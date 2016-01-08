@@ -1,6 +1,7 @@
 module OpenSolid.Vector2d
   ( Vector2d(Vector2d)
   , zero
+  , unitVector
   , xComponent
   , yComponent
   , components
@@ -28,6 +29,11 @@ type Vector2d =
 zero: Vector2d
 zero =
   Vector2d 0.0 0.0
+
+
+unitVector: Direction2d -> Vector2d
+unitVector (Direction2d x y) =
+  Vector2d x y
 
 
 xComponent: Vector2d -> Float
