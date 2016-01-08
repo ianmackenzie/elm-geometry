@@ -4,6 +4,9 @@ elm-stuff/
 # elm-repl generated files
 repl-temp-*
 
+opensolid-elm.sublime-workspace
+elm.js
+
 # =========================
 # Operating System Files
 # =========================
@@ -54,4 +57,3 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-opensolid-elm.sublime-workspace
