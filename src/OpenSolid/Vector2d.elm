@@ -13,7 +13,7 @@ module OpenSolid.Vector2d
   , negated
   , sum
   , difference
-  , product
+  , scaledBy
   , dotProduct
   , crossProduct
   ) where
@@ -69,7 +69,7 @@ normalized vector =
     if length' == 0 then
       zero
     else
-      product (1 / length') vector
+      scaledBy (1 / length') vector
 
 
 direction: Vector2d -> Direction2d
@@ -99,8 +99,8 @@ difference (Vector2d x1 y1) (Vector2d x2 y2) =
   Vector2d (x1 - x2) (y1 - y2)
 
 
-product: Float -> Vector2d -> Vector2d
-product scale (Vector2d x y) =
+scaledBy: Float -> Vector2d -> Vector2d
+scaledBy scale (Vector2d x y) =
   Vector2d (scale * x) (scale * y)
 
 
