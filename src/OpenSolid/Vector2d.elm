@@ -7,9 +7,18 @@ module OpenSolid.Vector2d
     , squaredLength
     , length
     , normalized
-    , dot
-    , cross
+    , direction
+    , normalDirection
+    , negated
+    , sum
+    , difference
+    , product
+    , dotProduct
+    , crossProduct
     ) where
+
+
+import OpenSolid.Direction2d as Direction2d exposing (Direction2d(Direction2d))
 
 
 type Vector2d =
@@ -48,7 +57,25 @@ length vector =
 
 normalized: Vector2d -> Vector2d
 normalized vector =
-    product (1.0 / (length vector)) vector
+    let
+        length' = length vector
+    in
+        if length' == 0 then
+            zero
+        else
+            product (1 / length') vector
+
+
+direction: Vector2d -> Direction2d
+direction vector =
+    let
+        (Vector2d x y) = normalized vector
+    in
+        Direction2d x y
+
+normalDirection: Vector2d -> Direction2d
+normalDirection vector =
+    Direction2d.normalDirection (direction vector)
 
 
 negated: Vector2d -> Vector2d
@@ -71,11 +98,11 @@ product scale (Vector2d x y) =
     Vector2d (scale * x) (scale * y)
 
 
-dot: Vector2d -> Vector2d -> Float
-dot (Vector2d x1 y1) (Vector2d x2 y2) =
+dotProduct: Vector2d -> Vector2d -> Float
+dotProduct (Vector2d x1 y1) (Vector2d x2 y2) =
     x1 * x2 + y1 * y2
 
 
-cross: Vector2d -> Vector2d -> Float
-cross (Vector2d x1 y1) (Vector2d x2 y2) =
+crossProduct: Vector2d -> Vector2d -> Float
+crossProduct (Vector2d x1 y1) (Vector2d x2 y2) =
     x1 * y2 - y1 * x2

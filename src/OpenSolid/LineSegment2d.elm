@@ -6,7 +6,7 @@ module OpenSolid.LineSegment2d
     , normalDirection
     , squaredLength
     , length
-    , transform
+    , transformedBy
     ) where
 
 
@@ -32,12 +32,12 @@ vector (LineSegment2d start end) =
 
 direction: LineSegment2d -> Direction2d
 direction lineSegment =
-    Direction2d.directionOf (vector lineSegment)
+    Vector2d.direction (vector lineSegment)
 
 
 normalDirection: LineSegment2d -> Direction2d
 normalDirection lineSegment =
-    Direction2d.normalDirection (direction lineSegment)
+    Vector2d.normalDirection (vector lineSegment)
 
 
 squaredLength: LineSegment2d -> Float
@@ -50,6 +50,6 @@ length lineSegment =
     Vector2d.length (vector lineSegment)
 
 
-transform: Transformation2d -> LineSegment2d -> LineSegment2d
-transform transformation (LineSegment2d start end) =
-    LineSegment2d (transformation.transformPoint start) (transformation.transformPoint end)
+transformedBy: Transformation2d -> LineSegment2d -> LineSegment2d
+transformedBy transformation (LineSegment2d start end) =
+    LineSegment2d (transformation.ofPoint start) (transformation.ofPoint end)

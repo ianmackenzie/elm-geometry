@@ -10,18 +10,24 @@ line: String -> a -> Html
 line label value =
     Html.div [] [Html.text (label ++ ": " ++ (toString value))]
 
+transform: LineSegment2d -> LineSegment2d
+transform =
+    LineSegment2d.transformedBy (Transformation2d.rotationAbout Point2d.origin (degrees 45))
+
 main =
     let
         intervalWidth = Interval.width (Interval 2 3)
         vectorLength = Vector2d.length (Vector2d 1 1)
         pointDifference = Point2d.difference (Point2d 1 2) Point2d.origin
-        rotation = Transformation2d.rotation Point2d.origin (degrees 45)
+        rotation = Transformation2d.rotationAbout Point2d.origin (degrees 45)
         lineSegment = LineSegment2d (Point2d 1 0) (Point2d 2 0)
-        transformedSegment = LineSegment2d.transform rotation lineSegment
+        transformedSegment = (LineSegment2d.transformedBy rotation) lineSegment
+        transformedSegment2 = transform lineSegment
     in
         Html.div []
             [ line "Interval width" intervalWidth
             , line "Vector length" vectorLength
             , line "Point difference" pointDifference
             , line "Transformed line segment" transformedSegment
+            , line "Transformed line segment 2" transformedSegment2
             ]

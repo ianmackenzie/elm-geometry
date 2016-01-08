@@ -1,78 +1,55 @@
 module OpenSolid.Direction2d
-    (
-    Direction2d,
-    fromComponents,
-    directionOf,
-    polar,
-    xDirection,
-    yDirection,
-    asVector,
-    xComponent,
-    yComponent,
-    components,
-    normalDirection,
-    transform
+    ( Direction2d(Direction2d)
+    , none
+    , polar
+    , xDirection
+    , yDirection
+    , xComponent
+    , yComponent
+    , components
+    , normalDirection
     ) where
 
 
-import OpenSolid.Vector2d as Vector2d exposing (Vector2d(Vector2d))
-import OpenSolid.Transformation2d as Transformation2d exposing (Transformation2d)
-
-
 type Direction2d =
-    Direction2d Vector2d
+    Direction2d Float Float
 
 
-fromComponents: Float -> Float -> Direction2d
-fromComponents x y =
-    Direction2d (Vector2d x y)
-
-
-directionOf: Vector2d -> Direction2d
-directionOf vector =
-    Direction2d (Vector2d.normalized vector)
+none: Direction2d
+none =
+    Direction2d 0 0
 
 
 polar: Float -> Direction2d
 polar angle =
-    Direction2d (Vector2d (cos angle) (sin angle))
+    Direction2d (cos angle) (sin angle)
 
 
 xDirection: Direction2d
 xDirection =
-    Direction2d (Vector2d 1.0 0.0)
+    Direction2d 1 0
 
 
 yDirection: Direction2d
 yDirection =
-    Direction2d (Vector2d 0.0 1.0)
-
-
-asVector: Direction2d -> Vector2d
-asVector (Direction2d vector) =
-    vector
+    Direction2d 0 1
 
 
 xComponent: Direction2d -> Float
-xComponent (Direction2d vector) =
-    Vector2d.xComponent vector
+xComponent (Direction2d x y) =
+    x
 
 
 yComponent: Direction2d -> Float
-yComponent (Direction2d vector) =
-    Vector2d.yComponent vector
+yComponent (Direction2d x y) =
+    y
 
 
 components: Direction2d -> (Float, Float)
-components (Direction2d vector) =
-    Vector2d.components vector
+components (Direction2d x y) =
+    (x, y)
 
 
 normalDirection: Direction2d -> Direction2d
-normalDirection (Direction2d (Vector2d x y)) =
-    Direction2d (Vector2d (-y) x)
-
-
-transform: Transformation2d -> Direction2d -> Direction2d
-transform transformation (Direction2d vector) =
-    Direction2d (transformation.transformVector vector)
+normalDirection (Direction2d x y) =
+    Direction2d (-y) x
