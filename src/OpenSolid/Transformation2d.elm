@@ -1,5 +1,6 @@
 module OpenSolid.Transformation2d
   ( Transformation2d
+  , identity
   , translationBy
   , rotationAbout
   , composition
@@ -17,6 +18,13 @@ type alias Transformation2d =
   , ofPoint: Point2d -> Point2d
   }
 
+
+identity: Transformation2d
+identity =
+  { ofDirection = \direction -> direction
+  , ofVector = \vector -> vector
+  , ofPoint = \point -> point
+  }
 
 translationBy: Vector2d -> Transformation2d
 translationBy vector =
