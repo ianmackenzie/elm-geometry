@@ -1,6 +1,7 @@
 module OpenSolid.Point2d
   ( Point2d(Point2d)
   , origin
+  , polar
   , xComponent
   , yComponent
   , components
@@ -21,6 +22,11 @@ type Point2d =
 origin: Point2d
 origin =
   Point2d 0.0 0.0
+
+
+polar: Float -> Float -> Point2d
+polar radius angle =
+  Point2d (radius * (cos angle)) (radius * (sin angle))
 
 
 xComponent: Point2d -> Float
