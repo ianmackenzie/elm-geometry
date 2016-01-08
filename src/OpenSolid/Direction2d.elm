@@ -1,9 +1,9 @@
 module OpenSolid.Direction2d
   ( Direction2d(Direction2d)
   , none
-  , polar
   , xDirection
   , yDirection
+  , polar
   , xComponent
   , yComponent
   , components
@@ -20,11 +20,6 @@ none =
   Direction2d 0 0
 
 
-polar: Float -> Direction2d
-polar angle =
-  Direction2d (cos angle) (sin angle)
-
-
 xDirection: Direction2d
 xDirection =
   Direction2d 1 0
@@ -33,6 +28,11 @@ xDirection =
 yDirection: Direction2d
 yDirection =
   Direction2d 0 1
+
+
+polar: Float -> Direction2d
+polar angle =
+  Direction2d (cos angle) (sin angle)
 
 
 xComponent: Direction2d -> Float
