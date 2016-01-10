@@ -1,4 +1,8 @@
-import Html exposing (Html)
+import Html exposing (Html, div, text)
+import Html.Attributes exposing (id, style)
+import Graphics.Element
+import Graphics.Collage exposing (Path, path, collage, traced, dashed)
+import Color exposing (blue)
 import OpenSolid.Interval as Interval exposing (Interval)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
@@ -8,7 +12,7 @@ import OpenSolid.Transformation2d as Transformation2d exposing (Transformation2d
 
 line: String -> a -> Html
 line label value =
-  Html.div [] [Html.text (label ++ ": " ++ (toString value))]
+  div [] [text (label ++ ": " ++ (toString value))]
 
 transform: LineSegment2d -> LineSegment2d
 transform =
@@ -27,7 +31,7 @@ main =
     rotatedDirection = Direction2d.transformedBy rotation Direction2d.x
     angledDotProduct = Vector2d.dot (Vector2d 2 3) rotatedDirection
   in
-    Html.div []
+    div []
       [ line "Interval width" intervalWidth
       , line "Vector length" vectorLength
       , line "Point difference" pointDifference
@@ -36,4 +40,23 @@ main =
       , line "Mixed dot product" mixedDotProduct
       , line "Rotated direction" rotatedDirection
       , line "Angled dot product" angledDotProduct
+      , testImage
       ]
+
+toPath: LineSegment2d -> Path
+toPath lineSegment =
+  path [Point2d.components lineSegment.firstEndpoint, Point2d.components lineSegment.secondEndpoint]
+
+testImage: Html
+testImage =
+  let
+    centerPoint = Point2d 0 0
+    lineSegment = LineSegment2d (Point2d 100 0) (Point2d 250 0)
+    angle = degrees 15
+    angles = List.map (\index -> angle * index) [0..18]
+    rotations = List.map (Transformation2d.rotation centerPoint) angles
+    segments = List.map (\rotation -> LineSegment2d.transformedBy rotation lineSegment) rotations
+    paths = List.map toPath segments
+    forms = List.map (traced (dashed blue)) paths
+  in
+    div [id "debugdiv"] [Html.fromElement (collage 500 500 forms)]
