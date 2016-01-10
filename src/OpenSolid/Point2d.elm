@@ -1,27 +1,29 @@
 module OpenSolid.Point2d
-  ( Point2d(Point2d)
+  ( Point2d
   , origin
   , polar
-  , xComponent
-  , yComponent
   , components
-  , squaredDistance
-  , distance
-  , sum
-  , difference
+  , squaredDistanceTo
+  , distanceTo
+  , transformedBy
+  , plus
+  , minus
   ) where
 
 
-import OpenSolid.Vector2d as Vector2d exposing (Vector2d(Vector2d))
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
+import OpenSolid.Transformation2d as Transformation2d exposing (Transformation2d)
 
 
-type Point2d =
-  Point2d Float Float
+type alias Point2d =
+  { x : Float
+  , y : Float
+  }
 
 
 origin: Point2d
 origin =
-  Point2d 0.0 0.0
+  Point2d 0 0
 
 
 polar: Float -> Float -> Point2d
@@ -29,37 +31,32 @@ polar radius angle =
   Point2d (radius * (cos angle)) (radius * (sin angle))
 
 
-xComponent: Point2d -> Float
-xComponent (Point2d x y) =
-  x
-
-
-yComponent: Point2d -> Float
-yComponent (Point2d x y) =
-  y
-
-
 components: Point2d -> (Float, Float)
-components (Point2d x y) =
-  (x, y)
+components point =
+  (point.x, point.y)
 
 
-squaredDistance: Point2d -> Point2d -> Float
-squaredDistance firstPoint secondPoint =
-  Vector2d.squaredLength (difference firstPoint secondPoint)
+squaredDistanceTo: Point2d -> Point2d -> Float
+squaredDistanceTo firstPoint secondPoint =
+  Vector2d.squaredLength (secondPoint `minus` firstPoint)
 
 
 
-distance: Point2d -> Point2d -> Float
-distance firstPoint secondPoint =
-  Vector2d.length (difference firstPoint secondPoint)
+distanceTo: Point2d -> Point2d -> Float
+distanceTo firstPoint secondPoint =
+  Vector2d.length (secondPoint `minus` firstPoint)
 
 
-sum: Point2d -> Vector2d -> Point2d
-sum (Point2d x1 y1) (Vector2d x2 y2) =
-  Point2d (x1 + x2) (y1 + y2)
+transformedBy: Transformation2d -> Point2d -> Point2d
+transformedBy transformation point =
+  transformation.ofPoint point
 
 
-difference: Point2d -> Point2d -> Vector2d
-difference (Point2d x1 y1) (Point2d x2 y2) =
-  Vector2d (x1 - x2) (y1 - y2)
+plus: Point2d -> Vector2d -> Point2d
+plus point vector  =
+  Point2d (point.x + vector.x) (point.y + vector.y)
+
+
+minus: Point2d -> Point2d -> Vector2d
+minus firstPoint secondPoint =
+  Vector2d (firstPoint.x - secondPoint.x) (firstPoint.y - secondPoint.y)

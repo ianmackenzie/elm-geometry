@@ -1,18 +1,22 @@
 module OpenSolid.Direction2d
-  ( Direction2d(Direction2d)
+  ( Direction2d
   , none
-  , xDirection
-  , yDirection
+  , x
+  , y
   , polar
-  , xComponent
-  , yComponent
   , components
   , normalDirection
+  , transformedBy
   ) where
 
 
-type Direction2d =
-  Direction2d Float Float
+import OpenSolid.Transformation2d as Transformation2d exposing (Transformation2d)
+
+
+type alias Direction2d =
+  { x : Float
+  , y : Float
+  }
 
 
 none: Direction2d
@@ -20,13 +24,13 @@ none =
   Direction2d 0 0
 
 
-xDirection: Direction2d
-xDirection =
+x: Direction2d
+x =
   Direction2d 1 0
 
 
-yDirection: Direction2d
-yDirection =
+y: Direction2d
+y =
   Direction2d 0 1
 
 
@@ -35,21 +39,16 @@ polar angle =
   Direction2d (cos angle) (sin angle)
 
 
-xComponent: Direction2d -> Float
-xComponent (Direction2d x y) =
-  x
-
-
-yComponent: Direction2d -> Float
-yComponent (Direction2d x y) =
-  y
-
-
 components: Direction2d -> (Float, Float)
-components (Direction2d x y) =
-  (x, y)
+components direction =
+  (direction.x, direction.y)
 
 
 normalDirection: Direction2d -> Direction2d
-normalDirection (Direction2d x y) =
-  Direction2d (-y) x
+normalDirection direction =
+  Direction2d (-direction.y) direction.x
+
+
+transformedBy: Transformation2d -> Direction2d -> Direction2d
+transformedBy transformation direction =
+  transformation.ofVector direction

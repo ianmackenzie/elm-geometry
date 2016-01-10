@@ -1,5 +1,5 @@
 module OpenSolid.Interval
-  ( Interval(Interval)
+  ( Interval
   , endpoints
   , width
   , interpolated
@@ -7,25 +7,27 @@ module OpenSolid.Interval
   ) where
 
 
-type Interval =
-  Interval Float Float
+type alias Interval =
+  { lowerBound : Float
+  , upperBound : Float
+  }
 
 
 endpoints: Interval -> (Float, Float)
-endpoints (Interval lower upper) =
-  (lower, upper)
+endpoints interval =
+  (interval.lowerBound, interval.upperBound)
 
 
 width: Interval -> Float
-width (Interval lower upper) =
-  upper - lower
+width interval =
+  interval.upperBound - interval.lowerBound
 
 
 interpolated: Interval -> Float -> Float
-interpolated (Interval lower upper) parameter =
-  lower + parameter * (upper - lower)
+interpolated interval parameter =
+  interval.lowerBound + parameter * (interval.upperBound - interval.lowerBound)
 
 
 median: Interval -> Float
-median (Interval lower upper) =
-  lower + 0.5 * (upper - lower)
+median interval =
+  interval.lowerBound + 0.5 * (interval.upperBound - interval.lowerBound)

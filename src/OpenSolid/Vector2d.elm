@@ -1,59 +1,43 @@
 module OpenSolid.Vector2d
-  ( Vector2d(Vector2d)
+  ( Vector2d
   , zero
-  , unitVector
-  , xComponent
-  , yComponent
   , components
   , squaredLength
   , length
   , normalized
   , direction
   , normalDirection
+  , transformedBy
   , negated
-  , sum
-  , difference
-  , scaledBy
-  , dotProduct
-  , crossProduct
+  , plus
+  , minus
+  , times
+  , dot
+  , cross
   ) where
 
 
-import OpenSolid.Direction2d as Direction2d exposing (Direction2d(Direction2d))
+import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
+import OpenSolid.Transformation2d as Transformation2d exposing (Transformation2d)
 
-
-type Vector2d =
-  Vector2d Float Float
-
+type alias Vector2d =
+  { x : Float
+  , y : Float
+  }
 
 zero: Vector2d
 zero =
-  Vector2d 0.0 0.0
-
-
-unitVector: Direction2d -> Vector2d
-unitVector (Direction2d x y) =
-  Vector2d x y
-
-
-xComponent: Vector2d -> Float
-xComponent (Vector2d x y) =
-  x
-
-
-yComponent: Vector2d -> Float
-yComponent (Vector2d x y) =
-  y
+  Vector2d 0 0
 
 
 components: Vector2d -> (Float, Float)
-components (Vector2d x y) =
-  (x, y)
+components vector =
+  (vector.x, vector.y)
 
 
 squaredLength: Vector2d -> Float
-squaredLength (Vector2d x y) =
-  x^2 + y^2
+squaredLength vector =
+  vector.x^2 + vector.y^2
 
 
 length: Vector2d -> Float
@@ -69,46 +53,49 @@ normalized vector =
     if length' == 0 then
       zero
     else
-      scaledBy (1 / length') vector
+      times vector (1 / length')
 
 
 direction: Vector2d -> Direction2d
 direction vector =
-  let
-    (Vector2d x y) = normalized vector
-  in
-    Direction2d x y
+  normalized vector
+
 
 normalDirection: Vector2d -> Direction2d
 normalDirection vector =
   Direction2d.normalDirection (direction vector)
 
 
+transformedBy: Transformation2d -> Vector2d -> Vector2d
+transformedBy transformation vector =
+  transformation.ofVector vector
+
+
 negated: Vector2d -> Vector2d
-negated (Vector2d x y) =
-  Vector2d (-x) (-y)
+negated vector =
+  Vector2d (-vector.x) (-vector.y)
 
 
-sum: Vector2d -> Vector2d -> Vector2d
-sum (Vector2d x1 y1) (Vector2d x2 y2) =
-  Vector2d (x1 + x2) (y1 + y2)
+plus: Vector2d -> Vector2d -> Vector2d
+plus firstVector secondVector =
+  Vector2d (firstVector.x + secondVector.x) (firstVector.y + secondVector.y)
 
 
-difference: Vector2d -> Vector2d -> Vector2d
-difference (Vector2d x1 y1) (Vector2d x2 y2) =
-  Vector2d (x1 - x2) (y1 - y2)
+minus: Vector2d -> Vector2d -> Vector2d
+minus firstVector secondVector =
+  Vector2d (firstVector.x - secondVector.x) (firstVector.y - secondVector.y)
 
 
-scaledBy: Float -> Vector2d -> Vector2d
-scaledBy scale (Vector2d x y) =
-  Vector2d (scale * x) (scale * y)
+times: Vector2d -> Float -> Vector2d
+times vector scale =
+  Vector2d (vector.x * scale) (vector.y * scale)
 
 
-dotProduct: Vector2d -> Vector2d -> Float
-dotProduct (Vector2d x1 y1) (Vector2d x2 y2) =
-  x1 * x2 + y1 * y2
+dot: Vector2d -> Vector2d -> Float
+dot firstVector secondVector =
+  firstVector.x * secondVector.x + firstVector.y * secondVector.y
 
 
-crossProduct: Vector2d -> Vector2d -> Float
-crossProduct (Vector2d x1 y1) (Vector2d x2 y2) =
-  x1 * y2 - y1 * x2
+cross: Vector2d -> Vector2d -> Float
+cross firstVector secondVector =
+  firstVector.x * secondVector.y - firstVector.y * secondVector.x
