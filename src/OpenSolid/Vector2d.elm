@@ -41,8 +41,8 @@ squaredLength vector =
 
 
 length: Vector2d -> Float
-length vector =
-  sqrt (squaredLength vector)
+length =
+  squaredLength >> sqrt
 
 
 normalized: Vector2d -> Vector2d
@@ -53,22 +53,22 @@ normalized vector =
     if length' == 0 then
       zero
     else
-      times vector (1 / length')
+      times (1 / length') vector
 
 
 direction: Vector2d -> Direction2d
-direction vector =
-  normalized vector
+direction =
+  normalized
 
 
 normalDirection: Vector2d -> Direction2d
-normalDirection vector =
-  Direction2d.normalDirection (direction vector)
+normalDirection =
+  direction >> Direction2d.normalDirection
 
 
 transformedBy: Transformation2d -> Vector2d -> Vector2d
-transformedBy transformation vector =
-  transformation.ofVector vector
+transformedBy transformation =
+  transformation.ofVector
 
 
 negated: Vector2d -> Vector2d
@@ -77,25 +77,25 @@ negated vector =
 
 
 plus: Vector2d -> Vector2d -> Vector2d
-plus firstVector secondVector =
-  Vector2d (firstVector.x + secondVector.x) (firstVector.y + secondVector.y)
+plus otherVector vector =
+  Vector2d (vector.x + otherVector.x) (vector.y + otherVector.y)
 
 
 minus: Vector2d -> Vector2d -> Vector2d
-minus firstVector secondVector =
-  Vector2d (firstVector.x - secondVector.x) (firstVector.y - secondVector.y)
+minus otherVector vector =
+  Vector2d (vector.x - otherVector.x) (vector.y - otherVector.y)
 
 
-times: Vector2d -> Float -> Vector2d
-times vector scale =
+times: Float -> Vector2d -> Vector2d
+times scale vector =
   Vector2d (vector.x * scale) (vector.y * scale)
 
 
 dot: Vector2d -> Vector2d -> Float
-dot firstVector secondVector =
-  firstVector.x * secondVector.x + firstVector.y * secondVector.y
+dot otherVector vector =
+  vector.x * otherVector.x + vector.y * otherVector.y
 
 
 cross: Vector2d -> Vector2d -> Float
-cross firstVector secondVector =
-  firstVector.x * secondVector.y - firstVector.y * secondVector.x
+cross otherVector vector =
+  vector.x * otherVector.y - vector.y * otherVector.x

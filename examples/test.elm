@@ -22,14 +22,14 @@ main =
   let
     intervalWidth = Interval.width (Interval 2 3)
     vectorLength = Vector2d.length (Vector2d 1 1)
-    pointDifference = Point2d.minus (Point2d 1 2) Point2d.origin
+    pointDifference = Point2d.minus Point2d.origin (Point2d 1 2)
     rotation = Transformation2d.rotation Point2d.origin (degrees 45)
     lineSegment = LineSegment2d (Point2d 1 0) (Point2d 2 0)
-    transformedSegment = (LineSegment2d.transformedBy rotation) lineSegment
+    transformedSegment = LineSegment2d.transformedBy rotation lineSegment
     transformedSegment2 = transform lineSegment
-    mixedDotProduct = Vector2d.dot (Vector2d 2 3) Direction2d.x
+    mixedDotProduct = Vector2d.dot Direction2d.x (Vector2d 2 3)
     rotatedDirection = Direction2d.transformedBy rotation Direction2d.x
-    angledDotProduct = Vector2d.dot (Vector2d 2 3) rotatedDirection
+    angledDotProduct = Vector2d.dot rotatedDirection (Vector2d 2 3)
   in
     div []
       [ line "Interval width" intervalWidth
@@ -53,10 +53,11 @@ testImage =
     centerPoint = Point2d 0 0
     lineSegment = LineSegment2d (Point2d 100 0) (Point2d 250 0)
     angle = degrees 15
-    angles = List.map (\index -> angle * index) [0..18]
-    rotations = List.map (Transformation2d.rotation centerPoint) angles
-    segments = List.map (\rotation -> LineSegment2d.transformedBy rotation lineSegment) rotations
-    paths = List.map toPath segments
-    forms = List.map (traced (dashed blue)) paths
+    forms =
+      List.map
+        ( (*) angle >> Transformation2d.rotation centerPoint >>
+          (\rotation -> LineSegment2d.transformedBy rotation lineSegment) >>
+          toPath >> traced (dashed blue) )
+        [0..18]
   in
-    div [id "debugdiv"] [Html.fromElement (collage 500 500 forms)]
+    div [] [Html.fromElement (collage 500 500 forms)]

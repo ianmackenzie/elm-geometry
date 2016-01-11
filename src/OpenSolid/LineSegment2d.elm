@@ -29,27 +29,27 @@ endpoints lineSegment =
 
 vector: LineSegment2d -> Vector2d
 vector lineSegment =
-  Point2d.minus lineSegment.secondEndpoint lineSegment.firstEndpoint
+  Point2d.minus lineSegment.firstEndpoint lineSegment.secondEndpoint
 
 
 direction: LineSegment2d -> Direction2d
-direction lineSegment =
-  Vector2d.direction (vector lineSegment)
+direction =
+  vector >> Vector2d.direction
 
 
 normalDirection: LineSegment2d -> Direction2d
-normalDirection lineSegment =
-  Vector2d.normalDirection (vector lineSegment)
+normalDirection =
+  vector >> Vector2d.normalDirection
 
 
 squaredLength: LineSegment2d -> Float
-squaredLength lineSegment =
-  Vector2d.squaredLength (vector lineSegment)
+squaredLength =
+  vector >> Vector2d.squaredLength
 
 
 length: LineSegment2d -> Float
-length lineSegment =
-  Vector2d.length (vector lineSegment)
+length =
+  vector >> Vector2d.length
 
 
 transformedBy: Transformation2d -> LineSegment2d -> LineSegment2d

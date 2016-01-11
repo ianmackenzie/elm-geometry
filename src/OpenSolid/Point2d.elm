@@ -37,26 +37,26 @@ components point =
 
 
 squaredDistanceTo: Point2d -> Point2d -> Float
-squaredDistanceTo firstPoint secondPoint =
-  Vector2d.squaredLength (secondPoint `minus` firstPoint)
+squaredDistanceTo otherPoint =
+  minus otherPoint >> Vector2d.squaredLength
 
 
 
 distanceTo: Point2d -> Point2d -> Float
-distanceTo firstPoint secondPoint =
-  Vector2d.length (secondPoint `minus` firstPoint)
+distanceTo otherPoint =
+  minus otherPoint >> Vector2d.length
 
 
 transformedBy: Transformation2d -> Point2d -> Point2d
-transformedBy transformation point =
-  transformation.ofPoint point
+transformedBy transformation =
+  transformation.ofPoint
 
 
-plus: Point2d -> Vector2d -> Point2d
-plus point vector  =
+plus: Vector2d -> Point2d -> Point2d
+plus vector point =
   Point2d (point.x + vector.x) (point.y + vector.y)
 
 
 minus: Point2d -> Point2d -> Vector2d
-minus firstPoint secondPoint =
-  Vector2d (firstPoint.x - secondPoint.x) (firstPoint.y - secondPoint.y)
+minus otherPoint point =
+  Vector2d (point.x - otherPoint.x) (point.y - otherPoint.y)

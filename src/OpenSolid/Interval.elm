@@ -23,11 +23,11 @@ width interval =
   interval.upperBound - interval.lowerBound
 
 
-interpolated: Interval -> Float -> Float
-interpolated interval parameter =
-  interval.lowerBound + parameter * (interval.upperBound - interval.lowerBound)
+interpolated: Float -> Interval -> Float
+interpolated parameter interval =
+  interval.lowerBound + parameter * width interval
 
 
 median: Interval -> Float
-median interval =
-  interval.lowerBound + 0.5 * (interval.upperBound - interval.lowerBound)
+median =
+  interpolated 0.5
