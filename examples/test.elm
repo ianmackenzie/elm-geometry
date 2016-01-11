@@ -50,12 +50,11 @@ toPath lineSegment =
 testImage: Html
 testImage =
   let
-    centerPoint = Point2d 0 0
     lineSegment = LineSegment2d (Point2d 100 0) (Point2d 250 0)
     angle = degrees 15
     forms =
       List.map
-        ( (*) angle >> Transformation2d.rotationAbout centerPoint >>
+        ( (*) angle >> Transformation2d.rotationAbout Point2d.origin >>
           (\rotation -> LineSegment2d.transformedBy rotation lineSegment) >>
           toPath >> traced (dashed blue) )
         [0..18]
