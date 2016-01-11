@@ -1,7 +1,7 @@
 module OpenSolid.Transformation2d
   ( Transformation2d
-  , translation
-  , rotation
+  , translationBy
+  , rotationAbout
   , compound
   ) where
 
@@ -24,8 +24,8 @@ type alias Transformation2d =
   }
 
 
-translation: Vector2d -> Transformation2d
-translation vector =
+translationBy: Vector2d -> Transformation2d
+translationBy vector =
   Transformation2d identity (\point -> Point2d (point.x + vector.x) (point.y + vector.y))
 
 
@@ -47,8 +47,8 @@ rotatePoint point originPoint sinAngle cosAngle =
     Point2d (originPoint.x + rotatedVector.x) (originPoint.y + rotatedVector.y)
 
 
-rotation: Point2d -> Float -> Transformation2d
-rotation point angle =
+rotationAbout: Point2d -> Float -> Transformation2d
+rotationAbout point angle =
   let
     sinAngle = sin angle
     cosAngle = cos angle
