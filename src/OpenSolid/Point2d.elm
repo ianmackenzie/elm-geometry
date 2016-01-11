@@ -28,7 +28,7 @@ origin =
 
 polar: Float -> Float -> Point2d
 polar radius angle =
-  Point2d (radius * (cos angle)) (radius * (sin angle))
+  Point2d (radius * cos angle) (radius * sin angle)
 
 
 components: Point2d -> (Float, Float)

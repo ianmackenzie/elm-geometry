@@ -12,7 +12,7 @@ import OpenSolid.Transformation2d as Transformation2d exposing (Transformation2d
 
 line: String -> a -> Html
 line label value =
-  div [] [text (label ++ ": " ++ (toString value))]
+  div [] [text (label ++ ": " ++ toString value)]
 
 transform: LineSegment2d -> LineSegment2d
 transform =
