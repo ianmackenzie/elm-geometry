@@ -16,6 +16,7 @@ transform: LineSegment2d -> LineSegment2d
 transform =
   LineSegment2d.transformedBy (Transformation2d.rotationAbout Point2d.origin (degrees 45))
 
+main: Html
 main =
   let
     intervalWidth = Interval.width (Interval 2 3)
