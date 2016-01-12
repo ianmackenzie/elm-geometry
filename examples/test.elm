@@ -18,11 +18,6 @@ line label value =
   div [] [text (label ++ ": " ++ toString value)]
 
 
-transform: LineSegment2d -> LineSegment2d
-transform =
-  LineSegment2d.transformedBy (Transformation2d.rotationAbout Point2d.origin (degrees 45))
-
-
 lines: Html
 lines =
   let
@@ -32,7 +27,6 @@ lines =
     rotation = Transformation2d.rotationAbout Point2d.origin (degrees 45)
     lineSegment = LineSegment2d (Point2d 1 0) (Point2d 2 0)
     transformedSegment = LineSegment2d.transformedBy rotation lineSegment
-    transformedSegment2 = transform lineSegment
     mixedDotProduct = Vector2d.dot Direction2d.x (Vector2d 2 3)
     rotatedDirection = Direction2d.transformedBy rotation Direction2d.x
     angledDotProduct = Vector2d.dot rotatedDirection (Vector2d 2 3)
@@ -42,7 +36,6 @@ lines =
       , line "Vector length" vectorLength
       , line "Point difference" pointDifference
       , line "Transformed line segment" transformedSegment
-      , line "Transformed line segment 2" transformedSegment2
       , line "Mixed dot product" mixedDotProduct
       , line "Rotated direction" rotatedDirection
       , line "Angled dot product" angledDotProduct
