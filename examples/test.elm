@@ -1,4 +1,6 @@
 import Html exposing (Html, div, text)
+import Time exposing (Time, fps)
+import Signal exposing (Signal)
 import Svg.Attributes exposing (stroke, strokeWidth)
 import OpenSolid.Interval as Interval exposing (Interval)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
@@ -20,8 +22,8 @@ transform =
   LineSegment2d.transformedBy (Transformation2d.rotationAbout Point2d.origin (degrees 45))
 
 
-main: Html
-main =
+lines: Html
+lines =
   let
     intervalWidth = Interval.width (Interval 2 3)
     vectorLength = Vector2d.length (Vector2d 1 1)
@@ -43,20 +45,34 @@ main =
       , line "Mixed dot product" mixedDotProduct
       , line "Rotated direction" rotatedDirection
       , line "Angled dot product" angledDotProduct
-      , testImage
       ]
 
 
-testImage: Html
-testImage =
+angularSpeed: Float
+angularSpeed =
+  -pi / 8
+
+
+update: Time -> Float -> Float
+update deltaTime angle =
+  angle + angularSpeed * (deltaTime / Time.second)
+
+
+view: Float -> Html
+view angle =
   let
     lineSegment = LineSegment2d (Point2d 5 0) (Point2d 10 0)
     segments =
       List.map
-        ( (\index -> index * degrees 15) >>
+        ( (\index -> angle + index * degrees 15) >>
           (\angle -> Transformation2d.rotationAbout Point2d.origin angle) >>
           (\rotation -> LineSegment2d.transformedBy rotation lineSegment) )
         [0..18]
     elements = List.map (Svg.lineSegment [stroke "blue", strokeWidth "0.05"]) segments
   in
-    svg 500 500 (Box2d (Interval -10 10) (Interval -10 10)) elements
+    div [] [lines, svg 500 500 (Box2d (Interval -10 10) (Interval -10 10)) elements]
+
+
+main: Signal Html
+main =
+  Signal.foldp update 0.0 (fps 120) |> Signal.map view
