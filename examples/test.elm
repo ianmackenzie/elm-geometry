@@ -1,20 +1,24 @@
 import Html exposing (Html, div, text)
-import Graphics.Collage exposing (Path, path, collage, traced, dashed)
-import Color exposing (blue)
+import Svg.Attributes exposing (stroke, strokeWidth)
 import OpenSolid.Interval as Interval exposing (Interval)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.Transformation2d as Transformation2d exposing (Transformation2d)
+import OpenSolid.Box2d as Box2d exposing (Box2d)
+import OpenSolid.Svg as Svg exposing (svg)
+
 
 line: String -> a -> Html
 line label value =
   div [] [text (label ++ ": " ++ toString value)]
 
+
 transform: LineSegment2d -> LineSegment2d
 transform =
   LineSegment2d.transformedBy (Transformation2d.rotationAbout Point2d.origin (degrees 45))
+
 
 main: Html
 main =
@@ -42,20 +46,17 @@ main =
       , testImage
       ]
 
-toPath: LineSegment2d -> Path
-toPath lineSegment =
-  path [Point2d.components lineSegment.firstEndpoint, Point2d.components lineSegment.secondEndpoint]
 
 testImage: Html
 testImage =
   let
-    lineSegment = LineSegment2d (Point2d 100 0) (Point2d 250 0)
-    angle = degrees 15
-    forms =
+    lineSegment = LineSegment2d (Point2d 5 0) (Point2d 10 0)
+    segments =
       List.map
-        ( (*) angle >> Transformation2d.rotationAbout Point2d.origin >>
-          (\rotation -> LineSegment2d.transformedBy rotation lineSegment) >>
-          toPath >> traced (dashed blue) )
+        ( (\index -> index * degrees 15) >>
+          (\angle -> Transformation2d.rotationAbout Point2d.origin angle) >>
+          (\rotation -> LineSegment2d.transformedBy rotation lineSegment) )
         [0..18]
+    elements = List.map (Svg.lineSegment [stroke "blue", strokeWidth "0.05"]) segments
   in
-    div [] [Html.fromElement (collage 500 500 forms)]
+    svg 500 500 (Box2d (Interval -10 10) (Interval -10 10)) elements
