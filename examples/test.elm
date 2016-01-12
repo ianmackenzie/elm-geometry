@@ -81,25 +81,25 @@ update deltaTime state =
 lineSegments: List LineSegment2d
 lineSegments =
   let
-    lineSegment = LineSegment2d (Point2d 5 0) (Point2d 10 0)
+    firstSegment = LineSegment2d (Point2d 5 0) (Point2d 10 0)
   in
     List.map
       ( (\index -> index * degrees 7.5) >>
         (\angle -> Transformation2d.rotationAbout Point2d.origin angle) >>
-        (\rotation -> LineSegment2d.transformedBy rotation lineSegment) )
+        (\rotation -> LineSegment2d.transformedBy rotation firstSegment) )
       [0..36]
 
 
 view: State -> Html
 view state =
   let
-    transformation = Transformation2d.rotationAbout Point2d.origin state.angle
-    transformedSegments = List.map (LineSegment2d.transformedBy transformation) lineSegments
-    elements = List.map (Svg.lineSegment [stroke "blue", strokeWidth "0.05"]) transformedSegments
+    rotation = Transformation2d.rotationAbout Point2d.origin state.angle
+    rotatedSegments = List.map (LineSegment2d.transformedBy rotation) lineSegments
+    svgElements = List.map (Svg.lineSegment [stroke "blue", strokeWidth "0.05"]) rotatedSegments
   in
     div []
       [ lines
-      , svg 500 500 (Box2d (Interval -10 10) (Interval -10 10)) elements
+      , svg 500 500 (Box2d (Interval -10 10) (Interval -10 10)) svgElements
       , line "Frame rate" state.frameRate
       ]
 
