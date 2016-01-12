@@ -58,17 +58,24 @@ update deltaTime angle =
   angle + angularSpeed * (deltaTime / Time.second)
 
 
+lineSegments: List LineSegment2d
+lineSegments =
+  let
+    lineSegment = LineSegment2d (Point2d 5 0) (Point2d 10 0)
+  in
+    List.map
+      ( (\index -> index * degrees 15) >>
+        (\angle -> Transformation2d.rotationAbout Point2d.origin angle) >>
+        (\rotation -> LineSegment2d.transformedBy rotation lineSegment) )
+      [0..18]
+
+
 view: Float -> Html
 view angle =
   let
-    lineSegment = LineSegment2d (Point2d 5 0) (Point2d 10 0)
-    segments =
-      List.map
-        ( (\index -> angle + index * degrees 15) >>
-          (\angle -> Transformation2d.rotationAbout Point2d.origin angle) >>
-          (\rotation -> LineSegment2d.transformedBy rotation lineSegment) )
-        [0..18]
-    elements = List.map (Svg.lineSegment [stroke "blue", strokeWidth "0.05"]) segments
+    transformation = Transformation2d.rotationAbout Point2d.origin angle
+    transformedSegments = List.map (LineSegment2d.transformedBy transformation) lineSegments
+    elements = List.map (Svg.lineSegment [stroke "blue", strokeWidth "0.05"]) transformedSegments
   in
     div [] [lines, svg 500 500 (Box2d (Interval -10 10) (Interval -10 10)) elements]
 
