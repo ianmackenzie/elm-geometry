@@ -1,6 +1,4 @@
 import Html exposing (Html, div, text)
-import Html.Attributes exposing (id, style)
-import Graphics.Element
 import Graphics.Collage exposing (Path, path, collage, traced, dashed)
 import Color exposing (blue)
 import OpenSolid.Interval as Interval exposing (Interval)
