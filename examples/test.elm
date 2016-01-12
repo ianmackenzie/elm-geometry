@@ -51,7 +51,7 @@ lines =
 
 angularSpeed: Float
 angularSpeed =
-  -pi / 8
+  -pi / 16
 
 
 type alias State =
