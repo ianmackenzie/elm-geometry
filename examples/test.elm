@@ -77,6 +77,7 @@ update deltaTime state =
     else
       State angle state.frameRate elapsedTime frameCount
 
+
 lineSegments: List LineSegment2d
 lineSegments =
   let
