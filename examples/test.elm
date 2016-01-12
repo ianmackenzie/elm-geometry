@@ -53,9 +53,24 @@ angularSpeed =
   -pi / 8
 
 
-update: Time -> Float -> Float
-update deltaTime angle =
-  angle + angularSpeed * (deltaTime / Time.second)
+type alias State =
+  { angle: Float
+  , frameRate: Float
+  }
+
+
+initialState: State
+initialState =
+  { angle = 0.0
+  , frameRate = 0.0
+  }
+
+
+update: Time -> State -> State
+update deltaTime state =
+  { angle = state.angle + angularSpeed * (deltaTime / Time.second)
+  , frameRate = Time.second / deltaTime
+  }
 
 
 lineSegments: List LineSegment2d
@@ -64,22 +79,26 @@ lineSegments =
     lineSegment = LineSegment2d (Point2d 5 0) (Point2d 10 0)
   in
     List.map
-      ( (\index -> index * degrees 15) >>
+      ( (\index -> index * degrees 7.5) >>
         (\angle -> Transformation2d.rotationAbout Point2d.origin angle) >>
         (\rotation -> LineSegment2d.transformedBy rotation lineSegment) )
-      [0..18]
+      [0..36]
 
 
-view: Float -> Html
-view angle =
+view: State -> Html
+view state =
   let
-    transformation = Transformation2d.rotationAbout Point2d.origin angle
+    transformation = Transformation2d.rotationAbout Point2d.origin state.angle
     transformedSegments = List.map (LineSegment2d.transformedBy transformation) lineSegments
     elements = List.map (Svg.lineSegment [stroke "blue", strokeWidth "0.05"]) transformedSegments
   in
-    div [] [lines, svg 500 500 (Box2d (Interval -10 10) (Interval -10 10)) elements]
+    div []
+      [ lines
+      , svg 500 500 (Box2d (Interval -10 10) (Interval -10 10)) elements
+      , line "Frame rate" state.frameRate
+      ]
 
 
 main: Signal Html
 main =
-  Signal.foldp update 0.0 (fps 120) |> Signal.map view
+  Signal.foldp update initialState (fps 120) |> Signal.map view
