@@ -1,6 +1,7 @@
 import Html exposing (Html, div, text)
 import Time exposing (Time, fps)
 import Signal exposing (Signal)
+import AnimationFrame
 import Svg.Attributes exposing (stroke, strokeWidth)
 import OpenSolid.Interval as Interval exposing (Interval)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
@@ -101,4 +102,4 @@ view state =
 
 main: Signal Html
 main =
-  Signal.foldp update initialState (fps 120) |> Signal.map view
+  Signal.foldp update initialState AnimationFrame.frame |> Signal.map view
