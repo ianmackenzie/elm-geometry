@@ -57,6 +57,8 @@ angularSpeed =
 type alias State =
   { angle: Float
   , frameRate: Float
+  , elapsedTime: Float
+  , frameCount: Int
   }
 
 
@@ -64,15 +66,23 @@ initialState: State
 initialState =
   { angle = 0.0
   , frameRate = 0.0
+  , elapsedTime = 0.0
+  , frameCount = 0
   }
 
 
 update: Time -> State -> State
 update deltaTime state =
-  { angle = state.angle + angularSpeed * (deltaTime / Time.second)
-  , frameRate = Time.second / deltaTime
-  }
-
+  let
+    deltaInSeconds = Time.inSeconds deltaTime
+    angle = state.angle + angularSpeed * deltaInSeconds
+    frameCount = state.frameCount + 1
+    elapsedTime = state.elapsedTime + deltaInSeconds
+  in
+    if elapsedTime >= 0.5 then
+      State angle (frameCount / elapsedTime) 0.0 0
+    else
+      State angle state.frameRate elapsedTime frameCount
 
 lineSegments: List LineSegment2d
 lineSegments =
