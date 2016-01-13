@@ -1,5 +1,6 @@
 import Html exposing (Html, div, text)
 import Time exposing (Time, fps)
+import String
 import Signal exposing (Signal)
 import AnimationFrame
 import Svg.Attributes exposing (stroke, strokeWidth)
@@ -53,6 +54,7 @@ type alias State =
   , frameRate: Float
   , elapsedTime: Float
   , frameCount: Int
+  , currentTime: Time
   }
 
 
@@ -62,7 +64,13 @@ initialState =
   , frameRate = 0.0
   , elapsedTime = 0.0
   , frameCount = 0
+  , currentTime = 0
   }
+
+
+type Event
+  = CurrentTime Time
+  | DeltaTime Time
 
 
 wrapAngle: Float -> Float
@@ -75,18 +83,23 @@ wrapAngle angle =
     angle
 
 
-update: Time -> State -> State
-update deltaTime state =
-  let
-    deltaInSeconds = Time.inSeconds deltaTime
-    angle = wrapAngle (state.angle + angularSpeed * deltaInSeconds)
-    frameCount = state.frameCount + 1
-    elapsedTime = state.elapsedTime + deltaInSeconds
-  in
-    if elapsedTime >= 0.5 then
-      State angle (frameCount / elapsedTime) 0.0 0
-    else
-      State angle state.frameRate elapsedTime frameCount
+update: Event -> State -> State
+update event state =
+  case event of
+    DeltaTime deltaTime ->
+      let
+        deltaInSeconds = Time.inSeconds deltaTime
+        angle = wrapAngle (state.angle + angularSpeed * deltaInSeconds)
+        frameCount = state.frameCount + 1
+        elapsedTime = state.elapsedTime + deltaInSeconds
+      in
+        if elapsedTime >= 0.5 then
+          State angle (frameCount / elapsedTime) 0.0 0 state.currentTime
+        else
+          State angle state.frameRate elapsedTime frameCount state.currentTime
+    CurrentTime currentTime ->
+      {state | currentTime = currentTime}
+
 
 
 lineSegments: List LineSegment2d
@@ -99,6 +112,20 @@ lineSegments =
         (\angle -> Transformation2d.rotationAbout Point2d.origin angle) >>
         (\rotation -> LineSegment2d.transformedBy rotation firstSegment) )
       [0..36]
+
+
+timeString: Time -> String
+timeString time =
+  let
+    seconds = round (Time.inSeconds time)
+    minutes = seconds // 60
+    hours = minutes // 60
+    secondsString = toString (seconds % 60)
+    minutesString = toString (minutes % 60)
+    hoursString = toString (hours % 24)
+  in
+    String.join ":" [hoursString, minutesString, secondsString]
+
 
 
 view: State -> Html
@@ -115,11 +142,16 @@ view state =
   in
     div []
       [ lines
-      , svg 500 500 (Box2d (Interval -10 10) (Interval -10 10)) svgElements
       , line "Frame rate" state.frameRate
+      , line "Current time" (timeString state.currentTime)
+      , svg 500 500 (Box2d (Interval -10 10) (Interval -10 10)) svgElements
       ]
 
 
 main: Signal Html
 main =
-  Signal.foldp update initialState AnimationFrame.frame |> Signal.map view
+  let
+    frameSignal = Signal.map DeltaTime AnimationFrame.frame
+    timeSignal = Signal.map CurrentTime (Time.every Time.second)
+  in
+    Signal.foldp update initialState (Signal.merge frameSignal timeSignal) |> Signal.map view
