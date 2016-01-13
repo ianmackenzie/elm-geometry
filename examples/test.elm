@@ -65,11 +65,20 @@ initialState =
   }
 
 
+wrapAngle: Float -> Float
+wrapAngle angle =
+  if angle < -pi then
+    angle + 2 * pi
+  else if angle > pi then
+    angle - 2 * pi
+  else
+    angle
+
 update: Time -> State -> State
 update deltaTime state =
   let
     deltaInSeconds = Time.inSeconds deltaTime
-    angle = state.angle + angularSpeed * deltaInSeconds
+    angle = wrapAngle (state.angle + angularSpeed * deltaInSeconds)
     frameCount = state.frameCount + 1
     elapsedTime = state.elapsedTime + deltaInSeconds
   in
