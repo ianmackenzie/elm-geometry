@@ -101,7 +101,6 @@ update event state =
       {state | currentTime = currentTime}
 
 
-
 lineSegments: List LineSegment2d
 lineSegments =
   let
@@ -125,7 +124,6 @@ timeString time =
     hoursString = toString (hours % 24)
   in
     String.join ":" [hoursString, minutesString, secondsString]
-
 
 
 view: State -> Html
