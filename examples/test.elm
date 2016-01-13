@@ -3,6 +3,7 @@ import Time exposing (Time, fps)
 import Signal exposing (Signal)
 import AnimationFrame
 import Svg.Attributes exposing (stroke, strokeWidth)
+import Debug
 import OpenSolid.Interval as Interval exposing (Interval)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
@@ -96,6 +97,10 @@ view state =
     rotation = Transformation2d.rotationAbout Point2d.origin state.angle
     rotatedSegments = List.map (LineSegment2d.transformedBy rotation) lineSegments
     svgElements = List.map (Svg.lineSegment [stroke "blue", strokeWidth "0.05"]) rotatedSegments
+    angle = Debug.watch "angle" state.angle
+    frameRate = Debug.watch "frameRate" state.frameRate
+    elapsedTime = Debug.watch "elapsedTime" state.elapsedTime
+    frameCount = Debug.watch "frameCount" state.frameCount
   in
     div []
       [ lines
