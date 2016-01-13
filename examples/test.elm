@@ -97,6 +97,7 @@ view state =
     rotation = Transformation2d.rotationAbout Point2d.origin state.angle
     rotatedSegments = List.map (LineSegment2d.transformedBy rotation) lineSegments
     svgElements = List.map (Svg.lineSegment [stroke "blue", strokeWidth "0.05"]) rotatedSegments
+
     angle = Debug.watch "angle" state.angle
     frameRate = Debug.watch "frameRate" state.frameRate
     elapsedTime = Debug.watch "elapsedTime" state.elapsedTime
