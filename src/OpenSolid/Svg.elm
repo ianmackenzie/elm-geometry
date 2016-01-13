@@ -6,6 +6,7 @@ module OpenSolid.Svg
 
 import Svg exposing (Svg, Attribute)
 import Svg.Attributes as Attributes
+import String
 import OpenSolid.Interval as Interval exposing (Interval)
 import OpenSolid.Box2d as Box2d exposing (Box2d)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
@@ -30,10 +31,10 @@ lineSegment: List Attribute -> LineSegment2d -> Svg
 lineSegment attributes lineSegment =
   let
     {firstEndpoint, secondEndpoint} = lineSegment
-    x1 = toString firstEndpoint.x
-    y1 = toString (-firstEndpoint.y)
-    x2 = toString secondEndpoint.x
-    y2 = toString (-secondEndpoint.y)
-    d = "M " ++ x1 ++ " " ++ y1 ++ " L " ++ x2 ++ " " ++ y2
+    x1 = firstEndpoint.x
+    y1 = -firstEndpoint.y
+    x2 = secondEndpoint.x
+    y2 = -secondEndpoint.y
+    d = String.join " " ["M", toString x1, toString y1, "L", toString x2, toString y2]
   in
     Svg.path ([Attributes.d d] ++ attributes) []
