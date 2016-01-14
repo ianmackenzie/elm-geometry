@@ -26,6 +26,7 @@ type alias Vector3d =
   , z: Float
   }
 
+
 zero: Vector3d
 zero =
   Vector3d 0 0 0
