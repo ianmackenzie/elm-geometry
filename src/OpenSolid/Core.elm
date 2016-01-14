@@ -14,45 +14,12 @@ module OpenSolid.Core
   ) where
 
 
-type alias Interval =
-  { lowerBound: Float
-  , upperBound: Float
-  }
+-- Primitives
 
 
 type alias Vector2d =
   { x: Float
   , y: Float
-  }
-
-
-type alias Direction2d =
-  { x: Float
-  , y: Float
-  }
-
-
-type alias Point2d =
-  { x: Float
-  , y: Float
-  }
-
-
-type alias Box2d =
-  { x: Interval
-  , y: Interval
-  }
-
-
-type alias LineSegment2d =
-  { firstEndpoint: Point2d
-  , secondEndpoint: Point2d
-  }
-
-
-type alias Transformation2d =
-  { ofVector: Vector2d -> Vector2d
-  , ofPoint: Point2d -> Point2d
   }
 
 
@@ -63,10 +30,9 @@ type alias Vector3d =
   }
 
 
-type alias Direction3d =
+type alias Point2d =
   { x: Float
   , y: Float
-  , z: Float
   }
 
 
@@ -77,14 +43,81 @@ type alias Point3d =
   }
 
 
-type alias Box3d =
-  { x: Interval
-  , y: Interval
-  , z: Interval
+type alias Direction2d =
+  { x: Float
+  , y: Float
+  }
+
+
+type alias Direction3d =
+  { x: Float
+  , y: Float
+  , z: Float
+  }
+
+
+-- Datums
+
+
+type alias Axis2d =
+  { originPoint: Point2d
+  , direction: Direction2d
   }
 
 
 type alias Axis3d =
   { originPoint: Point3d
   , direction: Direction3d
+  }
+
+
+-- Transformations
+
+
+type alias Transformation2d =
+  { ofVector: Vector2d -> Vector2d
+  , ofPoint: Point2d -> Point2d
+  }
+
+
+type alias Transformation3d =
+  { ofVector: Vector3d -> Vector3d
+  , ofPoint: Point3d -> Point3d
+  }
+
+
+-- Simplices
+
+
+type alias LineSegment2d =
+  { firstEndpoint: Point2d
+  , secondEndpoint: Point2d
+  }
+
+
+type alias LineSegment3d =
+  { firstEndpoint: Point3d
+  , secondEndpoint: Point3d
+  }
+
+
+-- Bounds types
+
+
+type alias Interval =
+  { lowerBound: Float
+  , upperBound: Float
+  }
+
+
+type alias Box2d =
+  { x: Interval
+  , y: Interval
+  }
+
+
+type alias Box3d =
+  { x: Interval
+  , y: Interval
+  , z: Interval
   }
