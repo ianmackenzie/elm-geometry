@@ -63,7 +63,7 @@ normalDirection =
 
 transformedBy: Transformation2d -> Vector2d -> Vector2d
 transformedBy =
-  .ofVector
+  fst
 
 
 negated: Vector2d -> Vector2d

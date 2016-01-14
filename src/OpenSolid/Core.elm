@@ -75,15 +75,15 @@ type alias Axis3d =
 
 
 type alias Transformation2d =
-  { ofVector: Vector2d -> Vector2d
-  , ofPoint: Point2d -> Point2d
-  }
+  ( Vector2d -> Vector2d
+  , Point2d -> Point2d
+  )
 
 
 type alias Transformation3d =
-  { ofVector: Vector3d -> Vector3d
-  , ofPoint: Point3d -> Point3d
-  }
+  ( Vector3d -> Vector3d
+  , Point3d -> Point3d
+  )
 
 
 -- Simplices

@@ -47,7 +47,8 @@ length =
 transformedBy: Transformation2d -> LineSegment2d -> LineSegment2d
 transformedBy transformation lineSegment =
   let
-    firstEndpoint = transformation.ofPoint lineSegment.firstEndpoint
-    secondEndpoint = transformation.ofPoint lineSegment.secondEndpoint
+    transformPoint = Point2d.transformedBy transformation
+    firstEndpoint = transformPoint lineSegment.firstEndpoint
+    secondEndpoint = transformPoint lineSegment.secondEndpoint
   in
     LineSegment2d firstEndpoint secondEndpoint

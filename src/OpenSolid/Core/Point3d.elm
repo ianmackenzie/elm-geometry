@@ -35,7 +35,7 @@ distanceTo other =
 
 transformedBy: Transformation3d -> Point3d -> Point3d
 transformedBy =
-  .ofPoint
+  snd
 
 
 plus: Vector3d -> Point3d -> Point3d

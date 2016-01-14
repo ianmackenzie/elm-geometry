@@ -23,20 +23,16 @@ times scale vector =
   Vector3d (scale * vector.x) (scale * vector.y) (scale * vector.z)
 
 
-type alias Transformation3d =
-  { ofVector: Vector3d -> Vector3d
-  , ofPoint: Point3d -> Point3d
-  }
-
-
 translationBy: Vector3d -> Transformation3d
 translationBy vector =
-  Transformation3d identity (plus vector)
+  ( identity
+  , plus vector
+  )
 
 
 rotateVector: (Direction3d, Direction3d, Direction3d) -> Vector3d -> Vector3d
-rotateVector (i, j, k) vector =
-  plus (times vector.z k) (plus (times vector.y j) (times vector.x i))
+rotateVector (xDirection, yDirection, zDirection) vector =
+  plus (times vector.z zDirection) (plus (times vector.y yDirection) (times vector.x xDirection))
 
 
 rotatePoint: Point3d -> (Direction3d, Direction3d, Direction3d) -> Point3d -> Point3d
@@ -78,9 +74,13 @@ rotationAbout axis angle =
   let
     basis = rotationBasis axis.direction angle
   in
-    Transformation3d (rotateVector basis) (rotatePoint axis.originPoint basis)
+    ( rotateVector basis
+    , rotatePoint axis.originPoint basis
+    )
 
 
 compound: Transformation3d -> Transformation3d -> Transformation3d
 compound outer inner =
-  Transformation3d (outer.ofVector << inner.ofVector) (outer.ofPoint << inner.ofPoint)
+  ( fst outer << fst inner
+  , snd outer << snd inner
+  )

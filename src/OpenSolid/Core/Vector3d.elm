@@ -89,7 +89,7 @@ normalDirection vector =
 
 transformedBy: Transformation3d -> Vector3d -> Vector3d
 transformedBy =
-  .ofVector
+  fst
 
 
 negated: Vector3d -> Vector3d

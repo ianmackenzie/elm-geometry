@@ -44,5 +44,5 @@ normalDirection =
 
 
 transformedBy: Transformation3d -> Direction3d -> Direction3d
-transformedBy transformation =
-  transformation.ofVector
+transformedBy =
+  fst

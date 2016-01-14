@@ -41,7 +41,7 @@ distanceTo other =
 
 transformedBy: Transformation2d -> Point2d -> Point2d
 transformedBy =
-  .ofPoint
+  snd
 
 
 plus: Vector2d -> Point2d -> Point2d

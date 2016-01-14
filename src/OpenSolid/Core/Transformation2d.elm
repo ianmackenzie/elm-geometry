@@ -10,7 +10,9 @@ import OpenSolid.Core exposing (Transformation2d, Vector2d, Point2d)
 
 translationBy: Vector2d -> Transformation2d
 translationBy vector =
-  Transformation2d identity (\point -> Point2d (point.x + vector.x) (point.y + vector.y))
+  ( identity
+  , \point -> Point2d (point.x + vector.x) (point.y + vector.y)
+  )
 
 
 rotateVector: Float -> Float -> Vector2d -> Vector2d
@@ -37,9 +39,13 @@ rotationAbout point angle =
     sinAngle = sin angle
     cosAngle = cos angle
   in
-    Transformation2d (rotateVector sinAngle cosAngle) (rotatePoint point sinAngle cosAngle)
+    ( rotateVector sinAngle cosAngle
+    , rotatePoint point sinAngle cosAngle
+    )
 
 
 compound: Transformation2d -> Transformation2d -> Transformation2d
 compound outer inner =
-  Transformation2d (outer.ofVector << inner.ofVector) (outer.ofPoint << inner.ofPoint)
+  ( fst outer << fst inner
+  , snd outer << snd inner
+  )
