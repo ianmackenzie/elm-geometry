@@ -29,8 +29,8 @@ translationBy vector =
   Transformation2d identity (\point -> Point2d (point.x + vector.x) (point.y + vector.y))
 
 
-rotateVector: Vector2d -> Float -> Float -> Vector2d
-rotateVector vector sinAngle cosAngle =
+rotateVector: Float -> Float -> Vector2d -> Vector2d
+rotateVector sinAngle cosAngle vector =
   let
     x = vector.x * cosAngle - vector.y * sinAngle
     y = vector.x * sinAngle + vector.y * cosAngle
@@ -38,11 +38,11 @@ rotateVector vector sinAngle cosAngle =
     Vector2d x y
 
 
-rotatePoint: Point2d -> Point2d -> Float -> Float -> Point2d
-rotatePoint point originPoint sinAngle cosAngle =
+rotatePoint: Point2d -> Float -> Float -> Point2d -> Point2d
+rotatePoint originPoint sinAngle cosAngle point =
   let
     vector = Vector2d (point.x - originPoint.x) (point.y - originPoint.y)
-    rotatedVector = rotateVector vector sinAngle cosAngle
+    rotatedVector = rotateVector sinAngle cosAngle vector
   in
     Point2d (originPoint.x + rotatedVector.x) (originPoint.y + rotatedVector.y)
 
@@ -52,10 +52,8 @@ rotationAbout point angle =
   let
     sinAngle = sin angle
     cosAngle = cos angle
-    ofVector = \vector -> rotateVector vector sinAngle cosAngle
-    ofPoint = \point' -> rotatePoint point' point sinAngle cosAngle
   in
-    Transformation2d ofVector ofPoint
+    Transformation2d (rotateVector sinAngle cosAngle) (rotatePoint point sinAngle cosAngle)
 
 
 compound: Transformation2d -> Transformation2d -> Transformation2d
