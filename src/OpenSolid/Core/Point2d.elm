@@ -34,7 +34,6 @@ squaredDistanceTo other =
   minus other >> Vector2d.squaredLength
 
 
-
 distanceTo: Point2d -> Point2d -> Float
 distanceTo other =
   minus other >> Vector2d.length
