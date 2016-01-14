@@ -1,6 +1,5 @@
-module OpenSolid.LineSegment2d
-  ( LineSegment2d
-  , endpoints
+module OpenSolid.Core.LineSegment2d
+  ( endpoints
   , vector
   , direction
   , normalDirection
@@ -10,16 +9,9 @@ module OpenSolid.LineSegment2d
   ) where
 
 
-import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
-import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
-import OpenSolid.Point2d as Point2d exposing (Point2d)
-import OpenSolid.Transformation2d as Transformation2d exposing (Transformation2d)
-
-
-type alias LineSegment2d =
-  { firstEndpoint : Point2d
-  , secondEndpoint : Point2d
-  }
+import OpenSolid.Core exposing (LineSegment2d, Point2d, Vector2d, Direction2d, Transformation2d)
+import OpenSolid.Core.Vector2d as Vector2d
+import OpenSolid.Core.Point2d as Point2d
 
 
 endpoints: LineSegment2d -> (Point2d, Point2d)

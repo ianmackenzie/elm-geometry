@@ -1,4 +1,4 @@
-module OpenSolid.Vector3d
+module OpenSolid.Core.Vector3d
   ( Vector3d
   , zero
   , components
@@ -17,8 +17,8 @@ module OpenSolid.Vector3d
   ) where
 
 
-import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
-import OpenSolid.Transformation3d as Transformation3d exposing (Transformation3d)
+import OpenSolid.Core exposing (Vector3d, Direction3d, Transformation3d)
+
 
 type alias Vector3d =
   { x: Float
@@ -63,13 +63,32 @@ direction =
 
 
 normalDirection: Vector3d -> Direction3d
-normalDirection =
-  Direction3d.normalDirection
+normalDirection vector =
+  if vector == zero then
+    Direction3d 0 0
+  else
+    let
+      absX = abs vector.x
+      absY = abs vector.y
+      absZ = abs vector.z
+      other =
+        if absX <= absY then
+          if absX <= absZ then
+            Vector3d 1 0 0
+          else
+            Vector3d 0 0 1
+        else
+          if absY <= absZ then
+            Vector3d 0 1 0
+          else
+            Vector3d 0 0 1
+    in
+      direction (cross other)
 
 
 transformedBy: Transformation3d -> Vector3d -> Vector3d
-transformedBy transformation =
-  transformation.ofVector
+transformedBy =
+  .ofVector
 
 
 negated: Vector3d -> Vector3d

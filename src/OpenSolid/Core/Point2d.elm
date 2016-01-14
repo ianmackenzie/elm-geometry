@@ -1,6 +1,5 @@
-module OpenSolid.Point2d
-  ( Point2d
-  , origin
+module OpenSolid.Core.Point2d
+  ( origin
   , polar
   , components
   , squaredDistanceTo
@@ -11,14 +10,8 @@ module OpenSolid.Point2d
   ) where
 
 
-import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
-import OpenSolid.Transformation2d as Transformation2d exposing (Transformation2d)
-
-
-type alias Point2d =
-  { x : Float
-  , y : Float
-  }
+import OpenSolid.Core exposing (Point2d, Vector2d, Transformation2d)
+import OpenSolid.Core.Vector2d as Vector2d
 
 
 origin: Point2d
@@ -37,19 +30,19 @@ components point =
 
 
 squaredDistanceTo: Point2d -> Point2d -> Float
-squaredDistanceTo otherPoint =
-  minus otherPoint >> Vector2d.squaredLength
+squaredDistanceTo other =
+  minus other >> Vector2d.squaredLength
 
 
 
 distanceTo: Point2d -> Point2d -> Float
-distanceTo otherPoint =
-  minus otherPoint >> Vector2d.length
+distanceTo other =
+  minus other >> Vector2d.length
 
 
 transformedBy: Transformation2d -> Point2d -> Point2d
-transformedBy transformation =
-  transformation.ofPoint
+transformedBy =
+  .ofPoint
 
 
 plus: Vector2d -> Point2d -> Point2d
@@ -58,5 +51,5 @@ plus vector point =
 
 
 minus: Point2d -> Point2d -> Vector2d
-minus otherPoint point =
-  Vector2d (point.x - otherPoint.x) (point.y - otherPoint.y)
+minus other point =
+  Vector2d (point.x - other.x) (point.y - other.y)

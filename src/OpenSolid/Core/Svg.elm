@@ -1,4 +1,4 @@
-module OpenSolid.Svg
+module OpenSolid.Core.Svg
   ( svg
   , lineSegment
   ) where
@@ -7,9 +7,8 @@ module OpenSolid.Svg
 import Svg exposing (Svg, Attribute)
 import Svg.Attributes as Attributes
 import String
-import OpenSolid.Interval as Interval exposing (Interval)
-import OpenSolid.Box2d as Box2d exposing (Box2d)
-import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
+import OpenSolid.Core exposing (Interval, Box2d, LineSegment2d)
+import OpenSolid.Core.Interval as Interval
 
 
 svg: Float -> Float -> Box2d -> List Svg -> Svg

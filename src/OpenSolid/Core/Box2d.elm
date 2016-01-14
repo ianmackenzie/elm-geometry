@@ -1,19 +1,12 @@
-module OpenSolid.Box2d
-  ( Box2d
-  , components
+module OpenSolid.Core.Box2d
+  ( components
   , contains
   , overlaps
   ) where
 
 
-import OpenSolid.Interval as Interval exposing (Interval)
-import OpenSolid.Point2d as Point2d exposing (Point2d)
-
-
-type alias Box2d =
-  { x: Interval
-  , y: Interval
-  }
+import OpenSolid.Core exposing (Interval, Point2d, Box2d)
+import OpenSolid.Core.Interval as Interval
 
 
 components: Box2d -> (Interval, Interval)

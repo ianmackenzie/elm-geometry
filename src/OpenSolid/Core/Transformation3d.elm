@@ -1,36 +1,11 @@
-module OpenSolid.Transformation3d
-  ( Transformation3d
-  , translationBy
+module OpenSolid.Core.Transformation3d
+  ( translationBy
   , rotationAbout
   , compound
   ) where
 
 
-type alias Vector3d =
-  { x: Float
-  , y: Float
-  , z: Float
-  }
-
-
-type alias Point3d =
-  { x: Float
-  , y: Float
-  , z: Float
-  }
-
-
-type alias Direction3d =
-  { x: Float
-  , y: Float
-  , z: Float
-  }
-
-
-type alias Axis3d =
-  { originPoint: Point3d
-  , direction: Direction3d
-  }
+import OpenSolid.Core exposing (Transformation3d, Vector3d, Point3d)
 
 
 plus: Vector3d -> Point3d -> Point3d

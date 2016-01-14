@@ -5,14 +5,21 @@ import Signal exposing (Signal)
 import AnimationFrame
 import Svg.Attributes exposing (stroke, strokeWidth)
 import Debug
-import OpenSolid.Interval as Interval exposing (Interval)
-import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
-import OpenSolid.Point2d as Point2d exposing (Point2d)
-import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
-import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
-import OpenSolid.Transformation2d as Transformation2d exposing (Transformation2d)
-import OpenSolid.Box2d as Box2d exposing (Box2d)
-import OpenSolid.Svg as Svg exposing (svg)
+import OpenSolid.Core exposing
+  ( Interval
+  , Vector2d
+  , Point2d
+  , Box2d
+  , Transformation2d
+  , LineSegment2d
+  )
+import OpenSolid.Core.Interval as Interval
+import OpenSolid.Core.Vector2d as Vector2d
+import OpenSolid.Core.Point2d as Point2d
+import OpenSolid.Core.Direction2d as Direction2d
+import OpenSolid.Core.LineSegment2d as LineSegment2d
+import OpenSolid.Core.Transformation2d as Transformation2d
+import OpenSolid.Core.Svg as Svg exposing (svg)
 
 
 line: String -> a -> Html

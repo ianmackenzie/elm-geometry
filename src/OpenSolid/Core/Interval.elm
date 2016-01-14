@@ -1,6 +1,5 @@
-module OpenSolid.Interval
-  ( Interval
-  , endpoints
+module OpenSolid.Core.Interval
+  ( endpoints
   , width
   , interpolated
   , median
@@ -9,10 +8,7 @@ module OpenSolid.Interval
   ) where
 
 
-type alias Interval =
-  { lowerBound : Float
-  , upperBound : Float
-  }
+import OpenSolid.Core exposing (Interval)
 
 
 endpoints: Interval -> (Float, Float)

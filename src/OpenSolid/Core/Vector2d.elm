@@ -1,6 +1,5 @@
-module OpenSolid.Vector2d
-  ( Vector2d
-  , zero
+module OpenSolid.Core.Vector2d
+  ( zero
   , components
   , squaredLength
   , length
@@ -17,13 +16,9 @@ module OpenSolid.Vector2d
   ) where
 
 
-import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
-import OpenSolid.Transformation2d as Transformation2d exposing (Transformation2d)
+import OpenSolid.Core exposing (Vector2d, Direction2d, Transformation2d)
+import OpenSolid.Core.Direction2d as Direction2d
 
-type alias Vector2d =
-  { x : Float
-  , y : Float
-  }
 
 zero: Vector2d
 zero =
@@ -67,8 +62,8 @@ normalDirection =
 
 
 transformedBy: Transformation2d -> Vector2d -> Vector2d
-transformedBy transformation =
-  transformation.ofVector
+transformedBy =
+  .ofVector
 
 
 negated: Vector2d -> Vector2d
@@ -77,13 +72,13 @@ negated vector =
 
 
 plus: Vector2d -> Vector2d -> Vector2d
-plus otherVector vector =
-  Vector2d (vector.x + otherVector.x) (vector.y + otherVector.y)
+plus other vector =
+  Vector2d (vector.x + other.x) (vector.y + other.y)
 
 
 minus: Vector2d -> Vector2d -> Vector2d
-minus otherVector vector =
-  Vector2d (vector.x - otherVector.x) (vector.y - otherVector.y)
+minus other vector =
+  Vector2d (vector.x - other.x) (vector.y - other.y)
 
 
 times: Float -> Vector2d -> Vector2d
@@ -92,10 +87,10 @@ times scale vector =
 
 
 dot: Vector2d -> Vector2d -> Float
-dot otherVector vector =
-  vector.x * otherVector.x + vector.y * otherVector.y
+dot other vector =
+  vector.x * other.x + vector.y * other.y
 
 
 cross: Vector2d -> Vector2d -> Float
-cross otherVector vector =
-  vector.x * otherVector.y - vector.y * otherVector.x
+cross other vector =
+  vector.x * other.y - vector.y * other.x

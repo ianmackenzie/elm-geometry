@@ -1,27 +1,11 @@
-module OpenSolid.Transformation2d
-  ( Transformation2d
-  , translationBy
+module OpenSolid.Core.Transformation2d
+  ( translationBy
   , rotationAbout
   , compound
   ) where
 
 
-type alias Vector2d =
-  { x : Float
-  , y : Float
-  }
-
-
-type alias Point2d =
-  { x : Float
-  , y : Float
-  }
-
-
-type alias Transformation2d =
-  { ofVector: Vector2d -> Vector2d
-  , ofPoint: Point2d -> Point2d
-  }
+import OpenSolid.Core exposing (Transformation2d, Vector2d, Point2d)
 
 
 translationBy: Vector2d -> Transformation2d

@@ -1,6 +1,5 @@
-module OpenSolid.Direction2d
-  ( Direction2d
-  , none
+module OpenSolid.Core.Direction2d
+  ( none
   , x
   , y
   , polar
@@ -10,13 +9,7 @@ module OpenSolid.Direction2d
   ) where
 
 
-import OpenSolid.Transformation2d as Transformation2d exposing (Transformation2d)
-
-
-type alias Direction2d =
-  { x : Float
-  , y : Float
-  }
+import OpenSolid.Core exposing (Direction2d, Transformation2d)
 
 
 none: Direction2d
