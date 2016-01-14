@@ -1,7 +1,7 @@
 {
   "version": "0.1.0",
   "summary": "2D/3D geometry manipulation library",
-  "repository": "https://github.com/ianmackenzie/opensolid-elm.git",
+  "repository": "https://github.com/ianmackenzie/elm-opensolid-core.git",
   "license": "MPL-2.0",
   "source-directories": ["src"],
   "exposed-modules": [],
