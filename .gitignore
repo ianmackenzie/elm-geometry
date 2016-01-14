@@ -4,7 +4,7 @@ elm-stuff/
 # elm-repl generated files
 repl-temp-*
 
-opensolid-elm.sublime-workspace
+*.sublime-workspace
 elm.js
 
 # =========================
