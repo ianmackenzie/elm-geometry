@@ -19,6 +19,9 @@ module OpenSolid.Core.Vector3d
 
 
 import OpenSolid.Core exposing (..)
+import OpenSolid.Core.Math2d as Math2d
+import OpenSolid.Core.Math3d as Math3d
+import OpenSolid.Core.Matrix3x2 as Matrix3x2
 
 
 zero: Vector3d
@@ -32,24 +35,18 @@ components vector =
 
 
 squaredLength: Vector3d -> Float
-squaredLength vector =
-  vector.x^2 + vector.y^2 + vector.z^2
+squaredLength =
+  Math3d.squaredNorm
 
 
 length: Vector3d -> Float
 length =
-  squaredLength >> sqrt
+  Math3d.norm
 
 
 normalized: Vector3d -> Vector3d
-normalized vector =
-  let
-    length' = length vector
-  in
-    if length' == 0 then
-      zero
-    else
-      times (1 / length') vector
+normalized =
+  Math3d.normalized
 
 
 direction: Vector3d -> Direction3d
@@ -58,27 +55,8 @@ direction =
 
 
 normalDirection: Vector3d -> Direction3d
-normalDirection vector =
-  if vector == zero then
-    Direction3d 0 0
-  else
-    let
-      absX = abs vector.x
-      absY = abs vector.y
-      absZ = abs vector.z
-      other =
-        if absX <= absY then
-          if absX <= absZ then
-            Vector3d 1 0 0
-          else
-            Vector3d 0 0 1
-        else
-          if absY <= absZ then
-            Vector3d 0 1 0
-          else
-            Vector3d 0 0 1
-    in
-      direction (cross other)
+normalDirection =
+  Math3d.perpendicularDirection
 
 
 transformedBy: Transformation3d -> Vector3d -> Vector3d
@@ -88,7 +66,7 @@ transformedBy =
 
 projectedOntoAxis: Axis3d -> Vector3d -> Vector3d
 projectedOntoAxis axis vector =
-  times (dot axis.direction vector) axis.direction
+  Math3d.projectedOnto axis.direction vector
 
 
 projectedOntoPlane: Plane3d -> Vector3d -> Vector3d
@@ -100,33 +78,30 @@ projectedOntoPlane plane vector =
 
 
 negated: Vector3d -> Vector3d
-negated vector =
-  Vector3d (-vector.x) (-vector.y) (-vector.z)
+negated =
+  Math3d.negated
 
 
 plus: Vector3d -> Vector3d -> Vector3d
-plus other vector =
-  Vector3d (vector.x + other.x) (vector.y + other.y) (vector.z + other.z)
+plus =
+  Math3d.plus
 
 
 minus: Vector3d -> Vector3d -> Vector3d
-minus other vector =
-  Vector3d (vector.x - other.x) (vector.y - other.y) (vector.z - other.z)
+minus =
+  Math3d.minus
 
 
 times: Float -> Vector3d -> Vector3d
-times scale vector =
-  Vector3d (vector.x * scale) (vector.y * scale) (vector.z * scale)
+times =
+  Math3d.times
 
 
 dot: Vector3d -> Vector3d -> Float
-dot other vector =
-  vector.x * other.x + vector.y * other.y + vector.z * other.z
+dot =
+  Math3d.dot
 
 
 cross: Vector3d -> Vector3d -> Vector3d
-cross other vector =
-  Vector3d
-    (vector.y * other.z - vector.z * other.y)
-    (vector.z * other.x - vector.x * other.z)
-    (vector.x * other.y - vector.y * other.x)
+cross =
+  Math3d.cross

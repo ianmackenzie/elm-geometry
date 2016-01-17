@@ -16,7 +16,9 @@ module OpenSolid.Core.Point2d
 
 import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Vector2d as Vector2d
-import OpenSolid.Core.Point3d as Point3d
+import OpenSolid.Core.Direction2d as Direction2d
+import OpenSolid.Core.Math2d as Math2d
+import OpenSolid.Core.Math3d as Math3d
 
 
 origin: Point2d
@@ -41,7 +43,7 @@ squaredDistanceTo other =
 
 distanceTo: Point2d -> Point2d -> Float
 distanceTo other =
-  minus other >> Vector2d.length
+  squaredDistanceTo other >> sqrt
 
 
 distanceAlongAxis: Axis2d -> Point2d -> Float
@@ -51,7 +53,7 @@ distanceAlongAxis axis =
 
 distanceToAxis: Axis2d -> Point2d -> Float
 distanceToAxis axis =
-  minus axis.originPoint >> Vector2d.dot (Axis2d.normalDirection axis)
+  minus axis.originPoint >> Vector2d.dot (Direction2d.normalDirection axis.direction)
 
 
 transformedBy: Transformation2d -> Point2d -> Point2d
@@ -70,14 +72,14 @@ projectedOntoAxis axis point =
 
 placedOntoPlane: Plane3d -> Point2d -> Point3d
 placedOntoPlane plane point =
-  Point3d.plus (Vector2d.placedOntoPlane plane point) plane.originPoint
+  Math3d.plus (Vector2d.placedOntoPlane plane point) plane.originPoint
 
 
 plus: Vector2d -> Point2d -> Point2d
-plus vector point =
-  Point2d (point.x + vector.x) (point.y + vector.y)
+plus =
+  Math2d.plus
 
 
 minus: Point2d -> Point2d -> Vector2d
-minus other point =
-  Vector2d (point.x - other.x) (point.y - other.y)
+minus =
+  Math2d.minus

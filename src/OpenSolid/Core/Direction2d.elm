@@ -13,6 +13,9 @@ module OpenSolid.Core.Direction2d
 
 
 import OpenSolid.Core exposing (..)
+import OpenSolid.Core.Math2d as Math2d
+import OpenSolid.Core.Math3d as Math3d
+import OpenSolid.Core.Matrix3x2 as Matrix3x2
 
 
 none: Direction2d
@@ -41,8 +44,8 @@ components direction =
 
 
 normalDirection: Direction2d -> Direction2d
-normalDirection direction =
-  Direction2d (-direction.y) direction.x
+normalDirection =
+  Math2d.perpendicular
 
 
 transformedBy: Transformation2d -> Direction2d -> Direction2d
@@ -50,16 +53,16 @@ transformedBy =
   fst
 
 
-placedOntoPlane: Plane3d -> Direction3d
-placedOntoPlane =
-  Vector2d.placedOntoPlane
+placedOntoPlane: Plane3d -> Direction2d -> Direction3d
+placedOntoPlane plane =
+  Matrix3x2.product plane.xDirection plane.yDirection
 
 
 negated: Direction2d -> Direction2d
 negated =
-  Vector2d.negated
+  Math2d.negated
 
 
 times: Float -> Direction2d -> Vector2d
 times =
-  Vector2d.times
+  Math2d.times

@@ -19,7 +19,9 @@ module OpenSolid.Core.Vector2d
 
 
 import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Direction2d as Direction2d
+import OpenSolid.Core.Math2d as Math2d
+import OpenSolid.Core.Math3d as Math3d
+import OpenSolid.Core.Matrix3x2 as Matrix3x2
 
 
 zero: Vector2d
@@ -33,24 +35,18 @@ components vector =
 
 
 squaredLength: Vector2d -> Float
-squaredLength vector =
-  vector.x^2 + vector.y^2
+squaredLength =
+  Math2d.squaredNorm
 
 
 length: Vector2d -> Float
 length =
-  squaredLength >> sqrt
+  Math2d.norm
 
 
 normalized: Vector2d -> Vector2d
-normalized vector =
-  let
-    length' = length vector
-  in
-    if length' == 0 then
-      zero
-    else
-      times (1 / length') vector
+normalized =
+  Math2d.normalized
 
 
 direction: Vector2d -> Direction2d
@@ -59,8 +55,8 @@ direction =
 
 
 normalDirection: Vector2d -> Direction2d
-normalDirection =
-  direction >> Direction2d.normalDirection
+normalDirection vector =
+  normalized (Math2d.perpendicular vector)
 
 
 transformedBy: Transformation2d -> Vector2d -> Vector2d
@@ -69,44 +65,40 @@ transformedBy =
 
 
 projectedOntoAxis: Axis2d -> Vector2d -> Vector2d
-projectedOntoAxis axis vector =
-  Direction2d.times (Vector2d.dot axis.direction vector) axis.direction
+projectedOntoAxis axis =
+  Math2d.projectedOnto axis.direction
 
 
 placedOntoPlane: Plane3d -> Vector2d -> Vector3d
-placedOntoPlane plane vector =
-  let
-    xVector = Direction3d.times vector.x plane.xDirection
-    yVector = Direction3d.times vector.y plane.yDirection
-  in
-    Vector3d.plus yVector xVector
+placedOntoPlane plane =
+  Matrix3x2.product plane.xDirection plane.yDirection
 
 
 negated: Vector2d -> Vector2d
-negated vector =
-  Vector2d (-vector.x) (-vector.y)
+negated =
+  Math2d.negated
 
 
 plus: Vector2d -> Vector2d -> Vector2d
-plus other vector =
-  Vector2d (vector.x + other.x) (vector.y + other.y)
+plus =
+  Math2d.plus
 
 
 minus: Vector2d -> Vector2d -> Vector2d
-minus other vector =
-  Vector2d (vector.x - other.x) (vector.y - other.y)
+minus =
+  Math2d.minus
 
 
 times: Float -> Vector2d -> Vector2d
-times scale vector =
-  Vector2d (vector.x * scale) (vector.y * scale)
+times =
+  Math2d.times
 
 
 dot: Vector2d -> Vector2d -> Float
-dot other vector =
-  vector.x * other.x + vector.y * other.y
+dot =
+  Math2d.dot
 
 
 cross: Vector2d -> Vector2d -> Float
-cross other vector =
-  vector.x * other.y - vector.y * other.x
+cross =
+  Math2d.cross

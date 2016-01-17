@@ -8,12 +8,14 @@ module OpenSolid.Core.Transformation2d
 
 
 import OpenSolid.Core exposing (..)
+import OpenSolid.Core.Math2d as Math2d
+import OpenSolid.Core.Matrix2x2 as Matrix2x2
 
 
 translationBy: Vector2d -> Transformation2d
 translationBy vector =
   ( identity
-  , \point -> Point2d (point.x + vector.x) (point.y + vector.y)
+  , \point -> Math2d.plus vector point
   )
 
 
@@ -29,10 +31,10 @@ rotateVector sinAngle cosAngle vector =
 rotatePoint: Point2d -> Float -> Float -> Point2d -> Point2d
 rotatePoint originPoint sinAngle cosAngle point =
   let
-    vector = Vector2d (point.x - originPoint.x) (point.y - originPoint.y)
+    vector = Math2d.minus originPoint point
     rotatedVector = rotateVector sinAngle cosAngle vector
   in
-    Point2d (originPoint.x + rotatedVector.x) (originPoint.y + rotatedVector.y)
+    Math2d.plus rotatedVector originPoint
 
 
 rotationAbout: Point2d -> Float -> Transformation2d
@@ -49,32 +51,20 @@ rotationAbout point angle =
 localizationTo: Frame2d -> Transformation2d
 localizationTo frame =
   let
-    transformVector =
-      \vector ->
-        let
-          x = Vector2d.dot frame.xDirection vector
-          y = Vector2d.dot frame.yDirection vector
-        in
-          Vector2d x y
+    transformVector = Matrix2x2.dotProduct frame.xDirection frame.yDirection
   in
     ( transformVector
-    , Vector2d.minus frame.originPoint >> transformVector
+    , Math2d.minus frame.originPoint >> transformVector
     )
 
 
 globalizationFrom: Frame2d -> Transformation2d
 globalizationFrom frame =
   let
-    transformVector =
-      \vector ->
-        let
-          xVector = Vector2d.times vector.x frame.xDirection
-          yVector = Vector2d.times vector.y frame.yDirection
-        in
-          Vector2d.plus yVector xVector
+    transformVector = Matrix2x2.product frame.xDirection frame.yDirection
   in
     ( transformVector
-    , transformVector >> Vector2d.plus frame.originPoint
+    , transformVector >> Math2d.plus frame.originPoint
     )
 
 

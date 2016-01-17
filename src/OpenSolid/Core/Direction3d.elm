@@ -12,7 +12,7 @@ module OpenSolid.Core.Direction3d
 
 
 import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Vector3d as Vector3d
+import OpenSolid.Core.Math3d as Math3d
 
 
 none: Direction3d
@@ -42,7 +42,7 @@ components direction =
 
 normalDirection: Direction3d -> Direction3d
 normalDirection =
-  Vector3d.normalDirection
+  Math3d.perpendicularDirection
 
 
 transformedBy: Transformation3d -> Direction3d -> Direction3d
@@ -52,9 +52,9 @@ transformedBy =
 
 negated: Direction3d -> Direction3d
 negated =
-  Vector3d.negated
+  Math3d.negated
 
 
 times: Float -> Direction3d -> Vector3d
 times =
-  Vector3d.times
+  Math3d.times

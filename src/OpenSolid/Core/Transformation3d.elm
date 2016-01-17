@@ -8,42 +8,29 @@ module OpenSolid.Core.Transformation3d
 
 
 import OpenSolid.Core exposing (..)
-
-
-plus: Vector3d -> Point3d -> Point3d
-plus vector point =
-  Point3d (point.x + vector.x) (point.y + vector.y) (point.z + vector.z)
-
-
-minus: Point3d -> Point3d -> Vector3d
-minus other point =
-  Vector3d (point.x - other.x) (point.y - other.y) (point.z - other.z)
-
-
-times: Float -> Vector3d -> Vector3d
-times scale vector =
-  Vector3d (scale * vector.x) (scale * vector.y) (scale * vector.z)
+import OpenSolid.Core.Math3d as Math3d
+import OpenSolid.Core.Matrix3x3 as Matrix3x3
 
 
 translationBy: Vector3d -> Transformation3d
 translationBy vector =
   ( identity
-  , plus vector
+  , Math3d.plus vector
   )
 
 
 rotateVector: (Direction3d, Direction3d, Direction3d) -> Vector3d -> Vector3d
-rotateVector (xDirection, yDirection, zDirection) vector =
-  plus (times vector.z zDirection) (plus (times vector.y yDirection) (times vector.x xDirection))
+rotateVector (xDirection, yDirection, zDirection) =
+  Matrix3x3.product xDirection yDirection zDirection
 
 
 rotatePoint: Point3d -> (Direction3d, Direction3d, Direction3d) -> Point3d -> Point3d
 rotatePoint originPoint basis point =
   let
-    radialVector = minus originPoint point
+    radialVector = Math3d.minus originPoint point
     rotatedVector = rotateVector basis radialVector
   in
-    plus rotatedVector originPoint
+    Math3d.plus rotatedVector originPoint
 
 
 rotationBasis: Direction3d -> Float -> (Direction3d, Direction3d, Direction3d)
@@ -84,34 +71,20 @@ rotationAbout axis angle =
 localizationTo: Frame3d -> Transformation3d
 localizationTo frame =
   let
-    transformVector =
-      \vector ->
-        let
-          x = Vector3d.dot frame.xDirection vector
-          y = Vector3d.dot frame.yDirection vector
-          z = Vector3d.dot frame.zDirection vector
-        in
-          Vector3d x y z
+    transformVector = Matrix3x3.dotProduct frame.xDirection frame.yDirection frame.zDirection
   in
     ( transformVector
-    , Vector3d.minus frame.originPoint >> transformVector
+    , Math3d.minus frame.originPoint >> transformVector
     )
 
 
 globalizationFrom: Frame3d -> Transformation3d
 globalizationFrom frame =
   let
-    transformVector =
-      \vector ->
-        let
-          xVector = Vector3d.times vector.x frame.xDirection
-          yVector = Vector3d.times vector.y frame.yDirection
-          zVector = Vector3d.times vector.z frame.zDirection
-        in
-          Vector3d.plus zVector (Vector3d.plus yVector xVector)
+    transformVector = Matrix3x3.product frame.xDirection frame.yDirection frame.zDirection
   in
     ( transformVector
-    , transformVector >> Vector3d.plus frame.originPoint
+    , transformVector >> Math3d.plus frame.originPoint
     )
 
 

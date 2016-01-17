@@ -11,6 +11,7 @@ module OpenSolid.Core.Point3d
 
 import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Vector3d as Vector3d
+import OpenSolid.Core.Math3d as Math3d
 
 
 origin: Point3d
@@ -30,7 +31,7 @@ squaredDistanceTo other =
 
 distanceTo: Point3d -> Point3d -> Float
 distanceTo other =
-  minus other >> Vector3d.length
+  squaredDistanceTo other >> sqrt
 
 
 transformedBy: Transformation3d -> Point3d -> Point3d
@@ -39,10 +40,10 @@ transformedBy =
 
 
 plus: Vector3d -> Point3d -> Point3d
-plus vector point =
-  Point3d (point.x + vector.x) (point.y + vector.y)
+plus =
+  Math3d.plus
 
 
 minus: Point3d -> Point3d -> Vector3d
-minus other point =
-  Vector3d (point.x - other.x) (point.y - other.y)
+minus =
+  Math3d.minus
