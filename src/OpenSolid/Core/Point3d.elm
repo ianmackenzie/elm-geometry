@@ -3,6 +3,9 @@ module OpenSolid.Core.Point3d
   , components
   , squaredDistanceTo
   , distanceTo
+  , squaredDistanceToAxis
+  , distanceToAxis
+  , distanceToPlane
   , transformedBy
   , plus
   , minus
@@ -32,6 +35,21 @@ squaredDistanceTo other =
 distanceTo: Point3d -> Point3d -> Float
 distanceTo other =
   squaredDistanceTo other >> sqrt
+
+
+squaredDistanceToAxis: Axis3d -> Point3d -> Float
+squaredDistanceToAxis axis =
+  minus axis.originPoint >> Vector3d.cross axis.direction >> Vector3d.squaredLength
+
+
+distanceToAxis: Axis3d -> Point3d -> Float
+distanceToAxis axis =
+  squaredDistanceToAxis axis >> sqrt
+
+
+distanceToPlane: Plane3d -> Point3d -> Float
+distanceToPlane plane =
+  minus plane.originPoint >> Vector3d.dot plane.normalDirection
 
 
 transformedBy: Transformation3d -> Point3d -> Point3d
