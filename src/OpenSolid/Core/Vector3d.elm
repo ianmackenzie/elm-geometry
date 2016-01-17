@@ -20,13 +20,6 @@ module OpenSolid.Core.Vector3d
 import OpenSolid.Core exposing (..)
 
 
-type alias Vector3d =
-  { x: Float
-  , y: Float
-  , z: Float
-  }
-
-
 zero: Vector3d
 zero =
   Vector3d 0 0 0
