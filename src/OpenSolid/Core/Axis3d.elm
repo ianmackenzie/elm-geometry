@@ -7,11 +7,13 @@ module  OpenSolid.Core.Axis3d
   , normalPlane
   , reversed
   , transformedBy
+  , projectedOntoPlane
   ) where
 
 
 import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Point3d as Point3d
+import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction3d as Direction3d
 import OpenSolid.Core.Plane3d as Plane3d
 
@@ -56,5 +58,14 @@ transformedBy transformation axis =
   let
     originPoint = Point3d.transformedBy transformation axis.originPoint
     direction = Direction3d.transformedBy transformation axis.direction
+  in
+    Axis3d originPoint direction
+
+
+projectedOntoPlane: Plane3d -> Axis3d -> Axis3d
+projectedOntoPlane plane axis =
+  let
+    originPoint = Point3d.projectedOntoPlane plane axis.originPoint
+    direction = Vector3d.direction (Vector3d.projectedOntoPlane plane axis.direction)
   in
     Axis3d originPoint direction
