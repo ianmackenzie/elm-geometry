@@ -1,6 +1,5 @@
 module OpenSolid.Core.Vector3d
-  ( Vector3d
-  , zero
+  ( zero
   , components
   , squaredLength
   , length
