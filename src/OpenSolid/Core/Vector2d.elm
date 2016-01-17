@@ -18,7 +18,7 @@ module OpenSolid.Core.Vector2d
   ) where
 
 
-import OpenSolid.Core exposing (Vector2d, Direction2d, Transformation2d)
+import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Direction2d as Direction2d
 
 

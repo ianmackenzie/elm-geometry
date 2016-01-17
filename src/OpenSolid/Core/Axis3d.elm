@@ -10,7 +10,7 @@ module  OpenSolid.Core.Axis3d
   ) where
 
 
-import OpenSolid.Core exposing (Point3d, Direction3d, Plane3d)
+import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Point3d as Point3d
 import OpenSolid.Core.Direction3d as Direction3d
 import OpenSolid.Core.Plane3d as Plane3d

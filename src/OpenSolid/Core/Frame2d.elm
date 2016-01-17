@@ -6,7 +6,7 @@ module OpenSolid.Core.Frame2d where
   ) where
 
 
-import OpenSolid.Core exposing (Point2d, Direction2d, Axis2d, Transformation2d)
+import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Point2d as Point2d
 import OpenSolid.Core.Direction2d as Direction2d
 

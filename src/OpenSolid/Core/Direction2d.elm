@@ -12,7 +12,7 @@ module OpenSolid.Core.Direction2d
   ) where
 
 
-import OpenSolid.Core exposing (Direction2d, Transformation2d)
+import OpenSolid.Core exposing (..)
 
 
 none: Direction2d
