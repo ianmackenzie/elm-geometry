@@ -8,6 +8,7 @@ module OpenSolid.Core.Vector3d
   , direction
   , normalDirection
   , transformedBy
+  , projectedOntoAxis
   , negated
   , plus
   , minus
@@ -83,6 +84,11 @@ normalDirection vector =
 transformedBy: Transformation3d -> Vector3d -> Vector3d
 transformedBy =
   fst
+
+
+projectedOntoAxis: Axis3d -> Vector3d -> Vector3d
+projectedOntoAxis axis vector =
+  times (dot axis.direction vector) axis.direction
 
 
 negated: Vector3d -> Vector3d
