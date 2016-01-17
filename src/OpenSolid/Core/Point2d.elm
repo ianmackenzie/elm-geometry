@@ -5,6 +5,7 @@ module OpenSolid.Core.Point2d
   , squaredDistanceTo
   , distanceTo
   , distanceAlongAxis
+  , distanceToAxis
   , transformedBy
   , plus
   , minus
@@ -43,6 +44,11 @@ distanceTo other =
 distanceAlongAxis: Axis2d -> Point2d -> Float
 distanceAlongAxis axis =
   minus axis.originPoint >> Vector2d.dot axis.direction
+
+
+distanceToAxis: Axis2d -> Point2d -> Float
+distanceToAxis axis =
+  minus axis.originPoint >> Vector2d.dot (Axis2d.normalDirection axis)
 
 
 transformedBy: Transformation2d -> Point2d -> Point2d
