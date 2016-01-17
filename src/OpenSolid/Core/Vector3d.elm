@@ -9,6 +9,7 @@ module OpenSolid.Core.Vector3d
   , normalDirection
   , transformedBy
   , projectedOntoAxis
+  , projectedOntoPlane
   , negated
   , plus
   , minus
@@ -89,6 +90,14 @@ transformedBy =
 projectedOntoAxis: Axis3d -> Vector3d -> Vector3d
 projectedOntoAxis axis vector =
   times (dot axis.direction vector) axis.direction
+
+
+projectedOntoPlane: Plane3d -> Vector3d -> Vector3d
+projectedOntoPlane plane vector =
+  let
+    normalComponent = dot plane.normalDirection vector
+  in
+    minus (times normalComponent plane.normalDirection) vector
 
 
 negated: Vector3d -> Vector3d
