@@ -1,7 +1,7 @@
 module OpenSolid.Core.Transformation3d
   ( translationBy
   , rotationAbout
-  , compound
+  , andThen
   ) where
 
 
@@ -79,8 +79,8 @@ rotationAbout axis angle =
     )
 
 
-compound: Transformation3d -> Transformation3d -> Transformation3d
-compound outer inner =
-  ( fst outer << fst inner
-  , snd outer << snd inner
+andThen: Transformation3d -> Transformation3d -> Transformation3d
+andThen second first =
+  ( fst first >> fst second
+  , snd first >> snd second
   )

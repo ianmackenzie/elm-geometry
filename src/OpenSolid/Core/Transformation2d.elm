@@ -1,7 +1,7 @@
 module OpenSolid.Core.Transformation2d
   ( translationBy
   , rotationAbout
-  , compound
+  , andThen
   ) where
 
 
@@ -44,8 +44,8 @@ rotationAbout point angle =
     )
 
 
-compound: Transformation2d -> Transformation2d -> Transformation2d
-compound outer inner =
-  ( fst outer << fst inner
-  , snd outer << snd inner
+andThen: Transformation2d -> Transformation2d -> Transformation2d
+andThen second first =
+  ( fst first >> fst second
+  , snd first >> snd second
   )
