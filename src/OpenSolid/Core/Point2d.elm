@@ -7,6 +7,7 @@ module OpenSolid.Core.Point2d
   , distanceAlongAxis
   , distanceToAxis
   , transformedBy
+  , projectedOntoAxis
   , plus
   , minus
   ) where
@@ -56,9 +57,11 @@ transformedBy =
   snd
 
 
-projectedOnto: Axis2d -> Point2d -> Point2d
-projectedOnto axis point =
-  Point2d.plus () axis.originPoint
+projectedOntoAxis: Axis2d -> Point2d -> Point2d
+projectedOntoAxis axis point =
+  Axis2d.pointAt (distanceAlongAxis axis point) axis
+
+
 
 
 plus: Vector2d -> Point2d -> Point2d
