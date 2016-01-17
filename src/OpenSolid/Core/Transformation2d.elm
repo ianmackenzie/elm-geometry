@@ -1,11 +1,13 @@
 module OpenSolid.Core.Transformation2d
   ( translationBy
   , rotationAbout
+  , localizationTo
+  , globalizationFrom
   , andThen
   ) where
 
 
-import OpenSolid.Core exposing (Transformation2d, Vector2d, Point2d)
+import OpenSolid.Core exposing (Transformation2d, Vector2d, Point2d, Frame2d)
 
 
 translationBy: Vector2d -> Transformation2d
@@ -41,6 +43,38 @@ rotationAbout point angle =
   in
     ( rotateVector sinAngle cosAngle
     , rotatePoint point sinAngle cosAngle
+    )
+
+
+localizationTo: Frame2d -> Transformation2d
+localizationTo frame =
+  let
+    transformVector =
+      \vector ->
+        let
+          x = Vector2d.dot frame.xDirection vector
+          y = Vector2d.dot frame.yDirection vector
+        in
+          Vector2d x y
+  in
+    ( transformVector
+    , Vector2d.minus frame.originPoint >> transformVector
+    )
+
+
+globalizationFrom: Frame2d -> Transformation2d
+globalizationFrom frame =
+  let
+    transformVector =
+      \vector ->
+        let
+          xVector = Vector2d.times vector.x frame.xDirection
+          yVector = Vector2d.times vector.y frame.yDirection
+        in
+          Vector2d.plus yVector xVector
+  in
+    ( transformVector
+    , transformVector >> Vector2d.plus frame.originPoint
     )
 
 

@@ -1,11 +1,13 @@
 module OpenSolid.Core.Transformation3d
   ( translationBy
   , rotationAbout
+  , localizationTo
+  , globalizationFrom
   , andThen
   ) where
 
 
-import OpenSolid.Core exposing (Transformation3d, Vector3d, Point3d)
+import OpenSolid.Core exposing (Transformation3d, Vector3d, Point3d, Frame3d)
 
 
 plus: Vector3d -> Point3d -> Point3d
@@ -76,6 +78,40 @@ rotationAbout axis angle =
   in
     ( rotateVector basis
     , rotatePoint axis.originPoint basis
+    )
+
+
+localizationTo: Frame3d -> Transformation3d
+localizationTo frame =
+  let
+    transformVector =
+      \vector ->
+        let
+          x = Vector3d.dot frame.xDirection vector
+          y = Vector3d.dot frame.yDirection vector
+          z = Vector3d.dot frame.zDirection vector
+        in
+          Vector3d x y z
+  in
+    ( transformVector
+    , Vector3d.minus frame.originPoint >> transformVector
+    )
+
+
+globalizationFrom: Frame3d -> Transformation3d
+globalizationFrom frame =
+  let
+    transformVector =
+      \vector ->
+        let
+          xVector = Vector3d.times vector.x frame.xDirection
+          yVector = Vector3d.times vector.y frame.yDirection
+          zVector = Vector3d.times vector.z frame.zDirection
+        in
+          Vector3d.plus zVector (Vector3d.plus yVector xVector)
+  in
+    ( transformVector
+    , transformVector >> Vector3d.plus frame.originPoint
     )
 
 
