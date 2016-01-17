@@ -4,12 +4,23 @@ import String
 import Signal exposing (Signal)
 import Debug
 import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Interval as Interval
-import OpenSolid.Core.Vector2d as Vector2d
-import OpenSolid.Core.Point2d as Point2d
+import OpenSolid.Core.Axis2d as Axis2d
+import OpenSolid.Core.Axis3d as Axis3d
+import OpenSolid.Core.Box2d as Box2d
+import OpenSolid.Core.Box3d as Box3d
 import OpenSolid.Core.Direction2d as Direction2d
+import OpenSolid.Core.Direction3d as Direction3d
+import OpenSolid.Core.Frame2d as Frame2d
+import OpenSolid.Core.Frame3d as Frame3d
+import OpenSolid.Core.Interval as Interval
 import OpenSolid.Core.LineSegment2d as LineSegment2d
+import OpenSolid.Core.Plane3d as Plane3d
+import OpenSolid.Core.Point2d as Point2d
+import OpenSolid.Core.Point3d as Point3d
 import OpenSolid.Core.Transformation2d as Transformation2d
+import OpenSolid.Core.Transformation3d as Transformation3d
+import OpenSolid.Core.Vector2d as Vector2d
+import OpenSolid.Core.Vector3d as Vector3d
 
 
 type alias State =
