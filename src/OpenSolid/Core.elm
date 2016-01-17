@@ -1,16 +1,19 @@
 module OpenSolid.Core
-  ( Interval
-  , Vector2d
-  , Direction2d
-  , Point2d
-  , Box2d
-  , LineSegment2d
-  , Transformation2d
+  ( Vector2d
   , Vector3d
-  , Direction3d
+  , Point2d
   , Point3d
-  , Box3d
+  , Direction2d
+  , Direction3d
+  , Axis2d
   , Axis3d
+  , Transformation2d
+  , Transformation3d
+  , LineSegment2d
+  , LineSegment3d
+  , Interval
+  , Box2d
+  , Box3d
   ) where
 
 
