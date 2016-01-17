@@ -61,7 +61,11 @@ transformedBy =
 
 projectedOntoAxis: Axis2d -> Point2d -> Point2d
 projectedOntoAxis axis point =
-  Axis2d.pointAt (distanceAlongAxis axis point) axis
+  let
+    displacement = minus axis.originPoint point
+    projectedDisplacement = Vector2d.projectedOntoAxis axis displacement
+  in
+    plus projectedDisplacement axis.originPoint
 
 
 placedOntoPlane: Plane3d -> Point2d -> Point3d
