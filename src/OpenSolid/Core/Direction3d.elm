@@ -6,6 +6,8 @@ module OpenSolid.Core.Direction3d
   , components
   , normalDirection
   , transformedBy
+  , negated
+  , times
   ) where
 
 
@@ -46,3 +48,13 @@ normalDirection =
 transformedBy: Transformation3d -> Direction3d -> Direction3d
 transformedBy =
   fst
+
+
+negated: Direction3d -> Direction3d
+negated =
+  Vector3d.negated
+
+
+times: Float -> Direction3d -> Vector3d
+times =
+  Vector3d.times
