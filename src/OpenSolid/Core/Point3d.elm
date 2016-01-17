@@ -7,6 +7,9 @@ module OpenSolid.Core.Point3d
   , distanceToAxis
   , distanceToPlane
   , transformedBy
+  , projectedOntoAxis
+  , projectedOntoPlane
+  , projectedIntoPlane
   , plus
   , minus
   ) where
@@ -55,6 +58,29 @@ distanceToPlane plane =
 transformedBy: Transformation3d -> Point3d -> Point3d
 transformedBy =
   snd
+
+
+projectedOntoAxis: Axis3d -> Point3d -> Point3d
+projectedOntoAxis axis point =
+  let
+    displacement = minus axis.originPoint point
+    projectedDisplacement = Vector3d.projectedOntoAxis axis displacement
+  in
+    plus projectedDisplacement axis.originPoint
+
+
+projectedOntoPlane: Plane3d -> Point3d -> Point3d
+projectedOntoPlane plane point =
+  let
+    distance = distanceToPlane plane point
+    normalDisplacement = Vector3d.times distance plane.normalDirection
+  in
+    Math3d.minus normalDisplacement point
+
+
+projectedIntoPlane: Plane3d -> Point3d -> Point2d
+projectedIntoPlane plane =
+  minus plane.originPoint >> Vector3d.projectedIntoPlane plane
 
 
 plus: Vector3d -> Point3d -> Point3d
