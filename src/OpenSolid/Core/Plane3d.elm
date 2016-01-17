@@ -74,7 +74,7 @@ offsetBy distance plane =
 
 flipped: Plane3d -> Plane3d
 flipped plane =
-  { plane | normalDirection = Direction3d.reversed plane.normalDirection }
+  { plane | normalDirection = Direction3d.negated plane.normalDirection }
 
 
 normalAxis: Plane3d -> Axis3d

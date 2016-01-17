@@ -42,7 +42,7 @@ normalAxis axis =
 
 reversed: Axis2d -> Axis2d
 reversed axis =
-  Axis2d axis.originPoint (Direction2d.reversed axis.direction)
+  Axis2d axis.originPoint (Direction2d.negated axis.direction)
 
 
 transformedBy: Transformation2d -> Axis2d -> Axis2d

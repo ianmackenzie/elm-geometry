@@ -48,7 +48,7 @@ normalPlane axis =
 
 reversed: Axis3d -> Axis3d
 reversed axis =
-  { axis | direction = Direction3d.reversed axis.direction }
+  { axis | direction = Direction3d.negated axis.direction }
 
 
 transformedBy: Transformation3d -> Axis3d -> Axis3d
