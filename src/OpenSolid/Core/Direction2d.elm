@@ -6,6 +6,7 @@ module OpenSolid.Core.Direction2d
   , components
   , normalDirection
   , transformedBy
+  , placedOntoPlane
   , negated
   , times
   ) where
@@ -47,6 +48,11 @@ normalDirection direction =
 transformedBy: Transformation2d -> Direction2d -> Direction2d
 transformedBy =
   fst
+
+
+placedOntoPlane: Plane3d -> Direction3d
+placedOntoPlane =
+  Vector2d.placedOntoPlane
 
 
 negated: Direction2d -> Direction2d
