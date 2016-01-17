@@ -1,4 +1,4 @@
-module Axis2d
+module OpenSolid.Core.Axis2d
   ( x
   , y
   , pointAt

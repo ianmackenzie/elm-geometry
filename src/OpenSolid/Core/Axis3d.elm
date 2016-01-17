@@ -1,4 +1,4 @@
-module Axis3d
+module  OpenSolid.Core.Axis3d
   ( x
   , y
   , z

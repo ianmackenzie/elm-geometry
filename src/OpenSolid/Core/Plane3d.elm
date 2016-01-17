@@ -1,4 +1,4 @@
-module Plane3d
+module  OpenSolid.Core.Plane3d
   ( xy
   , xz
   , yx
