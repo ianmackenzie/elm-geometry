@@ -1,4 +1,4 @@
-module OpenSolid.Core.Frame2d where
+module OpenSolid.Core.Frame2d
   ( global
   , xAxis
   , yAxis

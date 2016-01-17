@@ -1,4 +1,4 @@
-module OpenSolid.Core.Frame3d where
+module OpenSolid.Core.Frame3d
   ( global
   , xAxis
   , yAxis
