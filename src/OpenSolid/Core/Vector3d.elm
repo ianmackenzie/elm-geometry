@@ -9,6 +9,7 @@ module OpenSolid.Core.Vector3d
   , transformedBy
   , projectedOntoAxis
   , projectedOntoPlane
+  , projectedIntoPlane
   , negated
   , plus
   , minus
@@ -75,6 +76,11 @@ projectedOntoPlane plane vector =
     normalComponent = dot plane.normalDirection vector
   in
     minus (times normalComponent plane.normalDirection) vector
+
+
+projectedIntoPlane: Plane3d -> Vector3d -> Vector2d
+projectedIntoPlane plane vector =
+  Matrix3x2.dotProduct plane.xDirection plane.yDirection vector
 
 
 negated: Vector3d -> Vector3d
