@@ -82,6 +82,21 @@ type alias Plane3d =
   }
 
 
+type alias Frame2d =
+  { originPoint: Point2d
+  , xDirection: Direction2d
+  , yDirection: Direction2d
+  }
+
+
+type alias Frame3d =
+  { originPoint: Point3d
+  , xDirection: Direction3d
+  , yDirection: Direction3d
+  , zDirection: Direction3d
+  }
+
+
 -- Transformations
 
 
