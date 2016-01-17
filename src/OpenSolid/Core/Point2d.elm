@@ -44,6 +44,11 @@ transformedBy =
   snd
 
 
+projectedOnto: Axis2d -> Point2d -> Point2d
+projectedOnto axis point =
+  Point2d.plus () axis.originPoint
+
+
 plus: Vector2d -> Point2d -> Point2d
 plus vector point =
   Point2d (point.x + vector.x) (point.y + vector.y)
