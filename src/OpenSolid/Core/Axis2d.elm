@@ -48,10 +48,10 @@ reversed axis =
 transformedBy: Transformation2d -> Axis2d -> Axis2d
 transformedBy transformation axis =
   let
-    transformedOriginPoint = Point2d.transformedBy transformation axis.originPoint
-    transformedDirection = Direction2d.transformedBy transformation axis.direction
+    originPoint = Point2d.transformedBy transformation axis.originPoint
+    direction = Direction2d.transformedBy transformation axis.direction
   in
-    Axis2d transformedOriginPoint transformedDirection
+    Axis2d originPoint direction
 
 
 placedOntoPlane: Plane3d -> Axis2d -> Axis3d

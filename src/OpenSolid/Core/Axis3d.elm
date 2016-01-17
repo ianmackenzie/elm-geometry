@@ -54,7 +54,7 @@ reversed axis =
 transformedBy: Transformation3d -> Axis3d -> Axis3d
 transformedBy transformation axis =
   let
-    transformedOriginPoint = Point3d.transformedBy transformation axis.originPoint
-    transformedDirection = Direction3d.transformedBy transformation axis.direction
+    originPoint = Point3d.transformedBy transformation axis.originPoint
+    direction = Direction3d.transformedBy transformation axis.direction
   in
-    Axis3d transformedOriginPoint transformedDirection
+    Axis3d originPoint direction
