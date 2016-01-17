@@ -11,7 +11,7 @@ module OpenSolid.Core.Direction3d
   ) where
 
 
-import OpenSolid.Core exposing (Direction3d, Transformation3d)
+import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Vector3d as Vector3d
 
 

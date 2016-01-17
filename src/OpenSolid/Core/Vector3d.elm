@@ -17,7 +17,7 @@ module OpenSolid.Core.Vector3d
   ) where
 
 
-import OpenSolid.Core exposing (Vector3d, Direction3d, Transformation3d)
+import OpenSolid.Core exposing (..)
 
 
 type alias Vector3d =
