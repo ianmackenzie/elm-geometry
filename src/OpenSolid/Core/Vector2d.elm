@@ -6,9 +6,9 @@ module OpenSolid.Core.Vector2d
   , normalized
   , direction
   , normalDirection
+  , transformedBy
   , projectedOntoAxis
   , placedOntoPlane
-  , transformedBy
   , negated
   , plus
   , minus
@@ -63,6 +63,11 @@ normalDirection =
   direction >> Direction2d.normalDirection
 
 
+transformedBy: Transformation2d -> Vector2d -> Vector2d
+transformedBy =
+  fst
+
+
 projectedOntoAxis: Axis2d -> Vector2d -> Vector2d
 projectedOntoAxis axis vector =
   Direction2d.times (Vector2d.dot axis.direction vector) axis.direction
@@ -75,11 +80,6 @@ placedOntoPlane plane vector =
     yVector = Direction3d.times vector.y plane.yDirection
   in
     Vector3d.plus yVector xVector
-
-
-transformedBy: Transformation2d -> Vector2d -> Vector2d
-transformedBy =
-  fst
 
 
 negated: Vector2d -> Vector2d
