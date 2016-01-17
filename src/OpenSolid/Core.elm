@@ -74,6 +74,14 @@ type alias Axis3d =
   }
 
 
+type alias Plane3d =
+  { originPoint: Point3d
+  , xDirection: Direction3d
+  , yDirection: Direction3d
+  , normalDirection: Direction3d
+  }
+
+
 -- Transformations
 
 
