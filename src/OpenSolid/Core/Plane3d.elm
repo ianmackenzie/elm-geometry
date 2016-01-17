@@ -67,9 +67,9 @@ fromPointAndNormal originPoint normalDirection =
 offsetBy: Float -> Plane3d -> Plane3d
 offsetBy distance plane =
   let
-    displacement = Direction2d.times distance plane.normalDirection
+    displacement = Direction3d.times distance plane.normalDirection
   in
-    { plane | originPoint = Point2d.plus displacement plane.originPoint }
+    { plane | originPoint = Point3d.plus displacement plane.originPoint }
 
 
 flipped: Plane3d -> Plane3d
