@@ -8,6 +8,7 @@ module OpenSolid.Core.Point2d
   , distanceToAxis
   , transformedBy
   , projectedOntoAxis
+  , placedOntoPlane
   , plus
   , minus
   ) where
@@ -15,6 +16,7 @@ module OpenSolid.Core.Point2d
 
 import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Vector2d as Vector2d
+import OpenSolid.Core.Point3d as Point3d
 
 
 origin: Point2d
@@ -62,6 +64,9 @@ projectedOntoAxis axis point =
   Axis2d.pointAt (distanceAlongAxis axis point) axis
 
 
+placedOntoPlane: Plane3d -> Point2d -> Point3d
+placedOntoPlane plane point =
+  Point3d.plus (Vector2d.placedOntoPlane plane point) plane.originPoint
 
 
 plus: Vector2d -> Point2d -> Point2d
