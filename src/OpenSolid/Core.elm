@@ -7,6 +7,9 @@ module OpenSolid.Core
   , Direction3d
   , Axis2d
   , Axis3d
+  , Plane3d
+  , Frame2d
+  , Frame3d
   , Transformation2d
   , Transformation3d
   , LineSegment2d
