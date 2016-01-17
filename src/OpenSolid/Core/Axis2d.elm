@@ -9,6 +9,7 @@ module OpenSolid.Core.Axis2d
   ) where
 
 
+import OpenSolid.Core exposing (Point2d, Direction2d)
 import OpenSolid.Core.Point2d as Point2d
 import OpenSolid.Core.Direction2d as Direction2d
 

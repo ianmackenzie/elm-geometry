@@ -10,7 +10,7 @@ module OpenSolid.Core.Point2d
   ) where
 
 
-import OpenSolid.Core exposing (Point2d, Vector2d, Transformation2d)
+import OpenSolid.Core exposing (Point2d, Vector2d, Transformation2d, Axis2d)
 import OpenSolid.Core.Vector2d as Vector2d
 
 

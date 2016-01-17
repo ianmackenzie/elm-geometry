@@ -14,7 +14,9 @@ module  OpenSolid.Core.Plane3d
   ) where
 
 
+import OpenSolid.Core exposing (Point3d, Direction3d, Axis3d)
 import OpenSolid.Core.Point3d as Point3d
+import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction3d as Direction3d
 
 
