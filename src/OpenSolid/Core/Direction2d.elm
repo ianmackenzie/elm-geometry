@@ -4,6 +4,7 @@ module OpenSolid.Core.Direction2d
   , y
   , polar
   , components
+  , negated
   , normalDirection
   , transformedBy
   ) where
@@ -30,6 +31,11 @@ y =
 polar: Float -> Direction2d
 polar angle =
   Direction2d (cos angle) (sin angle)
+
+
+negated: Direction2d -> Direction2d
+negated =
+  Vector2d.negated
 
 
 components: Direction2d -> (Float, Float)
