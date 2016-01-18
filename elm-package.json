@@ -20,6 +20,7 @@
     "OpenSolid.Core.Plane3d",
     "OpenSolid.Core.Point2d",
     "OpenSolid.Core.Point3d",
+    "OpenSolid.Core.Scalar",
     "OpenSolid.Core.Transformation2d",
     "OpenSolid.Core.Transformation3d",
     "OpenSolid.Core.Vector2d",
