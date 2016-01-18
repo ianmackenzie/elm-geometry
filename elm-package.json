@@ -16,6 +16,7 @@
     "OpenSolid.Core.Frame3d",
     "OpenSolid.Core.Interval",
     "OpenSolid.Core.LineSegment2d",
+    "OpenSolid.Core.LineSegment3d",
     "OpenSolid.Core.Plane3d",
     "OpenSolid.Core.Point2d",
     "OpenSolid.Core.Point3d",
