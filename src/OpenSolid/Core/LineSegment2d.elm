@@ -9,7 +9,7 @@ module OpenSolid.Core.LineSegment2d
   ) where
 
 
-import OpenSolid.Core exposing (LineSegment2d, Point2d, Vector2d, Direction2d, Transformation2d)
+import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Point2d as Point2d
 
