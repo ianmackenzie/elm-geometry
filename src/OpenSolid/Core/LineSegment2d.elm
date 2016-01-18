@@ -6,6 +6,8 @@ module OpenSolid.Core.LineSegment2d
   , squaredLength
   , length
   , transformedBy
+  , projectedOntoAxis
+  , placedOntoPlane
   ) where
 
 
@@ -52,3 +54,23 @@ transformedBy transformation lineSegment =
     secondEndpoint = transformPoint lineSegment.secondEndpoint
   in
     LineSegment2d firstEndpoint secondEndpoint
+
+
+projectedOntoAxis: Axis2d -> LineSegment2d -> LineSegment2d
+projectedOntoAxis axis lineSegment =
+  let
+    projectPoint = Point2d.projectedOntoAxis axis
+    firstEndpoint = projectPoint lineSegment.firstEndpoint
+    secondEndpoint = projectPoint lineSegment.secondEndpoint
+  in
+    LineSegment2d firstEndpoint secondEndpoint
+
+
+placedOntoPlane: Plane3d -> LineSegment2d -> LineSegment3d
+placedOntoPlane plane lineSegment =
+  let
+    placePoint = Point2d.placedOntoPlane plane
+    firstEndpoint = placePoint lineSegment.firstEndpoint
+    secondEndpoint = placePoint lineSegment.secondEndpoint
+  in
+    LineSegment3d firstEndpoint secondEndpoint

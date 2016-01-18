@@ -6,6 +6,8 @@ module OpenSolid.Core.LineSegment3d
   , squaredLength
   , length
   , transformedBy
+  , projectedOntoPlane
+  , projectedIntoPlane
   ) where
 
 
@@ -52,3 +54,23 @@ transformedBy transformation lineSegment =
     secondEndpoint = transformPoint lineSegment.secondEndpoint
   in
     LineSegment3d firstEndpoint secondEndpoint
+
+
+projectedOntoPlane: Plane3d -> LineSegment3d -> LineSegment3d
+projectedOntoPlane plane lineSegment =
+  let
+    projectPoint = Point3d.projectedOntoPlane plane
+    firstEndpoint = projectPoint lineSegment.firstEndpoint
+    secondEndpoint = projectPoint lineSegment.secondEndpoint
+  in
+    LineSegment3d firstEndpoint secondEndpoint
+
+
+projectedIntoPlane: Plane3d -> LineSegment3d -> LineSegment2d
+projectedIntoPlane plane lineSegment =
+  let
+    projectPoint = Point3d.projectedIntoPlane plane
+    firstEndpoint = projectPoint lineSegment.firstEndpoint
+    secondEndpoint = projectPoint lineSegment.secondEndpoint
+  in
+    LineSegment2d firstEndpoint secondEndpoint
