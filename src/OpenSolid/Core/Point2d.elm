@@ -12,10 +12,12 @@ module OpenSolid.Core.Point2d
   , placedOntoPlane
   , plus
   , minus
+  , hull
   ) where
 
 
 import OpenSolid.Core exposing (..)
+import OpenSolid.Core.Scalar as Scalar
 import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Direction2d as Direction2d
 import OpenSolid.Core.Math2d as Math2d
@@ -92,3 +94,8 @@ plus =
 minus: Point2d -> Point2d -> Vector2d
 minus =
   Math2d.minus
+
+
+hull: Point2d -> Point2d -> Box2d
+hull firstPoint secondPoint =
+  Box2d (Scalar.hull firstPoint.x secondPoint.x) (Scalar.hull firstPoint.y secondPoint.y)

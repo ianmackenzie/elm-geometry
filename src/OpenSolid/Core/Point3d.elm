@@ -13,10 +13,12 @@ module OpenSolid.Core.Point3d
   , projectedIntoPlane
   , plus
   , minus
+  , hull
   ) where
 
 
 import OpenSolid.Core exposing (..)
+import OpenSolid.Core.Scalar as Scalar
 import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Math3d as Math3d
 
@@ -100,3 +102,13 @@ plus =
 minus: Point3d -> Point3d -> Vector3d
 minus =
   Math3d.minus
+
+
+hull: Point3d -> Point3d -> Box3d
+hull firstPoint secondPoint =
+  let
+    x = Scalar.hull firstPoint.x secondPoint.x
+    y = Scalar.hull firstPoint.y secondPoint.y
+    z = Scalar.hull firstPoint.z secondPoint.z
+  in
+    Box3d x y z
