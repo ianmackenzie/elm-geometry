@@ -14,6 +14,8 @@ module OpenSolid.Core
   , Transformation3d
   , LineSegment2d
   , LineSegment3d
+  , Triangle2d
+  , Triangle3d
   , Interval
   , Box2d
   , Box3d
@@ -127,6 +129,20 @@ type alias LineSegment2d =
 type alias LineSegment3d =
   { firstEndpoint: Point3d
   , secondEndpoint: Point3d
+  }
+
+
+type alias Triangle2d =
+  { firstVertex: Point2d
+  , secondVertex: Point2d
+  , thirdVertex: Point2d
+  }
+
+
+type alias Triangle3d =
+  { firstVertex: Point3d
+  , secondVertex: Point3d
+  , thirdVertex: Point3d
   }
 
 
