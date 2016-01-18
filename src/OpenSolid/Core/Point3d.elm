@@ -6,6 +6,7 @@ module OpenSolid.Core.Point3d
   , squaredDistanceToAxis
   , distanceToAxis
   , distanceToPlane
+  , scaledAbout
   , transformedBy
   , projectedOntoAxis
   , projectedOntoPlane
@@ -53,6 +54,14 @@ distanceToAxis axis =
 distanceToPlane: Plane3d -> Point3d -> Float
 distanceToPlane plane =
   minus plane.originPoint >> Vector3d.dot plane.normalDirection
+
+
+scaledAbout: Point3d -> Float -> Point3d -> Point3d
+scaledAbout originPoint scale point =
+  let
+    displacement = minus originPoint point
+  in
+    plus (Vector3d.times scale displacement) originPoint
 
 
 transformedBy: Transformation3d -> Point3d -> Point3d

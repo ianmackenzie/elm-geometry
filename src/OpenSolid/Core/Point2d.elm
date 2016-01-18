@@ -6,6 +6,7 @@ module OpenSolid.Core.Point2d
   , distanceTo
   , distanceAlongAxis
   , distanceToAxis
+  , scaledAbout
   , transformedBy
   , projectedOntoAxis
   , placedOntoPlane
@@ -54,6 +55,14 @@ distanceAlongAxis axis =
 distanceToAxis: Axis2d -> Point2d -> Float
 distanceToAxis axis =
   minus axis.originPoint >> Vector2d.dot (Direction2d.normalDirection axis.direction)
+
+
+scaledAbout: Point2d -> Float -> Point2d -> Point2d
+scaledAbout originPoint scale point =
+  let
+    displacement = minus originPoint point
+  in
+    plus (Vector2d.times scale displacement) originPoint
 
 
 transformedBy: Transformation2d -> Point2d -> Point2d

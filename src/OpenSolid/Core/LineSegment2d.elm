@@ -5,6 +5,7 @@ module OpenSolid.Core.LineSegment2d
   , normalDirection
   , squaredLength
   , length
+  , scaledAbout
   , transformedBy
   , projectedOntoAxis
   , placedOntoPlane
@@ -44,6 +45,16 @@ squaredLength =
 length: LineSegment2d -> Float
 length =
   vector >> Vector2d.length
+
+
+scaledAbout: Point2d -> Float -> LineSegment2d -> LineSegment2d
+scaledAbout point scale lineSegment =
+  let
+    scalePoint = Point2d.scaledAbout point scale
+    firstEndpoint = scalePoint lineSegment.firstEndpoint
+    secondEndpoint = scalePoint lineSegment.secondEndpoint
+  in
+    LineSegment2d firstEndpoint secondEndpoint
 
 
 transformedBy: Transformation2d -> LineSegment2d -> LineSegment2d
