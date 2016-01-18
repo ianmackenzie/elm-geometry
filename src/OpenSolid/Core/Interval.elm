@@ -5,6 +5,7 @@ module OpenSolid.Core.Interval
   , median
   , contains
   , overlaps
+  , singleton
   ) where
 
 
@@ -39,3 +40,8 @@ contains value interval =
 overlaps: Interval -> Interval -> Bool
 overlaps other interval =
   interval.lowerBound <= other.upperBound && interval.upperBound >= other.lowerBound
+
+
+singleton: Float -> Interval
+singleton value =
+  Interval value value
