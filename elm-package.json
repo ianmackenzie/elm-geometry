@@ -22,7 +22,7 @@
     "OpenSolid.Core.Transformation2d",
     "OpenSolid.Core.Transformation3d",
     "OpenSolid.Core.Vector2d",
-    "OpenSolid.Core.Vector3d",
+    "OpenSolid.Core.Vector3d"
   ],
   "dependencies": {
     "elm-lang/core": "3.0.0 <= v < 4.0.0",
