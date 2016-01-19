@@ -4,29 +4,14 @@ module OpenSolid.Core.Matrix3x2
   ) where
 
 
-type alias Components2d =
-  { x: Float
-  , y: Float
-  }
+import OpenSolid.Core exposing (..)
 
 
-type alias Components3d =
-  { x: Float
-  , y: Float
-  , z: Float
-  }
+product: Direction3d -> Direction3d -> Vector2d -> Vector3d
+product (Direction3d (Vector3d x1 y1 z1)) (Direction3d (Vector3d x2 y2 z2)) (Vector2d x y) =
+  Vector3d (x1 * x + x2 * y) (y1 * x + y2 * y) (z1 * x + z2 * y)
 
 
-product: Components3d -> Components3d -> Components2d -> Components3d
-product xBasis yBasis vector =
-  Components3d
-    (xBasis.x * vector.x + yBasis.x * vector.y)
-    (xBasis.y * vector.x + yBasis.y * vector.y)
-    (xBasis.z * vector.x + yBasis.z * vector.y)
-
-
-dotProduct: Components3d -> Components3d -> Components3d -> Components2d
-dotProduct xBasis yBasis vector =
-  Components2d
-    (xBasis.x * vector.x + xBasis.y * vector.y + xBasis.z * vector.z)
-    (yBasis.x * vector.x + yBasis.y * vector.y + yBasis.z * vector.z)
+dotProduct: Direction3d -> Direction3d -> Vector3d -> Vector2d
+dotProduct (Direction3d (Vector3d x1 y1 z1)) (Direction3d (Vector3d x2 y2 z2)) (Vector3d x y z) =
+  Vector2d (x1 * x + y1 * y + z1 * z) (x2 * x + y2 * y + z2 * z)
