@@ -22,7 +22,7 @@ import OpenSolid.Core.Point2d as Point2d
 --import OpenSolid.Core.Transformation3d as Transformation3d
 --import OpenSolid.Core.Triangle2d as Triangle2d
 import OpenSolid.Core.Vector2d as Vector2d
---import OpenSolid.Core.Vector3d as Vector3d
+import OpenSolid.Core.Vector3d as Vector3d
 
 
 type alias State =
