@@ -15,7 +15,7 @@ import OpenSolid.Core.Direction2d as Direction2d
 import OpenSolid.Core.Interval as Interval
 --import OpenSolid.Core.LineSegment2d as LineSegment2d
 --import OpenSolid.Core.Plane3d as Plane3d
---import OpenSolid.Core.Point2d as Point2d
+import OpenSolid.Core.Point2d as Point2d
 --import OpenSolid.Core.Point3d as Point3d
 --import OpenSolid.Core.Scalar as Scalar
 --import OpenSolid.Core.Transformation2d as Transformation2d
@@ -73,7 +73,7 @@ view state =
   let
     intervalWidth = Interval.width (Interval 2 3)
     vectorLength = Vector2d.length (Vector2d 1 1)
-    --pointDifference = Point2d.minus Point2d.origin (Point2d 1 2)
+    pointDifference = Point2d.minus Point2d.origin (Point2d 1 2)
     --rotation = Transformation2d.rotationAbout Point2d.origin (degrees 45)
     --lineSegment = LineSegment2d (Point2d 1 0) (Point2d 2 0)
     --transformedSegment = LineSegment2d.transformedBy rotation lineSegment
@@ -93,7 +93,7 @@ view state =
     Html.div []
       [ line "Interval width" intervalWidth
       , line "Vector length" vectorLength
-      --, line "Point difference" pointDifference
+      , line "Point difference" pointDifference
       --, line "Transformed line segment" transformedSegment
       --, line "Mixed dot product" mixedDotProduct
       --, line "Rotated direction" rotatedDirection
