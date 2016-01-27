@@ -79,5 +79,5 @@ negated (Direction2d vector) =
 
 
 times: Float -> Direction2d -> Vector2d
-times float (Direction2d vector) =
-  Vector2d.times float vector
+times scale (Direction2d vector) =
+  Vector2d.times scale vector
