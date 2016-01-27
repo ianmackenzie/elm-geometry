@@ -1,5 +1,6 @@
 module OpenSolid.Core.LineSegment3d
   ( endpoints
+  , mapReduce
   , vector
   , direction
   , normalDirection
@@ -7,6 +8,7 @@ module OpenSolid.Core.LineSegment3d
   , length
   , scaledAbout
   , transformedBy
+  , projectedOntoAxis
   , projectedOntoPlane
   , projectedIntoPlane
   ) where
@@ -18,13 +20,18 @@ import OpenSolid.Core.Point3d as Point3d
 
 
 endpoints: LineSegment3d -> (Point3d, Point3d)
-endpoints lineSegment =
-  (lineSegment.firstEndpoint, lineSegment.secondEndpoint)
+endpoints (LineSegment3d firstEndpoint secondEndpoint) =
+  (firstEndpoint, secondEndpoint)
+
+
+mapReduce: (Point3d -> a) -> (a -> a -> b) -> LineSegment3d -> b
+mapReduce map reduce (LineSegment3d firstEndpoint secondEndpoint) =
+  reduce (map firstEndpoint) (map secondEndpoint)
 
 
 vector: LineSegment3d -> Vector3d
-vector lineSegment =
-  Point3d.minus lineSegment.firstEndpoint lineSegment.secondEndpoint
+vector (LineSegment3d firstEndpoint secondEndpoint) =
+  Point3d.minus firstEndpoint secondEndpoint
 
 
 direction: LineSegment3d -> Direction3d
@@ -48,40 +55,25 @@ length =
 
 
 scaledAbout: Point3d -> Float -> LineSegment3d -> LineSegment3d
-scaledAbout point scale lineSegment =
-  let
-    scalePoint = Point3d.scaledAbout point scale
-    firstEndpoint = scalePoint lineSegment.firstEndpoint
-    secondEndpoint = scalePoint lineSegment.secondEndpoint
-  in
-    LineSegment3d firstEndpoint secondEndpoint
+scaledAbout point scale =
+  mapReduce (Point3d.scaledAbout point scale) LineSegment3d
 
 
 transformedBy: Transformation3d -> LineSegment3d -> LineSegment3d
-transformedBy transformation lineSegment =
-  let
-    transformPoint = Point3d.transformedBy transformation
-    firstEndpoint = transformPoint lineSegment.firstEndpoint
-    secondEndpoint = transformPoint lineSegment.secondEndpoint
-  in
-    LineSegment3d firstEndpoint secondEndpoint
+transformedBy transformation =
+  mapReduce (Point3d.transformedBy transformation) LineSegment3d
+
+
+projectedOntoAxis: Axis3d -> LineSegment3d -> LineSegment3d
+projectedOntoAxis axis =
+  mapReduce (Point3d.projectedOntoAxis axis) LineSegment3d
 
 
 projectedOntoPlane: Plane3d -> LineSegment3d -> LineSegment3d
-projectedOntoPlane plane lineSegment =
-  let
-    projectPoint = Point3d.projectedOntoPlane plane
-    firstEndpoint = projectPoint lineSegment.firstEndpoint
-    secondEndpoint = projectPoint lineSegment.secondEndpoint
-  in
-    LineSegment3d firstEndpoint secondEndpoint
+projectedOntoPlane plane =
+  mapReduce (Point3d.projectedOntoPlane plane) LineSegment3d
 
 
 projectedIntoPlane: Plane3d -> LineSegment3d -> LineSegment2d
-projectedIntoPlane plane lineSegment =
-  let
-    projectPoint = Point3d.projectedIntoPlane plane
-    firstEndpoint = projectPoint lineSegment.firstEndpoint
-    secondEndpoint = projectPoint lineSegment.secondEndpoint
-  in
-    LineSegment2d firstEndpoint secondEndpoint
+projectedIntoPlane plane =
+  mapReduce (Point3d.projectedIntoPlane plane) LineSegment2d

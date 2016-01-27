@@ -1,5 +1,6 @@
 module OpenSolid.Core.LineSegment2d
   ( endpoints
+  , mapReduce
   , vector
   , direction
   , normalDirection
@@ -18,13 +19,18 @@ import OpenSolid.Core.Point2d as Point2d
 
 
 endpoints: LineSegment2d -> (Point2d, Point2d)
-endpoints lineSegment =
-  (lineSegment.firstEndpoint, lineSegment.secondEndpoint)
+endpoints (LineSegment2d firstEndpoint secondEndpoint) =
+  (firstEndpoint, secondEndpoint)
+
+
+mapReduce: (Point2d -> a) -> (a -> a -> b) -> LineSegment2d -> b
+mapReduce map reduce (LineSegment2d firstEndpoint secondEndpoint) =
+  reduce (map firstEndpoint) (map secondEndpoint)
 
 
 vector: LineSegment2d -> Vector2d
-vector lineSegment =
-  Point2d.minus lineSegment.firstEndpoint lineSegment.secondEndpoint
+vector (LineSegment2d firstEndpoint secondEndpoint) =
+  Point2d.minus firstEndpoint secondEndpoint
 
 
 direction: LineSegment2d -> Direction2d
@@ -48,40 +54,20 @@ length =
 
 
 scaledAbout: Point2d -> Float -> LineSegment2d -> LineSegment2d
-scaledAbout point scale lineSegment =
-  let
-    scalePoint = Point2d.scaledAbout point scale
-    firstEndpoint = scalePoint lineSegment.firstEndpoint
-    secondEndpoint = scalePoint lineSegment.secondEndpoint
-  in
-    LineSegment2d firstEndpoint secondEndpoint
+scaledAbout point scale =
+  mapReduce (Point2d.scaledAbout point scale) LineSegment2d
 
 
 transformedBy: Transformation2d -> LineSegment2d -> LineSegment2d
-transformedBy transformation lineSegment =
-  let
-    transformPoint = Point2d.transformedBy transformation
-    firstEndpoint = transformPoint lineSegment.firstEndpoint
-    secondEndpoint = transformPoint lineSegment.secondEndpoint
-  in
-    LineSegment2d firstEndpoint secondEndpoint
+transformedBy transformation =
+  mapReduce (Point2d.transformedBy transformation) LineSegment2d
 
 
 projectedOntoAxis: Axis2d -> LineSegment2d -> LineSegment2d
-projectedOntoAxis axis lineSegment =
-  let
-    projectPoint = Point2d.projectedOntoAxis axis
-    firstEndpoint = projectPoint lineSegment.firstEndpoint
-    secondEndpoint = projectPoint lineSegment.secondEndpoint
-  in
-    LineSegment2d firstEndpoint secondEndpoint
+projectedOntoAxis axis =
+  mapReduce (Point2d.projectedOntoAxis axis) LineSegment2d
 
 
 placedOntoPlane: Plane3d -> LineSegment2d -> LineSegment3d
-placedOntoPlane plane lineSegment =
-  let
-    placePoint = Point2d.placedOntoPlane plane
-    firstEndpoint = placePoint lineSegment.firstEndpoint
-    secondEndpoint = placePoint lineSegment.secondEndpoint
-  in
-    LineSegment3d firstEndpoint secondEndpoint
+placedOntoPlane plane =
+  mapReduce (Point2d.placedOntoPlane plane) LineSegment3d
