@@ -100,8 +100,8 @@ placedOntoPlane plane (Point2d x y) =
 
 
 plus: Vector2d -> Point2d -> Point2d
-plus (Vector2d vx vy) (Point2d x y) =
-  Point2d (x + vx) (y + vy)
+plus (Vector2d vectorX vectorY) (Point2d x y) =
+  Point2d (x + vectorX) (y + vectorY)
 
 
 minus: Point2d -> Point2d -> Vector2d
