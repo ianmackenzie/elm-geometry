@@ -3,6 +3,7 @@ module OpenSolid.Core.Direction2d
   , xDirection
   , yDirection
   , polar
+  , vector
   , xComponent
   , yComponent
   , components
