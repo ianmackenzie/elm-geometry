@@ -9,7 +9,7 @@ import OpenSolid.Core exposing (..)
 --import OpenSolid.Core.Box2d as Box2d
 --import OpenSolid.Core.Box3d as Box3d
 import OpenSolid.Core.Direction2d as Direction2d
---import OpenSolid.Core.Direction3d as Direction3d
+import OpenSolid.Core.Direction3d as Direction3d
 --import OpenSolid.Core.Frame2d as Frame2d
 --import OpenSolid.Core.Frame3d as Frame3d
 import OpenSolid.Core.Interval as Interval

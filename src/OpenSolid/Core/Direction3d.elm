@@ -1,8 +1,12 @@
 module OpenSolid.Core.Direction3d
   ( none
-  , x
-  , y
-  , z
+  , xDirection
+  , yDirection
+  , zDirection
+  , vector
+  , xComponent
+  , yComponent
+  , zComponent
   , components
   , normalDirection
   , transformedBy
@@ -12,49 +16,69 @@ module OpenSolid.Core.Direction3d
 
 
 import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Math3d as Math3d
+import OpenSolid.Core.Vector3d as Vector3d
 
 
 none: Direction3d
 none =
-  Direction3d 0 0 0
+  Direction3d Vector3d.zero
 
 
-x: Direction3d
-x =
-  Direction3d 1 0 0
+xDirection: Direction3d
+xDirection =
+  Direction3d (Vector3d 1 0 0)
 
 
-y: Direction3d
-y =
-  Direction3d 0 1 0
+yDirection: Direction3d
+yDirection =
+  Direction3d (Vector3d 0 1 0)
 
 
-z: Direction3d
-z =
-  Direction3d 0 0 1
+zDirection: Direction3d
+zDirection =
+  Direction3d (Vector3d 0 0 1)
+
+
+vector: Direction3d -> Vector3d
+vector (Direction3d representation) =
+  representation
+
+
+xComponent: Direction3d -> Float
+xComponent (Direction3d vector) =
+  Vector3d.xComponent vector
+
+
+yComponent: Direction3d -> Float
+yComponent (Direction3d vector) =
+  Vector3d.yComponent vector
+
+
+zComponent: Direction3d -> Float
+zComponent (Direction3d vector) =
+  Vector3d.zComponent vector
 
 
 components: Direction3d -> (Float, Float, Float)
-components direction =
-  (direction.x, direction.y, direction.z)
+components (Direction3d vector) =
+  Vector3d.components vector
 
 
 normalDirection: Direction3d -> Direction3d
-normalDirection =
-  Math3d.perpendicularDirection
+normalDirection (Direction3d vector) =
+  Vector3d.normalDirection vector
 
 
 transformedBy: Transformation3d -> Direction3d -> Direction3d
-transformedBy =
-  fst
+transformedBy (Transformation3d transformVector transformPoint) (Direction3d vector) =
+  Direction3d (transformVector vector)
 
 
 negated: Direction3d -> Direction3d
-negated =
-  Math3d.negated
+negated (Direction3d vector) =
+  Direction3d (Vector3d.negated vector)
 
 
 times: Float -> Direction3d -> Vector3d
-times =
-  Math3d.times
+times scale (Direction3d vector) =
+  Vector3d.times scale vector
