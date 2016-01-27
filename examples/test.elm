@@ -21,7 +21,7 @@ import OpenSolid.Core.Point3d as Point3d
 import OpenSolid.Core.Scalar as Scalar
 --import OpenSolid.Core.Transformation2d as Transformation2d
 --import OpenSolid.Core.Transformation3d as Transformation3d
---import OpenSolid.Core.Triangle2d as Triangle2d
+import OpenSolid.Core.Triangle2d as Triangle2d
 import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Vector3d as Vector3d
 
@@ -81,10 +81,10 @@ view state =
     mixedDotProduct = Vector2d.dot (Direction2d.vector Direction2d.xDirection) (Vector2d 2 3)
     --rotatedDirection = Direction2d.transformedBy rotation Direction2d.x
     --angledDotProduct = Vector2d.dot rotatedDirection (Vector2d 2 3)
-    --triangle = Triangle2d Point2d.origin (Point2d 1 0) (Point2d 0 1)
-    --triangleArea = Triangle2d.area triangle
-    --contains1 = Triangle2d.contains (Point2d 0.5 0.5) triangle
-    --contains2 = Triangle2d.contains (Point2d 1 1) triangle
+    triangle = Triangle2d Point2d.origin (Point2d 1 0) (Point2d 0 1)
+    triangleArea = Triangle2d.area triangle
+    contains1 = Triangle2d.contains (Point2d 0.5 0.5) triangle
+    contains2 = Triangle2d.contains (Point2d 1 1) triangle
     --placedTriangle = Triangle2d.placedOntoPlane Plane3d.xz triangle
     axis = Axis2d Point2d.origin (Direction2d.polar (degrees -45))
     projectPoint = Point2d.projectedOntoAxis axis
@@ -100,9 +100,9 @@ view state =
       --, line "Rotated direction" rotatedDirection
       --, line "Angled dot product" angledDotProduct
       , line "Current time" (timeString state.currentTime)
-      --, line "Triangle area" triangleArea
-      --, line "Contains 1" contains1
-      --, line "Contains 2" contains2
+      , line "Triangle area" triangleArea
+      , line "Contains 1" contains1
+      , line "Contains 2" contains2
       --, line "Placed triangle" placedTriangle
       , line "Axis" axis
       --, line "Projected points" projectedPoints

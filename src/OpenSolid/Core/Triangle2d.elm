@@ -17,21 +17,21 @@ import OpenSolid.Core.Point2d as Point2d
 
 
 vertices: Triangle2d -> (Point2d, Point2d, Point2d)
-vertices triangle =
-  (triangle.firstVertex, triangle.secondVertex, triangle.thirdVertex)
+vertices (Triangle2d firstVertex secondVertex thirdVertex) =
+  (firstVertex, secondVertex, thirdVertex)
 
 
 edges: Triangle2d -> (LineSegment2d, LineSegment2d, LineSegment2d)
-edges triangle =
-  ( LineSegment2d triangle.thirdVertex triangle.secondVertex
-  , LineSegment2d triangle.firstVertex triangle.thirdVertex
-  , LineSegment2d triangle.secondVertex triangle.firstVertex
+edges (Triangle2d firstVertex secondVertex thirdVertex) =
+  ( LineSegment2d thirdVertex secondVertex
+  , LineSegment2d firstVertex thirdVertex
+  , LineSegment2d secondVertex firstVertex
   )
 
 
 mapReduce: (Point2d -> a) -> (a -> a -> a -> b) -> Triangle2d -> b
-mapReduce map reduce triangle =
-  reduce (map triangle.firstVertex) (map triangle.secondVertex) (map triangle.thirdVertex)
+mapReduce map reduce (Triangle2d firstVertex secondVertex thirdVertex) =
+  reduce (map firstVertex) (map secondVertex) (map thirdVertex)
 
 
 scaledAbout: Point2d -> Float -> Triangle2d -> Triangle2d
@@ -50,33 +50,33 @@ placedOntoPlane plane =
 
 
 area: Triangle2d -> Float
-area triangle =
+area (Triangle2d firstVertex secondVertex thirdVertex) =
   let
-    firstVector = Point2d.minus triangle.firstVertex triangle.secondVertex
-    secondVector = Point2d.minus triangle.firstVertex triangle.thirdVertex
+    firstVector = Point2d.minus firstVertex secondVertex
+    secondVector = Point2d.minus firstVertex thirdVertex
   in
     0.5 * Vector2d.cross secondVector firstVector
 
 
 centroid: Triangle2d -> Point2d
-centroid triangle =
+centroid (Triangle2d firstVertex secondVertex thirdVertex) =
   let
-    firstVector = Point2d.minus triangle.firstVertex triangle.secondVertex
-    secondVector = Point2d.minus triangle.firstVertex triangle.thirdVertex
+    firstVector = Point2d.minus firstVertex secondVertex
+    secondVector = Point2d.minus firstVertex thirdVertex
     displacement = Vector2d.times (1.0 / 3.0) (Vector2d.plus secondVector firstVector)
   in
-    Point2d.plus displacement triangle.firstVertex
+    Point2d.plus displacement firstVertex
 
 
 contains: Point2d -> Triangle2d -> Bool
-contains point triangle =
+contains point (Triangle2d firstVertex secondVertex thirdVertex) =
   let
     crossProduct startVertex endVertex =
       Vector2d.cross (Point2d.minus startVertex point) (Point2d.minus startVertex endVertex)
 
-    firstProduct = crossProduct triangle.firstVertex triangle.secondVertex
-    secondProduct = crossProduct triangle.secondVertex triangle.thirdVertex
-    thirdProduct = crossProduct triangle.thirdVertex triangle.firstVertex
+    firstProduct = crossProduct firstVertex secondVertex
+    secondProduct = crossProduct secondVertex thirdVertex
+    thirdProduct = crossProduct thirdVertex firstVertex
   in
     (firstProduct >= 0 && secondProduct >= 0 && thirdProduct >= 0) ||
     (firstProduct <= 0 && secondProduct <= 0 && thirdProduct <= 0)
