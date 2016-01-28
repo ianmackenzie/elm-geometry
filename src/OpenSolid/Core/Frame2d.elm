@@ -30,8 +30,8 @@ transformedBy: Transformation2d -> Frame2d -> Frame2d
 transformedBy transformation frame =
   let
     originPoint = Point2d.transformedBy transformation frame.originPoint
-    transformedDirection = Direction2d.transformedBy transformation
-    xDirection = transformedDirection frame.xDirection
-    yDirection = transformedDirection frame.yDirection
+    transformDirection = Direction2d.transformedBy transformation
+    xDirection = transformDirection frame.xDirection
+    yDirection = transformDirection frame.yDirection
   in
     Frame2d originPoint xDirection yDirection

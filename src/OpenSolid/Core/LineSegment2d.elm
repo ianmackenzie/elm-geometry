@@ -19,18 +19,18 @@ import OpenSolid.Core.Point2d as Point2d
 
 
 endpoints: LineSegment2d -> (Point2d, Point2d)
-endpoints (LineSegment2d firstEndpoint secondEndpoint) =
-  (firstEndpoint, secondEndpoint)
+endpoints lineSegment =
+  (lineSegment.firstEndpoint, lineSegment.secondEndpoint)
 
 
 mapReduce: (Point2d -> a) -> (a -> a -> b) -> LineSegment2d -> b
-mapReduce map reduce (LineSegment2d firstEndpoint secondEndpoint) =
-  reduce (map firstEndpoint) (map secondEndpoint)
+mapReduce map reduce lineSegment =
+  reduce (map lineSegment.firstEndpoint) (map lineSegment.secondEndpoint)
 
 
 vector: LineSegment2d -> Vector2d
-vector (LineSegment2d firstEndpoint secondEndpoint) =
-  Point2d.minus firstEndpoint secondEndpoint
+vector lineSegment =
+  Point2d.minus lineSegment.firstEndpoint lineSegment.secondEndpoint
 
 
 direction: LineSegment2d -> Direction2d

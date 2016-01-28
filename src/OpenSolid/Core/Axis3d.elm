@@ -41,8 +41,8 @@ pointAt distance axis =
 
 
 normalDirection: Axis3d -> Direction3d
-normalDirection =
-  .direction >> Direction3d.normalDirection
+normalDirection axis =
+  Direction3d.normalDirection axis.direction
 
 
 normalPlane: Axis3d -> Plane3d
@@ -52,7 +52,7 @@ normalPlane axis =
 
 reversed: Axis3d -> Axis3d
 reversed axis =
-  { axis | direction = Direction3d.negated axis.direction }
+  Axis3d axis.originPoint (Direction3d.negated axis.direction)
 
 
 transformedBy: Transformation3d -> Axis3d -> Axis3d
@@ -68,7 +68,7 @@ projectedOntoPlane: Plane3d -> Axis3d -> Axis3d
 projectedOntoPlane plane axis =
   let
     originPoint = Point3d.projectedOntoPlane plane axis.originPoint
-    direction = Vector3d.direction (Vector3d.projectedOntoPlane plane axis.direction)
+    direction = Direction3d.projectedOntoPlane plane axis.direction
   in
     Axis3d originPoint direction
 
@@ -77,6 +77,6 @@ projectedIntoPlane: Plane3d -> Axis3d -> Axis2d
 projectedIntoPlane plane axis =
   let
     originPoint = Point3d.projectedIntoPlane plane axis.originPoint
-    direction = Vector2d.direction (Vector3d.projectedIntoPlane plane axis.direction)
+    direction = Direction3d.projectedIntoPlane plane axis.direction
   in
     Axis2d originPoint direction

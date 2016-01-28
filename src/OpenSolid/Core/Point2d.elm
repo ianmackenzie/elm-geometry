@@ -1,8 +1,6 @@
 module OpenSolid.Core.Point2d
   ( origin
   , polar
-  , xComponent
-  , yComponent
   , components
   , squaredDistanceTo
   , distanceTo
@@ -21,6 +19,7 @@ module OpenSolid.Core.Point2d
 import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Scalar as Scalar
 import OpenSolid.Core.Vector2d as Vector2d
+import OpenSolid.Core.Direction2d as Direction2d
 
 
 origin: Point2d
@@ -31,16 +30,6 @@ origin =
 polar: Float -> Float -> Point2d
 polar radius angle =
   Point2d (radius * cos angle) (radius * sin angle)
-
-
-xComponent: Point2d -> Float
-xComponent (Point2d x y) =
-  x
-
-
-yComponent: Point2d -> Float
-yComponent (Point2d x y) =
-  y
 
 
 components: Point2d -> (Float, Float)
@@ -59,13 +48,13 @@ distanceTo other =
 
 
 distanceAlongAxis: Axis2d -> Point2d -> Float
-distanceAlongAxis (Axis2d originPoint (Direction2d vector)) =
-  minus originPoint >> Vector2d.dot vector
+distanceAlongAxis axis =
+  minus axis.originPoint >> Vector2d.componentIn axis.direction
 
 
 distanceToAxis: Axis2d -> Point2d -> Float
-distanceToAxis (Axis2d originPoint (Direction2d vector)) =
-  minus originPoint >> (flip Vector2d.cross) vector
+distanceToAxis axis =
+  minus axis.originPoint >> Vector2d.componentIn (Direction2d.normalDirection axis.direction)
 
 
 scaledAbout: Point2d -> Float -> Point2d -> Point2d
@@ -77,23 +66,23 @@ scaledAbout originPoint scale point =
 
 
 transformedBy: Transformation2d -> Point2d -> Point2d
-transformedBy (Transformation2d transformVector transformPoint) =
-  transformPoint
+transformedBy transformation =
+  transformation.transformPoint
 
 
 projectedOntoAxis: Axis2d -> Point2d -> Point2d
 projectedOntoAxis axis point =
   let
-    (Axis2d originPoint direction) = axis
-    projectedDisplacement = Vector2d.projectedOntoAxis axis (minus originPoint point)
+    displacement = minus axis.originPoint point
+    projectedDisplacement = Vector2d.projectedOntoAxis axis displacement
   in
-    plus projectedDisplacement originPoint
+    plus projectedDisplacement axis.originPoint
 
 
 placedOntoPlane: Plane3d -> Point2d -> Point3d
 placedOntoPlane plane (Point2d x y) =
   let
-    (Plane3d (Point3d px py pz) xDirection yDirection normalDirection) = plane
+    (Point3d px py pz) = plane.originPoint
     (Vector3d vx vy vz) = Vector2d.placedOntoPlane plane (Vector2d x y)
   in
     Point3d (px + vx) (py + vy) (pz + vz)

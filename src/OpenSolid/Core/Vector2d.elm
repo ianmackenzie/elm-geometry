@@ -1,7 +1,6 @@
 module OpenSolid.Core.Vector2d
   ( zero
-  , xComponent
-  , yComponent
+  , componentIn
   , components
   , squaredLength
   , length
@@ -30,14 +29,9 @@ zero =
   Vector2d 0 0
 
 
-xComponent: Vector2d -> Float
-xComponent (Vector2d x y) =
-  x
-
-
-yComponent: Vector2d -> Float
-yComponent (Vector2d x y) =
-  y
+componentIn: Direction2d -> Vector2d -> Float
+componentIn (Direction2d directionVector) vector =
+  dot directionVector vector
 
 
 components: Vector2d -> (Float, Float)
@@ -82,18 +76,21 @@ normalDirection =
 
 
 transformedBy: Transformation2d -> Vector2d -> Vector2d
-transformedBy (Transformation2d transformVector transformPoint) =
-  transformVector
+transformedBy transformation =
+  transformation.transformVector
 
 
 projectedOntoAxis: Axis2d -> Vector2d -> Vector2d
-projectedOntoAxis (Axis2d originPoint (Direction2d directionVector)) vector =
-  times (dot directionVector vector) directionVector
+projectedOntoAxis axis vector =
+  let
+    (Direction2d directionVector) = axis.direction
+  in
+    times (dot directionVector vector) directionVector
 
 
 placedOntoPlane: Plane3d -> Vector2d -> Vector3d
-placedOntoPlane (Plane3d originPoint xDirection yDirection normalDirection) =
-  Matrix3x2.product xDirection yDirection
+placedOntoPlane plane =
+  Matrix3x2.product plane.xDirection plane.yDirection
 
 
 negated: Vector2d -> Vector2d

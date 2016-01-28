@@ -1,21 +1,20 @@
 module OpenSolid.Core.Direction3d
   ( none
-  , xDirection
-  , yDirection
-  , zDirection
-  , vector
-  , xComponent
-  , yComponent
-  , zComponent
+  , x
+  , y
+  , z
   , components
   , normalDirection
   , transformedBy
+  , projectedOntoPlane
+  , projectedIntoPlane
   , negated
   , times
   ) where
 
 
 import OpenSolid.Core exposing (..)
+import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Vector3d as Vector3d
 
 
@@ -24,39 +23,19 @@ none =
   Direction3d Vector3d.zero
 
 
-xDirection: Direction3d
-xDirection =
+x: Direction3d
+x =
   Direction3d (Vector3d 1 0 0)
 
 
-yDirection: Direction3d
-yDirection =
+y: Direction3d
+y =
   Direction3d (Vector3d 0 1 0)
 
 
-zDirection: Direction3d
-zDirection =
+z: Direction3d
+z =
   Direction3d (Vector3d 0 0 1)
-
-
-vector: Direction3d -> Vector3d
-vector (Direction3d representation) =
-  representation
-
-
-xComponent: Direction3d -> Float
-xComponent (Direction3d vector) =
-  Vector3d.xComponent vector
-
-
-yComponent: Direction3d -> Float
-yComponent (Direction3d vector) =
-  Vector3d.yComponent vector
-
-
-zComponent: Direction3d -> Float
-zComponent (Direction3d vector) =
-  Vector3d.zComponent vector
 
 
 components: Direction3d -> (Float, Float, Float)
@@ -70,8 +49,18 @@ normalDirection (Direction3d vector) =
 
 
 transformedBy: Transformation3d -> Direction3d -> Direction3d
-transformedBy (Transformation3d transformVector transformPoint) (Direction3d vector) =
-  Direction3d (transformVector vector)
+transformedBy transformation (Direction3d vector) =
+  Direction3d (Vector3d.transformedBy transformation vector)
+
+
+projectedOntoPlane: Plane3d -> Direction3d -> Direction3d
+projectedOntoPlane plane (Direction3d vector) =
+  Vector3d.direction (Vector3d.projectedOntoPlane plane vector)
+
+
+projectedIntoPlane: Plane3d -> Direction3d -> Direction2d
+projectedIntoPlane plane (Direction3d vector) =
+  Vector2d.direction (Vector3d.projectedIntoPlane plane vector)
 
 
 negated: Direction3d -> Direction3d

@@ -1,8 +1,6 @@
 module OpenSolid.Core.Vector3d
   ( zero
-  , xComponent
-  , yComponent
-  , zComponent
+  , componentIn
   , components
   , squaredLength
   , length
@@ -32,19 +30,9 @@ zero =
   Vector3d 0 0 0
 
 
-xComponent: Vector3d -> Float
-xComponent (Vector3d x y z) =
-  x
-
-
-yComponent: Vector3d -> Float
-yComponent (Vector3d x y z) =
-  y
-
-
-zComponent: Vector3d -> Float
-zComponent (Vector3d x y z) =
-  z
+componentIn: Direction3d -> Vector3d -> Float
+componentIn (Direction3d directionVector) vector =
+  dot directionVector vector
 
 
 components: Vector3d -> (Float, Float, Float)
@@ -103,26 +91,30 @@ normalDirection =
 
 
 transformedBy: Transformation3d -> Vector3d -> Vector3d
-transformedBy (Transformation3d transformVector transformPoint) =
-  transformVector
+transformedBy transformation =
+  transformation.transformVector
 
 
 projectedOntoAxis: Axis3d -> Vector3d -> Vector3d
-projectedOntoAxis (Axis3d originPoint (Direction3d directionVector)) vector =
-  times (dot directionVector vector) directionVector
+projectedOntoAxis axis vector =
+  let
+    (Direction3d directionVector) = axis.direction
+  in
+    times (dot directionVector vector) directionVector
 
 
 projectedOntoPlane: Plane3d -> Vector3d -> Vector3d
-projectedOntoPlane (Plane3d originPoint xDirection yDirection (Direction3d normalVector)) vector =
+projectedOntoPlane plane vector =
   let
+    (Direction3d normalVector) = plane.normalDirection
     normalComponent = dot normalVector vector
   in
     minus (times normalComponent normalVector) vector
 
 
 projectedIntoPlane: Plane3d -> Vector3d -> Vector2d
-projectedIntoPlane (Plane3d originPoint xDirection yDirection normalDirection) vector =
-  Matrix3x2.dotProduct xDirection yDirection vector
+projectedIntoPlane plane vector =
+  Matrix3x2.dotProduct plane.xDirection plane.yDirection vector
 
 
 negated: Vector3d -> Vector3d

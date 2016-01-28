@@ -31,8 +31,8 @@ pointAt distance axis =
 
 
 normalDirection: Axis2d -> Direction2d
-normalDirection =
-  .direction >> Direction2d.normalDirection
+normalDirection axis =
+  Direction2d.normalDirection axis.direction
 
 
 normalAxis: Axis2d -> Axis2d

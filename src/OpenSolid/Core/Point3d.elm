@@ -1,8 +1,5 @@
 module OpenSolid.Core.Point3d
   ( origin
-  , xComponent
-  , yComponent
-  , zComponent
   , components
   , squaredDistanceTo
   , distanceTo
@@ -23,26 +20,12 @@ module OpenSolid.Core.Point3d
 import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Scalar as Scalar
 import OpenSolid.Core.Vector3d as Vector3d
+import OpenSolid.Core.Direction3d as Direction3d
 
 
 origin: Point3d
 origin =
   Point3d 0 0 0
-
-
-xComponent: Point3d -> Float
-xComponent (Point3d x y z) =
-  x
-
-
-yComponent: Point3d -> Float
-yComponent (Point3d x y z) =
-  y
-
-
-zComponent: Point3d -> Float
-zComponent (Point3d x y z) =
-  z
 
 
 components: Point3d -> (Float, Float, Float)
@@ -61,8 +44,11 @@ distanceTo other =
 
 
 squaredDistanceToAxis: Axis3d -> Point3d -> Float
-squaredDistanceToAxis (Axis3d originPoint (Direction3d directionVector)) =
-  minus originPoint >> Vector3d.cross directionVector >> Vector3d.squaredLength
+squaredDistanceToAxis axis =
+  let
+    (Direction3d directionVector) = axis.direction
+  in
+    minus axis.originPoint >> Vector3d.cross directionVector >> Vector3d.squaredLength
 
 
 distanceToAxis: Axis3d -> Point3d -> Float
@@ -71,8 +57,8 @@ distanceToAxis axis =
 
 
 distanceToPlane: Plane3d -> Point3d -> Float
-distanceToPlane (Plane3d originPoint xDirection yDirection (Direction3d normalVector)) =
-  minus originPoint >> Vector3d.dot normalVector
+distanceToPlane plane =
+  minus plane.originPoint >> Vector3d.componentIn plane.normalDirection
 
 
 scaledAbout: Point3d -> Float -> Point3d -> Point3d
@@ -84,25 +70,24 @@ scaledAbout originPoint scale point =
 
 
 transformedBy: Transformation3d -> Point3d -> Point3d
-transformedBy (Transformation3d transformVector transformPoint) =
-  transformPoint
+transformedBy transformation =
+  transformation.transformPoint
 
 
 projectedOntoAxis: Axis3d -> Point3d -> Point3d
 projectedOntoAxis axis point =
   let
-    (Axis3d originPoint direction) = axis
-    projectedDisplacement = Vector3d.projectedOntoAxis axis (minus originPoint point)
+    displacement = minus axis.originPoint point
+    projectedDisplacement = Vector3d.projectedOntoAxis axis displacement
   in
-    plus projectedDisplacement originPoint
+    plus projectedDisplacement axis.originPoint
 
 
 projectedOntoPlane: Plane3d -> Point3d -> Point3d
 projectedOntoPlane plane point =
   let
-    (Plane3d originPoint xDirection yDirection (Direction3d normalVector)) = plane
     distance = distanceToPlane plane point
-    normalDisplacement = Vector3d.times (-distance) normalVector
+    normalDisplacement = Direction3d.times (-distance) plane.normalDirection
   in
     plus normalDisplacement point
 
@@ -110,8 +95,7 @@ projectedOntoPlane plane point =
 projectedIntoPlane: Plane3d -> Point3d -> Point2d
 projectedIntoPlane plane point =
   let
-    (Plane3d originPoint xDirection yDirection normalDirection) = plane
-    displacement = minus originPoint point
+    displacement = minus plane.originPoint point
     (Vector2d x y) = Vector3d.projectedIntoPlane plane displacement
   in
     Point2d x y

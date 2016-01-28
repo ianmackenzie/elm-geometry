@@ -1,11 +1,8 @@
 module OpenSolid.Core.Direction2d
   ( none
-  , xDirection
-  , yDirection
+  , x
+  , y
   , polar
-  , vector
-  , xComponent
-  , yComponent
   , components
   , normalDirection
   , transformedBy
@@ -24,34 +21,19 @@ none =
   Direction2d Vector2d.zero
 
 
-xDirection: Direction2d
-xDirection =
+x: Direction2d
+x =
   Direction2d (Vector2d 1 0)
 
 
-yDirection: Direction2d
-yDirection =
+y: Direction2d
+y =
   Direction2d (Vector2d 0 1)
 
 
 polar: Float -> Direction2d
 polar angle =
   Direction2d (Vector2d (cos angle) (sin angle))
-
-
-vector: Direction2d -> Vector2d
-vector (Direction2d representation) =
-  representation
-
-
-xComponent: Direction2d -> Float
-xComponent (Direction2d vector) =
-  Vector2d.xComponent vector
-
-
-yComponent: Direction2d -> Float
-yComponent (Direction2d vector) =
-  Vector2d.yComponent vector
 
 
 components: Direction2d -> (Float, Float)
