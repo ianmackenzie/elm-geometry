@@ -1,4 +1,4 @@
-module OpenSolid.Core.Matrix2x2
+module OpenSolid.Core.Matrix3x3
   ( product
   , dotProduct
   ) where
@@ -20,7 +20,6 @@ product direction1 direction2 direction3 vector =
 
 dotProduct: Direction3d -> Direction3d -> Direction3d -> Vector3d -> Vector3d
 dotProduct direction1 direction2 direction3 vector =
-product direction1 direction2 direction3 vector =
   let
     (Direction3d (Vector3d x1 y1 z1)) = direction1
     (Direction3d (Vector3d x2 y2 z2)) = direction2
