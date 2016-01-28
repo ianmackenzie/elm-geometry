@@ -4,21 +4,14 @@ module OpenSolid.Core.Matrix2x2
   ) where
 
 
-type alias Components =
-  { x: Float
-  , y: Float
-  }
+import OpenSolid.Core exposing (..)
 
 
-product: Components -> Components -> Components -> Components
-product xBasis yBasis vector =
-  Components
-    (xBasis.x * vector.x + yBasis.x * vector.y)
-    (xBasis.y * vector.x + yBasis.y * vector.y)
+product: Direction2d -> Direction2d -> Vector2d -> Vector2d
+product (Direction2d (Vector2d x1 y1)) (Direction2d (Vector2d x2 y2)) (Vector2d x y) =
+  Vector2d (x1 * x + x2 * y) (y1 * x + y2 * y)
 
 
-dotProduct: Components -> Components -> Components -> Components
-dotProduct xBasis yBasis vector =
-  Components
-    (xBasis.x * vector.x + xBasis.y * vector.y)
-    (yBasis.x * vector.x + yBasis.y * vector.y)
+dotProduct: Direction2d -> Direction2d -> Vector2d -> Vector2d
+dotProduct (Direction2d (Vector2d x1 y1)) (Direction2d (Vector2d x2 y2)) (Vector2d x y) =
+  Vector2d (x1 * x + y1 * y) (x2 * x + y2 * y)
