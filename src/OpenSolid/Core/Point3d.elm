@@ -111,6 +111,6 @@ minus (Point3d otherX otherY otherZ) (Point3d x y z) =
   Vector3d (x - otherX) (y - otherY) (z - otherZ)
 
 
-hull: Point3d -> Point3d -> Box3d
+hull: Point3d -> Point3d -> Bounds3d
 hull (Point3d otherX otherY otherZ) (Point3d x y z) =
-  Box3d (Scalar.hull otherX x) (Scalar.hull otherY y) (Scalar.hull otherZ z)
+  Bounds3d (Scalar.hull otherX x) (Scalar.hull otherY y) (Scalar.hull otherZ z)

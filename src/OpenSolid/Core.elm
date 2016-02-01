@@ -6,8 +6,8 @@ module OpenSolid.Core
   , Direction2d (Direction2d)
   , Direction3d (Direction3d)
   , Interval (Interval)
-  , Box2d (Box2d)
-  , Box3d (Box3d)
+  , Bounds2d (Bounds2d)
+  , Bounds3d (Bounds3d)
   , LineSegment2d
   , LineSegment3d
   , Triangle2d
@@ -53,12 +53,12 @@ type Interval
   = Interval Float Float
 
 
-type Box2d
-  = Box2d Interval Interval
+type Bounds2d
+  = Bounds2d Interval Interval
 
 
-type Box3d
-  = Box3d Interval Interval Interval
+type Bounds3d
+  = Bounds3d Interval Interval Interval
 
 
 -- Simplices

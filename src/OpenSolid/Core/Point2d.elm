@@ -98,6 +98,6 @@ minus (Point2d otherX otherY) (Point2d x y) =
   Vector2d (x - otherX) (y - otherY)
 
 
-hull: Point2d -> Point2d -> Box2d
+hull: Point2d -> Point2d -> Bounds2d
 hull (Point2d otherX otherY) (Point2d x y) =
-  Box2d (Scalar.hull otherX x) (Scalar.hull otherY y)
+  Bounds2d (Scalar.hull otherX x) (Scalar.hull otherY y)
