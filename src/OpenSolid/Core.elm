@@ -5,7 +5,7 @@ module OpenSolid.Core
   , Point3d (Point3d)
   , Direction2d (Direction2d)
   , Direction3d (Direction3d)
-  , Interval (Interval)
+  , Interval
   , Bounds2d (Bounds2d)
   , Bounds3d (Bounds3d)
   , LineSegment2d
@@ -22,7 +22,16 @@ module OpenSolid.Core
   ) where
 
 
--- Primitives
+-- Interval
+
+
+type alias Interval =
+  { lowerBound: Float
+  , upperBound: Float
+  }
+
+
+-- Cartesian values
 
 
 type Vector2d
@@ -47,10 +56,6 @@ type Direction2d
 
 type Direction3d
   = Direction3d Vector3d
-
-
-type Interval
-  = Interval Float Float
 
 
 type Bounds2d

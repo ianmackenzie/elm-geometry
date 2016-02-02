@@ -1,7 +1,5 @@
 module OpenSolid.Core.Interval
-  ( lowerBound
-  , upperBound
-  , endpoints
+  ( endpoints
   , width
   , interpolated
   , median
@@ -19,29 +17,19 @@ singleton value =
   Interval value value
 
 
-lowerBound: Interval -> Float
-lowerBound (Interval lower upper) =
-  lower
-
-
-upperBound: Interval -> Float
-upperBound (Interval lower upper) =
-  upper
-
-
 endpoints: Interval -> (Float, Float)
-endpoints (Interval lower upper) =
-  (lower, upper)
+endpoints interval =
+  (interval.lowerBound, interval.upperBound)
 
 
 width: Interval -> Float
-width (Interval lower upper) =
-  upper - lower
+width interval =
+  interval.upperBound - interval.lowerBound
 
 
 interpolated: Float -> Interval -> Float
-interpolated parameter (Interval lower upper) =
-  lower + parameter * (upper - lower)
+interpolated parameter interval =
+  interval.lowerBound + parameter * width interval
 
 
 median: Interval -> Float
@@ -50,10 +38,10 @@ median =
 
 
 contains: Float -> Interval -> Bool
-contains value (Interval lower upper) =
-  lower <= value && value <= upper
+contains value interval =
+  interval.lowerBound <= value && value <= interval.upperBound
 
 
 overlaps: Interval -> Interval -> Bool
-overlaps (Interval otherLower otherUpper) (Interval lower upper) =
-  lower <= otherUpper && upper >= otherLower
+overlaps other interval =
+  interval.lowerBound <= other.upperBound && interval.upperBound >= other.lowerBound
