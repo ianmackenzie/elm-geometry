@@ -22,6 +22,7 @@ import OpenSolid.Core.Scalar as Scalar
 import OpenSolid.Core.Transformation2d as Transformation2d
 import OpenSolid.Core.Transformation3d as Transformation3d
 import OpenSolid.Core.Triangle2d as Triangle2d
+import OpenSolid.Core.Triangle3d as Triangle3d
 import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Vector3d as Vector3d
 
@@ -86,6 +87,8 @@ view state =
     contains1 = Triangle2d.contains (Point2d 0.5 0.5) triangle
     contains2 = Triangle2d.contains (Point2d 1 1) triangle
     placedTriangle = Triangle2d.placedOntoPlane Plane3d.xz triangle
+    placedArea = Triangle3d.area placedTriangle
+    placedCentroid = Triangle3d.centroid placedTriangle
     axis = Axis2d Point2d.origin (Direction2d.polar (degrees -45))
     projectPoint = Point2d.projectedOntoAxis axis
     list3 a b c = [a, b, c]
@@ -104,6 +107,8 @@ view state =
       , line "Contains 1" contains1
       , line "Contains 2" contains2
       , line "Placed triangle" placedTriangle
+      , line "Placed area" placedArea
+      , line "Placed centroid" placedCentroid
       , line "Axis" axis
       , line "Projected points" projectedPoints
       ]
