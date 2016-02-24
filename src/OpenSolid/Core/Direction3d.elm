@@ -3,7 +3,7 @@ module OpenSolid.Core.Direction3d
   , x
   , y
   , z
-  , components
+  , toTuple
   , normalDirection
   , transformedBy
   , projectedOntoPlane
@@ -14,60 +14,61 @@ module OpenSolid.Core.Direction3d
 
 
 import OpenSolid.Core exposing (..)
+import OpenSolid.Core.Components3d as Components3d
 import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Vector3d as Vector3d
 
 
 none: Direction3d
 none =
-  Direction3d Vector3d.zero
+  Direction3d 0 0 0
 
 
 x: Direction3d
 x =
-  Direction3d (Vector3d 1 0 0)
+  Direction3d 1 0 0
 
 
 y: Direction3d
 y =
-  Direction3d (Vector3d 0 1 0)
+  Direction3d 0 1 0
 
 
 z: Direction3d
 z =
-  Direction3d (Vector3d 0 0 1)
+  Direction3d 0 0 1
 
 
-components: Direction3d -> (Float, Float, Float)
-components (Direction3d vector) =
-  Vector3d.components vector
+toTuple: Direction3d -> (Float, Float, Float)
+toTuple =
+  Components3d.toTuple
 
 
 normalDirection: Direction3d -> Direction3d
-normalDirection (Direction3d vector) =
-  Vector3d.normalDirection vector
+normalDirection =
+  Vector3d.normalDirection
 
 
 transformedBy: Transformation3d -> Direction3d -> Direction3d
-transformedBy transformation (Direction3d vector) =
-  Direction3d (Vector3d.transformedBy transformation vector)
+transformedBy =
+  Vector3d.transformedBy
 
 
 projectedOntoPlane: Plane3d -> Direction3d -> Direction3d
-projectedOntoPlane plane (Direction3d vector) =
-  Vector3d.direction (Vector3d.projectedOntoPlane plane vector)
+projectedOntoPlane plane =
+  Vector3d.projectedOntoPlane plane >> Vector3d.direction
 
 
 projectedIntoPlane: Plane3d -> Direction3d -> Direction2d
-projectedIntoPlane plane (Direction3d vector) =
-  Vector2d.direction (Vector3d.projectedIntoPlane plane vector)
+projectedIntoPlane plane =
+  Vector3d.projectedIntoPlane plane >> Vector2d.direction
 
 
 negated: Direction3d -> Direction3d
-negated (Direction3d vector) =
-  Direction3d (Vector3d.negated vector)
+negated =
+  Components3d.negated
 
 
 times: Float -> Direction3d -> Vector3d
-times scale (Direction3d vector) =
-  Vector3d.times scale vector
+times =
+  Components3d.times

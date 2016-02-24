@@ -1,7 +1,7 @@
 module OpenSolid.Core.Vector3d
   ( zero
+  , toTuple
   , componentIn
-  , components
   , squaredLength
   , length
   , normalized
@@ -9,6 +9,7 @@ module OpenSolid.Core.Vector3d
   , perpendicularVector
   , normalDirection
   , transformedBy
+  , projectedOnto
   , projectedOntoAxis
   , projectedOntoPlane
   , projectedIntoPlane
@@ -22,6 +23,7 @@ module OpenSolid.Core.Vector3d
 
 
 import OpenSolid.Core exposing (..)
+import OpenSolid.Core.Components3d as Components3d
 import OpenSolid.Core.Matrix3x2 as Matrix3x2
 
 
@@ -30,19 +32,19 @@ zero =
   Vector3d 0 0 0
 
 
+toTuple: Vector3d -> (Float, Float, Float)
+toTuple =
+  Components3d.toTuple
+
+
 componentIn: Direction3d -> Vector3d -> Float
-componentIn (Direction3d directionVector) vector =
-  dot directionVector vector
-
-
-components: Vector3d -> (Float, Float, Float)
-components (Vector3d x y z) =
-  (x, y, z)
+componentIn =
+  dot
 
 
 squaredLength: Vector3d -> Float
-squaredLength (Vector3d x y z) =
-  x * x + y * y + z * z
+squaredLength vector =
+  vector.x * vector.x + vector.y * vector.y + vector.z * vector.z
 
 
 length: Vector3d -> Float
@@ -62,13 +64,16 @@ normalized vector =
 
 
 direction: Vector3d -> Direction3d
-direction vector =
-  Direction3d (normalized vector)
+direction =
+  normalized
 
 
 perpendicularVector: Vector3d -> Vector3d
-perpendicularVector (Vector3d x y z) =
+perpendicularVector vector =
   let
+    x = vector.x
+    y = vector.y
+    z = vector.z
     absX = abs x
     absY = abs y
     absZ = abs z
@@ -95,21 +100,19 @@ transformedBy transformation =
   transformation.transformVector
 
 
+projectedOnto: Direction3d -> Vector3d -> Vector3d
+projectedOnto direction vector =
+    times (componentIn direction vector) direction
+
+
 projectedOntoAxis: Axis3d -> Vector3d -> Vector3d
-projectedOntoAxis axis vector =
-  let
-    (Direction3d directionVector) = axis.direction
-  in
-    times (dot directionVector vector) directionVector
+projectedOntoAxis axis =
+  projectedOnto axis.direction
 
 
 projectedOntoPlane: Plane3d -> Vector3d -> Vector3d
 projectedOntoPlane plane vector =
-  let
-    (Direction3d normalVector) = plane.normalDirection
-    normalComponent = dot normalVector vector
-  in
-    minus (times normalComponent normalVector) vector
+  minus (projectedOnto plane.normalDirection vector) vector
 
 
 projectedIntoPlane: Plane3d -> Vector3d -> Vector2d
@@ -118,33 +121,35 @@ projectedIntoPlane plane vector =
 
 
 negated: Vector3d -> Vector3d
-negated (Vector3d x y z) =
-  Vector3d (-x) (-y) (-z)
+negated =
+  Components3d.negated
 
 
 plus: Vector3d -> Vector3d -> Vector3d
-plus (Vector3d otherX otherY otherZ) (Vector3d x y z) =
-  Vector3d (x + otherX) (y + otherY) (z + otherZ)
+plus =
+  Components3d.plus
 
 
 minus: Vector3d -> Vector3d -> Vector3d
-minus (Vector3d otherX otherY otherZ) (Vector3d x y z) =
-  Vector3d (x - otherX) (y - otherY) (z - otherZ)
+minus =
+  Components3d.minus
 
 
 times: Float -> Vector3d -> Vector3d
-times scale (Vector3d x y z) =
-  Vector3d (scale * x) (scale * y) (scale * z)
+times =
+  Components3d.times
 
 
 dot: Vector3d -> Vector3d -> Float
-dot (Vector3d otherX otherY otherZ) (Vector3d x y z) =
-  x * otherX + y * otherY + z * otherZ
+dot other vector =
+  vector.x * other.x + vector.y * other.y + vector.z * other.z
 
 
 cross: Vector3d -> Vector3d -> Vector3d
-cross (Vector3d otherX otherY otherZ) (Vector3d x y z) =
-  Vector3d
-    (y * otherZ - z * otherY)
-    (z * otherX - x * otherZ)
-    (x * otherY - y * otherX)
+cross other vector =
+  let
+    x = vector.y * other.z - vector.z * other.y
+    y = vector.z * other.x - vector.x * other.z
+    z = vector.x * other.y - vector.y * other.x
+  in
+    Vector3d x y z

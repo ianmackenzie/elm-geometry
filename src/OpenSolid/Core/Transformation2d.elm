@@ -8,49 +8,42 @@ module OpenSolid.Core.Transformation2d
 
 
 import OpenSolid.Core exposing (..)
+import OpenSolid.Core.Components2d as Components2d
 import OpenSolid.Core.Matrix2x2 as Matrix2x2
 
 
 translationBy: Vector2d -> Transformation2d
-translationBy (Vector2d vx vy) =
-  let
-    transformPoint (Point2d px py) = Point2d (px + vx) (py + vy)
-  in
-    Transformation2d identity transformPoint
+translationBy vector =
+  Transformation2d identity (Components2d.plus vector)
 
 
 rotateVector: Float -> Float -> Vector2d -> Vector2d
-rotateVector sinAngle cosAngle (Vector2d x y) =
-  Vector2d (x * cosAngle - y * sinAngle) (x * sinAngle + y * cosAngle)
+rotateVector sinAngle cosAngle vector =
+  Vector2d (vector.x * cosAngle - vector.y * sinAngle) (vector.x * sinAngle + vector.y * cosAngle)
 
 
 rotatePoint: Point2d -> Float -> Float -> Point2d -> Point2d
-rotatePoint (Point2d x0 y0) sinAngle cosAngle (Point2d px py) =
+rotatePoint centerPoint sinAngle cosAngle point =
   let
-    (Vector2d dx dy) = rotateVector sinAngle cosAngle (Vector2d (px - x0) (py - y0))
+    rotatedVector = rotateVector sinAngle cosAngle (Components2d.minus centerPoint point)
   in
-    Point2d (x0 + dx) (y0 + dy)
+    Components2d.plus rotatedVector centerPoint
 
 
 rotationAbout: Point2d -> Float -> Transformation2d
-rotationAbout point angle =
+rotationAbout centerPoint angle =
   let
     sinAngle = sin angle
     cosAngle = cos angle
   in
-    Transformation2d (rotateVector sinAngle cosAngle) (rotatePoint point sinAngle cosAngle)
+    Transformation2d (rotateVector sinAngle cosAngle) (rotatePoint centerPoint sinAngle cosAngle)
 
 
 localizationTo: Frame2d -> Transformation2d
 localizationTo frame =
   let
     transformVector = Matrix2x2.dotProduct frame.xDirection frame.yDirection
-    (Point2d x0 y0) = frame.originPoint
-    transformPoint (Point2d px py) =
-      let
-        (Vector2d x y) = transformVector (Vector2d (px - x0) (py - y0))
-      in
-        Point2d x y
+    transformPoint = Components2d.minus frame.originPoint >> transformVector
   in
     Transformation2d transformVector transformPoint
 
@@ -59,12 +52,7 @@ globalizationFrom: Frame2d -> Transformation2d
 globalizationFrom frame =
   let
     transformVector = Matrix2x2.product frame.xDirection frame.yDirection
-    (Point2d x0 y0) = frame.originPoint
-    transformPoint (Point2d px py) =
-      let
-        (Vector2d dx dy) = transformVector (Vector2d px py)
-      in
-        Point2d (x0 + dx) (y0 + dy)
+    transformPoint = transformVector >> Components2d.plus frame.originPoint
   in
     Transformation2d transformVector transformPoint
 

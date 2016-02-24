@@ -8,10 +8,18 @@ import OpenSolid.Core exposing (..)
 
 
 product: Direction2d -> Direction2d -> Vector2d -> Vector2d
-product (Direction2d (Vector2d x1 y1)) (Direction2d (Vector2d x2 y2)) (Vector2d x y) =
-  Vector2d (x1 * x + x2 * y) (y1 * x + y2 * y)
+product xDirection yDirection vector =
+  let
+    x = xDirection.x * vector.x + yDirection.x * vector.y
+    y = xDirection.y * vector.x + yDirection.y * vector.y
+  in
+    Vector2d x y
 
 
 dotProduct: Direction2d -> Direction2d -> Vector2d -> Vector2d
-dotProduct (Direction2d (Vector2d x1 y1)) (Direction2d (Vector2d x2 y2)) (Vector2d x y) =
-  Vector2d (x1 * x + y1 * y) (x2 * x + y2 * y)
+dotProduct xDirection yDirection vector =
+  let
+    x = xDirection.x * vector.x + xDirection.y * vector.y
+    y = yDirection.x * vector.x + yDirection.y * vector.y
+  in
+    Vector2d x y

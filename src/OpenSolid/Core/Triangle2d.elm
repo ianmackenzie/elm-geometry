@@ -79,4 +79,4 @@ contains point triangle =
     thirdProduct = crossProduct triangle.thirdVertex triangle.firstVertex
   in
     (firstProduct >= 0 && secondProduct >= 0 && thirdProduct >= 0) ||
-    (firstProduct <= 0 && secondProduct <= 0 && thirdProduct <= 0)
+      (firstProduct <= 0 && secondProduct <= 0 && thirdProduct <= 0)

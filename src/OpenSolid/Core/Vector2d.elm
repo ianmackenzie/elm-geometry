@@ -1,7 +1,7 @@
 module OpenSolid.Core.Vector2d
   ( zero
+  , toTuple
   , componentIn
-  , components
   , squaredLength
   , length
   , normalized
@@ -9,6 +9,7 @@ module OpenSolid.Core.Vector2d
   , perpendicularVector
   , normalDirection
   , transformedBy
+  , projectedOnto
   , projectedOntoAxis
   , placedOntoPlane
   , negated
@@ -21,6 +22,7 @@ module OpenSolid.Core.Vector2d
 
 
 import OpenSolid.Core exposing (..)
+import OpenSolid.Core.Components2d as Components2d
 import OpenSolid.Core.Matrix3x2 as Matrix3x2
 
 
@@ -29,19 +31,19 @@ zero =
   Vector2d 0 0
 
 
+toTuple: Vector2d -> (Float, Float)
+toTuple =
+  Components2d.toTuple
+
+
 componentIn: Direction2d -> Vector2d -> Float
-componentIn (Direction2d directionVector) vector =
-  dot directionVector vector
-
-
-components: Vector2d -> (Float, Float)
-components (Vector2d x y) =
-  (x, y)
+componentIn =
+  dot
 
 
 squaredLength: Vector2d -> Float
-squaredLength (Vector2d x y) =
-  x * x + y * y
+squaredLength vector =
+  vector.x * vector.x + vector.y * vector.y
 
 
 length: Vector2d -> Float
@@ -61,13 +63,13 @@ normalized vector =
 
 
 direction: Vector2d -> Direction2d
-direction vector =
-  Direction2d (normalized vector)
+direction =
+  normalized
 
 
 perpendicularVector: Vector2d -> Vector2d
-perpendicularVector (Vector2d x y) =
-  Vector2d (-y) x
+perpendicularVector vector =
+  Vector2d (-vector.y) vector.x
 
 
 normalDirection: Vector2d -> Direction2d
@@ -80,12 +82,14 @@ transformedBy transformation =
   transformation.transformVector
 
 
+projectedOnto: Direction2d -> Vector2d -> Vector2d
+projectedOnto direction vector =
+    times (componentIn direction vector) direction
+
+
 projectedOntoAxis: Axis2d -> Vector2d -> Vector2d
-projectedOntoAxis axis vector =
-  let
-    (Direction2d directionVector) = axis.direction
-  in
-    times (dot directionVector vector) directionVector
+projectedOntoAxis axis =
+  projectedOnto axis.direction
 
 
 placedOntoPlane: Plane3d -> Vector2d -> Vector3d
@@ -94,30 +98,29 @@ placedOntoPlane plane =
 
 
 negated: Vector2d -> Vector2d
-negated (Vector2d x y) =
-  Vector2d (-x) (-y)
+negated =
+  Components2d.negated
 
 
 plus: Vector2d -> Vector2d -> Vector2d
-plus (Vector2d otherX otherY) (Vector2d x y) =
-  Vector2d (x + otherX) (y + otherY)
+plus =
+  Components2d.plus
 
 
 minus: Vector2d -> Vector2d -> Vector2d
-minus (Vector2d otherX otherY) (Vector2d x y) =
-  Vector2d (x - otherX) (y - otherY)
-
+minus =
+  Components2d.minus
 
 times: Float -> Vector2d -> Vector2d
-times scale (Vector2d x y) =
-  Vector2d (scale * x) (scale * y)
+times =
+  Components2d.times
 
 
 dot: Vector2d -> Vector2d -> Float
-dot (Vector2d otherX otherY) (Vector2d x y) =
-  x * otherX + y * otherY
+dot other vector =
+  vector.x * other.x + vector.y * other.y
 
 
 cross: Vector2d -> Vector2d -> Float
-cross (Vector2d otherX otherY) (Vector2d x y) =
-  x * otherY - y * otherX
+cross other vector =
+  vector.x * other.y - vector.y * other.x

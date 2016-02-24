@@ -1,6 +1,6 @@
 module OpenSolid.Core.Point3d
   ( origin
-  , components
+  , toTuple
   , squaredDistanceTo
   , distanceTo
   , squaredDistanceToAxis
@@ -19,6 +19,7 @@ module OpenSolid.Core.Point3d
 
 import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Scalar as Scalar
+import OpenSolid.Core.Components3d as Components3d
 import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction3d as Direction3d
 
@@ -28,9 +29,9 @@ origin =
   Point3d 0 0 0
 
 
-components: Point3d -> (Float, Float, Float)
-components (Point3d x y z) =
-  (x, y, z)
+toTuple: Point3d -> (Float, Float, Float)
+toTuple =
+  Components3d.toTuple
 
 
 squaredDistanceTo: Point3d -> Point3d -> Float
@@ -45,10 +46,7 @@ distanceTo other =
 
 squaredDistanceToAxis: Axis3d -> Point3d -> Float
 squaredDistanceToAxis axis =
-  let
-    (Direction3d directionVector) = axis.direction
-  in
-    minus axis.originPoint >> Vector3d.cross directionVector >> Vector3d.squaredLength
+  minus axis.originPoint >> Vector3d.cross axis.direction >> Vector3d.squaredLength
 
 
 distanceToAxis: Axis3d -> Point3d -> Float
@@ -94,23 +92,19 @@ projectedOntoPlane plane point =
 
 projectedIntoPlane: Plane3d -> Point3d -> Point2d
 projectedIntoPlane plane point =
-  let
-    displacement = minus plane.originPoint point
-    (Vector2d x y) = Vector3d.projectedIntoPlane plane displacement
-  in
-    Point2d x y
+  Vector3d.projectedIntoPlane plane (minus plane.originPoint point)
 
 
 plus: Vector3d -> Point3d -> Point3d
-plus (Vector3d vectorX vectorY vectorZ) (Point3d x y z) =
-  Point3d (x + vectorX) (y + vectorY) (z + vectorZ)
+plus =
+  Components3d.plus
 
 
 minus: Point3d -> Point3d -> Vector3d
-minus (Point3d otherX otherY otherZ) (Point3d x y z) =
-  Vector3d (x - otherX) (y - otherY) (z - otherZ)
+minus =
+  Components3d.minus
 
 
 hull: Point3d -> Point3d -> Bounds3d
-hull (Point3d otherX otherY otherZ) (Point3d x y z) =
-  Bounds3d (Scalar.hull otherX x) (Scalar.hull otherY y) (Scalar.hull otherZ z)
+hull other point =
+  Bounds3d (Scalar.hull other.x point.x) (Scalar.hull other.y point.y) (Scalar.hull other.z point.z)

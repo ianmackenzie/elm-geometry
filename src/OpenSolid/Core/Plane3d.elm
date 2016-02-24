@@ -52,20 +52,14 @@ zy =
 
 fromPointAndBasis: Point3d -> Direction3d -> Direction3d -> Plane3d
 fromPointAndBasis originPoint xDirection yDirection =
-  let
-    (Direction3d xVector) = xDirection
-    (Direction3d yVector) = yDirection
-  in
-    Plane3d originPoint xDirection yDirection (Direction3d (Vector3d.cross yVector xVector))
+  Plane3d originPoint xDirection yDirection (Vector3d.cross yDirection xDirection)
 
 
 fromPointAndNormal: Point3d -> Direction3d -> Plane3d
 fromPointAndNormal originPoint normalDirection =
   let
     xDirection = Direction3d.normalDirection normalDirection
-    (Direction3d xVector) = xDirection
-    (Direction3d normalVector) = normalDirection
-    yDirection = Direction3d (Vector3d.cross xVector normalVector)
+    yDirection = Vector3d.cross xDirection normalDirection
   in
     Plane3d originPoint xDirection yDirection normalDirection
 

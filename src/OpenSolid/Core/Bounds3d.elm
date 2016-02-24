@@ -1,5 +1,5 @@
 module OpenSolid.Core.Bounds3d
-  ( components
+  ( toTuple
   , contains
   , overlaps
   ) where
@@ -9,16 +9,20 @@ import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Interval as Interval
 
 
-components: Bounds3d -> (Interval, Interval, Interval)
-components (Bounds3d x y z) =
-  (x, y, z)
+toTuple: Bounds3d -> (Interval, Interval, Interval)
+toTuple bounds =
+  (bounds.x, bounds.y, bounds.z)
 
 
 contains: Point3d -> Bounds3d -> Bool
-contains (Point3d pointX pointY pointZ) (Bounds3d x y z) =
-  Interval.contains pointX x && Interval.contains pointY y && Interval.contains pointZ z
+contains point bounds =
+  Interval.contains point.x bounds.x &&
+    Interval.contains point.y bounds.y &&
+      Interval.contains point.z bounds.z
 
 
 overlaps: Bounds3d -> Bounds3d -> Bool
-overlaps (Bounds3d otherX otherY otherZ) (Bounds3d x y z) =
-  Interval.overlaps otherX x && Interval.overlaps otherY y && Interval.overlaps otherZ z
+overlaps other bounds =
+  Interval.overlaps other.x bounds.x &&
+    Interval.overlaps other.y bounds.y &&
+      Interval.overlaps other.z bounds.z

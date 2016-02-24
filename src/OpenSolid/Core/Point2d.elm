@@ -1,7 +1,7 @@
 module OpenSolid.Core.Point2d
   ( origin
   , polar
-  , components
+  , toTuple
   , squaredDistanceTo
   , distanceTo
   , distanceAlongAxis
@@ -18,6 +18,8 @@ module OpenSolid.Core.Point2d
 
 import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Scalar as Scalar
+import OpenSolid.Core.Components2d as Components2d
+import OpenSolid.Core.Components3d as Components3d
 import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Direction2d as Direction2d
 
@@ -32,9 +34,9 @@ polar radius angle =
   Point2d (radius * cos angle) (radius * sin angle)
 
 
-components: Point2d -> (Float, Float)
-components (Point2d x y) =
-  (x, y)
+toTuple: Point2d -> (Float, Float)
+toTuple =
+  Components2d.toTuple
 
 
 squaredDistanceTo: Point2d -> Point2d -> Float
@@ -80,24 +82,20 @@ projectedOntoAxis axis point =
 
 
 placedOntoPlane: Plane3d -> Point2d -> Point3d
-placedOntoPlane plane (Point2d x y) =
-  let
-    (Point3d px py pz) = plane.originPoint
-    (Vector3d vx vy vz) = Vector2d.placedOntoPlane plane (Vector2d x y)
-  in
-    Point3d (px + vx) (py + vy) (pz + vz)
+placedOntoPlane plane =
+  Vector2d.placedOntoPlane plane >> Components3d.plus plane.originPoint
 
 
 plus: Vector2d -> Point2d -> Point2d
-plus (Vector2d vectorX vectorY) (Point2d x y) =
-  Point2d (x + vectorX) (y + vectorY)
+plus =
+  Components2d.plus
 
 
 minus: Point2d -> Point2d -> Vector2d
-minus (Point2d otherX otherY) (Point2d x y) =
-  Vector2d (x - otherX) (y - otherY)
+minus =
+  Components2d.minus
 
 
 hull: Point2d -> Point2d -> Bounds2d
-hull (Point2d otherX otherY) (Point2d x y) =
-  Bounds2d (Scalar.hull otherX x) (Scalar.hull otherY y)
+hull other point =
+  Bounds2d (Scalar.hull other.x point.x) (Scalar.hull other.y point.y)
