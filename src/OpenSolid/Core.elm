@@ -1,7 +1,5 @@
 module OpenSolid.Core
-  ( Components2d
-  , Components3d
-  , Vector2d
+  ( Vector2d
   , Vector3d
   , Point2d
   , Point3d
@@ -34,19 +32,6 @@ type alias Interval =
 
 
 -- Cartesian values
-
-
-type alias Components2d =
-  { x: Float
-  , y: Float
-  }
-
-
-type alias Components3d =
-  { x: Float
-  , y: Float
-  , z: Float
-  }
 
 
 type alias Vector2d =

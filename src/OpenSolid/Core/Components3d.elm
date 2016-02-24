@@ -10,6 +10,13 @@ module OpenSolid.Core.Components3d
 import OpenSolid.Core exposing (..)
 
 
+type alias Components3d =
+  { x: Float
+  , y: Float
+  , z: Float
+  }
+
+
 toTuple: Components3d -> (Float, Float, Float)
 toTuple components =
   (components.x, components.y, components.z)
