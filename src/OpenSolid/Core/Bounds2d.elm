@@ -1,5 +1,5 @@
 module OpenSolid.Core.Bounds2d
-  ( toTuple
+  ( components
   , contains
   , overlaps
   ) where
@@ -9,8 +9,8 @@ import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Interval as Interval
 
 
-toTuple: Bounds2d -> (Interval, Interval)
-toTuple bounds =
+components: Bounds2d -> (Interval, Interval)
+components bounds =
   (bounds.x, bounds.y)
 
 

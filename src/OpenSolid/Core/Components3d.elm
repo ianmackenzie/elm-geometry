@@ -1,5 +1,5 @@
 module OpenSolid.Core.Components3d
-  ( toTuple
+  ( components
   , negated
   , plus
   , minus
@@ -17,8 +17,8 @@ type alias Components3d =
   }
 
 
-toTuple: Components3d -> (Float, Float, Float)
-toTuple components =
+components: Components3d -> (Float, Float, Float)
+components components =
   (components.x, components.y, components.z)
 
 

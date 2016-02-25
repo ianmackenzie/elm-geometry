@@ -1,6 +1,6 @@
 module OpenSolid.Core.Vector2d
   ( zero
-  , toTuple
+  , components
   , componentIn
   , squaredLength
   , length
@@ -31,9 +31,9 @@ zero =
   Vector2d 0 0
 
 
-toTuple: Vector2d -> (Float, Float)
-toTuple =
-  Components2d.toTuple
+components: Vector2d -> (Float, Float)
+components =
+  Components2d.components
 
 
 componentIn: Direction2d -> Vector2d -> Float

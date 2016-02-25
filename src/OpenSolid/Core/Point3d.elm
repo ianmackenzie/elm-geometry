@@ -1,6 +1,6 @@
 module OpenSolid.Core.Point3d
   ( origin
-  , toTuple
+  , components
   , squaredDistanceTo
   , distanceTo
   , squaredDistanceToAxis
@@ -29,9 +29,9 @@ origin =
   Point3d 0 0 0
 
 
-toTuple: Point3d -> (Float, Float, Float)
-toTuple =
-  Components3d.toTuple
+components: Point3d -> (Float, Float, Float)
+components =
+  Components3d.components
 
 
 squaredDistanceTo: Point3d -> Point3d -> Float

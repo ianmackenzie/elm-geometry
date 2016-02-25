@@ -3,7 +3,7 @@ module OpenSolid.Core.Direction2d
   , x
   , y
   , polar
-  , toTuple
+  , components
   , normalDirection
   , transformedBy
   , placedOntoPlane
@@ -37,9 +37,9 @@ polar angle =
   Direction2d (cos angle) (sin angle)
 
 
-toTuple: Direction2d -> (Float, Float)
-toTuple =
-  Components2d.toTuple
+components: Direction2d -> (Float, Float)
+components =
+  Components2d.components
 
 
 normalDirection: Direction2d -> Direction2d

@@ -3,7 +3,7 @@ module OpenSolid.Core.Direction3d
   , x
   , y
   , z
-  , toTuple
+  , components
   , normalDirection
   , transformedBy
   , projectedOntoPlane
@@ -39,9 +39,9 @@ z =
   Direction3d 0 0 1
 
 
-toTuple: Direction3d -> (Float, Float, Float)
-toTuple =
-  Components3d.toTuple
+components: Direction3d -> (Float, Float, Float)
+components =
+  Components3d.components
 
 
 normalDirection: Direction3d -> Direction3d

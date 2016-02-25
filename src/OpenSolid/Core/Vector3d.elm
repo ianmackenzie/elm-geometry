@@ -1,6 +1,6 @@
 module OpenSolid.Core.Vector3d
   ( zero
-  , toTuple
+  , components
   , componentIn
   , squaredLength
   , length
@@ -32,9 +32,9 @@ zero =
   Vector3d 0 0 0
 
 
-toTuple: Vector3d -> (Float, Float, Float)
-toTuple =
-  Components3d.toTuple
+components: Vector3d -> (Float, Float, Float)
+components =
+  Components3d.components
 
 
 componentIn: Direction3d -> Vector3d -> Float
