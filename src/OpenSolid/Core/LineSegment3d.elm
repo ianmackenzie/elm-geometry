@@ -14,6 +14,7 @@ module OpenSolid.Core.LineSegment3d
   ) where
 
 
+import Maybe exposing (..)
 import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Point3d as Point3d
@@ -31,15 +32,15 @@ mapReduce map reduce lineSegment =
 
 vector: LineSegment3d -> Vector3d
 vector lineSegment =
-  Point3d.minus lineSegment.firstEndpoint lineSegment.secondEndpoint
+  Point3d.vectorTo lineSegment.secondEndpoint lineSegment.firstEndpoint
 
 
-direction: LineSegment3d -> Direction3d
+direction: LineSegment3d -> Maybe Direction3d
 direction =
   vector >> Vector3d.direction
 
 
-normalDirection: LineSegment3d -> Direction3d
+normalDirection: LineSegment3d -> Maybe Direction3d
 normalDirection =
   vector >> Vector3d.normalDirection
 

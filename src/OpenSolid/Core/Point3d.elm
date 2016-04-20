@@ -1,8 +1,10 @@
 module OpenSolid.Core.Point3d
   ( origin
-  , components
+  , fromTuple
+  , toTuple
   , squaredDistanceTo
   , distanceTo
+  , vectorTo
   , squaredDistanceToAxis
   , distanceToAxis
   , distanceToPlane
@@ -18,10 +20,14 @@ module OpenSolid.Core.Point3d
 
 
 import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Scalar as Scalar
-import OpenSolid.Core.Components3d as Components3d
+import OpenSolid.Core.Interval as Interval
 import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction3d as Direction3d
+
+
+toVector3d: Direction3d -> Vector3d
+toVector3d (Direction3d x y z) =
+  Vector3d x y z
 
 
 origin: Point3d
@@ -29,14 +35,19 @@ origin =
   Point3d 0 0 0
 
 
-components: Point3d -> (Float, Float, Float)
-components =
-  Components3d.components
+fromTuple: (Float, Float, Float) -> Point3d
+fromTuple (x, y, z) =
+  Point3d x y z
+
+
+toTuple: Point3d -> (Float, Float, Float)
+toTuple (Point3d x y z) =
+  (x, y, z)
 
 
 squaredDistanceTo: Point3d -> Point3d -> Float
 squaredDistanceTo other =
-  minus other >> Vector3d.squaredLength
+  vectorTo other >> Vector3d.squaredLength
 
 
 distanceTo: Point3d -> Point3d -> Float
@@ -44,9 +55,14 @@ distanceTo other =
   squaredDistanceTo other >> sqrt
 
 
+vectorTo: Point3d -> Point3d -> Vector3d
+vectorTo (Point3d x2 y2 z2) (Point3d x1 y1 z1) =
+  Vector3d (x2 - x1) (y2 - y1) (z2 - z1)
+
+
 squaredDistanceToAxis: Axis3d -> Point3d -> Float
 squaredDistanceToAxis axis =
-  minus axis.originPoint >> Vector3d.cross axis.direction >> Vector3d.squaredLength
+  vectorTo axis.originPoint >> Vector3d.cross (toVector3d axis.direction) >> Vector3d.squaredLength
 
 
 distanceToAxis: Axis3d -> Point3d -> Float
@@ -56,13 +72,13 @@ distanceToAxis axis =
 
 distanceToPlane: Plane3d -> Point3d -> Float
 distanceToPlane plane =
-  minus plane.originPoint >> Vector3d.componentIn plane.normalDirection
+  vectorTo plane.originPoint >> Vector3d.componentIn plane.normalDirection
 
 
 scaledAbout: Point3d -> Float -> Point3d -> Point3d
 scaledAbout originPoint scale point =
   let
-    displacement = minus originPoint point
+    displacement = vectorTo point originPoint
   in
     plus (Vector3d.times scale displacement) originPoint
 
@@ -75,7 +91,7 @@ transformedBy transformation =
 projectedOntoAxis: Axis3d -> Point3d -> Point3d
 projectedOntoAxis axis point =
   let
-    displacement = minus axis.originPoint point
+    displacement = vectorTo point axis.originPoint
     projectedDisplacement = Vector3d.projectedOntoAxis axis displacement
   in
     plus projectedDisplacement axis.originPoint
@@ -85,26 +101,29 @@ projectedOntoPlane: Plane3d -> Point3d -> Point3d
 projectedOntoPlane plane point =
   let
     distance = distanceToPlane plane point
-    normalDisplacement = Direction3d.times (-distance) plane.normalDirection
+    normalDisplacement = Direction3d.times distance plane.normalDirection
   in
     plus normalDisplacement point
 
 
 projectedIntoPlane: Plane3d -> Point3d -> Point2d
 projectedIntoPlane plane point =
-  Vector3d.projectedIntoPlane plane (minus plane.originPoint point)
+  let
+    (Vector2d x y) = Vector3d.projectedIntoPlane plane (vectorTo point plane.originPoint)
+  in
+    Point2d x y
 
 
 plus: Vector3d -> Point3d -> Point3d
-plus =
-  Components3d.plus
+plus (Vector3d vx vy vz) (Point3d px py pz) =
+  Point3d (px + vx) (py + vy) (pz + vz)
 
 
-minus: Point3d -> Point3d -> Vector3d
-minus =
-  Components3d.minus
+minus: Vector3d -> Point3d -> Point3d
+minus (Vector3d vx vy vz) (Point3d px py pz) =
+  Point3d (px - vx) (py - vy) (pz - vz)
 
 
 hull: Point3d -> Point3d -> Bounds3d
-hull other point =
-  Bounds3d (Scalar.hull other.x point.x) (Scalar.hull other.y point.y) (Scalar.hull other.z point.z)
+hull (Point3d x2 y2 z2) (Point3d x1 y1 z1) =
+  Bounds3d (Interval.hullOf x1 x2) (Interval.hullOf y1 y2) (Interval.hullOf z1 z2)

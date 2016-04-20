@@ -72,7 +72,8 @@ transformedBy: Transformation3d -> Frame3d -> Frame3d
 transformedBy transformation frame =
   let
     originPoint = Point3d.transformedBy transformation frame.originPoint
-    transformDirection = Direction3d.transformedBy transformation
+    transformDirection =
+      Direction3d.transformedBy transformation
     xDirection = transformDirection frame.xDirection
     yDirection = transformDirection frame.yDirection
     zDirection = transformDirection frame.zDirection

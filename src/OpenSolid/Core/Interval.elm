@@ -1,11 +1,11 @@
 module OpenSolid.Core.Interval
-  ( endpoints
+  ( singleton
+  , hullOf
   , width
   , interpolated
-  , median
+  , midpoint
   , contains
   , overlaps
-  , singleton
   ) where
 
 
@@ -17,9 +17,12 @@ singleton value =
   Interval value value
 
 
-endpoints: Interval -> (Float, Float)
-endpoints interval =
-  (interval.lowerBound, interval.upperBound)
+hullOf: Float -> Float -> Interval
+hullOf firstValue secondValue =
+  if firstValue <= secondValue then
+    Interval firstValue secondValue
+  else
+    Interval secondValue firstValue
 
 
 width: Interval -> Float
@@ -32,8 +35,8 @@ interpolated parameter interval =
   interval.lowerBound + parameter * width interval
 
 
-median: Interval -> Float
-median =
+midpoint: Interval -> Float
+midpoint =
   interpolated 0.5
 
 

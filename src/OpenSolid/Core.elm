@@ -1,13 +1,13 @@
 module OpenSolid.Core
-  ( Vector2d
-  , Vector3d
-  , Point2d
-  , Point3d
-  , Direction2d
-  , Direction3d
-  , Interval
-  , Bounds2d
-  , Bounds3d
+  ( Interval
+  , Vector2d(Vector2d)
+  , Vector3d(Vector3d)
+  , Point2d(Point2d)
+  , Point3d(Point3d)
+  , Direction2d(Direction2d)
+  , Direction3d(Direction3d)
+  , Bounds2d(Bounds2d)
+  , Bounds3d(Bounds3d)
   , LineSegment2d
   , LineSegment3d
   , Triangle2d
@@ -34,56 +34,36 @@ type alias Interval =
 -- Cartesian values
 
 
-type alias Vector2d =
-  { x: Float
-  , y: Float
-  }
+type Vector2d
+  = Vector2d Float Float
 
 
-type alias Vector3d =
-  { x: Float
-  , y: Float
-  , z: Float
-  }
+type Vector3d
+  = Vector3d Float Float Float
 
 
-type alias Point2d =
-  { x: Float
-  , y: Float
-  }
+type Point2d
+  = Point2d Float Float
 
 
-type alias Point3d =
-  { x: Float
-  , y: Float
-  , z: Float
-  }
+type Point3d
+  = Point3d Float Float Float
 
 
-type alias Direction2d =
-  { x: Float
-  , y: Float
-  }
+type Direction2d
+  = Direction2d Float Float
 
 
-type alias Direction3d =
-  { x: Float
-  , y: Float
-  , z: Float
-  }
+type Direction3d
+  = Direction3d Float Float Float
 
 
-type alias Bounds2d =
-  { x: Interval
-  , y: Interval
-  }
+type Bounds2d
+  = Bounds2d Interval Interval
 
 
-type alias Bounds3d =
-  { x: Interval
-  , y: Interval
-  , z: Interval
-  }
+type Bounds3d
+  = Bounds3d Interval Interval Interval
 
 
 -- Simplices

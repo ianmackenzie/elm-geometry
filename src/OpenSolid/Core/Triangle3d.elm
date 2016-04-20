@@ -57,8 +57,8 @@ projectedIntoPlane plane =
 area: Triangle3d -> Float
 area triangle =
   let
-    firstVector = Point3d.minus triangle.firstVertex triangle.secondVertex
-    secondVector = Point3d.minus triangle.firstVertex triangle.thirdVertex
+    firstVector = Point3d.vectorTo triangle.secondVertex triangle.firstVertex
+    secondVector = Point3d.vectorTo triangle.thirdVertex triangle.firstVertex
   in
     0.5 * Vector3d.length (Vector3d.cross secondVector firstVector)
 
@@ -66,8 +66,8 @@ area triangle =
 centroid: Triangle3d -> Point3d
 centroid triangle =
   let
-    firstVector = Point3d.minus triangle.firstVertex triangle.secondVertex
-    secondVector = Point3d.minus triangle.firstVertex triangle.thirdVertex
+    firstVector = Point3d.vectorTo triangle.secondVertex triangle.firstVertex
+    secondVector = Point3d.vectorTo triangle.thirdVertex triangle.firstVertex
     displacement = Vector3d.times (1.0 / 3.0) (Vector3d.plus secondVector firstVector)
   in
     Point3d.plus displacement triangle.firstVertex

@@ -52,8 +52,8 @@ placedOntoPlane plane =
 area: Triangle2d -> Float
 area triangle =
   let
-    firstVector = Point2d.minus triangle.firstVertex triangle.secondVertex
-    secondVector = Point2d.minus triangle.firstVertex triangle.thirdVertex
+    firstVector = Point2d.vectorTo triangle.secondVertex triangle.firstVertex
+    secondVector = Point2d.vectorTo triangle.thirdVertex triangle.firstVertex
   in
     0.5 * Vector2d.cross secondVector firstVector
 
@@ -61,8 +61,8 @@ area triangle =
 centroid: Triangle2d -> Point2d
 centroid triangle =
   let
-    firstVector = Point2d.minus triangle.firstVertex triangle.secondVertex
-    secondVector = Point2d.minus triangle.firstVertex triangle.thirdVertex
+    firstVector = Point2d.vectorTo triangle.secondVertex triangle.firstVertex
+    secondVector = Point2d.vectorTo triangle.thirdVertex triangle.firstVertex
     displacement = Vector2d.times (1.0 / 3.0) (Vector2d.plus secondVector firstVector)
   in
     Point2d.plus displacement triangle.firstVertex
@@ -72,11 +72,11 @@ contains: Point2d -> Triangle2d -> Bool
 contains point triangle =
   let
     crossProduct startVertex endVertex =
-      Vector2d.cross (Point2d.minus startVertex point) (Point2d.minus startVertex endVertex)
+      Vector2d.cross (Point2d.vectorTo point startVertex) (Point2d.vectorTo endVertex startVertex)
 
     firstProduct = crossProduct triangle.firstVertex triangle.secondVertex
     secondProduct = crossProduct triangle.secondVertex triangle.thirdVertex
     thirdProduct = crossProduct triangle.thirdVertex triangle.firstVertex
   in
     (firstProduct >= 0 && secondProduct >= 0 && thirdProduct >= 0) ||
-      (firstProduct <= 0 && secondProduct <= 0 && thirdProduct <= 0)
+    (firstProduct <= 0 && secondProduct <= 0 && thirdProduct <= 0)

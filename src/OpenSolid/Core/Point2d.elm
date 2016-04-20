@@ -1,9 +1,11 @@
 module OpenSolid.Core.Point2d
   ( origin
   , polar
-  , components
+  , fromTuple
+  , toTuple
   , squaredDistanceTo
   , distanceTo
+  , vectorTo
   , distanceAlongAxis
   , distanceToAxis
   , scaledAbout
@@ -17,9 +19,7 @@ module OpenSolid.Core.Point2d
 
 
 import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Scalar as Scalar
-import OpenSolid.Core.Components2d as Components2d
-import OpenSolid.Core.Components3d as Components3d
+import OpenSolid.Core.Interval as Interval
 import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Direction2d as Direction2d
 
@@ -34,14 +34,19 @@ polar radius angle =
   Point2d (radius * cos angle) (radius * sin angle)
 
 
-components: Point2d -> (Float, Float)
-components =
-  Components2d.components
+fromTuple: (Float, Float) -> Point2d
+fromTuple (x, y) =
+  Point2d x y
+
+
+toTuple: Point2d -> (Float, Float)
+toTuple (Point2d x y) =
+  (x, y)
 
 
 squaredDistanceTo: Point2d -> Point2d -> Float
 squaredDistanceTo other =
-  minus other >> Vector2d.squaredLength
+  vectorTo other >> Vector2d.squaredLength
 
 
 distanceTo: Point2d -> Point2d -> Float
@@ -49,20 +54,25 @@ distanceTo other =
   squaredDistanceTo other >> sqrt
 
 
+vectorTo: Point2d -> Point2d -> Vector2d
+vectorTo (Point2d x2 y2) (Point2d x1 y1) =
+  Vector2d (x2 - x1) (y2 - y1)
+
+
 distanceAlongAxis: Axis2d -> Point2d -> Float
-distanceAlongAxis axis =
-  minus axis.originPoint >> Vector2d.componentIn axis.direction
+distanceAlongAxis axis point =
+  Vector2d.componentIn axis.direction (vectorTo point axis.originPoint)
 
 
 distanceToAxis: Axis2d -> Point2d -> Float
 distanceToAxis axis =
-  minus axis.originPoint >> Vector2d.componentIn (Direction2d.normalDirection axis.direction)
+  vectorTo axis.originPoint >> Vector2d.componentIn (Direction2d.normalDirection axis.direction)
 
 
 scaledAbout: Point2d -> Float -> Point2d -> Point2d
 scaledAbout originPoint scale point =
   let
-    displacement = minus originPoint point
+    displacement = vectorTo point originPoint
   in
     plus (Vector2d.times scale displacement) originPoint
 
@@ -75,27 +85,31 @@ transformedBy transformation =
 projectedOntoAxis: Axis2d -> Point2d -> Point2d
 projectedOntoAxis axis point =
   let
-    displacement = minus axis.originPoint point
+    displacement = vectorTo point axis.originPoint
     projectedDisplacement = Vector2d.projectedOntoAxis axis displacement
   in
     plus projectedDisplacement axis.originPoint
 
 
 placedOntoPlane: Plane3d -> Point2d -> Point3d
-placedOntoPlane plane =
-  Vector2d.placedOntoPlane plane >> Components3d.plus plane.originPoint
+placedOntoPlane plane (Point2d x y) =
+  let
+    (Vector3d vx vy vz) = Vector2d.placedOntoPlane plane (Vector2d x y)
+    (Point3d px py pz) = plane.originPoint
+  in
+    Point3d (px + vx) (py + vy) (pz + vz)
 
 
 plus: Vector2d -> Point2d -> Point2d
-plus =
-  Components2d.plus
+plus (Vector2d vx vy) (Point2d px py) =
+  Point2d (px + vx) (py + vy)
 
 
-minus: Point2d -> Point2d -> Vector2d
-minus =
-  Components2d.minus
+minus: Vector2d -> Point2d -> Point2d
+minus (Vector2d vx vy) (Point2d px py) =
+  Point2d (px - vx) (py - vy)
 
 
 hull: Point2d -> Point2d -> Bounds2d
-hull other point =
-  Bounds2d (Scalar.hull other.x point.x) (Scalar.hull other.y point.y)
+hull (Point2d x2 y2) (Point2d x1 y1) =
+  Bounds2d (Interval.hullOf x1 x2) (Interval.hullOf y1 y2)

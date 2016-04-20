@@ -1,9 +1,9 @@
 module OpenSolid.Core.Direction2d
-  ( none
-  , x
+  ( x
   , y
   , polar
-  , components
+  , fromTuple
+  , toTuple
   , normalDirection
   , transformedBy
   , placedOntoPlane
@@ -13,13 +13,17 @@ module OpenSolid.Core.Direction2d
 
 
 import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Components2d as Components2d
 import OpenSolid.Core.Vector2d as Vector2d
 
 
-none: Direction2d
-none =
-  Direction2d 0 0
+toDirection2d: Vector2d -> Direction2d
+toDirection2d (Vector2d x y) =
+  Direction2d x y
+
+
+toDirection3d: Vector3d -> Direction3d
+toDirection3d (Vector3d x y z) =
+  Direction3d x y z
 
 
 x: Direction2d
@@ -37,31 +41,41 @@ polar angle =
   Direction2d (cos angle) (sin angle)
 
 
-components: Direction2d -> (Float, Float)
-components =
-  Components2d.components
+fromTuple: (Float, Float) -> Direction2d
+fromTuple (x, y) =
+  Direction2d x y
+
+
+toTuple: Direction2d -> (Float, Float)
+toTuple (Direction2d x y) =
+  (x, y)
+
+
+vector: Direction2d -> Vector2d
+vector (Direction2d x y) =
+  Vector2d x y
 
 
 normalDirection: Direction2d -> Direction2d
-normalDirection direction =
-  Direction2d (-direction.y) direction.x
+normalDirection (Direction2d x y) =
+  Direction2d (-y) x
 
 
 transformedBy: Transformation2d -> Direction2d -> Direction2d
-transformedBy =
-  Vector2d.transformedBy
+transformedBy transformation =
+  vector >> Vector2d.transformedBy transformation >> toDirection2d
 
 
 placedOntoPlane: Plane3d -> Direction2d -> Direction3d
-placedOntoPlane =
-  Vector2d.placedOntoPlane
+placedOntoPlane plane =
+  vector >> Vector2d.placedOntoPlane plane >> toDirection3d
 
 
 negated: Direction2d -> Direction2d
-negated =
-  Components2d.negated
+negated (Direction2d x y) =
+  Direction2d (-x) (-y)
 
 
 times: Float -> Direction2d -> Vector2d
-times =
-  Components2d.times
+times scale (Direction2d x y) =
+  Vector2d (x * scale) (y * scale)

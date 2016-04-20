@@ -1,6 +1,8 @@
 module OpenSolid.Core.Vector3d
   ( zero
-  , components
+  , fromTuple
+  , toTuple
+  , equals
   , componentIn
   , squaredLength
   , length
@@ -22,9 +24,19 @@ module OpenSolid.Core.Vector3d
   ) where
 
 
+import Maybe exposing (..)
 import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Components3d as Components3d
 import OpenSolid.Core.Matrix3x2 as Matrix3x2
+
+
+toVector: Direction3d -> Vector3d
+toVector (Direction3d x y z) =
+  Vector3d x y z
+
+
+toDirection: Vector3d -> Direction3d
+toDirection (Vector3d x y z) =
+  Direction3d x y z
 
 
 zero: Vector3d
@@ -32,19 +44,29 @@ zero =
   Vector3d 0 0 0
 
 
-components: Vector3d -> (Float, Float, Float)
-components =
-  Components3d.components
+fromTuple: (Float, Float, Float) -> Vector3d
+fromTuple (x, y, z) =
+  Vector3d x y z
+
+
+toTuple: Vector3d -> (Float, Float, Float)
+toTuple (Vector3d x y z) =
+  (x, y, z)
+
+
+equals: Vector3d -> Vector3d -> Bool
+equals (Vector3d x2 y2 z2) (Vector3d x1 y1 z1) =
+  x1 == x2 && y1 == y2 && z1 == z2
 
 
 componentIn: Direction3d -> Vector3d -> Float
-componentIn =
-  dot
+componentIn (Direction3d x2 y2 z2) (Vector3d x1 y1 z1) =
+  x1 * x2 + y1 * y2 + z1 * z2
 
 
 squaredLength: Vector3d -> Float
-squaredLength vector =
-  vector.x * vector.x + vector.y * vector.y + vector.z * vector.z
+squaredLength (Vector3d x y z) =
+  x * x + y * y + z * z
 
 
 length: Vector3d -> Float
@@ -52,28 +74,19 @@ length =
   squaredLength >> sqrt
 
 
-normalized: Vector3d -> Vector3d
+normalized: Vector3d -> Maybe Vector3d
 normalized vector =
-  let
-    vectorSquaredLength = squaredLength vector
-  in
-    if vectorSquaredLength == 0 then
-      zero
-    else
-      times (1 / (sqrt vectorSquaredLength)) vector
+  if equals zero vector then Nothing else Just (times (1 / length vector) vector)
 
 
-direction: Vector3d -> Direction3d
+direction: Vector3d -> Maybe Direction3d
 direction =
-  normalized
+  normalized >> Maybe.map toDirection
 
 
 perpendicularVector: Vector3d -> Vector3d
-perpendicularVector vector =
+perpendicularVector (Vector3d x y z) =
   let
-    x = vector.x
-    y = vector.y
-    z = vector.z
     absX = abs x
     absY = abs y
     absZ = abs z
@@ -90,7 +103,7 @@ perpendicularVector vector =
         Vector3d (-y) x 0
 
 
-normalDirection: Vector3d -> Direction3d
+normalDirection: Vector3d -> Maybe Direction3d
 normalDirection =
   perpendicularVector >> direction
 
@@ -102,7 +115,7 @@ transformedBy transformation =
 
 projectedOnto: Direction3d -> Vector3d -> Vector3d
 projectedOnto direction vector =
-    times (componentIn direction vector) direction
+    times (componentIn direction vector) (toVector direction)
 
 
 projectedOntoAxis: Axis3d -> Vector3d -> Vector3d
@@ -121,35 +134,30 @@ projectedIntoPlane plane vector =
 
 
 negated: Vector3d -> Vector3d
-negated =
-  Components3d.negated
+negated (Vector3d x y z) =
+  Vector3d (-x) (-y) (-z)
 
 
 plus: Vector3d -> Vector3d -> Vector3d
-plus =
-  Components3d.plus
+plus (Vector3d x2 y2 z2) (Vector3d x1 y1 z1) =
+  Vector3d (x1 + x2) (y1 + y2) (z1 + z2)
 
 
 minus: Vector3d -> Vector3d -> Vector3d
-minus =
-  Components3d.minus
+minus (Vector3d x2 y2 z2) (Vector3d x1 y1 z1) =
+  Vector3d (x1 - x2) (y1 - y2) (z1 - z2)
 
 
 times: Float -> Vector3d -> Vector3d
-times =
-  Components3d.times
+times scale (Vector3d x y z) =
+  Vector3d (x * scale) (y * scale) (z * scale)
 
 
 dot: Vector3d -> Vector3d -> Float
-dot other vector =
-  vector.x * other.x + vector.y * other.y + vector.z * other.z
+dot (Vector3d x2 y2 z2) (Vector3d x1 y1 z1) =
+  x1 * x2 + y1 * y2 + z1 * z2
 
 
 cross: Vector3d -> Vector3d -> Vector3d
-cross other vector =
-  let
-    x = vector.y * other.z - vector.z * other.y
-    y = vector.z * other.x - vector.x * other.z
-    z = vector.x * other.y - vector.y * other.x
-  in
-    Vector3d x y z
+cross (Vector3d x2 y2 z2) (Vector3d x1 y1 z1) =
+  Vector3d (y1 * z2 - z1 * y2) (z1 * x2 - x1 * z2) (x1 * y2 - y1 * x2)
