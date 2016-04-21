@@ -9,70 +9,50 @@ module OpenSolid.Core.Transformation2d
 
 import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Matrix2x2 as Matrix2x2
+import OpenSolid.Core.Point2d as Point2d
+import OpenSolid.Core.Vector2d as Vector2d
 
 
 translationBy: Vector2d -> Transformation2d
-translationBy (Vector2d vx vy) =
-  (identity, (\(Point2d px py) -> Point2d (px + vx) (py + vy)))
-
-
-rotateVector: Float -> Float -> Vector2d -> Vector2d
-rotateVector cosAngle sinAngle (Vector2d vx vy) =
-  Vector2d (vx * cosAngle - vy * sinAngle) (vy * cosAngle + vx * sinAngle)
-
-
-rotatePoint: Point2d -> Float -> Float -> Point2d -> Point2d
-rotatePoint (Point2d x0 y0) cosAngle sinAngle (Point2d px py) =
-  let
-    (Vector2d vx vy) = rotateVector cosAngle sinAngle (Vector2d (px - x0) (py - y0))
-  in
-    Point2d (x0 + vx) (y0 + vy)
+translationBy vector =
+  (identity, Point2d.plus vector)
 
 
 rotationAbout: Point2d -> Float -> Transformation2d
 rotationAbout centerPoint angle =
   let
-    cosAngle = cos angle
-    sinAngle = sin angle
+    cosine = cos angle
+    sine = sin angle
+    rotateVector (Vector2d x y) = Vector2d (x * cosine - y * sine) (y * cosine + x * sine)
+    rotatePoint = Point2d.vectorFrom centerPoint >> rotateVector >> Vector2d.addedTo centerPoint
   in
-    (rotateVector cosAngle sinAngle, rotatePoint centerPoint cosAngle sinAngle)
+    (rotateVector, rotatePoint)
 
 
 localizationTo: Frame2d -> Transformation2d
 localizationTo frame =
   let
-    transformVector = Matrix2x2.dotProduct frame.xDirection frame.yDirection
-    transformPoint (Point2d px py) =
-      let
-        (Point2d x0 y0) = frame.originPoint
-        (Vector2d x y) = transformVector (Vector2d (px - x0) (py - y0))
-      in
-        Point2d x y
+    localizeVector = Matrix2x2.dotProduct frame.xDirection frame.yDirection
+    vectorToPoint (Vector2d x y) = Point2d x y
+    localizePoint = Point2d.vectorFrom frame.originPoint >> localizeVector >> vectorToPoint
   in
-    (transformVector, transformPoint)
+    (localizeVector, localizePoint)
 
 
 globalizationFrom: Frame2d -> Transformation2d
 globalizationFrom frame =
   let
-    transformVector = Matrix2x2.product frame.xDirection frame.yDirection
-    transformPoint (Point2d px py) =
-      let
-        (Vector2d vx vy) = transformVector (Vector2d px py)
-        (Point2d x0 y0) = frame.originPoint
-      in
-        Point2d (x0 + vx) (y0 + vy)
+    globalizeVector = Matrix2x2.product frame.xDirection frame.yDirection
+    pointToVector (Point2d x y) = Vector2d x y
+    globalizePoint = pointToVector >> globalizeVector >> Vector2d.addedTo frame.originPoint
   in
-    (transformVector, transformPoint)
+    (globalizeVector, globalizePoint)
 
 
 sequence: List Transformation2d -> Transformation2d
 sequence transformations =
   let
-    (vectorTransformations, pointTransformations) = List.unzip transformations
-    transformVector vector =
-      List.foldl (<|) vector vectorTransformations
-    transformPoint point =
-      List.foldl (<|) point pointTransformations
+    (vectorFunctions, pointFunctions) = List.unzip transformations
+    chain functions argument = List.foldl (<|) argument functions
   in
-    (transformVector, transformPoint)
+    (chain vectorFunctions, chain pointFunctions)
