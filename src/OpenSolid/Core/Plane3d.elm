@@ -5,7 +5,6 @@ module  OpenSolid.Core.Plane3d
   , yz
   , zx
   , zy
-  , fromPointAndBasis
   , fromPointAndNormal
   , offsetBy
   , flipped
@@ -48,11 +47,6 @@ zx =
 zy: Plane3d
 zy =
   Plane3d Point3d.origin Direction3d.z Direction3d.y (Direction3d.negated Direction3d.x)
-
-
-fromPointAndBasis: Point3d -> Direction3d -> Direction3d -> Plane3d
-fromPointAndBasis originPoint xDirection yDirection =
-  Plane3d originPoint xDirection yDirection (Vector3d.cross yDirection xDirection)
 
 
 fromPointAndNormal: Point3d -> Direction3d -> Plane3d
