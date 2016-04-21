@@ -6,6 +6,7 @@ module OpenSolid.Core.Direction3d
   , toTuple
   , vector
   , normalDirection
+  , normalBasis
   , transformedBy
   , projectedOntoPlane
   , projectedIntoPlane
@@ -61,6 +62,15 @@ normalDirection direction =
     scale = 1 / (Vector3d.length perpendicularVector)
   in
     Direction3d (x * scale) (y * scale) (z * scale)
+
+
+normalBasis: Direction3d -> (Direction3d, Direction3d)
+normalBasis direction =
+  let
+    xDirection = normalDirection direction
+    yDirection = toDirection3d (Vector3d.cross (vector xDirection) (vector direction))
+  in
+    (xDirection, yDirection)
 
 
 transformedBy: Transformation3d -> Direction3d -> Direction3d
