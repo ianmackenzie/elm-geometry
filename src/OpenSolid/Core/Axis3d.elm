@@ -67,16 +67,14 @@ transformedBy transformation axis =
 projectedOntoPlane: Plane3d -> Axis3d -> Maybe Axis3d
 projectedOntoPlane plane axis =
   let
-    maybeDirection = Direction3d.projectedOntoPlane plane axis.direction
-    createAxisFromDirection = Axis3d (Point3d.projectedOntoPlane plane axis.originPoint)
+    projectedOrigin = Point3d.projectedOntoPlane plane axis.originPoint
   in
-    Maybe.map createAxisFromDirection maybeDirection
+    Maybe.map (Axis3d projectedOrigin) (Direction3d.projectedOntoPlane plane axis.direction)
 
 
 projectedIntoPlane: Plane3d -> Axis3d -> Maybe Axis2d
 projectedIntoPlane plane axis =
   let
-    maybeDirection = Direction3d.projectedIntoPlane plane axis.direction
-    createAxisFromDirection = Axis2d (Point3d.projectedIntoPlane plane axis.originPoint)
+    projectedOrigin = Point3d.projectedIntoPlane plane axis.originPoint
   in
-    Maybe.map createAxisFromDirection maybeDirection
+    Maybe.map (Axis2d projectedOrigin) (Direction3d.projectedIntoPlane plane axis.direction)
