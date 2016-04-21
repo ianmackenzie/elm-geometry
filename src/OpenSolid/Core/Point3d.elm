@@ -84,8 +84,8 @@ scaledAbout originPoint scale point =
 
 
 transformedBy: Transformation3d -> Point3d -> Point3d
-transformedBy transformation =
-  transformation.transformPoint
+transformedBy (_, transformPoint) =
+  transformPoint
 
 
 projectedOntoAxis: Axis3d -> Point3d -> Point3d

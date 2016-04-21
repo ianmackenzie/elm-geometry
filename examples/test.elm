@@ -19,7 +19,7 @@ import OpenSolid.Core.Plane3d as Plane3d
 import OpenSolid.Core.Point2d as Point2d
 import OpenSolid.Core.Point3d as Point3d
 import OpenSolid.Core.Scalar as Scalar
---import OpenSolid.Core.Transformation2d as Transformation2d
+import OpenSolid.Core.Transformation2d as Transformation2d
 --import OpenSolid.Core.Transformation3d as Transformation3d
 import OpenSolid.Core.Triangle2d as Triangle2d
 import OpenSolid.Core.Triangle3d as Triangle3d
@@ -76,12 +76,12 @@ view state =
     intervalWidth = Interval.width (Interval 2 3)
     vectorLength = Vector2d.length (Vector2d 1 1)
     pointDifference = Point2d.vectorTo (Point2d 1 2) Point2d.origin
-    --rotation = Transformation2d.rotationAbout Point2d.origin (degrees 45)
+    rotation = Transformation2d.rotationAbout Point2d.origin (degrees 45)
     lineSegment = LineSegment2d (Point2d 1 0) (Point2d 2 0)
-    --transformedSegment = LineSegment2d.transformedBy rotation lineSegment
+    transformedSegment = LineSegment2d.transformedBy rotation lineSegment
     directionComponent = Vector2d.componentIn Direction2d.x (Vector2d 2 3)
-    --rotatedDirection = Direction2d.transformedBy rotation Direction2d.x
-    --angledComponent = Vector2d.componentIn rotatedDirection (Vector2d 2 3)
+    rotatedDirection = Direction2d.transformedBy rotation Direction2d.x
+    angledComponent = Vector2d.componentIn rotatedDirection (Vector2d 2 3)
     triangle = Triangle2d Point2d.origin (Point2d 1 0) (Point2d 0 1)
     triangleArea = Triangle2d.area triangle
     contains1 = Triangle2d.contains (Point2d 0.5 0.5) triangle
@@ -99,10 +99,10 @@ view state =
       [ line "Interval width" intervalWidth
       , line "Vector length" vectorLength
       , line "Point difference" pointDifference
-      --, line "Transformed line segment" transformedSegment
+      , line "Transformed line segment" transformedSegment
       , line "Component in direction" directionComponent
-      --, line "Rotated direction" rotatedDirection
-      --, line "Angled component" angledComponent
+      , line "Rotated direction" rotatedDirection
+      , line "Angled component" angledComponent
       , line "Current time" (timeString state.currentTime)
       , line "Triangle area" triangleArea
       , line "Contains 1" contains1

@@ -137,12 +137,8 @@ type alias Frame3d =
 
 
 type alias Transformation2d =
-  { transformVector: Vector2d -> Vector2d
-  , transformPoint: Point2d -> Point2d
-  }
+  (Vector2d -> Vector2d, Point2d -> Point2d)
 
 
 type alias Transformation3d =
-  { transformVector: Vector3d -> Vector3d
-  , transformPoint: Point3d -> Point3d
-  }
+  (Vector3d -> Vector3d, Point3d -> Point3d)

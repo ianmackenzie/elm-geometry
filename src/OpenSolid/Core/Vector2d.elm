@@ -94,8 +94,8 @@ normalDirection =
 
 
 transformedBy: Transformation2d -> Vector2d -> Vector2d
-transformedBy transformation =
-  transformation.transformVector
+transformedBy (transformVector, _) =
+  transformVector
 
 
 projectedOnto: Direction2d -> Vector2d -> Vector2d

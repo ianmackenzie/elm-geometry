@@ -78,8 +78,8 @@ scaledAbout originPoint scale point =
 
 
 transformedBy: Transformation2d -> Point2d -> Point2d
-transformedBy transformation =
-  transformation.transformPoint
+transformedBy (_, transformPoint) =
+  transformPoint
 
 
 projectedOntoAxis: Axis2d -> Point2d -> Point2d
