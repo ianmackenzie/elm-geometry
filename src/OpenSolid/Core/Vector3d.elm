@@ -109,8 +109,8 @@ normalDirection =
 
 
 transformedBy: Transformation3d -> Vector3d -> Vector3d
-transformedBy (transformVector, _) =
-  transformVector
+transformedBy =
+  fst
 
 
 projectedOnto: Direction3d -> Vector3d -> Vector3d
