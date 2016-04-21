@@ -60,6 +60,11 @@ vectorTo (Point3d x2 y2 z2) (Point3d x1 y1 z1) =
   Vector3d (x2 - x1) (y2 - y1) (z2 - z1)
 
 
+vectorFrom: Point3d -> Point3d -> Vector3d
+vectorFrom (Point3d x2 y2 z2) (Point3d x1 y1 z1) =
+  Vector3d (x1 - x2) (y1 - y2) (z1 - z2)
+
+
 squaredDistanceToAxis: Axis3d -> Point3d -> Float
 squaredDistanceToAxis axis =
   vectorTo axis.originPoint >> Vector3d.cross (toVector3d axis.direction) >> Vector3d.squaredLength

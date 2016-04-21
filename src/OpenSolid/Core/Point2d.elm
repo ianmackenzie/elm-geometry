@@ -6,6 +6,7 @@ module OpenSolid.Core.Point2d
   , squaredDistanceTo
   , distanceTo
   , vectorTo
+  , vectorFrom
   , distanceAlongAxis
   , distanceToAxis
   , scaledAbout
@@ -57,6 +58,11 @@ distanceTo other =
 vectorTo: Point2d -> Point2d -> Vector2d
 vectorTo (Point2d x2 y2) (Point2d x1 y1) =
   Vector2d (x2 - x1) (y2 - y1)
+
+
+vectorFrom: Point2d -> Point2d -> Vector2d
+vectorFrom (Point2d x2 y2) (Point2d x1 y1) =
+  Vector2d (x1 - x2) (y1 - y2)
 
 
 distanceAlongAxis: Axis2d -> Point2d -> Float

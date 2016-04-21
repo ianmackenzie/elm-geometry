@@ -18,6 +18,8 @@ module OpenSolid.Core.Vector2d
   , plus
   , minus
   , times
+  , addedTo
+  , subtractedFrom
   , dot
   , cross
   ) where
@@ -131,6 +133,16 @@ minus (Vector2d x2 y2) (Vector2d x1 y1) =
 times: Float -> Vector2d -> Vector2d
 times scale (Vector2d x y) =
   Vector2d (x * scale) (y * scale)
+
+
+addedTo: Point2d -> Vector2d -> Point2d
+addedTo (Point2d px py) (Vector2d vx vy) =
+  Point2d (px + vx) (py + vy)
+
+
+subtractedFrom: Point2d -> Vector2d -> Point2d
+subtractedFrom (Point2d px py) (Vector2d vx vy) =
+  Point2d (px - vx) (py - vy)
 
 
 dot: Vector2d -> Vector2d -> Float

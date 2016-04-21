@@ -153,6 +153,16 @@ times scale (Vector3d x y z) =
   Vector3d (x * scale) (y * scale) (z * scale)
 
 
+addedTo: Point3d -> Vector3d -> Point3d
+addedTo (Point3d px py pz) (Vector3d vx vy vz) =
+  Point3d (px + vx) (py + vy) (pz + vz)
+
+
+subtractedFrom: Point3d -> Vector3d -> Point3d
+subtractedFrom (Point3d px py pz) (Vector3d vx vy vz) =
+  Point3d (px - vx) (py - vy) (pz - vz)
+
+
 dot: Vector3d -> Vector3d -> Float
 dot (Vector3d x2 y2 z2) (Vector3d x1 y1 z1) =
   x1 * x2 + y1 * y2 + z1 * z2
