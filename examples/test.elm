@@ -98,8 +98,8 @@ view state =
       , line "Point difference" pointDifference
       , line "Rotated line segment" rotatedSegment
       , line "Component in direction" directionComponent
-      --, line "Rotated direction" rotatedDirection
-      --, line "Angled component" angledComponent
+      , line "Rotated direction" rotatedDirection
+      , line "Angled component" angledComponent
       , line "Current time" (timeString state.currentTime)
       , line "Triangle area" triangleArea
       , line "Contains 1" contains1
