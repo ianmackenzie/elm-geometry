@@ -5,7 +5,6 @@ module OpenSolid.Core.Axis2d
   , normalDirection
   , normalAxis
   , reversed
-  , transformedBy
   , placedOntoPlane
   ) where
 
@@ -43,15 +42,6 @@ normalAxis axis =
 reversed: Axis2d -> Axis2d
 reversed axis =
   Axis2d axis.originPoint (Direction2d.negated axis.direction)
-
-
-transformedBy: Transformation2d -> Axis2d -> Axis2d
-transformedBy transformation axis =
-  let
-    originPoint = Point2d.transformedBy transformation axis.originPoint
-    direction = Direction2d.transformedBy transformation axis.direction
-  in
-    Axis2d originPoint direction
 
 
 placedOntoPlane: Plane3d -> Axis2d -> Axis3d

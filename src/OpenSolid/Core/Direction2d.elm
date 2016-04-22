@@ -5,7 +5,6 @@ module OpenSolid.Core.Direction2d
   , fromTuple
   , toTuple
   , normalDirection
-  , transformedBy
   , placedOntoPlane
   , negated
   , times
@@ -59,11 +58,6 @@ vector (Direction2d x y) =
 normalDirection: Direction2d -> Direction2d
 normalDirection (Direction2d x y) =
   Direction2d (-y) x
-
-
-transformedBy: Transformation2d -> Direction2d -> Direction2d
-transformedBy transformation =
-  vector >> Vector2d.transformedBy transformation >> toDirection2d
 
 
 placedOntoPlane: Plane3d -> Direction2d -> Direction3d

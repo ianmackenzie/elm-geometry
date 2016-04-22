@@ -9,7 +9,6 @@ module  OpenSolid.Core.Plane3d
   , offsetBy
   , flipped
   , normalAxis
-  , transformedBy
   ) where
 
 
@@ -73,15 +72,3 @@ flipped plane =
 normalAxis: Plane3d -> Axis3d
 normalAxis plane =
   Axis3d plane.originPoint plane.normalDirection
-
-
-transformedBy: Transformation3d -> Plane3d -> Plane3d
-transformedBy transformation plane =
-  let
-    originPoint = Point3d.transformedBy transformation plane.originPoint
-    transformDirection = Direction3d.transformedBy transformation
-    xDirection = transformDirection plane.xDirection
-    yDirection = transformDirection plane.yDirection
-    normalDirection = transformDirection plane.normalDirection
-  in
-    Plane3d originPoint xDirection yDirection normalDirection

@@ -3,7 +3,6 @@ module OpenSolid.Core.Triangle3d
   , edges
   , mapReduce
   , scaledAbout
-  , transformedBy
   , projectedOntoPlane
   , projectedIntoPlane
   , area
@@ -37,11 +36,6 @@ mapReduce map reduce triangle =
 scaledAbout: Point3d -> Float -> Triangle3d -> Triangle3d
 scaledAbout point scale =
   mapReduce (Point3d.scaledAbout point scale) Triangle3d
-
-
-transformedBy: Transformation3d -> Triangle3d -> Triangle3d
-transformedBy transformation =
-  mapReduce (Point3d.transformedBy transformation) Triangle3d
 
 
 projectedOntoPlane: Plane3d -> Triangle3d -> Triangle3d

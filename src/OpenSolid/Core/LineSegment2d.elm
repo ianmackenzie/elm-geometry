@@ -7,7 +7,7 @@ module OpenSolid.Core.LineSegment2d
   , squaredLength
   , length
   , scaledAbout
-  , transformedBy
+  , rotatedAbout
   , projectedOntoAxis
   , placedOntoPlane
   ) where
@@ -59,9 +59,9 @@ scaledAbout point scale =
   mapReduce (Point2d.scaledAbout point scale) LineSegment2d
 
 
-transformedBy: Transformation2d -> LineSegment2d -> LineSegment2d
-transformedBy transformation =
-  mapReduce (Point2d.transformedBy transformation) LineSegment2d
+rotatedAbout: Point2d -> Float -> LineSegment2d -> LineSegment2d
+rotatedAbout centerPoint angle =
+  mapReduce (Point2d.rotatedAbout centerPoint angle) LineSegment2d
 
 
 projectedOntoAxis: Axis2d -> LineSegment2d -> LineSegment2d

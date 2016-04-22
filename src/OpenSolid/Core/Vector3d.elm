@@ -10,7 +10,6 @@ module OpenSolid.Core.Vector3d
   , direction
   , perpendicularVector
   , normalDirection
-  , transformedBy
   , projectedOnto
   , projectedOntoAxis
   , projectedOntoPlane
@@ -106,11 +105,6 @@ perpendicularVector (Vector3d x y z) =
 normalDirection: Vector3d -> Maybe Direction3d
 normalDirection =
   perpendicularVector >> direction
-
-
-transformedBy: Transformation3d -> Vector3d -> Vector3d
-transformedBy =
-  fst
 
 
 projectedOnto: Direction3d -> Vector3d -> Vector3d

@@ -10,7 +10,10 @@ module OpenSolid.Core.Vector2d
   , direction
   , perpendicularVector
   , normalDirection
-  , transformedBy
+  , rotatedBy
+  , relativeTo
+  , placedIn
+  , mirroredAbout
   , projectedOnto
   , projectedOntoAxis
   , placedOntoPlane
@@ -25,8 +28,10 @@ module OpenSolid.Core.Vector2d
   ) where
 
 
+import Debug
 import Maybe exposing (..)
 import OpenSolid.Core exposing (..)
+import OpenSolid.Core.Matrix2x2 as Matrix2x2
 import OpenSolid.Core.Matrix3x2 as Matrix3x2
 
 
@@ -95,9 +100,34 @@ normalDirection =
   perpendicularVector >> direction
 
 
-transformedBy: Transformation2d -> Vector2d -> Vector2d
-transformedBy =
-  fst
+rotatedBy: Float -> Vector2d -> Vector2d
+rotatedBy angle =
+  let
+    cosine = Debug.log "cosine" (cos angle)
+    sine = Debug.log "sine" (sin angle)
+  in
+    \(Vector2d x y) -> Vector2d (x * cosine - y * sine) (y * cosine + x * sine)
+
+
+relativeTo: Frame2d -> Vector2d -> Vector2d
+relativeTo frame =
+  Matrix2x2.dotProduct frame.xDirection frame.yDirection
+
+
+placedIn: Frame2d -> Vector2d -> Vector2d
+placedIn frame =
+  Matrix2x2.product frame.xDirection frame.yDirection
+
+
+mirroredAbout: Axis2d -> Vector2d -> Vector2d
+mirroredAbout axis =
+  let
+    (Direction2d dx dy) = axis.direction
+    a = 1 - 2 * dy * dy
+    b = 2 * dx * dy
+    c = 1 - 2 * dx * dx
+  in
+    \(Vector2d vx vy) -> Vector2d (a * vx + b * vy) (c * vy + b * vx)
 
 
 projectedOnto: Direction2d -> Vector2d -> Vector2d

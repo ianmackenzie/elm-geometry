@@ -9,7 +9,6 @@ module OpenSolid.Core.Frame3d
   , yzPlane
   , zxPlane
   , zyPlane
-  , transformedBy
   ) where
 
 
@@ -66,16 +65,3 @@ zxPlane frame =
 zyPlane: Frame3d -> Plane3d
 zyPlane frame =
   Plane3d frame.originPoint frame.zDirection frame.yDirection (Direction3d.negated frame.xDirection)
-
-
-transformedBy: Transformation3d -> Frame3d -> Frame3d
-transformedBy transformation frame =
-  let
-    originPoint = Point3d.transformedBy transformation frame.originPoint
-    transformDirection =
-      Direction3d.transformedBy transformation
-    xDirection = transformDirection frame.xDirection
-    yDirection = transformDirection frame.yDirection
-    zDirection = transformDirection frame.zDirection
-  in
-    Frame3d originPoint xDirection yDirection zDirection

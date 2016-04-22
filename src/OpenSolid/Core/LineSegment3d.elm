@@ -7,7 +7,6 @@ module OpenSolid.Core.LineSegment3d
   , squaredLength
   , length
   , scaledAbout
-  , transformedBy
   , projectedOntoAxis
   , projectedOntoPlane
   , projectedIntoPlane
@@ -58,11 +57,6 @@ length =
 scaledAbout: Point3d -> Float -> LineSegment3d -> LineSegment3d
 scaledAbout point scale =
   mapReduce (Point3d.scaledAbout point scale) LineSegment3d
-
-
-transformedBy: Transformation3d -> LineSegment3d -> LineSegment3d
-transformedBy transformation =
-  mapReduce (Point3d.transformedBy transformation) LineSegment3d
 
 
 projectedOntoAxis: Axis3d -> LineSegment3d -> LineSegment3d

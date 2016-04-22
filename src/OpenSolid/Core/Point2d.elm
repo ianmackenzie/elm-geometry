@@ -10,7 +10,7 @@ module OpenSolid.Core.Point2d
   , distanceAlongAxis
   , distanceToAxis
   , scaledAbout
-  , transformedBy
+  , rotatedAbout
   , projectedOntoAxis
   , placedOntoPlane
   , plus
@@ -83,9 +83,12 @@ scaledAbout originPoint scale point =
     plus (Vector2d.times scale displacement) originPoint
 
 
-transformedBy: Transformation2d -> Point2d -> Point2d
-transformedBy =
-  snd
+rotatedAbout: Point2d -> Float -> Point2d -> Point2d
+rotatedAbout centerPoint angle =
+  let
+    rotateVector = Vector2d.rotatedBy angle
+  in
+    vectorFrom centerPoint >> rotateVector >> Vector2d.addedTo centerPoint
 
 
 projectedOntoAxis: Axis2d -> Point2d -> Point2d

@@ -7,7 +7,6 @@ module OpenSolid.Core.Direction3d
   , vector
   , normalDirection
   , normalBasis
-  , transformedBy
   , projectedOntoPlane
   , projectedIntoPlane
   , negated
@@ -71,11 +70,6 @@ normalBasis direction =
     yDirection = toDirection3d (Vector3d.cross (vector xDirection) (vector direction))
   in
     (xDirection, yDirection)
-
-
-transformedBy: Transformation3d -> Direction3d -> Direction3d
-transformedBy transformation =
-  vector >> Vector3d.transformedBy transformation >> toDirection3d
 
 
 projectedOntoPlane: Plane3d -> Direction3d -> Maybe Direction3d
