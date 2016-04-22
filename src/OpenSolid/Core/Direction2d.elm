@@ -5,7 +5,11 @@ module OpenSolid.Core.Direction2d
   , fromTuple
   , toTuple
   , normalDirection
-  , placedOntoPlane
+  , rotatedBy
+  , mirroredAbout
+  , relativeTo
+  , placedIn
+  , placedOnto
   , negated
   , times
   ) where
@@ -15,61 +19,71 @@ import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Vector2d as Vector2d
 
 
-toDirection2d: Vector2d -> Direction2d
-toDirection2d (Vector2d x y) =
-  Direction2d x y
-
-
-toDirection3d: Vector3d -> Direction3d
-toDirection3d (Vector3d x y z) =
-  Direction3d x y z
-
-
 x: Direction2d
 x =
-  Direction2d 1 0
+  Direction2d (Vector2d 1 0)
 
 
 y: Direction2d
 y =
-  Direction2d 0 1
+  Direction2d (Vector2d 0 1)
 
 
 polar: Float -> Direction2d
 polar angle =
-  Direction2d (cos angle) (sin angle)
+  Direction2d (Vector2d (cos angle) (sin angle))
 
 
 fromTuple: (Float, Float) -> Direction2d
-fromTuple (x, y) =
-  Direction2d x y
+fromTuple =
+  Vector2d.fromTuple >> Direction2d
 
 
 toTuple: Direction2d -> (Float, Float)
-toTuple (Direction2d x y) =
-  (x, y)
+toTuple =
+  vector >> Vector2d.toTuple
 
 
 vector: Direction2d -> Vector2d
-vector (Direction2d x y) =
-  Vector2d x y
+vector (Direction2d vec) =
+  vec
 
 
 normalDirection: Direction2d -> Direction2d
-normalDirection (Direction2d x y) =
-  Direction2d (-y) x
+normalDirection =
+  vector >> Vector2d.perpendicularVector >> Direction2d
 
 
-placedOntoPlane: Plane3d -> Direction2d -> Direction3d
-placedOntoPlane plane =
-  vector >> Vector2d.placedOntoPlane plane >> toDirection3d
+rotatedBy: Float -> Direction2d -> Direction2d
+rotatedBy angle =
+  vector >> Vector2d.rotatedBy angle >> Direction2d
+
+
+mirroredAbout: Axis2d -> Direction2d -> Direction2d
+mirroredAbout axis =
+  vector >> Vector2d.mirroredAbout axis >> Direction2d
+
+
+relativeTo: Frame2d -> Direction2d -> Direction2d
+relativeTo frame =
+  vector >> Vector2d.relativeTo frame >> Direction2d
+
+
+placedIn: Frame2d -> Direction2d -> Direction2d
+placedIn frame =
+  vector >> Vector2d.placedIn frame >> Direction2d
+
+
+placedOnto: Plane3d -> Direction2d -> Direction3d
+placedOnto plane =
+  vector >> Vector2d.placedOnto plane >> Direction3d
 
 
 negated: Direction2d -> Direction2d
-negated (Direction2d x y) =
-  Direction2d (-x) (-y)
+negated =
+  vector >> Vector2d.negated >> Direction2d
 
 
 times: Float -> Direction2d -> Vector2d
-times scale (Direction2d x y) =
-  Vector2d (x * scale) (y * scale)
+times scale =
+  vector >> Vector2d.times scale

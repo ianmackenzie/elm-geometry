@@ -51,11 +51,11 @@ type Point3d
 
 
 type Direction2d
-  = Direction2d Float Float
+  = Direction2d Vector2d
 
 
 type Direction3d
-  = Direction3d Float Float Float
+  = Direction3d Vector3d
 
 
 type Bounds2d

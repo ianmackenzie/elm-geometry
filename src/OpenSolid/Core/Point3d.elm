@@ -24,9 +24,9 @@ import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction3d as Direction3d
 
 
-toVector3d: Direction3d -> Vector3d
-toVector3d (Direction3d x y z) =
-  Vector3d x y z
+toVector: Direction3d -> Vector3d
+toVector (Direction3d vector) =
+  vector
 
 
 origin: Point3d
@@ -66,7 +66,7 @@ vectorFrom (Point3d x2 y2 z2) (Point3d x1 y1 z1) =
 
 squaredDistanceToAxis: Axis3d -> Point3d -> Float
 squaredDistanceToAxis axis =
-  vectorTo axis.originPoint >> Vector3d.cross (toVector3d axis.direction) >> Vector3d.squaredLength
+  vectorTo axis.originPoint >> Vector3d.cross (toVector axis.direction) >> Vector3d.squaredLength
 
 
 distanceToAxis: Axis3d -> Point3d -> Float

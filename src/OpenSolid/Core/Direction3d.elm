@@ -7,8 +7,8 @@ module OpenSolid.Core.Direction3d
   , vector
   , normalDirection
   , normalBasis
-  , projectedOntoPlane
-  , projectedIntoPlane
+  , projectedOnto
+  , projectedInto
   , negated
   , times
   ) where
@@ -19,74 +19,68 @@ import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Vector3d as Vector3d
 
 
-toDirection3d: Vector3d -> Direction3d
-toDirection3d (Vector3d x y z) =
-  Direction3d x y z
-
-
 x: Direction3d
 x =
-  Direction3d 1 0 0
+  Direction3d (Vector3d 1 0 0)
 
 
 y: Direction3d
 y =
-  Direction3d 0 1 0
+  Direction3d (Vector3d 0 1 0)
 
 
 z: Direction3d
 z =
-  Direction3d 0 0 1
+  Direction3d (Vector3d 0 0 1)
 
 
 fromTuple: (Float, Float, Float) -> Direction3d
-fromTuple (x, y, z) =
-  Direction3d x y z
+fromTuple =
+  Vector3d.fromTuple >> Direction3d
 
 
 toTuple: Direction3d -> (Float, Float, Float)
-toTuple (Direction3d x y z) =
-  (x, y, z)
+toTuple =
+  vector >> Vector3d.toTuple
 
 
 vector: Direction3d -> Vector3d
-vector (Direction3d x y z) =
-  Vector3d x y z
+vector (Direction3d vec) =
+  vec
 
 
 normalDirection: Direction3d -> Direction3d
 normalDirection direction =
   let
-    (Vector3d x y z as perpendicularVector) = Vector3d.perpendicularVector (vector direction)
-    scale = 1 / (Vector3d.length perpendicularVector)
+    perpendicularVector = Vector3d.perpendicularVector (vector direction)
   in
-    Direction3d (x * scale) (y * scale) (z * scale)
+    Direction3d (Vector3d.times (1 / Vector3d.length perpendicularVector) perpendicularVector)
 
 
 normalBasis: Direction3d -> (Direction3d, Direction3d)
 normalBasis direction =
   let
     xDirection = normalDirection direction
-    yDirection = toDirection3d (Vector3d.cross (vector xDirection) (vector direction))
+    yDirection = Direction3d (Vector3d.cross (vector xDirection) (vector direction))
   in
     (xDirection, yDirection)
 
 
-projectedOntoPlane: Plane3d -> Direction3d -> Maybe Direction3d
-projectedOntoPlane plane =
-  vector >> Vector3d.projectedOntoPlane plane >> Vector3d.direction
+projectedOnto: Plane3d -> Direction3d -> Maybe Direction3d
+projectedOnto plane =
+  vector >> Vector3d.projectedOnto plane >> Vector3d.direction
 
 
-projectedIntoPlane: Plane3d -> Direction3d -> Maybe Direction2d
-projectedIntoPlane plane =
-  vector >> Vector3d.projectedIntoPlane plane >> Vector2d.direction
+projectedInto: Plane3d -> Direction3d -> Maybe Direction2d
+projectedInto plane =
+  vector >> Vector3d.projectedInto plane >> Vector2d.direction
 
 
 negated: Direction3d -> Direction3d
-negated (Direction3d x y z) =
-  Direction3d (-x) (-y) (-z)
+negated =
+  vector >> Vector3d.negated >> Direction3d
 
 
 times: Float -> Direction3d -> Vector3d
-times scale (Direction3d x y z) =
-  Vector3d (x * scale) (y * scale) (z * scale)
+times scale =
+  vector >> Vector3d.times scale

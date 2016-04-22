@@ -29,13 +29,8 @@ import OpenSolid.Core.Matrix3x2 as Matrix3x2
 
 
 toVector: Direction3d -> Vector3d
-toVector (Direction3d x y z) =
-  Vector3d x y z
-
-
-toDirection: Vector3d -> Direction3d
-toDirection (Vector3d x y z) =
-  Direction3d x y z
+toVector (Direction3d vector) =
+  vector
 
 
 zero: Vector3d
@@ -59,8 +54,8 @@ equals (Vector3d x2 y2 z2) (Vector3d x1 y1 z1) =
 
 
 componentIn: Direction3d -> Vector3d -> Float
-componentIn (Direction3d x2 y2 z2) (Vector3d x1 y1 z1) =
-  x1 * x2 + y1 * y2 + z1 * z2
+componentIn (Direction3d vector) =
+  dot vector
 
 
 squaredLength: Vector3d -> Float
@@ -80,7 +75,7 @@ normalized vector =
 
 direction: Vector3d -> Maybe Direction3d
 direction =
-  normalized >> Maybe.map toDirection
+  normalized >> Maybe.map Direction3d
 
 
 perpendicularVector: Vector3d -> Vector3d

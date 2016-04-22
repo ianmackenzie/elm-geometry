@@ -35,14 +35,9 @@ import OpenSolid.Core.Matrix2x2 as Matrix2x2
 import OpenSolid.Core.Matrix3x2 as Matrix3x2
 
 
-toVector2d: Direction2d -> Vector2d
-toVector2d (Direction2d x y) =
-  Vector2d x y
-
-
-toDirection2d: Vector2d -> Direction2d
-toDirection2d (Vector2d x y) =
-  Direction2d x y
+toVector: Direction2d -> Vector2d
+toVector (Direction2d vector) =
+  vector
 
 
 zero: Vector2d
@@ -66,8 +61,8 @@ equals (Vector2d x2 y2) (Vector2d x1 y1) =
 
 
 componentIn: Direction2d -> Vector2d -> Float
-componentIn (Direction2d x2 y2) (Vector2d x1 y1) =
-  x1 * x2 + y1 * y2
+componentIn (Direction2d vector) =
+  dot vector
 
 
 squaredLength: Vector2d -> Float
@@ -87,7 +82,7 @@ normalized vector =
 
 direction: Vector2d -> Maybe Direction2d
 direction =
-  normalized >> Maybe.map toDirection2d
+  normalized >> Maybe.map Direction2d
 
 
 perpendicularVector: Vector2d -> Vector2d
@@ -122,7 +117,7 @@ placedIn frame =
 mirroredAbout: Axis2d -> Vector2d -> Vector2d
 mirroredAbout axis =
   let
-    (Direction2d dx dy) = axis.direction
+    (Direction2d (Vector2d dx dy)) = axis.direction
     a = 1 - 2 * dy * dy
     b = 2 * dx * dy
     c = 1 - 2 * dx * dx
