@@ -20,7 +20,7 @@ module OpenSolid.Core.Point2d
 
 
 import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Interval as Interval
+import OpenSolid.Core.Scalar as Scalar
 import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Direction2d as Direction2d
 
@@ -121,4 +121,4 @@ minus (Vector2d vx vy) (Point2d px py) =
 
 hull: Point2d -> Point2d -> Bounds2d
 hull (Point2d x2 y2) (Point2d x1 y1) =
-  Bounds2d (Interval.hullOf x1 x2) (Interval.hullOf y1 y2)
+  Bounds2d (Scalar.hull x2 x1) (Scalar.hull y2 y1)

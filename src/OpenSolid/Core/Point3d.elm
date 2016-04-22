@@ -19,7 +19,7 @@ module OpenSolid.Core.Point3d
 
 
 import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Interval as Interval
+import OpenSolid.Core.Scalar as Scalar
 import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction3d as Direction3d
 

@@ -1,15 +1,33 @@
 module OpenSolid.Core.Interval
-  ( singleton
+  ( empty
+  , whole
+  , singleton
   , hullOf
+  , isEmpty
+  , isWhole
+  , isFinite
   , width
   , interpolated
   , midpoint
   , contains
   , overlaps
+  , hull
   ) where
 
 
+import List
 import OpenSolid.Core exposing (..)
+import OpenSolid.Core.Scalar as Scalar
+
+
+empty: Interval
+empty =
+  Interval Scalar.nan Scalar.nan
+
+
+whole: Interval
+whole =
+  Interval Scalar.negativeInfinity Scalar.positiveInfinity
 
 
 singleton: Float -> Interval
@@ -17,12 +35,24 @@ singleton value =
   Interval value value
 
 
-hullOf: Float -> Float -> Interval
-hullOf firstValue secondValue =
-  if firstValue <= secondValue then
-    Interval firstValue secondValue
-  else
-    Interval secondValue firstValue
+hullOf: List Interval -> Interval
+hullOf =
+  List.foldl hull empty
+
+
+isEmpty: Interval -> Bool
+isEmpty interval =
+  isNaN interval.lowerBound && isNaN interval.upperBound
+
+
+isWhole: Interval -> Bool
+isWhole interval =
+  interval.lowerBound == Scalar.negativeInfinity && interval.upperBound == Scalar.positiveInfinity
+
+
+isFinite: Interval -> Bool
+isFinite interval =
+  interval.lowerBound > Scalar.negativeInfinity && interval.upperBound < Scalar.positiveInfinity
 
 
 width: Interval -> Float
@@ -32,7 +62,41 @@ width interval =
 
 interpolated: Float -> Interval -> Float
 interpolated parameter interval =
-  interval.lowerBound + parameter * width interval
+  if isFinite interval then
+    -- Fast path
+    interval.lowerBound + parameter * width interval
+  else if isNaN parameter || isEmpty interval then
+    Scalar.nan
+  else if interval.upperBound == Scalar.negativeInfinity then
+    -- Interval is singleton negative infinity
+    if parameter <= 1 then Scalar.negativeInfinity else Scalar.nan
+  else if interval.lowerBound == Scalar.positiveInfinity then
+    -- Interval is singleton positive infinity
+    if parameter >= 0 then Scalar.positiveInfinity else Scalar.nan
+  else if interval.lowerBound > Scalar.negativeInfinity then
+    -- Interval has finite lower bound, infinite upper bound
+    if parameter < 0 then
+      Scalar.negativeInfinity
+    else if parameter > 0 then
+      Scalar.positiveInfinity
+    else
+      interval.lowerBound
+  else if interval.upperBound < Scalar.positiveInfinity then
+    -- Interval has finite upper bound, infinite lower bound
+    if parameter < 1 then
+      Scalar.negativeInfinity
+    else if parameter > 1 then
+      Scalar.positiveInfinity
+    else
+      interval.upperBound
+  else
+    -- Interval is the whole interval
+    if parameter <= 0 then
+      Scalar.negativeInfinity
+    else if parameter >= 1 then
+      Scalar.positiveInfinity
+    else
+      Scalar.nan
 
 
 midpoint: Interval -> Float
@@ -48,3 +112,13 @@ contains value interval =
 overlaps: Interval -> Interval -> Bool
 overlaps other interval =
   interval.lowerBound <= other.upperBound && interval.upperBound >= other.lowerBound
+
+
+hull: Interval -> Interval -> Interval
+hull other interval =
+  if isEmpty other then
+    interval
+  else if isEmpty interval then
+    other
+  else
+    Interval (min interval.lowerBound other.lowerBound) (max interval.upperBound other.upperBound)
