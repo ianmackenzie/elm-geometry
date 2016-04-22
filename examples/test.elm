@@ -19,8 +19,6 @@ import OpenSolid.Core.Plane3d as Plane3d
 import OpenSolid.Core.Point2d as Point2d
 import OpenSolid.Core.Point3d as Point3d
 import OpenSolid.Core.Scalar as Scalar
-import OpenSolid.Core.Transformation2d as Transformation2d
---import OpenSolid.Core.Transformation3d as Transformation3d
 import OpenSolid.Core.Triangle2d as Triangle2d
 import OpenSolid.Core.Triangle3d as Triangle3d
 import OpenSolid.Core.Vector2d as Vector2d
