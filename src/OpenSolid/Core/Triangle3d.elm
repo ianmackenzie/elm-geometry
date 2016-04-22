@@ -3,8 +3,8 @@ module OpenSolid.Core.Triangle3d
   , edges
   , mapReduce
   , scaledAbout
-  , projectedOntoPlane
-  , projectedIntoPlane
+  , projectedOnto
+  , projectedInto
   , area
   , centroid
   ) where
@@ -38,14 +38,14 @@ scaledAbout point scale =
   mapReduce (Point3d.scaledAbout point scale) Triangle3d
 
 
-projectedOntoPlane: Plane3d -> Triangle3d -> Triangle3d
-projectedOntoPlane plane =
-  mapReduce (Point3d.projectedOntoPlane plane) Triangle3d
+projectedOnto: Plane3d -> Triangle3d -> Triangle3d
+projectedOnto plane =
+  mapReduce (Point3d.projectedOnto plane) Triangle3d
 
 
-projectedIntoPlane: Plane3d -> Triangle3d -> Triangle2d
-projectedIntoPlane plane =
-  mapReduce (Point3d.projectedIntoPlane plane) Triangle2d
+projectedInto: Plane3d -> Triangle3d -> Triangle2d
+projectedInto plane =
+  mapReduce (Point3d.projectedInto plane) Triangle2d
 
 
 area: Triangle3d -> Float

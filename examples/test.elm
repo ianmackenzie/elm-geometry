@@ -83,11 +83,11 @@ view state =
     triangleArea = Triangle2d.area triangle
     contains1 = Triangle2d.contains (Point2d 0.5 0.5) triangle
     contains2 = Triangle2d.contains (Point2d 1 1) triangle
-    placedTriangle = Triangle2d.placedOntoPlane Plane3d.xz triangle
+    placedTriangle = Triangle2d.placedOnto Plane3d.xz triangle
     placedArea = Triangle3d.area placedTriangle
     placedCentroid = Triangle3d.centroid placedTriangle
     axis = Axis2d Point2d.origin (Direction2d.polar (degrees -45))
-    projectPoint = Point2d.projectedOntoAxis axis
+    projectPoint = Point2d.projectedOnto axis
     list3 a b c =
       [a, b, c]
     projectedPoints = Triangle2d.mapReduce projectPoint list3 triangle

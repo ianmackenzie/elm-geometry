@@ -10,8 +10,8 @@ module OpenSolid.Core.Point3d
   , distanceToPlane
   , scaledAbout
   , projectedOntoAxis
-  , projectedOntoPlane
-  , projectedIntoPlane
+  , projectedOnto
+  , projectedInto
   , plus
   , minus
   , hull
@@ -96,8 +96,8 @@ projectedOntoAxis axis point =
     plus projectedDisplacement axis.originPoint
 
 
-projectedOntoPlane: Plane3d -> Point3d -> Point3d
-projectedOntoPlane plane point =
+projectedOnto: Plane3d -> Point3d -> Point3d
+projectedOnto plane point =
   let
     distance = distanceToPlane plane point
     normalDisplacement = Direction3d.times distance plane.normalDirection
@@ -105,10 +105,10 @@ projectedOntoPlane plane point =
     plus normalDisplacement point
 
 
-projectedIntoPlane: Plane3d -> Point3d -> Point2d
-projectedIntoPlane plane point =
+projectedInto: Plane3d -> Point3d -> Point2d
+projectedInto plane point =
   let
-    (Vector2d x y) = Vector3d.projectedIntoPlane plane (vectorTo point plane.originPoint)
+    (Vector2d x y) = Vector3d.projectedInto plane (vectorTo point plane.originPoint)
   in
     Point2d x y
 

@@ -6,8 +6,8 @@ module  OpenSolid.Core.Axis3d
   , normalDirection
   , normalPlane
   , reversed
-  , projectedOntoPlane
-  , projectedIntoPlane
+  , projectedOnto
+  , projectedInto
   ) where
 
 
@@ -54,17 +54,17 @@ reversed axis =
   Axis3d axis.originPoint (Direction3d.negated axis.direction)
 
 
-projectedOntoPlane: Plane3d -> Axis3d -> Maybe Axis3d
-projectedOntoPlane plane axis =
+projectedOnto: Plane3d -> Axis3d -> Maybe Axis3d
+projectedOnto plane axis =
   let
-    projectedOrigin = Point3d.projectedOntoPlane plane axis.originPoint
+    projectedOrigin = Point3d.projectedOnto plane axis.originPoint
   in
-    Maybe.map (Axis3d projectedOrigin) (Direction3d.projectedOntoPlane plane axis.direction)
+    Maybe.map (Axis3d projectedOrigin) (Direction3d.projectedOnto plane axis.direction)
 
 
-projectedIntoPlane: Plane3d -> Axis3d -> Maybe Axis2d
-projectedIntoPlane plane axis =
+projectedInto: Plane3d -> Axis3d -> Maybe Axis2d
+projectedInto plane axis =
   let
-    projectedOrigin = Point3d.projectedIntoPlane plane axis.originPoint
+    projectedOrigin = Point3d.projectedInto plane axis.originPoint
   in
-    Maybe.map (Axis2d projectedOrigin) (Direction3d.projectedIntoPlane plane axis.direction)
+    Maybe.map (Axis2d projectedOrigin) (Direction3d.projectedInto plane axis.direction)

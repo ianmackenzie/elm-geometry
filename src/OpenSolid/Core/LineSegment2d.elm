@@ -8,8 +8,8 @@ module OpenSolid.Core.LineSegment2d
   , length
   , scaledAbout
   , rotatedAbout
-  , projectedOntoAxis
-  , placedOntoPlane
+  , projectedOnto
+  , placedOnto
   ) where
 
 
@@ -64,11 +64,11 @@ rotatedAbout centerPoint angle =
   mapReduce (Point2d.rotatedAbout centerPoint angle) LineSegment2d
 
 
-projectedOntoAxis: Axis2d -> LineSegment2d -> LineSegment2d
-projectedOntoAxis axis =
-  mapReduce (Point2d.projectedOntoAxis axis) LineSegment2d
+projectedOnto: Axis2d -> LineSegment2d -> LineSegment2d
+projectedOnto axis =
+  mapReduce (Point2d.projectedOnto axis) LineSegment2d
 
 
-placedOntoPlane: Plane3d -> LineSegment2d -> LineSegment3d
-placedOntoPlane plane =
-  mapReduce (Point2d.placedOntoPlane plane) LineSegment3d
+placedOnto: Plane3d -> LineSegment2d -> LineSegment3d
+placedOnto plane =
+  mapReduce (Point2d.placedOnto plane) LineSegment3d

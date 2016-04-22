@@ -5,7 +5,7 @@ module OpenSolid.Core.Axis2d
   , normalDirection
   , normalAxis
   , reversed
-  , placedOntoPlane
+  , placedOnto
   ) where
 
 
@@ -44,10 +44,10 @@ reversed axis =
   Axis2d axis.originPoint (Direction2d.negated axis.direction)
 
 
-placedOntoPlane: Plane3d -> Axis2d -> Axis3d
-placedOntoPlane plane axis =
+placedOnto: Plane3d -> Axis2d -> Axis3d
+placedOnto plane axis =
   let
-    originPoint = Point2d.placedOntoPlane plane axis.originPoint
-    direction = Direction2d.placedOntoPlane plane axis.direction
+    originPoint = Point2d.placedOnto plane axis.originPoint
+    direction = Direction2d.placedOnto plane axis.direction
   in
     Axis3d originPoint direction

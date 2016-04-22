@@ -14,9 +14,9 @@ module OpenSolid.Core.Vector2d
   , relativeTo
   , placedIn
   , mirroredAbout
+  , projectionIn
   , projectedOnto
-  , projectedOntoAxis
-  , placedOntoPlane
+  , placedOnto
   , negated
   , plus
   , minus
@@ -125,18 +125,18 @@ mirroredAbout axis =
     \(Vector2d vx vy) -> Vector2d (a * vx + b * vy) (c * vy + b * vx)
 
 
-projectedOnto: Direction2d -> Vector2d -> Vector2d
-projectedOnto direction vector =
-  times (componentIn direction vector) (toVector2d direction)
+projectionIn: Direction2d -> Vector2d -> Vector2d
+projectionIn direction vector =
+  times (componentIn direction vector) (toVector direction)
 
 
-projectedOntoAxis: Axis2d -> Vector2d -> Vector2d
-projectedOntoAxis axis =
-  projectedOnto axis.direction
+projectedOnto: Axis2d -> Vector2d -> Vector2d
+projectedOnto axis =
+  projectionIn axis.direction
 
 
-placedOntoPlane: Plane3d -> Vector2d -> Vector3d
-placedOntoPlane plane =
+placedOnto: Plane3d -> Vector2d -> Vector3d
+placedOnto plane =
   Matrix3x2.product plane.xDirection plane.yDirection
 
 

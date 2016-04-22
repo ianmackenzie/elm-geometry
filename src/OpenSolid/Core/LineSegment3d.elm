@@ -8,8 +8,8 @@ module OpenSolid.Core.LineSegment3d
   , length
   , scaledAbout
   , projectedOntoAxis
-  , projectedOntoPlane
-  , projectedIntoPlane
+  , projectedOnto
+  , projectedInto
   ) where
 
 
@@ -64,11 +64,11 @@ projectedOntoAxis axis =
   mapReduce (Point3d.projectedOntoAxis axis) LineSegment3d
 
 
-projectedOntoPlane: Plane3d -> LineSegment3d -> LineSegment3d
-projectedOntoPlane plane =
-  mapReduce (Point3d.projectedOntoPlane plane) LineSegment3d
+projectedOnto: Plane3d -> LineSegment3d -> LineSegment3d
+projectedOnto plane =
+  mapReduce (Point3d.projectedOnto plane) LineSegment3d
 
 
-projectedIntoPlane: Plane3d -> LineSegment3d -> LineSegment2d
-projectedIntoPlane plane =
-  mapReduce (Point3d.projectedIntoPlane plane) LineSegment2d
+projectedInto: Plane3d -> LineSegment3d -> LineSegment2d
+projectedInto plane =
+  mapReduce (Point3d.projectedInto plane) LineSegment2d

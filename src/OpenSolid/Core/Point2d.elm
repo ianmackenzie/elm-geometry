@@ -11,8 +11,8 @@ module OpenSolid.Core.Point2d
   , distanceToAxis
   , scaledAbout
   , rotatedAbout
-  , projectedOntoAxis
-  , placedOntoPlane
+  , projectedOnto
+  , placedOnto
   , plus
   , minus
   , hull
@@ -91,19 +91,15 @@ rotatedAbout centerPoint angle =
     vectorFrom centerPoint >> rotateVector >> Vector2d.addedTo centerPoint
 
 
-projectedOntoAxis: Axis2d -> Point2d -> Point2d
-projectedOntoAxis axis point =
-  let
-    displacement = vectorTo point axis.originPoint
-    projectedDisplacement = Vector2d.projectedOntoAxis axis displacement
-  in
-    plus projectedDisplacement axis.originPoint
+projectedOnto: Axis2d -> Point2d -> Point2d
+projectedOnto axis =
+  vectorFrom axis.originPoint >> Vector2d.projectedOnto axis >> Vector2d.addedTo axis.originPoint
 
 
-placedOntoPlane: Plane3d -> Point2d -> Point3d
-placedOntoPlane plane (Point2d x y) =
+placedOnto: Plane3d -> Point2d -> Point3d
+placedOnto plane (Point2d x y) =
   let
-    (Vector3d vx vy vz) = Vector2d.placedOntoPlane plane (Vector2d x y)
+    (Vector3d vx vy vz) = Vector2d.placedOnto plane (Vector2d x y)
     (Point3d px py pz) = plane.originPoint
   in
     Point3d (px + vx) (py + vy) (pz + vz)

@@ -3,7 +3,7 @@ module OpenSolid.Core.Triangle2d
   , edges
   , mapReduce
   , scaledAbout
-  , placedOntoPlane
+  , placedOnto
   , area
   , centroid
   , contains
@@ -38,9 +38,9 @@ scaledAbout point scale =
   mapReduce (Point2d.scaledAbout point scale) Triangle2d
 
 
-placedOntoPlane: Plane3d -> Triangle2d -> Triangle3d
-placedOntoPlane plane =
-  mapReduce (Point2d.placedOntoPlane plane) Triangle3d
+placedOnto: Plane3d -> Triangle2d -> Triangle3d
+placedOnto plane =
+  mapReduce (Point2d.placedOnto plane) Triangle3d
 
 
 area: Triangle2d -> Float

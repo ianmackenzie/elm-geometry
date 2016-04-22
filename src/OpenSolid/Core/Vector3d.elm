@@ -10,10 +10,10 @@ module OpenSolid.Core.Vector3d
   , direction
   , perpendicularVector
   , normalDirection
-  , projectedOnto
+  , projectionIn
   , projectedOntoAxis
-  , projectedOntoPlane
-  , projectedIntoPlane
+  , projectedOnto
+  , projectedInto
   , negated
   , plus
   , minus
@@ -102,23 +102,23 @@ normalDirection =
   perpendicularVector >> direction
 
 
-projectedOnto: Direction3d -> Vector3d -> Vector3d
-projectedOnto direction vector =
+projectionIn: Direction3d -> Vector3d -> Vector3d
+projectionIn direction vector =
     times (componentIn direction vector) (toVector direction)
 
 
 projectedOntoAxis: Axis3d -> Vector3d -> Vector3d
 projectedOntoAxis axis =
-  projectedOnto axis.direction
+  projectionIn axis.direction
 
 
-projectedOntoPlane: Plane3d -> Vector3d -> Vector3d
-projectedOntoPlane plane vector =
-  minus (projectedOnto plane.normalDirection vector) vector
+projectedOnto: Plane3d -> Vector3d -> Vector3d
+projectedOnto plane vector =
+  minus (projectionIn plane.normalDirection vector) vector
 
 
-projectedIntoPlane: Plane3d -> Vector3d -> Vector2d
-projectedIntoPlane plane vector =
+projectedInto: Plane3d -> Vector3d -> Vector2d
+projectedInto plane vector =
   Matrix3x2.dotProduct plane.xDirection plane.yDirection vector
 
 
