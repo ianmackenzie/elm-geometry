@@ -28,7 +28,6 @@ module OpenSolid.Core.Vector3d
 
 import Maybe exposing (..)
 import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Matrix3x2 as Matrix3x2
 
 
 toVector: Direction3d -> Vector3d
@@ -174,7 +173,7 @@ projectedOnto plane vector =
 
 projectedInto: Plane3d -> Vector3d -> Vector2d
 projectedInto plane vector =
-  Matrix3x2.dotProduct plane.xDirection plane.yDirection vector
+  Vector2d (componentIn plane.xDirection vector) (componentIn plane.yDirection vector)
 
 
 negated: Vector3d -> Vector3d
