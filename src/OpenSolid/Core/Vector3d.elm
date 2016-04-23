@@ -18,6 +18,8 @@ module OpenSolid.Core.Vector3d
   , plus
   , minus
   , times
+  , addedTo
+  , subtractedFrom
   , dot
   , cross
   ) where
