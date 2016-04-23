@@ -10,6 +10,8 @@ module OpenSolid.Core.Vector3d
   , direction
   , perpendicularVector
   , normalDirection
+  , rotatedAbout
+  , mirroredAlong
   , projectionIn
   , projectedOnto
   , projectedInto
@@ -101,6 +103,63 @@ perpendicularVector (Vector3d x y z) =
 normalDirection: Vector3d -> Maybe Direction3d
 normalDirection =
   perpendicularVector >> direction
+
+
+rotatedAbout: Direction3d -> Float -> Vector3d -> Vector3d
+rotatedAbout (Direction3d (Vector3d dx dy dz)) angle =
+  let
+    halfAngle = 0.5 * angle
+    sinHalfAngle = sin halfAngle
+    x = dx * sinHalfAngle
+    y = dy * sinHalfAngle
+    z = dz * sinHalfAngle
+    w = cos halfAngle
+    wx = w * x
+    wy = w * y
+    wz = w * z
+    xx = x * x
+    xy = x * y
+    xz = x * z
+    yy = y * y
+    yz = y * z
+    zz = z * z
+    a00 = 1 - 2 * (yy + zz)
+    a10 = 2 * (xy + wz)
+    a20 = 2 * (xz - wy)
+    a01 = 2 * (xy - wz)
+    a11 = 1 - 2 * (xx + zz)
+    a21 = 2 * (yz + wx)
+    a02 = 2 * (xz + wy)
+    a12 = 2 * (yz - wx)
+    a22 = 1 - 2 * (xx + yy)
+  in
+    \(Vector3d vx vy vz) ->
+      let
+        vx' = a00 * vx + a01 * vy + a02 * vz
+        vy' = a10 * vx + a11 * vy + a12 * vz
+        vz' = a20 * vx + a21 * vy + a22 * vz
+      in
+        Vector3d vx' vy' vz'
+
+
+mirroredAlong: Direction3d -> Vector3d -> Vector3d
+mirroredAlong direction =
+  let
+    (Direction3d (Vector3d dx dy dz)) = direction
+    a = 1 - 2 * dx * dx
+    b = 1 - 2 * dy * dy
+    c = 1 - 2 * dz * dz
+    d = -2 * dy * dz
+    e = -2 * dx * dz
+    f = -2 * dx * dy
+  in
+    \(Vector3d vx vy vz) ->
+      let
+        vx' = a * vx + f * vy + e * vz
+        vy' = f * vx + b * vy + d * vz
+        vz' = e * vx + d * vy + c * vz
+      in
+        Vector3d vx' vy' vz'
 
 
 projectionIn: Direction3d -> Vector3d -> Vector3d
