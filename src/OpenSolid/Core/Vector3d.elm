@@ -161,6 +161,32 @@ mirroredAlong direction =
         Vector3d vx' vy' vz'
 
 
+relativeTo: Frame3d -> Vector3d -> Vector3d
+relativeTo frame vector =
+  let
+    x = componentIn frame.xDirection vector
+    y = componentIn frame.yDirection vector
+    z = componentIn frame.zDirection vector
+  in
+    Vector3d x y z
+
+
+placedIn: Frame3d -> Vector3d -> Vector3d
+placedIn frame =
+  let
+    (Direction3d (Vector3d x1 y1 z1)) = frame.xDirection
+    (Direction3d (Vector3d x2 y2 z2)) = frame.yDirection
+    (Direction3d (Vector3d x3 y3 z3)) = frame.zDirection
+  in
+    \(Vector3d x y z) ->
+      let
+        x' = x1 * x + x2 * y + x3 * z
+        y' = y1 * x + y2 * y + y3 * z
+        z' = z1 * x + z2 * y + z3 * z
+      in
+        Vector3d x' y' z'
+
+
 projectionIn: Direction3d -> Vector3d -> Vector3d
 projectionIn direction vector =
   times (componentIn direction vector) (toVector direction)
