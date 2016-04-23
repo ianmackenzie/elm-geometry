@@ -114,10 +114,10 @@ placedIn frame =
   Matrix2x2.product frame.xDirection frame.yDirection
 
 
-mirroredAbout: Axis2d -> Vector2d -> Vector2d
-mirroredAbout axis =
+mirroredAbout: Direction2d -> Vector2d -> Vector2d
+mirroredAbout direction =
   let
-    (Direction2d (Vector2d dx dy)) = axis.direction
+    (Direction2d (Vector2d dx dy)) = direction
     a = 1 - 2 * dy * dy
     b = 2 * dx * dy
     c = 1 - 2 * dx * dx
