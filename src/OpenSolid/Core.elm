@@ -17,8 +17,6 @@ module OpenSolid.Core
   , Plane3d
   , Frame2d
   , Frame3d
-  , Transformation2d
-  , Transformation3d
   ) where
 
 
@@ -131,14 +129,3 @@ type alias Frame3d =
   , yDirection: Direction3d
   , zDirection: Direction3d
   }
-
-
--- Transformations
-
-
-type alias Transformation2d =
-  (Vector2d -> Vector2d, Point2d -> Point2d)
-
-
-type alias Transformation3d =
-  (Vector3d -> Vector3d, Point3d -> Point3d)
