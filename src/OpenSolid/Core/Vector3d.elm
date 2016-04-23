@@ -164,7 +164,7 @@ mirroredAlong direction =
 
 projectionIn: Direction3d -> Vector3d -> Vector3d
 projectionIn direction vector =
-    times (componentIn direction vector) (toVector direction)
+  times (componentIn direction vector) (toVector direction)
 
 
 projectedOnto: Plane3d -> Vector3d -> Vector3d
