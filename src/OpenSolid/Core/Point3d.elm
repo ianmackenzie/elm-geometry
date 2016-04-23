@@ -88,12 +88,10 @@ scaledAbout originPoint scale point =
 
 
 projectedOntoAxis: Axis3d -> Point3d -> Point3d
-projectedOntoAxis axis point =
-  let
-    displacement = vectorTo point axis.originPoint
-    projectedDisplacement = Vector3d.projectedOntoAxis axis displacement
-  in
-    plus projectedDisplacement axis.originPoint
+projectedOntoAxis axis =
+  vectorFrom axis.originPoint >>
+    Vector3d.projectionIn axis.direction >>
+      Vector3d.addedTo axis.originPoint
 
 
 projectedOnto: Plane3d -> Point3d -> Point3d
