@@ -11,7 +11,6 @@ module OpenSolid.Core.Vector3d
   , perpendicularVector
   , normalDirection
   , projectionIn
-  , projectedOntoAxis
   , projectedOnto
   , projectedInto
   , negated
@@ -107,11 +106,6 @@ normalDirection =
 projectionIn: Direction3d -> Vector3d -> Vector3d
 projectionIn direction vector =
     times (componentIn direction vector) (toVector direction)
-
-
-projectedOntoAxis: Axis3d -> Vector3d -> Vector3d
-projectedOntoAxis axis =
-  projectionIn axis.direction
 
 
 projectedOnto: Plane3d -> Vector3d -> Vector3d
