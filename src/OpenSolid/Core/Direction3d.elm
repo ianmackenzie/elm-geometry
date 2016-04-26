@@ -45,8 +45,8 @@ toTuple =
 
 
 vector: Direction3d -> Vector3d
-vector (Direction3d vec) =
-  vec
+vector (Direction3d vector') =
+  vector'
 
 
 normalDirection: Direction3d -> Direction3d
