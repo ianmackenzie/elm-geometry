@@ -11,6 +11,8 @@ module OpenSolid.Core.Point2d
   , signedDistanceFrom
   , scaledAbout
   , rotatedAbout
+  , relativeTo
+  , placedIn
   , projectedOnto
   , placedOnto
   , plus
@@ -89,6 +91,22 @@ rotatedAbout centerPoint angle =
     rotateVector = Vector2d.rotatedBy angle
   in
     vectorFrom centerPoint >> rotateVector >> Vector2d.addedTo centerPoint
+
+
+relativeTo: Frame2d -> Point2d -> Point2d
+relativeTo frame =
+  let
+    localizeVector = Vector2d.relativeTo frame
+  in
+    vectorFrom frame.originPoint >> localizeVector >> (\(Vector2d x y) -> Point2d x y)
+
+
+placedIn: Frame2d -> Point2d -> Point2d
+placedIn frame =
+  let
+    globalizeVector = Vector2d.placedIn frame
+  in
+    (\(Point2d x y) -> Vector2d x y) >> globalizeVector >> Vector2d.addedTo frame.originPoint
 
 
 projectedOnto: Axis2d -> Point2d -> Point2d
