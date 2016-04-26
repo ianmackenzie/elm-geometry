@@ -11,6 +11,7 @@ module OpenSolid.Core.Point2d
   , signedDistanceFrom
   , scaledAbout
   , rotatedAbout
+  , mirroredAbout
   , relativeTo
   , placedIn
   , projectedOnto
@@ -91,6 +92,14 @@ rotatedAbout centerPoint angle =
     rotateVector = Vector2d.rotatedBy angle
   in
     vectorFrom centerPoint >> rotateVector >> Vector2d.addedTo centerPoint
+
+
+mirroredAbout: Axis2d -> Point2d -> Point2d
+mirroredAbout axis =
+  let
+    mirrorVector = Vector2d.mirroredAbout axis.direction
+  in
+    vectorFrom axis.originPoint >> mirrorVector >> Vector2d.addedTo axis.originPoint
 
 
 relativeTo: Frame2d -> Point2d -> Point2d
