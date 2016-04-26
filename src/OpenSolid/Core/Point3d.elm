@@ -78,9 +78,9 @@ distanceToAxis axis =
   squaredDistanceToAxis axis >> sqrt
 
 
-distanceToPlane: Plane3d -> Point3d -> Float
-distanceToPlane plane =
-  vectorTo plane.originPoint >> Vector3d.componentIn plane.normalDirection
+signedDistanceFrom: Plane3d -> Point3d -> Float
+signedDistanceFrom plane =
+  vectorFrom plane.originPoint >> Vector3d.componentIn plane.normalDirection
 
 
 scaledAbout: Point3d -> Float -> Point3d -> Point3d
