@@ -30,11 +30,6 @@ import Maybe exposing (..)
 import OpenSolid.Core exposing (..)
 
 
-toVector: Direction3d -> Vector3d
-toVector (Direction3d vector) =
-  vector
-
-
 zero: Vector3d
 zero =
   Vector3d 0 0 0
@@ -188,8 +183,8 @@ placedIn frame =
 
 
 projectionIn: Direction3d -> Vector3d -> Vector3d
-projectionIn direction vector =
-  times (componentIn direction vector) (toVector direction)
+projectionIn (Direction3d directionVector as direction) vector =
+  times (componentIn direction vector) directionVector
 
 
 projectedOnto: Plane3d -> Vector3d -> Vector3d
