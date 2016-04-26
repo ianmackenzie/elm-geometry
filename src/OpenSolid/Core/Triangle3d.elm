@@ -1,5 +1,6 @@
 module OpenSolid.Core.Triangle3d
-  ( vertices
+  ( fromVertices
+  , vertices
   , edges
   , mapReduce
   , scaledAbout
@@ -13,6 +14,11 @@ module OpenSolid.Core.Triangle3d
 import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Point3d as Point3d
+
+
+fromVertices: (Point3d, Point3d, Point3d) -> Triangle3d
+fromVertices (first, second, third) =
+  Triangle3d first second third
 
 
 vertices: Triangle3d -> (Point3d, Point3d, Point3d)

@@ -1,5 +1,6 @@
 module OpenSolid.Core.LineSegment3d
-  ( endpoints
+  ( fromEndpoints
+  , endpoints
   , mapReduce
   , vector
   , direction
@@ -17,6 +18,11 @@ import Maybe exposing (..)
 import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Point3d as Point3d
+
+
+fromEndpoints: (Point3d, Point3d) -> LineSegment3d
+fromEndpoints (start, end) =
+  LineSegment3d start end
 
 
 endpoints: LineSegment3d -> (Point3d, Point3d)
