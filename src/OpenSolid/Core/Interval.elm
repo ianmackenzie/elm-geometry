@@ -3,6 +3,8 @@ module OpenSolid.Core.Interval
   , whole
   , singleton
   , hullOf
+  , fromEndpoints
+  , endpoints
   , isEmpty
   , isWhole
   , isFinite
@@ -38,6 +40,16 @@ singleton value =
 hullOf: List Interval -> Interval
 hullOf =
   List.foldl hull empty
+
+
+fromEndpoints: (Float, Float) -> Interval
+fromEndpoints (lower, upper) =
+  Interval lower upper
+
+
+endpoints: Interval -> (Float, Float)
+endpoints interval =
+  (interval.lowerBound, interval.upperBound)
 
 
 isEmpty: Interval -> Bool
