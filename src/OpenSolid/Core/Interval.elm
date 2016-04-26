@@ -43,8 +43,8 @@ hullOf =
 
 
 fromEndpoints: (Float, Float) -> Interval
-fromEndpoints (lower, upper) =
-  Interval lower upper
+fromEndpoints (lowerBound, upperBound) =
+  Interval lowerBound upperBound
 
 
 endpoints: Interval -> (Float, Float)

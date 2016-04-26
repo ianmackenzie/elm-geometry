@@ -21,8 +21,8 @@ import OpenSolid.Core.Point2d as Point2d
 
 
 fromEndpoints: (Point2d, Point2d) -> LineSegment2d
-fromEndpoints (start, end) =
-  LineSegment2d start end
+fromEndpoints (firstEndpoint, secondEndpoint) =
+  LineSegment2d firstEndpoint secondEndpoint
 
 
 endpoints: LineSegment2d -> (Point2d, Point2d)

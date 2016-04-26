@@ -17,8 +17,8 @@ import OpenSolid.Core.Point3d as Point3d
 
 
 fromVertices: (Point3d, Point3d, Point3d) -> Triangle3d
-fromVertices (first, second, third) =
-  Triangle3d first second third
+fromVertices (firstVertex, secondVertex, thirdVertex) =
+  Triangle3d firstVertex secondVertex thirdVertex
 
 
 vertices: Triangle3d -> (Point3d, Point3d, Point3d)
