@@ -11,6 +11,7 @@ module OpenSolid.Core.Point3d
   , signedDistanceFrom
   , scaledAbout
   , rotatedAbout
+  , mirroredAbout
   , relativeTo
   , placedIn
   , projectedOntoAxis
@@ -97,6 +98,14 @@ rotatedAbout axis angle =
     rotateVector = Vector3d.rotatedAbout axis.direction angle
   in
     vectorFrom axis.originPoint >> rotateVector >> Vector3d.addedTo axis.originPoint
+
+
+mirroredAbout: Plane3d -> Point3d -> Point3d
+mirroredAbout plane =
+  let
+    mirrorVector = Vector3d.mirroredAlong plane.normalDirection
+  in
+    vectorFrom plane.originPoint >> mirrorVector >> Vector3d.addedTo plane.originPoint
 
 
 relativeTo: Frame3d -> Point3d -> Point3d
