@@ -59,9 +59,9 @@ rotatedBy angle =
   vector >> Vector2d.rotatedBy angle >> Direction2d
 
 
-mirroredAbout: Axis2d -> Direction2d -> Direction2d
-mirroredAbout axis =
-  vector >> Vector2d.mirroredAbout axis >> Direction2d
+mirroredAbout: Direction2d -> Direction2d -> Direction2d
+mirroredAbout direction =
+  vector >> Vector2d.mirroredAbout direction >> Direction2d
 
 
 relativeTo: Frame2d -> Direction2d -> Direction2d
