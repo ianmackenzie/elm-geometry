@@ -12,6 +12,8 @@ module OpenSolid.Core.Vector3d
   , normalDirection
   , rotatedAbout
   , mirroredAlong
+  , relativeTo
+  , placedIn
   , projectionIn
   , projectedOnto
   , projectedInto
