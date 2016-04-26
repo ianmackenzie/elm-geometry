@@ -5,6 +5,11 @@ module OpenSolid.Core.Axis2d
   , normalDirection
   , normalAxis
   , reversed
+  , scaledAbout
+  , rotatedAbout
+  , translatedBy
+  , relativeTo
+  , placedIn
   , placedOnto
   ) where
 
@@ -42,6 +47,43 @@ normalAxis axis =
 reversed: Axis2d -> Axis2d
 reversed axis =
   Axis2d axis.originPoint (Direction2d.negated axis.direction)
+
+
+scaledAbout: Point2d -> Float -> Axis2d -> Axis2d
+scaledAbout centerPoint scale axis =
+  Axis2d (Point2d.scaledAbout centerPoint scale axis.originPoint) axis.direction
+
+
+rotatedAbout: Point2d -> Float -> Axis2d -> Axis2d
+rotatedAbout centerPoint angle =
+  let
+    rotatePoint = Point2d.rotatedAbout centerPoint angle
+    rotateDirection = Direction2d.rotatedBy angle
+  in
+    \axis -> Axis2d (rotatePoint axis.originPoint) (rotateDirection axis.direction)
+
+
+translatedBy: Vector2d -> Axis2d -> Axis2d
+translatedBy vector axis =
+  Axis2d (Point2d.plus vector axis.originPoint) axis.direction
+
+
+relativeTo: Frame2d -> Axis2d -> Axis2d
+relativeTo frame =
+  let
+    localizePoint = Point2d.relativeTo frame
+    localizeDirection = Direction2d.relativeTo frame
+  in
+    \axis -> Axis2d (localizePoint axis.originPoint) (localizeDirection axis.direction)
+
+
+placedIn: Frame2d -> Axis2d -> Axis2d
+placedIn frame =
+  let
+    globalizePoint = Point2d.placedIn frame
+    globalizeDirection = Direction2d.placedIn frame
+  in
+    \axis -> Axis2d (globalizePoint axis.originPoint) (globalizeDirection axis.direction)
 
 
 placedOnto: Plane3d -> Axis2d -> Axis3d
