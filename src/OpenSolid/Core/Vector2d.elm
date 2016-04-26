@@ -31,8 +31,6 @@ module OpenSolid.Core.Vector2d
 import Debug
 import Maybe exposing (..)
 import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Matrix2x2 as Matrix2x2
-import OpenSolid.Core.Matrix3x2 as Matrix3x2
 
 
 toVector: Direction2d -> Vector2d
@@ -105,13 +103,17 @@ rotatedBy angle =
 
 
 relativeTo: Frame2d -> Vector2d -> Vector2d
-relativeTo frame =
-  Matrix2x2.dotProduct frame.xDirection frame.yDirection
+relativeTo frame vector =
+  Vector2d (componentIn frame.xDirection vector) (componentIn frame.yDirection vector)
 
 
 placedIn: Frame2d -> Vector2d -> Vector2d
 placedIn frame =
-  Matrix2x2.product frame.xDirection frame.yDirection
+  let
+    (Direction2d (Vector2d x1 y1)) = frame.xDirection
+    (Direction2d (Vector2d x2 y2)) = frame.yDirection
+  in
+    \(Vector2d x y) -> Vector2d (x1 * x + x2 * y) (y1 * x + y2 * y)
 
 
 mirroredAbout: Direction2d -> Vector2d -> Vector2d
@@ -137,7 +139,11 @@ projectedOnto axis =
 
 placedOnto: Plane3d -> Vector2d -> Vector3d
 placedOnto plane =
-  Matrix3x2.product plane.xDirection plane.yDirection
+  let
+    (Direction3d (Vector3d x1 y1 z1)) = plane.xDirection
+    (Direction3d (Vector3d x2 y2 z2)) = plane.yDirection
+  in
+    \(Vector2d x y) -> Vector3d (x1 * x + x2 * y) (y1 * x + y2 * y) (z1 * x + z2 * y)
 
 
 negated: Vector2d -> Vector2d
