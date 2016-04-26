@@ -1,7 +1,7 @@
 module OpenSolid.Core.Vector3d
   ( zero
-  , fromTuple
-  , toTuple
+  , fromComponents
+  , components
   , equals
   , componentIn
   , squaredLength
@@ -40,13 +40,13 @@ zero =
   Vector3d 0 0 0
 
 
-fromTuple: (Float, Float, Float) -> Vector3d
-fromTuple (x, y, z) =
+fromComponents: (Float, Float, Float) -> Vector3d
+fromComponents (x, y, z) =
   Vector3d x y z
 
 
-toTuple: Vector3d -> (Float, Float, Float)
-toTuple (Vector3d x y z) =
+components: Vector3d -> (Float, Float, Float)
+components (Vector3d x y z) =
   (x, y, z)
 
 

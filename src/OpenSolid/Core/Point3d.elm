@@ -1,7 +1,7 @@
 module OpenSolid.Core.Point3d
   ( origin
-  , fromTuple
-  , toTuple
+  , fromComponents
+  , components
   , squaredDistanceTo
   , distanceTo
   , vectorTo
@@ -34,13 +34,13 @@ origin =
   Point3d 0 0 0
 
 
-fromTuple: (Float, Float, Float) -> Point3d
-fromTuple (x, y, z) =
+fromComponents: (Float, Float, Float) -> Point3d
+fromComponents (x, y, z) =
   Point3d x y z
 
 
-toTuple: Point3d -> (Float, Float, Float)
-toTuple (Point3d x y z) =
+components: Point3d -> (Float, Float, Float)
+components (Point3d x y z) =
   (x, y, z)
 
 

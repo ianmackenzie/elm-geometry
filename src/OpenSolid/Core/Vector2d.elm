@@ -1,7 +1,7 @@
 module OpenSolid.Core.Vector2d
   ( zero
-  , fromTuple
-  , toTuple
+  , fromComponents
+  , components
   , equals
   , componentIn
   , squaredLength
@@ -45,13 +45,13 @@ zero =
   Vector2d 0 0
 
 
-fromTuple: (Float, Float) -> Vector2d
-fromTuple (x, y) =
+fromComponents: (Float, Float) -> Vector2d
+fromComponents (x, y) =
   Vector2d x y
 
 
-toTuple: Vector2d -> (Float, Float)
-toTuple (Vector2d x y) =
+components: Vector2d -> (Float, Float)
+components (Vector2d x y) =
   (x, y)
 
 

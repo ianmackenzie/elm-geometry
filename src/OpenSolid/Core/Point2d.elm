@@ -1,8 +1,8 @@
 module OpenSolid.Core.Point2d
   ( origin
   , polar
-  , fromTuple
-  , toTuple
+  , fromComponents
+  , components
   , squaredDistanceTo
   , distanceTo
   , vectorTo
@@ -35,13 +35,13 @@ polar radius angle =
   Point2d (radius * cos angle) (radius * sin angle)
 
 
-fromTuple: (Float, Float) -> Point2d
-fromTuple (x, y) =
+fromComponents: (Float, Float) -> Point2d
+fromComponents (x, y) =
   Point2d x y
 
 
-toTuple: Point2d -> (Float, Float)
-toTuple (Point2d x y) =
+components: Point2d -> (Float, Float)
+components (Point2d x y) =
   (x, y)
 
 

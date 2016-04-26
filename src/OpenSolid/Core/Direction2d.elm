@@ -2,8 +2,8 @@ module OpenSolid.Core.Direction2d
   ( x
   , y
   , polar
-  , fromTuple
-  , toTuple
+  , fromComponents
+  , components
   , normalDirection
   , rotatedBy
   , mirroredAbout
@@ -34,14 +34,14 @@ polar angle =
   Direction2d (Vector2d (cos angle) (sin angle))
 
 
-fromTuple: (Float, Float) -> Direction2d
-fromTuple =
-  Vector2d.fromTuple >> Direction2d
+fromComponents: (Float, Float) -> Direction2d
+fromComponents =
+  Vector2d.fromComponents >> Direction2d
 
 
-toTuple: Direction2d -> (Float, Float)
-toTuple =
-  vector >> Vector2d.toTuple
+components: Direction2d -> (Float, Float)
+components =
+  vector >> Vector2d.components
 
 
 vector: Direction2d -> Vector2d

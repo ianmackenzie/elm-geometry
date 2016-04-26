@@ -2,8 +2,8 @@ module OpenSolid.Core.Direction3d
   ( x
   , y
   , z
-  , fromTuple
-  , toTuple
+  , fromComponents
+  , components
   , vector
   , normalDirection
   , normalBasis
@@ -34,14 +34,14 @@ z =
   Direction3d (Vector3d 0 0 1)
 
 
-fromTuple: (Float, Float, Float) -> Direction3d
-fromTuple =
-  Vector3d.fromTuple >> Direction3d
+fromComponents: (Float, Float, Float) -> Direction3d
+fromComponents =
+  Vector3d.fromComponents >> Direction3d
 
 
-toTuple: Direction3d -> (Float, Float, Float)
-toTuple =
-  vector >> Vector3d.toTuple
+components: Direction3d -> (Float, Float, Float)
+components =
+  vector >> Vector3d.components
 
 
 vector: Direction3d -> Vector3d
