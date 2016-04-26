@@ -10,6 +10,7 @@ module OpenSolid.Core.Point3d
   , distanceToAxis
   , signedDistanceFrom
   , scaledAbout
+  , rotatedAbout
   , projectedOntoAxis
   , projectedOnto
   , projectedInto
@@ -86,6 +87,14 @@ signedDistanceFrom plane =
 scaledAbout: Point3d -> Float -> Point3d -> Point3d
 scaledAbout centerPoint scale =
   vectorFrom centerPoint >> Vector3d.times scale >> Vector3d.addedTo centerPoint
+
+
+rotatedAbout: Axis3d -> Float -> Point3d -> Point3d
+rotatedAbout axis angle =
+  let
+    rotateVector = Vector3d.rotatedAbout axis.direction angle
+  in
+    vectorFrom axis.originPoint >> rotateVector >> Vector3d.addedTo axis.originPoint
 
 
 projectedOntoAxis: Axis3d -> Point3d -> Point3d
