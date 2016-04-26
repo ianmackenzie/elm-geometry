@@ -7,8 +7,8 @@ module OpenSolid.Core.Point2d
   , distanceTo
   , vectorTo
   , vectorFrom
-  , distanceAlongAxis
-  , distanceToAxis
+  , distanceAlong
+  , signedDistanceFrom
   , scaledAbout
   , rotatedAbout
   , projectedOnto
@@ -65,14 +65,17 @@ vectorFrom (Point2d x2 y2) (Point2d x1 y1) =
   Vector2d (x1 - x2) (y1 - y2)
 
 
-distanceAlongAxis: Axis2d -> Point2d -> Float
-distanceAlongAxis axis point =
-  Vector2d.componentIn axis.direction (vectorTo point axis.originPoint)
+distanceAlong: Axis2d -> Point2d -> Float
+distanceAlong axis =
+  vectorFrom axis.originPoint >> Vector2d.componentIn axis.direction
 
 
-distanceToAxis: Axis2d -> Point2d -> Float
-distanceToAxis axis =
-  vectorTo axis.originPoint >> Vector2d.componentIn (Direction2d.normalDirection axis.direction)
+signedDistanceFrom: Axis2d -> Point2d -> Float
+signedDistanceFrom axis =
+  let
+    normalDirection = Direction2d.normalDirection axis.direction
+  in
+    vectorFrom axis.originPoint >> Vector2d.componentIn normalDirection
 
 
 scaledAbout: Point2d -> Float -> Point2d -> Point2d
