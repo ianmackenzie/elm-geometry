@@ -7,6 +7,10 @@ module OpenSolid.Core.Direction3d
   , vector
   , normalDirection
   , normalBasis
+  , rotatedAbout
+  , mirroredAlong
+  , relativeTo
+  , placedIn
   , projectedOnto
   , projectedInto
   , negated
@@ -64,6 +68,38 @@ normalBasis direction =
     yDirection = Direction3d (Vector3d.cross (vector xDirection) (vector direction))
   in
     (xDirection, yDirection)
+
+
+rotatedAbout: Direction3d -> Float -> Direction3d -> Direction3d
+rotatedAbout direction angle =
+  let
+    rotateVector = Vector3d.rotatedAbout direction angle
+  in
+    vector >> rotateVector >> Direction3d
+
+
+mirroredAlong: Direction3d -> Direction3d -> Direction3d
+mirroredAlong direction =
+  let
+    mirrorVector = Vector3d.mirroredAlong direction
+  in
+    vector >> mirrorVector >> Direction3d
+
+
+relativeTo: Frame3d -> Direction3d -> Direction3d
+relativeTo frame =
+  let
+    localizeVector = Vector3d.relativeTo frame
+  in
+    vector >> localizeVector >> Direction3d
+
+
+placedIn: Frame3d -> Direction3d -> Direction3d
+placedIn frame =
+  let
+    globalizeVector = Vector3d.placedIn frame
+  in
+    vector >> globalizeVector >> Direction3d
 
 
 projectedOnto: Plane3d -> Direction3d -> Maybe Direction3d
