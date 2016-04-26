@@ -11,9 +11,9 @@ module OpenSolid.Core.Vector2d
   , perpendicularVector
   , normalDirection
   , rotatedBy
+  , mirroredAbout
   , relativeTo
   , placedIn
-  , mirroredAbout
   , projectionIn
   , projectedOnto
   , placedOnto
@@ -97,6 +97,17 @@ rotatedBy angle =
     \(Vector2d x y) -> Vector2d (x * cosine - y * sine) (y * cosine + x * sine)
 
 
+mirroredAbout: Direction2d -> Vector2d -> Vector2d
+mirroredAbout direction =
+  let
+    (Direction2d (Vector2d dx dy)) = direction
+    a = 1 - 2 * dy * dy
+    b = 2 * dx * dy
+    c = 1 - 2 * dx * dx
+  in
+    \(Vector2d vx vy) -> Vector2d (a * vx + b * vy) (c * vy + b * vx)
+
+
 relativeTo: Frame2d -> Vector2d -> Vector2d
 relativeTo frame vector =
   Vector2d (componentIn frame.xDirection vector) (componentIn frame.yDirection vector)
@@ -109,17 +120,6 @@ placedIn frame =
     (Direction2d (Vector2d x2 y2)) = frame.yDirection
   in
     \(Vector2d x y) -> Vector2d (x1 * x + x2 * y) (y1 * x + y2 * y)
-
-
-mirroredAbout: Direction2d -> Vector2d -> Vector2d
-mirroredAbout direction =
-  let
-    (Direction2d (Vector2d dx dy)) = direction
-    a = 1 - 2 * dy * dy
-    b = 2 * dx * dy
-    c = 1 - 2 * dx * dx
-  in
-    \(Vector2d vx vy) -> Vector2d (a * vx + b * vy) (c * vy + b * vx)
 
 
 projectionIn: Direction2d -> Vector2d -> Vector2d
