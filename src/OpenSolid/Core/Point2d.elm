@@ -76,11 +76,8 @@ distanceToAxis axis =
 
 
 scaledAbout: Point2d -> Float -> Point2d -> Point2d
-scaledAbout originPoint scale point =
-  let
-    displacement = vectorTo point originPoint
-  in
-    plus (Vector2d.times scale displacement) originPoint
+scaledAbout centerPoint scale =
+  vectorFrom centerPoint >> Vector2d.times scale >> Vector2d.addedTo centerPoint
 
 
 rotatedAbout: Point2d -> Float -> Point2d -> Point2d
