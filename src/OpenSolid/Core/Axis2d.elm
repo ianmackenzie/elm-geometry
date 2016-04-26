@@ -87,9 +87,9 @@ placedIn frame =
 
 
 placedOnto: Plane3d -> Axis2d -> Axis3d
-placedOnto plane axis =
+placedOnto plane =
   let
-    originPoint = Point2d.placedOnto plane axis.originPoint
-    direction = Direction2d.placedOnto plane axis.direction
+    placePoint = Point2d.placedOnto plane
+    placeDirection = Direction2d.placedOnto plane
   in
-    Axis3d originPoint direction
+    \axis -> Axis3d (placePoint axis.originPoint) (placeDirection axis.direction)
