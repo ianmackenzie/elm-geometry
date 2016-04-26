@@ -11,6 +11,8 @@ module OpenSolid.Core.Point3d
   , signedDistanceFrom
   , scaledAbout
   , rotatedAbout
+  , relativeTo
+  , placedIn
   , projectedOntoAxis
   , projectedOnto
   , projectedInto
@@ -95,6 +97,22 @@ rotatedAbout axis angle =
     rotateVector = Vector3d.rotatedAbout axis.direction angle
   in
     vectorFrom axis.originPoint >> rotateVector >> Vector3d.addedTo axis.originPoint
+
+
+relativeTo: Frame3d -> Point3d -> Point3d
+relativeTo frame =
+  let
+    localizeVector = Vector3d.relativeTo frame
+  in
+    vectorFrom frame.originPoint >> localizeVector >> (\(Vector3d x y z) -> Point3d x y z)
+
+
+placedIn: Frame3d -> Point3d -> Point3d
+placedIn frame =
+  let
+    globalizeVector = Vector3d.placedIn frame
+  in
+    (\(Point3d x y z) -> Vector3d x y z) >> globalizeVector >> Vector3d.addedTo frame.originPoint
 
 
 projectedOntoAxis: Axis3d -> Point3d -> Point3d
