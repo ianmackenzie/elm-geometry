@@ -84,11 +84,8 @@ signedDistanceFrom plane =
 
 
 scaledAbout: Point3d -> Float -> Point3d -> Point3d
-scaledAbout originPoint scale point =
-  let
-    displacement = vectorTo point originPoint
-  in
-    plus (Vector3d.times scale displacement) originPoint
+scaledAbout centerPoint scale =
+  vectorFrom centerPoint >> Vector3d.times scale >> Vector3d.addedTo centerPoint
 
 
 projectedOntoAxis: Axis3d -> Point3d -> Point3d
