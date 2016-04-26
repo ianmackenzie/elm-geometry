@@ -33,11 +33,6 @@ import Maybe exposing (..)
 import OpenSolid.Core exposing (..)
 
 
-toVector: Direction2d -> Vector2d
-toVector (Direction2d vector) =
-  vector
-
-
 zero: Vector2d
 zero =
   Vector2d 0 0
@@ -128,8 +123,8 @@ mirroredAbout direction =
 
 
 projectionIn: Direction2d -> Vector2d -> Vector2d
-projectionIn direction vector =
-  times (componentIn direction vector) (toVector direction)
+projectionIn (Direction2d directionVector as direction) vector =
+  times (componentIn direction vector) directionVector
 
 
 projectedOnto: Axis2d -> Vector2d -> Vector2d
