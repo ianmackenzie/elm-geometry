@@ -4,6 +4,9 @@ module OpenSolid.Core.Triangle2d
   , edges
   , mapReduce
   , scaledAbout
+  , rotatedAbout
+  , translatedBy
+  , mirroredAbout
   , placedOnto
   , area
   , centroid
@@ -42,6 +45,27 @@ mapReduce map reduce triangle =
 scaledAbout: Point2d -> Float -> Triangle2d -> Triangle2d
 scaledAbout point scale =
   mapReduce (Point2d.scaledAbout point scale) Triangle2d
+
+
+rotatedAbout: Point2d -> Float -> Triangle2d -> Triangle2d
+rotatedAbout centerPoint angle =
+  let
+    rotatePoint = Point2d.rotatedAbout centerPoint angle
+  in
+    mapReduce rotatePoint Triangle2d
+
+
+translatedBy: Vector2d -> Triangle2d -> Triangle2d
+translatedBy vector =
+  mapReduce (Point2d.plus vector) Triangle2d
+
+
+mirroredAbout: Axis2d -> Triangle2d -> Triangle2d
+mirroredAbout axis =
+  let
+    mirrorPoint = Point2d.mirroredAbout axis
+  in
+    mapReduce mirrorPoint Triangle2d
 
 
 placedOnto: Plane3d -> Triangle2d -> Triangle3d
