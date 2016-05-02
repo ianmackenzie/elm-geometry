@@ -91,8 +91,8 @@ normalDirection =
 rotatedBy: Float -> Vector2d -> Vector2d
 rotatedBy angle =
   let
-    cosine = Debug.log "cosine" (cos angle)
-    sine = Debug.log "sine" (sin angle)
+    cosine = cos angle
+    sine = sin angle
   in
     \(Vector2d x y) -> Vector2d (x * cosine - y * sine) (y * cosine + x * sine)
 
