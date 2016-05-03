@@ -2,7 +2,8 @@ module OpenSolid.Core.Triangle2d
   ( fromVertices
   , vertices
   , edges
-  , mapReduce
+  , map
+  , mapTo
   , scaledAbout
   , rotatedAbout
   , translatedBy
@@ -37,14 +38,19 @@ edges triangle =
   )
 
 
-mapReduce: (Point2d -> a) -> (a -> a -> a -> b) -> Triangle2d -> b
-mapReduce map reduce triangle =
-  reduce (map triangle.firstVertex) (map triangle.secondVertex) (map triangle.thirdVertex)
+map: (Point2d -> Point2d) -> Triangle2d -> Triangle2d
+map =
+  mapTo Triangle2d
+
+
+mapTo: (a -> a -> a -> b) -> (Point2d -> a) -> Triangle2d -> b
+mapTo constructor map triangle =
+  constructor (map triangle.firstVertex) (map triangle.secondVertex) (map triangle.thirdVertex)
 
 
 scaledAbout: Point2d -> Float -> Triangle2d -> Triangle2d
 scaledAbout point scale =
-  mapReduce (Point2d.scaledAbout point scale) Triangle2d
+  map (Point2d.scaledAbout point scale)
 
 
 rotatedAbout: Point2d -> Float -> Triangle2d -> Triangle2d
@@ -52,12 +58,12 @@ rotatedAbout centerPoint angle =
   let
     rotatePoint = Point2d.rotatedAbout centerPoint angle
   in
-    mapReduce rotatePoint Triangle2d
+    map rotatePoint
 
 
 translatedBy: Vector2d -> Triangle2d -> Triangle2d
 translatedBy vector =
-  mapReduce (Point2d.plus vector) Triangle2d
+  map (Point2d.plus vector)
 
 
 mirroredAbout: Axis2d -> Triangle2d -> Triangle2d
@@ -65,12 +71,12 @@ mirroredAbout axis =
   let
     mirrorPoint = Point2d.mirroredAbout axis
   in
-    mapReduce mirrorPoint Triangle2d
+    map mirrorPoint
 
 
 placedOnto: Plane3d -> Triangle2d -> Triangle3d
 placedOnto plane =
-  mapReduce (Point2d.placedOnto plane) Triangle3d
+  mapTo Triangle3d (Point2d.placedOnto plane)
 
 
 area: Triangle2d -> Float

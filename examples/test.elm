@@ -90,7 +90,7 @@ view state =
     projectPoint = Point2d.projectedOnto axis
     list3 a b c =
       [a, b, c]
-    projectedPoints = Triangle2d.mapReduce projectPoint list3 triangle
+    projectedPoints = Triangle2d.mapTo list3 projectPoint triangle
   in
     Html.div []
       [ line "Interval width" intervalWidth
