@@ -1,11 +1,11 @@
 module OpenSolid.Core
-  ( Interval(Interval)
-  , Vector2d(Vector2d)
+  ( Vector2d(Vector2d)
   , Vector3d(Vector3d)
-  , Point2d(Point2d)
-  , Point3d(Point3d)
   , Direction2d(Direction2d)
   , Direction3d(Direction3d)
+  , Point2d(Point2d)
+  , Point3d(Point3d)
+  , Interval(Interval)
   , Bounds2d(Bounds2d)
   , Bounds3d(Bounds3d)
   , LineSegment2d(LineSegment2d)
@@ -20,14 +20,7 @@ module OpenSolid.Core
   ) where
 
 
--- Interval
-
-
-type Interval
-  = Interval Float Float
-
-
--- Cartesian values
+-- Cartesian types
 
 
 type Vector2d
@@ -38,6 +31,14 @@ type Vector3d
   = Vector3d Float Float Float
 
 
+type Direction2d
+  = Direction2d Vector2d
+
+
+type Direction3d
+  = Direction3d Vector3d
+
+
 type Point2d
   = Point2d Float Float
 
@@ -46,12 +47,11 @@ type Point3d
   = Point3d Float Float Float
 
 
-type Direction2d
-  = Direction2d Vector2d
+-- Bounds types
 
 
-type Direction3d
-  = Direction3d Vector3d
+type Interval
+  = Interval Float Float
 
 
 type Bounds2d
