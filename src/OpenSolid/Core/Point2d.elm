@@ -148,6 +148,6 @@ minus (Vector2d vx vy) (Point2d px py) =
   Point2d (px - vx) (py - vy)
 
 
-hull: Point2d -> Point2d -> Bounds2d
+hull: Point2d -> Point2d -> BoundingBox2d
 hull (Point2d x2 y2) (Point2d x1 y1) =
-  Bounds2d (Scalar.hull x2 x1) (Scalar.hull y2 y1)
+  BoundingBox2d (Scalar.hull x2 x1) (Scalar.hull y2 y1)

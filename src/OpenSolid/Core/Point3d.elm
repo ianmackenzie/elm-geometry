@@ -155,6 +155,6 @@ minus (Vector3d vx vy vz) (Point3d px py pz) =
   Point3d (px - vx) (py - vy) (pz - vz)
 
 
-hull: Point3d -> Point3d -> Bounds3d
+hull: Point3d -> Point3d -> BoundingBox3d
 hull (Point3d x2 y2 z2) (Point3d x1 y1 z1) =
-  Bounds3d (Scalar.hull x1 x2) (Scalar.hull y1 y2) (Scalar.hull z1 z2)
+  BoundingBox3d (Scalar.hull x1 x2) (Scalar.hull y1 y2) (Scalar.hull z1 z2)

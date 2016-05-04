@@ -6,8 +6,8 @@ module OpenSolid.Core
   , Point2d(Point2d)
   , Point3d(Point3d)
   , Interval(Interval)
-  , Bounds2d(Bounds2d)
-  , Bounds3d(Bounds3d)
+  , BoundingBox2d(BoundingBox2d)
+  , BoundingBox3d(BoundingBox3d)
   , LineSegment2d(LineSegment2d)
   , LineSegment3d(LineSegment3d)
   , Triangle2d(Triangle2d)
@@ -54,12 +54,12 @@ type Interval
   = Interval Float Float
 
 
-type Bounds2d
-  = Bounds2d Interval Interval
+type BoundingBox2d
+  = BoundingBox2d Interval Interval
 
 
-type Bounds3d
-  = Bounds3d Interval Interval Interval
+type BoundingBox3d
+  = BoundingBox3d Interval Interval Interval
 
 
 -- Simplices

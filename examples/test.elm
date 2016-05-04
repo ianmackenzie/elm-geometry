@@ -6,8 +6,8 @@ import Debug
 import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Axis2d as Axis2d
 import OpenSolid.Core.Axis3d as Axis3d
-import OpenSolid.Core.Bounds2d as Bounds2d
-import OpenSolid.Core.Bounds3d as Bounds3d
+import OpenSolid.Core.BoundingBox2d as BoundingBox2d
+import OpenSolid.Core.BoundingBox3d as BoundingBox3d
 import OpenSolid.Core.Direction2d as Direction2d
 import OpenSolid.Core.Direction3d as Direction3d
 import OpenSolid.Core.Frame2d as Frame2d
