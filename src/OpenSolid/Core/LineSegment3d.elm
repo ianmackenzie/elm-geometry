@@ -1,7 +1,8 @@
 module OpenSolid.Core.LineSegment3d
   ( fromEndpoints
   , endpoints
-  , mapReduce
+  , map
+  , mapTo
   , vector
   , direction
   , normalDirection
@@ -30,9 +31,14 @@ endpoints lineSegment =
   (lineSegment.firstEndpoint, lineSegment.secondEndpoint)
 
 
-mapReduce: (Point3d -> a) -> (a -> a -> b) -> LineSegment3d -> b
-mapReduce map reduce lineSegment =
-  reduce (map lineSegment.firstEndpoint) (map lineSegment.secondEndpoint)
+map: (Point3d -> Point3d) -> LineSegment3d -> LineSegment3d
+map =
+  mapTo LineSegment3d
+
+
+mapTo: (a -> a -> b) -> (Point3d -> a) -> LineSegment3d -> b
+mapTo constructor map lineSegment =
+  constructor (map lineSegment.firstEndpoint) (map lineSegment.secondEndpoint)
 
 
 vector: LineSegment3d -> Vector3d
@@ -62,19 +68,31 @@ length =
 
 scaledAbout: Point3d -> Float -> LineSegment3d -> LineSegment3d
 scaledAbout point scale =
-  mapReduce (Point3d.scaledAbout point scale) LineSegment3d
+  let
+    scalePoint = Point3d.scaledAbout point scale
+  in
+    map scalePoint
 
 
 projectedOntoAxis: Axis3d -> LineSegment3d -> LineSegment3d
 projectedOntoAxis axis =
-  mapReduce (Point3d.projectedOntoAxis axis) LineSegment3d
+  let
+    projectPoint = Point3d.projectedOntoAxis axis
+  in
+    map projectPoint
 
 
 projectedOnto: Plane3d -> LineSegment3d -> LineSegment3d
 projectedOnto plane =
-  mapReduce (Point3d.projectedOnto plane) LineSegment3d
+  let
+    projectPoint = Point3d.projectedOnto plane
+  in
+    map projectPoint
 
 
 projectedInto: Plane3d -> LineSegment3d -> LineSegment2d
 projectedInto plane =
-  mapReduce (Point3d.projectedInto plane) LineSegment2d
+  let
+    projectPoint = Point3d.projectedInto plane
+  in
+    mapTo LineSegment2d projectPoint
