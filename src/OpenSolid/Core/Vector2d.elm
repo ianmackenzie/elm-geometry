@@ -30,8 +30,6 @@ module OpenSolid.Core.Vector2d
   ) where
 
 
-import Debug
-import Maybe exposing (..)
 import OpenSolid.Core exposing (..)
 
 

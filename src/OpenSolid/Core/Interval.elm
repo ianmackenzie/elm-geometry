@@ -17,7 +17,6 @@ module OpenSolid.Core.Interval
   ) where
 
 
-import List
 import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Scalar as Scalar
 

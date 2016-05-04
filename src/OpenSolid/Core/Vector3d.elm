@@ -28,7 +28,6 @@ module OpenSolid.Core.Vector3d
   ) where
 
 
-import Maybe exposing (..)
 import OpenSolid.Core exposing (..)
 
 

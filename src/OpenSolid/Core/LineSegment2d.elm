@@ -17,7 +17,6 @@ module OpenSolid.Core.LineSegment2d
   ) where
 
 
-import Maybe exposing (..)
 import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Point2d as Point2d

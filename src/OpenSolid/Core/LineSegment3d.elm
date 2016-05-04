@@ -18,7 +18,6 @@ module OpenSolid.Core.LineSegment3d
   ) where
 
 
-import Maybe exposing (..)
 import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Point3d as Point3d

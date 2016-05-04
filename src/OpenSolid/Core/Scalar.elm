@@ -8,8 +8,6 @@ module OpenSolid.Core.Scalar
   ) where
 
 
-import List
-import Maybe
 import OpenSolid.Core exposing (..)
 
 
