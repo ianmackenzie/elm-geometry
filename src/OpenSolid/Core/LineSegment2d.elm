@@ -10,6 +10,8 @@ module OpenSolid.Core.LineSegment2d
   , length
   , scaledAbout
   , rotatedAbout
+  , translatedBy
+  , mirroredAbout
   , projectedOnto
   , placedOnto
   ) where
@@ -80,6 +82,19 @@ rotatedAbout centerPoint angle =
     rotatePoint = Point2d.rotatedAbout centerPoint angle
   in
     map rotatePoint
+
+
+translatedBy: Vector2d -> LineSegment2d -> LineSegment2d
+translatedBy vector =
+  map (Point2d.plus vector)
+
+
+mirroredAbout: Axis2d -> LineSegment2d -> LineSegment2d
+mirroredAbout axis =
+  let
+    mirrorPoint = Point2d.mirroredAbout axis
+  in
+    map mirrorPoint
 
 
 projectedOnto: Axis2d -> LineSegment2d -> LineSegment2d
