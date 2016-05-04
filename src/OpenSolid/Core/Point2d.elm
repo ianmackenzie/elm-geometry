@@ -1,6 +1,6 @@
 module OpenSolid.Core.Point2d
   ( origin
-  , polar
+  , fromPolarComponents
   , fromComponents
   , components
   , squaredDistanceTo
@@ -33,14 +33,14 @@ origin =
   Point2d 0 0
 
 
-polar: Float -> Float -> Point2d
-polar radius angle =
-  Point2d (radius * cos angle) (radius * sin angle)
-
-
 fromComponents: (Float, Float) -> Point2d
 fromComponents (x, y) =
   Point2d x y
+
+
+fromPolarComponents: (Float, Float) -> Point2d
+fromPolarComponents =
+  fromPolar >> fromComponents
 
 
 components: Point2d -> (Float, Float)

@@ -86,7 +86,7 @@ view state =
     placedTriangle = Triangle2d.placedOnto Plane3d.xz triangle
     placedArea = Triangle3d.area placedTriangle
     placedCentroid = Triangle3d.centroid placedTriangle
-    axis = Axis2d Point2d.origin (Direction2d.polar (degrees -45))
+    axis = Axis2d Point2d.origin (Direction2d.fromAngle (degrees -45))
     projectPoint = Point2d.projectedOnto axis
     list3 a b c =
       [a, b, c]
