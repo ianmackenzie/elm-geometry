@@ -17,26 +17,23 @@ import OpenSolid.Core.Point3d as Point3d
 
 
 fromVertices: (Point3d, Point3d, Point3d) -> Triangle3d
-fromVertices (firstVertex, secondVertex, thirdVertex) =
-  Triangle3d firstVertex secondVertex thirdVertex
+fromVertices (p1, p2, p3) =
+  Triangle3d p1 p2 p3
 
 
 vertices: Triangle3d -> (Point3d, Point3d, Point3d)
-vertices triangle =
-  (triangle.firstVertex, triangle.secondVertex, triangle.thirdVertex)
+vertices (Triangle3d p1 p2 p3) =
+  (p1, p2, p3)
 
 
 edges: Triangle3d -> (LineSegment3d, LineSegment3d, LineSegment3d)
-edges triangle =
-  ( LineSegment3d triangle.thirdVertex triangle.secondVertex
-  , LineSegment3d triangle.firstVertex triangle.thirdVertex
-  , LineSegment3d triangle.secondVertex triangle.firstVertex
-  )
+edges (Triangle3d p1 p2 p3) =
+  (LineSegment3d p3 p2, LineSegment3d p1 p3, LineSegment3d p2 p1)
 
 
 mapReduce: (Point3d -> a) -> (a -> a -> a -> b) -> Triangle3d -> b
-mapReduce map reduce triangle =
-  reduce (map triangle.firstVertex) (map triangle.secondVertex) (map triangle.thirdVertex)
+mapReduce map reduce (Triangle3d p1 p2 p3) =
+  reduce (map p1) (map p2) (map p3)
 
 
 scaledAbout: Point3d -> Float -> Triangle3d -> Triangle3d
@@ -55,19 +52,15 @@ projectedInto plane =
 
 
 area: Triangle3d -> Float
-area triangle =
-  let
-    firstVector = Point3d.vectorTo triangle.secondVertex triangle.firstVertex
-    secondVector = Point3d.vectorTo triangle.thirdVertex triangle.firstVertex
-  in
-    0.5 * Vector3d.length (Vector3d.cross secondVector firstVector)
+area (Triangle3d p1 p2 p3) =
+  0.5 * Vector3d.length (Vector3d.cross (Point3d.vectorTo p3 p1) (Point3d.vectorTo p2 p1))
 
 
 centroid: Triangle3d -> Point3d
-centroid triangle =
+centroid (Triangle3d p1 p2 p3) =
   let
-    firstVector = Point3d.vectorTo triangle.secondVertex triangle.firstVertex
-    secondVector = Point3d.vectorTo triangle.thirdVertex triangle.firstVertex
+    firstVector = Point3d.vectorTo p2 p1
+    secondVector = Point3d.vectorTo p3 p1
     displacement = Vector3d.times (1.0 / 3.0) (Vector3d.plus secondVector firstVector)
   in
-    Point3d.plus displacement triangle.firstVertex
+    Point3d.plus displacement p1

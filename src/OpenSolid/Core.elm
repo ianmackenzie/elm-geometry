@@ -8,10 +8,10 @@ module OpenSolid.Core
   , Direction3d(Direction3d)
   , Bounds2d(Bounds2d)
   , Bounds3d(Bounds3d)
-  , LineSegment2d
-  , LineSegment3d
-  , Triangle2d
-  , Triangle3d
+  , LineSegment2d(LineSegment2d)
+  , LineSegment3d(LineSegment3d)
+  , Triangle2d(Triangle2d)
+  , Triangle3d(Triangle3d)
   , Axis2d
   , Axis3d
   , Plane3d
@@ -67,30 +67,20 @@ type Bounds3d
 -- Simplices
 
 
-type alias LineSegment2d =
-  { firstEndpoint: Point2d
-  , secondEndpoint: Point2d
-  }
+type LineSegment2d
+  = LineSegment2d Point2d Point2d
 
 
-type alias LineSegment3d =
-  { firstEndpoint: Point3d
-  , secondEndpoint: Point3d
-  }
+type LineSegment3d
+  = LineSegment3d Point3d Point3d
 
 
-type alias Triangle2d =
-  { firstVertex: Point2d
-  , secondVertex: Point2d
-  , thirdVertex: Point2d
-  }
+type Triangle2d
+  = Triangle2d Point2d Point2d Point2d
 
 
-type alias Triangle3d =
-  { firstVertex: Point3d
-  , secondVertex: Point3d
-  , thirdVertex: Point3d
-  }
+type Triangle3d
+  = Triangle3d Point3d Point3d Point3d
 
 
 -- Datums
