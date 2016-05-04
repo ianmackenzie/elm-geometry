@@ -24,7 +24,7 @@ import OpenSolid.Core.Scalar as Scalar
 
 empty: Interval
 empty =
-  Interval Scalar.nan Scalar.nan
+  Interval Scalar.notANumber Scalar.notANumber
 
 
 whole: Interval
@@ -78,13 +78,13 @@ interpolated parameter interval =
     -- Fast path
     interval.lowerBound + parameter * width interval
   else if isNaN parameter || isEmpty interval then
-    Scalar.nan
+    Scalar.notANumber
   else if interval.upperBound == Scalar.negativeInfinity then
     -- Interval is singleton negative infinity
-    if parameter <= 1 then Scalar.negativeInfinity else Scalar.nan
+    if parameter <= 1 then Scalar.negativeInfinity else Scalar.notANumber
   else if interval.lowerBound == Scalar.positiveInfinity then
     -- Interval is singleton positive infinity
-    if parameter >= 0 then Scalar.positiveInfinity else Scalar.nan
+    if parameter >= 0 then Scalar.positiveInfinity else Scalar.notANumber
   else if interval.lowerBound > Scalar.negativeInfinity then
     -- Interval has finite lower bound, infinite upper bound
     if parameter < 0 then
@@ -108,7 +108,7 @@ interpolated parameter interval =
     else if parameter >= 1 then
       Scalar.positiveInfinity
     else
-      Scalar.nan
+      Scalar.notANumber
 
 
 midpoint: Interval -> Float

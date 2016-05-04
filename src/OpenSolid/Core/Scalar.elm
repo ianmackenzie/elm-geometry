@@ -1,5 +1,5 @@
 module OpenSolid.Core.Scalar
-  ( nan
+  ( notANumber
   , positiveInfinity
   , negativeInfinity
   , hullOf
@@ -13,8 +13,8 @@ import Maybe
 import OpenSolid.Core exposing (..)
 
 
-nan: Float
-nan =
+notANumber: Float
+notANumber =
   0 / 0
 
 
@@ -31,8 +31,8 @@ negativeInfinity =
 hullOf: List Float -> Interval
 hullOf values =
   let
-    minValue = Maybe.withDefault nan (List.minimum values)
-    maxValue = Maybe.withDefault nan (List.maximum values)
+    minValue = Maybe.withDefault notANumber (List.minimum values)
+    maxValue = Maybe.withDefault notANumber (List.maximum values)
   in
     Interval minValue maxValue
 
