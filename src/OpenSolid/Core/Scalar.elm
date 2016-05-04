@@ -2,9 +2,9 @@ module OpenSolid.Core.Scalar
   ( notANumber
   , positiveInfinity
   , negativeInfinity
+  , hull
   , hullOf
   , isZeroWithin
-  , hull
   ) where
 
 
@@ -28,6 +28,14 @@ negativeInfinity =
   -1 / 0
 
 
+hull: Float -> Float -> Interval
+hull firstValue secondValue =
+  if firstValue <= secondValue then
+    Interval firstValue secondValue
+  else
+    Interval secondValue firstValue
+
+
 hullOf: List Float -> Interval
 hullOf values =
   let
@@ -40,11 +48,3 @@ hullOf values =
 isZeroWithin: Float -> Float -> Bool
 isZeroWithin tolerance value =
   -tolerance <= value && value <= tolerance
-
-
-hull: Float -> Float -> Interval
-hull firstValue secondValue =
-  if firstValue <= secondValue then
-    Interval firstValue secondValue
-  else
-    Interval secondValue firstValue
