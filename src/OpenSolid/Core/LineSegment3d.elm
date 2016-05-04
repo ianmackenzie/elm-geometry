@@ -9,6 +9,9 @@ module OpenSolid.Core.LineSegment3d
   , squaredLength
   , length
   , scaledAbout
+  , rotatedAbout
+  , translatedBy
+  , mirroredAbout
   , projectedOntoAxis
   , projectedOnto
   , projectedInto
@@ -72,6 +75,27 @@ scaledAbout point scale =
     scalePoint = Point3d.scaledAbout point scale
   in
     map scalePoint
+
+
+rotatedAbout: Axis3d -> Float -> LineSegment3d -> LineSegment3d
+rotatedAbout axis angle =
+  let
+    rotatePoint = Point3d.rotatedAbout axis angle
+  in
+    map rotatePoint
+
+
+translatedBy: Vector3d -> LineSegment3d -> LineSegment3d
+translatedBy vector =
+  map (Point3d.plus vector)
+
+
+mirroredAbout: Plane3d -> LineSegment3d -> LineSegment3d
+mirroredAbout plane =
+  let
+    mirrorPoint = Point3d.mirroredAbout plane
+  in
+    map mirrorPoint
 
 
 projectedOntoAxis: Axis3d -> LineSegment3d -> LineSegment3d
