@@ -1,7 +1,8 @@
 module OpenSolid.Core.LineSegment2d
   ( fromEndpoints
   , endpoints
-  , mapReduce
+  , map
+  , mapTo
   , vector
   , direction
   , normalDirection
@@ -30,9 +31,14 @@ endpoints lineSegment =
   (lineSegment.firstEndpoint, lineSegment.secondEndpoint)
 
 
-mapReduce: (Point2d -> a) -> (a -> a -> b) -> LineSegment2d -> b
-mapReduce map reduce lineSegment =
-  reduce (map lineSegment.firstEndpoint) (map lineSegment.secondEndpoint)
+map: (Point2d -> Point2d) -> LineSegment2d -> LineSegment2d
+map =
+  mapTo LineSegment2d
+
+
+mapTo: (a -> a -> b) -> (Point2d -> a) -> LineSegment2d -> b
+mapTo constructor map lineSegment =
+  constructor (map lineSegment.firstEndpoint) (map lineSegment.secondEndpoint)
 
 
 vector: LineSegment2d -> Vector2d
@@ -62,19 +68,31 @@ length =
 
 scaledAbout: Point2d -> Float -> LineSegment2d -> LineSegment2d
 scaledAbout point scale =
-  mapReduce (Point2d.scaledAbout point scale) LineSegment2d
+  let
+    scalePoint = Point2d.scaledAbout point scale
+  in
+    map scalePoint
 
 
 rotatedAbout: Point2d -> Float -> LineSegment2d -> LineSegment2d
 rotatedAbout centerPoint angle =
-  mapReduce (Point2d.rotatedAbout centerPoint angle) LineSegment2d
+  let
+    rotatePoint = Point2d.rotatedAbout centerPoint angle
+  in
+    map rotatePoint
 
 
 projectedOnto: Axis2d -> LineSegment2d -> LineSegment2d
 projectedOnto axis =
-  mapReduce (Point2d.projectedOnto axis) LineSegment2d
+  let
+    projectPoint = Point2d.projectedOnto axis
+  in
+  map projectPoint
 
 
 placedOnto: Plane3d -> LineSegment2d -> LineSegment3d
 placedOnto plane =
-  mapReduce (Point2d.placedOnto plane) LineSegment3d
+  let
+    placePoint = Point2d.placedOnto plane
+  in
+    mapTo LineSegment3d placePoint
