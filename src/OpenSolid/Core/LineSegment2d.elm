@@ -87,7 +87,7 @@ projectedOnto axis =
   let
     projectPoint = Point2d.projectedOnto axis
   in
-  map projectPoint
+    map projectPoint
 
 
 placedOnto: Plane3d -> LineSegment2d -> LineSegment3d
