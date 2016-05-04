@@ -1,5 +1,5 @@
 module OpenSolid.Core
-  ( Interval
+  ( Interval(Interval)
   , Vector2d(Vector2d)
   , Vector3d(Vector3d)
   , Point2d(Point2d)
@@ -23,10 +23,8 @@ module OpenSolid.Core
 -- Interval
 
 
-type alias Interval =
-  { lowerBound: Float
-  , upperBound: Float
-  }
+type Interval
+  = Interval Float Float
 
 
 -- Cartesian values

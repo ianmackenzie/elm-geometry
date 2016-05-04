@@ -47,59 +47,59 @@ fromEndpoints (lowerBound, upperBound) =
 
 
 endpoints: Interval -> (Float, Float)
-endpoints interval =
-  (interval.lowerBound, interval.upperBound)
+endpoints (Interval lowerBound upperBound) =
+  (lowerBound, upperBound)
 
 
 isEmpty: Interval -> Bool
-isEmpty interval =
-  isNaN interval.lowerBound && isNaN interval.upperBound
+isEmpty (Interval lowerBound upperBound) =
+  isNaN lowerBound && isNaN upperBound
 
 
 isWhole: Interval -> Bool
-isWhole interval =
-  interval.lowerBound == Scalar.negativeInfinity && interval.upperBound == Scalar.positiveInfinity
+isWhole (Interval lowerBound upperBound) =
+  lowerBound == Scalar.negativeInfinity && upperBound == Scalar.positiveInfinity
 
 
 isFinite: Interval -> Bool
-isFinite interval =
-  interval.lowerBound > Scalar.negativeInfinity && interval.upperBound < Scalar.positiveInfinity
+isFinite (Interval lowerBound upperBound) =
+  lowerBound > Scalar.negativeInfinity && upperBound < Scalar.positiveInfinity
 
 
 width: Interval -> Float
-width interval =
-  interval.upperBound - interval.lowerBound
+width (Interval lowerBound upperBound) =
+  upperBound - lowerBound
 
 
 interpolated: Float -> Interval -> Float
-interpolated parameter interval =
+interpolated parameter (Interval lowerBound upperBound as interval) =
   if isFinite interval then
     -- Fast path
-    interval.lowerBound + parameter * width interval
+    lowerBound + parameter * width interval
   else if isNaN parameter || isEmpty interval then
     Scalar.notANumber
-  else if interval.upperBound == Scalar.negativeInfinity then
+  else if upperBound == Scalar.negativeInfinity then
     -- Interval is singleton negative infinity
     if parameter <= 1 then Scalar.negativeInfinity else Scalar.notANumber
-  else if interval.lowerBound == Scalar.positiveInfinity then
+  else if lowerBound == Scalar.positiveInfinity then
     -- Interval is singleton positive infinity
     if parameter >= 0 then Scalar.positiveInfinity else Scalar.notANumber
-  else if interval.lowerBound > Scalar.negativeInfinity then
+  else if lowerBound > Scalar.negativeInfinity then
     -- Interval has finite lower bound, infinite upper bound
     if parameter < 0 then
       Scalar.negativeInfinity
     else if parameter > 0 then
       Scalar.positiveInfinity
     else
-      interval.lowerBound
-  else if interval.upperBound < Scalar.positiveInfinity then
+      lowerBound
+  else if upperBound < Scalar.positiveInfinity then
     -- Interval has finite upper bound, infinite lower bound
     if parameter < 1 then
       Scalar.negativeInfinity
     else if parameter > 1 then
       Scalar.positiveInfinity
     else
-      interval.upperBound
+      upperBound
   else
     -- Interval is the whole interval
     if parameter <= 0 then
@@ -116,20 +116,20 @@ midpoint =
 
 
 contains: Float -> Interval -> Bool
-contains value interval =
-  interval.lowerBound <= value && value <= interval.upperBound
+contains value (Interval lowerBound upperBound) =
+  lowerBound <= value && value <= upperBound
 
 
 overlaps: Interval -> Interval -> Bool
-overlaps other interval =
-  interval.lowerBound <= other.upperBound && interval.upperBound >= other.lowerBound
+overlaps (Interval firstLower firstUpper) (Interval secondLower secondUpper) =
+  firstLower <= secondUpper && secondLower <= firstUpper
 
 
 hull: Interval -> Interval -> Interval
-hull other interval =
-  if isEmpty other then
-    interval
-  else if isEmpty interval then
-    other
+hull (Interval firstLower firstUpper as first) (Interval secondLower secondUpper as second) =
+  if isEmpty first then
+    second
+  else if isEmpty second then
+    first
   else
-    Interval (min interval.lowerBound other.lowerBound) (max interval.upperBound other.upperBound)
+    Interval (min secondLower firstLower) (max secondUpper firstUpper)
