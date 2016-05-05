@@ -8,6 +8,7 @@ module OpenSolid.Core.Axis2d
   , scaledAbout
   , rotatedAbout
   , translatedBy
+  , mirroredAbout
   , relativeTo
   , placedIn
   , placedOnto
@@ -66,6 +67,15 @@ rotatedAbout centerPoint angle =
 translatedBy: Vector2d -> Axis2d -> Axis2d
 translatedBy vector axis =
   Axis2d (Point2d.plus vector axis.originPoint) axis.direction
+
+
+mirroredAbout: Axis2d -> Axis2d -> Axis2d
+mirroredAbout otherAxis =
+  let
+    mirrorPoint = Point2d.mirroredAbout otherAxis
+    mirrorDirection = Direction2d.mirroredAbout otherAxis.direction
+  in
+    \axis -> Axis2d (mirrorPoint axis.originPoint) (mirrorDirection axis.direction)
 
 
 relativeTo: Frame2d -> Axis2d -> Axis2d
