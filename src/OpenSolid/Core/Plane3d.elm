@@ -9,6 +9,12 @@ module  OpenSolid.Core.Plane3d
   , offsetBy
   , flipped
   , normalAxis
+  , scaledAbout
+  , rotatedAbout
+  , translatedBy
+  , mirroredAbout
+  , relativeTo
+  , placedIn
   ) where
 
 
@@ -58,10 +64,7 @@ fromPointAndNormal originPoint normalDirection =
 
 offsetBy: Float -> Plane3d -> Plane3d
 offsetBy distance plane =
-  let
-    displacement = Direction3d.times distance plane.normalDirection
-  in
-    { plane | originPoint = Point3d.plus displacement plane.originPoint }
+  translatedBy (Direction3d.times distance plane.normalDirection) plane
 
 
 flipped: Plane3d -> Plane3d
@@ -72,3 +75,77 @@ flipped plane =
 normalAxis: Plane3d -> Axis3d
 normalAxis plane =
   Axis3d plane.originPoint plane.normalDirection
+
+
+scaledAbout: Point3d -> Float -> Plane3d -> Plane3d
+scaledAbout centerPoint scale plane =
+  { plane | originPoint = Point3d.scaledAbout centerPoint scale plane.originPoint }
+
+
+rotatedAbout: Axis3d -> Float -> Plane3d -> Plane3d
+rotatedAbout axis angle =
+  let
+    rotatePoint = Point3d.rotatedAbout axis angle
+    rotateDirection = Direction3d.rotatedAbout axis.direction angle
+  in
+    \plane ->
+      let
+        originPoint = rotatePoint plane.originPoint
+        xDirection = rotateDirection plane.xDirection
+        yDirection = rotateDirection plane.yDirection
+        normalDirection = rotateDirection plane.normalDirection
+      in
+        Plane3d originPoint xDirection yDirection normalDirection
+
+
+translatedBy: Vector3d -> Plane3d -> Plane3d
+translatedBy vector plane =
+  { plane | originPoint = Point3d.plus vector plane.originPoint }
+
+
+mirroredAbout: Plane3d -> Plane3d -> Plane3d
+mirroredAbout plane =
+  let
+    mirrorPoint = Point3d.mirroredAbout plane
+    mirrorDirection = Direction3d.mirroredAlong plane.normalDirection
+  in
+    \plane ->
+      let
+        originPoint = mirrorPoint plane.originPoint
+        xDirection = mirrorDirection plane.xDirection
+        yDirection = mirrorDirection plane.yDirection
+        normalDirection = mirrorDirection plane.normalDirection
+      in
+        Plane3d originPoint xDirection yDirection normalDirection
+
+
+relativeTo: Frame3d -> Plane3d -> Plane3d
+relativeTo frame =
+  let
+    localizePoint = Point3d.relativeTo frame
+    localizeDirection = Direction3d.relativeTo frame
+  in
+    \plane ->
+      let
+        originPoint = localizePoint plane.originPoint
+        xDirection = localizeDirection plane.xDirection
+        yDirection = localizeDirection plane.yDirection
+        normalDirection = localizeDirection plane.normalDirection
+      in
+        Plane3d originPoint xDirection yDirection normalDirection
+
+
+placedIn: Frame3d -> Plane3d -> Plane3d
+placedIn frame =
+  let
+    globalizePoint = Point3d.placedIn frame
+    globalizeDirection = Direction3d.placedIn frame
+  in
+    \plane ->
+      let
+        originPoint = globalizePoint plane.originPoint
+        xDirection = globalizeDirection plane.xDirection
+        yDirection = globalizeDirection plane.yDirection
+        normalDirection = globalizeDirection plane.normalDirection
+      in
+        Plane3d originPoint xDirection yDirection normalDirection
