@@ -5,6 +5,9 @@ module OpenSolid.Core.Triangle3d
   , map
   , mapTo
   , scaledAbout
+  , rotatedAbout
+  , translatedBy
+  , mirroredAbout
   , projectedOnto
   , projectedInto
   , area
@@ -48,6 +51,27 @@ scaledAbout centerPoint scale =
     scalePoint = Point3d.scaledAbout centerPoint scale
   in
     map scalePoint
+
+
+rotatedAbout: Axis3d -> Float -> Triangle3d -> Triangle3d
+rotatedAbout axis angle =
+  let
+    rotatePoint = Point3d.rotatedAbout axis angle
+  in
+    map rotatePoint
+
+
+translatedBy: Vector3d -> Triangle3d -> Triangle3d
+translatedBy vector =
+  map (Point3d.plus vector)
+
+
+mirroredAbout: Plane3d -> Triangle3d -> Triangle3d
+mirroredAbout plane =
+  let
+    mirrorPoint = Point3d.mirroredAbout plane
+  in
+    map mirrorPoint
 
 
 projectedOnto: Plane3d -> Triangle3d -> Triangle3d
