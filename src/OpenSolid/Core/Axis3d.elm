@@ -6,6 +6,12 @@ module  OpenSolid.Core.Axis3d
   , normalDirection
   , normalPlane
   , reversed
+  , scaledAbout
+  , rotatedAbout
+  , translatedBy
+  , mirroredAbout
+  , relativeTo
+  , placedIn
   , projectedOnto
   , projectedInto
   ) where
@@ -52,6 +58,52 @@ normalPlane axis =
 reversed: Axis3d -> Axis3d
 reversed axis =
   Axis3d axis.originPoint (Direction3d.negated axis.direction)
+
+
+scaledAbout: Point3d -> Float -> Axis3d -> Axis3d
+scaledAbout centerPoint scale axis =
+  Axis3d (Point3d.scaledAbout centerPoint scale axis.originPoint) axis.direction
+
+
+rotatedAbout: Axis3d -> Float -> Axis3d -> Axis3d
+rotatedAbout otherAxis angle =
+  let
+    rotatePoint = Point3d.rotatedAbout otherAxis angle
+    rotateDirection = Direction3d.rotatedAbout otherAxis.direction angle
+  in
+    \axis -> Axis3d (rotatePoint axis.originPoint) (rotateDirection axis.direction)
+
+
+translatedBy: Vector3d -> Axis3d -> Axis3d
+translatedBy vector axis =
+  Axis3d (Point3d.plus vector axis.originPoint) axis.direction
+
+
+mirroredAbout: Plane3d -> Axis3d -> Axis3d
+mirroredAbout plane =
+  let
+    mirrorPoint = Point3d.mirroredAbout plane
+    mirrorDirection = Direction3d.mirroredAlong plane.normalDirection
+  in
+    \axis -> Axis3d (mirrorPoint axis.originPoint) (mirrorDirection axis.direction)
+
+
+relativeTo: Frame3d -> Axis3d -> Axis3d
+relativeTo frame =
+  let
+    localizePoint = Point3d.relativeTo frame
+    localizeDirection = Direction3d.relativeTo frame
+  in
+    \axis -> Axis3d (localizePoint axis.originPoint) (localizeDirection axis.direction)
+
+
+placedIn: Frame3d -> Axis3d -> Axis3d
+placedIn frame =
+  let
+    globalizePoint = Point3d.placedIn frame
+    globalizeDirection = Direction3d.placedIn frame
+  in
+    \axis -> Axis3d (globalizePoint axis.originPoint) (globalizeDirection axis.direction)
 
 
 projectedOnto: Plane3d -> Axis3d -> Maybe Axis3d
