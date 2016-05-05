@@ -94,42 +94,8 @@ width (Interval lowerBound upperBound) =
 
 
 interpolated: Float -> Interval -> Float
-interpolated parameter (Interval lowerBound upperBound as interval) =
-  if isFinite interval then
-    -- Fast path
-    lowerBound + parameter * width interval
-  else if isNaN parameter || isEmpty interval then
-    notANumber
-  else if upperBound == negativeInfinity then
-    -- Interval is singleton negative infinity
-    if parameter <= 1 then negativeInfinity else notANumber
-  else if lowerBound == positiveInfinity then
-    -- Interval is singleton positive infinity
-    if parameter >= 0 then positiveInfinity else notANumber
-  else if lowerBound > negativeInfinity then
-    -- Interval has finite lower bound, infinite upper bound
-    if parameter < 0 then
-      negativeInfinity
-    else if parameter > 0 then
-      positiveInfinity
-    else
-      lowerBound
-  else if upperBound < positiveInfinity then
-    -- Interval has finite upper bound, infinite lower bound
-    if parameter < 1 then
-      negativeInfinity
-    else if parameter > 1 then
-      positiveInfinity
-    else
-      upperBound
-  else
-    -- Interval is the whole interval
-    if parameter <= 0 then
-      negativeInfinity
-    else if parameter >= 1 then
-      positiveInfinity
-    else
-      notANumber
+interpolated parameter (Interval lowerBound upperBound) =
+  lowerBound + parameter * (upperBound - lowerBound)
 
 
 midpoint: Interval -> Float
