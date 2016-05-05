@@ -4,6 +4,7 @@ module OpenSolid.Core.Interval
   , singleton
   , hull
   , hullOf
+  , intersection
   , fromEndpoints
   , endpoints
   , isEmpty
@@ -61,6 +62,20 @@ hull (Interval firstLower firstUpper as first) (Interval secondLower secondUpper
 hullOf: List Interval -> Interval
 hullOf =
   List.foldl hull empty
+
+
+intersection: Interval -> Interval -> Interval
+intersection first second =
+  if isEmpty first || isEmpty second then
+    empty
+  else
+    let
+      (Interval firstLower firstUpper) = first
+      (Interval secondLower secondUpper) = second
+      lowerBound = max firstLower secondLower
+      upperBound = min firstUpper secondUpper
+    in
+      if lowerBound <= upperBound then Interval lowerBound upperBound else empty
 
 
 fromEndpoints: (Float, Float) -> Interval
