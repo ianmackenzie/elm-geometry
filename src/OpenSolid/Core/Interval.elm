@@ -149,4 +149,4 @@ hull (Interval firstLower firstUpper as first) (Interval secondLower secondUpper
   else if isEmpty second then
     first
   else
-    Interval (min secondLower firstLower) (max secondUpper firstUpper)
+    Interval (min firstLower secondLower) (max firstUpper secondUpper)
