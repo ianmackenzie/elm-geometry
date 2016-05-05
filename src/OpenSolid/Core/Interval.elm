@@ -2,6 +2,7 @@ module OpenSolid.Core.Interval
   ( empty
   , whole
   , singleton
+  , hull
   , hullOf
   , fromEndpoints
   , endpoints
@@ -14,7 +15,6 @@ module OpenSolid.Core.Interval
   , contains
   , isInside
   , overlaps
-  , hull
   ) where
 
 
@@ -46,6 +46,16 @@ whole =
 singleton: Float -> Interval
 singleton value =
   Interval value value
+
+
+hull: Interval -> Interval -> Interval
+hull (Interval firstLower firstUpper as first) (Interval secondLower secondUpper as second) =
+  if isEmpty first then
+    second
+  else if isEmpty second then
+    first
+  else
+    Interval (min firstLower secondLower) (max firstUpper secondUpper)
 
 
 hullOf: List Interval -> Interval
@@ -140,13 +150,3 @@ isInside (Interval otherLower otherUpper) (Interval lowerBound upperBound) =
 overlaps: Interval -> Interval -> Bool
 overlaps (Interval firstLower firstUpper) (Interval secondLower secondUpper) =
   firstLower <= secondUpper && secondLower <= firstUpper
-
-
-hull: Interval -> Interval -> Interval
-hull (Interval firstLower firstUpper as first) (Interval secondLower secondUpper as second) =
-  if isEmpty first then
-    second
-  else if isEmpty second then
-    first
-  else
-    Interval (min firstLower secondLower) (max firstUpper secondUpper)
