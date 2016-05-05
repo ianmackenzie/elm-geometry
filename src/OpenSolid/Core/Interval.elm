@@ -11,7 +11,6 @@ module OpenSolid.Core.Interval
   , width
   , interpolated
   , midpoint
-  , contains
   , overlaps
   , hull
   ) where
@@ -113,11 +112,6 @@ interpolated parameter (Interval lowerBound upperBound as interval) =
 midpoint: Interval -> Float
 midpoint =
   interpolated 0.5
-
-
-contains: Float -> Interval -> Bool
-contains value (Interval lowerBound upperBound) =
-  lowerBound <= value && value <= upperBound
 
 
 overlaps: Interval -> Interval -> Bool

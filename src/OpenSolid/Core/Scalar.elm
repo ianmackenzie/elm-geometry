@@ -5,6 +5,7 @@ module OpenSolid.Core.Scalar
   , hull
   , hullOf
   , isZeroWithin
+  , isInside
   ) where
 
 
@@ -64,6 +65,18 @@ Note that the tolerance is given first, to allow convenient partial application:
 isZeroWithin: Float -> Float -> Bool
 isZeroWithin tolerance value =
   -tolerance <= value && value <= tolerance
+
+
+{-| Check if a value is in a given interval.
+
+    Scalar.isInside (Interval 2 4) 1 == False
+    Scalar.isInside (Interval 2 4) 2 == True
+    Scalar.isInside (Interval 2 4) 3 == True
+    List.filter (Scalar.isInside (Interval 2 4)) [0..10] == [2, 3, 4]
+-}
+isInside: Interval -> Float -> Bool
+isInside (Interval lowerBound upperBound) value =
+  lowerBound <= value && value <= upperBound
 
 
 {-| Construct an `Interval` containing the two given values.
