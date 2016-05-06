@@ -20,6 +20,7 @@ module OpenSolid.Core.Point3d
   , plus
   , minus
   , hull
+  , hullOf
   ) where
 
 
@@ -27,6 +28,7 @@ import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Scalar as Scalar
 import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction3d as Direction3d
+import OpenSolid.Core.BoundingBox3d as BoundingBox3d
 
 
 origin: Point3d
@@ -158,3 +160,8 @@ minus (Vector3d vx vy vz) (Point3d px py pz) =
 hull: Point3d -> Point3d -> BoundingBox3d
 hull (Point3d x2 y2 z2) (Point3d x1 y1 z1) =
   BoundingBox3d (Scalar.hull x1 x2) (Scalar.hull y1 y2) (Scalar.hull z1 z2)
+
+
+hullOf: List Point3d -> BoundingBox3d
+hullOf =
+  List.map BoundingBox3d.singleton >> BoundingBox3d.hullOf
