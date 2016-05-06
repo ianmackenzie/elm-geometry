@@ -67,8 +67,4 @@ hull firstValue secondValue =
 -}
 hullOf: List Float -> Interval
 hullOf values =
-  let
-    minValue = Maybe.withDefault notANumber (List.minimum values)
-    maxValue = Maybe.withDefault notANumber (List.maximum values)
-  in
-    Interval minValue maxValue
+  Maybe.withDefault Interval.empty (Maybe.map2 Interval (List.minimum values) (List.maximum values))
