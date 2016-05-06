@@ -15,7 +15,6 @@ module OpenSolid.Core.LineSegment2d
   , projectedOnto
   , placedOnto
   , boundingBox
-  , isInside
   ) where
 
 
@@ -117,8 +116,3 @@ placedOnto plane =
 boundingBox: LineSegment2d -> BoundingBox2d
 boundingBox (LineSegment2d p1 p2) =
   Point2d.hull p1 p2
-
-
-isInside: BoundingBox2d -> LineSegment2d -> Bool
-isInside box (LineSegment2d p1 p2) =
-  Point2d.isInside box p1 && Point2d.isInside box p2

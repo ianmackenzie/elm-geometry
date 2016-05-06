@@ -16,7 +16,6 @@ module OpenSolid.Core.LineSegment3d
   , projectedOnto
   , projectedInto
   , boundingBox
-  , isInside
   ) where
 
 
@@ -126,8 +125,3 @@ projectedInto plane =
 boundingBox: LineSegment3d -> BoundingBox3d
 boundingBox (LineSegment3d p1 p2) =
   Point3d.hull p1 p2
-
-
-isInside: BoundingBox3d -> LineSegment3d -> Bool
-isInside box (LineSegment3d p1 p2) =
-  Point3d.isInside box p1 && Point3d.isInside box p2
