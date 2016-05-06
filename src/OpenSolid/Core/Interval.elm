@@ -14,7 +14,6 @@ module OpenSolid.Core.Interval
   , interpolated
   , midpoint
   , contains
-  , isInside
   , overlaps
   ) where
 
@@ -118,16 +117,11 @@ midpoint =
   interpolated 0.5
 
 
-contains: Float -> Interval -> Bool
-contains value (Interval lowerBound upperBound) =
-  lowerBound <= value && value <= upperBound
-
-
-isInside: Interval -> Interval -> Bool
-isInside (Interval otherLower otherUpper) (Interval lowerBound upperBound) =
-  otherLower <= lowerBound && upperBound <= otherUpper
+contains: Interval -> Interval -> Bool
+contains (Interval otherLower otherUpper) (Interval lowerBound upperBound) =
+  lowerBound <= otherLower && otherUpper <= upperBound
 
 
 overlaps: Interval -> Interval -> Bool
-overlaps (Interval firstLower firstUpper) (Interval secondLower secondUpper) =
-  firstLower <= secondUpper && secondLower <= firstUpper
+overlaps (Interval otherLower otherUpper) (Interval lowerBound upperBound) =
+  lowerBound <= otherUpper && upperBound >= otherLower

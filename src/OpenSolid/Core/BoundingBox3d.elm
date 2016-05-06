@@ -20,11 +20,11 @@ components (BoundingBox3d x y z) =
   (x, y, z)
 
 
-contains: Point3d -> BoundingBox3d -> Bool
-contains (Point3d px py pz) (BoundingBox3d x y z) =
-  Interval.contains px x && Interval.contains py y && Interval.contains pz z
+contains: BoundingBox3d -> BoundingBox3d -> Bool
+contains (BoundingBox3d otherX otherY otherZ) (BoundingBox3d x y z) =
+  Interval.contains otherX x && Interval.contains otherY y && Interval.contains otherZ z
 
 
 overlaps: BoundingBox3d -> BoundingBox3d -> Bool
-overlaps (BoundingBox3d x2 y2 z2) (BoundingBox3d x1 y1 z1) =
-  Interval.overlaps x2 x1 && Interval.overlaps y2 y1 && Interval.overlaps z2 z1
+overlaps (BoundingBox3d otherX otherY otherZ) (BoundingBox3d x y z) =
+  Interval.overlaps otherX x && Interval.overlaps otherY y && Interval.overlaps otherZ z
