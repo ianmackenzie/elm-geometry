@@ -1,21 +1,12 @@
 module OpenSolid.Core.Scalar
-  ( notANumber
-  , positiveInfinity
-  , negativeInfinity
+  ( isZeroWithin
+  , isInside
   , hull
   , hullOf
-  , isZeroWithin
-  , isInside
   ) where
 
 
-{-| Various convenience values and functions for dealing with `Float` values.
-
-# Values
-
-@docs positiveInfinity, negativeInfinity, notANumber
-
-# Functions
+{-| Various convenience functions for dealing with `Float` values.
 
 @docs isZeroWithin, hull, hullOf
 
@@ -23,33 +14,6 @@ module OpenSolid.Core.Scalar
 
 
 import OpenSolid.Core exposing (..)
-
-
-{-| The constant positive infinity value.
-
-    isInfinite Scalar.positiveInfinity == True
--}
-positiveInfinity: Float
-positiveInfinity =
-  1 / 0
-
-
-{-| The constant negative infinity value.
-
-    isInfinite Scalar.negativeInfinity == True
--}
-negativeInfinity: Float
-negativeInfinity =
-  -1 / 0
-
-
-{-| The constant NaN value.
-
-    isNaN Scalar.notANumber == True
--}
-notANumber: Float
-notANumber =
-  0 / 0
 
 
 {-| Check if a value is equal to zero, to within a given tolerance.
