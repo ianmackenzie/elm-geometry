@@ -21,6 +21,7 @@ module OpenSolid.Core.Point3d
   , minus
   , hull
   , hullOf
+  , isInside
   ) where
 
 
@@ -165,3 +166,8 @@ hull (Point3d x2 y2 z2) (Point3d x1 y1 z1) =
 hullOf: List Point3d -> BoundingBox3d
 hullOf =
   List.map BoundingBox3d.singleton >> BoundingBox3d.hullOf
+
+
+isInside: BoundingBox3d -> Point3d -> Bool
+isInside (BoundingBox3d xInterval yInterval zInterval) (Point3d x y z) =
+  Scalar.isInside xInterval x && Scalar.isInside yInterval y && Scalar.isInside zInterval z
