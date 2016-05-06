@@ -104,10 +104,10 @@ translatedBy vector plane =
 
 
 mirroredAbout: Plane3d -> Plane3d -> Plane3d
-mirroredAbout plane =
+mirroredAbout otherPlane =
   let
-    mirrorPoint = Point3d.mirroredAbout plane
-    mirrorDirection = Direction3d.mirroredAlong plane.normalDirection
+    mirrorPoint = Point3d.mirroredAbout otherPlane
+    mirrorDirection = Direction3d.mirroredAlong otherPlane.normalDirection
   in
     \plane ->
       let
