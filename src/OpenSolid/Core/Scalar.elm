@@ -33,10 +33,11 @@ isZeroWithin tolerance value =
 
 {-| Check if a value is in a given interval.
 
-    Scalar.isInside (Interval 2 4) 1 == False
-    Scalar.isInside (Interval 2 4) 2 == True
-    Scalar.isInside (Interval 2 4) 3 == True
-    List.filter (Scalar.isInside (Interval 2 4)) [0..10] == [2, 3, 4]
+    Scalar.isInside (Interval 0 2) 1 == True
+    Scalar.isInside (Interval 0 2) 2 == True
+    Scalar.isInside (Interval 0 2) 3 == False
+    List.filter (Scalar.isInside (Interval 2.1 5.9)) [0..10] == [3, 4, 5]
+
 -}
 isInside: Interval -> Float -> Bool
 isInside (Interval lowerBound upperBound) value =
