@@ -14,6 +14,7 @@ module OpenSolid.Core.Scalar
 
 
 import OpenSolid.Core exposing (..)
+import OpenSolid.Core.Interval as Interval
 
 
 {-| Check if a value is equal to zero, to within a given tolerance.
