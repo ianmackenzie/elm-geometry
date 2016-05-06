@@ -11,7 +11,6 @@ module OpenSolid.Core.Triangle2d
   , placedOnto
   , area
   , centroid
-  , contains
   , boundingBox
   ) where
 
@@ -90,20 +89,6 @@ centroid (Triangle2d p1 p2 p3) =
     displacement = Vector2d.times (1.0 / 3.0) (Vector2d.plus secondVector firstVector)
   in
     Point2d.plus displacement p1
-
-
-contains: Point2d -> Triangle2d -> Bool
-contains point (Triangle2d p1 p2 p3) =
-  let
-    crossProduct startVertex endVertex =
-      Vector2d.cross (Point2d.vectorTo point startVertex) (Point2d.vectorTo endVertex startVertex)
-
-    firstProduct = crossProduct p1 p2
-    secondProduct = crossProduct p2 p3
-    thirdProduct = crossProduct p3 p1
-  in
-    (firstProduct >= 0 && secondProduct >= 0 && thirdProduct >= 0) ||
-    (firstProduct <= 0 && secondProduct <= 0 && thirdProduct <= 0)
 
 
 boundingBox: Triangle2d -> BoundingBox2d

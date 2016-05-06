@@ -81,8 +81,9 @@ view state =
     angledComponent = Vector2d.componentIn rotatedDirection (Vector2d 2 3)
     triangle = Triangle2d Point2d.origin (Point2d 1 0) (Point2d 0 1)
     triangleArea = Triangle2d.area triangle
-    contains1 = Triangle2d.contains (Point2d 0.5 0.5) triangle
-    contains2 = Triangle2d.contains (Point2d 1 1) triangle
+    isInsideTriangle = Point2d.isInsideTriangle triangle
+    inside1 = isInsideTriangle (Point2d 0.5 0.5)
+    inside2 = isInsideTriangle (Point2d 1 1)
     placedTriangle = Triangle2d.placedOnto Plane3d.xz triangle
     placedArea = Triangle3d.area placedTriangle
     placedCentroid = Triangle3d.centroid placedTriangle
@@ -102,8 +103,8 @@ view state =
       , line "Angled component" angledComponent
       , line "Current time" (timeString state.currentTime)
       , line "Triangle area" triangleArea
-      , line "Contains 1" contains1
-      , line "Contains 2" contains2
+      , line "Inside 1" inside1
+      , line "Inside 2" inside2
       , line "Placed triangle" placedTriangle
       , line "Placed area" placedArea
       , line "Placed centroid" placedCentroid
