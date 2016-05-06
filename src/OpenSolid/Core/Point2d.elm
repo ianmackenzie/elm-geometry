@@ -20,6 +20,7 @@ module OpenSolid.Core.Point2d
   , plus
   , minus
   , hull
+  , hullOf
   ) where
 
 
@@ -27,6 +28,7 @@ import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Scalar as Scalar
 import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Direction2d as Direction2d
+import OpenSolid.Core.BoundingBox2d as BoundingBox2d
 
 
 origin: Point2d
@@ -151,3 +153,8 @@ minus (Vector2d vx vy) (Point2d px py) =
 hull: Point2d -> Point2d -> BoundingBox2d
 hull (Point2d x2 y2) (Point2d x1 y1) =
   BoundingBox2d (Scalar.hull x2 x1) (Scalar.hull y2 y1)
+
+
+hullOf: List Point2d -> BoundingBox2d
+hullOf =
+  List.map BoundingBox2d.singleton >> BoundingBox2d.hullOf
