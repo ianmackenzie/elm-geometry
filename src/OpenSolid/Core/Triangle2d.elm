@@ -12,6 +12,7 @@ module OpenSolid.Core.Triangle2d
   , area
   , centroid
   , contains
+  , boundingBox
   ) where
 
 
@@ -103,3 +104,14 @@ contains point (Triangle2d p1 p2 p3) =
   in
     (firstProduct >= 0 && secondProduct >= 0 && thirdProduct >= 0) ||
     (firstProduct <= 0 && secondProduct <= 0 && thirdProduct <= 0)
+
+
+boundingBox: Triangle2d -> BoundingBox2d
+boundingBox (Triangle2d (Point2d x1 y1) (Point2d x2 y2) (Point2d x3 y3)) =
+  let
+    xMin = min x1 (min x2 x3)
+    xMax = max x1 (max x2 x3)
+    yMin = min y1 (min y2 y3)
+    yMax = max y1 (max y2 y3)
+  in
+    BoundingBox2d (Interval xMin xMax) (Interval yMin yMax)

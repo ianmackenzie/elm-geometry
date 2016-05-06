@@ -12,6 +12,7 @@ module OpenSolid.Core.Triangle3d
   , projectedInto
   , area
   , centroid
+  , boundingBox
   ) where
 
 
@@ -103,3 +104,16 @@ centroid (Triangle3d p1 p2 p3) =
     displacement = Vector3d.times (1.0 / 3.0) (Vector3d.plus secondVector firstVector)
   in
     Point3d.plus displacement p1
+
+
+boundingBox: Triangle3d -> BoundingBox3d
+boundingBox (Triangle3d (Point3d x1 y1 z1) (Point3d x2 y2 z2) (Point3d x3 y3 z3)) =
+  let
+    xMin = min x1 (min x2 x3)
+    xMax = max x1 (max x2 x3)
+    yMin = min y1 (min y2 y3)
+    yMax = max y1 (max y2 y3)
+    zMin = min z1 (min z2 z3)
+    zMax = max z1 (max z2 z3)
+  in
+    BoundingBox3d (Interval xMin xMax) (Interval yMin yMax) (Interval zMin zMax)
