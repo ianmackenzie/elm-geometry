@@ -29,13 +29,9 @@ negativeInfinity =
   -1 / 0
 
 
-notANumber =
-  0 / 0
-
-
 empty: Interval
 empty =
-  Interval notANumber notANumber
+  Interval (0 / 0) (0 / 0)
 
 
 whole: Interval
