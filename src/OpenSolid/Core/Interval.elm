@@ -8,8 +8,6 @@ module OpenSolid.Core.Interval
   , fromEndpoints
   , endpoints
   , isEmpty
-  , isWhole
-  , isFinite
   , width
   , interpolated
   , midpoint
@@ -86,16 +84,6 @@ endpoints (Interval lowerBound upperBound) =
 isEmpty: Interval -> Bool
 isEmpty (Interval lowerBound upperBound) =
   isNaN lowerBound && isNaN upperBound
-
-
-isWhole: Interval -> Bool
-isWhole (Interval lowerBound upperBound) =
-  lowerBound == negativeInfinity && upperBound == positiveInfinity
-
-
-isFinite: Interval -> Bool
-isFinite (Interval lowerBound upperBound) =
-  negativeInfinity < lowerBound && upperBound < positiveInfinity
 
 
 width: Interval -> Float
