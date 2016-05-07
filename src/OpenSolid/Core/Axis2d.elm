@@ -1,7 +1,7 @@
 module OpenSolid.Core.Axis2d
   ( x
   , y
-  , pointAt
+  , point
   , normalDirection
   , normalAxis
   , reversed
@@ -30,8 +30,8 @@ y =
   Axis2d Point2d.origin Direction2d.y
 
 
-pointAt: Float -> Axis2d -> Point2d
-pointAt distance axis =
+point: Float -> Axis2d -> Point2d
+point distance axis =
   Point2d.plus (Direction2d.times distance axis.direction) axis.originPoint
 
 

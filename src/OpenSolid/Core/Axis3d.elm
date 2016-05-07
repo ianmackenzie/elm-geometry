@@ -2,7 +2,7 @@ module  OpenSolid.Core.Axis3d
   ( x
   , y
   , z
-  , pointAt
+  , point
   , normalDirection
   , normalPlane
   , reversed
@@ -40,8 +40,8 @@ z =
   Axis3d Point3d.origin Direction3d.z
 
 
-pointAt: Float -> Axis3d -> Point3d
-pointAt distance axis =
+point: Float -> Axis3d -> Point3d
+point distance axis =
   Point3d.plus (Direction3d.times distance axis.direction) axis.originPoint
 
 
