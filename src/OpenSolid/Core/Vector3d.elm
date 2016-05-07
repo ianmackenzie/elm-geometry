@@ -9,23 +9,23 @@ module OpenSolid.Core.Vector3d
   , componentIn
   , squaredLength
   , length
-  , normalized
+  , normalize
   , direction
   , perpendicularVector
   , normalDirection
-  , rotatedAbout
-  , mirroredAlong
+  , rotateAbout
+  , mirrorAlong
   , relativeTo
-  , placedIn
+  , placeIn
   , projectionIn
-  , projectedOnto
-  , projectedInto
-  , negated
+  , projectOnto
+  , projectInto
+  , negate
   , plus
   , minus
   , times
-  , addedTo
-  , subtractedFrom
+  , addTo
+  , subtractFrom
   , dot
   , cross
   ) where
@@ -84,14 +84,14 @@ length =
   squaredLength >> sqrt
 
 
-normalized: Vector3d -> Maybe Vector3d
-normalized vector =
+normalize: Vector3d -> Maybe Vector3d
+normalize vector =
   if equals zero vector then Nothing else Just (times (1 / length vector) vector)
 
 
 direction: Vector3d -> Maybe Direction3d
 direction =
-  normalized >> Maybe.map Direction3d
+  normalize >> Maybe.map Direction3d
 
 
 perpendicularVector: Vector3d -> Vector3d
@@ -118,8 +118,8 @@ normalDirection =
   perpendicularVector >> direction
 
 
-rotatedAbout: Direction3d -> Float -> Vector3d -> Vector3d
-rotatedAbout (Direction3d (Vector3d dx dy dz)) angle =
+rotateAbout: Direction3d -> Float -> Vector3d -> Vector3d
+rotateAbout (Direction3d (Vector3d dx dy dz)) angle =
   let
     halfAngle = 0.5 * angle
     sinHalfAngle = sin halfAngle
@@ -155,8 +155,8 @@ rotatedAbout (Direction3d (Vector3d dx dy dz)) angle =
         Vector3d vx' vy' vz'
 
 
-mirroredAlong: Direction3d -> Vector3d -> Vector3d
-mirroredAlong direction =
+mirrorAlong: Direction3d -> Vector3d -> Vector3d
+mirrorAlong direction =
   let
     (Direction3d (Vector3d dx dy dz)) = direction
     a = 1 - 2 * dx * dx
@@ -185,8 +185,8 @@ relativeTo frame vector =
     Vector3d x y z
 
 
-placedIn: Frame3d -> Vector3d -> Vector3d
-placedIn frame =
+placeIn: Frame3d -> Vector3d -> Vector3d
+placeIn frame =
   let
     (Direction3d (Vector3d x1 y1 z1)) = frame.xDirection
     (Direction3d (Vector3d x2 y2 z2)) = frame.yDirection
@@ -206,18 +206,18 @@ projectionIn (Direction3d directionVector as direction) vector =
   times (componentIn direction vector) directionVector
 
 
-projectedOnto: Plane3d -> Vector3d -> Vector3d
-projectedOnto plane vector =
+projectOnto: Plane3d -> Vector3d -> Vector3d
+projectOnto plane vector =
   minus (projectionIn plane.normalDirection vector) vector
 
 
-projectedInto: Plane3d -> Vector3d -> Vector2d
-projectedInto plane vector =
+projectInto: Plane3d -> Vector3d -> Vector2d
+projectInto plane vector =
   Vector2d (componentIn plane.xDirection vector) (componentIn plane.yDirection vector)
 
 
-negated: Vector3d -> Vector3d
-negated (Vector3d x y z) =
+negate: Vector3d -> Vector3d
+negate (Vector3d x y z) =
   Vector3d (-x) (-y) (-z)
 
 
@@ -236,13 +236,13 @@ times scale (Vector3d x y z) =
   Vector3d (x * scale) (y * scale) (z * scale)
 
 
-addedTo: Point3d -> Vector3d -> Point3d
-addedTo (Point3d px py pz) (Vector3d vx vy vz) =
+addTo: Point3d -> Vector3d -> Point3d
+addTo (Point3d px py pz) (Vector3d vx vy vz) =
   Point3d (px + vx) (py + vy) (pz + vz)
 
 
-subtractedFrom: Point3d -> Vector3d -> Point3d
-subtractedFrom (Point3d px py pz) (Vector3d vx vy vz) =
+subtractFrom: Point3d -> Vector3d -> Point3d
+subtractFrom (Point3d px py pz) (Vector3d vx vy vz) =
   Point3d (px - vx) (py - vy) (pz - vz)
 
 

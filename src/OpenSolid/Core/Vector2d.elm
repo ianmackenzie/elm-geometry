@@ -10,23 +10,23 @@ module OpenSolid.Core.Vector2d
   , componentIn
   , squaredLength
   , length
-  , normalized
+  , normalize
   , direction
   , perpendicularVector
   , normalDirection
-  , rotatedBy
-  , mirroredAbout
+  , rotateBy
+  , mirrorAbout
   , relativeTo
-  , placedIn
+  , placeIn
   , projectionIn
-  , projectedOnto
-  , placedOnto
-  , negated
+  , projectOnto
+  , placeOnto
+  , negate
   , plus
   , minus
   , times
-  , addedTo
-  , subtractedFrom
+  , addTo
+  , subtractFrom
   , dot
   , cross
   ) where
@@ -90,14 +90,14 @@ length =
   squaredLength >> sqrt
 
 
-normalized: Vector2d -> Maybe Vector2d
-normalized vector =
+normalize: Vector2d -> Maybe Vector2d
+normalize vector =
   if equals zero vector then Nothing else Just (times (1 / length vector) vector)
 
 
 direction: Vector2d -> Maybe Direction2d
 direction =
-  normalized >> Maybe.map Direction2d
+  normalize >> Maybe.map Direction2d
 
 
 perpendicularVector: Vector2d -> Vector2d
@@ -110,8 +110,8 @@ normalDirection =
   perpendicularVector >> direction
 
 
-rotatedBy: Float -> Vector2d -> Vector2d
-rotatedBy angle =
+rotateBy: Float -> Vector2d -> Vector2d
+rotateBy angle =
   let
     cosine = cos angle
     sine = sin angle
@@ -119,8 +119,8 @@ rotatedBy angle =
     \(Vector2d x y) -> Vector2d (x * cosine - y * sine) (y * cosine + x * sine)
 
 
-mirroredAbout: Direction2d -> Vector2d -> Vector2d
-mirroredAbout direction =
+mirrorAbout: Direction2d -> Vector2d -> Vector2d
+mirrorAbout direction =
   let
     (Direction2d (Vector2d dx dy)) = direction
     a = 1 - 2 * dy * dy
@@ -135,8 +135,8 @@ relativeTo frame vector =
   Vector2d (componentIn frame.xDirection vector) (componentIn frame.yDirection vector)
 
 
-placedIn: Frame2d -> Vector2d -> Vector2d
-placedIn frame =
+placeIn: Frame2d -> Vector2d -> Vector2d
+placeIn frame =
   let
     (Direction2d (Vector2d x1 y1)) = frame.xDirection
     (Direction2d (Vector2d x2 y2)) = frame.yDirection
@@ -149,13 +149,13 @@ projectionIn (Direction2d directionVector as direction) vector =
   times (componentIn direction vector) directionVector
 
 
-projectedOnto: Axis2d -> Vector2d -> Vector2d
-projectedOnto axis =
+projectOnto: Axis2d -> Vector2d -> Vector2d
+projectOnto axis =
   projectionIn axis.direction
 
 
-placedOnto: Plane3d -> Vector2d -> Vector3d
-placedOnto plane =
+placeOnto: Plane3d -> Vector2d -> Vector3d
+placeOnto plane =
   let
     (Direction3d (Vector3d x1 y1 z1)) = plane.xDirection
     (Direction3d (Vector3d x2 y2 z2)) = plane.yDirection
@@ -163,8 +163,8 @@ placedOnto plane =
     \(Vector2d x y) -> Vector3d (x1 * x + x2 * y) (y1 * x + y2 * y) (z1 * x + z2 * y)
 
 
-negated: Vector2d -> Vector2d
-negated (Vector2d x y) =
+negate: Vector2d -> Vector2d
+negate (Vector2d x y) =
   Vector2d (-x) (-y)
 
 
@@ -183,13 +183,13 @@ times scale (Vector2d x y) =
   Vector2d (x * scale) (y * scale)
 
 
-addedTo: Point2d -> Vector2d -> Point2d
-addedTo (Point2d px py) (Vector2d vx vy) =
+addTo: Point2d -> Vector2d -> Point2d
+addTo (Point2d px py) (Vector2d vx vy) =
   Point2d (px + vx) (py + vy)
 
 
-subtractedFrom: Point2d -> Vector2d -> Point2d
-subtractedFrom (Point2d px py) (Vector2d vx vy) =
+subtractFrom: Point2d -> Vector2d -> Point2d
+subtractFrom (Point2d px py) (Vector2d vx vy) =
   Point2d (px - vx) (py - vy)
 
 

@@ -7,13 +7,13 @@ module OpenSolid.Core.Direction3d
   , vector
   , normalDirection
   , normalBasis
-  , rotatedAbout
-  , mirroredAlong
+  , rotateAbout
+  , mirrorAlong
   , relativeTo
-  , placedIn
-  , projectedOnto
-  , projectedInto
-  , negated
+  , placeIn
+  , projectOnto
+  , projectInto
+  , negate
   , times
   ) where
 
@@ -70,18 +70,18 @@ normalBasis direction =
     (xDirection, yDirection)
 
 
-rotatedAbout: Direction3d -> Float -> Direction3d -> Direction3d
-rotatedAbout direction angle =
+rotateAbout: Direction3d -> Float -> Direction3d -> Direction3d
+rotateAbout direction angle =
   let
-    rotateVector = Vector3d.rotatedAbout direction angle
+    rotateVector = Vector3d.rotateAbout direction angle
   in
     vector >> rotateVector >> Direction3d
 
 
-mirroredAlong: Direction3d -> Direction3d -> Direction3d
-mirroredAlong direction =
+mirrorAlong: Direction3d -> Direction3d -> Direction3d
+mirrorAlong direction =
   let
-    mirrorVector = Vector3d.mirroredAlong direction
+    mirrorVector = Vector3d.mirrorAlong direction
   in
     vector >> mirrorVector >> Direction3d
 
@@ -94,27 +94,27 @@ relativeTo frame =
     vector >> localizeVector >> Direction3d
 
 
-placedIn: Frame3d -> Direction3d -> Direction3d
-placedIn frame =
+placeIn: Frame3d -> Direction3d -> Direction3d
+placeIn frame =
   let
-    globalizeVector = Vector3d.placedIn frame
+    globalizeVector = Vector3d.placeIn frame
   in
     vector >> globalizeVector >> Direction3d
 
 
-projectedOnto: Plane3d -> Direction3d -> Maybe Direction3d
-projectedOnto plane =
-  vector >> Vector3d.projectedOnto plane >> Vector3d.direction
+projectOnto: Plane3d -> Direction3d -> Maybe Direction3d
+projectOnto plane =
+  vector >> Vector3d.projectOnto plane >> Vector3d.direction
 
 
-projectedInto: Plane3d -> Direction3d -> Maybe Direction2d
-projectedInto plane =
-  vector >> Vector3d.projectedInto plane >> Vector2d.direction
+projectInto: Plane3d -> Direction3d -> Maybe Direction2d
+projectInto plane =
+  vector >> Vector3d.projectInto plane >> Vector2d.direction
 
 
-negated: Direction3d -> Direction3d
-negated =
-  vector >> Vector3d.negated >> Direction3d
+negate: Direction3d -> Direction3d
+negate =
+  vector >> Vector3d.negate >> Direction3d
 
 
 times: Float -> Direction3d -> Vector3d

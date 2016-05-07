@@ -12,14 +12,14 @@ module OpenSolid.Core.Point3d
   , squaredDistanceToAxis
   , distanceToAxis
   , signedDistanceFrom
-  , scaledAbout
-  , rotatedAbout
-  , mirroredAbout
+  , scaleAbout
+  , rotateAbout
+  , mirrorAbout
   , relativeTo
-  , placedIn
-  , projectedOntoAxis
-  , projectedOnto
-  , projectedInto
+  , placeIn
+  , projectOntoAxis
+  , projectOnto
+  , projectInto
   , plus
   , minus
   , hull
@@ -108,25 +108,25 @@ signedDistanceFrom plane =
   vectorFrom plane.originPoint >> Vector3d.componentIn plane.normalDirection
 
 
-scaledAbout: Point3d -> Float -> Point3d -> Point3d
-scaledAbout centerPoint scale =
-  vectorFrom centerPoint >> Vector3d.times scale >> Vector3d.addedTo centerPoint
+scaleAbout: Point3d -> Float -> Point3d -> Point3d
+scaleAbout centerPoint scale =
+  vectorFrom centerPoint >> Vector3d.times scale >> Vector3d.addTo centerPoint
 
 
-rotatedAbout: Axis3d -> Float -> Point3d -> Point3d
-rotatedAbout axis angle =
+rotateAbout: Axis3d -> Float -> Point3d -> Point3d
+rotateAbout axis angle =
   let
-    rotateVector = Vector3d.rotatedAbout axis.direction angle
+    rotateVector = Vector3d.rotateAbout axis.direction angle
   in
-    vectorFrom axis.originPoint >> rotateVector >> Vector3d.addedTo axis.originPoint
+    vectorFrom axis.originPoint >> rotateVector >> Vector3d.addTo axis.originPoint
 
 
-mirroredAbout: Plane3d -> Point3d -> Point3d
-mirroredAbout plane =
+mirrorAbout: Plane3d -> Point3d -> Point3d
+mirrorAbout plane =
   let
-    mirrorVector = Vector3d.mirroredAlong plane.normalDirection
+    mirrorVector = Vector3d.mirrorAlong plane.normalDirection
   in
-    vectorFrom plane.originPoint >> mirrorVector >> Vector3d.addedTo plane.originPoint
+    vectorFrom plane.originPoint >> mirrorVector >> Vector3d.addTo plane.originPoint
 
 
 relativeTo: Frame3d -> Point3d -> Point3d
@@ -137,23 +137,23 @@ relativeTo frame =
     vectorFrom frame.originPoint >> localizeVector >> (\(Vector3d x y z) -> Point3d x y z)
 
 
-placedIn: Frame3d -> Point3d -> Point3d
-placedIn frame =
+placeIn: Frame3d -> Point3d -> Point3d
+placeIn frame =
   let
-    globalizeVector = Vector3d.placedIn frame
+    globalizeVector = Vector3d.placeIn frame
   in
-    (\(Point3d x y z) -> Vector3d x y z) >> globalizeVector >> Vector3d.addedTo frame.originPoint
+    (\(Point3d x y z) -> Vector3d x y z) >> globalizeVector >> Vector3d.addTo frame.originPoint
 
 
-projectedOntoAxis: Axis3d -> Point3d -> Point3d
-projectedOntoAxis axis =
+projectOntoAxis: Axis3d -> Point3d -> Point3d
+projectOntoAxis axis =
   vectorFrom axis.originPoint >>
     Vector3d.projectionIn axis.direction >>
-      Vector3d.addedTo axis.originPoint
+      Vector3d.addTo axis.originPoint
 
 
-projectedOnto: Plane3d -> Point3d -> Point3d
-projectedOnto plane point =
+projectOnto: Plane3d -> Point3d -> Point3d
+projectOnto plane point =
   let
     distance = signedDistanceFrom plane point
     displacement = Direction3d.times distance plane.normalDirection
@@ -161,9 +161,9 @@ projectedOnto plane point =
     minus displacement point
 
 
-projectedInto: Plane3d -> Point3d -> Point2d
-projectedInto plane =
-  vectorFrom plane.originPoint >> Vector3d.projectedInto plane >> (\(Vector2d x y) -> Point2d x y)
+projectInto: Plane3d -> Point3d -> Point2d
+projectInto plane =
+  vectorFrom plane.originPoint >> Vector3d.projectInto plane >> (\(Vector2d x y) -> Point2d x y)
 
 
 plus: Vector3d -> Point3d -> Point3d

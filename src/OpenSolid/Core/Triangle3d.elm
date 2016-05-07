@@ -4,12 +4,12 @@ module OpenSolid.Core.Triangle3d
   , edges
   , map
   , mapTo
-  , scaledAbout
-  , rotatedAbout
-  , translatedBy
-  , mirroredAbout
-  , projectedOnto
-  , projectedInto
+  , scaleAbout
+  , rotateAbout
+  , translateBy
+  , mirrorAbout
+  , projectOnto
+  , projectInto
   , area
   , centroid
   , boundingBox
@@ -46,47 +46,47 @@ mapTo constructor map (Triangle3d p1 p2 p3) =
   constructor (map p1) (map p2) (map p3)
 
 
-scaledAbout: Point3d -> Float -> Triangle3d -> Triangle3d
-scaledAbout centerPoint scale =
+scaleAbout: Point3d -> Float -> Triangle3d -> Triangle3d
+scaleAbout centerPoint scale =
   let
-    scalePoint = Point3d.scaledAbout centerPoint scale
+    scalePoint = Point3d.scaleAbout centerPoint scale
   in
     map scalePoint
 
 
-rotatedAbout: Axis3d -> Float -> Triangle3d -> Triangle3d
-rotatedAbout axis angle =
+rotateAbout: Axis3d -> Float -> Triangle3d -> Triangle3d
+rotateAbout axis angle =
   let
-    rotatePoint = Point3d.rotatedAbout axis angle
+    rotatePoint = Point3d.rotateAbout axis angle
   in
     map rotatePoint
 
 
-translatedBy: Vector3d -> Triangle3d -> Triangle3d
-translatedBy vector =
+translateBy: Vector3d -> Triangle3d -> Triangle3d
+translateBy vector =
   map (Point3d.plus vector)
 
 
-mirroredAbout: Plane3d -> Triangle3d -> Triangle3d
-mirroredAbout plane =
+mirrorAbout: Plane3d -> Triangle3d -> Triangle3d
+mirrorAbout plane =
   let
-    mirrorPoint = Point3d.mirroredAbout plane
+    mirrorPoint = Point3d.mirrorAbout plane
   in
     map mirrorPoint
 
 
-projectedOnto: Plane3d -> Triangle3d -> Triangle3d
-projectedOnto plane =
+projectOnto: Plane3d -> Triangle3d -> Triangle3d
+projectOnto plane =
   let
-    projectPoint = Point3d.projectedOnto plane
+    projectPoint = Point3d.projectOnto plane
   in
     map projectPoint
 
 
-projectedInto: Plane3d -> Triangle3d -> Triangle2d
-projectedInto plane =
+projectInto: Plane3d -> Triangle3d -> Triangle2d
+projectInto plane =
   let
-    projectPoint = Point3d.projectedInto plane
+    projectPoint = Point3d.projectInto plane
   in
     mapTo Triangle2d projectPoint
 

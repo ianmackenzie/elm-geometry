@@ -5,14 +5,14 @@ module OpenSolid.Core.Axis2d
   , segment
   , normalDirection
   , normalAxis
-  , reversed
-  , scaledAbout
-  , rotatedAbout
-  , translatedBy
-  , mirroredAbout
+  , reverse
+  , scaleAbout
+  , rotateAbout
+  , translateBy
+  , mirrorAbout
   , relativeTo
-  , placedIn
-  , placedOnto
+  , placeIn
+  , placeOnto
   ) where
 
 
@@ -51,35 +51,35 @@ normalAxis axis =
   Axis2d axis.originPoint (normalDirection axis)
 
 
-reversed: Axis2d -> Axis2d
-reversed axis =
-  Axis2d axis.originPoint (Direction2d.negated axis.direction)
+reverse: Axis2d -> Axis2d
+reverse axis =
+  Axis2d axis.originPoint (Direction2d.negate axis.direction)
 
 
-scaledAbout: Point2d -> Float -> Axis2d -> Axis2d
-scaledAbout centerPoint scale axis =
-  Axis2d (Point2d.scaledAbout centerPoint scale axis.originPoint) axis.direction
+scaleAbout: Point2d -> Float -> Axis2d -> Axis2d
+scaleAbout centerPoint scale axis =
+  Axis2d (Point2d.scaleAbout centerPoint scale axis.originPoint) axis.direction
 
 
-rotatedAbout: Point2d -> Float -> Axis2d -> Axis2d
-rotatedAbout centerPoint angle =
+rotateAbout: Point2d -> Float -> Axis2d -> Axis2d
+rotateAbout centerPoint angle =
   let
-    rotatePoint = Point2d.rotatedAbout centerPoint angle
-    rotateDirection = Direction2d.rotatedBy angle
+    rotatePoint = Point2d.rotateAbout centerPoint angle
+    rotateDirection = Direction2d.rotateBy angle
   in
     \axis -> Axis2d (rotatePoint axis.originPoint) (rotateDirection axis.direction)
 
 
-translatedBy: Vector2d -> Axis2d -> Axis2d
-translatedBy vector axis =
+translateBy: Vector2d -> Axis2d -> Axis2d
+translateBy vector axis =
   Axis2d (Point2d.plus vector axis.originPoint) axis.direction
 
 
-mirroredAbout: Axis2d -> Axis2d -> Axis2d
-mirroredAbout otherAxis =
+mirrorAbout: Axis2d -> Axis2d -> Axis2d
+mirrorAbout otherAxis =
   let
-    mirrorPoint = Point2d.mirroredAbout otherAxis
-    mirrorDirection = Direction2d.mirroredAbout otherAxis.direction
+    mirrorPoint = Point2d.mirrorAbout otherAxis
+    mirrorDirection = Direction2d.mirrorAbout otherAxis.direction
   in
     \axis -> Axis2d (mirrorPoint axis.originPoint) (mirrorDirection axis.direction)
 
@@ -93,19 +93,19 @@ relativeTo frame =
     \axis -> Axis2d (localizePoint axis.originPoint) (localizeDirection axis.direction)
 
 
-placedIn: Frame2d -> Axis2d -> Axis2d
-placedIn frame =
+placeIn: Frame2d -> Axis2d -> Axis2d
+placeIn frame =
   let
-    globalizePoint = Point2d.placedIn frame
-    globalizeDirection = Direction2d.placedIn frame
+    globalizePoint = Point2d.placeIn frame
+    globalizeDirection = Direction2d.placeIn frame
   in
     \axis -> Axis2d (globalizePoint axis.originPoint) (globalizeDirection axis.direction)
 
 
-placedOnto: Plane3d -> Axis2d -> Axis3d
-placedOnto plane =
+placeOnto: Plane3d -> Axis2d -> Axis3d
+placeOnto plane =
   let
-    placePoint = Point2d.placedOnto plane
-    placeDirection = Direction2d.placedOnto plane
+    placePoint = Point2d.placeOnto plane
+    placeDirection = Direction2d.placeOnto plane
   in
     \axis -> Axis3d (placePoint axis.originPoint) (placeDirection axis.direction)

@@ -12,13 +12,13 @@ module OpenSolid.Core.Point2d
   , vectorFrom
   , distanceAlong
   , signedDistanceFrom
-  , scaledAbout
-  , rotatedAbout
-  , mirroredAbout
+  , scaleAbout
+  , rotateAbout
+  , mirrorAbout
   , relativeTo
-  , placedIn
-  , projectedOnto
-  , placedOnto
+  , placeIn
+  , projectOnto
+  , placeOnto
   , plus
   , minus
   , hull
@@ -103,25 +103,25 @@ signedDistanceFrom axis =
     vectorFrom axis.originPoint >> Vector2d.componentIn normalDirection
 
 
-scaledAbout: Point2d -> Float -> Point2d -> Point2d
-scaledAbout centerPoint scale =
-  vectorFrom centerPoint >> Vector2d.times scale >> Vector2d.addedTo centerPoint
+scaleAbout: Point2d -> Float -> Point2d -> Point2d
+scaleAbout centerPoint scale =
+  vectorFrom centerPoint >> Vector2d.times scale >> Vector2d.addTo centerPoint
 
 
-rotatedAbout: Point2d -> Float -> Point2d -> Point2d
-rotatedAbout centerPoint angle =
+rotateAbout: Point2d -> Float -> Point2d -> Point2d
+rotateAbout centerPoint angle =
   let
-    rotateVector = Vector2d.rotatedBy angle
+    rotateVector = Vector2d.rotateBy angle
   in
-    vectorFrom centerPoint >> rotateVector >> Vector2d.addedTo centerPoint
+    vectorFrom centerPoint >> rotateVector >> Vector2d.addTo centerPoint
 
 
-mirroredAbout: Axis2d -> Point2d -> Point2d
-mirroredAbout axis =
+mirrorAbout: Axis2d -> Point2d -> Point2d
+mirrorAbout axis =
   let
-    mirrorVector = Vector2d.mirroredAbout axis.direction
+    mirrorVector = Vector2d.mirrorAbout axis.direction
   in
-    vectorFrom axis.originPoint >> mirrorVector >> Vector2d.addedTo axis.originPoint
+    vectorFrom axis.originPoint >> mirrorVector >> Vector2d.addTo axis.originPoint
 
 
 relativeTo: Frame2d -> Point2d -> Point2d
@@ -132,23 +132,23 @@ relativeTo frame =
     vectorFrom frame.originPoint >> localizeVector >> (\(Vector2d x y) -> Point2d x y)
 
 
-placedIn: Frame2d -> Point2d -> Point2d
-placedIn frame =
+placeIn: Frame2d -> Point2d -> Point2d
+placeIn frame =
   let
-    globalizeVector = Vector2d.placedIn frame
+    globalizeVector = Vector2d.placeIn frame
   in
-    (\(Point2d x y) -> Vector2d x y) >> globalizeVector >> Vector2d.addedTo frame.originPoint
+    (\(Point2d x y) -> Vector2d x y) >> globalizeVector >> Vector2d.addTo frame.originPoint
 
 
-projectedOnto: Axis2d -> Point2d -> Point2d
-projectedOnto axis =
-  vectorFrom axis.originPoint >> Vector2d.projectedOnto axis >> Vector2d.addedTo axis.originPoint
+projectOnto: Axis2d -> Point2d -> Point2d
+projectOnto axis =
+  vectorFrom axis.originPoint >> Vector2d.projectOnto axis >> Vector2d.addTo axis.originPoint
 
 
-placedOnto: Plane3d -> Point2d -> Point3d
-placedOnto plane (Point2d x y) =
+placeOnto: Plane3d -> Point2d -> Point3d
+placeOnto plane (Point2d x y) =
   let
-    (Vector3d vx vy vz) = Vector2d.placedOnto plane (Vector2d x y)
+    (Vector3d vx vy vz) = Vector2d.placeOnto plane (Vector2d x y)
     (Point3d px py pz) = plane.originPoint
   in
     Point3d (px + vx) (py + vy) (pz + vz)

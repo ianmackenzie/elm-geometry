@@ -6,15 +6,15 @@ module  OpenSolid.Core.Axis3d
   , segment
   , normalDirection
   , normalPlane
-  , reversed
-  , scaledAbout
-  , rotatedAbout
-  , translatedBy
-  , mirroredAbout
+  , reverse
+  , scaleAbout
+  , rotateAbout
+  , translateBy
+  , mirrorAbout
   , relativeTo
-  , placedIn
-  , projectedOnto
-  , projectedInto
+  , placeIn
+  , projectOnto
+  , projectInto
   ) where
 
 
@@ -61,35 +61,35 @@ normalPlane axis =
   Plane3d.fromPointAndNormal axis.originPoint axis.direction
 
 
-reversed: Axis3d -> Axis3d
-reversed axis =
-  Axis3d axis.originPoint (Direction3d.negated axis.direction)
+reverse: Axis3d -> Axis3d
+reverse axis =
+  Axis3d axis.originPoint (Direction3d.negate axis.direction)
 
 
-scaledAbout: Point3d -> Float -> Axis3d -> Axis3d
-scaledAbout centerPoint scale axis =
-  Axis3d (Point3d.scaledAbout centerPoint scale axis.originPoint) axis.direction
+scaleAbout: Point3d -> Float -> Axis3d -> Axis3d
+scaleAbout centerPoint scale axis =
+  Axis3d (Point3d.scaleAbout centerPoint scale axis.originPoint) axis.direction
 
 
-rotatedAbout: Axis3d -> Float -> Axis3d -> Axis3d
-rotatedAbout otherAxis angle =
+rotateAbout: Axis3d -> Float -> Axis3d -> Axis3d
+rotateAbout otherAxis angle =
   let
-    rotatePoint = Point3d.rotatedAbout otherAxis angle
-    rotateDirection = Direction3d.rotatedAbout otherAxis.direction angle
+    rotatePoint = Point3d.rotateAbout otherAxis angle
+    rotateDirection = Direction3d.rotateAbout otherAxis.direction angle
   in
     \axis -> Axis3d (rotatePoint axis.originPoint) (rotateDirection axis.direction)
 
 
-translatedBy: Vector3d -> Axis3d -> Axis3d
-translatedBy vector axis =
+translateBy: Vector3d -> Axis3d -> Axis3d
+translateBy vector axis =
   Axis3d (Point3d.plus vector axis.originPoint) axis.direction
 
 
-mirroredAbout: Plane3d -> Axis3d -> Axis3d
-mirroredAbout plane =
+mirrorAbout: Plane3d -> Axis3d -> Axis3d
+mirrorAbout plane =
   let
-    mirrorPoint = Point3d.mirroredAbout plane
-    mirrorDirection = Direction3d.mirroredAlong plane.normalDirection
+    mirrorPoint = Point3d.mirrorAbout plane
+    mirrorDirection = Direction3d.mirrorAlong plane.normalDirection
   in
     \axis -> Axis3d (mirrorPoint axis.originPoint) (mirrorDirection axis.direction)
 
@@ -103,26 +103,26 @@ relativeTo frame =
     \axis -> Axis3d (localizePoint axis.originPoint) (localizeDirection axis.direction)
 
 
-placedIn: Frame3d -> Axis3d -> Axis3d
-placedIn frame =
+placeIn: Frame3d -> Axis3d -> Axis3d
+placeIn frame =
   let
-    globalizePoint = Point3d.placedIn frame
-    globalizeDirection = Direction3d.placedIn frame
+    globalizePoint = Point3d.placeIn frame
+    globalizeDirection = Direction3d.placeIn frame
   in
     \axis -> Axis3d (globalizePoint axis.originPoint) (globalizeDirection axis.direction)
 
 
-projectedOnto: Plane3d -> Axis3d -> Maybe Axis3d
-projectedOnto plane axis =
+projectOnto: Plane3d -> Axis3d -> Maybe Axis3d
+projectOnto plane axis =
   let
-    projectedOrigin = Point3d.projectedOnto plane axis.originPoint
+    projectedOrigin = Point3d.projectOnto plane axis.originPoint
   in
-    Maybe.map (Axis3d projectedOrigin) (Direction3d.projectedOnto plane axis.direction)
+    Maybe.map (Axis3d projectedOrigin) (Direction3d.projectOnto plane axis.direction)
 
 
-projectedInto: Plane3d -> Axis3d -> Maybe Axis2d
-projectedInto plane axis =
+projectInto: Plane3d -> Axis3d -> Maybe Axis2d
+projectInto plane axis =
   let
-    projectedOrigin = Point3d.projectedInto plane axis.originPoint
+    projectedOrigin = Point3d.projectInto plane axis.originPoint
   in
-    Maybe.map (Axis2d projectedOrigin) (Direction3d.projectedInto plane axis.direction)
+    Maybe.map (Axis2d projectedOrigin) (Direction3d.projectInto plane axis.direction)

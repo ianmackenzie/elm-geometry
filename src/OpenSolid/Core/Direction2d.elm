@@ -5,12 +5,12 @@ module OpenSolid.Core.Direction2d
   , fromComponents
   , components
   , normalDirection
-  , rotatedBy
-  , mirroredAbout
+  , rotateBy
+  , mirrorAbout
   , relativeTo
-  , placedIn
-  , placedOnto
-  , negated
+  , placeIn
+  , placeOnto
+  , negate
   , times
   ) where
 
@@ -54,14 +54,14 @@ normalDirection =
   vector >> Vector2d.perpendicularVector >> Direction2d
 
 
-rotatedBy: Float -> Direction2d -> Direction2d
-rotatedBy angle =
-  vector >> Vector2d.rotatedBy angle >> Direction2d
+rotateBy: Float -> Direction2d -> Direction2d
+rotateBy angle =
+  vector >> Vector2d.rotateBy angle >> Direction2d
 
 
-mirroredAbout: Direction2d -> Direction2d -> Direction2d
-mirroredAbout direction =
-  vector >> Vector2d.mirroredAbout direction >> Direction2d
+mirrorAbout: Direction2d -> Direction2d -> Direction2d
+mirrorAbout direction =
+  vector >> Vector2d.mirrorAbout direction >> Direction2d
 
 
 relativeTo: Frame2d -> Direction2d -> Direction2d
@@ -69,19 +69,19 @@ relativeTo frame =
   vector >> Vector2d.relativeTo frame >> Direction2d
 
 
-placedIn: Frame2d -> Direction2d -> Direction2d
-placedIn frame =
-  vector >> Vector2d.placedIn frame >> Direction2d
+placeIn: Frame2d -> Direction2d -> Direction2d
+placeIn frame =
+  vector >> Vector2d.placeIn frame >> Direction2d
 
 
-placedOnto: Plane3d -> Direction2d -> Direction3d
-placedOnto plane =
-  vector >> Vector2d.placedOnto plane >> Direction3d
+placeOnto: Plane3d -> Direction2d -> Direction3d
+placeOnto plane =
+  vector >> Vector2d.placeOnto plane >> Direction3d
 
 
-negated: Direction2d -> Direction2d
-negated =
-  vector >> Vector2d.negated >> Direction2d
+negate: Direction2d -> Direction2d
+negate =
+  vector >> Vector2d.negate >> Direction2d
 
 
 times: Float -> Direction2d -> Vector2d

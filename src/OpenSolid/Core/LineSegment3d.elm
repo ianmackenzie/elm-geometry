@@ -8,13 +8,13 @@ module OpenSolid.Core.LineSegment3d
   , normalDirection
   , squaredLength
   , length
-  , scaledAbout
-  , rotatedAbout
-  , translatedBy
-  , mirroredAbout
-  , projectedOntoAxis
-  , projectedOnto
-  , projectedInto
+  , scaleAbout
+  , rotateAbout
+  , translateBy
+  , mirrorAbout
+  , projectOntoAxis
+  , projectOnto
+  , projectInto
   , boundingBox
   ) where
 
@@ -69,55 +69,55 @@ length =
   vector >> Vector3d.length
 
 
-scaledAbout: Point3d -> Float -> LineSegment3d -> LineSegment3d
-scaledAbout point scale =
+scaleAbout: Point3d -> Float -> LineSegment3d -> LineSegment3d
+scaleAbout point scale =
   let
-    scalePoint = Point3d.scaledAbout point scale
+    scalePoint = Point3d.scaleAbout point scale
   in
     map scalePoint
 
 
-rotatedAbout: Axis3d -> Float -> LineSegment3d -> LineSegment3d
-rotatedAbout axis angle =
+rotateAbout: Axis3d -> Float -> LineSegment3d -> LineSegment3d
+rotateAbout axis angle =
   let
-    rotatePoint = Point3d.rotatedAbout axis angle
+    rotatePoint = Point3d.rotateAbout axis angle
   in
     map rotatePoint
 
 
-translatedBy: Vector3d -> LineSegment3d -> LineSegment3d
-translatedBy vector =
+translateBy: Vector3d -> LineSegment3d -> LineSegment3d
+translateBy vector =
   map (Point3d.plus vector)
 
 
-mirroredAbout: Plane3d -> LineSegment3d -> LineSegment3d
-mirroredAbout plane =
+mirrorAbout: Plane3d -> LineSegment3d -> LineSegment3d
+mirrorAbout plane =
   let
-    mirrorPoint = Point3d.mirroredAbout plane
+    mirrorPoint = Point3d.mirrorAbout plane
   in
     map mirrorPoint
 
 
-projectedOntoAxis: Axis3d -> LineSegment3d -> LineSegment3d
-projectedOntoAxis axis =
+projectOntoAxis: Axis3d -> LineSegment3d -> LineSegment3d
+projectOntoAxis axis =
   let
-    projectPoint = Point3d.projectedOntoAxis axis
+    projectPoint = Point3d.projectOntoAxis axis
   in
     map projectPoint
 
 
-projectedOnto: Plane3d -> LineSegment3d -> LineSegment3d
-projectedOnto plane =
+projectOnto: Plane3d -> LineSegment3d -> LineSegment3d
+projectOnto plane =
   let
-    projectPoint = Point3d.projectedOnto plane
+    projectPoint = Point3d.projectOnto plane
   in
     map projectPoint
 
 
-projectedInto: Plane3d -> LineSegment3d -> LineSegment2d
-projectedInto plane =
+projectInto: Plane3d -> LineSegment3d -> LineSegment2d
+projectInto plane =
   let
-    projectPoint = Point3d.projectedInto plane
+    projectPoint = Point3d.projectInto plane
   in
     mapTo LineSegment2d projectPoint
 

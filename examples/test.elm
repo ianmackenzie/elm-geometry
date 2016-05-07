@@ -75,22 +75,21 @@ view state =
     vectorLength = Vector2d.length (Vector2d 1 1)
     pointDifference = Point2d.vectorTo (Point2d 1 2) Point2d.origin
     lineSegment = LineSegment2d (Point2d 1 0) (Point2d 2 0)
-    rotatedSegment = LineSegment2d.rotatedAbout Point2d.origin (degrees 45) lineSegment
+    rotatedSegment = LineSegment2d.rotateAbout Point2d.origin (degrees 45) lineSegment
     directionComponent = Vector2d.componentIn Direction2d.x (Vector2d 2 3)
-    rotatedDirection = Direction2d.rotatedBy (degrees 45) Direction2d.x
+    rotatedDirection = Direction2d.rotateBy (degrees 45) Direction2d.x
     angledComponent = Vector2d.componentIn rotatedDirection (Vector2d 2 3)
     triangle = Triangle2d Point2d.origin (Point2d 1 0) (Point2d 0 1)
     triangleArea = Triangle2d.area triangle
     isInsideTriangle = Point2d.isInsideTriangle triangle
     inside1 = isInsideTriangle (Point2d 0.5 0.5)
     inside2 = isInsideTriangle (Point2d 1 1)
-    placedTriangle = Triangle2d.placedOnto Plane3d.xz triangle
+    placedTriangle = Triangle2d.placeOnto Plane3d.xz triangle
     placedArea = Triangle3d.area placedTriangle
     placedCentroid = Triangle3d.centroid placedTriangle
     axis = Axis2d Point2d.origin (Direction2d.fromAngle (degrees -45))
-    projectPoint = Point2d.projectedOnto axis
-    list3 a b c =
-      [a, b, c]
+    projectPoint = Point2d.projectOnto axis
+    list3 a b c = [a, b, c]
     projectedPoints = Triangle2d.mapTo list3 projectPoint triangle
   in
     Html.div []

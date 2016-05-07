@@ -2,12 +2,12 @@ module OpenSolid.Core.Frame2d
   ( global
   , xAxis
   , yAxis
-  , scaledAbout
-  , rotatedAbout
-  , translatedBy
-  , mirroredAbout
+  , scaleAbout
+  , rotateAbout
+  , translateBy
+  , mirrorAbout
   , relativeTo
-  , placedIn
+  , placeIn
   ) where
 
 
@@ -31,16 +31,16 @@ yAxis frame =
   Axis2d frame.originPoint frame.yDirection
 
 
-scaledAbout: Point2d -> Float -> Frame2d -> Frame2d
-scaledAbout centerPoint scale frame =
-  { frame | originPoint = Point2d.scaledAbout centerPoint scale frame.originPoint }
+scaleAbout: Point2d -> Float -> Frame2d -> Frame2d
+scaleAbout centerPoint scale frame =
+  { frame | originPoint = Point2d.scaleAbout centerPoint scale frame.originPoint }
 
 
-rotatedAbout: Point2d -> Float -> Frame2d -> Frame2d
-rotatedAbout centerPoint angle =
+rotateAbout: Point2d -> Float -> Frame2d -> Frame2d
+rotateAbout centerPoint angle =
   let
-    rotatePoint = Point2d.rotatedAbout centerPoint angle
-    rotateDirection = Direction2d.rotatedBy angle
+    rotatePoint = Point2d.rotateAbout centerPoint angle
+    rotateDirection = Direction2d.rotateBy angle
   in
     \frame ->
       let
@@ -51,16 +51,16 @@ rotatedAbout centerPoint angle =
         Frame2d originPoint xDirection yDirection
 
 
-translatedBy: Vector2d -> Frame2d -> Frame2d
-translatedBy vector frame =
+translateBy: Vector2d -> Frame2d -> Frame2d
+translateBy vector frame =
   { frame | originPoint = Point2d.plus vector frame.originPoint }
 
 
-mirroredAbout: Axis2d -> Frame2d -> Frame2d
-mirroredAbout axis =
+mirrorAbout: Axis2d -> Frame2d -> Frame2d
+mirrorAbout axis =
   let
-    mirrorPoint = Point2d.mirroredAbout axis
-    mirrorDirection = Direction2d.mirroredAbout axis.direction
+    mirrorPoint = Point2d.mirrorAbout axis
+    mirrorDirection = Direction2d.mirrorAbout axis.direction
   in
     \frame ->
       let
@@ -86,11 +86,11 @@ relativeTo otherFrame =
         Frame2d originPoint xDirection yDirection
 
 
-placedIn: Frame2d -> Frame2d -> Frame2d
-placedIn frame =
+placeIn: Frame2d -> Frame2d -> Frame2d
+placeIn frame =
   let
-    globalizePoint = Point2d.placedIn frame
-    globalizeDirection = Direction2d.placedIn frame
+    globalizePoint = Point2d.placeIn frame
+    globalizeDirection = Direction2d.placeIn frame
   in
     \plane ->
       let

@@ -8,12 +8,12 @@ module OpenSolid.Core.LineSegment2d
   , normalDirection
   , squaredLength
   , length
-  , scaledAbout
-  , rotatedAbout
-  , translatedBy
-  , mirroredAbout
-  , projectedOnto
-  , placedOnto
+  , scaleAbout
+  , rotateAbout
+  , translateBy
+  , mirrorAbout
+  , projectOnto
+  , placeOnto
   , boundingBox
   ) where
 
@@ -68,47 +68,47 @@ length =
   vector >> Vector2d.length
 
 
-scaledAbout: Point2d -> Float -> LineSegment2d -> LineSegment2d
-scaledAbout point scale =
+scaleAbout: Point2d -> Float -> LineSegment2d -> LineSegment2d
+scaleAbout point scale =
   let
-    scalePoint = Point2d.scaledAbout point scale
+    scalePoint = Point2d.scaleAbout point scale
   in
     map scalePoint
 
 
-rotatedAbout: Point2d -> Float -> LineSegment2d -> LineSegment2d
-rotatedAbout centerPoint angle =
+rotateAbout: Point2d -> Float -> LineSegment2d -> LineSegment2d
+rotateAbout centerPoint angle =
   let
-    rotatePoint = Point2d.rotatedAbout centerPoint angle
+    rotatePoint = Point2d.rotateAbout centerPoint angle
   in
     map rotatePoint
 
 
-translatedBy: Vector2d -> LineSegment2d -> LineSegment2d
-translatedBy vector =
+translateBy: Vector2d -> LineSegment2d -> LineSegment2d
+translateBy vector =
   map (Point2d.plus vector)
 
 
-mirroredAbout: Axis2d -> LineSegment2d -> LineSegment2d
-mirroredAbout axis =
+mirrorAbout: Axis2d -> LineSegment2d -> LineSegment2d
+mirrorAbout axis =
   let
-    mirrorPoint = Point2d.mirroredAbout axis
+    mirrorPoint = Point2d.mirrorAbout axis
   in
     map mirrorPoint
 
 
-projectedOnto: Axis2d -> LineSegment2d -> LineSegment2d
-projectedOnto axis =
+projectOnto: Axis2d -> LineSegment2d -> LineSegment2d
+projectOnto axis =
   let
-    projectPoint = Point2d.projectedOnto axis
+    projectPoint = Point2d.projectOnto axis
   in
     map projectPoint
 
 
-placedOnto: Plane3d -> LineSegment2d -> LineSegment3d
-placedOnto plane =
+placeOnto: Plane3d -> LineSegment2d -> LineSegment3d
+placeOnto plane =
   let
-    placePoint = Point2d.placedOnto plane
+    placePoint = Point2d.placeOnto plane
   in
     mapTo LineSegment3d placePoint
 

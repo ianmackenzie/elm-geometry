@@ -9,12 +9,12 @@ module OpenSolid.Core.Frame3d
   , yzPlane
   , zxPlane
   , zyPlane
-  , scaledAbout
-  , rotatedAbout
-  , translatedBy
-  , mirroredAbout
+  , scaleAbout
+  , rotateAbout
+  , translateBy
+  , mirrorAbout
   , relativeTo
-  , placedIn
+  , placeIn
   ) where
 
 
@@ -50,12 +50,12 @@ xyPlane frame =
 
 xzPlane: Frame3d -> Plane3d
 xzPlane frame =
-  Plane3d frame.originPoint frame.xDirection frame.zDirection (Direction3d.negated frame.yDirection)
+  Plane3d frame.originPoint frame.xDirection frame.zDirection (Direction3d.negate frame.yDirection)
 
 
 yxPlane: Frame3d -> Plane3d
 yxPlane frame =
-  Plane3d frame.originPoint frame.yDirection frame.xDirection (Direction3d.negated frame.zDirection)
+  Plane3d frame.originPoint frame.yDirection frame.xDirection (Direction3d.negate frame.zDirection)
 
 
 yzPlane: Frame3d -> Plane3d
@@ -70,19 +70,19 @@ zxPlane frame =
 
 zyPlane: Frame3d -> Plane3d
 zyPlane frame =
-  Plane3d frame.originPoint frame.zDirection frame.yDirection (Direction3d.negated frame.xDirection)
+  Plane3d frame.originPoint frame.zDirection frame.yDirection (Direction3d.negate frame.xDirection)
 
 
-scaledAbout: Point3d -> Float -> Frame3d -> Frame3d
-scaledAbout centerPoint scale frame =
-  { frame | originPoint = Point3d.scaledAbout centerPoint scale frame.originPoint }
+scaleAbout: Point3d -> Float -> Frame3d -> Frame3d
+scaleAbout centerPoint scale frame =
+  { frame | originPoint = Point3d.scaleAbout centerPoint scale frame.originPoint }
 
 
-rotatedAbout: Axis3d -> Float -> Frame3d -> Frame3d
-rotatedAbout axis angle =
+rotateAbout: Axis3d -> Float -> Frame3d -> Frame3d
+rotateAbout axis angle =
   let
-    rotatePoint = Point3d.rotatedAbout axis angle
-    rotateDirection = Direction3d.rotatedAbout axis.direction angle
+    rotatePoint = Point3d.rotateAbout axis angle
+    rotateDirection = Direction3d.rotateAbout axis.direction angle
   in
     \frame ->
       let
@@ -94,16 +94,16 @@ rotatedAbout axis angle =
         Frame3d originPoint xDirection yDirection zDirection
 
 
-translatedBy: Vector3d -> Frame3d -> Frame3d
-translatedBy vector frame =
+translateBy: Vector3d -> Frame3d -> Frame3d
+translateBy vector frame =
   { frame | originPoint = Point3d.plus vector frame.originPoint }
 
 
-mirroredAbout: Plane3d -> Frame3d -> Frame3d
-mirroredAbout plane =
+mirrorAbout: Plane3d -> Frame3d -> Frame3d
+mirrorAbout plane =
   let
-    mirrorPoint = Point3d.mirroredAbout plane
-    mirrorDirection = Direction3d.mirroredAlong plane.normalDirection
+    mirrorPoint = Point3d.mirrorAbout plane
+    mirrorDirection = Direction3d.mirrorAlong plane.normalDirection
   in
     \frame ->
       let
@@ -131,11 +131,11 @@ relativeTo otherFrame =
         Frame3d originPoint xDirection yDirection zDirection
 
 
-placedIn: Frame3d -> Frame3d -> Frame3d
-placedIn frame =
+placeIn: Frame3d -> Frame3d -> Frame3d
+placeIn frame =
   let
-    globalizePoint = Point3d.placedIn frame
-    globalizeDirection = Direction3d.placedIn frame
+    globalizePoint = Point3d.placeIn frame
+    globalizeDirection = Direction3d.placeIn frame
   in
     \frame ->
       let
