@@ -2,6 +2,8 @@ module OpenSolid.Core.Vector2d
   ( zero
   , fromComponents
   , fromPolarComponents
+  , xComponent
+  , yComponent
   , components
   , polarComponents
   , equals
@@ -46,6 +48,16 @@ fromComponents (x, y) =
 fromPolarComponents: (Float, Float) -> Vector2d
 fromPolarComponents =
   fromPolar >> fromComponents
+
+
+xComponent: Vector2d -> Float
+xComponent (Vector2d x _) =
+  x
+
+
+yComponent: Vector2d -> Float
+yComponent (Vector2d _ y) =
+  y
 
 
 components: Vector2d -> (Float, Float)

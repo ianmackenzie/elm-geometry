@@ -1,6 +1,9 @@
 module OpenSolid.Core.Point3d
   ( origin
   , fromComponents
+  , xComponent
+  , yComponent
+  , zComponent
   , components
   , squaredDistanceTo
   , distanceTo
@@ -40,6 +43,21 @@ origin =
 fromComponents: (Float, Float, Float) -> Point3d
 fromComponents (x, y, z) =
   Point3d x y z
+
+
+xComponent: Point3d -> Float
+xComponent (Point3d x _ _) =
+  x
+
+
+yComponent: Point3d -> Float
+yComponent (Point3d _ y _) =
+  y
+
+
+zComponent: Point3d -> Float
+zComponent (Point3d _ _ z) =
+  z
 
 
 components: Point3d -> (Float, Float, Float)

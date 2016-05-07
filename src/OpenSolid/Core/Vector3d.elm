@@ -1,6 +1,9 @@
 module OpenSolid.Core.Vector3d
   ( zero
   , fromComponents
+  , xComponent
+  , yComponent
+  , zComponent
   , components
   , equals
   , componentIn
@@ -39,6 +42,21 @@ zero =
 fromComponents: (Float, Float, Float) -> Vector3d
 fromComponents (x, y, z) =
   Vector3d x y z
+
+
+xComponent: Vector3d -> Float
+xComponent (Vector3d x _ _) =
+  x
+
+
+yComponent: Vector3d -> Float
+yComponent (Vector3d _ y _) =
+  y
+
+
+zComponent: Vector3d -> Float
+zComponent (Vector3d _ _ z) =
+  z
 
 
 components: Vector3d -> (Float, Float, Float)
