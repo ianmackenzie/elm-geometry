@@ -2,6 +2,7 @@ module OpenSolid.Core.Axis2d
   ( x
   , y
   , point
+  , segment
   , normalDirection
   , normalAxis
   , reversed
@@ -33,6 +34,11 @@ y =
 point: Float -> Axis2d -> Point2d
 point distance axis =
   Point2d.plus (Direction2d.times distance axis.direction) axis.originPoint
+
+
+segment: Float -> Float -> Axis2d -> LineSegment2d
+segment start end axis =
+  LineSegment2d (point start axis) (point end axis)
 
 
 normalDirection: Axis2d -> Direction2d

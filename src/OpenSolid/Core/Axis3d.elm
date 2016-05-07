@@ -3,6 +3,7 @@ module  OpenSolid.Core.Axis3d
   , y
   , z
   , point
+  , segment
   , normalDirection
   , normalPlane
   , reversed
@@ -43,6 +44,11 @@ z =
 point: Float -> Axis3d -> Point3d
 point distance axis =
   Point3d.plus (Direction3d.times distance axis.direction) axis.originPoint
+
+
+segment: Float -> Float -> Axis3d -> LineSegment3d
+segment start end axis =
+  LineSegment3d (point start axis) (point end axis)
 
 
 normalDirection: Axis3d -> Direction3d
