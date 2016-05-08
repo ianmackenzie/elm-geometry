@@ -18,6 +18,9 @@ module OpenSolid.Core.Direction3d
   , projectInto
   , negate
   , times
+  , dot
+  , cross
+  , angleTo
   ) where
 
 
@@ -138,3 +141,18 @@ negate =
 times: Float -> Direction3d -> Vector3d
 times scale =
   vector >> Vector3d.times scale
+
+
+dot: Direction3d -> Direction3d -> Float
+dot other direction =
+  Vector3d.dot (vector other) (vector direction)
+
+
+cross: Direction3d -> Direction3d -> Vector3d
+cross other direction =
+  Vector3d.cross (vector other) (vector direction)
+
+
+angleTo: Direction3d -> Direction3d -> Float
+angleTo other direction =
+  acos (dot other direction)

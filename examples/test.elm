@@ -94,6 +94,8 @@ view state =
     referenceDirection = Direction2d.fromAngle (degrees 15)
     positiveAngle = Direction2d.angleTo rotatedDirection referenceDirection
     negativeAngle = Direction2d.angleTo (Direction2d.fromAngle (degrees -30))  referenceDirection
+    rotatedDirection3d = Direction3d.rotateAbout Direction3d.z (degrees 45) Direction3d.y
+    angle3d = Direction3d.angleTo rotatedDirection3d Direction3d.x
   in
     Html.div []
       [ line "Interval width" intervalWidth
@@ -114,6 +116,7 @@ view state =
       , line "Projected points" projectedPoints
       , line "Positive angle" (positiveAngle / degrees 1)
       , line "Negative angle" (negativeAngle / degrees 1)
+      , line "3D angle" (angle3d / degrees 1)
       ]
 
 
