@@ -1,7 +1,8 @@
-module OpenSolid.Core.Frame2d (global, xAxis, yAxis, scaleAbout, rotateAbout, translateBy, mirrorAbout, relativeTo, placeIn) where
+module OpenSolid.Core.Frame2d (global, xAxis, yAxis, point, vector, scaleAbout, rotateAbout, translateBy, mirrorAbout, relativeTo, placeIn) where
 
 import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Point2d as Point2d
+import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Direction2d as Direction2d
 
 
@@ -18,6 +19,16 @@ xAxis frame =
 yAxis : Frame2d -> Axis2d
 yAxis frame =
   Axis2d frame.originPoint frame.yDirection
+
+
+point : Float -> Float -> Frame2d -> Point2d
+point x y frame =
+  Point2d.plus (vector x y frame) frame.originPoint
+
+
+vector : Float -> Float -> Frame2d -> Vector2d
+vector x y frame =
+  Vector2d.plus (Direction2d.times y frame.yDirection) (Direction2d.times x frame.xDirection)
 
 
 scaleAbout : Point2d -> Float -> Frame2d -> Frame2d

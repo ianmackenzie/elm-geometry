@@ -1,7 +1,8 @@
-module OpenSolid.Core.Frame3d (global, xAxis, yAxis, zAxis, xyPlane, xzPlane, yxPlane, yzPlane, zxPlane, zyPlane, scaleAbout, rotateAbout, translateBy, mirrorAbout, relativeTo, placeIn) where
+module OpenSolid.Core.Frame3d (global, xAxis, yAxis, zAxis, xyPlane, xzPlane, yxPlane, yzPlane, zxPlane, zyPlane, point, vector, scaleAbout, rotateAbout, translateBy, mirrorAbout, relativeTo, placeIn) where
 
 import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Point3d as Point3d
+import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction3d as Direction3d
 
 
@@ -53,6 +54,26 @@ zxPlane frame =
 zyPlane : Frame3d -> Plane3d
 zyPlane frame =
   Plane3d frame.originPoint frame.zDirection frame.yDirection (Direction3d.negate frame.xDirection)
+
+
+point : Float -> Float -> Float -> Frame3d -> Point3d
+point x y z frame =
+  Point3d.plus (vector x y z frame) frame.originPoint
+
+
+vector : Float -> Float -> Float -> Frame3d -> Vector3d
+vector x y z frame =
+  let
+    xDisplacement =
+      Direction3d.times x frame.xDirection
+
+    yDisplacement =
+      Direction3d.times y frame.yDirection
+
+    zDisplacement =
+      Direction3d.times z frame.zDirection
+  in
+    Vector3d.plus zDisplacement (Vector3d.plus yDisplacement zDisplacement)
 
 
 scaleAbout : Point3d -> Float -> Frame3d -> Frame3d
