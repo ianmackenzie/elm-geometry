@@ -1,17 +1,9 @@
-module OpenSolid.Core.Scalar
-  ( isZeroWithin
-  , isInside
-  , hull
-  , hullOf
-  ) where
-
+module OpenSolid.Core.Scalar (isZeroWithin, isInside, hull, hullOf) where
 
 {-| Various convenience functions for dealing with `Float` values.
 
 @docs isZeroWithin, hull, hullOf
-
 -}
-
 
 import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Interval as Interval
@@ -25,9 +17,8 @@ import OpenSolid.Core.Interval as Interval
 Note that the tolerance is given first, to allow convenient partial application:
 
     List.filter (Scalar.isZeroWithin 1e-3) [0.0005, 0.005, 0.05, 0.0009] == [0.0005, 0.0009]
-
 -}
-isZeroWithin: Float -> Float -> Bool
+isZeroWithin : Float -> Float -> Bool
 isZeroWithin tolerance value =
   -tolerance <= value && value <= tolerance
 
@@ -38,9 +29,8 @@ isZeroWithin tolerance value =
     Scalar.isInside (Interval 0 2) 2 == True
     Scalar.isInside (Interval 0 2) 3 == False
     List.filter (Scalar.isInside (Interval 2.1 5.9)) [0..10] == [3, 4, 5]
-
 -}
-isInside: Interval -> Float -> Bool
+isInside : Interval -> Float -> Bool
 isInside (Interval lowerBound upperBound) value =
   lowerBound <= value && value <= upperBound
 
@@ -49,9 +39,8 @@ isInside (Interval lowerBound upperBound) value =
 
     Scalar.hull 2 3 == Interval 2 3
     Scalar.hull 4 0 == Interval 0 4
-
 -}
-hull: Float -> Float -> Interval
+hull : Float -> Float -> Interval
 hull firstValue secondValue =
   if firstValue <= secondValue then
     Interval firstValue secondValue
@@ -64,8 +53,7 @@ hull firstValue secondValue =
     Scalar.hullOf [3, 1, 2, 5, 4] == Interval 1 5
     Scalar.hullOf [2] == Interval 2 2
     Interval.isEmpty (Scalar.hullOf []) == True
-
 -}
-hullOf: List Float -> Interval
+hullOf : List Float -> Interval
 hullOf values =
   Maybe.withDefault Interval.empty (Maybe.map2 Interval (List.minimum values) (List.maximum values))

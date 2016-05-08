@@ -1,22 +1,4 @@
-module OpenSolid.Core.Interval
-  ( empty
-  , whole
-  , singleton
-  , hull
-  , hullOf
-  , intersection
-  , fromEndpoints
-  , endpoints
-  , lowerBound
-  , upperBound
-  , isEmpty
-  , width
-  , interpolate
-  , midpoint
-  , contains
-  , overlaps
-  ) where
-
+module OpenSolid.Core.Interval (empty, whole, singleton, hull, hullOf, intersection, fromEndpoints, endpoints, lowerBound, upperBound, isEmpty, width, interpolate, midpoint, contains, overlaps) where
 
 {-| Functionality for creating and manipulating `Interval` values.
 
@@ -35,9 +17,7 @@ arbitrary order.
 # Conversions
 
 @docs endpoints, fromEndpoints
-
 -}
-
 
 import OpenSolid.Core exposing (..)
 
@@ -60,15 +40,15 @@ themselves, direct comparisons against `Interval.empty` may not work properly; i
 you should use
 
     Interval.isEmpty interval
-
 -}
-empty: Interval
+empty : Interval
 empty =
   Interval (0 / 0) (0 / 0)
 
 
-{-| The whole interval (contains all values from negative infinity to positive infinity). -}
-whole: Interval
+{-| The whole interval (contains all values from negative infinity to positive infinity).
+-}
+whole : Interval
 whole =
   Interval negativeInfinity positiveInfinity
 
@@ -76,9 +56,8 @@ whole =
 {-| Construct an interval with both lower and upper bounds equal to the given value.
 
     Interval.singleton 3 == Interval 3 3
-
 -}
-singleton: Float -> Interval
+singleton : Float -> Interval
 singleton value =
   Interval value value
 
@@ -88,10 +67,9 @@ singleton value =
     Interval.hull (Interval 2 5) (Interval 4 8) == Interval 2 8
     Interval.hull (Interval 1 2) (Interval 9 10) == Interval 1 10
     Interval.hull (Interval.empty) (Interval 2 3) == Interval 2 3
-
 -}
-hull: Interval -> Interval -> Interval
-hull (Interval firstLower firstUpper as first) (Interval secondLower secondUpper as second) =
+hull : Interval -> Interval -> Interval
+hull ((Interval firstLower firstUpper) as first) ((Interval secondLower secondUpper) as second) =
   if isEmpty first then
     second
   else if isEmpty second then
@@ -105,9 +83,8 @@ hull (Interval firstLower firstUpper as first) (Interval secondLower secondUpper
     Interval.hullOf [Interval 2 3, Interval 4 8, Interval 1 2] == Interval 1 8
     Interval.hullOf [Interval.empty, Interval.singleton 3] == Interval 3 3
     Interval.isEmpty (Interval.hullOf []) == True
-
 -}
-hullOf: List Interval -> Interval
+hullOf : List Interval -> Interval
 hullOf =
   List.foldl hull empty
 
@@ -120,47 +97,58 @@ result will be empty.
     Interval.isEmpty (Interval.intersection (Interval 2 3) (Interval 4 5)) == True
     Interval.intersection Interval.whole (Interval 2 3) == Interval 2 3
     Interval.isEmpty (Interval.intersection Interval.empty (Interval 2 3)) == True
-
 -}
-intersection: Interval -> Interval -> Interval
+intersection : Interval -> Interval -> Interval
 intersection first second =
   if isEmpty first || isEmpty second then
     empty
   else
     let
-      (Interval firstLower firstUpper) = first
-      (Interval secondLower secondUpper) = second
-      lowerBound = max firstLower secondLower
-      upperBound = min firstUpper secondUpper
+      (Interval firstLower firstUpper) =
+        first
+
+      (Interval secondLower secondUpper) =
+        second
+
+      lowerBound =
+        max firstLower secondLower
+
+      upperBound =
+        min firstUpper secondUpper
     in
-      if lowerBound <= upperBound then Interval lowerBound upperBound else empty
+      if lowerBound <= upperBound then
+        Interval lowerBound upperBound
+      else
+        empty
 
 
 {-| Convert a pair of endpoints to an interval. Note that the endpoints must be in the correct
 order!
-
 -}
-fromEndpoints: (Float, Float) -> Interval
-fromEndpoints (lowerBound, upperBound) =
+fromEndpoints : ( Float, Float ) -> Interval
+fromEndpoints ( lowerBound, upperBound ) =
   Interval lowerBound upperBound
 
 
-{-| Extract the lower bound of an interval. -}
-lowerBound: Interval -> Float
+{-| Extract the lower bound of an interval.
+-}
+lowerBound : Interval -> Float
 lowerBound (Interval lower _) =
   lower
 
 
-{-| Extract the upper bound of an interval. -}
-upperBound: Interval -> Float
+{-| Extract the upper bound of an interval.
+-}
+upperBound : Interval -> Float
 upperBound (Interval _ upper) =
   upper
 
 
-{-| Convert an interval to a pair of endpoints. -}
-endpoints: Interval -> (Float, Float)
+{-| Convert an interval to a pair of endpoints.
+-}
+endpoints : Interval -> ( Float, Float )
 endpoints (Interval lowerBound upperBound) =
-  (lowerBound, upperBound)
+  ( lowerBound, upperBound )
 
 
 {-| Check if an interval is empty (contains no values).
@@ -168,9 +156,8 @@ endpoints (Interval lowerBound upperBound) =
     Interval.isEmpty Interval.empty == True
     Interval.isEmpty (Interval 2 3) == False
     Interval.isEmpty (Interval.singleton 1) == False
-
 -}
-isEmpty: Interval -> Bool
+isEmpty : Interval -> Bool
 isEmpty (Interval lowerBound upperBound) =
   isNaN lowerBound && isNaN upperBound
 
@@ -181,28 +168,27 @@ isEmpty (Interval lowerBound upperBound) =
     isInfinite (Interval.width Interval.whole) == True
     isNaN (Interval.width Interval.empty) == True
     Interval.width (Interval.singleton 1) == 0
-
 -}
-width: Interval -> Float
+width : Interval -> Float
 width (Interval lowerBound upperBound) =
   upperBound - lowerBound
 
 
-interpolate: Float -> Interval -> Float
+interpolate : Float -> Interval -> Float
 interpolate parameter (Interval lowerBound upperBound) =
   lowerBound + parameter * (upperBound - lowerBound)
 
 
-midpoint: Interval -> Float
+midpoint : Interval -> Float
 midpoint =
   interpolate 0.5
 
 
-contains: Interval -> Interval -> Bool
+contains : Interval -> Interval -> Bool
 contains (Interval otherLower otherUpper) (Interval lowerBound upperBound) =
   lowerBound <= otherLower && otherUpper <= upperBound
 
 
-overlaps: Interval -> Interval -> Bool
+overlaps : Interval -> Interval -> Bool
 overlaps (Interval otherLower otherUpper) (Interval lowerBound upperBound) =
   lowerBound <= otherUpper && upperBound >= otherLower

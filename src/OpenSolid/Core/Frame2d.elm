@@ -1,101 +1,122 @@
-module OpenSolid.Core.Frame2d
-  ( global
-  , xAxis
-  , yAxis
-  , scaleAbout
-  , rotateAbout
-  , translateBy
-  , mirrorAbout
-  , relativeTo
-  , placeIn
-  ) where
-
+module OpenSolid.Core.Frame2d (global, xAxis, yAxis, scaleAbout, rotateAbout, translateBy, mirrorAbout, relativeTo, placeIn) where
 
 import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Point2d as Point2d
 import OpenSolid.Core.Direction2d as Direction2d
 
 
-global: Frame2d
+global : Frame2d
 global =
   Frame2d Point2d.origin Direction2d.x Direction2d.y
 
 
-xAxis: Frame2d -> Axis2d
+xAxis : Frame2d -> Axis2d
 xAxis frame =
   Axis2d frame.originPoint frame.xDirection
 
 
-yAxis: Frame2d -> Axis2d
+yAxis : Frame2d -> Axis2d
 yAxis frame =
   Axis2d frame.originPoint frame.yDirection
 
 
-scaleAbout: Point2d -> Float -> Frame2d -> Frame2d
+scaleAbout : Point2d -> Float -> Frame2d -> Frame2d
 scaleAbout centerPoint scale frame =
   { frame | originPoint = Point2d.scaleAbout centerPoint scale frame.originPoint }
 
 
-rotateAbout: Point2d -> Float -> Frame2d -> Frame2d
+rotateAbout : Point2d -> Float -> Frame2d -> Frame2d
 rotateAbout centerPoint angle =
   let
-    rotatePoint = Point2d.rotateAbout centerPoint angle
-    rotateDirection = Direction2d.rotateBy angle
+    rotatePoint =
+      Point2d.rotateAbout centerPoint angle
+
+    rotateDirection =
+      Direction2d.rotateBy angle
   in
     \frame ->
       let
-        originPoint = rotatePoint frame.originPoint
-        xDirection = rotateDirection frame.xDirection
-        yDirection = rotateDirection frame.yDirection
+        originPoint =
+          rotatePoint frame.originPoint
+
+        xDirection =
+          rotateDirection frame.xDirection
+
+        yDirection =
+          rotateDirection frame.yDirection
       in
         Frame2d originPoint xDirection yDirection
 
 
-translateBy: Vector2d -> Frame2d -> Frame2d
+translateBy : Vector2d -> Frame2d -> Frame2d
 translateBy vector frame =
   { frame | originPoint = Point2d.plus vector frame.originPoint }
 
 
-mirrorAbout: Axis2d -> Frame2d -> Frame2d
+mirrorAbout : Axis2d -> Frame2d -> Frame2d
 mirrorAbout axis =
   let
-    mirrorPoint = Point2d.mirrorAbout axis
-    mirrorDirection = Direction2d.mirrorAbout axis.direction
+    mirrorPoint =
+      Point2d.mirrorAbout axis
+
+    mirrorDirection =
+      Direction2d.mirrorAbout axis.direction
   in
     \frame ->
       let
-        originPoint = mirrorPoint frame.originPoint
-        xDirection = mirrorDirection frame.xDirection
-        yDirection = mirrorDirection frame.yDirection
+        originPoint =
+          mirrorPoint frame.originPoint
+
+        xDirection =
+          mirrorDirection frame.xDirection
+
+        yDirection =
+          mirrorDirection frame.yDirection
       in
         Frame2d originPoint xDirection yDirection
 
 
-relativeTo: Frame2d -> Frame2d -> Frame2d
+relativeTo : Frame2d -> Frame2d -> Frame2d
 relativeTo otherFrame =
   let
-    localizePoint = Point2d.relativeTo otherFrame
-    localizeDirection = Direction2d.relativeTo otherFrame
+    localizePoint =
+      Point2d.relativeTo otherFrame
+
+    localizeDirection =
+      Direction2d.relativeTo otherFrame
   in
     \frame ->
       let
-        originPoint = localizePoint frame.originPoint
-        xDirection = localizeDirection frame.xDirection
-        yDirection = localizeDirection frame.yDirection
+        originPoint =
+          localizePoint frame.originPoint
+
+        xDirection =
+          localizeDirection frame.xDirection
+
+        yDirection =
+          localizeDirection frame.yDirection
       in
         Frame2d originPoint xDirection yDirection
 
 
-placeIn: Frame2d -> Frame2d -> Frame2d
+placeIn : Frame2d -> Frame2d -> Frame2d
 placeIn frame =
   let
-    globalizePoint = Point2d.placeIn frame
-    globalizeDirection = Direction2d.placeIn frame
+    globalizePoint =
+      Point2d.placeIn frame
+
+    globalizeDirection =
+      Direction2d.placeIn frame
   in
     \plane ->
       let
-        originPoint = globalizePoint plane.originPoint
-        xDirection = globalizeDirection plane.xDirection
-        yDirection = globalizeDirection plane.yDirection
+        originPoint =
+          globalizePoint plane.originPoint
+
+        xDirection =
+          globalizeDirection plane.xDirection
+
+        yDirection =
+          globalizeDirection plane.yDirection
       in
         Frame2d originPoint xDirection yDirection

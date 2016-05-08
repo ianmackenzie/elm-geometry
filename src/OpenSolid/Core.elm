@@ -1,24 +1,4 @@
-module OpenSolid.Core
-  ( Vector2d(Vector2d)
-  , Vector3d(Vector3d)
-  , Direction2d(Direction2d)
-  , Direction3d(Direction3d)
-  , Point2d(Point2d)
-  , Point3d(Point3d)
-  , Interval(Interval)
-  , BoundingBox2d(BoundingBox2d)
-  , BoundingBox3d(BoundingBox3d)
-  , LineSegment2d(LineSegment2d)
-  , LineSegment3d(LineSegment3d)
-  , Triangle2d(Triangle2d)
-  , Triangle3d(Triangle3d)
-  , Axis2d
-  , Axis3d
-  , Plane3d
-  , Frame2d
-  , Frame3d
-  ) where
-
+module OpenSolid.Core (Vector2d(Vector2d), Vector3d(Vector3d), Direction2d(Direction2d), Direction3d(Direction3d), Point2d(Point2d), Point3d(Point3d), Interval(Interval), BoundingBox2d(BoundingBox2d), BoundingBox3d(BoundingBox3d), LineSegment2d(LineSegment2d), LineSegment3d(LineSegment3d), Triangle2d(Triangle2d), Triangle3d(Triangle3d), Axis2d, Axis3d, Plane3d, Frame2d, Frame3d) where
 
 {-| This module contains the definitions of the core OpenSolid geometric data types. Each type also
 has a corresponding module providing related functionality. Suggested practice is to import this
@@ -97,36 +77,41 @@ These types represent bounding boxes around other geometric objects, and are use
 for tasks such as fast spatial searching or culling non-visible objects during 3D rendering.
 
 @docs Interval, BoundingBox2d, BoundingBox3d
-
 -}
 
 
-{-| A vector in 2D, defined by its X and Y components. -}
+{-| A vector in 2D, defined by its X and Y components.
+-}
 type Vector2d
   = Vector2d Float Float
 
 
-{-| A vector in 3D, defined by its X, Y and Z components. -}
+{-| A vector in 3D, defined by its X, Y and Z components.
+-}
 type Vector3d
   = Vector3d Float Float Float
 
 
-{-| A direction in 2D, defined by a vector with length one. -}
+{-| A direction in 2D, defined by a vector with length one.
+-}
 type Direction2d
   = Direction2d Vector2d
 
 
-{-| A direction in 3D, defined by a vector with length one. -}
+{-| A direction in 3D, defined by a vector with length one.
+-}
 type Direction3d
   = Direction3d Vector3d
 
 
-{-| A point in 2D, defined by its X and Y components. -}
+{-| A point in 2D, defined by its X and Y components.
+-}
 type Point2d
   = Point2d Float Float
 
 
-{-| A point in 3D, defined by its X, Y and Z components. -}
+{-| A point in 3D, defined by its X, Y and Z components.
+-}
 type Point3d
   = Point3d Float Float Float
 
@@ -135,44 +120,46 @@ type Point3d
 
 Note that if you construct an `Interval` directly from two values, the first must be less than or
 equal to the second. `Scalar.hull` provides a convenient way to construct an interval from two
-values if it is not known ahead of time which is lesser.
-
+values if it is not known ahead of time which is lesser
 -}
 type Interval
   = Interval Float Float
 
 
-{-| A bounding box in 2D, defined by X and Y intervals. -}
+{-| A bounding box in 2D, defined by X and Y intervals.
+-}
 type BoundingBox2d
   = BoundingBox2d Interval Interval
 
 
-{-| A bounding box in 3D, defined by X, Y and Z intervals. -}
+{-| A bounding box in 3D, defined by X, Y and Z intervals.
+-}
 type BoundingBox3d
   = BoundingBox3d Interval Interval Interval
 
 
-{-| A line segment in 2D. -}
+{-| A line segment in 2D.
+-}
 type LineSegment2d
   = LineSegment2d Point2d Point2d
 
 
-{-| A line segment in 3D. -}
+{-| A line segment in 3D.
+-}
 type LineSegment3d
   = LineSegment3d Point3d Point3d
 
 
-{-| A triangle in 2D. -}
+{-| A triangle in 2D.
+-}
 type Triangle2d
   = Triangle2d Point2d Point2d Point2d
 
 
-{-| A triangle in 3D. -}
+{-| A triangle in 3D.
+-}
 type Triangle3d
   = Triangle3d Point3d Point3d Point3d
-
-
--- Datums
 
 
 {-| An axis in 2D, defined by an origin point and direction. Useful for several operations
@@ -180,11 +167,10 @@ including:
   - Mirroring about the axis
   - Projecting onto the axis
   - Measuring distance along the axis
-
 -}
 type alias Axis2d =
-  { originPoint: Point2d
-  , direction: Direction2d
+  { originPoint : Point2d
+  , direction : Direction2d
   }
 
 
@@ -193,11 +179,10 @@ including:
   - Rotating about the axis
   - Projecting onto the axis
   - Measuring distance along the axis
-
 -}
 type alias Axis3d =
-  { originPoint: Point3d
-  , direction: Direction3d
+  { originPoint : Point3d
+  , direction : Direction3d
   }
 
 
@@ -212,13 +197,12 @@ several operations including:
 
 The basis directions and normal direction are all always mutually perpendicular. If you construct a
 `Plane3d` directly, you are responsible for ensuring this yourself.
-
 -}
 type alias Plane3d =
-  { originPoint: Point3d
-  , xDirection: Direction3d
-  , yDirection: Direction3d
-  , normalDirection: Direction3d
+  { originPoint : Point3d
+  , xDirection : Direction3d
+  , yDirection : Direction3d
+  , normalDirection : Direction3d
   }
 
 
@@ -226,12 +210,11 @@ type alias Plane3d =
 
 The two basis directions are always perpendicular. If you construct a `Frame2d` directly, you are
 responsible for ensuring this yourself.
-
 -}
 type alias Frame2d =
-  { originPoint: Point2d
-  , xDirection: Direction2d
-  , yDirection: Direction2d
+  { originPoint : Point2d
+  , xDirection : Direction2d
+  , yDirection : Direction2d
   }
 
 
@@ -239,11 +222,10 @@ type alias Frame2d =
 
 The three basis directions are always mutually perpendicular. If you construct a `Frame3d` directly,
 you are responsible for ensuring this yourself.
-
 -}
 type alias Frame3d =
-  { originPoint: Point3d
-  , xDirection: Direction3d
-  , yDirection: Direction3d
-  , zDirection: Direction3d
+  { originPoint : Point3d
+  , xDirection : Direction3d
+  , yDirection : Direction3d
+  , zDirection : Direction3d
   }

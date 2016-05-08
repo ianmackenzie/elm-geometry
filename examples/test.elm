@@ -1,3 +1,5 @@
+module Main (..) where
+
 import Html exposing (Html)
 import Time exposing (Time)
 import String
@@ -26,11 +28,11 @@ import OpenSolid.Core.Vector3d as Vector3d
 
 
 type alias State =
-  { currentTime: Time
+  { currentTime : Time
   }
 
 
-initialState: State
+initialState : State
 initialState =
   { currentTime = 0
   }
@@ -40,7 +42,7 @@ type Event
   = CurrentTime Time
 
 
-update: Event -> State -> State
+update : Event -> State -> State
 update event state =
   case event of
     CurrentTime currentTime ->
@@ -48,56 +50,118 @@ update event state =
       }
 
 
-line: String -> a -> Html
+line : String -> a -> Html
 line label value =
-  Html.div [] [Html.text (label ++ ": " ++ toString value)]
+  Html.div [] [ Html.text (label ++ ": " ++ toString value) ]
 
 
-timeString: Time -> String
+timeString : Time -> String
 timeString time =
   let
-    seconds = round (Time.inSeconds time)
-    minutes = seconds // 60
-    hours = minutes // 60
+    seconds =
+      round (Time.inSeconds time)
+
+    minutes =
+      seconds // 60
+
+    hours =
+      minutes // 60
+
     format length number =
       String.padLeft length '0' (toString number)
-    secondsString = format 2 (seconds % 60)
-    minutesString = format 2 (minutes % 60)
-    hoursString = format 1 ((hours + 11) % 24)
+
+    secondsString =
+      format 2 (seconds % 60)
+
+    minutesString =
+      format 2 (minutes % 60)
+
+    hoursString =
+      format 1 ((hours + 11) % 24)
   in
-    String.join ":" [hoursString, minutesString, secondsString]
+    String.join ":" [ hoursString, minutesString, secondsString ]
 
 
-view: State -> Html
+view : State -> Html
 view state =
   let
-    intervalWidth = Interval.width (Interval 2 3)
-    vectorLength = Vector2d.length (Vector2d 1 1)
-    pointDifference = Point2d.vectorTo (Point2d 1 2) Point2d.origin
-    lineSegment = LineSegment2d (Point2d 1 0) (Point2d 2 0)
-    rotatedSegment = LineSegment2d.rotateAbout Point2d.origin (degrees 45) lineSegment
-    directionComponent = Vector2d.componentIn Direction2d.x (Vector2d 2 3)
-    rotatedDirection = Direction2d.rotateBy (degrees 45) Direction2d.x
-    angledComponent = Vector2d.componentIn rotatedDirection (Vector2d 2 3)
-    triangle = Triangle2d Point2d.origin (Point2d 1 0) (Point2d 0 1)
-    triangleArea = Triangle2d.area triangle
-    isInsideTriangle = Point2d.isInsideTriangle triangle
-    inside1 = isInsideTriangle (Point2d 0.5 0.5)
-    inside2 = isInsideTriangle (Point2d 1 1)
-    placedTriangle = Triangle2d.placeOnto Plane3d.xz triangle
-    placedArea = Triangle3d.area placedTriangle
-    placedCentroid = Triangle3d.centroid placedTriangle
-    axis = Axis2d Point2d.origin (Direction2d.fromAngle (degrees -45))
-    projectPoint = Point2d.projectOnto axis
-    list3 a b c = [a, b, c]
-    projectedPoints = Triangle2d.mapTo list3 projectPoint triangle
-    referenceDirection = Direction2d.fromAngle (degrees 15)
-    positiveAngle = Direction2d.angleTo rotatedDirection referenceDirection
-    negativeAngle = Direction2d.angleTo (Direction2d.fromAngle (degrees -30))  referenceDirection
-    rotatedDirection3d = Direction3d.rotateAbout Direction3d.z (degrees 45) Direction3d.y
-    angle3d = Direction3d.angleTo rotatedDirection3d Direction3d.x
+    intervalWidth =
+      Interval.width (Interval 2 3)
+
+    vectorLength =
+      Vector2d.length (Vector2d 1 1)
+
+    pointDifference =
+      Point2d.vectorTo (Point2d 1 2) Point2d.origin
+
+    lineSegment =
+      LineSegment2d (Point2d 1 0) (Point2d 2 0)
+
+    rotatedSegment =
+      LineSegment2d.rotateAbout Point2d.origin (degrees 45) lineSegment
+
+    directionComponent =
+      Vector2d.componentIn Direction2d.x (Vector2d 2 3)
+
+    rotatedDirection =
+      Direction2d.rotateBy (degrees 45) Direction2d.x
+
+    angledComponent =
+      Vector2d.componentIn rotatedDirection (Vector2d 2 3)
+
+    triangle =
+      Triangle2d Point2d.origin (Point2d 1 0) (Point2d 0 1)
+
+    triangleArea =
+      Triangle2d.area triangle
+
+    isInsideTriangle =
+      Point2d.isInsideTriangle triangle
+
+    inside1 =
+      isInsideTriangle (Point2d 0.5 0.5)
+
+    inside2 =
+      isInsideTriangle (Point2d 1 1)
+
+    placedTriangle =
+      Triangle2d.placeOnto Plane3d.xz triangle
+
+    placedArea =
+      Triangle3d.area placedTriangle
+
+    placedCentroid =
+      Triangle3d.centroid placedTriangle
+
+    axis =
+      Axis2d Point2d.origin (Direction2d.fromAngle (degrees -45))
+
+    projectPoint =
+      Point2d.projectOnto axis
+
+    list3 a b c =
+      [ a, b, c ]
+
+    projectedPoints =
+      Triangle2d.mapTo list3 projectPoint triangle
+
+    referenceDirection =
+      Direction2d.fromAngle (degrees 15)
+
+    positiveAngle =
+      Direction2d.angleTo rotatedDirection referenceDirection
+
+    negativeAngle =
+      Direction2d.angleTo (Direction2d.fromAngle (degrees -30)) referenceDirection
+
+    rotatedDirection3d =
+      Direction3d.rotateAbout Direction3d.z (degrees 45) Direction3d.y
+
+    angle3d =
+      Direction3d.angleTo rotatedDirection3d Direction3d.x
   in
-    Html.div []
+    Html.div
+      []
       [ line "Interval width" intervalWidth
       , line "Vector length" vectorLength
       , line "Point difference" pointDifference
@@ -120,9 +184,10 @@ view state =
       ]
 
 
-main: Signal Html
+main : Signal Html
 main =
   let
-    timeSignal = Signal.map CurrentTime (Time.every Time.second)
+    timeSignal =
+      Signal.map CurrentTime (Time.every Time.second)
   in
     Signal.foldp update initialState timeSignal |> Signal.map view
