@@ -3,6 +3,8 @@ module OpenSolid.Core.Direction2d
   , y
   , fromAngle
   , fromComponents
+  , xComponent
+  , yComponent
   , components
   , normalDirection
   , rotateBy
@@ -37,6 +39,16 @@ fromAngle angle =
 fromComponents: (Float, Float) -> Direction2d
 fromComponents =
   Vector2d.fromComponents >> Direction2d
+
+
+xComponent: Direction2d -> Float
+xComponent =
+  vector >> Vector2d.xComponent
+
+
+yComponent: Direction2d -> Float
+yComponent =
+  vector >> Vector2d.yComponent
 
 
 components: Direction2d -> (Float, Float)
