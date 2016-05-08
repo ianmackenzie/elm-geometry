@@ -14,6 +14,9 @@ module OpenSolid.Core.Direction2d
   , placeOnto
   , negate
   , times
+  , dot
+  , cross
+  , angleTo
   ) where
 
 
@@ -99,3 +102,18 @@ negate =
 times: Float -> Direction2d -> Vector2d
 times scale =
   vector >> Vector2d.times scale
+
+
+dot: Direction2d -> Direction2d -> Float
+dot other direction =
+  Vector2d.dot (vector other) (vector direction)
+
+
+cross: Direction2d -> Direction2d -> Float
+cross other direction =
+  Vector2d.cross (vector other) (vector direction)
+
+
+angleTo: Direction2d -> Direction2d -> Float
+angleTo other direction =
+  atan2 (cross other direction) (dot other direction)

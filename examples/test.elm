@@ -91,6 +91,9 @@ view state =
     projectPoint = Point2d.projectOnto axis
     list3 a b c = [a, b, c]
     projectedPoints = Triangle2d.mapTo list3 projectPoint triangle
+    referenceDirection = Direction2d.fromAngle (degrees 15)
+    positiveAngle = Direction2d.angleTo rotatedDirection referenceDirection
+    negativeAngle = Direction2d.angleTo (Direction2d.fromAngle (degrees -30))  referenceDirection
   in
     Html.div []
       [ line "Interval width" intervalWidth
@@ -109,6 +112,8 @@ view state =
       , line "Placed centroid" placedCentroid
       , line "Axis" axis
       , line "Projected points" projectedPoints
+      , line "Positive angle" (positiveAngle / degrees 1)
+      , line "Negative angle" (negativeAngle / degrees 1)
       ]
 
 
