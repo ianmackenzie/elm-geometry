@@ -3,6 +3,9 @@ module OpenSolid.Core.Direction3d
   , y
   , z
   , fromComponents
+  , xComponent
+  , yComponent
+  , zComponent
   , components
   , vector
   , normalDirection
@@ -41,6 +44,21 @@ z =
 fromComponents: (Float, Float, Float) -> Direction3d
 fromComponents =
   Vector3d.fromComponents >> Direction3d
+
+
+xComponent: Direction3d -> Float
+xComponent =
+  vector >> Vector3d.xComponent
+
+
+yComponent: Direction3d -> Float
+yComponent =
+  vector >> Vector3d.yComponent
+
+
+zComponent: Direction3d -> Float
+zComponent =
+  vector >> Vector3d.zComponent
 
 
 components: Direction3d -> (Float, Float, Float)
