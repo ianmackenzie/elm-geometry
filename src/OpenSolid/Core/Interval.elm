@@ -7,6 +7,8 @@ module OpenSolid.Core.Interval
   , intersection
   , fromEndpoints
   , endpoints
+  , lowerBound
+  , upperBound
   , isEmpty
   , width
   , interpolate
@@ -141,6 +143,18 @@ order!
 fromEndpoints: (Float, Float) -> Interval
 fromEndpoints (lowerBound, upperBound) =
   Interval lowerBound upperBound
+
+
+{-| Extract the lower bound of an interval. -}
+lowerBound: Interval -> Float
+lowerBound (Interval lower _) =
+  lower
+
+
+{-| Extract the upper bound of an interval. -}
+upperBound: Interval -> Float
+upperBound (Interval _ upper) =
+  upper
 
 
 {-| Convert an interval to a pair of endpoints. -}
