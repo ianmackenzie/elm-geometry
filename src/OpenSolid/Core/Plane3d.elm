@@ -1,4 +1,4 @@
-module OpenSolid.Core.Plane3d (xy, xz, yx, yz, zx, zy, fromPointAndNormal, offsetBy, flip, normalAxis, scaleAbout, rotateAbout, translateBy, mirrorAbout, relativeTo, placeIn) where
+module OpenSolid.Core.Plane3d (xy, xz, yx, yz, zx, zy, fromPointAndNormal, point, vector, offsetBy, flip, normalAxis, scaleAbout, rotateAbout, translateBy, mirrorAbout, relativeTo, placeIn) where
 
 import OpenSolid.Core exposing (..)
 import OpenSolid.Core.Point3d as Point3d
@@ -43,6 +43,16 @@ fromPointAndNormal originPoint normalDirection =
       Direction3d.normalBasis normalDirection
   in
     Plane3d originPoint xDirection yDirection normalDirection
+
+
+point : Float -> Float -> Plane3d -> Point3d
+point x y plane =
+  Point3d.plus (vector x y plane) plane.originPoint
+
+
+vector : Float -> Float -> Plane3d -> Vector3d
+vector x y plane =
+  Vector3d.plus (Direction3d.times y plane.yDirection) (Direction3d.times x plane.xDirection)
 
 
 offsetBy : Float -> Plane3d -> Plane3d
