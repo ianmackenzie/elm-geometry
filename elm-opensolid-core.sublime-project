@@ -3,7 +3,7 @@
   [
     {
       "path": ".",
-      "folder_exclude_patterns": ["elm-stuff"],
+      "folder_exclude_patterns": ["elm-stuff"]
     }
   ],
   "settings":
