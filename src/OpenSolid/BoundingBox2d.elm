@@ -1,7 +1,7 @@
-module OpenSolid.Core.BoundingBox2d (empty, whole, singleton, hull, hullOf, intersection, fromComponents, components, isEmpty, midpoint, contains, overlaps) where
+module OpenSolid.BoundingBox2d (empty, whole, singleton, hull, hullOf, intersection, fromComponents, components, isEmpty, midpoint, contains, overlaps) where
 
-import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Interval as Interval
+import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Interval as Interval
 
 
 empty : BoundingBox2d

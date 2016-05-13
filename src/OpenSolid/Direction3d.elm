@@ -1,8 +1,8 @@
-module OpenSolid.Core.Direction3d (x, y, z, fromComponents, xComponent, yComponent, zComponent, components, vector, normalDirection, normalBasis, rotateAbout, mirrorAlong, relativeTo, placeIn, projectOnto, projectInto, negate, times, dot, cross, angleTo) where
+module OpenSolid.Direction3d (x, y, z, fromComponents, xComponent, yComponent, zComponent, components, vector, normalDirection, normalBasis, rotateAbout, mirrorAlong, relativeTo, placeIn, projectOnto, projectInto, negate, times, dot, cross, angleTo) where
 
-import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Vector2d as Vector2d
-import OpenSolid.Core.Vector3d as Vector3d
+import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Vector2d as Vector2d
+import OpenSolid.Vector3d as Vector3d
 
 
 x : Direction3d

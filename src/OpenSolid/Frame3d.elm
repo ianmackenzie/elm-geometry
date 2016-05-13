@@ -1,9 +1,9 @@
-module OpenSolid.Core.Frame3d (global, xAxis, yAxis, zAxis, xyPlane, xzPlane, yxPlane, yzPlane, zxPlane, zyPlane, point, vector, scaleAbout, rotateAbout, translateBy, mirrorAbout, relativeTo, placeIn) where
+module OpenSolid.Frame3d (global, xAxis, yAxis, zAxis, xyPlane, xzPlane, yxPlane, yzPlane, zxPlane, zyPlane, point, vector, scaleAbout, rotateAbout, translateBy, mirrorAbout, relativeTo, placeIn) where
 
-import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Point3d as Point3d
-import OpenSolid.Core.Vector3d as Vector3d
-import OpenSolid.Core.Direction3d as Direction3d
+import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Point3d as Point3d
+import OpenSolid.Vector3d as Vector3d
+import OpenSolid.Direction3d as Direction3d
 
 
 global : Frame3d

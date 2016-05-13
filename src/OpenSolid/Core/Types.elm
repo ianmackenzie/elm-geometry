@@ -1,12 +1,12 @@
-module OpenSolid.Core (Vector2d(Vector2d), Vector3d(Vector3d), Direction2d(Direction2d), Direction3d(Direction3d), Point2d(Point2d), Point3d(Point3d), Interval(Interval), BoundingBox2d(BoundingBox2d), BoundingBox3d(BoundingBox3d), LineSegment2d(LineSegment2d), LineSegment3d(LineSegment3d), Triangle2d(Triangle2d), Triangle3d(Triangle3d), Axis2d, Axis3d, Plane3d, Frame2d, Frame3d) where
+module OpenSolid.Core.Types (Vector2d(Vector2d), Vector3d(Vector3d), Direction2d(Direction2d), Direction3d(Direction3d), Point2d(Point2d), Point3d(Point3d), Interval(Interval), BoundingBox2d(BoundingBox2d), BoundingBox3d(BoundingBox3d), Axis2d, Axis3d, Plane3d, Frame2d, Frame3d) where
 
 {-| This module contains the definitions of the core OpenSolid geometric data types. Each type also
 has a corresponding module providing related functionality. Suggested practice is to import this
 module exposing everything, and import all other necessary modules using `as`:
 
-    import OpenSolid.Core exposing (..)
-    import OpenSolid.Core.Vector2d as Vector2d
-    import OpenSolid.Core.Plane3d as Plane3d
+    import OpenSolid.Core.Types exposing (..)
+    import OpenSolid.Vector2d as Vector2d
+    import OpenSolid.Plane3d as Plane3d
 
 Note that since these types are not opaque, it is possible to construct them directly, and this is
 sometimes the most convenient or efficient approach. However, in most cases it is safer and easier
@@ -39,21 +39,6 @@ well-defined ways; you can add a vector to a point to result in a new point, or 
 vector from one point to another, but you cannot 'add' two points like you can add two vectors.
 
 @docs Point2d, Point3d
-
-# Line segments
-
-Line segments are defined by their start and end points.
-
-@docs LineSegment2d, LineSegment3d
-
-# Triangles
-
-Triangles are defined by the positions of their three vertices, given in counterclockwise order.
-Some operations such as computing the area of a 2D triangle or the normal direction of a 3D triangle
-are affected by vertex order; typically reversing the vertex order will result in the sign of the
-result of these operations being flipped.
-
-@docs Triangle2d, Triangle3d
 
 # Datums
 
@@ -136,30 +121,6 @@ type BoundingBox2d
 -}
 type BoundingBox3d
   = BoundingBox3d Interval Interval Interval
-
-
-{-| A line segment in 2D.
--}
-type LineSegment2d
-  = LineSegment2d Point2d Point2d
-
-
-{-| A line segment in 3D.
--}
-type LineSegment3d
-  = LineSegment3d Point3d Point3d
-
-
-{-| A triangle in 2D.
--}
-type Triangle2d
-  = Triangle2d Point2d Point2d Point2d
-
-
-{-| A triangle in 3D.
--}
-type Triangle3d
-  = Triangle3d Point3d Point3d Point3d
 
 
 {-| An axis in 2D, defined by an origin point and direction. Useful for several operations

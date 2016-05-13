@@ -1,12 +1,12 @@
-module OpenSolid.Core.Scalar (isZeroWithin, isInside, hull, hullOf) where
+module OpenSolid.Scalar (isZeroWithin, isInside, hull, hullOf) where
 
 {-| Various convenience functions for dealing with `Float` values.
 
 @docs isZeroWithin, hull, hullOf
 -}
 
-import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Interval as Interval
+import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Interval as Interval
 
 
 {-| Check if a value is equal to zero, to within a given tolerance.

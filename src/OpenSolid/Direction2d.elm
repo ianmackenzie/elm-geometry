@@ -1,7 +1,7 @@
-module OpenSolid.Core.Direction2d (x, y, fromAngle, fromComponents, xComponent, yComponent, components, normalDirection, rotateBy, mirrorAbout, relativeTo, placeIn, placeOnto, negate, times, dot, cross, angleTo) where
+module OpenSolid.Direction2d (x, y, fromAngle, fromComponents, xComponent, yComponent, components, normalDirection, rotateBy, mirrorAbout, relativeTo, placeIn, placeOnto, negate, times, dot, cross, angleTo) where
 
-import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Vector2d as Vector2d
+import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Vector2d as Vector2d
 
 
 x : Direction2d

@@ -1,6 +1,6 @@
-module OpenSolid.Core.Vector3d (zero, fromComponents, xComponent, yComponent, zComponent, components, equals, componentIn, squaredLength, length, normalize, direction, perpendicularVector, normalDirection, rotateAbout, mirrorAlong, relativeTo, placeIn, projectionIn, projectOnto, projectInto, negate, plus, minus, times, addTo, subtractFrom, dot, cross) where
+module OpenSolid.Vector3d (zero, fromComponents, xComponent, yComponent, zComponent, components, equals, componentIn, squaredLength, length, normalize, direction, perpendicularVector, normalDirection, rotateAbout, mirrorAlong, relativeTo, placeIn, projectionIn, projectOnto, projectInto, negate, plus, minus, times, addTo, subtractFrom, dot, cross) where
 
-import OpenSolid.Core exposing (..)
+import OpenSolid.Core.Types exposing (..)
 
 
 zero : Vector3d

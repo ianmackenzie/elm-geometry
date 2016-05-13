@@ -1,4 +1,4 @@
-module OpenSolid.Core.Interval (empty, whole, singleton, hull, hullOf, intersection, fromEndpoints, endpoints, lowerBound, upperBound, isEmpty, width, interpolate, midpoint, contains, overlaps) where
+module OpenSolid.Interval (empty, whole, singleton, hull, hullOf, intersection, fromEndpoints, endpoints, lowerBound, upperBound, isEmpty, width, interpolate, midpoint, contains, overlaps) where
 
 {-| Functionality for creating and manipulating `Interval` values.
 
@@ -19,7 +19,7 @@ arbitrary order.
 @docs endpoints, fromEndpoints
 -}
 
-import OpenSolid.Core exposing (..)
+import OpenSolid.Core.Types exposing (..)
 
 
 positiveInfinity =

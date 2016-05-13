@@ -1,10 +1,10 @@
-module OpenSolid.Core.Point2d (origin, fromComponents, fromPolarComponents, xComponent, yComponent, components, polarComponents, squaredDistanceTo, distanceTo, vectorTo, vectorFrom, distanceAlong, signedDistanceFrom, scaleAbout, rotateAbout, mirrorAbout, relativeTo, placeIn, projectOnto, placeOnto, plus, minus, hull, hullOf, isInside, isInsideTriangle) where
+module OpenSolid.Point2d (origin, fromComponents, fromPolarComponents, xComponent, yComponent, components, polarComponents, squaredDistanceTo, distanceTo, vectorTo, vectorFrom, distanceAlong, signedDistanceFrom, scaleAbout, rotateAbout, mirrorAbout, relativeTo, placeIn, projectOnto, placeOnto, plus, minus, hull, hullOf, isInside) where
 
-import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Scalar as Scalar
-import OpenSolid.Core.Vector2d as Vector2d
-import OpenSolid.Core.Direction2d as Direction2d
-import OpenSolid.Core.BoundingBox2d as BoundingBox2d
+import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Scalar as Scalar
+import OpenSolid.Vector2d as Vector2d
+import OpenSolid.Direction2d as Direction2d
+import OpenSolid.BoundingBox2d as BoundingBox2d
 
 
 origin : Point2d
@@ -157,22 +157,3 @@ hullOf =
 isInside : BoundingBox2d -> Point2d -> Bool
 isInside (BoundingBox2d xInterval yInterval) (Point2d x y) =
   Scalar.isInside xInterval x && Scalar.isInside yInterval y
-
-
-isInsideTriangle : Triangle2d -> Point2d -> Bool
-isInsideTriangle (Triangle2d p1 p2 p3) point =
-  let
-    crossProduct startVertex endVertex =
-      Vector2d.cross (vectorTo point startVertex) (vectorTo endVertex startVertex)
-
-    firstProduct =
-      crossProduct p1 p2
-
-    secondProduct =
-      crossProduct p2 p3
-
-    thirdProduct =
-      crossProduct p3 p1
-  in
-    (firstProduct >= 0 && secondProduct >= 0 && thirdProduct >= 0)
-      || (firstProduct <= 0 && secondProduct <= 0 && thirdProduct <= 0)

@@ -1,10 +1,10 @@
-module OpenSolid.Core.Point3d (origin, fromComponents, xComponent, yComponent, zComponent, components, squaredDistanceTo, distanceTo, vectorTo, distanceAlong, squaredDistanceToAxis, distanceToAxis, signedDistanceFrom, scaleAbout, rotateAbout, mirrorAbout, relativeTo, placeIn, projectOntoAxis, projectOnto, projectInto, plus, minus, hull, hullOf, isInside) where
+module OpenSolid.Point3d (origin, fromComponents, xComponent, yComponent, zComponent, components, squaredDistanceTo, distanceTo, vectorTo, distanceAlong, squaredDistanceToAxis, distanceToAxis, signedDistanceFrom, scaleAbout, rotateAbout, mirrorAbout, relativeTo, placeIn, projectOntoAxis, projectOnto, projectInto, plus, minus, hull, hullOf, isInside) where
 
-import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Scalar as Scalar
-import OpenSolid.Core.Vector3d as Vector3d
-import OpenSolid.Core.Direction3d as Direction3d
-import OpenSolid.Core.BoundingBox3d as BoundingBox3d
+import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Scalar as Scalar
+import OpenSolid.Vector3d as Vector3d
+import OpenSolid.Direction3d as Direction3d
+import OpenSolid.BoundingBox3d as BoundingBox3d
 
 
 origin : Point3d

@@ -1,9 +1,9 @@
-module OpenSolid.Core.Plane3d (xy, xz, yx, yz, zx, zy, fromPointAndNormal, point, vector, offsetBy, flip, normalAxis, scaleAbout, rotateAbout, translateBy, mirrorAbout, relativeTo, placeIn) where
+module OpenSolid.Plane3d (xy, xz, yx, yz, zx, zy, fromPointAndNormal, point, vector, offsetBy, flip, normalAxis, scaleAbout, rotateAbout, translateBy, mirrorAbout, relativeTo, placeIn) where
 
-import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Point3d as Point3d
-import OpenSolid.Core.Vector3d as Vector3d
-import OpenSolid.Core.Direction3d as Direction3d
+import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Point3d as Point3d
+import OpenSolid.Vector3d as Vector3d
+import OpenSolid.Direction3d as Direction3d
 
 
 xy : Plane3d

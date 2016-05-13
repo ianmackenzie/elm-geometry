@@ -1,8 +1,8 @@
-module OpenSolid.Core.Axis2d (x, y, point, segment, normalDirection, normalAxis, reverse, scaleAbout, rotateAbout, translateBy, mirrorAbout, relativeTo, placeIn, placeOnto) where
+module OpenSolid.Axis2d (x, y, point, normalDirection, normalAxis, reverse, scaleAbout, rotateAbout, translateBy, mirrorAbout, relativeTo, placeIn, placeOnto) where
 
-import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Point2d as Point2d
-import OpenSolid.Core.Direction2d as Direction2d
+import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Point2d as Point2d
+import OpenSolid.Direction2d as Direction2d
 
 
 x : Axis2d
@@ -18,11 +18,6 @@ y =
 point : Float -> Axis2d -> Point2d
 point distance axis =
   Point2d.plus (Direction2d.times distance axis.direction) axis.originPoint
-
-
-segment : Float -> Float -> Axis2d -> LineSegment2d
-segment start end axis =
-  LineSegment2d (point start axis) (point end axis)
 
 
 normalDirection : Axis2d -> Direction2d

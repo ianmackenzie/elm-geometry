@@ -1,11 +1,11 @@
-module OpenSolid.Core.Axis3d (x, y, z, point, segment, normalDirection, normalPlane, reverse, scaleAbout, rotateAbout, translateBy, mirrorAbout, relativeTo, placeIn, projectOnto, projectInto) where
+module OpenSolid.Axis3d (x, y, z, point, normalDirection, normalPlane, reverse, scaleAbout, rotateAbout, translateBy, mirrorAbout, relativeTo, placeIn, projectOnto, projectInto) where
 
-import OpenSolid.Core exposing (..)
-import OpenSolid.Core.Point3d as Point3d
-import OpenSolid.Core.Vector2d as Vector2d
-import OpenSolid.Core.Vector3d as Vector3d
-import OpenSolid.Core.Direction3d as Direction3d
-import OpenSolid.Core.Plane3d as Plane3d
+import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Point3d as Point3d
+import OpenSolid.Vector2d as Vector2d
+import OpenSolid.Vector3d as Vector3d
+import OpenSolid.Direction3d as Direction3d
+import OpenSolid.Plane3d as Plane3d
 
 
 x : Axis3d
@@ -26,11 +26,6 @@ z =
 point : Float -> Axis3d -> Point3d
 point distance axis =
   Point3d.plus (Direction3d.times distance axis.direction) axis.originPoint
-
-
-segment : Float -> Float -> Axis3d -> LineSegment3d
-segment start end axis =
-  LineSegment3d (point start axis) (point end axis)
 
 
 normalDirection : Axis3d -> Direction3d

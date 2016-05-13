@@ -1,6 +1,6 @@
-module OpenSolid.Core.Vector2d (zero, fromComponents, fromPolarComponents, xComponent, yComponent, components, polarComponents, equals, componentIn, squaredLength, length, normalize, direction, perpendicularVector, normalDirection, rotateBy, mirrorAbout, relativeTo, placeIn, projectionIn, projectOnto, placeOnto, negate, plus, minus, times, addTo, subtractFrom, dot, cross) where
+module OpenSolid.Vector2d (zero, fromComponents, fromPolarComponents, xComponent, yComponent, components, polarComponents, equals, componentIn, squaredLength, length, normalize, direction, perpendicularVector, normalDirection, rotateBy, mirrorAbout, relativeTo, placeIn, projectionIn, projectOnto, placeOnto, negate, plus, minus, times, addTo, subtractFrom, dot, cross) where
 
-import OpenSolid.Core exposing (..)
+import OpenSolid.Core.Types exposing (..)
 
 
 zero : Vector2d
