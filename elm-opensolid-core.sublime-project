@@ -8,9 +8,9 @@
   ],
   "settings":
   {
-    "tab_size": 2,
+    "tab_size": 4,
     "translate_tabs_to_spaces": true,
-    "rulers": [100],
+    "rulers": [80],
     "match_brackets_angle": false,
     "ensure_newline_at_eof_on_save": true,
     "trim_trailing_white_space_on_save": true

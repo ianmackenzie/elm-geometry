@@ -1,4 +1,4 @@
-module OpenSolid.Scalar (isZeroWithin) where
+module OpenSolid.Scalar exposing (isZeroWithin)
 
 {-| Various convenience functions for dealing with `Float` values.
 
@@ -13,8 +13,8 @@ module OpenSolid.Scalar (isZeroWithin) where
 
 Note that the tolerance is given first, to allow convenient partial application:
 
-    List.filter (Scalar.isZeroWithin 1e-3) [0.0005, 0.005, 0.05, 0.0009] == [0.0005, 0.0009]
+    List.filter (Scalar.isZeroWithin 1e-3) [0.0005, 0.005] == [0.0005]
 -}
 isZeroWithin : Float -> Float -> Bool
 isZeroWithin tolerance value =
-  -tolerance <= value && value <= tolerance
+    -tolerance <= value && value <= tolerance
