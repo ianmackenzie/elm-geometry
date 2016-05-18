@@ -1,4 +1,4 @@
-module OpenSolid.Point3d (origin, fromComponents, xComponent, yComponent, zComponent, components, squaredDistanceTo, distanceTo, vectorTo, distanceAlong, squaredDistanceToAxis, distanceToAxis, signedDistanceFrom, scaleAbout, rotateAbout, mirrorAbout, relativeTo, placeIn, projectOntoAxis, projectOnto, projectInto, plus, minus, hull) where
+module OpenSolid.Point3d (origin, fromComponents, xComponent, yComponent, zComponent, components, squaredDistanceTo, distanceTo, vectorTo, distanceAlong, squaredDistanceToAxis, distanceToAxis, signedDistanceFrom, scaleAbout, rotateAbout, mirrorAbout, relativeTo, placeIn, projectOntoAxis, projectOnto, projectInto, plus, minus) where
 
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Vector3d as Vector3d
