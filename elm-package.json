@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "summary": "2D/3D points, vectors, axes, planes, coordinate frames, and bounding boxes",
+  "summary": "2D/3D points, vectors, directions, axes, planes, and coordinate frames",
   "repository": "https://github.com/ianmackenzie/elm-opensolid-core.git",
   "license": "MPL-2.0",
   "source-directories": ["src"],
