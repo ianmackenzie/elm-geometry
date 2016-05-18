@@ -1,4 +1,4 @@
-module OpenSolid.Core.Types (Vector2d(Vector2d), Vector3d(Vector3d), Direction2d(Direction2d), Direction3d(Direction3d), Point2d(Point2d), Point3d(Point3d), Interval(Interval), BoundingBox2d(BoundingBox2d), BoundingBox3d(BoundingBox3d), Axis2d, Axis3d, Plane3d, Frame2d, Frame3d) where
+module OpenSolid.Core.Types (Vector2d(Vector2d), Vector3d(Vector3d), Direction2d(Direction2d), Direction3d(Direction3d), Point2d(Point2d), Point3d(Point3d), Axis2d, Axis3d, Plane3d, Frame2d, Frame3d) where
 
 {-| This module contains the definitions of the core OpenSolid geometric data types. Each type also
 has a corresponding module providing related functionality. Suggested practice is to import this
@@ -55,13 +55,6 @@ coordinates. They are also a common source of datums used in transformations, fo
 about the Z axis of a 3D frame or mirroring about its XY plane.
 
 @docs Frame2d, Frame3d
-
-# Bounds types
-
-These types represent bounding boxes around other geometric objects, and are useful building blocks
-for tasks such as fast spatial searching or culling non-visible objects during 3D rendering.
-
-@docs Interval, BoundingBox2d, BoundingBox3d
 -}
 
 
@@ -99,28 +92,6 @@ type Point2d
 -}
 type Point3d
   = Point3d Float Float Float
-
-
-{-| An interval represents a range of floating-point numbers between an upper and lower bound.
-
-Note that if you construct an `Interval` directly from two values, the first must be less than or
-equal to the second. `Scalar.hull` provides a convenient way to construct an interval from two
-values if it is not known ahead of time which is lesser
--}
-type Interval
-  = Interval Float Float
-
-
-{-| A bounding box in 2D, defined by X and Y intervals.
--}
-type BoundingBox2d
-  = BoundingBox2d Interval Interval
-
-
-{-| A bounding box in 3D, defined by X, Y and Z intervals.
--}
-type BoundingBox3d
-  = BoundingBox3d Interval Interval Interval
 
 
 {-| An axis in 2D, defined by an origin point and direction. Useful for several operations

@@ -4,13 +4,10 @@ import Html exposing (Html)
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Axis2d as Axis2d
 import OpenSolid.Axis3d as Axis3d
-import OpenSolid.BoundingBox2d as BoundingBox2d
-import OpenSolid.BoundingBox3d as BoundingBox3d
 import OpenSolid.Direction2d as Direction2d
 import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Frame2d as Frame2d
 import OpenSolid.Frame3d as Frame3d
-import OpenSolid.Interval as Interval
 import OpenSolid.Plane3d as Plane3d
 import OpenSolid.Point2d as Point2d
 import OpenSolid.Point3d as Point3d
@@ -27,9 +24,6 @@ line label value =
 main : Html
 main =
   let
-    intervalWidth =
-      Interval.width (Interval 2 3)
-
     vectorLength =
       Vector2d.length (Vector2d 1 1)
 
@@ -65,8 +59,7 @@ main =
   in
     Html.div
       []
-      [ line "Interval width" intervalWidth
-      , line "Vector length" vectorLength
+      [ line "Vector length" vectorLength
       , line "Point difference" pointDifference
       , line "Component in direction" directionComponent
       , line "Rotated direction" rotatedDirection

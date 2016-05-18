@@ -1,35 +1,10 @@
-module OpenSolid.Core.Decode (interval, vector2d, vector3d, direction2d, direction3d, point2d, point3d, boundingBox2d, boundingBox3d, axis2d, axis3d, plane3d, frame2d, frame3d) where
+module OpenSolid.Core.Decode (vector2d, vector3d, direction2d, direction3d, point2d, point3d, axis2d, axis3d, plane3d, frame2d, frame3d) where
 
 {-| JSON decoders for the core OpenSolid types.
 -}
 
 import Json.Decode exposing (..)
 import OpenSolid.Core.Types exposing (..)
-
-
-intervalEndpoint : Decoder Float
-intervalEndpoint =
-  let
-    decodeString string =
-      case string of
-        "NaN" ->
-          Ok (0 / 0)
-
-        "Infinity" ->
-          Ok (1 / 0)
-
-        "-Infinity" ->
-          Ok (-1 / 0)
-
-        _ ->
-          Err "Expected 'NaN', 'Infinity' or '-Infinity'"
-  in
-    oneOf float (customDecoder string decodeString)
-
-
-interval : Decoder Interval
-interval =
-  tuple2 Interval intervalEndpoint intervalEndpoint
 
 
 vector2d : Decoder Vector2d
@@ -60,16 +35,6 @@ point2d =
 point3d : Decoder Point3d
 point3d =
   tuple3 Point3d float float float
-
-
-boundingBox2d : Decoder BoundingBox2d
-boundingBox2d =
-  tuple2 BoundingBox2d interval interval
-
-
-boundingBox3d : Decoder BoundingBox3d
-boundingBox3d =
-  tuple3 BoundingBox3d interval interval interval
 
 
 axis2d : Decoder Axis2d

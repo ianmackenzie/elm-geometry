@@ -1,10 +1,8 @@
-module OpenSolid.Point3d (origin, fromComponents, xComponent, yComponent, zComponent, components, squaredDistanceTo, distanceTo, vectorTo, distanceAlong, squaredDistanceToAxis, distanceToAxis, signedDistanceFrom, scaleAbout, rotateAbout, mirrorAbout, relativeTo, placeIn, projectOntoAxis, projectOnto, projectInto, plus, minus, hull, hullOf, isInside) where
+module OpenSolid.Point3d (origin, fromComponents, xComponent, yComponent, zComponent, components, squaredDistanceTo, distanceTo, vectorTo, distanceAlong, squaredDistanceToAxis, distanceToAxis, signedDistanceFrom, scaleAbout, rotateAbout, mirrorAbout, relativeTo, placeIn, projectOntoAxis, projectOnto, projectInto, plus, minus, hull) where
 
 import OpenSolid.Core.Types exposing (..)
-import OpenSolid.Scalar as Scalar
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Direction3d as Direction3d
-import OpenSolid.BoundingBox3d as BoundingBox3d
 
 
 origin : Point3d
@@ -154,18 +152,3 @@ plus (Vector3d vx vy vz) (Point3d px py pz) =
 minus : Vector3d -> Point3d -> Point3d
 minus (Vector3d vx vy vz) (Point3d px py pz) =
   Point3d (px - vx) (py - vy) (pz - vz)
-
-
-hull : Point3d -> Point3d -> BoundingBox3d
-hull (Point3d x2 y2 z2) (Point3d x1 y1 z1) =
-  BoundingBox3d (Scalar.hull x1 x2) (Scalar.hull y1 y2) (Scalar.hull z1 z2)
-
-
-hullOf : List Point3d -> BoundingBox3d
-hullOf =
-  List.map BoundingBox3d.singleton >> BoundingBox3d.hullOf
-
-
-isInside : BoundingBox3d -> Point3d -> Bool
-isInside (BoundingBox3d xInterval yInterval zInterval) (Point3d x y z) =
-  Scalar.isInside xInterval x && Scalar.isInside yInterval y && Scalar.isInside zInterval z

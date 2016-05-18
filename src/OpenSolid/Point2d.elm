@@ -1,10 +1,8 @@
-module OpenSolid.Point2d (origin, fromComponents, fromPolarComponents, xComponent, yComponent, components, polarComponents, squaredDistanceTo, distanceTo, vectorTo, vectorFrom, distanceAlong, signedDistanceFrom, scaleAbout, rotateAbout, mirrorAbout, relativeTo, placeIn, projectOnto, placeOnto, plus, minus, hull, hullOf, isInside) where
+module OpenSolid.Point2d (origin, fromComponents, fromPolarComponents, xComponent, yComponent, components, polarComponents, squaredDistanceTo, distanceTo, vectorTo, vectorFrom, distanceAlong, signedDistanceFrom, scaleAbout, rotateAbout, mirrorAbout, relativeTo, placeIn, projectOnto, placeOnto, plus, minus) where
 
 import OpenSolid.Core.Types exposing (..)
-import OpenSolid.Scalar as Scalar
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Direction2d as Direction2d
-import OpenSolid.BoundingBox2d as BoundingBox2d
 
 
 origin : Point2d
@@ -142,18 +140,3 @@ plus (Vector2d vx vy) (Point2d px py) =
 minus : Vector2d -> Point2d -> Point2d
 minus (Vector2d vx vy) (Point2d px py) =
   Point2d (px - vx) (py - vy)
-
-
-hull : Point2d -> Point2d -> BoundingBox2d
-hull (Point2d x2 y2) (Point2d x1 y1) =
-  BoundingBox2d (Scalar.hull x2 x1) (Scalar.hull y2 y1)
-
-
-hullOf : List Point2d -> BoundingBox2d
-hullOf =
-  List.map BoundingBox2d.singleton >> BoundingBox2d.hullOf
-
-
-isInside : BoundingBox2d -> Point2d -> Bool
-isInside (BoundingBox2d xInterval yInterval) (Point2d x y) =
-  Scalar.isInside xInterval x && Scalar.isInside yInterval y
