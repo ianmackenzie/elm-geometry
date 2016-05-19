@@ -12,7 +12,6 @@ import OpenSolid.Frame3d as Frame3d
 import OpenSolid.Plane3d as Plane3d
 import OpenSolid.Point2d as Point2d
 import OpenSolid.Point3d as Point3d
-import OpenSolid.Scalar as Scalar
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Vector3d as Vector3d
 
@@ -29,7 +28,7 @@ main =
     Html.beginnerProgram { model = (), view = view, update = update }
 
 
-update: Msg -> Model -> Model
+update : Msg -> Model -> Model
 update msg model =
     model
 
