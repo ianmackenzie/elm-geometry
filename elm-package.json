@@ -1,12 +1,11 @@
 {
-  "version": "0.1.0",
+  "version": "1.0.0",
   "summary": "2D/3D points, vectors, directions, axes, planes, and coordinate frames",
   "repository": "https://github.com/ianmackenzie/elm-opensolid-core.git",
   "license": "MPL-2.0",
   "source-directories": ["src"],
   "exposed-modules": [
-    "OpenSolid.Core.Types",
-    "OpenSolid.Scalar"
+    "OpenSolid.Core.Types"
   ],
   "dependencies": {
     "elm-lang/core": "4.0.0 <= v < 5.0.0"
