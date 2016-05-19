@@ -53,7 +53,7 @@ vectors to represent positions.
 
 A direction is effectively a vector with a length of one, used to represent
 quantities like the direction of an axis. Directions are internally represented
-as vectors and can be constructed directly from them, but note that in this case
+by vectors and can be constructed directly from them, but note that in this case
 you are responsible for ensuring that the given vector's length is exactly one.
 
 @docs Direction2d, Direction3d
@@ -77,7 +77,7 @@ and mirroring in 3D is defined by a mirror plane.
 
 # Frames
 
-Frames represent local coordinate systems, and allow for conversion between
+Frames represent local coordinate systems, and allow for conversions between
 local and global coordinates. They are also a common source of datums used in
 transformations, for example rotating about the Z axis of a 3D frame or
 mirroring about its XY plane.
