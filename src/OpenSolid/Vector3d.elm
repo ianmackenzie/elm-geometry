@@ -15,7 +15,6 @@ module OpenSolid.Vector3d
         , yComponent
         , zComponent
         , components
-        , equals
         , componentIn
         , squaredLength
         , length
@@ -73,11 +72,6 @@ components (Vector3d x y z) =
     ( x, y, z )
 
 
-equals : Vector3d -> Vector3d -> Bool
-equals (Vector3d x2 y2 z2) (Vector3d x1 y1 z1) =
-    x1 == x2 && y1 == y2 && z1 == z2
-
-
 componentIn : Direction3d -> Vector3d -> Float
 componentIn (Direction3d vector) =
     dot vector
@@ -95,7 +89,7 @@ length =
 
 normalize : Vector3d -> Maybe Vector3d
 normalize vector =
-    if equals zero vector then
+    if vector == zero then
         Nothing
     else
         Just (times (1 / length vector) vector)

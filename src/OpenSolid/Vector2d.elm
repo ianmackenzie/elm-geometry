@@ -16,7 +16,6 @@ module OpenSolid.Vector2d
         , yComponent
         , components
         , polarComponents
-        , equals
         , componentIn
         , squaredLength
         , length
@@ -79,11 +78,6 @@ polarComponents =
     components >> toPolar
 
 
-equals : Vector2d -> Vector2d -> Bool
-equals (Vector2d x2 y2) (Vector2d x1 y1) =
-    x1 == x2 && y1 == y2
-
-
 componentIn : Direction2d -> Vector2d -> Float
 componentIn (Direction2d vector) =
     dot vector
@@ -101,7 +95,7 @@ length =
 
 normalize : Vector2d -> Maybe Vector2d
 normalize vector =
-    if equals zero vector then
+    if vector == zero then
         Nothing
     else
         Just (times (1 / length vector) vector)
