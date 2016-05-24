@@ -7,15 +7,21 @@
 -}
 
 
-module Tests exposing (..)
+module Main exposing (..)
 
 import ElmTest exposing (..)
-import VectorTests exposing (vectorTests)
+import Tests.Vector2d
+import Tests.Vector3d
+import Tests.Point2d
 
 
 main =
     let
         tests =
-            suite "OpenSolid Core Tests" [ vectorTests ]
+            suite "OpenSolid Core Tests"
+                [ Tests.Vector2d.suite
+                , Tests.Vector3d.suite
+                , Tests.Point2d.suite
+                ]
     in
         runSuiteHtml tests
