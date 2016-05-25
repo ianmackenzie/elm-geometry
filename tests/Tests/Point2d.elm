@@ -10,13 +10,14 @@
 module Tests.Point2d exposing (suite)
 
 import ElmTest exposing (Test)
-import Check exposing (Claim, claim, true, for, quickCheck)
+import Check exposing (Claim, claim, true, that, is, for, quickCheck)
 import Check.Test exposing (evidenceToTest)
 import Check.Producer as Producer
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Point2d as Point2d
+import OpenSolid.Vector2d as Vector2d
 import TestUtils exposing (isApproximatelyZero)
-import Producers exposing (angle, point2d, axis2d)
+import Producers exposing (angle, vector2d, point2d, axis2d)
 
 
 rotationPreservesDistance : Claim
@@ -61,9 +62,18 @@ projectionOntoAxisPreservesDistance =
             `for` Producer.tuple ( point2d, axis2d )
 
 
+plusAndAddToAreEquivalent : Claim
+plusAndAddToAreEquivalent =
+    claim "Point2d.plus is equivalent to Vector2d.addTo"
+        `that` uncurry Point2d.plus
+        `is` uncurry (flip Vector2d.addTo)
+        `for` Producer.tuple ( vector2d, point2d )
+
+
 suite : Test
 suite =
     ElmTest.suite "Point2d tests"
         [ evidenceToTest (quickCheck rotationPreservesDistance)
         , evidenceToTest (quickCheck projectionOntoAxisPreservesDistance)
+        , evidenceToTest (quickCheck plusAndAddToAreEquivalent)
         ]
