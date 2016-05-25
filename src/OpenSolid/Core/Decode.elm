@@ -41,12 +41,12 @@ vector3d =
 
 direction2d : Decoder Direction2d
 direction2d =
-    tuple2 (Direction2d << Vector2d) float float
+    map Direction2d vector2d
 
 
 direction3d : Decoder Direction3d
 direction3d =
-    tuple3 (Direction3d << Vector3d) float float float
+    map Direction3d vector3d
 
 
 point2d : Decoder Point2d
