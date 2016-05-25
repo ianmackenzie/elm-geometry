@@ -7,9 +7,14 @@
 -}
 
 
-module TestUtils exposing (isApproximatelyZero)
+module TestUtils exposing (isApproximatelyZero, areApproximatelyEqual)
 
 
 isApproximatelyZero : Float -> Bool
 isApproximatelyZero value =
     abs value < 1.0e-12
+
+
+areApproximatelyEqual : Float -> Float -> Bool
+areApproximatelyEqual first second =
+    isApproximatelyZero (first - second)
