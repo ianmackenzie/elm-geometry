@@ -14,7 +14,7 @@ import Check exposing (Claim, claim, true, for, quickCheck)
 import Check.Test exposing (evidenceToTest)
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
-import TestUtils exposing (isApproximatelyZero)
+import TestUtils exposing (areApproximatelyEqual)
 import Producers exposing (vector2d)
 
 
@@ -30,7 +30,7 @@ normalizationWorksProperly =
 
                 Just normalized ->
                     -- Otherwise, normalized length should be nearly 1
-                    isApproximatelyZero (Vector2d.length normalized - 1)
+                    areApproximatelyEqual (Vector2d.length normalized) 1
     in
         claim "Normalization works properly"
             `true` normalizeResultIsCorrect
