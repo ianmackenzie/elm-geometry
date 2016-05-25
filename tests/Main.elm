@@ -13,6 +13,7 @@ import ElmTest exposing (..)
 import Tests.Vector2d
 import Tests.Vector3d
 import Tests.Point2d
+import Tests.Point3d
 
 
 main =
@@ -22,6 +23,7 @@ main =
                 [ Tests.Vector2d.suite
                 , Tests.Vector3d.suite
                 , Tests.Point2d.suite
+                , Tests.Point3d.suite
                 ]
     in
         runSuiteHtml tests
