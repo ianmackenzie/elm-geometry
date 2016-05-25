@@ -9,6 +9,8 @@
 
 module Tests.Point3d exposing (suite)
 
+import Json.Decode as Decode exposing (decodeString)
+import Json.Encode as Encode exposing (encode)
 import ElmTest exposing (Test)
 import Check exposing (Claim, claim, true, that, is, for, quickCheck)
 import Check.Test exposing (evidenceToTest)
@@ -16,6 +18,8 @@ import Check.Producer as Producer
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Vector3d as Vector3d
+import OpenSolid.Core.Decode as Decode
+import OpenSolid.Core.Encode as Encode
 import TestUtils exposing (areApproximatelyEqual)
 import Producers exposing (angle, vector3d, point3d, axis3d)
 
@@ -49,9 +53,18 @@ minusAndSubtractFromAreEquivalent =
         `for` Producer.tuple ( vector3d, point3d )
 
 
+jsonRoundTrips : Claim
+jsonRoundTrips =
+    claim "JSON conversion round-trips properly"
+        `that` (Encode.point3d >> encode 0 >> (decodeString Decode.point3d))
+        `is` Ok
+        `for` point3d
+
+
 suite : Test
 suite =
     ElmTest.suite "Point3d tests"
         [ evidenceToTest (quickCheck rotationAboutAxisPreservesDistance)
         , evidenceToTest (quickCheck minusAndSubtractFromAreEquivalent)
+        , evidenceToTest (quickCheck jsonRoundTrips)
         ]

@@ -9,11 +9,15 @@
 
 module Tests.Vector2d exposing (suite)
 
+import Json.Decode as Decode exposing (decodeString)
+import Json.Encode as Encode exposing (encode)
 import ElmTest exposing (Test, test, assert)
-import Check exposing (Claim, claim, true, for, quickCheck)
+import Check exposing (Claim, claim, true, that, is, for, quickCheck)
 import Check.Test exposing (evidenceToTest)
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
+import OpenSolid.Core.Decode as Decode
+import OpenSolid.Core.Encode as Encode
 import TestUtils exposing (areApproximatelyEqual)
 import Producers exposing (vector2d)
 
@@ -37,8 +41,17 @@ normalizationWorksProperly =
             `for` vector2d
 
 
+jsonRoundTrips : Claim
+jsonRoundTrips =
+    claim "JSON conversion round-trips properly"
+        `that` (Encode.vector2d >> encode 0 >> (decodeString Decode.vector2d))
+        `is` Ok
+        `for` vector2d
+
+
 suite : Test
 suite =
     ElmTest.suite "Vector2d tests"
         [ evidenceToTest (quickCheck normalizationWorksProperly)
+        , evidenceToTest (quickCheck jsonRoundTrips)
         ]
