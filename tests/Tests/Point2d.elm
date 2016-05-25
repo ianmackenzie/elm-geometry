@@ -9,6 +9,8 @@
 
 module Tests.Point2d exposing (suite)
 
+import Json.Decode as Decode exposing (decodeString)
+import Json.Encode as Encode exposing (encode)
 import ElmTest exposing (Test)
 import Check exposing (Claim, claim, true, that, is, for, quickCheck)
 import Check.Test exposing (evidenceToTest)
@@ -18,8 +20,6 @@ import OpenSolid.Point2d as Point2d
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import Json.Decode as Decode exposing (decodeString)
-import Json.Encode as Encode exposing (encode)
 import TestUtils exposing (areApproximatelyEqual)
 import Producers exposing (angle, vector2d, point2d, axis2d)
 
