@@ -16,6 +16,10 @@ import Check.Producer as Producer
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Point2d as Point2d
 import OpenSolid.Vector2d as Vector2d
+import OpenSolid.Core.Decode as Decode
+import OpenSolid.Core.Encode as Encode
+import Json.Decode as Decode exposing (decodeString)
+import Json.Encode as Encode exposing (encode)
 import TestUtils exposing (areApproximatelyEqual)
 import Producers exposing (angle, vector2d, point2d, axis2d)
 
@@ -70,10 +74,19 @@ plusAndAddToAreEquivalent =
         `for` Producer.tuple ( vector2d, point2d )
 
 
+jsonRoundTrips : Claim
+jsonRoundTrips =
+    claim "JSON conversion round-trips properly"
+        `that` (Encode.point2d >> encode 0 >> (decodeString Decode.point2d))
+        `is` Ok
+        `for` point2d
+
+
 suite : Test
 suite =
     ElmTest.suite "Point2d tests"
         [ evidenceToTest (quickCheck rotationPreservesDistance)
         , evidenceToTest (quickCheck projectionOntoAxisPreservesDistance)
         , evidenceToTest (quickCheck plusAndAddToAreEquivalent)
+        , evidenceToTest (quickCheck jsonRoundTrips)
         ]
