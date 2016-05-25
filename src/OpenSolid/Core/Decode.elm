@@ -88,7 +88,7 @@ frame2d =
 
 frame3d : Decoder Frame3d
 frame3d =
-    object3 Frame3d
+    object4 Frame3d
         ("originPoint" := point3d)
         ("xDirection" := direction3d)
         ("yDirection" := direction3d)
