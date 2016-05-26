@@ -9,7 +9,7 @@
 
 module Tests.Vector2d exposing (suite)
 
-import Json.Decode as Decode exposing (decodeString)
+import Json.Decode as Decode exposing (decodeValue)
 import Json.Encode as Encode exposing (encode)
 import ElmTest exposing (Test, test, assert)
 import Check exposing (Claim, claim, true, that, is, for, quickCheck)
@@ -44,7 +44,7 @@ normalizationWorksProperly =
 jsonRoundTrips : Claim
 jsonRoundTrips =
     claim "JSON conversion round-trips properly"
-        `that` (Encode.vector2d >> encode 0 >> (decodeString Decode.vector2d))
+        `that` (Encode.vector2d >> decodeValue Decode.vector2d)
         `is` Ok
         `for` vector2d
 

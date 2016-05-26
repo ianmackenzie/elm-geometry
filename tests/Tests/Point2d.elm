@@ -9,7 +9,7 @@
 
 module Tests.Point2d exposing (suite)
 
-import Json.Decode as Decode exposing (decodeString)
+import Json.Decode as Decode exposing (decodeValue)
 import Json.Encode as Encode exposing (encode)
 import ElmTest exposing (Test)
 import Check exposing (Claim, claim, true, that, is, for, quickCheck)
@@ -77,7 +77,7 @@ plusAndAddToAreEquivalent =
 jsonRoundTrips : Claim
 jsonRoundTrips =
     claim "JSON conversion round-trips properly"
-        `that` (Encode.point2d >> encode 0 >> (decodeString Decode.point2d))
+        `that` (Encode.point2d >> decodeValue Decode.point2d)
         `is` Ok
         `for` point2d
 
