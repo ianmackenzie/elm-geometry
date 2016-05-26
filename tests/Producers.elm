@@ -18,6 +18,7 @@ module Producers
         , point3d
         , axis2d
         , axis3d
+        , plane3d
         )
 
 {-| This module contains `Producer` implementations for the core OpenSolid types
@@ -30,6 +31,7 @@ import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Point2d as Point2d
 import OpenSolid.Point3d as Point3d
+import OpenSolid.Plane3d as Plane3d
 
 
 angle : Producer Float
@@ -130,3 +132,15 @@ axis3d =
             ( axis.originPoint, axis.direction )
     in
         Producer.convert tupleToAxis axisToTuple tupleProducer
+
+
+plane3d : Producer Plane3d
+plane3d =
+    let
+        tupleProducer =
+            Producer.tuple ( point3d, direction3d )
+
+        tupleToPlane ( point, direction ) =
+            Plane3d.fromPointAndNormal point direction
+    in
+        Producer.map tupleToPlane tupleProducer
