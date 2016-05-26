@@ -28,8 +28,6 @@ import Check.Producer as Producer exposing (Producer)
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Vector3d as Vector3d
-import OpenSolid.Direction2d as Direction2d
-import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Point2d as Point2d
 import OpenSolid.Point3d as Point3d
 
