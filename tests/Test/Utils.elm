@@ -7,7 +7,12 @@
 -}
 
 
-module Test.Utils exposing (isApproximatelyZero, areApproximatelyEqual)
+module Test.Utils
+    exposing
+        ( isApproximatelyZero
+        , isApproximatelyOne
+        , areApproximatelyEqual
+        )
 
 
 isApproximatelyZero : Float -> Bool
@@ -18,3 +23,8 @@ isApproximatelyZero value =
 areApproximatelyEqual : Float -> Float -> Bool
 areApproximatelyEqual first second =
     isApproximatelyZero (first - second)
+
+
+isApproximatelyOne : Float -> Bool
+isApproximatelyOne value =
+    areApproximatelyEqual value 1
