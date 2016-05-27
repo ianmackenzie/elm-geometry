@@ -17,7 +17,6 @@ import Check.Test exposing (evidenceToTest)
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import Test.Utils exposing (areApproximatelyEqual)
 import Test.Producers exposing (plane3d)
 
 

@@ -9,22 +9,76 @@
 
 module Test.Utils
     exposing
-        ( isApproximatelyZero
-        , isApproximatelyOne
-        , areApproximatelyEqual
+        ( valueIsZero
+        , valueIsOne
+        , valuesAreEqual
+        , vectorIsZero2d
+        , vectorIsZero3d
+        , vectorsAreEqual2d
+        , vectorsAreEqual3d
+        , directionsAreEqual2d
+        , directionsAreEqual3d
+        , pointsAreEqual2d
+        , pointsAreEqual3d
         )
 
+import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Vector2d as Vector2d
+import OpenSolid.Vector3d as Vector3d
+import OpenSolid.Direction2d as Direction2d
+import OpenSolid.Direction3d as Direction3d
+import OpenSolid.Point2d as Point2d
+import OpenSolid.Point3d as Point3d
 
-isApproximatelyZero : Float -> Bool
-isApproximatelyZero value =
+
+valueIsZero : Float -> Bool
+valueIsZero value =
     abs value < 1.0e-12
 
 
-areApproximatelyEqual : Float -> Float -> Bool
-areApproximatelyEqual first second =
-    isApproximatelyZero (first - second)
+valueIsOne : Float -> Bool
+valueIsOne value =
+    valueIsZero (value - 1)
 
 
-isApproximatelyOne : Float -> Bool
-isApproximatelyOne value =
-    areApproximatelyEqual value 1
+valuesAreEqual : Float -> Float -> Bool
+valuesAreEqual first second =
+    valueIsZero (first - second)
+
+
+vectorIsZero2d : Vector2d -> Bool
+vectorIsZero2d =
+    Vector2d.length >> valueIsZero
+
+
+vectorIsZero3d : Vector3d -> Bool
+vectorIsZero3d =
+    Vector3d.length >> valueIsZero
+
+
+vectorsAreEqual2d : Vector2d -> Vector2d -> Bool
+vectorsAreEqual2d firstVector secondVector =
+    vectorIsZero2d (Vector2d.minus secondVector firstVector)
+
+
+vectorsAreEqual3d : Vector3d -> Vector3d -> Bool
+vectorsAreEqual3d firstVector secondVector =
+    vectorIsZero3d (Vector3d.minus secondVector firstVector)
+
+
+directionsAreEqual2d firstDirection secondDirection =
+    vectorsAreEqual2d (Direction2d.vector firstDirection)
+        (Direction2d.vector secondDirection)
+
+
+directionsAreEqual3d firstDirection secondDirection =
+    vectorsAreEqual3d (Direction3d.vector firstDirection)
+        (Direction3d.vector secondDirection)
+
+
+pointsAreEqual2d firstPoint secondPoint =
+    vectorIsZero2d (Point2d.vectorFrom firstPoint secondPoint)
+
+
+pointsAreEqual3d firstPoint secondPoint =
+    vectorIsZero3d (Point3d.vectorFrom firstPoint secondPoint)

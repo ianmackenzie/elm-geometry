@@ -18,7 +18,7 @@ import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import Test.Utils exposing (isApproximatelyOne)
+import Test.Utils exposing (valueIsOne)
 import Test.Producers exposing (vector3d)
 
 
@@ -34,7 +34,7 @@ normalizationWorksProperly =
 
                 Just normalized ->
                     -- Otherwise, normalized length should be nearly 1
-                    isApproximatelyOne (Vector3d.length normalized)
+                    valueIsOne (Vector3d.length normalized)
     in
         claim "Normalization works properly"
             `true` normalizeResultIsCorrect

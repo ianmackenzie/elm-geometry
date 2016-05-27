@@ -19,7 +19,7 @@ import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Direction3d as Direction3d
-import Test.Utils exposing (isApproximatelyOne)
+import Test.Utils exposing (valueIsOne)
 import Test.Producers exposing (frame3d)
 
 
@@ -42,8 +42,8 @@ frameDirectionsAreOrthonormal =
                 tripleProduct =
                     Vector3d.componentIn frame.zDirection crossProduct
             in
-                isApproximatelyOne (Vector3d.length crossProduct)
-                    && isApproximatelyOne tripleProduct
+                valueIsOne (Vector3d.length crossProduct)
+                    && valueIsOne tripleProduct
     in
         claim "Frame3d basis directions are orthonormal"
             `true` directionsAreOrthonormal

@@ -20,7 +20,7 @@ import OpenSolid.Point2d as Point2d
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import Test.Utils exposing (areApproximatelyEqual)
+import Test.Utils exposing (valuesAreEqual)
 import Test.Producers exposing (angle, vector2d, point2d, axis2d)
 
 
@@ -38,7 +38,7 @@ rotationPreservesDistance =
                 rotatedDistance =
                     Point2d.distanceTo rotatedPoint centerPoint
             in
-                areApproximatelyEqual rotatedDistance distance
+                valuesAreEqual rotatedDistance distance
     in
         claim "Rotating about a point preserves distance from that point"
             `true` distancesAreEqual
@@ -59,7 +59,7 @@ projectionOntoAxisPreservesDistance =
                 projectedDistance =
                     Point2d.distanceAlong axis projectedPoint
             in
-                areApproximatelyEqual projectedDistance distance
+                valuesAreEqual projectedDistance distance
     in
         claim "Projection onto axis preserves distance along that axis"
             `true` distancesAreEqual

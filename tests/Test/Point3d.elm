@@ -20,7 +20,7 @@ import OpenSolid.Point3d as Point3d
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import Test.Utils exposing (areApproximatelyEqual)
+import Test.Utils exposing (valuesAreEqual)
 import Test.Producers exposing (angle, vector3d, point3d, axis3d)
 
 
@@ -38,7 +38,7 @@ rotationAboutAxisPreservesDistance =
                 rotatedDistance =
                     Point3d.distanceAlong axis rotatedPoint
             in
-                areApproximatelyEqual distance rotatedDistance
+                valuesAreEqual distance rotatedDistance
     in
         claim "Rotation about axis preserves distance along that axis"
             `true` distancesAreEqual
