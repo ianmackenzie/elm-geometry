@@ -17,7 +17,9 @@ import Check.Test exposing (evidenceToTest)
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import Test.Utils exposing (areApproximatelyEqual)
+import OpenSolid.Vector3d as Vector3d
+import OpenSolid.Direction3d as Direction3d
+import Test.Utils exposing (isApproximatelyOne)
 import Test.Producers exposing (frame3d)
 
 
@@ -29,8 +31,28 @@ jsonRoundTrips =
         `for` frame3d
 
 
+frameDirectionsAreOrthonormal : Claim
+frameDirectionsAreOrthonormal =
+    let
+        directionsAreOrthonormal frame =
+            let
+                crossProduct =
+                    Direction3d.cross frame.yDirection frame.xDirection
+
+                tripleProduct =
+                    Vector3d.componentIn frame.zDirection crossProduct
+            in
+                isApproximatelyOne (Vector3d.length crossProduct)
+                    && isApproximatelyOne tripleProduct
+    in
+        claim "Frame3d basis directions are orthonormal"
+            `true` directionsAreOrthonormal
+            `for` frame3d
+
+
 suite : Test
 suite =
     ElmTest.suite "Frame3d tests"
         [ evidenceToTest (quickCheck jsonRoundTrips)
+        , evidenceToTest (quickCheck frameDirectionsAreOrthonormal)
         ]
