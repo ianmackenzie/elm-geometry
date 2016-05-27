@@ -14,10 +14,13 @@ import Json.Encode as Encode
 import ElmTest exposing (Test)
 import Check exposing (Claim, claim, true, that, is, for, quickCheck)
 import Check.Test exposing (evidenceToTest)
+import Check.Producer as Producer
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import Test.Producers exposing (frame2d)
+import OpenSolid.Point2d as Point2d
+import Test.Utils exposing (pointsAreEqual2d)
+import Test.Producers exposing (frame2d, point2d)
 
 
 jsonRoundTrips : Claim
@@ -26,6 +29,25 @@ jsonRoundTrips =
         `that` (Encode.frame2d >> decodeValue Decode.frame2d)
         `is` Ok
         `for` frame2d
+
+
+coordinateTransformationRoundTrips : Claim
+coordinateTransformationRoundTrips =
+    let
+        transformationRoundTrips ( frame, point ) =
+            let
+                roundTrip1 =
+                    Point2d.relativeTo frame >> Point2d.placeIn frame
+
+                roundTrip2 =
+                    Point2d.placeIn frame >> Point2d.relativeTo frame
+            in
+                pointsAreEqual2d point (roundTrip1 point)
+                    && pointsAreEqual2d point (roundTrip2 point)
+    in
+        claim "Local/global coordinate transformation round-trips properly"
+            `true` transformationRoundTrips
+            `for` Producer.tuple ( frame2d, point2d )
 
 
 suite : Test
