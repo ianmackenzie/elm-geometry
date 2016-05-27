@@ -19,6 +19,8 @@ module Producers
         , axis2d
         , axis3d
         , plane3d
+        , frame2d
+        , frame3d
         )
 
 {-| This module contains `Producer` implementations for the core OpenSolid types
@@ -29,6 +31,7 @@ import Check.Producer as Producer exposing (Producer)
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Vector3d as Vector3d
+import OpenSolid.Direction2d as Direction2d
 import OpenSolid.Point2d as Point2d
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Plane3d as Plane3d
@@ -144,3 +147,47 @@ plane3d =
             Plane3d.fromPointAndNormal point direction
     in
         Producer.map tupleToPlane tupleProducer
+
+
+frame2d : Producer Frame2d
+frame2d =
+    let
+        tupleProducer =
+            Producer.tuple ( point2d, direction2d )
+
+        tupleToFrame ( point, direction ) =
+            Frame2d point direction (Direction2d.normalDirection direction)
+    in
+        Producer.map tupleToFrame tupleProducer
+
+
+frame3d : Producer Frame3d
+frame3d =
+    let
+        linearlyIndependentVectors ( _, v1, v2 ) =
+            Vector3d.squaredLength (Vector3d.cross v2 v1) > 1
+
+        tupleProducer =
+            Producer.filter linearlyIndependentVectors
+                (Producer.tuple3 ( point3d, vector3d, vector3d ))
+
+        toDirection vector =
+            Direction3d (Vector3d.times (1 / Vector3d.length vector) vector)
+
+        tupleToFrame ( point, v1, v2 ) =
+            let
+                xVector =
+                    v1
+
+                zVector =
+                    Vector3d.cross v2 xVector
+
+                yVector =
+                    Vector3d.cross xVector zVector
+            in
+                Frame3d point
+                    (toDirection xVector)
+                    (toDirection yVector)
+                    (toDirection zVector)
+    in
+        Producer.map tupleToFrame tupleProducer
