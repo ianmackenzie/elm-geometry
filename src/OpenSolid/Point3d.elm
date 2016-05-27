@@ -18,6 +18,7 @@ module OpenSolid.Point3d
         , squaredDistanceTo
         , distanceTo
         , vectorTo
+        , vectorFrom
         , distanceAlong
         , squaredDistanceToAxis
         , distanceToAxis

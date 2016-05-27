@@ -16,6 +16,7 @@ module OpenSolid.Direction2d
         , xComponent
         , yComponent
         , components
+        , vector
         , normalDirection
         , rotateBy
         , mirrorAbout
