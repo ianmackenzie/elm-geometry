@@ -7,7 +7,7 @@
 -}
 
 
-module Tests.Vector2d exposing (suite)
+module Test.Vector2d exposing (suite)
 
 import Json.Decode as Decode exposing (decodeValue)
 import Json.Encode as Encode exposing (encode)
@@ -18,8 +18,8 @@ import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import TestUtils exposing (areApproximatelyEqual)
-import Producers exposing (vector2d)
+import Test.Utils exposing (areApproximatelyEqual)
+import Test.Producers exposing (vector2d)
 
 
 normalizationWorksProperly : Claim

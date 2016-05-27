@@ -7,7 +7,7 @@
 -}
 
 
-module TestUtils exposing (isApproximatelyZero, areApproximatelyEqual)
+module Test.Utils exposing (isApproximatelyZero, areApproximatelyEqual)
 
 
 isApproximatelyZero : Float -> Bool

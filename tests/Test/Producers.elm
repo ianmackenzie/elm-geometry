@@ -7,7 +7,7 @@
 -}
 
 
-module Producers
+module Test.Producers
     exposing
         ( angle
         , vector2d

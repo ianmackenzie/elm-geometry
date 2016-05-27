@@ -7,7 +7,7 @@
 -}
 
 
-module Tests.Point2d exposing (suite)
+module Test.Point2d exposing (suite)
 
 import Json.Decode as Decode exposing (decodeValue)
 import Json.Encode as Encode exposing (encode)
@@ -20,8 +20,8 @@ import OpenSolid.Point2d as Point2d
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import TestUtils exposing (areApproximatelyEqual)
-import Producers exposing (angle, vector2d, point2d, axis2d)
+import Test.Utils exposing (areApproximatelyEqual)
+import Test.Producers exposing (angle, vector2d, point2d, axis2d)
 
 
 rotationPreservesDistance : Claim
