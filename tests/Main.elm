@@ -10,21 +10,31 @@
 module Main exposing (..)
 
 import ElmTest
-import Test.Vector2d
-import Test.Vector3d
+import Test.Axis2d
+import Test.Axis3d
 import Test.Direction2d
 import Test.Direction3d
+import Test.Frame2d
+import Test.Frame3d
+import Test.Plane3d
 import Test.Point2d
 import Test.Point3d
+import Test.Vector2d
+import Test.Vector3d
 
 
 testSuites =
-    [ Test.Vector2d.suite
-    , Test.Vector3d.suite
+    [ Test.Axis2d.suite
+    , Test.Axis3d.suite
     , Test.Direction2d.suite
     , Test.Direction3d.suite
+    , Test.Frame2d.suite
+    , Test.Frame3d.suite
+    , Test.Plane3d.suite
     , Test.Point2d.suite
     , Test.Point3d.suite
+    , Test.Vector2d.suite
+    , Test.Vector3d.suite
     ]
 
 
