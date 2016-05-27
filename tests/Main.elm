@@ -9,7 +9,7 @@
 
 module Main exposing (..)
 
-import ElmTest exposing (..)
+import ElmTest
 import Tests.Vector2d
 import Tests.Vector3d
 import Tests.Direction2d
@@ -29,4 +29,4 @@ testSuites =
 
 
 main =
-    runSuiteHtml (suite "OpenSolid Core Tests" testSuites)
+    ElmTest.runSuiteHtml (ElmTest.suite "OpenSolid Core Tests" testSuites)
