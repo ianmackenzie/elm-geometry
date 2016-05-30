@@ -6,7 +6,8 @@
   "source-directories": ["src"],
   "exposed-modules": [
     "OpenSolid.Core.Types",
-    "OpenSolid.Core.Encode"
+    "OpenSolid.Core.Encode",
+    "OpenSolid.Core.Decode"
   ],
   "dependencies": {
     "elm-lang/core": "4.0.0 <= v < 5.0.0"
