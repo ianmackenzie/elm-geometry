@@ -241,7 +241,7 @@ perpendicularVector (Vector2d x y) =
 {-| Attempt to construct a direction 90 degrees counterclockwise from the given
 vector. In the case of a zero vector, return `Nothing`.
 
-    Vector2d.normalDirection (Vector2d 0.001 0) == Just Direction2d.y
+    Vector2d.normalDirection (Vector2d 10 0) == Just Direction2d.y
     Vector2d.normalDirection (Vector2d 0 0) == Nothing
 -}
 normalDirection : Vector2d -> Maybe Direction2d
