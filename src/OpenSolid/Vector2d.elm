@@ -40,59 +40,166 @@ module OpenSolid.Vector2d
         , cross
         )
 
+{-| Functions for working with `Vector2d` values. Vectors can be constructed
+from their X and Y components using the type tag directly:
+
+    v1 = Vector2d 2 3
+    v2 = Vector2d (4 + 5) (sqrt 2)
+
+The functions in this module provide various other ways of constructing vectors
+and performing operations on them. For the examples below, assume the following
+imports:
+
+    import OpenSolid.Core.Types exposing (..)
+    import OpenSolid.Vector2d as Vector2d
+    import OpenSolid.Direction2d as Direction2d
+    import OpenSolid.Point2d as Point2d
+
+# Constants
+
+@docs zero
+
+# Conversions
+
+@docs fromComponents, fromPolarComponents, components, polarComponents
+
+# Individual components
+
+Although `xComponent` and `yComponent` are provided for convenience, in many
+cases it is  better to use `componentIn`. For instance, instead of using
+`Vector2d.yComponent someVector`, define something like
+
+    verticalDirection : Direction2d
+    verticalDirection =
+        Direction2d.y
+
+and then use `Vector2d.componentIn verticalDirection someVector`. This is more
+flexible and self-documenting, although admittedly not quite as efficient (since
+it requires a dot product behind the scenes instead of a simple component
+access).
+
+@docs xComponent, yComponent, componentIn
+
+# Arithmetic
+
+@docs plus, minus, times, addTo, subtractFrom, dot, cross
+
+# Length and direction
+
+@docs squaredLength, length, normalize, direction, perpendicularVector, normalDirection
+
+# Transformations
+
+@docs rotateBy, mirrorAbout, relativeTo, placeIn, projectionIn, projectOnto, placeOnto
+-}
+
 import OpenSolid.Core.Types exposing (..)
 
 
+{-| The zero vector.
+
+    Vector2d.zero == Vector2d 0 0
+-}
 zero : Vector2d
 zero =
     Vector2d 0 0
 
 
+{-| Construct a vector from a pair of X and Y components.
+
+    Vector2d.fromComponents ( 2, 3 ) == Vector2d 2 3
+-}
 fromComponents : ( Float, Float ) -> Vector2d
 fromComponents ( x, y ) =
     Vector2d x y
 
 
+{-| Construct a vector from (radius, angle) components. Angles must be given in
+radians (Elm's built-in `degrees` and `turns` functions may be useful).
+
+    Vector2d.fromPolarComponents ( 1, degrees 45 ) == Vector2d 0.7071 0.7071
+-}
 fromPolarComponents : ( Float, Float ) -> Vector2d
 fromPolarComponents =
     fromPolar >> fromComponents
 
 
+{-| Get the X component of a vector.
+-}
 xComponent : Vector2d -> Float
 xComponent (Vector2d x _) =
     x
 
 
+{-| Get the Y component of a vector.
+-}
 yComponent : Vector2d -> Float
 yComponent (Vector2d _ y) =
     y
 
 
+{-| Get the X and Y components of a vector as a tuple.
+-}
 components : Vector2d -> ( Float, Float )
 components (Vector2d x y) =
     ( x, y )
 
 
+{-| Convert a vector to polar (radius, angle) components. Angles will be
+returned in radians.
+
+    Vector2d.polarComponents (Vector2d 1 1) == (sqrt 2, pi / 4)
+-}
 polarComponents : Vector2d -> ( Float, Float )
 polarComponents =
     components >> toPolar
 
 
+{-| Get the component of a vector in a particular direction. For example,
+
+    Vector2d.componentIn Direction2d.x someVector
+
+is equivalent to
+
+    Vector2d.xComponent someVector
+-}
 componentIn : Direction2d -> Vector2d -> Float
 componentIn (Direction2d vector) =
     dot vector
 
 
+{-| Get the squared length of a vector. This is slightly more efficient than
+calling `Vector2d.length`.
+-}
 squaredLength : Vector2d -> Float
 squaredLength (Vector2d x y) =
     x * x + y * y
 
 
+{-| Get the length of a vector. Using `Vector2d.squaredLength` is slightly
+more efficient, so for instance
+
+    Vector2d.squaredLength vector > tolerance * tolerance
+
+is equivalent to but slightly faster than
+
+    Vector2d.length vector > tolerance
+
+In many cases, however, the speed difference will be neglible and using
+`Vector2d.length` is much more readable!
+-}
 length : Vector2d -> Float
 length =
     squaredLength >> sqrt
 
 
+{-| Attempt to normalize a vector to give a vector in the same direction but of
+length one, by dividing by the vector's current length. In the case of a zero
+vector, return `Nothing`.
+
+    Vector2d.normalize (Vector2d 1 1) == Just (Vector2d 0.7071 0.7071)
+    Vector2d.normalize (Vector2d 0 0) == Nothing
+-}
 normalize : Vector2d -> Maybe Vector2d
 normalize vector =
     if vector == zero then
@@ -101,16 +208,42 @@ normalize vector =
         Just (times (1 / length vector) vector)
 
 
+{-| Attempt to find the direction of a vector. In the case of a zero vector,
+return `Nothing`.
+
+    Vector2d.direction (Vector2d 1 1) == Just (Direction2d (Vector2d 0.7071 0.7071))
+    Vector2d.direction (Vector2d 0 0) == Nothing
+
+For instance, given an eye point and a point to look at, the view direction
+could be determined with
+
+    Vector2d.direction (Point2d.vectorFrom eyePoint lookAtPoint)
+
+This would return a `Maybe Direction2d`, with the `Nothing` case corresponding
+to the eye point and point to look at being coincident (in which case the view
+direction is not well-defined and some special-case logic would be needed).
+-}
 direction : Vector2d -> Maybe Direction2d
 direction =
     normalize >> Maybe.map Direction2d
 
 
+{-| Construct a vector perpendicular to the given vector by rotating it
+90 degrees in a counterclockwise direction.
+
+    Vector2d.perpendicularVector (Vector2 3 1) == Vector2d -1 3
+-}
 perpendicularVector : Vector2d -> Vector2d
 perpendicularVector (Vector2d x y) =
     Vector2d (-y) x
 
 
+{-| Attempt to construct a direction 90 degrees counterclockwise from the given
+vector. In the case of a zero vector, return `Nothing`.
+
+    Vector2d.normalDirection (Vector2d 0.001 0) == Just Direction2d.y
+    Vector2d.normalDirection (Vector2d 0 0) == Nothing
+-}
 normalDirection : Vector2d -> Maybe Direction2d
 normalDirection =
     perpendicularVector >> direction
