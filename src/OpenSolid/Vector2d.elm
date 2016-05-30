@@ -185,7 +185,7 @@ is equivalent to but slightly faster than
 
     Vector2d.length vector > tolerance
 
-In many cases, however, the speed difference will be neglible and using
+In many cases, however, the speed difference will be negligible and using
 `Vector2d.length` is much more readable!
 -}
 length : Vector2d -> Float
