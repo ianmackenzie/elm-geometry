@@ -21,7 +21,7 @@ module OpenSolid.Vector3d
         , normalize
         , direction
         , perpendicularVector
-        , normalDirection
+        , perpendicularDirection
         , rotateAbout
         , mirrorAlong
         , relativeTo
@@ -123,8 +123,8 @@ perpendicularVector (Vector3d x y z) =
             Vector3d (-y) x 0
 
 
-normalDirection : Vector3d -> Maybe Direction3d
-normalDirection =
+perpendicularDirection : Vector3d -> Maybe Direction3d
+perpendicularDirection =
     perpendicularVector >> direction
 
 

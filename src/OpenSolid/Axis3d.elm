@@ -56,7 +56,7 @@ point distance axis =
 
 normalDirection : Axis3d -> Direction3d
 normalDirection axis =
-    Direction3d.normalDirection axis.direction
+    Direction3d.perpendicularDirection axis.direction
 
 
 normalPlane : Axis3d -> Plane3d

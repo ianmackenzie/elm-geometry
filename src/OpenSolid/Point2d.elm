@@ -102,7 +102,7 @@ signedDistanceFrom : Axis2d -> Point2d -> Float
 signedDistanceFrom axis =
     let
         normalDirection =
-            Direction2d.normalDirection axis.direction
+            Direction2d.perpendicularDirection axis.direction
     in
         vectorFrom axis.originPoint >> Vector2d.componentIn normalDirection
 
