@@ -214,22 +214,22 @@ return `Nothing`.
     Vector2d.direction (Vector2d 1 1) == Just (Direction2d (Vector2d 0.7071 0.7071))
     Vector2d.direction (Vector2d 0 0) == Nothing
 
-For instance, given an eye point and a point to look at, the view direction
-could be determined with
+For instance, given an eye point and a point to look at, the corresponding view
+direction could be determined with
 
     Vector2d.direction (Point2d.vectorFrom eyePoint lookAtPoint)
 
-This would return a `Maybe Direction2d`, with the `Nothing` case corresponding
-to the eye point and point to look at being coincident (in which case the view
-direction is not well-defined and some special-case logic would be needed).
+This would return a `Maybe Direction2d`, with `Nothing` corresponding to the
+case where the eye point and point to look at are coincident (in which case the
+view direction is not well-defined and some special-case logic is needed).
 -}
 direction : Vector2d -> Maybe Direction2d
 direction =
     normalize >> Maybe.map Direction2d
 
 
-{-| Construct a vector perpendicular to the given vector by rotating it
-90 degrees in a counterclockwise direction.
+{-| Construct a vector perpendicular to the given vector but with the same
+length, by rotating the given vector 90 degrees in a counterclockwise direction.
 
     Vector2d.perpendicularVector (Vector2d 3 1) == Vector2d -1 3
 -}
