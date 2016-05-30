@@ -18,7 +18,7 @@ import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import Test.Utils exposing (valueIsOne)
+import Test.Utils exposing (valueIsOne, valueIsZero)
 import Test.Producers exposing (vector2d)
 
 
@@ -49,9 +49,28 @@ jsonRoundTrips =
         `for` vector2d
 
 
+perpendicularVectorIsPerpendicular : Claim
+perpendicularVectorIsPerpendicular =
+    let
+        dotProductIsZero vector =
+            let
+                perpendicularVector =
+                    Vector2d.perpendicularVector vector
+
+                dotProduct =
+                    Vector2d.dot vector perpendicularVector
+            in
+                valueIsZero dotProduct
+    in
+        claim "perpendicularVector actually returns a perpendicular vector"
+            `true` dotProductIsZero
+            `for` vector2d
+
+
 suite : Test
 suite =
     ElmTest.suite "Vector2d tests"
         [ evidenceToTest (quickCheck normalizationWorksProperly)
         , evidenceToTest (quickCheck jsonRoundTrips)
+        , evidenceToTest (quickCheck perpendicularVectorIsPerpendicular)
         ]
