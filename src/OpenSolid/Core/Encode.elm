@@ -40,13 +40,13 @@ vector3d (Vector3d x y z) =
 
 
 direction2d : Direction2d -> Value
-direction2d (Direction2d (Vector2d x y)) =
-    list [ float x, float y ]
+direction2d (Direction2d vector) =
+    vector2d vector
 
 
 direction3d : Direction3d -> Value
-direction3d (Direction3d (Vector3d x y z)) =
-    list [ float x, float y, float z ]
+direction3d (Direction3d vector) =
+    vector3d vector
 
 
 point2d : Point2d -> Value
