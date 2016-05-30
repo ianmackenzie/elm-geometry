@@ -29,36 +29,50 @@ import Json.Encode exposing (..)
 import OpenSolid.Core.Types exposing (..)
 
 
+{-| Encode a Vector2d as a list of two floats.
+-}
 vector2d : Vector2d -> Value
 vector2d (Vector2d x y) =
     list [ float x, float y ]
 
 
+{-| Encode a Vector3d as a list of three floats.
+-}
 vector3d : Vector3d -> Value
 vector3d (Vector3d x y z) =
     list [ float x, float y, float z ]
 
 
+{-| Encode a Direction2d as a list of two floats.
+-}
 direction2d : Direction2d -> Value
 direction2d (Direction2d vector) =
     vector2d vector
 
 
+{-| Encode a Direction3d as a list of three floats.
+-}
 direction3d : Direction3d -> Value
 direction3d (Direction3d vector) =
     vector3d vector
 
 
+{-| Encode a Point2d as a list of two floats.
+-}
 point2d : Point2d -> Value
 point2d (Point2d x y) =
     list [ float x, float y ]
 
 
+{-| Encode a Point3d as a list of three floats.
+-}
 point3d : Point3d -> Value
 point3d (Point3d x y z) =
     list [ float x, float y, float z ]
 
 
+{-| Encode an Axis2d as an object with 'originPoint' and 'direction' fields.
+-}
 axis2d : Axis2d -> Value
 axis2d axis =
     object
@@ -67,6 +81,8 @@ axis2d axis =
         ]
 
 
+{-| Encode an Axis3d as an object with 'originPoint' and 'direction' fields.
+-}
 axis3d : Axis3d -> Value
 axis3d axis =
     object
@@ -75,6 +91,9 @@ axis3d axis =
         ]
 
 
+{-| Encode a Plane3d as an object with 'originPoint', 'xDirection', 'yDirection'
+and 'normalDirection' fields.
+-}
 plane3d : Plane3d -> Value
 plane3d plane =
     object
@@ -85,6 +104,9 @@ plane3d plane =
         ]
 
 
+{-| Encode a Frame2d as an object with 'originPoint', 'xDirection' and
+'yDirection' fields.
+-}
 frame2d : Frame2d -> Value
 frame2d frame =
     object
@@ -94,6 +116,9 @@ frame2d frame =
         ]
 
 
+{-| Encode a Frame3d as an object with 'originPoint', 'xDirection', 'yDirection'
+and 'zDirection' fields.
+-}
 frame3d : Frame3d -> Value
 frame3d frame =
     object
