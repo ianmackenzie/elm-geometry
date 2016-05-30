@@ -231,7 +231,7 @@ direction =
 {-| Construct a vector perpendicular to the given vector by rotating it
 90 degrees in a counterclockwise direction.
 
-    Vector2d.perpendicularVector (Vector2 3 1) == Vector2d -1 3
+    Vector2d.perpendicularVector (Vector2d 3 1) == Vector2d -1 3
 -}
 perpendicularVector : Vector2d -> Vector2d
 perpendicularVector (Vector2d x y) =
