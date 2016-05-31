@@ -275,6 +275,13 @@ rotateBy angle =
             Vector2d (x * cosine - y * sine) (y * cosine + x * sine)
 
 
+{-| Mirror a vector about a particular direction. This can be thought of as
+mirroring the vector across an axis with the given direction, anchored at the
+base of the given vector.
+
+    Vector2d.mirrorAbout Direction2d.x (Vector2d 2 3) == Vector2d 2 -3
+    Vector2d.mirrorAbout Direction2d.y (Vector2d 2 3) == Vector2d -2 3
+-}
 mirrorAbout : Direction2d -> Vector2d -> Vector2d
 mirrorAbout direction =
     let
