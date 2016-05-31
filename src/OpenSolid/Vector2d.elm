@@ -41,7 +41,7 @@ module OpenSolid.Vector2d
         )
 
 {-| Functions for working with `Vector2d` values. Vectors can be constructed
-from their X and Y components using the type tag directly:
+directly from their X and Y components if desired:
 
     v1 = Vector2d 2 3
     v2 = Vector2d (4 + 5) (sqrt 2)
