@@ -20,8 +20,8 @@ module OpenSolid.Direction2d
         , perpendicularDirection
         , rotateBy
         , mirrorAbout
-        , relativeTo
-        , placeIn
+        , toLocalIn
+        , toGlobalFrom
         , placeOnto
         , negate
         , times
@@ -89,14 +89,14 @@ mirrorAbout direction =
     vector >> Vector2d.mirrorAbout direction >> Direction2d
 
 
-relativeTo : Frame2d -> Direction2d -> Direction2d
-relativeTo frame =
-    vector >> Vector2d.relativeTo frame >> Direction2d
+toLocalIn : Frame2d -> Direction2d -> Direction2d
+toLocalIn frame =
+    vector >> Vector2d.toLocalIn frame >> Direction2d
 
 
-placeIn : Frame2d -> Direction2d -> Direction2d
-placeIn frame =
-    vector >> Vector2d.placeIn frame >> Direction2d
+toGlobalFrom : Frame2d -> Direction2d -> Direction2d
+toGlobalFrom frame =
+    vector >> Vector2d.toGlobalFrom frame >> Direction2d
 
 
 placeOnto : Plane3d -> Direction2d -> Direction3d

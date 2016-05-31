@@ -25,8 +25,8 @@ module OpenSolid.Vector2d
         , perpendicularDirection
         , rotateBy
         , mirrorAbout
-        , relativeTo
-        , placeIn
+        , toLocalIn
+        , toGlobalFrom
         , projectionIn
         , projectOnto
         , placeOnto
@@ -90,7 +90,7 @@ access).
 
 # Transformations
 
-@docs rotateBy, mirrorAbout, relativeTo, placeIn, projectionIn, projectOnto, placeOnto
+@docs rotateBy, mirrorAbout, toLocalIn, toGlobalFrom, projectionIn, projectOnto, placeOnto
 -}
 
 import OpenSolid.Core.Types exposing (..)
@@ -300,14 +300,14 @@ mirrorAbout direction =
         \(Vector2d vx vy) -> Vector2d (a * vx + b * vy) (c * vy + b * vx)
 
 
-relativeTo : Frame2d -> Vector2d -> Vector2d
-relativeTo frame vector =
+toLocalIn : Frame2d -> Vector2d -> Vector2d
+toLocalIn frame vector =
     Vector2d (componentIn frame.xDirection vector)
         (componentIn frame.yDirection vector)
 
 
-placeIn : Frame2d -> Vector2d -> Vector2d
-placeIn frame =
+toGlobalFrom : Frame2d -> Vector2d -> Vector2d
+toGlobalFrom frame =
     let
         (Direction2d (Vector2d x1 y1)) =
             frame.xDirection

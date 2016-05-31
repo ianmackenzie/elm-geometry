@@ -25,8 +25,8 @@ module OpenSolid.Point2d
         , scaleAbout
         , rotateAbout
         , mirrorAbout
-        , relativeTo
-        , placeIn
+        , toLocalIn
+        , toGlobalFrom
         , projectOnto
         , placeOnto
         , plus
@@ -132,22 +132,22 @@ mirrorAbout axis =
             >> Vector2d.addTo axis.originPoint
 
 
-relativeTo : Frame2d -> Point2d -> Point2d
-relativeTo frame =
+toLocalIn : Frame2d -> Point2d -> Point2d
+toLocalIn frame =
     let
         localizeVector =
-            Vector2d.relativeTo frame
+            Vector2d.toLocalIn frame
     in
         vectorFrom frame.originPoint
             >> localizeVector
             >> (\(Vector2d x y) -> Point2d x y)
 
 
-placeIn : Frame2d -> Point2d -> Point2d
-placeIn frame =
+toGlobalFrom : Frame2d -> Point2d -> Point2d
+toGlobalFrom frame =
     let
         globalizeVector =
-            Vector2d.placeIn frame
+            Vector2d.toGlobalFrom frame
     in
         (\(Point2d x y) -> Vector2d x y)
             >> globalizeVector

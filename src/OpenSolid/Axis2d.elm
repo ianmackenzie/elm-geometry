@@ -19,8 +19,8 @@ module OpenSolid.Axis2d
         , rotateAbout
         , translateBy
         , mirrorAbout
-        , relativeTo
-        , placeIn
+        , toLocalIn
+        , toGlobalFrom
         , placeOnto
         )
 
@@ -101,28 +101,28 @@ mirrorAbout otherAxis =
                 (mirrorDirection axis.direction)
 
 
-relativeTo : Frame2d -> Axis2d -> Axis2d
-relativeTo frame =
+toLocalIn : Frame2d -> Axis2d -> Axis2d
+toLocalIn frame =
     let
         localizePoint =
-            Point2d.relativeTo frame
+            Point2d.toLocalIn frame
 
         localizeDirection =
-            Direction2d.relativeTo frame
+            Direction2d.toLocalIn frame
     in
         \axis ->
             Axis2d (localizePoint axis.originPoint)
                 (localizeDirection axis.direction)
 
 
-placeIn : Frame2d -> Axis2d -> Axis2d
-placeIn frame =
+toGlobalFrom : Frame2d -> Axis2d -> Axis2d
+toGlobalFrom frame =
     let
         globalizePoint =
-            Point2d.placeIn frame
+            Point2d.toGlobalFrom frame
 
         globalizeDirection =
-            Direction2d.placeIn frame
+            Direction2d.toGlobalFrom frame
     in
         \axis ->
             Axis2d (globalizePoint axis.originPoint)

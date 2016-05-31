@@ -24,8 +24,8 @@ module OpenSolid.Vector3d
         , perpendicularDirection
         , rotateAbout
         , mirrorAlong
-        , relativeTo
-        , placeIn
+        , toLocalIn
+        , toGlobalFrom
         , projectionIn
         , projectOnto
         , projectInto
@@ -255,8 +255,8 @@ mirrorAlong direction =
                 Vector3d vx' vy' vz'
 
 
-relativeTo : Frame3d -> Vector3d -> Vector3d
-relativeTo frame vector =
+toLocalIn : Frame3d -> Vector3d -> Vector3d
+toLocalIn frame vector =
     let
         x =
             componentIn frame.xDirection vector
@@ -270,8 +270,8 @@ relativeTo frame vector =
         Vector3d x y z
 
 
-placeIn : Frame3d -> Vector3d -> Vector3d
-placeIn frame =
+toGlobalFrom : Frame3d -> Vector3d -> Vector3d
+toGlobalFrom frame =
     let
         (Direction3d (Vector3d x1 y1 z1)) =
             frame.xDirection

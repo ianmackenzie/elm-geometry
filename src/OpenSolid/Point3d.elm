@@ -26,8 +26,8 @@ module OpenSolid.Point3d
         , scaleAbout
         , rotateAbout
         , mirrorAbout
-        , relativeTo
-        , placeIn
+        , toLocalIn
+        , toGlobalFrom
         , projectOntoAxis
         , projectOnto
         , projectInto
@@ -143,22 +143,22 @@ mirrorAbout plane =
             >> Vector3d.addTo plane.originPoint
 
 
-relativeTo : Frame3d -> Point3d -> Point3d
-relativeTo frame =
+toLocalIn : Frame3d -> Point3d -> Point3d
+toLocalIn frame =
     let
         localizeVector =
-            Vector3d.relativeTo frame
+            Vector3d.toLocalIn frame
     in
         vectorFrom frame.originPoint
             >> localizeVector
             >> (\(Vector3d x y z) -> Point3d x y z)
 
 
-placeIn : Frame3d -> Point3d -> Point3d
-placeIn frame =
+toGlobalFrom : Frame3d -> Point3d -> Point3d
+toGlobalFrom frame =
     let
         globalizeVector =
-            Vector3d.placeIn frame
+            Vector3d.toGlobalFrom frame
     in
         (\(Point3d x y z) -> Vector3d x y z)
             >> globalizeVector

@@ -20,8 +20,8 @@ module OpenSolid.Axis3d
         , rotateAbout
         , translateBy
         , mirrorAbout
-        , relativeTo
-        , placeIn
+        , toLocalIn
+        , toGlobalFrom
         , projectOnto
         , projectInto
         )
@@ -111,28 +111,28 @@ mirrorAbout plane =
                 (mirrorDirection axis.direction)
 
 
-relativeTo : Frame3d -> Axis3d -> Axis3d
-relativeTo frame =
+toLocalIn : Frame3d -> Axis3d -> Axis3d
+toLocalIn frame =
     let
         localizePoint =
-            Point3d.relativeTo frame
+            Point3d.toLocalIn frame
 
         localizeDirection =
-            Direction3d.relativeTo frame
+            Direction3d.toLocalIn frame
     in
         \axis ->
             Axis3d (localizePoint axis.originPoint)
                 (localizeDirection axis.direction)
 
 
-placeIn : Frame3d -> Axis3d -> Axis3d
-placeIn frame =
+toGlobalFrom : Frame3d -> Axis3d -> Axis3d
+toGlobalFrom frame =
     let
         globalizePoint =
-            Point3d.placeIn frame
+            Point3d.toGlobalFrom frame
 
         globalizeDirection =
-            Direction3d.placeIn frame
+            Direction3d.toGlobalFrom frame
     in
         \axis ->
             Axis3d (globalizePoint axis.originPoint)

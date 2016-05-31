@@ -22,8 +22,8 @@ module OpenSolid.Direction3d
         , normalBasis
         , rotateAbout
         , mirrorAlong
-        , relativeTo
-        , placeIn
+        , toLocalIn
+        , toGlobalFrom
         , projectOnto
         , projectInto
         , negate
@@ -125,20 +125,20 @@ mirrorAlong direction =
         vector >> mirrorVector >> Direction3d
 
 
-relativeTo : Frame3d -> Direction3d -> Direction3d
-relativeTo frame =
+toLocalIn : Frame3d -> Direction3d -> Direction3d
+toLocalIn frame =
     let
         localizeVector =
-            Vector3d.relativeTo frame
+            Vector3d.toLocalIn frame
     in
         vector >> localizeVector >> Direction3d
 
 
-placeIn : Frame3d -> Direction3d -> Direction3d
-placeIn frame =
+toGlobalFrom : Frame3d -> Direction3d -> Direction3d
+toGlobalFrom frame =
     let
         globalizeVector =
-            Vector3d.placeIn frame
+            Vector3d.toGlobalFrom frame
     in
         vector >> globalizeVector >> Direction3d
 

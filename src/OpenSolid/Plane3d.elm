@@ -25,8 +25,8 @@ module OpenSolid.Plane3d
         , rotateAbout
         , translateBy
         , mirrorAbout
-        , relativeTo
-        , placeIn
+        , toLocalIn
+        , toGlobalFrom
         )
 
 import OpenSolid.Core.Types exposing (..)
@@ -170,14 +170,14 @@ mirrorAbout otherPlane =
                 (mirrorDirection plane.normalDirection)
 
 
-relativeTo : Frame3d -> Plane3d -> Plane3d
-relativeTo frame =
+toLocalIn : Frame3d -> Plane3d -> Plane3d
+toLocalIn frame =
     let
         localizePoint =
-            Point3d.relativeTo frame
+            Point3d.toLocalIn frame
 
         localizeDirection =
-            Direction3d.relativeTo frame
+            Direction3d.toLocalIn frame
     in
         \plane ->
             Plane3d (localizePoint plane.originPoint)
@@ -186,14 +186,14 @@ relativeTo frame =
                 (localizeDirection plane.normalDirection)
 
 
-placeIn : Frame3d -> Plane3d -> Plane3d
-placeIn frame =
+toGlobalFrom : Frame3d -> Plane3d -> Plane3d
+toGlobalFrom frame =
     let
         globalizePoint =
-            Point3d.placeIn frame
+            Point3d.toGlobalFrom frame
 
         globalizeDirection =
-            Direction3d.placeIn frame
+            Direction3d.toGlobalFrom frame
     in
         \plane ->
             Plane3d (globalizePoint plane.originPoint)

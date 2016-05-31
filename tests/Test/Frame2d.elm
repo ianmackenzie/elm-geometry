@@ -37,10 +37,10 @@ coordinateTransformationRoundTrips =
         transformationRoundTrips ( frame, point ) =
             let
                 roundTrip1 =
-                    Point2d.relativeTo frame >> Point2d.placeIn frame
+                    Point2d.toLocalIn frame >> Point2d.toGlobalFrom frame
 
                 roundTrip2 =
-                    Point2d.placeIn frame >> Point2d.relativeTo frame
+                    Point2d.toGlobalFrom frame >> Point2d.toLocalIn frame
             in
                 pointsAreEqual2d point (roundTrip1 point)
                     && pointsAreEqual2d point (roundTrip2 point)

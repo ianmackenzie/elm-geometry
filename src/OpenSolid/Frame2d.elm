@@ -18,8 +18,8 @@ module OpenSolid.Frame2d
         , rotateAbout
         , translateBy
         , mirrorAbout
-        , relativeTo
-        , placeIn
+        , toLocalIn
+        , toGlobalFrom
         )
 
 import OpenSolid.Core.Types exposing (..)
@@ -104,14 +104,14 @@ mirrorAbout axis =
                 (mirrorDirection frame.yDirection)
 
 
-relativeTo : Frame2d -> Frame2d -> Frame2d
-relativeTo otherFrame =
+toLocalIn : Frame2d -> Frame2d -> Frame2d
+toLocalIn otherFrame =
     let
         localizePoint =
-            Point2d.relativeTo otherFrame
+            Point2d.toLocalIn otherFrame
 
         localizeDirection =
-            Direction2d.relativeTo otherFrame
+            Direction2d.toLocalIn otherFrame
     in
         \frame ->
             Frame2d (localizePoint frame.originPoint)
@@ -119,14 +119,14 @@ relativeTo otherFrame =
                 (localizeDirection frame.yDirection)
 
 
-placeIn : Frame2d -> Frame2d -> Frame2d
-placeIn frame =
+toGlobalFrom : Frame2d -> Frame2d -> Frame2d
+toGlobalFrom frame =
     let
         globalizePoint =
-            Point2d.placeIn frame
+            Point2d.toGlobalFrom frame
 
         globalizeDirection =
-            Direction2d.placeIn frame
+            Direction2d.toGlobalFrom frame
     in
         \plane ->
             Frame2d (globalizePoint plane.originPoint)
