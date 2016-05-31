@@ -243,7 +243,7 @@ perpendicularVector (Vector2d x y) =
 {-| Attempt to construct a direction 90 degrees counterclockwise from the given
 vector. In the case of a zero vector, return `Nothing`.
 
-    Vector2d.perpendicularDirection (Vector2d 10 0) == Just Direction2d.y
+    Vector2d.perpendicularDirection (Vector2d 10 0) == Just (Direction2d (Vector2d 0 1))
     Vector2d.perpendicularDirection (Vector2d 0 0) == Nothing
 -}
 perpendicularDirection : Vector2d -> Maybe Direction2d
@@ -253,7 +253,7 @@ perpendicularDirection =
 
 {-| Rotate a vector counterclockwise by a given angle (in radians).
 
-    Vector2d.rotateBy (degrees 45) (Vector2d 1 1) == Vector2d 0 (sqrt 2)
+    Vector2d.rotateBy (degrees 45) (Vector2d 1 1) == Vector2d 0 1.4142
     Vector2d.rotateBy pi (Vector2d 1 0) == Vector2d -1 0
 
 Rotating a list of vectors by 90 degrees:
