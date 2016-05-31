@@ -54,6 +54,7 @@ imports:
     import OpenSolid.Vector2d as Vector2d
     import OpenSolid.Direction2d as Direction2d
     import OpenSolid.Point2d as Point2d
+    import OpenSolid.Frame2d as Frame2d
 
 # Constants
 
@@ -300,6 +301,26 @@ mirrorAbout direction =
         \(Vector2d vx vy) -> Vector2d (a * vx + b * vy) (c * vy + b * vx)
 
 
+{-| Convert a vector from global coordinates to local coordinates within a given
+frame. The result will be the given vector expressed relative to the given
+frame. For instance, consider a frame rotated counterclockwise by 45 degrees
+from the global XY frame:
+
+    frame = Frame2d.rotateAbout (Point2d.origin) (degrees 45) Frame2d.global
+    frame.xDirection == Direction2d (Vector2d 0.7071 0.7071)
+    frame.yDirection == Direction2d (Vector2d -0.7071 0.7071)
+
+The vector `Vector2d 1 0` (in global coordinates), relative to that rotated
+frame, is a vector of length 1 with an angle of -45 degrees. Therefore,
+
+    Vector2d.toLocalIn frame (Vector2d 1 0) == Vector2d 0.7071 -0.7071
+
+The vector `Vector2d 1 1`, on the other hand, is parallel to the X axis of the
+rotated frame so only has an X component when expressed in local coordinates
+relative to that frame:
+
+    Vector2d.toLocalIn frame (Vector2d 1 1) == Vector2d 1.4142 0
+-}
 toLocalIn : Frame2d -> Vector2d -> Vector2d
 toLocalIn frame vector =
     Vector2d (componentIn frame.xDirection vector)
