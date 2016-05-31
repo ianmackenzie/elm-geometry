@@ -46,7 +46,7 @@ point distance axis =
 
 normalDirection : Axis2d -> Direction2d
 normalDirection axis =
-    Direction2d.normalDirection axis.direction
+    Direction2d.perpendicularDirection axis.direction
 
 
 normalAxis : Axis2d -> Axis2d
