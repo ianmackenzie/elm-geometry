@@ -59,31 +59,30 @@ imports:
 # Constants
 
 Although there are no predefined constants for `Vector2d 1 0` and
-`Vector2d 0 1`, in most cases you will want their `Direction2d` equivalents
-anyways, which are available as `Direction2d.x` and `Direction2d.y`.
+`Vector2d 0 1`, in most cases you will actually want their `Direction2d`
+equivalents, which are available as `Direction2d.x` and `Direction2d.y`.
 
 @docs zero
 
-# Conversions
+# Constructors
 
-@docs fromComponents, fromPolarComponents, components, polarComponents
+@docs fromComponents, fromPolarComponents
 
-# Individual components
+# Components
 
 Although `xComponent` and `yComponent` are provided for convenience, in many
 cases it is  better to use `componentIn`. For instance, instead of using
-`Vector2d.yComponent someVector`, define something like
+`Vector2d.yComponent someVector`, you could define a constant such as
 
     verticalDirection : Direction2d
     verticalDirection =
         Direction2d.y
 
 and then use `Vector2d.componentIn verticalDirection someVector`. This is more
-flexible and self-documenting, although admittedly not quite as efficient (since
-it requires a dot product behind the scenes instead of a simple component
-access).
+flexible and self-documenting, although not quite as efficient (since behind the
+scenes it requires a dot product instead of a simple component access).
 
-@docs xComponent, yComponent, componentIn
+@docs xComponent, yComponent, componentIn, components, polarComponents
 
 # Arithmetic
 
@@ -95,7 +94,11 @@ access).
 
 # Transformations
 
-@docs rotateBy, mirrorAbout, toLocalIn, toGlobalFrom, projectionIn, projectOnto, placeOnto
+@docs rotateBy, mirrorAbout, projectionIn, projectOnto, placeOnto
+
+# Coordinate conversions
+
+@docs toLocalIn, toGlobalFrom
 -}
 
 import OpenSolid.Core.Types exposing (..)
