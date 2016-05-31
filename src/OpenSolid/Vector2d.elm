@@ -148,7 +148,7 @@ components (Vector2d x y) =
 {-| Convert a vector to polar (radius, angle) components. Angles will be
 returned in radians.
 
-    Vector2d.polarComponents (Vector2d 1 1) == (sqrt 2, pi / 4)
+    Vector2d.polarComponents (Vector2d 1 1) == ( sqrt 2, pi / 4 )
 -}
 polarComponents : Vector2d -> ( Float, Float )
 polarComponents =
