@@ -58,6 +58,10 @@ imports:
 
 # Constants
 
+Although there are no predefined constants for `Vector2d 1 0` and
+`Vector2d 0 1`, in most cases you will want their `Direction2d` equivalents
+anyways, which are available as `Direction2d.x` and `Direction2d.y`.
+
 @docs zero
 
 # Conversions
