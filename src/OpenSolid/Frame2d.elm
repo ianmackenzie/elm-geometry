@@ -17,7 +17,7 @@ module OpenSolid.Frame2d
         , scaleAbout
         , rotateAbout
         , translateBy
-        , mirrorAbout
+        , mirrorAcross
         , toLocalIn
         , toGlobalFrom
         )
@@ -89,11 +89,11 @@ translateBy vector frame =
     { frame | originPoint = Point2d.plus vector frame.originPoint }
 
 
-mirrorAbout : Axis2d -> Frame2d -> Frame2d
-mirrorAbout axis =
+mirrorAcross : Axis2d -> Frame2d -> Frame2d
+mirrorAcross axis =
     let
         mirrorPoint =
-            Point2d.mirrorAbout axis
+            Point2d.mirrorAcross axis
 
         mirrorDirection =
             Direction2d.mirrorAbout axis.direction

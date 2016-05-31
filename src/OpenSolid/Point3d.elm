@@ -25,7 +25,7 @@ module OpenSolid.Point3d
         , signedDistanceFrom
         , scaleAbout
         , rotateAbout
-        , mirrorAbout
+        , mirrorAcross
         , toLocalIn
         , toGlobalFrom
         , projectOntoAxis
@@ -132,8 +132,8 @@ rotateAbout axis angle =
             >> Vector3d.addTo axis.originPoint
 
 
-mirrorAbout : Plane3d -> Point3d -> Point3d
-mirrorAbout plane =
+mirrorAcross : Plane3d -> Point3d -> Point3d
+mirrorAcross plane =
     let
         mirrorVector =
             Vector3d.mirrorAlong plane.normalDirection

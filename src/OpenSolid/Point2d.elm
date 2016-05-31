@@ -24,7 +24,7 @@ module OpenSolid.Point2d
         , signedDistanceFrom
         , scaleAbout
         , rotateAbout
-        , mirrorAbout
+        , mirrorAcross
         , toLocalIn
         , toGlobalFrom
         , projectOnto
@@ -121,8 +121,8 @@ rotateAbout centerPoint angle =
         vectorFrom centerPoint >> rotateVector >> Vector2d.addTo centerPoint
 
 
-mirrorAbout : Axis2d -> Point2d -> Point2d
-mirrorAbout axis =
+mirrorAcross : Axis2d -> Point2d -> Point2d
+mirrorAcross axis =
     let
         mirrorVector =
             Vector2d.mirrorAbout axis.direction

@@ -24,7 +24,7 @@ module OpenSolid.Plane3d
         , scaleAbout
         , rotateAbout
         , translateBy
-        , mirrorAbout
+        , mirrorAcross
         , toLocalIn
         , toGlobalFrom
         )
@@ -154,11 +154,11 @@ translateBy vector plane =
     { plane | originPoint = Point3d.plus vector plane.originPoint }
 
 
-mirrorAbout : Plane3d -> Plane3d -> Plane3d
-mirrorAbout otherPlane =
+mirrorAcross : Plane3d -> Plane3d -> Plane3d
+mirrorAcross otherPlane =
     let
         mirrorPoint =
-            Point3d.mirrorAbout otherPlane
+            Point3d.mirrorAcross otherPlane
 
         mirrorDirection =
             Direction3d.mirrorAlong otherPlane.normalDirection

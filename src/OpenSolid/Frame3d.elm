@@ -24,7 +24,7 @@ module OpenSolid.Frame3d
         , scaleAbout
         , rotateAbout
         , translateBy
-        , mirrorAbout
+        , mirrorAcross
         , toLocalIn
         , toGlobalFrom
         )
@@ -154,11 +154,11 @@ translateBy vector frame =
     { frame | originPoint = Point3d.plus vector frame.originPoint }
 
 
-mirrorAbout : Plane3d -> Frame3d -> Frame3d
-mirrorAbout plane =
+mirrorAcross : Plane3d -> Frame3d -> Frame3d
+mirrorAcross plane =
     let
         mirrorPoint =
-            Point3d.mirrorAbout plane
+            Point3d.mirrorAcross plane
 
         mirrorDirection =
             Direction3d.mirrorAlong plane.normalDirection

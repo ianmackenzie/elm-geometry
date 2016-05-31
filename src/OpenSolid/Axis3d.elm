@@ -19,7 +19,7 @@ module OpenSolid.Axis3d
         , scaleAbout
         , rotateAbout
         , translateBy
-        , mirrorAbout
+        , mirrorAcross
         , toLocalIn
         , toGlobalFrom
         , projectOnto
@@ -97,11 +97,11 @@ translateBy vector axis =
     Axis3d (Point3d.plus vector axis.originPoint) axis.direction
 
 
-mirrorAbout : Plane3d -> Axis3d -> Axis3d
-mirrorAbout plane =
+mirrorAcross : Plane3d -> Axis3d -> Axis3d
+mirrorAcross plane =
     let
         mirrorPoint =
-            Point3d.mirrorAbout plane
+            Point3d.mirrorAcross plane
 
         mirrorDirection =
             Direction3d.mirrorAlong plane.normalDirection

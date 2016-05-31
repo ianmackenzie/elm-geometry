@@ -18,7 +18,7 @@ module OpenSolid.Axis2d
         , scaleAbout
         , rotateAbout
         , translateBy
-        , mirrorAbout
+        , mirrorAcross
         , toLocalIn
         , toGlobalFrom
         , placeOnto
@@ -87,11 +87,11 @@ translateBy vector axis =
     Axis2d (Point2d.plus vector axis.originPoint) axis.direction
 
 
-mirrorAbout : Axis2d -> Axis2d -> Axis2d
-mirrorAbout otherAxis =
+mirrorAcross : Axis2d -> Axis2d -> Axis2d
+mirrorAcross otherAxis =
     let
         mirrorPoint =
-            Point2d.mirrorAbout otherAxis
+            Point2d.mirrorAcross otherAxis
 
         mirrorDirection =
             Direction2d.mirrorAbout otherAxis.direction
