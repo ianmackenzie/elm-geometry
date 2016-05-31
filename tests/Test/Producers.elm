@@ -42,29 +42,29 @@ angle =
     Producer.rangeFloat (-2 * pi) (2 * pi)
 
 
-component : Producer Float
-component =
+scalar : Producer Float
+scalar =
     Producer.rangeFloat -10 10
 
 
-components2d : Producer ( Float, Float )
-components2d =
-    Producer.tuple ( component, component )
+tuple2d : Producer ( Float, Float )
+tuple2d =
+    Producer.tuple ( scalar, scalar )
 
 
-components3d : Producer ( Float, Float, Float )
-components3d =
-    Producer.tuple3 ( component, component, component )
+tuple3d : Producer ( Float, Float, Float )
+tuple3d =
+    Producer.tuple3 ( scalar, scalar, scalar )
 
 
 vector2d : Producer Vector2d
 vector2d =
-    Producer.convert Vector2d.fromComponents Vector2d.components components2d
+    Producer.convert Vector2d.fromComponents Vector2d.components tuple2d
 
 
 vector3d : Producer Vector3d
 vector3d =
-    Producer.convert Vector3d.fromComponents Vector3d.components components3d
+    Producer.convert Vector3d.fromComponents Vector3d.components tuple3d
 
 
 direction2d : Producer Direction2d
@@ -99,12 +99,12 @@ direction3d =
 
 point2d : Producer Point2d
 point2d =
-    Producer.convert Point2d.fromComponents Point2d.components components2d
+    Producer.convert Point2d.fromCoordinates Point2d.coordinates tuple2d
 
 
 point3d : Producer Point3d
 point3d =
-    Producer.convert Point3d.fromComponents Point3d.components components3d
+    Producer.convert Point3d.fromCoordinates Point3d.coordinates tuple3d
 
 
 axis2d : Producer Axis2d

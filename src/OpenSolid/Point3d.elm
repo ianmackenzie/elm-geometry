@@ -10,11 +10,11 @@
 module OpenSolid.Point3d
     exposing
         ( origin
-        , fromComponents
-        , xComponent
-        , yComponent
-        , zComponent
-        , components
+        , fromCoordinates
+        , xCoordinate
+        , yCoordinate
+        , zCoordinate
+        , coordinates
         , squaredDistanceTo
         , distanceTo
         , vectorTo
@@ -45,28 +45,28 @@ origin =
     Point3d 0 0 0
 
 
-fromComponents : ( Float, Float, Float ) -> Point3d
-fromComponents ( x, y, z ) =
+fromCoordinates : ( Float, Float, Float ) -> Point3d
+fromCoordinates ( x, y, z ) =
     Point3d x y z
 
 
-xComponent : Point3d -> Float
-xComponent (Point3d x _ _) =
+xCoordinate : Point3d -> Float
+xCoordinate (Point3d x _ _) =
     x
 
 
-yComponent : Point3d -> Float
-yComponent (Point3d _ y _) =
+yCoordinate : Point3d -> Float
+yCoordinate (Point3d _ y _) =
     y
 
 
-zComponent : Point3d -> Float
-zComponent (Point3d _ _ z) =
+zCoordinate : Point3d -> Float
+zCoordinate (Point3d _ _ z) =
     z
 
 
-components : Point3d -> ( Float, Float, Float )
-components (Point3d x y z) =
+coordinates : Point3d -> ( Float, Float, Float )
+coordinates (Point3d x y z) =
     ( x, y, z )
 
 

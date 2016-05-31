@@ -10,12 +10,12 @@
 module OpenSolid.Point2d
     exposing
         ( origin
-        , fromComponents
-        , fromPolarComponents
-        , xComponent
-        , yComponent
-        , components
-        , polarComponents
+        , fromCoordinates
+        , fromPolarCoordinates
+        , xCoordinate
+        , yCoordinate
+        , coordinates
+        , polarCoordinates
         , squaredDistanceTo
         , distanceTo
         , vectorTo
@@ -43,34 +43,34 @@ origin =
     Point2d 0 0
 
 
-fromComponents : ( Float, Float ) -> Point2d
-fromComponents ( x, y ) =
+fromCoordinates : ( Float, Float ) -> Point2d
+fromCoordinates ( x, y ) =
     Point2d x y
 
 
-fromPolarComponents : ( Float, Float ) -> Point2d
-fromPolarComponents =
-    fromPolar >> fromComponents
+fromPolarCoordinates : ( Float, Float ) -> Point2d
+fromPolarCoordinates =
+    fromPolar >> fromCoordinates
 
 
-xComponent : Point2d -> Float
-xComponent (Point2d x _) =
+xCoordinate : Point2d -> Float
+xCoordinate (Point2d x _) =
     x
 
 
-yComponent : Point2d -> Float
-yComponent (Point2d _ y) =
+yCoordinate : Point2d -> Float
+yCoordinate (Point2d _ y) =
     y
 
 
-components : Point2d -> ( Float, Float )
-components (Point2d x y) =
+coordinates : Point2d -> ( Float, Float )
+coordinates (Point2d x y) =
     ( x, y )
 
 
-polarComponents : Point2d -> ( Float, Float )
-polarComponents =
-    components >> toPolar
+polarCoordinates : Point2d -> ( Float, Float )
+polarCoordinates =
+    coordinates >> toPolar
 
 
 squaredDistanceTo : Point2d -> Point2d -> Float
