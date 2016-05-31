@@ -162,6 +162,8 @@ polarComponents =
 is equivalent to
 
     Vector2d.xComponent someVector
+
+See also `projectionIn`.
 -}
 componentIn : Direction2d -> Vector2d -> Float
 componentIn (Direction2d vector) =
