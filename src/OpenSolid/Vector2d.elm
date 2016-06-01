@@ -174,7 +174,7 @@ polarComponents =
 {-| Get the component of a vector in a particular direction. For example,
 `Vector2d.componentIn Direction2d.x` is equivalent to `Vector2d.xComponent`.
 
-See also `projectionIn`.
+The result is signed value; for a vector version, see `projectionIn`.
 -}
 componentIn : Direction2d -> Vector2d -> Float
 componentIn (Direction2d vector) =
