@@ -98,6 +98,14 @@ scenes it requires a dot product instead of a simple component access).
 
 # Coordinate conversions
 
+For the examples for these functions, assuming the following definition of a
+local coordinate frame, one that is rotated 45 degrees counterclockwise from the
+global XY frame:
+
+    frame = Frame2d.rotateAround (Point2d.origin) (degrees 45) Frame2d.global
+    frame.xDirection == Direction2d (Vector2d 0.7071 0.7071)
+    frame.yDirection == Direction2d (Vector2d -0.7071 0.7071)
+
 @docs toLocalIn, toGlobalFrom
 -}
 
@@ -310,14 +318,9 @@ mirrorAbout direction =
 
 {-| Convert a vector from global coordinates to local coordinates within a given
 frame. The result will be the given vector expressed relative to the given
-frame. For instance, consider a frame rotated counterclockwise by 45 degrees
-from the global XY frame:
+frame.
 
-    frame = Frame2d.rotateAround (Point2d.origin) (degrees 45) Frame2d.global
-    frame.xDirection == Direction2d (Vector2d 0.7071 0.7071)
-    frame.yDirection == Direction2d (Vector2d -0.7071 0.7071)
-
-The vector `Vector2d 1 0` (in global coordinates), relative to that rotated
+The vector `Vector2d 1 0` (in global coordinates), relative to the rotated
 frame, is a vector of length 1 with an angle of -45 degrees. Therefore,
 
     Vector2d.toLocalIn frame (Vector2d 1 0) == Vector2d 0.7071 -0.7071
@@ -334,6 +337,20 @@ toLocalIn frame vector =
         (componentIn frame.yDirection vector)
 
 
+{-| Convert a vector from local coordinates within a given frame to global
+coordinates.
+
+The vector `Vector2d 1 0` (in local coordinates with respect to the rotated
+frame) is a vector of length 1 along the frame's X axis. Therefore,
+
+    Vector2d.toGlobalFrom frame (Vector2d 1 0) == Vector2d 0.7071 0.7071
+
+The vector `Vector2d 1 1` in local coordinates, on the other hand, is at a 45
+degree angle from the X axis of the rotated frame and so is straight up in
+global coordinates:
+
+    Vector2d.toGlobalFrom frame (Vector2d 1 1) == Vector2d 0 1.4142
+-}
 toGlobalFrom : Frame2d -> Vector2d -> Vector2d
 toGlobalFrom frame =
     let
