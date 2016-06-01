@@ -22,7 +22,7 @@ module OpenSolid.Plane3d
         , flip
         , normalAxis
         , scaleAbout
-        , rotateAbout
+        , rotateAround
         , translateBy
         , mirrorAcross
         , toLocalIn
@@ -133,11 +133,11 @@ scaleAbout centerPoint scale plane =
         { plane | originPoint = scaledOriginPoint }
 
 
-rotateAbout : Axis3d -> Float -> Plane3d -> Plane3d
-rotateAbout axis angle =
+rotateAround : Axis3d -> Float -> Plane3d -> Plane3d
+rotateAround axis angle =
     let
         rotatePoint =
-            Point3d.rotateAbout axis angle
+            Point3d.rotateAround axis angle
 
         rotateDirection =
             Direction3d.rotateAbout axis.direction angle

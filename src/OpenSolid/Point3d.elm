@@ -24,7 +24,7 @@ module OpenSolid.Point3d
         , distanceToAxis
         , signedDistanceFrom
         , scaleAbout
-        , rotateAbout
+        , rotateAround
         , mirrorAcross
         , toLocalIn
         , toGlobalFrom
@@ -121,11 +121,11 @@ scaleAbout centerPoint scale =
     vectorFrom centerPoint >> Vector3d.times scale >> Vector3d.addTo centerPoint
 
 
-rotateAbout : Axis3d -> Float -> Point3d -> Point3d
-rotateAbout axis angle =
+rotateAround : Axis3d -> Float -> Point3d -> Point3d
+rotateAround axis angle =
     let
         rotateVector =
-            Vector3d.rotateAbout axis.direction angle
+            Vector3d.rotateAround axis.direction angle
     in
         vectorFrom axis.originPoint
             >> rotateVector

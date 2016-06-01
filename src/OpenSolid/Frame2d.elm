@@ -15,7 +15,7 @@ module OpenSolid.Frame2d
         , point
         , vector
         , scaleAbout
-        , rotateAbout
+        , rotateAround
         , translateBy
         , mirrorAcross
         , toLocalIn
@@ -69,11 +69,11 @@ scaleAbout centerPoint scale frame =
         { frame | originPoint = scaledOriginPoint }
 
 
-rotateAbout : Point2d -> Float -> Frame2d -> Frame2d
-rotateAbout centerPoint angle =
+rotateAround : Point2d -> Float -> Frame2d -> Frame2d
+rotateAround centerPoint angle =
     let
         rotatePoint =
-            Point2d.rotateAbout centerPoint angle
+            Point2d.rotateAround centerPoint angle
 
         rotateDirection =
             Direction2d.rotateBy angle

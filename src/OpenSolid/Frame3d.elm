@@ -22,7 +22,7 @@ module OpenSolid.Frame3d
         , point
         , vector
         , scaleAbout
-        , rotateAbout
+        , rotateAround
         , translateBy
         , mirrorAcross
         , toLocalIn
@@ -133,11 +133,11 @@ scaleAbout centerPoint scale frame =
         { frame | originPoint = scaledOriginPoint }
 
 
-rotateAbout : Axis3d -> Float -> Frame3d -> Frame3d
-rotateAbout axis angle =
+rotateAround : Axis3d -> Float -> Frame3d -> Frame3d
+rotateAround axis angle =
     let
         rotatePoint =
-            Point3d.rotateAbout axis angle
+            Point3d.rotateAround axis angle
 
         rotateDirection =
             Direction3d.rotateAbout axis.direction angle

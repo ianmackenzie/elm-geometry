@@ -313,7 +313,7 @@ frame. The result will be the given vector expressed relative to the given
 frame. For instance, consider a frame rotated counterclockwise by 45 degrees
 from the global XY frame:
 
-    frame = Frame2d.rotateAbout (Point2d.origin) (degrees 45) Frame2d.global
+    frame = Frame2d.rotateAround (Point2d.origin) (degrees 45) Frame2d.global
     frame.xDirection == Direction2d (Vector2d 0.7071 0.7071)
     frame.yDirection == Direction2d (Vector2d -0.7071 0.7071)
 

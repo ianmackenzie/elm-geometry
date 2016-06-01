@@ -33,7 +33,7 @@ rotationPreservesDistance =
                     Point2d.distanceTo point centerPoint
 
                 rotatedPoint =
-                    Point2d.rotateAbout centerPoint rotationAngle point
+                    Point2d.rotateAround centerPoint rotationAngle point
 
                 rotatedDistance =
                     Point2d.distanceTo rotatedPoint centerPoint

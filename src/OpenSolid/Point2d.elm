@@ -23,7 +23,7 @@ module OpenSolid.Point2d
         , distanceAlong
         , signedDistanceFrom
         , scaleAbout
-        , rotateAbout
+        , rotateAround
         , mirrorAcross
         , toLocalIn
         , toGlobalFrom
@@ -112,8 +112,8 @@ scaleAbout centerPoint scale =
     vectorFrom centerPoint >> Vector2d.times scale >> Vector2d.addTo centerPoint
 
 
-rotateAbout : Point2d -> Float -> Point2d -> Point2d
-rotateAbout centerPoint angle =
+rotateAround : Point2d -> Float -> Point2d -> Point2d
+rotateAround centerPoint angle =
     let
         rotateVector =
             Vector2d.rotateBy angle

@@ -33,7 +33,7 @@ rotationAboutAxisPreservesDistance =
                     Point3d.distanceAlong axis point
 
                 rotatedPoint =
-                    Point3d.rotateAbout axis angle point
+                    Point3d.rotateAround axis angle point
 
                 rotatedDistance =
                     Point3d.distanceAlong axis rotatedPoint

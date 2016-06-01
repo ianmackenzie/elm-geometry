@@ -17,7 +17,7 @@ module OpenSolid.Axis3d
         , normalPlane
         , reverse
         , scaleAbout
-        , rotateAbout
+        , rotateAround
         , translateBy
         , mirrorAcross
         , toLocalIn
@@ -78,11 +78,11 @@ scaleAbout centerPoint scale axis =
         Axis3d (scalePoint axis.originPoint) axis.direction
 
 
-rotateAbout : Axis3d -> Float -> Axis3d -> Axis3d
-rotateAbout otherAxis angle =
+rotateAround : Axis3d -> Float -> Axis3d -> Axis3d
+rotateAround otherAxis angle =
     let
         rotatePoint =
-            Point3d.rotateAbout otherAxis angle
+            Point3d.rotateAround otherAxis angle
 
         rotateDirection =
             Direction3d.rotateAbout otherAxis.direction angle

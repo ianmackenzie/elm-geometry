@@ -16,7 +16,7 @@ module OpenSolid.Axis2d
         , normalAxis
         , reverse
         , scaleAbout
-        , rotateAbout
+        , rotateAround
         , translateBy
         , mirrorAcross
         , toLocalIn
@@ -68,11 +68,11 @@ scaleAbout centerPoint scale axis =
         Axis2d (scalePoint axis.originPoint) axis.direction
 
 
-rotateAbout : Point2d -> Float -> Axis2d -> Axis2d
-rotateAbout centerPoint angle =
+rotateAround : Point2d -> Float -> Axis2d -> Axis2d
+rotateAround centerPoint angle =
     let
         rotatePoint =
-            Point2d.rotateAbout centerPoint angle
+            Point2d.rotateAround centerPoint angle
 
         rotateDirection =
             Direction2d.rotateBy angle
