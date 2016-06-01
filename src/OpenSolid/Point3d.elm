@@ -125,7 +125,7 @@ rotateAround : Axis3d -> Float -> Point3d -> Point3d
 rotateAround axis angle =
     let
         rotateVector =
-            Vector3d.rotateAround axis.direction angle
+            Vector3d.rotateAbout axis.direction angle
     in
         vectorFrom axis.originPoint
             >> rotateVector
