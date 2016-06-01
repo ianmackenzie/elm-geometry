@@ -357,6 +357,13 @@ toGlobalFrom frame =
         \(Vector2d x y) -> Vector2d (x1 * x + x2 * y) (y1 * x + y2 * y)
 
 
+{-| Find the portion of a vector parallel to a particular direction. This can be
+thought of as projecting the vector onto an axis that has the given direction.
+
+See also `componentIn`.
+`Vector2d.length (Vector2d.projectionIn direction vector)` is equivalent to
+`abs (Vector2d.componentIn direction vector)`
+-}
 projectionIn : Direction2d -> Vector2d -> Vector2d
 projectionIn ((Direction2d directionVector) as direction) vector =
     times (componentIn direction vector) directionVector
