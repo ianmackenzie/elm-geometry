@@ -49,6 +49,14 @@ jsonRoundTrips =
         `for` vector2d
 
 
+recordConversionRoundTrips : Claim
+recordConversionRoundTrips =
+    claim "Record conversion round-trips properly"
+        `that` (Vector2d.toRecord >> Vector2d.fromRecord)
+        `is` identity
+        `for` vector2d
+
+
 perpendicularVectorIsPerpendicular : Claim
 perpendicularVectorIsPerpendicular =
     let
@@ -72,5 +80,6 @@ suite =
     ElmTest.suite "Vector2d tests"
         [ evidenceToTest (quickCheck normalizationWorksProperly)
         , evidenceToTest (quickCheck jsonRoundTrips)
+        , evidenceToTest (quickCheck recordConversionRoundTrips)
         , evidenceToTest (quickCheck perpendicularVectorIsPerpendicular)
         ]

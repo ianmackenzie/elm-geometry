@@ -49,9 +49,18 @@ jsonRoundTrips =
         `for` vector3d
 
 
+recordConversionRoundTrips : Claim
+recordConversionRoundTrips =
+    claim "Record conversion round-trips properly"
+        `that` (Vector3d.toRecord >> Vector3d.fromRecord)
+        `is` identity
+        `for` vector3d
+
+
 suite : Test
 suite =
     ElmTest.suite "Vector3d tests"
         [ evidenceToTest (quickCheck normalizationWorksProperly)
         , evidenceToTest (quickCheck jsonRoundTrips)
+        , evidenceToTest (quickCheck recordConversionRoundTrips)
         ]

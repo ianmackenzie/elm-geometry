@@ -82,6 +82,14 @@ jsonRoundTrips =
         `for` point2d
 
 
+recordConversionRoundTrips : Claim
+recordConversionRoundTrips =
+    claim "Record conversion round-trips properly"
+        `that` (Point2d.toRecord >> Point2d.fromRecord)
+        `is` identity
+        `for` point2d
+
+
 suite : Test
 suite =
     ElmTest.suite "Point2d tests"
@@ -89,4 +97,5 @@ suite =
         , evidenceToTest (quickCheck projectionOntoAxisPreservesDistance)
         , evidenceToTest (quickCheck plusAndAddToAreEquivalent)
         , evidenceToTest (quickCheck jsonRoundTrips)
+        , evidenceToTest (quickCheck recordConversionRoundTrips)
         ]

@@ -31,6 +31,8 @@ module OpenSolid.Point2d
         , placeOnto
         , plus
         , minus
+        , toRecord
+        , fromRecord
         )
 
 import OpenSolid.Core.Types exposing (..)
@@ -181,3 +183,13 @@ plus (Vector2d vx vy) (Point2d px py) =
 minus : Vector2d -> Point2d -> Point2d
 minus (Vector2d vx vy) (Point2d px py) =
     Point2d (px - vx) (py - vy)
+
+
+toRecord : Point2d -> { x : Float, y : Float }
+toRecord (Point2d x y) =
+    { x = x, y = y }
+
+
+fromRecord : { x : Float, y : Float } -> Point2d
+fromRecord { x, y } =
+    Point2d x y

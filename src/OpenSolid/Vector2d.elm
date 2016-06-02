@@ -38,6 +38,8 @@ module OpenSolid.Vector2d
         , subtractFrom
         , dot
         , cross
+        , toRecord
+        , fromRecord
         )
 
 {-| Functions for working with `Vector2d` values. Vectors can be constructed
@@ -107,6 +109,10 @@ global XY frame:
     frame.yDirection == Direction2d (Vector2d -0.7071 0.7071)
 
 @docs toLocalIn, toGlobalFrom
+
+# Record conversions
+
+@docs toRecord, fromRecord
 -}
 
 import OpenSolid.Core.Types exposing (..)
@@ -425,3 +431,13 @@ dot (Vector2d x2 y2) (Vector2d x1 y1) =
 cross : Vector2d -> Vector2d -> Float
 cross (Vector2d x2 y2) (Vector2d x1 y1) =
     x1 * y2 - y1 * x2
+
+
+toRecord : Vector2d -> { x : Float, y : Float }
+toRecord (Vector2d x y) =
+    { x = x, y = y }
+
+
+fromRecord : { x : Float, y : Float } -> Vector2d
+fromRecord { x, y } =
+    Vector2d x y

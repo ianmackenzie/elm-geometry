@@ -33,6 +33,8 @@ module OpenSolid.Point3d
         , projectInto
         , plus
         , minus
+        , toRecord
+        , fromRecord
         )
 
 import OpenSolid.Core.Types exposing (..)
@@ -199,3 +201,13 @@ plus (Vector3d vx vy vz) (Point3d px py pz) =
 minus : Vector3d -> Point3d -> Point3d
 minus (Vector3d vx vy vz) (Point3d px py pz) =
     Point3d (px - vx) (py - vy) (pz - vz)
+
+
+toRecord : Point3d -> { x : Float, y : Float, z : Float }
+toRecord (Point3d x y z) =
+    { x = x, y = y, z = z }
+
+
+fromRecord : { x : Float, y : Float, z : Float } -> Point3d
+fromRecord { x, y, z } =
+    Point3d x y z

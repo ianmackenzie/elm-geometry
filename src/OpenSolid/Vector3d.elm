@@ -37,6 +37,8 @@ module OpenSolid.Vector3d
         , subtractFrom
         , dot
         , cross
+        , toRecord
+        , fromRecord
         )
 
 import OpenSolid.Core.Types exposing (..)
@@ -350,3 +352,13 @@ dot (Vector3d x2 y2 z2) (Vector3d x1 y1 z1) =
 cross : Vector3d -> Vector3d -> Vector3d
 cross (Vector3d x2 y2 z2) (Vector3d x1 y1 z1) =
     Vector3d (y1 * z2 - z1 * y2) (z1 * x2 - x1 * z2) (x1 * y2 - y1 * x2)
+
+
+toRecord : Vector3d -> { x : Float, y : Float, z : Float }
+toRecord (Vector3d x y z) =
+    { x = x, y = y, z = z }
+
+
+fromRecord : { x : Float, y : Float, z : Float } -> Vector3d
+fromRecord { x, y, z } =
+    Vector3d x y z

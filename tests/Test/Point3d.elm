@@ -61,10 +61,19 @@ jsonRoundTrips =
         `for` point3d
 
 
+recordConversionRoundTrips : Claim
+recordConversionRoundTrips =
+    claim "Record conversion round-trips properly"
+        `that` (Point3d.toRecord >> Point3d.fromRecord)
+        `is` identity
+        `for` point3d
+
+
 suite : Test
 suite =
     ElmTest.suite "Point3d tests"
         [ evidenceToTest (quickCheck rotationAboutAxisPreservesDistance)
         , evidenceToTest (quickCheck minusAndSubtractFromAreEquivalent)
         , evidenceToTest (quickCheck jsonRoundTrips)
+        , evidenceToTest (quickCheck recordConversionRoundTrips)
         ]
