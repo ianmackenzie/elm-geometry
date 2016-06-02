@@ -31,6 +31,8 @@ module OpenSolid.Vector2d
         , projectOnto
         , placeOnto
         , negate
+        , sum
+        , difference
         , plus
         , minus
         , times
@@ -396,6 +398,16 @@ placeOnto plane =
 negate : Vector2d -> Vector2d
 negate (Vector2d x y) =
     Vector2d (-x) (-y)
+
+
+sum : Vector2d -> Vector2d -> Vector2d
+sum (Vector2d x1 y1) (Vector2d x2 y2) =
+    Vector2d (x1 + x2) (y1 + y2)
+
+
+difference : Vector2d -> Vector2d -> Vector2d
+difference (Vector2d x1 y1) (Vector2d x2 y2) =
+    Vector2d (x1 - x2) (y1 - y2)
 
 
 plus : Vector2d -> Vector2d -> Vector2d
