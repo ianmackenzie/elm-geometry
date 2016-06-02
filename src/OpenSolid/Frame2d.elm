@@ -9,7 +9,7 @@
 
 module OpenSolid.Frame2d
     exposing
-        ( global
+        ( xy
         , xAxis
         , yAxis
         , point
@@ -28,8 +28,8 @@ import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Direction2d as Direction2d
 
 
-global : Frame2d
-global =
+xy : Frame2d
+xy =
     Frame2d Point2d.origin Direction2d.x Direction2d.y
 
 

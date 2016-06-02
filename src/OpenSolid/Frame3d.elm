@@ -9,7 +9,7 @@
 
 module OpenSolid.Frame3d
     exposing
-        ( global
+        ( xyz
         , xAxis
         , yAxis
         , zAxis
@@ -35,8 +35,8 @@ import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Direction3d as Direction3d
 
 
-global : Frame3d
-global =
+xyz : Frame3d
+xyz =
     Frame3d Point3d.origin Direction3d.x Direction3d.y Direction3d.z
 
 
