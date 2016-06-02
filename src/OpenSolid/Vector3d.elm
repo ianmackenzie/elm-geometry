@@ -19,10 +19,7 @@ module OpenSolid.Vector3d
         , componentIn
         , squaredLength
         , length
-        , normalize
-        , direction
         , perpendicularVector
-        , perpendicularDirection
         , rotateAbout
         , mirrorAlong
         , toLocalIn
@@ -106,19 +103,6 @@ length =
     squaredLength >> sqrt
 
 
-normalize : Vector3d -> Maybe Vector3d
-normalize vector =
-    if vector == zero then
-        Nothing
-    else
-        Just (times (1 / length vector) vector)
-
-
-direction : Vector3d -> Maybe Direction3d
-direction =
-    normalize >> Maybe.map Direction3d
-
-
 perpendicularVector : Vector3d -> Vector3d
 perpendicularVector (Vector3d x y z) =
     let
@@ -140,11 +124,6 @@ perpendicularVector (Vector3d x y z) =
             Vector3d z 0 (-x)
         else
             Vector3d (-y) x 0
-
-
-perpendicularDirection : Vector3d -> Maybe Direction3d
-perpendicularDirection =
-    perpendicularVector >> direction
 
 
 rotateAbout : Direction3d -> Float -> Vector3d -> Vector3d

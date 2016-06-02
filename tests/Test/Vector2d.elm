@@ -22,25 +22,6 @@ import Test.Utils exposing (valueIsOne, valueIsZero)
 import Test.Producers exposing (vector2d)
 
 
-normalizationWorksProperly : Claim
-normalizationWorksProperly =
-    let
-        normalizeResultIsCorrect vector =
-            case (Vector2d.normalize vector) of
-                Nothing ->
-                    -- If normalized result is Nothing, input must have been the
-                    -- zero vector
-                    vector == Vector2d.zero
-
-                Just normalized ->
-                    -- Otherwise, normalized length should be nearly 1
-                    valueIsOne (Vector2d.length normalized)
-    in
-        claim "Normalization works properly"
-            `true` normalizeResultIsCorrect
-            `for` vector2d
-
-
 jsonRoundTrips : Claim
 jsonRoundTrips =
     claim "JSON conversion round-trips properly"
@@ -78,8 +59,7 @@ perpendicularVectorIsPerpendicular =
 suite : Test
 suite =
     ElmTest.suite "Vector2d tests"
-        [ evidenceToTest (quickCheck normalizationWorksProperly)
-        , evidenceToTest (quickCheck jsonRoundTrips)
+        [ evidenceToTest (quickCheck jsonRoundTrips)
         , evidenceToTest (quickCheck recordConversionRoundTrips)
         , evidenceToTest (quickCheck perpendicularVectorIsPerpendicular)
         ]

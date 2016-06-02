@@ -22,25 +22,6 @@ import Test.Utils exposing (valueIsOne)
 import Test.Producers exposing (vector3d)
 
 
-normalizationWorksProperly : Claim
-normalizationWorksProperly =
-    let
-        normalizeResultIsCorrect vector =
-            case (Vector3d.normalize vector) of
-                Nothing ->
-                    -- If normalized result is Nothing, input must have been the
-                    -- zero vector
-                    vector == Vector3d.zero
-
-                Just normalized ->
-                    -- Otherwise, normalized length should be nearly 1
-                    valueIsOne (Vector3d.length normalized)
-    in
-        claim "Normalization works properly"
-            `true` normalizeResultIsCorrect
-            `for` vector3d
-
-
 jsonRoundTrips : Claim
 jsonRoundTrips =
     claim "JSON conversion round-trips properly"
@@ -60,7 +41,6 @@ recordConversionRoundTrips =
 suite : Test
 suite =
     ElmTest.suite "Vector3d tests"
-        [ evidenceToTest (quickCheck normalizationWorksProperly)
-        , evidenceToTest (quickCheck jsonRoundTrips)
+        [ evidenceToTest (quickCheck jsonRoundTrips)
         , evidenceToTest (quickCheck recordConversionRoundTrips)
         ]

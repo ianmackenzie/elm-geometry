@@ -20,10 +20,7 @@ module OpenSolid.Vector2d
         , componentIn
         , squaredLength
         , length
-        , normalize
-        , direction
         , perpendicularVector
-        , perpendicularDirection
         , rotateBy
         , mirrorAbout
         , toLocalIn
@@ -93,7 +90,7 @@ scenes it requires a dot product instead of a simple component access).
 
 # Length and direction
 
-@docs squaredLength, length, normalize, direction, perpendicularVector, perpendicularDirection
+@docs squaredLength, length, perpendicularVector
 
 # Transformations
 
@@ -225,41 +222,6 @@ length =
     squaredLength >> sqrt
 
 
-{-| Attempt to normalize a vector to give a vector in the same direction but of
-length one, by dividing by the vector's current length. In the case of a zero
-vector, return `Nothing`.
-
-    Vector2d.normalize (Vector2d 1 1) == Just (Vector2d 0.7071 0.7071)
-    Vector2d.normalize (Vector2d 0 0) == Nothing
--}
-normalize : Vector2d -> Maybe Vector2d
-normalize vector =
-    if vector == zero then
-        Nothing
-    else
-        Just (times (1 / length vector) vector)
-
-
-{-| Attempt to find the direction of a vector. In the case of a zero vector,
-return `Nothing`.
-
-    Vector2d.direction (Vector2d 1 1) == Just (Direction2d (Vector2d 0.7071 0.7071))
-    Vector2d.direction (Vector2d 0 0) == Nothing
-
-For instance, given an eye point and a point to look at, the corresponding view
-direction could be determined with
-
-    Vector2d.direction (Point2d.vectorFrom eyePoint lookAtPoint)
-
-This would return a `Maybe Direction2d`, with `Nothing` corresponding to the
-case where the eye point and point to look at are coincident (in which case the
-view direction is not well-defined and some special-case logic is needed).
--}
-direction : Vector2d -> Maybe Direction2d
-direction =
-    normalize >> Maybe.map Direction2d
-
-
 {-| Construct a vector perpendicular to the given vector but with the same
 length, by rotating the given vector 90 degrees in a counterclockwise direction.
 
@@ -268,17 +230,6 @@ length, by rotating the given vector 90 degrees in a counterclockwise direction.
 perpendicularVector : Vector2d -> Vector2d
 perpendicularVector (Vector2d x y) =
     Vector2d (-y) x
-
-
-{-| Attempt to construct a direction 90 degrees counterclockwise from the given
-vector. In the case of a zero vector, return `Nothing`.
-
-    Vector2d.perpendicularDirection (Vector2d 10 0) == Just (Direction2d (Vector2d 0 1))
-    Vector2d.perpendicularDirection (Vector2d 0 0) == Nothing
--}
-perpendicularDirection : Vector2d -> Maybe Direction2d
-perpendicularDirection =
-    perpendicularVector >> direction
 
 
 {-| Rotate a vector counterclockwise by a given angle (in radians).
