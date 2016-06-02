@@ -131,7 +131,7 @@ zero =
 
 
 relativeTo : Frame2d -> Float -> Float -> Vector2d
-relativeTo frame x y =
+relativeTo frame =
     let
         (Direction2d (Vector2d x1 y1)) =
             frame.xDirection
@@ -139,7 +139,7 @@ relativeTo frame x y =
         (Direction2d (Vector2d x2 y2)) =
             frame.yDirection
     in
-        Vector2d (x * x1 + y * x2) (x * y1 + y * y2)
+        \x y -> Vector2d (x * x1 + y * x2) (x * y1 + y * y2)
 
 
 {-| Construct a vector from a pair of X and Y components.
