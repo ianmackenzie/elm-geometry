@@ -66,14 +66,6 @@ projectionOntoAxisPreservesDistance =
             `for` Producer.tuple ( point2d, axis2d )
 
 
-plusAndAddToAreEquivalent : Claim
-plusAndAddToAreEquivalent =
-    claim "Point2d.plus is equivalent to Vector2d.addTo"
-        `that` uncurry Point2d.plus
-        `is` uncurry (flip Vector2d.addTo)
-        `for` Producer.tuple ( vector2d, point2d )
-
-
 jsonRoundTrips : Claim
 jsonRoundTrips =
     claim "JSON conversion round-trips properly"
@@ -95,7 +87,6 @@ suite =
     ElmTest.suite "Point2d tests"
         [ evidenceToTest (quickCheck rotationPreservesDistance)
         , evidenceToTest (quickCheck projectionOntoAxisPreservesDistance)
-        , evidenceToTest (quickCheck plusAndAddToAreEquivalent)
         , evidenceToTest (quickCheck jsonRoundTrips)
         , evidenceToTest (quickCheck recordConversionRoundTrips)
         ]

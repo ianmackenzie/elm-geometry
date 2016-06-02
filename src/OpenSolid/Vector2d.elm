@@ -37,8 +37,6 @@ module OpenSolid.Vector2d
         , plus
         , minus
         , times
-        , addTo
-        , subtractFrom
         , dot
         , cross
         , toRecord
@@ -436,16 +434,6 @@ minus (Vector2d x2 y2) (Vector2d x1 y1) =
 times : Float -> Vector2d -> Vector2d
 times scale (Vector2d x y) =
     Vector2d (x * scale) (y * scale)
-
-
-addTo : Point2d -> Vector2d -> Point2d
-addTo (Point2d px py) (Vector2d vx vy) =
-    Point2d (px + vx) (py + vy)
-
-
-subtractFrom : Point2d -> Vector2d -> Point2d
-subtractFrom (Point2d px py) (Vector2d vx vy) =
-    Point2d (px - vx) (py - vy)
 
 
 dot : Vector2d -> Vector2d -> Float

@@ -45,14 +45,6 @@ rotationAboutAxisPreservesDistance =
             `for` Producer.tuple3 ( point3d, axis3d, angle )
 
 
-minusAndSubtractFromAreEquivalent : Claim
-minusAndSubtractFromAreEquivalent =
-    claim "Point3d.minus is equivalent to Vector3d.subtractFrom"
-        `that` uncurry Point3d.minus
-        `is` uncurry (flip Vector3d.subtractFrom)
-        `for` Producer.tuple ( vector3d, point3d )
-
-
 jsonRoundTrips : Claim
 jsonRoundTrips =
     claim "JSON conversion round-trips properly"
@@ -73,7 +65,6 @@ suite : Test
 suite =
     ElmTest.suite "Point3d tests"
         [ evidenceToTest (quickCheck rotationAboutAxisPreservesDistance)
-        , evidenceToTest (quickCheck minusAndSubtractFromAreEquivalent)
         , evidenceToTest (quickCheck jsonRoundTrips)
         , evidenceToTest (quickCheck recordConversionRoundTrips)
         ]

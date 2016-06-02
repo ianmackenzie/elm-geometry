@@ -119,9 +119,13 @@ signedDistanceFrom axis =
         vectorFrom axis.originPoint >> Vector2d.componentIn normalDirection
 
 
+addTo (Point2d px py) (Vector2d vx vy) =
+    Point2d (px + vx) (py + vy)
+
+
 scaleAbout : Point2d -> Float -> Point2d -> Point2d
 scaleAbout centerPoint scale =
-    vectorFrom centerPoint >> Vector2d.times scale >> Vector2d.addTo centerPoint
+    vectorFrom centerPoint >> Vector2d.times scale >> addTo centerPoint
 
 
 rotateAround : Point2d -> Float -> Point2d -> Point2d
@@ -130,7 +134,7 @@ rotateAround centerPoint angle =
         rotateVector =
             Vector2d.rotateBy angle
     in
-        vectorFrom centerPoint >> rotateVector >> Vector2d.addTo centerPoint
+        vectorFrom centerPoint >> rotateVector >> addTo centerPoint
 
 
 mirrorAcross : Axis2d -> Point2d -> Point2d
@@ -139,9 +143,7 @@ mirrorAcross axis =
         mirrorVector =
             Vector2d.mirrorAbout axis.direction
     in
-        vectorFrom axis.originPoint
-            >> mirrorVector
-            >> Vector2d.addTo axis.originPoint
+        vectorFrom axis.originPoint >> mirrorVector >> addTo axis.originPoint
 
 
 toLocalIn : Frame2d -> Point2d -> Point2d
@@ -163,14 +165,14 @@ toGlobalFrom frame =
     in
         (\(Point2d x y) -> Vector2d x y)
             >> globalizeVector
-            >> Vector2d.addTo frame.originPoint
+            >> addTo frame.originPoint
 
 
 projectOnto : Axis2d -> Point2d -> Point2d
 projectOnto axis =
     vectorFrom axis.originPoint
         >> Vector2d.projectOnto axis
-        >> Vector2d.addTo axis.originPoint
+        >> addTo axis.originPoint
 
 
 placeOnto : Plane3d -> Point2d -> Point3d

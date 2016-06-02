@@ -34,8 +34,6 @@ module OpenSolid.Vector3d
         , plus
         , minus
         , times
-        , addTo
-        , subtractFrom
         , dot
         , cross
         , toRecord
@@ -351,16 +349,6 @@ minus (Vector3d x2 y2 z2) (Vector3d x1 y1 z1) =
 times : Float -> Vector3d -> Vector3d
 times scale (Vector3d x y z) =
     Vector3d (x * scale) (y * scale) (z * scale)
-
-
-addTo : Point3d -> Vector3d -> Point3d
-addTo (Point3d px py pz) (Vector3d vx vy vz) =
-    Point3d (px + vx) (py + vy) (pz + vz)
-
-
-subtractFrom : Point3d -> Vector3d -> Point3d
-subtractFrom (Point3d px py pz) (Vector3d vx vy vz) =
-    Point3d (px - vx) (py - vy) (pz - vz)
 
 
 dot : Vector3d -> Vector3d -> Float

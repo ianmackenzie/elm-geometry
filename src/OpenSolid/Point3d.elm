@@ -128,9 +128,13 @@ signedDistanceFrom plane =
     vectorFrom plane.originPoint >> Vector3d.componentIn plane.normalDirection
 
 
+addTo (Point3d px py pz) (Vector3d vx vy vz) =
+    Point3d (px + vx) (py + vy) (pz + vz)
+
+
 scaleAbout : Point3d -> Float -> Point3d -> Point3d
 scaleAbout centerPoint scale =
-    vectorFrom centerPoint >> Vector3d.times scale >> Vector3d.addTo centerPoint
+    vectorFrom centerPoint >> Vector3d.times scale >> addTo centerPoint
 
 
 rotateAround : Axis3d -> Float -> Point3d -> Point3d
@@ -139,9 +143,7 @@ rotateAround axis angle =
         rotateVector =
             Vector3d.rotateAbout axis.direction angle
     in
-        vectorFrom axis.originPoint
-            >> rotateVector
-            >> Vector3d.addTo axis.originPoint
+        vectorFrom axis.originPoint >> rotateVector >> addTo axis.originPoint
 
 
 mirrorAcross : Plane3d -> Point3d -> Point3d
@@ -150,9 +152,7 @@ mirrorAcross plane =
         mirrorVector =
             Vector3d.mirrorAlong plane.normalDirection
     in
-        vectorFrom plane.originPoint
-            >> mirrorVector
-            >> Vector3d.addTo plane.originPoint
+        vectorFrom plane.originPoint >> mirrorVector >> addTo plane.originPoint
 
 
 toLocalIn : Frame3d -> Point3d -> Point3d
@@ -174,14 +174,14 @@ toGlobalFrom frame =
     in
         (\(Point3d x y z) -> Vector3d x y z)
             >> globalizeVector
-            >> Vector3d.addTo frame.originPoint
+            >> addTo frame.originPoint
 
 
 projectOntoAxis : Axis3d -> Point3d -> Point3d
 projectOntoAxis axis =
     vectorFrom axis.originPoint
         >> Vector3d.projectionIn axis.direction
-        >> Vector3d.addTo axis.originPoint
+        >> addTo axis.originPoint
 
 
 projectOnto : Plane3d -> Point3d -> Point3d
