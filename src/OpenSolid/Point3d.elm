@@ -10,6 +10,7 @@
 module OpenSolid.Point3d
     exposing
         ( origin
+        , relativeTo
         , fromCoordinates
         , xCoordinate
         , yCoordinate
@@ -45,6 +46,15 @@ import OpenSolid.Direction3d as Direction3d
 origin : Point3d
 origin =
     Point3d 0 0 0
+
+
+relativeTo : Frame3d -> Float -> Float -> Float -> Point3d
+relativeTo frame =
+    let
+        relativeVector =
+            Vector3d.relativeTo frame
+    in
+        \x y z -> plus (relativeVector x y z) frame.originPoint
 
 
 fromCoordinates : ( Float, Float, Float ) -> Point3d
