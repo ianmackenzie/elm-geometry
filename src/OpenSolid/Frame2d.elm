@@ -13,8 +13,6 @@ module OpenSolid.Frame2d
         , at
         , xAxis
         , yAxis
-        , point
-        , vector
         , scaleAbout
         , rotateAround
         , translateBy
@@ -47,23 +45,6 @@ xAxis frame =
 yAxis : Frame2d -> Axis2d
 yAxis frame =
     Axis2d frame.originPoint frame.yDirection
-
-
-point : Float -> Float -> Frame2d -> Point2d
-point x y frame =
-    Point2d.plus (vector x y frame) frame.originPoint
-
-
-vector : Float -> Float -> Frame2d -> Vector2d
-vector x y frame =
-    let
-        xVector =
-            Direction2d.times x frame.xDirection
-
-        yVector =
-            Direction2d.times y frame.yDirection
-    in
-        Vector2d.plus yVector xVector
 
 
 scaleAbout : Point2d -> Float -> Frame2d -> Frame2d
