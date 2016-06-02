@@ -10,6 +10,7 @@
 module OpenSolid.Vector2d
     exposing
         ( zero
+        , relativeTo
         , fromComponents
         , fromPolarComponents
         , xComponent
@@ -127,6 +128,18 @@ import OpenSolid.Core.Types exposing (..)
 zero : Vector2d
 zero =
     Vector2d 0 0
+
+
+relativeTo : Frame2d -> Float -> Float -> Vector2d
+relativeTo frame x y =
+    let
+        (Direction2d (Vector2d x1 y1)) =
+            frame.xDirection
+
+        (Direction2d (Vector2d x2 y2)) =
+            frame.yDirection
+    in
+        Vector2d (x * x1 + y * x2) (x * y1 + y * y2)
 
 
 {-| Construct a vector from a pair of X and Y components.
