@@ -10,6 +10,7 @@
 module OpenSolid.Vector3d
     exposing
         ( zero
+        , relativeTo
         , fromComponents
         , xComponent
         , yComponent
@@ -47,6 +48,24 @@ import OpenSolid.Core.Types exposing (..)
 zero : Vector3d
 zero =
     Vector3d 0 0 0
+
+
+relativeTo : Frame3d -> Float -> Float -> Float -> Vector3d
+relativeTo frame =
+    let
+        (Direction3d (Vector3d x1 y1 z1)) =
+            frame.xDirection
+
+        (Direction3d (Vector3d x2 y2 z2)) =
+            frame.yDirection
+
+        (Direction3d (Vector3d x3 y3 z3)) =
+            frame.zDirection
+    in
+        \x y z ->
+            Vector3d (x * x1 + y * x2 + z * x3)
+                (x * y1 + y * y2 + z * y3)
+                (x * z1 + y * z2 + z * z3)
 
 
 fromComponents : ( Float, Float, Float ) -> Vector3d
