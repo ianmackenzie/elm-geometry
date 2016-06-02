@@ -47,8 +47,12 @@ origin =
 
 
 relativeTo : Frame2d -> Float -> Float -> Point2d
-relativeTo frame x y =
-    plus (Vector2d.relativeTo frame x y) frame.originPoint
+relativeTo frame =
+    let
+        relativeVector =
+            Vector2d.relativeTo frame
+    in
+        \x y -> plus (relativeVector x y) frame.originPoint
 
 
 fromCoordinates : ( Float, Float ) -> Point2d
