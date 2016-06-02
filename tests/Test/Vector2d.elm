@@ -66,7 +66,7 @@ perpendicularVectorIsPerpendicular =
                     Vector2d.perpendicularVector vector
 
                 dotProduct =
-                    Vector2d.dot vector perpendicularVector
+                    Vector2d.dotProduct vector perpendicularVector
             in
                 valueIsZero dotProduct
     in

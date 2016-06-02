@@ -114,7 +114,7 @@ squaredDistanceToAxis axis =
             Direction3d.vector axis.direction
     in
         vectorFrom axis.originPoint
-            >> Vector3d.cross directionVector
+            >> Vector3d.crossProduct directionVector
             >> Vector3d.squaredLength
 
 

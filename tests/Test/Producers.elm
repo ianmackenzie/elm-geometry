@@ -167,7 +167,7 @@ frame3d : Producer Frame3d
 frame3d =
     let
         linearlyIndependentVectors ( _, v1, v2 ) =
-            Vector3d.squaredLength (Vector3d.cross v2 v1) > 1
+            Vector3d.squaredLength (Vector3d.crossProduct v1 v2) > 1
 
         tupleProducer =
             Producer.filter linearlyIndependentVectors
@@ -182,10 +182,10 @@ frame3d =
                     v1
 
                 zVector =
-                    Vector3d.cross v2 xVector
+                    Vector3d.crossProduct xVector v2
 
                 yVector =
-                    Vector3d.cross xVector zVector
+                    Vector3d.crossProduct zVector xVector
             in
                 Frame3d point
                     (toDirection xVector)

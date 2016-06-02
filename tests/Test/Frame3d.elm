@@ -37,7 +37,7 @@ frameDirectionsAreOrthonormal =
         directionsAreOrthonormal frame =
             let
                 crossProduct =
-                    Direction3d.cross frame.yDirection frame.xDirection
+                    Direction3d.crossProduct frame.xDirection frame.yDirection
 
                 tripleProduct =
                     Vector3d.componentIn frame.zDirection crossProduct

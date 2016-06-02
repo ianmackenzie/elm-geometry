@@ -37,8 +37,8 @@ module OpenSolid.Vector2d
         , plus
         , minus
         , times
-        , dot
-        , cross
+        , dotProduct
+        , crossProduct
         , toRecord
         , fromRecord
         )
@@ -89,7 +89,7 @@ scenes it requires a dot product instead of a simple component access).
 
 # Arithmetic
 
-@docs plus, minus, times, addTo, subtractFrom, dot, cross
+@docs plus, minus, times, dotProduct, crossProduct
 
 # Length and direction
 
@@ -197,7 +197,7 @@ The result is signed value; for a vector version, see `projectionIn`.
 -}
 componentIn : Direction2d -> Vector2d -> Float
 componentIn (Direction2d vector) =
-    dot vector
+    dotProduct vector
 
 
 {-| Get the squared length of a vector. This is slightly more efficient than
@@ -436,13 +436,13 @@ times scale (Vector2d x y) =
     Vector2d (x * scale) (y * scale)
 
 
-dot : Vector2d -> Vector2d -> Float
-dot (Vector2d x2 y2) (Vector2d x1 y1) =
+dotProduct : Vector2d -> Vector2d -> Float
+dotProduct (Vector2d x1 y1) (Vector2d x2 y2) =
     x1 * x2 + y1 * y2
 
 
-cross : Vector2d -> Vector2d -> Float
-cross (Vector2d x2 y2) (Vector2d x1 y1) =
+crossProduct : Vector2d -> Vector2d -> Float
+crossProduct (Vector2d x1 y1) (Vector2d x2 y2) =
     x1 * y2 - y1 * x2
 
 

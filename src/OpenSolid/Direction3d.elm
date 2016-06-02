@@ -28,8 +28,8 @@ module OpenSolid.Direction3d
         , projectInto
         , negate
         , times
-        , dot
-        , cross
+        , dotProduct
+        , crossProduct
         , angleTo
         )
 
@@ -102,7 +102,7 @@ normalBasis direction =
             perpendicularDirection direction
 
         yDirection =
-            Direction3d (Vector3d.cross (vector xDirection) (vector direction))
+            Direction3d (crossProduct direction xDirection)
     in
         ( xDirection, yDirection )
 
@@ -163,16 +163,16 @@ times scale =
     vector >> Vector3d.times scale
 
 
-dot : Direction3d -> Direction3d -> Float
-dot other direction =
-    Vector3d.dot (vector other) (vector direction)
+dotProduct : Direction3d -> Direction3d -> Float
+dotProduct firstDirection secondDirection =
+    Vector3d.dotProduct (vector firstDirection) (vector secondDirection)
 
 
-cross : Direction3d -> Direction3d -> Vector3d
-cross other direction =
-    Vector3d.cross (vector other) (vector direction)
+crossProduct : Direction3d -> Direction3d -> Vector3d
+crossProduct firstDirection secondDirection =
+    Vector3d.crossProduct (vector firstDirection) (vector secondDirection)
 
 
 angleTo : Direction3d -> Direction3d -> Float
 angleTo other direction =
-    acos (dot other direction)
+    acos (dotProduct direction other)

@@ -25,8 +25,8 @@ module OpenSolid.Direction2d
         , placeOnto
         , negate
         , times
-        , dot
-        , cross
+        , dotProduct
+        , crossProduct
         , angleTo
         )
 
@@ -114,16 +114,16 @@ times scale =
     vector >> Vector2d.times scale
 
 
-dot : Direction2d -> Direction2d -> Float
-dot other direction =
-    Vector2d.dot (vector other) (vector direction)
+dotProduct : Direction2d -> Direction2d -> Float
+dotProduct firstDirection secondDirection =
+    Vector2d.dotProduct (vector firstDirection) (vector secondDirection)
 
 
-cross : Direction2d -> Direction2d -> Float
-cross other direction =
-    Vector2d.cross (vector other) (vector direction)
+crossProduct : Direction2d -> Direction2d -> Float
+crossProduct firstDirection secondDirection =
+    Vector2d.crossProduct (vector firstDirection) (vector secondDirection)
 
 
 angleTo : Direction2d -> Direction2d -> Float
 angleTo other direction =
-    atan2 (cross other direction) (dot other direction)
+    atan2 (crossProduct direction other) (dotProduct direction other)

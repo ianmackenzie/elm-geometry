@@ -34,8 +34,8 @@ module OpenSolid.Vector3d
         , plus
         , minus
         , times
-        , dot
-        , cross
+        , dotProduct
+        , crossProduct
         , toRecord
         , fromRecord
         )
@@ -93,7 +93,7 @@ components (Vector3d x y z) =
 
 componentIn : Direction3d -> Vector3d -> Float
 componentIn (Direction3d vector) =
-    dot vector
+    dotProduct vector
 
 
 squaredLength : Vector3d -> Float
@@ -351,13 +351,13 @@ times scale (Vector3d x y z) =
     Vector3d (x * scale) (y * scale) (z * scale)
 
 
-dot : Vector3d -> Vector3d -> Float
-dot (Vector3d x2 y2 z2) (Vector3d x1 y1 z1) =
+dotProduct : Vector3d -> Vector3d -> Float
+dotProduct (Vector3d x1 y1 z1) (Vector3d x2 y2 z2) =
     x1 * x2 + y1 * y2 + z1 * z2
 
 
-cross : Vector3d -> Vector3d -> Vector3d
-cross (Vector3d x2 y2 z2) (Vector3d x1 y1 z1) =
+crossProduct : Vector3d -> Vector3d -> Vector3d
+crossProduct (Vector3d x1 y1 z1) (Vector3d x2 y2 z2) =
     Vector3d (y1 * z2 - z1 * y2) (z1 * x2 - x1 * z2) (x1 * y2 - y1 * x2)
 
 
