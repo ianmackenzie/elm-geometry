@@ -23,7 +23,9 @@ module OpenSolid.Vector3d
         , length
         , perpendicularVector
         , rotateAbout
+        , rotateAround
         , mirrorIn
+        , mirrorAcross
         , toLocalIn
         , toGlobalFrom
         , projectionIn
@@ -238,6 +240,11 @@ rotateAbout (Direction3d (Vector3d dx dy dz)) angle =
                 Vector3d vx' vy' vz'
 
 
+rotateAround : Axis3d -> Float -> Vector3d -> Vector3d
+rotateAround axis =
+    rotateAbout axis.direction
+
+
 mirrorIn : Direction3d -> Vector3d -> Vector3d
 mirrorIn direction =
     let
@@ -274,6 +281,11 @@ mirrorIn direction =
                     e * vx + d * vy + c * vz
             in
                 Vector3d vx' vy' vz'
+
+
+mirrorAcross : Plane3d -> Vector3d -> Vector3d
+mirrorAcross plane =
+    mirrorIn plane.normalDirection
 
 
 toLocalIn : Frame3d -> Vector3d -> Vector3d
