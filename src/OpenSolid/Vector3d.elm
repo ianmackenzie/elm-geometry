@@ -11,6 +11,7 @@ module OpenSolid.Vector3d
     exposing
         ( zero
         , relativeTo
+        , along
         , fromComponents
         , xComponent
         , yComponent
@@ -61,6 +62,15 @@ relativeTo frame =
             Vector3d (x * x1 + y * x2 + z * x3)
                 (x * y1 + y * y2 + z * y3)
                 (x * z1 + y * z2 + z * z3)
+
+
+along : Axis3d -> Float -> Vector3d
+along axis magnitude =
+    let
+        (Direction3d directionVector) =
+            axis.direction
+    in
+        times magnitude directionVector
 
 
 fromComponents : ( Float, Float, Float ) -> Vector3d

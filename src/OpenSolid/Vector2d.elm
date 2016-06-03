@@ -11,6 +11,7 @@ module OpenSolid.Vector2d
     exposing
         ( zero
         , relativeTo
+        , along
         , fromComponents
         , fromPolarComponents
         , xComponent
@@ -140,6 +141,15 @@ relativeTo frame =
             frame.yDirection
     in
         \x y -> Vector2d (x * x1 + y * x2) (x * y1 + y * y2)
+
+
+along : Axis2d -> Float -> Vector2d
+along axis magnitude =
+    let
+        (Direction2d directionVector) =
+            axis.direction
+    in
+        times magnitude directionVector
 
 
 {-| Construct a vector from a pair of X and Y components.
