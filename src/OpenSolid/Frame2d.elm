@@ -14,6 +14,7 @@ module OpenSolid.Frame2d
         , xAxis
         , yAxis
         , scaleAbout
+        , rotateBy
         , rotateAround
         , translateBy
         , translateAlong
@@ -55,6 +56,18 @@ scaleAbout centerPoint scale frame =
             Point2d.scaleAbout centerPoint scale frame.originPoint
     in
         { frame | originPoint = scaledOriginPoint }
+
+
+rotateBy : Float -> Frame2d -> Frame2d
+rotateBy angle =
+    let
+        rotateDirection =
+            Direction2d.rotateBy angle
+    in
+        \frame ->
+            Frame2d frame.originPoint
+                (rotateDirection frame.xDirection)
+                (rotateDirection frame.yDirection)
 
 
 rotateAround : Point2d -> Float -> Frame2d -> Frame2d
