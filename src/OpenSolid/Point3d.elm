@@ -11,6 +11,7 @@ module OpenSolid.Point3d
     exposing
         ( origin
         , relativeTo
+        , on
         , along
         , fromCoordinates
         , xCoordinate
@@ -57,6 +58,15 @@ relativeTo frame =
             Vector3d.relativeTo frame
     in
         \x y z -> plus (relativeVector x y z) frame.originPoint
+
+
+on : Plane3d -> Float -> Float -> Point3d
+on plane =
+    let
+        planarVector =
+            Vector3d.on plane
+    in
+        \x y -> plus (planarVector x y) plane.originPoint
 
 
 along : Axis3d -> Float -> Point3d

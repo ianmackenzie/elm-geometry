@@ -11,6 +11,7 @@ module OpenSolid.Vector3d
     exposing
         ( zero
         , relativeTo
+        , on
         , along
         , fromComponents
         , xComponent
@@ -62,6 +63,18 @@ relativeTo frame =
             Vector3d (x * x1 + y * x2 + z * x3)
                 (x * y1 + y * y2 + z * y3)
                 (x * z1 + y * z2 + z * z3)
+
+
+on : Plane3d -> Float -> Float -> Vector3d
+on plane =
+    let
+        (Direction3d (Vector3d x1 y1 z1)) =
+            plane.xDirection
+
+        (Direction3d (Vector3d x2 y2 z2)) =
+            plane.yDirection
+    in
+        \x y -> Vector3d (x * x1 + y * x2) (x * y1 + y * y2) (x * z1 + y * z2)
 
 
 along : Axis3d -> Float -> Vector3d
