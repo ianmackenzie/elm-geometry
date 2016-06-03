@@ -12,6 +12,7 @@ module OpenSolid.Vector2d
         ( zero
         , relativeTo
         , along
+        , polar
         , fromComponents
         , fromPolarComponents
         , xComponent
@@ -148,6 +149,11 @@ along axis magnitude =
             axis.direction
     in
         times magnitude directionVector
+
+
+polar : Float -> Float -> Vector2d
+polar radius angle =
+    fromPolarComponents ( radius, angle )
 
 
 {-| Construct a vector from a pair of X and Y components.
