@@ -141,7 +141,7 @@ rotateAround axis angle =
             Point3d.rotateAround axis angle
 
         rotateDirection =
-            Direction3d.rotateAbout axis.direction angle
+            Direction3d.rotateAround axis angle
     in
         \plane ->
             Plane3d (rotatePoint plane.originPoint)
@@ -167,7 +167,7 @@ mirrorAcross otherPlane =
             Point3d.mirrorAcross otherPlane
 
         mirrorDirection =
-            Direction3d.mirrorIn otherPlane.normalDirection
+            Direction3d.mirrorAcross otherPlane
     in
         \plane ->
             Plane3d (mirrorPoint plane.originPoint)

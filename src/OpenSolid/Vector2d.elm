@@ -24,7 +24,6 @@ module OpenSolid.Vector2d
         , length
         , perpendicularVector
         , rotateBy
-        , mirrorAbout
         , mirrorAcross
         , toLocalIn
         , toGlobalFrom
@@ -276,17 +275,17 @@ rotateBy angle =
             Vector2d (x * cosine - y * sine) (y * cosine + x * sine)
 
 
-{-| Mirror a vector about a particular direction. This can be thought of as
-mirroring the vector across an axis that has the given direction.
+{-| Mirror a vector across a particular axis. Note that only the direction of
+the axis affects the result.
 
-    Vector2d.mirrorAbout Direction2d.x (Vector2d 2 3) == Vector2d 2 -3
-    Vector2d.mirrorAbout Direction2d.y (Vector2d 2 3) == Vector2d -2 3
+    Vector2d.mirrorAcross Axis2d.x (Vector2d 2 3) == Vector2d 2 -3
+    Vector2d.mirrorAcross Axis2d.y (Vector2d 2 3) == Vector2d -2 3
 -}
-mirrorAbout : Direction2d -> Vector2d -> Vector2d
-mirrorAbout direction =
+mirrorAcross : Axis2d -> Vector2d -> Vector2d
+mirrorAcross axis =
     let
         (Direction2d (Vector2d dx dy)) =
-            direction
+            axis.direction
 
         a =
             1 - 2 * dy * dy
@@ -298,11 +297,6 @@ mirrorAbout direction =
             1 - 2 * dx * dx
     in
         \(Vector2d vx vy) -> Vector2d (a * vx + b * vy) (c * vy + b * vx)
-
-
-mirrorAcross : Axis2d -> Vector2d -> Vector2d
-mirrorAcross axis =
-    mirrorAbout axis.direction
 
 
 {-| Convert a vector from global coordinates to local coordinates within a given

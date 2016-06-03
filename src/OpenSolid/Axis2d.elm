@@ -82,7 +82,7 @@ mirrorAcross otherAxis =
             Point2d.mirrorAcross otherAxis
 
         mirrorDirection =
-            Direction2d.mirrorAbout otherAxis.direction
+            Direction2d.mirrorAcross otherAxis
     in
         \axis ->
             Axis2d (mirrorPoint axis.originPoint)

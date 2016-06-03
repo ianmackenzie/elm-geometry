@@ -108,7 +108,7 @@ mirrorAcross axis =
             Point2d.mirrorAcross axis
 
         mirrorDirection =
-            Direction2d.mirrorAbout axis.direction
+            Direction2d.mirrorAcross axis
     in
         \frame ->
             Frame2d (mirrorPoint frame.originPoint)

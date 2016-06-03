@@ -21,7 +21,6 @@ module OpenSolid.Direction2d
         , vector
         , perpendicularDirection
         , rotateBy
-        , mirrorAbout
         , mirrorAcross
         , toLocalIn
         , toGlobalFrom
@@ -115,14 +114,9 @@ rotateBy angle =
     vector >> Vector2d.rotateBy angle >> Direction2d
 
 
-mirrorAbout : Direction2d -> Direction2d -> Direction2d
-mirrorAbout direction =
-    vector >> Vector2d.mirrorAbout direction >> Direction2d
-
-
 mirrorAcross : Axis2d -> Direction2d -> Direction2d
 mirrorAcross axis =
-    mirrorAbout axis.direction
+    vector >> Vector2d.mirrorAcross axis >> Direction2d
 
 
 toLocalIn : Frame2d -> Direction2d -> Direction2d

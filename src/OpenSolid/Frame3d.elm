@@ -127,7 +127,7 @@ rotateAround axis angle =
             Point3d.rotateAround axis angle
 
         rotateDirection =
-            Direction3d.rotateAbout axis.direction angle
+            Direction3d.rotateAround axis angle
     in
         \frame ->
             Frame3d (rotatePoint frame.originPoint)

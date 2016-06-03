@@ -22,9 +22,7 @@ module OpenSolid.Vector3d
         , squaredLength
         , length
         , perpendicularVector
-        , rotateAbout
         , rotateAround
-        , mirrorIn
         , mirrorAcross
         , toLocalIn
         , toGlobalFrom
@@ -151,9 +149,12 @@ perpendicularVector (Vector3d x y z) =
             Vector3d (-y) x 0
 
 
-rotateAbout : Direction3d -> Float -> Vector3d -> Vector3d
-rotateAbout (Direction3d (Vector3d dx dy dz)) angle =
+rotateAround : Axis3d -> Float -> Vector3d -> Vector3d
+rotateAround axis angle =
     let
+        (Direction3d (Vector3d dx dy dz)) =
+            axis.direction
+
         halfAngle =
             0.5 * angle
 
@@ -240,16 +241,11 @@ rotateAbout (Direction3d (Vector3d dx dy dz)) angle =
                 Vector3d vx' vy' vz'
 
 
-rotateAround : Axis3d -> Float -> Vector3d -> Vector3d
-rotateAround axis =
-    rotateAbout axis.direction
-
-
-mirrorIn : Direction3d -> Vector3d -> Vector3d
-mirrorIn direction =
+mirrorAcross : Plane3d -> Vector3d -> Vector3d
+mirrorAcross plane =
     let
         (Direction3d (Vector3d dx dy dz)) =
-            direction
+            plane.normalDirection
 
         a =
             1 - 2 * dx * dx
@@ -281,11 +277,6 @@ mirrorIn direction =
                     e * vx + d * vy + c * vz
             in
                 Vector3d vx' vy' vz'
-
-
-mirrorAcross : Plane3d -> Vector3d -> Vector3d
-mirrorAcross plane =
-    mirrorIn plane.normalDirection
 
 
 toLocalIn : Frame3d -> Vector3d -> Vector3d

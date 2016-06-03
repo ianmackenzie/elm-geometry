@@ -167,7 +167,7 @@ mirrorAcross : Axis2d -> Point2d -> Point2d
 mirrorAcross axis =
     let
         mirrorVector =
-            Vector2d.mirrorAbout axis.direction
+            Vector2d.mirrorAcross axis
     in
         vectorFrom axis.originPoint >> mirrorVector >> addTo axis.originPoint
 

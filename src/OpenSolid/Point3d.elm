@@ -170,7 +170,7 @@ rotateAround : Axis3d -> Float -> Point3d -> Point3d
 rotateAround axis angle =
     let
         rotateVector =
-            Vector3d.rotateAbout axis.direction angle
+            Vector3d.rotateAround axis angle
     in
         vectorFrom axis.originPoint >> rotateVector >> addTo axis.originPoint
 
@@ -184,7 +184,7 @@ mirrorAcross : Plane3d -> Point3d -> Point3d
 mirrorAcross plane =
     let
         mirrorVector =
-            Vector3d.mirrorIn plane.normalDirection
+            Vector3d.mirrorAcross plane
     in
         vectorFrom plane.originPoint >> mirrorVector >> addTo plane.originPoint
 
