@@ -20,8 +20,6 @@ module OpenSolid.Frame3d
         , yzPlane
         , zxPlane
         , zyPlane
-        , point
-        , vector
         , scaleAbout
         , rotateAround
         , rotateAroundOwn
@@ -111,27 +109,6 @@ zyPlane frame =
         frame.zDirection
         frame.yDirection
         (Direction3d.negate frame.xDirection)
-
-
-point : Float -> Float -> Float -> Frame3d -> Point3d
-point x y z frame =
-    Point3d.plus (vector x y z frame) frame.originPoint
-
-
-vector : Float -> Float -> Float -> Frame3d -> Vector3d
-vector x y z frame =
-    let
-        xDisplacement =
-            Direction3d.times x frame.xDirection
-
-        yDisplacement =
-            Direction3d.times y frame.yDirection
-
-        zDisplacement =
-            Direction3d.times z frame.zDirection
-    in
-        Vector3d.plus zDisplacement
-            (Vector3d.plus yDisplacement xDisplacement)
 
 
 scaleAbout : Point3d -> Float -> Frame3d -> Frame3d

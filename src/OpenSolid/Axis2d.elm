@@ -11,7 +11,6 @@ module OpenSolid.Axis2d
     exposing
         ( x
         , y
-        , point
         , reverse
         , scaleAbout
         , rotateAround
@@ -36,11 +35,6 @@ x =
 y : Axis2d
 y =
     Axis2d Point2d.origin Direction2d.y
-
-
-point : Float -> Axis2d -> Point2d
-point distance axis =
-    Point2d.plus (Direction2d.times distance axis.direction) axis.originPoint
 
 
 reverse : Axis2d -> Axis2d
