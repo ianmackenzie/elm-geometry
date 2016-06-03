@@ -23,7 +23,7 @@ module OpenSolid.Direction3d
         , perpendicularDirection
         , normalBasis
         , rotateAbout
-        , mirrorAlong
+        , mirrorIn
         , toLocalIn
         , toGlobalFrom
         , projectOnto
@@ -140,11 +140,11 @@ rotateAbout direction angle =
         vector >> rotateVector >> Direction3d
 
 
-mirrorAlong : Direction3d -> Direction3d -> Direction3d
-mirrorAlong direction =
+mirrorIn : Direction3d -> Direction3d -> Direction3d
+mirrorIn direction =
     let
         mirrorVector =
-            Vector3d.mirrorAlong direction
+            Vector3d.mirrorIn direction
     in
         vector >> mirrorVector >> Direction3d
 

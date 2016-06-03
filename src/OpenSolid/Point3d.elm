@@ -184,7 +184,7 @@ mirrorAcross : Plane3d -> Point3d -> Point3d
 mirrorAcross plane =
     let
         mirrorVector =
-            Vector3d.mirrorAlong plane.normalDirection
+            Vector3d.mirrorIn plane.normalDirection
     in
         vectorFrom plane.originPoint >> mirrorVector >> addTo plane.originPoint
 

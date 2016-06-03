@@ -186,7 +186,7 @@ mirrorAcross plane =
             Point3d.mirrorAcross plane
 
         mirrorDirection =
-            Direction3d.mirrorAlong plane.normalDirection
+            Direction3d.mirrorIn plane.normalDirection
     in
         \frame ->
             Frame3d (mirrorPoint frame.originPoint)

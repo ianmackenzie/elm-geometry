@@ -23,7 +23,7 @@ module OpenSolid.Vector3d
         , length
         , perpendicularVector
         , rotateAbout
-        , mirrorAlong
+        , mirrorIn
         , toLocalIn
         , toGlobalFrom
         , projectionIn
@@ -238,8 +238,8 @@ rotateAbout (Direction3d (Vector3d dx dy dz)) angle =
                 Vector3d vx' vy' vz'
 
 
-mirrorAlong : Direction3d -> Vector3d -> Vector3d
-mirrorAlong direction =
+mirrorIn : Direction3d -> Vector3d -> Vector3d
+mirrorIn direction =
     let
         (Direction3d (Vector3d dx dy dz)) =
             direction
