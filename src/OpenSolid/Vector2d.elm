@@ -66,7 +66,7 @@ equivalents, which are available as `Direction2d.x` and `Direction2d.y`.
 
 # Constructors
 
-@docs fromComponents, fromPolarComponents
+@docs relativeTo, fromComponents, fromPolarComponents
 
 # Components
 
@@ -125,6 +125,11 @@ zero =
     Vector2d 0 0
 
 
+{-| Construct a vector from its X and Y components relative to a particular
+reference frame. The result will these local components converted to a vector in
+global coordinates. Note that the position (origin point location) of the frame
+has no effect on the result.
+-}
 relativeTo : Frame2d -> Float -> Float -> Vector2d
 relativeTo frame =
     let
