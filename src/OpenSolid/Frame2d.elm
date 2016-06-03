@@ -16,6 +16,7 @@ module OpenSolid.Frame2d
         , scaleAbout
         , rotateAround
         , translateBy
+        , translateAlong
         , mirrorAcross
         , toLocalIn
         , toGlobalFrom
@@ -74,6 +75,11 @@ rotateAround centerPoint angle =
 translateBy : Vector2d -> Frame2d -> Frame2d
 translateBy vector frame =
     { frame | originPoint = Point2d.plus vector frame.originPoint }
+
+
+translateAlong : Axis2d -> Float -> Frame2d -> Frame2d
+translateAlong axis distance =
+    translateBy (Vector2d.along axis distance)
 
 
 mirrorAcross : Axis2d -> Frame2d -> Frame2d

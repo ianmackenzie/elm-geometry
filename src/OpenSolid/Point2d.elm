@@ -25,6 +25,7 @@ module OpenSolid.Point2d
         , signedDistanceFrom
         , scaleAbout
         , rotateAround
+        , translateAlong
         , mirrorAcross
         , toLocalIn
         , toGlobalFrom
@@ -135,6 +136,11 @@ rotateAround centerPoint angle =
             Vector2d.rotateBy angle
     in
         vectorFrom centerPoint >> rotateVector >> addTo centerPoint
+
+
+translateAlong : Axis2d -> Float -> Point2d -> Point2d
+translateAlong axis distance =
+    plus (Vector2d.along axis distance)
 
 
 mirrorAcross : Axis2d -> Point2d -> Point2d

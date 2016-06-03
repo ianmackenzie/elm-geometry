@@ -19,6 +19,7 @@ module OpenSolid.Axis3d
         , scaleAbout
         , rotateAround
         , translateBy
+        , translateAlong
         , mirrorAcross
         , toLocalIn
         , toGlobalFrom
@@ -95,6 +96,11 @@ rotateAround otherAxis angle =
 translateBy : Vector3d -> Axis3d -> Axis3d
 translateBy vector axis =
     Axis3d (Point3d.plus vector axis.originPoint) axis.direction
+
+
+translateAlong : Axis3d -> Float -> Axis3d -> Axis3d
+translateAlong axis distance =
+    translateBy (Vector3d.along axis distance)
 
 
 mirrorAcross : Plane3d -> Axis3d -> Axis3d

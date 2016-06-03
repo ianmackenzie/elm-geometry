@@ -26,6 +26,7 @@ module OpenSolid.Point3d
         , signedDistanceFrom
         , scaleAbout
         , rotateAround
+        , translateAlong
         , mirrorAcross
         , toLocalIn
         , toGlobalFrom
@@ -144,6 +145,11 @@ rotateAround axis angle =
             Vector3d.rotateAbout axis.direction angle
     in
         vectorFrom axis.originPoint >> rotateVector >> addTo axis.originPoint
+
+
+translateAlong : Axis3d -> Float -> Point3d -> Point3d
+translateAlong axis distance =
+    plus (Vector3d.along axis distance)
 
 
 mirrorAcross : Plane3d -> Point3d -> Point3d

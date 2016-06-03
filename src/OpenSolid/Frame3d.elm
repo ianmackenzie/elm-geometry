@@ -25,6 +25,7 @@ module OpenSolid.Frame3d
         , scaleAbout
         , rotateAround
         , translateBy
+        , translateAlong
         , mirrorAcross
         , toLocalIn
         , toGlobalFrom
@@ -158,6 +159,11 @@ rotateAround axis angle =
 translateBy : Vector3d -> Frame3d -> Frame3d
 translateBy vector frame =
     { frame | originPoint = Point3d.plus vector frame.originPoint }
+
+
+translateAlong : Axis3d -> Float -> Frame3d -> Frame3d
+translateAlong axis distance =
+    translateBy (Vector3d.along axis distance)
 
 
 mirrorAcross : Plane3d -> Frame3d -> Frame3d

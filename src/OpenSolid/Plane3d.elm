@@ -24,6 +24,7 @@ module OpenSolid.Plane3d
         , scaleAbout
         , rotateAround
         , translateBy
+        , translateAlong
         , mirrorAcross
         , toLocalIn
         , toGlobalFrom
@@ -152,6 +153,11 @@ rotateAround axis angle =
 translateBy : Vector3d -> Plane3d -> Plane3d
 translateBy vector plane =
     { plane | originPoint = Point3d.plus vector plane.originPoint }
+
+
+translateAlong : Axis3d -> Float -> Plane3d -> Plane3d
+translateAlong axis distance =
+    translateBy (Vector3d.along axis distance)
 
 
 mirrorAcross : Plane3d -> Plane3d -> Plane3d
