@@ -12,8 +12,6 @@ module OpenSolid.Axis2d
         ( x
         , y
         , point
-        , normalDirection
-        , normalAxis
         , reverse
         , scaleAbout
         , rotateAround
@@ -43,16 +41,6 @@ y =
 point : Float -> Axis2d -> Point2d
 point distance axis =
     Point2d.plus (Direction2d.times distance axis.direction) axis.originPoint
-
-
-normalDirection : Axis2d -> Direction2d
-normalDirection axis =
-    Direction2d.perpendicularDirection axis.direction
-
-
-normalAxis : Axis2d -> Axis2d
-normalAxis axis =
-    Axis2d axis.originPoint (normalDirection axis)
 
 
 reverse : Axis2d -> Axis2d

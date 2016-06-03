@@ -13,8 +13,6 @@ module OpenSolid.Axis3d
         , y
         , z
         , point
-        , normalDirection
-        , normalPlane
         , reverse
         , scaleAbout
         , rotateAround
@@ -53,16 +51,6 @@ z =
 point : Float -> Axis3d -> Point3d
 point distance axis =
     Point3d.plus (Direction3d.times distance axis.direction) axis.originPoint
-
-
-normalDirection : Axis3d -> Direction3d
-normalDirection axis =
-    Direction3d.perpendicularDirection axis.direction
-
-
-normalPlane : Axis3d -> Plane3d
-normalPlane axis =
-    Plane3d.fromPointAndNormal axis.originPoint axis.direction
 
 
 reverse : Axis3d -> Axis3d
