@@ -18,7 +18,6 @@ module OpenSolid.Plane3d
         , fromPointAndNormal
         , offsetBy
         , flip
-        , normalAxis
         , scaleAbout
         , rotateAround
         , translateBy
@@ -99,11 +98,6 @@ offsetBy distance plane =
 flip : Plane3d -> Plane3d
 flip plane =
     { plane | normalDirection = Direction3d.negate plane.normalDirection }
-
-
-normalAxis : Plane3d -> Axis3d
-normalAxis plane =
-    Axis3d plane.originPoint plane.normalDirection
 
 
 scaleAbout : Point3d -> Float -> Plane3d -> Plane3d
