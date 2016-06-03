@@ -115,15 +115,8 @@ vector (Direction3d vector') =
 
 
 perpendicularDirection : Direction3d -> Direction3d
-perpendicularDirection direction =
-    let
-        perpendicularVector =
-            Vector3d.perpendicularVector (vector direction)
-
-        inverseLength =
-            1 / Vector3d.length perpendicularVector
-    in
-        Direction3d (Vector3d.times inverseLength perpendicularVector)
+perpendicularDirection =
+    vector >> Vector3d.perpendicularVector >> ofNonZeroVector
 
 
 normalBasis : Direction3d -> ( Direction3d, Direction3d )
