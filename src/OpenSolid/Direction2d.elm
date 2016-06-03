@@ -22,6 +22,7 @@ module OpenSolid.Direction2d
         , perpendicularDirection
         , rotateBy
         , mirrorAbout
+        , mirrorAcross
         , toLocalIn
         , toGlobalFrom
         , placeOnto
@@ -117,6 +118,11 @@ rotateBy angle =
 mirrorAbout : Direction2d -> Direction2d -> Direction2d
 mirrorAbout direction =
     vector >> Vector2d.mirrorAbout direction >> Direction2d
+
+
+mirrorAcross : Axis2d -> Direction2d -> Direction2d
+mirrorAcross axis =
+    mirrorAbout axis.direction
 
 
 toLocalIn : Frame2d -> Direction2d -> Direction2d

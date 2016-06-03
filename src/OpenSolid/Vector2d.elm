@@ -25,6 +25,7 @@ module OpenSolid.Vector2d
         , perpendicularVector
         , rotateBy
         , mirrorAbout
+        , mirrorAcross
         , toLocalIn
         , toGlobalFrom
         , projectionIn
@@ -297,6 +298,11 @@ mirrorAbout direction =
             1 - 2 * dx * dx
     in
         \(Vector2d vx vy) -> Vector2d (a * vx + b * vy) (c * vy + b * vx)
+
+
+mirrorAcross : Axis2d -> Vector2d -> Vector2d
+mirrorAcross axis =
+    mirrorAbout axis.direction
 
 
 {-| Convert a vector from global coordinates to local coordinates within a given
