@@ -23,8 +23,8 @@ module OpenSolid.Point3d
         , vectorTo
         , vectorFrom
         , distanceAlong
-        , squaredDistanceToAxis
-        , distanceToAxis
+        , squaredDistanceFromAxis
+        , distanceFromAxis
         , signedDistanceFrom
         , scaleAbout
         , rotateAround
@@ -124,20 +124,16 @@ distanceAlong axis =
     vectorFrom axis.originPoint >> Vector3d.componentIn axis.direction
 
 
-squaredDistanceToAxis : Axis3d -> Point3d -> Float
-squaredDistanceToAxis axis =
-    let
-        directionVector =
-            Direction3d.vector axis.direction
-    in
-        vectorFrom axis.originPoint
-            >> Vector3d.crossProduct directionVector
-            >> Vector3d.squaredLength
+squaredDistanceFromAxis : Axis3d -> Point3d -> Float
+squaredDistanceFromAxis axis =
+    vectorFrom axis.originPoint
+        >> Vector3d.crossProduct (Direction3d.vector axis.direction)
+        >> Vector3d.squaredLength
 
 
-distanceToAxis : Axis3d -> Point3d -> Float
-distanceToAxis axis =
-    squaredDistanceToAxis axis >> sqrt
+distanceFromAxis : Axis3d -> Point3d -> Float
+distanceFromAxis axis =
+    squaredDistanceFromAxis axis >> sqrt
 
 
 signedDistanceFrom : Plane3d -> Point3d -> Float
