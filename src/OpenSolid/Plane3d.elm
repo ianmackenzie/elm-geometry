@@ -16,8 +16,6 @@ module OpenSolid.Plane3d
         , zx
         , zy
         , fromPointAndNormal
-        , point
-        , vector
         , offsetBy
         , flip
         , normalAxis
@@ -91,23 +89,6 @@ fromPointAndNormal originPoint normalDirection =
             Direction3d.normalBasis normalDirection
     in
         Plane3d originPoint xDirection yDirection normalDirection
-
-
-point : Float -> Float -> Plane3d -> Point3d
-point x y plane =
-    Point3d.plus (vector x y plane) plane.originPoint
-
-
-vector : Float -> Float -> Plane3d -> Vector3d
-vector x y plane =
-    let
-        xVector =
-            Direction3d.times x plane.xDirection
-
-        yVector =
-            Direction3d.times y plane.yDirection
-    in
-        Vector3d.plus yVector xVector
 
 
 offsetBy : Float -> Plane3d -> Plane3d
