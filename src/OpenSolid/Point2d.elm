@@ -14,6 +14,8 @@ module OpenSolid.Point2d
         , along
         , fromCoordinates
         , fromPolarCoordinates
+        , interpolate
+        , midpoint
         , xCoordinate
         , yCoordinate
         , coordinates
@@ -70,6 +72,20 @@ fromCoordinates ( x, y ) =
 fromPolarCoordinates : ( Float, Float ) -> Point2d
 fromPolarCoordinates =
     fromPolar >> fromCoordinates
+
+
+interpolate : Point2d -> Point2d -> Float -> Point2d
+interpolate startPoint endPoint =
+    let
+        displacement =
+            vectorFrom startPoint endPoint
+    in
+        \t -> plus (Vector2d.times t displacement) startPoint
+
+
+midpoint : Point2d -> Point2d -> Point2d
+midpoint firstPoint secondPoint =
+    interpolate firstPoint secondPoint 0.5
 
 
 xCoordinate : Point2d -> Float

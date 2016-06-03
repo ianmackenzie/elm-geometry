@@ -14,6 +14,8 @@ module OpenSolid.Point3d
         , on
         , along
         , fromCoordinates
+        , interpolate
+        , midpoint
         , xCoordinate
         , yCoordinate
         , zCoordinate
@@ -77,6 +79,20 @@ along axis distance =
 fromCoordinates : ( Float, Float, Float ) -> Point3d
 fromCoordinates ( x, y, z ) =
     Point3d x y z
+
+
+interpolate : Point3d -> Point3d -> Float -> Point3d
+interpolate startPoint endPoint =
+    let
+        displacement =
+            vectorFrom startPoint endPoint
+    in
+        \t -> plus (Vector3d.times t displacement) startPoint
+
+
+midpoint : Point3d -> Point3d -> Point3d
+midpoint firstPoint secondPoint =
+    interpolate firstPoint secondPoint 0.5
 
 
 xCoordinate : Point3d -> Float
