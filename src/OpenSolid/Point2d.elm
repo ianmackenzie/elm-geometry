@@ -23,7 +23,7 @@ module OpenSolid.Point2d
         , vectorTo
         , vectorFrom
         , distanceAlong
-        , signedDistanceFrom
+        , distanceFromAxis
         , scaleAbout
         , rotateAround
         , translateAlong
@@ -117,13 +117,11 @@ distanceAlong axis =
     vectorFrom axis.originPoint >> Vector2d.componentIn axis.direction
 
 
-signedDistanceFrom : Axis2d -> Point2d -> Float
-signedDistanceFrom axis =
-    let
-        normalDirection =
-            Direction2d.perpendicularDirection axis.direction
-    in
-        vectorFrom axis.originPoint >> Vector2d.componentIn normalDirection
+distanceFromAxis : Axis2d -> Point2d -> Float
+distanceFromAxis axis =
+    vectorFrom axis.originPoint
+        >> Vector2d.crossProduct (Direction2d.vector axis.direction)
+        >> abs
 
 
 addTo (Point2d px py) (Vector2d vx vy) =
