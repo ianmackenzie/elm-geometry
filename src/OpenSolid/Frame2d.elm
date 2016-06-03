@@ -18,6 +18,7 @@ module OpenSolid.Frame2d
         , rotateAround
         , translateBy
         , translateAlong
+        , translateAlongOwn
         , mirrorAcross
         , toLocalIn
         , toGlobalFrom
@@ -93,6 +94,11 @@ translateBy vector frame =
 translateAlong : Axis2d -> Float -> Frame2d -> Frame2d
 translateAlong axis distance =
     translateBy (Vector2d.along axis distance)
+
+
+translateAlongOwn : (Frame2d -> Axis2d) -> Float -> Frame2d -> Frame2d
+translateAlongOwn axis distance frame =
+    translateAlong (axis frame) distance frame
 
 
 mirrorAcross : Axis2d -> Frame2d -> Frame2d
