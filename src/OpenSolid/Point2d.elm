@@ -11,6 +11,7 @@ module OpenSolid.Point2d
     exposing
         ( origin
         , relativeTo
+        , along
         , fromCoordinates
         , fromPolarCoordinates
         , xCoordinate
@@ -54,6 +55,11 @@ relativeTo frame =
             Vector2d.relativeTo frame
     in
         \x y -> plus (relativeVector x y) frame.originPoint
+
+
+along : Axis2d -> Float -> Point2d
+along axis distance =
+    plus (Vector2d.along axis distance) axis.originPoint
 
 
 fromCoordinates : ( Float, Float ) -> Point2d
