@@ -168,11 +168,9 @@ scaleAbout centerPoint scale =
 
 rotateAround : Axis3d -> Float -> Point3d -> Point3d
 rotateAround axis angle =
-    let
-        rotateVector =
-            Vector3d.rotateAround axis angle
-    in
-        vectorFrom axis.originPoint >> rotateVector >> addTo axis.originPoint
+    vectorFrom axis.originPoint
+        >> Vector3d.rotateAround axis angle
+        >> addTo axis.originPoint
 
 
 translateAlong : Axis3d -> Float -> Point3d -> Point3d
@@ -182,33 +180,23 @@ translateAlong axis distance =
 
 mirrorAcross : Plane3d -> Point3d -> Point3d
 mirrorAcross plane =
-    let
-        mirrorVector =
-            Vector3d.mirrorAcross plane
-    in
-        vectorFrom plane.originPoint >> mirrorVector >> addTo plane.originPoint
+    vectorFrom plane.originPoint
+        >> Vector3d.mirrorAcross plane
+        >> addTo plane.originPoint
 
 
 toLocalIn : Frame3d -> Point3d -> Point3d
 toLocalIn frame =
-    let
-        localizeVector =
-            Vector3d.toLocalIn frame
-    in
-        vectorFrom frame.originPoint
-            >> localizeVector
-            >> (\(Vector3d x y z) -> Point3d x y z)
+    vectorFrom frame.originPoint
+        >> Vector3d.toLocalIn frame
+        >> (\(Vector3d x y z) -> Point3d x y z)
 
 
 toGlobalFrom : Frame3d -> Point3d -> Point3d
 toGlobalFrom frame =
-    let
-        globalizeVector =
-            Vector3d.toGlobalFrom frame
-    in
-        (\(Point3d x y z) -> Vector3d x y z)
-            >> globalizeVector
-            >> addTo frame.originPoint
+    (\(Point3d x y z) -> Vector3d x y z)
+        >> Vector3d.toGlobalFrom frame
+        >> addTo frame.originPoint
 
 
 projectOntoAxis : Axis3d -> Point3d -> Point3d

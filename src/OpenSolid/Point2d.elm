@@ -151,11 +151,7 @@ scaleAbout centerPoint scale =
 
 rotateAround : Point2d -> Float -> Point2d -> Point2d
 rotateAround centerPoint angle =
-    let
-        rotateVector =
-            Vector2d.rotateBy angle
-    in
-        vectorFrom centerPoint >> rotateVector >> addTo centerPoint
+    vectorFrom centerPoint >> Vector2d.rotateBy angle >> addTo centerPoint
 
 
 translateAlong : Axis2d -> Float -> Point2d -> Point2d
@@ -165,33 +161,23 @@ translateAlong axis distance =
 
 mirrorAcross : Axis2d -> Point2d -> Point2d
 mirrorAcross axis =
-    let
-        mirrorVector =
-            Vector2d.mirrorAcross axis
-    in
-        vectorFrom axis.originPoint >> mirrorVector >> addTo axis.originPoint
+    vectorFrom axis.originPoint
+        >> Vector2d.mirrorAcross axis
+        >> addTo axis.originPoint
 
 
 toLocalIn : Frame2d -> Point2d -> Point2d
 toLocalIn frame =
-    let
-        localizeVector =
-            Vector2d.toLocalIn frame
-    in
-        vectorFrom frame.originPoint
-            >> localizeVector
-            >> (\(Vector2d x y) -> Point2d x y)
+    vectorFrom frame.originPoint
+        >> Vector2d.toLocalIn frame
+        >> (\(Vector2d x y) -> Point2d x y)
 
 
 toGlobalFrom : Frame2d -> Point2d -> Point2d
 toGlobalFrom frame =
-    let
-        globalizeVector =
-            Vector2d.toGlobalFrom frame
-    in
-        (\(Point2d x y) -> Vector2d x y)
-            >> globalizeVector
-            >> addTo frame.originPoint
+    (\(Point2d x y) -> Vector2d x y)
+        >> Vector2d.toGlobalFrom frame
+        >> addTo frame.originPoint
 
 
 projectOnto : Axis2d -> Point2d -> Point2d
