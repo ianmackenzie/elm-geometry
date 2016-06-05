@@ -26,7 +26,7 @@ module OpenSolid.Vector2d
         , rotateBy
         , mirrorAcross
         , toLocalIn
-        , toGlobalFrom
+        , fromLocalIn
         , projectionIn
         , projectOnto
         , placeOnto
@@ -106,7 +106,7 @@ global XY frame:
     frame.xDirection == Direction2d (Vector2d 0.7071 0.7071)
     frame.yDirection == Direction2d (Vector2d -0.7071 0.7071)
 
-@docs toLocalIn, toGlobalFrom
+@docs toLocalIn, fromLocalIn
 
 # Record conversions
 
@@ -326,16 +326,16 @@ coordinates.
 The vector `Vector2d 1 0` (in local coordinates with respect to the rotated
 frame) is a vector of length 1 along the frame's X axis. Therefore,
 
-    Vector2d.toGlobalFrom frame (Vector2d 1 0) == Vector2d 0.7071 0.7071
+    Vector2d.fromLocalIn frame (Vector2d 1 0) == Vector2d 0.7071 0.7071
 
 The vector `Vector2d 1 1` in local coordinates, on the other hand, is at a 45
 degree angle from the X axis of the rotated frame and so is straight up in
 global coordinates:
 
-    Vector2d.toGlobalFrom frame (Vector2d 1 1) == Vector2d 0 1.4142
+    Vector2d.fromLocalIn frame (Vector2d 1 1) == Vector2d 0 1.4142
 -}
-toGlobalFrom : Frame2d -> Vector2d -> Vector2d
-toGlobalFrom frame =
+fromLocalIn : Frame2d -> Vector2d -> Vector2d
+fromLocalIn frame =
     let
         (Direction2d (Vector2d x1 y1)) =
             frame.xDirection

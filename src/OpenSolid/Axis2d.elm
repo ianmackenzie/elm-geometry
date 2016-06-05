@@ -18,7 +18,7 @@ module OpenSolid.Axis2d
         , translateAlong
         , mirrorAcross
         , toLocalIn
-        , toGlobalFrom
+        , fromLocalIn
         , placeOnto
         )
 
@@ -92,29 +92,29 @@ mirrorAcross otherAxis =
 toLocalIn : Frame2d -> Axis2d -> Axis2d
 toLocalIn frame =
     let
-        localizePoint =
+        toLocalPoint =
             Point2d.toLocalIn frame
 
-        localizeDirection =
+        toLocalDirection =
             Direction2d.toLocalIn frame
     in
         \axis ->
-            Axis2d (localizePoint axis.originPoint)
-                (localizeDirection axis.direction)
+            Axis2d (toLocalPoint axis.originPoint)
+                (toLocalDirection axis.direction)
 
 
-toGlobalFrom : Frame2d -> Axis2d -> Axis2d
-toGlobalFrom frame =
+fromLocalIn : Frame2d -> Axis2d -> Axis2d
+fromLocalIn frame =
     let
-        globalizePoint =
-            Point2d.toGlobalFrom frame
+        fromLocalPoint =
+            Point2d.fromLocalIn frame
 
-        globalizeDirection =
-            Direction2d.toGlobalFrom frame
+        fromLocalDirection =
+            Direction2d.fromLocalIn frame
     in
         \axis ->
-            Axis2d (globalizePoint axis.originPoint)
-                (globalizeDirection axis.direction)
+            Axis2d (fromLocalPoint axis.originPoint)
+                (fromLocalDirection axis.direction)
 
 
 placeOnto : Plane3d -> Axis2d -> Axis3d

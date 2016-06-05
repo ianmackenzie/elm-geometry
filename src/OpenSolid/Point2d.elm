@@ -31,7 +31,7 @@ module OpenSolid.Point2d
         , translateAlong
         , mirrorAcross
         , toLocalIn
-        , toGlobalFrom
+        , fromLocalIn
         , projectOnto
         , placeOnto
         , plus
@@ -173,10 +173,10 @@ toLocalIn frame =
         >> (\(Vector2d x y) -> Point2d x y)
 
 
-toGlobalFrom : Frame2d -> Point2d -> Point2d
-toGlobalFrom frame =
+fromLocalIn : Frame2d -> Point2d -> Point2d
+fromLocalIn frame =
     (\(Point2d x y) -> Vector2d x y)
-        >> Vector2d.toGlobalFrom frame
+        >> Vector2d.fromLocalIn frame
         >> addTo frame.originPoint
 
 

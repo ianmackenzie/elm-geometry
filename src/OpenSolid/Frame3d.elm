@@ -29,7 +29,7 @@ module OpenSolid.Frame3d
         , mirrorAcross
         , mirrorAcrossOwn
         , toLocalIn
-        , toGlobalFrom
+        , fromLocalIn
         )
 
 import OpenSolid.Core.Types exposing (..)
@@ -180,30 +180,30 @@ mirrorAcrossOwn plane frame =
 toLocalIn : Frame3d -> Frame3d -> Frame3d
 toLocalIn otherFrame =
     let
-        localizePoint =
+        toLocalPoint =
             Point3d.toLocalIn otherFrame
 
-        localizeDirection =
+        toLocalDirection =
             Direction3d.toLocalIn otherFrame
     in
         \frame ->
-            Frame3d (localizePoint frame.originPoint)
-                (localizeDirection frame.xDirection)
-                (localizeDirection frame.yDirection)
-                (localizeDirection frame.zDirection)
+            Frame3d (toLocalPoint frame.originPoint)
+                (toLocalDirection frame.xDirection)
+                (toLocalDirection frame.yDirection)
+                (toLocalDirection frame.zDirection)
 
 
-toGlobalFrom : Frame3d -> Frame3d -> Frame3d
-toGlobalFrom frame =
+fromLocalIn : Frame3d -> Frame3d -> Frame3d
+fromLocalIn frame =
     let
-        globalizePoint =
-            Point3d.toGlobalFrom frame
+        fromLocalPoint =
+            Point3d.fromLocalIn frame
 
-        globalizeDirection =
-            Direction3d.toGlobalFrom frame
+        fromLocalDirection =
+            Direction3d.fromLocalIn frame
     in
         \frame ->
-            Frame3d (globalizePoint frame.originPoint)
-                (globalizeDirection frame.xDirection)
-                (globalizeDirection frame.yDirection)
-                (globalizeDirection frame.zDirection)
+            Frame3d (fromLocalPoint frame.originPoint)
+                (fromLocalDirection frame.xDirection)
+                (fromLocalDirection frame.yDirection)
+                (fromLocalDirection frame.zDirection)

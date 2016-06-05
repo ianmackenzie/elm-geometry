@@ -24,7 +24,7 @@ module OpenSolid.Plane3d
         , translateAlong
         , mirrorAcross
         , toLocalIn
-        , toGlobalFrom
+        , fromLocalIn
         )
 
 import OpenSolid.Core.Types exposing (..)
@@ -154,30 +154,30 @@ mirrorAcross otherPlane =
 toLocalIn : Frame3d -> Plane3d -> Plane3d
 toLocalIn frame =
     let
-        localizePoint =
+        toLocalPoint =
             Point3d.toLocalIn frame
 
-        localizeDirection =
+        toLocalDirection =
             Direction3d.toLocalIn frame
     in
         \plane ->
-            Plane3d (localizePoint plane.originPoint)
-                (localizeDirection plane.xDirection)
-                (localizeDirection plane.yDirection)
-                (localizeDirection plane.normalDirection)
+            Plane3d (toLocalPoint plane.originPoint)
+                (toLocalDirection plane.xDirection)
+                (toLocalDirection plane.yDirection)
+                (toLocalDirection plane.normalDirection)
 
 
-toGlobalFrom : Frame3d -> Plane3d -> Plane3d
-toGlobalFrom frame =
+fromLocalIn : Frame3d -> Plane3d -> Plane3d
+fromLocalIn frame =
     let
-        globalizePoint =
-            Point3d.toGlobalFrom frame
+        fromLocalPoint =
+            Point3d.fromLocalIn frame
 
-        globalizeDirection =
-            Direction3d.toGlobalFrom frame
+        fromLocalDirection =
+            Direction3d.fromLocalIn frame
     in
         \plane ->
-            Plane3d (globalizePoint plane.originPoint)
-                (globalizeDirection plane.xDirection)
-                (globalizeDirection plane.yDirection)
-                (globalizeDirection plane.normalDirection)
+            Plane3d (fromLocalPoint plane.originPoint)
+                (fromLocalDirection plane.xDirection)
+                (fromLocalDirection plane.yDirection)
+                (fromLocalDirection plane.normalDirection)

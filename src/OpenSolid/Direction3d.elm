@@ -25,7 +25,7 @@ module OpenSolid.Direction3d
         , rotateAround
         , mirrorAcross
         , toLocalIn
-        , toGlobalFrom
+        , fromLocalIn
         , projectOnto
         , projectInto
         , negate
@@ -146,13 +146,9 @@ toLocalIn frame =
     vector >> Vector3d.toLocalIn frame >> Direction3d
 
 
-toGlobalFrom : Frame3d -> Direction3d -> Direction3d
-toGlobalFrom frame =
-    let
-        globalizeVector =
-            Vector3d.toGlobalFrom frame
-    in
-        vector >> globalizeVector >> Direction3d
+fromLocalIn : Frame3d -> Direction3d -> Direction3d
+fromLocalIn frame =
+    vector >> Vector3d.fromLocalIn frame >> Direction3d
 
 
 projectOnto : Plane3d -> Direction3d -> Maybe Direction3d

@@ -36,14 +36,14 @@ coordinateTransformationRoundTrips =
     let
         transformationRoundTrips ( frame, point ) =
             let
-                roundTrip1 =
-                    Point2d.toLocalIn frame >> Point2d.toGlobalFrom frame
+                globalToGlobal =
+                    Point2d.toLocalIn frame >> Point2d.fromLocalIn frame
 
-                roundTrip2 =
-                    Point2d.toGlobalFrom frame >> Point2d.toLocalIn frame
+                localToLocal =
+                    Point2d.fromLocalIn frame >> Point2d.toLocalIn frame
             in
-                pointsAreEqual2d point (roundTrip1 point)
-                    && pointsAreEqual2d point (roundTrip2 point)
+                pointsAreEqual2d point (globalToGlobal point)
+                    && pointsAreEqual2d point (localToLocal point)
     in
         claim "Local/global coordinate transformation round-trips properly"
             `true` transformationRoundTrips

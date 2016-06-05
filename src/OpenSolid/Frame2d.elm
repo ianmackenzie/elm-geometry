@@ -21,7 +21,7 @@ module OpenSolid.Frame2d
         , translateAlongOwn
         , mirrorAcross
         , toLocalIn
-        , toGlobalFrom
+        , fromLocalIn
         )
 
 import OpenSolid.Core.Types exposing (..)
@@ -119,28 +119,28 @@ mirrorAcross axis =
 toLocalIn : Frame2d -> Frame2d -> Frame2d
 toLocalIn otherFrame =
     let
-        localizePoint =
+        toLocalPoint =
             Point2d.toLocalIn otherFrame
 
-        localizeDirection =
+        toLocalDirection =
             Direction2d.toLocalIn otherFrame
     in
         \frame ->
-            Frame2d (localizePoint frame.originPoint)
-                (localizeDirection frame.xDirection)
-                (localizeDirection frame.yDirection)
+            Frame2d (toLocalPoint frame.originPoint)
+                (toLocalDirection frame.xDirection)
+                (toLocalDirection frame.yDirection)
 
 
-toGlobalFrom : Frame2d -> Frame2d -> Frame2d
-toGlobalFrom frame =
+fromLocalIn : Frame2d -> Frame2d -> Frame2d
+fromLocalIn frame =
     let
-        globalizePoint =
-            Point2d.toGlobalFrom frame
+        fromLocalPoint =
+            Point2d.fromLocalIn frame
 
-        globalizeDirection =
-            Direction2d.toGlobalFrom frame
+        fromLocalDirection =
+            Direction2d.fromLocalIn frame
     in
         \plane ->
-            Frame2d (globalizePoint plane.originPoint)
-                (globalizeDirection plane.xDirection)
-                (globalizeDirection plane.yDirection)
+            Frame2d (fromLocalPoint plane.originPoint)
+                (fromLocalDirection plane.xDirection)
+                (fromLocalDirection plane.yDirection)

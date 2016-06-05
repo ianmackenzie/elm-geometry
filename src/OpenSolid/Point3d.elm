@@ -33,7 +33,7 @@ module OpenSolid.Point3d
         , translateAlong
         , mirrorAcross
         , toLocalIn
-        , toGlobalFrom
+        , fromLocalIn
         , projectOntoAxis
         , projectOnto
         , projectInto
@@ -192,10 +192,10 @@ toLocalIn frame =
         >> (\(Vector3d x y z) -> Point3d x y z)
 
 
-toGlobalFrom : Frame3d -> Point3d -> Point3d
-toGlobalFrom frame =
+fromLocalIn : Frame3d -> Point3d -> Point3d
+fromLocalIn frame =
     (\(Point3d x y z) -> Vector3d x y z)
-        >> Vector3d.toGlobalFrom frame
+        >> Vector3d.fromLocalIn frame
         >> addTo frame.originPoint
 
 

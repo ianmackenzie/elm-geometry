@@ -25,7 +25,7 @@ module OpenSolid.Vector3d
         , rotateAround
         , mirrorAcross
         , toLocalIn
-        , toGlobalFrom
+        , fromLocalIn
         , projectionIn
         , projectOnto
         , projectInto
@@ -294,8 +294,8 @@ toLocalIn frame vector =
         Vector3d x y z
 
 
-toGlobalFrom : Frame3d -> Vector3d -> Vector3d
-toGlobalFrom frame =
+fromLocalIn : Frame3d -> Vector3d -> Vector3d
+fromLocalIn frame =
     let
         (Direction3d (Vector3d x1 y1 z1)) =
             frame.xDirection
