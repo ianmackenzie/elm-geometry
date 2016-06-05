@@ -20,6 +20,7 @@ module OpenSolid.Frame2d
         , translateAlong
         , translateAlongOwn
         , mirrorAcross
+        , mirrorAcrossOwn
         , toLocalIn
         , fromLocalIn
         )
@@ -114,6 +115,11 @@ mirrorAcross axis =
             Frame2d (mirrorPoint frame.originPoint)
                 (mirrorDirection frame.xDirection)
                 (mirrorDirection frame.yDirection)
+
+
+mirrorAcrossOwn : (Frame2d -> Axis2d) -> Frame2d -> Frame2d
+mirrorAcrossOwn axis frame =
+    mirrorAcross (axis frame) frame
 
 
 toLocalIn : Frame2d -> Frame2d -> Frame2d
