@@ -29,6 +29,7 @@ module OpenSolid.Vector3d
         , projectionIn
         , projectOnto
         , projectInto
+        , placeOnto
         , negate
         , plus
         , minus
@@ -334,6 +335,19 @@ projectInto : Plane3d -> Vector3d -> Vector2d
 projectInto plane vector =
     Vector2d (componentIn plane.xDirection vector)
         (componentIn plane.yDirection vector)
+
+
+placeOnto : Plane3d -> Vector2d -> Vector3d
+placeOnto plane =
+    let
+        (Direction3d (Vector3d x1 y1 z1)) =
+            plane.xDirection
+
+        (Direction3d (Vector3d x2 y2 z2)) =
+            plane.yDirection
+    in
+        \(Vector2d x y) ->
+            Vector3d (x1 * x + x2 * y) (y1 * x + y2 * y) (z1 * x + z2 * y)
 
 
 negate : Vector3d -> Vector3d

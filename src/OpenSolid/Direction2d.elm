@@ -24,7 +24,6 @@ module OpenSolid.Direction2d
         , mirrorAcross
         , toLocalIn
         , fromLocalIn
-        , placeOnto
         , negate
         , times
         , dotProduct
@@ -127,11 +126,6 @@ toLocalIn frame =
 fromLocalIn : Frame2d -> Direction2d -> Direction2d
 fromLocalIn frame =
     vector >> Vector2d.fromLocalIn frame >> Direction2d
-
-
-placeOnto : Plane3d -> Direction2d -> Direction3d
-placeOnto plane =
-    vector >> Vector2d.placeOnto plane >> Direction3d
 
 
 negate : Direction2d -> Direction2d

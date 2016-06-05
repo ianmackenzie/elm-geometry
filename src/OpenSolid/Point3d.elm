@@ -37,6 +37,7 @@ module OpenSolid.Point3d
         , projectOntoAxis
         , projectOnto
         , projectInto
+        , placeOnto
         , plus
         , minus
         , toRecord
@@ -223,6 +224,11 @@ projectInto plane =
     vectorFrom plane.originPoint
         >> Vector3d.projectInto plane
         >> (\(Vector2d x y) -> Point2d x y)
+
+
+placeOnto : Plane3d -> Point2d -> Point3d
+placeOnto plane (Point2d x y) =
+    plus (Vector3d.placeOnto plane (Vector2d x y)) plane.originPoint
 
 
 plus : Vector3d -> Point3d -> Point3d

@@ -33,7 +33,6 @@ module OpenSolid.Point2d
         , toLocalIn
         , fromLocalIn
         , projectOnto
-        , placeOnto
         , plus
         , minus
         , toRecord
@@ -185,18 +184,6 @@ projectOnto axis =
     vectorFrom axis.originPoint
         >> Vector2d.projectOnto axis
         >> addTo axis.originPoint
-
-
-placeOnto : Plane3d -> Point2d -> Point3d
-placeOnto plane (Point2d x y) =
-    let
-        (Vector3d vx vy vz) =
-            Vector2d.placeOnto plane (Vector2d x y)
-
-        (Point3d px py pz) =
-            plane.originPoint
-    in
-        Point3d (px + vx) (py + vy) (pz + vz)
 
 
 plus : Vector2d -> Point2d -> Point2d

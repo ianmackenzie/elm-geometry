@@ -28,6 +28,7 @@ module OpenSolid.Direction3d
         , fromLocalIn
         , projectOnto
         , projectInto
+        , placeOnto
         , negate
         , times
         , dotProduct
@@ -159,6 +160,11 @@ projectOnto plane =
 projectInto : Plane3d -> Direction3d -> Maybe Direction2d
 projectInto plane =
     vector >> Vector3d.projectInto plane >> Direction2d.ofVector
+
+
+placeOnto : Plane3d -> Direction2d -> Direction3d
+placeOnto plane =
+    Direction2d.vector >> Vector3d.placeOnto plane >> Direction3d
 
 
 negate : Direction3d -> Direction3d

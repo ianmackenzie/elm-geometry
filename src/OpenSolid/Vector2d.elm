@@ -29,7 +29,6 @@ module OpenSolid.Vector2d
         , fromLocalIn
         , projectionIn
         , projectOnto
-        , placeOnto
         , negate
         , plus
         , minus
@@ -94,7 +93,7 @@ scenes it requires a dot product instead of a simple component access).
 
 # Transformations
 
-@docs rotateBy, mirrorAbout, projectionIn, projectOnto, placeOnto
+@docs rotateBy, mirrorAbout, projectionIn, projectOnto
 
 # Coordinate conversions
 
@@ -361,19 +360,6 @@ projectionIn ((Direction2d directionVector) as direction) vector =
 projectOnto : Axis2d -> Vector2d -> Vector2d
 projectOnto axis =
     projectionIn axis.direction
-
-
-placeOnto : Plane3d -> Vector2d -> Vector3d
-placeOnto plane =
-    let
-        (Direction3d (Vector3d x1 y1 z1)) =
-            plane.xDirection
-
-        (Direction3d (Vector3d x2 y2 z2)) =
-            plane.yDirection
-    in
-        \(Vector2d x y) ->
-            Vector3d (x1 * x + x2 * y) (y1 * x + y2 * y) (z1 * x + z2 * y)
 
 
 negate : Vector2d -> Vector2d

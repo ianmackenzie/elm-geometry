@@ -22,6 +22,7 @@ module OpenSolid.Axis3d
         , fromLocalIn
         , projectOnto
         , projectInto
+        , placeOnto
         )
 
 import OpenSolid.Core.Types exposing (..)
@@ -145,3 +146,17 @@ projectInto plane axis =
     in
         Maybe.map (Axis2d projectedOrigin)
             (Direction3d.projectInto plane axis.direction)
+
+
+placeOnto : Plane3d -> Axis2d -> Axis3d
+placeOnto plane =
+    let
+        placePoint =
+            Point3d.placeOnto plane
+
+        placeDirection =
+            Direction3d.placeOnto plane
+    in
+        \axis ->
+            Axis3d (placePoint axis.originPoint)
+                (placeDirection axis.direction)

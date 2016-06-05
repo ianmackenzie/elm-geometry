@@ -19,7 +19,6 @@ module OpenSolid.Axis2d
         , mirrorAcross
         , toLocalIn
         , fromLocalIn
-        , placeOnto
         )
 
 import OpenSolid.Core.Types exposing (..)
@@ -115,17 +114,3 @@ fromLocalIn frame =
         \axis ->
             Axis2d (fromLocalPoint axis.originPoint)
                 (fromLocalDirection axis.direction)
-
-
-placeOnto : Plane3d -> Axis2d -> Axis3d
-placeOnto plane =
-    let
-        placePoint =
-            Point2d.placeOnto plane
-
-        placeDirection =
-            Direction2d.placeOnto plane
-    in
-        \axis ->
-            Axis3d (placePoint axis.originPoint)
-                (placeDirection axis.direction)
