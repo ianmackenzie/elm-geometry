@@ -20,7 +20,7 @@ module OpenSolid.Direction3d
         , zComponent
         , components
         , vector
-        , perpendicularDirection
+        , perpendicularTo
         , normalBasis
         , rotateAround
         , mirrorAcross
@@ -115,16 +115,16 @@ vector (Direction3d vector') =
     vector'
 
 
-perpendicularDirection : Direction3d -> Direction3d
-perpendicularDirection =
-    vector >> Vector3d.perpendicularVector >> ofNonZeroVector
+perpendicularTo : Direction3d -> Direction3d
+perpendicularTo =
+    vector >> Vector3d.perpendicularTo >> ofNonZeroVector
 
 
 normalBasis : Direction3d -> ( Direction3d, Direction3d )
 normalBasis direction =
     let
         xDirection =
-            perpendicularDirection direction
+            perpendicularTo direction
 
         yDirection =
             Direction3d (crossProduct direction xDirection)

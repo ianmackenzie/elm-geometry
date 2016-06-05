@@ -156,9 +156,7 @@ frame2d =
             Producer.tuple ( point2d, direction2d )
 
         tupleToFrame ( point, direction ) =
-            Frame2d point
-                direction
-                (Direction2d.perpendicularDirection direction)
+            Frame2d point direction (Direction2d.perpendicularTo direction)
     in
         Producer.map tupleToFrame tupleProducer
 

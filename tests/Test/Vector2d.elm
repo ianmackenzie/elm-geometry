@@ -44,14 +44,14 @@ perpendicularVectorIsPerpendicular =
         dotProductIsZero vector =
             let
                 perpendicularVector =
-                    Vector2d.perpendicularVector vector
+                    Vector2d.perpendicularTo vector
 
                 dotProduct =
                     Vector2d.dotProduct vector perpendicularVector
             in
                 valueIsZero dotProduct
     in
-        claim "perpendicularVector actually returns a perpendicular vector"
+        claim "perpendicularTo actually returns a perpendicular vector"
             `true` dotProductIsZero
             `for` vector2d
 

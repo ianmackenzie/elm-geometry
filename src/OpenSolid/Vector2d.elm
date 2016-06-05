@@ -22,7 +22,7 @@ module OpenSolid.Vector2d
         , componentIn
         , squaredLength
         , length
-        , perpendicularVector
+        , perpendicularTo
         , rotateBy
         , mirrorAcross
         , toLocalIn
@@ -89,7 +89,7 @@ scenes it requires a dot product instead of a simple component access).
 
 # Length and direction
 
-@docs squaredLength, length, perpendicularVector
+@docs squaredLength, length, perpendicularTo
 
 # Transformations
 
@@ -243,10 +243,10 @@ length =
 {-| Construct a vector perpendicular to the given vector but with the same
 length, by rotating the given vector 90 degrees in a counterclockwise direction.
 
-    Vector2d.perpendicularVector (Vector2d 3 1) == Vector2d -1 3
+    Vector2d.perpendicularTo (Vector2d 3 1) == Vector2d -1 3
 -}
-perpendicularVector : Vector2d -> Vector2d
-perpendicularVector (Vector2d x y) =
+perpendicularTo : Vector2d -> Vector2d
+perpendicularTo (Vector2d x y) =
     Vector2d (-y) x
 
 

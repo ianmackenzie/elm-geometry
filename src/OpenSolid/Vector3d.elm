@@ -21,7 +21,7 @@ module OpenSolid.Vector3d
         , componentIn
         , squaredLength
         , length
-        , perpendicularVector
+        , perpendicularTo
         , rotateAround
         , mirrorAcross
         , toLocalIn
@@ -127,8 +127,8 @@ length =
     squaredLength >> sqrt
 
 
-perpendicularVector : Vector3d -> Vector3d
-perpendicularVector (Vector3d x y z) =
+perpendicularTo : Vector3d -> Vector3d
+perpendicularTo (Vector3d x y z) =
     let
         absX =
             abs x

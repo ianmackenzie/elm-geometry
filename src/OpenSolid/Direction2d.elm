@@ -19,7 +19,7 @@ module OpenSolid.Direction2d
         , yComponent
         , components
         , vector
-        , perpendicularDirection
+        , perpendicularTo
         , rotateBy
         , mirrorAcross
         , toLocalIn
@@ -103,9 +103,9 @@ vector (Direction2d vector') =
     vector'
 
 
-perpendicularDirection : Direction2d -> Direction2d
-perpendicularDirection =
-    vector >> Vector2d.perpendicularVector >> Direction2d
+perpendicularTo : Direction2d -> Direction2d
+perpendicularTo =
+    vector >> Vector2d.perpendicularTo >> Direction2d
 
 
 rotateBy : Float -> Direction2d -> Direction2d
