@@ -12,6 +12,7 @@ module OpenSolid.Point2d
         ( origin
         , relativeTo
         , along
+        , polar
         , fromCoordinates
         , fromPolarCoordinates
         , interpolate
@@ -61,6 +62,11 @@ relativeTo frame =
 along : Axis2d -> Float -> Point2d
 along axis distance =
     plus (Vector2d.along axis distance) axis.originPoint
+
+
+polar : Float -> Float -> Point2d
+polar radius angle =
+    fromPolarCoordinates ( radius, angle )
 
 
 fromCoordinates : ( Float, Float ) -> Point2d
