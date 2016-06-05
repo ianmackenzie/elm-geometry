@@ -10,7 +10,6 @@
 module OpenSolid.Vector2d
     exposing
         ( zero
-        , relativeTo
         , along
         , polar
         , fromComponents
@@ -122,23 +121,6 @@ import OpenSolid.Core.Types exposing (..)
 zero : Vector2d
 zero =
     Vector2d 0 0
-
-
-{-| Construct a vector from its X and Y components relative to a particular
-reference frame. The result will these local components converted to a vector in
-global coordinates. Note that the position (origin point location) of the frame
-has no effect on the result.
--}
-relativeTo : Frame2d -> Float -> Float -> Vector2d
-relativeTo frame =
-    let
-        (Direction2d (Vector2d x1 y1)) =
-            frame.xDirection
-
-        (Direction2d (Vector2d x2 y2)) =
-            frame.yDirection
-    in
-        \x y -> Vector2d (x * x1 + y * x2) (x * y1 + y * y2)
 
 
 along : Axis2d -> Float -> Vector2d

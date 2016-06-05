@@ -10,7 +10,6 @@
 module OpenSolid.Point2d
     exposing
         ( origin
-        , relativeTo
         , along
         , polar
         , fromCoordinates
@@ -48,15 +47,6 @@ import OpenSolid.Direction2d as Direction2d
 origin : Point2d
 origin =
     Point2d 0 0
-
-
-relativeTo : Frame2d -> Float -> Float -> Point2d
-relativeTo frame =
-    let
-        relativeVector =
-            Vector2d.relativeTo frame
-    in
-        \x y -> plus (relativeVector x y) frame.originPoint
 
 
 along : Axis2d -> Float -> Point2d
