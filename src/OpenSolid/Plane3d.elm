@@ -23,8 +23,10 @@ module OpenSolid.Plane3d
         , normalAxis
         , scaleAbout
         , rotateAround
+        , rotateAroundOwn
         , translateBy
         , translateAlong
+        , translateAlongOwn
         , mirrorAcross
         , toLocalIn
         , fromLocalIn
@@ -143,6 +145,11 @@ rotateAround axis angle =
                 (rotateDirection plane.normalDirection)
 
 
+rotateAroundOwn : (Plane3d -> Axis3d) -> Float -> Plane3d -> Plane3d
+rotateAroundOwn axis angle plane =
+    rotateAround (axis plane) angle plane
+
+
 translateBy : Vector3d -> Plane3d -> Plane3d
 translateBy vector plane =
     { plane | originPoint = Point3d.plus vector plane.originPoint }
@@ -151,6 +158,11 @@ translateBy vector plane =
 translateAlong : Axis3d -> Float -> Plane3d -> Plane3d
 translateAlong axis distance =
     translateBy (Vector3d.along axis distance)
+
+
+translateAlongOwn : (Plane3d -> Axis3d) -> Float -> Plane3d -> Plane3d
+translateAlongOwn axis distance plane =
+    translateAlong (axis plane) distance plane
 
 
 mirrorAcross : Plane3d -> Plane3d -> Plane3d
