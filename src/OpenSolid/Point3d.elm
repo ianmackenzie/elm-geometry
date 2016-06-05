@@ -25,7 +25,7 @@ module OpenSolid.Point3d
         , distanceAlong
         , squaredDistanceFromAxis
         , distanceFromAxis
-        , signedDistanceFrom
+        , distanceFromPlane
         , scaleAbout
         , rotateAround
         , translateAlong
@@ -133,8 +133,8 @@ distanceFromAxis axis =
     squaredDistanceFromAxis axis >> sqrt
 
 
-signedDistanceFrom : Plane3d -> Point3d -> Float
-signedDistanceFrom plane =
+distanceFromPlane : Plane3d -> Point3d -> Float
+distanceFromPlane plane =
     vectorFrom plane.originPoint >> Vector3d.componentIn plane.normalDirection
 
 
@@ -191,7 +191,7 @@ projectOnto : Plane3d -> Point3d -> Point3d
 projectOnto plane point =
     let
         distance =
-            signedDistanceFrom plane point
+            distanceFromPlane plane point
 
         displacement =
             Direction3d.times distance plane.normalDirection
