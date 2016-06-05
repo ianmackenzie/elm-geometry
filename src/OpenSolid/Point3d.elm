@@ -18,8 +18,8 @@ module OpenSolid.Point3d
         , yCoordinate
         , zCoordinate
         , coordinates
-        , squaredDistanceTo
-        , distanceTo
+        , squaredDistanceFrom
+        , distanceFrom
         , vectorTo
         , vectorFrom
         , distanceAlong
@@ -96,14 +96,14 @@ coordinates (Point3d x y z) =
     ( x, y, z )
 
 
-squaredDistanceTo : Point3d -> Point3d -> Float
-squaredDistanceTo other =
-    vectorTo other >> Vector3d.squaredLength
+squaredDistanceFrom : Point3d -> Point3d -> Float
+squaredDistanceFrom other =
+    vectorFrom other >> Vector3d.squaredLength
 
 
-distanceTo : Point3d -> Point3d -> Float
-distanceTo other =
-    squaredDistanceTo other >> sqrt
+distanceFrom : Point3d -> Point3d -> Float
+distanceFrom other =
+    squaredDistanceFrom other >> sqrt
 
 
 vectorTo : Point3d -> Point3d -> Vector3d

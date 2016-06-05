@@ -20,8 +20,8 @@ module OpenSolid.Point2d
         , yCoordinate
         , coordinates
         , polarCoordinates
-        , squaredDistanceTo
-        , distanceTo
+        , squaredDistanceFrom
+        , distanceFrom
         , vectorTo
         , vectorFrom
         , distanceAlong
@@ -103,14 +103,14 @@ polarCoordinates =
     coordinates >> toPolar
 
 
-squaredDistanceTo : Point2d -> Point2d -> Float
-squaredDistanceTo other =
-    vectorTo other >> Vector2d.squaredLength
+squaredDistanceFrom : Point2d -> Point2d -> Float
+squaredDistanceFrom other =
+    vectorFrom other >> Vector2d.squaredLength
 
 
-distanceTo : Point2d -> Point2d -> Float
-distanceTo other =
-    squaredDistanceTo other >> sqrt
+distanceFrom : Point2d -> Point2d -> Float
+distanceFrom other =
+    squaredDistanceFrom other >> sqrt
 
 
 vectorTo : Point2d -> Point2d -> Vector2d

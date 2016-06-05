@@ -29,16 +29,16 @@ rotationPreservesDistance =
     let
         distancesAreEqual ( point, centerPoint, rotationAngle ) =
             let
-                distance =
-                    Point2d.distanceTo point centerPoint
+                initialDistance =
+                    Point2d.distanceFrom centerPoint point
 
                 rotatedPoint =
                     Point2d.rotateAround centerPoint rotationAngle point
 
                 rotatedDistance =
-                    Point2d.distanceTo rotatedPoint centerPoint
+                    Point2d.distanceFrom centerPoint rotatedPoint
             in
-                valuesAreEqual rotatedDistance distance
+                valuesAreEqual initialDistance rotatedDistance
     in
         claim "Rotating about a point preserves distance from that point"
             `true` distancesAreEqual
