@@ -133,29 +133,17 @@ normalBasis direction =
 
 rotateAround : Axis3d -> Float -> Direction3d -> Direction3d
 rotateAround axis angle =
-    let
-        rotateVector =
-            Vector3d.rotateAround axis angle
-    in
-        vector >> rotateVector >> Direction3d
+    vector >> Vector3d.rotateAround axis angle >> Direction3d
 
 
 mirrorAcross : Plane3d -> Direction3d -> Direction3d
 mirrorAcross plane =
-    let
-        mirrorVector =
-            Vector3d.mirrorAcross plane
-    in
-        vector >> mirrorVector >> Direction3d
+    vector >> Vector3d.mirrorAcross plane >> Direction3d
 
 
 toLocalIn : Frame3d -> Direction3d -> Direction3d
 toLocalIn frame =
-    let
-        localizeVector =
-            Vector3d.toLocalIn frame
-    in
-        vector >> localizeVector >> Direction3d
+    vector >> Vector3d.toLocalIn frame >> Direction3d
 
 
 toGlobalFrom : Frame3d -> Direction3d -> Direction3d
