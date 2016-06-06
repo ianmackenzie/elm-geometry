@@ -12,7 +12,6 @@ module OpenSolid.Axis3d
         ( x
         , y
         , z
-        , reverse
         , scaleAbout
         , rotateAround
         , translateBy
@@ -46,11 +45,6 @@ y =
 z : Axis3d
 z =
     Axis3d Point3d.origin Direction3d.z
-
-
-reverse : Axis3d -> Axis3d
-reverse axis =
-    Axis3d axis.originPoint (Direction3d.negate axis.direction)
 
 
 scaleAbout : Point3d -> Float -> Axis3d -> Axis3d
