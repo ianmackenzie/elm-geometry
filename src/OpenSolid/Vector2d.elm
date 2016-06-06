@@ -448,7 +448,8 @@ toLocalIn frame vector =
 coordinates.
 
 The vector `Vector2d 1 0` (in local coordinates with respect to the rotated
-frame) is a vector of length 1 along the frame's X axis. Therefore,
+frame) is a vector of length 1 along the frame's X axis, which is itself at a 45
+degree angle in global coordinates. Therefore,
 
     Vector2d.fromLocalIn frame (Vector2d 1 0) == Vector2d 0.7071 0.7071
 
