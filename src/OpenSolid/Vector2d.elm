@@ -32,7 +32,6 @@ module OpenSolid.Vector2d
         , rotateBy
         , mirrorAcross
         , projectOnto
-        , projectionIn
         , perpendicularTo
         , toLocalIn
         , fromLocalIn
@@ -128,7 +127,7 @@ difference will be negligible and using `length` is much more readable!
 
 # Transformations
 
-@docs rotateBy, mirrorAcross, projectOnto, projectionIn, perpendicularTo
+@docs rotateBy, mirrorAcross, projectOnto, perpendicularTo
 
 # Local coordinates
 
@@ -249,8 +248,6 @@ yComponent (Vector2d _ y) =
 {-| Get the component of a vector in a particular direction.
 
     Vector2d.componentIn Direction2d.x someVector == Vector2d.xComponent someVector
-
-The result is signed value; for a vector version, see `projectionIn`.
 -}
 componentIn : Direction2d -> Vector2d -> Float
 componentIn (Direction2d vector) =
@@ -350,20 +347,12 @@ mirrorAcross axis =
 
 
 projectOnto : Axis2d -> Vector2d -> Vector2d
-projectOnto axis =
-    projectionIn axis.direction
-
-
-{-| Find the portion of a vector parallel to a particular direction. This can be
-thought of as projecting the vector onto an axis that has the given direction.
-
-See also `componentIn`.
-`Vector2d.length (Vector2d.projectionIn direction vector)` is equivalent to
-`abs (Vector2d.componentIn direction vector)`
--}
-projectionIn : Direction2d -> Vector2d -> Vector2d
-projectionIn ((Direction2d directionVector) as direction) vector =
-    times (componentIn direction vector) directionVector
+projectOnto axis vector =
+    let
+        (Direction2d directionVector) =
+            axis.direction
+    in
+        times (dotProduct vector directionVector) directionVector
 
 
 {-| Construct a vector perpendicular to the given vector but with the same

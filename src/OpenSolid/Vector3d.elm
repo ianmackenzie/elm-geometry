@@ -24,7 +24,7 @@ module OpenSolid.Vector3d
         , mirrorAcross
         , toLocalIn
         , fromLocalIn
-        , projectionIn
+        , projectOntoAxis
         , projectOnto
         , projectInto
         , placeOnto
@@ -289,14 +289,22 @@ fromLocalIn frame =
                 Vector3d x' y' z'
 
 
-projectionIn : Direction3d -> Vector3d -> Vector3d
-projectionIn ((Direction3d directionVector) as direction) vector =
-    times (componentIn direction vector) directionVector
+projectOntoAxis : Axis3d -> Vector3d -> Vector3d
+projectOntoAxis axis vector =
+    let
+        (Direction3d directionVector) =
+            axis.direction
+    in
+        times (dotProduct vector directionVector) directionVector
 
 
 projectOnto : Plane3d -> Vector3d -> Vector3d
 projectOnto plane vector =
-    minus (projectionIn plane.normalDirection vector) vector
+    let
+        normalAxis =
+            Axis3d plane.originPoint plane.normalDirection
+    in
+        minus (projectOntoAxis normalAxis vector) vector
 
 
 projectInto : Plane3d -> Vector3d -> Vector2d

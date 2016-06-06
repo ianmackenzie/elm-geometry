@@ -183,7 +183,7 @@ fromLocalIn frame =
 projectOntoAxis : Axis3d -> Point3d -> Point3d
 projectOntoAxis axis =
     vectorFrom axis.originPoint
-        >> Vector3d.projectionIn axis.direction
+        >> Vector3d.projectOntoAxis axis
         >> addTo axis.originPoint
 
 
