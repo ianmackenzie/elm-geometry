@@ -305,9 +305,14 @@ crossProduct (Vector2d x1 y1) (Vector2d x2 y2) =
 
 Rotating a list of vectors by 90 degrees:
 
-    vectors = [ v1, v2, v3 ]
-    angle = degrees 90
-    rotatedVectors = List.map (Vector2d.rotateBy angle) vectors
+    vectors =
+        [ v1, v2, v3 ]
+    
+    angle =
+        degrees 90
+    
+    rotatedVectors =
+        List.map (Vector2d.rotateBy angle) vectors
 -}
 rotateBy : Float -> Vector2d -> Vector2d
 rotateBy angle =
