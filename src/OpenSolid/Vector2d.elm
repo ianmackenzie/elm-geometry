@@ -292,7 +292,13 @@ the vector to be subtracted from is given second, so
 This means that `minus` can be used more naturally in situations like `map`
 functions, e.g.
 
-    List.map (Vector2d.minus (Vector2d 2 0)) [ Vector2d 1 2, Vector2d 3 4 ] == [ Vector2d -1 2, Vector2d 1 4 ]
+    minusVector =
+        Vector2d.minus (Vector2d 2 0)
+
+    originalVectors =
+        [ Vector2d 1 2, Vector2d 3 4 ]
+
+    List.map minusVector originalVectors == [ Vector2d -1 2, Vector2d 1 4 ]
 
 or function pipelining
 
