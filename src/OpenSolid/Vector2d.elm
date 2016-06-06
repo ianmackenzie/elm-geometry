@@ -268,31 +268,78 @@ squaredLength (Vector2d x y) =
     x * x + y * y
 
 
+{-| Negate a vector.
+-}
 negate : Vector2d -> Vector2d
 negate (Vector2d x y) =
     Vector2d (-x) (-y)
 
 
+{-| Add one vector to another.
+
+    Vector2d.plus (Vector2d 1 2) (Vector2d 3 4) == Vector2d 4 6
+-}
 plus : Vector2d -> Vector2d -> Vector2d
 plus (Vector2d x2 y2) (Vector2d x1 y1) =
     Vector2d (x1 + x2) (y1 + y2)
 
 
+{-| Subtract one vector from another. The vector to subtract is given first and
+the vector to be subtracted from is given second, so
+    
+    Vector2d.minus (Vector2d 1 2) (Vector2d 5 6) == Vector2d 4 4
+
+This means that `minus` can be used more naturally in situations like `map`
+functions, e.g.
+
+    List.map (Vector2d.minus (Vector2d 2 0)) [ Vector2d 1 2, Vector2d 3 4 ] == [ Vector2d -1 2, Vector2d 1 4 ]
+
+or function pipelining
+
+    myFunction =
+        Vector2d.minus (Vector2d 0 1) >> Vector2d.times 3
+
+    myFunction (Vector2d 2 1) == Vector2d 6 0
+
+where `myFunction` could be described in pseudo-English as 'minus by
+`Vector2d 0 1` and then times by 3'.
+-}
 minus : Vector2d -> Vector2d -> Vector2d
 minus (Vector2d x2 y2) (Vector2d x1 y1) =
     Vector2d (x1 - x2) (y1 - y2)
 
 
+{-| Multiply a vector by a scalar.
+
+    Vector2d.times 3 (Vector2d 1 2) == Vector2d 3 6
+-}
 times : Float -> Vector2d -> Vector2d
 times scale (Vector2d x y) =
     Vector2d (x * scale) (y * scale)
 
 
+{-| Find the dot product of two vectors.
+
+    Vector2d.dotProduct (Vector2d 1 2) (Vector2d 3 4) == 1 * 3 + 2 * 4 == 11 
+-}
 dotProduct : Vector2d -> Vector2d -> Float
 dotProduct (Vector2d x1 y1) (Vector2d x2 y2) =
     x1 * x2 + y1 * y2
 
 
+{-| Find the scalar 'cross product' of two vectors in 2D. This is defined as
+
+    crossProduct (Vector2d x1 y1) (Vector2d x2 y2) =
+        x1 * y2 - y1 * x2
+
+and is useful in many of the same ways as the 3D cross product. Its magnitude is
+equal to the product of the lengths of the two given vectors and the sine of the
+angle between them, so it can be used as a metric to determine if two vectors
+are nearly parallel. The sign of the result indicates the direction of rotation
+from the first vector to the second (positive indicates a counterclockwise
+rotation and negative indicates a clockwise rotation), similar to how the
+direction of the 3D cross product indicates the direction of rotation.
+-}
 crossProduct : Vector2d -> Vector2d -> Float
 crossProduct (Vector2d x1 y1) (Vector2d x2 y2) =
     x1 * y2 - y1 * x2
