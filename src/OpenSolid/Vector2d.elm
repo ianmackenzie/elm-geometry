@@ -404,6 +404,12 @@ mirrorAcross axis =
         \(Vector2d vx vy) -> Vector2d (a * vx + b * vy) (c * vy + b * vx)
 
 
+{-| Project a vector onto an axis. This will result in a vector parallel to the
+given axis.
+
+    Vector2d.projectOnto Axis2d.y (Vector2d 3 4) == Vector2d 0 4
+    Vector2d.projectOnto Axis2d.x (Vector2d -1 2) == Vector2d -1 0
+-}
 projectOnto : Axis2d -> Vector2d -> Vector2d
 projectOnto axis vector =
     let
