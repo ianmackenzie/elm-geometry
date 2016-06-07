@@ -7,7 +7,7 @@
 -}
 
 
-module OpenSolid.Axis2d
+module OpenSolid.Core.Axis2d
     exposing
         ( x
         , y
@@ -21,8 +21,8 @@ module OpenSolid.Axis2d
         )
 
 import OpenSolid.Core.Types exposing (..)
-import OpenSolid.Point2d as Point2d
-import OpenSolid.Direction2d as Direction2d
+import OpenSolid.Core.Point2d as Point2d
+import OpenSolid.Core.Direction2d as Direction2d
 
 
 x : Axis2d

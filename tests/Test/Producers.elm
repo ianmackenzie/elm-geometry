@@ -29,12 +29,12 @@ module Test.Producers
 
 import Check.Producer as Producer exposing (Producer)
 import OpenSolid.Core.Types exposing (..)
-import OpenSolid.Vector2d as Vector2d
-import OpenSolid.Vector3d as Vector3d
-import OpenSolid.Direction2d as Direction2d
-import OpenSolid.Point2d as Point2d
-import OpenSolid.Point3d as Point3d
-import OpenSolid.Plane3d as Plane3d
+import OpenSolid.Core.Vector2d as Vector2d
+import OpenSolid.Core.Vector3d as Vector3d
+import OpenSolid.Core.Direction2d as Direction2d
+import OpenSolid.Core.Point2d as Point2d
+import OpenSolid.Core.Point3d as Point3d
+import OpenSolid.Core.Plane3d as Plane3d
 
 
 angle : Producer Float

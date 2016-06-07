@@ -7,7 +7,7 @@
 -}
 
 
-module OpenSolid.Plane3d
+module OpenSolid.Core.Plane3d
     exposing
         ( xy
         , xz
@@ -33,9 +33,9 @@ module OpenSolid.Plane3d
         )
 
 import OpenSolid.Core.Types exposing (..)
-import OpenSolid.Point3d as Point3d
-import OpenSolid.Vector3d as Vector3d
-import OpenSolid.Direction3d as Direction3d
+import OpenSolid.Core.Point3d as Point3d
+import OpenSolid.Core.Vector3d as Vector3d
+import OpenSolid.Core.Direction3d as Direction3d
 
 
 xy : Plane3d

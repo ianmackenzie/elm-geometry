@@ -7,7 +7,7 @@
 -}
 
 
-module OpenSolid.Vector2d
+module OpenSolid.Core.Vector2d
     exposing
         ( zero
         , polar
@@ -42,10 +42,10 @@ values and performing operations on them. For the examples below, assume the
 following imports:
 
     import OpenSolid.Core.Types exposing (..)
-    import OpenSolid.Vector2d as Vector2d
-    import OpenSolid.Direction2d as Direction2d
-    import OpenSolid.Point2d as Point2d
-    import OpenSolid.Frame2d as Frame2d
+    import OpenSolid.Core.Vector2d as Vector2d
+    import OpenSolid.Core.Direction2d as Direction2d
+    import OpenSolid.Core.Point2d as Point2d
+    import OpenSolid.Core.Frame2d as Frame2d
 
 Examples use `==` to indicate that two expressions are equivalent, even if (due
 to numerical roundoff) they would not be exactly equal.

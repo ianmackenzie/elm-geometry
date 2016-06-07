@@ -7,7 +7,7 @@
 -}
 
 
-module OpenSolid.Axis3d
+module OpenSolid.Core.Axis3d
     exposing
         ( x
         , y
@@ -25,11 +25,11 @@ module OpenSolid.Axis3d
         )
 
 import OpenSolid.Core.Types exposing (..)
-import OpenSolid.Point3d as Point3d
-import OpenSolid.Vector2d as Vector2d
-import OpenSolid.Vector3d as Vector3d
-import OpenSolid.Direction3d as Direction3d
-import OpenSolid.Plane3d as Plane3d
+import OpenSolid.Core.Point3d as Point3d
+import OpenSolid.Core.Vector2d as Vector2d
+import OpenSolid.Core.Vector3d as Vector3d
+import OpenSolid.Core.Direction3d as Direction3d
+import OpenSolid.Core.Plane3d as Plane3d
 
 
 x : Axis3d

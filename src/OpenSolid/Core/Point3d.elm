@@ -7,7 +7,7 @@
 -}
 
 
-module OpenSolid.Point3d
+module OpenSolid.Core.Point3d
     exposing
         ( origin
         , along
@@ -43,8 +43,8 @@ module OpenSolid.Point3d
         )
 
 import OpenSolid.Core.Types exposing (..)
-import OpenSolid.Vector3d as Vector3d
-import OpenSolid.Direction3d as Direction3d
+import OpenSolid.Core.Vector3d as Vector3d
+import OpenSolid.Core.Direction3d as Direction3d
 
 
 origin : Point3d

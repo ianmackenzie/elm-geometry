@@ -7,7 +7,7 @@
 -}
 
 
-module OpenSolid.Point2d
+module OpenSolid.Core.Point2d
     exposing
         ( origin
         , along
@@ -40,8 +40,8 @@ module OpenSolid.Point2d
         )
 
 import OpenSolid.Core.Types exposing (..)
-import OpenSolid.Vector2d as Vector2d
-import OpenSolid.Direction2d as Direction2d
+import OpenSolid.Core.Vector2d as Vector2d
+import OpenSolid.Core.Direction2d as Direction2d
 
 
 origin : Point2d

@@ -28,8 +28,8 @@ functionality. Suggested practice is to import this module exposing everything,
 and import all other necessary modules using `as`:
 
     import OpenSolid.Core.Types exposing (..)
-    import OpenSolid.Vector2d as Vector2d
-    import OpenSolid.Plane3d as Plane3d
+    import OpenSolid.Core.Vector2d as Vector2d
+    import OpenSolid.Core.Plane3d as Plane3d
 
 Note that since these types are not opaque, it is possible to construct them
 directly, and this is sometimes the most convenient or efficient approach.

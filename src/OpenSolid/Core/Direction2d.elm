@@ -7,7 +7,7 @@
 -}
 
 
-module OpenSolid.Direction2d
+module OpenSolid.Core.Direction2d
     exposing
         ( x
         , y
@@ -32,7 +32,7 @@ module OpenSolid.Direction2d
         )
 
 import OpenSolid.Core.Types exposing (..)
-import OpenSolid.Vector2d as Vector2d
+import OpenSolid.Core.Vector2d as Vector2d
 
 
 x : Direction2d

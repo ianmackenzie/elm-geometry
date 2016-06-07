@@ -15,7 +15,7 @@ import ElmTest exposing (Test, test, assert)
 import Check exposing (Claim, claim, true, that, is, for, quickCheck)
 import Check.Test exposing (evidenceToTest)
 import OpenSolid.Core.Types exposing (..)
-import OpenSolid.Vector3d as Vector3d
+import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
 import Test.Utils exposing (valueIsOne)

@@ -7,7 +7,7 @@
 -}
 
 
-module OpenSolid.Frame2d
+module OpenSolid.Core.Frame2d
     exposing
         ( xy
         , at
@@ -26,9 +26,9 @@ module OpenSolid.Frame2d
         )
 
 import OpenSolid.Core.Types exposing (..)
-import OpenSolid.Point2d as Point2d
-import OpenSolid.Vector2d as Vector2d
-import OpenSolid.Direction2d as Direction2d
+import OpenSolid.Core.Point2d as Point2d
+import OpenSolid.Core.Vector2d as Vector2d
+import OpenSolid.Core.Direction2d as Direction2d
 
 
 xy : Frame2d

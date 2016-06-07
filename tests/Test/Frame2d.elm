@@ -18,7 +18,7 @@ import Check.Producer as Producer
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import OpenSolid.Point2d as Point2d
+import OpenSolid.Core.Point2d as Point2d
 import Test.Utils exposing (pointsAreEqual2d)
 import Test.Producers exposing (frame2d, point2d)
 

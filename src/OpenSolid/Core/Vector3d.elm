@@ -7,7 +7,7 @@
 -}
 
 
-module OpenSolid.Vector3d
+module OpenSolid.Core.Vector3d
     exposing
         ( zero
         , along

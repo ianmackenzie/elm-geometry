@@ -16,8 +16,8 @@ import Check exposing (Claim, claim, true, that, is, for, quickCheck)
 import Check.Test exposing (evidenceToTest)
 import Check.Producer as Producer
 import OpenSolid.Core.Types exposing (..)
-import OpenSolid.Point2d as Point2d
-import OpenSolid.Vector2d as Vector2d
+import OpenSolid.Core.Point2d as Point2d
+import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
 import Test.Utils exposing (valuesAreEqual)
