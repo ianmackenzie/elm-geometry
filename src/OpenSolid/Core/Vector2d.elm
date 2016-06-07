@@ -48,7 +48,7 @@ following imports:
     import OpenSolid.Core.Frame2d as Frame2d
 
 Examples use `==` to indicate that two expressions are equivalent, even if (due
-to numerical roundoff) they would not be exactly equal.
+to numerical roundoff) they might not be exactly equal.
 
 # Constants
 
@@ -56,7 +56,7 @@ to numerical roundoff) they would not be exactly equal.
 
 Although there are no predefined constants for `Vector2d 1 0` and
 `Vector2d 0 1`, in most cases you will actually want their `Direction2d`
-equivalents, which are available as `Direction2d.x` and `Direction2d.y`.
+versions `Direction2d.x` and `Direction2d.y`.
 
 # Constructors
 
@@ -69,7 +69,7 @@ not the only way!
 # Conversions
 
 Various ways to convert to and from plain tuples and records. Primarily useful
-for interoperability with other libraries; for instance, you could define
+for interoperability with other libraries. For example, you could define
 conversion functions to and from `elm-linear-algebra`'s `Vec2` type with
 
     toVec2 : Vector2d -> Math.Vector2.Vec2
@@ -83,34 +83,6 @@ conversion functions to and from `elm-linear-algebra`'s `Vec2` type with
 @docs components, fromComponents, polarComponents, fromPolarComponents, toRecord, fromRecord
 
 # Components
-
-Although `xComponent` and `yComponent` are provided for convenience, in many
-cases it is  better to use `componentIn`. For instance, instead of using
-
-    Vector2d.yComponent someVector
-
-you could define a constant such as
-
-    verticalDirection =
-        Direction2d.y
-
-and then use
-
-    Vector2d.componentIn verticalDirection someVector
-
-or even define a convenience function
-
-    verticalComponent : Vector2d -> Float
-    verticalComponent =
-        Vector2d.componentIn Direction2d.y
-
-which you could then use as
-
-    verticalComponent someVector
-
-This sort of approach is more flexible, although not quite as efficient (since
-behind the scenes it requires a dot product instead of a simple component
-access).
 
 @docs xComponent, yComponent, componentIn
 
@@ -128,8 +100,10 @@ access).
 
 # Local coordinates
 
-For the examples below, assume the following definition of a local coordinate
-frame, one that is rotated 45 degrees counterclockwise from the global XY frame:
+Functions for transforming vectors between local and global coordinates in
+different coordinate frames. For the examples below, assume the following
+definition of a local coordinate frame, one that is rotated 45 degrees
+counterclockwise from the global XY frame:
 
     frame = Frame2d.rotateBy (degrees 45) Frame2d.xy
     frame.xDirection == Direction2d (Vector2d 0.7071 0.7071)
@@ -160,12 +134,10 @@ polar radius angle =
     fromPolarComponents ( radius, angle )
 
 
-{-| Construct a vector parallel to the given axis, with the given magnitude. The
-magnitude may be negative, in which case the vector will be in the opposite
-direction as the axis. This is really just a thin wrapper around
-`Direction2d.times`:
+{-| Construct a vector parallel to the given axis, with the given magnitude.
 
-    Vector2d.along axis magnitude == Direction2d.times magnitude axis.direction
+    Vector2d.along Axis2d.x 5 == Vector2d 5 0
+    Vector2d.along Axis2d.y -3 == Vector2d 0 -3
 -}
 along : Axis2d -> Float -> Vector2d
 along axis magnitude =
@@ -180,15 +152,15 @@ along axis magnitude =
 
     Vector2d.components (Vector2d x y) == ( x, y )
 
-Note that you can use this to extract the X and Y components using tuple pattern
-matching, for instance
+Note that you could use this to extract the X and Y components of a vector using
+tuple pattern matching, for example
 
-    ( x, y ) = Vector2d.components someVector
+    ( x, y ) = Vector2d.components vector
 
-but it's a bit simpler and more efficient (although perhaps slightly cryptic) to
-use pattern matching on the vector directly:
+but it's simpler and more efficient (although perhaps slightly cryptic) to use
+pattern matching on the vector directly:
 
-    (Vector2d x y) = someVector
+    (Vector2d x y) = vector
 -}
 components : Vector2d -> ( Float, Float )
 components (Vector2d x y) =
@@ -204,7 +176,7 @@ fromComponents ( x, y ) =
     Vector2d x y
 
 
-{-| Convert a vector to polar (radius, angle) components. Angles will be
+{-| Get the polar (radius, angle) components of a vector. Angles will be
 returned in radians.
 
     Vector2d.polarComponents (Vector2d 1 1) == ( sqrt 2, degrees 45 )
@@ -255,14 +227,35 @@ yComponent (Vector2d _ y) =
     y
 
 
-{-| Get the component of a vector in a particular direction.
+{-| Although `xComponent` and `yComponent` are provided for convenience, in many
+cases it is  better to use `componentIn`, which finds the component of a vector
+in an arbitrary direction (equivalent to taking a dot product of the vector and
+a unit vector in the given direction). For example, instead of using
 
-    Vector2d.componentIn Direction2d.x someVector == Vector2d.xComponent someVector
+    Vector2d.yComponent vector
 
-This is equivalent to taking the dot product between the given vector and the
-underlying direction vector:
+you could define a constant such as
 
-    Vector2d.componentIn direction vector == Vector2d.dotProduct vector (Direction2d.asVector direction)
+    verticalDirection =
+        Direction2d.y
+
+and then use
+
+    Vector2d.componentIn verticalDirection vector
+
+or even define a convenience function
+
+    verticalComponent : Vector2d -> Float
+    verticalComponent =
+        Vector2d.componentIn verticalDirection
+
+which you could then use as
+
+    verticalComponent vector
+
+This sort of approach is more flexible, although not quite as efficient (since
+behind the scenes it requires a dot product instead of a simple component
+access).
 -}
 componentIn : Direction2d -> Vector2d -> Float
 componentIn (Direction2d vector) =
@@ -277,7 +270,7 @@ length =
 
 
 {-| Get the squared length of a vector. `squaredLength` is slightly faster than
-`length`, so for instance
+`length`, so for example
 
     Vector2d.squaredLength vector > tolerance * tolerance
 
@@ -294,6 +287,8 @@ squaredLength (Vector2d x y) =
 
 
 {-| Negate a vector.
+
+    Vector2d.negate (Vector2d -1 2) == Vector2d 1 -2
 -}
 negate : Vector2d -> Vector2d
 negate (Vector2d x y) =
@@ -315,7 +310,7 @@ the vector to be subtracted from is given second, so
     Vector2d.minus (Vector2d 1 2) (Vector2d 5 6) == Vector2d 4 4
 
 This means that `minus` can be used more naturally in situations like `map`
-functions, e.g.
+functions
 
     minusVector =
         Vector2d.minus (Vector2d 2 0)
@@ -332,8 +327,8 @@ or function pipelining
 
     myFunction (Vector2d 2 1) == Vector2d 6 0
 
-where `myFunction` could be described in pseudo-English as 'minus by
-`Vector2d 0 1` and then times by 3'.
+where `myFunction` could be described in pseudo-English as '`minus` by
+`Vector2d 0 1` and then `times` by 3'.
 -}
 minus : Vector2d -> Vector2d -> Vector2d
 minus (Vector2d x2 y2) (Vector2d x1 y1) =
@@ -444,9 +439,9 @@ projectOnto axis vector =
         times (dotProduct vector directionVector) directionVector
 
 
-{-| Construct a vector perpendicular to the given vector but with the same
-length, by rotating the given vector 90 degrees in a counterclockwise direction.
-The perpendicular vector will have the same magnitude as the given vector.
+{-| Construct a vector perpendicular to the given vector, by rotating the given
+vector 90 degrees in a counterclockwise direction. The perpendicular vector will
+have the same length as the given vector.
 
     Vector2d.perpendicularTo (Vector2d 3 1) == Vector2d -1 3
 -}
