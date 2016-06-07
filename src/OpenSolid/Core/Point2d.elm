@@ -104,31 +104,60 @@ import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Direction2d as Direction2d
 
 
+{-| The point (0, 0).
+
+    Point2d.origin == Point2d 0 0
+-}
 origin : Point2d
 origin =
     Point2d 0 0
 
 
-along : Axis2d -> Float -> Point2d
-along axis distance =
-    plus (Vector2d.along axis distance) axis.originPoint
+{-| Construct a point given its radius from the origin and its angle
+counterclockwise from the positive X axis. Angles must be given in radians
+(Elm's built-in `degrees` and `turns` functions may be useful).
 
-
+    Point2d.polar 1 (degrees 45) == Point2d 0.7071 0.7071
+-}
 polar : Float -> Float -> Point2d
 polar radius angle =
     fromPolarCoordinates ( radius, angle )
 
 
-fromCoordinates : ( Float, Float ) -> Point2d
-fromCoordinates ( x, y ) =
-    Point2d x y
+{-| Construct a point along an axis, at a particular distance from the axis'
+origin point.
+
+    axis =
+        Axis2d (Point2d 1 1) Direction2d.x
+
+    Point2d.along axis 3 == Point2d 4 1
+    Point2d.along axis -3 == Point2d -2 1
+-}
+along : Axis2d -> Float -> Point2d
+along axis distance =
+    plus (Vector2d.along axis distance) axis.originPoint
 
 
-fromPolarCoordinates : ( Float, Float ) -> Point2d
-fromPolarCoordinates =
-    fromPolar >> fromCoordinates
+{-| Construct a point halfway between two other points.
+
+    Point2d.midpoint (Point2d 1 1) (Point2d 3 7) == Point2d 2 4
+-}
+midpoint : Point2d -> Point2d -> Point2d
+midpoint firstPoint secondPoint =
+    interpolate firstPoint secondPoint 0.5
 
 
+{-| Construct a point by interpolating between two other points.
+
+    Point2d.interpolate Point2d.origin (Point2d 8 8) 0 == Point2d 0 0
+    Point2d.interpolate Point2d.origin (Point2d 8 8) 0.25 == Point2d 2 2
+    Point2d.interpolate Point2d.origin (Point2d 8 8) 0.75 == Point2d 6 6
+    Point2d.interpolate Point2d.origin (Point2d 8 8) 1 == Point2d 8 8
+
+You can also pass values less than zero or larger than one to extrapolate:
+
+    Point2d.interpolate Point2d.origin (Point2d 100 0) 1.1 == Point2d 110 0
+-}
 interpolate : Point2d -> Point2d -> Float -> Point2d
 interpolate startPoint endPoint =
     let
@@ -138,9 +167,34 @@ interpolate startPoint endPoint =
         \t -> plus (Vector2d.times t displacement) startPoint
 
 
-midpoint : Point2d -> Point2d -> Point2d
-midpoint firstPoint secondPoint =
-    interpolate firstPoint secondPoint 0.5
+coordinates : Point2d -> ( Float, Float )
+coordinates (Point2d x y) =
+    ( x, y )
+
+
+fromCoordinates : ( Float, Float ) -> Point2d
+fromCoordinates ( x, y ) =
+    Point2d x y
+
+
+polarCoordinates : Point2d -> ( Float, Float )
+polarCoordinates =
+    coordinates >> toPolar
+
+
+fromPolarCoordinates : ( Float, Float ) -> Point2d
+fromPolarCoordinates =
+    fromPolar >> fromCoordinates
+
+
+toRecord : Point2d -> { x : Float, y : Float }
+toRecord (Point2d x y) =
+    { x = x, y = y }
+
+
+fromRecord : { x : Float, y : Float } -> Point2d
+fromRecord { x, y } =
+    Point2d x y
 
 
 xCoordinate : Point2d -> Float
@@ -153,26 +207,6 @@ yCoordinate (Point2d _ y) =
     y
 
 
-coordinates : Point2d -> ( Float, Float )
-coordinates (Point2d x y) =
-    ( x, y )
-
-
-polarCoordinates : Point2d -> ( Float, Float )
-polarCoordinates =
-    coordinates >> toPolar
-
-
-squaredDistanceFrom : Point2d -> Point2d -> Float
-squaredDistanceFrom other =
-    vectorFrom other >> Vector2d.squaredLength
-
-
-distanceFrom : Point2d -> Point2d -> Float
-distanceFrom other =
-    squaredDistanceFrom other >> sqrt
-
-
 vectorTo : Point2d -> Point2d -> Vector2d
 vectorTo (Point2d x2 y2) (Point2d x1 y1) =
     Vector2d (x2 - x1) (y2 - y1)
@@ -181,6 +215,16 @@ vectorTo (Point2d x2 y2) (Point2d x1 y1) =
 vectorFrom : Point2d -> Point2d -> Vector2d
 vectorFrom (Point2d x2 y2) (Point2d x1 y1) =
     Vector2d (x1 - x2) (y1 - y2)
+
+
+distanceFrom : Point2d -> Point2d -> Float
+distanceFrom other =
+    squaredDistanceFrom other >> sqrt
+
+
+squaredDistanceFrom : Point2d -> Point2d -> Float
+squaredDistanceFrom other =
+    vectorFrom other >> Vector2d.squaredLength
 
 
 distanceAlong : Axis2d -> Point2d -> Float
@@ -193,6 +237,16 @@ distanceFromAxis axis =
     vectorFrom axis.originPoint
         >> Vector2d.crossProduct (Direction2d.asVector axis.direction)
         >> abs
+
+
+plus : Vector2d -> Point2d -> Point2d
+plus (Vector2d vx vy) (Point2d px py) =
+    Point2d (px + vx) (py + vy)
+
+
+minus : Vector2d -> Point2d -> Point2d
+minus (Vector2d vx vy) (Point2d px py) =
+    Point2d (px - vx) (py - vy)
 
 
 addTo (Point2d px py) (Vector2d vx vy) =
@@ -221,6 +275,13 @@ mirrorAcross axis =
         >> addTo axis.originPoint
 
 
+projectOnto : Axis2d -> Point2d -> Point2d
+projectOnto axis =
+    vectorFrom axis.originPoint
+        >> Vector2d.projectOnto axis
+        >> addTo axis.originPoint
+
+
 toLocalIn : Frame2d -> Point2d -> Point2d
 toLocalIn frame =
     vectorFrom frame.originPoint
@@ -233,30 +294,3 @@ fromLocalIn frame =
     (\(Point2d x y) -> Vector2d x y)
         >> Vector2d.fromLocalIn frame
         >> addTo frame.originPoint
-
-
-projectOnto : Axis2d -> Point2d -> Point2d
-projectOnto axis =
-    vectorFrom axis.originPoint
-        >> Vector2d.projectOnto axis
-        >> addTo axis.originPoint
-
-
-plus : Vector2d -> Point2d -> Point2d
-plus (Vector2d vx vy) (Point2d px py) =
-    Point2d (px + vx) (py + vy)
-
-
-minus : Vector2d -> Point2d -> Point2d
-minus (Vector2d vx vy) (Point2d px py) =
-    Point2d (px - vx) (py - vy)
-
-
-toRecord : Point2d -> { x : Float, y : Float }
-toRecord (Point2d x y) =
-    { x = x, y = y }
-
-
-fromRecord : { x : Float, y : Float } -> Point2d
-fromRecord { x, y } =
-    Point2d x y
