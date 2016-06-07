@@ -37,15 +37,9 @@ module OpenSolid.Vector2d
         , fromLocalIn
         )
 
-{-| Functions for working with `Vector2d` values. Since `Vector2d` is not an
-opaque type, values can be constructed directly from their X and Y components:
-
-    v1 = Vector2d 2 3
-    v2 = Vector2d (4 + 5) (sqrt 2)
-
-The functions in this module provide various other ways of constructing vectors
-and performing operations on them. For the examples below, assume the following
-imports:
+{-| The functions in this module provide various ways of constructing `Vector2d`
+values and performing operations on them. For the examples below, assume the
+following imports:
 
     import OpenSolid.Core.Types exposing (..)
     import OpenSolid.Vector2d as Vector2d
@@ -66,11 +60,25 @@ equivalents, which are available as `Direction2d.x` and `Direction2d.y`.
 
 # Constructors
 
+Since `Vector2d` is not an opaque type, the simplest way to construct one is
+directly from its X and Y components, for example `Vector2d 2 3`. But that is
+not the only way!
+
 @docs polar, along
 
 # Conversions
 
-Various ways to convert to and from plain tuples and records.
+Various ways to convert to and from plain tuples and records. Primarily useful
+for interoperability with other libraries; for instance, you could define
+conversion functions to and from `elm-linear-algebra`'s `Vec2` type with
+
+    toVec2 : Vector2d -> Math.Vector2.Vec2
+    toVec2 =
+        Vector2d.components >> Math.Vector2.fromTuple
+
+    fromVec2 : Math.Vector2.Vec2 -> Vector2d
+    fromVec2 =
+        Math.Vector2.toTuple >> Vector2d.fromComponents
 
 @docs components, fromComponents, polarComponents, fromPolarComponents, toRecord, fromRecord
 
@@ -163,7 +171,10 @@ polar radius angle =
     fromPolarComponents ( radius, angle )
 
 
-{-| Construct a vector parallel to the given axis, with the given direction.
+{-| Construct a vector parallel to the given axis, with the given magnitude. The
+magnitude may be negative, in which case the vector will be in the opposite
+direction as the axis. This is really just a thin wrapper around
+`Direction2d.times`:
 
     Vector2d.along axis magnitude == Direction2d.times magnitude axis.direction
 -}
@@ -179,6 +190,16 @@ along axis magnitude =
 {-| Get the (x, y) components of a vector.
 
     Vector2d.components (Vector2d x y) == ( x, y )
+
+Note that you can use this to extract the X and Y components using tuple pattern
+matching, for instance
+
+    ( x, y ) = Vector2d.components someVector
+
+but it's a bit simpler and more efficient (although perhaps slightly cryptic) to
+use pattern matching on the vector directly:
+
+    (Vector2d x y) = someVector
 -}
 components : Vector2d -> ( Float, Float )
 components (Vector2d x y) =
@@ -248,6 +269,11 @@ yComponent (Vector2d _ y) =
 {-| Get the component of a vector in a particular direction.
 
     Vector2d.componentIn Direction2d.x someVector == Vector2d.xComponent someVector
+
+This is equivalent to taking the dot product between the given vector and the
+underlying direction vector:
+
+    Vector2d.componentIn direction vector == Vector2d.dotProduct vector (Direction2d.asVector direction)
 -}
 componentIn : Direction2d -> Vector2d -> Float
 componentIn (Direction2d vector) =
@@ -421,6 +447,7 @@ projectOnto axis vector =
 
 {-| Construct a vector perpendicular to the given vector but with the same
 length, by rotating the given vector 90 degrees in a counterclockwise direction.
+The perpendicular vector will have the same magnitude as the given vector.
 
     Vector2d.perpendicularTo (Vector2d 3 1) == Vector2d -1 3
 -}
@@ -434,7 +461,8 @@ frame. The result will be the given vector expressed relative to the given
 frame.
 
 The vector `Vector2d 1 0` (in global coordinates), relative to the rotated
-frame, is a vector of length 1 with an angle of -45 degrees. Therefore,
+frame defined above, is a vector of length 1 with an angle of -45 degrees.
+Therefore,
 
     Vector2d.toLocalIn frame (Vector2d 1 0) == Vector2d 0.7071 -0.7071
 
@@ -454,8 +482,8 @@ toLocalIn frame vector =
 coordinates.
 
 The vector `Vector2d 1 0` (in local coordinates with respect to the rotated
-frame) is a vector of length 1 along the frame's X axis, which is itself at a 45
-degree angle in global coordinates. Therefore,
+frame defined above) is a vector of length 1 along the frame's X axis, which is
+itself at a 45 degree angle in global coordinates. Therefore,
 
     Vector2d.fromLocalIn frame (Vector2d 1 0) == Vector2d 0.7071 0.7071
 
