@@ -286,7 +286,7 @@ plus (Vector2d x2 y2) (Vector2d x1 y1) =
 
 {-| Subtract one vector from another. The vector to subtract is given first and
 the vector to be subtracted from is given second, so
-    
+
     Vector2d.minus (Vector2d 1 2) (Vector2d 5 6) == Vector2d 4 4
 
 This means that `minus` can be used more naturally in situations like `map`
@@ -326,7 +326,7 @@ times scale (Vector2d x y) =
 
 {-| Find the dot product of two vectors.
 
-    Vector2d.dotProduct (Vector2d 1 2) (Vector2d 3 4) == 1 * 3 + 2 * 4 == 11 
+    Vector2d.dotProduct (Vector2d 1 2) (Vector2d 3 4) == 1 * 3 + 2 * 4 == 11
 -}
 dotProduct : Vector2d -> Vector2d -> Float
 dotProduct (Vector2d x1 y1) (Vector2d x2 y2) =
@@ -360,10 +360,10 @@ Rotating a list of vectors by 90 degrees:
 
     vectors =
         [ v1, v2, v3 ]
-    
+
     angle =
         degrees 90
-    
+
     rotatedVectors =
         List.map (Vector2d.rotateBy angle) vectors
 -}
