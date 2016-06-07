@@ -127,11 +127,11 @@ polar radius angle =
 {-| Construct a point along an axis, at a particular distance from the axis'
 origin point.
 
-    axis =
+    horizontalAxis =
         Axis2d (Point2d 1 1) Direction2d.x
 
-    Point2d.along axis 3 == Point2d 4 1
-    Point2d.along axis -3 == Point2d -2 1
+    Point2d.along horizontalAxis 3 == Point2d 4 1
+    Point2d.along horizontalAxis -3 == Point2d -2 1
 -}
 along : Axis2d -> Float -> Point2d
 along axis distance =
@@ -147,12 +147,17 @@ midpoint firstPoint secondPoint =
     interpolate firstPoint secondPoint 0.5
 
 
-{-| Construct a point by interpolating between two other points.
+{-| Construct a point by interpolating between two other points based on a
+parameter that ranges from zero to one.
 
-    Point2d.interpolate Point2d.origin (Point2d 8 8) 0 == Point2d 0 0
-    Point2d.interpolate Point2d.origin (Point2d 8 8) 0.25 == Point2d 2 2
-    Point2d.interpolate Point2d.origin (Point2d 8 8) 0.75 == Point2d 6 6
-    Point2d.interpolate Point2d.origin (Point2d 8 8) 1 == Point2d 8 8
+    interpolate : Float -> Point2d
+    interpolate value =
+        Point2d.interpolate Point2d.origin (Point2d 8 8) value
+
+    interpolate 0 == Point2d 0 0
+    interpolate 0.25 == Point2d 2 2
+    interpolate 0.75 == Point2d 6 6
+    interpolate 1 == Point2d 8 8
 
 You can also pass values less than zero or larger than one to extrapolate:
 
