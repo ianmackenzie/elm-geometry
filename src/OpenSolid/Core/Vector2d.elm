@@ -116,17 +116,6 @@ access).
 
 # Length
 
-`squaredLength` is slightly faster than `length`, so for instance
-
-    Vector2d.squaredLength vector > tolerance * tolerance
-
-is equivalent to but slightly more efficient than
-
-    Vector2d.length vector > tolerance
-
-since the latter requires a square root. In many cases, however, the speed
-difference will be negligible and using `length` is much more readable!
-
 @docs length, squaredLength
 
 # Arithmetic
@@ -287,7 +276,17 @@ length =
     squaredLength >> sqrt
 
 
-{-| Get the squared length of a vector.
+{-| Get the squared length of a vector. `squaredLength` is slightly faster than
+`length`, so for instance
+
+    Vector2d.squaredLength vector > tolerance * tolerance
+
+is equivalent to but slightly more efficient than
+
+    Vector2d.length vector > tolerance
+
+since the latter requires a square root. In many cases, however, the speed
+difference will be negligible and using `length` is much more readable!
 -}
 squaredLength : Vector2d -> Float
 squaredLength (Vector2d x y) =
