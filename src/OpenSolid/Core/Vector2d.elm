@@ -37,9 +37,8 @@ module OpenSolid.Core.Vector2d
         , fromLocalIn
         )
 
-{-| The functions in this module provide various ways of constructing `Vector2d`
-values and performing operations on them. For the examples below, assume the
-following imports:
+{-| Various functions for constructing `Vector2d` values and performing
+operations on them. For the examples below, assume the following imports:
 
     import OpenSolid.Core.Types exposing (..)
     import OpenSolid.Core.Vector2d as Vector2d
@@ -226,35 +225,17 @@ yComponent (Vector2d _ y) =
     y
 
 
-{-| Although `xComponent` and `yComponent` are provided for convenience, in many
-cases it is  better to use `componentIn`, which finds the component of a vector
-in an arbitrary direction (equivalent to taking a dot product of the vector and
-a unit vector in the given direction). For example, instead of using
+{-| Find the component of a vector in an arbitrary direction, for example
 
-    Vector2d.yComponent vector
+    forwardSpeed = Vector2d.componentIn forwardDirection velocityVector
 
-you could define a constant such as
+This is more general and flexible than using `xComponent` or `yComponent`, both
+of which can be expressed in terms of `componentIn`, for example
 
-    verticalDirection =
-        Direction2d.y
+    Vector2d.xComponent vector == Vector2d.componentIn Direction2d.x vector
 
-and then use
-
-    Vector2d.componentIn verticalDirection vector
-
-or even define a convenience function
-
-    verticalComponent : Vector2d -> Float
-    verticalComponent =
-        Vector2d.componentIn verticalDirection
-
-which you could then use as
-
-    verticalComponent vector
-
-This sort of approach is more flexible, although not quite as efficient (since
-behind the scenes it requires a dot product instead of a simple component
-access).
+but `componentIn` is slightly slower since behind the scenes it requires a dot
+product instead of a simple component access.
 -}
 componentIn : Direction2d -> Vector2d -> Float
 componentIn (Direction2d vector) =
