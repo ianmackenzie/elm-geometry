@@ -10,34 +10,94 @@
 module OpenSolid.Core.Point2d
     exposing
         ( origin
-        , along
         , polar
-        , fromCoordinates
-        , fromPolarCoordinates
-        , interpolate
+        , along
         , midpoint
+        , interpolate
+        , coordinates
+        , fromCoordinates
+        , polarCoordinates
+        , fromPolarCoordinates
+        , toRecord
+        , fromRecord
         , xCoordinate
         , yCoordinate
-        , coordinates
-        , polarCoordinates
-        , squaredDistanceFrom
-        , distanceFrom
         , vectorTo
         , vectorFrom
+        , distanceFrom
+        , squaredDistanceFrom
         , distanceAlong
         , distanceFromAxis
+        , plus
+        , minus
         , scaleAbout
         , rotateAround
         , translateAlong
         , mirrorAcross
+        , projectOnto
         , toLocalIn
         , fromLocalIn
-        , projectOnto
-        , plus
-        , minus
-        , toRecord
-        , fromRecord
         )
+
+{-| Various functions for constructing `Point2d` values and performing
+operations on them. For the examples below, assume the following imports:
+
+    import OpenSolid.Core.Types exposing (..)
+    import OpenSolid.Core.Point2d as Point2d
+    import OpenSolid.Core.Vector2d as Vector2d
+    import OpenSolid.Core.Frame2d as Frame2d
+
+Examples use `==` to indicate that two expressions are equivalent, even if (due
+to numerical roundoff) they might not be exactly equal.
+
+# Constants
+
+@docs origin
+
+# Constructors
+
+Since `Point2d` is not an opaque type, the simplest way to construct one is
+directly from its X and Y coordinates, for example `Point2d 2 3`. But that is
+not the only way!
+
+@docs polar, along, midpoint, interpolate
+
+# Conversions
+
+Various ways to convert to and from plain tuples and records. Primarily useful
+for interoperability with other libraries. For example, you could define
+conversion functions to and from `elm-linear-algebra`'s `Vec2` type with
+
+    toVec2 : Point2d -> Math.Vector2.Vec2
+    toVec2 =
+        Point2d.coordinates >> Math.Vector2.fromTuple
+
+    fromVec2 : Math.Vector2.Vec2 -> Point2d
+    fromVec2 =
+        Math.Vector2.toTuple >> Point2d.fromCoordinates
+
+@docs coordinates, fromCoordinates, polarCoordinates, fromPolarCoordinates, toRecord, fromRecord
+
+# Coordinates
+
+@docs xCoordinate, yCoordinate
+
+# Displacement and distance
+
+@docs vectorTo, vectorFrom, distanceFrom, squaredDistanceFrom, distanceAlong, distanceFromAxis
+
+# Arithmetic
+
+@docs plus, minus
+
+# Transformations
+
+@docs scaleAbout, rotateAround, translateAlong, mirrorAcross, projectOnto
+
+# Local coordinates
+
+@docs toLocalIn, fromLocalIn
+-}
 
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Vector2d as Vector2d
