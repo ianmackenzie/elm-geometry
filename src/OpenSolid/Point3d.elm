@@ -124,7 +124,7 @@ distanceAlong axis =
 squaredDistanceFromAxis : Axis3d -> Point3d -> Float
 squaredDistanceFromAxis axis =
     vectorFrom axis.originPoint
-        >> Vector3d.crossProduct (Direction3d.vector axis.direction)
+        >> Vector3d.crossProduct (Direction3d.asVector axis.direction)
         >> Vector3d.squaredLength
 
 

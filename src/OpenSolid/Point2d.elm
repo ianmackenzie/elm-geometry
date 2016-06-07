@@ -131,7 +131,7 @@ distanceAlong axis =
 distanceFromAxis : Axis2d -> Point2d -> Float
 distanceFromAxis axis =
     vectorFrom axis.originPoint
-        >> Vector2d.crossProduct (Direction2d.vector axis.direction)
+        >> Vector2d.crossProduct (Direction2d.asVector axis.direction)
         >> abs
 
 

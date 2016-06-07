@@ -18,7 +18,7 @@ module OpenSolid.Direction2d
         , xComponent
         , yComponent
         , components
-        , vector
+        , asVector
         , perpendicularTo
         , rotateBy
         , mirrorAcross
@@ -85,67 +85,67 @@ fromComponents =
 
 xComponent : Direction2d -> Float
 xComponent =
-    vector >> Vector2d.xComponent
+    asVector >> Vector2d.xComponent
 
 
 yComponent : Direction2d -> Float
 yComponent =
-    vector >> Vector2d.yComponent
+    asVector >> Vector2d.yComponent
 
 
 components : Direction2d -> ( Float, Float )
 components =
-    vector >> Vector2d.components
+    asVector >> Vector2d.components
 
 
-vector : Direction2d -> Vector2d
-vector (Direction2d vector') =
-    vector'
+asVector : Direction2d -> Vector2d
+asVector (Direction2d vector) =
+    vector
 
 
 perpendicularTo : Direction2d -> Direction2d
 perpendicularTo =
-    vector >> Vector2d.perpendicularTo >> Direction2d
+    asVector >> Vector2d.perpendicularTo >> Direction2d
 
 
 rotateBy : Float -> Direction2d -> Direction2d
 rotateBy angle =
-    vector >> Vector2d.rotateBy angle >> Direction2d
+    asVector >> Vector2d.rotateBy angle >> Direction2d
 
 
 mirrorAcross : Axis2d -> Direction2d -> Direction2d
 mirrorAcross axis =
-    vector >> Vector2d.mirrorAcross axis >> Direction2d
+    asVector >> Vector2d.mirrorAcross axis >> Direction2d
 
 
 toLocalIn : Frame2d -> Direction2d -> Direction2d
 toLocalIn frame =
-    vector >> Vector2d.toLocalIn frame >> Direction2d
+    asVector >> Vector2d.toLocalIn frame >> Direction2d
 
 
 fromLocalIn : Frame2d -> Direction2d -> Direction2d
 fromLocalIn frame =
-    vector >> Vector2d.fromLocalIn frame >> Direction2d
+    asVector >> Vector2d.fromLocalIn frame >> Direction2d
 
 
 negate : Direction2d -> Direction2d
 negate =
-    vector >> Vector2d.negate >> Direction2d
+    asVector >> Vector2d.negate >> Direction2d
 
 
 times : Float -> Direction2d -> Vector2d
 times scale =
-    vector >> Vector2d.times scale
+    asVector >> Vector2d.times scale
 
 
 dotProduct : Direction2d -> Direction2d -> Float
 dotProduct firstDirection secondDirection =
-    Vector2d.dotProduct (vector firstDirection) (vector secondDirection)
+    Vector2d.dotProduct (asVector firstDirection) (asVector secondDirection)
 
 
 crossProduct : Direction2d -> Direction2d -> Float
 crossProduct firstDirection secondDirection =
-    Vector2d.crossProduct (vector firstDirection) (vector secondDirection)
+    Vector2d.crossProduct (asVector firstDirection) (asVector secondDirection)
 
 
 angleTo : Direction2d -> Direction2d -> Float
