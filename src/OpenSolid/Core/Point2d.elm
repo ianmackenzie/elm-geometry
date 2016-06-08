@@ -161,7 +161,7 @@ parameter that ranges from zero to one.
 
 You can also pass values less than zero or larger than one to extrapolate:
 
-    Point2d.interpolate Point2d.origin (Point2d 100 0) 1.1 == Point2d 110 0
+    interpolate 1.25 == Point2d 10 10
 -}
 interpolate : Point2d -> Point2d -> Float -> Point2d
 interpolate startPoint endPoint =
