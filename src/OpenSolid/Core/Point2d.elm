@@ -172,41 +172,80 @@ interpolate startPoint endPoint =
         \t -> plus (Vector2d.times t displacement) startPoint
 
 
+{-| Get the (x, y) coordinates of a point.
+
+    Point2d.cooordinates (Point2d x y) == ( x, y )
+
+Note that you could use this to extract the X and Y coordinates of a point using
+tuple pattern matching, for example
+
+    ( x, y ) = Point2d.coordinates point
+
+but it's simpler and more efficient (although perhaps slightly cryptic) to use
+pattern matching on the point directly:
+
+    (Point2d x y) = point
+-}
 coordinates : Point2d -> ( Float, Float )
 coordinates (Point2d x y) =
     ( x, y )
 
 
+{-| Construct a point from (x, y) coordinates.
+
+    Point2d.fromCoordinates ( x, y ) == Point2d x y
+-}
 fromCoordinates : ( Float, Float ) -> Point2d
 fromCoordinates ( x, y ) =
     Point2d x y
 
 
+{-| Get the polar (radius, angle) coordinates of a point. Angles will be
+returned in radians.
+
+    Point2d.polarCoordinates (Point2d 1 1) == ( sqrt 2, degrees 45 )
+-}
 polarCoordinates : Point2d -> ( Float, Float )
 polarCoordinates =
     coordinates >> toPolar
 
 
+{-| Construct a point from polar (radius, angle) coordinates.
+
+    Point2d.fromPolarCoordinates ( radius, angle ) == Point2d.polar radius angle
+-}
 fromPolarCoordinates : ( Float, Float ) -> Point2d
 fromPolarCoordinates =
     fromPolar >> fromCoordinates
 
 
+{-| Convert a point to a record with `x` and `y` fields.
+
+    Point2d.toRecord (Point2d 2 3) == { x = 2, y = 3 }
+-}
 toRecord : Point2d -> { x : Float, y : Float }
 toRecord (Point2d x y) =
     { x = x, y = y }
 
 
+{-| Construct a point from a record with `x` and `y` fields.
+
+    Point2d.fromRecord { x = 2, y = 3 } == Point2d 2 3
+-}
 fromRecord : { x : Float, y : Float } -> Point2d
 fromRecord { x, y } =
     Point2d x y
 
 
+{-| Get the X coordinate of a point.
+-}
 xCoordinate : Point2d -> Float
 xCoordinate (Point2d x _) =
     x
 
 
+{-| Get the Y coordinate of a point.
+-}
 yCoordinate : Point2d -> Float
 yCoordinate (Point2d _ y) =
     y
