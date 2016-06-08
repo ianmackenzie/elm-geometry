@@ -21,7 +21,7 @@ module OpenSolid.Core.Direction3d
         , components
         , asVector
         , perpendicularTo
-        , normalBasis
+        , perpendicularBasis
         , rotateAround
         , mirrorAcross
         , toLocalIn
@@ -120,8 +120,8 @@ perpendicularTo =
     asVector >> Vector3d.perpendicularTo >> ofNonZeroVector
 
 
-normalBasis : Direction3d -> ( Direction3d, Direction3d )
-normalBasis direction =
+perpendicularBasis : Direction3d -> ( Direction3d, Direction3d )
+perpendicularBasis direction =
     let
         xDirection =
             perpendicularTo direction
