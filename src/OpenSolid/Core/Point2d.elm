@@ -22,8 +22,8 @@ module OpenSolid.Core.Point2d
         , fromRecord
         , xCoordinate
         , yCoordinate
-        , vectorTo
         , vectorFrom
+        , vectorTo
         , distanceFrom
         , squaredDistanceFrom
         , distanceAlong
@@ -251,31 +251,96 @@ yCoordinate (Point2d _ y) =
     y
 
 
-vectorTo : Point2d -> Point2d -> Vector2d
-vectorTo (Point2d x2 y2) (Point2d x1 y1) =
-    Vector2d (x2 - x1) (y2 - y1)
+{-| Find the vector from one point to another.
 
-
+    Point2d.vectorFrom (Point2d 1 1) (Point2d 4 5) == Vector2d 3 4
+-}
 vectorFrom : Point2d -> Point2d -> Vector2d
 vectorFrom (Point2d x2 y2) (Point2d x1 y1) =
     Vector2d (x1 - x2) (y1 - y2)
 
 
+{-| Flipped version of `vectorFrom`, where the end point is given first.
+
+    Point2d.vectorTo (Point2d 1 1) (Point2d 4 5) == Vector2d -3 -4
+-}
+vectorTo : Point2d -> Point2d -> Vector2d
+vectorTo (Point2d x2 y2) (Point2d x1 y1) =
+    Vector2d (x2 - x1) (y2 - y1)
+
+
+{-| Find the distance between two points.
+
+    Point2d.distanceFrom (Point2d 1 1) (Point2d 2 2) == sqrt 2
+
+Partial application can be useful:
+
+    points =
+        [ Point2d 3 4, Point2d 10 0, Point2d -1 2 ]
+
+    sortedPoints =
+        List.sortBy (Point2d.distanceFrom Point2d.origin) points
+
+    sortedPoints == [ Point2d -1 2, Point2d 3 4, Point2d 10 10 ]
+-}
 distanceFrom : Point2d -> Point2d -> Float
 distanceFrom other =
     squaredDistanceFrom other >> sqrt
 
 
+{-| Find the square of the distance from one point to another.
+`squaredDistanceFrom` is slightly faster than `distanceFrom`, so for example
+
+    Point2d.squaredDistanceFrom firstPoint secondPoint > tolerance * tolerance
+
+is equivalent to but slightly more efficient than
+
+    Point2d.distanceFrom firstPoint secondPoint > tolerance
+
+since the latter requires a square root. In many cases, however, the speed
+difference will be negligible and using `distanceFrom` is much more readable!
+-}
 squaredDistanceFrom : Point2d -> Point2d -> Float
 squaredDistanceFrom other =
     vectorFrom other >> Vector2d.squaredLength
 
 
+{-| Determine how far along an axis a particular point lies. Conceptually, the
+point is projected perpendicularly onto the axis, and then the distance of this
+projected point from the axis' origin point is measured. The result may be
+negative if the projected point is 'behind' the axis' origin point.
+
+    axis =
+        Axis2d (Point2d 1 2) Direction2d.x
+
+    Point2d.distanceAlong axis (Point2d 3 3) == 2
+    Point2d.distanceAlong axis Point2d.origin == -1
+-}
 distanceAlong : Axis2d -> Point2d -> Float
 distanceAlong axis =
     vectorFrom axis.originPoint >> Vector2d.componentIn axis.direction
 
 
+{-| Determine the perpendicular (or neareast) distance of a point from an axis.
+Note that this is an unsigned value - it does not matter which side of the axis
+the point is on:
+
+    axis =
+        Axis2d (Point2d 1 2) Direction2d.x
+
+    Point2d.distanceFrom axis (Point2d 3 3) == 1 -- one unit above
+    Point2d.distanceFrom axis Point2d.origin == 2 -- two units below
+
+If you need a signed value, you could construct a perpendicular axis and measure
+distance along it (using the same `axis` as above):
+
+    perpendicularAxis =
+        Axis2d axis.originPoint (Direction2d.perpendicularTo axis.direction)
+
+    perpendicularAxis == Axis2d (Point2d 1 2) Direction2d.y
+    Point2d.distanceAlong perpendicularAxis (Point2d 3 3) == 1
+    Point2d.distanceAlong perpendicularAxis Point2d.origin == -2
+-}
 distanceFromAxis : Axis2d -> Point2d -> Float
 distanceFromAxis axis =
     vectorFrom axis.originPoint
@@ -283,11 +348,19 @@ distanceFromAxis axis =
         >> abs
 
 
+{-| Add a vector a point (translate the point by that vector).
+
+    Point2d.plus (Vector2d 1 2) (Point2d 3 4) == Point2d 4 6
+-}
 plus : Vector2d -> Point2d -> Point2d
 plus (Vector2d vx vy) (Point2d px py) =
     Point2d (px + vx) (py + vy)
 
 
+{-| Subtract a vector from a point (translate by the negation of that vector).
+
+    Point2d.minus (Vector2d 1 2) (Point2d 3 4) == Point2d 2 2
+-}
 minus : Vector2d -> Point2d -> Point2d
 minus (Vector2d vx vy) (Point2d px py) =
     Point2d (px - vx) (py - vy)
@@ -297,21 +370,58 @@ addTo (Point2d px py) (Vector2d vx vy) =
     Point2d (px + vx) (py + vy)
 
 
+{-| Perform a uniform scaling about the given center point. The center point is
+given first and the point to transform is given last. Points will contract or
+expand about the center point by the given scale. Scaling by a factor of 1 does
+nothing, and scaling by a factor of 0 collapses all points to the center point.
+
+    Point2d.scaleAbout Point2d.origin 3 (Point2d 1 2) == Point2d 3 6
+    Point2d.scaleAbout (Point2d 1 1) 0.5 (Point2d 5 1) == Point2d 3 1
+    Point2d.scaleAbout (Point2d 1 1) 2 (Point2d 1 2) == Point2d 1 3
+    Point2d.scaleAbout (Point2d 1 1) 10 (Point2d 1 1) == Point2d 1 1
+
+Do not scale by a negative scaling factor - while this will sometimes do what
+you want it is confusing and error prone. Try a combination of mirror and/or
+rotation operations instead.
+-}
 scaleAbout : Point2d -> Float -> Point2d -> Point2d
 scaleAbout centerPoint scale =
     vectorFrom centerPoint >> Vector2d.times scale >> addTo centerPoint
 
 
+{-| Rotate around a given center point counterclockwise by a given angle (in
+radians). The point to rotate around is given first and the point to rotate is
+given last.
+
+    Point2d.rotateAround Point2d.origin (degrees 45) (Point2d 1 0) == Point2d 0.7071 0.7071
+    Point2d.rotateAround (Point2d 2 1) (degrees 90) (Point2d 3 1) == Point2d 2 2
+-}
 rotateAround : Point2d -> Float -> Point2d -> Point2d
 rotateAround centerPoint angle =
     vectorFrom centerPoint >> Vector2d.rotateBy angle >> addTo centerPoint
 
 
+{-| Translate parallel to a given axis by a given distance.
+
+    Point2d.translateAlong Axis2d.x 3 (Point2d 1 2) == Point2d 4 2
+    Point2d.translateAlong Axis2d.y -4 (Point2d 1 1) == Point2d 1 -3
+-}
 translateAlong : Axis2d -> Float -> Point2d -> Point2d
 translateAlong axis distance =
     plus (Vector2d.along axis distance)
 
 
+{-| Mirror a point across an axis.
+
+    Point2d.mirrorAcross Axis2d.x (Point2d 2 3) == Point2d -2 3
+
+Angled axes work as well:
+
+    diagonalAxis =
+        Axis2d Point2d.origin (Direction2d.fromAngle (degrees 45))
+
+    Point2d.mirrorAcross diagonalAxis (Point2d 3 0) == Point2d 0 3
+-}
 mirrorAcross : Axis2d -> Point2d -> Point2d
 mirrorAcross axis =
     vectorFrom axis.originPoint
@@ -319,6 +429,16 @@ mirrorAcross axis =
         >> addTo axis.originPoint
 
 
+{-| Project a point perpendicularly onto an axis.
+
+    Point2d.projectOnto Axis2d.x (Point2d 2 3) == Point2d 2 0
+    Point2d.projectOnto Axis2d.y (Point2d 2 3) == Point2d 0 3
+
+    offsetYAxis =
+        Axis2d (Point2d 1 0) Direction2d.y
+
+    Point2d.projectOnto offsetYAxis (Point2d 2 3) == Point2d 1 3
+-}
 projectOnto : Axis2d -> Point2d -> Point2d
 projectOnto axis =
     vectorFrom axis.originPoint
