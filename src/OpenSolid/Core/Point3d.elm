@@ -11,6 +11,7 @@ module OpenSolid.Core.Point3d
     exposing
         ( origin
         , along
+        , onPlane
         , fromCoordinates
         , interpolate
         , midpoint
@@ -35,7 +36,6 @@ module OpenSolid.Core.Point3d
         , projectOntoAxis
         , projectOnto
         , projectInto
-        , placeOnto
         , plus
         , minus
         , toRecord
@@ -55,6 +55,11 @@ origin =
 along : Axis3d -> Float -> Point3d
 along axis distance =
     plus (Direction3d.times distance axis.direction) axis.originPoint
+
+
+onPlane : Plane3d -> Point2d -> Point3d
+onPlane plane (Point2d x y) =
+    plus (Vector3d.onPlane plane (Vector2d x y)) plane.originPoint
 
 
 fromCoordinates : ( Float, Float, Float ) -> Point3d
@@ -204,11 +209,6 @@ projectInto plane =
     vectorFrom plane.originPoint
         >> Vector3d.projectInto plane
         >> (\(Vector2d x y) -> Point2d x y)
-
-
-placeOnto : Plane3d -> Point2d -> Point3d
-placeOnto plane (Point2d x y) =
-    plus (Vector3d.placeOnto plane (Vector2d x y)) plane.originPoint
 
 
 plus : Vector3d -> Point3d -> Point3d

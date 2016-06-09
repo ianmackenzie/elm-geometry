@@ -12,6 +12,7 @@ module OpenSolid.Core.Direction3d
         ( x
         , y
         , z
+        , onPlane
         , ofVector
         , ofNonZeroVector
         , fromComponents
@@ -28,7 +29,6 @@ module OpenSolid.Core.Direction3d
         , fromLocalIn
         , projectOnto
         , projectInto
-        , placeOnto
         , negate
         , times
         , dotProduct
@@ -55,6 +55,11 @@ y =
 z : Direction3d
 z =
     Direction3d (Vector3d 0 0 1)
+
+
+onPlane : Plane3d -> Direction2d -> Direction3d
+onPlane plane =
+    Direction2d.asVector >> Vector3d.onPlane plane >> Direction3d
 
 
 {-| Attempt to find the direction of a vector. In the case of a zero vector,
@@ -160,11 +165,6 @@ projectOnto plane =
 projectInto : Plane3d -> Direction3d -> Maybe Direction2d
 projectInto plane =
     asVector >> Vector3d.projectInto plane >> Direction2d.ofVector
-
-
-placeOnto : Plane3d -> Direction2d -> Direction3d
-placeOnto plane =
-    Direction2d.asVector >> Vector3d.placeOnto plane >> Direction3d
 
 
 negate : Direction3d -> Direction3d

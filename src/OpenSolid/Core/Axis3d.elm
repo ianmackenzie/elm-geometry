@@ -12,6 +12,7 @@ module OpenSolid.Core.Axis3d
         ( x
         , y
         , z
+        , onPlane
         , scaleAbout
         , rotateAround
         , translateBy
@@ -21,7 +22,6 @@ module OpenSolid.Core.Axis3d
         , fromLocalIn
         , projectOnto
         , projectInto
-        , placeOnto
         )
 
 import OpenSolid.Core.Types exposing (..)
@@ -45,6 +45,20 @@ y =
 z : Axis3d
 z =
     Axis3d Point3d.origin Direction3d.z
+
+
+onPlane : Plane3d -> Axis2d -> Axis3d
+onPlane plane =
+    let
+        pointOnPlane =
+            Point3d.onPlane plane
+
+        directionOnPlane =
+            Direction3d.onPlane plane
+    in
+        \axis ->
+            Axis3d (pointOnPlane axis.originPoint)
+                (directionOnPlane axis.direction)
 
 
 scaleAbout : Point3d -> Float -> Axis3d -> Axis3d
@@ -140,17 +154,3 @@ projectInto plane axis =
     in
         Maybe.map (Axis2d projectedOrigin)
             (Direction3d.projectInto plane axis.direction)
-
-
-placeOnto : Plane3d -> Axis2d -> Axis3d
-placeOnto plane =
-    let
-        placePoint =
-            Point3d.placeOnto plane
-
-        placeDirection =
-            Direction3d.placeOnto plane
-    in
-        \axis ->
-            Axis3d (placePoint axis.originPoint)
-                (placeDirection axis.direction)
