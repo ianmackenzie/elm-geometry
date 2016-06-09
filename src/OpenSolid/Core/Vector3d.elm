@@ -10,6 +10,7 @@
 module OpenSolid.Core.Vector3d
     exposing
         ( zero
+        , alongAxis
         , onPlane
         , fromComponents
         , xComponent
@@ -43,6 +44,15 @@ import OpenSolid.Core.Types exposing (..)
 zero : Vector3d
 zero =
     Vector3d 0 0 0
+
+
+alongAxis : Axis3d -> Float -> Vector3d
+alongAxis axis magnitude =
+    let
+        (Direction3d directionVector) =
+            axis.direction
+    in
+        times magnitude directionVector
 
 
 onPlane : Plane3d -> Vector2d -> Vector3d

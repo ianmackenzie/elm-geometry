@@ -54,7 +54,7 @@ origin =
 
 alongAxis : Axis3d -> Float -> Point3d
 alongAxis axis distance =
-    plus (Direction3d.times distance axis.direction) axis.originPoint
+    plus (Vector3d.alongAxis axis distance) axis.originPoint
 
 
 onPlane : Plane3d -> Point2d -> Point3d
@@ -161,7 +161,7 @@ rotateAround axis angle =
 
 translateAlong : Axis3d -> Float -> Point3d -> Point3d
 translateAlong axis distance =
-    plus (Direction3d.times distance axis.direction)
+    plus (Vector3d.alongAxis axis distance)
 
 
 mirrorAcross : Plane3d -> Point3d -> Point3d

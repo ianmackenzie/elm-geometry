@@ -148,7 +148,7 @@ translateBy vector frame =
 
 translateAlong : Axis3d -> Float -> Frame3d -> Frame3d
 translateAlong axis distance =
-    translateBy (Direction3d.times distance axis.direction)
+    translateBy (Vector3d.alongAxis axis distance)
 
 
 translateAlongOwn : (Frame3d -> Axis3d) -> Float -> Frame3d -> Frame3d

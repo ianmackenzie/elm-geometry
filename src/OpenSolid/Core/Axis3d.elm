@@ -91,7 +91,7 @@ translateBy vector axis =
 
 translateAlong : Axis3d -> Float -> Axis3d -> Axis3d
 translateAlong axis distance =
-    translateBy (Direction3d.times distance axis.direction)
+    translateBy (Vector3d.alongAxis axis distance)
 
 
 mirrorAcross : Plane3d -> Axis3d -> Axis3d
