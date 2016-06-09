@@ -12,6 +12,7 @@ module OpenSolid.Core.Vector2d
         ( zero
         , polar
         , alongAxis
+        , perpendicularTo
         , xComponent
         , yComponent
         , componentIn
@@ -26,7 +27,6 @@ module OpenSolid.Core.Vector2d
         , rotateBy
         , mirrorAcross
         , projectOnto
-        , perpendicularTo
         , toLocalIn
         , fromLocalIn
         , components
@@ -62,7 +62,7 @@ Since `Vector2d` is not an opaque type, the simplest way to construct one is
 directly from its X and Y components, for example `Vector2d 2 3`. But that is
 not the only way!
 
-@docs polar, alongAxis
+@docs polar, alongAxis, perpendicularTo
 
 # Components
 
@@ -78,7 +78,7 @@ not the only way!
 
 # Transformations
 
-@docs rotateBy, mirrorAcross, projectOnto, perpendicularTo
+@docs rotateBy, mirrorAcross, projectOnto
 
 # Local coordinates
 
@@ -146,6 +146,17 @@ alongAxis axis magnitude =
             axis.direction
     in
         times magnitude directionVector
+
+
+{-| Construct a vector perpendicular to the given vector, by rotating the given
+vector 90 degrees in a counterclockwise direction. The perpendicular vector will
+have the same length as the given vector.
+
+    Vector2d.perpendicularTo (Vector2d 3 1) == Vector2d -1 3
+-}
+perpendicularTo : Vector2d -> Vector2d
+perpendicularTo (Vector2d x y) =
+    Vector2d (-y) x
 
 
 {-| Get the X component of a vector.
@@ -358,17 +369,6 @@ projectOnto axis vector =
             axis.direction
     in
         times (dotProduct vector directionVector) directionVector
-
-
-{-| Construct a vector perpendicular to the given vector, by rotating the given
-vector 90 degrees in a counterclockwise direction. The perpendicular vector will
-have the same length as the given vector.
-
-    Vector2d.perpendicularTo (Vector2d 3 1) == Vector2d -1 3
--}
-perpendicularTo : Vector2d -> Vector2d
-perpendicularTo (Vector2d x y) =
-    Vector2d (-y) x
 
 
 {-| Convert a vector from global coordinates to local coordinates within a given
