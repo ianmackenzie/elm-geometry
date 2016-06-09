@@ -16,6 +16,7 @@ module OpenSolid.Core.Axis2d
         , translateBy
         , translateAlong
         , mirrorAcross
+        , perpendicularTo
         , toLocalIn
         , fromLocalIn
         )
@@ -80,6 +81,11 @@ mirrorAcross otherAxis =
         \axis ->
             Axis2d (mirrorPoint axis.originPoint)
                 (mirrorDirection axis.direction)
+
+
+perpendicularTo : Axis2d -> Axis2d
+perpendicularTo axis =
+    Axis2d axis.originPoint (Direction2d.perpendicularTo axis.direction)
 
 
 toLocalIn : Frame2d -> Axis2d -> Axis2d
