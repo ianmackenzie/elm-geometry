@@ -11,7 +11,6 @@ module OpenSolid.Core.Vector2d
     exposing
         ( zero
         , polar
-        , along
         , components
         , fromComponents
         , polarComponents
@@ -62,7 +61,7 @@ Since `Vector2d` is not an opaque type, the simplest way to construct one is
 directly from its X and Y components, for example `Vector2d 2 3`. But that is
 not the only way!
 
-@docs polar, along
+@docs polar
 
 # Conversions
 
@@ -130,20 +129,6 @@ radians (Elm's built-in `degrees` and `turns` functions may be useful).
 polar : Float -> Float -> Vector2d
 polar radius angle =
     fromPolarComponents ( radius, angle )
-
-
-{-| Construct a vector parallel to the given axis, with the given magnitude.
-
-    Vector2d.along Axis2d.x 5 == Vector2d 5 0
-    Vector2d.along Axis2d.y -3 == Vector2d 0 -3
--}
-along : Axis2d -> Float -> Vector2d
-along axis magnitude =
-    let
-        (Direction2d directionVector) =
-            axis.direction
-    in
-        times magnitude directionVector
 
 
 {-| Get the (x, y) components of a vector.

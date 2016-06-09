@@ -135,7 +135,7 @@ origin point.
 -}
 along : Axis2d -> Float -> Point2d
 along axis distance =
-    plus (Vector2d.along axis distance) axis.originPoint
+    plus (Direction2d.times distance axis.direction) axis.originPoint
 
 
 {-| Construct a point halfway between two other points.
@@ -408,7 +408,7 @@ rotateAround centerPoint angle =
 -}
 translateAlong : Axis2d -> Float -> Point2d -> Point2d
 translateAlong axis distance =
-    plus (Vector2d.along axis distance)
+    plus (Direction2d.times distance axis.direction)
 
 
 {-| Mirror a point across an axis.
