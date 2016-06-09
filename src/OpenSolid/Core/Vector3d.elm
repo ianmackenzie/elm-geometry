@@ -12,31 +12,99 @@ module OpenSolid.Core.Vector3d
         ( zero
         , alongAxis
         , onPlane
-        , fromComponents
+        , perpendicularTo
         , xComponent
         , yComponent
         , zComponent
-        , components
         , componentIn
-        , squaredLength
         , length
-        , perpendicularTo
-        , rotateAround
-        , mirrorAcross
-        , toLocalIn
-        , fromLocalIn
-        , projectOntoAxis
-        , projectOnto
-        , projectInto
+        , squaredLength
         , negate
         , plus
         , minus
         , times
         , dotProduct
         , crossProduct
+        , rotateAround
+        , mirrorAcross
+        , projectOntoAxis
+        , projectOnto
+        , projectInto
+        , toLocalIn
+        , fromLocalIn
+        , components
+        , fromComponents
         , toRecord
         , fromRecord
         )
+
+{-| Various functions for constructing `Vector3d` values and performing
+operations on them. For the examples below, assume the following imports:
+
+    import OpenSolid.Core.Types exposing (..)
+    import OpenSolid.Core.Vector3d as Vector3d
+    import OpenSolid.Core.Direction3d as Direction3d
+    import OpenSolid.Core.Frame3d as Frame3d
+
+Examples use `==` to indicate that two expressions are equivalent, even if (due
+to numerical roundoff) they might not be exactly equal.
+
+# Constants
+
+@docs zero
+
+Although there are no predefined constants for `Vector2d 1 0 0`,
+`Vector2d 0 1 0` and `Vector2d 0 0 1`, in most cases you will actually want
+their `Direction3d` versions `Direction3d.x`, `Direction3d.y` and
+`Direction3d.z`.
+
+# Constructors
+
+Since `Vector3d` is not an opaque type, the simplest way to construct one is
+directly from its X, Y and Z components, for example `Vector2d 2 3 4`. But that
+is not the only way!
+
+@docs alongAxis, onPlane, perpendicularTo
+
+# Components
+
+@docs xComponent, yComponent, zComponent, componentIn
+
+# Length
+
+@docs length, squaredLength
+
+# Arithmetic
+
+@docs negate, plus, minus, times, dotProduct, crossProduct
+
+# Transformations
+
+@docs rotateAround, mirrorAcross, projectOntoAxis, projectOnto
+
+# Local coordinates
+
+Functions for transforming vectors between local and global coordinates in
+different coordinate frames.
+
+@docs projectInto, toLocalIn, fromLocalIn
+
+# Conversions
+
+Various ways to convert to and from plain tuples and records. Primarily useful
+for interoperability with other libraries. For example, you could define
+conversion functions to and from `elm-linear-algebra`'s `Vec3` type with
+
+    toVec3 : Vector3d -> Math.Vector3.Vec3
+    toVec3 =
+        Vector3d.components >> Math.Vector3.fromTuple
+
+    fromVec3 : Math.Vector3.Vec3 -> Vector3d
+    fromVec3 =
+        Math.Vector3.toTuple >> Vector3d.fromComponents
+
+@docs components, fromComponents, toRecord, fromRecord
+-}
 
 import OpenSolid.Core.Types exposing (..)
 
@@ -68,46 +136,6 @@ onPlane plane =
             Vector3d (x1 * x + x2 * y) (y1 * x + y2 * y) (z1 * x + z2 * y)
 
 
-fromComponents : ( Float, Float, Float ) -> Vector3d
-fromComponents ( x, y, z ) =
-    Vector3d x y z
-
-
-xComponent : Vector3d -> Float
-xComponent (Vector3d x _ _) =
-    x
-
-
-yComponent : Vector3d -> Float
-yComponent (Vector3d _ y _) =
-    y
-
-
-zComponent : Vector3d -> Float
-zComponent (Vector3d _ _ z) =
-    z
-
-
-components : Vector3d -> ( Float, Float, Float )
-components (Vector3d x y z) =
-    ( x, y, z )
-
-
-componentIn : Direction3d -> Vector3d -> Float
-componentIn (Direction3d vector) =
-    dotProduct vector
-
-
-squaredLength : Vector3d -> Float
-squaredLength (Vector3d x y z) =
-    x * x + y * y + z * z
-
-
-length : Vector3d -> Float
-length =
-    squaredLength >> sqrt
-
-
 perpendicularTo : Vector3d -> Vector3d
 perpendicularTo (Vector3d x y z) =
     let
@@ -129,6 +157,66 @@ perpendicularTo (Vector3d x y z) =
             Vector3d z 0 (-x)
         else
             Vector3d (-y) x 0
+
+
+xComponent : Vector3d -> Float
+xComponent (Vector3d x _ _) =
+    x
+
+
+yComponent : Vector3d -> Float
+yComponent (Vector3d _ y _) =
+    y
+
+
+zComponent : Vector3d -> Float
+zComponent (Vector3d _ _ z) =
+    z
+
+
+componentIn : Direction3d -> Vector3d -> Float
+componentIn (Direction3d vector) =
+    dotProduct vector
+
+
+length : Vector3d -> Float
+length =
+    squaredLength >> sqrt
+
+
+squaredLength : Vector3d -> Float
+squaredLength (Vector3d x y z) =
+    x * x + y * y + z * z
+
+
+negate : Vector3d -> Vector3d
+negate (Vector3d x y z) =
+    Vector3d (-x) (-y) (-z)
+
+
+plus : Vector3d -> Vector3d -> Vector3d
+plus (Vector3d x2 y2 z2) (Vector3d x1 y1 z1) =
+    Vector3d (x1 + x2) (y1 + y2) (z1 + z2)
+
+
+minus : Vector3d -> Vector3d -> Vector3d
+minus (Vector3d x2 y2 z2) (Vector3d x1 y1 z1) =
+    Vector3d (x1 - x2) (y1 - y2) (z1 - z2)
+
+
+times : Float -> Vector3d -> Vector3d
+times scale (Vector3d x y z) =
+    Vector3d (x * scale) (y * scale) (z * scale)
+
+
+dotProduct : Vector3d -> Vector3d -> Float
+dotProduct (Vector3d x1 y1 z1) (Vector3d x2 y2 z2) =
+    x1 * x2 + y1 * y2 + z1 * z2
+
+
+crossProduct : Vector3d -> Vector3d -> Vector3d
+crossProduct (Vector3d x1 y1 z1) (Vector3d x2 y2 z2) =
+    Vector3d (y1 * z2 - z1 * y2) (z1 * x2 - x1 * z2) (x1 * y2 - y1 * x2)
 
 
 rotateAround : Axis3d -> Float -> Vector3d -> Vector3d
@@ -261,6 +349,24 @@ mirrorAcross plane =
                 Vector3d vx' vy' vz'
 
 
+projectOntoAxis : Axis3d -> Vector3d -> Vector3d
+projectOntoAxis axis vector =
+    let
+        (Direction3d directionVector) =
+            axis.direction
+    in
+        times (dotProduct vector directionVector) directionVector
+
+
+projectOnto : Plane3d -> Vector3d -> Vector3d
+projectOnto plane vector =
+    let
+        normalAxis =
+            Axis3d plane.originPoint plane.normalDirection
+    in
+        minus (projectOntoAxis normalAxis vector) vector
+
+
 toLocalIn : Frame3d -> Vector3d -> Vector3d
 toLocalIn frame vector =
     let
@@ -302,58 +408,20 @@ fromLocalIn frame =
                 Vector3d x' y' z'
 
 
-projectOntoAxis : Axis3d -> Vector3d -> Vector3d
-projectOntoAxis axis vector =
-    let
-        (Direction3d directionVector) =
-            axis.direction
-    in
-        times (dotProduct vector directionVector) directionVector
-
-
-projectOnto : Plane3d -> Vector3d -> Vector3d
-projectOnto plane vector =
-    let
-        normalAxis =
-            Axis3d plane.originPoint plane.normalDirection
-    in
-        minus (projectOntoAxis normalAxis vector) vector
-
-
 projectInto : Plane3d -> Vector3d -> Vector2d
 projectInto plane vector =
     Vector2d (componentIn plane.xDirection vector)
         (componentIn plane.yDirection vector)
 
 
-negate : Vector3d -> Vector3d
-negate (Vector3d x y z) =
-    Vector3d (-x) (-y) (-z)
+components : Vector3d -> ( Float, Float, Float )
+components (Vector3d x y z) =
+    ( x, y, z )
 
 
-plus : Vector3d -> Vector3d -> Vector3d
-plus (Vector3d x2 y2 z2) (Vector3d x1 y1 z1) =
-    Vector3d (x1 + x2) (y1 + y2) (z1 + z2)
-
-
-minus : Vector3d -> Vector3d -> Vector3d
-minus (Vector3d x2 y2 z2) (Vector3d x1 y1 z1) =
-    Vector3d (x1 - x2) (y1 - y2) (z1 - z2)
-
-
-times : Float -> Vector3d -> Vector3d
-times scale (Vector3d x y z) =
-    Vector3d (x * scale) (y * scale) (z * scale)
-
-
-dotProduct : Vector3d -> Vector3d -> Float
-dotProduct (Vector3d x1 y1 z1) (Vector3d x2 y2 z2) =
-    x1 * x2 + y1 * y2 + z1 * z2
-
-
-crossProduct : Vector3d -> Vector3d -> Vector3d
-crossProduct (Vector3d x1 y1 z1) (Vector3d x2 y2 z2) =
-    Vector3d (y1 * z2 - z1 * y2) (z1 * x2 - x1 * z2) (x1 * y2 - y1 * x2)
+fromComponents : ( Float, Float, Float ) -> Vector3d
+fromComponents ( x, y, z ) =
+    Vector3d x y z
 
 
 toRecord : Vector3d -> { x : Float, y : Float, z : Float }
