@@ -11,7 +11,7 @@ module OpenSolid.Core.Point2d
     exposing
         ( origin
         , polar
-        , along
+        , alongAxis
         , midpoint
         , interpolate
         , coordinates
@@ -60,7 +60,7 @@ Since `Point2d` is not an opaque type, the simplest way to construct one is
 directly from its X and Y coordinates, for example `Point2d 2 3`. But that is
 not the only way!
 
-@docs polar, along, midpoint, interpolate
+@docs polar, alongAxis, midpoint, interpolate
 
 # Conversions
 
@@ -130,11 +130,11 @@ origin point.
     horizontalAxis =
         Axis2d (Point2d 1 1) Direction2d.x
 
-    Point2d.along horizontalAxis 3 == Point2d 4 1
-    Point2d.along horizontalAxis -3 == Point2d -2 1
+    Point2d.alongAxis horizontalAxis 3 == Point2d 4 1
+    Point2d.alongAxis horizontalAxis -3 == Point2d -2 1
 -}
-along : Axis2d -> Float -> Point2d
-along axis distance =
+alongAxis : Axis2d -> Float -> Point2d
+alongAxis axis distance =
     plus (Direction2d.times distance axis.direction) axis.originPoint
 
 

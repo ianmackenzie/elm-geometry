@@ -10,7 +10,7 @@
 module OpenSolid.Core.Point3d
     exposing
         ( origin
-        , along
+        , alongAxis
         , onPlane
         , fromCoordinates
         , interpolate
@@ -52,8 +52,8 @@ origin =
     Point3d 0 0 0
 
 
-along : Axis3d -> Float -> Point3d
-along axis distance =
+alongAxis : Axis3d -> Float -> Point3d
+alongAxis axis distance =
     plus (Direction3d.times distance axis.direction) axis.originPoint
 
 
