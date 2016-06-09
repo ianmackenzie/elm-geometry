@@ -149,6 +149,8 @@ alongAxis axis magnitude =
 
 
 {-| Get the X component of a vector.
+
+    Vector2d.xComponent (Vector2d 2 3) == 2
 -}
 xComponent : Vector2d -> Float
 xComponent (Vector2d x _) =
@@ -156,6 +158,8 @@ xComponent (Vector2d x _) =
 
 
 {-| Get the Y component of a vector.
+
+    Vector2d.yComponent (Vector2d 2 3) == 3
 -}
 yComponent : Vector2d -> Float
 yComponent (Vector2d _ y) =
