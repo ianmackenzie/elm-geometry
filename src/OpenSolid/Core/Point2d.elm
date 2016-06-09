@@ -14,12 +14,6 @@ module OpenSolid.Core.Point2d
         , alongAxis
         , midpoint
         , interpolate
-        , coordinates
-        , fromCoordinates
-        , polarCoordinates
-        , fromPolarCoordinates
-        , toRecord
-        , fromRecord
         , xCoordinate
         , yCoordinate
         , vectorFrom
@@ -37,6 +31,12 @@ module OpenSolid.Core.Point2d
         , projectOnto
         , toLocalIn
         , fromLocalIn
+        , coordinates
+        , fromCoordinates
+        , polarCoordinates
+        , fromPolarCoordinates
+        , toRecord
+        , fromRecord
         )
 
 {-| Various functions for constructing `Point2d` values and performing
@@ -44,7 +44,6 @@ operations on them. For the examples below, assume the following imports:
 
     import OpenSolid.Core.Types exposing (..)
     import OpenSolid.Core.Point2d as Point2d
-    import OpenSolid.Core.Vector2d as Vector2d
     import OpenSolid.Core.Frame2d as Frame2d
 
 Examples use `==` to indicate that two expressions are equivalent, even if (due
@@ -62,6 +61,31 @@ not the only way!
 
 @docs polar, alongAxis, midpoint, interpolate
 
+# Coordinates
+
+@docs xCoordinate, yCoordinate
+
+# Displacement and distance
+
+@docs vectorFrom, vectorTo, distanceFrom, squaredDistanceFrom, distanceAlong, distanceFromAxis
+
+# Arithmetic
+
+@docs plus, minus
+
+# Transformations
+
+@docs scaleAbout, rotateAround, translateAlong, mirrorAcross, projectOnto
+
+# Local coordinates
+
+Functions for transforming points between local and global coordinates in
+different coordinate frames. Although these examples use a simple offset
+frame, these functions can be used to convert to and from local coordinates in
+arbitrarily transformed (translated, rotated, mirrored) frames.
+
+@docs toLocalIn, fromLocalIn
+
 # Conversions
 
 Various ways to convert to and from plain tuples and records. Primarily useful
@@ -77,26 +101,6 @@ conversion functions to and from `elm-linear-algebra`'s `Vec2` type with
         Math.Vector2.toTuple >> Point2d.fromCoordinates
 
 @docs coordinates, fromCoordinates, polarCoordinates, fromPolarCoordinates, toRecord, fromRecord
-
-# Coordinates
-
-@docs xCoordinate, yCoordinate
-
-# Displacement and distance
-
-@docs vectorTo, vectorFrom, distanceFrom, squaredDistanceFrom, distanceAlong, distanceFromAxis
-
-# Arithmetic
-
-@docs plus, minus
-
-# Transformations
-
-@docs scaleAbout, rotateAround, translateAlong, mirrorAcross, projectOnto
-
-# Local coordinates
-
-@docs toLocalIn, fromLocalIn
 -}
 
 import OpenSolid.Core.Types exposing (..)
@@ -105,8 +109,6 @@ import OpenSolid.Core.Direction2d as Direction2d
 
 
 {-| The point (0, 0).
-
-    Point2d.origin == Point2d 0 0
 -}
 origin : Point2d
 origin =
@@ -151,15 +153,15 @@ midpoint firstPoint secondPoint =
 parameter that ranges from zero to one.
 
     interpolate : Float -> Point2d
-    interpolate value =
-        Point2d.interpolate Point2d.origin (Point2d 8 8) value
+    interpolate parameter =
+        Point2d.interpolate Point2d.origin (Point2d 8 8) parameter
 
     interpolate 0 == Point2d 0 0
     interpolate 0.25 == Point2d 2 2
     interpolate 0.75 == Point2d 6 6
     interpolate 1 == Point2d 8 8
 
-You can also pass values less than zero or larger than one to extrapolate:
+You can also pass values less than zero or greater than one to extrapolate:
 
     interpolate 1.25 == Point2d 10 10
 -}
@@ -172,72 +174,9 @@ interpolate startPoint endPoint =
         \t -> plus (Vector2d.times t displacement) startPoint
 
 
-{-| Get the (x, y) coordinates of a point.
-
-    Point2d.cooordinates (Point2d x y) == ( x, y )
-
-Note that you could use this to extract the X and Y coordinates of a point using
-tuple pattern matching, for example
-
-    ( x, y ) = Point2d.coordinates point
-
-but it's simpler and more efficient (although perhaps slightly cryptic) to use
-pattern matching on the point directly:
-
-    (Point2d x y) = point
--}
-coordinates : Point2d -> ( Float, Float )
-coordinates (Point2d x y) =
-    ( x, y )
-
-
-{-| Construct a point from (x, y) coordinates.
-
-    Point2d.fromCoordinates ( x, y ) == Point2d x y
--}
-fromCoordinates : ( Float, Float ) -> Point2d
-fromCoordinates ( x, y ) =
-    Point2d x y
-
-
-{-| Get the polar (radius, angle) coordinates of a point. Angles will be
-returned in radians.
-
-    Point2d.polarCoordinates (Point2d 1 1) == ( sqrt 2, degrees 45 )
--}
-polarCoordinates : Point2d -> ( Float, Float )
-polarCoordinates =
-    coordinates >> toPolar
-
-
-{-| Construct a point from polar (radius, angle) coordinates.
-
-    Point2d.fromPolarCoordinates ( radius, angle ) == Point2d.polar radius angle
--}
-fromPolarCoordinates : ( Float, Float ) -> Point2d
-fromPolarCoordinates =
-    fromPolar >> fromCoordinates
-
-
-{-| Convert a point to a record with `x` and `y` fields.
-
-    Point2d.toRecord (Point2d 2 3) == { x = 2, y = 3 }
--}
-toRecord : Point2d -> { x : Float, y : Float }
-toRecord (Point2d x y) =
-    { x = x, y = y }
-
-
-{-| Construct a point from a record with `x` and `y` fields.
-
-    Point2d.fromRecord { x = 2, y = 3 } == Point2d 2 3
--}
-fromRecord : { x : Float, y : Float } -> Point2d
-fromRecord { x, y } =
-    Point2d x y
-
-
 {-| Get the X coordinate of a point.
+
+    Point2d.xCoordinate (Point2d 2 3) == 2
 -}
 xCoordinate : Point2d -> Float
 xCoordinate (Point2d x _) =
@@ -245,6 +184,8 @@ xCoordinate (Point2d x _) =
 
 
 {-| Get the Y coordinate of a point.
+
+    Point2d.yCoordinate (Point2d 2 3) == 3
 -}
 yCoordinate : Point2d -> Float
 yCoordinate (Point2d _ y) =
@@ -323,7 +264,7 @@ distanceAlong axis =
 
 {-| Determine the perpendicular (or neareast) distance of a point from an axis.
 Note that this is an unsigned value - it does not matter which side of the axis
-the point is on:
+the point is on.
 
     axis =
         Axis2d (Point2d 1 2) Direction2d.x
@@ -332,12 +273,11 @@ the point is on:
     Point2d.distanceFrom axis Point2d.origin == 2 -- two units below
 
 If you need a signed value, you could construct a perpendicular axis and measure
-distance along it (using the same `axis` as above):
+distance along it (using the `axis` value from above):
 
     perpendicularAxis =
-        Axis2d axis.originPoint (Direction2d.perpendicularTo axis.direction)
+        Axis2d.perpendicularTo axis
 
-    perpendicularAxis == Axis2d (Point2d 1 2) Direction2d.y
     Point2d.distanceAlong perpendicularAxis (Point2d 3 3) == 1
     Point2d.distanceAlong perpendicularAxis Point2d.origin == -2
 -}
@@ -348,7 +288,7 @@ distanceFromAxis axis =
         >> abs
 
 
-{-| Add a vector a point (translate the point by that vector).
+{-| Add a vector to a point (translate the point by that vector).
 
     Point2d.plus (Vector2d 1 2) (Point2d 3 4) == Point2d 4 6
 -}
@@ -446,6 +386,16 @@ projectOnto axis =
         >> addTo axis.originPoint
 
 
+{-| Convert a point from global coordinates to local coordinates within a given
+frame. The result will be the given point expressed relative to the given
+frame.
+
+    localFrame =
+        Frame2d.at (Point2d 1 2)
+
+    Point2d.toLocalIn localFrame (Point2d 4 5) == Point2d 3 3
+    Point2d.toLocalIn localFrame (Point2d 1 0) == Point2d 0 -2
+-}
 toLocalIn : Frame2d -> Point2d -> Point2d
 toLocalIn frame =
     vectorFrom frame.originPoint
@@ -453,8 +403,82 @@ toLocalIn frame =
         >> (\(Vector2d x y) -> Point2d x y)
 
 
+{-| Convert a point from local coordinates within a given frame to global
+coordinates. Inverse of `toLocalIn`.
+
+    localFrame =
+        Frame2d.at (Point2d 1 2)
+
+    Point2d.fromLocalIn localFrame (Point2d 3 3) == Point2d 4 5
+    Point2d.fromLocalIn localFrame (Point2d 0 -2) == Point2d 1 0
+-}
 fromLocalIn : Frame2d -> Point2d -> Point2d
 fromLocalIn frame =
     (\(Point2d x y) -> Vector2d x y)
         >> Vector2d.fromLocalIn frame
         >> addTo frame.originPoint
+
+
+{-| Get the (x, y) coordinates of a point.
+
+    Point2d.cooordinates (Point2d x y) == ( x, y )
+
+Note that you could use this to extract the X and Y coordinates of a point using
+tuple pattern matching, for example
+
+    ( x, y ) = Point2d.coordinates point
+
+but it's simpler and more efficient to use pattern matching on the point
+directly:
+
+    (Point2d x y) = point
+-}
+coordinates : Point2d -> ( Float, Float )
+coordinates (Point2d x y) =
+    ( x, y )
+
+
+{-| Construct a point from (x, y) coordinates.
+
+    Point2d.fromCoordinates ( x, y ) == Point2d x y
+-}
+fromCoordinates : ( Float, Float ) -> Point2d
+fromCoordinates ( x, y ) =
+    Point2d x y
+
+
+{-| Get the polar (radius, angle) coordinates of a point. Angles will be
+returned in radians.
+
+    Point2d.polarCoordinates (Point2d 1 1) == ( sqrt 2, degrees 45 )
+-}
+polarCoordinates : Point2d -> ( Float, Float )
+polarCoordinates =
+    coordinates >> toPolar
+
+
+{-| Construct a point from polar (radius, angle) coordinates.
+
+    Point2d.fromPolarCoordinates ( radius, angle ) == Point2d.polar radius angle
+-}
+fromPolarCoordinates : ( Float, Float ) -> Point2d
+fromPolarCoordinates =
+    fromPolar >> fromCoordinates
+
+
+{-| Convert a point to a record with `x` and `y` fields.
+
+    Point2d.toRecord (Point2d 2 3) == { x = 2, y = 3 }
+-}
+toRecord : Point2d -> { x : Float, y : Float }
+toRecord (Point2d x y) =
+    { x = x, y = y }
+
+
+{-| Construct a point from a record with `x` and `y` fields.
+
+    Point2d.fromRecord { x = 2, y = 3 } == Point2d 2 3
+-}
+fromRecord : { x : Float, y : Float } -> Point2d
+fromRecord { x, y } =
+    Point2d x y
