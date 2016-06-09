@@ -132,7 +132,9 @@ polar radius angle =
     fromPolarComponents ( radius, angle )
 
 
-{-| Construct a vector parallel to the given axis, with the given magnitude.
+{-| Construct a vector parallel to the given axis, with the given magnitude. The
+magnitude may be negative, in which case the vector will have an opposite
+direction to the axis.
 
     Vector2d.alongAxis Axis2d.x 5 == Vector2d 5 0
     Vector2d.alongAxis Axis2d.y -3 == Vector2d 0 -3
@@ -230,12 +232,12 @@ yComponent (Vector2d _ y) =
     forwardSpeed = Vector2d.componentIn forwardDirection velocityVector
 
 This is more general and flexible than using `xComponent` or `yComponent`, both
-of which can be expressed in terms of `componentIn`, for example
+of which can be expressed in terms of `componentIn`:
 
     Vector2d.xComponent vector == Vector2d.componentIn Direction2d.x vector
 
-but `componentIn` is slightly slower since behind the scenes it requires a dot
-product instead of a simple component access.
+However, `componentIn` is slightly slower because behind the scenes it requires
+a dot product instead of a simple component access.
 -}
 componentIn : Direction2d -> Vector2d -> Float
 componentIn (Direction2d vector) =
