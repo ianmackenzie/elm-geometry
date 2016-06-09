@@ -12,12 +12,6 @@ module OpenSolid.Core.Vector2d
         ( zero
         , polar
         , alongAxis
-        , components
-        , fromComponents
-        , polarComponents
-        , fromPolarComponents
-        , toRecord
-        , fromRecord
         , xComponent
         , yComponent
         , componentIn
@@ -35,6 +29,12 @@ module OpenSolid.Core.Vector2d
         , perpendicularTo
         , toLocalIn
         , fromLocalIn
+        , components
+        , fromComponents
+        , polarComponents
+        , fromPolarComponents
+        , toRecord
+        , fromRecord
         )
 
 {-| Various functions for constructing `Vector2d` values and performing
@@ -64,22 +64,6 @@ not the only way!
 
 @docs polar, alongAxis
 
-# Conversions
-
-Various ways to convert to and from plain tuples and records. Primarily useful
-for interoperability with other libraries. For example, you could define
-conversion functions to and from `elm-linear-algebra`'s `Vec2` type with
-
-    toVec2 : Vector2d -> Math.Vector2.Vec2
-    toVec2 =
-        Vector2d.components >> Math.Vector2.fromTuple
-
-    fromVec2 : Math.Vector2.Vec2 -> Vector2d
-    fromVec2 =
-        Math.Vector2.toTuple >> Vector2d.fromComponents
-
-@docs components, fromComponents, polarComponents, fromPolarComponents, toRecord, fromRecord
-
 # Components
 
 @docs xComponent, yComponent, componentIn
@@ -108,6 +92,22 @@ counterclockwise from the global XY frame:
     frame.yDirection == Direction2d (Vector2d -0.7071 0.7071)
 
 @docs toLocalIn, fromLocalIn
+
+# Conversions
+
+Various ways to convert to and from plain tuples and records. Primarily useful
+for interoperability with other libraries. For example, you could define
+conversion functions to and from `elm-linear-algebra`'s `Vec2` type with
+
+    toVec2 : Vector2d -> Math.Vector2.Vec2
+    toVec2 =
+        Vector2d.components >> Math.Vector2.fromTuple
+
+    fromVec2 : Math.Vector2.Vec2 -> Vector2d
+    fromVec2 =
+        Math.Vector2.toTuple >> Vector2d.fromComponents
+
+@docs components, fromComponents, polarComponents, fromPolarComponents, toRecord, fromRecord
 -}
 
 import OpenSolid.Core.Types exposing (..)
@@ -146,71 +146,6 @@ alongAxis axis magnitude =
             axis.direction
     in
         times magnitude directionVector
-
-
-{-| Get the (x, y) components of a vector.
-
-    Vector2d.components (Vector2d x y) == ( x, y )
-
-Note that you could use this to extract the X and Y components of a vector using
-tuple pattern matching, for example
-
-    ( x, y ) = Vector2d.components vector
-
-but it's simpler and more efficient (although perhaps slightly cryptic) to use
-pattern matching on the vector directly:
-
-    (Vector2d x y) = vector
--}
-components : Vector2d -> ( Float, Float )
-components (Vector2d x y) =
-    ( x, y )
-
-
-{-| Construct a vector from (x, y) components.
-
-    Vector2d.fromComponents ( x, y ) == Vector2d x y
--}
-fromComponents : ( Float, Float ) -> Vector2d
-fromComponents ( x, y ) =
-    Vector2d x y
-
-
-{-| Get the polar (radius, angle) components of a vector. Angles will be
-returned in radians.
-
-    Vector2d.polarComponents (Vector2d 1 1) == ( sqrt 2, degrees 45 )
--}
-polarComponents : Vector2d -> ( Float, Float )
-polarComponents =
-    components >> toPolar
-
-
-{-| Construct a vector from polar (radius, angle) components.
-
-    Vector2d.fromPolarComponents ( radius, angle ) == Vector2d.polar radius angle
--}
-fromPolarComponents : ( Float, Float ) -> Vector2d
-fromPolarComponents =
-    fromPolar >> fromComponents
-
-
-{-| Convert a vector to a record with `x` and `y` fields.
-
-    Vector2d.toRecord (Vector2d 2 3) == { x = 2, y = 3 }
--}
-toRecord : Vector2d -> { x : Float, y : Float }
-toRecord (Vector2d x y) =
-    { x = x, y = y }
-
-
-{-| Construct a vector from a record with `x` and `y` fields.
-
-    Vector2d.fromRecord { x = 2, y = 3 } == Vector2d 2 3
--}
-fromRecord : { x : Float, y : Float } -> Vector2d
-fromRecord { x, y } =
-    Vector2d x y
 
 
 {-| Get the X component of a vector.
@@ -479,3 +414,68 @@ fromLocalIn frame =
             frame.yDirection
     in
         \(Vector2d x y) -> Vector2d (x1 * x + x2 * y) (y1 * x + y2 * y)
+
+
+{-| Get the (x, y) components of a vector.
+
+    Vector2d.components (Vector2d x y) == ( x, y )
+
+Note that you could use this to extract the X and Y components of a vector using
+tuple pattern matching, for example
+
+    ( x, y ) = Vector2d.components vector
+
+but it's simpler and more efficient to use pattern matching on the vector
+directly:
+
+    (Vector2d x y) = vector
+-}
+components : Vector2d -> ( Float, Float )
+components (Vector2d x y) =
+    ( x, y )
+
+
+{-| Construct a vector from (x, y) components.
+
+    Vector2d.fromComponents ( x, y ) == Vector2d x y
+-}
+fromComponents : ( Float, Float ) -> Vector2d
+fromComponents ( x, y ) =
+    Vector2d x y
+
+
+{-| Get the polar (radius, angle) components of a vector. Angles will be
+returned in radians.
+
+    Vector2d.polarComponents (Vector2d 1 1) == ( sqrt 2, degrees 45 )
+-}
+polarComponents : Vector2d -> ( Float, Float )
+polarComponents =
+    components >> toPolar
+
+
+{-| Construct a vector from polar (radius, angle) components.
+
+    Vector2d.fromPolarComponents ( radius, angle ) == Vector2d.polar radius angle
+-}
+fromPolarComponents : ( Float, Float ) -> Vector2d
+fromPolarComponents =
+    fromPolar >> fromComponents
+
+
+{-| Convert a vector to a record with `x` and `y` fields.
+
+    Vector2d.toRecord (Vector2d 2 3) == { x = 2, y = 3 }
+-}
+toRecord : Vector2d -> { x : Float, y : Float }
+toRecord (Vector2d x y) =
+    { x = x, y = y }
+
+
+{-| Construct a vector from a record with `x` and `y` fields.
+
+    Vector2d.fromRecord { x = 2, y = 3 } == Vector2d 2 3
+-}
+fromRecord : { x : Float, y : Float } -> Vector2d
+fromRecord { x, y } =
+    Vector2d x y
