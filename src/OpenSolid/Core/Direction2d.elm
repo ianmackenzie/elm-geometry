@@ -11,15 +11,15 @@ module OpenSolid.Core.Direction2d
     exposing
         ( x
         , y
+        , fromAngle
         , ofVector
         , ofNonZeroVector
-        , fromAngle
+        , perpendicularTo
         , fromComponents
         , xComponent
         , yComponent
         , components
         , asVector
-        , perpendicularTo
         , rotateBy
         , mirrorAcross
         , toLocalIn
@@ -43,6 +43,11 @@ x =
 y : Direction2d
 y =
     Direction2d (Vector2d 0 1)
+
+
+fromAngle : Float -> Direction2d
+fromAngle angle =
+    Direction2d (Vector2d (cos angle) (sin angle))
 
 
 {-| Attempt to find the direction of a vector. In the case of a zero vector,
@@ -73,9 +78,9 @@ ofNonZeroVector vector =
     Direction2d (Vector2d.times (1 / Vector2d.length vector) vector)
 
 
-fromAngle : Float -> Direction2d
-fromAngle angle =
-    Direction2d (Vector2d (cos angle) (sin angle))
+perpendicularTo : Direction2d -> Direction2d
+perpendicularTo =
+    asVector >> Vector2d.perpendicularTo >> Direction2d
 
 
 fromComponents : ( Float, Float ) -> Direction2d
@@ -101,11 +106,6 @@ components =
 asVector : Direction2d -> Vector2d
 asVector (Direction2d vector) =
     vector
-
-
-perpendicularTo : Direction2d -> Direction2d
-perpendicularTo =
-    asVector >> Vector2d.perpendicularTo >> Direction2d
 
 
 rotateBy : Float -> Direction2d -> Direction2d

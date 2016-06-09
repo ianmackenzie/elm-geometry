@@ -15,14 +15,14 @@ module OpenSolid.Core.Direction3d
         , onPlane
         , ofVector
         , ofNonZeroVector
+        , perpendicularTo
+        , perpendicularBasis
         , fromComponents
         , xComponent
         , yComponent
         , zComponent
         , components
         , asVector
-        , perpendicularTo
-        , perpendicularBasis
         , rotateAround
         , mirrorAcross
         , toLocalIn
@@ -90,6 +90,23 @@ ofNonZeroVector vector =
     Direction3d (Vector3d.times (1 / Vector3d.length vector) vector)
 
 
+perpendicularTo : Direction3d -> Direction3d
+perpendicularTo =
+    asVector >> Vector3d.perpendicularTo >> ofNonZeroVector
+
+
+perpendicularBasis : Direction3d -> ( Direction3d, Direction3d )
+perpendicularBasis direction =
+    let
+        xDirection =
+            perpendicularTo direction
+
+        yDirection =
+            Direction3d (crossProduct direction xDirection)
+    in
+        ( xDirection, yDirection )
+
+
 fromComponents : ( Float, Float, Float ) -> Direction3d
 fromComponents =
     Vector3d.fromComponents >> Direction3d
@@ -118,23 +135,6 @@ components =
 asVector : Direction3d -> Vector3d
 asVector (Direction3d vector) =
     vector
-
-
-perpendicularTo : Direction3d -> Direction3d
-perpendicularTo =
-    asVector >> Vector3d.perpendicularTo >> ofNonZeroVector
-
-
-perpendicularBasis : Direction3d -> ( Direction3d, Direction3d )
-perpendicularBasis direction =
-    let
-        xDirection =
-            perpendicularTo direction
-
-        yDirection =
-            Direction3d (crossProduct direction xDirection)
-    in
-        ( xDirection, yDirection )
 
 
 rotateAround : Axis3d -> Float -> Direction3d -> Direction3d

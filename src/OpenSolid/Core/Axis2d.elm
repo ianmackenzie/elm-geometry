@@ -11,12 +11,12 @@ module OpenSolid.Core.Axis2d
     exposing
         ( x
         , y
+        , perpendicularTo
         , scaleAbout
         , rotateAround
         , translateBy
         , translateAlong
         , mirrorAcross
-        , perpendicularTo
         , toLocalIn
         , fromLocalIn
         )
@@ -34,6 +34,11 @@ x =
 y : Axis2d
 y =
     Axis2d Point2d.origin Direction2d.y
+
+
+perpendicularTo : Axis2d -> Axis2d
+perpendicularTo axis =
+    Axis2d axis.originPoint (Direction2d.perpendicularTo axis.direction)
 
 
 scaleAbout : Point2d -> Float -> Axis2d -> Axis2d
@@ -81,11 +86,6 @@ mirrorAcross otherAxis =
         \axis ->
             Axis2d (mirrorPoint axis.originPoint)
                 (mirrorDirection axis.direction)
-
-
-perpendicularTo : Axis2d -> Axis2d
-perpendicularTo axis =
-    Axis2d axis.originPoint (Direction2d.perpendicularTo axis.direction)
 
 
 toLocalIn : Frame2d -> Axis2d -> Axis2d
