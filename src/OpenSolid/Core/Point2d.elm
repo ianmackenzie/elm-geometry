@@ -391,7 +391,7 @@ frame. The result will be the given point expressed relative to the given
 frame.
 
     localFrame =
-        Frame2d.at (Point2d 1 2)
+        Frame2d.atPoint (Point2d 1 2)
 
     Point2d.toLocalIn localFrame (Point2d 4 5) == Point2d 3 3
     Point2d.toLocalIn localFrame (Point2d 1 0) == Point2d 0 -2
@@ -407,7 +407,7 @@ toLocalIn frame =
 coordinates. Inverse of `toLocalIn`.
 
     localFrame =
-        Frame2d.at (Point2d 1 2)
+        Frame2d.atPoint (Point2d 1 2)
 
     Point2d.fromLocalIn localFrame (Point2d 3 3) == Point2d 4 5
     Point2d.fromLocalIn localFrame (Point2d 0 -2) == Point2d 1 0
