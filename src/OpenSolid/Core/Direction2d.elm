@@ -12,7 +12,6 @@ module OpenSolid.Core.Direction2d
         ( x
         , y
         , fromAngle
-        , ofVector
         , ofNonZeroVector
         , perpendicularTo
         , fromComponents
@@ -48,29 +47,6 @@ y =
 fromAngle : Float -> Direction2d
 fromAngle angle =
     Direction2d (Vector2d (cos angle) (sin angle))
-
-
-{-| Attempt to find the direction of a vector. In the case of a zero vector,
-return `Nothing`.
-
-    Direction2d.ofVector (Vector2d 1 1) == Just (Direction2d (Vector2d 0.7071 0.7071))
-    Direction2d.ofVector (Vector2d 0 0) == Nothing
-
-For instance, given an eye point and a point to look at, the corresponding view
-direction could be determined with
-
-    Direction2d.ofVector (Point2d.vectorFrom eyePoint lookAtPoint)
-
-This would return a `Maybe Direction2d`, with `Nothing` corresponding to the
-case where the eye point and point to look at are coincident (in which case the
-view direction is not well-defined and some special-case logic is needed).
--}
-ofVector : Vector2d -> Maybe Direction2d
-ofVector vector =
-    if vector == Vector2d.zero then
-        Nothing
-    else
-        Just (ofNonZeroVector vector)
 
 
 ofNonZeroVector : Vector2d -> Direction2d

@@ -18,6 +18,7 @@ module OpenSolid.Core.Vector2d
         , componentIn
         , length
         , squaredLength
+        , direction
         , negate
         , plus
         , minus
@@ -68,9 +69,9 @@ not the only way!
 
 @docs xComponent, yComponent, componentIn
 
-# Length
+# Length and direction
 
-@docs length, squaredLength
+@docs length, squaredLength, direction
 
 # Arithmetic
 
@@ -216,6 +217,32 @@ difference will be negligible and using `length` is much more readable!
 squaredLength : Vector2d -> Float
 squaredLength (Vector2d x y) =
     x * x + y * y
+
+
+{-| Attempt to find the direction of a vector. In the case of a zero vector,
+return `Nothing`.
+
+    Vector2d.direction (Vector2d 1 1) == Just (Direction2d (Vector2d 0.7071 0.7071))
+    Vector2d.direction (Vector2d 0 0) == Nothing
+
+For instance, given an eye point and a point to look at, the corresponding view
+direction could be determined with
+
+    Vector2d.direction (Point2d.vectorFrom eyePoint lookAtPoint)
+
+This would return a `Maybe Direction2d`, with `Nothing` corresponding to the
+case where the eye point and point to look at are coincident (in which case the
+view direction is not well-defined and some special-case logic is needed).
+
+If you can *guarantee* that a vector is non-zero and don't want to deal with a
+`Maybe`, you can use `Direction2d.ofNonZeroVector` instead.
+-}
+direction : Vector2d -> Maybe Direction2d
+direction vector =
+    if vector == zero then
+        Nothing
+    else
+        Just (Direction2d (times (1 / length vector) vector))
 
 
 {-| Negate a vector.

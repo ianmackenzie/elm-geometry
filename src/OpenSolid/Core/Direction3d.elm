@@ -13,7 +13,6 @@ module OpenSolid.Core.Direction3d
         , y
         , z
         , onPlane
-        , ofVector
         , ofNonZeroVector
         , perpendicularTo
         , perpendicularBasis
@@ -60,29 +59,6 @@ z =
 onPlane : Plane3d -> Direction2d -> Direction3d
 onPlane plane =
     Direction2d.asVector >> Vector3d.onPlane plane >> Direction3d
-
-
-{-| Attempt to find the direction of a vector. In the case of a zero vector,
-return `Nothing`.
-
-    Direction3d.ofVector (Vector3d 1 0 1) == Just (Direction3d (Vector3d 0.7071 0 0.7071))
-    Direction3d.ofVector (Vector3d 0 0 0) == Nothing
-
-For instance, given an eye point and a point to look at, the corresponding view
-direction could be determined with
-
-    Direction3d.ofVector (Point3d.vectorFrom eyePoint lookAtPoint)
-
-This would return a `Maybe Direction3d`, with `Nothing` corresponding to the
-case where the eye point and point to look at are coincident (in which case the
-view direction is not well-defined and some special-case logic is needed).
--}
-ofVector : Vector3d -> Maybe Direction3d
-ofVector vector =
-    if vector == Vector3d.zero then
-        Nothing
-    else
-        Just (ofNonZeroVector vector)
 
 
 ofNonZeroVector : Vector3d -> Direction3d
@@ -159,12 +135,12 @@ fromLocalIn frame =
 
 projectOnto : Plane3d -> Direction3d -> Maybe Direction3d
 projectOnto plane =
-    asVector >> Vector3d.projectOnto plane >> ofVector
+    asVector >> Vector3d.projectOnto plane >> Vector3d.direction
 
 
 projectInto : Plane3d -> Direction3d -> Maybe Direction2d
 projectInto plane =
-    asVector >> Vector3d.projectInto plane >> Direction2d.ofVector
+    asVector >> Vector3d.projectInto plane >> Vector2d.direction
 
 
 negate : Direction3d -> Direction3d

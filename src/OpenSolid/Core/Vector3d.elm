@@ -19,6 +19,7 @@ module OpenSolid.Core.Vector3d
         , componentIn
         , length
         , squaredLength
+        , direction
         , negate
         , plus
         , minus
@@ -70,9 +71,9 @@ is not the only way!
 
 @docs xComponent, yComponent, zComponent, componentIn
 
-# Length
+# Length and direction
 
-@docs length, squaredLength
+@docs length, squaredLength, direction
 
 # Arithmetic
 
@@ -187,6 +188,32 @@ length =
 squaredLength : Vector3d -> Float
 squaredLength (Vector3d x y z) =
     x * x + y * y + z * z
+
+
+{-| Attempt to find the direction of a vector. In the case of a zero vector,
+return `Nothing`.
+
+    Vector3d.direction (Vector3d 1 0 1) == Just (Direction3d (Vector3d 0.7071 0 0.7071))
+    Vector3d.direction (Vector3d 0 0 0) == Nothing
+
+For instance, given an eye point and a point to look at, the corresponding view
+direction could be determined with
+
+    Vector3d.direction (Point3d.vectorFrom eyePoint lookAtPoint)
+
+This would return a `Maybe Direction3d`, with `Nothing` corresponding to the
+case where the eye point and point to look at are coincident (in which case the
+view direction is not well-defined and some special-case logic is needed).
+
+If you can *guarantee* that a vector is non-zero and don't want to deal with a
+`Maybe`, you can use `Direction3d.ofNonZeroVector` instead.
+-}
+direction : Vector3d -> Maybe Direction3d
+direction vector =
+    if vector == zero then
+        Nothing
+    else
+        Just (Direction3d (times (1 / length vector) vector))
 
 
 negate : Vector3d -> Vector3d
