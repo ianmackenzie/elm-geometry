@@ -54,15 +54,15 @@ to numerical roundoff) they might not be exactly equal.
 
 @docs zero
 
-Although there are no predefined constants for `Vector2d 1 0 0`,
-`Vector2d 0 1 0` and `Vector2d 0 0 1`, in most cases you will actually want
+Although there are no predefined constants for `Vector3d 1 0 0`,
+`Vector3d 0 1 0` and `Vector3d 0 0 1`, in most cases you will actually want
 their `Direction3d` versions `Direction3d.x`, `Direction3d.y` and
 `Direction3d.z`.
 
 # Constructors
 
 Since `Vector3d` is not an opaque type, the simplest way to construct one is
-directly from its X, Y and Z components, for example `Vector2d 2 3 4`. But that
+directly from its X, Y and Z components, for example `Vector3d 2 3 4`. But that
 is not the only way!
 
 @docs alongAxis, onPlane, perpendicularTo
@@ -86,7 +86,15 @@ is not the only way!
 # Local coordinates
 
 Functions for transforming vectors between local and global coordinates in
-different coordinate frames.
+different coordinate frames. For the examples below, assume the following
+definition of a local coordinate frame, one that is rotated 45 degrees
+counterclockwise about the Z axis from the global XYZ frame:
+
+    frame = Frame3d.rotateAround Axis3d.z (degrees 45) Frame3d.xyz
+
+    frame.xDirection == Direction3d (Vector3d 0.7071 0.7071 0)
+    frame.yDirection == Direction3d (Vector3d -0.7071 0.7071 0)
+    frame.zDirection == Direction3d (Vector3d 0 0 1)
 
 @docs projectInto, toLocalIn, fromLocalIn
 
@@ -110,11 +118,22 @@ conversion functions to and from `elm-linear-algebra`'s `Vec3` type with
 import OpenSolid.Core.Types exposing (..)
 
 
+{-| The zero vector.
+
+    Vector3d.zero == Vector3d 0 0 0
+-}
 zero : Vector3d
 zero =
     Vector3d 0 0 0
 
 
+{-| Construct a vector parallel to the given axis, with the given magnitude. The
+magnitude may be negative, in which case the vector will have an opposite
+direction to the axis.
+
+    Vector3d.alongAxis Axis3d.x 5 == Vector3d 5 0 0
+    Vector3d.alongAxis Axis3d.y -3 == Vector3d 0 -3 0
+-}
 alongAxis : Axis3d -> Float -> Vector3d
 alongAxis axis magnitude =
     let
@@ -124,6 +143,17 @@ alongAxis axis magnitude =
         times magnitude directionVector
 
 
+{-| Construct a vector which lies on the given plane, with the given local
+(planar) components.
+
+    Vector3d.onPlane Plane3d.xy (Vector2d 2 3) == Vector3d 2 3 0
+    Vector3d.onPlane Plane3d.yz (Vector2d 2 3) == Vector3d 0 2 3
+    Vector3d.onPlane Plane3d.zy (Vector2d 2 3) == Vector3d 0 3 2
+
+    Vector3d.onPlane plane (Vector2d x y) ==
+        Vector3d.plus (Direction3d.times x plane.xDirection)
+            (Direction3d.times y plane.yDirection)
+-}
 onPlane : Plane3d -> Vector2d -> Vector3d
 onPlane plane =
     let
@@ -137,6 +167,15 @@ onPlane plane =
             Vector3d (x1 * x + x2 * y) (y1 * x + y2 * y) (z1 * x + z2 * y)
 
 
+{-| Construct an arbitrary vector perpendicular to the given vector. The exact
+magnitude and direction of the resulting vector are not specified, but it is
+guaranteed to be perpendicular to the given vector and non-zero (unless the
+given vector is itself zero).
+
+    Vector3d.perpendicularTo (Vector3d 3 0 0) == Vector3d 0 0 -3
+    Vector3d.perpendicularTo (Vector3d 1 2 3) == Vector3d 0 -3 2
+    Vector3d.perpendicularTo Vector3d.zero == Vector3d.zero
+-}
 perpendicularTo : Vector3d -> Vector3d
 perpendicularTo (Vector3d x y z) =
     let
@@ -160,31 +199,68 @@ perpendicularTo (Vector3d x y z) =
             Vector3d (-y) x 0
 
 
+{-| Get the X component of a vector.
+
+    Vector3d.xComponent (Vector3d 1 2 3) == 1
+-}
 xComponent : Vector3d -> Float
 xComponent (Vector3d x _ _) =
     x
 
 
+{-| Get the Y component of a vector.
+
+    Vector3d.yComponent (Vector3d 1 2 3) == 2
+-}
 yComponent : Vector3d -> Float
 yComponent (Vector3d _ y _) =
     y
 
 
+{-| Get the Z component of a vector.
+
+    Vector3d.zComponent (Vector3d 1 2 3) == 3
+-}
 zComponent : Vector3d -> Float
 zComponent (Vector3d _ _ z) =
     z
 
 
+{-| Find the component of a vector in an arbitrary direction, for example
+
+    verticalSpeed = Vector3d.componentIn upDirection velocityVector
+
+This is more general and flexible than using `xComponent`, `yComponent` or
+`zComponent`, all of which can be expressed in terms of `componentIn`:
+
+    Vector3d.zComponent vector == Vector3d.componentIn Direction3d.z vector
+-}
 componentIn : Direction3d -> Vector3d -> Float
 componentIn (Direction3d vector) =
     dotProduct vector
 
 
+{-| Get the length of a vector.
+
+    Vector3d.length (Vector3d 1 1 1) == sqrt 3
+-}
 length : Vector3d -> Float
 length =
     squaredLength >> sqrt
 
 
+{-| Get the squared length of a vector. `squaredLength` is slightly faster than
+`length`, so for example
+
+    Vector3d.squaredLength vector > tolerance * tolerance
+
+is equivalent to but slightly more efficient than
+
+    Vector3d.length vector > tolerance
+
+since the latter requires a square root. In many cases, however, the speed
+difference will be negligible and using `length` is much more readable!
+-}
 squaredLength : Vector3d -> Float
 squaredLength (Vector3d x y z) =
     x * x + y * y + z * z
@@ -193,7 +269,9 @@ squaredLength (Vector3d x y z) =
 {-| Attempt to find the direction of a vector. In the case of a zero vector,
 return `Nothing`.
 
-    Vector3d.direction (Vector3d 1 0 1) == Just (Direction3d (Vector3d 0.7071 0 0.7071))
+    Vector3d.direction (Vector3d 1 0 1) ==
+        Just (Direction3d (Vector3d 0.7071 0 0.7071))
+
     Vector3d.direction (Vector3d 0 0 0) == Nothing
 
 For instance, given an eye point and a point to look at, the corresponding view
@@ -216,31 +294,77 @@ direction vector =
         Just (Direction3d (times (1 / length vector) vector))
 
 
+{-| Negate a vector.
+
+    Vector3d.negate (Vector3d 1 -3 2) == Vector3d -1 3 -2
+-}
 negate : Vector3d -> Vector3d
 negate (Vector3d x y z) =
     Vector3d (-x) (-y) (-z)
 
 
+{-| Add one vector to another.
+
+    Vector3d.plus (Vector3d 1 2 3) (Vector3d 4 5 6) == Vector3d 5 7 8
+-}
 plus : Vector3d -> Vector3d -> Vector3d
 plus (Vector3d x2 y2 z2) (Vector3d x1 y1 z1) =
     Vector3d (x1 + x2) (y1 + y2) (z1 + z2)
 
 
+{-| Subtract one vector from another. The vector to subtract is given first and
+the vector to be subtracted from is given second, so
+
+    Vector3d.minus (Vector3d 1 1 1) (Vector3d 5 6 7) == Vector3d 4 5 6
+
+This means that `minus` can be used more naturally in situations like `map`
+functions
+
+    minusVector =
+        Vector3d.minus (Vector3d 2 2 2)
+
+    originalVectors =
+        [ Vector3d 1 2 3, Vector3d 3 4 5 ]
+
+    List.map minusVector originalVectors == [ Vector3d -1 0 1, Vector3d 1 2 3 ]
+
+or function pipelining
+
+    myFunction =
+        Vector3d.minus (Vector3d 1 1 1) >> Vector3d.times 3
+
+    myFunction (Vector3d 3 2 1) == Vector3d 6 3 0
+
+where `myFunction` could be described in pseudo-English as '`minus` by
+`Vector3d 1 1 1` and then `times` by 3'.
+-}
 minus : Vector3d -> Vector3d -> Vector3d
 minus (Vector3d x2 y2 z2) (Vector3d x1 y1 z1) =
     Vector3d (x1 - x2) (y1 - y2) (z1 - z2)
 
 
+{-| Multiply a vector by a scalar.
+
+    Vector3d.times 3 (Vector3d 1 2 3) == Vector3d 3 6 9
+-}
 times : Float -> Vector3d -> Vector3d
 times scale (Vector3d x y z) =
     Vector3d (x * scale) (y * scale) (z * scale)
 
 
+{-| Find the dot product of two vectors.
+
+    Vector3d.dotProduct (Vector3d 1 0 2) (Vector3d 3 4 5) == 1 * 3 + 2 * 5 == 13
+-}
 dotProduct : Vector3d -> Vector3d -> Float
 dotProduct (Vector3d x1 y1 z1) (Vector3d x2 y2 z2) =
     x1 * x2 + y1 * y2 + z1 * z2
 
 
+{-| Find the cross product of two vectors.
+
+    Vector3d.crossProduct (Vector3d 2 0 0) (Vector3d 0 3 0) == Vector3d 0 0 6
+-}
 crossProduct : Vector3d -> Vector3d -> Vector3d
 crossProduct (Vector3d x1 y1 z1) (Vector3d x2 y2 z2) =
     Vector3d (y1 * z2 - z1 * y2) (z1 * x2 - x1 * z2) (x1 * y2 - y1 * x2)
