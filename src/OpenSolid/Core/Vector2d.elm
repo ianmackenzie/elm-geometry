@@ -153,7 +153,10 @@ alongAxis axis magnitude =
 vector 90 degrees in a counterclockwise direction. The perpendicular vector will
 have the same length as the given vector.
 
+    Vector2d.perpendicularTo (Vector2d 1 0) == Vector2d 0 1
+    Vector2d.perpendicularTo (Vector2d 0 1) == Vector2d -1 0
     Vector2d.perpendicularTo (Vector2d 3 1) == Vector2d -1 3
+    Vector2d.perpendicularTo Vector2d.zero == Vector2d.zero
 -}
 perpendicularTo : Vector2d -> Vector2d
 perpendicularTo (Vector2d x y) =
@@ -196,6 +199,8 @@ componentIn (Direction2d vector) =
 
 
 {-| Get the length of a vector.
+
+    Vector2d.length (Vector2d 1 1) == sqrt 2
 -}
 length : Vector2d -> Float
 length =
