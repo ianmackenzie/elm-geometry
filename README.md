@@ -30,11 +30,15 @@ Vector2d.direction (Vector2d 3 0) == Just Direction2d.x
 ## Philosophy
 
 OpenSolid is similar in functionality to other vector/linear algebra libraries
-but has a more geometric than mathematical focus. For example, OpenSolid does
-not use matrices to define transformations (in fact, matrices are not used
-anywhere). Instead, transformations are simply Elm functions such as
+but has a more geometric than mathematical focus.
+
+### Transformations
+
+OpenSolid does not use matrices to define transformations (in fact, matrices are
+not used anywhere). Instead, transformations are simply Elm functions such as
 `Point2d.rotateAround` shown above. This has many advantages. First, it means
-that transformations can directly used with functions like `List.map`:
+that transformations can directly used with higher-order functions like
+`List.map`:
 
 ```elm
 points =
@@ -51,7 +55,7 @@ rotatedPoints == [ Point2d 0 1, Point2d 0 2, Point2d 0 3 ]
 
 Second, transformations can be composed like any other functions to produce
 composite transformations (no more having to remember multiplication order of
-matrices):
+matrices!):
 
 ```elm
 rotateThenScale =
@@ -61,8 +65,10 @@ rotateThenScale (Point2d 1 0) == Point2d 0 3
 rotateThenScale (Point2d 0 2) == Point2d -6 0
 ```
 
-OpenSolid also encourages thinking about points and vectors as geometric
-entities instead of (x,y,z) values. For example, instead of using
+### Components
+
+OpenSolid encourages thinking about points and vectors as geometric entities
+instead of (x,y,z) values. For example, instead of using
 
 ```elm
 Point3d.xCoordinate myPoint
