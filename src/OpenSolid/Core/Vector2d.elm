@@ -89,6 +89,7 @@ definition of a local coordinate frame, one that is rotated 45 degrees
 counterclockwise from the global XY frame:
 
     frame = Frame2d.rotateBy (degrees 45) Frame2d.xy
+
     frame.xDirection == Direction2d (Vector2d 0.7071 0.7071)
     frame.yDirection == Direction2d (Vector2d -0.7071 0.7071)
 
@@ -224,7 +225,9 @@ squaredLength (Vector2d x y) =
 {-| Attempt to find the direction of a vector. In the case of a zero vector,
 return `Nothing`.
 
-    Vector2d.direction (Vector2d 1 1) == Just (Direction2d (Vector2d 0.7071 0.7071))
+    Vector2d.direction (Vector2d 1 1) ==
+        Just (Direction2d (Vector2d 0.7071 0.7071))
+
     Vector2d.direction (Vector2d 0 0) == Nothing
 
 For instance, given an eye point and a point to look at, the corresponding view
@@ -489,7 +492,8 @@ polarComponents =
 
 {-| Construct a vector from polar (radius, angle) components.
 
-    Vector2d.fromPolarComponents ( radius, angle ) == Vector2d.polar radius angle
+    Vector2d.fromPolarComponents ( radius, angle ) ==
+        Vector2d.polar radius angle
 -}
 fromPolarComponents : ( Float, Float ) -> Vector2d
 fromPolarComponents =
