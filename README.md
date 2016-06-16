@@ -4,9 +4,9 @@ This library defines the core OpenSolid data types: vectors, directions, points,
 axes, planes and coordinate frames in both 2D and 3D:
 
 ```elm
-myVector = Vector3d 1 2 3
-myPoint = Point2d 4 5
-negativeXDirection = Direction3d (Vector3d -1 0 0)
+myVector3d = Vector3d 1 2 3
+myPoint2d = Point2d 4 5
+negativeXDirection3d = Direction3d (Vector3d -1 0 0)
 
 Vector3d.zero == Vector3d 0 0 0
 Direction2d.y == Direction2d (Vector2d 0 1)
@@ -14,7 +14,8 @@ Point2d.origin == Point2d 0 0
 Axis3d.z == Axis3d Point3d.origin Direction3d.z
 Frame2d.xy == Frame2d Point2d.origin Direction2d.x Direction2d.y
 
-A large range of geometric operations are supported:
+(Directions are effectively type-safe unit vectors.) A large range of geometric
+operations are supported:
 
 ```elm
 Vector3d.plus (Vector3d 1 2 3) (Vector3d 4 5 6) == Vector3d 5 7 9
