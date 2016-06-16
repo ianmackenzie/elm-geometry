@@ -85,3 +85,25 @@ angled, not at the origin, or even changing dynamically. The key idea is to
 think in terms of fundamental geometric concepts like "distance of a point along
 an axis" since (unlike "X component of a point") that is independent of the
 particular coordinate system being used to define the point and axis.
+
+### Type safety
+
+OpenSolid distinguishes between vectors, directions and points and only allows
+operations that make sense. For example, vectors can be added together but
+points cannot (however, a vector can be added to a point to produce a shifted
+point).
+
+OpenSolid uses the concept of a 'direction' where other libraries typically use
+vectors with unit length. Having a separate type helps to keep track of whether
+a vector has already been normalized (no more having to guess whether a function
+that accepts a vector argument actually needs a unit vector, and if so whether
+you're expected to normalize the vector yourself or whether the function will do
+that internally).
+
+You can normalize a vector to produce a direction with (for example) the
+`Vector3d.direction` function, but that actually returns a `Maybe Direction3d`
+since a zero vector has no direction - passing `Vector3d.zero` to
+`Vector3d.direction` will result in `None`. This takes advantage of Elm's type
+system to ensure that all code considers the degenerate zero-vector case, which
+is easy to run into when (for example) trying to compute the normal direction to
+a degenerate triangle in 3D.
