@@ -189,9 +189,6 @@ This is more general and flexible than using `xComponent` or `yComponent`, both
 of which can be expressed in terms of `componentIn`:
 
     Vector2d.xComponent vector == Vector2d.componentIn Direction2d.x vector
-
-However, `componentIn` is slightly slower because behind the scenes it requires
-a dot product instead of a simple component access.
 -}
 componentIn : Direction2d -> Vector2d -> Float
 componentIn (Direction2d vector) =
