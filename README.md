@@ -1,7 +1,7 @@
 # OpenSolid Core Library
 
-This library defines the core OpenSolid data types: vectors, directions, points,
-axes, planes and coordinate frames in both 2D and 3D:
+This library defines the core OpenSolid data types - vectors, directions,
+points, axes, planes and coordinate frames in both 2D and 3D:
 
 ```elm
 myVector3d = Vector3d 1 2 3
