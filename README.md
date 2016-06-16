@@ -13,6 +13,7 @@ Direction2d.y == Direction2d (Vector2d 0 1)
 Point2d.origin == Point2d 0 0
 Axis3d.z == Axis3d Point3d.origin Direction3d.z
 Frame2d.xy == Frame2d Point2d.origin Direction2d.x Direction2d.y
+```
 
 (Directions are effectively type-safe unit vectors.) A large range of geometric
 operations are supported:
