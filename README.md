@@ -42,7 +42,7 @@ that transformations can directly used with higher-order functions like
 
 ```elm
 points =
-    [ Point2d 1 0, Point2d 2 0, Point2d 3 0]
+    [ Point2d 1 0, Point2d 2 0, Point2d 3 0 ]
 
 rotateNinetyDegrees =
     Point2d.rotateAround Point2d.origin (degrees 90)
