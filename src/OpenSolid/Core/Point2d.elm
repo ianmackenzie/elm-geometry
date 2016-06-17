@@ -31,6 +31,7 @@ module OpenSolid.Core.Point2d
         , projectOnto
         , toLocalIn
         , fromLocalIn
+        , placeOnto
         , coordinates
         , fromCoordinates
         , polarCoordinates
@@ -84,7 +85,7 @@ different coordinate frames. Although these examples use a simple offset
 frame, these functions can be used to convert to and from local coordinates in
 arbitrarily transformed (translated, rotated, mirrored) frames.
 
-@docs toLocalIn, fromLocalIn
+@docs toLocalIn, fromLocalIn, placeOnto
 
 # Conversions
 
@@ -417,6 +418,18 @@ fromLocalIn frame =
     (\(Point2d x y) -> Vector2d x y)
         >> Vector2d.fromLocalIn frame
         >> addTo frame.originPoint
+
+
+placeOnto : Plane3d -> Point2d -> Point3d
+placeOnto plane (Point2d x y) =
+    let
+        (Vector3d vx vy vz) =
+            Vector2d.placeOnto plane (Vector2d x y)
+
+        (Point3d px py pz) =
+            plane.originPoint
+    in
+        Point3d (px + vx) (py + vy) (pz + vz)
 
 
 {-| Get the (x, y) coordinates of a point.

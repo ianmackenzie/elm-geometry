@@ -30,6 +30,7 @@ module OpenSolid.Core.Vector2d
         , projectOnto
         , toLocalIn
         , fromLocalIn
+        , placeOnto
         , components
         , fromComponents
         , polarComponents
@@ -93,7 +94,7 @@ counterclockwise from the global XY frame:
     frame.xDirection == Direction2d (Vector2d 0.7071 0.7071)
     frame.yDirection == Direction2d (Vector2d -0.7071 0.7071)
 
-@docs toLocalIn, fromLocalIn
+@docs toLocalIn, fromLocalIn, placeOnto
 
 # Conversions
 
@@ -450,6 +451,19 @@ fromLocalIn frame =
             frame.yDirection
     in
         \(Vector2d x y) -> Vector2d (x1 * x + x2 * y) (y1 * x + y2 * y)
+
+
+placeOnto : Plane3d -> Vector2d -> Vector3d
+placeOnto plane =
+    let
+        (Direction3d (Vector3d x1 y1 z1)) =
+            plane.xDirection
+
+        (Direction3d (Vector3d x2 y2 z2)) =
+            plane.yDirection
+    in
+        \(Vector2d x y) ->
+            Vector3d (x1 * x + x2 * y) (y1 * x + y2 * y) (z1 * x + z2 * y)
 
 
 {-| Get the (x, y) components of a vector.

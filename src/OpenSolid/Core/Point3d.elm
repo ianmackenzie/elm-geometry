@@ -57,9 +57,9 @@ alongAxis axis distance =
     plus (Vector3d.alongAxis axis distance) axis.originPoint
 
 
-onPlane : Plane3d -> Point2d -> Point3d
-onPlane plane (Point2d x y) =
-    plus (Vector3d.onPlane plane (Vector2d x y)) plane.originPoint
+onPlane : Plane3d -> Float -> Float -> Point3d
+onPlane plane x y =
+    plus (Vector3d.onPlane plane x y) plane.originPoint
 
 
 fromCoordinates : ( Float, Float, Float ) -> Point3d

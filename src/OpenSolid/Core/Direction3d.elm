@@ -12,7 +12,6 @@ module OpenSolid.Core.Direction3d
         ( x
         , y
         , z
-        , onPlane
         , ofNonZeroVector
         , perpendicularTo
         , perpendicularBasis
@@ -54,11 +53,6 @@ y =
 z : Direction3d
 z =
     Direction3d (Vector3d 0 0 1)
-
-
-onPlane : Plane3d -> Direction2d -> Direction3d
-onPlane plane =
-    Direction2d.asVector >> Vector3d.onPlane plane >> Direction3d
 
 
 ofNonZeroVector : Vector3d -> Direction3d
