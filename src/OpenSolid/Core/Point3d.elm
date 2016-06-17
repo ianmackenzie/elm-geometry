@@ -12,6 +12,7 @@ module OpenSolid.Core.Point3d
         ( origin
         , alongAxis
         , onPlane
+        , relativeTo
         , fromCoordinates
         , interpolate
         , midpoint
@@ -60,6 +61,11 @@ alongAxis axis =
 onPlane : Plane3d -> ( Float, Float ) -> Point3d
 onPlane plane =
     Vector3d.onPlane plane >> addTo plane.originPoint
+
+
+relativeTo : Frame3d -> ( Float, Float, Float ) -> Point3d
+relativeTo frame =
+    Vector3d.relativeTo frame >> addTo frame.originPoint
 
 
 fromCoordinates : ( Float, Float, Float ) -> Point3d
@@ -180,9 +186,7 @@ toLocalIn frame =
 
 fromLocalIn : Frame3d -> Point3d -> Point3d
 fromLocalIn frame =
-    (\(Point3d x y z) -> Vector3d x y z)
-        >> Vector3d.fromLocalIn frame
-        >> addTo frame.originPoint
+    coordinates >> relativeTo frame
 
 
 projectOntoAxis : Axis3d -> Point3d -> Point3d
