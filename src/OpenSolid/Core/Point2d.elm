@@ -436,7 +436,7 @@ placeOnto plane (Point2d x y) =
 
 {-| Get the (x, y) coordinates of a point.
 
-    Point2d.cooordinates (Point2d x y) == ( x, y )
+    Point2d.coordinates (Point2d x y) == ( x, y )
 
 Note that you could use this to extract the X and Y coordinates of a point using
 tuple pattern matching, for example
