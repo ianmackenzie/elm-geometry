@@ -33,8 +33,6 @@ module OpenSolid.Core.Vector2d
         , placeOnto
         , components
         , fromComponents
-        , polarComponents
-        , fromPolarComponents
         , toRecord
         , fromRecord
         )
@@ -110,7 +108,7 @@ conversion functions to and from `elm-linear-algebra`'s `Vec2` type with
     fromVec2 =
         Math.Vector2.toTuple >> Vector2d.fromComponents
 
-@docs components, fromComponents, polarComponents, fromPolarComponents, toRecord, fromRecord
+@docs components, fromComponents, toRecord, fromRecord
 -}
 
 import OpenSolid.Core.Types exposing (..)
@@ -132,7 +130,11 @@ radians (Elm's built-in `degrees` and `turns` functions may be useful).
 -}
 polar : Float -> Float -> Vector2d
 polar radius angle =
-    fromPolarComponents ( radius, angle )
+    let
+        ( x, y ) =
+            fromPolar ( radius, angle )
+    in
+        Vector2d x y
 
 
 {-| Construct a vector parallel to the given axis, with the given magnitude. The
@@ -492,26 +494,6 @@ components (Vector2d x y) =
 fromComponents : ( Float, Float ) -> Vector2d
 fromComponents ( x, y ) =
     Vector2d x y
-
-
-{-| Get the polar (radius, angle) components of a vector. Angles will be
-returned in radians.
-
-    Vector2d.polarComponents (Vector2d 1 1) == ( sqrt 2, degrees 45 )
--}
-polarComponents : Vector2d -> ( Float, Float )
-polarComponents =
-    components >> toPolar
-
-
-{-| Construct a vector from polar (radius, angle) components.
-
-    Vector2d.fromPolarComponents ( radius, angle ) ==
-        Vector2d.polar radius angle
--}
-fromPolarComponents : ( Float, Float ) -> Vector2d
-fromPolarComponents =
-    fromPolar >> fromComponents
 
 
 {-| Convert a vector to a record with `x` and `y` fields.

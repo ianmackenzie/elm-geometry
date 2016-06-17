@@ -34,8 +34,6 @@ module OpenSolid.Core.Point2d
         , placeOnto
         , coordinates
         , fromCoordinates
-        , polarCoordinates
-        , fromPolarCoordinates
         , toRecord
         , fromRecord
         )
@@ -101,7 +99,7 @@ conversion functions to and from `elm-linear-algebra`'s `Vec2` type with
     fromVec2 =
         Math.Vector2.toTuple >> Point2d.fromCoordinates
 
-@docs coordinates, fromCoordinates, polarCoordinates, fromPolarCoordinates, toRecord, fromRecord
+@docs coordinates, fromCoordinates, toRecord, fromRecord
 -}
 
 import OpenSolid.Core.Types exposing (..)
@@ -124,7 +122,11 @@ counterclockwise from the positive X axis. Angles must be given in radians
 -}
 polar : Float -> Float -> Point2d
 polar radius angle =
-    fromPolarCoordinates ( radius, angle )
+    let
+        ( x, y ) =
+            fromPolar ( radius, angle )
+    in
+        Point2d x y
 
 
 {-| Construct a point along an axis, at a particular distance from the axis'
@@ -458,25 +460,6 @@ coordinates (Point2d x y) =
 fromCoordinates : ( Float, Float ) -> Point2d
 fromCoordinates ( x, y ) =
     Point2d x y
-
-
-{-| Get the polar (radius, angle) coordinates of a point. Angles will be
-returned in radians.
-
-    Point2d.polarCoordinates (Point2d 1 1) == ( sqrt 2, degrees 45 )
--}
-polarCoordinates : Point2d -> ( Float, Float )
-polarCoordinates =
-    coordinates >> toPolar
-
-
-{-| Construct a point from polar (radius, angle) coordinates.
-
-    Point2d.fromPolarCoordinates ( radius, angle ) == Point2d.polar radius angle
--}
-fromPolarCoordinates : ( Float, Float ) -> Point2d
-fromPolarCoordinates =
-    fromPolar >> fromCoordinates
 
 
 {-| Convert a point to a record with `x` and `y` fields.
