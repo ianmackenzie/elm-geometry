@@ -11,7 +11,7 @@ module OpenSolid.Core.Direction2d
     exposing
         ( x
         , y
-        , polar
+        , fromAngle
         , ofNonZeroVector
         , perpendicularTo
         , fromComponents
@@ -45,8 +45,8 @@ y =
     Direction2d (Vector2d 0 1)
 
 
-polar : Float -> Direction2d
-polar angle =
+fromAngle : Float -> Direction2d
+fromAngle angle =
     Direction2d (Vector2d (cos angle) (sin angle))
 
 

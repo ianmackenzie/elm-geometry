@@ -37,8 +37,8 @@ However, in most cases it is safer and easier to use the various functions in
 the associated modules, since many types have restrictions on how they must be
 defined. For instance, the `Vector2d` defining a `Direction2d` must have a
 length of one; instead of attempting to guarantee this yourself it is usually
-better to use a constructor function like `Direction2d.polar` or start with an
-existing direction such as `Direction2d.y` and transform it as necessary. For
+better to use a constructor function like `Direction2d.fromAngle` or start with
+an existing direction such as `Direction2d.y` and transform it as necessary. For
 more complex types like `Plane3d` this is even more true!
 
 # Vectors
