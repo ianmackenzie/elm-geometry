@@ -28,6 +28,7 @@ module OpenSolid.Core.Direction2d
         , times
         , dotProduct
         , crossProduct
+        , angleFrom
         , angleTo
         )
 
@@ -128,6 +129,11 @@ dotProduct firstDirection secondDirection =
 crossProduct : Direction2d -> Direction2d -> Float
 crossProduct firstDirection secondDirection =
     Vector2d.crossProduct (asVector firstDirection) (asVector secondDirection)
+
+
+angleFrom : Direction2d -> Direction2d -> Float
+angleFrom other direction =
+    atan2 (crossProduct other direction) (dotProduct other direction)
 
 
 angleTo : Direction2d -> Direction2d -> Float
