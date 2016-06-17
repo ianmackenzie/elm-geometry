@@ -146,15 +146,15 @@ alongAxis axis magnitude =
 {-| Construct a vector which lies on the given plane, with the given local
 (planar) components.
 
-    Vector3d.onPlane Plane3d.xy 2 3 == Vector3d 2 3 0
-    Vector3d.onPlane Plane3d.yz 2 3 == Vector3d 0 2 3
-    Vector3d.onPlane Plane3d.zy 2 3 == Vector3d 0 3 2
+    Vector3d.onPlane Plane3d.xy ( 2, 3 ) == Vector3d 2 3 0
+    Vector3d.onPlane Plane3d.yz ( 2, 3 ) == Vector3d 0 2 3
+    Vector3d.onPlane Plane3d.zy ( 2, 3 ) == Vector3d 0 3 2
 
-    Vector3d.onPlane plane x y ==
+    Vector3d.onPlane plane ( x, y ) ==
         Vector3d.plus (Direction3d.times x plane.xDirection)
             (Direction3d.times y plane.yDirection)
 -}
-onPlane : Plane3d -> Float -> Float -> Vector3d
+onPlane : Plane3d -> ( Float, Float ) -> Vector3d
 onPlane plane =
     let
         (Direction3d (Vector3d x1 y1 z1)) =
@@ -163,7 +163,8 @@ onPlane plane =
         (Direction3d (Vector3d x2 y2 z2)) =
             plane.yDirection
     in
-        \x y -> Vector3d (x1 * x + x2 * y) (y1 * x + y2 * y) (z1 * x + z2 * y)
+        \( x, y ) ->
+            Vector3d (x1 * x + x2 * y) (y1 * x + y2 * y) (z1 * x + z2 * y)
 
 
 {-| Construct an arbitrary vector perpendicular to the given vector. The exact
