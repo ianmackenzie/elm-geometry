@@ -10,8 +10,8 @@
 module OpenSolid.Core.Vector2d
     exposing
         ( zero
-        , polar
         , alongAxis
+        , relativeTo
         , perpendicularTo
         , xComponent
         , yComponent
@@ -62,7 +62,7 @@ Since `Vector2d` is not an opaque type, the simplest way to construct one is
 directly from its X and Y components, for example `Vector2d 2 3`. But that is
 not the only way!
 
-@docs polar, alongAxis, perpendicularTo
+@docs, alongAxis, relativeTo, perpendicularTo
 
 # Components
 
@@ -123,20 +123,6 @@ zero =
     Vector2d 0 0
 
 
-{-| Construct a vector with the given radius and angle. Angles must be given in
-radians (Elm's built-in `degrees` and `turns` functions may be useful).
-
-    Vector2d.polar 1 (degrees 45) == Vector2d 0.7071 0.7071
--}
-polar : Float -> Float -> Vector2d
-polar radius angle =
-    let
-        ( x, y ) =
-            fromPolar ( radius, angle )
-    in
-        Vector2d x y
-
-
 {-| Construct a vector parallel to the given axis, with the given magnitude. The
 magnitude may be negative, in which case the vector will have an opposite
 direction to the axis.
@@ -151,6 +137,18 @@ alongAxis axis magnitude =
             axis.direction
     in
         times magnitude directionVector
+
+
+relativeTo : Frame2d -> ( Float, Float ) -> Vector2d
+relativeTo frame =
+    let
+        (Direction2d (Vector2d x1 y1)) =
+            frame.xDirection
+
+        (Direction2d (Vector2d x2 y2)) =
+            frame.yDirection
+    in
+        \( x, y ) -> Vector2d (x1 * x + x2 * y) (y1 * x + y2 * y)
 
 
 {-| Construct a vector perpendicular to the given vector, by rotating the given
@@ -445,14 +443,7 @@ global coordinates:
 -}
 fromLocalIn : Frame2d -> Vector2d -> Vector2d
 fromLocalIn frame =
-    let
-        (Direction2d (Vector2d x1 y1)) =
-            frame.xDirection
-
-        (Direction2d (Vector2d x2 y2)) =
-            frame.yDirection
-    in
-        \(Vector2d x y) -> Vector2d (x1 * x + x2 * y) (y1 * x + y2 * y)
+    components >> relativeTo frame
 
 
 placeOnto : Plane3d -> Vector2d -> Vector3d

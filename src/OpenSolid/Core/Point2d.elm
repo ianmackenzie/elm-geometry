@@ -10,8 +10,8 @@
 module OpenSolid.Core.Point2d
     exposing
         ( origin
-        , polar
         , alongAxis
+        , relativeTo
         , midpoint
         , interpolate
         , xCoordinate
@@ -58,7 +58,7 @@ Since `Point2d` is not an opaque type, the simplest way to construct one is
 directly from its X and Y coordinates, for example `Point2d 2 3`. But that is
 not the only way!
 
-@docs polar, alongAxis, midpoint, interpolate
+@docs alongAxis, relativeTo, midpoint, interpolate
 
 # Coordinates
 
@@ -114,21 +114,6 @@ origin =
     Point2d 0 0
 
 
-{-| Construct a point given its radius from the origin and its angle
-counterclockwise from the positive X axis. Angles must be given in radians
-(Elm's built-in `degrees` and `turns` functions may be useful).
-
-    Point2d.polar 1 (degrees 45) == Point2d 0.7071 0.7071
--}
-polar : Float -> Float -> Point2d
-polar radius angle =
-    let
-        ( x, y ) =
-            fromPolar ( radius, angle )
-    in
-        Point2d x y
-
-
 {-| Construct a point along an axis, at a particular distance from the axis'
 origin point.
 
@@ -141,6 +126,11 @@ origin point.
 alongAxis : Axis2d -> Float -> Point2d
 alongAxis axis distance =
     plus (Vector2d.alongAxis axis distance) axis.originPoint
+
+
+relativeTo : Frame2d -> ( Float, Float ) -> Point2d
+relativeTo frame =
+    Vector2d.relativeTo frame >> addTo frame.originPoint
 
 
 {-| Construct a point halfway between two other points.
@@ -417,9 +407,7 @@ coordinates. Inverse of `toLocalIn`.
 -}
 fromLocalIn : Frame2d -> Point2d -> Point2d
 fromLocalIn frame =
-    (\(Point2d x y) -> Vector2d x y)
-        >> Vector2d.fromLocalIn frame
-        >> addTo frame.originPoint
+    coordinates >> relativeTo frame
 
 
 placeOnto : Plane3d -> Point2d -> Point3d
