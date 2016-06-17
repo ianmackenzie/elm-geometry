@@ -31,7 +31,7 @@ module OpenSolid.Core.Direction3d
         , times
         , dotProduct
         , crossProduct
-        , angleTo
+        , angleFrom
         )
 
 import OpenSolid.Core.Types exposing (..)
@@ -157,6 +157,6 @@ crossProduct firstDirection secondDirection =
     Vector3d.crossProduct (asVector firstDirection) (asVector secondDirection)
 
 
-angleTo : Direction3d -> Direction3d -> Float
-angleTo other direction =
+angleFrom : Direction3d -> Direction3d -> Float
+angleFrom other direction =
     acos (dotProduct direction other)
