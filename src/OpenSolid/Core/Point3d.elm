@@ -53,8 +53,8 @@ origin =
 
 
 alongAxis : Axis3d -> Float -> Point3d
-alongAxis axis distance =
-    plus (Vector3d.alongAxis axis distance) axis.originPoint
+alongAxis axis =
+    Vector3d.alongAxis axis >> addTo axis.originPoint
 
 
 onPlane : Plane3d -> ( Float, Float ) -> Point3d
