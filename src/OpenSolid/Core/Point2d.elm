@@ -358,7 +358,7 @@ translateAlong axis distance =
 Angled axes work as well:
 
     diagonalAxis =
-        Axis2d Point2d.origin (Direction2d.fromAngle (degrees 45))
+        Axis2d Point2d.origin (Direction2d.polar (degrees 45))
 
     Point2d.mirrorAcross diagonalAxis (Point2d 3 0) == Point2d 0 3
 -}
