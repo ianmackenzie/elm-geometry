@@ -124,8 +124,8 @@ origin point.
     Point2d.alongAxis horizontalAxis -3 == Point2d -2 1
 -}
 alongAxis : Axis2d -> Float -> Point2d
-alongAxis axis distance =
-    plus (Vector2d.alongAxis axis distance) axis.originPoint
+alongAxis axis =
+    Vector2d.alongAxis axis >> addTo axis.originPoint
 
 
 relativeTo : Frame2d -> ( Float, Float ) -> Point2d
