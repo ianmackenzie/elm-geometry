@@ -12,6 +12,7 @@ module OpenSolid.Core.Vector3d
         ( zero
         , alongAxis
         , onPlane
+        , relativeTo
         , perpendicularTo
         , xComponent
         , yComponent
@@ -65,7 +66,7 @@ Since `Vector3d` is not an opaque type, the simplest way to construct one is
 directly from its X, Y and Z components, for example `Vector3d 2 3 4`. But that
 is not the only way!
 
-@docs alongAxis, onPlane, perpendicularTo
+@docs alongAxis, onPlane, relativeTo, perpendicularTo
 
 # Components
 
@@ -165,6 +166,32 @@ onPlane plane =
     in
         \( x, y ) ->
             Vector3d (x1 * x + x2 * y) (y1 * x + y2 * y) (z1 * x + z2 * y)
+
+
+relativeTo : Frame3d -> ( Float, Float, Float ) -> Vector3d
+relativeTo frame =
+    let
+        (Direction3d (Vector3d x1 y1 z1)) =
+            frame.xDirection
+
+        (Direction3d (Vector3d x2 y2 z2)) =
+            frame.yDirection
+
+        (Direction3d (Vector3d x3 y3 z3)) =
+            frame.zDirection
+    in
+        \( x, y, z ) ->
+            let
+                x' =
+                    x1 * x + x2 * y + x3 * z
+
+                y' =
+                    y1 * x + y2 * y + y3 * z
+
+                z' =
+                    z1 * x + z2 * y + z3 * z
+            in
+                Vector3d x' y' z'
 
 
 {-| Construct an arbitrary vector perpendicular to the given vector. The exact
@@ -535,28 +562,7 @@ toLocalIn frame vector =
 
 fromLocalIn : Frame3d -> Vector3d -> Vector3d
 fromLocalIn frame =
-    let
-        (Direction3d (Vector3d x1 y1 z1)) =
-            frame.xDirection
-
-        (Direction3d (Vector3d x2 y2 z2)) =
-            frame.yDirection
-
-        (Direction3d (Vector3d x3 y3 z3)) =
-            frame.zDirection
-    in
-        \(Vector3d x y z) ->
-            let
-                x' =
-                    x1 * x + x2 * y + x3 * z
-
-                y' =
-                    y1 * x + y2 * y + y3 * z
-
-                z' =
-                    z1 * x + z2 * y + z3 * z
-            in
-                Vector3d x' y' z'
+    components >> relativeTo frame
 
 
 projectInto : Plane3d -> Vector3d -> Vector2d
