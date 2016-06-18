@@ -21,8 +21,8 @@ module OpenSolid.Core.Direction2d
         , asVector
         , rotateBy
         , mirrorAcross
-        , toLocalIn
-        , fromLocalIn
+        , localizeTo
+        , placeIn
         , placeOnto
         , negate
         , times
@@ -96,14 +96,14 @@ mirrorAcross axis =
     asVector >> Vector2d.mirrorAcross axis >> Direction2d
 
 
-toLocalIn : Frame2d -> Direction2d -> Direction2d
-toLocalIn frame =
-    asVector >> Vector2d.toLocalIn frame >> Direction2d
+localizeTo : Frame2d -> Direction2d -> Direction2d
+localizeTo frame =
+    asVector >> Vector2d.localizeTo frame >> Direction2d
 
 
-fromLocalIn : Frame2d -> Direction2d -> Direction2d
-fromLocalIn frame =
-    asVector >> Vector2d.fromLocalIn frame >> Direction2d
+placeIn : Frame2d -> Direction2d -> Direction2d
+placeIn frame =
+    asVector >> Vector2d.placeIn frame >> Direction2d
 
 
 placeOnto : Plane3d -> Direction2d -> Direction3d

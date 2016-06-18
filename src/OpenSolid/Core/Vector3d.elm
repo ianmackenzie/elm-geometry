@@ -32,8 +32,8 @@ module OpenSolid.Core.Vector3d
         , projectOntoAxis
         , projectOnto
         , projectInto
-        , toLocalIn
-        , fromLocalIn
+        , localizeTo
+        , placeIn
         , components
         , fromComponents
         , toRecord
@@ -97,7 +97,7 @@ counterclockwise about the Z axis from the global XYZ frame:
     frame.yDirection == Direction3d (Vector3d -0.7071 0.7071 0)
     frame.zDirection == Direction3d (Vector3d 0 0 1)
 
-@docs projectInto, toLocalIn, fromLocalIn
+@docs projectInto, localizeTo, placeIn
 
 # Conversions
 
@@ -545,8 +545,8 @@ projectOnto plane vector =
         minus (projectOntoAxis normalAxis vector) vector
 
 
-toLocalIn : Frame3d -> Vector3d -> Vector3d
-toLocalIn frame vector =
+localizeTo : Frame3d -> Vector3d -> Vector3d
+localizeTo frame vector =
     let
         x =
             componentIn frame.xDirection vector
@@ -560,8 +560,8 @@ toLocalIn frame vector =
         Vector3d x y z
 
 
-fromLocalIn : Frame3d -> Vector3d -> Vector3d
-fromLocalIn frame =
+placeIn : Frame3d -> Vector3d -> Vector3d
+placeIn frame =
     components >> relativeTo frame
 
 

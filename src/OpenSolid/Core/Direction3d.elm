@@ -23,8 +23,8 @@ module OpenSolid.Core.Direction3d
         , asVector
         , rotateAround
         , mirrorAcross
-        , toLocalIn
-        , fromLocalIn
+        , localizeTo
+        , placeIn
         , projectOnto
         , projectInto
         , negate
@@ -117,14 +117,14 @@ mirrorAcross plane =
     asVector >> Vector3d.mirrorAcross plane >> Direction3d
 
 
-toLocalIn : Frame3d -> Direction3d -> Direction3d
-toLocalIn frame =
-    asVector >> Vector3d.toLocalIn frame >> Direction3d
+localizeTo : Frame3d -> Direction3d -> Direction3d
+localizeTo frame =
+    asVector >> Vector3d.localizeTo frame >> Direction3d
 
 
-fromLocalIn : Frame3d -> Direction3d -> Direction3d
-fromLocalIn frame =
-    asVector >> Vector3d.fromLocalIn frame >> Direction3d
+placeIn : Frame3d -> Direction3d -> Direction3d
+placeIn frame =
+    asVector >> Vector3d.placeIn frame >> Direction3d
 
 
 projectOnto : Plane3d -> Direction3d -> Maybe Direction3d

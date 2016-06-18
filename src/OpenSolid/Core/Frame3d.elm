@@ -28,8 +28,8 @@ module OpenSolid.Core.Frame3d
         , translateAlongOwn
         , mirrorAcross
         , mirrorAcrossOwn
-        , toLocalIn
-        , fromLocalIn
+        , localizeTo
+        , placeIn
         )
 
 import OpenSolid.Core.Types exposing (..)
@@ -177,33 +177,33 @@ mirrorAcrossOwn plane frame =
     mirrorAcross (plane frame) frame
 
 
-toLocalIn : Frame3d -> Frame3d -> Frame3d
-toLocalIn otherFrame =
+localizeTo : Frame3d -> Frame3d -> Frame3d
+localizeTo otherFrame =
     let
-        toLocalPoint =
-            Point3d.toLocalIn otherFrame
+        localizePoint =
+            Point3d.localizeTo otherFrame
 
-        toLocalDirection =
-            Direction3d.toLocalIn otherFrame
+        localizeDirection =
+            Direction3d.localizeTo otherFrame
     in
         \frame ->
-            Frame3d (toLocalPoint frame.originPoint)
-                (toLocalDirection frame.xDirection)
-                (toLocalDirection frame.yDirection)
-                (toLocalDirection frame.zDirection)
+            Frame3d (localizePoint frame.originPoint)
+                (localizeDirection frame.xDirection)
+                (localizeDirection frame.yDirection)
+                (localizeDirection frame.zDirection)
 
 
-fromLocalIn : Frame3d -> Frame3d -> Frame3d
-fromLocalIn frame =
+placeIn : Frame3d -> Frame3d -> Frame3d
+placeIn frame =
     let
-        fromLocalPoint =
-            Point3d.fromLocalIn frame
+        placePoint =
+            Point3d.placeIn frame
 
-        fromLocalDirection =
-            Direction3d.fromLocalIn frame
+        placeDirection =
+            Direction3d.placeIn frame
     in
         \frame ->
-            Frame3d (fromLocalPoint frame.originPoint)
-                (fromLocalDirection frame.xDirection)
-                (fromLocalDirection frame.yDirection)
-                (fromLocalDirection frame.zDirection)
+            Frame3d (placePoint frame.originPoint)
+                (placeDirection frame.xDirection)
+                (placeDirection frame.yDirection)
+                (placeDirection frame.zDirection)

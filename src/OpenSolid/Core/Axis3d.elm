@@ -17,8 +17,8 @@ module OpenSolid.Core.Axis3d
         , translateBy
         , translateAlong
         , mirrorAcross
-        , toLocalIn
-        , fromLocalIn
+        , localizeTo
+        , placeIn
         , projectOnto
         , projectInto
         )
@@ -93,32 +93,32 @@ mirrorAcross plane =
                 (mirrorDirection axis.direction)
 
 
-toLocalIn : Frame3d -> Axis3d -> Axis3d
-toLocalIn frame =
+localizeTo : Frame3d -> Axis3d -> Axis3d
+localizeTo frame =
     let
-        toLocalPoint =
-            Point3d.toLocalIn frame
+        localizePoint =
+            Point3d.localizeTo frame
 
-        toLocalDirection =
-            Direction3d.toLocalIn frame
+        localizeDirection =
+            Direction3d.localizeTo frame
     in
         \axis ->
-            Axis3d (toLocalPoint axis.originPoint)
-                (toLocalDirection axis.direction)
+            Axis3d (localizePoint axis.originPoint)
+                (localizeDirection axis.direction)
 
 
-fromLocalIn : Frame3d -> Axis3d -> Axis3d
-fromLocalIn frame =
+placeIn : Frame3d -> Axis3d -> Axis3d
+placeIn frame =
     let
-        fromLocalPoint =
-            Point3d.fromLocalIn frame
+        placePoint =
+            Point3d.placeIn frame
 
-        fromLocalDirection =
-            Direction3d.fromLocalIn frame
+        placeDirection =
+            Direction3d.placeIn frame
     in
         \axis ->
-            Axis3d (fromLocalPoint axis.originPoint)
-                (fromLocalDirection axis.direction)
+            Axis3d (placePoint axis.originPoint)
+                (placeDirection axis.direction)
 
 
 projectOnto : Plane3d -> Axis3d -> Maybe Axis3d

@@ -28,8 +28,8 @@ module OpenSolid.Core.Plane3d
         , translateAlong
         , translateAlongOwn
         , mirrorAcross
-        , toLocalIn
-        , fromLocalIn
+        , localizeTo
+        , placeIn
         )
 
 import OpenSolid.Core.Types exposing (..)
@@ -181,33 +181,33 @@ mirrorAcross otherPlane =
                 (mirrorDirection plane.normalDirection)
 
 
-toLocalIn : Frame3d -> Plane3d -> Plane3d
-toLocalIn frame =
+localizeTo : Frame3d -> Plane3d -> Plane3d
+localizeTo frame =
     let
-        toLocalPoint =
-            Point3d.toLocalIn frame
+        localizePoint =
+            Point3d.localizeTo frame
 
-        toLocalDirection =
-            Direction3d.toLocalIn frame
+        localizeDirection =
+            Direction3d.localizeTo frame
     in
         \plane ->
-            Plane3d (toLocalPoint plane.originPoint)
-                (toLocalDirection plane.xDirection)
-                (toLocalDirection plane.yDirection)
-                (toLocalDirection plane.normalDirection)
+            Plane3d (localizePoint plane.originPoint)
+                (localizeDirection plane.xDirection)
+                (localizeDirection plane.yDirection)
+                (localizeDirection plane.normalDirection)
 
 
-fromLocalIn : Frame3d -> Plane3d -> Plane3d
-fromLocalIn frame =
+placeIn : Frame3d -> Plane3d -> Plane3d
+placeIn frame =
     let
-        fromLocalPoint =
-            Point3d.fromLocalIn frame
+        placePoint =
+            Point3d.placeIn frame
 
-        fromLocalDirection =
-            Direction3d.fromLocalIn frame
+        placeDirection =
+            Direction3d.placeIn frame
     in
         \plane ->
-            Plane3d (fromLocalPoint plane.originPoint)
-                (fromLocalDirection plane.xDirection)
-                (fromLocalDirection plane.yDirection)
-                (fromLocalDirection plane.normalDirection)
+            Plane3d (placePoint plane.originPoint)
+                (placeDirection plane.xDirection)
+                (placeDirection plane.yDirection)
+                (placeDirection plane.normalDirection)

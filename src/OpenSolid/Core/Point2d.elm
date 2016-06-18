@@ -29,8 +29,8 @@ module OpenSolid.Core.Point2d
         , translateAlong
         , mirrorAcross
         , projectOnto
-        , toLocalIn
-        , fromLocalIn
+        , localizeTo
+        , placeIn
         , placeOnto
         , coordinates
         , fromCoordinates
@@ -83,7 +83,7 @@ different coordinate frames. Although these examples use a simple offset
 frame, these functions can be used to convert to and from local coordinates in
 arbitrarily transformed (translated, rotated, mirrored) frames.
 
-@docs toLocalIn, fromLocalIn, placeOnto
+@docs localizeTo, placeIn, placeOnto
 
 # Conversions
 
@@ -386,27 +386,27 @@ frame.
     localFrame =
         Frame2d.atPoint (Point2d 1 2)
 
-    Point2d.toLocalIn localFrame (Point2d 4 5) == Point2d 3 3
-    Point2d.toLocalIn localFrame (Point2d 1 0) == Point2d 0 -2
+    Point2d.localizeTo localFrame (Point2d 4 5) == Point2d 3 3
+    Point2d.localizeTo localFrame (Point2d 1 0) == Point2d 0 -2
 -}
-toLocalIn : Frame2d -> Point2d -> Point2d
-toLocalIn frame =
+localizeTo : Frame2d -> Point2d -> Point2d
+localizeTo frame =
     vectorFrom frame.originPoint
-        >> Vector2d.toLocalIn frame
+        >> Vector2d.localizeTo frame
         >> (\(Vector2d x y) -> Point2d x y)
 
 
 {-| Convert a point from local coordinates within a given frame to global
-coordinates. Inverse of `toLocalIn`.
+coordinates. Inverse of `localizeTo`.
 
     localFrame =
         Frame2d.atPoint (Point2d 1 2)
 
-    Point2d.fromLocalIn localFrame (Point2d 3 3) == Point2d 4 5
-    Point2d.fromLocalIn localFrame (Point2d 0 -2) == Point2d 1 0
+    Point2d.placeIn localFrame (Point2d 3 3) == Point2d 4 5
+    Point2d.placeIn localFrame (Point2d 0 -2) == Point2d 1 0
 -}
-fromLocalIn : Frame2d -> Point2d -> Point2d
-fromLocalIn frame =
+placeIn : Frame2d -> Point2d -> Point2d
+placeIn frame =
     coordinates >> relativeTo frame
 
 

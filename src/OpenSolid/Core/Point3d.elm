@@ -33,8 +33,8 @@ module OpenSolid.Core.Point3d
         , rotateAround
         , translateAlong
         , mirrorAcross
-        , toLocalIn
-        , fromLocalIn
+        , localizeTo
+        , placeIn
         , projectOntoAxis
         , projectOnto
         , projectInto
@@ -183,15 +183,15 @@ mirrorAcross plane =
         >> addTo plane.originPoint
 
 
-toLocalIn : Frame3d -> Point3d -> Point3d
-toLocalIn frame =
+localizeTo : Frame3d -> Point3d -> Point3d
+localizeTo frame =
     vectorFrom frame.originPoint
-        >> Vector3d.toLocalIn frame
+        >> Vector3d.localizeTo frame
         >> (\(Vector3d x y z) -> Point3d x y z)
 
 
-fromLocalIn : Frame3d -> Point3d -> Point3d
-fromLocalIn frame =
+placeIn : Frame3d -> Point3d -> Point3d
+placeIn frame =
     coordinates >> relativeTo frame
 
 

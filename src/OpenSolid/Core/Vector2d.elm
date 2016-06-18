@@ -28,8 +28,8 @@ module OpenSolid.Core.Vector2d
         , rotateBy
         , mirrorAcross
         , projectOnto
-        , toLocalIn
-        , fromLocalIn
+        , localizeTo
+        , placeIn
         , placeOnto
         , components
         , fromComponents
@@ -92,7 +92,7 @@ counterclockwise from the global XY frame:
     frame.xDirection == Direction2d (Vector2d 0.7071 0.7071)
     frame.yDirection == Direction2d (Vector2d -0.7071 0.7071)
 
-@docs toLocalIn, fromLocalIn, placeOnto
+@docs localizeTo, placeIn, placeOnto
 
 # Conversions
 
@@ -412,16 +412,16 @@ The vector `Vector2d 1 0` (in global coordinates), relative to the rotated
 frame defined above, is a vector of length 1 with an angle of -45 degrees.
 Therefore,
 
-    Vector2d.toLocalIn frame (Vector2d 1 0) == Vector2d 0.7071 -0.7071
+    Vector2d.localizeTo frame (Vector2d 1 0) == Vector2d 0.7071 -0.7071
 
 The vector `Vector2d 1 1`, on the other hand, is parallel to the X axis of the
 rotated frame so only has an X component when expressed in local coordinates
 relative to that frame:
 
-    Vector2d.toLocalIn frame (Vector2d 1 1) == Vector2d 1.4142 0
+    Vector2d.localizeTo frame (Vector2d 1 1) == Vector2d 1.4142 0
 -}
-toLocalIn : Frame2d -> Vector2d -> Vector2d
-toLocalIn frame vector =
+localizeTo : Frame2d -> Vector2d -> Vector2d
+localizeTo frame vector =
     Vector2d (componentIn frame.xDirection vector)
         (componentIn frame.yDirection vector)
 
@@ -433,16 +433,16 @@ The vector `Vector2d 1 0` (in local coordinates with respect to the rotated
 frame defined above) is a vector of length 1 along the frame's X axis, which is
 itself at a 45 degree angle in global coordinates. Therefore,
 
-    Vector2d.fromLocalIn frame (Vector2d 1 0) == Vector2d 0.7071 0.7071
+    Vector2d.placeIn frame (Vector2d 1 0) == Vector2d 0.7071 0.7071
 
 The vector `Vector2d 1 1` in local coordinates, on the other hand, is at a 45
 degree angle from the X axis of the rotated frame and so is straight up in
 global coordinates:
 
-    Vector2d.fromLocalIn frame (Vector2d 1 1) == Vector2d 0 1.4142
+    Vector2d.placeIn frame (Vector2d 1 1) == Vector2d 0 1.4142
 -}
-fromLocalIn : Frame2d -> Vector2d -> Vector2d
-fromLocalIn frame =
+placeIn : Frame2d -> Vector2d -> Vector2d
+placeIn frame =
     components >> relativeTo frame
 
 
