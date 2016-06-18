@@ -73,7 +73,18 @@ rotateThenScale (Point2d 0 2) == Point2d -3 0
 ```
 
 (Yes, in this particular case it doesn't actually matter whether you rotate
-first and then scale or the other way around, but you get the idea.)
+first and then scale or the other way around, but you get the idea.) You can
+even compose transformation functions with other functions (even ones you define
+yourself!) to produce composite 'transformations' that would be impossible to
+represent with a transformation matrix:
+
+```elm
+horizontalDistance =
+    Point3d.projectOnto Plane3d.xy >> Point3d.distanceFrom Point3d.origin
+
+horizontalDistance (Point3d 3 4 5) == 5
+horizontalDistance (Point3d 1 1 1) == sqrt 2
+```
 
 ### Components
 
