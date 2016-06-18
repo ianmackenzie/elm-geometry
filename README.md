@@ -27,6 +27,7 @@ operations are supported:
 ```elm
 Vector3d.plus (Vector3d 1 2 3) (Vector3d 4 5 6) == Vector3d 5 7 9
 Point3d.vectorFrom (Point3d 1 1 1) (Point3d 3 5 4) == Vector3d 2 4 3
+Point2d.distanceFrom Point2d.origin (Point2d 1 1) == sqrt 2
 Direction2d.fromAngle (degrees 30) == Direction2d (Vector2d 0.866 0.5)
 Point3d.mirrorAcross Plane3d.xy (Point3d 1 2 3) == Point3d 1 2 -3
 Point2d.rotateAround Point2d.origin (degrees 45) (Point2d 1 0) == Point2d 0.7071 0.7071
