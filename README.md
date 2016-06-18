@@ -7,7 +7,7 @@ visualization, and potentially games or numerical analysis (although OpenSolid
 prioritizes flexibility and expressiveness over raw speed).
 
 This library defines the OpenSolid core data types - vectors, directions,
-points, axes, planes and coordinate frames in 2D and 3D:
+points, axes, planes and frames (coordinate systems) in 2D and 3D:
 
 ```elm
 myVector3d = Vector3d 1 2 3
