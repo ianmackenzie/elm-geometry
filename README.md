@@ -1,7 +1,7 @@
 # OpenSolid Core Library
 
 OpenSolid consists of a set of Elm libraries for working with geometry. This
-library defines the core OpenSolid data types - vectors, directions, points,
+library defines the OpenSolid core data types - vectors, directions, points,
 axes, planes and coordinate frames in both 2D and 3D:
 
 ```elm
