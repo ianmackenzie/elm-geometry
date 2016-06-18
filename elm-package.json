@@ -7,9 +7,7 @@
   "exposed-modules": [
     "OpenSolid.Core.Types",
     "OpenSolid.Core.Encode",
-    "OpenSolid.Core.Decode",
-    "OpenSolid.Core.Vector2d",
-    "OpenSolid.Core.Point2d"
+    "OpenSolid.Core.Decode"
   ],
   "dependencies": {
     "elm-lang/core": "4.0.0 <= v < 5.0.0"
