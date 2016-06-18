@@ -2,7 +2,7 @@
 
 OpenSolid consists of a set of Elm libraries for working with geometry. This
 library defines the OpenSolid core data types - vectors, directions, points,
-axes, planes and coordinate frames in both 2D and 3D:
+axes, planes and coordinate frames in 2D and 3D:
 
 ```elm
 myVector3d = Vector3d 1 2 3
@@ -38,20 +38,20 @@ but has a more geometric than mathematical focus.
 OpenSolid does not use matrices to define transformations (in fact, matrices are
 not used anywhere). Instead, transformations are simply Elm functions such as
 `Point2d.rotateAround` shown above. This has many advantages. First, it means
-that transformations can directly used with higher-order functions like
+that transformations can be directly used with higher-order functions like
 `List.map`:
 
 ```elm
-points =
+pointsOnXAxis =
     [ Point2d 1 0, Point2d 2 0, Point2d 3 0 ]
 
 rotateNinetyDegrees =
     Point2d.rotateAround Point2d.origin (degrees 90)
 
-rotatedPoints =
-    List.map rotateNinetyDegrees points
+pointsOnYAxis =
+    List.map rotateNinetyDegrees pointsOnXAxis
 
-rotatedPoints == [ Point2d 0 1, Point2d 0 2, Point2d 0 3 ]
+pointsOnYAxis == [ Point2d 0 1, Point2d 0 2, Point2d 0 3 ]
 ```
 
 Second, transformations can be composed like any other functions to produce
@@ -65,6 +65,9 @@ rotateThenScale =
 rotateThenScale (Point2d 1 0) == Point2d 0 1.5
 rotateThenScale (Point2d 0 2) == Point2d -3 0
 ```
+
+(Yes, in this particular case it doesn't actually matter whether you rotate
+first and then scale or the other way around, but you get the idea.)
 
 ### Components
 
@@ -101,8 +104,8 @@ that accepts a vector argument actually needs a unit vector, and if so whether
 you're expected to normalize the vector yourself or whether the function will do
 that internally).
 
-You can normalize a vector to produce a direction with (for example) the
-`Vector3d.direction` function, but that actually returns a `Maybe Direction3d`
+You can normalize a vector to produce a direction with the `Vector2d.direction`
+and `Vector3d.direction` functions, but they actually return `Maybe` values
 since a zero vector has no direction - passing `Vector3d.zero` to
 `Vector3d.direction` will result in `None`. This takes advantage of Elm's type
 system to ensure that all code considers the degenerate zero-vector case, which
