@@ -12,7 +12,6 @@ module OpenSolid.Core.Direction3d
         ( x
         , y
         , z
-        , ofNonZeroVector
         , perpendicularTo
         , fromComponents
         , xComponent
@@ -54,14 +53,19 @@ z =
     Direction3d (Vector3d 0 0 1)
 
 
-ofNonZeroVector : Vector3d -> Direction3d
-ofNonZeroVector vector =
-    Direction3d (Vector3d.times (1 / Vector3d.length vector) vector)
-
-
 perpendicularTo : Direction3d -> Direction3d
-perpendicularTo =
-    asVector >> Vector3d.perpendicularTo >> ofNonZeroVector
+perpendicularTo (Direction3d vector) =
+    let
+        perpendicularVector =
+            Vector3d.perpendicularTo vector
+
+        length =
+            Vector3d.length perpendicularVector
+
+        normalizedVector =
+            Vector3d.times (1 / length) perpendicularVector
+    in
+        Direction3d normalizedVector
 
 
 fromComponents : ( Float, Float, Float ) -> Direction3d

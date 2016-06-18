@@ -309,9 +309,6 @@ direction could be determined with
 This would return a `Maybe Direction3d`, with `Nothing` corresponding to the
 case where the eye point and point to look at are coincident (in which case the
 view direction is not well-defined and some special-case logic is needed).
-
-If you can *guarantee* that a vector is non-zero and don't want to deal with a
-`Maybe`, you can use `Direction3d.ofNonZeroVector` instead.
 -}
 direction : Vector3d -> Maybe Direction3d
 direction vector =

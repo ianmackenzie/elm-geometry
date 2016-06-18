@@ -12,7 +12,6 @@ module OpenSolid.Core.Direction2d
         ( x
         , y
         , fromAngle
-        , ofNonZeroVector
         , perpendicularTo
         , fromComponents
         , xComponent
@@ -49,11 +48,6 @@ y =
 fromAngle : Float -> Direction2d
 fromAngle angle =
     Direction2d (Vector2d (cos angle) (sin angle))
-
-
-ofNonZeroVector : Vector2d -> Direction2d
-ofNonZeroVector vector =
-    Direction2d (Vector2d.times (1 / Vector2d.length vector) vector)
 
 
 perpendicularTo : Direction2d -> Direction2d
