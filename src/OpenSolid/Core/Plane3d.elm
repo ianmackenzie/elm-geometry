@@ -10,11 +10,11 @@
 module OpenSolid.Core.Plane3d
     exposing
         ( xy
-        , xz
         , yx
         , yz
-        , zx
         , zy
+        , zx
+        , xz
         , fromPointAndNormal
         , offsetBy
         , flip
@@ -46,14 +46,6 @@ xy =
         Direction3d.z
 
 
-xz : Plane3d
-xz =
-    Plane3d Point3d.origin
-        Direction3d.x
-        Direction3d.z
-        (Direction3d.negate Direction3d.y)
-
-
 yx : Plane3d
 yx =
     Plane3d Point3d.origin
@@ -70,6 +62,14 @@ yz =
         Direction3d.x
 
 
+zy : Plane3d
+zy =
+    Plane3d Point3d.origin
+        Direction3d.z
+        Direction3d.y
+        (Direction3d.negate Direction3d.x)
+
+
 zx : Plane3d
 zx =
     Plane3d Point3d.origin
@@ -78,12 +78,12 @@ zx =
         Direction3d.y
 
 
-zy : Plane3d
-zy =
+xz : Plane3d
+xz =
     Plane3d Point3d.origin
+        Direction3d.x
         Direction3d.z
-        Direction3d.y
-        (Direction3d.negate Direction3d.x)
+        (Direction3d.negate Direction3d.y)
 
 
 fromPointAndNormal : Point3d -> Direction3d -> Plane3d

@@ -15,11 +15,11 @@ module OpenSolid.Core.Frame3d
         , yAxis
         , zAxis
         , xyPlane
-        , xzPlane
         , yxPlane
         , yzPlane
-        , zxPlane
         , zyPlane
+        , zxPlane
+        , xzPlane
         , scaleAbout
         , rotateAround
         , rotateAroundOwn
@@ -71,14 +71,6 @@ xyPlane frame =
         frame.zDirection
 
 
-xzPlane : Frame3d -> Plane3d
-xzPlane frame =
-    Plane3d frame.originPoint
-        frame.xDirection
-        frame.zDirection
-        (Direction3d.negate frame.yDirection)
-
-
 yxPlane : Frame3d -> Plane3d
 yxPlane frame =
     Plane3d frame.originPoint
@@ -95,6 +87,14 @@ yzPlane frame =
         frame.xDirection
 
 
+zyPlane : Frame3d -> Plane3d
+zyPlane frame =
+    Plane3d frame.originPoint
+        frame.zDirection
+        frame.yDirection
+        (Direction3d.negate frame.xDirection)
+
+
 zxPlane : Frame3d -> Plane3d
 zxPlane frame =
     Plane3d frame.originPoint
@@ -103,12 +103,12 @@ zxPlane frame =
         frame.yDirection
 
 
-zyPlane : Frame3d -> Plane3d
-zyPlane frame =
+xzPlane : Frame3d -> Plane3d
+xzPlane frame =
     Plane3d frame.originPoint
+        frame.xDirection
         frame.zDirection
-        frame.yDirection
-        (Direction3d.negate frame.xDirection)
+        (Direction3d.negate frame.yDirection)
 
 
 scaleAbout : Point3d -> Float -> Frame3d -> Frame3d
