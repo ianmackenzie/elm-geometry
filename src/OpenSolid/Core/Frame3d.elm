@@ -194,13 +194,13 @@ localizeTo otherFrame =
 
 
 placeIn : Frame3d -> Frame3d -> Frame3d
-placeIn frame =
+placeIn otherFrame =
     let
         placePoint =
-            Point3d.placeIn frame
+            Point3d.placeIn otherFrame
 
         placeDirection =
-            Direction3d.placeIn frame
+            Direction3d.placeIn otherFrame
     in
         \frame ->
             Frame3d (placePoint frame.originPoint)

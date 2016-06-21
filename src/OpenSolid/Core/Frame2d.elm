@@ -131,15 +131,15 @@ localizeTo otherFrame =
 
 
 placeIn : Frame2d -> Frame2d -> Frame2d
-placeIn frame =
+placeIn otherFrame =
     let
         placePoint =
-            Point2d.placeIn frame
+            Point2d.placeIn otherFrame
 
         placeDirection =
-            Direction2d.placeIn frame
+            Direction2d.placeIn otherFrame
     in
-        \plane ->
-            Frame2d (placePoint plane.originPoint)
-                (placeDirection plane.xDirection)
-                (placeDirection plane.yDirection)
+        \frame ->
+            Frame2d (placePoint frame.originPoint)
+                (placeDirection frame.xDirection)
+                (placeDirection frame.yDirection)
