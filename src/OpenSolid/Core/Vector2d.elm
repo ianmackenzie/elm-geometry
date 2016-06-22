@@ -155,7 +155,7 @@ vector 90 degrees in a counterclockwise direction. The perpendicular vector will
 have the same length as the given vector.
 
     Vector2d.perpendicularTo (Vector2d ( 1, 0 )) == Vector2d ( 0, 1 )
-    Vector2d.perpendicularTo (Vector2d ( 0, 1 )) == Vector2d ( -1, 0 )
+    Vector2d.perpendicularTo (Vector2d ( 0, 2 )) == Vector2d ( -2, 0 )
     Vector2d.perpendicularTo (Vector2d ( 3, 1 )) == Vector2d ( -1, 3 )
     Vector2d.perpendicularTo Vector2d.zero == Vector2d.zero
 -}
