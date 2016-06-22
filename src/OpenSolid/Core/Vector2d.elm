@@ -79,10 +79,10 @@ is not the only way!
 
 @docs rotateBy, mirrorAcross, projectOnto
 
-# Local coordinates
+# Coordinate conversions
 
 Functions for transforming vectors between local and global coordinates in
-different coordinate frames. For the examples below, assume the following
+different coordinate systems. For the examples below, assume the following
 definition of a local coordinate frame, one that is rotated 45 degrees
 counterclockwise from the global XY frame:
 
