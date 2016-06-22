@@ -93,11 +93,11 @@ counterclockwise from the global XY frame:
 
 @docs localizeTo, placeIn, placeOnto
 
-# Conversions
+# Record conversions
 
-Various ways to convert to and from plain tuples and records. Primarily useful
-for interoperability with other libraries. For example, you could define
-conversion functions to and from `elm-linear-algebra`'s `Vec2` type with
+Convert `Vector2d` values to and from Elm records. Primarily useful for
+interoperability with other libraries. For example, you could define conversion
+functions to and from `elm-linear-algebra`'s `Vec2` type with
 
     toVec2 : Vector2d -> Math.Vector2.Vec2
     toVec2 =
@@ -106,6 +106,17 @@ conversion functions to and from `elm-linear-algebra`'s `Vec2` type with
     fromVec2 : Math.Vector2.Vec2 -> Vector2d
     fromVec2 =
         Math.Vector2.toRecord >> Vector2d.fromRecord
+
+although in this particular case it would likely be simpler and more efficient
+to use
+
+    toVec2 : Vector2d -> Math.Vector2.Vec2
+    toVec2 =
+        Vector2d.components >> Math.Vector2.fromTuple
+
+    fromVec2 : Math.Vector2.Vec2 -> Vector2d
+    fromVec2 =
+        Math.Vector2.toTuple >> Vector2d
 
 @docs toRecord, fromRecord
 -}
