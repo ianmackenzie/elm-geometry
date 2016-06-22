@@ -10,13 +10,13 @@ This library defines the OpenSolid core data types - vectors, directions,
 points, axes, planes and frames (coordinate systems) in 2D and 3D:
 
 ```elm
-myVector3d = Vector3d 1 2 3
-myPoint2d = Point2d 4 5
-negativeXDirection3d = Direction3d (Vector3d -1 0 0)
+myVector3d = Vector3d ( 1, 2, 3 )
+myPoint2d = Point2d ( 4, 5 )
+negativeXDirection3d = Direction3d ( -1, 0, 0 )
 
-Vector3d.zero == Vector3d 0 0 0
-Direction2d.y == Direction2d (Vector2d 0 1)
-Point2d.origin == Point2d 0 0
+Vector3d.zero == Vector3d ( 0, 0, 0 )
+Direction2d.y == Direction2d ( 0, 1 )
+Point2d.origin == Point2d ( 0, 0 )
 Axis3d.z == Axis3d Point3d.origin Direction3d.z
 Frame2d.xy == Frame2d Point2d.origin Direction2d.x Direction2d.y
 ```
@@ -25,13 +25,13 @@ Frame2d.xy == Frame2d Point2d.origin Direction2d.x Direction2d.y
 operations are supported:
 
 ```elm
-Vector3d.plus (Vector3d 1 2 3) (Vector3d 4 5 6) == Vector3d 5 7 9
-Point3d.vectorFrom (Point3d 1 1 1) (Point3d 3 5 4) == Vector3d 2 4 3
-Point2d.distanceFrom Point2d.origin (Point2d 1 1) == sqrt 2
-Direction2d.fromAngle (degrees 30) == Direction2d (Vector2d 0.866 0.5)
-Point3d.mirrorAcross Plane3d.xy (Point3d 1 2 3) == Point3d 1 2 -3
-Point2d.rotateAround Point2d.origin (degrees 45) (Point2d 1 0) == Point2d 0.7071 0.7071
-Vector2d.direction (Vector2d 3 0) == Just Direction2d.x
+Vector3d.plus (Vector3d ( 1, 2, 3 )) (Vector3d ( 4, 5, 6 )) == Vector3d ( 5, 7, 9 )
+Point3d.vectorFrom (Point3d ( 1, 1, 1 )) (Point3d ( 3, 5, 4 )) == Vector3d ( 2, 4, 3 )
+Point2d.distanceFrom Point2d.origin (Point2d ( 1, 1 )) == sqrt 2
+Direction2d.fromAngle (degrees 30) == Direction2d ( 0.866, 0.5 )
+Point3d.mirrorAcross Plane3d.xy (Point3d ( 1, 2, 3 )) == Point3d ( 1, 2, -3 )
+Point2d.rotateAround Point2d.origin (degrees 45) (Point2d ( 1, 0 )) == Point2d ( 0.7071, 0.7071 )
+Vector2d.direction (Vector2d ( 3, 0 )) == Just Direction2d.x
 ```
 
 ## Philosophy
@@ -49,7 +49,7 @@ that transformations can be directly used with higher-order functions like
 
 ```elm
 pointsOnXAxis =
-    [ Point2d 1 0, Point2d 2 0, Point2d 3 0 ]
+    [ Point2d ( 1, 0 ), Point2d ( 2, 0 ), Point2d ( 3, 0 ) ]
 
 rotateNinetyDegrees =
     Point2d.rotateAround Point2d.origin (degrees 90)
@@ -57,7 +57,7 @@ rotateNinetyDegrees =
 pointsOnYAxis =
     List.map rotateNinetyDegrees pointsOnXAxis
 
-pointsOnYAxis == [ Point2d 0 1, Point2d 0 2, Point2d 0 3 ]
+pointsOnYAxis == [ Point2d ( 0, 1 ), Point2d ( 0, 2 ), Point2d ( 0, 3 ) ]
 ```
 
 Second, transformations can be composed like any other functions to produce
@@ -68,8 +68,8 @@ matrices!):
 rotateThenScale =
     Point2d.rotateAround Point2d.origin (degrees 90) >> Point2d.scaleAbout Point2d.origin 1.5
 
-rotateThenScale (Point2d 1 0) == Point2d 0 1.5
-rotateThenScale (Point2d 0 2) == Point2d -3 0
+rotateThenScale (Point2d ( 1, 0 )) == Point2d ( 0, 1.5 )
+rotateThenScale (Point2d ( 0, 2 )) == Point2d ( -3, 0 )
 ```
 
 (Yes, in this particular case it doesn't actually matter whether you rotate
@@ -82,8 +82,8 @@ represent with a transformation matrix:
 horizontalDistance =
     Point3d.projectOnto Plane3d.xy >> Point3d.distanceFrom Point3d.origin
 
-horizontalDistance (Point3d 3 4 5) == 5
-horizontalDistance (Point3d 1 1 1) == sqrt 2
+horizontalDistance (Point3d ( 3, 4, 2 )) == 5
+horizontalDistance (Point3d ( 1, 1, 1 )) == sqrt 2
 ```
 
 ### Components
