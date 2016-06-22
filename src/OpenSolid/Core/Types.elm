@@ -22,10 +22,10 @@ module OpenSolid.Core.Types
         , Frame3d
         )
 
-{-| This module contains the definitions of the core OpenSolid geometric data
-types. Each type also has a corresponding module providing related
-functionality. Suggested practice is to import this module exposing everything,
-and import all other necessary modules using `as`:
+{-| This module contains the definitions of the core OpenSolid data types. Each
+type also has a corresponding module providing related functionality. Suggested
+practice is to import this module exposing everything, and import all other
+necessary modules using `as`:
 
     import OpenSolid.Core.Types exposing (..)
     import OpenSolid.Core.Vector2d as Vector2d
@@ -33,13 +33,26 @@ and import all other necessary modules using `as`:
 
 Note that since these types are not opaque, it is possible to construct them
 directly, and this is sometimes the most convenient or efficient approach.
-However, in most cases it is safer and easier to use the various functions in
-the associated modules, since many types have restrictions on how they must be
-defined. For instance, the `Vector2d` defining a `Direction2d` must have a
-length of one; instead of attempting to guarantee this yourself it is usually
-better to use a constructor function like `Direction2d.fromAngle` or start with
-an existing direction such as `Direction2d.y` and transform it as necessary. For
-more complex types like `Plane3d` this is even more true!
+However, this can also circumvent the otherwise rigorous type safety of
+OpenSolid, since it makes it possible to define nonsense objects that do not
+satisfy certain invariants that are otherwise always maintained. Specifically:
+
+  - The components defining a `Direction2d` or `Direction3d` must be properly
+    normalized so that the direction has a 'length' of one.
+  - The X and Y directions of a `Frame2d` must be perpendicular to each other.
+  - The X, Y, and Z directions of a `Frame3d` must all be mutually
+    perpendicular.
+  - The X, Y, and normal directions of a `Plane3d` must all be mutually
+    perpendicular.
+
+For example, instead of constructing a `Direction2d` directly from its
+components, it is usually better to use a constructor function like
+`Direction2d.fromAngle` or start with an existing direction like `Direction2d.y`
+and transform it as necessary. For more complex types like `Plane3d` this is
+even more true! All OpenSolid functions (transformations etc.) will properly
+maintain the invariants described above, so for example it is impossible to
+produce a `Frame2d` with non-perpendicular X and Y directions except by directly
+constructing one.
 
 # Vectors
 
@@ -52,9 +65,9 @@ vectors to represent positions.
 # Directions
 
 A direction is effectively a vector with a length of one, used to represent
-quantities like the direction of an axis. Directions are internally represented
-by vectors and can be constructed directly from them, but note that in this case
-you are responsible for ensuring that the given vector's length is exactly one.
+quantities like the direction of an axis. Directions can be directly constructed
+from their components, but note that in this case you are responsible for
+ensuring that the direction's 'length' is exactly one.
 
 @docs Direction2d, Direction3d
 
