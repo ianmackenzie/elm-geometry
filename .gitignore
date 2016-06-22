@@ -6,6 +6,7 @@ repl-temp-*
 
 *.sublime-workspace
 elm.js
+documentation.json
 
 # =========================
 # Operating System Files
