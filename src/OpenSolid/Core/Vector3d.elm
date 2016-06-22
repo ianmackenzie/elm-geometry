@@ -228,6 +228,20 @@ perpendicularTo vector =
             Vector3d ( -y, x, 0 )
 
 
+{-| Extract the components of a vector.
+
+    Vector3d.components (Vector2d ( 2, 3, 4 )) == ( 2, 3, 4 )
+
+This combined with Elm's built-in tuple destructuring provides a convenient way
+to extract the X, Y and Z components of a vector in one line of code:
+
+    ( x, y, z ) = Vector3d.components vector
+-}
+components : Vector3d -> ( Float, Float, Float )
+components (Vector3d components') =
+    components'
+
+
 {-| Get the X component of a vector.
 
     Vector3d.xComponent (Vector3d ( 1, 2, 3 )) == 1
@@ -625,11 +639,6 @@ projectInto plane vector =
         ( componentIn plane.xDirection vector
         , componentIn plane.yDirection vector
         )
-
-
-components : Vector3d -> ( Float, Float, Float )
-components (Vector3d components') =
-    components'
 
 
 toRecord : Vector3d -> { x : Float, y : Float, z : Float }
