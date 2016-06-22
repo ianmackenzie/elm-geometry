@@ -13,6 +13,7 @@ module OpenSolid.Core.Vector2d
         , alongAxis
         , relativeTo
         , perpendicularTo
+        , components
         , xComponent
         , yComponent
         , componentIn
@@ -31,7 +32,6 @@ module OpenSolid.Core.Vector2d
         , localizeTo
         , placeIn
         , placeOnto
-        , components
         , toRecord
         , fromRecord
         )
@@ -162,6 +162,20 @@ have the same length as the given vector.
 perpendicularTo : Vector2d -> Vector2d
 perpendicularTo (Vector2d ( x, y )) =
     Vector2d ( -y, x )
+
+
+{-| Extract the components of a vector.
+
+    Vector2d.components (Vector2d ( 2, 3 )) == ( 2, 3 )
+
+This along with Elm's built-in tuple destructuring provides a convenient way to
+extract both the X and Y components of a vector in one line of code:
+
+    ( x, y ) = Vector2d.components vector
+-}
+components : Vector2d -> ( Float, Float )
+components (Vector2d components') =
+    components'
 
 
 {-| Get the X component of a vector.
@@ -462,15 +476,6 @@ placeOnto plane =
     in
         \(Vector2d ( x, y )) ->
             Vector3d ( x1 * x + x2 * y, y1 * x + y2 * y, z1 * x + z2 * y )
-
-
-{-| Get the (x, y) components of a vector as a tuple.
-
-    ( x, y ) = Vector2d.components vector
--}
-components : Vector2d -> ( Float, Float )
-components (Vector2d components') =
-    components'
 
 
 {-| Convert a vector to a record with `x` and `y` fields.
