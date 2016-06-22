@@ -137,7 +137,7 @@ type Point3d
 
 {-| An axis in 2D, defined by an origin point and direction. Useful for several
 operations including:
-  - Mirroring about the axis
+  - Mirroring across the axis
   - Projecting onto the axis
   - Measuring distance along the axis
 -}
@@ -149,7 +149,7 @@ type alias Axis2d =
 
 {-| An axis in 3D, defined by an origin point and direction. Useful for several
 operations including:
-  - Rotating about the axis
+  - Rotating around the axis
   - Projecting onto the axis
   - Measuring distance along the axis
 -}
@@ -161,7 +161,7 @@ type alias Axis3d =
 
 {-| A 3D plane, defined by an origin point, two basis directions and a normal
 direction. Useful for several operations including:
-  - Mirroring about the plane
+  - Mirroring across the plane
   - Projecting onto the plane
   - Placing 2D objects onto the plane to result in 3D objects
     (converting from 2D coordinates within the plane to global 3D coordinates)
