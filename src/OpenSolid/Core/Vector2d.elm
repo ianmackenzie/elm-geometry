@@ -168,8 +168,8 @@ perpendicularTo (Vector2d ( x, y )) =
 
     Vector2d.components (Vector2d ( 2, 3 )) == ( 2, 3 )
 
-This along with Elm's built-in tuple destructuring provides a convenient way to
-extract both the X and Y components of a vector in one line of code:
+This combined with Elm's built-in tuple destructuring provides a convenient way
+to extract both the X and Y components of a vector in one line of code:
 
     ( x, y ) = Vector2d.components vector
 -}
