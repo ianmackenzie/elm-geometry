@@ -59,12 +59,12 @@ tuple3d =
 
 vector2d : Producer Vector2d
 vector2d =
-    Producer.convert Vector2d.fromComponents Vector2d.components tuple2d
+    Producer.convert Vector2d Vector2d.components tuple2d
 
 
 vector3d : Producer Vector3d
 vector3d =
-    Producer.convert Vector3d.fromComponents Vector3d.components tuple3d
+    Producer.convert Vector3d Vector3d.components tuple3d
 
 
 direction2d : Producer Direction2d
@@ -77,7 +77,11 @@ direction2d =
             Producer.filter isValid vector2d
 
         direction vector =
-            Direction2d (Vector2d.times (1 / Vector2d.length vector) vector)
+            let
+                normalizedVector =
+                    Vector2d.times (1 / Vector2d.length vector) vector
+            in
+                Direction2d (Vector2d.components normalizedVector)
     in
         Producer.map direction validVector
 
@@ -92,19 +96,23 @@ direction3d =
             Producer.filter isValid vector3d
 
         direction vector =
-            Direction3d (Vector3d.times (1 / Vector3d.length vector) vector)
+            let
+                normalizedVector =
+                    Vector3d.times (1 / Vector3d.length vector) vector
+            in
+                Direction3d (Vector3d.components normalizedVector)
     in
         Producer.map direction validVector
 
 
 point2d : Producer Point2d
 point2d =
-    Producer.convert Point2d.fromCoordinates Point2d.coordinates tuple2d
+    Producer.convert Point2d Point2d.coordinates tuple2d
 
 
 point3d : Producer Point3d
 point3d =
-    Producer.convert Point3d.fromCoordinates Point3d.coordinates tuple3d
+    Producer.convert Point3d Point3d.coordinates tuple3d
 
 
 axis2d : Producer Axis2d
@@ -172,7 +180,11 @@ frame3d =
                 (Producer.tuple3 ( point3d, vector3d, vector3d ))
 
         toDirection vector =
-            Direction3d (Vector3d.times (1 / Vector3d.length vector) vector)
+            let
+                normalizedVector =
+                    Vector3d.times (1 / Vector3d.length vector) vector
+            in
+                Direction3d (Vector3d.components normalizedVector)
 
         tupleToFrame ( point, v1, v2 ) =
             let

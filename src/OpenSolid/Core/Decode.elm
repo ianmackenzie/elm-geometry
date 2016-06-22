@@ -36,42 +36,42 @@ import OpenSolid.Core.Types exposing (..)
 -}
 vector2d : Decoder Vector2d
 vector2d =
-    tuple2 Vector2d float float
+    tuple2 (\x y -> Vector2d ( x, y )) float float
 
 
 {-| Decode a Vector3d from a list of three floats.
 -}
 vector3d : Decoder Vector3d
 vector3d =
-    tuple3 Vector3d float float float
+    tuple3 (\x y z -> Vector3d ( x, y, z )) float float float
 
 
 {-| Decode a Direction2d from a list of two floats.
 -}
 direction2d : Decoder Direction2d
 direction2d =
-    map Direction2d vector2d
+    tuple2 (\x y -> Direction2d ( x, y )) float float
 
 
 {-| Decode a Direction3d from a list of three floats.
 -}
 direction3d : Decoder Direction3d
 direction3d =
-    map Direction3d vector3d
+    tuple3 (\x y z -> Direction3d ( x, y, z )) float float float
 
 
 {-| Decode a Point2d from a list of two floats.
 -}
 point2d : Decoder Point2d
 point2d =
-    tuple2 Point2d float float
+    tuple2 (\x y -> Point2d ( x, y )) float float
 
 
 {-| Decode a Point3d from a list of three floats.
 -}
 point3d : Decoder Point3d
 point3d =
-    tuple3 Point3d float float float
+    tuple3 (\x y z -> Point3d ( x, y, z )) float float float
 
 
 {-| Decode an Axis2d from an object with 'originPoint' and 'direction' fields.

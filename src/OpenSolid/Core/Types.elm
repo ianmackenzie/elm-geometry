@@ -89,37 +89,37 @@ mirroring about its XY plane.
 {-| A vector in 2D, defined by its X and Y components.
 -}
 type Vector2d
-    = Vector2d Float Float
+    = Vector2d ( Float, Float )
 
 
 {-| A vector in 3D, defined by its X, Y and Z components.
 -}
 type Vector3d
-    = Vector3d Float Float Float
+    = Vector3d ( Float, Float, Float )
 
 
-{-| A direction in 2D, defined by a vector with length one.
+{-| A direction in 2D, defined by its X and Y components.
 -}
 type Direction2d
-    = Direction2d Vector2d
+    = Direction2d ( Float, Float )
 
 
-{-| A direction in 3D, defined by a vector with length one.
+{-| A direction in 3D, defined by its X, Y and Z components.
 -}
 type Direction3d
-    = Direction3d Vector3d
+    = Direction3d ( Float, Float, Float )
 
 
 {-| A point in 2D, defined by its X and Y components.
 -}
 type Point2d
-    = Point2d Float Float
+    = Point2d ( Float, Float )
 
 
 {-| A point in 3D, defined by its X, Y and Z components.
 -}
 type Point3d
-    = Point3d Float Float Float
+    = Point3d ( Float, Float, Float )
 
 
 {-| An axis in 2D, defined by an origin point and direction. Useful for several

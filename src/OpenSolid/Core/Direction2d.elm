@@ -13,11 +13,9 @@ module OpenSolid.Core.Direction2d
         , y
         , fromAngle
         , perpendicularTo
-        , fromComponents
         , xComponent
         , yComponent
         , components
-        , asVector
         , rotateBy
         , mirrorAcross
         , localizeTo
@@ -35,94 +33,94 @@ import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Vector2d as Vector2d
 
 
+toVector (Direction2d components) =
+    Vector2d components
+
+
+toDirection (Vector2d components) =
+    Direction2d components
+
+
 x : Direction2d
 x =
-    Direction2d (Vector2d 1 0)
+    Direction2d ( 1, 0 )
 
 
 y : Direction2d
 y =
-    Direction2d (Vector2d 0 1)
+    Direction2d ( 0, 1 )
 
 
 fromAngle : Float -> Direction2d
 fromAngle angle =
-    Direction2d (Vector2d (cos angle) (sin angle))
+    Direction2d ( cos angle, sin angle )
 
 
 perpendicularTo : Direction2d -> Direction2d
 perpendicularTo =
-    asVector >> Vector2d.perpendicularTo >> Direction2d
-
-
-fromComponents : ( Float, Float ) -> Direction2d
-fromComponents =
-    Vector2d.fromComponents >> Direction2d
+    toVector >> Vector2d.perpendicularTo >> toDirection
 
 
 xComponent : Direction2d -> Float
 xComponent =
-    asVector >> Vector2d.xComponent
+    components >> fst
 
 
 yComponent : Direction2d -> Float
 yComponent =
-    asVector >> Vector2d.yComponent
+    components >> snd
 
 
 components : Direction2d -> ( Float, Float )
-components =
-    asVector >> Vector2d.components
-
-
-asVector : Direction2d -> Vector2d
-asVector (Direction2d vector) =
-    vector
+components (Direction2d components') =
+    components'
 
 
 rotateBy : Float -> Direction2d -> Direction2d
 rotateBy angle =
-    asVector >> Vector2d.rotateBy angle >> Direction2d
+    toVector >> Vector2d.rotateBy angle >> toDirection
 
 
 mirrorAcross : Axis2d -> Direction2d -> Direction2d
 mirrorAcross axis =
-    asVector >> Vector2d.mirrorAcross axis >> Direction2d
+    toVector >> Vector2d.mirrorAcross axis >> toDirection
 
 
 localizeTo : Frame2d -> Direction2d -> Direction2d
 localizeTo frame =
-    asVector >> Vector2d.localizeTo frame >> Direction2d
+    toVector >> Vector2d.localizeTo frame >> toDirection
 
 
 placeIn : Frame2d -> Direction2d -> Direction2d
 placeIn frame =
-    asVector >> Vector2d.placeIn frame >> Direction2d
+    toVector >> Vector2d.placeIn frame >> toDirection
 
 
 placeOnto : Plane3d -> Direction2d -> Direction3d
 placeOnto plane =
-    asVector >> Vector2d.placeOnto plane >> Direction3d
+    toVector
+        >> Vector2d.placeOnto plane
+        >> (\(Vector3d components) -> Direction3d components)
 
 
 negate : Direction2d -> Direction2d
 negate =
-    asVector >> Vector2d.negate >> Direction2d
+    toVector >> Vector2d.negate >> toDirection
 
 
 times : Float -> Direction2d -> Vector2d
 times scale =
-    asVector >> Vector2d.times scale
+    toVector >> Vector2d.times scale
 
 
 dotProduct : Direction2d -> Direction2d -> Float
 dotProduct firstDirection secondDirection =
-    Vector2d.dotProduct (asVector firstDirection) (asVector secondDirection)
+    Vector2d.dotProduct (toVector firstDirection) (toVector secondDirection)
 
 
 crossProduct : Direction2d -> Direction2d -> Float
 crossProduct firstDirection secondDirection =
-    Vector2d.crossProduct (asVector firstDirection) (asVector secondDirection)
+    Vector2d.crossProduct (toVector firstDirection) (toVector secondDirection)
 
 
 angleFrom : Direction2d -> Direction2d -> Float

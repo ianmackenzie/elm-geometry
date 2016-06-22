@@ -14,6 +14,7 @@ module OpenSolid.Core.Point2d
         , relativeTo
         , midpoint
         , interpolate
+        , coordinates
         , xCoordinate
         , yCoordinate
         , vectorFrom
@@ -32,8 +33,6 @@ module OpenSolid.Core.Point2d
         , localizeTo
         , placeIn
         , placeOnto
-        , coordinates
-        , fromCoordinates
         , toRecord
         , fromRecord
         )
@@ -55,8 +54,8 @@ to numerical roundoff) they might not be exactly equal.
 # Constructors
 
 Since `Point2d` is not an opaque type, the simplest way to construct one is
-directly from its X and Y coordinates, for example `Point2d 2 3`. But that is
-not the only way!
+directly from its X and Y coordinates, for example `Point2d ( 2, 3 )`. But that
+is not the only way!
 
 @docs alongAxis, relativeTo, midpoint, interpolate
 
@@ -93,13 +92,13 @@ conversion functions to and from `elm-linear-algebra`'s `Vec2` type with
 
     toVec2 : Point2d -> Math.Vector2.Vec2
     toVec2 =
-        Point2d.coordinates >> Math.Vector2.fromTuple
+        Point2d.toRecord >> Math.Vector2.fromRecord
 
     fromVec2 : Math.Vector2.Vec2 -> Point2d
     fromVec2 =
-        Math.Vector2.toTuple >> Point2d.fromCoordinates
+        Math.Vector2.toRecord >> Point2d.fromRecord
 
-@docs coordinates, fromCoordinates, toRecord, fromRecord
+@docs toRecord, fromRecord
 -}
 
 import OpenSolid.Core.Types exposing (..)
@@ -111,17 +110,17 @@ import OpenSolid.Core.Direction2d as Direction2d
 -}
 origin : Point2d
 origin =
-    Point2d 0 0
+    Point2d ( 0, 0 )
 
 
 {-| Construct a point along an axis, at a particular distance from the axis'
 origin point.
 
     horizontalAxis =
-        Axis2d (Point2d 1 1) Direction2d.x
+        Axis2d (Point2d ( 1, 1 )) Direction2d.x
 
-    Point2d.alongAxis horizontalAxis 3 == Point2d 4 1
-    Point2d.alongAxis horizontalAxis -3 == Point2d -2 1
+    Point2d.alongAxis horizontalAxis 3 == Point2d ( 4, 1 )
+    Point2d.alongAxis horizontalAxis -3 == Point2d ( -2, 1 )
 -}
 alongAxis : Axis2d -> Float -> Point2d
 alongAxis axis =
@@ -135,7 +134,7 @@ relativeTo frame =
 
 {-| Construct a point halfway between two other points.
 
-    Point2d.midpoint (Point2d 1 1) (Point2d 3 7) == Point2d 2 4
+    Point2d.midpoint (Point2d ( 1, 1 )) (Point2d ( 3, 7 )) == Point2d ( 2, 4 )
 -}
 midpoint : Point2d -> Point2d -> Point2d
 midpoint firstPoint secondPoint =
@@ -147,16 +146,16 @@ parameter that ranges from zero to one.
 
     interpolate : Float -> Point2d
     interpolate parameter =
-        Point2d.interpolate Point2d.origin (Point2d 8 8) parameter
+        Point2d.interpolate Point2d.origin (Point2d ( 8, 8 )) parameter
 
-    interpolate 0 == Point2d 0 0
-    interpolate 0.25 == Point2d 2 2
-    interpolate 0.75 == Point2d 6 6
-    interpolate 1 == Point2d 8 8
+    interpolate 0 == Point2d ( 0, 0 )
+    interpolate 0.25 == Point2d ( 2, 2 )
+    interpolate 0.75 == Point2d ( 6, 6 )
+    interpolate 1 == Point2d ( 8, 8 )
 
 You can also pass values less than zero or greater than one to extrapolate:
 
-    interpolate 1.25 == Point2d 10 10
+    interpolate 1.25 == Point2d ( 10, 10 )
 -}
 interpolate : Point2d -> Point2d -> Float -> Point2d
 interpolate startPoint endPoint =
@@ -167,55 +166,80 @@ interpolate startPoint endPoint =
         \t -> plus (Vector2d.times t displacement) startPoint
 
 
+{-| Get the (x, y) coordinates of a point as a tuple.
+
+    ( x, y ) = Point2d.coordinates point
+-}
+coordinates : Point2d -> ( Float, Float )
+coordinates (Point2d coordinates') =
+    coordinates'
+
+
 {-| Get the X coordinate of a point.
 
-    Point2d.xCoordinate (Point2d 2 3) == 2
+    Point2d.xCoordinate (Point2d ( 2, 3 )) == 2
 -}
 xCoordinate : Point2d -> Float
-xCoordinate (Point2d x _) =
-    x
+xCoordinate =
+    coordinates >> fst
 
 
 {-| Get the Y coordinate of a point.
 
-    Point2d.yCoordinate (Point2d 2 3) == 3
+    Point2d.yCoordinate (Point2d ( 2, 3 )) == 3
 -}
 yCoordinate : Point2d -> Float
-yCoordinate (Point2d _ y) =
-    y
+yCoordinate =
+    coordinates >> snd
 
 
 {-| Find the vector from one point to another.
 
-    Point2d.vectorFrom (Point2d 1 1) (Point2d 4 5) == Vector2d 3 4
+    Point2d.vectorFrom (Point2d ( 1, 1 )) (Point2d ( 4, 5 )) ==
+        Vector2d ( 3, 4 )
 -}
 vectorFrom : Point2d -> Point2d -> Vector2d
-vectorFrom (Point2d x2 y2) (Point2d x1 y1) =
-    Vector2d (x1 - x2) (y1 - y2)
+vectorFrom other point =
+    let
+        ( x', y' ) =
+            coordinates other
+
+        ( x, y ) =
+            coordinates point
+    in
+        Vector2d ( x - x', y - y' )
 
 
 {-| Flipped version of `vectorFrom`, where the end point is given first.
 
-    Point2d.vectorTo (Point2d 1 1) (Point2d 4 5) == Vector2d -3 -4
+    Point2d.vectorTo (Point2d ( 1, 1 )) (Point2d ( 4, 5 )) ==
+        Vector2d ( -3, -4 )
 -}
 vectorTo : Point2d -> Point2d -> Vector2d
-vectorTo (Point2d x2 y2) (Point2d x1 y1) =
-    Vector2d (x2 - x1) (y2 - y1)
+vectorTo other point =
+    let
+        ( x', y' ) =
+            coordinates other
+
+        ( x, y ) =
+            coordinates point
+    in
+        Vector2d ( x' - x, y' - y )
 
 
 {-| Find the distance between two points.
 
-    Point2d.distanceFrom (Point2d 1 1) (Point2d 2 2) == sqrt 2
+    Point2d.distanceFrom (Point2d ( 1, 1 )) (Point2d ( 2, 2 )) == sqrt 2
 
 Partial application can be useful:
 
     points =
-        [ Point2d 3 4, Point2d 10 0, Point2d -1 2 ]
+        [ Point2d ( 3, 4 ), Point2d ( 10, 0 ), Point2d ( -1, 2 ) ]
 
     sortedPoints =
         List.sortBy (Point2d.distanceFrom Point2d.origin) points
 
-    sortedPoints == [ Point2d -1 2, Point2d 3 4, Point2d 10 10 ]
+    sortedPoints == [ Point2d ( -1, 2 ), Point2d ( 3, 4 ), Point2d ( 10, 0 ) ]
 -}
 distanceFrom : Point2d -> Point2d -> Float
 distanceFrom other =
@@ -245,9 +269,9 @@ projected point from the axis' origin point is measured. The result may be
 negative if the projected point is 'behind' the axis' origin point.
 
     axis =
-        Axis2d (Point2d 1 2) Direction2d.x
+        Axis2d (Point2d ( 1, 2 )) Direction2d.x
 
-    Point2d.distanceAlong axis (Point2d 3 3) == 2
+    Point2d.distanceAlong axis (Point2d ( 3, 3 )) == 2
     Point2d.distanceAlong axis Point2d.origin == -1
 -}
 distanceAlong : Axis2d -> Point2d -> Float
@@ -260,9 +284,9 @@ Note that this is an unsigned value - it does not matter which side of the axis
 the point is on.
 
     axis =
-        Axis2d (Point2d 1 2) Direction2d.x
+        Axis2d (Point2d ( 1, 2 )) Direction2d.x
 
-    Point2d.distanceFrom axis (Point2d 3 3) == 1 -- one unit above
+    Point2d.distanceFrom axis (Point2d ( 3, 3 )) == 1 -- one unit above
     Point2d.distanceFrom axis Point2d.origin == 2 -- two units below
 
 If you need a signed value, you could construct a perpendicular axis and measure
@@ -271,36 +295,61 @@ distance along it (using the `axis` value from above):
     perpendicularAxis =
         Axis2d.perpendicularTo axis
 
-    Point2d.distanceAlong perpendicularAxis (Point2d 3 3) == 1
+    Point2d.distanceAlong perpendicularAxis (Point2d ( 3, 3 )) == 1
     Point2d.distanceAlong perpendicularAxis Point2d.origin == -2
 -}
 distanceFromAxis : Axis2d -> Point2d -> Float
 distanceFromAxis axis =
-    vectorFrom axis.originPoint
-        >> Vector2d.crossProduct (Direction2d.asVector axis.direction)
-        >> abs
+    let
+        directionVector =
+            Vector2d (Direction2d.components axis.direction)
+    in
+        vectorFrom axis.originPoint
+            >> Vector2d.crossProduct directionVector
+            >> abs
 
 
 {-| Add a vector to a point (translate the point by that vector).
 
-    Point2d.plus (Vector2d 1 2) (Point2d 3 4) == Point2d 4 6
+    Point2d.plus (Vector2d ( 1, 2 )) (Point2d ( 3, 4 )) == Point2d ( 4, 6 )
 -}
 plus : Vector2d -> Point2d -> Point2d
-plus (Vector2d vx vy) (Point2d px py) =
-    Point2d (px + vx) (py + vy)
+plus vector point =
+    let
+        ( vx, vy ) =
+            Vector2d.components vector
+
+        ( px, py ) =
+            coordinates point
+    in
+        Point2d ( px + vx, py + vy )
 
 
 {-| Subtract a vector from a point (translate by the negation of that vector).
 
-    Point2d.minus (Vector2d 1 2) (Point2d 3 4) == Point2d 2 2
+    Point2d.minus (Vector2d ( 1, 2 )) (Point2d ( 3, 4 )) == Point2d ( 2, 2 )
 -}
 minus : Vector2d -> Point2d -> Point2d
-minus (Vector2d vx vy) (Point2d px py) =
-    Point2d (px - vx) (py - vy)
+minus vector point =
+    let
+        ( vx, vy ) =
+            Vector2d.components vector
+
+        ( px, py ) =
+            coordinates point
+    in
+        Point2d ( px - vx, py - vy )
 
 
-addTo (Point2d px py) (Vector2d vx vy) =
-    Point2d (px + vx) (py + vy)
+addTo point vector =
+    let
+        ( px, py ) =
+            coordinates point
+
+        ( vx, vy ) =
+            Vector2d.components vector
+    in
+        Point2d ( px + vx, py + vy )
 
 
 {-| Perform a uniform scaling about the given center point. The center point is
@@ -308,10 +357,10 @@ given first and the point to transform is given last. Points will contract or
 expand about the center point by the given scale. Scaling by a factor of 1 does
 nothing, and scaling by a factor of 0 collapses all points to the center point.
 
-    Point2d.scaleAbout Point2d.origin 3 (Point2d 1 2) == Point2d 3 6
-    Point2d.scaleAbout (Point2d 1 1) 0.5 (Point2d 5 1) == Point2d 3 1
-    Point2d.scaleAbout (Point2d 1 1) 2 (Point2d 1 2) == Point2d 1 3
-    Point2d.scaleAbout (Point2d 1 1) 10 (Point2d 1 1) == Point2d 1 1
+    Point2d.scaleAbout Point2d.origin 3 (Point2d ( 1, 2 )) == Point2d ( 3, 6 )
+    Point2d.scaleAbout (Point2d ( 1, 1 )) 0.5 (Point2d ( 5, 1 )) == Point2d ( 3, 1 )
+    Point2d.scaleAbout (Point2d ( 1, 1 )) 2 (Point2d ( 1, 2 )) == Point2d ( 1, 3 )
+    Point2d.scaleAbout (Point2d ( 1, 1 )) 10 (Point2d ( 1, 1 )) == Point2d ( 1, 1 )
 
 Do not scale by a negative scaling factor - while this will sometimes do what
 you want it is confusing and error prone. Try a combination of mirror and/or
@@ -326,8 +375,11 @@ scaleAbout centerPoint scale =
 radians). The point to rotate around is given first and the point to rotate is
 given last.
 
-    Point2d.rotateAround Point2d.origin (degrees 45) (Point2d 1 0) == Point2d 0.7071 0.7071
-    Point2d.rotateAround (Point2d 2 1) (degrees 90) (Point2d 3 1) == Point2d 2 2
+    Point2d.rotateAround Point2d.origin (degrees 45) (Point2d ( 1, 0 )) ==
+        Point2d ( 0.7071, 0.7071 )
+
+    Point2d.rotateAround (Point2d ( 2, 1 )) (degrees 90) (Point2d ( 3, 1 )) ==
+        Point2d ( 2, 2 )
 -}
 rotateAround : Point2d -> Float -> Point2d -> Point2d
 rotateAround centerPoint angle =
@@ -336,8 +388,8 @@ rotateAround centerPoint angle =
 
 {-| Translate parallel to a given axis by a given distance.
 
-    Point2d.translateAlong Axis2d.x 3 (Point2d 1 2) == Point2d 4 2
-    Point2d.translateAlong Axis2d.y -4 (Point2d 1 1) == Point2d 1 -3
+    Point2d.translateAlong Axis2d.x 3 (Point2d ( 1, 2 )) == Point2d ( 4, 2 )
+    Point2d.translateAlong Axis2d.y -4 (Point2d ( 1, 1 )) == Point2d ( 1, -3 )
 -}
 translateAlong : Axis2d -> Float -> Point2d -> Point2d
 translateAlong axis distance =
@@ -346,14 +398,14 @@ translateAlong axis distance =
 
 {-| Mirror a point across an axis.
 
-    Point2d.mirrorAcross Axis2d.x (Point2d 2 3) == Point2d -2 3
+    Point2d.mirrorAcross Axis2d.x (Point2d ( 2, 3 )) == Point2d ( -2, 3 )
 
 Angled axes work as well:
 
     diagonalAxis =
         Axis2d Point2d.origin (Direction2d.fromAngle (degrees 45))
 
-    Point2d.mirrorAcross diagonalAxis (Point2d 3 0) == Point2d 0 3
+    Point2d.mirrorAcross diagonalAxis (Point2d ( 3, 0 )) == Point2d ( 0, 3 )
 -}
 mirrorAcross : Axis2d -> Point2d -> Point2d
 mirrorAcross axis =
@@ -364,13 +416,13 @@ mirrorAcross axis =
 
 {-| Project a point perpendicularly onto an axis.
 
-    Point2d.projectOnto Axis2d.x (Point2d 2 3) == Point2d 2 0
-    Point2d.projectOnto Axis2d.y (Point2d 2 3) == Point2d 0 3
+    Point2d.projectOnto Axis2d.x (Point2d ( 2, 3 )) == Point2d ( 2, 0 )
+    Point2d.projectOnto Axis2d.y (Point2d ( 2, 3 )) == Point2d ( 0, 3 )
 
     offsetYAxis =
-        Axis2d (Point2d 1 0) Direction2d.y
+        Axis2d (Point2d ( 1, 0 )) Direction2d.y
 
-    Point2d.projectOnto offsetYAxis (Point2d 2 3) == Point2d 1 3
+    Point2d.projectOnto offsetYAxis (Point2d ( 2, 3 )) == Point2d ( 1, 3 )
 -}
 projectOnto : Axis2d -> Point2d -> Point2d
 projectOnto axis =
@@ -384,26 +436,26 @@ frame. The result will be the given point expressed relative to the given
 frame.
 
     localFrame =
-        Frame2d.at (Point2d 1 2)
+        Frame2d.at (Point2d ( 1, 2 ))
 
-    Point2d.localizeTo localFrame (Point2d 4 5) == Point2d 3 3
-    Point2d.localizeTo localFrame (Point2d 1 0) == Point2d 0 -2
+    Point2d.localizeTo localFrame (Point2d ( 4, 5 )) == Point2d ( 3, 3 )
+    Point2d.localizeTo localFrame (Point2d ( 1, 0 )) == Point2d ( 0, -2 )
 -}
 localizeTo : Frame2d -> Point2d -> Point2d
 localizeTo frame =
     vectorFrom frame.originPoint
         >> Vector2d.localizeTo frame
-        >> (\(Vector2d x y) -> Point2d x y)
+        >> (Vector2d.components >> Point2d)
 
 
 {-| Convert a point from local coordinates within a given frame to global
 coordinates. Inverse of `localizeTo`.
 
     localFrame =
-        Frame2d.at (Point2d 1 2)
+        Frame2d.at (Point2d ( 1, 2 ))
 
-    Point2d.placeIn localFrame (Point2d 3 3) == Point2d 4 5
-    Point2d.placeIn localFrame (Point2d 0 -2) == Point2d 1 0
+    Point2d.placeIn localFrame (Point2d ( 3, 3 )) == Point2d ( 4, 5 )
+    Point2d.placeIn localFrame (Point2d ( 0, -2 )) == Point2d ( 1, 0 )
 -}
 placeIn : Frame2d -> Point2d -> Point2d
 placeIn frame =
@@ -411,58 +463,30 @@ placeIn frame =
 
 
 placeOnto : Plane3d -> Point2d -> Point3d
-placeOnto plane (Point2d x y) =
+placeOnto plane (Point2d coordinates) =
     let
-        (Vector3d vx vy vz) =
-            Vector2d.placeOnto plane (Vector2d x y)
+        (Vector3d ( vx, vy, vz )) =
+            Vector2d.placeOnto plane (Vector2d coordinates)
 
-        (Point3d px py pz) =
+        (Point3d ( px, py, pz )) =
             plane.originPoint
     in
-        Point3d (px + vx) (py + vy) (pz + vz)
-
-
-{-| Get the (x, y) coordinates of a point.
-
-    Point2d.coordinates (Point2d x y) == ( x, y )
-
-Note that you could use this to extract the X and Y coordinates of a point using
-tuple pattern matching, for example
-
-    ( x, y ) = Point2d.coordinates point
-
-but it's simpler and more efficient to use pattern matching on the point
-directly:
-
-    (Point2d x y) = point
--}
-coordinates : Point2d -> ( Float, Float )
-coordinates (Point2d x y) =
-    ( x, y )
-
-
-{-| Construct a point from (x, y) coordinates.
-
-    Point2d.fromCoordinates ( x, y ) == Point2d x y
--}
-fromCoordinates : ( Float, Float ) -> Point2d
-fromCoordinates ( x, y ) =
-    Point2d x y
+        Point3d ( px + vx, py + vy, pz + vz )
 
 
 {-| Convert a point to a record with `x` and `y` fields.
 
-    Point2d.toRecord (Point2d 2 3) == { x = 2, y = 3 }
+    Point2d.toRecord (Point2d ( 2, 3 )) == { x = 2, y = 3 }
 -}
 toRecord : Point2d -> { x : Float, y : Float }
-toRecord (Point2d x y) =
+toRecord (Point2d ( x, y )) =
     { x = x, y = y }
 
 
 {-| Construct a point from a record with `x` and `y` fields.
 
-    Point2d.fromRecord { x = 2, y = 3 } == Point2d 2 3
+    Point2d.fromRecord { x = 2, y = 3 } == Point2d ( 2, 3 )
 -}
 fromRecord : { x : Float, y : Float } -> Point2d
 fromRecord { x, y } =
-    Point2d x y
+    Point2d ( x, y )

@@ -92,8 +92,11 @@ fromPointAndNormal originPoint normalDirection =
         xDirection =
             Direction3d.perpendicularTo normalDirection
 
+        yDirectionVector =
+            Direction3d.crossProduct normalDirection xDirection
+
         yDirection =
-            Direction3d (Direction3d.crossProduct normalDirection xDirection)
+            Direction3d (Vector3d.components yDirectionVector)
     in
         Plane3d originPoint xDirection yDirection normalDirection
 

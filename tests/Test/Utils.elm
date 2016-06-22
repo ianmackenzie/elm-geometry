@@ -67,13 +67,13 @@ vectorsAreEqual3d firstVector secondVector =
 
 
 directionsAreEqual2d firstDirection secondDirection =
-    vectorsAreEqual2d (Direction2d.asVector firstDirection)
-        (Direction2d.asVector secondDirection)
+    vectorsAreEqual2d (Vector2d (Direction2d.components firstDirection))
+        (Vector2d (Direction2d.components secondDirection))
 
 
 directionsAreEqual3d firstDirection secondDirection =
-    vectorsAreEqual3d (Direction3d.asVector firstDirection)
-        (Direction3d.asVector secondDirection)
+    vectorsAreEqual3d (Vector3d (Direction3d.components firstDirection))
+        (Vector3d (Direction3d.components secondDirection))
 
 
 pointsAreEqual2d firstPoint secondPoint =

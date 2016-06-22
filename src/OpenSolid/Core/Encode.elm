@@ -30,48 +30,64 @@ module OpenSolid.Core.Encode
 
 import Json.Encode exposing (..)
 import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Core.Vector2d as Vector2d
+import OpenSolid.Core.Direction2d as Direction2d
+import OpenSolid.Core.Point2d as Point2d
+import OpenSolid.Core.Vector3d as Vector3d
+import OpenSolid.Core.Direction3d as Direction3d
+import OpenSolid.Core.Point3d as Point3d
+
+
+tuple2 : ( Float, Float ) -> Value
+tuple2 ( x, y ) =
+    list [ float x, float y ]
+
+
+tuple3 : ( Float, Float, Float ) -> Value
+tuple3 ( x, y, z ) =
+    list [ float x, float y, float z ]
 
 
 {-| Encode a Vector2d as a list of two floats.
 -}
 vector2d : Vector2d -> Value
-vector2d (Vector2d x y) =
-    list [ float x, float y ]
+vector2d =
+    Vector2d.components >> tuple2
 
 
 {-| Encode a Vector3d as a list of three floats.
 -}
 vector3d : Vector3d -> Value
-vector3d (Vector3d x y z) =
-    list [ float x, float y, float z ]
+vector3d =
+    Vector3d.components >> tuple3
 
 
 {-| Encode a Direction2d as a list of two floats.
 -}
 direction2d : Direction2d -> Value
-direction2d (Direction2d vector) =
-    vector2d vector
+direction2d =
+    Direction2d.components >> tuple2
 
 
 {-| Encode a Direction3d as a list of three floats.
 -}
 direction3d : Direction3d -> Value
-direction3d (Direction3d vector) =
-    vector3d vector
+direction3d =
+    Direction3d.components >> tuple3
 
 
 {-| Encode a Point2d as a list of two floats.
 -}
 point2d : Point2d -> Value
-point2d (Point2d x y) =
-    list [ float x, float y ]
+point2d =
+    Point2d.coordinates >> tuple2
 
 
 {-| Encode a Point3d as a list of three floats.
 -}
 point3d : Point3d -> Value
-point3d (Point3d x y z) =
-    list [ float x, float y, float z ]
+point3d =
+    Point3d.coordinates >> tuple3
 
 
 {-| Encode an Axis2d as an object with 'originPoint' and 'direction' fields.

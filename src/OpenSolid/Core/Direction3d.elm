@@ -13,12 +13,10 @@ module OpenSolid.Core.Direction3d
         , y
         , z
         , perpendicularTo
-        , fromComponents
         , xComponent
         , yComponent
         , zComponent
         , components
-        , asVector
         , rotateAround
         , mirrorAcross
         , localizeTo
@@ -38,26 +36,34 @@ import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction2d as Direction2d
 
 
+toVector (Direction3d components) =
+    Vector3d components
+
+
+toDirection (Vector3d components) =
+    Direction3d components
+
+
 x : Direction3d
 x =
-    Direction3d (Vector3d 1 0 0)
+    Direction3d ( 1, 0, 0 )
 
 
 y : Direction3d
 y =
-    Direction3d (Vector3d 0 1 0)
+    Direction3d ( 0, 1, 0 )
 
 
 z : Direction3d
 z =
-    Direction3d (Vector3d 0 0 1)
+    Direction3d ( 0, 0, 1 )
 
 
 perpendicularTo : Direction3d -> Direction3d
-perpendicularTo (Direction3d vector) =
+perpendicularTo direction =
     let
         perpendicularVector =
-            Vector3d.perpendicularTo vector
+            Vector3d.perpendicularTo (toVector direction)
 
         length =
             Vector3d.length perpendicularVector
@@ -65,87 +71,77 @@ perpendicularTo (Direction3d vector) =
         normalizedVector =
             Vector3d.times (1 / length) perpendicularVector
     in
-        Direction3d normalizedVector
-
-
-fromComponents : ( Float, Float, Float ) -> Direction3d
-fromComponents =
-    Vector3d.fromComponents >> Direction3d
-
-
-xComponent : Direction3d -> Float
-xComponent =
-    asVector >> Vector3d.xComponent
-
-
-yComponent : Direction3d -> Float
-yComponent =
-    asVector >> Vector3d.yComponent
-
-
-zComponent : Direction3d -> Float
-zComponent =
-    asVector >> Vector3d.zComponent
+        Direction3d (Vector3d.components normalizedVector)
 
 
 components : Direction3d -> ( Float, Float, Float )
-components =
-    asVector >> Vector3d.components
+components (Direction3d components') =
+    components'
 
 
-asVector : Direction3d -> Vector3d
-asVector (Direction3d vector) =
-    vector
+xComponent : Direction3d -> Float
+xComponent (Direction3d ( x, _, _ )) =
+    x
+
+
+yComponent : Direction3d -> Float
+yComponent (Direction3d ( _, y, _ )) =
+    y
+
+
+zComponent : Direction3d -> Float
+zComponent (Direction3d ( _, _, z )) =
+    z
 
 
 rotateAround : Axis3d -> Float -> Direction3d -> Direction3d
 rotateAround axis angle =
-    asVector >> Vector3d.rotateAround axis angle >> Direction3d
+    toVector >> Vector3d.rotateAround axis angle >> toDirection
 
 
 mirrorAcross : Plane3d -> Direction3d -> Direction3d
 mirrorAcross plane =
-    asVector >> Vector3d.mirrorAcross plane >> Direction3d
+    toVector >> Vector3d.mirrorAcross plane >> toDirection
 
 
 localizeTo : Frame3d -> Direction3d -> Direction3d
 localizeTo frame =
-    asVector >> Vector3d.localizeTo frame >> Direction3d
+    toVector >> Vector3d.localizeTo frame >> toDirection
 
 
 placeIn : Frame3d -> Direction3d -> Direction3d
 placeIn frame =
-    asVector >> Vector3d.placeIn frame >> Direction3d
+    toVector >> Vector3d.placeIn frame >> toDirection
 
 
 projectOnto : Plane3d -> Direction3d -> Maybe Direction3d
 projectOnto plane =
-    asVector >> Vector3d.projectOnto plane >> Vector3d.direction
+    toVector >> Vector3d.projectOnto plane >> Vector3d.direction
 
 
 projectInto : Plane3d -> Direction3d -> Maybe Direction2d
 projectInto plane =
-    asVector >> Vector3d.projectInto plane >> Vector2d.direction
+    toVector >> Vector3d.projectInto plane >> Vector2d.direction
 
 
 negate : Direction3d -> Direction3d
 negate =
-    asVector >> Vector3d.negate >> Direction3d
+    toVector >> Vector3d.negate >> toDirection
 
 
 times : Float -> Direction3d -> Vector3d
 times scale =
-    asVector >> Vector3d.times scale
+    toVector >> Vector3d.times scale
 
 
 dotProduct : Direction3d -> Direction3d -> Float
 dotProduct firstDirection secondDirection =
-    Vector3d.dotProduct (asVector firstDirection) (asVector secondDirection)
+    Vector3d.dotProduct (toVector firstDirection) (toVector secondDirection)
 
 
 crossProduct : Direction3d -> Direction3d -> Vector3d
 crossProduct firstDirection secondDirection =
-    Vector3d.crossProduct (asVector firstDirection) (asVector secondDirection)
+    Vector3d.crossProduct (toVector firstDirection) (toVector secondDirection)
 
 
 angleFrom : Direction3d -> Direction3d -> Float

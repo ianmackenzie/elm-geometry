@@ -32,7 +32,6 @@ module OpenSolid.Core.Vector2d
         , placeIn
         , placeOnto
         , components
-        , fromComponents
         , toRecord
         , fromRecord
         )
@@ -52,21 +51,21 @@ to numerical roundoff) they might not be exactly equal.
 
 @docs zero
 
-Although there are no predefined constants for `Vector2d 1 0` and
-`Vector2d 0 1`, in most cases you will actually want their `Direction2d`
+Although there are no predefined constants for `Vector2d ( 1, 0 )` and
+`Vector2d ( 0, 1 )`, in most cases you will actually want their `Direction2d`
 versions `Direction2d.x` and `Direction2d.y`.
 
 # Constructors
 
 Since `Vector2d` is not an opaque type, the simplest way to construct one is
-directly from its X and Y components, for example `Vector2d 2 3`. But that is
-not the only way!
+directly from its X and Y components, for example `Vector2d ( 2, 3 )`. But that
+is not the only way!
 
 @docs, alongAxis, relativeTo, perpendicularTo
 
 # Components
 
-@docs xComponent, yComponent, componentIn
+@docs components, xComponent, yComponent, componentIn
 
 # Length and direction
 
@@ -89,8 +88,8 @@ counterclockwise from the global XY frame:
 
     frame = Frame2d.rotateBy (degrees 45) Frame2d.xy
 
-    frame.xDirection == Direction2d (Vector2d 0.7071 0.7071)
-    frame.yDirection == Direction2d (Vector2d -0.7071 0.7071)
+    frame.xDirection == Direction2d (Vector2d ( 0.7071, 0.7071 ))
+    frame.yDirection == Direction2d (Vector2d ( -0.7071, 0.7071 ))
 
 @docs localizeTo, placeIn, placeOnto
 
@@ -102,13 +101,13 @@ conversion functions to and from `elm-linear-algebra`'s `Vec2` type with
 
     toVec2 : Vector2d -> Math.Vector2.Vec2
     toVec2 =
-        Vector2d.components >> Math.Vector2.fromTuple
+        Vector2d.toRecord >> Math.Vector2.fromRecord
 
     fromVec2 : Math.Vector2.Vec2 -> Vector2d
     fromVec2 =
-        Math.Vector2.toTuple >> Vector2d.fromComponents
+        Math.Vector2.toRecord >> Vector2d.fromRecord
 
-@docs components, fromComponents, toRecord, fromRecord
+@docs toRecord, fromRecord
 -}
 
 import OpenSolid.Core.Types exposing (..)
@@ -116,71 +115,71 @@ import OpenSolid.Core.Types exposing (..)
 
 {-| The zero vector.
 
-    Vector2d.zero == Vector2d 0 0
+    Vector2d.zero == Vector2d ( 0, 0 )
 -}
 zero : Vector2d
 zero =
-    Vector2d 0 0
+    Vector2d ( 0, 0 )
 
 
 {-| Construct a vector parallel to the given axis, with the given magnitude. The
 magnitude may be negative, in which case the vector will have an opposite
 direction to the axis.
 
-    Vector2d.alongAxis Axis2d.x 5 == Vector2d 5 0
-    Vector2d.alongAxis Axis2d.y -3 == Vector2d 0 -3
+    Vector2d.alongAxis Axis2d.x 5 == Vector2d ( 5, 0 )
+    Vector2d.alongAxis Axis2d.y -3 == Vector2d ( 0, -3 )
 -}
 alongAxis : Axis2d -> Float -> Vector2d
 alongAxis axis magnitude =
     let
-        (Direction2d directionVector) =
+        (Direction2d ( dx, dy )) =
             axis.direction
     in
-        times magnitude directionVector
+        Vector2d ( dx * magnitude, dy * magnitude )
 
 
 relativeTo : Frame2d -> ( Float, Float ) -> Vector2d
 relativeTo frame =
     let
-        (Direction2d (Vector2d x1 y1)) =
+        (Direction2d ( x1, y1 )) =
             frame.xDirection
 
-        (Direction2d (Vector2d x2 y2)) =
+        (Direction2d ( x2, y2 )) =
             frame.yDirection
     in
-        \( x, y ) -> Vector2d (x1 * x + x2 * y) (y1 * x + y2 * y)
+        \( x, y ) -> Vector2d ( x1 * x + x2 * y, y1 * x + y2 * y )
 
 
 {-| Construct a vector perpendicular to the given vector, by rotating the given
 vector 90 degrees in a counterclockwise direction. The perpendicular vector will
 have the same length as the given vector.
 
-    Vector2d.perpendicularTo (Vector2d 1 0) == Vector2d 0 1
-    Vector2d.perpendicularTo (Vector2d 0 1) == Vector2d -1 0
-    Vector2d.perpendicularTo (Vector2d 3 1) == Vector2d -1 3
+    Vector2d.perpendicularTo (Vector2d ( 1, 0 )) == Vector2d ( 0, 1 )
+    Vector2d.perpendicularTo (Vector2d ( 0, 1 )) == Vector2d ( -1, 0 )
+    Vector2d.perpendicularTo (Vector2d ( 3, 1 )) == Vector2d ( -1, 3 )
     Vector2d.perpendicularTo Vector2d.zero == Vector2d.zero
 -}
 perpendicularTo : Vector2d -> Vector2d
-perpendicularTo (Vector2d x y) =
-    Vector2d (-y) x
+perpendicularTo (Vector2d ( x, y )) =
+    Vector2d ( -y, x )
 
 
 {-| Get the X component of a vector.
 
-    Vector2d.xComponent (Vector2d 2 3) == 2
+    Vector2d.xComponent (Vector2d ( 2, 3 )) == 2
 -}
 xComponent : Vector2d -> Float
-xComponent (Vector2d x _) =
-    x
+xComponent =
+    components >> fst
 
 
 {-| Get the Y component of a vector.
 
-    Vector2d.yComponent (Vector2d 2 3) == 3
+    Vector2d.yComponent (Vector2d ( 2, 3 )) == 3
 -}
 yComponent : Vector2d -> Float
-yComponent (Vector2d _ y) =
-    y
+yComponent =
+    components >> snd
 
 
 {-| Find the component of a vector in an arbitrary direction, for example
@@ -193,13 +192,13 @@ of which can be expressed in terms of `componentIn`:
     Vector2d.xComponent vector == Vector2d.componentIn Direction2d.x vector
 -}
 componentIn : Direction2d -> Vector2d -> Float
-componentIn (Direction2d vector) =
-    dotProduct vector
+componentIn (Direction2d ( dx, dy )) (Vector2d ( x, y )) =
+    x * dx + y * dy
 
 
 {-| Get the length of a vector.
 
-    Vector2d.length (Vector2d 1 1) == sqrt 2
+    Vector2d.length (Vector2d ( 1, 1 )) == sqrt 2
 -}
 length : Vector2d -> Float
 length =
@@ -219,17 +218,17 @@ since the latter requires a square root. In many cases, however, the speed
 difference will be negligible and using `length` is much more readable!
 -}
 squaredLength : Vector2d -> Float
-squaredLength (Vector2d x y) =
+squaredLength (Vector2d ( x, y )) =
     x * x + y * y
 
 
 {-| Attempt to find the direction of a vector. In the case of a zero vector,
 return `Nothing`.
 
-    Vector2d.direction (Vector2d 1 1) ==
-        Just (Direction2d (Vector2d 0.7071 0.7071))
+    Vector2d.direction (Vector2d ( 1, 1 )) ==
+        Just (Direction2d (Vector2d ( 0.7071, 0.7071 )))
 
-    Vector2d.direction (Vector2d 0 0) == Nothing
+    Vector2d.direction (Vector2d ( 0, 0 )) == Nothing
 
 For instance, given an eye point and a point to look at, the corresponding view
 direction could be determined with
@@ -245,79 +244,83 @@ direction vector =
     if vector == zero then
         Nothing
     else
-        Just (Direction2d (times (1 / length vector) vector))
+        let
+            normalizedVector =
+                times (1 / length vector) vector
+        in
+            Just (Direction2d (components normalizedVector))
 
 
 {-| Negate a vector.
 
-    Vector2d.negate (Vector2d -1 2) == Vector2d 1 -2
+    Vector2d.negate (Vector2d ( -1, 2 )) == Vector2d ( 1, -2 )
 -}
 negate : Vector2d -> Vector2d
-negate (Vector2d x y) =
-    Vector2d (-x) (-y)
+negate (Vector2d ( x, y )) =
+    Vector2d ( -x, -y )
 
 
 {-| Add one vector to another.
 
-    Vector2d.plus (Vector2d 1 2) (Vector2d 3 4) == Vector2d 4 6
+    Vector2d.plus (Vector2d ( 1, 2 )) (Vector2d ( 3, 4 )) == Vector2d ( 4, 6 )
 -}
 plus : Vector2d -> Vector2d -> Vector2d
-plus (Vector2d x2 y2) (Vector2d x1 y1) =
-    Vector2d (x1 + x2) (y1 + y2)
+plus (Vector2d ( x2, y2 )) (Vector2d ( x1, y1 )) =
+    Vector2d ( x1 + x2, y1 + y2 )
 
 
 {-| Subtract one vector from another. The vector to subtract is given first and
 the vector to be subtracted from is given second, so
 
-    Vector2d.minus (Vector2d 1 2) (Vector2d 5 6) == Vector2d 4 4
+    Vector2d.minus (Vector2d ( 1, 2 )) (Vector2d ( 5, 6 )) == Vector2d ( 4, 4 )
 
 This means that `minus` can be used more naturally in situations like `map`
 functions
 
     minusVector =
-        Vector2d.minus (Vector2d 2 0)
+        Vector2d.minus (Vector2d ( 2, 0 ))
 
     originalVectors =
-        [ Vector2d 1 2, Vector2d 3 4 ]
+        [ Vector2d ( 1, 2 ), Vector2d ( 3, 4 ) ]
 
-    List.map minusVector originalVectors == [ Vector2d -1 2, Vector2d 1 4 ]
+    List.map minusVector originalVectors == [ Vector2d ( -1, 2 ), Vector2d ( 1, 4 ) ]
 
 or function pipelining
 
     myFunction =
-        Vector2d.minus (Vector2d 0 1) >> Vector2d.times 3
+        Vector2d.minus (Vector2d ( 0, 1 )) >> Vector2d.times 3
 
-    myFunction (Vector2d 2 1) == Vector2d 6 0
+    myFunction (Vector2d ( 2, 1 )) == Vector2d ( 6, 0 )
 
 where `myFunction` could be described in pseudo-English as '`minus` by
-`Vector2d 0 1` and then `times` by 3'.
+`Vector2d ( 0, 1 )` and then `times` by 3'.
 -}
 minus : Vector2d -> Vector2d -> Vector2d
-minus (Vector2d x2 y2) (Vector2d x1 y1) =
-    Vector2d (x1 - x2) (y1 - y2)
+minus (Vector2d ( x2, y2 )) (Vector2d ( x1, y1 )) =
+    Vector2d ( x1 - x2, y1 - y2 )
 
 
 {-| Multiply a vector by a scalar.
 
-    Vector2d.times 3 (Vector2d 1 2) == Vector2d 3 6
+    Vector2d.times 3 (Vector2d ( 1, 2 )) == Vector2d ( 3, 6 )
 -}
 times : Float -> Vector2d -> Vector2d
-times scale (Vector2d x y) =
-    Vector2d (x * scale) (y * scale)
+times scale (Vector2d ( x, y )) =
+    Vector2d ( x * scale, y * scale )
 
 
 {-| Find the dot product of two vectors.
 
-    Vector2d.dotProduct (Vector2d 1 2) (Vector2d 3 4) == 1 * 3 + 2 * 4 == 11
+    Vector2d.dotProduct (Vector2d ( 1, 2 )) (Vector2d ( 3, 4 )) == 1 * 3 + 2 * 4 == 11
 -}
 dotProduct : Vector2d -> Vector2d -> Float
-dotProduct (Vector2d x1 y1) (Vector2d x2 y2) =
+dotProduct (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
     x1 * x2 + y1 * y2
 
 
 {-| Find the scalar 'cross product' of two vectors in 2D. This is defined as
 
-    crossProduct (Vector2d x1 y1) (Vector2d x2 y2) =
+    crossProduct (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
         x1 * y2 - y1 * x2
 
 and is useful in many of the same ways as the 3D cross product. Its magnitude is
@@ -329,14 +332,14 @@ rotation and negative indicates a clockwise rotation), similar to how the
 direction of the 3D cross product indicates the direction of rotation.
 -}
 crossProduct : Vector2d -> Vector2d -> Float
-crossProduct (Vector2d x1 y1) (Vector2d x2 y2) =
+crossProduct (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
     x1 * y2 - y1 * x2
 
 
 {-| Rotate a vector counterclockwise by a given angle (in radians).
 
-    Vector2d.rotateBy (degrees 45) (Vector2d 1 1) == Vector2d 0 1.4142
-    Vector2d.rotateBy pi (Vector2d 1 0) == Vector2d -1 0
+    Vector2d.rotateBy (degrees 45) (Vector2d ( 1, 1 )) == Vector2d ( 0, 1.4142 )
+    Vector2d.rotateBy pi (Vector2d ( 1, 0 )) == Vector2d ( -1, 0 )
 
 Rotating a list of vectors by 90 degrees:
 
@@ -358,20 +361,20 @@ rotateBy angle =
         sine =
             sin angle
     in
-        \(Vector2d x y) ->
-            Vector2d (x * cosine - y * sine) (y * cosine + x * sine)
+        \(Vector2d ( x, y )) ->
+            Vector2d ( x * cosine - y * sine, y * cosine + x * sine )
 
 
 {-| Mirror a vector across a particular axis. Note that only the direction of
 the axis affects the result.
 
-    Vector2d.mirrorAcross Axis2d.x (Vector2d 2 3) == Vector2d 2 -3
-    Vector2d.mirrorAcross Axis2d.y (Vector2d 2 3) == Vector2d -2 3
+    Vector2d.mirrorAcross Axis2d.x (Vector2d ( 2, 3 )) == Vector2d ( 2, -3 )
+    Vector2d.mirrorAcross Axis2d.y (Vector2d ( 2, 3 )) == Vector2d ( -2, 3 )
 -}
 mirrorAcross : Axis2d -> Vector2d -> Vector2d
 mirrorAcross axis =
     let
-        (Direction2d (Vector2d dx dy)) =
+        (Direction2d ( dx, dy )) =
             axis.direction
 
         a =
@@ -383,20 +386,23 @@ mirrorAcross axis =
         c =
             1 - 2 * dx * dx
     in
-        \(Vector2d vx vy) -> Vector2d (a * vx + b * vy) (c * vy + b * vx)
+        \(Vector2d ( vx, vy )) -> Vector2d ( a * vx + b * vy, c * vy + b * vx )
 
 
 {-| Project a vector onto an axis. This will result in a vector parallel to the
 given axis.
 
-    Vector2d.projectOnto Axis2d.y (Vector2d 3 4) == Vector2d 0 4
-    Vector2d.projectOnto Axis2d.x (Vector2d -1 2) == Vector2d -1 0
+    Vector2d.projectOnto Axis2d.y (Vector2d ( 3, 4 )) == Vector2d ( 0, 4 )
+    Vector2d.projectOnto Axis2d.x (Vector2d ( -1, 2 )) == Vector2d ( -1, 0 )
 -}
 projectOnto : Axis2d -> Vector2d -> Vector2d
 projectOnto axis vector =
     let
-        (Direction2d directionVector) =
+        (Direction2d directionComponents) =
             axis.direction
+
+        directionVector =
+            Vector2d directionComponents
     in
         times (dotProduct vector directionVector) directionVector
 
@@ -405,38 +411,40 @@ projectOnto axis vector =
 frame. The result will be the given vector expressed relative to the given
 frame.
 
-The vector `Vector2d 1 0` (in global coordinates), relative to the rotated
+The vector `Vector2d ( 1, 0 )` (in global coordinates), relative to the rotated
 frame defined above, is a vector of length 1 with an angle of -45 degrees.
 Therefore,
 
-    Vector2d.localizeTo frame (Vector2d 1 0) == Vector2d 0.7071 -0.7071
+    Vector2d.localizeTo frame (Vector2d ( 1, 0 )) == Vector2d ( 0.7071, -0.7071 )
 
-The vector `Vector2d 1 1`, on the other hand, is parallel to the X axis of the
+The vector `Vector2d ( 1, 1 )`, on the other hand, is parallel to the X axis of the
 rotated frame so only has an X component when expressed in local coordinates
 relative to that frame:
 
-    Vector2d.localizeTo frame (Vector2d 1 1) == Vector2d 1.4142 0
+    Vector2d.localizeTo frame (Vector2d ( 1, 1 )) == Vector2d ( 1.4142, 0 )
 -}
 localizeTo : Frame2d -> Vector2d -> Vector2d
 localizeTo frame vector =
-    Vector2d (componentIn frame.xDirection vector)
-        (componentIn frame.yDirection vector)
+    Vector2d
+        ( componentIn frame.xDirection vector
+        , componentIn frame.yDirection vector
+        )
 
 
 {-| Convert a vector from local coordinates within a given frame to global
 coordinates.
 
-The vector `Vector2d 1 0` (in local coordinates with respect to the rotated
+The vector `Vector2d ( 1, 0 )` (in local coordinates with respect to the rotated
 frame defined above) is a vector of length 1 along the frame's X axis, which is
 itself at a 45 degree angle in global coordinates. Therefore,
 
-    Vector2d.placeIn frame (Vector2d 1 0) == Vector2d 0.7071 0.7071
+    Vector2d.placeIn frame (Vector2d ( 1, 0 )) == Vector2d ( 0.7071, 0.7071 )
 
-The vector `Vector2d 1 1` in local coordinates, on the other hand, is at a 45
+The vector `Vector2d ( 1, 1 )` in local coordinates, on the other hand, is at a 45
 degree angle from the X axis of the rotated frame and so is straight up in
 global coordinates:
 
-    Vector2d.placeIn frame (Vector2d 1 1) == Vector2d 0 1.4142
+    Vector2d.placeIn frame (Vector2d ( 1, 1 )) == Vector2d ( 0, 1.4142 )
 -}
 placeIn : Frame2d -> Vector2d -> Vector2d
 placeIn frame =
@@ -446,57 +454,42 @@ placeIn frame =
 placeOnto : Plane3d -> Vector2d -> Vector3d
 placeOnto plane =
     let
-        (Direction3d (Vector3d x1 y1 z1)) =
+        (Direction3d ( x1, y1, z1 )) =
             plane.xDirection
 
-        (Direction3d (Vector3d x2 y2 z2)) =
+        (Direction3d ( x2, y2, z2 )) =
             plane.yDirection
     in
-        \(Vector2d x y) ->
-            Vector3d (x1 * x + x2 * y) (y1 * x + y2 * y) (z1 * x + z2 * y)
+        \(Vector2d ( x, y )) ->
+            Vector3d ( x1 * x + x2 * y, y1 * x + y2 * y, z1 * x + z2 * y )
 
 
-{-| Get the (x, y) components of a vector.
-
-    Vector2d.components (Vector2d x y) == ( x, y )
-
-Note that you could use this to extract the X and Y components of a vector using
-tuple pattern matching, for example
+{-| Get the (x, y) components of a vector as a tuple.
 
     ( x, y ) = Vector2d.components vector
-
-but it's simpler and more efficient to use pattern matching on the vector
-directly:
-
-    (Vector2d x y) = vector
 -}
 components : Vector2d -> ( Float, Float )
-components (Vector2d x y) =
-    ( x, y )
-
-
-{-| Construct a vector from (x, y) components.
-
-    Vector2d.fromComponents ( x, y ) == Vector2d x y
--}
-fromComponents : ( Float, Float ) -> Vector2d
-fromComponents ( x, y ) =
-    Vector2d x y
+components (Vector2d components') =
+    components'
 
 
 {-| Convert a vector to a record with `x` and `y` fields.
 
-    Vector2d.toRecord (Vector2d 2 3) == { x = 2, y = 3 }
+    Vector2d.toRecord (Vector2d ( 2, 3 )) == { x = 2, y = 3 }
 -}
 toRecord : Vector2d -> { x : Float, y : Float }
-toRecord (Vector2d x y) =
-    { x = x, y = y }
+toRecord vector =
+    let
+        ( x, y ) =
+            components vector
+    in
+        { x = x, y = y }
 
 
 {-| Construct a vector from a record with `x` and `y` fields.
 
-    Vector2d.fromRecord { x = 2, y = 3 } == Vector2d 2 3
+    Vector2d.fromRecord { x = 2, y = 3 } == Vector2d ( 2, 3 )
 -}
 fromRecord : { x : Float, y : Float } -> Vector2d
 fromRecord { x, y } =
-    Vector2d x y
+    Vector2d ( x, y )

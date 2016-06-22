@@ -13,7 +13,6 @@ module OpenSolid.Core.Point3d
         , alongAxis
         , onPlane
         , relativeTo
-        , fromCoordinates
         , interpolate
         , midpoint
         , xCoordinate
@@ -51,7 +50,7 @@ import OpenSolid.Core.Direction3d as Direction3d
 
 origin : Point3d
 origin =
-    Point3d 0 0 0
+    Point3d ( 0, 0, 0 )
 
 
 alongAxis : Axis3d -> Float -> Point3d
@@ -69,11 +68,6 @@ relativeTo frame =
     Vector3d.relativeTo frame >> addTo frame.originPoint
 
 
-fromCoordinates : ( Float, Float, Float ) -> Point3d
-fromCoordinates ( x, y, z ) =
-    Point3d x y z
-
-
 interpolate : Point3d -> Point3d -> Float -> Point3d
 interpolate startPoint endPoint =
     let
@@ -89,23 +83,23 @@ midpoint firstPoint secondPoint =
 
 
 xCoordinate : Point3d -> Float
-xCoordinate (Point3d x _ _) =
+xCoordinate (Point3d ( x, _, _ )) =
     x
 
 
 yCoordinate : Point3d -> Float
-yCoordinate (Point3d _ y _) =
+yCoordinate (Point3d ( _, y, _ )) =
     y
 
 
 zCoordinate : Point3d -> Float
-zCoordinate (Point3d _ _ z) =
+zCoordinate (Point3d ( _, _, z )) =
     z
 
 
 coordinates : Point3d -> ( Float, Float, Float )
-coordinates (Point3d x y z) =
-    ( x, y, z )
+coordinates (Point3d coordinates') =
+    coordinates'
 
 
 squaredDistanceFrom : Point3d -> Point3d -> Float
@@ -119,13 +113,27 @@ distanceFrom other =
 
 
 vectorTo : Point3d -> Point3d -> Vector3d
-vectorTo (Point3d x2 y2 z2) (Point3d x1 y1 z1) =
-    Vector3d (x2 - x1) (y2 - y1) (z2 - z1)
+vectorTo other point =
+    let
+        ( x', y', z' ) =
+            coordinates other
+
+        ( x, y, z ) =
+            coordinates point
+    in
+        Vector3d ( x' - x, y' - y, z' - z )
 
 
 vectorFrom : Point3d -> Point3d -> Vector3d
-vectorFrom (Point3d x2 y2 z2) (Point3d x1 y1 z1) =
-    Vector3d (x1 - x2) (y1 - y2) (z1 - z2)
+vectorFrom other point =
+    let
+        ( x', y', z' ) =
+            coordinates other
+
+        ( x, y, z ) =
+            coordinates point
+    in
+        Vector3d ( x - x', y - y', z - z' )
 
 
 distanceAlong : Axis3d -> Point3d -> Float
@@ -135,9 +143,13 @@ distanceAlong axis =
 
 squaredDistanceFromAxis : Axis3d -> Point3d -> Float
 squaredDistanceFromAxis axis =
-    vectorFrom axis.originPoint
-        >> Vector3d.crossProduct (Direction3d.asVector axis.direction)
-        >> Vector3d.squaredLength
+    let
+        directionVector =
+            Vector3d (Direction3d.components axis.direction)
+    in
+        vectorFrom axis.originPoint
+            >> Vector3d.crossProduct directionVector
+            >> Vector3d.squaredLength
 
 
 distanceFromAxis : Axis3d -> Point3d -> Float
@@ -147,7 +159,7 @@ distanceFromAxis axis =
 
 distanceFromPlane : Plane3d -> Point3d -> Float
 distanceFromPlane plane =
-    abs << signedDistanceFromPlane plane
+    signedDistanceFromPlane plane >> abs
 
 
 signedDistanceFromPlane : Plane3d -> Point3d -> Float
@@ -155,8 +167,15 @@ signedDistanceFromPlane plane =
     vectorFrom plane.originPoint >> Vector3d.componentIn plane.normalDirection
 
 
-addTo (Point3d px py pz) (Vector3d vx vy vz) =
-    Point3d (px + vx) (py + vy) (pz + vz)
+addTo point vector =
+    let
+        ( px, py, pz ) =
+            coordinates point
+
+        ( vx, vy, vz ) =
+            Vector3d.components vector
+    in
+        Point3d ( px + vx, py + vy, pz + vz )
 
 
 scaleAbout : Point3d -> Float -> Point3d -> Point3d
@@ -187,7 +206,7 @@ localizeTo : Frame3d -> Point3d -> Point3d
 localizeTo frame =
     vectorFrom frame.originPoint
         >> Vector3d.localizeTo frame
-        >> (\(Vector3d x y z) -> Point3d x y z)
+        >> (\(Vector3d components) -> Point3d components)
 
 
 placeIn : Frame3d -> Point3d -> Point3d
@@ -218,24 +237,42 @@ projectInto : Plane3d -> Point3d -> Point2d
 projectInto plane =
     vectorFrom plane.originPoint
         >> Vector3d.projectInto plane
-        >> (\(Vector2d x y) -> Point2d x y)
+        >> (\(Vector2d components) -> Point2d components)
 
 
 plus : Vector3d -> Point3d -> Point3d
-plus (Vector3d vx vy vz) (Point3d px py pz) =
-    Point3d (px + vx) (py + vy) (pz + vz)
+plus vector point =
+    let
+        ( vx, vy, vz ) =
+            Vector3d.components vector
+
+        ( px, py, pz ) =
+            coordinates point
+    in
+        Point3d ( px + vx, py + vy, pz + vz )
 
 
 minus : Vector3d -> Point3d -> Point3d
-minus (Vector3d vx vy vz) (Point3d px py pz) =
-    Point3d (px - vx) (py - vy) (pz - vz)
+minus vector point =
+    let
+        ( vx, vy, vz ) =
+            Vector3d.components vector
+
+        ( px, py, pz ) =
+            coordinates point
+    in
+        Point3d ( px - vx, py - vy, pz - vz )
 
 
 toRecord : Point3d -> { x : Float, y : Float, z : Float }
-toRecord (Point3d x y z) =
-    { x = x, y = y, z = z }
+toRecord point =
+    let
+        ( x, y, z ) =
+            coordinates point
+    in
+        { x = x, y = y, z = z }
 
 
 fromRecord : { x : Float, y : Float, z : Float } -> Point3d
 fromRecord { x, y, z } =
-    Point3d x y z
+    Point3d ( x, y, z )
