@@ -105,7 +105,10 @@ which has the advantage that it is easy to adapt to work with axes that might be
 angled, not at the origin, or even changing dynamically. The key idea is to
 think in terms of fundamental geometric concepts like "distance of a point along
 an axis" since they are independent of the particular coordinate system being
-used.
+used. Although OpenSolid does allow access to individual components (such as
+with `Point3d.xCoordinate` above), it does not provide additional component-
+centric functionality like modifying a single coordinate of a point or
+'swizzling' a vector to change the order of its components.
 
 ### Type safety
 
