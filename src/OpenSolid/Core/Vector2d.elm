@@ -21,9 +21,9 @@ module OpenSolid.Core.Vector2d
         , squaredLength
         , direction
         , negate
+        , times
         , plus
         , minus
-        , times
         , dotProduct
         , crossProduct
         , rotateBy
@@ -73,7 +73,7 @@ is not the only way!
 
 # Arithmetic
 
-@docs negate, plus, minus, times, dotProduct, crossProduct
+@docs negate, times, plus, minus, dotProduct, crossProduct
 
 # Transformations
 
@@ -296,6 +296,15 @@ negate (Vector2d ( x, y )) =
     Vector2d ( -x, -y )
 
 
+{-| Multiply a vector by a scalar.
+
+    Vector2d.times 3 (Vector2d ( 1, 2 )) == Vector2d ( 3, 6 )
+-}
+times : Float -> Vector2d -> Vector2d
+times scale (Vector2d ( x, y )) =
+    Vector2d ( x * scale, y * scale )
+
+
 {-| Add one vector to another.
 
     Vector2d.plus (Vector2d ( 1, 2 )) (Vector2d ( 3, 4 )) == Vector2d ( 4, 6 )
@@ -334,15 +343,6 @@ where `myFunction` could be described in pseudo-English as '`minus` by
 minus : Vector2d -> Vector2d -> Vector2d
 minus (Vector2d ( x2, y2 )) (Vector2d ( x1, y1 )) =
     Vector2d ( x1 - x2, y1 - y2 )
-
-
-{-| Multiply a vector by a scalar.
-
-    Vector2d.times 3 (Vector2d ( 1, 2 )) == Vector2d ( 3, 6 )
--}
-times : Float -> Vector2d -> Vector2d
-times scale (Vector2d ( x, y )) =
-    Vector2d ( x * scale, y * scale )
 
 
 {-| Find the dot product of two vectors.
