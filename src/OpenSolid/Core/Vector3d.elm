@@ -79,7 +79,7 @@ that is not the only way!
 
 # Arithmetic
 
-@docs negate, plus, minus, times, dotProduct, crossProduct
+@docs negate, times, plus, minus, dotProduct, crossProduct
 
 # Transformations
 
