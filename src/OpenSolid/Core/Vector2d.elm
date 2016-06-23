@@ -88,8 +88,8 @@ counterclockwise from the global XY frame:
 
     frame = Frame2d.rotateBy (degrees 45) Frame2d.xy
 
-    frame.xDirection == Direction2d (Vector2d ( 0.7071, 0.7071 ))
-    frame.yDirection == Direction2d (Vector2d ( -0.7071, 0.7071 ))
+    frame.xDirection == Direction2d ( 0.7071, 0.7071 )
+    frame.yDirection == Direction2d ( -0.7071, 0.7071 )
 
 @docs localizeTo, placeIn, placeOnto
 
@@ -262,7 +262,7 @@ squaredLength (Vector2d ( x, y )) =
 return `Nothing`.
 
     Vector2d.direction (Vector2d ( 1, 1 )) ==
-        Just (Direction2d (Vector2d ( 0.7071, 0.7071 )))
+        Just (Direction2d ( 0.7071, 0.7071 ))
 
     Vector2d.direction (Vector2d ( 0, 0 )) == Nothing
 
