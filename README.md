@@ -3,7 +3,7 @@
 OpenSolid consists of a set of Elm libraries for working with geometry. It is
 intended to provide a solid foundation for HTML-based applications in areas such
 as CAD (computer-aided design), CAM (computer-aided manufacturing), 2D/3D
-visualization, and potentially games or simulation (although OpenSolid
+visualization, and potentially games or simulations (although OpenSolid
 prioritizes flexibility and expressiveness over raw speed).
 
 This library defines the OpenSolid core data types - vectors, directions,
