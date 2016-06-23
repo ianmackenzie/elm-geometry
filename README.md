@@ -3,7 +3,7 @@
 OpenSolid consists of a set of Elm libraries for working with geometry. It is
 intended to provide a solid foundation for HTML-based applications in areas such
 as CAD (computer-aided design), CAM (computer-aided manufacturing), 2D/3D
-visualization, and potentially games or numerical analysis (although OpenSolid
+visualization, and potentially games or simulation (although OpenSolid
 prioritizes flexibility and expressiveness over raw speed).
 
 This library defines the OpenSolid core data types - vectors, directions,
@@ -74,9 +74,9 @@ rotateThenScale (Point2d ( 0, 2 )) == Point2d ( -3, 0 )
 
 (Yes, in this particular case it doesn't actually matter whether you rotate
 first and then scale or the other way around, but you get the idea.) You can
-even compose transformation functions with other functions (even ones you define
-yourself!) to produce composite 'transformations' that would be impossible to
-represent with a transformation matrix:
+even compose transformation functions with other functions (perhaps ones you
+define yourself!) to produce composite 'transformations' that would be
+impossible to represent with a transformation matrix:
 
 ```elm
 horizontalDistance =
@@ -89,7 +89,7 @@ horizontalDistance (Point3d ( 1, 1, 1 )) == sqrt 2
 ### Components
 
 OpenSolid encourages thinking about points and vectors as geometric entities
-instead of (x,y,z) values. For example, instead of using
+instead of in terms of X, Y and Z values. For example, instead of using
 
 ```elm
 Point3d.xCoordinate myPoint
