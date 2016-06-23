@@ -90,7 +90,8 @@ different coordinate frames. For the examples below, assume the following
 definition of a local coordinate frame, one that is rotated 45 degrees
 counterclockwise about the Z axis from the global XYZ frame:
 
-    frame = Frame3d.rotateAround Axis3d.z (degrees 45) Frame3d.xyz
+    frame =
+        Frame3d.rotateAround Axis3d.z (degrees 45) Frame3d.xyz
 
     frame.xDirection == Direction3d ( 0.7071, 0.7071, 0 )
     frame.yDirection == Direction3d ( -0.7071, 0.7071, 0 )
