@@ -61,7 +61,7 @@ Since `Vector2d` is not an opaque type, the simplest way to construct one is
 directly from its X and Y components, for example `Vector2d ( 2, 3 )`. But that
 is not the only way!
 
-@docs, alongAxis, relativeTo, perpendicularTo
+@docs alongAxis, relativeTo, perpendicularTo
 
 # Components
 
