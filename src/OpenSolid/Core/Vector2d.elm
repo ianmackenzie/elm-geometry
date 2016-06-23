@@ -347,7 +347,7 @@ times scale (Vector2d ( x, y )) =
 
 {-| Find the dot product of two vectors.
 
-    Vector2d.dotProduct (Vector2d ( 1, 2 )) (Vector2d ( 3, 4 )) == 1 * 3 + 2 * 4 == 11
+    Vector2d.dotProduct (Vector2d ( 1, 2 )) (Vector2d ( 3, 4 )) == 11
 -}
 dotProduct : Vector2d -> Vector2d -> Float
 dotProduct (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
