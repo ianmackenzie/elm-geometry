@@ -149,6 +149,17 @@ alongAxis axis magnitude =
         Vector2d ( dx * magnitude, dy * magnitude )
 
 
+{-| Construct a vector from its components relative to a given frame.
+
+    upsideDownFrame =
+        Frame2d Point2d.origin Direction2d.x (Direction2d.negate Direction2d.y)
+
+    rotatedFrame =
+        Frame2d.rotatedAround Point2d.origin (degrees 45) Frame2d.xy
+
+    Vector2d.relativeTo upsideDownFrame ( 2, 3 ) == Vector2d ( 2, -3 )
+    Vector2d.relativeTo rotatedFrame ( 2, 0 ) == Vector2d ( 1.4142, 1.4142 )
+-}
 relativeTo : Frame2d -> ( Float, Float ) -> Vector2d
 relativeTo frame =
     let
@@ -476,6 +487,22 @@ placeIn frame =
     components >> relativeTo frame
 
 
+{-| Convert a 2D vector to 3D by placing it on a given frame. This will
+construct a 3D vector by taking the X and Y components of the given vector and
+applying them to the X and Y basis directions of the given plane.
+
+    Vector2d.placeOnto Plane3d.xy (Vector2d ( 2, 3 )) == Vector3d ( 2, 3, 0 )
+    Vector2d.placeOnto Plane3d.yz (Vector2d ( 2, 3 )) == Vector3d ( 0, 2, 3 )
+    Vector2d.placeOnto Plane3d.zx (Vector2d ( 2, 3 )) == Vector3d ( 3, 0, 2 )
+
+A slightly more complex example:
+
+    inclinedPlane =
+        Plane3d.rotateAround Axis3d.y (degrees -45) Plane3d.xy
+
+    Vector2d.placeOnto inclinedPlane (Vector2d ( 1, 1 )) ==
+        Vector3d ( 0.7071, 1, 0.7071 )
+-}
 placeOnto : Plane3d -> Vector2d -> Vector3d
 placeOnto plane =
     let
