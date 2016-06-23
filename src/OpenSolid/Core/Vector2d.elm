@@ -112,11 +112,9 @@ functions to and from `elm-linear-algebra`'s `Vec2` type with
 although in this particular case it would likely be simpler and more efficient
 to use
 
-    toVec2 : Vector2d -> Math.Vector2.Vec2
     toVec2 =
         Vector2d.components >> Math.Vector2.fromTuple
 
-    fromVec2 : Math.Vector2.Vec2 -> Vector2d
     fromVec2 =
         Math.Vector2.toTuple >> Vector2d
 
