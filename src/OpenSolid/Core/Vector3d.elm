@@ -14,6 +14,7 @@ module OpenSolid.Core.Vector3d
         , onPlane
         , relativeTo
         , perpendicularTo
+        , components
         , xComponent
         , yComponent
         , zComponent
@@ -22,9 +23,9 @@ module OpenSolid.Core.Vector3d
         , squaredLength
         , direction
         , negate
+        , times
         , plus
         , minus
-        , times
         , dotProduct
         , crossProduct
         , rotateAround
@@ -34,7 +35,6 @@ module OpenSolid.Core.Vector3d
         , projectInto
         , localizeTo
         , placeIn
-        , components
         , toRecord
         , fromRecord
         )
@@ -358,6 +358,19 @@ negate vector =
         Vector3d ( -x, -y, -z )
 
 
+{-| Multiply a vector by a scalar.
+
+    Vector3d.times 3 (Vector3d ( 1, 2, 3 )) == Vector3d ( 3, 6, 9 )
+-}
+times : Float -> Vector3d -> Vector3d
+times scale vector =
+    let
+        ( x, y, z ) =
+            components vector
+    in
+        Vector3d ( x * scale, y * scale, z * scale )
+
+
 {-| Add one vector to another.
 
     Vector3d.plus (Vector3d ( 1, 2, 3 )) (Vector3d ( 4, 5, 6 )) == Vector3d ( 5, 7, 8 )
@@ -412,19 +425,6 @@ minus other vector =
             components vector
     in
         Vector3d ( x - x', y - y', z - z' )
-
-
-{-| Multiply a vector by a scalar.
-
-    Vector3d.times 3 (Vector3d ( 1, 2, 3 )) == Vector3d ( 3, 6, 9 )
--}
-times : Float -> Vector3d -> Vector3d
-times scale vector =
-    let
-        ( x, y, z ) =
-            components vector
-    in
-        Vector3d ( x * scale, y * scale, z * scale )
 
 
 {-| Find the dot product of two vectors.
