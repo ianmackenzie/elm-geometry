@@ -85,7 +85,7 @@ that is not the only way!
 
 @docs rotateAround, mirrorAcross, projectOntoAxis, projectOnto
 
-# Local coordinates
+# Coordinate conversions
 
 Functions for transforming vectors between local and global coordinates in
 different coordinate frames. For the examples below, assume the following
@@ -101,11 +101,11 @@ counterclockwise about the Z axis from the global XYZ frame:
 
 @docs projectInto, localizeTo, placeIn
 
-# Conversions
+# Record conversions
 
-Various ways to convert to and from plain tuples and records. Primarily useful
-for interoperability with other libraries. For example, you could define
-conversion functions to and from `elm-linear-algebra`'s `Vec3` type with
+Convert `Vector3d` values to and from Elm records. Primarily useful for
+interoperability with other libraries. For example, you could define conversion
+functions to and from `elm-linear-algebra`'s `Vec3` type with
 
     toVec3 : Vector3d -> Math.Vector3.Vec3
     toVec3 =
@@ -114,6 +114,15 @@ conversion functions to and from `elm-linear-algebra`'s `Vec3` type with
     fromVec3 : Math.Vector3.Vec3 -> Vector3d
     fromVec3 =
         Math.Vector3.toRecord >> Vector3d.fromRecord
+
+although in this particular case it would likely be simpler and more efficient
+to use
+
+    toVec3 =
+        Vector3d.components >> Math.Vector3.fromTuple
+
+    fromVec3 =
+        Math.Vector3.toTuple >> Vector3d
 
 @docs toRecord, fromRecord
 -}
