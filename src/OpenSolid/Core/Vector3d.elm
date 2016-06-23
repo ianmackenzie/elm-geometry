@@ -40,12 +40,14 @@ module OpenSolid.Core.Vector3d
         )
 
 {-| Various functions for constructing `Vector3d` values and performing
-operations on them. For the examples below, assume the following imports:
+operations on them. For the examples below, assume that all OpenSolid core types
+have been imported using
 
     import OpenSolid.Core.Types exposing (..)
+
+and all necessary modules have been imported using the following pattern:
+
     import OpenSolid.Core.Vector3d as Vector3d
-    import OpenSolid.Core.Direction3d as Direction3d
-    import OpenSolid.Core.Frame3d as Frame3d
 
 Examples use `==` to indicate that two expressions are equivalent, even if (due
 to numerical roundoff) they might not be exactly equal.

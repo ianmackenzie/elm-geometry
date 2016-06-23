@@ -37,12 +37,14 @@ module OpenSolid.Core.Vector2d
         )
 
 {-| Various functions for constructing `Vector2d` values and performing
-operations on them. For the examples below, assume the following imports:
+operations on them. For the examples below, assume that all OpenSolid core types
+have been imported using
 
     import OpenSolid.Core.Types exposing (..)
+
+and all necessary modules have been imported using the following pattern:
+
     import OpenSolid.Core.Vector2d as Vector2d
-    import OpenSolid.Core.Direction2d as Direction2d
-    import OpenSolid.Core.Frame2d as Frame2d
 
 Examples use `==` to indicate that two expressions are equivalent, even if (due
 to numerical roundoff) they might not be exactly equal.
