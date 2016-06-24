@@ -38,11 +38,14 @@ module OpenSolid.Core.Point2d
         )
 
 {-| Various functions for constructing `Point2d` values and performing
-operations on them. For the examples below, assume the following imports:
+operations on them. For the examples below, assume that all OpenSolid core types
+have been imported using
 
     import OpenSolid.Core.Types exposing (..)
+
+and all necessary modules have been imported using the following pattern:
+
     import OpenSolid.Core.Point2d as Point2d
-    import OpenSolid.Core.Frame2d as Frame2d
 
 Examples use `==` to indicate that two expressions are equivalent, even if (due
 to numerical roundoff) they might not be exactly equal.
@@ -61,11 +64,15 @@ is not the only way!
 
 # Coordinates
 
-@docs xCoordinate, yCoordinate
+@docs coordinates, xCoordinate, yCoordinate
 
-# Displacement and distance
+# Displacement
 
-@docs vectorFrom, vectorTo, distanceFrom, squaredDistanceFrom, distanceAlong, distanceFromAxis
+@docs vectorFrom, vectorTo
+
+# Distance
+
+@docs distanceFrom, squaredDistanceFrom, distanceAlong, distanceFromAxis
 
 # Arithmetic
 
@@ -75,20 +82,20 @@ is not the only way!
 
 @docs scaleAbout, rotateAround, translateAlong, mirrorAcross, projectOnto
 
-# Local coordinates
+# Coordinate conversions
 
 Functions for transforming points between local and global coordinates in
-different coordinate frames. Although these examples use a simple offset
+different coordinate systems. Although these examples use a simple offset
 frame, these functions can be used to convert to and from local coordinates in
 arbitrarily transformed (translated, rotated, mirrored) frames.
 
 @docs localizeTo, placeIn, placeOnto
 
-# Conversions
+# Record conversions
 
-Various ways to convert to and from plain tuples and records. Primarily useful
-for interoperability with other libraries. For example, you could define
-conversion functions to and from `elm-linear-algebra`'s `Vec2` type with
+Convert `Point2d` values to and from Elm records. Primarily useful for
+interoperability with other libraries. For example, you could define conversion
+functions to and from `elm-linear-algebra`'s `Vec2` type with
 
     toVec2 : Point2d -> Math.Vector2.Vec2
     toVec2 =
@@ -97,6 +104,15 @@ conversion functions to and from `elm-linear-algebra`'s `Vec2` type with
     fromVec2 : Math.Vector2.Vec2 -> Point2d
     fromVec2 =
         Math.Vector2.toRecord >> Point2d.fromRecord
+
+although in this particular case it would likely be simpler and more efficient
+to use
+
+    toVec2 =
+        Point2d.coordinates >> Math.Vector2.fromTuple
+
+    fromVec2 =
+        Math.Vector2.toTuple >> Point2d
 
 @docs toRecord, fromRecord
 -}
