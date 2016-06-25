@@ -1,4 +1,4 @@
-# OpenSolid Core Library
+# elm-opensolid-core
 
 OpenSolid consists of a set of Elm libraries for working with geometry. It is
 intended to provide a solid foundation for HTML-based applications in areas such
