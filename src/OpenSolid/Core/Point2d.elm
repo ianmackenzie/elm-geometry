@@ -117,6 +117,10 @@ import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Direction2d as Direction2d
 
 
+addTo =
+    flip translateBy
+
+
 {-| The point (0, 0).
 -}
 origin : Point2d
@@ -227,15 +231,8 @@ vectorFrom other point =
         Vector2d ( -3, -4 )
 -}
 vectorTo : Point2d -> Point2d -> Vector2d
-vectorTo other point =
-    let
-        ( x', y' ) =
-            coordinates other
-
-        ( x, y ) =
-            coordinates point
-    in
-        Vector2d ( x' - x, y' - y )
+vectorTo =
+    flip vectorFrom
 
 
 {-| Find the distance between two points.
@@ -318,17 +315,6 @@ distanceFromAxis axis =
         vectorFrom axis.originPoint
             >> Vector2d.crossProduct directionVector
             >> abs
-
-
-addTo point vector =
-    let
-        ( px, py ) =
-            coordinates point
-
-        ( vx, vy ) =
-            Vector2d.components vector
-    in
-        Point2d ( px + vx, py + vy )
 
 
 {-| Perform a uniform scaling about the given center point. The center point is

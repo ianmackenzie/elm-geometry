@@ -129,5 +129,5 @@ angleFrom other direction =
 
 
 angleTo : Direction2d -> Direction2d -> Float
-angleTo other direction =
-    atan2 (crossProduct direction other) (dotProduct direction other)
+angleTo =
+    flip angleFrom

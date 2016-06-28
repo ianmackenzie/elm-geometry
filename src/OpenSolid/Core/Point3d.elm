@@ -47,6 +47,10 @@ import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction3d as Direction3d
 
 
+addTo =
+    flip translateBy
+
+
 origin : Point3d
 origin =
     Point3d ( 0, 0, 0 )
@@ -111,18 +115,6 @@ distanceFrom other =
     squaredDistanceFrom other >> sqrt
 
 
-vectorTo : Point3d -> Point3d -> Vector3d
-vectorTo other point =
-    let
-        ( x', y', z' ) =
-            coordinates other
-
-        ( x, y, z ) =
-            coordinates point
-    in
-        Vector3d ( x' - x, y' - y, z' - z )
-
-
 vectorFrom : Point3d -> Point3d -> Vector3d
 vectorFrom other point =
     let
@@ -133,6 +125,11 @@ vectorFrom other point =
             coordinates point
     in
         Vector3d ( x - x', y - y', z - z' )
+
+
+vectorTo : Point3d -> Point3d -> Vector3d
+vectorTo =
+    flip vectorFrom
 
 
 distanceAlong : Axis3d -> Point3d -> Float
@@ -164,17 +161,6 @@ distanceFromPlane plane =
 signedDistanceFromPlane : Plane3d -> Point3d -> Float
 signedDistanceFromPlane plane =
     vectorFrom plane.originPoint >> Vector3d.componentIn plane.normalDirection
-
-
-addTo point vector =
-    let
-        ( px, py, pz ) =
-            coordinates point
-
-        ( vx, vy, vz ) =
-            Vector3d.components vector
-    in
-        Point3d ( px + vx, py + vy, pz + vz )
 
 
 scaleAbout : Point3d -> Float -> Point3d -> Point3d
