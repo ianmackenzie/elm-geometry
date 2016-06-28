@@ -30,6 +30,7 @@ module OpenSolid.Core.Point3d
         , signedDistanceFromPlane
         , scaleAbout
         , rotateAround
+        , translateBy
         , translateAlong
         , mirrorAcross
         , localizeTo
@@ -37,8 +38,6 @@ module OpenSolid.Core.Point3d
         , projectOntoAxis
         , projectOnto
         , projectInto
-        , plus
-        , minus
         , toRecord
         , fromRecord
         )
@@ -74,7 +73,7 @@ interpolate startPoint endPoint =
         displacement =
             vectorFrom startPoint endPoint
     in
-        \t -> plus (Vector3d.times t displacement) startPoint
+        \t -> translateBy (Vector3d.times t displacement) startPoint
 
 
 midpoint : Point3d -> Point3d -> Point3d
@@ -190,9 +189,21 @@ rotateAround axis angle =
         >> addTo axis.originPoint
 
 
+translateBy : Vector3d -> Point3d -> Point3d
+translateBy vector point =
+    let
+        ( vx, vy, vz ) =
+            Vector3d.components vector
+
+        ( px, py, pz ) =
+            coordinates point
+    in
+        Point3d ( px + vx, py + vy, pz + vz )
+
+
 translateAlong : Axis3d -> Float -> Point3d -> Point3d
 translateAlong axis distance =
-    plus (Vector3d.alongAxis axis distance)
+    translateBy (Vector3d.alongAxis axis distance)
 
 
 mirrorAcross : Plane3d -> Point3d -> Point3d
@@ -228,9 +239,9 @@ projectOnto plane point =
             signedDistanceFromPlane plane point
 
         displacement =
-            Direction3d.times signedDistance plane.normalDirection
+            Direction3d.times -signedDistance plane.normalDirection
     in
-        minus displacement point
+        translateBy displacement point
 
 
 projectInto : Plane3d -> Point3d -> Point2d
@@ -238,30 +249,6 @@ projectInto plane =
     vectorFrom plane.originPoint
         >> Vector3d.projectInto plane
         >> (\(Vector2d components) -> Point2d components)
-
-
-plus : Vector3d -> Point3d -> Point3d
-plus vector point =
-    let
-        ( vx, vy, vz ) =
-            Vector3d.components vector
-
-        ( px, py, pz ) =
-            coordinates point
-    in
-        Point3d ( px + vx, py + vy, pz + vz )
-
-
-minus : Vector3d -> Point3d -> Point3d
-minus vector point =
-    let
-        ( vx, vy, vz ) =
-            Vector3d.components vector
-
-        ( px, py, pz ) =
-            coordinates point
-    in
-        Point3d ( px - vx, py - vy, pz - vz )
 
 
 toRecord : Point3d -> { x : Float, y : Float, z : Float }

@@ -71,7 +71,7 @@ rotateAround otherAxis angle =
 
 translateBy : Vector3d -> Axis3d -> Axis3d
 translateBy vector axis =
-    Axis3d (Point3d.plus vector axis.originPoint) axis.direction
+    Axis3d (Point3d.translateBy vector axis.originPoint) axis.direction
 
 
 translateAlong : Axis3d -> Float -> Axis3d -> Axis3d

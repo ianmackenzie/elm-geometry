@@ -23,10 +23,9 @@ module OpenSolid.Core.Point2d
         , squaredDistanceFrom
         , distanceAlong
         , distanceFromAxis
-        , plus
-        , minus
         , scaleAbout
         , rotateAround
+        , translateBy
         , translateAlong
         , mirrorAcross
         , projectOnto
@@ -74,13 +73,9 @@ is not the only way!
 
 @docs distanceFrom, squaredDistanceFrom, distanceAlong, distanceFromAxis
 
-# Arithmetic
-
-@docs plus, minus
-
 # Transformations
 
-@docs scaleAbout, rotateAround, translateAlong, mirrorAcross, projectOnto
+@docs scaleAbout, rotateAround, translateBy, translateAlong, mirrorAcross, projectOnto
 
 # Coordinate conversions
 
@@ -179,7 +174,7 @@ interpolate startPoint endPoint =
         displacement =
             vectorFrom startPoint endPoint
     in
-        \t -> plus (Vector2d.times t displacement) startPoint
+        \t -> translateBy (Vector2d.times t displacement) startPoint
 
 
 {-| Get the (x, y) coordinates of a point as a tuple.
@@ -325,38 +320,6 @@ distanceFromAxis axis =
             >> abs
 
 
-{-| Add a vector to a point (translate the point by that vector).
-
-    Point2d.plus (Vector2d ( 1, 2 )) (Point2d ( 3, 4 )) == Point2d ( 4, 6 )
--}
-plus : Vector2d -> Point2d -> Point2d
-plus vector point =
-    let
-        ( vx, vy ) =
-            Vector2d.components vector
-
-        ( px, py ) =
-            coordinates point
-    in
-        Point2d ( px + vx, py + vy )
-
-
-{-| Subtract a vector from a point (translate by the negation of that vector).
-
-    Point2d.minus (Vector2d ( 1, 2 )) (Point2d ( 3, 4 )) == Point2d ( 2, 2 )
--}
-minus : Vector2d -> Point2d -> Point2d
-minus vector point =
-    let
-        ( vx, vy ) =
-            Vector2d.components vector
-
-        ( px, py ) =
-            coordinates point
-    in
-        Point2d ( px - vx, py - vy )
-
-
 addTo point vector =
     let
         ( px, py ) =
@@ -402,6 +365,22 @@ rotateAround centerPoint angle =
     vectorFrom centerPoint >> Vector2d.rotateBy angle >> addTo centerPoint
 
 
+{-| Translate by a given displacement.
+
+    Point2d.translateBy (Vector2d ( 1, 2 )) (Point2d ( 3, 4 )) == Point2d ( 4, 6 )
+-}
+translateBy : Vector2d -> Point2d -> Point2d
+translateBy vector point =
+    let
+        ( vx, vy ) =
+            Vector2d.components vector
+
+        ( px, py ) =
+            coordinates point
+    in
+        Point2d ( px + vx, py + vy )
+
+
 {-| Translate parallel to a given axis by a given distance.
 
     Point2d.translateAlong Axis2d.x 3 (Point2d ( 1, 2 )) == Point2d ( 4, 2 )
@@ -409,7 +388,7 @@ rotateAround centerPoint angle =
 -}
 translateAlong : Axis2d -> Float -> Point2d -> Point2d
 translateAlong axis distance =
-    plus (Vector2d.alongAxis axis distance)
+    translateBy (Vector2d.alongAxis axis distance)
 
 
 {-| Mirror a point across an axis.

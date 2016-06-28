@@ -143,7 +143,7 @@ rotateAroundOwn axis angle frame =
 
 translateBy : Vector3d -> Frame3d -> Frame3d
 translateBy vector frame =
-    { frame | originPoint = Point3d.plus vector frame.originPoint }
+    { frame | originPoint = Point3d.translateBy vector frame.originPoint }
 
 
 translateAlong : Axis3d -> Float -> Frame3d -> Frame3d

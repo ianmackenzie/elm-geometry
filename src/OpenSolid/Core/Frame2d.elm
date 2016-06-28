@@ -82,7 +82,7 @@ rotateAroundOwn centerPoint angle frame =
 
 translateBy : Vector2d -> Frame2d -> Frame2d
 translateBy vector frame =
-    { frame | originPoint = Point2d.plus vector frame.originPoint }
+    { frame | originPoint = Point2d.translateBy vector frame.originPoint }
 
 
 translateAlong : Axis2d -> Float -> Frame2d -> Frame2d
