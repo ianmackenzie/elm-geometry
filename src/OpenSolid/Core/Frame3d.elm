@@ -24,8 +24,8 @@ module OpenSolid.Core.Frame3d
         , rotateAround
         , rotateAroundOwn
         , translateBy
-        , translateAlong
-        , translateAlongOwn
+        , translateIn
+        , translateInOwn
         , mirrorAcross
         , mirrorAcrossOwn
         , localizeTo
@@ -146,14 +146,14 @@ translateBy vector frame =
     { frame | originPoint = Point3d.translateBy vector frame.originPoint }
 
 
-translateAlong : Axis3d -> Float -> Frame3d -> Frame3d
-translateAlong axis distance =
-    translateBy (Vector3d.in' axis.direction distance)
+translateIn : Direction3d -> Float -> Frame3d -> Frame3d
+translateIn direction =
+    translateBy << Vector3d.in' direction
 
 
-translateAlongOwn : (Frame3d -> Axis3d) -> Float -> Frame3d -> Frame3d
-translateAlongOwn axis distance frame =
-    translateAlong (axis frame) distance frame
+translateInOwn : (Frame3d -> Direction3d) -> Float -> Frame3d -> Frame3d
+translateInOwn direction distance frame =
+    translateIn (direction frame) distance frame
 
 
 mirrorAcross : Plane3d -> Frame3d -> Frame3d

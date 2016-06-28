@@ -26,7 +26,7 @@ module OpenSolid.Core.Point2d
         , scaleAbout
         , rotateAround
         , translateBy
-        , translateAlong
+        , translateIn
         , mirrorAcross
         , projectOnto
         , localizeTo
@@ -75,7 +75,7 @@ is not the only way!
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, translateAlong, mirrorAcross, projectOnto
+@docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
 
 # Coordinate conversions
 
@@ -381,14 +381,14 @@ translateBy vector point =
         Point2d ( px + vx, py + vy )
 
 
-{-| Translate parallel to a given axis by a given distance.
+{-| Translate in a given direction by a given distance.
 
-    Point2d.translateAlong Axis2d.x 3 (Point2d ( 1, 2 )) == Point2d ( 4, 2 )
-    Point2d.translateAlong Axis2d.y -4 (Point2d ( 1, 1 )) == Point2d ( 1, -3 )
+    Point2d.translateIn Direction2d.x 3 (Point2d ( 1, 2 )) == Point2d ( 4, 2 )
+    Point2d.translateIn Direction2d.y -4 (Point2d ( 1, 1 )) == Point2d ( 1, -3 )
 -}
-translateAlong : Axis2d -> Float -> Point2d -> Point2d
-translateAlong axis distance =
-    translateBy (Vector2d.in' axis.direction distance)
+translateIn : Direction2d -> Float -> Point2d -> Point2d
+translateIn direction =
+    translateBy << Vector2d.in' direction
 
 
 {-| Mirror a point across an axis.

@@ -15,7 +15,7 @@ module OpenSolid.Core.Axis2d
         , scaleAbout
         , rotateAround
         , translateBy
-        , translateAlong
+        , translateIn
         , mirrorAcross
         , localizeTo
         , placeIn
@@ -71,9 +71,9 @@ translateBy vector axis =
     Axis2d (Point2d.translateBy vector axis.originPoint) axis.direction
 
 
-translateAlong : Axis2d -> Float -> Axis2d -> Axis2d
-translateAlong axis distance =
-    translateBy (Vector2d.in' axis.direction distance)
+translateIn : Direction2d -> Float -> Axis2d -> Axis2d
+translateIn direction =
+    translateBy << Vector2d.in' direction
 
 
 mirrorAcross : Axis2d -> Axis2d -> Axis2d

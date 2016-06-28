@@ -31,7 +31,7 @@ module OpenSolid.Core.Point3d
         , scaleAbout
         , rotateAround
         , translateBy
-        , translateAlong
+        , translateIn
         , mirrorAcross
         , localizeTo
         , placeIn
@@ -201,9 +201,9 @@ translateBy vector point =
         Point3d ( px + vx, py + vy, pz + vz )
 
 
-translateAlong : Axis3d -> Float -> Point3d -> Point3d
-translateAlong axis distance =
-    translateBy (Vector3d.in' axis.direction distance)
+translateIn : Direction3d -> Float -> Point3d -> Point3d
+translateIn direction =
+    translateBy << Vector3d.in' direction
 
 
 mirrorAcross : Plane3d -> Point3d -> Point3d

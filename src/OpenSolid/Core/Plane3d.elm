@@ -25,8 +25,8 @@ module OpenSolid.Core.Plane3d
         , rotateAround
         , rotateAroundOwn
         , translateBy
-        , translateAlong
-        , translateAlongOwn
+        , translateIn
+        , translateInOwn
         , mirrorAcross
         , localizeTo
         , placeIn
@@ -102,8 +102,8 @@ fromPointAndNormal originPoint normalDirection =
 
 
 offsetBy : Float -> Plane3d -> Plane3d
-offsetBy distance plane =
-    translateBy (Direction3d.times distance plane.normalDirection) plane
+offsetBy =
+    translateInOwn .normalDirection
 
 
 flip : Plane3d -> Plane3d
@@ -161,14 +161,14 @@ translateBy vector plane =
     { plane | originPoint = Point3d.translateBy vector plane.originPoint }
 
 
-translateAlong : Axis3d -> Float -> Plane3d -> Plane3d
-translateAlong axis distance =
-    translateBy (Vector3d.in' axis.direction distance)
+translateIn : Direction3d -> Float -> Plane3d -> Plane3d
+translateIn direction =
+    translateBy << Vector3d.in' direction
 
 
-translateAlongOwn : (Plane3d -> Axis3d) -> Float -> Plane3d -> Plane3d
-translateAlongOwn axis distance plane =
-    translateAlong (axis plane) distance plane
+translateInOwn : (Plane3d -> Direction3d) -> Float -> Plane3d -> Plane3d
+translateInOwn direction distance plane =
+    translateIn (direction plane) distance plane
 
 
 mirrorAcross : Plane3d -> Plane3d -> Plane3d
