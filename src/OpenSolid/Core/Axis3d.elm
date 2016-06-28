@@ -74,7 +74,7 @@ translateBy vector axis =
     Axis3d (Point3d.translateBy vector axis.originPoint) axis.direction
 
 
-translateIn : Axis3d -> Float -> Axis3d -> Axis3d
+translateIn : Direction3d -> Float -> Axis3d -> Axis3d
 translateIn direction =
     translateBy << Vector3d.in' direction
 
