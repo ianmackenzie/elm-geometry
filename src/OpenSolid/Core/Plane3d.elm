@@ -163,7 +163,7 @@ translateBy vector plane =
 
 translateAlong : Axis3d -> Float -> Plane3d -> Plane3d
 translateAlong axis distance =
-    translateBy (Vector3d.alongAxis axis distance)
+    translateBy (Vector3d.in' axis.direction distance)
 
 
 translateAlongOwn : (Plane3d -> Axis3d) -> Float -> Plane3d -> Plane3d

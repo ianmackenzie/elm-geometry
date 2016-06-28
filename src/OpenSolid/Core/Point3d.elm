@@ -10,8 +10,8 @@
 module OpenSolid.Core.Point3d
     exposing
         ( origin
-        , alongAxis
-        , onPlane
+        , along
+        , on
         , relativeTo
         , interpolate
         , midpoint
@@ -52,14 +52,14 @@ origin =
     Point3d ( 0, 0, 0 )
 
 
-alongAxis : Axis3d -> Float -> Point3d
-alongAxis axis =
-    Vector3d.alongAxis axis >> addTo axis.originPoint
+along : Axis3d -> Float -> Point3d
+along axis =
+    Vector3d.in' axis.direction >> addTo axis.originPoint
 
 
-onPlane : Plane3d -> ( Float, Float ) -> Point3d
-onPlane plane =
-    Vector3d.onPlane plane >> addTo plane.originPoint
+on : Plane3d -> ( Float, Float ) -> Point3d
+on plane =
+    Vector3d.on plane >> addTo plane.originPoint
 
 
 relativeTo : Frame3d -> ( Float, Float, Float ) -> Point3d
@@ -203,7 +203,7 @@ translateBy vector point =
 
 translateAlong : Axis3d -> Float -> Point3d -> Point3d
 translateAlong axis distance =
-    translateBy (Vector3d.alongAxis axis distance)
+    translateBy (Vector3d.in' axis.direction distance)
 
 
 mirrorAcross : Plane3d -> Point3d -> Point3d

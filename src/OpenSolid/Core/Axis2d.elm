@@ -73,7 +73,7 @@ translateBy vector axis =
 
 translateAlong : Axis2d -> Float -> Axis2d -> Axis2d
 translateAlong axis distance =
-    translateBy (Vector2d.alongAxis axis distance)
+    translateBy (Vector2d.in' axis.direction distance)
 
 
 mirrorAcross : Axis2d -> Axis2d -> Axis2d

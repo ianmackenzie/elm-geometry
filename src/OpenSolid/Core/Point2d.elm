@@ -10,7 +10,7 @@
 module OpenSolid.Core.Point2d
     exposing
         ( origin
-        , alongAxis
+        , along
         , relativeTo
         , midpoint
         , interpolate
@@ -59,7 +59,7 @@ Since `Point2d` is not an opaque type, the simplest way to construct one is
 directly from its X and Y coordinates, for example `Point2d ( 2, 3 )`. But that
 is not the only way!
 
-@docs alongAxis, relativeTo, midpoint, interpolate
+@docs along, relativeTo, midpoint, interpolate
 
 # Coordinates
 
@@ -130,12 +130,12 @@ origin point.
     horizontalAxis =
         Axis2d (Point2d ( 1, 1 )) Direction2d.x
 
-    Point2d.alongAxis horizontalAxis 3 == Point2d ( 4, 1 )
-    Point2d.alongAxis horizontalAxis -3 == Point2d ( -2, 1 )
+    Point2d.along horizontalAxis 3 == Point2d ( 4, 1 )
+    Point2d.along horizontalAxis -3 == Point2d ( -2, 1 )
 -}
-alongAxis : Axis2d -> Float -> Point2d
-alongAxis axis =
-    Vector2d.alongAxis axis >> addTo axis.originPoint
+along : Axis2d -> Float -> Point2d
+along axis =
+    Vector2d.in' axis.direction >> addTo axis.originPoint
 
 
 relativeTo : Frame2d -> ( Float, Float ) -> Point2d
@@ -388,7 +388,7 @@ translateBy vector point =
 -}
 translateAlong : Axis2d -> Float -> Point2d -> Point2d
 translateAlong axis distance =
-    translateBy (Vector2d.alongAxis axis distance)
+    translateBy (Vector2d.in' axis.direction distance)
 
 
 {-| Mirror a point across an axis.

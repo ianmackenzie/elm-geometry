@@ -10,8 +10,8 @@
 module OpenSolid.Core.Vector3d
     exposing
         ( zero
-        , alongAxis
-        , onPlane
+        , in'
+        , on
         , relativeTo
         , perpendicularTo
         , components
@@ -67,7 +67,7 @@ Since `Vector3d` is not an opaque type, the simplest way to construct one is
 directly from its X, Y and Z components, for example `Vector3d ( 2, 3, 4 )`. But
 that is not the only way!
 
-@docs alongAxis, onPlane, relativeTo, perpendicularTo
+@docs in', on, relativeTo, perpendicularTo
 
 # Components
 
@@ -143,14 +143,14 @@ zero =
 magnitude may be negative, in which case the vector will have an opposite
 direction to the axis.
 
-    Vector3d.alongAxis Axis3d.x 5 == Vector3d ( 5, 0, 0 )
-    Vector3d.alongAxis Axis3d.y -3 == Vector3d ( 0, -3, 0 )
+    Vector3d.in' Direction3d.x 5 == Vector3d ( 5, 0, 0 )
+    Vector3d.in' Direction3d.y -3 == Vector3d ( 0, -3, 0 )
 -}
-alongAxis : Axis3d -> Float -> Vector3d
-alongAxis axis magnitude =
+in' : Direction3d -> Float -> Vector3d
+in' direction magnitude =
     let
         (Direction3d components) =
-            axis.direction
+            direction
     in
         times magnitude (Vector3d components)
 
@@ -158,16 +158,16 @@ alongAxis axis magnitude =
 {-| Construct a vector which lies on the given plane, with the given local
 (planar) components.
 
-    Vector3d.onPlane Plane3d.xy ( 2, 3 ) == Vector3d ( 2, 3, 0 )
-    Vector3d.onPlane Plane3d.yz ( 2, 3 ) == Vector3d ( 0, 2, 3 )
-    Vector3d.onPlane Plane3d.zy ( 2, 3 ) == Vector3d ( 0, 3, 2 )
+    Vector3d.on Plane3d.xy ( 2, 3 ) == Vector3d ( 2, 3, 0 )
+    Vector3d.on Plane3d.yz ( 2, 3 ) == Vector3d ( 0, 2, 3 )
+    Vector3d.on Plane3d.zy ( 2, 3 ) == Vector3d ( 0, 3, 2 )
 
-    Vector3d.onPlane plane ( x, y ) ==
+    Vector3d.on plane ( x, y ) ==
         Vector3d.plus (Direction3d.times x plane.xDirection)
             (Direction3d.times y plane.yDirection)
 -}
-onPlane : Plane3d -> ( Float, Float ) -> Vector3d
-onPlane plane =
+on : Plane3d -> ( Float, Float ) -> Vector3d
+on plane =
     let
         (Direction3d ( x1, y1, z1 )) =
             plane.xDirection

@@ -87,7 +87,7 @@ translateBy vector frame =
 
 translateAlong : Axis2d -> Float -> Frame2d -> Frame2d
 translateAlong axis distance =
-    translateBy (Vector2d.alongAxis axis distance)
+    translateBy (Vector2d.in' axis.direction distance)
 
 
 translateAlongOwn : (Frame2d -> Axis2d) -> Float -> Frame2d -> Frame2d
