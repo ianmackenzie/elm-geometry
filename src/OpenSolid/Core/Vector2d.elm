@@ -28,6 +28,7 @@ module OpenSolid.Core.Vector2d
         , crossProduct
         , rotateBy
         , mirrorAcross
+        , projectionIn
         , projectOnto
         , localizeTo
         , placeIn
@@ -79,7 +80,7 @@ is not the only way!
 
 # Transformations
 
-@docs rotateBy, mirrorAcross, projectOnto
+@docs rotateBy, mirrorAcross, projectionIn, projectOnto
 
 # Coordinate conversions
 
@@ -163,11 +164,14 @@ in' direction magnitude =
 relativeTo : Frame2d -> ( Float, Float ) -> Vector2d
 relativeTo frame =
     let
+        (Frame2d { originPoint, xDirection, yDirection }) =
+            frame
+
         (Direction2d ( x1, y1 )) =
-            frame.xDirection
+            xDirection
 
         (Direction2d ( x2, y2 )) =
-            frame.yDirection
+            yDirection
     in
         \( x, y ) -> Vector2d ( x1 * x + x2 * y, y1 * x + y2 * y )
 
@@ -410,8 +414,11 @@ the axis affects the result.
 mirrorAcross : Axis2d -> Vector2d -> Vector2d
 mirrorAcross axis =
     let
+        (Axis2d { originPoint, direction }) =
+            axis
+
         (Direction2d ( dx, dy )) =
-            axis.direction
+            direction
 
         a =
             1 - 2 * dy * dy
@@ -425,6 +432,18 @@ mirrorAcross axis =
         \(Vector2d ( vx, vy )) -> Vector2d ( a * vx + b * vy, c * vy + b * vx )
 
 
+projectionIn : Direction2d -> Vector2d -> Vector2d
+projectionIn direction vector =
+    let
+        (Direction2d directionComponents) =
+            direction
+
+        directionVector =
+            Vector2d directionComponents
+    in
+        times (dotProduct vector directionVector) directionVector
+
+
 {-| Project a vector onto an axis. This will result in a vector parallel to the
 given axis.
 
@@ -432,15 +451,12 @@ given axis.
     Vector2d.projectOnto Axis2d.x (Vector2d ( -1, 2 )) == Vector2d ( -1, 0 )
 -}
 projectOnto : Axis2d -> Vector2d -> Vector2d
-projectOnto axis vector =
+projectOnto axis =
     let
-        (Direction2d directionComponents) =
-            axis.direction
-
-        directionVector =
-            Vector2d directionComponents
+        (Axis2d { originPoint, direction }) =
+            axis
     in
-        times (dotProduct vector directionVector) directionVector
+        projectionIn direction
 
 
 {-| Convert a vector from global coordinates to local coordinates within a given
@@ -461,10 +477,14 @@ relative to that frame:
 -}
 localizeTo : Frame2d -> Vector2d -> Vector2d
 localizeTo frame vector =
-    Vector2d
-        ( componentIn frame.xDirection vector
-        , componentIn frame.yDirection vector
-        )
+    let
+        (Frame2d { originPoint, xDirection, yDirection }) =
+            frame
+    in
+        Vector2d
+            ( componentIn xDirection vector
+            , componentIn yDirection vector
+            )
 
 
 {-| Convert a vector from local coordinates within a given frame to global
@@ -506,11 +526,14 @@ A slightly more complex example:
 placeOnto : Plane3d -> Vector2d -> Vector3d
 placeOnto plane =
     let
+        (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
+            plane
+
         (Direction3d ( x1, y1, z1 )) =
-            plane.xDirection
+            xDirection
 
         (Direction3d ( x2, y2, z2 )) =
-            plane.yDirection
+            yDirection
     in
         \(Vector2d ( x, y )) ->
             Vector3d ( x1 * x + x2 * y, y1 * x + y2 * y, z1 * x + z2 * y )

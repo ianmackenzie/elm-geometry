@@ -34,6 +34,8 @@ import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction2d as Direction2d
 import OpenSolid.Core.Point2d as Point2d
 import OpenSolid.Core.Point3d as Point3d
+import OpenSolid.Core.Axis2d as Axis2d
+import OpenSolid.Core.Axis3d as Axis3d
 import OpenSolid.Core.Plane3d as Plane3d
 
 
@@ -122,10 +124,10 @@ axis2d =
             Producer.tuple ( point2d, direction2d )
 
         tupleToAxis ( point, direction ) =
-            Axis2d point direction
+            Axis2d { originPoint = point, direction = direction }
 
         axisToTuple axis =
-            ( axis.originPoint, axis.direction )
+            ( Axis2d.originPoint axis, Axis2d.direction axis )
     in
         Producer.convert tupleToAxis axisToTuple tupleProducer
 
@@ -137,10 +139,10 @@ axis3d =
             Producer.tuple ( point3d, direction3d )
 
         tupleToAxis ( point, direction ) =
-            Axis3d point direction
+            Axis3d { originPoint = point, direction = direction }
 
         axisToTuple axis =
-            ( axis.originPoint, axis.direction )
+            ( Axis3d.originPoint axis, Axis3d.direction axis )
     in
         Producer.convert tupleToAxis axisToTuple tupleProducer
 
@@ -164,7 +166,11 @@ frame2d =
             Producer.tuple ( point2d, direction2d )
 
         tupleToFrame ( point, direction ) =
-            Frame2d point direction (Direction2d.perpendicularTo direction)
+            Frame2d
+                { originPoint = point
+                , xDirection = direction
+                , yDirection = Direction2d.perpendicularTo direction
+                }
     in
         Producer.map tupleToFrame tupleProducer
 
@@ -197,9 +203,11 @@ frame3d =
                 yVector =
                     Vector3d.crossProduct zVector xVector
             in
-                Frame3d point
-                    (toDirection xVector)
-                    (toDirection yVector)
-                    (toDirection zVector)
+                Frame3d
+                    { originPoint = point
+                    , xDirection = toDirection xVector
+                    , yDirection = toDirection yVector
+                    , zDirection = toDirection zVector
+                    }
     in
         Producer.map tupleToFrame tupleProducer

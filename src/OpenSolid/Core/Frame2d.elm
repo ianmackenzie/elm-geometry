@@ -9,8 +9,13 @@
 
 module OpenSolid.Core.Frame2d
     exposing
-        ( xy
+        ( Properties
+        , xy
         , at
+        , properties
+        , originPoint
+        , xDirection
+        , yDirection
         , xAxis
         , yAxis
         , scaleAbout
@@ -31,6 +36,13 @@ import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Direction2d as Direction2d
 
 
+type alias Properties =
+    { originPoint : Point2d
+    , xDirection : Direction2d
+    , yDirection : Direction2d
+    }
+
+
 xy : Frame2d
 xy =
     at Point2d.origin
@@ -38,26 +50,50 @@ xy =
 
 at : Point2d -> Frame2d
 at point =
-    Frame2d point Direction2d.x Direction2d.y
+    Frame2d
+        { originPoint = point
+        , xDirection = Direction2d.x
+        , yDirection = Direction2d.y
+        }
+
+
+properties : Frame2d -> Properties
+properties (Frame2d properties') =
+    properties'
+
+
+originPoint : Frame2d -> Point2d
+originPoint =
+    properties >> .originPoint
+
+
+xDirection : Frame2d -> Direction2d
+xDirection =
+    properties >> .xDirection
+
+
+yDirection : Frame2d -> Direction2d
+yDirection =
+    properties >> .yDirection
 
 
 xAxis : Frame2d -> Axis2d
 xAxis frame =
-    Axis2d frame.originPoint frame.xDirection
+    Axis2d { originPoint = originPoint frame, direction = xDirection frame }
 
 
 yAxis : Frame2d -> Axis2d
 yAxis frame =
-    Axis2d frame.originPoint frame.yDirection
+    Axis2d { originPoint = originPoint frame, direction = yDirection frame }
 
 
 scaleAbout : Point2d -> Float -> Frame2d -> Frame2d
 scaleAbout centerPoint scale frame =
-    let
-        scaledOriginPoint =
-            Point2d.scaleAbout centerPoint scale frame.originPoint
-    in
-        { frame | originPoint = scaledOriginPoint }
+    Frame2d
+        { originPoint = Point2d.scaleAbout centerPoint scale (originPoint frame)
+        , xDirection = xDirection frame
+        , yDirection = yDirection frame
+        }
 
 
 rotateAround : Point2d -> Float -> Frame2d -> Frame2d
@@ -70,9 +106,11 @@ rotateAround centerPoint angle =
             Direction2d.rotateBy angle
     in
         \frame ->
-            Frame2d (rotatePoint frame.originPoint)
-                (rotateDirection frame.xDirection)
-                (rotateDirection frame.yDirection)
+            Frame2d
+                { originPoint = rotatePoint (originPoint frame)
+                , xDirection = rotateDirection (xDirection frame)
+                , yDirection = rotateDirection (yDirection frame)
+                }
 
 
 rotateAroundOwn : (Frame2d -> Point2d) -> Float -> Frame2d -> Frame2d
@@ -82,7 +120,11 @@ rotateAroundOwn centerPoint angle frame =
 
 translateBy : Vector2d -> Frame2d -> Frame2d
 translateBy vector frame =
-    { frame | originPoint = Point2d.translateBy vector frame.originPoint }
+    Frame2d
+        { originPoint = Point2d.translateBy vector (originPoint frame)
+        , xDirection = xDirection frame
+        , yDirection = yDirection frame
+        }
 
 
 translateIn : Direction2d -> Float -> Frame2d -> Frame2d
@@ -105,9 +147,11 @@ mirrorAcross axis =
             Direction2d.mirrorAcross axis
     in
         \frame ->
-            Frame2d (mirrorPoint frame.originPoint)
-                (mirrorDirection frame.xDirection)
-                (mirrorDirection frame.yDirection)
+            Frame2d
+                { originPoint = mirrorPoint (originPoint frame)
+                , xDirection = mirrorDirection (xDirection frame)
+                , yDirection = mirrorDirection (yDirection frame)
+                }
 
 
 mirrorAcrossOwn : (Frame2d -> Axis2d) -> Frame2d -> Frame2d
@@ -125,9 +169,11 @@ localizeTo otherFrame =
             Direction2d.localizeTo otherFrame
     in
         \frame ->
-            Frame2d (localizePoint frame.originPoint)
-                (localizeDirection frame.xDirection)
-                (localizeDirection frame.yDirection)
+            Frame2d
+                { originPoint = localizePoint (originPoint frame)
+                , xDirection = localizeDirection (xDirection frame)
+                , yDirection = localizeDirection (yDirection frame)
+                }
 
 
 placeIn : Frame2d -> Frame2d -> Frame2d
@@ -140,6 +186,8 @@ placeIn otherFrame =
             Direction2d.placeIn otherFrame
     in
         \frame ->
-            Frame2d (placePoint frame.originPoint)
-                (placeDirection frame.xDirection)
-                (placeDirection frame.yDirection)
+            Frame2d
+                { originPoint = placePoint (originPoint frame)
+                , xDirection = placeDirection (xDirection frame)
+                , yDirection = placeDirection (yDirection frame)
+                }

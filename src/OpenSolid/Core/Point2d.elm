@@ -139,12 +139,20 @@ origin point.
 -}
 along : Axis2d -> Float -> Point2d
 along axis =
-    Vector2d.in' axis.direction >> addTo axis.originPoint
+    let
+        (Axis2d { originPoint, direction }) =
+            axis
+    in
+        Vector2d.in' direction >> addTo originPoint
 
 
 relativeTo : Frame2d -> ( Float, Float ) -> Point2d
 relativeTo frame =
-    Vector2d.relativeTo frame >> addTo frame.originPoint
+    let
+        (Frame2d { originPoint, xDirection, yDirection }) =
+            frame
+    in
+        Vector2d.relativeTo frame >> addTo originPoint
 
 
 {-| Construct a point halfway between two other points.
@@ -284,7 +292,11 @@ negative if the projected point is 'behind' the axis' origin point.
 -}
 distanceAlong : Axis2d -> Point2d -> Float
 distanceAlong axis =
-    vectorFrom axis.originPoint >> Vector2d.componentIn axis.direction
+    let
+        (Axis2d { originPoint, direction }) =
+            axis
+    in
+        vectorFrom originPoint >> Vector2d.componentIn direction
 
 
 {-| Determine the perpendicular (or neareast) distance of a point from an axis.
@@ -309,12 +321,13 @@ distance along it (using the `axis` value from above):
 distanceFromAxis : Axis2d -> Point2d -> Float
 distanceFromAxis axis =
     let
+        (Axis2d { originPoint, direction }) =
+            axis
+
         directionVector =
-            Vector2d (Direction2d.components axis.direction)
+            Vector2d (Direction2d.components direction)
     in
-        vectorFrom axis.originPoint
-            >> Vector2d.crossProduct directionVector
-            >> abs
+        vectorFrom originPoint >> Vector2d.crossProduct directionVector >> abs
 
 
 {-| Perform a uniform scaling about the given center point. The center point is
@@ -390,9 +403,13 @@ Angled axes work as well:
 -}
 mirrorAcross : Axis2d -> Point2d -> Point2d
 mirrorAcross axis =
-    vectorFrom axis.originPoint
-        >> Vector2d.mirrorAcross axis
-        >> addTo axis.originPoint
+    let
+        (Axis2d { originPoint, direction }) =
+            axis
+    in
+        vectorFrom originPoint
+            >> Vector2d.mirrorAcross axis
+            >> addTo originPoint
 
 
 {-| Project a point perpendicularly onto an axis.
@@ -407,9 +424,13 @@ mirrorAcross axis =
 -}
 projectOnto : Axis2d -> Point2d -> Point2d
 projectOnto axis =
-    vectorFrom axis.originPoint
-        >> Vector2d.projectOnto axis
-        >> addTo axis.originPoint
+    let
+        (Axis2d { originPoint, direction }) =
+            axis
+    in
+        vectorFrom originPoint
+            >> Vector2d.projectOnto axis
+            >> addTo originPoint
 
 
 {-| Convert a point from global coordinates to local coordinates within a given
@@ -424,9 +445,14 @@ frame.
 -}
 localizeTo : Frame2d -> Point2d -> Point2d
 localizeTo frame =
-    vectorFrom frame.originPoint
-        >> Vector2d.localizeTo frame
-        >> (Vector2d.components >> Point2d)
+    let
+        (Frame2d { originPoint, xDirection, yDirection }) =
+            frame
+    in
+        vectorFrom originPoint
+            >> Vector2d.localizeTo frame
+            >> Vector2d.components
+            >> Point2d
 
 
 {-| Convert a point from local coordinates within a given frame to global
@@ -444,13 +470,16 @@ placeIn frame =
 
 
 placeOnto : Plane3d -> Point2d -> Point3d
-placeOnto plane (Point2d coordinates) =
+placeOnto plane point =
     let
-        (Vector3d ( vx, vy, vz )) =
-            Vector2d.placeOnto plane (Vector2d coordinates)
+        (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
+            plane
 
         (Point3d ( px, py, pz )) =
-            plane.originPoint
+            originPoint
+
+        (Vector3d ( vx, vy, vz )) =
+            Vector2d.placeOnto plane (Vector2d (coordinates point))
     in
         Point3d ( px + vx, py + vy, pz + vz )
 

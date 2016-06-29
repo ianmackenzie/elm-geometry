@@ -30,6 +30,7 @@ module OpenSolid.Core.Vector3d
         , crossProduct
         , rotateAround
         , mirrorAcross
+        , projectionIn
         , projectOntoAxis
         , projectOnto
         , projectInto
@@ -169,11 +170,14 @@ in' direction magnitude =
 on : Plane3d -> ( Float, Float ) -> Vector3d
 on plane =
     let
+        (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
+            plane
+
         (Direction3d ( x1, y1, z1 )) =
-            plane.xDirection
+            xDirection
 
         (Direction3d ( x2, y2, z2 )) =
-            plane.yDirection
+            yDirection
     in
         \( x, y ) ->
             Vector3d ( x1 * x + x2 * y, y1 * x + y2 * y, z1 * x + z2 * y )
@@ -182,14 +186,17 @@ on plane =
 relativeTo : Frame3d -> ( Float, Float, Float ) -> Vector3d
 relativeTo frame =
     let
+        (Frame3d { originPoint, xDirection, yDirection, zDirection }) =
+            frame
+
         (Direction3d ( x1, y1, z1 )) =
-            frame.xDirection
+            xDirection
 
         (Direction3d ( x2, y2, z2 )) =
-            frame.yDirection
+            yDirection
 
         (Direction3d ( x3, y3, z3 )) =
-            frame.zDirection
+            zDirection
     in
         \( x, y, z ) ->
             let
@@ -471,8 +478,11 @@ crossProduct first second =
 rotateAround : Axis3d -> Float -> Vector3d -> Vector3d
 rotateAround axis angle =
     let
+        (Axis3d { originPoint, direction }) =
+            axis
+
         (Direction3d ( dx, dy, dz )) =
-            axis.direction
+            direction
 
         halfAngle =
             0.5 * angle
@@ -566,8 +576,11 @@ rotateAround axis angle =
 mirrorAcross : Plane3d -> Vector3d -> Vector3d
 mirrorAcross plane =
     let
+        (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
+            plane
+
         (Direction3d ( dx, dy, dz )) =
-            plane.normalDirection
+            normalDirection
 
         a =
             1 - 2 * dx * dx
@@ -604,11 +617,11 @@ mirrorAcross plane =
                 Vector3d ( x', y', z' )
 
 
-projectOntoAxis : Axis3d -> Vector3d -> Vector3d
-projectOntoAxis axis vector =
+projectionIn : Direction3d -> Vector3d -> Vector3d
+projectionIn direction vector =
     let
         (Direction3d directionComponents) =
-            axis.direction
+            direction
 
         directionVector =
             Vector3d directionComponents
@@ -616,26 +629,38 @@ projectOntoAxis axis vector =
         times (dotProduct vector directionVector) directionVector
 
 
+projectOntoAxis : Axis3d -> Vector3d -> Vector3d
+projectOntoAxis axis =
+    let
+        (Axis3d { originPoint, direction }) =
+            axis
+    in
+        projectionIn direction
+
+
 projectOnto : Plane3d -> Vector3d -> Vector3d
 projectOnto plane vector =
     let
-        normalAxis =
-            Axis3d plane.originPoint plane.normalDirection
+        (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
+            plane
     in
-        minus (projectOntoAxis normalAxis vector) vector
+        minus (projectionIn normalDirection vector) vector
 
 
 localizeTo : Frame3d -> Vector3d -> Vector3d
 localizeTo frame vector =
     let
+        (Frame3d { originPoint, xDirection, yDirection, zDirection }) =
+            frame
+
         x =
-            componentIn frame.xDirection vector
+            componentIn xDirection vector
 
         y =
-            componentIn frame.yDirection vector
+            componentIn yDirection vector
 
         z =
-            componentIn frame.zDirection vector
+            componentIn zDirection vector
     in
         Vector3d ( x, y, z )
 
@@ -647,10 +672,14 @@ placeIn frame =
 
 projectInto : Plane3d -> Vector3d -> Vector2d
 projectInto plane vector =
-    Vector2d
-        ( componentIn plane.xDirection vector
-        , componentIn plane.yDirection vector
-        )
+    let
+        (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
+            plane
+    in
+        Vector2d
+            ( componentIn xDirection vector
+            , componentIn yDirection vector
+            )
 
 
 toRecord : Vector3d -> { x : Float, y : Float, z : Float }

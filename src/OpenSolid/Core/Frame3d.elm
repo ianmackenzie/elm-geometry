@@ -9,8 +9,14 @@
 
 module OpenSolid.Core.Frame3d
     exposing
-        ( xyz
+        ( Properties
+        , xyz
         , at
+        , properties
+        , originPoint
+        , xDirection
+        , yDirection
+        , zDirection
         , xAxis
         , yAxis
         , zAxis
@@ -38,6 +44,14 @@ import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction3d as Direction3d
 
 
+type alias Properties =
+    { originPoint : Point3d
+    , xDirection : Direction3d
+    , yDirection : Direction3d
+    , zDirection : Direction3d
+    }
+
+
 xyz : Frame3d
 xyz =
     at Point3d.origin
@@ -45,79 +59,122 @@ xyz =
 
 at : Point3d -> Frame3d
 at point =
-    Frame3d point Direction3d.x Direction3d.y Direction3d.z
+    Frame3d
+        { originPoint = point
+        , xDirection = Direction3d.x
+        , yDirection = Direction3d.y
+        , zDirection = Direction3d.z
+        }
+
+
+properties : Frame3d -> Properties
+properties (Frame3d properties') =
+    properties'
+
+
+originPoint : Frame3d -> Point3d
+originPoint =
+    properties >> .originPoint
+
+
+xDirection : Frame3d -> Direction3d
+xDirection =
+    properties >> .xDirection
+
+
+yDirection : Frame3d -> Direction3d
+yDirection =
+    properties >> .yDirection
+
+
+zDirection : Frame3d -> Direction3d
+zDirection =
+    properties >> .zDirection
 
 
 xAxis : Frame3d -> Axis3d
 xAxis frame =
-    Axis3d frame.originPoint frame.xDirection
+    Axis3d { originPoint = originPoint frame, direction = xDirection frame }
 
 
 yAxis : Frame3d -> Axis3d
 yAxis frame =
-    Axis3d frame.originPoint frame.yDirection
+    Axis3d { originPoint = originPoint frame, direction = yDirection frame }
 
 
 zAxis : Frame3d -> Axis3d
 zAxis frame =
-    Axis3d frame.originPoint frame.zDirection
+    Axis3d { originPoint = originPoint frame, direction = zDirection frame }
 
 
 xyPlane : Frame3d -> Plane3d
 xyPlane frame =
-    Plane3d frame.originPoint
-        frame.xDirection
-        frame.yDirection
-        frame.zDirection
+    Plane3d
+        { originPoint = originPoint frame
+        , xDirection = xDirection frame
+        , yDirection = yDirection frame
+        , normalDirection = zDirection frame
+        }
 
 
 yxPlane : Frame3d -> Plane3d
 yxPlane frame =
-    Plane3d frame.originPoint
-        frame.yDirection
-        frame.xDirection
-        (Direction3d.negate frame.zDirection)
+    Plane3d
+        { originPoint = originPoint frame
+        , xDirection = yDirection frame
+        , yDirection = xDirection frame
+        , normalDirection = Direction3d.negate (zDirection frame)
+        }
 
 
 yzPlane : Frame3d -> Plane3d
 yzPlane frame =
-    Plane3d frame.originPoint
-        frame.yDirection
-        frame.zDirection
-        frame.xDirection
+    Plane3d
+        { originPoint = originPoint frame
+        , xDirection = yDirection frame
+        , yDirection = zDirection frame
+        , normalDirection = xDirection frame
+        }
 
 
 zyPlane : Frame3d -> Plane3d
 zyPlane frame =
-    Plane3d frame.originPoint
-        frame.zDirection
-        frame.yDirection
-        (Direction3d.negate frame.xDirection)
+    Plane3d
+        { originPoint = originPoint frame
+        , xDirection = zDirection frame
+        , yDirection = yDirection frame
+        , normalDirection = Direction3d.negate (xDirection frame)
+        }
 
 
 zxPlane : Frame3d -> Plane3d
 zxPlane frame =
-    Plane3d frame.originPoint
-        frame.zDirection
-        frame.xDirection
-        frame.yDirection
+    Plane3d
+        { originPoint = originPoint frame
+        , xDirection = zDirection frame
+        , yDirection = xDirection frame
+        , normalDirection = yDirection frame
+        }
 
 
 xzPlane : Frame3d -> Plane3d
 xzPlane frame =
-    Plane3d frame.originPoint
-        frame.xDirection
-        frame.zDirection
-        (Direction3d.negate frame.yDirection)
+    Plane3d
+        { originPoint = originPoint frame
+        , xDirection = xDirection frame
+        , yDirection = zDirection frame
+        , normalDirection = Direction3d.negate (yDirection frame)
+        }
 
 
 scaleAbout : Point3d -> Float -> Frame3d -> Frame3d
 scaleAbout centerPoint scale frame =
-    let
-        scaledOriginPoint =
-            Point3d.scaleAbout centerPoint scale frame.originPoint
-    in
-        { frame | originPoint = scaledOriginPoint }
+    Frame3d
+        { originPoint = Point3d.scaleAbout centerPoint scale (originPoint frame)
+        , xDirection = xDirection frame
+        , yDirection = yDirection frame
+        , zDirection = zDirection frame
+        }
 
 
 rotateAround : Axis3d -> Float -> Frame3d -> Frame3d
@@ -130,10 +187,12 @@ rotateAround axis angle =
             Direction3d.rotateAround axis angle
     in
         \frame ->
-            Frame3d (rotatePoint frame.originPoint)
-                (rotateDirection frame.xDirection)
-                (rotateDirection frame.yDirection)
-                (rotateDirection frame.zDirection)
+            Frame3d
+                { originPoint = rotatePoint (originPoint frame)
+                , xDirection = rotateDirection (xDirection frame)
+                , yDirection = rotateDirection (yDirection frame)
+                , zDirection = rotateDirection (zDirection frame)
+                }
 
 
 rotateAroundOwn : (Frame3d -> Axis3d) -> Float -> Frame3d -> Frame3d
@@ -143,7 +202,12 @@ rotateAroundOwn axis angle frame =
 
 translateBy : Vector3d -> Frame3d -> Frame3d
 translateBy vector frame =
-    { frame | originPoint = Point3d.translateBy vector frame.originPoint }
+    Frame3d
+        { originPoint = Point3d.translateBy vector (originPoint frame)
+        , xDirection = xDirection frame
+        , yDirection = yDirection frame
+        , zDirection = zDirection frame
+        }
 
 
 translateIn : Direction3d -> Float -> Frame3d -> Frame3d
@@ -163,13 +227,15 @@ mirrorAcross plane =
             Point3d.mirrorAcross plane
 
         mirrorDirection =
-            Direction3d.mirrorIn plane.normalDirection
+            Direction3d.mirrorAcross plane
     in
         \frame ->
-            Frame3d (mirrorPoint frame.originPoint)
-                (mirrorDirection frame.xDirection)
-                (mirrorDirection frame.yDirection)
-                (mirrorDirection frame.zDirection)
+            Frame3d
+                { originPoint = mirrorPoint (originPoint frame)
+                , xDirection = mirrorDirection (xDirection frame)
+                , yDirection = mirrorDirection (yDirection frame)
+                , zDirection = mirrorDirection (zDirection frame)
+                }
 
 
 mirrorAcrossOwn : (Frame3d -> Plane3d) -> Frame3d -> Frame3d
@@ -187,10 +253,12 @@ localizeTo otherFrame =
             Direction3d.localizeTo otherFrame
     in
         \frame ->
-            Frame3d (localizePoint frame.originPoint)
-                (localizeDirection frame.xDirection)
-                (localizeDirection frame.yDirection)
-                (localizeDirection frame.zDirection)
+            Frame3d
+                { originPoint = localizePoint (originPoint frame)
+                , xDirection = localizeDirection (xDirection frame)
+                , yDirection = localizeDirection (yDirection frame)
+                , zDirection = localizeDirection (zDirection frame)
+                }
 
 
 placeIn : Frame3d -> Frame3d -> Frame3d
@@ -203,7 +271,9 @@ placeIn otherFrame =
             Direction3d.placeIn otherFrame
     in
         \frame ->
-            Frame3d (placePoint frame.originPoint)
-                (placeDirection frame.xDirection)
-                (placeDirection frame.yDirection)
-                (placeDirection frame.zDirection)
+            Frame3d
+                { originPoint = placePoint (originPoint frame)
+                , xDirection = placeDirection (xDirection frame)
+                , yDirection = placeDirection (yDirection frame)
+                , zDirection = placeDirection (zDirection frame)
+                }

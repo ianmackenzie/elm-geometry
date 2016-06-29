@@ -19,6 +19,7 @@ import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
 import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction3d as Direction3d
+import OpenSolid.Core.Frame3d as Frame3d
 import Test.Utils exposing (valueIsOne)
 import Test.Producers exposing (frame3d)
 
@@ -37,10 +38,11 @@ frameDirectionsAreOrthonormal =
         directionsAreOrthonormal frame =
             let
                 crossProduct =
-                    Direction3d.crossProduct frame.xDirection frame.yDirection
+                    Direction3d.crossProduct (Frame3d.xDirection frame)
+                        (Frame3d.yDirection frame)
 
                 tripleProduct =
-                    Vector3d.componentIn frame.zDirection crossProduct
+                    Vector3d.componentIn (Frame3d.zDirection frame) crossProduct
             in
                 valueIsOne (Vector3d.length crossProduct)
                     && valueIsOne tripleProduct

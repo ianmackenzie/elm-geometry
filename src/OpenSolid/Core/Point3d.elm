@@ -58,17 +58,29 @@ origin =
 
 along : Axis3d -> Float -> Point3d
 along axis =
-    Vector3d.in' axis.direction >> addTo axis.originPoint
+    let
+        (Axis3d { originPoint, direction }) =
+            axis
+    in
+        Vector3d.in' direction >> addTo originPoint
 
 
 on : Plane3d -> ( Float, Float ) -> Point3d
 on plane =
-    Vector3d.on plane >> addTo plane.originPoint
+    let
+        (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
+            plane
+    in
+        Vector3d.on plane >> addTo originPoint
 
 
 relativeTo : Frame3d -> ( Float, Float, Float ) -> Point3d
 relativeTo frame =
-    Vector3d.relativeTo frame >> addTo frame.originPoint
+    let
+        (Frame3d { originPoint, xDirection, yDirection, zDirection }) =
+            frame
+    in
+        Vector3d.relativeTo frame >> addTo originPoint
 
 
 interpolate : Point3d -> Point3d -> Float -> Point3d
@@ -134,16 +146,23 @@ vectorTo =
 
 distanceAlong : Axis3d -> Point3d -> Float
 distanceAlong axis =
-    vectorFrom axis.originPoint >> Vector3d.componentIn axis.direction
+    let
+        (Axis3d { originPoint, direction }) =
+            axis
+    in
+        vectorFrom originPoint >> Vector3d.componentIn direction
 
 
 squaredDistanceFromAxis : Axis3d -> Point3d -> Float
 squaredDistanceFromAxis axis =
     let
+        (Axis3d { originPoint, direction }) =
+            axis
+
         directionVector =
-            Vector3d (Direction3d.components axis.direction)
+            Vector3d (Direction3d.components direction)
     in
-        vectorFrom axis.originPoint
+        vectorFrom originPoint
             >> Vector3d.crossProduct directionVector
             >> Vector3d.squaredLength
 
@@ -160,7 +179,11 @@ distanceFromPlane plane =
 
 signedDistanceFromPlane : Plane3d -> Point3d -> Float
 signedDistanceFromPlane plane =
-    vectorFrom plane.originPoint >> Vector3d.componentIn plane.normalDirection
+    let
+        (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
+            plane
+    in
+        vectorFrom originPoint >> Vector3d.componentIn normalDirection
 
 
 scaleAbout : Point3d -> Float -> Point3d -> Point3d
@@ -170,9 +193,13 @@ scaleAbout centerPoint scale =
 
 rotateAround : Axis3d -> Float -> Point3d -> Point3d
 rotateAround axis angle =
-    vectorFrom axis.originPoint
-        >> Vector3d.rotateAround axis angle
-        >> addTo axis.originPoint
+    let
+        (Axis3d { originPoint, direction }) =
+            axis
+    in
+        vectorFrom originPoint
+            >> Vector3d.rotateAround axis angle
+            >> addTo originPoint
 
 
 translateBy : Vector3d -> Point3d -> Point3d
@@ -194,16 +221,24 @@ translateIn direction =
 
 mirrorAcross : Plane3d -> Point3d -> Point3d
 mirrorAcross plane =
-    vectorFrom plane.originPoint
-        >> Vector3d.mirrorAcross plane
-        >> addTo plane.originPoint
+    let
+        (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
+            plane
+    in
+        vectorFrom originPoint
+            >> Vector3d.mirrorAcross plane
+            >> addTo originPoint
 
 
 localizeTo : Frame3d -> Point3d -> Point3d
 localizeTo frame =
-    vectorFrom frame.originPoint
-        >> Vector3d.localizeTo frame
-        >> (\(Vector3d components) -> Point3d components)
+    let
+        (Frame3d { originPoint, xDirection, yDirection, zDirection }) =
+            frame
+    in
+        vectorFrom originPoint
+            >> Vector3d.localizeTo frame
+            >> (\(Vector3d components) -> Point3d components)
 
 
 placeIn : Frame3d -> Point3d -> Point3d
@@ -213,28 +248,39 @@ placeIn frame =
 
 projectOntoAxis : Axis3d -> Point3d -> Point3d
 projectOntoAxis axis =
-    vectorFrom axis.originPoint
-        >> Vector3d.projectOntoAxis axis
-        >> addTo axis.originPoint
+    let
+        (Axis3d { originPoint, direction }) =
+            axis
+    in
+        vectorFrom originPoint
+            >> Vector3d.projectOntoAxis axis
+            >> addTo originPoint
 
 
 projectOnto : Plane3d -> Point3d -> Point3d
 projectOnto plane point =
     let
+        (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
+            plane
+
         signedDistance =
             signedDistanceFromPlane plane point
 
         displacement =
-            Direction3d.times -signedDistance plane.normalDirection
+            Vector3d.in' normalDirection -signedDistance
     in
         translateBy displacement point
 
 
 projectInto : Plane3d -> Point3d -> Point2d
 projectInto plane =
-    vectorFrom plane.originPoint
-        >> Vector3d.projectInto plane
-        >> (\(Vector2d components) -> Point2d components)
+    let
+        (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
+            plane
+    in
+        vectorFrom originPoint
+            >> Vector3d.projectInto plane
+            >> (\(Vector2d components) -> Point2d components)
 
 
 toRecord : Point3d -> { x : Float, y : Float, z : Float }

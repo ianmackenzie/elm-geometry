@@ -36,6 +36,11 @@ import OpenSolid.Core.Point2d as Point2d
 import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction3d as Direction3d
 import OpenSolid.Core.Point3d as Point3d
+import OpenSolid.Core.Axis2d as Axis2d
+import OpenSolid.Core.Axis3d as Axis3d
+import OpenSolid.Core.Plane3d as Plane3d
+import OpenSolid.Core.Frame2d as Frame2d
+import OpenSolid.Core.Frame3d as Frame3d
 
 
 tuple2 : ( Float, Float ) -> Value
@@ -95,8 +100,8 @@ point3d =
 axis2d : Axis2d -> Value
 axis2d axis =
     object
-        [ ( "originPoint", point2d axis.originPoint )
-        , ( "direction", direction2d axis.direction )
+        [ ( "originPoint", point2d (Axis2d.originPoint axis) )
+        , ( "direction", direction2d (Axis2d.direction axis) )
         ]
 
 
@@ -105,8 +110,8 @@ axis2d axis =
 axis3d : Axis3d -> Value
 axis3d axis =
     object
-        [ ( "originPoint", point3d axis.originPoint )
-        , ( "direction", direction3d axis.direction )
+        [ ( "originPoint", point3d (Axis3d.originPoint axis) )
+        , ( "direction", direction3d (Axis3d.direction axis) )
         ]
 
 
@@ -116,10 +121,10 @@ and 'normalDirection' fields.
 plane3d : Plane3d -> Value
 plane3d plane =
     object
-        [ ( "originPoint", point3d plane.originPoint )
-        , ( "xDirection", direction3d plane.xDirection )
-        , ( "yDirection", direction3d plane.yDirection )
-        , ( "normalDirection", direction3d plane.normalDirection )
+        [ ( "originPoint", point3d (Plane3d.originPoint plane) )
+        , ( "xDirection", direction3d (Plane3d.xDirection plane) )
+        , ( "yDirection", direction3d (Plane3d.yDirection plane) )
+        , ( "normalDirection", direction3d (Plane3d.normalDirection plane) )
         ]
 
 
@@ -129,9 +134,9 @@ plane3d plane =
 frame2d : Frame2d -> Value
 frame2d frame =
     object
-        [ ( "originPoint", point2d frame.originPoint )
-        , ( "xDirection", direction2d frame.xDirection )
-        , ( "yDirection", direction2d frame.yDirection )
+        [ ( "originPoint", point2d (Frame2d.originPoint frame) )
+        , ( "xDirection", direction2d (Frame2d.xDirection frame) )
+        , ( "yDirection", direction2d (Frame2d.yDirection frame) )
         ]
 
 
@@ -141,8 +146,8 @@ and 'zDirection' fields.
 frame3d : Frame3d -> Value
 frame3d frame =
     object
-        [ ( "originPoint", point3d frame.originPoint )
-        , ( "xDirection", direction3d frame.xDirection )
-        , ( "yDirection", direction3d frame.yDirection )
-        , ( "zDirection", direction3d frame.zDirection )
+        [ ( "originPoint", point3d (Frame3d.originPoint frame) )
+        , ( "xDirection", direction3d (Frame3d.xDirection frame) )
+        , ( "yDirection", direction3d (Frame3d.yDirection frame) )
+        , ( "zDirection", direction3d (Frame3d.zDirection frame) )
         ]

@@ -9,9 +9,13 @@
 
 module OpenSolid.Core.Axis2d
     exposing
-        ( x
+        ( Properties
+        , x
         , y
         , perpendicularTo
+        , properties
+        , originPoint
+        , direction
         , scaleAbout
         , rotateAround
         , translateBy
@@ -28,28 +32,49 @@ import OpenSolid.Core.Point2d as Point2d
 import OpenSolid.Core.Direction2d as Direction2d
 
 
+type alias Properties =
+    { originPoint : Point2d, direction : Direction2d }
+
+
 x : Axis2d
 x =
-    Axis2d Point2d.origin Direction2d.x
+    Axis2d { originPoint = Point2d.origin, direction = Direction2d.x }
 
 
 y : Axis2d
 y =
-    Axis2d Point2d.origin Direction2d.y
+    Axis2d { originPoint = Point2d.origin, direction = Direction2d.y }
 
 
 perpendicularTo : Axis2d -> Axis2d
 perpendicularTo axis =
-    Axis2d axis.originPoint (Direction2d.perpendicularTo axis.direction)
+    Axis2d
+        { originPoint = originPoint axis
+        , direction = Direction2d.perpendicularTo (direction axis)
+        }
+
+
+properties : Axis2d -> Properties
+properties (Axis2d properties') =
+    properties'
+
+
+originPoint : Axis2d -> Point2d
+originPoint =
+    properties >> .originPoint
+
+
+direction : Axis2d -> Direction2d
+direction =
+    properties >> .direction
 
 
 scaleAbout : Point2d -> Float -> Axis2d -> Axis2d
 scaleAbout centerPoint scale axis =
-    let
-        scalePoint =
-            Point2d.scaleAbout centerPoint scale
-    in
-        Axis2d (scalePoint axis.originPoint) axis.direction
+    Axis2d
+        { originPoint = Point2d.scaleAbout centerPoint scale (originPoint axis)
+        , direction = direction axis
+        }
 
 
 rotateAround : Point2d -> Float -> Axis2d -> Axis2d
@@ -62,13 +87,18 @@ rotateAround centerPoint angle =
             Direction2d.rotateBy angle
     in
         \axis ->
-            Axis2d (rotatePoint axis.originPoint)
-                (rotateDirection axis.direction)
+            Axis2d
+                { originPoint = rotatePoint (originPoint axis)
+                , direction = rotateDirection (direction axis)
+                }
 
 
 translateBy : Vector2d -> Axis2d -> Axis2d
 translateBy vector axis =
-    Axis2d (Point2d.translateBy vector axis.originPoint) axis.direction
+    Axis2d
+        { originPoint = Point2d.translateBy vector (originPoint axis)
+        , direction = direction axis
+        }
 
 
 translateIn : Direction2d -> Float -> Axis2d -> Axis2d
@@ -86,8 +116,10 @@ mirrorAcross otherAxis =
             Direction2d.mirrorAcross otherAxis
     in
         \axis ->
-            Axis2d (mirrorPoint axis.originPoint)
-                (mirrorDirection axis.direction)
+            Axis2d
+                { originPoint = mirrorPoint (originPoint axis)
+                , direction = mirrorDirection (direction axis)
+                }
 
 
 localizeTo : Frame2d -> Axis2d -> Axis2d
@@ -100,8 +132,10 @@ localizeTo frame =
             Direction2d.localizeTo frame
     in
         \axis ->
-            Axis2d (localizePoint axis.originPoint)
-                (localizeDirection axis.direction)
+            Axis2d
+                { originPoint = localizePoint (originPoint axis)
+                , direction = localizeDirection (direction axis)
+                }
 
 
 placeIn : Frame2d -> Axis2d -> Axis2d
@@ -114,8 +148,10 @@ placeIn frame =
             Direction2d.placeIn frame
     in
         \axis ->
-            Axis2d (placePoint axis.originPoint)
-                (placeDirection axis.direction)
+            Axis2d
+                { originPoint = placePoint (originPoint axis)
+                , direction = placeDirection (direction axis)
+                }
 
 
 placeOnto : Plane3d -> Axis2d -> Axis3d
@@ -128,5 +164,7 @@ placeOnto plane =
             Direction2d.placeOnto plane
     in
         \axis ->
-            Axis3d (placePoint axis.originPoint)
-                (placeDirection axis.direction)
+            Axis3d
+                { originPoint = placePoint (originPoint axis)
+                , direction = placeDirection (direction axis)
+                }

@@ -30,62 +30,73 @@ module OpenSolid.Core.Decode
 
 import Json.Decode exposing (..)
 import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Core.Axis2d as Axis2d
+import OpenSolid.Core.Axis3d as Axis3d
+import OpenSolid.Core.Plane3d as Plane3d
+import OpenSolid.Core.Frame2d as Frame2d
+import OpenSolid.Core.Frame3d as Frame3d
 
 
 {-| Decode a Vector2d from a list of two floats.
 -}
 vector2d : Decoder Vector2d
 vector2d =
-    tuple2 (\x y -> Vector2d ( x, y )) float float
+    tuple2 (,) float float |> map Vector2d
 
 
 {-| Decode a Vector3d from a list of three floats.
 -}
 vector3d : Decoder Vector3d
 vector3d =
-    tuple3 (\x y z -> Vector3d ( x, y, z )) float float float
+    tuple3 (,,) float float float |> map Vector3d
 
 
 {-| Decode a Direction2d from a list of two floats.
 -}
 direction2d : Decoder Direction2d
 direction2d =
-    tuple2 (\x y -> Direction2d ( x, y )) float float
+    tuple2 (,) float float |> map Direction2d
 
 
 {-| Decode a Direction3d from a list of three floats.
 -}
 direction3d : Decoder Direction3d
 direction3d =
-    tuple3 (\x y z -> Direction3d ( x, y, z )) float float float
+    tuple3 (,,) float float float |> map Direction3d
 
 
 {-| Decode a Point2d from a list of two floats.
 -}
 point2d : Decoder Point2d
 point2d =
-    tuple2 (\x y -> Point2d ( x, y )) float float
+    tuple2 (,) float float |> map Point2d
 
 
 {-| Decode a Point3d from a list of three floats.
 -}
 point3d : Decoder Point3d
 point3d =
-    tuple3 (\x y z -> Point3d ( x, y, z )) float float float
+    tuple3 (,,) float float float |> map Point3d
 
 
 {-| Decode an Axis2d from an object with 'originPoint' and 'direction' fields.
 -}
 axis2d : Decoder Axis2d
 axis2d =
-    object2 Axis2d ("originPoint" := point2d) ("direction" := direction2d)
+    object2 Axis2d.Properties
+        ("originPoint" := point2d)
+        ("direction" := direction2d)
+        |> map Axis2d
 
 
 {-| Decode an Axis3d from an object with 'originPoint' and 'direction' fields.
 -}
 axis3d : Decoder Axis3d
 axis3d =
-    object2 Axis3d ("originPoint" := point3d) ("direction" := direction3d)
+    object2 Axis3d.Properties
+        ("originPoint" := point3d)
+        ("direction" := direction3d)
+        |> map Axis3d
 
 
 {-| Decode a Plane3d from an object with 'originPoint', 'xDirection',
@@ -93,11 +104,12 @@ axis3d =
 -}
 plane3d : Decoder Plane3d
 plane3d =
-    object4 Plane3d
+    object4 Plane3d.Properties
         ("originPoint" := point3d)
         ("xDirection" := direction3d)
         ("yDirection" := direction3d)
         ("normalDirection" := direction3d)
+        |> map Plane3d
 
 
 {-| Decode a Frame2d from an object with 'originPoint', 'xDirection', and
@@ -105,10 +117,11 @@ plane3d =
 -}
 frame2d : Decoder Frame2d
 frame2d =
-    object3 Frame2d
+    object3 Frame2d.Properties
         ("originPoint" := point2d)
         ("xDirection" := direction2d)
         ("yDirection" := direction2d)
+        |> map Frame2d
 
 
 {-| Decode a Frame3d from an object with 'originPoint', 'xDirection',
@@ -116,8 +129,9 @@ frame2d =
 -}
 frame3d : Decoder Frame3d
 frame3d =
-    object4 Frame3d
+    object4 Frame3d.Properties
         ("originPoint" := point3d)
         ("xDirection" := direction3d)
         ("yDirection" := direction3d)
         ("zDirection" := direction3d)
+        |> map Frame3d

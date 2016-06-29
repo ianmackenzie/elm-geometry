@@ -15,11 +15,11 @@ module OpenSolid.Core.Types
         , Direction3d(Direction3d)
         , Point2d(Point2d)
         , Point3d(Point3d)
-        , Axis2d
-        , Axis3d
-        , Plane3d
-        , Frame2d
-        , Frame3d
+        , Axis2d(Axis2d)
+        , Axis3d(Axis3d)
+        , Plane3d(Plane3d)
+        , Frame2d(Frame2d)
+        , Frame3d(Frame3d)
         )
 
 {-| This module contains the definitions of the core OpenSolid data types. Each
@@ -141,10 +141,8 @@ operations including:
   - Projecting onto the axis
   - Measuring distance along the axis
 -}
-type alias Axis2d =
-    { originPoint : Point2d
-    , direction : Direction2d
-    }
+type Axis2d
+    = Axis2d { originPoint : Point2d, direction : Direction2d }
 
 
 {-| An axis in 3D, defined by an origin point and direction. Useful for several
@@ -153,10 +151,8 @@ operations including:
   - Projecting onto the axis
   - Measuring distance along the axis
 -}
-type alias Axis3d =
-    { originPoint : Point3d
-    , direction : Direction3d
-    }
+type Axis3d
+    = Axis3d { originPoint : Point3d, direction : Direction3d }
 
 
 {-| A 3D plane, defined by an origin point, two basis directions and a normal
@@ -172,12 +168,13 @@ The basis directions and normal direction are all always mutually perpendicular.
 If you construct a `Plane3d` directly, you are responsible for ensuring this
 yourself.
 -}
-type alias Plane3d =
-    { originPoint : Point3d
-    , xDirection : Direction3d
-    , yDirection : Direction3d
-    , normalDirection : Direction3d
-    }
+type Plane3d
+    = Plane3d
+        { originPoint : Point3d
+        , xDirection : Direction3d
+        , yDirection : Direction3d
+        , normalDirection : Direction3d
+        }
 
 
 {-| A `Frame2d` represents a coordinate system in 2D space.
@@ -185,11 +182,12 @@ type alias Plane3d =
 The two basis directions are always perpendicular. If you construct a `Frame2d`
 directly, you are responsible for ensuring this yourself.
 -}
-type alias Frame2d =
-    { originPoint : Point2d
-    , xDirection : Direction2d
-    , yDirection : Direction2d
-    }
+type Frame2d
+    = Frame2d
+        { originPoint : Point2d
+        , xDirection : Direction2d
+        , yDirection : Direction2d
+        }
 
 
 {-| A `Frame3d` represents a coordinate system in 3D space.
@@ -197,9 +195,10 @@ type alias Frame2d =
 The three basis directions are always mutually perpendicular. If you construct a
 `Frame3d` directly, you are responsible for ensuring this yourself.
 -}
-type alias Frame3d =
-    { originPoint : Point3d
-    , xDirection : Direction3d
-    , yDirection : Direction3d
-    , zDirection : Direction3d
-    }
+type Frame3d
+    = Frame3d
+        { originPoint : Point3d
+        , xDirection : Direction3d
+        , yDirection : Direction3d
+        , zDirection : Direction3d
+        }
