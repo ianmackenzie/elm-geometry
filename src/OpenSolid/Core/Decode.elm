@@ -41,42 +41,42 @@ import OpenSolid.Core.Frame3d as Frame3d
 -}
 vector2d : Decoder Vector2d
 vector2d =
-    tuple2 (,) float float |> map Vector2d
+    map Vector2d (tuple2 (,) float float)
 
 
 {-| Decode a Vector3d from a list of three floats.
 -}
 vector3d : Decoder Vector3d
 vector3d =
-    tuple3 (,,) float float float |> map Vector3d
+    map Vector3d (tuple3 (,,) float float float)
 
 
 {-| Decode a Direction2d from a list of two floats.
 -}
 direction2d : Decoder Direction2d
 direction2d =
-    tuple2 (,) float float |> map Direction2d
+    map Direction2d (tuple2 (,) float float)
 
 
 {-| Decode a Direction3d from a list of three floats.
 -}
 direction3d : Decoder Direction3d
 direction3d =
-    tuple3 (,,) float float float |> map Direction3d
+    map Direction3d (tuple3 (,,) float float float)
 
 
 {-| Decode a Point2d from a list of two floats.
 -}
 point2d : Decoder Point2d
 point2d =
-    tuple2 (,) float float |> map Point2d
+    map Point2d (tuple2 (,) float float)
 
 
 {-| Decode a Point3d from a list of three floats.
 -}
 point3d : Decoder Point3d
 point3d =
-    tuple3 (,,) float float float |> map Point3d
+    map Point3d (tuple3 (,,) float float float)
 
 
 {-| Decode an Axis2d from an object with 'originPoint' and 'direction' fields.
