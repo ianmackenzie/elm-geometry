@@ -9,15 +9,13 @@
 
 module OpenSolid.Core.Plane3d
     exposing
-        ( Properties
-        , xy
+        ( xy
         , yx
         , yz
         , zy
         , zx
         , xz
         , fromPointAndNormal
-        , properties
         , originPoint
         , xDirection
         , yDirection
@@ -42,14 +40,6 @@ import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Point3d as Point3d
 import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction3d as Direction3d
-
-
-type alias Properties =
-    { originPoint : Point3d
-    , xDirection : Direction3d
-    , yDirection : Direction3d
-    , normalDirection : Direction3d
-    }
 
 
 xy : Plane3d
@@ -132,29 +122,24 @@ fromPointAndNormal originPoint normalDirection =
             }
 
 
-properties : Plane3d -> Properties
-properties (Plane3d properties') =
-    properties'
-
-
 originPoint : Plane3d -> Point3d
-originPoint =
-    properties >> .originPoint
+originPoint (Plane3d properties) =
+    properties.originPoint
 
 
 xDirection : Plane3d -> Direction3d
-xDirection =
-    properties >> .xDirection
+xDirection (Plane3d properties) =
+    properties.xDirection
 
 
 yDirection : Plane3d -> Direction3d
-yDirection =
-    properties >> .yDirection
+yDirection (Plane3d properties) =
+    properties.yDirection
 
 
 normalDirection : Plane3d -> Direction3d
-normalDirection =
-    properties >> .normalDirection
+normalDirection (Plane3d properties) =
+    properties.normalDirection
 
 
 offsetBy : Float -> Plane3d -> Plane3d

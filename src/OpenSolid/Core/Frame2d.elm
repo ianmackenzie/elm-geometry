@@ -9,10 +9,8 @@
 
 module OpenSolid.Core.Frame2d
     exposing
-        ( Properties
-        , xy
+        ( xy
         , at
-        , properties
         , originPoint
         , xDirection
         , yDirection
@@ -36,13 +34,6 @@ import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Direction2d as Direction2d
 
 
-type alias Properties =
-    { originPoint : Point2d
-    , xDirection : Direction2d
-    , yDirection : Direction2d
-    }
-
-
 xy : Frame2d
 xy =
     at Point2d.origin
@@ -57,24 +48,19 @@ at point =
         }
 
 
-properties : Frame2d -> Properties
-properties (Frame2d properties') =
-    properties'
-
-
 originPoint : Frame2d -> Point2d
-originPoint =
-    properties >> .originPoint
+originPoint (Frame2d properties) =
+    properties.originPoint
 
 
 xDirection : Frame2d -> Direction2d
-xDirection =
-    properties >> .xDirection
+xDirection (Frame2d properties) =
+    properties.xDirection
 
 
 yDirection : Frame2d -> Direction2d
-yDirection =
-    properties >> .yDirection
+yDirection (Frame2d properties) =
+    properties.yDirection
 
 
 xAxis : Frame2d -> Axis2d

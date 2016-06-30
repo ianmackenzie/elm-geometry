@@ -83,20 +83,26 @@ point3d =
 -}
 axis2d : Decoder Axis2d
 axis2d =
-    object2 Axis2d.Properties
-        ("originPoint" := point2d)
-        ("direction" := direction2d)
-        |> map Axis2d
+    let
+        constructor originPoint direction =
+            Axis2d { originPoint = originPoint, direction = direction }
+    in
+        object2 constructor
+            ("originPoint" := point2d)
+            ("direction" := direction2d)
 
 
 {-| Decode an Axis3d from an object with 'originPoint' and 'direction' fields.
 -}
 axis3d : Decoder Axis3d
 axis3d =
-    object2 Axis3d.Properties
-        ("originPoint" := point3d)
-        ("direction" := direction3d)
-        |> map Axis3d
+    let
+        constructor originPoint direction =
+            Axis3d { originPoint = originPoint, direction = direction }
+    in
+        object2 constructor
+            ("originPoint" := point3d)
+            ("direction" := direction3d)
 
 
 {-| Decode a Plane3d from an object with 'originPoint', 'xDirection',
@@ -104,12 +110,20 @@ axis3d =
 -}
 plane3d : Decoder Plane3d
 plane3d =
-    object4 Plane3d.Properties
-        ("originPoint" := point3d)
-        ("xDirection" := direction3d)
-        ("yDirection" := direction3d)
-        ("normalDirection" := direction3d)
-        |> map Plane3d
+    let
+        constructor originPoint xDirection yDirection normalDirection =
+            Plane3d
+                { originPoint = originPoint
+                , xDirection = xDirection
+                , yDirection = yDirection
+                , normalDirection = normalDirection
+                }
+    in
+        object4 constructor
+            ("originPoint" := point3d)
+            ("xDirection" := direction3d)
+            ("yDirection" := direction3d)
+            ("normalDirection" := direction3d)
 
 
 {-| Decode a Frame2d from an object with 'originPoint', 'xDirection', and
@@ -117,11 +131,18 @@ plane3d =
 -}
 frame2d : Decoder Frame2d
 frame2d =
-    object3 Frame2d.Properties
-        ("originPoint" := point2d)
-        ("xDirection" := direction2d)
-        ("yDirection" := direction2d)
-        |> map Frame2d
+    let
+        constructor originPoint xDirection yDirection =
+            Frame2d
+                { originPoint = originPoint
+                , xDirection = xDirection
+                , yDirection = yDirection
+                }
+    in
+        object3 constructor
+            ("originPoint" := point2d)
+            ("xDirection" := direction2d)
+            ("yDirection" := direction2d)
 
 
 {-| Decode a Frame3d from an object with 'originPoint', 'xDirection',
@@ -129,9 +150,17 @@ frame2d =
 -}
 frame3d : Decoder Frame3d
 frame3d =
-    object4 Frame3d.Properties
-        ("originPoint" := point3d)
-        ("xDirection" := direction3d)
-        ("yDirection" := direction3d)
-        ("zDirection" := direction3d)
-        |> map Frame3d
+    let
+        constructor originPoint xDirection yDirection zDirection =
+            Frame3d
+                { originPoint = originPoint
+                , xDirection = xDirection
+                , yDirection = yDirection
+                , zDirection = zDirection
+                }
+    in
+        object4 constructor
+            ("originPoint" := point3d)
+            ("xDirection" := direction3d)
+            ("yDirection" := direction3d)
+            ("zDirection" := direction3d)

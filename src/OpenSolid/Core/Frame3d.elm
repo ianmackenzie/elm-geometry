@@ -9,10 +9,8 @@
 
 module OpenSolid.Core.Frame3d
     exposing
-        ( Properties
-        , xyz
+        ( xyz
         , at
-        , properties
         , originPoint
         , xDirection
         , yDirection
@@ -44,14 +42,6 @@ import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction3d as Direction3d
 
 
-type alias Properties =
-    { originPoint : Point3d
-    , xDirection : Direction3d
-    , yDirection : Direction3d
-    , zDirection : Direction3d
-    }
-
-
 xyz : Frame3d
 xyz =
     at Point3d.origin
@@ -67,29 +57,24 @@ at point =
         }
 
 
-properties : Frame3d -> Properties
-properties (Frame3d properties') =
-    properties'
-
-
 originPoint : Frame3d -> Point3d
-originPoint =
-    properties >> .originPoint
+originPoint (Frame3d properties) =
+    properties.originPoint
 
 
 xDirection : Frame3d -> Direction3d
-xDirection =
-    properties >> .xDirection
+xDirection (Frame3d properties) =
+    properties.xDirection
 
 
 yDirection : Frame3d -> Direction3d
-yDirection =
-    properties >> .yDirection
+yDirection (Frame3d properties) =
+    properties.yDirection
 
 
 zDirection : Frame3d -> Direction3d
-zDirection =
-    properties >> .zDirection
+zDirection (Frame3d properties) =
+    properties.zDirection
 
 
 xAxis : Frame3d -> Axis3d

@@ -9,11 +9,9 @@
 
 module OpenSolid.Core.Axis3d
     exposing
-        ( Properties
-        , x
+        ( x
         , y
         , z
-        , properties
         , originPoint
         , direction
         , scaleAbout
@@ -34,10 +32,6 @@ import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction3d as Direction3d
 
 
-type alias Properties =
-    { originPoint : Point3d, direction : Direction3d }
-
-
 x : Axis3d
 x =
     Axis3d { originPoint = Point3d.origin, direction = Direction3d.x }
@@ -53,19 +47,14 @@ z =
     Axis3d { originPoint = Point3d.origin, direction = Direction3d.z }
 
 
-properties : Axis3d -> Properties
-properties (Axis3d properties') =
-    properties'
-
-
 originPoint : Axis3d -> Point3d
-originPoint =
-    properties >> .originPoint
+originPoint (Axis3d properties) =
+    properties.originPoint
 
 
 direction : Axis3d -> Direction3d
-direction =
-    properties >> .direction
+direction (Axis3d properties) =
+    properties.direction
 
 
 scaleAbout : Point3d -> Float -> Axis3d -> Axis3d

@@ -9,11 +9,9 @@
 
 module OpenSolid.Core.Axis2d
     exposing
-        ( Properties
-        , x
+        ( x
         , y
         , perpendicularTo
-        , properties
         , originPoint
         , direction
         , scaleAbout
@@ -30,10 +28,6 @@ import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Point2d as Point2d
 import OpenSolid.Core.Direction2d as Direction2d
-
-
-type alias Properties =
-    { originPoint : Point2d, direction : Direction2d }
 
 
 x : Axis2d
@@ -54,19 +48,14 @@ perpendicularTo axis =
         }
 
 
-properties : Axis2d -> Properties
-properties (Axis2d properties') =
-    properties'
-
-
 originPoint : Axis2d -> Point2d
-originPoint =
-    properties >> .originPoint
+originPoint (Axis2d properties) =
+    properties.originPoint
 
 
 direction : Axis2d -> Direction2d
-direction =
-    properties >> .direction
+direction (Axis2d properties) =
+    properties.direction
 
 
 scaleAbout : Point2d -> Float -> Axis2d -> Axis2d
