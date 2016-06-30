@@ -389,7 +389,8 @@ times scale vector =
 
 {-| Add one vector to another.
 
-    Vector3d.plus (Vector3d ( 1, 2, 3 )) (Vector3d ( 4, 5, 6 )) == Vector3d ( 5, 7, 8 )
+    Vector3d.plus (Vector3d ( 1, 2, 3 )) (Vector3d ( 4, 5, 6 )) ==
+        Vector3d ( 5, 7, 8 )
 -}
 plus : Vector3d -> Vector3d -> Vector3d
 plus other vector =
@@ -461,7 +462,8 @@ dotProduct first second =
 
 {-| Find the cross product of two vectors.
 
-    Vector3d.crossProduct (Vector3d ( 2, 0, 0 )) (Vector3d ( 0, 3, 0 )) == Vector3d ( 0, 0, 6 )
+    Vector3d.crossProduct (Vector3d ( 2, 0, 0 )) (Vector3d ( 0, 3, 0 )) ==
+        Vector3d ( 0, 0, 6 )
 -}
 crossProduct : Vector3d -> Vector3d -> Vector3d
 crossProduct first second =
