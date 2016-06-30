@@ -156,7 +156,7 @@ inDirection direction magnitude =
         Frame2d Point2d.origin Direction2d.x (Direction2d.negate Direction2d.y)
 
     rotatedFrame =
-        Frame2d.rotatedAround Point2d.origin (degrees 45) Frame2d.xy
+        Frame2d.rotateAround Point2d.origin (degrees 45) Frame2d.xy
 
     Vector2d.relativeTo upsideDownFrame ( 2, 3 ) == Vector2d ( 2, -3 )
     Vector2d.relativeTo rotatedFrame ( 2, 0 ) == Vector2d ( 1.4142, 1.4142 )
