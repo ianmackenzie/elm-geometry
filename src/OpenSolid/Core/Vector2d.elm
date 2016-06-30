@@ -481,10 +481,11 @@ The vector `Vector2d ( 1, 0 )` (in global coordinates), relative to the rotated
 frame defined above, is a vector of length 1 with an angle of -45 degrees.
 Therefore,
 
-    Vector2d.localizeTo frame (Vector2d ( 1, 0 )) == Vector2d ( 0.7071, -0.7071 )
+    Vector2d.localizeTo frame (Vector2d ( 1, 0 )) ==
+        Vector2d ( 0.7071, -0.7071 )
 
-The vector `Vector2d ( 1, 1 )`, on the other hand, is parallel to the X axis of the
-rotated frame so only has an X component when expressed in local coordinates
+The vector `Vector2d ( 1, 1 )`, on the other hand, is parallel to the X axis of
+the rotated frame so only has an X component when expressed in local coordinates
 relative to that frame:
 
     Vector2d.localizeTo frame (Vector2d ( 1, 1 )) == Vector2d ( 1.4142, 0 )
