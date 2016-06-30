@@ -96,9 +96,9 @@ counterclockwise about the Z axis from the global XYZ frame:
     frame =
         Frame3d.rotateAround Axis3d.z (degrees 45) Frame3d.xyz
 
-    frame.xDirection == Direction3d ( 0.7071, 0.7071, 0 )
-    frame.yDirection == Direction3d ( -0.7071, 0.7071, 0 )
-    frame.zDirection == Direction3d ( 0, 0, 1 )
+    Frame3d.xDirection frame == Direction3d ( 0.7071, 0.7071, 0 )
+    Frame3d.yDirection frame == Direction3d ( -0.7071, 0.7071, 0 )
+    Frame3d.zDirection frame == Direction3d ( 0, 0, 1 )
 
 @docs projectInto, localizeTo, placeIn
 
@@ -164,8 +164,8 @@ inDirection direction magnitude =
     Vector3d.on Plane3d.zy ( 2, 3 ) == Vector3d ( 0, 3, 2 )
 
     Vector3d.on plane ( x, y ) ==
-        Vector3d.plus (Direction3d.times x plane.xDirection)
-            (Direction3d.times y plane.yDirection)
+        Vector3d.plus (Direction3d.times x (Plane3d.xDirection plane))
+            (Direction3d.times y (Plane3d.yDirection plane))
 -}
 on : Plane3d -> ( Float, Float ) -> Vector3d
 on plane =

@@ -91,8 +91,8 @@ counterclockwise from the global XY frame:
 
     frame = Frame2d.rotateAround Point2d.origin (degrees 45) Frame2d.xy
 
-    frame.xDirection == Direction2d ( 0.7071, 0.7071 )
-    frame.yDirection == Direction2d ( -0.7071, 0.7071 )
+    Frame2d.xDirection frame == Direction2d ( 0.7071, 0.7071 )
+    Frame2d.yDirection frame == Direction2d ( -0.7071, 0.7071 )
 
 @docs localizeTo, placeIn, placeOnto
 
