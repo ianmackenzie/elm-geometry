@@ -6,8 +6,9 @@ as CAD (computer-aided design), CAM (computer-aided manufacturing), 2D/3D
 visualization, and potentially games or simulations (although OpenSolid
 prioritizes flexibility and expressiveness over raw speed).
 
-This library defines the OpenSolid core data types - vectors, directions,
-points, axes, planes and frames (coordinate systems) in 2D and 3D:
+This library defines the OpenSolid core data types - vectors, directions (type-
+safe unit vectors), points, axes, planes and frames (coordinate systems) in 2D
+and 3D:
 
 ```elm
 Vector3d.zero == Vector3d ( 0, 0, 0 )
@@ -32,8 +33,6 @@ Plane3d.yz ==
         , normalDirection = Direction3d.x
         }
 ```
-
-(Directions can be thought of as type-safe unit vectors.)
 
 A large range of geometric operations are supported - a few examples:
 
