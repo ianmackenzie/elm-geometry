@@ -132,7 +132,7 @@ origin =
 origin point.
 
     horizontalAxis =
-        Axis2d (Point2d ( 1, 1 )) Direction2d.x
+        Axis2d { originPoint = Point2d ( 1, 1 ), direction = Direction2d.x }
 
     Point2d.along horizontalAxis 3 == Point2d ( 4, 1 )
     Point2d.along horizontalAxis -3 == Point2d ( -2, 1 )
@@ -285,7 +285,7 @@ projected point from the axis' origin point is measured. The result may be
 negative if the projected point is 'behind' the axis' origin point.
 
     axis =
-        Axis2d (Point2d ( 1, 2 )) Direction2d.x
+        Axis2d { originPoint = Point2d ( 1, 2 ), direction = Direction2d.x }
 
     Point2d.distanceAlong axis (Point2d ( 3, 3 )) == 2
     Point2d.distanceAlong axis Point2d.origin == -1
@@ -304,7 +304,7 @@ Note that this is an unsigned value - it does not matter which side of the axis
 the point is on.
 
     axis =
-        Axis2d (Point2d ( 1, 2 )) Direction2d.x
+        Axis2d { originPoint = Point2d ( 1, 2 ), direction = Direction2d.x }
 
     Point2d.distanceFrom axis (Point2d ( 3, 3 )) == 1 -- one unit above
     Point2d.distanceFrom axis Point2d.origin == 2 -- two units below
@@ -397,7 +397,10 @@ translateIn direction =
 Angled axes work as well:
 
     diagonalAxis =
-        Axis2d Point2d.origin (Direction2d.fromAngle (degrees 45))
+        Axis2d
+            { originPoint = Point2d.origin
+            , direction = Direction2d.fromAngle (degrees 45)
+            }
 
     Point2d.mirrorAcross diagonalAxis (Point2d ( 3, 0 )) == Point2d ( 0, 3 )
 -}
@@ -418,7 +421,7 @@ mirrorAcross axis =
     Point2d.projectOnto Axis2d.y (Point2d ( 2, 3 )) == Point2d ( 0, 3 )
 
     offsetYAxis =
-        Axis2d (Point2d ( 1, 0 )) Direction2d.y
+        Axis2d { originPoint = Point2d ( 1, 0 ), direction = Direction2d.y }
 
     Point2d.projectOnto offsetYAxis (Point2d ( 2, 3 )) == Point2d ( 1, 3 )
 -}
