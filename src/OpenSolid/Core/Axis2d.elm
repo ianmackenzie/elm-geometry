@@ -92,7 +92,7 @@ translateBy vector axis =
 
 translateIn : Direction2d -> Float -> Axis2d -> Axis2d
 translateIn direction =
-    translateBy << Vector2d.in' direction
+    translateBy << Vector2d.inDirection direction
 
 
 mirrorAcross : Axis2d -> Axis2d -> Axis2d

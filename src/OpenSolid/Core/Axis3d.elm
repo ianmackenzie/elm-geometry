@@ -95,7 +95,7 @@ translateBy vector axis =
 
 translateIn : Direction3d -> Float -> Axis3d -> Axis3d
 translateIn direction =
-    translateBy << Vector3d.in' direction
+    translateBy << Vector3d.inDirection direction
 
 
 mirrorAcross : Plane3d -> Axis3d -> Axis3d

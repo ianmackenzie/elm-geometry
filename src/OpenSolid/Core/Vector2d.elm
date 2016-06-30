@@ -10,7 +10,7 @@
 module OpenSolid.Core.Vector2d
     exposing
         ( zero
-        , in'
+        , inDirection
         , relativeTo
         , perpendicularTo
         , components
@@ -64,7 +64,7 @@ Since `Vector2d` is not an opaque type, the simplest way to construct one is
 directly from its X and Y components, for example `Vector2d ( 2, 3 )`. But that
 is not the only way!
 
-@docs in', relativeTo, perpendicularTo
+@docs inDirection, relativeTo, perpendicularTo
 
 # Components
 
@@ -138,11 +138,11 @@ zero =
 magnitude may be negative, in which case the vector will have an opposite
 direction to the axis.
 
-    Vector2d.in' Direction2d.x 5 == Vector2d ( 5, 0 )
-    Vector2d.in' Direction2d.y -3 == Vector2d ( 0, -3 )
+    Vector2d.inDirection Direction2d.x 5 == Vector2d ( 5, 0 )
+    Vector2d.inDirection Direction2d.y -3 == Vector2d ( 0, -3 )
 -}
-in' : Direction2d -> Float -> Vector2d
-in' direction magnitude =
+inDirection : Direction2d -> Float -> Vector2d
+inDirection direction magnitude =
     let
         (Direction2d components) =
             direction

@@ -10,7 +10,7 @@
 module OpenSolid.Core.Vector3d
     exposing
         ( zero
-        , in'
+        , inDirection
         , on
         , relativeTo
         , perpendicularTo
@@ -68,7 +68,7 @@ Since `Vector3d` is not an opaque type, the simplest way to construct one is
 directly from its X, Y and Z components, for example `Vector3d ( 2, 3, 4 )`. But
 that is not the only way!
 
-@docs in', on, relativeTo, perpendicularTo
+@docs inDirection, on, relativeTo, perpendicularTo
 
 # Components
 
@@ -144,11 +144,11 @@ zero =
 magnitude may be negative, in which case the vector will have an opposite
 direction to the axis.
 
-    Vector3d.in' Direction3d.x 5 == Vector3d ( 5, 0, 0 )
-    Vector3d.in' Direction3d.y -3 == Vector3d ( 0, -3, 0 )
+    Vector3d.inDirection Direction3d.x 5 == Vector3d ( 5, 0, 0 )
+    Vector3d.inDirection Direction3d.y -3 == Vector3d ( 0, -3, 0 )
 -}
-in' : Direction3d -> Float -> Vector3d
-in' direction magnitude =
+inDirection : Direction3d -> Float -> Vector3d
+inDirection direction magnitude =
     let
         (Direction3d components) =
             direction

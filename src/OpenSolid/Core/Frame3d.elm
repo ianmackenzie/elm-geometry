@@ -197,7 +197,7 @@ translateBy vector frame =
 
 translateIn : Direction3d -> Float -> Frame3d -> Frame3d
 translateIn direction =
-    translateBy << Vector3d.in' direction
+    translateBy << Vector3d.inDirection direction
 
 
 translateInOwn : (Frame3d -> Direction3d) -> Float -> Frame3d -> Frame3d

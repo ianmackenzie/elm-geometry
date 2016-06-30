@@ -220,7 +220,7 @@ translateBy vector plane =
 
 translateIn : Direction3d -> Float -> Plane3d -> Plane3d
 translateIn direction =
-    translateBy << Vector3d.in' direction
+    translateBy << Vector3d.inDirection direction
 
 
 translateInOwn : (Plane3d -> Direction3d) -> Float -> Plane3d -> Plane3d

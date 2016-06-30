@@ -143,7 +143,7 @@ along axis =
         (Axis2d { originPoint, direction }) =
             axis
     in
-        Vector2d.in' direction >> addTo originPoint
+        Vector2d.inDirection direction >> addTo originPoint
 
 
 relativeTo : Frame2d -> ( Float, Float ) -> Point2d
@@ -387,7 +387,7 @@ translateBy vector point =
 -}
 translateIn : Direction2d -> Float -> Point2d -> Point2d
 translateIn direction =
-    translateBy << Vector2d.in' direction
+    translateBy << Vector2d.inDirection direction
 
 
 {-| Mirror a point across an axis.

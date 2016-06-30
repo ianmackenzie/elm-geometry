@@ -62,7 +62,7 @@ along axis =
         (Axis3d { originPoint, direction }) =
             axis
     in
-        Vector3d.in' direction >> addTo originPoint
+        Vector3d.inDirection direction >> addTo originPoint
 
 
 on : Plane3d -> ( Float, Float ) -> Point3d
@@ -216,7 +216,7 @@ translateBy vector point =
 
 translateIn : Direction3d -> Float -> Point3d -> Point3d
 translateIn direction =
-    translateBy << Vector3d.in' direction
+    translateBy << Vector3d.inDirection direction
 
 
 mirrorAcross : Plane3d -> Point3d -> Point3d
@@ -267,7 +267,7 @@ projectOnto plane point =
             signedDistanceFromPlane plane point
 
         displacement =
-            Vector3d.in' normalDirection -signedDistance
+            Vector3d.inDirection normalDirection -signedDistance
     in
         translateBy displacement point
 

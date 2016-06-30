@@ -115,7 +115,7 @@ translateBy vector frame =
 
 translateIn : Direction2d -> Float -> Frame2d -> Frame2d
 translateIn direction =
-    translateBy << Vector2d.in' direction
+    translateBy << Vector2d.inDirection direction
 
 
 translateInOwn : (Frame2d -> Direction2d) -> Float -> Frame2d -> Frame2d
