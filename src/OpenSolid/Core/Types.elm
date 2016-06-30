@@ -123,13 +123,13 @@ type Direction3d
     = Direction3d ( Float, Float, Float )
 
 
-{-| A point in 2D, defined by its X and Y components.
+{-| A point in 2D, defined by its X and Y coordinates.
 -}
 type Point2d
     = Point2d ( Float, Float )
 
 
-{-| A point in 3D, defined by its X, Y and Z components.
+{-| A point in 3D, defined by its X, Y and Z coordinates.
 -}
 type Point3d
     = Point3d ( Float, Float, Float )
