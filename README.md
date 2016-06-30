@@ -10,10 +10,6 @@ This library defines the OpenSolid core data types - vectors, directions,
 points, axes, planes and frames (coordinate systems) in 2D and 3D:
 
 ```elm
-myVector3d = Vector3d ( 1, 2, 3 )
-myPoint2d = Point2d ( 4, 5 )
-negativeXDirection3d = Direction3d ( -1, 0, 0 )
-
 Vector3d.zero == Vector3d ( 0, 0, 0 )
 Direction2d.y == Direction2d ( 0, 1 )
 Point2d.origin == Point2d ( 0, 0 )
@@ -26,11 +22,18 @@ operations are supported:
 ```elm
 Vector3d.plus (Vector3d ( 1, 2, 3 )) (Vector3d ( 4, 5, 6 )) == Vector3d ( 5, 7, 9 )
 Point3d.vectorFrom (Point3d ( 1, 1, 1 )) (Point3d ( 3, 5, 4 )) == Vector3d ( 2, 4, 3 )
-Point2d.distanceFrom Point2d.origin (Point2d ( 1, 1 )) == sqrt 2
-Direction2d.fromAngle (degrees 30) == Direction2d ( 0.866, 0.5 )
+Point2d.distanceFrom Point2d.origin (Point2d ( 1, 1 )) == 1.4142
+
 Point3d.mirrorAcross Plane3d.xy (Point3d ( 1, 2, 3 )) == Point3d ( 1, 2, -3 )
 Point2d.rotateAround Point2d.origin (degrees 45) (Point2d ( 1, 0 )) == Point2d ( 0.7071, 0.7071 )
-Vector2d.direction (Vector2d ( 3, 0 )) == Just Direction2d.x
+Point3d.projectOnto Plane3d.xy (Point3d ( 2, 1, 3 )) == Point3d ( 2, 1, 0 )
+
+Direction2d.fromAngle (degrees 30) == Direction2d ( 0.866, 0.5 )
+Vector2d.inDirection Direction2d.y 2.5 == Vector2d ( 0, 2.5 )
+Point3d.on Plane3d.xz ( 2, 3 ) == Point3d ( 2, 0, 3 )
+
+Vector2d.direction (Vector2d ( 3, 0 )) == Just (Direction2d ( 1, 0 ))
+Vector3d.projectionIn Direction3d.z (Vector3d ( 3, 1, 4 )) == Vector3d ( 0, 0, 4 )
 ```
 
 ## Philosophy
