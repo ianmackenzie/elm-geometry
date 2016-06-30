@@ -190,8 +190,12 @@ have the same length as the given vector.
     Vector2d.perpendicularTo Vector2d.zero == Vector2d.zero
 -}
 perpendicularTo : Vector2d -> Vector2d
-perpendicularTo (Vector2d ( x, y )) =
-    Vector2d ( -y, x )
+perpendicularTo vector =
+    let
+        ( x, y ) =
+            components vector
+    in
+        Vector2d ( -y, x )
 
 
 {-| Extract the components of a vector.
