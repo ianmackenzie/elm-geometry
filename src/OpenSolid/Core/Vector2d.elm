@@ -510,8 +510,8 @@ itself at a 45 degree angle in global coordinates. Therefore,
 
     Vector2d.placeIn frame (Vector2d ( 1, 0 )) == Vector2d ( 0.7071, 0.7071 )
 
-The vector `Vector2d ( 1, 1 )` in local coordinates, on the other hand, is at a 45
-degree angle from the X axis of the rotated frame and so is straight up in
+The vector `Vector2d ( 1, 1 )` in local coordinates, on the other hand, is at a
+45 degree angle from the X axis of the rotated frame and so is straight up in
 global coordinates:
 
     Vector2d.placeIn frame (Vector2d ( 1, 1 )) == Vector2d ( 0, 1.4142 )
