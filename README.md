@@ -33,8 +33,9 @@ Plane3d.yz ==
         }
 ```
 
-(Directions can be thought of as type-safe unit vectors.) A large range of
-geometric operations are supported - a few examples:
+(Directions can be thought of as type-safe unit vectors.)
+
+A large range of geometric operations are supported - a few examples:
 
 ```elm
 -- Arithmetic
