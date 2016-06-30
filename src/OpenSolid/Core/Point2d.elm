@@ -335,10 +335,17 @@ given first and the point to transform is given last. Points will contract or
 expand about the center point by the given scale. Scaling by a factor of 1 does
 nothing, and scaling by a factor of 0 collapses all points to the center point.
 
-    Point2d.scaleAbout Point2d.origin 3 (Point2d ( 1, 2 )) == Point2d ( 3, 6 )
-    Point2d.scaleAbout (Point2d ( 1, 1 )) 0.5 (Point2d ( 5, 1 )) == Point2d ( 3, 1 )
-    Point2d.scaleAbout (Point2d ( 1, 1 )) 2 (Point2d ( 1, 2 )) == Point2d ( 1, 3 )
-    Point2d.scaleAbout (Point2d ( 1, 1 )) 10 (Point2d ( 1, 1 )) == Point2d ( 1, 1 )
+    Point2d.scaleAbout Point2d.origin 3 (Point2d ( 1, 2 )) ==
+        Point2d ( 3, 6 )
+
+    Point2d.scaleAbout (Point2d ( 1, 1 )) 0.5 (Point2d ( 5, 1 )) ==
+        Point2d ( 3, 1 )
+
+    Point2d.scaleAbout (Point2d ( 1, 1 )) 2 (Point2d ( 1, 2 )) ==
+        Point2d ( 1, 3 )
+
+    Point2d.scaleAbout (Point2d ( 1, 1 )) 10 (Point2d ( 1, 1 )) ==
+        Point2d ( 1, 1 )
 
 Do not scale by a negative scaling factor - while this will sometimes do what
 you want it is confusing and error prone. Try a combination of mirror and/or
@@ -366,7 +373,8 @@ rotateAround centerPoint angle =
 
 {-| Translate by a given displacement.
 
-    Point2d.translateBy (Vector2d ( 1, 2 )) (Point2d ( 3, 4 )) == Point2d ( 4, 6 )
+    Point2d.translateBy (Vector2d ( 1, 2 )) (Point2d ( 3, 4 )) ==
+        Point2d ( 4, 6 )
 -}
 translateBy : Vector2d -> Point2d -> Point2d
 translateBy vector point =
