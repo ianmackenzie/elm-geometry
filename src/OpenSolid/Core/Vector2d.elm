@@ -89,7 +89,7 @@ different coordinate systems. For the examples below, assume the following
 definition of a local coordinate frame, one that is rotated 45 degrees
 counterclockwise from the global XY frame:
 
-    frame = Frame2d.rotateBy (degrees 45) Frame2d.xy
+    frame = Frame2d.rotateAround Point2d.origin (degrees 45) Frame2d.xy
 
     frame.xDirection == Direction2d ( 0.7071, 0.7071 )
     frame.yDirection == Direction2d ( -0.7071, 0.7071 )
