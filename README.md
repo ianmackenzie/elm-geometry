@@ -17,8 +17,7 @@ negativeXDirection3d = Direction3d ( -1, 0, 0 )
 Vector3d.zero == Vector3d ( 0, 0, 0 )
 Direction2d.y == Direction2d ( 0, 1 )
 Point2d.origin == Point2d ( 0, 0 )
-Axis3d.z == Axis3d Point3d.origin Direction3d.z
-Frame2d.xy == Frame2d Point2d.origin Direction2d.x Direction2d.y
+Axis3d.z == Axis3d { originPoint = Point3d.origin, direction = Direction3d.z }
 ```
 
 (Directions are effectively type-safe unit vectors.) A large range of geometric
