@@ -153,7 +153,11 @@ inDirection direction magnitude =
 {-| Construct a vector from its components relative to a given frame.
 
     upsideDownFrame =
-        Frame2d Point2d.origin Direction2d.x (Direction2d.negate Direction2d.y)
+        Frame2d
+            { originPoint = Point2d.origin
+            , xDirection = Direction2d.x
+            , yDirection = Direction2d.negate Direction2d.y
+            }
 
     rotatedFrame =
         Frame2d.rotateAround Point2d.origin (degrees 45) Frame2d.xy
