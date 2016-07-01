@@ -501,21 +501,12 @@ rotateAround axis angle =
         a22 =
             1 - 2 * (xx + yy)
     in
-        \vector ->
-            let
-                ( x, y, z ) =
-                    components vector
-
-                x' =
-                    a00 * x + a01 * y + a02 * z
-
-                y' =
-                    a10 * x + a11 * y + a12 * z
-
-                z' =
-                    a20 * x + a21 * y + a22 * z
-            in
-                Vector3d ( x', y', z' )
+        \(Vector3d ( x, y, z )) ->
+            Vector3d
+                ( a00 * x + a01 * y + a02 * z
+                , a10 * x + a11 * y + a12 * z
+                , a20 * x + a21 * y + a22 * z
+                )
 
 
 mirrorAcross : Plane3d -> Vector3d -> Vector3d
@@ -545,21 +536,12 @@ mirrorAcross plane =
         f =
             -2 * dx * dy
     in
-        \vector ->
-            let
-                ( x, y, z ) =
-                    components vector
-
-                x' =
-                    a * x + f * y + e * z
-
-                y' =
-                    f * x + b * y + d * z
-
-                z' =
-                    e * x + d * y + c * z
-            in
-                Vector3d ( x', y', z' )
+        \(Vector3d ( x, y, z )) ->
+            Vector3d
+                ( a * x + f * y + e * z
+                , f * x + b * y + d * z
+                , e * x + d * y + c * z
+                )
 
 
 projectionIn : Direction3d -> Vector3d -> Vector3d
@@ -597,17 +579,12 @@ localizeTo frame vector =
     let
         (Frame3d { originPoint, xDirection, yDirection, zDirection }) =
             frame
-
-        x =
-            componentIn xDirection vector
-
-        y =
-            componentIn yDirection vector
-
-        z =
-            componentIn zDirection vector
     in
-        Vector3d ( x, y, z )
+        Vector3d
+            ( componentIn xDirection vector
+            , componentIn yDirection vector
+            , componentIn zDirection vector
+            )
 
 
 placeIn : Frame3d -> Vector3d -> Vector3d
