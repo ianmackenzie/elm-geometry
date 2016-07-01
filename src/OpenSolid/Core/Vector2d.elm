@@ -99,16 +99,6 @@ function:
 
 # Coordinate conversions
 
-Functions for transforming vectors between local and global coordinates in
-different coordinate systems. For the examples below, assume the following
-definition of a local coordinate frame, one that is rotated 45 degrees
-counterclockwise from the global XY frame:
-
-    frame = Frame2d.rotateAround Point2d.origin (degrees 45) Frame2d.xy
-
-    Frame2d.xDirection frame == Direction2d ( 0.7071, 0.7071 )
-    Frame2d.yDirection frame == Direction2d ( -0.7071, 0.7071 )
-
 @docs localizeTo, placeIn, placeOnto
 
 # Record conversions
@@ -462,18 +452,21 @@ projectOnto axis =
 frame. The result will be the given vector expressed relative to the given
 frame.
 
-The vector `Vector2d ( 1, 0 )` (in global coordinates), relative to the rotated
-frame defined above, is a vector of length 1 with an angle of -45 degrees.
-Therefore,
+    upsideDownFrame =
+        Frame2d
+            { originPoint = Point2d.origin
+            , xDirection = Direction2d.x
+            , yDirection = Direction2d.negate Direction2d.y
+            }
 
-    Vector2d.localizeTo frame (Vector2d ( 1, 0 )) ==
-        Vector2d ( 0.7071, -0.7071 )
+    rotatedFrame =
+        Frame2d.rotateAround Point2d.origin (degrees 45) Frame2d.xy
 
-The vector `Vector2d ( 1, 1 )`, on the other hand, is parallel to the X axis of
-the rotated frame so only has an X component when expressed in local coordinates
-relative to that frame:
+    Vector2d.localizeTo upsideDownFrame (Vector2d ( 2, 3 )) ==
+        Vector2d ( 2, -3 )
 
-    Vector2d.localizeTo frame (Vector2d ( 1, 1 )) == Vector2d ( 1.4142, 0 )
+    Vector2d.localizeTo rotatedFrame (Vector2d ( 2, 0 )) ==
+        Vector2d ( 1.4142, -1.4142 )
 -}
 localizeTo : Frame2d -> Vector2d -> Vector2d
 localizeTo frame vector =
@@ -490,17 +483,21 @@ localizeTo frame vector =
 {-| Convert a vector from local coordinates within a given frame to global
 coordinates.
 
-The vector `Vector2d ( 1, 0 )` (in local coordinates with respect to the rotated
-frame defined above) is a vector of length 1 along the frame's X axis, which is
-itself at a 45 degree angle in global coordinates. Therefore,
+    upsideDownFrame =
+        Frame2d
+            { originPoint = Point2d.origin
+            , xDirection = Direction2d.x
+            , yDirection = Direction2d.negate Direction2d.y
+            }
 
-    Vector2d.placeIn frame (Vector2d ( 1, 0 )) == Vector2d ( 0.7071, 0.7071 )
+    rotatedFrame =
+        Frame2d.rotateAround Point2d.origin (degrees 45) Frame2d.xy
 
-The vector `Vector2d ( 1, 1 )` in local coordinates, on the other hand, is at a
-45 degree angle from the X axis of the rotated frame and so is straight up in
-global coordinates:
+    Vector2d.placeIn upsideDownFrame (Vector2d ( 2, 3 )) ==
+        Vector2d ( 2, -3 )
 
-    Vector2d.placeIn frame (Vector2d ( 1, 1 )) == Vector2d ( 0, 1.4142 )
+    Vector2d.placeIn rotatedFrame (Vector2d ( 2, 0 )) ==
+        Vector2d ( 1.4142, 1.4142 )
 -}
 placeIn : Frame2d -> Vector2d -> Vector2d
 placeIn frame =
