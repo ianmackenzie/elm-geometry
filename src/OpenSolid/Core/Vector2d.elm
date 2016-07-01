@@ -63,6 +63,22 @@ Since `Vector2d` is not an opaque type, the simplest way to construct one is
 directly from its X and Y components, for example `Vector2d ( 2, 3 )`. But that
 is not the only way!
 
+In addition to the constructors described below, it may be useful to define your
+own specialized constructor functions by combining existing OpenSolid functions.
+For instance, to easily create vectors defined by their components in some local
+frame, you could define something like
+
+    localPoint : Float -> Float -> Vector2d
+    localPoint x y =
+        Point2d.placeIn localFrame (Point2d ( x, y ))
+
+To create vectors from polar coordinates, you can use Elm's built-in `fromPolar`
+function:
+
+    polarVector : Float -> Float -> Vector2d
+    polarVector radius angle =
+        Vector2d (fromPolar ( radius, angle ))
+
 @docs inDirection, perpendicularTo
 
 # Components
