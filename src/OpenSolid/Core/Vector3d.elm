@@ -11,8 +11,8 @@ module OpenSolid.Core.Vector3d
     exposing
         ( zero
         , inDirection
-        , on
-        , relativeTo
+        , onPlane
+        , inFrame
         , perpendicularTo
         , components
         , xComponent
@@ -68,7 +68,7 @@ Since `Vector3d` is not an opaque type, the simplest way to construct one is
 directly from its X, Y and Z components, for example `Vector3d ( 2, 3, 4 )`. But
 that is not the only way!
 
-@docs inDirection, on, relativeTo, perpendicularTo
+@docs inDirection, onPlane, inFrame, perpendicularTo
 
 # Components
 
@@ -129,6 +129,7 @@ to use
 -}
 
 import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Core.Vector2d as Vector2d
 
 
 {-| The zero vector.
@@ -159,32 +160,20 @@ inDirection direction magnitude =
 {-| Construct a vector which lies on the given plane, with the given local
 (planar) components.
 
-    Vector3d.on Plane3d.xy ( 2, 3 ) == Vector3d ( 2, 3, 0 )
-    Vector3d.on Plane3d.yz ( 2, 3 ) == Vector3d ( 0, 2, 3 )
-    Vector3d.on Plane3d.zy ( 2, 3 ) == Vector3d ( 0, 3, 2 )
+    Vector3d.onPlane Plane3d.xy ( 2, 3 ) == Vector3d ( 2, 3, 0 )
+    Vector3d.onPlane Plane3d.yz ( 2, 3 ) == Vector3d ( 0, 2, 3 )
+    Vector3d.onPlane Plane3d.zy ( 2, 3 ) == Vector3d ( 0, 3, 2 )
 
-    Vector3d.on plane ( x, y ) ==
-        Vector3d.plus (Direction3d.times x (Plane3d.xDirection plane))
-            (Direction3d.times y (Plane3d.yDirection plane))
+    Vector3d.onPlane plane components ==
+        Vector2d.placeOnto plane (Vector2d components)
 -}
-on : Plane3d -> ( Float, Float ) -> Vector3d
-on plane =
-    let
-        (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
-            plane
-
-        (Direction3d ( x1, y1, z1 )) =
-            xDirection
-
-        (Direction3d ( x2, y2, z2 )) =
-            yDirection
-    in
-        \( x, y ) ->
-            Vector3d ( x1 * x + x2 * y, y1 * x + y2 * y, z1 * x + z2 * y )
+onPlane : Plane3d -> ( Float, Float ) -> Vector3d
+onPlane plane =
+    Vector2d >> Vector2d.placeOnto plane
 
 
-relativeTo : Frame3d -> ( Float, Float, Float ) -> Vector3d
-relativeTo frame =
+inFrame : Frame3d -> ( Float, Float, Float ) -> Vector3d
+inFrame frame =
     let
         (Frame3d { originPoint, xDirection, yDirection, zDirection }) =
             frame
@@ -669,7 +658,7 @@ localizeTo frame vector =
 
 placeIn : Frame3d -> Vector3d -> Vector3d
 placeIn frame =
-    components >> relativeTo frame
+    components >> inFrame frame
 
 
 projectInto : Plane3d -> Vector3d -> Vector2d

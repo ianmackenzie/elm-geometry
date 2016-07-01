@@ -10,9 +10,9 @@
 module OpenSolid.Core.Point3d
     exposing
         ( origin
-        , along
-        , on
-        , relativeTo
+        , alongAxis
+        , onPlane
+        , inFrame
         , interpolate
         , midpoint
         , xCoordinate
@@ -56,8 +56,8 @@ origin =
     Point3d ( 0, 0, 0 )
 
 
-along : Axis3d -> Float -> Point3d
-along axis =
+alongAxis : Axis3d -> Float -> Point3d
+alongAxis axis =
     let
         (Axis3d { originPoint, direction }) =
             axis
@@ -65,22 +65,22 @@ along axis =
         Vector3d.inDirection direction >> addTo originPoint
 
 
-on : Plane3d -> ( Float, Float ) -> Point3d
-on plane =
+onPlane : Plane3d -> ( Float, Float ) -> Point3d
+onPlane plane =
     let
         (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
             plane
     in
-        Vector3d.on plane >> addTo originPoint
+        Vector3d.onPlane plane >> addTo originPoint
 
 
-relativeTo : Frame3d -> ( Float, Float, Float ) -> Point3d
-relativeTo frame =
+inFrame : Frame3d -> ( Float, Float, Float ) -> Point3d
+inFrame frame =
     let
         (Frame3d { originPoint, xDirection, yDirection, zDirection }) =
             frame
     in
-        Vector3d.relativeTo frame >> addTo originPoint
+        Vector3d.inFrame frame >> addTo originPoint
 
 
 interpolate : Point3d -> Point3d -> Float -> Point3d
@@ -243,7 +243,7 @@ localizeTo frame =
 
 placeIn : Frame3d -> Point3d -> Point3d
 placeIn frame =
-    coordinates >> relativeTo frame
+    coordinates >> inFrame frame
 
 
 projectOntoAxis : Axis3d -> Point3d -> Point3d

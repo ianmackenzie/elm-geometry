@@ -11,7 +11,7 @@ module OpenSolid.Core.Vector2d
     exposing
         ( zero
         , inDirection
-        , relativeTo
+        , inFrame
         , perpendicularTo
         , components
         , xComponent
@@ -64,7 +64,7 @@ Since `Vector2d` is not an opaque type, the simplest way to construct one is
 directly from its X and Y components, for example `Vector2d ( 2, 3 )`. But that
 is not the only way!
 
-@docs inDirection, relativeTo, perpendicularTo
+@docs inDirection, inFrame, perpendicularTo
 
 # Components
 
@@ -162,11 +162,11 @@ inDirection direction magnitude =
     rotatedFrame =
         Frame2d.rotateAround Point2d.origin (degrees 45) Frame2d.xy
 
-    Vector2d.relativeTo upsideDownFrame ( 2, 3 ) == Vector2d ( 2, -3 )
-    Vector2d.relativeTo rotatedFrame ( 2, 0 ) == Vector2d ( 1.4142, 1.4142 )
+    Vector2d.inFrame upsideDownFrame ( 2, 3 ) == Vector2d ( 2, -3 )
+    Vector2d.inFrame rotatedFrame ( 2, 0 ) == Vector2d ( 1.4142, 1.4142 )
 -}
-relativeTo : Frame2d -> ( Float, Float ) -> Vector2d
-relativeTo frame =
+inFrame : Frame2d -> ( Float, Float ) -> Vector2d
+inFrame frame =
     let
         (Frame2d { originPoint, xDirection, yDirection }) =
             frame
@@ -519,7 +519,7 @@ global coordinates:
 -}
 placeIn : Frame2d -> Vector2d -> Vector2d
 placeIn frame =
-    components >> relativeTo frame
+    components >> inFrame frame
 
 
 {-| Convert a 2D vector to 3D by placing it on a given frame. This will
