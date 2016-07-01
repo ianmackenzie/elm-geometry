@@ -11,7 +11,6 @@ module OpenSolid.Core.Point2d
     exposing
         ( origin
         , alongAxis
-        , inFrame
         , midpoint
         , interpolate
         , coordinates
@@ -144,15 +143,6 @@ alongAxis axis =
             axis
     in
         Vector2d.inDirection direction >> addTo originPoint
-
-
-inFrame : Frame2d -> ( Float, Float ) -> Point2d
-inFrame frame =
-    let
-        (Frame2d { originPoint, xDirection, yDirection }) =
-            frame
-    in
-        Vector2d.inFrame frame >> addTo originPoint
 
 
 {-| Construct a point halfway between two other points.
@@ -477,7 +467,11 @@ coordinates. Inverse of `localizeTo`.
 -}
 placeIn : Frame2d -> Point2d -> Point2d
 placeIn frame =
-    coordinates >> inFrame frame
+    let
+        (Frame2d { originPoint, xDirection, yDirection }) =
+            frame
+    in
+        coordinates >> Vector2d >> Vector2d.placeIn frame >> addTo originPoint
 
 
 placeOnto : Plane3d -> Point2d -> Point3d

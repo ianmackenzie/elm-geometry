@@ -11,7 +11,6 @@ module OpenSolid.Core.Vector2d
     exposing
         ( zero
         , inDirection
-        , inFrame
         , perpendicularTo
         , components
         , xComponent
@@ -64,7 +63,7 @@ Since `Vector2d` is not an opaque type, the simplest way to construct one is
 directly from its X and Y components, for example `Vector2d ( 2, 3 )`. But that
 is not the only way!
 
-@docs inDirection, inFrame, perpendicularTo
+@docs inDirection, perpendicularTo
 
 # Components
 
@@ -148,36 +147,6 @@ inDirection direction magnitude =
             direction
     in
         times magnitude (Vector2d components)
-
-
-{-| Construct a vector from its components relative to a given frame.
-
-    upsideDownFrame =
-        Frame2d
-            { originPoint = Point2d.origin
-            , xDirection = Direction2d.x
-            , yDirection = Direction2d.negate Direction2d.y
-            }
-
-    rotatedFrame =
-        Frame2d.rotateAround Point2d.origin (degrees 45) Frame2d.xy
-
-    Vector2d.inFrame upsideDownFrame ( 2, 3 ) == Vector2d ( 2, -3 )
-    Vector2d.inFrame rotatedFrame ( 2, 0 ) == Vector2d ( 1.4142, 1.4142 )
--}
-inFrame : Frame2d -> ( Float, Float ) -> Vector2d
-inFrame frame =
-    let
-        (Frame2d { originPoint, xDirection, yDirection }) =
-            frame
-
-        (Direction2d ( x1, y1 )) =
-            xDirection
-
-        (Direction2d ( x2, y2 )) =
-            yDirection
-    in
-        \( x, y ) -> Vector2d ( x1 * x + x2 * y, y1 * x + y2 * y )
 
 
 {-| Construct a vector perpendicular to the given vector, by rotating the given
@@ -519,7 +488,17 @@ global coordinates:
 -}
 placeIn : Frame2d -> Vector2d -> Vector2d
 placeIn frame =
-    components >> inFrame frame
+    let
+        (Frame2d { originPoint, xDirection, yDirection }) =
+            frame
+
+        (Direction2d ( x1, y1 )) =
+            xDirection
+
+        (Direction2d ( x2, y2 )) =
+            yDirection
+    in
+        \(Vector2d ( x, y )) -> Vector2d ( x1 * x + x2 * y, y1 * x + y2 * y )
 
 
 {-| Convert a 2D vector to 3D by placing it on a given frame. This will

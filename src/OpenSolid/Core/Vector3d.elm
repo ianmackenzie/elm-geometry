@@ -11,8 +11,6 @@ module OpenSolid.Core.Vector3d
     exposing
         ( zero
         , inDirection
-        , onPlane
-        , inFrame
         , perpendicularTo
         , components
         , xComponent
@@ -68,7 +66,7 @@ Since `Vector3d` is not an opaque type, the simplest way to construct one is
 directly from its X, Y and Z components, for example `Vector3d ( 2, 3, 4 )`. But
 that is not the only way!
 
-@docs inDirection, onPlane, inFrame, perpendicularTo
+@docs inDirection, perpendicularTo
 
 # Components
 
@@ -155,50 +153,6 @@ inDirection direction magnitude =
             direction
     in
         times magnitude (Vector3d components)
-
-
-{-| Construct a vector which lies on the given plane, with the given local
-(planar) components.
-
-    Vector3d.onPlane Plane3d.xy ( 2, 3 ) == Vector3d ( 2, 3, 0 )
-    Vector3d.onPlane Plane3d.yz ( 2, 3 ) == Vector3d ( 0, 2, 3 )
-    Vector3d.onPlane Plane3d.zy ( 2, 3 ) == Vector3d ( 0, 3, 2 )
-
-    Vector3d.onPlane plane components ==
-        Vector2d.placeOnto plane (Vector2d components)
--}
-onPlane : Plane3d -> ( Float, Float ) -> Vector3d
-onPlane plane =
-    Vector2d >> Vector2d.placeOnto plane
-
-
-inFrame : Frame3d -> ( Float, Float, Float ) -> Vector3d
-inFrame frame =
-    let
-        (Frame3d { originPoint, xDirection, yDirection, zDirection }) =
-            frame
-
-        (Direction3d ( x1, y1, z1 )) =
-            xDirection
-
-        (Direction3d ( x2, y2, z2 )) =
-            yDirection
-
-        (Direction3d ( x3, y3, z3 )) =
-            zDirection
-    in
-        \( x, y, z ) ->
-            let
-                x' =
-                    x1 * x + x2 * y + x3 * z
-
-                y' =
-                    y1 * x + y2 * y + y3 * z
-
-                z' =
-                    z1 * x + z2 * y + z3 * z
-            in
-                Vector3d ( x', y', z' )
 
 
 {-| Construct an arbitrary vector perpendicular to the given vector. The exact
@@ -658,7 +612,25 @@ localizeTo frame vector =
 
 placeIn : Frame3d -> Vector3d -> Vector3d
 placeIn frame =
-    components >> inFrame frame
+    let
+        (Frame3d { originPoint, xDirection, yDirection, zDirection }) =
+            frame
+
+        (Direction3d ( x1, y1, z1 )) =
+            xDirection
+
+        (Direction3d ( x2, y2, z2 )) =
+            yDirection
+
+        (Direction3d ( x3, y3, z3 )) =
+            zDirection
+    in
+        \(Vector3d ( x, y, z )) ->
+            Vector3d
+                ( x1 * x + x2 * y + x3 * z
+                , y1 * x + y2 * y + y3 * z
+                , z1 * x + z2 * y + z3 * z
+                )
 
 
 projectInto : Plane3d -> Vector3d -> Vector2d
