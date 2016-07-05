@@ -2,9 +2,8 @@
 
 OpenSolid consists of a set of Elm libraries for working with geometry. It is
 intended to provide a solid foundation for HTML-based applications in areas such
-as CAD (computer-aided design), CAM (computer-aided manufacturing), 2D/3D
-visualization, and potentially games or simulations (although OpenSolid
-prioritizes flexibility and expressiveness over raw speed).
+as CAD (computer-aided design), CAM (computer-aided manufacturing), and 2D/3D
+visualization.
 
 This library contains the OpenSolid core data types - vectors, directions
 (type-safe unit vectors), points, axes, planes and frames (coordinate systems)
@@ -34,7 +33,7 @@ Plane3d.yz ==
         }
 ```
 
-A large range of geometric operations are supported - a few examples:
+A large range of geometric operations are supported:
 
 ```elm
 -- Arithmetic
@@ -51,10 +50,9 @@ Point3d.projectOnto Plane3d.xy (Point3d ( 2, 1, 3 )) == Point3d ( 2, 1, 0 )
 Vector3d.projectionIn Direction3d.z (Vector3d ( 3, 1, 4 )) == Vector3d ( 0, 0, 4 )
 
 -- Constructors
-Point2d.along Axis2d.x 3 == Point2d ( 3, 0 )
+Point2d.alongAxis Axis2d.x 3 == Point2d ( 3, 0 )
 Direction2d.fromAngle (degrees 30) == Direction2d ( 0.866, 0.5 )
 Vector2d.inDirection Direction2d.y 2.5 == Vector2d ( 0, 2.5 )
-Point3d.on Plane3d.xz ( 2, 3 ) == Point3d ( 2, 0, 3 )
 Frame2d.at (Point2d ( 3, 4 )) == Frame2d.translateBy (Vector2d ( 3, 4 )) Frame2d.xy
 
 -- Type-safe 'normalize'
@@ -100,6 +98,9 @@ first argument (first rule), and the vector to rotate as the last argument
 ```elm
 rotatedVector = Vector3d.rotateAround Axis3d.z (degrees 45) originalVector
 ```
+
+(If the angle to rotate by was the first argument, the function would have been
+named `rotateBy` instead.)
 
 ## Philosophy
 
