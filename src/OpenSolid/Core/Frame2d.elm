@@ -10,7 +10,7 @@
 module OpenSolid.Core.Frame2d
     exposing
         ( xy
-        , at
+        , atPoint
         , originPoint
         , xDirection
         , yDirection
@@ -36,11 +36,11 @@ import OpenSolid.Core.Direction2d as Direction2d
 
 xy : Frame2d
 xy =
-    at Point2d.origin
+    atPoint Point2d.origin
 
 
-at : Point2d -> Frame2d
-at point =
+atPoint : Point2d -> Frame2d
+atPoint point =
     Frame2d
         { originPoint = point
         , xDirection = Direction2d.x
