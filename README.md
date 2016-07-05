@@ -53,7 +53,7 @@ Vector3d.projectionIn Direction3d.z (Vector3d ( 3, 1, 4 )) == Vector3d ( 0, 0, 4
 Point2d.alongAxis Axis2d.x 3 == Point2d ( 3, 0 )
 Direction2d.fromAngle (degrees 30) == Direction2d ( 0.866, 0.5 )
 Vector2d.inDirection Direction2d.y 2.5 == Vector2d ( 0, 2.5 )
-Frame2d.at (Point2d ( 3, 4 )) == Frame2d.translateBy (Vector2d ( 3, 4 )) Frame2d.xy
+Frame2d.atPoint (Point2d ( 3, 4 )) == Frame2d.translateBy (Vector2d ( 3, 4 )) Frame2d.xy
 
 -- Type-safe 'normalize'
 Vector2d.direction (Vector2d ( 3, 0 )) == Just (Direction2d ( 1, 0 ))
