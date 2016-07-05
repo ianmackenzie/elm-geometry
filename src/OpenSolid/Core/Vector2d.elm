@@ -306,8 +306,10 @@ the vector to be subtracted from is given second, so
 
     Vector2d.minus (Vector2d ( 1, 2 )) (Vector2d ( 5, 6 )) == Vector2d ( 4, 4 )
 
+or more generally, `Vector2d.minus a b` means `b - a`, not `a - b`. Think of
+`Vector2d.minus a b` as the operation `minus a` being applied to the vector `b`.
 This means that `minus` can be used more naturally in situations like `map`
-functions
+functions:
 
     minusVector =
         Vector2d.minus (Vector2d ( 2, 0 ))
@@ -317,7 +319,7 @@ functions
 
     List.map minusVector originalVectors == [ Vector2d ( -1, 2 ), Vector2d ( 1, 4 ) ]
 
-or function pipelining
+or function pipelining:
 
     myFunction =
         Vector2d.minus (Vector2d ( 0, 1 )) >> Vector2d.times 3
