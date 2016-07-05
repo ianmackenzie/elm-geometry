@@ -62,6 +62,45 @@ Vector2d.direction (Vector2d ( 3, 0 )) == Just (Direction2d ( 1, 0 ))
 Vector2d.direction Vector2d.zero == Nothing
 ```
 
+## Usage notes
+
+### Importing modules
+
+Most OpenSolid modules are designed to imported as qualified, for example
+
+```elm
+import OpenSolid.Core.Point3d as Point3d
+```
+
+The main exception is the `Types` module, which only contains type definitions
+and is intended to be imported without qualification:
+
+```elm
+import OpenSolid.Core.Types exposing (..)
+```
+
+The JSON `Encode` and `Decode` modules are also designed to be imported
+unqualified, as that seems to be the style encouraged by existing JSON
+encode/decode modules.
+
+### Function conventions
+
+OpenSolid follows a couple of main conventions for how functions are called:
+
+  - Many function names end with a preposition like 'in', 'around', or 'onto',
+    which is used to indicate which argument comes first.
+  - The general Elm rule of 'the data structure is the last argument' is
+    followed; the last argument is usually the value that is being operated on
+    (queried or transformed).
+
+For example, `Vector3d.rotateAround` takes the the axis to rotate around as the
+first argument (first rule), and the vector to rotate as the last argument
+(second rule). The angle to rotate by is therefore the second argument:
+
+```elm
+rotatedVector = Vector3d.rotateAround Axis3d.z (degrees 45) originalVector
+```
+
 ## Philosophy
 
 OpenSolid is similar in functionality to other vector/linear algebra libraries
