@@ -133,8 +133,8 @@ origin point.
     horizontalAxis =
         Axis2d { originPoint = Point2d ( 1, 1 ), direction = Direction2d.x }
 
-    Point2d.along horizontalAxis 3 == Point2d ( 4, 1 )
-    Point2d.along horizontalAxis -3 == Point2d ( -2, 1 )
+    Point2d.alongAxis horizontalAxis 3 == Point2d ( 4, 1 )
+    Point2d.alongAxis horizontalAxis -3 == Point2d ( -2, 1 )
 -}
 alongAxis : Axis2d -> Float -> Point2d
 alongAxis axis =
