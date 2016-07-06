@@ -18,6 +18,7 @@ module OpenSolid.Core.Axis3d
         , rotateAround
         , translateBy
         , translateIn
+        , translateTo
         , mirrorAcross
         , localizeTo
         , placeIn
@@ -96,6 +97,11 @@ translateBy vector axis =
 translateIn : Direction3d -> Float -> Axis3d -> Axis3d
 translateIn direction =
     translateBy << Vector3d.inDirection direction
+
+
+translateTo : Point3d -> Axis3d -> Axis3d
+translateTo point axis =
+    Axis3d { originPoint = point, direction = direction axis }
 
 
 mirrorAcross : Plane3d -> Axis3d -> Axis3d

@@ -31,6 +31,7 @@ module OpenSolid.Core.Plane3d
         , translateBy
         , translateIn
         , translateInOwn
+        , translateTo
         , mirrorAcross
         , localizeTo
         , placeIn
@@ -226,6 +227,16 @@ translateIn direction =
 translateInOwn : (Plane3d -> Direction3d) -> Float -> Plane3d -> Plane3d
 translateInOwn direction distance plane =
     translateIn (direction plane) distance plane
+
+
+translateTo : Point3d -> Plane3d -> Plane3d
+translateTo point plane =
+    Plane3d
+        { originPoint = point
+        , xDirection = xDirection plane
+        , yDirection = yDirection plane
+        , normalDirection = normalDirection plane
+        }
 
 
 mirrorAcross : Plane3d -> Plane3d -> Plane3d
