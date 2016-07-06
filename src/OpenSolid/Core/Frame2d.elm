@@ -10,7 +10,6 @@
 module OpenSolid.Core.Frame2d
     exposing
         ( xy
-        , atPoint
         , originPoint
         , xDirection
         , yDirection
@@ -22,6 +21,7 @@ module OpenSolid.Core.Frame2d
         , translateBy
         , translateIn
         , translateInOwn
+        , translateTo
         , mirrorAcross
         , mirrorAcrossOwn
         , localizeTo
@@ -36,13 +36,8 @@ import OpenSolid.Core.Direction2d as Direction2d
 
 xy : Frame2d
 xy =
-    atPoint Point2d.origin
-
-
-atPoint : Point2d -> Frame2d
-atPoint point =
     Frame2d
-        { originPoint = point
+        { originPoint = Point2d.origin
         , xDirection = Direction2d.x
         , yDirection = Direction2d.y
         }
@@ -121,6 +116,15 @@ translateIn direction =
 translateInOwn : (Frame2d -> Direction2d) -> Float -> Frame2d -> Frame2d
 translateInOwn direction distance frame =
     translateIn (direction frame) distance frame
+
+
+translateTo : Point2d -> Frame2d -> Frame2d
+translateTo point frame =
+    Frame2d
+        { originPoint = point
+        , xDirection = xDirection frame
+        , yDirection = yDirection frame
+        }
 
 
 mirrorAcross : Axis2d -> Frame2d -> Frame2d

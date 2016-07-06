@@ -10,7 +10,6 @@
 module OpenSolid.Core.Frame3d
     exposing
         ( xyz
-        , atPoint
         , originPoint
         , xDirection
         , yDirection
@@ -30,6 +29,7 @@ module OpenSolid.Core.Frame3d
         , translateBy
         , translateIn
         , translateInOwn
+        , translateTo
         , mirrorAcross
         , mirrorAcrossOwn
         , localizeTo
@@ -44,13 +44,8 @@ import OpenSolid.Core.Direction3d as Direction3d
 
 xyz : Frame3d
 xyz =
-    atPoint Point3d.origin
-
-
-atPoint : Point3d -> Frame3d
-atPoint point =
     Frame3d
-        { originPoint = point
+        { originPoint = Point3d.origin
         , xDirection = Direction3d.x
         , yDirection = Direction3d.y
         , zDirection = Direction3d.z
@@ -203,6 +198,16 @@ translateIn direction =
 translateInOwn : (Frame3d -> Direction3d) -> Float -> Frame3d -> Frame3d
 translateInOwn direction distance frame =
     translateIn (direction frame) distance frame
+
+
+translateTo : Point3d -> Frame3d -> Frame3d
+translateTo point frame =
+    Frame3d
+        { originPoint = point
+        , xDirection = xDirection frame
+        , yDirection = yDirection frame
+        , zDirection = zDirection frame
+        }
 
 
 mirrorAcross : Plane3d -> Frame3d -> Frame3d
