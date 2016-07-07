@@ -114,6 +114,7 @@ means that transformations can be directly used with higher-order functions like
 pointsOnXAxis =
     [ Point2d ( 1, 0 ), Point2d ( 2, 0 ), Point2d ( 3, 0 ) ]
 
+rotateNinetyDegrees : Point2d -> Point2d
 rotateNinetyDegrees =
     Point2d.rotateAround Point2d.origin (degrees 90)
 
@@ -128,6 +129,7 @@ composite transformations (no more having to remember multiplication order of
 matrices!):
 
 ```elm
+rotateThenScale : Point2d -> Point2d
 rotateThenScale =
     Point2d.rotateAround Point2d.origin (degrees 90) >> Point2d.scaleAbout Point2d.origin 1.5
 
