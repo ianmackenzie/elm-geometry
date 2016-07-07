@@ -36,6 +36,12 @@ Plane3d.yz ==
 A large range of geometric operations are supported:
 
 ```elm
+-- Constructors
+Point2d.alongAxis Axis2d.x 3 == Point2d ( 3, 0 )
+Direction2d.fromAngle (degrees 30) == Direction2d ( 0.866, 0.5 )
+Vector2d.inDirection Direction2d.y 2.5 == Vector2d ( 0, 2.5 )
+Plane3d.fromPointAndNormal Point3d.origin Direction3d.y == Plane3d.zx
+
 -- Arithmetic
 Vector3d.plus (Vector3d ( 1, 2, 3 )) (Vector3d ( 4, 5, 6 )) == Vector3d ( 5, 7, 9 )
 Point3d.vectorFrom (Point3d ( 1, 1, 1 )) (Point3d ( 3, 5, 4 )) == Vector3d ( 2, 4, 3 )
@@ -48,12 +54,6 @@ Point2d.rotateAround Point2d.origin (degrees 45) (Point2d ( 1, 0 )) == Point2d (
 Plane3d.translateIn Direction3d.z 3 Plane3d.xy == Plane3d.offsetBy 3 Plane3d.xy
 Point3d.projectOnto Plane3d.xy (Point3d ( 2, 1, 3 )) == Point3d ( 2, 1, 0 )
 Vector3d.projectionIn Direction3d.z (Vector3d ( 3, 1, 4 )) == Vector3d ( 0, 0, 4 )
-
--- Constructors
-Point2d.alongAxis Axis2d.x 3 == Point2d ( 3, 0 )
-Direction2d.fromAngle (degrees 30) == Direction2d ( 0.866, 0.5 )
-Vector2d.inDirection Direction2d.y 2.5 == Vector2d ( 0, 2.5 )
-Plane3d.fromPointAndNormal Point3d.origin Direction3d.y == Plane3d.zx
 ```
 
 ## Usage notes
