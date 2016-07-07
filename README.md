@@ -81,38 +81,31 @@ The JSON `Encode` and `Decode` modules are also designed to be imported
 unqualified, as that seems to be the style encouraged by existing JSON
 encode/decode modules.
 
-### Function conventions
+### Directions
 
-OpenSolid follows a couple of main conventions for how functions are called:
+OpenSolid uses the concept of a 'direction' where other libraries typically use
+vectors with unit length. Having a separate type helps to keep track of whether
+a vector has already been normalized -- no more having to guess whether a
+function that accepts a vector argument actually needs a unit vector, and if so
+whether you're expected to normalize the vector yourself or whether the function
+will do that internally.
 
-  - Many function names end with a preposition like 'in', 'around', or 'onto',
-    which is used to indicate which argument comes first.
-  - The general Elm rule of 'the data structure is the last argument' is
-    followed; the last argument is usually the value that is being operated on
-    (queried or transformed).
-
-For example, `Vector3d.rotateAround` takes the the axis to rotate around as the
-first argument (first rule), and the vector to rotate as the last argument
-(second rule). The angle to rotate by is therefore the second argument:
-
-```elm
-rotatedVector = Vector3d.rotateAround Axis3d.z (degrees 45) originalVector
-```
-
-(If the angle to rotate by was the first argument, the function would have been
-named `rotateBy` instead.)
-
-## Philosophy
-
-OpenSolid is similar in functionality to other vector/linear algebra libraries
-but has a more geometric than mathematical focus.
+You can normalize a vector to produce a direction with the `Vector2d.direction`
+and `Vector3d.direction` functions, but they actually return `Maybe` values
+since a zero vector has no direction - passing `Vector3d.zero` to
+`Vector3d.direction` will result in `None`. This takes advantage of Elm's type
+system to ensure that all code considers the degenerate zero-vector case, which
+is easy to run into when (for example) trying to compute the normal direction to
+a degenerate triangle in 3D.
 
 ### Transformations
 
-OpenSolid does not use matrices to define transformations (in fact, matrices are
-not used anywhere). Instead, transformations are simply Elm functions such as
-`Point2d.rotateAround` shown above. This has many advantages. First, it means
-that transformations can be directly used with higher-order functions like
+Many of OpenSolid is concerned with different kinds of transformations --
+translations, rotations, scalings, mirrors, and projections. Unlike most other
+geometric libraries, however, OpenSolid does not use matrices to define
+transformations (in fact, matrices are not used anywhere). Instead,
+transformations are simply Elm functions. This has many advantages. First, it
+means that transformations can be directly used with higher-order functions like
 `List.map`:
 
 ```elm
@@ -147,55 +140,9 @@ define yourself!) to produce composite 'transformations' that would be
 impossible to represent with a transformation matrix:
 
 ```elm
-horizontalDistance =
+horizontalDistanceFromOrigin =
     Point3d.projectOnto Plane3d.xy >> Point3d.distanceFrom Point3d.origin
 
-horizontalDistance (Point3d ( 3, 4, 2 )) == 5
-horizontalDistance (Point3d ( 1, 1, 1 )) == sqrt 2
+horizontalDistanceFromOrigin (Point3d ( 3, 4, 2 )) == 5
+horizontalDistanceFromOrigin (Point3d ( 1, 1, 1 )) == sqrt 2
 ```
-
-### Components
-
-OpenSolid encourages thinking about points and vectors as geometric entities
-instead of in terms of X, Y and Z values. For example, instead of using
-
-```elm
-Point3d.xCoordinate myPoint
-```
-
-you could use
-
-```elm
-Point3d.distanceAlong Axis3d.x myPoint
-```
-
-which has the advantage that it is easy to adapt to work with axes that might be
-angled, not at the origin, or even changing dynamically. The key idea is to
-think in terms of fundamental geometric concepts like "distance of a point along
-an axis" since they are independent of the particular coordinate system being
-used. Although OpenSolid does allow access to individual components (such as
-with `Point3d.xCoordinate` above), it does not provide additional component-
-centric functionality like modifying a single coordinate of a point or
-'swizzling' a vector to change the order of its components.
-
-### Type safety
-
-OpenSolid distinguishes between vectors, directions and points and only allows
-operations that make sense. For example, vectors can be added together but
-points cannot (however, a vector can be added to a point to produce a shifted
-point).
-
-OpenSolid uses the concept of a 'direction' where other libraries typically use
-vectors with unit length. Having a separate type helps to keep track of whether
-a vector has already been normalized (no more having to guess whether a function
-that accepts a vector argument actually needs a unit vector, and if so whether
-you're expected to normalize the vector yourself or whether the function will do
-that internally).
-
-You can normalize a vector to produce a direction with the `Vector2d.direction`
-and `Vector3d.direction` functions, but they actually return `Maybe` values
-since a zero vector has no direction - passing `Vector3d.zero` to
-`Vector3d.direction` will result in `None`. This takes advantage of Elm's type
-system to ensure that all code considers the degenerate zero-vector case, which
-is easy to run into when (for example) trying to compute the normal direction to
-a degenerate triangle in 3D.
