@@ -78,7 +78,7 @@ import OpenSolid.Core.Types exposing (..)
 ```
 
 The JSON `Encode` and `Decode` modules are also designed to be imported
-unqualified, as that seems to be the style encouraged by existing JSON
+unqualified, as that seems to be the style established by existing JSON
 encode/decode modules.
 
 ### Directions
