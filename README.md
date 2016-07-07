@@ -80,11 +80,11 @@ encode/decode modules.
 ### Directions
 
 OpenSolid uses the concept of a 'direction' where other libraries typically use
-vectors with unit length. Having separate types helps to keep track of whether
-a vector has already been normalized -- no more having to guess whether a
-function that accepts a vector argument actually needs a unit vector, and if so
-whether you're expected to normalize the vector yourself or whether the function
-will do that internally.
+vectors with unit length. Having separate types helps to keep track of whether a
+vector has already been normalized - no more having to guess whether a function
+that accepts a vector argument actually needs a unit vector, and if so whether
+you're expected to normalize the vector yourself or whether the function will do
+that internally.
 
 You can normalize a vector to produce a direction with the `Vector2d.direction`
 and `Vector3d.direction` functions, but they actually return `Maybe` values
@@ -102,7 +102,7 @@ to compute the normal direction to a degenerate triangle in 3D.
 
 ### Transformations
 
-Many of OpenSolid is concerned with different kinds of transformations --
+Many of OpenSolid is concerned with different kinds of transformations -
 translations, rotations, scalings, mirrors, and projections. Unlike most other
 geometric libraries, however, OpenSolid does not use matrices to define
 transformations (in fact, matrices are not used anywhere). Instead,
