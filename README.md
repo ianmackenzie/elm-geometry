@@ -54,10 +54,6 @@ Point2d.alongAxis Axis2d.x 3 == Point2d ( 3, 0 )
 Direction2d.fromAngle (degrees 30) == Direction2d ( 0.866, 0.5 )
 Vector2d.inDirection Direction2d.y 2.5 == Vector2d ( 0, 2.5 )
 Plane3d.fromPointAndNormal Point3d.origin Direction3d.y == Plane3d.zx
-
--- Type-safe 'normalize'
-Vector2d.direction (Vector2d ( 3, 0 )) == Just (Direction2d ( 1, 0 ))
-Vector2d.direction Vector2d.zero == Nothing
 ```
 
 ## Usage notes
@@ -84,7 +80,7 @@ encode/decode modules.
 ### Directions
 
 OpenSolid uses the concept of a 'direction' where other libraries typically use
-vectors with unit length. Having a separate type helps to keep track of whether
+vectors with unit length. Having separate types helps to keep track of whether
 a vector has already been normalized -- no more having to guess whether a
 function that accepts a vector argument actually needs a unit vector, and if so
 whether you're expected to normalize the vector yourself or whether the function
@@ -92,11 +88,17 @@ will do that internally.
 
 You can normalize a vector to produce a direction with the `Vector2d.direction`
 and `Vector3d.direction` functions, but they actually return `Maybe` values
-since a zero vector has no direction - passing `Vector3d.zero` to
-`Vector3d.direction` will result in `None`. This takes advantage of Elm's type
-system to ensure that all code considers the degenerate zero-vector case, which
-is easy to run into when (for example) trying to compute the normal direction to
-a degenerate triangle in 3D.
+since the zero vector has no direction:
+
+```elm
+Vector2d.direction (Vector2d ( 3, 0 )) == Just (Direction2d ( 1, 0 ))
+Vector2d.direction (Vector2d ( -2, 2 )) == Just (Direction2d ( -0.7071, 0.7071 ))
+Vector2d.direction (Vector2d ( 0, 0 )) == Nothing
+```
+
+This takes advantage of Elm's type system to ensure that all code considers the
+degenerate zero-vector case, which is easy to run into when (for example) trying
+to compute the normal direction to a degenerate triangle in 3D.
 
 ### Transformations
 
