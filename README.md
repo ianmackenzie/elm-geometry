@@ -58,6 +58,32 @@ Vector3d.projectionIn Direction3d.z (Vector3d ( 3, 1, 4 )) == Vector3d ( 0, 0, 4
 
 ## Usage notes
 
+OpenSolid is functionally similar to other vector/geometry libraries, but works
+differently in a few subtle but meaningful ways. In general, OpenSolid has a
+more geometric than mathematical focus. Distinct types are used for points,
+vectors and directions which many (most?) other libraries treat as a single
+generic vector type, and explicitly working with individual X/Y/Z point
+coordinates and vector components is discouraged. In many cases the fact that
+points and vectors happen to be represented using Cartesian coordinates can be
+treated as an implementation detail. For example, instead of using
+
+```elm
+forwardSpeed = Vector3d.xComponent velocityVector
+```
+
+you could use
+
+```elm
+forwardSpeed = Vector3d.componentIn forwardsDirection velocityVector
+```
+
+where (in a `Constants` module or some other isolated section of code) you would
+define
+
+```elm
+forwardsDirection = Direction3d.x
+```
+
 ### Importing modules
 
 Most OpenSolid modules are designed to imported as qualified, for example
