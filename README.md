@@ -63,9 +63,12 @@ differently in a few subtle but meaningful ways. In general, OpenSolid has a
 more geometric than mathematical focus. Distinct types are used for points,
 vectors and directions which many (most?) other libraries treat as a single
 generic vector type, and explicitly working with individual X/Y/Z point
-coordinates and vector components is discouraged. In many cases the fact that
-points and vectors happen to be represented using Cartesian coordinates can be
-treated as an implementation detail. For example, instead of using
+coordinates and vector components is discouraged (although still very easy to do
+when necessary).
+
+In many cases the fact that points and vectors happen to be represented using
+Cartesian coordinates can be treated as an implementation detail. For example,
+instead of using
 
 ```elm
 forwardSpeed = Vector3d.xComponent velocityVector
@@ -77,8 +80,7 @@ you could use
 forwardSpeed = Vector3d.componentIn forwardsDirection velocityVector
 ```
 
-where (in a `Constants` module or some other isolated section of code) you would
-define
+where (in a `Constants` module or similar) you would define
 
 ```elm
 forwardsDirection = Direction3d.x
@@ -98,10 +100,6 @@ and is intended to be imported without qualification:
 ```elm
 import OpenSolid.Core.Types exposing (..)
 ```
-
-The JSON `Encode` and `Decode` modules are also designed to be imported
-unqualified, as that seems to be the style established by existing JSON
-encode/decode modules.
 
 ### Directions
 
@@ -128,12 +126,20 @@ to compute the normal direction to a degenerate triangle in 3D.
 
 ### Transformations
 
-Many of OpenSolid is concerned with different kinds of transformations -
-translations, rotations, scalings, mirrors, and projections. Unlike most other
-geometric libraries, however, OpenSolid does not use matrices to define
-transformations (in fact, matrices are not used anywhere). Instead,
-transformations are simply Elm functions. This has many advantages. First, it
-means that transformations can be directly used with higher-order functions like
+Many of the functions in this library deal with different kinds of
+transformations - translations, rotations, scalings, mirrors, and projections.
+Unlike most other geometric libraries, however, OpenSolid does not use matrices
+to define transformations (in fact, matrices are not used anywhere). Instead of
+having functions to create transformation matrices which can then later be
+applied to values, transformations in OpenSolid are just Elm functions that can
+be used directly:
+
+```elm
+rotatedPoint = Point2d.rotateAround Point2d.origin (degrees 45) originalPoint
+```
+
+This has many advantages. First, partial function application means that
+transformations can be directly used with higher-order functions like
 `List.map`:
 
 ```elm
@@ -164,9 +170,10 @@ rotateThenScale (Point2d ( 0, 2 )) == Point2d ( -3, 0 )
 ```
 
 (Yes, in this particular case it doesn't actually matter whether you rotate
-first and then scale or the other way around, but you get the idea.) You can
-even compose transformation functions with other functions (perhaps ones you
-define yourself!) to produce composite 'transformations' that would be
+first and then scale or the other way around, but you get the idea.)
+
+You can even compose transformation functions with other functions (perhaps ones
+you define yourself!) to produce composite 'transformations' that would be
 impossible to represent with a transformation matrix:
 
 ```elm
