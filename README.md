@@ -63,8 +63,8 @@ differently in a few subtle but meaningful ways. In general, OpenSolid has a
 more geometric than mathematical focus. Distinct types are used for points,
 vectors and directions which many (most?) other libraries treat as a single
 generic vector type, and explicitly working with individual X/Y/Z point
-coordinates and vector components is discouraged (although still very easy to do
-when necessary).
+coordinates and vector components is discouraged (although still easy to do when
+necessary).
 
 In many cases the fact that points and vectors happen to be represented using
 Cartesian coordinates can be treated as an implementation detail. For example,
