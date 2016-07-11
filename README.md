@@ -108,7 +108,7 @@ hanging", the general rule is that the last word in the function name applies to
 the first function argument. A few examples:
 
   - `Point3d.rotateAround` takes the axis to rotate around as the first
-    argument. (If the angle to rotate by was the first argument the
+    argument. (If the angle to rotate by was the first argument, the
     function would have been named `rotateBy` instead.)
   - `Vector3d.minus a b` means `b - a` - think of it as `minus a` applied to
     `b`. This is often handy when used with partial function application.
