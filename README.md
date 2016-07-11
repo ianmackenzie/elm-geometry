@@ -61,10 +61,9 @@ Vector3d.projectionIn Direction3d.z (Vector3d ( 3, 1, 4 )) == Vector3d ( 0, 0, 4
 OpenSolid is functionally similar to other vector/geometry libraries, but works
 differently in a few subtle but meaningful ways. In general, OpenSolid has a
 more geometric than mathematical focus. Distinct types are used for points,
-vectors and directions which many (most?) other libraries treat as a single
-generic vector type, and explicitly working with individual X/Y/Z point
-coordinates and vector components is discouraged (although still easy to do when
-necessary).
+vectors and directions which many other libraries treat as a single generic
+vector type, and explicitly working with individual X/Y/Z point coordinates and
+vector components is discouraged (although still easy to do when necessary).
 
 In many cases the fact that points and vectors happen to be represented using
 Cartesian coordinates can be treated as an implementation detail. For example,
@@ -106,11 +105,11 @@ import OpenSolid.Core.Types exposing (..)
 Many OpenSolid functions end with a preposition like 'around', 'onto', 'along',
 'plus', or 'minus'. In these cases, where the function name "leaves you
 hanging", the general rule is that the last word in the function name applies to
-the first argument. A few examples:
+the first function argument. A few examples:
 
   - `Point3d.rotateAround` takes the axis to rotate around as the first
-    argument. If instead the angle to rotate by was the first argument the
-    function would have been named `rotateBy` instead.
+    argument. (If the angle to rotate by was the first argument the
+    function would have been named `rotateBy` instead.)
   - `Vector3d.minus a b` means `b - a` - think of it as `minus a` applied to
     `b`. This is often handy when used with partial function application.
     Compare to `Vector3d.crossProduct` which takes its arguments in 'normal'
