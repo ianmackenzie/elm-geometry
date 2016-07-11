@@ -14,6 +14,7 @@ module OpenSolid.Core.Axis3d
         , z
         , originPoint
         , direction
+        , point
         , scaleAbout
         , rotateAround
         , translateBy
@@ -56,6 +57,15 @@ originPoint (Axis3d properties) =
 direction : Axis3d -> Direction3d
 direction (Axis3d properties) =
     properties.direction
+
+
+point : Axis3d -> Float -> Point3d
+point axis coordinate =
+    let
+        displacement =
+            Direction3d.times coordinate (direction axis)
+    in
+        Point3d.translateBy displacement (originPoint axis)
 
 
 scaleAbout : Point3d -> Float -> Axis3d -> Axis3d

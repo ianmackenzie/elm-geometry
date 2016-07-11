@@ -14,6 +14,7 @@ module OpenSolid.Core.Axis2d
         , perpendicularTo
         , originPoint
         , direction
+        , point
         , scaleAbout
         , rotateAround
         , translateBy
@@ -57,6 +58,24 @@ originPoint (Axis2d properties) =
 direction : Axis2d -> Direction2d
 direction (Axis2d properties) =
     properties.direction
+
+
+{-| Get the point on an axis at a particular distance from the axis' origin
+point.
+
+    horizontalAxis =
+        Axis2d { originPoint = Point2d ( 1, 1 ), direction = Direction2d.x }
+
+    Axis2d.point horizontalAxis 3 == Point2d ( 4, 1 )
+    Axis2d.point horizontalAxis -3 == Point2d ( -2, 1 )
+-}
+point : Axis2d -> Float -> Point2d
+point axis coordinate =
+    let
+        displacement =
+            Direction2d.times coordinate (direction axis)
+    in
+        Point2d.translateBy displacement (originPoint axis)
 
 
 scaleAbout : Point2d -> Float -> Axis2d -> Axis2d

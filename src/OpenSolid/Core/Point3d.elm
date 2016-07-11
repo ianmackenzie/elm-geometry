@@ -10,7 +10,6 @@
 module OpenSolid.Core.Point3d
     exposing
         ( origin
-        , alongAxis
         , interpolate
         , midpoint
         , xCoordinate
@@ -52,15 +51,6 @@ addTo =
 origin : Point3d
 origin =
     Point3d ( 0, 0, 0 )
-
-
-alongAxis : Axis3d -> Float -> Point3d
-alongAxis axis =
-    let
-        (Axis3d { originPoint, direction }) =
-            axis
-    in
-        Vector3d.inDirection direction >> addTo originPoint
 
 
 interpolate : Point3d -> Point3d -> Float -> Point3d

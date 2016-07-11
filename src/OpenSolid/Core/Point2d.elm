@@ -10,7 +10,6 @@
 module OpenSolid.Core.Point2d
     exposing
         ( origin
-        , alongAxis
         , midpoint
         , interpolate
         , coordinates
@@ -58,7 +57,7 @@ Since `Point2d` is not an opaque type, the simplest way to construct one is
 directly from its X and Y coordinates, for example `Point2d ( 2, 3 )`. But that
 is not the only way!
 
-@docs alongAxis, inFrame, midpoint, interpolate
+@docs midpoint, interpolate
 
 # Coordinates
 
@@ -125,24 +124,6 @@ addTo =
 origin : Point2d
 origin =
     Point2d ( 0, 0 )
-
-
-{-| Construct a point along an axis, at a particular distance from the axis'
-origin point.
-
-    horizontalAxis =
-        Axis2d { originPoint = Point2d ( 1, 1 ), direction = Direction2d.x }
-
-    Point2d.alongAxis horizontalAxis 3 == Point2d ( 4, 1 )
-    Point2d.alongAxis horizontalAxis -3 == Point2d ( -2, 1 )
--}
-alongAxis : Axis2d -> Float -> Point2d
-alongAxis axis =
-    let
-        (Axis2d { originPoint, direction }) =
-            axis
-    in
-        Vector2d.inDirection direction >> addTo originPoint
 
 
 {-| Construct a point halfway between two other points.
