@@ -106,13 +106,11 @@ import OpenSolid.Core.Types exposing (..)
 Many OpenSolid functions end with a preposition like 'around', 'onto', 'along',
 'plus', or 'minus'. In these cases, where the function name "leaves you
 hanging", the general rule is that the last word in the function name applies to
-the first argument.
-
-A few examples:
+the first argument. A few examples:
 
   - `Point3d.rotateAround` takes the axis to rotate around as the first
-    argument - if instead the angle to rotate by was the first argument the
-    function would have been named `rotateBy`.
+    argument. If instead the angle to rotate by was the first argument the
+    function would have been named `rotateBy` instead.
   - `Vector3d.minus a b` means `b - a` - think of it as `minus a` applied to
     `b`. This is often handy when used with partial function application.
     Compare to `Vector3d.crossProduct` which takes its arguments in 'normal'
