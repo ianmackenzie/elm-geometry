@@ -101,6 +101,29 @@ and is intended to be imported without qualification:
 import OpenSolid.Core.Types exposing (..)
 ```
 
+### Function suffixes
+
+Many OpenSolid functions end with a preposition like 'around', 'onto', 'along',
+'plus', or 'minus'. In these cases, where the function name "leaves you
+hanging", the general rule is that the last word in the function name applies to
+the first argument.
+
+A few examples:
+
+  - `Point3d.rotateAround` takes the axis to rotate around as the first
+    argument - if instead the angle to rotate by was the first argument the
+    function would have been named `rotateBy`.
+  - `Vector3d.minus a b` means `b - a` - think of it as `minus a` applied to
+    `b`. This is often handy when used with partial function application.
+    Compare to `Vector3d.crossProduct` which takes its arguments in 'normal'
+    order since 'product' is not a preposition - this function was in fact
+    originally named `Vector3d.cross` and took its arguments in 'reverse' order,
+    but this was found to be error-prone and not very useful.
+  - `Point3d.vectorTo` and `Point3d.vectorFrom` are flipped versions of each
+    other. The first computes the vector to the first point from the second
+    point, and the second computes the vector from the first point to the second
+    point.
+
 ### Directions
 
 OpenSolid uses the concept of a 'direction' where other libraries typically use
