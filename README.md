@@ -1,5 +1,3 @@
-# elm-opensolid-core
-
 ## What is it?
 
 OpenSolid consists of a set of Elm libraries for working with geometry. It is
