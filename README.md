@@ -102,8 +102,8 @@ import OpenSolid.Core.Types exposing (..)
 
 ### Function suffixes
 
-Many OpenSolid functions end with a preposition like 'around', 'onto', 'along',
-'plus', or 'minus'. In these cases, where the function name "leaves you
+Many OpenSolid functions end with a preposition like "around", "onto", "along",
+"plus", or "minus". In these cases, where the function name "leaves you
 hanging", the general rule is that the last word in the function name applies to
 the first function argument. A few examples:
 
