@@ -372,16 +372,6 @@ translateIn direction =
 {-| Mirror a point across an axis.
 
     Point2d.mirrorAcross Axis2d.x (Point2d ( 2, 3 )) == Point2d ( -2, 3 )
-
-Angled axes work as well:
-
-    diagonalAxis =
-        Axis2d
-            { originPoint = Point2d.origin
-            , direction = Direction2d.fromAngle (degrees 45)
-            }
-
-    Point2d.mirrorAcross diagonalAxis (Point2d ( 3, 0 )) == Point2d ( 0, 3 )
 -}
 mirrorAcross : Axis2d -> Point2d -> Point2d
 mirrorAcross axis =
