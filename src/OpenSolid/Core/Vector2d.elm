@@ -252,15 +252,6 @@ return `Nothing`.
         Just (Direction2d ( 0.7071, 0.7071 ))
 
     Vector2d.direction (Vector2d ( 0, 0 )) == Nothing
-
-For instance, given an eye point and a point to look at, the corresponding view
-direction could be determined with
-
-    Vector2d.direction (Point2d.vectorFrom eyePoint lookAtPoint)
-
-This would return a `Maybe Direction2d`, with `Nothing` corresponding to the
-case where the eye point and point to look at are coincident (in which case the
-view direction is not well-defined and some special-case logic is needed).
 -}
 direction : Vector2d -> Maybe Direction2d
 direction vector =
@@ -308,26 +299,6 @@ the vector to be subtracted from is given second, so
 
 or more generally, `Vector2d.minus a b` means `b - a`, not `a - b`. Think of
 `Vector2d.minus a b` as the operation `minus a` being applied to the vector `b`.
-This means that `minus` can be used more naturally in situations like `map`
-functions:
-
-    minusVector =
-        Vector2d.minus (Vector2d ( 2, 0 ))
-
-    originalVectors =
-        [ Vector2d ( 1, 2 ), Vector2d ( 3, 4 ) ]
-
-    List.map minusVector originalVectors == [ Vector2d ( -1, 2 ), Vector2d ( 1, 4 ) ]
-
-or function pipelining:
-
-    myFunction =
-        Vector2d.minus (Vector2d ( 0, 1 )) >> Vector2d.times 3
-
-    myFunction (Vector2d ( 2, 1 )) == Vector2d ( 6, 0 )
-
-where `myFunction` could be described in pseudo-English as '`minus` by
-`Vector2d ( 0, 1 )` and then `times` by 3'.
 -}
 minus : Vector2d -> Vector2d -> Vector2d
 minus (Vector2d ( x2, y2 )) (Vector2d ( x1, y1 )) =
@@ -365,17 +336,6 @@ crossProduct (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
 
     Vector2d.rotateBy (degrees 45) (Vector2d ( 1, 1 )) == Vector2d ( 0, 1.4142 )
     Vector2d.rotateBy pi (Vector2d ( 1, 0 )) == Vector2d ( -1, 0 )
-
-Rotating a list of vectors by 90 degrees:
-
-    vectors =
-        [ v1, v2, v3 ]
-
-    angle =
-        degrees 90
-
-    rotatedVectors =
-        List.map (Vector2d.rotateBy angle) vectors
 -}
 rotateBy : Float -> Vector2d -> Vector2d
 rotateBy angle =

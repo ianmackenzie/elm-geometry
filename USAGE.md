@@ -63,21 +63,30 @@ name applies to the first function argument. A few examples:
     point, and the second computes the vector from the first point to the second
     point.
 
-Note that this means that OpenSolid functions do not work well with Elm's
-backtick/infix notation, but do work well with its pipe operators. For example,
-because of Elm's syntax rules
+In many cases, these functions are designed to work well when leaving off the
+last argument (partial function application) and then chaining the partially-
+applied functions together:
 
 ```elm
-p1 `Point2d.vectorTo` p2
+horizontalDistanceFromOrigin =
+    Point3d.projectOnto Plane3d.xy >> Point3d.distanceFrom Point3d.origin
+
+horizontalDistanceFromOrigin (Point3d ( 3, 4, 2 )) == 5
+horizontalDistanceFromOrigin (Point3d ( 1, 1, 1 )) == sqrt 2
 ```
 
-will do the exact opposite of what it looks like, but
+or passing them to higher-order functions like `List.map`:
 
 ```elm
-p1 |> Point2d.vectorTo p2
-```
+vectors =
+    [ v1, v2, v3 ]
 
-will work.
+angle =
+    degrees 90
+
+rotatedVectors =
+    List.map (Vector2d.rotateBy angle) vectors
+```
 
 ### Polar coordinates
 
@@ -115,8 +124,16 @@ Vector2d.direction (Vector2d ( 0, 0 )) == Nothing
 ```
 
 This takes advantage of Elm's type system to ensure that all code considers the
-degenerate zero-vector case, which is easy to run into when (for example) trying
-to compute the normal direction to a degenerate triangle in 3D.
+degenerate zero-vector case. For example, given an eye point and a point to look
+at, the corresponding view direction could be determined with
+
+```elm
+Vector3d.direction (Point3d.vectorFrom eyePoint lookAtPoint)
+```
+
+This would return a `Maybe Direction3d`, with `Nothing` corresponding to the
+case where the eye point and point to look at are coincident (in which case the
+view direction is not well-defined and some special-case logic is needed).
 
 ### Transformations
 
@@ -165,15 +182,3 @@ rotateThenScale (Point2d ( 0, 2 )) == Point2d ( -3, 0 )
 
 (Yes, in this particular case it doesn't actually matter whether you rotate
 first and then scale or the other way around, but you get the idea.)
-
-You can even compose transformation functions with other functions (perhaps ones
-you define yourself!) to produce composite 'transformations' that would be
-impossible to represent with a transformation matrix:
-
-```elm
-horizontalDistanceFromOrigin =
-    Point3d.projectOnto Plane3d.xy >> Point3d.distanceFrom Point3d.origin
-
-horizontalDistanceFromOrigin (Point3d ( 3, 4, 2 )) == 5
-horizontalDistanceFromOrigin (Point3d ( 1, 1, 1 )) == sqrt 2
-```

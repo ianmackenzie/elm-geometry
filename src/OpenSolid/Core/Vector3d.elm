@@ -282,15 +282,6 @@ return `Nothing`.
         Just (Direction3d ( 0.7071, 0, 0.7071 ))
 
     Vector3d.direction (Vector3d ( 0, 0, 0 )) == Nothing
-
-For instance, given an eye point and a point to look at, the corresponding view
-direction could be determined with
-
-    Vector3d.direction (Point3d.vectorFrom eyePoint lookAtPoint)
-
-This would return a `Maybe Direction3d`, with `Nothing` corresponding to the
-case where the eye point and point to look at are coincident (in which case the
-view direction is not well-defined and some special-case logic is needed).
 -}
 direction : Vector3d -> Maybe Direction3d
 direction vector =
@@ -353,27 +344,8 @@ the vector to be subtracted from is given second, so
     Vector3d.minus (Vector3d ( 1, 1, 1 )) (Vector3d ( 5, 6, 7 )) ==
         Vector3d ( 4, 5, 6 )
 
-This means that `minus` can be used more naturally in situations like `map`
-functions
-
-    minusVector =
-        Vector3d.minus (Vector3d ( 2, 2, 2 ))
-
-    originalVectors =
-        [ Vector3d ( 1, 2, 3 ), Vector3d ( 3, 4, 5 ) ]
-
-    List.map minusVector originalVectors ==
-        [ Vector3d ( -1, 0, 1 ), Vector3d ( 1, 2, 3 ) ]
-
-or function pipelining
-
-    myFunction =
-        Vector3d.minus (Vector3d ( 1, 1, 1 )) >> Vector3d.times 3
-
-    myFunction (Vector3d ( 3, 2, 1 )) == Vector3d ( 6, 3, 0 )
-
-where `myFunction` could be described in pseudo-English as '`minus` by
-`Vector3d ( 1, 1, 1 )` and then `times` by 3'.
+or more generally, `Vector3d.minus a b` means `b - a`, not `a - b`. Think of
+`Vector3d.minus a b` as the operation `minus a` being applied to the vector `b`.
 -}
 minus : Vector3d -> Vector3d -> Vector3d
 minus other vector =
