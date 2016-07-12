@@ -1,5 +1,7 @@
 # elm-opensolid-core
 
+## What is it?
+
 OpenSolid consists of a set of Elm libraries for working with geometry. It is
 intended to provide a solid foundation for HTML-based applications in areas such
 as CAD (computer-aided design), CAM (computer-aided manufacturing), and 2D/3D
@@ -56,7 +58,13 @@ Point3d.projectOnto Plane3d.xy (Point3d ( 2, 1, 3 )) == Point3d ( 2, 1, 0 )
 Vector3d.projectionIn Direction3d.z (Vector3d ( 3, 1, 4 )) == Vector3d ( 0, 0, 4 )
 ```
 
-## Usage notes
+## How do I use it?
+
+Short answer: run `elm package install ianmackenzie/elm-opensolid-core`, then
+look through the documentation for the modules that you're interested in.
+Everything you need to know you should be able to get by reading the
+documentation, but if you're interested in some of the guiding principles and
+rationale behind OpenSolid, read on.
 
 OpenSolid is functionally similar to other vector/geometry libraries, but works
 differently in a few subtle but meaningful ways. In general, OpenSolid has a
