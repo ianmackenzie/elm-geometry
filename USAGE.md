@@ -64,8 +64,8 @@ name applies to the first function argument. A few examples:
     point.
 
 In many cases, these functions are designed to work well when leaving off the
-last argument (partial function application) and then chaining the partially-
-applied functions together:
+last argument (partial function application) and then chaining the
+partially-applied functions together:
 
 ```elm
 horizontalDistanceFromOrigin =
