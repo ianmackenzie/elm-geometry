@@ -37,7 +37,6 @@ A large range of geometric operations are supported:
 
 ```elm
 -- Constructors
-Point2d.alongAxis Axis2d.x 3 == Point2d ( 3, 0 )
 Direction2d.fromAngle (degrees 30) == Direction2d ( 0.866, 0.5 )
 Vector2d.inDirection Direction2d.y 2.5 == Vector2d ( 0, 2.5 )
 Plane3d.fromPointAndNormal Point3d.origin Direction3d.y == Plane3d.zx
