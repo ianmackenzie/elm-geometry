@@ -75,16 +75,17 @@ horizontalDistanceFromOrigin (Point3d ( 3, 4, 2 )) == 5
 horizontalDistanceFromOrigin (Point3d ( 1, 1, 1 )) == sqrt 2
 ```
 
-or passing them to higher-order functions like `List.map`:
+Passing partially-applied functions to higher-order functions like `List.map`
+also works well:
 
 ```elm
-minusVector =
-    Vector2d.minus (Vector2d ( 2, 0 ))
+offset =
+    Vector2d ( 2, 0 )
 
-originalVectors =
-    [ Vector2d ( 1, 2 ), Vector2d ( 3, 4 ) ]
+vectors =
+    [ Vector2d ( 3, 4 ), Vector2d ( 5, 6 ) ]
 
-List.map minusVector originalVectors == [ Vector2d ( -1, 2 ), Vector2d ( 1, 4 ) ]
+List.map (Vector2d.minus offset) vectors == [ Vector2d ( 1, 4 ), Vector2d ( 3, 6 ) ]
 ```
 
 ### Polar coordinates
