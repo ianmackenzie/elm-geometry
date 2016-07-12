@@ -107,10 +107,10 @@ import OpenSolid.Core.Types exposing (..)
 
 ### Function suffixes
 
-Many OpenSolid functions end with a preposition like "around", "onto", "along",
-"plus", or "minus". In these cases, where the function name "leaves you
-hanging", the general rule is that the last word in the function name applies to
-the first function argument. A few examples:
+Many OpenSolid functions end with a preposition like "to", "from", "around",
+"onto", "along", "plus", or "minus". In these cases, where the function name
+"leaves you hanging", the general rule is that the last word in the function
+name applies to the first function argument. A few examples:
 
   - `Point3d.rotateAround` takes the axis to rotate around as the first
     argument. (If the angle to rotate by was the first argument, the
@@ -125,6 +125,22 @@ the first function argument. A few examples:
     other. The first computes the vector to the first point from the second
     point, and the second computes the vector from the first point to the second
     point.
+
+Note that this means that OpenSolid functions do not work well with Elm's
+backtick/infix notation, but do work well with its pipe operators. For example,
+because of Elm's syntax rules
+
+```elm
+p1 `Point2d.vectorTo` p2
+```
+
+will do the exact opposite of what it looks like, but
+
+```elm
+p1 |> Point2d.vectorTo p2
+```
+
+will do what you'd expect.
 
 ### Polar coordinates
 
