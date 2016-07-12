@@ -140,7 +140,7 @@ will do the exact opposite of what it looks like, but
 p1 |> Point2d.vectorTo p2
 ```
 
-will do what you'd expect.
+will work.
 
 ### Polar coordinates
 
