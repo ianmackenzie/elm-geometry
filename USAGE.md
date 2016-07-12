@@ -18,13 +18,13 @@ forwardSpeed = Vector3d.xComponent velocityVector
 you could use
 
 ```elm
-forwardSpeed = Vector3d.componentIn forwardsDirection velocityVector
+forwardSpeed = Vector3d.componentIn forwardDirection velocityVector
 ```
 
 where (in a `Constants` module or similar) you would define
 
 ```elm
-forwardsDirection = Direction3d.x
+forwardDirection = Direction3d.x
 ```
 
 ### Importing modules
