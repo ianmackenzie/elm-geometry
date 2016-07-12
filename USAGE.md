@@ -78,14 +78,13 @@ horizontalDistanceFromOrigin (Point3d ( 1, 1, 1 )) == sqrt 2
 or passing them to higher-order functions like `List.map`:
 
 ```elm
-vectors =
-    [ v1, v2, v3 ]
+minusVector =
+    Vector2d.minus (Vector2d ( 2, 0 ))
 
-angle =
-    degrees 90
+originalVectors =
+    [ Vector2d ( 1, 2 ), Vector2d ( 3, 4 ) ]
 
-rotatedVectors =
-    List.map (Vector2d.rotateBy angle) vectors
+List.map minusVector originalVectors == [ Vector2d ( -1, 2 ), Vector2d ( 1, 4 ) ]
 ```
 
 ### Polar coordinates
