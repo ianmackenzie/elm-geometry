@@ -5,9 +5,9 @@ intended to provide a solid foundation for HTML-based applications in areas such
 as CAD (computer-aided design), CAM (computer-aided manufacturing), and 2D/3D
 visualization.
 
-This library contains the OpenSolid core data types - vectors, directions
-(type-safe unit vectors), points, axes, planes and frames (coordinate systems)
-in 2D and 3D:
+This library contains the OpenSolid core data types and operations - vectors,
+directions (type-safe unit vectors), points, axes, planes and frames (coordinate
+systems) in 2D and 3D:
 
 ```elm
 Vector3d.zero == Vector3d ( 0, 0, 0 )
