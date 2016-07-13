@@ -55,6 +55,9 @@ Point3d.projectOnto Plane3d.xy (Point3d ( 2, 1, 3 )) == Point3d ( 2, 1, 0 )
 Vector3d.projectionIn Direction3d.z (Vector3d ( 3, 1, 4 )) == Vector3d ( 0, 0, 4 )
 ```
 
+JSON encoders and decoders for all types are also provided in the `Encode` and
+`Decode` modules.
+
 ## How do I use it?
 
 To install, run `elm package install ianmackenzie/elm-opensolid-core` or add
