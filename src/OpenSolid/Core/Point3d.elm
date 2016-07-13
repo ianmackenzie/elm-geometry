@@ -24,7 +24,7 @@ module OpenSolid.Core.Point3d
         , squaredDistanceFromAxis
         , distanceFromAxis
         , distanceFromPlane
-        , signedDistanceFromPlane
+        , signedDistanceFrom
         , scaleAbout
         , rotateAround
         , translateBy
@@ -144,11 +144,11 @@ distanceFromAxis axis =
 
 distanceFromPlane : Plane3d -> Point3d -> Float
 distanceFromPlane plane =
-    signedDistanceFromPlane plane >> abs
+    signedDistanceFrom plane >> abs
 
 
-signedDistanceFromPlane : Plane3d -> Point3d -> Float
-signedDistanceFromPlane plane =
+signedDistanceFrom : Plane3d -> Point3d -> Float
+signedDistanceFrom plane =
     let
         (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
             plane
@@ -238,7 +238,7 @@ projectOnto plane point =
             plane
 
         signedDistance =
-            signedDistanceFromPlane plane point
+            signedDistanceFrom plane point
 
         displacement =
             Vector3d.inDirection normalDirection -signedDistance

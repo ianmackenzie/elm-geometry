@@ -105,7 +105,7 @@ you could use
 
 ```elm
 forwardSpeed = Vector3d.componentIn forwardDirection velocityVector
-height = Point3d.signedDistanceFromPlane groundPlane position
+height = Point3d.signedDistanceFrom groundPlane position
 ```
 
 where (in a `Constants` module or similar) you would define
