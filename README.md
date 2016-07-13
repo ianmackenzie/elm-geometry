@@ -58,7 +58,7 @@ Vector3d.projectionIn Direction3d.z (Vector3d ( 3, 1, 4 )) == Vector3d ( 0, 0, 4
 ## How do I use it?
 
 To install, run `elm package install ianmackenzie/elm-opensolid-core` or add
-`"ianmackenzie/elm-opensolid-core": "1.0.0 <= v < 2.0.0" to `elm-package.json`.
+`"ianmackenzie/elm-opensolid-core": "1.0.0 <= v < 2.0.0"` to `elm-package.json`.
 
 Most OpenSolid modules are designed to imported as qualified, for example
 
