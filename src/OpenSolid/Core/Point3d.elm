@@ -27,7 +27,6 @@ module OpenSolid.Core.Point3d
         , scaleAbout
         , rotateAround
         , translateBy
-        , translateIn
         , mirrorAcross
         , localizeTo
         , placeIn
@@ -178,11 +177,6 @@ translateBy vector point =
         Point3d ( px + vx, py + vy, pz + vz )
 
 
-translateIn : Direction3d -> Float -> Point3d -> Point3d
-translateIn direction =
-    translateBy << Vector3d.inDirection direction
-
-
 mirrorAcross : Plane3d -> Point3d -> Point3d
 mirrorAcross plane =
     let
@@ -235,7 +229,7 @@ projectOnto plane point =
             signedDistanceFrom plane point
 
         displacement =
-            Vector3d.inDirection normalDirection -signedDistance
+            Direction3d.times -signedDistance normalDirection
     in
         translateBy displacement point
 

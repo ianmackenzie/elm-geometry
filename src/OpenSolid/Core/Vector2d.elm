@@ -10,7 +10,6 @@
 module OpenSolid.Core.Vector2d
     exposing
         ( zero
-        , inDirection
         , perpendicularTo
         , components
         , xComponent
@@ -76,7 +75,7 @@ function:
 
     vector = Vector2d (fromPolar ( radius, angle ))
 
-@docs inDirection, perpendicularTo
+@docs perpendicularTo
 
 # Components
 
@@ -139,22 +138,6 @@ import OpenSolid.Core.Types exposing (..)
 zero : Vector2d
 zero =
     Vector2d ( 0, 0 )
-
-
-{-| Construct a vector in a particular direction, with the given magnitude. The
-magnitude may be negative, in which case the vector will have an opposite
-direction to the axis.
-
-    Vector2d.inDirection Direction2d.x 5 == Vector2d ( 5, 0 )
-    Vector2d.inDirection Direction2d.y -3 == Vector2d ( 0, -3 )
--}
-inDirection : Direction2d -> Float -> Vector2d
-inDirection direction magnitude =
-    let
-        (Direction2d components) =
-            direction
-    in
-        times magnitude (Vector2d components)
 
 
 {-| Construct a vector perpendicular to the given vector, by rotating the given

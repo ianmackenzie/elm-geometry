@@ -91,7 +91,7 @@ function:
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto
 
 # Coordinate conversions
 
@@ -375,16 +375,6 @@ translateBy vector point =
             coordinates point
     in
         Point2d ( px + vx, py + vy )
-
-
-{-| Translate in a given direction by a given distance.
-
-    Point2d.translateIn Direction2d.x 3 (Point2d ( 1, 2 )) == Point2d ( 4, 2 )
-    Point2d.translateIn Direction2d.y -4 (Point2d ( 1, 1 )) == Point2d ( 1, -3 )
--}
-translateIn : Direction2d -> Float -> Point2d -> Point2d
-translateIn direction =
-    translateBy << Vector2d.inDirection direction
 
 
 {-| Mirror a point across an axis.
