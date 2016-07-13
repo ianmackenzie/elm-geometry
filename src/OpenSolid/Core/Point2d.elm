@@ -24,7 +24,6 @@ module OpenSolid.Core.Point2d
         , scaleAbout
         , rotateAround
         , translateBy
-        , translateIn
         , mirrorAcross
         , projectOnto
         , localizeTo
@@ -56,6 +55,15 @@ to numerical roundoff) they might not be exactly equal.
 Since `Point2d` is not an opaque type, the simplest way to construct one is
 directly from its X and Y coordinates, for example `Point2d ( 2, 3 )`. But that
 is not the only way!
+
+It may be useful to define your own specialized constructor functions by
+combining existing OpenSolid functions. For instance, to easily create points
+defined by their coordinates in some local frame, you could define something
+like
+
+    localPoint : Float -> Float -> Point2d
+    localPoint x y =
+        Point2d.placeIn localFrame (Point2d ( x, y ))
 
 To create points from polar coordinates, you can use Elm's built-in `fromPolar`
 function:
