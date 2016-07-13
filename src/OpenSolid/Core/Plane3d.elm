@@ -225,7 +225,7 @@ translateAlongOwn axis distance plane =
         displacement =
             Direction3d.times distance (Axis3d.direction (axis plane))
     in
-        translateBy displacement
+        translateBy displacement plane
 
 
 translateTo : Point3d -> Plane3d -> Plane3d
