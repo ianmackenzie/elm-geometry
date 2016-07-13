@@ -23,7 +23,6 @@ module OpenSolid.Core.Point3d
         , distanceAlong
         , squaredDistanceFromAxis
         , distanceFromAxis
-        , distanceFromPlane
         , signedDistanceFrom
         , scaleAbout
         , rotateAround
@@ -140,11 +139,6 @@ squaredDistanceFromAxis axis =
 distanceFromAxis : Axis3d -> Point3d -> Float
 distanceFromAxis axis =
     squaredDistanceFromAxis axis >> sqrt
-
-
-distanceFromPlane : Plane3d -> Point3d -> Float
-distanceFromPlane plane =
-    signedDistanceFrom plane >> abs
 
 
 signedDistanceFrom : Plane3d -> Point3d -> Float
