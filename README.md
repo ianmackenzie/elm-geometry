@@ -244,19 +244,3 @@ vectors =
 
 List.map (Vector2d.minus offset) vectors == [ Vector2d ( 1, 4 ), Vector2d ( 3, 6 ) ]
 ```
-
-### Polar coordinates
-
-OpenSolid itself has no functions that take polar coordinates directly, but is
-designed to work well with Elm's built-in `toPolar` and `fromPolar` functions.
-For example, to get the polar coordinates of a point:
-
-```elm
-( radius, angle ) = toPolar (Point2d.coordinates point)
-```
-
-and to create a point from polar coordinates:
-
-```elm
-point = Point2d (fromPolar ( radius, angle ))
-```

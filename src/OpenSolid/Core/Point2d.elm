@@ -57,9 +57,19 @@ Since `Point2d` is not an opaque type, the simplest way to construct one is
 directly from its X and Y coordinates, for example `Point2d ( 2, 3 )`. But that
 is not the only way!
 
+To create points from polar coordinates, you can use Elm's built-in `fromPolar`
+function:
+
+    point = Point2d (fromPolar ( radius, angle ))
+
 @docs midpoint, interpolate
 
 # Coordinates
+
+To get the polar coordinates of a point, you can use Elm's built in `toPolar`
+function:
+
+    ( radius, angle ) = toPolar (Point2d.coordinates point)
 
 @docs coordinates, xCoordinate, yCoordinate
 

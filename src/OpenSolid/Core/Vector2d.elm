@@ -72,16 +72,19 @@ frame, you could define something like
     localPoint x y =
         Point2d.placeIn localFrame (Point2d ( x, y ))
 
-To create vectors from polar coordinates, you can use Elm's built-in `fromPolar`
+To create vectors from polar components, you can use Elm's built-in `fromPolar`
 function:
 
-    polarVector : Float -> Float -> Vector2d
-    polarVector radius angle =
-        Vector2d (fromPolar ( radius, angle ))
+    vector = Vector2d (fromPolar ( radius, angle ))
 
 @docs inDirection, perpendicularTo
 
 # Components
+
+To get the polar components of a vector, you can use Elm's built in `toPolar`
+function:
+
+    ( radius, angle ) = toPolar (Vector2d.components vector)
 
 @docs components, xComponent, yComponent, componentIn
 
