@@ -498,12 +498,8 @@ placeOnto plane =
     Vector2d.toRecord (Vector2d ( 2, 3 )) == { x = 2, y = 3 }
 -}
 toRecord : Vector2d -> { x : Float, y : Float }
-toRecord vector =
-    let
-        ( x, y ) =
-            components vector
-    in
-        { x = x, y = y }
+toRecord (Vector2d ( x, y )) =
+    { x = x, y = y }
 
 
 {-| Construct a vector from a record with `x` and `y` fields.

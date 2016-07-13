@@ -578,12 +578,8 @@ projectInto plane vector =
 
 
 toRecord : Vector3d -> { x : Float, y : Float, z : Float }
-toRecord vector =
-    let
-        ( x, y, z ) =
-            components vector
-    in
-        { x = x, y = y, z = z }
+toRecord (Vector3d ( x, y, z )) =
+    { x = x, y = y, z = z }
 
 
 fromRecord : { x : Float, y : Float, z : Float } -> Vector3d

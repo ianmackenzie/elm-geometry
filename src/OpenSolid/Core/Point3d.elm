@@ -246,12 +246,8 @@ projectInto plane =
 
 
 toRecord : Point3d -> { x : Float, y : Float, z : Float }
-toRecord point =
-    let
-        ( x, y, z ) =
-            coordinates point
-    in
-        { x = x, y = y, z = z }
+toRecord (Point3d ( x, y, z )) =
+    { x = x, y = y, z = z }
 
 
 fromRecord : { x : Float, y : Float, z : Float } -> Point3d
