@@ -73,9 +73,9 @@ and is intended to be imported without qualification:
 import OpenSolid.Core.Types exposing (..)
 ```
 
-Everything you need to know you should be able to get by browsing the
-documentation, but if you're interested in some of the guiding principles and
-rationale behind OpenSolid, read on!
+For technical details, check out the documentation for each module, but if
+you're interested in some of the guiding principles and rationale behind
+OpenSolid, read on!
 
 ## What makes it different?
 
