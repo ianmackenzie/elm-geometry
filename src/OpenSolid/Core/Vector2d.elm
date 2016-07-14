@@ -406,6 +406,9 @@ in the axis' direction.
 
     Vector2d.projectOnto Axis2d.y (Vector2d ( 3, 4 )) == Vector2d ( 0, 4 )
     Vector2d.projectOnto Axis2d.x (Vector2d ( -1, 2 )) == Vector2d ( -1, 0 )
+
+    Vector2d.projectOnto axis vector ==
+        Vector2d.projectionIn (Axis2d.direction axis) vector
 -}
 projectOnto : Axis2d -> Vector2d -> Vector2d
 projectOnto axis =
