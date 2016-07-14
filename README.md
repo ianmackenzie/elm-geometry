@@ -60,8 +60,19 @@ JSON encoders and decoders for all types are also provided in the `Encode` and
 
 ## How do I use it?
 
-To install, run `elm package install ianmackenzie/elm-opensolid-core` or add
-`"ianmackenzie/elm-opensolid-core": "1.0.0 <= v < 2.0.0"` to `elm-package.json`.
+To install, run
+
+```
+elm package install ianmackenzie/elm-opensolid-core
+```
+
+or add
+
+```json
+"ianmackenzie/elm-opensolid-core": "1.0.0 <= v < 2.0.0"
+```
+
+to your `elm-package.json`.
 
 Most OpenSolid modules are designed to imported as qualified, for example
 
