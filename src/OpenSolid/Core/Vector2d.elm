@@ -386,8 +386,11 @@ this means splitting the original vector into a portion parallel to the given
 direction and a portion perpendicular to it, then returning the parallel
 portion.
 
-    Vector2d.projectionIn Direction2d.x (Vector2d ( 2, 3 )) == Vector2d ( 2, 0 )
-    Vector2d.projectionIn Direction2d.y (Vector2d ( 2, 3 )) == Vector2d ( 0, 3 )
+    Vector2d.projectionIn Direction2d.x (Vector2d ( 2, 3 )) ==
+        Vector2d ( 2, 0 )
+
+    Vector2d.projectionIn Direction2d.y (Vector2d ( 2, 3 )) ==
+        Vector2d ( 0, 3 )
 -}
 projectionIn : Direction2d -> Vector2d -> Vector2d
 projectionIn direction vector =
