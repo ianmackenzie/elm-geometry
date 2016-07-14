@@ -381,8 +381,10 @@ mirrorAcross axis =
         \(Vector2d ( vx, vy )) -> Vector2d ( a * vx + b * vy, c * vy + b * vx )
 
 
-{-| Project a vector onto a particular direction. The result will be parallel to
-that direction.
+{-| Find the projection of a vector in a particular direction. Conceptually,
+this means splitting the original vector into a portion parallel to the given
+direction and a portion perpendicular to it, then returning the parallel
+portion.
 
     Vector2d.projectionIn Direction2d.x (Vector2d ( 2, 3 )) == Vector2d ( 2, 0 )
     Vector2d.projectionIn Direction2d.y (Vector2d ( 2, 3 )) == Vector2d ( 0, 3 )
@@ -399,8 +401,8 @@ projectionIn direction vector =
         times (dotProduct vector directionVector) directionVector
 
 
-{-| Project a vector onto an axis. This will result in a vector parallel to the
-given axis.
+{-| Project a vector onto an axis. This is equivalent to finding the projection
+in the axis' direction.
 
     Vector2d.projectOnto Axis2d.y (Vector2d ( 3, 4 )) == Vector2d ( 0, 4 )
     Vector2d.projectOnto Axis2d.x (Vector2d ( -1, 2 )) == Vector2d ( -1, 0 )
