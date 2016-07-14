@@ -84,7 +84,7 @@ plane is relevant, since vectors are position-independent. Think of transforming
 a vector as placing its tail on the relevant axis or plane and then transforming
 its tip.
 
-@docs rotateAround, mirrorAcross, projectOntoAxis, projectOnto
+@docs rotateAround, mirrorAcross, projectionIn, projectOntoAxis, projectOnto
 
 # Coordinate conversions
 
