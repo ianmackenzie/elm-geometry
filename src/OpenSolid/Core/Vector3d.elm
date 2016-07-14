@@ -133,7 +133,6 @@ to use
 -}
 
 import OpenSolid.Core.Types exposing (..)
-import OpenSolid.Core.Vector2d as Vector2d
 
 
 {-| The zero vector.

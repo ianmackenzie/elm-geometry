@@ -30,11 +30,6 @@ module OpenSolid.Core.Decode
 
 import Json.Decode exposing (..)
 import OpenSolid.Core.Types exposing (..)
-import OpenSolid.Core.Axis2d as Axis2d
-import OpenSolid.Core.Axis3d as Axis3d
-import OpenSolid.Core.Plane3d as Plane3d
-import OpenSolid.Core.Frame2d as Frame2d
-import OpenSolid.Core.Frame3d as Frame3d
 
 
 {-| Decode a Vector2d from a list of two floats.
