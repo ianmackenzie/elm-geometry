@@ -383,6 +383,14 @@ crossProduct first second =
         Vector3d ( y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2 - y1 * x2 )
 
 
+{-| Rotate a vector around an axis.
+
+    Vector3d.rotateAround Axis3d.x (degrees 90) (Vector3d ( 0, 0, 3)) ==
+        Vector3d ( 0, -3, 0 )
+
+    Vector3d.rotateAround Axis3d.z (degrees 45) (Vector3d ( 1, 0, 1 )) ==
+        Vector3d ( 0.7071, 0.7071, 1 )
+-}
 rotateAround : Axis3d -> Float -> Vector3d -> Vector3d
 rotateAround axis angle =
     let
@@ -472,6 +480,14 @@ rotateAround axis angle =
                 )
 
 
+{-| Mirror a vector across a plane.
+
+    Vector3d.mirrorAcross Plane3d.xy (Vector3d ( 1, 2, 3 )) ==
+        Vector3d ( 1, 2, -3 )
+
+    Vector3d.mirrorAcross Plane3d.yz (Vector3d ( 1, 2, 3 )) ==
+        Vector3d ( -1, 2, 3 )
+-}
 mirrorAcross : Plane3d -> Vector3d -> Vector3d
 mirrorAcross plane =
     let
@@ -507,6 +523,17 @@ mirrorAcross plane =
                 )
 
 
+{-| Find the projection of a vector in a particular direction. Conceptually,
+this means splitting the original vector into a portion parallel to the given
+direction and a portion perpendicular to it, then returning the parallel
+portion.
+
+    Vector3d.projectionIn Direction3d.x (Vector3d ( 1, 2, 3 )) ==
+        Vector3d ( 1, 0, 0 )
+
+    Vector3d.projectionIn Direction3d.z (Vector3d ( 1, 2, 3 )) ==
+        Vector3d ( 0, 0, 3 )
+-}
 projectionIn : Direction3d -> Vector3d -> Vector3d
 projectionIn direction vector =
     let
@@ -519,6 +546,18 @@ projectionIn direction vector =
         times (dotProduct vector directionVector) directionVector
 
 
+{-| Project a vector onto an axis. This is equivalent to finding the projection
+in the axis' direction.
+
+    Vector3d.projectOnto Axis3d.y (Vector3d ( 2, 3, 4 )) ==
+        Vector3d ( 0, 3, 0 )
+
+    Vector3d.projectOnto Axis3d.x (Vector3d ( -1, 2, -3 )) ==
+        Vector3d ( -1, 0, 0 )
+
+    Vector3d.projectOnto axis vector ==
+        Vector3d.projectionIn (Axis3d.direction axis) vector
+-}
 projectOntoAxis : Axis3d -> Vector3d -> Vector3d
 projectOntoAxis axis =
     let
@@ -528,6 +567,17 @@ projectOntoAxis axis =
         projectionIn direction
 
 
+{-| Project a vector onto a plane. Conceptually, this means splitting the
+original vector into a portion parallel to the plane (perpendicular to the
+plane's normal direction) and a portion perpendicular to it (parallel to its
+normal direction), then returning the parallel (in-plane) portion.
+
+    Vector3d.projectOnto Plane3d.xy (Vector3d ( 2, 1, 3 )) ==
+        Vector3d ( 2, 1, 0 )
+
+    Vector3d.projectOnto Plane3d.xz (Vector3d ( 2, 1, 3 )) ==
+        Vector3d ( 2, 0, 3 )
+-}
 projectOnto : Plane3d -> Vector3d -> Vector3d
 projectOnto plane vector =
     let
@@ -537,6 +587,13 @@ projectOnto plane vector =
         minus (projectionIn normalDirection vector) vector
 
 
+{-| Convert a vector from global coordinates to local coordinates within a given
+frame. The result will be the given vector expressed relative to the given
+frame.
+
+    Vector3d.localizeTo rotatedFrame (Vector3d ( 2, 0, 1 )) ==
+        Vector3d ( 1.4142, -1.4142, 1 )
+-}
 localizeTo : Frame3d -> Vector3d -> Vector3d
 localizeTo frame vector =
     let
@@ -550,6 +607,12 @@ localizeTo frame vector =
             )
 
 
+{-| Convert a vector from local coordinates within a given frame to global
+coordinates.
+
+    Vector3d.placeIn rotatedFrame (Vector3d ( 2, 0, 1 )) ==
+        Vector3d ( 1.4142, 1.4142, 1 )
+-}
 placeIn : Frame3d -> Vector3d -> Vector3d
 placeIn frame =
     let
@@ -573,6 +636,19 @@ placeIn frame =
                 )
 
 
+{-| Project a given vector onto a given plane and then express the projected
+vector in terms of 2D components within the plane (relative to the plane's X and
+Y basis directions).
+
+    Vector3d.projectInto Plane3d.xy (Vector3d ( 2, 1, 3 )) ==
+        Vector2d ( 2, 1 )
+
+    Vector3d.projectInto Plane3d.yz (Vector3d ( 2, 1, 3 )) ==
+        Vector2d ( 1, 3 )
+
+    Vector3d.projectInto Plane3d.zx (Vector3d ( 2, 1, 3 )) ==
+        Vector2d ( 3, 2 )
+-}
 projectInto : Plane3d -> Vector3d -> Vector2d
 projectInto plane vector =
     let
@@ -585,11 +661,19 @@ projectInto plane vector =
             )
 
 
+{-| Convert a vector to a record with `x`, `y` and `z` fields.
+
+    Vector3d.toRecord (Vector3d ( 2, 1, 3 )) == { x = 2, y = 1, z = 3 }
+-}
 toRecord : Vector3d -> { x : Float, y : Float, z : Float }
 toRecord (Vector3d ( x, y, z )) =
     { x = x, y = y, z = z }
 
 
+{-| Construct a vector from a record with `x`, `y` and `z` fields.
+
+    Vector3d.fromRecord { x = 2, y = 1, z = 3 } == Vector3d ( 2, 1, 3 )
+-}
 fromRecord : { x : Float, y : Float, z : Float } -> Vector3d
 fromRecord { x, y, z } =
     Vector3d ( x, y, z )
