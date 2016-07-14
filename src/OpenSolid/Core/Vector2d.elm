@@ -35,9 +35,8 @@ module OpenSolid.Core.Vector2d
         , fromRecord
         )
 
-{-| Various functions for constructing `Vector2d` values and performing
-operations on them. For the examples below, assume that all OpenSolid core types
-have been imported using
+{-| Various functions for working with `Vector2d` values. For the examples
+below, assume that all OpenSolid core types have been imported using
 
     import OpenSolid.Core.Types exposing (..)
 
@@ -59,30 +58,15 @@ versions `Direction2d.x` and `Direction2d.y`.
 # Constructors
 
 Since `Vector2d` is not an opaque type, the simplest way to construct one is
-directly from its X and Y components, for example `Vector2d ( 2, 3 )`. But that
-is not the only way!
+directly from its X and Y components, for example `Vector2d ( 2, 3 )`.
 
-It may be useful to define your own specialized constructor functions by
-combining existing OpenSolid functions. For instance, to easily create vectors
-defined by their components in some local frame, you could define something like
-
-    localVector : Float -> Float -> Vector2d
-    localVector x y =
-        Vector2d.placeIn localFrame (Vector2d ( x, y ))
-
-To create vectors from polar components, you can use Elm's built-in `fromPolar`
-function:
-
-    vector = Vector2d (fromPolar ( radius, angle ))
+There are no specific functions to create vectors from polar components, but you
+can use Elm's built-in `fromPolar` function, for example
+`Vector2d (fromPolar ( radius, angle ))`.
 
 @docs perpendicularTo
 
 # Components
-
-To get the polar components of a vector, you can use Elm's built in `toPolar`
-function:
-
-    ( radius, angle ) = toPolar (Vector2d.components vector)
 
 @docs components, xComponent, yComponent, componentIn
 
@@ -96,9 +80,30 @@ function:
 
 # Transformations
 
+Note that for `mirrorAcross` and `projectOnto`, only the direction of the axis
+affects the result, since vectors are position-independent. Think of
+mirroring/projecting a vector across/onto an axis as moving the vector so its
+tail is on the axis, then mirroring/projecting its tip across/onto the axis.
+
 @docs rotateBy, mirrorAcross, projectionIn, projectOnto
 
 # Coordinate conversions
+
+Like transformations, coordinate conversions of vectors depend only on the
+orientations of the relevant frames/planes, not the positions of their origin
+points, since vectors are position independent.
+
+For `localizeTo` and `placeIn`, assume the following frames have been defined:
+
+    upsideDownFrame =
+        Frame2d
+            { originPoint = Point2d.origin
+            , xDirection = Direction2d.x
+            , yDirection = Direction2d.negate Direction2d.y
+            }
+
+    rotatedFrame =
+        Frame2d.rotateAround Point2d.origin (degrees 45) Frame2d.xy
 
 @docs localizeTo, placeIn, placeOnto
 
@@ -141,7 +146,7 @@ zero =
 
 
 {-| Construct a vector perpendicular to the given vector, by rotating the given
-vector 90 degrees in a counterclockwise direction. The perpendicular vector will
+vector 90 degrees in a counterclockwise direction. The constructed vector will
 have the same length as the given vector.
 
     Vector2d.perpendicularTo (Vector2d ( 1, 0 )) == Vector2d ( 0, 1 )
@@ -166,6 +171,11 @@ This combined with Elm's built-in tuple destructuring provides a convenient way
 to extract both the X and Y components of a vector in one line of code:
 
     ( x, y ) = Vector2d.components vector
+
+To get the polar components of a vector, you can use Elm's built in `toPolar`
+function:
+
+    ( radius, angle ) = toPolar (Vector2d.components vector)
 -}
 components : Vector2d -> ( Float, Float )
 components (Vector2d components') =
@@ -222,8 +232,9 @@ is equivalent to but slightly more efficient than
 
     Vector2d.length vector > tolerance
 
-since the latter requires a square root. In many cases, however, the speed
-difference will be negligible and using `length` is much more readable!
+since the latter requires a square root under the hood. In many cases, however,
+the speed difference will be negligible and using `length` is much more
+readable!
 -}
 squaredLength : Vector2d -> Float
 squaredLength (Vector2d ( x, y )) =
@@ -280,7 +291,8 @@ plus (Vector2d ( x2, y2 )) (Vector2d ( x1, y1 )) =
 {-| Subtract one vector from another. The vector to subtract is given first and
 the vector to be subtracted from is given second, so
 
-    Vector2d.minus (Vector2d ( 1, 2 )) (Vector2d ( 5, 6 )) == Vector2d ( 4, 4 )
+    Vector2d.minus (Vector2d ( 1, 2 )) (Vector2d ( 5, 6 )) ==
+        Vector2d ( 4, 4 )
 
 or more generally, `Vector2d.minus a b` means `b - a`, not `a - b`. Think of
 `Vector2d.minus a b` as the operation `minus a` being applied to the vector `b`.
@@ -304,13 +316,15 @@ dotProduct (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
     crossProduct (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
         x1 * y2 - y1 * x2
 
-and is useful in many of the same ways as the 3D cross product. Its magnitude is
-equal to the product of the lengths of the two given vectors and the sine of the
-angle between them, so it can be used as a metric to determine if two vectors
-are nearly parallel. The sign of the result indicates the direction of rotation
-from the first vector to the second (positive indicates a counterclockwise
-rotation and negative indicates a clockwise rotation), similar to how the
-direction of the 3D cross product indicates the direction of rotation.
+and is useful in many of the same ways as the 3D cross product:
+
+  - Its magnitude is equal to the product of the lengths of the two given
+    vectors and the sine of the angle between them, so it can be used as a
+    metric to determine if two vectors are nearly parallel.
+  - The sign of the result indicates the direction of rotation from the first
+    vector to the second (positive indicates a counterclockwise rotation and
+    negative indicates a clockwise rotation), similar to how the direction of
+    the 3D cross product indicates the direction of rotation.
 -}
 crossProduct : Vector2d -> Vector2d -> Float
 crossProduct (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
@@ -335,11 +349,15 @@ rotateBy angle =
             Vector2d ( x * cosine - y * sine, y * cosine + x * sine )
 
 
-{-| Mirror a vector across a particular axis. Note that only the direction of
-the axis affects the result.
+{-| Mirror a vector across a particular axis.
 
-    Vector2d.mirrorAcross Axis2d.x (Vector2d ( 2, 3 )) == Vector2d ( 2, -3 )
     Vector2d.mirrorAcross Axis2d.y (Vector2d ( 2, 3 )) == Vector2d ( -2, 3 )
+
+    horizontalAxis =
+        Axis2d { originPoint = Point2d ( 100, 100 ), direction = Direction2d.x }
+
+    Vector2d.mirrorAcross horizontalAxis (Vector2d ( 2, 3 )) ==
+        Vector2d ( 2, -3 )
 -}
 mirrorAcross : Axis2d -> Vector2d -> Vector2d
 mirrorAcross axis =
@@ -399,16 +417,6 @@ projectOnto axis =
 frame. The result will be the given vector expressed relative to the given
 frame.
 
-    upsideDownFrame =
-        Frame2d
-            { originPoint = Point2d.origin
-            , xDirection = Direction2d.x
-            , yDirection = Direction2d.negate Direction2d.y
-            }
-
-    rotatedFrame =
-        Frame2d.rotateAround Point2d.origin (degrees 45) Frame2d.xy
-
     Vector2d.localizeTo upsideDownFrame (Vector2d ( 2, 3 )) ==
         Vector2d ( 2, -3 )
 
@@ -429,16 +437,6 @@ localizeTo frame vector =
 
 {-| Convert a vector from local coordinates within a given frame to global
 coordinates.
-
-    upsideDownFrame =
-        Frame2d
-            { originPoint = Point2d.origin
-            , xDirection = Direction2d.x
-            , yDirection = Direction2d.negate Direction2d.y
-            }
-
-    rotatedFrame =
-        Frame2d.rotateAround Point2d.origin (degrees 45) Frame2d.xy
 
     Vector2d.placeIn upsideDownFrame (Vector2d ( 2, 3 )) ==
         Vector2d ( 2, -3 )
@@ -461,7 +459,7 @@ placeIn frame =
         \(Vector2d ( x, y )) -> Vector2d ( x1 * x + x2 * y, y1 * x + y2 * y )
 
 
-{-| Convert a 2D vector to 3D by placing it on a given frame. This will
+{-| Convert a 2D vector to 3D by placing it on a given plane. This will
 construct a 3D vector by taking the X and Y components of the given vector and
 applying them to the X and Y basis directions of the given plane.
 
