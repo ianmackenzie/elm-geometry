@@ -90,19 +90,19 @@ its tip.
 
 Functions for transforming vectors between local and global coordinates in
 different coordinate frames. Like transformations, coordinate conversions of
-vectors depend only on the orientations of the relevant frames/planes, not the
-positions of their origin points.
+vectors depend only on the orientations of the relevant frames/planes, not their
+positions.
 
 For `localizeTo` and `placeIn`, assume the following definition of a local
 coordinate frame, one that is rotated 45 degrees counterclockwise about the Z
 axis from the global XYZ frame:
 
-    frame =
+    rotatedFrame =
         Frame3d.rotateAround Axis3d.z (degrees 45) Frame3d.xyz
 
-    Frame3d.xDirection frame == Direction3d ( 0.7071, 0.7071, 0 )
-    Frame3d.yDirection frame == Direction3d ( -0.7071, 0.7071, 0 )
-    Frame3d.zDirection frame == Direction3d ( 0, 0, 1 )
+    Frame3d.xDirection rotatedFrame == Direction3d ( 0.7071, 0.7071, 0 )
+    Frame3d.yDirection rotatedFrame == Direction3d ( -0.7071, 0.7071, 0 )
+    Frame3d.zDirection rotatedFrame == Direction3d ( 0, 0, 1 )
 
 @docs projectInto, localizeTo, placeIn
 
