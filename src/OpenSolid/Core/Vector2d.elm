@@ -89,9 +89,10 @@ tail is on the axis, then mirroring/projecting its tip across/onto the axis.
 
 # Coordinate conversions
 
-Like transformations, coordinate conversions of vectors depend only on the
-orientations of the relevant frames/planes, not the positions of their origin
-points, since vectors are position independent.
+Functions for transforming vectors between local and global coordinates in
+different coordinate frames. Like transformations, coordinate conversions of
+vectors depend only on the orientations of the relevant frames/planes, not the
+positions of their origin points.
 
 For `localizeTo` and `placeIn`, assume the following frames have been defined:
 

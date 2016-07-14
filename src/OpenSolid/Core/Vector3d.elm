@@ -37,9 +37,8 @@ module OpenSolid.Core.Vector3d
         , fromRecord
         )
 
-{-| Various functions for constructing `Vector3d` values and performing
-operations on them. For the examples below, assume that all OpenSolid core types
-have been imported using
+{-| Various functions for working with `Vector3d` values. For the examples
+below, assume that all OpenSolid core types have been imported using
 
     import OpenSolid.Core.Types exposing (..)
 
@@ -62,8 +61,7 @@ actually want their `Direction3d` versions `Direction3d.x`, `Direction3d.y` and
 # Constructors
 
 Since `Vector3d` is not an opaque type, the simplest way to construct one is
-directly from its X, Y and Z components, for example `Vector3d ( 2, 3, 4 )`. But
-that is not the only way!
+directly from its X, Y and Z components, for example `Vector3d ( 2, 3, 4 )`.
 
 @docs perpendicularTo
 
@@ -81,14 +79,23 @@ that is not the only way!
 
 # Transformations
 
+Note that for all transformations, only the orientation of the relevant axis or
+plane is relevant, since vectors are position-independent. Think of transforming
+a vector as placing its tail on the relevant axis or plane and then transforming
+its tip.
+
 @docs rotateAround, mirrorAcross, projectOntoAxis, projectOnto
 
 # Coordinate conversions
 
 Functions for transforming vectors between local and global coordinates in
-different coordinate frames. For the examples below, assume the following
-definition of a local coordinate frame, one that is rotated 45 degrees
-counterclockwise about the Z axis from the global XYZ frame:
+different coordinate frames. Like transformations, coordinate conversions of
+vectors depend only on the orientations of the relevant frames/planes, not the
+positions of their origin points.
+
+For `localizeTo` and `placeIn`, assume the following definition of a local
+coordinate frame, one that is rotated 45 degrees counterclockwise about the Z
+axis from the global XYZ frame:
 
     frame =
         Frame3d.rotateAround Axis3d.z (degrees 45) Frame3d.xyz
@@ -246,8 +253,9 @@ is equivalent to but slightly more efficient than
 
     Vector3d.length vector > tolerance
 
-since the latter requires a square root. In many cases, however, the speed
-difference will be negligible and using `length` is much more readable!
+since the latter requires a square root under the hood. In many cases, however,
+the speed difference will be negligible and using `length` is much more
+readable!
 -}
 squaredLength : Vector3d -> Float
 squaredLength vector =
