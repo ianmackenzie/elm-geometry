@@ -28,8 +28,6 @@ module OpenSolid.Core.Axis3d
 
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Point3d as Point3d
-import OpenSolid.Core.Vector2d as Vector2d
-import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction3d as Direction3d
 
 

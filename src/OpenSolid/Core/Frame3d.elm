@@ -37,7 +37,6 @@ module OpenSolid.Core.Frame3d
 
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Point3d as Point3d
-import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction3d as Direction3d
 import OpenSolid.Core.Axis3d as Axis3d
 

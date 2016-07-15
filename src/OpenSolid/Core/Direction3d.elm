@@ -33,7 +33,6 @@ module OpenSolid.Core.Direction3d
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Vector3d as Vector3d
-import OpenSolid.Core.Direction2d as Direction2d
 
 
 toVector (Direction3d components) =

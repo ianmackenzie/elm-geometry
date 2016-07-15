@@ -26,7 +26,6 @@ module OpenSolid.Core.Axis2d
         )
 
 import OpenSolid.Core.Types exposing (..)
-import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Point2d as Point2d
 import OpenSolid.Core.Direction2d as Direction2d
 
