@@ -453,6 +453,17 @@ placeIn frame =
         coordinates >> Vector2d >> Vector2d.placeIn frame >> addTo originPoint
 
 
+{-| Take a point defined by 2D coordinates within a particular plane and convert
+it to global 3D coordinates.
+
+    Point2d.placeOnto Plane3d.xz (Point2d ( 2, 1 )) == Point3d ( 2, 0, 1 )
+
+    rotatedPlane =
+        Plane3d.rotateAround Axis3d.x (degrees 45) Plane3d.xy
+
+    Point2d.placeOnto rotatedPlane (Point2d ( 2, 1 )) ==
+        Point3d ( 2, 0.7071, 0.7071 )
+-}
 placeOnto : Plane3d -> Point2d -> Point3d
 placeOnto plane point =
     let
