@@ -9,7 +9,8 @@
     "OpenSolid.Core.Encode",
     "OpenSolid.Core.Decode",
     "OpenSolid.Core.Vector2d",
-    "OpenSolid.Core.Vector3d"
+    "OpenSolid.Core.Vector3d",
+    "OpenSolid.Core.Point2d"
   ],
   "dependencies": {
     "elm-lang/core": "4.0.0 <= v < 5.0.0"
