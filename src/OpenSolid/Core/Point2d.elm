@@ -33,9 +33,8 @@ module OpenSolid.Core.Point2d
         , fromRecord
         )
 
-{-| Various functions for constructing `Point2d` values and performing
-operations on them. For the examples below, assume that all OpenSolid core types
-have been imported using
+{-| Various functions for working with `Point2d` values. For the examples below,
+assume that all OpenSolid core types have been imported using
 
     import OpenSolid.Core.Types exposing (..)
 
@@ -53,31 +52,15 @@ to numerical roundoff) they might not be exactly equal.
 # Constructors
 
 Since `Point2d` is not an opaque type, the simplest way to construct one is
-directly from its X and Y coordinates, for example `Point2d ( 2, 3 )`. But that
-is not the only way!
+directly from its X and Y coordinates, for example `Point2d ( 2, 3 )`.
 
-It may be useful to define your own specialized constructor functions by
-combining existing OpenSolid functions. For instance, to easily create points
-defined by their coordinates in some local frame, you could define something
-like
-
-    localPoint : Float -> Float -> Point2d
-    localPoint x y =
-        Point2d.placeIn localFrame (Point2d ( x, y ))
-
-To create points from polar coordinates, you can use Elm's built-in `fromPolar`
-function:
-
-    point = Point2d (fromPolar ( radius, angle ))
+There are no specific functions to create points from polar components, but you
+can use Elm's built-in `fromPolar` function, for example
+`Point2d (fromPolar ( radius, angle ))`.
 
 @docs midpoint, interpolate
 
 # Coordinates
-
-To get the polar coordinates of a point, you can use Elm's built in `toPolar`
-function:
-
-    ( radius, angle ) = toPolar (Point2d.coordinates point)
 
 @docs coordinates, xCoordinate, yCoordinate
 
@@ -156,18 +139,18 @@ midpoint firstPoint secondPoint =
 {-| Construct a point by interpolating between two other points based on a
 parameter that ranges from zero to one.
 
-    interpolate : Float -> Point2d
-    interpolate parameter =
+    interpolatedPoint : Float -> Point2d
+    interpolatedPoint parameter =
         Point2d.interpolate Point2d.origin (Point2d ( 8, 8 )) parameter
 
-    interpolate 0 == Point2d ( 0, 0 )
-    interpolate 0.25 == Point2d ( 2, 2 )
-    interpolate 0.75 == Point2d ( 6, 6 )
-    interpolate 1 == Point2d ( 8, 8 )
+    interpolatedPoint 0 == Point2d ( 0, 0 )
+    interpolatedPoint 0.25 == Point2d ( 2, 2 )
+    interpolatedPoint 0.75 == Point2d ( 6, 6 )
+    interpolatedPoint 1 == Point2d ( 8, 8 )
 
-You can also pass values less than zero or greater than one to extrapolate:
+You can actually pass values less than zero or greater than one to extrapolate:
 
-    interpolate 1.25 == Point2d ( 10, 10 )
+    interpolatedPoint 1.25 == Point2d ( 10, 10 )
 -}
 interpolate : Point2d -> Point2d -> Float -> Point2d
 interpolate startPoint endPoint =
@@ -181,6 +164,11 @@ interpolate startPoint endPoint =
 {-| Get the (x, y) coordinates of a point as a tuple.
 
     ( x, y ) = Point2d.coordinates point
+
+To get the polar coordinates of a point, you can use Elm's built in `toPolar`
+function:
+
+    ( radius, angle ) = toPolar (Point2d.coordinates point)
 -}
 coordinates : Point2d -> ( Float, Float )
 coordinates (Point2d coordinates') =
@@ -241,10 +229,8 @@ Partial application can be useful:
     points =
         [ Point2d ( 3, 4 ), Point2d ( 10, 0 ), Point2d ( -1, 2 ) ]
 
-    sortedPoints =
-        List.sortBy (Point2d.distanceFrom Point2d.origin) points
-
-    sortedPoints == [ Point2d ( -1, 2 ), Point2d ( 3, 4 ), Point2d ( 10, 0 ) ]
+    List.sortBy (Point2d.distanceFrom Point2d.origin) points ==
+        [ Point2d ( -1, 2 ), Point2d ( 3, 4 ), Point2d ( 10, 0 ) ]
 -}
 distanceFrom : Point2d -> Point2d -> Float
 distanceFrom other =
@@ -260,8 +246,9 @@ is equivalent to but slightly more efficient than
 
     Point2d.distanceFrom firstPoint secondPoint > tolerance
 
-since the latter requires a square root. In many cases, however, the speed
-difference will be negligible and using `distanceFrom` is much more readable!
+since the latter requires a square root under the hood. In many cases, however,
+the speed difference will be negligible and using `distanceFrom` is much more
+readable!
 -}
 squaredDistanceFrom : Point2d -> Point2d -> Float
 squaredDistanceFrom other =
@@ -360,7 +347,7 @@ rotateAround centerPoint angle =
     vectorFrom centerPoint >> Vector2d.rotateBy angle >> addTo centerPoint
 
 
-{-| Translate by a given displacement.
+{-| Translate a point by a given displacement.
 
     Point2d.translateBy (Vector2d ( 1, 2 )) (Point2d ( 3, 4 )) ==
         Point2d ( 4, 6 )
