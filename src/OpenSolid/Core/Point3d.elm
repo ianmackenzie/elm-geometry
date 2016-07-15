@@ -42,6 +42,7 @@ import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction3d as Direction3d
 
 
+addTo : Point3d -> Vector3d -> Point3d
 addTo =
     flip translateBy
 

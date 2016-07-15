@@ -35,10 +35,12 @@ import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Vector3d as Vector3d
 
 
+toVector : Direction3d -> Vector3d
 toVector (Direction3d components) =
     Vector3d components
 
 
+toDirection : Vector3d -> Direction3d
 toDirection (Vector3d components) =
     Direction3d components
 

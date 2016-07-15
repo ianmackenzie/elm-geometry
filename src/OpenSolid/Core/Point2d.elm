@@ -116,6 +116,7 @@ import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Direction2d as Direction2d
 
 
+addTo : Point2d -> Vector2d -> Point2d
 addTo =
     flip translateBy
 

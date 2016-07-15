@@ -33,10 +33,12 @@ import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Vector2d as Vector2d
 
 
+toVector : Direction2d -> Vector2d
 toVector (Direction2d components) =
     Vector2d components
 
 
+toDirection : Vector2d -> Direction2d
 toDirection (Vector2d components) =
     Direction2d components
 
