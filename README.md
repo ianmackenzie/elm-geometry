@@ -103,9 +103,9 @@ generic vector type.
 
 Explicitly working with individual X/Y/Z point coordinates and vector components
 is easy to do in OpenSolid when necessary, but in many cases it is more flexible
-to consider points and vectors as abstract geometric quantities and treat their
-internal representations as an implementation detail. For example, instead of
-using
+and meaningful to consider points and vectors as abstract geometric quantities
+and treat their internal representations as an implementation detail. For
+example, instead of using
 
 ```elm
 forwardSpeed = Vector3d.xComponent velocityVector
