@@ -236,6 +236,7 @@ last argument (partial function application) and then chaining the
 partially-applied functions together:
 
 ```elm
+horizontalDistanceFromOrigin : Point3d -> Float
 horizontalDistanceFromOrigin =
     Point3d.projectOnto Plane3d.xy >> Point3d.distanceFrom Point3d.origin
 
