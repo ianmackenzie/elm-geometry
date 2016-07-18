@@ -52,6 +52,11 @@ origin =
     Point3d ( 0, 0, 0 )
 
 
+midpoint : Point3d -> Point3d -> Point3d
+midpoint firstPoint secondPoint =
+    interpolate firstPoint secondPoint 0.5
+
+
 interpolate : Point3d -> Point3d -> Float -> Point3d
 interpolate startPoint endPoint =
     let
@@ -59,11 +64,6 @@ interpolate startPoint endPoint =
             vectorFrom startPoint endPoint
     in
         \t -> translateBy (Vector3d.times t displacement) startPoint
-
-
-midpoint : Point3d -> Point3d -> Point3d
-midpoint firstPoint secondPoint =
-    interpolate firstPoint secondPoint 0.5
 
 
 xCoordinate : Point3d -> Float
