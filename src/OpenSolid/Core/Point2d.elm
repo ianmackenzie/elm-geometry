@@ -52,7 +52,8 @@ to numerical roundoff) they might not be exactly equal.
 # Constructors
 
 Since `Point2d` is not an opaque type, the simplest way to construct one is
-directly from its X and Y coordinates, for example `Point2d ( 2, 3 )`.
+directly from its X and Y coordinates, for example `Point2d ( 2, 3 )`. But that
+is not the only way!
 
 There are no specific functions to create points from polar components, but you
 can use Elm's built-in `fromPolar` function, for example
