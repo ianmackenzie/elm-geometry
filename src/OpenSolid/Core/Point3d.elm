@@ -10,32 +10,107 @@
 module OpenSolid.Core.Point3d
     exposing
         ( origin
-        , interpolate
         , midpoint
+        , interpolate
+        , coordinates
         , xCoordinate
         , yCoordinate
         , zCoordinate
-        , coordinates
-        , squaredDistanceFrom
-        , distanceFrom
-        , vectorTo
         , vectorFrom
+        , vectorTo
+        , distanceFrom
+        , squaredDistanceFrom
         , distanceAlong
-        , squaredDistanceFromAxis
         , distanceFromAxis
+        , squaredDistanceFromAxis
         , signedDistanceFrom
         , scaleAbout
         , rotateAround
         , translateBy
         , mirrorAcross
-        , localizeTo
-        , placeIn
         , projectOntoAxis
         , projectOnto
         , projectInto
+        , localizeTo
+        , placeIn
         , toRecord
         , fromRecord
         )
+
+{-| Various functions for working with `Point3d` values. For the examples below,
+assume that all OpenSolid core types have been imported using
+
+    import OpenSolid.Core.Types exposing (..)
+
+and all necessary modules have been imported using the following pattern:
+
+    import OpenSolid.Core.Point3d as Point3d
+
+Examples use `==` to indicate that two expressions are equivalent, even if (due
+to numerical roundoff) they might not be exactly equal.
+
+# Constants
+
+@docs origin
+
+# Constructors
+
+Since `Point3d` is not an opaque type, the simplest way to construct one is
+directly from its X, Y and Z coordinates, for example `Point2d ( 2, 1, 3 )`. But
+that is not the only way!
+
+@docs midpoint, interpolate
+
+# Coordinates
+
+@docs coordinates, xCoordinate, yCoordinate, zCoordinate
+
+# Displacement
+
+@docs vectorFrom, vectorTo
+
+# Distance
+
+@docs distanceFrom, squaredDistanceFrom, distanceAlong, distanceFromAxis, squaredDistanceFromAxis, signedDistanceFrom
+
+# Transformations
+
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOntoAxis, projectOnto
+
+# Coordinate conversions
+
+Functions for transforming points between local and global coordinates in
+different coordinate systems. Although these examples use a simple offset
+frame, these functions can be used to convert to and from local coordinates in
+arbitrarily transformed (translated, rotated, mirrored) frames.
+
+@docs projectInto, localizeTo, placeIn
+
+# Record conversions
+
+Convert `Point3d` values to and from Elm records. Primarily useful for
+interoperability with other libraries. For example, you could define conversion
+functions to and from `elm-linear-algebra`'s `Vec3` type with
+
+    toVec3 : Point3d -> Math.Vector3.Vec3
+    toVec3 =
+        Point3d.toRecord >> Math.Vector3.fromRecord
+
+    fromVec3 : Math.Vector3.Vec3 -> Point3d
+    fromVec3 =
+        Math.Vector3.toRecord >> Point3d.fromRecord
+
+although in this particular case it would likely be simpler and more efficient
+to use
+
+    toVec3 =
+        Point3d.coordinates >> Math.Vector3.fromTuple
+
+    fromVec3 =
+        Math.Vector3.toTuple >> Point3d
+
+@docs toRecord, fromRecord
+-}
 
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Vector3d as Vector3d
@@ -66,6 +141,11 @@ interpolate startPoint endPoint =
         \t -> translateBy (Vector3d.times t displacement) startPoint
 
 
+coordinates : Point3d -> ( Float, Float, Float )
+coordinates (Point3d coordinates') =
+    coordinates'
+
+
 xCoordinate : Point3d -> Float
 xCoordinate (Point3d ( x, _, _ )) =
     x
@@ -79,11 +159,6 @@ yCoordinate (Point3d ( _, y, _ )) =
 zCoordinate : Point3d -> Float
 zCoordinate (Point3d ( _, _, z )) =
     z
-
-
-coordinates : Point3d -> ( Float, Float, Float )
-coordinates (Point3d coordinates') =
-    coordinates'
 
 
 squaredDistanceFrom : Point3d -> Point3d -> Float
