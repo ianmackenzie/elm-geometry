@@ -23,6 +23,12 @@ module OpenSolid.Core.Frame3d
         , zyPlane
         , zxPlane
         , xzPlane
+        , xyFrame
+        , yxFrame
+        , yzFrame
+        , zyFrame
+        , zxFrame
+        , xzFrame
         , scaleAbout
         , rotateAround
         , rotateAroundOwn
@@ -90,8 +96,6 @@ xyPlane : Frame3d -> Plane3d
 xyPlane frame =
     Plane3d
         { originPoint = originPoint frame
-        , xDirection = xDirection frame
-        , yDirection = yDirection frame
         , normalDirection = zDirection frame
         }
 
@@ -100,8 +104,6 @@ yxPlane : Frame3d -> Plane3d
 yxPlane frame =
     Plane3d
         { originPoint = originPoint frame
-        , xDirection = yDirection frame
-        , yDirection = xDirection frame
         , normalDirection = Direction3d.negate (zDirection frame)
         }
 
@@ -110,8 +112,6 @@ yzPlane : Frame3d -> Plane3d
 yzPlane frame =
     Plane3d
         { originPoint = originPoint frame
-        , xDirection = yDirection frame
-        , yDirection = zDirection frame
         , normalDirection = xDirection frame
         }
 
@@ -120,8 +120,6 @@ zyPlane : Frame3d -> Plane3d
 zyPlane frame =
     Plane3d
         { originPoint = originPoint frame
-        , xDirection = zDirection frame
-        , yDirection = yDirection frame
         , normalDirection = Direction3d.negate (xDirection frame)
         }
 
@@ -130,8 +128,6 @@ zxPlane : Frame3d -> Plane3d
 zxPlane frame =
     Plane3d
         { originPoint = originPoint frame
-        , xDirection = zDirection frame
-        , yDirection = xDirection frame
         , normalDirection = yDirection frame
         }
 
@@ -140,9 +136,61 @@ xzPlane : Frame3d -> Plane3d
 xzPlane frame =
     Plane3d
         { originPoint = originPoint frame
+        , normalDirection = Direction3d.negate (yDirection frame)
+        }
+
+
+xyFrame : Frame3d -> PlanarFrame3d
+xyFrame frame =
+    PlanarFrame3d
+        { originPoint = originPoint frame
+        , xDirection = xDirection frame
+        , yDirection = yDirection frame
+        }
+
+
+yxFrame : Frame3d -> PlanarFrame3d
+yxFrame frame =
+    PlanarFrame3d
+        { originPoint = originPoint frame
+        , xDirection = yDirection frame
+        , yDirection = xDirection frame
+        }
+
+
+yzFrame : Frame3d -> PlanarFrame3d
+yzFrame frame =
+    PlanarFrame3d
+        { originPoint = originPoint frame
+        , xDirection = yDirection frame
+        , yDirection = zDirection frame
+        }
+
+
+zyFrame : Frame3d -> PlanarFrame3d
+zyFrame frame =
+    PlanarFrame3d
+        { originPoint = originPoint frame
+        , xDirection = zDirection frame
+        , yDirection = yDirection frame
+        }
+
+
+zxFrame : Frame3d -> PlanarFrame3d
+zxFrame frame =
+    PlanarFrame3d
+        { originPoint = originPoint frame
+        , xDirection = zDirection frame
+        , yDirection = xDirection frame
+        }
+
+
+xzFrame : Frame3d -> PlanarFrame3d
+xzFrame frame =
+    PlanarFrame3d
+        { originPoint = originPoint frame
         , xDirection = xDirection frame
         , yDirection = zDirection frame
-        , normalDirection = Direction3d.negate (yDirection frame)
         }
 
 

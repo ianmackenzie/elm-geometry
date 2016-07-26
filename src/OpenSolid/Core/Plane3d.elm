@@ -15,21 +15,15 @@ module OpenSolid.Core.Plane3d
         , zy
         , zx
         , xz
-        , fromPointAndNormal
         , originPoint
-        , xDirection
-        , yDirection
         , normalDirection
+        , planarFrame
         , offsetBy
         , flip
-        , xAxis
-        , yAxis
         , normalAxis
         , scaleAbout
         , rotateAround
-        , rotateAroundOwn
         , translateBy
-        , translateAlongOwn
         , translateTo
         , mirrorAcross
         , localizeTo
@@ -40,15 +34,12 @@ import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Point3d as Point3d
 import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction3d as Direction3d
-import OpenSolid.Core.Axis3d as Axis3d
 
 
 xy : Plane3d
 xy =
     Plane3d
         { originPoint = Point3d.origin
-        , xDirection = Direction3d.x
-        , yDirection = Direction3d.y
         , normalDirection = Direction3d.z
         }
 
@@ -57,8 +48,6 @@ yx : Plane3d
 yx =
     Plane3d
         { originPoint = Point3d.origin
-        , xDirection = Direction3d.y
-        , yDirection = Direction3d.x
         , normalDirection = Direction3d.negate Direction3d.z
         }
 
@@ -67,8 +56,6 @@ yz : Plane3d
 yz =
     Plane3d
         { originPoint = Point3d.origin
-        , xDirection = Direction3d.y
-        , yDirection = Direction3d.z
         , normalDirection = Direction3d.x
         }
 
@@ -77,8 +64,6 @@ zy : Plane3d
 zy =
     Plane3d
         { originPoint = Point3d.origin
-        , xDirection = Direction3d.z
-        , yDirection = Direction3d.y
         , normalDirection = Direction3d.negate Direction3d.x
         }
 
@@ -87,8 +72,6 @@ zx : Plane3d
 zx =
     Plane3d
         { originPoint = Point3d.origin
-        , xDirection = Direction3d.z
-        , yDirection = Direction3d.x
         , normalDirection = Direction3d.y
         }
 
@@ -97,30 +80,8 @@ xz : Plane3d
 xz =
     Plane3d
         { originPoint = Point3d.origin
-        , xDirection = Direction3d.x
-        , yDirection = Direction3d.z
         , normalDirection = Direction3d.negate Direction3d.y
         }
-
-
-fromPointAndNormal : Point3d -> Direction3d -> Plane3d
-fromPointAndNormal originPoint normalDirection =
-    let
-        xDirection =
-            Direction3d.perpendicularTo normalDirection
-
-        yDirectionVector =
-            Direction3d.crossProduct normalDirection xDirection
-
-        yDirection =
-            Direction3d (Vector3d.components yDirectionVector)
-    in
-        Plane3d
-            { originPoint = originPoint
-            , xDirection = xDirection
-            , yDirection = yDirection
-            , normalDirection = normalDirection
-            }
 
 
 originPoint : Plane3d -> Point3d
@@ -128,44 +89,44 @@ originPoint (Plane3d properties) =
     properties.originPoint
 
 
-xDirection : Plane3d -> Direction3d
-xDirection (Plane3d properties) =
-    properties.xDirection
-
-
-yDirection : Plane3d -> Direction3d
-yDirection (Plane3d properties) =
-    properties.yDirection
-
-
 normalDirection : Plane3d -> Direction3d
 normalDirection (Plane3d properties) =
     properties.normalDirection
 
 
+planarFrame : Plane3d -> PlanarFrame3d
+planarFrame plane =
+    let
+        normal =
+            normalDirection plane
+
+        xDirection =
+            Direction3d.perpendicularTo normal
+
+        yDirectionVector =
+            Direction3d.crossProduct normal xDirection
+
+        yDirection =
+            Direction3d (Vector3d.components yDirectionVector)
+    in
+        PlanarFrame3d
+            { originPoint = originPoint plane
+            , xDirection = xDirection
+            , yDirection = yDirection
+            }
+
+
 offsetBy : Float -> Plane3d -> Plane3d
-offsetBy =
-    translateAlongOwn normalAxis
+offsetBy distance plane =
+    translateBy (Direction3d.times distance (normalDirection plane)) plane
 
 
 flip : Plane3d -> Plane3d
 flip plane =
     Plane3d
         { originPoint = originPoint plane
-        , xDirection = xDirection plane
-        , yDirection = yDirection plane
         , normalDirection = Direction3d.negate (normalDirection plane)
         }
-
-
-xAxis : Plane3d -> Axis3d
-xAxis plane =
-    Axis3d { originPoint = originPoint plane, direction = xDirection plane }
-
-
-yAxis : Plane3d -> Axis3d
-yAxis plane =
-    Axis3d { originPoint = originPoint plane, direction = yDirection plane }
 
 
 normalAxis : Plane3d -> Axis3d
@@ -180,8 +141,6 @@ scaleAbout : Point3d -> Float -> Plane3d -> Plane3d
 scaleAbout centerPoint scale plane =
     Plane3d
         { originPoint = Point3d.scaleAbout centerPoint scale (originPoint plane)
-        , xDirection = xDirection plane
-        , yDirection = yDirection plane
         , normalDirection = normalDirection plane
         }
 
@@ -198,42 +157,22 @@ rotateAround axis angle =
         \plane ->
             Plane3d
                 { originPoint = rotatePoint (originPoint plane)
-                , xDirection = rotateDirection (xDirection plane)
-                , yDirection = rotateDirection (yDirection plane)
                 , normalDirection = rotateDirection (normalDirection plane)
                 }
-
-
-rotateAroundOwn : (Plane3d -> Axis3d) -> Float -> Plane3d -> Plane3d
-rotateAroundOwn axis angle plane =
-    rotateAround (axis plane) angle plane
 
 
 translateBy : Vector3d -> Plane3d -> Plane3d
 translateBy vector plane =
     Plane3d
         { originPoint = Point3d.translateBy vector (originPoint plane)
-        , xDirection = xDirection plane
-        , yDirection = yDirection plane
         , normalDirection = normalDirection plane
         }
-
-
-translateAlongOwn : (Plane3d -> Axis3d) -> Float -> Plane3d -> Plane3d
-translateAlongOwn axis distance plane =
-    let
-        displacement =
-            Direction3d.times distance (Axis3d.direction (axis plane))
-    in
-        translateBy displacement plane
 
 
 translateTo : Point3d -> Plane3d -> Plane3d
 translateTo point plane =
     Plane3d
         { originPoint = point
-        , xDirection = xDirection plane
-        , yDirection = yDirection plane
         , normalDirection = normalDirection plane
         }
 
@@ -250,8 +189,6 @@ mirrorAcross otherPlane =
         \plane ->
             Plane3d
                 { originPoint = mirrorPoint (originPoint plane)
-                , xDirection = mirrorDirection (xDirection plane)
-                , yDirection = mirrorDirection (yDirection plane)
                 , normalDirection = mirrorDirection (normalDirection plane)
                 }
 
@@ -268,8 +205,6 @@ localizeTo frame =
         \plane ->
             Plane3d
                 { originPoint = localizePoint (originPoint plane)
-                , xDirection = localizeDirection (xDirection plane)
-                , yDirection = localizeDirection (yDirection plane)
                 , normalDirection = localizeDirection (normalDirection plane)
                 }
 
@@ -286,7 +221,5 @@ placeIn frame =
         \plane ->
             Plane3d
                 { originPoint = placePoint (originPoint plane)
-                , xDirection = placeDirection (xDirection plane)
-                , yDirection = placeDirection (yDirection plane)
                 , normalDirection = placeDirection (normalDirection plane)
                 }

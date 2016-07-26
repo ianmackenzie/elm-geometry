@@ -30,7 +30,7 @@ module OpenSolid.Core.Vector3d
         , projectionIn
         , projectOntoAxis
         , projectOnto
-        , projectInto
+        , projectInto2d
         , localizeTo
         , placeIn
         , toRecord
@@ -104,7 +104,7 @@ axis from the global XYZ frame:
     Frame3d.yDirection rotatedFrame == Direction3d ( -0.7071, 0.7071, 0 )
     Frame3d.zDirection rotatedFrame == Direction3d ( 0, 0, 1 )
 
-@docs projectInto, localizeTo, placeIn
+@docs projectInto2d, localizeTo, placeIn
 
 # Record conversions
 
@@ -490,7 +490,7 @@ rotateAround axis angle =
 mirrorAcross : Plane3d -> Vector3d -> Vector3d
 mirrorAcross plane =
     let
-        (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
+        (Plane3d { originPoint, normalDirection }) =
             plane
 
         (Direction3d ( dx, dy, dz )) =
@@ -580,7 +580,7 @@ normal direction), then returning the parallel (in-plane) portion.
 projectOnto : Plane3d -> Vector3d -> Vector3d
 projectOnto plane vector =
     let
-        (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
+        (Plane3d { originPoint, normalDirection }) =
             plane
     in
         minus (projectionIn normalDirection vector) vector
@@ -635,24 +635,25 @@ placeIn frame =
                 )
 
 
-{-| Project a given vector onto a given plane and then express the projected
-vector in terms of 2D components within the plane (relative to the plane's X and
+{-| Project a vector into a given planar frame. Conceptually, this projects the
+vector onto the plane of the given frame and then expresses the projected vector
+in terms of 2D components within the plane (relative to the given frame's X and
 Y basis directions).
 
-    Vector3d.projectInto Plane3d.xy (Vector3d ( 2, 1, 3 )) ==
+    Vector3d.projectInto2d PlanarFrame3d.xy (Vector3d ( 2, 1, 3 )) ==
         Vector2d ( 2, 1 )
 
-    Vector3d.projectInto Plane3d.yz (Vector3d ( 2, 1, 3 )) ==
+    Vector3d.projectInto2d PlanarFrame3d.yz (Vector3d ( 2, 1, 3 )) ==
         Vector2d ( 1, 3 )
 
-    Vector3d.projectInto Plane3d.zx (Vector3d ( 2, 1, 3 )) ==
+    Vector3d.projectInto2d PlanarFrame3d.zx (Vector3d ( 2, 1, 3 )) ==
         Vector2d ( 3, 2 )
 -}
-projectInto : Plane3d -> Vector3d -> Vector2d
-projectInto plane vector =
+projectInto2d : PlanarFrame3d -> Vector3d -> Vector2d
+projectInto2d planarFrame vector =
     let
-        (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
-            plane
+        (PlanarFrame3d { originPoint, xDirection, yDirection }) =
+            planarFrame
     in
         Vector2d
             ( componentIn xDirection vector

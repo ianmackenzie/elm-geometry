@@ -28,7 +28,7 @@ module OpenSolid.Core.Point2d
         , projectOnto
         , localizeTo
         , placeIn
-        , placeOnto
+        , placeIn3d
         , toRecord
         , fromRecord
         )
@@ -84,7 +84,7 @@ different coordinate systems. Although these examples use a simple offset
 frame, these functions can be used to convert to and from local coordinates in
 arbitrarily transformed (translated, rotated, mirrored) frames.
 
-@docs localizeTo, placeIn, placeOnto
+@docs localizeTo, placeIn, placeIn3d
 
 # Record conversions
 
@@ -442,28 +442,28 @@ placeIn frame =
         coordinates >> Vector2d >> Vector2d.placeIn frame >> addTo originPoint
 
 
-{-| Take a point defined by 2D coordinates within a particular plane and convert
-it to global 3D coordinates.
+{-| Take a point defined by 2D coordinates within a particular planar frame and
+convert it to global 3D coordinates.
 
-    Point2d.placeOnto Plane3d.xz (Point2d ( 2, 1 )) == Point3d ( 2, 0, 1 )
+    Point2d.placeIn3d PlanarFrame3d.xz (Point2d ( 2, 1 )) == Point3d ( 2, 0, 1 )
 
-    rotatedPlane =
-        Plane3d.rotateAround Axis3d.x (degrees 45) Plane3d.xy
+    rotatedFrame =
+        PlanarFrame3d.rotateAround Axis3d.x (degrees 45) PlanarFrame3d.xy
 
-    Point2d.placeOnto rotatedPlane (Point2d ( 2, 1 )) ==
+    Point2d.placeIn3d rotatedFrame (Point2d ( 2, 1 )) ==
         Point3d ( 2, 0.7071, 0.7071 )
 -}
-placeOnto : Plane3d -> Point2d -> Point3d
-placeOnto plane point =
+placeIn3d : PlanarFrame3d -> Point2d -> Point3d
+placeIn3d planarFrame point =
     let
-        (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
-            plane
+        (PlanarFrame3d { originPoint, xDirection, yDirection }) =
+            planarFrame
 
         (Point3d ( px, py, pz )) =
             originPoint
 
         (Vector3d ( vx, vy, vz )) =
-            Vector2d.placeOnto plane (Vector2d (coordinates point))
+            Vector2d.placeIn3d planarFrame (Vector2d (coordinates point))
     in
         Point3d ( px + vx, py + vy, pz + vz )
 

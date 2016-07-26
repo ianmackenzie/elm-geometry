@@ -23,7 +23,7 @@ module OpenSolid.Core.Axis3d
         , localizeTo
         , placeIn
         , projectOnto
-        , projectInto
+        , projectInto2d
         )
 
 import OpenSolid.Core.Types exposing (..)
@@ -166,13 +166,16 @@ projectOnto plane axis =
         Maybe.map toAxis (Direction3d.projectOnto plane (direction axis))
 
 
-projectInto : Plane3d -> Axis3d -> Maybe Axis2d
-projectInto plane axis =
+projectInto2d : PlanarFrame3d -> Axis3d -> Maybe Axis2d
+projectInto2d planarFrame axis =
     let
         projectedOrigin =
-            Point3d.projectInto plane (originPoint axis)
+            Point3d.projectInto2d planarFrame (originPoint axis)
+
+        maybeDirection =
+            Direction3d.projectInto2d planarFrame (direction axis)
 
         toAxis direction =
             Axis2d { originPoint = projectedOrigin, direction = direction }
     in
-        Maybe.map toAxis (Direction3d.projectInto plane (direction axis))
+        Maybe.map toAxis maybeDirection

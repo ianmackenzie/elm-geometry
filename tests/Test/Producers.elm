@@ -154,7 +154,7 @@ plane3d =
             Producer.tuple ( point3d, direction3d )
 
         tupleToPlane ( point, direction ) =
-            Plane3d.fromPointAndNormal point direction
+            Plane3d { originPoint = point, normalDirection = direction }
     in
         Producer.map tupleToPlane tupleProducer
 

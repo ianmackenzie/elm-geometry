@@ -20,7 +20,7 @@ module OpenSolid.Core.Direction2d
         , mirrorAcross
         , localizeTo
         , placeIn
-        , placeOnto
+        , placeIn3d
         , negate
         , times
         , dotProduct
@@ -98,10 +98,10 @@ placeIn frame =
     toVector >> Vector2d.placeIn frame >> toDirection
 
 
-placeOnto : Plane3d -> Direction2d -> Direction3d
-placeOnto plane =
+placeIn3d : PlanarFrame3d -> Direction2d -> Direction3d
+placeIn3d planarFrame =
     toVector
-        >> Vector2d.placeOnto plane
+        >> Vector2d.placeIn3d planarFrame
         >> (\(Vector3d components) -> Direction3d components)
 
 

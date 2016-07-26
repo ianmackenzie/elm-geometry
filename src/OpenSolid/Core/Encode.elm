@@ -20,12 +20,13 @@ module OpenSolid.Core.Encode
         , plane3d
         , frame2d
         , frame3d
+        , planarFrame3d
         )
 
 {-| JSON encoders for the core OpenSolid types.
 
 @docs vector2d, vector3d, direction2d, direction3d, point2d, point3d
-@docs axis2d, axis3d, plane3d, frame2d, frame3d
+@docs axis2d, axis3d, plane3d, frame2d, frame3d, planarFrame3d
 -}
 
 import Json.Encode exposing (..)
@@ -41,6 +42,7 @@ import OpenSolid.Core.Axis3d as Axis3d
 import OpenSolid.Core.Plane3d as Plane3d
 import OpenSolid.Core.Frame2d as Frame2d
 import OpenSolid.Core.Frame3d as Frame3d
+import OpenSolid.Core.PlanarFrame3d as PlanarFrame3d
 
 
 tuple2 : ( Float, Float ) -> Value
@@ -115,15 +117,13 @@ axis3d axis =
         ]
 
 
-{-| Encode a Plane3d as an object with 'originPoint', 'xDirection', 'yDirection'
-and 'normalDirection' fields.
+{-| Encode a Plane3d as an object with 'originPoint' and 'normalDirection'
+fields.
 -}
 plane3d : Plane3d -> Value
 plane3d plane =
     object
         [ ( "originPoint", point3d (Plane3d.originPoint plane) )
-        , ( "xDirection", direction3d (Plane3d.xDirection plane) )
-        , ( "yDirection", direction3d (Plane3d.yDirection plane) )
         , ( "normalDirection", direction3d (Plane3d.normalDirection plane) )
         ]
 
@@ -150,4 +150,16 @@ frame3d frame =
         , ( "xDirection", direction3d (Frame3d.xDirection frame) )
         , ( "yDirection", direction3d (Frame3d.yDirection frame) )
         , ( "zDirection", direction3d (Frame3d.zDirection frame) )
+        ]
+
+
+{-| Encode a PlanarFrame3d as an object with 'originPoint', 'xDirection',
+and 'yDirection' fields.
+-}
+planarFrame3d : PlanarFrame3d -> Value
+planarFrame3d planarFrame =
+    object
+        [ ( "originPoint", point3d (PlanarFrame3d.originPoint planarFrame) )
+        , ( "xDirection", direction3d (PlanarFrame3d.xDirection planarFrame) )
+        , ( "yDirection", direction3d (PlanarFrame3d.yDirection planarFrame) )
         ]

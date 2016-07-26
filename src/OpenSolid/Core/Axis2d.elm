@@ -22,7 +22,7 @@ module OpenSolid.Core.Axis2d
         , mirrorAcross
         , localizeTo
         , placeIn
-        , placeOnto
+        , placeIn3d
         )
 
 import OpenSolid.Core.Types exposing (..)
@@ -161,14 +161,14 @@ placeIn frame =
                 }
 
 
-placeOnto : Plane3d -> Axis2d -> Axis3d
-placeOnto plane =
+placeIn3d : PlanarFrame3d -> Axis2d -> Axis3d
+placeIn3d planarFrame =
     let
         placePoint =
-            Point2d.placeOnto plane
+            Point2d.placeIn3d planarFrame
 
         placeDirection =
-            Direction2d.placeOnto plane
+            Direction2d.placeIn3d planarFrame
     in
         \axis ->
             Axis3d

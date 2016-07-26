@@ -30,7 +30,7 @@ module OpenSolid.Core.Point3d
         , mirrorAcross
         , projectOntoAxis
         , projectOnto
-        , projectInto
+        , projectInto2d
         , localizeTo
         , placeIn
         , toRecord
@@ -84,7 +84,7 @@ different coordinate systems. Although these examples use a simple offset
 frame, these functions can be used to convert to and from local coordinates in
 arbitrarily transformed (translated, rotated, mirrored) frames.
 
-@docs projectInto, localizeTo, placeIn
+@docs projectInto2d, localizeTo, placeIn
 
 # Record conversions
 
@@ -219,7 +219,7 @@ distanceFromAxis axis =
 signedDistanceFrom : Plane3d -> Point3d -> Float
 signedDistanceFrom plane =
     let
-        (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
+        (Plane3d { originPoint, normalDirection }) =
             plane
     in
         vectorFrom originPoint >> Vector3d.componentIn normalDirection
@@ -256,7 +256,7 @@ translateBy vector point =
 mirrorAcross : Plane3d -> Point3d -> Point3d
 mirrorAcross plane =
     let
-        (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
+        (Plane3d { originPoint, normalDirection }) =
             plane
     in
         vectorFrom originPoint
@@ -298,7 +298,7 @@ projectOntoAxis axis =
 projectOnto : Plane3d -> Point3d -> Point3d
 projectOnto plane point =
     let
-        (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
+        (Plane3d { originPoint, normalDirection }) =
             plane
 
         signedDistance =
@@ -310,14 +310,14 @@ projectOnto plane point =
         translateBy displacement point
 
 
-projectInto : Plane3d -> Point3d -> Point2d
-projectInto plane =
+projectInto2d : PlanarFrame3d -> Point3d -> Point2d
+projectInto2d planarFrame =
     let
-        (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
-            plane
+        (PlanarFrame3d { originPoint, xDirection, yDirection }) =
+            planarFrame
     in
         vectorFrom originPoint
-            >> Vector3d.projectInto plane
+            >> Vector3d.projectInto2d planarFrame
             >> (\(Vector2d components) -> Point2d components)
 
 

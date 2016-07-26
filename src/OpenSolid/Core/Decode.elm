@@ -20,12 +20,13 @@ module OpenSolid.Core.Decode
         , plane3d
         , frame2d
         , frame3d
+        , planarFrame3d
         )
 
 {-| JSON decoders for the core OpenSolid types.
 
 @docs vector2d, vector3d, direction2d, direction3d, point2d, point3d
-@docs axis2d, axis3d, plane3d, frame2d, frame3d
+@docs axis2d, axis3d, plane3d, frame2d, frame3d, planarFrame3d
 -}
 
 import Json.Decode exposing (..)
@@ -100,24 +101,20 @@ axis3d =
             ("direction" := direction3d)
 
 
-{-| Decode a Plane3d from an object with 'originPoint', 'xDirection',
-'yDirection' and 'normalDirection' fields.
+{-| Decode a Plane3d from an object with 'originPoint' and 'normalDirection'
+fields.
 -}
 plane3d : Decoder Plane3d
 plane3d =
     let
-        constructor originPoint xDirection yDirection normalDirection =
+        constructor originPoint normalDirection =
             Plane3d
                 { originPoint = originPoint
-                , xDirection = xDirection
-                , yDirection = yDirection
                 , normalDirection = normalDirection
                 }
     in
-        object4 constructor
+        object2 constructor
             ("originPoint" := point3d)
-            ("xDirection" := direction3d)
-            ("yDirection" := direction3d)
             ("normalDirection" := direction3d)
 
 
@@ -159,3 +156,22 @@ frame3d =
             ("xDirection" := direction3d)
             ("yDirection" := direction3d)
             ("zDirection" := direction3d)
+
+
+{-| Decode a PlanarFrame3d from an object with 'originPoint', 'xDirection', and
+'yDirection' fields.
+-}
+planarFrame3d : Decoder PlanarFrame3d
+planarFrame3d =
+    let
+        constructor originPoint xDirection yDirection =
+            PlanarFrame3d
+                { originPoint = originPoint
+                , xDirection = xDirection
+                , yDirection = yDirection
+                }
+    in
+        object3 constructor
+            ("originPoint" := point3d)
+            ("xDirection" := direction3d)
+            ("yDirection" := direction3d)

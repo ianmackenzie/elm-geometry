@@ -25,6 +25,7 @@ module OpenSolid.Core.Frame2d
         , mirrorAcrossOwn
         , localizeTo
         , placeIn
+        , placeIn3d
         )
 
 import OpenSolid.Core.Types exposing (..)
@@ -175,6 +176,23 @@ placeIn otherFrame =
     in
         \frame ->
             Frame2d
+                { originPoint = placePoint (originPoint frame)
+                , xDirection = placeDirection (xDirection frame)
+                , yDirection = placeDirection (yDirection frame)
+                }
+
+
+placeIn3d : PlanarFrame3d -> Frame2d -> PlanarFrame3d
+placeIn3d planarFrame =
+    let
+        placePoint =
+            Point2d.placeIn3d planarFrame
+
+        placeDirection =
+            Direction2d.placeIn3d planarFrame
+    in
+        \frame ->
+            PlanarFrame3d
                 { originPoint = placePoint (originPoint frame)
                 , xDirection = placeDirection (xDirection frame)
                 , yDirection = placeDirection (yDirection frame)

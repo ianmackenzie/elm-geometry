@@ -20,6 +20,7 @@ module OpenSolid.Core.Types
         , Plane3d(Plane3d)
         , Frame2d(Frame2d)
         , Frame3d(Frame3d)
+        , PlanarFrame3d(PlanarFrame3d)
         )
 
 {-| This module contains the definitions of the core OpenSolid data types. Each
@@ -95,7 +96,7 @@ local and global coordinates. They are also a common source of datums used in
 transformations, for example rotating about the Z axis of a 3D frame or
 mirroring about its XY plane.
 
-@docs Frame2d, Frame3d
+@docs Frame2d, Frame3d, PlanarFrame3d
 -}
 
 
@@ -155,26 +156,14 @@ type Axis3d
     = Axis3d { originPoint : Point3d, direction : Direction3d }
 
 
-{-| A 3D plane, defined by an origin point, two basis directions and a normal
-direction. Useful for several operations including:
+{-| A 3D plane, defined by an origin point and a normal direction. Useful for
+several operations including:
   - Mirroring across the plane
   - Projecting onto the plane
-  - Placing 2D objects onto the plane to result in 3D objects
-    (converting from 2D coordinates within the plane to global 3D coordinates)
-  - Projecting 3D objects into the plane to result in 2D objects
-    (converting from global 3D coordinates to 2D coordinates within the plane)
-
-The basis directions and normal direction are all always mutually perpendicular.
-If you construct a `Plane3d` directly, you are responsible for ensuring this
-yourself.
+  - Measuring distance from the plane
 -}
 type Plane3d
-    = Plane3d
-        { originPoint : Point3d
-        , xDirection : Direction3d
-        , yDirection : Direction3d
-        , normalDirection : Direction3d
-        }
+    = Plane3d { originPoint : Point3d, normalDirection : Direction3d }
 
 
 {-| A `Frame2d` represents a coordinate system in 2D space.
@@ -201,4 +190,19 @@ type Frame3d
         , xDirection : Direction3d
         , yDirection : Direction3d
         , zDirection : Direction3d
+        }
+
+
+{-| A `PlanarFrame3d` represents a 2D planar coordinate system in 3D space.
+Used to convert between 2D and 3D coordinates, such as taking 2D lines and
+placing them on a 3D plane, or projecting a 3D point into a 2D sketch.
+
+The two basis directions are all always perpendicular. If you construct a
+`PlanarFrame3d` directly, you are responsible for ensuring this yourself.
+-}
+type PlanarFrame3d
+    = PlanarFrame3d
+        { originPoint : Point3d
+        , xDirection : Direction3d
+        , yDirection : Direction3d
         }

@@ -39,7 +39,6 @@ A large range of geometric operations are supported:
 -- Constructors
 Direction2d.fromAngle (degrees 30) == Direction2d ( 0.866, 0.5 )
 Vector2d.inDirection Direction2d.y 2.5 == Vector2d ( 0, 2.5 )
-Plane3d.fromPointAndNormal Point3d.origin Direction3d.y == Plane3d.zx
 
 -- Arithmetic
 Vector3d.plus (Vector3d ( 1, 2, 3 )) (Vector3d ( 4, 5, 6 )) == Vector3d ( 5, 7, 9 )

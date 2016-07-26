@@ -30,7 +30,7 @@ module OpenSolid.Core.Vector2d
         , projectOnto
         , localizeTo
         , placeIn
-        , placeOnto
+        , placeIn3d
         , toRecord
         , fromRecord
         )
@@ -106,7 +106,7 @@ For `localizeTo` and `placeIn`, assume the following frames have been defined:
     rotatedFrame =
         Frame2d.rotateAround Point2d.origin (degrees 45) Frame2d.xy
 
-@docs localizeTo, placeIn, placeOnto
+@docs localizeTo, placeIn, placeIn3d
 
 # Record conversions
 
@@ -468,27 +468,32 @@ placeIn frame =
         \(Vector2d ( x, y )) -> Vector2d ( x1 * x + x2 * y, y1 * x + y2 * y )
 
 
-{-| Convert a 2D vector to 3D by placing it on a given plane. This will
+{-| Convert a 2D vector to 3D by placing it in a given planar frame. This will
 construct a 3D vector by taking the X and Y components of the given vector and
-applying them to the X and Y basis directions of the given plane.
+applying them to the X and Y basis directions of the given frame.
 
-    Vector2d.placeOnto Plane3d.xy (Vector2d ( 2, 3 )) == Vector3d ( 2, 3, 0 )
-    Vector2d.placeOnto Plane3d.yz (Vector2d ( 2, 3 )) == Vector3d ( 0, 2, 3 )
-    Vector2d.placeOnto Plane3d.zx (Vector2d ( 2, 3 )) == Vector3d ( 3, 0, 2 )
+    Vector2d.placeIn3d PlanarFrame3d.xy (Vector2d ( 2, 3 )) ==
+        Vector3d ( 2, 3, 0 )
+
+    Vector2d.placeIn3d PlanarFrame3d.yz (Vector2d ( 2, 3 )) ==
+        Vector3d ( 0, 2, 3 )
+
+    Vector2d.placeIn3d PlanarFrame3d.zx (Vector2d ( 2, 3 )) ==
+        Vector3d ( 3, 0, 2 )
 
 A slightly more complex example:
 
-    inclinedPlane =
-        Plane3d.rotateAround Axis3d.y (degrees -45) Plane3d.xy
+    inclinedFrame =
+        PlanarFrame3d.rotateAround Axis3d.y (degrees -45) PlanarFrame3d.xy
 
-    Vector2d.placeOnto inclinedPlane (Vector2d ( 1, 1 )) ==
+    Vector2d.placeIn3d inclinedFrame (Vector2d ( 1, 1 )) ==
         Vector3d ( 0.7071, 1, 0.7071 )
 -}
-placeOnto : Plane3d -> Vector2d -> Vector3d
-placeOnto plane =
+placeIn3d : PlanarFrame3d -> Vector2d -> Vector3d
+placeIn3d planarFrame =
     let
-        (Plane3d { originPoint, xDirection, yDirection, normalDirection }) =
-            plane
+        (PlanarFrame3d { originPoint, xDirection, yDirection }) =
+            planarFrame
 
         (Direction3d ( x1, y1, z1 )) =
             xDirection

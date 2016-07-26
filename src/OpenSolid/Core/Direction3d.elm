@@ -22,7 +22,7 @@ module OpenSolid.Core.Direction3d
         , localizeTo
         , placeIn
         , projectOnto
-        , projectInto
+        , projectInto2d
         , negate
         , times
         , dotProduct
@@ -120,9 +120,9 @@ projectOnto plane =
     toVector >> Vector3d.projectOnto plane >> Vector3d.direction
 
 
-projectInto : Plane3d -> Direction3d -> Maybe Direction2d
-projectInto plane =
-    toVector >> Vector3d.projectInto plane >> Vector2d.direction
+projectInto2d : PlanarFrame3d -> Direction3d -> Maybe Direction2d
+projectInto2d planarFrame =
+    toVector >> Vector3d.projectInto2d planarFrame >> Vector2d.direction
 
 
 negate : Direction3d -> Direction3d
