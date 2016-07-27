@@ -59,7 +59,7 @@ Since `Point3d` is not an opaque type, the simplest way to construct one is
 directly from its X, Y and Z coordinates, for example `Point2d ( 2, 1, 3 )`. But
 that is not the only way!
 
-@docs midpoint, interpolate
+@docs along, midpoint, interpolate
 
 # Coordinates
 
@@ -125,6 +125,22 @@ addTo =
 origin : Point3d
 origin =
     Point3d ( 0, 0, 0 )
+
+
+{-| Construct a point along an axis at a particular distance from the axis'
+origin point. Positive and negative distances will be interpreted relative to
+the direction of the axis.
+
+    horizontalAxis =
+        Axis3d { originPoint = Point2d ( 1, 1, 1 ), direction = Direction3d.x }
+
+    Point3d.along horizontalAxis 3 == Point3d ( 4, 1, 1 )
+    Point3d.along horizontalAxis -3 == Point3d ( -2, 1, 1 )
+    Point3d.along (Axis3d.flip horizontalAxis) 3 == Point3d ( -2, 1, 1 )
+-}
+along : Axis3d -> Float -> Point3d
+along (Axis3d { originPoint, direction }) distance =
+    translateBy (Direction3d.times distance direction) originPoint
 
 
 midpoint : Point3d -> Point3d -> Point3d

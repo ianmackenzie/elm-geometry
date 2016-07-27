@@ -10,6 +10,7 @@
 module OpenSolid.Core.Point2d
     exposing
         ( origin
+        , along
         , midpoint
         , interpolate
         , coordinates
@@ -59,7 +60,7 @@ There are no specific functions to create points from polar components, but you
 can use Elm's built-in `fromPolar` function, for example
 `Point2d (fromPolar ( radius, angle ))`.
 
-@docs midpoint, interpolate
+@docs along, midpoint, interpolate
 
 # Coordinates
 
@@ -127,6 +128,22 @@ addTo =
 origin : Point2d
 origin =
     Point2d ( 0, 0 )
+
+
+{-| Construct a point along an axis at a particular distance from the axis'
+origin point. Positive and negative distances will be interpreted relative to
+the direction of the axis.
+
+    horizontalAxis =
+        Axis2d { originPoint = Point2d ( 1, 1 ), direction = Direction2d.x }
+
+    Point2d.along horizontalAxis 3 == Point2d ( 4, 1 )
+    Point2d.along horizontalAxis -3 == Point2d ( -2, 1 )
+    Point2d.along (Axis2d.flip horizontalAxis) 3 == Point2d ( -2, 1 )
+-}
+along : Axis2d -> Float -> Point2d
+along (Axis2d { originPoint, direction }) distance =
+    translateBy (Direction2d.times distance direction) originPoint
 
 
 {-| Construct a point halfway between two other points.
