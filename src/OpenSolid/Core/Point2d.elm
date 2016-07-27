@@ -283,11 +283,11 @@ sign of the result of this function.
     axis =
         Axis2d { originPoint = Point2d ( 1, 2 ), direction = Direction2d.x }
 
-    Point2d.distanceFrom axis (Point2d ( 3, 3 )) == 1
-    Point2d.distanceFrom axis Point2d.origin == -2
+    Point2d.signedDistanceFrom axis (Point2d ( 3, 3 )) == 1
+    Point2d.signedDistanceFrom axis Point2d.origin == -2
 
-    Point2d.distanceFrom (Axis2d.flip axis) (Point2d ( 3, 3 )) == -1
-    Point2d.distanceFrom (Axis2d.flip axis) Point2d.origin == 2
+    Point2d.signedDistanceFrom (Axis2d.flip axis) (Point2d ( 3, 3 )) == -1
+    Point2d.signedDistanceFrom (Axis2d.flip axis) Point2d.origin == 2
 -}
 signedDistanceFrom : Axis2d -> Point2d -> Float
 signedDistanceFrom axis =
