@@ -7,7 +7,7 @@
 -}
 
 
-module Main exposing (..)
+module Tests exposing (..)
 
 import ElmTest
 import Test.Axis2d
