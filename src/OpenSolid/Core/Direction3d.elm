@@ -17,6 +17,7 @@ module OpenSolid.Core.Direction3d
         , xComponent
         , yComponent
         , zComponent
+        , toVector
         , rotateAround
         , mirrorAcross
         , localizeTo
@@ -33,11 +34,6 @@ module OpenSolid.Core.Direction3d
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Vector3d as Vector3d
-
-
-toVector : Direction3d -> Vector3d
-toVector (Direction3d components) =
-    Vector3d components
 
 
 toDirection : Vector3d -> Direction3d
@@ -93,6 +89,11 @@ yComponent (Direction3d ( _, y, _ )) =
 zComponent : Direction3d -> Float
 zComponent (Direction3d ( _, _, z )) =
     z
+
+
+toVector : Direction3d -> Vector3d
+toVector (Direction3d components) =
+    Vector3d components
 
 
 rotateAround : Axis3d -> Float -> Direction3d -> Direction3d

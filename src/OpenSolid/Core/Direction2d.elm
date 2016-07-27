@@ -16,6 +16,7 @@ module OpenSolid.Core.Direction2d
         , components
         , xComponent
         , yComponent
+        , toVector
         , rotateBy
         , mirrorAcross
         , localizeTo
@@ -31,11 +32,6 @@ module OpenSolid.Core.Direction2d
 
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Vector2d as Vector2d
-
-
-toVector : Direction2d -> Vector2d
-toVector (Direction2d components) =
-    Vector2d components
 
 
 toDirection : Vector2d -> Direction2d
@@ -76,6 +72,11 @@ xComponent =
 yComponent : Direction2d -> Float
 yComponent =
     components >> snd
+
+
+toVector : Direction2d -> Vector2d
+toVector (Direction2d components) =
+    Vector2d components
 
 
 rotateBy : Float -> Direction2d -> Direction2d
