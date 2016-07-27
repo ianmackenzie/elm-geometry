@@ -15,6 +15,7 @@ module OpenSolid.Core.Axis2d
         , originPoint
         , direction
         , point
+        , flip
         , scaleAbout
         , rotateAround
         , translateBy
@@ -74,6 +75,14 @@ point axis coordinate =
             Direction2d.times coordinate (direction axis)
     in
         Point2d.translateBy displacement (originPoint axis)
+
+
+flip : Axis2d -> Axis2d
+flip axis =
+    Axis2d
+        { originPoint = originPoint axis
+        , direction = Direction2d.negate (direction axis)
+        }
 
 
 scaleAbout : Point2d -> Float -> Axis2d -> Axis2d
