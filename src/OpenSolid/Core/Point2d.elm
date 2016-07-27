@@ -159,8 +159,8 @@ midpoint firstPoint secondPoint =
 parameter that ranges from zero to one.
 
     interpolatedPoint : Float -> Point2d
-    interpolatedPoint parameter =
-        Point2d.interpolate Point2d.origin (Point2d ( 8, 8 )) parameter
+    interpolatedPoint =
+        Point2d.interpolate Point2d.origin (Point2d ( 8, 8 ))
 
     interpolatedPoint 0 == Point2d ( 0, 0 )
     interpolatedPoint 0.25 == Point2d ( 2, 2 )
