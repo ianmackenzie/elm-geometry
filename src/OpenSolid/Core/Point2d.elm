@@ -19,8 +19,8 @@ module OpenSolid.Core.Point2d
         , vectorTo
         , distanceFrom
         , squaredDistanceFrom
-        , distanceAlong
-        , distanceFromAxis
+        , signedDistanceFrom
+        , signedDistanceAlong
         , scaleAbout
         , rotateAround
         , translateBy
@@ -71,7 +71,7 @@ can use Elm's built-in `fromPolar` function, for example
 
 # Distance
 
-@docs distanceFrom, squaredDistanceFrom, distanceAlong, distanceFromAxis
+@docs distanceFrom, squaredDistanceFrom, signedDistanceFrom, signedDistanceAlong
 
 # Transformations
 
@@ -257,47 +257,23 @@ squaredDistanceFrom other =
     vectorFrom other >> Vector2d.squaredLength
 
 
-{-| Determine how far along an axis a particular point lies. Conceptually, the
-point is projected perpendicularly onto the axis, and then the distance of this
-projected point from the axis' origin point is measured. The result may be
-negative if the projected point is 'behind' the axis' origin point.
+{-| Determine the perpendicular distance of a point from an axis. The result
+will be positive if the point is to the left of the axis and negative if it is
+to the right, with the forwards direction defined by the direction of the axis.
+This means that flipping an axis (reversing its direction) will also flip the
+sign of the result of this function.
 
     axis =
         Axis2d { originPoint = Point2d ( 1, 2 ), direction = Direction2d.x }
 
-    Point2d.distanceAlong axis (Point2d ( 3, 3 )) == 2
-    Point2d.distanceAlong axis Point2d.origin == -1
+    Point2d.distanceFrom axis (Point2d ( 3, 3 )) == 1
+    Point2d.distanceFrom axis Point2d.origin == -2
+
+    Point2d.distanceFrom (Axis2d.flip axis) (Point2d ( 3, 3 )) == -1
+    Point2d.distanceFrom (Axis2d.flip axis) Point2d.origin == 2
 -}
-distanceAlong : Axis2d -> Point2d -> Float
-distanceAlong axis =
-    let
-        (Axis2d { originPoint, direction }) =
-            axis
-    in
-        vectorFrom originPoint >> Vector2d.componentIn direction
-
-
-{-| Determine the perpendicular (or neareast) distance of a point from an axis.
-Note that this is an unsigned value - it does not matter which side of the axis
-the point is on.
-
-    axis =
-        Axis2d { originPoint = Point2d ( 1, 2 ), direction = Direction2d.x }
-
-    Point2d.distanceFrom axis (Point2d ( 3, 3 )) == 1 -- one unit above
-    Point2d.distanceFrom axis Point2d.origin == 2 -- two units below
-
-If you need a signed value, you could construct a perpendicular axis and measure
-distance along it (using the `axis` value from above):
-
-    perpendicularAxis =
-        Axis2d.perpendicularTo axis
-
-    Point2d.distanceAlong perpendicularAxis (Point2d ( 3, 3 )) == 1
-    Point2d.distanceAlong perpendicularAxis Point2d.origin == -2
--}
-distanceFromAxis : Axis2d -> Point2d -> Float
-distanceFromAxis axis =
+signedDistanceFrom : Axis2d -> Point2d -> Float
+signedDistanceFrom axis =
     let
         (Axis2d { originPoint, direction }) =
             axis
@@ -305,13 +281,34 @@ distanceFromAxis axis =
         directionVector =
             Vector2d (Direction2d.components direction)
     in
-        vectorFrom originPoint >> Vector2d.crossProduct directionVector >> abs
+        vectorFrom originPoint >> Vector2d.crossProduct directionVector
+
+
+{-| Determine how far along an axis a particular point lies. Conceptually, the
+point is projected perpendicularly onto the axis, and then the distance of this
+projected point from the axis' origin point is measured. The result will be
+positive if the projected point is ahead the axis' origin point and negative if
+it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
+
+    axis =
+        Axis2d { originPoint = Point2d ( 1, 2 ), direction = Direction2d.x }
+
+    Point2d.signedDistanceAlong axis (Point2d ( 3, 3 )) == 2
+    Point2d.signedDistanceAlong axis Point2d.origin == -1
+-}
+signedDistanceAlong : Axis2d -> Point2d -> Float
+signedDistanceAlong axis =
+    let
+        (Axis2d { originPoint, direction }) =
+            axis
+    in
+        vectorFrom originPoint >> Vector2d.componentIn direction
 
 
 {-| Perform a uniform scaling about the given center point. The center point is
 given first and the point to transform is given last. Points will contract or
-expand about the center point by the given scale. Scaling by a factor of 1 does
-nothing, and scaling by a factor of 0 collapses all points to the center point.
+expand about the center point by the given scale. Scaling by a factor of 1 is a
+no-op, and scaling by a factor of 0 collapses all points to the center point.
 
     Point2d.scaleAbout Point2d.origin 3 (Point2d ( 1, 2 )) ==
         Point2d ( 3, 6 )
@@ -325,8 +322,8 @@ nothing, and scaling by a factor of 0 collapses all points to the center point.
     Point2d.scaleAbout (Point2d ( 1, 1 )) 10 (Point2d ( 1, 1 )) ==
         Point2d ( 1, 1 )
 
-Do not scale by a negative scaling factor - while this will sometimes do what
-you want it is confusing and error prone. Try a combination of mirror and/or
+Do not scale by a negative scaling factor - while this may sometimes do what you
+want it is confusing and error prone. Try a combination of mirror and/or
 rotation operations instead.
 -}
 scaleAbout : Point2d -> Float -> Point2d -> Point2d
@@ -349,7 +346,7 @@ rotateAround centerPoint angle =
     vectorFrom centerPoint >> Vector2d.rotateBy angle >> addTo centerPoint
 
 
-{-| Translate a point by a given displacement.
+{-| Translate a point by a given displacement. You can think of this as 'plus'.
 
     Point2d.translateBy (Vector2d ( 1, 2 )) (Point2d ( 3, 4 )) ==
         Point2d ( 4, 6 )
