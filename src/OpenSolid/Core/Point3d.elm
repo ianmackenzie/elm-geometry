@@ -122,6 +122,8 @@ addTo =
     flip translateBy
 
 
+{-| The point (0, 0, 0).
+-}
 origin : Point3d
 origin =
     Point3d ( 0, 0, 0 )
@@ -143,11 +145,32 @@ along (Axis3d { originPoint, direction }) distance =
     translateBy (Direction3d.times distance direction) originPoint
 
 
+{-| Construct a point halfway between two other points.
+
+    Point3d.midpoint (Point3d ( 1, 1, 1 )) (Point3d ( 3, 7, 9 )) ==
+        Point3d ( 2, 4, 5 )
+-}
 midpoint : Point3d -> Point3d -> Point3d
 midpoint firstPoint secondPoint =
     interpolate firstPoint secondPoint 0.5
 
 
+{-| Construct a point by interpolating between two other points based on a
+parameter that ranges from zero to one.
+
+    interpolatedPoint : Float -> Point3d
+    interpolatedPoint =
+        Point3d.interpolate Point3d.origin (Point3d ( 4, 8, 12 ))
+
+    interpolatedPoint 0 == Point3d ( 0, 0, 0 )
+    interpolatedPoint 0.25 == Point3d ( 1, 2, 3 )
+    interpolatedPoint 0.75 == Point3d ( 3, 6, 9 )
+    interpolatedPoint 1 == Point3d ( 4, 8, 12 )
+
+You can actually pass values less than zero or greater than one to extrapolate:
+
+    interpolatedPoint 1.25 == Point3d ( 5, 10, 15 )
+-}
 interpolate : Point3d -> Point3d -> Float -> Point3d
 interpolate startPoint endPoint =
     let
@@ -157,36 +180,47 @@ interpolate startPoint endPoint =
         \t -> translateBy (Vector3d.times t displacement) startPoint
 
 
+{-| Get the (x, y, z) coordinates of a point as a tuple.
+
+    ( x, y, z ) = Point3d.coordinates point
+-}
 coordinates : Point3d -> ( Float, Float, Float )
 coordinates (Point3d coordinates') =
     coordinates'
 
 
+{-| Get the X coordinate of a point.
+
+    Point3d.xCoordinate (Point2d ( 2, 1, 3 )) == 2
+-}
 xCoordinate : Point3d -> Float
 xCoordinate (Point3d ( x, _, _ )) =
     x
 
 
+{-| Get the Y coordinate of a point.
+
+    Point3d.yCoordinate (Point2d ( 2, 1, 3 )) == 1
+-}
 yCoordinate : Point3d -> Float
 yCoordinate (Point3d ( _, y, _ )) =
     y
 
 
+{-| Get the Z coordinate of a point.
+
+    Point3d.zCoordinate (Point2d ( 2, 1, 3 )) == 3
+-}
 zCoordinate : Point3d -> Float
 zCoordinate (Point3d ( _, _, z )) =
     z
 
 
-squaredDistanceFrom : Point3d -> Point3d -> Float
-squaredDistanceFrom other =
-    vectorFrom other >> Vector3d.squaredLength
+{-| Find the vector from one point to another.
 
-
-distanceFrom : Point3d -> Point3d -> Float
-distanceFrom other =
-    squaredDistanceFrom other >> sqrt
-
-
+    Point3d.vectorFrom (Point3d ( 1, 1, 1 )) (Point3d ( 4, 5, 6 )) ==
+        Vector3d ( 3, 4, 5 )
+-}
 vectorFrom : Point3d -> Point3d -> Vector3d
 vectorFrom other point =
     let
@@ -199,16 +233,69 @@ vectorFrom other point =
         Vector3d ( x - x', y - y', z - z' )
 
 
+{-| Flipped version of `vectorFrom`, where the end point is given first.
+
+    Point2d.vectorTo (Point2d ( 1, 1, 1 )) (Point2d ( 4, 5, 6 )) ==
+        Vector2d ( -3, -4, -5 )
+-}
 vectorTo : Point3d -> Point3d -> Vector3d
 vectorTo =
     flip vectorFrom
 
 
+{-| Find the distance between two points.
+
+    Point3d.distanceFrom (Point3d ( 1, 1, 1 )) (Point3d ( 2, 2, 2 )) == sqrt 3
+
+Partial application can be useful:
+
+    points =
+        [ Point3d ( 3, 4, 5 ), Point3d ( 10, 10, 10 ), Point3d ( -1, 2, -3 ) ]
+
+    List.sortBy (Point3d.distanceFrom Point3d.origin) points ==
+        [ Point3d ( -1, 2, -3 ), Point3d ( 3, 4, 5 ), Point3d ( 10, 10, 10 ) ]
+-}
+distanceFrom : Point3d -> Point3d -> Float
+distanceFrom other =
+    squaredDistanceFrom other >> sqrt
+
+
+{-| Find the square of the distance from one point to another.
+`squaredDistanceFrom` is slightly faster than `distanceFrom`, so for example
+
+    Point3d.squaredDistanceFrom firstPoint secondPoint > tolerance * tolerance
+
+is equivalent to but slightly more efficient than
+
+    Point3d.distanceFrom firstPoint secondPoint > tolerance
+
+since the latter requires a square root under the hood. In many cases, however,
+the speed difference will be negligible and using `distanceFrom` is much more
+readable!
+-}
+squaredDistanceFrom : Point3d -> Point3d -> Float
+squaredDistanceFrom other =
+    vectorFrom other >> Vector3d.squaredLength
+
+
+{-| Find the perpendicular (nearest) distance of a point from an axis.
+
+    Point3d.distanceFromAxis Axis3d.x (Point3d ( -1, 2, 0 )) == 2
+    Point3d.distanceFromAxis Axis3d.y (Point3d ( -1, 2, 0 )) == 1
+    Point3d.distanceFromAxis Axis3d.z (Point3d ( -1, 2, 0 )) == sqrt 5
+
+Note that unlike in 2D, the result is always positive (unsigned) since there is
+no such thing as the left or right side of an axis in 3D.
+-}
 distanceFromAxis : Axis3d -> Point3d -> Float
 distanceFromAxis axis =
     squaredDistanceFromAxis axis >> sqrt
 
 
+{-| Find the square of the perpendicular distance of a point from an axis. As
+with `distanceFrom`/`squaredDistanceFrom` this is slightly more efficient than
+`distanceFromAxis` since it avoids a square root.
+-}
 squaredDistanceFromAxis : Axis3d -> Point3d -> Float
 squaredDistanceFromAxis axis =
     let
@@ -223,6 +310,18 @@ squaredDistanceFromAxis axis =
             >> Vector3d.squaredLength
 
 
+{-| Determine how far along an axis a particular point lies. Conceptually, the
+point is projected perpendicularly onto the axis, and then the distance of this
+projected point from the axis' origin point is measured. The result will be
+positive if the projected point is ahead the axis' origin point and negative if
+it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
+
+    axis =
+        Axis3d { originPoint = Point3d ( 1, 0, 0 ), direction = Direction3d.x }
+
+    Point3d.signedDistanceAlong axis (Point3d ( 3, 3, 3 )) == 2
+    Point3d.signedDistanceAlong axis Point3d.origin == -1
+-}
 signedDistanceAlong : Axis3d -> Point3d -> Float
 signedDistanceAlong axis =
     let
@@ -232,6 +331,24 @@ signedDistanceAlong axis =
         vectorFrom originPoint >> Vector3d.componentIn direction
 
 
+{-| Find the perpendicular distance of a point from a plane. The result will be
+positive if the point is 'above' the plane and negative if it is 'below', with
+'up' defined by the normal direction of the plane. This means that flipping a
+plane (reversing its normal direction) will also flip the sign of the result of
+this function.
+
+    plane =
+        Plane3d
+            { originPoint = Point2d ( 1, 2, 3 )
+            , normalDirection = Direction2d.y
+            }
+
+    Point3d.signedDistanceFrom plane (Point3d ( 3, 3, 3 )) == 1
+    Point3d.signedDistanceFrom plane Point3d.origin == -2
+
+    Point3d.signedDistanceFrom (Plane3d.flip plane) (Point3d ( 3, 3, 3 )) == -1
+    Point3d.signedDistanceFrom (Plane3d.flip plane) Point3d.origin == 2
+-}
 signedDistanceFrom : Plane3d -> Point3d -> Float
 signedDistanceFrom plane =
     let
