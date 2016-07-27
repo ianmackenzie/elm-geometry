@@ -13,9 +13,9 @@ module OpenSolid.Core.Direction2d
         , y
         , fromAngle
         , perpendicularTo
+        , components
         , xComponent
         , yComponent
-        , components
         , rotateBy
         , mirrorAcross
         , localizeTo
@@ -63,6 +63,11 @@ perpendicularTo =
     toVector >> Vector2d.perpendicularTo >> toDirection
 
 
+components : Direction2d -> ( Float, Float )
+components (Direction2d components') =
+    components'
+
+
 xComponent : Direction2d -> Float
 xComponent =
     components >> fst
@@ -71,11 +76,6 @@ xComponent =
 yComponent : Direction2d -> Float
 yComponent =
     components >> snd
-
-
-components : Direction2d -> ( Float, Float )
-components (Direction2d components') =
-    components'
 
 
 rotateBy : Float -> Direction2d -> Direction2d

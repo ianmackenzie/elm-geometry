@@ -13,10 +13,10 @@ module OpenSolid.Core.Direction3d
         , y
         , z
         , perpendicularTo
+        , components
         , xComponent
         , yComponent
         , zComponent
-        , components
         , rotateAround
         , mirrorAcross
         , localizeTo
