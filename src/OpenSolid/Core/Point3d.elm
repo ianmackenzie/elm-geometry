@@ -303,7 +303,7 @@ squaredDistanceFromAxis axis =
             axis
 
         directionVector =
-            Vector3d (Direction3d.components direction)
+            Direction3d.toVector direction
     in
         vectorFrom originPoint
             >> Vector3d.crossProduct directionVector
