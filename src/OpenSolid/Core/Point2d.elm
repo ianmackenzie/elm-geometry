@@ -380,7 +380,8 @@ translateBy vector point =
         Point2d ( px + vx, py + vy )
 
 
-{-| Mirror a point across an axis.
+{-| Mirror a point across an axis. The result will be the same distance from the
+axis but on the opposite side.
 
     Point2d.mirrorAcross Axis2d.x (Point2d ( 2, 3 )) == Point2d ( -2, 3 )
 -}
