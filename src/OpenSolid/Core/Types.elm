@@ -40,10 +40,9 @@ satisfy certain invariants that are otherwise always maintained. Specifically:
 
   - The components defining a `Direction2d` or `Direction3d` must be properly
     normalized so that the direction has a 'length' of one.
-  - The X and Y directions of a `Frame2d` must be perpendicular to each other.
+  - The X and Y directions of a `Frame2d` or `PlanarFrame3d` must be
+    perpendicular to each other.
   - The X, Y, and Z directions of a `Frame3d` must all be mutually
-    perpendicular.
-  - The X, Y, and normal directions of a `Plane3d` must all be mutually
     perpendicular.
 
 For example, instead of constructing a `Direction2d` directly from its
