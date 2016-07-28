@@ -358,11 +358,43 @@ signedDistanceFrom plane =
         vectorFrom originPoint >> Vector3d.componentIn normalDirection
 
 
+{-| Perform a uniform scaling about the given center point. The center point is
+given first and the point to transform is given last. Points will contract or
+expand about the center point by the given scale. Scaling by a factor of 1 is a
+no-op, and scaling by a factor of 0 collapses all points to the center point.
+
+    Point3d.scaleAbout Point3d.origin 3 (Point3d ( 1, 2, 3 )) ==
+        Point3d ( 3, 6, 9 )
+
+    Point3d.scaleAbout (Point3d ( 1, 1, 1 )) 2 (Point3d ( 1, 2, 3 )) ==
+        Point3d ( 1, 3, 5 )
+
+    Point3d.scaleAbout (Point3d ( 1, 1, 1 )) 0.5 (Point3d ( 1, 2, 3 )) ==
+        Point3d ( 1, 1.5, 2 )
+
+    Point3d.scaleAbout (Point3d ( 1, 1, 1 )) 10 (Point3d ( 1, 1, 1 )) ==
+        Point3d ( 1, 1, 1 )
+
+Do not scale by a negative scaling factor - while this may sometimes do what you
+want it is confusing and error prone. Try a combination of mirror and/or
+rotation operations instead.
+-}
 scaleAbout : Point3d -> Float -> Point3d -> Point3d
 scaleAbout centerPoint scale =
     vectorFrom centerPoint >> Vector3d.times scale >> addTo centerPoint
 
 
+{-| Rotate a point around an axis by a given angle (in radians).
+
+    Point3d.rotateAround Axis3d.x (degrees 90) (Point3d ( 3, 1, 0 )) ==
+        Point3d ( 3, 0, 1 )
+
+    Point3d.rotateAround Axis3d.z (degrees 45) (Point3d ( 1, 0, 0 )) ==
+        Point3d ( 0.7071, 0.7071, 0 )
+
+Rotation direction is given by the right-hand rule, counterclockwise about the
+direction of the axis.
+-}
 rotateAround : Axis3d -> Float -> Point3d -> Point3d
 rotateAround axis angle =
     let
@@ -374,6 +406,11 @@ rotateAround axis angle =
             >> addTo originPoint
 
 
+{-| Translate a point by a given displacement. You can think of this as 'plus'.
+
+    Point3d.translateBy (Vector3d ( 1, 2, 3 )) (Point3d ( 3, 4, 5 )) ==
+        Point3d ( 4, 6, 8 )
+-}
 translateBy : Vector3d -> Point3d -> Point3d
 translateBy vector point =
     let
@@ -386,6 +423,23 @@ translateBy vector point =
         Point3d ( px + vx, py + vy, pz + vz )
 
 
+{-| Mirror a point across a plane. The result will be the same distance from the
+plane but on the opposite side.
+
+    Point3d.mirrorAcross Plane3d.xy (Point3d ( 1, 2, 3 )) ==
+        Point3d ( 1, 2, -3 )
+
+    Point3d.mirrorAcross Plane3d.yz (Point3d ( 1, 2, 3 )) ==
+        Point3d ( -1, 2, 3 )
+
+    offsetPlane =
+        Plane3d.offsetBy 1 Plane3d.xy
+
+    -- The origin point is 1 unit below the offset
+    -- plane, so its mirrored copy is one unit above
+    Point3d.mirrorAcross offsetPlane Point3d.origin ==
+        Point3d ( 0, 0, 2 )
+-}
 mirrorAcross : Plane3d -> Point3d -> Point3d
 mirrorAcross plane =
     let
@@ -395,6 +449,71 @@ mirrorAcross plane =
         vectorFrom originPoint
             >> Vector3d.mirrorAcross plane
             >> addTo originPoint
+
+
+{-| Project a point perpendicularly onto a plane.
+
+    Point3d.projectOnto Plane3d.xy (Point3d ( 1, 2, 3 )) ==
+        Point3d ( 1, 2, 0 )
+
+    Point3d.projectOnto Plane3d.yz (Point3d ( 1, 2, 3 )) ==
+        Point3d ( 0, 2, 3 )
+
+    offsetPlane =
+        Plane3d.offsetBy 1 Plane3d.xy
+
+    Point3d.projectOnto offsetPlane (Point3d ( 1, 2, 3 )) ==
+        Point3d ( 1, 2, 1 )
+-}
+projectOnto : Plane3d -> Point3d -> Point3d
+projectOnto plane point =
+    let
+        (Plane3d { originPoint, normalDirection }) =
+            plane
+
+        signedDistance =
+            signedDistanceFrom plane point
+
+        displacement =
+            Direction3d.times -signedDistance normalDirection
+    in
+        translateBy displacement point
+
+
+{-| Project a point perpendicularly onto an axis.
+
+    Point3d.projectOntoAxis Axis2d.x (Point3d ( 1, 2, 3 )) ==
+        Point2d ( 1, 0, 0 )
+
+    Point3d.projectOntoAxis Axis2d.y (Point3d ( 1, 2, 3 )) ==
+        Point2d ( 0, 2, 0 )
+
+    verticalAxis =
+        Axis3d { originPoint = Point3d ( 1, 1, 1 ), direction = Direction3d.z }
+
+    Point3d.projectOntoAxis verticalAxis (Point3d ( 10, 10, 10 )) ==
+        Point3d ( 1, 1, 10 )
+-}
+projectOntoAxis : Axis3d -> Point3d -> Point3d
+projectOntoAxis axis =
+    let
+        (Axis3d { originPoint, direction }) =
+            axis
+    in
+        vectorFrom originPoint
+            >> Vector3d.projectOntoAxis axis
+            >> addTo originPoint
+
+
+projectInto2d : PlanarFrame3d -> Point3d -> Point2d
+projectInto2d planarFrame =
+    let
+        (PlanarFrame3d { originPoint, xDirection, yDirection }) =
+            planarFrame
+    in
+        vectorFrom originPoint
+            >> Vector3d.projectInto2d planarFrame
+            >> (\(Vector2d components) -> Point2d components)
 
 
 localizeTo : Frame3d -> Point3d -> Point3d
@@ -415,43 +534,6 @@ placeIn frame =
             frame
     in
         coordinates >> Vector3d >> Vector3d.placeIn frame >> addTo originPoint
-
-
-projectOntoAxis : Axis3d -> Point3d -> Point3d
-projectOntoAxis axis =
-    let
-        (Axis3d { originPoint, direction }) =
-            axis
-    in
-        vectorFrom originPoint
-            >> Vector3d.projectOntoAxis axis
-            >> addTo originPoint
-
-
-projectOnto : Plane3d -> Point3d -> Point3d
-projectOnto plane point =
-    let
-        (Plane3d { originPoint, normalDirection }) =
-            plane
-
-        signedDistance =
-            signedDistanceFrom plane point
-
-        displacement =
-            Direction3d.times -signedDistance normalDirection
-    in
-        translateBy displacement point
-
-
-projectInto2d : PlanarFrame3d -> Point3d -> Point2d
-projectInto2d planarFrame =
-    let
-        (PlanarFrame3d { originPoint, xDirection, yDirection }) =
-            planarFrame
-    in
-        vectorFrom originPoint
-            >> Vector3d.projectInto2d planarFrame
-            >> (\(Vector2d components) -> Point2d components)
 
 
 toRecord : Point3d -> { x : Float, y : Float, z : Float }
