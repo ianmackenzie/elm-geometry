@@ -4,8 +4,8 @@
   "repository": "https://github.com/ianmackenzie/opensolid-core.git",
   "license": "MPL-2.0",
   "source-directories": ["src"],
-  "exposed-modules-doc": [
-    "OpenSolid.Core.Point2d"
+  "doc-exposed-modules": [
+    "OpenSolid.Core.Point3d"
   ],
   "exposed-modules": [
     "OpenSolid.Core.Types",
@@ -13,7 +13,8 @@
     "OpenSolid.Core.Decode",
     "OpenSolid.Core.Vector2d",
     "OpenSolid.Core.Vector3d",
-    "OpenSolid.Core.Point2d"
+    "OpenSolid.Core.Point2d",
+    "OpenSolid.Core.Point3d"
   ],
   "dependencies": {
     "elm-lang/core": "4.0.0 <= v < 5.0.0"

@@ -10,6 +10,7 @@
 module OpenSolid.Core.Point3d
     exposing
         ( origin
+        , along
         , midpoint
         , interpolate
         , coordinates
@@ -505,6 +506,20 @@ projectOntoAxis axis =
             >> addTo originPoint
 
 
+{-| Project a point into a given planar frame. Conceptually, this projects the
+point onto the plane of the given frame and then expresses the projected point
+in terms of 2D components within the plane (relative to the given frame's X and
+Y axes).
+
+    Point3d.projectInto2d PlanarFrame3d.xy (Point3d ( 2, 1, 3 )) ==
+        Point2d ( 2, 1 )
+
+    Point3d.projectInto2d PlanarFrame3d.yz (Point3d ( 2, 1, 3 )) ==
+        Point2d ( 1, 3 )
+
+    Point3d.projectInto2d PlanarFrame3d.zx (Point3d ( 2, 1, 3 )) ==
+        Point2d ( 3, 2 )
+-}
 projectInto2d : PlanarFrame3d -> Point3d -> Point2d
 projectInto2d planarFrame =
     let
@@ -516,6 +531,16 @@ projectInto2d planarFrame =
             >> (\(Vector2d components) -> Point2d components)
 
 
+{-| Convert a point from global coordinates to local coordinates within a given
+frame. The result will be the given point expressed relative to the given
+frame.
+
+    localFrame =
+        Frame3d.translateTo (Point3d ( 1, 2, 3 )) Frame3d.xyz
+
+    Point3d.localizeTo localFrame (Point3d ( 4, 5, 6 )) == Point3d ( 3, 3, 3 )
+    Point3d.localizeTo localFrame (Point3d ( 1, 1, 1 )) == Point3d ( 0, -1, -2 )
+-}
 localizeTo : Frame3d -> Point3d -> Point3d
 localizeTo frame =
     let
@@ -527,6 +552,15 @@ localizeTo frame =
             >> (\(Vector3d components) -> Point3d components)
 
 
+{-| Convert a point from local coordinates within a given frame to global
+coordinates. Inverse of `localizeTo`.
+
+    localFrame =
+        Frame3d.translateTo (Point3d ( 1, 2, 3 )) Frame3d.xy
+
+    Point3d.placeIn localFrame (Point3d ( 3, 3, 3 )) == Point3d ( 4, 5, 6 )
+    Point3d.placeIn localFrame (Point3d ( 0, -1, -2 )) == Point3d ( 1, 1, 1 )
+-}
 placeIn : Frame3d -> Point3d -> Point3d
 placeIn frame =
     let
@@ -536,11 +570,19 @@ placeIn frame =
         coordinates >> Vector3d >> Vector3d.placeIn frame >> addTo originPoint
 
 
+{-| Convert a point to a record with `x`, `y` and `z` fields.
+
+    Point3d.toRecord (Point3d ( 2, 3, 1 )) == { x = 2, y = 3, z = 1 }
+-}
 toRecord : Point3d -> { x : Float, y : Float, z : Float }
 toRecord (Point3d ( x, y, z )) =
     { x = x, y = y, z = z }
 
 
+{-| Construct a point from a record with `x`, `y` and `z` fields.
+
+    Point3d.fromRecord { x = 2, y = 3, z = 1 } == Point2d ( 2, 3, 1 )
+-}
 fromRecord : { x : Float, y : Float, z : Float } -> Point3d
 fromRecord { x, y, z } =
     Point3d ( x, y, z )
