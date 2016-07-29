@@ -24,7 +24,7 @@ module OpenSolid.Core.Plane3d
         , scaleAbout
         , rotateAround
         , translateBy
-        , translateTo
+        , moveTo
         , mirrorAcross
         , localizeTo
         , placeIn
@@ -169,10 +169,10 @@ translateBy vector plane =
         }
 
 
-translateTo : Point3d -> Plane3d -> Plane3d
-translateTo point plane =
+moveTo : Point3d -> Plane3d -> Plane3d
+moveTo newOrigin plane =
     Plane3d
-        { originPoint = point
+        { originPoint = newOrigin
         , normalDirection = normalDirection plane
         }
 

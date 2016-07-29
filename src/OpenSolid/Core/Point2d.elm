@@ -422,7 +422,7 @@ frame. The result will be the given point expressed relative to the given
 frame.
 
     localFrame =
-        Frame2d.translateTo (Point2d ( 1, 2 )) Frame2d.xy
+        Frame2d.moveTo (Point2d ( 1, 2 )) Frame2d.xy
 
     Point2d.localizeTo localFrame (Point2d ( 4, 5 )) == Point2d ( 3, 3 )
     Point2d.localizeTo localFrame (Point2d ( 1, 0 )) == Point2d ( 0, -2 )
@@ -443,7 +443,7 @@ localizeTo frame =
 coordinates. Inverse of `localizeTo`.
 
     localFrame =
-        Frame2d.translateTo (Point2d ( 1, 2 )) Frame2d.xy
+        Frame2d.moveTo (Point2d ( 1, 2 )) Frame2d.xy
 
     Point2d.placeIn localFrame (Point2d ( 3, 3 )) == Point2d ( 4, 5 )
     Point2d.placeIn localFrame (Point2d ( 0, -2 )) == Point2d ( 1, 0 )

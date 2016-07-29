@@ -34,7 +34,7 @@ module OpenSolid.Core.Frame3d
         , rotateAroundOwn
         , translateBy
         , translateAlongOwn
-        , translateTo
+        , moveTo
         , mirrorAcross
         , mirrorAcrossOwn
         , localizeTo
@@ -246,10 +246,10 @@ translateAlongOwn axis distance frame =
         translateBy displacement frame
 
 
-translateTo : Point3d -> Frame3d -> Frame3d
-translateTo point frame =
+moveTo : Point3d -> Frame3d -> Frame3d
+moveTo newOrigin frame =
     Frame3d
-        { originPoint = point
+        { originPoint = newOrigin
         , xDirection = xDirection frame
         , yDirection = yDirection frame
         , zDirection = zDirection frame

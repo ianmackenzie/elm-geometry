@@ -26,7 +26,7 @@ module OpenSolid.Core.PlanarFrame3d
         , rotateAroundOwn
         , translateBy
         , translateAlongOwn
-        , translateTo
+        , moveTo
         , mirrorAcross
         , localizeTo
         , placeIn
@@ -193,10 +193,10 @@ translateAlongOwn axis distance planarFrame =
         translateBy displacement planarFrame
 
 
-translateTo : Point3d -> PlanarFrame3d -> PlanarFrame3d
-translateTo point planarFrame =
+moveTo : Point3d -> PlanarFrame3d -> PlanarFrame3d
+moveTo newOrigin planarFrame =
     PlanarFrame3d
-        { originPoint = point
+        { originPoint = newOrigin
         , xDirection = xDirection planarFrame
         , yDirection = yDirection planarFrame
         }

@@ -18,7 +18,7 @@ module OpenSolid.Core.Axis2d
         , scaleAbout
         , rotateAround
         , translateBy
-        , translateTo
+        , moveTo
         , mirrorAcross
         , localizeTo
         , placeIn
@@ -98,9 +98,9 @@ translateBy vector axis =
         }
 
 
-translateTo : Point2d -> Axis2d -> Axis2d
-translateTo point axis =
-    Axis2d { originPoint = point, direction = direction axis }
+moveTo : Point2d -> Axis2d -> Axis2d
+moveTo newOrigin axis =
+    Axis2d { originPoint = newOrigin, direction = direction axis }
 
 
 mirrorAcross : Axis2d -> Axis2d -> Axis2d

@@ -20,7 +20,7 @@ module OpenSolid.Core.Frame2d
         , rotateAroundOwn
         , translateBy
         , translateAlongOwn
-        , translateTo
+        , moveTo
         , mirrorAcross
         , mirrorAcrossOwn
         , localizeTo
@@ -117,10 +117,10 @@ translateAlongOwn axis distance frame =
         translateBy displacement frame
 
 
-translateTo : Point2d -> Frame2d -> Frame2d
-translateTo point frame =
+moveTo : Point2d -> Frame2d -> Frame2d
+moveTo newOrigin frame =
     Frame2d
-        { originPoint = point
+        { originPoint = newOrigin
         , xDirection = xDirection frame
         , yDirection = yDirection frame
         }
