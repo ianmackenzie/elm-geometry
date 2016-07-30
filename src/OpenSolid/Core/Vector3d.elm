@@ -31,7 +31,7 @@ module OpenSolid.Core.Vector3d
         , projectOntoAxis
         , projectOnto
         , projectInto2d
-        , localizeTo
+        , relativeTo
         , placeIn
         , toRecord
         , fromRecord
@@ -93,7 +93,7 @@ different coordinate frames. Like transformations, coordinate conversions of
 vectors depend only on the orientations of the relevant frames/planes, not their
 positions.
 
-For `localizeTo` and `placeIn`, assume the following definition of a local
+For `relativeTo` and `placeIn`, assume the following definition of a local
 coordinate frame, one that is rotated 45 degrees counterclockwise about the Z
 axis from the global XYZ frame:
 
@@ -104,7 +104,7 @@ axis from the global XYZ frame:
     Frame3d.yDirection rotatedFrame == Direction3d ( -0.7071, 0.7071, 0 )
     Frame3d.zDirection rotatedFrame == Direction3d ( 0, 0, 1 )
 
-@docs projectInto2d, localizeTo, placeIn
+@docs projectInto2d, relativeTo, placeIn
 
 # Record conversions
 
@@ -586,15 +586,14 @@ projectOnto plane vector =
         minus (projectionIn normalDirection vector) vector
 
 
-{-| Convert a vector from global coordinates to local coordinates within a given
-frame. The result will be the given vector expressed relative to the given
-frame.
+{-| Take a vector currently expressed in global coordinates and express it in
+coordinates relative to a given frame.
 
-    Vector3d.localizeTo rotatedFrame (Vector3d ( 2, 0, 1 )) ==
+    Vector3d.relativeTo rotatedFrame (Vector3d ( 2, 0, 1 )) ==
         Vector3d ( 1.4142, -1.4142, 1 )
 -}
-localizeTo : Frame3d -> Vector3d -> Vector3d
-localizeTo frame vector =
+relativeTo : Frame3d -> Vector3d -> Vector3d
+relativeTo frame vector =
     let
         (Frame3d { originPoint, xDirection, yDirection, zDirection }) =
             frame
@@ -606,8 +605,9 @@ localizeTo frame vector =
             )
 
 
-{-| Convert a vector from local coordinates within a given frame to global
-coordinates.
+{-| Place a vector in a given frame, considering its components as being
+relative to that frame and returning the corresponding vector in global
+coordinates. Inverse of `relativeTo`.
 
     Vector3d.placeIn rotatedFrame (Vector3d ( 2, 0, 1 )) ==
         Vector3d ( 1.4142, 1.4142, 1 )

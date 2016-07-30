@@ -20,7 +20,7 @@ module OpenSolid.Core.Direction3d
         , toVector
         , rotateAround
         , mirrorAcross
-        , localizeTo
+        , relativeTo
         , placeIn
         , projectOnto
         , projectInto2d
@@ -106,9 +106,9 @@ mirrorAcross plane =
     toVector >> Vector3d.mirrorAcross plane >> toDirection
 
 
-localizeTo : Frame3d -> Direction3d -> Direction3d
-localizeTo frame =
-    toVector >> Vector3d.localizeTo frame >> toDirection
+relativeTo : Frame3d -> Direction3d -> Direction3d
+relativeTo frame =
+    toVector >> Vector3d.relativeTo frame >> toDirection
 
 
 placeIn : Frame3d -> Direction3d -> Direction3d

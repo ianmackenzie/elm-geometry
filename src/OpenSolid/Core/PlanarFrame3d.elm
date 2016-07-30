@@ -28,7 +28,7 @@ module OpenSolid.Core.PlanarFrame3d
         , translateAlongOwn
         , moveTo
         , mirrorAcross
-        , localizeTo
+        , relativeTo
         , placeIn
         )
 
@@ -219,20 +219,20 @@ mirrorAcross plane =
                 }
 
 
-localizeTo : Frame3d -> PlanarFrame3d -> PlanarFrame3d
-localizeTo frame =
+relativeTo : Frame3d -> PlanarFrame3d -> PlanarFrame3d
+relativeTo frame =
     let
-        localizePoint =
-            Point3d.localizeTo frame
+        relativePoint =
+            Point3d.relativeTo frame
 
-        localizeDirection =
-            Direction3d.localizeTo frame
+        relativeDirection =
+            Direction3d.relativeTo frame
     in
         \planarFrame ->
             PlanarFrame3d
-                { originPoint = localizePoint (originPoint planarFrame)
-                , xDirection = localizeDirection (xDirection planarFrame)
-                , yDirection = localizeDirection (yDirection planarFrame)
+                { originPoint = relativePoint (originPoint planarFrame)
+                , xDirection = relativeDirection (xDirection planarFrame)
+                , yDirection = relativeDirection (yDirection planarFrame)
                 }
 
 

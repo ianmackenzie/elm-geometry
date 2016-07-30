@@ -27,7 +27,7 @@ module OpenSolid.Core.Point2d
         , translateBy
         , mirrorAcross
         , projectOnto
-        , localizeTo
+        , relativeTo
         , placeIn
         , placeIn3d
         , toRecord
@@ -87,7 +87,7 @@ different coordinate systems. Although these examples use a simple offset
 frame, these functions can be used to convert to and from local coordinates in
 arbitrarily transformed (translated, rotated, mirrored) frames.
 
-@docs localizeTo, placeIn, placeIn3d
+@docs relativeTo, placeIn, placeIn3d
 
 # Record conversions
 
@@ -534,9 +534,8 @@ projectOnto axis =
             >> addTo originPoint
 
 
-{-| Convert a point from global coordinates to local coordinates within a given
-frame. The result will be the given point expressed relative to the given
-frame.
+{-| Take a point currently expressed in global coordinates and express it in
+coordinates relative to a given frame.
 
     localOrigin =
         Point2d ( 1, 2 )
@@ -544,26 +543,27 @@ frame.
     localFrame =
         Frame2d.moveTo localOrigin Frame2d.xy
 
-    Point2d.localizeTo localFrame (Point2d ( 4, 5 )) ==
+    Point2d.relativeTo localFrame (Point2d ( 4, 5 )) ==
         Point2d ( 3, 3 )
 
-    Point2d.localizeTo localFrame (Point2d ( 1, 0 )) ==
+    Point2d.relativeTo localFrame (Point2d ( 1, 0 )) ==
         Point2d ( 0, -2 )
 -}
-localizeTo : Frame2d -> Point2d -> Point2d
-localizeTo frame =
+relativeTo : Frame2d -> Point2d -> Point2d
+relativeTo frame =
     let
         (Frame2d { originPoint, xDirection, yDirection }) =
             frame
     in
         vectorFrom originPoint
-            >> Vector2d.localizeTo frame
+            >> Vector2d.relativeTo frame
             >> Vector2d.components
             >> Point2d
 
 
-{-| Convert a point from local coordinates within a given frame to global
-coordinates. Inverse of `localizeTo`.
+{-| Place a point in a given frame, considering its coordinates as being
+relative to that frame and returning the corresponding point in global
+coordinates. Inverse of `relativeTo`.
 
     localOrigin =
         Point2d ( 1, 2 )

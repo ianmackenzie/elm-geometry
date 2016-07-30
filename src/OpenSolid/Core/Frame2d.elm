@@ -23,7 +23,7 @@ module OpenSolid.Core.Frame2d
         , moveTo
         , mirrorAcross
         , mirrorAcrossOwn
-        , localizeTo
+        , relativeTo
         , placeIn
         , placeIn3d
         )
@@ -148,20 +148,20 @@ mirrorAcrossOwn axis frame =
     mirrorAcross (axis frame) frame
 
 
-localizeTo : Frame2d -> Frame2d -> Frame2d
-localizeTo otherFrame =
+relativeTo : Frame2d -> Frame2d -> Frame2d
+relativeTo otherFrame =
     let
-        localizePoint =
-            Point2d.localizeTo otherFrame
+        relativePoint =
+            Point2d.relativeTo otherFrame
 
-        localizeDirection =
-            Direction2d.localizeTo otherFrame
+        relativeDirection =
+            Direction2d.relativeTo otherFrame
     in
         \frame ->
             Frame2d
-                { originPoint = localizePoint (originPoint frame)
-                , xDirection = localizeDirection (xDirection frame)
-                , yDirection = localizeDirection (yDirection frame)
+                { originPoint = relativePoint (originPoint frame)
+                , xDirection = relativeDirection (xDirection frame)
+                , yDirection = relativeDirection (yDirection frame)
                 }
 
 

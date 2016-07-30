@@ -20,7 +20,7 @@ module OpenSolid.Core.Axis2d
         , translateBy
         , moveTo
         , mirrorAcross
-        , localizeTo
+        , relativeTo
         , placeIn
         , placeIn3d
         )
@@ -119,19 +119,19 @@ mirrorAcross otherAxis =
                 }
 
 
-localizeTo : Frame2d -> Axis2d -> Axis2d
-localizeTo frame =
+relativeTo : Frame2d -> Axis2d -> Axis2d
+relativeTo frame =
     let
-        localizePoint =
-            Point2d.localizeTo frame
+        relativePoint =
+            Point2d.relativeTo frame
 
-        localizeDirection =
-            Direction2d.localizeTo frame
+        relativeDirection =
+            Direction2d.relativeTo frame
     in
         \axis ->
             Axis2d
-                { originPoint = localizePoint (originPoint axis)
-                , direction = localizeDirection (direction axis)
+                { originPoint = relativePoint (originPoint axis)
+                , direction = relativeDirection (direction axis)
                 }
 
 

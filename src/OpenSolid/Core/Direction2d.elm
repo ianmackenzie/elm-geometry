@@ -19,7 +19,7 @@ module OpenSolid.Core.Direction2d
         , toVector
         , rotateBy
         , mirrorAcross
-        , localizeTo
+        , relativeTo
         , placeIn
         , placeIn3d
         , negate
@@ -89,9 +89,9 @@ mirrorAcross axis =
     toVector >> Vector2d.mirrorAcross axis >> toDirection
 
 
-localizeTo : Frame2d -> Direction2d -> Direction2d
-localizeTo frame =
-    toVector >> Vector2d.localizeTo frame >> toDirection
+relativeTo : Frame2d -> Direction2d -> Direction2d
+relativeTo frame =
+    toVector >> Vector2d.relativeTo frame >> toDirection
 
 
 placeIn : Frame2d -> Direction2d -> Direction2d

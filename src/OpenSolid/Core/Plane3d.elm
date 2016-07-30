@@ -26,7 +26,7 @@ module OpenSolid.Core.Plane3d
         , translateBy
         , moveTo
         , mirrorAcross
-        , localizeTo
+        , relativeTo
         , placeIn
         )
 
@@ -193,19 +193,19 @@ mirrorAcross otherPlane =
                 }
 
 
-localizeTo : Frame3d -> Plane3d -> Plane3d
-localizeTo frame =
+relativeTo : Frame3d -> Plane3d -> Plane3d
+relativeTo frame =
     let
-        localizePoint =
-            Point3d.localizeTo frame
+        relativePoint =
+            Point3d.relativeTo frame
 
-        localizeDirection =
-            Direction3d.localizeTo frame
+        relativeDirection =
+            Direction3d.relativeTo frame
     in
         \plane ->
             Plane3d
-                { originPoint = localizePoint (originPoint plane)
-                , normalDirection = localizeDirection (normalDirection plane)
+                { originPoint = relativePoint (originPoint plane)
+                , normalDirection = relativeDirection (normalDirection plane)
                 }
 
 

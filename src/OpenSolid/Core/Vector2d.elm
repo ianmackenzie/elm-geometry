@@ -28,7 +28,7 @@ module OpenSolid.Core.Vector2d
         , mirrorAcross
         , projectionIn
         , projectOnto
-        , localizeTo
+        , relativeTo
         , placeIn
         , placeIn3d
         , toRecord
@@ -94,7 +94,7 @@ different coordinate frames. Like transformations, coordinate conversions of
 vectors depend only on the orientations of the relevant frames/planes, not the
 positions of their origin points.
 
-For `localizeTo` and `placeIn`, assume the following frames have been defined:
+For `relativeTo` and `placeIn`, assume the following frames have been defined:
 
     upsideDownFrame =
         Frame2d
@@ -106,7 +106,7 @@ For `localizeTo` and `placeIn`, assume the following frames have been defined:
     rotatedFrame =
         Frame2d.rotateAround Point2d.origin (degrees 45) Frame2d.xy
 
-@docs localizeTo, placeIn, placeIn3d
+@docs relativeTo, placeIn, placeIn3d
 
 # Record conversions
 
@@ -422,18 +422,17 @@ projectOnto axis =
         projectionIn direction
 
 
-{-| Convert a vector from global coordinates to local coordinates within a given
-frame. The result will be the given vector expressed relative to the given
-frame.
+{-| Take a vector currently expressed in global coordinates and express it in
+coordinates relative to a given frame.
 
-    Vector2d.localizeTo upsideDownFrame (Vector2d ( 2, 3 )) ==
+    Vector2d.relativeTo upsideDownFrame (Vector2d ( 2, 3 )) ==
         Vector2d ( 2, -3 )
 
-    Vector2d.localizeTo rotatedFrame (Vector2d ( 2, 0 )) ==
+    Vector2d.relativeTo rotatedFrame (Vector2d ( 2, 0 )) ==
         Vector2d ( 1.4142, -1.4142 )
 -}
-localizeTo : Frame2d -> Vector2d -> Vector2d
-localizeTo frame vector =
+relativeTo : Frame2d -> Vector2d -> Vector2d
+relativeTo frame vector =
     let
         (Frame2d { originPoint, xDirection, yDirection }) =
             frame
@@ -444,8 +443,9 @@ localizeTo frame vector =
             )
 
 
-{-| Convert a vector from local coordinates within a given frame to global
-coordinates.
+{-| Place a vector in a given frame, considering its components as being
+relative to that frame and returning the corresponding vector in global
+coordinates. Inverse of `relativeTo`.
 
     Vector2d.placeIn upsideDownFrame (Vector2d ( 2, 3 )) ==
         Vector2d ( 2, -3 )

@@ -32,7 +32,7 @@ module OpenSolid.Core.Point3d
         , projectOnto
         , projectOntoAxis
         , projectInto2d
-        , localizeTo
+        , relativeTo
         , placeIn
         , toRecord
         , fromRecord
@@ -85,7 +85,7 @@ different coordinate systems. Although these examples use a simple offset
 frame, these functions can be used to convert to and from local coordinates in
 arbitrarily transformed (translated, rotated, mirrored) frames.
 
-@docs projectInto2d, localizeTo, placeIn
+@docs projectInto2d, relativeTo, placeIn
 
 # Record conversions
 
@@ -525,6 +525,8 @@ plane but on the opposite side.
     Point3d.mirrorAcross Plane3d.yz point ==
         Point3d ( -1, 2, 3 )
 
+The plane does not have to pass through the origin:
+
     -- offsetPlane is the plane Z=1
     offsetPlane =
         Plane3d.offsetBy 1 Plane3d.xy
@@ -643,9 +645,8 @@ projectInto2d planarFrame =
             >> (\(Vector2d components) -> Point2d components)
 
 
-{-| Convert a point from global coordinates to local coordinates within a given
-frame. The result will be the given point expressed relative to the given
-frame.
+{-| Take a point currently expressed in global coordinates and express it in
+coordinates relative to a given frame.
 
     localOrigin =
         Point3d ( 1, 2, 3 )
@@ -653,25 +654,26 @@ frame.
     localFrame =
         Frame3d.moveTo localOrigin Frame3d.xyz
 
-    Point3d.localizeTo localFrame (Point3d ( 4, 5, 6 )) ==
+    Point3d.relativeTo localFrame (Point3d ( 4, 5, 6 )) ==
         Point3d ( 3, 3, 3 )
 
-    Point3d.localizeTo localFrame (Point3d ( 1, 1, 1 )) ==
+    Point3d.relativeTo localFrame (Point3d ( 1, 1, 1 )) ==
         Point3d ( 0, -1, -2 )
 -}
-localizeTo : Frame3d -> Point3d -> Point3d
-localizeTo frame =
+relativeTo : Frame3d -> Point3d -> Point3d
+relativeTo frame =
     let
         (Frame3d { originPoint, xDirection, yDirection, zDirection }) =
             frame
     in
         vectorFrom originPoint
-            >> Vector3d.localizeTo frame
+            >> Vector3d.relativeTo frame
             >> (\(Vector3d components) -> Point3d components)
 
 
-{-| Convert a point from local coordinates within a given frame to global
-coordinates. Inverse of `localizeTo`.
+{-| Place a point in a given frame, considering its coordinates as being
+relative to that frame and returning the corresponding point in global
+coordinates. Inverse of `relativeTo`.
 
     localOrigin =
         Point3d ( 1, 2, 3 )

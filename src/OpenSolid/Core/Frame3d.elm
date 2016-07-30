@@ -37,7 +37,7 @@ module OpenSolid.Core.Frame3d
         , moveTo
         , mirrorAcross
         , mirrorAcrossOwn
-        , localizeTo
+        , relativeTo
         , placeIn
         )
 
@@ -279,21 +279,21 @@ mirrorAcrossOwn plane frame =
     mirrorAcross (plane frame) frame
 
 
-localizeTo : Frame3d -> Frame3d -> Frame3d
-localizeTo otherFrame =
+relativeTo : Frame3d -> Frame3d -> Frame3d
+relativeTo otherFrame =
     let
-        localizePoint =
-            Point3d.localizeTo otherFrame
+        relativePoint =
+            Point3d.relativeTo otherFrame
 
-        localizeDirection =
-            Direction3d.localizeTo otherFrame
+        relativeDirection =
+            Direction3d.relativeTo otherFrame
     in
         \frame ->
             Frame3d
-                { originPoint = localizePoint (originPoint frame)
-                , xDirection = localizeDirection (xDirection frame)
-                , yDirection = localizeDirection (yDirection frame)
-                , zDirection = localizeDirection (zDirection frame)
+                { originPoint = relativePoint (originPoint frame)
+                , xDirection = relativeDirection (xDirection frame)
+                , yDirection = relativeDirection (yDirection frame)
+                , zDirection = relativeDirection (zDirection frame)
                 }
 
 
