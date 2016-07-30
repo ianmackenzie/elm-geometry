@@ -29,8 +29,8 @@ module OpenSolid.Core.Point3d
         , rotateAround
         , translateBy
         , mirrorAcross
-        , projectOntoAxis
         , projectOnto
+        , projectOntoAxis
         , projectInto2d
         , localizeTo
         , placeIn
@@ -38,8 +38,8 @@ module OpenSolid.Core.Point3d
         , fromRecord
         )
 
-{-| Various functions for working with `Point3d` values. For the examples below,
-assume that all OpenSolid core types have been imported using
+{-| Various functions for creating and working with `Point3d` values. For the
+examples below, assume that all OpenSolid core types have been imported using
 
     import OpenSolid.Core.Types exposing (..)
 
@@ -76,7 +76,7 @@ directly from a tuple of its X, Y and Z coordinates, for example
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOntoAxis, projectOnto
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, projectOntoAxis
 
 # Coordinate conversions
 
@@ -124,6 +124,8 @@ addTo =
 
 
 {-| The point (0, 0, 0).
+
+    Point3d.origin == Point3d ( 0, 0, 0 )
 -}
 origin : Point3d
 origin =
@@ -199,7 +201,7 @@ axis:
     horizontalAxis =
         Axis3d
             { originPoint = Point2d ( 1, 1, 1 )
-            , direction = Direction3d.negate Direction3d.x
+            , direction = Direction3d ( -1, 0, 0 )
             }
 
     Point3d.along horizontalAxis 3 ==
@@ -443,17 +445,11 @@ no-op, and scaling by a factor of 0 collapses all points to the center point.
     point =
         Point3d ( 1, 2, 3 )
 
-    Point3d.scaleAbout Point3d.origin 3 point ==
-        Point3d ( 3, 6, 9 )
-
     Point3d.scaleAbout centerPoint 3 point ==
         Point3d ( 1, 4, 7 )
 
     Point3d.scaleAbout centerPoint 0.5 point ==
         Point3d ( 1, 1.5, 2 )
-
-    Point3d.scaleAbout centerPoint 10 centerPoint ==
-        centerPoint
 
 Do not scale by a negative scaling factor - while this may sometimes do what you
 want it is confusing and error prone. Try a combination of mirror and/or
@@ -559,6 +555,8 @@ mirrorAcross plane =
 
     Point3d.projectOnto Plane3d.yz point ==
         Point3d ( 0, 2, 3 )
+
+The plane does not have to pass through the origin:
 
     offsetPlane =
         Plane3d.offsetBy 1 Plane3d.xy
