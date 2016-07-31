@@ -147,8 +147,8 @@ zero =
 
 
 {-| Construct a vector perpendicular to the given vector, by rotating the given
-vector 90 degrees in a counterclockwise direction. The constructed vector will
-have the same length as the given vector.
+vector 90 degrees counterclockwise. The constructed vector will have the same
+length as the given vector.
 
     Vector2d.perpendicularTo (Vector2d ( 1, 0 )) == Vector2d ( 0, 1 )
     Vector2d.perpendicularTo (Vector2d ( 0, 2 )) == Vector2d ( -2, 0 )

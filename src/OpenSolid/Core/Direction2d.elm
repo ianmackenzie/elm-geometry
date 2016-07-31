@@ -128,7 +128,7 @@ y =
 
 
 {-| Construct a direction perpendicular to the given direction, by rotating the
-given direction 90 degrees in a counterclockwise direction.
+given direction 90 degrees counterclockwise.
 
     Direction2d.perpendicularTo Direction2d.x ==
         Direction2d.y
@@ -150,7 +150,7 @@ the positive X direction.
     Direction2d.fromAngle (degrees 90) ==
         Direction2d.y
 
-    Direction2d.fromAngle (degrees 225) ==
+    Direction2d.fromAngle (degrees -135) ==
         Direction2d ( -0.7071, -0.7071 )
 -}
 fromAngle : Float -> Direction2d
@@ -236,8 +236,7 @@ yComponent =
     components >> snd
 
 
-{-| Convert a direction to a unit vector. Should not usually be necessary, but
-may be useful in some specialized cases.
+{-| Convert a direction to a unit vector.
 
     Direction2d.toVector Direction2d.x ==
         Vector2d ( 1, 0 )
@@ -257,15 +256,15 @@ negate =
     toVector >> Vector2d.negate >> toDirection
 
 
-{-| Construct a vector in the direction of a given vector, with the given
-magnitude. If the magnitude is negative the resulting vector will be in the
-opposite of the given direction.
+{-| Construct a vector with the given magnitude in the given direction. If the
+magnitude is negative the resulting vector will be in the opposite of the given
+direction.
 
     direction =
         Direction2d.fromAngle (degrees 45)
 
-    Direction2d.times 4 direction ==
-        Vector2d 2.8284 2.8284
+    Direction2d.times 2 direction ==
+        Vector2d 1.4142 1.4142
 
 -}
 times : Float -> Direction2d -> Vector2d
@@ -288,13 +287,14 @@ dotProduct firstDirection secondDirection =
 
 
 {-| Find the cross product of two directions. This is equal to the sine of the
-angle between them.
+counterclockwise angle from the first to the second.
 
     angledDirection =
         Direction2d.fromAngle (degrees 45)
 
     Direction2d.crossProduct Direction2d.x angledDirection == 0.7071
     Direction2d.crossProduct Direction2d.x Direction2d.y == 1
+    Direction2d.crossProduct Direction2d.y Direction2d.x == -1
 -}
 crossProduct : Direction2d -> Direction2d -> Float
 crossProduct firstDirection secondDirection =
