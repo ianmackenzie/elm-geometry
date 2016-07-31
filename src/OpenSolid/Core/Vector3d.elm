@@ -37,8 +37,8 @@ module OpenSolid.Core.Vector3d
         , fromRecord
         )
 
-{-| Various functions for working with `Vector3d` values. For the examples
-below, assume that all OpenSolid core types have been imported using
+{-| Various functions for creating and working with `Vector3d` values. For the
+examples below, assume that all OpenSolid core types have been imported using
 
     import OpenSolid.Core.Types exposing (..)
 

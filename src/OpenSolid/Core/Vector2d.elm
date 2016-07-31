@@ -35,8 +35,8 @@ module OpenSolid.Core.Vector2d
         , fromRecord
         )
 
-{-| Various functions for working with `Vector2d` values. For the examples
-below, assume that all OpenSolid core types have been imported using
+{-| Various functions for creating and working with `Vector2d` values. For the
+examples below, assume that all OpenSolid core types have been imported using
 
     import OpenSolid.Core.Types exposing (..)
 
@@ -150,10 +150,17 @@ zero =
 vector 90 degrees counterclockwise. The constructed vector will have the same
 length as the given vector.
 
-    Vector2d.perpendicularTo (Vector2d ( 1, 0 )) == Vector2d ( 0, 1 )
-    Vector2d.perpendicularTo (Vector2d ( 0, 2 )) == Vector2d ( -2, 0 )
-    Vector2d.perpendicularTo (Vector2d ( 3, 1 )) == Vector2d ( -1, 3 )
-    Vector2d.perpendicularTo Vector2d.zero == Vector2d.zero
+    Vector2d.perpendicularTo (Vector2d ( 1, 0 )) ==
+        Vector2d ( 0, 1 )
+
+    Vector2d.perpendicularTo (Vector2d ( 0, 2 )) ==
+        Vector2d ( -2, 0 )
+
+    Vector2d.perpendicularTo (Vector2d ( 3, 1 )) ==
+        Vector2d ( -1, 3 )
+
+    Vector2d.perpendicularTo Vector2d.zero ==
+        Vector2d.zero
 -}
 perpendicularTo : Vector2d -> Vector2d
 perpendicularTo vector =
@@ -171,12 +178,14 @@ perpendicularTo vector =
 This combined with Elm's built-in tuple destructuring provides a convenient way
 to extract both the X and Y components of a vector in one line of code:
 
-    ( x, y ) = Vector2d.components vector
+    ( x, y ) =
+        Vector2d.components vector
 
 To get the polar components of a vector, you can use Elm's built in `toPolar`
 function:
 
-    ( radius, angle ) = toPolar (Vector2d.components vector)
+    ( radius, angle ) =
+        toPolar (Vector2d.components vector)
 -}
 components : Vector2d -> ( Float, Float )
 components (Vector2d components') =
@@ -203,12 +212,14 @@ yComponent =
 
 {-| Find the component of a vector in an arbitrary direction, for example
 
-    forwardSpeed = Vector2d.componentIn forwardDirection velocityVector
+    forwardSpeed =
+        Vector2d.componentIn forwardDirection velocityVector
 
 This is more general and flexible than using `xComponent` or `yComponent`, both
 of which can be expressed in terms of `componentIn`:
 
-    Vector2d.xComponent vector == Vector2d.componentIn Direction2d.x vector
+    Vector2d.xComponent vector ==
+        Vector2d.componentIn Direction2d.x vector
 -}
 componentIn : Direction2d -> Vector2d -> Float
 componentIn (Direction2d ( dx, dy )) (Vector2d ( x, y )) =
@@ -264,7 +275,8 @@ direction vector =
 
 {-| Negate a vector.
 
-    Vector2d.negate (Vector2d ( -1, 2 )) == Vector2d ( 1, -2 )
+    Vector2d.negate (Vector2d ( -1, 2 )) ==
+        Vector2d ( 1, -2 )
 -}
 negate : Vector2d -> Vector2d
 negate (Vector2d ( x, y )) =
@@ -273,7 +285,8 @@ negate (Vector2d ( x, y )) =
 
 {-| Multiply a vector by a scalar.
 
-    Vector2d.times 3 (Vector2d ( 1, 2 )) == Vector2d ( 3, 6 )
+    Vector2d.times 3 (Vector2d ( 1, 2 )) ==
+        Vector2d ( 3, 6 )
 -}
 times : Float -> Vector2d -> Vector2d
 times scale (Vector2d ( x, y )) =
@@ -282,7 +295,8 @@ times scale (Vector2d ( x, y )) =
 
 {-| Add one vector to another.
 
-    Vector2d.plus (Vector2d ( 1, 2 )) (Vector2d ( 3, 4 )) == Vector2d ( 4, 6 )
+    Vector2d.plus (Vector2d ( 1, 2 )) (Vector2d ( 3, 4 )) ==
+        Vector2d ( 4, 6 )
 -}
 plus : Vector2d -> Vector2d -> Vector2d
 plus (Vector2d ( x2, y2 )) (Vector2d ( x1, y1 )) =
@@ -305,7 +319,13 @@ minus (Vector2d ( x2, y2 )) (Vector2d ( x1, y1 )) =
 
 {-| Find the dot product of two vectors.
 
-    Vector2d.dotProduct (Vector2d ( 1, 2 )) (Vector2d ( 3, 4 )) == 11
+    firstVector =
+        Vector2d ( 1, 2 )
+
+    secondVector =
+        Vector2d ( 3, 4 )
+
+    Vector2d.dotProduct firstVector secondVector == 11
 -}
 dotProduct : Vector2d -> Vector2d -> Float
 dotProduct (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
@@ -334,8 +354,11 @@ crossProduct (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
 
 {-| Rotate a vector counterclockwise by a given angle (in radians).
 
-    Vector2d.rotateBy (degrees 45) (Vector2d ( 1, 1 )) == Vector2d ( 0, 1.4142 )
-    Vector2d.rotateBy pi (Vector2d ( 1, 0 )) == Vector2d ( -1, 0 )
+    Vector2d.rotateBy (degrees 45) (Vector2d ( 1, 1 )) ==
+        Vector2d ( 0, 1.4142 )
+
+    Vector2d.rotateBy pi (Vector2d ( 1, 0 )) ==
+        Vector2d ( -1, 0 )
 -}
 rotateBy : Float -> Vector2d -> Vector2d
 rotateBy angle =
@@ -352,12 +375,19 @@ rotateBy angle =
 
 {-| Mirror a vector across a particular axis.
 
-    Vector2d.mirrorAcross Axis2d.y (Vector2d ( 2, 3 )) == Vector2d ( -2, 3 )
+    vector =
+        Vector2d ( 2, 3 )
+
+    Vector2d.mirrorAcross Axis2d.y vector ==
+        Vector2d ( -2, 3 )
 
     horizontalAxis =
-        Axis2d { originPoint = Point2d ( 100, 100 ), direction = Direction2d.x }
+        Axis2d
+            { originPoint = Point2d ( 100, 200 )
+            , direction = Direction2d.x
+            }
 
-    Vector2d.mirrorAcross horizontalAxis (Vector2d ( 2, 3 )) ==
+    Vector2d.mirrorAcross horizontalAxis vector ==
         Vector2d ( 2, -3 )
 -}
 mirrorAcross : Axis2d -> Vector2d -> Vector2d
@@ -386,10 +416,13 @@ this means splitting the original vector into a portion parallel to the given
 direction and a portion perpendicular to it, then returning the parallel
 portion.
 
-    Vector2d.projectionIn Direction2d.x (Vector2d ( 2, 3 )) ==
+    vector =
+        Vector2d ( 2, 3 )
+
+    Vector2d.projectionIn Direction2d.x vector ==
         Vector2d ( 2, 0 )
 
-    Vector2d.projectionIn Direction2d.y (Vector2d ( 2, 3 )) ==
+    Vector2d.projectionIn Direction2d.y vector ==
         Vector2d ( 0, 3 )
 -}
 projectionIn : Direction2d -> Vector2d -> Vector2d
@@ -404,14 +437,15 @@ projectionIn direction vector =
         times (dotProduct vector directionVector) directionVector
 
 
-{-| Project a vector onto an axis. This is equivalent to finding the projection
-in the axis' direction.
+{-| Project a vector onto an axis.
 
-    Vector2d.projectOnto Axis2d.y (Vector2d ( 3, 4 )) == Vector2d ( 0, 4 )
-    Vector2d.projectOnto Axis2d.x (Vector2d ( -1, 2 )) == Vector2d ( -1, 0 )
+    Vector2d.projectOnto Axis2d.y (Vector2d ( 3, 4 )) ==
+        Vector2d ( 0, 4 )
 
-    Vector2d.projectOnto axis vector ==
-        Vector2d.projectionIn (Axis2d.direction axis) vector
+    Vector2d.projectOnto Axis2d.x (Vector2d ( -1, 2 )) ==
+        Vector2d ( -1, 0 )
+
+This is equivalent to finding the projection in the axis' direction.
 -}
 projectOnto : Axis2d -> Vector2d -> Vector2d
 projectOnto axis =
@@ -484,10 +518,10 @@ applying them to the X and Y basis directions of the given frame.
 A slightly more complex example:
 
     inclinedFrame =
-        PlanarFrame3d.rotateAround Axis3d.y (degrees -45) PlanarFrame3d.xy
+        PlanarFrame3d.rotateAround Axis3d.x (degrees 45) PlanarFrame3d.xy
 
     Vector2d.placeIn3d inclinedFrame (Vector2d ( 1, 1 )) ==
-        Vector3d ( 0.7071, 1, 0.7071 )
+        Vector3d ( 1, 0.7071, 0.7071 )
 -}
 placeIn3d : PlanarFrame3d -> Vector2d -> Vector3d
 placeIn3d planarFrame =
@@ -507,7 +541,8 @@ placeIn3d planarFrame =
 
 {-| Convert a vector to a record with `x` and `y` fields.
 
-    Vector2d.toRecord (Vector2d ( 2, 3 )) == { x = 2, y = 3 }
+    Vector2d.toRecord (Vector2d ( 2, 3 )) ==
+        { x = 2, y = 3 }
 -}
 toRecord : Vector2d -> { x : Float, y : Float }
 toRecord (Vector2d ( x, y )) =
@@ -516,7 +551,8 @@ toRecord (Vector2d ( x, y )) =
 
 {-| Construct a vector from a record with `x` and `y` fields.
 
-    Vector2d.fromRecord { x = 2, y = 3 } == Vector2d ( 2, 3 )
+    Vector2d.fromRecord { x = 2, y = 3 } ==
+        Vector2d ( 2, 3 )
 -}
 fromRecord : { x : Float, y : Float } -> Vector2d
 fromRecord { x, y } =
