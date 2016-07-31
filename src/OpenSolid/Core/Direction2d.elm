@@ -301,11 +301,31 @@ crossProduct firstDirection secondDirection =
     Vector2d.crossProduct (toVector firstDirection) (toVector secondDirection)
 
 
+{-| Rotate a direction counterclockwise by a given angle (in radians).
+
+    Direction2d.rotateBy (degrees 45) Direction2d.x ==
+        Direction2d ( 0.7071, 0.7071 )
+
+    Direction2d.rotateBy pi Direction2d.y ==
+        Direction2d.negate Direction2d.y
+-}
 rotateBy : Float -> Direction2d -> Direction2d
 rotateBy angle =
     toVector >> Vector2d.rotateBy angle >> toDirection
 
 
+{-| Mirror a direction across a particular axis. Note that only the direction of
+the axis affects the result, since directions are position-independent.
+
+    slopedAxis =
+        Axis2d
+            { originPoint = Point2d ( 100, 200 )
+            , direction = Direction2d.fromAngle (degrees 45)
+            }
+
+    Direction2d.mirrorAcross slopedAxis Direction2d.x ==
+        Direction2d.y
+-}
 mirrorAcross : Axis2d -> Direction2d -> Direction2d
 mirrorAcross axis =
     toVector >> Vector2d.mirrorAcross axis >> toDirection
