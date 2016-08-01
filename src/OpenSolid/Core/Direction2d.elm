@@ -51,10 +51,19 @@ to numerical roundoff) they might not be exactly equal.
 
 Since `Direction2d` is not an opaque type, the simplest way to construct one is
 directly from its X and Y components, for example `Direction2d ( 1, 0 )`.
-However, if you do this you must ensure that the 'length' of the vector is
-exactly one; `Direction2d ( 1, 0 )`, `Direction2d ( -1, 0 )` and
-`Direction2d ( 1 / sqrt 2, 1 / sqrt 2 )` are all valid but
-`Direction2d ( 1, 1 )` is not.
+However, if you do this you must ensure that the sum of the squares of the
+given components is exactly one:
+
+    Direction2d ( 1, 0 )
+    Direction2d ( -1, 0 )
+    Direction2d ( 1 / sqrt 2, 1 / sqrt 2 )
+
+are all valid but
+
+    Direction2d ( 2, 0 )
+    Direction2d ( 1, 1 )
+
+are not.
 
 @docs perpendicularTo
 
@@ -95,7 +104,9 @@ For `relativeTo` and `placeIn`, assume the following frames have been defined:
             }
 
     rotatedFrame =
-        Frame2d.rotateAround Point2d.origin (degrees 45) Frame2d.xy
+        Frame2d.rotateAround Point2d.origin
+            (degrees 30)
+            Frame2d.xy
 
 @docs relativeTo, placeIn, placeIn3d
 -}
@@ -256,9 +267,8 @@ negate =
     toVector >> Vector2d.negate >> toDirection
 
 
-{-| Construct a vector with the given magnitude in the given direction. If the
-magnitude is negative the resulting vector will be in the opposite of the given
-direction.
+{-| Construct a vector from a magnitude and a direction. If the magnitude is
+negative the resulting vector will be in the opposite of the given direction.
 
     direction =
         Direction2d.fromAngle (degrees 45)
@@ -275,10 +285,11 @@ times scale =
 {-| Find the dot product of two directions. This is equal to the cosine of the
 angle between them.
 
-    angledDirection =
+    direction =
         Direction2d.fromAngle (degrees 60)
 
-    Direction2d.dotProduct Direction2d.x angledDirection == 0.5
+    Direction2d.dotProduct Direction2d.x direction == 0.5
+    Direction2d.dotProduct Direction2d.x Direction2d.x == 1
     Direction2d.dotProduct Direction2d.x Direction2d.y == 0
 -}
 dotProduct : Direction2d -> Direction2d -> Float
@@ -289,10 +300,11 @@ dotProduct firstDirection secondDirection =
 {-| Find the cross product of two directions. This is equal to the sine of the
 counterclockwise angle from the first to the second.
 
-    angledDirection =
-        Direction2d.fromAngle (degrees 45)
+    direction =
+        Direction2d.fromAngle (degrees 60)
 
-    Direction2d.crossProduct Direction2d.x angledDirection == 0.7071
+    Direction2d.crossProduct Direction2d.x direction == 0.866
+    Direction2d.crossProduct Direction2d.x Direction2d.x == 0
     Direction2d.crossProduct Direction2d.x Direction2d.y == 1
     Direction2d.crossProduct Direction2d.y Direction2d.x == -1
 -}
@@ -325,6 +337,9 @@ the axis affects the result, since directions are position-independent.
 
     Direction2d.mirrorAcross slopedAxis Direction2d.x ==
         Direction2d.y
+
+    Direction2d.mirrorAcross slopedAxis Direction2d.y ==
+        Direction2d.x
 -}
 mirrorAcross : Axis2d -> Direction2d -> Direction2d
 mirrorAcross axis =
@@ -338,10 +353,10 @@ relative to a given frame.
         Direction2d ( 0, -1 )
 
     Direction2d.relativeTo rotatedFrame Direction2d.x ==
-        Direction2d ( 0.7071, -0.7071 )
+        Direction2d ( 0.866, -0.5 )
 
     Direction2d.relativeTo rotatedFrame Direction2d.y ==
-        Direction2d ( 0.7071, 0.7071 )
+        Direction2d ( 0.5, 0.866 )
 -}
 relativeTo : Frame2d -> Direction2d -> Direction2d
 relativeTo frame =
@@ -356,10 +371,10 @@ coordinates. Inverse of `relativeTo`.
         Direction2d ( 0, -1 )
 
     Direction2d.placeIn rotatedFrame Direction2d.x ==
-        Direction2d ( 0.7071, 0.7071 )
+        Direction2d ( 0.866, 0.5 )
 
     Direction2d.placeIn rotatedFrame Direction2d.y ==
-        Direction2d ( -0.7071, 0.7071 )
+        Direction2d ( -0.5, 0.866 )
 -}
 placeIn : Frame2d -> Direction2d -> Direction2d
 placeIn frame =
