@@ -101,10 +101,10 @@ generic vector type.
 ### Coordinates and components
 
 Explicitly working with individual X/Y/Z point coordinates and vector components
-is easy to do in OpenSolid when necessary, but in many cases it is more flexible
-and meaningful to consider points and vectors as abstract geometric quantities
-and treat their internal representations as an implementation detail. For
-example, instead of using
+is easy to do in OpenSolid when necessary, but in many cases it is equally easy
+to consider points and vectors as abstract geometric quantities and treat their
+internal representations as an implementation detail. For example, instead of
+using
 
 ```elm
 forwardSpeed = Vector3d.xComponent velocityVector
@@ -125,9 +125,10 @@ forwardDirection = Direction3d.x
 groundPlane = Plane3d.xy
 ```
 
-This is slightly more verbose, but very explicit, and adapts more easily to
-changes (perhaps the forward direction becomes a configuration setting, or the
-ground plane becomes dynamic and shifts or tilts over time).
+This is slightly more verbose and somewhat less efficient, but very explicit,
+and adapts more easily to changes (perhaps the forward direction becomes a
+configuration setting, or the ground plane becomes dynamic and shifts or tilts
+over time).
 
 ### Directions
 
