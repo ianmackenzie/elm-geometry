@@ -534,8 +534,8 @@ projectOnto axis =
             >> addTo originPoint
 
 
-{-| Take a point currently expressed in global coordinates and express it in
-coordinates relative to a given frame.
+{-| Take a point currently expressed in global coordinates and express it
+relative to a given frame.
 
     localOrigin =
         Point2d ( 1, 2 )

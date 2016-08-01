@@ -456,8 +456,8 @@ projectOnto axis =
         projectionIn direction
 
 
-{-| Take a vector currently expressed in global coordinates and express it in
-coordinates relative to a given frame.
+{-| Take a vector currently expressed in global coordinates and express it
+relative to a given frame.
 
     Vector2d.relativeTo upsideDownFrame (Vector2d ( 2, 3 )) ==
         Vector2d ( 2, -3 )

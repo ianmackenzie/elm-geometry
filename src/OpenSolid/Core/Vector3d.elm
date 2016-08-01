@@ -586,8 +586,8 @@ projectOnto plane vector =
         minus (projectionIn normalDirection vector) vector
 
 
-{-| Take a vector currently expressed in global coordinates and express it in
-coordinates relative to a given frame.
+{-| Take a vector currently expressed in global coordinates and express it
+relative to a given frame.
 
     Vector3d.relativeTo rotatedFrame (Vector3d ( 2, 0, 1 )) ==
         Vector3d ( 1.4142, -1.4142, 1 )
