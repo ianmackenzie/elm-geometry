@@ -517,10 +517,12 @@ applying them to the X and Y basis directions of the given frame.
 
 A slightly more complex example:
 
-    inclinedFrame =
-        PlanarFrame3d.rotateAround Axis3d.x (degrees 45) PlanarFrame3d.xy
+    tiltedFrame =
+        PlanarFrame3d.rotateAround Axis3d.x
+            (degrees 45)
+            PlanarFrame3d.xy
 
-    Vector2d.placeIn3d inclinedFrame (Vector2d ( 1, 1 )) ==
+    Vector2d.placeIn3d tiltedFrame (Vector2d ( 1, 1 )) ==
         Vector3d ( 1, 0.7071, 0.7071 )
 -}
 placeIn3d : PlanarFrame3d -> Vector2d -> Vector3d
