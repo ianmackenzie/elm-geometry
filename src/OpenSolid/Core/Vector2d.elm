@@ -104,7 +104,9 @@ For `relativeTo` and `placeIn`, assume the following frames have been defined:
             }
 
     rotatedFrame =
-        Frame2d.rotateAround Point2d.origin (degrees 45) Frame2d.xy
+        Frame2d.rotateAround Point2d.origin
+            (degrees 30)
+            Frame2d.xy
 
 @docs relativeTo, placeIn, placeIn3d
 
@@ -463,7 +465,7 @@ relative to a given frame.
         Vector2d ( 2, -3 )
 
     Vector2d.relativeTo rotatedFrame (Vector2d ( 2, 0 )) ==
-        Vector2d ( 1.4142, -1.4142 )
+        Vector2d ( 1.732, -1 )
 -}
 relativeTo : Frame2d -> Vector2d -> Vector2d
 relativeTo frame vector =
@@ -485,7 +487,7 @@ coordinates. Inverse of `relativeTo`.
         Vector2d ( 2, -3 )
 
     Vector2d.placeIn rotatedFrame (Vector2d ( 2, 0 )) ==
-        Vector2d ( 1.4142, 1.4142 )
+        Vector2d ( 1.732, 1 )
 -}
 placeIn : Frame2d -> Vector2d -> Vector2d
 placeIn frame =
