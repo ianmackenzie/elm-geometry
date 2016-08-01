@@ -331,16 +331,57 @@ mirrorAcross axis =
     toVector >> Vector2d.mirrorAcross axis >> toDirection
 
 
+{-| Take a direction currently expressed in global coordinates and express it
+relative to a given frame.
+
+    Direction2d.relativeTo upsideDownFrame Direction2d.y ==
+        Direction2d ( 0, -1 )
+
+    Direction2d.relativeTo rotatedFrame Direction2d.x ==
+        Direction2d ( 0.7071, -0.7071 )
+
+    Direction2d.relativeTo rotatedFrame Direction2d.y ==
+        Direction2d ( 0.7071, 0.7071 )
+-}
 relativeTo : Frame2d -> Direction2d -> Direction2d
 relativeTo frame =
     toVector >> Vector2d.relativeTo frame >> toDirection
 
 
+{-| Place a direction in a given frame, considering it as being expressed
+relative to that frame and returning the corresponding direction in global
+coordinates. Inverse of `relativeTo`.
+
+    Direction2d.placeIn upsideDownFrame Direction2d.y ==
+        Direction2d ( 0, -1 )
+
+    Direction2d.placeIn rotatedFrame Direction2d.x ==
+        Direction2d ( 0.7071, 0.7071 )
+
+    Direction2d.placeIn rotatedFrame Direction2d.y ==
+        Direction2d ( -0.7071, 0.7071 )
+-}
 placeIn : Frame2d -> Direction2d -> Direction2d
 placeIn frame =
     toVector >> Vector2d.placeIn frame >> toDirection
 
 
+{-| Convert a 2D direction to 3D by placing it in a given planar frame. This
+will construct a 3D direction by taking the X and Y components of the given
+direction and applying them to the X and Y basis directions of the given frame.
+
+    direction =
+        Direction2d ( 0.6, 0.8 )
+
+    Direction2d.placeIn3d PlanarFrame3d.xy direction ==
+        Direction3d ( 0.6, 0.8, 0 )
+
+    Direction2d.placeIn3d PlanarFrame3d.yz direction ==
+        Direction3d ( 0, 0.6, 0.8 )
+
+    Direction2d.placeIn3d PlanarFrame3d.zx direction ==
+        Direction3d ( 0.8, 0, 0.6 )
+-}
 placeIn3d : PlanarFrame3d -> Direction2d -> Direction3d
 placeIn3d planarFrame =
     toVector
