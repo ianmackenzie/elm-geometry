@@ -13,6 +13,7 @@
     "OpenSolid.Core.Decode",
     "OpenSolid.Core.Vector2d",
     "OpenSolid.Core.Vector3d",
+    "OpenSolid.Core.Direction2d",
     "OpenSolid.Core.Point2d",
     "OpenSolid.Core.Point3d"
   ],
