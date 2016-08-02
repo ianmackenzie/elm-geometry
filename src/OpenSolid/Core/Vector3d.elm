@@ -94,14 +94,14 @@ vectors depend only on the orientations of the relevant frames/planes, not their
 positions.
 
 For `relativeTo` and `placeIn`, assume the following definition of a local
-coordinate frame, one that is rotated 45 degrees counterclockwise about the Z
+coordinate frame, one that is rotated 30 degrees counterclockwise about the Z
 axis from the global XYZ frame:
 
     rotatedFrame =
-        Frame3d.rotateAround Axis3d.z (degrees 45) Frame3d.xyz
+        Frame3d.rotateAround Axis3d.z (degrees 30) Frame3d.xyz
 
-    Frame3d.xDirection rotatedFrame == Direction3d ( 0.7071, 0.7071, 0 )
-    Frame3d.yDirection rotatedFrame == Direction3d ( -0.7071, 0.7071, 0 )
+    Frame3d.xDirection rotatedFrame == Direction3d ( 0.866, 0.5, 0 )
+    Frame3d.yDirection rotatedFrame == Direction3d ( -0.5, 0.866, 0 )
     Frame3d.zDirection rotatedFrame == Direction3d ( 0, 0, 1 )
 
 @docs projectInto2d, relativeTo, placeIn
@@ -589,8 +589,8 @@ projectOnto plane vector =
 {-| Take a vector currently expressed in global coordinates and express it
 relative to a given frame.
 
-    Vector3d.relativeTo rotatedFrame (Vector3d ( 2, 0, 1 )) ==
-        Vector3d ( 1.4142, -1.4142, 1 )
+    Vector3d.relativeTo rotatedFrame (Vector3d ( 2, 0, 3 )) ==
+        Vector3d ( 1.732, -1, 3 )
 -}
 relativeTo : Frame3d -> Vector3d -> Vector3d
 relativeTo frame vector =
@@ -609,8 +609,8 @@ relativeTo frame vector =
 relative to that frame and returning the corresponding vector in global
 coordinates. Inverse of `relativeTo`.
 
-    Vector3d.placeIn rotatedFrame (Vector3d ( 2, 0, 1 )) ==
-        Vector3d ( 1.4142, 1.4142, 1 )
+    Vector3d.placeIn rotatedFrame (Vector3d ( 2, 0, 3 )) ==
+        Vector3d ( 1.732, 1, 3 )
 -}
 placeIn : Frame3d -> Vector3d -> Vector3d
 placeIn frame =
