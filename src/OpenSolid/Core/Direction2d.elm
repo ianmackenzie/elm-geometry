@@ -216,8 +216,8 @@ angleTo =
     flip angleFrom
 
 
-{-| Get the components of this direction as a tuple (the components it would
-have as a unit vector, also know as its direction cosines).
+{-| Get the components of a direction as a tuple (the components it would have
+as a unit vector, also know as its direction cosines).
 
     ( x, y ) =
         Direction2d.components direction
@@ -227,7 +227,7 @@ components (Direction2d components') =
     components'
 
 
-{-| Get the X component of this direction.
+{-| Get the X component of a direction.
 
     Direction2d.xComponent Direction2d.x == 1
     Direction2d.xComponent Direction2d.y == 0
@@ -237,7 +237,7 @@ xComponent =
     components >> fst
 
 
-{-| Get the Y component of this direction.
+{-| Get the Y component of a direction.
 
     Direction2d.yComponent Direction2d.x == 0
     Direction2d.yComponent Direction2d.y == 1
