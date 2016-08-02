@@ -15,7 +15,10 @@ Direction2d.y == Direction2d ( 0, 1 )
 Point2d.origin == Point2d ( 0, 0 )
 
 Axis3d.z ==
-    Axis3d { originPoint = Point3d.origin, direction = Direction3d.z }
+    Axis3d
+        { originPoint = Point3d.origin
+        , direction = Direction3d.z
+        }
 
 Frame2d.xy ==
     Frame2d
@@ -37,21 +40,42 @@ A large range of geometric operations are supported:
 
 ```elm
 -- Constructors
-Direction2d.fromAngle (degrees 30) == Direction2d ( 0.866, 0.5 )
-Vector2d.inDirection Direction2d.y 2.5 == Vector2d ( 0, 2.5 )
+
+Direction2d.fromAngle (degrees 30) ==
+    Direction2d ( 0.866, 0.5 )
+
+Point3d.midpoint Point3d.origin (Point3d (1, 4, 5)) ==
+    Vector2d ( 0.5, 2, 2.5 )
 
 -- Arithmetic
-Vector3d.plus (Vector3d ( 1, 2, 3 )) (Vector3d ( 4, 5, 6 )) == Vector3d ( 5, 7, 9 )
-Point3d.vectorFrom (Point3d ( 1, 1, 1 )) (Point3d ( 3, 5, 4 )) == Vector3d ( 2, 4, 3 )
+
+Vector3d.plus (Vector3d ( 1, 2, 3 )) (Vector3d ( 4, 5, 6 )) ==
+    Vector3d ( 5, 7, 9 )
+
+Point3d.vectorFrom (Point3d ( 1, 1, 1 )) (Point3d ( 3, 5, 4 )) ==
+    Vector3d ( 2, 4, 3 )
+
 Point2d.distanceFrom Point2d.origin (Point2d ( 1, 1 )) == 1.4142
 
 -- Transformations
-Point3d.mirrorAcross Plane3d.xy (Point3d ( 1, 2, 3 )) == Point3d ( 1, 2, -3 )
-Vector2d.rotateBy (degrees 45) (Vector2d ( 1, 1 )) == Vector2d ( 0, 1.4142 )
-Point2d.rotateAround Point2d.origin (degrees 45) (Point2d ( 1, 0 )) == Point2d ( 0.7071, 0.7071 )
-Plane3d.translateIn Direction3d.z 3 Plane3d.xy == Plane3d.offsetBy 3 Plane3d.xy
-Point3d.projectOnto Plane3d.xy (Point3d ( 2, 1, 3 )) == Point3d ( 2, 1, 0 )
-Vector3d.projectionIn Direction3d.z (Vector3d ( 3, 1, 4 )) == Vector3d ( 0, 0, 4 )
+
+Point3d.mirrorAcross Plane3d.xy (Point3d ( 1, 2, 3 )) ==
+    Point3d ( 1, 2, -3 )
+
+Vector2d.rotateBy (degrees 45) (Vector2d ( 1, 1 )) ==
+    Vector2d ( 0, 1.4142 )
+
+Point2d.rotateAround Point2d.origin (degrees 45) (Point2d ( 1, 0 )) ==
+    Point2d ( 0.7071, 0.7071 )
+
+Plane3d.translateBy (Vector3d ( 0, 0, 3 )) Plane3d.xy ==
+    Plane3d.offsetBy 3 Plane3d.xy
+
+Point3d.projectOnto Plane3d.xy (Point3d ( 2, 1, 3 )) ==
+    Point3d ( 2, 1, 0 )
+
+Vector3d.projectionIn Direction3d.z (Vector3d ( 3, 1, 4 )) ==
+    Vector3d ( 0, 0, 4 )
 ```
 
 JSON encoders and decoders for all types are also provided in the `Encode` and
@@ -141,8 +165,11 @@ rotateThenScale =
     Point2d.rotateAround Point2d.origin (degrees 90)
         >> Point2d.scaleAbout Point2d.origin 1.5
 
-rotateThenScale (Point2d ( 1, 0 )) == Point2d ( 0, 1.5 )
-rotateThenScale (Point2d ( 0, 2 )) == Point2d ( -3, 0 )
+rotateThenScale (Point2d ( 1, 0 )) ==
+    Point2d ( 0, 1.5 )
+
+rotateThenScale (Point2d ( 0, 2 )) ==
+    Point2d ( -3, 0 )
 ```
 
 (Yes, in this particular case it doesn't actually matter whether you rotate
