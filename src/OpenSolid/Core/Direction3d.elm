@@ -31,8 +31,9 @@ module OpenSolid.Core.Direction3d
         , projectInto2d
         )
 
-{-| Various functions for working with `Direction3d` values. For the examples
-below, assume that all OpenSolid core types have been imported using
+{-| Various functions for creating and working with `Direction3d` values. For
+the examples below, assume that all OpenSolid core types have been imported
+using
 
     import OpenSolid.Core.Types exposing (..)
 
