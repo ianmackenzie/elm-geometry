@@ -90,6 +90,11 @@ are not.
 
 # Coordinate conversions
 
+Functions for transforming directions between local and global coordinates in
+different coordinate frames. Like transformations, coordinate conversions of
+directions depend only on the orientations of the relevant frames/planes, not
+the positions of their origin points.
+
 For `relativeTo` and `placeIn`, assume the following definition of a local
 coordinate frame, one that is rotated 30 degrees counterclockwise about the Z
 axis from the global XYZ frame:
