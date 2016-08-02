@@ -30,8 +30,6 @@ Frame2d.xy ==
 Plane3d.yz ==
     Plane3d
         { originPoint = Point3d.origin
-        , xDirection = Direction3d.y
-        , yDirection = Direction3d.z
         , normalDirection = Direction3d.x
         }
 ```
