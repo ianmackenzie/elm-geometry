@@ -85,7 +85,7 @@ are not.
 
 # Transformations
 
-@docs rotateBy, mirrorAcross, projectOnto
+@docs rotateAround, mirrorAcross, projectOnto
 
 # Coordinate conversions
 
