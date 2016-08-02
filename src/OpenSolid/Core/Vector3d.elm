@@ -635,10 +635,10 @@ placeIn frame =
                 )
 
 
-{-| Project a vector into a given planar frame. Conceptually, this projects the
-vector onto the plane of the given frame and then expresses the projected vector
-in terms of 2D components within the plane (relative to the given frame's X and
-Y basis directions).
+{-| Project a vector into a given planar frame, converting it to 2D.
+Conceptually, this projects the vector onto the plane of the given frame and
+then expresses the projected vector in terms of 2D components within the frame
+(relative to the given frame's X and Y basis directions).
 
     Vector3d.projectInto2d PlanarFrame3d.xy (Vector3d ( 2, 1, 3 )) ==
         Vector2d ( 2, 1 )
