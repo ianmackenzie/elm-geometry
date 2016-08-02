@@ -331,21 +331,87 @@ mirrorAcross plane =
     toVector >> Vector3d.mirrorAcross plane >> toDirection
 
 
+{-| Project a direction onto a plane. This is effectively the direction of the
+given direction's 'shadow' on the given plane. If the given direction is
+exactly perpendicular to the given plane, then `Nothing` is returned.
+
+    direction =
+        Direction3d ( 0.6, -0.8, 0 )
+
+    Direction3d.projectOnto Plane3d.xy direction ==
+        Just (Direction3d ( 0.6, -0.8, 0 ))
+
+    Direction3d.projectOnto Plane3d.xz direction ==
+        Just (Direction3d ( 1, 0, 0 ))
+
+    Direction3d.projectOnto Plane3d.yz direction ==
+        Just (Direction3d ( 0, -1, 0 ))
+
+    Direction3d.projectOnto Plane3d.xy Direction3d.z ==
+        Nothing
+-}
 projectOnto : Plane3d -> Direction3d -> Maybe Direction3d
 projectOnto plane =
     toVector >> Vector3d.projectOnto plane >> Vector3d.direction
 
 
+{-| Project a direction into a given planar frame, converting it to 2D.
+Conceptually, this projects the direction onto the plane of the given frame and
+then expresses the projected direction in terms of 2D components within the
+frame (relative to the frame's X and Y basis directions). If the direction is
+exactly perpendicular to the plane of the given frame, then `Nothing` is
+returned.
+
+    direction =
+        Direction3d ( 0.6, -0.8, 0 )
+
+    Direction3d.projectInto PlanarFrame3d.xy direction ==
+        Just (Direction2d ( 0.6, -0.8 ))
+
+    Direction3d.projectInto PlanarFrame3d.xz direction ==
+        Just (Direction2d ( 1, 0 ))
+
+    Direction3d.projectInto PlanarFrame3d.yz direction ==
+        Just (Direction2d ( -1, 0 ))
+
+    Direction3d.projectInto PlanarFrame3d.xy Direction3d.z ==
+        Nothing
+-}
 projectInto2d : PlanarFrame3d -> Direction3d -> Maybe Direction2d
 projectInto2d planarFrame =
     toVector >> Vector3d.projectInto2d planarFrame >> Vector2d.direction
 
 
+{-| Take a direction currently expressed in global coordinates and express it
+relative to a given frame.
+
+    Direction3d.relativeTo rotatedFrame Direction3d.x ==
+        Direction3d ( 0.866, -0.5, 0 )
+
+    Direction3d.relativeTo rotatedFrame Direction3d.y ==
+        Direction3d ( 0.5, 0.866, 0 )
+
+    Direction3d.relativeTo rotatedFrame Direction3d.z ==
+        Direction3d ( 0, 0, 1 )
+-}
 relativeTo : Frame3d -> Direction3d -> Direction3d
 relativeTo frame =
     toVector >> Vector3d.relativeTo frame >> toDirection
 
 
+{-| Place a direction in a given frame, considering it as being expressed
+relative to that frame and returning the corresponding direction in global
+coordinates. Inverse of `relativeTo`.
+
+    Direction3d.placeIn rotatedFrame Direction3d.x ==
+        Direction3d ( 0.866, 0.5, 0 )
+
+    Direction3d.placeIn rotatedFrame Direction3d.y ==
+        Direction2d ( -0.5, 0.866, 0 )
+
+    Direction3d.placeIn rotatedFrame Direction3d.z ==
+        Direction3d ( 0, 0, 1 )
+-}
 placeIn : Frame3d -> Direction3d -> Direction3d
 placeIn frame =
     toVector >> Vector3d.placeIn frame >> toDirection
