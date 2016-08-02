@@ -281,6 +281,15 @@ crossProduct firstDirection secondDirection =
 
 {-| Find the angle from one direction to another. The result will be in the
 range 0 to π.
+
+    Direction3d.angleFrom Direction3d.x Direction3d.x ==
+        degrees 0 -- 0
+
+    Direction3d.angleFrom Direction3d.x Direction3d.z ==
+        degrees 90 -- pi / 2
+
+    Direction3d.angleFrom Direction3d.y (Direction3d ( 0, -1, 0 )) ==
+        degrees 180 -- pi
 -}
 angleFrom : Direction3d -> Direction3d -> Float
 angleFrom other direction =
