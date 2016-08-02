@@ -56,7 +56,7 @@ However, if you do this you must ensure that the sum of the squares of the
 given components is exactly one:
 
     Direction2d ( 1, 0 )
-    Direction2d ( -1, 0 )
+    Direction2d ( 0, -1 )
     Direction2d ( 0.6, 0.8 )
 
 are all valid but
