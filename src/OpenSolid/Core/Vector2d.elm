@@ -230,7 +230,7 @@ componentIn (Direction2d ( dx, dy )) (Vector2d ( x, y )) =
 
 {-| Get the length of a vector.
 
-    Vector2d.length (Vector2d ( 1, 1 )) == sqrt 2
+    Vector2d.length (Vector2d ( 3, 4 )) == 5
 -}
 length : Vector2d -> Float
 length =
@@ -258,8 +258,8 @@ squaredLength (Vector2d ( x, y )) =
 {-| Attempt to find the direction of a vector. In the case of a zero vector,
 return `Nothing`.
 
-    Vector2d.direction (Vector2d ( 1, 1 )) ==
-        Just (Direction2d ( 0.7071, 0.7071 ))
+    Vector2d.direction (Vector2d ( 3, 4 )) ==
+        Just (Direction2d ( 0.6, 0.8 ))
 
     Vector2d.direction (Vector2d ( 0, 0 )) == Nothing
 -}

@@ -56,7 +56,7 @@ given components is exactly one:
 
     Direction2d ( 1, 0 )
     Direction2d ( -1, 0 )
-    Direction2d ( 1 / sqrt 2, 1 / sqrt 2 )
+    Direction2d ( 0.6, 0.8 )
 
 are all valid but
 
@@ -271,10 +271,10 @@ negate =
 negative the resulting vector will be in the opposite of the given direction.
 
     direction =
-        Direction2d.fromAngle (degrees 45)
+        Direction2d ( 0.6, 0.8 )
 
     Direction2d.times 2 direction ==
-        Vector2d 1.4142 1.4142
+        Vector2d ( 1.2, 1.6 )
 
 -}
 times : Float -> Direction2d -> Vector2d

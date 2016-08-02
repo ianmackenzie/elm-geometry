@@ -291,12 +291,12 @@ vectorTo =
 {-| Find the distance between two points.
 
     p1 =
-        Point3d ( 1, 1, 1 )
+        Point3d ( 1, 1, 2 )
 
     p2 =
-        Point3d ( 2, 2, 2 )
+        Point3d ( 2, 3, 4 )
 
-    Point3d.distanceFrom p1 p2 == sqrt 3
+    Point3d.distanceFrom p1 p2 == 3
 
 Partial application can be useful:
 
@@ -342,11 +342,11 @@ squaredDistanceFrom other =
 {-| Find the perpendicular (nearest) distance of a point from an axis.
 
     point =
-        Point3d ( -1, 2, 0 )
+        Point3d ( -3, 4, 0 )
 
-    Point3d.distanceFromAxis Axis3d.x point == 2
-    Point3d.distanceFromAxis Axis3d.y point == 1
-    Point3d.distanceFromAxis Axis3d.z point == sqrt 5
+    Point3d.distanceFromAxis Axis3d.x point == 4
+    Point3d.distanceFromAxis Axis3d.y point == 3
+    Point3d.distanceFromAxis Axis3d.z point == 5
 
 Note that unlike in 2D, the result is always positive (unsigned) since there is
 no such thing as the left or right side of an axis in 3D.

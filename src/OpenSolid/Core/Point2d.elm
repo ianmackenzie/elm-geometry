@@ -290,12 +290,12 @@ vectorTo =
 {-| Find the distance between two points.
 
     p1 =
-        Point2d ( 1, 1 )
+        Point2d ( 2, 3 )
 
     p2 =
-        Point2d ( 2, 2 )
+        Point2d ( 5, 7 )
 
-    Point2d.distanceFrom p1 p2 == sqrt 2
+    Point2d.distanceFrom p1 p2 == 5
 
 Partial application can be useful:
 

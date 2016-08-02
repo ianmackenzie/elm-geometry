@@ -236,7 +236,7 @@ componentIn (Direction3d components) =
 
 {-| Get the length of a vector.
 
-    Vector3d.length (Vector3d ( 1, 1, 1 )) == sqrt 3
+    Vector3d.length (Vector3d ( 2, 1, 2 )) == 3
 -}
 length : Vector3d -> Float
 length =
@@ -268,8 +268,8 @@ squaredLength vector =
 {-| Attempt to find the direction of a vector. In the case of a zero vector,
 return `Nothing`.
 
-    Vector3d.direction (Vector3d ( 1, 0, 1 )) ==
-        Just (Direction3d ( 0.7071, 0, 0.7071 ))
+    Vector3d.direction (Vector3d ( 3, 0, 4 )) ==
+        Just (Direction3d ( 0.6, 0, 0.8 ))
 
     Vector3d.direction (Vector3d ( 0, 0, 0 )) == Nothing
 -}
