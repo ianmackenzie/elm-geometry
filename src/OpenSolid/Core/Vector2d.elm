@@ -61,8 +61,10 @@ Since `Vector2d` is not an opaque type, the simplest way to construct one is
 directly from its X and Y components, for example `Vector2d ( 2, 3 )`.
 
 There are no specific functions to create vectors from polar components, but you
-can use Elm's built-in `fromPolar` function, for example
-`Vector2d (fromPolar ( radius, angle ))`.
+can use Elm's built-in `fromPolar` function:
+
+    vector =
+        Vector2d (fromPolar ( radius, angle ))
 
 @docs perpendicularTo
 
@@ -175,7 +177,8 @@ perpendicularTo vector =
 
 {-| Extract the components of a vector.
 
-    Vector2d.components (Vector2d ( 2, 3 )) == ( 2, 3 )
+    Vector2d.components (Vector2d ( 2, 3 )) ==
+        ( 2, 3 )
 
 This combined with Elm's built-in tuple destructuring provides a convenient way
 to extract both the X and Y components of a vector in one line of code:
@@ -215,7 +218,7 @@ yComponent =
 {-| Find the component of a vector in an arbitrary direction, for example
 
     forwardSpeed =
-        Vector2d.componentIn forwardDirection velocityVector
+        Vector2d.componentIn forwardDirection velocity
 
 This is more general and flexible than using `xComponent` or `yComponent`, both
 of which can be expressed in terms of `componentIn`:
@@ -261,7 +264,8 @@ return `Nothing`.
     Vector2d.direction (Vector2d ( 3, 4 )) ==
         Just (Direction2d ( 0.6, 0.8 ))
 
-    Vector2d.direction (Vector2d ( 0, 0 )) == Nothing
+    Vector2d.direction (Vector2d ( 0, 0 )) ==
+        Nothing
 -}
 direction : Vector2d -> Maybe Direction2d
 direction vector =
@@ -297,7 +301,13 @@ times scale (Vector2d ( x, y )) =
 
 {-| Add one vector to another.
 
-    Vector2d.plus (Vector2d ( 1, 2 )) (Vector2d ( 3, 4 )) ==
+    firstVector =
+        Vector2d ( 1, 2 )
+
+    secondVector =
+        Vector2d ( 3, 4 )
+
+    Vector2d.plus firstVector secondVector ==
         Vector2d ( 4, 6 )
 -}
 plus : Vector2d -> Vector2d -> Vector2d
@@ -308,7 +318,13 @@ plus (Vector2d ( x2, y2 )) (Vector2d ( x1, y1 )) =
 {-| Subtract one vector from another. The vector to subtract is given first and
 the vector to be subtracted from is given second, so
 
-    Vector2d.minus (Vector2d ( 1, 2 )) (Vector2d ( 5, 6 )) ==
+    firstVector =
+        Vector2d ( 1, 2 )
+
+    secondVector =
+        Vector2d ( 5, 6 )
+
+    Vector2d.minus firstVector secondVector ==
         Vector2d ( 4, 4 )
 
 or more generally, `Vector2d.minus a b` means `b - a`, not `a - b`. Think of
@@ -520,13 +536,16 @@ placeIn frame =
 construct a 3D vector by taking the X and Y components of the given vector and
 applying them to the X and Y basis directions of the given frame.
 
-    Vector2d.placeIn3d PlanarFrame3d.xy (Vector2d ( 2, 3 )) ==
+    vector =
+        Vector2d ( 2, 3 )
+
+    Vector2d.placeIn3d PlanarFrame3d.xy vector ==
         Vector3d ( 2, 3, 0 )
 
-    Vector2d.placeIn3d PlanarFrame3d.yz (Vector2d ( 2, 3 )) ==
+    Vector2d.placeIn3d PlanarFrame3d.yz vector ==
         Vector3d ( 0, 2, 3 )
 
-    Vector2d.placeIn3d PlanarFrame3d.zx (Vector2d ( 2, 3 )) ==
+    Vector2d.placeIn3d PlanarFrame3d.zx vector ==
         Vector3d ( 3, 0, 2 )
 
 A slightly more complex example:
