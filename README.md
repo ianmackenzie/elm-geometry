@@ -140,7 +140,10 @@ transformations can be directly used with higher-order functions like
 
 ```elm
 pointsOnXAxis =
-    [ Point2d ( 1, 0 ), Point2d ( 2, 0 ), Point2d ( 3, 0 ) ]
+    [ Point2d ( 1, 0 )
+    , Point2d ( 2, 0 )
+    , Point2d ( 3, 0 )
+    ]
 
 rotateNinetyDegrees : Point2d -> Point2d
 rotateNinetyDegrees =
@@ -150,7 +153,10 @@ pointsOnYAxis =
     List.map rotateNinetyDegrees pointsOnXAxis
 
 pointsOnYAxis ==
-    [ Point2d ( 0, 1 ), Point2d ( 0, 2 ), Point2d ( 0, 3 ) ]
+    [ Point2d ( 0, 1 )
+    , Point2d ( 0, 2 )
+    , Point2d ( 0, 3 )
+    ]
 ```
 
 Second, transformations can be composed like any other functions to produce
