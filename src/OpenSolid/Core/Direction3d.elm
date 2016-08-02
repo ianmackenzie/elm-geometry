@@ -254,7 +254,7 @@ angle between them.
 
     Direction3d.dotProduct Direction2d.x direction == 0.6
     Direction3d.dotProduct Direction2d.z direction == 0
-    Direction3d.dotProduct Direction2d.y Direction2d.y == 1
+    Direction3d.dotProduct direction direction == 1
 
 -}
 dotProduct : Direction3d -> Direction3d -> Float
@@ -273,6 +273,9 @@ of the two directions converted to unit vectors.
 
     Direction3d.crossProduct Direction3d.x direction ==
         Vector3d ( 0, 0, 0.8 )
+
+    Direction3d.crossProduct direction direction ==
+        Vector3d.zero
 -}
 crossProduct : Direction3d -> Direction3d -> Vector3d
 crossProduct firstDirection secondDirection =
