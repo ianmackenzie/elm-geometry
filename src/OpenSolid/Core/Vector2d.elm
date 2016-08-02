@@ -348,6 +348,18 @@ and is useful in many of the same ways as the 3D cross product:
     vector to the second (positive indicates a counterclockwise rotation and
     negative indicates a clockwise rotation), similar to how the direction of
     the 3D cross product indicates the direction of rotation.
+
+Some examples:
+
+    firstVector =
+        Vector2d ( 2, 0 )
+
+    secondVector =
+        Vector2d ( 0, 3 )
+
+    Vector2d.crossProduct firstVector secondVector == 6
+    Vector2d.crossProduct secondVector firstVector == -6
+    Vector2d.crossProduct firstVector firstVector == 0
 -}
 crossProduct : Vector2d -> Vector2d -> Float
 crossProduct (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
