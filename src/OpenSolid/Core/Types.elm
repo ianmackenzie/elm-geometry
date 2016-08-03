@@ -48,7 +48,7 @@ satisfy certain invariants that are otherwise always maintained. Specifically:
 For example, instead of constructing a `Direction2d` directly from its
 components, it is usually better to use a constructor function like
 `Direction2d.fromAngle` or start with an existing direction like `Direction2d.y`
-and transform it as necessary. For more complex types like `Plane3d` this is
+and transform it as necessary. For more complex types like `Frame3d` this is
 even more true! All OpenSolid functions (transformations etc.) will properly
 maintain the invariants described above, so for example it is impossible to
 produce a `Frame2d` with non-perpendicular X and Y directions except by directly
