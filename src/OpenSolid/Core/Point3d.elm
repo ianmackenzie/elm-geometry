@@ -31,9 +31,9 @@ module OpenSolid.Core.Point3d
         , mirrorAcross
         , projectOnto
         , projectOntoAxis
-        , projectInto2d
         , relativeTo
         , placeIn
+        , projectInto2d
         , toRecord
         , fromRecord
         )
@@ -85,7 +85,7 @@ different coordinate systems. Although these examples use a simple offset
 frame, these functions can be used to convert to and from local coordinates in
 arbitrarily transformed (translated, rotated, mirrored) frames.
 
-@docs projectInto2d, relativeTo, placeIn
+@docs relativeTo, placeIn, projectInto2d
 
 # Record conversions
 
@@ -617,34 +617,6 @@ projectOntoAxis axis =
             >> addTo originPoint
 
 
-{-| Project a point into a given planar frame. Conceptually, this projects the
-point onto the plane of the given frame and then expresses the projected point
-in terms of 2D coordinates within the plane (relative to the given frame's X and
-Y axes).
-
-    point =
-        Point3d ( 2, 1, 3 )
-
-    Point3d.projectInto2d PlanarFrame3d.xy point ==
-        Point2d ( 2, 1 )
-
-    Point3d.projectInto2d PlanarFrame3d.yz point ==
-        Point2d ( 1, 3 )
-
-    Point3d.projectInto2d PlanarFrame3d.zx point ==
-        Point2d ( 3, 2 )
--}
-projectInto2d : PlanarFrame3d -> Point3d -> Point2d
-projectInto2d planarFrame =
-    let
-        (PlanarFrame3d { originPoint, xDirection, yDirection }) =
-            planarFrame
-    in
-        vectorFrom originPoint
-            >> Vector3d.projectInto2d planarFrame
-            >> (\(Vector2d components) -> Point2d components)
-
-
 {-| Take a point currently expressed in global coordinates and express it in
 coordinates relative to a given frame.
 
@@ -694,6 +666,34 @@ placeIn frame =
             frame
     in
         coordinates >> Vector3d >> Vector3d.placeIn frame >> addTo originPoint
+
+
+{-| Project a point into a given planar frame. Conceptually, this projects the
+point onto the plane of the given frame and then expresses the projected point
+in terms of 2D coordinates within the plane (relative to the given frame's X and
+Y axes).
+
+    point =
+        Point3d ( 2, 1, 3 )
+
+    Point3d.projectInto2d PlanarFrame3d.xy point ==
+        Point2d ( 2, 1 )
+
+    Point3d.projectInto2d PlanarFrame3d.yz point ==
+        Point2d ( 1, 3 )
+
+    Point3d.projectInto2d PlanarFrame3d.zx point ==
+        Point2d ( 3, 2 )
+-}
+projectInto2d : PlanarFrame3d -> Point3d -> Point2d
+projectInto2d planarFrame =
+    let
+        (PlanarFrame3d { originPoint, xDirection, yDirection }) =
+            planarFrame
+    in
+        vectorFrom originPoint
+            >> Vector3d.projectInto2d planarFrame
+            >> (\(Vector2d components) -> Point2d components)
 
 
 {-| Convert a point to a record with `x`, `y` and `z` fields.
