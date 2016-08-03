@@ -25,21 +25,88 @@ module OpenSolid.Core.Axis2d
         , placeIn3d
         )
 
+{-| Various functions for creating and working with `Axis2d` values. For the
+examples below, assume that all OpenSolid core types have been imported using
+
+    import OpenSolid.Core.Types exposing (..)
+
+and all necessary modules have been imported using the following pattern:
+
+    import OpenSolid.Core.Axis2d as Axis2d
+
+Examples use `==` to indicate that two expressions are equivalent, even if (due
+to numerical roundoff) they might not be exactly equal.
+
+# Predefined axes
+
+@docs x, y
+
+# Constructors
+
+Axes can by constructed by passing a record with `originPoint` and `direction`
+fields to the `Axis2d` constructor, for example:
+
+    axis =
+        Axis2d
+            { originPoint = Point2d ( 2, 3 )
+            , direction = Direction2d.fromAngle (degrees 45)
+            }
+
+@docs perpendicularTo
+
+# Accessors
+
+@docs originPoint, direction
+
+# Transformations
+
+@docs flip, scaleAbout, rotateAround, translateBy, moveTo, mirrorAcross
+
+# Coordinate transformations
+
+@docs relativeTo, placeIn, placeIn3d
+-}
+
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Point2d as Point2d
 import OpenSolid.Core.Direction2d as Direction2d
 
 
+{-| The global X axis.
+
+    Axis2d.x ==
+        Axis2d
+            { originPoint = Point2d.origin
+            , direction = Direction2d.x
+            }
+-}
 x : Axis2d
 x =
     Axis2d { originPoint = Point2d.origin, direction = Direction2d.x }
 
 
+{-| The global Y axis.
+
+    Axis2d.y ==
+        Axis2d
+            { originPoint = Point2d.origin
+            , direction = Direction2d.y
+            }
+-}
 y : Axis2d
 y =
     Axis2d { originPoint = Point2d.origin, direction = Direction2d.y }
 
 
+{-| Construct an axis perpendicular to another axis by rotating the given axis
+90 degrees counterclockwise around its own origin point.
+
+    Axis2d.perpendicularTo Axis2d.x ==
+        Axis2d.y
+
+    Axis2d.perpendicularTo Axis2d.y ==
+        Axis2d.flip Axis2d.x
+-}
 perpendicularTo : Axis2d -> Axis2d
 perpendicularTo axis =
     Axis2d
@@ -48,16 +115,34 @@ perpendicularTo axis =
         }
 
 
+{-| Get the origin point of an axis.
+
+    Axis2d.originPoint Axis2d.x ==
+        Point2d.origin
+-}
 originPoint : Axis2d -> Point2d
 originPoint (Axis2d properties) =
     properties.originPoint
 
 
+{-| Get the direction of an axis.
+
+    Axis2d.direction Axis2d.y ==
+        Direction2d.y
+-}
 direction : Axis2d -> Direction2d
 direction (Axis2d properties) =
     properties.direction
 
 
+{-| Reverse the direction of an axis while keeping the same origin point.
+
+    Axis2d.flip Axis2d.x ==
+        Axis2d
+            { originPoint = Point2d.origin
+            , direction = Direction2d ( -1, 0 )
+            }
+-}
 flip : Axis2d -> Axis2d
 flip axis =
     Axis2d
@@ -66,6 +151,24 @@ flip axis =
         }
 
 
+{-| Scale an axis about a center point by a given scale. The axis' origin point
+will scaled about the given center point by the given scale, and the axis'
+direction will remain the same. The end result will be that every point on the
+axis will be scaled away from or towards the given center point by the given
+scale.
+
+    axis =
+        Axis2d
+            { originPoint = Point2d ( 2, 3 )
+            , direction = Direction2d.x
+            }
+
+    Axis2d.scaleAbout Point2d.origin 3 axis ==
+        Axis2d
+            { originPoint = Point2d ( 6, 9 )
+            , direction = Direction2d.x
+            }
+-}
 scaleAbout : Point2d -> Float -> Axis2d -> Axis2d
 scaleAbout centerPoint scale axis =
     Axis2d
@@ -74,6 +177,11 @@ scaleAbout centerPoint scale axis =
         }
 
 
+{-| Rotate an axis around a given center point by a given angle.
+
+    Axis2d.rotateAround Point2d.origin (degrees 90) Axis2d.x ==
+        Axis2d.y
+-}
 rotateAround : Point2d -> Float -> Axis2d -> Axis2d
 rotateAround centerPoint angle =
     let
@@ -90,6 +198,17 @@ rotateAround centerPoint angle =
                 }
 
 
+{-| Translate an axis by a given displacement.
+
+    displacement =
+        Vector2d ( 2, 3 )
+
+    Axis2d.translateBy displacement Axis2d.y ==
+        Axis2d
+            { originPoint = Point2d ( 2, 3 )
+            , direction = Direction2d.y
+            }
+-}
 translateBy : Vector2d -> Axis2d -> Axis2d
 translateBy vector axis =
     Axis2d
@@ -98,11 +217,46 @@ translateBy vector axis =
         }
 
 
+{-| Move an axis so that it has the given origin point but unchanged direction.
+
+    axis =
+        Axis2d
+            { originPoint = Point2d ( 2, 3 )
+            , direction = Direction2d.y
+            }
+
+    newOrigin =
+        Point2d ( 4, 5 )
+
+    Axis2d.moveTo newOrigin axis ==
+        Axis2d
+            { originPoint = Point2d ( 4, 5 ),
+            , direction = Direction2d.y
+            }
+-}
 moveTo : Point2d -> Axis2d -> Axis2d
 moveTo newOrigin axis =
     Axis2d { originPoint = newOrigin, direction = direction axis }
 
 
+{-| Mirror one axis across another. The axis to mirror across is given first and
+the axis to mirror is given second.
+
+    axis =
+        Axis2d
+            { originPoint = Point2d ( 1, 2 )
+            , direction = Direction2d.fromAngle (degrees 30)
+            }
+
+    mirrorAxis =
+        Axis2d.x
+
+    Axis2d.mirrorAcross mirrorAxis axis ==
+        Axis2d
+            { originPoint = Point2d ( 1, -2 )
+            , direction = Direction2d.fromAngle (degrees -30)
+            }
+-}
 mirrorAcross : Axis2d -> Axis2d -> Axis2d
 mirrorAcross otherAxis =
     let
@@ -119,6 +273,28 @@ mirrorAcross otherAxis =
                 }
 
 
+{-| Take an axis currently expressed in global coordinates and express it
+relative to a given frame. For example, an axis at a 45 degree angle, expressed
+relative to a frame inclined at a 30 degree angle, is an axis at only a 15
+degree angle:
+
+    rotatedFrame =
+        Frame2d.rotateAround Point2d.origin
+            (degrees 30)
+            Frame2d.xy
+
+    axis =
+        Axis2d
+            { originPoint = Point2d.origin
+            , direction = Direction2d.fromAngle (degrees 45)
+            }
+
+    Axis2d.relativeTo rotatedFrame axis ==
+        Axis2d
+            { originPoint = Point2d.origin
+            , direction = Direction2d.fromAngle (degrees 15)
+            }
+-}
 relativeTo : Frame2d -> Axis2d -> Axis2d
 relativeTo frame =
     let
@@ -135,6 +311,28 @@ relativeTo frame =
                 }
 
 
+{-| Place an axis in a given frame, considering it as being expressed relative
+to that frame and returning the corresponding axis in global coordinates.
+Inverse of `relativeTo`. For example, an axis at a 15 degree angle, placed in a
+frame already inclined at a 30 degree angle, is an axis at a 45 degree angle:
+
+    rotatedFrame =
+        Frame2d.rotateAround Point2d.origin
+            (degrees 30)
+            Frame2d.xy
+
+    axis =
+        Axis2d
+            { originPoint = Point2d.origin
+            , direction = Direction2d.fromAngle (degrees 15)
+            }
+
+    Axis2d.placeIn rotatedFrame axis ==
+        Axis2d
+            { originPoint = Point2d.origin
+            , direction = Direction2d.fromAngle (degrees 45)
+            }
+-}
 placeIn : Frame2d -> Axis2d -> Axis2d
 placeIn frame =
     let
@@ -151,6 +349,28 @@ placeIn frame =
                 }
 
 
+{-| Convert a 2D axis to 3D by placing it in a given planar frame. This will
+result in a 3D axis in the plane of the given frame. Equivalent to applying
+corresponding `placeIn3d` calls to the origin point and direction of the axis.
+
+    axis =
+        Axis2d
+            { originPoint = Point2d ( 2, 3 )
+            , direction = Direction2d ( 0.6, 0.8 )
+            }
+
+    Axis2d.placeIn3d PlanarFrame3d.xy ==
+        Axis3d
+            { originPoint = Point3d ( 2, 3, 0 )
+            , direction = Direction3d ( 0.6, 0.8, 0 )
+            }
+
+    Axis2d.placeIn3d PlanarFrame3d.zx ==
+        Axis3d
+            { originPoint = Point3d ( 3, 0, 2 )
+            , direction = Direction3d ( 0.8, 0, 0.6 )
+            }
+-}
 placeIn3d : PlanarFrame3d -> Axis2d -> Axis3d
 placeIn3d planarFrame =
     let

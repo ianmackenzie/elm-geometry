@@ -16,7 +16,8 @@
     "OpenSolid.Core.Direction2d",
     "OpenSolid.Core.Direction3d",
     "OpenSolid.Core.Point2d",
-    "OpenSolid.Core.Point3d"
+    "OpenSolid.Core.Point3d",
+    "OpenSolid.Core.Axis2d"
   ],
   "dependencies": {
     "elm-lang/core": "4.0.0 <= v < 5.0.0"
