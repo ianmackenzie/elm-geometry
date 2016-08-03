@@ -100,11 +100,16 @@ axis from the global XYZ frame:
     rotatedFrame =
         Frame3d.rotateAround Axis3d.z (degrees 30) Frame3d.xyz
 
-    Frame3d.xDirection rotatedFrame == Direction3d ( 0.866, 0.5, 0 )
-    Frame3d.yDirection rotatedFrame == Direction3d ( -0.5, 0.866, 0 )
-    Frame3d.zDirection rotatedFrame == Direction3d ( 0, 0, 1 )
+    Frame3d.xDirection rotatedFrame ==
+        Direction3d ( 0.866, 0.5, 0 )
 
-@docs projectInto2d, relativeTo, placeIn
+    Frame3d.yDirection rotatedFrame ==
+        Direction3d ( -0.5, 0.866, 0 )
+
+    Frame3d.zDirection rotatedFrame ==
+        Direction3d ( 0, 0, 1 )
+
+@docs relativeTo, placeIn, projectInto2d
 
 # Record conversions
 
@@ -149,9 +154,14 @@ magnitude and direction of the resulting vector are not specified, but it is
 guaranteed to be perpendicular to the given vector and non-zero (unless the
 given vector is itself zero).
 
-    Vector3d.perpendicularTo (Vector3d ( 3, 0, 0 )) == Vector3d ( 0, 0, -3 )
-    Vector3d.perpendicularTo (Vector3d ( 1, 2, 3 )) == Vector3d ( 0, -3, 2 )
-    Vector3d.perpendicularTo Vector3d.zero == Vector3d.zero
+    Vector3d.perpendicularTo (Vector3d ( 3, 0, 0 )) ==
+        Vector3d ( 0, 0, -3 )
+
+    Vector3d.perpendicularTo (Vector3d ( 1, 2, 3 )) ==
+        Vector3d ( 0, -3, 2 )
+
+    Vector3d.perpendicularTo Vector3d.zero ==
+        Vector3d.zero
 -}
 perpendicularTo : Vector3d -> Vector3d
 perpendicularTo vector =
@@ -181,12 +191,14 @@ perpendicularTo vector =
 
 {-| Extract the components of a vector.
 
-    Vector3d.components (Vector2d ( 2, 3, 4 )) == ( 2, 3, 4 )
+    Vector3d.components (Vector2d ( 2, 3, 4 )) ==
+        ( 2, 3, 4 )
 
 This combined with Elm's built-in tuple destructuring provides a convenient way
 to extract the X, Y and Z components of a vector in one line of code:
 
-    ( x, y, z ) = Vector3d.components vector
+    ( x, y, z ) =
+        Vector3d.components vector
 -}
 components : Vector3d -> ( Float, Float, Float )
 components (Vector3d components') =
@@ -222,12 +234,14 @@ zComponent (Vector3d ( _, _, z )) =
 
 {-| Find the component of a vector in an arbitrary direction, for example
 
-    verticalSpeed = Vector3d.componentIn upDirection velocityVector
+    verticalSpeed =
+        Vector3d.componentIn upDirection velocity
 
 This is more general and flexible than using `xComponent`, `yComponent` or
 `zComponent`, all of which can be expressed in terms of `componentIn`:
 
-    Vector3d.zComponent vector == Vector3d.componentIn Direction3d.z vector
+    Vector3d.zComponent vector ==
+        Vector3d.componentIn Direction3d.z vector
 -}
 componentIn : Direction3d -> Vector3d -> Float
 componentIn (Direction3d components) =
@@ -271,7 +285,8 @@ return `Nothing`.
     Vector3d.direction (Vector3d ( 3, 0, 4 )) ==
         Just (Direction3d ( 0.6, 0, 0.8 ))
 
-    Vector3d.direction (Vector3d ( 0, 0, 0 )) == Nothing
+    Vector3d.direction (Vector3d ( 0, 0, 0 )) ==
+        Nothing
 -}
 direction : Vector3d -> Maybe Direction3d
 direction vector =
@@ -287,7 +302,8 @@ direction vector =
 
 {-| Negate a vector.
 
-    Vector3d.negate (Vector3d ( 1, -3, 2 )) == Vector3d ( -1, 3, -2 )
+    Vector3d.negate (Vector3d ( 1, -3, 2 )) ==
+        Vector3d ( -1, 3, -2 )
 -}
 negate : Vector3d -> Vector3d
 negate vector =
@@ -300,7 +316,8 @@ negate vector =
 
 {-| Multiply a vector by a scalar.
 
-    Vector3d.times 3 (Vector3d ( 1, 2, 3 )) == Vector3d ( 3, 6, 9 )
+    Vector3d.times 3 (Vector3d ( 1, 2, 3 )) ==
+        Vector3d ( 3, 6, 9 )
 -}
 times : Float -> Vector3d -> Vector3d
 times scale vector =
@@ -313,8 +330,14 @@ times scale vector =
 
 {-| Add one vector to another.
 
-    Vector3d.plus (Vector3d ( 1, 2, 3 )) (Vector3d ( 4, 5, 6 )) ==
-        Vector3d ( 5, 7, 8 )
+    firstVector =
+        Vector3d ( 1, 2, 3 )
+
+    secondVector =
+        Vector3d ( 4, 5, 6 )
+
+    Vector3d.plus firstVector secondVector ==
+        Vector3d ( 5, 7, 9 )
 -}
 plus : Vector3d -> Vector3d -> Vector3d
 plus other vector =
@@ -331,7 +354,13 @@ plus other vector =
 {-| Subtract one vector from another. The vector to subtract is given first and
 the vector to be subtracted from is given second, so
 
-    Vector3d.minus (Vector3d ( 1, 1, 1 )) (Vector3d ( 5, 6, 7 )) ==
+    firstVector =
+        Vector3d ( 1, 1, 1 )
+
+    secondVector =
+        Vector3d ( 5, 6, 7 )
+
+    Vector3d.minus firstVector secondVector ==
         Vector3d ( 4, 5, 6 )
 
 or more generally, `Vector3d.minus a b` means `b - a`, not `a - b`. Think of
@@ -351,7 +380,13 @@ minus other vector =
 
 {-| Find the dot product of two vectors.
 
-    Vector3d.dotProduct (Vector3d ( 1, 0, 2 )) (Vector3d ( 3, 4, 5 )) == 13
+    firstVector =
+        Vector3d ( 1, 0, 2 )
+
+    secondVector =
+        Vector3d ( 3, 4, 5 )
+
+    Vector3d.dotProduct firstVector secondVector == 13
 -}
 dotProduct : Vector3d -> Vector3d -> Float
 dotProduct first second =
@@ -367,7 +402,13 @@ dotProduct first second =
 
 {-| Find the cross product of two vectors.
 
-    Vector3d.crossProduct (Vector3d ( 2, 0, 0 )) (Vector3d ( 0, 3, 0 )) ==
+    firstVector =
+        Vector3d ( 2, 0, 0 )
+
+    secondVector =
+        Vector3d ( 0, 3, 0 )
+
+    Vector3d.crossProduct firstVector secondVector ==
         Vector3d ( 0, 0, 6 )
 -}
 crossProduct : Vector3d -> Vector3d -> Vector3d
@@ -379,16 +420,23 @@ crossProduct first second =
         ( x2, y2, z2 ) =
             components second
     in
-        Vector3d ( y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2 - y1 * x2 )
+        Vector3d
+            ( y1 * z2 - z1 * y2
+            , z1 * x2 - x1 * z2
+            , x1 * y2 - y1 * x2
+            )
 
 
 {-| Rotate a vector around an axis.
 
-    Vector3d.rotateAround Axis3d.x (degrees 90) (Vector3d ( 0, 0, 3)) ==
-        Vector3d ( 0, -3, 0 )
+    vector =
+        Vector3d ( 2, 0, 1 )
 
-    Vector3d.rotateAround Axis3d.z (degrees 45) (Vector3d ( 1, 0, 1 )) ==
-        Vector3d ( 0.7071, 0.7071, 1 )
+    Vector3d.rotateAround Axis3d.x (degrees 90) vector ==
+        Vector3d ( 2, -1, 0 )
+
+    Vector3d.rotateAround Axis3d.z (degrees 45) vector ==
+        Vector3d ( 1.4142, 1.4142, 1 )
 -}
 rotateAround : Axis3d -> Float -> Vector3d -> Vector3d
 rotateAround axis angle =
@@ -481,10 +529,13 @@ rotateAround axis angle =
 
 {-| Mirror a vector across a plane.
 
-    Vector3d.mirrorAcross Plane3d.xy (Vector3d ( 1, 2, 3 )) ==
+    vector =
+        Vector3d ( 1, 2, 3 )
+
+    Vector3d.mirrorAcross Plane3d.xy vector ==
         Vector3d ( 1, 2, -3 )
 
-    Vector3d.mirrorAcross Plane3d.yz (Vector3d ( 1, 2, 3 )) ==
+    Vector3d.mirrorAcross Plane3d.yz vector ==
         Vector3d ( -1, 2, 3 )
 -}
 mirrorAcross : Plane3d -> Vector3d -> Vector3d
@@ -527,10 +578,13 @@ this means splitting the original vector into a portion parallel to the given
 direction and a portion perpendicular to it, then returning the parallel
 portion.
 
-    Vector3d.projectionIn Direction3d.x (Vector3d ( 1, 2, 3 )) ==
+    vector =
+        Vector3d ( 1, 2, 3 )
+
+    Vector3d.projectionIn Direction3d.x vector ==
         Vector3d ( 1, 0, 0 )
 
-    Vector3d.projectionIn Direction3d.z (Vector3d ( 1, 2, 3 )) ==
+    Vector3d.projectionIn Direction3d.z vector ==
         Vector3d ( 0, 0, 3 )
 -}
 projectionIn : Direction3d -> Vector3d -> Vector3d
@@ -548,10 +602,13 @@ projectionIn direction vector =
 {-| Project a vector onto an axis. This is equivalent to finding the projection
 in the axis' direction.
 
-    Vector3d.projectOnto Axis3d.y (Vector3d ( 2, 3, 4 )) ==
-        Vector3d ( 0, 3, 0 )
+    vector =
+        Vector3d ( -1, 2, -3 )
 
-    Vector3d.projectOnto Axis3d.x (Vector3d ( -1, 2, -3 )) ==
+    Vector3d.projectOnto Axis3d.y vector ==
+        Vector3d ( 0, 2, 0 )
+
+    Vector3d.projectOnto Axis3d.x vector ==
         Vector3d ( -1, 0, 0 )
 
     Vector3d.projectOnto axis vector ==
@@ -571,10 +628,13 @@ original vector into a portion parallel to the plane (perpendicular to the
 plane's normal direction) and a portion perpendicular to it (parallel to its
 normal direction), then returning the parallel (in-plane) portion.
 
-    Vector3d.projectOnto Plane3d.xy (Vector3d ( 2, 1, 3 )) ==
+    vector =
+        Vector3d ( 2, 1, 3 )
+
+    Vector3d.projectOnto Plane3d.xy vector ==
         Vector3d ( 2, 1, 0 )
 
-    Vector3d.projectOnto Plane3d.xz (Vector3d ( 2, 1, 3 )) ==
+    Vector3d.projectOnto Plane3d.xz vector ==
         Vector3d ( 2, 0, 3 )
 -}
 projectOnto : Plane3d -> Vector3d -> Vector3d
@@ -589,7 +649,10 @@ projectOnto plane vector =
 {-| Take a vector currently expressed in global coordinates and express it
 relative to a given frame.
 
-    Vector3d.relativeTo rotatedFrame (Vector3d ( 2, 0, 3 )) ==
+    vector =
+        Vector3d ( 2, 0, 3 )
+
+    Vector3d.relativeTo rotatedFrame vector ==
         Vector3d ( 1.732, -1, 3 )
 -}
 relativeTo : Frame3d -> Vector3d -> Vector3d
@@ -609,7 +672,10 @@ relativeTo frame vector =
 relative to that frame and returning the corresponding vector in global
 coordinates. Inverse of `relativeTo`.
 
-    Vector3d.placeIn rotatedFrame (Vector3d ( 2, 0, 3 )) ==
+    vector =
+        Vector3d ( 2, 0, 3 )
+
+    Vector3d.placeIn rotatedFrame vector ==
         Vector3d ( 1.732, 1, 3 )
 -}
 placeIn : Frame3d -> Vector3d -> Vector3d
@@ -640,13 +706,16 @@ Conceptually, this projects the vector onto the plane of the given frame and
 then expresses the projected vector in terms of 2D components within the frame
 (relative to the given frame's X and Y basis directions).
 
-    Vector3d.projectInto2d PlanarFrame3d.xy (Vector3d ( 2, 1, 3 )) ==
+    vector =
+        Vector3d ( 2, 1, 3 )
+
+    Vector3d.projectInto2d PlanarFrame3d.xy vector ==
         Vector2d ( 2, 1 )
 
-    Vector3d.projectInto2d PlanarFrame3d.yz (Vector3d ( 2, 1, 3 )) ==
+    Vector3d.projectInto2d PlanarFrame3d.yz vector ==
         Vector2d ( 1, 3 )
 
-    Vector3d.projectInto2d PlanarFrame3d.zx (Vector3d ( 2, 1, 3 )) ==
+    Vector3d.projectInto2d PlanarFrame3d.zx vector ==
         Vector2d ( 3, 2 )
 -}
 projectInto2d : PlanarFrame3d -> Vector3d -> Vector2d
@@ -663,7 +732,8 @@ projectInto2d planarFrame vector =
 
 {-| Convert a vector to a record with `x`, `y` and `z` fields.
 
-    Vector3d.toRecord (Vector3d ( 2, 1, 3 )) == { x = 2, y = 1, z = 3 }
+    Vector3d.toRecord (Vector3d ( 2, 1, 3 )) ==
+        { x = 2, y = 1, z = 3 }
 -}
 toRecord : Vector3d -> { x : Float, y : Float, z : Float }
 toRecord (Vector3d ( x, y, z )) =
@@ -672,7 +742,8 @@ toRecord (Vector3d ( x, y, z )) =
 
 {-| Construct a vector from a record with `x`, `y` and `z` fields.
 
-    Vector3d.fromRecord { x = 2, y = 1, z = 3 } == Vector3d ( 2, 1, 3 )
+    Vector3d.fromRecord { x = 2, y = 1, z = 3 } ==
+        Vector3d ( 2, 1, 3 )
 -}
 fromRecord : { x : Float, y : Float, z : Float } -> Vector3d
 fromRecord { x, y, z } =
