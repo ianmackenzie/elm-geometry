@@ -198,7 +198,8 @@ rotateAround centerPoint angle =
                 }
 
 
-{-| Translate an axis by a given displacement.
+{-| Translate an axis by a given displacement. Applies the given displacement to
+the axis' origin point.
 
     displacement =
         Vector2d ( 2, 3 )
