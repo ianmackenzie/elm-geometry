@@ -3,7 +3,7 @@
   "summary": "Tests",
   "repository": "https://github.com/ianmackenzie/opensolid-core.git",
   "license": "MPL-2.0",
-  "source-directories": [".", "../src"],
+  "source-directories": ["src", "../src"],
   "exposed-modules": [],
   "dependencies": {
     "elm-lang/core": "4.0.0 <= v < 5.0.0",

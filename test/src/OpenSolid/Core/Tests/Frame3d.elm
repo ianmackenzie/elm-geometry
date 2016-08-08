@@ -7,7 +7,7 @@
 -}
 
 
-module Test.Frame3d exposing (suite)
+module OpenSolid.Core.Tests.Frame3d exposing (suite)
 
 import Json.Decode as Decode exposing (decodeValue)
 import Json.Encode as Encode
@@ -20,8 +20,8 @@ import OpenSolid.Core.Encode as Encode
 import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction3d as Direction3d
 import OpenSolid.Core.Frame3d as Frame3d
-import Test.Utils exposing (valueIsOne)
-import Test.Producers exposing (frame3d)
+import OpenSolid.Core.Test.Comparisons exposing (valueIsOne)
+import OpenSolid.Core.Test.Producers exposing (frame3d)
 
 
 jsonRoundTrips : Claim

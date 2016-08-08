@@ -7,29 +7,40 @@
 -}
 
 
-module Test.Axis2d exposing (suite)
+module OpenSolid.Core.Tests.Vector3d exposing (suite)
 
 import Json.Decode as Decode exposing (decodeValue)
-import Json.Encode as Encode
-import ElmTest exposing (Test)
+import Json.Encode as Encode exposing (encode)
+import ElmTest exposing (Test, test, assert)
 import Check exposing (Claim, claim, true, that, is, for, quickCheck)
 import Check.Test exposing (evidenceToTest)
 import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import Test.Producers exposing (axis2d)
+import OpenSolid.Core.Test.Comparisons exposing (valueIsOne)
+import OpenSolid.Core.Test.Producers exposing (vector3d)
 
 
 jsonRoundTrips : Claim
 jsonRoundTrips =
     claim "JSON conversion round-trips properly"
-        `that` (Encode.axis2d >> decodeValue Decode.axis2d)
+        `that` (Encode.vector3d >> decodeValue Decode.vector3d)
         `is` Ok
-        `for` axis2d
+        `for` vector3d
+
+
+recordConversionRoundTrips : Claim
+recordConversionRoundTrips =
+    claim "Record conversion round-trips properly"
+        `that` (Vector3d.toRecord >> Vector3d.fromRecord)
+        `is` identity
+        `for` vector3d
 
 
 suite : Test
 suite =
-    ElmTest.suite "Axis2d tests"
+    ElmTest.suite "Vector3d tests"
         [ evidenceToTest (quickCheck jsonRoundTrips)
+        , evidenceToTest (quickCheck recordConversionRoundTrips)
         ]

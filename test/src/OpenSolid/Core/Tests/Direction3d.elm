@@ -7,7 +7,7 @@
 -}
 
 
-module Test.Direction3d exposing (suite)
+module OpenSolid.Core.Tests.Direction3d exposing (suite)
 
 import Json.Decode as Decode exposing (decodeValue)
 import Json.Encode as Encode
@@ -17,7 +17,7 @@ import Check.Test exposing (evidenceToTest)
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import Test.Producers exposing (direction3d)
+import OpenSolid.Core.Test.Producers exposing (direction3d)
 
 
 jsonRoundTrips : Claim

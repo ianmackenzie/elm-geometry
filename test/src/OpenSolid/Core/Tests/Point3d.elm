@@ -7,7 +7,7 @@
 -}
 
 
-module Test.Point3d exposing (suite)
+module OpenSolid.Core.Tests.Point3d exposing (suite)
 
 import Json.Decode as Decode exposing (decodeValue)
 import Json.Encode as Encode exposing (encode)
@@ -20,8 +20,8 @@ import OpenSolid.Core.Point3d as Point3d
 import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import Test.Utils exposing (valuesAreEqual)
-import Test.Producers exposing (angle, vector3d, point3d, axis3d)
+import OpenSolid.Core.Test.Comparisons exposing (valuesAreEqual)
+import OpenSolid.Core.Test.Producers exposing (angle, vector3d, point3d, axis3d)
 
 
 rotationAboutAxisPreservesDistance : Claim

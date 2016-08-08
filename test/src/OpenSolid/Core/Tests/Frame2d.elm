@@ -7,7 +7,7 @@
 -}
 
 
-module Test.Frame2d exposing (suite)
+module OpenSolid.Core.Tests.Frame2d exposing (suite)
 
 import Json.Decode as Decode exposing (decodeValue)
 import Json.Encode as Encode
@@ -19,8 +19,8 @@ import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
 import OpenSolid.Core.Point2d as Point2d
-import Test.Utils exposing (pointsAreEqual2d)
-import Test.Producers exposing (frame2d, point2d)
+import OpenSolid.Core.Test.Comparisons exposing (pointsAreEqual2d)
+import OpenSolid.Core.Test.Producers exposing (frame2d, point2d)
 
 
 jsonRoundTrips : Claim
