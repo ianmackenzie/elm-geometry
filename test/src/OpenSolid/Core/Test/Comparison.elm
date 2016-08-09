@@ -7,7 +7,7 @@
 -}
 
 
-module OpenSolid.Core.Test.Comparisons
+module OpenSolid.Core.Test.Comparison
     exposing
         ( valueIsZero
         , valueIsOne

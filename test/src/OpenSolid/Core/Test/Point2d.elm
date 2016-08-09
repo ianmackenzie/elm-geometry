@@ -7,7 +7,7 @@
 -}
 
 
-module OpenSolid.Core.Tests.Point2d exposing (suite)
+module OpenSolid.Core.Test.Point2d exposing (suite)
 
 import Json.Decode as Decode exposing (decodeValue)
 import Json.Encode as Encode exposing (encode)
@@ -20,8 +20,8 @@ import OpenSolid.Core.Point2d as Point2d
 import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import OpenSolid.Core.Test.Comparisons exposing (valuesAreEqual)
-import OpenSolid.Core.Test.Producers exposing (angle, vector2d, point2d, axis2d)
+import OpenSolid.Core.Test.Comparison exposing (valuesAreEqual)
+import OpenSolid.Core.Test.Producer exposing (angle, vector2d, point2d, axis2d)
 
 
 rotationPreservesDistance : Claim
@@ -90,3 +90,7 @@ suite =
         , evidenceToTest (quickCheck jsonRoundTrips)
         , evidenceToTest (quickCheck recordConversionRoundTrips)
         ]
+
+
+main =
+    ElmTest.runSuiteHtml suite

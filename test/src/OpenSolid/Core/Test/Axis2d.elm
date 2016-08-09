@@ -7,7 +7,7 @@
 -}
 
 
-module OpenSolid.Core.Tests.Direction3d exposing (suite)
+module OpenSolid.Core.Test.Axis2d exposing (suite)
 
 import Json.Decode as Decode exposing (decodeValue)
 import Json.Encode as Encode
@@ -17,19 +17,23 @@ import Check.Test exposing (evidenceToTest)
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import OpenSolid.Core.Test.Producers exposing (direction3d)
+import OpenSolid.Core.Test.Producer exposing (axis2d)
 
 
 jsonRoundTrips : Claim
 jsonRoundTrips =
     claim "JSON conversion round-trips properly"
-        `that` (Encode.direction3d >> decodeValue Decode.direction3d)
+        `that` (Encode.axis2d >> decodeValue Decode.axis2d)
         `is` Ok
-        `for` direction3d
+        `for` axis2d
 
 
 suite : Test
 suite =
-    ElmTest.suite "Direction3d tests"
+    ElmTest.suite "OpenSolid.Core.Axis2d"
         [ evidenceToTest (quickCheck jsonRoundTrips)
         ]
+
+
+main =
+    ElmTest.runSuiteHtml suite

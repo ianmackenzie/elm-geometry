@@ -7,7 +7,7 @@
 -}
 
 
-module OpenSolid.Core.Test.Producers
+module OpenSolid.Core.Test.Producer
     exposing
         ( angle
         , vector2d

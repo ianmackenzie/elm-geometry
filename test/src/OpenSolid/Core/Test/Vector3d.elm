@@ -7,7 +7,7 @@
 -}
 
 
-module OpenSolid.Core.Tests.Vector3d exposing (suite)
+module OpenSolid.Core.Test.Vector3d exposing (suite)
 
 import Json.Decode as Decode exposing (decodeValue)
 import Json.Encode as Encode exposing (encode)
@@ -18,8 +18,8 @@ import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import OpenSolid.Core.Test.Comparisons exposing (valueIsOne)
-import OpenSolid.Core.Test.Producers exposing (vector3d)
+import OpenSolid.Core.Test.Comparison exposing (valueIsOne)
+import OpenSolid.Core.Test.Producer exposing (vector3d)
 
 
 jsonRoundTrips : Claim
@@ -44,3 +44,7 @@ suite =
         [ evidenceToTest (quickCheck jsonRoundTrips)
         , evidenceToTest (quickCheck recordConversionRoundTrips)
         ]
+
+
+main =
+    ElmTest.runSuiteHtml suite
