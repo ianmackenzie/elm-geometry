@@ -54,7 +54,7 @@ frameDirectionsAreOrthonormal =
 
 suite : Test
 suite =
-    ElmTest.suite "Frame3d tests"
+    ElmTest.suite "OpenSolid.Core.Frame3d"
         [ evidenceToTest (quickCheck jsonRoundTrips)
         , evidenceToTest (quickCheck frameDirectionsAreOrthonormal)
         ]

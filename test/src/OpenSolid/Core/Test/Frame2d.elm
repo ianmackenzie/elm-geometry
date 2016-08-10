@@ -52,7 +52,7 @@ coordinateTransformationRoundTrips =
 
 suite : Test
 suite =
-    ElmTest.suite "Frame2d tests"
+    ElmTest.suite "OpenSolid.Core.Frame2d"
         [ evidenceToTest (quickCheck jsonRoundTrips)
         ]
 

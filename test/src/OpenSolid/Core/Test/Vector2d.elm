@@ -58,7 +58,7 @@ perpendicularVectorIsPerpendicular =
 
 suite : Test
 suite =
-    ElmTest.suite "Vector2d tests"
+    ElmTest.suite "OpenSolid.Core.Vector2d"
         [ evidenceToTest (quickCheck jsonRoundTrips)
         , evidenceToTest (quickCheck recordConversionRoundTrips)
         , evidenceToTest (quickCheck perpendicularVectorIsPerpendicular)

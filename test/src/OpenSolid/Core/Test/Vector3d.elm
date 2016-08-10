@@ -40,7 +40,7 @@ recordConversionRoundTrips =
 
 suite : Test
 suite =
-    ElmTest.suite "Vector3d tests"
+    ElmTest.suite "OpenSolid.Core.Vector3d"
         [ evidenceToTest (quickCheck jsonRoundTrips)
         , evidenceToTest (quickCheck recordConversionRoundTrips)
         ]

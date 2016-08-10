@@ -30,7 +30,7 @@ jsonRoundTrips =
 
 suite : Test
 suite =
-    ElmTest.suite "Direction3d tests"
+    ElmTest.suite "OpenSolid.Core.Direction3d"
         [ evidenceToTest (quickCheck jsonRoundTrips)
         ]
 

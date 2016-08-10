@@ -84,7 +84,7 @@ recordConversionRoundTrips =
 
 suite : Test
 suite =
-    ElmTest.suite "Point2d tests"
+    ElmTest.suite "OpenSolid.Core.Point2d"
         [ evidenceToTest (quickCheck rotationPreservesDistance)
         , evidenceToTest (quickCheck projectionOntoAxisPreservesDistance)
         , evidenceToTest (quickCheck jsonRoundTrips)

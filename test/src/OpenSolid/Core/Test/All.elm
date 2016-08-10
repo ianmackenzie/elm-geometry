@@ -24,7 +24,7 @@ import OpenSolid.Core.Test.Vector3d as Vector3d
 
 
 suite =
-    ElmTest.suite "OpenSolid Core Tests"
+    ElmTest.suite "OpenSolid.Core"
         [ Axis2d.suite
         , Axis3d.suite
         , Direction2d.suite
