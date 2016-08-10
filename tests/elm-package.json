@@ -3,13 +3,15 @@
   "summary": "Tests",
   "repository": "https://github.com/opensolid/core.git",
   "license": "MPL-2.0",
-  "source-directories": ["src", "../src"],
+  "source-directories": [".", "../src", "../test/src"],
   "exposed-modules": [],
   "dependencies": {
     "elm-lang/core": "4.0.0 <= v < 5.0.0",
     "elm-lang/html": "1.0.0 <= v < 2.0.0",
-    "elm-community/elm-test": "1.0.0 <= v < 2.0.0",
-    "elm-community/elm-check": "1.0.0 <= v < 2.0.0"
+    "elm-community/elm-test": "2.0.0 <= v < 3.0.0",
+    "rtfeldman/html-test-runner": "1.0.0 <= v < 2.0.0",
+    "mgold/elm-random-pcg": "3.0.0 <= v < 4.0.0",
+    "elm-community/shrink": "1.0.0 <= v < 2.0.0"
   },
   "elm-version": "0.17.0 <= v < 0.18.0"
 }
