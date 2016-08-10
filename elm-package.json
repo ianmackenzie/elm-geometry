@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "summary": "2D/3D points, vectors, directions, axes, planes, and coordinate frames",
-  "repository": "https://github.com/ianmackenzie/opensolid-core.git",
+  "repository": "https://github.com/opensolid/core.git",
   "license": "MPL-2.0",
   "source-directories": ["src"],
   "doc-exposed-modules": [
