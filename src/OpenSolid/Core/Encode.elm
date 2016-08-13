@@ -20,13 +20,13 @@ module OpenSolid.Core.Encode
         , plane3d
         , frame2d
         , frame3d
-        , planarFrame3d
+        , sketchPlane3d
         )
 
 {-| JSON encoders for the core OpenSolid types.
 
 @docs vector2d, vector3d, direction2d, direction3d, point2d, point3d
-@docs axis2d, axis3d, plane3d, frame2d, frame3d, planarFrame3d
+@docs axis2d, axis3d, plane3d, frame2d, frame3d, sketchPlane3d
 -}
 
 import Json.Encode exposing (..)
@@ -42,7 +42,7 @@ import OpenSolid.Core.Axis3d as Axis3d
 import OpenSolid.Core.Plane3d as Plane3d
 import OpenSolid.Core.Frame2d as Frame2d
 import OpenSolid.Core.Frame3d as Frame3d
-import OpenSolid.Core.PlanarFrame3d as PlanarFrame3d
+import OpenSolid.Core.SketchPlane3d as SketchPlane3d
 
 
 tuple2 : ( Float, Float ) -> Value
@@ -153,13 +153,13 @@ frame3d frame =
         ]
 
 
-{-| Encode a PlanarFrame3d as an object with 'originPoint', 'xDirection',
+{-| Encode a SketchPlane3d as an object with 'originPoint', 'xDirection',
 and 'yDirection' fields.
 -}
-planarFrame3d : PlanarFrame3d -> Value
-planarFrame3d planarFrame =
+sketchPlane3d : SketchPlane3d -> Value
+sketchPlane3d sketchPlane =
     object
-        [ ( "originPoint", point3d (PlanarFrame3d.originPoint planarFrame) )
-        , ( "xDirection", direction3d (PlanarFrame3d.xDirection planarFrame) )
-        , ( "yDirection", direction3d (PlanarFrame3d.yDirection planarFrame) )
+        [ ( "originPoint", point3d (SketchPlane3d.originPoint sketchPlane) )
+        , ( "xDirection", direction3d (SketchPlane3d.xDirection sketchPlane) )
+        , ( "yDirection", direction3d (SketchPlane3d.yDirection sketchPlane) )
         ]

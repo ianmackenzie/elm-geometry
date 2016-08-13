@@ -593,33 +593,33 @@ and placing it on a particular 3D plane.
     point2d =
         Point2d ( 2, 1 )
 
-    Point2d.placeIn3d PlanarFrame3d.xy point2d ==
+    Point2d.placeIn3d SketchPlane3d.xy point2d ==
         Point3d ( 2, 1, 0 )
 
-    Point2d.placeIn3d PlanarFrame3d.xz point2d ==
+    Point2d.placeIn3d SketchPlane3d.xz point2d ==
         Point3d ( 2, 0, 1 )
 
 The frame can have any position and orientation:
 
     tiltedFrame =
-        PlanarFrame3d.rotateAround Axis3d.x
+        SketchPlane3d.rotateAround Axis3d.x
             (degrees 45)
-            PlanarFrame3d.xy
+            SketchPlane3d.xy
 
     Point2d.placeIn3d tiltedFrame point ==
         Point3d ( 2, 0.7071, 0.7071 )
 -}
-placeIn3d : PlanarFrame3d -> Point2d -> Point3d
-placeIn3d planarFrame point =
+placeIn3d : SketchPlane3d -> Point2d -> Point3d
+placeIn3d sketchPlane point =
     let
-        (PlanarFrame3d { originPoint, xDirection, yDirection }) =
-            planarFrame
+        (SketchPlane3d { originPoint, xDirection, yDirection }) =
+            sketchPlane
 
         (Point3d ( px, py, pz )) =
             originPoint
 
         (Vector3d ( vx, vy, vz )) =
-            Vector2d.placeIn3d planarFrame (Vector2d (coordinates point))
+            Vector2d.placeIn3d sketchPlane (Vector2d (coordinates point))
     in
         Point3d ( px + vx, py + vy, pz + vz )
 

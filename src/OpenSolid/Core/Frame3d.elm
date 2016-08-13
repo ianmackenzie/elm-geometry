@@ -23,12 +23,12 @@ module OpenSolid.Core.Frame3d
         , zyPlane
         , zxPlane
         , xzPlane
-        , xyFrame
-        , yxFrame
-        , yzFrame
-        , zyFrame
-        , zxFrame
-        , xzFrame
+        , xySketchPlane
+        , yxSketchPlane
+        , yzSketchPlane
+        , zySketchPlane
+        , zxSketchPlane
+        , xzSketchPlane
         , rotateAround
         , rotateAroundOwn
         , translateBy
@@ -139,54 +139,54 @@ xzPlane frame =
         }
 
 
-xyFrame : Frame3d -> PlanarFrame3d
-xyFrame frame =
-    PlanarFrame3d
+xySketchPlane : Frame3d -> SketchPlane3d
+xySketchPlane frame =
+    SketchPlane3d
         { originPoint = originPoint frame
         , xDirection = xDirection frame
         , yDirection = yDirection frame
         }
 
 
-yxFrame : Frame3d -> PlanarFrame3d
-yxFrame frame =
-    PlanarFrame3d
+yxSketchPlane : Frame3d -> SketchPlane3d
+yxSketchPlane frame =
+    SketchPlane3d
         { originPoint = originPoint frame
         , xDirection = yDirection frame
         , yDirection = xDirection frame
         }
 
 
-yzFrame : Frame3d -> PlanarFrame3d
-yzFrame frame =
-    PlanarFrame3d
+yzSketchPlane : Frame3d -> SketchPlane3d
+yzSketchPlane frame =
+    SketchPlane3d
         { originPoint = originPoint frame
         , xDirection = yDirection frame
         , yDirection = zDirection frame
         }
 
 
-zyFrame : Frame3d -> PlanarFrame3d
-zyFrame frame =
-    PlanarFrame3d
+zySketchPlane : Frame3d -> SketchPlane3d
+zySketchPlane frame =
+    SketchPlane3d
         { originPoint = originPoint frame
         , xDirection = zDirection frame
         , yDirection = yDirection frame
         }
 
 
-zxFrame : Frame3d -> PlanarFrame3d
-zxFrame frame =
-    PlanarFrame3d
+zxSketchPlane : Frame3d -> SketchPlane3d
+zxSketchPlane frame =
+    SketchPlane3d
         { originPoint = originPoint frame
         , xDirection = zDirection frame
         , yDirection = xDirection frame
         }
 
 
-xzFrame : Frame3d -> PlanarFrame3d
-xzFrame frame =
-    PlanarFrame3d
+xzSketchPlane : Frame3d -> SketchPlane3d
+xzSketchPlane frame =
+    SketchPlane3d
         { originPoint = originPoint frame
         , xDirection = xDirection frame
         , yDirection = zDirection frame

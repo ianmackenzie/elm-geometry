@@ -333,26 +333,26 @@ corresponding `placeIn3d` calls to the origin point and direction of the axis.
             , direction = Direction2d ( 0.6, 0.8 )
             }
 
-    Axis2d.placeIn3d PlanarFrame3d.xy ==
+    Axis2d.placeIn3d SketchPlane3d.xy ==
         Axis3d
             { originPoint = Point3d ( 2, 3, 0 )
             , direction = Direction3d ( 0.6, 0.8, 0 )
             }
 
-    Axis2d.placeIn3d PlanarFrame3d.zx ==
+    Axis2d.placeIn3d SketchPlane3d.zx ==
         Axis3d
             { originPoint = Point3d ( 3, 0, 2 )
             , direction = Direction3d ( 0.8, 0, 0.6 )
             }
 -}
-placeIn3d : PlanarFrame3d -> Axis2d -> Axis3d
-placeIn3d planarFrame =
+placeIn3d : SketchPlane3d -> Axis2d -> Axis3d
+placeIn3d sketchPlane =
     let
         placePoint =
-            Point2d.placeIn3d planarFrame
+            Point2d.placeIn3d sketchPlane
 
         placeDirection =
-            Direction2d.placeIn3d planarFrame
+            Direction2d.placeIn3d sketchPlane
     in
         \axis ->
             Axis3d

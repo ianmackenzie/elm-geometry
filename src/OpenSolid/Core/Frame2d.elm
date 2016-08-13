@@ -172,17 +172,17 @@ placeIn otherFrame =
                 }
 
 
-placeIn3d : PlanarFrame3d -> Frame2d -> PlanarFrame3d
-placeIn3d planarFrame =
+placeIn3d : SketchPlane3d -> Frame2d -> SketchPlane3d
+placeIn3d sketchPlane =
     let
         placePoint =
-            Point2d.placeIn3d planarFrame
+            Point2d.placeIn3d sketchPlane
 
         placeDirection =
-            Direction2d.placeIn3d planarFrame
+            Direction2d.placeIn3d sketchPlane
     in
         \frame ->
-            PlanarFrame3d
+            SketchPlane3d
                 { originPoint = placePoint (originPoint frame)
                 , xDirection = placeDirection (xDirection frame)
                 , yDirection = placeDirection (yDirection frame)

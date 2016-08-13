@@ -21,7 +21,7 @@ module OpenSolid.Core.Test.Fuzz
         , plane3d
         , frame2d
         , frame3d
-        , planarFrame3d
+        , sketchPlane3d
         )
 
 {-| This module contains `Fuzzer` implementations for the core OpenSolid types.
@@ -228,14 +228,14 @@ frame3d =
         Fuzz.map tupleToFrame tuple
 
 
-planarFrame3d : Fuzzer PlanarFrame3d
-planarFrame3d =
+sketchPlane3d : Fuzzer SketchPlane3d
+sketchPlane3d =
     let
         tuple =
             Fuzz.tuple ( point3d, direction3d )
 
         tupleToFrame ( originPoint, xDirection ) =
-            PlanarFrame3d
+            SketchPlane3d
                 { originPoint = originPoint
                 , xDirection = xDirection
                 , yDirection = Direction3d.perpendicularTo xDirection

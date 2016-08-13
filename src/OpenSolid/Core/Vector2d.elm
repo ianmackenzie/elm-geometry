@@ -539,30 +539,30 @@ applying them to the X and Y basis directions of the given frame.
     vector =
         Vector2d ( 2, 3 )
 
-    Vector2d.placeIn3d PlanarFrame3d.xy vector ==
+    Vector2d.placeIn3d SketchPlane3d.xy vector ==
         Vector3d ( 2, 3, 0 )
 
-    Vector2d.placeIn3d PlanarFrame3d.yz vector ==
+    Vector2d.placeIn3d SketchPlane3d.yz vector ==
         Vector3d ( 0, 2, 3 )
 
-    Vector2d.placeIn3d PlanarFrame3d.zx vector ==
+    Vector2d.placeIn3d SketchPlane3d.zx vector ==
         Vector3d ( 3, 0, 2 )
 
 A slightly more complex example:
 
     tiltedFrame =
-        PlanarFrame3d.rotateAround Axis3d.x
+        SketchPlane3d.rotateAround Axis3d.x
             (degrees 45)
-            PlanarFrame3d.xy
+            SketchPlane3d.xy
 
     Vector2d.placeIn3d tiltedFrame (Vector2d ( 1, 1 )) ==
         Vector3d ( 1, 0.7071, 0.7071 )
 -}
-placeIn3d : PlanarFrame3d -> Vector2d -> Vector3d
-placeIn3d planarFrame =
+placeIn3d : SketchPlane3d -> Vector2d -> Vector3d
+placeIn3d sketchPlane =
     let
-        (PlanarFrame3d { originPoint, xDirection, yDirection }) =
-            planarFrame
+        (SketchPlane3d { originPoint, xDirection, yDirection }) =
+            sketchPlane
 
         (Direction3d ( x1, y1, z1 )) =
             xDirection

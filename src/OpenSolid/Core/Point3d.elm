@@ -676,23 +676,23 @@ Y axes).
     point =
         Point3d ( 2, 1, 3 )
 
-    Point3d.projectInto2d PlanarFrame3d.xy point ==
+    Point3d.projectInto2d SketchPlane3d.xy point ==
         Point2d ( 2, 1 )
 
-    Point3d.projectInto2d PlanarFrame3d.yz point ==
+    Point3d.projectInto2d SketchPlane3d.yz point ==
         Point2d ( 1, 3 )
 
-    Point3d.projectInto2d PlanarFrame3d.zx point ==
+    Point3d.projectInto2d SketchPlane3d.zx point ==
         Point2d ( 3, 2 )
 -}
-projectInto2d : PlanarFrame3d -> Point3d -> Point2d
-projectInto2d planarFrame =
+projectInto2d : SketchPlane3d -> Point3d -> Point2d
+projectInto2d sketchPlane =
     let
-        (PlanarFrame3d { originPoint, xDirection, yDirection }) =
-            planarFrame
+        (SketchPlane3d { originPoint, xDirection, yDirection }) =
+            sketchPlane
     in
         vectorFrom originPoint
-            >> Vector3d.projectInto2d planarFrame
+            >> Vector3d.projectInto2d sketchPlane
             >> (\(Vector2d components) -> Point2d components)
 
 

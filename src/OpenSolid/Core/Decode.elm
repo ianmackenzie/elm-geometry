@@ -20,13 +20,13 @@ module OpenSolid.Core.Decode
         , plane3d
         , frame2d
         , frame3d
-        , planarFrame3d
+        , sketchPlane3d
         )
 
 {-| JSON decoders for the core OpenSolid types.
 
 @docs vector2d, vector3d, direction2d, direction3d, point2d, point3d
-@docs axis2d, axis3d, plane3d, frame2d, frame3d, planarFrame3d
+@docs axis2d, axis3d, plane3d, frame2d, frame3d, sketchPlane3d
 -}
 
 import Json.Decode exposing (..)
@@ -158,14 +158,14 @@ frame3d =
             ("zDirection" := direction3d)
 
 
-{-| Decode a PlanarFrame3d from an object with 'originPoint', 'xDirection', and
+{-| Decode a SketchPlane3d from an object with 'originPoint', 'xDirection', and
 'yDirection' fields.
 -}
-planarFrame3d : Decoder PlanarFrame3d
-planarFrame3d =
+sketchPlane3d : Decoder SketchPlane3d
+sketchPlane3d =
     let
         constructor originPoint xDirection yDirection =
-            PlanarFrame3d
+            SketchPlane3d
                 { originPoint = originPoint
                 , xDirection = xDirection
                 , yDirection = yDirection

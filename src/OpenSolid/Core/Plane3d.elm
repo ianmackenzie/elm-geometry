@@ -17,7 +17,7 @@ module OpenSolid.Core.Plane3d
         , xz
         , originPoint
         , normalDirection
-        , planarFrame
+        , sketchPlane
         , offsetBy
         , flip
         , normalAxis
@@ -93,8 +93,8 @@ normalDirection (Plane3d properties) =
     properties.normalDirection
 
 
-planarFrame : Plane3d -> PlanarFrame3d
-planarFrame plane =
+sketchPlane : Plane3d -> SketchPlane3d
+sketchPlane plane =
     let
         normal =
             normalDirection plane
@@ -108,7 +108,7 @@ planarFrame plane =
         yDirection =
             Direction3d (Vector3d.components yDirectionVector)
     in
-        PlanarFrame3d
+        SketchPlane3d
             { originPoint = originPoint plane
             , xDirection = xDirection
             , yDirection = yDirection

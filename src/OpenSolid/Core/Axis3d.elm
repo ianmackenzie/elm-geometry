@@ -363,7 +363,7 @@ frame, returns `Nothing`.
             , direction = Direction3d ( 0.6, -0.8, 0 )
             }
 
-    Axis3d.projectInto2d PlanarFrame3d.xy ==
+    Axis3d.projectInto2d SketchPlane3d.xy ==
         Just
             (Axis2d
                 { originPoint = Point2d ( 2, 1 )
@@ -371,7 +371,7 @@ frame, returns `Nothing`.
                 }
             )
 
-    Axis3d.projectInto2d PlanarFrame3d.yz ==
+    Axis3d.projectInto2d SketchPlane3d.yz ==
         Just
             (Axis2d
                 { originPoint = Point2d ( 1, 3 )
@@ -379,17 +379,17 @@ frame, returns `Nothing`.
                 }
             )
 
-    Axis3d.projectInto PlanarFrame3d.xy Axis3d.z ==
+    Axis3d.projectInto SketchPlane3d.xy Axis3d.z ==
         Nothing
 -}
-projectInto2d : PlanarFrame3d -> Axis3d -> Maybe Axis2d
-projectInto2d planarFrame axis =
+projectInto2d : SketchPlane3d -> Axis3d -> Maybe Axis2d
+projectInto2d sketchPlane axis =
     let
         projectedOrigin =
-            Point3d.projectInto2d planarFrame (originPoint axis)
+            Point3d.projectInto2d sketchPlane (originPoint axis)
 
         maybeDirection =
-            Direction3d.projectInto2d planarFrame (direction axis)
+            Direction3d.projectInto2d sketchPlane (direction axis)
 
         toAxis direction =
             Axis2d { originPoint = projectedOrigin, direction = direction }

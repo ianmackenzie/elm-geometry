@@ -389,17 +389,17 @@ direction and applying them to the X and Y basis directions of the given frame.
     direction =
         Direction2d ( 0.6, 0.8 )
 
-    Direction2d.placeIn3d PlanarFrame3d.xy direction ==
+    Direction2d.placeIn3d SketchPlane3d.xy direction ==
         Direction3d ( 0.6, 0.8, 0 )
 
-    Direction2d.placeIn3d PlanarFrame3d.yz direction ==
+    Direction2d.placeIn3d SketchPlane3d.yz direction ==
         Direction3d ( 0, 0.6, 0.8 )
 
-    Direction2d.placeIn3d PlanarFrame3d.zx direction ==
+    Direction2d.placeIn3d SketchPlane3d.zx direction ==
         Direction3d ( 0.8, 0, 0.6 )
 -}
-placeIn3d : PlanarFrame3d -> Direction2d -> Direction3d
-placeIn3d planarFrame =
+placeIn3d : SketchPlane3d -> Direction2d -> Direction3d
+placeIn3d sketchPlane =
     toVector
-        >> Vector2d.placeIn3d planarFrame
+        >> Vector2d.placeIn3d sketchPlane
         >> (\(Vector3d components) -> Direction3d components)

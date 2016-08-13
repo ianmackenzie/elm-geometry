@@ -709,20 +709,20 @@ then expresses the projected vector in terms of 2D components within the frame
     vector =
         Vector3d ( 2, 1, 3 )
 
-    Vector3d.projectInto2d PlanarFrame3d.xy vector ==
+    Vector3d.projectInto2d SketchPlane3d.xy vector ==
         Vector2d ( 2, 1 )
 
-    Vector3d.projectInto2d PlanarFrame3d.yz vector ==
+    Vector3d.projectInto2d SketchPlane3d.yz vector ==
         Vector2d ( 1, 3 )
 
-    Vector3d.projectInto2d PlanarFrame3d.zx vector ==
+    Vector3d.projectInto2d SketchPlane3d.zx vector ==
         Vector2d ( 3, 2 )
 -}
-projectInto2d : PlanarFrame3d -> Vector3d -> Vector2d
-projectInto2d planarFrame vector =
+projectInto2d : SketchPlane3d -> Vector3d -> Vector2d
+projectInto2d sketchPlane vector =
     let
-        (PlanarFrame3d { originPoint, xDirection, yDirection }) =
-            planarFrame
+        (SketchPlane3d { originPoint, xDirection, yDirection }) =
+            sketchPlane
     in
         Vector2d
             ( componentIn xDirection vector

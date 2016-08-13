@@ -383,21 +383,21 @@ returned.
     direction =
         Direction3d ( 0.6, -0.8, 0 )
 
-    Direction3d.projectInto PlanarFrame3d.xy direction ==
+    Direction3d.projectInto SketchPlane3d.xy direction ==
         Just (Direction2d ( 0.6, -0.8 ))
 
-    Direction3d.projectInto PlanarFrame3d.xz direction ==
+    Direction3d.projectInto SketchPlane3d.xz direction ==
         Just (Direction2d ( 1, 0 ))
 
-    Direction3d.projectInto PlanarFrame3d.yz direction ==
+    Direction3d.projectInto SketchPlane3d.yz direction ==
         Just (Direction2d ( -1, 0 ))
 
-    Direction3d.projectInto PlanarFrame3d.xy Direction3d.z ==
+    Direction3d.projectInto SketchPlane3d.xy Direction3d.z ==
         Nothing
 -}
-projectInto2d : PlanarFrame3d -> Direction3d -> Maybe Direction2d
-projectInto2d planarFrame =
-    toVector >> Vector3d.projectInto2d planarFrame >> Vector2d.direction
+projectInto2d : SketchPlane3d -> Direction3d -> Maybe Direction2d
+projectInto2d sketchPlane =
+    toVector >> Vector3d.projectInto2d sketchPlane >> Vector2d.direction
 
 
 {-| Take a direction currently expressed in global coordinates and express it
