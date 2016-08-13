@@ -29,7 +29,6 @@ module OpenSolid.Core.Frame3d
         , zyFrame
         , zxFrame
         , xzFrame
-        , scaleAbout
         , rotateAround
         , rotateAroundOwn
         , translateBy
@@ -191,16 +190,6 @@ xzFrame frame =
         { originPoint = originPoint frame
         , xDirection = xDirection frame
         , yDirection = zDirection frame
-        }
-
-
-scaleAbout : Point3d -> Float -> Frame3d -> Frame3d
-scaleAbout centerPoint scale frame =
-    Frame3d
-        { originPoint = Point3d.scaleAbout centerPoint scale (originPoint frame)
-        , xDirection = xDirection frame
-        , yDirection = yDirection frame
-        , zDirection = zDirection frame
         }
 
 

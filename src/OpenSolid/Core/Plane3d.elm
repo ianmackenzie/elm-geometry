@@ -21,7 +21,6 @@ module OpenSolid.Core.Plane3d
         , offsetBy
         , flip
         , normalAxis
-        , scaleAbout
         , rotateAround
         , translateBy
         , moveTo
@@ -134,14 +133,6 @@ normalAxis plane =
     Axis3d
         { originPoint = originPoint plane
         , direction = normalDirection plane
-        }
-
-
-scaleAbout : Point3d -> Float -> Plane3d -> Plane3d
-scaleAbout centerPoint scale plane =
-    Plane3d
-        { originPoint = Point3d.scaleAbout centerPoint scale (originPoint plane)
-        , normalDirection = normalDirection plane
         }
 
 

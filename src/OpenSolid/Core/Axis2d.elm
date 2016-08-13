@@ -15,7 +15,6 @@ module OpenSolid.Core.Axis2d
         , originPoint
         , direction
         , flip
-        , scaleAbout
         , rotateAround
         , translateBy
         , moveTo
@@ -60,7 +59,7 @@ fields to the `Axis2d` constructor, for example:
 
 # Transformations
 
-@docs flip, scaleAbout, rotateAround, translateBy, moveTo, mirrorAcross
+@docs flip, rotateAround, translateBy, moveTo, mirrorAcross
 
 # Coordinate transformations
 
@@ -148,32 +147,6 @@ flip axis =
     Axis2d
         { originPoint = originPoint axis
         , direction = Direction2d.negate (direction axis)
-        }
-
-
-{-| Scale an axis about a center point by a given scale. The axis' origin point
-will scaled about the given center point by the given scale, and the axis'
-direction will remain the same. The end result will be that every point on the
-axis will be scaled away from or towards the given center point by the given
-scale.
-
-    axis =
-        Axis2d
-            { originPoint = Point2d ( 2, 3 )
-            , direction = Direction2d.x
-            }
-
-    Axis2d.scaleAbout Point2d.origin 3 axis ==
-        Axis2d
-            { originPoint = Point2d ( 6, 9 )
-            , direction = Direction2d.x
-            }
--}
-scaleAbout : Point2d -> Float -> Axis2d -> Axis2d
-scaleAbout centerPoint scale axis =
-    Axis2d
-        { originPoint = Point2d.scaleAbout centerPoint scale (originPoint axis)
-        , direction = direction axis
         }
 
 

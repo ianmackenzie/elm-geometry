@@ -15,7 +15,6 @@ module OpenSolid.Core.Frame2d
         , yDirection
         , xAxis
         , yAxis
-        , scaleAbout
         , rotateAround
         , rotateAroundOwn
         , translateBy
@@ -66,15 +65,6 @@ xAxis frame =
 yAxis : Frame2d -> Axis2d
 yAxis frame =
     Axis2d { originPoint = originPoint frame, direction = yDirection frame }
-
-
-scaleAbout : Point2d -> Float -> Frame2d -> Frame2d
-scaleAbout centerPoint scale frame =
-    Frame2d
-        { originPoint = Point2d.scaleAbout centerPoint scale (originPoint frame)
-        , xDirection = xDirection frame
-        , yDirection = yDirection frame
-        }
 
 
 rotateAround : Point2d -> Float -> Frame2d -> Frame2d

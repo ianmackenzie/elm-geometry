@@ -15,7 +15,6 @@ module OpenSolid.Core.Axis3d
         , originPoint
         , direction
         , flip
-        , scaleAbout
         , rotateAround
         , translateBy
         , moveTo
@@ -59,7 +58,7 @@ fields to the `Axis3d` constructor, for example:
 
 # Transformations
 
-@docs flip, scaleAbout, rotateAround, translateBy, moveTo, mirrorAcross, projectOnto
+@docs flip, rotateAround, translateBy, moveTo, mirrorAcross, projectOnto
 
 # Coordinate transformations
 
@@ -144,36 +143,6 @@ flip axis =
         { originPoint = originPoint axis
         , direction = Direction3d.negate (direction axis)
         }
-
-
-{-| Scale an axis about a center point by a given scale. The axis' origin point
-will scaled about the given center point by the given scale, and the axis'
-direction will remain the same. The end result will be that every point on the
-axis will be scaled away from or towards the given center point by the given
-scale.
-
-    axis =
-        Axis3d
-            { originPoint = Point3d ( 2, 1, 3 )
-            , direction = Direction3d.x
-            }
-
-    Axis3d.scaleAbout Point3d.origin 3 axis ==
-        Axis3d
-            { originPoint = Point3d ( 6, 3, 9 )
-            , direction = Direction3d.x
-            }
--}
-scaleAbout : Point3d -> Float -> Axis3d -> Axis3d
-scaleAbout centerPoint scale axis =
-    let
-        scalePoint =
-            Point3d.scaleAbout centerPoint scale
-    in
-        Axis3d
-            { originPoint = scalePoint (originPoint axis)
-            , direction = direction axis
-            }
 
 
 {-| Rotate an axis around another axis by a given angle. The axis to rotate

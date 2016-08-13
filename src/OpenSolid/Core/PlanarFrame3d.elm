@@ -21,7 +21,6 @@ module OpenSolid.Core.PlanarFrame3d
         , xAxis
         , yAxis
         , plane
-        , scaleAbout
         , rotateAround
         , rotateAroundOwn
         , translateBy
@@ -138,16 +137,6 @@ plane planarFrame =
             { originPoint = originPoint planarFrame
             , normalDirection = normalDirection
             }
-
-
-scaleAbout : Point3d -> Float -> PlanarFrame3d -> PlanarFrame3d
-scaleAbout centerPoint scale planarFrame =
-    PlanarFrame3d
-        { originPoint =
-            Point3d.scaleAbout centerPoint scale (originPoint planarFrame)
-        , xDirection = xDirection planarFrame
-        , yDirection = yDirection planarFrame
-        }
 
 
 rotateAround : Axis3d -> Float -> PlanarFrame3d -> PlanarFrame3d
