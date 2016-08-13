@@ -20,7 +20,7 @@ module OpenSolid.Core.Types
         , Plane3d(Plane3d)
         , Frame2d(Frame2d)
         , Frame3d(Frame3d)
-        , PlanarFrame3d(PlanarFrame3d)
+        , SketchPlane3d(SketchPlane3d)
         )
 
 {-| This module contains the definitions of the core OpenSolid data types. Each
@@ -40,7 +40,7 @@ satisfy certain invariants that are otherwise always maintained. Specifically:
 
   - The components defining a `Direction2d` or `Direction3d` must be properly
     normalized so that the direction has a 'length' of one.
-  - The X and Y directions of a `Frame2d` or `PlanarFrame3d` must be
+  - The X and Y directions of a `Frame2d` or `SketchPlane3d` must be
     perpendicular to each other.
   - The X, Y, and Z directions of a `Frame3d` must all be mutually
     perpendicular.
@@ -95,7 +95,11 @@ local and global coordinates. They are also a common source of datums used in
 transformations, for example rotating about the Z axis of a 3D frame or
 mirroring about its XY plane.
 
-@docs Frame2d, Frame3d, PlanarFrame3d
+@docs Frame2d, Frame3d
+
+# Sketch planes
+
+@docs SketchPlane3d
 -}
 
 
@@ -192,15 +196,15 @@ type Frame3d
         }
 
 
-{-| A `PlanarFrame3d` represents a 2D planar coordinate system in 3D space.
+{-| A `SketchPlane3d` represents a 2D planar coordinate system in 3D space.
 Used to convert between 2D and 3D coordinates, such as taking 2D lines and
 placing them on a 3D plane, or projecting a 3D point into a 2D sketch.
 
 The two basis directions are all always perpendicular. If you construct a
-`PlanarFrame3d` directly, you are responsible for ensuring this yourself.
+`SketchPlane3d` directly, you are responsible for ensuring this yourself.
 -}
-type PlanarFrame3d
-    = PlanarFrame3d
+type SketchPlane3d
+    = SketchPlane3d
         { originPoint : Point3d
         , xDirection : Direction3d
         , yDirection : Direction3d
