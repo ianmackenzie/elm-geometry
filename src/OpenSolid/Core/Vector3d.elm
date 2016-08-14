@@ -90,13 +90,13 @@ its tip.
 # Coordinate frames
 
 Functions for transforming vectors between local and global coordinates in
-different coordinate frames. Like transformations, coordinate conversions of
-vectors depend only on the orientations of the relevant frames/planes, not their
-positions.
+different coordinate frames. Like other transformations, coordinate
+transformations of vectors depend only on the orientations of the relevant
+frames, not their positions.
 
-For `relativeTo` and `placeIn`, assume the following definition of a local
-coordinate frame, one that is rotated 30 degrees counterclockwise about the Z
-axis from the global XYZ frame:
+For the examples, assume the following definition of a local coordinate frame,
+one that is rotated 30 degrees counterclockwise about the Z axis from the global
+XYZ frame:
 
     rotatedFrame =
         Frame3d.rotateAround Axis3d.z (degrees 30) Frame3d.xyz

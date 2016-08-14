@@ -81,9 +81,7 @@ and Z coordinates to the `Point3d` constructor, for example
 # Coordinate frames
 
 Functions for transforming points between local and global coordinates in
-different coordinate systems. Although these examples use a simple offset
-frame, these functions can be used to convert to and from local coordinates in
-arbitrarily transformed (translated, rotated, mirrored) frames.
+different coordinate frames.
 
 @docs relativeTo, placeIn, projectInto2d
 

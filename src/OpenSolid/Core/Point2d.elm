@@ -83,9 +83,7 @@ can use Elm's built-in `fromPolar` function:
 # Coordinate frames
 
 Functions for transforming points between local and global coordinates in
-different coordinate systems. Although these examples use a simple offset
-frame, these functions can be used to convert to and from local coordinates in
-arbitrarily transformed (translated, rotated, mirrored) frames.
+different coordinate frames.
 
 @docs relativeTo, placeIn, placeIn3d
 
