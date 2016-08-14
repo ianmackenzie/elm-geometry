@@ -24,7 +24,6 @@ module OpenSolid.Core.Frame2d
         , mirrorAcrossOwn
         , relativeTo
         , placeIn
-        , placeIn3d
         )
 
 import OpenSolid.Core.Types exposing (..)
@@ -166,23 +165,6 @@ placeIn otherFrame =
     in
         \frame ->
             Frame2d
-                { originPoint = placePoint (originPoint frame)
-                , xDirection = placeDirection (xDirection frame)
-                , yDirection = placeDirection (yDirection frame)
-                }
-
-
-placeIn3d : SketchPlane3d -> Frame2d -> SketchPlane3d
-placeIn3d sketchPlane =
-    let
-        placePoint =
-            Point2d.placeIn3d sketchPlane
-
-        placeDirection =
-            Direction2d.placeIn3d sketchPlane
-    in
-        \frame ->
-            SketchPlane3d
                 { originPoint = placePoint (originPoint frame)
                 , xDirection = placeDirection (xDirection frame)
                 , yDirection = placeDirection (yDirection frame)
