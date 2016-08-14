@@ -49,12 +49,12 @@ scalar =
 
 tuple2d : Fuzzer ( Float, Float )
 tuple2d =
-    Fuzz.tuple ( Fuzz.float, Fuzz.float )
+    Fuzz.tuple ( scalar, scalar )
 
 
 tuple3d : Fuzzer ( Float, Float, Float )
 tuple3d =
-    Fuzz.tuple3 ( Fuzz.float, Fuzz.float, Fuzz.float )
+    Fuzz.tuple3 ( scalar, scalar, scalar )
 
 
 vector2d : Fuzzer Vector2d
