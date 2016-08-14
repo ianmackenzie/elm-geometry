@@ -94,7 +94,7 @@ direction2d =
 
 direction2dWithin : Float -> Comparator Direction2d
 direction2dWithin tolerance =
-    by (vector2dWithin tolerance) Direction2d.toVector
+    by (vector2dWithin tolerance) Direction2d.vector
 
 
 direction3d : Comparator Direction3d
@@ -104,7 +104,7 @@ direction3d =
 
 direction3dWithin : Float -> Comparator Direction3d
 direction3dWithin tolerance =
-    by (vector3dWithin tolerance) Direction3d.toVector
+    by (vector3dWithin tolerance) Direction3d.vector
 
 
 point2d : Comparator Point2d

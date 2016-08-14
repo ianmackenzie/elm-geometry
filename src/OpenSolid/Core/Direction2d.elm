@@ -19,7 +19,7 @@ module OpenSolid.Core.Direction2d
         , components
         , xComponent
         , yComponent
-        , toVector
+        , vector
         , negate
         , times
         , dotProduct
@@ -77,7 +77,7 @@ are not.
 
 # Vector conversion
 
-@docs toVector
+@docs vector
 
 # Arithmetic
 
@@ -149,7 +149,7 @@ given direction 90 degrees counterclockwise.
 -}
 perpendicularTo : Direction2d -> Direction2d
 perpendicularTo =
-    toVector >> Vector2d.perpendicularTo >> toDirection
+    vector >> Vector2d.perpendicularTo >> toDirection
 
 
 {-| Construct a direction from an angle in radians, given counterclockwise from
@@ -249,11 +249,11 @@ yComponent =
 
 {-| Convert a direction to a unit vector.
 
-    Direction2d.toVector Direction2d.x ==
+    Direction2d.vector Direction2d.x ==
         Vector2d ( 1, 0 )
 -}
-toVector : Direction2d -> Vector2d
-toVector (Direction2d components) =
+vector : Direction2d -> Vector2d
+vector (Direction2d components) =
     Vector2d components
 
 
@@ -264,7 +264,7 @@ toVector (Direction2d components) =
 -}
 negate : Direction2d -> Direction2d
 negate =
-    toVector >> Vector2d.negate >> toDirection
+    vector >> Vector2d.negate >> toDirection
 
 
 {-| Construct a vector from a magnitude and a direction. If the magnitude is
@@ -279,7 +279,7 @@ negative the resulting vector will be in the opposite of the given direction.
 -}
 times : Float -> Direction2d -> Vector2d
 times scale =
-    toVector >> Vector2d.times scale
+    vector >> Vector2d.times scale
 
 
 {-| Find the dot product of two directions. This is equal to the cosine of the
@@ -294,7 +294,7 @@ angle between them.
 -}
 dotProduct : Direction2d -> Direction2d -> Float
 dotProduct firstDirection secondDirection =
-    Vector2d.dotProduct (toVector firstDirection) (toVector secondDirection)
+    Vector2d.dotProduct (vector firstDirection) (vector secondDirection)
 
 
 {-| Find the cross product of two directions. This is equal to the sine of the
@@ -310,7 +310,7 @@ counterclockwise angle from the first to the second.
 -}
 crossProduct : Direction2d -> Direction2d -> Float
 crossProduct firstDirection secondDirection =
-    Vector2d.crossProduct (toVector firstDirection) (toVector secondDirection)
+    Vector2d.crossProduct (vector firstDirection) (vector secondDirection)
 
 
 {-| Rotate a direction counterclockwise by a given angle (in radians).
@@ -323,7 +323,7 @@ crossProduct firstDirection secondDirection =
 -}
 rotateBy : Float -> Direction2d -> Direction2d
 rotateBy angle =
-    toVector >> Vector2d.rotateBy angle >> toDirection
+    vector >> Vector2d.rotateBy angle >> toDirection
 
 
 {-| Mirror a direction across a particular axis. Note that only the direction of
@@ -343,7 +343,7 @@ the axis affects the result, since directions are position-independent.
 -}
 mirrorAcross : Axis2d -> Direction2d -> Direction2d
 mirrorAcross axis =
-    toVector >> Vector2d.mirrorAcross axis >> toDirection
+    vector >> Vector2d.mirrorAcross axis >> toDirection
 
 
 {-| Take a direction currently expressed in global coordinates and express it
@@ -360,7 +360,7 @@ relative to a given frame.
 -}
 relativeTo : Frame2d -> Direction2d -> Direction2d
 relativeTo frame =
-    toVector >> Vector2d.relativeTo frame >> toDirection
+    vector >> Vector2d.relativeTo frame >> toDirection
 
 
 {-| Place a direction in a given frame, considering it as being expressed
@@ -378,4 +378,4 @@ coordinates. Inverse of `relativeTo`.
 -}
 placeIn : Frame2d -> Direction2d -> Direction2d
 placeIn frame =
-    toVector >> Vector2d.placeIn frame >> toDirection
+    vector >> Vector2d.placeIn frame >> toDirection

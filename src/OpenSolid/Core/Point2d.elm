@@ -373,7 +373,7 @@ signedDistanceFrom axis =
             axis
 
         directionVector =
-            Direction2d.toVector direction
+            Direction2d.vector direction
     in
         vectorFrom originPoint >> Vector2d.crossProduct directionVector
 
