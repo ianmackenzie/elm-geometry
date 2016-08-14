@@ -9,11 +9,11 @@
 
 module OpenSolid.Core.Test.Vector2d exposing (suite)
 
-import Json.Decode as Decode exposing (decodeValue)
-import Json.Encode as Encode exposing (encode)
-import Test exposing (Test, fuzz, describe)
+import Json.Decode as Decode
+import Json.Encode as Encode
+import Test exposing (Test)
 import Expect
-import Test.Runner.Html exposing (run)
+import Test.Runner.Html as Html
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Decode as Decode
@@ -25,19 +25,19 @@ import OpenSolid.Core.Test.Expect as Expect
 
 jsonRoundTrips : Test
 jsonRoundTrips =
-    fuzz Fuzz.vector2d
+    Test.fuzz Fuzz.vector2d
         "JSON conversion round-trips properly"
         (\vector ->
             vector
                 |> Encode.vector2d
-                |> decodeValue Decode.vector2d
+                |> Decode.decodeValue Decode.vector2d
                 |> Expect.equal (Ok vector)
         )
 
 
 recordConversionRoundTrips : Test
 recordConversionRoundTrips =
-    fuzz Fuzz.vector2d
+    Test.fuzz Fuzz.vector2d
         "Record conversion round-trips properly"
         (\vector ->
             vector
@@ -49,7 +49,7 @@ recordConversionRoundTrips =
 
 perpendicularVectorIsPerpendicular : Test
 perpendicularVectorIsPerpendicular =
-    fuzz Fuzz.vector2d
+    Test.fuzz Fuzz.vector2d
         "perpendicularTo actually returns a perpendicular vector"
         (\vector ->
             vector
@@ -61,7 +61,7 @@ perpendicularVectorIsPerpendicular =
 
 suite : Test
 suite =
-    describe "OpenSolid.Core.Vector2d"
+    Test.describe "OpenSolid.Core.Vector2d"
         [ jsonRoundTrips
         , recordConversionRoundTrips
         , perpendicularVectorIsPerpendicular
@@ -69,4 +69,4 @@ suite =
 
 
 main =
-    run suite
+    Html.run suite
