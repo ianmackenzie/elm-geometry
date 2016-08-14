@@ -117,6 +117,7 @@ to use
 -}
 
 import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Core.Point2d as Point2d
 import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Direction3d as Direction3d
 
@@ -729,7 +730,8 @@ placeOnto sketchPlane point =
             originPoint
 
         (Vector3d ( vx, vy, vz )) =
-            Vector2d.placeOnto sketchPlane (Vector2d (coordinates point))
+            Vector3d.placeOnto sketchPlane
+                (Vector2d (Point2d.coordinates point))
     in
         Point3d ( px + vx, py + vy, pz + vz )
 

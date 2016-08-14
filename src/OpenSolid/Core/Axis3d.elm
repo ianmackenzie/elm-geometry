@@ -76,6 +76,7 @@ different coordinate frames.
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Point3d as Point3d
 import OpenSolid.Core.Direction3d as Direction3d
+import OpenSolid.Core.Axis2d as Axis2d
 
 
 {-| The global X axis.
@@ -432,13 +433,13 @@ placeOnto : SketchPlane3d -> Axis2d -> Axis3d
 placeOnto sketchPlane =
     let
         placePoint =
-            Point2d.placeOnto sketchPlane
+            Point3d.placeOnto sketchPlane
 
         placeDirection =
-            Direction2d.placeOnto sketchPlane
+            Direction3d.placeOnto sketchPlane
     in
         \axis ->
             Axis3d
-                { originPoint = placePoint (originPoint axis)
-                , direction = placeDirection (direction axis)
+                { originPoint = placePoint (Axis2d.originPoint axis)
+                , direction = placeDirection (Axis2d.direction axis)
                 }

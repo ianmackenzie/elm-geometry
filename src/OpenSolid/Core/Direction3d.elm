@@ -122,6 +122,7 @@ XYZ frame:
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Vector3d as Vector3d
+import OpenSolid.Core.Direction2d as Direction2d
 
 
 toDirection : Vector3d -> Direction3d
@@ -462,4 +463,4 @@ and return the corresponding direction in 3D.
 -}
 placeOnto : SketchPlane3d -> Direction2d -> Direction3d
 placeOnto sketchPlane =
-    Direction2d.toVector >> Vector2d.placeOnto sketchPlane >> toDirection
+    Direction2d.toVector >> Vector3d.placeOnto sketchPlane >> toDirection
