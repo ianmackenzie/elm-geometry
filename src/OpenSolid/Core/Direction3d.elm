@@ -102,9 +102,16 @@ XYZ frame:
     rotatedFrame =
         Frame3d.rotateAround Axis3d.z (degrees 30) Frame3d.xyz
 
-    Frame3d.xDirection rotatedFrame == Direction3d ( 0.866, 0.5, 0 )
-    Frame3d.yDirection rotatedFrame == Direction3d ( -0.5, 0.866, 0 )
-    Frame3d.zDirection rotatedFrame == Direction3d ( 0, 0, 1 )
+    Frame3d.xDirection rotatedFrame ==
+        Direction3d ( 0.866, 0.5, 0 )
+
+    Frame3d.yDirection rotatedFrame ==
+        Direction3d ( -0.5, 0.866, 0 )
+
+    Frame3d.zDirection rotatedFrame ==
+        Direction3d ( 0, 0, 1 )
+
+@docs relativeTo, placeIn
 
 @docs projectInto2d, relativeTo, placeIn
 -}
