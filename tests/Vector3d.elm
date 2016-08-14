@@ -9,42 +9,52 @@
 
 module OpenSolid.Core.Test.Vector3d exposing (suite)
 
-import Json.Decode as Decode exposing (decodeValue)
-import Json.Encode as Encode exposing (encode)
-import ElmTest exposing (Test, test, assert)
-import Check exposing (Claim, claim, true, that, is, for, quickCheck)
-import Check.Test exposing (evidenceToTest)
+import Json.Decode as Decode
+import Json.Encode as Encode
+import Test exposing (Test)
+import Expect
+import Test.Runner.Html as Html
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import OpenSolid.Core.Test.Comparison exposing (valueIsOne)
-import OpenSolid.Core.Test.Producer exposing (vector3d)
+import OpenSolid.Core.Test.Compare as Compare
+import OpenSolid.Core.Test.Fuzz as Fuzz
+import OpenSolid.Core.Test.Expect as Expect
 
 
-jsonRoundTrips : Claim
+jsonRoundTrips : Test
 jsonRoundTrips =
-    claim "JSON conversion round-trips properly"
-        `that` (Encode.vector3d >> decodeValue Decode.vector3d)
-        `is` Ok
-        `for` vector3d
+    Test.fuzz Fuzz.vector3d
+        "JSON conversion round-trips properly"
+        (\vector ->
+            vector
+                |> Encode.vector3d
+                |> Decode.decodeValue Decode.vector3d
+                |> Expect.equal (Ok vector)
+        )
 
 
-recordConversionRoundTrips : Claim
+recordConversionRoundTrips : Test
 recordConversionRoundTrips =
-    claim "Record conversion round-trips properly"
-        `that` (Vector3d.toRecord >> Vector3d.fromRecord)
-        `is` identity
-        `for` vector3d
+    Test.fuzz Fuzz.vector3d
+        "Record conversion round-trips properly"
+        (\vector ->
+            vector
+                |> Vector3d.toRecord
+                |> Vector3d.fromRecord
+                |> Expect.equal vector
+        )
 
 
 suite : Test
 suite =
-    ElmTest.suite "OpenSolid.Core.Vector3d"
-        [ evidenceToTest (quickCheck jsonRoundTrips)
-        , evidenceToTest (quickCheck recordConversionRoundTrips)
+    Test.describe "OpenSolid.Core.Vector3d"
+        [ jsonRoundTrips
+        , recordConversionRoundTrips
         ]
 
 
+main : Program Never
 main =
-    ElmTest.runSuiteHtml suite
+    Html.run suite
