@@ -9,25 +9,27 @@
 
 module OpenSolid.Core.Test.Point2d exposing (suite)
 
-import Json.Decode as Decode exposing (decodeValue)
-import Json.Encode as Encode exposing (encode)
-import ElmTest exposing (Test)
-import Check exposing (Claim, claim, true, that, is, for, quickCheck)
-import Check.Test exposing (evidenceToTest)
-import Check.Producer as Producer
+import Json.Decode as Decode
+import Json.Encode as Encode
+import Test exposing (Test)
+import Expect
+import Test.Runner.Html as Html
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Point2d as Point2d
-import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import OpenSolid.Core.Test.Comparison exposing (valuesAreEqual)
-import OpenSolid.Core.Test.Producer exposing (angle, vector2d, point2d, axis2d)
+import OpenSolid.Core.Test.Compare as Compare
+import OpenSolid.Core.Test.Fuzz as Fuzz
+import OpenSolid.Core.Test.Expect as Expect
 
 
-rotationPreservesDistance : Claim
+rotationPreservesDistance : Test
 rotationPreservesDistance =
     let
-        distancesAreEqual ( point, centerPoint, rotationAngle ) =
+        description =
+            "Rotating about a point preserves distance from that point"
+
+        expectation point centerPoint rotationAngle =
             let
                 initialDistance =
                     Point2d.distanceFrom centerPoint point
@@ -38,17 +40,18 @@ rotationPreservesDistance =
                 rotatedDistance =
                     Point2d.distanceFrom centerPoint rotatedPoint
             in
-                valuesAreEqual initialDistance rotatedDistance
+                Expect.approximately initialDistance rotatedDistance
     in
-        claim "Rotating about a point preserves distance from that point"
-            `true` distancesAreEqual
-            `for` Producer.tuple3 ( point2d, point2d, angle )
+        Test.fuzz3 Fuzz.point2d Fuzz.point2d Fuzz.scalar description expectation
 
 
-projectionOntoAxisPreservesDistance : Claim
+projectionOntoAxisPreservesDistance : Test
 projectionOntoAxisPreservesDistance =
     let
-        distancesAreEqual ( point, axis ) =
+        description =
+            "Projection onto axis preserves distance along that axis"
+
+        expectation point axis =
             let
                 distance =
                     Point2d.signedDistanceAlong axis point
@@ -59,38 +62,45 @@ projectionOntoAxisPreservesDistance =
                 projectedDistance =
                     Point2d.signedDistanceAlong axis projectedPoint
             in
-                valuesAreEqual projectedDistance distance
+                Expect.approximately projectedDistance distance
     in
-        claim "Projection onto axis preserves distance along that axis"
-            `true` distancesAreEqual
-            `for` Producer.tuple ( point2d, axis2d )
+        Test.fuzz2 Fuzz.point2d Fuzz.axis2d description expectation
 
 
-jsonRoundTrips : Claim
+jsonRoundTrips : Test
 jsonRoundTrips =
-    claim "JSON conversion round-trips properly"
-        `that` (Encode.point2d >> decodeValue Decode.point2d)
-        `is` Ok
-        `for` point2d
+    Test.fuzz Fuzz.point2d
+        "JSON conversion round-trips properly"
+        (\point ->
+            point
+                |> Encode.point2d
+                |> Decode.decodeValue Decode.point2d
+                |> Expect.equal (Ok point)
+        )
 
 
-recordConversionRoundTrips : Claim
+recordConversionRoundTrips : Test
 recordConversionRoundTrips =
-    claim "Record conversion round-trips properly"
-        `that` (Point2d.toRecord >> Point2d.fromRecord)
-        `is` identity
-        `for` point2d
+    Test.fuzz Fuzz.point2d
+        "Record conversion round-trips properly"
+        (\point ->
+            point
+                |> Point2d.toRecord
+                |> Point2d.fromRecord
+                |> Expect.equal point
+        )
 
 
 suite : Test
 suite =
-    ElmTest.suite "OpenSolid.Core.Point2d"
-        [ evidenceToTest (quickCheck rotationPreservesDistance)
-        , evidenceToTest (quickCheck projectionOntoAxisPreservesDistance)
-        , evidenceToTest (quickCheck jsonRoundTrips)
-        , evidenceToTest (quickCheck recordConversionRoundTrips)
+    Test.describe "OpenSolid.Core.Point2d"
+        [ rotationPreservesDistance
+        , projectionOntoAxisPreservesDistance
+        , jsonRoundTrips
+        , recordConversionRoundTrips
         ]
 
 
+main : Program Never
 main =
-    ElmTest.runSuiteHtml suite
+    Html.run suite
