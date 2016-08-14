@@ -68,5 +68,6 @@ suite =
         ]
 
 
+main : Program Never
 main =
     Html.run suite
