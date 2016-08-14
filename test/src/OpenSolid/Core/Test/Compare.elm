@@ -2,8 +2,8 @@ module OpenSolid.Core.Test.Compare
     exposing
         ( Comparator
         , defaultTolerance
-        , scalar
-        , scalarWithin
+        , approximately
+        , approximatelyWithin
         , vector2d
         , vector2dWithin
         , vector3d
@@ -57,13 +57,13 @@ allOf comparators first second =
     List.all (\comparator -> comparator first second) comparators
 
 
-scalar : Comparator Float
-scalar =
-    scalarWithin defaultTolerance
+approximately : Comparator Float
+approximately =
+    approximatelyWithin defaultTolerance
 
 
-scalarWithin : Float -> Comparator Float
-scalarWithin tolerance first second =
+approximatelyWithin : Float -> Comparator Float
+approximatelyWithin tolerance first second =
     abs (first - second) <= tolerance
 
 

@@ -10,8 +10,8 @@
 module OpenSolid.Core.Test.Expect
     exposing
         ( Expector
-        , scalar
-        , scalarWithin
+        , approximately
+        , approximatelyWithin
         , vector2d
         , vector2dWithin
         , vector3d
@@ -57,14 +57,14 @@ by comparator first second =
             Expect.fail message
 
 
-scalar : Expector Float
-scalar =
-    by Compare.scalar
+approximately : Expector Float
+approximately =
+    by Compare.approximately
 
 
-scalarWithin : Float -> Expector Float
-scalarWithin =
-    by << Compare.scalarWithin
+approximatelyWithin : Float -> Expector Float
+approximatelyWithin =
+    by << Compare.approximatelyWithin
 
 
 vector2d : Vector2d -> Vector2d -> Expectation

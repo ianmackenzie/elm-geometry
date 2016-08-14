@@ -55,7 +55,7 @@ perpendicularVectorIsPerpendicular =
             vector
                 |> Vector2d.perpendicularTo
                 |> Vector2d.dotProduct vector
-                |> Expect.scalar 0
+                |> Expect.approximately 0
         )
 
 
