@@ -57,8 +57,8 @@ versions `Direction2d.x` and `Direction2d.y`.
 
 # Constructors
 
-Since `Vector2d` is not an opaque type, the simplest way to construct one is
-directly from its X and Y components, for example `Vector2d ( 2, 3 )`.
+The simplest way to construct a `Vector2d` value is by passing a tuple of X and
+Y components to the `Vector2d` constructor, for example `Vector2d ( 2, 3 )`.
 
 There are no specific functions to create vectors from polar components, but you
 can use Elm's built-in `fromPolar` function:

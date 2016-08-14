@@ -56,8 +56,8 @@ to numerical roundoff) they might not be exactly equal.
 
 # Constructors
 
-Since `Point3d` is not an opaque type, the simplest way to construct one is
-directly from a tuple of its X, Y and Z coordinates, for example
+The simplest way to construct a `Point3d` value is by passing a tuple of X, Y
+and Z coordinates to the `Point3d` constructor, for example
 `Point2d ( 2, 1, 3 )`. But that is not the only way!
 
 @docs midpoint, interpolate, along

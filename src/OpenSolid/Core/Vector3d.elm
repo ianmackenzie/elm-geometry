@@ -60,8 +60,9 @@ actually want their `Direction3d` versions `Direction3d.x`, `Direction3d.y` and
 
 # Constructors
 
-Since `Vector3d` is not an opaque type, the simplest way to construct one is
-directly from its X, Y and Z components, for example `Vector3d ( 2, 3, 4 )`.
+The simplest way to construct a `Vector3d` value is by passing a tuple of X, Y
+and Z components to the `Vector3d` constructor, for example
+`Vector3d ( 2, 3, 4 )`.
 
 @docs perpendicularTo
 

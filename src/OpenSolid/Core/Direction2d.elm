@@ -50,10 +50,10 @@ to numerical roundoff) they might not be exactly equal.
 
 # Constructors
 
-Since `Direction2d` is not an opaque type, the simplest way to construct one is
-directly from its X and Y components, for example `Direction2d ( 1, 0 )`.
-However, if you do this you must ensure that the sum of the squares of the
-given components is exactly one:
+The simplest way to construct a `Direction2d` value is by passing a tuple of X
+and Y components to the `Direction2d` constructor, for example
+`Direction2d ( 1, 0 )`. However, if you do this you must ensure that the sum of
+the squares of the given components is exactly one:
 
     Direction2d ( 1, 0 )
     Direction2d ( 0, -1 )

@@ -50,10 +50,10 @@ to numerical roundoff) they might not be exactly equal.
 
 # Constructors
 
-Since `Direction3d` is not an opaque type, the simplest way to construct one is
-directly from its X and Y components, for example `Direction3d ( 1, 0, 0 )`.
-However, if you do this you must ensure that the sum of the squares of the
-given components is exactly one:
+The simplest way to construct a `Direction3d` value is by passing a tuple of X,
+Y and Z components to the `Direction3d` constructor, for example
+`Direction3d (1, 0, 0 )`. However, if you do this you must ensure that the sum
+of the squares of the given components is exactly one:
 
     Direction3d ( 1, 0, 0 )
     Direction3d ( 0, -1, 0 )
