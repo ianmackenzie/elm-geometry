@@ -106,9 +106,8 @@ For the examples, assume the following frames have been defined:
             }
 
     rotatedFrame =
-        Frame2d.rotateAround Point2d.origin
-            (degrees 30)
-            Frame2d.xy
+        Frame2d.xy
+            |> Frame2d.rotateAround Point2d.origin (degrees 30)
 
 @docs relativeTo, placeIn, placeIn3d
 
