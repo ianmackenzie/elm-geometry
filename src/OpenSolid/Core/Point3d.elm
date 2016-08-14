@@ -33,7 +33,8 @@ module OpenSolid.Core.Point3d
         , projectOntoAxis
         , relativeTo
         , placeIn
-        , projectInto2d
+        , projectInto
+        , placeOnto
         , toRecord
         , fromRecord
         )
@@ -83,7 +84,11 @@ and Z coordinates to the `Point3d` constructor, for example
 Functions for transforming points between local and global coordinates in
 different coordinate frames.
 
-@docs relativeTo, placeIn, projectInto2d
+@docs relativeTo, placeIn
+
+# Sketch planes
+
+@docs projectInto, placeOnto
 
 # Record conversions
 
@@ -666,32 +671,67 @@ placeIn frame =
         coordinates >> Vector3d >> Vector3d.placeIn frame >> addTo originPoint
 
 
-{-| Project a point into a given planar frame. Conceptually, this projects the
-point onto the plane of the given frame and then expresses the projected point
-in terms of 2D coordinates within the plane (relative to the given frame's X and
-Y axes).
+{-| Project a point into a given sketch plane. Conceptually, this projects the
+point onto the plane and then expresses the projected point in 2D sketch
+coordinates.
 
     point =
         Point3d ( 2, 1, 3 )
 
-    Point3d.projectInto2d SketchPlane3d.xy point ==
+    Point3d.projectInto SketchPlane3d.xy point ==
         Point2d ( 2, 1 )
 
-    Point3d.projectInto2d SketchPlane3d.yz point ==
+    Point3d.projectInto SketchPlane3d.yz point ==
         Point2d ( 1, 3 )
 
-    Point3d.projectInto2d SketchPlane3d.zx point ==
+    Point3d.projectInto SketchPlane3d.zx point ==
         Point2d ( 3, 2 )
 -}
-projectInto2d : SketchPlane3d -> Point3d -> Point2d
-projectInto2d sketchPlane =
+projectInto : SketchPlane3d -> Point3d -> Point2d
+projectInto sketchPlane =
     let
         (SketchPlane3d { originPoint, xDirection, yDirection }) =
             sketchPlane
     in
         vectorFrom originPoint
-            >> Vector3d.projectInto2d sketchPlane
+            >> Vector3d.projectInto sketchPlane
             >> (\(Vector2d components) -> Point2d components)
+
+
+{-| Take a point defined in 2D coordinates within a particular sketch plane and
+return the corresponding point in 3D.
+
+    point2d =
+        Point2d ( 2, 1 )
+
+    Point3d.placeOnto SketchPlane3d.xy point2d ==
+        Point3d ( 2, 1, 0 )
+
+    Point3d.placeOnto SketchPlane3d.xz point2d ==
+        Point3d ( 2, 0, 1 )
+
+The sketch plane can have any position and orientation:
+
+    tiltedSketchPlane =
+        SketchPlane3d.xy
+            |> SketchPlane3d.rotateAround Axis3d.x (degrees 45)
+
+    Point3d.placeOnto tiltedSketchPlane point2d ==
+        Point3d ( 2, 0.7071, 0.7071 )
+-}
+placeOnto : SketchPlane3d -> Point2d -> Point3d
+placeOnto sketchPlane point =
+    let
+        (SketchPlane3d { originPoint, xDirection, yDirection }) =
+            sketchPlane
+
+        (Point3d ( px, py, pz )) =
+            originPoint
+
+        (Vector3d ( vx, vy, vz )) =
+            Vector2d.placeOnto sketchPlane (Vector2d (coordinates point))
+    in
+        Point3d ( px + vx, py + vy, pz + vz )
 
 
 {-| Convert a point to a record with `x`, `y` and `z` fields.

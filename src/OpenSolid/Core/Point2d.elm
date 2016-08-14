@@ -29,7 +29,6 @@ module OpenSolid.Core.Point2d
         , projectOnto
         , relativeTo
         , placeIn
-        , placeIn3d
         , toRecord
         , fromRecord
         )
@@ -85,7 +84,7 @@ can use Elm's built-in `fromPolar` function:
 Functions for transforming points between local and global coordinates in
 different coordinate frames.
 
-@docs relativeTo, placeIn, placeIn3d
+@docs relativeTo, placeIn
 
 # Record conversions
 
@@ -582,44 +581,6 @@ placeIn frame =
             frame
     in
         coordinates >> Vector2d >> Vector2d.placeIn frame >> addTo originPoint
-
-
-{-| Take a point defined by 2D coordinates within a particular planar frame and
-convert it to global 3D coordinates. You can think of this as taking a 2D point
-and placing it on a particular 3D plane.
-
-    point2d =
-        Point2d ( 2, 1 )
-
-    Point2d.placeIn3d SketchPlane3d.xy point2d ==
-        Point3d ( 2, 1, 0 )
-
-    Point2d.placeIn3d SketchPlane3d.xz point2d ==
-        Point3d ( 2, 0, 1 )
-
-The frame can have any position and orientation:
-
-    tiltedFrame =
-        SketchPlane3d.rotateAround Axis3d.x
-            (degrees 45)
-            SketchPlane3d.xy
-
-    Point2d.placeIn3d tiltedFrame point ==
-        Point3d ( 2, 0.7071, 0.7071 )
--}
-placeIn3d : SketchPlane3d -> Point2d -> Point3d
-placeIn3d sketchPlane point =
-    let
-        (SketchPlane3d { originPoint, xDirection, yDirection }) =
-            sketchPlane
-
-        (Point3d ( px, py, pz )) =
-            originPoint
-
-        (Vector3d ( vx, vy, vz )) =
-            Vector2d.placeIn3d sketchPlane (Vector2d (coordinates point))
-    in
-        Point3d ( px + vx, py + vy, pz + vz )
 
 
 {-| Convert a point to a record with `x` and `y` fields.

@@ -28,11 +28,12 @@ module OpenSolid.Core.Vector3d
         , rotateAround
         , mirrorAcross
         , projectionIn
-        , projectOntoAxis
         , projectOnto
-        , projectInto2d
+        , projectOntoAxis
         , relativeTo
         , placeIn
+        , projectInto
+        , placeOnto
         , toRecord
         , fromRecord
         )
@@ -85,7 +86,7 @@ plane is relevant, since vectors are position-independent. Think of transforming
 a vector as placing its tail on the relevant axis or plane and then transforming
 its tip.
 
-@docs rotateAround, mirrorAcross, projectionIn, projectOntoAxis, projectOnto
+@docs rotateAround, mirrorAcross, projectionIn, projectOnto, projectOntoAxis
 
 # Coordinate frames
 
@@ -110,7 +111,14 @@ XYZ frame:
     Frame3d.zDirection rotatedFrame ==
         Direction3d ( 0, 0, 1 )
 
-@docs relativeTo, placeIn, projectInto2d
+@docs relativeTo, placeIn
+
+# Sketch planes
+
+Functions for converting vectors between global 3D coordinates and 2D
+coordinates within a particular sketch plane.
+
+@docs projectInto, placeOnto
 
 # Record conversions
 
@@ -600,6 +608,29 @@ projectionIn direction vector =
         times (dotProduct vector directionVector) directionVector
 
 
+{-| Project a vector onto a plane. Conceptually, this means splitting the
+original vector into a portion parallel to the plane (perpendicular to the
+plane's normal direction) and a portion perpendicular to it (parallel to its
+normal direction), then returning the parallel (in-plane) portion.
+
+    vector =
+        Vector3d ( 2, 1, 3 )
+
+    Vector3d.projectOnto Plane3d.xy vector ==
+        Vector3d ( 2, 1, 0 )
+
+    Vector3d.projectOnto Plane3d.xz vector ==
+        Vector3d ( 2, 0, 3 )
+-}
+projectOnto : Plane3d -> Vector3d -> Vector3d
+projectOnto plane vector =
+    let
+        (Plane3d { originPoint, normalDirection }) =
+            plane
+    in
+        minus (projectionIn normalDirection vector) vector
+
+
 {-| Project a vector onto an axis. This is equivalent to finding the projection
 in the axis' direction.
 
@@ -622,29 +653,6 @@ projectOntoAxis axis =
             axis
     in
         projectionIn direction
-
-
-{-| Project a vector onto a plane. Conceptually, this means splitting the
-original vector into a portion parallel to the plane (perpendicular to the
-plane's normal direction) and a portion perpendicular to it (parallel to its
-normal direction), then returning the parallel (in-plane) portion.
-
-    vector =
-        Vector3d ( 2, 1, 3 )
-
-    Vector3d.projectOnto Plane3d.xy vector ==
-        Vector3d ( 2, 1, 0 )
-
-    Vector3d.projectOnto Plane3d.xz vector ==
-        Vector3d ( 2, 0, 3 )
--}
-projectOnto : Plane3d -> Vector3d -> Vector3d
-projectOnto plane vector =
-    let
-        (Plane3d { originPoint, normalDirection }) =
-            plane
-    in
-        minus (projectionIn normalDirection vector) vector
 
 
 {-| Take a vector currently expressed in global coordinates and express it
@@ -702,25 +710,24 @@ placeIn frame =
                 )
 
 
-{-| Project a vector into a given planar frame, converting it to 2D.
-Conceptually, this projects the vector onto the plane of the given frame and
-then expresses the projected vector in terms of 2D components within the frame
-(relative to the given frame's X and Y basis directions).
+{-| Project a vector into a given sketch plane. Conceptually, this projects the
+vector onto the plane and then expresses the projected vector in 2D sketch
+coordinates.
 
     vector =
         Vector3d ( 2, 1, 3 )
 
-    Vector3d.projectInto2d SketchPlane3d.xy vector ==
+    Vector3d.projectInto SketchPlane3d.xy vector ==
         Vector2d ( 2, 1 )
 
-    Vector3d.projectInto2d SketchPlane3d.yz vector ==
+    Vector3d.projectInto SketchPlane3d.yz vector ==
         Vector2d ( 1, 3 )
 
-    Vector3d.projectInto2d SketchPlane3d.zx vector ==
+    Vector3d.projectInto SketchPlane3d.zx vector ==
         Vector2d ( 3, 2 )
 -}
-projectInto2d : SketchPlane3d -> Vector3d -> Vector2d
-projectInto2d sketchPlane vector =
+projectInto : SketchPlane3d -> Vector3d -> Vector2d
+projectInto sketchPlane vector =
     let
         (SketchPlane3d { originPoint, xDirection, yDirection }) =
             sketchPlane
@@ -729,6 +736,46 @@ projectInto2d sketchPlane vector =
             ( componentIn xDirection vector
             , componentIn yDirection vector
             )
+
+
+{-| Take a vector defined in 2D coordinates within a particular sketch plane and
+return the corresponding vector in 3D.
+
+    vector2d =
+        Vector2d ( 2, 3 )
+
+    Vector3d.placeOnto SketchPlane3d.xy vector2d ==
+        Vector3d ( 2, 3, 0 )
+
+    Vector3d.placeOnto SketchPlane3d.yz vector2d ==
+        Vector3d ( 0, 2, 3 )
+
+    Vector3d.placeOnto SketchPlane3d.zx vector2d ==
+        Vector3d ( 3, 0, 2 )
+
+A slightly more complex example:
+
+    tiltedSketchPlane =
+        SketchPlane3d.xy
+            |> SketchPlane3d.rotateAround Axis3d.x (degrees 45)
+
+    Vector3d.placeOnto tiltedSketchPlane (Vector2d ( 1, 1 )) ==
+        Vector3d ( 1, 0.7071, 0.7071 )
+-}
+placeOnto : SketchPlane3d -> Vector2d -> Vector3d
+placeOnto sketchPlane =
+    let
+        (SketchPlane3d { originPoint, xDirection, yDirection }) =
+            sketchPlane
+
+        (Direction3d ( x1, y1, z1 )) =
+            xDirection
+
+        (Direction3d ( x2, y2, z2 )) =
+            yDirection
+    in
+        \(Vector2d ( x, y )) ->
+            Vector3d ( x1 * x + x2 * y, y1 * x + y2 * y, z1 * x + z2 * y )
 
 
 {-| Convert a vector to a record with `x`, `y` and `z` fields.

@@ -30,7 +30,6 @@ module OpenSolid.Core.Vector2d
         , projectOnto
         , relativeTo
         , placeIn
-        , placeIn3d
         , toRecord
         , fromRecord
         )
@@ -109,7 +108,7 @@ For the examples, assume the following frames have been defined:
         Frame2d.xy
             |> Frame2d.rotateAround Point2d.origin (degrees 30)
 
-@docs relativeTo, placeIn, placeIn3d
+@docs relativeTo, placeIn
 
 # Record conversions
 
@@ -529,48 +528,6 @@ placeIn frame =
             yDirection
     in
         \(Vector2d ( x, y )) -> Vector2d ( x1 * x + x2 * y, y1 * x + y2 * y )
-
-
-{-| Convert a 2D vector to 3D by placing it in a given planar frame. This will
-construct a 3D vector by taking the X and Y components of the given vector and
-applying them to the X and Y basis directions of the given frame.
-
-    vector =
-        Vector2d ( 2, 3 )
-
-    Vector2d.placeIn3d SketchPlane3d.xy vector ==
-        Vector3d ( 2, 3, 0 )
-
-    Vector2d.placeIn3d SketchPlane3d.yz vector ==
-        Vector3d ( 0, 2, 3 )
-
-    Vector2d.placeIn3d SketchPlane3d.zx vector ==
-        Vector3d ( 3, 0, 2 )
-
-A slightly more complex example:
-
-    tiltedFrame =
-        SketchPlane3d.rotateAround Axis3d.x
-            (degrees 45)
-            SketchPlane3d.xy
-
-    Vector2d.placeIn3d tiltedFrame (Vector2d ( 1, 1 )) ==
-        Vector3d ( 1, 0.7071, 0.7071 )
--}
-placeIn3d : SketchPlane3d -> Vector2d -> Vector3d
-placeIn3d sketchPlane =
-    let
-        (SketchPlane3d { originPoint, xDirection, yDirection }) =
-            sketchPlane
-
-        (Direction3d ( x1, y1, z1 )) =
-            xDirection
-
-        (Direction3d ( x2, y2, z2 )) =
-            yDirection
-    in
-        \(Vector2d ( x, y )) ->
-            Vector3d ( x1 * x + x2 * y, y1 * x + y2 * y, z1 * x + z2 * y )
 
 
 {-| Convert a vector to a record with `x` and `y` fields.

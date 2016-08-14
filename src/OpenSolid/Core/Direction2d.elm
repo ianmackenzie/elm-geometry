@@ -28,7 +28,6 @@ module OpenSolid.Core.Direction2d
         , mirrorAcross
         , relativeTo
         , placeIn
-        , placeIn3d
         )
 
 {-| Various functions for creating and working with `Direction2d` values. For
@@ -109,7 +108,7 @@ For the examples, assume the following frames have been defined:
             (degrees 30)
             Frame2d.xy
 
-@docs relativeTo, placeIn, placeIn3d
+@docs relativeTo, placeIn
 -}
 
 import OpenSolid.Core.Types exposing (..)
@@ -380,26 +379,3 @@ coordinates. Inverse of `relativeTo`.
 placeIn : Frame2d -> Direction2d -> Direction2d
 placeIn frame =
     toVector >> Vector2d.placeIn frame >> toDirection
-
-
-{-| Convert a 2D direction to 3D by placing it in a given planar frame. This
-will construct a 3D direction by taking the X and Y components of the given
-direction and applying them to the X and Y basis directions of the given frame.
-
-    direction =
-        Direction2d ( 0.6, 0.8 )
-
-    Direction2d.placeIn3d SketchPlane3d.xy direction ==
-        Direction3d ( 0.6, 0.8, 0 )
-
-    Direction2d.placeIn3d SketchPlane3d.yz direction ==
-        Direction3d ( 0, 0.6, 0.8 )
-
-    Direction2d.placeIn3d SketchPlane3d.zx direction ==
-        Direction3d ( 0.8, 0, 0.6 )
--}
-placeIn3d : SketchPlane3d -> Direction2d -> Direction3d
-placeIn3d sketchPlane =
-    toVector
-        >> Vector2d.placeIn3d sketchPlane
-        >> (\(Vector3d components) -> Direction3d components)

@@ -25,10 +25,11 @@ module OpenSolid.Core.Direction3d
         , angleFrom
         , rotateAround
         , mirrorAcross
+        , projectOnto
         , relativeTo
         , placeIn
-        , projectOnto
-        , projectInto2d
+        , projectInto
+        , placeOnto
         )
 
 {-| Various functions for creating and working with `Direction3d` values. For
@@ -113,7 +114,9 @@ XYZ frame:
 
 @docs relativeTo, placeIn
 
-@docs projectInto2d, relativeTo, placeIn
+# Sketch planes
+
+@docs projectInto, placeOnto
 -}
 
 import OpenSolid.Core.Types exposing (..)
@@ -380,33 +383,6 @@ projectOnto plane =
     toVector >> Vector3d.projectOnto plane >> Vector3d.direction
 
 
-{-| Project a direction into a given planar frame, converting it to 2D.
-Conceptually, this projects the direction onto the plane of the given frame and
-then expresses the projected direction in terms of 2D components within the
-frame (relative to the frame's X and Y basis directions). If the direction is
-exactly perpendicular to the plane of the given frame, then `Nothing` is
-returned.
-
-    direction =
-        Direction3d ( 0.6, -0.8, 0 )
-
-    Direction3d.projectInto SketchPlane3d.xy direction ==
-        Just (Direction2d ( 0.6, -0.8 ))
-
-    Direction3d.projectInto SketchPlane3d.xz direction ==
-        Just (Direction2d ( 1, 0 ))
-
-    Direction3d.projectInto SketchPlane3d.yz direction ==
-        Just (Direction2d ( -1, 0 ))
-
-    Direction3d.projectInto SketchPlane3d.xy Direction3d.z ==
-        Nothing
--}
-projectInto2d : SketchPlane3d -> Direction3d -> Maybe Direction2d
-projectInto2d sketchPlane =
-    toVector >> Vector3d.projectInto2d sketchPlane >> Vector2d.direction
-
-
 {-| Take a direction currently expressed in global coordinates and express it
 relative to a given frame.
 
@@ -440,3 +416,50 @@ coordinates. Inverse of `relativeTo`.
 placeIn : Frame3d -> Direction3d -> Direction3d
 placeIn frame =
     toVector >> Vector3d.placeIn frame >> toDirection
+
+
+{-| Project a direction into a given sketch plane. Conceptually, this projects
+the direction onto the plane and then expresses the projected direction in 2D
+sketch coordinates.
+
+This is only possible if the direction is not perpendicular to the sketch
+plane; if it is perpendicular, `Nothing` is returned.
+
+    direction =
+        Direction3d ( 0.6, -0.8, 0 )
+
+    Direction3d.projectInto SketchPlane3d.xy direction ==
+        Just (Direction2d ( 0.6, -0.8 ))
+
+    Direction3d.projectInto SketchPlane3d.xz direction ==
+        Just (Direction2d ( 1, 0 ))
+
+    Direction3d.projectInto SketchPlane3d.yz direction ==
+        Just (Direction2d ( -1, 0 ))
+
+    Direction3d.projectInto SketchPlane3d.xy Direction3d.z ==
+        Nothing
+-}
+projectInto : SketchPlane3d -> Direction3d -> Maybe Direction2d
+projectInto sketchPlane =
+    toVector >> Vector3d.projectInto sketchPlane >> Vector2d.direction
+
+
+{-| Take a direction defined in 2D coordinates within a particular sketch plane
+and return the corresponding direction in 3D.
+
+    direction =
+        Direction2d ( 0.6, 0.8 )
+
+    Direction2d.placeOnto SketchPlane3d.xy direction ==
+        Direction3d ( 0.6, 0.8, 0 )
+
+    Direction2d.placeOnto SketchPlane3d.yz direction ==
+        Direction3d ( 0, 0.6, 0.8 )
+
+    Direction2d.placeOnto SketchPlane3d.zx direction ==
+        Direction3d ( 0.8, 0, 0.6 )
+-}
+placeOnto : SketchPlane3d -> Direction2d -> Direction3d
+placeOnto sketchPlane =
+    Direction2d.toVector >> Vector2d.placeOnto sketchPlane >> toDirection

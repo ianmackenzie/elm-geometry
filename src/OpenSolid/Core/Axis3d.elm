@@ -22,7 +22,8 @@ module OpenSolid.Core.Axis3d
         , projectOnto
         , relativeTo
         , placeIn
-        , projectInto2d
+        , projectInto
+        , placeOnto
         )
 
 {-| Various functions for creating and working with `Axis3d` values. For the
@@ -62,7 +63,14 @@ fields to the `Axis3d` constructor, for example:
 
 # Coordinate frames
 
-@docs relativeTo, placeIn, projectInto2d
+Functions for transforming axes between local and global coordinates in
+different coordinate frames.
+
+@docs relativeTo, placeIn
+
+# Sketch planes
+
+@docs projectInto, placeOnto
 -}
 
 import OpenSolid.Core.Types exposing (..)
@@ -352,10 +360,12 @@ placeIn frame =
                 }
 
 
-{-| Project a 3D axis into 2D, projecting it onto the plane of the given planar
-frame and then expressing the projected axis in terms of 2D coordinates within
-that frame. If the axis is exactly perpendicular to the plane of the given
-frame, returns `Nothing`.
+{-| Project an axis into a given sketch plane. Conceptually, this 'flattens' the
+axis onto the plane and then expresses the projected axis in 2D sketch
+coordinates.
+
+This is only possible if the axis is not perpendicular to the sketch
+plane; if it is perpendicular, `Nothing` is returned.
 
     axis =
         Axis3d
@@ -363,7 +373,7 @@ frame, returns `Nothing`.
             , direction = Direction3d ( 0.6, -0.8, 0 )
             }
 
-    Axis3d.projectInto2d SketchPlane3d.xy ==
+    Axis3d.projectInto SketchPlane3d.xy axis ==
         Just
             (Axis2d
                 { originPoint = Point2d ( 2, 1 )
@@ -371,7 +381,7 @@ frame, returns `Nothing`.
                 }
             )
 
-    Axis3d.projectInto2d SketchPlane3d.yz ==
+    Axis3d.projectInto SketchPlane3d.yz axis ==
         Just
             (Axis2d
                 { originPoint = Point2d ( 1, 3 )
@@ -382,16 +392,53 @@ frame, returns `Nothing`.
     Axis3d.projectInto SketchPlane3d.xy Axis3d.z ==
         Nothing
 -}
-projectInto2d : SketchPlane3d -> Axis3d -> Maybe Axis2d
-projectInto2d sketchPlane axis =
+projectInto : SketchPlane3d -> Axis3d -> Maybe Axis2d
+projectInto sketchPlane axis =
     let
         projectedOrigin =
-            Point3d.projectInto2d sketchPlane (originPoint axis)
+            Point3d.projectInto sketchPlane (originPoint axis)
 
         maybeDirection =
-            Direction3d.projectInto2d sketchPlane (direction axis)
+            Direction3d.projectInto sketchPlane (direction axis)
 
         toAxis direction =
             Axis2d { originPoint = projectedOrigin, direction = direction }
     in
         Maybe.map toAxis maybeDirection
+
+
+{-| Take an axis defined in 2D coordinates within a particular sketch plane and
+return the corresponding axis in 3D.
+
+    axis2d =
+        Axis2d
+            { originPoint = Point2d ( 2, 3 )
+            , direction = Direction2d ( 0.6, 0.8 )
+            }
+
+    Axis3d.placeOnto SketchPlane3d.xy axis2d ==
+        Axis3d
+            { originPoint = Point3d ( 2, 3, 0 )
+            , direction = Direction3d ( 0.6, 0.8, 0 )
+            }
+
+    Axis3d.placeOnto SketchPlane3d.zx axis2d ==
+        Axis3d
+            { originPoint = Point3d ( 3, 0, 2 )
+            , direction = Direction3d ( 0.8, 0, 0.6 )
+            }
+-}
+placeOnto : SketchPlane3d -> Axis2d -> Axis3d
+placeOnto sketchPlane =
+    let
+        placePoint =
+            Point2d.placeOnto sketchPlane
+
+        placeDirection =
+            Direction2d.placeOnto sketchPlane
+    in
+        \axis ->
+            Axis3d
+                { originPoint = placePoint (originPoint axis)
+                , direction = placeDirection (direction axis)
+                }
