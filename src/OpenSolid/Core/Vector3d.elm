@@ -87,7 +87,7 @@ its tip.
 
 @docs rotateAround, mirrorAcross, projectionIn, projectOntoAxis, projectOnto
 
-# Coordinate conversions
+# Coordinate frames
 
 Functions for transforming vectors between local and global coordinates in
 different coordinate frames. Like transformations, coordinate conversions of

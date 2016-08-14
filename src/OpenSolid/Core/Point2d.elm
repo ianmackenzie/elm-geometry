@@ -80,7 +80,7 @@ can use Elm's built-in `fromPolar` function:
 
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto
 
-# Coordinate conversions
+# Coordinate frames
 
 Functions for transforming points between local and global coordinates in
 different coordinate systems. Although these examples use a simple offset

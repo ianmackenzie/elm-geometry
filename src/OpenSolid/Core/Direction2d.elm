@@ -88,7 +88,7 @@ are not.
 
 @docs rotateBy, mirrorAcross
 
-# Coordinate conversions
+# Coordinate frames
 
 Functions for transforming directions between local and global coordinates in
 different coordinate frames. Like transformations, coordinate conversions of

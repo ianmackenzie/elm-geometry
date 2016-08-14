@@ -89,7 +89,7 @@ tail is on the axis, then mirroring/projecting its tip across/onto the axis.
 
 @docs rotateBy, mirrorAcross, projectionIn, projectOnto
 
-# Coordinate conversions
+# Coordinate frames
 
 Functions for transforming vectors between local and global coordinates in
 different coordinate frames. Like transformations, coordinate conversions of

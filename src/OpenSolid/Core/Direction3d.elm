@@ -88,7 +88,7 @@ are not.
 
 @docs rotateAround, mirrorAcross, projectOnto
 
-# Coordinate conversions
+# Coordinate frames
 
 Functions for transforming directions between local and global coordinates in
 different coordinate frames. Like transformations, coordinate conversions of

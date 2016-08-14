@@ -78,7 +78,7 @@ and Z coordinates to the `Point3d` constructor, for example
 
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, projectOntoAxis
 
-# Coordinate conversions
+# Coordinate frames
 
 Functions for transforming points between local and global coordinates in
 different coordinate systems. Although these examples use a simple offset

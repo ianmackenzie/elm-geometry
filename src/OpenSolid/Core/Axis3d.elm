@@ -60,7 +60,7 @@ fields to the `Axis3d` constructor, for example:
 
 @docs flip, rotateAround, translateBy, moveTo, mirrorAcross, projectOnto
 
-# Coordinate transformations
+# Coordinate frames
 
 @docs relativeTo, placeIn, projectInto2d
 -}

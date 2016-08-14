@@ -61,7 +61,7 @@ fields to the `Axis2d` constructor, for example:
 
 @docs flip, rotateAround, translateBy, moveTo, mirrorAcross
 
-# Coordinate transformations
+# Coordinate frames
 
 @docs relativeTo, placeIn, placeIn3d
 -}
