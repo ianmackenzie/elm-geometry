@@ -221,22 +221,34 @@ Explicitly working with individual X/Y/Z point coordinates and vector components
 is easy to do in OpenSolid when necessary:
 
 ```elm
-forwardSpeed = Vector3d.xComponent velocityVector
-height = Point3d.zCoordinate position
+forwardSpeed =
+    Vector3d.xComponent velocityVector
+
+height =
+    Point3d.zCoordinate position
 ```
 
 In many cases, however, it is equally easy and often advantageous to consider
 points and vectors as abstract geometric quantities and treat their internal
-representations as an implementation detail. For example, the above might be
-replaced by
+representations by coordinates/components as an implementation detail. For
+example, the above might be replaced by
 
 ```elm
-forwardSpeed = Vector3d.componentIn forwardDirection velocityVector
-height = Point3d.signedDistanceFrom groundPlane position
+forwardSpeed =
+    Vector3d.componentIn forwardDirection velocityVector
 
--- Perhaps in a Constants.elm file or similar
-forwardDirection = Direction3d.x
-groundPlane = Plane3d.xy
+height =
+    Point3d.signedDistanceFrom groundPlane position
+```
+
+where (perhaps in a Constants.elm file or similar) you would define
+
+```elm
+forwardDirection =
+    Direction3d.x
+
+groundPlane =
+    Plane3d.xy
 ```
 
 This approach is less coupled to the particular coordinate system being used and
