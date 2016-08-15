@@ -10,13 +10,10 @@
 module Point3d exposing (suite)
 
 import Test exposing (Test)
-import Expect
 import Test.Runner.Html as Html
-import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Point3d as Point3d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import OpenSolid.Core.Test.Compare as Compare
 import OpenSolid.Core.Test.Fuzz as Fuzz
 import OpenSolid.Core.Test.Expect as Expect
 import Generic
