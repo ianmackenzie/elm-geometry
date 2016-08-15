@@ -7,7 +7,7 @@
 -}
 
 
-module OpenSolid.Core.Test.Vector3d exposing (suite)
+module Vector3d exposing (suite)
 
 import Json.Decode as Decode
 import Json.Encode as Encode

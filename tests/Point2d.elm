@@ -7,7 +7,7 @@
 -}
 
 
-module OpenSolid.Core.Test.Point2d exposing (suite)
+module Point2d exposing (suite)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
