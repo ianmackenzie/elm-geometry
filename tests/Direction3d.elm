@@ -7,33 +7,32 @@
 -}
 
 
-module OpenSolid.Core.Test.Direction3d exposing (suite)
+module Direction3d exposing (suite)
 
-import Json.Decode as Decode exposing (decodeValue)
-import Json.Encode as Encode
-import ElmTest exposing (Test)
-import Check exposing (Claim, claim, true, that, is, for, quickCheck)
-import Check.Test exposing (evidenceToTest)
-import OpenSolid.Core.Types exposing (..)
+import Test exposing (Test)
+import Test.Runner.Html as Html
+import OpenSolid.Core.Direction3d as Direction3d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import OpenSolid.Core.Test.Producer exposing (direction3d)
+import OpenSolid.Core.Test.Fuzz as Fuzz
+import OpenSolid.Core.Test.Expect as Expect
+import Generic
 
 
-jsonRoundTrips : Claim
+jsonRoundTrips : Test
 jsonRoundTrips =
-    claim "JSON conversion round-trips properly"
-        `that` (Encode.direction3d >> decodeValue Decode.direction3d)
-        `is` Ok
-        `for` direction3d
+    Generic.jsonRoundTrips Fuzz.direction3d
+        Encode.direction3d
+        Decode.direction3d
 
 
 suite : Test
 suite =
-    ElmTest.suite "OpenSolid.Core.Direction3d"
-        [ evidenceToTest (quickCheck jsonRoundTrips)
+    Test.describe "OpenSolid.Core.Direction3d"
+        [ jsonRoundTrips
         ]
 
 
+main : Program Never
 main =
-    ElmTest.runSuiteHtml suite
+    Html.run suite
