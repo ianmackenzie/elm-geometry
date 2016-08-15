@@ -9,8 +9,6 @@
 
 module Vector3d exposing (suite)
 
-import Json.Decode as Decode
-import Json.Encode as Encode
 import Test exposing (Test)
 import Expect
 import Test.Runner.Html as Html
@@ -21,30 +19,20 @@ import OpenSolid.Core.Encode as Encode
 import OpenSolid.Core.Test.Compare as Compare
 import OpenSolid.Core.Test.Fuzz as Fuzz
 import OpenSolid.Core.Test.Expect as Expect
+import Generic
 
 
 jsonRoundTrips : Test
 jsonRoundTrips =
-    Test.fuzz Fuzz.vector3d
-        "JSON conversion round-trips properly"
-        (\vector ->
-            vector
-                |> Encode.vector3d
-                |> Decode.decodeValue Decode.vector3d
-                |> Expect.equal (Ok vector)
-        )
+    Generic.jsonRoundTrips Fuzz.vector3d Encode.vector3d Decode.vector3d
 
 
 recordConversionRoundTrips : Test
 recordConversionRoundTrips =
-    Test.fuzz Fuzz.vector3d
-        "Record conversion round-trips properly"
-        (\vector ->
-            vector
-                |> Vector3d.toRecord
-                |> Vector3d.fromRecord
-                |> Expect.equal vector
-        )
+    Generic.conversionRoundTrips "Record"
+        Fuzz.vector3d
+        Vector3d.toRecord
+        Vector3d.fromRecord
 
 
 suite : Test

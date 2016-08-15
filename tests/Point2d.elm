@@ -9,8 +9,6 @@
 
 module Point2d exposing (suite)
 
-import Json.Decode as Decode
-import Json.Encode as Encode
 import Test exposing (Test)
 import Expect
 import Test.Runner.Html as Html
@@ -21,6 +19,7 @@ import OpenSolid.Core.Encode as Encode
 import OpenSolid.Core.Test.Compare as Compare
 import OpenSolid.Core.Test.Fuzz as Fuzz
 import OpenSolid.Core.Test.Expect as Expect
+import Generic
 
 
 rotationPreservesDistance : Test
@@ -69,26 +68,15 @@ projectionOntoAxisPreservesDistance =
 
 jsonRoundTrips : Test
 jsonRoundTrips =
-    Test.fuzz Fuzz.point2d
-        "JSON conversion round-trips properly"
-        (\point ->
-            point
-                |> Encode.point2d
-                |> Decode.decodeValue Decode.point2d
-                |> Expect.equal (Ok point)
-        )
+    Generic.jsonRoundTrips Fuzz.point2d Encode.point2d Decode.point2d
 
 
 recordConversionRoundTrips : Test
 recordConversionRoundTrips =
-    Test.fuzz Fuzz.point2d
-        "Record conversion round-trips properly"
-        (\point ->
-            point
-                |> Point2d.toRecord
-                |> Point2d.fromRecord
-                |> Expect.equal point
-        )
+    Generic.conversionRoundTrips "Record"
+        Fuzz.point2d
+        Point2d.toRecord
+        Point2d.fromRecord
 
 
 suite : Test
