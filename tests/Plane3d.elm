@@ -7,33 +7,30 @@
 -}
 
 
-module OpenSolid.Core.Test.Plane3d exposing (suite)
+module Plane3d exposing (suite)
 
-import Json.Decode as Decode exposing (decodeValue)
-import Json.Encode as Encode
-import ElmTest exposing (Test)
-import Check exposing (Claim, claim, true, that, is, for, quickCheck)
-import Check.Test exposing (evidenceToTest)
-import OpenSolid.Core.Types exposing (..)
+import Test exposing (Test)
+import Test.Runner.Html as Html
+import OpenSolid.Core.Plane3d as Plane3d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import OpenSolid.Core.Test.Producer exposing (plane3d)
+import OpenSolid.Core.Test.Fuzz as Fuzz
+import OpenSolid.Core.Test.Expect as Expect
+import Generic
 
 
-jsonRoundTrips : Claim
+jsonRoundTrips : Test
 jsonRoundTrips =
-    claim "JSON conversion round-trips properly"
-        `that` (Encode.plane3d >> decodeValue Decode.plane3d)
-        `is` Ok
-        `for` plane3d
+    Generic.jsonRoundTrips Fuzz.plane3d Encode.plane3d Decode.plane3d
 
 
 suite : Test
 suite =
-    ElmTest.suite "OpenSolid.Core.Plane3d"
-        [ evidenceToTest (quickCheck jsonRoundTrips)
+    Test.describe "OpenSolid.Core.Plane3d"
+        [ jsonRoundTrips
         ]
 
 
+main : Program Never
 main =
-    ElmTest.runSuiteHtml suite
+    Html.run suite

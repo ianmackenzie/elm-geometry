@@ -7,33 +7,30 @@
 -}
 
 
-module OpenSolid.Core.Test.Axis2d exposing (suite)
+module Axis2d exposing (suite)
 
-import Json.Decode as Decode exposing (decodeValue)
-import Json.Encode as Encode
-import ElmTest exposing (Test)
-import Check exposing (Claim, claim, true, that, is, for, quickCheck)
-import Check.Test exposing (evidenceToTest)
-import OpenSolid.Core.Types exposing (..)
+import Test exposing (Test)
+import Test.Runner.Html as Html
+import OpenSolid.Core.Axis2d as Axis2d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import OpenSolid.Core.Test.Producer exposing (axis2d)
+import OpenSolid.Core.Test.Fuzz as Fuzz
+import OpenSolid.Core.Test.Expect as Expect
+import Generic
 
 
-jsonRoundTrips : Claim
+jsonRoundTrips : Test
 jsonRoundTrips =
-    claim "JSON conversion round-trips properly"
-        `that` (Encode.axis2d >> decodeValue Decode.axis2d)
-        `is` Ok
-        `for` axis2d
+    Generic.jsonRoundTrips Fuzz.axis2d Encode.axis2d Decode.axis2d
 
 
 suite : Test
 suite =
-    ElmTest.suite "OpenSolid.Core.Axis2d"
-        [ evidenceToTest (quickCheck jsonRoundTrips)
+    Test.describe "OpenSolid.Core.Axis2d"
+        [ jsonRoundTrips
         ]
 
 
+main : Program Never
 main =
-    ElmTest.runSuiteHtml suite
+    Html.run suite
