@@ -32,12 +32,18 @@ frameDirectionsAreOrthonormal =
         "Frame3d basis directions are orthonormal"
         (\frame ->
             let
-                crossProduct =
-                    Direction3d.crossProduct (Frame3d.xDirection frame)
-                        (Frame3d.yDirection frame)
+                xDirection =
+                    Frame3d.xDirection frame
+
+                yDirection =
+                    Frame3d.yDirection frame
+
+                zDirection =
+                    Frame3d.zDirection frame
 
                 tripleProduct =
-                    Vector3d.componentIn (Frame3d.zDirection frame) crossProduct
+                    Direction3d.crossProduct xDirection yDirection
+                        |> Vector3d.componentIn zDirection
             in
                 Expect.approximately 1 tripleProduct
         )
