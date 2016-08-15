@@ -7,55 +7,62 @@
 -}
 
 
-module OpenSolid.Core.Test.Frame2d exposing (suite)
+module Frame2d exposing (suite)
 
-import Json.Decode as Decode exposing (decodeValue)
-import Json.Encode as Encode
-import ElmTest exposing (Test)
-import Check exposing (Claim, claim, true, that, is, for, quickCheck)
-import Check.Test exposing (evidenceToTest)
-import Check.Producer as Producer
-import OpenSolid.Core.Types exposing (..)
+import Test exposing (Test)
+import Test.Runner.Html as Html
+import OpenSolid.Core.Point2d as Point2d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import OpenSolid.Core.Point2d as Point2d
-import OpenSolid.Core.Test.Comparison exposing (pointsAreEqual2d)
-import OpenSolid.Core.Test.Producer exposing (frame2d, point2d)
+import OpenSolid.Core.Test.Fuzz as Fuzz
+import OpenSolid.Core.Test.Expect as Expect
+import Generic
 
 
-jsonRoundTrips : Claim
+jsonRoundTrips : Test
 jsonRoundTrips =
-    claim "JSON conversion round-trips properly"
-        `that` (Encode.frame2d >> decodeValue Decode.frame2d)
-        `is` Ok
-        `for` frame2d
+    Generic.jsonRoundTrips Fuzz.frame2d Encode.frame2d Decode.frame2d
 
 
-coordinateTransformationRoundTrips : Claim
-coordinateTransformationRoundTrips =
+globalToGlobal : Test
+globalToGlobal =
     let
-        transformationRoundTrips ( frame, point ) =
-            let
-                globalToGlobal =
-                    Point2d.relativeTo frame >> Point2d.placeIn frame
+        description =
+            "Global -> local -> global conversion round-trips properly"
 
-                localToLocal =
-                    Point2d.placeIn frame >> Point2d.relativeTo frame
-            in
-                pointsAreEqual2d point (globalToGlobal point)
-                    && pointsAreEqual2d point (localToLocal point)
+        expectation frame point =
+            point
+                |> Point2d.relativeTo frame
+                |> Point2d.placeIn frame
+                |> Expect.point2d point
     in
-        claim "Local/global coordinate transformation round-trips properly"
-            `true` transformationRoundTrips
-            `for` Producer.tuple ( frame2d, point2d )
+        Test.fuzz2 Fuzz.frame2d Fuzz.point2d description expectation
+
+
+localToLocal : Test
+localToLocal =
+    let
+        description =
+            "Local -> global -> local conversion round-trips properly"
+
+        expectation frame point =
+            point
+                |> Point2d.placeIn frame
+                |> Point2d.relativeTo frame
+                |> Expect.point2d point
+    in
+        Test.fuzz2 Fuzz.frame2d Fuzz.point2d description expectation
 
 
 suite : Test
 suite =
-    ElmTest.suite "OpenSolid.Core.Frame2d"
-        [ evidenceToTest (quickCheck jsonRoundTrips)
+    Test.describe "OpenSolid.Core.Frame2d"
+        [ jsonRoundTrips
+        , globalToGlobal
+        , localToLocal
         ]
 
 
+main : Program Never
 main =
-    ElmTest.runSuiteHtml suite
+    Html.run suite

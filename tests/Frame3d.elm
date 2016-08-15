@@ -7,35 +7,30 @@
 -}
 
 
-module OpenSolid.Core.Test.Frame3d exposing (suite)
+module Frame3d exposing (suite)
 
-import Json.Decode as Decode exposing (decodeValue)
-import Json.Encode as Encode
-import ElmTest exposing (Test)
-import Check exposing (Claim, claim, true, that, is, for, quickCheck)
-import Check.Test exposing (evidenceToTest)
-import OpenSolid.Core.Types exposing (..)
+import Test exposing (Test)
+import Test.Runner.Html as Html
+import OpenSolid.Core.Frame3d as Frame3d
+import OpenSolid.Core.Direction3d as Direction3d
+import OpenSolid.Core.Vector3d as Vector3d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
-import OpenSolid.Core.Vector3d as Vector3d
-import OpenSolid.Core.Direction3d as Direction3d
-import OpenSolid.Core.Frame3d as Frame3d
-import OpenSolid.Core.Test.Comparison exposing (valueIsOne)
-import OpenSolid.Core.Test.Producer exposing (frame3d)
+import OpenSolid.Core.Test.Fuzz as Fuzz
+import OpenSolid.Core.Test.Expect as Expect
+import Generic
 
 
-jsonRoundTrips : Claim
+jsonRoundTrips : Test
 jsonRoundTrips =
-    claim "JSON conversion round-trips properly"
-        `that` (Encode.frame3d >> decodeValue Decode.frame3d)
-        `is` Ok
-        `for` frame3d
+    Generic.jsonRoundTrips Fuzz.frame3d Encode.frame3d Decode.frame3d
 
 
-frameDirectionsAreOrthonormal : Claim
+frameDirectionsAreOrthonormal : Test
 frameDirectionsAreOrthonormal =
-    let
-        directionsAreOrthonormal frame =
+    Test.fuzz Fuzz.frame3d
+        "Frame3d basis directions are orthonormal"
+        (\frame ->
             let
                 crossProduct =
                     Direction3d.crossProduct (Frame3d.xDirection frame)
@@ -44,21 +39,18 @@ frameDirectionsAreOrthonormal =
                 tripleProduct =
                     Vector3d.componentIn (Frame3d.zDirection frame) crossProduct
             in
-                valueIsOne (Vector3d.length crossProduct)
-                    && valueIsOne tripleProduct
-    in
-        claim "Frame3d basis directions are orthonormal"
-            `true` directionsAreOrthonormal
-            `for` frame3d
+                Expect.approximately 1 tripleProduct
+        )
 
 
 suite : Test
 suite =
-    ElmTest.suite "OpenSolid.Core.Frame3d"
-        [ evidenceToTest (quickCheck jsonRoundTrips)
-        , evidenceToTest (quickCheck frameDirectionsAreOrthonormal)
+    Test.describe "OpenSolid.Core.Frame3d"
+        [ jsonRoundTrips
+        , frameDirectionsAreOrthonormal
         ]
 
 
+main : Program Never
 main =
-    ElmTest.runSuiteHtml suite
+    Html.run suite
