@@ -7,24 +7,25 @@
 -}
 
 
-module OpenSolid.Core.Test.All exposing (..)
+module All exposing (..)
 
-import ElmTest
-import OpenSolid.Core.Test.Axis2d as Axis2d
-import OpenSolid.Core.Test.Axis3d as Axis3d
-import OpenSolid.Core.Test.Direction2d as Direction2d
-import OpenSolid.Core.Test.Direction3d as Direction3d
-import OpenSolid.Core.Test.Frame2d as Frame2d
-import OpenSolid.Core.Test.Frame3d as Frame3d
-import OpenSolid.Core.Test.Plane3d as Plane3d
-import OpenSolid.Core.Test.Point2d as Point2d
-import OpenSolid.Core.Test.Point3d as Point3d
-import OpenSolid.Core.Test.Vector2d as Vector2d
-import OpenSolid.Core.Test.Vector3d as Vector3d
+import Test
+import Test.Runner.Html as Html
+import Axis2d
+import Axis3d
+import Direction2d
+import Direction3d
+import Frame2d
+import Frame3d
+import Plane3d
+import Point2d
+import Point3d
+import Vector2d
+import Vector3d
 
 
 suite =
-    ElmTest.suite "OpenSolid.Core"
+    Test.describe "OpenSolid.Core"
         [ Axis2d.suite
         , Axis3d.suite
         , Direction2d.suite
@@ -39,5 +40,6 @@ suite =
         ]
 
 
+main : Program Never
 main =
-    ElmTest.runSuiteHtml suite
+    Html.run suite
