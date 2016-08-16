@@ -26,14 +26,15 @@ if (!shell.test("-d", "output")) {
 names.forEach(function(name) {
     let elmFilename = name + ".elm";
     let htmlFilename = "output/" + name + ".html";
+    let elmMakeCommand = "elm make --output " + htmlFilename + " " + elmFilename;
     // Compile Elm file to HTML
-    if (shell.exec("elm make --output " + htmlFilename + " " + elmFilename).code == 0) {
+    if (shell.exec(elmMakeCommand).code == 0) {
         // Render HTML to PNG
-        let nightmare = Nightmare({show: false});
-        let dimensions = {x: 0, y: 0, width: 320, height : 240};
+        let nightmare = Nightmare({show: false}).viewport(1024, 768);
         let pngFilename = "output/" + name + ".png";
+        let dimensions = {x: 0, y: 0, width: 320, height : 240};
         let url = fileUrl(htmlFilename);
-        nightmare.viewport(1024, 768).goto(url).screenshot(pngFilename, dimensions).end().then(function (result) {
+        nightmare.goto(url).screenshot(pngFilename, dimensions).end().then(function (result) {
             console.log("Rendered " + pngFilename);
         }).catch(function (error) {
             console.error("Render failed:", error);
