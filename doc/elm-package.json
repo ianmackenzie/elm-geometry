@@ -1,0 +1,17 @@
+{
+    "version": "1.0.0",
+    "summary": "Documentation for the OpenSolid core library",
+    "repository": "https://github.com/opensolid/core.git",
+    "license": "MPL-2.0",
+    "source-directories": [
+        ".",
+        "../src",
+        "../../svg/src"
+    ],
+    "exposed-modules": [],
+    "dependencies": {
+        "elm-lang/core": "4.0.5 <= v < 5.0.0",
+        "elm-lang/html": "1.1.0 <= v < 2.0.0"
+    },
+    "elm-version": "0.17.0 <= v < 0.18.0"
+}

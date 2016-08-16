@@ -1,0 +1,24 @@
+{
+  "name": "opensolid-core-doc",
+  "version": "1.0.0",
+  "description": "Documentation for the OpenSolid core library",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/opensolid/core.git"
+  },
+  "keywords": [
+    "opensolid",
+    "documentation"
+  ],
+  "author": "Ian Mackenzie <ian.e.mackenzie@gmail.com>",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/opensolid/core/issues"
+  },
+  "homepage": "https://github.com/opensolid/core#readme",
+  "dependencies": {
+    "file-url": "^1.1.0",
+    "nightmare": "^2.6.1",
+    "shelljs": "^0.7.3"
+  }
+}
