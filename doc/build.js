@@ -26,7 +26,7 @@ if (!shell.test("-d", "output")) {
 names.forEach(function(name) {
     let elmFilename = name + ".elm";
     let htmlFilename = "output/" + name + ".html";
-    let elmMakeCommand = "elm make --output " + htmlFilename + " " + elmFilename;
+    let elmMakeCommand = "elm make --yes --output " + htmlFilename + " " + elmFilename;
     // Compile Elm file to HTML
     if (shell.exec(elmMakeCommand).code == 0) {
         // Render HTML to PNG
