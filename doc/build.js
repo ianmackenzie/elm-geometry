@@ -17,6 +17,12 @@ if (process.argv.length == 2) {
     names = process.argv.slice(2);
 }
 
+// Install any needed Elm packages
+if (shell.exec("elm package install --yes").code != 0) {
+    shell.echo("Elm package installation failed");
+    process.exit(1);
+}
+
 // Create output directory if necessary
 if (!shell.test("-d", "output")) {
     shell.mkdir("output");
