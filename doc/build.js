@@ -32,7 +32,7 @@ names.forEach(function(name) {
         // Render HTML to PNG
         let nightmare = Nightmare({show: false}).viewport(1024, 768);
         let pngFilename = "output/" + name + ".png";
-        let dimensions = {x: 0, y: 0, width: 320, height : 240};
+        let dimensions = {x: 0, y: 0, width: 300, height : 300};
         let url = fileUrl(htmlFilename);
         nightmare.goto(url).screenshot(pngFilename, dimensions).end().then(function (result) {
             console.log("Rendered " + pngFilename);
