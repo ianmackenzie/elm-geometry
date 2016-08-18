@@ -68,21 +68,12 @@ jsonRoundTrips =
     Generic.jsonRoundTrips Fuzz.point2d Encode.point2d Decode.point2d
 
 
-recordConversionRoundTrips : Test
-recordConversionRoundTrips =
-    Generic.conversionRoundTrips "Record"
-        Fuzz.point2d
-        Point2d.toRecord
-        Point2d.fromRecord
-
-
 suite : Test
 suite =
     Test.describe "OpenSolid.Core.Point2d"
         [ rotationPreservesDistance
         , projectionOntoAxisPreservesDistance
         , jsonRoundTrips
-        , recordConversionRoundTrips
         ]
 
 

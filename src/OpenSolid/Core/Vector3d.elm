@@ -34,8 +34,6 @@ module OpenSolid.Core.Vector3d
         , placeIn
         , projectInto
         , placeOnto
-        , toRecord
-        , fromRecord
         )
 
 {-| Various functions for creating and working with `Vector3d` values. For the
@@ -119,31 +117,6 @@ Functions for converting vectors between global 3D coordinates and 2D
 coordinates within a particular sketch plane.
 
 @docs projectInto, placeOnto
-
-# Record conversions
-
-Convert `Vector3d` values to and from Elm records. Primarily useful for
-interoperability with other libraries. For example, you could define conversion
-functions to and from `elm-linear-algebra`'s `Vec3` type with
-
-    toVec3 : Vector3d -> Math.Vector3.Vec3
-    toVec3 =
-        Vector3d.toRecord >> Math.Vector3.fromRecord
-
-    fromVec3 : Math.Vector3.Vec3 -> Vector3d
-    fromVec3 =
-        Math.Vector3.toRecord >> Vector3d.fromRecord
-
-although in this particular case it would likely be simpler and more efficient
-to use
-
-    toVec3 =
-        Vector3d.components >> Math.Vector3.fromTuple
-
-    fromVec3 =
-        Math.Vector3.toTuple >> Vector3d
-
-@docs toRecord, fromRecord
 -}
 
 import OpenSolid.Core.Types exposing (..)
@@ -776,23 +749,3 @@ placeOnto sketchPlane =
     in
         \(Vector2d ( x, y )) ->
             Vector3d ( x1 * x + x2 * y, y1 * x + y2 * y, z1 * x + z2 * y )
-
-
-{-| Convert a vector to a record with `x`, `y` and `z` fields.
-
-    Vector3d.toRecord (Vector3d ( 2, 1, 3 )) ==
-        { x = 2, y = 1, z = 3 }
--}
-toRecord : Vector3d -> { x : Float, y : Float, z : Float }
-toRecord (Vector3d ( x, y, z )) =
-    { x = x, y = y, z = z }
-
-
-{-| Construct a vector from a record with `x`, `y` and `z` fields.
-
-    Vector3d.fromRecord { x = 2, y = 1, z = 3 } ==
-        Vector3d ( 2, 1, 3 )
--}
-fromRecord : { x : Float, y : Float, z : Float } -> Vector3d
-fromRecord { x, y, z } =
-    Vector3d ( x, y, z )

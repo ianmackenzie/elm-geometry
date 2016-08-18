@@ -30,8 +30,6 @@ module OpenSolid.Core.Vector2d
         , projectOnto
         , relativeTo
         , placeIn
-        , toRecord
-        , fromRecord
         )
 
 {-| Various functions for creating and working with `Vector2d` values. For the
@@ -109,31 +107,6 @@ For the examples, assume the following frames have been defined:
             |> Frame2d.rotateAround Point2d.origin (degrees 30)
 
 @docs relativeTo, placeIn
-
-# Record conversions
-
-Convert `Vector2d` values to and from Elm records. Primarily useful for
-interoperability with other libraries. For example, you could define conversion
-functions to and from `elm-linear-algebra`'s `Vec2` type with
-
-    toVec2 : Vector2d -> Math.Vector2.Vec2
-    toVec2 =
-        Vector2d.toRecord >> Math.Vector2.fromRecord
-
-    fromVec2 : Math.Vector2.Vec2 -> Vector2d
-    fromVec2 =
-        Math.Vector2.toRecord >> Vector2d.fromRecord
-
-although in this particular case it would likely be simpler and more efficient
-to use
-
-    toVec2 =
-        Vector2d.components >> Math.Vector2.fromTuple
-
-    fromVec2 =
-        Math.Vector2.toTuple >> Vector2d
-
-@docs toRecord, fromRecord
 -}
 
 import OpenSolid.Core.Types exposing (..)
@@ -528,23 +501,3 @@ placeIn frame =
             yDirection
     in
         \(Vector2d ( x, y )) -> Vector2d ( x1 * x + x2 * y, y1 * x + y2 * y )
-
-
-{-| Convert a vector to a record with `x` and `y` fields.
-
-    Vector2d.toRecord (Vector2d ( 2, 3 )) ==
-        { x = 2, y = 3 }
--}
-toRecord : Vector2d -> { x : Float, y : Float }
-toRecord (Vector2d ( x, y )) =
-    { x = x, y = y }
-
-
-{-| Construct a vector from a record with `x` and `y` fields.
-
-    Vector2d.fromRecord { x = 2, y = 3 } ==
-        Vector2d ( 2, 3 )
--}
-fromRecord : { x : Float, y : Float } -> Vector2d
-fromRecord { x, y } =
-    Vector2d ( x, y )

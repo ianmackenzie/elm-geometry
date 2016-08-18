@@ -29,8 +29,6 @@ module OpenSolid.Core.Point2d
         , projectOnto
         , relativeTo
         , placeIn
-        , toRecord
-        , fromRecord
         )
 
 {-| Various functions for creating and working with `Point2d` values. For the
@@ -85,31 +83,6 @@ Functions for transforming points between local and global coordinates in
 different coordinate frames.
 
 @docs relativeTo, placeIn
-
-# Record conversions
-
-Convert `Point2d` values to and from Elm records. Primarily useful for
-interoperability with other libraries. For example, you could define conversion
-functions to and from `elm-linear-algebra`'s `Vec2` type with
-
-    toVec2 : Point2d -> Math.Vector2.Vec2
-    toVec2 =
-        Point2d.toRecord >> Math.Vector2.fromRecord
-
-    fromVec2 : Math.Vector2.Vec2 -> Point2d
-    fromVec2 =
-        Math.Vector2.toRecord >> Point2d.fromRecord
-
-although in this particular case it would likely be simpler and more efficient
-to use
-
-    toVec2 =
-        Point2d.coordinates >> Math.Vector2.fromTuple
-
-    fromVec2 =
-        Math.Vector2.toTuple >> Point2d
-
-@docs toRecord, fromRecord
 -}
 
 import OpenSolid.Core.Types exposing (..)
@@ -581,23 +554,3 @@ placeIn frame =
             frame
     in
         coordinates >> Vector2d >> Vector2d.placeIn frame >> addTo originPoint
-
-
-{-| Convert a point to a record with `x` and `y` fields.
-
-    Point2d.toRecord (Point2d ( 2, 3 )) ==
-        { x = 2, y = 3 }
--}
-toRecord : Point2d -> { x : Float, y : Float }
-toRecord (Point2d ( x, y )) =
-    { x = x, y = y }
-
-
-{-| Construct a point from a record with `x` and `y` fields.
-
-    Point2d.fromRecord { x = 2, y = 3 } ==
-        Point2d ( 2, 3 )
--}
-fromRecord : { x : Float, y : Float } -> Point2d
-fromRecord { x, y } =
-    Point2d ( x, y )

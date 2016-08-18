@@ -24,14 +24,6 @@ jsonRoundTrips =
     Generic.jsonRoundTrips Fuzz.vector2d Encode.vector2d Decode.vector2d
 
 
-recordConversionRoundTrips : Test
-recordConversionRoundTrips =
-    Generic.conversionRoundTrips "Record"
-        Fuzz.vector2d
-        Vector2d.toRecord
-        Vector2d.fromRecord
-
-
 perpendicularVectorIsPerpendicular : Test
 perpendicularVectorIsPerpendicular =
     Test.fuzz Fuzz.vector2d
@@ -48,7 +40,6 @@ suite : Test
 suite =
     Test.describe "OpenSolid.Core.Vector2d"
         [ jsonRoundTrips
-        , recordConversionRoundTrips
         , perpendicularVectorIsPerpendicular
         ]
 

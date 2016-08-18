@@ -24,19 +24,10 @@ jsonRoundTrips =
     Generic.jsonRoundTrips Fuzz.vector3d Encode.vector3d Decode.vector3d
 
 
-recordConversionRoundTrips : Test
-recordConversionRoundTrips =
-    Generic.conversionRoundTrips "Record"
-        Fuzz.vector3d
-        Vector3d.toRecord
-        Vector3d.fromRecord
-
-
 suite : Test
 suite =
     Test.describe "OpenSolid.Core.Vector3d"
         [ jsonRoundTrips
-        , recordConversionRoundTrips
         ]
 
 

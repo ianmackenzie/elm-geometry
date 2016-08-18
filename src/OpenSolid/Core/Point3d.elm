@@ -35,8 +35,6 @@ module OpenSolid.Core.Point3d
         , placeIn
         , projectInto
         , placeOnto
-        , toRecord
-        , fromRecord
         )
 
 {-| Various functions for creating and working with `Point3d` values. For the
@@ -89,31 +87,6 @@ different coordinate frames.
 # Sketch planes
 
 @docs projectInto, placeOnto
-
-# Record conversions
-
-Convert `Point3d` values to and from Elm records. Primarily useful for
-interoperability with other libraries. For example, you could define conversion
-functions to and from `elm-linear-algebra`'s `Vec3` type with
-
-    toVec3 : Point3d -> Math.Vector3.Vec3
-    toVec3 =
-        Point3d.toRecord >> Math.Vector3.fromRecord
-
-    fromVec3 : Math.Vector3.Vec3 -> Point3d
-    fromVec3 =
-        Math.Vector3.toRecord >> Point3d.fromRecord
-
-although in this particular case it would likely be simpler and more efficient
-to use
-
-    toVec3 =
-        Point3d.coordinates >> Math.Vector3.fromTuple
-
-    fromVec3 =
-        Math.Vector3.toTuple >> Point3d
-
-@docs toRecord, fromRecord
 -}
 
 import OpenSolid.Core.Types exposing (..)
@@ -734,23 +707,3 @@ placeOnto sketchPlane point =
                 (Vector2d (Point2d.coordinates point))
     in
         Point3d ( px + vx, py + vy, pz + vz )
-
-
-{-| Convert a point to a record with `x`, `y` and `z` fields.
-
-    Point3d.toRecord (Point3d ( 2, 3, 1 )) ==
-        { x = 2, y = 3, z = 1 }
--}
-toRecord : Point3d -> { x : Float, y : Float, z : Float }
-toRecord (Point3d ( x, y, z )) =
-    { x = x, y = y, z = z }
-
-
-{-| Construct a point from a record with `x`, `y` and `z` fields.
-
-    Point3d.fromRecord { x = 2, y = 3, z = 1 } ==
-        Point2d ( 2, 3, 1 )
--}
-fromRecord : { x : Float, y : Float, z : Float } -> Point3d
-fromRecord { x, y, z } =
-    Point3d ( x, y, z )
