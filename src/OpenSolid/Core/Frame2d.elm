@@ -16,6 +16,8 @@ module OpenSolid.Core.Frame2d
         , yDirection
         , xAxis
         , yAxis
+        , flipX
+        , flipY
         , rotateAround
         , rotateAroundOwn
         , translateBy
@@ -70,6 +72,24 @@ xAxis frame =
 yAxis : Frame2d -> Axis2d
 yAxis frame =
     Axis2d { originPoint = originPoint frame, direction = yDirection frame }
+
+
+flipX : Frame2d -> Frame2d
+flipX frame =
+    Frame2d
+        { originPoint = originPoint frame
+        , xDirection = Direction2d.negate (xDirection frame)
+        , yDirection = yDirection frame
+        }
+
+
+flipY : Frame2d -> Frame2d
+flipY frame =
+    Frame2d
+        { originPoint = originPoint frame
+        , xDirection = xDirection frame
+        , yDirection = Direction2d.negate (yDirection frame)
+        }
 
 
 rotateAround : Point2d -> Float -> Frame2d -> Frame2d

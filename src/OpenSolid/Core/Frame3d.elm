@@ -30,6 +30,9 @@ module OpenSolid.Core.Frame3d
         , zySketchPlane
         , zxSketchPlane
         , xzSketchPlane
+        , flipX
+        , flipY
+        , flipZ
         , rotateAround
         , rotateAroundOwn
         , translateBy
@@ -196,6 +199,36 @@ xzSketchPlane frame =
         { originPoint = originPoint frame
         , xDirection = xDirection frame
         , yDirection = zDirection frame
+        }
+
+
+flipX : Frame3d -> Frame3d
+flipX frame =
+    Frame3d
+        { originPoint = originPoint frame
+        , xDirection = Direction3d.negate (xDirection frame)
+        , yDirection = yDirection frame
+        , zDirection = zDirection frame
+        }
+
+
+flipY : Frame3d -> Frame3d
+flipY frame =
+    Frame3d
+        { originPoint = originPoint frame
+        , xDirection = xDirection frame
+        , yDirection = Direction3d.negate (yDirection frame)
+        , zDirection = zDirection frame
+        }
+
+
+flipZ : Frame3d -> Frame3d
+flipZ frame =
+    Frame3d
+        { originPoint = originPoint frame
+        , xDirection = xDirection frame
+        , yDirection = yDirection frame
+        , zDirection = Direction3d.negate (zDirection frame)
         }
 
 
