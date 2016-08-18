@@ -2,8 +2,10 @@ module HelloWorld exposing (..)
 
 import Html exposing (Html)
 import Svg exposing (Svg)
+import Svg.Attributes as Attributes
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Core.Point2d as Point2d
+import OpenSolid.Core.Frame2d as Frame2d
 import OpenSolid.BoundingBox.Types exposing (..)
 import OpenSolid.Svg as Svg
 import Svg.Attributes as Attributes
@@ -35,11 +37,11 @@ pointsGroup =
     Svg.g [] (List.map svgPoint points)
 
 
-boundingBox : BoundingBox2d
-boundingBox =
-    BoundingBox2d { minX = -120, minY = -120, maxX = 120, maxY = 120 }
+topLeftFrame =
+    Frame2d.at (Point2d ( -120, 120 )) |> Frame2d.flipY
 
 
 main : Html Never
 main =
-    Svg.scene2d boundingBox [ pointsGroup ]
+    Svg.svg [ Attributes.width "240", Attributes.height "240" ]
+        [ Svg.relativeTo topLeftFrame pointsGroup ]
