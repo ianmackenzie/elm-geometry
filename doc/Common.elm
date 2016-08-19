@@ -125,44 +125,44 @@ scene2d scale boundingBox elements =
 
 point2d : String -> Point2d -> Svg msg
 point2d color point =
-    Svg.point2d [ Attributes.r pointRadius, Attributes.fill color ] point
+    Svg.point2d [ Attributes.fill color, Attributes.r pointRadius ] point
 
 
 centerPoint2d : String -> Point2d -> Svg msg
 centerPoint2d color point =
     let
-        frame =
-            Frame2d.at point
-
-        origin =
-            Point2d.origin
-
-        offset =
-            centerPointCrossRadius
+        horizontalLine =
+            LineSegment2d
+                ( Point2d ( -centerPointCrossRadius, 0 )
+                , Point2d ( centerPointCrossRadius, 0 )
+                )
 
         verticalLine =
-            LineSegment2d ( Point2d ( 0, -offset ), Point2d ( 0, offset ) )
-
-        horizontalLine =
-            LineSegment2d ( Point2d ( -offset, 0 ), Point2d ( offset, 0 ) )
+            LineSegment2d
+                ( Point2d ( 0, -centerPointCrossRadius )
+                , Point2d ( 0, centerPointCrossRadius )
+                )
 
         pointAttributes =
-            [ Attributes.r centerPointRadius, Attributes.fill color ]
+            [ Attributes.fill color, Attributes.r centerPointRadius ]
+
+        lineAttributes =
+            [ Attributes.stroke color, Attributes.strokeWidth thin ]
     in
-        Svg.g [ Attributes.stroke color, Attributes.strokeWidth thin ]
-            [ Svg.point2d pointAttributes origin
-            , Svg.lineSegment2d [] verticalLine
-            , Svg.lineSegment2d [] horizontalLine
+        Svg.g []
+            [ Svg.point2d pointAttributes Point2d.origin
+            , Svg.lineSegment2d lineAttributes verticalLine
+            , Svg.lineSegment2d lineAttributes horizontalLine
             ]
-            |> Svg.placeIn frame
+            |> Svg.placeIn (Frame2d.at point)
 
 
 originPoint2d : String -> Point2d -> Svg msg
 originPoint2d color point =
     Svg.point2d
-        [ Attributes.r originPointRadius
-        , Attributes.fill "white"
+        [ Attributes.fill "white"
         , Attributes.stroke color
+        , Attributes.r originPointRadius
         , Attributes.strokeWidth thin
         ]
         point
