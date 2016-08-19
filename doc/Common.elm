@@ -1,11 +1,15 @@
 module Common
     exposing
-        ( scene2d
+        ( largeScale
+        , smallScale
+        , thin
         , black
         , blue
         , orange
         , teal
+        , scene2d
         , point2d
+        , centerPoint2d
         , direction2d
         , frame2d
         )
@@ -24,17 +28,69 @@ import OpenSolid.BoundingBox.BoundingBox2d as BoundingBox2d
 import OpenSolid.Svg as Svg
 
 
+largeScale : Float
+largeScale =
+    75
+
+
+smallScale : Float
+smallScale =
+    40
+
+
+thin : String
+thin =
+    "0.01"
+
+
+pointRadius : String
+pointRadius =
+    "0.05"
+
+
+centerPointRadius : String
+centerPointRadius =
+    "0.03"
+
+
+originPointRadius : String
+originPointRadius =
+    "0.05"
+
+
+centerPointCrossRadius : Float
+centerPointCrossRadius =
+    0.1
+
+
+black : String
+black =
+    "black"
+
+
+blue : String
+blue =
+    "rgb(0, 109, 219)"
+
+
+orange : String
+orange =
+    "rgb(219, 109, 0)"
+
+
+teal : String
+teal =
+    "rgb(0, 146, 146)"
+
+
 globalAttributes : List (Svg.Attribute msg)
 globalAttributes =
     [ Attributes.strokeWidth "0.02" ]
 
 
-scene2d : BoundingBox2d -> List (Svg msg) -> Html msg
-scene2d boundingBox elements =
+scene2d : Float -> BoundingBox2d -> List (Svg msg) -> Html msg
+scene2d scale boundingBox elements =
     let
-        scale =
-            50
-
         minX =
             BoundingBox2d.minX boundingBox
 
@@ -67,29 +123,49 @@ scene2d boundingBox elements =
             ]
 
 
-black : String
-black =
-    "black"
-
-
-blue : String
-blue =
-    "rgb(0, 109, 219)"
-
-
-orange : String
-orange =
-    "rgb(219, 109, 0)"
-
-
-teal : String
-teal =
-    "rgb(0, 146, 146)"
-
-
 point2d : String -> Point2d -> Svg msg
 point2d color point =
-    Svg.point2d [ Attributes.r "0.05", Attributes.fill color ] point
+    Svg.point2d [ Attributes.r pointRadius, Attributes.fill color ] point
+
+
+centerPoint2d : String -> Point2d -> Svg msg
+centerPoint2d color point =
+    let
+        frame =
+            Frame2d.at point
+
+        origin =
+            Point2d.origin
+
+        offset =
+            centerPointCrossRadius
+
+        verticalLine =
+            LineSegment2d ( Point2d ( 0, -offset ), Point2d ( 0, offset ) )
+
+        horizontalLine =
+            LineSegment2d ( Point2d ( -offset, 0 ), Point2d ( offset, 0 ) )
+
+        pointAttributes =
+            [ Attributes.r centerPointRadius, Attributes.fill color ]
+    in
+        Svg.g [ Attributes.stroke color, Attributes.strokeWidth thin ]
+            [ Svg.point2d pointAttributes origin
+            , Svg.lineSegment2d [] verticalLine
+            , Svg.lineSegment2d [] horizontalLine
+            ]
+            |> Svg.placeIn frame
+
+
+originPoint2d : String -> Point2d -> Svg msg
+originPoint2d color point =
+    Svg.point2d
+        [ Attributes.r originPointRadius
+        , Attributes.fill "white"
+        , Attributes.stroke color
+        , Attributes.strokeWidth thin
+        ]
+        point
 
 
 direction2d : String -> Point2d -> Direction2d -> Svg msg
@@ -112,18 +188,16 @@ direction2d color basePoint direction =
                 }
 
         tipPoint =
-            Point2d ( length, 0 ) |> Point2d.placeIn frame
+            Point2d ( length, 0 )
 
         stemPoint =
-            Point2d ( length - tipLength, 0 ) |> Point2d.placeIn frame
+            Point2d ( length - tipLength, 0 )
 
         leftPoint =
             Point2d ( length - tipLength, tipWidth / 2 )
-                |> Point2d.placeIn frame
 
         rightPoint =
             Point2d ( length - tipLength, -tipWidth / 2 )
-                |> Point2d.placeIn frame
 
         stem =
             LineSegment2d ( basePoint, stemPoint )
@@ -131,8 +205,13 @@ direction2d color basePoint direction =
         tip =
             Triangle2d ( tipPoint, leftPoint, rightPoint )
     in
-        Svg.g [ Attributes.stroke color ]
+        Svg.g
+            [ Attributes.stroke color
+            , Attributes.fill "white"
+            , Attributes.strokeWidth thin
+            ]
             [ Svg.lineSegment2d [] stem, Svg.triangle2d [] tip ]
+            |> Svg.placeIn frame
 
 
 frame2d : String -> Frame2d -> Svg msg
@@ -148,7 +227,7 @@ frame2d color frame =
             Frame2d.yDirection frame
     in
         Svg.g []
-            [ point2d color originPoint
-            , direction2d color originPoint xDirection
+            [ direction2d color originPoint xDirection
             , direction2d color originPoint yDirection
+            , originPoint2d color originPoint
             ]
