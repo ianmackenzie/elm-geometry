@@ -21,6 +21,8 @@ module OpenSolid.Core.SketchPlane3d
         , xAxis
         , yAxis
         , plane
+        , flipX
+        , flipY
         , rotateAround
         , rotateAroundOwn
         , translateBy
@@ -137,6 +139,24 @@ plane sketchPlane =
             { originPoint = originPoint sketchPlane
             , normalDirection = normalDirection
             }
+
+
+flipX : SketchPlane3d -> SketchPlane3d
+flipX sketchPlane =
+    SketchPlane3d
+        { originPoint = originPoint sketchPlane
+        , xDirection = Direction3d.negate (xDirection sketchPlane)
+        , yDirection = yDirection sketchPlane
+        }
+
+
+flipY : SketchPlane3d -> SketchPlane3d
+flipY sketchPlane =
+    SketchPlane3d
+        { originPoint = originPoint sketchPlane
+        , xDirection = xDirection sketchPlane
+        , yDirection = Direction3d.negate (yDirection sketchPlane)
+        }
 
 
 rotateAround : Axis3d -> Float -> SketchPlane3d -> SketchPlane3d
