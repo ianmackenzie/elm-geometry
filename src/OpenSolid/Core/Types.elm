@@ -32,27 +32,25 @@ necessary modules using `as`:
     import OpenSolid.Core.Vector2d as Vector2d
     import OpenSolid.Core.Plane3d as Plane3d
 
-Note that since these types are not opaque, it is possible to construct them
-directly, and this is sometimes the most convenient or efficient approach.
-However, this can also circumvent the otherwise rigorous type safety of
-OpenSolid, since it makes it possible to define nonsense objects that do not
-satisfy certain invariants that are otherwise always maintained. Specifically:
+Note that since the definitions of these types are exposed, it is possible to
+construct them directly, and this is sometimes the most convenient or efficient
+approach:
 
-  - The components defining a `Direction2d` or `Direction3d` must be properly
-    normalized so that the direction has a 'length' of one.
-  - The X and Y directions of a `Frame2d` or `SketchPlane3d` must be
-    perpendicular to each other.
-  - The X, Y, and Z directions of a `Frame3d` must all be mutually
-    perpendicular.
+    vector =
+        Vector2d ( 2, 3 )
 
-For example, instead of constructing a `Direction2d` directly from its
-components, it is usually better to use a constructor function like
-`Direction2d.fromAngle` or start with an existing direction like `Direction2d.y`
-and transform it as necessary. For more complex types like `Frame3d` this is
-even more true! All OpenSolid functions (transformations etc.) will properly
-maintain the invariants described above, so for example it is impossible to
-produce a `Frame2d` with non-perpendicular X and Y directions except by directly
-constructing one.
+    point =
+        Point3d ( 3, 1, 4 )
+
+    axis =
+        Axis3d
+            { originPoint = Point3d ( 1, 0, 2 )
+            , direction = Direction3d ( 0, 1, 0 )
+            }
+
+Alternatively, you can use constructor functions like `Direction2d.fromAngle`,
+or start with predefined constants such as `Point3d.origin` and transform them
+as necessary.
 
 # Vectors
 
