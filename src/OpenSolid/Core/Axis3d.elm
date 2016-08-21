@@ -177,7 +177,7 @@ rotateAround otherAxis angle =
 
 
 {-| Translate an axis by a given displacement. Applies the given displacement to
-the axis' origin point.
+the axis' origin point and leaves the direction unchanged.
 
     displacement =
         Vector3d ( 2, 1, 3 )
@@ -285,9 +285,12 @@ projectOnto plane axis =
 relative to a given frame. For example, consider a frame raised up one unit
 above the global XYZ frame and rotated 45 degrees clockwise around the Z axis:
 
+    newOrigin =
+        Point3d ( 0, 0, 1 )
+
     frame =
         Frame3d.xyz
-            |> Frame3d.moveTo (Point3d (0, 0, 1))
+            |> Frame3d.moveTo newOrigin
             |> Frame3d.rotateAround Axis3d.z (degrees -45)
 
 Relative to this frame, the global X axis is one unit below the origin, with
@@ -322,9 +325,12 @@ Inverse of `relativeTo`.
 For example, consider a frame raised up one unit above the global XYZ frame and
 rotated 45 degrees clockwise around the Z axis:
 
+    newOrigin =
+        Point3d ( 0, 0, 1 )
+
     frame =
         Frame3d.xyz
-            |> Frame3d.moveTo (Point3d (0, 0, 1))
+            |> Frame3d.moveTo newOrigin
             |> Frame3d.rotateAround Axis3d.z (degrees -45)
 
 Now, consider an axis in the X direction through the point (0, 0, 1):
@@ -361,7 +367,7 @@ placeIn frame =
                 }
 
 
-{-| Project an axis into a given sketch plane. Conceptually, this 'flattens' the
+{-| Project an axis into a given sketch plane. Conceptually, this projects the
 axis onto the plane and then expresses the projected axis in 2D sketch
 coordinates.
 
