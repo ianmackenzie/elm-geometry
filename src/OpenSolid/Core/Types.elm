@@ -67,15 +67,15 @@ vectors to represent positions.
 A direction is effectively a vector with a length of one, used to represent
 quantities like the direction of an axis. Directions can be directly constructed
 from their components, but note that in this case you are responsible for
-ensuring that the direction's 'length' is exactly one.
+ensuring that the sum of the squares of the components is exactly one.
 
 @docs Direction2d, Direction3d
 
 # Points
 
 Points represent positions in space. They are distinct from vectors but interact
-with them in well-defined ways; you can add a vector to a point to result in a
-new point, or you can compute the vector from one point to another, but you
+with them in well-defined ways; you can translate a point by a vector to result
+in a new point, or you can compute the vector from one point to another, but you
 cannot 'add' two points like you can add two vectors.
 
 @docs Point2d, Point3d
