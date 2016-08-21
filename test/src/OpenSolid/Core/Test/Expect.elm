@@ -12,6 +12,8 @@ module OpenSolid.Core.Test.Expect
         ( Expector
         , approximately
         , approximatelyWithin
+        , angle
+        , angleWithin
         , vector2d
         , vector2dWithin
         , vector3d
@@ -65,6 +67,16 @@ approximately =
 approximatelyWithin : Float -> Expector Float
 approximatelyWithin =
     by << Compare.approximatelyWithin
+
+
+angle : Expector Float
+angle =
+    by Compare.angle
+
+
+angleWithin : Float -> Expector Float
+angleWithin =
+    by << Compare.angleWithin
 
 
 vector2d : Vector2d -> Vector2d -> Expectation

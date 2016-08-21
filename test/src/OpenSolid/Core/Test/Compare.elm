@@ -4,6 +4,8 @@ module OpenSolid.Core.Test.Compare
         , defaultTolerance
         , approximately
         , approximatelyWithin
+        , angle
+        , angleWithin
         , vector2d
         , vector2dWithin
         , vector3d
@@ -65,6 +67,20 @@ approximately =
 approximatelyWithin : Float -> Comparator Float
 approximatelyWithin tolerance first second =
     abs (first - second) <= tolerance
+
+
+angle : Comparator Float
+angle =
+    angleWithin defaultTolerance
+
+
+angleWithin : Float -> Comparator Float
+angleWithin tolerance first second =
+    let
+        difference =
+            second - first
+    in
+        abs (sin difference) <= tolerance && cos difference > 0.0
 
 
 vector2d : Comparator Vector2d
