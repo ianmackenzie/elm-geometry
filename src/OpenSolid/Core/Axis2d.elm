@@ -152,7 +152,9 @@ flip axis =
         }
 
 
-{-| Rotate an axis around a given center point by a given angle.
+{-| Rotate an axis around a given center point by a given angle. Rotates the
+axis' origin point around the given point by the given angle and the axis'
+direction by the given angle.
 
     Axis2d.rotateAround Point2d.origin (degrees 90) Axis2d.x ==
         Axis2d.y
@@ -174,7 +176,7 @@ rotateAround centerPoint angle =
 
 
 {-| Translate an axis by a given displacement. Applies the given displacement to
-the axis' origin point.
+the axis' origin point and leaves the direction unchanged.
 
     displacement =
         Vector2d ( 2, 3 )
