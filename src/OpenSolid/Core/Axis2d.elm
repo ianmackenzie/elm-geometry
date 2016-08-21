@@ -255,9 +255,7 @@ relative to a frame inclined at a 30 degree angle, is an axis at only a 15
 degree angle:
 
     rotatedFrame =
-        Frame2d.rotateAround Point2d.origin
-            (degrees 30)
-            Frame2d.xy
+        Frame2d.rotateBy (degrees 30) Frame2d.xy
 
     axis =
         Axis2d
@@ -293,9 +291,7 @@ Inverse of `relativeTo`. For example, an axis at a 15 degree angle, placed in a
 frame already inclined at a 30 degree angle, is an axis at a 45 degree angle:
 
     rotatedFrame =
-        Frame2d.rotateAround Point2d.origin
-            (degrees 30)
-            Frame2d.xy
+        Frame2d.rotateBy (degrees 30) Frame2d.xy
 
     axis =
         Axis2d
