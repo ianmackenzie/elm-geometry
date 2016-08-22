@@ -13,6 +13,7 @@ import Test exposing (Test)
 import Test.Runner.Html as Html
 import OpenSolid.Core.Vector2d as Vector2d
 import OpenSolid.Core.Direction2d as Direction2d
+import OpenSolid.Core.Axis2d as Axis2d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
 import OpenSolid.Core.Test.Fuzz as Fuzz
@@ -80,6 +81,43 @@ rotateByRotatesByTheCorrectAngle =
         )
 
 
+mirrorAcrossPreservesParallelComponent : Test
+mirrorAcrossPreservesParallelComponent =
+    Test.fuzz2 Fuzz.vector2d
+        Fuzz.axis2d
+        "Mirroring a vector across an axis preserves component parallel to the axis"
+        (\vector axis ->
+            let
+                parallelComponent =
+                    Vector2d.componentIn (Axis2d.direction axis)
+            in
+                vector
+                    |> Vector2d.mirrorAcross axis
+                    |> parallelComponent
+                    |> Expect.approximately (parallelComponent vector)
+        )
+
+
+mirrorAcrossNegatesPerpendicularComponent : Test
+mirrorAcrossNegatesPerpendicularComponent =
+    Test.fuzz2 Fuzz.vector2d
+        Fuzz.axis2d
+        "Mirroring a vector across an axis negates component perpendicular to the axis"
+        (\vector axis ->
+            let
+                perpendicularDirection =
+                    Direction2d.perpendicularTo (Axis2d.direction axis)
+
+                perpendicularComponent =
+                    Vector2d.componentIn perpendicularDirection
+            in
+                vector
+                    |> Vector2d.mirrorAcross axis
+                    |> perpendicularComponent
+                    |> Expect.approximately (-(perpendicularComponent vector))
+        )
+
+
 suite : Test
 suite =
     Test.describe "OpenSolid.Core.Vector2d"
@@ -88,6 +126,8 @@ suite =
         , dotProductWithSelfIsSquaredLength
         , rotateByPreservesLength
         , rotateByRotatesByTheCorrectAngle
+        , mirrorAcrossPreservesParallelComponent
+        , mirrorAcrossNegatesPerpendicularComponent
         ]
 
 
