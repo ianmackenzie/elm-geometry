@@ -12,6 +12,7 @@ module Vector2d exposing (suite)
 import Test exposing (Test)
 import Test.Runner.Html as Html
 import OpenSolid.Core.Vector2d as Vector2d
+import OpenSolid.Core.Direction2d as Direction2d
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Encode as Encode
 import OpenSolid.Core.Test.Fuzz as Fuzz
@@ -36,11 +37,57 @@ perpendicularVectorIsPerpendicular =
         )
 
 
+dotProductWithSelfIsSquaredLength : Test
+dotProductWithSelfIsSquaredLength =
+    Test.fuzz Fuzz.vector2d
+        "Dot product of a vector with itself is its squared length"
+        (\vector ->
+            Vector2d.dotProduct vector vector
+                |> Expect.approximately (Vector2d.squaredLength vector)
+        )
+
+
+rotateByPreservesLength : Test
+rotateByPreservesLength =
+    Test.fuzz2 Fuzz.vector2d
+        Fuzz.scalar
+        "Rotating a vector preserves its length"
+        (\vector angle ->
+            Vector2d.rotateBy angle vector
+                |> Vector2d.length
+                |> Expect.approximately (Vector2d.length vector)
+        )
+
+
+rotateByRotatesByTheCorrectAngle : Test
+rotateByRotatesByTheCorrectAngle =
+    Test.fuzz2 Fuzz.vector2d
+        Fuzz.scalar
+        "Rotating a vector rotates by the correct angle"
+        (\vector angle ->
+            let
+                direction =
+                    Vector2d.direction vector
+
+                rotatedDirection =
+                    Vector2d.direction (Vector2d.rotateBy angle vector)
+
+                measuredAngle =
+                    Maybe.map2 Direction2d.angleFrom direction rotatedDirection
+                        |> Maybe.withDefault 0
+            in
+                Expect.angle angle measuredAngle
+        )
+
+
 suite : Test
 suite =
     Test.describe "OpenSolid.Core.Vector2d"
         [ jsonRoundTrips
         , perpendicularVectorIsPerpendicular
+        , dotProductWithSelfIsSquaredLength
+        , rotateByPreservesLength
+        , rotateByRotatesByTheCorrectAngle
         ]
 
 
