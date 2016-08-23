@@ -50,6 +50,9 @@ fields to the `Axis2d` constructor, for example:
             , direction = Direction2d.fromAngle (degrees 45)
             }
 
+Future versions of OpenSolid may add specialized constructors such as for
+constructing an axis through two points.
+
 @docs perpendicularTo
 
 # Accessors

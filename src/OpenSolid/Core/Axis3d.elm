@@ -53,6 +53,9 @@ fields to the `Axis3d` constructor, for example:
             , direction = Direction3d.y
             }
 
+Future versions of OpenSolid may add specialized constructors such as for
+constructing an axis through two points.
+
 # Accessors
 
 @docs originPoint, direction
