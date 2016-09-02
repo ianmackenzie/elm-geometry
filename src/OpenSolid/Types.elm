@@ -21,6 +21,8 @@ module OpenSolid.Types
         , Frame2d(Frame2d)
         , Frame3d(Frame3d)
         , SketchPlane3d(SketchPlane3d)
+        , BoundingBox2d(BoundingBox2d)
+        , BoundingBox3d(BoundingBox3d)
         )
 
 {-| This module contains the definitions of the core OpenSolid data types. Each
@@ -98,6 +100,14 @@ mirroring about its XY plane.
 # Sketch planes
 
 @docs SketchPlane3d
+
+# Bounding boxes
+
+These types represent bounding boxes around other geometric objects, and are
+useful building blocks for tasks such as fast spatial searching or culling non-
+visible objects during 3D rendering.
+
+@docs BoundingBox2d, BoundingBox3d
 -}
 
 
@@ -206,4 +216,34 @@ type SketchPlane3d
         { originPoint : Point3d
         , xDirection : Direction3d
         , yDirection : Direction3d
+        }
+
+
+{-| A bounding box in 2D, defined by its minimum and maximum X and Y values.
+
+If you construct an `BoundingBox2d` directly from its values, you must ensure
+that they are properly ordered: `minX <= maxX`, `minY <= maxY`.
+-}
+type BoundingBox2d
+    = BoundingBox2d
+        { minX : Float
+        , maxX : Float
+        , minY : Float
+        , maxY : Float
+        }
+
+
+{-| A bounding box in 3D, defined by its minimum and maximum X, Y and Z values.
+
+If you construct an `BoundingBox3d` directly from its values, you must ensure
+that they are properly ordered: `minX <= maxX`, `minY <= maxY`, `minZ <= maxZ`.
+-}
+type BoundingBox3d
+    = BoundingBox3d
+        { minX : Float
+        , maxX : Float
+        , minY : Float
+        , maxY : Float
+        , minZ : Float
+        , maxZ : Float
         }
