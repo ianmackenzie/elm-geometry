@@ -11,17 +11,16 @@ module Vector3d exposing (suite)
 
 import Test exposing (Test)
 import Test.Runner.Html as Html
-import OpenSolid.Core.Vector3d as Vector3d
-import OpenSolid.Core.Decode as Decode
-import OpenSolid.Core.Encode as Encode
-import OpenSolid.Core.Test.Fuzz as Fuzz
-import OpenSolid.Core.Test.Expect as Expect
+import OpenSolid.Vector3d as Vector3d
+import OpenSolid.Fuzz.Vector3d as Fuzz
+import OpenSolid.Expect as Expect
+import OpenSolid.Expect.Vector3d as Expect
 import Generic
 
 
 jsonRoundTrips : Test
 jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.vector3d Encode.vector3d Decode.vector3d
+    Generic.jsonRoundTrips Fuzz.vector3d Vector3d.encode Vector3d.decoder
 
 
 suite : Test

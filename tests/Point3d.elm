@@ -11,11 +11,12 @@ module Point3d exposing (suite)
 
 import Test exposing (Test)
 import Test.Runner.Html as Html
-import OpenSolid.Core.Point3d as Point3d
-import OpenSolid.Core.Decode as Decode
-import OpenSolid.Core.Encode as Encode
-import OpenSolid.Core.Test.Fuzz as Fuzz
-import OpenSolid.Core.Test.Expect as Expect
+import OpenSolid.Point3d as Point3d
+import OpenSolid.Fuzz as Fuzz
+import OpenSolid.Fuzz.Point3d as Fuzz
+import OpenSolid.Fuzz.Axis3d as Fuzz
+import OpenSolid.Expect as Expect
+import OpenSolid.Expect.Point3d as Expect
 import Generic
 
 
@@ -43,7 +44,7 @@ rotationAboutAxisPreservesDistance =
 
 jsonRoundTrips : Test
 jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.point3d Encode.point3d Decode.point3d
+    Generic.jsonRoundTrips Fuzz.point3d Point3d.encode Point3d.decoder
 
 
 suite : Test

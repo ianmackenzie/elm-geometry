@@ -11,17 +11,16 @@ module Plane3d exposing (suite)
 
 import Test exposing (Test)
 import Test.Runner.Html as Html
-import OpenSolid.Core.Plane3d as Plane3d
-import OpenSolid.Core.Decode as Decode
-import OpenSolid.Core.Encode as Encode
-import OpenSolid.Core.Test.Fuzz as Fuzz
-import OpenSolid.Core.Test.Expect as Expect
+import OpenSolid.Plane3d as Plane3d
+import OpenSolid.Fuzz.Plane3d as Fuzz
+import OpenSolid.Expect as Expect
+import OpenSolid.Expect.Plane3d as Expect
 import Generic
 
 
 jsonRoundTrips : Test
 jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.plane3d Encode.plane3d Decode.plane3d
+    Generic.jsonRoundTrips Fuzz.plane3d Plane3d.encode Plane3d.decoder
 
 
 suite : Test

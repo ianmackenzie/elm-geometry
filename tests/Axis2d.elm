@@ -11,17 +11,16 @@ module Axis2d exposing (suite)
 
 import Test exposing (Test)
 import Test.Runner.Html as Html
-import OpenSolid.Core.Axis2d as Axis2d
-import OpenSolid.Core.Decode as Decode
-import OpenSolid.Core.Encode as Encode
-import OpenSolid.Core.Test.Fuzz as Fuzz
-import OpenSolid.Core.Test.Expect as Expect
+import OpenSolid.Axis2d as Axis2d
+import OpenSolid.Fuzz.Axis2d as Fuzz
+import OpenSolid.Expect as Expect
+import OpenSolid.Expect.Axis2d as Expect
 import Generic
 
 
 jsonRoundTrips : Test
 jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.axis2d Encode.axis2d Decode.axis2d
+    Generic.jsonRoundTrips Fuzz.axis2d Axis2d.encode Axis2d.decoder
 
 
 suite : Test

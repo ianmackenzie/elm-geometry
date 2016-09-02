@@ -5,21 +5,19 @@
   "license": "MPL-2.0",
   "source-directories": ["src"],
   "doc-exposed-modules": [
-    "OpenSolid.Core.Point3d"
+    "OpenSolid.Point3d"
   ],
   "exposed-modules": [
-    "OpenSolid.Core.Types",
-    "OpenSolid.Core.Encode",
-    "OpenSolid.Core.Decode",
-    "OpenSolid.Core.Vector2d",
-    "OpenSolid.Core.Vector3d",
-    "OpenSolid.Core.Direction2d",
-    "OpenSolid.Core.Direction3d",
-    "OpenSolid.Core.Point2d",
-    "OpenSolid.Core.Point3d",
-    "OpenSolid.Core.Axis2d",
-    "OpenSolid.Core.Axis3d",
-    "OpenSolid.Core.Plane3d"
+    "OpenSolid.Types",
+    "OpenSolid.Vector2d",
+    "OpenSolid.Vector3d",
+    "OpenSolid.Direction2d",
+    "OpenSolid.Direction3d",
+    "OpenSolid.Point2d",
+    "OpenSolid.Point3d",
+    "OpenSolid.Axis2d",
+    "OpenSolid.Axis3d",
+    "OpenSolid.Plane3d"
   ],
   "dependencies": {
     "elm-lang/core": "4.0.0 <= v < 5.0.0"

@@ -11,19 +11,18 @@ module Frame3d exposing (suite)
 
 import Test exposing (Test)
 import Test.Runner.Html as Html
-import OpenSolid.Core.Frame3d as Frame3d
-import OpenSolid.Core.Direction3d as Direction3d
-import OpenSolid.Core.Vector3d as Vector3d
-import OpenSolid.Core.Decode as Decode
-import OpenSolid.Core.Encode as Encode
-import OpenSolid.Core.Test.Fuzz as Fuzz
-import OpenSolid.Core.Test.Expect as Expect
+import OpenSolid.Frame3d as Frame3d
+import OpenSolid.Direction3d as Direction3d
+import OpenSolid.Vector3d as Vector3d
+import OpenSolid.Fuzz.Frame3d as Fuzz
+import OpenSolid.Expect as Expect
+import OpenSolid.Expect.Frame3d as Expect
 import Generic
 
 
 jsonRoundTrips : Test
 jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.frame3d Encode.frame3d Decode.frame3d
+    Generic.jsonRoundTrips Fuzz.frame3d Frame3d.encode Frame3d.decoder
 
 
 frameDirectionsAreOrthonormal : Test
