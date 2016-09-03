@@ -1,7 +1,7 @@
 module OpenSolid.Fuzz.Frame3d exposing (frame3d)
 
 import Fuzz exposing (Fuzzer)
-import OpenSolid.Types exposing (..)
+import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Fuzz.Point3d as Fuzz

@@ -1,7 +1,7 @@
 module OpenSolid.Fuzz.Axis2d exposing (axis2d)
 
 import Fuzz exposing (Fuzzer)
-import OpenSolid.Types exposing (..)
+import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Fuzz.Point2d as Fuzz
 import OpenSolid.Fuzz.Direction2d as Fuzz
 

@@ -1,6 +1,6 @@
 module OpenSolid.Compare.Plane3d exposing (plane3d, plane3dWithin)
 
-import OpenSolid.Types exposing (..)
+import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Plane3d as Plane3d
 import OpenSolid.Compare as Compare exposing (Comparator)
 import OpenSolid.Compare.Point3d as Compare

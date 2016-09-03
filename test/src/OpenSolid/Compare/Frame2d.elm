@@ -4,7 +4,7 @@ module OpenSolid.Compare.Frame2d
         , frame2dWithin
         )
 
-import OpenSolid.Types exposing (..)
+import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Frame2d as Frame2d
 import OpenSolid.Compare as Compare exposing (Comparator)
 import OpenSolid.Compare.Point2d as Compare

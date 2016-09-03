@@ -5,7 +5,7 @@ module OpenSolid.Expect.SketchPlane3d
         )
 
 import Expect exposing (Expectation)
-import OpenSolid.Types exposing (..)
+import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Compare.SketchPlane3d as Compare
 import OpenSolid.Expect as Expect
 

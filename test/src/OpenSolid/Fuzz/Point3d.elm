@@ -1,7 +1,7 @@
 module OpenSolid.Fuzz.Point3d exposing (point3d)
 
 import Fuzz exposing (Fuzzer)
-import OpenSolid.Types exposing (..)
+import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Fuzz as Fuzz
 
 

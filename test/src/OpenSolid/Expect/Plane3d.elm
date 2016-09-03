@@ -1,7 +1,7 @@
 module OpenSolid.Expect.Plane3d exposing (plane3d, plane3dWithin)
 
 import Expect exposing (Expectation)
-import OpenSolid.Types exposing (..)
+import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Compare.Plane3d as Compare
 import OpenSolid.Expect as Expect
 

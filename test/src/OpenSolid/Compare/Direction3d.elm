@@ -1,6 +1,6 @@
 module OpenSolid.Compare.Direction3d exposing (direction3d, direction3dWithin)
 
-import OpenSolid.Types exposing (..)
+import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Compare as Compare exposing (Comparator)
 import OpenSolid.Compare.Vector3d as Compare

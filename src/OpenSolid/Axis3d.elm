@@ -31,7 +31,7 @@ module OpenSolid.Axis3d
 {-| Various functions for creating and working with `Axis3d` values. For the
 examples below, assume that all OpenSolid core types have been imported using
 
-    import OpenSolid.Types exposing (..)
+    import OpenSolid.Core.Types exposing (..)
 
 and all necessary modules have been imported using the following pattern:
 
@@ -84,7 +84,7 @@ different coordinate frames.
 
 import Json.Encode as Encode exposing (Value)
 import Json.Decode as Decode exposing (Decoder, (:=))
-import OpenSolid.Types exposing (..)
+import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Axis2d as Axis2d

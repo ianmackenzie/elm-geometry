@@ -1,7 +1,7 @@
 module OpenSolid.Fuzz.BoundingBox3d exposing (boundingBox3d)
 
 import Fuzz exposing (Fuzzer)
-import OpenSolid.Types exposing (..)
+import OpenSolid.Core.Types exposing (..)
 import OpenSolid.BoundingBox3d as BoundingBox3d
 import OpenSolid.Fuzz as Fuzz
 import OpenSolid.Fuzz.Interval as Fuzz

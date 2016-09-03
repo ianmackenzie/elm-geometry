@@ -37,7 +37,7 @@ module OpenSolid.Vector2d
 {-| Various functions for creating and working with `Vector2d` values. For the
 examples below, assume that all OpenSolid core types have been imported using
 
-    import OpenSolid.Types exposing (..)
+    import OpenSolid.Core.Types exposing (..)
 
 and all necessary modules have been imported using the following pattern:
 
@@ -116,7 +116,7 @@ For the examples, assume the following frames have been defined:
 
 import Json.Encode as Encode exposing (Value)
 import Json.Decode as Decode exposing (Decoder, (:=))
-import OpenSolid.Types exposing (..)
+import OpenSolid.Core.Types exposing (..)
 
 
 {-| The zero vector.

@@ -1,6 +1,6 @@
 module OpenSolid.Compare.Axis3d exposing (axis3d, axis3dWithin)
 
-import OpenSolid.Types exposing (..)
+import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Axis3d as Axis3d
 import OpenSolid.Compare as Compare exposing (Comparator)
 import OpenSolid.Compare.Point3d as Compare

@@ -1,6 +1,6 @@
 module OpenSolid.Compare.Point2d exposing (point2d, point2dWithin)
 
-import OpenSolid.Types exposing (..)
+import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Point2d as Point2d
 import OpenSolid.Compare as Compare exposing (Comparator)
 

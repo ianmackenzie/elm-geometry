@@ -7,7 +7,7 @@
 -}
 
 
-module OpenSolid.Types
+module OpenSolid.Core.Types
     exposing
         ( Vector2d(Vector2d)
         , Vector3d(Vector3d)
@@ -30,7 +30,7 @@ type also has a corresponding module providing related functionality. Suggested
 practice is to import this module exposing everything, and import all other
 necessary modules using `as`:
 
-    import OpenSolid.Types exposing (..)
+    import OpenSolid.Core.Types exposing (..)
     import OpenSolid.Vector2d as Vector2d
     import OpenSolid.Plane3d as Plane3d
 

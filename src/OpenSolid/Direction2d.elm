@@ -36,7 +36,7 @@ module OpenSolid.Direction2d
 the examples below, assume that all OpenSolid core types have been imported
 using
 
-    import OpenSolid.Types exposing (..)
+    import OpenSolid.Core.Types exposing (..)
 
 and all necessary modules have been imported using the following pattern:
 
@@ -117,7 +117,7 @@ For the examples, assume the following frames have been defined:
 
 import Json.Encode as Encode exposing (Value)
 import Json.Decode as Decode exposing (Decoder, (:=))
-import OpenSolid.Types exposing (..)
+import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
 
 

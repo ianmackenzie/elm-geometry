@@ -1,7 +1,7 @@
 module OpenSolid.Expect.Point2d exposing (point2d, point2dWithin)
 
 import Expect exposing (Expectation)
-import OpenSolid.Types exposing (..)
+import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Expect as Expect
 import OpenSolid.Compare.Point2d as Compare
 

@@ -1,7 +1,7 @@
 module OpenSolid.Expect.Axis2d exposing (axis2d, axis2dWithin)
 
 import Expect exposing (Expectation)
-import OpenSolid.Types exposing (..)
+import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Compare.Axis2d as Compare
 import OpenSolid.Expect as Expect
 

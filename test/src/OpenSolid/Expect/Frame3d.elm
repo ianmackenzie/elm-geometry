@@ -1,7 +1,7 @@
 module OpenSolid.Expect.Frame3d exposing (frame3d, frame3dWithin)
 
 import Expect exposing (Expectation)
-import OpenSolid.Types exposing (..)
+import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Compare.Frame3d as Compare
 import OpenSolid.Expect as Expect
 

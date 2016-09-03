@@ -1,7 +1,7 @@
 module OpenSolid.Expect.Vector3d exposing (vector3d, vector3dWithin)
 
 import Expect exposing (Expectation)
-import OpenSolid.Types exposing (..)
+import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Expect as Expect
 import OpenSolid.Compare.Vector3d as Compare
 

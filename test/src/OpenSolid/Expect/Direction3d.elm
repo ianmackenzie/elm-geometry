@@ -1,7 +1,7 @@
 module OpenSolid.Expect.Direction3d exposing (direction3d, direction3dWithin)
 
 import Expect exposing (Expectation)
-import OpenSolid.Types exposing (..)
+import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Expect exposing (by)
 import OpenSolid.Compare.Direction3d as Compare
 

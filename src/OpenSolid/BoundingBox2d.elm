@@ -24,7 +24,7 @@ module OpenSolid.BoundingBox2d
 
 import Json.Encode as Encode exposing (Value)
 import Json.Decode as Decode exposing (Decoder, (:=))
-import OpenSolid.Types exposing (..)
+import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Point2d as Point2d
 import OpenSolid.Encode as Encode
 import OpenSolid.Decode as Decode

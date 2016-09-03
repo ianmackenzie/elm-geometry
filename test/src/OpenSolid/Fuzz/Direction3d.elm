@@ -1,7 +1,7 @@
 module OpenSolid.Fuzz.Direction3d exposing (direction3d)
 
 import Fuzz exposing (Fuzzer)
-import OpenSolid.Types exposing (..)
+import OpenSolid.Core.Types exposing (..)
 
 
 direction3d : Fuzzer Direction3d
