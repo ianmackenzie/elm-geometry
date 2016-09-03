@@ -18,10 +18,16 @@ module OpenSolid.BoundingBox2d
         , isContainedWithin
         , hull
         , intersection
+        , encode
+        , decoder
         )
 
+import Json.Encode as Encode exposing (Value)
+import Json.Decode as Decode exposing (Decoder, (:=))
 import OpenSolid.Types exposing (..)
 import OpenSolid.Point2d as Point2d
+import OpenSolid.Encode as Encode
+import OpenSolid.Decode as Decode
 
 
 empty : BoundingBox2d
@@ -162,3 +168,25 @@ intersection other boundingBox =
             }
     else
         empty
+
+
+encode : BoundingBox2d -> Value
+encode boundingBox =
+    Encode.object
+        [ ( "minX", Encode.extremum (minX boundingBox) )
+        , ( "maxX", Encode.extremum (maxX boundingBox) )
+        , ( "minY", Encode.extremum (minY boundingBox) )
+        , ( "maxY", Encode.extremum (maxY boundingBox) )
+        ]
+
+
+decoder : Decoder BoundingBox2d
+decoder =
+    Decode.object4
+        (\minX maxX minY maxY ->
+            BoundingBox2d { minX = minX, maxX = maxX, minY = minY, maxY = maxY }
+        )
+        ("minX" := Decode.extremum)
+        ("maxX" := Decode.extremum)
+        ("minY" := Decode.extremum)
+        ("maxY" := Decode.extremum)

@@ -20,10 +20,16 @@ module OpenSolid.BoundingBox3d
         , isContainedWithin
         , hull
         , intersection
+        , encode
+        , decoder
         )
 
+import Json.Encode as Encode exposing (Value)
+import Json.Decode as Decode exposing (Decoder, (:=))
 import OpenSolid.Types exposing (..)
 import OpenSolid.Point3d as Point3d
+import OpenSolid.Encode as Encode
+import OpenSolid.Decode as Decode
 
 
 empty : BoundingBox3d
@@ -195,3 +201,36 @@ intersection other boundingBox =
             }
     else
         empty
+
+
+encode : BoundingBox3d -> Value
+encode boundingBox =
+    Encode.object
+        [ ( "minX", Encode.extremum (minX boundingBox) )
+        , ( "maxX", Encode.extremum (maxX boundingBox) )
+        , ( "minY", Encode.extremum (minY boundingBox) )
+        , ( "maxY", Encode.extremum (maxY boundingBox) )
+        , ( "minZ", Encode.extremum (minZ boundingBox) )
+        , ( "maxZ", Encode.extremum (maxZ boundingBox) )
+        ]
+
+
+decoder : Decoder BoundingBox3d
+decoder =
+    Decode.object6
+        (\minX maxX minY maxY minZ maxZ ->
+            BoundingBox3d
+                { minX = minX
+                , maxX = maxX
+                , minY = minY
+                , maxY = maxY
+                , minZ = minZ
+                , maxZ = maxZ
+                }
+        )
+        ("minX" := Decode.extremum)
+        ("maxX" := Decode.extremum)
+        ("minY" := Decode.extremum)
+        ("maxY" := Decode.extremum)
+        ("minZ" := Decode.extremum)
+        ("maxZ" := Decode.extremum)
