@@ -1,4 +1,4 @@
-module OpenSolid.BoundingBox.BoundingBox2d
+module OpenSolid.BoundingBox2d
     exposing
         ( empty
         , whole
@@ -14,7 +14,6 @@ module OpenSolid.BoundingBox.BoundingBox2d
         , isEmpty
         , isWhole
         , midpoint
-        , contains
         , overlaps
         , isContainedWithin
         , hull
