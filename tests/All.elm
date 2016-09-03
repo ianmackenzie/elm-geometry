@@ -22,6 +22,8 @@ import Point2d
 import Point3d
 import Vector2d
 import Vector3d
+import BoundingBox2d
+import BoundingBox3d
 
 
 suite =
@@ -37,6 +39,8 @@ suite =
         , Point3d.suite
         , Vector2d.suite
         , Vector3d.suite
+        , BoundingBox2d.suite
+        , BoundingBox3d.suite
         ]
 
 
