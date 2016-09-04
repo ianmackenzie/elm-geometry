@@ -15,6 +15,8 @@ import Expect
 import Test.Runner.Html as Html
 import OpenSolid.BoundingBox3d as BoundingBox3d
 import OpenSolid.Fuzz.BoundingBox3d as Fuzz
+import OpenSolid.Fuzz.Point3d as Fuzz
+import OpenSolid.Expect.BoundingBox3d as Expect
 
 
 jsonRoundTrips : Test
@@ -42,10 +44,22 @@ jsonRoundTrips =
         )
 
 
+fromPointsConsistentWithContaining : Test
+fromPointsConsistentWithContaining =
+    Test.fuzz2 Fuzz.point3d
+        Fuzz.point3d
+        "'containing' is consistent with 'fromPoints'"
+        (\first second ->
+            BoundingBox3d.containing [ first, second ]
+                |> Expect.boundingBox3d (BoundingBox3d.fromPoints first second)
+        )
+
+
 suite : Test
 suite =
     Test.describe "OpenSolid.Core.BoundingBox3d"
         [ jsonRoundTrips
+        , fromPointsConsistentWithContaining
         ]
 
 
