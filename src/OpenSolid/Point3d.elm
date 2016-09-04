@@ -35,8 +35,6 @@ module OpenSolid.Point3d
         , placeIn
         , projectInto
         , placeOnto
-        , encode
-        , decoder
         )
 
 {-| Various functions for creating and working with `Point3d` values. For the
@@ -89,14 +87,8 @@ different coordinate frames.
 # Sketch planes
 
 @docs projectInto, placeOnto
-
-# JSON serialization
-
-@docs encode, decoder
 -}
 
-import Json.Encode as Encode exposing (Value)
-import Json.Decode as Decode exposing (Decoder, (:=))
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Point2d as Point2d
 import OpenSolid.Vector3d as Vector3d
@@ -715,24 +707,3 @@ placeOnto sketchPlane point =
                 (Vector2d (Point2d.coordinates point))
     in
         Point3d ( px + vx, py + vy, pz + vz )
-
-
-{-| Encode a Point3d as a JSON object with 'x', 'y' and 'z' fields.
--}
-encode : Point3d -> Value
-encode point =
-    Encode.object
-        [ ( "x", Encode.float (xCoordinate point) )
-        , ( "y", Encode.float (yCoordinate point) )
-        , ( "z", Encode.float (zCoordinate point) )
-        ]
-
-
-{-| Decoder for Point3d values from JSON objects with 'x', 'y' and 'z' fields.
--}
-decoder : Decoder Point3d
-decoder =
-    Decode.object3 (\x y z -> Point3d ( x, y, z ))
-        ("x" := Decode.float)
-        ("y" := Decode.float)
-        ("z" := Decode.float)

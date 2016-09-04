@@ -21,8 +21,6 @@ module OpenSolid.Axis2d
         , mirrorAcross
         , relativeTo
         , placeIn
-        , encode
-        , decoder
         )
 
 {-| Various functions for creating and working with `Axis2d` values. For the
@@ -71,14 +69,8 @@ Functions for transforming axes between local and global coordinates in
 different coordinate frames.
 
 @docs relativeTo, placeIn
-
-# JSON serialization
-
-@docs encode, decoder
 -}
 
-import Json.Encode as Encode exposing (Value)
-import Json.Decode as Decode exposing (Decoder, (:=))
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Point2d as Point2d
 import OpenSolid.Direction2d as Direction2d
@@ -332,26 +324,3 @@ placeIn frame =
                 { originPoint = placePoint (originPoint axis)
                 , direction = placeDirection (direction axis)
                 }
-
-
-{-| Encode an Axis2d as a JSON object with 'originPoint' and 'direction' fields.
--}
-encode : Axis2d -> Value
-encode axis =
-    Encode.object
-        [ ( "originPoint", Point2d.encode (originPoint axis) )
-        , ( "direction", Direction2d.encode (direction axis) )
-        ]
-
-
-{-| Decoder for Axis2d values from JSON objects with 'originPoint' and
-'direction' fields.
--}
-decoder : Decoder Axis2d
-decoder =
-    Decode.object2
-        (\originPoint direction ->
-            Axis2d { originPoint = originPoint, direction = direction }
-        )
-        ("originPoint" := Point2d.decoder)
-        ("direction" := Direction2d.decoder)

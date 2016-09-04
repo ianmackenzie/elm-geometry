@@ -24,8 +24,6 @@ module OpenSolid.Plane3d
         , mirrorAcross
         , relativeTo
         , placeIn
-        , encode
-        , decoder
         )
 
 {-| Various functions for creating and working with `Plane3d` values. For the
@@ -74,14 +72,8 @@ the midplane between two other planes.
 # Coordinate frames
 
 @docs relativeTo, placeIn
-
-# JSON serialization
-
-@docs encode, decoder
 -}
 
-import Json.Encode as Encode exposing (Value)
-import Json.Decode as Decode exposing (Decoder, (:=))
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Vector3d as Vector3d
@@ -437,30 +429,3 @@ placeIn frame =
                 { originPoint = placePoint (originPoint plane)
                 , normalDirection = placeDirection (normalDirection plane)
                 }
-
-
-{-| Encode an Plane3d as a JSON object with 'originPoint' and 'normalDirection'
-fields.
--}
-encode : Plane3d -> Value
-encode plane =
-    Encode.object
-        [ ( "originPoint", Point3d.encode (originPoint plane) )
-        , ( "normalDirection", Direction3d.encode (normalDirection plane) )
-        ]
-
-
-{-| Decoder for Plane3d values from JSON objects with 'originPoint' and
-'normalDirection' fields.
--}
-decoder : Decoder Plane3d
-decoder =
-    Decode.object2
-        (\originPoint normalDirection ->
-            Plane3d
-                { originPoint = originPoint
-                , normalDirection = normalDirection
-                }
-        )
-        ("originPoint" := Point3d.decoder)
-        ("normalDirection" := Direction3d.decoder)

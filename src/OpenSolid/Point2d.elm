@@ -29,8 +29,6 @@ module OpenSolid.Point2d
         , projectOnto
         , relativeTo
         , placeIn
-        , encode
-        , decoder
         )
 
 {-| Various functions for creating and working with `Point2d` values. For the
@@ -85,14 +83,8 @@ Functions for transforming points between local and global coordinates in
 different coordinate frames.
 
 @docs relativeTo, placeIn
-
-# JSON serialization
-
-@docs encode, decoder
 -}
 
-import Json.Encode as Encode exposing (Value)
-import Json.Decode as Decode exposing (Decoder, (:=))
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Direction2d as Direction2d
@@ -562,22 +554,3 @@ placeIn frame =
             frame
     in
         coordinates >> Vector2d >> Vector2d.placeIn frame >> addTo originPoint
-
-
-{-| Encode a Point2d as a JSON object with 'x' and 'y' fields.
--}
-encode : Point2d -> Value
-encode point =
-    Encode.object
-        [ ( "x", Encode.float (xCoordinate point) )
-        , ( "y", Encode.float (yCoordinate point) )
-        ]
-
-
-{-| Decoder for Point2d values from JSON objects with 'x' and 'y' fields.
--}
-decoder : Decoder Point2d
-decoder =
-    Decode.object2 (\x y -> Point2d ( x, y ))
-        ("x" := Decode.float)
-        ("y" := Decode.float)

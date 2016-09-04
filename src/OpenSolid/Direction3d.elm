@@ -30,8 +30,6 @@ module OpenSolid.Direction3d
         , placeIn
         , projectInto
         , placeOnto
-        , encode
-        , decoder
         )
 
 {-| Various functions for creating and working with `Direction3d` values. For
@@ -119,14 +117,8 @@ XYZ frame:
 # Sketch planes
 
 @docs projectInto, placeOnto
-
-# JSON serialization
-
-@docs encode, decoder
 -}
 
-import Json.Encode as Encode exposing (Value)
-import Json.Decode as Decode exposing (Decoder, (:=))
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Vector3d as Vector3d
@@ -472,25 +464,3 @@ and return the corresponding direction in 3D.
 placeOnto : SketchPlane3d -> Direction2d -> Direction3d
 placeOnto sketchPlane =
     Direction2d.vector >> Vector3d.placeOnto sketchPlane >> toDirection
-
-
-{-| Encode a Direction3d as a JSON object with 'x', 'y' and 'z' fields.
--}
-encode : Direction3d -> Value
-encode direction =
-    Encode.object
-        [ ( "x", Encode.float (xComponent direction) )
-        , ( "y", Encode.float (yComponent direction) )
-        , ( "z", Encode.float (zComponent direction) )
-        ]
-
-
-{-| Decoder for Direction3d values from JSON objects with 'x', 'y' and 'z'
-fields.
--}
-decoder : Decoder Direction3d
-decoder =
-    Decode.object3 (\x y z -> Direction3d ( x, y, z ))
-        ("x" := Decode.float)
-        ("y" := Decode.float)
-        ("z" := Decode.float)

@@ -24,8 +24,6 @@ module OpenSolid.Axis3d
         , placeIn
         , projectInto
         , placeOnto
-        , encode
-        , decoder
         )
 
 {-| Various functions for creating and working with `Axis3d` values. For the
@@ -76,14 +74,8 @@ different coordinate frames.
 # Sketch planes
 
 @docs projectInto, placeOnto
-
-# JSON serialization
-
-@docs encode, decoder
 -}
 
-import Json.Encode as Encode exposing (Value)
-import Json.Decode as Decode exposing (Decoder, (:=))
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Direction3d as Direction3d
@@ -460,26 +452,3 @@ placeOnto sketchPlane =
                 { originPoint = placePoint (Axis2d.originPoint axis)
                 , direction = placeDirection (Axis2d.direction axis)
                 }
-
-
-{-| Encode an Axis3d as a JSON object with 'originPoint' and 'direction' fields.
--}
-encode : Axis3d -> Value
-encode axis =
-    Encode.object
-        [ ( "originPoint", Point3d.encode (originPoint axis) )
-        , ( "direction", Direction3d.encode (direction axis) )
-        ]
-
-
-{-| Decoder for Axis3d values from JSON objects with 'originPoint' and
-'direction' fields.
--}
-decoder : Decoder Axis3d
-decoder =
-    Decode.object2
-        (\originPoint direction ->
-            Axis3d { originPoint = originPoint, direction = direction }
-        )
-        ("originPoint" := Point3d.decoder)
-        ("direction" := Direction3d.decoder)

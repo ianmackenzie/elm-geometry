@@ -30,8 +30,6 @@ module OpenSolid.Vector2d
         , projectOnto
         , relativeTo
         , placeIn
-        , encode
-        , decoder
         )
 
 {-| Various functions for creating and working with `Vector2d` values. For the
@@ -108,14 +106,8 @@ For the examples, assume the following frames have been defined:
         Frame2d.rotateBy (degrees 30) Frame2d.xy
 
 @docs relativeTo, placeIn
-
-# JSON serialization
-
-@docs encode, decoder
 -}
 
-import Json.Encode as Encode exposing (Value)
-import Json.Decode as Decode exposing (Decoder, (:=))
 import OpenSolid.Core.Types exposing (..)
 
 
@@ -508,22 +500,3 @@ placeIn frame =
             yDirection
     in
         \(Vector2d ( x, y )) -> Vector2d ( x1 * x + x2 * y, y1 * x + y2 * y )
-
-
-{-| Encode a Vector2d as a JSON object with 'x' and 'y' fields.
--}
-encode : Vector2d -> Value
-encode vector =
-    Encode.object
-        [ ( "x", Encode.float (xComponent vector) )
-        , ( "y", Encode.float (yComponent vector) )
-        ]
-
-
-{-| Decoder for Vector2d values from JSON objects with 'x' and 'y' fields.
--}
-decoder : Decoder Vector2d
-decoder =
-    Decode.object2 (\x y -> Vector2d ( x, y ))
-        ("x" := Decode.float)
-        ("y" := Decode.float)

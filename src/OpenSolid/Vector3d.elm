@@ -34,8 +34,6 @@ module OpenSolid.Vector3d
         , placeIn
         , projectInto
         , placeOnto
-        , encode
-        , decoder
         )
 
 {-| Various functions for creating and working with `Vector3d` values. For the
@@ -119,14 +117,8 @@ Functions for converting vectors between global 3D coordinates and 2D
 coordinates within a particular sketch plane.
 
 @docs projectInto, placeOnto
-
-# JSON serialization
-
-@docs encode, decoder
 -}
 
-import Json.Encode as Encode exposing (Value)
-import Json.Decode as Decode exposing (Decoder, (:=))
 import OpenSolid.Core.Types exposing (..)
 
 
@@ -757,24 +749,3 @@ placeOnto sketchPlane =
     in
         \(Vector2d ( x, y )) ->
             Vector3d ( x1 * x + x2 * y, y1 * x + y2 * y, z1 * x + z2 * y )
-
-
-{-| Encode a Vector3d as a JSON object with 'x', 'y' and 'z' fields.
--}
-encode : Vector3d -> Value
-encode vector =
-    Encode.object
-        [ ( "x", Encode.float (xComponent vector) )
-        , ( "y", Encode.float (yComponent vector) )
-        , ( "z", Encode.float (zComponent vector) )
-        ]
-
-
-{-| Decoder for Vector3d values from JSON objects with 'x', 'y' and 'z' fields.
--}
-decoder : Decoder Vector3d
-decoder =
-    Decode.object3 (\x y z -> Vector3d ( x, y, z ))
-        ("x" := Decode.float)
-        ("y" := Decode.float)
-        ("z" := Decode.float)

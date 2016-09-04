@@ -28,8 +28,6 @@ module OpenSolid.Direction2d
         , mirrorAcross
         , relativeTo
         , placeIn
-        , encode
-        , decoder
         )
 
 {-| Various functions for creating and working with `Direction2d` values. For
@@ -109,14 +107,8 @@ For the examples, assume the following frames have been defined:
         Frame2d.rotateBy (degrees 30) Frame2d.xy
 
 @docs relativeTo, placeIn
-
-# JSON serialization
-
-@docs encode, decoder
 -}
 
-import Json.Encode as Encode exposing (Value)
-import Json.Decode as Decode exposing (Decoder, (:=))
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
 
@@ -385,22 +377,3 @@ coordinates. Inverse of `relativeTo`.
 placeIn : Frame2d -> Direction2d -> Direction2d
 placeIn frame =
     vector >> Vector2d.placeIn frame >> toDirection
-
-
-{-| Encode a Direction2d as a JSON object with 'x' and 'y' fields.
--}
-encode : Direction2d -> Value
-encode direction =
-    Encode.object
-        [ ( "x", Encode.float (xComponent direction) )
-        , ( "y", Encode.float (yComponent direction) )
-        ]
-
-
-{-| Decoder for Direction2d values from JSON objects with 'x' and 'y' fields.
--}
-decoder : Decoder Direction2d
-decoder =
-    Decode.object2 (\x y -> Direction2d ( x, y ))
-        ("x" := Decode.float)
-        ("y" := Decode.float)
