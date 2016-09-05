@@ -15,7 +15,7 @@ module OpenSolid.BoundingBox2d
         , isWhole
         , midpoint
         , overlaps
-        , isContainedWithin
+        , contains
         , hull
         , intersection
         )
@@ -131,12 +131,12 @@ overlaps other boundingBox =
 {-| Returns false if *either* bounding box is empty - the empty bounding box is
 not considered to be 'within' any other bounding box
 -}
-isContainedWithin : BoundingBox2d -> BoundingBox2d -> Bool
-isContainedWithin other boundingBox =
-    (minX boundingBox >= minX other)
-        && (maxX boundingBox <= maxX other)
-        && (minY boundingBox >= minY other)
-        && (maxY boundingBox <= maxY other)
+contains : BoundingBox2d -> BoundingBox2d -> Bool
+contains other boundingBox =
+    (minX boundingBox <= minX other)
+        && (maxX boundingBox >= maxX other)
+        && (minY boundingBox <= minY other)
+        && (maxY boundingBox >= maxY other)
 
 
 hull : BoundingBox2d -> BoundingBox2d -> BoundingBox2d
