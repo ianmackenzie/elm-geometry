@@ -23,7 +23,9 @@ module OpenSolid.Core.Fuzz
         , frame3d
         , sketchPlane3d
         , boundingBox2d
+        , nonEmptyBoundingBox2d
         , boundingBox3d
+        , nonEmptyBoundingBox3d
         )
 
 import Fuzz exposing (Fuzzer)
@@ -203,6 +205,17 @@ interval =
 boundingBox2d : Fuzzer BoundingBox2d
 boundingBox2d =
     let
+        emptyBoundingBox2d =
+            Fuzz.map (always BoundingBox2d.empty) Fuzz.unit
+    in
+        Fuzz.frequencyOrCrash
+            [ ( 1, nonEmptyBoundingBox2d )
+            , ( 1, emptyBoundingBox2d )
+            ]
+
+
+nonEmptyBoundingBox2d =
+    let
         intervals =
             Fuzz.tuple ( interval, interval )
 
@@ -213,21 +226,24 @@ boundingBox2d =
                 , minY = minY
                 , maxY = maxY
                 }
-
-        nonEmptyBoundingBox =
-            Fuzz.map intervalsToBoundingBox intervals
-
-        emptyBoundingBox =
-            Fuzz.map (always BoundingBox2d.empty) Fuzz.unit
     in
-        Fuzz.frequencyOrCrash
-            [ ( 1, nonEmptyBoundingBox )
-            , ( 1, emptyBoundingBox )
-            ]
+        Fuzz.map intervalsToBoundingBox intervals
 
 
 boundingBox3d : Fuzzer BoundingBox3d
 boundingBox3d =
+    let
+        emptyBoundingBox3d =
+            Fuzz.map (always BoundingBox3d.empty) Fuzz.unit
+    in
+        Fuzz.frequencyOrCrash
+            [ ( 1, nonEmptyBoundingBox3d )
+            , ( 1, emptyBoundingBox3d )
+            ]
+
+
+nonEmptyBoundingBox3d : Fuzzer BoundingBox3d
+nonEmptyBoundingBox3d =
     let
         intervals =
             Fuzz.tuple3 ( interval, interval, interval )
@@ -251,14 +267,5 @@ boundingBox3d =
                     , minZ = minZ
                     , maxZ = maxZ
                     }
-
-        nonEmptyBoundingBox =
-            Fuzz.map intervalsToBoundingBox intervals
-
-        emptyBoundingBox =
-            Fuzz.map (always BoundingBox3d.empty) Fuzz.unit
     in
-        Fuzz.frequencyOrCrash
-            [ ( 1, nonEmptyBoundingBox )
-            , ( 1, emptyBoundingBox )
-            ]
+        Fuzz.map intervalsToBoundingBox intervals
