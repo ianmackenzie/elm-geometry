@@ -8,7 +8,9 @@
     "OpenSolid.Point3d"
   ],
   "exposed-modules": [
-    "OpenSolid.Types",
+    "OpenSolid.Core.Types",
+    "OpenSolid.Core.Encode",
+    "OpenSolid.Core.Decode",
     "OpenSolid.Vector2d",
     "OpenSolid.Vector3d",
     "OpenSolid.Direction2d",
