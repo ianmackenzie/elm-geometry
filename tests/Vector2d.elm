@@ -16,11 +16,8 @@ import OpenSolid.Direction2d as Direction2d
 import OpenSolid.Axis2d as Axis2d
 import OpenSolid.Core.Encode as Encode
 import OpenSolid.Core.Decode as Decode
-import OpenSolid.Fuzz as Fuzz
-import OpenSolid.Fuzz.Vector2d as Fuzz
-import OpenSolid.Fuzz.Axis2d as Fuzz
-import OpenSolid.Expect as Expect
-import OpenSolid.Expect.Vector2d as Expect
+import OpenSolid.Core.Fuzz as Fuzz
+import OpenSolid.Core.Expect as Expect
 import Generic
 
 

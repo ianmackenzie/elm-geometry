@@ -14,11 +14,8 @@ import Test.Runner.Html as Html
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Core.Encode as Encode
 import OpenSolid.Core.Decode as Decode
-import OpenSolid.Fuzz as Fuzz
-import OpenSolid.Fuzz.Point3d as Fuzz
-import OpenSolid.Fuzz.Axis3d as Fuzz
-import OpenSolid.Expect as Expect
-import OpenSolid.Expect.Point3d as Expect
+import OpenSolid.Core.Fuzz as Fuzz
+import OpenSolid.Core.Expect as Expect
 import Generic
 
 

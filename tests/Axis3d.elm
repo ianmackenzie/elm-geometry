@@ -13,9 +13,8 @@ import Test exposing (Test)
 import Test.Runner.Html as Html
 import OpenSolid.Core.Encode as Encode
 import OpenSolid.Core.Decode as Decode
-import OpenSolid.Fuzz.Axis3d as Fuzz
-import OpenSolid.Expect as Expect
-import OpenSolid.Expect.Axis3d as Expect
+import OpenSolid.Core.Fuzz as Fuzz
+import OpenSolid.Core.Expect as Expect
 import Generic
 
 

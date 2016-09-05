@@ -16,9 +16,8 @@ import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Core.Encode as Encode
 import OpenSolid.Core.Decode as Decode
-import OpenSolid.Fuzz.Frame3d as Fuzz
-import OpenSolid.Expect as Expect
-import OpenSolid.Expect.Frame3d as Expect
+import OpenSolid.Core.Fuzz as Fuzz
+import OpenSolid.Core.Expect as Expect
 import Generic
 
 
