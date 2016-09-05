@@ -14,6 +14,8 @@ import Test exposing (Test)
 import Expect
 import Test.Runner.Html as Html
 import OpenSolid.BoundingBox3d as BoundingBox3d
+import OpenSolid.Core.Encode as Encode
+import OpenSolid.Core.Decode as Decode
 import OpenSolid.Fuzz.BoundingBox3d as Fuzz
 import OpenSolid.Fuzz.Point3d as Fuzz
 import OpenSolid.Expect.BoundingBox3d as Expect
@@ -26,10 +28,10 @@ jsonRoundTrips =
         (\value ->
             let
                 encoded =
-                    BoundingBox3d.encode value
+                    Encode.boundingBox3d value
 
                 decoded =
-                    Decode.decodeValue BoundingBox3d.decoder encoded
+                    Decode.decodeValue Decode.boundingBox3d encoded
             in
                 case decoded of
                     Ok result ->

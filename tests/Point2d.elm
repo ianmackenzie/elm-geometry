@@ -12,6 +12,8 @@ module Point2d exposing (suite)
 import Test exposing (Test)
 import Test.Runner.Html as Html
 import OpenSolid.Point2d as Point2d
+import OpenSolid.Core.Encode as Encode
+import OpenSolid.Core.Decode as Decode
 import OpenSolid.Fuzz as Fuzz
 import OpenSolid.Fuzz.Point2d as Fuzz
 import OpenSolid.Fuzz.Axis2d as Fuzz
@@ -66,7 +68,7 @@ projectionOntoAxisPreservesDistance =
 
 jsonRoundTrips : Test
 jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.point2d Point2d.encode Point2d.decoder
+    Generic.jsonRoundTrips Fuzz.point2d Encode.point2d Decode.point2d
 
 
 suite : Test

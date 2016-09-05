@@ -1,7 +1,7 @@
 module OpenSolid.Core.Encode
     exposing
         ( vector2d
-        , vector2d
+        , vector3d
         , direction2d
         , direction3d
         , point2d
@@ -152,6 +152,47 @@ plane3d plane =
         ]
 
 
+{-| Encode a Frame2d as an object with 'originPoint', 'xDirection' and
+'yDirection' fields.
+-}
+frame2d : Frame2d -> Value
+frame2d frame =
+    Encode.object
+        [ ( "originPoint", point2d (Frame2d.originPoint frame) )
+        , ( "xDirection", direction2d (Frame2d.xDirection frame) )
+        , ( "yDirection", direction2d (Frame2d.yDirection frame) )
+        ]
+
+
+{-| Encode a Frame3d as an object with 'originPoint', 'xDirection', 'yDirection'
+and 'zDirection' fields.
+-}
+frame3d : Frame3d -> Value
+frame3d frame =
+    Encode.object
+        [ ( "originPoint", point3d (Frame3d.originPoint frame) )
+        , ( "xDirection", direction3d (Frame3d.xDirection frame) )
+        , ( "yDirection", direction3d (Frame3d.yDirection frame) )
+        , ( "zDirection", direction3d (Frame3d.zDirection frame) )
+        ]
+
+
+{-| Encode a SketchPlane3d as an object with 'originPoint', 'xDirection' and
+'yDirection' fields.
+-}
+sketchPlane3d : SketchPlane3d -> Value
+sketchPlane3d sketchPlane =
+    Encode.object
+        [ ( "originPoint", point3d (SketchPlane3d.originPoint sketchPlane) )
+        , ( "xDirection", direction3d (SketchPlane3d.xDirection sketchPlane) )
+        , ( "yDirection", direction3d (SketchPlane3d.yDirection sketchPlane) )
+        ]
+
+
+{-| Encode a Float in such a way that infinite and NaN values can be preserved,
+by falling back to string constants "Infinity", "-Infinity" and "NaN" for
+special values.
+-}
 extremum : Float -> Value
 extremum value =
     if isNaN value then
@@ -162,3 +203,31 @@ extremum value =
         Encode.string "-Infinity"
     else
         Encode.float value
+
+
+{-| Encode a BoundingBox2d as an object with 'minX', 'maxX', 'minY' and 'maxY'
+fields.
+-}
+boundingBox2d : BoundingBox2d -> Value
+boundingBox2d boundingBox =
+    Encode.object
+        [ ( "minX", extremum (BoundingBox2d.minX boundingBox) )
+        , ( "maxX", extremum (BoundingBox2d.maxX boundingBox) )
+        , ( "minY", extremum (BoundingBox2d.minY boundingBox) )
+        , ( "maxY", extremum (BoundingBox2d.maxY boundingBox) )
+        ]
+
+
+{-| Encode a BoundingBox3d as an object with 'minX', 'maxX', 'minY', 'maxY',
+'minZ' and 'maxZ' fields.
+-}
+boundingBox3d : BoundingBox3d -> Value
+boundingBox3d boundingBox =
+    Encode.object
+        [ ( "minX", extremum (BoundingBox3d.minX boundingBox) )
+        , ( "maxX", extremum (BoundingBox3d.maxX boundingBox) )
+        , ( "minY", extremum (BoundingBox3d.minY boundingBox) )
+        , ( "maxY", extremum (BoundingBox3d.maxY boundingBox) )
+        , ( "minZ", extremum (BoundingBox3d.minZ boundingBox) )
+        , ( "maxZ", extremum (BoundingBox3d.maxZ boundingBox) )
+        ]

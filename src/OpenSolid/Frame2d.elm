@@ -28,12 +28,8 @@ module OpenSolid.Frame2d
         , mirrorAcrossOwn
         , relativeTo
         , placeIn
-        , encode
-        , decoder
         )
 
-import Json.Encode as Encode exposing (Value)
-import Json.Decode as Decode exposing (Decoder, (:=))
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Point2d as Point2d
 import OpenSolid.Direction2d as Direction2d
@@ -213,33 +209,3 @@ placeIn otherFrame =
                 , xDirection = placeDirection (xDirection frame)
                 , yDirection = placeDirection (yDirection frame)
                 }
-
-
-{-| Encode a Frame2d as a JSON object with 'originPoint', 'xDirection' and
-'yDirection' fields.
--}
-encode : Frame2d -> Value
-encode frame =
-    Encode.object
-        [ ( "originPoint", Point2d.encode (originPoint frame) )
-        , ( "xDirection", Direction2d.encode (xDirection frame) )
-        , ( "yDirection", Direction2d.encode (yDirection frame) )
-        ]
-
-
-{-| Decoder for Frame2d values from JSON objects with 'originPoint',
-'xDirection' and 'yDirection' fields.
--}
-decoder : Decoder Frame2d
-decoder =
-    Decode.object3
-        (\originPoint xDirection yDirection ->
-            Frame2d
-                { originPoint = originPoint
-                , xDirection = xDirection
-                , yDirection = yDirection
-                }
-        )
-        ("originPoint" := Point2d.decoder)
-        ("xDirection" := Direction2d.decoder)
-        ("yDirection" := Direction2d.decoder)

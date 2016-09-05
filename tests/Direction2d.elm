@@ -12,6 +12,8 @@ module Direction2d exposing (suite)
 import Test exposing (Test)
 import Test.Runner.Html as Html
 import OpenSolid.Direction2d as Direction2d
+import OpenSolid.Core.Encode as Encode
+import OpenSolid.Core.Decode as Decode
 import OpenSolid.Fuzz.Direction2d as Fuzz
 import OpenSolid.Expect as Expect
 import OpenSolid.Expect.Direction2d as Expect
@@ -21,8 +23,8 @@ import Generic
 jsonRoundTrips : Test
 jsonRoundTrips =
     Generic.jsonRoundTrips Fuzz.direction2d
-        Direction2d.encode
-        Direction2d.decoder
+        Encode.direction2d
+        Decode.direction2d
 
 
 suite : Test

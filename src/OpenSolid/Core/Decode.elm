@@ -119,6 +119,65 @@ plane3d =
         ("normalDirection" := direction3d)
 
 
+{-| Decoder for Frame2d values from objects with 'originPoint', 'xDirection' and
+'yDirection' fields.
+-}
+frame2d : Decoder Frame2d
+frame2d =
+    Decode.object3
+        (\originPoint xDirection yDirection ->
+            Frame2d
+                { originPoint = originPoint
+                , xDirection = xDirection
+                , yDirection = yDirection
+                }
+        )
+        ("originPoint" := point2d)
+        ("xDirection" := direction2d)
+        ("yDirection" := direction2d)
+
+
+{-| Decoder for Frame3d values from objects with 'originPoint', 'xDirection',
+'yDirection' and 'zDirection' fields.
+-}
+frame3d : Decoder Frame3d
+frame3d =
+    Decode.object4
+        (\originPoint xDirection yDirection zDirection ->
+            Frame3d
+                { originPoint = originPoint
+                , xDirection = xDirection
+                , yDirection = yDirection
+                , zDirection = zDirection
+                }
+        )
+        ("originPoint" := point3d)
+        ("xDirection" := direction3d)
+        ("yDirection" := direction3d)
+        ("zDirection" := direction3d)
+
+
+{-| Decoder for SketchPlane3d values from objects with 'originPoint',
+'xDirection' and 'yDirection' fields.
+-}
+sketchPlane3d : Decoder SketchPlane3d
+sketchPlane3d =
+    Decode.object3
+        (\originPoint xDirection yDirection ->
+            SketchPlane3d
+                { originPoint = originPoint
+                , xDirection = xDirection
+                , yDirection = yDirection
+                }
+        )
+        ("originPoint" := point3d)
+        ("xDirection" := direction3d)
+        ("yDirection" := direction3d)
+
+
+{-| Decoder for Float values with special-case handling for infinite and NaN
+values (encoded as string constants "Infinity", "-Infinity" or "NaN").
+-}
 extremum : Decoder Float
 extremum =
     let
@@ -140,3 +199,47 @@ extremum =
             Decode.customDecoder Decode.string parse
     in
         Decode.oneOf [ specialValueDecoder, Decode.float ]
+
+
+{-| Decoder for BoundingBox2d values from objects with 'minX', 'maxX', 'minY'
+and 'maxY' fields.
+-}
+boundingBox2d : Decoder BoundingBox2d
+boundingBox2d =
+    Decode.object4
+        (\minX maxX minY maxY ->
+            BoundingBox2d
+                { minX = minX
+                , maxX = maxX
+                , minY = minY
+                , maxY = maxY
+                }
+        )
+        ("minX" := extremum)
+        ("maxX" := extremum)
+        ("minY" := extremum)
+        ("maxY" := extremum)
+
+
+{-| Decoder for BoundingBox3d values from objects with 'minX', 'maxX', 'minY',
+'maxY', 'minZ' and 'maxZ' fields.
+-}
+boundingBox3d : Decoder BoundingBox3d
+boundingBox3d =
+    Decode.object6
+        (\minX maxX minY maxY minZ maxZ ->
+            BoundingBox3d
+                { minX = minX
+                , maxX = maxX
+                , minY = minY
+                , maxY = maxY
+                , minZ = minZ
+                , maxZ = maxZ
+                }
+        )
+        ("minX" := extremum)
+        ("maxX" := extremum)
+        ("minY" := extremum)
+        ("maxY" := extremum)
+        ("minZ" := extremum)
+        ("maxZ" := extremum)

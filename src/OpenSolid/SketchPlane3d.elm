@@ -31,12 +31,8 @@ module OpenSolid.SketchPlane3d
         , mirrorAcross
         , relativeTo
         , placeIn
-        , encode
-        , decoder
         )
 
-import Json.Encode as Encode exposing (Value)
-import Json.Decode as Decode exposing (Decoder, (:=))
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Vector3d as Vector3d
@@ -264,33 +260,3 @@ placeIn frame =
                 , xDirection = placeDirection (xDirection sketchPlane)
                 , yDirection = placeDirection (yDirection sketchPlane)
                 }
-
-
-{-| Encode a SketchPlane3d as a JSON object with 'originPoint', 'xDirection' and
-'yDirection' fields.
--}
-encode : SketchPlane3d -> Value
-encode sketchPlane =
-    Encode.object
-        [ ( "originPoint", Point3d.encode (originPoint sketchPlane) )
-        , ( "xDirection", Direction3d.encode (xDirection sketchPlane) )
-        , ( "yDirection", Direction3d.encode (yDirection sketchPlane) )
-        ]
-
-
-{-| Decoder for SketchPlane3d values from JSON objects with 'originPoint',
-'xDirection' and 'yDirection' fields.
--}
-decoder : Decoder SketchPlane3d
-decoder =
-    Decode.object3
-        (\originPoint xDirection yDirection ->
-            SketchPlane3d
-                { originPoint = originPoint
-                , xDirection = xDirection
-                , yDirection = yDirection
-                }
-        )
-        ("originPoint" := Point3d.decoder)
-        ("xDirection" := Direction3d.decoder)
-        ("yDirection" := Direction3d.decoder)

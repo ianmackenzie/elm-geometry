@@ -42,12 +42,8 @@ module OpenSolid.Frame3d
         , mirrorAcrossOwn
         , relativeTo
         , placeIn
-        , encode
-        , decoder
         )
 
-import Json.Encode as Encode exposing (Value)
-import Json.Decode as Decode exposing (Decoder, (:=))
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Direction3d as Direction3d
@@ -345,36 +341,3 @@ placeIn otherFrame =
                 , yDirection = placeDirection (yDirection frame)
                 , zDirection = placeDirection (zDirection frame)
                 }
-
-
-{-| Encode a Frame3d as a JSON object with 'originPoint', 'xDirection',
-'yDirection' and 'zDirection' fields.
--}
-encode : Frame3d -> Value
-encode frame =
-    Encode.object
-        [ ( "originPoint", Point3d.encode (originPoint frame) )
-        , ( "xDirection", Direction3d.encode (xDirection frame) )
-        , ( "yDirection", Direction3d.encode (yDirection frame) )
-        , ( "zDirection", Direction3d.encode (zDirection frame) )
-        ]
-
-
-{-| Decoder for Frame3d values from JSON objects with 'originPoint',
-'xDirection', 'yDirection' and 'zDirection' fields.
--}
-decoder : Decoder Frame3d
-decoder =
-    Decode.object4
-        (\originPoint xDirection yDirection zDirection ->
-            Frame3d
-                { originPoint = originPoint
-                , xDirection = xDirection
-                , yDirection = yDirection
-                , zDirection = zDirection
-                }
-        )
-        ("originPoint" := Point3d.decoder)
-        ("xDirection" := Direction3d.decoder)
-        ("yDirection" := Direction3d.decoder)
-        ("zDirection" := Direction3d.decoder)
