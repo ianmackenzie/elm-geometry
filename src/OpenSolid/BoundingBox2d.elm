@@ -128,6 +128,9 @@ overlaps other boundingBox =
         && (maxY boundingBox >= minY other)
 
 
+{-| Returns false if *either* bounding box is empty - the empty bounding box is
+not considered to be 'within' any other bounding box
+-}
 isContainedWithin : BoundingBox2d -> BoundingBox2d -> Bool
 isContainedWithin other boundingBox =
     (minX boundingBox >= minX other)
