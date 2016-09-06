@@ -24,7 +24,6 @@ module OpenSolid.Frame2d
         , translateAlongOwn
         , moveTo
         , mirrorAcross
-        , mirrorAcrossOwn
         , relativeTo
         , placeIn
         )
@@ -164,11 +163,6 @@ mirrorAcross axis =
                 , xDirection = mirrorDirection (xDirection frame)
                 , yDirection = mirrorDirection (yDirection frame)
                 }
-
-
-mirrorAcrossOwn : (Frame2d -> Axis2d) -> Frame2d -> Frame2d
-mirrorAcrossOwn axis frame =
-    mirrorAcross (axis frame) frame
 
 
 relativeTo : Frame2d -> Frame2d -> Frame2d

@@ -39,7 +39,6 @@ module OpenSolid.Frame3d
         , translateAlongOwn
         , moveTo
         , mirrorAcross
-        , mirrorAcrossOwn
         , relativeTo
         , placeIn
         )
@@ -300,11 +299,6 @@ mirrorAcross plane =
                 , yDirection = mirrorDirection (yDirection frame)
                 , zDirection = mirrorDirection (zDirection frame)
                 }
-
-
-mirrorAcrossOwn : (Frame3d -> Plane3d) -> Frame3d -> Frame3d
-mirrorAcrossOwn plane frame =
-    mirrorAcross (plane frame) frame
 
 
 relativeTo : Frame3d -> Frame3d -> Frame3d
