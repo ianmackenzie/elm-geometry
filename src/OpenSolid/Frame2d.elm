@@ -20,7 +20,6 @@ module OpenSolid.Frame2d
         , flipY
         , rotateBy
         , rotateAround
-        , rotateAroundOwn
         , translateBy
         , translateAlongOwn
         , moveTo
@@ -121,11 +120,6 @@ rotateAround centerPoint angle =
                 , xDirection = rotateDirection (xDirection frame)
                 , yDirection = rotateDirection (yDirection frame)
                 }
-
-
-rotateAroundOwn : (Frame2d -> Point2d) -> Float -> Frame2d -> Frame2d
-rotateAroundOwn centerPoint angle frame =
-    rotateAround (centerPoint frame) angle frame
 
 
 translateBy : Vector2d -> Frame2d -> Frame2d
