@@ -61,11 +61,8 @@ direction3d =
         theta =
             Fuzz.floatRange -pi pi
 
-        t =
-            Fuzz.floatRange -1 1
-
         phi =
-            Fuzz.map acos t
+            Fuzz.map acos (Fuzz.floatRange -1 1)
 
         direction theta phi =
             Direction3d
