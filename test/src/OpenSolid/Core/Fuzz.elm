@@ -58,20 +58,29 @@ direction2d =
 direction3d : Fuzzer Direction3d
 direction3d =
     let
-        theta =
-            Fuzz.floatRange -pi pi
-
         phi =
             Fuzz.map acos (Fuzz.floatRange -1 1)
 
-        direction theta phi =
-            Direction3d
-                ( sin phi * cos theta
-                , sin phi * sin theta
-                , cos phi
-                )
+        theta =
+            Fuzz.floatRange -pi pi
+
+        direction phi theta =
+            let
+                r =
+                    sin phi
+
+                x =
+                    r * cos theta
+
+                y =
+                    r * sin theta
+
+                z =
+                    cos phi
+            in
+                Direction3d ( x, y, z )
     in
-        Fuzz.map2 direction theta phi
+        Fuzz.map2 direction phi theta
 
 
 point2d : Fuzzer Point2d
