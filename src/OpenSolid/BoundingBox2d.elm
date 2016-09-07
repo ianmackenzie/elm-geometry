@@ -4,6 +4,7 @@ module OpenSolid.BoundingBox2d
         , containing2
         , containing3
         , containing
+        , extrema
         , minX
         , maxX
         , minY
@@ -83,24 +84,35 @@ containing points =
             Just (List.foldl hull (singleton first) (List.map singleton rest))
 
 
+extrema :
+    BoundingBox2d
+    -> { minX : Float
+       , maxX : Float
+       , minY : Float
+       , maxY : Float
+       }
+extrema (BoundingBox2d extrema') =
+    extrema'
+
+
 minX : BoundingBox2d -> Float
-minX (BoundingBox2d properties) =
-    properties.minX
+minX =
+    extrema >> .minX
 
 
 maxX : BoundingBox2d -> Float
-maxX (BoundingBox2d properties) =
-    properties.maxX
+maxX =
+    extrema >> .maxX
 
 
 minY : BoundingBox2d -> Float
-minY (BoundingBox2d properties) =
-    properties.minY
+minY =
+    extrema >> .minY
 
 
 maxY : BoundingBox2d -> Float
-maxY (BoundingBox2d properties) =
-    properties.maxY
+maxY =
+    extrema >> .maxY
 
 
 minPoint : BoundingBox2d -> Point2d
