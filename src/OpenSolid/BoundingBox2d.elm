@@ -9,8 +9,9 @@ module OpenSolid.BoundingBox2d
         , maxX
         , minY
         , maxY
-        , minPoint
-        , maxPoint
+        , midX
+        , midY
+        , point
         , midpoint
         , overlaps
         , contains
@@ -115,19 +116,35 @@ maxY =
     extrema >> .maxY
 
 
-minPoint : BoundingBox2d -> Point2d
-minPoint boundingBox =
-    Point2d ( minX boundingBox, minY boundingBox )
+midX : BoundingBox2d -> Float
+midX boundingBox =
+    let
+        { minX, maxX } =
+            extrema boundingBox
+    in
+        minX + 0.5 * (maxX - minX)
 
 
-maxPoint : BoundingBox2d -> Point2d
-maxPoint boundingBox =
-    Point2d ( maxX boundingBox, maxY boundingBox )
+midY : BoundingBox2d -> Float
+midY boundingBox =
+    let
+        { minY, maxY } =
+            extrema boundingBox
+    in
+        minY + 0.5 * (maxY - minY)
+
+
+point :
+    ( BoundingBox2d -> Float, BoundingBox2d -> Float )
+    -> BoundingBox2d
+    -> Point2d
+point ( xFunction, yFunction ) boundingBox =
+    Point2d ( xFunction boundingBox, yFunction boundingBox )
 
 
 midpoint : BoundingBox2d -> Point2d
-midpoint boundingBox =
-    Point2d.midpoint (minPoint boundingBox) (maxPoint boundingBox)
+midpoint =
+    point ( midX, midY )
 
 
 overlaps : BoundingBox2d -> BoundingBox2d -> Bool

@@ -11,8 +11,10 @@ module OpenSolid.BoundingBox3d
         , maxY
         , minZ
         , maxZ
-        , minPoint
-        , maxPoint
+        , midX
+        , midY
+        , midZ
+        , point
         , midpoint
         , overlaps
         , contains
@@ -140,19 +142,48 @@ maxZ =
     extrema >> .maxZ
 
 
-minPoint : BoundingBox3d -> Point3d
-minPoint boundingBox =
-    Point3d ( minX boundingBox, minY boundingBox, minZ boundingBox )
+midX : BoundingBox3d -> Float
+midX boundingBox =
+    let
+        { minX, maxX } =
+            extrema boundingBox
+    in
+        minX + 0.5 * (maxX - minX)
 
 
-maxPoint : BoundingBox3d -> Point3d
-maxPoint boundingBox =
-    Point3d ( maxX boundingBox, maxY boundingBox, maxZ boundingBox )
+midY : BoundingBox3d -> Float
+midY boundingBox =
+    let
+        { minY, maxY } =
+            extrema boundingBox
+    in
+        minY + 0.5 * (maxY - minY)
+
+
+midZ : BoundingBox3d -> Float
+midZ boundingBox =
+    let
+        { minZ, maxZ } =
+            extrema boundingBox
+    in
+        minZ + 0.5 * (maxZ - minZ)
+
+
+point :
+    ( BoundingBox3d -> Float, BoundingBox3d -> Float, BoundingBox3d -> Float )
+    -> BoundingBox3d
+    -> Point3d
+point ( xFunction, yFunction, zFunction ) boundingBox =
+    Point3d
+        ( xFunction boundingBox
+        , yFunction boundingBox
+        , zFunction boundingBox
+        )
 
 
 midpoint : BoundingBox3d -> Point3d
-midpoint boundingBox =
-    Point3d.midpoint (minPoint boundingBox) (maxPoint boundingBox)
+midpoint =
+    point ( midX, midY, midZ )
 
 
 overlaps : BoundingBox3d -> BoundingBox3d -> Bool
