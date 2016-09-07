@@ -1,9 +1,8 @@
 module OpenSolid.BoundingBox3d
     exposing
-        ( empty
-        , whole
-        , singleton
-        , fromPoints
+        ( singleton
+        , containing2
+        , containing3
         , containing
         , minX
         , maxX
@@ -13,8 +12,6 @@ module OpenSolid.BoundingBox3d
         , maxZ
         , minPoint
         , maxPoint
-        , isEmpty
-        , isWhole
         , midpoint
         , overlaps
         , contains
@@ -24,30 +21,6 @@ module OpenSolid.BoundingBox3d
 
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Point3d as Point3d
-
-
-empty : BoundingBox3d
-empty =
-    BoundingBox3d
-        { minX = 0 / 0
-        , maxX = 0 / 0
-        , minY = 0 / 0
-        , maxY = 0 / 0
-        , minZ = 0 / 0
-        , maxZ = 0 / 0
-        }
-
-
-whole : BoundingBox3d
-whole =
-    BoundingBox3d
-        { minX = -1 / 0
-        , maxX = 1 / 0
-        , minY = -1 / 0
-        , maxY = 1 / 0
-        , minZ = -1 / 0
-        , maxZ = 1 / 0
-        }
 
 
 singleton : Point3d -> BoundingBox3d
@@ -66,9 +39,12 @@ singleton point =
             }
 
 
-fromPoints : Point3d -> Point3d -> BoundingBox3d
-fromPoints firstPoint secondPoint =
+containing2 : ( Point3d, Point3d ) -> BoundingBox3d
+containing2 points =
     let
+        ( firstPoint, secondPoint ) =
+            points
+
         ( x1, y1, z1 ) =
             Point3d.coordinates firstPoint
 
@@ -85,9 +61,39 @@ fromPoints firstPoint secondPoint =
             }
 
 
-containing : List Point3d -> BoundingBox3d
+containing3 : ( Point3d, Point3d, Point3d ) -> BoundingBox3d
+containing3 points =
+    let
+        ( firstPoint, secondPoint, thirdPoint ) =
+            points
+
+        ( x1, y1, z1 ) =
+            Point3d.coordinates firstPoint
+
+        ( x2, y2, z2 ) =
+            Point3d.coordinates secondPoint
+
+        ( x3, y3, z3 ) =
+            Point3d.coordinates thirdPoint
+    in
+        BoundingBox3d
+            { minX = min x1 (min x2 x3)
+            , maxX = max x1 (max x2 x3)
+            , minY = min y1 (min y2 y3)
+            , maxY = max y1 (max y2 y3)
+            , minZ = min z1 (min z2 z3)
+            , maxZ = max z1 (max z2 z3)
+            }
+
+
+containing : List Point3d -> Maybe BoundingBox3d
 containing points =
-    List.foldl hull empty (List.map singleton points)
+    case points of
+        [] ->
+            Nothing
+
+        first :: rest ->
+            Just (List.foldl hull (singleton first) (List.map singleton rest))
 
 
 minX : BoundingBox3d -> Float
@@ -130,16 +136,6 @@ maxPoint boundingBox =
     Point3d ( maxX boundingBox, maxY boundingBox, maxZ boundingBox )
 
 
-isEmpty : BoundingBox3d -> Bool
-isEmpty (BoundingBox3d { minX, maxX, minY, maxY, minZ, maxZ }) =
-    not ((minX <= maxX) && (minY <= maxY) && (minZ <= maxZ))
-
-
-isWhole : BoundingBox3d -> Bool
-isWhole boundingBox =
-    boundingBox == whole
-
-
 midpoint : BoundingBox3d -> Point3d
 midpoint boundingBox =
     Point3d.midpoint (minPoint boundingBox) (maxPoint boundingBox)
@@ -155,9 +151,6 @@ overlaps other boundingBox =
         && (maxZ boundingBox >= minZ other)
 
 
-{-| Returns false if *either* bounding box is empty - the empty bounding box is
-not considered to be 'within' any other bounding box
--}
 contains : BoundingBox3d -> BoundingBox3d -> Bool
 contains other boundingBox =
     (minX boundingBox <= minX other)
@@ -170,31 +163,28 @@ contains other boundingBox =
 
 hull : BoundingBox3d -> BoundingBox3d -> BoundingBox3d
 hull other boundingBox =
-    if isEmpty other then
-        boundingBox
-    else if isEmpty boundingBox then
-        other
-    else
-        BoundingBox3d
-            { minX = min (minX boundingBox) (minX other)
-            , maxX = max (maxX boundingBox) (maxX other)
-            , minY = min (minY boundingBox) (minY other)
-            , maxY = max (maxY boundingBox) (maxY other)
-            , minZ = min (minZ boundingBox) (minZ other)
-            , maxZ = max (maxZ boundingBox) (maxZ other)
-            }
+    BoundingBox3d
+        { minX = min (minX boundingBox) (minX other)
+        , maxX = max (maxX boundingBox) (maxX other)
+        , minY = min (minY boundingBox) (minY other)
+        , maxY = max (maxY boundingBox) (maxY other)
+        , minZ = min (minZ boundingBox) (minZ other)
+        , maxZ = max (maxZ boundingBox) (maxZ other)
+        }
 
 
-intersection : BoundingBox3d -> BoundingBox3d -> BoundingBox3d
+intersection : BoundingBox3d -> BoundingBox3d -> Maybe BoundingBox3d
 intersection other boundingBox =
     if overlaps other boundingBox then
-        BoundingBox3d
-            { minX = max (minX boundingBox) (minX other)
-            , maxX = min (maxX boundingBox) (maxX other)
-            , minY = max (minY boundingBox) (minY other)
-            , maxY = min (maxY boundingBox) (maxY other)
-            , minZ = max (minZ boundingBox) (minZ other)
-            , maxZ = min (maxZ boundingBox) (maxZ other)
-            }
+        Just
+            (BoundingBox3d
+                { minX = max (minX boundingBox) (minX other)
+                , maxX = min (maxX boundingBox) (maxX other)
+                , minY = max (minY boundingBox) (minY other)
+                , maxY = min (maxY boundingBox) (maxY other)
+                , minZ = max (minZ boundingBox) (minZ other)
+                , maxZ = min (maxZ boundingBox) (maxZ other)
+                }
+            )
     else
-        empty
+        Nothing

@@ -18,41 +18,32 @@ import OpenSolid.Core.Encode as Encode
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Fuzz as Fuzz
 import OpenSolid.Core.Expect as Expect
+import Generic
 
 
 jsonRoundTrips : Test
 jsonRoundTrips =
-    Test.fuzz Fuzz.boundingBox2d
-        "JSON conversion round-trips properly"
-        (\value ->
-            let
-                encoded =
-                    Encode.boundingBox2d value
-
-                decoded =
-                    Decode.decodeValue Decode.boundingBox2d encoded
-            in
-                case decoded of
-                    Ok result ->
-                        if BoundingBox2d.isEmpty value then
-                            Expect.true "Expected empty bounding box to round-trip to empty bounding box"
-                                (BoundingBox2d.isEmpty result)
-                        else
-                            Expect.equal result value
-
-                    Err string ->
-                        Expect.fail string
-        )
+    Generic.jsonRoundTrips Fuzz.boundingBox2d
+        Encode.boundingBox2d
+        Decode.boundingBox2d
 
 
 fromPointsConsistentWithContaining : Test
 fromPointsConsistentWithContaining =
-    Test.fuzz2 Fuzz.point2d
+    Test.fuzz3 Fuzz.point2d
         Fuzz.point2d
-        "'containing' is consistent with 'fromPoints'"
-        (\first second ->
-            BoundingBox2d.containing [ first, second ]
-                |> Expect.boundingBox2d (BoundingBox2d.fromPoints first second)
+        Fuzz.point2d
+        "'containing' is consistent with 'containing3'"
+        (\first second third ->
+            let
+                list =
+                    [ first, second, third ]
+
+                tuple =
+                    ( first, second, third )
+            in
+                BoundingBox2d.containing list
+                    |> Expect.equal (Just (BoundingBox2d.containing3 tuple))
         )
 
 
@@ -63,45 +54,45 @@ intersectionConsistentWithOverlaps =
         "'intersection' is consistent with 'overlaps'"
         (\first second ->
             let
-                intersection =
-                    BoundingBox2d.intersection first second
-
                 overlaps =
                     BoundingBox2d.overlaps first second
+
+                intersection =
+                    BoundingBox2d.intersection first second
             in
-                case ( overlaps, BoundingBox2d.isEmpty intersection ) of
-                    ( True, False ) ->
+                case ( overlaps, intersection ) of
+                    ( True, Just _ ) ->
                         Expect.pass
 
-                    ( False, True ) ->
+                    ( False, Nothing ) ->
                         Expect.pass
 
-                    ( True, True ) ->
+                    ( True, Nothing ) ->
                         Expect.fail
                             (toString first
                                 ++ " and "
                                 ++ toString second
                                 ++ " considered to overlap, "
-                                ++ "but intersection is empty"
+                                ++ "but intersection is Nothing"
                             )
 
-                    ( False, False ) ->
+                    ( False, Just intersectionBox ) ->
                         Expect.fail
                             (toString first
                                 ++ " and "
                                 ++ toString second
                                 ++ " not considered to overlap, "
-                                ++ " but have non-empty intersection "
-                                ++ toString intersection
+                                ++ " but have valid intersection "
+                                ++ toString intersectionBox
                             )
         )
 
 
 hullContainsInputs : Test
 hullContainsInputs =
-    Test.fuzz2 Fuzz.nonEmptyBoundingBox2d
-        Fuzz.nonEmptyBoundingBox2d
-        "hull of two non-empty boxes contains both input boxes"
+    Test.fuzz2 Fuzz.boundingBox2d
+        Fuzz.boundingBox2d
+        "hull of two boxes contains both input boxes"
         (\first second ->
             let
                 hull =

@@ -189,32 +189,16 @@ sketchPlane3d sketchPlane =
         ]
 
 
-{-| Encode a Float in such a way that infinite and NaN values can be preserved,
-by falling back to string constants "Infinity", "-Infinity" and "NaN" for
-special values.
--}
-extremum : Float -> Value
-extremum value =
-    if isNaN value then
-        Encode.string "NaN"
-    else if value == 1 / 0 then
-        Encode.string "Infinity"
-    else if value == -1 / 0 then
-        Encode.string "-Infinity"
-    else
-        Encode.float value
-
-
 {-| Encode a BoundingBox2d as an object with 'minX', 'maxX', 'minY' and 'maxY'
 fields.
 -}
 boundingBox2d : BoundingBox2d -> Value
 boundingBox2d boundingBox =
     Encode.object
-        [ ( "minX", extremum (BoundingBox2d.minX boundingBox) )
-        , ( "maxX", extremum (BoundingBox2d.maxX boundingBox) )
-        , ( "minY", extremum (BoundingBox2d.minY boundingBox) )
-        , ( "maxY", extremum (BoundingBox2d.maxY boundingBox) )
+        [ ( "minX", Encode.float (BoundingBox2d.minX boundingBox) )
+        , ( "maxX", Encode.float (BoundingBox2d.maxX boundingBox) )
+        , ( "minY", Encode.float (BoundingBox2d.minY boundingBox) )
+        , ( "maxY", Encode.float (BoundingBox2d.maxY boundingBox) )
         ]
 
 
@@ -224,10 +208,10 @@ boundingBox2d boundingBox =
 boundingBox3d : BoundingBox3d -> Value
 boundingBox3d boundingBox =
     Encode.object
-        [ ( "minX", extremum (BoundingBox3d.minX boundingBox) )
-        , ( "maxX", extremum (BoundingBox3d.maxX boundingBox) )
-        , ( "minY", extremum (BoundingBox3d.minY boundingBox) )
-        , ( "maxY", extremum (BoundingBox3d.maxY boundingBox) )
-        , ( "minZ", extremum (BoundingBox3d.minZ boundingBox) )
-        , ( "maxZ", extremum (BoundingBox3d.maxZ boundingBox) )
+        [ ( "minX", Encode.float (BoundingBox3d.minX boundingBox) )
+        , ( "maxX", Encode.float (BoundingBox3d.maxX boundingBox) )
+        , ( "minY", Encode.float (BoundingBox3d.minY boundingBox) )
+        , ( "maxY", Encode.float (BoundingBox3d.maxY boundingBox) )
+        , ( "minZ", Encode.float (BoundingBox3d.minZ boundingBox) )
+        , ( "maxZ", Encode.float (BoundingBox3d.maxZ boundingBox) )
         ]

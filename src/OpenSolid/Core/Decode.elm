@@ -175,32 +175,6 @@ sketchPlane3d =
         ("yDirection" := direction3d)
 
 
-{-| Decoder for Float values with special-case handling for infinite and NaN
-values (encoded as string constants "Infinity", "-Infinity" or "NaN").
--}
-extremum : Decoder Float
-extremum =
-    let
-        parse string =
-            case string of
-                "NaN" ->
-                    Ok (0 / 0)
-
-                "Infinity" ->
-                    Ok (1 / 0)
-
-                "-Infinity" ->
-                    Ok (-1 / 0)
-
-                _ ->
-                    Err "Expected 'NaN', 'Infinity' or '-Infinity'"
-
-        specialValueDecoder =
-            Decode.customDecoder Decode.string parse
-    in
-        Decode.oneOf [ specialValueDecoder, Decode.float ]
-
-
 {-| Decoder for BoundingBox2d values from objects with 'minX', 'maxX', 'minY'
 and 'maxY' fields.
 -}
@@ -215,10 +189,10 @@ boundingBox2d =
                 , maxY = maxY
                 }
         )
-        ("minX" := extremum)
-        ("maxX" := extremum)
-        ("minY" := extremum)
-        ("maxY" := extremum)
+        ("minX" := Decode.float)
+        ("maxX" := Decode.float)
+        ("minY" := Decode.float)
+        ("maxY" := Decode.float)
 
 
 {-| Decoder for BoundingBox3d values from objects with 'minX', 'maxX', 'minY',
@@ -237,9 +211,9 @@ boundingBox3d =
                 , maxZ = maxZ
                 }
         )
-        ("minX" := extremum)
-        ("maxX" := extremum)
-        ("minY" := extremum)
-        ("maxY" := extremum)
-        ("minZ" := extremum)
-        ("maxZ" := extremum)
+        ("minX" := Decode.float)
+        ("maxX" := Decode.float)
+        ("minY" := Decode.float)
+        ("maxY" := Decode.float)
+        ("minZ" := Decode.float)
+        ("maxZ" := Decode.float)

@@ -23,9 +23,7 @@ module OpenSolid.Core.Fuzz
         , frame3d
         , sketchPlane3d
         , boundingBox2d
-        , nonEmptyBoundingBox2d
         , boundingBox3d
-        , nonEmptyBoundingBox3d
         )
 
 import Fuzz exposing (Fuzzer)
@@ -183,13 +181,6 @@ interval =
 
 boundingBox2d : Fuzzer BoundingBox2d
 boundingBox2d =
-    Fuzz.frequencyOrCrash
-        [ ( 1, nonEmptyBoundingBox2d )
-        , ( 1, Fuzz.constant BoundingBox2d.empty )
-        ]
-
-
-nonEmptyBoundingBox2d =
     let
         boundingBox ( minX, maxX ) ( minY, maxY ) =
             BoundingBox2d
@@ -204,14 +195,6 @@ nonEmptyBoundingBox2d =
 
 boundingBox3d : Fuzzer BoundingBox3d
 boundingBox3d =
-    Fuzz.frequencyOrCrash
-        [ ( 1, nonEmptyBoundingBox3d )
-        , ( 1, Fuzz.constant BoundingBox3d.empty )
-        ]
-
-
-nonEmptyBoundingBox3d : Fuzzer BoundingBox3d
-nonEmptyBoundingBox3d =
     let
         boundingBox ( minX, maxX ) ( minY, maxY ) ( minZ, maxZ ) =
             BoundingBox3d
