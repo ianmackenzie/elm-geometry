@@ -109,6 +109,26 @@ hullContainsInputs =
         )
 
 
+intersectionIsValidOrNothing : Test
+intersectionIsValidOrNothing =
+    Test.fuzz2 Fuzz.boundingBox3d
+        Fuzz.boundingBox3d
+        "intersection of two boxes is either Nothing or Just a valid box"
+        (\first second ->
+            case (BoundingBox3d.intersection first second) of
+                Nothing ->
+                    Expect.pass
+
+                Just result ->
+                    let
+                        { minX, maxX, minY, maxY, minZ, maxZ } =
+                            BoundingBox3d.extrema result
+                    in
+                        Expect.true "expected extrema to be correctly ordered"
+                            ((minX <= maxX) && (minY <= maxY) && (minZ <= maxZ))
+        )
+
+
 suite : Test
 suite =
     Test.describe "OpenSolid.Core.BoundingBox3d"
@@ -116,6 +136,7 @@ suite =
         , fromPointsConsistentWithContaining
         , intersectionConsistentWithOverlaps
         , hullContainsInputs
+        , intersectionIsValidOrNothing
         ]
 
 
