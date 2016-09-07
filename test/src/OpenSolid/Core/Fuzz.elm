@@ -69,14 +69,14 @@ direction3d =
         phi =
             Fuzz.map acos t
 
-        direction ( theta, phi ) =
+        direction theta phi =
             Direction3d
                 ( sin phi * cos theta
                 , sin phi * sin theta
                 , cos phi
                 )
     in
-        Fuzz.map direction (Fuzz.tuple ( theta, phi ))
+        Fuzz.map2 direction theta phi
 
 
 point2d : Fuzzer Point2d
@@ -92,65 +92,50 @@ point3d =
 axis2d : Fuzzer Axis2d
 axis2d =
     let
-        tuple =
-            Fuzz.tuple ( point2d, direction2d )
-
-        tupleToAxis ( originPoint, direction ) =
+        axis originPoint direction =
             Axis2d { originPoint = originPoint, direction = direction }
     in
-        Fuzz.map tupleToAxis tuple
+        Fuzz.map2 axis point2d direction2d
 
 
 axis3d : Fuzzer Axis3d
 axis3d =
     let
-        tuple =
-            Fuzz.tuple ( point3d, direction3d )
-
-        tupleToAxis ( originPoint, direction ) =
+        axis originPoint direction =
             Axis3d { originPoint = originPoint, direction = direction }
     in
-        Fuzz.map tupleToAxis tuple
+        Fuzz.map2 axis point3d direction3d
 
 
 plane3d : Fuzzer Plane3d
 plane3d =
     let
-        tuple =
-            Fuzz.tuple ( point3d, direction3d )
-
-        tupleToPlane ( originPoint, normalDirection ) =
+        plane originPoint normalDirection =
             Plane3d
                 { originPoint = originPoint
                 , normalDirection = normalDirection
                 }
     in
-        Fuzz.map tupleToPlane tuple
+        Fuzz.map2 plane point3d direction3d
 
 
 frame2d : Fuzzer Frame2d
 frame2d =
     let
-        tuple =
-            Fuzz.tuple ( point2d, direction2d )
-
-        tupleToFrame ( originPoint, xDirection ) =
+        frame originPoint xDirection =
             Frame2d
                 { originPoint = originPoint
                 , xDirection = xDirection
                 , yDirection = Direction2d.perpendicularTo xDirection
                 }
     in
-        Fuzz.map tupleToFrame tuple
+        Fuzz.map2 frame point2d direction2d
 
 
 frame3d : Fuzzer Frame3d
 frame3d =
     let
-        tuple =
-            Fuzz.tuple ( point3d, direction3d )
-
-        tupleToFrame ( originPoint, xDirection ) =
+        frame originPoint xDirection =
             let
                 yDirection =
                     Direction3d.perpendicularTo xDirection
@@ -168,58 +153,45 @@ frame3d =
                     , zDirection = zDirection
                     }
     in
-        Fuzz.map tupleToFrame tuple
+        Fuzz.map2 frame point3d direction3d
 
 
 sketchPlane3d : Fuzzer SketchPlane3d
 sketchPlane3d =
     let
-        tuple =
-            Fuzz.tuple ( point3d, direction3d )
-
-        tupleToFrame ( originPoint, xDirection ) =
+        sketchPlane originPoint xDirection =
             SketchPlane3d
                 { originPoint = originPoint
                 , xDirection = xDirection
                 , yDirection = Direction3d.perpendicularTo xDirection
                 }
     in
-        Fuzz.map tupleToFrame tuple
+        Fuzz.map2 sketchPlane point3d direction3d
 
 
 interval : Fuzzer ( Float, Float )
 interval =
     let
-        tuple =
-            Fuzz.tuple ( scalar, scalar )
-
-        ordered ( firstValue, secondValue ) =
+        ordered firstValue secondValue =
             if firstValue <= secondValue then
                 ( firstValue, secondValue )
             else
                 ( secondValue, firstValue )
     in
-        Fuzz.map ordered tuple
+        Fuzz.map2 ordered scalar scalar
 
 
 boundingBox2d : Fuzzer BoundingBox2d
 boundingBox2d =
-    let
-        emptyBoundingBox2d =
-            Fuzz.map (always BoundingBox2d.empty) Fuzz.unit
-    in
-        Fuzz.frequencyOrCrash
-            [ ( 1, nonEmptyBoundingBox2d )
-            , ( 1, emptyBoundingBox2d )
-            ]
+    Fuzz.frequencyOrCrash
+        [ ( 1, nonEmptyBoundingBox2d )
+        , ( 1, Fuzz.constant BoundingBox2d.empty )
+        ]
 
 
 nonEmptyBoundingBox2d =
     let
-        intervals =
-            Fuzz.tuple ( interval, interval )
-
-        intervalsToBoundingBox ( ( minX, maxX ), ( minY, maxY ) ) =
+        boundingBox ( minX, maxX ) ( minY, maxY ) =
             BoundingBox2d
                 { minX = minX
                 , maxX = maxX
@@ -227,45 +199,28 @@ nonEmptyBoundingBox2d =
                 , maxY = maxY
                 }
     in
-        Fuzz.map intervalsToBoundingBox intervals
+        Fuzz.map2 boundingBox interval interval
 
 
 boundingBox3d : Fuzzer BoundingBox3d
 boundingBox3d =
-    let
-        emptyBoundingBox3d =
-            Fuzz.map (always BoundingBox3d.empty) Fuzz.unit
-    in
-        Fuzz.frequencyOrCrash
-            [ ( 1, nonEmptyBoundingBox3d )
-            , ( 1, emptyBoundingBox3d )
-            ]
+    Fuzz.frequencyOrCrash
+        [ ( 1, nonEmptyBoundingBox3d )
+        , ( 1, Fuzz.constant BoundingBox3d.empty )
+        ]
 
 
 nonEmptyBoundingBox3d : Fuzzer BoundingBox3d
 nonEmptyBoundingBox3d =
     let
-        intervals =
-            Fuzz.tuple3 ( interval, interval, interval )
-
-        intervalsToBoundingBox ( xInterval, yInterval, zInterval ) =
-            let
-                ( minX, maxX ) =
-                    xInterval
-
-                ( minY, maxY ) =
-                    yInterval
-
-                ( minZ, maxZ ) =
-                    zInterval
-            in
-                BoundingBox3d
-                    { minX = minX
-                    , maxX = maxX
-                    , minY = minY
-                    , maxY = maxY
-                    , minZ = minZ
-                    , maxZ = maxZ
-                    }
+        boundingBox ( minX, maxX ) ( minY, maxY ) ( minZ, maxZ ) =
+            BoundingBox3d
+                { minX = minX
+                , maxX = maxX
+                , minY = minY
+                , maxY = maxY
+                , minZ = minZ
+                , maxZ = maxZ
+                }
     in
-        Fuzz.map intervalsToBoundingBox intervals
+        Fuzz.map3 boundingBox interval interval interval
