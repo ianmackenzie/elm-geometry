@@ -85,11 +85,30 @@ import OpenSolid.Direction2d as Direction2d
 import OpenSolid.Axis2d as Axis2d
 
 
+{-| The global XY frame.
+
+    Frame2d.xy ==
+        Frame2d
+            { originPoint = Point2d.origin
+            , xDirection = Direction2d.x
+            , yDirection = Direction2d.y
+            }
+-}
 xy : Frame2d
 xy =
     at Point2d.origin
 
 
+{-| Construct a frame aligned with the global XY frame but with the given point
+as its origin point.
+
+    Frame2d.at (Point2d ( 2, 3 )) ==
+        Frame2d
+            { originPoint = Point2d ( 2, 3 )
+            , xDirection = Direction2d.x
+            , yDirection = Direction2d.y
+            }
+-}
 at : Point2d -> Frame2d
 at point =
     Frame2d
@@ -99,31 +118,68 @@ at point =
         }
 
 
+{-| Get the origin point of a given frame.
+
+    Frame2d.originPoint Frame2d.xy ==
+        Point2d.origin
+-}
 originPoint : Frame2d -> Point2d
 originPoint (Frame2d properties) =
     properties.originPoint
 
 
+{-| Get the X direction of a given frame.
+
+    Frame2d.xDirection Frame2d.xy ==
+        Direction2d.x
+-}
 xDirection : Frame2d -> Direction2d
 xDirection (Frame2d properties) =
     properties.xDirection
 
 
+{-| Get the Y direction of a given frame.
+
+    Frame2d.yDirection Frame2d.xy ==
+        Direction2d.y
+-}
 yDirection : Frame2d -> Direction2d
 yDirection (Frame2d properties) =
     properties.yDirection
 
 
+{-| Get the X axis of a given frame (the axis formed from the frame's origin
+point and X direction).
+
+    Frame2d.xAxis Frame2d.xy ==
+        Axis2d.x
+-}
 xAxis : Frame2d -> Axis2d
 xAxis frame =
     Axis2d { originPoint = originPoint frame, direction = xDirection frame }
 
 
+{-| Get the Y axis of a given frame (the axis formed from the frame's origin
+point and Y direction).
+
+    Frame2d.yAxis Frame2d.xy ==
+        Axis2d.y
+-}
 yAxis : Frame2d -> Axis2d
 yAxis frame =
     Axis2d { originPoint = originPoint frame, direction = yDirection frame }
 
 
+{-| Reverse the X direction of a frame, leaving its Y direction and origin point
+the same.
+
+    Frame2d.flipX Frame2d.xy ==
+        Frame2d
+            { originPoint = Point2d.origin
+            , xDirection = Direction2d.negate Direction2d.x
+            , yDirection = Direction2d.y
+            }
+-}
 flipX : Frame2d -> Frame2d
 flipX frame =
     Frame2d
@@ -133,6 +189,16 @@ flipX frame =
         }
 
 
+{-| Reverse the Y direction of a frame, leaving its X direction and origin point
+the same.
+
+    Frame2d.flipY Frame2d.xy ==
+        Frame2d
+            { originPoint = Point2d.origin
+            , xDirection = Direction2d.x
+            , yDirection = Direction2d.negate Direction2d.y
+            }
+-}
 flipY : Frame2d -> Frame2d
 flipY frame =
     Frame2d
@@ -142,6 +208,20 @@ flipY frame =
         }
 
 
+{-| Rotate a frame counterclockwise by a given angle around the frame's own
+origin point. The resulting frame will have the same origin point, and its X and
+Y directions will be rotated by the given angle.
+
+    frame =
+        Frame2d.at (Point2d ( 1, 1 ))
+
+    Frame2d.rotateBy (degrees 45) frame ==
+        Frame2d
+            { originPoint = Point2d ( 1, 1 )
+            , xDirection = Direction2d ( 0.7071, 0.7071 )
+            , yDirection = Direction2d ( -0.7071, 0.7071 )
+            }
+-}
 rotateBy : Float -> Frame2d -> Frame2d
 rotateBy angle frame =
     let
@@ -155,6 +235,20 @@ rotateBy angle frame =
             }
 
 
+{-| Rotate a frame counterclockwise around a given point by a given angle. The
+frame's origin point will be rotated around the given point by the given angle,
+and its X and Y basis directions will be rotated by the given angle.
+
+    frame =
+        Frame2d.at (Point2d ( 1, 1 ))
+
+    Frame2d.rotateAround Point2d.origin (degrees 45) frame ==
+        Frame2d
+            { originPoint = Point2d ( 0, 1.4142 )
+            , xDirection = Direction2d ( 0.7071, 0.7071 )
+            , yDirection = Direction2d ( -0.7071, 0.7071 )
+            }
+-}
 rotateAround : Point2d -> Float -> Frame2d -> Frame2d
 rotateAround centerPoint angle =
     let
@@ -172,6 +266,17 @@ rotateAround centerPoint angle =
                 }
 
 
+{-| Translate a frame by a given displacement.
+
+    frame =
+        Frame2d.at (Point2d ( 2, 3 ))
+
+    displacement =
+        Vector2d ( 1, 1 )
+
+    Frame2d.translateBy displacement frame ==
+        Frame2d.at (Point2d ( 3, 4 ))
+-}
 translateBy : Vector2d -> Frame2d -> Frame2d
 translateBy vector frame =
     Frame2d
@@ -181,6 +286,23 @@ translateBy vector frame =
         }
 
 
+{-| Translate a frame along one of its own axes by a given distance.
+
+The first argument is a function that will be called on the given frame to
+determine the axis to translate along; the vast majority of the time this will
+either by `Frame2d.xAxis` or `Frame2d.yAxis`. The second argument is the
+distance to translate along the given axis.
+
+This function is convenient when constructing frames via a series of
+transformations. For example,
+
+    Frame2d.at (Point2d ( 2, 0 ))
+        |> Frame2d.rotateBy (degrees 45)
+        |> Frame2d.translateAlongOwn Frame2d.xAxis 2
+
+means 'construct a frame at the point (2, 0), rotate it about its own origin
+point by 45 degrees, then translate it alongs its own axis by 2 units'.
+-}
 translateAlongOwn : (Frame2d -> Axis2d) -> Float -> Frame2d -> Frame2d
 translateAlongOwn axis distance frame =
     let
@@ -190,6 +312,22 @@ translateAlongOwn axis distance frame =
         translateBy displacement frame
 
 
+{-| Move a frame so that it has the given origin point.
+
+    frame =
+        Frame2d
+            { point = Point2d ( 2, 3 )
+            , xDirection = Direction2d ( 0.8, 0.6 )
+            , yDirection = Direction2d ( -0.6, 0.8 )
+            }
+
+    Frame2d.moveTo (Point2d ( 1, 1 )) frame ==
+        Frame2d
+            { point = Point2d ( 1, 1 )
+            , xDirection = Direction2d ( 0.8, 0.6 )
+            , yDirection = Direction2d ( -0.6, 0.8 )
+            }
+-}
 moveTo : Point2d -> Frame2d -> Frame2d
 moveTo newOrigin frame =
     Frame2d
@@ -199,6 +337,18 @@ moveTo newOrigin frame =
         }
 
 
+{-| Mirror a frame across an axis.
+
+    frame =
+        Frame2d.at (Point2d ( 2, 3 ))
+
+    Frame2d.mirrorAcross Axis2d.x frame ==
+        Frame2d
+            { originPoint = Point2d ( 2, -3 )
+            , xDirection = Direction2d.x
+            , yDirection = Direction2d.negate Direction2d.y
+            }
+-}
 mirrorAcross : Axis2d -> Frame2d -> Frame2d
 mirrorAcross axis =
     let
@@ -216,6 +366,41 @@ mirrorAcross axis =
                 }
 
 
+{-| Express one frame relative to another; the result will be the second frame
+expressed in local coordinates relative to the first. This is one of the most
+conceptually tricky operations in this library!
+
+For example, consider a reference frame at the point (2, 3) with its X direction
+opposite to the global X direction:
+
+    referenceFrame =
+        Frame2d
+            { originPoint = Point2d ( 2, 3 )
+            , xDirection = Direction2d.negate Direction2d.x
+            , yDirection = Direction2d.y
+            }
+
+Now, consider a frame at the point (4, 4), aligned with the global X and Y
+directions:
+
+    frame =
+        Frame2d
+            { originPoint = Point2d ( 4, 4 )
+            , xDirection = Direction2d.x
+            , yDirection = Direction2d.y
+            }
+
+Relative to the reference frame, the origin point of this frame is two units
+'behind' and one unit 'above' to origin point of the reference frame and its
+X direction is in the 'negative' X direction. Therefore,
+
+    Frame2d.relativeTo referenceFrame frame ==
+        Frame2d
+            { originPoint = Point2d ( -2, 1 )
+            , xDirection = Direction2d.negate Direction2d.x
+            , yDirection = Direction2d.y
+            }
+-}
 relativeTo : Frame2d -> Frame2d -> Frame2d
 relativeTo otherFrame =
     let
