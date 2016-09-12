@@ -10,9 +10,14 @@ directions (type-safe unit vectors), points, axes, planes and frames (coordinate
 systems) in 2D and 3D:
 
 ```elm
-Vector3d.zero == Vector3d ( 0, 0, 0 )
-Direction2d.y == Direction2d ( 0, 1 )
-Point2d.origin == Point2d ( 0, 0 )
+Vector3d.zero ==
+    Vector3d ( 0, 0, 0 )
+
+Direction2d.y ==
+    Direction2d ( 0, 1 )
+
+Point2d.origin ==
+    Point2d ( 0, 0 )
 
 Axis3d.z ==
     Axis3d
