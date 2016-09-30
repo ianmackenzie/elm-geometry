@@ -125,65 +125,6 @@ more geometric than mathematical focus. For example, distinct types are used for
 points, vectors and directions which many other libraries treat as a single
 generic vector type.
 
-### Transformations
-
-Many of the functions in this library deal with different kinds of
-transformations - translations, rotations, scalings, mirrors, and projections.
-Unlike most other geometric libraries, however, OpenSolid does not use matrices
-to define transformations (in fact, matrices are not used anywhere). Instead of
-having functions to create transformation matrices which can then later be
-applied to values, transformations in OpenSolid are just functions that can be
-used directly:
-
-```elm
-rotatedPoint = Point2d.rotateAround Point2d.origin (degrees 45) originalPoint
-```
-
-This has many advantages. First, partial function application means that
-transformations can be directly used with higher-order functions like
-`List.map`:
-
-```elm
-pointsOnXAxis =
-    [ Point2d ( 1, 0 )
-    , Point2d ( 2, 0 )
-    , Point2d ( 3, 0 )
-    ]
-
-rotateNinetyDegrees : Point2d -> Point2d
-rotateNinetyDegrees =
-    Point2d.rotateAround Point2d.origin (degrees 90)
-
-pointsOnYAxis =
-    List.map rotateNinetyDegrees pointsOnXAxis
-
-pointsOnYAxis ==
-    [ Point2d ( 0, 1 )
-    , Point2d ( 0, 2 )
-    , Point2d ( 0, 3 )
-    ]
-```
-
-Second, transformations can be composed like any other functions to produce
-composite transformations (no more having to remember multiplication order of
-matrices!):
-
-```elm
-rotateThenScale : Point2d -> Point2d
-rotateThenScale =
-    Point2d.rotateAround Point2d.origin (degrees 90)
-        >> Point2d.scaleAbout Point2d.origin 1.5
-
-rotateThenScale (Point2d ( 1, 0 )) ==
-    Point2d ( 0, 1.5 )
-
-rotateThenScale (Point2d ( 0, 2 )) ==
-    Point2d ( -3, 0 )
-```
-
-(Yes, in this particular case it doesn't actually matter whether you rotate
-first and then scale or the other way around, but you get the idea.)
-
 ### Directions
 
 OpenSolid uses the concept of a 'direction' where other libraries typically use
