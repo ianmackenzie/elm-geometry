@@ -13,8 +13,9 @@ module OpenSolid.BoundingBox2d
         , midY
         , point
         , midpoint
-        , overlaps
         , contains
+        , overlaps
+        , isContainedIn
         , hull
         , intersection
         )
@@ -147,6 +148,16 @@ midpoint =
     point ( midX, midY )
 
 
+contains : Point2d -> BoundingBox2d -> Bool
+contains point boundingBox =
+    let
+        ( x, y ) =
+            Point2d.coordinates point
+    in
+        (minX boundingBox <= x && x <= maxX boundingBox)
+            && (minY boundingBox <= y && y <= maxY boundingBox)
+
+
 overlaps : BoundingBox2d -> BoundingBox2d -> Bool
 overlaps other boundingBox =
     (minX boundingBox <= maxX other)
@@ -155,12 +166,10 @@ overlaps other boundingBox =
         && (maxY boundingBox >= minY other)
 
 
-contains : BoundingBox2d -> BoundingBox2d -> Bool
-contains other boundingBox =
-    (minX boundingBox <= minX other)
-        && (maxX boundingBox >= maxX other)
-        && (minY boundingBox <= minY other)
-        && (maxY boundingBox >= maxY other)
+isContainedIn : BoundingBox2d -> BoundingBox2d -> Bool
+isContainedIn other boundingBox =
+    (minX other <= minX boundingBox && maxX boundingBox <= maxX other)
+        && (minY other <= minY boundingBox && maxY boundingBox <= maxY other)
 
 
 hull : BoundingBox2d -> BoundingBox2d -> BoundingBox2d

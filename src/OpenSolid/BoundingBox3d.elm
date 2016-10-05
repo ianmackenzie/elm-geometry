@@ -16,8 +16,9 @@ module OpenSolid.BoundingBox3d
         , midZ
         , point
         , midpoint
-        , overlaps
         , contains
+        , overlaps
+        , isContainedIn
         , hull
         , intersection
         )
@@ -186,6 +187,17 @@ midpoint =
     point ( midX, midY, midZ )
 
 
+contains : Point3d -> BoundingBox3d -> Bool
+contains point boundingBox =
+    let
+        ( x, y, z ) =
+            Point3d.coordinates point
+    in
+        (minX boundingBox <= x && x <= maxX boundingBox)
+            && (minY boundingBox <= y && y <= maxY boundingBox)
+            && (minZ boundingBox <= z && z <= maxZ boundingBox)
+
+
 overlaps : BoundingBox3d -> BoundingBox3d -> Bool
 overlaps other boundingBox =
     (minX boundingBox <= maxX other)
@@ -196,14 +208,11 @@ overlaps other boundingBox =
         && (maxZ boundingBox >= minZ other)
 
 
-contains : BoundingBox3d -> BoundingBox3d -> Bool
-contains other boundingBox =
-    (minX boundingBox <= minX other)
-        && (maxX boundingBox >= maxX other)
-        && (minY boundingBox <= minY other)
-        && (maxY boundingBox >= maxY other)
-        && (minZ boundingBox <= minZ other)
-        && (maxZ boundingBox >= maxZ other)
+isContainedIn : BoundingBox3d -> BoundingBox3d -> Bool
+isContainedIn other boundingBox =
+    (minX other <= minX boundingBox && maxX boundingBox <= maxX other)
+        && (minY other <= minY boundingBox && maxY boundingBox <= maxY other)
+        && (minZ other <= minZ boundingBox && maxZ boundingBox <= maxZ other)
 
 
 hull : BoundingBox3d -> BoundingBox3d -> BoundingBox3d

@@ -98,14 +98,11 @@ hullContainsInputs =
                 hull =
                     BoundingBox3d.hull first second
 
-                containsFirst =
-                    BoundingBox3d.contains first hull
-
-                containsSecond =
-                    BoundingBox3d.contains second hull
+                isContained =
+                    BoundingBox3d.isContainedIn hull
             in
                 Expect.true "Bounding box hull does not contain both inputs"
-                    (containsFirst && containsSecond)
+                    (isContained first && isContained second)
         )
 
 
