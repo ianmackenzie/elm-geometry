@@ -12,6 +12,10 @@ module OpenSolid.Core.Encode
         , frame2d
         , frame3d
         , sketchPlane3d
+        , lineSegment2d
+        , lineSegment3d
+        , triangle2d
+        , triangle3d
         , boundingBox2d
         , boundingBox3d
         )
@@ -30,6 +34,10 @@ import OpenSolid.Plane3d as Plane3d
 import OpenSolid.Frame2d as Frame2d
 import OpenSolid.Frame3d as Frame3d
 import OpenSolid.SketchPlane3d as SketchPlane3d
+import OpenSolid.LineSegment2d as LineSegment2d
+import OpenSolid.LineSegment3d as LineSegment3d
+import OpenSolid.Triangle2d as Triangle2d
+import OpenSolid.Triangle3d as Triangle3d
 import OpenSolid.BoundingBox2d as BoundingBox2d
 import OpenSolid.BoundingBox3d as BoundingBox3d
 
@@ -187,6 +195,46 @@ sketchPlane3d sketchPlane =
         , ( "xDirection", direction3d (SketchPlane3d.xDirection sketchPlane) )
         , ( "yDirection", direction3d (SketchPlane3d.yDirection sketchPlane) )
         ]
+
+
+lineSegment2d : LineSegment2d -> Value
+lineSegment2d lineSegment =
+    Encode.object
+        [ ( "startPoint", point2d (LineSegment2d.startPoint lineSegment) )
+        , ( "endPoint", point2d (LineSegment2d.endPoint lineSegment) )
+        ]
+
+
+lineSegment3d : LineSegment3d -> Value
+lineSegment3d lineSegment =
+    Encode.object
+        [ ( "startPoint", point3d (LineSegment3d.startPoint lineSegment) )
+        , ( "endPoint", point3d (LineSegment3d.endPoint lineSegment) )
+        ]
+
+
+triangle2d : Triangle2d -> Value
+triangle2d triangle =
+    let
+        ( v1, v2, v3 ) =
+            Triangle2d.vertices triangle
+
+        vertices =
+            Encode.list [ point2d v1, point2d v2, point2d v3 ]
+    in
+        Encode.object [ ( "vertices", vertices ) ]
+
+
+triangle3d : Triangle3d -> Value
+triangle3d triangle =
+    let
+        ( v1, v2, v3 ) =
+            Triangle3d.vertices triangle
+
+        vertices =
+            Encode.list [ point3d v1, point3d v2, point3d v3 ]
+    in
+        Encode.object [ ( "vertices", vertices ) ]
 
 
 {-| Encode a BoundingBox2d as an object with 'minX', 'maxX', 'minY' and 'maxY'

@@ -21,17 +21,19 @@ module OpenSolid.Core.Compare
         , point3d
         , point3dWithin
         , axis2d
-        , axis2dWithin
         , axis3d
-        , axis3dWithin
         , plane3d
-        , plane3dWithin
         , frame2d
-        , frame2dWithin
         , frame3d
-        , frame3dWithin
         , sketchPlane3d
-        , sketchPlane3dWithin
+        , lineSegment2d
+        , lineSegment2dWithin
+        , lineSegment3d
+        , lineSegment3dWithin
+        , triangle2d
+        , triangle2dWithin
+        , triangle3d
+        , triangle3dWithin
         , boundingBox2d
         , boundingBox2dWithin
         , boundingBox3d
@@ -51,6 +53,10 @@ import OpenSolid.Plane3d as Plane3d
 import OpenSolid.Frame2d as Frame2d
 import OpenSolid.Frame3d as Frame3d
 import OpenSolid.SketchPlane3d as SketchPlane3d
+import OpenSolid.LineSegment2d as LineSegment2d
+import OpenSolid.LineSegment3d as LineSegment3d
+import OpenSolid.Triangle2d as Triangle2d
+import OpenSolid.Triangle3d as Triangle3d
 import OpenSolid.BoundingBox2d as BoundingBox2d
 import OpenSolid.BoundingBox3d as BoundingBox3d
 
@@ -160,84 +166,118 @@ point3dWithin tolerance first second =
 
 axis2d : Comparator Axis2d
 axis2d =
-    axis2dWithin defaultTolerance
-
-
-axis2dWithin : Float -> Comparator Axis2d
-axis2dWithin tolerance =
-    allOf
-        [ by (point2dWithin tolerance) Axis2d.originPoint
-        , by (direction2dWithin tolerance) Axis2d.direction
-        ]
+    allOf [ by point2d Axis2d.originPoint, by direction2d Axis2d.direction ]
 
 
 axis3d : Comparator Axis3d
 axis3d =
-    axis3dWithin defaultTolerance
-
-
-axis3dWithin : Float -> Comparator Axis3d
-axis3dWithin tolerance =
-    allOf
-        [ by (point3dWithin tolerance) Axis3d.originPoint
-        , by (direction3dWithin tolerance) Axis3d.direction
-        ]
+    allOf [ by point3d Axis3d.originPoint, by direction3d Axis3d.direction ]
 
 
 plane3d : Comparator Plane3d
 plane3d =
-    plane3dWithin defaultTolerance
-
-
-plane3dWithin : Float -> Comparator Plane3d
-plane3dWithin tolerance =
     allOf
-        [ by (point3dWithin tolerance) Plane3d.originPoint
-        , by (direction3dWithin tolerance) Plane3d.normalDirection
+        [ by point3d Plane3d.originPoint
+        , by direction3d Plane3d.normalDirection
         ]
 
 
 frame2d : Comparator Frame2d
 frame2d =
-    frame2dWithin defaultTolerance
-
-
-frame2dWithin : Float -> Comparator Frame2d
-frame2dWithin tolerance =
     allOf
-        [ by (point2dWithin tolerance) Frame2d.originPoint
-        , by (direction2dWithin tolerance) Frame2d.xDirection
-        , by (direction2dWithin tolerance) Frame2d.yDirection
+        [ by point2d Frame2d.originPoint
+        , by direction2d Frame2d.xDirection
+        , by direction2d Frame2d.yDirection
         ]
 
 
 frame3d : Comparator Frame3d
 frame3d =
-    frame3dWithin defaultTolerance
-
-
-frame3dWithin : Float -> Comparator Frame3d
-frame3dWithin tolerance =
     allOf
-        [ by (point3dWithin tolerance) Frame3d.originPoint
-        , by (direction3dWithin tolerance) Frame3d.xDirection
-        , by (direction3dWithin tolerance) Frame3d.yDirection
-        , by (direction3dWithin tolerance) Frame3d.zDirection
+        [ by point3d Frame3d.originPoint
+        , by direction3d Frame3d.xDirection
+        , by direction3d Frame3d.yDirection
+        , by direction3d Frame3d.zDirection
         ]
 
 
 sketchPlane3d : Comparator SketchPlane3d
 sketchPlane3d =
-    sketchPlane3dWithin defaultTolerance
-
-
-sketchPlane3dWithin : Float -> Comparator SketchPlane3d
-sketchPlane3dWithin tolerance =
     allOf
-        [ by (point3dWithin tolerance) SketchPlane3d.originPoint
-        , by (direction3dWithin tolerance) SketchPlane3d.xDirection
-        , by (direction3dWithin tolerance) SketchPlane3d.yDirection
+        [ by point3d SketchPlane3d.originPoint
+        , by direction3d SketchPlane3d.xDirection
+        , by direction3d SketchPlane3d.yDirection
         ]
+
+
+lineSegment2d : Comparator LineSegment2d
+lineSegment2d =
+    lineSegment2dWithin defaultTolerance
+
+
+lineSegment2dWithin : Float -> Comparator LineSegment2d
+lineSegment2dWithin tolerance =
+    allOf
+        [ by (point2dWithin tolerance) LineSegment2d.startPoint
+        , by (point2dWithin tolerance) LineSegment2d.endPoint
+        ]
+
+
+lineSegment3d : Comparator LineSegment3d
+lineSegment3d =
+    lineSegment3dWithin defaultTolerance
+
+
+lineSegment3dWithin : Float -> Comparator LineSegment3d
+lineSegment3dWithin tolerance =
+    allOf
+        [ by (point3dWithin tolerance) LineSegment3d.startPoint
+        , by (point3dWithin tolerance) LineSegment3d.endPoint
+        ]
+
+
+triangle2d : Comparator Triangle2d
+triangle2d =
+    triangle2dWithin defaultTolerance
+
+
+triangle2dWithin : Float -> Comparator Triangle2d
+triangle2dWithin tolerance firstTriangle secondTriangle =
+    let
+        ( firstVertex1, firstVertex2, firstVertex3 ) =
+            Triangle2d.vertices firstTriangle
+
+        ( secondVertex1, secondVertex2, secondVertex3 ) =
+            Triangle2d.vertices secondTriangle
+
+        comparePoints =
+            point2dWithin tolerance
+    in
+        comparePoints firstVertex1 secondVertex1
+            && comparePoints firstVertex2 secondVertex2
+            && comparePoints firstVertex3 secondVertex3
+
+
+triangle3d : Comparator Triangle3d
+triangle3d =
+    triangle3dWithin defaultTolerance
+
+
+triangle3dWithin : Float -> Comparator Triangle3d
+triangle3dWithin tolerance firstTriangle secondTriangle =
+    let
+        ( firstVertex1, firstVertex2, firstVertex3 ) =
+            Triangle3d.vertices firstTriangle
+
+        ( secondVertex1, secondVertex2, secondVertex3 ) =
+            Triangle3d.vertices secondTriangle
+
+        comparePoints =
+            point3dWithin tolerance
+    in
+        comparePoints firstVertex1 secondVertex1
+            && comparePoints firstVertex2 secondVertex2
+            && comparePoints firstVertex3 secondVertex3
 
 
 boundingBox2d : Comparator BoundingBox2d

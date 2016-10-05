@@ -21,6 +21,10 @@ module OpenSolid.Core.Types
         , Frame2d(Frame2d)
         , Frame3d(Frame3d)
         , SketchPlane3d(SketchPlane3d)
+        , LineSegment2d(LineSegment2d)
+        , LineSegment3d(LineSegment3d)
+        , Triangle2d(Triangle2d)
+        , Triangle3d(Triangle3d)
         , BoundingBox2d(BoundingBox2d)
         , BoundingBox3d(BoundingBox3d)
         )
@@ -217,6 +221,30 @@ type SketchPlane3d
         , xDirection : Direction3d
         , yDirection : Direction3d
         }
+
+
+{-| A line segment in 2D, defined by its start and end points.
+-}
+type LineSegment2d
+    = LineSegment2d ( Point2d, Point2d )
+
+
+{-| A line segment in 3D, defined by its start and end points.
+-}
+type LineSegment3d
+    = LineSegment3d ( Point3d, Point3d )
+
+
+{-| A triangle in 2D, defined by its three vertices.
+-}
+type Triangle2d
+    = Triangle2d ( Point2d, Point2d, Point2d )
+
+
+{-| A triangle in 3D, defined by its three vertices.
+-}
+type Triangle3d
+    = Triangle3d ( Point3d, Point3d, Point3d )
 
 
 {-| A bounding box in 2D, defined by its minimum and maximum X and Y values.

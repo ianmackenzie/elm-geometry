@@ -27,17 +27,19 @@ module OpenSolid.Core.Expect
         , point3d
         , point3dWithin
         , axis2d
-        , axis2dWithin
         , axis3d
-        , axis3dWithin
         , plane3d
-        , plane3dWithin
         , frame2d
-        , frame2dWithin
         , frame3d
-        , frame3dWithin
         , sketchPlane3d
-        , sketchPlane3dWithin
+        , lineSegment2d
+        , lineSegment2dWithin
+        , lineSegment3d
+        , lineSegment3dWithin
+        , triangle2d
+        , triangle2dWithin
+        , triangle3d
+        , triangle3dWithin
         , boundingBox2d
         , boundingBox2dWithin
         , boundingBox3d
@@ -146,19 +148,9 @@ axis2d =
     by Compare.axis2d
 
 
-axis2dWithin : Float -> Axis2d -> Axis2d -> Expectation
-axis2dWithin =
-    by << Compare.axis2dWithin
-
-
 axis3d : Axis3d -> Axis3d -> Expectation
 axis3d =
     by Compare.axis3d
-
-
-axis3dWithin : Float -> Axis3d -> Axis3d -> Expectation
-axis3dWithin =
-    by << Compare.axis3dWithin
 
 
 plane3d : Plane3d -> Plane3d -> Expectation
@@ -166,19 +158,9 @@ plane3d =
     by Compare.plane3d
 
 
-plane3dWithin : Float -> Plane3d -> Plane3d -> Expectation
-plane3dWithin =
-    by << Compare.plane3dWithin
-
-
 frame2d : Frame2d -> Frame2d -> Expectation
 frame2d =
     by Compare.frame2d
-
-
-frame2dWithin : Float -> Frame2d -> Frame2d -> Expectation
-frame2dWithin =
-    by << Compare.frame2dWithin
 
 
 frame3d : Frame3d -> Frame3d -> Expectation
@@ -186,19 +168,49 @@ frame3d =
     by Compare.frame3d
 
 
-frame3dWithin : Float -> Frame3d -> Frame3d -> Expectation
-frame3dWithin =
-    by << Compare.frame3dWithin
-
-
 sketchPlane3d : SketchPlane3d -> SketchPlane3d -> Expectation
 sketchPlane3d =
     by Compare.sketchPlane3d
 
 
-sketchPlane3dWithin : Float -> SketchPlane3d -> SketchPlane3d -> Expectation
-sketchPlane3dWithin =
-    by << Compare.sketchPlane3dWithin
+lineSegment2d : LineSegment2d -> LineSegment2d -> Expectation
+lineSegment2d =
+    by Compare.lineSegment2d
+
+
+lineSegment2dWithin : Float -> LineSegment2d -> LineSegment2d -> Expectation
+lineSegment2dWithin =
+    by << Compare.lineSegment2dWithin
+
+
+lineSegment3d : LineSegment3d -> LineSegment3d -> Expectation
+lineSegment3d =
+    by Compare.lineSegment3d
+
+
+lineSegment3dWithin : Float -> LineSegment3d -> LineSegment3d -> Expectation
+lineSegment3dWithin =
+    by << Compare.lineSegment3dWithin
+
+
+triangle2d : Triangle2d -> Triangle2d -> Expectation
+triangle2d =
+    by Compare.triangle2d
+
+
+triangle2dWithin : Float -> Triangle2d -> Triangle2d -> Expectation
+triangle2dWithin =
+    by << Compare.triangle2dWithin
+
+
+triangle3d : Triangle3d -> Triangle3d -> Expectation
+triangle3d =
+    by Compare.triangle3d
+
+
+triangle3dWithin : Float -> Triangle3d -> Triangle3d -> Expectation
+triangle3dWithin =
+    by << Compare.triangle3dWithin
 
 
 boundingBox2d : BoundingBox2d -> BoundingBox2d -> Expectation

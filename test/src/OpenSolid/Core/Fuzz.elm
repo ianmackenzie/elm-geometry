@@ -22,6 +22,10 @@ module OpenSolid.Core.Fuzz
         , frame2d
         , frame3d
         , sketchPlane3d
+        , lineSegment2d
+        , lineSegment3d
+        , triangle2d
+        , triangle3d
         , boundingBox2d
         , boundingBox3d
         )
@@ -171,6 +175,26 @@ sketchPlane3d =
                 }
     in
         Fuzz.map2 sketchPlane point3d direction3d
+
+
+lineSegment2d : Fuzzer LineSegment2d
+lineSegment2d =
+    Fuzz.map LineSegment2d (Fuzz.tuple ( point2d, point2d ))
+
+
+lineSegment3d : Fuzzer LineSegment3d
+lineSegment3d =
+    Fuzz.map LineSegment3d (Fuzz.tuple ( point3d, point3d ))
+
+
+triangle2d : Fuzzer Triangle2d
+triangle2d =
+    Fuzz.map Triangle2d (Fuzz.tuple3 ( point2d, point2d, point2d ))
+
+
+triangle3d : Fuzzer Triangle3d
+triangle3d =
+    Fuzz.map Triangle3d (Fuzz.tuple3 ( point3d, point3d, point3d ))
 
 
 interval : Fuzzer ( Float, Float )

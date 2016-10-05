@@ -12,6 +12,10 @@ module OpenSolid.Core.Decode
         , frame2d
         , frame3d
         , sketchPlane3d
+        , lineSegment2d
+        , lineSegment3d
+        , triangle2d
+        , triangle3d
         , boundingBox2d
         , boundingBox3d
         )
@@ -173,6 +177,38 @@ sketchPlane3d =
         ("originPoint" := point3d)
         ("xDirection" := direction3d)
         ("yDirection" := direction3d)
+
+
+lineSegment2d : Decoder LineSegment2d
+lineSegment2d =
+    Decode.object2
+        (\firstVertex secondVertex ->
+            LineSegment2d ( firstVertex, secondVertex )
+        )
+        ("startPoint" := point2d)
+        ("endPoint" := point2d)
+
+
+lineSegment3d : Decoder LineSegment3d
+lineSegment3d =
+    Decode.object2
+        (\firstVertex secondVertex ->
+            LineSegment3d ( firstVertex, secondVertex )
+        )
+        ("startPoint" := point3d)
+        ("endPoint" := point3d)
+
+
+triangle2d : Decoder Triangle2d
+triangle2d =
+    Decode.object1 Triangle2d
+        ("vertices" := Decode.tuple3 (,,) point2d point2d point2d)
+
+
+triangle3d : Decoder Triangle3d
+triangle3d =
+    Decode.object1 Triangle3d
+        ("vertices" := Decode.tuple3 (,,) point3d point3d point3d)
 
 
 {-| Decoder for BoundingBox2d values from objects with 'minX', 'maxX', 'minY'
