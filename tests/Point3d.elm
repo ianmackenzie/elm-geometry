@@ -19,8 +19,8 @@ import OpenSolid.Core.Expect as Expect
 import Generic
 
 
-rotationAboutAxisPreservesDistance : Test
-rotationAboutAxisPreservesDistance =
+rotationAboutAxisPreservesDistanceAlong : Test
+rotationAboutAxisPreservesDistanceAlong =
     let
         description =
             "Rotation about axis preserves distance along that axis"
@@ -41,6 +41,28 @@ rotationAboutAxisPreservesDistance =
         Test.fuzz3 Fuzz.point3d Fuzz.axis3d Fuzz.scalar description expectation
 
 
+rotationAboutAxisPreservesRadialDistance : Test
+rotationAboutAxisPreservesRadialDistance =
+    let
+        description =
+            "Rotation about axis preserves radial distance from that axis"
+
+        expectation point axis angle =
+            let
+                radialDistance =
+                    Point3d.radialDistanceFrom axis point
+
+                rotatedPoint =
+                    Point3d.rotateAround axis angle point
+
+                rotatedDistance =
+                    Point3d.radialDistanceFrom axis rotatedPoint
+            in
+                Expect.approximately radialDistance rotatedDistance
+    in
+        Test.fuzz3 Fuzz.point3d Fuzz.axis3d Fuzz.scalar description expectation
+
+
 jsonRoundTrips : Test
 jsonRoundTrips =
     Generic.jsonRoundTrips Fuzz.point3d Encode.point3d Decode.point3d
@@ -49,7 +71,8 @@ jsonRoundTrips =
 suite : Test
 suite =
     Test.describe "OpenSolid.Core.Point3d"
-        [ rotationAboutAxisPreservesDistance
+        [ rotationAboutAxisPreservesDistanceAlong
+        , rotationAboutAxisPreservesRadialDistance
         , jsonRoundTrips
         ]
 
