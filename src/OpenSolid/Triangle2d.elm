@@ -19,7 +19,8 @@ module OpenSolid.Triangle2d
         , translateBy
         , mirrorAcross
         , area
-        , signedArea
+        , clockwiseArea
+        , counterclockwiseArea
         , centroid
         , boundingBox
         )
@@ -112,11 +113,26 @@ mirrorAcross axis =
 
 area : Triangle2d -> Float
 area =
-    abs << signedArea
+    clockwiseArea >> abs
 
 
-signedArea : Triangle2d -> Float
-signedArea triangle =
+clockwiseArea : Triangle2d -> Float
+clockwiseArea triangle =
+    let
+        ( p1, p2, p3 ) =
+            vertices triangle
+
+        firstVector =
+            Point2d.vectorFrom p1 p2
+
+        secondVector =
+            Point2d.vectorFrom p1 p3
+    in
+        0.5 * Vector2d.crossProduct secondVector firstVector
+
+
+counterclockwiseArea : Triangle2d -> Float
+counterclockwiseArea triangle =
     let
         ( p1, p2, p3 ) =
             vertices triangle
