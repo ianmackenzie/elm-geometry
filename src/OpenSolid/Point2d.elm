@@ -20,7 +20,7 @@ module OpenSolid.Point2d
         , vectorTo
         , distanceFrom
         , squaredDistanceFrom
-        , signedDistanceAlong
+        , distanceAlong
         , signedDistanceFrom
         , scaleAbout
         , rotateAround
@@ -71,7 +71,7 @@ can use Elm's built-in `fromPolar` function:
 
 # Distance
 
-@docs distanceFrom, squaredDistanceFrom, signedDistanceAlong, signedDistanceFrom
+@docs distanceFrom, squaredDistanceFrom, distanceAlong, signedDistanceFrom
 
 # Transformations
 
@@ -323,11 +323,11 @@ it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
     point =
         Point2d ( 3, 3 )
 
-    Point2d.signedDistanceAlong axis point == 2
-    Point2d.signedDistanceAlong axis Point2d.origin == -1
+    Point2d.distanceAlong axis point == 2
+    Point2d.distanceAlong axis Point2d.origin == -1
 -}
-signedDistanceAlong : Axis2d -> Point2d -> Float
-signedDistanceAlong axis =
+distanceAlong : Axis2d -> Point2d -> Float
+distanceAlong axis =
     let
         (Axis2d { originPoint, direction }) =
             axis

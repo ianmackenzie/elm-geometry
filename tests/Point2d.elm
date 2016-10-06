@@ -50,13 +50,13 @@ projectionOntoAxisPreservesDistance =
         expectation point axis =
             let
                 distance =
-                    Point2d.signedDistanceAlong axis point
+                    Point2d.distanceAlong axis point
 
                 projectedPoint =
                     Point2d.projectOnto axis point
 
                 projectedDistance =
-                    Point2d.signedDistanceAlong axis projectedPoint
+                    Point2d.distanceAlong axis projectedPoint
             in
                 Expect.approximately projectedDistance distance
     in

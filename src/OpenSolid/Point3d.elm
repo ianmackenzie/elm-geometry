@@ -21,7 +21,7 @@ module OpenSolid.Point3d
         , vectorTo
         , distanceFrom
         , squaredDistanceFrom
-        , signedDistanceAlong
+        , distanceAlong
         , radialDistanceFrom
         , squaredRadialDistanceFrom
         , signedDistanceFrom
@@ -71,7 +71,7 @@ and Z coordinates to the `Point3d` constructor, for example
 
 # Distance
 
-@docs distanceFrom, squaredDistanceFrom, signedDistanceAlong, radialDistanceFrom, squaredRadialDistanceFrom, signedDistanceFrom
+@docs distanceFrom, squaredDistanceFrom, distanceAlong, radialDistanceFrom, squaredRadialDistanceFrom, signedDistanceFrom
 
 # Transformations
 
@@ -331,11 +331,11 @@ it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
     point =
         Point3d ( 3, 3, 3 )
 
-    Point3d.signedDistanceAlong axis point == 2
-    Point3d.signedDistanceAlong axis Point3d.origin == -1
+    Point3d.distanceAlong axis point == 2
+    Point3d.distanceAlong axis Point3d.origin == -1
 -}
-signedDistanceAlong : Axis3d -> Point3d -> Float
-signedDistanceAlong axis =
+distanceAlong : Axis3d -> Point3d -> Float
+distanceAlong axis =
     let
         (Axis3d { originPoint, direction }) =
             axis
