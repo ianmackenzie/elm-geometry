@@ -126,6 +126,20 @@ intersectionIsValidOrNothing =
         )
 
 
+boxContainsOwnCentroid : Test
+boxContainsOwnCentroid =
+    Test.fuzz Fuzz.boundingBox2d
+        "a bounding box contains its own centroid"
+        (\box ->
+            let
+                centroid =
+                    BoundingBox2d.centroid box
+            in
+                Expect.true "bounding box does not contain its own centroid"
+                    (BoundingBox2d.contains centroid box)
+        )
+
+
 suite : Test
 suite =
     Test.describe "OpenSolid.Core.BoundingBox2d"
@@ -134,6 +148,7 @@ suite =
         , intersectionConsistentWithOverlaps
         , hullContainsInputs
         , intersectionIsValidOrNothing
+        , boxContainsOwnCentroid
         ]
 
 
