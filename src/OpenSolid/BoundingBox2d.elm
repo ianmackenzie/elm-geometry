@@ -20,7 +20,7 @@ module OpenSolid.BoundingBox2d
         , maxY
         , midX
         , midY
-        , midpoint
+        , centroid
         , contains
         , overlaps
         , isContainedIn
@@ -143,8 +143,8 @@ midY boundingBox =
         minY + 0.5 * (maxY - minY)
 
 
-midpoint : BoundingBox2d -> Point2d
-midpoint boundingBox =
+centroid : BoundingBox2d -> Point2d
+centroid boundingBox =
     Point2d ( midX boundingBox, midY boundingBox )
 
 
