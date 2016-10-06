@@ -50,9 +50,6 @@ fields to the `Axis2d` constructor, for example:
             , direction = Direction2d.fromAngle (degrees 45)
             }
 
-Future versions of OpenSolid may add specialized constructors such as for
-constructing an axis through two points.
-
 @docs perpendicularTo
 
 # Accessors
@@ -144,7 +141,7 @@ direction (Axis2d properties) =
     Axis2d.flip Axis2d.x ==
         Axis2d
             { originPoint = Point2d.origin
-            , direction = Direction2d ( -1, 0 )
+            , direction = Direction2d.negate Direction2d.x
             }
 -}
 flip : Axis2d -> Axis2d
@@ -229,10 +226,7 @@ the axis to mirror is given second.
             , direction = Direction2d.fromAngle (degrees 30)
             }
 
-    mirrorAxis =
-        Axis2d.x
-
-    Axis2d.mirrorAcross mirrorAxis axis ==
+    Axis2d.mirrorAcross Axis2d.x axis ==
         Axis2d
             { originPoint = Point2d ( 1, -2 )
             , direction = Direction2d.fromAngle (degrees -30)
@@ -255,23 +249,15 @@ mirrorAcross otherAxis =
 
 
 {-| Take an axis currently expressed in global coordinates and express it
-relative to a given frame. For example, an axis at a 45 degree angle, expressed
-relative to a frame inclined at a 30 degree angle, is an axis at only a 15
-degree angle:
+relative to a given frame.
 
-    rotatedFrame =
-        Frame2d.rotateBy (degrees 30) Frame2d.xy
+    originPoint =
+        Point2d ( 2, 3 )
 
-    axis =
+    Axis2d.relativeTo (Frame2d.at originPoint) Axis2d.x ==
         Axis2d
-            { originPoint = Point2d.origin
-            , direction = Direction2d.fromAngle (degrees 45)
-            }
-
-    Axis2d.relativeTo rotatedFrame axis ==
-        Axis2d
-            { originPoint = Point2d.origin
-            , direction = Direction2d.fromAngle (degrees 15)
+            { originPoint = Point2d ( -2, -3 )
+            , direction = Direction2d.x
             }
 -}
 relativeTo : Frame2d -> Axis2d -> Axis2d
@@ -292,22 +278,15 @@ relativeTo frame =
 
 {-| Place an axis in a given frame, considering it as being expressed relative
 to that frame and returning the corresponding axis in global coordinates.
-Inverse of `relativeTo`. For example, an axis at a 15 degree angle, placed in a
-frame already inclined at a 30 degree angle, is an axis at a 45 degree angle:
+Inverse of `relativeTo`.
 
-    rotatedFrame =
-        Frame2d.rotateBy (degrees 30) Frame2d.xy
+    originPoint =
+        Point2d ( 2, 3 )
 
-    axis =
+    Axis2d.placeIn (Frame2d.at originPoint) Axis2d.x ==
         Axis2d
-            { originPoint = Point2d.origin
-            , direction = Direction2d.fromAngle (degrees 15)
-            }
-
-    Axis2d.placeIn rotatedFrame axis ==
-        Axis2d
-            { originPoint = Point2d.origin
-            , direction = Direction2d.fromAngle (degrees 45)
+            { originPoint = Point2d ( 2, 3 )
+            , direction = Direction2d.x
             }
 -}
 placeIn : Frame2d -> Axis2d -> Axis2d
