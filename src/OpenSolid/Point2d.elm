@@ -20,8 +20,8 @@ module OpenSolid.Point2d
         , vectorTo
         , distanceFrom
         , squaredDistanceFrom
-        , signedDistanceFrom
         , signedDistanceAlong
+        , signedDistanceFrom
         , scaleAbout
         , rotateAround
         , translateBy
@@ -71,7 +71,7 @@ can use Elm's built-in `fromPolar` function:
 
 # Distance
 
-@docs distanceFrom, squaredDistanceFrom, signedDistanceFrom, signedDistanceAlong
+@docs distanceFrom, squaredDistanceFrom, signedDistanceAlong, signedDistanceFrom
 
 # Transformations
 
@@ -308,6 +308,33 @@ squaredDistanceFrom other =
     vectorFrom other >> Vector2d.squaredLength
 
 
+{-| Determine how far along an axis a particular point lies. Conceptually, the
+point is projected perpendicularly onto the axis, and then the distance of this
+projected point from the axis' origin point is measured. The result will be
+positive if the projected point is ahead the axis' origin point and negative if
+it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
+
+    axis =
+        Axis2d
+            { originPoint = Point2d ( 1, 2 )
+            , direction = Direction2d.x
+            }
+
+    point =
+        Point2d ( 3, 3 )
+
+    Point2d.signedDistanceAlong axis point == 2
+    Point2d.signedDistanceAlong axis Point2d.origin == -1
+-}
+signedDistanceAlong : Axis2d -> Point2d -> Float
+signedDistanceAlong axis =
+    let
+        (Axis2d { originPoint, direction }) =
+            axis
+    in
+        vectorFrom originPoint >> Vector2d.componentIn direction
+
+
 {-| Find the perpendicular distance of a point from an axis. The result
 will be positive if the point is to the left of the axis and negative if it is
 to the right, with the forwards direction defined by the direction of the axis.
@@ -349,33 +376,6 @@ signedDistanceFrom axis =
             Direction2d.vector direction
     in
         vectorFrom originPoint >> Vector2d.crossProduct directionVector
-
-
-{-| Determine how far along an axis a particular point lies. Conceptually, the
-point is projected perpendicularly onto the axis, and then the distance of this
-projected point from the axis' origin point is measured. The result will be
-positive if the projected point is ahead the axis' origin point and negative if
-it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
-
-    axis =
-        Axis2d
-            { originPoint = Point2d ( 1, 2 )
-            , direction = Direction2d.x
-            }
-
-    point =
-        Point2d ( 3, 3 )
-
-    Point2d.signedDistanceAlong axis point == 2
-    Point2d.signedDistanceAlong axis Point2d.origin == -1
--}
-signedDistanceAlong : Axis2d -> Point2d -> Float
-signedDistanceAlong axis =
-    let
-        (Axis2d { originPoint, direction }) =
-            axis
-    in
-        vectorFrom originPoint >> Vector2d.componentIn direction
 
 
 {-| Perform a uniform scaling about the given center point. The center point is
