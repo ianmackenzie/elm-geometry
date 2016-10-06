@@ -37,57 +37,51 @@ import OpenSolid.Core.Types exposing (..)
 -}
 vector2d : Decoder Vector2d
 vector2d =
-    Decode.object2 (\x y -> Vector2d ( x, y ))
-        ("x" := Decode.float)
-        ("y" := Decode.float)
+    Decode.tuple2 (\x y -> Vector2d ( x, y )) Decode.float Decode.float
 
 
 {-| Decoder for Vector3d values from objects with 'x', 'y' and 'z' fields.
 -}
 vector3d : Decoder Vector3d
 vector3d =
-    Decode.object3 (\x y z -> Vector3d ( x, y, z ))
-        ("x" := Decode.float)
-        ("y" := Decode.float)
-        ("z" := Decode.float)
+    Decode.tuple3 (\x y z -> Vector3d ( x, y, z ))
+        Decode.float
+        Decode.float
+        Decode.float
 
 
 {-| Decoder for Direction2d values from objects with 'x' and 'y' fields.
 -}
 direction2d : Decoder Direction2d
 direction2d =
-    Decode.object2 (\x y -> Direction2d ( x, y ))
-        ("x" := Decode.float)
-        ("y" := Decode.float)
+    Decode.tuple2 (\x y -> Direction2d ( x, y )) Decode.float Decode.float
 
 
 {-| Decoder for Direction3d values from objects with 'x', 'y' and 'z' fields.
 -}
 direction3d : Decoder Direction3d
 direction3d =
-    Decode.object3 (\x y z -> Direction3d ( x, y, z ))
-        ("x" := Decode.float)
-        ("y" := Decode.float)
-        ("z" := Decode.float)
+    Decode.tuple3 (\x y z -> Direction3d ( x, y, z ))
+        Decode.float
+        Decode.float
+        Decode.float
 
 
 {-| Decoder for Point2d values from objects with 'x' and 'y' fields.
 -}
 point2d : Decoder Point2d
 point2d =
-    Decode.object2 (\x y -> Point2d ( x, y ))
-        ("x" := Decode.float)
-        ("y" := Decode.float)
+    Decode.tuple2 (\x y -> Point2d ( x, y )) Decode.float Decode.float
 
 
 {-| Decoder for Point3d values from objects with 'x', 'y' and 'z' fields.
 -}
 point3d : Decoder Point3d
 point3d =
-    Decode.object3 (\x y z -> Point3d ( x, y, z ))
-        ("x" := Decode.float)
-        ("y" := Decode.float)
-        ("z" := Decode.float)
+    Decode.tuple3 (\x y z -> Point3d ( x, y, z ))
+        Decode.float
+        Decode.float
+        Decode.float
 
 
 {-| Decoder for Axis2d values from objects with 'originPoint' and 'direction'
@@ -190,34 +184,28 @@ sketchPlane3d =
 
 lineSegment2d : Decoder LineSegment2d
 lineSegment2d =
-    Decode.object2
-        (\firstVertex secondVertex ->
-            LineSegment2d ( firstVertex, secondVertex )
-        )
-        ("startPoint" := point2d)
-        ("endPoint" := point2d)
+    Decode.tuple2 (\v1 v2 -> LineSegment2d ( v1, v2 )) point2d point2d
 
 
 lineSegment3d : Decoder LineSegment3d
 lineSegment3d =
-    Decode.object2
-        (\firstVertex secondVertex ->
-            LineSegment3d ( firstVertex, secondVertex )
-        )
-        ("startPoint" := point3d)
-        ("endPoint" := point3d)
+    Decode.tuple2 (\v1 v2 -> LineSegment3d ( v1, v2 )) point3d point3d
 
 
 triangle2d : Decoder Triangle2d
 triangle2d =
-    Decode.object1 Triangle2d
-        ("vertices" := Decode.tuple3 (,,) point2d point2d point2d)
+    Decode.tuple3 (\v1 v2 v3 -> Triangle2d ( v1, v2, v3 ))
+        point2d
+        point2d
+        point2d
 
 
 triangle3d : Decoder Triangle3d
 triangle3d =
-    Decode.object1 Triangle3d
-        ("vertices" := Decode.tuple3 (,,) point3d point3d point3d)
+    Decode.tuple3 (\v1 v2 v3 -> Triangle3d ( v1, v2, v3 ))
+        point3d
+        point3d
+        point3d
 
 
 {-| Decoder for BoundingBox2d values from objects with 'minX', 'maxX', 'minY'

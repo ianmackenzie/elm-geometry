@@ -59,10 +59,7 @@ vector2d vector =
         ( x, y ) =
             Vector2d.components vector
     in
-        Encode.object
-            [ ( "x", Encode.float x )
-            , ( "y", Encode.float y )
-            ]
+        Encode.list [ Encode.float x, Encode.float y ]
 
 
 {-| Encode a Vector3d as an object with 'x', 'y' and 'z' fields.
@@ -73,11 +70,7 @@ vector3d vector =
         ( x, y, z ) =
             Vector3d.components vector
     in
-        Encode.object
-            [ ( "x", Encode.float x )
-            , ( "y", Encode.float y )
-            , ( "z", Encode.float z )
-            ]
+        Encode.list [ Encode.float x, Encode.float y, Encode.float z ]
 
 
 {-| Encode a Direction2d as an object with 'x' and 'y' fields.
@@ -88,10 +81,7 @@ direction2d direction =
         ( x, y ) =
             Direction2d.components direction
     in
-        Encode.object
-            [ ( "x", Encode.float x )
-            , ( "y", Encode.float y )
-            ]
+        Encode.list [ Encode.float x, Encode.float y ]
 
 
 {-| Encode a Direction3d as an object with 'x', 'y' and 'z' fields.
@@ -102,11 +92,7 @@ direction3d direction =
         ( x, y, z ) =
             Direction3d.components direction
     in
-        Encode.object
-            [ ( "x", Encode.float x )
-            , ( "y", Encode.float y )
-            , ( "z", Encode.float z )
-            ]
+        Encode.list [ Encode.float x, Encode.float y, Encode.float z ]
 
 
 {-| Encode a Point2d as an object with 'x' and 'y' fields.
@@ -117,10 +103,7 @@ point2d point =
         ( x, y ) =
             Point2d.coordinates point
     in
-        Encode.object
-            [ ( "x", Encode.float x )
-            , ( "y", Encode.float y )
-            ]
+        Encode.list [ Encode.float x, Encode.float y ]
 
 
 {-| Encode a Point3d as an object with 'x', 'y' and 'z' fields.
@@ -131,11 +114,7 @@ point3d point =
         ( x, y, z ) =
             Point3d.coordinates point
     in
-        Encode.object
-            [ ( "x", Encode.float x )
-            , ( "y", Encode.float y )
-            , ( "z", Encode.float z )
-            ]
+        Encode.list [ Encode.float x, Encode.float y, Encode.float z ]
 
 
 {-| Encode an Axis2d as an object with 'originPoint' and 'direction' fields.
@@ -208,18 +187,20 @@ sketchPlane3d sketchPlane =
 
 lineSegment2d : LineSegment2d -> Value
 lineSegment2d lineSegment =
-    Encode.object
-        [ ( "startPoint", point2d (LineSegment2d.startPoint lineSegment) )
-        , ( "endPoint", point2d (LineSegment2d.endPoint lineSegment) )
-        ]
+    let
+        ( startPoint, endPoint ) =
+            LineSegment2d.endpoints lineSegment
+    in
+        Encode.list [ point2d startPoint, point2d endPoint ]
 
 
 lineSegment3d : LineSegment3d -> Value
 lineSegment3d lineSegment =
-    Encode.object
-        [ ( "startPoint", point3d (LineSegment3d.startPoint lineSegment) )
-        , ( "endPoint", point3d (LineSegment3d.endPoint lineSegment) )
-        ]
+    let
+        ( startPoint, endPoint ) =
+            LineSegment3d.endpoints lineSegment
+    in
+        Encode.list [ point3d startPoint, point3d endPoint ]
 
 
 triangle2d : Triangle2d -> Value
@@ -227,11 +208,8 @@ triangle2d triangle =
     let
         ( v1, v2, v3 ) =
             Triangle2d.vertices triangle
-
-        vertices =
-            Encode.list [ point2d v1, point2d v2, point2d v3 ]
     in
-        Encode.object [ ( "vertices", vertices ) ]
+        Encode.list [ point2d v1, point2d v2, point2d v3 ]
 
 
 triangle3d : Triangle3d -> Value
@@ -239,11 +217,8 @@ triangle3d triangle =
     let
         ( v1, v2, v3 ) =
             Triangle3d.vertices triangle
-
-        vertices =
-            Encode.list [ point3d v1, point3d v2, point3d v3 ]
     in
-        Encode.object [ ( "vertices", vertices ) ]
+        Encode.list [ point3d v1, point3d v2, point3d v3 ]
 
 
 {-| Encode a BoundingBox2d as an object with 'minX', 'maxX', 'minY' and 'maxY'
