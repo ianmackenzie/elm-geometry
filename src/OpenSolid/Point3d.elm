@@ -21,9 +21,9 @@ module OpenSolid.Point3d
         , vectorTo
         , distanceFrom
         , squaredDistanceFrom
-        , distanceFromAxis
-        , squaredDistanceFromAxis
         , signedDistanceAlong
+        , radialDistanceFrom
+        , squaredRadialDistanceFrom
         , signedDistanceFrom
         , scaleAbout
         , rotateAround
@@ -71,7 +71,7 @@ and Z coordinates to the `Point3d` constructor, for example
 
 # Distance
 
-@docs distanceFrom, squaredDistanceFrom, distanceFromAxis, squaredDistanceFromAxis, signedDistanceAlong, signedDistanceFrom
+@docs distanceFrom, squaredDistanceFrom, signedDistanceAlong, radialDistanceFrom, squaredRadialDistanceFrom, signedDistanceFrom
 
 # Transformations
 
@@ -316,41 +316,6 @@ squaredDistanceFrom other =
     vectorFrom other >> Vector3d.squaredLength
 
 
-{-| Find the perpendicular (nearest) distance of a point from an axis.
-
-    point =
-        Point3d ( -3, 4, 0 )
-
-    Point3d.distanceFromAxis Axis3d.x point == 4
-    Point3d.distanceFromAxis Axis3d.y point == 3
-    Point3d.distanceFromAxis Axis3d.z point == 5
-
-Note that unlike in 2D, the result is always positive (unsigned) since there is
-no such thing as the left or right side of an axis in 3D.
--}
-distanceFromAxis : Axis3d -> Point3d -> Float
-distanceFromAxis axis =
-    squaredDistanceFromAxis axis >> sqrt
-
-
-{-| Find the square of the perpendicular distance of a point from an axis. As
-with `distanceFrom`/`squaredDistanceFrom` this is slightly more efficient than
-`distanceFromAxis` since it avoids a square root.
--}
-squaredDistanceFromAxis : Axis3d -> Point3d -> Float
-squaredDistanceFromAxis axis =
-    let
-        (Axis3d { originPoint, direction }) =
-            axis
-
-        directionVector =
-            Direction3d.vector direction
-    in
-        vectorFrom originPoint
-            >> Vector3d.crossProduct directionVector
-            >> Vector3d.squaredLength
-
-
 {-| Determine how far along an axis a particular point lies. Conceptually, the
 point is projected perpendicularly onto the axis, and then the distance of this
 projected point from the axis' origin point is measured. The result will be
@@ -376,6 +341,41 @@ signedDistanceAlong axis =
             axis
     in
         vectorFrom originPoint >> Vector3d.componentIn direction
+
+
+{-| Find the perpendicular (nearest) distance of a point from an axis.
+
+    point =
+        Point3d ( -3, 4, 0 )
+
+    Point3d.radialDistanceFrom Axis3d.x point == 4
+    Point3d.radialDistanceFrom Axis3d.y point == 3
+    Point3d.radialDistanceFrom Axis3d.z point == 5
+
+Note that unlike in 2D, the result is always positive (unsigned) since there is
+no such thing as the left or right side of an axis in 3D.
+-}
+radialDistanceFrom : Axis3d -> Point3d -> Float
+radialDistanceFrom axis =
+    squaredRadialDistanceFrom axis >> sqrt
+
+
+{-| Find the square of the perpendicular distance of a point from an axis. As
+with `distanceFrom`/`squaredDistanceFrom` this is slightly more efficient than
+`radialDistanceFrom` since it avoids a square root.
+-}
+squaredRadialDistanceFrom : Axis3d -> Point3d -> Float
+squaredRadialDistanceFrom axis =
+    let
+        (Axis3d { originPoint, direction }) =
+            axis
+
+        directionVector =
+            Direction3d.vector direction
+    in
+        vectorFrom originPoint
+            >> Vector3d.crossProduct directionVector
+            >> Vector3d.squaredLength
 
 
 {-| Find the perpendicular distance of a point from a plane. The result will be
