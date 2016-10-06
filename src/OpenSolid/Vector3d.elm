@@ -29,7 +29,6 @@ module OpenSolid.Vector3d
         , mirrorAcross
         , projectionIn
         , projectOnto
-        , projectOntoAxis
         , relativeTo
         , placeIn
         , projectInto
@@ -84,7 +83,7 @@ plane is relevant, since vectors are position-independent. Think of transforming
 a vector as placing its tail on the relevant axis or plane and then transforming
 its tip.
 
-@docs rotateAround, mirrorAcross, projectionIn, projectOnto, projectOntoAxis
+@docs rotateAround, mirrorAcross, projectionIn, projectOnto
 
 # Coordinate frames
 
@@ -602,30 +601,6 @@ projectOnto plane vector =
             plane
     in
         minus (projectionIn normalDirection vector) vector
-
-
-{-| Project a vector onto an axis. This is equivalent to finding the projection
-in the axis' direction.
-
-    vector =
-        Vector3d ( -1, 2, -3 )
-
-    Vector3d.projectOnto Axis3d.y vector ==
-        Vector3d ( 0, 2, 0 )
-
-    Vector3d.projectOnto Axis3d.x vector ==
-        Vector3d ( -1, 0, 0 )
-
-    Vector3d.projectOnto axis vector ==
-        Vector3d.projectionIn (Axis3d.direction axis) vector
--}
-projectOntoAxis : Axis3d -> Vector3d -> Vector3d
-projectOntoAxis axis =
-    let
-        (Axis3d { originPoint, direction }) =
-            axis
-    in
-        projectionIn direction
 
 
 {-| Take a vector currently expressed in global coordinates and express it

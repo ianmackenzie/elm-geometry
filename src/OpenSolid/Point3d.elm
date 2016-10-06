@@ -30,7 +30,6 @@ module OpenSolid.Point3d
         , translateBy
         , mirrorAcross
         , projectOnto
-        , projectOntoAxis
         , relativeTo
         , placeIn
         , projectInto
@@ -75,7 +74,7 @@ and Z coordinates to the `Point3d` constructor, for example
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, projectOntoAxis
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto
 
 # Coordinate frames
 
@@ -556,42 +555,6 @@ projectOnto plane point =
             Direction3d.times -signedDistance normalDirection
     in
         translateBy displacement point
-
-
-{-| Project a point perpendicularly onto an axis.
-
-    point =
-        Point3d ( 1, 2, 3 )
-
-    Point3d.projectOntoAxis Axis2d.x point ==
-        Point2d ( 1, 0, 0 )
-
-    Point3d.projectOntoAxis Axis2d.y point ==
-        Point2d ( 0, 2, 0 )
-
-The axis does not have to pass through the origin:
-
-    point =
-        Point3d ( 10, 10, 10 )
-
-    offsetVerticalAxis =
-        Axis3d
-            { originPoint = Point3d ( 1, 1, 1 )
-            , direction = Direction3d.z
-            }
-
-    Point3d.projectOntoAxis offsetVerticalAxis point ==
-        Point3d ( 1, 1, 10 )
--}
-projectOntoAxis : Axis3d -> Point3d -> Point3d
-projectOntoAxis axis =
-    let
-        (Axis3d { originPoint, direction }) =
-            axis
-    in
-        vectorFrom originPoint
-            >> Vector3d.projectOntoAxis axis
-            >> addTo originPoint
 
 
 {-| Take a point currently expressed in global coordinates and express it in

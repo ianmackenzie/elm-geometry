@@ -25,7 +25,6 @@ module OpenSolid.LineSegment3d
         , rotateAround
         , translateBy
         , mirrorAcross
-        , projectOntoAxis
         , projectOnto
         , relativeTo
         , placeIn
@@ -131,11 +130,6 @@ translateBy vector =
 mirrorAcross : Plane3d -> LineSegment3d -> LineSegment3d
 mirrorAcross plane =
     map (Point3d.mirrorAcross plane)
-
-
-projectOntoAxis : Axis3d -> LineSegment3d -> LineSegment3d
-projectOntoAxis axis =
-    map (Point3d.projectOntoAxis axis)
 
 
 projectOnto : Plane3d -> LineSegment3d -> LineSegment3d
