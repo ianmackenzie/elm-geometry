@@ -10,6 +10,7 @@
 module Triangle2d exposing (suite)
 
 import Test exposing (Test)
+import Expect
 import Test.Runner.Html as Html
 import OpenSolid.Triangle2d as Triangle2d
 import OpenSolid.Core.Encode as Encode
@@ -24,10 +25,25 @@ jsonRoundTrips =
     Generic.jsonRoundTrips Fuzz.triangle2d Encode.triangle2d Decode.triangle2d
 
 
+triangleContainsOwnCentroid : Test
+triangleContainsOwnCentroid =
+    Test.fuzz Fuzz.triangle2d
+        "triangle contains its own centroid"
+        (\triangle ->
+            let
+                centroid =
+                    Triangle2d.centroid triangle
+            in
+                Expect.true "triangle did not contain its own centroid"
+                    (Triangle2d.contains centroid triangle)
+        )
+
+
 suite : Test
 suite =
     Test.describe "OpenSolid.Core.Triangle2d"
         [ jsonRoundTrips
+        , triangleContainsOwnCentroid
         ]
 
 
