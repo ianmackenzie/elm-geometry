@@ -53,9 +53,6 @@ fields to the `Axis3d` constructor, for example:
             , direction = Direction3d.y
             }
 
-Future versions of OpenSolid may add specialized constructors such as for
-constructing an axis through two points.
-
 # Accessors
 
 @docs originPoint, direction
@@ -146,7 +143,7 @@ direction (Axis3d properties) =
     Axis3d.flip Axis3d.x ==
         Axis3d
             { originPoint = Point3d.origin
-            , direction = Direction3d ( -1, 0, 0 )
+            , direction = Direction3d.negate Direction3d.x
             }
 -}
 flip : Axis3d -> Axis3d
@@ -285,24 +282,15 @@ projectOnto plane axis =
 
 
 {-| Take an axis currently expressed in global coordinates and express it
-relative to a given frame. For example, consider a frame raised up one unit
-above the global XYZ frame and rotated 45 degrees clockwise around the Z axis:
+relative to a given frame.
 
-    newOrigin =
-        Point3d ( 0, 0, 1 )
+    originPoint =
+        Point3d ( 2, 1, 3 )
 
-    frame =
-        Frame3d.xyz
-            |> Frame3d.moveTo newOrigin
-            |> Frame3d.rotateAround Axis3d.z (degrees -45)
-
-Relative to this frame, the global X axis is one unit below the origin, with
-a direction halfway between the X and Y directions:
-
-    Axis3d.relativeTo frame Axis3d.x ==
+    Axis3d.relativeTo (Frame3d.at originPoint) Axis3d.x ==
         Axis3d
-            { originPoint = Point3d ( 0, 0, -1 )
-            , direction = Direction3d ( 0.7071, 0.7071, 0 )
+            { originPoint = Point3d ( -2, -1, -3 )
+            , direction = Direction3d.x
             }
 -}
 relativeTo : Frame3d -> Axis3d -> Axis3d
@@ -323,36 +311,15 @@ relativeTo frame =
 
 {-| Place an axis in a given frame, considering it as being expressed relative
 to that frame and returning the corresponding axis in global coordinates.
-Inverse of `relativeTo`.
 
-For example, consider a frame raised up one unit above the global XYZ frame and
-rotated 45 degrees clockwise around the Z axis:
+    originPoint =
+        Point3d ( 2, 1, 3 )
 
-    newOrigin =
-        Point3d ( 0, 0, 1 )
-
-    frame =
-        Frame3d.xyz
-            |> Frame3d.moveTo newOrigin
-            |> Frame3d.rotateAround Axis3d.z (degrees -45)
-
-Now, consider an axis in the X direction through the point (0, 0, 1):
-
-    axis =
+    Axis3d.placeIn (Frame3d.at originPoint) Axis3d.x ==
         Axis3d
-            { originPoint = Point3d ( 0, 0, 1 )
+            { originPoint = Point3d ( 2, 1, 3 )
             , direction = Direction3d.x
             }
-
-Placing this axis in the given frame gives an axis that is two units above the
-global origin point, with the X direction of the rotated frame:
-
-    Axis3d.placeIn frame axis ==
-        Axis3d
-            { originPoint = Point3d ( 0, 0, 2 )
-            , direction = Direction3d ( 0.7071, -0.7071, 0 )
-            }
-
 -}
 placeIn : Frame3d -> Axis3d -> Axis3d
 placeIn frame =
