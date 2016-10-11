@@ -55,8 +55,8 @@ approach:
             }
 
 Alternatively, you can use constructor functions like `Direction2d.fromAngle`,
-or start with predefined constants such as `Point3d.origin` and transform them
-as necessary.
+or start with predefined values such as `Point3d.origin` and transform them as
+necessary.
 
 # Vectors
 
@@ -96,8 +96,8 @@ and mirroring in 3D is defined by a mirror plane.
 
 Frames represent local coordinate systems, and allow for conversions between
 local and global coordinates. They are also a common source of datums used in
-transformations, for example rotating about the Z axis of a 3D frame or
-mirroring about its XY plane.
+transformations, for example rotating around the Z axis of a 3D frame or
+mirroring across its XY plane.
 
 @docs Frame2d, Frame3d
 
