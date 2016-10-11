@@ -56,7 +56,7 @@ to numerical roundoff) they might not be exactly equal.
 
 The simplest way to construct a `Point3d` value is by passing a tuple of X, Y
 and Z coordinates to the `Point3d` constructor, for example
-`Point2d ( 2, 1, 3 )`. But that is not the only way!
+`Point3d ( 2, 1, 3 )`. But that is not the only way!
 
 @docs midpoint, interpolate, along
 
@@ -176,7 +176,7 @@ axis:
 
     horizontalAxis =
         Axis3d
-            { originPoint = Point2d ( 1, 1, 1 )
+            { originPoint = Point3d ( 1, 1, 1 )
             , direction = Direction3d ( -1, 0, 0 )
             }
 
@@ -203,7 +203,7 @@ coordinates (Point3d coordinates') =
 
 {-| Get the X coordinate of a point.
 
-    Point3d.xCoordinate (Point2d ( 2, 1, 3 )) == 2
+    Point3d.xCoordinate (Point3d ( 2, 1, 3 )) == 2
 -}
 xCoordinate : Point3d -> Float
 xCoordinate (Point3d ( x, _, _ )) =
@@ -212,7 +212,7 @@ xCoordinate (Point3d ( x, _, _ )) =
 
 {-| Get the Y coordinate of a point.
 
-    Point3d.yCoordinate (Point2d ( 2, 1, 3 )) == 1
+    Point3d.yCoordinate (Point3d ( 2, 1, 3 )) == 1
 -}
 yCoordinate : Point3d -> Float
 yCoordinate (Point3d ( _, y, _ )) =
@@ -221,7 +221,7 @@ yCoordinate (Point3d ( _, y, _ )) =
 
 {-| Get the Z coordinate of a point.
 
-    Point3d.zCoordinate (Point2d ( 2, 1, 3 )) == 3
+    Point3d.zCoordinate (Point3d ( 2, 1, 3 )) == 3
 -}
 zCoordinate : Point3d -> Float
 zCoordinate (Point3d ( _, _, z )) =
@@ -256,8 +256,8 @@ vectorFrom other point =
     startPoint =
         Point3d ( 2, 1, 3 )
 
-    Point2d.vectorTo Point3d.origin startPoint ==
-        Vector2d ( -2, -1, -3 )
+    Point3d.vectorTo Point3d.origin startPoint ==
+        Vector3d ( -2, -1, -3 )
 -}
 vectorTo : Point3d -> Point3d -> Vector3d
 vectorTo =
@@ -383,8 +383,8 @@ positive if the point is 'above' the plane and negative if it is 'below', with
 
     plane =
         Plane3d
-            { originPoint = Point2d ( 1, 2, 3 )
-            , normalDirection = Direction2d.y
+            { originPoint = Point3d ( 1, 2, 3 )
+            , normalDirection = Direction3d.y
             }
 
     point =
