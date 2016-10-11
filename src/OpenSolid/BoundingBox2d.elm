@@ -153,9 +153,11 @@ contains point boundingBox =
     let
         ( x, y ) =
             Point2d.coordinates point
+
+        { minX, maxX, minY, maxY } =
+            extrema boundingBox
     in
-        (minX boundingBox <= x && x <= maxX boundingBox)
-            && (minY boundingBox <= y && y <= maxY boundingBox)
+        (minX <= x && x <= maxX) && (minY <= y && y <= maxY)
 
 
 overlaps : BoundingBox2d -> BoundingBox2d -> Bool
