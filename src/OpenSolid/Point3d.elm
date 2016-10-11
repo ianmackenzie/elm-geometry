@@ -632,7 +632,8 @@ projectInto sketchPlane =
     in
         vectorFrom originPoint
             >> Vector3d.projectInto sketchPlane
-            >> (\(Vector2d components) -> Point2d components)
+            >> Vector2d.components
+            >> Point2d
 
 
 {-| Take a point defined in 2D coordinates within a particular sketch plane and
