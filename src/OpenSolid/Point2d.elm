@@ -16,6 +16,7 @@ module OpenSolid.Point2d
         , coordinates
         , xCoordinate
         , yCoordinate
+        , within
         , vectorFrom
         , vectorTo
         , distanceFrom
@@ -64,6 +65,10 @@ can use Elm's built-in `fromPolar` function:
 # Coordinates
 
 @docs coordinates, xCoordinate, yCoordinate
+
+# Comparison
+
+@docs within
 
 # Displacement
 
@@ -219,6 +224,25 @@ xCoordinate =
 yCoordinate : Point2d -> Float
 yCoordinate =
     coordinates >> snd
+
+
+{-| Compare two points within a tolerance.
+
+    firstPoint =
+        Point2d ( 1, 2 )
+
+    secondPoint =
+        Point2d ( 0.9999, 2.0002 )
+
+    Point2d.within 1e-3 firstPoint secondPoint ==
+        True
+
+    Point2d.within 1e-6 firstPoint secondPoint ==
+        False
+-}
+within : Float -> Point2d -> Point2d -> Bool
+within tolerance firstPoint secondPoint =
+    squaredDistanceFrom firstPoint secondPoint <= tolerance * tolerance
 
 
 {-| Find the vector from one point to another.

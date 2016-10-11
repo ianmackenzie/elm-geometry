@@ -16,6 +16,7 @@ module OpenSolid.Vector3d
         , yComponent
         , zComponent
         , componentIn
+        , within
         , length
         , squaredLength
         , direction
@@ -67,6 +68,10 @@ and Z components to the `Vector3d` constructor, for example
 # Components
 
 @docs components, xComponent, yComponent, zComponent, componentIn
+
+# Comparison
+
+@docs within
 
 # Length and direction
 
@@ -227,6 +232,25 @@ This is more general and flexible than using `xComponent`, `yComponent` or
 componentIn : Direction3d -> Vector3d -> Float
 componentIn (Direction3d components) =
     dotProduct (Vector3d components)
+
+
+{-| Compare two vectors within a tolerance.
+
+    firstVector =
+        Vector3d ( 2, 1, 3 )
+
+    secondVector =
+        Vector3d ( 2.0002, 0.9999, 3.0001 )
+
+    Vector3d.within 1e-3 firstVector secondVector ==
+        True
+
+    Vector3d.within 1e-6 firstVector secondVector ==
+        False
+-}
+within : Float -> Vector3d -> Vector3d -> Bool
+within tolerance firstVector secondVector =
+    squaredLength (minus firstVector secondVector) <= tolerance * tolerance
 
 
 {-| Get the length of a vector.

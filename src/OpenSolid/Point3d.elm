@@ -17,6 +17,7 @@ module OpenSolid.Point3d
         , xCoordinate
         , yCoordinate
         , zCoordinate
+        , within
         , vectorFrom
         , vectorTo
         , distanceFrom
@@ -63,6 +64,10 @@ and Z coordinates to the `Point3d` constructor, for example
 # Coordinates
 
 @docs coordinates, xCoordinate, yCoordinate, zCoordinate
+
+# Comparison
+
+@docs within
 
 # Displacement
 
@@ -227,6 +232,25 @@ yCoordinate (Point3d ( _, y, _ )) =
 zCoordinate : Point3d -> Float
 zCoordinate (Point3d ( _, _, z )) =
     z
+
+
+{-| Compare two points within a tolerance.
+
+    firstPoint =
+        Point3d ( 2, 1, 3 )
+
+    secondPoint =
+        Point3d ( 2.0002, 0.9999, 3.0001 )
+
+    Point3d.within 1e-3 firstPoint secondPoint ==
+        True
+
+    Point3d.within 1e-6 firstPoint secondPoint ==
+        False
+-}
+within : Float -> Point3d -> Point3d -> Bool
+within tolerance firstPoint secondPoint =
+    squaredDistanceFrom firstPoint secondPoint <= tolerance * tolerance
 
 
 {-| Find the vector from one point to another.
