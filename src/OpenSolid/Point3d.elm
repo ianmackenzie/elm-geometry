@@ -658,16 +658,12 @@ The sketch plane can have any position and orientation:
         Point3d ( 2, 0.7071, 0.7071 )
 -}
 placeOnto : SketchPlane3d -> Point2d -> Point3d
-placeOnto sketchPlane point =
+placeOnto sketchPlane =
     let
         (SketchPlane3d { originPoint, xDirection, yDirection }) =
             sketchPlane
-
-        (Point3d ( px, py, pz )) =
-            originPoint
-
-        (Vector3d ( vx, vy, vz )) =
-            Vector3d.placeOnto sketchPlane
-                (Vector2d (Point2d.coordinates point))
     in
-        Point3d ( px + vx, py + vy, pz + vz )
+        Point2d.coordinates
+            >> Vector2d
+            >> Vector3d.placeOnto sketchPlane
+            >> addTo originPoint
