@@ -226,7 +226,8 @@ yCoordinate =
     coordinates >> snd
 
 
-{-| Compare two points within a tolerance.
+{-| Compare two points within a tolerance. Returns true if the distance
+between the two given points is less than the given tolerance.
 
     firstPoint =
         Point2d ( 1, 2 )

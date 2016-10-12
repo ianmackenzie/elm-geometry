@@ -234,7 +234,8 @@ zCoordinate (Point3d ( _, _, z )) =
     z
 
 
-{-| Compare two points within a tolerance.
+{-| Compare two points within a tolerance. Returns true if the distance
+between the two given points is less than the given tolerance.
 
     firstPoint =
         Point3d ( 2, 1, 3 )

@@ -234,7 +234,8 @@ componentIn (Direction3d components) =
     dotProduct (Vector3d components)
 
 
-{-| Compare two vectors within a tolerance.
+{-| Compare two vectors within a tolerance. Returns true if the difference
+between the two given vectors has length less than the given tolerance.
 
     firstVector =
         Vector3d ( 2, 1, 3 )

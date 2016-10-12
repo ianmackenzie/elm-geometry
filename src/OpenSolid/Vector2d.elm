@@ -206,7 +206,8 @@ componentIn (Direction2d ( dx, dy )) (Vector2d ( x, y )) =
     x * dx + y * dy
 
 
-{-| Compare two vectors within a tolerance.
+{-| Compare two vectors within a tolerance. Returns true if the difference
+between the two given vectors has length less than the given tolerance.
 
     firstVector =
         Vector2d ( 1, 2 )
