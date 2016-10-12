@@ -459,12 +459,12 @@ isContainedIn other boundingBox =
             }
 -}
 hull : BoundingBox2d -> BoundingBox2d -> BoundingBox2d
-hull other boundingBox =
+hull firstBox secondBox =
     BoundingBox2d
-        { minX = min (minX boundingBox) (minX other)
-        , maxX = max (maxX boundingBox) (maxX other)
-        , minY = min (minY boundingBox) (minY other)
-        , maxY = max (maxY boundingBox) (maxY other)
+        { minX = min (minX firstBox) (minX secondBox)
+        , maxX = max (maxX firstBox) (maxX secondBox)
+        , minY = min (minY firstBox) (minY secondBox)
+        , maxY = max (maxY firstBox) (maxY secondBox)
         }
 
 
@@ -509,14 +509,14 @@ given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
         Nothing
 -}
 intersection : BoundingBox2d -> BoundingBox2d -> Maybe BoundingBox2d
-intersection other boundingBox =
-    if overlaps other boundingBox then
+intersection firstBox secondBox =
+    if overlaps firstBox secondBox then
         Just
             (BoundingBox2d
-                { minX = max (minX boundingBox) (minX other)
-                , maxX = min (maxX boundingBox) (maxX other)
-                , minY = max (minY boundingBox) (minY other)
-                , maxY = min (maxY boundingBox) (maxY other)
+                { minX = max (minX firstBox) (minX secondBox)
+                , maxX = min (maxX firstBox) (maxX secondBox)
+                , minY = max (minY firstBox) (minY secondBox)
+                , maxY = min (maxY firstBox) (maxY secondBox)
                 }
             )
     else

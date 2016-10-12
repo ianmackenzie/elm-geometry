@@ -212,28 +212,28 @@ isContainedIn other boundingBox =
 
 
 hull : BoundingBox3d -> BoundingBox3d -> BoundingBox3d
-hull other boundingBox =
+hull firstBox secondBox =
     BoundingBox3d
-        { minX = min (minX boundingBox) (minX other)
-        , maxX = max (maxX boundingBox) (maxX other)
-        , minY = min (minY boundingBox) (minY other)
-        , maxY = max (maxY boundingBox) (maxY other)
-        , minZ = min (minZ boundingBox) (minZ other)
-        , maxZ = max (maxZ boundingBox) (maxZ other)
+        { minX = min (minX firstBox) (minX secondBox)
+        , maxX = max (maxX firstBox) (maxX secondBox)
+        , minY = min (minY firstBox) (minY secondBox)
+        , maxY = max (maxY firstBox) (maxY secondBox)
+        , minZ = min (minZ firstBox) (minZ secondBox)
+        , maxZ = max (maxZ firstBox) (maxZ secondBox)
         }
 
 
 intersection : BoundingBox3d -> BoundingBox3d -> Maybe BoundingBox3d
-intersection other boundingBox =
-    if overlaps other boundingBox then
+intersection firstBox secondBox =
+    if overlaps firstBox secondBox then
         Just
             (BoundingBox3d
-                { minX = max (minX boundingBox) (minX other)
-                , maxX = min (maxX boundingBox) (maxX other)
-                , minY = max (minY boundingBox) (minY other)
-                , maxY = min (maxY boundingBox) (maxY other)
-                , minZ = max (minZ boundingBox) (minZ other)
-                , maxZ = min (maxZ boundingBox) (maxZ other)
+                { minX = max (minX firstBox) (minX secondBox)
+                , maxX = min (maxX firstBox) (maxX secondBox)
+                , minY = max (minY firstBox) (minY secondBox)
+                , maxY = min (maxY firstBox) (maxY secondBox)
+                , minZ = max (minZ firstBox) (minZ secondBox)
+                , maxZ = min (maxZ firstBox) (maxZ secondBox)
                 }
             )
     else
