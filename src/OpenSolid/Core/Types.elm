@@ -105,6 +105,14 @@ mirroring across its XY plane.
 
 @docs SketchPlane3d
 
+# Line segments
+
+@docs LineSegment2d, LineSegment3d
+
+# Triangles
+
+@docs Triangle2d, Triangle3d
+
 # Bounding boxes
 
 These types represent bounding boxes around other geometric objects, and are
