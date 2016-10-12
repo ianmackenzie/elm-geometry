@@ -353,7 +353,7 @@ contains point boundingBox =
         (minX <= x && x <= maxX) && (minY <= y && y <= maxY)
 
 
-{-| Test if two bounding boxes overlap (have any points in common).
+{-| Test if one bounding box overlaps (touches) another.
 
     firstBox =
         BoundingBox2d
@@ -393,8 +393,8 @@ overlaps other boundingBox =
         && (maxY boundingBox >= minY other)
 
 
-{-| Test if the second bounding box is fully contained within the first (is a
-strict subset of it).
+{-| Test if the second given bounding box is fully contained within the first
+(is a strict subset of it).
 
     outerBox =
         BoundingBox2d
