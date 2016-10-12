@@ -19,7 +19,9 @@
     "OpenSolid.Point3d",
     "OpenSolid.Axis2d",
     "OpenSolid.Axis3d",
-    "OpenSolid.Plane3d"
+    "OpenSolid.Plane3d",
+    "OpenSolid.BoundingBox2d",
+    "OpenSolid.BoundingBox3d"
   ],
   "dependencies": {
     "elm-lang/core": "4.0.0 <= v < 5.0.0"
