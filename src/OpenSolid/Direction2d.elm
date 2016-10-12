@@ -19,6 +19,7 @@ module OpenSolid.Direction2d
         , components
         , xComponent
         , yComponent
+        , within
         , vector
         , negate
         , times
@@ -74,6 +75,10 @@ are not.
 # Components
 
 @docs components, xComponent, yComponent
+
+# Comparison
+
+@docs within
 
 # Vector conversion
 
@@ -243,6 +248,26 @@ xComponent =
 yComponent : Direction2d -> Float
 yComponent =
     components >> snd
+
+
+{-| Compare two directions within a tolerance. Returns true if the angle between
+the two given directions is less than the given tolerance.
+
+    firstDirection =
+        Direction2d.fromAngle (degrees 45)
+
+    secondDirection =
+        Direction2d.fromAngle (degrees 47)
+
+    Direction2d.within (degrees 5) firstDirection secondDirection ==
+        True
+
+    Direction2d.within (degrees 1) firstDirection secondDirection ==
+        False
+-}
+within : Float -> Direction2d -> Direction2d -> Bool
+within angle firstDirection secondDirection =
+    abs (angleFrom firstDirection secondDirection) <= angle
 
 
 {-| Convert a direction to a unit vector.

@@ -17,6 +17,7 @@ module OpenSolid.Direction3d
         , xComponent
         , yComponent
         , zComponent
+        , within
         , vector
         , negate
         , times
@@ -72,6 +73,10 @@ are not.
 # Components
 
 @docs components, xComponent, yComponent, zComponent
+
+# Comparison
+
+@docs within
 
 # Vector conversion
 
@@ -228,6 +233,23 @@ yComponent (Direction3d ( _, y, _ )) =
 zComponent : Direction3d -> Float
 zComponent (Direction3d ( _, _, z )) =
     z
+
+
+{-| Compare two directions within a tolerance. Returns true if the angle between
+the two given directions is less than the given tolerance.
+
+    direction =
+        Direction3d.rotateAround Axis3d.z (degrees 2) Direction3d.x
+
+    Direction3d.within (degrees 5) Direction3d.x direction ==
+        True
+
+    Direction3d.within (degrees 1) Direction3d.x direction ==
+        False
+-}
+within : Float -> Direction3d -> Direction3d -> Bool
+within angle firstDirection secondDirection =
+    angleFrom firstDirection secondDirection <= angle
 
 
 {-| Convert a direction to a unit vector.
