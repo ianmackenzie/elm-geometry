@@ -105,7 +105,7 @@ singleton point =
         BoundingBox2d { minX = x, maxX = x, minY = y, maxY = y }
 
 
-{-| Construct a bounding box containing two arbitrary points.
+{-| Construct a bounding box containing both of the given points.
 
     point1 =
         Point2d ( 2, 3 )
@@ -141,7 +141,7 @@ containing2 points =
             }
 
 
-{-| Construct a bounding box containing three arbitrary points.
+{-| Construct a bounding box containing all three of the given points.
 
     point1 =
         Point2d ( 2, 3 )
