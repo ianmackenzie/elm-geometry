@@ -268,8 +268,8 @@ angle between them.
     direction =
         Direction3d ( 0.6, 0.8, 0 )
 
-    Direction3d.dotProduct Direction2d.x direction == 0.6
-    Direction3d.dotProduct Direction2d.z direction == 0
+    Direction3d.dotProduct Direction3d.x direction == 0.6
+    Direction3d.dotProduct Direction3d.z direction == 0
     Direction3d.dotProduct direction direction == 1
 
 -}
@@ -409,7 +409,7 @@ coordinates. Inverse of `relativeTo`.
         Direction3d ( 0.866, 0.5, 0 )
 
     Direction3d.placeIn rotatedFrame Direction3d.y ==
-        Direction2d ( -0.5, 0.866, 0 )
+        Direction3d ( -0.5, 0.866, 0 )
 
     Direction3d.placeIn rotatedFrame Direction3d.z ==
         Direction3d ( 0, 0, 1 )
@@ -452,13 +452,13 @@ and return the corresponding direction in 3D.
     direction =
         Direction2d ( 0.6, 0.8 )
 
-    Direction2d.placeOnto SketchPlane3d.xy direction ==
+    Direction3d.placeOnto SketchPlane3d.xy direction ==
         Direction3d ( 0.6, 0.8, 0 )
 
-    Direction2d.placeOnto SketchPlane3d.yz direction ==
+    Direction3d.placeOnto SketchPlane3d.yz direction ==
         Direction3d ( 0, 0.6, 0.8 )
 
-    Direction2d.placeOnto SketchPlane3d.zx direction ==
+    Direction3d.placeOnto SketchPlane3d.zx direction ==
         Direction3d ( 0.8, 0, 0.6 )
 -}
 placeOnto : SketchPlane3d -> Direction2d -> Direction3d
