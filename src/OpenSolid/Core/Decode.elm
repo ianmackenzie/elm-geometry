@@ -29,18 +29,26 @@ module OpenSolid.Core.Decode
         , boundingBox3d
         )
 
+{-| JSON decoders for the core OpenSolid types.
+
+@docs vector2d, vector3d, direction2d, direction3d, point2d, point3d
+@docs axis2d, axis3d, plane3d, frame2d, frame3d, sketchPlane3d
+@docs lineSegment2d, lineSegment3d, triangle2d, triangle3d
+@docs boundingBox2d, boundingBox3d
+-}
+
 import Json.Decode as Decode exposing (Decoder, (:=))
 import OpenSolid.Core.Types exposing (..)
 
 
-{-| Decoder for Vector2d values from objects with 'x' and 'y' fields.
+{-| Decodes a Vector2d from a list of two floating-point components.
 -}
 vector2d : Decoder Vector2d
 vector2d =
     Decode.tuple2 (\x y -> Vector2d ( x, y )) Decode.float Decode.float
 
 
-{-| Decoder for Vector3d values from objects with 'x', 'y' and 'z' fields.
+{-| Decodes a Vector3d from a list of three floating-point components.
 -}
 vector3d : Decoder Vector3d
 vector3d =
@@ -50,14 +58,14 @@ vector3d =
         Decode.float
 
 
-{-| Decoder for Direction2d values from objects with 'x' and 'y' fields.
+{-| Decodes a Direction2d from a list of two floating-point components.
 -}
 direction2d : Decoder Direction2d
 direction2d =
     Decode.tuple2 (\x y -> Direction2d ( x, y )) Decode.float Decode.float
 
 
-{-| Decoder for Direction3d values from objects with 'x', 'y' and 'z' fields.
+{-| Decodes a Direction3d from a list of three floating-point components.
 -}
 direction3d : Decoder Direction3d
 direction3d =
@@ -67,14 +75,14 @@ direction3d =
         Decode.float
 
 
-{-| Decoder for Point2d values from objects with 'x' and 'y' fields.
+{-| Decodes a Point2d from a list of two floating-point coordinates.
 -}
 point2d : Decoder Point2d
 point2d =
     Decode.tuple2 (\x y -> Point2d ( x, y )) Decode.float Decode.float
 
 
-{-| Decoder for Point3d values from objects with 'x', 'y' and 'z' fields.
+{-| Decodes a Point3d from a list of three floating-point coordinates.
 -}
 point3d : Decoder Point3d
 point3d =
@@ -84,8 +92,7 @@ point3d =
         Decode.float
 
 
-{-| Decoder for Axis2d values from objects with 'originPoint' and 'direction'
-fields.
+{-| Decodes an Axis2d from an object with 'originPoint' and 'direction' fields.
 -}
 axis2d : Decoder Axis2d
 axis2d =
@@ -97,8 +104,7 @@ axis2d =
         ("direction" := direction2d)
 
 
-{-| Decoder for Axis3d values from objects with 'originPoint' and 'direction'
-fields.
+{-| Decodes an Axis3d from an object with 'originPoint' and 'direction' fields.
 -}
 axis3d : Decoder Axis3d
 axis3d =
@@ -110,8 +116,8 @@ axis3d =
         ("direction" := direction3d)
 
 
-{-| Decoder for Plane3d values from objects with 'originPoint' and
-'normalDirection' fields.
+{-| Decodes a Plane3d from an object with 'originPoint' and 'normalDirection'
+fields.
 -}
 plane3d : Decoder Plane3d
 plane3d =
@@ -126,7 +132,7 @@ plane3d =
         ("normalDirection" := direction3d)
 
 
-{-| Decoder for Frame2d values from objects with 'originPoint', 'xDirection' and
+{-| Decodes a Frame2d from an object with 'originPoint', 'xDirection' and
 'yDirection' fields.
 -}
 frame2d : Decoder Frame2d
@@ -144,7 +150,7 @@ frame2d =
         ("yDirection" := direction2d)
 
 
-{-| Decoder for Frame3d values from objects with 'originPoint', 'xDirection',
+{-| Decodes a Frame3d from an object with 'originPoint', 'xDirection',
 'yDirection' and 'zDirection' fields.
 -}
 frame3d : Decoder Frame3d
@@ -164,8 +170,8 @@ frame3d =
         ("zDirection" := direction3d)
 
 
-{-| Decoder for SketchPlane3d values from objects with 'originPoint',
-'xDirection' and 'yDirection' fields.
+{-| Decodes a SketchPlane3d from an object with 'originPoint', 'xDirection' and
+'yDirection' fields.
 -}
 sketchPlane3d : Decoder SketchPlane3d
 sketchPlane3d =
@@ -182,16 +188,22 @@ sketchPlane3d =
         ("yDirection" := direction3d)
 
 
+{-| Decodes a LineSegment2d from a list of two endpoints.
+-}
 lineSegment2d : Decoder LineSegment2d
 lineSegment2d =
     Decode.tuple2 (\v1 v2 -> LineSegment2d ( v1, v2 )) point2d point2d
 
 
+{-| Decodes a LineSegment3d from a list of two endpoints.
+-}
 lineSegment3d : Decoder LineSegment3d
 lineSegment3d =
     Decode.tuple2 (\v1 v2 -> LineSegment3d ( v1, v2 )) point3d point3d
 
 
+{-| Decodes a Triangle2d from a list of three vertices.
+-}
 triangle2d : Decoder Triangle2d
 triangle2d =
     Decode.tuple3 (\v1 v2 v3 -> Triangle2d ( v1, v2, v3 ))
@@ -200,6 +212,8 @@ triangle2d =
         point2d
 
 
+{-| Decodes a Triangle3d from a list of three vertices.
+-}
 triangle3d : Decoder Triangle3d
 triangle3d =
     Decode.tuple3 (\v1 v2 v3 -> Triangle3d ( v1, v2, v3 ))
@@ -208,8 +222,8 @@ triangle3d =
         point3d
 
 
-{-| Decoder for BoundingBox2d values from objects with 'minX', 'maxX', 'minY'
-and 'maxY' fields.
+{-| Decodes a BoundingBox2d from an object with 'minX', 'maxX', 'minY' and
+'maxY' fields.
 -}
 boundingBox2d : Decoder BoundingBox2d
 boundingBox2d =
@@ -228,8 +242,8 @@ boundingBox2d =
         ("maxY" := Decode.float)
 
 
-{-| Decoder for BoundingBox3d values from objects with 'minX', 'maxX', 'minY',
-'maxY', 'minZ' and 'maxZ' fields.
+{-| Decodes a BoundingBox3d from an object with 'minX', 'maxX', 'minY', 'maxY',
+'minZ' and 'maxZ' fields.
 -}
 boundingBox3d : Decoder BoundingBox3d
 boundingBox3d =

@@ -29,6 +29,14 @@ module OpenSolid.Core.Encode
         , boundingBox3d
         )
 
+{-| JSON encoders for the core OpenSolid types.
+
+@docs vector2d, vector3d, direction2d, direction3d, point2d, point3d
+@docs axis2d, axis3d, plane3d, frame2d, frame3d, sketchPlane3d
+@docs lineSegment2d, lineSegment3d, triangle2d, triangle3d
+@docs boundingBox2d, boundingBox3d
+-}
+
 import Json.Encode as Encode exposing (Value)
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
@@ -51,7 +59,7 @@ import OpenSolid.BoundingBox2d as BoundingBox2d
 import OpenSolid.BoundingBox3d as BoundingBox3d
 
 
-{-| Encode a Vector2d as an object with 'x' and 'y' fields.
+{-| Encode a Vector2d as a list of two floating-point components.
 -}
 vector2d : Vector2d -> Value
 vector2d vector =
@@ -62,7 +70,7 @@ vector2d vector =
         Encode.list [ Encode.float x, Encode.float y ]
 
 
-{-| Encode a Vector3d as an object with 'x', 'y' and 'z' fields.
+{-| Encode a Vector3d as a list of three floating-point components.
 -}
 vector3d : Vector3d -> Value
 vector3d vector =
@@ -73,7 +81,7 @@ vector3d vector =
         Encode.list [ Encode.float x, Encode.float y, Encode.float z ]
 
 
-{-| Encode a Direction2d as an object with 'x' and 'y' fields.
+{-| Encode a Direction2d as a list of two floating-point components.
 -}
 direction2d : Direction2d -> Value
 direction2d direction =
@@ -84,7 +92,7 @@ direction2d direction =
         Encode.list [ Encode.float x, Encode.float y ]
 
 
-{-| Encode a Direction3d as an object with 'x', 'y' and 'z' fields.
+{-| Encode a Direction3d as as a list of three floating-point components.
 -}
 direction3d : Direction3d -> Value
 direction3d direction =
@@ -95,7 +103,7 @@ direction3d direction =
         Encode.list [ Encode.float x, Encode.float y, Encode.float z ]
 
 
-{-| Encode a Point2d as an object with 'x' and 'y' fields.
+{-| Encode a Point2d as as a list of two floating-point coordinates.
 -}
 point2d : Point2d -> Value
 point2d point =
@@ -106,7 +114,7 @@ point2d point =
         Encode.list [ Encode.float x, Encode.float y ]
 
 
-{-| Encode a Point3d as an object with 'x', 'y' and 'z' fields.
+{-| Encode a Point3d as as a list of three floating-point coordinates.
 -}
 point3d : Point3d -> Value
 point3d point =
@@ -185,6 +193,8 @@ sketchPlane3d sketchPlane =
         ]
 
 
+{-| Encode a LineSegment2d as a list of two endpoints.
+-}
 lineSegment2d : LineSegment2d -> Value
 lineSegment2d lineSegment =
     let
@@ -194,6 +204,8 @@ lineSegment2d lineSegment =
         Encode.list [ point2d startPoint, point2d endPoint ]
 
 
+{-| Encode a LineSegment3d as a list of two endpoints.
+-}
 lineSegment3d : LineSegment3d -> Value
 lineSegment3d lineSegment =
     let
@@ -203,6 +215,8 @@ lineSegment3d lineSegment =
         Encode.list [ point3d startPoint, point3d endPoint ]
 
 
+{-| Encode a Triangle2d as a list of three vertices.
+-}
 triangle2d : Triangle2d -> Value
 triangle2d triangle =
     let
@@ -212,6 +226,8 @@ triangle2d triangle =
         Encode.list [ point2d v1, point2d v2, point2d v3 ]
 
 
+{-| Encode a Triangle3d as a list of three vertices.
+-}
 triangle3d : Triangle3d -> Value
 triangle3d triangle =
     let
