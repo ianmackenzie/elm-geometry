@@ -152,7 +152,7 @@ containing2 points =
     point3 =
         Point2d ( 6, 4 )
 
-    BoundingBox2d.containing2 ( point1, point2 ) ==
+    BoundingBox2d.containing3 ( point1, point2, point3 ) ==
         BoundingBox2d
             { minX = -1
             , maxX = 6
