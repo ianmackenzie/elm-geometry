@@ -71,11 +71,6 @@ perpendicular to each other.
 
 # Coordinate frames
 
-Functions for expressing frames relative to other frames. These can be
-confusing, and are likely to be necessary only in fairly specialized situations,
-but are provided for consistency with the `relativeTo` and `placeIn` functions
-in other modules.
-
 @docs relativeTo, placeIn
 -}
 
@@ -326,7 +321,14 @@ transformations. For example,
         |> Frame2d.translateAlongOwn Frame2d.xAxis 2
 
 means 'construct a frame at the point (2, 0), rotate it about its own origin
-point by 45 degrees, then translate it alongs its own axis by 2 units'.
+point by 45 degrees, then translate it alongs its own (now inclined) X axis by
+2 units', resulting in
+
+    Frame2d
+        { originPoint = Point2d ( 3.4142, 1.4142 )
+        , xDirection = Direction2d ( 0.7071, 0.7071 )
+        , yDirection = Direction2d ( -0.7071, 0.7071 )
+        }
 -}
 translateAlongOwn : (Frame2d -> Axis2d) -> Float -> Frame2d -> Frame2d
 translateAlongOwn axis distance frame =
@@ -366,40 +368,8 @@ mirrorAcross axis =
                 }
 
 
-{-| Express one frame relative to another; the result will be the second frame
-expressed in local coordinates relative to the first. This is one of the most
-conceptually tricky operations in this library!
-
-For example, consider a reference frame at the point (2, 3) with its X direction
-opposite to the global X direction:
-
-    referenceFrame =
-        Frame2d
-            { originPoint = Point2d ( 2, 3 )
-            , xDirection = Direction2d.negate Direction2d.x
-            , yDirection = Direction2d.y
-            }
-
-Now, consider a frame at the point (4, 4), aligned with the global X and Y
-directions:
-
-    frame =
-        Frame2d
-            { originPoint = Point2d ( 4, 4 )
-            , xDirection = Direction2d.x
-            , yDirection = Direction2d.y
-            }
-
-Relative to the reference frame, the origin point of this frame is two units
-'behind' and one unit 'above' to origin point of the reference frame and its
-X direction is in the 'negative' X direction. Therefore,
-
-    Frame2d.relativeTo referenceFrame frame ==
-        Frame2d
-            { originPoint = Point2d ( -2, 1 )
-            , xDirection = Direction2d.negate Direction2d.x
-            , yDirection = Direction2d.y
-            }
+{-| Take two frames expressed in global coordinates and return the second one
+expressed in local coordinates relative to the first.
 -}
 relativeTo : Frame2d -> Frame2d -> Frame2d
 relativeTo otherFrame =
@@ -418,6 +388,10 @@ relativeTo otherFrame =
                 }
 
 
+{-| Take one frame expressed in global coordinates and a second frame expressed
+in local coordinates relative to the first, and return the second frame
+expressed in global coordinates.
+-}
 placeIn : Frame2d -> Frame2d -> Frame2d
 placeIn otherFrame =
     let
