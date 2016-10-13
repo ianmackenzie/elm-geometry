@@ -583,14 +583,11 @@ projectOnto plane point =
         translateBy displacement point
 
 
-
-    localOrigin =
-        Point3d ( 1, 2, 3 )
 {-| Take a point currently defined in global coordinates and express it
 relative to a given reference frame.
 
     localFrame =
-        Frame3d.moveTo localOrigin Frame3d.xyz
+        Frame3d.at (Point3d ( 1, 2, 3 ))
 
     Point3d.relativeTo localFrame (Point3d ( 4, 5, 6 )) ==
         Point3d ( 3, 3, 3 )
@@ -612,11 +609,8 @@ relativeTo frame =
 {-| Take a point defined in local coordinates relative to a given reference
 frame, and return that point expressed in global coordinates.
 
-    localOrigin =
-        Point3d ( 1, 2, 3 )
-
     localFrame =
-        Frame3d.moveTo localOrigin Frame3d.xyz
+        Frame3d.at (Point3d ( 1, 2, 3 ))
 
     Point3d.placeIn localFrame (Point3d ( 3, 3, 3 )) ==
         Point3d ( 4, 5, 6 )

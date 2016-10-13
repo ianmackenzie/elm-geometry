@@ -529,20 +529,17 @@ projectOnto axis =
             >> addTo originPoint
 
 
-
-    localOrigin =
-        Point2d ( 1, 2 )
 {-| Take a point currently defined in global coordinates and express it
 relative to a given reference frame.
 
     localFrame =
-        Frame2d.moveTo localOrigin Frame2d.xy
+        Frame2d.at (Point2d ( 1, 2 ))
 
     Point2d.relativeTo localFrame (Point2d ( 4, 5 )) ==
         Point2d ( 3, 3 )
 
-    Point2d.relativeTo localFrame (Point2d ( 1, 0 )) ==
-        Point2d ( 0, -2 )
+    Point2d.relativeTo localFrame (Point2d ( 1, 1 )) ==
+        Point2d ( 0, -1 )
 -}
 relativeTo : Frame2d -> Point2d -> Point2d
 relativeTo frame =
@@ -556,14 +553,11 @@ relativeTo frame =
             >> Point2d
 
 
-
-    localOrigin =
-        Point2d ( 1, 2 )
 {-| Take a point defined in local coordinates relative to a given reference
 frame, and return that point expressed in global coordinates.
 
     localFrame =
-        Frame2d.moveTo localOrigin Frame2d.xy
+        Frame2d.at (Point2d ( 1, 2 ))
 
     Point2d.placeIn localFrame (Point2d ( 3, 3 )) ==
         Point2d ( 4, 5 )
