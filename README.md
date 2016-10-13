@@ -103,7 +103,7 @@ to your `elm-package.json`.
 Most OpenSolid modules are designed to imported as qualified, for example
 
 ```elm
-import OpenSolid.Core.Point3d as Point3d
+import OpenSolid.Point3d as Point3d
 ```
 
 The main exception is the `Types` module, which only contains type definitions
