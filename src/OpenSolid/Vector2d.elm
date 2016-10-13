@@ -19,6 +19,7 @@ module OpenSolid.Vector2d
         , length
         , squaredLength
         , direction
+        , lengthAndDirection
         , negate
         , times
         , plus
@@ -76,7 +77,7 @@ can use Elm's built-in `fromPolar` function:
 
 # Length and direction
 
-@docs length, squaredLength, direction
+@docs length, squaredLength, direction, lengthAndDirection
 
 # Arithmetic
 
@@ -272,6 +273,37 @@ direction vector =
                 times (1 / length vector) vector
         in
             Just (Direction2d (components normalizedVector))
+
+
+{-| Attempt to find the length and direction of a vector. In the case of a zero
+vector, returns `Nothing`.
+
+    vector =
+        Vector2d ( 3, 4 )
+
+    Vector2d.lengthAndDirection vector ==
+        Just ( 5, Direction2d ( 0.6, 0.8 ) )
+
+    Vector2d.lengthAndDirection Vector2d.zero ==
+        Nothing
+-}
+lengthAndDirection : Vector2d -> Maybe ( Float, Direction2d )
+lengthAndDirection vector =
+    let
+        vectorLength =
+            length vector
+    in
+        if vectorLength == 0.0 then
+            Nothing
+        else
+            let
+                normalizedVector =
+                    times (1 / vectorLength) vector
+
+                vectorDirection =
+                    Direction2d (components normalizedVector)
+            in
+                Just ( vectorLength, vectorDirection )
 
 
 {-| Negate a vector.

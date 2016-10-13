@@ -20,6 +20,7 @@ module OpenSolid.Vector3d
         , length
         , squaredLength
         , direction
+        , lengthAndDirection
         , negate
         , times
         , plus
@@ -75,7 +76,7 @@ and Z components to the `Vector3d` constructor, for example
 
 # Length and direction
 
-@docs length, squaredLength, direction
+@docs length, squaredLength, direction, lengthAndDirection
 
 # Arithmetic
 
@@ -304,6 +305,37 @@ direction vector =
                 times (1 / length vector) vector
         in
             Just (Direction3d (components normalizedVector))
+
+
+{-| Attempt to find the length and direction of a vector. In the case of a zero
+vector, returns `Nothing`.
+
+    vector =
+        Vector3d ( 3, 0, 4 )
+
+    Vector3d.lengthAndDirection vector ==
+        Just ( 5, Direction3d ( 0.6, 0, 0.8 ) )
+
+    Vector3d.lengthAndDirection Vector3d.zero ==
+        Nothing
+-}
+lengthAndDirection : Vector3d -> Maybe ( Float, Direction3d )
+lengthAndDirection vector =
+    let
+        vectorLength =
+            length vector
+    in
+        if vectorLength == 0.0 then
+            Nothing
+        else
+            let
+                normalizedVector =
+                    times (1 / vectorLength) vector
+
+                vectorDirection =
+                    Direction3d (components normalizedVector)
+            in
+                Just ( vectorLength, vectorDirection )
 
 
 {-| Negate a vector.
