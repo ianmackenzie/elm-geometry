@@ -15,7 +15,7 @@ module OpenSolid.Vector2d
         , xComponent
         , yComponent
         , componentIn
-        , within
+        , equalWithin
         , length
         , squaredLength
         , direction
@@ -72,7 +72,7 @@ can use Elm's built-in `fromPolar` function:
 
 # Comparison
 
-@docs within
+@docs equalWithin
 
 # Length and direction
 
@@ -215,14 +215,14 @@ between the two given vectors has length less than the given tolerance.
     secondVector =
         Vector2d ( 0.9999, 2.0002 )
 
-    Vector2d.within 1e-3 firstVector secondVector ==
+    Vector2d.equalWithin 1e-3 firstVector secondVector ==
         True
 
-    Vector2d.within 1e-6 firstVector secondVector ==
+    Vector2d.equalWithin 1e-6 firstVector secondVector ==
         False
 -}
-within : Float -> Vector2d -> Vector2d -> Bool
-within tolerance firstVector secondVector =
+equalWithin : Float -> Vector2d -> Vector2d -> Bool
+equalWithin tolerance firstVector secondVector =
     squaredLength (minus firstVector secondVector) <= tolerance * tolerance
 
 

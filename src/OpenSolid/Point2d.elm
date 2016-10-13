@@ -16,7 +16,7 @@ module OpenSolid.Point2d
         , coordinates
         , xCoordinate
         , yCoordinate
-        , within
+        , equalWithin
         , vectorFrom
         , vectorTo
         , distanceFrom
@@ -68,7 +68,7 @@ can use Elm's built-in `fromPolar` function:
 
 # Comparison
 
-@docs within
+@docs equalWithin
 
 # Displacement
 
@@ -235,14 +235,14 @@ between the two given points is less than the given tolerance.
     secondPoint =
         Point2d ( 0.9999, 2.0002 )
 
-    Point2d.within 1e-3 firstPoint secondPoint ==
+    Point2d.equalWithin 1e-3 firstPoint secondPoint ==
         True
 
-    Point2d.within 1e-6 firstPoint secondPoint ==
+    Point2d.equalWithin 1e-6 firstPoint secondPoint ==
         False
 -}
-within : Float -> Point2d -> Point2d -> Bool
-within tolerance firstPoint secondPoint =
+equalWithin : Float -> Point2d -> Point2d -> Bool
+equalWithin tolerance firstPoint secondPoint =
     squaredDistanceFrom firstPoint secondPoint <= tolerance * tolerance
 
 

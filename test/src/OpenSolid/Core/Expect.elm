@@ -140,7 +140,7 @@ vector2d =
 
 vector2dWithin : Float -> Vector2d -> Vector2d -> Expectation
 vector2dWithin tolerance =
-    expect (Vector2d.within tolerance)
+    expect (Vector2d.equalWithin tolerance)
 
 
 vector3d : Vector3d -> Vector3d -> Expectation
@@ -150,7 +150,7 @@ vector3d =
 
 vector3dWithin : Float -> Vector3d -> Vector3d -> Expectation
 vector3dWithin tolerance =
-    expect (Vector3d.within tolerance)
+    expect (Vector3d.equalWithin tolerance)
 
 
 direction2d : Direction2d -> Direction2d -> Expectation
@@ -160,7 +160,7 @@ direction2d =
 
 direction2dWithin : Float -> Direction2d -> Direction2d -> Expectation
 direction2dWithin tolerance =
-    expect (Direction2d.within tolerance)
+    expect (Direction2d.equalWithin tolerance)
 
 
 direction3d : Direction3d -> Direction3d -> Expectation
@@ -170,7 +170,7 @@ direction3d =
 
 direction3dWithin : Float -> Direction3d -> Direction3d -> Expectation
 direction3dWithin tolerance =
-    expect (Direction3d.within tolerance)
+    expect (Direction3d.equalWithin tolerance)
 
 
 point2d : Point2d -> Point2d -> Expectation
@@ -180,7 +180,7 @@ point2d =
 
 point2dWithin : Float -> Point2d -> Point2d -> Expectation
 point2dWithin tolerance =
-    expect (Point2d.within tolerance)
+    expect (Point2d.equalWithin tolerance)
 
 
 point3d : Point3d -> Point3d -> Expectation
@@ -190,15 +190,15 @@ point3d =
 
 point3dWithin : Float -> Point3d -> Point3d -> Expectation
 point3dWithin tolerance =
-    expect (Point3d.within tolerance)
+    expect (Point3d.equalWithin tolerance)
 
 
 axis2d : Axis2d -> Axis2d -> Expectation
 axis2d =
     expect
         (allOf
-            [ by (Point2d.within defaultTolerance) Axis2d.originPoint
-            , by (Direction2d.within defaultTolerance) Axis2d.direction
+            [ by (Point2d.equalWithin defaultTolerance) Axis2d.originPoint
+            , by (Direction2d.equalWithin defaultTolerance) Axis2d.direction
             ]
         )
 
@@ -207,8 +207,8 @@ axis3d : Axis3d -> Axis3d -> Expectation
 axis3d =
     expect
         (allOf
-            [ by (Point3d.within defaultTolerance) Axis3d.originPoint
-            , by (Direction3d.within defaultTolerance) Axis3d.direction
+            [ by (Point3d.equalWithin defaultTolerance) Axis3d.originPoint
+            , by (Direction3d.equalWithin defaultTolerance) Axis3d.direction
             ]
         )
 
@@ -217,8 +217,10 @@ plane3d : Plane3d -> Plane3d -> Expectation
 plane3d =
     expect
         (allOf
-            [ by (Point3d.within defaultTolerance) Plane3d.originPoint
-            , by (Direction3d.within defaultTolerance) Plane3d.normalDirection
+            [ by (Point3d.equalWithin defaultTolerance)
+                Plane3d.originPoint
+            , by (Direction3d.equalWithin defaultTolerance)
+                Plane3d.normalDirection
             ]
         )
 
@@ -227,9 +229,9 @@ frame2d : Frame2d -> Frame2d -> Expectation
 frame2d =
     expect
         (allOf
-            [ by (Point2d.within defaultTolerance) Frame2d.originPoint
-            , by (Direction2d.within defaultTolerance) Frame2d.xDirection
-            , by (Direction2d.within defaultTolerance) Frame2d.yDirection
+            [ by (Point2d.equalWithin defaultTolerance) Frame2d.originPoint
+            , by (Direction2d.equalWithin defaultTolerance) Frame2d.xDirection
+            , by (Direction2d.equalWithin defaultTolerance) Frame2d.yDirection
             ]
         )
 
@@ -238,10 +240,10 @@ frame3d : Frame3d -> Frame3d -> Expectation
 frame3d =
     expect
         (allOf
-            [ by (Point3d.within defaultTolerance) Frame3d.originPoint
-            , by (Direction3d.within defaultTolerance) Frame3d.xDirection
-            , by (Direction3d.within defaultTolerance) Frame3d.yDirection
-            , by (Direction3d.within defaultTolerance) Frame3d.zDirection
+            [ by (Point3d.equalWithin defaultTolerance) Frame3d.originPoint
+            , by (Direction3d.equalWithin defaultTolerance) Frame3d.xDirection
+            , by (Direction3d.equalWithin defaultTolerance) Frame3d.yDirection
+            , by (Direction3d.equalWithin defaultTolerance) Frame3d.zDirection
             ]
         )
 
@@ -250,9 +252,12 @@ sketchPlane3d : SketchPlane3d -> SketchPlane3d -> Expectation
 sketchPlane3d =
     expect
         (allOf
-            [ by (Point3d.within defaultTolerance) SketchPlane3d.originPoint
-            , by (Direction3d.within defaultTolerance) SketchPlane3d.xDirection
-            , by (Direction3d.within defaultTolerance) SketchPlane3d.yDirection
+            [ by (Point3d.equalWithin defaultTolerance)
+                SketchPlane3d.originPoint
+            , by (Direction3d.equalWithin defaultTolerance)
+                SketchPlane3d.xDirection
+            , by (Direction3d.equalWithin defaultTolerance)
+                SketchPlane3d.yDirection
             ]
         )
 
@@ -266,8 +271,8 @@ lineSegment2dWithin : Float -> LineSegment2d -> LineSegment2d -> Expectation
 lineSegment2dWithin tolerance =
     expect
         (allOf
-            [ by (Point2d.within tolerance) LineSegment2d.startPoint
-            , by (Point2d.within tolerance) LineSegment2d.endPoint
+            [ by (Point2d.equalWithin tolerance) LineSegment2d.startPoint
+            , by (Point2d.equalWithin tolerance) LineSegment2d.endPoint
             ]
         )
 
@@ -281,8 +286,8 @@ lineSegment3dWithin : Float -> LineSegment3d -> LineSegment3d -> Expectation
 lineSegment3dWithin tolerance =
     expect
         (allOf
-            [ by (Point3d.within tolerance) LineSegment3d.startPoint
-            , by (Point3d.within tolerance) LineSegment3d.endPoint
+            [ by (Point3d.equalWithin tolerance) LineSegment3d.startPoint
+            , by (Point3d.equalWithin tolerance) LineSegment3d.endPoint
             ]
         )
 
@@ -303,12 +308,12 @@ triangle2dWithin tolerance =
                 ( secondVertex1, secondVertex2, secondVertex3 ) =
                     Triangle2d.vertices secondTriangle
 
-                comparePoints =
-                    Point2d.within tolerance
+                equalPoints =
+                    Point2d.equalWithin tolerance
             in
-                comparePoints firstVertex1 secondVertex1
-                    && comparePoints firstVertex2 secondVertex2
-                    && comparePoints firstVertex3 secondVertex3
+                equalPoints firstVertex1 secondVertex1
+                    && equalPoints firstVertex2 secondVertex2
+                    && equalPoints firstVertex3 secondVertex3
     in
         expect comparison
 
@@ -329,12 +334,12 @@ triangle3dWithin tolerance =
                 ( secondVertex1, secondVertex2, secondVertex3 ) =
                     Triangle3d.vertices secondTriangle
 
-                comparePoints =
-                    Point3d.within tolerance
+                equalPoints =
+                    Point3d.equalWithin tolerance
             in
-                comparePoints firstVertex1 secondVertex1
-                    && comparePoints firstVertex2 secondVertex2
-                    && comparePoints firstVertex3 secondVertex3
+                equalPoints firstVertex1 secondVertex1
+                    && equalPoints firstVertex2 secondVertex2
+                    && equalPoints firstVertex3 secondVertex3
     in
         expect comparison
 
