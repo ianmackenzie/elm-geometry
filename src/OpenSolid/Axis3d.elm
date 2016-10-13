@@ -15,9 +15,9 @@ module OpenSolid.Axis3d
         , originPoint
         , direction
         , flip
+        , moveTo
         , rotateAround
         , translateBy
-        , moveTo
         , mirrorAcross
         , projectOnto
         , relativeTo
@@ -59,7 +59,7 @@ fields to the `Axis3d` constructor, for example:
 
 # Transformations
 
-@docs flip, rotateAround, translateBy, moveTo, mirrorAcross, projectOnto
+@docs flip, moveTo, rotateAround, translateBy, mirrorAcross, projectOnto
 
 # Coordinate frames
 
@@ -154,6 +154,28 @@ flip axis =
         }
 
 
+{-| Move an axis so that it has the given origin point but unchanged direction.
+
+    axis =
+        Axis3d
+            { originPoint = Point3d ( 2, 1, 3 )
+            , direction = Direction3d.y
+            }
+
+    newOrigin =
+        Point3d ( 3, 4, 5 )
+
+    Axis3d.moveTo newOrigin axis ==
+        Axis3d
+            { originPoint = Point3d ( 3, 4, 5 ),
+            , direction = Direction3d.y
+            }
+-}
+moveTo : Point3d -> Axis3d -> Axis3d
+moveTo newOrigin axis =
+    Axis3d { originPoint = newOrigin, direction = direction axis }
+
+
 {-| Rotate an axis around another axis by a given angle. The axis to rotate
 around is given first and the axis to rotate is given last.
 
@@ -194,28 +216,6 @@ translateBy vector axis =
         { originPoint = Point3d.translateBy vector (originPoint axis)
         , direction = direction axis
         }
-
-
-{-| Move an axis so that it has the given origin point but unchanged direction.
-
-    axis =
-        Axis3d
-            { originPoint = Point3d ( 2, 1, 3 )
-            , direction = Direction3d.y
-            }
-
-    newOrigin =
-        Point3d ( 3, 4, 5 )
-
-    Axis3d.moveTo newOrigin axis ==
-        Axis3d
-            { originPoint = Point3d ( 3, 4, 5 ),
-            , direction = Direction3d.y
-            }
--}
-moveTo : Point3d -> Axis3d -> Axis3d
-moveTo newOrigin axis =
-    Axis3d { originPoint = newOrigin, direction = direction axis }
 
 
 {-| Mirror an axis across a plane.

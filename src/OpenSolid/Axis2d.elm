@@ -15,9 +15,9 @@ module OpenSolid.Axis2d
         , originPoint
         , direction
         , flip
+        , moveTo
         , rotateAround
         , translateBy
-        , moveTo
         , mirrorAcross
         , relativeTo
         , placeIn
@@ -58,7 +58,7 @@ fields to the `Axis2d` constructor, for example:
 
 # Transformations
 
-@docs flip, rotateAround, translateBy, moveTo, mirrorAcross
+@docs flip, moveTo, rotateAround, translateBy, mirrorAcross
 
 # Coordinate frames
 
@@ -152,6 +152,28 @@ flip axis =
         }
 
 
+{-| Move an axis so that it has the given origin point but unchanged direction.
+
+    axis =
+        Axis2d
+            { originPoint = Point2d ( 2, 3 )
+            , direction = Direction2d.y
+            }
+
+    newOrigin =
+        Point2d ( 4, 5 )
+
+    Axis2d.moveTo newOrigin axis ==
+        Axis2d
+            { originPoint = Point2d ( 4, 5 ),
+            , direction = Direction2d.y
+            }
+-}
+moveTo : Point2d -> Axis2d -> Axis2d
+moveTo newOrigin axis =
+    Axis2d { originPoint = newOrigin, direction = direction axis }
+
+
 {-| Rotate an axis around a given center point by a given angle. Rotates the
 axis' origin point around the given point by the given angle and the axis'
 direction by the given angle.
@@ -193,28 +215,6 @@ translateBy vector axis =
         { originPoint = Point2d.translateBy vector (originPoint axis)
         , direction = direction axis
         }
-
-
-{-| Move an axis so that it has the given origin point but unchanged direction.
-
-    axis =
-        Axis2d
-            { originPoint = Point2d ( 2, 3 )
-            , direction = Direction2d.y
-            }
-
-    newOrigin =
-        Point2d ( 4, 5 )
-
-    Axis2d.moveTo newOrigin axis ==
-        Axis2d
-            { originPoint = Point2d ( 4, 5 ),
-            , direction = Direction2d.y
-            }
--}
-moveTo : Point2d -> Axis2d -> Axis2d
-moveTo newOrigin axis =
-    Axis2d { originPoint = newOrigin, direction = direction axis }
 
 
 {-| Mirror one axis across another. The axis to mirror across is given first and

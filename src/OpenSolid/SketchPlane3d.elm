@@ -23,11 +23,11 @@ module OpenSolid.SketchPlane3d
         , plane
         , flipX
         , flipY
+        , moveTo
         , rotateAround
         , rotateAroundOwn
         , translateBy
         , translateAlongOwn
-        , moveTo
         , mirrorAcross
         , relativeTo
         , placeIn
@@ -159,6 +159,15 @@ flipY sketchPlane =
         }
 
 
+moveTo : Point3d -> SketchPlane3d -> SketchPlane3d
+moveTo newOrigin sketchPlane =
+    SketchPlane3d
+        { originPoint = newOrigin
+        , xDirection = xDirection sketchPlane
+        , yDirection = yDirection sketchPlane
+        }
+
+
 rotateAround : Axis3d -> Float -> SketchPlane3d -> SketchPlane3d
 rotateAround axis angle =
     let
@@ -200,15 +209,6 @@ translateAlongOwn axis distance sketchPlane =
             Direction3d.times distance axisDirection
     in
         translateBy displacement sketchPlane
-
-
-moveTo : Point3d -> SketchPlane3d -> SketchPlane3d
-moveTo newOrigin sketchPlane =
-    SketchPlane3d
-        { originPoint = newOrigin
-        , xDirection = xDirection sketchPlane
-        , yDirection = yDirection sketchPlane
-        }
 
 
 mirrorAcross : Plane3d -> SketchPlane3d -> SketchPlane3d

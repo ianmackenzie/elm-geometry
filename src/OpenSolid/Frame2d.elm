@@ -18,11 +18,11 @@ module OpenSolid.Frame2d
         , yAxis
         , flipX
         , flipY
+        , moveTo
         , rotateBy
         , rotateAround
         , translateBy
         , translateAlongOwn
-        , moveTo
         , mirrorAcross
         , relativeTo
         , placeIn
@@ -67,7 +67,7 @@ perpendicular to each other.
 
 # Transformations
 
-@docs flipX, flipY, rotateBy, rotateAround, translateBy, translateAlongOwn, moveTo, mirrorAcross
+@docs flipX, flipY, moveTo, rotateBy, rotateAround, translateBy, translateAlongOwn, mirrorAcross
 
 # Coordinate frames
 
@@ -208,6 +208,31 @@ flipY frame =
         }
 
 
+{-| Move a frame so that it has the given origin point.
+
+    frame =
+        Frame2d
+            { point = Point2d ( 2, 3 )
+            , xDirection = Direction2d ( 0.8, 0.6 )
+            , yDirection = Direction2d ( -0.6, 0.8 )
+            }
+
+    Frame2d.moveTo (Point2d ( 1, 1 )) frame ==
+        Frame2d
+            { point = Point2d ( 1, 1 )
+            , xDirection = Direction2d ( 0.8, 0.6 )
+            , yDirection = Direction2d ( -0.6, 0.8 )
+            }
+-}
+moveTo : Point2d -> Frame2d -> Frame2d
+moveTo newOrigin frame =
+    Frame2d
+        { originPoint = newOrigin
+        , xDirection = xDirection frame
+        , yDirection = yDirection frame
+        }
+
+
 {-| Rotate a frame counterclockwise by a given angle around the frame's own
 origin point. The resulting frame will have the same origin point, and its X and
 Y directions will be rotated by the given angle.
@@ -310,31 +335,6 @@ translateAlongOwn axis distance frame =
             Direction2d.times distance (Axis2d.direction (axis frame))
     in
         translateBy displacement frame
-
-
-{-| Move a frame so that it has the given origin point.
-
-    frame =
-        Frame2d
-            { point = Point2d ( 2, 3 )
-            , xDirection = Direction2d ( 0.8, 0.6 )
-            , yDirection = Direction2d ( -0.6, 0.8 )
-            }
-
-    Frame2d.moveTo (Point2d ( 1, 1 )) frame ==
-        Frame2d
-            { point = Point2d ( 1, 1 )
-            , xDirection = Direction2d ( 0.8, 0.6 )
-            , yDirection = Direction2d ( -0.6, 0.8 )
-            }
--}
-moveTo : Point2d -> Frame2d -> Frame2d
-moveTo newOrigin frame =
-    Frame2d
-        { originPoint = newOrigin
-        , xDirection = xDirection frame
-        , yDirection = yDirection frame
-        }
 
 
 {-| Mirror a frame across an axis.

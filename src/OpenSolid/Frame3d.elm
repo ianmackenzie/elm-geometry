@@ -33,11 +33,11 @@ module OpenSolid.Frame3d
         , flipX
         , flipY
         , flipZ
+        , moveTo
         , rotateAround
         , rotateAroundOwn
         , translateBy
         , translateAlongOwn
-        , moveTo
         , mirrorAcross
         , relativeTo
         , placeIn
@@ -231,6 +231,16 @@ flipZ frame =
         }
 
 
+moveTo : Point3d -> Frame3d -> Frame3d
+moveTo newOrigin frame =
+    Frame3d
+        { originPoint = newOrigin
+        , xDirection = xDirection frame
+        , yDirection = yDirection frame
+        , zDirection = zDirection frame
+        }
+
+
 rotateAround : Axis3d -> Float -> Frame3d -> Frame3d
 rotateAround axis angle =
     let
@@ -271,16 +281,6 @@ translateAlongOwn axis distance frame =
             Direction3d.times distance (Axis3d.direction (axis frame))
     in
         translateBy displacement frame
-
-
-moveTo : Point3d -> Frame3d -> Frame3d
-moveTo newOrigin frame =
-    Frame3d
-        { originPoint = newOrigin
-        , xDirection = xDirection frame
-        , yDirection = yDirection frame
-        , zDirection = zDirection frame
-        }
 
 
 mirrorAcross : Plane3d -> Frame3d -> Frame3d
