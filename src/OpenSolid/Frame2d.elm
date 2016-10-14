@@ -368,7 +368,7 @@ mirrorAcross axis =
                 }
 
 
-{-| Take two frames expressed in global coordinates and return the second one
+{-| Take two frames defined in global coordinates, and return the second one
 expressed in local coordinates relative to the first.
 -}
 relativeTo : Frame2d -> Frame2d -> Frame2d
@@ -388,8 +388,8 @@ relativeTo otherFrame =
                 }
 
 
-{-| Take one frame expressed in global coordinates and a second frame expressed
-in local coordinates relative to the first, and return the second frame
+{-| Take one frame defined in global coordinates and a second frame defined
+in local coordinates relative to the first frame, and return the second frame
 expressed in global coordinates.
 -}
 placeIn : Frame2d -> Frame2d -> Frame2d

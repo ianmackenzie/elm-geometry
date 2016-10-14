@@ -660,8 +660,8 @@ projectOnto plane vector =
         minus (projectionIn normalDirection vector) vector
 
 
-{-| Take a vector currently expressed in global coordinates and express it
-relative to a given frame.
+{-| Take a vector defined in global coordinates, and return it expressed in
+local coordinates relative to a given reference frame.
 
     vector =
         Vector3d ( 2, 0, 3 )
@@ -682,9 +682,8 @@ relativeTo frame vector =
             )
 
 
-{-| Place a vector in a given frame, considering its components as being
-relative to that frame and returning the corresponding vector in global
-coordinates. Inverse of `relativeTo`.
+{-| Take a vector defined in local coordinates relative to a given reference
+frame, and return that vector expressed in global coordinates.
 
     vector =
         Vector3d ( 2, 0, 3 )

@@ -281,8 +281,8 @@ projectOnto plane axis =
         Maybe.map toAxis (Direction3d.projectOnto plane (direction axis))
 
 
-{-| Take an axis currently expressed in global coordinates and express it
-relative to a given frame.
+{-| Take an axis defined in global coordinates, and return it expressed in local
+coordinates relative to a given reference frame.
 
     originPoint =
         Point3d ( 2, 1, 3 )
@@ -309,8 +309,8 @@ relativeTo frame =
                 }
 
 
-{-| Place an axis in a given frame, considering it as being expressed relative
-to that frame and returning the corresponding axis in global coordinates.
+{-| Take an axis defined in local coordinates relative to a given reference
+frame, and return that axis expressed in global coordinates.
 
     originPoint =
         Point3d ( 2, 1, 3 )

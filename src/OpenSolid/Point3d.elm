@@ -583,8 +583,8 @@ projectOnto plane point =
         translateBy displacement point
 
 
-{-| Take a point currently defined in global coordinates and express it
-relative to a given reference frame.
+{-| Take a point defined in global coordinates, and return it expressed in local
+coordinates relative to a given reference frame.
 
     localFrame =
         Frame3d.at (Point3d ( 1, 2, 3 ))

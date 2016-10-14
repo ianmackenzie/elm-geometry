@@ -529,8 +529,8 @@ projectOnto axis =
             >> addTo originPoint
 
 
-{-| Take a point currently defined in global coordinates and express it
-relative to a given reference frame.
+{-| Take a point defined in global coordinates, and return it expressed in local
+coordinates relative to a given reference frame.
 
     localFrame =
         Frame2d.at (Point2d ( 1, 2 ))
@@ -562,8 +562,8 @@ frame, and return that point expressed in global coordinates.
     Point2d.placeIn localFrame (Point2d ( 3, 3 )) ==
         Point2d ( 4, 5 )
 
-    Point2d.placeIn localFrame (Point2d ( 0, -2 )) ==
-        Point2d ( 1, 0 )
+    Point2d.placeIn localFrame (Point2d ( 0, 1 )) ==
+        Point2d ( 1, 1 )
 -}
 placeIn : Frame2d -> Point2d -> Point2d
 placeIn frame =

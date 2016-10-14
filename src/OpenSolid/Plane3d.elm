@@ -344,25 +344,22 @@ mirrorAcross otherPlane =
                 }
 
 
-{-| Take an axis currently expressed in global coordinates and express it
-relative to a given frame. For example, consider a frame raised up one unit
-above the global XYZ frame and rotated 45 degrees clockwise around the Z axis:
+{-| Take a plane defined in global coordinates, and return it expressed in local
+coordinates relative to a given reference frame.
 
-    newOrigin =
-        Point3d ( 0, 0, 1 )
+    referenceFrame =
+        Frame3d.at (Point3d ( 1, 1, 1 ))
 
-    frame =
-        Frame3d.xyz
-            |> Frame3d.moveTo newOrigin
-            |> Frame3d.rotateAround Axis3d.z (degrees -45)
-
-Relative to this frame, the global YZ plane has an origin point one unit below
-the origin, with a normal direction halfway between the X and Y directions:
-
-    Plane3d.relativeTo frame Plane3d.yz ==
+    plane =
         Plane3d
-            { originPoint = Point3d ( 0, 0, -1 )
-            , normalDirection = Direction3d ( 0.7071, 0.7071, 0 )
+            { originPoint = Point3d ( 0, 0, 2 )
+            , normalDirection = Direction3d.z
+            }
+
+    Plane3d.relativeTo referenceFrame plane ==
+        Plane3d
+            { originPoint = Point3d ( -1, -1, 1 )
+            , normalDirection = Direction3d.z
             }
 -}
 relativeTo : Frame3d -> Plane3d -> Plane3d
@@ -381,39 +378,23 @@ relativeTo frame =
                 }
 
 
-{-| Place a plane in a given frame, considering it as being expressed relative
-to that frame and returning the corresponding plane in global coordinates.
-Inverse of `relativeTo`.
+{-| Take a plane defined in local coordinates relative to a given reference
+frame, and return that plane expressed in global coordinates.
 
-For example, consider a frame raised up one unit above the global XYZ frame and
-rotated 45 degrees clockwise around the Z axis:
-
-    newOrigin =
-        Point3d ( 0, 0, 1 )
-
-    frame =
-        Frame3d.xyz
-            |> Frame3d.moveTo newOrigin
-            |> Frame3d.rotateAround Axis3d.z (degrees -45)
-
-Now, consider a plane through the point (0, 0, 1) with a normal in the positive
-X direction (parallel to the YZ plane):
+    referenceFrame =
+        Frame3d.at (Point3d ( 1, 1, 1 ))
 
     plane =
         Plane3d
-            { originPoint = Point3d ( 0, 0, 1 )
-            , normalDirection = Direction3d.x
+            { originPoint = Point3d ( 1, 2, 3 )
+            , normalDirection = Direction3d.z
             }
 
-Placing this plane in the given frame gives a plane with an origin point two
-units above the global origin point, with the X direction of the rotated frame:
-
-    Plane3d.placeIn frame plane ==
+    Plane3d.placeIn referenceFrame plane ==
         Plane3d
-            { originPoint = Point3d ( 0, 0, 2 )
-            , normalDirection = Direction3d ( 0.7071, -0.7071, 0 )
+            { originPoint = Point3d ( 2, 3, 4 )
+            , normalDirection = Direction3d.z
             }
-
 -}
 placeIn : Frame3d -> Plane3d -> Plane3d
 placeIn frame =

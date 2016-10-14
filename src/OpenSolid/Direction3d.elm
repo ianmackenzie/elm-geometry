@@ -406,8 +406,8 @@ projectOnto plane =
     vector >> Vector3d.projectOnto plane >> Vector3d.direction
 
 
-{-| Take a direction currently expressed in global coordinates and express it
-relative to a given frame.
+{-| Take a direction defined in global coordinates, and return it expressed in
+local coordinates relative to a given reference frame.
 
     Direction3d.relativeTo rotatedFrame Direction3d.x ==
         Direction3d ( 0.866, -0.5, 0 )
@@ -423,9 +423,8 @@ relativeTo frame =
     vector >> Vector3d.relativeTo frame >> toDirection
 
 
-{-| Place a direction in a given frame, considering it as being expressed
-relative to that frame and returning the corresponding direction in global
-coordinates. Inverse of `relativeTo`.
+{-| Take a direction defined in local coordinates relative to a given reference
+frame, and return that direction expressed in global coordinates.
 
     Direction3d.placeIn rotatedFrame Direction3d.x ==
         Direction3d ( 0.866, 0.5, 0 )

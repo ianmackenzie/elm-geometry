@@ -369,8 +369,8 @@ mirrorAcross axis =
     vector >> Vector2d.mirrorAcross axis >> toDirection
 
 
-{-| Take a direction currently expressed in global coordinates and express it
-relative to a given frame.
+{-| Take a direction defined in global coordinates, and return it expressed in
+local coordinates relative to a given reference frame.
 
     Direction2d.relativeTo upsideDownFrame Direction2d.y ==
         Direction2d ( 0, -1 )
@@ -386,9 +386,8 @@ relativeTo frame =
     vector >> Vector2d.relativeTo frame >> toDirection
 
 
-{-| Place a direction in a given frame, considering it as being expressed
-relative to that frame and returning the corresponding direction in global
-coordinates. Inverse of `relativeTo`.
+{-| Take a direction defined in local coordinates relative to a given reference
+frame, and return that direction expressed in global coordinates.
 
     Direction2d.placeIn upsideDownFrame Direction2d.y ==
         Direction2d ( 0, -1 )

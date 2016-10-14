@@ -513,8 +513,8 @@ projectOnto axis =
         projectionIn direction
 
 
-{-| Take a vector currently expressed in global coordinates and express it
-relative to a given frame.
+{-| Take a vector defined in global coordinates, and return it expressed in
+local coordinates relative to a given reference frame.
 
     Vector2d.relativeTo upsideDownFrame (Vector2d ( 2, 3 )) ==
         Vector2d ( 2, -3 )
@@ -534,9 +534,8 @@ relativeTo frame vector =
             )
 
 
-{-| Place a vector in a given frame, considering its components as being
-relative to that frame and returning the corresponding vector in global
-coordinates. Inverse of `relativeTo`.
+{-| Take a vector defined in local coordinates relative to a given reference
+frame, and return that vector expressed in global coordinates.
 
     Vector2d.placeIn upsideDownFrame (Vector2d ( 2, 3 )) ==
         Vector2d ( 2, -3 )

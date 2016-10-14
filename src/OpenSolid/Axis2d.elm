@@ -248,8 +248,8 @@ mirrorAcross otherAxis =
                 }
 
 
-{-| Take an axis currently expressed in global coordinates and express it
-relative to a given frame.
+{-| Take an axis defined in global coordinates, and return it expressed in local
+coordinates relative to a given reference frame.
 
     originPoint =
         Point2d ( 2, 3 )
@@ -276,9 +276,8 @@ relativeTo frame =
                 }
 
 
-{-| Place an axis in a given frame, considering it as being expressed relative
-to that frame and returning the corresponding axis in global coordinates.
-Inverse of `relativeTo`.
+{-| Take an axis defined in local coordinates relative to a given reference
+frame, and return that axis expressed in global coordinates.
 
     originPoint =
         Point2d ( 2, 3 )
