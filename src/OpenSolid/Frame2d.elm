@@ -98,8 +98,8 @@ xy =
     at Point2d.origin
 
 
-{-| Construct a frame aligned with the global XY frame but with the given point
-as its origin point.
+{-| Construct a frame aligned with the global XY frame but with the given origin
+point.
 
     Frame2d.at (Point2d ( 2, 3 )) ==
         Frame2d
