@@ -309,8 +309,10 @@ translateBy vector frame =
 {-| Translate a frame along one of its own axes by a given distance.
 
 The first argument is an axis defined in local coordinates within the frame; the
-majority of the time this will be either `Axis2d.x` or `Axis2d.y`. The second
-argument is the distance to translate along the given axis.
+majority of the time this will be either `Axis2d.x` or `Axis2d.y`. Since the
+axis is assumed to be defined in local coordinates within the given frame,
+`Axis2d.x` means 'the X axis of the frame' and not 'the global X axis'. The
+second argument is the distance to translate along the given axis.
 
 This function is convenient when constructing frames via a series of
 transformations. For example,
@@ -320,8 +322,8 @@ transformations. For example,
         |> Frame2d.translateAlongOwn Axis2d.x 2
 
 means 'construct a frame at the point (2, 0), rotate it about its own origin
-point by 45 degrees, then translate it alongs its own (now inclined) X axis by
-2 units', resulting in
+point by 45 degrees, then translate it along its own X axis by 2 units',
+resulting in
 
     Frame2d
         { originPoint = Point2d ( 3.4142, 1.4142 )
