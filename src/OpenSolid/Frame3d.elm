@@ -43,6 +43,66 @@ module OpenSolid.Frame3d
         , placeIn
         )
 
+{-| Various functions for creating and working with `Frame3d` values. For the
+examples below, assume that all OpenSolid core types have been imported using
+
+    import OpenSolid.Core.Types exposing (..)
+
+and all necessary modules have been imported using the following pattern:
+
+    import OpenSolid.Frame3d as Frame3d
+
+Examples use `==` to indicate that two expressions are equivalent, even if (due
+to numerical roundoff) they might not be exactly equal.
+
+# Predefined frames
+
+@docs xy
+
+# Constructors
+
+Frames can by constructed by passing a record with `originPoint`, `xDirection`
+and 'yDirection' fields to the `Frame3d` constructor, for example:
+
+    frame =
+        Frame3d
+            { originPoint = Point3d ( 2, 1, 3 )
+            , xDirection = Direction3d.y
+            , yDirection = Direction3d.z
+            , zDirection = Direction3d.x
+            }
+
+In this case you must be careful to ensure that the X, Y and Z directions are
+perpendicular to each other. (You will likely also want to make sure that
+they form a right-handed coordinate system.)
+
+@docs at
+
+# Accessors
+
+@docs originPoint, xDirection, yDirection, zDirection
+
+# Axes
+
+@docs xAxis, yAxis, zAxis
+
+# Planes
+
+@docs xyPlane, yxPlane, yzPlane, zyPlane, zxPlane, xzPlane
+
+# Sketch planes
+
+@docs xySketchPlane, yxSketchPlane, yzSketchPlane, zySketchPlane, zxSketchPlane, xzSketchPlane
+
+# Transformations
+
+@docs flipX, flipY, flipZ, moveTo, rotateAround, rotateAroundOwn, translateBy, translateAlongOwn, mirrorAcross
+
+# Coordinate frames
+
+@docs relativeTo, placeIn
+-}
+
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Direction3d as Direction3d
