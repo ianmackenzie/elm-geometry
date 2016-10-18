@@ -63,7 +63,11 @@ perpendicular to each other.
 
 # Accessors
 
-@docs originPoint, xDirection, yDirection, xAxis, yAxis
+@docs originPoint, xDirection, yDirection
+
+# Axes
+
+@docs xAxis, yAxis
 
 # Transformations
 
