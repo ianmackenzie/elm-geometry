@@ -15,7 +15,6 @@ module OpenSolid.Direction2d
         , fromAngle
         , toAngle
         , angleFrom
-        , angleTo
         , components
         , xComponent
         , yComponent
@@ -70,7 +69,7 @@ are not.
 
 # Angles
 
-@docs fromAngle, toAngle, angleFrom, angleTo
+@docs fromAngle, toAngle, angleFrom
 
 # Components
 
@@ -203,20 +202,6 @@ second. The result will be in the range -π to π.
 angleFrom : Direction2d -> Direction2d -> Float
 angleFrom other direction =
     atan2 (crossProduct other direction) (dotProduct other direction)
-
-
-{-| Flipped version of `angleFrom`: The counterclockwise angle *to* the first
-direction, *from* the second.
-
-    direction =
-        Direction2d.fromAngle (degrees 45)
-
-    Direction2d.angleTo Direction2d.x direction ==
-        degrees -45
--}
-angleTo : Direction2d -> Direction2d -> Float
-angleTo =
-    flip angleFrom
 
 
 {-| Get the components of a direction as a tuple (the components it would have

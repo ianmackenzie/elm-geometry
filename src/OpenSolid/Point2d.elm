@@ -18,7 +18,6 @@ module OpenSolid.Point2d
         , yCoordinate
         , equalWithin
         , vectorFrom
-        , vectorTo
         , distanceFrom
         , squaredDistanceFrom
         , distanceAlong
@@ -72,7 +71,7 @@ can use Elm's built-in `fromPolar` function:
 
 # Displacement
 
-@docs vectorFrom, vectorTo
+@docs vectorFrom
 
 # Distance
 
@@ -267,19 +266,6 @@ vectorFrom other point =
             coordinates point
     in
         Vector2d ( x - x', y - y' )
-
-
-{-| Flipped version of `vectorFrom`, where the end point is given first.
-
-    startPoint =
-        Point2d ( 2, 3 )
-
-    Point2d.vectorTo Point2d.origin startPoint ==
-        Vector2d ( -2, -3 )
--}
-vectorTo : Point2d -> Point2d -> Vector2d
-vectorTo =
-    flip vectorFrom
 
 
 {-| Find the distance between two points.

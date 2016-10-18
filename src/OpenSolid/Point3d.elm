@@ -19,7 +19,6 @@ module OpenSolid.Point3d
         , zCoordinate
         , equalWithin
         , vectorFrom
-        , vectorTo
         , distanceFrom
         , squaredDistanceFrom
         , distanceAlong
@@ -71,7 +70,7 @@ and Z coordinates to the `Point3d` constructor, for example
 
 # Displacement
 
-@docs vectorFrom, vectorTo
+@docs vectorFrom
 
 # Distance
 
@@ -275,19 +274,6 @@ vectorFrom other point =
             coordinates point
     in
         Vector3d ( x - x', y - y', z - z' )
-
-
-{-| Flipped version of `vectorFrom`, where the end point is given first.
-
-    startPoint =
-        Point3d ( 2, 1, 3 )
-
-    Point3d.vectorTo Point3d.origin startPoint ==
-        Vector3d ( -2, -1, -3 )
--}
-vectorTo : Point3d -> Point3d -> Vector3d
-vectorTo =
-    flip vectorFrom
 
 
 {-| Find the distance between two points.
