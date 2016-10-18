@@ -259,9 +259,9 @@ rotateAround axis angle =
                 }
 
 
-rotateAroundOwn : (Frame3d -> Axis3d) -> Float -> Frame3d -> Frame3d
-rotateAroundOwn axis angle frame =
-    rotateAround (axis frame) angle frame
+rotateAroundOwn : Axis3d -> Float -> Frame3d -> Frame3d
+rotateAroundOwn localAxis angle frame =
+    rotateAround (Axis3d.placeIn frame localAxis) angle frame
 
 
 translateBy : Vector3d -> Frame3d -> Frame3d
@@ -274,11 +274,14 @@ translateBy vector frame =
         }
 
 
-translateAlongOwn : (Frame3d -> Axis3d) -> Float -> Frame3d -> Frame3d
-translateAlongOwn axis distance frame =
+translateAlongOwn : Axis3d -> Float -> Frame3d -> Frame3d
+translateAlongOwn localAxis distance frame =
     let
+        direction =
+            Direction3d.placeIn frame (Axis3d.direction localAxis)
+
         displacement =
-            Direction3d.times distance (Axis3d.direction (axis frame))
+            Direction3d.times distance direction
     in
         translateBy displacement frame
 

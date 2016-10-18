@@ -38,6 +38,7 @@ import OpenSolid.Point3d as Point3d
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Axis3d as Axis3d
+import OpenSolid.Axis2d as Axis2d
 
 
 xy : SketchPlane3d
@@ -185,9 +186,9 @@ rotateAround axis angle =
                 }
 
 
-rotateAroundOwn : (SketchPlane3d -> Axis3d) -> Float -> SketchPlane3d -> SketchPlane3d
-rotateAroundOwn axis angle sketchPlane =
-    rotateAround (axis sketchPlane) angle sketchPlane
+rotateAroundOwn : Axis2d -> Float -> SketchPlane3d -> SketchPlane3d
+rotateAroundOwn localAxis angle sketchPlane =
+    rotateAround (Axis3d.placeOnto sketchPlane localAxis) angle sketchPlane
 
 
 translateBy : Vector3d -> SketchPlane3d -> SketchPlane3d
@@ -199,14 +200,14 @@ translateBy vector sketchPlane =
         }
 
 
-translateAlongOwn : (SketchPlane3d -> Axis3d) -> Float -> SketchPlane3d -> SketchPlane3d
-translateAlongOwn axis distance sketchPlane =
+translateAlongOwn : Axis2d -> Float -> SketchPlane3d -> SketchPlane3d
+translateAlongOwn localAxis distance sketchPlane =
     let
-        axisDirection =
-            Axis3d.direction (axis sketchPlane)
+        direction =
+            Direction3d.placeOnto sketchPlane (Axis2d.direction localAxis)
 
         displacement =
-            Direction3d.times distance axisDirection
+            Direction3d.times distance direction
     in
         translateBy displacement sketchPlane
 
