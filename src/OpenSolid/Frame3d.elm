@@ -89,17 +89,44 @@ they form a right-handed coordinate system.)
 # Planes
 
 The following functions all return planes with the same origin point as the
-given plane, but with different normal directions.
+given plane, but with varying normal directions. In each case the normal
+direction of the resulting plane is given by the cross product of the two
+indicated basis directions (assuming a right-handed frame); for example,
+
+    Frame3d.xyPlane Frame3d.xyz ==
+        Plane3d
+            { originPoint = Point3d.origin
+            , normalDirection = Direction3d.z
+            }
+
+since the cross product of the X and Y basis directions of a frame is equal to
+its Z basis direction. And since reversing the order of arguments in a cross
+product reverses the sign of the result,
+
+    Frame3d.yxPlane Frame3d.xyz ==
+        Plane3d
+            { originPoint = Point3d.origin
+            , normalDirection = Direction3d.negate Direction3d.z
+            }
 
 @docs xyPlane, yxPlane, yzPlane, zyPlane, zxPlane, xzPlane
 
 # Sketch planes
 
 These functions all form a sketch plane from two axes of the given frame. The X
-and Y axes of the sketch plane will correspond to the two indicated axes. Note
-that this can be confusing - for example, a 2D X coordinate value in a frame's
-`yzSketchPlane` corresponds to a distance along the frame's Y axis, and a 2D Y
-coordinate corresponds to a distance along the frame's Z axis!
+and Y axes of the sketch plane will correspond to the two indicated axes. For
+example,
+
+    Frame3d.yzSketchPlane Frame3d.xyz ==
+        SketchPlane3d
+            { originPoint = Point3d.origin
+            , xDirection = Direction3d.y
+            , yDirection = Direction3d.z
+            }
+
+Note that this can be confusing - for example, a local X coordinate in the above
+sketch plane corresponds to a global Y coordinate, and a local Y coordinate
+corresponds to a global Z coordinate!
 
 @docs xySketchPlane, yxSketchPlane, yzSketchPlane, zySketchPlane, zxSketchPlane, xzSketchPlane
 
@@ -227,14 +254,7 @@ zAxis frame =
     Axis3d { originPoint = originPoint frame, direction = zDirection frame }
 
 
-{-| Get the XY plane of the given frame (through the frame's origin point, with
-normal direction equal to the frame's positive Z direction).
-
-    Frame3d.xyPlane Frame3d.xyz ==
-        Plane3d
-            { originPoint = Point3d.origin
-            , normalDirection = Direction3d.z
-            }
+{-| Get a plane with normal direction equal to the frame's positive Z direction.
 -}
 xyPlane : Frame3d -> Plane3d
 xyPlane frame =
@@ -244,14 +264,7 @@ xyPlane frame =
         }
 
 
-{-| Get the YX plane of the given frame (through the frame's origin point, with
-normal direction equal to the frame's negative Z direction).
-
-    Frame3d.yxPlane Frame3d.xyz ==
-        Plane3d
-            { originPoint = Point3d.origin
-            , normalDirection = Direction3d.negate Direction3d.z
-            }
+{-| Get a plane with normal direction equal to the frame's negative Z direction.
 -}
 yxPlane : Frame3d -> Plane3d
 yxPlane frame =
@@ -261,14 +274,7 @@ yxPlane frame =
         }
 
 
-{-| Get the YZ plane of the given frame (through the frame's origin point, with
-normal direction equal to the frame's positive X direction).
-
-    Frame3d.yzPlane Frame3d.xyz ==
-        Plane3d
-            { originPoint = Point3d.origin
-            , normalDirection = Direction3d.x
-            }
+{-| Get a plane with normal direction equal to the frame's positive X direction.
 -}
 yzPlane : Frame3d -> Plane3d
 yzPlane frame =
@@ -278,14 +284,7 @@ yzPlane frame =
         }
 
 
-{-| Get the ZY plane of the given frame (through the frame's origin point, with
-normal direction equal to the frame's negative X direction).
-
-    Frame3d.zyPlane Frame3d.xyz ==
-        Plane3d
-            { originPoint = Point3d.origin
-            , normalDirection = Direction3d.negate Direction3d.x
-            }
+{-| Get a plane with normal direction equal to the frame's negative X direction.
 -}
 zyPlane : Frame3d -> Plane3d
 zyPlane frame =
@@ -295,14 +294,7 @@ zyPlane frame =
         }
 
 
-{-| Get the ZX plane of the given frame (through the frame's origin point, with
-normal direction equal to the frame's positive Y direction).
-
-    Frame3d.zxPlane Frame3d.xyz ==
-        Plane3d
-            { originPoint = Point3d.origin
-            , normalDirection = Direction3d.y
-            }
+{-| Get a plane with normal direction equal to the frame's positive Y direction.
 -}
 zxPlane : Frame3d -> Plane3d
 zxPlane frame =
@@ -312,14 +304,7 @@ zxPlane frame =
         }
 
 
-{-| Get the XZ plane of the given frame (through the frame's origin point, with
-normal direction equal to the frame's negative Y direction).
-
-    Frame3d.xzPlane Frame3d.xyz ==
-        Plane3d
-            { originPoint = Point3d.origin
-            , normalDirection = Direction3d.negate Direction3d.y
-            }
+{-| Get a plane with normal direction equal to the frame's negative Y direction.
 -}
 xzPlane : Frame3d -> Plane3d
 xzPlane frame =
@@ -330,13 +315,6 @@ xzPlane frame =
 
 
 {-| Form a sketch plane from the given frame's X and Y axes.
-
-    Frame3d.xySketchPlane Frame3d.xyz ==
-        SketchPlane3d
-            { originPoint = Point3d.origin
-            , xDirection = Direction3d.x
-            , yDirection = Direction3d.y
-            }
 -}
 xySketchPlane : Frame3d -> SketchPlane3d
 xySketchPlane frame =
@@ -348,13 +326,6 @@ xySketchPlane frame =
 
 
 {-| Form a sketch plane from the given frame's Y and X axes.
-
-    Frame3d.yxSketchPlane Frame3d.xyz ==
-        SketchPlane3d
-            { originPoint = Point3d.origin
-            , xDirection = Direction3d.y
-            , yDirection = Direction3d.x
-            }
 -}
 yxSketchPlane : Frame3d -> SketchPlane3d
 yxSketchPlane frame =
@@ -366,13 +337,6 @@ yxSketchPlane frame =
 
 
 {-| Form a sketch plane from the given frame's Y and Z axes.
-
-    Frame3d.yzSketchPlane Frame3d.xyz ==
-        SketchPlane3d
-            { originPoint = Point3d.origin
-            , xDirection = Direction3d.y
-            , yDirection = Direction3d.z
-            }
 -}
 yzSketchPlane : Frame3d -> SketchPlane3d
 yzSketchPlane frame =
@@ -384,13 +348,6 @@ yzSketchPlane frame =
 
 
 {-| Form a sketch plane from the given frame's Z and Y axes.
-
-    Frame3d.zySketchPlane Frame3d.xyz ==
-        SketchPlane3d
-            { originPoint = Point3d.origin
-            , xDirection = Direction3d.z
-            , yDirection = Direction3d.y
-            }
 -}
 zySketchPlane : Frame3d -> SketchPlane3d
 zySketchPlane frame =
@@ -402,13 +359,6 @@ zySketchPlane frame =
 
 
 {-| Form a sketch plane from the given frame's Z and X axes.
-
-    Frame3d.zxSketchPlane Frame3d.xyz ==
-        SketchPlane3d
-            { originPoint = Point3d.origin
-            , xDirection = Direction3d.z
-            , yDirection = Direction3d.x
-            }
 -}
 zxSketchPlane : Frame3d -> SketchPlane3d
 zxSketchPlane frame =
@@ -420,13 +370,6 @@ zxSketchPlane frame =
 
 
 {-| Form a sketch plane from the given frame's X and Z axes.
-
-    Frame3d.xzSketchPlane Frame3d.xyz ==
-        SketchPlane3d
-            { originPoint = Point3d.origin
-            , xDirection = Direction3d.x
-            , yDirection = Direction3d.z
-            }
 -}
 xzSketchPlane : Frame3d -> SketchPlane3d
 xzSketchPlane frame =
