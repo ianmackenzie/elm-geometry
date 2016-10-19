@@ -15,7 +15,6 @@ module OpenSolid.LineSegment2d
         , midpoint
         , interpolate
         , map
-        , mapTo
         , vector
         , direction
         , normalDirection
@@ -67,17 +66,12 @@ interpolate lineSegment =
 
 
 map : (Point2d -> Point2d) -> LineSegment2d -> LineSegment2d
-map =
-    mapTo LineSegment2d
-
-
-mapTo : (( a, a ) -> b) -> (Point2d -> a) -> LineSegment2d -> b
-mapTo tag map lineSegment =
+map function lineSegment =
     let
         ( p1, p2 ) =
             endpoints lineSegment
     in
-        tag ( map p1, map p2 )
+        LineSegment2d ( function p1, function p2 )
 
 
 vector : LineSegment2d -> Vector2d

@@ -12,7 +12,6 @@ module OpenSolid.Triangle3d
         ( vertices
         , edges
         , map
-        , mapTo
         , scaleAbout
         , rotateAround
         , translateBy
@@ -50,17 +49,12 @@ edges triangle =
 
 
 map : (Point3d -> Point3d) -> Triangle3d -> Triangle3d
-map =
-    mapTo Triangle3d
-
-
-mapTo : (( a, a, a ) -> b) -> (Point3d -> a) -> Triangle3d -> b
-mapTo constructor map triangle =
+map function triangle =
     let
         ( p1, p2, p3 ) =
             vertices triangle
     in
-        constructor ( map p1, map p2, map p3 )
+        Triangle3d ( function p1, function p2, function p3 )
 
 
 scaleAbout : Point3d -> Float -> Triangle3d -> Triangle3d
@@ -89,13 +83,27 @@ projectOnto plane =
 
 
 projectInto : SketchPlane3d -> Triangle3d -> Triangle2d
-projectInto sketchPlane =
-    mapTo Triangle2d (Point3d.projectInto sketchPlane)
+projectInto sketchPlane triangle =
+    let
+        ( p1, p2, p3 ) =
+            vertices triangle
+
+        project =
+            Point3d.projectInto sketchPlane
+    in
+        Triangle2d ( project p1, project p2, project p3 )
 
 
 placeOnto : SketchPlane3d -> Triangle2d -> Triangle3d
-placeOnto sketchPlane =
-    Triangle2d.mapTo Triangle3d (Point3d.placeOnto sketchPlane)
+placeOnto sketchPlane triangle2d =
+    let
+        ( p1, p2, p3 ) =
+            Triangle2d.vertices triangle2d
+
+        place =
+            Point3d.placeOnto sketchPlane
+    in
+        Triangle3d ( place p1, place p2, place p3 )
 
 
 area : Triangle3d -> Float

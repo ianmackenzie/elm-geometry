@@ -15,7 +15,6 @@ module OpenSolid.LineSegment3d
         , midpoint
         , interpolate
         , map
-        , mapTo
         , vector
         , direction
         , normalDirection
@@ -70,17 +69,12 @@ interpolate lineSegment =
 
 
 map : (Point3d -> Point3d) -> LineSegment3d -> LineSegment3d
-map =
-    mapTo LineSegment3d
-
-
-mapTo : (( a, a ) -> b) -> (Point3d -> a) -> LineSegment3d -> b
-mapTo tag map lineSegment =
+map function lineSegment =
     let
         ( p1, p2 ) =
             endpoints lineSegment
     in
-        tag ( map p1, map p2 )
+        LineSegment3d ( function p1, function p2 )
 
 
 vector : LineSegment3d -> Vector3d
@@ -148,13 +142,27 @@ placeIn frame =
 
 
 projectInto : SketchPlane3d -> LineSegment3d -> LineSegment2d
-projectInto sketchPlane =
-    mapTo LineSegment2d (Point3d.projectInto sketchPlane)
+projectInto sketchPlane lineSegment =
+    let
+        ( p1, p2 ) =
+            endpoints lineSegment
+
+        project =
+            Point3d.projectInto sketchPlane
+    in
+        LineSegment2d ( project p1, project p2 )
 
 
 placeOnto : SketchPlane3d -> LineSegment2d -> LineSegment3d
-placeOnto sketchPlane =
-    LineSegment2d.mapTo LineSegment3d (Point3d.placeOnto sketchPlane)
+placeOnto sketchPlane lineSegment2d =
+    let
+        ( p1, p2 ) =
+            LineSegment2d.endpoints lineSegment2d
+
+        place =
+            Point3d.placeOnto sketchPlane
+    in
+        LineSegment3d ( place p1, place p2 )
 
 
 boundingBox : LineSegment3d -> BoundingBox3d

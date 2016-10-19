@@ -12,7 +12,6 @@ module OpenSolid.Triangle2d
         ( vertices
         , edges
         , map
-        , mapTo
         , contains
         , scaleAbout
         , rotateAround
@@ -49,17 +48,12 @@ edges triangle =
 
 
 map : (Point2d -> Point2d) -> Triangle2d -> Triangle2d
-map =
-    mapTo Triangle2d
-
-
-mapTo : (( a, a, a ) -> b) -> (Point2d -> a) -> Triangle2d -> b
-mapTo constructor map triangle =
+map function triangle =
     let
         ( p1, p2, p3 ) =
             vertices triangle
     in
-        constructor ( map p1, map p2, map p3 )
+        Triangle2d ( function p1, function p2, function p3 )
 
 
 contains : Point2d -> Triangle2d -> Bool
