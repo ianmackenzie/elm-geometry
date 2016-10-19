@@ -380,6 +380,16 @@ xzSketchPlane frame =
         }
 
 
+{-| Reverse the X direction of a frame.
+
+    Frame3d.flipX Frame3d.xyz ==
+        Frame3d
+            { originPoint = Point3d.origin
+            , xDirection = Direction3d.negate Direction3d.x
+            , yDirection = Direction3d.y
+            , zDirection = Direction3d.z
+            }
+-}
 flipX : Frame3d -> Frame3d
 flipX frame =
     Frame3d
@@ -390,6 +400,16 @@ flipX frame =
         }
 
 
+{-| Reverse the Y direction of a frame.
+
+    Frame3d.flipY Frame3d.xyz ==
+        Frame3d
+            { originPoint = Point3d.origin
+            , xDirection = Direction3d.x
+            , yDirection = Direction3d.negate Direction3d.y
+            , zDirection = Direction3d.z
+            }
+-}
 flipY : Frame3d -> Frame3d
 flipY frame =
     Frame3d
@@ -400,6 +420,16 @@ flipY frame =
         }
 
 
+{-| Reverse the Z direction of a frame.
+
+    Frame3d.flipZ Frame3d.xyz ==
+        Frame3d
+            { originPoint = Point3d.origin
+            , xDirection = Direction3d.x
+            , yDirection = Direction3d.y
+            , zDirection = Direction3d.negate Direction3d.z
+            }
+-}
 flipZ : Frame3d -> Frame3d
 flipZ frame =
     Frame3d
@@ -410,6 +440,14 @@ flipZ frame =
         }
 
 
+{-| Move a frame so that it has the given origin point but same orientation.
+
+    point =
+        Point3d ( 2, 1, 3 )
+
+    Frame3d.at point ==
+        Frame3d.moveTo point Frame3d.xyz
+-}
 moveTo : Point3d -> Frame3d -> Frame3d
 moveTo newOrigin frame =
     Frame3d
