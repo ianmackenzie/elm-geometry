@@ -57,7 +57,7 @@ to numerical roundoff) they might not be exactly equal.
 
 # Predefined frames
 
-@docs xy
+@docs xyz
 
 # Constructors
 
