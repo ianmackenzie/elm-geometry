@@ -359,6 +359,10 @@ translateAlongOwn localAxis distance frame =
             , xDirection = Direction2d.x
             , yDirection = Direction2d.negate Direction2d.y
             }
+
+Note that this will change the
+[handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
+of the frame.
 -}
 mirrorAcross : Axis2d -> Frame2d -> Frame2d
 mirrorAcross axis =
