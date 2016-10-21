@@ -360,7 +360,7 @@ translateAlongOwn localAxis distance frame =
             , yDirection = Direction2d.negate Direction2d.y
             }
 
-Note that this will change the
+Note that this will switch the
 [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 of the frame.
 -}
