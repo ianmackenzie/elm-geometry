@@ -458,6 +458,20 @@ moveTo newOrigin frame =
         }
 
 
+{-| Rotate a frame around an axis by a given angle (in radians). The frame's
+origin point and basis directions will all be rotated around the given axis.
+
+    frame =
+        Frame3d.at (Point3d ( 2, 1, 3 ))
+
+    Frame3d.rotateAround Frame3d.zAxis (degrees 90) frame ==
+        Frame3d
+            { originPoint = Point3d ( -1, 2, 3 )
+            , xDirection = Direction3d.y
+            , yDirection = Direction3d.negate Direction3d.x
+            , zDirection = Direction3d.z
+            }
+-}
 rotateAround : Axis3d -> Float -> Frame3d -> Frame3d
 rotateAround axis angle =
     let
@@ -476,11 +490,48 @@ rotateAround axis angle =
                 }
 
 
+{-| Rotate a frame around one of its own axes by a given angle (in radians). The
+first argument is an axis defined in local coordinates within the frame; the
+majority of the time this will be `Axis3d.x`, `Axis3d.y` or `Axis3d.z`. Since
+the axis is assumed to be defined in local coordinates within the given frame,
+`Axis3d.x` in this context ultimately means 'the X axis of the frame' and not
+'the global X axis'. Compare the following to the above example for
+`rotateAround`:
+
+    frame =
+        Frame3d.at (Point3d ( 2, 1, 3 ))
+
+    Frame3d.rotateAroundOwn Frame3d.zAxis (degrees 90) frame ==
+        Frame3d
+            { originPoint = Point3d ( 2, 1, 3 )
+            , xDirection = Direction3d.y
+            , yDirection = Direction3d.negate Direction3d.x
+            , zDirection = Direction3d.z
+            }
+
+Since the rotation is done around the frame's own Z axis (which passes through
+the frame's origin point), the origin point remains the same after rotation. In
+this example the frame's Z axis has the same orientation as the global Z axis
+so the frame's basis directions are rotated the same way, but in more complex
+examples involving rotated frames a rotation around (for example) the frame's
+own Z axis may be completely different from a rotation around the global Z axis.
+-}
 rotateAroundOwn : Axis3d -> Float -> Frame3d -> Frame3d
 rotateAroundOwn localAxis angle frame =
     rotateAround (Axis3d.placeIn frame localAxis) angle frame
 
 
+{-| Translate a frame by a given displacement.
+
+    frame =
+        Frame3d.at (Point3d ( 2, 1, 3 ))
+
+    displacement =
+        Vector3d ( 1, 1, 1 )
+
+    Frame3d.translateBy displacement frame ==
+        Frame3d.at (Point3d ( 3, 2, 4 ))
+-}
 translateBy : Vector3d -> Frame3d -> Frame3d
 translateBy vector frame =
     Frame3d
@@ -491,6 +542,33 @@ translateBy vector frame =
         }
 
 
+{-| Translate a frame along one of its own axes by a given distance.
+
+The first argument is an axis defined in local coordinates within the frame; the
+majority of the time this will be `Axis3d.x`, `Axis3d.y` or `Axis3d.z`. Since
+the axis is assumed to be defined in local coordinates within the given frame,
+`Axis3d.x` in this context ultimately means 'the X axis of the frame' and not
+'the global X axis'. The second argument is the distance to translate along the
+given axis.
+
+This function is convenient when constructing frames via a series of
+transformations. For example,
+
+    Frame3d.at (Point3d ( 2, 0, 0 ))
+        |> Frame3d.rotateAroundOwn Axis3d.z (degrees 45)
+        |> Frame3d.translateAlongOwn Axis3d.x 2
+
+means 'construct a frame at the point (2, 0, 0), rotate it about its own Z axis
+by 45 degrees, then translate it along its own (rotated) X axis by 2 units',
+resulting in
+
+    Frame3d
+        { originPoint = Point3d ( 3.4142, 1.4142, 0 )
+        , xDirection = Direction3d ( 0.7071, 0.7071, 0 )
+        , yDirection = Direction3d ( -0.7071, 0.7071, 0)
+        , zDirection = Direction3d.z
+        }
+-}
 translateAlongOwn : Axis3d -> Float -> Frame3d -> Frame3d
 translateAlongOwn localAxis distance frame =
     let
@@ -503,6 +581,23 @@ translateAlongOwn localAxis distance frame =
         translateBy displacement frame
 
 
+{-| Mirror a frame across a plane.
+
+    frame =
+        Frame3d.at (Point3d ( 2, 1, 3 ))
+
+    Frame3d.mirrorAcross Plane3d.xy frame ==
+        Frame3d
+            { originPoint = Point3d ( 2, 1, -3 )
+            , xDirection = Direction3d.x
+            , yDirection = Direction3d.y
+            , zDirection = Direction3d.negate Direction3d.z
+            }
+
+Note that this will switch the
+[handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
+of the frame.
+-}
 mirrorAcross : Plane3d -> Frame3d -> Frame3d
 mirrorAcross plane =
     let
@@ -521,6 +616,9 @@ mirrorAcross plane =
                 }
 
 
+{-| Take two frames defined in global coordinates, and return the second one
+expressed in local coordinates relative to the first.
+-}
 relativeTo : Frame3d -> Frame3d -> Frame3d
 relativeTo otherFrame =
     let
@@ -539,6 +637,10 @@ relativeTo otherFrame =
                 }
 
 
+{-| Take one frame defined in global coordinates and a second frame defined
+in local coordinates relative to the first frame, and return the second frame
+expressed in global coordinates.
+-}
 placeIn : Frame3d -> Frame3d -> Frame3d
 placeIn otherFrame =
     let
