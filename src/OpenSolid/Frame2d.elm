@@ -315,8 +315,9 @@ translateBy vector frame =
 The first argument is an axis defined in local coordinates within the frame; the
 majority of the time this will be either `Axis2d.x` or `Axis2d.y`. Since the
 axis is assumed to be defined in local coordinates within the given frame,
-`Axis2d.x` means 'the X axis of the frame' and not 'the global X axis'. The
-second argument is the distance to translate along the given axis.
+`Axis2d.x` in this context ultimately means 'the X axis of the frame' and not
+'the global X axis'. The second argument is the distance to translate along the
+given axis.
 
 This function is convenient when constructing frames via a series of
 transformations. For example,
