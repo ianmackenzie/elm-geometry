@@ -14,14 +14,14 @@
     "OpenSolid.Axis2d",
     "OpenSolid.Axis3d",
     "OpenSolid.BoundingBox2d",
-    "OpenSolid.BoundingBox3d"
+    "OpenSolid.BoundingBox3d",
     "OpenSolid.Direction2d",
     "OpenSolid.Direction3d",
     "OpenSolid.Plane3d",
     "OpenSolid.Point2d",
     "OpenSolid.Point3d",
     "OpenSolid.Vector2d",
-    "OpenSolid.Vector3d",
+    "OpenSolid.Vector3d"
   ],
   "dependencies": {
     "elm-lang/core": "4.0.0 <= v < 5.0.0"
