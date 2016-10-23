@@ -11,9 +11,11 @@ module BoundingBox2d exposing (suite)
 
 import Json.Decode as Decode
 import Test exposing (Test)
+import Fuzz
 import Expect
 import Test.Runner.Html as Html
 import OpenSolid.BoundingBox2d as BoundingBox2d
+import OpenSolid.Point2d as Point2d
 import OpenSolid.Core.Encode as Encode
 import OpenSolid.Core.Decode as Decode
 import OpenSolid.Core.Fuzz as Fuzz
@@ -28,22 +30,24 @@ jsonRoundTrips =
         Decode.boundingBox2d
 
 
-fromPointsConsistentWithContaining : Test
-fromPointsConsistentWithContaining =
-    Test.fuzz3 Fuzz.point2d
+containingConsistentWithHull : Test
+containingConsistentWithHull =
+    Test.fuzz2 Fuzz.point2d
         Fuzz.point2d
-        Fuzz.point2d
-        "'containing' is consistent with 'containing3'"
-        (\first second third ->
-            let
-                list =
-                    [ first, second, third ]
+        "'containing' is consistent with 'Point2d.hull'"
+        (\firstPoint secondPoint ->
+            BoundingBox2d.containing [ firstPoint, secondPoint ]
+                |> Expect.equal (Just (Point2d.hull firstPoint secondPoint))
+        )
 
-                tuple =
-                    ( first, second, third )
-            in
-                BoundingBox2d.containing list
-                    |> Expect.equal (Just (BoundingBox2d.containing3 tuple))
+
+containingIsOrderIndependent : Test
+containingIsOrderIndependent =
+    Test.fuzz (Fuzz.list Fuzz.point2d)
+        "'containing' does not depend on input order"
+        (\points ->
+            BoundingBox2d.containing (List.reverse points)
+                |> Expect.equal (BoundingBox2d.containing points)
         )
 
 
@@ -144,7 +148,8 @@ suite : Test
 suite =
     Test.describe "OpenSolid.Core.BoundingBox2d"
         [ jsonRoundTrips
-        , fromPointsConsistentWithContaining
+        , containingConsistentWithHull
+        , containingIsOrderIndependent
         , intersectionConsistentWithOverlaps
         , hullContainsInputs
         , intersectionIsValidOrNothing

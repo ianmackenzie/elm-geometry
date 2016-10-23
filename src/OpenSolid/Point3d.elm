@@ -34,6 +34,7 @@ module OpenSolid.Point3d
         , placeIn
         , projectInto
         , placeOnto
+        , hull
         )
 
 {-| Various functions for creating and working with `Point3d` values. For the
@@ -90,6 +91,10 @@ different coordinate frames.
 # Sketch planes
 
 @docs projectInto, placeOnto
+
+# Bounds
+
+@docs hull
 -}
 
 import OpenSolid.Core.Types exposing (..)
@@ -672,3 +677,40 @@ placeOnto sketchPlane =
             >> Vector2d
             >> Vector3d.placeOnto sketchPlane
             >> addTo originPoint
+
+
+{-| Construct a bounding box containing both of the given points.
+
+    point1 =
+        Point3d ( 2, 1, 3 )
+
+    point2 =
+        Point3d ( -1, 5, -2 )
+
+    Point3d.hull point1 point2 ==
+        BoundingBox3d
+            { minX = -1
+            , maxX = 2
+            , minY = 1
+            , maxY = 5
+            , minZ = -2
+            , maxZ = 3
+            }
+-}
+hull : Point3d -> Point3d -> BoundingBox3d
+hull firstPoint secondPoint =
+    let
+        ( x1, y1, z1 ) =
+            coordinates firstPoint
+
+        ( x2, y2, z2 ) =
+            coordinates secondPoint
+    in
+        BoundingBox3d
+            { minX = min x1 x2
+            , maxX = max x1 x2
+            , minY = min y1 y2
+            , maxY = max y1 y2
+            , minZ = min z1 z2
+            , maxZ = max z1 z2
+            }

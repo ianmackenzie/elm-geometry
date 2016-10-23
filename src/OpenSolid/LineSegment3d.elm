@@ -35,7 +35,6 @@ module OpenSolid.LineSegment3d
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Point3d as Point3d
-import OpenSolid.BoundingBox3d as BoundingBox3d
 import OpenSolid.LineSegment2d as LineSegment2d
 
 
@@ -167,4 +166,8 @@ placeOnto sketchPlane lineSegment2d =
 
 boundingBox : LineSegment3d -> BoundingBox3d
 boundingBox lineSegment =
-    BoundingBox3d.containing2 (endpoints lineSegment)
+    let
+        ( p1, p2 ) =
+            endpoints lineSegment
+    in
+        Point3d.hull p1 p2

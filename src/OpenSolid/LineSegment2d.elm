@@ -84,7 +84,6 @@ different coordinate frames.
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Point2d as Point2d
-import OpenSolid.BoundingBox2d as BoundingBox2d
 
 
 {-| Get the endpoints of a line segment as a tuple.
@@ -259,4 +258,8 @@ placeIn frame =
 
 boundingBox : LineSegment2d -> BoundingBox2d
 boundingBox lineSegment =
-    BoundingBox2d.containing2 (endpoints lineSegment)
+    let
+        ( p1, p2 ) =
+            endpoints lineSegment
+    in
+        Point2d.hull p1 p2

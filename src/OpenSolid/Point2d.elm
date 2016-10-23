@@ -29,6 +29,7 @@ module OpenSolid.Point2d
         , projectOnto
         , relativeTo
         , placeIn
+        , hull
         )
 
 {-| Various functions for creating and working with `Point2d` values. For the
@@ -87,6 +88,10 @@ Functions for transforming points between local and global coordinates in
 different coordinate frames.
 
 @docs relativeTo, placeIn
+
+# Bounds
+
+@docs hull
 -}
 
 import OpenSolid.Core.Types exposing (..)
@@ -558,3 +563,36 @@ placeIn frame =
             frame
     in
         coordinates >> Vector2d >> Vector2d.placeIn frame >> addTo originPoint
+
+
+{-| Construct a bounding box containing both of the given points.
+
+    point1 =
+        Point2d ( 2, 3 )
+
+    point2 =
+        Point2d ( -1, 5 )
+
+    Point2d.hull point1 point2 ==
+        BoundingBox2d
+            { minX = -1
+            , maxX = 2
+            , minY = 3
+            , maxY = 5
+            }
+-}
+hull : Point2d -> Point2d -> BoundingBox2d
+hull firstPoint secondPoint =
+    let
+        ( x1, y1 ) =
+            coordinates firstPoint
+
+        ( x2, y2 ) =
+            coordinates secondPoint
+    in
+        BoundingBox2d
+            { minX = min x1 x2
+            , maxX = max x1 x2
+            , minY = min y1 y2
+            , maxY = max y1 y2
+            }

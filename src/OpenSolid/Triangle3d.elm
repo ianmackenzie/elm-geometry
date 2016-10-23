@@ -27,7 +27,6 @@ module OpenSolid.Triangle3d
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Point3d as Point3d
-import OpenSolid.BoundingBox3d as BoundingBox3d
 import OpenSolid.Triangle2d as Triangle2d
 
 
@@ -141,4 +140,24 @@ centroid triangle =
 
 boundingBox : Triangle3d -> BoundingBox3d
 boundingBox triangle =
-    BoundingBox3d.containing3 (vertices triangle)
+    let
+        ( p1, p2, p3 ) =
+            vertices triangle
+
+        ( x1, y1, z1 ) =
+            Point3d.coordinates p1
+
+        ( x2, y2, z2 ) =
+            Point3d.coordinates p2
+
+        ( x3, y3, z3 ) =
+            Point3d.coordinates p3
+    in
+        BoundingBox3d
+            { minX = min x1 (min x2 x3)
+            , maxX = max x1 (max x2 x3)
+            , minY = min y1 (min y2 y3)
+            , maxY = max y1 (max y2 y3)
+            , minZ = min z1 (min z2 z3)
+            , maxZ = max z1 (max z2 z3)
+            }

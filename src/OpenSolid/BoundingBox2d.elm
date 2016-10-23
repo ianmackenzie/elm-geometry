@@ -10,8 +10,6 @@
 module OpenSolid.BoundingBox2d
     exposing
         ( singleton
-        , containing2
-        , containing3
         , containing
         , extrema
         , minX
@@ -54,7 +52,7 @@ Bounding boxes can be constructed by passing a record with `minX`, `maxX`,
             , maxY = 4
             }
 
-@docs singleton, containing2, containing3, containing
+@docs singleton, containing
 
 # Accessors
 
@@ -105,84 +103,6 @@ singleton point =
         BoundingBox2d { minX = x, maxX = x, minY = y, maxY = y }
 
 
-{-| Construct a bounding box containing both of the given points.
-
-    point1 =
-        Point2d ( 2, 3 )
-
-    point2 =
-        Point2d ( -1, 5 )
-
-    BoundingBox2d.containing2 ( point1, point2 ) ==
-        BoundingBox2d
-            { minX = -1
-            , maxX = 2
-            , minY = 3
-            , maxY = 5
-            }
--}
-containing2 : ( Point2d, Point2d ) -> BoundingBox2d
-containing2 points =
-    let
-        ( firstPoint, secondPoint ) =
-            points
-
-        ( x1, y1 ) =
-            Point2d.coordinates firstPoint
-
-        ( x2, y2 ) =
-            Point2d.coordinates secondPoint
-    in
-        BoundingBox2d
-            { minX = min x1 x2
-            , maxX = max x1 x2
-            , minY = min y1 y2
-            , maxY = max y1 y2
-            }
-
-
-{-| Construct a bounding box containing all three of the given points.
-
-    point1 =
-        Point2d ( 2, 3 )
-
-    point2 =
-        Point2d ( -1, 5 )
-
-    point3 =
-        Point2d ( 6, 4 )
-
-    BoundingBox2d.containing3 ( point1, point2, point3 ) ==
-        BoundingBox2d
-            { minX = -1
-            , maxX = 6
-            , minY = 3
-            , maxY = 5
-            }
--}
-containing3 : ( Point2d, Point2d, Point2d ) -> BoundingBox2d
-containing3 points =
-    let
-        ( firstPoint, secondPoint, thirdPoint ) =
-            points
-
-        ( x1, y1 ) =
-            Point2d.coordinates firstPoint
-
-        ( x2, y2 ) =
-            Point2d.coordinates secondPoint
-
-        ( x3, y3 ) =
-            Point2d.coordinates thirdPoint
-    in
-        BoundingBox2d
-            { minX = min x1 (min x2 x3)
-            , maxX = max x1 (max x2 x3)
-            , minY = min y1 (min y2 y3)
-            , maxY = max y1 (max y2 y3)
-            }
-
-
 {-| Construct a bounding box containing all points in the given list. If the
 list is empty, returns `Nothing`.
 
@@ -204,6 +124,9 @@ list is empty, returns `Nothing`.
 
     BoundingBox2d.containing [] ==
         Nothing
+
+If you have exactly two points, you can use `Point2d.hull` instead (which
+returns a `BoundingBox2d` instead of a `Maybe BoundingBox2d`).
 -}
 containing : List Point2d -> Maybe BoundingBox2d
 containing points =
