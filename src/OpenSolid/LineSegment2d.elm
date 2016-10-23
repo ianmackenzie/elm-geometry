@@ -12,6 +12,7 @@ module OpenSolid.LineSegment2d
         ( endpoints
         , startPoint
         , endPoint
+        , reverse
         , midpoint
         , interpolate
         , length
@@ -55,7 +56,7 @@ following line segment has been defined:
 
 # Endpoints
 
-@docs endpoints, startPoint, endPoint
+@docs endpoints, startPoint, endPoint, reverse
 
 # Interpolation
 
@@ -120,6 +121,23 @@ startPoint (LineSegment2d ( start, _ )) =
 endPoint : LineSegment2d -> Point2d
 endPoint (LineSegment2d ( _, end )) =
     end
+
+
+{-| Reverse a line segment, swapping its start and end points.
+
+    LineSegment2d.reverse lineSegment ==
+        LineSegment2d
+            ( Point2d ( 3, 4 )
+            , Point2d ( 1, 2 )
+            )
+-}
+reverse : LineSegment2d -> LineSegment2d
+reverse lineSegment =
+    let
+        ( p1, p2 ) =
+            endpoints lineSegment
+    in
+        LineSegment2d ( p2, p1 )
 
 
 {-| Get the midpoint of a line segment.

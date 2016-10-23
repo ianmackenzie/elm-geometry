@@ -12,6 +12,7 @@ module OpenSolid.LineSegment3d
         ( endpoints
         , startPoint
         , endPoint
+        , reverse
         , midpoint
         , interpolate
         , map
@@ -51,6 +52,15 @@ startPoint (LineSegment3d ( start, _ )) =
 endPoint : LineSegment3d -> Point3d
 endPoint (LineSegment3d ( _, end )) =
     end
+
+
+reverse : LineSegment3d -> LineSegment3d
+reverse lineSegment =
+    let
+        ( p1, p2 ) =
+            endpoints lineSegment
+    in
+        LineSegment3d ( p2, p1 )
 
 
 midpoint : LineSegment3d -> Point3d
