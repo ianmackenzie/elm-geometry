@@ -68,6 +68,9 @@ following line segment has been defined:
 
 # Transformations
 
+Transforming a line segment is the same as transforming its start and end points
+and forming a new line segment between the resulting points.
+
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
 
 # Coordinate frames
@@ -230,31 +233,102 @@ vector lineSegment =
         Point2d.vectorFrom p1 p2
 
 
+{-| Perform a uniform scaling about the given center point.
+
+    point =
+        Point2d ( 1, 1 )
+
+    LineSegment2d.scaleAbout point 2 lineSegment ==
+        LineSegment2d
+            ( Point2d ( 1, 3 )
+            , Point2d ( 5, 7 )
+            )
+-}
 scaleAbout : Point2d -> Float -> LineSegment2d -> LineSegment2d
 scaleAbout point scale =
     map (Point2d.scaleAbout point scale)
 
 
+{-| Rotate around a given center point counterclockwise by a given angle (in
+radians).
+
+    LineSegment2d.rotateAround Point2d.origin (degrees 90) lineSegment ==
+        LineSegment2d
+            ( Point2d ( -2, 1 )
+            , Point2d ( -4, 3 )
+            )
+-}
 rotateAround : Point2d -> Float -> LineSegment2d -> LineSegment2d
 rotateAround centerPoint angle =
     map (Point2d.rotateAround centerPoint angle)
 
 
+{-| Translate a line segment by a given displacement.
+
+    displacement =
+        Vector2d ( 1, 2 )
+
+    LineSegment2d.translateBy displacement lineSegment ==
+        LineSegment2d
+            ( Point2d ( 2, 4 )
+            , Point2d ( 4, 6 )
+            )
+-}
 translateBy : Vector2d -> LineSegment2d -> LineSegment2d
 translateBy vector =
     map (Point2d.translateBy vector)
 
 
+{-| Mirror a line segment across an axis.
+
+    mirroredSegment =
+        LineSegment2d.mirrorAcross Axis2d.y lineSegment
+
+    mirroredSegment ==
+        LineSegment2d
+            ( Point2d ( -1, 2 )
+            , Point2d ( -3, 4 )
+            )
+
+Note that the endpoints of a mirrored segment are equal to the mirrored
+endpoints of the original segment, but the `normalDirection` of a mirrored
+segment is the *opposite* of the mirrored normal direction of the original
+segment (since the normal direction is always considered to be 'to the left' of
+the line segment). In some cases it may be necessary to `reverse` the mirrored
+segment or otherwise account for the normal direction being 'wrong'.
+-}
 mirrorAcross : Axis2d -> LineSegment2d -> LineSegment2d
 mirrorAcross axis =
     map (Point2d.mirrorAcross axis)
 
 
+{-| Project a line segment onto an axis.
+
+    LineSegment2d.projectOnto Axis2d.x lineSegment ==
+        LineSegment2d
+            ( Point2d ( 1, 0 )
+            , Point2d ( 3, 0 )
+            )
+
+    LineSegment2d.projectOnto Axis2d.y lineSegment ==
+        LineSegment2d
+            ( Point2d ( 0, 2 )
+            , Point2d ( 0, 4 )
+            )
+-}
 projectOnto : Axis2d -> LineSegment2d -> LineSegment2d
 projectOnto axis =
     map (Point2d.projectOnto axis)
 
 
+{-| Transform the start and end points of a line segment by a given function
+and create a new line segment from the resulting points. Most other
+transformation functions can be defined in terms of `map`; for example,
+
+    LineSegment2d.projectOnto Axis2d.x lineSegment ==
+        LineSegment2d.map (Point2d.projectOnto Axis2d.x) lineSegment
+
+-}
 map : (Point2d -> Point2d) -> LineSegment2d -> LineSegment2d
 map function lineSegment =
     let
@@ -264,16 +338,51 @@ map function lineSegment =
         LineSegment2d ( function p1, function p2 )
 
 
+{-| Take a line segment defined in global coordinates, and return it expressed
+in local coordinates relative to a given reference frame.
+
+    localFrame =
+        Frame2d.at (Point2d ( 1, 2 ))
+
+    LineSegment2d.relativeTo localFrame lineSegment ==
+        LineSegment2d
+            ( Point2d ( 0, 0 )
+            , Point2d ( 2, 2 )
+            )
+-}
 relativeTo : Frame2d -> LineSegment2d -> LineSegment2d
 relativeTo frame =
     map (Point2d.relativeTo frame)
 
 
+{-| Take a line segment considered to be defined in local coordinates relative
+to a given reference frame, and return that line segment expressed in global
+coordinates.
+
+    localFrame =
+        Frame2d.at (Point2d ( 1, 2 ))
+
+    LineSegment2d.placeIn localFrame lineSegment ==
+        LineSegment2d
+            ( Point2d ( 2, 4 )
+            , Point2d ( 4, 6 )
+            )
+-}
 placeIn : Frame2d -> LineSegment2d -> LineSegment2d
 placeIn frame =
     map (Point2d.placeIn frame)
 
 
+{-| Get the minimal bounding box containing a given line segment.
+
+    LineSegment2d.boundingBox lineSegment ==
+        BoundingBox2d
+            { minX = 1
+            , maxX = 3
+            , minY = 2
+            , maxY = 4
+            }
+-}
 boundingBox : LineSegment2d -> BoundingBox2d
 boundingBox lineSegment =
     let
