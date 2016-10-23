@@ -61,7 +61,7 @@ following line segment has been defined:
 
 @docs midpoint, interpolate
 
-# Lendth and direction
+# Length and direction
 
 @docs length, squaredLength, direction, normalDirection, vector
 
