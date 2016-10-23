@@ -15,17 +15,17 @@ module OpenSolid.LineSegment3d
         , reverse
         , midpoint
         , interpolate
-        , map
-        , vector
+        , length
+        , squaredLength
         , direction
         , normalDirection
-        , squaredLength
-        , length
+        , vector
         , scaleAbout
         , rotateAround
         , translateBy
         , mirrorAcross
         , projectOnto
+        , map
         , relativeTo
         , placeIn
         , projectInto
@@ -77,22 +77,14 @@ interpolate lineSegment =
         Point3d.interpolate start end
 
 
-map : (Point3d -> Point3d) -> LineSegment3d -> LineSegment3d
-map function lineSegment =
-    let
-        ( p1, p2 ) =
-            endpoints lineSegment
-    in
-        LineSegment3d ( function p1, function p2 )
+length : LineSegment3d -> Float
+length =
+    vector >> Vector3d.length
 
 
-vector : LineSegment3d -> Vector3d
-vector lineSegment =
-    let
-        ( p1, p2 ) =
-            endpoints lineSegment
-    in
-        Point3d.vectorFrom p1 p2
+squaredLength : LineSegment3d -> Float
+squaredLength =
+    vector >> Vector3d.squaredLength
 
 
 direction : LineSegment3d -> Maybe Direction3d
@@ -105,14 +97,13 @@ normalDirection =
     vector >> Vector3d.perpendicularTo >> Vector3d.direction
 
 
-squaredLength : LineSegment3d -> Float
-squaredLength =
-    vector >> Vector3d.squaredLength
-
-
-length : LineSegment3d -> Float
-length =
-    vector >> Vector3d.length
+vector : LineSegment3d -> Vector3d
+vector lineSegment =
+    let
+        ( p1, p2 ) =
+            endpoints lineSegment
+    in
+        Point3d.vectorFrom p1 p2
 
 
 scaleAbout : Point3d -> Float -> LineSegment3d -> LineSegment3d
@@ -138,6 +129,15 @@ mirrorAcross plane =
 projectOnto : Plane3d -> LineSegment3d -> LineSegment3d
 projectOnto plane =
     map (Point3d.projectOnto plane)
+
+
+map : (Point3d -> Point3d) -> LineSegment3d -> LineSegment3d
+map function lineSegment =
+    let
+        ( p1, p2 ) =
+            endpoints lineSegment
+    in
+        LineSegment3d ( function p1, function p2 )
 
 
 relativeTo : Frame3d -> LineSegment3d -> LineSegment3d
