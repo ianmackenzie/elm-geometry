@@ -18,6 +18,7 @@ module OpenSolid.BoundingBox3d
         , maxY
         , minZ
         , maxZ
+        , dimensions
         , midX
         , midY
         , midZ
@@ -74,7 +75,7 @@ For all examples in this section, assume the following example bounding box:
             , maxZ = -5
             }
 
-@docs extrema, minX, maxX, minY, maxY, minZ, maxZ, midX, midY, midZ, centroid
+@docs extrema, minX, maxX, minY, maxY, minZ, maxZ, dimensions, midX, midY, midZ, centroid
 
 # Checks
 
@@ -245,6 +246,20 @@ minZ =
 maxZ : BoundingBox3d -> Float
 maxZ =
     extrema >> .maxZ
+
+
+{-| Get the X, Y and Z dimensions (widths) of a bounding box.
+
+    BoundingBox3d.dimensions exampleBox ==
+        ( 2, 6, 1 )
+-}
+dimensions : BoundingBox3d -> ( Float, Float, Float )
+dimensions boundingBox =
+    let
+        { minX, maxX, minY, maxY, minZ, maxZ } =
+            extrema boundingBox
+    in
+        ( maxX - minX, maxY - minY, maxZ - minZ )
 
 
 {-| Get the median X value of a bounding box.

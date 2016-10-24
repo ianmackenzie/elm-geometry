@@ -16,6 +16,7 @@ module OpenSolid.BoundingBox2d
         , maxX
         , minY
         , maxY
+        , dimensions
         , midX
         , midY
         , centroid
@@ -66,7 +67,7 @@ For all examples in this section, assume the following example bounding box:
             , maxY = 4
             }
 
-@docs extrema, minX, maxX, minY, maxY, midX, midY, centroid
+@docs extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centroid
 
 # Checks
 
@@ -202,6 +203,26 @@ minY =
 maxY : BoundingBox2d -> Float
 maxY =
     extrema >> .maxY
+
+
+{-| Get the X and Y dimensions (width and height) of a bounding box.
+
+    ( width, height ) =
+        BoundingBox2d.dimensions exampleBox
+
+    width ==
+        2
+
+    height ==
+        6
+-}
+dimensions : BoundingBox2d -> ( Float, Float )
+dimensions boundingBox =
+    let
+        { minX, maxX, minY, maxY } =
+            extrema boundingBox
+    in
+        ( maxX - minX, maxY - minY )
 
 
 {-| Get the median X value of a bounding box.
