@@ -208,7 +208,7 @@ direction =
 
 {-| Get the direction perpendicular to a line segment, pointing to the left.
 Equivalent to
-`LineSegment2d.direction |> Maybe.map Direction2d.perpendicularTo`. If the line
+`LineSegment2d.direction >> Maybe.map Direction2d.perpendicularTo`. If the line
 segment has zero length, returns `Nothing`.
 
     LineSegment2d.normalDirection lineSegment ==
