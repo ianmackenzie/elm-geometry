@@ -68,8 +68,8 @@ following line segment has been defined:
 
 # Transformations
 
-Transforming a line segment is the same as transforming its start and end points
-and forming a new line segment between the resulting points.
+Transforming a line segment is equivalent to transforming its start and end
+points and forming a new line segment between the resulting points.
 
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
 
