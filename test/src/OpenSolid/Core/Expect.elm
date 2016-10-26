@@ -119,10 +119,10 @@ angle =
 angleWithin : Float -> Float -> Float -> Expectation
 angleWithin tolerance =
     let
-        comparison first second =
+        comparison firstAngle secondAngle =
             let
                 difference =
-                    second - first
+                    secondAngle - firstAngle
             in
                 abs (atan2 (sin difference) (cos difference)) <= tolerance
     in
