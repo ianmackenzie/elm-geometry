@@ -281,10 +281,7 @@ translateBy vector =
 
 {-| Mirror a line segment across an axis.
 
-    mirroredSegment =
-        LineSegment2d.mirrorAcross Axis2d.y lineSegment
-
-    mirroredSegment ==
+    LineSegment2d.mirrorAcross Axis2d.y lineSegment ==
         LineSegment2d
             ( Point2d ( -1, 2 )
             , Point2d ( -3, 4 )
