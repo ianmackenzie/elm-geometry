@@ -18,7 +18,6 @@ module OpenSolid.Triangle3d
         , mirrorAcross
         , projectOnto
         , projectInto
-        , placeOnto
         , area
         , centroid
         , boundingBox
@@ -91,18 +90,6 @@ projectInto sketchPlane triangle =
             Point3d.projectInto sketchPlane
     in
         Triangle2d ( project p1, project p2, project p3 )
-
-
-placeOnto : SketchPlane3d -> Triangle2d -> Triangle3d
-placeOnto sketchPlane triangle2d =
-    let
-        ( p1, p2, p3 ) =
-            Triangle2d.vertices triangle2d
-
-        place =
-            Point3d.placeOnto sketchPlane
-    in
-        Triangle3d ( place p1, place p2, place p3 )
 
 
 area : Triangle3d -> Float

@@ -23,7 +23,6 @@ module OpenSolid.Axis3d
         , relativeTo
         , placeIn
         , projectInto
-        , placeOnto
         )
 
 {-| Various functions for creating and working with `Axis3d` values. For the
@@ -70,13 +69,12 @@ different coordinate frames.
 
 # Sketch planes
 
-@docs projectInto, placeOnto
+@docs projectInto
 -}
 
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Direction3d as Direction3d
-import OpenSolid.Axis2d as Axis2d
 
 
 {-| The global X axis.
@@ -382,40 +380,3 @@ projectInto sketchPlane axis =
             Axis2d { originPoint = projectedOrigin, direction = direction }
     in
         Maybe.map toAxis maybeDirection
-
-
-{-| Take an axis defined in 2D coordinates within a particular sketch plane and
-return the corresponding axis in 3D.
-
-    axis2d =
-        Axis2d
-            { originPoint = Point2d ( 2, 3 )
-            , direction = Direction2d ( 0.6, 0.8 )
-            }
-
-    Axis3d.placeOnto SketchPlane3d.xy axis2d ==
-        Axis3d
-            { originPoint = Point3d ( 2, 3, 0 )
-            , direction = Direction3d ( 0.6, 0.8, 0 )
-            }
-
-    Axis3d.placeOnto SketchPlane3d.zx axis2d ==
-        Axis3d
-            { originPoint = Point3d ( 3, 0, 2 )
-            , direction = Direction3d ( 0.8, 0, 0.6 )
-            }
--}
-placeOnto : SketchPlane3d -> Axis2d -> Axis3d
-placeOnto sketchPlane =
-    let
-        placePoint =
-            Point3d.placeOnto sketchPlane
-
-        placeDirection =
-            Direction3d.placeOnto sketchPlane
-    in
-        \axis ->
-            Axis3d
-                { originPoint = placePoint (Axis2d.originPoint axis)
-                , direction = placeDirection (Axis2d.direction axis)
-                }

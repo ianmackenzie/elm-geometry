@@ -30,7 +30,6 @@ module OpenSolid.Direction3d
         , relativeTo
         , placeIn
         , projectInto
-        , placeOnto
         )
 
 {-| Various functions for creating and working with `Direction3d` values. For
@@ -121,13 +120,12 @@ XYZ frame:
 
 # Sketch planes
 
-@docs projectInto, placeOnto
+@docs projectInto
 -}
 
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Vector3d as Vector3d
-import OpenSolid.Direction2d as Direction2d
 
 
 toDirection : Vector3d -> Direction3d
@@ -465,23 +463,3 @@ plane; if it is perpendicular, `Nothing` is returned.
 projectInto : SketchPlane3d -> Direction3d -> Maybe Direction2d
 projectInto sketchPlane =
     vector >> Vector3d.projectInto sketchPlane >> Vector2d.direction
-
-
-{-| Take a direction defined in 2D coordinates within a particular sketch plane
-and return the corresponding direction in 3D.
-
-    direction =
-        Direction2d ( 0.6, 0.8 )
-
-    Direction3d.placeOnto SketchPlane3d.xy direction ==
-        Direction3d ( 0.6, 0.8, 0 )
-
-    Direction3d.placeOnto SketchPlane3d.yz direction ==
-        Direction3d ( 0, 0.6, 0.8 )
-
-    Direction3d.placeOnto SketchPlane3d.zx direction ==
-        Direction3d ( 0.8, 0, 0.6 )
--}
-placeOnto : SketchPlane3d -> Direction2d -> Direction3d
-placeOnto sketchPlane =
-    Direction2d.vector >> Vector3d.placeOnto sketchPlane >> toDirection

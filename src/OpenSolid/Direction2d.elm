@@ -28,6 +28,7 @@ module OpenSolid.Direction2d
         , mirrorAcross
         , relativeTo
         , placeIn
+        , placeOnto
         )
 
 {-| Various functions for creating and working with `Direction2d` values. For
@@ -111,6 +112,10 @@ For the examples, assume the following frames have been defined:
         Frame2d.rotateBy (degrees 30) Frame2d.xy
 
 @docs relativeTo, placeIn
+
+# Sketch frames
+
+@docs placeOnto
 -}
 
 import OpenSolid.Core.Types exposing (..)
@@ -386,3 +391,38 @@ frame, and return that direction expressed in global coordinates.
 placeIn : Frame2d -> Direction2d -> Direction2d
 placeIn frame =
     vector >> Vector2d.placeIn frame >> toDirection
+
+
+{-| Take a direction defined in 2D coordinates within a particular sketch plane
+and return the corresponding direction in 3D.
+
+    direction =
+        Direction2d ( 0.6, 0.8 )
+
+    Direction2d.placeOnto SketchPlane3d.xy direction ==
+        Direction3d ( 0.6, 0.8, 0 )
+
+    Direction2d.placeOnto SketchPlane3d.yz direction ==
+        Direction3d ( 0, 0.6, 0.8 )
+
+    Direction2d.placeOnto SketchPlane3d.zx direction ==
+        Direction3d ( 0.8, 0, 0.6 )
+-}
+placeOnto : SketchPlane3d -> Direction2d -> Direction3d
+placeOnto sketchPlane =
+    let
+        (SketchPlane3d { originPoint, xDirection, yDirection }) =
+            sketchPlane
+
+        (Direction3d ( ux, uy, uz )) =
+            xDirection
+
+        (Direction3d ( vx, vy, vz )) =
+            yDirection
+    in
+        \(Direction2d ( x, y )) ->
+            Direction3d
+                ( x * ux + y * vx
+                , x * uy + y * vy
+                , x * uz + y * vz
+                )

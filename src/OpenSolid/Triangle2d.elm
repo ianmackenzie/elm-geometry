@@ -17,6 +17,7 @@ module OpenSolid.Triangle2d
         , rotateAround
         , translateBy
         , mirrorAcross
+        , placeOnto
         , area
         , clockwiseArea
         , counterclockwiseArea
@@ -102,6 +103,20 @@ translateBy vector =
 mirrorAcross : Axis2d -> Triangle2d -> Triangle2d
 mirrorAcross axis =
     map (Point2d.mirrorAcross axis)
+
+
+placeOnto : SketchPlane3d -> Triangle2d -> Triangle3d
+placeOnto sketchPlane =
+    let
+        place =
+            Point2d.placeOnto sketchPlane
+    in
+        \triangle ->
+            let
+                ( p1, p2, p3 ) =
+                    vertices triangle
+            in
+                Triangle3d ( place p1, place p2, place p3 )
 
 
 area : Triangle2d -> Float

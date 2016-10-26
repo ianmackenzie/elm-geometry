@@ -33,7 +33,6 @@ module OpenSolid.Point3d
         , relativeTo
         , placeIn
         , projectInto
-        , placeOnto
         , hull
         )
 
@@ -90,7 +89,7 @@ different coordinate frames.
 
 # Sketch planes
 
-@docs projectInto, placeOnto
+@docs projectInto
 
 # Bounds
 
@@ -98,7 +97,6 @@ different coordinate frames.
 -}
 
 import OpenSolid.Core.Types exposing (..)
-import OpenSolid.Point2d as Point2d
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Direction3d as Direction3d
@@ -644,39 +642,6 @@ projectInto sketchPlane =
             >> Vector3d.projectInto sketchPlane
             >> Vector2d.components
             >> Point2d
-
-
-{-| Take a point defined in 2D coordinates within a particular sketch plane and
-return the corresponding point in 3D.
-
-    point2d =
-        Point2d ( 2, 1 )
-
-    Point3d.placeOnto SketchPlane3d.xy point2d ==
-        Point3d ( 2, 1, 0 )
-
-    Point3d.placeOnto SketchPlane3d.xz point2d ==
-        Point3d ( 2, 0, 1 )
-
-The sketch plane can have any position and orientation:
-
-    tiltedSketchPlane =
-        SketchPlane3d.xy
-            |> SketchPlane3d.rotateAround Axis3d.x (degrees 45)
-
-    Point3d.placeOnto tiltedSketchPlane point2d ==
-        Point3d ( 2, 0.7071, 0.7071 )
--}
-placeOnto : SketchPlane3d -> Point2d -> Point3d
-placeOnto sketchPlane =
-    let
-        (SketchPlane3d { originPoint, xDirection, yDirection }) =
-            sketchPlane
-    in
-        Point2d.coordinates
-            >> Vector2d
-            >> Vector3d.placeOnto sketchPlane
-            >> addTo originPoint
 
 
 {-| Construct a bounding box containing both of the given points.

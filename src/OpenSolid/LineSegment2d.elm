@@ -28,6 +28,7 @@ module OpenSolid.LineSegment2d
         , map
         , relativeTo
         , placeIn
+        , placeOnto
         , boundingBox
         )
 
@@ -79,6 +80,10 @@ Functions for transforming points between local and global coordinates in
 different coordinate frames.
 
 @docs relativeTo, placeIn
+
+# Sketch planes
+
+@docs placeOnto
 
 # Bounds
 
@@ -367,6 +372,29 @@ coordinates.
 placeIn : Frame2d -> LineSegment2d -> LineSegment2d
 placeIn frame =
     map (Point2d.placeIn frame)
+
+
+{-| Take a line segment defined in 2D coordinates within a particular sketch
+plane and return the corresponding line segment in 3D.
+
+    LineSegment2d.placeOnto SketchPlane3d.yz lineSegment ==
+        LineSegment3d
+            ( Point3d ( 0, 1, 2 )
+            , Point3d ( 0, 3, 4 )
+            )
+-}
+placeOnto : SketchPlane3d -> LineSegment2d -> LineSegment3d
+placeOnto sketchPlane =
+    let
+        place =
+            Point2d.placeOnto sketchPlane
+    in
+        \lineSegment ->
+            let
+                ( p1, p2 ) =
+                    endpoints lineSegment
+            in
+                LineSegment3d ( place p1, place p2 )
 
 
 {-| Get the minimal bounding box containing a given line segment.

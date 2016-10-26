@@ -34,7 +34,6 @@ module OpenSolid.Vector3d
         , relativeTo
         , placeIn
         , projectInto
-        , placeOnto
         )
 
 {-| Various functions for creating and working with `Vector3d` values. For the
@@ -121,7 +120,7 @@ XYZ frame:
 Functions for converting vectors between global 3D coordinates and 2D
 coordinates within a particular sketch plane.
 
-@docs projectInto, placeOnto
+@docs projectInto
 -}
 
 import OpenSolid.Core.Types exposing (..)
@@ -740,43 +739,3 @@ projectInto sketchPlane vector =
             ( componentIn xDirection vector
             , componentIn yDirection vector
             )
-
-
-{-| Take a vector defined in 2D coordinates within a particular sketch plane and
-return the corresponding vector in 3D.
-
-    vector2d =
-        Vector2d ( 2, 3 )
-
-    Vector3d.placeOnto SketchPlane3d.xy vector2d ==
-        Vector3d ( 2, 3, 0 )
-
-    Vector3d.placeOnto SketchPlane3d.yz vector2d ==
-        Vector3d ( 0, 2, 3 )
-
-    Vector3d.placeOnto SketchPlane3d.zx vector2d ==
-        Vector3d ( 3, 0, 2 )
-
-A slightly more complex example:
-
-    tiltedSketchPlane =
-        SketchPlane3d.xy
-            |> SketchPlane3d.rotateAround Axis3d.x (degrees 45)
-
-    Vector3d.placeOnto tiltedSketchPlane (Vector2d ( 1, 1 )) ==
-        Vector3d ( 1, 0.7071, 0.7071 )
--}
-placeOnto : SketchPlane3d -> Vector2d -> Vector3d
-placeOnto sketchPlane =
-    let
-        (SketchPlane3d { originPoint, xDirection, yDirection }) =
-            sketchPlane
-
-        (Direction3d ( x1, y1, z1 )) =
-            xDirection
-
-        (Direction3d ( x2, y2, z2 )) =
-            yDirection
-    in
-        \(Vector2d ( x, y )) ->
-            Vector3d ( x1 * x + x2 * y, y1 * x + y2 * y, z1 * x + z2 * y )

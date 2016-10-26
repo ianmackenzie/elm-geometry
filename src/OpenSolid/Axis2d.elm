@@ -21,6 +21,7 @@ module OpenSolid.Axis2d
         , mirrorAcross
         , relativeTo
         , placeIn
+        , placeOnto
         )
 
 {-| Various functions for creating and working with `Axis2d` values. For the
@@ -66,6 +67,10 @@ Functions for transforming axes between local and global coordinates in
 different coordinate frames.
 
 @docs relativeTo, placeIn
+
+# Sketch planes
+
+@docs placeOnto
 -}
 
 import OpenSolid.Core.Types exposing (..)
@@ -299,6 +304,43 @@ placeIn frame =
     in
         \axis ->
             Axis2d
+                { originPoint = placePoint (originPoint axis)
+                , direction = placeDirection (direction axis)
+                }
+
+
+{-| Take an axis defined in 2D coordinates within a particular sketch plane and
+return the corresponding axis in 3D.
+
+    axis =
+        Axis2d
+            { originPoint = Point2d ( 2, 3 )
+            , direction = Direction2d ( 0.6, 0.8 )
+            }
+
+    Axis2d.placeOnto SketchPlane3d.xy axis ==
+        Axis3d
+            { originPoint = Point3d ( 2, 3, 0 )
+            , direction = Direction3d ( 0.6, 0.8, 0 )
+            }
+
+    Axis2d.placeOnto SketchPlane3d.zx axis ==
+        Axis3d
+            { originPoint = Point3d ( 3, 0, 2 )
+            , direction = Direction3d ( 0.8, 0, 0.6 )
+            }
+-}
+placeOnto : SketchPlane3d -> Axis2d -> Axis3d
+placeOnto sketchPlane =
+    let
+        placePoint =
+            Point2d.placeOnto sketchPlane
+
+        placeDirection =
+            Direction2d.placeOnto sketchPlane
+    in
+        \axis ->
+            Axis3d
                 { originPoint = placePoint (originPoint axis)
                 , direction = placeDirection (direction axis)
                 }

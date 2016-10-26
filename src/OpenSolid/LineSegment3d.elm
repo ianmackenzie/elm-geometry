@@ -29,7 +29,6 @@ module OpenSolid.LineSegment3d
         , relativeTo
         , placeIn
         , projectInto
-        , placeOnto
         , boundingBox
         )
 
@@ -84,7 +83,7 @@ different coordinate frames.
 
 # Sketch planes
 
-@docs projectInto, placeOnto
+@docs projectInto
 
 # Bounds
 
@@ -94,7 +93,6 @@ different coordinate frames.
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Point3d as Point3d
-import OpenSolid.LineSegment2d as LineSegment2d
 
 
 {-| Get the endpoints of a line segment as a tuple.
@@ -346,18 +344,6 @@ projectInto sketchPlane lineSegment =
             Point3d.projectInto sketchPlane
     in
         LineSegment2d ( project p1, project p2 )
-
-
-placeOnto : SketchPlane3d -> LineSegment2d -> LineSegment3d
-placeOnto sketchPlane lineSegment2d =
-    let
-        ( p1, p2 ) =
-            LineSegment2d.endpoints lineSegment2d
-
-        place =
-            Point3d.placeOnto sketchPlane
-    in
-        LineSegment3d ( place p1, place p2 )
 
 
 boundingBox : LineSegment3d -> BoundingBox3d

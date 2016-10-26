@@ -30,6 +30,7 @@ module OpenSolid.Point2d
         , relativeTo
         , placeIn
         , hull
+        , placeOnto
         )
 
 {-| Various functions for creating and working with `Point2d` values. For the
@@ -88,6 +89,10 @@ Functions for transforming points between local and global coordinates in
 different coordinate frames.
 
 @docs relativeTo, placeIn
+
+# Sketch planes
+
+@docs placeOnto
 
 # Bounds
 
@@ -563,6 +568,50 @@ placeIn frame =
             frame
     in
         coordinates >> Vector2d >> Vector2d.placeIn frame >> addTo originPoint
+
+
+{-| Take a point defined in 2D coordinates within a particular sketch plane and
+return the corresponding point in 3D.
+
+    point =
+        Point2d ( 2, 1 )
+
+    Point2d.placeOnto SketchPlane3d.xy point ==
+        Point3d ( 2, 1, 0 )
+
+    Point2d.placeOnto SketchPlane3d.xz point ==
+        Point3d ( 2, 0, 1 )
+
+The sketch plane can have any position and orientation:
+
+    tiltedSketchPlane =
+        SketchPlane3d.xy
+            |> SketchPlane3d.rotateAround Axis3d.x (degrees 45)
+
+    Point2d.placeOnto tiltedSketchPlane point ==
+        Point3d ( 2, 0.7071, 0.7071 )
+-}
+placeOnto : SketchPlane3d -> Point2d -> Point3d
+placeOnto sketchPlane =
+    let
+        (SketchPlane3d { originPoint, xDirection, yDirection }) =
+            sketchPlane
+
+        (Point3d ( x0, y0, z0 )) =
+            originPoint
+
+        (Direction3d ( ux, uy, uz )) =
+            xDirection
+
+        (Direction3d ( vx, vy, vz )) =
+            yDirection
+    in
+        \(Point2d ( x, y )) ->
+            Point3d
+                ( x0 + x * ux + y * vx
+                , y0 + x * uy + y * vy
+                , z0 + x * uz + y * vz
+                )
 
 
 {-| Construct a bounding box containing both of the given points.
