@@ -327,7 +327,6 @@ transformation functions can be defined in terms of `map`; for example,
 
     LineSegment2d.projectOnto Axis2d.x lineSegment ==
         LineSegment2d.map (Point2d.projectOnto Axis2d.x) lineSegment
-
 -}
 map : (Point2d -> Point2d) -> LineSegment2d -> LineSegment2d
 map function lineSegment =
