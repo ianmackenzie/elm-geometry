@@ -49,6 +49,7 @@ module OpenSolid.Core.Expect
 
 import Expect exposing (Expectation)
 import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Scalar as Scalar
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Direction2d as Direction2d
@@ -85,11 +86,6 @@ expect comparison first second =
             Expect.fail message
 
 
-equalWithin : Float -> Float -> Float -> Bool
-equalWithin tolerance firstValue secondValue =
-    abs (firstValue - secondValue) <= tolerance
-
-
 by : Comparison b -> (a -> b) -> Comparison a
 by comparison property first second =
     comparison (property first) (property second)
@@ -112,7 +108,7 @@ approximately =
 
 within : Float -> Float -> Float -> Expectation
 within tolerance =
-    expect (equalWithin tolerance)
+    expect (Scalar.equalWithin tolerance)
 
 
 angle : Float -> Float -> Expectation
@@ -353,10 +349,10 @@ boundingBox2dWithin : Float -> BoundingBox2d -> BoundingBox2d -> Expectation
 boundingBox2dWithin tolerance =
     expect
         (allOf
-            [ by (equalWithin tolerance) BoundingBox2d.minX
-            , by (equalWithin tolerance) BoundingBox2d.maxX
-            , by (equalWithin tolerance) BoundingBox2d.minY
-            , by (equalWithin tolerance) BoundingBox2d.maxY
+            [ by (Scalar.equalWithin tolerance) BoundingBox2d.minX
+            , by (Scalar.equalWithin tolerance) BoundingBox2d.maxX
+            , by (Scalar.equalWithin tolerance) BoundingBox2d.minY
+            , by (Scalar.equalWithin tolerance) BoundingBox2d.maxY
             ]
         )
 
@@ -370,11 +366,11 @@ boundingBox3dWithin : Float -> BoundingBox3d -> BoundingBox3d -> Expectation
 boundingBox3dWithin tolerance =
     expect
         (allOf
-            [ by (equalWithin tolerance) BoundingBox3d.minX
-            , by (equalWithin tolerance) BoundingBox3d.maxX
-            , by (equalWithin tolerance) BoundingBox3d.minY
-            , by (equalWithin tolerance) BoundingBox3d.maxY
-            , by (equalWithin tolerance) BoundingBox3d.minZ
-            , by (equalWithin tolerance) BoundingBox3d.maxZ
+            [ by (Scalar.equalWithin tolerance) BoundingBox3d.minX
+            , by (Scalar.equalWithin tolerance) BoundingBox3d.maxX
+            , by (Scalar.equalWithin tolerance) BoundingBox3d.minY
+            , by (Scalar.equalWithin tolerance) BoundingBox3d.maxY
+            , by (Scalar.equalWithin tolerance) BoundingBox3d.minZ
+            , by (Scalar.equalWithin tolerance) BoundingBox3d.maxZ
             ]
         )

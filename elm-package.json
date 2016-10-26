@@ -23,6 +23,7 @@
     "OpenSolid.Plane3d",
     "OpenSolid.Point2d",
     "OpenSolid.Point3d",
+    "OpenSolid.Scalar",
     "OpenSolid.Vector2d",
     "OpenSolid.Vector3d"
   ],
