@@ -239,31 +239,84 @@ vector lineSegment =
         Point3d.vectorFrom p1 p2
 
 
+{-| Perform a uniform scaling about the given center point.
+
+    point =
+        Point3d ( 1, 1, 1 )
+
+    LineSegment3d.scaleAbout point 2 lineSegment ==
+        LineSegment3d
+            ( Point3d ( 1, 3, 5 )
+            , Point3d ( 7, 9, 11 )
+            )
+-}
 scaleAbout : Point3d -> Float -> LineSegment3d -> LineSegment3d
 scaleAbout point scale =
     map (Point3d.scaleAbout point scale)
 
 
+{-| Rotate around a given axis by a given angle (in radians).
+
+    LineSegment3d.rotateAround Axis3d.z (degrees 90) lineSegment ==
+        LineSegment3d
+            ( Point3d ( -2, 1, 3 )
+            , Point3d ( -5, 4, 6 )
+            )
+-}
 rotateAround : Axis3d -> Float -> LineSegment3d -> LineSegment3d
 rotateAround axis angle =
     map (Point3d.rotateAround axis angle)
 
 
+{-| Translate a line segment by a given displacement.
+
+    displacement =
+        Vector3d ( 1, 2, 3 )
+
+    LineSegment3d.translateBy displacement lineSegment ==
+        LineSegment3d
+            ( Point3d ( 2, 4, 6 )
+            , Point3d ( 5, 7, 9 )
+            )
+-}
 translateBy : Vector3d -> LineSegment3d -> LineSegment3d
 translateBy vector =
     map (Point3d.translateBy vector)
 
 
+{-| Mirror a line segment across a plane.
+
+    LineSegment3d.mirrorAcross Plane3d.xy lineSegment ==
+        LineSegment3d
+            ( Point3d ( 1, 2, -3 )
+            , Point3d ( 4, 5, -6 )
+            )
+-}
 mirrorAcross : Plane3d -> LineSegment3d -> LineSegment3d
 mirrorAcross plane =
     map (Point3d.mirrorAcross plane)
 
 
+{-| Project a line segment onto a plane.
+
+    LineSegment3d.projectOnto Plane3d.yz lineSegment ==
+        LineSegment3d
+            ( Point3d ( 0, 2, 3 )
+            , Point3d ( 0, 5, 6 )
+            )
+-}
 projectOnto : Plane3d -> LineSegment3d -> LineSegment3d
 projectOnto plane =
     map (Point3d.projectOnto plane)
 
 
+{-| Transform the start and end points of a line segment by a given function
+and create a new line segment from the resulting points. Most other
+transformation functions can be defined in terms of `map`; for example,
+
+    LineSegment3d.projectOnto Plane3d.xy lineSegment ==
+        LineSegment3d.map (Point3d.projectOnto Plane3d.xy) lineSegment
+-}
 map : (Point3d -> Point3d) -> LineSegment3d -> LineSegment3d
 map function lineSegment =
     let
