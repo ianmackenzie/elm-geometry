@@ -89,13 +89,13 @@ JSON encoders and decoders for all types are also provided in the `Encode` and
 To install, run
 
 ```
-elm package install opensolid/core
+elm package install opensolid/geometry
 ```
 
 or add
 
 ```json
-"opensolid/core": "1.0.0 <= v < 2.0.0"
+"opensolid/geometry": "1.0.0 <= v < 2.0.0"
 ```
 
 to your `elm-package.json`.
