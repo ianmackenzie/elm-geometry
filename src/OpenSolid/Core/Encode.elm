@@ -27,6 +27,9 @@ module OpenSolid.Core.Encode
         , triangle3d
         , boundingBox2d
         , boundingBox3d
+        , polyline2d
+        , polyline3d
+        , polygon2d
         )
 
 {-| JSON encoders for the core OpenSolid types.
@@ -35,6 +38,7 @@ module OpenSolid.Core.Encode
 @docs axis2d, axis3d, plane3d, frame2d, frame3d, sketchPlane3d
 @docs lineSegment2d, lineSegment3d, triangle2d, triangle3d
 @docs boundingBox2d, boundingBox3d
+@docs polyline2d, polyline3d, polygon2d
 -}
 
 import Json.Encode as Encode exposing (Value)
@@ -57,6 +61,9 @@ import OpenSolid.Triangle2d as Triangle2d
 import OpenSolid.Triangle3d as Triangle3d
 import OpenSolid.BoundingBox2d as BoundingBox2d
 import OpenSolid.BoundingBox3d as BoundingBox3d
+import OpenSolid.Polyline2d as Polyline2d
+import OpenSolid.Polyline3d as Polyline3d
+import OpenSolid.Polygon2d as Polygon2d
 
 
 {-| Encode a Vector2d as a list of two floating-point components.
@@ -263,3 +270,24 @@ boundingBox3d boundingBox =
         , ( "minZ", Encode.float (BoundingBox3d.minZ boundingBox) )
         , ( "maxZ", Encode.float (BoundingBox3d.maxZ boundingBox) )
         ]
+
+
+{-| Encode a Polyline2d as a list of points.
+-}
+polyline2d : Polyline2d -> Value
+polyline2d polyline =
+    Encode.list (List.map point2d (Polyline2d.vertices polyline))
+
+
+{-| Encode a Polyline3d as a list of points.
+-}
+polyline3d : Polyline3d -> Value
+polyline3d polyline =
+    Encode.list (List.map point3d (Polyline3d.vertices polyline))
+
+
+{-| Encode a Polygon2d as a list of points.
+-}
+polygon2d : Polygon2d -> Value
+polygon2d polygon =
+    Encode.list (List.map point2d (Polygon2d.vertices polygon))

@@ -45,6 +45,12 @@ module OpenSolid.Core.Expect
         , boundingBox2dWithin
         , boundingBox3d
         , boundingBox3dWithin
+        , polyline2d
+        , polyline2dWithin
+        , polyline3d
+        , polyline3dWithin
+        , polygon2d
+        , polygon2dWithin
         )
 
 import Expect exposing (Expectation)
@@ -68,6 +74,9 @@ import OpenSolid.Triangle2d as Triangle2d
 import OpenSolid.Triangle3d as Triangle3d
 import OpenSolid.BoundingBox2d as BoundingBox2d
 import OpenSolid.BoundingBox3d as BoundingBox3d
+import OpenSolid.Polyline2d as Polyline2d
+import OpenSolid.Polyline3d as Polyline3d
+import OpenSolid.Polygon2d as Polygon2d
 
 
 type alias Comparison a =
@@ -94,6 +103,23 @@ by comparison property first second =
 allOf : List (Comparison a) -> Comparison a
 allOf comparisons first second =
     List.all (\comparison -> comparison first second) comparisons
+
+
+listOf : Comparison a -> Comparison (List a)
+listOf comparison firstList secondList =
+    case ( firstList, secondList ) of
+        ( [], [] ) ->
+            True
+
+        ( _, [] ) ->
+            False
+
+        ( [], _ ) ->
+            False
+
+        ( firstHead :: firstTail, secondHead :: secondTail ) ->
+            (comparison firstHead secondHead)
+                && (listOf comparison firstTail secondTail)
 
 
 defaultTolerance : Float
@@ -374,3 +400,33 @@ boundingBox3dWithin tolerance =
             , by (Scalar.equalWithin tolerance) BoundingBox3d.maxZ
             ]
         )
+
+
+polyline2d : Polyline2d -> Polyline2d -> Expectation
+polyline2d =
+    polyline2dWithin defaultTolerance
+
+
+polyline2dWithin : Float -> Polyline2d -> Polyline2d -> Expectation
+polyline2dWithin tolerance =
+    expect (by (listOf (Point2d.equalWithin tolerance)) Polyline2d.vertices)
+
+
+polyline3d : Polyline3d -> Polyline3d -> Expectation
+polyline3d =
+    polyline3dWithin defaultTolerance
+
+
+polyline3dWithin : Float -> Polyline3d -> Polyline3d -> Expectation
+polyline3dWithin tolerance =
+    expect (by (listOf (Point3d.equalWithin tolerance)) Polyline3d.vertices)
+
+
+polygon2d : Polygon2d -> Polygon2d -> Expectation
+polygon2d =
+    polygon2dWithin defaultTolerance
+
+
+polygon2dWithin : Float -> Polygon2d -> Polygon2d -> Expectation
+polygon2dWithin tolerance =
+    expect (by (listOf (Point2d.equalWithin tolerance)) Polygon2d.vertices)

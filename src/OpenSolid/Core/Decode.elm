@@ -27,6 +27,9 @@ module OpenSolid.Core.Decode
         , triangle3d
         , boundingBox2d
         , boundingBox3d
+        , polyline2d
+        , polyline3d
+        , polygon2d
         )
 
 {-| JSON decoders for the core OpenSolid types.
@@ -35,6 +38,7 @@ module OpenSolid.Core.Decode
 @docs axis2d, axis3d, plane3d, frame2d, frame3d, sketchPlane3d
 @docs lineSegment2d, lineSegment3d, triangle2d, triangle3d
 @docs boundingBox2d, boundingBox3d
+@docs polyline2d, polyline3d, polygon2d
 -}
 
 import Json.Decode as Decode exposing (Decoder, (:=))
@@ -264,3 +268,24 @@ boundingBox3d =
         ("maxY" := Decode.float)
         ("minZ" := Decode.float)
         ("maxZ" := Decode.float)
+
+
+{-| Decodes a Polyline2d from a list of vertices.
+-}
+polyline2d : Decoder Polyline2d
+polyline2d =
+    Decode.map Polyline2d (Decode.list point2d)
+
+
+{-| Decodes a Polyline3d from a list of vertices.
+-}
+polyline3d : Decoder Polyline3d
+polyline3d =
+    Decode.map Polyline3d (Decode.list point3d)
+
+
+{-| Decodes a Polygon2d from a list of vertices.
+-}
+polygon2d : Decoder Polygon2d
+polygon2d =
+    Decode.map Polygon2d (Decode.list point2d)

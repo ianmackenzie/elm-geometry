@@ -27,6 +27,9 @@ module OpenSolid.Core.Types
         , Triangle3d(Triangle3d)
         , BoundingBox2d(BoundingBox2d)
         , BoundingBox3d(BoundingBox3d)
+        , Polyline2d(Polyline2d)
+        , Polyline3d(Polyline3d)
+        , Polygon2d(Polygon2d)
         )
 
 {-| This module contains the definitions of the core OpenSolid data types. Each
@@ -120,6 +123,14 @@ useful building blocks for tasks such as fast spatial searching or culling non-
 visible objects during 3D rendering.
 
 @docs BoundingBox2d, BoundingBox3d
+
+# Polylines
+
+@docs Polyline2d, Polyline3d
+
+# Polygons
+
+@docs Polygon2d
 -}
 
 
@@ -283,3 +294,23 @@ type BoundingBox3d
         , minZ : Float
         , maxZ : Float
         }
+
+
+{-| A polyline in 2D, defined by a list of vertices.
+-}
+type Polyline2d
+    = Polyline2d (List Point2d)
+
+
+{-| A polyline in 3D, defined by a list of vertices.
+-}
+type Polyline3d
+    = Polyline3d (List Point3d)
+
+
+{-| A polygon in 2D, defined by a list of vertices. The last vertex is
+considered to be connected to the first vertex (they do not have to be
+coincident).
+-}
+type Polygon2d
+    = Polygon2d (List Point2d)

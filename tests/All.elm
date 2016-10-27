@@ -24,6 +24,9 @@ import LineSegment3d
 import Plane3d
 import Point2d
 import Point3d
+import Polyline2d
+import Polyline3d
+import Polygon2d
 import Triangle2d
 import Triangle3d
 import Vector2d
@@ -45,6 +48,9 @@ suite =
         , Plane3d.suite
         , Point2d.suite
         , Point3d.suite
+        , Polyline2d.suite
+        , Polyline3d.suite
+        , Polygon2d.suite
         , Triangle2d.suite
         , Triangle3d.suite
         , Vector2d.suite

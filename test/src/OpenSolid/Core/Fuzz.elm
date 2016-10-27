@@ -28,6 +28,9 @@ module OpenSolid.Core.Fuzz
         , triangle3d
         , boundingBox2d
         , boundingBox3d
+        , polyline2d
+        , polyline3d
+        , polygon2d
         )
 
 import Fuzz exposing (Fuzzer)
@@ -237,3 +240,18 @@ boundingBox3d =
                 }
     in
         Fuzz.map3 boundingBox interval interval interval
+
+
+polyline2d : Fuzzer Polyline2d
+polyline2d =
+    Fuzz.map Polyline2d (Fuzz.list point2d)
+
+
+polyline3d : Fuzzer Polyline3d
+polyline3d =
+    Fuzz.map Polyline3d (Fuzz.list point3d)
+
+
+polygon2d : Fuzzer Polygon2d
+polygon2d =
+    Fuzz.map Polygon2d (Fuzz.list point2d)
