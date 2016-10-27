@@ -324,16 +324,63 @@ map function lineSegment =
         LineSegment3d ( function p1, function p2 )
 
 
+{-| Take a line segment defined in global coordinates, and return it expressed
+in local coordinates relative to a given reference frame.
+
+    localFrame =
+        Frame3d.at (Point3d ( 1, 2, 3 ))
+
+    LineSegment3d.relativeTo localFrame lineSegment ==
+        LineSegment3d
+            ( Point3d ( 0, 0, 0 )
+            , Point3d ( 3, 3, 3 )
+            )
+-}
 relativeTo : Frame3d -> LineSegment3d -> LineSegment3d
 relativeTo frame =
     map (Point3d.relativeTo frame)
 
 
+{-| Take a line segment considered to be defined in local coordinates relative
+to a given reference frame, and return that line segment expressed in global
+coordinates.
+
+    localFrame =
+        Frame3d.at (Point3d ( 1, 2, 3 ))
+
+    LineSegment3d.placeIn localFrame lineSegment ==
+        LineSegment3d
+            ( Point3d ( 2, 4, 6 )
+            , Point3d ( 5, 7, 9 )
+            )
+-}
 placeIn : Frame3d -> LineSegment3d -> LineSegment3d
 placeIn frame =
     map (Point3d.placeIn frame)
 
 
+{-| Project a line segment into a given sketch plane. Conceptually, this
+projects the line segment onto the plane and then expresses the projected
+line segment in 2D sketch coordinates.
+
+    LineSegment3d.projectInto SketchPlane3d.xy lineSegment ==
+        LineSegment2d
+            ( Point2d ( 1, 2 )
+            , Point2d ( 4, 5 )
+            )
+
+    LineSegment3d.projectInto SketchPlane3d.yz lineSegment ==
+        LineSegment2d
+            ( Point2d ( 2, 3 )
+            , Point2d ( 5, 6 )
+            )
+
+    LineSegment3d.projectInto SketchPlane3d.zx lineSegment ==
+        LineSegment2d
+            ( Point2d ( 3, 1 )
+            , Point2d ( 6, 4 )
+            )
+-}
 projectInto : SketchPlane3d -> LineSegment3d -> LineSegment2d
 projectInto sketchPlane lineSegment =
     let
@@ -346,6 +393,18 @@ projectInto sketchPlane lineSegment =
         LineSegment2d ( project p1, project p2 )
 
 
+{-| Get the minimal bounding box containing a given line segment.
+
+    LineSegment3d.boundingBox lineSegment ==
+        BoundingBox3d
+            { minX = 1
+            , maxX = 4
+            , minY = 2
+            , maxY = 5
+            , minZ = 3
+            , maxZ = 6
+            }
+-}
 boundingBox : LineSegment3d -> BoundingBox3d
 boundingBox lineSegment =
     let
