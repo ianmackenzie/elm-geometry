@@ -20,6 +20,7 @@
     "OpenSolid.Frame2d",
     "OpenSolid.Frame3d",
     "OpenSolid.LineSegment2d",
+    "OpenSolid.LineSegment3d",
     "OpenSolid.Plane3d",
     "OpenSolid.Point2d",
     "OpenSolid.Point3d",
