@@ -14,10 +14,10 @@ import Test.Runner.Html as Html
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Direction2d as Direction2d
 import OpenSolid.Axis2d as Axis2d
-import OpenSolid.Core.Encode as Encode
-import OpenSolid.Core.Decode as Decode
-import OpenSolid.Core.Fuzz as Fuzz
-import OpenSolid.Core.Expect as Expect
+import OpenSolid.Geometry.Encode as Encode
+import OpenSolid.Geometry.Decode as Decode
+import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Geometry.Expect as Expect
 import Generic
 
 
@@ -120,7 +120,7 @@ mirrorAcrossNegatesPerpendicularComponent =
 
 suite : Test
 suite =
-    Test.describe "OpenSolid.Core.Vector2d"
+    Test.describe "OpenSolid.Geometry.Vector2d"
         [ jsonRoundTrips
         , perpendicularVectorIsPerpendicular
         , dotProductWithSelfIsSquaredLength

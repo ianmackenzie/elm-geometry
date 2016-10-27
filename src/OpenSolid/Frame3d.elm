@@ -46,7 +46,7 @@ module OpenSolid.Frame3d
 {-| Various functions for creating and working with `Frame3d` values. For the
 examples below, assume that all OpenSolid core types have been imported using
 
-    import OpenSolid.Core.Types exposing (..)
+    import OpenSolid.Geometry.Types exposing (..)
 
 and all necessary modules have been imported using the following pattern:
 
@@ -139,7 +139,7 @@ corresponds to a global Z coordinate!
 @docs relativeTo, placeIn
 -}
 
-import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Axis3d as Axis3d

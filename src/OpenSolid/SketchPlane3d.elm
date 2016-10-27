@@ -33,7 +33,7 @@ module OpenSolid.SketchPlane3d
         , placeIn
         )
 
-import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Direction2d as Direction2d

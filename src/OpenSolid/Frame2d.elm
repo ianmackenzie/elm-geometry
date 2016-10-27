@@ -31,7 +31,7 @@ module OpenSolid.Frame2d
 {-| Various functions for creating and working with `Frame2d` values. For the
 examples below, assume that all OpenSolid core types have been imported using
 
-    import OpenSolid.Core.Types exposing (..)
+    import OpenSolid.Geometry.Types exposing (..)
 
 and all necessary modules have been imported using the following pattern:
 
@@ -78,7 +78,7 @@ perpendicular to each other.
 @docs relativeTo, placeIn
 -}
 
-import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point2d as Point2d
 import OpenSolid.Direction2d as Direction2d
 import OpenSolid.Axis2d as Axis2d

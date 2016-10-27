@@ -25,7 +25,7 @@ module OpenSolid.Triangle2d
         , boundingBox
         )
 
-import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Point2d as Point2d
 

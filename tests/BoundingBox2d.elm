@@ -16,10 +16,10 @@ import Expect
 import Test.Runner.Html as Html
 import OpenSolid.BoundingBox2d as BoundingBox2d
 import OpenSolid.Point2d as Point2d
-import OpenSolid.Core.Encode as Encode
-import OpenSolid.Core.Decode as Decode
-import OpenSolid.Core.Fuzz as Fuzz
-import OpenSolid.Core.Expect as Expect
+import OpenSolid.Geometry.Encode as Encode
+import OpenSolid.Geometry.Decode as Decode
+import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Geometry.Expect as Expect
 import Generic
 
 
@@ -146,7 +146,7 @@ boxContainsOwnCentroid =
 
 suite : Test
 suite =
-    Test.describe "OpenSolid.Core.BoundingBox2d"
+    Test.describe "OpenSolid.Geometry.BoundingBox2d"
         [ jsonRoundTrips
         , containingConsistentWithHull
         , containingIsOrderIndependent

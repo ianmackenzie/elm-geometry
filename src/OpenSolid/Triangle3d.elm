@@ -23,7 +23,7 @@ module OpenSolid.Triangle3d
         , boundingBox
         )
 
-import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Point3d as Point3d
 

@@ -34,7 +34,7 @@ import Vector3d
 
 
 suite =
-    Test.describe "OpenSolid.Core"
+    Test.describe "OpenSolid.Geometry"
         [ Axis2d.suite
         , Axis3d.suite
         , BoundingBox2d.suite

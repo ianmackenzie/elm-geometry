@@ -25,7 +25,7 @@ module OpenSolid.Polygon2d
         , boundingBox
         )
 
-import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point2d as Point2d
 import OpenSolid.BoundingBox2d as BoundingBox2d
 import OpenSolid.LineSegment2d as LineSegment2d

@@ -11,10 +11,10 @@ module Axis3d exposing (suite)
 
 import Test exposing (Test)
 import Test.Runner.Html as Html
-import OpenSolid.Core.Encode as Encode
-import OpenSolid.Core.Decode as Decode
-import OpenSolid.Core.Fuzz as Fuzz
-import OpenSolid.Core.Expect as Expect
+import OpenSolid.Geometry.Encode as Encode
+import OpenSolid.Geometry.Decode as Decode
+import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Geometry.Expect as Expect
 import Generic
 
 
@@ -25,7 +25,7 @@ jsonRoundTrips =
 
 suite : Test
 suite =
-    Test.describe "OpenSolid.Core.Axis3d"
+    Test.describe "OpenSolid.Geometry.Axis3d"
         [ jsonRoundTrips
         ]
 

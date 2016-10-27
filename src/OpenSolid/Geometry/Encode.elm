@@ -7,7 +7,7 @@
 -}
 
 
-module OpenSolid.Core.Encode
+module OpenSolid.Geometry.Encode
     exposing
         ( vector2d
         , vector3d
@@ -42,7 +42,7 @@ module OpenSolid.Core.Encode
 -}
 
 import Json.Encode as Encode exposing (Value)
-import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Direction2d as Direction2d

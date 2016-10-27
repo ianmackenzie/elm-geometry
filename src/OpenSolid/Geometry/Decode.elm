@@ -7,7 +7,7 @@
 -}
 
 
-module OpenSolid.Core.Decode
+module OpenSolid.Geometry.Decode
     exposing
         ( vector2d
         , vector3d
@@ -42,7 +42,7 @@ module OpenSolid.Core.Decode
 -}
 
 import Json.Decode as Decode exposing (Decoder, (:=))
-import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Geometry.Types exposing (..)
 
 
 {-| Decodes a Vector2d from a list of two floating-point components.

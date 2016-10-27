@@ -12,10 +12,10 @@ module LineSegment2d exposing (suite)
 import Test exposing (Test)
 import Test.Runner.Html as Html
 import OpenSolid.LineSegment2d as LineSegment2d
-import OpenSolid.Core.Encode as Encode
-import OpenSolid.Core.Decode as Decode
-import OpenSolid.Core.Fuzz as Fuzz
-import OpenSolid.Core.Expect as Expect
+import OpenSolid.Geometry.Encode as Encode
+import OpenSolid.Geometry.Decode as Decode
+import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Geometry.Expect as Expect
 import Generic
 
 
@@ -28,7 +28,7 @@ jsonRoundTrips =
 
 suite : Test
 suite =
-    Test.describe "OpenSolid.Core.LineSegment2d"
+    Test.describe "OpenSolid.Geometry.LineSegment2d"
         [ jsonRoundTrips
         ]
 

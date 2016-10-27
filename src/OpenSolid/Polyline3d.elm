@@ -23,7 +23,7 @@ module OpenSolid.Polyline3d
         , boundingBox
         )
 
-import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.BoundingBox3d as BoundingBox3d
 import OpenSolid.LineSegment3d as LineSegment3d

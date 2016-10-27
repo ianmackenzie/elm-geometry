@@ -110,7 +110,7 @@ The main exception is the `Types` module, which only contains type definitions
 and is intended to be imported without qualification:
 
 ```elm
-import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Geometry.Types exposing (..)
 ```
 
 For technical details, check out the documentation for each module, but if

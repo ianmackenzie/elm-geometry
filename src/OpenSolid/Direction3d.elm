@@ -36,7 +36,7 @@ module OpenSolid.Direction3d
 the examples below, assume that all OpenSolid core types have been imported
 using
 
-    import OpenSolid.Core.Types exposing (..)
+    import OpenSolid.Geometry.Types exposing (..)
 
 and all necessary modules have been imported using the following pattern:
 
@@ -123,7 +123,7 @@ XYZ frame:
 @docs projectInto
 -}
 
-import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Vector3d as Vector3d
 

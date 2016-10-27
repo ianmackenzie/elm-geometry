@@ -7,7 +7,7 @@
 -}
 
 
-module OpenSolid.Core.Fuzz
+module OpenSolid.Geometry.Fuzz
     exposing
         ( scalar
         , vector2d
@@ -34,7 +34,7 @@ module OpenSolid.Core.Fuzz
         )
 
 import Fuzz exposing (Fuzzer)
-import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Direction2d as Direction2d
 import OpenSolid.Direction3d as Direction3d

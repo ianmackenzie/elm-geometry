@@ -35,7 +35,7 @@ module OpenSolid.Direction2d
 the examples below, assume that all OpenSolid core types have been imported
 using
 
-    import OpenSolid.Core.Types exposing (..)
+    import OpenSolid.Geometry.Types exposing (..)
 
 and all necessary modules have been imported using the following pattern:
 
@@ -118,7 +118,7 @@ For the examples, assume the following frames have been defined:
 @docs placeOnto
 -}
 
-import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
 
 

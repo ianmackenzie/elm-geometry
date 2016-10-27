@@ -36,7 +36,7 @@ module OpenSolid.LineSegment2d
 the examples below, assume that all OpenSolid core types have been imported
 using
 
-    import OpenSolid.Core.Types exposing (..)
+    import OpenSolid.Geometry.Types exposing (..)
 
 and all necessary modules have been imported using the following pattern:
 
@@ -90,7 +90,7 @@ different coordinate frames.
 @docs boundingBox
 -}
 
-import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Point2d as Point2d
 

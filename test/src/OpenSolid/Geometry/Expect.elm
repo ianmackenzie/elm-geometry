@@ -7,7 +7,7 @@
 -}
 
 
-module OpenSolid.Core.Expect
+module OpenSolid.Geometry.Expect
     exposing
         ( Comparison
         , expect
@@ -54,7 +54,7 @@ module OpenSolid.Core.Expect
         )
 
 import Expect exposing (Expectation)
-import OpenSolid.Core.Types exposing (..)
+import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Scalar as Scalar
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Vector3d as Vector3d
