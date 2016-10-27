@@ -309,7 +309,7 @@ type Polyline3d
 
 
 {-| A polygon in 2D, defined by a list of vertices. The last vertex is
-considered to be connected to the first vertex (they do not have to be
+considered to be connected back to the first vertex (they do not have to be
 coincident).
 -}
 type Polygon2d
