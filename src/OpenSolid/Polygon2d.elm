@@ -15,15 +15,56 @@ module OpenSolid.Polygon2d
         , area
         , clockwiseArea
         , counterclockwiseArea
-        , map
         , scaleAbout
         , rotateAround
         , translateBy
         , mirrorAcross
+        , map
         , relativeTo
         , placeIn
         , boundingBox
         )
+
+{-| Various functions for creating and working with `Polygon2d` values. Polygons
+can be constructed explicitly by passing a list of vertices to the `Polygon2d`
+constructor, for example
+
+    rectangle =
+        Polygon2d
+            [ Point2d ( 1, 1 )
+            , Point2d ( 3, 1 )
+            , Point2d ( 3, 2 )
+            , Point2d ( 1, 2 )
+            ]
+
+For the examples below, assume that `rectangle` has been defined, all OpenSolid
+core types have been imported using
+
+    import OpenSolid.Geometry.Types exposing (..)
+
+and all other necessary modules have been imported using the following pattern:
+
+    import OpenSolid.Polygon2d as Polygon2d
+
+Examples use `==` to indicate that two expressions are equivalent, even if (due
+to numerical roundoff) they might not be exactly equal.
+
+# Accessors
+
+@docs vertices, edges
+
+# Perimeter and area
+
+@docs perimeter, area, clockwiseArea, counterclockwiseArea
+
+# Transformations
+
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross, map
+
+# Coordinate frames
+
+@docs relativeTo, placeIn
+-}
 
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point2d as Point2d
@@ -87,11 +128,6 @@ counterclockwiseArea polygon =
                 List.sum segmentAreas
 
 
-map : (Point2d -> Point2d) -> Polygon2d -> Polygon2d
-map function =
-    vertices >> List.map function >> Polygon2d
-
-
 scaleAbout : Point2d -> Float -> Polygon2d -> Polygon2d
 scaleAbout point scale =
     map (Point2d.scaleAbout point scale)
@@ -110,6 +146,11 @@ translateBy vector =
 mirrorAcross : Axis2d -> Polygon2d -> Polygon2d
 mirrorAcross axis =
     map (Point2d.mirrorAcross axis)
+
+
+map : (Point2d -> Point2d) -> Polygon2d -> Polygon2d
+map function =
+    vertices >> List.map function >> Polygon2d
 
 
 relativeTo : Frame2d -> Polygon2d -> Polygon2d
