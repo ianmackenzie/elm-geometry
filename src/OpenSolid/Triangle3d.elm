@@ -26,7 +26,6 @@ module OpenSolid.Triangle3d
 import OpenSolid.Core.Types exposing (..)
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Point3d as Point3d
-import OpenSolid.Triangle2d as Triangle2d
 
 
 vertices : Triangle3d -> ( Point3d, Point3d, Point3d )
