@@ -26,6 +26,7 @@
     "OpenSolid.Point3d",
     "OpenSolid.Polygon2d",
     "OpenSolid.Polyline2d",
+    "OpenSolid.Polyline3d",
     "OpenSolid.Scalar",
     "OpenSolid.Vector2d",
     "OpenSolid.Vector3d"
