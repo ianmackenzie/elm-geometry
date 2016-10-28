@@ -177,7 +177,7 @@ counterclockwiseArea polygon =
                 List.sum segmentAreas
 
 
-{-| Scale a polygon about a given center point.
+{-| Scale a polygon about a given center point by a given scale.
 
     point =
         Point2d ( 2, 1 )

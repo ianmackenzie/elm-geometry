@@ -238,7 +238,7 @@ vector lineSegment =
         Point2d.vectorFrom p1 p2
 
 
-{-| Perform a uniform scaling about the given center point.
+{-| Scale a line segment about the given center point by the given scale.
 
     point =
         Point2d ( 1, 1 )

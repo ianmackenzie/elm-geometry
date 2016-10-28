@@ -122,7 +122,7 @@ length =
     segments >> List.map LineSegment2d.length >> List.sum
 
 
-{-| Scale a polyline about a given center point.
+{-| Scale a polyline about a given center point by a given scale.
 
     point =
         Point2d ( 1, 0 )
