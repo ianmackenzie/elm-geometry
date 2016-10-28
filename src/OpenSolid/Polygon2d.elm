@@ -278,7 +278,7 @@ relativeTo frame =
 
 
 {-| Take a polygon considered to be defined in local coordinates relative
-to a given reference frame, and return that line segment expressed in global
+to a given reference frame, and return that polygon expressed in global
 coordinates.
 
     localFrame =
