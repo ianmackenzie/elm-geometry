@@ -23,9 +23,9 @@ module OpenSolid.Polyline2d
         , boundingBox
         )
 
-{-| Various functions for creating and working with `Polyline2d` values. Polylines
-can be constructed explicitly by passing a list of vertices to the `Polyline2d`
-constructor, for example
+{-| Various functions for creating and working with `Polyline2d` values.
+Polylines can be constructed explicitly by passing a list of vertices to the
+`Polyline2d` constructor, for example
 
     stepShape =
         Polyline2d
