@@ -112,7 +112,8 @@ segments polyline =
             List.map2 (\start end -> LineSegment2d ( start, end )) all rest
 
 
-{-| Get the overall length of a polyline (the sum of the lengths of its edges).
+{-| Get the overall length of a polyline (the sum of the lengths of its
+segments).
 
     Polyline2d.length stepShape ==
         3
