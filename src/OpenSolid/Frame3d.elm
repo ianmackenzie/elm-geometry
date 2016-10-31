@@ -45,7 +45,8 @@ module OpenSolid.Frame3d
 
 {-| Various functions for creating and working with `Frame3d` values.  A
 `Frame3d` represents a coordinate system in 3D space and is defined by an origin
-point and X, Y and Z basis directions (which are always perpendicular).
+point and X, Y and Z basis directions (which are always perpendicular to each
+other).
 
 Frames can by constructed by passing a record with `originPoint`, `xDirection`
 and 'yDirection' fields to the `Frame3d` constructor, for example:
@@ -59,8 +60,9 @@ and 'yDirection' fields to the `Frame3d` constructor, for example:
             }
 
 In this case you must be careful to ensure that the X, Y and Z directions are
-perpendicular to each other. (You will likely also want to make sure that
-they form a right-handed coordinate system.)
+perpendicular. (You will likely also want to make sure that they form a right-
+handed coordinate system - that is, one where the Z direction is equal to the
+cross product of the X and Y directions.)
 
 ## Reading this documentation
 

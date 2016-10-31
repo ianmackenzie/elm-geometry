@@ -30,7 +30,8 @@ module OpenSolid.Frame2d
 
 {-| Various functions for creating and working with `Frame2d` values. A
 `Frame2d` represents a coordinate system in 2D space and is defined by an origin
-point and X and Y basis directions (which are always perpendicular).
+point and X and Y basis directions (which are always perpendicular to each
+other).
 
 Frames can by constructed by passing a record with `originPoint`, `xDirection`
 and 'yDirection' fields to the `Frame2d` constructor, for example:
@@ -43,7 +44,7 @@ and 'yDirection' fields to the `Frame2d` constructor, for example:
             }
 
 In this case you must be careful to ensure that the X and Y directions are
-perpendicular to each other.
+perpendicular.
 
 ## Reading this documentation
 
