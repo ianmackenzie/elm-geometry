@@ -91,7 +91,7 @@ actually want their `Direction3d` versions `Direction3d.x`, `Direction3d.y` and
 
 # Transformations
 
-Note that for all transformations, only the orientation of the relevant axis or
+Note that for all transformations, only the orientation of the given axis or
 plane is relevant, since vectors are position-independent. Think of transforming
 a vector as placing its tail on the relevant axis or plane and then transforming
 its tip.
@@ -106,8 +106,8 @@ transformations of vectors depend only on the orientations of the relevant
 frames, not their positions.
 
 For the examples, assume the following definition of a local coordinate frame,
-one that is rotated 30 degrees counterclockwise about the Z axis from the global
-XYZ frame:
+one that is rotated 30 degrees counterclockwise around the Z axis from the
+global XYZ frame:
 
     rotatedFrame =
         Frame3d.rotateAround Axis3d.z (degrees 30) Frame3d.xyz
@@ -247,7 +247,7 @@ componentIn (Direction3d components) =
 
 
 {-| Compare two vectors within a tolerance. Returns true if the difference
-between the two given vectors has length less than the given tolerance.
+between the two given vectors has magnitude less than the given tolerance.
 
     firstVector =
         Vector3d ( 2, 1, 3 )
@@ -266,7 +266,7 @@ equalWithin tolerance firstVector secondVector =
     squaredLength (minus firstVector secondVector) <= tolerance * tolerance
 
 
-{-| Get the length of a vector.
+{-| Get the length (magnitude) of a vector.
 
     Vector3d.length (Vector3d ( 2, 1, 2 )) ==
         3
@@ -478,7 +478,7 @@ crossProduct first second =
             )
 
 
-{-| Rotate a vector around an axis.
+{-| Rotate a vector around a given axis by a given angle (in radians).
 
     vector =
         Vector3d ( 2, 0, 1 )

@@ -218,7 +218,7 @@ componentIn (Direction2d ( dx, dy )) (Vector2d ( x, y )) =
 
 
 {-| Compare two vectors within a tolerance. Returns true if the difference
-between the two given vectors has length less than the given tolerance.
+between the two given vectors has magnitude less than the given tolerance.
 
     firstVector =
         Vector2d ( 1, 2 )
@@ -237,7 +237,7 @@ equalWithin tolerance firstVector secondVector =
     squaredLength (minus firstVector secondVector) <= tolerance * tolerance
 
 
-{-| Get the length of a vector.
+{-| Get the length (magnitude) of a vector.
 
     Vector2d.length (Vector2d ( 3, 4 )) ==
         5
@@ -461,7 +461,7 @@ rotateBy angle =
             Vector2d ( x * cosine - y * sine, y * cosine + x * sine )
 
 
-{-| Mirror a vector across a particular axis.
+{-| Mirror a vector across a given axis.
 
     vector =
         Vector2d ( 2, 3 )
