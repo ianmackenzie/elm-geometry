@@ -398,8 +398,15 @@ dotProduct (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
 
 {-| Find the scalar 'cross product' of two vectors in 2D. This is defined as
 
-    crossProduct (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
-        x1 * y2 - y1 * x2
+    crossProduct firstVector secondVector =
+        let
+            ( x1, y1 ) =
+                components firstVector
+
+            ( x2, y2 ) =
+                components secondVector
+        in
+            x1 * y2 - y1 * x2
 
 and is useful in many of the same ways as the 3D cross product:
 
@@ -429,8 +436,15 @@ Some examples:
         0
 -}
 crossProduct : Vector2d -> Vector2d -> Float
-crossProduct (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
-    x1 * y2 - y1 * x2
+crossProduct firstVector secondVector =
+    let
+        ( x1, y1 ) =
+            components firstVector
+
+        ( x2, y2 ) =
+            components secondVector
+    in
+        x1 * y2 - y1 * x2
 
 
 {-| Rotate a vector counterclockwise by a given angle (in radians).
