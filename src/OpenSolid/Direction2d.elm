@@ -37,7 +37,7 @@ using
 
     import OpenSolid.Geometry.Types exposing (..)
 
-and all necessary modules have been imported using the following pattern:
+and all other necessary modules have been imported using the following pattern:
 
     import OpenSolid.Direction2d as Direction2d
 

@@ -41,7 +41,7 @@ examples below, assume that all OpenSolid core types have been imported using
 
     import OpenSolid.Geometry.Types exposing (..)
 
-and all necessary modules have been imported using the following pattern:
+and all other necessary modules have been imported using the following pattern:
 
     import OpenSolid.Vector3d as Vector3d
 
