@@ -28,8 +28,27 @@ module OpenSolid.Frame2d
         , placeIn
         )
 
-{-| Various functions for creating and working with `Frame2d` values. For the
-examples below, assume that all OpenSolid core types have been imported using
+{-| Various functions for creating and working with `Frame2d` values. A
+`Frame2d` represents a coordinate system in 2D space and is defined by an origin
+point and X and Y basis directions (which are always perpendicular).
+
+Frames can by constructed by passing a record with `originPoint`, `xDirection`
+and 'yDirection' fields to the `Frame2d` constructor, for example:
+
+    frame =
+        Frame2d
+            { originPoint = Point2d ( 2, 3 )
+            , xDirection = Direction2d.fromAngle (degrees 45)
+            , yDirection = Direction2d.fromAngle (degrees 135)
+            }
+
+In this case you must be careful to ensure that the X and Y directions are
+perpendicular to each other.
+
+## Reading this documentation
+
+For the examples below, assume that all OpenSolid core types have been imported
+using
 
     import OpenSolid.Geometry.Types exposing (..)
 
@@ -45,19 +64,6 @@ to numerical roundoff) they might not be exactly equal.
 @docs xy
 
 # Constructors
-
-Frames can by constructed by passing a record with `originPoint`, `xDirection`
-and 'yDirection' fields to the `Frame2d` constructor, for example:
-
-    frame =
-        Frame2d
-            { originPoint = Point2d ( 2, 3 )
-            , xDirection = Direction2d.fromAngle (degrees 45)
-            , yDirection = Direction2d.fromAngle (degrees 135)
-            }
-
-In this case you must be careful to ensure that the X and Y directions are
-perpendicular to each other.
 
 @docs at
 

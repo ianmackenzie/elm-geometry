@@ -27,9 +27,28 @@ module OpenSolid.BoundingBox2d
         , intersection
         )
 
-{-| Various functions for creating and working with `BoundingBox2d` values. For
-the examples below, assume that all OpenSolid core types have been imported
-using
+{-| Various functions for creating and working with `BoundingBox2d` values. A
+`BoundingBox2d` is defined by its minimum and maximum X and Y values.
+
+Bounding boxes can be constructed by passing a record with `minX`, `maxX`,
+`minY` and `maxY` fields to the `BoundingBox2d` constructor, for example
+
+    exampleBox =
+        BoundingBox2d
+            { minX = 1
+            , maxX = 3
+            , minY = -2
+            , maxY = 4
+            }
+
+If you construct an `BoundingBox2d` this way, you must ensure that the given
+values are properly ordered: `minX <= maxX`, `minY <= maxY`. Alternately, you
+can use functions such as `Point2d.hull` where the input order does not matter.
+
+## Reading this documentation
+
+For the examples below, assume that `exampleBox` has been defined, all OpenSolid
+core types have been imported using
 
     import OpenSolid.Geometry.Types exposing (..)
 
@@ -42,30 +61,9 @@ to numerical roundoff) they might not be exactly equal.
 
 # Constructors
 
-Bounding boxes can be constructed by passing a record with `minX`, `maxX`,
-`minY` and `maxY` fields to the `BoundingBox2d` constructor, for example
-
-    boundingBox =
-        BoundingBox2d
-            { minX = 1
-            , maxX = 3
-            , minY = -2
-            , maxY = 4
-            }
-
 @docs singleton, containing
 
 # Accessors
-
-For all examples in this section, assume the following example bounding box:
-
-    exampleBox =
-        BoundingBox2d
-            { minX = 1
-            , maxX = 3
-            , minY = -2
-            , maxY = 4
-            }
 
 @docs extrema, minX, maxX, minY, maxY
 @docs dimensions, midX, midY, centroid

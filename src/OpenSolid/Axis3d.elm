@@ -25,8 +25,27 @@ module OpenSolid.Axis3d
         , projectInto
         )
 
-{-| Various functions for creating and working with `Axis3d` values. For the
-examples below, assume that all OpenSolid core types have been imported using
+{-| Various functions for creating and working with `Axis3d` values. An `Axis3d`
+is defined by an origin point and direction and is useful for several operations
+including:
+
+  - Rotating around the axis
+  - Projecting onto the axis
+  - Measuring distance along the axis
+
+Axes can by constructed by passing a record with `originPoint` and `direction`
+fields to the `Axis3d` constructor, for example:
+
+    axis =
+        Axis3d
+            { originPoint = Point3d ( 2, 1, 3 )
+            , direction = Direction3d.y
+            }
+
+## Reading this documentation
+
+For the examples below, assume that all OpenSolid core types have been imported
+using
 
     import OpenSolid.Geometry.Types exposing (..)
 
@@ -40,17 +59,6 @@ to numerical roundoff) they might not be exactly equal.
 # Predefined axes
 
 @docs x, y, z
-
-# Constructors
-
-Axes can by constructed by passing a record with `originPoint` and `direction`
-fields to the `Axis3d` constructor, for example:
-
-    axis =
-        Axis3d
-            { originPoint = Point3d ( 2, 1, 3 )
-            , direction = Direction3d.y
-            }
 
 # Accessors
 

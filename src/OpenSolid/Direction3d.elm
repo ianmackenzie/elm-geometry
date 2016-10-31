@@ -32,8 +32,26 @@ module OpenSolid.Direction3d
         , projectInto
         )
 
-{-| Various functions for creating and working with `Direction3d` values. For
-the examples below, assume that all OpenSolid core types have been imported
+{-| Various functions for creating and working with `Direction3d` values. The
+simplest way to construct a `Direction3d` value is by passing a tuple of X, Y
+and Z components to the `Direction3d` constructor, for example
+`Direction3d (1, 0, 0 )`. However, if you do this you must ensure that the sum
+of the squares of the given components is exactly one:
+
+    Direction3d ( 1, 0, 0 )
+    Direction3d ( 0, -1, 0 )
+    Direction3d ( 0.6, 0, 0.8 )
+
+are all valid but
+
+    Direction3d ( 2, 0, 0 )
+    Direction3d ( 1, 1, 1 )
+
+are not.
+
+## Reading this documentation
+
+For the examples below, assume that all OpenSolid core types have been imported
 using
 
     import OpenSolid.Geometry.Types exposing (..)
@@ -50,22 +68,6 @@ to numerical roundoff) they might not be exactly equal.
 @docs x, y, z
 
 # Constructors
-
-The simplest way to construct a `Direction3d` value is by passing a tuple of X,
-Y and Z components to the `Direction3d` constructor, for example
-`Direction3d (1, 0, 0 )`. However, if you do this you must ensure that the sum
-of the squares of the given components is exactly one:
-
-    Direction3d ( 1, 0, 0 )
-    Direction3d ( 0, -1, 0 )
-    Direction3d ( 0.6, 0, 0.8 )
-
-are all valid but
-
-    Direction3d ( 2, 0, 0 )
-    Direction3d ( 1, 1, 1 )
-
-are not.
 
 @docs perpendicularTo
 

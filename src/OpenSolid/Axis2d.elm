@@ -24,8 +24,27 @@ module OpenSolid.Axis2d
         , placeOnto
         )
 
-{-| Various functions for creating and working with `Axis2d` values. For the
-examples below, assume that all OpenSolid core types have been imported using
+{-| Various functions for creating and working with `Axis2d` values. An `Axis2d`
+is defined by an origin point and direction and is useful for several operations
+including:
+
+  - Mirroring across the axis
+  - Projecting onto the axis
+  - Measuring distance along the axis
+
+Axes can by constructed by passing a record with `originPoint` and `direction`
+fields to the `Axis2d` constructor, for example:
+
+    axis =
+        Axis2d
+            { originPoint = Point2d ( 2, 3 )
+            , direction = Direction2d.fromAngle (degrees 45)
+            }
+
+## Reading this documentation
+
+For the examples below, assume that all OpenSolid core types have been imported
+using
 
     import OpenSolid.Geometry.Types exposing (..)
 
@@ -41,15 +60,6 @@ to numerical roundoff) they might not be exactly equal.
 @docs x, y
 
 # Constructors
-
-Axes can by constructed by passing a record with `originPoint` and `direction`
-fields to the `Axis2d` constructor, for example:
-
-    axis =
-        Axis2d
-            { originPoint = Point2d ( 2, 3 )
-            , direction = Direction2d.fromAngle (degrees 45)
-            }
 
 @docs perpendicularTo
 

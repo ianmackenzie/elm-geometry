@@ -36,8 +36,20 @@ module OpenSolid.Vector3d
         , projectInto
         )
 
-{-| Various functions for creating and working with `Vector3d` values. For the
-examples below, assume that all OpenSolid core types have been imported using
+{-| Various functions for creating and working with `Vector3d` values. A
+`Vector3d` is defined by its X, Y and Z components and represents a quantity
+like a velocity or displacement in 3D.
+
+The simplest way to create a `Vector3d` is by passing a tuple of X, Y and Z
+components to the `Vector3d` constructor, for example
+
+    vector =
+        Vector3d ( 2, 1, 3 )
+
+## Reading this documentation
+
+For the examples below, assume that all OpenSolid core types have been imported
+using
 
     import OpenSolid.Geometry.Types exposing (..)
 
@@ -58,10 +70,6 @@ actually want their `Direction3d` versions `Direction3d.x`, `Direction3d.y` and
 `Direction3d.z`.
 
 # Constructors
-
-The simplest way to construct a `Vector3d` value is by passing a tuple of X, Y
-and Z components to the `Vector3d` constructor, for example
-`Vector3d ( 2, 3, 4 )`.
 
 @docs perpendicularTo
 

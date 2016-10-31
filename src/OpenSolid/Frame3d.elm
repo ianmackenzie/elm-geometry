@@ -43,23 +43,9 @@ module OpenSolid.Frame3d
         , placeIn
         )
 
-{-| Various functions for creating and working with `Frame3d` values. For the
-examples below, assume that all OpenSolid core types have been imported using
-
-    import OpenSolid.Geometry.Types exposing (..)
-
-and all other necessary modules have been imported using the following pattern:
-
-    import OpenSolid.Frame3d as Frame3d
-
-Examples use `==` to indicate that two expressions are equivalent, even if (due
-to numerical roundoff) they might not be exactly equal.
-
-# Predefined frames
-
-@docs xyz
-
-# Constructors
+{-| Various functions for creating and working with `Frame3d` values.  A
+`Frame3d` represents a coordinate system in 3D space and is defined by an origin
+point and X, Y and Z basis directions (which are always perpendicular).
 
 Frames can by constructed by passing a record with `originPoint`, `xDirection`
 and 'yDirection' fields to the `Frame3d` constructor, for example:
@@ -75,6 +61,26 @@ and 'yDirection' fields to the `Frame3d` constructor, for example:
 In this case you must be careful to ensure that the X, Y and Z directions are
 perpendicular to each other. (You will likely also want to make sure that
 they form a right-handed coordinate system.)
+
+## Reading this documentation
+
+For the examples below, assume that all OpenSolid core types have been imported
+using
+
+    import OpenSolid.Geometry.Types exposing (..)
+
+and all other necessary modules have been imported using the following pattern:
+
+    import OpenSolid.Frame3d as Frame3d
+
+Examples use `==` to indicate that two expressions are equivalent, even if (due
+to numerical roundoff) they might not be exactly equal.
+
+# Predefined frames
+
+@docs xyz
+
+# Constructors
 
 @docs at
 

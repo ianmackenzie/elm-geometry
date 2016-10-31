@@ -26,8 +26,11 @@ module OpenSolid.Polygon2d
         )
 
 {-| Various functions for creating and working with `Polygon2d` values. Polygons
-can be constructed explicitly by passing a list of vertices to the `Polygon2d`
-constructor, for example
+are defined by an ordered list of vertices; the last vertex is implicitly
+considered to be connected back to the first vertex.
+
+Polygons can be constructed explicitly by passing a list of vertices to the
+`Polygon2d` constructor, for example
 
     rectangle =
         Polygon2d
@@ -36,6 +39,8 @@ constructor, for example
             , Point2d ( 3, 2 )
             , Point2d ( 1, 2 )
             ]
+
+## Reading this documentation
 
 For the examples below, assume that `rectangle` has been defined, all OpenSolid
 core types have been imported using

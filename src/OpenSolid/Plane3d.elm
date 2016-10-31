@@ -26,8 +26,27 @@ module OpenSolid.Plane3d
         , placeIn
         )
 
-{-| Various functions for creating and working with `Plane3d` values. For the
-examples below, assume that all OpenSolid core types have been imported using
+{-| Various functions for creating and working with `Plane3d` values. A
+`Plane3d` is defined by an origin point and normal direction and is useful for
+several operations including:
+
+  - Mirroring across the plane
+  - Projecting onto the plane
+  - Measuring distance from the plane
+
+Planes can by constructed by passing a record with `originPoint` and
+`normalDirection` fields to the `Plane3d` constructor, for example:
+
+    plane =
+        Plane3d
+            { originPoint = Point3d ( 2, 1, 3 )
+            , normalDirection = Direction3d.y
+            }
+
+## Reading this documentation
+
+For the examples below, assume that all OpenSolid core types have been imported
+using
 
     import OpenSolid.Geometry.Types exposing (..)
 
@@ -41,21 +60,6 @@ to numerical roundoff) they might not be exactly equal.
 # Predefined planes
 
 @docs xy, yz, zx
-
-# Constructors
-
-Planes can by constructed by passing a record with `originPoint` and
-`normalDirection` fields to the `Plane3d` constructor, for example:
-
-    plane =
-        Plane3d
-            { originPoint = Point3d ( 2, 1, 3 )
-            , normalDirection = Direction3d.y
-            }
-
-Future OpenSolid versions will likely add specialized constructors such as for
-constructing a plane through three points, the midplane between two points, or
-the midplane between two other planes.
 
 # Accessors
 

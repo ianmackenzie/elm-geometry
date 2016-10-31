@@ -30,40 +30,12 @@ module OpenSolid.BoundingBox3d
         , intersection
         )
 
-{-| Various functions for creating and working with `BoundingBox3d` values. For
-the examples below, assume that all OpenSolid core types have been imported
-using
-
-    import OpenSolid.Geometry.Types exposing (..)
-
-and all necessary modules have been imported using the following pattern:
-
-    import OpenSolid.BoundingBox3d as BoundingBox3d
-
-Examples use `==` to indicate that two expressions are equivalent, even if (due
-to numerical roundoff) they might not be exactly equal.
-
-# Constructors
+{-| Various functions for creating and working with `BoundingBox3d` values. A
+`BoundingBox3d` is defined by its minimum and maximum X, Y and Z values.
 
 Bounding boxes can be constructed by passing a record with `minX`, `maxX`,
 `minY`, `maxY`, `minZ` and `maxZ` fields to the `BoundingBox3d` constructor, for
 example
-
-    boundingBox =
-        BoundingBox3d
-            { minX = 1
-            , maxX = 3
-            , minY = -2
-            , maxY = 4
-            , minZ = -6
-            , maxZ = -5
-            }
-
-@docs singleton, containing
-
-# Accessors
-
-For all examples in this section, assume the following example bounding box:
 
     exampleBox =
         BoundingBox3d
@@ -74,6 +46,31 @@ For all examples in this section, assume the following example bounding box:
             , minZ = -6
             , maxZ = -5
             }
+
+If you construct an `BoundingBox3d` this way, you must ensure that the given
+values are properly ordered: `minX <= maxX`, `minY <= maxY`, `minZ <= maxZ`.
+Alternately, you can use functions such as `Point3d.hull` where the input order
+does not matter.
+
+## Reading this documentation
+
+For the examples below, assume that `exampleBox` has been defined, all OpenSolid
+core types have been imported using
+
+    import OpenSolid.Geometry.Types exposing (..)
+
+and all other necessary modules have been imported using the following pattern:
+
+    import OpenSolid.BoundingBox3d as BoundingBox3d
+
+Examples use `==` to indicate that two expressions are equivalent, even if (due
+to numerical roundoff) they might not be exactly equal.
+
+# Constructors
+
+@docs singleton, containing
+
+# Accessors
 
 @docs extrema, minX, maxX, minY, maxY, minZ, maxZ
 @docs dimensions, midX, midY, midZ, centroid

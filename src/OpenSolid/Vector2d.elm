@@ -35,8 +35,26 @@ module OpenSolid.Vector2d
         , placeOnto
         )
 
-{-| Various functions for creating and working with `Vector2d` values. For the
-examples below, assume that all OpenSolid core types have been imported using
+{-| Various functions for creating and working with `Vector2d` values. A
+`Vector2d` is defined by its X and Y components and represents a quantity like a
+velocity or displacement in 2D.
+
+The simplest way to create a `Vector2d` is  by passing a tuple of X and Y
+components to the `Vector2d` constructor, for example
+
+    vector =
+        Vector2d ( 2, 3 )
+
+There are no specific functions to create vectors from polar components, but you
+can use Elm's built-in `fromPolar` function:
+
+    vector =
+        Vector2d (fromPolar ( radius, angle ))
+
+## Reading this documentation
+
+For the examples below, assume that all OpenSolid core types have been imported
+using
 
     import OpenSolid.Geometry.Types exposing (..)
 
@@ -56,15 +74,6 @@ Although there are no predefined constants for `Vector2d ( 1, 0 )` and
 versions `Direction2d.x` and `Direction2d.y`.
 
 # Constructors
-
-The simplest way to construct a `Vector2d` value is by passing a tuple of X and
-Y components to the `Vector2d` constructor, for example `Vector2d ( 2, 3 )`.
-
-There are no specific functions to create vectors from polar components, but you
-can use Elm's built-in `fromPolar` function:
-
-    vector =
-        Vector2d (fromPolar ( radius, angle ))
 
 @docs perpendicularTo
 

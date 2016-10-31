@@ -31,8 +31,26 @@ module OpenSolid.Direction2d
         , placeOnto
         )
 
-{-| Various functions for creating and working with `Direction2d` values. For
-the examples below, assume that all OpenSolid core types have been imported
+{-| Various functions for creating and working with `Direction2d` values. The
+simplest way to construct a `Direction2d` value is by passing a tuple of X and Y
+components to the `Direction2d` constructor, for example `Direction2d ( 1, 0 )`.
+However, if you do this you must ensure that the sum of the squares of the given
+components is exactly one:
+
+    Direction2d ( 1, 0 )
+    Direction2d ( 0, -1 )
+    Direction2d ( 0.6, 0.8 )
+
+are all valid but
+
+    Direction2d ( 2, 0 )
+    Direction2d ( 1, 1 )
+
+are not.
+
+## Reading this documentation
+
+For the examples below, assume that all OpenSolid core types have been imported
 using
 
     import OpenSolid.Geometry.Types exposing (..)
@@ -49,22 +67,6 @@ to numerical roundoff) they might not be exactly equal.
 @docs x, y
 
 # Constructors
-
-The simplest way to construct a `Direction2d` value is by passing a tuple of X
-and Y components to the `Direction2d` constructor, for example
-`Direction2d ( 1, 0 )`. However, if you do this you must ensure that the sum of
-the squares of the given components is exactly one:
-
-    Direction2d ( 1, 0 )
-    Direction2d ( 0, -1 )
-    Direction2d ( 0.6, 0.8 )
-
-are all valid but
-
-    Direction2d ( 2, 0 )
-    Direction2d ( 1, 1 )
-
-are not.
 
 @docs perpendicularTo
 
