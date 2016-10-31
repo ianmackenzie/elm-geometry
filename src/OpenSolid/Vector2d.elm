@@ -124,7 +124,8 @@ import OpenSolid.Geometry.Types exposing (..)
 
 {-| The zero vector.
 
-    Vector2d.zero == Vector2d ( 0, 0 )
+    Vector2d.zero ==
+        Vector2d ( 0, 0 )
 -}
 zero : Vector2d
 zero =
@@ -180,7 +181,8 @@ components (Vector2d components') =
 
 {-| Get the X component of a vector.
 
-    Vector2d.xComponent (Vector2d ( 2, 3 )) == 2
+    Vector2d.xComponent (Vector2d ( 2, 3 )) ==
+        2
 -}
 xComponent : Vector2d -> Float
 xComponent =
@@ -189,7 +191,8 @@ xComponent =
 
 {-| Get the Y component of a vector.
 
-    Vector2d.yComponent (Vector2d ( 2, 3 )) == 3
+    Vector2d.yComponent (Vector2d ( 2, 3 )) ==
+        3
 -}
 yComponent : Vector2d -> Float
 yComponent =
@@ -234,7 +237,8 @@ equalWithin tolerance firstVector secondVector =
 
 {-| Get the length of a vector.
 
-    Vector2d.length (Vector2d ( 3, 4 )) == 5
+    Vector2d.length (Vector2d ( 3, 4 )) ==
+        5
 -}
 length : Vector2d -> Float
 length =
@@ -375,7 +379,8 @@ minus (Vector2d ( x2, y2 )) (Vector2d ( x1, y1 )) =
     secondVector =
         Vector2d ( 3, 4 )
 
-    Vector2d.dotProduct firstVector secondVector == 11
+    Vector2d.dotProduct firstVector secondVector ==
+        11
 -}
 dotProduct : Vector2d -> Vector2d -> Float
 dotProduct (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
@@ -405,9 +410,14 @@ Some examples:
     secondVector =
         Vector2d ( 0, 3 )
 
-    Vector2d.crossProduct firstVector secondVector == 6
-    Vector2d.crossProduct secondVector firstVector == -6
-    Vector2d.crossProduct firstVector firstVector == 0
+    Vector2d.crossProduct firstVector secondVector ==
+        6
+
+    Vector2d.crossProduct secondVector firstVector ==
+        -6
+
+    Vector2d.crossProduct firstVector firstVector ==
+        0
 -}
 crossProduct : Vector2d -> Vector2d -> Float
 crossProduct (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =

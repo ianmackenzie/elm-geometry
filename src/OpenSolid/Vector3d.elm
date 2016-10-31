@@ -128,7 +128,8 @@ import OpenSolid.Geometry.Types exposing (..)
 
 {-| The zero vector.
 
-    Vector3d.zero == Vector3d ( 0, 0, 0 )
+    Vector3d.zero ==
+        Vector3d ( 0, 0, 0 )
 -}
 zero : Vector3d
 zero =
@@ -193,7 +194,8 @@ components (Vector3d components') =
 
 {-| Get the X component of a vector.
 
-    Vector3d.xComponent (Vector3d ( 1, 2, 3 )) == 1
+    Vector3d.xComponent (Vector3d ( 1, 2, 3 )) ==
+        1
 -}
 xComponent : Vector3d -> Float
 xComponent (Vector3d ( x, _, _ )) =
@@ -202,7 +204,8 @@ xComponent (Vector3d ( x, _, _ )) =
 
 {-| Get the Y component of a vector.
 
-    Vector3d.yComponent (Vector3d ( 1, 2, 3 )) == 2
+    Vector3d.yComponent (Vector3d ( 1, 2, 3 )) ==
+        2
 -}
 yComponent : Vector3d -> Float
 yComponent (Vector3d ( _, y, _ )) =
@@ -211,7 +214,8 @@ yComponent (Vector3d ( _, y, _ )) =
 
 {-| Get the Z component of a vector.
 
-    Vector3d.zComponent (Vector3d ( 1, 2, 3 )) == 3
+    Vector3d.zComponent (Vector3d ( 1, 2, 3 )) ==
+        3
 -}
 zComponent : Vector3d -> Float
 zComponent (Vector3d ( _, _, z )) =
@@ -256,7 +260,8 @@ equalWithin tolerance firstVector secondVector =
 
 {-| Get the length of a vector.
 
-    Vector3d.length (Vector3d ( 2, 1, 2 )) == 3
+    Vector3d.length (Vector3d ( 2, 1, 2 )) ==
+        3
 -}
 length : Vector3d -> Float
 length =
@@ -423,7 +428,8 @@ minus other vector =
     secondVector =
         Vector3d ( 3, 4, 5 )
 
-    Vector3d.dotProduct firstVector secondVector == 13
+    Vector3d.dotProduct firstVector secondVector ==
+        13
 -}
 dotProduct : Vector3d -> Vector3d -> Float
 dotProduct first second =
