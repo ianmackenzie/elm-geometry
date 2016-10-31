@@ -33,6 +33,28 @@ module OpenSolid.SketchPlane3d
         , placeIn
         )
 
+{-| Various functions for creating and working with `SketchPlane3d` values.
+Sketch planes are defined by an origin point and X and Y basis directions in 3D,
+which define a 2D coordinate system (the X and Y basis directions are always
+perpendicular). A sketch plane can therefore be used to convert between 2D and
+3D coordinates, such as taking 2D lines and placing them on a 3D plane, or
+projecting a 3D point into a 2D sketch.
+
+Sketch planes can be constructed explicitly by passing a record with
+`originPoint`, `xDirection` and `yDirection` fields to the `SketchPlane3d`
+constructor, for example
+
+    sketchPlane =
+        SketchPlane3d
+            { originPoint = Point3d ( 2, 1, 3 )
+            , xDirection = Direction3d.y
+            , yDirection = Direction3d.negate Direction3d.z
+            }
+
+If you construct a `SketchPlane3d` this way, you are responsible for ensuring
+that the X and Y basis directions are perpendicular to each other.
+-}
+
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Vector3d as Vector3d
