@@ -24,7 +24,7 @@ module OpenSolid.Polyline2d
         )
 
 {-| Various functions for creating and working with `Polyline2d` values.
-Polylines can be constructed explicitly by passing a list of vertices to the
+Polylines can be constructed by passing an ordered list of vertices to the
 `Polyline2d` constructor, for example
 
     stepShape =
@@ -34,6 +34,8 @@ Polylines can be constructed explicitly by passing a list of vertices to the
             , Point2d ( 1, 1 )
             , Point2d ( 2, 1 )
             ]
+
+## Reading this documentation
 
 For the examples below, assume that `stepShape` has been defined, all OpenSolid
 core types have been imported using

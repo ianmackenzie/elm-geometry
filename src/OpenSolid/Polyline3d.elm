@@ -24,7 +24,7 @@ module OpenSolid.Polyline3d
         )
 
 {-| Various functions for creating and working with `Polyline3d` values.
-Polylines can be constructed explicitly by passing a list of vertices to the
+Polylines can be constructed by passing an ordered list of vertices to the
 `Polyline3d` constructor, for example
 
     examplePolyline =
@@ -34,6 +34,8 @@ Polylines can be constructed explicitly by passing a list of vertices to the
             , Point2d ( 1, 2, 0 )
             , Point2d ( 1, 2, 3 )
             ]
+
+## Reading this documentation
 
 For the examples below, assume that `examplePolyline` has been defined, all
 OpenSolid core types have been imported using

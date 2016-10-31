@@ -26,11 +26,8 @@ module OpenSolid.Polygon2d
         )
 
 {-| Various functions for creating and working with `Polygon2d` values. Polygons
-are defined by an ordered list of vertices; the last vertex is implicitly
-considered to be connected back to the first vertex.
-
-Polygons can be constructed explicitly by passing a list of vertices to the
-`Polygon2d` constructor, for example
+can be constructed by passing an ordered list of vertices to the `Polygon2d`
+constructor, for example
 
     rectangle =
         Polygon2d
@@ -39,6 +36,9 @@ Polygons can be constructed explicitly by passing a list of vertices to the
             , Point2d ( 3, 2 )
             , Point2d ( 1, 2 )
             ]
+
+The last vertex is implicitly considered to be connected back to the first
+vertex (you do not have to close the polygon explicitly).
 
 ## Reading this documentation
 
