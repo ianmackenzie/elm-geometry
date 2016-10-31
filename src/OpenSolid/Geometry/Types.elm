@@ -35,7 +35,7 @@ module OpenSolid.Geometry.Types
 {-| This module contains the definitions of the core OpenSolid data types. Each
 type also has a corresponding module providing related functionality. Suggested
 practice is to import this module exposing everything, and import all other
-necessary modules using `as`:
+necessary modules using `as`, for example:
 
     import OpenSolid.Geometry.Types exposing (..)
     import OpenSolid.Vector2d as Vector2d
