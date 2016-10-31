@@ -109,14 +109,7 @@ different coordinate frames. Like other transformations, coordinate conversions
 of vectors depend only on the orientations of the relevant frames, not the
 positions of their origin points.
 
-For the examples, assume the following frames have been defined:
-
-    upsideDownFrame =
-        Frame2d
-            { originPoint = Point2d.origin
-            , xDirection = Direction2d.x
-            , yDirection = Direction2d.negate Direction2d.y
-            }
+For the examples, assume the following frame has been defined:
 
     rotatedFrame =
         Frame2d.rotateBy (degrees 30) Frame2d.xy
@@ -554,9 +547,6 @@ projectOnto axis =
 {-| Take a vector defined in global coordinates, and return it expressed in
 local coordinates relative to a given reference frame.
 
-    Vector2d.relativeTo upsideDownFrame (Vector2d ( 2, 3 )) ==
-        Vector2d ( 2, -3 )
-
     Vector2d.relativeTo rotatedFrame (Vector2d ( 2, 0 )) ==
         Vector2d ( 1.732, -1 )
 -}
@@ -574,9 +564,6 @@ relativeTo frame vector =
 
 {-| Take a vector defined in local coordinates relative to a given reference
 frame, and return that vector expressed in global coordinates.
-
-    Vector2d.placeIn upsideDownFrame (Vector2d ( 2, 3 )) ==
-        Vector2d ( 2, -3 )
 
     Vector2d.placeIn rotatedFrame (Vector2d ( 2, 0 )) ==
         Vector2d ( 1.732, 1 )
