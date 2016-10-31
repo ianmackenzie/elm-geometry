@@ -114,76 +114,71 @@ visible objects during 3D rendering.
 -}
 
 
-{-| A vector in 2D, defined by its X and Y components.
+{-| A vector in 2D, defined by its X and Y components. See the `Vector2d`
+module for details.
 -}
 type Vector2d
     = Vector2d ( Float, Float )
 
 
-{-| A vector in 3D, defined by its X, Y and Z components.
+{-| A vector in 3D, defined by its X, Y and Z components. See the `Vector3d`
+module for details.
 -}
 type Vector3d
     = Vector3d ( Float, Float, Float )
 
 
-{-| A direction in 2D, defined by its X and Y components.
+{-| A direction in 2D, defined by its X and Y components. See the
+`Direction2d` module for details.
 -}
 type Direction2d
     = Direction2d ( Float, Float )
 
 
-{-| A direction in 3D, defined by its X, Y and Z components.
+{-| A direction in 3D, defined by its X, Y and Z components. See the
+`Direction3d` module for details.
 -}
 type Direction3d
     = Direction3d ( Float, Float, Float )
 
 
-{-| A point in 2D, defined by its X and Y coordinates.
+{-| A point in 2D, defined by its X and Y coordinates. See the `Point2d`
+module for details.
 -}
 type Point2d
     = Point2d ( Float, Float )
 
 
-{-| A point in 3D, defined by its X, Y and Z coordinates.
+{-| A point in 3D, defined by its X, Y and Z coordinates. See the `Point3d`
+module for details.
 -}
 type Point3d
     = Point3d ( Float, Float, Float )
 
 
-{-| An axis in 2D, defined by an origin point and direction. Useful for several
-operations including:
-  - Mirroring across the axis
-  - Projecting onto the axis
-  - Measuring distance along the axis
+{-| An axis in 2D, defined by an origin point and direction. See the `Axis2d`
+module for details.
 -}
 type Axis2d
     = Axis2d { originPoint : Point2d, direction : Direction2d }
 
 
-{-| An axis in 3D, defined by an origin point and direction. Useful for several
-operations including:
-  - Rotating around the axis
-  - Projecting onto the axis
-  - Measuring distance along the axis
+{-| An axis in 3D, defined by an origin point and direction. See the `Axis3d`
+module for details.
 -}
 type Axis3d
     = Axis3d { originPoint : Point3d, direction : Direction3d }
 
 
-{-| A 3D plane, defined by an origin point and a normal direction. Useful for
-several operations including:
-  - Mirroring across the plane
-  - Projecting onto the plane
-  - Measuring distance from the plane
+{-| A 3D plane, defined by an origin point and a normal direction. See the
+`Plane3d` module for details.
 -}
 type Plane3d
     = Plane3d { originPoint : Point3d, normalDirection : Direction3d }
 
 
-{-| A `Frame2d` represents a coordinate system in 2D space.
-
-The two basis directions are always perpendicular. If you construct a `Frame2d`
-directly, you are responsible for ensuring this yourself.
+{-| A `Frame2d` represents a coordinate system in 2D space. See the `Frame2d`
+module for details.
 -}
 type Frame2d
     = Frame2d
@@ -193,10 +188,8 @@ type Frame2d
         }
 
 
-{-| A `Frame3d` represents a coordinate system in 3D space.
-
-The three basis directions are always mutually perpendicular. If you construct a
-`Frame3d` directly, you are responsible for ensuring this yourself.
+{-| A `Frame3d` represents a coordinate system in 3D space. See the `Frame3d`
+module for details.
 -}
 type Frame3d
     = Frame3d
@@ -207,12 +200,8 @@ type Frame3d
         }
 
 
-{-| A `SketchPlane3d` represents a 2D planar coordinate system in 3D space.
-Used to convert between 2D and 3D coordinates, such as taking 2D lines and
-placing them on a 3D plane, or projecting a 3D point into a 2D sketch.
-
-The two basis directions are all always perpendicular. If you construct a
-`SketchPlane3d` directly, you are responsible for ensuring this yourself.
+{-| A `SketchPlane3d` represents a 2D planar coordinate system in 3D space. See
+the `SketchPlane3d` module for details.
 -}
 type SketchPlane3d
     = SketchPlane3d
@@ -222,34 +211,36 @@ type SketchPlane3d
         }
 
 
-{-| A line segment in 2D, defined by its start and end points.
+{-| A line segment in 2D, defined by its start and end points. See the
+`LineSegment2d` module for details.
 -}
 type LineSegment2d
     = LineSegment2d ( Point2d, Point2d )
 
 
-{-| A line segment in 3D, defined by its start and end points.
+{-| A line segment in 3D, defined by its start and end points. See the
+`LineSegment3d` module for details.
 -}
 type LineSegment3d
     = LineSegment3d ( Point3d, Point3d )
 
 
-{-| A triangle in 2D, defined by its three vertices.
+{-| A triangle in 2D, defined by its three vertices. See the `Triangle2d` module
+for details.
 -}
 type Triangle2d
     = Triangle2d ( Point2d, Point2d, Point2d )
 
 
-{-| A triangle in 3D, defined by its three vertices.
+{-| A triangle in 3D, defined by its three vertices. See the `Triangle3d` module
+for details.
 -}
 type Triangle3d
     = Triangle3d ( Point3d, Point3d, Point3d )
 
 
-{-| A bounding box in 2D, defined by its minimum and maximum X and Y values.
-
-If you construct an `BoundingBox2d` directly from its values, you must ensure
-that they are properly ordered: `minX <= maxX`, `minY <= maxY`.
+{-| A bounding box in 2D, defined by its minimum and maximum X and Y values. See
+the `BoundingBox2d` module for details.
 -}
 type BoundingBox2d
     = BoundingBox2d
@@ -261,9 +252,7 @@ type BoundingBox2d
 
 
 {-| A bounding box in 3D, defined by its minimum and maximum X, Y and Z values.
-
-If you construct an `BoundingBox3d` directly from its values, you must ensure
-that they are properly ordered: `minX <= maxX`, `minY <= maxY`, `minZ <= maxZ`.
+See the `BoundingBox3d` module for details.
 -}
 type BoundingBox3d
     = BoundingBox3d
@@ -276,21 +265,22 @@ type BoundingBox3d
         }
 
 
-{-| A polyline in 2D, defined by a list of vertices.
+{-| A polyline in 2D, defined by a list of vertices. See the `Polyline2d` module
+for details.
 -}
 type Polyline2d
     = Polyline2d (List Point2d)
 
 
-{-| A polyline in 3D, defined by a list of vertices.
+{-| A polyline in 3D, defined by a list of vertices. See the `Polyline3d` module
+for details.
 -}
 type Polyline3d
     = Polyline3d (List Point3d)
 
 
-{-| A polygon in 2D, defined by a list of vertices. The last vertex is
-considered to be connected back to the first vertex (they do not have to be
-coincident).
+{-| A polygon in 2D, defined by a list of vertices. See the `Polygon2d` module
+for details.
 -}
 type Polygon2d
     = Polygon2d (List Point2d)
