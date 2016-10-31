@@ -67,7 +67,8 @@ For all examples in this section, assume the following example bounding box:
             , maxY = 4
             }
 
-@docs extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centroid
+@docs extrema, minX, maxX, minY, maxY
+@docs dimensions, midX, midY, centroid
 
 # Checks
 

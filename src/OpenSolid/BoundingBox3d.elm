@@ -75,7 +75,8 @@ For all examples in this section, assume the following example bounding box:
             , maxZ = -5
             }
 
-@docs extrema, minX, maxX, minY, maxY, minZ, maxZ, dimensions, midX, midY, midZ, centroid
+@docs extrema, minX, maxX, minY, maxY, minZ, maxZ
+@docs dimensions, midX, midY, midZ, centroid
 
 # Checks
 
