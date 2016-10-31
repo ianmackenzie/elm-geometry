@@ -41,26 +41,6 @@ necessary modules using `as`, for example:
     import OpenSolid.Vector2d as Vector2d
     import OpenSolid.Plane3d as Plane3d
 
-Note that since the definitions of these types are exposed, it is possible to
-construct them directly, and this is sometimes the most convenient or efficient
-approach:
-
-    vector =
-        Vector2d ( 2, 3 )
-
-    point =
-        Point3d ( 3, 1, 4 )
-
-    axis =
-        Axis3d
-            { originPoint = Point3d ( 1, 0, 2 )
-            , direction = Direction3d ( 0, 1, 0 )
-            }
-
-Alternatively, you can use constructor functions like `Direction2d.fromAngle`,
-or start with predefined values such as `Point3d.origin` and transform them as
-necessary.
-
 # Vectors
 
 Vectors represent quantities such as displacements or velocities. OpenSolid
