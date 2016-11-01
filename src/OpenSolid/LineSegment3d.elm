@@ -32,28 +32,26 @@ module OpenSolid.LineSegment3d
         , boundingBox
         )
 
-{-| Various functions for creating and working with `LineSegment3d` values. For
-the examples below, assume that all OpenSolid core types have been imported
-using
+{-| Various functions for creating and working with `LineSegment3d` values. Line
+segments are defined by their start and end points and can be constructed by
+passing a tuple of start and end points to the `LineSegment3d` constructor, for
+example
 
-    import OpenSolid.Geometry.Types exposing (..)
+    lineSegment =
+        LineSegment2d
+            ( Point2d ( 1, 2, 3 )
+            , Point2d ( 4, 5, 6 )
+            )
 
-and all other necessary modules have been imported using the following pattern:
+## Reading this documentation
+
+For the examples below, assume that `lineSegment` has been defined as above, all
+OpenSolid core types have been imported using
 
     import OpenSolid.LineSegment3d as LineSegment3d
 
 Examples use `==` to indicate that two expressions are equivalent, even if (due
 to numerical roundoff) they might not be exactly equal.
-
-Line segments can be constructed explicitly by passing a tuple of start and end
-points to the `LineSegment3d` constructor. For all examples, assume the
-following line segment has been defined:
-
-    lineSegment =
-        LineSegment3d
-            ( Point3d ( 1, 2, 3 )
-            , Point3d ( 4, 5, 6 )
-            )
 
 # Endpoints
 
