@@ -47,7 +47,8 @@ are all valid but
     Direction3d ( 2, 0, 0 )
     Direction3d ( 1, 1, 1 )
 
-are not.
+are not. Instead of manually constructing `Direction3d` values, it may be easier
+to start with existing directions and transform them as necessary.
 
 ## Reading this documentation
 

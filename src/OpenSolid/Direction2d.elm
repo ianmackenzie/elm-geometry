@@ -46,7 +46,9 @@ are all valid but
     Direction2d ( 2, 0 )
     Direction2d ( 1, 1 )
 
-are not.
+are not. Instead of manually constructing `Direction2d` values, it may be easier
+to use constructors like `Direction2d.fromAngle` or start with existing
+directions and transform them as necessary.
 
 ## Reading this documentation
 
