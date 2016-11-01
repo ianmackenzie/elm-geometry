@@ -5,9 +5,21 @@ intended to provide a solid foundation for HTML-based applications in areas such
 as CAD (computer-aided design), CAM (computer-aided manufacturing), and 2D/3D
 visualization.
 
-This library contains the OpenSolid core data types and operations - vectors,
-directions (type-safe unit vectors), points, axes, planes and frames (coordinate
-systems) in 2D and 3D:
+This library contains modules for creating and working with the core OpenSolid
+data types:
+
+  - `Vector2d`, `Vector3d`
+  - `Direction2d`, `Direction3d` (type-safe unit vectors)
+  - `Point2d`, `Point3d`
+  - `Axis2d`, `Axis3d`
+  - `Plane3d`
+  - `Frame2d`, `Frame3d` (local coordinate systems)
+  - `SketchPlane3d` (local 2D coordinate system embedded in 3D)
+  - `BoundingBox2d`, `BoundingBox3d`
+  - `LineSegment2d`, `LineSegment3d`
+  - `Triangle2d`, `Triangle3d`
+  - `Polyline2d`, `Polyline3d`
+  - `Polygon2d`
 
 ```elm
 Vector3d.zero ==
@@ -37,6 +49,21 @@ Plane3d.yz ==
         { originPoint = Point3d.origin
         , normalDirection = Direction3d.x
         }
+
+unitTriangle =
+    Triangle2d
+        ( Point2d.origin
+        , Point2d ( 1, 0 )
+        , Point2d ( 0, 1 )
+        )
+
+zShape =
+    Polyline3d
+        [ Point3d.origin
+        , Point3d ( 1, 0, 0 )
+        , Point3d ( 0, 0, 1 )
+        , Point3d ( 1, 0, 1 )
+        ]
 ```
 
 A large range of geometric operations are supported:
@@ -79,6 +106,27 @@ Point3d.projectOnto Plane3d.xy (Point3d ( 2, 1, 3 )) ==
 
 Vector3d.projectionIn Direction3d.z (Vector3d ( 3, 1, 4 )) ==
     Vector3d ( 0, 0, 4 )
+
+-- Coordinate transformations
+
+rotatedFrame =
+    Frame2d.xy |> Frame2d.rotateBy (degrees 30)
+
+Vector2d.relativeTo rotatedFrame (Vector2d ( 2, 0 )) ==
+    Vector2d ( 1.7321, -1 )
+
+Point3d.projectInto SketchPlane3d.yz (Point3d ( 2, 1, 3 )) ==
+    Point2d ( 1, 3 )
+
+-- Bounding boxes
+
+Point2d.hull (Point2d ( 1, 4 )) (Point2d ( 2, 3 )) ==
+    BoundingBox2d
+        { minX = 1
+        , maxX = 2
+        , minY = 3
+        , maxY = 4
+        }
 ```
 
 JSON encoders and decoders for all types are also provided in the `Encode` and
