@@ -21,6 +21,8 @@ data types:
   - `Polyline2d`, `Polyline3d`
   - `Polygon2d`
 
+Some examples of built-in constants and basic value construction:
+
 ```elm
 Vector3d.zero ==
     Vector3d ( 0, 0, 0 )
