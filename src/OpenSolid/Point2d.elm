@@ -33,8 +33,26 @@ module OpenSolid.Point2d
         , placeOnto
         )
 
-{-| Various functions for creating and working with `Point2d` values. For the
-examples below, assume that all OpenSolid core types have been imported using
+{-| Various functions for creating and working with `Point2d` values. A
+`Point2d` is defined by its X and Y coordinates and represents a position in
+2D space.
+
+The simplest way to construct a `Point2d` value is by passing a tuple of X and Y
+coordinates to the `Point2d` constructor, for example
+
+    point =
+        Point2d ( 2, 3 )
+
+There are no specific functions to create points from polar components, but you
+can use Elm's built-in `fromPolar` function:
+
+    point =
+        Point2d (fromPolar ( radius, angle ))
+
+## Reading this documentation
+
+For the examples below, assume that all OpenSolid core types have been imported
+using
 
     import OpenSolid.Geometry.Types exposing (..)
 
@@ -50,16 +68,6 @@ to numerical roundoff) they might not be exactly equal.
 @docs origin
 
 # Constructors
-
-The simplest way to construct a `Point2d` value is by passing a tuple of X and Y
-coordinates to the `Point2d` constructor, for example `Point2d ( 2, 3 )`. But
-that is not the only way!
-
-There are no specific functions to create points from polar components, but you
-can use Elm's built-in `fromPolar` function:
-
-    point =
-        Point2d (fromPolar ( radius, angle ))
 
 @docs midpoint, interpolate, along
 

@@ -36,8 +36,20 @@ module OpenSolid.Point3d
         , hull
         )
 
-{-| Various functions for creating and working with `Point3d` values. For the
-examples below, assume that all OpenSolid core types have been imported using
+{-| Various functions for creating and working with `Point3d` values. A
+`Point3d` is defined by its X, Y and Z coordinates and represents a position in
+3D space.
+
+The simplest way to construct a `Point3d` value is by passing a tuple of X, Y
+and Z coordinates to the `Point3d` constructor, for example
+
+    point =
+        Point3d ( 2, 1, 3 )
+
+## Reading this documentation
+
+For the examples below, assume that all OpenSolid core types have been imported
+using
 
     import OpenSolid.Geometry.Types exposing (..)
 
@@ -53,10 +65,6 @@ to numerical roundoff) they might not be exactly equal.
 @docs origin
 
 # Constructors
-
-The simplest way to construct a `Point3d` value is by passing a tuple of X, Y
-and Z coordinates to the `Point3d` constructor, for example
-`Point3d ( 2, 1, 3 )`. But that is not the only way!
 
 @docs midpoint, interpolate, along
 
