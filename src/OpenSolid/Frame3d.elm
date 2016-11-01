@@ -48,6 +48,15 @@ module OpenSolid.Frame3d
 point and X, Y and Z basis directions (which are always perpendicular to each
 other).
 
+Frames can be used to transform between local and global coordinates using the
+`relativeTo` and `placeIn` functions associated with various other data types. A
+special but common case of coordinate transformation is to create 'template'
+objects using `relativeTo` and then instantiate them at different locations and
+in different orientations using `placeIn`.
+
+Frames can also be used as a source of datums used in transformations, for
+example rotating around the Z axis of a frame or mirroring across its XY plane.
+
 Frames can by constructed by passing a record with `originPoint`, `xDirection`
 and 'yDirection' fields to the `Frame3d` constructor, for example:
 
