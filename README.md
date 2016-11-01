@@ -8,11 +8,10 @@ visualization.
 This library contains modules for creating and working with the core OpenSolid
 data types:
 
+  - `Point2d`, `Point3d`
   - `Vector2d`, `Vector3d`
   - `Direction2d`, `Direction3d` (type-safe unit vectors)
-  - `Point2d`, `Point3d`
-  - `Axis2d`, `Axis3d`
-  - `Plane3d`
+  - `Axis2d`, `Axis3d`, `Plane3d` (used in rotations, mirrors, projections)
   - `Frame2d`, `Frame3d` (local coordinate systems)
   - `SketchPlane3d` (local 2D coordinate system embedded in 3D)
   - `BoundingBox2d`, `BoundingBox3d`
