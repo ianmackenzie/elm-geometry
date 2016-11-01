@@ -42,8 +42,8 @@ vertex (you do not have to close the polygon explicitly).
 
 ## Reading this documentation
 
-For the examples below, assume that `rectangle` has been defined, all OpenSolid
-core types have been imported using
+For the examples below, assume that `rectangle` has been defined as above, all
+OpenSolid core types have been imported using
 
     import OpenSolid.Geometry.Types exposing (..)
 

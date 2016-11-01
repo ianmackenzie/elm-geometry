@@ -47,8 +47,8 @@ can use functions such as `Point2d.hull` where the input order does not matter.
 
 ## Reading this documentation
 
-For the examples below, assume that `exampleBox` has been defined, all OpenSolid
-core types have been imported using
+For the examples below, assume that `exampleBox` has been defined as above, all
+OpenSolid core types have been imported using
 
     import OpenSolid.Geometry.Types exposing (..)
 

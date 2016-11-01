@@ -37,8 +37,8 @@ Polylines can be constructed by passing an ordered list of vertices to the
 
 ## Reading this documentation
 
-For the examples below, assume that `examplePolyline` has been defined, all
-OpenSolid core types have been imported using
+For the examples below, assume that `examplePolyline` has been defined as above,
+all OpenSolid core types have been imported using
 
     import OpenSolid.Geometry.Types exposing (..)
 
