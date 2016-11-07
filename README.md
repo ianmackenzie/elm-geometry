@@ -1,17 +1,17 @@
 ## What is it?
 
-OpenSolid consists of a set of Elm libraries for working with geometry. It is
+OpenSolid consists of a set of Elm packages for working with geometry. It is
 intended to provide a solid foundation for HTML-based applications in areas such
 as CAD (computer-aided design), CAM (computer-aided manufacturing), and 2D/3D
 visualization.
 
-This library contains modules for creating and working with the core OpenSolid
+This package contains modules for creating and working with the core OpenSolid
 data types:
 
   - `Point2d`, `Point3d`
   - `Vector2d`, `Vector3d`
   - `Direction2d`, `Direction3d` (type-safe unit vectors)
-  - `Axis2d`, `Axis3d`, `Plane3d` (used in rotations, mirrors, projections)
+  - `Axis2d`, `Axis3d`, `Plane3d` (useful for rotations, mirrors, projections)
   - `Frame2d`, `Frame3d` (local coordinate systems)
   - `SketchPlane3d` (local 2D coordinate system embedded in 3D)
   - `BoundingBox2d`, `BoundingBox3d`
@@ -121,15 +121,15 @@ OpenSolid, read on!
 
 ## What makes it different?
 
-OpenSolid is functionally similar to other vector/geometry libraries, but works
+OpenSolid is functionally similar to other vector/geometry packages, but works
 differently in a few subtle but meaningful ways. In general, OpenSolid has a
 more geometric than mathematical focus. For example, distinct types are used for
-points, vectors and directions which many other libraries treat as a single
+points, vectors and directions which many other packages treat as a single
 generic vector type.
 
 ### Directions
 
-OpenSolid uses the concept of a 'direction' where other libraries typically use
+OpenSolid uses the concept of a 'direction' where other packages typically use
 vectors with unit length. Having separate types helps to keep track of whether a
 vector has already been normalized - no more having to guess whether a function
 that accepts a vector argument actually needs a unit vector, and if so whether
