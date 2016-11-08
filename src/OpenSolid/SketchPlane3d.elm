@@ -28,9 +28,7 @@ module OpenSolid.SketchPlane3d
         , flipY
         , moveTo
         , rotateAround
-        , rotateAroundOwn
         , translateBy
-        , translateAlongOwn
         , mirrorAcross
         , relativeTo
         , placeIn
