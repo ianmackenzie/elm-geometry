@@ -211,11 +211,6 @@ rotateAround axis angle =
                 }
 
 
-rotateAroundOwn : Axis2d -> Float -> SketchPlane3d -> SketchPlane3d
-rotateAroundOwn localAxis angle sketchPlane =
-    rotateAround (Axis2d.placeOnto sketchPlane localAxis) angle sketchPlane
-
-
 translateBy : Vector3d -> SketchPlane3d -> SketchPlane3d
 translateBy vector sketchPlane =
     SketchPlane3d
@@ -223,18 +218,6 @@ translateBy vector sketchPlane =
         , xDirection = xDirection sketchPlane
         , yDirection = yDirection sketchPlane
         }
-
-
-translateAlongOwn : Axis2d -> Float -> SketchPlane3d -> SketchPlane3d
-translateAlongOwn localAxis distance sketchPlane =
-    let
-        direction =
-            Direction2d.placeOnto sketchPlane (Axis2d.direction localAxis)
-
-        displacement =
-            Direction3d.times distance direction
-    in
-        translateBy displacement sketchPlane
 
 
 mirrorAcross : Plane3d -> SketchPlane3d -> SketchPlane3d
