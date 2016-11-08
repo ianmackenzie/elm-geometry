@@ -59,9 +59,7 @@ that the X and Y basis directions are perpendicular to each other.
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Vector3d as Vector3d
-import OpenSolid.Direction2d as Direction2d
 import OpenSolid.Direction3d as Direction3d
-import OpenSolid.Axis2d as Axis2d
 
 
 xy : SketchPlane3d
