@@ -77,7 +77,7 @@ points and forming a new line segment between the resulting points.
 
 # Coordinate frames
 
-Functions for transforming points between local and global coordinates in
+Functions for transforming line segments between local and global coordinates in
 different coordinate frames.
 
 @docs relativeTo, placeIn
