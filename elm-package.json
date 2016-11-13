@@ -30,6 +30,7 @@
     "OpenSolid.Scalar",
     "OpenSolid.SketchPlane3d",
     "OpenSolid.Triangle2d",
+    "OpenSolid.Triangle3d",
     "OpenSolid.Vector2d",
     "OpenSolid.Vector3d"
   ],
