@@ -298,11 +298,10 @@ translateBy vector =
             )
 
 Note that the endpoints of a mirrored segment are equal to the mirrored
-endpoints of the original segment, but the `normalDirection` of a mirrored
-segment is the *opposite* of the mirrored normal direction of the original
-segment (since the normal direction is always considered to be 'to the left' of
-the line segment). In some cases it may be necessary to `reverse` the mirrored
-segment or otherwise account for the normal direction being 'wrong'.
+endpoints of the original segment, but as a result the normal direction of a
+mirrored segment is the *opposite* of the mirrored normal direction of the
+original segment (since the normal direction is always considered to be 'to the
+left' of the line segment).
 -}
 mirrorAcross : Axis2d -> LineSegment2d -> LineSegment2d
 mirrorAcross axis =
