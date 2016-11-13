@@ -29,6 +29,7 @@
     "OpenSolid.Polyline3d",
     "OpenSolid.Scalar",
     "OpenSolid.SketchPlane3d",
+    "OpenSolid.Triangle2d",
     "OpenSolid.Vector2d",
     "OpenSolid.Vector3d"
   ],
