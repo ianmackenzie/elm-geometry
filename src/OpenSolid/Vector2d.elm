@@ -180,8 +180,8 @@ function:
         toPolar (Vector2d.components vector)
 -}
 components : Vector2d -> ( Float, Float )
-components (Vector2d components') =
-    components'
+components (Vector2d components_) =
+    components_
 
 
 {-| Get the X component of a vector.
@@ -190,8 +190,8 @@ components (Vector2d components') =
         2
 -}
 xComponent : Vector2d -> Float
-xComponent =
-    components >> fst
+xComponent (Vector2d ( x, _ )) =
+    x
 
 
 {-| Get the Y component of a vector.
@@ -200,8 +200,8 @@ xComponent =
         3
 -}
 yComponent : Vector2d -> Float
-yComponent =
-    components >> snd
+yComponent (Vector2d ( _, y )) =
+    y
 
 
 {-| Find the component of a vector in an arbitrary direction, for example

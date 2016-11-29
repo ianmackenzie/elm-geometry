@@ -97,8 +97,8 @@ import OpenSolid.Triangle2d as Triangle2d
         ]
 -}
 vertices : Polygon2d -> List Point2d
-vertices (Polygon2d vertices') =
-    vertices'
+vertices (Polygon2d vertices_) =
+    vertices_
 
 
 {-| Get the edges of a polygon. This will include an edge from the last point

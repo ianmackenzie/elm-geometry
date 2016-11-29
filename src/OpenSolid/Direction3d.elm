@@ -205,8 +205,8 @@ as a unit vector, also know as its direction cosines).
         Direction3d.components direction
 -}
 components : Direction3d -> ( Float, Float, Float )
-components (Direction3d components') =
-    components'
+components (Direction3d components_) =
+    components_
 
 
 {-| Get the X component of a direction.

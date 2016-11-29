@@ -216,8 +216,8 @@ along (Axis3d { originPoint, direction }) distance =
         Point3d.coordinates point
 -}
 coordinates : Point3d -> ( Float, Float, Float )
-coordinates (Point3d coordinates') =
-    coordinates'
+coordinates (Point3d coordinates_) =
+    coordinates_
 
 
 {-| Get the X coordinate of a point.
@@ -281,13 +281,13 @@ equalWithin tolerance firstPoint secondPoint =
 vectorFrom : Point3d -> Point3d -> Vector3d
 vectorFrom other point =
     let
-        ( x', y', z' ) =
+        ( otherX, otherY, otherZ ) =
             coordinates other
 
         ( x, y, z ) =
             coordinates point
     in
-        Vector3d ( x - x', y - y', z - z' )
+        Vector3d ( x - otherX, y - otherY, z - otherZ )
 
 
 {-| Find the distance between two points.

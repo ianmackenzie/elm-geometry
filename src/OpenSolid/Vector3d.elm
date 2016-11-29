@@ -199,8 +199,8 @@ to extract the X, Y and Z components of a vector in one line of code:
         Vector3d.components vector
 -}
 components : Vector3d -> ( Float, Float, Float )
-components (Vector3d components') =
-    components'
+components (Vector3d components_) =
+    components_
 
 
 {-| Get the X component of a vector.
@@ -395,13 +395,13 @@ times scale vector =
 plus : Vector3d -> Vector3d -> Vector3d
 plus other vector =
     let
-        ( x', y', z' ) =
+        ( otherX, otherY, otherZ ) =
             components other
 
         ( x, y, z ) =
             components vector
     in
-        Vector3d ( x + x', y + y', z + z' )
+        Vector3d ( x + otherX, y + otherY, z + otherZ )
 
 
 {-| Subtract one vector from another. The vector to subtract is given first and
@@ -422,13 +422,13 @@ or more generally, `Vector3d.minus a b` means `b - a`, not `a - b`. Think of
 minus : Vector3d -> Vector3d -> Vector3d
 minus other vector =
     let
-        ( x', y', z' ) =
+        ( otherX, otherY, otherZ ) =
             components other
 
         ( x, y, z ) =
             components vector
     in
-        Vector3d ( x - x', y - y', z - z' )
+        Vector3d ( x - otherX, y - otherY, z - otherZ )
 
 
 {-| Find the dot product of two vectors.

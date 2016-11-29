@@ -16,7 +16,7 @@ import Json.Decode as Decode
 import Test exposing (Test)
 import Fuzz
 import Expect
-import Test.Runner.Html as Html
+import Test.Runner.Html as HtmlRunner
 import OpenSolid.BoundingBox3d as BoundingBox3d
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Geometry.Encode as Encode
@@ -160,6 +160,6 @@ suite =
         ]
 
 
-main : Program Never
+main : HtmlRunner.TestProgram
 main =
-    Html.run suite
+    HtmlRunner.run suite

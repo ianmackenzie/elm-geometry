@@ -13,7 +13,7 @@
 module Frame3d exposing (suite)
 
 import Test exposing (Test)
-import Test.Runner.Html as Html
+import Test.Runner.Html as HtmlRunner
 import OpenSolid.Frame3d as Frame3d
 import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Vector3d as Vector3d
@@ -60,6 +60,6 @@ suite =
         ]
 
 
-main : Program Never
+main : HtmlRunner.TestProgram
 main =
-    Html.run suite
+    HtmlRunner.run suite

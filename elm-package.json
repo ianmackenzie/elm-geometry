@@ -1,41 +1,40 @@
 {
-  "version": "1.0.0",
-  "summary": "2D/3D geometric data types and operations",
-  "repository": "https://github.com/opensolid/geometry.git",
-  "license": "MPL-2.0",
-  "source-directories": ["src"],
-  "doc-exposed-modules": [
-    "OpenSolid.Point3d"
-  ],
-  "exposed-modules": [
-    "OpenSolid.Geometry.Decode",
-    "OpenSolid.Geometry.Encode",
-    "OpenSolid.Geometry.Types",
-    "OpenSolid.Axis2d",
-    "OpenSolid.Axis3d",
-    "OpenSolid.BoundingBox2d",
-    "OpenSolid.BoundingBox3d",
-    "OpenSolid.Direction2d",
-    "OpenSolid.Direction3d",
-    "OpenSolid.Frame2d",
-    "OpenSolid.Frame3d",
-    "OpenSolid.LineSegment2d",
-    "OpenSolid.LineSegment3d",
-    "OpenSolid.Plane3d",
-    "OpenSolid.Point2d",
-    "OpenSolid.Point3d",
-    "OpenSolid.Polygon2d",
-    "OpenSolid.Polyline2d",
-    "OpenSolid.Polyline3d",
-    "OpenSolid.Scalar",
-    "OpenSolid.SketchPlane3d",
-    "OpenSolid.Triangle2d",
-    "OpenSolid.Triangle3d",
-    "OpenSolid.Vector2d",
-    "OpenSolid.Vector3d"
-  ],
-  "dependencies": {
-    "elm-lang/core": "4.0.0 <= v < 5.0.0"
-  },
-  "elm-version": "0.17.0 <= v < 0.18.0"
+    "version": "1.0.0",
+    "summary": "2D/3D geometric data types and operations",
+    "repository": "https://github.com/opensolid/geometry.git",
+    "license": "MPL-2.0",
+    "source-directories": [
+        "src"
+    ],
+    "exposed-modules": [
+        "OpenSolid.Geometry.Decode",
+        "OpenSolid.Geometry.Encode",
+        "OpenSolid.Geometry.Types",
+        "OpenSolid.Axis2d",
+        "OpenSolid.Axis3d",
+        "OpenSolid.BoundingBox2d",
+        "OpenSolid.BoundingBox3d",
+        "OpenSolid.Direction2d",
+        "OpenSolid.Direction3d",
+        "OpenSolid.Frame2d",
+        "OpenSolid.Frame3d",
+        "OpenSolid.LineSegment2d",
+        "OpenSolid.LineSegment3d",
+        "OpenSolid.Plane3d",
+        "OpenSolid.Point2d",
+        "OpenSolid.Point3d",
+        "OpenSolid.Polygon2d",
+        "OpenSolid.Polyline2d",
+        "OpenSolid.Polyline3d",
+        "OpenSolid.Scalar",
+        "OpenSolid.SketchPlane3d",
+        "OpenSolid.Triangle2d",
+        "OpenSolid.Triangle3d",
+        "OpenSolid.Vector2d",
+        "OpenSolid.Vector3d"
+    ],
+    "dependencies": {
+        "elm-lang/core": "5.0.0 <= v < 6.0.0"
+    },
+    "elm-version": "0.18.0 <= v < 0.19.0"
 }

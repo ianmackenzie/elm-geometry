@@ -13,7 +13,7 @@
 module Vector2d exposing (suite)
 
 import Test exposing (Test)
-import Test.Runner.Html as Html
+import Test.Runner.Html as HtmlRunner
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Direction2d as Direction2d
 import OpenSolid.Axis2d as Axis2d
@@ -134,6 +134,6 @@ suite =
         ]
 
 
-main : Program Never
+main : HtmlRunner.TestProgram
 main =
-    Html.run suite
+    HtmlRunner.run suite

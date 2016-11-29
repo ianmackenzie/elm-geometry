@@ -108,8 +108,8 @@ import OpenSolid.Point3d as Point3d
         Point3d ( 4, 5, 6 )
 -}
 endpoints : LineSegment3d -> ( Point3d, Point3d )
-endpoints (LineSegment3d endpoints') =
-    endpoints'
+endpoints (LineSegment3d endpoints_) =
+    endpoints_
 
 
 {-| Get the start point of a line segment.

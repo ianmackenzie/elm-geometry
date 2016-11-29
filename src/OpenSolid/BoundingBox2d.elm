@@ -163,8 +163,8 @@ extrema :
        , minY : Float
        , maxY : Float
        }
-extrema (BoundingBox2d extrema') =
-    extrema'
+extrema (BoundingBox2d extrema_) =
+    extrema_
 
 
 {-| Get the minimum X value of a bounding box.

@@ -13,7 +13,7 @@
 module Axis3d exposing (suite)
 
 import Test exposing (Test)
-import Test.Runner.Html as Html
+import Test.Runner.Html as HtmlRunner
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Fuzz as Fuzz
@@ -33,6 +33,6 @@ suite =
         ]
 
 
-main : Program Never
+main : HtmlRunner.TestProgram
 main =
-    Html.run suite
+    HtmlRunner.run suite

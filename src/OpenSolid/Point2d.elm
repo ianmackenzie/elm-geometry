@@ -224,8 +224,8 @@ function:
         toPolar (Point2d.coordinates point)
 -}
 coordinates : Point2d -> ( Float, Float )
-coordinates (Point2d coordinates') =
-    coordinates'
+coordinates (Point2d coordinates_) =
+    coordinates_
 
 
 {-| Get the X coordinate of a point.
@@ -233,8 +233,8 @@ coordinates (Point2d coordinates') =
     Point2d.xCoordinate (Point2d ( 2, 3 )) == 2
 -}
 xCoordinate : Point2d -> Float
-xCoordinate =
-    coordinates >> fst
+xCoordinate (Point2d ( x, _ )) =
+    x
 
 
 {-| Get the Y coordinate of a point.
@@ -242,8 +242,8 @@ xCoordinate =
     Point2d.yCoordinate (Point2d ( 2, 3 )) == 3
 -}
 yCoordinate : Point2d -> Float
-yCoordinate =
-    coordinates >> snd
+yCoordinate (Point2d ( _, y )) =
+    y
 
 
 {-| Compare two points within a tolerance. Returns true if the distance
@@ -280,13 +280,13 @@ equalWithin tolerance firstPoint secondPoint =
 vectorFrom : Point2d -> Point2d -> Vector2d
 vectorFrom other point =
     let
-        ( x', y' ) =
+        ( otherX, otherY ) =
             coordinates other
 
         ( x, y ) =
             coordinates point
     in
-        Vector2d ( x - x', y - y' )
+        Vector2d ( x - otherX, y - otherY )
 
 
 {-| Find the distance between two points.

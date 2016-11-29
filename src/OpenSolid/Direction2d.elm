@@ -223,8 +223,8 @@ as a unit vector, also know as its direction cosines).
         Direction2d.components direction
 -}
 components : Direction2d -> ( Float, Float )
-components (Direction2d components') =
-    components'
+components (Direction2d components_) =
+    components_
 
 
 {-| Get the X component of a direction.
@@ -233,8 +233,8 @@ components (Direction2d components') =
     Direction2d.xComponent Direction2d.y == 0
 -}
 xComponent : Direction2d -> Float
-xComponent =
-    components >> fst
+xComponent (Direction2d ( x, _ )) =
+    x
 
 
 {-| Get the Y component of a direction.
@@ -243,8 +243,8 @@ xComponent =
     Direction2d.yComponent Direction2d.y == 1
 -}
 yComponent : Direction2d -> Float
-yComponent =
-    components >> snd
+yComponent (Direction2d ( _, y )) =
+    y
 
 
 {-| Compare two directions within a tolerance. Returns true if the angle between

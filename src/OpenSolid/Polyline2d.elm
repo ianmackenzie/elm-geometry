@@ -95,8 +95,8 @@ import OpenSolid.LineSegment2d as LineSegment2d
         ]
 -}
 vertices : Polyline2d -> List Point2d
-vertices (Polyline2d vertices') =
-    vertices'
+vertices (Polyline2d vertices_) =
+    vertices_
 
 
 {-| Get the individual segments of a polyline.

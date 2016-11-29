@@ -13,7 +13,7 @@
 module Frame2d exposing (suite)
 
 import Test exposing (Test)
-import Test.Runner.Html as Html
+import Test.Runner.Html as HtmlRunner
 import OpenSolid.Frame2d as Frame2d
 import OpenSolid.Point2d as Point2d
 import OpenSolid.Geometry.Encode as Encode
@@ -67,6 +67,6 @@ suite =
         ]
 
 
-main : Program Never
+main : HtmlRunner.TestProgram
 main =
-    Html.run suite
+    HtmlRunner.run suite

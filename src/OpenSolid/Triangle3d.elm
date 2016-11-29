@@ -103,8 +103,8 @@ import OpenSolid.Point3d as Point3d
         Point3d ( 2, 1, 3 )
 -}
 vertices : Triangle3d -> ( Point3d, Point3d, Point3d )
-vertices (Triangle3d vertices') =
-    vertices'
+vertices (Triangle3d vertices_) =
+    vertices_
 
 
 {-| Get the edges of a triangle: from the first vertex to the second, from the

@@ -13,7 +13,7 @@
 module All exposing (..)
 
 import Test
-import Test.Runner.Html as Html
+import Test.Runner.Html as HtmlRunner
 import Axis2d
 import Axis3d
 import BoundingBox2d
@@ -61,6 +61,6 @@ suite =
         ]
 
 
-main : Program Never
+main : HtmlRunner.TestProgram
 main =
-    Html.run suite
+    HtmlRunner.run suite

@@ -185,8 +185,8 @@ extrema :
        , minZ : Float
        , maxZ : Float
        }
-extrema (BoundingBox3d extrema') =
-    extrema'
+extrema (BoundingBox3d extrema_) =
+    extrema_
 
 
 {-| Get the minimum X value of a bounding box.

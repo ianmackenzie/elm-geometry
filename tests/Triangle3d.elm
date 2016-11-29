@@ -13,7 +13,7 @@
 module Triangle3d exposing (suite)
 
 import Test exposing (Test)
-import Test.Runner.Html as Html
+import Test.Runner.Html as HtmlRunner
 import OpenSolid.Triangle3d as Triangle3d
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Decode as Decode
@@ -34,6 +34,6 @@ suite =
         ]
 
 
-main : Program Never
+main : HtmlRunner.TestProgram
 main =
-    Html.run suite
+    HtmlRunner.run suite
