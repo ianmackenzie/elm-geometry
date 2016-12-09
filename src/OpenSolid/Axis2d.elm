@@ -183,7 +183,7 @@ flip axis =
 
     Axis2d.moveTo newOrigin axis ==
         Axis2d
-            { originPoint = Point2d ( 4, 5 ),
+            { originPoint = Point2d ( 4, 5 )
             , direction = Direction2d.y
             }
 -}
