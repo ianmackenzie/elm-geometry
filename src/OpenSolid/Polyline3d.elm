@@ -261,17 +261,20 @@ projectInto sketchPlane =
     vertices >> List.map (Point3d.projectInto sketchPlane) >> Polyline2d
 
 
-{-| Get the minimal bounding box containing a given line segment.
+{-| Get the minimal bounding box containing a given polyline. Returns `Nothing`
+if the polyline has no vertices.
 
     Polyline3d.boundingBox examplePolyline ==
-        BoundingBox3d
-            { minX = 0
-            , maxX = 1
-            , minY = 0
-            , maxY = 2
-            , minZ = 0
-            , maxZ = 3
-            }
+        Just
+            (BoundingBox3d
+                { minX = 0
+                , maxX = 1
+                , minY = 0
+                , maxY = 2
+                , minZ = 0
+                , maxZ = 3
+                }
+            )
 -}
 boundingBox : Polyline3d -> Maybe BoundingBox3d
 boundingBox polyline =

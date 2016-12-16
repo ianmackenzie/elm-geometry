@@ -265,12 +265,14 @@ placeOnto sketchPlane =
 if the polyline has no vertices.
 
     Polyline2d.boundingBox stepShape ==
-        BoundingBox2d
-            { minX = 0
-            , maxX = 2
-            , minY = 0
-            , maxY = 1
-            }
+        Just
+            (BoundingBox2d
+                { minX = 0
+                , maxX = 2
+                , minY = 0
+                , maxY = 1
+                }
+            )
 -}
 boundingBox : Polyline2d -> Maybe BoundingBox2d
 boundingBox polyline =
