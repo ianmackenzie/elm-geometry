@@ -50,10 +50,10 @@ example
             , maxZ = -5
             }
 
-If you construct an `BoundingBox3d` this way, you must ensure that the given
+If you construct a `BoundingBox3d` this way, you must ensure that the given
 values are properly ordered: `minX <= maxX`, `minY <= maxY`, `minZ <= maxZ`.
-Alternately, you can use functions such as `Point3d.hull` where the input order
-does not matter.
+Alternately, you can construct bounding boxes using functions such as
+`Point3d.hull` where the input order does not matter.
 
 ## Reading this documentation
 

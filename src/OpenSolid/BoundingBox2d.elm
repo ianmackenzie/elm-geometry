@@ -44,9 +44,10 @@ Bounding boxes can be constructed by passing a record with `minX`, `maxX`,
             , maxY = 4
             }
 
-If you construct an `BoundingBox2d` this way, you must ensure that the given
+If you construct a `BoundingBox2d` this way, you must ensure that the given
 values are properly ordered: `minX <= maxX`, `minY <= maxY`. Alternately, you
-can use functions such as `Point2d.hull` where the input order does not matter.
+can construct bounding boxes using functions such as `Point2d.hull` where the
+input order does not matter.
 
 ## Reading this documentation
 
