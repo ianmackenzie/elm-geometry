@@ -55,9 +55,13 @@ vectors to represent positions.
 # Directions
 
 A direction is effectively a vector with a length of one, used to represent
-quantities like the direction of an axis. Directions can be directly constructed
-from their components, but note that in this case you are responsible for
-ensuring that the sum of the squares of the components is exactly one.
+quantities like the direction of an axis or the normal direction of a plane.
+
+Directions can be directly constructed from their components, but note that in
+this case you are responsible for ensuring that the sum of the squares of the
+components is exactly one. In many cases it is easier and safer to use the
+various constructors and transformation functions in corresponding modules
+instead.
 
 @docs Direction2d, Direction3d
 
@@ -102,8 +106,8 @@ mirroring across its XY plane.
 # Bounding boxes
 
 These types represent bounding boxes around other geometric objects, and are
-useful building blocks for tasks such as fast spatial searching or culling non-
-visible objects during 3D rendering.
+useful for tasks such as fast spatial searching or culling non-visible objects
+during 3D rendering.
 
 @docs BoundingBox2d, BoundingBox3d
 
@@ -203,8 +207,9 @@ type Frame3d
         }
 
 
-{-| A `SketchPlane3d` represents a 2D planar coordinate system in 3D space. See
-the `SketchPlane3d` module for details.
+{-| A `SketchPlane3d` represents a 2D planar coordinate system in 3D space, and
+allows operations such as projecting 3D geometry into a 2D coordinate system or
+placing 2D geometry on a 3D plane. See the `SketchPlane3d` module for details.
 -}
 type SketchPlane3d
     = SketchPlane3d
@@ -282,8 +287,9 @@ type Polyline3d
     = Polyline3d (List Point3d)
 
 
-{-| A polygon in 2D, defined by a list of vertices. See the `Polygon2d` module
-for details.
+{-| A polygon in 2D, defined by a list of vertices. Very similar to a
+`Polyline2d` but the last point is implicitly considered to connect back to the
+first point. See the `Polygon2d` module for details.
 -}
 type Polygon2d
     = Polygon2d (List Point2d)
