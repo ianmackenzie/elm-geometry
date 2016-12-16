@@ -453,8 +453,8 @@ no-op, and scaling by a factor of 0 collapses all points to the center point.
     Point3d.scaleAbout centerPoint 0.5 point ==
         Point3d ( 1, 1.5, 2 )
 
-Do not scale by a negative scaling factor - while this may sometimes do what you
-want it is confusing and error prone. Try a combination of mirror and/or
+Avoid scaling by a negative scaling factor - while this may sometimes do what
+you want it is confusing and error prone. Try a combination of mirror and/or
 rotation operations instead.
 -}
 scaleAbout : Point3d -> Float -> Point3d -> Point3d
