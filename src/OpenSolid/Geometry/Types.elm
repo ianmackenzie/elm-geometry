@@ -33,6 +33,7 @@ module OpenSolid.Geometry.Types
         , Polyline2d(Polyline2d)
         , Polyline3d(Polyline3d)
         , Polygon2d(Polygon2d)
+        , Circle2d(Circle2d)
         )
 
 {-| This module contains the definitions of the core OpenSolid data types. Each
@@ -118,6 +119,10 @@ during 3D rendering.
 # Polygons
 
 @docs Polygon2d
+
+# Circles
+
+@docs Circle2d
 -}
 
 
@@ -293,3 +298,10 @@ first point. See the `Polygon2d` module for details.
 -}
 type Polygon2d
     = Polygon2d (List Point2d)
+
+
+{-| A circle in 2D, defined by its center poitn and radius. See the `Circle2d`
+moduel for details.
+-}
+type Circle2d
+    = Circle2d { centerPoint : Point2d, radius : Float }

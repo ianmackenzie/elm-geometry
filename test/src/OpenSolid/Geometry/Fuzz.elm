@@ -34,6 +34,7 @@ module OpenSolid.Geometry.Fuzz
         , polyline2d
         , polyline3d
         , polygon2d
+        , circle2d
         )
 
 import Fuzz exposing (Fuzzer)
@@ -258,3 +259,12 @@ polyline3d =
 polygon2d : Fuzzer Polygon2d
 polygon2d =
     Fuzz.map Polygon2d (Fuzz.list point2d)
+
+
+circle2d : Fuzzer Circle2d
+circle2d =
+    let
+        circle centerPoint radius =
+            Circle2d { centerPoint = centerPoint, radius = radius }
+    in
+        Fuzz.map2 circle point2d scalar

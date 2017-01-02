@@ -54,6 +54,7 @@ module OpenSolid.Geometry.Expect
         , polyline3dWithin
         , polygon2d
         , polygon2dWithin
+        , circle2d
         )
 
 import Expect exposing (Expectation)
@@ -80,6 +81,7 @@ import OpenSolid.BoundingBox3d as BoundingBox3d
 import OpenSolid.Polyline2d as Polyline2d
 import OpenSolid.Polyline3d as Polyline3d
 import OpenSolid.Polygon2d as Polygon2d
+import OpenSolid.Circle2d as Circle2d
 
 
 type alias Comparison a =
@@ -433,3 +435,13 @@ polygon2d =
 polygon2dWithin : Float -> Polygon2d -> Polygon2d -> Expectation
 polygon2dWithin tolerance =
     expect (by (listOf (Point2d.equalWithin tolerance)) Polygon2d.vertices)
+
+
+circle2d : Circle2d -> Circle2d -> Expectation
+circle2d =
+    expect
+        (allOf
+            [ by (Point2d.equalWithin defaultTolerance) Circle2d.centerPoint
+            , by (Scalar.equalWithin defaultTolerance) Circle2d.radius
+            ]
+        )
