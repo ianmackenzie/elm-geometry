@@ -2,7 +2,16 @@ module OpenSolid.Circle2d
     exposing
         ( centerPoint
         , radius
+        , diameter
+        , area
+        , circumference
         , contains
+        , scaleAbout
+        , rotateAround
+        , translateBy
+        , mirrorAcross
+        , relativeTo
+        , placeIn
         )
 
 {-| Various functions for creating and working with `Circle2d` values. A
