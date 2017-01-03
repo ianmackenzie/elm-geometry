@@ -21,12 +21,11 @@ module OpenSolid.Direction2d
         , components
         , xComponent
         , yComponent
+        , componentIn
         , equalWithin
         , vector
         , negate
         , times
-        , dotProduct
-        , crossProduct
         , rotateBy
         , mirrorAcross
         , relativeTo
@@ -81,7 +80,7 @@ to numerical roundoff) they might not be exactly equal.
 
 # Components
 
-@docs components, xComponent, yComponent
+@docs components, xComponent, yComponent, componentIn
 
 # Comparison
 
@@ -93,7 +92,7 @@ to numerical roundoff) they might not be exactly equal.
 
 # Arithmetic
 
-@docs negate, times, dotProduct, crossProduct
+@docs negate, times
 
 # Transformations
 
@@ -220,7 +219,15 @@ second. The result will be in the range -π to π.
 -}
 angleFrom : Direction2d -> Direction2d -> Float
 angleFrom other direction =
-    atan2 (crossProduct other direction) (dotProduct other direction)
+    let
+        otherVector =
+            vector other
+
+        directionVector =
+            vector direction
+    in
+        atan2 (Vector2d.crossProduct otherVector directionVector)
+            (Vector2d.dotProduct otherVector directionVector)
 
 
 {-| Get the components of a direction as a tuple (the components it would have
@@ -258,6 +265,27 @@ xComponent (Direction2d ( x, _ )) =
 yComponent : Direction2d -> Float
 yComponent (Direction2d ( _, y )) =
     y
+
+
+{-| Find the component of one direction in another direction. This is equal to
+the cosine of the angle between the directions, or equivalently the dot product
+of the two directions converted to unit vectors.
+
+    direction =
+        Direction2d.fromAngle (degrees 60)
+
+    Direction2d.componentIn Direction2d.x direction ==
+        0.5
+
+    Direction2d.componentIn Direction2d.x Direction2d.x ==
+        1
+
+    Direction2d.componentIn Direction2d.x Direction2d.y ==
+        0
+-}
+componentIn : Direction2d -> Direction2d -> Float
+componentIn firstDirection secondDirection =
+    Vector2d.componentIn firstDirection (vector secondDirection)
 
 
 {-| Compare two directions within a tolerance. Returns true if the angle between
@@ -313,42 +341,6 @@ negative the resulting vector will be in the opposite of the given direction.
 times : Float -> Direction2d -> Vector2d
 times scale =
     vector >> Vector2d.times scale
-
-
-{-| Find the dot product of two directions. This is equal to the cosine of the
-angle between them.
-
-    direction =
-        Direction2d.fromAngle (degrees 60)
-
-    Direction2d.dotProduct Direction2d.x direction ==
-        0.5
-
-    Direction2d.dotProduct Direction2d.x Direction2d.x ==
-        1
-
-    Direction2d.dotProduct Direction2d.x Direction2d.y ==
-        0
--}
-dotProduct : Direction2d -> Direction2d -> Float
-dotProduct firstDirection secondDirection =
-    Vector2d.dotProduct (vector firstDirection) (vector secondDirection)
-
-
-{-| Find the cross product of two directions. This is equal to the sine of the
-counterclockwise angle from the first to the second.
-
-    direction =
-        Direction2d.fromAngle (degrees 60)
-
-    Direction2d.crossProduct Direction2d.x direction == 0.866
-    Direction2d.crossProduct Direction2d.x Direction2d.x == 0
-    Direction2d.crossProduct Direction2d.x Direction2d.y == 1
-    Direction2d.crossProduct Direction2d.y Direction2d.x == -1
--}
-crossProduct : Direction2d -> Direction2d -> Float
-crossProduct firstDirection secondDirection =
-    Vector2d.crossProduct (vector firstDirection) (vector secondDirection)
 
 
 {-| Rotate a direction counterclockwise by a given angle (in radians).
