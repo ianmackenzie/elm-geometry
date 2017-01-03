@@ -176,8 +176,8 @@ perpendicular to the given direction.
     Direction3d.perpendicularTo Direction3d.x ==
         Direction3d ( 0, 0, -1 )
 
-    Direction3d.perpendicularTo Diretion3d.y ==
-        Direction3d ( 1, 0, 0 )
+    Direction3d.perpendicularTo Direction3d.y ==
+        Direction3d ( 0, 0, 1 )
 
     direction =
         Direction3d ( 0.6, 0, 0.8 )
