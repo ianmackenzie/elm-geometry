@@ -14,6 +14,7 @@
         "OpenSolid.Axis3d",
         "OpenSolid.BoundingBox2d",
         "OpenSolid.BoundingBox3d",
+        "OpenSolid.Circle2d",
         "OpenSolid.Direction2d",
         "OpenSolid.Direction3d",
         "OpenSolid.Frame2d",
