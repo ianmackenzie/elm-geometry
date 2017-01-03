@@ -141,7 +141,8 @@ toDirection (Vector3d components) =
 
 {-| The positive X direction.
 
-    Direction3d.x == Direction3d ( 1, 0, 0 )
+    Direction3d.x ==
+        Direction3d ( 1, 0, 0 )
 -}
 x : Direction3d
 x =
@@ -150,7 +151,8 @@ x =
 
 {-| The positive Y direction.
 
-    Direction3d.y == Direction3d ( 0, 1, 0 )
+    Direction3d.y ==
+        Direction3d ( 0, 1, 0 )
 -}
 y : Direction3d
 y =
@@ -159,7 +161,8 @@ y =
 
 {-| The positive Z direction.
 
-    Direction3d.z == Direction3d ( 0, 0, 1 )
+    Direction3d.z ==
+        Direction3d ( 0, 0, 1 )
 -}
 z : Direction3d
 z =

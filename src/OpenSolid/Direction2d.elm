@@ -136,7 +136,8 @@ toDirection (Vector2d components) =
 
 {-| The positive X direction.
 
-    Direction2d.x == Direction2d ( 1, 0 )
+    Direction2d.x ==
+        Direction2d ( 1, 0 )
 -}
 x : Direction2d
 x =
@@ -145,7 +146,8 @@ x =
 
 {-| The positive Y direction.
 
-    Direction2d.y == Direction2d ( 0, 1 )
+    Direction2d.y ==
+        Direction2d ( 0, 1 )
 -}
 y : Direction2d
 y =
@@ -186,9 +188,14 @@ fromAngle angle =
 {-| Convert a direction to a counterclockwise angle in radians from the positive
 X direction. The result will be in the range -π to π.
 
-    Direction2d.toAngle Direction2d.x == 0
-    Direction2d.toAngle Direction2d.y == pi / 2
-    Direction2d.toAngle (Direction2d ( 0, -1 )) == -pi / 2
+    Direction2d.toAngle Direction2d.x ==
+        0
+
+    Direction2d.toAngle Direction2d.y ==
+        pi / 2
+
+    Direction2d.toAngle (Direction2d ( 0, -1 )) ==
+        -pi / 2
 -}
 toAngle : Direction2d -> Float
 toAngle direction =
@@ -229,8 +236,11 @@ components (Direction2d components_) =
 
 {-| Get the X component of a direction.
 
-    Direction2d.xComponent Direction2d.x == 1
-    Direction2d.xComponent Direction2d.y == 0
+    Direction2d.xComponent Direction2d.x ==
+        1
+
+    Direction2d.xComponent Direction2d.y ==
+        0
 -}
 xComponent : Direction2d -> Float
 xComponent (Direction2d ( x, _ )) =
@@ -239,8 +249,11 @@ xComponent (Direction2d ( x, _ )) =
 
 {-| Get the Y component of a direction.
 
-    Direction2d.yComponent Direction2d.x == 0
-    Direction2d.yComponent Direction2d.y == 1
+    Direction2d.yComponent Direction2d.x ==
+        0
+
+    Direction2d.yComponent Direction2d.y ==
+        1
 -}
 yComponent : Direction2d -> Float
 yComponent (Direction2d ( _, y )) =
@@ -308,9 +321,14 @@ angle between them.
     direction =
         Direction2d.fromAngle (degrees 60)
 
-    Direction2d.dotProduct Direction2d.x direction == 0.5
-    Direction2d.dotProduct Direction2d.x Direction2d.x == 1
-    Direction2d.dotProduct Direction2d.x Direction2d.y == 0
+    Direction2d.dotProduct Direction2d.x direction ==
+        0.5
+
+    Direction2d.dotProduct Direction2d.x Direction2d.x ==
+        1
+
+    Direction2d.dotProduct Direction2d.x Direction2d.y ==
+        0
 -}
 dotProduct : Direction2d -> Direction2d -> Float
 dotProduct firstDirection secondDirection =
