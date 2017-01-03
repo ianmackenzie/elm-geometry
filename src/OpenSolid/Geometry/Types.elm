@@ -301,7 +301,7 @@ type Polygon2d
 
 
 {-| A circle in 2D, defined by its center point and radius. See the `Circle2d`
-moduel for details.
+module for details.
 -}
 type Circle2d
     = Circle2d { centerPoint : Point2d, radius : Float }
