@@ -16,6 +16,7 @@ module OpenSolid.Direction3d
         , y
         , z
         , perpendicularTo
+        , perpendicularBasis
         , components
         , xComponent
         , yComponent
@@ -73,7 +74,7 @@ to numerical roundoff) they might not be exactly equal.
 
 # Constructors
 
-@docs perpendicularTo
+@docs perpendicularTo, perpendicularBasis
 
 # Components
 
@@ -199,6 +200,37 @@ perpendicularTo direction =
             Vector3d.times (1 / length) perpendicularVector
     in
         Direction3d (Vector3d.components normalizedVector)
+
+
+{-| Construct a pair of directions that are perpendicular to each other and both
+perpendicular to the  given direction.
+
+The given direction and the two returned directions will form a right-handed
+system (that is, a right-handed `Frame3d` could be constructed by using the
+given direction as the X direction and the two returned directions as the Y and
+Z directions).
+
+    Direction3d.perpendicularBasis Direction3d.x ==
+        ( Direction3d ( 0, 0, -1 )
+        , Direction3d ( 0, 1, 0 )
+        )
+
+    Direction3d.perpendicularBasis Direction3d.y ==
+        ( Direction3d ( 0, 0, 1 )
+        , Direction3d ( 1, 0, 0 )
+        )
+-}
+perpendicularBasis : Direction3d -> ( Direction3d, Direction3d )
+perpendicularBasis direction =
+    let
+        xDirection =
+            perpendicularTo direction
+
+        yDirection =
+            Vector3d.crossProduct (vector direction) (vector xDirection)
+                |> toDirection
+    in
+        ( xDirection, yDirection )
 
 
 {-| Get the components of a direction as a tuple (the components it would have
