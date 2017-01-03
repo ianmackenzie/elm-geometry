@@ -148,7 +148,7 @@ contains point circle =
     Circle2d.scaleAbout (Point2d ( 1, 2 )) 0.5 exampleCircle ==
         Circle2d
             { centerPoint = Point2d ( 1, 2 )
-            , radius = 6
+            , radius = 1.5
             }
 -}
 scaleAbout : Point2d -> Float -> Circle2d -> Circle2d
