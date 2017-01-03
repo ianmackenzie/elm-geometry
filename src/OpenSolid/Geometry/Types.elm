@@ -300,7 +300,7 @@ type Polygon2d
     = Polygon2d (List Point2d)
 
 
-{-| A circle in 2D, defined by its center poitn and radius. See the `Circle2d`
+{-| A circle in 2D, defined by its center point and radius. See the `Circle2d`
 moduel for details.
 -}
 type Circle2d
