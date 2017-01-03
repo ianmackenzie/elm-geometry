@@ -152,14 +152,8 @@ frame3d =
     let
         frame originPoint xDirection =
             let
-                yDirection =
-                    Direction3d.perpendicularTo xDirection
-
-                zDirectionVector =
-                    Direction3d.crossProduct xDirection yDirection
-
-                zDirection =
-                    Direction3d (Vector3d.components zDirectionVector)
+                ( yDirection, zDirection ) =
+                    Direction3d.perpendicularBasis xDirection
             in
                 Frame3d
                     { originPoint = originPoint

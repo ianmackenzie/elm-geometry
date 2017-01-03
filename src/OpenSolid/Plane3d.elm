@@ -202,14 +202,8 @@ sketchPlane plane =
         normal =
             normalDirection plane
 
-        xDirection =
-            Direction3d.perpendicularTo normal
-
-        yDirectionVector =
-            Direction3d.crossProduct normal xDirection
-
-        yDirection =
-            Direction3d (Vector3d.components yDirectionVector)
+        ( xDirection, yDirection ) =
+            Direction3d.perpendicularBasis normal
     in
         SketchPlane3d
             { originPoint = originPoint plane
