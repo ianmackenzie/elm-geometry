@@ -25,8 +25,7 @@ module OpenSolid.Direction3d
         , vector
         , negate
         , times
-        , dotProduct
-        , crossProduct
+        , componentIn
         , angleFrom
         , rotateAround
         , mirrorAcross
@@ -78,7 +77,7 @@ to numerical roundoff) they might not be exactly equal.
 
 # Components
 
-@docs components, xComponent, yComponent, zComponent
+@docs components, xComponent, yComponent, zComponent, componentIn
 
 # Comparison
 
@@ -90,7 +89,7 @@ to numerical roundoff) they might not be exactly equal.
 
 # Arithmetic
 
-@docs negate, times, dotProduct, crossProduct
+@docs negate, times
 
 # Angle measurement
 
@@ -274,6 +273,27 @@ zComponent (Direction3d ( _, _, z )) =
     z
 
 
+{-| Find the component of one direction in another direction. This is equal to
+the cosine of the angle between the directions, or equivalently the dot product
+of the two directions converted to unit vectors.
+
+    direction =
+        Direction3d ( 0.6, 0.8, 0 )
+
+    Direction3d.componentIn Direction3d.x direction ==
+        0.6
+
+    Direction3d.componentIn Direction3d.z direction ==
+        0
+
+    Direction3d.componentIn direction direction ==
+        1
+-}
+componentIn : Direction3d -> Direction3d -> Float
+componentIn firstDirection secondDirection =
+    Vector3d.componentIn firstDirection (vector secondDirection)
+
+
 {-| Compare two directions within a tolerance. Returns true if the angle between
 the two given directions is less than the given tolerance.
 
@@ -323,42 +343,6 @@ times scale =
     vector >> Vector3d.times scale
 
 
-{-| Find the dot product of two directions. This is equal to the cosine of the
-angle between them.
-
-    direction =
-        Direction3d ( 0.6, 0.8, 0 )
-
-    Direction3d.dotProduct Direction3d.x direction == 0.6
-    Direction3d.dotProduct Direction3d.z direction == 0
-    Direction3d.dotProduct direction direction == 1
-
--}
-dotProduct : Direction3d -> Direction3d -> Float
-dotProduct firstDirection secondDirection =
-    Vector3d.dotProduct (vector firstDirection) (vector secondDirection)
-
-
-{-| Find the cross product of two directions. This is equal to the cross product
-of the two directions converted to unit vectors.
-
-    Direction3d.crossProduct Direction3d.x Direction3d.z ==
-        Vector3d ( 0, -1, 0 )
-
-    direction =
-        Direction3d ( 0.6, 0.8, 0 )
-
-    Direction3d.crossProduct Direction3d.x direction ==
-        Vector3d ( 0, 0, 0.8 )
-
-    Direction3d.crossProduct direction direction ==
-        Vector3d.zero
--}
-crossProduct : Direction3d -> Direction3d -> Vector3d
-crossProduct firstDirection secondDirection =
-    Vector3d.crossProduct (vector firstDirection) (vector secondDirection)
-
-
 {-| Find the angle from one direction to another. The result will be in the
 range 0 to π.
 
@@ -373,7 +357,7 @@ range 0 to π.
 -}
 angleFrom : Direction3d -> Direction3d -> Float
 angleFrom other direction =
-    acos (dotProduct direction other)
+    acos (componentIn direction other)
 
 
 {-| Rotate a direction around an axis by a given angle.
