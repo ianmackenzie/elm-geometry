@@ -39,8 +39,8 @@ other).
 Frames can be used to transform between local and global coordinates using the
 `relativeTo` and `placeIn` functions associated with various other data types. A
 special but common case of coordinate transformation is to create 'template'
-objects using `relativeTo` and then instantiate them at different locations and
-in different orientations using `placeIn`.
+objects, perhaps using `relativeTo`, and then instantiate them at different
+locations and in different orientations using `placeIn`.
 
 Frames can also be used as a source of datums used in transformations, for
 example mirroring across the X axis of a frame.
