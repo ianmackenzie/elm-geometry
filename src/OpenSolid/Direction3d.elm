@@ -273,6 +273,7 @@ yComponent (Direction3d ( _, y, _ )) =
 
     Direction3d.zComponent Direction3d.z ==
         1
+
     Direction3d.zComponent Direction3d.x ==
         0
 -}
