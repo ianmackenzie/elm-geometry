@@ -245,8 +245,11 @@ components (Direction3d components_) =
 
 {-| Get the X component of a direction.
 
-    Direction3d.xComponent Direction3d.x == 1
-    Direction3d.xComponent Direction3d.y == 0
+    Direction3d.xComponent Direction3d.x ==
+        1
+
+    Direction3d.xComponent Direction3d.y ==
+        0
 -}
 xComponent : Direction3d -> Float
 xComponent (Direction3d ( x, _, _ )) =
@@ -255,8 +258,11 @@ xComponent (Direction3d ( x, _, _ )) =
 
 {-| Get the Y component of a direction.
 
-    Direction3d.yComponent Direction3d.y == 1
-    Direction3d.yComponent Direction3d.z == 0
+    Direction3d.yComponent Direction3d.y ==
+        1
+
+    Direction3d.yComponent Direction3d.z ==
+        0
 -}
 yComponent : Direction3d -> Float
 yComponent (Direction3d ( _, y, _ )) =
@@ -265,8 +271,10 @@ yComponent (Direction3d ( _, y, _ )) =
 
 {-| Get the Z component of a direction.
 
-    Direction3d.zComponent Direction3d.z == 1
-    Direction3d.zComponent Direction3d.x == 0
+    Direction3d.zComponent Direction3d.z ==
+        1
+    Direction3d.zComponent Direction3d.x ==
+        0
 -}
 zComponent : Direction3d -> Float
 zComponent (Direction3d ( _, _, z )) =
