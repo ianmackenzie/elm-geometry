@@ -72,9 +72,9 @@ Frames can by constructed by passing a record with `originPoint`, `xDirection`,
             }
 
 In this case you must be careful to ensure that the X, Y and Z directions are
-perpendicular. (You will likely also want to make sure that they form a right-
-handed coordinate system - that is, one where the Z direction is equal to the
-cross product of the X and Y directions.)
+perpendicular. (You will likely also want to make sure that they form a
+[right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
+coordinate system.)
 
 ## Reading this documentation
 

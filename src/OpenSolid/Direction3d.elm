@@ -204,7 +204,8 @@ perpendicularTo direction =
 {-| Construct a pair of directions that are perpendicular to each other and both
 perpendicular to the  given direction.
 
-The given direction and the two returned directions will form a right-handed
+The given direction and the two returned directions will form a
+[right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 system (that is, a right-handed `Frame3d` could be constructed by using the
 given direction as the X direction and the two returned directions as the Y and
 Z directions).
