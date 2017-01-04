@@ -133,8 +133,8 @@ product reverses the sign of the result,
 
 # Sketch planes
 
-These functions all form a sketch plane from two axes of the given frame. The X
-and Y axes of the sketch plane will correspond to the two indicated axes. For
+These functions all form a `SketchPlane3d` from two axes of the given frame. The
+X and Y axes of the sketch plane will correspond to the two indicated axes. For
 example,
 
     Frame3d.yzSketchPlane Frame3d.xyz ==
