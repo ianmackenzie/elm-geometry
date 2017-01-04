@@ -83,7 +83,6 @@ to numerical roundoff) they might not be exactly equal.
 
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
-import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Direction3d as Direction3d
 
 
