@@ -282,6 +282,12 @@ of the two directions converted to unit vectors.
 
     Direction2d.componentIn Direction2d.x Direction2d.y ==
         0
+
+This is more general and flexible than using `xComponent` or `yComponent`, both
+of which can be expressed in terms of `componentIn`:
+
+    Direction2d.xComponent direction ==
+        Direction2d.componentIn Direction2d.x direction
 -}
 componentIn : Direction2d -> Direction2d -> Float
 componentIn firstDirection secondDirection =

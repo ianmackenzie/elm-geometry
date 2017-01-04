@@ -296,6 +296,12 @@ of the two directions converted to unit vectors.
 
     Direction3d.componentIn direction direction ==
         1
+
+This is more general and flexible than using `xComponent`, `yComponent` or
+`zComponent`, all of which can be expressed in terms of `componentIn`:
+
+    Direction3d.zComponent direction ==
+        Direction3d.componentIn Direction3d.z direction
 -}
 componentIn : Direction3d -> Direction3d -> Float
 componentIn firstDirection secondDirection =
