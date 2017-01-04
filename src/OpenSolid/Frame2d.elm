@@ -46,7 +46,7 @@ Frames can also be used as a source of datums used in transformations, for
 example mirroring across the X axis of a frame.
 
 Frames can by constructed by passing a record with `originPoint`, `xDirection`
-and 'yDirection' fields to the `Frame2d` constructor, for example:
+and `yDirection` fields to the `Frame2d` constructor, for example:
 
     frame =
         Frame2d

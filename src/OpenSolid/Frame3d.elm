@@ -60,8 +60,8 @@ locations and in different orientations using `placeIn`.
 Frames can also be used as a source of datums used in transformations, for
 example rotating around the Z axis of a frame or mirroring across its XY plane.
 
-Frames can by constructed by passing a record with `originPoint`, `xDirection`
-and 'yDirection' fields to the `Frame3d` constructor, for example:
+Frames can by constructed by passing a record with `originPoint`, `xDirection`,
+`yDirection` and `zDirection` fields to the `Frame3d` constructor, for example:
 
     frame =
         Frame3d
