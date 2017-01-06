@@ -59,23 +59,39 @@ data types:
     ![Polyline3d](https://opensolid.github.io/images/geometry/icons/polyline3d.svg)
     ![Polygon2d](https://opensolid.github.io/images/geometry/icons/polygon2d.svg)
 
-  - `Circle2d`
+  - and last but not least `Circle2d`
 
     ![Circle2d](https://opensolid.github.io/images/geometry/icons/circle2d.svg)
 
-A large range of geometric operations are supported:
+A large range of geometric operations are supported - various forms of
+constructors:
 
 ```elm
--- Constructors
-
 Direction2d.fromAngle (degrees 30) ==
     Direction2d ( 0.866, 0.5 )
 
 Point3d.midpoint Point3d.origin (Point3d (1, 4, 5)) ==
     Vector2d ( 0.5, 2, 2.5 )
 
--- Arithmetic
+Point2d.hull (Point2d ( 1, 4 )) (Point2d ( 2, 3 )) ==
+    BoundingBox2d
+        { minX = 1
+        , maxX = 2
+        , minY = 3
+        , maxY = 4
+        }
 
+Frame2d.at (Point2d ( 2, 3 )) ==
+    Frame2d
+        { originPoint = Point2d ( 2, 3 )
+        , xDirection = Direction2d.x
+        , yDirection = Direction2d.y
+        }
+```
+
+Point/vector arithmetic:
+
+```elm
 Vector3d.plus (Vector3d ( 1, 2, 3 )) (Vector3d ( 4, 5, 6 )) ==
     Vector3d ( 5, 7, 9 )
 
@@ -83,9 +99,11 @@ Point3d.vectorFrom (Point3d ( 1, 1, 1 )) (Point3d ( 3, 5, 4 )) ==
     Vector3d ( 2, 4, 3 )
 
 Point2d.distanceFrom Point2d.origin (Point2d ( 1, 1 )) == 1.4142
+```
 
--- Transformations
+2D/3D transformations:
 
+```elm
 Point3d.mirrorAcross Plane3d.xy (Point3d ( 1, 2, 3 )) ==
     Point3d ( 1, 2, -3 )
 
@@ -98,14 +116,19 @@ Point2d.rotateAround Point2d.origin (degrees 45) (Point2d ( 1, 0 )) ==
 Plane3d.translateBy (Vector3d ( 0, 0, 3 )) Plane3d.xy ==
     Plane3d.offsetBy 3 Plane3d.xy
 
-Point3d.projectOnto Plane3d.xy (Point3d ( 2, 1, 3 )) ==
-    Point3d ( 2, 1, 0 )
-
 Vector3d.projectionIn Direction3d.z (Vector3d ( 3, 1, 4 )) ==
     Vector3d ( 0, 0, 4 )
 
--- Coordinate transformations
+Triangle3d.rotateAround Axis3d.x (degrees 45) triangle
 
+lineSegment
+    |> LineSegment3d.mirrorAcross Plane3d.yz
+    |> LineSegment3d.projectOnto Plane3d.xy
+```
+
+and conversion between coordinate systems:
+
+```elm
 rotatedFrame =
     Frame2d.xy |> Frame2d.rotateBy (degrees 30)
 
@@ -114,16 +137,6 @@ Vector2d.relativeTo rotatedFrame (Vector2d ( 2, 0 )) ==
 
 Point3d.projectInto SketchPlane3d.yz (Point3d ( 2, 1, 3 )) ==
     Point2d ( 1, 3 )
-
--- Bounding boxes
-
-Point2d.hull (Point2d ( 1, 4 )) (Point2d ( 2, 3 )) ==
-    BoundingBox2d
-        { minX = 1
-        , maxX = 2
-        , minY = 3
-        , maxY = 4
-        }
 ```
 
 JSON encoders and decoders for all types are also provided in the `Encode` and
