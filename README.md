@@ -129,7 +129,7 @@ transformedLineSegment =
         |> LineSegment3d.projectOnto Plane3d.xy
 ```
 
-and conversion between coordinate systems:
+And conversions between coordinate systems:
 
 ```elm
 rotatedFrame =
