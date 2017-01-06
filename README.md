@@ -9,16 +9,59 @@ This package contains modules for creating and working with the core OpenSolid
 data types:
 
   - `Point2d`, `Point3d`
+
+    ![Point2d](https://opensolid.github.io/images/geometry/icons/point2d.svg)
+    ![Point3d](https://opensolid.github.io/images/geometry/icons/point3d.svg)
+
   - `Vector2d`, `Vector3d`
+
+    ![Vector2d](https://opensolid.github.io/images/geometry/icons/vector2d.svg)
+    ![Vector3d](https://opensolid.github.io/images/geometry/icons/vector3d.svg)
+
   - `Direction2d`, `Direction3d` (type-safe unit vectors)
+
+    ![Direction2d](https://opensolid.github.io/images/geometry/icons/direction2d.svg)
+    ![Direction3d](https://opensolid.github.io/images/geometry/icons/direction3d.svg)
+
   - `Axis2d`, `Axis3d`, `Plane3d` (useful for rotations, mirrors, projections)
+
+    ![Axis2d](https://opensolid.github.io/images/geometry/icons/axis2d.svg)
+    ![Axis3d](https://opensolid.github.io/images/geometry/icons/axis3d.svg)
+    ![Plane3d](https://opensolid.github.io/images/geometry/icons/plane3d.svg)
+
   - `Frame2d`, `Frame3d` (local coordinate systems)
+
+    ![Frame2d](https://opensolid.github.io/images/geometry/icons/frame2d.svg)
+    ![Frame3d](https://opensolid.github.io/images/geometry/icons/frame3d.svg)
+
   - `SketchPlane3d` (local 2D coordinate system embedded in 3D)
+
+    ![SketchPlane3d](https://opensolid.github.io/images/geometry/icons/sketchPlane3d.svg)
+
   - `BoundingBox2d`, `BoundingBox3d`
+
+    ![BoundingBox2d](https://opensolid.github.io/images/geometry/icons/boundingBox2d.svg)
+    ![BoundingBox3d](https://opensolid.github.io/images/geometry/icons/boundingBox3d.svg)
+
   - `LineSegment2d`, `LineSegment3d`
+
+    ![LineSegment2d](https://opensolid.github.io/images/geometry/icons/lineSegment2d.svg)
+    ![LineSegment3d](https://opensolid.github.io/images/geometry/icons/lineSegment3d.svg)
+
   - `Triangle2d`, `Triangle3d`
-  - `Polyline2d`, `Polyline3d`
-  - `Polygon2d`
+
+    ![Triangle2d](https://opensolid.github.io/images/geometry/icons/triangle2d.svg)
+    ![Triangle3d](https://opensolid.github.io/images/geometry/icons/triangle3d.svg)
+
+  - `Polyline2d`, `Polyline3d`, `Polygon2d`
+
+    ![Polyline2d](https://opensolid.github.io/images/geometry/icons/polyline2d.svg)
+    ![Polyline3d](https://opensolid.github.io/images/geometry/icons/polyline3d.svg)
+    ![Polygon2d](https://opensolid.github.io/images/geometry/icons/polygon2d.svg)
+
+  - `Circle2d`
+
+    ![Circle2d](https://opensolid.github.io/images/geometry/icons/circle2d.svg)
 
 A large range of geometric operations are supported:
 
