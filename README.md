@@ -98,7 +98,8 @@ Vector3d.plus (Vector3d ( 1, 2, 3 )) (Vector3d ( 4, 5, 6 )) ==
 Point3d.vectorFrom (Point3d ( 1, 1, 1 )) (Point3d ( 3, 5, 4 )) ==
     Vector3d ( 2, 4, 3 )
 
-Point2d.distanceFrom Point2d.origin (Point2d ( 1, 1 )) == 1.4142
+Point2d.distanceFrom Point2d.origin (Point2d ( 1, 1 )) ==
+    1.4142
 ```
 
 2D/3D transformations:
