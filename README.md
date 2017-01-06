@@ -120,11 +120,13 @@ Plane3d.translateBy (Vector3d ( 0, 0, 3 )) Plane3d.xy ==
 Vector3d.projectionIn Direction3d.z (Vector3d ( 3, 1, 4 )) ==
     Vector3d ( 0, 0, 4 )
 
-Triangle3d.rotateAround Axis3d.x (degrees 45) triangle
+rotatedTriangle =
+    Triangle3d.rotateAround Axis3d.x (degrees 45) triangle
 
-lineSegment
-    |> LineSegment3d.mirrorAcross Plane3d.yz
-    |> LineSegment3d.projectOnto Plane3d.xy
+transformedLineSegment =
+    lineSegment
+        |> LineSegment3d.mirrorAcross Plane3d.yz
+        |> LineSegment3d.projectOnto Plane3d.xy
 ```
 
 and conversion between coordinate systems:
