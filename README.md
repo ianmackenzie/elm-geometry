@@ -63,7 +63,7 @@ data types:
 
     ![Circle2d](https://opensolid.github.io/images/geometry/icons/circle2d.svg)
 
-A large range of geometric operations are supported - various forms of
+A large range of geometric operations are supported, such as various forms of
 constructors:
 
 ```elm
