@@ -71,7 +71,7 @@ Direction2d.fromAngle (degrees 30) ==
     Direction2d ( 0.866, 0.5 )
 
 Point3d.midpoint Point3d.origin (Point3d (1, 4, 5)) ==
-    Vector2d ( 0.5, 2, 2.5 )
+    Point3d ( 0.5, 2, 2.5 )
 
 Point2d.hull (Point2d ( 1, 4 )) (Point2d ( 2, 3 )) ==
     BoundingBox2d
