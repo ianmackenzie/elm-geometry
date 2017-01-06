@@ -35,7 +35,9 @@ module OpenSolid.LineSegment2d
         , boundingBox
         )
 
-{-| Various functions for creating and working with `LineSegment2d` values. Line
+{-| <img src="https://opensolid.github.io/images/geometry/icons/lineSegment2d.svg" alt="LineSegment2d" width="160">
+
+Various functions for creating and working with `LineSegment2d` values. Line
 segments are defined by their start and end points and can be constructed by
 passing a tuple of start and end points to the `LineSegment2d` constructor, for
 example

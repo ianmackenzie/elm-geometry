@@ -28,9 +28,11 @@ module OpenSolid.Triangle3d
         , boundingBox
         )
 
-{-| Various functions for creating and working with `Triangle3d` values.
-Triangles are defined by their three vertices and can be constructed by passing
-a tuple of vertices to the `Triangle3d` constructor, for example
+{-| <img src="https://opensolid.github.io/images/geometry/icons/triangle3d.svg" alt="Triangle3d" width="160">
+
+Various functions for creating and working with `Triangle3d` values. Triangles
+are defined by their three vertices and can be constructed by passing a tuple of
+vertices to the `Triangle3d` constructor, for example
 
     exampleTriangle =
         Triangle3d

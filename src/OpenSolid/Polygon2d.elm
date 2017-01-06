@@ -28,8 +28,10 @@ module OpenSolid.Polygon2d
         , boundingBox
         )
 
-{-| Various functions for creating and working with `Polygon2d` values. Polygons
-can be constructed by passing an ordered list of vertices to the `Polygon2d`
+{-| <img src="https://opensolid.github.io/images/geometry/icons/polygon2d.svg" alt="Polygon2d" width="160">
+
+Various functions for creating and working with `Polygon2d` values. Polygons can
+be constructed by passing an ordered list of vertices to the `Polygon2d`
 constructor, for example
 
     rectangle =

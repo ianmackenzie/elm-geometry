@@ -34,7 +34,9 @@ module OpenSolid.SketchPlane3d
         , placeIn
         )
 
-{-| Various functions for creating and working with `SketchPlane3d` values.
+{-| <img src="https://opensolid.github.io/images/geometry/icons/sketchPlane3d.svg" alt="SketchPlane3d" width="160">
+
+Various functions for creating and working with `SketchPlane3d` values.
 Sketch planes are defined by an origin point and X and Y basis directions in 3D,
 which define a 2D coordinate system (the X and Y basis directions are always
 perpendicular). A sketch plane can therefore be used to convert between 2D and

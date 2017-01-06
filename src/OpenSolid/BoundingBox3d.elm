@@ -33,7 +33,9 @@ module OpenSolid.BoundingBox3d
         , intersection
         )
 
-{-| Various functions for creating and working with `BoundingBox3d` values. A
+{-| <img src="https://opensolid.github.io/images/geometry/icons/boundingBox3d.svg" alt="BoundingBox3d" width="160">
+
+Various functions for creating and working with `BoundingBox3d` values. A
 `BoundingBox3d` is defined by its minimum and maximum X, Y and Z values.
 
 Bounding boxes can be constructed by passing a record with `minX`, `maxX`,

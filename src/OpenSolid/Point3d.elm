@@ -39,9 +39,10 @@ module OpenSolid.Point3d
         , hull
         )
 
-{-| Various functions for creating and working with `Point3d` values. A
-`Point3d` is defined by its X, Y and Z coordinates and represents a position in
-3D space.
+{-| <img src="https://opensolid.github.io/images/geometry/icons/point3d.svg" alt="Point3d" width="160">
+
+Various functions for creating and working with `Point3d` values. A `Point3d` is
+defined by its X, Y and Z coordinates and represents a position in 3D space.
 
 The simplest way to construct a `Point3d` value is by passing a tuple of X, Y
 and Z coordinates to the `Point3d` constructor, for example

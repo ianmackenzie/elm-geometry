@@ -26,9 +26,11 @@ module OpenSolid.Polyline2d
         , boundingBox
         )
 
-{-| Various functions for creating and working with `Polyline2d` values.
-Polylines can be constructed by passing an ordered list of vertices to the
-`Polyline2d` constructor, for example
+{-| <img src="https://opensolid.github.io/images/geometry/icons/polyline2d.svg" alt="Polyline2d" width="160">
+
+Various functions for creating and working with `Polyline2d` values. Polylines
+can be constructed by passing an ordered list of vertices to the `Polyline2d`
+constructor, for example
 
     stepShape =
         Polyline2d

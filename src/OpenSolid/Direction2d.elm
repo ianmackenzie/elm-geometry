@@ -33,7 +33,9 @@ module OpenSolid.Direction2d
         , placeOnto
         )
 
-{-| Various functions for creating and working with `Direction2d` values. The
+{-| <img src="https://opensolid.github.io/images/geometry/icons/direction2d.svg" alt="Direction2d" width="160">
+
+Various functions for creating and working with `Direction2d` values. The
 simplest way to construct a `Direction2d` value is by passing a tuple of X and Y
 components to the `Direction2d` constructor, for example `Direction2d ( 1, 0 )`.
 However, if you do this you must ensure that the sum of the squares of the given

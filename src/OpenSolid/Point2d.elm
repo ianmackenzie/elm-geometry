@@ -36,9 +36,10 @@ module OpenSolid.Point2d
         , placeOnto
         )
 
-{-| Various functions for creating and working with `Point2d` values. A
-`Point2d` is defined by its X and Y coordinates and represents a position in
-2D space.
+{-| <img src="https://opensolid.github.io/images/geometry/icons/point2d.svg" alt="Point2d" width="160">
+
+Various functions for creating and working with `Point2d` values. A `Point2d` is
+defined by its X and Y coordinates and represents a position in 2D space.
 
 The simplest way to construct a `Point2d` value is by passing a tuple of X and Y
 coordinates to the `Point2d` constructor, for example

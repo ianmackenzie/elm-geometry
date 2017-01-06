@@ -30,7 +30,9 @@ module OpenSolid.BoundingBox2d
         , intersection
         )
 
-{-| Various functions for creating and working with `BoundingBox2d` values. A
+{-| <img src="https://opensolid.github.io/images/geometry/icons/boundingBox2d.svg" alt="BoundingBox2d" width="160">
+
+Various functions for creating and working with `BoundingBox2d` values. A
 `BoundingBox2d` is defined by its minimum and maximum X and Y values.
 
 Bounding boxes can be constructed by passing a record with `minX`, `maxX`,

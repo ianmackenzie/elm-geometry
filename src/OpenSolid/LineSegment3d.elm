@@ -35,7 +35,9 @@ module OpenSolid.LineSegment3d
         , boundingBox
         )
 
-{-| Various functions for creating and working with `LineSegment3d` values. Line
+{-| <img src="https://opensolid.github.io/images/geometry/icons/lineSegment3d.svg" alt="LineSegment3d" width="160">
+
+Various functions for creating and working with `LineSegment3d` values. Line
 segments are defined by their start and end points and can be constructed by
 passing a tuple of start and end points to the `LineSegment3d` constructor, for
 example

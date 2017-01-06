@@ -38,9 +38,11 @@ module OpenSolid.Vector2d
         , placeOnto
         )
 
-{-| Various functions for creating and working with `Vector2d` values. A
-`Vector2d` is defined by its X and Y components and represents a quantity like a
-velocity or displacement in 2D.
+{-| <img src="https://opensolid.github.io/images/geometry/icons/vector2d.svg" alt="Vector2d" width="160">
+
+Various functions for creating and working with `Vector2d` values. A `Vector2d`
+is defined by its X and Y components and represents a quantity like a velocity
+or displacement in 2D.
 
 The simplest way to create a `Vector2d` is  by passing a tuple of X and Y
 components to the `Vector2d` constructor, for example

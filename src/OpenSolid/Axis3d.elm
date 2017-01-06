@@ -28,8 +28,10 @@ module OpenSolid.Axis3d
         , projectInto
         )
 
-{-| Various functions for creating and working with `Axis3d` values. An `Axis3d`
-is defined by an origin point and direction and is useful for several operations
+{-| <img src="https://opensolid.github.io/images/geometry/icons/axis3d.svg" alt="Axis3d" width="160">
+
+Various functions for creating and working with `Axis3d` values. An `Axis3d` is
+defined by an origin point and direction and is useful for several operations
 including:
 
   - Rotating around the axis

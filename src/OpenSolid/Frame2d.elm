@@ -31,10 +31,11 @@ module OpenSolid.Frame2d
         , placeIn
         )
 
-{-| Various functions for creating and working with `Frame2d` values. A
-`Frame2d` represents a coordinate system in 2D space and is defined by an origin
-point and X and Y basis directions (which are always perpendicular to each
-other).
+{-| <img src="https://opensolid.github.io/images/geometry/icons/frame2d.svg" alt="Frame2d" width="160">
+
+Various functions for creating and working with `Frame2d` values. A `Frame2d`
+represents a coordinate system in 2D space and is defined by an origin point and
+X and Y basis directions (which are always perpendicular to each other).
 
 Frames can be used to transform between local and global coordinates using the
 `relativeTo` and `placeIn` functions associated with various other data types. A

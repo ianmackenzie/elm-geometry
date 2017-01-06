@@ -35,7 +35,9 @@ module OpenSolid.Direction3d
         , projectInto
         )
 
-{-| Various functions for creating and working with `Direction3d` values. The
+{-| <img src="https://opensolid.github.io/images/geometry/icons/direction3d.svg" alt="Direction3d" width="160">
+
+Various functions for creating and working with `Direction3d` values. The
 simplest way to construct a `Direction3d` value is by passing a tuple of X, Y
 and Z components to the `Direction3d` constructor, for example
 `Direction3d (1, 0, 0 )`. However, if you do this you must ensure that the sum

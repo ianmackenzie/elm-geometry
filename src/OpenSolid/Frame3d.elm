@@ -46,10 +46,11 @@ module OpenSolid.Frame3d
         , placeIn
         )
 
-{-| Various functions for creating and working with `Frame3d` values.  A
-`Frame3d` represents a coordinate system in 3D space and is defined by an origin
-point and X, Y and Z basis directions (which are always perpendicular to each
-other).
+{-| <img src="https://opensolid.github.io/images/geometry/icons/frame3d.svg" alt="Frame3d" width="160">
+
+Various functions for creating and working with `Frame3d` values.  A `Frame3d`
+represents a coordinate system in 3D space and is defined by an origin point and
+X, Y and Z basis directions (which are always perpendicular to each other).
 
 Frames can be used to transform between local and global coordinates using the
 `relativeTo` and `placeIn` functions associated with various other data types. A

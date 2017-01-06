@@ -39,9 +39,11 @@ module OpenSolid.Vector3d
         , projectInto
         )
 
-{-| Various functions for creating and working with `Vector3d` values. A
-`Vector3d` is defined by its X, Y and Z components and represents a quantity
-like a velocity or displacement in 3D.
+{-| <img src="https://opensolid.github.io/images/geometry/icons/vector3d.svg" alt="Vector3d" width="160">
+
+Various functions for creating and working with `Vector3d` values. A `Vector3d`
+is defined by its X, Y and Z components and represents a quantity like a
+velocity or displacement in 3D.
 
 The simplest way to create a `Vector3d` is by passing a tuple of X, Y and Z
 components to the `Vector3d` constructor, for example

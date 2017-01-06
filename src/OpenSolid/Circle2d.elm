@@ -14,8 +14,10 @@ module OpenSolid.Circle2d
         , placeIn
         )
 
-{-| Various functions for creating and working with `Circle2d` values. A
-`Circle2d` is defined by its center point and radius.
+{-| <img src="https://opensolid.github.io/images/geometry/icons/circle2d.svg" alt="Circle2d" width="160">
+
+Various functions for creating and working with `Circle2d` values. A `Circle2d`
+is defined by its center point and radius.
 
 Circles can be constructed by passing a record with `centerPoint` and `radius`
 fields to the `Circle2d` constructor, for example
