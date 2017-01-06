@@ -126,71 +126,91 @@ during 3D rendering.
 -}
 
 
-{-| A vector in 2D, defined by its X and Y components. See the `Vector2d`
-module for details.
+{-| ![Vector2d](https://opensolid.github.io/images/geometry/icons/vector2d.svg)
+
+A vector in 2D, defined by its X and Y components. See the `Vector2d` module for
+details.
 -}
 type Vector2d
     = Vector2d ( Float, Float )
 
 
-{-| A vector in 3D, defined by its X, Y and Z components. See the `Vector3d`
-module for details.
+{-| ![Vector3d](https://opensolid.github.io/images/geometry/icons/vector3d.svg)
+
+A vector in 3D, defined by its X, Y and Z components. See the `Vector3d` module
+for details.
 -}
 type Vector3d
     = Vector3d ( Float, Float, Float )
 
 
-{-| A direction in 2D, defined by its X and Y components. See the
-`Direction2d` module for details.
+{-| ![Direction2d](https://opensolid.github.io/images/geometry/icons/direction2d.svg)
+
+A direction in 2D, defined by its X and Y components. See the `Direction2d`
+module for details.
 -}
 type Direction2d
     = Direction2d ( Float, Float )
 
 
-{-| A direction in 3D, defined by its X, Y and Z components. See the
-`Direction3d` module for details.
+{-| ![Direction3d](https://opensolid.github.io/images/geometry/icons/direction3d.svg)
+
+A direction in 3D, defined by its X, Y and Z components. See the `Direction3d`
+module for details.
 -}
 type Direction3d
     = Direction3d ( Float, Float, Float )
 
 
-{-| A point in 2D, defined by its X and Y coordinates. See the `Point2d`
-module for details.
+{-| ![Point2d](https://opensolid.github.io/images/geometry/icons/point2d.svg)
+
+A point in 2D, defined by its X and Y coordinates. See the `Point2d` module for
+details.
 -}
 type Point2d
     = Point2d ( Float, Float )
 
 
-{-| A point in 3D, defined by its X, Y and Z coordinates. See the `Point3d`
-module for details.
+{-| ![Point3d](https://opensolid.github.io/images/geometry/icons/point3d.svg)
+
+A point in 3D, defined by its X, Y and Z coordinates. See the `Point3d` module
+for details.
 -}
 type Point3d
     = Point3d ( Float, Float, Float )
 
 
-{-| An axis in 2D, defined by an origin point and direction. See the `Axis2d`
-module for details.
+{-| ![Axis2d](https://opensolid.github.io/images/geometry/icons/axis2d.svg)
+
+An axis in 2D, defined by an origin point and direction. See the `Axis2d` module
+for details.
 -}
 type Axis2d
     = Axis2d { originPoint : Point2d, direction : Direction2d }
 
 
-{-| An axis in 3D, defined by an origin point and direction. See the `Axis3d`
-module for details.
+{-| ![Axis3d](https://opensolid.github.io/images/geometry/icons/axis3d.svg)
+
+An axis in 3D, defined by an origin point and direction. See the `Axis3d` module
+for details.
 -}
 type Axis3d
     = Axis3d { originPoint : Point3d, direction : Direction3d }
 
 
-{-| A 3D plane, defined by an origin point and a normal direction. See the
-`Plane3d` module for details.
+{-| ![Plane3d](https://opensolid.github.io/images/geometry/icons/plane3d.svg)
+
+A 3D plane, defined by an origin point and a normal direction. See the `Plane3d`
+module for details.
 -}
 type Plane3d
     = Plane3d { originPoint : Point3d, normalDirection : Direction3d }
 
 
-{-| A `Frame2d` represents a coordinate system in 2D space. See the `Frame2d`
-module for details.
+{-| ![Frame2d](https://opensolid.github.io/images/geometry/icons/frame2d.svg)
+
+A `Frame2d` represents a coordinate system in 2D space. See the `Frame2d` module
+for details.
 -}
 type Frame2d
     = Frame2d
@@ -200,8 +220,10 @@ type Frame2d
         }
 
 
-{-| A `Frame3d` represents a coordinate system in 3D space. See the `Frame3d`
-module for details.
+{-| ![Frame3d](https://opensolid.github.io/images/geometry/icons/frame3d.svg)
+
+A `Frame3d` represents a coordinate system in 3D space. See the `Frame3d` module
+for details.
 -}
 type Frame3d
     = Frame3d
@@ -212,7 +234,9 @@ type Frame3d
         }
 
 
-{-| A `SketchPlane3d` represents a 2D planar coordinate system in 3D space, and
+{-| ![SketchPlane3d](https://opensolid.github.io/images/geometry/icons/sketchPlane3d.svg)
+
+A `SketchPlane3d` represents a 2D planar coordinate system in 3D space, and
 allows operations such as projecting 3D geometry into a 2D coordinate system or
 placing 2D geometry on a 3D plane. See the `SketchPlane3d` module for details.
 -}
@@ -224,36 +248,46 @@ type SketchPlane3d
         }
 
 
-{-| A line segment in 2D, defined by its start and end points. See the
+{-| ![LineSegment2d](https://opensolid.github.io/images/geometry/icons/lineSegment2d.svg)
+
+A line segment in 2D, defined by its start and end points. See the
 `LineSegment2d` module for details.
 -}
 type LineSegment2d
     = LineSegment2d ( Point2d, Point2d )
 
 
-{-| A line segment in 3D, defined by its start and end points. See the
+{-| ![LineSegment3d](https://opensolid.github.io/images/geometry/icons/lineSegment3d.svg)
+
+A line segment in 3D, defined by its start and end points. See the
 `LineSegment3d` module for details.
 -}
 type LineSegment3d
     = LineSegment3d ( Point3d, Point3d )
 
 
-{-| A triangle in 2D, defined by its three vertices. See the `Triangle2d` module
-for details.
+{-| ![Triangle2d](https://opensolid.github.io/images/geometry/icons/triangle2d.svg)
+
+A triangle in 2D, defined by its three vertices. See the `Triangle2d` module for
+details.
 -}
 type Triangle2d
     = Triangle2d ( Point2d, Point2d, Point2d )
 
 
-{-| A triangle in 3D, defined by its three vertices. See the `Triangle3d` module
-for details.
+{-| ![Triangle3d](https://opensolid.github.io/images/geometry/icons/triangle3d.svg)
+
+A triangle in 3D, defined by its three vertices. See the `Triangle3d` module for
+details.
 -}
 type Triangle3d
     = Triangle3d ( Point3d, Point3d, Point3d )
 
 
-{-| A bounding box in 2D, defined by its minimum and maximum X and Y values. See
-the `BoundingBox2d` module for details.
+{-| ![BoundingBox2d](https://opensolid.github.io/images/geometry/icons/boundingBox2d.svg)
+
+A bounding box in 2D, defined by its minimum and maximum X and Y values. See the
+`BoundingBox2d` module for details.
 -}
 type BoundingBox2d
     = BoundingBox2d
@@ -264,8 +298,10 @@ type BoundingBox2d
         }
 
 
-{-| A bounding box in 3D, defined by its minimum and maximum X, Y and Z values.
-See the `BoundingBox3d` module for details.
+{-| ![BoundingBox3d](https://opensolid.github.io/images/geometry/icons/boundingBox3d.svg)
+
+A bounding box in 3D, defined by its minimum and maximum X, Y and Z values. See
+the `BoundingBox3d` module for details.
 -}
 type BoundingBox3d
     = BoundingBox3d
@@ -278,29 +314,37 @@ type BoundingBox3d
         }
 
 
-{-| A polyline in 2D, defined by a list of vertices. See the `Polyline2d` module
-for details.
+{-| ![Polyline2d](https://opensolid.github.io/images/geometry/icons/polyline2d.svg)
+
+A polyline in 2D, defined by a list of vertices. See the `Polyline2d` module for
+details.
 -}
 type Polyline2d
     = Polyline2d (List Point2d)
 
 
-{-| A polyline in 3D, defined by a list of vertices. See the `Polyline3d` module
-for details.
+{-| ![Polyline3d](https://opensolid.github.io/images/geometry/icons/polyline3d.svg)
+
+A polyline in 3D, defined by a list of vertices. See the `Polyline3d` module for
+details.
 -}
 type Polyline3d
     = Polyline3d (List Point3d)
 
 
-{-| A polygon in 2D, defined by a list of vertices. Very similar to a
-`Polyline2d` but the last point is implicitly considered to connect back to the
-first point. See the `Polygon2d` module for details.
+{-| ![Polygon2d](https://opensolid.github.io/images/geometry/icons/polygon2d.svg)
+
+A polygon in 2D, defined by a list of vertices. Very similar to a `Polyline2d`
+but the last point is implicitly considered to connect back to the first point.
+See the `Polygon2d` module for details.
 -}
 type Polygon2d
     = Polygon2d (List Point2d)
 
 
-{-| A circle in 2D, defined by its center point and radius. See the `Circle2d`
+{-| ![Circle2d](https://opensolid.github.io/images/geometry/icons/circle2d.svg)
+
+A circle in 2D, defined by its center point and radius. See the `Circle2d`
 module for details.
 -}
 type Circle2d
