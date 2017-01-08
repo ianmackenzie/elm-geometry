@@ -176,8 +176,8 @@ type Point3d
 
 {-| ![Axis2d](https://opensolid.github.io/images/geometry/icons/axis2d.svg)
 
-An axis in 2D, defined by an origin point and direction. See the `Axis2d` module
-for details.
+An axis in 2D, defined by its origin point and direction. See the `Axis2d`
+module for details.
 -}
 type Axis2d
     = Axis2d { originPoint : Point2d, direction : Direction2d }
@@ -185,8 +185,8 @@ type Axis2d
 
 {-| ![Axis3d](https://opensolid.github.io/images/geometry/icons/axis3d.svg)
 
-An axis in 3D, defined by an origin point and direction. See the `Axis3d` module
-for details.
+An axis in 3D, defined by its origin point and direction. See the `Axis3d`
+module for details.
 -}
 type Axis3d
     = Axis3d { originPoint : Point3d, direction : Direction3d }
@@ -194,8 +194,8 @@ type Axis3d
 
 {-| ![Plane3d](https://opensolid.github.io/images/geometry/icons/plane3d.svg)
 
-A 3D plane, defined by an origin point and a normal direction. See the `Plane3d`
-module for details.
+A plane in 3D, defined by its origin point and normal direction. See the
+`Plane3d` module for details.
 -}
 type Plane3d
     = Plane3d { originPoint : Point3d, normalDirection : Direction3d }
@@ -203,8 +203,8 @@ type Plane3d
 
 {-| ![Frame2d](https://opensolid.github.io/images/geometry/icons/frame2d.svg)
 
-A `Frame2d` represents a coordinate system in 2D space. See the `Frame2d` module
-for details.
+A coordinate system in 2D space, defined by its origin point and X and Y
+directions. See the `Frame2d` module for details.
 -}
 type Frame2d
     = Frame2d
@@ -216,8 +216,8 @@ type Frame2d
 
 {-| ![Frame3d](https://opensolid.github.io/images/geometry/icons/frame3d.svg)
 
-A `Frame3d` represents a coordinate system in 3D space. See the `Frame3d` module
-for details.
+A coordinate system in 3D space, defined by its origin point and X, Y and Z
+directions. See the `Frame3d` module for details.
 -}
 type Frame3d
     = Frame3d
@@ -230,9 +230,10 @@ type Frame3d
 
 {-| ![SketchPlane3d](https://opensolid.github.io/images/geometry/icons/sketchPlane3d.svg)
 
-A `SketchPlane3d` represents a 2D planar coordinate system in 3D space, and
-allows operations such as projecting 3D geometry into a 2D coordinate system or
-placing 2D geometry on a 3D plane. See the `SketchPlane3d` module for details.
+A 2D planar coordinate system embedded in 3D space, defined by its origin point
+and X and Y directions. Used for operations such as projecting 3D geometry into
+a 2D coordinate system or placing 2D geometry in 3D. See the `SketchPlane3d`
+module for details.
 -}
 type SketchPlane3d
     = SketchPlane3d
