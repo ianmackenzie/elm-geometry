@@ -58,12 +58,6 @@ vectors to represent positions.
 A direction is effectively a vector with a length of one, used to represent
 quantities like the direction of an axis or the normal direction of a plane.
 
-Directions can be directly constructed from their components, but note that in
-this case you are responsible for ensuring that the sum of the squares of the
-components is exactly one. In many cases it is easier and safer to use the
-various constructors and transformation functions in corresponding modules
-instead.
-
 @docs Direction2d, Direction3d
 
 # Points
