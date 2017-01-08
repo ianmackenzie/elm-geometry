@@ -1,9 +1,8 @@
 ## What is it?
 
 This package attempts to make it easier to write software such as computer-aided
-design apps, geometric simulations/analyses and games by providing a set of core
-modules for creating and manipulating objects of a large set of 2D and 3D data
-types:
+design apps, geometric simulations and games by providing modules for creating
+and manipulating objects of various 2D and 3D data types:
 
   - `Point2d`, `Point3d`
 
