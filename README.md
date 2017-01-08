@@ -1,12 +1,9 @@
 ## What is it?
 
-OpenSolid consists of a set of Elm packages for working with geometry. It is
-intended to provide a solid foundation for HTML-based applications in areas such
-as CAD (computer-aided design), CAM (computer-aided manufacturing), and 2D/3D
-visualization.
-
-This package contains modules for creating and working with the core OpenSolid
-data types:
+This package attempts to make it easier to write software such as computer-aided
+design apps, geometric simulations/analyses and games by providing a set of core
+modules for creating and manipulating objects of a large set of 2D and 3D data
+types:
 
   - `Point2d`, `Point3d`
 
