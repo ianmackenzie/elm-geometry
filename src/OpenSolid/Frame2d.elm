@@ -332,19 +332,17 @@ translateBy vector frame =
 
 {-| Translate a frame along one of its own axes by a given distance.
 
-The first argument is an axis defined in local coordinates within the frame; the
-majority of the time this will be either `Axis2d.x` or `Axis2d.y`. Since the
-axis is assumed to be defined in local coordinates within the given frame,
-`Axis2d.x` in this context ultimately means 'the X axis of the frame' and not
-'the global X axis'. The second argument is the distance to translate along the
-given axis.
+The first argument is a function that returns the axis to translate along, given
+the current frame. The majority of the time this argument will be either
+`Frame2d.xAxis` or `Frame2d.yAxis`. The second argument is the distance to
+translate along the given axis.
 
 This function is convenient when constructing frames via a series of
 transformations. For example,
 
     Frame2d.at (Point2d ( 2, 0 ))
         |> Frame2d.rotateBy (degrees 45)
-        |> Frame2d.translateAlongOwn Axis2d.x 2
+        |> Frame2d.translateAlongOwn Frame2d.xAxis 2
 
 means 'construct a frame at the point (2, 0), rotate it about its own origin
 point by 45 degrees, then translate it along its own X axis by 2 units',
@@ -356,11 +354,11 @@ resulting in
         , yDirection = Direction2d ( -0.7071, 0.7071 )
         }
 -}
-translateAlongOwn : Axis2d -> Float -> Frame2d -> Frame2d
-translateAlongOwn localAxis distance frame =
+translateAlongOwn : (Frame2d -> Axis2d) -> Float -> Frame2d -> Frame2d
+translateAlongOwn axis distance frame =
     let
         direction =
-            Direction2d.placeIn frame (Axis2d.direction localAxis)
+            Axis2d.direction (axis frame)
 
         displacement =
             Direction2d.times distance direction

@@ -28,7 +28,9 @@ module OpenSolid.SketchPlane3d
         , flipY
         , moveTo
         , rotateAround
+        , rotateAroundOwn
         , translateBy
+        , translateAlongOwn
         , mirrorAcross
         , relativeTo
         , placeIn
@@ -99,7 +101,7 @@ point, and use the two indicated global axes as their X and Y axes. For example,
 
 # Transformations
 
-@docs flipX, flipY, moveTo, rotateAround, translateBy, mirrorAcross
+@docs flipX, flipY, moveTo, rotateAround, rotateAroundOwn, translateBy, translateAlongOwn, mirrorAcross
 
 # Coordinate frames
 
@@ -110,6 +112,7 @@ import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Direction3d as Direction3d
+import OpenSolid.Axis3d as Axis3d
 
 
 {-| A sketch plane formed from the global X and Y axes.
@@ -346,6 +349,41 @@ rotateAround axis angle =
                 }
 
 
+{-| Rotate a sketch plane around one of its own axes by a given angle (in
+radians).
+
+The first argument is a function that returns the axis to rotate around, given
+the current sketch plane. The majority of the time this will be either
+`SketchPlane3d.xAxis` or `SketchPlane3d.yAxis`.
+
+This function is convenient when constructing sketch planes via a series of
+transformations. For example,
+
+    sketchPlane =
+        SketchPlane3d.xy
+            |> SketchPlane3d.translateBy (Vector3d ( 1, 0, 0 ))
+            |> SketchPlane3d.rotateAroundOwn SketchPlane3d.yAxis (degrees -45)
+
+    sketchPlane ==
+        SketchPlane3d
+            { originPoint = Point3d ( 1, 0, 0 )
+            , xDirection = Direction3d ( 0.7071, 0, 0.7071 )
+            , yDirection = Direction3d.y
+            }
+
+Note that since the rotation was around the sketch plane's own Y axis (which
+passes through the sketch plane's origin point) instead of the global Y axis,
+the origin point itself was not affected by the rotation.
+-}
+rotateAroundOwn :
+    (SketchPlane3d -> Axis3d)
+    -> Float
+    -> SketchPlane3d
+    -> SketchPlane3d
+rotateAroundOwn axis angle sketchPlane =
+    rotateAround (axis sketchPlane) angle sketchPlane
+
+
 {-| Translate a sketch plane by a given displacement.
 
     displacement =
@@ -365,6 +403,45 @@ translateBy vector sketchPlane =
         , xDirection = xDirection sketchPlane
         , yDirection = yDirection sketchPlane
         }
+
+
+{-| Translate a sketch plane along one of its own axes by a given distance.
+
+The first argument is a function that returns the axis to translate along, given
+the current sketch plane. The majority of the time this will be either
+`SketchPlane3d.xAxis` or `SketchPlane3d.yAxis`.
+
+This function is convenient when constructing frames via a series of
+transformations. For example,
+
+    SketchPlane3d.xy
+        |> SketchPlane3d.rotateAround Axis3d.x (degrees 45)
+        |> SketchPlane3d.translateAlongOwn SketchPlane3d.yAxis 2
+
+means 'take the global XY sketch plane, rotate it around the global X axis by
+45 degrees, then translate the result 2 units along its own (rotated) Y axis',
+resulting in
+
+    SketchPlane3d
+        { originPoint = Point3d ( 0, 1.4142, 1.4142 )
+        , xDirection = Direction3d.x
+        , yDirection = Direction3d ( 0, 0.7071, 0.7071 )
+        }
+-}
+translateAlongOwn :
+    (SketchPlane3d -> Axis3d)
+    -> Float
+    -> SketchPlane3d
+    -> SketchPlane3d
+translateAlongOwn axis distance frame =
+    let
+        direction =
+            Axis3d.direction (axis frame)
+
+        displacement =
+            Direction3d.times distance direction
+    in
+        translateBy displacement frame
 
 
 {-| Mirror a sketch plane across a plane.

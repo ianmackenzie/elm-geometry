@@ -511,13 +511,12 @@ rotateAround axis angle =
                 }
 
 
-{-| Rotate a frame around one of its own axes by a given angle (in radians). The
-first argument is an axis defined in local coordinates within the frame; the
-majority of the time this will be `Axis3d.x`, `Axis3d.y` or `Axis3d.z`. Since
-the axis is assumed to be defined in local coordinates within the given frame,
-`Axis3d.x` in this context ultimately means 'the X axis of the frame' and not
-'the global X axis'. Compare the following to the above example for
-`rotateAround`:
+{-| Rotate a frame around one of its own axes by a given angle (in radians).
+
+The first argument is a function that returns the axis to rotate around, given
+the current frame. The majority of the time this will be either `Frame3d.xAxis`,
+`Frame3d.yAxis` or `Frame3d.zAxis`. Compare the following to the above example
+for `rotateAround`:
 
     frame =
         Frame3d.at (Point3d ( 2, 1, 3 ))
@@ -531,15 +530,16 @@ the axis is assumed to be defined in local coordinates within the given frame,
             }
 
 Since the rotation is done around the frame's own Z axis (which passes through
-the frame's origin point), the origin point remains the same after rotation. In
-this example the frame's Z axis has the same orientation as the global Z axis
+the frame's origin point), the origin point remains the same after rotation.
+
+In this example the frame's Z axis has the same orientation as the global Z axis
 so the frame's basis directions are rotated the same way, but in more complex
 examples involving rotated frames a rotation around (for example) the frame's
 own Z axis may be completely different from a rotation around the global Z axis.
 -}
-rotateAroundOwn : Axis3d -> Float -> Frame3d -> Frame3d
-rotateAroundOwn localAxis angle frame =
-    rotateAround (Axis3d.placeIn frame localAxis) angle frame
+rotateAroundOwn : (Frame3d -> Axis3d) -> Float -> Frame3d -> Frame3d
+rotateAroundOwn axis angle frame =
+    rotateAround (axis frame) angle frame
 
 
 {-| Translate a frame by a given displacement.
@@ -565,19 +565,16 @@ translateBy vector frame =
 
 {-| Translate a frame along one of its own axes by a given distance.
 
-The first argument is an axis defined in local coordinates within the frame; the
-majority of the time this will be `Axis3d.x`, `Axis3d.y` or `Axis3d.z`. Since
-the axis is assumed to be defined in local coordinates within the given frame,
-`Axis3d.x` in this context ultimately means 'the X axis of the frame' and not
-'the global X axis'. The second argument is the distance to translate along the
-given axis.
+The first argument is a function that returns the axis to translate along, given
+the current frame. The majority of the time this will be either `Frame3d.xAxis`,
+`Frame3d.yAxis` or `Frame3d.zAxis`.
 
 This function is convenient when constructing frames via a series of
 transformations. For example,
 
     Frame3d.at (Point3d ( 2, 0, 0 ))
-        |> Frame3d.rotateAroundOwn Axis3d.z (degrees 45)
-        |> Frame3d.translateAlongOwn Axis3d.x 2
+        |> Frame3d.rotateAroundOwn Frame3d.zAxis (degrees 45)
+        |> Frame3d.translateAlongOwn Frame3d.xAxis 2
 
 means 'construct a frame at the point (2, 0, 0), rotate it about its own Z axis
 by 45 degrees, then translate it along its own (rotated) X axis by 2 units',
@@ -590,11 +587,11 @@ resulting in
         , zDirection = Direction3d.z
         }
 -}
-translateAlongOwn : Axis3d -> Float -> Frame3d -> Frame3d
-translateAlongOwn localAxis distance frame =
+translateAlongOwn : (Frame3d -> Axis3d) -> Float -> Frame3d -> Frame3d
+translateAlongOwn axis distance frame =
     let
         direction =
-            Direction3d.placeIn frame (Axis3d.direction localAxis)
+            Axis3d.direction (axis frame)
 
         displacement =
             Direction3d.times distance direction
