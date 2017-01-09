@@ -40,20 +40,6 @@ constructor, for example
             , Point2d ( 2, 1 )
             ]
 
-## Reading this documentation
-
-For the examples below, assume that `stepShape` has been defined as above, all
-OpenSolid core types have been imported using
-
-    import OpenSolid.Geometry.Types exposing (..)
-
-and all other necessary modules have been imported using the following pattern:
-
-    import OpenSolid.Polyline2d as Polyline2d
-
-Examples use `==` to indicate that two expressions are equivalent, even if (due
-to numerical roundoff) they might not be exactly equal.
-
 # Accessors
 
 @docs vertices, segments

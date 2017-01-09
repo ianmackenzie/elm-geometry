@@ -59,20 +59,6 @@ and `yDirection` fields to the `Frame2d` constructor, for example:
 In this case you must be careful to ensure that the X and Y directions are
 perpendicular.
 
-## Reading this documentation
-
-For the examples below, assume that all OpenSolid core types have been imported
-using
-
-    import OpenSolid.Geometry.Types exposing (..)
-
-and all other necessary modules have been imported using the following pattern:
-
-    import OpenSolid.Frame2d as Frame2d
-
-Examples use `==` to indicate that two expressions are equivalent, even if (due
-to numerical roundoff) they might not be exactly equal.
-
 # Predefined frames
 
 @docs xy

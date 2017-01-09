@@ -28,20 +28,6 @@ fields to the `Circle2d` constructor, for example
             , radius = 3
             }
 
-## Reading this documentation
-
-For the examples below, assume that `exampleCircle` has been defined as above,
-all OpenSolid core types have been imported using
-
-    import OpenSolid.Geometry.Types exposing (..)
-
-and all other necessary modules have been imported using the following pattern:
-
-    import OpenSolid.Circle2d as Circle2d
-
-Examples use `==` to indicate that two expressions are equivalent, even if (due
-to numerical roundoff) they might not be exactly equal.
-
 # Accessors
 
 @docs centerPoint, radius, diameter, area, circumference

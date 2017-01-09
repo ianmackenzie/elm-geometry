@@ -47,20 +47,6 @@ fields to the `Axis3d` constructor, for example:
             , direction = Direction3d.y
             }
 
-## Reading this documentation
-
-For the examples below, assume that all OpenSolid core types have been imported
-using
-
-    import OpenSolid.Geometry.Types exposing (..)
-
-and all other necessary modules have been imported using the following pattern:
-
-    import OpenSolid.Axis3d as Axis3d
-
-Examples use `==` to indicate that two expressions are equivalent, even if (due
-to numerical roundoff) they might not be exactly equal.
-
 # Predefined axes
 
 @docs x, y, z

@@ -50,20 +50,6 @@ and Z coordinates to the `Point3d` constructor, for example
     point =
         Point3d ( 2, 1, 3 )
 
-## Reading this documentation
-
-For the examples below, assume that all OpenSolid core types have been imported
-using
-
-    import OpenSolid.Geometry.Types exposing (..)
-
-and all other necessary modules have been imported using the following pattern:
-
-    import OpenSolid.Point3d as Point3d
-
-Examples use `==` to indicate that two expressions are equivalent, even if (due
-to numerical roundoff) they might not be exactly equal.
-
 # Constants
 
 @docs origin

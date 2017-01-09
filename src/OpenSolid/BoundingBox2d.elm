@@ -51,20 +51,6 @@ values are properly ordered: `minX <= maxX`, `minY <= maxY`. Alternately, you
 can construct bounding boxes using functions such as `Point2d.hull` where the
 input order does not matter.
 
-## Reading this documentation
-
-For the examples below, assume that `exampleBox` has been defined as above, all
-OpenSolid core types have been imported using
-
-    import OpenSolid.Geometry.Types exposing (..)
-
-and all other necessary modules have been imported using the following pattern:
-
-    import OpenSolid.BoundingBox2d as BoundingBox2d
-
-Examples use `==` to indicate that two expressions are equivalent, even if (due
-to numerical roundoff) they might not be exactly equal.
-
 # Constructors
 
 @docs singleton, containing

@@ -48,16 +48,6 @@ example
             , Point2d ( 4, 5, 6 )
             )
 
-## Reading this documentation
-
-For the examples below, assume that `lineSegment` has been defined as above, all
-OpenSolid core types have been imported using
-
-    import OpenSolid.LineSegment3d as LineSegment3d
-
-Examples use `==` to indicate that two expressions are equivalent, even if (due
-to numerical roundoff) they might not be exactly equal.
-
 # Endpoints
 
 @docs endpoints, startPoint, endPoint, reverse

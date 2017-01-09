@@ -41,20 +41,6 @@ vertices to the `Triangle3d` constructor, for example
             , Point3d ( 2, 1, 3 )
             )
 
-## Reading this documentation
-
-For the examples below, assume that `exampleTriangle` has been defined as above,
-all OpenSolid core types have been imported using
-
-    import OpenSolid.Geometry.Types exposing (..)
-
-and all other necessary modules have been imported using the following pattern:
-
-    import OpenSolid.Triangle3d as Triangle3d
-
-Examples use `==` to indicate that two expressions are equivalent, even if (due
-to numerical roundoff) they might not be exactly equal.
-
 # Accessors
 
 @docs vertices, edges

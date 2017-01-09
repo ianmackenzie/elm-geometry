@@ -46,20 +46,6 @@ fields to the `Axis2d` constructor, for example:
             , direction = Direction2d.fromAngle (degrees 45)
             }
 
-## Reading this documentation
-
-For the examples below, assume that all OpenSolid core types have been imported
-using
-
-    import OpenSolid.Geometry.Types exposing (..)
-
-and all other necessary modules have been imported using the following pattern:
-
-    import OpenSolid.Axis2d as Axis2d
-
-Examples use `==` to indicate that two expressions are equivalent, even if (due
-to numerical roundoff) they might not be exactly equal.
-
 # Predefined axes
 
 @docs x, y

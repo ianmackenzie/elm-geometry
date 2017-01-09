@@ -77,20 +77,6 @@ perpendicular. (You will likely also want to make sure that they form a
 [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 coordinate system.)
 
-## Reading this documentation
-
-For the examples below, assume that all OpenSolid core types have been imported
-using
-
-    import OpenSolid.Geometry.Types exposing (..)
-
-and all other necessary modules have been imported using the following pattern:
-
-    import OpenSolid.Frame3d as Frame3d
-
-Examples use `==` to indicate that two expressions are equivalent, even if (due
-to numerical roundoff) they might not be exactly equal.
-
 # Predefined frames
 
 @docs xyz

@@ -53,20 +53,6 @@ can use Elm's built-in `fromPolar` function:
     point =
         Point2d (fromPolar ( radius, angle ))
 
-## Reading this documentation
-
-For the examples below, assume that all OpenSolid core types have been imported
-using
-
-    import OpenSolid.Geometry.Types exposing (..)
-
-and all other necessary modules have been imported using the following pattern:
-
-    import OpenSolid.Point2d as Point2d
-
-Examples use `==` to indicate that two expressions are equivalent, even if (due
-to numerical roundoff) they might not be exactly equal.
-
 # Constants
 
 @docs origin

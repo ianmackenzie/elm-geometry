@@ -157,17 +157,19 @@ or add
 
 to your `elm-package.json`.
 
-Most OpenSolid modules are designed to imported as qualified, for example
+Full API documentation is available for each module. Most modules are associated
+with a particular type; for an overview of the various types in the package,
+check out the `OpenSolid.Geometry.Types` module.
 
-```elm
-import OpenSolid.Point3d as Point3d
-```
-
-The main exception is the `Types` module, which only contains type definitions
-and is intended to be imported without qualification:
+Most OpenSolid modules are designed to imported as qualified. The main exception
+is the `Types` module, which only contains type definitions and is intended to
+be imported without qualification. For example,
 
 ```elm
 import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Point3d as Point3d
+import OpenSolid.Vector2d as Vector2d
 ```
 
-For technical details, check out the documentation for each module.
+All documentation examples assume that `OpenSolid.Geometry.Types` and any other
+necessary modules have been imported using this pattern.

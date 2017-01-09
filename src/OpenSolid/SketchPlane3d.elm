@@ -61,20 +61,6 @@ constructor, for example
 If you construct a `SketchPlane3d` this way, you are responsible for ensuring
 that the X and Y basis directions are perpendicular to each other.
 
-## Reading this documentation
-
-For the examples below, assume that all OpenSolid core types have been imported
-using
-
-    import OpenSolid.Geometry.Types exposing (..)
-
-and all other necessary modules have been imported using the following pattern:
-
-    import OpenSolid.SketchPlane3d as SketchPlane3d
-
-Examples use `==` to indicate that two expressions are equivalent, even if (due
-to numerical roundoff) they might not be exactly equal.
-
 # Predefined sketch planes
 
 These predefined sketch planes all have the global origin point as their origin

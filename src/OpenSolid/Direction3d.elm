@@ -55,20 +55,6 @@ are all valid but
 are not. Instead of manually constructing `Direction3d` values, it may be easier
 to start with existing directions and transform them as necessary.
 
-## Reading this documentation
-
-For the examples below, assume that all OpenSolid core types have been imported
-using
-
-    import OpenSolid.Geometry.Types exposing (..)
-
-and all other necessary modules have been imported using the following pattern:
-
-    import OpenSolid.Direction3d as Direction3d
-
-Examples use `==` to indicate that two expressions are equivalent, even if (due
-to numerical roundoff) they might not be exactly equal.
-
 # Constants
 
 @docs x, y, z
