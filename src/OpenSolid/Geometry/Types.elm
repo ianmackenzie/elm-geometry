@@ -47,9 +47,8 @@ necessary modules using `as`, for example:
 
 # Vectors
 
-Vectors represent quantities such as displacements or velocities. OpenSolid
-distinguishes between vectors and points, so points should be used instead of
-vectors to represent positions.
+Vectors represent quantities such as displacements or velocities. For positions,
+`Point2d` or `Point3d` should be used instead.
 
 @docs Vector2d, Vector3d
 
