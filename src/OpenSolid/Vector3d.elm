@@ -55,10 +55,12 @@ components to the `Vector3d` constructor, for example
 
 @docs zero
 
-Although there are no predefined constants for `Vector3d ( 1, 0, 0 )`,
-`Vector3d ( 0, 1, 0 )` and `Vector3d ( 0, 0, 1 )`, in most cases you will
-actually want their `Direction3d` versions `Direction3d.x`, `Direction3d.y` and
-`Direction3d.z`.
+Although there are no predefined constants for
+<code>Vector3d&nbsp;(&nbsp;1,&nbsp;0,&nbsp;0&nbsp;)</code>,
+<code>Vector3d&nbsp;(&nbsp;0,&nbsp;1,&nbsp;0&nbsp;)</code> and
+<code>Vector3d&nbsp;(&nbsp;0,&nbsp;0,&nbsp;1&nbsp;)</code>, in most cases you
+will actually want their `Direction3d` versions `Direction3d.x`, `Direction3d.y`
+and `Direction3d.z`.
 
 # Constructors
 
@@ -404,8 +406,10 @@ the vector to be subtracted from is given second, so
     Vector3d.minus firstVector secondVector ==
         Vector3d ( 4, 5, 6 )
 
-or more generally, `Vector3d.minus a b` means `b - a`, not `a - b`. Think of
-`Vector3d.minus a b` as the operation `minus a` being applied to the vector `b`.
+or more generally, <code>Vector3d.minus&nbsp;a&nbsp;b</code> means
+<code>b&nbsp;-&nbsp;a</code>, not <code>a&nbsp;-&nbsp;b</code>. Think of
+<code>Vector3d.minus&nbsp;a&nbsp;b</code> as the operation
+<code>minus&nbsp;a</code> being applied to the vector `b`.
 -}
 minus : Vector3d -> Vector3d -> Vector3d
 minus other vector =

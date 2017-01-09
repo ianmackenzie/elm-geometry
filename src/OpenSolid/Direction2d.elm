@@ -37,9 +37,10 @@ module OpenSolid.Direction2d
 
 Various functions for creating and working with `Direction2d` values. The
 simplest way to construct a `Direction2d` value is by passing a tuple of X and Y
-components to the `Direction2d` constructor, for example `Direction2d ( 1, 0 )`.
-However, if you do this you must ensure that the sum of the squares of the given
-components is exactly one:
+components to the `Direction2d` constructor, for example
+<code>Direction2d&nbsp;(&nbsp;1,&nbsp;0&nbsp;)</code>. However, if you do this
+you must ensure that the sum of the squares of the given components is exactly
+one:
 
     Direction2d ( 1, 0 )
     Direction2d ( 0, -1 )

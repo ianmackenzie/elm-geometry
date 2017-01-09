@@ -53,7 +53,8 @@ example
             }
 
 If you construct a `BoundingBox3d` this way, you must ensure that the given
-values are properly ordered: `minX <= maxX`, `minY <= maxY`, `minZ <= maxZ`.
+values are properly ordered: <code>minX&nbsp;<=&nbsp;maxX</code>,
+<code>minY&nbsp;<=&nbsp;maxY</code>, <code>minZ&nbsp;<=&nbsp;maxZ</code>.
 Alternately, you can construct bounding boxes using functions such as
 `Point3d.hull` where the input order does not matter.
 

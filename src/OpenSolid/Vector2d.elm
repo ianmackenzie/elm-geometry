@@ -60,9 +60,10 @@ can use Elm's built-in `fromPolar` function:
 
 @docs zero
 
-Although there are no predefined constants for `Vector2d ( 1, 0 )` and
-`Vector2d ( 0, 1 )`, in most cases you will actually want their `Direction2d`
-versions `Direction2d.x` and `Direction2d.y`.
+Although there are no predefined constants for
+<code>Vector2d&nbsp;(&nbsp;1,&nbsp;0&nbsp;)</code> and
+<code>Vector2d&nbsp;(&nbsp;0,&nbsp;1&nbsp;)</code>, in most cases you will
+actually want their `Direction2d` versions `Direction2d.x` and `Direction2d.y`.
 
 # Constructors
 
@@ -356,8 +357,10 @@ the vector to be subtracted from is given second, so
     Vector2d.minus firstVector secondVector ==
         Vector2d ( 4, 4 )
 
-or more generally, `Vector2d.minus a b` means `b - a`, not `a - b`. Think of
-`Vector2d.minus a b` as the operation `minus a` being applied to the vector `b`.
+or more generally, <code>Vector2d.minus&nbsp;a&nbsp;b</code> means
+<code>b&nbsp;-&nbsp;a</code>, not <code>a&nbsp;-&nbsp;b</code>. Think of
+<code>Vector2d.minus&nbsp;a&nbsp;b</code> as the operation
+<code>minus&nbsp;a</code> being applied to the vector `b`.
 -}
 minus : Vector2d -> Vector2d -> Vector2d
 minus (Vector2d ( x2, y2 )) (Vector2d ( x1, y1 )) =
