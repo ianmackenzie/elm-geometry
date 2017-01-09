@@ -3,7 +3,7 @@
 This package is intended for use in 2D/3D geometry software such as computer
 aided design apps, simulations and games. It consists of a set of modules for
 creating, manipulating and querying geometry in an expressive, flexible and
-reliable way. A wide variety of geometric data types are supported:
+readable way. A wide variety of geometric data types are supported:
 
   - `Point2d`, `Point3d`
 
@@ -20,7 +20,7 @@ reliable way. A wide variety of geometric data types are supported:
     ![Direction2d](https://opensolid.github.io/images/geometry/icons/direction2d.svg)
     ![Direction3d](https://opensolid.github.io/images/geometry/icons/direction3d.svg)
 
-  - `Axis2d`, `Axis3d`, `Plane3d` (useful for rotations, mirrors, projections)
+  - `Axis2d`, `Axis3d`, `Plane3d`
 
     ![Axis2d](https://opensolid.github.io/images/geometry/icons/axis2d.svg)
     ![Axis3d](https://opensolid.github.io/images/geometry/icons/axis3d.svg)
@@ -61,7 +61,7 @@ reliable way. A wide variety of geometric data types are supported:
     ![Circle2d](https://opensolid.github.io/images/geometry/icons/circle2d.svg)
 
 A large range of geometric functionality is included, such as various forms of
-constructors:
+constructors...
 
 ```elm
 Direction2d.fromAngle (degrees 30) ==
@@ -86,7 +86,7 @@ Frame2d.at (Point2d ( 2, 3 )) ==
         }
 ```
 
-...point/vector arithmetic:
+...point/vector arithmetic...
 
 ```elm
 Vector3d.plus (Vector3d ( 1, 2, 3 )) (Vector3d ( 4, 5, 6 )) ==
@@ -99,7 +99,7 @@ Point2d.distanceFrom Point2d.origin (Point2d ( 1, 1 )) ==
     1.4142
 ```
 
-...2D/3D transformations:
+...2D/3D transformations...
 
 ```elm
 Point3d.mirrorAcross Plane3d.xy (Point3d ( 1, 2, 3 )) ==
