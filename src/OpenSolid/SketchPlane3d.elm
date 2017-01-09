@@ -21,8 +21,10 @@ module OpenSolid.SketchPlane3d
         , originPoint
         , xDirection
         , yDirection
+        , normalDirection
         , xAxis
         , yAxis
+        , normalAxis
         , plane
         , flipX
         , flipY
@@ -89,11 +91,11 @@ point, and use the two indicated global axes as their X and Y axes. For example,
 
 # Accessors
 
-@docs originPoint, xDirection, yDirection
+@docs originPoint, xDirection, yDirection, normalDirection
 
 # Axes
 
-@docs xAxis, yAxis
+@docs xAxis, yAxis, normalAxis
 
 # Conversions
 
@@ -213,6 +215,26 @@ yDirection (SketchPlane3d properties) =
     properties.yDirection
 
 
+{-| Get the normal direction to a sketch plane. This is equal to the cross
+product of the sketch plane's X and Y directions.
+
+    SketchPlane3d.normalDirection SketchPlane3d.xy ==
+        Direction3d.z
+
+    SketchPlane3d.normalDirection SketchPlane3d.xz ==
+        Direction3d.negate Direction3d.y
+-}
+normalDirection : SketchPlane3d -> Direction3d
+normalDirection sketchPlane =
+    let
+        normalVector =
+            Vector3d.crossProduct
+                (Direction3d.vector (xDirection sketchPlane))
+                (Direction3d.vector (yDirection sketchPlane))
+    in
+        Direction3d (Vector3d.components normalVector)
+
+
 {-| Get the X axis of a sketch plane. A 2D X coordinate within the sketch plane
 corresponds to a distance along this axis in 3D.
 
@@ -241,9 +263,25 @@ yAxis sketchPlane =
         }
 
 
-{-| Conver a `SketchPlane3d` to a `Plane3d`. The normal direction of the
-returned plane will be equal to the cross product of the X and Y directions of
-the given sketch plane.
+{-| Get the normal axis to a sketch plane (the axis formed from the sketch
+plane's origin point and normal direction).
+
+    SketchPlane3d.normalAxis SketchPlane3d.xy ==
+        Axis3d.z
+
+    SketchPlane3d.normalAxis SketchPlane3d.xz ==
+        Axis3d.flip Axis3d.y
+-}
+normalAxis : SketchPlane3d -> Axis3d
+normalAxis sketchPlane =
+    Axis3d
+        { originPoint = originPoint sketchPlane
+        , direction = normalDirection sketchPlane
+        }
+
+
+{-| Conver a `SketchPlane3d` to a `Plane3d` with the same origin point and
+normal direction.
 
     SketchPlane3d.plane SketchPlane3d.xy ==
         Plane3d.xy
@@ -253,19 +291,10 @@ the given sketch plane.
 -}
 plane : SketchPlane3d -> Plane3d
 plane sketchPlane =
-    let
-        normalVector =
-            Vector3d.crossProduct
-                (Direction3d.vector (xDirection sketchPlane))
-                (Direction3d.vector (yDirection sketchPlane))
-
-        normalDirection =
-            Direction3d (Vector3d.components normalVector)
-    in
-        Plane3d
-            { originPoint = originPoint sketchPlane
-            , normalDirection = normalDirection
-            }
+    Plane3d
+        { originPoint = originPoint sketchPlane
+        , normalDirection = normalDirection sketchPlane
+        }
 
 
 {-| Flip the X direction of a sketch plane, leaving its Y direction and origin
