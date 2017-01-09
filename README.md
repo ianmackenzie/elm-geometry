@@ -1,8 +1,9 @@
 ## What is it?
 
-This package attempts to make it easier to write software such as computer-aided
-design apps, geometric simulations and games by providing modules for creating
-and manipulating objects of various 2D and 3D data types:
+This package is intended for use in 2D/3D geometry software such as computer
+aided design apps, simulations and games. It consists of a set of modules for
+creating, manipulating and querying geometry in an expressive, flexible and
+reliable way. A wide variety of geometric data types are supported:
 
   - `Point2d`, `Point3d`
 
@@ -59,7 +60,7 @@ and manipulating objects of various 2D and 3D data types:
 
     ![Circle2d](https://opensolid.github.io/images/geometry/icons/circle2d.svg)
 
-A large range of geometric operations are supported, such as various forms of
+A large range of geometric functionality is included, such as various forms of
 constructors:
 
 ```elm
@@ -85,7 +86,7 @@ Frame2d.at (Point2d ( 2, 3 )) ==
         }
 ```
 
-Point/vector arithmetic:
+...point/vector arithmetic:
 
 ```elm
 Vector3d.plus (Vector3d ( 1, 2, 3 )) (Vector3d ( 4, 5, 6 )) ==
@@ -98,7 +99,7 @@ Point2d.distanceFrom Point2d.origin (Point2d ( 1, 1 )) ==
     1.4142
 ```
 
-2D/3D transformations:
+...2D/3D transformations:
 
 ```elm
 Point3d.mirrorAcross Plane3d.xy (Point3d ( 1, 2, 3 )) ==
@@ -125,7 +126,7 @@ transformedLineSegment =
         |> LineSegment3d.projectOnto Plane3d.xy
 ```
 
-And conversions between coordinate systems:
+...and conversions between coordinate systems:
 
 ```elm
 rotatedFrame =
