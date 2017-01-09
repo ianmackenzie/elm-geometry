@@ -55,7 +55,7 @@ are all valid but
 are not. Instead of manually constructing `Direction3d` values, it may be easier
 to start with existing directions and transform them as necessary.
 
-# Constants
+# Predefined directions
 
 @docs x, y, z
 

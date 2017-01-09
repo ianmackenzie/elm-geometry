@@ -51,7 +51,7 @@ components to the `Vector3d` constructor, for example
     vector =
         Vector3d ( 2, 1, 3 )
 
-# Constants
+# Predefined vectors
 
 @docs zero
 

@@ -50,7 +50,7 @@ and Z coordinates to the `Point3d` constructor, for example
     point =
         Point3d ( 2, 1, 3 )
 
-# Constants
+# Predefined points
 
 @docs origin
 

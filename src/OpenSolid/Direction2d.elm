@@ -54,7 +54,7 @@ are not. Instead of manually constructing `Direction2d` values, it may be easier
 to use constructors like `Direction2d.fromAngle` or start with existing
 directions and transform them as necessary.
 
-# Constants
+# Predefined directions
 
 @docs x, y
 

@@ -56,7 +56,7 @@ can use Elm's built-in `fromPolar` function:
     vector =
         Vector2d (fromPolar ( radius, angle ))
 
-# Constants
+# Predefined vectors
 
 @docs zero
 

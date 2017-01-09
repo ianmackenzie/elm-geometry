@@ -53,7 +53,7 @@ can use Elm's built-in `fromPolar` function:
     point =
         Point2d (fromPolar ( radius, angle ))
 
-# Constants
+# Predefined points
 
 @docs origin
 
