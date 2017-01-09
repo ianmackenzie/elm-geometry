@@ -19,6 +19,7 @@ module OpenSolid.Polyline3d
         , rotateAround
         , translateBy
         , mirrorAcross
+        , projectOnto
         , map
         , relativeTo
         , placeIn
@@ -52,7 +53,7 @@ constructor, for example
 
 Transforming a polyline is equivalent to transforming each of its vertices.
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, map
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
 
 # Coordinate frames
 
@@ -180,6 +181,21 @@ translateBy vector =
 mirrorAcross : Plane3d -> Polyline3d -> Polyline3d
 mirrorAcross plane =
     map (Point3d.mirrorAcross plane)
+
+
+{-| Project (flatten) a polyline onto the given plane.
+
+    Polyline3d.projectOnto Plane3d.xz examplePolyline ==
+        Polyline3d
+            [ Point3d ( 0, 0, 0 )
+            , Point3d ( 1, 0, 0 )
+            , Point3d ( 1, 0, 0 )
+            , Point3d ( 1, 0, 3 )
+            ]
+-}
+projectOnto : Plane3d -> Polyline3d -> Polyline3d
+projectOnto plane =
+    map (Point3d.projectOnto plane)
 
 
 {-| Transform each vertex of a polyline by the given function. All other

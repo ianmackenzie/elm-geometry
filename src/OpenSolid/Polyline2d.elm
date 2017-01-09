@@ -19,6 +19,7 @@ module OpenSolid.Polyline2d
         , rotateAround
         , translateBy
         , mirrorAcross
+        , projectOnto
         , map
         , relativeTo
         , placeIn
@@ -52,7 +53,7 @@ constructor, for example
 
 Transforming a polyline is equivalent to transforming each of its vertices.
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, map
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
 
 # Coordinate frames
 
@@ -181,6 +182,21 @@ translateBy vector =
 mirrorAcross : Axis2d -> Polyline2d -> Polyline2d
 mirrorAcross axis =
     map (Point2d.mirrorAcross axis)
+
+
+{-| Project (flatten) a polyline onto the given axis.
+
+    Polyline2d.projectOnto Axis2d.x stepShape ==
+        Polyline2d
+            [ Point2d ( 0, 0 )
+            , Point2d ( 1, 0 )
+            , Point2d ( 1, 0 )
+            , Point2d ( 2, 0 )
+            ]
+-}
+projectOnto : Axis2d -> Polyline2d -> Polyline2d
+projectOnto axis =
+    map (Point2d.projectOnto axis)
 
 
 {-| Transform each vertex of a polyline by the given function. All other
