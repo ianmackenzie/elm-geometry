@@ -12,6 +12,7 @@ module OpenSolid.Circle2d
         , mirrorAcross
         , relativeTo
         , placeIn
+        , boundingBox
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/circle2d.svg" alt="Circle2d" width="160">
@@ -43,6 +44,10 @@ fields to the `Circle2d` constructor, for example
 # Coordinate transformations
 
 @docs relativeTo, placeIn
+
+# Bounds
+
+@docs boundingBox
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -263,3 +268,30 @@ placeIn frame =
                 { centerPoint = placePoint (centerPoint circle)
                 , radius = radius circle
                 }
+
+
+{-| Get the minimal bounding box containing a given circle.
+
+    Circle2d.boundingBox exampleCircle ==
+        BoundingBox2d
+            { minX = -2
+            , maxX = 4
+            , minY = -1
+            , maxY = 5
+            }
+-}
+boundingBox : Circle2d -> BoundingBox2d
+boundingBox circle =
+    let
+        ( x, y ) =
+            Point2d.coordinates (centerPoint circle)
+
+        r =
+            radius circle
+    in
+        BoundingBox2d
+            { minX = x - r
+            , maxX = x + r
+            , minY = y - r
+            , maxY = y + r
+            }
