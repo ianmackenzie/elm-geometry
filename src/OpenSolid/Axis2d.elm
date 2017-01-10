@@ -14,7 +14,6 @@ module OpenSolid.Axis2d
     exposing
         ( x
         , y
-        , perpendicularTo
         , originPoint
         , direction
         , flip
@@ -49,10 +48,6 @@ fields to the `Axis2d` constructor, for example:
 # Predefined axes
 
 @docs x, y
-
-# Constructors
-
-@docs perpendicularTo
 
 # Accessors
 
@@ -103,23 +98,6 @@ x =
 y : Axis2d
 y =
     Axis2d { originPoint = Point2d.origin, direction = Direction2d.y }
-
-
-{-| Construct an axis perpendicular to another axis by rotating the given axis
-90 degrees counterclockwise around its own origin point.
-
-    Axis2d.perpendicularTo Axis2d.x ==
-        Axis2d.y
-
-    Axis2d.perpendicularTo Axis2d.y ==
-        Axis2d.flip Axis2d.x
--}
-perpendicularTo : Axis2d -> Axis2d
-perpendicularTo axis =
-    Axis2d
-        { originPoint = originPoint axis
-        , direction = Direction2d.perpendicularTo (direction axis)
-        }
 
 
 {-| Get the origin point of an axis.

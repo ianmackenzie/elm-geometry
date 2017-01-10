@@ -58,19 +58,6 @@ yExample =
                     )
 
 
-perpendicularToExamples : Test
-perpendicularToExamples =
-    Test.describe "Axis2d.perpendicularTo examples"
-        [ Test.test "First example" <|
-            \() ->
-                Axis2d.perpendicularTo Axis2d.x |> Expect.axis2d Axis2d.y
-        , Test.test "Second example" <|
-            \() ->
-                Axis2d.perpendicularTo Axis2d.y
-                    |> Expect.axis2d (Axis2d.flip Axis2d.x)
-        ]
-
-
 originPointExample : Test
 originPointExample =
     Test.test "Axis2d.originPoint example" <|
@@ -236,7 +223,6 @@ documentationExamples =
     Test.describe "Documentation examples are correct"
         [ xExample
         , yExample
-        , perpendicularToExamples
         , originPointExample
         , directionExample
         , flipExample
