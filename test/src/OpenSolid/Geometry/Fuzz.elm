@@ -261,4 +261,4 @@ circle2d =
         circle centerPoint radius =
             Circle2d { centerPoint = centerPoint, radius = radius }
     in
-        Fuzz.map2 circle point2d scalar
+        Fuzz.map2 circle point2d (Fuzz.map abs scalar)
