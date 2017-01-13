@@ -128,8 +128,7 @@ Point3d.projectInto SketchPlane3d.yz (Point3d ( 2, 1, 3 ))
 -- Point2d ( 1, 3 )
 ```
 
-JSON encoders and decoders for all types are also provided in the `Encode` and
-`Decode` modules.
+Support is also provided for encoding/decoding values to and from JSON.
 
 ## How do I use it?
 
