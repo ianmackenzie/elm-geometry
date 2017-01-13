@@ -181,7 +181,7 @@ originalPoint =
     Point3d ( 2, 1, 3 )
 ```
 
-...and `Module.name` should be used for everything else:
+...while `Module.name` should be used for everything else:
 
 ```elm
 rotatedPoint =
