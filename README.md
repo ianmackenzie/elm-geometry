@@ -133,19 +133,21 @@ Support is also provided for encoding/decoding values to and from JSON.
 
 ## Installation
 
-To install, run
+Assuming you have [installed Elm](https://guide.elm-lang.org/install.html) and
+started a new project, use [elm-package](https://guide.elm-lang.org/install.html#elm-package)
+to install `opensolid/geometry`, either by running
 
 ```
 elm package install opensolid/geometry
 ```
 
-or add
+in a command prompt inside your project directory or by adding
 
 ```json
 "opensolid/geometry": "1.0.0 <= v < 2.0.0"
 ```
 
-to your `elm-package.json`.
+to your project's `elm-package.json`.
 
 ## Documentation
 
