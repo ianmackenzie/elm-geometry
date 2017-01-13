@@ -130,7 +130,7 @@ Point3d.projectInto SketchPlane3d.yz (Point3d ( 2, 1, 3 ))
 
 Support is also provided for encoding/decoding values to and from JSON.
 
-## How do I use it?
+## Installation
 
 To install, run
 
@@ -146,19 +146,40 @@ or add
 
 to your `elm-package.json`.
 
-Full API documentation is available for each module. Most modules are associated
-with a particular type; for an overview of the various types in the package,
-check out the `OpenSolid.Geometry.Types` module.
+# Documentation
 
-Most OpenSolid modules are designed to imported as qualified. The main exception
-is the `Types` module, which only contains type definitions and is intended to
-be imported without qualification. For example,
+Full API documentation is available for each module. Most modules are associated
+with a particular data type (for example, the `Point3d` type has a corresponding
+`Point3d` module); for an overview of the various types in the package, check
+out the `OpenSolid.Geometry.Types` module.
+
+# Usage details
+
+Following the [Elm package design guidelines](http://package.elm-lang.org/help/design-guidelines#module-names-should-not-reappear-in-function-names),
+most OpenSolid modules are designed to imported using `as`:
+
+```elm
+import OpenSolid.Point3d as Point3d
+import OpenSolid.Axis3d as Axis3d
+```
+
+The main exception is the `Types` module containing the core data type
+definitions, which are intended to be exposed directly:
 
 ```elm
 import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Point3d as Point3d
-import OpenSolid.Vector2d as Vector2d
 ```
 
-All documentation examples assume that `OpenSolid.Geometry.Types` and any other
-necessary modules have been imported using this pattern.
+When following the above patterns, type names can be used directly...
+
+```elm
+originalPoint =
+    Point3d ( 2, 1, 3 )
+```
+
+...and `Module.name` should be used for everything else:
+
+```elm
+rotatedPoint =
+    Point3d.rotateAround Axis3d.x (degrees 30) originalPoint
+```
