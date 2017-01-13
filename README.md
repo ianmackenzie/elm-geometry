@@ -130,6 +130,9 @@ Point2d.placeIn rotatedFrame (Point2d (1, 0))
 
 Point3d.projectInto SketchPlane3d.yz (Point3d ( 2, 1, 3 ))
 -- Point2d ( 1, 3 )
+
+Point2d.placeOnto SketchPlane3d.xz (Point2d ( 4, 5 ))
+-- Point3d ( 4, 0, 5 )
 ```
 
 Support is also provided for encoding/decoding values to and from JSON.
