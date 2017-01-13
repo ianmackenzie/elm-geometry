@@ -6,22 +6,23 @@ games. Instead of writing your own 3D point/vector types and transformation
 functions, give this package a try!  A wide variety of geometric data types are
 supported:
 
-  - `Point2d`, `Point3d`
+  - `Point2d`, `Point3d` (positions in space)
 
     ![Point2d](https://opensolid.github.io/images/geometry/icons/point2d.svg)
     ![Point3d](https://opensolid.github.io/images/geometry/icons/point3d.svg)
 
-  - `Vector2d`, `Vector3d`
+  - `Vector2d`, `Vector3d` (velocities, displacements)
 
     ![Vector2d](https://opensolid.github.io/images/geometry/icons/vector2d.svg)
     ![Vector3d](https://opensolid.github.io/images/geometry/icons/vector3d.svg)
 
-  - `Direction2d`, `Direction3d` (type-safe unit vectors)
+  - `Direction2d`, `Direction3d` ('up', 'forward', 'north' etc.; can be thought
+    of as unit vectors)
 
     ![Direction2d](https://opensolid.github.io/images/geometry/icons/direction2d.svg)
     ![Direction3d](https://opensolid.github.io/images/geometry/icons/direction3d.svg)
 
-  - `Axis2d`, `Axis3d`, `Plane3d`
+  - `Axis2d`, `Axis3d`, `Plane3d` (useful for rotations, mirrors, projections)
 
     ![Axis2d](https://opensolid.github.io/images/geometry/icons/axis2d.svg)
     ![Axis3d](https://opensolid.github.io/images/geometry/icons/axis3d.svg)
