@@ -71,8 +71,12 @@ Direction2d.fromAngle (degrees 30)
 Point3d.midpoint Point3d.origin (Point3d (1, 4, 5))
 -- Point3d ( 0.5, 2, 2.5 )
 
-localFrame =
-    Frame2d.at (Point2d ( 2, 3 ))
+Frame2d.at (Point2d ( 2, 3 ))
+-- Frame2d
+--     { originPoint = Point2d ( 2, 3 )
+--     , xDirection = Direction2d ( 1, 0 )
+--     , yDirection = Direction2d ( 0, 1 )
+--     }
 ```
 
 ...point/vector arithmetic...
