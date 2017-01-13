@@ -150,14 +150,14 @@ or add
 
 to your `elm-package.json`.
 
-# Documentation
+## Documentation
 
 Full API documentation is available for each module. Most modules are associated
 with a particular data type (for example, the `Point3d` type has a corresponding
 `Point3d` module); for an overview of the various types in the package, check
 out the `OpenSolid.Geometry.Types` module.
 
-# Usage details
+## Usage details
 
 Following the [Elm package design guidelines](http://package.elm-lang.org/help/design-guidelines#module-names-should-not-reappear-in-function-names),
 most OpenSolid modules are designed to imported using `as`:
