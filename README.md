@@ -125,6 +125,9 @@ rotatedFrame =
 Vector2d.relativeTo rotatedFrame (Vector2d ( 2, 0 ))
 -- Vector2d ( 1.7321, -1 )
 
+Point2d.placeIn rotatedFrame (Point2d (1, 0))
+-- Point2d ( 0.866, 0.5 )
+
 Point3d.projectInto SketchPlane3d.yz (Point3d ( 2, 1, 3 ))
 -- Point2d ( 1, 3 )
 ```
