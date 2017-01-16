@@ -164,30 +164,32 @@ out the `OpenSolid.Geometry.Types` module.
 ## Usage details
 
 Following the [Elm package design guidelines](http://package.elm-lang.org/help/design-guidelines#module-names-should-not-reappear-in-function-names),
-most OpenSolid modules are designed to imported using `as`:
+most OpenSolid modules are designed to imported using `as` and then used as
+prefixes:
 
 ```elm
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Axis3d as Axis3d
+
+rotatedPoint =
+    Point3d.rotateAround Axis3d.x (degrees 30) originalPoint
 ```
 
-The main exception is the `Types` module containing the core data type
-definitions, which are intended to be exposed directly:
+The exception is the `Types` module containing the definitions of core data
+types. The types themselves are intended to be exposed directly:
 
 ```elm
 import OpenSolid.Geometry.Types exposing (..)
-```
 
-When following the above patterns, type names can be used directly...
+myPoint =
+    Point2d ( 2, 1 ) -- not Types.Point2d or OpenSolid.Point2d
 
-```elm
-originalPoint =
-    Point3d ( 2, 1, 3 )
-```
+negativeXDirection =
+    Direction2d ( -1, 0 )
 
-...while `Module.name` should be used for everything else:
-
-```elm
-rotatedPoint =
-    Point3d.rotateAround Axis3d.x (degrees 30) originalPoint
+axis =
+    Axis2d
+        { originPoint = myPoint
+        , direction = negativeXDirection
+        }
 ```
