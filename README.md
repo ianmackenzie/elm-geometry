@@ -165,7 +165,7 @@ out the `OpenSolid.Geometry.Types` module.
 
 Following the [Elm package design guidelines](http://package.elm-lang.org/help/design-guidelines#module-names-should-not-reappear-in-function-names),
 most OpenSolid modules are designed to imported using `as` and then used as
-prefixes:
+prefixes for the functions and values that they define:
 
 ```elm
 import OpenSolid.Point3d as Point3d
@@ -182,7 +182,7 @@ types. The types themselves are intended to be exposed directly:
 import OpenSolid.Geometry.Types exposing (..)
 
 myPoint =
-    Point2d ( 2, 1 ) -- not Types.Point2d or OpenSolid.Point2d
+    Point2d ( 2, 1 ) -- Point2d, not Types.Point2d or OpenSolid.Point2d
 
 negativeXDirection =
     Direction2d ( -1, 0 )
