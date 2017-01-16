@@ -1,10 +1,9 @@
 ## What is it?
 
-An [Elm](http://elm-lang.org) package for working with 2D and 3D geometry, for
-use when developing software such as computer aided design apps, simulations and
-games. Instead of writing your own 3D point/vector types and transformation
-functions, give this package a try!  A wide variety of geometric data types are
-supported:
+An [Elm](http://elm-lang.org) package for working with 2D and 3D geometry.
+Instead of creating your own point/vector/geometry types and writing your own
+construction/transformation functions, give this package a try!  A wide variety
+of geometric data types are supported:
 
   - `Point2d`, `Point3d`
 
