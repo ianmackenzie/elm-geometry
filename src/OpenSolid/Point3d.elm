@@ -383,7 +383,7 @@ squaredRadialDistanceFrom axis =
             axis
 
         directionVector =
-            Direction3d.vector direction
+            Direction3d.toVector direction
     in
         vectorFrom originPoint
             >> Vector3d.crossProduct directionVector
