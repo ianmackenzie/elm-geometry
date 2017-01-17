@@ -37,10 +37,16 @@ module OpenSolid.LineSegment3d
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/lineSegment3d.svg" alt="LineSegment3d" width="160">
 
-Various functions for creating and working with `LineSegment3d` values. Line
-segments are defined by their start and end points and can be constructed by
-passing a tuple of start and end points to the `LineSegment3d` constructor, for
-example
+A `LineSegment3d` is a line between two points in 3D. This module contains
+functionality such as:
+
+  - Interpolating within a line segment or measuring its length
+  - Scaling, rotating, translating, mirroring or projecting a line segment
+  - Converting a line segment between local and global coordinates in different
+    reference frames
+
+Line segments can be constructed by passing a tuple of start and end points to
+the `LineSegment3d` constructor, for example
 
     lineSegment =
         LineSegment2d
