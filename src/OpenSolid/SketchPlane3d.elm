@@ -215,8 +215,8 @@ normalDirection sketchPlane =
     let
         normalVector =
             Vector3d.crossProduct
-                (Direction3d.vector (xDirection sketchPlane))
-                (Direction3d.vector (yDirection sketchPlane))
+                (Direction3d.toVector (xDirection sketchPlane))
+                (Direction3d.toVector (yDirection sketchPlane))
     in
         Direction3d (Vector3d.components normalVector)
 

@@ -22,7 +22,7 @@ module OpenSolid.Direction3d
         , yComponent
         , zComponent
         , equalWithin
-        , vector
+        , toVector
         , negate
         , times
         , componentIn
@@ -74,7 +74,7 @@ to start with existing directions and transform them as necessary.
 
 # Vector conversion
 
-@docs vector
+@docs toVector
 
 # Arithmetic
 
@@ -179,7 +179,7 @@ perpendicularTo : Direction3d -> Direction3d
 perpendicularTo direction =
     let
         perpendicularVector =
-            Vector3d.perpendicularTo (vector direction)
+            Vector3d.perpendicularTo (toVector direction)
 
         length =
             Vector3d.length perpendicularVector
@@ -216,7 +216,7 @@ perpendicularBasis direction =
             perpendicularTo direction
 
         yDirection =
-            Vector3d.crossProduct (vector direction) (vector xDirection)
+            Vector3d.crossProduct (toVector direction) (toVector xDirection)
                 |> toDirection
     in
         ( xDirection, yDirection )
@@ -296,7 +296,7 @@ This is more general and flexible than using `xComponent`, `yComponent` or
 -}
 componentIn : Direction3d -> Direction3d -> Float
 componentIn firstDirection secondDirection =
-    Vector3d.componentIn firstDirection (vector secondDirection)
+    Vector3d.componentIn firstDirection (toVector secondDirection)
 
 
 {-| Compare two directions within a tolerance. Returns true if the angle between
@@ -318,11 +318,11 @@ equalWithin angle firstDirection secondDirection =
 
 {-| Convert a direction to a unit vector.
 
-    Direction3d.vector Direction3d.y ==
+    Direction3d.toVector Direction3d.y ==
         Vector3d ( 0, 1, 0 )
 -}
-vector : Direction3d -> Vector3d
-vector (Direction3d components) =
+toVector : Direction3d -> Vector3d
+toVector (Direction3d components) =
     Vector3d components
 
 
@@ -333,7 +333,7 @@ vector (Direction3d components) =
 -}
 negate : Direction3d -> Direction3d
 negate =
-    vector >> Vector3d.negate >> toDirection
+    toVector >> Vector3d.negate >> toDirection
 
 
 {-| Construct a vector from a magnitude and a direction. If the magnitude is
@@ -345,7 +345,7 @@ negative the resulting vector will be in the opposite of the given direction.
 -}
 times : Float -> Direction3d -> Vector3d
 times scale =
-    vector >> Vector3d.times scale
+    toVector >> Vector3d.times scale
 
 
 {-| Find the angle from one direction to another. The result will be in the
@@ -385,7 +385,7 @@ its origin point, since directions are position-independent:
 -}
 rotateAround : Axis3d -> Float -> Direction3d -> Direction3d
 rotateAround axis angle =
-    vector >> Vector3d.rotateAround axis angle >> toDirection
+    toVector >> Vector3d.rotateAround axis angle >> toDirection
 
 
 {-| Mirror a direction across a plane.
@@ -407,7 +407,7 @@ position of its origin point, since directions are position-independent:
 -}
 mirrorAcross : Plane3d -> Direction3d -> Direction3d
 mirrorAcross plane =
-    vector >> Vector3d.mirrorAcross plane >> toDirection
+    toVector >> Vector3d.mirrorAcross plane >> toDirection
 
 
 {-| Project a direction onto a plane. This is effectively the direction of the
@@ -431,7 +431,7 @@ exactly perpendicular to the given plane, then `Nothing` is returned.
 -}
 projectOnto : Plane3d -> Direction3d -> Maybe Direction3d
 projectOnto plane =
-    vector >> Vector3d.projectOnto plane >> Vector3d.direction
+    toVector >> Vector3d.projectOnto plane >> Vector3d.direction
 
 
 {-| Take a direction defined in global coordinates, and return it expressed in
@@ -448,7 +448,7 @@ local coordinates relative to a given reference frame.
 -}
 relativeTo : Frame3d -> Direction3d -> Direction3d
 relativeTo frame =
-    vector >> Vector3d.relativeTo frame >> toDirection
+    toVector >> Vector3d.relativeTo frame >> toDirection
 
 
 {-| Take a direction defined in local coordinates relative to a given reference
@@ -465,7 +465,7 @@ frame, and return that direction expressed in global coordinates.
 -}
 placeIn : Frame3d -> Direction3d -> Direction3d
 placeIn frame =
-    vector >> Vector3d.placeIn frame >> toDirection
+    toVector >> Vector3d.placeIn frame >> toDirection
 
 
 {-| Project a direction into a given sketch plane. Conceptually, this projects
@@ -492,4 +492,4 @@ plane; if it is perpendicular, `Nothing` is returned.
 -}
 projectInto : SketchPlane3d -> Direction3d -> Maybe Direction2d
 projectInto sketchPlane =
-    vector >> Vector3d.projectInto sketchPlane >> Vector2d.direction
+    toVector >> Vector3d.projectInto sketchPlane >> Vector2d.direction

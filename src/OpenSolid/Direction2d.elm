@@ -23,7 +23,7 @@ module OpenSolid.Direction2d
         , yComponent
         , componentIn
         , equalWithin
-        , vector
+        , toVector
         , negate
         , times
         , rotateBy
@@ -77,7 +77,7 @@ directions and transform them as necessary.
 
 # Vector conversion
 
-@docs vector
+@docs toVector
 
 # Arithmetic
 
@@ -153,7 +153,7 @@ given direction 90 degrees counterclockwise.
 -}
 perpendicularTo : Direction2d -> Direction2d
 perpendicularTo =
-    vector >> Vector2d.perpendicularTo >> toDirection
+    toVector >> Vector2d.perpendicularTo >> toDirection
 
 
 {-| Construct a direction from an angle in radians, given counterclockwise from
@@ -210,10 +210,10 @@ angleFrom : Direction2d -> Direction2d -> Float
 angleFrom other direction =
     let
         otherVector =
-            vector other
+            toVector other
 
         directionVector =
-            vector direction
+            toVector direction
     in
         atan2 (Vector2d.crossProduct otherVector directionVector)
             (Vector2d.dotProduct otherVector directionVector)
@@ -280,7 +280,7 @@ of which can be expressed in terms of `componentIn`:
 -}
 componentIn : Direction2d -> Direction2d -> Float
 componentIn firstDirection secondDirection =
-    Vector2d.componentIn firstDirection (vector secondDirection)
+    Vector2d.componentIn firstDirection (toVector secondDirection)
 
 
 {-| Compare two directions within a tolerance. Returns true if the angle between
@@ -305,11 +305,11 @@ equalWithin angle firstDirection secondDirection =
 
 {-| Convert a direction to a unit vector.
 
-    Direction2d.vector Direction2d.x ==
+    Direction2d.toVector Direction2d.x ==
         Vector2d ( 1, 0 )
 -}
-vector : Direction2d -> Vector2d
-vector (Direction2d components) =
+toVector : Direction2d -> Vector2d
+toVector (Direction2d components) =
     Vector2d components
 
 
@@ -320,7 +320,7 @@ vector (Direction2d components) =
 -}
 negate : Direction2d -> Direction2d
 negate =
-    vector >> Vector2d.negate >> toDirection
+    toVector >> Vector2d.negate >> toDirection
 
 
 {-| Construct a vector from a magnitude and a direction. If the magnitude is
@@ -335,7 +335,7 @@ negative the resulting vector will be in the opposite of the given direction.
 -}
 times : Float -> Direction2d -> Vector2d
 times scale =
-    vector >> Vector2d.times scale
+    toVector >> Vector2d.times scale
 
 
 {-| Rotate a direction counterclockwise by a given angle (in radians).
@@ -348,7 +348,7 @@ times scale =
 -}
 rotateBy : Float -> Direction2d -> Direction2d
 rotateBy angle =
-    vector >> Vector2d.rotateBy angle >> toDirection
+    toVector >> Vector2d.rotateBy angle >> toDirection
 
 
 {-| Mirror a direction across a particular axis. Note that only the direction of
@@ -368,7 +368,7 @@ the axis affects the result, since directions are position-independent.
 -}
 mirrorAcross : Axis2d -> Direction2d -> Direction2d
 mirrorAcross axis =
-    vector >> Vector2d.mirrorAcross axis >> toDirection
+    toVector >> Vector2d.mirrorAcross axis >> toDirection
 
 
 {-| Take a direction defined in global coordinates, and return it expressed in
@@ -385,7 +385,7 @@ local coordinates relative to a given reference frame.
 -}
 relativeTo : Frame2d -> Direction2d -> Direction2d
 relativeTo frame =
-    vector >> Vector2d.relativeTo frame >> toDirection
+    toVector >> Vector2d.relativeTo frame >> toDirection
 
 
 {-| Take a direction defined in local coordinates relative to a given reference
@@ -402,7 +402,7 @@ frame, and return that direction expressed in global coordinates.
 -}
 placeIn : Frame2d -> Direction2d -> Direction2d
 placeIn frame =
-    vector >> Vector2d.placeIn frame >> toDirection
+    toVector >> Vector2d.placeIn frame >> toDirection
 
 
 {-| Take a direction defined in 2D coordinates within a particular sketch plane

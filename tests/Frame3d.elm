@@ -36,13 +36,13 @@ frameDirectionsAreOrthonormal =
         (\frame ->
             let
                 xDirectionVector =
-                    Direction3d.vector (Frame3d.xDirection frame)
+                    Direction3d.toVector (Frame3d.xDirection frame)
 
                 yDirectionVector =
-                    Direction3d.vector (Frame3d.yDirection frame)
+                    Direction3d.toVector (Frame3d.yDirection frame)
 
                 zDirectionVector =
-                    Direction3d.vector (Frame3d.zDirection frame)
+                    Direction3d.toVector (Frame3d.zDirection frame)
 
                 tripleProduct =
                     Vector3d.crossProduct xDirectionVector yDirectionVector
