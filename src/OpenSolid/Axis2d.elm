@@ -38,10 +38,10 @@ an origin point and direction. Axes have several uses, such as:
 Axes can by constructed by passing a record with `originPoint` and `direction`
 fields to the `Axis2d` constructor, for example:
 
-    axis =
+    exampleAxis =
         Axis2d
-            { originPoint = Point2d ( 2, 3 )
-            , direction = Direction2d.fromAngle (degrees 45)
+            { originPoint = Point2d ( 1, 3 )
+            , direction = Direction2d ( 0.8, 0.6 )
             }
 
 # Predefined axes
@@ -75,11 +75,11 @@ import OpenSolid.Direction2d as Direction2d
 
 {-| The global X axis.
 
-    Axis2d.x ==
-        Axis2d
-            { originPoint = Point2d.origin
-            , direction = Direction2d.x
-            }
+    Axis2d.x
+    --> Axis2d
+    -->     { originPoint = Point2d.origin
+    -->     , direction = Direction2d.x
+    -->     }
 -}
 x : Axis2d
 x =
@@ -88,11 +88,11 @@ x =
 
 {-| The global Y axis.
 
-    Axis2d.y ==
-        Axis2d
-            { originPoint = Point2d.origin
-            , direction = Direction2d.y
-            }
+    Axis2d.y
+    --> Axis2d
+    -->     { originPoint = Point2d.origin
+    -->     , direction = Direction2d.y
+    -->     }
 -}
 y : Axis2d
 y =
@@ -101,8 +101,8 @@ y =
 
 {-| Get the origin point of an axis.
 
-    Axis2d.originPoint Axis2d.x ==
-        Point2d.origin
+    Axis2d.originPoint exampleAxis
+    --> Point2d ( 1, 3 )
 -}
 originPoint : Axis2d -> Point2d
 originPoint (Axis2d properties) =
@@ -111,8 +111,8 @@ originPoint (Axis2d properties) =
 
 {-| Get the direction of an axis.
 
-    Axis2d.direction Axis2d.y ==
-        Direction2d.y
+    Axis2d.direction exampleAxis
+    --> Direction2d ( 0.8, 0.6 )
 -}
 direction : Axis2d -> Direction2d
 direction (Axis2d properties) =
@@ -121,11 +121,11 @@ direction (Axis2d properties) =
 
 {-| Reverse the direction of an axis while keeping the same origin point.
 
-    Axis2d.flip Axis2d.x ==
-        Axis2d
-            { originPoint = Point2d.origin
-            , direction = Direction2d.negate Direction2d.x
-            }
+    Axis2d.flip exampleAxis
+    --> Axis2d
+    -->     { originPoint = Point2d ( 1, 3 )
+    -->     , direction = Direction2d ( -0.8, -0.6 )
+    -->     }
 -}
 flip : Axis2d -> Axis2d
 flip axis =
@@ -137,20 +137,14 @@ flip axis =
 
 {-| Move an axis so that it has the given origin point but unchanged direction.
 
-    axis =
-        Axis2d
-            { originPoint = Point2d ( 2, 3 )
-            , direction = Direction2d.y
-            }
-
     newOrigin =
         Point2d ( 4, 5 )
 
-    Axis2d.moveTo newOrigin axis ==
-        Axis2d
-            { originPoint = Point2d ( 4, 5 )
-            , direction = Direction2d.y
-            }
+    Axis2d.moveTo newOrigin exampleAxis
+    --> Axis2d
+    -->     { originPoint = Point2d ( 4, 5 )
+    -->     , direction = Direction2d ( 0.8, 0.6 )
+    -->     }
 -}
 moveTo : Point2d -> Axis2d -> Axis2d
 moveTo newOrigin axis =
@@ -161,8 +155,11 @@ moveTo newOrigin axis =
 axis' origin point around the given point by the given angle and the axis'
 direction by the given angle.
 
-    Axis2d.rotateAround Point2d.origin (degrees 90) Axis2d.x ==
-        Axis2d.y
+    Axis2d.rotateAround Point2d.origin (degrees 90) exampleAxis
+    --> Axis2d
+    -->     { originPoint = Point2d ( -3, 1 )
+    -->     , direction = Direction2d ( -0.6, 0.8 )
+    -->     }
 -}
 rotateAround : Point2d -> Float -> Axis2d -> Axis2d
 rotateAround centerPoint angle =
@@ -186,11 +183,11 @@ the axis' origin point and leaves the direction unchanged.
     displacement =
         Vector2d ( 2, 3 )
 
-    Axis2d.translateBy displacement Axis2d.y ==
-        Axis2d
-            { originPoint = Point2d ( 2, 3 )
-            , direction = Direction2d.y
-            }
+    Axis2d.translateBy displacement exampleAxis
+    --> Axis2d
+    -->     { originPoint = Point2d ( 3, 6 )
+    -->     , direction = Direction2d ( 0.8, 0.6 )
+    -->     }
 -}
 translateBy : Vector2d -> Axis2d -> Axis2d
 translateBy vector axis =
@@ -203,17 +200,11 @@ translateBy vector axis =
 {-| Mirror one axis across another. The axis to mirror across is given first and
 the axis to mirror is given second.
 
-    axis =
-        Axis2d
-            { originPoint = Point2d ( 1, 2 )
-            , direction = Direction2d.fromAngle (degrees 30)
-            }
-
-    Axis2d.mirrorAcross Axis2d.x axis ==
-        Axis2d
-            { originPoint = Point2d ( 1, -2 )
-            , direction = Direction2d.fromAngle (degrees -30)
-            }
+    Axis2d.mirrorAcross Axis2d.x exampleAxis
+    --> Axis2d
+    -->     { originPoint = Point2d ( 1, -3 )
+    -->     , direction = Direction2d ( 0.8, -0.6 )
+    -->     }
 -}
 mirrorAcross : Axis2d -> Axis2d -> Axis2d
 mirrorAcross otherAxis =
@@ -237,11 +228,11 @@ coordinates relative to a given reference frame.
     originPoint =
         Point2d ( 2, 3 )
 
-    Axis2d.relativeTo (Frame2d.at originPoint) Axis2d.x ==
-        Axis2d
-            { originPoint = Point2d ( -2, -3 )
-            , direction = Direction2d.x
-            }
+    Axis2d.relativeTo (Frame2d.at originPoint) exampleAxis
+    --> Axis2d
+    -->     { originPoint = Point2d ( -1, 0 )
+    -->     , direction = Direction2d ( 0.8, 0.6 )
+    -->     }
 -}
 relativeTo : Frame2d -> Axis2d -> Axis2d
 relativeTo frame =
@@ -265,11 +256,11 @@ frame, and return that axis expressed in global coordinates.
     originPoint =
         Point2d ( 2, 3 )
 
-    Axis2d.placeIn (Frame2d.at originPoint) Axis2d.x ==
-        Axis2d
-            { originPoint = Point2d ( 2, 3 )
-            , direction = Direction2d.x
-            }
+    Axis2d.placeIn (Frame2d.at originPoint) exampleAxis
+    --> Axis2d
+    -->     { originPoint = Point2d ( 3, 6 )
+    -->     , direction = Direction2d ( 0.8, 0.6 )
+    -->     }
 -}
 placeIn : Frame2d -> Axis2d -> Axis2d
 placeIn frame =
@@ -290,23 +281,17 @@ placeIn frame =
 {-| Take an axis defined in 2D coordinates within a particular sketch plane and
 return the corresponding axis in 3D.
 
-    axis =
-        Axis2d
-            { originPoint = Point2d ( 2, 3 )
-            , direction = Direction2d ( 0.6, 0.8 )
-            }
+    Axis2d.placeOnto SketchPlane3d.xy exampleAxis
+    --> Axis3d
+    -->     { originPoint = Point3d ( 2, 3, 0 )
+    -->     , direction = Direction3d ( 0.8, 0.6, 0 )
+    -->     }
 
-    Axis2d.placeOnto SketchPlane3d.xy axis ==
-        Axis3d
-            { originPoint = Point3d ( 2, 3, 0 )
-            , direction = Direction3d ( 0.6, 0.8, 0 )
-            }
-
-    Axis2d.placeOnto SketchPlane3d.zx axis ==
-        Axis3d
-            { originPoint = Point3d ( 3, 0, 2 )
-            , direction = Direction3d ( 0.8, 0, 0.6 )
-            }
+    Axis2d.placeOnto SketchPlane3d.zx exampleAxis
+    --> Axis3d
+    -->     { originPoint = Point3d ( 3, 0, 2 )
+    -->     , direction = Direction3d ( 0.6, 0, 0.8 )
+    -->     }
 -}
 placeOnto : SketchPlane3d -> Axis2d -> Axis3d
 placeOnto sketchPlane =
