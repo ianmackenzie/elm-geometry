@@ -55,7 +55,7 @@ constructor, for example
         SketchPlane3d
             { originPoint = Point3d ( 2, 1, 3 )
             , xDirection = Direction3d.y
-            , yDirection = Direction3d.negate Direction3d.z
+            , yDirection = Direction3d.flip Direction3d.z
             }
 
 If you construct a `SketchPlane3d` this way, you are responsible for ensuring
@@ -208,7 +208,7 @@ product of the sketch plane's X and Y directions.
         Direction3d.z
 
     SketchPlane3d.normalDirection SketchPlane3d.xz ==
-        Direction3d.negate Direction3d.y
+        Direction3d.flip Direction3d.y
 -}
 normalDirection : SketchPlane3d -> Direction3d
 normalDirection sketchPlane =
@@ -289,7 +289,7 @@ point unchanged.
     SketchPlane3d.flipX SketchPlane3d.yz ==
         SketchPlane3d
             { originPoint = Point3d.origin
-            , xDirection = Direction3d.negate Direction3d.y
+            , xDirection = Direction3d.flip Direction3d.y
             , yDirection = Direction3d.z
             }
 -}
@@ -297,7 +297,7 @@ flipX : SketchPlane3d -> SketchPlane3d
 flipX sketchPlane =
     SketchPlane3d
         { originPoint = originPoint sketchPlane
-        , xDirection = Direction3d.negate (xDirection sketchPlane)
+        , xDirection = Direction3d.flip (xDirection sketchPlane)
         , yDirection = yDirection sketchPlane
         }
 
@@ -309,7 +309,7 @@ point unchanged.
         SketchPlane3d
             { originPoint = Point3d.origin
             , xDirection = Direction3d.y
-            , yDirection = Direction3d.negate Direction3d.z
+            , yDirection = Direction3d.flip Direction3d.z
             }
 -}
 flipY : SketchPlane3d -> SketchPlane3d
@@ -317,7 +317,7 @@ flipY sketchPlane =
     SketchPlane3d
         { originPoint = originPoint sketchPlane
         , xDirection = xDirection sketchPlane
-        , yDirection = Direction3d.negate (yDirection sketchPlane)
+        , yDirection = Direction3d.flip (yDirection sketchPlane)
         }
 
 
@@ -472,7 +472,7 @@ translateAlongOwn axis distance frame =
         SketchPlane3d
             { originPoint = Point2d ( 2, 1, -3 )
             , xDirection = Direction3d.y
-            , yDirection = Direction3d.negate Direction3d.z
+            , yDirection = Direction3d.flip Direction3d.z
             }
 -}
 mirrorAcross : Plane3d -> SketchPlane3d -> SketchPlane3d

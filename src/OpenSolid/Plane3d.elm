@@ -230,7 +230,7 @@ flip : Plane3d -> Plane3d
 flip plane =
     Plane3d
         { originPoint = originPoint plane
-        , normalDirection = Direction3d.negate (normalDirection plane)
+        , normalDirection = Direction3d.flip (normalDirection plane)
         }
 
 

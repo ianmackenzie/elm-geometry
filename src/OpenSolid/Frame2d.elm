@@ -182,7 +182,7 @@ the same.
     Frame2d.flipX Frame2d.xy ==
         Frame2d
             { originPoint = Point2d.origin
-            , xDirection = Direction2d.negate Direction2d.x
+            , xDirection = Direction2d.flip Direction2d.x
             , yDirection = Direction2d.y
             }
 -}
@@ -190,7 +190,7 @@ flipX : Frame2d -> Frame2d
 flipX frame =
     Frame2d
         { originPoint = originPoint frame
-        , xDirection = Direction2d.negate (xDirection frame)
+        , xDirection = Direction2d.flip (xDirection frame)
         , yDirection = yDirection frame
         }
 
@@ -202,7 +202,7 @@ the same.
         Frame2d
             { originPoint = Point2d.origin
             , xDirection = Direction2d.x
-            , yDirection = Direction2d.negate Direction2d.y
+            , yDirection = Direction2d.flip Direction2d.y
             }
 -}
 flipY : Frame2d -> Frame2d
@@ -210,7 +210,7 @@ flipY frame =
     Frame2d
         { originPoint = originPoint frame
         , xDirection = xDirection frame
-        , yDirection = Direction2d.negate (yDirection frame)
+        , yDirection = Direction2d.flip (yDirection frame)
         }
 
 
@@ -362,7 +362,7 @@ translateAlongOwn axis distance frame =
         Frame2d
             { originPoint = Point2d ( 2, -3 )
             , xDirection = Direction2d.x
-            , yDirection = Direction2d.negate Direction2d.y
+            , yDirection = Direction2d.flip Direction2d.y
             }
 
 Note that this will switch the

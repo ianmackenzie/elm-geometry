@@ -24,8 +24,8 @@ module OpenSolid.Direction2d
         , componentIn
         , equalWithin
         , toVector
-        , negate
         , times
+        , flip
         , rotateBy
         , mirrorAcross
         , relativeTo
@@ -77,15 +77,11 @@ directions and transform them as necessary.
 
 # Vector conversion
 
-@docs toVector
-
-# Arithmetic
-
-@docs negate, times
+@docs toVector, times
 
 # Transformations
 
-@docs rotateBy, mirrorAcross
+@docs flip, rotateBy, mirrorAcross
 
 # Coordinate frames
 
@@ -100,7 +96,7 @@ For the examples, assume the following frames have been defined:
         Frame2d
             { originPoint = Point2d.origin
             , xDirection = Direction2d.x
-            , yDirection = Direction2d.negate Direction2d.y
+            , yDirection = Direction2d.flip Direction2d.y
             }
 
     rotatedFrame =
@@ -149,7 +145,7 @@ given direction 90 degrees counterclockwise.
         Direction2d.y
 
     Direction2d.perpendicularTo Direction2d.y ==
-        Direction2d.negate Direction2d.x
+        Direction2d.flip Direction2d.x
 -}
 perpendicularTo : Direction2d -> Direction2d
 perpendicularTo =
@@ -313,16 +309,6 @@ toVector (Direction2d components) =
     Vector2d components
 
 
-{-| Reverse a direction.
-
-    Direction2d.negate Direction2d.y ==
-        Direction2d ( 0, -1 )
--}
-negate : Direction2d -> Direction2d
-negate =
-    toVector >> Vector2d.negate >> toDirection
-
-
 {-| Construct a vector from a magnitude and a direction. If the magnitude is
 negative the resulting vector will be in the opposite of the given direction.
 
@@ -338,13 +324,23 @@ times scale =
     toVector >> Vector2d.times scale
 
 
+{-| Reverse a direction.
+
+    Direction2d.flip Direction2d.y ==
+        Direction2d ( 0, -1 )
+-}
+flip : Direction2d -> Direction2d
+flip =
+    toVector >> Vector2d.negate >> toDirection
+
+
 {-| Rotate a direction counterclockwise by a given angle (in radians).
 
     Direction2d.rotateBy (degrees 45) Direction2d.x ==
         Direction2d ( 0.7071, 0.7071 )
 
     Direction2d.rotateBy pi Direction2d.y ==
-        Direction2d.negate Direction2d.y
+        Direction2d.flip Direction2d.y
 -}
 rotateBy : Float -> Direction2d -> Direction2d
 rotateBy angle =

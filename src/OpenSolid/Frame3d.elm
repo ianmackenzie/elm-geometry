@@ -113,7 +113,7 @@ product reverses the sign of the result,
     Frame3d.yxPlane Frame3d.xyz ==
         Plane3d
             { originPoint = Point3d.origin
-            , normalDirection = Direction3d.negate Direction3d.z
+            , normalDirection = Direction3d.flip Direction3d.z
             }
 
 @docs xyPlane, yxPlane, yzPlane, zyPlane, zxPlane, xzPlane
@@ -277,7 +277,7 @@ yxPlane : Frame3d -> Plane3d
 yxPlane frame =
     Plane3d
         { originPoint = originPoint frame
-        , normalDirection = Direction3d.negate (zDirection frame)
+        , normalDirection = Direction3d.flip (zDirection frame)
         }
 
 
@@ -297,7 +297,7 @@ zyPlane : Frame3d -> Plane3d
 zyPlane frame =
     Plane3d
         { originPoint = originPoint frame
-        , normalDirection = Direction3d.negate (xDirection frame)
+        , normalDirection = Direction3d.flip (xDirection frame)
         }
 
 
@@ -317,7 +317,7 @@ xzPlane : Frame3d -> Plane3d
 xzPlane frame =
     Plane3d
         { originPoint = originPoint frame
-        , normalDirection = Direction3d.negate (yDirection frame)
+        , normalDirection = Direction3d.flip (yDirection frame)
         }
 
 
@@ -392,7 +392,7 @@ xzSketchPlane frame =
     Frame3d.flipX Frame3d.xyz ==
         Frame3d
             { originPoint = Point3d.origin
-            , xDirection = Direction3d.negate Direction3d.x
+            , xDirection = Direction3d.flip Direction3d.x
             , yDirection = Direction3d.y
             , zDirection = Direction3d.z
             }
@@ -401,7 +401,7 @@ flipX : Frame3d -> Frame3d
 flipX frame =
     Frame3d
         { originPoint = originPoint frame
-        , xDirection = Direction3d.negate (xDirection frame)
+        , xDirection = Direction3d.flip (xDirection frame)
         , yDirection = yDirection frame
         , zDirection = zDirection frame
         }
@@ -413,7 +413,7 @@ flipX frame =
         Frame3d
             { originPoint = Point3d.origin
             , xDirection = Direction3d.x
-            , yDirection = Direction3d.negate Direction3d.y
+            , yDirection = Direction3d.flip Direction3d.y
             , zDirection = Direction3d.z
             }
 -}
@@ -422,7 +422,7 @@ flipY frame =
     Frame3d
         { originPoint = originPoint frame
         , xDirection = xDirection frame
-        , yDirection = Direction3d.negate (yDirection frame)
+        , yDirection = Direction3d.flip (yDirection frame)
         , zDirection = zDirection frame
         }
 
@@ -434,7 +434,7 @@ flipY frame =
             { originPoint = Point3d.origin
             , xDirection = Direction3d.x
             , yDirection = Direction3d.y
-            , zDirection = Direction3d.negate Direction3d.z
+            , zDirection = Direction3d.flip Direction3d.z
             }
 -}
 flipZ : Frame3d -> Frame3d
@@ -443,7 +443,7 @@ flipZ frame =
         { originPoint = originPoint frame
         , xDirection = xDirection frame
         , yDirection = yDirection frame
-        , zDirection = Direction3d.negate (zDirection frame)
+        , zDirection = Direction3d.flip (zDirection frame)
         }
 
 
@@ -475,7 +475,7 @@ origin point and basis directions will all be rotated around the given axis.
         Frame3d
             { originPoint = Point3d ( -1, 2, 3 )
             , xDirection = Direction3d.y
-            , yDirection = Direction3d.negate Direction3d.x
+            , yDirection = Direction3d.flip Direction3d.x
             , zDirection = Direction3d.z
             }
 -}
@@ -511,7 +511,7 @@ for `rotateAround`:
         Frame3d
             { originPoint = Point3d ( 2, 1, 3 )
             , xDirection = Direction3d.y
-            , yDirection = Direction3d.negate Direction3d.x
+            , yDirection = Direction3d.flip Direction3d.x
             , zDirection = Direction3d.z
             }
 
@@ -595,7 +595,7 @@ translateAlongOwn axis distance frame =
             { originPoint = Point3d ( 2, 1, -3 )
             , xDirection = Direction3d.x
             , yDirection = Direction3d.y
-            , zDirection = Direction3d.negate Direction3d.z
+            , zDirection = Direction3d.flip Direction3d.z
             }
 
 Note that this will switch the

@@ -23,7 +23,7 @@ module OpenSolid.Direction3d
         , zComponent
         , equalWithin
         , toVector
-        , negate
+        , flip
         , times
         , componentIn
         , angleFrom
@@ -74,11 +74,7 @@ to start with existing directions and transform them as necessary.
 
 # Vector conversion
 
-@docs toVector
-
-# Arithmetic
-
-@docs negate, times
+@docs toVector, times
 
 # Angle measurement
 
@@ -86,7 +82,7 @@ to start with existing directions and transform them as necessary.
 
 # Transformations
 
-@docs rotateAround, mirrorAcross, projectOnto
+@docs flip, rotateAround, mirrorAcross, projectOnto
 
 # Coordinate frames
 
@@ -326,16 +322,6 @@ toVector (Direction3d components) =
     Vector3d components
 
 
-{-| Reverse a direction.
-
-    Direction3d.negate Direction3d.y ==
-        Direction3d ( 0, -1, 0 )
--}
-negate : Direction3d -> Direction3d
-negate =
-    toVector >> Vector3d.negate >> toDirection
-
-
 {-| Construct a vector from a magnitude and a direction. If the magnitude is
 negative the resulting vector will be in the opposite of the given direction.
 
@@ -363,6 +349,16 @@ range 0 to π.
 angleFrom : Direction3d -> Direction3d -> Float
 angleFrom other direction =
     acos (componentIn direction other)
+
+
+{-| Reverse a direction.
+
+    Direction3d.flip Direction3d.y ==
+        Direction3d ( 0, -1, 0 )
+-}
+flip : Direction3d -> Direction3d
+flip =
+    toVector >> Vector3d.negate >> toDirection
 
 
 {-| Rotate a direction around an axis by a given angle.

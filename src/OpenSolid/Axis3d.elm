@@ -140,14 +140,14 @@ direction (Axis3d properties) =
     Axis3d.flip Axis3d.x ==
         Axis3d
             { originPoint = Point3d.origin
-            , direction = Direction3d.negate Direction3d.x
+            , direction = Direction3d.flip Direction3d.x
             }
 -}
 flip : Axis3d -> Axis3d
 flip axis =
     Axis3d
         { originPoint = originPoint axis
-        , direction = Direction3d.negate (direction axis)
+        , direction = Direction3d.flip (direction axis)
         }
 
 

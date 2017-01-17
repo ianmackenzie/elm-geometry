@@ -131,7 +131,7 @@ flip : Axis2d -> Axis2d
 flip axis =
     Axis2d
         { originPoint = originPoint axis
-        , direction = Direction2d.negate (direction axis)
+        , direction = Direction2d.flip (direction axis)
         }
 
 
