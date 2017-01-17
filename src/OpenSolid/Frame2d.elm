@@ -33,18 +33,19 @@ module OpenSolid.Frame2d
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/frame2d.svg" alt="Frame2d" width="160">
 
-Various functions for creating and working with `Frame2d` values. A `Frame2d`
-represents a coordinate system in 2D space and is defined by an origin point and
-X and Y basis directions (which are always perpendicular to each other).
+A `Frame2d` has an origin point and a pair of X and Y directions (which are
+always perpendicular to each other). It can be thought of as:
 
-Frames can be used to transform between local and global coordinates using the
-`relativeTo` and `placeIn` functions associated with various other data types. A
-special but common case of coordinate transformation is to create 'template'
-objects, perhaps using `relativeTo`, and then instantiate them at different
-locations and in different orientations using `placeIn`.
-
-Frames can also be used as a source of datums used in transformations, for
-example mirroring across the X axis of a frame.
+  - A local coordinate system: Most geometric types have associated `relativeTo`
+    and `placeIn` functions that convert values of that type from global
+    coordinates to local coordinates in a particular frame, and vice versa.
+  - A pair of X and Y axes: It is often convenient to (for example) mirror
+    across the X axis of a frame, or project onto its Y axis. Frames can
+    also themselves be translated, rotated and mirrored!
+  - A combined 2D position and orientation: For example, a `Frame2d` could be
+    used to define the position and orientation of a spaceship in a 2D game.
+    Movement of the ship would then be done by translating and rotating the
+    frame.
 
 Frames can by constructed by passing a record with `originPoint`, `xDirection`
 and `yDirection` fields to the `Frame2d` constructor, for example:
