@@ -562,8 +562,8 @@ transformations. For example,
         |> Frame3d.rotateAroundOwn Frame3d.zAxis (degrees 45)
         |> Frame3d.translateAlongOwn Frame3d.xAxis 2
 
-means 'construct a frame at the point (2, 0, 0), rotate it about its own Z axis
-by 45 degrees, then translate it along its own (rotated) X axis by 2 units',
+means "construct a frame at the point (2, 0, 0), rotate it around its own Z axis
+by 45 degrees, then translate it along its own (rotated) X axis by 2 units",
 resulting in
 
     Frame3d

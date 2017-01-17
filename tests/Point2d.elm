@@ -26,7 +26,7 @@ rotationPreservesDistance : Test
 rotationPreservesDistance =
     let
         description =
-            "Rotating about a point preserves distance from that point"
+            "Rotating around a point preserves distance from that point"
 
         expectation point centerPoint rotationAngle =
             let

@@ -330,8 +330,8 @@ transformations. For example,
         |> Frame2d.rotateBy (degrees 45)
         |> Frame2d.translateAlongOwn Frame2d.xAxis 2
 
-means 'construct a frame at the point (2, 0), rotate it about its own origin
-point by 45 degrees, then translate it along its own X axis by 2 units',
+means "construct a frame at the point (2, 0), rotate it around its own origin
+point by 45 degrees, then translate it along its own X axis by 2 units",
 resulting in
 
     Frame2d

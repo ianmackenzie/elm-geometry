@@ -463,7 +463,7 @@ scaleAbout centerPoint scale =
     Point3d.rotateAround axis angle point ==
         Point3d ( 3, 0.7071, 0.7071 )
 
-Rotation direction is given by the right-hand rule, counterclockwise about the
+Rotation direction is given by the right-hand rule, counterclockwise around the
 direction of the axis.
 -}
 rotateAround : Axis3d -> Float -> Point3d -> Point3d

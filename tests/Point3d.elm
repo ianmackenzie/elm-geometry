@@ -26,7 +26,7 @@ rotationAboutAxisPreservesDistanceAlong : Test
 rotationAboutAxisPreservesDistanceAlong =
     let
         description =
-            "Rotation about axis preserves distance along that axis"
+            "Rotation around an axis preserves distance along that axis"
 
         expectation point axis angle =
             let
@@ -48,7 +48,7 @@ rotationAboutAxisPreservesRadialDistance : Test
 rotationAboutAxisPreservesRadialDistance =
     let
         description =
-            "Rotation about axis preserves radial distance from that axis"
+            "Rotation around an axis preserves radial distance from that axis"
 
         expectation point axis angle =
             let

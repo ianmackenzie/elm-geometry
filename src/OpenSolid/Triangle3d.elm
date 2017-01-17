@@ -180,7 +180,7 @@ scaleAbout centerPoint scale =
     map (Point3d.scaleAbout centerPoint scale)
 
 
-{-| Rotate a triangle about a given axis by a given angle (in radians).
+{-| Rotate a triangle around a given axis by a given angle (in radians).
 
     Triangle3d.rotateAround Axis3d.z (degrees 90) exampleTriangle ==
         Triangle3d
