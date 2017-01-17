@@ -30,9 +30,8 @@ module OpenSolid.Axis3d
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/axis3d.svg" alt="Axis3d" width="160">
 
-Various functions for creating and working with `Axis3d` values. An `Axis3d` is
-defined by an origin point and direction and is useful for several operations
-including:
+An `Axis3d` represents an infinitely long straight line in 3D and is defined by
+an origin point and direction. Axes have several uses, such as:
 
   - Rotating around the axis
   - Projecting onto the axis
@@ -41,10 +40,10 @@ including:
 Axes can by constructed by passing a record with `originPoint` and `direction`
 fields to the `Axis3d` constructor, for example:
 
-    axis =
+    exampleAxis =
         Axis3d
-            { originPoint = Point3d ( 2, 1, 3 )
-            , direction = Direction3d.y
+            { originPoint = Point3d ( -2, 1, 3 )
+            , direction = Direction3d ( 0, 0.8, -0.6 )
             }
 
 # Predefined axes
@@ -78,11 +77,11 @@ import OpenSolid.Direction3d as Direction3d
 
 {-| The global X axis.
 
-    Axis3d.x ==
-        Axis3d
-            { originPoint = Point3d.origin
-            , direction = Direction3d.x
-            }
+    Axis3d.x
+    --> Axis3d
+    -->     { originPoint = Point3d.origin
+    -->     , direction = Direction3d.x
+    -->     }
 -}
 x : Axis3d
 x =
@@ -91,11 +90,11 @@ x =
 
 {-| The global Y axis.
 
-    Axis3d.y ==
-        Axis3d
-            { originPoint = Point3d.origin
-            , direction = Direction3d.y
-            }
+    Axis3d.y
+    --> Axis3d
+    -->     { originPoint = Point3d.origin
+    -->     , direction = Direction3d.y
+    -->     }
 -}
 y : Axis3d
 y =
@@ -104,11 +103,11 @@ y =
 
 {-| The global Z axis.
 
-    Axis3d.z ==
-        Axis3d
-            { originPoint = Point3d.origin
-            , direction = Direction3d.z
-            }
+    Axis3d.z
+    --> Axis3d
+    -->     { originPoint = Point3d.origin
+    -->     , direction = Direction3d.z
+    -->     }
 -}
 z : Axis3d
 z =
@@ -117,8 +116,8 @@ z =
 
 {-| Get the origin point of an axis.
 
-    Axis3d.originPoint Axis3d.x ==
-        Point3d.origin
+    Axis3d.originPoint exampleAxis
+    --> Point3d ( -2, 1, 3 )
 -}
 originPoint : Axis3d -> Point3d
 originPoint (Axis3d properties) =
@@ -127,8 +126,8 @@ originPoint (Axis3d properties) =
 
 {-| Get the direction of an axis.
 
-    Axis3d.direction Axis3d.y ==
-        Direction3d.y
+    Axis3d.direction exampleAxis
+    --> Direction3d ( 0, 0.8, -0.6 )
 -}
 direction : Axis3d -> Direction3d
 direction (Axis3d properties) =
@@ -137,11 +136,11 @@ direction (Axis3d properties) =
 
 {-| Reverse the direction of an axis while keeping the same origin point.
 
-    Axis3d.flip Axis3d.x ==
-        Axis3d
-            { originPoint = Point3d.origin
-            , direction = Direction3d.flip Direction3d.x
-            }
+    Axis3d.flip exampleAxis
+    --> Axis3d
+    -->     { originPoint = Point3d ( -2, 1, 3 )
+    -->     , direction = Direction3d ( 0, -0.8, 0.6 )
+    -->     }
 -}
 flip : Axis3d -> Axis3d
 flip axis =
@@ -153,20 +152,14 @@ flip axis =
 
 {-| Move an axis so that it has the given origin point but unchanged direction.
 
-    axis =
-        Axis3d
-            { originPoint = Point3d ( 2, 1, 3 )
-            , direction = Direction3d.y
-            }
-
     newOrigin =
         Point3d ( 3, 4, 5 )
 
-    Axis3d.moveTo newOrigin axis ==
-        Axis3d
-            { originPoint = Point3d ( 3, 4, 5 ),
-            , direction = Direction3d.y
-            }
+    Axis3d.moveTo newOrigin exampleAxis
+    --> Axis3d
+    -->     { originPoint = Point3d ( 3, 4, 5 ),
+    -->     , direction = Direction3d ( 0, 0.8, -0.6 )
+    -->     }
 -}
 moveTo : Point3d -> Axis3d -> Axis3d
 moveTo newOrigin axis =
@@ -176,8 +169,11 @@ moveTo newOrigin axis =
 {-| Rotate an axis around another axis by a given angle. The axis to rotate
 around is given first and the axis to rotate is given last.
 
-    Axis3d.rotateAround Axis3d.x (degrees 90) Axis3d.y ==
-        Axis3d.z
+    Axis3d.rotateAround Axis3d.z (degrees 90) exampleAxis
+    --> Axis3d
+    -->     { originPoint = Point3d ( -1, -2, 3 )
+    -->     , direction = Direction3d ( -0.8, 0, -0.6 )
+    -->     }
 -}
 rotateAround : Axis3d -> Float -> Axis3d -> Axis3d
 rotateAround otherAxis angle =
@@ -199,13 +195,13 @@ rotateAround otherAxis angle =
 the axis' origin point and leaves the direction unchanged.
 
     displacement =
-        Vector3d ( 2, 1, 3 )
+        Vector3d ( 3, 3, 3 )
 
-    Axis3d.translateBy displacement Axis3d.y ==
-        Axis3d
-            { originPoint = Point3d ( 2, 1, 3 )
-            , direction = Direction3d.y
-            }
+    Axis3d.translateBy displacement exampleAxis
+    --> Axis3d
+    -->     { originPoint = Point3d ( 1, 4, 6 )
+    -->     , direction = Direction3d ( 0, 0.8, -0.6 )
+    -->     }
 -}
 translateBy : Vector3d -> Axis3d -> Axis3d
 translateBy vector axis =
@@ -217,17 +213,11 @@ translateBy vector axis =
 
 {-| Mirror an axis across a plane.
 
-    axis =
-        Axis3d
-            { originPoint = Point3d ( 1, 2, 3 )
-            , direction = Direction3d ( 0, 0.6, 0.8 )
-            }
-
-    Axis3d.mirrorAcross Plane3d.xy axis ==
-        Axis3d
-            { originPoint = Point3d ( 1, 2, -3 )
-            , direction = Direction3d ( 0, 0.6, -0.8 )
-            }
+    Axis3d.mirrorAcross Plane3d.xy exampleAxis
+    --> Axis3d
+    -->     { originPoint = Point3d ( -2, 1, -3 )
+    -->     , direction = Direction3d ( 0, 0.6, 0.8 )
+    -->     }
 -}
 mirrorAcross : Plane3d -> Axis3d -> Axis3d
 mirrorAcross plane =
@@ -249,22 +239,16 @@ mirrorAcross plane =
 given axis on the given plane. If the given axis is exactly perpendicular to the
 given plane, returns `Nothing`.
 
-    axis =
-        Axis3d
-            { originPoint = Point3d ( 2, 1, 3 )
-            , direction = Diretion3d ( 0.6, 0, 0.8 )
-            }
+    Axis3d.projectOnto Plane3d.xy exampleAxis
+    --> Just
+    -->     (Axis3d
+    -->         { originPoint = Point3d ( -2, 1, 0 )
+    -->         , direction = Direction3d ( 0, 1, 0 )
+    -->         }
+    -->     )
 
-    Axis3d.projectOnto Plane3d.xy axis ==
-        Just
-            (Axis3d
-                { originPoint = Point3d ( 2, 1, 0 )
-                , direction = Direction3d ( 1, 0, 0 )
-                }
-            )
-
-    Axis3d.projectOnto Plane3d.xy Axis3d.z ==
-        Nothing
+    Axis3d.projectOnto Plane3d.xy Axis3d.z
+    --> Nothing
 -}
 projectOnto : Plane3d -> Axis3d -> Maybe Axis3d
 projectOnto plane axis =
@@ -282,13 +266,13 @@ projectOnto plane axis =
 coordinates relative to a given reference frame.
 
     originPoint =
-        Point3d ( 2, 1, 3 )
+        Point3d ( 3, 3, 3 )
 
-    Axis3d.relativeTo (Frame3d.at originPoint) Axis3d.x ==
-        Axis3d
-            { originPoint = Point3d ( -2, -1, -3 )
-            , direction = Direction3d.x
-            }
+    Axis3d.relativeTo (Frame3d.at originPoint) exampleAxis
+    --> Axis3d
+    -->     { originPoint = Point3d ( -5, -2, 0 )
+    -->     , direction = Direction3d ( 0, 0.8, -0.6 )
+    -->     }
 -}
 relativeTo : Frame3d -> Axis3d -> Axis3d
 relativeTo frame =
@@ -310,13 +294,13 @@ relativeTo frame =
 frame, and return that axis expressed in global coordinates.
 
     originPoint =
-        Point3d ( 2, 1, 3 )
+        Point3d ( 3, 3, 3 )
 
-    Axis3d.placeIn (Frame3d.at originPoint) Axis3d.x ==
-        Axis3d
-            { originPoint = Point3d ( 2, 1, 3 )
-            , direction = Direction3d.x
-            }
+    Axis3d.placeIn (Frame3d.at originPoint) exampleAxis
+    --> Axis3d
+    -->     { originPoint = Point3d ( 1, 4, 6 )
+    -->     , direction = Direction3d ( 0, 0.8, -0.6 )
+    -->     }
 -}
 placeIn : Frame3d -> Axis3d -> Axis3d
 placeIn frame =
@@ -341,30 +325,24 @@ coordinates.
 This is only possible if the axis is not perpendicular to the sketch
 plane; if it is perpendicular, `Nothing` is returned.
 
-    axis =
-        Axis3d
-            { originPoint = Point3d ( 2, 1, 3 )
-            , direction = Direction3d ( 0.6, -0.8, 0 )
-            }
+    Axis3d.projectInto SketchPlane3d.yz exampleAxis
+    --> Just
+    -->     (Axis2d
+    -->         { originPoint = Point2d ( 1, 3 )
+    -->         , direction = Direction2d ( 0.8, -0.6 )
+    -->         }
+    -->     )
 
-    Axis3d.projectInto SketchPlane3d.xy axis ==
-        Just
-            (Axis2d
-                { originPoint = Point2d ( 2, 1 )
-                , direction = Direction3d ( 0.6, -0.8 )
-                }
-            )
+    Axis3d.projectInto SketchPlane3d.xy exampleAxis
+    --> Just
+    -->     (Axis2d
+    -->         { originPoint = Point2d ( -2, 1 )
+    -->         , direction = Direction3d ( 0, 1 )
+    -->         }
+    -->     )
 
-    Axis3d.projectInto SketchPlane3d.yz axis ==
-        Just
-            (Axis2d
-                { originPoint = Point2d ( 1, 3 )
-                , direction = Direction2d ( -1, 0 )
-                }
-            )
-
-    Axis3d.projectInto SketchPlane3d.xy Axis3d.z ==
-        Nothing
+    Axis3d.projectInto SketchPlane3d.xy Axis3d.z
+    --> Nothing
 -}
 projectInto : SketchPlane3d -> Axis3d -> Maybe Axis2d
 projectInto sketchPlane axis =
