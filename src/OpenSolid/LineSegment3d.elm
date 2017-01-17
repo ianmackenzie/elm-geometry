@@ -222,7 +222,7 @@ normalDirection =
     vector >> Vector3d.perpendicularTo >> Vector3d.direction
 
 
-{-| Get the vector from a given line segment's start point to its end point.
+{-| Get the vector from a line segment's start point to its end point.
 
     LineSegment3d.vector lineSegment ==
         Vector3d ( 2, 2, 2 )
@@ -392,7 +392,7 @@ projectInto sketchPlane lineSegment =
         LineSegment2d ( project p1, project p2 )
 
 
-{-| Get the minimal bounding box containing a given line segment.
+{-| Get the minimal bounding box containing a line segment.
 
     LineSegment3d.boundingBox lineSegment ==
         BoundingBox3d
