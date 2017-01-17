@@ -64,7 +64,7 @@ constructors...
 Direction2d.fromAngle (degrees 30)
 --> Direction2d ( 0.866, 0.5 )
 
-Point3d.midpoint Point3d.origin (Point3d (1, 4, 5))
+Point3d.midpoint Point3d.origin (Point3d ( 1, 4, 5 ))
 --> Point3d ( 0.5, 2, 2.5 )
 
 Frame2d.at (Point2d ( 2, 3 ))
