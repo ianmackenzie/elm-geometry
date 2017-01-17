@@ -21,12 +21,12 @@ module OpenSolid.Direction3d
         , xComponent
         , yComponent
         , zComponent
+        , componentIn
         , equalWithin
         , toVector
-        , flip
         , times
-        , componentIn
         , angleFrom
+        , flip
         , rotateAround
         , mirrorAcross
         , projectOnto
