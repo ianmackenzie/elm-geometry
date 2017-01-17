@@ -28,9 +28,8 @@ module OpenSolid.Axis2d
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/axis2d.svg" alt="Axis2d" width="160">
 
-Various functions for creating and working with `Axis2d` values. An `Axis2d` is
-defined by an origin point and direction and is useful for several operations
-including:
+An `Axis2d` represents an infinitely long straight line in 2D and is defined by
+an origin point and direction. Axes have several uses, such as:
 
   - Mirroring across the axis
   - Projecting onto the axis
