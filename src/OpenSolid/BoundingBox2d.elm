@@ -330,7 +330,7 @@ overlaps other boundingBox =
 
 
 {-| Test if the second given bounding box is fully contained within the first
-(is a strict subset of it).
+(is a subset of it).
 
     outerBox =
         BoundingBox2d
