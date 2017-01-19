@@ -54,10 +54,10 @@ Bounding boxes can be constructed by passing a record with `minX`, `maxX`,
 
     exampleBox =
         BoundingBox2d
-            { minX = 1
-            , maxX = 3
-            , minY = -2
-            , maxY = 4
+            { minX = 3
+            , maxX = 8
+            , minY = 2
+            , maxY = 6
             }
 
 If you construct a `BoundingBox2d` this way, you must ensure that the given
@@ -93,13 +93,13 @@ import OpenSolid.Point2d as Point2d
     point =
         Point2d ( 2, 3 )
 
-    BoundingBox2d.singleton point ==
-        BoundingBox2d
-            { minX = 2
-            , maxX = 2
-            , minY = 3
-            , maxY = 3
-            }
+    BoundingBox2d.singleton point
+    --> BoundingBox2d
+    -->     { minX = 2
+    -->     , maxX = 2
+    -->     , minY = 3
+    -->     , maxY = 3
+    -->     }
 -}
 singleton : Point2d -> BoundingBox2d
 singleton point =
@@ -119,18 +119,18 @@ list is empty, returns `Nothing`.
         , Point2d ( 6, 4 )
         ]
 
-    BoundingBox2d.containing points ==
-        Just
-            (BoundingBox2d
-                { minX = -1
-                , maxX = 6
-                , minY = 3
-                , maxY = 5
-                }
-            )
+    BoundingBox2d.containing points
+    --> Just
+    -->     (BoundingBox2d
+    -->         { minX = -1
+    -->         , maxX = 6
+    -->         , minY = 3
+    -->         , maxY = 5
+    -->         }
+    -->     )
 
-    BoundingBox2d.containing [] ==
-        Nothing
+    BoundingBox2d.containing []
+    --> Nothing
 
 If you have exactly two points, you can use `Point2d.hull` instead (which
 returns a `BoundingBox2d` instead of a `Maybe BoundingBox2d`).
@@ -148,17 +148,21 @@ containing points =
 {-| Get the minimum and maximum X and Y values of a bounding box in a single
 record.
 
-    BoundingBox2d.extrema exampleBox ==
-        { minX = 1
-        , maxX = 3
-        , minY = -2
-        , maxY = 4
-        }
+    BoundingBox2d.extrema exampleBox
+    --> { minX = 3
+    --> , maxX = 8
+    --> , minY = 2
+    --> , maxY = 6
+    --> }
 
 Can be useful when combined with record destructuring, for example
 
     { minX, maxX, minY, maxY } =
         BoundingBox2d.extrema exampleBox
+    --> minX = 3
+    --> maxX = 8
+    --> minY = 2
+    --> maxY = 6
 -}
 extrema :
     BoundingBox2d
@@ -173,8 +177,8 @@ extrema (BoundingBox2d extrema_) =
 
 {-| Get the minimum X value of a bounding box.
 
-    BoundingBox2d.minX exampleBox ==
-        1
+    BoundingBox2d.minX exampleBox
+    --> 3
 -}
 minX : BoundingBox2d -> Float
 minX =
@@ -183,8 +187,8 @@ minX =
 
 {-| Get the maximum X value of a bounding box.
 
-    BoundingBox2d.maxX exampleBox ==
-        3
+    BoundingBox2d.maxX exampleBox
+    --> 8
 -}
 maxX : BoundingBox2d -> Float
 maxX =
@@ -193,8 +197,8 @@ maxX =
 
 {-| Get the minimum Y value of a bounding box.
 
-    BoundingBox2d.minY exampleBox ==
-        -2
+    BoundingBox2d.minY exampleBox
+    --> 2
 -}
 minY : BoundingBox2d -> Float
 minY =
@@ -203,8 +207,8 @@ minY =
 
 {-| Get the maximum Y value of a bounding box.
 
-    BoundingBox2d.maxY exampleBox ==
-        4
+    BoundingBox2d.maxY exampleBox
+    --> 6
 -}
 maxY : BoundingBox2d -> Float
 maxY =
@@ -215,12 +219,8 @@ maxY =
 
     ( width, height ) =
         BoundingBox2d.dimensions exampleBox
-
-    width ==
-        2
-
-    height ==
-        6
+    --> width = 5
+    --> height = 4
 -}
 dimensions : BoundingBox2d -> ( Float, Float )
 dimensions boundingBox =
@@ -233,8 +233,8 @@ dimensions boundingBox =
 
 {-| Get the median X value of a bounding box.
 
-    BoundingBox2d.midX exampleBox ==
-        2
+    BoundingBox2d.midX exampleBox
+    --> 5.5
 -}
 midX : BoundingBox2d -> Float
 midX boundingBox =
@@ -247,8 +247,8 @@ midX boundingBox =
 
 {-| Get the median Y value of a bounding box.
 
-    BoundingBox2d.midY exampleBox ==
-        1
+    BoundingBox2d.midY exampleBox
+    --> 4
 -}
 midY : BoundingBox2d -> Float
 midY boundingBox =
@@ -261,8 +261,8 @@ midY boundingBox =
 
 {-| Get the point at the center of a bounding box.
 
-    BoundingBox2d.centroid exampleBox ==
-        Point2d ( 2, 1 )
+    BoundingBox2d.centroid exampleBox
+    --> Point2d ( 5.5, 4 )
 -}
 centroid : BoundingBox2d -> Point2d
 centroid boundingBox =
@@ -271,25 +271,11 @@ centroid boundingBox =
 
 {-| Check if a bounding box contains a particular point.
 
-    boundingBox =
-        BoundingBox2d
-            { minX = 0
-            , maxX = 2
-            , minY = 0
-            , maxY = 3
-            }
+    BoundingBox2d.contains (Point2d ( 4, 3 )) exampleBox
+    --> True
 
-    firstPoint =
-        Point2d ( 1, 2 )
-
-    secondPoint =
-        Point2d ( 3, 1 )
-
-    BoundingBox2d.contains firstPoint boundingBox ==
-        True
-
-    BoundingBox2d.contains secondPoint boundingBox ==
-        False
+    BoundingBox2d.contains Point2d.origin exampleBox
+    --> False
 -}
 contains : Point2d -> BoundingBox2d -> Bool
 contains point boundingBox =
@@ -329,11 +315,11 @@ contains point boundingBox =
             , maxY = 5
             }
 
-    BoundingBox2d.overlaps firstBox secondBox ==
-        True
+    BoundingBox2d.overlaps firstBox secondBox
+    --> True
 
-    BoundingBox2d.overlaps firstBox thirdBox ==
-        False
+    BoundingBox2d.overlaps firstBox thirdBox
+    --> False
 -}
 overlaps : BoundingBox2d -> BoundingBox2d -> Bool
 overlaps other boundingBox =
@@ -370,11 +356,11 @@ overlaps other boundingBox =
             , maxY = 12
             }
 
-    BoundingBox2d.isContainedIn outerBox innerBox ==
-        True
+    BoundingBox2d.isContainedIn outerBox innerBox
+    --> True
 
-    BoundingBox2d.isContainedIn outerBox overlappingBox ==
-        False
+    BoundingBox2d.isContainedIn outerBox overlappingBox
+    --> False
 -}
 isContainedIn : BoundingBox2d -> BoundingBox2d -> Bool
 isContainedIn other boundingBox =
@@ -400,13 +386,13 @@ isContainedIn other boundingBox =
             , maxY = 5
             }
 
-    BoundingBox2d.hull firstBox secondBox ==
-        BoundingBox2d
-            { minX = -2
-            , maxX = 4
-            , minY = 2
-            , maxY = 5
-            }
+    BoundingBox2d.hull firstBox secondBox
+    --> BoundingBox2d
+    -->     { minX = -2
+    -->     , maxX = 4
+    -->     , minY = 2
+    -->     , maxY = 5
+    -->     }
 -}
 hull : BoundingBox2d -> BoundingBox2d -> BoundingBox2d
 hull firstBox secondBox =
@@ -445,18 +431,18 @@ given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
             , maxY = 5
             }
 
-    BoundingBox2d.intersection firstBox secondBox ==
-        Just
-            (BoundingBox2d
-                { minX = 2
-                , maxX = 4
-                , minY = 2
-                , maxY = 3
-                }
-            )
+    BoundingBox2d.intersection firstBox secondBox
+    --> Just
+    -->     (BoundingBox2d
+    -->         { minX = 2
+    -->         , maxX = 4
+    -->         , minY = 2
+    -->         , maxY = 3
+    -->         }
+    -->     )
 
     BoundingBox2d.intersection firstBox thirdBox ==
-        Nothing
+    --> Nothing
 -}
 intersection : BoundingBox2d -> BoundingBox2d -> Maybe BoundingBox2d
 intersection firstBox secondBox =
