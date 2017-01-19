@@ -441,7 +441,7 @@ given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
     -->         }
     -->     )
 
-    BoundingBox2d.intersection firstBox thirdBox ==
+    BoundingBox2d.intersection firstBox thirdBox
     --> Nothing
 -}
 intersection : BoundingBox2d -> BoundingBox2d -> Maybe BoundingBox2d
