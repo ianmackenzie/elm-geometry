@@ -57,12 +57,12 @@ example
 
     exampleBox =
         BoundingBox3d
-            { minX = 1
-            , maxX = 3
-            , minY = -2
-            , maxY = 4
-            , minZ = -6
-            , maxZ = -5
+            { minX = -2
+            , maxX = 2
+            , minY = 2
+            , maxY = 5
+            , minZ = 3
+            , maxZ = 4
             }
 
 If you construct a `BoundingBox3d` this way, you must ensure that the given
@@ -98,15 +98,15 @@ import OpenSolid.Point3d as Point3d
     point =
         Point3d ( 2, 1, 3 )
 
-    BoundingBox3d.singleton point ==
-        BoundingBox3d
-            { minX = 2
-            , maxX = 2
-            , minY = 1
-            , maxY = 1
-            , minZ = 3
-            , maxZ = 3
-            }
+    BoundingBox3d.singleton point
+    --> BoundingBox3d
+    -->     { minX = 2
+    -->     , maxX = 2
+    -->     , minY = 1
+    -->     , maxY = 1
+    -->     , minZ = 3
+    -->     , maxZ = 3
+    -->     }
 -}
 singleton : Point3d -> BoundingBox3d
 singleton point =
@@ -133,20 +133,20 @@ list is empty, returns `Nothing`.
         , Point3d ( 6, 4, 2 )
         ]
 
-    BoundingBox3d.containing points ==
-        Just
-            (BoundingBox3d
-                { minX = -1
-                , maxX = 6
-                , minY = 1
-                , maxY = 5
-                , minZ = -2
-                , maxZ = 3
-                }
-            )
+    BoundingBox3d.containing points
+    --> Just
+    -->     (BoundingBox3d
+    -->         { minX = -1
+    -->         , maxX = 6
+    -->         , minY = 1
+    -->         , maxY = 5
+    -->         , minZ = -2
+    -->         , maxZ = 3
+    -->         }
+    -->     )
 
-    BoundingBox3d.containing [] ==
-        Nothing
+    BoundingBox3d.containing []
+    --> Nothing
 
 If you have exactly two points, you can use `Point3d.hull` instead (which
 returns a `BoundingBox3d` instead of a `Maybe BoundingBox3d`).
@@ -164,19 +164,25 @@ containing points =
 {-| Get the minimum and maximum X, Y and Z values of a bounding box in a single
 record.
 
-    BoundingBox3d.extrema exampleBox ==
-        { minX = 1
-        , maxX = 3
-        , minY = -2
-        , maxY = 4
-        , minZ = -6
-        , maxZ = -5
-        }
+    BoundingBox3d.extrema exampleBox
+    --> { minX = -2
+    --> , maxX = 2
+    --> , minY = 2
+    --> , maxY = 5
+    --> , minZ = 3
+    --> , maxZ = 4
+    --> }
 
 Can be useful when combined with record destructuring, for example
 
     { minX, maxX, minY, maxY, minZ, maxZ } =
         BoundingBox3d.extrema exampleBox
+    --> minX = -2
+    --> maxX = 2
+    --> minY = 2
+    --> maxY = 5
+    --> minZ = 3
+    --> maxZ = 4
 -}
 extrema :
     BoundingBox3d
@@ -193,8 +199,8 @@ extrema (BoundingBox3d extrema_) =
 
 {-| Get the minimum X value of a bounding box.
 
-    BoundingBox3d.minX exampleBox ==
-        1
+    BoundingBox3d.minX exampleBox
+    --> -2
 -}
 minX : BoundingBox3d -> Float
 minX =
@@ -203,8 +209,8 @@ minX =
 
 {-| Get the maximum X value of a bounding box.
 
-    BoundingBox3d.maxX exampleBox ==
-        3
+    BoundingBox3d.maxX exampleBox
+    --> 2
 -}
 maxX : BoundingBox3d -> Float
 maxX =
@@ -213,8 +219,8 @@ maxX =
 
 {-| Get the minimum Y value of a bounding box.
 
-    BoundingBox3d.minY exampleBox ==
-        -2
+    BoundingBox3d.minY exampleBox
+    --> 2
 -}
 minY : BoundingBox3d -> Float
 minY =
@@ -223,8 +229,8 @@ minY =
 
 {-| Get the maximum Y value of a bounding box.
 
-    BoundingBox3d.maxY exampleBox ==
-        4
+    BoundingBox3d.maxY exampleBox
+    --> 5
 -}
 maxY : BoundingBox3d -> Float
 maxY =
@@ -233,8 +239,8 @@ maxY =
 
 {-| Get the minimum Z value of a bounding box.
 
-    BoundingBox3d.minZ exampleBox ==
-        -6
+    BoundingBox3d.minZ exampleBox
+    --> 3
 -}
 minZ : BoundingBox3d -> Float
 minZ =
@@ -243,8 +249,8 @@ minZ =
 
 {-| Get the maximum Z value of a bounding box.
 
-    BoundingBox3d.maxZ exampleBox ==
-        -5
+    BoundingBox3d.maxZ exampleBox
+    --> 4
 -}
 maxZ : BoundingBox3d -> Float
 maxZ =
@@ -253,8 +259,8 @@ maxZ =
 
 {-| Get the X, Y and Z dimensions (widths) of a bounding box.
 
-    BoundingBox3d.dimensions exampleBox ==
-        ( 2, 6, 1 )
+    BoundingBox3d.dimensions exampleBox
+    --> ( 4, 3, 1 )
 -}
 dimensions : BoundingBox3d -> ( Float, Float, Float )
 dimensions boundingBox =
@@ -267,8 +273,8 @@ dimensions boundingBox =
 
 {-| Get the median X value of a bounding box.
 
-    BoundingBox3d.midX exampleBox ==
-        2
+    BoundingBox3d.midX exampleBox
+    --> 0
 -}
 midX : BoundingBox3d -> Float
 midX boundingBox =
@@ -281,8 +287,8 @@ midX boundingBox =
 
 {-| Get the median Y value of a bounding box.
 
-    BoundingBox3d.midY exampleBox ==
-        1
+    BoundingBox3d.midY exampleBox
+    --> 3.5
 -}
 midY : BoundingBox3d -> Float
 midY boundingBox =
@@ -295,8 +301,8 @@ midY boundingBox =
 
 {-| Get the median Z value of a bounding box.
 
-    BoundingBox3d.midZ exampleBox ==
-        -5.5
+    BoundingBox3d.midZ exampleBox
+    --> 3.5
 -}
 midZ : BoundingBox3d -> Float
 midZ boundingBox =
@@ -309,8 +315,8 @@ midZ boundingBox =
 
 {-| Get the point at the center of a bounding box.
 
-    BoundingBox3d.centroid exampleBox ==
-        Point3d ( 2, 1, -5.5 )
+    BoundingBox3d.centroid exampleBox
+    --> Point3d ( 0, 3.5, 3.5 )
 -}
 centroid : BoundingBox3d -> Point3d
 centroid boundingBox =
@@ -319,27 +325,17 @@ centroid boundingBox =
 
 {-| Check if a bounding box contains a particular point.
 
-    boundingBox =
-        BoundingBox3d
-            { minX = 0
-            , maxX = 2
-            , minY = 0
-            , maxY = 3
-            , minZ = 0
-            , maxZ = 4
-            }
-
     firstPoint =
-        Point3d ( 1, 2, 3 )
+        Point3d ( 1, 4, 3 )
 
     secondPoint =
-        Point3d ( 3, 1, 2 )
+        Point3d ( 3, 4, 5 )
 
-    BoundingBox3d.contains firstPoint boundingBox ==
-        True
+    BoundingBox3d.contains firstPoint exampleBox
+    --> True
 
-    BoundingBox3d.contains secondPoint boundingBox ==
-        False
+    BoundingBox3d.contains secondPoint exampleBox
+    --> False
 -}
 contains : Point3d -> BoundingBox3d -> Bool
 contains point boundingBox =
@@ -384,11 +380,11 @@ contains point boundingBox =
             , maxZ = 2
             }
 
-    BoundingBox3d.overlaps firstBox secondBox ==
-        True
+    BoundingBox3d.overlaps firstBox secondBox
+    --> True
 
-    BoundingBox3d.overlaps firstBox thirdBox ==
-        False
+    BoundingBox3d.overlaps firstBox thirdBox
+    --> False
 -}
 overlaps : BoundingBox3d -> BoundingBox3d -> Bool
 overlaps other boundingBox =
@@ -401,7 +397,7 @@ overlaps other boundingBox =
 
 
 {-| Test if the second given bounding box is fully contained within the first
-(is a strict subset of it).
+(is a subset of it).
 
     outerBox =
         BoundingBox3d
@@ -433,11 +429,11 @@ overlaps other boundingBox =
             , maxZ = 8
             }
 
-    BoundingBox3d.isContainedIn outerBox innerBox ==
-        True
+    BoundingBox3d.isContainedIn outerBox innerBox
+    --> True
 
-    BoundingBox3d.isContainedIn outerBox overlappingBox ==
-        False
+    BoundingBox3d.isContainedIn outerBox overlappingBox
+    --> False
 -}
 isContainedIn : BoundingBox3d -> BoundingBox3d -> Bool
 isContainedIn other boundingBox =
@@ -468,15 +464,15 @@ isContainedIn other boundingBox =
             , maxZ = 0
             }
 
-    BoundingBox3d.hull firstBox secondBox ==
-        BoundingBox3d
-            { minX = -2
-            , maxX = 4
-            , minY = 2
-            , maxY = 5
-            , minZ = -1
-            , maxZ = 5
-            }
+    BoundingBox3d.hull firstBox secondBox
+    --> BoundingBox3d
+    -->     { minX = -2
+    -->     , maxX = 4
+    -->     , minY = 2
+    -->     , maxY = 5
+    -->     , minZ = -1
+    -->     , maxZ = 5
+    -->     }
 -}
 hull : BoundingBox3d -> BoundingBox3d -> BoundingBox3d
 hull firstBox secondBox =
@@ -523,20 +519,20 @@ given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
             , maxZ = 8
             }
 
-    BoundingBox3d.intersection firstBox secondBox ==
-        Just
-            (BoundingBox3d
-                { minX = 2
-                , maxX = 4
-                , minY = 2
-                , maxY = 3
-                , minZ = 6
-                , maxZ = 7
-                }
-            )
+    BoundingBox3d.intersection firstBox secondBox
+    --> Just
+    -->     (BoundingBox3d
+    -->         { minX = 2
+    -->         , maxX = 4
+    -->         , minY = 2
+    -->         , maxY = 3
+    -->         , minZ = 6
+    -->         , maxZ = 7
+    -->         }
+    -->     )
 
-    BoundingBox3d.intersection firstBox thirdBox ==
-        Nothing
+    BoundingBox3d.intersection firstBox thirdBox
+    --> Nothing
 -}
 intersection : BoundingBox3d -> BoundingBox3d -> Maybe BoundingBox3d
 intersection firstBox secondBox =
