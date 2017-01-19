@@ -32,8 +32,22 @@ module OpenSolid.BoundingBox2d
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/boundingBox2d.svg" alt="BoundingBox2d" width="160">
 
-Various functions for creating and working with `BoundingBox2d` values. A
-`BoundingBox2d` is defined by its minimum and maximum X and Y values.
+A `BoundingBox2d` is a rectangular box in 2D defined by its minimum and maximum
+X and Y values. It is possible to generate bounding boxes for most geometric
+objects; for example, `Triangle2d.boundingBox` takes a `Triangle2d` and returns
+a `BoundingBox2d` that contains that triangle. There are several use cases where
+it is more efficient to deal with the bounding box of an object than the object
+itself, such as:
+
+  - Intersection checking: If (for example) the bounding boxes of a line segment
+    and a triangle do not overlap, then the line segment and triangle cannot
+    possibly intersect each other. Expensive intersection checking therefore
+    only has to be performed for line segments and triangles whose bounding
+    boxes _do_ overlap.
+  - 2D rendering: When rendering a 2D scene, any object whose bounding box does
+    not overlap the viewing area must itself be completely outside the viewing
+    area, and therefore does not have to be drawn. This provides a simple form
+    of culling.
 
 Bounding boxes can be constructed by passing a record with `minX`, `maxX`,
 `minY` and `maxY` fields to the `BoundingBox2d` constructor, for example
