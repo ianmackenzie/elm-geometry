@@ -60,8 +60,8 @@ Bounding boxes can be constructed by passing a record with `minX`, `maxX`,
             , maxY = 6
             }
 
-If you construct a `BoundingBox2d` this way, you must ensure that the given
-values are properly ordered: <code>minX&nbsp;<=&nbsp;maxX</code>,
+If you construct a `BoundingBox2d` this way, **you must ensure that the given
+values are properly ordered**: <code>minX&nbsp;<=&nbsp;maxX</code>,
 <code>minY&nbsp;<=&nbsp;maxY</code>. Alternately, you can construct bounding
 boxes using functions such as `Point2d.hull` where the input order does not
 matter.

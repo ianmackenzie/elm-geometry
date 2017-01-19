@@ -58,8 +58,8 @@ constructor, for example
             , yDirection = Direction3d.flip Direction3d.z
             }
 
-If you construct a `SketchPlane3d` this way, you are responsible for ensuring
-that the X and Y basis directions are perpendicular to each other.
+If you construct a `SketchPlane3d` this way, **you must ensure that the X and Y
+basis directions are perpendicular to each other**.
 
 # Predefined sketch planes
 

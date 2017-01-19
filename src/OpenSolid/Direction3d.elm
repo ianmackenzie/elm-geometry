@@ -41,8 +41,8 @@ Various functions for creating and working with `Direction3d` values. The
 simplest way to construct a `Direction3d` value is by passing a tuple of X, Y
 and Z components to the `Direction3d` constructor, for example
 <code>Direction3d&nbsp;(1,&nbsp;0,&nbsp;0&nbsp;)</code>. However, if you do this
-you must ensure that the sum of the squares of the given components is exactly
-one:
+**you must ensure that the sum of the squares of the given components is exactly
+one**:
 
     Direction3d ( 1, 0, 0 )
     Direction3d ( 0, -1, 0 )

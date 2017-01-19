@@ -57,8 +57,8 @@ and `yDirection` fields to the `Frame2d` constructor, for example:
             , yDirection = Direction2d.fromAngle (degrees 135)
             }
 
-In this case you must be careful to ensure that the X and Y directions are
-perpendicular.
+In this case **you must be careful to ensure that the X and Y directions are
+perpendicular**.
 
 # Predefined frames
 

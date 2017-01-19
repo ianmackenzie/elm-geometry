@@ -29,6 +29,9 @@ fields to the `Circle2d` constructor, for example
             , radius = 3
             }
 
+**You must ensure the provided radius is positive** (or zero, but that's not a
+very useful circle).
+
 # Accessors
 
 @docs centerPoint, radius, diameter, area, circumference
