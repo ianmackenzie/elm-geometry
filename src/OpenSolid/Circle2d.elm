@@ -60,8 +60,8 @@ import OpenSolid.Point2d as Point2d
 
 {-| Get the center point of a circle.
 
-    Circle2d.centerPoint exampleCircle ==
-        Point2d ( 1, 2 )
+    Circle2d.centerPoint exampleCircle
+    --> Point2d ( 1, 2 )
 -}
 centerPoint : Circle2d -> Point2d
 centerPoint (Circle2d properties) =
@@ -70,8 +70,8 @@ centerPoint (Circle2d properties) =
 
 {-| Get the radius of a circle.
 
-    Circle2d.radius exampleCircle ==
-        3
+    Circle2d.radius exampleCircle
+    --> 3
 -}
 radius : Circle2d -> Float
 radius (Circle2d properties) =
@@ -80,8 +80,8 @@ radius (Circle2d properties) =
 
 {-| Get the diameter of a circle.
 
-    Circle2d.diameter exampleCircle ==
-        6
+    Circle2d.diameter exampleCircle
+    --> 6
 -}
 diameter : Circle2d -> Float
 diameter circle =
@@ -90,8 +90,8 @@ diameter circle =
 
 {-| Get the area of a circle.
 
-    Circle2d.area exampleCircle ==
-        28.2743
+    Circle2d.area exampleCircle
+    --> 28.2743
 -}
 area : Circle2d -> Float
 area circle =
@@ -104,8 +104,8 @@ area circle =
 
 {-| Get the circumference of a circle.
 
-    Circle2d.circumference exampleCircle ==
-        18.8496
+    Circle2d.circumference exampleCircle
+    --> 18.8496
 
 -}
 circumference : Circle2d -> Float
@@ -119,11 +119,11 @@ circumference circle =
 
 {-| Check if a circle contains a given point.
 
-    Circle2d.contains Point2d.origin exampleCircle ==
-        True
+    Circle2d.contains Point2d.origin exampleCircle
+    --> True
 
-    Circle2d.contains (Point2d ( 10, 10 )) exampleCircle ==
-        False
+    Circle2d.contains (Point2d ( 10, 10 )) exampleCircle
+    --> False
 -}
 contains : Point2d -> Circle2d -> Bool
 contains point circle =
@@ -136,17 +136,17 @@ contains point circle =
 
 {-| Scale a circle about a given point by a given scale.
 
-    Circle2d.scaleAbout Point2d.origin 2 exampleCircle ==
-        Circle2d
-            { centerPoint = Point2d ( 2, 4 )
-            , radius = 6
-            }
+    Circle2d.scaleAbout Point2d.origin 2 exampleCircle
+    --> Circle2d
+    -->     { centerPoint = Point2d ( 2, 4 )
+    -->     , radius = 6
+    -->     }
 
-    Circle2d.scaleAbout (Point2d ( 1, 2 )) 0.5 exampleCircle ==
-        Circle2d
-            { centerPoint = Point2d ( 1, 2 )
-            , radius = 1.5
-            }
+    Circle2d.scaleAbout (Point2d ( 1, 2 )) 0.5 exampleCircle
+    --> Circle2d
+    -->     { centerPoint = Point2d ( 1, 2 )
+    -->     , radius = 1.5
+    -->     }
 -}
 scaleAbout : Point2d -> Float -> Circle2d -> Circle2d
 scaleAbout point scale =
@@ -163,11 +163,11 @@ scaleAbout point scale =
 
 {-| Rotate a circle around a given point by a given angle (in radians).
 
-    Circle2d.rotateAround Point2d.origin (degrees 90) exampleCircle ==
-        Circle2d
-            { centerPoint = Point2d ( -2, 1 )
-            , radius = 3
-            }
+    Circle2d.rotateAround Point2d.origin (degrees 90) exampleCircle
+    --> Circle2d
+    -->     { centerPoint = Point2d ( -2, 1 )
+    -->     , radius = 3
+    -->     }
 -}
 rotateAround : Point2d -> Float -> Circle2d -> Circle2d
 rotateAround point angle =
@@ -184,11 +184,11 @@ rotateAround point angle =
 
 {-| Translate a circle by a given displacement.
 
-    Circle2d.translateBy (Vector2d ( 2, 2 )) exampleCircle ==
-        Circle2d
-            { centerPoint = Point2d ( 3, 4 )
-            , radius = 3
-            }
+    Circle2d.translateBy (Vector2d ( 2, 2 )) exampleCircle
+    --> Circle2d
+    -->     { centerPoint = Point2d ( 3, 4 )
+    -->     , radius = 3
+    -->     }
 -}
 translateBy : Vector2d -> Circle2d -> Circle2d
 translateBy displacement =
@@ -205,11 +205,11 @@ translateBy displacement =
 
 {-| Mirror a circle across a given axis.
 
-    Circle2d.mirrorAcross Axis2d.x exampleCircle ==
-        Circle2d
-            { centerPoint = Point2d ( 1, -2 )
-            , radius = 3
-            }
+    Circle2d.mirrorAcross Axis2d.x exampleCircle
+    --> Circle2d
+    -->     { centerPoint = Point2d ( 1, -2 )
+    -->     , radius = 3
+    -->     }
 -}
 mirrorAcross : Axis2d -> Circle2d -> Circle2d
 mirrorAcross axis =
@@ -230,11 +230,11 @@ local coordinates relative to a given reference frame.
     localFrame =
         Frame2d.at (Point2d ( 2, 3 ))
 
-    Circle2d.relativeTo localFrame exampleCircle ==
-        Circle2d
-            { centerPoint = Point2d ( -1, -1 )
-            , radius = 3
-            }
+    Circle2d.relativeTo localFrame exampleCircle
+    --> Circle2d
+    -->     { centerPoint = Point2d ( -1, -1 )
+    -->     , radius = 3
+    -->     }
 -}
 relativeTo : Frame2d -> Circle2d -> Circle2d
 relativeTo frame =
@@ -255,11 +255,11 @@ given reference frame, and return that circle expressed in global coordinates.
     localFrame =
         Frame2d.at (Point2d ( 2, 3 ))
 
-    Circle2d.placeIn localFrame exampleCircle ==
-        Circle2d
-            { centerPoint = Point2d ( 3, 5 )
-            , radius = 3
-            }
+    Circle2d.placeIn localFrame exampleCircle
+    --> Circle2d
+    -->     { centerPoint = Point2d ( 3, 5 )
+    -->     , radius = 3
+    -->     }
 -}
 placeIn : Frame2d -> Circle2d -> Circle2d
 placeIn frame =
@@ -276,13 +276,13 @@ placeIn frame =
 
 {-| Get the minimal bounding box containing a given circle.
 
-    Circle2d.boundingBox exampleCircle ==
-        BoundingBox2d
-            { minX = -2
-            , maxX = 4
-            , minY = -1
-            , maxY = 5
-            }
+    Circle2d.boundingBox exampleCircle
+    --> BoundingBox2d
+    -->     { minX = -2
+    -->     , maxX = 4
+    -->     , minY = -1
+    -->     , maxY = 5
+    -->     }
 -}
 boundingBox : Circle2d -> BoundingBox2d
 boundingBox circle =
