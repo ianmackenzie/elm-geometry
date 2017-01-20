@@ -35,9 +35,20 @@ module OpenSolid.Direction2d
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/direction2d.svg" alt="Direction2d" width="160">
 
-Various functions for creating and working with `Direction2d` values. The
-simplest way to construct a `Direction2d` value is by passing a tuple of X and Y
-components to the `Direction2d` constructor, for example
+A `Direction2d` represents a direction like 'up' or 'north' or 'forwards'. They
+are represented using X and Y components, and can be converted to vectors if
+necessary, but should be thought of as conceptually different. Directions have
+several uses, such as:
+
+  - Constructing a vector from a length and direction
+  - Determining the component of a vector in a particular direction (for
+    example, finding the component of velocity in the up direction to get
+    vertical speed)
+  - Determining the (signed) angle between two directions
+  - Defining the orientation of an axis or reference frame
+
+The simplest way to construct a `Direction2d` value is by passing a tuple of X
+and Y components to the `Direction2d` constructor, for example
 <code>Direction2d&nbsp;(&nbsp;1,&nbsp;0&nbsp;)</code>. However, if you do this
 **you must ensure that the sum of the squares of the given components is exactly
 one**:
