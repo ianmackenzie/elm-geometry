@@ -131,8 +131,8 @@ toDirection (Vector2d components) =
 
 {-| The positive X direction.
 
-    Direction2d.x ==
-        Direction2d ( 1, 0 )
+    Direction2d.x
+    --> Direction2d ( 1, 0 )
 -}
 x : Direction2d
 x =
@@ -141,8 +141,8 @@ x =
 
 {-| The positive Y direction.
 
-    Direction2d.y ==
-        Direction2d ( 0, 1 )
+    Direction2d.y
+    --> Direction2d ( 0, 1 )
 -}
 y : Direction2d
 y =
@@ -152,11 +152,11 @@ y =
 {-| Construct a direction perpendicular to the given direction, by rotating the
 given direction 90 degrees counterclockwise.
 
-    Direction2d.perpendicularTo Direction2d.x ==
-        Direction2d.y
+    Direction2d.perpendicularTo Direction2d.x
+    --> Direction2d.y
 
-    Direction2d.perpendicularTo Direction2d.y ==
-        Direction2d.flip Direction2d.x
+    Direction2d.perpendicularTo Direction2d.y
+    --> Direction2d ( -1, 0 )
 -}
 perpendicularTo : Direction2d -> Direction2d
 perpendicularTo =
@@ -166,14 +166,14 @@ perpendicularTo =
 {-| Construct a direction from an angle in radians, given counterclockwise from
 the positive X direction.
 
-    Direction2d.fromAngle 0 ==
-        Direction2d.x
+    Direction2d.fromAngle 0
+    --> Direction2d.x
 
-    Direction2d.fromAngle (degrees 90) ==
-        Direction2d.y
+    Direction2d.fromAngle (degrees 90)
+    --> Direction2d.y
 
-    Direction2d.fromAngle (degrees -135) ==
-        Direction2d ( -0.7071, -0.7071 )
+    Direction2d.fromAngle (degrees 135)
+    --> Direction2d ( -0.7071, 0.7071 )
 -}
 fromAngle : Float -> Direction2d
 fromAngle angle =
@@ -183,14 +183,14 @@ fromAngle angle =
 {-| Convert a direction to a counterclockwise angle in radians from the positive
 X direction. The result will be in the range -π to π.
 
-    Direction2d.toAngle Direction2d.x ==
-        0
+    Direction2d.toAngle Direction2d.x
+    --> 0
 
-    Direction2d.toAngle Direction2d.y ==
-        pi / 2
+    Direction2d.toAngle Direction2d.y
+    --> degrees 90
 
-    Direction2d.toAngle (Direction2d ( 0, -1 )) ==
-        -pi / 2
+    Direction2d.toAngle (Direction2d ( 0, -1 ))
+    --> degrees -90
 -}
 toAngle : Direction2d -> Float
 toAngle direction =
@@ -207,11 +207,11 @@ second. The result will be in the range -π to π.
     referenceDirection =
         Direction2d.fromAngle (degrees 30)
 
-    Direction2d.angleFrom referenceDirection Direction2d.y ==
-        degrees 60
+    Direction2d.angleFrom referenceDirection Direction2d.y
+    --> degrees 60
 
-    Direction2d.angleFrom referenceDirection Direction2d.x ==
-        degrees -30
+    Direction2d.angleFrom referenceDirection Direction2d.x
+    --> degrees -30
 -}
 angleFrom : Direction2d -> Direction2d -> Float
 angleFrom other direction =
@@ -239,11 +239,11 @@ components (Direction2d components_) =
 
 {-| Get the X component of a direction.
 
-    Direction2d.xComponent Direction2d.x ==
-        1
+    Direction2d.xComponent Direction2d.x
+    --> 1
 
-    Direction2d.xComponent Direction2d.y ==
-        0
+    Direction2d.xComponent Direction2d.y
+    --> 0
 -}
 xComponent : Direction2d -> Float
 xComponent (Direction2d ( x, _ )) =
@@ -252,11 +252,11 @@ xComponent (Direction2d ( x, _ )) =
 
 {-| Get the Y component of a direction.
 
-    Direction2d.yComponent Direction2d.x ==
-        0
+    Direction2d.yComponent Direction2d.x
+    --> 0
 
-    Direction2d.yComponent Direction2d.y ==
-        1
+    Direction2d.yComponent Direction2d.y
+    --> 1
 -}
 yComponent : Direction2d -> Float
 yComponent (Direction2d ( _, y )) =
@@ -270,20 +270,23 @@ of the two directions converted to unit vectors.
     direction =
         Direction2d.fromAngle (degrees 60)
 
-    Direction2d.componentIn Direction2d.x direction ==
-        0.5
+    Direction2d.componentIn Direction2d.x direction
+    --> 0.5
 
-    Direction2d.componentIn Direction2d.x Direction2d.x ==
-        1
+    Direction2d.componentIn Direction2d.x Direction2d.x
+    --> 1
 
-    Direction2d.componentIn Direction2d.x Direction2d.y ==
-        0
+    Direction2d.componentIn Direction2d.x Direction2d.y
+    --> 0
 
 This is more general and flexible than using `xComponent` or `yComponent`, both
 of which can be expressed in terms of `componentIn`:
 
-    Direction2d.xComponent direction ==
-        Direction2d.componentIn Direction2d.x direction
+    Direction2d.xComponent direction
+
+is equivalent to
+
+    Direction2d.componentIn Direction2d.x direction
 -}
 componentIn : Direction2d -> Direction2d -> Float
 componentIn firstDirection secondDirection =
@@ -299,11 +302,11 @@ the two given directions is less than the given tolerance.
     secondDirection =
         Direction2d.fromAngle (degrees 47)
 
-    Direction2d.equalWithin (degrees 5) firstDirection secondDirection ==
-        True
+    Direction2d.equalWithin (degrees 5) firstDirection secondDirection
+    --> True
 
-    Direction2d.equalWithin (degrees 1) firstDirection secondDirection ==
-        False
+    Direction2d.equalWithin (degrees 1) firstDirection secondDirection
+    --> False
 -}
 equalWithin : Float -> Direction2d -> Direction2d -> Bool
 equalWithin angle firstDirection secondDirection =
@@ -312,8 +315,8 @@ equalWithin angle firstDirection secondDirection =
 
 {-| Convert a direction to a unit vector.
 
-    Direction2d.toVector Direction2d.x ==
-        Vector2d ( 1, 0 )
+    Direction2d.toVector Direction2d.x
+    --> Vector2d ( 1, 0 )
 -}
 toVector : Direction2d -> Vector2d
 toVector (Direction2d components) =
@@ -326,8 +329,8 @@ negative the resulting vector will be in the opposite of the given direction.
     direction =
         Direction2d ( 0.6, 0.8 )
 
-    Direction2d.times 2 direction ==
-        Vector2d ( 1.2, 1.6 )
+    Direction2d.times 2 direction
+    --> Vector2d ( 1.2, 1.6 )
 
 -}
 times : Float -> Direction2d -> Vector2d
@@ -337,8 +340,8 @@ times scale =
 
 {-| Reverse a direction.
 
-    Direction2d.flip Direction2d.y ==
-        Direction2d ( 0, -1 )
+    Direction2d.flip Direction2d.y
+    --> Direction2d ( 0, -1 )
 -}
 flip : Direction2d -> Direction2d
 flip =
@@ -347,11 +350,11 @@ flip =
 
 {-| Rotate a direction counterclockwise by a given angle (in radians).
 
-    Direction2d.rotateBy (degrees 45) Direction2d.x ==
-        Direction2d ( 0.7071, 0.7071 )
+    Direction2d.rotateBy (degrees 45) Direction2d.x
+    --> Direction2d ( 0.7071, 0.7071 )
 
-    Direction2d.rotateBy pi Direction2d.y ==
-        Direction2d.flip Direction2d.y
+    Direction2d.rotateBy pi Direction2d.y
+    --> Direction2d.flip Direction2d.y
 -}
 rotateBy : Float -> Direction2d -> Direction2d
 rotateBy angle =
@@ -367,11 +370,11 @@ the axis affects the result, since directions are position-independent.
             , direction = Direction2d.fromAngle (degrees 45)
             }
 
-    Direction2d.mirrorAcross slopedAxis Direction2d.x ==
-        Direction2d.y
+    Direction2d.mirrorAcross slopedAxis Direction2d.x
+    --> Direction2d.y
 
-    Direction2d.mirrorAcross slopedAxis Direction2d.y ==
-        Direction2d.x
+    Direction2d.mirrorAcross slopedAxis Direction2d.y
+    --> Direction2d.x
 -}
 mirrorAcross : Axis2d -> Direction2d -> Direction2d
 mirrorAcross axis =
@@ -381,14 +384,14 @@ mirrorAcross axis =
 {-| Take a direction defined in global coordinates, and return it expressed in
 local coordinates relative to a given reference frame.
 
-    Direction2d.relativeTo upsideDownFrame Direction2d.y ==
-        Direction2d ( 0, -1 )
+    Direction2d.relativeTo upsideDownFrame Direction2d.y
+    --> Direction2d ( 0, -1 )
 
-    Direction2d.relativeTo rotatedFrame Direction2d.x ==
-        Direction2d ( 0.866, -0.5 )
+    Direction2d.relativeTo rotatedFrame Direction2d.x
+    --> Direction2d ( 0.866, -0.5 )
 
-    Direction2d.relativeTo rotatedFrame Direction2d.y ==
-        Direction2d ( 0.5, 0.866 )
+    Direction2d.relativeTo rotatedFrame Direction2d.y
+    --> Direction2d ( 0.5, 0.866 )
 -}
 relativeTo : Frame2d -> Direction2d -> Direction2d
 relativeTo frame =
@@ -398,14 +401,14 @@ relativeTo frame =
 {-| Take a direction defined in local coordinates relative to a given reference
 frame, and return that direction expressed in global coordinates.
 
-    Direction2d.placeIn upsideDownFrame Direction2d.y ==
-        Direction2d ( 0, -1 )
+    Direction2d.placeIn upsideDownFrame Direction2d.y
+    --> Direction2d ( 0, -1 )
 
-    Direction2d.placeIn rotatedFrame Direction2d.x ==
-        Direction2d ( 0.866, 0.5 )
+    Direction2d.placeIn rotatedFrame Direction2d.x
+    --> Direction2d ( 0.866, 0.5 )
 
-    Direction2d.placeIn rotatedFrame Direction2d.y ==
-        Direction2d ( -0.5, 0.866 )
+    Direction2d.placeIn rotatedFrame Direction2d.y
+    --> Direction2d ( -0.5, 0.866 )
 -}
 placeIn : Frame2d -> Direction2d -> Direction2d
 placeIn frame =
@@ -418,14 +421,14 @@ and return the corresponding direction in 3D.
     direction =
         Direction2d ( 0.6, 0.8 )
 
-    Direction2d.placeOnto SketchPlane3d.xy direction ==
-        Direction3d ( 0.6, 0.8, 0 )
+    Direction2d.placeOnto SketchPlane3d.xy direction
+    --> Direction3d ( 0.6, 0.8, 0 )
 
-    Direction2d.placeOnto SketchPlane3d.yz direction ==
-        Direction3d ( 0, 0.6, 0.8 )
+    Direction2d.placeOnto SketchPlane3d.yz direction
+    --> Direction3d ( 0, 0.6, 0.8 )
 
-    Direction2d.placeOnto SketchPlane3d.zx direction ==
-        Direction3d ( 0.8, 0, 0.6 )
+    Direction2d.placeOnto SketchPlane3d.zx direction
+    --> Direction3d ( 0.8, 0, 0.6 )
 -}
 placeOnto : SketchPlane3d -> Direction2d -> Direction3d
 placeOnto sketchPlane =
