@@ -48,18 +48,19 @@ module OpenSolid.Frame3d
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/frame3d.svg" alt="Frame3d" width="160">
 
-Various functions for creating and working with `Frame3d` values.  A `Frame3d`
-represents a coordinate system in 3D space and is defined by an origin point and
-X, Y and Z basis directions (which are always perpendicular to each other).
+A `Frame3d` has an origin point and a set of X, Y and Z directions (which are
+always perpendicular to each other). It can be thought of as:
 
-Frames can be used to transform between local and global coordinates using the
-`relativeTo` and `placeIn` functions associated with various other data types. A
-special but common case of coordinate transformation is to create 'template'
-objects, perhaps using `relativeTo`, and then instantiate them at different
-locations and in different orientations using `placeIn`.
-
-Frames can also be used as a source of datums used in transformations, for
-example rotating around the Z axis of a frame or mirroring across its XY plane.
+  - A local coordinate system: Most geometric types have associated `relativeTo`
+    and `placeIn` functions that convert values of that type from global
+    coordinates to local coordinates in a particular frame, and vice versa.
+  - A set of axes and planes: It is often convenient to (for example) rotate
+    around the Z axis of a frame, or mirror across its XY plane. Frames can
+    also themselves be translated, rotated and mirrored!
+  - A combined 3D position and orientation: For example, a `Frame3d` could be
+    used to define the position and orientation of a spaceship in a 3D game.
+    Movement of the ship would then be done by translating and rotating the
+    frame.
 
 Frames can by constructed by passing a record with `originPoint`, `xDirection`,
 `yDirection` and `zDirection` fields to the `Frame3d` constructor, for example:
@@ -67,9 +68,9 @@ Frames can by constructed by passing a record with `originPoint`, `xDirection`,
     frame =
         Frame3d
             { originPoint = Point3d ( 2, 1, 3 )
-            , xDirection = Direction3d.y
-            , yDirection = Direction3d.z
-            , zDirection = Direction3d.x
+            , xDirection = Direction3d ( 0.8, 0.6, 0 )
+            , yDirection = Direction3d ( -0.6, 0.8, 0 )
+            , zDirection = Direction3d ( 0, 0, 1)
             }
 
 In this case **you must be careful to ensure that the X, Y and Z directions are
