@@ -215,7 +215,7 @@ sketchPlane plane =
 -}
 offsetBy : Float -> Plane3d -> Plane3d
 offsetBy distance plane =
-    translateBy (Direction3d.times distance (normalDirection plane)) plane
+    translateBy (Direction3d.scaleBy distance (normalDirection plane)) plane
 
 
 {-| Reverse a plane's normal direction while leaving its origin point unchanged.

@@ -24,8 +24,8 @@ module OpenSolid.Vector3d
         , squaredLength
         , direction
         , lengthAndDirection
-        , negate
-        , times
+        , flip
+        , scaleBy
         , plus
         , minus
         , dotProduct
@@ -80,7 +80,7 @@ and `Direction3d.z`.
 
 # Arithmetic
 
-@docs negate, times, plus, minus, dotProduct, crossProduct
+@docs flip, scaleBy, plus, minus, dotProduct, crossProduct
 
 # Transformations
 
@@ -307,7 +307,7 @@ direction vector =
     else
         let
             normalizedVector =
-                times (1 / length vector) vector
+                scaleBy (1 / length vector) vector
         in
             Just (Direction3d (components normalizedVector))
 
@@ -335,40 +335,12 @@ lengthAndDirection vector =
         else
             let
                 normalizedVector =
-                    times (1 / vectorLength) vector
+                    scaleBy (1 / vectorLength) vector
 
                 vectorDirection =
                     Direction3d (components normalizedVector)
             in
                 Just ( vectorLength, vectorDirection )
-
-
-{-| Negate a vector.
-
-    Vector3d.negate (Vector3d ( 1, -3, 2 )) ==
-        Vector3d ( -1, 3, -2 )
--}
-negate : Vector3d -> Vector3d
-negate vector =
-    let
-        ( x, y, z ) =
-            components vector
-    in
-        Vector3d ( -x, -y, -z )
-
-
-{-| Multiply a vector by a scalar.
-
-    Vector3d.times 3 (Vector3d ( 1, 2, 3 )) ==
-        Vector3d ( 3, 6, 9 )
--}
-times : Float -> Vector3d -> Vector3d
-times scale vector =
-    let
-        ( x, y, z ) =
-            components vector
-    in
-        Vector3d ( x * scale, y * scale, z * scale )
 
 
 {-| Add one vector to another.
@@ -471,6 +443,34 @@ crossProduct first second =
             , z1 * x2 - x1 * z2
             , x1 * y2 - y1 * x2
             )
+
+
+{-| Reverse the direction of a vector, negating its components.
+
+    Vector3d.flip (Vector3d ( 1, -3, 2 )) ==
+        Vector3d ( -1, 3, -2 )
+-}
+flip : Vector3d -> Vector3d
+flip vector =
+    let
+        ( x, y, z ) =
+            components vector
+    in
+        Vector3d ( -x, -y, -z )
+
+
+{-| Scale the length of a vector by a given scale.
+
+    Vector3d.scaleBy 3 (Vector3d ( 1, 2, 3 )) ==
+        Vector3d ( 3, 6, 9 )
+-}
+scaleBy : Float -> Vector3d -> Vector3d
+scaleBy scale vector =
+    let
+        ( x, y, z ) =
+            components vector
+    in
+        Vector3d ( x * scale, y * scale, z * scale )
 
 
 {-| Rotate a vector around a given axis by a given angle (in radians).
@@ -642,7 +642,7 @@ projectionIn direction vector =
         directionVector =
             Vector3d directionComponents
     in
-        times (dotProduct vector directionVector) directionVector
+        scaleBy (dotProduct vector directionVector) directionVector
 
 
 {-| Project a vector onto a plane. Conceptually, this means splitting the

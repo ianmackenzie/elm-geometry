@@ -348,7 +348,7 @@ translateAlongOwn axis distance frame =
             Axis2d.direction (axis frame)
 
         displacement =
-            Direction2d.times distance direction
+            Direction2d.scaleBy distance direction
     in
         translateBy displacement frame
 

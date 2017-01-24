@@ -170,7 +170,7 @@ interpolate startPoint endPoint =
         displacement =
             vectorFrom startPoint endPoint
     in
-        \t -> translateBy (Vector2d.times t displacement) startPoint
+        \t -> translateBy (Vector2d.scaleBy t displacement) startPoint
 
 
 {-| Construct a point along an axis at a particular distance from the axis'
@@ -196,7 +196,7 @@ the axis:
 -}
 along : Axis2d -> Float -> Point2d
 along (Axis2d { originPoint, direction }) distance =
-    translateBy (Direction2d.times distance direction) originPoint
+    translateBy (Direction2d.scaleBy distance direction) originPoint
 
 
 {-| Get the coordinates of a point as a tuple.
@@ -420,7 +420,7 @@ rotation operations instead.
 -}
 scaleAbout : Point2d -> Float -> Point2d -> Point2d
 scaleAbout centerPoint scale =
-    vectorFrom centerPoint >> Vector2d.times scale >> addTo centerPoint
+    vectorFrom centerPoint >> Vector2d.scaleBy scale >> addTo centerPoint
 
 
 {-| Rotate around a given center point counterclockwise by a given angle (in

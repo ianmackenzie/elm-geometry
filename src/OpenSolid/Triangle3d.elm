@@ -140,7 +140,7 @@ centroid triangle =
             Point3d.vectorFrom p1 p3
 
         displacement =
-            Vector3d.times (1.0 / 3.0) (Vector3d.plus secondVector firstVector)
+            Vector3d.scaleBy (1.0 / 3.0) (Vector3d.plus secondVector firstVector)
     in
         Point3d.translateBy displacement p1
 

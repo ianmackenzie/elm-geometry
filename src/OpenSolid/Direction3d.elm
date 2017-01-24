@@ -24,7 +24,7 @@ module OpenSolid.Direction3d
         , componentIn
         , equalWithin
         , toVector
-        , times
+        , scaleBy
         , angleFrom
         , flip
         , rotateAround
@@ -85,7 +85,7 @@ to start with existing directions and transform them as necessary.
 
 # Vector conversion
 
-@docs toVector, times
+@docs toVector, scaleBy
 
 # Angle measurement
 
@@ -183,7 +183,7 @@ perpendicularTo direction =
             Vector3d.length perpendicularVector
 
         normalizedVector =
-            Vector3d.times (1 / length) perpendicularVector
+            Vector3d.scaleBy (1 / length) perpendicularVector
     in
         Direction3d (Vector3d.components normalizedVector)
 
@@ -327,18 +327,6 @@ toVector (Direction3d components) =
     Vector3d components
 
 
-{-| Construct a vector from a magnitude and a direction. If the magnitude is
-negative the resulting vector will be in the opposite of the given direction.
-
-    Direction3d.times 3 Direction3d.z
-    --> Vector3d ( 0, 0, 3 )
-
--}
-times : Float -> Direction3d -> Vector3d
-times scale =
-    toVector >> Vector3d.times scale
-
-
 {-| Find the angle from one direction to another. The result will be in the
 range 0 to π.
 
@@ -363,7 +351,21 @@ angleFrom other direction =
 -}
 flip : Direction3d -> Direction3d
 flip =
-    toVector >> Vector3d.negate >> toDirection
+    toVector >> Vector3d.flip >> toDirection
+
+
+{-| Construct a vector of a particular length by treating a direction as a unit
+vector and scaling it by the given length.
+
+    Direction3d.scaleBy 3 Direction3d.z
+    --> Vector3d ( 0, 0, 3 )
+
+The length can be negative, in which case the resulting vector will have the
+opposite direction.
+-}
+scaleBy : Float -> Direction3d -> Vector3d
+scaleBy scale =
+    toVector >> Vector3d.scaleBy scale
 
 
 {-| Rotate a direction around an axis by a given angle.

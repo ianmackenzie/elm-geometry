@@ -23,12 +23,12 @@ module OpenSolid.Vector2d
         , squaredLength
         , direction
         , lengthAndDirection
-        , negate
-        , times
         , plus
         , minus
         , dotProduct
         , crossProduct
+        , flip
+        , scaleBy
         , rotateBy
         , mirrorAcross
         , projectionIn
@@ -83,7 +83,7 @@ actually want their `Direction2d` versions `Direction2d.x` and `Direction2d.y`.
 
 # Arithmetic
 
-@docs negate, times, plus, minus, dotProduct, crossProduct
+@docs plus, minus, dotProduct, crossProduct
 
 # Transformations
 
@@ -92,7 +92,7 @@ affects the result, since vectors are position-independent. Think of
 mirroring/projecting a vector across/onto an axis as moving the vector so its
 tail is on the axis, then mirroring/projecting its tip across/onto the axis.
 
-@docs rotateBy, mirrorAcross, projectionIn, projectOnto
+@docs flip, scaleBy, rotateBy, mirrorAcross, projectionIn, projectOnto
 
 # Coordinate frames
 
@@ -273,7 +273,7 @@ direction vector =
     else
         let
             normalizedVector =
-                times (1 / length vector) vector
+                scaleBy (1 / length vector) vector
         in
             Just (Direction2d (components normalizedVector))
 
@@ -301,32 +301,12 @@ lengthAndDirection vector =
         else
             let
                 normalizedVector =
-                    times (1 / vectorLength) vector
+                    scaleBy (1 / vectorLength) vector
 
                 vectorDirection =
                     Direction2d (components normalizedVector)
             in
                 Just ( vectorLength, vectorDirection )
-
-
-{-| Negate a vector.
-
-    Vector2d.negate (Vector2d ( -1, 2 )) ==
-        Vector2d ( 1, -2 )
--}
-negate : Vector2d -> Vector2d
-negate (Vector2d ( x, y )) =
-    Vector2d ( -x, -y )
-
-
-{-| Multiply a vector by a scalar.
-
-    Vector2d.times 3 (Vector2d ( 1, 2 )) ==
-        Vector2d ( 3, 6 )
--}
-times : Float -> Vector2d -> Vector2d
-times scale (Vector2d ( x, y )) =
-    Vector2d ( x * scale, y * scale )
 
 
 {-| Add one vector to another.
@@ -434,6 +414,26 @@ crossProduct firstVector secondVector =
         x1 * y2 - y1 * x2
 
 
+{-| Reverse the direction of a vector, negating its components.
+
+    Vector2d.flip (Vector2d ( -1, 2 )) ==
+        Vector2d ( 1, -2 )
+-}
+flip : Vector2d -> Vector2d
+flip (Vector2d ( x, y )) =
+    Vector2d ( -x, -y )
+
+
+{-| Scale the length of a vector by a given scale.
+
+    Vector2d.scaleBy 3 (Vector2d ( 1, 2 )) ==
+        Vector2d ( 3, 6 )
+-}
+scaleBy : Float -> Vector2d -> Vector2d
+scaleBy scale (Vector2d ( x, y )) =
+    Vector2d ( x * scale, y * scale )
+
+
 {-| Rotate a vector counterclockwise by a given angle (in radians).
 
     Vector2d.rotateBy (degrees 45) (Vector2d ( 1, 1 )) ==
@@ -516,7 +516,7 @@ projectionIn direction vector =
         directionVector =
             Vector2d directionComponents
     in
-        times (dotProduct vector directionVector) directionVector
+        scaleBy (dotProduct vector directionVector) directionVector
 
 
 {-| Project a vector onto an axis.

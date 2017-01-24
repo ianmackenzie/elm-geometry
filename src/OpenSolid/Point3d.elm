@@ -168,7 +168,7 @@ interpolate startPoint endPoint =
         displacement =
             vectorFrom startPoint endPoint
     in
-        \t -> translateBy (Vector3d.times t displacement) startPoint
+        \t -> translateBy (Vector3d.scaleBy t displacement) startPoint
 
 
 {-| Construct a point along an axis at a particular distance from the axis'
@@ -194,7 +194,7 @@ axis:
 -}
 along : Axis3d -> Float -> Point3d
 along (Axis3d { originPoint, direction }) distance =
-    translateBy (Direction3d.times distance direction) originPoint
+    translateBy (Direction3d.scaleBy distance direction) originPoint
 
 
 {-| Get the coordinates of a point as a tuple.
@@ -446,7 +446,7 @@ rotation operations instead.
 -}
 scaleAbout : Point3d -> Float -> Point3d -> Point3d
 scaleAbout centerPoint scale =
-    vectorFrom centerPoint >> Vector3d.times scale >> addTo centerPoint
+    vectorFrom centerPoint >> Vector3d.scaleBy scale >> addTo centerPoint
 
 
 {-| Rotate a point around an axis by a given angle (in radians).
@@ -565,7 +565,7 @@ projectOnto plane point =
             signedDistanceFrom plane point
 
         displacement =
-            Direction3d.times -signedDistance normalDirection
+            Direction3d.scaleBy -signedDistance normalDirection
     in
         translateBy displacement point
 

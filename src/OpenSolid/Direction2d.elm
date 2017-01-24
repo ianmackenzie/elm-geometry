@@ -24,8 +24,8 @@ module OpenSolid.Direction2d
         , componentIn
         , equalWithin
         , toVector
-        , times
         , flip
+        , scaleBy
         , rotateBy
         , mirrorAcross
         , relativeTo
@@ -88,11 +88,11 @@ directions and transform them as necessary.
 
 # Vector conversion
 
-@docs toVector, times
+@docs toVector
 
 # Transformations
 
-@docs flip, rotateBy, mirrorAcross
+@docs flip, scaleBy, rotateBy, mirrorAcross
 
 # Coordinate frames
 
@@ -323,21 +323,6 @@ toVector (Direction2d components) =
     Vector2d components
 
 
-{-| Construct a vector from a magnitude and a direction. If the magnitude is
-negative the resulting vector will be in the opposite of the given direction.
-
-    direction =
-        Direction2d ( 0.6, 0.8 )
-
-    Direction2d.times 2 direction
-    --> Vector2d ( 1.2, 1.6 )
-
--}
-times : Float -> Direction2d -> Vector2d
-times scale =
-    toVector >> Vector2d.times scale
-
-
 {-| Reverse a direction.
 
     Direction2d.flip Direction2d.y
@@ -345,7 +330,24 @@ times scale =
 -}
 flip : Direction2d -> Direction2d
 flip =
-    toVector >> Vector2d.negate >> toDirection
+    toVector >> Vector2d.flip >> toDirection
+
+
+{-| Construct a vector of a particular length by treating a direction as a unit
+vector and scaling it by the given length.
+
+    direction =
+        Direction2d ( 0.6, 0.8 )
+
+    Direction2d.scaleBy 2 direction
+    --> Vector2d ( 1.2, 1.6 )
+
+The length can be negative, in which case the resulting vector will have the
+opposite direction.
+-}
+scaleBy : Float -> Direction2d -> Vector2d
+scaleBy scale =
+    toVector >> Vector2d.scaleBy scale
 
 
 {-| Rotate a direction counterclockwise by a given angle (in radians).
