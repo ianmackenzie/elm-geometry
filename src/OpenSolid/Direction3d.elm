@@ -24,9 +24,9 @@ module OpenSolid.Direction3d
         , componentIn
         , equalWithin
         , toVector
-        , scaleBy
         , angleFrom
         , flip
+        , scaleBy
         , rotateAround
         , mirrorAcross
         , projectOnto
