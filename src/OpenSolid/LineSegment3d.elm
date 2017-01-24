@@ -117,7 +117,7 @@ endPoint (LineSegment3d ( _, end )) =
 {-| Get the endpoints of a line segment as a tuple.
 
     ( p1, p2 ) =
-        LineSegment3d.endpoints exampleLineSegment
+        LineSegment3d.endpoints lineSegment
 -}
 endpoints : LineSegment3d -> ( Point3d, Point3d )
 endpoints (LineSegment3d endpoints_) =
@@ -204,8 +204,7 @@ direction =
     vector >> Vector3d.direction
 
 
-{-| Get an arbitrary direction perpendicular to a line segment. Equivalent to
-`LineSegment3d.direction >> Maybe.map Direction3d.perpendicularTo`. If the line
+{-| Get an arbitrary direction perpendicular to a line segment. If the line
 segment has zero length, returns `Nothing`.
 
     LineSegment3d.normalDirection exampleLineSegment
