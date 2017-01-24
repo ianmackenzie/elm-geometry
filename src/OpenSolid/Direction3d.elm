@@ -189,7 +189,7 @@ perpendicularTo direction =
 
 
 {-| Construct a pair of directions that are perpendicular to each other and both
-perpendicular to the  given direction.
+perpendicular to the given direction.
 
 The given direction and the two returned directions will form a
 [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
