@@ -85,7 +85,7 @@ to start with existing directions and transform them as necessary.
 
 # Vector conversion
 
-@docs toVector, scaleBy
+@docs toVector
 
 # Angle measurement
 
@@ -93,7 +93,7 @@ to start with existing directions and transform them as necessary.
 
 # Transformations
 
-@docs flip, rotateAround, mirrorAcross, projectOnto
+@docs flip, scaleBy, rotateAround, mirrorAcross, projectOnto
 
 # Coordinate frames
 
