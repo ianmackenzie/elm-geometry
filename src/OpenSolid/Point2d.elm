@@ -32,8 +32,8 @@ module OpenSolid.Point2d
         , projectOnto
         , relativeTo
         , placeIn
-        , hull
         , placeOnto
+        , hull
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/point2d.svg" alt="Point2d" width="160">
