@@ -37,12 +37,23 @@ module OpenSolid.Direction3d
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/direction3d.svg" alt="Direction3d" width="160">
 
-Various functions for creating and working with `Direction3d` values. The
-simplest way to construct a `Direction3d` value is by passing a tuple of X, Y
-and Z components to the `Direction3d` constructor, for example
-<code>Direction3d&nbsp;(1,&nbsp;0,&nbsp;0&nbsp;)</code>. However, if you do this
-**you must ensure that the sum of the squares of the given components is exactly
-one**:
+A `Direction3d` represents a direction like 'up' or 'north' or 'forwards'. They
+are represented using X, Y and Z components, and can be converted to vectors if
+necessary, but should be thought of as conceptually different. Directions have
+several uses, such as:
+
+  - Constructing a vector from a length and direction
+  - Determining the component of a vector in a particular direction (for
+    example, finding the component of velocity in the up direction to get
+    vertical speed)
+  - Determining the angle between two directions
+  - Defining the orientation of an axis, plane or reference frame
+
+The simplest way to construct a `Direction3d` value is by passing a tuple of X,
+Y and Z components to the `Direction3d` constructor, for example
+<code>Direction3d&nbsp;(&nbsp;0,&nbsp;1,&nbsp;0&nbsp;)</code>. However, if you
+do this **you must ensure that the sum of the squares of the given components is
+exactly one**:
 
     Direction3d ( 1, 0, 0 )
     Direction3d ( 0, -1, 0 )
