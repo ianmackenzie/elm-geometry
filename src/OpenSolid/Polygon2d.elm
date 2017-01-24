@@ -30,9 +30,16 @@ module OpenSolid.Polygon2d
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/polygon2d.svg" alt="Polygon2d" width="160">
 
-Various functions for creating and working with `Polygon2d` values. Polygons can
-be constructed by passing an ordered list of vertices to the `Polygon2d`
-constructor, for example
+A `Polygon2d` represents a closed polygon in 2D, and is defined by a list of
+vertices. This module contains a variety of polygon-related functionality, such
+as
+
+  - Computing the perimeter and area of polygons
+  - Scaling, rotating, translating and mirroring polygons
+  - Converting polygons between different coordinate systems
+
+Polygons can be constructed by passing an ordered list of vertices to the
+`Polygon2d` constructor, for example
 
     rectangle =
         Polygon2d
