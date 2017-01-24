@@ -31,9 +31,8 @@ module OpenSolid.Plane3d
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/plane3d.svg" alt="Plane3d" width="160">
 
-Various functions for creating and working with `Plane3d` values. A `Plane3d` is
-defined by an origin point and normal direction and is useful for several
-operations including:
+A `Plane3d` is an infinite flat plane in 3D. It is defined by an origin point
+and normal direction and is useful for several operations including:
 
   - Mirroring across the plane
   - Projecting onto the plane
