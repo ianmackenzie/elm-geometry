@@ -114,7 +114,8 @@ addTo =
 
 {-| The point (0, 0).
 
-    Point2d.origin == Point2d ( 0, 0 )
+    Point2d.origin
+    --> Point2d ( 0, 0 )
 -}
 origin : Point2d
 origin =
@@ -129,8 +130,8 @@ origin =
     p2 =
         Point2d ( 3, 7 )
 
-    Point2d.midpoint p1 p2 ==
-        Point2d ( 2, 4 )
+    Point2d.midpoint p1 p2
+    --> Point2d ( 2, 4 )
 -}
 midpoint : Point2d -> Point2d -> Point2d
 midpoint firstPoint secondPoint =
@@ -146,8 +147,8 @@ parameter that ranges from zero to one.
     endPoint =
         Point2d ( 8, 12 )
 
-    Point2d.interpolate startPoint endPoint 0.25 ==
-        Point2d ( 2, 3 )
+    Point2d.interpolate startPoint endPoint 0.25
+    --> Point2d ( 2, 3 )
 
 Partial application may be useful:
 
@@ -155,19 +156,19 @@ Partial application may be useful:
     interpolatedPoint =
         Point2d.interpolate startPoint endPoint
 
-    List.map interpolatedPoint [ 0, 0.5, 1 ] ==
-        [ Point2d ( 0, 0 )
-        , Point2d ( 4, 6 )
-        , Point2d ( 8, 12 )
-        ]
+    List.map interpolatedPoint [ 0, 0.5, 1 ]
+    --> [ Point2d ( 0, 0 )
+    --> , Point2d ( 4, 6 )
+    --> , Point2d ( 8, 12 )
+    --> ]
 
 You can pass values less than zero or greater than one to extrapolate:
 
-    interpolatedPoint -0.5 ==
-        Point2d ( -4, -6 )
+    interpolatedPoint -0.5
+    --> Point2d ( -4, -6 )
 
-    interpolatedPoint 1.25 ==
-        Point2d ( 10, 15 )
+    interpolatedPoint 1.25
+    --> Point2d ( 10, 15 )
 -}
 interpolate : Point2d -> Point2d -> Float -> Point2d
 interpolate startPoint endPoint =
@@ -181,8 +182,8 @@ interpolate startPoint endPoint =
 {-| Construct a point along an axis at a particular distance from the axis'
 origin point.
 
-    Point2d.along Axis2d.y 3 ==
-        Point2d ( 0, 3 )
+    Point2d.along Axis2d.y 3
+    --> Point2d ( 0, 3 )
 
 Positive and negative distances will be interpreted relative to the direction of
 the axis:
@@ -193,11 +194,11 @@ the axis:
             , direction = Direction2d ( -1, 0 )
             }
 
-    Point2d.along horizontalAxis 3 ==
-        Point2d ( -2, 1 )
+    Point2d.along horizontalAxis 3
+    --> Point2d ( -2, 1 )
 
-    Point2d.along horizontalAxis -3 ==
-        Point2d ( 4, 1 )
+    Point2d.along horizontalAxis -3
+    --> Point2d ( 4, 1 )
 -}
 along : Axis2d -> Float -> Point2d
 along (Axis2d { originPoint, direction }) distance =
@@ -222,7 +223,8 @@ coordinates (Point2d coordinates_) =
 
 {-| Get the X coordinate of a point.
 
-    Point2d.xCoordinate (Point2d ( 2, 3 )) == 2
+    Point2d.xCoordinate (Point2d ( 2, 3 ))
+    --> 2
 -}
 xCoordinate : Point2d -> Float
 xCoordinate (Point2d ( x, _ )) =
@@ -231,7 +233,8 @@ xCoordinate (Point2d ( x, _ )) =
 
 {-| Get the Y coordinate of a point.
 
-    Point2d.yCoordinate (Point2d ( 2, 3 )) == 3
+    Point2d.yCoordinate (Point2d ( 2, 3 ))
+    --> 3
 -}
 yCoordinate : Point2d -> Float
 yCoordinate (Point2d ( _, y )) =
@@ -247,11 +250,11 @@ between the two given points is less than the given tolerance.
     secondPoint =
         Point2d ( 0.9999, 2.0002 )
 
-    Point2d.equalWithin 1e-3 firstPoint secondPoint ==
-        True
+    Point2d.equalWithin 1e-3 firstPoint secondPoint
+    --> True
 
-    Point2d.equalWithin 1e-6 firstPoint secondPoint ==
-        False
+    Point2d.equalWithin 1e-6 firstPoint secondPoint
+    --> False
 -}
 equalWithin : Float -> Point2d -> Point2d -> Bool
 equalWithin tolerance firstPoint secondPoint =
@@ -266,8 +269,8 @@ equalWithin tolerance firstPoint secondPoint =
     endPoint =
         Point2d ( 4, 5 )
 
-    Point2d.vectorFrom startPoint endPoint ==
-        Vector2d ( 3, 4 )
+    Point2d.vectorFrom startPoint endPoint
+    --> Vector2d ( 3, 4 )
 -}
 vectorFrom : Point2d -> Point2d -> Vector2d
 vectorFrom other point =
@@ -289,7 +292,8 @@ vectorFrom other point =
     p2 =
         Point2d ( 5, 7 )
 
-    Point2d.distanceFrom p1 p2 == 5
+    Point2d.distanceFrom p1 p2
+    --> 5
 
 Partial application can be useful:
 
@@ -303,11 +307,11 @@ Partial application can be useful:
     distanceFromOrigin =
         Point2d.distanceFrom Point2d.origin
 
-    List.sortBy distanceFromOrigin points ==
-        [ Point2d ( -1, 2 )
-        , Point2d ( 3, 4 )
-        , Point2d ( 10, 0 )
-        ]
+    List.sortBy distanceFromOrigin points
+    --> [ Point2d ( -1, 2 )
+    --> , Point2d ( 3, 4 )
+    --> , Point2d ( 10, 0 )
+    --> ]
 -}
 distanceFrom : Point2d -> Point2d -> Float
 distanceFrom other =
@@ -347,8 +351,11 @@ it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
     point =
         Point2d ( 3, 3 )
 
-    Point2d.distanceAlong axis point == 2
-    Point2d.distanceAlong axis Point2d.origin == -1
+    Point2d.distanceAlong axis point
+    --> 2
+
+    Point2d.distanceAlong axis Point2d.origin
+    --> -1
 -}
 distanceAlong : Axis2d -> Point2d -> Float
 distanceAlong axis =
@@ -376,9 +383,12 @@ to the right, with the forwards direction defined by the direction of the axis.
 
     -- Since the axis is in the positive X direction,
     -- points above the axis are to the left (positive)
-    Point2d.signedDistanceFrom axis point == 1
+    Point2d.signedDistanceFrom axis point
+    -->  1
+
     -- and points below are to the right (negative)
-    Point2d.signedDistanceFrom axis Point2d.origin == -2
+    Point2d.signedDistanceFrom axis Point2d.origin
+    --> -2
 
 This means that flipping an axis will also flip the sign of the result of this
 function:
@@ -387,8 +397,11 @@ function:
     flippedAxis =
         Axis2d.flip axis
 
-    Point2d.signedDistanceFrom flippedAxis point == -1
-    Point2d.signedDistanceFrom flippedAxis Point2d.origin == 2
+    Point2d.signedDistanceFrom flippedAxis point
+    --> -1
+
+    Point2d.signedDistanceFrom flippedAxis Point2d.origin
+    --> 2
 -}
 signedDistanceFrom : Axis2d -> Point2d -> Float
 signedDistanceFrom axis =
@@ -413,11 +426,11 @@ no-op, and scaling by a factor of 0 collapses all points to the center point.
     point =
         Point2d ( 2, 3 )
 
-    Point2d.scaleAbout centerPoint 3 point ==
-        Point2d ( 4, 7 )
+    Point2d.scaleAbout centerPoint 3 point
+    --> Point2d ( 4, 7 )
 
-    Point2d.scaleAbout centerPoint 0.5 point ==
-        Point2d ( 1.5, 2 )
+    Point2d.scaleAbout centerPoint 0.5 point
+    --> Point2d ( 1.5, 2 )
 
 Avoid scaling by a negative scaling factor - while this may sometimes do what
 you want it is confusing and error prone. Try a combination of mirror and/or
@@ -441,8 +454,8 @@ given last.
     point =
         Point2d ( 3, 0 )
 
-    Point2d.rotateAround centerPoint angle point ==
-        Point2d ( 2.7071, 0.7071 )
+    Point2d.rotateAround centerPoint angle point
+    --> Point2d ( 2.7071, 0.7071 )
 -}
 rotateAround : Point2d -> Float -> Point2d -> Point2d
 rotateAround centerPoint angle =
@@ -457,8 +470,8 @@ rotateAround centerPoint angle =
     displacement =
         Vector2d ( 1, 2 )
 
-    Point2d.translateBy displacement point ==
-        Point2d ( 4, 6 )
+    Point2d.translateBy displacement point
+    --> Point2d ( 4, 6 )
 -}
 translateBy : Vector2d -> Point2d -> Point2d
 translateBy vector point =
@@ -478,11 +491,11 @@ axis but on the opposite side.
     point =
         Point2d ( 2, 3 )
 
-    Point2d.mirrorAcross Axis2d.x point ==
-        Point2d ( 2, -3 )
+    Point2d.mirrorAcross Axis2d.x point
+    --> Point2d ( 2, -3 )
 
-    Point2d.mirrorAcross Axis2d.y point ==
-        Point2d ( -2, 3 )
+    Point2d.mirrorAcross Axis2d.y point
+    --> Point2d ( -2, 3 )
 -}
 mirrorAcross : Axis2d -> Point2d -> Point2d
 mirrorAcross axis =
@@ -500,11 +513,11 @@ mirrorAcross axis =
     point =
         Point2d ( 2, 3 )
 
-    Point2d.projectOnto Axis2d.x point ==
-        Point2d ( 2, 0 )
+    Point2d.projectOnto Axis2d.x point
+    --> Point2d ( 2, 0 )
 
-    Point2d.projectOnto Axis2d.y point ==
-        Point2d ( 0, 3 )
+    Point2d.projectOnto Axis2d.y point
+    --> Point2d ( 0, 3 )
 
 The axis does not have to pass through the origin:
 
@@ -514,8 +527,8 @@ The axis does not have to pass through the origin:
             , direction = Direction2d.y
             }
 
-    Point2d.projectOnto offsetYAxis point ==
-        Point2d ( 1, 3 )
+    Point2d.projectOnto offsetYAxis point
+    --> Point2d ( 1, 3 )
 -}
 projectOnto : Axis2d -> Point2d -> Point2d
 projectOnto axis =
@@ -534,11 +547,11 @@ coordinates relative to a given reference frame.
     localFrame =
         Frame2d.at (Point2d ( 1, 2 ))
 
-    Point2d.relativeTo localFrame (Point2d ( 4, 5 )) ==
-        Point2d ( 3, 3 )
+    Point2d.relativeTo localFrame (Point2d ( 4, 5 ))
+    --> Point2d ( 3, 3 )
 
-    Point2d.relativeTo localFrame (Point2d ( 1, 1 )) ==
-        Point2d ( 0, -1 )
+    Point2d.relativeTo localFrame (Point2d ( 1, 1 ))
+    --> Point2d ( 0, -1 )
 -}
 relativeTo : Frame2d -> Point2d -> Point2d
 relativeTo frame =
@@ -558,11 +571,11 @@ frame, and return that point expressed in global coordinates.
     localFrame =
         Frame2d.at (Point2d ( 1, 2 ))
 
-    Point2d.placeIn localFrame (Point2d ( 3, 3 )) ==
-        Point2d ( 4, 5 )
+    Point2d.placeIn localFrame (Point2d ( 3, 3 ))
+    --> Point2d ( 4, 5 )
 
-    Point2d.placeIn localFrame (Point2d ( 0, 1 )) ==
-        Point2d ( 1, 1 )
+    Point2d.placeIn localFrame (Point2d ( 0, 1 ))
+    --> Point2d ( 1, 1 )
 -}
 placeIn : Frame2d -> Point2d -> Point2d
 placeIn frame =
@@ -579,11 +592,11 @@ return the corresponding point in 3D.
     point =
         Point2d ( 2, 1 )
 
-    Point2d.placeOnto SketchPlane3d.xy point ==
-        Point3d ( 2, 1, 0 )
+    Point2d.placeOnto SketchPlane3d.xy point
+    --> Point3d ( 2, 1, 0 )
 
-    Point2d.placeOnto SketchPlane3d.xz point ==
-        Point3d ( 2, 0, 1 )
+    Point2d.placeOnto SketchPlane3d.xz point
+    --> Point3d ( 2, 0, 1 )
 
 The sketch plane can have any position and orientation:
 
@@ -591,8 +604,8 @@ The sketch plane can have any position and orientation:
         SketchPlane3d.xy
             |> SketchPlane3d.rotateAround Axis3d.x (degrees 45)
 
-    Point2d.placeOnto tiltedSketchPlane point ==
-        Point3d ( 2, 0.7071, 0.7071 )
+    Point2d.placeOnto tiltedSketchPlane point
+    --> Point3d ( 2, 0.7071, 0.7071 )
 -}
 placeOnto : SketchPlane3d -> Point2d -> Point3d
 placeOnto sketchPlane =
@@ -625,13 +638,13 @@ placeOnto sketchPlane =
     point2 =
         Point2d ( -1, 5 )
 
-    Point2d.hull point1 point2 ==
-        BoundingBox2d
-            { minX = -1
-            , maxX = 2
-            , minY = 3
-            , maxY = 5
-            }
+    Point2d.hull point1 point2
+    --> BoundingBox2d
+    -->     { minX = -1
+    -->     , maxX = 2
+    -->     , minY = 3
+    -->     , maxY = 5
+    -->     }
 -}
 hull : Point2d -> Point2d -> BoundingBox2d
 hull firstPoint secondPoint =
