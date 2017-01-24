@@ -76,11 +76,11 @@ import OpenSolid.Direction3d as Direction3d
 {-| The global XY plane, centered at the origin with a normal in the positive Z
 direction.
 
-    Plane3d.xy ==
-        Plane3d
-            { originPoint = Point3d.origin
-            , normalDirection = Direction3d.z
-            }
+    Plane3d.xy
+    --> Plane3d
+    -->     { originPoint = Point3d.origin
+    -->     , normalDirection = Direction3d.z
+    -->     }
 -}
 xy : Plane3d
 xy =
@@ -93,11 +93,11 @@ xy =
 {-| The global YZ plane, centered at the origin with a normal in the positive X
 direction.
 
-    Plane3d.yz ==
-        Plane3d
-            { originPoint = Point3d.origin
-            , normalDirection = Direction3d.x
-            }
+    Plane3d.yz
+    --> Plane3d
+    -->     { originPoint = Point3d.origin
+    -->     , normalDirection = Direction3d.x
+    -->     }
 -}
 yz : Plane3d
 yz =
@@ -110,11 +110,11 @@ yz =
 {-| The global ZX plane, centered at the origin with a normal in the positive Y
 direction.
 
-    Plane3d.zx ==
-        Plane3d
-            { originPoint = Point3d.origin
-            , normalDirection = Direction3d.y
-            }
+    Plane3d.zx
+    --> Plane3d
+    -->     { originPoint = Point3d.origin
+    -->     , normalDirection = Direction3d.y
+    -->     }
 -}
 zx : Plane3d
 zx =
@@ -126,8 +126,8 @@ zx =
 
 {-| Get the origin point of a plane.
 
-    Plane3d.originPoint Plane3d.xy ==
-        Point3d.origin
+    Plane3d.originPoint Plane3d.xy
+    --> Point3d.origin
 -}
 originPoint : Plane3d -> Point3d
 originPoint (Plane3d properties) =
@@ -136,8 +136,8 @@ originPoint (Plane3d properties) =
 
 {-| Get the normal direction of a plane.
 
-    Plane3d.normalDirection Plane3d.xy ==
-        Direction3d.z
+    Plane3d.normalDirection Plane3d.xy
+    --> Direction3d.z
 -}
 normalDirection : Plane3d -> Direction3d
 normalDirection (Plane3d properties) =
@@ -146,8 +146,8 @@ normalDirection (Plane3d properties) =
 
 {-| Construct an axis from the origin point and normal direction of a plane.
 
-    Plane3d.normalAxis Plane3d.zx ==
-        Axis3d.y
+    Plane3d.normalAxis Plane3d.zx
+    --> Axis3d.y
 -}
 normalAxis : Plane3d -> Axis3d
 normalAxis plane =
@@ -161,18 +161,18 @@ normalAxis plane =
 plane will be the origin point of the given plane. The X and Y basis directions
 of the sketch plane
 
-  - will be perpendicular to each other
-  - will both be perpendicular to the normal direction of the given plane
+  - will be perpendicular to each other,
+  - will both be perpendicular to the normal direction of the given plane, and
   - will have a cross product equal to the normal direction of the given plane
 
 but are otherwise arbitrary. For example, in the current implementation,
 
-    Plane3d.sketchPlane Plane3d.xy ==
-        SketchPlane3d
-            { originPoint = Point3d.origin
-            , xDirection = Direction3d ( 0, -1, 0 )
-            , yDirection = Direction3d ( 1, 0, 0 )
-            }
+    Plane3d.sketchPlane Plane3d.xy
+    --> SketchPlane3d
+    -->     { originPoint = Point3d.origin
+    -->     , xDirection = Direction3d ( 0, -1, 0 )
+    -->     , yDirection = Direction3d ( 1, 0, 0 )
+    -->     }
 
 which is coplanar with and has the same origin point as`SketchPlane3d.xy`, but
 is not equal to it as might be expected.
@@ -200,17 +200,17 @@ sketchPlane plane =
 
 {-| Shift a plane in its own normal direction by the given (signed) distance.
 
-    Plane3d.offsetBy 1.0 Plane3d.zx ==
-        Plane3d
-            { originPoint = Point3d ( 0, 1, 0 )
-            , normalDirection = Direction3d.y
-            }
+    Plane3d.offsetBy 1.0 Plane3d.zx
+    --> Plane3d
+    -->     { originPoint = Point3d ( 0, 1, 0 )
+    -->     , normalDirection = Direction3d.y
+    -->     }
 
-    Plane3d.offsetBy -2.0 Plane3d.xy ==
-        Plane3d
-            { originPoint = Point3d ( 0, 0, -2 )
-            , normalDirection = Direction3d.z
-            }
+    Plane3d.offsetBy -2.0 Plane3d.xy
+    --> Plane3d
+    -->     { originPoint = Point3d ( 0, 0, -2 )
+    -->     , normalDirection = Direction3d.z
+    -->     }
 -}
 offsetBy : Float -> Plane3d -> Plane3d
 offsetBy distance plane =
@@ -219,11 +219,11 @@ offsetBy distance plane =
 
 {-| Reverse a plane's normal direction while leaving its origin point unchanged.
 
-    Plane3d.flip Plane3d.xy ==
-        Plane3d
-            { originPoint = Point3d.origin
-            , normalDirection = Direction3d ( 0, 0, -1 )
-            }
+    Plane3d.flip Plane3d.xy
+    --> Plane3d
+    -->     { originPoint = Point3d.origin
+    -->     , normalDirection = Direction3d ( 0, 0, -1 )
+    -->     }
 -}
 flip : Plane3d -> Plane3d
 flip plane =
@@ -235,8 +235,8 @@ flip plane =
 
 {-| Rotate a plane around an axis by a given angle.
 
-    Plane3d.rotateAround Axis3d.y (degrees 90) Plane3d.xy ==
-        Plane3d.yz
+    Plane3d.rotateAround Axis3d.y (degrees 90) Plane3d.xy
+    --> Plane3d.yz
 -}
 rotateAround : Axis3d -> Float -> Plane3d -> Plane3d
 rotateAround axis angle =
@@ -266,11 +266,11 @@ the plane's origin point and leaves its normal direction unchanged.
     displacement =
         Vector3d ( 1, 2, 3 )
 
-    Plane3d.translateBy displacement plane ==
-        Plane3d
-            { originPoint = Point3d ( 2, 3, 4 )
-            , normalDirection = Direction3d.z
-            }
+    Plane3d.translateBy displacement plane
+    --> Plane3d
+    -->     { originPoint = Point3d ( 2, 3, 4 )
+    -->     , normalDirection = Direction3d.z
+    -->     }
 -}
 translateBy : Vector3d -> Plane3d -> Plane3d
 translateBy vector plane =
@@ -286,11 +286,11 @@ direction.
     newOrigin =
         Point3d ( 1, 2, 3 )
 
-    Plane3d.moveTo newOrigin Plane3d.xy ==
-        Plane3d
-            { originPoint = Point3d ( 1, 2, 3 )
-            , normalDirection = Direction3d.z
-            }
+    Plane3d.moveTo newOrigin Plane3d.xy
+    --> Plane3d
+    -->     { originPoint = Point3d ( 1, 2, 3 )
+    -->     , normalDirection = Direction3d.z
+    -->     }
 -}
 moveTo : Point3d -> Plane3d -> Plane3d
 moveTo newOrigin plane =
@@ -309,11 +309,11 @@ and the plane to mirror is given second.
             , normalDirection = Direction3d.z
             }
 
-    Plane3d.mirrorAcross Plane3d.xy plane ==
-        Plane3d
-            { originPoint = Point3d ( 1, 2, -3 )
-            , normalDirection = Direction3d ( 0, 0, -1 )
-            }
+    Plane3d.mirrorAcross Plane3d.xy plane
+    --> Plane3d
+    -->     { originPoint = Point3d ( 1, 2, -3 )
+    -->     , normalDirection = Direction3d ( 0, 0, -1 )
+    -->     }
 -}
 mirrorAcross : Plane3d -> Plane3d -> Plane3d
 mirrorAcross otherPlane =
@@ -343,11 +343,11 @@ coordinates relative to a given reference frame.
             , normalDirection = Direction3d.z
             }
 
-    Plane3d.relativeTo referenceFrame plane ==
-        Plane3d
-            { originPoint = Point3d ( -1, -1, 1 )
-            , normalDirection = Direction3d.z
-            }
+    Plane3d.relativeTo referenceFrame plane
+    --> Plane3d
+    -->     { originPoint = Point3d ( -1, -1, 1 )
+    -->     , normalDirection = Direction3d.z
+    -->     }
 -}
 relativeTo : Frame3d -> Plane3d -> Plane3d
 relativeTo frame =
@@ -377,11 +377,11 @@ frame, and return that plane expressed in global coordinates.
             , normalDirection = Direction3d.z
             }
 
-    Plane3d.placeIn referenceFrame plane ==
-        Plane3d
-            { originPoint = Point3d ( 2, 3, 4 )
-            , normalDirection = Direction3d.z
-            }
+    Plane3d.placeIn referenceFrame plane
+    --> Plane3d
+    -->     { originPoint = Point3d ( 2, 3, 4 )
+    -->     , normalDirection = Direction3d.z
+    -->     }
 -}
 placeIn : Frame3d -> Plane3d -> Plane3d
 placeIn frame =
