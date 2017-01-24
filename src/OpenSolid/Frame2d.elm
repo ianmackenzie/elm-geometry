@@ -93,12 +93,12 @@ import OpenSolid.Axis2d as Axis2d
 
 {-| The global XY frame.
 
-    Frame2d.xy ==
-        Frame2d
-            { originPoint = Point2d.origin
-            , xDirection = Direction2d.x
-            , yDirection = Direction2d.y
-            }
+    Frame2d.xy
+    --> Frame2d
+    -->     { originPoint = Point2d.origin
+    -->     , xDirection = Direction2d.x
+    -->     , yDirection = Direction2d.y
+    -->     }
 -}
 xy : Frame2d
 xy =
@@ -108,12 +108,12 @@ xy =
 {-| Construct a frame aligned with the global XY frame but with the given origin
 point.
 
-    Frame2d.at (Point2d ( 2, 3 )) ==
-        Frame2d
-            { originPoint = Point2d ( 2, 3 )
-            , xDirection = Direction2d.x
-            , yDirection = Direction2d.y
-            }
+    Frame2d.at (Point2d ( 2, 3 ))
+    --> Frame2d
+    -->     { originPoint = Point2d ( 2, 3 )
+    -->     , xDirection = Direction2d.x
+    -->     , yDirection = Direction2d.y
+    -->     }
 -}
 at : Point2d -> Frame2d
 at point =
@@ -126,8 +126,8 @@ at point =
 
 {-| Get the origin point of a given frame.
 
-    Frame2d.originPoint Frame2d.xy ==
-        Point2d.origin
+    Frame2d.originPoint Frame2d.xy
+    --> Point2d.origin
 -}
 originPoint : Frame2d -> Point2d
 originPoint (Frame2d properties) =
@@ -136,8 +136,8 @@ originPoint (Frame2d properties) =
 
 {-| Get the X direction of a given frame.
 
-    Frame2d.xDirection Frame2d.xy ==
-        Direction2d.x
+    Frame2d.xDirection Frame2d.xy
+    --> Direction2d.x
 -}
 xDirection : Frame2d -> Direction2d
 xDirection (Frame2d properties) =
@@ -146,8 +146,8 @@ xDirection (Frame2d properties) =
 
 {-| Get the Y direction of a given frame.
 
-    Frame2d.yDirection Frame2d.xy ==
-        Direction2d.y
+    Frame2d.yDirection Frame2d.xy
+    --> Direction2d.y
 -}
 yDirection : Frame2d -> Direction2d
 yDirection (Frame2d properties) =
@@ -157,8 +157,8 @@ yDirection (Frame2d properties) =
 {-| Get the X axis of a given frame (the axis formed from the frame's origin
 point and X direction).
 
-    Frame2d.xAxis Frame2d.xy ==
-        Axis2d.x
+    Frame2d.xAxis Frame2d.xy
+    --> Axis2d.x
 -}
 xAxis : Frame2d -> Axis2d
 xAxis frame =
@@ -168,8 +168,8 @@ xAxis frame =
 {-| Get the Y axis of a given frame (the axis formed from the frame's origin
 point and Y direction).
 
-    Frame2d.yAxis Frame2d.xy ==
-        Axis2d.y
+    Frame2d.yAxis Frame2d.xy
+    --> Axis2d.y
 -}
 yAxis : Frame2d -> Axis2d
 yAxis frame =
@@ -179,12 +179,12 @@ yAxis frame =
 {-| Reverse the X direction of a frame, leaving its Y direction and origin point
 the same.
 
-    Frame2d.flipX Frame2d.xy ==
-        Frame2d
-            { originPoint = Point2d.origin
-            , xDirection = Direction2d.flip Direction2d.x
-            , yDirection = Direction2d.y
-            }
+    Frame2d.flipX Frame2d.xy
+    --> Frame2d
+    -->     { originPoint = Point2d.origin
+    -->     , xDirection = Direction2d.flip Direction2d.x
+    -->     , yDirection = Direction2d.y
+    -->     }
 -}
 flipX : Frame2d -> Frame2d
 flipX frame =
@@ -198,12 +198,12 @@ flipX frame =
 {-| Reverse the Y direction of a frame, leaving its X direction and origin point
 the same.
 
-    Frame2d.flipY Frame2d.xy ==
-        Frame2d
-            { originPoint = Point2d.origin
-            , xDirection = Direction2d.x
-            , yDirection = Direction2d.flip Direction2d.y
-            }
+    Frame2d.flipY Frame2d.xy
+    --> Frame2d
+    -->     { originPoint = Point2d.origin
+    -->     , xDirection = Direction2d.x
+    -->     , yDirection = Direction2d.flip Direction2d.y
+    -->     }
 -}
 flipY : Frame2d -> Frame2d
 flipY frame =
@@ -223,12 +223,12 @@ flipY frame =
             , yDirection = Direction2d ( -0.6, 0.8 )
             }
 
-    Frame2d.moveTo (Point2d ( 1, 1 )) frame ==
-        Frame2d
-            { point = Point2d ( 1, 1 )
-            , xDirection = Direction2d ( 0.8, 0.6 )
-            , yDirection = Direction2d ( -0.6, 0.8 )
-            }
+    Frame2d.moveTo (Point2d ( 1, 1 )) frame
+    --> Frame2d
+    -->     { point = Point2d ( 1, 1 )
+    -->     , xDirection = Direction2d ( 0.8, 0.6 )
+    -->     , yDirection = Direction2d ( -0.6, 0.8 )
+    -->     }
 -}
 moveTo : Point2d -> Frame2d -> Frame2d
 moveTo newOrigin frame =
@@ -246,12 +246,12 @@ Y directions will be rotated by the given angle.
     frame =
         Frame2d.at (Point2d ( 1, 1 ))
 
-    Frame2d.rotateBy (degrees 45) frame ==
-        Frame2d
-            { originPoint = Point2d ( 1, 1 )
-            , xDirection = Direction2d ( 0.7071, 0.7071 )
-            , yDirection = Direction2d ( -0.7071, 0.7071 )
-            }
+    Frame2d.rotateBy (degrees 45) frame
+    --> Frame2d
+    -->     { originPoint = Point2d ( 1, 1 )
+    -->     , xDirection = Direction2d ( 0.7071, 0.7071 )
+    -->     , yDirection = Direction2d ( -0.7071, 0.7071 )
+    -->     }
 -}
 rotateBy : Float -> Frame2d -> Frame2d
 rotateBy angle frame =
@@ -273,12 +273,12 @@ and its X and Y basis directions will be rotated by the given angle.
     frame =
         Frame2d.at (Point2d ( 1, 1 ))
 
-    Frame2d.rotateAround Point2d.origin (degrees 45) frame ==
-        Frame2d
-            { originPoint = Point2d ( 0, 1.4142 )
-            , xDirection = Direction2d ( 0.7071, 0.7071 )
-            , yDirection = Direction2d ( -0.7071, 0.7071 )
-            }
+    Frame2d.rotateAround Point2d.origin (degrees 45) frame
+    --> Frame2d
+    -->     { originPoint = Point2d ( 0, 1.4142 )
+    -->     , xDirection = Direction2d ( 0.7071, 0.7071 )
+    -->     , yDirection = Direction2d ( -0.7071, 0.7071 )
+    -->     }
 -}
 rotateAround : Point2d -> Float -> Frame2d -> Frame2d
 rotateAround centerPoint angle =
@@ -305,8 +305,8 @@ rotateAround centerPoint angle =
     displacement =
         Vector2d ( 1, 1 )
 
-    Frame2d.translateBy displacement frame ==
-        Frame2d.at (Point2d ( 3, 4 ))
+    Frame2d.translateBy displacement frame
+    --> Frame2d.at (Point2d ( 3, 4 ))
 -}
 translateBy : Vector2d -> Frame2d -> Frame2d
 translateBy vector frame =
@@ -358,12 +358,12 @@ translateAlongOwn axis distance frame =
     frame =
         Frame2d.at (Point2d ( 2, 3 ))
 
-    Frame2d.mirrorAcross Axis2d.x frame ==
-        Frame2d
-            { originPoint = Point2d ( 2, -3 )
-            , xDirection = Direction2d.x
-            , yDirection = Direction2d.flip Direction2d.y
-            }
+    Frame2d.mirrorAcross Axis2d.x frame
+    --> Frame2d
+    -->     { originPoint = Point2d ( 2, -3 )
+    -->     , xDirection = Direction2d.x
+    -->     , yDirection = Direction2d.flip Direction2d.y
+    -->     }
 
 Note that this will switch the
 [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
