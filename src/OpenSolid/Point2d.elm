@@ -38,8 +38,13 @@ module OpenSolid.Point2d
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/point2d.svg" alt="Point2d" width="160">
 
-Various functions for creating and working with `Point2d` values. A `Point2d` is
-defined by its X and Y coordinates and represents a position in 2D space.
+A `Point2d` represents a position in 2D space and is defined by its X and Y
+coordinates. This module contains a variety of point-related functionality, such
+as
+
+  - Measuring distance between points
+  - Scaling, rotating, translating, mirroring and projecting points
+  - Converting points between different coordinate systems
 
 The simplest way to construct a `Point2d` value is by passing a tuple of X and Y
 coordinates to the `Point2d` constructor, for example
