@@ -1,9 +1,9 @@
 ## What is it?
 
-An [Elm](http://elm-lang.org) package for working with 2D and 3D geometry.
-Instead of creating your own point/vector/geometry types and writing your own
-construction/transformation functions, give this package a try!  A wide variety
-of geometric data types are supported:
+`opensolid/geometry` is an [Elm](http://elm-lang.org) package for working with
+2D and 3D geometry. Instead of creating your own point/vector/geometry types and
+writing your own construction/transformation functions, give this package a try!
+A wide variety of geometric data types are supported:
 
   - `Point2d`, `Point3d`
 
