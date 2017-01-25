@@ -167,7 +167,7 @@ to your project's `elm-package.json`.
 
 Full API documentation is available for each module. Most modules are associated
 with a particular data type (for example, the `Point3d` module contains
-functions related to the `Point3d` data type); for an overview of the various
+functions related to the `Point3d` data type). For an overview of the various
 types in the package, check out the `OpenSolid.Geometry.Types` module.
 
 ## Usage details
