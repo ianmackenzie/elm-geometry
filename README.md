@@ -89,7 +89,7 @@ Frame2d.at (Point2d ( 2, 3 ))
 ...point/vector arithmetic...
 
 ```elm
-Vector3d.plus (Vector3d ( 1, 2, 3 )) (Vector3d ( 4, 5, 6 ))
+Vector3d.sum (Vector3d ( 1, 2, 3 )) (Vector3d ( 4, 5, 6 ))
 --> Vector3d ( 5, 7, 9 )
 
 Point3d.vectorFrom (Point3d ( 1, 1, 1 )) (Point3d ( 3, 5, 4 ))
