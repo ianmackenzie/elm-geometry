@@ -2,8 +2,8 @@
 
 `opensolid/geometry` is an [Elm](http://elm-lang.org) package for working with
 2D and 3D geometry. It provides a rich set of geometric data types such as
-points, axes and coordinate frames along with operations that combine them in
-many different ways, allowing you to easily:
+points, axes, triangles and coordinate frames along with operations that combine
+them in many different ways, allowing you to easily:
 
   - Rotate points around axes in 3D
   - Rotate axes around points in 2D
