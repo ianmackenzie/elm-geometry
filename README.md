@@ -208,7 +208,7 @@ axis =
 ## Questions? Comments?
 
 Please [open a new issue](https://github.com/opensolid/geometry/issues) if you
-run into a bug, if any documentation is missing, incorrect or confusing, or if
+run into a bug, if any documentation is missing/incorrect/confusing, or if
 there's a new feature that you would find useful. For general questions about
 using OpenSolid, try posting on:
 
