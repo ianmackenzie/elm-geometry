@@ -26,8 +26,8 @@ module OpenSolid.Vector3d
         , lengthAndDirection
         , flip
         , scaleBy
-        , plus
-        , minus
+        , sum
+        , difference
         , dotProduct
         , crossProduct
         , rotateAround
@@ -80,7 +80,7 @@ and `Direction3d.z`.
 
 # Arithmetic
 
-@docs flip, scaleBy, plus, minus, dotProduct, crossProduct
+@docs sum, difference, dotProduct, crossProduct
 
 # Transformations
 
@@ -89,7 +89,7 @@ plane is relevant, since vectors are position-independent. Think of transforming
 a vector as placing its tail on the relevant axis or plane and then transforming
 its tip.
 
-@docs rotateAround, mirrorAcross, projectionIn, projectOnto
+@docs flip, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
 
 # Coordinate frames
 
@@ -256,7 +256,7 @@ between the two given vectors has magnitude less than the given tolerance.
 -}
 equalWithin : Float -> Vector3d -> Vector3d -> Bool
 equalWithin tolerance firstVector secondVector =
-    squaredLength (minus firstVector secondVector) <= tolerance * tolerance
+    squaredLength (difference firstVector secondVector) <= tolerance * tolerance
 
 
 {-| Get the length (magnitude) of a vector.
@@ -343,7 +343,7 @@ lengthAndDirection vector =
                 Just ( vectorLength, vectorDirection )
 
 
-{-| Add one vector to another.
+{-| Find the sum of two vectors.
 
     firstVector =
         Vector3d ( 1, 2, 3 )
@@ -351,48 +351,42 @@ lengthAndDirection vector =
     secondVector =
         Vector3d ( 4, 5, 6 )
 
-    Vector3d.plus firstVector secondVector ==
+    Vector3d.sum firstVector secondVector ==
         Vector3d ( 5, 7, 9 )
 -}
-plus : Vector3d -> Vector3d -> Vector3d
-plus other vector =
+sum : Vector3d -> Vector3d -> Vector3d
+sum firstVector secondVector =
     let
-        ( otherX, otherY, otherZ ) =
-            components other
+        ( x1, y1, z1 ) =
+            components firstVector
 
-        ( x, y, z ) =
-            components vector
+        ( x2, y2, z2 ) =
+            components secondVector
     in
-        Vector3d ( x + otherX, y + otherY, z + otherZ )
+        Vector3d ( x1 + x2, y1 + y2, z1 + z2 )
 
 
-{-| Subtract one vector from another. The vector to subtract is given first and
-the vector to be subtracted from is given second, so
+{-| Find the difference between two vectors (the first vector minus the second).
 
     firstVector =
-        Vector3d ( 1, 1, 1 )
-
-    secondVector =
         Vector3d ( 5, 6, 7 )
 
-    Vector3d.minus firstVector secondVector ==
+    secondVector =
+        Vector3d ( 1, 1, 1 )
+
+    Vector3d.difference firstVector secondVector ==
         Vector3d ( 4, 5, 6 )
-
-or more generally, <code>Vector3d.minus&nbsp;a&nbsp;b</code> means
-<code>b&nbsp;-&nbsp;a</code>, not <code>a&nbsp;-&nbsp;b</code>. Think of
-<code>Vector3d.minus&nbsp;a&nbsp;b</code> as the operation
-<code>minus&nbsp;a</code> being applied to the vector `b`.
 -}
-minus : Vector3d -> Vector3d -> Vector3d
-minus other vector =
+difference : Vector3d -> Vector3d -> Vector3d
+difference firstVector secondVector =
     let
-        ( otherX, otherY, otherZ ) =
-            components other
+        ( x1, y1, z1 ) =
+            components firstVector
 
-        ( x, y, z ) =
-            components vector
+        ( x2, y2, z2 ) =
+            components secondVector
     in
-        Vector3d ( x - otherX, y - otherY, z - otherZ )
+        Vector3d ( x1 - x2, y1 - y2, z1 - z2 )
 
 
 {-| Find the dot product of two vectors.
@@ -665,7 +659,7 @@ projectOnto plane vector =
         (Plane3d { originPoint, normalDirection }) =
             plane
     in
-        minus (projectionIn normalDirection vector) vector
+        difference vector (projectionIn normalDirection vector)
 
 
 {-| Take a vector defined in global coordinates, and return it expressed in

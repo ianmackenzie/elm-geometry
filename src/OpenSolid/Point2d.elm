@@ -462,7 +462,7 @@ rotateAround centerPoint angle =
     vectorFrom centerPoint >> Vector2d.rotateBy angle >> addTo centerPoint
 
 
-{-| Translate a point by a given displacement. You can think of this as 'plus'.
+{-| Translate a point by a given displacement.
 
     point =
         Point2d ( 3, 4 )

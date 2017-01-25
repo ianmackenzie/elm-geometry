@@ -146,7 +146,7 @@ centroid triangle =
             Point2d.vectorFrom p1 p3
 
         displacement =
-            Vector2d.scaleBy (1.0 / 3.0) (Vector2d.plus secondVector firstVector)
+            Vector2d.scaleBy (1.0 / 3.0) (Vector2d.sum firstVector secondVector)
     in
         Point2d.translateBy displacement p1
 

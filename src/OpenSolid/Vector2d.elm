@@ -23,8 +23,8 @@ module OpenSolid.Vector2d
         , squaredLength
         , direction
         , lengthAndDirection
-        , plus
-        , minus
+        , sum
+        , difference
         , dotProduct
         , crossProduct
         , flip
@@ -83,7 +83,7 @@ actually want their `Direction2d` versions `Direction2d.x` and `Direction2d.y`.
 
 # Arithmetic
 
-@docs plus, minus, dotProduct, crossProduct
+@docs sum, difference, dotProduct, crossProduct
 
 # Transformations
 
@@ -226,7 +226,7 @@ between the two given vectors has magnitude less than the given tolerance.
 -}
 equalWithin : Float -> Vector2d -> Vector2d -> Bool
 equalWithin tolerance firstVector secondVector =
-    squaredLength (minus firstVector secondVector) <= tolerance * tolerance
+    squaredLength (difference firstVector secondVector) <= tolerance * tolerance
 
 
 {-| Get the length (magnitude) of a vector.
@@ -309,7 +309,7 @@ lengthAndDirection vector =
                 Just ( vectorLength, vectorDirection )
 
 
-{-| Add one vector to another.
+{-| Find the sum of two vectors.
 
     firstVector =
         Vector2d ( 1, 2 )
@@ -317,33 +317,27 @@ lengthAndDirection vector =
     secondVector =
         Vector2d ( 3, 4 )
 
-    Vector2d.plus firstVector secondVector ==
+    Vector2d.sum firstVector secondVector ==
         Vector2d ( 4, 6 )
 -}
-plus : Vector2d -> Vector2d -> Vector2d
-plus (Vector2d ( x2, y2 )) (Vector2d ( x1, y1 )) =
+sum : Vector2d -> Vector2d -> Vector2d
+sum (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
     Vector2d ( x1 + x2, y1 + y2 )
 
 
-{-| Subtract one vector from another. The vector to subtract is given first and
-the vector to be subtracted from is given second, so
+{-| Find the difference between two vectors (the first vector minus the second).
 
     firstVector =
-        Vector2d ( 1, 2 )
-
-    secondVector =
         Vector2d ( 5, 6 )
 
-    Vector2d.minus firstVector secondVector ==
-        Vector2d ( 4, 4 )
+    secondVector =
+        Vector2d ( 1, 3 )
 
-or more generally, <code>Vector2d.minus&nbsp;a&nbsp;b</code> means
-<code>b&nbsp;-&nbsp;a</code>, not <code>a&nbsp;-&nbsp;b</code>. Think of
-<code>Vector2d.minus&nbsp;a&nbsp;b</code> as the operation
-<code>minus&nbsp;a</code> being applied to the vector `b`.
+    Vector2d.difference firstVector secondVector ==
+        Vector2d ( 4, 3 )
 -}
-minus : Vector2d -> Vector2d -> Vector2d
-minus (Vector2d ( x2, y2 )) (Vector2d ( x1, y1 )) =
+difference : Vector2d -> Vector2d -> Vector2d
+difference (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
     Vector2d ( x1 - x2, y1 - y2 )
 
 

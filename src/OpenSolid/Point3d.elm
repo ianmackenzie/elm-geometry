@@ -500,7 +500,7 @@ rotateAround axis angle =
             >> addTo originPoint
 
 
-{-| Translate a point by a given displacement. You can think of this as 'plus'.
+{-| Translate a point by a given displacement.
 
     point =
         Point3d ( 3, 4, 5 )
