@@ -164,7 +164,7 @@ out the `OpenSolid.Geometry.Types` module.
 ## Usage details
 
 Following the [Elm package design guidelines](http://package.elm-lang.org/help/design-guidelines#module-names-should-not-reappear-in-function-names),
-most OpenSolid modules are designed to imported using `as` and then used as
+most OpenSolid modules are designed to be imported using `as` and then used as
 prefixes for the functions and values that they define:
 
 ```elm
