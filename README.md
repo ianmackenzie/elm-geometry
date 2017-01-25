@@ -10,6 +10,7 @@ types such as points, axes and coordinate frames that allow you to:
   - Measure distances and angles between different objects
   - Project 3D geometry into a 2D sketch
   - Compose complex 2D/3D transformations easily and elegantly
+  - ...and much more!
 
 A wide variety of data types are supported:
 
