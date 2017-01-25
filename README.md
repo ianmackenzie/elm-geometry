@@ -5,11 +5,11 @@
 types such as points, axes and coordinate frames that allow you to:
 
   - Rotate points around axes in 3D
-  - Project triangles onto 3D planes
-  - Find the components of a 2D vector relative to a local reference frame
+  - Mirror triangles across 3D planes
+  - Project 3D geometry into 2D sketch planes
   - Measure distances and angles between different objects
-  - Project 3D geometry into a 2D sketch
-  - Compose complex 2D/3D transformations easily and elegantly
+  - Easily convert objects between different coordinate systems
+  - Elegantly compose complex 2D/3D transformations
   - ...and much more!
 
 A wide variety of data types are supported:
