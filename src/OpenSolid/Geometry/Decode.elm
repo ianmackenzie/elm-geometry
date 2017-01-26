@@ -107,7 +107,7 @@ point3d =
         (Decode.index 2 Decode.float)
 
 
-{-| Decodes an Axis2d from an object with 'originPoint' and 'direction' fields.
+{-| Decodes an Axis2d from an object with `originPoint` and `direction` fields.
 -}
 axis2d : Decoder Axis2d
 axis2d =
@@ -119,7 +119,7 @@ axis2d =
         (Decode.field "direction" direction2d)
 
 
-{-| Decodes an Axis3d from an object with 'originPoint' and 'direction' fields.
+{-| Decodes an Axis3d from an object with `originPoint` and `direction` fields.
 -}
 axis3d : Decoder Axis3d
 axis3d =
@@ -131,7 +131,7 @@ axis3d =
         (Decode.field "direction" direction3d)
 
 
-{-| Decodes a Plane3d from an object with 'originPoint' and 'normalDirection'
+{-| Decodes a Plane3d from an object with `originPoint` and `normalDirection`
 fields.
 -}
 plane3d : Decoder Plane3d
@@ -147,8 +147,8 @@ plane3d =
         (Decode.field "normalDirection" direction3d)
 
 
-{-| Decodes a Frame2d from an object with 'originPoint', 'xDirection' and
-'yDirection' fields.
+{-| Decodes a Frame2d from an object with `originPoint`, `xDirection` and
+`yDirection` fields.
 -}
 frame2d : Decoder Frame2d
 frame2d =
@@ -165,8 +165,8 @@ frame2d =
         (Decode.field "yDirection" direction2d)
 
 
-{-| Decodes a Frame3d from an object with 'originPoint', 'xDirection',
-'yDirection' and 'zDirection' fields.
+{-| Decodes a Frame3d from an object with `originPoint`, `xDirection`,
+`yDirection` and `zDirection` fields.
 -}
 frame3d : Decoder Frame3d
 frame3d =
@@ -185,8 +185,8 @@ frame3d =
         (Decode.field "zDirection" direction3d)
 
 
-{-| Decodes a SketchPlane3d from an object with 'originPoint', 'xDirection' and
-'yDirection' fields.
+{-| Decodes a SketchPlane3d from an object with `originPoint`, `xDirection` and
+`yDirection` fields.
 -}
 sketchPlane3d : Decoder SketchPlane3d
 sketchPlane3d =
@@ -241,8 +241,8 @@ triangle3d =
         (Decode.index 2 point3d)
 
 
-{-| Decodes a BoundingBox2d from an object with 'minX', 'maxX', 'minY' and
-'maxY' fields.
+{-| Decodes a BoundingBox2d from an object with `minX`, `maxX`, `minY` and
+`maxY` fields.
 -}
 boundingBox2d : Decoder BoundingBox2d
 boundingBox2d =
@@ -261,8 +261,8 @@ boundingBox2d =
         (Decode.field "maxY" Decode.float)
 
 
-{-| Decodes a BoundingBox3d from an object with 'minX', 'maxX', 'minY', 'maxY',
-'minZ' and 'maxZ' fields.
+{-| Decodes a BoundingBox3d from an object with `minX`, `maxX`, `minY`, `maxY`,
+`minZ` and `maxZ` fields.
 -}
 boundingBox3d : Decoder BoundingBox3d
 boundingBox3d =
@@ -306,7 +306,7 @@ polygon2d =
     Decode.map Polygon2d (Decode.list point2d)
 
 
-{-| Decodes a Circle2d from an object with 'centerPoint' and 'radius' fields.
+{-| Decodes a Circle2d from an object with `centerPoint` and `radius` fields.
 -}
 circle2d : Decoder Circle2d
 circle2d =

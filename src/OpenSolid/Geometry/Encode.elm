@@ -138,7 +138,7 @@ point3d point =
         Encode.list [ Encode.float x, Encode.float y, Encode.float z ]
 
 
-{-| Encode an Axis2d as an object with 'originPoint' and 'direction' fields.
+{-| Encode an Axis2d as an object with `originPoint` and `direction` fields.
 -}
 axis2d : Axis2d -> Value
 axis2d axis =
@@ -148,7 +148,7 @@ axis2d axis =
         ]
 
 
-{-| Encode an Axis3d as an object with 'originPoint' and 'direction' fields.
+{-| Encode an Axis3d as an object with `originPoint` and `direction` fields.
 -}
 axis3d : Axis3d -> Value
 axis3d axis =
@@ -158,7 +158,7 @@ axis3d axis =
         ]
 
 
-{-| Encode a Plane3d as an object with 'originPoint' and 'normalDirection'
+{-| Encode a Plane3d as an object with `originPoint` and `normalDirection`
 fields.
 -}
 plane3d : Plane3d -> Value
@@ -169,8 +169,8 @@ plane3d plane =
         ]
 
 
-{-| Encode a Frame2d as an object with 'originPoint', 'xDirection' and
-'yDirection' fields.
+{-| Encode a Frame2d as an object with `originPoint`, `xDirection` and
+`yDirection` fields.
 -}
 frame2d : Frame2d -> Value
 frame2d frame =
@@ -181,8 +181,8 @@ frame2d frame =
         ]
 
 
-{-| Encode a Frame3d as an object with 'originPoint', 'xDirection', 'yDirection'
-and 'zDirection' fields.
+{-| Encode a Frame3d as an object with `originPoint`, `xDirection`, `yDirection`
+and `zDirection` fields.
 -}
 frame3d : Frame3d -> Value
 frame3d frame =
@@ -194,8 +194,8 @@ frame3d frame =
         ]
 
 
-{-| Encode a SketchPlane3d as an object with 'originPoint', 'xDirection' and
-'yDirection' fields.
+{-| Encode a SketchPlane3d as an object with `originPoint`, `xDirection` and
+`yDirection` fields.
 -}
 sketchPlane3d : SketchPlane3d -> Value
 sketchPlane3d sketchPlane =
@@ -250,7 +250,7 @@ triangle3d triangle =
         Encode.list [ point3d v1, point3d v2, point3d v3 ]
 
 
-{-| Encode a BoundingBox2d as an object with 'minX', 'maxX', 'minY' and 'maxY'
+{-| Encode a BoundingBox2d as an object with `minX`, `maxX`, `minY` and `maxY`
 fields.
 -}
 boundingBox2d : BoundingBox2d -> Value
@@ -263,8 +263,8 @@ boundingBox2d boundingBox =
         ]
 
 
-{-| Encode a BoundingBox3d as an object with 'minX', 'maxX', 'minY', 'maxY',
-'minZ' and 'maxZ' fields.
+{-| Encode a BoundingBox3d as an object with `minX`, `maxX`, `minY`, `maxY`,
+`minZ` and `maxZ` fields.
 -}
 boundingBox3d : BoundingBox3d -> Value
 boundingBox3d boundingBox =
@@ -299,7 +299,7 @@ polygon2d polygon =
     Encode.list (List.map point2d (Polygon2d.vertices polygon))
 
 
-{-| Encode a Circle2d as an object with 'centerPoint' and 'radius' fields.
+{-| Encode a Circle2d as an object with `centerPoint` and `radius` fields.
 -}
 circle2d : Circle2d -> Value
 circle2d circle =
