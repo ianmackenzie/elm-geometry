@@ -40,9 +40,20 @@ module OpenSolid.Vector2d
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/vector2d.svg" alt="Vector2d" width="160">
 
-Various functions for creating and working with `Vector2d` values. A `Vector2d`
-is defined by its X and Y components and represents a quantity like a velocity
-or displacement in 2D.
+A `Vector2d` represents a quantity such as a displacement or velocity in 2D, and
+is defined by its X and Y components. This module contains a variety of
+vector-related functionality, such as
+
+  - Adding or subtracting vectors
+  - Finding the lengths of vectors
+  - Rotating vectors
+  - Converting vectors between different coordinate systems
+
+Note that unlike in many other geometry packages where vectors are used as a
+general-purpose data type, OpenSolid has separate data types for vectors,
+directions and points. In most code it is actually more common to use `Point2d`
+and `Direction2d` than `Vector2d`, and much code can avoid working directly with
+`Vector2d` values at all!
 
 The simplest way to create a `Vector2d` is  by passing a tuple of X and Y
 components to the `Vector2d` constructor, for example
