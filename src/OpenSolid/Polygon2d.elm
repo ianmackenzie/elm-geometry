@@ -139,7 +139,7 @@ area =
 
 
 {-| Get the signed area of a polygon, with polygons with vertices in clockwise
-order considered have positive area and polygons with vertices in
+order considered to have positive area and polygons with vertices in
 counterclockwise order considered to have negative area.
 
     Polygon2d.clockwiseArea rectangle ==
@@ -151,8 +151,8 @@ clockwiseArea polygon =
 
 
 {-| Get the signed area of a polygon, with polygons with vertices in
-counterclockwise order considered have positive area and polygons with vertices
-in clockwise order considered to have negative area.
+counterclockwise order considered to have positive area and polygons with
+vertices in clockwise order considered to have negative area.
 
     Polygon2d.counterclockwiseArea rectangle ==
         6
