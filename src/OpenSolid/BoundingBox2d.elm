@@ -34,10 +34,10 @@ module OpenSolid.BoundingBox2d
 
 A `BoundingBox2d` is a rectangular box in 2D defined by its minimum and maximum
 X and Y values. It is possible to generate bounding boxes for most geometric
-objects; for example, `Triangle2d.boundingBox` takes a `Triangle2d` and returns
-a `BoundingBox2d` that contains that triangle. There are several use cases where
-it is more efficient to deal with the bounding box of an object than the object
-itself, such as:
+objects; for example, [`Triangle2d.boundingBox`](OpenSolid-Triangle2d#boundingBox)
+takes a `Triangle2d` and returns a `BoundingBox2d` that contains that triangle.
+There are several use cases where it is more efficient to deal with the bounding
+box of an object than the object itself, such as:
 
   - Intersection checking: If (for example) the bounding boxes of a line segment
     and a triangle do not overlap, then the line segment and triangle cannot
@@ -63,8 +63,8 @@ Bounding boxes can be constructed by passing a record with `minX`, `maxX`,
 If you construct a `BoundingBox2d` this way, **you must ensure that the given
 values are properly ordered**: <code>minX&nbsp;<=&nbsp;maxX</code>,
 <code>minY&nbsp;<=&nbsp;maxY</code>. Alternately, you can construct bounding
-boxes using functions such as `Point2d.hull` where the input order does not
-matter.
+boxes using functions such as [`Point2d.hull`](OpenSolid-Point2d#hull) where the
+input order does not matter.
 
 # Constructors
 
@@ -132,8 +132,8 @@ list is empty, returns `Nothing`.
     BoundingBox2d.containing []
     --> Nothing
 
-If you have exactly two points, you can use `Point2d.hull` instead (which
-returns a `BoundingBox2d` instead of a `Maybe BoundingBox2d`).
+If you have exactly two points, you can use [`Point2d.hull`](OpenSolid-Point2d#hull)
+instead (which returns a `BoundingBox2d` instead of a `Maybe BoundingBox2d`).
 -}
 containing : List Point2d -> Maybe BoundingBox2d
 containing points =

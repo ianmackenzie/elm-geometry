@@ -70,8 +70,8 @@ Although there are no predefined constants for
 <code>Vector3d&nbsp;(&nbsp;1,&nbsp;0,&nbsp;0&nbsp;)</code>,
 <code>Vector3d&nbsp;(&nbsp;0,&nbsp;1,&nbsp;0&nbsp;)</code> and
 <code>Vector3d&nbsp;(&nbsp;0,&nbsp;0,&nbsp;1&nbsp;)</code>, in most cases you
-will actually want their `Direction3d` versions `Direction3d.x`, `Direction3d.y`
-and `Direction3d.z`.
+will actually want their `Direction3d` versions [`Direction3d.x`](OpenSolid-Direction3d#x),
+[`Direction3d.y`](OpenSolid-Direction3d#y) and [`Direction3d.z`](OpenSolid-Direction3d#z).
 
 # Constructors
 

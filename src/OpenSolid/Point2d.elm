@@ -53,7 +53,8 @@ coordinates to the `Point2d` constructor, for example
         Point2d ( 2, 3 )
 
 There are no specific functions to create points from polar components, but you
-can use Elm's built-in `fromPolar` function:
+can use Elm's built-in [`fromPolar`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#fromPolar)
+function:
 
     point =
         Point2d (fromPolar ( radius, angle ))
@@ -210,7 +211,7 @@ along (Axis2d { originPoint, direction }) distance =
     ( x, y ) =
         Point2d.coordinates point
 
-To get the polar coordinates of a point, you can use Elm's built in `toPolar`
+To get the polar coordinates of a point, you can use Elm's built-in [`toPolar`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#toPolar)
 function:
 
     ( radius, angle ) =

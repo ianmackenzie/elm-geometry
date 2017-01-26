@@ -62,7 +62,8 @@ components to the `Vector2d` constructor, for example
         Vector2d ( 2, 3 )
 
 There are no specific functions to create vectors from polar components, but you
-can use Elm's built-in `fromPolar` function:
+can use Elm's built-in [`fromPolar`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#fromPolar)
+function:
 
     vector =
         Vector2d (fromPolar ( radius, angle ))
@@ -74,7 +75,8 @@ can use Elm's built-in `fromPolar` function:
 Although there are no predefined constants for
 <code>Vector2d&nbsp;(&nbsp;1,&nbsp;0&nbsp;)</code> and
 <code>Vector2d&nbsp;(&nbsp;0,&nbsp;1&nbsp;)</code>, in most cases you will
-actually want their `Direction2d` versions `Direction2d.x` and `Direction2d.y`.
+actually want their `Direction2d` versions [`Direction2d.x`](OpenSolid-Direction2d#x)
+and [`Direction2d.y`](OpenSolid-Direction2d#y).
 
 # Constructors
 
@@ -173,7 +175,7 @@ to extract both the X and Y components of a vector in one line of code:
     ( x, y ) =
         Vector2d.components vector
 
-To get the polar components of a vector, you can use Elm's built in `toPolar`
+To get the polar components of a vector, you can use Elm's built-in [`toPolar`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#toPolar)
 function:
 
     ( radius, angle ) =

@@ -174,8 +174,8 @@ but are otherwise arbitrary. For example, in the current implementation,
     -->     , yDirection = Direction3d ( 1, 0, 0 )
     -->     }
 
-which is coplanar with and has the same origin point as`SketchPlane3d.xy`, but
-is not equal to it as might be expected.
+which is coplanar with and has the same origin point as [`SketchPlane3d.xy`](OpenSolid-SketchPlane3d#xy),
+but is not equal to it as might be expected.
 
 As a result, this function is only useful if the exact X and Y basis directions
 of the resulting sketch plane are not important; if they are, you will need to

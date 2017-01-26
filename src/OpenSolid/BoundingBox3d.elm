@@ -37,10 +37,10 @@ module OpenSolid.BoundingBox3d
 
 A `BoundingBox3d` is a rectangular box in 3D defined by its minimum and maximum
 X, Y and Z values. It is possible to generate bounding boxes for most geometric
-objects; for example, `Triangle3d.boundingBox` takes a `Triangle3d` and returns
-a `BoundingBox3d` that contains that triangle. There are several use cases where
-it is more efficient to deal with the bounding box of an object than the object
-itself, such as:
+objects; [`Triangle3d.boundingBox`](OpenSolid-Triangle3d#boundingBox)
+takes a `Triangle3d` and returns a `BoundingBox3d` that contains that triangle.
+There are several use cases where it is more efficient to deal with the bounding
+box of an object than the object itself, such as:
 
   - Intersection checking: If (for example) the bounding boxes of a line segment
     and a triangle do not overlap, then the line segment and triangle cannot
@@ -69,7 +69,7 @@ If you construct a `BoundingBox3d` this way, **you must ensure that the given
 values are properly ordered**: <code>minX&nbsp;<=&nbsp;maxX</code>,
 <code>minY&nbsp;<=&nbsp;maxY</code>, <code>minZ&nbsp;<=&nbsp;maxZ</code>.
 Alternately, you can construct bounding boxes using functions such as
-`Point3d.hull` where the input order does not matter.
+[`Point3d.hull`](OpenSolid-Point3d#hull) where the input order does not matter.
 
 # Constructors
 
@@ -148,8 +148,8 @@ list is empty, returns `Nothing`.
     BoundingBox3d.containing []
     --> Nothing
 
-If you have exactly two points, you can use `Point3d.hull` instead (which
-returns a `BoundingBox3d` instead of a `Maybe BoundingBox3d`).
+If you have exactly two points, you can use [`Point3d.hull`](OpenSolid-Point3d#hull)
+instead (which returns a `BoundingBox3d` instead of a `Maybe BoundingBox3d`).
 -}
 containing : List Point3d -> Maybe BoundingBox3d
 containing points =
