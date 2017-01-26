@@ -101,21 +101,21 @@ given plane, but with varying normal directions. In each case the normal
 direction of the resulting plane is given by the cross product of the two
 indicated basis directions (assuming a right-handed frame); for example,
 
-    Frame3d.xyPlane Frame3d.xyz ==
-        Plane3d
-            { originPoint = Point3d.origin
-            , normalDirection = Direction3d.z
-            }
+    Frame3d.xyPlane Frame3d.xyz
+    --> Plane3d
+    -->     { originPoint = Point3d.origin
+    -->     , normalDirection = Direction3d.z
+    -->     }
 
 since the cross product of the X and Y basis directions of a frame is equal to
 its Z basis direction. And since reversing the order of arguments in a cross
 product reverses the sign of the result,
 
-    Frame3d.yxPlane Frame3d.xyz ==
-        Plane3d
-            { originPoint = Point3d.origin
-            , normalDirection = Direction3d.flip Direction3d.z
-            }
+    Frame3d.yxPlane Frame3d.xyz
+    --> Plane3d
+    -->     { originPoint = Point3d.origin
+    -->     , normalDirection = Direction3d.flip Direction3d.z
+    -->     }
 
 @docs xyPlane, yxPlane, yzPlane, zyPlane, zxPlane, xzPlane
 
@@ -125,12 +125,12 @@ These functions all form a `SketchPlane3d` from two axes of the given frame. The
 X and Y axes of the sketch plane will correspond to the two indicated axes. For
 example,
 
-    Frame3d.yzSketchPlane Frame3d.xyz ==
-        SketchPlane3d
-            { originPoint = Point3d.origin
-            , xDirection = Direction3d.y
-            , yDirection = Direction3d.z
-            }
+    Frame3d.yzSketchPlane Frame3d.xyz
+    --> SketchPlane3d
+    -->     { originPoint = Point3d.origin
+    -->     , xDirection = Direction3d.y
+    -->     , yDirection = Direction3d.z
+    -->     }
 
 Note that this can be confusing - for example, a local X coordinate in the above
 sketch plane corresponds to a global Y coordinate, and a local Y coordinate
@@ -155,13 +155,13 @@ import OpenSolid.Axis3d as Axis3d
 
 {-| The global XYZ frame.
 
-    Frame3d.xyz ==
-        Frame3d
-            { originPoint = Point3d.origin
-            , xDirection = Direction3d.x
-            , yDirection = Direction3d.y
-            , zDirection = Direction3d.z
-            }
+    Frame3d.xyz
+    --> Frame3d
+    -->     { originPoint = Point3d.origin
+    -->     , xDirection = Direction3d.x
+    -->     , yDirection = Direction3d.y
+    -->     , zDirection = Direction3d.z
+    -->     }
 -}
 xyz : Frame3d
 xyz =
@@ -171,13 +171,13 @@ xyz =
 {-| Construct a frame aligned with the global XYZ frame but with the given
 origin point.
 
-    Frame3d.at (Point3d ( 2, 1, 3 )) ==
-        Frame3d
-            { originPoint = Point3d ( 2, 1, 3 )
-            , xDirection = Direction3d.x
-            , yDirection = Direction3d.y
-            , zDirection = Direction3d.z
-            }
+    Frame3d.at (Point3d ( 2, 1, 3 ))
+    --> Frame3d
+    -->     { originPoint = Point3d ( 2, 1, 3 )
+    -->     , xDirection = Direction3d.x
+    -->     , yDirection = Direction3d.y
+    -->     , zDirection = Direction3d.z
+    -->     }
 -}
 at : Point3d -> Frame3d
 at point =
@@ -191,8 +191,8 @@ at point =
 
 {-| Get the origin point of a given frame.
 
-    Frame3d.originPoint Frame3d.xyz ==
-        Point3d.origin
+    Frame3d.originPoint Frame3d.xyz
+    --> Point3d.origin
 -}
 originPoint : Frame3d -> Point3d
 originPoint (Frame3d properties) =
@@ -201,8 +201,8 @@ originPoint (Frame3d properties) =
 
 {-| Get the X direction of a given frame.
 
-    Frame3d.xDirection Frame3d.xyz ==
-        Direction3d.x
+    Frame3d.xDirection Frame3d.xyz
+    --> Direction3d.x
 -}
 xDirection : Frame3d -> Direction3d
 xDirection (Frame3d properties) =
@@ -211,8 +211,8 @@ xDirection (Frame3d properties) =
 
 {-| Get the Y direction of a given frame.
 
-    Frame3d.yDirection Frame3d.xyz ==
-        Direction3d.y
+    Frame3d.yDirection Frame3d.xyz
+    --> Direction3d.y
 -}
 yDirection : Frame3d -> Direction3d
 yDirection (Frame3d properties) =
@@ -221,8 +221,8 @@ yDirection (Frame3d properties) =
 
 {-| Get the Z direction of a given frame.
 
-    Frame3d.zDirection Frame3d.xyz ==
-        Direction3d.z
+    Frame3d.zDirection Frame3d.xyz
+    --> Direction3d.z
 -}
 zDirection : Frame3d -> Direction3d
 zDirection (Frame3d properties) =
@@ -232,8 +232,8 @@ zDirection (Frame3d properties) =
 {-| Get the X axis of a given frame (the axis formed from the frame's origin
 point and X direction).
 
-    Frame3d.xAxis Frame3d.xyz ==
-        Axis3d.x
+    Frame3d.xAxis Frame3d.xyz
+    --> Axis3d.x
 -}
 xAxis : Frame3d -> Axis3d
 xAxis frame =
@@ -243,8 +243,8 @@ xAxis frame =
 {-| Get the Y axis of a given frame (the axis formed from the frame's origin
 point and Y direction).
 
-    Frame3d.yAxis Frame3d.xyz ==
-        Axis3d.y
+    Frame3d.yAxis Frame3d.xyz
+    --> Axis3d.y
 -}
 yAxis : Frame3d -> Axis3d
 yAxis frame =
@@ -254,8 +254,8 @@ yAxis frame =
 {-| Get the Z axis of a given frame (the axis formed from the frame's origin
 point and Z direction).
 
-    Frame3d.zAxis Frame3d.xyz ==
-        Axis3d.z
+    Frame3d.zAxis Frame3d.xyz
+    --> Axis3d.z
 -}
 zAxis : Frame3d -> Axis3d
 zAxis frame =
@@ -390,13 +390,13 @@ xzSketchPlane frame =
 
 {-| Reverse the X direction of a frame.
 
-    Frame3d.flipX Frame3d.xyz ==
-        Frame3d
-            { originPoint = Point3d.origin
-            , xDirection = Direction3d.flip Direction3d.x
-            , yDirection = Direction3d.y
-            , zDirection = Direction3d.z
-            }
+    Frame3d.flipX Frame3d.xyz
+    --> Frame3d
+    -->     { originPoint = Point3d.origin
+    -->     , xDirection = Direction3d.flip Direction3d.x
+    -->     , yDirection = Direction3d.y
+    -->     , zDirection = Direction3d.z
+    -->     }
 -}
 flipX : Frame3d -> Frame3d
 flipX frame =
@@ -410,13 +410,13 @@ flipX frame =
 
 {-| Reverse the Y direction of a frame.
 
-    Frame3d.flipY Frame3d.xyz ==
-        Frame3d
-            { originPoint = Point3d.origin
-            , xDirection = Direction3d.x
-            , yDirection = Direction3d.flip Direction3d.y
-            , zDirection = Direction3d.z
-            }
+    Frame3d.flipY Frame3d.xyz
+    --> Frame3d
+    -->     { originPoint = Point3d.origin
+    -->     , xDirection = Direction3d.x
+    -->     , yDirection = Direction3d.flip Direction3d.y
+    -->     , zDirection = Direction3d.z
+    -->     }
 -}
 flipY : Frame3d -> Frame3d
 flipY frame =
@@ -430,13 +430,13 @@ flipY frame =
 
 {-| Reverse the Z direction of a frame.
 
-    Frame3d.flipZ Frame3d.xyz ==
-        Frame3d
-            { originPoint = Point3d.origin
-            , xDirection = Direction3d.x
-            , yDirection = Direction3d.y
-            , zDirection = Direction3d.flip Direction3d.z
-            }
+    Frame3d.flipZ Frame3d.xyz
+    --> Frame3d
+    -->     { originPoint = Point3d.origin
+    -->     , xDirection = Direction3d.x
+    -->     , yDirection = Direction3d.y
+    -->     , zDirection = Direction3d.flip Direction3d.z
+    -->     }
 -}
 flipZ : Frame3d -> Frame3d
 flipZ frame =
@@ -453,8 +453,13 @@ flipZ frame =
     point =
         Point3d ( 2, 1, 3 )
 
-    Frame3d.at point ==
-        Frame3d.moveTo point Frame3d.xyz
+    Frame3d.at point
+    --> Frame3d
+    -->     { originPoint = Point3d ( 2, 1, 3 )
+    -->     , xDirection = Direction3d.x
+    -->     , yDirection = Direction3d.y
+    -->     , zDirection = Direction3d.z
+    -->     }
 -}
 moveTo : Point3d -> Frame3d -> Frame3d
 moveTo newOrigin frame =
@@ -472,13 +477,13 @@ origin point and basis directions will all be rotated around the given axis.
     frame =
         Frame3d.at (Point3d ( 2, 1, 3 ))
 
-    Frame3d.rotateAround Frame3d.zAxis (degrees 90) frame ==
-        Frame3d
-            { originPoint = Point3d ( -1, 2, 3 )
-            , xDirection = Direction3d.y
-            , yDirection = Direction3d.flip Direction3d.x
-            , zDirection = Direction3d.z
-            }
+    Frame3d.rotateAround Frame3d.zAxis (degrees 90) frame
+    --> Frame3d
+    -->     { originPoint = Point3d ( -1, 2, 3 )
+    -->     , xDirection = Direction3d.y
+    -->     , yDirection = Direction3d.flip Direction3d.x
+    -->     , zDirection = Direction3d.z
+    -->     }
 -}
 rotateAround : Axis3d -> Float -> Frame3d -> Frame3d
 rotateAround axis angle =
@@ -508,13 +513,13 @@ for `rotateAround`:
     frame =
         Frame3d.at (Point3d ( 2, 1, 3 ))
 
-    Frame3d.rotateAroundOwn Frame3d.zAxis (degrees 90) frame ==
-        Frame3d
-            { originPoint = Point3d ( 2, 1, 3 )
-            , xDirection = Direction3d.y
-            , yDirection = Direction3d.flip Direction3d.x
-            , zDirection = Direction3d.z
-            }
+    Frame3d.rotateAroundOwn Frame3d.zAxis (degrees 90) frame
+    --> Frame3d
+    -->     { originPoint = Point3d ( 2, 1, 3 )
+    -->     , xDirection = Direction3d.y
+    -->     , yDirection = Direction3d.flip Direction3d.x
+    -->     , zDirection = Direction3d.z
+    -->     }
 
 Since the rotation is done around the frame's own Z axis (which passes through
 the frame's origin point), the origin point remains the same after rotation.
@@ -537,8 +542,8 @@ rotateAroundOwn axis angle frame =
     displacement =
         Vector3d ( 1, 1, 1 )
 
-    Frame3d.translateBy displacement frame ==
-        Frame3d.at (Point3d ( 3, 2, 4 ))
+    Frame3d.translateBy displacement frame
+    --> Frame3d.at (Point3d ( 3, 2, 4 ))
 -}
 translateBy : Vector3d -> Frame3d -> Frame3d
 translateBy vector frame =
@@ -591,13 +596,13 @@ translateAlongOwn axis distance frame =
     frame =
         Frame3d.at (Point3d ( 2, 1, 3 ))
 
-    Frame3d.mirrorAcross Plane3d.xy frame ==
-        Frame3d
-            { originPoint = Point3d ( 2, 1, -3 )
-            , xDirection = Direction3d.x
-            , yDirection = Direction3d.y
-            , zDirection = Direction3d.flip Direction3d.z
-            }
+    Frame3d.mirrorAcross Plane3d.xy frame
+    --> Frame3d
+    -->     { originPoint = Point3d ( 2, 1, -3 )
+    -->     , xDirection = Direction3d.x
+    -->     , yDirection = Direction3d.y
+    -->     , zDirection = Direction3d.flip Direction3d.z
+    -->     }
 
 Note that this will switch the
 [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
