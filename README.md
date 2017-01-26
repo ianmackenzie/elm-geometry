@@ -212,6 +212,7 @@ there's a new feature that you would find useful. For general questions about
 using OpenSolid, try posting on:
 
   - [Stack Overflow](https://stackoverflow.com/questions/ask?tags=elm+opensolid)
+    (tag your question with 'opensolid' and 'elm')
   - The [r/elm](https://reddit.com/r/elm) subreddit
   - The [elm-discuss](https://groups.google.com/forum/#!forum/elm-discuss)
     Google Group
