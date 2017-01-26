@@ -162,7 +162,7 @@ in a command prompt inside your project directory or by adding
 "opensolid/geometry": "1.0.0 <= v < 2.0.0"
 ```
 
-to your project's `elm-package.json`.
+to the `dependencies` field in your project's `elm-package.json`.
 
 ## Documentation
 
