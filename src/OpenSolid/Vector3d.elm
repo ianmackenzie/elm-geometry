@@ -41,9 +41,20 @@ module OpenSolid.Vector3d
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/vector3d.svg" alt="Vector3d" width="160">
 
-Various functions for creating and working with `Vector3d` values. A `Vector3d`
-is defined by its X, Y and Z components and represents a quantity like a
-velocity or displacement in 3D.
+A `Vector3d` represents a quantity such as a displacement or velocity in 3D, and
+is defined by its X, Y and Z components. This module contains a variety of
+vector-related functionality, such as
+
+  - Adding or subtracting vectors
+  - Finding the lengths of vectors
+  - Rotating vectors
+  - Converting vectors between different coordinate systems
+
+Note that unlike in many other geometry packages where vectors are used as a
+general-purpose data type, OpenSolid has separate data types for vectors,
+directions and points. In most code it is actually more common to use `Point3d`
+and `Direction3d` than `Vector3d`, and much code can avoid working directly with
+`Vector3d` values at all!
 
 The simplest way to create a `Vector3d` is by passing a tuple of X, Y and Z
 components to the `Vector3d` constructor, for example
