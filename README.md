@@ -206,6 +206,11 @@ axis =
         }
 ```
 
+## Related projects
+
+  - [`opensolid/svg`](http://package.elm-lang.org/packages/opensolid/svg/latest)
+    uses this package to create SVG diagrams in a flexible and expressive way
+
 ## Questions? Comments?
 
 Please [open a new issue](https://github.com/opensolid/geometry/issues) if you
