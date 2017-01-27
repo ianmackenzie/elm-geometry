@@ -37,7 +37,7 @@ module OpenSolid.BoundingBox3d
 
 A `BoundingBox3d` is a rectangular box in 3D defined by its minimum and maximum
 X, Y and Z values. It is possible to generate bounding boxes for most geometric
-objects; [`Triangle3d.boundingBox`](OpenSolid-Triangle3d#boundingBox)
+objects; for example, [`Triangle3d.boundingBox`](OpenSolid-Triangle3d#boundingBox)
 takes a `Triangle3d` and returns a `BoundingBox3d` that contains that triangle.
 There are several use cases where it is more efficient to deal with the bounding
 box of an object than the object itself, such as:
