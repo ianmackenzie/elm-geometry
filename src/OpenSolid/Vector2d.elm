@@ -212,7 +212,7 @@ yComponent (Vector2d ( _, y )) =
         Vector2d.componentIn forwardDirection velocity
 
 This is more general and flexible than using `xComponent` or `yComponent`, both
-of which can be expressed in terms of `componentIn`:
+of which can be expressed in terms of `componentIn`; for example,
 
     Vector2d.xComponent vector
 

@@ -231,7 +231,8 @@ zComponent (Vector3d ( _, _, z )) =
         Vector3d.componentIn upDirection velocity
 
 This is more general and flexible than using `xComponent`, `yComponent` or
-`zComponent`, all of which can be expressed in terms of `componentIn`:
+`zComponent`, all of which can be expressed in terms of `componentIn`; for
+example,
 
     Vector3d.zComponent vector
 

@@ -287,7 +287,8 @@ of the two directions converted to unit vectors.
     --> 1
 
 This is more general and flexible than using `xComponent`, `yComponent` or
-`zComponent`, all of which can be expressed in terms of `componentIn`:
+`zComponent`, all of which can be expressed in terms of `componentIn`; for
+example,
 
     Direction3d.zComponent direction
 

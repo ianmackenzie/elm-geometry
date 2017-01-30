@@ -251,7 +251,7 @@ mirrorAcross axis =
 
 
 {-| Transform each vertex of a polygon by the given function. All other
-transformations can be defined in terms of `map`, for example
+transformations can be defined in terms of `map`; for example,
 
     Polygon2d.mirrorAcross Axis2d.x polygon
 

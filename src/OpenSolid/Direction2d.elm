@@ -280,7 +280,7 @@ of the two directions converted to unit vectors.
     --> 0
 
 This is more general and flexible than using `xComponent` or `yComponent`, both
-of which can be expressed in terms of `componentIn`:
+of which can be expressed in terms of `componentIn`; for example,
 
     Direction2d.xComponent direction
 
