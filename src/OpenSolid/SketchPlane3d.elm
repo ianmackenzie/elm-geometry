@@ -40,12 +40,31 @@ module OpenSolid.SketchPlane3d
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/sketchPlane3d.svg" alt="SketchPlane3d" width="160">
 
-Various functions for creating and working with `SketchPlane3d` values.
-Sketch planes are defined by an origin point and X and Y basis directions in 3D,
-which define a 2D coordinate system (the X and Y basis directions are always
-perpendicular). A sketch plane can therefore be used to convert between 2D and
-3D coordinates, such as taking 2D lines and placing them on a 3D plane, or
-projecting a 3D point into a 2D sketch.
+Sketch planes define a 2D planar coordinate system in 3D space, and are defined
+by an origin point and X and Y directions (which are always perpendicular to
+each other). Sketch planes are the primary tool for converting back and forth
+between 2D and 3D coordinates:
+
+  - 3D geometry such as points, directions and line segments can be projected
+    _into_ a sketch plane, which effectively projects the geometry _onto_ the
+    sketch plane and then expresses the projected geometry _in_ 2D coordinates.
+  - 2D geometry can be place _onto_ a sketch plane to result in 3D geometry. For
+    example, a 2D point placed onto a sketch plane will result in a 3D point
+    _on_ that sketch plane that has the given 2D coordinate _in_ the sketch
+    plane.
+
+Many 3D data types have `projectInto` functions that return the corresponding 2D
+data type, and those 2D data types have `placeOnto` functions for converting
+back to 3D. For example, [`Triangle3d.projectInto`](OpenSolid-Triangle3d#projectInto)
+returns a `Triangle2d` and [`Triangle2d.placeOnto`](OpenSolid-Triangle2d#placeOnto)
+returns a `Triangle3d`. These pairs of functions are almost, but not quite,
+inverses of each other:
+
+  - <code>Point2d.placeOnto&nbsp;sketchPlane&nbsp;>>&nbsp;Point3d.projectInto&nbsp;sketchPlane</code>
+    will just return the original `Point2d` (within roundoff error).
+  - <code>Point3d.projectInto&nbsp;sketchPlane&nbsp;>>&nbsp;Point2d.placeOnto&nbsp;sketchPlane</code>
+    is equivalent to <code>Point3d.projectOnto&nbsp;(SketchPlane3d.plane&nbsp;sketchPlane)</code>
+    since the result will always be on the given sketch plane.
 
 Sketch planes can be constructed explicitly by passing a record with
 `originPoint`, `xDirection` and `yDirection` fields to the `SketchPlane3d`
