@@ -29,9 +29,9 @@ module OpenSolid.Polyline2d
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/polyline2d.svg" alt="Polyline2d" width="160">
 
-Various functions for creating and working with `Polyline2d` values. Polylines
-can be constructed by passing an ordered list of vertices to the `Polyline2d`
-constructor, for example
+A `Polyline2d` represents a sequence of vertices connected by line segments.
+Polylines can be constructed by passing an ordered list of vertices to the
+`Polyline2d` constructor, for example
 
     stepShape =
         Polyline2d
@@ -76,12 +76,12 @@ import OpenSolid.LineSegment2d as LineSegment2d
 
 {-| Get the vertices of a polyline.
 
-    Polyline2d.vertices stepShape ==
-        [ Point2d ( 0, 0 )
-        , Point2d ( 1, 0 )
-        , Point2d ( 1, 1 )
-        , Point2d ( 2, 1 )
-        ]
+    Polyline2d.vertices stepShape
+    --> [ Point2d ( 0, 0 )
+    --> , Point2d ( 1, 0 )
+    --> , Point2d ( 1, 1 )
+    --> , Point2d ( 2, 1 )
+    --> ]
 -}
 vertices : Polyline2d -> List Point2d
 vertices (Polyline2d vertices_) =
@@ -90,11 +90,11 @@ vertices (Polyline2d vertices_) =
 
 {-| Get the individual segments of a polyline.
 
-    Polyline2d.segments stepShape ==
-        [ LineSegment2d ( Point2d ( 0, 0 ), Point2d ( 1, 0 ) )
-        , LineSegment2d ( Point2d ( 1, 0 ), Point2d ( 1, 1 ) )
-        , LineSegment2d ( Point2d ( 1, 1 ), Point2d ( 2, 1 ) )
-        ]
+    Polyline2d.segments stepShape
+    --> [ LineSegment2d ( Point2d ( 0, 0 ), Point2d ( 1, 0 ) )
+    --> , LineSegment2d ( Point2d ( 1, 0 ), Point2d ( 1, 1 ) )
+    --> , LineSegment2d ( Point2d ( 1, 1 ), Point2d ( 2, 1 ) )
+    --> ]
 -}
 segments : Polyline2d -> List LineSegment2d
 segments polyline =
@@ -109,8 +109,8 @@ segments polyline =
 {-| Get the overall length of a polyline (the sum of the lengths of its
 segments).
 
-    Polyline2d.length stepShape ==
-        3
+    Polyline2d.length stepShape
+    --> 3
 -}
 length : Polyline2d -> Float
 length =
@@ -122,13 +122,13 @@ length =
     point =
         Point2d ( 1, 0 )
 
-    Polyline2d.scaleAbout point 2 stepShape ==
-        Polyline2d
-            [ Point2d ( -1, 0 )
-            , Point2d ( 1, 0 )
-            , Point2d ( 1, 2 )
-            , Point2d ( 3, 2 )
-            ]
+    Polyline2d.scaleAbout point 2 stepShape
+    --> Polyline2d
+    -->     [ Point2d ( -1, 0 )
+    -->     , Point2d ( 1, 0 )
+    -->     , Point2d ( 1, 2 )
+    -->     , Point2d ( 3, 2 )
+    -->     ]
 -}
 scaleAbout : Point2d -> Float -> Polyline2d -> Polyline2d
 scaleAbout point scale =
@@ -138,13 +138,13 @@ scaleAbout point scale =
 {-| Rotate a polyline around the given center point counterclockwise by the
 given angle (in radians).
 
-    Polyline2d.rotateAround Point2d.origin (degrees 90) stepShape ==
-        Polyline2d
-            [ Point2d ( 0, 0 )
-            , Point2d ( 0, 1 )
-            , Point2d ( -1, 1 )
-            , Point2d ( -1, 2 )
-            ]
+    Polyline2d.rotateAround Point2d.origin (degrees 90) stepShape
+    --> Polyline2d
+    -->     [ Point2d ( 0, 0 )
+    -->     , Point2d ( 0, 1 )
+    -->     , Point2d ( -1, 1 )
+    -->     , Point2d ( -1, 2 )
+    -->     ]
 -}
 rotateAround : Point2d -> Float -> Polyline2d -> Polyline2d
 rotateAround point angle =
@@ -156,13 +156,13 @@ rotateAround point angle =
     displacement =
         Vector2d ( 2, 3 )
 
-    Polyline2d.translateBy displacement stepShape ==
-        Polyline2d
-            [ Point2d ( 2, 3 )
-            , Point2d ( 3, 3 )
-            , Point2d ( 3, 4 )
-            , Point2d ( 4, 4 )
-            ]
+    Polyline2d.translateBy displacement stepShape
+    --> Polyline2d
+    -->     [ Point2d ( 2, 3 )
+    -->     , Point2d ( 3, 3 )
+    -->     , Point2d ( 3, 4 )
+    -->     , Point2d ( 4, 4 )
+    -->     ]
 -}
 translateBy : Vector2d -> Polyline2d -> Polyline2d
 translateBy vector =
@@ -171,13 +171,13 @@ translateBy vector =
 
 {-| Mirror a polyline across the given axis.
 
-    Polyline2d.mirrorAcross Axis2d.x stepShape ==
-        Polyline2d
-            [ Point2d ( 0, 0 )
-            , Point2d ( 1, 0 )
-            , Point2d ( 1, -1 )
-            , Point2d ( 2, -1 )
-            ]
+    Polyline2d.mirrorAcross Axis2d.x stepShape
+    --> Polyline2d
+    -->     [ Point2d ( 0, 0 )
+    -->     , Point2d ( 1, 0 )
+    -->     , Point2d ( 1, -1 )
+    -->     , Point2d ( 2, -1 )
+    -->     ]
 -}
 mirrorAcross : Axis2d -> Polyline2d -> Polyline2d
 mirrorAcross axis =
@@ -186,13 +186,13 @@ mirrorAcross axis =
 
 {-| Project (flatten) a polyline onto the given axis.
 
-    Polyline2d.projectOnto Axis2d.x stepShape ==
-        Polyline2d
-            [ Point2d ( 0, 0 )
-            , Point2d ( 1, 0 )
-            , Point2d ( 1, 0 )
-            , Point2d ( 2, 0 )
-            ]
+    Polyline2d.projectOnto Axis2d.x stepShape
+    --> Polyline2d
+    -->     [ Point2d ( 0, 0 )
+    -->     , Point2d ( 1, 0 )
+    -->     , Point2d ( 1, 0 )
+    -->     , Point2d ( 2, 0 )
+    -->     ]
 -}
 projectOnto : Axis2d -> Polyline2d -> Polyline2d
 projectOnto axis =
@@ -200,10 +200,13 @@ projectOnto axis =
 
 
 {-| Transform each vertex of a polyline by the given function. All other
-transformations can be defined in terms of `map`, for example
+transformations can be defined in terms of `map`; for example,
 
-    Polyline2d.mirrorAcross Axis2d.x stepShape ==
-        Polyline2d.map (Point2d.mirrorAcross Axis2d.x) stepShape
+    Polyline2d.mirrorAcross Axis2d.x polyline
+
+is equivalent to
+
+    Polyline2d.map (Point2d.mirrorAcross Axis2d.x) polyline
 -}
 map : (Point2d -> Point2d) -> Polyline2d -> Polyline2d
 map function =
@@ -216,13 +219,13 @@ in local coordinates relative to a given reference frame.
     localFrame =
         Frame2d.at (Point2d ( 1, 2 ))
 
-    Polyline2d.relativeTo localFrame stepShape ==
-        Polyline2d
-            [ Point2d ( -1, -2 )
-            , Point2d ( 0, -2 )
-            , Point2d ( 0, -1 )
-            , Point2d ( 1, -1 )
-            ]
+    Polyline2d.relativeTo localFrame stepShape
+    --> Polyline2d
+    -->     [ Point2d ( -1, -2 )
+    -->     , Point2d ( 0, -2 )
+    -->     , Point2d ( 0, -1 )
+    -->     , Point2d ( 1, -1 )
+    -->     ]
 -}
 relativeTo : Frame2d -> Polyline2d -> Polyline2d
 relativeTo frame =
@@ -236,13 +239,13 @@ coordinates.
     localFrame =
         Frame2d.at (Point2d ( 1, 2 ))
 
-    Polyline2d.placeIn localFrame stepShape ==
-        Polyline2d
-            [ Point2d ( 1, 2 )
-            , Point2d ( 2, 2 )
-            , Point2d ( 2, 3 )
-            , Point2d ( 3, 3 )
-            ]
+    Polyline2d.placeIn localFrame stepShape
+    --> Polyline2d
+    -->     [ Point2d ( 1, 2 )
+    -->     , Point2d ( 2, 2 )
+    -->     , Point2d ( 2, 3 )
+    -->     , Point2d ( 3, 3 )
+    -->     ]
 -}
 placeIn : Frame2d -> Polyline2d -> Polyline2d
 placeIn frame =
@@ -252,13 +255,13 @@ placeIn frame =
 {-| Take a polyline defined in 2D coordinates within a particular sketch plane
 and return the corresponding polyline in 3D.
 
-    Polyline2d.placeOnto SketchPlane3d.yz stepShape ==
-        Polyline3d
-            [ Point3d ( 0, 0, 0 )
-            , Point3d ( 0, 1, 0 )
-            , Point3d ( 0, 1, 1 )
-            , Point3d ( 0, 2, 1 )
-            ]
+    Polyline2d.placeOnto SketchPlane3d.yz stepShape
+    --> Polyline3d
+    -->     [ Point3d ( 0, 0, 0 )
+    -->     , Point3d ( 0, 1, 0 )
+    -->     , Point3d ( 0, 1, 1 )
+    -->     , Point3d ( 0, 2, 1 )
+    -->     ]
 -}
 placeOnto : SketchPlane3d -> Polyline2d -> Polyline3d
 placeOnto sketchPlane =
@@ -268,15 +271,15 @@ placeOnto sketchPlane =
 {-| Get the minimal bounding box containing a given polyline. Returns `Nothing`
 if the polyline has no vertices.
 
-    Polyline2d.boundingBox stepShape ==
-        Just
-            (BoundingBox2d
-                { minX = 0
-                , maxX = 2
-                , minY = 0
-                , maxY = 1
-                }
-            )
+    Polyline2d.boundingBox stepShape
+    --> Just
+    -->     (BoundingBox2d
+    -->         { minX = 0
+    -->         , maxX = 2
+    -->         , minY = 0
+    -->         , maxY = 1
+    -->         }
+    -->     )
 -}
 boundingBox : Polyline2d -> Maybe BoundingBox2d
 boundingBox polyline =
