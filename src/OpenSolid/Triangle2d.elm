@@ -32,9 +32,15 @@ module OpenSolid.Triangle2d
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/triangle2d.svg" alt="Triangle2d" width="160">
 
-Various functions for creating and working with `Triangle2d` values. Triangles
-are defined by their three vertices and can be constructed by passing a tuple of
-vertices to the `Triangle2d` constructor, for example
+A `Triangle2d` represents a triangle in 2D space, and is defined by its three
+vertices. This module contains triangle-related functionality such as:
+
+  - Finding the area and centroid of triangles
+  - Scaling, rotating, translating and mirroring triangles
+  - Converting triangles between different coordinate systems
+
+Triangles can be constructed by passing a tuple of vertices to the `Triangle2d`
+constructor, for example
 
     exampleTriangle =
         Triangle2d
@@ -86,15 +92,9 @@ import OpenSolid.Point2d as Point2d
 
     ( p1, p2, p3 ) =
         Triangle2d.vertices exampleTriangle
-
-    p1 ==
-        Point2d ( 1, 1 )
-
-    p2 ==
-        Point2d ( 2, 1 )
-
-    p3 ==
-        Point2d ( 1, 3 )
+    --> p1 = Point2d ( 1, 1 )
+    --> p2 = Point2d ( 2, 1 )
+    --> p3 = Point2d ( 1, 3 )
 -}
 vertices : Triangle2d -> ( Point2d, Point2d, Point2d )
 vertices (Triangle2d vertices_) =
@@ -106,15 +106,9 @@ second to the third, and from the third back to the first.
 
     ( e1, e2, e3 ) =
         Triangle2d.edges exampleTriangle
-
-    e1 ==
-        LineSegment2d ( Point2d ( 1, 1 ), Point2d ( 2, 1 ) )
-
-    e2 ==
-        LineSegment2d ( Point2d ( 2, 1 ), Point2d ( 1, 3 ) )
-
-    e3 ==
-        LineSegment2d ( Point2d ( 1, 3 ), Point2d ( 1, 1 ) )
+    --> e1 = LineSegment2d ( Point2d ( 1, 1 ), Point2d ( 2, 1 ) )
+    --> e2 = LineSegment2d ( Point2d ( 2, 1 ), Point2d ( 1, 3 ) )
+    --> e3 = LineSegment2d ( Point2d ( 1, 3 ), Point2d ( 1, 1 ) )
 -}
 edges : Triangle2d -> ( LineSegment2d, LineSegment2d, LineSegment2d )
 edges triangle =
@@ -130,8 +124,8 @@ edges triangle =
 
 {-| Get the centroid (center of mass) of a triangle.
 
-    Triangle2d.centroid exampleTriangle ==
-        Point2d ( 1.3333, 1.6667 )
+    Triangle2d.centroid exampleTriangle
+    --> Point2d ( 1.3333, 1.6667 )
 -}
 centroid : Triangle2d -> Point2d
 centroid triangle =
@@ -156,11 +150,11 @@ centroid triangle =
     interiorPoint =
         Point2d ( 1.5, 1.5 )
 
-    Triangle2d.contains interiorPoint exampleTriangle ==
-        True
+    Triangle2d.contains interiorPoint exampleTriangle
+    --> True
 
-    Triangle2d.contains Point2d.origin exampleTriangle ==
-        False
+    Triangle2d.contains Point2d.origin exampleTriangle
+    --> False
 
 It does not matter whether the triangle's vertices are in clockwise or
 counterclockwise order.
@@ -197,8 +191,8 @@ contains point triangle =
 {-| Get the area of a triangle. The result will always be positive regardless of
 whether the triangle's vertices are in clockwise or counterclockwise order.
 
-    Triangle2d.area exampleTriangle ==
-        1.0
+    Triangle2d.area exampleTriangle
+    --> 1.0
 -}
 area : Triangle2d -> Float
 area =
@@ -209,8 +203,8 @@ area =
 triangle's vertices are in counterclockwise order and a negative value
 otherwise.
 
-    Triangle2d.counterclockwiseArea exampleTriangle ==
-        1.0
+    Triangle2d.counterclockwiseArea exampleTriangle
+    --> 1.0
 -}
 counterclockwiseArea : Triangle2d -> Float
 counterclockwiseArea triangle =
@@ -230,8 +224,8 @@ counterclockwiseArea triangle =
 {-| Get the signed area of a triangle, returning a positive value if the
 triangle's vertices are in clockwise order and a negative value otherwise.
 
-    Triangle2d.clockwiseArea exampleTriangle ==
-        -1.0
+    Triangle2d.clockwiseArea exampleTriangle
+    --> -1.0
 -}
 clockwiseArea : Triangle2d -> Float
 clockwiseArea triangle =
@@ -240,12 +234,12 @@ clockwiseArea triangle =
 
 {-| Scale a triangle about a given point by a given scale.
 
-    Triangle2d.scaleAbout Point2d.origin 2 exampleTriangle ==
-        Triangle2d
-            ( Point2d ( 2, 2 )
-            , Point2d ( 4, 2 )
-            , Point2d ( 2, 6 )
-            )
+    Triangle2d.scaleAbout Point2d.origin 2 exampleTriangle
+    --> Triangle2d
+    -->     ( Point2d ( 2, 2 )
+    -->     , Point2d ( 4, 2 )
+    -->     , Point2d ( 2, 6 )
+    -->     )
 
 Note that scaling by a negative value will result in the 'winding direction' of
 the triangle being flipped - if the triangle's vertices were in counterclockwise
@@ -259,12 +253,12 @@ scaleAbout point scale =
 
 {-| Rotate a triangle around a given point by a given angle (in radians).
 
-    Triangle2d.rotateAround Point2d.origin (degrees 90) exampleTriangle ==
-        Triangle2d
-            ( Point2d ( -1, 1 )
-            , Point2d ( -1, 2 )
-            , Point2d ( -3, 1 )
-            )
+    Triangle2d.rotateAround Point2d.origin (degrees 90) exampleTriangle
+    --> Triangle2d
+    -->     ( Point2d ( -1, 1 )
+    -->     , Point2d ( -1, 2 )
+    -->     , Point2d ( -3, 1 )
+    -->     )
 -}
 rotateAround : Point2d -> Float -> Triangle2d -> Triangle2d
 rotateAround centerPoint angle =
@@ -276,12 +270,12 @@ rotateAround centerPoint angle =
     displacement =
         Vector2d ( 2, -3 )
 
-    Triangle2d.translateBy displacement exampleTriangle ==
-        Triangle2d
-            ( Point2d ( 3, -2 )
-            , Point2d ( 4, -2 )
-            , Point2d ( 3, 0 )
-            )
+    Triangle2d.translateBy displacement exampleTriangle
+    --> Triangle2d
+    -->     ( Point2d ( 3, -2 )
+    -->     , Point2d ( 4, -2 )
+    -->     , Point2d ( 3, 0 )
+    -->     )
 -}
 translateBy : Vector2d -> Triangle2d -> Triangle2d
 translateBy vector =
@@ -290,12 +284,12 @@ translateBy vector =
 
 {-| Mirror a triangle across a given axis.
 
-    Triangle2d.mirrorAcross Axis2d.y exampleTriangle ==
-        Triangle2d
-            ( Point2d ( -1, 1 )
-            , Point2d ( -2, 1 )
-            , Point2d ( -1, 3 )
-            )
+    Triangle2d.mirrorAcross Axis2d.y exampleTriangle
+    --> Triangle2d
+    -->     ( Point2d ( -1, 1 )
+    -->     , Point2d ( -2, 1 )
+    -->     , Point2d ( -1, 3 )
+    -->     )
 
 Note that mirroring a triangle will result in its 'winding direction' being
 flipped - if the triangle's vertices were in counterclockwise order before
@@ -310,8 +304,11 @@ mirrorAcross axis =
 triangle from the resulting points. Most other transformation functions can be
 defined in terms of `map`; for example,
 
-    Triangle.mirrorAcross Axis2d.x lineSegment ==
-        Triangle.map (Point2d.mirrorAcross Axis2d.x) lineSegment
+    Triangle.mirrorAcross Axis2d.x triangle
+
+is equivalent to
+
+    Triangle.map (Point2d.mirrorAcross Axis2d.x) triangle
 -}
 map : (Point2d -> Point2d) -> Triangle2d -> Triangle2d
 map function triangle =
@@ -328,12 +325,12 @@ in local coordinates relative to a given reference frame.
     localFrame =
         Frame2d.at (Point2d ( 1, 2 ))
 
-    Triangle2d.relativeTo localFrame exampleTriangle ==
-        Triangle2d
-            ( Point2d ( 0, -1 )
-            , Point2d ( 1, -1 )
-            , Point2d ( 0, 1 )
-            )
+    Triangle2d.relativeTo localFrame exampleTriangle
+    --> Triangle2d
+    -->     ( Point2d ( 0, -1 )
+    -->     , Point2d ( 1, -1 )
+    -->     , Point2d ( 0, 1 )
+    -->     )
 -}
 relativeTo : Frame2d -> Triangle2d -> Triangle2d
 relativeTo frame =
@@ -346,12 +343,12 @@ given reference frame, and return that triangle expressed in global coordinates.
     localFrame =
         Frame2d.at (Point2d ( 1, 2 ))
 
-    Triangle2d.placeIn localFrame exampleTriangle ==
-        Triangle2d
-            ( Point2d ( 2, 3 )
-            , Point2d ( 3, 3 )
-            , Point2d ( 2, 5 )
-            )
+    Triangle2d.placeIn localFrame exampleTriangle
+    --> Triangle2d
+    -->     ( Point2d ( 2, 3 )
+    -->     , Point2d ( 3, 3 )
+    -->     , Point2d ( 2, 5 )
+    -->     )
 -}
 placeIn : Frame2d -> Triangle2d -> Triangle2d
 placeIn frame =
@@ -361,12 +358,12 @@ placeIn frame =
 {-| Take a triangle defined in 2D coordinates within a particular sketch
 plane and return the corresponding triangle in 3D.
 
-    Triangle2d.placeOnto SketchPlane3d.xz exampleTriangle ==
-        Triangle3d
-            ( Point3d ( 1, 0, 1 )
-            , Point3d ( 2, 0, 1 )
-            , Point3d ( 1, 0, 3 )
-            )
+    Triangle2d.placeOnto SketchPlane3d.xz exampleTriangle
+    --> Triangle3d
+    -->     ( Point3d ( 1, 0, 1 )
+    -->     , Point3d ( 2, 0, 1 )
+    -->     , Point3d ( 1, 0, 3 )
+    -->     )
 -}
 placeOnto : SketchPlane3d -> Triangle2d -> Triangle3d
 placeOnto sketchPlane =
@@ -384,13 +381,13 @@ placeOnto sketchPlane =
 
 {-| Get the minimal bounding box containing a given triangle.
 
-    Triangle2d.boundingBox exampleTriangle ==
-        BoundingBox2d
-            { minX = 1
-            , maxX = 2
-            , minY = 1
-            , maxY = 3
-            }
+    Triangle2d.boundingBox exampleTriangle
+    --> BoundingBox2d
+    -->     { minX = 1
+    -->     , maxX = 2
+    -->     , minY = 1
+    -->     , maxY = 3
+    -->     }
 -}
 boundingBox : Triangle2d -> BoundingBox2d
 boundingBox triangle =
