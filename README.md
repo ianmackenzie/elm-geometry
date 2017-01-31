@@ -210,7 +210,7 @@ axis =
 
   - [`opensolid/svg`](http://package.elm-lang.org/packages/opensolid/svg/latest)
     lets you create and manipulate SVG drawings using the data types from this
-    package
+    package.
 
 ## Questions? Comments?
 
