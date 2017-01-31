@@ -166,12 +166,12 @@ to the `dependencies` field in your project's `elm-package.json`.
 
 ## Documentation
 
-[Full API documentation](http://package.elm-lang.org/packages/opensolid/geometry/1.0.2)
+[Full API documentation](http://package.elm-lang.org/packages/opensolid/geometry/1.0.3)
 is available for each module. Most modules are associated with a particular data
-type (for example, the [`Point3d`](http://package.elm-lang.org/packages/opensolid/geometry/1.0.2/OpenSolid-Point3d)
-module contains functions related to the [`Point3d`](http://package.elm-lang.org/packages/opensolid/geometry/1.0.2/OpenSolid-Geometry-Types#Point3d)
+type (for example, the [`Point3d`](http://package.elm-lang.org/packages/opensolid/geometry/1.0.3/OpenSolid-Point3d)
+module contains functions related to the [`Point3d`](http://package.elm-lang.org/packages/opensolid/geometry/1.0.3/OpenSolid-Geometry-Types#Point3d)
 data type). For an overview of the various types in the package, check
-out the [`OpenSolid.Geometry.Types`](http://package.elm-lang.org/packages/opensolid/geometry/1.0.2/OpenSolid-Geometry-Types) module.
+out the [`OpenSolid.Geometry.Types`](http://package.elm-lang.org/packages/opensolid/geometry/1.0.3/OpenSolid-Geometry-Types) module.
 
 ## Usage details
 
