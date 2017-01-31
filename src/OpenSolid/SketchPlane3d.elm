@@ -40,10 +40,10 @@ module OpenSolid.SketchPlane3d
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/sketchPlane3d.svg" alt="SketchPlane3d" width="160">
 
-Sketch planes define a 2D planar coordinate system in 3D space, and are defined
-by an origin point and X and Y directions (which are always perpendicular to
-each other). Sketch planes are the primary tool for converting back and forth
-between 2D and 3D coordinates:
+A `SketchPlane3d` represents a 2D planar coordinate system in 3D space, and is
+defined by its origin point and X and Y directions (which are always
+perpendicular to each other). Sketch planes are the primary tool for converting
+back and forth between 2D and 3D coordinates:
 
   - 3D geometry such as points, directions and line segments can be projected
     _into_ a sketch plane, which effectively projects the geometry _onto_ the
