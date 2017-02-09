@@ -262,8 +262,8 @@ type LineSegment3d
 
 {-| ![Triangle2d](https://opensolid.github.io/images/geometry/icons/triangle2d.svg)
 
-A triangle in 2D, defined by its three vertices. See the [`Triangle2d`](OpenSolid-Triangle2d) module for
-details.
+A triangle in 2D, defined by its three vertices. See the [`Triangle2d`](OpenSolid-Triangle2d)
+module for details.
 -}
 type Triangle2d
     = Triangle2d ( Point2d, Point2d, Point2d )
@@ -271,8 +271,8 @@ type Triangle2d
 
 {-| ![Triangle3d](https://opensolid.github.io/images/geometry/icons/triangle3d.svg)
 
-A triangle in 3D, defined by its three vertices. See the [`Triangle3d`](OpenSolid-Triangle3d) module for
-details.
+A triangle in 3D, defined by its three vertices. See the [`Triangle3d`](OpenSolid-Triangle3d)
+module for details.
 -}
 type Triangle3d
     = Triangle3d ( Point3d, Point3d, Point3d )
