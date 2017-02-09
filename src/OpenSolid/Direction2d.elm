@@ -115,7 +115,7 @@ For the examples, assume the following frames have been defined:
 
 @docs relativeTo, placeIn
 
-# Sketch frames
+# Sketch planes
 
 @docs placeOnto
 -}
