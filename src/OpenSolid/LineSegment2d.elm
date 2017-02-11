@@ -12,7 +12,8 @@
 
 module OpenSolid.LineSegment2d
     exposing
-        ( endpoints
+        ( along
+        , endpoints
         , startPoint
         , endPoint
         , reverse
@@ -54,6 +55,10 @@ the `LineSegment2d` constructor, for example
             , Point2d ( 3, 4 )
             )
 
+# Constructors
+
+@docs along
+
 # Endpoints
 
 @docs startPoint, endPoint, endpoints, reverse
@@ -92,6 +97,21 @@ different coordinate frames.
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Point2d as Point2d
+
+
+{-| Construct a line segment collinear with the given axis, with its endpoints
+at the given distances from the axis' origin point.
+
+    LineSegment2d.along Axis2d.x 3 5
+    --> LineSegment2d ( Point2d ( 3, 0 ), Point2d ( 5, 0 ) )
+
+    LineSegment2d.along Axis2d.y 2 -4
+    --> LineSegment2d ( Point2d ( 0, 2 ), Point2d ( 0, -4 ) )
+
+-}
+along : Axis2d -> Float -> Float -> LineSegment2d
+along axis start end =
+    LineSegment2d ( Point2d.along axis start, Point2d.along axis end )
 
 
 {-| Get the start point of a line segment.

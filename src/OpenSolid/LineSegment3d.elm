@@ -12,7 +12,8 @@
 
 module OpenSolid.LineSegment3d
     exposing
-        ( endpoints
+        ( along
+        , endpoints
         , startPoint
         , endPoint
         , reverse
@@ -54,6 +55,10 @@ the `LineSegment3d` constructor, for example
             , Point3d ( 4, 5, 6 )
             )
 
+# Constructors
+
+@docs along
+
 # Endpoints
 
 @docs startPoint, endPoint, endpoints, reverse
@@ -92,6 +97,21 @@ different coordinate frames.
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Point3d as Point3d
+
+
+{-| Construct a line segment collinear with the given axis, with its endpoints
+at the given distances from the axis' origin point.
+
+    LineSegment3d.along Axis3d.x 3 5
+    --> LineSegment3d ( Point3d ( 3, 0, 0 ), Point3d ( 5, 0, 0 ) )
+
+    LineSegment3d.along Axis3d.y 2 -4
+    --> LineSegment3d ( Point3d ( 0, 2, 0 ), Point3d ( 0, -4, 0 ) )
+
+-}
+along : Axis3d -> Float -> Float -> LineSegment3d
+along axis start end =
+    LineSegment3d ( Point3d.along axis start, Point3d.along axis end )
 
 
 {-| Get the start point of a line segment.
