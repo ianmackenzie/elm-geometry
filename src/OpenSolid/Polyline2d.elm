@@ -30,6 +30,12 @@ module OpenSolid.Polyline2d
 {-| <img src="https://opensolid.github.io/images/geometry/icons/polyline2d.svg" alt="Polyline2d" width="160">
 
 A `Polyline2d` represents a sequence of vertices connected by line segments.
+This module contains a variety of polyline-related functionality, such as
+
+  - Computing the length of polylines
+  - Scaling, rotating, translating and mirroring polylines
+  - Converting polylines between different coordinate systems
+
 Polylines can be constructed by passing an ordered list of vertices to the
 `Polyline2d` constructor, for example
 

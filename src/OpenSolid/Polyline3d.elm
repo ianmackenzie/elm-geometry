@@ -30,6 +30,12 @@ module OpenSolid.Polyline3d
 {-| <img src="https://opensolid.github.io/images/geometry/icons/polyline3d.svg" alt="Polyline3d" width="160">
 
 A `Polyline3d` represents a sequence of vertices connected by line segments.
+This module contains a variety of polyline-related functionality, such as
+
+  - Computing the length of polylines
+  - Scaling, rotating, translating and mirroring polylines
+  - Converting polylines between different coordinate systems
+
 Polylines can be constructed by passing an ordered list of vertices to the
 `Polyline3d` constructor, for example
 
