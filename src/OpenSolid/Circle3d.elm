@@ -46,7 +46,7 @@ centerPoint (Circle3d properties) =
     Circle3d.axialDirection exampleCircle
     --> Direction3d.z
 -}
-axialDirection : Circle3d -> Float
+axialDirection : Circle3d -> Direction3d
 axialDirection (Circle3d properties) =
     properties.axialDirection
 
