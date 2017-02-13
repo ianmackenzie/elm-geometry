@@ -34,6 +34,7 @@ module OpenSolid.Geometry.Types
         , Polyline3d(Polyline3d)
         , Polygon2d(Polygon2d)
         , Circle2d(Circle2d)
+        , Circle3d(Circle3d)
         )
 
 {-| This module contains the definitions of the core OpenSolid data types. Each
@@ -115,7 +116,7 @@ during 3D rendering.
 
 # Circles
 
-@docs Circle2d
+@docs Circle2d, Circle3d
 -}
 
 
@@ -343,3 +344,16 @@ module for details.
 -}
 type Circle2d
     = Circle2d { centerPoint : Point2d, radius : Float }
+
+
+{-|
+
+A circle in 3D, defined by its center point, axial direction and radius. See the
+[`Circle3d`](OpenSolid-Circle3d) module for details.
+-}
+type Circle3d
+    = Circle3d
+        { centerPoint : Point3d
+        , axialDirection : Direction3d
+        , radius : Float
+        }
