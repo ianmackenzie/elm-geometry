@@ -34,6 +34,7 @@ module OpenSolid.Geometry.Decode
         , polyline3d
         , polygon2d
         , circle2d
+        , circle3d
         )
 
 {-| JSON decoders for the core OpenSolid types.
@@ -43,7 +44,7 @@ module OpenSolid.Geometry.Decode
 @docs lineSegment2d, lineSegment3d, triangle2d, triangle3d
 @docs boundingBox2d, boundingBox3d
 @docs polyline2d, polyline3d, polygon2d
-@docs circle2d
+@docs circle2d, circle3d
 -}
 
 import Json.Decode as Decode exposing (Decoder)
@@ -317,4 +318,22 @@ circle2d =
             Circle2d { centerPoint = centerPoint, radius = radius }
         )
         (Decode.field "centerPoint" point2d)
+        (Decode.field "radius" Decode.float)
+
+
+{-| Decodes a Circle3d from an object with `centerPoint`, `axialDirection` and
+`radius` fields.
+-}
+circle3d : Decoder Circle3d
+circle3d =
+    Decode.map3
+        (\centerPoint axialDirection radius ->
+            Circle3d
+                { centerPoint = centerPoint
+                , axialDirection = axialDirection
+                , radius = radius
+                }
+        )
+        (Decode.field "centerPoint" point3d)
+        (Decode.field "axialDirection" direction3d)
         (Decode.field "radius" Decode.float)

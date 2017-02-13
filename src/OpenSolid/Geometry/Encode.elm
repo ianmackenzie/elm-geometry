@@ -34,6 +34,7 @@ module OpenSolid.Geometry.Encode
         , polyline3d
         , polygon2d
         , circle2d
+        , circle3d
         )
 
 {-| JSON encoders for the core OpenSolid types.
@@ -43,7 +44,7 @@ module OpenSolid.Geometry.Encode
 @docs lineSegment2d, lineSegment3d, triangle2d, triangle3d
 @docs boundingBox2d, boundingBox3d
 @docs polyline2d, polyline3d, polygon2d
-@docs circle2d
+@docs circle2d, circle3d
 -}
 
 import Json.Encode as Encode exposing (Value)
@@ -307,4 +308,16 @@ circle2d circle =
     Encode.object
         [ ( "centerPoint", point2d (Circle2d.centerPoint circle) )
         , ( "radius", Encode.float (Circle2d.radius circle) )
+        ]
+
+
+{-| Encode a Circle3d as an object with `centerPoint`, `axialDirection` and
+`radius` fields.
+-}
+circle3d : Circle3d -> Value
+circle3d circle =
+    Encode.object
+        [ ( "centerPoint", point3d (Circle3d.centerPoint circle) )
+        , ( "axialDirection", direction3d (Circle3d.axialDirection circle) )
+        , ( "radius", Encode.float (Circle3d.radius circle) )
         ]
