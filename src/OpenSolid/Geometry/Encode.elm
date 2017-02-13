@@ -69,7 +69,8 @@ import OpenSolid.BoundingBox3d as BoundingBox3d
 import OpenSolid.Polyline2d as Polyline2d
 import OpenSolid.Polyline3d as Polyline3d
 import OpenSolid.Polygon2d as Polygon2d
-import OpenSolid.Circle2d as Circle2d
+import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
+import OpenSolid.Circle3d as Circle3d exposing (Circle3d)
 
 
 {-| Encode a Vector2d as a list of two floating-point components.

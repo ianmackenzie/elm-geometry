@@ -48,6 +48,8 @@ module OpenSolid.Geometry.Decode
 
 import Json.Decode as Decode exposing (Decoder)
 import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Circle2d as Circle2d exposing (Circle2d(..))
+import OpenSolid.Circle3d as Circle3d exposing (Circle3d(..))
 
 
 {-| Decodes a Vector2d from a list of two floating-point components.

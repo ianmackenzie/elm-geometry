@@ -1,6 +1,7 @@
 module OpenSolid.Circle2d
     exposing
-        ( unit
+        ( Circle2d(Circle2d)
+        , unit
         , centerPoint
         , radius
         , diameter
@@ -34,6 +35,10 @@ fields to the `Circle2d` constructor, for example
 **You must ensure the provided radius is positive** (or zero, but that's not a
 very useful circle).
 
+# Types
+
+@docs Circle2d
+
 # Predefined circles
 
 @docs unit
@@ -61,6 +66,13 @@ very useful circle).
 
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point2d as Point2d
+
+
+{-|
+A circle in 2D, defined by its center point and radius.
+-}
+type Circle2d
+    = Circle2d { centerPoint : Point2d, radius : Float }
 
 
 {-| The unit circle, centered on the origin with a radius of 1.
