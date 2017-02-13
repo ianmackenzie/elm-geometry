@@ -1,6 +1,7 @@
 module OpenSolid.Circle3d
     exposing
         ( centerPoint
+        , axialDirection
         , radius
         )
 
