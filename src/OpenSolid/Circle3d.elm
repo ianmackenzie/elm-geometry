@@ -1,4 +1,4 @@
-module Circle3d
+module OpenSolid.Circle3d
     exposing
         ( centerPoint
         , radius
