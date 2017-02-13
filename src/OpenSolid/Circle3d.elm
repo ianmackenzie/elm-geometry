@@ -28,7 +28,6 @@ very useful circle).
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Point3d as Point3d
 
 
 {-| Get the center point of a circle.
