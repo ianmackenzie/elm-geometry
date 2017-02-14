@@ -18,6 +18,7 @@ module OpenSolid.Frame3d
         , xDirection
         , yDirection
         , zDirection
+        , isRightHanded
         , xAxis
         , yAxis
         , zAxis
@@ -90,6 +91,10 @@ coordinate system.)
 
 @docs originPoint, xDirection, yDirection, zDirection
 
+# Handedness
+
+@docs isRightHanded
+
 # Axes
 
 @docs xAxis, yAxis, zAxis
@@ -151,6 +156,7 @@ import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Axis3d as Axis3d
+import OpenSolid.Vector3d as Vector3d
 
 
 {-| The global XYZ frame.
@@ -227,6 +233,33 @@ yDirection (Frame3d properties) =
 zDirection : Frame3d -> Direction3d
 zDirection (Frame3d properties) =
     properties.zDirection
+
+
+{-| Check if a frame is [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness).
+
+    Frame3d.isRightHanded Frame3d.xyz
+    --> True
+
+    Frame3d.isRightHanded (Frame3d.flipZ Frame3d.xyz)
+    --> False
+
+All predefined frames are right-handed, and most operations on frames preserve
+handedness, so about the only ways to end up with a left-handed frame are by
+constructing one explicitly or by mirroring a right-handed frame.
+-}
+isRightHanded : Frame3d -> Bool
+isRightHanded frame =
+    let
+        xVector =
+            Direction3d.toVector (xDirection frame)
+
+        yVector =
+            Direction3d.toVector (yDirection frame)
+
+        zVector =
+            Direction3d.toVector (zDirection frame)
+    in
+        Vector3d.dotProduct zVector (Vector3d.crossProduct xVector yVector) > 0
 
 
 {-| Get the X axis of a given frame (the axis formed from the frame's origin

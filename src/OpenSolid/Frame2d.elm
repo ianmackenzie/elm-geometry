@@ -17,6 +17,7 @@ module OpenSolid.Frame2d
         , originPoint
         , xDirection
         , yDirection
+        , isRightHanded
         , xAxis
         , yAxis
         , flipX
@@ -72,6 +73,10 @@ perpendicular**.
 
 @docs originPoint, xDirection, yDirection
 
+# Handedness
+
+@docs isRightHanded
+
 # Axes
 
 @docs xAxis, yAxis
@@ -89,6 +94,7 @@ import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point2d as Point2d
 import OpenSolid.Direction2d as Direction2d
 import OpenSolid.Axis2d as Axis2d
+import OpenSolid.Vector2d as Vector2d
 
 
 {-| The global XY frame.
@@ -152,6 +158,29 @@ xDirection (Frame2d properties) =
 yDirection : Frame2d -> Direction2d
 yDirection (Frame2d properties) =
     properties.yDirection
+
+
+{-| Check if a frame is [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness).
+
+    Frame2d.isRightHanded Frame2d.xy
+    --> True
+
+    Frame2d.isRightHanded (Frame2d.flipX Frame2d.xy)
+    --> False
+
+All predefined frames are right-handed, and most operations on frames preserve
+handedness.
+-}
+isRightHanded : Frame2d -> Bool
+isRightHanded frame =
+    let
+        xVector =
+            Direction2d.toVector (xDirection frame)
+
+        yVector =
+            Direction2d.toVector (yDirection frame)
+    in
+        Vector2d.crossProduct xVector yVector > 0
 
 
 {-| Get the X axis of a given frame (the axis formed from the frame's origin
