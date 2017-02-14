@@ -193,8 +193,8 @@ xz =
         }
 
 
-{-| Construct a sketch plane that passes through the three given points. Returns
-a sketch plane where:
+{-| Attempt to construct a sketch plane that passes through the three given
+points. Returns a sketch plane where:
 
   - The origin point is the first given point
   - The X direction is equal to the direction from the first given point to the
