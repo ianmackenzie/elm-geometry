@@ -604,8 +604,7 @@ translateAlongOwn axis distance frame =
     -->     , zDirection = Direction3d.flip Direction3d.z
     -->     }
 
-Note that this will switch the
-[handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
+Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 of the frame.
 -}
 mirrorAcross : Plane3d -> Frame3d -> Frame3d
