@@ -185,6 +185,9 @@ the same.
     -->     , xDirection = Direction2d.flip Direction2d.x
     -->     , yDirection = Direction2d.y
     -->     }
+
+Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
+of the frame.
 -}
 flipX : Frame2d -> Frame2d
 flipX frame =
@@ -204,6 +207,9 @@ the same.
     -->     , xDirection = Direction2d.x
     -->     , yDirection = Direction2d.flip Direction2d.y
     -->     }
+
+Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
+of the frame.
 -}
 flipY : Frame2d -> Frame2d
 flipY frame =

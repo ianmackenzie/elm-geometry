@@ -397,6 +397,9 @@ xzSketchPlane frame =
     -->     , yDirection = Direction3d.y
     -->     , zDirection = Direction3d.z
     -->     }
+
+Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
+of the frame.
 -}
 flipX : Frame3d -> Frame3d
 flipX frame =
@@ -417,6 +420,9 @@ flipX frame =
     -->     , yDirection = Direction3d.flip Direction3d.y
     -->     , zDirection = Direction3d.z
     -->     }
+
+Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
+of the frame.
 -}
 flipY : Frame3d -> Frame3d
 flipY frame =
@@ -437,6 +443,9 @@ flipY frame =
     -->     , yDirection = Direction3d.y
     -->     , zDirection = Direction3d.flip Direction3d.z
     -->     }
+
+Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
+of the frame.
 -}
 flipZ : Frame3d -> Frame3d
 flipZ frame =
