@@ -33,6 +33,7 @@ module OpenSolid.Point3d
         , translateBy
         , mirrorAcross
         , projectOnto
+        , projectRadiallyOnto
         , relativeTo
         , placeIn
         , projectInto
@@ -82,7 +83,7 @@ and Z coordinates to the `Point3d` constructor, for example
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, projectRadiallyOnto
 
 # Coordinate frames
 
@@ -591,6 +592,28 @@ projectOnto plane point =
             Direction3d.scaleBy -signedDistance normalDirection
     in
         translateBy displacement point
+
+
+{-| Project a point perpendicularly (radially) onto an axis.
+
+    point =
+        Point3d ( 1, 2, 3 )
+
+    Point3d.projectRadiallyOnto Axis3d.x
+    --> Point3d ( 1, 0, 0 )
+
+    verticalAxis =
+        Axis3d
+            { originPoint = Point3d ( 0, 1, 2 )
+            , direction = Direction3d.z
+            }
+
+    Point3d.projectRadiallyOnto verticalAxis
+    --> Point3d ( 0, 1, 3 )
+-}
+projectRadiallyOnto : Axis3d -> Point3d -> Point3d
+projectRadiallyOnto axis point =
+    along axis (distanceAlong axis point)
 
 
 {-| Take a point defined in global coordinates, and return it expressed in local
