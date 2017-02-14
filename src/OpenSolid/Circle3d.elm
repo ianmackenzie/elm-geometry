@@ -1,7 +1,6 @@
 module OpenSolid.Circle3d
     exposing
-        ( Circle3d(Circle3d)
-        , centerPoint
+        ( centerPoint
         , axialDirection
         , radius
         )
@@ -28,26 +27,12 @@ Circles can be constructed by passing a record with `centerPoint`,
 **You must ensure the provided radius is positive** (or zero, but that's not a
 very useful circle).
 
-# Types
-
-@docs Circle3d
-
 # Accessors
 
 @docs centerPoint, axialDirection, radius
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
-
-
-{-| A circle in 3D, defined by its center point, axial direction and radius.
--}
-type Circle3d
-    = Circle3d
-        { centerPoint : Point3d
-        , axialDirection : Direction3d
-        , radius : Float
-        }
 
 
 {-| Get the center point of a circle.
