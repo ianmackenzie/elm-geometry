@@ -1,15 +1,10 @@
 module OpenSolid.QuadraticSpline3d
     exposing
-        ( QuadraticSpline3d
-        , bezier
+        ( bezier
         , controlPoints
         )
 
 import OpenSolid.Geometry.Types exposing (..)
-
-
-type QuadraticSpline3d
-    = QuadraticSpline3d ( Point3d, Point3d, Point3d )
 
 
 bezier : Point3d -> Point3d -> Point3d -> QuadraticSpline3d

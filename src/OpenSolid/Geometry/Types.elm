@@ -35,6 +35,12 @@ module OpenSolid.Geometry.Types
         , Polygon2d(Polygon2d)
         , Circle2d(Circle2d)
         , Circle3d(Circle3d)
+        , Arc2d(Arc2d)
+        , Arc3d(Arc3d)
+        , QuadraticSpline2d(QuadraticSpline2d)
+        , QuadraticSpline3d(QuadraticSpline3d)
+        , CubicSpline2d(CubicSpline2d)
+        , CubicSpline3d(CubicSpline3d)
         )
 
 {-| This module contains the definitions of the core OpenSolid data types. Each
@@ -117,6 +123,14 @@ during 3D rendering.
 # Circles
 
 @docs Circle2d, Circle3d
+
+# Arcs
+
+@docs Arc2d, Arc3d
+
+# Splines
+
+@docs QuadraticSpline2d, QuadraticSpline3d, CubicSpline2d, CubicSpline3d
 -}
 
 
@@ -357,3 +371,57 @@ type Circle3d
         , axialDirection : Direction3d
         , radius : Float
         }
+
+
+{-|
+
+An arc in 2D, defined by its center point, start point and swept angle. See the
+[`Arc2d`](OpenSolid-Arc2d) module for details.
+-}
+type Arc2d
+    = Arc2d { centerPoint : Point2d, startPoint : Point2d, sweptAngle : Float }
+
+
+{-|
+
+An arc in 3D, defined by its axis, start point and swept angle. See the
+[`Arc3d`](OpenSolid-Arc3d) module for details.
+-}
+type Arc3d
+    = Arc3d { axis : Axis3d, startPoint : Point3d, sweptAngle : Float }
+
+
+{-|
+
+A quadratic spline in 2D, defined by its three control points. See the
+[`QuadraticSpline2d`](OpenSolid-QuadraticSpline2d) module for details.
+-}
+type QuadraticSpline2d
+    = QuadraticSpline2d ( Point2d, Point2d, Point2d )
+
+
+{-|
+
+A quadratic spline in 3D, defined by its three control points. See the
+[`QuadraticSpline3d`](OpenSolid-QuadraticSpline3d) module for details.
+-}
+type QuadraticSpline3d
+    = QuadraticSpline3d ( Point3d, Point3d, Point3d )
+
+
+{-|
+
+A cubic spline in 2D, defined by its four control points. See the
+[`CubicSpline2d`](OpenSolid-CubicSpline2d) module for details.
+-}
+type CubicSpline2d
+    = CubicSpline2d ( Point2d, Point2d, Point2d, Point2d )
+
+
+{-|
+
+A cubic spline in 3D, defined by its four control points. See the
+[`CubicSpline3d`](OpenSolid-CubicSpline3d) module for details.
+-}
+type CubicSpline3d
+    = CubicSpline3d ( Point3d, Point3d, Point3d, Point3d )

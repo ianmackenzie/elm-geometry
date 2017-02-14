@@ -1,15 +1,10 @@
 module OpenSolid.CubicSpline3d
     exposing
-        ( CubicSpline3d
-        , bezier
+        ( bezier
         , controlPoints
         )
 
 import OpenSolid.Geometry.Types exposing (..)
-
-
-type CubicSpline3d
-    = CubicSpline3d ( Point3d, Point3d, Point3d, Point3d )
 
 
 bezier : Point3d -> Point3d -> Point3d -> Point3d -> CubicSpline3d
