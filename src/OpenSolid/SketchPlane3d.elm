@@ -204,6 +204,24 @@ points. Returns a sketch plane where:
     is on the positive Y side of the sketch plane's X axis)
 
 If the three given points are collinear, returns `Nothing`.
+
+    SketchPlane3d.throughPoints
+        (Point3d ( 2, 0, 0 ))
+        (Point3d ( 3, 0, 0 ))
+        (Point3d ( 4, 1, 1 ))
+    --> Just
+    -->     (SketchPlane3d
+    -->         { originPoint = Point3d ( 2, 0, 0 )
+    -->         , xDirection = Direction3d.x
+    -->         , yDirection = Direction3d ( 0, 0.7071, 0.7071 )
+    -->         }
+    -->     )
+
+    SketchPlane3d.throughPoints
+        (Point3d ( 2, 0, 0 ))
+        (Point3d ( 3, 0, 0 ))
+        (Point3d ( 4, 0, 0 ))
+    --> Nothing
 -}
 throughPoints : Point3d -> Point3d -> Point3d -> Maybe SketchPlane3d
 throughPoints firstPoint secondPoint thirdPoint =
