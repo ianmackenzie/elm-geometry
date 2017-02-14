@@ -15,6 +15,7 @@ module OpenSolid.Plane3d
         ( xy
         , yz
         , zx
+        , throughPoints
         , originPoint
         , normalDirection
         , sketchPlane
@@ -51,6 +52,10 @@ Planes can by constructed by passing a record with `originPoint` and
 
 @docs xy, yz, zx
 
+# Constructors
+
+@docs throughPoints
+
 # Accessors
 
 @docs originPoint, normalDirection
@@ -71,6 +76,7 @@ Planes can by constructed by passing a record with `originPoint` and
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Direction3d as Direction3d
+import OpenSolid.Triangle3d as Triangle3d
 
 
 {-| The global XY plane, centered at the origin with a normal in the positive Z
@@ -122,6 +128,53 @@ zx =
         { originPoint = Point3d.origin
         , normalDirection = Direction3d.y
         }
+
+
+{-| Attempt to construct a plane passing through the three given points. The
+origin point of the resulting plane will be equal to the first given point, and
+the normal direction will be such that the three given points are in
+counterclockwise order around it according to the right-hand rule. If the three
+given points are collinear, returns `Nothing`.
+
+    Plane3d.throughPoints
+        (Point3d ( 2, 0, 0 ))
+        (Point3d ( 3, 0, 0 ))
+        (Point3d ( 4, 1, 1 ))
+    --> Just
+    -->     (Plane3d
+    -->         { originPoint = Point3d ( 2, 0, 0 )
+    -->         , normalDirection = Direction3d ( 0, -0.7071, 0.7071 )
+    -->         }
+    -->     )
+
+    Plane3d.throughPoints
+        (Point3d ( 2, 0, 0 ))
+        (Point3d ( 3, 0, 0 ))
+        (Point3d ( 4, 0, 0 ))
+    --> Nothing
+-}
+throughPoints : Point3d -> Point3d -> Point3d -> Maybe Plane3d
+throughPoints firstPoint secondPoint thirdPoint =
+    let
+        triangle =
+            Triangle3d ( firstPoint, secondPoint, thirdPoint )
+
+        a =
+            Just
+                (Plane3d
+                    { originPoint = Point3d.origin
+                    , normalDirection = Direction3d.z
+                    }
+                )
+    in
+        Triangle3d.normalDirection triangle
+            |> Maybe.map
+                (\normalDirection ->
+                    Plane3d
+                        { originPoint = firstPoint
+                        , normalDirection = normalDirection
+                        }
+                )
 
 
 {-| Get the origin point of a plane.
