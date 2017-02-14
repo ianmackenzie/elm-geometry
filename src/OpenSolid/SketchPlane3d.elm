@@ -18,6 +18,7 @@ module OpenSolid.SketchPlane3d
         , zy
         , zx
         , xz
+        , throughPoints
         , originPoint
         , xDirection
         , yDirection
@@ -93,6 +94,10 @@ point, and use the two indicated global axes as their X and Y axes. For example,
     -->     }
 
 @docs xy, yx, yz, zy, zx, xz
+
+# Constructors
+
+@docs throughPoints
 
 # Accessors
 
@@ -186,6 +191,63 @@ xz =
         , xDirection = Direction3d.x
         , yDirection = Direction3d.z
         }
+
+
+{-| Construct a sketch plane that passes through the three given points. Returns
+a sketch plane where:
+
+  - The origin point is the first given point
+  - The X direction is equal to the direction from the first given point to the
+    second
+  - The Y direction is chosen such that the third given point lies on the sketch
+    plane and has a positive Y coordinate within the sketch plane (that is, it
+    is on the positive Y side of the sketch plane's X axis)
+
+If the three given points are collinear, returns `Nothing`.
+-}
+throughPoints : Point3d -> Point3d -> Point3d -> Maybe SketchPlane3d
+throughPoints firstPoint secondPoint thirdPoint =
+    Vector3d.direction (Point3d.vectorFrom firstPoint secondPoint)
+        |> Maybe.andThen
+            (\xDirection ->
+                let
+                    firstCandidate =
+                        Point3d.vectorFrom firstPoint thirdPoint
+
+                    secondCandidate =
+                        Point3d.vectorFrom secondPoint thirdPoint
+
+                    firstSquaredLength =
+                        Vector3d.squaredLength firstCandidate
+
+                    secondSquaredLength =
+                        Vector3d.squaredLength secondCandidate
+
+                    chosenVector =
+                        if firstSquaredLength <= secondSquaredLength then
+                            firstCandidate
+                        else
+                            secondCandidate
+
+                    xDirectionVector =
+                        Direction3d.toVector xDirection
+
+                    normalVector =
+                        Vector3d.crossProduct xDirectionVector chosenVector
+
+                    yVector =
+                        Vector3d.crossProduct normalVector xDirectionVector
+                in
+                    Vector3d.direction yVector
+                        |> Maybe.map
+                            (\yDirection ->
+                                SketchPlane3d
+                                    { originPoint = firstPoint
+                                    , xDirection = xDirection
+                                    , yDirection = yDirection
+                                    }
+                            )
+            )
 
 
 {-| Get the origin point of a sketch plane.
