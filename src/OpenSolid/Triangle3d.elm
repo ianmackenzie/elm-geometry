@@ -16,6 +16,7 @@ module OpenSolid.Triangle3d
         , edges
         , centroid
         , area
+        , normalDirection
         , scaleAbout
         , rotateAround
         , translateBy
@@ -53,7 +54,7 @@ constructor, for example
 
 # Basics
 
-@docs centroid, area
+@docs centroid, area, normalDirection
 
 # Transformations
 
@@ -158,6 +159,29 @@ area triangle =
             Point3d.vectorFrom p1 p3
     in
         0.5 * Vector3d.length (Vector3d.crossProduct firstVector secondVector)
+
+
+{-| Attempt to find the normal direction to a triangle. The resulting direction
+will be oriented such that the triangle vertices are in counterclockwise order
+around it according to the right-hand rule. If the triangle is degenerate (its
+three vertices are collinear), returns `Nothing`.
+
+    Triangle3d.normalDirection exampleTriangle
+    --> Just (Direction3d ( 0, -0.9487, 0.3162 ))
+-}
+normalDirection : Triangle3d -> Maybe Direction3d
+normalDirection triangle =
+    let
+        ( p1, p2, p3 ) =
+            vertices triangle
+
+        v1 =
+            Point3d.vectorFrom p1 p2
+
+        v2 =
+            Point3d.vectorFrom p2 p3
+    in
+        Vector3d.direction (Vector3d.crossProduct v1 v2)
 
 
 {-| Scale a triangle about a given point by a given scale.
