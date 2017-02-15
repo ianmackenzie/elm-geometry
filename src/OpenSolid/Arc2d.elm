@@ -164,12 +164,18 @@ fromEndpoints startPoint endPoint radius windingDirection lengthType =
                                 2 * asin (halfLength / radius)
 
                             sweptAngle =
-                                case lengthType of
-                                    Short ->
+                                case ( windingDirection, lengthType ) of
+                                    ( Counterclockwise, Short ) ->
                                         shortAngle
 
-                                    Long ->
+                                    ( Clockwise, Short ) ->
+                                        -shortAngle
+
+                                    ( Counterclockwise, Long ) ->
                                         2 * pi - shortAngle
+
+                                    ( Clockwise, Long ) ->
+                                        shortAngle - 2 * pi
                         in
                             Arc2d
                                 { centerPoint = centerPoint
