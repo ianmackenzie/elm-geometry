@@ -113,8 +113,8 @@ throughPoints firstPoint secondPoint thirdPoint =
             )
 
 
-fromEndpoints : Point2d -> Point2d -> Float -> WindingDirection -> Length -> Maybe Arc2d
-fromEndpoints startPoint endPoint radius windingDirection lengthType =
+fromEndpoints : Point2d -> Point2d -> Float -> Length -> WindingDirection -> Maybe Arc2d
+fromEndpoints startPoint endPoint radius lengthType windingDirection =
     let
         chord =
             LineSegment2d ( startPoint, endPoint )
