@@ -91,19 +91,23 @@ the three given points are collinear, returns `Nothing`.
         Point2d.origin
         (Point2d ( 1, 0 ))
         (Point2d ( 0, 1 ))
-    --> Circle2d
-    -->     { centerPoint = Point2d ( 0.5, 0.5 )
-    -->     , radius = 0.7071
-    -->     }
+    --> Just
+    -->     (Circle2d
+    -->         { centerPoint = Point2d ( 0.5, 0.5 )
+    -->         , radius = 0.7071
+    -->         }
+    -->     )
 
     Circle2d.throughPoints
         Point2d.origin
         (Point2d ( 2, 1 ))
         (Point2d ( 4, 0 ))
-    --> Circle2d
-    -->     { centerPoint = Point2d ( 2, -1.5 )
-    -->     , radius = 2.5
-    -->     }
+    --> Just
+    -->     (Circle2d
+    -->         { centerPoint = Point2d ( 2, -1.5 )
+    -->         , radius = 2.5
+    -->         }
+    -->     )
 
     Circle2d.throughPoints
         Point2d.origin
