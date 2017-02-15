@@ -224,16 +224,17 @@ scaleAbout point scale arc =
 
 
 rotateAround : Point2d -> Float -> Arc2d -> Arc2d
-rotateAround point angle arc =
+rotateAround point angle =
     let
         rotatePoint =
             Point2d.rotateAround point angle
     in
-        Arc2d
-            { centerPoint = rotatePoint (centerPoint arc)
-            , startPoint = rotatePoint (startPoint arc)
-            , sweptAngle = sweptAngle arc
-            }
+        \arc ->
+            Arc2d
+                { centerPoint = rotatePoint (centerPoint arc)
+                , startPoint = rotatePoint (startPoint arc)
+                , sweptAngle = sweptAngle arc
+                }
 
 
 translateBy : Vector2d -> Arc2d -> Arc2d
@@ -250,16 +251,17 @@ translateBy displacement arc =
 
 
 mirrorAcross : Axis2d -> Arc2d -> Arc2d
-mirrorAcross axis arc =
+mirrorAcross axis =
     let
         mirrorPoint =
             Point2d.mirrorAcross axis
     in
-        Arc2d
-            { centerPoint = mirrorPoint (centerPoint arc)
-            , startPoint = mirrorPoint (startPoint arc)
-            , sweptAngle = -(sweptAngle arc)
-            }
+        \arc ->
+            Arc2d
+                { centerPoint = mirrorPoint (centerPoint arc)
+                , startPoint = mirrorPoint (startPoint arc)
+                , sweptAngle = -(sweptAngle arc)
+                }
 
 
 relativeTo : Frame2d -> Arc2d -> Arc2d
