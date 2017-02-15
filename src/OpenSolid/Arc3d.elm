@@ -20,6 +20,8 @@ import OpenSolid.Arc2d as Arc2d
 import OpenSolid.Axis3d as Axis3d
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Frame3d as Frame3d
+import OpenSolid.Direction3d as Direction3d
+import OpenSolid.SketchPlane3d as SketchPlane3d
 
 
 throughPoints : Point3d -> Point3d -> Point3d -> Maybe Arc3d
