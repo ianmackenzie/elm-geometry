@@ -14,6 +14,7 @@ module OpenSolid.Circle2d
         , mirrorAcross
         , relativeTo
         , placeIn
+        , placeOnto
         , boundingBox
         )
 
@@ -59,6 +60,10 @@ very useful circle).
 
 @docs relativeTo, placeIn
 
+# Sketch planes
+
+@docs placeOnto
+
 # Bounds
 
 @docs boundingBox
@@ -66,6 +71,7 @@ very useful circle).
 
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point2d as Point2d
+import OpenSolid.SketchPlane3d as SketchPlane3d
 
 
 {-| The unit circle, centered on the origin with a radius of 1.
@@ -390,6 +396,25 @@ placeIn frame =
                 { centerPoint = placePoint (centerPoint circle)
                 , radius = radius circle
                 }
+
+
+{-| Take a circle defined in 2D coordinates within a particular sketch plane and
+return the corresponding circle in 3D.
+
+    Circle2d.placeOnto SketchPlane3d.yz exampleCircle
+    --> Circle3d
+    -->     { centerPoint = Point3d ( 0, 1, 2 )
+    -->     , axialDirection = Direction3d.x
+    -->     , radius = 3
+    -->     }
+-}
+placeOnto : SketchPlane3d -> Circle2d -> Circle3d
+placeOnto sketchPlane circle =
+    Circle3d
+        { centerPoint = Point2d.placeOnto sketchPlane (centerPoint circle)
+        , axialDirection = SketchPlane3d.normalDirection sketchPlane
+        , radius = radius circle
+        }
 
 
 {-| Get the minimal bounding box containing a given circle.
