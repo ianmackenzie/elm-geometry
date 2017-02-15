@@ -63,7 +63,7 @@ startPoint (Arc3d properties) =
 
 endPoint : Arc3d -> Point3d
 endPoint arc =
-    Point3d.rotateAround (axis arc) (sweptAngle arc)
+    Point3d.rotateAround (axis arc) (sweptAngle arc) (startPoint arc)
 
 
 sweptAngle : Arc3d -> Float
