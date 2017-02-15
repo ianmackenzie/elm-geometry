@@ -101,12 +101,20 @@ scaleAbout point scale arc =
 
 
 rotateAround : Axis3d -> Float -> Arc3d -> Arc3d
-rotateAround rotationAxis angle arc =
-    Arc3d
-        { axis = Axis3d.rotateAround rotationAxis angle (axis arc)
-        , startPoint = Point3d.rotateAround rotationAxis angle (startPoint arc)
-        , sweptAngle = sweptAngle arc
-        }
+rotateAround rotationAxis angle =
+    let
+        rotateAxis =
+            Axis3d.rotateAround rotationAxis angle
+
+        rotatePoint =
+            Point3d.rotateAround rotationAxis angle
+    in
+        \arc ->
+            Arc3d
+                { axis = rotateAxis (axis arc)
+                , startPoint = rotatePoint (startPoint arc)
+                , sweptAngle = sweptAngle arc
+                }
 
 
 translateBy : Vector3d -> Arc3d -> Arc3d
@@ -119,12 +127,20 @@ translateBy displacement arc =
 
 
 mirrorAcross : Plane3d -> Arc3d -> Arc3d
-mirrorAcross plane arc =
-    Arc3d
-        { axis = Axis3d.mirrorAcross plane (axis arc)
-        , startPoint = Point3d.mirrorAcross plane (startPoint arc)
-        , sweptAngle = -(sweptAngle arc)
-        }
+mirrorAcross plane =
+    let
+        mirrorAxis =
+            Axis3d.mirrorAcross plane
+
+        mirrorPoint =
+            Point3d.mirrorAcross plane
+    in
+        \arc ->
+            Arc3d
+                { axis = mirrorAxis (axis arc)
+                , startPoint = mirrorPoint (startPoint arc)
+                , sweptAngle = -(sweptAngle arc)
+                }
 
 
 relativeTo : Frame3d -> Arc3d -> Arc3d
