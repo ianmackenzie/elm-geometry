@@ -55,7 +55,7 @@ very useful circle).
 
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross
 
-# Coordinate transformations
+# Coordinate frames
 
 @docs relativeTo, placeIn
 
