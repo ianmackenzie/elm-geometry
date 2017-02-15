@@ -167,10 +167,10 @@ throughPoints firstPoint secondPoint thirdPoint =
                     Point2d.distanceFrom centerPoint firstPoint
 
                 r2 =
-                    Point2d.distanceFrom centerPoint firstPoint
+                    Point2d.distanceFrom centerPoint secondPoint
 
                 r3 =
-                    Point2d.distanceFrom centerPoint firstPoint
+                    Point2d.distanceFrom centerPoint thirdPoint
             in
                 Just
                     (Circle2d
