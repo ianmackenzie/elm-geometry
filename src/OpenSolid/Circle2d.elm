@@ -232,11 +232,7 @@ area circle =
 -}
 circumference : Circle2d -> Float
 circumference circle =
-    let
-        r =
-            radius circle
-    in
-        2 * pi * r
+    2 * pi * radius circle
 
 
 {-| Check if a circle contains a given point.
