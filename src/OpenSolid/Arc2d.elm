@@ -22,6 +22,30 @@ module OpenSolid.Arc2d
         , placeOnto
         )
 
+{-| An `Arc2d` is a section of a circle, defined by its center point, start
+point and swept angle (the counterclockwise angle from the start point to the
+end point). This module includes functionality for
+
+  - Constructing arcs through given points and/or with a given radius
+  - Scaling, rotating, translating and mirroring arcs
+  - Converting arcs between different coordinate systems
+  - Placing 2D arcs onto sketch planes to result in 3D arcs
+
+Arcs can be constructed explicitly by passing a record with `centerPoint`,
+`startPoint` and `sweptAngle` fields to the `Arc2d` constructor, for example
+
+    exampleArc =
+        Arc2d
+            { centerPoint = Point2d ( 1, 1 )
+            , startPoint = Point2d ( 3, 1 )
+            , sweptAngle = degrees 90
+            }
+
+# Constructors
+
+@docs throughPoints, fromEndpoints, Length, short, long, WindingDirection, counterclockwise, clockwise
+-}
+
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point2d as Point2d
 import OpenSolid.SketchPlane3d as SketchPlane3d
@@ -32,36 +56,88 @@ import OpenSolid.Direction2d as Direction2d
 import OpenSolid.Circle2d as Circle2d
 
 
+{-| Argument type used in [`fromEndpoints`](#fromEndpoints).
+-}
 type Length
     = Short
     | Long
 
 
+{-| Argument type used in [`fromEndpoints`](#fromEndpoints).
+-}
 type WindingDirection
     = Clockwise
     | Counterclockwise
 
 
+{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
+-}
 clockwise : WindingDirection
 clockwise =
     Clockwise
 
 
+{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
+-}
 counterclockwise : WindingDirection
 counterclockwise =
     Counterclockwise
 
 
+{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
+-}
 short : Length
 short =
     Short
 
 
+{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
+-}
 long : Length
 long =
     Long
 
 
+{-| Attempt to construct an arc that starts at the first given point, passes
+through the second given point and ends at the third given point. If the three
+points are collinear, returns `Nothing`.
+
+    Arc2d.throughPoints
+        Point2d.origin
+        (Point2d ( 1, 0 ))
+        (Point2d ( 0, 1 ))
+    --> Just
+    -->     (Arc2d
+    -->         { centerPoint = Point2d ( 0.5, 0.5 )
+    -->         , startPoint = Point2d.origin
+    -->         , sweptAngle = degrees 270
+    -->         }
+    -->     )
+
+    Arc2d.throughPoints
+        (Point2d ( 1, 0 ))
+        Point2d.origin
+        (Point2d ( 0, 1 ))
+    --> Just
+    -->     (Arc2d
+    -->         { centerPoint = Point2d ( 0.5, 0.5 )
+    -->         , startPoint = Point2d ( 1, 0 )
+    -->         , sweptAngle = degrees -180
+    -->         }
+    -->     )
+
+    Arc2d.throughPoints
+        Point2d.origin
+        (Point2d ( 1, 0 ))
+        (Point2d ( 2, 0 ))
+    --> Nothing
+
+    Arc2d.throughPoints
+        Point2d.origin
+        Point2d.origin
+        (Point2d ( 1, 0 ))
+    --> Nothing
+-}
 throughPoints : Point2d -> Point2d -> Point2d -> Maybe Arc2d
 throughPoints firstPoint secondPoint thirdPoint =
     Circle2d.throughPoints firstPoint secondPoint thirdPoint
@@ -113,6 +189,91 @@ throughPoints firstPoint secondPoint thirdPoint =
             )
 
 
+{-| Attempt to construct an arc with the given start point, end point and
+radius. For any given valid set of start point, end point and radius, there are
+four possible results, so two more arguments are required to fully specify the
+arc to create:
+
+  - For the fourth argument, pass either [`Arc2d.short`](#short) or
+    [`Arc2d.long`](#long) to indicate whether the returned arc should be have a
+    swept angle less than or greater than 180 degrees respectively.
+  - For the fifth argument, pass either [`Arc2d.counterclockwise`](#counterclockwise)
+    or [`Arc2d.clockwise`](#clockwise) to indicate whether the returned arc
+    should be counterclockwise (have a positive swept angle) or clockwise (have
+    a negative swept angle).
+
+For example:
+
+    p1 =
+        Point2d ( 1, 0 )
+
+    p2 =
+        Point2d ( 0, 1 )
+
+    Arc2d.fromEndpoints p1 p2 1 Arc2d.short Arc2d.counterclockwise
+    --> Just
+    -->     (Arc2d
+    -->         { startPoint = Point2d ( 1, 0 )
+    -->         , centerPoint = Point2d.origin
+    -->         , sweptAngle = degrees 90
+    -->         }
+    -->     )
+
+    Arc2d.fromEndpoints p1 p2 1 Arc2d.short Arc2d.clockwise
+    --> Just
+    -->     (Arc2d
+    -->         { startPoint = Point2d ( 1, 0 )
+    -->         , centerPoint = Point2d ( 1, 1 )
+    -->         , sweptAngle = degrees -90
+    -->         }
+    -->     )
+
+    Arc2d.fromEndpoints p1 p2 1 Arc2d.long Arc2d.counterclockwise
+    --> Just
+    -->     (Arc2d
+    -->         { startPoint = Point2d ( 1, 0 )
+    -->         , centerPoint = Point2d ( 1, 1 )
+    -->         , sweptAngle = degrees 270
+    -->         }
+    -->     )
+
+    Arc2d.fromEndpoints p1 p2 1 Arc2d.long Arc2d.clockwise
+    --> Just
+    -->     (Arc2d
+    -->         { startPoint = Point2d ( 1, 0 )
+    -->         , centerPoint = Point2d.origin
+    -->         , sweptAngle = degrees -270
+    -->         }
+    -->     )
+
+    Arc2d.fromEndpoints p1 p2 2 Arc2d.short Arc2d.counterclockwise
+    --> Just
+    -->     (Arc2d
+    -->         { startPoint = Point2d ( 1, 0 )
+    -->         , centerPoint = Point2d ( -0.8229, -0.8229 )
+    -->         , sweptAngle = degrees 41.4096
+    -->         }
+    -->     )
+
+If the start and end points are coincident or the distance between them is more
+than twice the given radius, returns `Nothing`:
+
+    Arc2d.fromEndpoints p1 p2 0.5 Arc2d.short Arc2d.counterclockwise
+    --> Nothing
+
+Note that this means it is dangerous to use this function to construct 180
+degree arcs (half circles), since in this case due to numerical roundoff the
+distance between the two given points may appear to be slightly more than twice
+the given radius. In this case it is safer to use a more specialized approach,
+such as
+
+    halfCircle =s
+        Arc2d
+            { startPoint = firstPoint
+            , centerPoint = Point2d.midpoint firstPoint secondPoint
+            , sweptAngle = degrees 180 -- or 'degrees -180' for a clockwise arc
+            }
+-}
 fromEndpoints : Point2d -> Point2d -> Float -> Length -> WindingDirection -> Maybe Arc2d
 fromEndpoints startPoint endPoint radius lengthType windingDirection =
     let
