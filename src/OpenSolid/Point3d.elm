@@ -171,12 +171,19 @@ You can pass values less than zero or greater than one to extrapolate:
     --> Point3d ( 1, 2, 9 )
 -}
 interpolate : Point3d -> Point3d -> Float -> Point3d
-interpolate startPoint endPoint =
+interpolate p1 p2 t =
     let
-        displacement =
-            vectorFrom startPoint endPoint
+        ( x1, y1, z1 ) =
+            coordinates p1
+
+        ( x2, y2, z2 ) =
+            coordinates p2
     in
-        \t -> translateBy (Vector3d.scaleBy t displacement) startPoint
+        Point3d
+            ( x1 + t * (x2 - x1)
+            , y1 + t * (y2 - y1)
+            , z1 + t * (z2 - z1)
+            )
 
 
 {-| Construct a point along an axis at a particular distance from the axis'

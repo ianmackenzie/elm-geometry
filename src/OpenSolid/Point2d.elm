@@ -172,12 +172,15 @@ You can pass values less than zero or greater than one to extrapolate:
     --> Point2d ( 10, 15 )
 -}
 interpolate : Point2d -> Point2d -> Float -> Point2d
-interpolate startPoint endPoint =
+interpolate p1 p2 t =
     let
-        displacement =
-            vectorFrom startPoint endPoint
+        ( x1, y1 ) =
+            coordinates p1
+
+        ( x2, y2 ) =
+            coordinates p2
     in
-        \t -> translateBy (Vector2d.scaleBy t displacement) startPoint
+        Point2d ( x1 + t * (x2 - x1), y1 + t * (y2 - y1) )
 
 
 {-| Construct a point along an axis at a particular distance from the axis'
