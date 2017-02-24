@@ -14,6 +14,7 @@ module OpenSolid.Vector3d
     exposing
         ( zero
         , perpendicularTo
+        , interpolate
         , components
         , xComponent
         , yComponent
@@ -75,7 +76,7 @@ will actually want their `Direction3d` versions [`Direction3d.x`](OpenSolid-Dire
 
 # Constructors
 
-@docs perpendicularTo
+@docs perpendicularTo, interpolate
 
 # Components
 
@@ -177,6 +178,54 @@ perpendicularTo vector =
             Vector3d ( z, 0, -x )
         else
             Vector3d ( -y, x, 0 )
+
+
+{-| Construct a vector by interpolating between two other vectors based on a
+parameter that ranges from zero to one.
+
+    startVector =
+        Vector3d ( 1, 2, 4 )
+
+    endVector =
+        Vector3d ( 1, 2, 8 )
+
+    Vector3d.interpolate startVector endVector 0.25
+    --> Vector3d ( 1, 2, 5 )
+
+Partial application may be useful:
+
+    interpolatedVector : Float -> Vector3d
+    interpolatedVector =
+        Vector3d.interpolate startVector endVector
+
+    List.map interpolatedVector [ 0, 0.5, 1 ]
+    --> [ Vector3d ( 1, 2, 4 )
+    --> , Vector3d ( 1, 2, 6 )
+    --> , Vector3d ( 1, 2, 8 )
+    --> ]
+
+You can pass values less than zero or greater than one to extrapolate:
+
+    interpolatedVector -0.5
+    --> Vector3d ( 1, 2, 2 )
+
+    interpolatedVector 1.25
+    --> Vector3d ( 1, 2, 9 )
+-}
+interpolate : Vector3d -> Vector3d -> Float -> Vector3d
+interpolate v1 v2 t =
+    let
+        ( x1, y1, z1 ) =
+            components v1
+
+        ( x2, y2, z2 ) =
+            components v2
+    in
+        Vector3d
+            ( x1 + t * (x2 - x1)
+            , y1 + t * (y2 - y1)
+            , z1 + t * (z2 - z1)
+            )
 
 
 {-| Extract the components of a vector.

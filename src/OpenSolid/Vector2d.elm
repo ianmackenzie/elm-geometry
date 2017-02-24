@@ -14,6 +14,7 @@ module OpenSolid.Vector2d
     exposing
         ( zero
         , perpendicularTo
+        , interpolate
         , components
         , xComponent
         , yComponent
@@ -80,7 +81,7 @@ and [`Direction2d.y`](OpenSolid-Direction2d#y).
 
 # Constructors
 
-@docs perpendicularTo
+@docs perpendicularTo, interpolate
 
 # Components
 
@@ -162,6 +163,50 @@ perpendicularTo vector =
             components vector
     in
         Vector2d ( -y, x )
+
+
+{-| Construct a vector by interpolating between two other vectors based on a
+parameter that ranges from zero to one.
+
+    startVector =
+        Vector2d.zero
+
+    endVector =
+        Vector2d ( 8, 12 )
+
+    Vector2d.interpolate startVector endVector 0.25
+    --> Vector2d ( 2, 3 )
+
+Partial application may be useful:
+
+    interpolatedVector : Float -> Vector2d
+    interpolatedVector =
+        Vector2d.interpolate startVector endVector
+
+    List.map interpolatedVector [ 0, 0.5, 1 ]
+    --> [ Vector2d ( 0, 0 )
+    --> , Vector2d ( 4, 6 )
+    --> , Vector2d ( 8, 12 )
+    --> ]
+
+You can pass values less than zero or greater than one to extrapolate:
+
+    interpolatedVector -0.5
+    --> Vector2d ( -4, -6 )
+
+    interpolatedVector 1.25
+    --> Vector2d ( 10, 15 )
+-}
+interpolate : Vector2d -> Vector2d -> Float -> Vector2d
+interpolate v1 v2 t =
+    let
+        ( x1, y1 ) =
+            components v1
+
+        ( x2, y2 ) =
+            components v2
+    in
+        Vector2d ( x1 + t * (x2 - x1), y1 + t * (y2 - y1) )
 
 
 {-| Extract the components of a vector.
