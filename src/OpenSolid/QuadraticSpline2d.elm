@@ -2,9 +2,19 @@ module OpenSolid.QuadraticSpline2d
     exposing
         ( bezier
         , controlPoints
+        , startPoint
+        , endPoint
+        , scaleAbout
+        , rotateAround
+        , translateBy
+        , mirrorAcross
+        , relativeTo
+        , placeIn
+        , placeOnto
         )
 
 import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Point2d as Point2d
 
 
 bezier : Point2d -> Point2d -> Point2d -> QuadraticSpline2d
@@ -15,3 +25,64 @@ bezier firstPoint secondPoint thirdPoint =
 controlPoints : QuadraticSpline2d -> ( Point2d, Point2d, Point2d )
 controlPoints (QuadraticSpline2d controlPoints_) =
     controlPoints_
+
+
+startPoint : QuadraticSpline2d -> Point2d
+startPoint (QuadraticSpline2d ( p1, _, _ )) =
+    p1
+
+
+endPoint : QuadraticSpline2d -> Point2d
+endPoint (QuadraticSpline2d ( _, _, p3 )) =
+    p3
+
+
+mapControlPoints : (Point2d -> Point2d) -> QuadraticSpline2d -> QuadraticSpline2d
+mapControlPoints function spline =
+    let
+        ( p1, p2, p3 ) =
+            controlPoints spline
+    in
+        QuadraticSpline2d ( function p1, function p2, function p3 )
+
+
+scaleAbout : Point2d -> Float -> QuadraticSpline2d -> QuadraticSpline2d
+scaleAbout point scale =
+    mapControlPoints (Point2d.scaleAbout point scale)
+
+
+rotateAround : Point2d -> Float -> QuadraticSpline2d -> QuadraticSpline2d
+rotateAround point angle =
+    mapControlPoints (Point2d.rotateAround point angle)
+
+
+translateBy : Vector2d -> QuadraticSpline2d -> QuadraticSpline2d
+translateBy displacement =
+    mapControlPoints (Point2d.translateBy displacement)
+
+
+mirrorAcross : Axis2d -> QuadraticSpline2d -> QuadraticSpline2d
+mirrorAcross axis =
+    mapControlPoints (Point2d.mirrorAcross axis)
+
+
+relativeTo : Frame2d -> QuadraticSpline2d -> QuadraticSpline2d
+relativeTo frame =
+    mapControlPoints (Point2d.relativeTo frame)
+
+
+placeIn : Frame2d -> QuadraticSpline2d -> QuadraticSpline2d
+placeIn frame =
+    mapControlPoints (Point2d.placeIn frame)
+
+
+placeOnto : SketchPlane3d -> QuadraticSpline2d -> QuadraticSpline3d
+placeOnto sketchPlane spline =
+    let
+        ( p1, p2, p3 ) =
+            controlPoints spline
+
+        place =
+            Point2d.placeOnto sketchPlane
+    in
+        QuadraticSpline3d ( place p1, place p2, place p3 )
