@@ -4,6 +4,8 @@ module OpenSolid.CubicSpline3d
         , controlPoints
         , startPoint
         , endPoint
+        , interpolate
+        , derivative
         , scaleAbout
         , rotateAround
         , translateBy
@@ -15,6 +17,7 @@ module OpenSolid.CubicSpline3d
 
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
+import OpenSolid.Vector3d as Vector3d
 
 
 bezier : Point3d -> Point3d -> Point3d -> Point3d -> CubicSpline3d
@@ -35,6 +38,56 @@ startPoint (CubicSpline3d ( p1, _, _, _ )) =
 endPoint : CubicSpline3d -> Point3d
 endPoint (CubicSpline3d ( _, _, _, p4 )) =
     p4
+
+
+interpolate : CubicSpline3d -> Float -> Point3d
+interpolate spline t =
+    let
+        ( p1, p2, p3, p4 ) =
+            controlPoints spline
+
+        q1 =
+            Point3d.interpolate p1 p2 t
+
+        q2 =
+            Point3d.interpolate p2 p3 t
+
+        q3 =
+            Point3d.interpolate p3 p4 t
+
+        r1 =
+            Point3d.interpolate q1 q2 t
+
+        r2 =
+            Point3d.interpolate q2 q3 t
+    in
+        Point3d.interpolate r1 r2 t
+
+
+derivative : CubicSpline3d -> Float -> Vector3d
+derivative spline =
+    let
+        ( p1, p2, p3, p4 ) =
+            controlPoints spline
+
+        v1 =
+            Point3d.vectorFrom p1 p2
+
+        v2 =
+            Point3d.vectorFrom p2 p3
+
+        v3 =
+            Point3d.vectorFrom p3 p4
+    in
+        \t ->
+            let
+                w1 =
+                    Vector3d.interpolate v1 v2 t
+
+                w2 =
+                    Vector3d.interpolate v2 v3 t
+            in
+                Vector3d.interpolate w1 w2 t |> Vector3d.scaleBy 3
 
 
 mapControlPoints : (Point3d -> Point3d) -> CubicSpline3d -> CubicSpline3d

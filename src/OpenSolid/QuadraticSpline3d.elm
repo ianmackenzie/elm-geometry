@@ -4,6 +4,8 @@ module OpenSolid.QuadraticSpline3d
         , controlPoints
         , startPoint
         , endPoint
+        , interpolate
+        , derivative
         , scaleAbout
         , rotateAround
         , translateBy
@@ -15,6 +17,7 @@ module OpenSolid.QuadraticSpline3d
 
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
+import OpenSolid.Vector3d as Vector3d
 
 
 bezier : Point3d -> Point3d -> Point3d -> QuadraticSpline3d
@@ -35,6 +38,36 @@ startPoint (QuadraticSpline3d ( p1, _, _ )) =
 endPoint : QuadraticSpline3d -> Point3d
 endPoint (QuadraticSpline3d ( _, _, p3 )) =
     p3
+
+
+interpolate : QuadraticSpline3d -> Float -> Point3d
+interpolate spline t =
+    let
+        ( p1, p2, p3 ) =
+            controlPoints spline
+
+        q1 =
+            Point3d.interpolate p1 p2 t
+
+        q2 =
+            Point3d.interpolate p2 p3 t
+    in
+        Point3d.interpolate q1 q2 t
+
+
+derivative : QuadraticSpline3d -> Float -> Vector3d
+derivative spline =
+    let
+        ( p1, p2, p3 ) =
+            controlPoints spline
+
+        v1 =
+            Point3d.vectorFrom p1 p2
+
+        v2 =
+            Point3d.vectorFrom p2 p3
+    in
+        \t -> Vector3d.interpolate v1 v2 t |> Vector3d.scaleBy 2
 
 
 mapControlPoints : (Point3d -> Point3d) -> QuadraticSpline3d -> QuadraticSpline3d

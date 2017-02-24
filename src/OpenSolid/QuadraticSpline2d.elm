@@ -4,6 +4,8 @@ module OpenSolid.QuadraticSpline2d
         , controlPoints
         , startPoint
         , endPoint
+        , interpolate
+        , derivative
         , scaleAbout
         , rotateAround
         , translateBy
@@ -15,6 +17,7 @@ module OpenSolid.QuadraticSpline2d
 
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point2d as Point2d
+import OpenSolid.Vector2d as Vector2d
 
 
 bezier : Point2d -> Point2d -> Point2d -> QuadraticSpline2d
@@ -35,6 +38,36 @@ startPoint (QuadraticSpline2d ( p1, _, _ )) =
 endPoint : QuadraticSpline2d -> Point2d
 endPoint (QuadraticSpline2d ( _, _, p3 )) =
     p3
+
+
+interpolate : QuadraticSpline2d -> Float -> Point2d
+interpolate spline t =
+    let
+        ( p1, p2, p3 ) =
+            controlPoints spline
+
+        q1 =
+            Point2d.interpolate p1 p2 t
+
+        q2 =
+            Point2d.interpolate p2 p3 t
+    in
+        Point2d.interpolate q1 q2 t
+
+
+derivative : QuadraticSpline2d -> Float -> Vector2d
+derivative spline =
+    let
+        ( p1, p2, p3 ) =
+            controlPoints spline
+
+        v1 =
+            Point2d.vectorFrom p1 p2
+
+        v2 =
+            Point2d.vectorFrom p2 p3
+    in
+        \t -> Vector2d.interpolate v1 v2 t |> Vector2d.scaleBy 2
 
 
 mapControlPoints : (Point2d -> Point2d) -> QuadraticSpline2d -> QuadraticSpline2d
