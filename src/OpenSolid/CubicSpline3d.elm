@@ -5,6 +5,8 @@ module OpenSolid.CubicSpline3d
         , controlPoints
         , startPoint
         , endPoint
+        , startDerivative
+        , endDerivative
         , interpolate
         , derivative
         , scaleAbout
@@ -61,6 +63,24 @@ startPoint (CubicSpline3d ( p1, _, _, _ )) =
 endPoint : CubicSpline3d -> Point3d
 endPoint (CubicSpline3d ( _, _, _, p4 )) =
     p4
+
+
+startDerivative : CubicSpline3d -> Vector3d
+startDerivative spline =
+    let
+        ( p1, p2, _, _ ) =
+            controlPoints spline
+    in
+        Point3d.vectorFrom p1 p2 |> Vector3d.scaleBy 3
+
+
+endDerivative : CubicSpline3d -> Vector3d
+endDerivative spline =
+    let
+        ( _, _, p3, p4 ) =
+            controlPoints spline
+    in
+        Point3d.vectorFrom p3 p4 |> Vector3d.scaleBy 3
 
 
 interpolate : CubicSpline3d -> Float -> Point3d
