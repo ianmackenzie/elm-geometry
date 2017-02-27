@@ -1,6 +1,7 @@
 module OpenSolid.CubicSpline3d
     exposing
         ( bezier
+        , hermite
         , controlPoints
         , startPoint
         , endPoint
@@ -23,6 +24,28 @@ import OpenSolid.Vector3d as Vector3d
 bezier : Point3d -> Point3d -> Point3d -> Point3d -> CubicSpline3d
 bezier firstPoint secondPoint thirdPoint fourthPoint =
     CubicSpline3d ( firstPoint, secondPoint, thirdPoint, fourthPoint )
+
+
+hermite : ( Point3d, Vector3d ) -> ( Point3d, Vector3d ) -> CubicSpline3d
+hermite start end =
+    let
+        ( startPoint, startDerivative ) =
+            start
+
+        ( endPoint, endDerivative ) =
+            end
+
+        startControlPoint =
+            startPoint
+                |> Point3d.translateBy
+                    (Vector3d.scaleBy (1 / 3) startDerivative)
+
+        endControlPoint =
+            endPoint
+                |> Point3d.translateBy
+                    (Vector3d.scaleBy (-1 / 3) endDerivative)
+    in
+        bezier startPoint startControlPoint endControlPoint endPoint
 
 
 controlPoints : CubicSpline3d -> ( Point3d, Point3d, Point3d, Point3d )
