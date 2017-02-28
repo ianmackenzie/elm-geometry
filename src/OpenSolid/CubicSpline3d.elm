@@ -7,7 +7,7 @@ module OpenSolid.CubicSpline3d
         , endPoint
         , startDerivative
         , endDerivative
-        , interpolate
+        , evaluate
         , derivative
         , scaleAbout
         , rotateAround
@@ -83,8 +83,8 @@ endDerivative spline =
         Point3d.vectorFrom p3 p4 |> Vector3d.scaleBy 3
 
 
-interpolate : CubicSpline3d -> Float -> Point3d
-interpolate spline t =
+evaluate : CubicSpline3d -> Float -> Point3d
+evaluate spline t =
     let
         ( p1, p2, p3, p4 ) =
             controlPoints spline
