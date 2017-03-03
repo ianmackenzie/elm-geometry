@@ -356,7 +356,8 @@ flip =
 
 
 {-| Construct a vector of a particular length by treating a direction as a unit
-vector and scaling it by the given length.
+vector and scaling it by the given length. In many cases it may be shorter and
+more clear to use the [`Vector3d.in_`](OpenSolid-Vector3d#in_) constructor.
 
     Direction3d.scaleBy 3 Direction3d.z
     --> Vector3d ( 0, 0, 3 )

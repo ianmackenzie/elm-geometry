@@ -334,7 +334,8 @@ flip =
 
 
 {-| Construct a vector of a particular length by treating a direction as a unit
-vector and scaling it by the given length.
+vector and scaling it by the given length. In many cases it may be shorter and
+more clear to use the [`Vector2d.in_`](OpenSolid-Vector2d#in_) constructor.
 
     direction =
         Direction2d ( 0.6, 0.8 )
