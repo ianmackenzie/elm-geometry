@@ -16,6 +16,7 @@ module OpenSolid.Point2d
         , midpoint
         , interpolate
         , along
+        , in_
         , coordinates
         , xCoordinate
         , yCoordinate
@@ -65,7 +66,7 @@ function:
 
 # Constructors
 
-@docs midpoint, interpolate, along
+@docs midpoint, interpolate, along, in_
 
 # Coordinates
 
@@ -207,6 +208,27 @@ the axis:
 along : Axis2d -> Float -> Point2d
 along (Axis2d { originPoint, direction }) distance =
     translateBy (Direction2d.scaleBy distance direction) originPoint
+
+
+{-| Construct a point given its local coordinates within a particular frame.
+
+    rotatedFrame =
+        Frame2d.xy |> Frame2d.rotateBy (degrees 45)
+
+    Point2d.in_ rotatedFrame ( 2, 0 )
+    --> Point2d ( 1.4142, 1.4142 )
+
+This is shorthand for using `Point2d.placeIn`;
+
+    Point2d.in_ frame coordinates
+
+is equivalent to
+
+    Point2d coordinates |> Point2d.placeIn frame
+-}
+in_ : Frame2d -> ( Float, Float ) -> Point2d
+in_ frame coordinates =
+    Point2d coordinates |> placeIn frame
 
 
 {-| Get the coordinates of a point as a tuple.
