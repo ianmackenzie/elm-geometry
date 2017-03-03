@@ -47,8 +47,14 @@ frameDirectionsAreOrthonormal =
                 tripleProduct =
                     Vector3d.crossProduct xDirectionVector yDirectionVector
                         |> Vector3d.dotProduct zDirectionVector
+
+                expectedTripleProduct =
+                    if Frame3d.isRightHanded frame then
+                        1
+                    else
+                        -1
             in
-                Expect.approximately 1 (abs tripleProduct)
+                Expect.approximately expectedTripleProduct tripleProduct
         )
 
 
