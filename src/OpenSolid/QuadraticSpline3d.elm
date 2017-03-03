@@ -5,6 +5,8 @@ module OpenSolid.QuadraticSpline3d
         , startPoint
         , endPoint
         , point
+        , startDerivative
+        , endDerivative
         , derivative
         , scaleAbout
         , rotateAround
@@ -53,6 +55,24 @@ point spline t =
             Point3d.interpolate p2 p3 t
     in
         Point3d.interpolate q1 q2 t
+
+
+startDerivative : QuadraticSpline3d -> Vector3d
+startDerivative spline =
+    let
+        ( p1, p2, _ ) =
+            controlPoints spline
+    in
+        Point3d.vectorFrom p1 p2 |> Vector3d.scaleBy 2
+
+
+endDerivative : QuadraticSpline3d -> Vector3d
+endDerivative spline =
+    let
+        ( _, p2, p3 ) =
+            controlPoints spline
+    in
+        Point3d.vectorFrom p2 p3 |> Vector3d.scaleBy 2
 
 
 derivative : QuadraticSpline3d -> Float -> Vector3d
