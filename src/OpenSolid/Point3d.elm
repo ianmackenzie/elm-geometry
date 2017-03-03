@@ -16,6 +16,8 @@ module OpenSolid.Point3d
         , midpoint
         , interpolate
         , along
+        , on
+        , in_
         , coordinates
         , xCoordinate
         , yCoordinate
@@ -63,7 +65,7 @@ and Z coordinates to the `Point3d` constructor, for example
 
 # Constructors
 
-@docs midpoint, interpolate, along
+@docs midpoint, interpolate, along, on, in_
 
 # Coordinates
 
@@ -105,6 +107,7 @@ import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Direction3d as Direction3d
+import OpenSolid.Point2d as Point2d
 
 
 addTo : Point3d -> Vector3d -> Point3d
@@ -210,6 +213,45 @@ axis:
 along : Axis3d -> Float -> Point3d
 along (Axis3d { originPoint, direction }) distance =
     translateBy (Direction3d.scaleBy distance direction) originPoint
+
+
+{-| Construct a point on a sketch plane with the given local coordinates.
+
+    Point3d.on SketchPlane3d.xz ( 2, 3 )
+    --> Point3d ( 2, 0, 3 )
+
+This is shorthand for using `Point2d.placeOnto`;
+
+    Point3d.on sketchPlane coordinates
+
+is equivalent to
+
+    Point2d coordinates |> Point2d.placeOnto sketchPlane
+-}
+on : SketchPlane3d -> ( Float, Float ) -> Point3d
+on sketchPlane coordinates =
+    Point2d coordinates |> Point2d.placeOnto sketchPlane
+
+
+{-| Construct a point given its local coordinates within a particular frame.
+
+    frame =
+        Frame3d.at (Point3d ( 1, 1, 1 ))
+
+    Point3d.in_ frame ( 1, 2, 3 )
+    --> Point3d ( 2, 3, 4 )
+
+This is shorthand for using `Point3d.placeIn`;
+
+    Point3d.in_ frame coordinates
+
+is equivalent to
+
+    Point3d coordinates |> Point3d.placeIn frame
+-}
+in_ : Frame3d -> ( Float, Float, Float ) -> Point3d
+in_ frame coordinates =
+    Point3d coordinates |> placeIn frame
 
 
 {-| Get the coordinates of a point as a tuple.
