@@ -4,7 +4,7 @@ module OpenSolid.QuadraticSpline3d
         , controlPoints
         , startPoint
         , endPoint
-        , evaluate
+        , point
         , derivative
         , scaleAbout
         , rotateAround
@@ -40,8 +40,8 @@ endPoint (QuadraticSpline3d ( _, _, p3 )) =
     p3
 
 
-evaluate : QuadraticSpline3d -> Float -> Point3d
-evaluate spline t =
+point : QuadraticSpline3d -> Float -> Point3d
+point spline t =
     let
         ( p1, p2, p3 ) =
             controlPoints spline
