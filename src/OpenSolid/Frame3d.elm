@@ -626,11 +626,8 @@ translateAlongOwn axis distance frame =
     let
         direction =
             Axis3d.direction (axis frame)
-
-        displacement =
-            Direction3d.scaleBy distance direction
     in
-        translateBy displacement frame
+        translateBy (Vector3d.in_ direction distance) frame
 
 
 {-| Mirror a frame across a plane.

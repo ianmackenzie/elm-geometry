@@ -310,8 +310,7 @@ fromEndpoints startPoint endPoint radius lengthType windingDirection =
                                         -offsetMagnitude
 
                             offset =
-                                Direction2d.scaleBy offsetDistance
-                                    offsetDirection
+                                Vector2d.in_ offsetDirection offsetDistance
 
                             midpoint =
                                 LineSegment2d.midpoint chord

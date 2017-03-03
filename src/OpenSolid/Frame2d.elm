@@ -381,11 +381,8 @@ translateAlongOwn axis distance frame =
     let
         direction =
             Axis2d.direction (axis frame)
-
-        displacement =
-            Direction2d.scaleBy distance direction
     in
-        translateBy displacement frame
+        translateBy (Vector2d.in_ direction distance) frame
 
 
 {-| Mirror a frame across an axis.

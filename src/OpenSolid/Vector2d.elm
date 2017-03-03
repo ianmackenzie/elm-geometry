@@ -13,6 +13,7 @@
 module OpenSolid.Vector2d
     exposing
         ( zero
+        , in_
         , perpendicularTo
         , interpolate
         , components
@@ -81,7 +82,7 @@ and [`Direction2d.y`](OpenSolid-Direction2d#y).
 
 # Constructors
 
-@docs perpendicularTo, interpolate
+@docs in_, perpendicularTo, interpolate
 
 # Components
 
@@ -138,6 +139,20 @@ import OpenSolid.Geometry.Types exposing (..)
 zero : Vector2d
 zero =
     Vector2d ( 0, 0 )
+
+
+{-| Construct a vector in the given direction with the given magnitude.
+
+    Vector2d.in_ Direction2d.y 5
+    --> Vector2d ( 0, 5 )
+-}
+in_ : Direction2d -> Float -> Vector2d
+in_ direction magnitude =
+    let
+        (Direction2d ( x, y )) =
+            direction
+    in
+        Vector2d ( magnitude * x, magnitude * y )
 
 
 {-| Construct a vector perpendicular to the given vector, by rotating the given

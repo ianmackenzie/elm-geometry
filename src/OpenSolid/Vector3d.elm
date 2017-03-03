@@ -13,6 +13,7 @@
 module OpenSolid.Vector3d
     exposing
         ( zero
+        , in_
         , perpendicularTo
         , interpolate
         , components
@@ -76,7 +77,7 @@ will actually want their `Direction3d` versions [`Direction3d.x`](OpenSolid-Dire
 
 # Constructors
 
-@docs perpendicularTo, interpolate
+@docs in_, perpendicularTo, interpolate
 
 # Components
 
@@ -138,6 +139,20 @@ import OpenSolid.Geometry.Types exposing (..)
 zero : Vector3d
 zero =
     Vector3d ( 0, 0, 0 )
+
+
+{-| Construct a vector in the given direction with the given magnitude.
+
+    Vector3d.in_ Direction3d.y 5
+    --> Vector3d ( 0, 5, 0 )
+-}
+in_ : Direction3d -> Float -> Vector3d
+in_ direction magnitude =
+    let
+        (Direction3d ( x, y, z )) =
+            direction
+    in
+        Vector3d ( magnitude * x, magnitude * y, magnitude * z )
 
 
 {-| Construct an arbitrary vector perpendicular to the given vector. The exact

@@ -76,6 +76,7 @@ Planes can by constructed by passing a record with `originPoint` and
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Direction3d as Direction3d
+import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Triangle3d as Triangle3d
 
 
@@ -267,7 +268,7 @@ sketchPlane plane =
 -}
 offsetBy : Float -> Plane3d -> Plane3d
 offsetBy distance plane =
-    translateBy (Direction3d.scaleBy distance (normalDirection plane)) plane
+    translateBy (Vector3d.in_ (normalDirection plane) distance) plane
 
 
 {-| Reverse a plane's normal direction while leaving its origin point unchanged.
