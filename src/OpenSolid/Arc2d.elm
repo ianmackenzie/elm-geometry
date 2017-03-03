@@ -12,6 +12,7 @@ module OpenSolid.Arc2d
         , radius
         , startPoint
         , endPoint
+        , point
         , sweptAngle
         , scaleAbout
         , rotateAround
@@ -366,6 +367,15 @@ startPoint (Arc2d properties) =
 endPoint : Arc2d -> Point2d
 endPoint arc =
     Point2d.rotateAround (centerPoint arc) (sweptAngle arc) (startPoint arc)
+
+
+point : Arc2d -> Float -> Point2d
+point arc parameter =
+    let
+        angle =
+            parameter * sweptAngle arc
+    in
+        Point2d.rotateAround (centerPoint arc) angle (startPoint arc)
 
 
 sweptAngle : Arc2d -> Float

@@ -6,6 +6,7 @@ module OpenSolid.Arc3d
         , radius
         , startPoint
         , endPoint
+        , point
         , sweptAngle
         , scaleAbout
         , rotateAround
@@ -64,6 +65,15 @@ startPoint (Arc3d properties) =
 endPoint : Arc3d -> Point3d
 endPoint arc =
     Point3d.rotateAround (axis arc) (sweptAngle arc) (startPoint arc)
+
+
+point : Arc3d -> Float -> Point3d
+point arc parameter =
+    let
+        angle =
+            parameter * sweptAngle arc
+    in
+        Point3d.rotateAround (axis arc) angle (startPoint arc)
 
 
 sweptAngle : Arc3d -> Float
