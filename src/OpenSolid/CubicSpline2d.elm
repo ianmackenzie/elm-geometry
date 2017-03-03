@@ -5,9 +5,9 @@ module OpenSolid.CubicSpline2d
         , controlPoints
         , startPoint
         , endPoint
+        , point
         , startDerivative
         , endDerivative
-        , point
         , derivative
         , scaleAbout
         , rotateAround
@@ -65,24 +65,6 @@ endPoint (CubicSpline2d ( _, _, _, p4 )) =
     p4
 
 
-startDerivative : CubicSpline2d -> Vector2d
-startDerivative spline =
-    let
-        ( p1, p2, _, _ ) =
-            controlPoints spline
-    in
-        Point2d.vectorFrom p1 p2 |> Vector2d.scaleBy 3
-
-
-endDerivative : CubicSpline2d -> Vector2d
-endDerivative spline =
-    let
-        ( _, _, p3, p4 ) =
-            controlPoints spline
-    in
-        Point2d.vectorFrom p3 p4 |> Vector2d.scaleBy 3
-
-
 point : CubicSpline2d -> Float -> Point2d
 point spline t =
     let
@@ -105,6 +87,24 @@ point spline t =
             Point2d.interpolate q2 q3 t
     in
         Point2d.interpolate r1 r2 t
+
+
+startDerivative : CubicSpline2d -> Vector2d
+startDerivative spline =
+    let
+        ( p1, p2, _, _ ) =
+            controlPoints spline
+    in
+        Point2d.vectorFrom p1 p2 |> Vector2d.scaleBy 3
+
+
+endDerivative : CubicSpline2d -> Vector2d
+endDerivative spline =
+    let
+        ( _, _, p3, p4 ) =
+            controlPoints spline
+    in
+        Point2d.vectorFrom p3 p4 |> Vector2d.scaleBy 3
 
 
 derivative : CubicSpline2d -> Float -> Vector2d
