@@ -48,7 +48,7 @@ frameDirectionsAreOrthonormal =
                     Vector3d.crossProduct xDirectionVector yDirectionVector
                         |> Vector3d.dotProduct zDirectionVector
             in
-                Expect.approximately 1 tripleProduct
+                Expect.approximately 1 (abs tripleProduct)
         )
 
 

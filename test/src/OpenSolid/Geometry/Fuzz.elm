@@ -137,20 +137,30 @@ plane3d =
 frame2d : Fuzzer Frame2d
 frame2d =
     let
-        frame originPoint xDirection =
-            Frame2d
-                { originPoint = originPoint
-                , xDirection = xDirection
-                , yDirection = Direction2d.perpendicularTo xDirection
-                }
+        frame originPoint xDirection rightHanded =
+            let
+                perpendicularDirection =
+                    Direction2d.perpendicularTo xDirection
+
+                yDirection =
+                    if rightHanded then
+                        perpendicularDirection
+                    else
+                        Direction2d.flip perpendicularDirection
+            in
+                Frame2d
+                    { originPoint = originPoint
+                    , xDirection = xDirection
+                    , yDirection = yDirection
+                    }
     in
-        Fuzz.map2 frame point2d direction2d
+        Fuzz.map3 frame point2d direction2d Fuzz.bool
 
 
 frame3d : Fuzzer Frame3d
 frame3d =
     let
-        frame originPoint xDirection =
+        frame originPoint xDirection flipY flipZ =
             let
                 ( yDirection, zDirection ) =
                     Direction3d.perpendicularBasis xDirection
@@ -158,11 +168,19 @@ frame3d =
                 Frame3d
                     { originPoint = originPoint
                     , xDirection = xDirection
-                    , yDirection = yDirection
-                    , zDirection = zDirection
+                    , yDirection =
+                        if flipY then
+                            Direction3d.flip yDirection
+                        else
+                            yDirection
+                    , zDirection =
+                        if flipZ then
+                            Direction3d.flip zDirection
+                        else
+                            zDirection
                     }
     in
-        Fuzz.map2 frame point3d direction3d
+        Fuzz.map4 frame point3d direction3d Fuzz.bool Fuzz.bool
 
 
 sketchPlane3d : Fuzzer SketchPlane3d
