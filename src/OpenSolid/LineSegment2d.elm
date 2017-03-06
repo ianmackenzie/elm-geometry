@@ -19,6 +19,7 @@ module OpenSolid.LineSegment2d
         , reverse
         , midpoint
         , interpolate
+        , intersection
         , length
         , squaredLength
         , direction
@@ -66,6 +67,10 @@ the `LineSegment2d` constructor, for example
 # Interpolation
 
 @docs midpoint, interpolate
+
+# Intersection
+
+@docs intersection
 
 # Length and direction
 
@@ -189,6 +194,77 @@ interpolate lineSegment =
             endpoints lineSegment
     in
         Point2d.interpolate start end
+
+
+{-| Get the intersection, if it exists, of two line segments.
+
+    -- 4 corners of a square
+    a = Point2d (0, 0)
+    b = Point2d (1, 0)
+    c = Point2d (1, 1)
+    d = Point2d (0, 1)
+
+    -- definition of some segments with those points
+    ab = LineSegment2d (a,b)
+    ...
+
+    -- searching for intersections
+
+    LineSegment2d.intersection ab bc
+    --> Just (Point2d (1,0)) -- corner point b
+
+    LineSegment2d.intersection ac bd
+    --> Just (Point2d (0.5,0.5)) -- diagonal crossing at square center
+
+    LineSegment2d.intersection ab cd
+    --> Nothing -- parallel lines
+
+    LineSegment2d.intersection ab ab
+    --> Nothing -- collinear lines
+-}
+intersection : LineSegment2d -> LineSegment2d -> Maybe Point2d
+intersection lineSegment1 lineSegment2 =
+    -- The two line segments are:
+    -- p |--- r ---| p+r
+    -- q |--- s ---| q+s
+    let
+        ( p, q ) =
+            ( startPoint lineSegment1
+            , startPoint lineSegment2
+            )
+
+        ( r, s, pq ) =
+            ( vector lineSegment1
+            , vector lineSegment2
+            , Point2d.vectorFrom p q
+            )
+
+        ( rXs, pqXr, pqXs ) =
+            ( Vector2d.crossProduct r s
+            , Vector2d.crossProduct pq r
+            , Vector2d.crossProduct pq s
+            )
+    in
+        if rXs == 0 then
+            -- parallel or collinear lines
+            Nothing
+        else
+            let
+                ( t, u ) =
+                    ( pqXs / rXs
+                    , pqXr / rXs
+                    )
+
+                intersection =
+                    interpolate lineSegment1 t
+
+                within start end x =
+                    start <= x && x <= end
+            in
+                if within 0 1 t && within 0 1 u then
+                    Just intersection
+                else
+                    Nothing
 
 
 {-| Get the length of a line segment.
