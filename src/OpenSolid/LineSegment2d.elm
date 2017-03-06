@@ -19,12 +19,12 @@ module OpenSolid.LineSegment2d
         , reverse
         , midpoint
         , interpolate
-        , intersection
         , length
         , squaredLength
         , direction
         , normalDirection
         , vector
+        , intersection
         , scaleAbout
         , rotateAround
         , translateBy
@@ -68,13 +68,13 @@ the `LineSegment2d` constructor, for example
 
 @docs midpoint, interpolate
 
-# Intersection
-
-@docs intersection
-
 # Length and direction
 
 @docs length, squaredLength, direction, normalDirection, vector
+
+# Intersection
+
+@docs intersection
 
 # Transformations
 
@@ -196,6 +196,64 @@ interpolate lineSegment =
         Point2d.interpolate start end
 
 
+{-| Get the length of a line segment.
+
+    LineSegment2d.length exampleLineSegment
+    --> 2.8284
+-}
+length : LineSegment2d -> Float
+length =
+    vector >> Vector2d.length
+
+
+{-| Get the squared length of a line segment. Slightly more efficient than
+`length` since it avoids a square root.
+
+    LineSegment2d.squaredLength exampleLineSegment
+    --> 8
+-}
+squaredLength : LineSegment2d -> Float
+squaredLength =
+    vector >> Vector2d.squaredLength
+
+
+{-| Get the direction from a line segment's start point to its end point. If the
+line segment has zero length (the start and end points are the same), returns
+`Nothing`.
+
+    LineSegment2d.direction exampleLineSegment
+    --> Just (Direction2d ( 0.7071, 0.7071 ))
+-}
+direction : LineSegment2d -> Maybe Direction2d
+direction =
+    vector >> Vector2d.direction
+
+
+{-| Get the direction perpendicular to a line segment, pointing to the left. If
+the line segment has zero length, returns `Nothing`.
+
+    LineSegment2d.normalDirection exampleLineSegment
+    --> Just (Direction2d ( -0.7071, 0.7071 ))
+-}
+normalDirection : LineSegment2d -> Maybe Direction2d
+normalDirection =
+    vector >> Vector2d.perpendicularTo >> Vector2d.direction
+
+
+{-| Get the vector from a given line segment's start point to its end point.
+
+    LineSegment2d.vector exampleLineSegment
+    --> Vector2d ( 2, 2 )
+-}
+vector : LineSegment2d -> Vector2d
+vector lineSegment =
+    let
+        ( p1, p2 ) =
+            endpoints lineSegment
+    in
+        Point2d.vectorFrom p1 p2
+
+
 {-| Get the intersection, if it exists, of two line segments.
 
     -- 4 corners of a square
@@ -265,64 +323,6 @@ intersection lineSegment1 lineSegment2 =
                     Just intersection
                 else
                     Nothing
-
-
-{-| Get the length of a line segment.
-
-    LineSegment2d.length exampleLineSegment
-    --> 2.8284
--}
-length : LineSegment2d -> Float
-length =
-    vector >> Vector2d.length
-
-
-{-| Get the squared length of a line segment. Slightly more efficient than
-`length` since it avoids a square root.
-
-    LineSegment2d.squaredLength exampleLineSegment
-    --> 8
--}
-squaredLength : LineSegment2d -> Float
-squaredLength =
-    vector >> Vector2d.squaredLength
-
-
-{-| Get the direction from a line segment's start point to its end point. If the
-line segment has zero length (the start and end points are the same), returns
-`Nothing`.
-
-    LineSegment2d.direction exampleLineSegment
-    --> Just (Direction2d ( 0.7071, 0.7071 ))
--}
-direction : LineSegment2d -> Maybe Direction2d
-direction =
-    vector >> Vector2d.direction
-
-
-{-| Get the direction perpendicular to a line segment, pointing to the left. If
-the line segment has zero length, returns `Nothing`.
-
-    LineSegment2d.normalDirection exampleLineSegment
-    --> Just (Direction2d ( -0.7071, 0.7071 ))
--}
-normalDirection : LineSegment2d -> Maybe Direction2d
-normalDirection =
-    vector >> Vector2d.perpendicularTo >> Vector2d.direction
-
-
-{-| Get the vector from a given line segment's start point to its end point.
-
-    LineSegment2d.vector exampleLineSegment
-    --> Vector2d ( 2, 2 )
--}
-vector : LineSegment2d -> Vector2d
-vector lineSegment =
-    let
-        ( p1, p2 ) =
-            endpoints lineSegment
-    in
-        Point2d.vectorFrom p1 p2
 
 
 {-| Scale a line segment about the given center point by the given scale.
