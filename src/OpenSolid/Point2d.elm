@@ -180,8 +180,29 @@ interpolate p1 p2 t =
 
         ( x2, y2 ) =
             coordinates p2
+
+        dx =
+            x2 - x1
+
+        dy =
+            y2 - y1
+
+        u =
+            1 - t
+
+        xt =
+            x1 + t * dx
+
+        yt =
+            y1 + t * dy
+
+        xu =
+            x2 - u * dx
+
+        yu =
+            y2 - u * dy
     in
-        Point2d ( x1 + t * (x2 - x1), y1 + t * (y2 - y1) )
+        Point2d ( xt * u + xu * t, yt * u + yu * t )
 
 
 {-| Construct a point along an axis at a particular distance from the axis'

@@ -13,6 +13,8 @@
 module Point3d exposing (suite)
 
 import Test exposing (Test)
+import Fuzz
+import Expect
 import Test.Runner.Html as HtmlRunner
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Geometry.Encode as Encode
@@ -66,6 +68,34 @@ rotationAboutAxisPreservesRadialDistance =
         Test.fuzz3 Fuzz.point3d Fuzz.axis3d Fuzz.scalar description expectation
 
 
+midpointIsEquidistant : Test
+midpointIsEquidistant =
+    Test.fuzz2
+        Fuzz.point3d
+        Fuzz.point3d
+        "Midpoint of two points is equidistant from those points"
+        (\p1 p2 ->
+            let
+                midpoint =
+                    Point3d.midpoint p1 p2
+            in
+                Expect.approximately
+                    (Point3d.distanceFrom p1 midpoint)
+                    (Point3d.distanceFrom p2 midpoint)
+        )
+
+
+interpolationReturnsExactEndpoints : Test
+interpolationReturnsExactEndpoints =
+    Test.fuzz (Fuzz.tuple ( Fuzz.point3d, Fuzz.point3d ))
+        "Interpolation returns exact start point for t=0 and exact end point for t=1"
+        (Expect.all
+            [ \( p1, p2 ) -> Point3d.interpolate p1 p2 0 |> Expect.equal p1
+            , \( p1, p2 ) -> Point3d.interpolate p1 p2 1 |> Expect.equal p2
+            ]
+        )
+
+
 jsonRoundTrips : Test
 jsonRoundTrips =
     Generic.jsonRoundTrips Fuzz.point3d Encode.point3d Decode.point3d
@@ -76,6 +106,8 @@ suite =
     Test.describe "OpenSolid.Geometry.Point3d"
         [ rotationAboutAxisPreservesDistanceAlong
         , rotationAboutAxisPreservesRadialDistance
+        , midpointIsEquidistant
+        , interpolationReturnsExactEndpoints
         , jsonRoundTrips
         ]
 
