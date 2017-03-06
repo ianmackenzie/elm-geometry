@@ -18,6 +18,7 @@ import Test.Runner.Html as HtmlRunner
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.LineSegment2d as LineSegment2d
 import OpenSolid.Point2d as Point2d
+import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Triangle2d as Triangle2d
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Decode as Decode
@@ -157,11 +158,78 @@ intersectionWorksProperly =
         Test.fuzz2 Fuzz.lineSegment2d Fuzz.lineSegment2d description expectation
 
 
+intersectionDoesNotFindCoincidentEndpoints : Test
+intersectionDoesNotFindCoincidentEndpoints =
+    Test.fuzz3
+        Fuzz.point2d
+        Fuzz.point2d
+        Fuzz.point2d
+        "Intersection of two line segments sharing an endpoint is Nothing"
+        (\p1 p2 p3 ->
+            Expect.all
+                [ \( p1, p2, p3 ) ->
+                    LineSegment2d.intersection
+                        (LineSegment2d ( p1, p2 ))
+                        (LineSegment2d ( p2, p3 ))
+                        |> Expect.equal Nothing
+                , \( p1, p2, p3 ) ->
+                    LineSegment2d.intersection
+                        (LineSegment2d ( p1, p2 ))
+                        (LineSegment2d ( p1, p3 ))
+                        |> Expect.equal Nothing
+                , \( p1, p2, p3 ) ->
+                    LineSegment2d.intersection
+                        (LineSegment2d ( p1, p3 ))
+                        (LineSegment2d ( p2, p3 ))
+                        |> Expect.equal Nothing
+                ]
+                ( p1, p2, p3 )
+        )
+
+
+intersectionFindsCoincidentEndpoints : Test
+intersectionFindsCoincidentEndpoints =
+    let
+        description =
+            "Intersection of two segments with a shared endpoints returns that endpoint"
+
+        expectation firstStart secondStart sharedEnd =
+            let
+                firstSegment =
+                    LineSegment2d ( firstStart, sharedEnd )
+
+                secondSegment =
+                    LineSegment2d ( secondStart, sharedEnd )
+
+                firstVector =
+                    LineSegment2d.vector firstSegment
+
+                secondVector =
+                    LineSegment2d.vector secondSegment
+
+                intersection =
+                    LineSegment2d.intersection firstSegment secondSegment
+            in
+                if Vector2d.crossProduct firstVector secondVector == 0 then
+                    Expect.equal Nothing intersection
+                else
+                    Expect.equal (Just sharedEnd) intersection
+    in
+        Test.fuzz3
+            Fuzz.point2d
+            Fuzz.point2d
+            Fuzz.point2d
+            description
+            expectation
+
+
 suite : Test
 suite =
     Test.describe "OpenSolid.Geometry.LineSegment2d"
         [ jsonRoundTrips
         , intersectionWorksProperly
+        , intersectionFindsCoincidentEndpoints
+        , intersectionDoesNotFindCoincidentEndpoints
         ]
 
 
