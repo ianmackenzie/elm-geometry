@@ -33,28 +33,6 @@ jsonRoundTrips =
         Decode.lineSegment2d
 
 
-rotationPreservesDistance : Test
-rotationPreservesDistance =
-    let
-        description =
-            "Rotating around a point preserves distance from that point"
-
-        expectation point centerPoint rotationAngle =
-            let
-                initialDistance =
-                    Point2d.distanceFrom centerPoint point
-
-                rotatedPoint =
-                    Point2d.rotateAround centerPoint rotationAngle point
-
-                rotatedDistance =
-                    Point2d.distanceFrom centerPoint rotatedPoint
-            in
-                Expect.approximately initialDistance rotatedDistance
-    in
-        Test.fuzz3 Fuzz.point2d Fuzz.point2d Fuzz.scalar description expectation
-
-
 intersectionWorksProperly : Test
 intersectionWorksProperly =
     let
