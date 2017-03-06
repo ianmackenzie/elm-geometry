@@ -181,11 +181,41 @@ interpolate p1 p2 t =
 
         ( x2, y2, z2 ) =
             coordinates p2
+
+        dx =
+            x2 - x1
+
+        dy =
+            y2 - y1
+
+        dz =
+            z2 - z1
+
+        u =
+            1 - t
+
+        xt =
+            x1 + t * dx
+
+        yt =
+            y1 + t * dy
+
+        zt =
+            z1 + t * dz
+
+        xu =
+            x2 - u * dx
+
+        yu =
+            y2 - u * dy
+
+        zu =
+            z2 - u * dz
     in
         Point3d
-            ( x1 + t * (x2 - x1)
-            , y1 + t * (y2 - y1)
-            , z1 + t * (z2 - z1)
+            ( xt * u + xu * t
+            , yt * u + yu * t
+            , zt * u + zu * t
             )
 
 
