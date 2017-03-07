@@ -16,7 +16,7 @@ During development, to run the OpenSolid tests locally, you have two options:
   - Run `elm reactor` inside the `tests` subdirectory. You should then be able
     to open up `localhost:8000` in a browser and click on `All.elm` to run the
     entire test suite. You can also click on any of the files named after
-    individual OpenSolid modules (for example, LineSegment2d.elm) to run only
+    individual OpenSolid modules (for example, `LineSegment2d.elm`) to run only
     the tests for that module.
   - Run `elm package install` inside the `tests` subdirectory, install
     [`elm-test`](https://github.com/rtfeldman/node-test-runner) by running
