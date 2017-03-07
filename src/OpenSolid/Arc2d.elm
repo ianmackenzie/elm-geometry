@@ -44,7 +44,7 @@ Arcs can be constructed explicitly by passing a record with `centerPoint`,
 
 # Constructors
 
-@docs throughPoints, fromEndpoints, Length, short, long, WindingDirection, counterclockwise, clockwise
+@docs Length, WindingDirection, short, long, clockwise, counterclockwise, throughPoints, fromEndpoints
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -73,20 +73,6 @@ type WindingDirection
 
 {-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
 -}
-clockwise : WindingDirection
-clockwise =
-    Clockwise
-
-
-{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
--}
-counterclockwise : WindingDirection
-counterclockwise =
-    Counterclockwise
-
-
-{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
--}
 short : Length
 short =
     Short
@@ -97,6 +83,20 @@ short =
 long : Length
 long =
     Long
+
+
+{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
+-}
+clockwise : WindingDirection
+clockwise =
+    Clockwise
+
+
+{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
+-}
+counterclockwise : WindingDirection
+counterclockwise =
+    Counterclockwise
 
 
 {-| Attempt to construct an arc that starts at the first given point, passes
