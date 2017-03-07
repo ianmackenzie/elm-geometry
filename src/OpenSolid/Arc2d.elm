@@ -348,26 +348,62 @@ fromEndpoints startPoint endPoint radius lengthType windingDirection =
             Nothing
 
 
+{-| Get the center point of an arc.
+
+    Arc2d.centerPoint exampleArc
+    --> Point2d ( 1, 1 )
+
+
+
+    exampleArc =
+        Arc2d
+            { centerPoint = Point2d ( 1, 1 )
+            , startPoint = Point2d ( 3, 1 )
+            , sweptAngle = degrees 90
+            }
+-}
 centerPoint : Arc2d -> Point2d
 centerPoint (Arc2d properties) =
     properties.centerPoint
 
 
+{-| Get the radius of an arc.
+
+    Arc2d.radius exampleArc
+    --> 2
+-}
 radius : Arc2d -> Float
 radius arc =
     Point2d.distanceFrom (centerPoint arc) (startPoint arc)
 
 
+{-| Get the start point of an arc.
+
+    Arc2d.startPoint exampleArc
+    --> Point2d ( 3, 1 )
+-}
 startPoint : Arc2d -> Point2d
 startPoint (Arc2d properties) =
     properties.startPoint
 
 
+{-| Get the end point of an arc.
+
+    Arc2d.endPoint exampleArc
+    --> Point2d ( 1, 3 )
+-}
 endPoint : Arc2d -> Point2d
 endPoint arc =
     Point2d.rotateAround (centerPoint arc) (sweptAngle arc) (startPoint arc)
 
 
+{-| Get the point along an arc at a given parameter value. A parameter value of
+0 corresponds to the start point of the arc and a value of 1 corresponds to the
+end point.
+
+    Arc2d.point exampleArc 0.5
+    --> Point2d ( 2.4142, 2.4142 )
+-}
 point : Arc2d -> Float -> Point2d
 point arc parameter =
     let
@@ -377,6 +413,14 @@ point arc parameter =
         Point2d.rotateAround (centerPoint arc) angle (startPoint arc)
 
 
+{-| Get the swept angle of an arc in radians.
+
+    Arc2d.sweptAngle exampleArc
+    --> 1.5708
+
+The result will be positive for a counterclockwise arc and negative for a
+clockwise one.
+-}
 sweptAngle : Arc2d -> Float
 sweptAngle (Arc2d properties) =
     properties.sweptAngle
