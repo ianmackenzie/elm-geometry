@@ -268,7 +268,7 @@ distance between the two given points may appear to be slightly more than twice
 the given radius. In this case it is safer to use a more specialized approach,
 such as
 
-    halfCircle =s
+    halfCircle =
         Arc2d
             { startPoint = firstPoint
             , centerPoint = Point2d.midpoint firstPoint secondPoint
