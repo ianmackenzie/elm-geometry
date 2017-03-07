@@ -6,17 +6,19 @@ important as code issues!). If you're willing to help fix the issue/implement
 the feature, please mention that in the issue, but it's certainly not a
 requirement!
 
-In the long term, it is intended that there will be an established process for
-accepting contributions via pull requests, and ultimately by adding core
-collaborators to the OpenSolid organization on GitHub, but none of this is in
-place yet.
+If you are interested in contributing changes to OpenSolid, please fork this
+repository and make a pull request with your proposed changes (although please
+open an issue first for major contributions before writing too much code, so we
+can discuss different potential approaches).
 
-If you are interested in the issues around open source governance, I would love
-your thoughts on this in general, but right now specifically on the issue of
-Contributor License Agreements (CLAs) - should one be required for OpenSolid
-contributors, or is that overkill? Is it enough for it to be implicitly
-understood that contributed code uses the same license as existing code? I don't
-want to scare off potential contributors, and I have no interest in requiring
-anyone to sign an onerous CLA that dumps legal liability on them, but I am
-committed to this project for the long term and want to make sure that it's on
-good legal footing.
+During development, to run the OpenSolid tests locally, you have two options:
+
+  - Run `elm reactor` inside the `tests` subdirectory. You should then be able
+    to open up `localhost:8000` in a browser and click on `All.elm` to run the
+    entire test suite. You can also click on any of the files named after
+    individual OpenSolid modules (for example, LineSegment2d.elm) to run only
+    the tests for that module.
+  - Run `elm package install` inside the `tests` subdirectory, install
+    [`elm-test`](https://github.com/rtfeldman/node-test-runner) by running
+    `npm install -g elm-test`, then run `elm-test` from the root directory of
+    this repository to run all the tests from the command line.
