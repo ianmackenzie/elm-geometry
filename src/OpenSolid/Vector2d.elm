@@ -213,15 +213,28 @@ You can pass values less than zero or greater than one to extrapolate:
     --> Vector2d ( 10, 15 )
 -}
 interpolate : Vector2d -> Vector2d -> Float -> Vector2d
-interpolate v1 v2 t =
+interpolate p1 p2 t =
     let
         ( x1, y1 ) =
-            components v1
+            components p1
 
         ( x2, y2 ) =
-            components v2
+            components p2
+
+        dx =
+            x2 - x1
+
+        dy =
+            y2 - y1
     in
-        Vector2d ( x1 + t * (x2 - x1), y1 + t * (y2 - y1) )
+        if t <= 0.5 then
+            Vector2d ( x1 + t * dx, y1 + t * dy )
+        else
+            let
+                u =
+                    1 - t
+            in
+                Vector2d ( x2 - u * dx, y2 - u * dy )
 
 
 {-| Extract the components of a vector.

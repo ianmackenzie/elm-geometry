@@ -190,33 +190,15 @@ interpolate p1 p2 t =
 
         dz =
             z2 - z1
-
-        u =
-            1 - t
-
-        xt =
-            x1 + t * dx
-
-        yt =
-            y1 + t * dy
-
-        zt =
-            z1 + t * dz
-
-        xu =
-            x2 - u * dx
-
-        yu =
-            y2 - u * dy
-
-        zu =
-            z2 - u * dz
     in
-        Point3d
-            ( xt * u + xu * t
-            , yt * u + yu * t
-            , zt * u + zu * t
-            )
+        if t <= 0.5 then
+            Point3d ( x1 + t * dx, y1 + t * dy, z1 + t * dz )
+        else
+            let
+                u =
+                    1 - t
+            in
+                Point3d ( x2 - u * dx, y2 - u * dy, z2 - u * dz )
 
 
 {-| Construct a point along an axis at a particular distance from the axis'

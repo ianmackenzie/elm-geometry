@@ -228,19 +228,31 @@ You can pass values less than zero or greater than one to extrapolate:
     --> Vector3d ( 1, 2, 9 )
 -}
 interpolate : Vector3d -> Vector3d -> Float -> Vector3d
-interpolate v1 v2 t =
+interpolate p1 p2 t =
     let
         ( x1, y1, z1 ) =
-            components v1
+            components p1
 
         ( x2, y2, z2 ) =
-            components v2
+            components p2
+
+        dx =
+            x2 - x1
+
+        dy =
+            y2 - y1
+
+        dz =
+            z2 - z1
     in
-        Vector3d
-            ( x1 + t * (x2 - x1)
-            , y1 + t * (y2 - y1)
-            , z1 + t * (z2 - z1)
-            )
+        if t <= 0.5 then
+            Vector3d ( x1 + t * dx, y1 + t * dy, z1 + t * dz )
+        else
+            let
+                u =
+                    1 - t
+            in
+                Vector3d ( x2 - u * dx, y2 - u * dy, z2 - u * dz )
 
 
 {-| Extract the components of a vector.
