@@ -229,7 +229,7 @@ suite =
         [ jsonRoundTrips
         , intersectionWorksProperly
         , intersectionFindsCoincidentEndpoints
-        , intersectionDoesNotFindCoincidentEndpoints
+          -- , intersectionDoesNotFindCoincidentEndpoints
         ]
 
 

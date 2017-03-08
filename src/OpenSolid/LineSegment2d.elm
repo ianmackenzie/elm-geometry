@@ -286,9 +286,11 @@ intersection lineSegment1 lineSegment2 =
     -- p |--- r ---| p+r
     -- q |--- s ---| q+s
     let
-        ( p, q ) =
+        ( p, q, p_, q_ ) =
             ( startPoint lineSegment1
             , startPoint lineSegment2
+            , endPoint lineSegment1
+            , endPoint lineSegment2
             )
 
         ( r, s, pq ) =
@@ -306,6 +308,10 @@ intersection lineSegment1 lineSegment2 =
         if rXs == 0 then
             -- parallel or collinear lines
             Nothing
+        else if p == q || p == q_ then
+            Just p
+        else if p_ == q || p_ == q_ then
+            Just p_
         else
             let
                 ( t, u ) =
