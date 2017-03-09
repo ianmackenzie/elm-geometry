@@ -31,14 +31,17 @@ jsonRoundTrips =
 triangleContainsOwnCentroid : Test
 triangleContainsOwnCentroid =
     Test.fuzz Fuzz.triangle2d
-        "triangle contains its own centroid"
+        "non-zero area triangle contains its own centroid"
         (\triangle ->
             let
                 centroid =
                     Triangle2d.centroid triangle
+
+                area =
+                    Triangle2d.area triangle
             in
-                Expect.true "triangle did not contain its own centroid"
-                    (Triangle2d.contains centroid triangle)
+                Expect.true "non-zero area triangle did not contain its own centroid"
+                    (area == 0.0 || Triangle2d.contains centroid triangle)
         )
 
 
