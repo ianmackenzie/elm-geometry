@@ -352,15 +352,6 @@ fromEndpoints startPoint endPoint radius lengthType windingDirection =
 
     Arc2d.centerPoint exampleArc
     --> Point2d ( 1, 1 )
-
-
-
-    exampleArc =
-        Arc2d
-            { centerPoint = Point2d ( 1, 1 )
-            , startPoint = Point2d ( 3, 1 )
-            , sweptAngle = degrees 90
-            }
 -}
 centerPoint : Arc2d -> Point2d
 centerPoint (Arc2d properties) =
