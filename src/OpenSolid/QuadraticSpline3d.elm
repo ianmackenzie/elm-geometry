@@ -49,12 +49,12 @@ point spline t =
             controlPoints spline
 
         q1 =
-            Point3d.interpolate p1 p2 t
+            Point3d.interpolateFrom p1 p2 t
 
         q2 =
-            Point3d.interpolate p2 p3 t
+            Point3d.interpolateFrom p2 p3 t
     in
-        Point3d.interpolate q1 q2 t
+        Point3d.interpolateFrom q1 q2 t
 
 
 startDerivative : QuadraticSpline3d -> Vector3d
@@ -87,7 +87,7 @@ derivative spline =
         v2 =
             Point3d.vectorFrom p2 p3
     in
-        \t -> Vector3d.interpolate v1 v2 t |> Vector3d.scaleBy 2
+        \t -> Vector3d.interpolateFrom v1 v2 t |> Vector3d.scaleBy 2
 
 
 mapControlPoints : (Point3d -> Point3d) -> QuadraticSpline3d -> QuadraticSpline3d

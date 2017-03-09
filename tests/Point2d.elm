@@ -90,8 +90,8 @@ interpolationReturnsExactEndpoints =
     Test.fuzz (Fuzz.tuple ( Fuzz.point2d, Fuzz.point2d ))
         "Interpolation returns exact start point for t=0 and exact end point for t=1"
         (Expect.all
-            [ \( p1, p2 ) -> Point2d.interpolate p1 p2 0 |> Expect.equal p1
-            , \( p1, p2 ) -> Point2d.interpolate p1 p2 1 |> Expect.equal p2
+            [ \( p1, p2 ) -> Point2d.interpolateFrom p1 p2 0 |> Expect.equal p1
+            , \( p1, p2 ) -> Point2d.interpolateFrom p1 p2 1 |> Expect.equal p2
             ]
         )
 
