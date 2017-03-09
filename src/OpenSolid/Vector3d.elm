@@ -228,13 +228,13 @@ You can pass values less than zero or greater than one to extrapolate:
     --> Vector3d ( 1, 2, 9 )
 -}
 interpolate : Vector3d -> Vector3d -> Float -> Vector3d
-interpolate p1 p2 t =
+interpolate v1 v2 t =
     let
         ( x1, y1, z1 ) =
-            components p1
+            components v1
 
         ( x2, y2, z2 ) =
-            components p2
+            components v2
 
         dx =
             x2 - x1
