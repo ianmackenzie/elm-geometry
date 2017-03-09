@@ -283,8 +283,8 @@ vector lineSegment =
 intersection : LineSegment2d -> LineSegment2d -> Maybe Point2d
 intersection lineSegment1 lineSegment2 =
     -- The two line segments are:
-    -- p |--- r ---| p+r
-    -- q |--- s ---| q+s
+    -- p |--- r ---| p_
+    -- q |--- s ---| q_
     let
         ( p, q, p_, q_ ) =
             ( startPoint lineSegment1
