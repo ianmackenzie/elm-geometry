@@ -292,30 +292,34 @@ intersection lineSegment1 lineSegment2 =
         ( q, q_ ) =
             endpoints lineSegment2
 
-        ( r, s, pq ) =
+        ( r, s, pq, pq_, qp_ ) =
             ( vector lineSegment1
             , vector lineSegment2
             , Point2d.vectorFrom p q
+            , Point2d.vectorFrom p q_
+            , Point2d.vectorFrom q p_
             )
 
-        ( rXs, pqXr, pqXs ) =
-            ( Vector2d.crossProduct r s
-            , Vector2d.crossProduct pq r
+        ( pqXr, pqXs, sXqp_, rXpq_ ) =
+            ( Vector2d.crossProduct pq r
             , Vector2d.crossProduct pq s
+            , Vector2d.crossProduct s qp_
+            , Vector2d.crossProduct r pq_
+            )
+
+        ( tDenominator, uDenominator ) =
+            ( pqXs - sXqp_
+            , pqXr + rXpq_
             )
     in
-        if rXs == 0 then
+        if tDenominator == 0 || uDenominator == 0 then
             -- parallel or collinear lines
             Nothing
-        else if p == q || p == q_ then
-            Just p
-        else if p_ == q || p_ == q_ then
-            Just p_
         else
             let
                 ( t, u ) =
-                    ( pqXs / rXs
-                    , pqXr / rXs
+                    ( pqXs / tDenominator
+                    , pqXr / uDenominator
                     )
 
                 intersection =
