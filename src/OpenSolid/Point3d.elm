@@ -109,6 +109,7 @@ import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Point2d as Point2d
+import OpenSolid.Scalar as Scalar
 
 
 addTo : Point3d -> Vector3d -> Point3d
@@ -182,24 +183,12 @@ interpolateFrom p1 p2 t =
 
         ( x2, y2, z2 ) =
             coordinates p2
-
-        dx =
-            x2 - x1
-
-        dy =
-            y2 - y1
-
-        dz =
-            z2 - z1
     in
-        if t <= 0.5 then
-            Point3d ( x1 + t * dx, y1 + t * dy, z1 + t * dz )
-        else
-            let
-                u =
-                    1 - t
-            in
-                Point3d ( x2 - u * dx, y2 - u * dy, z2 - u * dz )
+        Point3d
+            ( Scalar.interpolateFrom x1 x2 t
+            , Scalar.interpolateFrom y1 y2 t
+            , Scalar.interpolateFrom z1 z2 t
+            )
 
 
 {-| DEPRECATED: Alias for `interpolateFrom`, kept for compatibility. Use

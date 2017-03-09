@@ -108,6 +108,7 @@ different coordinate frames.
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Direction2d as Direction2d
+import OpenSolid.Scalar as Scalar
 
 
 addTo : Point2d -> Vector2d -> Point2d
@@ -181,21 +182,11 @@ interpolateFrom p1 p2 t =
 
         ( x2, y2 ) =
             coordinates p2
-
-        dx =
-            x2 - x1
-
-        dy =
-            y2 - y1
     in
-        if t <= 0.5 then
-            Point2d ( x1 + t * dx, y1 + t * dy )
-        else
-            let
-                u =
-                    1 - t
-            in
-                Point2d ( x2 - u * dx, y2 - u * dy )
+        Point2d
+            ( Scalar.interpolateFrom x1 x2 t
+            , Scalar.interpolateFrom y1 y2 t
+            )
 
 
 {-| DEPRECATED: Alias for `interpolateFrom`, kept for compatibility. Use

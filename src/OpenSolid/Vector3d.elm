@@ -130,6 +130,7 @@ coordinates within a particular sketch plane.
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Scalar as Scalar
 
 
 {-| The zero vector.
@@ -236,24 +237,12 @@ interpolateFrom v1 v2 t =
 
         ( x2, y2, z2 ) =
             components v2
-
-        dx =
-            x2 - x1
-
-        dy =
-            y2 - y1
-
-        dz =
-            z2 - z1
     in
-        if t <= 0.5 then
-            Vector3d ( x1 + t * dx, y1 + t * dy, z1 + t * dz )
-        else
-            let
-                u =
-                    1 - t
-            in
-                Vector3d ( x2 - u * dx, y2 - u * dy, z2 - u * dz )
+        Vector3d
+            ( Scalar.interpolateFrom x1 x2 t
+            , Scalar.interpolateFrom y1 y2 t
+            , Scalar.interpolateFrom z1 z2 t
+            )
 
 
 {-| DEPRECATED: Alias for `interpolateFrom`, kept for compatibility. Use

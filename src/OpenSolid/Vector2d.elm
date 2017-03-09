@@ -130,6 +130,7 @@ For the examples, assume the following frame has been defined:
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Scalar as Scalar
 
 
 {-| The zero vector.
@@ -221,21 +222,11 @@ interpolateFrom v1 v2 t =
 
         ( x2, y2 ) =
             components v2
-
-        dx =
-            x2 - x1
-
-        dy =
-            y2 - y1
     in
-        if t <= 0.5 then
-            Vector2d ( x1 + t * dx, y1 + t * dy )
-        else
-            let
-                u =
-                    1 - t
-            in
-                Vector2d ( x2 - u * dx, y2 - u * dy )
+        Vector2d
+            ( Scalar.interpolateFrom x1 x2 t
+            , Scalar.interpolateFrom y1 y2 t
+            )
 
 
 {-| DEPRECATED: Alias for `interpolateFrom`, kept for compatibility. Use
