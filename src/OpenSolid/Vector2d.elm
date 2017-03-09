@@ -15,6 +15,7 @@ module OpenSolid.Vector2d
         ( zero
         , in_
         , perpendicularTo
+        , interpolateFrom
         , interpolate
         , components
         , xComponent
@@ -82,7 +83,7 @@ and [`Direction2d.y`](OpenSolid-Direction2d#y).
 
 # Constructors
 
-@docs in_, perpendicularTo, interpolate
+@docs in_, perpendicularTo, interpolateFrom, interpolate
 
 # Components
 
@@ -180,8 +181,8 @@ perpendicularTo vector =
         Vector2d ( -y, x )
 
 
-{-| Construct a vector by interpolating between two other vectors based on a
-parameter that ranges from zero to one.
+{-| Construct a vector by interpolating from the first given vector to the
+second, based on a parameter that ranges from zero to one.
 
     startVector =
         Vector2d.zero
@@ -189,14 +190,14 @@ parameter that ranges from zero to one.
     endVector =
         Vector2d ( 8, 12 )
 
-    Vector2d.interpolate startVector endVector 0.25
+    Vector2d.interpolateFrom startVector endVector 0.25
     --> Vector2d ( 2, 3 )
 
 Partial application may be useful:
 
     interpolatedVector : Float -> Vector2d
     interpolatedVector =
-        Vector2d.interpolate startVector endVector
+        Vector2d.interpolateFrom startVector endVector
 
     List.map interpolatedVector [ 0, 0.5, 1 ]
     --> [ Vector2d ( 0, 0 )
@@ -212,8 +213,8 @@ You can pass values less than zero or greater than one to extrapolate:
     interpolatedVector 1.25
     --> Vector2d ( 10, 15 )
 -}
-interpolate : Vector2d -> Vector2d -> Float -> Vector2d
-interpolate v1 v2 t =
+interpolateFrom : Vector2d -> Vector2d -> Float -> Vector2d
+interpolateFrom v1 v2 t =
     let
         ( x1, y1 ) =
             components v1
@@ -235,6 +236,14 @@ interpolate v1 v2 t =
                     1 - t
             in
                 Vector2d ( x2 - u * dx, y2 - u * dy )
+
+
+{-| DEPRECATED: Alias for `interpolateFrom`, kept for compatibility. Use
+`interpolateFrom` instead.
+-}
+interpolate : Vector2d -> Vector2d -> Float -> Vector2d
+interpolate =
+    interpolateFrom
 
 
 {-| Extract the components of a vector.

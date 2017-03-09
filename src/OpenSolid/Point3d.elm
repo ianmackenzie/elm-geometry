@@ -14,6 +14,7 @@ module OpenSolid.Point3d
     exposing
         ( origin
         , midpoint
+        , interpolateFrom
         , interpolate
         , along
         , on
@@ -65,7 +66,7 @@ and Z coordinates to the `Point3d` constructor, for example
 
 # Constructors
 
-@docs midpoint, interpolate, along, on, in_
+@docs midpoint, interpolateFrom, interpolate, along, on, in_
 
 # Coordinates
 
@@ -141,8 +142,8 @@ midpoint firstPoint secondPoint =
     interpolate firstPoint secondPoint 0.5
 
 
-{-| Construct a point by interpolating between two other points based on a
-parameter that ranges from zero to one.
+{-| Construct a point by interpolating from the first given point to the second,
+based on a parameter that ranges from zero to one.
 
     startPoint =
         Point3d ( 1, 2, 4 )
@@ -150,14 +151,14 @@ parameter that ranges from zero to one.
     endPoint =
         Point3d ( 1, 2, 8 )
 
-    Point3d.interpolate startPoint endPoint 0.25
+    Point3d.interpolateFrom startPoint endPoint 0.25
     --> Point3d ( 1, 2, 5 )
 
 Partial application may be useful:
 
     interpolatedPoint : Float -> Point3d
     interpolatedPoint =
-        Point3d.interpolate startPoint endPoint
+        Point3d.interpolateFrom startPoint endPoint
 
     List.map interpolatedPoint [ 0, 0.5, 1 ]
     --> [ Point3d ( 1, 2, 4 )
@@ -173,8 +174,8 @@ You can pass values less than zero or greater than one to extrapolate:
     interpolatedPoint 1.25
     --> Point3d ( 1, 2, 9 )
 -}
-interpolate : Point3d -> Point3d -> Float -> Point3d
-interpolate p1 p2 t =
+interpolateFrom : Point3d -> Point3d -> Float -> Point3d
+interpolateFrom p1 p2 t =
     let
         ( x1, y1, z1 ) =
             coordinates p1
@@ -199,6 +200,14 @@ interpolate p1 p2 t =
                     1 - t
             in
                 Point3d ( x2 - u * dx, y2 - u * dy, z2 - u * dz )
+
+
+{-| DEPRECATED: Alias for `interpolateFrom`, kept for compatibility. Use
+`interpolateFrom` instead.
+-}
+interpolate : Point3d -> Point3d -> Float -> Point3d
+interpolate =
+    interpolateFrom
 
 
 {-| Construct a point along an axis at a particular distance from the axis'

@@ -14,6 +14,7 @@ module OpenSolid.Point2d
     exposing
         ( origin
         , midpoint
+        , interpolateFrom
         , interpolate
         , along
         , in_
@@ -66,7 +67,7 @@ function:
 
 # Constructors
 
-@docs midpoint, interpolate, along, in_
+@docs midpoint, interpolateFrom, interpolate, along, in_
 
 # Coordinates
 
@@ -140,8 +141,8 @@ midpoint firstPoint secondPoint =
     interpolate firstPoint secondPoint 0.5
 
 
-{-| Construct a point by interpolating between two other points based on a
-parameter that ranges from zero to one.
+{-| Construct a point by interpolating from the first given point to the second,
+based on a parameter that ranges from zero to one.
 
     startPoint =
         Point2d.origin
@@ -149,14 +150,14 @@ parameter that ranges from zero to one.
     endPoint =
         Point2d ( 8, 12 )
 
-    Point2d.interpolate startPoint endPoint 0.25
+    Point2d.interpolateFrom startPoint endPoint 0.25
     --> Point2d ( 2, 3 )
 
 Partial application may be useful:
 
     interpolatedPoint : Float -> Point2d
     interpolatedPoint =
-        Point2d.interpolate startPoint endPoint
+        Point2d.interpolateFrom startPoint endPoint
 
     List.map interpolatedPoint [ 0, 0.5, 1 ]
     --> [ Point2d ( 0, 0 )
@@ -172,8 +173,8 @@ You can pass values less than zero or greater than one to extrapolate:
     interpolatedPoint 1.25
     --> Point2d ( 10, 15 )
 -}
-interpolate : Point2d -> Point2d -> Float -> Point2d
-interpolate p1 p2 t =
+interpolateFrom : Point2d -> Point2d -> Float -> Point2d
+interpolateFrom p1 p2 t =
     let
         ( x1, y1 ) =
             coordinates p1
@@ -195,6 +196,14 @@ interpolate p1 p2 t =
                     1 - t
             in
                 Point2d ( x2 - u * dx, y2 - u * dy )
+
+
+{-| DEPRECATED: Alias for `interpolateFrom`, kept for compatibility. Use
+`interpolateFrom` instead.
+-}
+interpolate : Point2d -> Point2d -> Float -> Point2d
+interpolate =
+    interpolateFrom
 
 
 {-| Construct a point along an axis at a particular distance from the axis'
