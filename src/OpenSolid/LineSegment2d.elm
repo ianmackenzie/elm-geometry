@@ -286,12 +286,11 @@ intersection lineSegment1 lineSegment2 =
     -- p |--- r ---| p_
     -- q |--- s ---| q_
     let
-        ( p, q, p_, q_ ) =
-            ( startPoint lineSegment1
-            , startPoint lineSegment2
-            , endPoint lineSegment1
-            , endPoint lineSegment2
-            )
+        ( p, p_ ) =
+            endpoints lineSegment1
+
+        ( q, q_ ) =
+            endpoints lineSegment2
 
         ( r, s, pq ) =
             ( vector lineSegment1
