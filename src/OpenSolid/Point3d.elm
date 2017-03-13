@@ -140,7 +140,7 @@ origin =
 -}
 midpoint : Point3d -> Point3d -> Point3d
 midpoint firstPoint secondPoint =
-    interpolate firstPoint secondPoint 0.5
+    interpolateFrom firstPoint secondPoint 0.5
 
 
 {-| Construct a point by interpolating from the first given point to the second,
