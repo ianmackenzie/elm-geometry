@@ -45,6 +45,22 @@ Arcs can be constructed explicitly by passing a record with `centerPoint`,
 # Constructors
 
 @docs Length, WindingDirection, short, long, clockwise, counterclockwise, throughPoints, fromEndpoints
+
+# Accessors
+
+@docs centerPoint, radius, startPoint, endPoint, point, sweptAngle
+
+# Transformations
+
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross
+
+# Coordinate frames
+
+@docs relativeTo, placeIn
+
+# Sketch planes
+
+@docs placeOnto
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -417,6 +433,15 @@ sweptAngle (Arc2d properties) =
     properties.sweptAngle
 
 
+{-| Scale an arc about a given point by a given scale.
+
+    Arc2d.scaleAbout (Point2d ( 0, 1 )) 2 exampleArc
+    --> Arc2d
+    -->     { startPoint = Point2d ( 6, 1 )
+    -->     , centerPoint = Point2d ( 2, 1 )
+    -->     , sweptAngle = degrees 90
+    -->     }
+-}
 scaleAbout : Point2d -> Float -> Arc2d -> Arc2d
 scaleAbout point scale arc =
     let
@@ -434,6 +459,15 @@ scaleAbout point scale arc =
             }
 
 
+{-| Rotate an arc around a given point by a given angle.
+
+    Arc2d.rotateAround Point2d.origin (degrees 90)
+    Arc2d
+        { startPoint = Point2d ( -1, 3 )
+        , centerPoint = Point2d ( -1, 1 )
+        , sweptAngle = degrees 90
+        }
+-}
 rotateAround : Point2d -> Float -> Arc2d -> Arc2d
 rotateAround point angle =
     let
@@ -448,6 +482,18 @@ rotateAround point angle =
                 }
 
 
+{-| Translate an arc by a given displacement.
+
+    displacement =
+        Vector2d ( 2, 3 )
+
+    Arc2d.translateBy displacement exampleArc
+    --> Arc2d
+    -->     { startPoint = Point2d ( 5, 4 )
+    -->     , centerPoint = Point2d ( 3, 4 )
+    -->     , sweptAngle = degrees 90
+    -->     }
+-}
 translateBy : Vector2d -> Arc2d -> Arc2d
 translateBy displacement arc =
     let
@@ -461,6 +507,15 @@ translateBy displacement arc =
             }
 
 
+{-| Mirror an arc across a given axis.
+
+    Arc2d.mirrorAcross Axis2d.y exampleArc
+    --> Arc2d
+    -->     { startPoint = Point2d ( -3, 1 )
+    -->     , centerPoint = Point2d ( -1, 1 )
+    -->     , sweptAngle = degrees -90
+    -->     }
+-}
 mirrorAcross : Axis2d -> Arc2d -> Arc2d
 mirrorAcross axis =
     let
@@ -475,6 +530,19 @@ mirrorAcross axis =
                 }
 
 
+{-| Take an arc defined in global coordinates, and return it expressed in local
+coordinates relative to a given reference frame.
+
+    localFrame =
+        Frame2d.at (Point2d ( 1, 2 ))
+
+    Arc2d.relativeTo localFrame exampleArc
+    --> Arc2d
+    -->     { startPoint = Point2d ( 2, -1 )
+    -->     , centerPoint = Point2d ( 0, -1 )
+    -->     , sweptAngle = degrees 90
+    -->     }
+-}
 relativeTo : Frame2d -> Arc2d -> Arc2d
 relativeTo frame arc =
     let
@@ -492,6 +560,19 @@ relativeTo frame arc =
             }
 
 
+{-| Take an arc considered to be defined in local coordinates relative to a
+given reference frame, and return that arc expressed in global coordinates.
+
+    localFrame =
+        Frame2d.at (Point2d ( 1, 2 ))
+
+    Arc2d.placeIn localFrame exampleArc
+    --> Arc2d
+    -->     { startPoint = Point2d ( 4, 3 )
+    -->     , centerPoint = Point2d ( 2, 3 )
+    -->     , sweptAngle = degrees 90
+    -->     }
+-}
 placeIn : Frame2d -> Arc2d -> Arc2d
 placeIn frame arc =
     let
@@ -509,6 +590,20 @@ placeIn frame arc =
             }
 
 
+{-| Take an arc defined in 2D coordinates within a particular sketch plane and
+return the corresponding arc in 3D.
+
+    Arc2d.placeOnto SketchPlane3d.yz exampleArc
+    --> Arc3d
+    -->     { startPoint = Point3d ( 0, 3, 1 )
+    -->     , axis =
+    -->         Axis3d
+    -->             { originPoint = Point3d ( 0, 1, 1 )
+    -->             , direction = Direction3d.x
+    -->             }
+    -->     , sweptAngle = degrees 90
+    -->     }
+-}
 placeOnto : SketchPlane3d -> Arc2d -> Arc3d
 placeOnto sketchPlane arc =
     let
