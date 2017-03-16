@@ -40,4 +40,4 @@ before_script:
 
 script:
   - cd $TRAVIS_BUILD_DIR/tests
-  - elm-test --seed 948576658 Main.elm
+  - elm-test Main.elm
