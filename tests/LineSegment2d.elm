@@ -191,7 +191,7 @@ intersectionFindsCoincidentEndpoints : Test
 intersectionFindsCoincidentEndpoints =
     let
         description =
-            "Intersection of two segments with a shared endpoints returns that endpoint"
+            "Intersection of two segments with a shared endpoint returns that endpoint"
 
         expectation firstStart secondStart sharedEnd =
             let
