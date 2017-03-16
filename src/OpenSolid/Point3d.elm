@@ -14,6 +14,7 @@ module OpenSolid.Point3d
     exposing
         ( origin
         , midpoint
+        , interpolateFrom
         , interpolate
         , along
         , on
@@ -65,7 +66,7 @@ and Z coordinates to the `Point3d` constructor, for example
 
 # Constructors
 
-@docs midpoint, interpolate, along, on, in_
+@docs midpoint, interpolateFrom, interpolate, along, on, in_
 
 # Coordinates
 
@@ -108,6 +109,7 @@ import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Point2d as Point2d
+import OpenSolid.Scalar as Scalar
 
 
 addTo : Point3d -> Vector3d -> Point3d
@@ -138,11 +140,11 @@ origin =
 -}
 midpoint : Point3d -> Point3d -> Point3d
 midpoint firstPoint secondPoint =
-    interpolate firstPoint secondPoint 0.5
+    interpolateFrom firstPoint secondPoint 0.5
 
 
-{-| Construct a point by interpolating between two other points based on a
-parameter that ranges from zero to one.
+{-| Construct a point by interpolating from the first given point to the second,
+based on a parameter that ranges from zero to one.
 
     startPoint =
         Point3d ( 1, 2, 4 )
@@ -150,14 +152,14 @@ parameter that ranges from zero to one.
     endPoint =
         Point3d ( 1, 2, 8 )
 
-    Point3d.interpolate startPoint endPoint 0.25
+    Point3d.interpolateFrom startPoint endPoint 0.25
     --> Point3d ( 1, 2, 5 )
 
 Partial application may be useful:
 
     interpolatedPoint : Float -> Point3d
     interpolatedPoint =
-        Point3d.interpolate startPoint endPoint
+        Point3d.interpolateFrom startPoint endPoint
 
     List.map interpolatedPoint [ 0, 0.5, 1 ]
     --> [ Point3d ( 1, 2, 4 )
@@ -173,32 +175,28 @@ You can pass values less than zero or greater than one to extrapolate:
     interpolatedPoint 1.25
     --> Point3d ( 1, 2, 9 )
 -}
-interpolate : Point3d -> Point3d -> Float -> Point3d
-interpolate p1 p2 t =
+interpolateFrom : Point3d -> Point3d -> Float -> Point3d
+interpolateFrom p1 p2 t =
     let
         ( x1, y1, z1 ) =
             coordinates p1
 
         ( x2, y2, z2 ) =
             coordinates p2
-
-        dx =
-            x2 - x1
-
-        dy =
-            y2 - y1
-
-        dz =
-            z2 - z1
     in
-        if t <= 0.5 then
-            Point3d ( x1 + t * dx, y1 + t * dy, z1 + t * dz )
-        else
-            let
-                u =
-                    1 - t
-            in
-                Point3d ( x2 - u * dx, y2 - u * dy, z2 - u * dz )
+        Point3d
+            ( Scalar.interpolateFrom x1 x2 t
+            , Scalar.interpolateFrom y1 y2 t
+            , Scalar.interpolateFrom z1 z2 t
+            )
+
+
+{-| DEPRECATED: Alias for `interpolateFrom`, kept for compatibility. Use
+`interpolateFrom` instead.
+-}
+interpolate : Point3d -> Point3d -> Float -> Point3d
+interpolate =
+    interpolateFrom
 
 
 {-| Construct a point along an axis at a particular distance from the axis'

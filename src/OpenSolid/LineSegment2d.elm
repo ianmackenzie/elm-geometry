@@ -193,7 +193,7 @@ interpolate lineSegment =
         ( start, end ) =
             endpoints lineSegment
     in
-        Point2d.interpolate start end
+        Point2d.interpolateFrom start end
 
 
 {-| Get the length of a line segment.

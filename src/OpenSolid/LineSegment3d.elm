@@ -188,7 +188,7 @@ interpolate lineSegment =
         ( start, end ) =
             endpoints lineSegment
     in
-        Point3d.interpolate start end
+        Point3d.interpolateFrom start end
 
 
 {-| Get the length of a line segment.

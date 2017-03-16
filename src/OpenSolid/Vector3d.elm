@@ -15,6 +15,7 @@ module OpenSolid.Vector3d
         ( zero
         , in_
         , perpendicularTo
+        , interpolateFrom
         , interpolate
         , components
         , xComponent
@@ -77,7 +78,7 @@ will actually want their `Direction3d` versions [`Direction3d.x`](OpenSolid-Dire
 
 # Constructors
 
-@docs in_, perpendicularTo, interpolate
+@docs in_, perpendicularTo, interpolateFrom, interpolate
 
 # Components
 
@@ -129,6 +130,7 @@ coordinates within a particular sketch plane.
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Scalar as Scalar
 
 
 {-| The zero vector.
@@ -195,8 +197,8 @@ perpendicularTo vector =
             Vector3d ( -y, x, 0 )
 
 
-{-| Construct a vector by interpolating between two other vectors based on a
-parameter that ranges from zero to one.
+{-| Construct a vector by interpolating from the first given vector to the
+second, based on a parameter that ranges from zero to one.
 
     startVector =
         Vector3d ( 1, 2, 4 )
@@ -204,14 +206,14 @@ parameter that ranges from zero to one.
     endVector =
         Vector3d ( 1, 2, 8 )
 
-    Vector3d.interpolate startVector endVector 0.25
+    Vector3d.interpolateFrom startVector endVector 0.25
     --> Vector3d ( 1, 2, 5 )
 
 Partial application may be useful:
 
     interpolatedVector : Float -> Vector3d
     interpolatedVector =
-        Vector3d.interpolate startVector endVector
+        Vector3d.interpolateFrom startVector endVector
 
     List.map interpolatedVector [ 0, 0.5, 1 ]
     --> [ Vector3d ( 1, 2, 4 )
@@ -227,32 +229,28 @@ You can pass values less than zero or greater than one to extrapolate:
     interpolatedVector 1.25
     --> Vector3d ( 1, 2, 9 )
 -}
-interpolate : Vector3d -> Vector3d -> Float -> Vector3d
-interpolate p1 p2 t =
+interpolateFrom : Vector3d -> Vector3d -> Float -> Vector3d
+interpolateFrom v1 v2 t =
     let
         ( x1, y1, z1 ) =
-            components p1
+            components v1
 
         ( x2, y2, z2 ) =
-            components p2
-
-        dx =
-            x2 - x1
-
-        dy =
-            y2 - y1
-
-        dz =
-            z2 - z1
+            components v2
     in
-        if t <= 0.5 then
-            Vector3d ( x1 + t * dx, y1 + t * dy, z1 + t * dz )
-        else
-            let
-                u =
-                    1 - t
-            in
-                Vector3d ( x2 - u * dx, y2 - u * dy, z2 - u * dz )
+        Vector3d
+            ( Scalar.interpolateFrom x1 x2 t
+            , Scalar.interpolateFrom y1 y2 t
+            , Scalar.interpolateFrom z1 z2 t
+            )
+
+
+{-| DEPRECATED: Alias for `interpolateFrom`, kept for compatibility. Use
+`interpolateFrom` instead.
+-}
+interpolate : Vector3d -> Vector3d -> Float -> Vector3d
+interpolate =
+    interpolateFrom
 
 
 {-| Extract the components of a vector.

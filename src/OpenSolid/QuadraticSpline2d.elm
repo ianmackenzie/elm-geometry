@@ -49,12 +49,12 @@ point spline t =
             controlPoints spline
 
         q1 =
-            Point2d.interpolate p1 p2 t
+            Point2d.interpolateFrom p1 p2 t
 
         q2 =
-            Point2d.interpolate p2 p3 t
+            Point2d.interpolateFrom p2 p3 t
     in
-        Point2d.interpolate q1 q2 t
+        Point2d.interpolateFrom q1 q2 t
 
 
 startDerivative : QuadraticSpline2d -> Vector2d
@@ -87,7 +87,7 @@ derivative spline =
         v2 =
             Point2d.vectorFrom p2 p3
     in
-        \t -> Vector2d.interpolate v1 v2 t |> Vector2d.scaleBy 2
+        \t -> Vector2d.interpolateFrom v1 v2 t |> Vector2d.scaleBy 2
 
 
 mapControlPoints : (Point2d -> Point2d) -> QuadraticSpline2d -> QuadraticSpline2d

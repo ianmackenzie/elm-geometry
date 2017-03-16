@@ -156,26 +156,15 @@ given points are collinear, returns `Nothing`.
 -}
 throughPoints : Point3d -> Point3d -> Point3d -> Maybe Plane3d
 throughPoints firstPoint secondPoint thirdPoint =
-    let
-        triangle =
-            Triangle3d ( firstPoint, secondPoint, thirdPoint )
-
-        a =
-            Just
-                (Plane3d
-                    { originPoint = Point3d.origin
-                    , normalDirection = Direction3d.z
+    Triangle3d ( firstPoint, secondPoint, thirdPoint )
+        |> Triangle3d.normalDirection
+        |> Maybe.map
+            (\normalDirection ->
+                Plane3d
+                    { originPoint = firstPoint
+                    , normalDirection = normalDirection
                     }
-                )
-    in
-        Triangle3d.normalDirection triangle
-            |> Maybe.map
-                (\normalDirection ->
-                    Plane3d
-                        { originPoint = firstPoint
-                        , normalDirection = normalDirection
-                        }
-                )
+            )
 
 
 {-| Get the origin point of a plane.
