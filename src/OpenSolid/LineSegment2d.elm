@@ -313,8 +313,19 @@ intersection lineSegment1 lineSegment2 =
             )
     in
         if tDenominator == 0 || uDenominator == 0 then
-            -- parallel or collinear lines
-            Nothing
+            if Vector2d.dotProduct r s < 0 then
+                if p_ == q_ then
+                    Just p_
+                else if p == q then
+                    Just p
+                else
+                    Nothing
+            else if p_ == q then
+                Just p_
+            else if p == q_ then
+                Just p
+            else
+                Nothing
         else
             let
                 ( t, u ) =
