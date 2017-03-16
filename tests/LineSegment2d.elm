@@ -211,10 +211,10 @@ intersectionFindsCoincidentEndpoints =
                 intersection =
                     LineSegment2d.intersection firstSegment secondSegment
             in
-                if Vector2d.crossProduct firstVector secondVector == 0 then
-                    Expect.equal Nothing intersection
-                else
+                if Vector2d.crossProduct firstVector secondVector /= 0 then
                     Expect.equal (Just sharedEnd) intersection
+                else
+                    Expect.pass
     in
         Test.fuzz3
             Fuzz.point2d
