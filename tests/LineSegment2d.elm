@@ -14,6 +14,7 @@ module LineSegment2d exposing (suite)
 
 import Test exposing (Test)
 import Expect
+import Fuzz
 import Test.Runner.Html as HtmlRunner
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.LineSegment2d as LineSegment2d
@@ -223,6 +224,84 @@ intersectionFindsCoincidentEndpoints =
             expectation
 
 
+intersectionFindsCollinearCoincidentEndpoints : Test
+intersectionFindsCollinearCoincidentEndpoints =
+    let
+        description =
+            "Intersection of two collinear segments with one shared endpoint returns that endpoint"
+
+        expectation startPoint vector t =
+            let
+                endPoint =
+                    startPoint |> Point2d.translateBy vector
+
+                midPoint =
+                    Point2d.interpolateFrom startPoint endPoint t
+
+                firstSegment =
+                    LineSegment2d ( startPoint, midPoint )
+
+                secondSegment =
+                    LineSegment2d ( midPoint, endPoint )
+
+                intersection1 =
+                    LineSegment2d.intersection firstSegment secondSegment
+
+                intersection2 =
+                    LineSegment2d.intersection
+                        firstSegment
+                        (LineSegment2d.reverse secondSegment)
+
+                intersection3 =
+                    LineSegment2d.intersection
+                        (LineSegment2d.reverse firstSegment)
+                        secondSegment
+
+                intersection4 =
+                    LineSegment2d.intersection
+                        (LineSegment2d.reverse firstSegment)
+                        (LineSegment2d.reverse secondSegment)
+            in
+                Expect.all
+                    [ Expect.equal intersection1
+                    , Expect.equal intersection2
+                    , Expect.equal intersection3
+                    , Expect.equal intersection4
+                    ]
+                    (Just midPoint)
+    in
+        Test.fuzz3
+            Fuzz.point2d
+            Fuzz.vector2d
+            (Fuzz.floatRange 0 1)
+            description
+            expectation
+
+
+intersectionOfEqualLineSegmentsIsNothing : Test
+intersectionOfEqualLineSegmentsIsNothing =
+    Test.fuzz
+        Fuzz.lineSegment2d
+        "Intersection of two identical line segments is Nothing"
+        (\lineSegment ->
+            LineSegment2d.intersection lineSegment lineSegment
+                |> Expect.equal Nothing
+        )
+
+
+intersectionOfReversedEqualLineSegmentsIsNothing : Test
+intersectionOfReversedEqualLineSegmentsIsNothing =
+    Test.fuzz
+        Fuzz.lineSegment2d
+        "Intersection of two identical line segments is Nothing"
+        (\lineSegment ->
+            LineSegment2d.intersection
+                lineSegment
+                (LineSegment2d.reverse lineSegment)
+                |> Expect.equal Nothing
+        )
+
+
 suite : Test
 suite =
     Test.describe "OpenSolid.Geometry.LineSegment2d"
@@ -230,6 +309,9 @@ suite =
         , intersectionWorksProperly
         , intersectionFindsCoincidentEndpoints
           -- , intersectionDoesNotFindCoincidentEndpoints
+        , intersectionFindsCollinearCoincidentEndpoints
+        , intersectionOfEqualLineSegmentsIsNothing
+        , intersectionOfReversedEqualLineSegmentsIsNothing
         ]
 
 
