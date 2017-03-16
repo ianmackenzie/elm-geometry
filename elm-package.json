@@ -10,6 +10,7 @@
         "OpenSolid.Geometry.Decode",
         "OpenSolid.Geometry.Encode",
         "OpenSolid.Geometry.Types",
+        "OpenSolid.Arc2d",
         "OpenSolid.Axis2d",
         "OpenSolid.Axis3d",
         "OpenSolid.BoundingBox2d",
