@@ -302,6 +302,50 @@ intersectionOfReversedEqualLineSegmentsIsNothing =
         )
 
 
+sharedEndpointOnThirdSegmentInducesAnIntersection : Test
+sharedEndpointOnThirdSegmentInducesAnIntersection =
+    let
+        description =
+            "A shared endpoint on a third segment induces an intersection between the third segment and at least one of the other two segments sharing the endpoint."
+
+        expectation segment3 point1 point2 =
+            let
+                sharedPoint =
+                    LineSegment2d.midpoint segment3
+
+                ( segment1, segment2 ) =
+                    ( LineSegment2d ( sharedPoint, point1 )
+                    , LineSegment2d ( sharedPoint, point2 )
+                    )
+
+                ( v1, v2, v3 ) =
+                    ( LineSegment2d.vector segment1
+                    , LineSegment2d.vector segment2
+                    , LineSegment2d.vector segment3
+                    )
+            in
+                if Vector2d.crossProduct v3 v1 * Vector2d.crossProduct v3 v2 >= 0 then
+                    -- Ignore the case when point1 and point2 are on the same side of segment3
+                    Expect.pass
+                else
+                    let
+                        ( intersection1, intersection2 ) =
+                            ( LineSegment2d.intersection segment1 segment3
+                            , LineSegment2d.intersection segment2 segment3
+                            )
+                    in
+                        Expect.true
+                            "At least one intersection is detected"
+                            (intersection1 /= Nothing || intersection2 /= Nothing)
+    in
+        Test.fuzz3
+            Fuzz.lineSegment2d
+            Fuzz.point2d
+            Fuzz.point2d
+            description
+            expectation
+
+
 suite : Test
 suite =
     Test.describe "OpenSolid.Geometry.LineSegment2d"
@@ -312,6 +356,7 @@ suite =
         , intersectionFindsCollinearCoincidentEndpoints
         , intersectionOfEqualLineSegmentsIsNothing
         , intersectionOfReversedEqualLineSegmentsIsNothing
+        , sharedEndpointOnThirdSegmentInducesAnIntersection
         ]
 
 
