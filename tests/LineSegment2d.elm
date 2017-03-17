@@ -278,6 +278,21 @@ intersectionFindsCollinearCoincidentEndpoints =
             expectation
 
 
+intersectionOfEqualPointSegmentIsPoint : Test
+intersectionOfEqualPointSegmentIsPoint =
+    Test.fuzz
+        Fuzz.point2d
+        "Intersection of trivial segment (a point) with itself is the point."
+        (\point ->
+            let
+                segment =
+                    LineSegment2d ( point, point )
+            in
+                LineSegment2d.intersection segment segment
+                    |> Expect.equal (Just point)
+        )
+
+
 intersectionOfEqualLineSegmentsIsNothing : Test
 intersectionOfEqualLineSegmentsIsNothing =
     Test.fuzz
@@ -289,8 +304,7 @@ intersectionOfEqualLineSegmentsIsNothing =
                     LineSegment2d.endpoints lineSegment
             in
                 if start == end then
-                    LineSegment2d.intersection lineSegment lineSegment
-                        |> Expect.equal (Just start)
+                    Expect.pass
                 else
                     LineSegment2d.intersection lineSegment lineSegment
                         |> Expect.equal Nothing
@@ -362,6 +376,7 @@ suite =
         , intersectionFindsCoincidentEndpoints
           -- , intersectionDoesNotFindCoincidentEndpoints
         , intersectionFindsCollinearCoincidentEndpoints
+        , intersectionOfEqualPointSegmentIsPoint
         , intersectionOfEqualLineSegmentsIsNothing
         , intersectionOfReversedEqualLineSegmentsIsNothing
         , sharedEndpointOnThirdSegmentInducesAnIntersection
