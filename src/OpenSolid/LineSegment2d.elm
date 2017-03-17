@@ -313,20 +313,28 @@ intersection lineSegment1 lineSegment2 =
             )
     in
         if tDenominator == 0 || uDenominator == 0 then
+            -- Segments are parallel or collinear.
+            -- In collinear case, we check if there is only one intersection point.
             if Vector2d.dotProduct r s < 0 then
                 if p_ == q_ then
+                    -- p |----- p_ | q_ -----| q
                     Just p_
                 else if p == q then
+                    -- q_ |----- q | p -----| p_
                     Just p
                 else
                     Nothing
             else if p_ == q then
+                -- p |----- p_ | q -----| q_
                 Just p_
             else if p == q_ then
+                -- q |----- q_ | p -----| p_
                 Just p
             else
                 Nothing
         else
+            -- Segments are not parallel.
+            -- We search for the intersection point of the two lines.
             let
                 ( t, u ) =
                     ( pqXs / tDenominator
@@ -340,6 +348,7 @@ intersection lineSegment1 lineSegment2 =
                     start <= x && x <= end
             in
                 if within 0 1 t && within 0 1 u then
+                    -- Intersection is within both segments.
                     Just intersection
                 else
                     Nothing
