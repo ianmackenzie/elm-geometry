@@ -322,38 +322,56 @@ sharedEndpointOnThirdSegmentInducesAnIntersection =
                     , LineSegment2d.vector segment2
                     , LineSegment2d.vector segment3
                     )
+
+                intersections =
+                    ( LineSegment2d.intersection segment1 segment3
+                    , LineSegment2d.intersection segment2 segment3
+                    )
+
+                ( v3Xv1, v3Xv2 ) =
+                    ( Vector2d.crossProduct v3 v1
+                    , Vector2d.crossProduct v3 v2
+                    )
             in
-                if Vector2d.crossProduct v3 v1 * Vector2d.crossProduct v3 v2 >= 0 then
-                    -- Ignore the case when point1 and point2 are on the same side of segment3
+                if v3Xv1 == 0 || v3Xv2 == 0 then
                     Expect.pass
+                else if v3Xv1 * v3Xv2 > 0 then
+                    -- point1 and point2 are on the same side of segment3
+                    case intersections of
+                        ( Nothing, Nothing ) ->
+                            Expect.pass
+
+                        ( Just p1, Just p2 ) ->
+                            -- If intersection points are found for both
+                            -- segments, they should be both be exactly
+                            -- equal to the shared endpoint
+                            sharedPoint |> Expect.all [ Expect.point2d p1, Expect.point2d p2 ]
+
+                        _ ->
+                            Expect.fail "Behaviors different for segments on the same side"
                 else
-                    let
-                        intersections =
-                            ( LineSegment2d.intersection segment1 segment3
-                            , LineSegment2d.intersection segment2 segment3
-                            )
-                    in
-                        case intersections of
-                            ( Nothing, Nothing ) ->
-                                Expect.fail "Shared endpoint intersection not found"
+                    -- point1 and point2 are on opposite sides of segment3
+                    case intersections of
+                        ( Nothing, Nothing ) ->
+                            Expect.fail "Shared endpoint intersection not found"
 
-                            ( Just point, Nothing ) ->
-                                -- If an intersection point is found for one
-                                -- segment, it should be approximately equal to
-                                -- the shared endpoint
-                                point |> Expect.point2d sharedPoint
+                        ( Just point, Nothing ) ->
+                            -- If an intersection point is found for one
+                            -- segment, it should be approximately equal to
+                            -- the shared endpoint
+                            point |> Expect.point2d sharedPoint
 
-                            ( Nothing, Just point ) ->
-                                -- If an intersection point is found for one
-                                -- segment, it should be approximately equal to
-                                -- the shared endpoint
-                                point |> Expect.point2d sharedPoint
+                        ( Nothing, Just point ) ->
+                            -- If an intersection point is found for one
+                            -- segment, it should be approximately equal to
+                            -- the shared endpoint
+                            point |> Expect.point2d sharedPoint
 
-                            ( Just point1, Just point2 ) ->
-                                -- If intersection points are found for both
-                                -- segments, they should be both be exactly
-                                -- equal to the shared endpoint
-                                sharedPoint |> Expect.all [ Expect.equal point1, Expect.equal point2 ]
+                        ( Just p1, Just p2 ) ->
+                            -- If intersection points are found for both
+                            -- segments, they should be both be exactly
+                            -- equal to the shared endpoint
+                            sharedPoint |> Expect.all [ Expect.equal p1, Expect.equal p2 ]
     in
         Test.fuzz3
             Fuzz.lineSegment2d
