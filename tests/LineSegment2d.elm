@@ -386,6 +386,19 @@ sharedEndpointOnThirdSegmentInducesAnIntersection =
             expectation
 
 
+intersectionIsSymmetric : Test
+intersectionIsSymmetric =
+    Test.fuzz2
+        Fuzz.lineSegment2d
+        Fuzz.lineSegment2d
+        "Intersection should be symmetric"
+        (\lineSegment1 lineSegment2 ->
+            Expect.equal
+                (LineSegment2d.intersection lineSegment1 lineSegment2)
+                (LineSegment2d.intersection lineSegment2 lineSegment1)
+        )
+
+
 suite : Test
 suite =
     Test.describe "OpenSolid.Geometry.LineSegment2d"
@@ -398,6 +411,7 @@ suite =
         , intersectionOfEqualLineSegmentsIsNothing
         , intersectionOfReversedEqualLineSegmentsIsNothing
         , sharedEndpointOnThirdSegmentInducesAnIntersection
+        , intersectionIsSymmetric
         ]
 
 
