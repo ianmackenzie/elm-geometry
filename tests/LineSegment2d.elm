@@ -268,7 +268,7 @@ intersectionOfEqualLineSegmentsIsNothing : Test
 intersectionOfEqualLineSegmentsIsNothing =
     Test.fuzz
         Fuzz.lineSegment2d
-        "Intersection of two identical non trivial line segments is Nothing"
+        "Intersection of two identical non degenerate line segments is Nothing"
         (\lineSegment ->
             let
                 ( start, end ) =
@@ -286,12 +286,18 @@ intersectionOfReversedEqualLineSegmentsIsNothing : Test
 intersectionOfReversedEqualLineSegmentsIsNothing =
     Test.fuzz
         Fuzz.lineSegment2d
-        "Intersection of two identical line segments is Nothing"
+        "Intersection of two reverse identical non degenerate line segments is Nothing"
         (\lineSegment ->
-            LineSegment2d.intersection
-                lineSegment
-                (LineSegment2d.reverse lineSegment)
-                |> Expect.equal Nothing
+            let
+                ( start, end ) =
+                    LineSegment2d.endpoints lineSegment
+            in
+                if start == end then
+                    Expect.pass
+                else
+                    LineSegment2d.reverse lineSegment
+                        |> LineSegment2d.intersection lineSegment
+                        |> Expect.equal Nothing
         )
 
 
