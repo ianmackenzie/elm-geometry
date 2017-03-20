@@ -13,6 +13,7 @@
 module OpenSolid.Vector2d
     exposing
         ( zero
+        , polar
         , in_
         , perpendicularTo
         , interpolateFrom
@@ -64,13 +65,6 @@ components to the `Vector2d` constructor, for example
     vector =
         Vector2d ( 2, 3 )
 
-There are no specific functions to create vectors from polar components, but you
-can use Elm's built-in [`fromPolar`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#fromPolar)
-function:
-
-    vector =
-        Vector2d (fromPolar ( radius, angle ))
-
 # Predefined vectors
 
 @docs zero
@@ -83,7 +77,7 @@ and [`Direction2d.y`](OpenSolid-Direction2d#y).
 
 # Constructors
 
-@docs in_, perpendicularTo, interpolateFrom, interpolate
+@docs polar, in_, perpendicularTo, interpolateFrom, interpolate
 
 # Components
 
@@ -141,6 +135,26 @@ import OpenSolid.Scalar as Scalar
 zero : Vector2d
 zero =
     Vector2d ( 0, 0 )
+
+
+{-| Construct a vector from a length and angle. The angle is measured
+counterclockwise from the positive X direction.
+
+    Vector2d.polar ( 2, degrees 135 )
+    -->Vector2d ( -1.4142, 1.4142 )
+
+This is shorthand for using Elm's built-in [`fromPolar`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#fromPolar)
+function and passing the result to the `Vector2d` constructor:
+
+    Vector2d.polar ( r, theta )
+
+is equivalent to
+
+    Vector2d (fromPolar ( r, theta ))
+-}
+polar : ( Float, Float ) -> Vector2d
+polar =
+    Vector2d << fromPolar
 
 
 {-| Construct a vector in the given direction with the given magnitude.

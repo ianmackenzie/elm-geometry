@@ -13,6 +13,7 @@
 module OpenSolid.Point2d
     exposing
         ( origin
+        , polar
         , midpoint
         , interpolateFrom
         , interpolate
@@ -54,20 +55,13 @@ coordinates to the `Point2d` constructor, for example
     point =
         Point2d ( 2, 3 )
 
-There are no specific functions to create points from polar components, but you
-can use Elm's built-in [`fromPolar`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#fromPolar)
-function:
-
-    point =
-        Point2d (fromPolar ( radius, angle ))
-
 # Predefined points
 
 @docs origin
 
 # Constructors
 
-@docs midpoint, interpolateFrom, interpolate, along, in_
+@docs polar, midpoint, interpolateFrom, interpolate, along, in_
 
 # Coordinates
 
@@ -124,6 +118,26 @@ addTo =
 origin : Point2d
 origin =
     Point2d ( 0, 0 )
+
+
+{-| Construct a point from a radius and angle. Radius is measured from the
+origin and angle is measured counterclockwise from the positive X direction.
+
+    Point2d.polar ( 2, degrees 135 )
+    --> Point2d ( -1.4142, 1.4142 )
+
+This is shorthand for using Elm's built-in [`fromPolar`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#fromPolar)
+function and passing the result to the `Point2d` constructor:
+
+    Point2d.polar ( r, theta )
+
+is equivalent to
+
+    Point2d (fromPolar ( r, theta ))
+-}
+polar : ( Float, Float ) -> Point2d
+polar =
+    Point2d << fromPolar
 
 
 {-| Construct a point halfway between two other points.
