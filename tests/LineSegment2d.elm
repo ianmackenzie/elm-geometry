@@ -159,35 +159,6 @@ intersectionWorksProperly =
         Test.fuzz2 Fuzz.lineSegment2d Fuzz.lineSegment2d description expectation
 
 
-intersectionDoesNotFindCoincidentEndpoints : Test
-intersectionDoesNotFindCoincidentEndpoints =
-    Test.fuzz3
-        Fuzz.point2d
-        Fuzz.point2d
-        Fuzz.point2d
-        "Intersection of two line segments sharing an endpoint is Nothing"
-        (\p1 p2 p3 ->
-            Expect.all
-                [ \( p1, p2, p3 ) ->
-                    LineSegment2d.intersection
-                        (LineSegment2d ( p1, p2 ))
-                        (LineSegment2d ( p2, p3 ))
-                        |> Expect.equal Nothing
-                , \( p1, p2, p3 ) ->
-                    LineSegment2d.intersection
-                        (LineSegment2d ( p1, p2 ))
-                        (LineSegment2d ( p1, p3 ))
-                        |> Expect.equal Nothing
-                , \( p1, p2, p3 ) ->
-                    LineSegment2d.intersection
-                        (LineSegment2d ( p1, p3 ))
-                        (LineSegment2d ( p2, p3 ))
-                        |> Expect.equal Nothing
-                ]
-                ( p1, p2, p3 )
-        )
-
-
 intersectionFindsCoincidentEndpoints : Test
 intersectionFindsCoincidentEndpoints =
     let
@@ -405,7 +376,6 @@ suite =
         [ jsonRoundTrips
         , intersectionWorksProperly
         , intersectionFindsCoincidentEndpoints
-          -- , intersectionDoesNotFindCoincidentEndpoints
         , intersectionFindsCollinearCoincidentEndpoints
         , intersectionOfEqualPointSegmentIsPoint
         , intersectionOfEqualLineSegmentsIsNothing
