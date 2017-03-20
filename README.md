@@ -63,9 +63,10 @@ A wide variety of data types are supported:
     ![Polyline3d](https://opensolid.github.io/images/geometry/icons/polyline3d.svg)
     ![Polygon2d](https://opensolid.github.io/images/geometry/icons/polygon2d.svg)
 
-  - and last but not least `Circle2d`
+  - and last but not least `Circle2d` and `Circle3d`
 
     ![Circle2d](https://opensolid.github.io/images/geometry/icons/circle2d.svg)
+    ![Circle3d](https://opensolid.github.io/images/geometry/icons/circle3d.svg)
 
 A large range of geometric functionality is included, such as various forms of
 constructors...

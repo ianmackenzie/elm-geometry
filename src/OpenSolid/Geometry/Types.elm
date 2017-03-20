@@ -360,7 +360,7 @@ type Circle2d
     = Circle2d { centerPoint : Point2d, radius : Float }
 
 
-{-|
+{-| ![Circle3d](https://opensolid.github.io/images/geometry/icons/circle3d.svg)
 
 A circle in 3D, defined by its center point, axial direction and radius. See the
 [`Circle3d`](OpenSolid-Circle3d) module for details.

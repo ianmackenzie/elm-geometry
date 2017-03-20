@@ -15,7 +15,7 @@ module OpenSolid.Circle3d
         , boundingBox
         )
 
-{-|
+{-| <img src="https://opensolid.github.io/images/geometry/icons/circle3d.svg" alt="Circle3d" width="160">
 
 A `Circle3d` is defined by its center point, axial direction and radius. The
 axial direction is the direction of the axis through the center of the circle
