@@ -351,14 +351,32 @@ sharedEndpointOnThirdSegmentInducesAnIntersection =
                     Expect.pass
                 else
                     let
-                        ( intersection1, intersection2 ) =
+                        intersections =
                             ( LineSegment2d.intersection segment1 segment3
                             , LineSegment2d.intersection segment2 segment3
                             )
                     in
-                        Expect.true
-                            "At least one intersection is detected"
-                            (intersection1 /= Nothing || intersection2 /= Nothing)
+                        case intersections of
+                            ( Nothing, Nothing ) ->
+                                Expect.fail "Shared endpoint intersection not found"
+
+                            ( Just point, Nothing ) ->
+                                -- If an intersection point is found for one
+                                -- segment, it should be approximately equal to
+                                -- the shared endpoint
+                                point |> Expect.point2d sharedPoint
+
+                            ( Nothing, Just point ) ->
+                                -- If an intersection point is found for one
+                                -- segment, it should be approximately equal to
+                                -- the shared endpoint
+                                point |> Expect.point2d sharedPoint
+
+                            ( Just point1, Just point2 ) ->
+                                -- If intersection points are found for both
+                                -- segments, they should be both be exactly
+                                -- equal to the shared endpoint
+                                sharedPoint |> Expect.all [ Expect.equal point1, Expect.equal point2 ]
     in
         Test.fuzz3
             Fuzz.lineSegment2d
