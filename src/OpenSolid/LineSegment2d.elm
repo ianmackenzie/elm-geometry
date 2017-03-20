@@ -341,9 +341,6 @@ intersection lineSegment1 lineSegment2 =
                     , pqXr / uDenominator
                     )
 
-                intersection =
-                    interpolate lineSegment1 t
-
                 within start end x =
                     start <= x && x <= end
             in
