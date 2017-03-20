@@ -254,7 +254,9 @@ vector lineSegment =
         Point2d.vectorFrom p1 p2
 
 
-{-| Get the intersection, if it exists, of two line segments.
+{-| Attempt to find the unique intersection point of two line segments. If there
+is no such point (the two line segments do not touch, or they overlap), returns
+`Nothing`.
 
     -- 4 corners of a square
     a = Point2d (0, 0)
@@ -279,6 +281,13 @@ vector lineSegment =
 
     LineSegment2d.intersection ab ab
     --> Nothing -- collinear lines
+
+Note that if the endpoint of one line segment lies on the other line segment,
+numerical roundoff means that the intersection may or may not be found. If two
+segments have a shared endpoint (the two segments meet in something like a 'V',
+where the end point of one segment is the start point of the next), that point
+is guaranteed to be returned as the intersection point, but if two segments meet
+in a 'T' shape the intersection point may or may not be found.
 -}
 intersection : LineSegment2d -> LineSegment2d -> Maybe Point2d
 intersection lineSegment1 lineSegment2 =
