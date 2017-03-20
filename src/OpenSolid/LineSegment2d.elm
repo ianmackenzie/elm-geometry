@@ -259,22 +259,25 @@ is no such point (the two line segments do not touch, or they overlap), returns
 `Nothing`.
 
     -- 4 corners of a square
-    a = Point2d (0, 0)
-    b = Point2d (1, 0)
-    c = Point2d (1, 1)
-    d = Point2d (0, 1)
+    ( a, b, c, d ) =
+        ( Point2d (0, 0)
+        , Point2d (1, 0)
+        , Point2d (1, 1)
+        , Point2d (0, 1)
+        )
 
     -- definition of some segments with those points
-    ab = LineSegment2d (a,b)
+    ab =
+        LineSegment2d ( a, b )
     ...
 
     -- searching for intersections
 
     LineSegment2d.intersection ab bc
-    --> Just (Point2d (1,0)) -- corner point b
+    --> Just (Point2d ( 1, 0 )) -- corner point b
 
     LineSegment2d.intersection ac bd
-    --> Just (Point2d (0.5,0.5)) -- diagonal crossing at square center
+    --> Just (Point2d ( 0.5, 0.5 )) -- diagonal crossing at square center
 
     LineSegment2d.intersection ab cd
     --> Nothing -- parallel lines
