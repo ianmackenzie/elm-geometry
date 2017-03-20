@@ -347,6 +347,9 @@ intersection lineSegment1 lineSegment2 =
                 if within 0 1 t && within 0 1 u then
                     -- Intersection is within both segments.
                     let
+                        -- Ensure interpolation happens from the closest
+                        -- endpoint (this should be more numerically stable, and
+                        -- also mostly ensures that intersection is symmetric)
                         intersection =
                             if min t (1 - t) <= min u (1 - u) then
                                 interpolate lineSegment1 t
