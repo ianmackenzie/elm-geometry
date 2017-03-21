@@ -343,7 +343,7 @@ sharedEndpointOnThirdSegmentInducesAnIntersection =
 
                         ( Just p1, Just p2 ) ->
                             -- If intersection points are found for both
-                            -- segments, they should be both be exactly
+                            -- segments, they should be both be approximately
                             -- equal to the shared endpoint
                             sharedPoint |> Expect.all [ Expect.point2d p1, Expect.point2d p2 ]
 
