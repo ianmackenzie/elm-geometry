@@ -24,6 +24,7 @@ module OpenSolid.LineSegment2d
         , direction
         , normalDirection
         , vector
+        , intersectionPoint
         , scaleAbout
         , rotateAround
         , translateBy
@@ -70,6 +71,10 @@ the `LineSegment2d` constructor, for example
 # Length and direction
 
 @docs length, squaredLength, direction, normalDirection, vector
+
+# Intersection
+
+@docs intersectionPoint
 
 # Transformations
 
@@ -247,6 +252,125 @@ vector lineSegment =
             endpoints lineSegment
     in
         Point2d.vectorFrom p1 p2
+
+
+{-| Attempt to find the unique intersection point of two line segments. If there
+is no such point (the two line segments do not touch, or they overlap), returns
+`Nothing`.
+
+    -- 4 corners of a square
+    ( a, b, c, d ) =
+        ( Point2d (0, 0)
+        , Point2d (1, 0)
+        , Point2d (1, 1)
+        , Point2d (0, 1)
+        )
+
+    -- definition of some segments with those points
+    ab =
+        LineSegment2d ( a, b )
+    ...
+
+    -- searching for intersections
+
+    LineSegment2d.intersectionPoint ab bc
+    --> Just (Point2d ( 1, 0 )) -- corner point b
+
+    LineSegment2d.intersectionPoint ac bd
+    --> Just (Point2d ( 0.5, 0.5 )) -- diagonal crossing at square center
+
+    LineSegment2d.intersectionPoint ab cd
+    --> Nothing -- parallel lines
+
+    LineSegment2d.intersectionPoint ab ab
+    --> Nothing -- collinear lines
+
+Note that if the endpoint of one line segment lies on the other line segment,
+numerical roundoff means that the intersection may or may not be found. If two
+segments have a shared endpoint (the two segments meet in something like a 'V',
+where the end point of one segment is the start point of the next), that point
+is guaranteed to be returned as the intersection point, but if two segments meet
+in a 'T' shape the intersection point may or may not be found.
+-}
+intersectionPoint : LineSegment2d -> LineSegment2d -> Maybe Point2d
+intersectionPoint lineSegment1 lineSegment2 =
+    -- The two line segments are:
+    -- p |--- r ---| p_
+    -- q |--- s ---| q_
+    let
+        ( p, p_ ) =
+            endpoints lineSegment1
+
+        ( q, q_ ) =
+            endpoints lineSegment2
+
+        ( r, s, pq, pq_, qp_ ) =
+            ( vector lineSegment1
+            , vector lineSegment2
+            , Point2d.vectorFrom p q
+            , Point2d.vectorFrom p q_
+            , Point2d.vectorFrom q p_
+            )
+
+        ( pqXr, pqXs, sXqp_, rXpq_ ) =
+            ( Vector2d.crossProduct pq r
+            , Vector2d.crossProduct pq s
+            , Vector2d.crossProduct s qp_
+            , Vector2d.crossProduct r pq_
+            )
+
+        ( tDenominator, uDenominator ) =
+            ( pqXs - sXqp_
+            , pqXr + rXpq_
+            )
+    in
+        if tDenominator == 0 || uDenominator == 0 then
+            -- Segments are parallel or collinear.
+            -- In collinear case, we check if there is only one intersection point.
+            if Vector2d.dotProduct r s < 0 then
+                if p_ == q_ then
+                    -- p |----- p_ | q_ -----| q
+                    Just p_
+                else if p == q then
+                    -- q_ |----- q | p -----| p_
+                    Just p
+                else
+                    Nothing
+            else if p_ == q then
+                -- p |----- p_ | q -----| q_
+                Just p_
+            else if p == q_ then
+                -- q |----- q_ | p -----| p_
+                Just p
+            else
+                Nothing
+        else
+            -- Segments are not parallel.
+            -- We search for the intersection point of the two lines.
+            let
+                ( t, u ) =
+                    ( pqXs / tDenominator
+                    , pqXr / uDenominator
+                    )
+
+                within start end x =
+                    start <= x && x <= end
+            in
+                if within 0 1 t && within 0 1 u then
+                    -- Intersection is within both segments.
+                    let
+                        -- Ensure interpolation happens from the closest
+                        -- endpoint (this should be more numerically stable, and
+                        -- also mostly ensures that intersection is symmetric)
+                        intersection =
+                            if min t (1 - t) <= min u (1 - u) then
+                                interpolate lineSegment1 t
+                            else
+                                interpolate lineSegment2 u
+                    in
+                        Just intersection
+                else
+                    Nothing
 
 
 {-| Scale a line segment about the given center point by the given scale.
