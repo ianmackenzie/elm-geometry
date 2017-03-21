@@ -345,7 +345,9 @@ sharedEndpointOnThirdSegmentInducesAnIntersection =
                             -- If intersection points are found for both
                             -- segments, they should be both be approximately
                             -- equal to the shared endpoint
-                            sharedPoint |> Expect.all [ Expect.point2d p1, Expect.point2d p2 ]
+                            sharedPoint
+                                |> Expect.all
+                                    [ Expect.point2d p1, Expect.point2d p2 ]
 
                         _ ->
                             Expect.fail "Behaviors different for segments on the same side"
@@ -371,7 +373,9 @@ sharedEndpointOnThirdSegmentInducesAnIntersection =
                             -- If intersection points are found for both
                             -- segments, they should be both be exactly
                             -- equal to the shared endpoint
-                            sharedPoint |> Expect.all [ Expect.equal p1, Expect.equal p2 ]
+                            sharedPoint
+                                |> Expect.all
+                                    [ Expect.equal p1, Expect.equal p2 ]
     in
         Test.fuzz3
             Fuzz.lineSegment2d
