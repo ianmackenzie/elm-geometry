@@ -48,20 +48,20 @@ If you happen to use Sublime Text as your editor, [here](https://gist.github.com
 is the (very simple) Sublime Text project file I use for editing OpenSolid code.
 I create an `opensolid` directory, place the project file in it, check out all
 OpenSolid repositories as subdirectories, then open the project file in Sublime
-Text so I can edit all of my checked-out OpenSolid repositories at once; the
-resulting directory structure looks like
+Text so I can edit all of my checked-out OpenSolid repositories at once. The
+resulting directory structure looks like:
 
 ```
 opensolid
 ├── opensolid.sublime-project
 ├── geometry
-│   ├── README.md
 │   ├── .git
+│   ├── README.md
 │   ├── src
 │   ├── ...
 ├── svg
-│   ├── README.md
 │   ├── .git
+│   ├── README.md
 │   ├── src
 │   ├── ...
 ```
