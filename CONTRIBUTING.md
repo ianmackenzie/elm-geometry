@@ -15,7 +15,9 @@ repository and make a pull request with your proposed changes (although please
 open an issue first for major contributions before writing too much code, so we
 can discuss different potential approaches).
 
-During development, to run the OpenSolid tests locally, you have two options:
+During development, please run the existing tests periodically to make sure you
+haven't accidentally broken anything! To run the tests locally, you have two
+options:
 
   - Run `elm reactor` inside the `tests` subdirectory. You should then be able
     to open up `localhost:8000` in a browser and click on `All.elm` to run the
