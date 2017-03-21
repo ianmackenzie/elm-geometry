@@ -42,6 +42,26 @@ Don't worry too much about writing documentation - small fixes for things like
 typos and formatting are certainly welcome, but I would prefer to write the bulk
 of the documentation myself to ensure a consistent style and tone throughout.
 
+Git commit messages should be formatted as follows:
+
+  - The first line should be a short (50 characters or less) summary of the
+    change. The first word should be a capitalized verb like 'Add', 'Modify',
+    'Remove' etc. The line should not end in a period. Examples of good summary
+    lines include "Add Triangle3d.centroid function", "Tweak formatting", "Make
+    LineSegment2d.intersectionPoint faster", and "Fix bug in
+    Arc2d.throughPoints".
+  - The commit message may then optionally have a blank line followed by any
+    more detailed discussion of the changes (links to issues, rationale for why
+    a change was made, etc.). This should be in the form of capitalized
+    sentences/phrases but otherwise formatting is flexible (use paragraphs,
+    bulleted lists or a combination if you want).
+
+Here are some sample commit messages:
+
+  - [Add [Point,Vector]#d.interpolateFrom](https://github.com/opensolid/geometry/commit/0c91e5eaf4089d94783c28f2a10ece3005be89e4)
+  - [Tweak triangle test to avoid spurious failure](https://github.com/opensolid/geometry/commit/bce5df26e5646f14577cd60472fab03101346a74)
+  - [Test Frame3d a bit more precisely](https://github.com/opensolid/geometry/commit/bcf22c03ede5b7594dbcbde02a49430311d53679)
+
 ## Sublime Text
 
 If you happen to use Sublime Text as your editor, [here](https://gist.github.com/ianmackenzie/77c686282078f853647fd7d4b8894830)
