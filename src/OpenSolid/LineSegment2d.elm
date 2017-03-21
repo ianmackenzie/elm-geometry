@@ -24,7 +24,7 @@ module OpenSolid.LineSegment2d
         , direction
         , normalDirection
         , vector
-        , intersection
+        , intersectionPoint
         , scaleAbout
         , rotateAround
         , translateBy
@@ -74,7 +74,7 @@ the `LineSegment2d` constructor, for example
 
 # Intersection
 
-@docs intersection
+@docs intersectionPoint
 
 # Transformations
 
@@ -273,16 +273,16 @@ is no such point (the two line segments do not touch, or they overlap), returns
 
     -- searching for intersections
 
-    LineSegment2d.intersection ab bc
+    LineSegment2d.intersectionPoint ab bc
     --> Just (Point2d ( 1, 0 )) -- corner point b
 
-    LineSegment2d.intersection ac bd
+    LineSegment2d.intersectionPoint ac bd
     --> Just (Point2d ( 0.5, 0.5 )) -- diagonal crossing at square center
 
-    LineSegment2d.intersection ab cd
+    LineSegment2d.intersectionPoint ab cd
     --> Nothing -- parallel lines
 
-    LineSegment2d.intersection ab ab
+    LineSegment2d.intersectionPoint ab ab
     --> Nothing -- collinear lines
 
 Note that if the endpoint of one line segment lies on the other line segment,
@@ -292,8 +292,8 @@ where the end point of one segment is the start point of the next), that point
 is guaranteed to be returned as the intersection point, but if two segments meet
 in a 'T' shape the intersection point may or may not be found.
 -}
-intersection : LineSegment2d -> LineSegment2d -> Maybe Point2d
-intersection lineSegment1 lineSegment2 =
+intersectionPoint : LineSegment2d -> LineSegment2d -> Maybe Point2d
+intersectionPoint lineSegment1 lineSegment2 =
     -- The two line segments are:
     -- p |--- r ---| p_
     -- q |--- s ---| q_

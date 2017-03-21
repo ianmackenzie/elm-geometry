@@ -42,7 +42,7 @@ intersectionWorksProperly =
             "Intersection of two line segments returns a point that is on both segments, if such a point exists"
 
         expectation firstSegment secondSegment =
-            case LineSegment2d.intersection firstSegment secondSegment of
+            case LineSegment2d.intersectionPoint firstSegment secondSegment of
                 Just point ->
                     let
                         -- Not enough by itself - point might be collinear with
@@ -180,7 +180,7 @@ intersectionFindsCoincidentEndpoints =
                     LineSegment2d.vector secondSegment
 
                 intersection =
-                    LineSegment2d.intersection firstSegment secondSegment
+                    LineSegment2d.intersectionPoint firstSegment secondSegment
             in
                 if Vector2d.crossProduct firstVector secondVector /= 0 then
                     Expect.equal (Just sharedEnd) intersection
@@ -216,20 +216,20 @@ intersectionFindsCollinearCoincidentEndpoints =
                     LineSegment2d ( midPoint, endPoint )
 
                 intersection1 =
-                    LineSegment2d.intersection firstSegment secondSegment
+                    LineSegment2d.intersectionPoint firstSegment secondSegment
 
                 intersection2 =
-                    LineSegment2d.intersection
+                    LineSegment2d.intersectionPoint
                         firstSegment
                         (LineSegment2d.reverse secondSegment)
 
                 intersection3 =
-                    LineSegment2d.intersection
+                    LineSegment2d.intersectionPoint
                         (LineSegment2d.reverse firstSegment)
                         secondSegment
 
                 intersection4 =
-                    LineSegment2d.intersection
+                    LineSegment2d.intersectionPoint
                         (LineSegment2d.reverse firstSegment)
                         (LineSegment2d.reverse secondSegment)
             in
@@ -259,7 +259,7 @@ intersectionOfEqualPointSegmentIsPoint =
                 segment =
                     LineSegment2d ( point, point )
             in
-                LineSegment2d.intersection segment segment
+                LineSegment2d.intersectionPoint segment segment
                     |> Expect.equal (Just point)
         )
 
@@ -277,7 +277,7 @@ intersectionOfEqualLineSegmentsIsNothing =
                 if start == end then
                     Expect.pass
                 else
-                    LineSegment2d.intersection lineSegment lineSegment
+                    LineSegment2d.intersectionPoint lineSegment lineSegment
                         |> Expect.equal Nothing
         )
 
@@ -296,7 +296,7 @@ intersectionOfReversedEqualLineSegmentsIsNothing =
                     Expect.pass
                 else
                     LineSegment2d.reverse lineSegment
-                        |> LineSegment2d.intersection lineSegment
+                        |> LineSegment2d.intersectionPoint lineSegment
                         |> Expect.equal Nothing
         )
 
@@ -324,8 +324,8 @@ sharedEndpointOnThirdSegmentInducesAnIntersection =
                     )
 
                 intersections =
-                    ( LineSegment2d.intersection segment1 segment3
-                    , LineSegment2d.intersection segment2 segment3
+                    ( LineSegment2d.intersectionPoint segment1 segment3
+                    , LineSegment2d.intersectionPoint segment2 segment3
                     )
 
                 ( v3Xv1, v3Xv2 ) =
@@ -393,8 +393,8 @@ intersectionIsSymmetric =
         "Intersection should be symmetric"
         (\lineSegment1 lineSegment2 ->
             Expect.equal
-                (LineSegment2d.intersection lineSegment1 lineSegment2)
-                (LineSegment2d.intersection lineSegment2 lineSegment1)
+                (LineSegment2d.intersectionPoint lineSegment1 lineSegment2)
+                (LineSegment2d.intersectionPoint lineSegment2 lineSegment1)
         )
 
 
