@@ -52,8 +52,7 @@ your feature is appreciated but not mandatory.
 
 Git commits should generally be as small and focused as possible, so that they
 can be reviewed individually. Commit messages should follow [the seven rules of
-a great Git commit message](https://chris.beams.io/posts/git-commit/#seven-
-rules):
+a great Git commit message](https://chris.beams.io/posts/git-commit/#seven-rules):
 
   - Separate subject from body with a blank line
   - Limit the subject line to 50 characters
