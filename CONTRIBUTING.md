@@ -15,6 +15,20 @@ repository and make a pull request with your proposed changes (although please
 open an issue first for major contributions before writing too much code, so we
 can discuss different potential approaches).
 
+## Writing code
+
+When writing your code, try to follow existing code style as much as possible -
+in particular, this means:
+
+  - Use [`elm-format`](https://github.com/avh4/elm-format) to format your code.
+  - Wrap code to 80 columns.
+
+Don't worry too much about writing documentation - small fixes for things like
+typos and formatting are certainly welcome, but I would prefer to write the bulk
+of the documentation myself to ensure a consistent style and tone throughout.
+
+## Testing
+
 During development, please run the existing tests periodically to make sure you
 haven't accidentally broken anything! To run the tests locally, you have two
 options:
@@ -29,20 +43,12 @@ options:
     `npm install -g elm-test`, then run `elm-test` from the root directory of
     this repository to run all the tests from the command line.
 
-When writing your code, try to follow existing code style as much as possible -
-in particular, this means:
+If you are working on fixing a bug, please first add a test that catches the bug
+to the relevant file in the `tests` subdirectory, then add your fix and verify
+that the test now passes. If you are adding a new feature, writing tests for
+your feature is appreciated but not mandatory.
 
-  - Use [`elm-format`](https://github.com/avh4/elm-format) to format your code.
-  - Wrap code to 80 columns.
-
-If you are fixing a bug, please add a test that catches the bug to the relevant
-file in the `tests` subdirectory, then add your fix and verify that the test now
-passes. If you are adding a new feature, writing tests for your feature is
-appreciated but not mandatory.
-
-Don't worry too much about writing documentation - small fixes for things like
-typos and formatting are certainly welcome, but I would prefer to write the bulk
-of the documentation myself to ensure a consistent style and tone throughout.
+## Git commits
 
 Git commit messages should follow [the seven rules of a great Git commit
 message](https://chris.beams.io/posts/git-commit/#seven-rules):
