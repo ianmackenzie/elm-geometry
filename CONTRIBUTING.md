@@ -66,10 +66,10 @@ a great Git commit message](https://chris.beams.io/posts/git-commit/#seven-rules
 
 Here are some sample commits to use as examples:
 
-  - [Add [Point,Vector]#d.interpolateFrom](https://github.com/opensolid/geometry/commit/0c91e5eaf4089d94783c28f2a10ece3005be89e4)
-  - [Tweak triangle test to avoid spurious failure](https://github.com/opensolid/geometry/commit/bce5df26e5646f14577cd60472fab03101346a74)
-  - [Test Frame3d a bit more precisely](https://github.com/opensolid/geometry/commit/bcf22c03ede5b7594dbcbde02a49430311d53679)
   - [Fix bug in Arc2d.fromEndpoints](https://github.com/opensolid/geometry/commit/593039e1223727afe04c53b3af170dfa2b9725b0)
+  - [Test Frame3d a bit more precisely](https://github.com/opensolid/geometry/commit/bcf22c03ede5b7594dbcbde02a49430311d53679)
+  - [Tweak triangle test to avoid spurious failure](https://github.com/opensolid/geometry/commit/bce5df26e5646f14577cd60472fab03101346a74)
+  - [Add [Point,Vector]#d.interpolateFrom](https://github.com/opensolid/geometry/commit/0c91e5eaf4089d94783c28f2a10ece3005be89e4)
 
 ## Sublime Text configuration
 
