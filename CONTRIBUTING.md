@@ -13,7 +13,9 @@ requirement!
 If you _are_ interested in contributing changes to OpenSolid, please fork this
 repository and make a pull request with your proposed changes (although please
 open an issue first for major contributions before writing too much code, so we
-can discuss different potential approaches).
+can discuss different potential approaches). As part of your pull request, make
+sure that you add yourself to the [AUTHORS](https://github.com/opensolid/geometry/blob/master/AUTHORS)
+file!
 
 ## Writing code
 
