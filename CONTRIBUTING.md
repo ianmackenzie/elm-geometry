@@ -48,7 +48,7 @@ to the relevant file in the `tests` subdirectory, then add your fix and verify
 that the test now passes. If you are adding a new feature, writing tests for
 your feature is appreciated but not mandatory.
 
-## Commmitting
+## Committing
 
 Git commits should generally be as small and focused as possible, so that they
 can be reviewed individually. Commit messages should follow [the seven rules of
