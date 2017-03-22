@@ -62,7 +62,7 @@ Here are some sample commits to use as examples:
   - [Test Frame3d a bit more precisely](https://github.com/opensolid/geometry/commit/bcf22c03ede5b7594dbcbde02a49430311d53679)
   - [Fix bug in Arc2d.fromEndpoints](https://github.com/opensolid/geometry/commit/593039e1223727afe04c53b3af170dfa2b9725b0)
 
-## Sublime Text
+## Sublime Text configuration
 
 If you happen to use Sublime Text as your editor, [here](https://gist.github.com/ianmackenzie/77c686282078f853647fd7d4b8894830)
 is the (very simple) Sublime Text project file I use for editing OpenSolid code.
