@@ -48,7 +48,7 @@ to the relevant file in the `tests` subdirectory, then add your fix and verify
 that the test now passes. If you are adding a new feature, writing tests for
 your feature is appreciated but not mandatory.
 
-## Git commits
+## Commmitting
 
 Git commit messages should follow [the seven rules of a great Git commit
 message](https://chris.beams.io/posts/git-commit/#seven-rules):
