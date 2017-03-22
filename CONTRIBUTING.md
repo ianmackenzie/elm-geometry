@@ -58,7 +58,7 @@ Git commit messages should be formatted as follows:
     sentences/phrases but otherwise formatting is flexible (use paragraphs,
     bulleted lists or a combination if you want).
 
-Here are some sample commit messages:
+Here are some sample commits to use as examples:
 
   - [Add [Point,Vector]#d.interpolateFrom](https://github.com/opensolid/geometry/commit/0c91e5eaf4089d94783c28f2a10ece3005be89e4)
   - [Tweak triangle test to avoid spurious failure](https://github.com/opensolid/geometry/commit/bce5df26e5646f14577cd60472fab03101346a74)
