@@ -44,19 +44,16 @@ Don't worry too much about writing documentation - small fixes for things like
 typos and formatting are certainly welcome, but I would prefer to write the bulk
 of the documentation myself to ensure a consistent style and tone throughout.
 
-Git commit messages should be formatted as follows:
+Git commit messages should follow [the seven rules of a great Git commit
+message](https://chris.beams.io/posts/git-commit/#seven-rules):
 
-  - The first line should be a short (50 characters or less) summary of the
-    change. The first word should be a capitalized verb like 'Add', 'Modify',
-    'Remove' etc. The line should not end in a period. Examples of good summary
-    lines include "Add Triangle3d.centroid function", "Tweak formatting", "Make
-    LineSegment2d.intersectionPoint faster", and "Fix bug in
-    Arc2d.throughPoints".
-  - The commit message may then optionally have a blank line followed by any
-    more detailed discussion of the changes (links to issues, rationale for why
-    a change was made, etc.). This should be in the form of capitalized
-    sentences/phrases but otherwise formatting is flexible (use paragraphs,
-    bulleted lists or a combination if you want).
+  - Separate subject from body with a blank line
+  - Limit the subject line to 50 characters
+  - Capitalize the subject line
+  - Do not end the subject line with a period
+  - Use the imperative mood in the subject line
+  - Wrap the body at 72 characters
+  - Use the body to explain what and why vs. how
 
 Here are some sample commits to use as examples:
 
