@@ -736,15 +736,36 @@ coordinates.
     --> Point2d ( 3, 2 )
 -}
 projectInto : SketchPlane3d -> Point3d -> Point2d
-projectInto sketchPlane =
+projectInto sketchPlane point =
     let
         (SketchPlane3d { originPoint, xDirection, yDirection }) =
             sketchPlane
+
+        (Point3d ( x0, y0, z0 )) =
+            originPoint
+
+        (Direction3d ( ux, uy, uz )) =
+            xDirection
+
+        (Direction3d ( vx, vy, vz )) =
+            yDirection
+
+        (Point3d ( x, y, z )) =
+            point
+
+        dx =
+            x - x0
+
+        dy =
+            y - y0
+
+        dz =
+            z - z0
     in
-        vectorFrom originPoint
-            >> Vector3d.projectInto sketchPlane
-            >> Vector2d.components
-            >> Point2d
+        Point2d
+            ( dx * ux + dy * uy + dz * uz
+            , dx * vx + dy * vy + dz * vz
+            )
 
 
 {-| Construct a bounding box containing both of the given points.
