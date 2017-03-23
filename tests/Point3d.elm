@@ -17,6 +17,8 @@ import Fuzz
 import Expect
 import Test.Runner.Html as HtmlRunner
 import OpenSolid.Point3d as Point3d
+import OpenSolid.SketchPlane3d as SketchPlane3d
+import OpenSolid.Point2d as Point2d
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Fuzz as Fuzz
@@ -96,6 +98,22 @@ interpolationReturnsExactEndpoints =
         )
 
 
+projectIntoThenPlaceOntoIsProjectOnto : Test
+projectIntoThenPlaceOntoIsProjectOnto =
+    Test.fuzz2 Fuzz.point3d
+        Fuzz.sketchPlane3d
+        "Point3d.projectInto followed by Point2d.placeOnto is equivalent to Point3d.projectOnto"
+        (\point sketchPlane ->
+            let
+                plane =
+                    SketchPlane3d.plane sketchPlane
+            in
+                Point3d.projectInto sketchPlane point
+                    |> Point2d.placeOnto sketchPlane
+                    |> Expect.point3d (Point3d.projectOnto plane point)
+        )
+
+
 jsonRoundTrips : Test
 jsonRoundTrips =
     Generic.jsonRoundTrips Fuzz.point3d Encode.point3d Decode.point3d
@@ -108,6 +126,7 @@ suite =
         , rotationAboutAxisPreservesRadialDistance
         , midpointIsEquidistant
         , interpolationReturnsExactEndpoints
+        , projectIntoThenPlaceOntoIsProjectOnto
         , jsonRoundTrips
         ]
 
