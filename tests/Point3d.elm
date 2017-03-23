@@ -19,6 +19,9 @@ import Test.Runner.Html as HtmlRunner
 import OpenSolid.Point3d as Point3d
 import OpenSolid.SketchPlane3d as SketchPlane3d
 import OpenSolid.Point2d as Point2d
+import OpenSolid.Plane3d as Plane3d
+import OpenSolid.Vector3d as Vector3d
+import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Fuzz as Fuzz
@@ -114,6 +117,48 @@ projectIntoThenPlaceOntoIsProjectOnto =
         )
 
 
+mirrorFlipsSignedDistance : Test
+mirrorFlipsSignedDistance =
+    Test.fuzz2 Fuzz.point3d
+        Fuzz.plane3d
+        "'mirrorAcross plane' changes the sign of the 'signedDistanceFrom plane'"
+        (\point plane ->
+            let
+                signedDistance =
+                    Point3d.signedDistanceFrom plane point
+            in
+                Point3d.mirrorAcross plane point
+                    |> Point3d.signedDistanceFrom plane
+                    |> Expect.approximately -signedDistance
+        )
+
+
+translationByPerpendicularDoesNotChangeSignedDistance : Test
+translationByPerpendicularDoesNotChangeSignedDistance =
+    Test.fuzz3 Fuzz.point3d
+        Fuzz.plane3d
+        Fuzz.scalar
+        "Translating in a direction perpendicular to a plane's normal direction does not change signed distance from that plane"
+        (\point plane distance ->
+            let
+                originalSignedDistance =
+                    Point3d.signedDistanceFrom plane point
+
+                normalDirection =
+                    Plane3d.normalDirection plane
+
+                perpendicularDirection =
+                    Direction3d.perpendicularTo normalDirection
+
+                displacement =
+                    Vector3d.in_ perpendicularDirection distance
+            in
+                Point3d.translateBy displacement point
+                    |> Point3d.signedDistanceFrom plane
+                    |> Expect.approximately originalSignedDistance
+        )
+
+
 jsonRoundTrips : Test
 jsonRoundTrips =
     Generic.jsonRoundTrips Fuzz.point3d Encode.point3d Decode.point3d
@@ -127,6 +172,8 @@ suite =
         , midpointIsEquidistant
         , interpolationReturnsExactEndpoints
         , projectIntoThenPlaceOntoIsProjectOnto
+        , mirrorFlipsSignedDistance
+        , translationByPerpendicularDoesNotChangeSignedDistance
         , jsonRoundTrips
         ]
 
