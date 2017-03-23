@@ -498,12 +498,21 @@ the sign of the result of this function:
     --> -1
 -}
 signedDistanceFrom : Plane3d -> Point3d -> Float
-signedDistanceFrom plane =
+signedDistanceFrom plane point =
     let
         (Plane3d { originPoint, normalDirection }) =
             plane
+
+        (Point3d ( x0, y0, z0 )) =
+            originPoint
+
+        (Direction3d ( nx, ny, nz )) =
+            normalDirection
+
+        (Point3d ( x, y, z )) =
+            point
     in
-        vectorFrom originPoint >> Vector3d.componentIn normalDirection
+        (x - x0) * nx + (y - y0) * ny + (z - z0) * nz
 
 
 {-| Perform a uniform scaling about the given center point. The center point is
