@@ -65,6 +65,10 @@ import OpenSolid.Direction3d as Direction3d
 import OpenSolid.SketchPlane3d as SketchPlane3d
 
 
+{-| Attempt to construct an arc that starts at the first given point, passes
+through the second given point and ends at the third given point. If the three
+points are collinear, returns `Nothing`.
+-}
 throughPoints : Point3d -> Point3d -> Point3d -> Maybe Arc3d
 throughPoints firstPoint secondPoint thirdPoint =
     SketchPlane3d.throughPoints firstPoint secondPoint thirdPoint
