@@ -24,6 +24,7 @@ module OpenSolid.Point2d
         , yCoordinate
         , equalWithin
         , vectorFrom
+        , directionFrom
         , distanceFrom
         , squaredDistanceFrom
         , distanceAlong
@@ -71,13 +72,9 @@ coordinates to the `Point2d` constructor, for example
 
 @docs equalWithin
 
-# Displacement
+# Displacement and distance
 
-@docs vectorFrom
-
-# Distance
-
-@docs distanceFrom, squaredDistanceFrom, distanceAlong, signedDistanceFrom
+@docs vectorFrom, directionFrom, distanceFrom, squaredDistanceFrom, distanceAlong, signedDistanceFrom
 
 # Transformations
 
@@ -335,6 +332,26 @@ vectorFrom other point =
             coordinates point
     in
         Vector2d ( x - otherX, y - otherY )
+
+
+{-| Attempt to find the direction from the first point to the second. If the two
+points are coincident, returns `Nothing`.
+
+    point =
+        Point2d ( 1, 1 )
+
+    Point2d.directionFrom Point2d.origin point
+    --> Just (Direction2d ( 0.7071, 0.7071 ))
+
+    Point2d.directionFrom point Point2d.origin
+    --> Just (Direction2d ( -0.7071, -0.7071 ))
+
+    Point2d.directionFrom point point
+    --> Nothing
+-}
+directionFrom : Point2d -> Point2d -> Maybe Direction2d
+directionFrom point =
+    vectorFrom point >> Vector2d.direction
 
 
 {-| Find the distance between two points.

@@ -25,6 +25,7 @@ module OpenSolid.Point3d
         , zCoordinate
         , equalWithin
         , vectorFrom
+        , directionFrom
         , distanceFrom
         , squaredDistanceFrom
         , distanceAlong
@@ -76,13 +77,9 @@ and Z coordinates to the `Point3d` constructor, for example
 
 @docs equalWithin
 
-# Displacement
+# Displacement and distance
 
-@docs vectorFrom
-
-# Distance
-
-@docs distanceFrom, squaredDistanceFrom, distanceAlong, radialDistanceFrom, squaredRadialDistanceFrom, signedDistanceFrom
+@docs vectorFrom, directionFrom, distanceFrom, squaredDistanceFrom, distanceAlong, radialDistanceFrom, squaredRadialDistanceFrom, signedDistanceFrom
 
 # Transformations
 
@@ -345,6 +342,26 @@ vectorFrom other point =
             coordinates point
     in
         Vector3d ( x - otherX, y - otherY, z - otherZ )
+
+
+{-| Attempt to find the direction from the first point to the second. If the two
+points are coincident, returns `Nothing`.
+
+    point =
+        Point3d ( 1, 0, 1 )
+
+    Point3d.directionFrom Point3d.origin point
+    --> Just (Direction3d ( 0.7071, 0, 0.7071 ))
+
+    Point3d.directionFrom point Point3d.origin
+    --> Just (Direction3d ( -0.7071, 0, -0.7071 ))
+
+    Point3d.directionFrom point point
+    --> Nothing
+-}
+directionFrom : Point3d -> Point3d -> Maybe Direction3d
+directionFrom point =
+    vectorFrom point >> Vector3d.direction
 
 
 {-| Find the distance between two points.
