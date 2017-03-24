@@ -102,7 +102,6 @@ different coordinate frames.
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Point2d as Point2d
