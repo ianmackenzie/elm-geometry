@@ -185,7 +185,7 @@ perpendicularTo direction =
         normalizedVector =
             Vector3d.scaleBy (1 / length) perpendicularVector
     in
-        Direction3d (Vector3d.components normalizedVector)
+        toDirection normalizedVector
 
 
 {-| Construct a pair of directions that are perpendicular to each other and both
