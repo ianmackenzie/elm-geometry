@@ -393,7 +393,7 @@ type Arc3d
 
 {-|
 
-A quadratic spline in 2D, defined by its three control points. See the
+A quadratic Bezier spline in 2D, defined by its three control points. See the
 [`QuadraticSpline2d`](OpenSolid-QuadraticSpline2d) module for details.
 -}
 type QuadraticSpline2d
@@ -402,7 +402,7 @@ type QuadraticSpline2d
 
 {-|
 
-A quadratic spline in 3D, defined by its three control points. See the
+A quadratic Bezier spline in 3D, defined by its three control points. See the
 [`QuadraticSpline3d`](OpenSolid-QuadraticSpline3d) module for details.
 -}
 type QuadraticSpline3d
@@ -411,7 +411,7 @@ type QuadraticSpline3d
 
 {-|
 
-A cubic spline in 2D, defined by its four control points. See the
+A cubic Bezier spline in 2D, defined by its four control points. See the
 [`CubicSpline2d`](OpenSolid-CubicSpline2d) module for details.
 -}
 type CubicSpline2d
@@ -420,7 +420,7 @@ type CubicSpline2d
 
 {-|
 
-A cubic spline in 3D, defined by its four control points. See the
+A cubic Bezier spline in 3D, defined by its four control points. See the
 [`CubicSpline3d`](OpenSolid-CubicSpline3d) module for details.
 -}
 type CubicSpline3d
