@@ -606,14 +606,7 @@ portion.
 -}
 projectionIn : Direction2d -> Vector2d -> Vector2d
 projectionIn direction vector =
-    let
-        (Direction2d directionComponents) =
-            direction
-
-        directionVector =
-            Vector2d directionComponents
-    in
-        scaleBy (dotProduct vector directionVector) directionVector
+    in_ direction (componentIn direction vector)
 
 
 {-| Project a vector onto an axis.
