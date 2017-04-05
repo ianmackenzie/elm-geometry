@@ -100,11 +100,16 @@ import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Direction2d as Direction2d
 import OpenSolid.Scalar as Scalar
+import OpenSolid.Bootstrap.Axis2d as Axis2d
+import OpenSolid.Bootstrap.Frame2d as Frame2d
+import OpenSolid.Bootstrap.Direction3d as Direction3d
+import OpenSolid.Bootstrap.Point3d as Point3d
+import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
 
 
 addTo : Point2d -> Vector2d -> Point2d
-addTo =
-    flip translateBy
+addTo point vector =
+    translateBy vector point
 
 
 {-| The point (0, 0).
@@ -133,8 +138,8 @@ is equivalent to
     Point2d (fromPolar ( r, theta ))
 -}
 polar : ( Float, Float ) -> Point2d
-polar =
-    Point2d << fromPolar
+polar coordinates =
+    Point2d (fromPolar coordinates)
 
 
 {-| Construct a point halfway between two other points.
@@ -230,8 +235,9 @@ the axis:
     --> Point2d ( 4, 1 )
 -}
 along : Axis2d -> Float -> Point2d
-along (Axis2d { originPoint, direction }) distance =
-    translateBy (Vector2d.in_ direction distance) originPoint
+along axis distance =
+    Axis2d.originPoint axis
+        |> translateBy (Vector2d.in_ (Axis2d.direction axis) distance)
 
 
 {-| Construct a point given its local coordinates within a particular frame.
@@ -252,7 +258,7 @@ is equivalent to
 -}
 in_ : Frame2d -> ( Float, Float ) -> Point2d
 in_ frame coordinates =
-    Point2d coordinates |> placeIn frame
+    placeIn frame (Point2d coordinates)
 
 
 {-| Get the coordinates of a point as a tuple.
@@ -323,15 +329,15 @@ equalWithin tolerance firstPoint secondPoint =
     --> Vector2d ( 3, 4 )
 -}
 vectorFrom : Point2d -> Point2d -> Vector2d
-vectorFrom other point =
+vectorFrom firstPoint secondPoint =
     let
-        ( otherX, otherY ) =
-            coordinates other
+        ( x1, y1 ) =
+            coordinates firstPoint
 
-        ( x, y ) =
-            coordinates point
+        ( x2, y2 ) =
+            coordinates secondPoint
     in
-        Vector2d ( x - otherX, y - otherY )
+        Vector2d ( x2 - x1, y2 - y1 )
 
 
 {-| Attempt to find the direction from the first point to the second. If the two
@@ -350,8 +356,8 @@ points are coincident, returns `Nothing`.
     --> Nothing
 -}
 directionFrom : Point2d -> Point2d -> Maybe Direction2d
-directionFrom point =
-    vectorFrom point >> Vector2d.direction
+directionFrom firstPoint secondPoint =
+    Vector2d.direction (vectorFrom firstPoint secondPoint)
 
 
 {-| Find the distance between two points.
@@ -384,8 +390,8 @@ Partial application can be useful:
     --> ]
 -}
 distanceFrom : Point2d -> Point2d -> Float
-distanceFrom other =
-    squaredDistanceFrom other >> sqrt
+distanceFrom firstPoint secondPoint =
+    sqrt (squaredDistanceFrom firstPoint secondPoint)
 
 
 {-| Find the square of the distance from one point to another.
@@ -402,8 +408,8 @@ the speed difference will be negligible and using `distanceFrom` is much more
 readable!
 -}
 squaredDistanceFrom : Point2d -> Point2d -> Float
-squaredDistanceFrom other =
-    vectorFrom other >> Vector2d.squaredLength
+squaredDistanceFrom firstPoint secondPoint =
+    Vector2d.squaredLength (vectorFrom firstPoint secondPoint)
 
 
 {-| Determine how far along an axis a particular point lies. Conceptually, the
@@ -428,12 +434,9 @@ it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
     --> -1
 -}
 distanceAlong : Axis2d -> Point2d -> Float
-distanceAlong axis =
-    let
-        (Axis2d { originPoint, direction }) =
-            axis
-    in
-        vectorFrom originPoint >> Vector2d.componentIn direction
+distanceAlong axis point =
+    vectorFrom (Axis2d.originPoint axis) point
+        |> Vector2d.componentIn (Axis2d.direction axis)
 
 
 {-| Find the perpendicular distance of a point from an axis. The result
@@ -474,15 +477,15 @@ function:
     --> 2
 -}
 signedDistanceFrom : Axis2d -> Point2d -> Float
-signedDistanceFrom axis =
+signedDistanceFrom axis point =
     let
-        (Axis2d { originPoint, direction }) =
-            axis
-
         directionVector =
-            Direction2d.toVector direction
+            Direction2d.toVector (Axis2d.direction axis)
+
+        displacementVector =
+            vectorFrom (Axis2d.originPoint axis) point
     in
-        vectorFrom originPoint >> Vector2d.crossProduct directionVector
+        Vector2d.crossProduct directionVector displacementVector
 
 
 {-| Perform a uniform scaling about the given center point. The center point is
@@ -507,8 +510,8 @@ you want it is confusing and error prone. Try a combination of mirror and/or
 rotation operations instead.
 -}
 scaleAbout : Point2d -> Float -> Point2d -> Point2d
-scaleAbout centerPoint scale =
-    vectorFrom centerPoint >> Vector2d.scaleBy scale >> addTo centerPoint
+scaleAbout centerPoint scale point =
+    vectorFrom centerPoint point |> Vector2d.scaleBy scale |> addTo centerPoint
 
 
 {-| Rotate around a given center point counterclockwise by a given angle (in
@@ -569,13 +572,9 @@ axis but on the opposite side.
 -}
 mirrorAcross : Axis2d -> Point2d -> Point2d
 mirrorAcross axis =
-    let
-        (Axis2d { originPoint, direction }) =
-            axis
-    in
-        vectorFrom originPoint
-            >> Vector2d.mirrorAcross axis
-            >> addTo originPoint
+    vectorFrom (Axis2d.originPoint axis)
+        >> Vector2d.mirrorAcross axis
+        >> addTo (Axis2d.originPoint axis)
 
 
 {-| Project a point perpendicularly onto an axis.
@@ -602,13 +601,9 @@ The axis does not have to pass through the origin:
 -}
 projectOnto : Axis2d -> Point2d -> Point2d
 projectOnto axis =
-    let
-        (Axis2d { originPoint, direction }) =
-            axis
-    in
-        vectorFrom originPoint
-            >> Vector2d.projectOnto axis
-            >> addTo originPoint
+    vectorFrom (Axis2d.originPoint axis)
+        >> Vector2d.projectOnto axis
+        >> addTo (Axis2d.originPoint axis)
 
 
 {-| Take a point defined in global coordinates, and return it expressed in local
@@ -624,15 +619,11 @@ coordinates relative to a given reference frame.
     --> Point2d ( 0, -1 )
 -}
 relativeTo : Frame2d -> Point2d -> Point2d
-relativeTo frame =
-    let
-        (Frame2d { originPoint, xDirection, yDirection }) =
-            frame
-    in
-        vectorFrom originPoint
-            >> Vector2d.relativeTo frame
-            >> Vector2d.components
-            >> Point2d
+relativeTo frame point =
+    vectorFrom (Frame2d.originPoint frame) point
+        |> Vector2d.relativeTo frame
+        |> Vector2d.components
+        |> Point2d
 
 
 {-| Take a point defined in local coordinates relative to a given reference
@@ -648,12 +639,10 @@ frame, and return that point expressed in global coordinates.
     --> Point2d ( 1, 1 )
 -}
 placeIn : Frame2d -> Point2d -> Point2d
-placeIn frame =
-    let
-        (Frame2d { originPoint, xDirection, yDirection }) =
-            frame
-    in
-        coordinates >> Vector2d >> Vector2d.placeIn frame >> addTo originPoint
+placeIn frame point =
+    Vector2d (coordinates point)
+        |> Vector2d.placeIn frame
+        |> addTo (Frame2d.originPoint frame)
 
 
 {-| Take a point defined in 2D coordinates within a particular sketch plane and
@@ -680,17 +669,14 @@ The sketch plane can have any position and orientation:
 placeOnto : SketchPlane3d -> Point2d -> Point3d
 placeOnto sketchPlane =
     let
-        (SketchPlane3d { originPoint, xDirection, yDirection }) =
-            sketchPlane
+        ( x0, y0, z0 ) =
+            Point3d.coordinates (SketchPlane3d.originPoint sketchPlane)
 
-        (Point3d ( x0, y0, z0 )) =
-            originPoint
+        ( ux, uy, uz ) =
+            Direction3d.components (SketchPlane3d.xDirection sketchPlane)
 
-        (Direction3d ( ux, uy, uz )) =
-            xDirection
-
-        (Direction3d ( vx, vy, vz )) =
-            yDirection
+        ( vx, vy, vz ) =
+            Direction3d.components (SketchPlane3d.yDirection sketchPlane)
     in
         \(Point2d ( x, y )) ->
             Point3d
