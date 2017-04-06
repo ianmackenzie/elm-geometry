@@ -131,6 +131,11 @@ coordinates within a particular sketch plane.
 
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Scalar as Scalar
+import OpenSolid.Bootstrap.Direction3d as Direction3d
+import OpenSolid.Bootstrap.Axis3d as Axis3d
+import OpenSolid.Bootstrap.Plane3d as Plane3d
+import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
+import OpenSolid.Bootstrap.Frame3d as Frame3d
 
 
 {-| The zero vector.
@@ -149,12 +154,12 @@ zero =
     --> Vector3d ( 0, 5, 0 )
 -}
 in_ : Direction3d -> Float -> Vector3d
-in_ direction magnitude =
+in_ direction length =
     let
-        (Direction3d ( x, y, z )) =
-            direction
+        ( dx, dy, dz ) =
+            Direction3d.components direction
     in
-        Vector3d ( magnitude * x, magnitude * y, magnitude * z )
+        Vector3d ( length * dx, length * dy, length * dz )
 
 
 {-| Construct an arbitrary vector perpendicular to the given vector. The exact
@@ -315,8 +320,15 @@ is equivalent to
     Vector3d.componentIn Direction3d.z vector
 -}
 componentIn : Direction3d -> Vector3d -> Float
-componentIn (Direction3d components) =
-    dotProduct (Vector3d components)
+componentIn direction vector =
+    let
+        ( dx, dy, dz ) =
+            Direction3d.components direction
+
+        ( vx, vy, vz ) =
+            components vector
+    in
+        vx * dx + vy * dy + vz * dz
 
 
 {-| Compare two vectors within a tolerance. Returns true if the difference
@@ -345,8 +357,8 @@ equalWithin tolerance firstVector secondVector =
     --> 3
 -}
 length : Vector3d -> Float
-length =
-    squaredLength >> sqrt
+length vector =
+    sqrt (squaredLength vector)
 
 
 {-| Get the squared length of a vector. `squaredLength` is slightly faster than
@@ -481,13 +493,13 @@ difference firstVector secondVector =
     --> 13
 -}
 dotProduct : Vector3d -> Vector3d -> Float
-dotProduct first second =
+dotProduct firstVector secondVector =
     let
         ( x1, y1, z1 ) =
-            components first
+            components firstVector
 
         ( x2, y2, z2 ) =
-            components second
+            components secondVector
     in
         x1 * x2 + y1 * y2 + z1 * z2
 
@@ -504,13 +516,13 @@ dotProduct first second =
     --> Vector3d ( 0, 0, 6 )
 -}
 crossProduct : Vector3d -> Vector3d -> Vector3d
-crossProduct first second =
+crossProduct firstVector secondVector =
     let
         ( x1, y1, z1 ) =
-            components first
+            components firstVector
 
         ( x2, y2, z2 ) =
-            components second
+            components secondVector
     in
         Vector3d
             ( y1 * z2 - z1 * y2
@@ -561,11 +573,8 @@ scaleBy scale vector =
 rotateAround : Axis3d -> Float -> Vector3d -> Vector3d
 rotateAround axis angle =
     let
-        (Axis3d { originPoint, direction }) =
-            axis
-
-        (Direction3d ( dx, dy, dz )) =
-            direction
+        ( dx, dy, dz ) =
+            Direction3d.components (Axis3d.direction axis)
 
         halfAngle =
             0.5 * angle
@@ -661,11 +670,8 @@ rotateAround axis angle =
 mirrorAcross : Plane3d -> Vector3d -> Vector3d
 mirrorAcross plane =
     let
-        (Plane3d { originPoint, normalDirection }) =
-            plane
-
-        (Direction3d ( dx, dy, dz )) =
-            normalDirection
+        ( dx, dy, dz ) =
+            Direction3d.components (Plane3d.normalDirection plane)
 
         a =
             1 - 2 * dx * dx
@@ -709,14 +715,7 @@ portion.
 -}
 projectionIn : Direction3d -> Vector3d -> Vector3d
 projectionIn direction vector =
-    let
-        (Direction3d directionComponents) =
-            direction
-
-        directionVector =
-            Vector3d directionComponents
-    in
-        scaleBy (dotProduct vector directionVector) directionVector
+    in_ direction (componentIn direction vector)
 
 
 {-| Project a vector onto a plane. Conceptually, this means splitting the
@@ -735,11 +734,7 @@ normal direction), then returning the parallel (in-plane) portion.
 -}
 projectOnto : Plane3d -> Vector3d -> Vector3d
 projectOnto plane vector =
-    let
-        (Plane3d { originPoint, normalDirection }) =
-            plane
-    in
-        difference vector (projectionIn normalDirection vector)
+    difference vector (projectionIn (Plane3d.normalDirection plane) vector)
 
 
 {-| Take a vector defined in global coordinates, and return it expressed in
@@ -753,15 +748,11 @@ local coordinates relative to a given reference frame.
 -}
 relativeTo : Frame3d -> Vector3d -> Vector3d
 relativeTo frame vector =
-    let
-        (Frame3d { originPoint, xDirection, yDirection, zDirection }) =
-            frame
-    in
-        Vector3d
-            ( componentIn xDirection vector
-            , componentIn yDirection vector
-            , componentIn zDirection vector
-            )
+    Vector3d
+        ( componentIn (Frame3d.xDirection frame) vector
+        , componentIn (Frame3d.yDirection frame) vector
+        , componentIn (Frame3d.zDirection frame) vector
+        )
 
 
 {-| Take a vector defined in local coordinates relative to a given reference
@@ -774,26 +765,25 @@ frame, and return that vector expressed in global coordinates.
     --> Vector3d ( 1.732, 1, 3 )
 -}
 placeIn : Frame3d -> Vector3d -> Vector3d
-placeIn frame =
+placeIn frame vector =
     let
-        (Frame3d { originPoint, xDirection, yDirection, zDirection }) =
-            frame
+        ( x1, y1, z1 ) =
+            Direction3d.components (Frame3d.xDirection frame)
 
-        (Direction3d ( x1, y1, z1 )) =
-            xDirection
+        ( x2, y2, z2 ) =
+            Direction3d.components (Frame3d.yDirection frame)
 
-        (Direction3d ( x2, y2, z2 )) =
-            yDirection
+        ( x3, y3, z3 ) =
+            Direction3d.components (Frame3d.zDirection frame)
 
-        (Direction3d ( x3, y3, z3 )) =
-            zDirection
+        ( x, y, z ) =
+            components vector
     in
-        \(Vector3d ( x, y, z )) ->
-            Vector3d
-                ( x1 * x + x2 * y + x3 * z
-                , y1 * x + y2 * y + y3 * z
-                , z1 * x + z2 * y + z3 * z
-                )
+        Vector3d
+            ( x1 * x + x2 * y + x3 * z
+            , y1 * x + y2 * y + y3 * z
+            , z1 * x + z2 * y + z3 * z
+            )
 
 
 {-| Project a vector into a given sketch plane. Conceptually, this projects the
@@ -814,11 +804,7 @@ coordinates.
 -}
 projectInto : SketchPlane3d -> Vector3d -> Vector2d
 projectInto sketchPlane vector =
-    let
-        (SketchPlane3d { originPoint, xDirection, yDirection }) =
-            sketchPlane
-    in
-        Vector2d
-            ( componentIn xDirection vector
-            , componentIn yDirection vector
-            )
+    Vector2d
+        ( componentIn (SketchPlane3d.xDirection sketchPlane) vector
+        , componentIn (SketchPlane3d.yDirection sketchPlane) vector
+        )
