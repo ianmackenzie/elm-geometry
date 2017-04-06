@@ -125,6 +125,11 @@ For the examples, assume the following frame has been defined:
 
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Scalar as Scalar
+import OpenSolid.Bootstrap.Direction2d as Direction2d
+import OpenSolid.Bootstrap.Axis2d as Axis2d
+import OpenSolid.Bootstrap.Frame2d as Frame2d
+import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
+import OpenSolid.Bootstrap.Direction3d as Direction3d
 
 
 {-| The zero vector.
@@ -153,8 +158,8 @@ is equivalent to
     Vector2d (fromPolar ( r, theta ))
 -}
 polar : ( Float, Float ) -> Vector2d
-polar =
-    Vector2d << fromPolar
+polar coordinates =
+    Vector2d (fromPolar coordinates)
 
 
 {-| Construct a vector in the given direction with the given length.
@@ -163,12 +168,12 @@ polar =
     --> Vector2d ( 0, 5 )
 -}
 in_ : Direction2d -> Float -> Vector2d
-in_ direction magnitude =
+in_ direction length =
     let
-        (Direction2d ( x, y )) =
-            direction
+        ( dx, dy ) =
+            Direction2d.components direction
     in
-        Vector2d ( magnitude * x, magnitude * y )
+        Vector2d ( length * dx, length * dy )
 
 
 {-| Construct a vector perpendicular to the given vector, by rotating the given
@@ -308,8 +313,15 @@ is equivalent to
     Vector2d.componentIn Direction2d.x vector
 -}
 componentIn : Direction2d -> Vector2d -> Float
-componentIn (Direction2d ( dx, dy )) (Vector2d ( x, y )) =
-    x * dx + y * dy
+componentIn direction vector =
+    let
+        ( dx, dy ) =
+            Direction2d.components direction
+
+        ( vx, vy ) =
+            components vector
+    in
+        vx * dx + vy * dy
 
 
 {-| Compare two vectors within a tolerance. Returns true if the difference
@@ -338,8 +350,8 @@ equalWithin tolerance firstVector secondVector =
     --> 5
 -}
 length : Vector2d -> Float
-length =
-    squaredLength >> sqrt
+length vector =
+    sqrt (squaredLength vector)
 
 
 {-| Get the squared length of a vector. `squaredLength` is slightly faster than
@@ -356,8 +368,12 @@ the speed difference will be negligible and using `length` is much more
 readable!
 -}
 squaredLength : Vector2d -> Float
-squaredLength (Vector2d ( x, y )) =
-    x * x + y * y
+squaredLength vector =
+    let
+        ( x, y ) =
+            components vector
+    in
+        x * x + y * y
 
 
 {-| Attempt to find the direction of a vector. In the case of a zero vector,
@@ -424,8 +440,15 @@ lengthAndDirection vector =
     --> Vector2d ( 4, 6 )
 -}
 sum : Vector2d -> Vector2d -> Vector2d
-sum (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
-    Vector2d ( x1 + x2, y1 + y2 )
+sum firstVector secondVector =
+    let
+        ( x1, y1 ) =
+            components firstVector
+
+        ( x2, y2 ) =
+            components secondVector
+    in
+        Vector2d ( x1 + x2, y1 + y2 )
 
 
 {-| Find the difference between two vectors (the first vector minus the second).
@@ -440,8 +463,15 @@ sum (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
     --> Vector2d ( 4, 3 )
 -}
 difference : Vector2d -> Vector2d -> Vector2d
-difference (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
-    Vector2d ( x1 - x2, y1 - y2 )
+difference firstVector secondVector =
+    let
+        ( x1, y1 ) =
+            components firstVector
+
+        ( x2, y2 ) =
+            components secondVector
+    in
+        Vector2d ( x1 - x2, y1 - y2 )
 
 
 {-| Find the dot product of two vectors.
@@ -456,8 +486,15 @@ difference (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
     --> 11
 -}
 dotProduct : Vector2d -> Vector2d -> Float
-dotProduct (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
-    x1 * x2 + y1 * y2
+dotProduct firstVector secondVector =
+    let
+        ( x1, y1 ) =
+            components firstVector
+
+        ( x2, y2 ) =
+            components secondVector
+    in
+        x1 * x2 + y1 * y2
 
 
 {-| Find the scalar 'cross product' of two vectors in 2D. This is defined as
@@ -517,8 +554,12 @@ crossProduct firstVector secondVector =
     --> Vector2d ( 1, -2 )
 -}
 flip : Vector2d -> Vector2d
-flip (Vector2d ( x, y )) =
-    Vector2d ( -x, -y )
+flip vector =
+    let
+        ( x, y ) =
+            components vector
+    in
+        Vector2d ( -x, -y )
 
 
 {-| Scale the length of a vector by a given scale.
@@ -527,8 +568,12 @@ flip (Vector2d ( x, y )) =
     --> Vector2d ( 3, 6 )
 -}
 scaleBy : Float -> Vector2d -> Vector2d
-scaleBy scale (Vector2d ( x, y )) =
-    Vector2d ( x * scale, y * scale )
+scaleBy scale vector =
+    let
+        ( x, y ) =
+            components vector
+    in
+        Vector2d ( x * scale, y * scale )
 
 
 {-| Rotate a vector counterclockwise by a given angle (in radians).
@@ -572,11 +617,8 @@ rotateBy angle =
 mirrorAcross : Axis2d -> Vector2d -> Vector2d
 mirrorAcross axis =
     let
-        (Axis2d { originPoint, direction }) =
-            axis
-
-        (Direction2d ( dx, dy )) =
-            direction
+        ( dx, dy ) =
+            Direction2d.components (Axis2d.direction axis)
 
         a =
             1 - 2 * dy * dy
@@ -620,12 +662,8 @@ projectionIn direction vector =
 This is equivalent to finding the projection in the axis' direction.
 -}
 projectOnto : Axis2d -> Vector2d -> Vector2d
-projectOnto axis =
-    let
-        (Axis2d { originPoint, direction }) =
-            axis
-    in
-        projectionIn direction
+projectOnto axis vector =
+    projectionIn (Axis2d.direction axis) vector
 
 
 {-| Take a vector defined in global coordinates, and return it expressed in
@@ -636,14 +674,10 @@ local coordinates relative to a given reference frame.
 -}
 relativeTo : Frame2d -> Vector2d -> Vector2d
 relativeTo frame vector =
-    let
-        (Frame2d { originPoint, xDirection, yDirection }) =
-            frame
-    in
-        Vector2d
-            ( componentIn xDirection vector
-            , componentIn yDirection vector
-            )
+    Vector2d
+        ( componentIn (Frame2d.xDirection frame) vector
+        , componentIn (Frame2d.yDirection frame) vector
+        )
 
 
 {-| Take a vector defined in local coordinates relative to a given reference
@@ -655,14 +689,11 @@ frame, and return that vector expressed in global coordinates.
 placeIn : Frame2d -> Vector2d -> Vector2d
 placeIn frame =
     let
-        (Frame2d { originPoint, xDirection, yDirection }) =
-            frame
+        ( x1, y1 ) =
+            Direction2d.components (Frame2d.xDirection frame)
 
-        (Direction2d ( x1, y1 )) =
-            xDirection
-
-        (Direction2d ( x2, y2 )) =
-            yDirection
+        ( x2, y2 ) =
+            Direction2d.components (Frame2d.yDirection frame)
     in
         \(Vector2d ( x, y )) -> Vector2d ( x1 * x + x2 * y, y1 * x + y2 * y )
 
@@ -692,20 +723,19 @@ A slightly more complex example:
     --> Vector3d ( 1, 0.7071, 0.7071 )
 -}
 placeOnto : SketchPlane3d -> Vector2d -> Vector3d
-placeOnto sketchPlane =
+placeOnto sketchPlane vector =
     let
-        (SketchPlane3d { originPoint, xDirection, yDirection }) =
-            sketchPlane
+        ( ux, uy, uz ) =
+            Direction3d.components (SketchPlane3d.xDirection sketchPlane)
 
-        (Direction3d ( ux, uy, uz )) =
-            xDirection
+        ( vx, vy, vz ) =
+            Direction3d.components (SketchPlane3d.yDirection sketchPlane)
 
-        (Direction3d ( vx, vy, vz )) =
-            yDirection
+        ( x, y ) =
+            components vector
     in
-        \(Vector2d ( x, y )) ->
-            Vector3d
-                ( x * ux + y * vx
-                , x * uy + y * vy
-                , x * uz + y * vz
-                )
+        Vector3d
+            ( x * ux + y * vx
+            , x * uy + y * vy
+            , x * uz + y * vz
+            )
