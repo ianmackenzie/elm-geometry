@@ -143,7 +143,7 @@ zero =
     Vector3d ( 0, 0, 0 )
 
 
-{-| Construct a vector in the given direction with the given magnitude.
+{-| Construct a vector in the given direction with the given length.
 
     Vector3d.in_ Direction3d.y 5
     --> Vector3d ( 0, 5, 0 )
@@ -158,7 +158,7 @@ in_ direction magnitude =
 
 
 {-| Construct an arbitrary vector perpendicular to the given vector. The exact
-magnitude and direction of the resulting vector are not specified, but it is
+length and direction of the resulting vector are not specified, but it is
 guaranteed to be perpendicular to the given vector and non-zero (unless the
 given vector is itself zero).
 

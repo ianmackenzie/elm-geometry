@@ -157,7 +157,7 @@ polar =
     Vector2d << fromPolar
 
 
-{-| Construct a vector in the given direction with the given magnitude.
+{-| Construct a vector in the given direction with the given length.
 
     Vector2d.in_ Direction2d.y 5
     --> Vector2d ( 0, 5 )
@@ -474,9 +474,9 @@ dotProduct (Vector2d ( x1, y1 )) (Vector2d ( x2, y2 )) =
 
 and is useful in many of the same ways as the 3D cross product:
 
-  - Its magnitude is equal to the product of the lengths of the two given
-    vectors and the sine of the angle between them, so it can be used as a
-    metric to determine if two vectors are nearly parallel.
+  - Its length is equal to the product of the lengths of the two given vectors
+    and the sine of the angle between them, so it can be used as a metric to
+    determine if two vectors are nearly parallel.
   - The sign of the result indicates the direction of rotation from the first
     vector to the second (positive indicates a counterclockwise rotation and
     negative indicates a clockwise rotation), similar to how the direction of
