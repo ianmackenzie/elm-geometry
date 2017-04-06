@@ -178,8 +178,8 @@ midpoint lineSegment =
 
 {-| Interpolate a line segment between its start and end points; a value of 0.0
 corresponds to the start point of the line segment, a value of 0.5 corresponds
-to its midpoint and a value of 1.0 corresponds to its end point. Negative values
-or values greater than 1 can be used to extrapolate.
+to its midpoint and a value of 1.0 corresponds to its end point. Values less
+than 0.0 or greater than 1.0 can be used to extrapolate.
 
     LineSegment2d.interpolate exampleLineSegment 0.25
     --> Point2d ( 1.5, 2.5 )
