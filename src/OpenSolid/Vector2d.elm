@@ -59,11 +59,12 @@ directions and points. In most code it is actually more common to use `Point2d`
 and `Direction2d` than `Vector2d`, and much code can avoid working directly with
 `Vector2d` values at all!
 
-The simplest way to create a `Vector2d` is  by passing a tuple of X and Y
+The simplest way to create a `Vector2d` is by passing a tuple of X and Y
 components to the `Vector2d` constructor, for example
 
     vector =
         Vector2d ( 2, 3 )
+
 
 # Predefined vectors
 
@@ -75,25 +76,31 @@ Although there are no predefined constants for
 actually want their `Direction2d` versions [`Direction2d.x`](OpenSolid-Direction2d#x)
 and [`Direction2d.y`](OpenSolid-Direction2d#y).
 
+
 # Constructors
 
 @docs polar, in_, perpendicularTo, interpolateFrom, interpolate
+
 
 # Components
 
 @docs components, xComponent, yComponent, componentIn
 
+
 # Comparison
 
 @docs equalWithin
+
 
 # Length and direction
 
 @docs length, squaredLength, direction, lengthAndDirection
 
+
 # Arithmetic
 
 @docs sum, difference, dotProduct, crossProduct
+
 
 # Transformations
 
@@ -103,6 +110,7 @@ mirroring/projecting a vector across/onto an axis as moving the vector so its
 tail is on the axis, then mirroring/projecting its tip across/onto the axis.
 
 @docs flip, scaleBy, rotateBy, mirrorAcross, projectionIn, projectOnto
+
 
 # Coordinate frames
 
@@ -118,9 +126,11 @@ For the examples, assume the following frame has been defined:
 
 @docs relativeTo, placeIn
 
+
 # Sketch planes
 
 @docs placeOnto
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -136,6 +146,7 @@ import OpenSolid.Bootstrap.Direction3d as Direction3d
 
     Vector2d.zero
     --> Vector2d ( 0, 0 )
+
 -}
 zero : Vector2d
 zero =
@@ -156,6 +167,7 @@ function and passing the result to the `Vector2d` constructor:
 is equivalent to
 
     Vector2d (fromPolar ( r, theta ))
+
 -}
 polar : ( Float, Float ) -> Vector2d
 polar coordinates =
@@ -166,6 +178,7 @@ polar coordinates =
 
     Vector2d.in_ Direction2d.y 5
     --> Vector2d ( 0, 5 )
+
 -}
 in_ : Direction2d -> Float -> Vector2d
 in_ direction length =
@@ -191,6 +204,7 @@ length as the given vector.
 
     Vector2d.perpendicularTo Vector2d.zero
     --> Vector2d.zero
+
 -}
 perpendicularTo : Vector2d -> Vector2d
 perpendicularTo vector =
@@ -232,6 +246,7 @@ You can pass values less than zero or greater than one to extrapolate:
 
     interpolatedVector 1.25
     --> Vector2d ( 10, 15 )
+
 -}
 interpolateFrom : Vector2d -> Vector2d -> Float -> Vector2d
 interpolateFrom v1 v2 t =
@@ -272,6 +287,7 @@ function:
 
     ( radius, angle ) =
         toPolar (Vector2d.components vector)
+
 -}
 components : Vector2d -> ( Float, Float )
 components (Vector2d components_) =
@@ -282,6 +298,7 @@ components (Vector2d components_) =
 
     Vector2d.xComponent (Vector2d ( 2, 3 ))
     --> 2
+
 -}
 xComponent : Vector2d -> Float
 xComponent (Vector2d ( x, _ )) =
@@ -292,6 +309,7 @@ xComponent (Vector2d ( x, _ )) =
 
     Vector2d.yComponent (Vector2d ( 2, 3 ))
     --> 3
+
 -}
 yComponent : Vector2d -> Float
 yComponent (Vector2d ( _, y )) =
@@ -311,6 +329,7 @@ of which can be expressed in terms of `componentIn`; for example,
 is equivalent to
 
     Vector2d.componentIn Direction2d.x vector
+
 -}
 componentIn : Direction2d -> Vector2d -> Float
 componentIn direction vector =
@@ -338,6 +357,7 @@ between the two given vectors has magnitude less than the given tolerance.
 
     Vector2d.equalWithin 1e-6 firstVector secondVector
     --> False
+
 -}
 equalWithin : Float -> Vector2d -> Vector2d -> Bool
 equalWithin tolerance firstVector secondVector =
@@ -348,6 +368,7 @@ equalWithin tolerance firstVector secondVector =
 
     Vector2d.length (Vector2d ( 3, 4 ))
     --> 5
+
 -}
 length : Vector2d -> Float
 length vector =
@@ -366,6 +387,7 @@ is equivalent to but slightly more efficient than
 since the latter requires a square root under the hood. In many cases, however,
 the speed difference will be negligible and using `length` is much more
 readable!
+
 -}
 squaredLength : Vector2d -> Float
 squaredLength vector =
@@ -384,6 +406,7 @@ return `Nothing`.
 
     Vector2d.direction (Vector2d ( 0, 0 ))
     --> Nothing
+
 -}
 direction : Vector2d -> Maybe Direction2d
 direction vector =
@@ -408,6 +431,7 @@ vector, returns `Nothing`.
 
     Vector2d.lengthAndDirection Vector2d.zero
     --> Nothing
+
 -}
 lengthAndDirection : Vector2d -> Maybe ( Float, Direction2d )
 lengthAndDirection vector =
@@ -438,6 +462,7 @@ lengthAndDirection vector =
 
     Vector2d.sum firstVector secondVector
     --> Vector2d ( 4, 6 )
+
 -}
 sum : Vector2d -> Vector2d -> Vector2d
 sum firstVector secondVector =
@@ -461,6 +486,7 @@ sum firstVector secondVector =
 
     Vector2d.difference firstVector secondVector
     --> Vector2d ( 4, 3 )
+
 -}
 difference : Vector2d -> Vector2d -> Vector2d
 difference firstVector secondVector =
@@ -484,6 +510,7 @@ difference firstVector secondVector =
 
     Vector2d.dotProduct firstVector secondVector
     --> 11
+
 -}
 dotProduct : Vector2d -> Vector2d -> Float
 dotProduct firstVector secondVector =
@@ -535,6 +562,7 @@ Some examples:
 
     Vector2d.crossProduct firstVector firstVector
     --> 0
+
 -}
 crossProduct : Vector2d -> Vector2d -> Float
 crossProduct firstVector secondVector =
@@ -552,6 +580,7 @@ crossProduct firstVector secondVector =
 
     Vector2d.flip (Vector2d ( -1, 2 ))
     --> Vector2d ( 1, -2 )
+
 -}
 flip : Vector2d -> Vector2d
 flip vector =
@@ -566,6 +595,7 @@ flip vector =
 
     Vector2d.scaleBy 3 (Vector2d ( 1, 2 ))
     --> Vector2d ( 3, 6 )
+
 -}
 scaleBy : Float -> Vector2d -> Vector2d
 scaleBy scale vector =
@@ -583,6 +613,7 @@ scaleBy scale vector =
 
     Vector2d.rotateBy pi (Vector2d ( 1, 0 ))
     --> Vector2d ( -1, 0 )
+
 -}
 rotateBy : Float -> Vector2d -> Vector2d
 rotateBy angle =
@@ -613,6 +644,7 @@ rotateBy angle =
 
     Vector2d.mirrorAcross horizontalAxis vector
     --> Vector2d ( 2, -3 )
+
 -}
 mirrorAcross : Axis2d -> Vector2d -> Vector2d
 mirrorAcross axis =
@@ -645,6 +677,7 @@ portion.
 
     Vector2d.projectionIn Direction2d.y vector
     --> Vector2d ( 0, 3 )
+
 -}
 projectionIn : Direction2d -> Vector2d -> Vector2d
 projectionIn direction vector =
@@ -660,6 +693,7 @@ projectionIn direction vector =
     --> Vector2d ( -1, 0 )
 
 This is equivalent to finding the projection in the axis' direction.
+
 -}
 projectOnto : Axis2d -> Vector2d -> Vector2d
 projectOnto axis vector =
@@ -671,6 +705,7 @@ local coordinates relative to a given reference frame.
 
     Vector2d.relativeTo rotatedFrame (Vector2d ( 2, 0 ))
     --> Vector2d ( 1.732, -1 )
+
 -}
 relativeTo : Frame2d -> Vector2d -> Vector2d
 relativeTo frame vector =
@@ -685,6 +720,7 @@ frame, and return that vector expressed in global coordinates.
 
     Vector2d.placeIn rotatedFrame (Vector2d ( 2, 0 ))
     --> Vector2d ( 1.732, 1 )
+
 -}
 placeIn : Frame2d -> Vector2d -> Vector2d
 placeIn frame =
@@ -721,6 +757,7 @@ A slightly more complex example:
 
     Vector2d.placeOnto tiltedSketchPlane (Vector2d ( 1, 1 ))
     --> Vector3d ( 1, 0.7071, 0.7071 )
+
 -}
 placeOnto : SketchPlane3d -> Vector2d -> Vector3d
 placeOnto sketchPlane vector =

@@ -37,21 +37,26 @@ Circles can be constructed by passing a record with `centerPoint`,
 **You must ensure the provided radius is positive** (or zero, but that's not a
 very useful circle).
 
+
 # Accessors
 
 @docs centerPoint, axialDirection, radius, diameter, area, circumference
+
 
 # Transformations
 
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross
 
+
 # Coordinate frames
 
 @docs relativeTo, placeIn
 
+
 # Bounds
 
 @docs boundingBox
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -63,6 +68,7 @@ import OpenSolid.Direction3d as Direction3d
 
     Circle3d.centerPoint exampleCircle
     --> Point3d ( 2, 0, 1 )
+
 -}
 centerPoint : Circle3d -> Point3d
 centerPoint (Circle3d properties) =
@@ -73,6 +79,7 @@ centerPoint (Circle3d properties) =
 
     Circle3d.axialDirection exampleCircle
     --> Direction3d.z
+
 -}
 axialDirection : Circle3d -> Direction3d
 axialDirection (Circle3d properties) =
@@ -83,6 +90,7 @@ axialDirection (Circle3d properties) =
 
     Circle3d.radius exampleCircle
     --> 3
+
 -}
 radius : Circle3d -> Float
 radius (Circle3d properties) =
@@ -93,6 +101,7 @@ radius (Circle3d properties) =
 
     Circl3d.diameter exampleCircle
     --> 6
+
 -}
 diameter : Circle3d -> Float
 diameter circle =
@@ -103,6 +112,7 @@ diameter circle =
 
     Circle3d.area exampleCircle
     --> 28.2743
+
 -}
 area : Circle3d -> Float
 area circle =
@@ -117,6 +127,7 @@ area circle =
 
     Circle3d.circumference exampleCircle
     --> 18.8496
+
 -}
 circumference : Circle3d -> Float
 circumference circle =
@@ -131,6 +142,7 @@ circumference circle =
     -->     , axialDirection = Direction3d.z
     -->     , radius = 9
     -->     }
+
 -}
 scaleAbout : Point3d -> Float -> Circle3d -> Circle3d
 scaleAbout point scale circle =
@@ -153,6 +165,7 @@ scaleAbout point scale circle =
     -->     , axialDirection = Direction3d.x
     -->     , radius = 3
     -->     }
+
 -}
 rotateAround : Axis3d -> Float -> Circle3d -> Circle3d
 rotateAround axis angle =
@@ -182,6 +195,7 @@ rotateAround axis angle =
     -->     , axialDirection = Direction3d.z
     -->     , radius = 3
     -->     }
+
 -}
 translateBy : Vector3d -> Circle3d -> Circle3d
 translateBy displacement circle =
@@ -200,6 +214,7 @@ translateBy displacement circle =
     -->     , axialDirection = Direction3d ( 0, 0, -1 )
     -->     , radius = 3
     -->     }
+
 -}
 mirrorAcross : Plane3d -> Circle3d -> Circle3d
 mirrorAcross plane =
@@ -230,6 +245,7 @@ local coordinates relative to a given reference frame.
     -->     , axialDirection = Direction3d.z
     -->     , radius = 3
     -->     }
+
 -}
 relativeTo : Frame3d -> Circle3d -> Circle3d
 relativeTo frame circle =
@@ -252,6 +268,7 @@ given reference frame, and return that circle expressed in global coordinates.
     -->     , axialDirection = Direction3d.z
     -->     , radius = 3
     -->     }
+
 -}
 placeIn : Frame3d -> Circle3d -> Circle3d
 placeIn frame circle =
@@ -273,6 +290,7 @@ placeIn frame circle =
     -->     , minZ = 1
     -->     , maxZ = 1
     -->     }
+
 -}
 boundingBox : Circle3d -> BoundingBox3d
 boundingBox circle =

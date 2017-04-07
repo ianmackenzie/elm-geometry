@@ -48,29 +48,36 @@ Planes can by constructed by passing a record with `originPoint` and
             , normalDirection = Direction3d.y
             }
 
+
 # Predefined planes
 
 @docs xy, yz, zx
+
 
 # Constructors
 
 @docs throughPoints
 
+
 # Accessors
 
 @docs originPoint, normalDirection
+
 
 # Conversions
 
 @docs normalAxis, sketchPlane
 
+
 # Transformations
 
 @docs offsetBy, flip, rotateAround, translateBy, moveTo, mirrorAcross
 
+
 # Coordinate frames
 
 @docs relativeTo, placeIn
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -88,6 +95,7 @@ direction.
     -->     { originPoint = Point3d.origin
     -->     , normalDirection = Direction3d.z
     -->     }
+
 -}
 xy : Plane3d
 xy =
@@ -105,6 +113,7 @@ direction.
     -->     { originPoint = Point3d.origin
     -->     , normalDirection = Direction3d.x
     -->     }
+
 -}
 yz : Plane3d
 yz =
@@ -122,6 +131,7 @@ direction.
     -->     { originPoint = Point3d.origin
     -->     , normalDirection = Direction3d.y
     -->     }
+
 -}
 zx : Plane3d
 zx =
@@ -153,6 +163,7 @@ given points are collinear, returns `Nothing`.
         (Point3d ( 3, 0, 0 ))
         (Point3d ( 4, 0, 0 ))
     --> Nothing
+
 -}
 throughPoints : Point3d -> Point3d -> Point3d -> Maybe Plane3d
 throughPoints firstPoint secondPoint thirdPoint =
@@ -171,6 +182,7 @@ throughPoints firstPoint secondPoint thirdPoint =
 
     Plane3d.originPoint Plane3d.xy
     --> Point3d.origin
+
 -}
 originPoint : Plane3d -> Point3d
 originPoint (Plane3d properties) =
@@ -181,6 +193,7 @@ originPoint (Plane3d properties) =
 
     Plane3d.normalDirection Plane3d.xy
     --> Direction3d.z
+
 -}
 normalDirection : Plane3d -> Direction3d
 normalDirection (Plane3d properties) =
@@ -191,6 +204,7 @@ normalDirection (Plane3d properties) =
 
     Plane3d.normalAxis Plane3d.zx
     --> Axis3d.y
+
 -}
 normalAxis : Plane3d -> Axis3d
 normalAxis plane =
@@ -224,6 +238,7 @@ As a result, this function is only useful if the exact X and Y basis directions
 of the resulting sketch plane are not important; if they are, you will need to
 construct those directions explicitly and directly construct a new
 `SketchPlane3d` from them.
+
 -}
 sketchPlane : Plane3d -> SketchPlane3d
 sketchPlane plane =
@@ -254,6 +269,7 @@ sketchPlane plane =
     -->     { originPoint = Point3d ( 0, 0, -2 )
     -->     , normalDirection = Direction3d.z
     -->     }
+
 -}
 offsetBy : Float -> Plane3d -> Plane3d
 offsetBy distance plane =
@@ -267,6 +283,7 @@ offsetBy distance plane =
     -->     { originPoint = Point3d.origin
     -->     , normalDirection = Direction3d ( 0, 0, -1 )
     -->     }
+
 -}
 flip : Plane3d -> Plane3d
 flip plane =
@@ -280,6 +297,7 @@ flip plane =
 
     Plane3d.rotateAround Axis3d.y (degrees 90) Plane3d.xy
     --> Plane3d.yz
+
 -}
 rotateAround : Axis3d -> Float -> Plane3d -> Plane3d
 rotateAround axis angle =
@@ -314,6 +332,7 @@ the plane's origin point and leaves its normal direction unchanged.
     -->     { originPoint = Point3d ( 2, 3, 4 )
     -->     , normalDirection = Direction3d.z
     -->     }
+
 -}
 translateBy : Vector3d -> Plane3d -> Plane3d
 translateBy vector plane =
@@ -334,6 +353,7 @@ direction.
     -->     { originPoint = Point3d ( 1, 2, 3 )
     -->     , normalDirection = Direction3d.z
     -->     }
+
 -}
 moveTo : Point3d -> Plane3d -> Plane3d
 moveTo newOrigin plane =
@@ -357,6 +377,7 @@ and the plane to mirror is given second.
     -->     { originPoint = Point3d ( 1, 2, -3 )
     -->     , normalDirection = Direction3d ( 0, 0, -1 )
     -->     }
+
 -}
 mirrorAcross : Plane3d -> Plane3d -> Plane3d
 mirrorAcross otherPlane =
@@ -391,6 +412,7 @@ coordinates relative to a given reference frame.
     -->     { originPoint = Point3d ( -1, -1, 1 )
     -->     , normalDirection = Direction3d.z
     -->     }
+
 -}
 relativeTo : Frame3d -> Plane3d -> Plane3d
 relativeTo frame =
@@ -425,6 +447,7 @@ frame, and return that plane expressed in global coordinates.
     -->     { originPoint = Point3d ( 2, 3, 4 )
     -->     , normalDirection = Direction3d.z
     -->     }
+
 -}
 placeIn : Frame3d -> Plane3d -> Plane3d
 placeIn frame =

@@ -36,37 +36,46 @@ fields to the `Circle2d` constructor, for example
 **You must ensure the provided radius is positive** (or zero, but that's not a
 very useful circle).
 
+
 # Predefined circles
 
 @docs unit
+
 
 # Constructors
 
 @docs throughPoints
 
+
 # Accessors
 
 @docs centerPoint, radius, diameter, area, circumference
+
 
 # Queries
 
 @docs contains
 
+
 # Transformations
 
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross
+
 
 # Coordinate frames
 
 @docs relativeTo, placeIn
 
+
 # Sketch planes
 
 @docs placeOnto
 
+
 # Bounds
 
 @docs boundingBox
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -78,6 +87,7 @@ import OpenSolid.SketchPlane3d as SketchPlane3d
 
     Circle2d.unit
     --> Circle2d { centerPoint = Point2d.origin, radius = 1 }
+
 -}
 unit : Circle2d
 unit =
@@ -120,6 +130,7 @@ the three given points are collinear, returns `Nothing`.
         Point2d.origin
         (Point2d ( 1, 0 ))
     --> Nothing
+
 -}
 throughPoints : Point2d -> Point2d -> Point2d -> Maybe Circle2d
 throughPoints firstPoint secondPoint thirdPoint =
@@ -194,6 +205,7 @@ throughPoints firstPoint secondPoint thirdPoint =
 
     Circle2d.centerPoint exampleCircle
     --> Point2d ( 1, 2 )
+
 -}
 centerPoint : Circle2d -> Point2d
 centerPoint (Circle2d properties) =
@@ -204,6 +216,7 @@ centerPoint (Circle2d properties) =
 
     Circle2d.radius exampleCircle
     --> 3
+
 -}
 radius : Circle2d -> Float
 radius (Circle2d properties) =
@@ -214,6 +227,7 @@ radius (Circle2d properties) =
 
     Circle2d.diameter exampleCircle
     --> 6
+
 -}
 diameter : Circle2d -> Float
 diameter circle =
@@ -224,6 +238,7 @@ diameter circle =
 
     Circle2d.area exampleCircle
     --> 28.2743
+
 -}
 area : Circle2d -> Float
 area circle =
@@ -252,6 +267,7 @@ circumference circle =
 
     Circle2d.contains (Point2d ( 10, 10 )) exampleCircle
     --> False
+
 -}
 contains : Point2d -> Circle2d -> Bool
 contains point circle =
@@ -275,6 +291,7 @@ contains point circle =
     -->     { centerPoint = Point2d ( 1, 2 )
     -->     , radius = 1.5
     -->     }
+
 -}
 scaleAbout : Point2d -> Float -> Circle2d -> Circle2d
 scaleAbout point scale =
@@ -296,6 +313,7 @@ scaleAbout point scale =
     -->     { centerPoint = Point2d ( -2, 1 )
     -->     , radius = 3
     -->     }
+
 -}
 rotateAround : Point2d -> Float -> Circle2d -> Circle2d
 rotateAround point angle =
@@ -317,6 +335,7 @@ rotateAround point angle =
     -->     { centerPoint = Point2d ( 3, 4 )
     -->     , radius = 3
     -->     }
+
 -}
 translateBy : Vector2d -> Circle2d -> Circle2d
 translateBy displacement =
@@ -338,6 +357,7 @@ translateBy displacement =
     -->     { centerPoint = Point2d ( 1, -2 )
     -->     , radius = 3
     -->     }
+
 -}
 mirrorAcross : Axis2d -> Circle2d -> Circle2d
 mirrorAcross axis =
@@ -363,6 +383,7 @@ local coordinates relative to a given reference frame.
     -->     { centerPoint = Point2d ( -1, -1 )
     -->     , radius = 3
     -->     }
+
 -}
 relativeTo : Frame2d -> Circle2d -> Circle2d
 relativeTo frame =
@@ -388,6 +409,7 @@ given reference frame, and return that circle expressed in global coordinates.
     -->     { centerPoint = Point2d ( 3, 5 )
     -->     , radius = 3
     -->     }
+
 -}
 placeIn : Frame2d -> Circle2d -> Circle2d
 placeIn frame =
@@ -411,6 +433,7 @@ return the corresponding circle in 3D.
     -->     , axialDirection = Direction3d.x
     -->     , radius = 3
     -->     }
+
 -}
 placeOnto : SketchPlane3d -> Circle2d -> Circle3d
 placeOnto sketchPlane circle =
@@ -430,6 +453,7 @@ placeOnto sketchPlane circle =
     -->     , minY = -1
     -->     , maxY = 5
     -->     }
+
 -}
 boundingBox : Circle2d -> BoundingBox2d
 boundingBox circle =

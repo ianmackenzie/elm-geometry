@@ -43,7 +43,7 @@ box of an object than the object itself, such as:
     and a triangle do not overlap, then the line segment and triangle cannot
     possibly intersect each other. Expensive intersection checking therefore
     only has to be performed for line segments and triangles whose bounding
-    boxes _do_ overlap.
+    boxes *do* overlap.
   - 2D rendering: When rendering a 2D scene, any object whose bounding box does
     not overlap the viewing area must itself be completely outside the viewing
     area, and therefore does not have to be drawn. This provides a simple form
@@ -66,22 +66,27 @@ values are properly ordered**: <code>minX&nbsp;<=&nbsp;maxX</code>,
 boxes using functions such as [`Point2d.hull`](OpenSolid-Point2d#hull) where the
 input order does not matter.
 
+
 # Constructors
 
 @docs singleton, containing
+
 
 # Accessors
 
 @docs extrema, minX, maxX, minY, maxY
 @docs dimensions, midX, midY, centroid
 
+
 # Checks
 
 @docs contains, overlaps, isContainedIn
 
+
 # Boolean operations
 
 @docs hull, intersection
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -100,6 +105,7 @@ import OpenSolid.Point2d as Point2d
     -->     , minY = 3
     -->     , maxY = 3
     -->     }
+
 -}
 singleton : Point2d -> BoundingBox2d
 singleton point =
@@ -134,6 +140,7 @@ list is empty, returns `Nothing`.
 
 If you have exactly two points, you can use [`Point2d.hull`](OpenSolid-Point2d#hull)
 instead (which returns a `BoundingBox2d` instead of a `Maybe BoundingBox2d`).
+
 -}
 containing : List Point2d -> Maybe BoundingBox2d
 containing points =
@@ -159,18 +166,22 @@ Can be useful when combined with record destructuring, for example
 
     { minX, maxX, minY, maxY } =
         BoundingBox2d.extrema exampleBox
+
+
     --> minX = 3
     --> maxX = 8
     --> minY = 2
     --> maxY = 6
+
 -}
 extrema :
     BoundingBox2d
-    -> { minX : Float
-       , maxX : Float
-       , minY : Float
-       , maxY : Float
-       }
+    ->
+        { minX : Float
+        , maxX : Float
+        , minY : Float
+        , maxY : Float
+        }
 extrema (BoundingBox2d extrema_) =
     extrema_
 
@@ -179,6 +190,7 @@ extrema (BoundingBox2d extrema_) =
 
     BoundingBox2d.minX exampleBox
     --> 3
+
 -}
 minX : BoundingBox2d -> Float
 minX =
@@ -189,6 +201,7 @@ minX =
 
     BoundingBox2d.maxX exampleBox
     --> 8
+
 -}
 maxX : BoundingBox2d -> Float
 maxX =
@@ -199,6 +212,7 @@ maxX =
 
     BoundingBox2d.minY exampleBox
     --> 2
+
 -}
 minY : BoundingBox2d -> Float
 minY =
@@ -209,6 +223,7 @@ minY =
 
     BoundingBox2d.maxY exampleBox
     --> 6
+
 -}
 maxY : BoundingBox2d -> Float
 maxY =
@@ -219,8 +234,11 @@ maxY =
 
     ( width, height ) =
         BoundingBox2d.dimensions exampleBox
+
+
     --> width = 5
     --> height = 4
+
 -}
 dimensions : BoundingBox2d -> ( Float, Float )
 dimensions boundingBox =
@@ -235,6 +253,7 @@ dimensions boundingBox =
 
     BoundingBox2d.midX exampleBox
     --> 5.5
+
 -}
 midX : BoundingBox2d -> Float
 midX boundingBox =
@@ -249,6 +268,7 @@ midX boundingBox =
 
     BoundingBox2d.midY exampleBox
     --> 4
+
 -}
 midY : BoundingBox2d -> Float
 midY boundingBox =
@@ -263,6 +283,7 @@ midY boundingBox =
 
     BoundingBox2d.centroid exampleBox
     --> Point2d ( 5.5, 4 )
+
 -}
 centroid : BoundingBox2d -> Point2d
 centroid boundingBox =
@@ -276,6 +297,7 @@ centroid boundingBox =
 
     BoundingBox2d.contains Point2d.origin exampleBox
     --> False
+
 -}
 contains : Point2d -> BoundingBox2d -> Bool
 contains point boundingBox =
@@ -320,6 +342,7 @@ contains point boundingBox =
 
     BoundingBox2d.overlaps firstBox thirdBox
     --> False
+
 -}
 overlaps : BoundingBox2d -> BoundingBox2d -> Bool
 overlaps other boundingBox =
@@ -361,6 +384,7 @@ overlaps other boundingBox =
 
     BoundingBox2d.isContainedIn outerBox overlappingBox
     --> False
+
 -}
 isContainedIn : BoundingBox2d -> BoundingBox2d -> Bool
 isContainedIn other boundingBox =
@@ -393,6 +417,7 @@ isContainedIn other boundingBox =
     -->     , minY = 2
     -->     , maxY = 5
     -->     }
+
 -}
 hull : BoundingBox2d -> BoundingBox2d -> BoundingBox2d
 hull firstBox secondBox =
@@ -443,6 +468,7 @@ given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
 
     BoundingBox2d.intersection firstBox thirdBox
     --> Nothing
+
 -}
 intersection : BoundingBox2d -> BoundingBox2d -> Maybe BoundingBox2d
 intersection firstBox secondBox =

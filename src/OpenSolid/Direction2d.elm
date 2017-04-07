@@ -66,33 +66,41 @@ are not. Instead of manually constructing `Direction2d` values, it may be easier
 to use constructors like `Direction2d.fromAngle` or start with existing
 directions and transform them as necessary.
 
+
 # Predefined directions
 
 @docs x, y
+
 
 # Constructors
 
 @docs perpendicularTo
 
+
 # Angles
 
 @docs fromAngle, toAngle, angleFrom
+
 
 # Components
 
 @docs components, xComponent, yComponent, componentIn
 
+
 # Comparison
 
 @docs equalWithin
+
 
 # Vector conversion
 
 @docs toVector
 
+
 # Transformations
 
 @docs flip, scaleBy, rotateBy, mirrorAcross
+
 
 # Coordinate frames
 
@@ -115,9 +123,11 @@ For the examples, assume the following frames have been defined:
 
 @docs relativeTo, placeIn
 
+
 # Sketch planes
 
 @docs placeOnto
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -133,6 +143,7 @@ toDirection (Vector2d components) =
 
     Direction2d.x
     --> Direction2d ( 1, 0 )
+
 -}
 x : Direction2d
 x =
@@ -143,6 +154,7 @@ x =
 
     Direction2d.y
     --> Direction2d ( 0, 1 )
+
 -}
 y : Direction2d
 y =
@@ -157,6 +169,7 @@ given direction 90 degrees counterclockwise.
 
     Direction2d.perpendicularTo Direction2d.y
     --> Direction2d ( -1, 0 )
+
 -}
 perpendicularTo : Direction2d -> Direction2d
 perpendicularTo =
@@ -174,6 +187,7 @@ the positive X direction.
 
     Direction2d.fromAngle (degrees 135)
     --> Direction2d ( -0.7071, 0.7071 )
+
 -}
 fromAngle : Float -> Direction2d
 fromAngle angle =
@@ -191,6 +205,7 @@ X direction. The result will be in the range -π to π.
 
     Direction2d.toAngle (Direction2d ( 0, -1 ))
     --> degrees -90
+
 -}
 toAngle : Direction2d -> Float
 toAngle direction =
@@ -212,6 +227,7 @@ second. The result will be in the range -π to π.
 
     Direction2d.angleFrom referenceDirection Direction2d.x
     --> degrees -30
+
 -}
 angleFrom : Direction2d -> Direction2d -> Float
 angleFrom other direction =
@@ -231,6 +247,7 @@ as a unit vector, also know as its direction cosines).
 
     ( x, y ) =
         Direction2d.components direction
+
 -}
 components : Direction2d -> ( Float, Float )
 components (Direction2d components_) =
@@ -244,6 +261,7 @@ components (Direction2d components_) =
 
     Direction2d.xComponent Direction2d.y
     --> 0
+
 -}
 xComponent : Direction2d -> Float
 xComponent (Direction2d ( x, _ )) =
@@ -257,6 +275,7 @@ xComponent (Direction2d ( x, _ )) =
 
     Direction2d.yComponent Direction2d.y
     --> 1
+
 -}
 yComponent : Direction2d -> Float
 yComponent (Direction2d ( _, y )) =
@@ -287,6 +306,7 @@ of which can be expressed in terms of `componentIn`; for example,
 is equivalent to
 
     Direction2d.componentIn Direction2d.x direction
+
 -}
 componentIn : Direction2d -> Direction2d -> Float
 componentIn firstDirection secondDirection =
@@ -307,6 +327,7 @@ the two given directions is less than the given tolerance.
 
     Direction2d.equalWithin (degrees 1) firstDirection secondDirection
     --> False
+
 -}
 equalWithin : Float -> Direction2d -> Direction2d -> Bool
 equalWithin angle firstDirection secondDirection =
@@ -317,6 +338,7 @@ equalWithin angle firstDirection secondDirection =
 
     Direction2d.toVector Direction2d.x
     --> Vector2d ( 1, 0 )
+
 -}
 toVector : Direction2d -> Vector2d
 toVector (Direction2d components) =
@@ -327,6 +349,7 @@ toVector (Direction2d components) =
 
     Direction2d.flip Direction2d.y
     --> Direction2d ( 0, -1 )
+
 -}
 flip : Direction2d -> Direction2d
 flip =
@@ -345,6 +368,7 @@ more clear to use the [`Vector2d.in_`](OpenSolid-Vector2d#in_) constructor.
 
 The length can be negative, in which case the resulting vector will have the
 opposite direction.
+
 -}
 scaleBy : Float -> Direction2d -> Vector2d
 scaleBy scale =
@@ -358,6 +382,7 @@ scaleBy scale =
 
     Direction2d.rotateBy pi Direction2d.y
     --> Direction2d.flip Direction2d.y
+
 -}
 rotateBy : Float -> Direction2d -> Direction2d
 rotateBy angle =
@@ -378,6 +403,7 @@ the axis affects the result, since directions are position-independent.
 
     Direction2d.mirrorAcross slopedAxis Direction2d.y
     --> Direction2d.x
+
 -}
 mirrorAcross : Axis2d -> Direction2d -> Direction2d
 mirrorAcross axis =
@@ -395,6 +421,7 @@ local coordinates relative to a given reference frame.
 
     Direction2d.relativeTo rotatedFrame Direction2d.y
     --> Direction2d ( 0.5, 0.866 )
+
 -}
 relativeTo : Frame2d -> Direction2d -> Direction2d
 relativeTo frame =
@@ -412,6 +439,7 @@ frame, and return that direction expressed in global coordinates.
 
     Direction2d.placeIn rotatedFrame Direction2d.y
     --> Direction2d ( -0.5, 0.866 )
+
 -}
 placeIn : Frame2d -> Direction2d -> Direction2d
 placeIn frame =
@@ -432,6 +460,7 @@ and return the corresponding direction in 3D.
 
     Direction2d.placeOnto SketchPlane3d.zx direction
     --> Direction3d ( 0.8, 0, 0.6 )
+
 -}
 placeOnto : SketchPlane3d -> Direction2d -> Direction3d
 placeOnto sketchPlane =

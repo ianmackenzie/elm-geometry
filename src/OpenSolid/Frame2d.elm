@@ -61,33 +61,41 @@ and `yDirection` fields to the `Frame2d` constructor, for example:
 In this case **you must be careful to ensure that the X and Y directions are
 perpendicular**.
 
+
 # Predefined frames
 
 @docs xy
+
 
 # Constructors
 
 @docs at
 
+
 # Accessors
 
 @docs originPoint, xDirection, yDirection
+
 
 # Handedness
 
 @docs isRightHanded
 
+
 # Axes
 
 @docs xAxis, yAxis
+
 
 # Transformations
 
 @docs flipX, flipY, moveTo, rotateBy, rotateAround, translateBy, translateAlongOwn, mirrorAcross
 
+
 # Coordinate frames
 
 @docs relativeTo, placeIn
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -105,6 +113,7 @@ import OpenSolid.Vector2d as Vector2d
     -->     , xDirection = Direction2d.x
     -->     , yDirection = Direction2d.y
     -->     }
+
 -}
 xy : Frame2d
 xy =
@@ -120,6 +129,7 @@ point.
     -->     , xDirection = Direction2d.x
     -->     , yDirection = Direction2d.y
     -->     }
+
 -}
 at : Point2d -> Frame2d
 at point =
@@ -134,6 +144,7 @@ at point =
 
     Frame2d.originPoint Frame2d.xy
     --> Point2d.origin
+
 -}
 originPoint : Frame2d -> Point2d
 originPoint (Frame2d properties) =
@@ -144,6 +155,7 @@ originPoint (Frame2d properties) =
 
     Frame2d.xDirection Frame2d.xy
     --> Direction2d.x
+
 -}
 xDirection : Frame2d -> Direction2d
 xDirection (Frame2d properties) =
@@ -154,6 +166,7 @@ xDirection (Frame2d properties) =
 
     Frame2d.yDirection Frame2d.xy
     --> Direction2d.y
+
 -}
 yDirection : Frame2d -> Direction2d
 yDirection (Frame2d properties) =
@@ -170,6 +183,7 @@ yDirection (Frame2d properties) =
 
 All predefined frames are right-handed, and most operations on frames preserve
 handedness.
+
 -}
 isRightHanded : Frame2d -> Bool
 isRightHanded frame =
@@ -188,6 +202,7 @@ point and X direction).
 
     Frame2d.xAxis Frame2d.xy
     --> Axis2d.x
+
 -}
 xAxis : Frame2d -> Axis2d
 xAxis frame =
@@ -199,6 +214,7 @@ point and Y direction).
 
     Frame2d.yAxis Frame2d.xy
     --> Axis2d.y
+
 -}
 yAxis : Frame2d -> Axis2d
 yAxis frame =
@@ -217,6 +233,7 @@ the same.
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 of the frame.
+
 -}
 flipX : Frame2d -> Frame2d
 flipX frame =
@@ -239,6 +256,7 @@ the same.
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 of the frame.
+
 -}
 flipY : Frame2d -> Frame2d
 flipY frame =
@@ -264,6 +282,7 @@ flipY frame =
     -->     , xDirection = Direction2d ( 0.8, 0.6 )
     -->     , yDirection = Direction2d ( -0.6, 0.8 )
     -->     }
+
 -}
 moveTo : Point2d -> Frame2d -> Frame2d
 moveTo newOrigin frame =
@@ -287,6 +306,7 @@ Y directions will be rotated by the given angle.
     -->     , xDirection = Direction2d ( 0.7071, 0.7071 )
     -->     , yDirection = Direction2d ( -0.7071, 0.7071 )
     -->     }
+
 -}
 rotateBy : Float -> Frame2d -> Frame2d
 rotateBy angle frame =
@@ -314,6 +334,7 @@ and its X and Y basis directions will be rotated by the given angle.
     -->     , xDirection = Direction2d ( 0.7071, 0.7071 )
     -->     , yDirection = Direction2d ( -0.7071, 0.7071 )
     -->     }
+
 -}
 rotateAround : Point2d -> Float -> Frame2d -> Frame2d
 rotateAround centerPoint angle =
@@ -342,6 +363,7 @@ rotateAround centerPoint angle =
 
     Frame2d.translateBy displacement frame
     --> Frame2d.at (Point2d ( 3, 4 ))
+
 -}
 translateBy : Vector2d -> Frame2d -> Frame2d
 translateBy vector frame =
@@ -375,6 +397,7 @@ resulting in
         , xDirection = Direction2d ( 0.7071, 0.7071 )
         , yDirection = Direction2d ( -0.7071, 0.7071 )
         }
+
 -}
 translateAlongOwn : (Frame2d -> Axis2d) -> Float -> Frame2d -> Frame2d
 translateAlongOwn axis distance frame =
@@ -399,6 +422,7 @@ translateAlongOwn axis distance frame =
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 of the frame.
+
 -}
 mirrorAcross : Axis2d -> Frame2d -> Frame2d
 mirrorAcross axis =

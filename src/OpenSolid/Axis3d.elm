@@ -46,17 +46,21 @@ fields to the `Axis3d` constructor, for example:
             , direction = Direction3d ( 0, 0.8, -0.6 )
             }
 
+
 # Predefined axes
 
 @docs x, y, z
+
 
 # Accessors
 
 @docs originPoint, direction
 
+
 # Transformations
 
 @docs flip, moveTo, rotateAround, translateBy, mirrorAcross, projectOnto
+
 
 # Coordinate frames
 
@@ -65,9 +69,11 @@ different coordinate frames.
 
 @docs relativeTo, placeIn
 
+
 # Sketch planes
 
 @docs projectInto
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -82,6 +88,7 @@ import OpenSolid.Direction3d as Direction3d
     -->     { originPoint = Point3d.origin
     -->     , direction = Direction3d.x
     -->     }
+
 -}
 x : Axis3d
 x =
@@ -95,6 +102,7 @@ x =
     -->     { originPoint = Point3d.origin
     -->     , direction = Direction3d.y
     -->     }
+
 -}
 y : Axis3d
 y =
@@ -108,6 +116,7 @@ y =
     -->     { originPoint = Point3d.origin
     -->     , direction = Direction3d.z
     -->     }
+
 -}
 z : Axis3d
 z =
@@ -118,6 +127,7 @@ z =
 
     Axis3d.originPoint exampleAxis
     --> Point3d ( -2, 1, 3 )
+
 -}
 originPoint : Axis3d -> Point3d
 originPoint (Axis3d properties) =
@@ -128,6 +138,7 @@ originPoint (Axis3d properties) =
 
     Axis3d.direction exampleAxis
     --> Direction3d ( 0, 0.8, -0.6 )
+
 -}
 direction : Axis3d -> Direction3d
 direction (Axis3d properties) =
@@ -141,6 +152,7 @@ direction (Axis3d properties) =
     -->     { originPoint = Point3d ( -2, 1, 3 )
     -->     , direction = Direction3d ( 0, -0.8, 0.6 )
     -->     }
+
 -}
 flip : Axis3d -> Axis3d
 flip axis =
@@ -160,6 +172,7 @@ flip axis =
     -->     { originPoint = Point3d ( 3, 4, 5 ),
     -->     , direction = Direction3d ( 0, 0.8, -0.6 )
     -->     }
+
 -}
 moveTo : Point3d -> Axis3d -> Axis3d
 moveTo newOrigin axis =
@@ -174,6 +187,7 @@ around is given first and the axis to rotate is given last.
     -->     { originPoint = Point3d ( -1, -2, 3 )
     -->     , direction = Direction3d ( -0.8, 0, -0.6 )
     -->     }
+
 -}
 rotateAround : Axis3d -> Float -> Axis3d -> Axis3d
 rotateAround otherAxis angle =
@@ -202,6 +216,7 @@ the axis' origin point and leaves the direction unchanged.
     -->     { originPoint = Point3d ( 1, 4, 6 )
     -->     , direction = Direction3d ( 0, 0.8, -0.6 )
     -->     }
+
 -}
 translateBy : Vector3d -> Axis3d -> Axis3d
 translateBy vector axis =
@@ -218,6 +233,7 @@ translateBy vector axis =
     -->     { originPoint = Point3d ( -2, 1, -3 )
     -->     , direction = Direction3d ( 0, 0.6, 0.8 )
     -->     }
+
 -}
 mirrorAcross : Plane3d -> Axis3d -> Axis3d
 mirrorAcross plane =
@@ -249,6 +265,7 @@ given plane, returns `Nothing`.
 
     Axis3d.projectOnto Plane3d.xy Axis3d.z
     --> Nothing
+
 -}
 projectOnto : Plane3d -> Axis3d -> Maybe Axis3d
 projectOnto plane axis =
@@ -273,6 +290,7 @@ coordinates relative to a given reference frame.
     -->     { originPoint = Point3d ( -5, -2, 0 )
     -->     , direction = Direction3d ( 0, 0.8, -0.6 )
     -->     }
+
 -}
 relativeTo : Frame3d -> Axis3d -> Axis3d
 relativeTo frame =
@@ -301,6 +319,7 @@ frame, and return that axis expressed in global coordinates.
     -->     { originPoint = Point3d ( 1, 4, 6 )
     -->     , direction = Direction3d ( 0, 0.8, -0.6 )
     -->     }
+
 -}
 placeIn : Frame3d -> Axis3d -> Axis3d
 placeIn frame =
@@ -343,6 +362,7 @@ plane; if it is perpendicular, `Nothing` is returned.
 
     Axis3d.projectInto SketchPlane3d.xy Axis3d.z
     --> Nothing
+
 -}
 projectInto : SketchPlane3d -> Axis3d -> Maybe Axis2d
 projectInto sketchPlane axis =

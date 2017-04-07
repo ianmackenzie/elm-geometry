@@ -44,17 +44,21 @@ fields to the `Axis2d` constructor, for example:
             , direction = Direction2d ( 0.8, 0.6 )
             }
 
+
 # Predefined axes
 
 @docs x, y
+
 
 # Accessors
 
 @docs originPoint, direction
 
+
 # Transformations
 
 @docs flip, moveTo, rotateAround, translateBy, mirrorAcross
+
 
 # Coordinate frames
 
@@ -63,9 +67,11 @@ different coordinate frames.
 
 @docs relativeTo, placeIn
 
+
 # Sketch planes
 
 @docs placeOnto
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -80,6 +86,7 @@ import OpenSolid.Direction2d as Direction2d
     -->     { originPoint = Point2d.origin
     -->     , direction = Direction2d.x
     -->     }
+
 -}
 x : Axis2d
 x =
@@ -93,6 +100,7 @@ x =
     -->     { originPoint = Point2d.origin
     -->     , direction = Direction2d.y
     -->     }
+
 -}
 y : Axis2d
 y =
@@ -103,6 +111,7 @@ y =
 
     Axis2d.originPoint exampleAxis
     --> Point2d ( 1, 3 )
+
 -}
 originPoint : Axis2d -> Point2d
 originPoint (Axis2d properties) =
@@ -113,6 +122,7 @@ originPoint (Axis2d properties) =
 
     Axis2d.direction exampleAxis
     --> Direction2d ( 0.8, 0.6 )
+
 -}
 direction : Axis2d -> Direction2d
 direction (Axis2d properties) =
@@ -126,6 +136,7 @@ direction (Axis2d properties) =
     -->     { originPoint = Point2d ( 1, 3 )
     -->     , direction = Direction2d ( -0.8, -0.6 )
     -->     }
+
 -}
 flip : Axis2d -> Axis2d
 flip axis =
@@ -145,6 +156,7 @@ flip axis =
     -->     { originPoint = Point2d ( 4, 5 )
     -->     , direction = Direction2d ( 0.8, 0.6 )
     -->     }
+
 -}
 moveTo : Point2d -> Axis2d -> Axis2d
 moveTo newOrigin axis =
@@ -160,6 +172,7 @@ direction by the given angle.
     -->     { originPoint = Point2d ( -3, 1 )
     -->     , direction = Direction2d ( -0.6, 0.8 )
     -->     }
+
 -}
 rotateAround : Point2d -> Float -> Axis2d -> Axis2d
 rotateAround centerPoint angle =
@@ -188,6 +201,7 @@ the axis' origin point and leaves the direction unchanged.
     -->     { originPoint = Point2d ( 3, 6 )
     -->     , direction = Direction2d ( 0.8, 0.6 )
     -->     }
+
 -}
 translateBy : Vector2d -> Axis2d -> Axis2d
 translateBy vector axis =
@@ -205,6 +219,7 @@ the axis to mirror is given second.
     -->     { originPoint = Point2d ( 1, -3 )
     -->     , direction = Direction2d ( 0.8, -0.6 )
     -->     }
+
 -}
 mirrorAcross : Axis2d -> Axis2d -> Axis2d
 mirrorAcross otherAxis =
@@ -233,6 +248,7 @@ coordinates relative to a given reference frame.
     -->     { originPoint = Point2d ( -1, 0 )
     -->     , direction = Direction2d ( 0.8, 0.6 )
     -->     }
+
 -}
 relativeTo : Frame2d -> Axis2d -> Axis2d
 relativeTo frame =
@@ -261,6 +277,7 @@ frame, and return that axis expressed in global coordinates.
     -->     { originPoint = Point2d ( 3, 6 )
     -->     , direction = Direction2d ( 0.8, 0.6 )
     -->     }
+
 -}
 placeIn : Frame2d -> Axis2d -> Axis2d
 placeIn frame =
@@ -292,6 +309,7 @@ return the corresponding axis in 3D.
     -->     { originPoint = Point3d ( 3, 0, 2 )
     -->     , direction = Direction3d ( 0.6, 0, 0.8 )
     -->     }
+
 -}
 placeOnto : SketchPlane3d -> Axis2d -> Axis3d
 placeOnto sketchPlane =

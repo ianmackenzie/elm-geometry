@@ -47,13 +47,16 @@ Polylines can be constructed by passing an ordered list of vertices to the
             , Point2d ( 2, 1 )
             ]
 
+
 # Accessors
 
 @docs vertices, segments
 
+
 # Length
 
 @docs length
+
 
 # Transformations
 
@@ -61,17 +64,21 @@ Transforming a polyline is equivalent to transforming each of its vertices.
 
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
 
+
 # Coordinate frames
 
 @docs relativeTo, placeIn
+
 
 # Sketch planes
 
 @docs placeOnto
 
+
 # Bounds
 
 @docs boundingBox
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -88,6 +95,7 @@ import OpenSolid.LineSegment2d as LineSegment2d
     --> , Point2d ( 1, 1 )
     --> , Point2d ( 2, 1 )
     --> ]
+
 -}
 vertices : Polyline2d -> List Point2d
 vertices (Polyline2d vertices_) =
@@ -101,6 +109,7 @@ vertices (Polyline2d vertices_) =
     --> , LineSegment2d ( Point2d ( 1, 0 ), Point2d ( 1, 1 ) )
     --> , LineSegment2d ( Point2d ( 1, 1 ), Point2d ( 2, 1 ) )
     --> ]
+
 -}
 segments : Polyline2d -> List LineSegment2d
 segments polyline =
@@ -117,6 +126,7 @@ segments).
 
     Polyline2d.length stepShape
     --> 3
+
 -}
 length : Polyline2d -> Float
 length =
@@ -135,6 +145,7 @@ length =
     -->     , Point2d ( 1, 2 )
     -->     , Point2d ( 3, 2 )
     -->     ]
+
 -}
 scaleAbout : Point2d -> Float -> Polyline2d -> Polyline2d
 scaleAbout point scale =
@@ -151,6 +162,7 @@ given angle (in radians).
     -->     , Point2d ( -1, 1 )
     -->     , Point2d ( -1, 2 )
     -->     ]
+
 -}
 rotateAround : Point2d -> Float -> Polyline2d -> Polyline2d
 rotateAround point angle =
@@ -169,6 +181,7 @@ rotateAround point angle =
     -->     , Point2d ( 3, 4 )
     -->     , Point2d ( 4, 4 )
     -->     ]
+
 -}
 translateBy : Vector2d -> Polyline2d -> Polyline2d
 translateBy vector =
@@ -184,6 +197,7 @@ translateBy vector =
     -->     , Point2d ( 1, -1 )
     -->     , Point2d ( 2, -1 )
     -->     ]
+
 -}
 mirrorAcross : Axis2d -> Polyline2d -> Polyline2d
 mirrorAcross axis =
@@ -199,6 +213,7 @@ mirrorAcross axis =
     -->     , Point2d ( 1, 0 )
     -->     , Point2d ( 2, 0 )
     -->     ]
+
 -}
 projectOnto : Axis2d -> Polyline2d -> Polyline2d
 projectOnto axis =
@@ -213,6 +228,7 @@ transformations can be defined in terms of `map`; for example,
 is equivalent to
 
     Polyline2d.map (Point2d.mirrorAcross Axis2d.x) polyline
+
 -}
 map : (Point2d -> Point2d) -> Polyline2d -> Polyline2d
 map function =
@@ -232,6 +248,7 @@ in local coordinates relative to a given reference frame.
     -->     , Point2d ( 0, -1 )
     -->     , Point2d ( 1, -1 )
     -->     ]
+
 -}
 relativeTo : Frame2d -> Polyline2d -> Polyline2d
 relativeTo frame =
@@ -252,6 +269,7 @@ coordinates.
     -->     , Point2d ( 2, 3 )
     -->     , Point2d ( 3, 3 )
     -->     ]
+
 -}
 placeIn : Frame2d -> Polyline2d -> Polyline2d
 placeIn frame =
@@ -268,6 +286,7 @@ and return the corresponding polyline in 3D.
     -->     , Point3d ( 0, 1, 1 )
     -->     , Point3d ( 0, 2, 1 )
     -->     ]
+
 -}
 placeOnto : SketchPlane3d -> Polyline2d -> Polyline3d
 placeOnto sketchPlane =
@@ -286,6 +305,7 @@ if the polyline has no vertices.
     -->         , maxY = 1
     -->         }
     -->     )
+
 -}
 boundingBox : Polyline2d -> Maybe BoundingBox2d
 boundingBox polyline =

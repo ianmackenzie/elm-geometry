@@ -52,6 +52,7 @@ necessary modules using `as`, for example:
     import OpenSolid.Vector2d as Vector2d
     import OpenSolid.Plane3d as Plane3d
 
+
 # Vectors
 
 Vectors represent quantities such as displacements or velocities. For positions,
@@ -59,12 +60,14 @@ Vectors represent quantities such as displacements or velocities. For positions,
 
 @docs Vector2d, Vector3d
 
+
 # Directions
 
 A direction is effectively a vector with a length of one, used to represent
 quantities like the direction of an axis or the normal direction of a plane.
 
 @docs Direction2d, Direction3d
+
 
 # Points
 
@@ -75,6 +78,7 @@ cannot 'add' two points like you can add two vectors.
 
 @docs Point2d, Point3d
 
+
 # Datums
 
 Axes and planes are used extensively within OpenSolid to define different types
@@ -82,6 +86,7 @@ of transformations. For instance, rotation in 3D is defined by a rotation axis
 and mirroring in 3D is defined by a mirror plane.
 
 @docs Axis2d, Axis3d, Plane3d
+
 
 # Frames
 
@@ -92,17 +97,21 @@ mirroring across its XY plane.
 
 @docs Frame2d, Frame3d
 
+
 # Sketch planes
 
 @docs SketchPlane3d
+
 
 # Line segments
 
 @docs LineSegment2d, LineSegment3d
 
+
 # Triangles
 
 @docs Triangle2d, Triangle3d
+
 
 # Bounding boxes
 
@@ -112,25 +121,31 @@ during 3D rendering.
 
 @docs BoundingBox2d, BoundingBox3d
 
+
 # Polylines
 
 @docs Polyline2d, Polyline3d
+
 
 # Polygons
 
 @docs Polygon2d
 
+
 # Circles
 
 @docs Circle2d, Circle3d
+
 
 # Arcs
 
 @docs Arc2d, Arc3d
 
+
 # Splines
 
 @docs QuadraticSpline2d, QuadraticSpline3d, CubicSpline2d, CubicSpline3d
+
 -}
 
 
@@ -138,6 +153,7 @@ during 3D rendering.
 
 A vector in 2D, defined by its X and Y components. See the [`Vector2d`](OpenSolid-Vector2d)
 module for details.
+
 -}
 type Vector2d
     = Vector2d ( Float, Float )
@@ -147,6 +163,7 @@ type Vector2d
 
 A vector in 3D, defined by its X, Y and Z components. See the [`Vector3d`](OpenSolid-Vector3d)
 module for details.
+
 -}
 type Vector3d
     = Vector3d ( Float, Float, Float )
@@ -156,6 +173,7 @@ type Vector3d
 
 A direction in 2D, defined by its X and Y components. See the [`Direction2d`](OpenSolid-Direction2d)
 module for details.
+
 -}
 type Direction2d
     = Direction2d ( Float, Float )
@@ -165,6 +183,7 @@ type Direction2d
 
 A direction in 3D, defined by its X, Y and Z components. See the [`Direction3d`](OpenSolid-Direction3d)
 module for details.
+
 -}
 type Direction3d
     = Direction3d ( Float, Float, Float )
@@ -174,6 +193,7 @@ type Direction3d
 
 A point in 2D, defined by its X and Y coordinates. See the [`Point2d`](OpenSolid-Point2d)
 module for details.
+
 -}
 type Point2d
     = Point2d ( Float, Float )
@@ -183,6 +203,7 @@ type Point2d
 
 A point in 3D, defined by its X, Y and Z coordinates. See the [`Point3d`](OpenSolid-Point3d)
 module for details.
+
 -}
 type Point3d
     = Point3d ( Float, Float, Float )
@@ -192,6 +213,7 @@ type Point3d
 
 An axis in 2D, defined by its origin point and direction. See the [`Axis2d`](OpenSolid-Axis2d)
 module for details.
+
 -}
 type Axis2d
     = Axis2d { originPoint : Point2d, direction : Direction2d }
@@ -201,6 +223,7 @@ type Axis2d
 
 An axis in 3D, defined by its origin point and direction. See the [`Axis3d`](OpenSolid-Axis3d)
 module for details.
+
 -}
 type Axis3d
     = Axis3d { originPoint : Point3d, direction : Direction3d }
@@ -210,6 +233,7 @@ type Axis3d
 
 A plane in 3D, defined by its origin point and normal direction. See the
 [`Plane3d`](OpenSolid-Plane3d) module for details.
+
 -}
 type Plane3d
     = Plane3d { originPoint : Point3d, normalDirection : Direction3d }
@@ -219,6 +243,7 @@ type Plane3d
 
 A coordinate system in 2D space, defined by its origin point and X and Y
 directions. See the [`Frame2d`](OpenSolid-Frame2d) module for details.
+
 -}
 type Frame2d
     = Frame2d
@@ -232,6 +257,7 @@ type Frame2d
 
 A coordinate system in 3D space, defined by its origin point and X, Y and Z
 directions. See the [`Frame3d`](OpenSolid-Frame3d) module for details.
+
 -}
 type Frame3d
     = Frame3d
@@ -248,6 +274,7 @@ A 2D planar coordinate system embedded in 3D space, defined by its origin point
 and X and Y directions. Used for operations such as projecting 3D geometry into
 a 2D coordinate system or placing 2D geometry in 3D. See the [`SketchPlane3d`](OpenSolid-SketchPlane3d)
 module for details.
+
 -}
 type SketchPlane3d
     = SketchPlane3d
@@ -261,6 +288,7 @@ type SketchPlane3d
 
 A line segment in 2D, defined by its start and end points. See the
 [`LineSegment2d`](OpenSolid-LineSegment2d) module for details.
+
 -}
 type LineSegment2d
     = LineSegment2d ( Point2d, Point2d )
@@ -270,6 +298,7 @@ type LineSegment2d
 
 A line segment in 3D, defined by its start and end points. See the
 [`LineSegment3d`](OpenSolid-LineSegment3d) module for details.
+
 -}
 type LineSegment3d
     = LineSegment3d ( Point3d, Point3d )
@@ -279,6 +308,7 @@ type LineSegment3d
 
 A triangle in 2D, defined by its three vertices. See the [`Triangle2d`](OpenSolid-Triangle2d)
 module for details.
+
 -}
 type Triangle2d
     = Triangle2d ( Point2d, Point2d, Point2d )
@@ -288,6 +318,7 @@ type Triangle2d
 
 A triangle in 3D, defined by its three vertices. See the [`Triangle3d`](OpenSolid-Triangle3d)
 module for details.
+
 -}
 type Triangle3d
     = Triangle3d ( Point3d, Point3d, Point3d )
@@ -297,6 +328,7 @@ type Triangle3d
 
 A bounding box in 2D, defined by its minimum and maximum X and Y values. See the
 [`BoundingBox2d`](OpenSolid-BoundingBox2d) module for details.
+
 -}
 type BoundingBox2d
     = BoundingBox2d
@@ -311,6 +343,7 @@ type BoundingBox2d
 
 A bounding box in 3D, defined by its minimum and maximum X, Y and Z values. See
 the [`BoundingBox3d`](OpenSolid-BoundingBox3d) module for details.
+
 -}
 type BoundingBox3d
     = BoundingBox3d
@@ -327,6 +360,7 @@ type BoundingBox3d
 
 A polyline in 2D, defined by a list of vertices. See the [`Polyline2d`](OpenSolid-Polyline2d)
 module for details.
+
 -}
 type Polyline2d
     = Polyline2d (List Point2d)
@@ -336,6 +370,7 @@ type Polyline2d
 
 A polyline in 3D, defined by a list of vertices. See the [`Polyline3d`](OpenSolid-Polyline3d)
 module for details.
+
 -}
 type Polyline3d
     = Polyline3d (List Point3d)
@@ -346,6 +381,7 @@ type Polyline3d
 A polygon in 2D, defined by a list of vertices. Very similar to a `Polyline2d`
 but the last point is implicitly considered to connect back to the first point.
 See the [`Polygon2d`](OpenSolid-Polygon2d) module for details.
+
 -}
 type Polygon2d
     = Polygon2d (List Point2d)
@@ -355,6 +391,7 @@ type Polygon2d
 
 A circle in 2D, defined by its center point and radius. See the [`Circle2d`](OpenSolid-Circle2d)
 module for details.
+
 -}
 type Circle2d
     = Circle2d { centerPoint : Point2d, radius : Float }
@@ -364,6 +401,7 @@ type Circle2d
 
 A circle in 3D, defined by its center point, axial direction and radius. See the
 [`Circle3d`](OpenSolid-Circle3d) module for details.
+
 -}
 type Circle3d
     = Circle3d
@@ -373,54 +411,42 @@ type Circle3d
         }
 
 
-{-|
-
-An arc in 2D, defined by its center point, start point and swept angle. See the
+{-| An arc in 2D, defined by its center point, start point and swept angle. See the
 [`Arc2d`](OpenSolid-Arc2d) module for details.
 -}
 type Arc2d
     = Arc2d { centerPoint : Point2d, startPoint : Point2d, sweptAngle : Float }
 
 
-{-|
-
-An arc in 3D, defined by its axis, start point and swept angle. See the
+{-| An arc in 3D, defined by its axis, start point and swept angle. See the
 [`Arc3d`](OpenSolid-Arc3d) module for details.
 -}
 type Arc3d
     = Arc3d { axis : Axis3d, startPoint : Point3d, sweptAngle : Float }
 
 
-{-|
-
-A quadratic Bezier spline in 2D, defined by its three control points. See the
+{-| A quadratic Bezier spline in 2D, defined by its three control points. See the
 [`QuadraticSpline2d`](OpenSolid-QuadraticSpline2d) module for details.
 -}
 type QuadraticSpline2d
     = QuadraticSpline2d ( Point2d, Point2d, Point2d )
 
 
-{-|
-
-A quadratic Bezier spline in 3D, defined by its three control points. See the
+{-| A quadratic Bezier spline in 3D, defined by its three control points. See the
 [`QuadraticSpline3d`](OpenSolid-QuadraticSpline3d) module for details.
 -}
 type QuadraticSpline3d
     = QuadraticSpline3d ( Point3d, Point3d, Point3d )
 
 
-{-|
-
-A cubic Bezier spline in 2D, defined by its four control points. See the
+{-| A cubic Bezier spline in 2D, defined by its four control points. See the
 [`CubicSpline2d`](OpenSolid-CubicSpline2d) module for details.
 -}
 type CubicSpline2d
     = CubicSpline2d ( Point2d, Point2d, Point2d, Point2d )
 
 
-{-|
-
-A cubic Bezier spline in 3D, defined by its four control points. See the
+{-| A cubic Bezier spline in 3D, defined by its four control points. See the
 [`CubicSpline3d`](OpenSolid-CubicSpline3d) module for details.
 -}
 type CubicSpline3d

@@ -3,6 +3,7 @@ module OpenSolid.Scalar exposing (equalWithin, interpolateFrom)
 {-| Convenience functions for working with scalar (floating-point) values.
 
 @docs equalWithin, interpolateFrom
+
 -}
 
 
@@ -13,6 +14,7 @@ module OpenSolid.Scalar exposing (equalWithin, interpolateFrom)
 
     Scalar.equalWithin 1e-3 1.9999 2.0001 ==
         True
+
 -}
 equalWithin : Float -> Float -> Float -> Bool
 equalWithin tolerance firstValue secondValue =
@@ -36,6 +38,7 @@ Parameter values less than zero or greater than one can be used to extrapolate:
 
     Scalar.interpolateFrom 2 -2 -0.25
     --> 3
+
 -}
 interpolateFrom : Float -> Float -> Float -> Float
 interpolateFrom start end parameter =

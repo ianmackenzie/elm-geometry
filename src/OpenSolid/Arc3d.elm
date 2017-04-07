@@ -39,21 +39,26 @@ point - here the origin point of the given axis is `Point3d.origin`, while the
 center point of the arc is `Point3d ( 0, 0, 1 )` (the start point of the arc
 projected onto the axis).
 
+
 # Constructors
 
 @docs throughPoints
+
 
 # Accessors
 
 @docs axis, centerPoint, radius, startoint, endPoint, point, sweptAngle
 
+
 # Transformations
 
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross
 
+
 # Coordinate frames
 
 @docs relativeTo, placeIn
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)

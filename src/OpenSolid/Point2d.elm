@@ -56,29 +56,36 @@ coordinates to the `Point2d` constructor, for example
     point =
         Point2d ( 2, 3 )
 
+
 # Predefined points
 
 @docs origin
+
 
 # Constructors
 
 @docs polar, midpoint, interpolateFrom, interpolate, along, in_
 
+
 # Coordinates
 
 @docs coordinates, xCoordinate, yCoordinate
+
 
 # Comparison
 
 @docs equalWithin
 
+
 # Displacement and distance
 
 @docs vectorFrom, directionFrom, distanceFrom, squaredDistanceFrom, distanceAlong, signedDistanceFrom
 
+
 # Transformations
 
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto
+
 
 # Coordinate frames
 
@@ -87,13 +94,16 @@ different coordinate frames.
 
 @docs relativeTo, placeIn
 
+
 # Sketch planes
 
 @docs placeOnto
 
+
 # Bounds
 
 @docs hull
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -116,6 +126,7 @@ addTo point vector =
 
     Point2d.origin
     --> Point2d ( 0, 0 )
+
 -}
 origin : Point2d
 origin =
@@ -136,6 +147,7 @@ function and passing the result to the `Point2d` constructor:
 is equivalent to
 
     Point2d (fromPolar ( r, theta ))
+
 -}
 polar : ( Float, Float ) -> Point2d
 polar coordinates =
@@ -152,6 +164,7 @@ polar coordinates =
 
     Point2d.midpoint p1 p2
     --> Point2d ( 2, 4 )
+
 -}
 midpoint : Point2d -> Point2d -> Point2d
 midpoint firstPoint secondPoint =
@@ -189,6 +202,7 @@ You can pass values less than zero or greater than one to extrapolate:
 
     interpolatedPoint 1.25
     --> Point2d ( 10, 15 )
+
 -}
 interpolateFrom : Point2d -> Point2d -> Float -> Point2d
 interpolateFrom p1 p2 t =
@@ -233,6 +247,7 @@ the axis:
 
     Point2d.along horizontalAxis -3
     --> Point2d ( 4, 1 )
+
 -}
 along : Axis2d -> Float -> Point2d
 along axis distance =
@@ -255,6 +270,7 @@ This is shorthand for using `Point2d.placeIn`;
 is equivalent to
 
     Point2d coordinates |> Point2d.placeIn frame
+
 -}
 in_ : Frame2d -> ( Float, Float ) -> Point2d
 in_ frame coordinates =
@@ -271,6 +287,7 @@ function:
 
     ( radius, angle ) =
         toPolar (Point2d.coordinates point)
+
 -}
 coordinates : Point2d -> ( Float, Float )
 coordinates (Point2d coordinates_) =
@@ -281,6 +298,7 @@ coordinates (Point2d coordinates_) =
 
     Point2d.xCoordinate (Point2d ( 2, 3 ))
     --> 2
+
 -}
 xCoordinate : Point2d -> Float
 xCoordinate (Point2d ( x, _ )) =
@@ -291,6 +309,7 @@ xCoordinate (Point2d ( x, _ )) =
 
     Point2d.yCoordinate (Point2d ( 2, 3 ))
     --> 3
+
 -}
 yCoordinate : Point2d -> Float
 yCoordinate (Point2d ( _, y )) =
@@ -311,6 +330,7 @@ between the two given points is less than the given tolerance.
 
     Point2d.equalWithin 1e-6 firstPoint secondPoint
     --> False
+
 -}
 equalWithin : Float -> Point2d -> Point2d -> Bool
 equalWithin tolerance firstPoint secondPoint =
@@ -327,6 +347,7 @@ equalWithin tolerance firstPoint secondPoint =
 
     Point2d.vectorFrom startPoint endPoint
     --> Vector2d ( 3, 4 )
+
 -}
 vectorFrom : Point2d -> Point2d -> Vector2d
 vectorFrom firstPoint secondPoint =
@@ -354,6 +375,7 @@ points are coincident, returns `Nothing`.
 
     Point2d.directionFrom point point
     --> Nothing
+
 -}
 directionFrom : Point2d -> Point2d -> Maybe Direction2d
 directionFrom firstPoint secondPoint =
@@ -388,6 +410,7 @@ Partial application can be useful:
     --> , Point2d ( 3, 4 )
     --> , Point2d ( 10, 0 )
     --> ]
+
 -}
 distanceFrom : Point2d -> Point2d -> Float
 distanceFrom firstPoint secondPoint =
@@ -406,6 +429,7 @@ is equivalent to but slightly more efficient than
 since the latter requires a square root under the hood. In many cases, however,
 the speed difference will be negligible and using `distanceFrom` is much more
 readable!
+
 -}
 squaredDistanceFrom : Point2d -> Point2d -> Float
 squaredDistanceFrom firstPoint secondPoint =
@@ -432,6 +456,7 @@ it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
 
     Point2d.distanceAlong axis Point2d.origin
     --> -1
+
 -}
 distanceAlong : Axis2d -> Point2d -> Float
 distanceAlong axis point =
@@ -475,6 +500,7 @@ function:
 
     Point2d.signedDistanceFrom flippedAxis Point2d.origin
     --> 2
+
 -}
 signedDistanceFrom : Axis2d -> Point2d -> Float
 signedDistanceFrom axis point =
@@ -508,6 +534,7 @@ no-op, and scaling by a factor of 0 collapses all points to the center point.
 Avoid scaling by a negative scaling factor - while this may sometimes do what
 you want it is confusing and error prone. Try a combination of mirror and/or
 rotation operations instead.
+
 -}
 scaleAbout : Point2d -> Float -> Point2d -> Point2d
 scaleAbout centerPoint scale point =
@@ -529,6 +556,7 @@ given last.
 
     Point2d.rotateAround centerPoint angle point
     --> Point2d ( 2.7071, 0.7071 )
+
 -}
 rotateAround : Point2d -> Float -> Point2d -> Point2d
 rotateAround centerPoint angle =
@@ -545,6 +573,7 @@ rotateAround centerPoint angle =
 
     Point2d.translateBy displacement point
     --> Point2d ( 4, 6 )
+
 -}
 translateBy : Vector2d -> Point2d -> Point2d
 translateBy vector point =
@@ -569,6 +598,7 @@ axis but on the opposite side.
 
     Point2d.mirrorAcross Axis2d.y point
     --> Point2d ( -2, 3 )
+
 -}
 mirrorAcross : Axis2d -> Point2d -> Point2d
 mirrorAcross axis =
@@ -598,6 +628,7 @@ The axis does not have to pass through the origin:
 
     Point2d.projectOnto offsetYAxis point
     --> Point2d ( 1, 3 )
+
 -}
 projectOnto : Axis2d -> Point2d -> Point2d
 projectOnto axis =
@@ -617,6 +648,7 @@ coordinates relative to a given reference frame.
 
     Point2d.relativeTo localFrame (Point2d ( 1, 1 ))
     --> Point2d ( 0, -1 )
+
 -}
 relativeTo : Frame2d -> Point2d -> Point2d
 relativeTo frame point =
@@ -637,6 +669,7 @@ frame, and return that point expressed in global coordinates.
 
     Point2d.placeIn localFrame (Point2d ( 0, 1 ))
     --> Point2d ( 1, 1 )
+
 -}
 placeIn : Frame2d -> Point2d -> Point2d
 placeIn frame point =
@@ -665,6 +698,7 @@ The sketch plane can have any position and orientation:
 
     Point2d.placeOnto tiltedSketchPlane point
     --> Point3d ( 2, 0.7071, 0.7071 )
+
 -}
 placeOnto : SketchPlane3d -> Point2d -> Point3d
 placeOnto sketchPlane =
@@ -701,6 +735,7 @@ placeOnto sketchPlane =
     -->     , minY = 3
     -->     , maxY = 5
     -->     }
+
 -}
 hull : Point2d -> Point2d -> BoundingBox2d
 hull firstPoint secondPoint =

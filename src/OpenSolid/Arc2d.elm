@@ -42,25 +42,31 @@ Arcs can be constructed explicitly by passing a record with `centerPoint`,
             , sweptAngle = degrees 90
             }
 
+
 # Constructors
 
 @docs Length, WindingDirection, short, long, clockwise, counterclockwise, throughPoints, fromEndpoints
+
 
 # Accessors
 
 @docs centerPoint, radius, startPoint, endPoint, point, sweptAngle
 
+
 # Transformations
 
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross
+
 
 # Coordinate frames
 
 @docs relativeTo, placeIn
 
+
 # Sketch planes
 
 @docs placeOnto
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -154,6 +160,7 @@ points are collinear, returns `Nothing`.
         Point2d.origin
         (Point2d ( 1, 0 ))
     --> Nothing
+
 -}
 throughPoints : Point2d -> Point2d -> Point2d -> Maybe Arc2d
 throughPoints firstPoint secondPoint thirdPoint =
@@ -290,6 +297,7 @@ such as
             , centerPoint = Point2d.midpoint firstPoint secondPoint
             , sweptAngle = degrees 180 -- or 'degrees -180' for a clockwise arc
             }
+
 -}
 fromEndpoints : Point2d -> Point2d -> Float -> Length -> WindingDirection -> Maybe Arc2d
 fromEndpoints startPoint endPoint radius lengthType windingDirection =
@@ -368,6 +376,7 @@ fromEndpoints startPoint endPoint radius lengthType windingDirection =
 
     Arc2d.centerPoint exampleArc
     --> Point2d ( 1, 1 )
+
 -}
 centerPoint : Arc2d -> Point2d
 centerPoint (Arc2d properties) =
@@ -378,6 +387,7 @@ centerPoint (Arc2d properties) =
 
     Arc2d.radius exampleArc
     --> 2
+
 -}
 radius : Arc2d -> Float
 radius arc =
@@ -388,6 +398,7 @@ radius arc =
 
     Arc2d.startPoint exampleArc
     --> Point2d ( 3, 1 )
+
 -}
 startPoint : Arc2d -> Point2d
 startPoint (Arc2d properties) =
@@ -398,6 +409,7 @@ startPoint (Arc2d properties) =
 
     Arc2d.endPoint exampleArc
     --> Point2d ( 1, 3 )
+
 -}
 endPoint : Arc2d -> Point2d
 endPoint arc =
@@ -410,6 +422,7 @@ end point.
 
     Arc2d.point exampleArc 0.5
     --> Point2d ( 2.4142, 2.4142 )
+
 -}
 point : Arc2d -> Float -> Point2d
 point arc parameter =
@@ -427,6 +440,7 @@ point arc parameter =
 
 The result will be positive for a counterclockwise arc and negative for a
 clockwise one.
+
 -}
 sweptAngle : Arc2d -> Float
 sweptAngle (Arc2d properties) =
@@ -441,6 +455,7 @@ sweptAngle (Arc2d properties) =
     -->     , centerPoint = Point2d ( 2, 1 )
     -->     , sweptAngle = degrees 90
     -->     }
+
 -}
 scaleAbout : Point2d -> Float -> Arc2d -> Arc2d
 scaleAbout point scale arc =
@@ -467,6 +482,7 @@ scaleAbout point scale arc =
         , centerPoint = Point2d ( -1, 1 )
         , sweptAngle = degrees 90
         }
+
 -}
 rotateAround : Point2d -> Float -> Arc2d -> Arc2d
 rotateAround point angle =
@@ -493,6 +509,7 @@ rotateAround point angle =
     -->     , centerPoint = Point2d ( 3, 4 )
     -->     , sweptAngle = degrees 90
     -->     }
+
 -}
 translateBy : Vector2d -> Arc2d -> Arc2d
 translateBy displacement arc =
@@ -515,6 +532,7 @@ translateBy displacement arc =
     -->     , centerPoint = Point2d ( -1, 1 )
     -->     , sweptAngle = degrees -90
     -->     }
+
 -}
 mirrorAcross : Axis2d -> Arc2d -> Arc2d
 mirrorAcross axis =
@@ -542,6 +560,7 @@ coordinates relative to a given reference frame.
     -->     , centerPoint = Point2d ( 0, -1 )
     -->     , sweptAngle = degrees 90
     -->     }
+
 -}
 relativeTo : Frame2d -> Arc2d -> Arc2d
 relativeTo frame arc =
@@ -572,6 +591,7 @@ given reference frame, and return that arc expressed in global coordinates.
     -->     , centerPoint = Point2d ( 2, 3 )
     -->     , sweptAngle = degrees 90
     -->     }
+
 -}
 placeIn : Frame2d -> Arc2d -> Arc2d
 placeIn frame arc =
@@ -603,6 +623,7 @@ return the corresponding arc in 3D.
     -->             }
     -->     , sweptAngle = degrees 90
     -->     }
+
 -}
 placeOnto : SketchPlane3d -> Arc2d -> Arc3d
 placeOnto sketchPlane arc =

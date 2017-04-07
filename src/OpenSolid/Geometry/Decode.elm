@@ -45,6 +45,7 @@ module OpenSolid.Geometry.Decode
 @docs boundingBox2d, boundingBox3d
 @docs polyline2d, polyline3d, polygon2d
 @docs circle2d, circle3d
+
 -}
 
 import Json.Decode as Decode exposing (Decoder)

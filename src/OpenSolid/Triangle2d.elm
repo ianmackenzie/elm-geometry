@@ -49,23 +49,28 @@ constructor, for example
             , Point2d ( 1, 3 )
             )
 
+
 # Accessors
 
 @docs vertices, edges
+
 
 # Basics
 
 @docs centroid, contains
 
+
 # Area
 
 @docs area, counterclockwiseArea, clockwiseArea
+
 
 # Transformations
 
 Transforming a triangle is equivalent to transforming its vertices.
 
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross, map
+
 
 # Coordinate frames
 
@@ -74,13 +79,16 @@ different coordinate frames.
 
 @docs relativeTo, placeIn
 
+
 # Sketch planes
 
 @docs placeOnto
 
+
 # Bounds
 
 @docs boundingBox
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -92,9 +100,12 @@ import OpenSolid.Point2d as Point2d
 
     ( p1, p2, p3 ) =
         Triangle2d.vertices exampleTriangle
+
+
     --> p1 = Point2d ( 1, 1 )
     --> p2 = Point2d ( 2, 1 )
     --> p3 = Point2d ( 1, 3 )
+
 -}
 vertices : Triangle2d -> ( Point2d, Point2d, Point2d )
 vertices (Triangle2d vertices_) =
@@ -106,9 +117,12 @@ second to the third, and from the third back to the first.
 
     ( e1, e2, e3 ) =
         Triangle2d.edges exampleTriangle
+
+
     --> e1 = LineSegment2d ( Point2d ( 1, 1 ), Point2d ( 2, 1 ) )
     --> e2 = LineSegment2d ( Point2d ( 2, 1 ), Point2d ( 1, 3 ) )
     --> e3 = LineSegment2d ( Point2d ( 1, 3 ), Point2d ( 1, 1 ) )
+
 -}
 edges : Triangle2d -> ( LineSegment2d, LineSegment2d, LineSegment2d )
 edges triangle =
@@ -126,6 +140,7 @@ edges triangle =
 
     Triangle2d.centroid exampleTriangle
     --> Point2d ( 1.3333, 1.6667 )
+
 -}
 centroid : Triangle2d -> Point2d
 centroid triangle =
@@ -158,6 +173,7 @@ centroid triangle =
 
 It does not matter whether the triangle's vertices are in clockwise or
 counterclockwise order.
+
 -}
 contains : Point2d -> Triangle2d -> Bool
 contains point triangle =
@@ -193,6 +209,7 @@ whether the triangle's vertices are in clockwise or counterclockwise order.
 
     Triangle2d.area exampleTriangle
     --> 1.0
+
 -}
 area : Triangle2d -> Float
 area =
@@ -205,6 +222,7 @@ otherwise.
 
     Triangle2d.counterclockwiseArea exampleTriangle
     --> 1.0
+
 -}
 counterclockwiseArea : Triangle2d -> Float
 counterclockwiseArea triangle =
@@ -226,6 +244,7 @@ triangle's vertices are in clockwise order and a negative value otherwise.
 
     Triangle2d.clockwiseArea exampleTriangle
     --> -1.0
+
 -}
 clockwiseArea : Triangle2d -> Float
 clockwiseArea triangle =
@@ -245,6 +264,7 @@ Note that scaling by a negative value will result in the 'winding direction' of
 the triangle being flipped - if the triangle's vertices were in counterclockwise
 order before the negative scaling, they will be in clockwise order afterwards
 and vice versa.
+
 -}
 scaleAbout : Point2d -> Float -> Triangle2d -> Triangle2d
 scaleAbout point scale =
@@ -259,6 +279,7 @@ scaleAbout point scale =
     -->     , Point2d ( -1, 2 )
     -->     , Point2d ( -3, 1 )
     -->     )
+
 -}
 rotateAround : Point2d -> Float -> Triangle2d -> Triangle2d
 rotateAround centerPoint angle =
@@ -276,6 +297,7 @@ rotateAround centerPoint angle =
     -->     , Point2d ( 4, -2 )
     -->     , Point2d ( 3, 0 )
     -->     )
+
 -}
 translateBy : Vector2d -> Triangle2d -> Triangle2d
 translateBy vector =
@@ -294,6 +316,7 @@ translateBy vector =
 Note that mirroring a triangle will result in its 'winding direction' being
 flipped - if the triangle's vertices were in counterclockwise order before
 mirroring, they will be in clockwise order afterwards and vice versa.
+
 -}
 mirrorAcross : Axis2d -> Triangle2d -> Triangle2d
 mirrorAcross axis =
@@ -309,6 +332,7 @@ defined in terms of `map`; for example,
 is equivalent to
 
     Triangle.map (Point2d.mirrorAcross Axis2d.x) triangle
+
 -}
 map : (Point2d -> Point2d) -> Triangle2d -> Triangle2d
 map function triangle =
@@ -331,6 +355,7 @@ in local coordinates relative to a given reference frame.
     -->     , Point2d ( 1, -1 )
     -->     , Point2d ( 0, 1 )
     -->     )
+
 -}
 relativeTo : Frame2d -> Triangle2d -> Triangle2d
 relativeTo frame =
@@ -349,6 +374,7 @@ given reference frame, and return that triangle expressed in global coordinates.
     -->     , Point2d ( 3, 3 )
     -->     , Point2d ( 2, 5 )
     -->     )
+
 -}
 placeIn : Frame2d -> Triangle2d -> Triangle2d
 placeIn frame =
@@ -364,6 +390,7 @@ plane and return the corresponding triangle in 3D.
     -->     , Point3d ( 2, 0, 1 )
     -->     , Point3d ( 1, 0, 3 )
     -->     )
+
 -}
 placeOnto : SketchPlane3d -> Triangle2d -> Triangle3d
 placeOnto sketchPlane =
@@ -388,6 +415,7 @@ placeOnto sketchPlane =
     -->     , minY = 1
     -->     , maxY = 3
     -->     }
+
 -}
 boundingBox : Triangle2d -> BoundingBox2d
 boundingBox triangle =

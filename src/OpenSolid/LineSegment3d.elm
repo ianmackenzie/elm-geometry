@@ -55,21 +55,26 @@ the `LineSegment3d` constructor, for example
             , Point3d ( 4, 5, 6 )
             )
 
+
 # Constructors
 
 @docs along
+
 
 # Endpoints
 
 @docs startPoint, endPoint, endpoints, reverse
 
+
 # Interpolation
 
 @docs midpoint, interpolate
 
+
 # Length and direction
 
 @docs length, squaredLength, direction, normalDirection, vector
+
 
 # Transformations
 
@@ -78,6 +83,7 @@ points and forming a new line segment between the resulting points.
 
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
 
+
 # Coordinate frames
 
 Functions for transforming line segments between local and global coordinates in
@@ -85,13 +91,16 @@ different coordinate frames.
 
 @docs relativeTo, placeIn
 
+
 # Sketch planes
 
 @docs projectInto
 
+
 # Bounds
 
 @docs boundingBox
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -118,6 +127,7 @@ along axis start end =
 
     LineSegment3d.startPoint exampleLineSegment
     -- Point3d ( 1, 2, 3 )
+
 -}
 startPoint : LineSegment3d -> Point3d
 startPoint (LineSegment3d ( start, _ )) =
@@ -128,6 +138,7 @@ startPoint (LineSegment3d ( start, _ )) =
 
     LineSegment3d.endPoint exampleLineSegment
     -- Point3d ( 4, 5, 6 )
+
 -}
 endPoint : LineSegment3d -> Point3d
 endPoint (LineSegment3d ( _, end )) =
@@ -138,6 +149,7 @@ endPoint (LineSegment3d ( _, end )) =
 
     ( p1, p2 ) =
         LineSegment3d.endpoints lineSegment
+
 -}
 endpoints : LineSegment3d -> ( Point3d, Point3d )
 endpoints (LineSegment3d endpoints_) =
@@ -151,6 +163,7 @@ endpoints (LineSegment3d endpoints_) =
     --     ( Point3d ( 4, 5, 6 )
     --     , Point3d ( 1, 2, 3 )
     --     )
+
 -}
 reverse : LineSegment3d -> LineSegment3d
 reverse lineSegment =
@@ -165,6 +178,7 @@ reverse lineSegment =
 
     LineSegment3d.midpoint exampleLineSegment
     -- Point3d ( 2.5, 3.5, 4.5 )
+
 -}
 midpoint : LineSegment3d -> Point3d
 midpoint lineSegment =
@@ -181,6 +195,7 @@ than 0.0 or greater than 1.0 can be used to extrapolate.
 
     LineSegment3d.interpolate exampleLineSegment (-1 / 3)
     -- Point3d ( 0, 1, 2 )
+
 -}
 interpolate : LineSegment3d -> Float -> Point3d
 interpolate lineSegment =
@@ -195,6 +210,7 @@ interpolate lineSegment =
 
     LineSegment3d.length exampleLineSegment
     -- 5.1962
+
 -}
 length : LineSegment3d -> Float
 length =
@@ -206,6 +222,7 @@ length =
 
     LineSegment3d.squaredLength exampleLineSegment
     -- 27
+
 -}
 squaredLength : LineSegment3d -> Float
 squaredLength =
@@ -218,6 +235,7 @@ line segment has zero length (the start and end points are the same), returns
 
     LineSegment3d.direction exampleLineSegment
     -- Just (Direction3d ( 0.5774, 0.5774, 0.5774 ))
+
 -}
 direction : LineSegment3d -> Maybe Direction3d
 direction =
@@ -229,6 +247,7 @@ segment has zero length, returns `Nothing`.
 
     LineSegment3d.normalDirection exampleLineSegment
     -- Just (Direction3d ( 0, -0.7071, 0.7071 ))
+
 -}
 normalDirection : LineSegment3d -> Maybe Direction3d
 normalDirection =
@@ -239,6 +258,7 @@ normalDirection =
 
     LineSegment3d.vector exampleLineSegment
     -- Vector3d ( 2, 2, 2 )
+
 -}
 vector : LineSegment3d -> Vector3d
 vector lineSegment =
@@ -259,6 +279,7 @@ vector lineSegment =
     --     ( Point3d ( 1, 3, 5 )
     --     , Point3d ( 7, 9, 11 )
     --     )
+
 -}
 scaleAbout : Point3d -> Float -> LineSegment3d -> LineSegment3d
 scaleAbout point scale =
@@ -272,6 +293,7 @@ scaleAbout point scale =
     --     ( Point3d ( -2, 1, 3 )
     --     , Point3d ( -5, 4, 6 )
     --     )
+
 -}
 rotateAround : Axis3d -> Float -> LineSegment3d -> LineSegment3d
 rotateAround axis angle =
@@ -288,6 +310,7 @@ rotateAround axis angle =
     --     ( Point3d ( 2, 4, 6 )
     --     , Point3d ( 5, 7, 9 )
     --     )
+
 -}
 translateBy : Vector3d -> LineSegment3d -> LineSegment3d
 translateBy vector =
@@ -301,6 +324,7 @@ translateBy vector =
     --     ( Point3d ( 1, 2, -3 )
     --     , Point3d ( 4, 5, -6 )
     --     )
+
 -}
 mirrorAcross : Plane3d -> LineSegment3d -> LineSegment3d
 mirrorAcross plane =
@@ -314,6 +338,7 @@ mirrorAcross plane =
     --     ( Point3d ( 0, 2, 3 )
     --     , Point3d ( 0, 5, 6 )
     --     )
+
 -}
 projectOnto : Plane3d -> LineSegment3d -> LineSegment3d
 projectOnto plane =
@@ -329,6 +354,7 @@ transformation functions can be defined in terms of `map`; for example,
 is equivalent to
 
     LineSegment3d.map (Point3d.projectOnto Plane3d.xy)
+
 -}
 map : (Point3d -> Point3d) -> LineSegment3d -> LineSegment3d
 map function lineSegment =
@@ -350,6 +376,7 @@ in local coordinates relative to a given reference frame.
     --     ( Point3d ( 0, 0, 0 )
     --     , Point3d ( 3, 3, 3 )
     --     )
+
 -}
 relativeTo : Frame3d -> LineSegment3d -> LineSegment3d
 relativeTo frame =
@@ -368,6 +395,7 @@ coordinates.
     --     ( Point3d ( 2, 4, 6 )
     --     , Point3d ( 5, 7, 9 )
     --     )
+
 -}
 placeIn : Frame3d -> LineSegment3d -> LineSegment3d
 placeIn frame =
@@ -395,6 +423,7 @@ line segment in 2D sketch coordinates.
     --     ( Point2d ( 3, 1 )
     --     , Point2d ( 6, 4 )
     --     )
+
 -}
 projectInto : SketchPlane3d -> LineSegment3d -> LineSegment2d
 projectInto sketchPlane lineSegment =
@@ -419,6 +448,7 @@ projectInto sketchPlane lineSegment =
     --     , minZ = 3
     --     , maxZ = 6
     --     }
+
 -}
 boundingBox : LineSegment3d -> BoundingBox3d
 boundingBox lineSegment =

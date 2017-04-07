@@ -46,7 +46,7 @@ box of an object than the object itself, such as:
     and a triangle do not overlap, then the line segment and triangle cannot
     possibly intersect each other. Expensive intersection checking therefore
     only has to be performed for line segments and triangles whose bounding
-    boxes _do_ overlap.
+    boxes *do* overlap.
   - 3D rendering: When rendering a 3D scene, any object whose bounding box is
     not visible must itself be not visible, and therefore does not have to be
     drawn. This provides a simple form of culling.
@@ -71,22 +71,27 @@ values are properly ordered**: <code>minX&nbsp;<=&nbsp;maxX</code>,
 Alternately, you can construct bounding boxes using functions such as
 [`Point3d.hull`](OpenSolid-Point3d#hull) where the input order does not matter.
 
+
 # Constructors
 
 @docs singleton, containing
+
 
 # Accessors
 
 @docs extrema, minX, maxX, minY, maxY, minZ, maxZ
 @docs dimensions, midX, midY, midZ, centroid
 
+
 # Checks
 
 @docs contains, overlaps, isContainedIn
 
+
 # Boolean operations
 
 @docs hull, intersection
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -107,6 +112,7 @@ import OpenSolid.Point3d as Point3d
     -->     , minZ = 3
     -->     , maxZ = 3
     -->     }
+
 -}
 singleton : Point3d -> BoundingBox3d
 singleton point =
@@ -150,6 +156,7 @@ list is empty, returns `Nothing`.
 
 If you have exactly two points, you can use [`Point3d.hull`](OpenSolid-Point3d#hull)
 instead (which returns a `BoundingBox3d` instead of a `Maybe BoundingBox3d`).
+
 -}
 containing : List Point3d -> Maybe BoundingBox3d
 containing points =
@@ -177,22 +184,26 @@ Can be useful when combined with record destructuring, for example
 
     { minX, maxX, minY, maxY, minZ, maxZ } =
         BoundingBox3d.extrema exampleBox
+
+
     --> minX = -2
     --> maxX = 2
     --> minY = 2
     --> maxY = 5
     --> minZ = 3
     --> maxZ = 4
+
 -}
 extrema :
     BoundingBox3d
-    -> { minX : Float
-       , maxX : Float
-       , minY : Float
-       , maxY : Float
-       , minZ : Float
-       , maxZ : Float
-       }
+    ->
+        { minX : Float
+        , maxX : Float
+        , minY : Float
+        , maxY : Float
+        , minZ : Float
+        , maxZ : Float
+        }
 extrema (BoundingBox3d extrema_) =
     extrema_
 
@@ -201,6 +212,7 @@ extrema (BoundingBox3d extrema_) =
 
     BoundingBox3d.minX exampleBox
     --> -2
+
 -}
 minX : BoundingBox3d -> Float
 minX =
@@ -211,6 +223,7 @@ minX =
 
     BoundingBox3d.maxX exampleBox
     --> 2
+
 -}
 maxX : BoundingBox3d -> Float
 maxX =
@@ -221,6 +234,7 @@ maxX =
 
     BoundingBox3d.minY exampleBox
     --> 2
+
 -}
 minY : BoundingBox3d -> Float
 minY =
@@ -231,6 +245,7 @@ minY =
 
     BoundingBox3d.maxY exampleBox
     --> 5
+
 -}
 maxY : BoundingBox3d -> Float
 maxY =
@@ -241,6 +256,7 @@ maxY =
 
     BoundingBox3d.minZ exampleBox
     --> 3
+
 -}
 minZ : BoundingBox3d -> Float
 minZ =
@@ -251,6 +267,7 @@ minZ =
 
     BoundingBox3d.maxZ exampleBox
     --> 4
+
 -}
 maxZ : BoundingBox3d -> Float
 maxZ =
@@ -261,6 +278,7 @@ maxZ =
 
     BoundingBox3d.dimensions exampleBox
     --> ( 4, 3, 1 )
+
 -}
 dimensions : BoundingBox3d -> ( Float, Float, Float )
 dimensions boundingBox =
@@ -275,6 +293,7 @@ dimensions boundingBox =
 
     BoundingBox3d.midX exampleBox
     --> 0
+
 -}
 midX : BoundingBox3d -> Float
 midX boundingBox =
@@ -289,6 +308,7 @@ midX boundingBox =
 
     BoundingBox3d.midY exampleBox
     --> 3.5
+
 -}
 midY : BoundingBox3d -> Float
 midY boundingBox =
@@ -303,6 +323,7 @@ midY boundingBox =
 
     BoundingBox3d.midZ exampleBox
     --> 3.5
+
 -}
 midZ : BoundingBox3d -> Float
 midZ boundingBox =
@@ -317,6 +338,7 @@ midZ boundingBox =
 
     BoundingBox3d.centroid exampleBox
     --> Point3d ( 0, 3.5, 3.5 )
+
 -}
 centroid : BoundingBox3d -> Point3d
 centroid boundingBox =
@@ -336,6 +358,7 @@ centroid boundingBox =
 
     BoundingBox3d.contains secondPoint exampleBox
     --> False
+
 -}
 contains : Point3d -> BoundingBox3d -> Bool
 contains point boundingBox =
@@ -385,6 +408,7 @@ contains point boundingBox =
 
     BoundingBox3d.overlaps firstBox thirdBox
     --> False
+
 -}
 overlaps : BoundingBox3d -> BoundingBox3d -> Bool
 overlaps other boundingBox =
@@ -434,6 +458,7 @@ overlaps other boundingBox =
 
     BoundingBox3d.isContainedIn outerBox overlappingBox
     --> False
+
 -}
 isContainedIn : BoundingBox3d -> BoundingBox3d -> Bool
 isContainedIn other boundingBox =
@@ -473,6 +498,7 @@ isContainedIn other boundingBox =
     -->     , minZ = -1
     -->     , maxZ = 5
     -->     }
+
 -}
 hull : BoundingBox3d -> BoundingBox3d -> BoundingBox3d
 hull firstBox secondBox =
@@ -533,6 +559,7 @@ given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
 
     BoundingBox3d.intersection firstBox thirdBox
     --> Nothing
+
 -}
 intersection : BoundingBox3d -> BoundingBox3d -> Maybe BoundingBox3d
 intersection firstBox secondBox =

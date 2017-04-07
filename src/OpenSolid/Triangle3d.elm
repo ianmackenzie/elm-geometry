@@ -48,19 +48,23 @@ constructor, for example
             , Point3d ( 2, 1, 3 )
             )
 
+
 # Accessors
 
 @docs vertices, edges
 
+
 # Basics
 
 @docs centroid, area, normalDirection
+
 
 # Transformations
 
 Transforming a triangle is equivalent to transforming its vertices.
 
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
+
 
 # Coordinate frames
 
@@ -69,13 +73,16 @@ different coordinate frames.
 
 @docs relativeTo, placeIn
 
+
 # Sketch planes
 
 @docs projectInto
 
+
 # Bounds
 
 @docs boundingBox
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -87,9 +94,12 @@ import OpenSolid.Point3d as Point3d
 
     ( p1, p2, p3 ) =
         Triangle3d.vertices exampleTriangle
+
+
     --> p1 = Point3d ( 1, 0, 0 )
     --> p2 = Point3d ( 2, 0, 0 )
     --> p3 = Point3d ( 2, 1, 3 )
+
 -}
 vertices : Triangle3d -> ( Point3d, Point3d, Point3d )
 vertices (Triangle3d vertices_) =
@@ -101,9 +111,12 @@ second to the third, and from the third back to the first.
 
     ( e1, e2, e3 ) =
         Triangle3d.edges exampleTriangle
+
+
     --> e1 = LineSegment3d ( Point3d ( 1, 0, 0 ), Point3d ( 2, 0, 0 ) )
     --> e2 = LineSegment3d ( Point3d ( 2, 0, 0 ), Point3d ( 2, 1, 3 ) )
     --> e3 = LineSegment3d ( Point3d ( 2, 1, 3 ), Point3d ( 1, 0, 0 ) )
+
 -}
 edges : Triangle3d -> ( LineSegment3d, LineSegment3d, LineSegment3d )
 edges triangle =
@@ -121,6 +134,7 @@ edges triangle =
 
     Triangle3d.centroid exampleTriangle
     --> Point3d ( 1.6667, 0.6667, 1 )
+
 -}
 centroid : Triangle3d -> Point3d
 centroid triangle =
@@ -168,6 +182,7 @@ three vertices are collinear), returns `Nothing`.
 
     Triangle3d.normalDirection exampleTriangle
     --> Just (Direction3d ( 0, -0.9487, 0.3162 ))
+
 -}
 normalDirection : Triangle3d -> Maybe Direction3d
 normalDirection triangle =
@@ -192,6 +207,7 @@ normalDirection triangle =
     -->     , Point3d ( 4, 0, 0 )
     -->     , Point3d ( 4, 2, 6 )
     -->     )
+
 -}
 scaleAbout : Point3d -> Float -> Triangle3d -> Triangle3d
 scaleAbout centerPoint scale =
@@ -206,6 +222,7 @@ scaleAbout centerPoint scale =
     -->     , Point3d ( 0, 2, 0 )
     -->     , Point3d ( -1, 2, 3 )
     -->     )
+
 -}
 rotateAround : Axis3d -> Float -> Triangle3d -> Triangle3d
 rotateAround axis angle =
@@ -223,6 +240,7 @@ rotateAround axis angle =
     -->     , Point3d ( 4, -1, 3 )
     -->     , Point3d ( 4, 0, 6 )
     -->     )
+
 -}
 translateBy : Vector3d -> Triangle3d -> Triangle3d
 translateBy vector =
@@ -237,6 +255,7 @@ translateBy vector =
     -->     ( Point3d ( -2, 0, 0 )
     -->     ( Point3d ( -2, 1, 3 )
     -->     )
+
 -}
 mirrorAcross : Plane3d -> Triangle3d -> Triangle3d
 mirrorAcross plane =
@@ -258,6 +277,7 @@ mirrorAcross plane =
     -->     , Point3d ( 2, 0, 0 )
     -->     , Point3d ( 2, 0, 3 )
     -->     )
+
 -}
 projectOnto : Plane3d -> Triangle3d -> Triangle3d
 projectOnto plane =
@@ -273,6 +293,7 @@ defined in terms of `map`; for example,
 is equivalent to
 
     Triangle.map (Point3d.projectOnto Plane3d.xz) triangle
+
 -}
 map : (Point3d -> Point3d) -> Triangle3d -> Triangle3d
 map function triangle =
@@ -295,6 +316,7 @@ in local coordinates relative to a given reference frame.
     -->     , Point3d ( 0, -1, -3 )
     -->     , Point3d ( 0, 0, 0 )
     -->     )
+
 -}
 relativeTo : Frame3d -> Triangle3d -> Triangle3d
 relativeTo frame =
@@ -313,6 +335,7 @@ given reference frame, and return that triangle expressed in global coordinates.
     -->     , Point3d ( 4, 1, 3 )
     -->     , Point3d ( 4, 2, 6 )
     -->     )
+
 -}
 placeIn : Frame3d -> Triangle3d -> Triangle3d
 placeIn frame =
@@ -336,6 +359,7 @@ sketch coordinates.
     -->     , Point2d ( 0, 2 )
     -->     , Point2d ( 3, 2 )
     -->     )
+
 -}
 projectInto : SketchPlane3d -> Triangle3d -> Triangle2d
 projectInto sketchPlane triangle =
@@ -360,6 +384,7 @@ projectInto sketchPlane triangle =
     -->     , minZ = 0
     -->     , maxZ = 3
     -->     }
+
 -}
 boundingBox : Triangle3d -> BoundingBox3d
 boundingBox triangle =

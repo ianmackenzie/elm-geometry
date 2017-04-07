@@ -47,11 +47,11 @@ perpendicular to each other). Sketch planes are the primary tool for converting
 back and forth between 2D and 3D coordinates:
 
   - 3D geometry such as points, directions and line segments can be projected
-    _into_ a sketch plane, which effectively projects the geometry _onto_ the
-    sketch plane and then expresses the projected geometry _in_ 2D coordinates.
-  - 2D geometry can be place _onto_ a sketch plane to result in 3D geometry. For
+    *into* a sketch plane, which effectively projects the geometry *onto* the
+    sketch plane and then expresses the projected geometry *in* 2D coordinates.
+  - 2D geometry can be place *onto* a sketch plane to result in 3D geometry. For
     example, a 2D point placed onto a sketch plane will result in a 3D point
-    _on_ that sketch plane that has the given 2D coordinate _in_ the sketch
+    *on* that sketch plane that has the given 2D coordinate *in* the sketch
     plane.
 
 Many 3D data types have `projectInto` functions that return the corresponding 2D
@@ -81,6 +81,7 @@ constructor, for example
 If you construct a `SketchPlane3d` this way, **you must ensure that the X and Y
 basis directions are perpendicular to each other**.
 
+
 # Predefined sketch planes
 
 These predefined sketch planes all have the global origin point as their origin
@@ -95,29 +96,36 @@ point, and use the two indicated global axes as their X and Y axes. For example,
 
 @docs xy, yx, yz, zy, zx, xz
 
+
 # Constructors
 
 @docs throughPoints
+
 
 # Accessors
 
 @docs originPoint, xDirection, yDirection, normalDirection
 
+
 # Axes
 
 @docs xAxis, yAxis, normalAxis
+
 
 # Conversions
 
 @docs plane
 
+
 # Transformations
 
 @docs flipX, flipY, moveTo, rotateAround, rotateAroundOwn, translateBy, translateAlongOwn, mirrorAcross
 
+
 # Coordinate frames
 
 @docs relativeTo, placeIn
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -222,6 +230,7 @@ If the three given points are collinear, returns `Nothing`.
         (Point3d ( 3, 0, 0 ))
         (Point3d ( 4, 0, 0 ))
     --> Nothing
+
 -}
 throughPoints : Point3d -> Point3d -> Point3d -> Maybe SketchPlane3d
 throughPoints firstPoint secondPoint thirdPoint =
@@ -272,6 +281,7 @@ throughPoints firstPoint secondPoint thirdPoint =
 
     SketchPlane3d.originPoint SketchPlane3d.xy
     --> Point3d.origin
+
 -}
 originPoint : SketchPlane3d -> Point3d
 originPoint (SketchPlane3d properties) =
@@ -283,6 +293,7 @@ X axis).
 
     SketchPlane3d.xDirection SketchPlane3d.zx
     --> Direction3d.z
+
 -}
 xDirection : SketchPlane3d -> Direction3d
 xDirection (SketchPlane3d properties) =
@@ -294,6 +305,7 @@ Y axis).
 
     SketchPlane3d.yDirection SketchPlane3d.zx
     --> Direction3d.x
+
 -}
 yDirection : SketchPlane3d -> Direction3d
 yDirection (SketchPlane3d properties) =
@@ -308,6 +320,7 @@ product of the sketch plane's X and Y directions.
 
     SketchPlane3d.normalDirection SketchPlane3d.xz
     --> Direction3d.flip Direction3d.y
+
 -}
 normalDirection : SketchPlane3d -> Direction3d
 normalDirection sketchPlane =
@@ -325,6 +338,7 @@ corresponds to a distance along this axis in 3D.
 
     SketchPlane3d.xAxis SketchPlane3d.zx
     --> Axis3d.z
+
 -}
 xAxis : SketchPlane3d -> Axis3d
 xAxis sketchPlane =
@@ -339,6 +353,7 @@ corresponds to a distance along this axis in 3D.
 
     SketchPlane3d.yAxis SketchPlane3d.zx
     --> Axis3d.x
+
 -}
 yAxis : SketchPlane3d -> Axis3d
 yAxis sketchPlane =
@@ -356,6 +371,7 @@ plane's origin point and normal direction).
 
     SketchPlane3d.normalAxis SketchPlane3d.xz
     --> Axis3d.flip Axis3d.y
+
 -}
 normalAxis : SketchPlane3d -> Axis3d
 normalAxis sketchPlane =
@@ -373,6 +389,7 @@ normal direction.
 
     SketchPlane3d.plane SketchPlane3d.yx
     --> Plane3d.flip Plane3d.xy
+
 -}
 plane : SketchPlane3d -> Plane3d
 plane sketchPlane =
@@ -391,6 +408,7 @@ point unchanged.
     -->     , xDirection = Direction3d.flip Direction3d.y
     -->     , yDirection = Direction3d.z
     -->     }
+
 -}
 flipX : SketchPlane3d -> SketchPlane3d
 flipX sketchPlane =
@@ -410,6 +428,7 @@ point unchanged.
     -->     , xDirection = Direction3d.y
     -->     , yDirection = Direction3d.flip Direction3d.z
     -->     }
+
 -}
 flipY : SketchPlane3d -> SketchPlane3d
 flipY sketchPlane =
@@ -429,6 +448,7 @@ its X and Y directions unchanged.
     -->     , xDirection = Direction3d.y
     -->     , yDirection = Direction3d.z
     -->     }
+
 -}
 moveTo : Point3d -> SketchPlane3d -> SketchPlane3d
 moveTo newOrigin sketchPlane =
@@ -445,6 +465,7 @@ the given axis.
 
     SketchPlane3d.rotateAround Axis3d.x (degrees 90) SketchPlane3d.xy
     --> SketchPlane3d.xz
+
 -}
 rotateAround : Axis3d -> Float -> SketchPlane3d -> SketchPlane3d
 rotateAround axis angle =
@@ -485,6 +506,7 @@ transformations. For example,
 Note that since the rotation was around the sketch plane's own Y axis (which
 passes through the sketch plane's origin point) instead of the global Y axis,
 the origin point itself was not affected by the rotation.
+
 -}
 rotateAroundOwn :
     (SketchPlane3d -> Axis3d)
@@ -506,6 +528,7 @@ rotateAroundOwn axis angle sketchPlane =
     -->     , xDirection = Direction3d.x
     -->     , yDirection = Direction3d.y
     -->     }
+
 -}
 translateBy : Vector3d -> SketchPlane3d -> SketchPlane3d
 translateBy vector sketchPlane =
@@ -538,6 +561,7 @@ resulting in
         , xDirection = Direction3d.x
         , yDirection = Direction3d ( 0, 0.7071, 0.7071 )
         }
+
 -}
 translateAlongOwn :
     (SketchPlane3d -> Axis3d)
@@ -567,6 +591,7 @@ translateAlongOwn axis distance frame =
     -->     , xDirection = Direction3d.y
     -->     , yDirection = Direction3d.flip Direction3d.z
     -->     }
+
 -}
 mirrorAcross : Plane3d -> SketchPlane3d -> SketchPlane3d
 mirrorAcross plane =

@@ -56,25 +56,31 @@ the `LineSegment2d` constructor, for example
             , Point2d ( 3, 4 )
             )
 
+
 # Constructors
 
 @docs along
+
 
 # Endpoints
 
 @docs startPoint, endPoint, endpoints, reverse
 
+
 # Interpolation
 
 @docs midpoint, interpolate
+
 
 # Length and direction
 
 @docs length, squaredLength, direction, normalDirection, vector
 
+
 # Intersection
 
 @docs intersectionPoint
+
 
 # Transformations
 
@@ -83,6 +89,7 @@ points and forming a new line segment between the resulting points.
 
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
 
+
 # Coordinate frames
 
 Functions for transforming line segments between local and global coordinates in
@@ -90,13 +97,16 @@ different coordinate frames.
 
 @docs relativeTo, placeIn
 
+
 # Sketch planes
 
 @docs placeOnto
 
+
 # Bounds
 
 @docs boundingBox
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -123,6 +133,7 @@ along axis start end =
 
     LineSegment2d.startPoint exampleLineSegment
     --> Point2d ( 1, 2 )
+
 -}
 startPoint : LineSegment2d -> Point2d
 startPoint (LineSegment2d ( start, _ )) =
@@ -133,6 +144,7 @@ startPoint (LineSegment2d ( start, _ )) =
 
     LineSegment2d.endPoint exampleLineSegment
     --> Point2d ( 3, 4 )
+
 -}
 endPoint : LineSegment2d -> Point2d
 endPoint (LineSegment2d ( _, end )) =
@@ -143,6 +155,7 @@ endPoint (LineSegment2d ( _, end )) =
 
     ( p1, p2 ) =
         LineSegment2d.endpoints lineSegment
+
 -}
 endpoints : LineSegment2d -> ( Point2d, Point2d )
 endpoints (LineSegment2d endpoints_) =
@@ -156,6 +169,7 @@ endpoints (LineSegment2d endpoints_) =
     -->     ( Point2d ( 3, 4 )
     -->     , Point2d ( 1, 2 )
     -->     )
+
 -}
 reverse : LineSegment2d -> LineSegment2d
 reverse lineSegment =
@@ -170,6 +184,7 @@ reverse lineSegment =
 
     LineSegment2d.midpoint exampleLineSegment
     --> Point2d ( 2, 3 )
+
 -}
 midpoint : LineSegment2d -> Point2d
 midpoint lineSegment =
@@ -186,6 +201,7 @@ than 0.0 or greater than 1.0 can be used to extrapolate.
 
     LineSegment2d.interpolate exampleLineSegment 1.5
     --> Point2d ( 4, 5 )
+
 -}
 interpolate : LineSegment2d -> Float -> Point2d
 interpolate lineSegment =
@@ -200,6 +216,7 @@ interpolate lineSegment =
 
     LineSegment2d.length exampleLineSegment
     --> 2.8284
+
 -}
 length : LineSegment2d -> Float
 length =
@@ -211,6 +228,7 @@ length =
 
     LineSegment2d.squaredLength exampleLineSegment
     --> 8
+
 -}
 squaredLength : LineSegment2d -> Float
 squaredLength =
@@ -223,6 +241,7 @@ line segment has zero length (the start and end points are the same), returns
 
     LineSegment2d.direction exampleLineSegment
     --> Just (Direction2d ( 0.7071, 0.7071 ))
+
 -}
 direction : LineSegment2d -> Maybe Direction2d
 direction =
@@ -234,6 +253,7 @@ the line segment has zero length, returns `Nothing`.
 
     LineSegment2d.normalDirection exampleLineSegment
     --> Just (Direction2d ( -0.7071, 0.7071 ))
+
 -}
 normalDirection : LineSegment2d -> Maybe Direction2d
 normalDirection =
@@ -244,6 +264,7 @@ normalDirection =
 
     LineSegment2d.vector exampleLineSegment
     --> Vector2d ( 2, 2 )
+
 -}
 vector : LineSegment2d -> Vector2d
 vector lineSegment =
@@ -291,6 +312,7 @@ segments have a shared endpoint (the two segments meet in something like a 'V',
 where the end point of one segment is the start point of the next), that point
 is guaranteed to be returned as the intersection point, but if two segments meet
 in a 'T' shape the intersection point may or may not be found.
+
 -}
 intersectionPoint : LineSegment2d -> LineSegment2d -> Maybe Point2d
 intersectionPoint lineSegment1 lineSegment2 =
@@ -383,6 +405,7 @@ intersectionPoint lineSegment1 lineSegment2 =
     -->     ( Point2d ( 1, 3 )
     -->     , Point2d ( 5, 7 )
     -->     )
+
 -}
 scaleAbout : Point2d -> Float -> LineSegment2d -> LineSegment2d
 scaleAbout point scale =
@@ -397,6 +420,7 @@ radians).
     -->     ( Point2d ( -2, 1 )
     -->     , Point2d ( -4, 3 )
     -->     )
+
 -}
 rotateAround : Point2d -> Float -> LineSegment2d -> LineSegment2d
 rotateAround centerPoint angle =
@@ -413,6 +437,7 @@ rotateAround centerPoint angle =
     -->     ( Point2d ( 2, 4 )
     -->     , Point2d ( 4, 6 )
     -->     )
+
 -}
 translateBy : Vector2d -> LineSegment2d -> LineSegment2d
 translateBy vector =
@@ -432,6 +457,7 @@ endpoints of the original segment, but as a result the normal direction of a
 mirrored segment is the *opposite* of the mirrored normal direction of the
 original segment (since the normal direction is always considered to be 'to the
 left' of the line segment).
+
 -}
 mirrorAcross : Axis2d -> LineSegment2d -> LineSegment2d
 mirrorAcross axis =
@@ -451,6 +477,7 @@ mirrorAcross axis =
     -->     ( Point2d ( 0, 2 )
     -->     , Point2d ( 0, 4 )
     -->     )
+
 -}
 projectOnto : Axis2d -> LineSegment2d -> LineSegment2d
 projectOnto axis =
@@ -466,6 +493,7 @@ transformation functions can be defined in terms of `map`; for example,
 is equivalent to
 
     LineSegment2d.map (Point2d.projectOnto Axis2d.x)
+
 -}
 map : (Point2d -> Point2d) -> LineSegment2d -> LineSegment2d
 map function lineSegment =
@@ -487,6 +515,7 @@ in local coordinates relative to a given reference frame.
     -->     ( Point2d ( 0, 0 )
     -->     , Point2d ( 2, 2 )
     -->     )
+
 -}
 relativeTo : Frame2d -> LineSegment2d -> LineSegment2d
 relativeTo frame =
@@ -505,6 +534,7 @@ coordinates.
     -->     ( Point2d ( 2, 4 )
     -->     , Point2d ( 4, 6 )
     -->     )
+
 -}
 placeIn : Frame2d -> LineSegment2d -> LineSegment2d
 placeIn frame =
@@ -519,6 +549,7 @@ plane and return the corresponding line segment in 3D.
     -->     ( Point3d ( 0, 1, 2 )
     -->     , Point3d ( 0, 3, 4 )
     -->     )
+
 -}
 placeOnto : SketchPlane3d -> LineSegment2d -> LineSegment3d
 placeOnto sketchPlane =
@@ -543,6 +574,7 @@ placeOnto sketchPlane =
     -->     , minY = 2
     -->     , maxY = 4
     -->     }
+
 -}
 boundingBox : LineSegment2d -> BoundingBox2d
 boundingBox lineSegment =

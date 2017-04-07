@@ -65,6 +65,7 @@ components to the `Vector3d` constructor, for example
     vector =
         Vector3d ( 2, 1, 3 )
 
+
 # Predefined vectors
 
 @docs zero
@@ -76,25 +77,31 @@ Although there are no predefined constants for
 will actually want their `Direction3d` versions [`Direction3d.x`](OpenSolid-Direction3d#x),
 [`Direction3d.y`](OpenSolid-Direction3d#y) and [`Direction3d.z`](OpenSolid-Direction3d#z).
 
+
 # Constructors
 
 @docs in_, perpendicularTo, interpolateFrom, interpolate
+
 
 # Components
 
 @docs components, xComponent, yComponent, zComponent, componentIn
 
+
 # Comparison
 
 @docs equalWithin
+
 
 # Length and direction
 
 @docs length, squaredLength, direction, lengthAndDirection
 
+
 # Arithmetic
 
 @docs sum, difference, dotProduct, crossProduct
+
 
 # Transformations
 
@@ -104,6 +111,7 @@ a vector as placing its tail on the relevant axis or plane and then transforming
 its tip.
 
 @docs flip, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
+
 
 # Coordinate frames
 
@@ -121,12 +129,14 @@ global XYZ frame:
 
 @docs relativeTo, placeIn
 
+
 # Sketch planes
 
 Functions for converting vectors between global 3D coordinates and 2D
 coordinates within a particular sketch plane.
 
 @docs projectInto
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -142,6 +152,7 @@ import OpenSolid.Bootstrap.Frame3d as Frame3d
 
     Vector3d.zero
     --> Vector3d ( 0, 0, 0 )
+
 -}
 zero : Vector3d
 zero =
@@ -152,6 +163,7 @@ zero =
 
     Vector3d.in_ Direction3d.y 5
     --> Vector3d ( 0, 5, 0 )
+
 -}
 in_ : Direction3d -> Float -> Vector3d
 in_ direction length =
@@ -175,6 +187,7 @@ given vector is itself zero).
 
     Vector3d.perpendicularTo Vector3d.zero
     --> Vector3d.zero
+
 -}
 perpendicularTo : Vector3d -> Vector3d
 perpendicularTo vector =
@@ -233,6 +246,7 @@ You can pass values less than zero or greater than one to extrapolate:
 
     interpolatedVector 1.25
     --> Vector3d ( 1, 2, 9 )
+
 -}
 interpolateFrom : Vector3d -> Vector3d -> Float -> Vector3d
 interpolateFrom v1 v2 t =
@@ -268,6 +282,7 @@ to extract the X, Y and Z components of a vector in one line of code:
 
     ( x, y, z ) =
         Vector3d.components vector
+
 -}
 components : Vector3d -> ( Float, Float, Float )
 components (Vector3d components_) =
@@ -278,6 +293,7 @@ components (Vector3d components_) =
 
     Vector3d.xComponent (Vector3d ( 1, 2, 3 ))
     --> 1
+
 -}
 xComponent : Vector3d -> Float
 xComponent (Vector3d ( x, _, _ )) =
@@ -288,6 +304,7 @@ xComponent (Vector3d ( x, _, _ )) =
 
     Vector3d.yComponent (Vector3d ( 1, 2, 3 ))
     --> 2
+
 -}
 yComponent : Vector3d -> Float
 yComponent (Vector3d ( _, y, _ )) =
@@ -298,6 +315,7 @@ yComponent (Vector3d ( _, y, _ )) =
 
     Vector3d.zComponent (Vector3d ( 1, 2, 3 ))
     --> 3
+
 -}
 zComponent : Vector3d -> Float
 zComponent (Vector3d ( _, _, z )) =
@@ -318,6 +336,7 @@ example,
 is equivalent to
 
     Vector3d.componentIn Direction3d.z vector
+
 -}
 componentIn : Direction3d -> Vector3d -> Float
 componentIn direction vector =
@@ -345,6 +364,7 @@ between the two given vectors has magnitude less than the given tolerance.
 
     Vector3d.equalWithin 1e-6 firstVector secondVector
     --> False
+
 -}
 equalWithin : Float -> Vector3d -> Vector3d -> Bool
 equalWithin tolerance firstVector secondVector =
@@ -355,6 +375,7 @@ equalWithin tolerance firstVector secondVector =
 
     Vector3d.length (Vector3d ( 2, 1, 2 ))
     --> 3
+
 -}
 length : Vector3d -> Float
 length vector =
@@ -373,6 +394,7 @@ is equivalent to but slightly more efficient than
 since the latter requires a square root under the hood. In many cases, however,
 the speed difference will be negligible and using `length` is much more
 readable!
+
 -}
 squaredLength : Vector3d -> Float
 squaredLength vector =
@@ -391,6 +413,7 @@ return `Nothing`.
 
     Vector3d.direction (Vector3d ( 0, 0, 0 ))
     --> Nothing
+
 -}
 direction : Vector3d -> Maybe Direction3d
 direction vector =
@@ -415,6 +438,7 @@ vector, returns `Nothing`.
 
     Vector3d.lengthAndDirection Vector3d.zero
     --> Nothing
+
 -}
 lengthAndDirection : Vector3d -> Maybe ( Float, Direction3d )
 lengthAndDirection vector =
@@ -445,6 +469,7 @@ lengthAndDirection vector =
 
     Vector3d.sum firstVector secondVector
     --> Vector3d ( 5, 7, 9 )
+
 -}
 sum : Vector3d -> Vector3d -> Vector3d
 sum firstVector secondVector =
@@ -468,6 +493,7 @@ sum firstVector secondVector =
 
     Vector3d.difference firstVector secondVector
     --> Vector3d ( 4, 5, 6 )
+
 -}
 difference : Vector3d -> Vector3d -> Vector3d
 difference firstVector secondVector =
@@ -491,6 +517,7 @@ difference firstVector secondVector =
 
     Vector3d.dotProduct firstVector secondVector
     --> 13
+
 -}
 dotProduct : Vector3d -> Vector3d -> Float
 dotProduct firstVector secondVector =
@@ -514,6 +541,7 @@ dotProduct firstVector secondVector =
 
     Vector3d.crossProduct firstVector secondVector
     --> Vector3d ( 0, 0, 6 )
+
 -}
 crossProduct : Vector3d -> Vector3d -> Vector3d
 crossProduct firstVector secondVector =
@@ -535,6 +563,7 @@ crossProduct firstVector secondVector =
 
     Vector3d.flip (Vector3d ( 1, -3, 2 ))
     --> Vector3d ( -1, 3, -2 )
+
 -}
 flip : Vector3d -> Vector3d
 flip vector =
@@ -549,6 +578,7 @@ flip vector =
 
     Vector3d.scaleBy 3 (Vector3d ( 1, 2, 3 ))
     --> Vector3d ( 3, 6, 9 )
+
 -}
 scaleBy : Float -> Vector3d -> Vector3d
 scaleBy scale vector =
@@ -569,6 +599,7 @@ scaleBy scale vector =
 
     Vector3d.rotateAround Axis3d.z (degrees 45) vector
     --> Vector3d ( 1.4142, 1.4142, 1 )
+
 -}
 rotateAround : Axis3d -> Float -> Vector3d -> Vector3d
 rotateAround axis angle =
@@ -666,6 +697,7 @@ rotateAround axis angle =
 
     Vector3d.mirrorAcross Plane3d.yz vector
     --> Vector3d ( -1, 2, 3 )
+
 -}
 mirrorAcross : Plane3d -> Vector3d -> Vector3d
 mirrorAcross plane =
@@ -712,6 +744,7 @@ portion.
 
     Vector3d.projectionIn Direction3d.z vector
     --> Vector3d ( 0, 0, 3 )
+
 -}
 projectionIn : Direction3d -> Vector3d -> Vector3d
 projectionIn direction vector =
@@ -731,6 +764,7 @@ normal direction), then returning the parallel (in-plane) portion.
 
     Vector3d.projectOnto Plane3d.xz vector
     --> Vector3d ( 2, 0, 3 )
+
 -}
 projectOnto : Plane3d -> Vector3d -> Vector3d
 projectOnto plane vector =
@@ -745,6 +779,7 @@ local coordinates relative to a given reference frame.
 
     Vector3d.relativeTo rotatedFrame vector
     --> Vector3d ( 1.732, -1, 3 )
+
 -}
 relativeTo : Frame3d -> Vector3d -> Vector3d
 relativeTo frame vector =
@@ -763,6 +798,7 @@ frame, and return that vector expressed in global coordinates.
 
     Vector3d.placeIn rotatedFrame vector
     --> Vector3d ( 1.732, 1, 3 )
+
 -}
 placeIn : Frame3d -> Vector3d -> Vector3d
 placeIn frame vector =
@@ -801,6 +837,7 @@ coordinates.
 
     Vector3d.projectInto SketchPlane3d.zx vector
     --> Vector2d ( 3, 2 )
+
 -}
 projectInto : SketchPlane3d -> Vector3d -> Vector2d
 projectInto sketchPlane vector =

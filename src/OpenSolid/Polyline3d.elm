@@ -47,13 +47,16 @@ Polylines can be constructed by passing an ordered list of vertices to the
             , Point2d ( 1, 2, 3 )
             ]
 
+
 # Accessors
 
 @docs vertices, segments
 
+
 # Length
 
 @docs length
+
 
 # Transformations
 
@@ -61,17 +64,21 @@ Transforming a polyline is equivalent to transforming each of its vertices.
 
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
 
+
 # Coordinate frames
 
 @docs relativeTo, placeIn
+
 
 # Sketch planes
 
 @docs projectInto
 
+
 # Bounds
 
 @docs boundingBox
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -88,6 +95,7 @@ import OpenSolid.LineSegment3d as LineSegment3d
     --> , Point3d ( 1, 2, 0 )
     --> , Point3d ( 1, 2, 3 )
     --> ]
+
 -}
 vertices : Polyline3d -> List Point3d
 vertices (Polyline3d vertices_) =
@@ -101,6 +109,7 @@ vertices (Polyline3d vertices_) =
     --> , LineSegment3d ( Point3d ( 1, 0, 0 ), Point3d ( 1, 2, 0 ) )
     --> , LineSegment3d ( Point3d ( 1, 2, 0 ), Point3d ( 1, 2, 3 ) )
     --> ]
+
 -}
 segments : Polyline3d -> List LineSegment3d
 segments polyline =
@@ -117,6 +126,7 @@ segments).
 
     Polyline3d.length examplePolyline
     --> 6
+
 -}
 length : Polyline3d -> Float
 length =
@@ -135,6 +145,7 @@ length =
     -->     , Point3d ( 1, 4, 0 )
     -->     , Point3d ( 1, 4, 6 )
     -->     ]
+
 -}
 scaleAbout : Point3d -> Float -> Polyline3d -> Polyline3d
 scaleAbout point scale =
@@ -150,6 +161,7 @@ scaleAbout point scale =
     -->     , Point3d ( -2, 1, 0 )
     -->     , Point3d ( -2, 1, 3 )
     -->     ]
+
 -}
 rotateAround : Axis3d -> Float -> Polyline3d -> Polyline3d
 rotateAround axis angle =
@@ -168,6 +180,7 @@ rotateAround axis angle =
     -->     , Point3d ( 2, 4, 3 )
     -->     , Point3d ( 2, 4, 6 )
     -->     ]
+
 -}
 translateBy : Vector3d -> Polyline3d -> Polyline3d
 translateBy vector =
@@ -183,6 +196,7 @@ translateBy vector =
     -->     , Point3d ( 1, -2, 0 )
     -->     , Point3d ( 1, -2, 3 )
     -->     ]
+
 -}
 mirrorAcross : Plane3d -> Polyline3d -> Polyline3d
 mirrorAcross plane =
@@ -198,6 +212,7 @@ mirrorAcross plane =
     -->     , Point3d ( 1, 0, 0 )
     -->     , Point3d ( 1, 0, 3 )
     -->     ]
+
 -}
 projectOnto : Plane3d -> Polyline3d -> Polyline3d
 projectOnto plane =
@@ -212,6 +227,7 @@ transformations can be defined in terms of `map`; for example,
 is equivalent to
 
     Polyline3d.map (Point3d.mirrorAcross Plane3d.xz) polyline
+
 -}
 map : (Point3d -> Point3d) -> Polyline3d -> Polyline3d
 map function =
@@ -231,6 +247,7 @@ in local coordinates relative to a given reference frame.
     -->     , Point3d ( 0, 0, -3 )
     -->     , Point3d ( 0, 0, 0 )
     -->     ]
+
 -}
 relativeTo : Frame3d -> Polyline3d -> Polyline3d
 relativeTo frame =
@@ -251,6 +268,7 @@ coordinates.
     -->     , Point3d ( 2, 4, 3 )
     -->     , Point3d ( 2, 4, 6 )
     -->     ]
+
 -}
 placeIn : Frame3d -> Polyline3d -> Polyline3d
 placeIn frame =
@@ -268,6 +286,7 @@ sketch coordinates.
     -->     , Point2d ( 1, 2 )
     -->     , Point2d ( 1, 2 )
     -->     ]
+
 -}
 projectInto : SketchPlane3d -> Polyline3d -> Polyline2d
 projectInto sketchPlane =
@@ -288,6 +307,7 @@ if the polyline has no vertices.
     -->         , maxZ = 3
     -->         }
     -->     )
+
 -}
 boundingBox : Polyline3d -> Maybe BoundingBox3d
 boundingBox polyline =

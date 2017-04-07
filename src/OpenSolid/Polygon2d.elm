@@ -52,13 +52,16 @@ Polygons can be constructed by passing an ordered list of vertices to the
 The last vertex is implicitly considered to be connected back to the first
 vertex (you do not have to close the polygon explicitly).
 
+
 # Accessors
 
 @docs vertices, edges
 
+
 # Perimeter and area
 
 @docs perimeter, area, clockwiseArea, counterclockwiseArea
+
 
 # Transformations
 
@@ -66,13 +69,16 @@ Transforming a polygon is equivalent to transforming each of its vertices.
 
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross, map
 
+
 # Coordinate frames
 
 @docs relativeTo, placeIn
 
+
 # Bounds
 
 @docs boundingBox
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -90,6 +96,7 @@ import OpenSolid.Triangle2d as Triangle2d
     --> , Point2d ( 3, 2 )
     --> , Point2d ( 1, 2 )
     --> ]
+
 -}
 vertices : Polygon2d -> List Point2d
 vertices (Polygon2d vertices_) =
@@ -105,6 +112,7 @@ back to the first point.
     --> , LineSegment2d ( Point2d ( 3, 2 ), Point2d ( 1, 2 ) )
     --> , LineSegment2d ( Point2d ( 1, 2 ), Point2d ( 1, 1 ) )
     --> ]
+
 -}
 edges : Polygon2d -> List LineSegment2d
 edges polygon =
@@ -122,6 +130,7 @@ edges polygon =
 
     Polygon2d.perimeter rectangle
     --> 6
+
 -}
 perimeter : Polygon2d -> Float
 perimeter =
@@ -132,6 +141,7 @@ perimeter =
 
     Polygon2d.area rectangle
     --> 2
+
 -}
 area : Polygon2d -> Float
 area =
@@ -144,6 +154,7 @@ counterclockwise order considered to have negative area.
 
     Polygon2d.clockwiseArea rectangle
     --> -6
+
 -}
 clockwiseArea : Polygon2d -> Float
 clockwiseArea polygon =
@@ -156,6 +167,7 @@ vertices in clockwise order considered to have negative area.
 
     Polygon2d.counterclockwiseArea rectangle
     --> 6
+
 -}
 counterclockwiseArea : Polygon2d -> Float
 counterclockwiseArea polygon =
@@ -192,6 +204,7 @@ counterclockwiseArea polygon =
     -->     , Point2d ( 4, 3 )
     -->     , Point2d ( 0, 3 )
     -->     ]
+
 -}
 scaleAbout : Point2d -> Float -> Polygon2d -> Polygon2d
 scaleAbout point scale =
@@ -208,6 +221,7 @@ angle (in radians).
     -->     , Point2d ( -2, 3 )
     -->     , Point2d ( -2, 1 )
     -->     ]
+
 -}
 rotateAround : Point2d -> Float -> Polygon2d -> Polygon2d
 rotateAround point angle =
@@ -226,6 +240,7 @@ rotateAround point angle =
     -->     , Point2d ( 5, 5 )
     -->     , Point2d ( 3, 5 )
     -->     ]
+
 -}
 translateBy : Vector2d -> Polygon2d -> Polygon2d
 translateBy vector =
@@ -244,6 +259,7 @@ translateBy vector =
 
 Note that if a polygon's vertices were in counterclockwise order before
 mirroring, they will be in clockwise order afterward, and vice versa.
+
 -}
 mirrorAcross : Axis2d -> Polygon2d -> Polygon2d
 mirrorAcross axis =
@@ -258,6 +274,7 @@ transformations can be defined in terms of `map`; for example,
 is equivalent to
 
     Polygon2d.map (Point2d.mirrorAcross Axis2d.x) polygon
+
 -}
 map : (Point2d -> Point2d) -> Polygon2d -> Polygon2d
 map function =
@@ -277,6 +294,7 @@ in local coordinates relative to a given reference frame.
     -->     , Point2d ( 2, 0 )
     -->     , Point2d ( 0, 0 )
     -->     ]
+
 -}
 relativeTo : Frame2d -> Polygon2d -> Polygon2d
 relativeTo frame =
@@ -297,6 +315,7 @@ coordinates.
     -->     , Point2d ( 4, 4 )
     -->     , Point2d ( 2, 4 )
     -->     ]
+
 -}
 placeIn : Frame2d -> Polygon2d -> Polygon2d
 placeIn frame =
@@ -315,6 +334,7 @@ if the polygon has no vertices.
     -->         , maxY = 2
     -->         }
     -->     )
+
 -}
 boundingBox : Polygon2d -> Maybe BoundingBox2d
 boundingBox polygon =

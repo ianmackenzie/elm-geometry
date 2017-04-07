@@ -79,25 +79,31 @@ perpendicular**. (You will likely also want to make sure that they form a
 [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 coordinate system.)
 
+
 # Predefined frames
 
 @docs xyz
+
 
 # Constructors
 
 @docs at
 
+
 # Accessors
 
 @docs originPoint, xDirection, yDirection, zDirection
+
 
 # Handedness
 
 @docs isRightHanded
 
+
 # Axes
 
 @docs xAxis, yAxis, zAxis
+
 
 # Planes
 
@@ -124,6 +130,7 @@ product reverses the sign of the result,
 
 @docs xyPlane, yxPlane, yzPlane, zyPlane, zxPlane, xzPlane
 
+
 # Sketch planes
 
 These functions all form a `SketchPlane3d` from two axes of the given frame. The
@@ -143,13 +150,16 @@ corresponds to a global Z coordinate!
 
 @docs xySketchPlane, yxSketchPlane, yzSketchPlane, zySketchPlane, zxSketchPlane, xzSketchPlane
 
+
 # Transformations
 
 @docs flipX, flipY, flipZ, moveTo, rotateAround, rotateAroundOwn, translateBy, translateAlongOwn, mirrorAcross
 
+
 # Coordinate frames
 
 @docs relativeTo, placeIn
+
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
@@ -168,6 +178,7 @@ import OpenSolid.Vector3d as Vector3d
     -->     , yDirection = Direction3d.y
     -->     , zDirection = Direction3d.z
     -->     }
+
 -}
 xyz : Frame3d
 xyz =
@@ -184,6 +195,7 @@ origin point.
     -->     , yDirection = Direction3d.y
     -->     , zDirection = Direction3d.z
     -->     }
+
 -}
 at : Point3d -> Frame3d
 at point =
@@ -199,6 +211,7 @@ at point =
 
     Frame3d.originPoint Frame3d.xyz
     --> Point3d.origin
+
 -}
 originPoint : Frame3d -> Point3d
 originPoint (Frame3d properties) =
@@ -209,6 +222,7 @@ originPoint (Frame3d properties) =
 
     Frame3d.xDirection Frame3d.xyz
     --> Direction3d.x
+
 -}
 xDirection : Frame3d -> Direction3d
 xDirection (Frame3d properties) =
@@ -219,6 +233,7 @@ xDirection (Frame3d properties) =
 
     Frame3d.yDirection Frame3d.xyz
     --> Direction3d.y
+
 -}
 yDirection : Frame3d -> Direction3d
 yDirection (Frame3d properties) =
@@ -229,6 +244,7 @@ yDirection (Frame3d properties) =
 
     Frame3d.zDirection Frame3d.xyz
     --> Direction3d.z
+
 -}
 zDirection : Frame3d -> Direction3d
 zDirection (Frame3d properties) =
@@ -246,6 +262,7 @@ zDirection (Frame3d properties) =
 All predefined frames are right-handed, and most operations on frames preserve
 handedness, so about the only ways to end up with a left-handed frame are by
 constructing one explicitly or by mirroring a right-handed frame.
+
 -}
 isRightHanded : Frame3d -> Bool
 isRightHanded frame =
@@ -267,6 +284,7 @@ point and X direction).
 
     Frame3d.xAxis Frame3d.xyz
     --> Axis3d.x
+
 -}
 xAxis : Frame3d -> Axis3d
 xAxis frame =
@@ -278,6 +296,7 @@ point and Y direction).
 
     Frame3d.yAxis Frame3d.xyz
     --> Axis3d.y
+
 -}
 yAxis : Frame3d -> Axis3d
 yAxis frame =
@@ -289,6 +308,7 @@ point and Z direction).
 
     Frame3d.zAxis Frame3d.xyz
     --> Axis3d.z
+
 -}
 zAxis : Frame3d -> Axis3d
 zAxis frame =
@@ -433,6 +453,7 @@ xzSketchPlane frame =
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 of the frame.
+
 -}
 flipX : Frame3d -> Frame3d
 flipX frame =
@@ -456,6 +477,7 @@ flipX frame =
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 of the frame.
+
 -}
 flipY : Frame3d -> Frame3d
 flipY frame =
@@ -479,6 +501,7 @@ flipY frame =
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 of the frame.
+
 -}
 flipZ : Frame3d -> Frame3d
 flipZ frame =
@@ -502,6 +525,7 @@ flipZ frame =
     -->     , yDirection = Direction3d.y
     -->     , zDirection = Direction3d.z
     -->     }
+
 -}
 moveTo : Point3d -> Frame3d -> Frame3d
 moveTo newOrigin frame =
@@ -526,6 +550,7 @@ origin point and basis directions will all be rotated around the given axis.
     -->     , yDirection = Direction3d.flip Direction3d.x
     -->     , zDirection = Direction3d.z
     -->     }
+
 -}
 rotateAround : Axis3d -> Float -> Frame3d -> Frame3d
 rotateAround axis angle =
@@ -570,6 +595,7 @@ In this example the frame's Z axis has the same orientation as the global Z axis
 so the frame's basis directions are rotated the same way, but in more complex
 examples involving rotated frames a rotation around (for example) the frame's
 own Z axis may be completely different from a rotation around the global Z axis.
+
 -}
 rotateAroundOwn : (Frame3d -> Axis3d) -> Float -> Frame3d -> Frame3d
 rotateAroundOwn axis angle frame =
@@ -586,6 +612,7 @@ rotateAroundOwn axis angle frame =
 
     Frame3d.translateBy displacement frame
     --> Frame3d.at (Point3d ( 3, 2, 4 ))
+
 -}
 translateBy : Vector3d -> Frame3d -> Frame3d
 translateBy vector frame =
@@ -620,6 +647,7 @@ resulting in
         , yDirection = Direction3d ( -0.7071, 0.7071, 0)
         , zDirection = Direction3d.z
         }
+
 -}
 translateAlongOwn : (Frame3d -> Axis3d) -> Float -> Frame3d -> Frame3d
 translateAlongOwn axis distance frame =
@@ -645,6 +673,7 @@ translateAlongOwn axis distance frame =
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 of the frame.
+
 -}
 mirrorAcross : Plane3d -> Frame3d -> Frame3d
 mirrorAcross plane =
