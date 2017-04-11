@@ -132,6 +132,8 @@ For the examples, assume the following frames have been defined:
 
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
+import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
+import OpenSolid.Bootstrap.Direction3d as Direction3d
 
 
 toDirection : Vector2d -> Direction2d
@@ -172,8 +174,8 @@ given direction 90 degrees counterclockwise.
 
 -}
 perpendicularTo : Direction2d -> Direction2d
-perpendicularTo =
-    toVector >> Vector2d.perpendicularTo >> toDirection
+perpendicularTo direction =
+    toVector direction |> Vector2d.perpendicularTo |> toDirection
 
 
 {-| Construct a direction from an angle in radians, given counterclockwise from
@@ -230,16 +232,16 @@ second. The result will be in the range -π to π.
 
 -}
 angleFrom : Direction2d -> Direction2d -> Float
-angleFrom other direction =
+angleFrom firstDirection secondDirection =
     let
-        otherVector =
-            toVector other
+        firstVector =
+            toVector firstDirection
 
-        directionVector =
-            toVector direction
+        secondVector =
+            toVector secondDirection
     in
-        atan2 (Vector2d.crossProduct otherVector directionVector)
-            (Vector2d.dotProduct otherVector directionVector)
+        atan2 (Vector2d.crossProduct firstVector secondVector)
+            (Vector2d.dotProduct firstVector secondVector)
 
 
 {-| Get the components of a direction as a tuple (the components it would have
@@ -352,8 +354,12 @@ toVector (Direction2d components) =
 
 -}
 flip : Direction2d -> Direction2d
-flip =
-    toVector >> Vector2d.flip >> toDirection
+flip direction =
+    let
+        ( x, y ) =
+            components direction
+    in
+        Direction2d ( -x, -y )
 
 
 {-| Construct a vector of a particular length by treating a direction as a unit
@@ -371,8 +377,8 @@ opposite direction.
 
 -}
 scaleBy : Float -> Direction2d -> Vector2d
-scaleBy scale =
-    toVector >> Vector2d.scaleBy scale
+scaleBy scale direction =
+    toVector direction |> Vector2d.scaleBy scale
 
 
 {-| Rotate a direction counterclockwise by a given angle (in radians).
@@ -385,8 +391,8 @@ scaleBy scale =
 
 -}
 rotateBy : Float -> Direction2d -> Direction2d
-rotateBy angle =
-    toVector >> Vector2d.rotateBy angle >> toDirection
+rotateBy angle direction =
+    toVector direction |> Vector2d.rotateBy angle |> toDirection
 
 
 {-| Mirror a direction across a particular axis. Note that only the direction of
@@ -406,8 +412,8 @@ the axis affects the result, since directions are position-independent.
 
 -}
 mirrorAcross : Axis2d -> Direction2d -> Direction2d
-mirrorAcross axis =
-    toVector >> Vector2d.mirrorAcross axis >> toDirection
+mirrorAcross axis direction =
+    toVector direction |> Vector2d.mirrorAcross axis |> toDirection
 
 
 {-| Take a direction defined in global coordinates, and return it expressed in
@@ -424,8 +430,8 @@ local coordinates relative to a given reference frame.
 
 -}
 relativeTo : Frame2d -> Direction2d -> Direction2d
-relativeTo frame =
-    toVector >> Vector2d.relativeTo frame >> toDirection
+relativeTo frame direction =
+    toVector direction |> Vector2d.relativeTo frame |> toDirection
 
 
 {-| Take a direction defined in local coordinates relative to a given reference
@@ -442,8 +448,8 @@ frame, and return that direction expressed in global coordinates.
 
 -}
 placeIn : Frame2d -> Direction2d -> Direction2d
-placeIn frame =
-    toVector >> Vector2d.placeIn frame >> toDirection
+placeIn frame direction =
+    toVector direction |> Vector2d.placeIn frame |> toDirection
 
 
 {-| Take a direction defined in 2D coordinates within a particular sketch plane
@@ -463,20 +469,19 @@ and return the corresponding direction in 3D.
 
 -}
 placeOnto : SketchPlane3d -> Direction2d -> Direction3d
-placeOnto sketchPlane =
+placeOnto sketchPlane direction =
     let
-        (SketchPlane3d { originPoint, xDirection, yDirection }) =
-            sketchPlane
+        ( x, y ) =
+            components direction
 
-        (Direction3d ( ux, uy, uz )) =
-            xDirection
+        ( ux, uy, uz ) =
+            Direction3d.components (SketchPlane3d.xDirection sketchPlane)
 
-        (Direction3d ( vx, vy, vz )) =
-            yDirection
+        ( vx, vy, vz ) =
+            Direction3d.components (SketchPlane3d.yDirection sketchPlane)
     in
-        \(Direction2d ( x, y )) ->
-            Direction3d
-                ( x * ux + y * vx
-                , x * uy + y * vy
-                , x * uz + y * vz
-                )
+        Direction3d
+            ( x * ux + y * vx
+            , x * uy + y * vy
+            , x * uz + y * vz
+            )
