@@ -16,9 +16,9 @@ module OpenSolid.Arc3d
         , placeIn
         )
 
-{-| An `Arc3d` is a section of a circle in 3D, defined by its axis, start point
-and swept angle (the counterclockwise angle around the axis from the start point
-to the arc's end point). This module includes functionality for
+{-| An `Arc3d` is a section of a circle in 3D, defined by its central axis,
+start point and swept angle (the counterclockwise angle around the axis from the
+start point to the arc's end point). This module includes functionality for
 
   - Constructing arcs through given points
   - Scaling, rotating, translating and mirroring arcs
@@ -34,10 +34,10 @@ and `sweptAngle` fields to the `Arc3d` constructor, for example
             , sweptAngle = degrees 90
             }
 
-Note that the origin point is not required to be the same as the arc's center
-point - here the origin point of the given axis is `Point3d.origin`, while the
-center point of the arc is `Point3d ( 0, 0, 1 )` (the start point of the arc
-projected onto the axis).
+Note that the origin point of the axis is not required to be the same as the
+arc's center point - here the origin point of the given axis is
+`Point3d.origin`, while the center point of the arc is `Point3d ( 0, 0, 1 )`
+(the start point of the arc projected onto the axis).
 
 
 # Constructors
