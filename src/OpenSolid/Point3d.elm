@@ -116,6 +116,10 @@ import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Point2d as Point2d
 import OpenSolid.Scalar as Scalar
+import OpenSolid.Bootstrap.Axis3d as Axis3d
+import OpenSolid.Bootstrap.Plane3d as Plane3d
+import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
+import OpenSolid.Bootstrap.Frame3d as Frame3d
 
 
 addTo : Point3d -> Vector3d -> Point3d
@@ -231,8 +235,9 @@ axis:
 
 -}
 along : Axis3d -> Float -> Point3d
-along (Axis3d { originPoint, direction }) distance =
-    translateBy (Vector3d.in_ direction distance) originPoint
+along axis distance =
+    Axis3d.originPoint axis
+        |> translateBy (Vector3d.in_ (Axis3d.direction axis) distance)
 
 
 {-| Construct a point on a sketch plane with the given local coordinates.
@@ -251,7 +256,7 @@ is equivalent to
 -}
 on : SketchPlane3d -> ( Float, Float ) -> Point3d
 on sketchPlane coordinates =
-    Point2d coordinates |> Point2d.placeOnto sketchPlane
+    Point2d.placeOnto sketchPlane (Point2d coordinates)
 
 
 {-| Construct a point given its local coordinates within a particular frame.
@@ -273,7 +278,7 @@ is equivalent to
 -}
 in_ : Frame3d -> ( Float, Float, Float ) -> Point3d
 in_ frame coordinates =
-    Point3d coordinates |> placeIn frame
+    placeIn frame (Point3d coordinates)
 
 
 {-| Get the coordinates of a point as a tuple.
@@ -354,15 +359,15 @@ equalWithin tolerance firstPoint secondPoint =
 
 -}
 vectorFrom : Point3d -> Point3d -> Vector3d
-vectorFrom other point =
+vectorFrom firstPoint secondPoint =
     let
-        ( otherX, otherY, otherZ ) =
-            coordinates other
+        ( x1, y1, z1 ) =
+            coordinates firstPoint
 
-        ( x, y, z ) =
-            coordinates point
+        ( x2, y2, z2 ) =
+            coordinates secondPoint
     in
-        Vector3d ( x - otherX, y - otherY, z - otherZ )
+        Vector3d ( x2 - x1, y2 - y1, z2 - z1 )
 
 
 {-| Attempt to find the direction from the first point to the second. If the two
@@ -382,8 +387,8 @@ points are coincident, returns `Nothing`.
 
 -}
 directionFrom : Point3d -> Point3d -> Maybe Direction3d
-directionFrom point =
-    vectorFrom point >> Vector3d.direction
+directionFrom firstPoint secondPoint =
+    Vector3d.direction (vectorFrom firstPoint secondPoint)
 
 
 {-| Find the distance between two points.
@@ -417,8 +422,8 @@ Partial application can be useful:
 
 -}
 distanceFrom : Point3d -> Point3d -> Float
-distanceFrom other =
-    squaredDistanceFrom other >> sqrt
+distanceFrom firstPoint secondPoint =
+    sqrt (squaredDistanceFrom firstPoint secondPoint)
 
 
 {-| Find the square of the distance from one point to another.
@@ -436,8 +441,8 @@ readable!
 
 -}
 squaredDistanceFrom : Point3d -> Point3d -> Float
-squaredDistanceFrom other =
-    vectorFrom other >> Vector3d.squaredLength
+squaredDistanceFrom firstPoint secondPoint =
+    Vector3d.squaredLength (vectorFrom firstPoint secondPoint)
 
 
 {-| Determine how far along an axis a particular point lies. Conceptually, the
@@ -463,12 +468,9 @@ it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
 
 -}
 distanceAlong : Axis3d -> Point3d -> Float
-distanceAlong axis =
-    let
-        (Axis3d { originPoint, direction }) =
-            axis
-    in
-        vectorFrom originPoint >> Vector3d.componentIn direction
+distanceAlong axis point =
+    vectorFrom (Axis3d.originPoint axis) point
+        |> Vector3d.componentIn (Axis3d.direction axis)
 
 
 {-| Find the perpendicular (nearest) distance of a point from an axis.
@@ -490,8 +492,8 @@ no such thing as the left or right side of an axis in 3D.
 
 -}
 radialDistanceFrom : Axis3d -> Point3d -> Float
-radialDistanceFrom axis =
-    squaredRadialDistanceFrom axis >> sqrt
+radialDistanceFrom axis point =
+    sqrt (squaredRadialDistanceFrom axis point)
 
 
 {-| Find the square of the perpendicular distance of a point from an axis. As
@@ -499,17 +501,10 @@ with `distanceFrom`/`squaredDistanceFrom` this is slightly more efficient than
 `radialDistanceFrom` since it avoids a square root.
 -}
 squaredRadialDistanceFrom : Axis3d -> Point3d -> Float
-squaredRadialDistanceFrom axis =
-    let
-        (Axis3d { originPoint, direction }) =
-            axis
-
-        directionVector =
-            Direction3d.toVector direction
-    in
-        vectorFrom originPoint
-            >> Vector3d.crossProduct directionVector
-            >> Vector3d.squaredLength
+squaredRadialDistanceFrom axis point =
+    vectorFrom (Axis3d.originPoint axis) point
+        |> Vector3d.crossProduct (Direction3d.toVector (Axis3d.direction axis))
+        |> Vector3d.squaredLength
 
 
 {-| Find the perpendicular distance of a point from a plane. The result will be
@@ -544,17 +539,14 @@ the sign of the result of this function:
 signedDistanceFrom : Plane3d -> Point3d -> Float
 signedDistanceFrom plane point =
     let
-        (Plane3d { originPoint, normalDirection }) =
-            plane
+        ( x, y, z ) =
+            coordinates point
 
-        (Point3d ( x0, y0, z0 )) =
-            originPoint
+        ( x0, y0, z0 ) =
+            coordinates (Plane3d.originPoint plane)
 
-        (Direction3d ( nx, ny, nz )) =
-            normalDirection
-
-        (Point3d ( x, y, z )) =
-            point
+        ( nx, ny, nz ) =
+            Direction3d.components (Plane3d.normalDirection plane)
     in
         (x - x0) * nx + (y - y0) * ny + (z - z0) * nz
 
@@ -582,8 +574,8 @@ rotation operations instead.
 
 -}
 scaleAbout : Point3d -> Float -> Point3d -> Point3d
-scaleAbout centerPoint scale =
-    vectorFrom centerPoint >> Vector3d.scaleBy scale >> addTo centerPoint
+scaleAbout centerPoint scale point =
+    vectorFrom centerPoint point |> Vector3d.scaleBy scale |> addTo centerPoint
 
 
 {-| Rotate a point around an axis by a given angle (in radians).
@@ -605,14 +597,14 @@ direction of the axis.
 
 -}
 rotateAround : Axis3d -> Float -> Point3d -> Point3d
-rotateAround axis angle =
+rotateAround axis angle point =
     let
-        (Axis3d { originPoint, direction }) =
-            axis
+        originPoint =
+            Axis3d.originPoint axis
     in
-        vectorFrom originPoint
-            >> Vector3d.rotateAround axis angle
-            >> addTo originPoint
+        vectorFrom originPoint point
+            |> Vector3d.rotateAround axis angle
+            |> addTo originPoint
 
 
 {-| Translate a point by a given displacement.
@@ -666,14 +658,14 @@ The plane does not have to pass through the origin:
 
 -}
 mirrorAcross : Plane3d -> Point3d -> Point3d
-mirrorAcross plane =
+mirrorAcross plane point =
     let
-        (Plane3d { originPoint, normalDirection }) =
-            plane
+        originPoint =
+            Plane3d.originPoint plane
     in
-        vectorFrom originPoint
-            >> Vector3d.mirrorAcross plane
-            >> addTo originPoint
+        vectorFrom originPoint point
+            |> Vector3d.mirrorAcross plane
+            |> addTo originPoint
 
 
 {-| Project a point perpendicularly onto a plane.
@@ -699,14 +691,11 @@ The plane does not have to pass through the origin:
 projectOnto : Plane3d -> Point3d -> Point3d
 projectOnto plane point =
     let
-        (Plane3d { originPoint, normalDirection }) =
-            plane
-
         signedDistance =
             signedDistanceFrom plane point
 
         displacement =
-            Vector3d.in_ normalDirection -signedDistance
+            Vector3d.in_ (Plane3d.normalDirection plane) -signedDistance
     in
         translateBy displacement point
 
@@ -748,14 +737,11 @@ coordinates relative to a given reference frame.
 
 -}
 relativeTo : Frame3d -> Point3d -> Point3d
-relativeTo frame =
-    let
-        (Frame3d { originPoint, xDirection, yDirection, zDirection }) =
-            frame
-    in
-        vectorFrom originPoint
-            >> Vector3d.relativeTo frame
-            >> (\(Vector3d components) -> Point3d components)
+relativeTo frame point =
+    vectorFrom (Frame3d.originPoint frame) point
+        |> Vector3d.relativeTo frame
+        |> Vector3d.components
+        |> Point3d
 
 
 {-| Take a point defined in local coordinates relative to a given reference
@@ -772,12 +758,10 @@ frame, and return that point expressed in global coordinates.
 
 -}
 placeIn : Frame3d -> Point3d -> Point3d
-placeIn frame =
-    let
-        (Frame3d { originPoint, xDirection, yDirection, zDirection }) =
-            frame
-    in
-        coordinates >> Vector3d >> Vector3d.placeIn frame >> addTo originPoint
+placeIn frame point =
+    Vector3d (coordinates point)
+        |> Vector3d.placeIn frame
+        |> addTo (Frame3d.originPoint frame)
 
 
 {-| Project a point into a given sketch plane. Conceptually, this projects the
@@ -800,20 +784,17 @@ coordinates.
 projectInto : SketchPlane3d -> Point3d -> Point2d
 projectInto sketchPlane point =
     let
-        (SketchPlane3d { originPoint, xDirection, yDirection }) =
-            sketchPlane
+        ( x, y, z ) =
+            coordinates point
 
-        (Point3d ( x0, y0, z0 )) =
-            originPoint
+        ( x0, y0, z0 ) =
+            coordinates (SketchPlane3d.originPoint sketchPlane)
 
-        (Direction3d ( ux, uy, uz )) =
-            xDirection
+        ( ux, uy, uz ) =
+            Direction3d.components (SketchPlane3d.xDirection sketchPlane)
 
-        (Direction3d ( vx, vy, vz )) =
-            yDirection
-
-        (Point3d ( x, y, z )) =
-            point
+        ( vx, vy, vz ) =
+            Direction3d.components (SketchPlane3d.yDirection sketchPlane)
 
         dx =
             x - x0
