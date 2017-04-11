@@ -363,8 +363,8 @@ range 0 to π.
 
 -}
 angleFrom : Direction3d -> Direction3d -> Float
-angleFrom other direction =
-    acos (componentIn direction other)
+angleFrom firstDirection secondDirection =
+    acos (componentIn firstDirection secondDirection)
 
 
 {-| Reverse a direction.
@@ -374,8 +374,12 @@ angleFrom other direction =
 
 -}
 flip : Direction3d -> Direction3d
-flip =
-    toVector >> Vector3d.flip >> toDirection
+flip direction =
+    let
+        ( x, y, z ) =
+            components direction
+    in
+        Direction3d ( -x, -y, -z )
 
 
 {-| Construct a vector of a particular length by treating a direction as a unit
@@ -390,8 +394,8 @@ opposite direction.
 
 -}
 scaleBy : Float -> Direction3d -> Vector3d
-scaleBy scale =
-    toVector >> Vector3d.scaleBy scale
+scaleBy scale direction =
+    toVector direction |> Vector3d.scaleBy scale
 
 
 {-| Rotate a direction around an axis by a given angle.
@@ -413,8 +417,8 @@ its origin point, since directions are position-independent:
 
 -}
 rotateAround : Axis3d -> Float -> Direction3d -> Direction3d
-rotateAround axis angle =
-    toVector >> Vector3d.rotateAround axis angle >> toDirection
+rotateAround axis angle direction =
+    toVector direction |> Vector3d.rotateAround axis angle |> toDirection
 
 
 {-| Mirror a direction across a plane.
@@ -436,8 +440,8 @@ position of its origin point, since directions are position-independent:
 
 -}
 mirrorAcross : Plane3d -> Direction3d -> Direction3d
-mirrorAcross plane =
-    toVector >> Vector3d.mirrorAcross plane >> toDirection
+mirrorAcross plane direction =
+    toVector direction |> Vector3d.mirrorAcross plane |> toDirection
 
 
 {-| Project a direction onto a plane. This is effectively the direction of the
@@ -461,8 +465,8 @@ exactly perpendicular to the given plane, then `Nothing` is returned.
 
 -}
 projectOnto : Plane3d -> Direction3d -> Maybe Direction3d
-projectOnto plane =
-    toVector >> Vector3d.projectOnto plane >> Vector3d.direction
+projectOnto plane direction =
+    toVector direction |> Vector3d.projectOnto plane |> Vector3d.direction
 
 
 {-| Take a direction defined in global coordinates, and return it expressed in
@@ -479,8 +483,8 @@ local coordinates relative to a given reference frame.
 
 -}
 relativeTo : Frame3d -> Direction3d -> Direction3d
-relativeTo frame =
-    toVector >> Vector3d.relativeTo frame >> toDirection
+relativeTo frame direction =
+    toVector direction |> Vector3d.relativeTo frame |> toDirection
 
 
 {-| Take a direction defined in local coordinates relative to a given reference
@@ -497,8 +501,8 @@ frame, and return that direction expressed in global coordinates.
 
 -}
 placeIn : Frame3d -> Direction3d -> Direction3d
-placeIn frame =
-    toVector >> Vector3d.placeIn frame >> toDirection
+placeIn frame direction =
+    toVector direction |> Vector3d.placeIn frame |> toDirection
 
 
 {-| Project a direction into a given sketch plane. Conceptually, this projects
@@ -525,5 +529,5 @@ plane; if it is perpendicular, `Nothing` is returned.
 
 -}
 projectInto : SketchPlane3d -> Direction3d -> Maybe Direction2d
-projectInto sketchPlane =
-    toVector >> Vector3d.projectInto sketchPlane >> Vector2d.direction
+projectInto sketchPlane direction =
+    toVector direction |> Vector3d.projectInto sketchPlane |> Vector2d.direction
