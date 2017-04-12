@@ -412,8 +412,8 @@ scaleAbout point scale =
     map (Point2d.scaleAbout point scale)
 
 
-{-| Rotate around a given center point counterclockwise by a given angle (in
-radians).
+{-| Rotate a line segment counterclockwise around a given center point by a
+given angle (in radians).
 
     LineSegment2d.rotateAround Point2d.origin (degrees 90) exampleLineSegment
     --> LineSegment2d

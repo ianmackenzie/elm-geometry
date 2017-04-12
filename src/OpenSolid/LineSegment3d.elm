@@ -286,7 +286,7 @@ scaleAbout point scale =
     map (Point3d.scaleAbout point scale)
 
 
-{-| Rotate around a given axis by a given angle (in radians).
+{-| Rotate a line segment around a given axis by a given angle (in radians).
 
     LineSegment3d.rotateAround Axis3d.z (degrees 90) exampleLineSegment
     -- LineSegment3d
