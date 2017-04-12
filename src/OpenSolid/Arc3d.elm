@@ -204,6 +204,23 @@ sweptAngle (Arc3d properties) =
     properties.sweptAngle
 
 
+{-| Scale an arc about the given center point by the given scale.
+
+    point =
+        Point3d ( 1, 0, 1 )
+
+    Arc3d.scaleAbout point 2 exampleArc
+    --> Arc3d
+    -->     { axis =
+    -->         Axis3d
+    -->             { originPoint = Point3d ( -1, 0, -1 )
+    -->             , direction = Direction3d.z
+    -->             }
+    -->     , startPoint = Point3d ( 3, 0, 1 )
+    -->     , sweptAngle = degrees 90
+    -->     }
+
+-}
 scaleAbout : Point3d -> Float -> Arc3d -> Arc3d
 scaleAbout point scale arc =
     let
@@ -235,6 +252,16 @@ scaleAbout point scale arc =
             }
 
 
+{-| Rotate an arc around a given axis by a given angle (in radians).
+
+    Arc3d.rotateAround Axis3d.x (degrees 90) exampleArc
+    --> Arc3d
+    -->     { axis = Axis3d.flip Axis3d.y
+    -->     , startPoint = Point3d ( 2, -1, 0 )
+    -->     , sweptAngle = degrees 90
+    -->     }
+
+-}
 rotateAround : Axis3d -> Float -> Arc3d -> Arc3d
 rotateAround rotationAxis angle =
     let
@@ -252,6 +279,23 @@ rotateAround rotationAxis angle =
                 }
 
 
+{-| Translate an arc by a given displacement.
+
+    displacement =
+        Vector3d ( 2, 1, 3 )
+
+    Arc3d.translateBy displacement exampleArc
+    --> Arc3d
+    -->     { axis =
+    -->         Axis3d
+    -->             { originPoint = Point3d ( 2, 1, 3 )
+    -->             , direction = Direction3d.z
+    -->             }
+    -->     , startPoint = Point3d ( 4, 1, 4 )
+    -->     , sweptAngle = degrees 90
+    -->     }
+
+-}
 translateBy : Vector3d -> Arc3d -> Arc3d
 translateBy displacement arc =
     Arc3d
@@ -261,6 +305,18 @@ translateBy displacement arc =
         }
 
 
+{-| Mirror an arc across a given plane.
+
+    Arc3d.mirrorAcross Plane3d.xy exampleArc
+    Arc3d
+        { axis = Axis3d.flip Axis3d.z
+        , startPoint = Point3d ( 2, 0, -1 )
+        , sweptAngle = degrees -90
+        }
+
+Note that this flips the sign of the arc's swept angle.
+
+-}
 mirrorAcross : Plane3d -> Arc3d -> Arc3d
 mirrorAcross plane =
     let
@@ -278,6 +334,24 @@ mirrorAcross plane =
                 }
 
 
+{-| Take an arc defined in global coordinates, and return it expressed in local
+coordinates relative to a given reference frame.
+
+    localFrame =
+        Frame3d.at (Point3d ( 1, 2, 3 ))
+
+    Arc3d.relativeTo localFrame exampleArc
+    --> Arc3d
+    -->     { axis =
+    -->         Axis3d
+    -->             { originPoint = Point3d ( -1, -2, -3 )
+    -->             , direction = Direction3d.z
+    -->             }
+    -->     , startPoint = Point3d ( 1, -2, -2 )
+    -->     , sweptAngle = degrees 90
+    -->     }
+
+-}
 relativeTo : Frame3d -> Arc3d -> Arc3d
 relativeTo frame arc =
     Arc3d
@@ -291,6 +365,24 @@ relativeTo frame arc =
         }
 
 
+{-| Take an arc considered to be defined in local coordinates relative to a
+given reference frame, and return that arc expressed in global coordinates.
+
+    localFrame =
+        Frame3d.at (Point3d ( 1, 2, 3 ))
+
+    Arc3d.placeIn localFrame exampleArc
+    --> Arc3d
+    -->     { axis =
+    -->         Axis3d
+    -->             { originPoint = Point3d ( 1, 2, 3 )
+    -->             , direction = Direction3d.z
+    -->             }
+    -->     , startPoint = Point3d ( 3, 2, 4 )
+    -->     , sweptAngle = degrees 90
+    -->     }
+
+-}
 placeIn : Frame3d -> Arc3d -> Arc3d
 placeIn frame arc =
     Arc3d
