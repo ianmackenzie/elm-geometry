@@ -114,31 +114,72 @@ throughPoints firstPoint secondPoint thirdPoint =
             )
 
 
+{-| Get the central axis of an arc.
+
+    Arc3d.axis exampleArc
+    --> Axis3d.z
+
+-}
 axis : Arc3d -> Axis3d
 axis (Arc3d properties) =
     properties.axis
 
 
+{-| Get the center point of an arc.
+
+    Arc3d.centerPoint exampleArc
+    --> Point3d ( 0, 0, 1 )
+
+The center point of an arc is equal to its start point projected onto its
+central axis, which may not be equal to the origin point of that axis.
+
+-}
 centerPoint : Arc3d -> Point3d
 centerPoint arc =
     Point3d.projectRadiallyOnto (axis arc) (startPoint arc)
 
 
+{-| Get the radius of an arc.
+
+    Arc3d.radius exampleArc
+    --> 2
+
+-}
 radius : Arc3d -> Float
 radius arc =
     Point3d.radialDistanceFrom (axis arc) (startPoint arc)
 
 
+{-| Get the start point of an arc.
+
+    Arc3d.startPoint exampleArc
+    --> Point3d ( 2, 0, 1 )
+
+-}
 startPoint : Arc3d -> Point3d
 startPoint (Arc3d properties) =
     properties.startPoint
 
 
+{-| Get the end point of an arc.
+
+    Arc3d.endPoint exampleArc
+    --> Point3d ( 0, 2, 1 )
+
+-}
 endPoint : Arc3d -> Point3d
 endPoint arc =
     Point3d.rotateAround (axis arc) (sweptAngle arc) (startPoint arc)
 
 
+{-| Get the point along an arc at a given parameter value. A parameter value of
+0 corresponds to the start point of the arc and a value of 1 corresponds to the
+end point.
+
+    Arc3d.point exampleArc 0.5
+    --> Point3d ( 1.4142, 1.4142, 1 )
+
+-}
 point : Arc3d -> Float -> Point3d
 point arc parameter =
     let
@@ -148,6 +189,16 @@ point arc parameter =
         Point3d.rotateAround (axis arc) angle (startPoint arc)
 
 
+{-| Get the swept angle of an arc in radians.
+
+    Arc2d.sweptAngle exampleArc
+    --> 1.5708
+
+A positive swept angle means that the arc is formed by rotating the given start
+point counterclockwise around the central axis, and vice versa for a negative
+angle.
+
+-}
 sweptAngle : Arc3d -> Float
 sweptAngle (Arc3d properties) =
     properties.sweptAngle
