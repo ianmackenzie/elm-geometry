@@ -47,7 +47,7 @@ arc's center point - here the origin point of the given axis is
 
 # Accessors
 
-@docs axis, centerPoint, radius, startoint, endPoint, point, sweptAngle
+@docs axis, centerPoint, radius, startPoint, endPoint, point, sweptAngle
 
 
 # Transformations
