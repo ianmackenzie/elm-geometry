@@ -159,6 +159,20 @@ endDerivative spline =
         Point2d.vectorFrom p2 p3 |> Vector2d.scaleBy 2
 
 
+{-| Get a point along a spline, based on a parameter that ranges from 0 to 1. A
+parameter value of 0 corresponds to the start point of the spline and a value of
+1 corresponds to the end point.
+
+    QuadraticSpline2d.point exampleSpline 0
+    --> Point2d ( 1, 1 )
+
+    QuadraticSpline2d.point exampleSpline 0.5
+    --> Point2d ( 3, 2.5 )
+
+    QuadraticSpline2d.point exampleSpline 1
+    --> Point2d ( 5, 1 )
+
+-}
 point : QuadraticSpline2d -> Float -> Point2d
 point spline t =
     let
@@ -174,6 +188,20 @@ point spline t =
         Point2d.interpolateFrom q1 q2 t
 
 
+{-| Get the deriative value at a point along a spline, based on a parameter that
+ranges from 0 to 1. A parameter value of 0 corresponds to the start derivative
+of the spline and a value of 1 corresponds to the end derivative.
+
+    QuadraticSpline2d.derivative exampleSpline 0
+    --> Vector2d ( 4, 6 )
+
+    QuadraticSpline2d.derivative exampleSpline 0.5
+    --> Vector2d ( 4, 0 )
+
+    QuadraticSpline2d.derivative exampleSpline 1
+    --> Vector2d ( 4, -6 )
+
+-}
 derivative : QuadraticSpline2d -> Float -> Vector2d
 derivative spline =
     let
@@ -189,21 +217,65 @@ derivative spline =
         \t -> Vector2d.interpolateFrom v1 v2 t |> Vector2d.scaleBy 2
 
 
+{-| Scale a spline about the given center point by the given scale.
+
+    QuadraticSpline2d.scaleAbout Point2d.origin 2 exampleSpline
+    --> QuadraticSpline2d
+    -->     ( Point2d ( 2, 2 )
+    -->     , Point2d ( 6, 8 )
+    -->     , Point2d ( 10, 2 )
+    -->     )
+
+-}
 scaleAbout : Point2d -> Float -> QuadraticSpline2d -> QuadraticSpline2d
 scaleAbout point scale =
     mapControlPoints (Point2d.scaleAbout point scale)
 
 
+{-| Rotate a spline counterclockwise around a given center point by a given
+angle (in radians).
+
+    QuadraticSpline2d.rotateAround Point2d.origin (degrees 90) exampleSpline
+    --> QuadraticSpline2d
+    -->     ( Point2d ( -1, 1 )
+    -->     , Point2d ( -4, 3 )
+    -->     , Point2d ( -1, 5 )
+    -->     )
+
+-}
 rotateAround : Point2d -> Float -> QuadraticSpline2d -> QuadraticSpline2d
 rotateAround point angle =
     mapControlPoints (Point2d.rotateAround point angle)
 
 
+{-| Translate a spline by a given displacement.
+
+    displacement =
+        Vector2d ( 2, 3 )
+
+    QuadraticSpline2d.translateBy displacement exampleSpline
+    --> QuadraticSpline2d
+    -->     ( Point2d ( 3, 4 )
+    -->     , Point2d ( 5, 7 )
+    -->     , Point2d ( 7, 4 )
+    -->     )
+
+-}
 translateBy : Vector2d -> QuadraticSpline2d -> QuadraticSpline2d
 translateBy displacement =
     mapControlPoints (Point2d.translateBy displacement)
 
 
+{-| Mirror a spline across an axis.
+
+    QuadraticSpline2d.mirrorAcross Axis2d.x exampleSpline
+    --> QuadraticSpline2d
+    -->     ( Point2d ( 1, -1 )
+    -->     , Point2d ( 3, -4 )
+    -->     , Point2d ( 5, -1 )
+    -->     )
+
+-}
 mirrorAcross : Axis2d -> QuadraticSpline2d -> QuadraticSpline2d
 mirrorAcross axis =
     mapControlPoints (Point2d.mirrorAcross axis)
@@ -218,16 +290,55 @@ mapControlPoints function spline =
         QuadraticSpline2d ( function p1, function p2, function p3 )
 
 
+{-| Take a spline defined in global coordinates, and return it expressed in
+local coordinates relative to a given reference frame.
+
+    localFrame =
+        Frame2d.at (Point2d ( 1, 2 ))
+
+    QuadraticSpline2d.relativeTo localFrame exampleSpline
+    --> QuadraticSpline2d
+    -->     ( Point2d ( 0, -1 )
+    -->     , Point2d ( 2, 2 )
+    -->     , Point2d ( 4, -1 )
+    -->     )
+
+-}
 relativeTo : Frame2d -> QuadraticSpline2d -> QuadraticSpline2d
 relativeTo frame =
     mapControlPoints (Point2d.relativeTo frame)
 
 
+{-| Take a spline considered to be defined in local coordinates relative to a
+given reference frame, and return that spline expressed in global coordinates.
+
+    localFrame =
+        Frame2d.at (Point2d ( 1, 2 ))
+
+    QuadraticSpline2d.placeIn localFrame exampleSpline
+    --> QuadraticSpline2d
+    -->     ( Point2d ( 2, 3 )
+    -->     , Point2d ( 4, 6 )
+    -->     , Point2d ( 6, 3 )
+    -->     )
+
+-}
 placeIn : Frame2d -> QuadraticSpline2d -> QuadraticSpline2d
 placeIn frame =
     mapControlPoints (Point2d.placeIn frame)
 
 
+{-| Take a spline defined in 2D coordinates within a particular sketch
+plane and return the corresponding spline in 3D.
+
+    QuadraticSpline2d.placeOnto SketchPlane3d.xz exampleSpline
+    --> QuadraticSpline3d
+    -->     ( Point3d ( 1, 0, 1 )
+    -->     , Point3d ( 3, 0, 4 )
+    -->     , Point3d ( 5, 0, 1 )
+    -->     )
+
+-}
 placeOnto : SketchPlane3d -> QuadraticSpline2d -> QuadraticSpline3d
 placeOnto sketchPlane spline =
     let
