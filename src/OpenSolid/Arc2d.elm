@@ -50,7 +50,12 @@ Arcs can be constructed explicitly by passing a record with `centerPoint`,
 
 # Accessors
 
-@docs centerPoint, radius, startPoint, endPoint, point, sweptAngle
+@docs centerPoint, radius, startPoint, endPoint, sweptAngle
+
+
+# Evaluation
+
+@docs point
 
 
 # Transformations
@@ -416,6 +421,20 @@ endPoint arc =
     Point2d.rotateAround (centerPoint arc) (sweptAngle arc) (startPoint arc)
 
 
+{-| Get the swept angle of an arc in radians.
+
+    Arc2d.sweptAngle exampleArc
+    --> 1.5708
+
+The result will be positive for a counterclockwise arc and negative for a
+clockwise one.
+
+-}
+sweptAngle : Arc2d -> Float
+sweptAngle (Arc2d properties) =
+    properties.sweptAngle
+
+
 {-| Get the point along an arc at a given parameter value. A parameter value of
 0 corresponds to the start point of the arc and a value of 1 corresponds to the
 end point.
@@ -431,20 +450,6 @@ point arc parameter =
             parameter * sweptAngle arc
     in
         Point2d.rotateAround (centerPoint arc) angle (startPoint arc)
-
-
-{-| Get the swept angle of an arc in radians.
-
-    Arc2d.sweptAngle exampleArc
-    --> 1.5708
-
-The result will be positive for a counterclockwise arc and negative for a
-clockwise one.
-
--}
-sweptAngle : Arc2d -> Float
-sweptAngle (Arc2d properties) =
-    properties.sweptAngle
 
 
 {-| Scale an arc about a given point by a given scale.
