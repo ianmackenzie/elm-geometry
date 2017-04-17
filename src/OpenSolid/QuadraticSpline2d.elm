@@ -53,7 +53,7 @@ Splines can be constructed by passing a tuple of control points to the
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, mapControlPoints
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross
 
 
 # Coordinate frames
