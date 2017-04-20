@@ -14,6 +14,7 @@ module OpenSolid.BoundingBox3d
     exposing
         ( singleton
         , containing
+        , hullOf
         , extrema
         , minX
         , maxX
@@ -74,7 +75,7 @@ Alternately, you can construct bounding boxes using functions such as
 
 # Constructors
 
-@docs singleton, containing
+@docs singleton, containing, hullOf
 
 
 # Accessors
@@ -160,12 +161,45 @@ instead (which returns a `BoundingBox3d` instead of a `Maybe BoundingBox3d`).
 -}
 containing : List Point3d -> Maybe BoundingBox3d
 containing points =
-    case points of
+    hullOf (List.map singleton points)
+
+
+{-| Construct a bounding box containing all bounding boxes in the given list. If
+the list is empty, returns `Nothing`.
+
+    singletonBox =
+        BoundingBox3d.singleton (Point3d ( 2, 1, 0 ))
+
+    BoundingBox3d.hullOf [ exampleBox, singletonBox ]
+    --> Just
+    -->     (BoundingBox3d
+    -->         { minX = -2,
+    -->         , maxX = 2
+    -->         , minY = 1
+    -->         , maxY = 5
+    -->         , minZ = 0
+    -->         , maxZ = 4
+    -->         }
+    -->     )
+
+    BoundingBox3d.hullOf [ exampleBox ]
+    --> Just exampleBox
+
+    BoundingBox3d.hullOf []
+    --> Nothing
+
+If you have exactly two bounding boxes, you can use [`BoundingBox3d.hull`](#hull)
+instead (which returns a `BoundingBox3d` instead of a `Maybe BoundingBox3d`).
+
+-}
+hullOf : List BoundingBox3d -> Maybe BoundingBox3d
+hullOf boundingBoxes =
+    case boundingBoxes of
+        first :: rest ->
+            Just (List.foldl hull first rest)
+
         [] ->
             Nothing
-
-        first :: rest ->
-            Just (List.foldl hull (singleton first) (List.map singleton rest))
 
 
 {-| Get the minimum and maximum X, Y and Z values of a bounding box in a single

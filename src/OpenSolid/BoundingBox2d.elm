@@ -14,6 +14,7 @@ module OpenSolid.BoundingBox2d
     exposing
         ( singleton
         , containing
+        , hullOf
         , extrema
         , minX
         , maxX
@@ -69,7 +70,7 @@ input order does not matter.
 
 # Constructors
 
-@docs singleton, containing
+@docs singleton, containing, hullOf
 
 
 # Accessors
@@ -144,12 +145,43 @@ instead (which returns a `BoundingBox2d` instead of a `Maybe BoundingBox2d`).
 -}
 containing : List Point2d -> Maybe BoundingBox2d
 containing points =
-    case points of
+    hullOf (List.map singleton points)
+
+
+{-| Construct a bounding box containing all bounding boxes in the given list. If
+the list is empty, returns `Nothing`.
+
+    singletonBox =
+        BoundingBox2d.singleton (Point2d ( 1, 3 ))
+
+    BoundingBox2d.hullOf [ exampleBox, singletonBox ]
+    --> Just
+    -->     (BoundingBox2d
+    -->         { minX = 1,
+    -->         , maxX = 8
+    -->         , minY = 2
+    -->         , maxY = 6
+    -->         }
+    -->     )
+
+    BoundingBox2d.hullOf [ exampleBox ]
+    --> Just exampleBox
+
+    BoundingBox2d.hullOf []
+    --> Nothing
+
+If you have exactly two bounding boxes, you can use [`BoundingBox2d.hull`](#hull)
+instead (which returns a `BoundingBox2d` instead of a `Maybe BoundingBox2d`).
+
+-}
+hullOf : List BoundingBox2d -> Maybe BoundingBox2d
+hullOf boundingBoxes =
+    case boundingBoxes of
+        first :: rest ->
+            Just (List.foldl hull first rest)
+
         [] ->
             Nothing
-
-        first :: rest ->
-            Just (List.foldl hull (singleton first) (List.map singleton rest))
 
 
 {-| Get the minimum and maximum X and Y values of a bounding box in a single
