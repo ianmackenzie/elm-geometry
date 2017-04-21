@@ -4,9 +4,9 @@ module OpenSolid.QuadraticSpline2d
         , controlPoints
         , startPoint
         , endPoint
-        , point
         , startDerivative
         , endDerivative
+        , point
         , derivative
         , scaleAbout
         , rotateAround
