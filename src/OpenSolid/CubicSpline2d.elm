@@ -5,9 +5,9 @@ module OpenSolid.CubicSpline2d
         , controlPoints
         , startPoint
         , endPoint
-        , point
         , startDerivative
         , endDerivative
+        , point
         , derivative
         , scaleAbout
         , rotateAround
@@ -17,6 +17,57 @@ module OpenSolid.CubicSpline2d
         , placeIn
         , placeOnto
         )
+
+{-| A `CubicSpline2d` is a cubic [Bézier curve](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)
+in 2D defined by four control points. This module contains functionality for
+
+  - Evaluating points and derivatives along a spline
+  - Scaling, rotating, translating or mirroring a spline
+  - Converting a spline between local and global coordinates in different
+    reference frames
+
+Splines can be constructed by passing a tuple of control points to the
+`CubicSpline2d` constructor, for example
+
+    exampleSpline =
+        CubicSpline2d
+            ( Point2d ( 1, 1 )
+            , Point2d ( 3, 4 )
+            , Point2d ( 5, 1 )
+            , Point2d ( 7, 4 )
+            )
+
+
+# Constructors
+
+@docs bezier, hermite
+
+
+# Accessors
+
+@docs controlPoints, startPoint, endPoint, startDerivative, endDerivative
+
+
+# Evaluation
+
+@docs point, derivative
+
+
+# Transformations
+
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross
+
+
+# Coordinate frames
+
+@docs relativeTo, placeIn
+
+
+# Sketch planes
+
+@docs placeOnto
+
+-}
 
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point2d as Point2d
@@ -65,6 +116,24 @@ endPoint (CubicSpline2d ( _, _, _, p4 )) =
     p4
 
 
+startDerivative : CubicSpline2d -> Vector2d
+startDerivative spline =
+    let
+        ( p1, p2, _, _ ) =
+            controlPoints spline
+    in
+        Point2d.vectorFrom p1 p2 |> Vector2d.scaleBy 3
+
+
+endDerivative : CubicSpline2d -> Vector2d
+endDerivative spline =
+    let
+        ( _, _, p3, p4 ) =
+            controlPoints spline
+    in
+        Point2d.vectorFrom p3 p4 |> Vector2d.scaleBy 3
+
+
 point : CubicSpline2d -> Float -> Point2d
 point spline t =
     let
@@ -87,24 +156,6 @@ point spline t =
             Point2d.interpolateFrom q2 q3 t
     in
         Point2d.interpolateFrom r1 r2 t
-
-
-startDerivative : CubicSpline2d -> Vector2d
-startDerivative spline =
-    let
-        ( p1, p2, _, _ ) =
-            controlPoints spline
-    in
-        Point2d.vectorFrom p1 p2 |> Vector2d.scaleBy 3
-
-
-endDerivative : CubicSpline2d -> Vector2d
-endDerivative spline =
-    let
-        ( _, _, p3, p4 ) =
-            controlPoints spline
-    in
-        Point2d.vectorFrom p3 p4 |> Vector2d.scaleBy 3
 
 
 derivative : CubicSpline2d -> Float -> Vector2d
