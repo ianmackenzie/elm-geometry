@@ -206,16 +206,9 @@ Can be useful when combined with record destructuring, for example
     --> maxY = 6
 
 -}
-extrema :
-    BoundingBox2d
-    ->
-        { minX : Float
-        , maxX : Float
-        , minY : Float
-        , maxY : Float
-        }
-extrema (BoundingBox2d extrema_) =
-    extrema_
+extrema : BoundingBox2d -> { minX : Float, maxX : Float, minY : Float, maxY : Float }
+extrema (BoundingBox2d properties) =
+    properties
 
 
 {-| Get the minimum X value of a bounding box.
@@ -225,8 +218,8 @@ extrema (BoundingBox2d extrema_) =
 
 -}
 minX : BoundingBox2d -> Float
-minX =
-    extrema >> .minX
+minX (BoundingBox2d properties) =
+    properties.minX
 
 
 {-| Get the maximum X value of a bounding box.
@@ -236,8 +229,8 @@ minX =
 
 -}
 maxX : BoundingBox2d -> Float
-maxX =
-    extrema >> .maxX
+maxX (BoundingBox2d properties) =
+    properties.maxX
 
 
 {-| Get the minimum Y value of a bounding box.
@@ -247,8 +240,8 @@ maxX =
 
 -}
 minY : BoundingBox2d -> Float
-minY =
-    extrema >> .minY
+minY (BoundingBox2d properties) =
+    properties.minY
 
 
 {-| Get the maximum Y value of a bounding box.
@@ -258,8 +251,8 @@ minY =
 
 -}
 maxY : BoundingBox2d -> Float
-maxY =
-    extrema >> .maxY
+maxY (BoundingBox2d properties) =
+    properties.maxY
 
 
 {-| Get the X and Y dimensions (width and height) of a bounding box.

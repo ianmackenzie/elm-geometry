@@ -228,18 +228,9 @@ Can be useful when combined with record destructuring, for example
     --> maxZ = 4
 
 -}
-extrema :
-    BoundingBox3d
-    ->
-        { minX : Float
-        , maxX : Float
-        , minY : Float
-        , maxY : Float
-        , minZ : Float
-        , maxZ : Float
-        }
-extrema (BoundingBox3d extrema_) =
-    extrema_
+extrema : BoundingBox3d -> { minX : Float, maxX : Float, minY : Float, maxY : Float, minZ : Float, maxZ : Float }
+extrema (BoundingBox3d properties) =
+    properties
 
 
 {-| Get the minimum X value of a bounding box.
@@ -249,8 +240,8 @@ extrema (BoundingBox3d extrema_) =
 
 -}
 minX : BoundingBox3d -> Float
-minX =
-    extrema >> .minX
+minX (BoundingBox3d properties) =
+    properties.minX
 
 
 {-| Get the maximum X value of a bounding box.
@@ -260,8 +251,8 @@ minX =
 
 -}
 maxX : BoundingBox3d -> Float
-maxX =
-    extrema >> .maxX
+maxX (BoundingBox3d properties) =
+    properties.maxX
 
 
 {-| Get the minimum Y value of a bounding box.
@@ -271,8 +262,8 @@ maxX =
 
 -}
 minY : BoundingBox3d -> Float
-minY =
-    extrema >> .minY
+minY (BoundingBox3d properties) =
+    properties.minY
 
 
 {-| Get the maximum Y value of a bounding box.
@@ -282,8 +273,8 @@ minY =
 
 -}
 maxY : BoundingBox3d -> Float
-maxY =
-    extrema >> .maxY
+maxY (BoundingBox3d properties) =
+    properties.maxY
 
 
 {-| Get the minimum Z value of a bounding box.
@@ -293,8 +284,8 @@ maxY =
 
 -}
 minZ : BoundingBox3d -> Float
-minZ =
-    extrema >> .minZ
+minZ (BoundingBox3d properties) =
+    properties.minZ
 
 
 {-| Get the maximum Z value of a bounding box.
@@ -304,8 +295,8 @@ minZ =
 
 -}
 maxZ : BoundingBox3d -> Float
-maxZ =
-    extrema >> .maxZ
+maxZ (BoundingBox3d properties) =
+    properties.maxZ
 
 
 {-| Get the X, Y and Z dimensions (widths) of a bounding box.
