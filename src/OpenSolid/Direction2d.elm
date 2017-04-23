@@ -14,6 +14,10 @@ module OpenSolid.Direction2d
     exposing
         ( x
         , y
+        , positiveX
+        , negativeX
+        , positiveY
+        , negativeY
         , perpendicularTo
         , fromAngle
         , toAngle
@@ -69,7 +73,7 @@ directions and transform them as necessary.
 
 # Predefined directions
 
-@docs x, y
+@docs x, y, positiveX, negativeX, positiveY, negativeY
 
 
 # Constructors
@@ -114,8 +118,8 @@ For the examples, assume the following frames have been defined:
     upsideDownFrame =
         Frame2d
             { originPoint = Point2d.origin
-            , xDirection = Direction2d.x
-            , yDirection = Direction2d.flip Direction2d.y
+            , xDirection = Direction2d.positiveX
+            , yDirection = Direction2d.negativeY
             }
 
     rotatedFrame =
@@ -141,26 +145,62 @@ toDirection (Vector2d components) =
     Direction2d components
 
 
-{-| The positive X direction.
-
-    Direction2d.x
-    --> Direction2d ( 1, 0 )
-
+{-| Synonym for `Direction2d.positiveX`.
 -}
 x : Direction2d
 x =
     Direction2d ( 1, 0 )
 
 
-{-| The positive Y direction.
-
-    Direction2d.y
-    --> Direction2d ( 0, 1 )
-
+{-| Synonym for `Direction2d.positiveY`.
 -}
 y : Direction2d
 y =
     Direction2d ( 0, 1 )
+
+
+{-| The positive X direction.
+
+    Direction2d.positiveX
+    --> Direction2d ( 1, 0 )
+
+-}
+positiveX : Direction2d
+positiveX =
+    Direction2d ( 1, 0 )
+
+
+{-| The negative X direction.
+
+    Direction2d.negativeX
+    --> Direction2d ( -1, 0 )
+
+-}
+negativeX : Direction2d
+negativeX =
+    Direction2d ( -1, 0 )
+
+
+{-| The positive Y direction.
+
+    Direction2d.positiveY
+    --> Direction2d ( 0, 1 )
+
+-}
+positiveY : Direction2d
+positiveY =
+    Direction2d ( 0, 1 )
+
+
+{-| The negative Y direction.
+
+    Direction2d.negativeY
+    --> Direction2d ( 0, -1 )
+
+-}
+negativeY : Direction2d
+negativeY =
+    Direction2d ( 0, -1 )
 
 
 {-| Construct a direction perpendicular to the given direction, by rotating the
@@ -387,7 +427,7 @@ scaleBy scale direction =
     --> Direction2d ( 0.7071, 0.7071 )
 
     Direction2d.rotateBy pi Direction2d.y
-    --> Direction2d.flip Direction2d.y
+    --> Direction2d.negativeY
 
 -}
 rotateBy : Float -> Direction2d -> Direction2d

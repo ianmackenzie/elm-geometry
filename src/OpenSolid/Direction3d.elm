@@ -15,6 +15,12 @@ module OpenSolid.Direction3d
         ( x
         , y
         , z
+        , positiveX
+        , negativeX
+        , positiveY
+        , negativeY
+        , positiveZ
+        , negativeZ
         , perpendicularTo
         , perpendicularBasis
         , orthonormalize
@@ -71,7 +77,7 @@ to start with existing directions and transform them as necessary.
 
 # Predefined directions
 
-@docs x, y, z
+@docs x, y, z, positiveX, negativeX, positiveY, negativeY, positiveZ, negativeZ
 
 
 # Constructors
@@ -137,37 +143,91 @@ toDirection (Vector3d components) =
     Direction3d components
 
 
-{-| The positive X direction.
-
-    Direction3d.x
-    --> Direction3d ( 1, 0, 0 )
-
+{-| Synonym for `Direction3d.positiveX`.
 -}
 x : Direction3d
 x =
     Direction3d ( 1, 0, 0 )
 
 
-{-| The positive Y direction.
-
-    Direction3d.y
-    --> Direction3d ( 0, 1, 0 )
-
+{-| Synonym for `Direction3d.positiveY`.
 -}
 y : Direction3d
 y =
     Direction3d ( 0, 1, 0 )
 
 
-{-| The positive Z direction.
-
-    Direction3d.z
-    --> Direction3d ( 0, 0, 1 )
-
+{-| Synonym for `Direction3d.positiveZ`.
 -}
 z : Direction3d
 z =
     Direction3d ( 0, 0, 1 )
+
+
+{-| The positive X direction.
+
+    Direction3d.positiveX
+    --> Direction3d ( 1, 0, 0 )
+
+-}
+positiveX : Direction3d
+positiveX =
+    Direction3d ( 1, 0, 0 )
+
+
+{-| The negative X direction.
+
+    Direction3d.negativeX
+    --> Direction3d ( -1, 0, 0 )
+
+-}
+negativeX : Direction3d
+negativeX =
+    Direction3d ( -1, 0, 0 )
+
+
+{-| The positive Y direction.
+
+    Direction3d.positiveY
+    --> Direction3d ( 0, 1, 0 )
+
+-}
+positiveY : Direction3d
+positiveY =
+    Direction3d ( 0, 1, 0 )
+
+
+{-| The negative Y direction.
+
+    Direction3d.negativeY
+    --> Direction3d ( 0, -1, 0 )
+
+-}
+negativeY : Direction3d
+negativeY =
+    Direction3d ( 0, -1, 0 )
+
+
+{-| The positive Z direction.
+
+    Direction3d.positiveZ
+    --> Direction3d ( 0, 0, 1 )
+
+-}
+positiveZ : Direction3d
+positiveZ =
+    Direction3d ( 0, 0, 1 )
+
+
+{-| The negative Z direction.
+
+    Direction3d.negativeZ
+    --> Direction3d ( 0, 0, -1 )
+
+-}
+negativeZ : Direction3d
+negativeZ =
+    Direction3d ( 0, 0, -1 )
 
 
 {-| Construct an arbitrary direction perpendicular to the given direction. The

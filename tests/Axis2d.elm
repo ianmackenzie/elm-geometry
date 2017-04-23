@@ -80,7 +80,7 @@ flipExample =
                 |> Expect.axis2d
                     (Axis2d
                         { originPoint = Point2d.origin
-                        , direction = Direction2d.flip Direction2d.x
+                        , direction = Direction2d.negativeX
                         }
                     )
 

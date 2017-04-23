@@ -227,8 +227,8 @@ the same.
     Frame2d.flipX Frame2d.xy
     --> Frame2d
     -->     { originPoint = Point2d.origin
-    -->     , xDirection = Direction2d.flip Direction2d.x
-    -->     , yDirection = Direction2d.y
+    -->     , xDirection = Direction2d.negativeX
+    -->     , yDirection = Direction2d.positiveY
     -->     }
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
@@ -250,8 +250,8 @@ the same.
     Frame2d.flipY Frame2d.xy
     --> Frame2d
     -->     { originPoint = Point2d.origin
-    -->     , xDirection = Direction2d.x
-    -->     , yDirection = Direction2d.flip Direction2d.y
+    -->     , xDirection = Direction2d.positiveX
+    -->     , yDirection = Direction2d.negativeY
     -->     }
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
@@ -416,8 +416,8 @@ translateAlongOwn axis distance frame =
     Frame2d.mirrorAcross Axis2d.x frame
     --> Frame2d
     -->     { originPoint = Point2d ( 2, -3 )
-    -->     , xDirection = Direction2d.x
-    -->     , yDirection = Direction2d.flip Direction2d.y
+    -->     , xDirection = Direction2d.positiveX
+    -->     , yDirection = Direction2d.negativeY
     -->     }
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)

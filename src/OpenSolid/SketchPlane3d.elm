@@ -74,8 +74,8 @@ constructor, for example
     sketchPlane =
         SketchPlane3d
             { originPoint = Point3d ( 2, 1, 3 )
-            , xDirection = Direction3d.y
-            , yDirection = Direction3d.flip Direction3d.z
+            , xDirection = Direction3d.positiveY
+            , yDirection = Direction3d.negativeZ
             }
 
 If you construct a `SketchPlane3d` this way, **you must ensure that the X and Y
@@ -319,7 +319,7 @@ product of the sketch plane's X and Y directions.
     --> Direction3d.z
 
     SketchPlane3d.normalDirection SketchPlane3d.xz
-    --> Direction3d.flip Direction3d.y
+    --> Direction3d.negativeY
 
 -}
 normalDirection : SketchPlane3d -> Direction3d
@@ -405,8 +405,8 @@ point unchanged.
     SketchPlane3d.flipX SketchPlane3d.yz
     --> SketchPlane3d
     -->     { originPoint = Point3d.origin
-    -->     , xDirection = Direction3d.flip Direction3d.y
-    -->     , yDirection = Direction3d.z
+    -->     , xDirection = Direction3d.negativeY
+    -->     , yDirection = Direction3d.positiveZ
     -->     }
 
 -}
@@ -425,8 +425,8 @@ point unchanged.
     SketchPlane3d.flipY SketchPlane3d.yz
     --> SketchPlane3d
     -->     { originPoint = Point3d.origin
-    -->     , xDirection = Direction3d.y
-    -->     , yDirection = Direction3d.flip Direction3d.z
+    -->     , xDirection = Direction3d.positiveY
+    -->     , yDirection = Direction3d.negativeZ
     -->     }
 
 -}
@@ -581,15 +581,15 @@ translateAlongOwn axis distance frame =
     sketchPlane =
         SketchPlane3d
             { originPoint = Point2d ( 2, 1, 3 )
-            , xDirection = Direction3d.y
-            , yDirection = Direction3d.z
+            , xDirection = Direction3d.positiveY
+            , yDirection = Direction3d.positiveZ
             }
 
     SketchPlane3d.mirrorAcross Plane3d.xy sketchPlane
     --> SketchPlane3d
     -->     { originPoint = Point2d ( 2, 1, -3 )
-    -->     , xDirection = Direction3d.y
-    -->     , yDirection = Direction3d.flip Direction3d.z
+    -->     , xDirection = Direction3d.positiveY
+    -->     , yDirection = Direction3d.negativeZ
     -->     }
 
 -}

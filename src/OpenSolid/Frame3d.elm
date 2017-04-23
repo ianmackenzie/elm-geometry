@@ -71,7 +71,7 @@ Frames can by constructed by passing a record with `originPoint`, `xDirection`,
             { originPoint = Point3d ( 2, 1, 3 )
             , xDirection = Direction3d ( 0.8, 0.6, 0 )
             , yDirection = Direction3d ( -0.6, 0.8, 0 )
-            , zDirection = Direction3d ( 0, 0, 1)
+            , zDirection = Direction3d ( 0, 0, 1 )
             }
 
 In this case **you must be careful to ensure that the X, Y and Z directions are
@@ -115,7 +115,7 @@ indicated basis directions (assuming a right-handed frame); for example,
     Frame3d.xyPlane Frame3d.xyz
     --> Plane3d
     -->     { originPoint = Point3d.origin
-    -->     , normalDirection = Direction3d.z
+    -->     , normalDirection = Direction3d.positiveZ
     -->     }
 
 since the cross product of the X and Y basis directions of a frame is equal to
@@ -125,7 +125,7 @@ product reverses the sign of the result,
     Frame3d.yxPlane Frame3d.xyz
     --> Plane3d
     -->     { originPoint = Point3d.origin
-    -->     , normalDirection = Direction3d.flip Direction3d.z
+    -->     , normalDirection = Direction3d.negativeZ
     -->     }
 
 @docs xyPlane, yxPlane, yzPlane, zyPlane, zxPlane, xzPlane
@@ -446,9 +446,9 @@ xzSketchPlane frame =
     Frame3d.flipX Frame3d.xyz
     --> Frame3d
     -->     { originPoint = Point3d.origin
-    -->     , xDirection = Direction3d.flip Direction3d.x
-    -->     , yDirection = Direction3d.y
-    -->     , zDirection = Direction3d.z
+    -->     , xDirection = Direction3d.negativeX
+    -->     , yDirection = Direction3d.positiveY
+    -->     , zDirection = Direction3d.positiveZ
     -->     }
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
@@ -470,9 +470,9 @@ flipX frame =
     Frame3d.flipY Frame3d.xyz
     --> Frame3d
     -->     { originPoint = Point3d.origin
-    -->     , xDirection = Direction3d.x
-    -->     , yDirection = Direction3d.flip Direction3d.y
-    -->     , zDirection = Direction3d.z
+    -->     , xDirection = Direction3d.positiveX
+    -->     , yDirection = Direction3d.negativeY
+    -->     , zDirection = Direction3d.positiveZ
     -->     }
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
@@ -494,9 +494,9 @@ flipY frame =
     Frame3d.flipZ Frame3d.xyz
     --> Frame3d
     -->     { originPoint = Point3d.origin
-    -->     , xDirection = Direction3d.x
-    -->     , yDirection = Direction3d.y
-    -->     , zDirection = Direction3d.flip Direction3d.z
+    -->     , xDirection = Direction3d.positiveX
+    -->     , yDirection = Direction3d.positiveY
+    -->     , zDirection = Direction3d.negativeZ
     -->     }
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
@@ -546,9 +546,9 @@ origin point and basis directions will all be rotated around the given axis.
     Frame3d.rotateAround Frame3d.zAxis (degrees 90) frame
     --> Frame3d
     -->     { originPoint = Point3d ( -1, 2, 3 )
-    -->     , xDirection = Direction3d.y
-    -->     , yDirection = Direction3d.flip Direction3d.x
-    -->     , zDirection = Direction3d.z
+    -->     , xDirection = Direction3d.positiveY
+    -->     , yDirection = Direction3d.negativeX
+    -->     , zDirection = Direction3d.positiveZ
     -->     }
 
 -}
@@ -583,9 +583,9 @@ for `rotateAround`:
     Frame3d.rotateAroundOwn Frame3d.zAxis (degrees 90) frame
     --> Frame3d
     -->     { originPoint = Point3d ( 2, 1, 3 )
-    -->     , xDirection = Direction3d.y
-    -->     , yDirection = Direction3d.flip Direction3d.x
-    -->     , zDirection = Direction3d.z
+    -->     , xDirection = Direction3d.positiveY
+    -->     , yDirection = Direction3d.negativeX
+    -->     , zDirection = Direction3d.positiveZ
     -->     }
 
 Since the rotation is done around the frame's own Z axis (which passes through
@@ -666,9 +666,9 @@ translateAlongOwn axis distance frame =
     Frame3d.mirrorAcross Plane3d.xy frame
     --> Frame3d
     -->     { originPoint = Point3d ( 2, 1, -3 )
-    -->     , xDirection = Direction3d.x
-    -->     , yDirection = Direction3d.y
-    -->     , zDirection = Direction3d.flip Direction3d.z
+    -->     , xDirection = Direction3d.positiveX
+    -->     , yDirection = Direction3d.positiveY
+    -->     , zDirection = Direction3d.negativeZ
     -->     }
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
