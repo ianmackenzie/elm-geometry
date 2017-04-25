@@ -74,11 +74,24 @@ import OpenSolid.Point2d as Point2d
 import OpenSolid.Vector2d as Vector2d
 
 
+{-| Construct a spline from its four control points. This is the same as just
+using the `CubicSpline2d` constructor directly;
+
+    CubicSpline2d.bezier p1 p2 p3 p4
+
+is equivalent to
+
+    CubicSpline2d ( p1, p2, p3, p4 )
+
+-}
 bezier : Point2d -> Point2d -> Point2d -> Point2d -> CubicSpline2d
 bezier firstPoint secondPoint thirdPoint fourthPoint =
     CubicSpline2d ( firstPoint, secondPoint, thirdPoint, fourthPoint )
 
 
+{-| Construct a spline in Hermite form, from the position and derivative values
+at its start and end points.
+-}
 hermite : ( Point2d, Vector2d ) -> ( Point2d, Vector2d ) -> CubicSpline2d
 hermite start end =
     let
