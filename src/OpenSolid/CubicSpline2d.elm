@@ -90,7 +90,11 @@ bezier firstPoint secondPoint thirdPoint fourthPoint =
 
 
 {-| Construct a spline in Hermite form, from the position and derivative values
-at its start and end points.
+at its start and end points, like so:
+
+<iframe src="https://opensolid.github.io/images/geometry/1.2/HermiteCubicSpline2d.html" style="width: 190px; height: 160px" scrolling=no frameborder=0></iframe>
+<https://opensolid.github.io/images/geometry/1.2/HermiteCubicSpline2d.html>
+
 -}
 hermite : ( Point2d, Vector2d ) -> ( Point2d, Vector2d ) -> CubicSpline2d
 hermite start end =
