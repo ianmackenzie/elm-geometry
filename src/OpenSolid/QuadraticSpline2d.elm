@@ -95,7 +95,7 @@ bezier firstPoint secondPoint thirdPoint =
 
     --> p1 = Point2d ( 1, 1 )
     --> p2 = Point2d ( 3, 4 )
-    --> p3 = Point3d ( 5, 1 )
+    --> p3 = Point2d ( 5, 1 )
 
 -}
 controlPoints : QuadraticSpline2d -> ( Point2d, Point2d, Point2d )
