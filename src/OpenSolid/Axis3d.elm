@@ -370,10 +370,7 @@ projectInto sketchPlane axis =
         projectedOrigin =
             Point3d.projectInto sketchPlane (originPoint axis)
 
-        maybeDirection =
-            Direction3d.projectInto sketchPlane (direction axis)
-
         toAxis direction =
             Axis2d { originPoint = projectedOrigin, direction = direction }
     in
-        Maybe.map toAxis maybeDirection
+        Maybe.map toAxis (Direction3d.projectInto sketchPlane (direction axis))
