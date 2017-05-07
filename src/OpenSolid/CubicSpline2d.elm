@@ -101,14 +101,8 @@ length of the resulting spline.
 
 -}
 hermite : ( Point2d, Vector2d ) -> ( Point2d, Vector2d ) -> CubicSpline2d
-hermite start end =
+hermite ( startPoint, startDerivative ) ( endPoint, endDerivative ) =
     let
-        ( startPoint, startDerivative ) =
-            start
-
-        ( endPoint, endDerivative ) =
-            end
-
         startControlPoint =
             startPoint
                 |> Point2d.translateBy
