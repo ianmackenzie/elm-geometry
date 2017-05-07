@@ -35,6 +35,7 @@ module OpenSolid.Geometry.Fuzz
         , polyline3d
         , polygon2d
         , circle2d
+        , circle3d
         )
 
 import Fuzz exposing (Fuzzer)
@@ -280,3 +281,16 @@ circle2d =
             Circle2d { centerPoint = centerPoint, radius = radius }
     in
         Fuzz.map2 circle point2d (Fuzz.map abs scalar)
+
+
+circle3d : Fuzzer Circle3d
+circle3d =
+    let
+        circle centerPoint axialDirection radius =
+            Circle3d
+                { centerPoint = centerPoint
+                , axialDirection = axialDirection
+                , radius = radius
+                }
+    in
+        Fuzz.map3 circle point3d direction3d (Fuzz.map abs scalar)
