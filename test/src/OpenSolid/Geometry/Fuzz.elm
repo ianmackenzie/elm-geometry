@@ -36,6 +36,8 @@ module OpenSolid.Geometry.Fuzz
         , polygon2d
         , circle2d
         , circle3d
+        , arc2d
+        , arc3d
         )
 
 import Fuzz exposing (Fuzzer)
@@ -294,3 +296,29 @@ circle3d =
                 }
     in
         Fuzz.map3 circle point3d direction3d (Fuzz.map abs scalar)
+
+
+arc2d : Fuzzer Arc2d
+arc2d =
+    let
+        arc centerPoint startPoint sweptAngle =
+            Arc2d
+                { centerPoint = centerPoint
+                , startPoint = startPoint
+                , sweptAngle = sweptAngle
+                }
+    in
+        Fuzz.map3 arc point2d point2d (Fuzz.floatRange (-3 * pi) (3 * pi))
+
+
+arc3d : Fuzzer Arc3d
+arc3d =
+    let
+        arc axis startPoint sweptAngle =
+            Arc3d
+                { axis = axis
+                , startPoint = startPoint
+                , sweptAngle = sweptAngle
+                }
+    in
+        Fuzz.map3 arc axis3d point3d (Fuzz.floatRange (-3 * pi) (3 * pi))
