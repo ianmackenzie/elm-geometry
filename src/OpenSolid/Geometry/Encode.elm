@@ -35,6 +35,12 @@ module OpenSolid.Geometry.Encode
         , polygon2d
         , circle2d
         , circle3d
+        , arc2d
+        , arc3d
+        , quadraticSpline2d
+        , quadraticSpline3d
+        , cubicSpline2d
+        , cubicSpline3d
         )
 
 {-| JSON encoders for the core OpenSolid types.
@@ -44,7 +50,8 @@ module OpenSolid.Geometry.Encode
 @docs lineSegment2d, lineSegment3d, triangle2d, triangle3d
 @docs boundingBox2d, boundingBox3d
 @docs polyline2d, polyline3d, polygon2d
-@docs circle2d, circle3d
+@docs circle2d, circle3d, arc2d, arc3d
+@docs quadraticSpline2d, quadraticSpline3d, cubicSpline2d, cubicSpline3d
 
 -}
 
@@ -73,6 +80,12 @@ import OpenSolid.Polyline3d as Polyline3d
 import OpenSolid.Polygon2d as Polygon2d
 import OpenSolid.Circle2d as Circle2d
 import OpenSolid.Circle3d as Circle3d
+import OpenSolid.Arc2d as Arc2d
+import OpenSolid.Arc3d as Arc3d
+import OpenSolid.QuadraticSpline2d as QuadraticSpline2d
+import OpenSolid.QuadraticSpline3d as QuadraticSpline3d
+import OpenSolid.CubicSpline2d as CubicSpline2d
+import OpenSolid.CubicSpline3d as CubicSpline3d
 
 
 {-| Encode a Vector2d as a list of two floating-point components.
@@ -322,3 +335,71 @@ circle3d circle =
         , ( "axialDirection", direction3d (Circle3d.axialDirection circle) )
         , ( "radius", Encode.float (Circle3d.radius circle) )
         ]
+
+
+{-| Encode an Arc2d as an object with `centerPoint`, `startPoint` and
+`sweptAngle` fields.
+-}
+arc2d : Arc2d -> Value
+arc2d arc =
+    Encode.object
+        [ ( "centerPoint", point2d (Arc2d.centerPoint arc) )
+        , ( "startPoint", point2d (Arc2d.startPoint arc) )
+        , ( "sweptAngle", Encode.float (Arc2d.sweptAngle arc) )
+        ]
+
+
+{-| Encode an Arc3d as an object with `axis`, `startPoint` and
+`sweptAngle` fields.
+-}
+arc3d : Arc3d -> Value
+arc3d arc =
+    Encode.object
+        [ ( "axis", axis3d (Arc3d.axis arc) )
+        , ( "startPoint", point3d (Arc3d.startPoint arc) )
+        , ( "sweptAngle", Encode.float (Arc3d.sweptAngle arc) )
+        ]
+
+
+{-| Encode a QuadraticSpline2d as a list of three control points.
+-}
+quadraticSpline2d : QuadraticSpline2d -> Value
+quadraticSpline2d spline =
+    let
+        ( p1, p2, p3 ) =
+            QuadraticSpline2d.controlPoints spline
+    in
+        Encode.list [ point2d p1, point2d p2, point2d p3 ]
+
+
+{-| Encode a QuadraticSpline3d as a list of three control points.
+-}
+quadraticSpline3d : QuadraticSpline3d -> Value
+quadraticSpline3d spline =
+    let
+        ( p1, p2, p3 ) =
+            QuadraticSpline3d.controlPoints spline
+    in
+        Encode.list [ point3d p1, point3d p2, point3d p3 ]
+
+
+{-| Encode a CubicSpline2d as a list of four control points.
+-}
+cubicSpline2d : CubicSpline2d -> Value
+cubicSpline2d spline =
+    let
+        ( p1, p2, p3, p4 ) =
+            CubicSpline2d.controlPoints spline
+    in
+        Encode.list [ point2d p1, point2d p2, point2d p3, point2d p4 ]
+
+
+{-| Encode a CubicSpline3d as a list of four control points.
+-}
+cubicSpline3d : CubicSpline3d -> Value
+cubicSpline3d spline =
+    let
+        ( p1, p2, p3, p4 ) =
+            CubicSpline3d.controlPoints spline
+    in
+        Encode.list [ point3d p1, point3d p2, point3d p3, point3d p4 ]

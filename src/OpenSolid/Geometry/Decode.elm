@@ -35,6 +35,12 @@ module OpenSolid.Geometry.Decode
         , polygon2d
         , circle2d
         , circle3d
+        , arc2d
+        , arc3d
+        , quadraticSpline2d
+        , quadraticSpline3d
+        , cubicSpline2d
+        , cubicSpline3d
         )
 
 {-| JSON decoders for the core OpenSolid types.
@@ -44,7 +50,8 @@ module OpenSolid.Geometry.Decode
 @docs lineSegment2d, lineSegment3d, triangle2d, triangle3d
 @docs boundingBox2d, boundingBox3d
 @docs polyline2d, polyline3d, polygon2d
-@docs circle2d, circle3d
+@docs circle2d, circle3d, arc2d, arc3d
+@docs quadraticSpline2d, quadraticSpline3d, cubicSpline2d, cubicSpline3d
 
 -}
 
@@ -336,3 +343,81 @@ circle3d =
         (Decode.field "centerPoint" point3d)
         (Decode.field "axialDirection" direction3d)
         (Decode.field "radius" Decode.float)
+
+
+{-| Decodes a Arc2d from an object with `centerPoint`, `startPoint` and
+`sweptAngle` fields.
+-}
+arc2d : Decoder Arc2d
+arc2d =
+    Decode.map3
+        (\centerPoint startPoint sweptAngle ->
+            Arc2d
+                { centerPoint = centerPoint
+                , startPoint = startPoint
+                , sweptAngle = sweptAngle
+                }
+        )
+        (Decode.field "centerPoint" point2d)
+        (Decode.field "startPoint" point2d)
+        (Decode.field "sweptAngle" Decode.float)
+
+
+{-| Decodes an Arc3d from an object with `axis`, `startPoint` and `sweptAngle`
+fields.
+-}
+arc3d : Decoder Arc3d
+arc3d =
+    Decode.map3
+        (\axis startPoint sweptAngle ->
+            Arc3d
+                { axis = axis
+                , startPoint = startPoint
+                , sweptAngle = sweptAngle
+                }
+        )
+        (Decode.field "axis" axis3d)
+        (Decode.field "startPoint" point3d)
+        (Decode.field "sweptAngle" Decode.float)
+
+
+{-| Decodes a QuadraticSpline2d from a list of three control points.
+-}
+quadraticSpline2d : Decoder QuadraticSpline2d
+quadraticSpline2d =
+    Decode.map3 (\p1 p2 p3 -> QuadraticSpline2d ( p1, p2, p3 ))
+        (Decode.index 0 point2d)
+        (Decode.index 1 point2d)
+        (Decode.index 2 point2d)
+
+
+{-| Decodes a QuadraticSpline3d from a list of three control points.
+-}
+quadraticSpline3d : Decoder QuadraticSpline3d
+quadraticSpline3d =
+    Decode.map3 (\p1 p2 p3 -> QuadraticSpline3d ( p1, p2, p3 ))
+        (Decode.index 0 point3d)
+        (Decode.index 1 point3d)
+        (Decode.index 2 point3d)
+
+
+{-| Decodes a CubicSpline2d from a list of four control points.
+-}
+cubicSpline2d : Decoder CubicSpline2d
+cubicSpline2d =
+    Decode.map4 (\p1 p2 p3 p4 -> CubicSpline2d ( p1, p2, p3, p4 ))
+        (Decode.index 0 point2d)
+        (Decode.index 1 point2d)
+        (Decode.index 2 point2d)
+        (Decode.index 3 point2d)
+
+
+{-| Decodes a CubicSpline3d from a list of four control points.
+-}
+cubicSpline3d : Decoder CubicSpline3d
+cubicSpline3d =
+    Decode.map4 (\p1 p2 p3 p4 -> CubicSpline3d ( p1, p2, p3, p4 ))
+        (Decode.index 0 point3d)
+        (Decode.index 1 point3d)
+        (Decode.index 2 point3d)
+        (Decode.index 3 point3d)
