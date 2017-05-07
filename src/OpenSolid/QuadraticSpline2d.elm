@@ -203,6 +203,8 @@ of the spline and a value of 1 corresponds to the end derivative.
     QuadraticSpline2d.derivative exampleSpline 1
     --> Vector2d ( 4, -6 )
 
+Note that the derivative interpolates linearly from end to end.
+
 -}
 derivative : QuadraticSpline2d -> Float -> Vector2d
 derivative spline =
