@@ -56,6 +56,8 @@ module OpenSolid.Geometry.Expect
         , polygon2dWithin
         , circle2d
         , circle3d
+        , arc2d
+        , arc3d
         )
 
 import Expect exposing (Expectation)
@@ -84,6 +86,8 @@ import OpenSolid.Polyline3d as Polyline3d
 import OpenSolid.Polygon2d as Polygon2d
 import OpenSolid.Circle2d as Circle2d
 import OpenSolid.Circle3d as Circle3d
+import OpenSolid.Arc2d as Arc2d
+import OpenSolid.Arc3d as Arc3d
 
 
 type alias Comparison a =
@@ -459,5 +463,28 @@ circle3d =
                 Circle3d.axialDirection
             , by (Scalar.equalWithin defaultTolerance)
                 Circle3d.radius
+            ]
+        )
+
+
+arc2d : Arc2d -> Arc2d -> Expectation
+arc2d =
+    expect
+        (allOf
+            [ by (Point2d.equalWithin defaultTolerance) Arc2d.centerPoint
+            , by (Point2d.equalWithin defaultTolerance) Arc2d.startPoint
+            , by (Scalar.equalWithin defaultTolerance) Arc2d.sweptAngle
+            ]
+        )
+
+
+arc3d : Arc3d -> Arc3d -> Expectation
+arc3d =
+    expect
+        (allOf
+            [ by (Point3d.equalWithin defaultTolerance) Arc3d.centerPoint
+            , by (Direction3d.equalWithin defaultTolerance) Arc3d.axialDirection
+            , by (Point3d.equalWithin defaultTolerance) Arc3d.startPoint
+            , by (Scalar.equalWithin defaultTolerance) Arc3d.sweptAngle
             ]
         )
