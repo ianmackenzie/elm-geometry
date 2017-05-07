@@ -19,6 +19,7 @@
         "OpenSolid.Circle2d",
         "OpenSolid.Circle3d",
         "OpenSolid.CubicSpline2d",
+        "OpenSolid.CubicSpline3d",
         "OpenSolid.Direction2d",
         "OpenSolid.Direction3d",
         "OpenSolid.Frame2d",
