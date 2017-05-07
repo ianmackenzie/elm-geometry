@@ -38,6 +38,10 @@ module OpenSolid.Geometry.Fuzz
         , circle3d
         , arc2d
         , arc3d
+        , quadraticSpline2d
+        , quadraticSpline3d
+        , cubicSpline2d
+        , cubicSpline3d
         )
 
 import Fuzz exposing (Fuzzer)
@@ -322,3 +326,27 @@ arc3d =
                 }
     in
         Fuzz.map3 arc axis3d point3d (Fuzz.floatRange (-3 * pi) (3 * pi))
+
+
+quadraticSpline2d : Fuzzer QuadraticSpline2d
+quadraticSpline2d =
+    Fuzz.tuple3 ( point2d, point2d, point2d )
+        |> Fuzz.map QuadraticSpline2d
+
+
+quadraticSpline3d : Fuzzer QuadraticSpline3d
+quadraticSpline3d =
+    Fuzz.tuple3 ( point3d, point3d, point3d )
+        |> Fuzz.map QuadraticSpline3d
+
+
+cubicSpline2d : Fuzzer CubicSpline2d
+cubicSpline2d =
+    Fuzz.tuple4 ( point2d, point2d, point2d, point2d )
+        |> Fuzz.map CubicSpline2d
+
+
+cubicSpline3d : Fuzzer CubicSpline3d
+cubicSpline3d =
+    Fuzz.tuple4 ( point3d, point3d, point3d, point3d )
+        |> Fuzz.map CubicSpline3d
