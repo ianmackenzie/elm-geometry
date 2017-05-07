@@ -411,43 +411,61 @@ type Circle3d
         }
 
 
-{-| An arc in 2D, defined by its center point, start point and swept angle. See the
+{-| ![Arc2d](https://opensolid.github.io/images/geometry/icons/arc2d.svg)
+
+An arc in 2D, defined by its center point, start point and swept angle. See the
 [`Arc2d`](OpenSolid-Arc2d) module for details.
+
 -}
 type Arc2d
     = Arc2d { centerPoint : Point2d, startPoint : Point2d, sweptAngle : Float }
 
 
-{-| An arc in 3D, defined by its axis, start point and swept angle. See the
+{-| ![Arc3d](https://opensolid.github.io/images/geometry/icons/arc3d.svg)
+
+An arc in 3D, defined by its axis, start point and swept angle. See the
 [`Arc3d`](OpenSolid-Arc3d) module for details.
+
 -}
 type Arc3d
     = Arc3d { axis : Axis3d, startPoint : Point3d, sweptAngle : Float }
 
 
-{-| A quadratic Bezier spline in 2D, defined by its three control points. See the
+{-| ![QuadraticSpline2d](https://opensolid.github.io/images/geometry/icons/quadraticSpline2d.svg)
+
+A quadratic Bezier spline in 2D, defined by its three control points. See the
 [`QuadraticSpline2d`](OpenSolid-QuadraticSpline2d) module for details.
+
 -}
 type QuadraticSpline2d
     = QuadraticSpline2d ( Point2d, Point2d, Point2d )
 
 
-{-| A quadratic Bezier spline in 3D, defined by its three control points. See the
+{-| ![QuadraticSpline3d](https://opensolid.github.io/images/geometry/icons/quadraticSpline3d.svg)
+
+A quadratic Bezier spline in 3D, defined by its three control points. See the
 [`QuadraticSpline3d`](OpenSolid-QuadraticSpline3d) module for details.
+
 -}
 type QuadraticSpline3d
     = QuadraticSpline3d ( Point3d, Point3d, Point3d )
 
 
-{-| A cubic Bezier spline in 2D, defined by its four control points. See the
+{-| ![CubicSpline2d](https://opensolid.github.io/images/geometry/icons/cubicSpline2d.svg)
+
+A cubic Bezier spline in 2D, defined by its four control points. See the
 [`CubicSpline2d`](OpenSolid-CubicSpline2d) module for details.
+
 -}
 type CubicSpline2d
     = CubicSpline2d ( Point2d, Point2d, Point2d, Point2d )
 
 
-{-| A cubic Bezier spline in 3D, defined by its four control points. See the
+{-| ![CubicSpline3d](https://opensolid.github.io/images/geometry/icons/cubicSpline3d.svg)
+
+A cubic Bezier spline in 3D, defined by its four control points. See the
 [`CubicSpline3d`](OpenSolid-CubicSpline3d) module for details.
+
 -}
 type CubicSpline3d
     = CubicSpline3d ( Point3d, Point3d, Point3d, Point3d )

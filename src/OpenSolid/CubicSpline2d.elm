@@ -18,7 +18,9 @@ module OpenSolid.CubicSpline2d
         , placeOnto
         )
 
-{-| A `CubicSpline2d` is a cubic [Bézier curve](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)
+{-| <img src="https://opensolid.github.io/images/geometry/icons/cubicSpline2d.svg" alt="CubicSpline2d" width="160">
+
+A `CubicSpline2d` is a cubic [Bézier curve](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)
 in 2D defined by four control points. This module contains functionality for
 
   - Evaluating points and derivatives along a spline

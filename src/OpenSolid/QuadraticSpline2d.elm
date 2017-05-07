@@ -17,7 +17,9 @@ module OpenSolid.QuadraticSpline2d
         , placeOnto
         )
 
-{-| A `QuadraticSpline2d` is a quadratic [Bézier curve](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)
+{-| <img src="https://opensolid.github.io/images/geometry/icons/quadraticSpline2d.svg" alt="QuadraticSpline2d" width="160">
+
+A `QuadraticSpline2d` is a quadratic [Bézier curve](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)
 in 2D defined by three control points. This module contains functionality for
 
   - Evaluating points and derivatives along a spline
