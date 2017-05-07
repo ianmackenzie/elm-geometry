@@ -14,6 +14,8 @@ module All exposing (..)
 
 import Test
 import Test.Runner.Html as HtmlRunner
+import Arc2d
+import Arc3d
 import Axis2d
 import Axis3d
 import BoundingBox2d
@@ -40,7 +42,9 @@ import Vector3d
 
 suite =
     Test.describe "OpenSolid.Geometry"
-        [ Axis2d.suite
+        [ Arc2d.suite
+        , Arc3d.suite
+        , Axis2d.suite
         , Axis3d.suite
         , BoundingBox2d.suite
         , BoundingBox3d.suite
