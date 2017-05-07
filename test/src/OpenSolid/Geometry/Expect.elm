@@ -58,6 +58,10 @@ module OpenSolid.Geometry.Expect
         , circle3d
         , arc2d
         , arc3d
+        , quadraticSpline2d
+        , quadraticSpline3d
+        , cubicSpline2d
+        , cubicSpline3d
         )
 
 import Expect exposing (Expectation)
@@ -88,6 +92,10 @@ import OpenSolid.Circle2d as Circle2d
 import OpenSolid.Circle3d as Circle3d
 import OpenSolid.Arc2d as Arc2d
 import OpenSolid.Arc3d as Arc3d
+import OpenSolid.QuadraticSpline2d as QuadraticSpline2d
+import OpenSolid.QuadraticSpline3d as QuadraticSpline3d
+import OpenSolid.CubicSpline2d as CubicSpline2d
+import OpenSolid.CubicSpline3d as CubicSpline3d
 
 
 type alias Comparison a =
@@ -487,4 +495,76 @@ arc3d =
             , by (Point3d.equalWithin defaultTolerance) Arc3d.startPoint
             , by (Scalar.equalWithin defaultTolerance) Arc3d.sweptAngle
             ]
+        )
+
+
+quadraticSpline2d : QuadraticSpline2d -> QuadraticSpline2d -> Expectation
+quadraticSpline2d =
+    expect
+        (\firstSpline secondSpline ->
+            let
+                ( p1, p2, p3 ) =
+                    QuadraticSpline2d.controlPoints firstSpline
+
+                ( q1, q2, q3 ) =
+                    QuadraticSpline2d.controlPoints secondSpline
+
+                equal =
+                    Point2d.equalWithin defaultTolerance
+            in
+                equal p1 q1 && equal p2 q2 && equal p3 q3
+        )
+
+
+quadraticSpline3d : QuadraticSpline3d -> QuadraticSpline3d -> Expectation
+quadraticSpline3d =
+    expect
+        (\firstSpline secondSpline ->
+            let
+                ( p1, p2, p3 ) =
+                    QuadraticSpline3d.controlPoints firstSpline
+
+                ( q1, q2, q3 ) =
+                    QuadraticSpline3d.controlPoints secondSpline
+
+                equal =
+                    Point3d.equalWithin defaultTolerance
+            in
+                equal p1 q1 && equal p2 q2 && equal p3 q3
+        )
+
+
+cubicSpline2d : CubicSpline2d -> CubicSpline2d -> Expectation
+cubicSpline2d =
+    expect
+        (\firstSpline secondSpline ->
+            let
+                ( p1, p2, p3, p4 ) =
+                    CubicSpline2d.controlPoints firstSpline
+
+                ( q1, q2, q3, q4 ) =
+                    CubicSpline2d.controlPoints secondSpline
+
+                equal =
+                    Point2d.equalWithin defaultTolerance
+            in
+                equal p1 q1 && equal p2 q2 && equal p3 q3 && equal p4 q4
+        )
+
+
+cubicSpline3d : CubicSpline3d -> CubicSpline3d -> Expectation
+cubicSpline3d =
+    expect
+        (\firstSpline secondSpline ->
+            let
+                ( p1, p2, p3, p4 ) =
+                    CubicSpline3d.controlPoints firstSpline
+
+                ( q1, q2, q3, q4 ) =
+                    CubicSpline3d.controlPoints secondSpline
+
+                equal =
+                    Point3d.equalWithin defaultTolerance
+            in
+                equal p1 q1 && equal p2 q2 && equal p3 q3 && equal p4 q4
         )
