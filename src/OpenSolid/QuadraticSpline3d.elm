@@ -12,6 +12,7 @@ module OpenSolid.QuadraticSpline3d
         , rotateAround
         , translateBy
         , mirrorAcross
+        , projectOnto
         , relativeTo
         , placeIn
         , projectInto

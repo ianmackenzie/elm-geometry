@@ -13,6 +13,7 @@ module OpenSolid.CubicSpline3d
         , rotateAround
         , translateBy
         , mirrorAcross
+        , projectOnto
         , relativeTo
         , placeIn
         , projectInto
