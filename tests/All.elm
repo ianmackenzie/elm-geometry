@@ -22,6 +22,8 @@ import BoundingBox2d
 import BoundingBox3d
 import Circle2d
 import Circle3d
+import CubicSpline2d
+import CubicSpline3d
 import Direction2d
 import Direction3d
 import Frame2d
@@ -31,9 +33,11 @@ import LineSegment3d
 import Plane3d
 import Point2d
 import Point3d
+import Polygon2d
 import Polyline2d
 import Polyline3d
-import Polygon2d
+import QuadraticSpline2d
+import QuadraticSpline3d
 import Triangle2d
 import Triangle3d
 import Vector2d
@@ -50,6 +54,8 @@ suite =
         , BoundingBox3d.suite
         , Circle2d.suite
         , Circle3d.suite
+        , CubicSpline2d.suite
+        , CubicSpline3d.suite
         , Direction2d.suite
         , Direction3d.suite
         , Frame2d.suite
@@ -59,9 +65,11 @@ suite =
         , Plane3d.suite
         , Point2d.suite
         , Point3d.suite
+        , Polygon2d.suite
         , Polyline2d.suite
         , Polyline3d.suite
-        , Polygon2d.suite
+        , QuadraticSpline2d.suite
+        , QuadraticSpline3d.suite
         , Triangle2d.suite
         , Triangle3d.suite
         , Vector2d.suite
