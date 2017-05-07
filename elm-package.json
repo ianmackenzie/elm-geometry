@@ -32,6 +32,7 @@
         "OpenSolid.Polyline2d",
         "OpenSolid.Polyline3d",
         "OpenSolid.QuadraticSpline2d",
+        "OpenSolid.QuadraticSpline3d",
         "OpenSolid.Scalar",
         "OpenSolid.SketchPlane3d",
         "OpenSolid.Triangle2d",
