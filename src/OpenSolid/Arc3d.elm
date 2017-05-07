@@ -3,6 +3,7 @@ module OpenSolid.Arc3d
         ( throughPoints
         , axis
         , centerPoint
+        , axialDirection
         , radius
         , startPoint
         , endPoint
@@ -139,6 +140,20 @@ central axis, which may not be equal to the origin point of that axis.
 centerPoint : Arc3d -> Point3d
 centerPoint arc =
     Point3d.projectRadiallyOnto (axis arc) (startPoint arc)
+
+
+{-| Get direction of an arc's axis;
+
+    Arc3d.axialDirection arc
+
+is equivalent to
+
+    Axis3d.direction (Arc3d.axis arc)
+
+-}
+axialDirection : Arc3d -> Direction3d
+axialDirection arc =
+    Axis3d.direction (axis arc)
 
 
 {-| Get the radius of an arc.
