@@ -19,6 +19,7 @@ import Axis3d
 import BoundingBox2d
 import BoundingBox3d
 import Circle2d
+import Circle3d
 import Direction2d
 import Direction3d
 import Frame2d
@@ -44,6 +45,7 @@ suite =
         , BoundingBox2d.suite
         , BoundingBox3d.suite
         , Circle2d.suite
+        , Circle3d.suite
         , Direction2d.suite
         , Direction3d.suite
         , Frame2d.suite
