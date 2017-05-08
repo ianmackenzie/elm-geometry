@@ -47,13 +47,10 @@ A wide variety of data types are supported:
     ![BoundingBox2d](https://opensolid.github.io/images/geometry/icons/boundingBox2d.svg)
     ![BoundingBox3d](https://opensolid.github.io/images/geometry/icons/boundingBox3d.svg)
 
-  - `LineSegment2d`, `LineSegment3d`
+  - `LineSegment2d`, `LineSegment3d`, `Triangle2d`, `Triangle3d`
 
     ![LineSegment2d](https://opensolid.github.io/images/geometry/icons/lineSegment2d.svg)
     ![LineSegment3d](https://opensolid.github.io/images/geometry/icons/lineSegment3d.svg)
-
-  - `Triangle2d`, `Triangle3d`
-
     ![Triangle2d](https://opensolid.github.io/images/geometry/icons/triangle2d.svg)
     ![Triangle3d](https://opensolid.github.io/images/geometry/icons/triangle3d.svg)
 
