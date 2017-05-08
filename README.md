@@ -220,10 +220,14 @@ run into a bug, if any documentation is missing/incorrect/confusing, or if
 there's a new feature that you would find useful. For general questions about
 using OpenSolid, try posting on:
 
+  - [Elm Slack](http://elmlang.herokuapp.com/) (mention @ianmackenzie in your
+    questions so I get a notification)
   - [Stack Overflow](https://stackoverflow.com/questions/ask?tags=opensolid+elm)
     (tag your question with 'opensolid' and 'elm')
   - The [r/elm](https://reddit.com/r/elm) subreddit
   - The [elm-discuss](https://groups.google.com/forum/#!forum/elm-discuss)
     Google Group
+  - Or if you happen to be in the New York area, come on out to the
+    [Elm NYC meetup](https://www.meetup.com/Elm-NYC/) =)
 
 Have fun, and don't be afraid to ask for help!
