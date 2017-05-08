@@ -63,10 +63,19 @@ A wide variety of data types are supported:
     ![Polyline3d](https://opensolid.github.io/images/geometry/icons/polyline3d.svg)
     ![Polygon2d](https://opensolid.github.io/images/geometry/icons/polygon2d.svg)
 
-  - and last but not least `Circle2d` and `Circle3d`
+  - `Circle2d`, `Circle3d`, `Arc2d`, `Arc3d`
 
     ![Circle2d](https://opensolid.github.io/images/geometry/icons/circle2d.svg)
     ![Circle3d](https://opensolid.github.io/images/geometry/icons/circle3d.svg)
+    ![Arc2d](https://opensolid.github.io/images/geometry/icons/arc2d.svg)
+    ![Arc3d](https://opensolid.github.io/images/geometry/icons/arc3d.svg)
+
+  - `QuadraticSpline2d`, `QuadraticSpline3d`, `CubicSpline2d`, `CubicSpline3d`
+
+    ![QuadraticSpline2d](https://opensolid.github.io/images/geometry/icons/quadraticSpline2d.svg)
+    ![QuadraticSpline3d](https://opensolid.github.io/images/geometry/icons/quadraticSpline3d.svg)
+    ![CubicSpline2d](https://opensolid.github.io/images/geometry/icons/cubicSpline2d.svg)
+    ![CubicSpline3d](https://opensolid.github.io/images/geometry/icons/cubicSpline3d.svg)
 
 A large range of geometric functionality is included, such as various forms of
 constructors...
