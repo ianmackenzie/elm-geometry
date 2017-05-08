@@ -15,18 +15,12 @@ transforming and combining them in many different ways. You can:
 
 A wide variety of data types are supported:
 
-  - `Point2d`, `Point3d`
+  - `Point2d`, `Point3d`, `Vector2d`, `Vector3d`, `Direction2d`, `Direction3d`
 
     ![Point2d](https://opensolid.github.io/images/geometry/icons/point2d.svg)
     ![Point3d](https://opensolid.github.io/images/geometry/icons/point3d.svg)
-
-  - `Vector2d`, `Vector3d`
-
     ![Vector2d](https://opensolid.github.io/images/geometry/icons/vector2d.svg)
     ![Vector3d](https://opensolid.github.io/images/geometry/icons/vector3d.svg)
-
-  - `Direction2d`, `Direction3d`
-
     ![Direction2d](https://opensolid.github.io/images/geometry/icons/direction2d.svg)
     ![Direction3d](https://opensolid.github.io/images/geometry/icons/direction3d.svg)
 
