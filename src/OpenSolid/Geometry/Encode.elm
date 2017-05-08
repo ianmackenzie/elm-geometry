@@ -88,7 +88,7 @@ import OpenSolid.CubicSpline2d as CubicSpline2d
 import OpenSolid.CubicSpline3d as CubicSpline3d
 
 
-{-| Encode a Vector2d as a list of two floating-point components.
+{-| Encode a `Vector2d` as a list of two floating-point components.
 -}
 vector2d : Vector2d -> Value
 vector2d vector =
@@ -99,7 +99,7 @@ vector2d vector =
         Encode.list [ Encode.float x, Encode.float y ]
 
 
-{-| Encode a Vector3d as a list of three floating-point components.
+{-| Encode a `Vector3d` as a list of three floating-point components.
 -}
 vector3d : Vector3d -> Value
 vector3d vector =
@@ -110,7 +110,7 @@ vector3d vector =
         Encode.list [ Encode.float x, Encode.float y, Encode.float z ]
 
 
-{-| Encode a Direction2d as a list of two floating-point components.
+{-| Encode a `Direction2d` as a list of two floating-point components.
 -}
 direction2d : Direction2d -> Value
 direction2d direction =
@@ -121,7 +121,7 @@ direction2d direction =
         Encode.list [ Encode.float x, Encode.float y ]
 
 
-{-| Encode a Direction3d as as a list of three floating-point components.
+{-| Encode a `Direction3d` as as a list of three floating-point components.
 -}
 direction3d : Direction3d -> Value
 direction3d direction =
@@ -132,7 +132,7 @@ direction3d direction =
         Encode.list [ Encode.float x, Encode.float y, Encode.float z ]
 
 
-{-| Encode a Point2d as as a list of two floating-point coordinates.
+{-| Encode a `Point2d` as as a list of two floating-point coordinates.
 -}
 point2d : Point2d -> Value
 point2d point =
@@ -143,7 +143,7 @@ point2d point =
         Encode.list [ Encode.float x, Encode.float y ]
 
 
-{-| Encode a Point3d as as a list of three floating-point coordinates.
+{-| Encode a `Point3d` as as a list of three floating-point coordinates.
 -}
 point3d : Point3d -> Value
 point3d point =
@@ -154,7 +154,7 @@ point3d point =
         Encode.list [ Encode.float x, Encode.float y, Encode.float z ]
 
 
-{-| Encode an Axis2d as an object with `originPoint` and `direction` fields.
+{-| Encode an `Axis2d` as an object with `originPoint` and `direction` fields.
 -}
 axis2d : Axis2d -> Value
 axis2d axis =
@@ -164,7 +164,7 @@ axis2d axis =
         ]
 
 
-{-| Encode an Axis3d as an object with `originPoint` and `direction` fields.
+{-| Encode an `Axis3d` as an object with `originPoint` and `direction` fields.
 -}
 axis3d : Axis3d -> Value
 axis3d axis =
@@ -174,7 +174,7 @@ axis3d axis =
         ]
 
 
-{-| Encode a Plane3d as an object with `originPoint` and `normalDirection`
+{-| Encode a `Plane3d` as an object with `originPoint` and `normalDirection`
 fields.
 -}
 plane3d : Plane3d -> Value
@@ -185,7 +185,7 @@ plane3d plane =
         ]
 
 
-{-| Encode a Frame2d as an object with `originPoint`, `xDirection` and
+{-| Encode a `Frame2d` as an object with `originPoint`, `xDirection` and
 `yDirection` fields.
 -}
 frame2d : Frame2d -> Value
@@ -197,8 +197,8 @@ frame2d frame =
         ]
 
 
-{-| Encode a Frame3d as an object with `originPoint`, `xDirection`, `yDirection`
-and `zDirection` fields.
+{-| Encode a `Frame3d` as an object with `originPoint`, `xDirection`,
+`yDirection` and `zDirection` fields.
 -}
 frame3d : Frame3d -> Value
 frame3d frame =
@@ -210,7 +210,7 @@ frame3d frame =
         ]
 
 
-{-| Encode a SketchPlane3d as an object with `originPoint`, `xDirection` and
+{-| Encode a `SketchPlane3d` as an object with `originPoint`, `xDirection` and
 `yDirection` fields.
 -}
 sketchPlane3d : SketchPlane3d -> Value
@@ -222,7 +222,7 @@ sketchPlane3d sketchPlane =
         ]
 
 
-{-| Encode a LineSegment2d as a list of two endpoints.
+{-| Encode a `LineSegment2d` as a list of two endpoints.
 -}
 lineSegment2d : LineSegment2d -> Value
 lineSegment2d lineSegment =
@@ -233,7 +233,7 @@ lineSegment2d lineSegment =
         Encode.list [ point2d startPoint, point2d endPoint ]
 
 
-{-| Encode a LineSegment3d as a list of two endpoints.
+{-| Encode a `LineSegment3d` as a list of two endpoints.
 -}
 lineSegment3d : LineSegment3d -> Value
 lineSegment3d lineSegment =
@@ -244,7 +244,7 @@ lineSegment3d lineSegment =
         Encode.list [ point3d startPoint, point3d endPoint ]
 
 
-{-| Encode a Triangle2d as a list of three vertices.
+{-| Encode a `Triangle2d` as a list of three vertices.
 -}
 triangle2d : Triangle2d -> Value
 triangle2d triangle =
@@ -255,7 +255,7 @@ triangle2d triangle =
         Encode.list [ point2d v1, point2d v2, point2d v3 ]
 
 
-{-| Encode a Triangle3d as a list of three vertices.
+{-| Encode a `Triangle3d` as a list of three vertices.
 -}
 triangle3d : Triangle3d -> Value
 triangle3d triangle =
@@ -266,7 +266,7 @@ triangle3d triangle =
         Encode.list [ point3d v1, point3d v2, point3d v3 ]
 
 
-{-| Encode a BoundingBox2d as an object with `minX`, `maxX`, `minY` and `maxY`
+{-| Encode a `BoundingBox2d` as an object with `minX`, `maxX`, `minY` and `maxY`
 fields.
 -}
 boundingBox2d : BoundingBox2d -> Value
@@ -279,7 +279,7 @@ boundingBox2d boundingBox =
         ]
 
 
-{-| Encode a BoundingBox3d as an object with `minX`, `maxX`, `minY`, `maxY`,
+{-| Encode a `BoundingBox3d` as an object with `minX`, `maxX`, `minY`, `maxY`,
 `minZ` and `maxZ` fields.
 -}
 boundingBox3d : BoundingBox3d -> Value
@@ -294,28 +294,28 @@ boundingBox3d boundingBox =
         ]
 
 
-{-| Encode a Polyline2d as a list of points.
+{-| Encode a `Polyline2d` as a list of points.
 -}
 polyline2d : Polyline2d -> Value
 polyline2d polyline =
     Encode.list (List.map point2d (Polyline2d.vertices polyline))
 
 
-{-| Encode a Polyline3d as a list of points.
+{-| Encode a `Polyline3d` as a list of points.
 -}
 polyline3d : Polyline3d -> Value
 polyline3d polyline =
     Encode.list (List.map point3d (Polyline3d.vertices polyline))
 
 
-{-| Encode a Polygon2d as a list of points.
+{-| Encode a `Polygon2d` as a list of points.
 -}
 polygon2d : Polygon2d -> Value
 polygon2d polygon =
     Encode.list (List.map point2d (Polygon2d.vertices polygon))
 
 
-{-| Encode a Circle2d as an object with `centerPoint` and `radius` fields.
+{-| Encode a `Circle2d` as an object with `centerPoint` and `radius` fields.
 -}
 circle2d : Circle2d -> Value
 circle2d circle =
@@ -325,7 +325,7 @@ circle2d circle =
         ]
 
 
-{-| Encode a Circle3d as an object with `centerPoint`, `axialDirection` and
+{-| Encode a `Circle3d` as an object with `centerPoint`, `axialDirection` and
 `radius` fields.
 -}
 circle3d : Circle3d -> Value
@@ -337,7 +337,7 @@ circle3d circle =
         ]
 
 
-{-| Encode an Arc2d as an object with `centerPoint`, `startPoint` and
+{-| Encode an `Arc2d` as an object with `centerPoint`, `startPoint` and
 `sweptAngle` fields.
 -}
 arc2d : Arc2d -> Value
@@ -349,8 +349,8 @@ arc2d arc =
         ]
 
 
-{-| Encode an Arc3d as an object with `axis`, `startPoint` and
-`sweptAngle` fields.
+{-| Encode an `Arc3d` as an object with `axis`, `startPoint` and `sweptAngle`
+fields.
 -}
 arc3d : Arc3d -> Value
 arc3d arc =
@@ -361,7 +361,7 @@ arc3d arc =
         ]
 
 
-{-| Encode a QuadraticSpline2d as a list of three control points.
+{-| Encode a `QuadraticSpline2d` as a list of three control points.
 -}
 quadraticSpline2d : QuadraticSpline2d -> Value
 quadraticSpline2d spline =
@@ -372,7 +372,7 @@ quadraticSpline2d spline =
         Encode.list [ point2d p1, point2d p2, point2d p3 ]
 
 
-{-| Encode a QuadraticSpline3d as a list of three control points.
+{-| Encode a `QuadraticSpline3d` as a list of three control points.
 -}
 quadraticSpline3d : QuadraticSpline3d -> Value
 quadraticSpline3d spline =
@@ -383,7 +383,7 @@ quadraticSpline3d spline =
         Encode.list [ point3d p1, point3d p2, point3d p3 ]
 
 
-{-| Encode a CubicSpline2d as a list of four control points.
+{-| Encode a `CubicSpline2d` as a list of four control points.
 -}
 cubicSpline2d : CubicSpline2d -> Value
 cubicSpline2d spline =
@@ -394,7 +394,7 @@ cubicSpline2d spline =
         Encode.list [ point2d p1, point2d p2, point2d p3, point2d p4 ]
 
 
-{-| Encode a CubicSpline3d as a list of four control points.
+{-| Encode a `CubicSpline3d` as a list of four control points.
 -}
 cubicSpline3d : CubicSpline3d -> Value
 cubicSpline3d spline =
