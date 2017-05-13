@@ -77,7 +77,10 @@ Frames can by constructed by passing a record with `originPoint`, `xDirection`,
 In this case **you must be careful to ensure that the X, Y and Z directions are
 perpendicular**. (You will likely also want to make sure that they form a
 [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
-coordinate system.)
+coordinate system.) To construct sets of mutually perpendicular directions,
+[`Vector3d.orthonormalize`](OpenSolid-Vector3d#orthonormalize) or
+[`Direction3d.orthogonalize`](OpenSolid-Direction3d#orthogonalize) may be
+useful.
 
 
 # Predefined frames
