@@ -86,7 +86,10 @@ import OpenSolid.SketchPlane3d as SketchPlane3d
 {-| The unit circle, centered on the origin with a radius of 1.
 
     Circle2d.unit
-    --> Circle2d { centerPoint = Point2d.origin, radius = 1 }
+    --> Circle2d
+    -->     { centerPoint = Point2d.origin
+    -->     , radius = 1
+    -->     }
 
 -}
 unit : Circle2d
