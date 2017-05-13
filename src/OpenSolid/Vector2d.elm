@@ -27,6 +27,7 @@ module OpenSolid.Vector2d
         , squaredLength
         , direction
         , lengthAndDirection
+        , orthonormalize
         , sum
         , difference
         , dotProduct
@@ -450,6 +451,41 @@ lengthAndDirection vector =
                     Direction2d (components normalizedVector)
             in
                 Just ( vectorLength, vectorDirection )
+
+
+{-| Attempt to form a pair of perpendicular directions from the two given
+vectors by performing [Gram-Schmidt normalization](https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process):
+
+  - The first returned direction will be equal to the direction of the first
+    given vector
+  - The second returned direction will be as close as possible to the second
+    given vector while being perpendicular to the first returned direction
+
+If either of the given vectors are zero, or if the two vectors are parallel,
+`Nothing` will be returned.
+
+See also [`Direction2d.orthogonalize`](OpenSolid-Direction2d#orthogonalize).
+
+-}
+orthonormalize : ( Vector2d, Vector2d ) -> Maybe ( Direction2d, Direction2d )
+orthonormalize ( xVector, xyVector ) =
+    direction xVector
+        |> Maybe.andThen
+            (\xDirection ->
+                let
+                    yDirection =
+                        Direction2d.perpendicularTo xDirection
+
+                    perpendicularComponent =
+                        componentIn yDirection xyVector
+                in
+                    if perpendicularComponent > 0.0 then
+                        Just ( xDirection, yDirection )
+                    else if perpendicularComponent < 0.0 then
+                        Just ( xDirection, Direction2d.flip yDirection )
+                    else
+                        Nothing
+            )
 
 
 {-| Find the sum of two vectors.

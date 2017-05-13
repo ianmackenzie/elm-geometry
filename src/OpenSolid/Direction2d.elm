@@ -19,6 +19,7 @@ module OpenSolid.Direction2d
         , positiveY
         , negativeY
         , perpendicularTo
+        , orthogonalize
         , fromAngle
         , toAngle
         , angleFrom
@@ -78,7 +79,7 @@ directions and transform them as necessary.
 
 # Constructors
 
-@docs perpendicularTo
+@docs perpendicularTo, orthogonalize
 
 
 # Angles
@@ -217,6 +218,30 @@ given direction 90 degrees counterclockwise.
 perpendicularTo : Direction2d -> Direction2d
 perpendicularTo =
     Bootstrap.perpendicularTo
+
+
+{-| Attempt to form a pair of perpendicular directions from the two given
+directions by performing [Gram-Schmidt normalization](https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process);
+
+    Direction2d.orthogonalize
+        ( xDirection
+        , yDirection
+        )
+
+is equivalent to
+
+    Vector2d.orthonormalize
+        ( Direction2d.toVector xDirection
+        , Direction2d.toVector yDirection
+        )
+
+-}
+orthogonalize : ( Direction2d, Direction2d ) -> Maybe ( Direction2d, Direction2d )
+orthogonalize ( xDirection, yDirection ) =
+    Vector2d.orthonormalize
+        ( toVector xDirection
+        , toVector yDirection
+        )
 
 
 {-| Construct a direction from an angle in radians, given counterclockwise from
