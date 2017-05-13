@@ -13,8 +13,12 @@
 module Vector2d exposing (suite)
 
 import Test exposing (Test)
+import Fuzz
+import Expect
 import Test.Runner.Html as HtmlRunner
+import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
+import OpenSolid.Point2d as Point2d
 import OpenSolid.Direction2d as Direction2d
 import OpenSolid.Axis2d as Axis2d
 import OpenSolid.Geometry.Encode as Encode
@@ -121,6 +125,47 @@ mirrorAcrossNegatesPerpendicularComponent =
         )
 
 
+orthonormalizeProducesValidFrameBasis : Test
+orthonormalizeProducesValidFrameBasis =
+    Test.fuzz (Fuzz.tuple ( Fuzz.vector2d, Fuzz.vector2d ))
+        "orthonormalize produces a valid frame basis"
+        (\vectors ->
+            case Vector2d.orthonormalize vectors of
+                Just ( xDirection, yDirection ) ->
+                    Expect.validFrame2d
+                        (Frame2d
+                            { originPoint = Point2d.origin
+                            , xDirection = xDirection
+                            , yDirection = yDirection
+                            }
+                        )
+
+                Nothing ->
+                    let
+                        ( v1, v2 ) =
+                            vectors
+
+                        crossProduct =
+                            Vector2d.crossProduct v1 v2
+                    in
+                        Expect.approximately 0.0 crossProduct
+        )
+
+
+orthonormalizingParallelVectorsReturnsNothing : Test
+orthonormalizingParallelVectorsReturnsNothing =
+    Test.test "orthonormalizing parallel vectors returns Nothing"
+        (\() ->
+            let
+                vectors =
+                    ( Vector2d ( 1, 2 )
+                    , Vector2d ( -3, -6 )
+                    )
+            in
+                Expect.equal Nothing (Vector2d.orthonormalize vectors)
+        )
+
+
 suite : Test
 suite =
     Test.describe "OpenSolid.Geometry.Vector2d"
@@ -131,6 +176,8 @@ suite =
         , rotateByRotatesByTheCorrectAngle
         , mirrorAcrossPreservesParallelComponent
         , mirrorAcrossNegatesPerpendicularComponent
+        , orthonormalizeProducesValidFrameBasis
+        , orthonormalizingParallelVectorsReturnsNothing
         ]
 
 

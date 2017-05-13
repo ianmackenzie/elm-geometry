@@ -22,8 +22,10 @@ module OpenSolid.Geometry.Expect
         , vector2dWithin
         , vector3d
         , vector3dWithin
+        , validDirection2d
         , direction2d
         , direction2dWithin
+        , validDirection3d
         , direction3d
         , direction3dWithin
         , point2d
@@ -33,7 +35,9 @@ module OpenSolid.Geometry.Expect
         , axis2d
         , axis3d
         , plane3d
+        , validFrame2d
         , frame2d
+        , validFrame3d
         , frame3d
         , sketchPlane3d
         , lineSegment2d
@@ -194,6 +198,23 @@ vector3dWithin tolerance =
     expect (Vector3d.equalWithin tolerance)
 
 
+validDirection2d : Direction2d -> Expectation
+validDirection2d direction =
+    let
+        length =
+            Vector2d.length (Direction2d.toVector direction)
+    in
+        if abs (length - 1) <= defaultTolerance then
+            Expect.pass
+        else
+            Expect.fail
+                ("Expected "
+                    ++ toString direction
+                    ++ " to have length 1, but actually has length "
+                    ++ toString length
+                )
+
+
 direction2d : Direction2d -> Direction2d -> Expectation
 direction2d =
     direction2dWithin defaultTolerance
@@ -202,6 +223,23 @@ direction2d =
 direction2dWithin : Float -> Direction2d -> Direction2d -> Expectation
 direction2dWithin tolerance =
     expect (Direction2d.equalWithin tolerance)
+
+
+validDirection3d : Direction3d -> Expectation
+validDirection3d direction =
+    let
+        length =
+            Vector3d.length (Direction3d.toVector direction)
+    in
+        if abs (length - 1) <= defaultTolerance then
+            Expect.pass
+        else
+            Expect.fail
+                ("Expected "
+                    ++ toString direction
+                    ++ " to have length 1, but actually has length "
+                    ++ toString length
+                )
 
 
 direction3d : Direction3d -> Direction3d -> Expectation
@@ -266,6 +304,35 @@ plane3d =
         )
 
 
+validFrame2d : Frame2d -> Expectation
+validFrame2d =
+    Expect.all
+        [ Frame2d.xDirection >> validDirection2d
+        , Frame2d.yDirection >> validDirection2d
+        , (\frame ->
+            let
+                xDirection =
+                    Frame2d.xDirection frame
+
+                yDirection =
+                    Frame2d.yDirection frame
+
+                parallelComponent =
+                    Direction2d.componentIn xDirection yDirection
+            in
+                if abs parallelComponent <= defaultTolerance then
+                    Expect.pass
+                else
+                    Expect.fail
+                        ("Expected perpendicular basis directions, got "
+                            ++ toString xDirection
+                            ++ ", "
+                            ++ toString yDirection
+                        )
+          )
+        ]
+
+
 frame2d : Frame2d -> Frame2d -> Expectation
 frame2d =
     expect
@@ -275,6 +342,51 @@ frame2d =
             , by (Direction2d.equalWithin defaultTolerance) Frame2d.yDirection
             ]
         )
+
+
+validFrame3d : Frame3d -> Expectation
+validFrame3d =
+    Expect.all
+        [ Frame3d.xDirection >> validDirection3d
+        , Frame3d.yDirection >> validDirection3d
+        , Frame3d.zDirection >> validDirection3d
+        , (\frame ->
+            let
+                xDirection =
+                    Frame3d.xDirection frame
+
+                yDirection =
+                    Frame3d.yDirection frame
+
+                zDirection =
+                    Frame3d.zDirection frame
+
+                xyComponent =
+                    Direction3d.componentIn xDirection yDirection
+
+                yzComponent =
+                    Direction3d.componentIn yDirection zDirection
+
+                zxComponent =
+                    Direction3d.componentIn zDirection xDirection
+            in
+                if
+                    (abs xyComponent <= defaultTolerance)
+                        && (abs yzComponent <= defaultTolerance)
+                        && (abs zxComponent <= defaultTolerance)
+                then
+                    Expect.pass
+                else
+                    Expect.fail
+                        ("Expected perpendicular basis directions, got "
+                            ++ toString xDirection
+                            ++ ", "
+                            ++ toString yDirection
+                            ++ ", "
+                            ++ toString zDirection
+                        )
+          )
+        ]
 
 
 frame3d : Frame3d -> Frame3d -> Expectation
