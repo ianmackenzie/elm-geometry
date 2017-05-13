@@ -97,9 +97,9 @@ at its start and end points, like so:
 
 ![Hermite cubic spline](https://opensolid.github.io/images/geometry/1.2/hermiteCubicSpline.svg)
 
-The spline is based on a parameter that ranges from 0 to 1; as a result, for
-best results the length of each derivative vector should be roughly equal to the
-length of the resulting spline.
+The spline is based on a parameter that ranges from 0 to 1; as a result, in most
+cases the length of each derivative vector should be roughly equal to the length
+of the resulting spline.
 
 -}
 hermite : ( Point3d, Vector3d ) -> ( Point3d, Vector3d ) -> CubicSpline3d
