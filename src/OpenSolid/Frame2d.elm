@@ -185,7 +185,8 @@ yDirection (Frame2d properties) =
     --> False
 
 All predefined frames are right-handed, and most operations on frames preserve
-handedness.
+handedness, so about the only ways to end up with a left-handed frame are by
+constructing one explicitly or by mirroring a right-handed frame.
 
 -}
 isRightHanded : Frame2d -> Bool
