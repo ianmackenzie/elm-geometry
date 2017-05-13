@@ -23,7 +23,7 @@ module OpenSolid.Direction3d
         , negativeZ
         , perpendicularTo
         , perpendicularBasis
-        , orthonormalize
+        , orthogonalize
         , components
         , xComponent
         , yComponent
@@ -296,62 +296,30 @@ perpendicularBasis direction =
 
 
 {-| Attempt to form a set of three mutually perpendicular directions from the
-three given vectors by performing [Gram-Schmidt normalization](https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process).
-In general,
+three given directions by performing [Gram-Schmidt normalization](https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process);
 
-  - The first returned direction will be equal to the direction of the first
-    given vector
-  - The second returned direction will be as close to the second given vector
-    as possible while being perpendicular to the first returned direction
-  - The third returned direction will be as close to the third given vector as
-    possible while being perpendicular to the first and second returned
-    directions
+    Direction3d.orthogonalize
+        ( xDirection
+        , yDirection
+        , zDirection
+        )
+
+is equivalent to
+
+    Vector3d.orthonormalize
+        ( Direction3d.toVector xDirection
+        , Direction3d.toVector yDirection
+        , Direction3d.toVector zDirection
+        )
 
 -}
-orthonormalize :
-    ( Vector3d, Vector3d, Vector3d )
-    -> Maybe ( Direction3d, Direction3d, Direction3d )
-orthonormalize ( xVector, xyVector, xyzVector ) =
-    Vector3d.direction xVector
-        |> Maybe.andThen
-            (\xDirection ->
-                let
-                    xProjection =
-                        Vector3d.projectionIn xDirection xyVector
-
-                    yVector =
-                        Vector3d.difference xyVector xProjection
-                in
-                    Vector3d.direction yVector
-                        |> Maybe.andThen
-                            (\yDirection ->
-                                let
-                                    xProjection =
-                                        Vector3d.projectionIn xDirection
-                                            xyzVector
-
-                                    yzVector =
-                                        Vector3d.difference xyzVector
-                                            xProjection
-
-                                    yProjection =
-                                        Vector3d.projectionIn yDirection
-                                            yzVector
-
-                                    zVector =
-                                        Vector3d.difference yzVector
-                                            yProjection
-                                in
-                                    Vector3d.direction zVector
-                                        |> Maybe.map
-                                            (\zDirection ->
-                                                ( xDirection
-                                                , yDirection
-                                                , zDirection
-                                                )
-                                            )
-                            )
-            )
+orthogonalize : ( Direction3d, Direction3d, Direction3d ) -> Maybe ( Direction3d, Direction3d, Direction3d )
+orthogonalize ( xDirection, yDirection, zDirection ) =
+    Vector3d.orthonormalize
+        ( toVector xDirection
+        , toVector yDirection
+        , toVector zDirection
+        )
 
 
 {-| Get the components of a direction as a tuple (the components it would have

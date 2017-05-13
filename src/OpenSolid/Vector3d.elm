@@ -27,6 +27,7 @@ module OpenSolid.Vector3d
         , squaredLength
         , direction
         , lengthAndDirection
+        , orthonormalize
         , flip
         , scaleBy
         , sum
@@ -95,7 +96,7 @@ will actually want their `Direction3d` versions [`Direction3d.x`](OpenSolid-Dire
 
 # Length and direction
 
-@docs length, squaredLength, direction, lengthAndDirection
+@docs length, squaredLength, direction, lengthAndDirection, orthonormalize
 
 
 # Arithmetic
@@ -457,6 +458,66 @@ lengthAndDirection vector =
                     Direction3d (components normalizedVector)
             in
                 Just ( vectorLength, vectorDirection )
+
+
+{-| Attempt to form a set of three mutually perpendicular directions from the
+three given vectors by performing [Gram-Schmidt normalization](https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process):
+
+  - The first returned direction will be equal to the direction of the first
+    given vector
+  - The second returned direction will be as close as possible to the second
+    given vector while being perpendicular to the first returned direction
+  - The third returned direction will be as close as possible to the third given
+    vector while being perpendicular to the first and second returned directions
+
+If any of the given vectors are zero, any two of them are parallel, or the three
+are coplanar, `Nothing` will be returned.
+
+See also [`Direction3d.orthogonalize`](OpenSolid-Direction3d#orthogonalize).
+
+-}
+orthonormalize : ( Vector3d, Vector3d, Vector3d ) -> Maybe ( Direction3d, Direction3d, Direction3d )
+orthonormalize ( xVector, xyVector, xyzVector ) =
+    direction xVector
+        |> Maybe.andThen
+            (\xDirection ->
+                let
+                    xProjection =
+                        projectionIn xDirection xyVector
+
+                    yVector =
+                        difference xyVector xProjection
+                in
+                    direction yVector
+                        |> Maybe.andThen
+                            (\yDirection ->
+                                let
+                                    xProjection =
+                                        projectionIn xDirection
+                                            xyzVector
+
+                                    yzVector =
+                                        difference xyzVector
+                                            xProjection
+
+                                    yProjection =
+                                        projectionIn yDirection
+                                            yzVector
+
+                                    zVector =
+                                        difference yzVector
+                                            yProjection
+                                in
+                                    direction zVector
+                                        |> Maybe.map
+                                            (\zDirection ->
+                                                ( xDirection
+                                                , yDirection
+                                                , zDirection
+                                                )
+                                            )
+                            )
+            )
 
 
 {-| Find the sum of two vectors.
