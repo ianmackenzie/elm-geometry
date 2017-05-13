@@ -112,10 +112,16 @@ import OpenSolid.Point3d as Point3d
 at the given distances from the axis' origin point.
 
     LineSegment3d.along Axis3d.x 3 5
-    --> LineSegment3d ( Point3d ( 3, 0, 0 ), Point3d ( 5, 0, 0 ) )
+    --> LineSegment3d
+    -->     ( Point3d ( 3, 0, 0 )
+    -->     , Point3d ( 5, 0, 0 )
+    -->     )
 
     LineSegment3d.along Axis3d.y 2 -4
-    --> LineSegment3d ( Point3d ( 0, 2, 0 ), Point3d ( 0, -4, 0 ) )
+    --> LineSegment3d
+    -->     ( Point3d ( 0, 2, 0 )
+    -->     , Point3d ( 0, -4, 0 )
+    -->     )
 
 -}
 along : Axis3d -> Float -> Float -> LineSegment3d

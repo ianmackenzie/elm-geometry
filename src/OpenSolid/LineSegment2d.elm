@@ -118,10 +118,16 @@ import OpenSolid.Point2d as Point2d
 at the given distances from the axis' origin point.
 
     LineSegment2d.along Axis2d.x 3 5
-    --> LineSegment2d ( Point2d ( 3, 0 ), Point2d ( 5, 0 ) )
+    --> LineSegment2d
+    -->     ( Point2d ( 3, 0 )
+    -->     , Point2d ( 5, 0 )
+    -->     )
 
     LineSegment2d.along Axis2d.y 2 -4
-    --> LineSegment2d ( Point2d ( 0, 2 ), Point2d ( 0, -4 ) )
+    --> LineSegment2d
+    -->     ( Point2d ( 0, 2 )
+    -->     , Point2d ( 0, -4 )
+    -->     )
 
 -}
 along : Axis2d -> Float -> Float -> LineSegment2d
