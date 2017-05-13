@@ -287,10 +287,10 @@ is no such point (the two line segments do not touch, or they overlap), returns
 
     -- 4 corners of a square
     ( a, b, c, d ) =
-        ( Point2d (0, 0)
-        , Point2d (1, 0)
-        , Point2d (1, 1)
-        , Point2d (0, 1)
+        ( Point2d ( 0, 0 )
+        , Point2d ( 1, 0 )
+        , Point2d ( 1, 1 )
+        , Point2d ( 0, 1 )
         )
 
     -- definition of some segments with those points
