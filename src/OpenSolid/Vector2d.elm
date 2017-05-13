@@ -464,6 +464,21 @@ vectors by performing [Gram-Schmidt normalization](https://en.wikipedia.org/wiki
 If either of the given vectors are zero, or if the two vectors are parallel,
 `Nothing` will be returned.
 
+    Vector2d.orthonormalize
+        ( Vector2d ( 4, 3 )
+        , Vector2d ( 0, -2 )
+        )
+    --> Just
+    -->     ( Direction2d ( 0.8, 0.6 )
+    -->     , Direction2d ( 0.6, -0.8 )
+    -->     )
+
+    Vector2d.orthonormalize
+        ( Vector2d ( 4, 3 )
+        , Vector2d ( 8, 6 )
+        )
+    --> Nothing
+
 See also [`Direction2d.orthogonalize`](OpenSolid-Direction2d#orthogonalize).
 
 -}

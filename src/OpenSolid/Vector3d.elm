@@ -473,6 +473,24 @@ three given vectors by performing [Gram-Schmidt normalization](https://en.wikipe
 If any of the given vectors are zero, any two of them are parallel, or the three
 are coplanar, `Nothing` will be returned.
 
+    Vector3d.orthonormalize
+        ( Vector3d ( 4, 3, 0 )
+        , Vector3d ( 0, 2, 0 )
+        , Vector3d ( 1, 2, 3 )
+        )
+    --> Just
+    -->     ( Direction3d ( 0.8, 0.6, 0 )
+    -->     , Direction3d ( -0.6, 0.8, 0 )
+    -->     , Direction3d ( 0, 0, 1 )
+    -->     )
+
+    Vector3d.orthonormalize
+        ( Vector3d ( 2, 0, 0 )
+        , Vector3d ( 3, 1, 0 )
+        , Vector3d ( 4, 2, 0 )
+        )
+    --> Nothing
+
 See also [`Direction3d.orthogonalize`](OpenSolid-Direction3d#orthogonalize).
 
 -}
