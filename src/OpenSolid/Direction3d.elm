@@ -311,51 +311,47 @@ In general,
 orthonormalize :
     ( Vector3d, Vector3d, Vector3d )
     -> Maybe ( Direction3d, Direction3d, Direction3d )
-orthonormalize vectors =
-    let
-        ( xVector, xyVector, xyzVector ) =
-            vectors
-    in
-        Vector3d.direction xVector
-            |> Maybe.andThen
-                (\xDirection ->
-                    let
-                        xProjection =
-                            Vector3d.projectionIn xDirection xyVector
+orthonormalize ( xVector, xyVector, xyzVector ) =
+    Vector3d.direction xVector
+        |> Maybe.andThen
+            (\xDirection ->
+                let
+                    xProjection =
+                        Vector3d.projectionIn xDirection xyVector
 
-                        yVector =
-                            Vector3d.difference xyVector xProjection
-                    in
-                        Vector3d.direction yVector
-                            |> Maybe.andThen
-                                (\yDirection ->
-                                    let
-                                        xProjection =
-                                            Vector3d.projectionIn xDirection
-                                                xyzVector
+                    yVector =
+                        Vector3d.difference xyVector xProjection
+                in
+                    Vector3d.direction yVector
+                        |> Maybe.andThen
+                            (\yDirection ->
+                                let
+                                    xProjection =
+                                        Vector3d.projectionIn xDirection
+                                            xyzVector
 
-                                        yzVector =
-                                            Vector3d.difference xyzVector
-                                                xProjection
+                                    yzVector =
+                                        Vector3d.difference xyzVector
+                                            xProjection
 
-                                        yProjection =
-                                            Vector3d.projectionIn yDirection
-                                                yzVector
+                                    yProjection =
+                                        Vector3d.projectionIn yDirection
+                                            yzVector
 
-                                        zVector =
-                                            Vector3d.difference yzVector
-                                                yProjection
-                                    in
-                                        Vector3d.direction zVector
-                                            |> Maybe.map
-                                                (\zDirection ->
-                                                    ( xDirection
-                                                    , yDirection
-                                                    , zDirection
-                                                    )
+                                    zVector =
+                                        Vector3d.difference yzVector
+                                            yProjection
+                                in
+                                    Vector3d.direction zVector
+                                        |> Maybe.map
+                                            (\zDirection ->
+                                                ( xDirection
+                                                , yDirection
+                                                , zDirection
                                                 )
-                                )
-                )
+                                            )
+                            )
+            )
 
 
 {-| Get the components of a direction as a tuple (the components it would have
