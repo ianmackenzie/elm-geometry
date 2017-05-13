@@ -82,7 +82,7 @@ to start with existing directions and transform them as necessary.
 
 # Constructors
 
-@docs perpendicularTo, perpendicularBasis, orthonormalize
+@docs perpendicularTo, perpendicularBasis, orthogonalize
 
 
 # Components

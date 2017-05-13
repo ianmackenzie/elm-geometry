@@ -95,7 +95,7 @@ and [`Direction2d.y`](OpenSolid-Direction2d#y).
 
 # Length and direction
 
-@docs length, squaredLength, direction, lengthAndDirection
+@docs length, squaredLength, direction, lengthAndDirection, orthonormalize
 
 
 # Arithmetic
