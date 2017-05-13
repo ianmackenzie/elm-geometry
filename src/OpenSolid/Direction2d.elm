@@ -136,6 +136,7 @@ For the examples, assume the following frames have been defined:
 
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
+import OpenSolid.Bootstrap.Direction2d as Bootstrap
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
 import OpenSolid.Bootstrap.Direction3d as Direction3d
 
@@ -214,8 +215,8 @@ given direction 90 degrees counterclockwise.
 
 -}
 perpendicularTo : Direction2d -> Direction2d
-perpendicularTo direction =
-    toVector direction |> Vector2d.perpendicularTo |> toDirection
+perpendicularTo =
+    Bootstrap.perpendicularTo
 
 
 {-| Construct a direction from an angle in radians, given counterclockwise from
@@ -292,8 +293,8 @@ as a unit vector, also know as its direction cosines).
 
 -}
 components : Direction2d -> ( Float, Float )
-components (Direction2d components_) =
-    components_
+components =
+    Bootstrap.components
 
 
 {-| Get the X component of a direction.
@@ -394,12 +395,8 @@ toVector (Direction2d components) =
 
 -}
 flip : Direction2d -> Direction2d
-flip direction =
-    let
-        ( x, y ) =
-            components direction
-    in
-        Direction2d ( -x, -y )
+flip =
+    Bootstrap.flip
 
 
 {-| Construct a vector of a particular length by treating a direction as a unit
