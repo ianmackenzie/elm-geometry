@@ -223,10 +223,7 @@ perpendicularTo =
 {-| Attempt to form a pair of perpendicular directions from the two given
 directions by performing [Gram-Schmidt normalization](https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process);
 
-    Direction2d.orthogonalize
-        ( xDirection
-        , yDirection
-        )
+    Direction2d.orthogonalize ( xDirection, yDirection )
 
 is equivalent to
 
