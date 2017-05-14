@@ -17,7 +17,6 @@ module OpenSolid.Vector2d
         , in_
         , perpendicularTo
         , interpolateFrom
-        , interpolate
         , components
         , xComponent
         , yComponent
@@ -80,7 +79,7 @@ and [`Direction2d.y`](OpenSolid-Direction2d#y).
 
 # Constructors
 
-@docs polar, in_, perpendicularTo, interpolateFrom, interpolate
+@docs polar, in_, perpendicularTo, interpolateFrom
 
 
 # Components
@@ -262,14 +261,6 @@ interpolateFrom v1 v2 t =
             ( Scalar.interpolateFrom x1 x2 t
             , Scalar.interpolateFrom y1 y2 t
             )
-
-
-{-| DEPRECATED: Alias for `interpolateFrom`, kept for compatibility. Use
-`interpolateFrom` instead.
--}
-interpolate : Vector2d -> Vector2d -> Float -> Vector2d
-interpolate =
-    interpolateFrom
 
 
 {-| Extract the components of a vector.

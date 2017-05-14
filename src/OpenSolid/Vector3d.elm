@@ -16,7 +16,6 @@ module OpenSolid.Vector3d
         , in_
         , perpendicularTo
         , interpolateFrom
-        , interpolate
         , components
         , xComponent
         , yComponent
@@ -81,7 +80,7 @@ will actually want their `Direction3d` versions [`Direction3d.x`](OpenSolid-Dire
 
 # Constructors
 
-@docs in_, perpendicularTo, interpolateFrom, interpolate
+@docs in_, perpendicularTo, interpolateFrom
 
 
 # Components
@@ -263,14 +262,6 @@ interpolateFrom v1 v2 t =
             , Scalar.interpolateFrom y1 y2 t
             , Scalar.interpolateFrom z1 z2 t
             )
-
-
-{-| DEPRECATED: Alias for `interpolateFrom`, kept for compatibility. Use
-`interpolateFrom` instead.
--}
-interpolate : Vector3d -> Vector3d -> Float -> Vector3d
-interpolate =
-    interpolateFrom
 
 
 {-| Extract the components of a vector.
