@@ -380,11 +380,8 @@ intersectionPoint lineSegment1 lineSegment2 =
                     ( pqXs / tDenominator
                     , pqXr / uDenominator
                     )
-
-                within start end x =
-                    start <= x && x <= end
             in
-                if within 0 1 t && within 0 1 u then
+                if (0 <= t && t <= 1) && (0 <= u && u <= 1) then
                     -- Intersection is within both segments.
                     let
                         -- Ensure interpolation happens from the closest
