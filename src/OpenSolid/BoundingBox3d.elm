@@ -390,10 +390,13 @@ contains point boundingBox =
     let
         ( x, y, z ) =
             Point3d.coordinates point
+
+        { minX, maxX, minY, maxY, minZ, maxZ } =
+            extrema boundingBox
     in
-        (minX boundingBox <= x && x <= maxX boundingBox)
-            && (minY boundingBox <= y && y <= maxY boundingBox)
-            && (minZ boundingBox <= z && z <= maxZ boundingBox)
+        (minX <= x && x <= maxX)
+            && (minY <= y && y <= maxY)
+            && (minZ <= z && z <= maxZ)
 
 
 {-| Test if one bounding box overlaps (touches) another.
