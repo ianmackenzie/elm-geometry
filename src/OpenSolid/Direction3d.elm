@@ -12,34 +12,34 @@
 
 module OpenSolid.Direction3d
     exposing
-        ( x
-        , y
-        , z
-        , positiveX
-        , negativeX
-        , positiveY
-        , negativeY
-        , positiveZ
-        , negativeZ
-        , perpendicularTo
-        , perpendicularBasis
-        , orthogonalize
-        , components
-        , xComponent
-        , yComponent
-        , zComponent
+        ( angleFrom
         , componentIn
+        , components
         , equalWithin
-        , toVector
-        , angleFrom
         , flip
-        , scaleBy
-        , rotateAround
         , mirrorAcross
+        , negativeX
+        , negativeY
+        , negativeZ
+        , orthogonalize
+        , perpendicularBasis
+        , perpendicularTo
+        , placeIn
+        , positiveX
+        , positiveY
+        , positiveZ
+        , projectInto
         , projectOnto
         , relativeTo
-        , placeIn
-        , projectInto
+        , rotateAround
+        , scaleBy
+        , toVector
+        , x
+        , xComponent
+        , y
+        , yComponent
+        , z
+        , zComponent
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/direction3d.svg" alt="Direction3d" width="160">
@@ -259,7 +259,7 @@ perpendicularTo direction =
         normalizedVector =
             Vector3d.scaleBy (1 / length) perpendicularVector
     in
-        toDirection normalizedVector
+    toDirection normalizedVector
 
 
 {-| Construct a pair of directions that are perpendicular to each other and both
@@ -292,7 +292,7 @@ perpendicularBasis direction =
             Vector3d.crossProduct (toVector direction) (toVector xDirection)
                 |> toDirection
     in
-        ( xDirection, yDirection )
+    ( xDirection, yDirection )
 
 
 {-| Attempt to form a set of three mutually perpendicular directions from the
@@ -467,7 +467,7 @@ flip direction =
         ( x, y, z ) =
             components direction
     in
-        Direction3d ( -x, -y, -z )
+    Direction3d ( -x, -y, -z )
 
 
 {-| Construct a vector of a particular length by treating a direction as a unit

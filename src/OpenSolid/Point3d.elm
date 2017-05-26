@@ -12,36 +12,36 @@
 
 module OpenSolid.Point3d
     exposing
-        ( origin
-        , midpoint
-        , interpolateFrom
-        , interpolate
-        , along
-        , on
-        , in_
+        ( along
         , coordinates
+        , directionFrom
+        , distanceAlong
+        , distanceFrom
+        , equalWithin
+        , hull
+        , in_
+        , interpolate
+        , interpolateFrom
+        , midpoint
+        , mirrorAcross
+        , on
+        , origin
+        , placeIn
+        , projectInto
+        , projectOnto
+        , projectRadiallyOnto
+        , radialDistanceFrom
+        , relativeTo
+        , rotateAround
+        , scaleAbout
+        , signedDistanceFrom
+        , squaredDistanceFrom
+        , squaredRadialDistanceFrom
+        , translateBy
+        , vectorFrom
         , xCoordinate
         , yCoordinate
         , zCoordinate
-        , equalWithin
-        , vectorFrom
-        , directionFrom
-        , distanceFrom
-        , squaredDistanceFrom
-        , distanceAlong
-        , radialDistanceFrom
-        , squaredRadialDistanceFrom
-        , signedDistanceFrom
-        , scaleAbout
-        , rotateAround
-        , translateBy
-        , mirrorAcross
-        , projectOnto
-        , projectRadiallyOnto
-        , relativeTo
-        , placeIn
-        , projectInto
-        , hull
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/point3d.svg" alt="Point3d" width="160">
@@ -111,15 +111,15 @@ different coordinate frames.
 
 -}
 
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Vector3d as Vector3d
-import OpenSolid.Direction3d as Direction3d
-import OpenSolid.Point2d as Point2d
-import OpenSolid.Scalar as Scalar
 import OpenSolid.Bootstrap.Axis3d as Axis3d
+import OpenSolid.Bootstrap.Frame3d as Frame3d
 import OpenSolid.Bootstrap.Plane3d as Plane3d
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
-import OpenSolid.Bootstrap.Frame3d as Frame3d
+import OpenSolid.Direction3d as Direction3d
+import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Point2d as Point2d
+import OpenSolid.Scalar as Scalar
+import OpenSolid.Vector3d as Vector3d
 
 
 addTo : Point3d -> Vector3d -> Point3d
@@ -197,11 +197,11 @@ interpolateFrom p1 p2 t =
         ( x2, y2, z2 ) =
             coordinates p2
     in
-        Point3d
-            ( Scalar.interpolateFrom x1 x2 t
-            , Scalar.interpolateFrom y1 y2 t
-            , Scalar.interpolateFrom z1 z2 t
-            )
+    Point3d
+        ( Scalar.interpolateFrom x1 x2 t
+        , Scalar.interpolateFrom y1 y2 t
+        , Scalar.interpolateFrom z1 z2 t
+        )
 
 
 {-| DEPRECATED: Alias for `interpolateFrom`, kept for compatibility. Use
@@ -367,7 +367,7 @@ vectorFrom firstPoint secondPoint =
         ( x2, y2, z2 ) =
             coordinates secondPoint
     in
-        Vector3d ( x2 - x1, y2 - y1, z2 - z1 )
+    Vector3d ( x2 - x1, y2 - y1, z2 - z1 )
 
 
 {-| Attempt to find the direction from the first point to the second. If the two
@@ -548,7 +548,7 @@ signedDistanceFrom plane point =
         ( nx, ny, nz ) =
             Direction3d.components (Plane3d.normalDirection plane)
     in
-        (x - x0) * nx + (y - y0) * ny + (z - z0) * nz
+    (x - x0) * nx + (y - y0) * ny + (z - z0) * nz
 
 
 {-| Perform a uniform scaling about the given center point. The center point is
@@ -602,9 +602,9 @@ rotateAround axis angle point =
         originPoint =
             Axis3d.originPoint axis
     in
-        vectorFrom originPoint point
-            |> Vector3d.rotateAround axis angle
-            |> addTo originPoint
+    vectorFrom originPoint point
+        |> Vector3d.rotateAround axis angle
+        |> addTo originPoint
 
 
 {-| Translate a point by a given displacement.
@@ -628,7 +628,7 @@ translateBy vector point =
         ( px, py, pz ) =
             coordinates point
     in
-        Point3d ( px + vx, py + vy, pz + vz )
+    Point3d ( px + vx, py + vy, pz + vz )
 
 
 {-| Mirror a point across a plane. The result will be the same distance from the
@@ -663,9 +663,9 @@ mirrorAcross plane point =
         originPoint =
             Plane3d.originPoint plane
     in
-        vectorFrom originPoint point
-            |> Vector3d.mirrorAcross plane
-            |> addTo originPoint
+    vectorFrom originPoint point
+        |> Vector3d.mirrorAcross plane
+        |> addTo originPoint
 
 
 {-| Project a point perpendicularly onto a plane.
@@ -697,7 +697,7 @@ projectOnto plane point =
         displacement =
             Vector3d.in_ (Plane3d.normalDirection plane) -signedDistance
     in
-        translateBy displacement point
+    translateBy displacement point
 
 
 {-| Project a point perpendicularly (radially) onto an axis.
@@ -805,10 +805,10 @@ projectInto sketchPlane point =
         dz =
             z - z0
     in
-        Point2d
-            ( dx * ux + dy * uy + dz * uz
-            , dx * vx + dy * vy + dz * vz
-            )
+    Point2d
+        ( dx * ux + dy * uy + dz * uz
+        , dx * vx + dy * vy + dz * vz
+        )
 
 
 {-| Construct a bounding box containing both of the given points.
@@ -839,11 +839,11 @@ hull firstPoint secondPoint =
         ( x2, y2, z2 ) =
             coordinates secondPoint
     in
-        BoundingBox3d
-            { minX = min x1 x2
-            , maxX = max x1 x2
-            , minY = min y1 y2
-            , maxY = max y1 y2
-            , minZ = min z1 z2
-            , maxZ = max z1 z2
-            }
+    BoundingBox3d
+        { minX = min x1 x2
+        , maxX = max x1 x2
+        , minY = min y1 y2
+        , maxY = max y1 y2
+        , minZ = min z1 z2
+        , maxZ = max z1 z2
+        }

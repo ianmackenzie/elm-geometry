@@ -19,7 +19,7 @@ flip direction =
         ( x, y ) =
             components direction
     in
-        Direction2d ( -x, -y )
+    Direction2d ( -x, -y )
 
 
 perpendicularTo : Direction2d -> Direction2d
@@ -28,4 +28,4 @@ perpendicularTo direction =
         ( x, y ) =
             components direction
     in
-        Direction2d ( -y, x )
+    Direction2d ( -y, x )

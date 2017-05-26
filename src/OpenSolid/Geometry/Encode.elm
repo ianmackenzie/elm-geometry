@@ -12,35 +12,35 @@
 
 module OpenSolid.Geometry.Encode
     exposing
-        ( vector2d
-        , vector3d
-        , direction2d
-        , direction3d
-        , point2d
-        , point3d
+        ( arc2d
+        , arc3d
         , axis2d
         , axis3d
-        , plane3d
-        , frame2d
-        , frame3d
-        , sketchPlane3d
-        , lineSegment2d
-        , lineSegment3d
-        , triangle2d
-        , triangle3d
         , boundingBox2d
         , boundingBox3d
-        , polyline2d
-        , polyline3d
-        , polygon2d
         , circle2d
         , circle3d
-        , arc2d
-        , arc3d
-        , quadraticSpline2d
-        , quadraticSpline3d
         , cubicSpline2d
         , cubicSpline3d
+        , direction2d
+        , direction3d
+        , frame2d
+        , frame3d
+        , lineSegment2d
+        , lineSegment3d
+        , plane3d
+        , point2d
+        , point3d
+        , polygon2d
+        , polyline2d
+        , polyline3d
+        , quadraticSpline2d
+        , quadraticSpline3d
+        , sketchPlane3d
+        , triangle2d
+        , triangle3d
+        , vector2d
+        , vector3d
         )
 
 {-| JSON encoders for the core OpenSolid types.
@@ -56,36 +56,36 @@ module OpenSolid.Geometry.Encode
 -}
 
 import Json.Encode as Encode exposing (Value)
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Vector2d as Vector2d
-import OpenSolid.Vector3d as Vector3d
-import OpenSolid.Direction2d as Direction2d
-import OpenSolid.Direction3d as Direction3d
-import OpenSolid.Point2d as Point2d
-import OpenSolid.Point3d as Point3d
-import OpenSolid.Axis2d as Axis2d
-import OpenSolid.Axis3d as Axis3d
-import OpenSolid.Plane3d as Plane3d
-import OpenSolid.Frame2d as Frame2d
-import OpenSolid.Frame3d as Frame3d
-import OpenSolid.SketchPlane3d as SketchPlane3d
-import OpenSolid.LineSegment2d as LineSegment2d
-import OpenSolid.LineSegment3d as LineSegment3d
-import OpenSolid.Triangle2d as Triangle2d
-import OpenSolid.Triangle3d as Triangle3d
-import OpenSolid.BoundingBox2d as BoundingBox2d
-import OpenSolid.BoundingBox3d as BoundingBox3d
-import OpenSolid.Polyline2d as Polyline2d
-import OpenSolid.Polyline3d as Polyline3d
-import OpenSolid.Polygon2d as Polygon2d
-import OpenSolid.Circle2d as Circle2d
-import OpenSolid.Circle3d as Circle3d
 import OpenSolid.Arc2d as Arc2d
 import OpenSolid.Arc3d as Arc3d
-import OpenSolid.QuadraticSpline2d as QuadraticSpline2d
-import OpenSolid.QuadraticSpline3d as QuadraticSpline3d
+import OpenSolid.Axis2d as Axis2d
+import OpenSolid.Axis3d as Axis3d
+import OpenSolid.BoundingBox2d as BoundingBox2d
+import OpenSolid.BoundingBox3d as BoundingBox3d
+import OpenSolid.Circle2d as Circle2d
+import OpenSolid.Circle3d as Circle3d
 import OpenSolid.CubicSpline2d as CubicSpline2d
 import OpenSolid.CubicSpline3d as CubicSpline3d
+import OpenSolid.Direction2d as Direction2d
+import OpenSolid.Direction3d as Direction3d
+import OpenSolid.Frame2d as Frame2d
+import OpenSolid.Frame3d as Frame3d
+import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.LineSegment2d as LineSegment2d
+import OpenSolid.LineSegment3d as LineSegment3d
+import OpenSolid.Plane3d as Plane3d
+import OpenSolid.Point2d as Point2d
+import OpenSolid.Point3d as Point3d
+import OpenSolid.Polygon2d as Polygon2d
+import OpenSolid.Polyline2d as Polyline2d
+import OpenSolid.Polyline3d as Polyline3d
+import OpenSolid.QuadraticSpline2d as QuadraticSpline2d
+import OpenSolid.QuadraticSpline3d as QuadraticSpline3d
+import OpenSolid.SketchPlane3d as SketchPlane3d
+import OpenSolid.Triangle2d as Triangle2d
+import OpenSolid.Triangle3d as Triangle3d
+import OpenSolid.Vector2d as Vector2d
+import OpenSolid.Vector3d as Vector3d
 
 
 {-| Encode a `Vector2d` as a list of two floating-point components.
@@ -96,7 +96,7 @@ vector2d vector =
         ( x, y ) =
             Vector2d.components vector
     in
-        Encode.list [ Encode.float x, Encode.float y ]
+    Encode.list [ Encode.float x, Encode.float y ]
 
 
 {-| Encode a `Vector3d` as a list of three floating-point components.
@@ -107,7 +107,7 @@ vector3d vector =
         ( x, y, z ) =
             Vector3d.components vector
     in
-        Encode.list [ Encode.float x, Encode.float y, Encode.float z ]
+    Encode.list [ Encode.float x, Encode.float y, Encode.float z ]
 
 
 {-| Encode a `Direction2d` as a list of two floating-point components.
@@ -118,7 +118,7 @@ direction2d direction =
         ( x, y ) =
             Direction2d.components direction
     in
-        Encode.list [ Encode.float x, Encode.float y ]
+    Encode.list [ Encode.float x, Encode.float y ]
 
 
 {-| Encode a `Direction3d` as as a list of three floating-point components.
@@ -129,7 +129,7 @@ direction3d direction =
         ( x, y, z ) =
             Direction3d.components direction
     in
-        Encode.list [ Encode.float x, Encode.float y, Encode.float z ]
+    Encode.list [ Encode.float x, Encode.float y, Encode.float z ]
 
 
 {-| Encode a `Point2d` as as a list of two floating-point coordinates.
@@ -140,7 +140,7 @@ point2d point =
         ( x, y ) =
             Point2d.coordinates point
     in
-        Encode.list [ Encode.float x, Encode.float y ]
+    Encode.list [ Encode.float x, Encode.float y ]
 
 
 {-| Encode a `Point3d` as as a list of three floating-point coordinates.
@@ -151,7 +151,7 @@ point3d point =
         ( x, y, z ) =
             Point3d.coordinates point
     in
-        Encode.list [ Encode.float x, Encode.float y, Encode.float z ]
+    Encode.list [ Encode.float x, Encode.float y, Encode.float z ]
 
 
 {-| Encode an `Axis2d` as an object with `originPoint` and `direction` fields.
@@ -230,7 +230,7 @@ lineSegment2d lineSegment =
         ( startPoint, endPoint ) =
             LineSegment2d.endpoints lineSegment
     in
-        Encode.list [ point2d startPoint, point2d endPoint ]
+    Encode.list [ point2d startPoint, point2d endPoint ]
 
 
 {-| Encode a `LineSegment3d` as a list of two endpoints.
@@ -241,7 +241,7 @@ lineSegment3d lineSegment =
         ( startPoint, endPoint ) =
             LineSegment3d.endpoints lineSegment
     in
-        Encode.list [ point3d startPoint, point3d endPoint ]
+    Encode.list [ point3d startPoint, point3d endPoint ]
 
 
 {-| Encode a `Triangle2d` as a list of three vertices.
@@ -252,7 +252,7 @@ triangle2d triangle =
         ( v1, v2, v3 ) =
             Triangle2d.vertices triangle
     in
-        Encode.list [ point2d v1, point2d v2, point2d v3 ]
+    Encode.list [ point2d v1, point2d v2, point2d v3 ]
 
 
 {-| Encode a `Triangle3d` as a list of three vertices.
@@ -263,7 +263,7 @@ triangle3d triangle =
         ( v1, v2, v3 ) =
             Triangle3d.vertices triangle
     in
-        Encode.list [ point3d v1, point3d v2, point3d v3 ]
+    Encode.list [ point3d v1, point3d v2, point3d v3 ]
 
 
 {-| Encode a `BoundingBox2d` as an object with `minX`, `maxX`, `minY` and `maxY`
@@ -369,7 +369,7 @@ quadraticSpline2d spline =
         ( p1, p2, p3 ) =
             QuadraticSpline2d.controlPoints spline
     in
-        Encode.list [ point2d p1, point2d p2, point2d p3 ]
+    Encode.list [ point2d p1, point2d p2, point2d p3 ]
 
 
 {-| Encode a `QuadraticSpline3d` as a list of three control points.
@@ -380,7 +380,7 @@ quadraticSpline3d spline =
         ( p1, p2, p3 ) =
             QuadraticSpline3d.controlPoints spline
     in
-        Encode.list [ point3d p1, point3d p2, point3d p3 ]
+    Encode.list [ point3d p1, point3d p2, point3d p3 ]
 
 
 {-| Encode a `CubicSpline2d` as a list of four control points.
@@ -391,7 +391,7 @@ cubicSpline2d spline =
         ( p1, p2, p3, p4 ) =
             CubicSpline2d.controlPoints spline
     in
-        Encode.list [ point2d p1, point2d p2, point2d p3, point2d p4 ]
+    Encode.list [ point2d p1, point2d p2, point2d p3, point2d p4 ]
 
 
 {-| Encode a `CubicSpline3d` as a list of four control points.
@@ -402,4 +402,4 @@ cubicSpline3d spline =
         ( p1, p2, p3, p4 ) =
             CubicSpline3d.controlPoints spline
     in
-        Encode.list [ point3d p1, point3d p2, point3d p3, point3d p4 ]
+    Encode.list [ point3d p1, point3d p2, point3d p3, point3d p4 ]

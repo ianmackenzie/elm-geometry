@@ -12,22 +12,22 @@
 
 module OpenSolid.Triangle2d
     exposing
-        ( vertices
-        , edges
+        ( area
+        , boundingBox
         , centroid
-        , contains
-        , area
-        , counterclockwiseArea
         , clockwiseArea
-        , scaleAbout
-        , rotateAround
-        , translateBy
-        , mirrorAcross
+        , contains
+        , counterclockwiseArea
+        , edges
         , map
-        , relativeTo
+        , mirrorAcross
         , placeIn
         , placeOnto
-        , boundingBox
+        , relativeTo
+        , rotateAround
+        , scaleAbout
+        , translateBy
+        , vertices
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/triangle2d.svg" alt="Triangle2d" width="160">
@@ -92,8 +92,8 @@ different coordinate frames.
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Point2d as Point2d
+import OpenSolid.Vector2d as Vector2d
 
 
 {-| Get the vertices of a triangle.
@@ -130,10 +130,10 @@ edges triangle =
         ( p1, p2, p3 ) =
             vertices triangle
     in
-        ( LineSegment2d ( p1, p2 )
-        , LineSegment2d ( p2, p3 )
-        , LineSegment2d ( p3, p1 )
-        )
+    ( LineSegment2d ( p1, p2 )
+    , LineSegment2d ( p2, p3 )
+    , LineSegment2d ( p3, p1 )
+    )
 
 
 {-| Get the centroid (center of mass) of a triangle.
@@ -157,7 +157,7 @@ centroid triangle =
         displacement =
             Vector2d.scaleBy (1.0 / 3.0) (Vector2d.sum firstVector secondVector)
     in
-        Point2d.translateBy displacement p1
+    Point2d.translateBy displacement p1
 
 
 {-| Check whether a given point is inside a given triangle.
@@ -189,7 +189,7 @@ contains point triangle =
                 segmentVector =
                     Point2d.vectorFrom startVertex endVertex
             in
-                Vector2d.crossProduct segmentVector vectorToPoint
+            Vector2d.crossProduct segmentVector vectorToPoint
 
         firstProduct =
             crossProduct p1 p2
@@ -200,8 +200,8 @@ contains point triangle =
         thirdProduct =
             crossProduct p3 p1
     in
-        (firstProduct >= 0 && secondProduct >= 0 && thirdProduct >= 0)
-            || (firstProduct <= 0 && secondProduct <= 0 && thirdProduct <= 0)
+    (firstProduct >= 0 && secondProduct >= 0 && thirdProduct >= 0)
+        || (firstProduct <= 0 && secondProduct <= 0 && thirdProduct <= 0)
 
 
 {-| Get the area of a triangle. The result will always be positive regardless of
@@ -236,7 +236,7 @@ counterclockwiseArea triangle =
         secondVector =
             Point2d.vectorFrom p1 p3
     in
-        0.5 * Vector2d.crossProduct firstVector secondVector
+    0.5 * Vector2d.crossProduct firstVector secondVector
 
 
 {-| Get the signed area of a triangle, returning a positive value if the
@@ -340,7 +340,7 @@ map function triangle =
         ( p1, p2, p3 ) =
             vertices triangle
     in
-        Triangle2d ( function p1, function p2, function p3 )
+    Triangle2d ( function p1, function p2, function p3 )
 
 
 {-| Take a triangle defined in global coordinates, and return it expressed
@@ -398,12 +398,12 @@ placeOnto sketchPlane =
         place =
             Point2d.placeOnto sketchPlane
     in
-        \triangle ->
-            let
-                ( p1, p2, p3 ) =
-                    vertices triangle
-            in
-                Triangle3d ( place p1, place p2, place p3 )
+    \triangle ->
+        let
+            ( p1, p2, p3 ) =
+                vertices triangle
+        in
+        Triangle3d ( place p1, place p2, place p3 )
 
 
 {-| Get the minimal bounding box containing a given triangle.
@@ -432,9 +432,9 @@ boundingBox triangle =
         ( x3, y3 ) =
             Point2d.coordinates p3
     in
-        BoundingBox2d
-            { minX = min x1 (min x2 x3)
-            , maxX = max x1 (max x2 x3)
-            , minY = min y1 (min y2 y3)
-            , maxY = max y1 (max y2 y3)
-            }
+    BoundingBox2d
+        { minX = min x1 (min x2 x3)
+        , maxX = max x1 (max x2 x3)
+        , minY = min y1 (min y2 y3)
+        , maxY = max y1 (max y2 y3)
+        }

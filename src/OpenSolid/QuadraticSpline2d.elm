@@ -2,19 +2,19 @@ module OpenSolid.QuadraticSpline2d
     exposing
         ( bezier
         , controlPoints
-        , startPoint
-        , endPoint
-        , startDerivative
-        , endDerivative
-        , point
         , derivative
-        , scaleAbout
-        , rotateAround
-        , translateBy
+        , endDerivative
+        , endPoint
         , mirrorAcross
-        , relativeTo
         , placeIn
         , placeOnto
+        , point
+        , relativeTo
+        , rotateAround
+        , scaleAbout
+        , startDerivative
+        , startPoint
+        , translateBy
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/quadraticSpline2d.svg" alt="QuadraticSpline2d" width="160">
@@ -142,7 +142,7 @@ startDerivative spline =
         ( p1, p2, _ ) =
             controlPoints spline
     in
-        Point2d.vectorFrom p1 p2 |> Vector2d.scaleBy 2
+    Point2d.vectorFrom p1 p2 |> Vector2d.scaleBy 2
 
 
 {-| Get the end derivative of a spline. This is equal to twice the vector from
@@ -158,7 +158,7 @@ endDerivative spline =
         ( _, p2, p3 ) =
             controlPoints spline
     in
-        Point2d.vectorFrom p2 p3 |> Vector2d.scaleBy 2
+    Point2d.vectorFrom p2 p3 |> Vector2d.scaleBy 2
 
 
 {-| Get a point along a spline, based on a parameter that ranges from 0 to 1. A
@@ -187,7 +187,7 @@ point spline t =
         q2 =
             Point2d.interpolateFrom p2 p3 t
     in
-        Point2d.interpolateFrom q1 q2 t
+    Point2d.interpolateFrom q1 q2 t
 
 
 {-| Get the deriative value at a point along a spline, based on a parameter that
@@ -218,7 +218,7 @@ derivative spline =
         v2 =
             Point2d.vectorFrom p2 p3
     in
-        \t -> Vector2d.interpolateFrom v1 v2 t |> Vector2d.scaleBy 2
+    \t -> Vector2d.interpolateFrom v1 v2 t |> Vector2d.scaleBy 2
 
 
 {-| Scale a spline about the given center point by the given scale.
@@ -291,7 +291,7 @@ mapControlPoints function spline =
         ( p1, p2, p3 ) =
             controlPoints spline
     in
-        QuadraticSpline2d ( function p1, function p2, function p3 )
+    QuadraticSpline2d ( function p1, function p2, function p3 )
 
 
 {-| Take a spline defined in global coordinates, and return it expressed in
@@ -352,4 +352,4 @@ placeOnto sketchPlane spline =
         place =
             Point2d.placeOnto sketchPlane
     in
-        QuadraticSpline3d ( place p1, place p2, place p3 )
+    QuadraticSpline3d ( place p1, place p2, place p3 )

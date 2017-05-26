@@ -12,18 +12,18 @@
 
 module OpenSolid.Axis2d
     exposing
-        ( x
-        , y
-        , originPoint
-        , direction
+        ( direction
         , flip
-        , moveTo
-        , rotateAround
-        , translateBy
         , mirrorAcross
-        , relativeTo
+        , moveTo
+        , originPoint
         , placeIn
         , placeOnto
+        , relativeTo
+        , rotateAround
+        , translateBy
+        , x
+        , y
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/axis2d.svg" alt="Axis2d" width="160">
@@ -74,9 +74,9 @@ different coordinate frames.
 
 -}
 
+import OpenSolid.Direction2d as Direction2d
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point2d as Point2d
-import OpenSolid.Direction2d as Direction2d
 
 
 {-| The global X axis.
@@ -183,11 +183,11 @@ rotateAround centerPoint angle =
         rotateDirection =
             Direction2d.rotateBy angle
     in
-        \axis ->
-            Axis2d
-                { originPoint = rotatePoint (originPoint axis)
-                , direction = rotateDirection (direction axis)
-                }
+    \axis ->
+        Axis2d
+            { originPoint = rotatePoint (originPoint axis)
+            , direction = rotateDirection (direction axis)
+            }
 
 
 {-| Translate an axis by a given displacement. Applies the given displacement to
@@ -230,11 +230,11 @@ mirrorAcross otherAxis =
         mirrorDirection =
             Direction2d.mirrorAcross otherAxis
     in
-        \axis ->
-            Axis2d
-                { originPoint = mirrorPoint (originPoint axis)
-                , direction = mirrorDirection (direction axis)
-                }
+    \axis ->
+        Axis2d
+            { originPoint = mirrorPoint (originPoint axis)
+            , direction = mirrorDirection (direction axis)
+            }
 
 
 {-| Take an axis defined in global coordinates, and return it expressed in local
@@ -259,11 +259,11 @@ relativeTo frame =
         relativeDirection =
             Direction2d.relativeTo frame
     in
-        \axis ->
-            Axis2d
-                { originPoint = relativePoint (originPoint axis)
-                , direction = relativeDirection (direction axis)
-                }
+    \axis ->
+        Axis2d
+            { originPoint = relativePoint (originPoint axis)
+            , direction = relativeDirection (direction axis)
+            }
 
 
 {-| Take an axis defined in local coordinates relative to a given reference
@@ -288,11 +288,11 @@ placeIn frame =
         placeDirection =
             Direction2d.placeIn frame
     in
-        \axis ->
-            Axis2d
-                { originPoint = placePoint (originPoint axis)
-                , direction = placeDirection (direction axis)
-                }
+    \axis ->
+        Axis2d
+            { originPoint = placePoint (originPoint axis)
+            , direction = placeDirection (direction axis)
+            }
 
 
 {-| Take an axis defined in 2D coordinates within a particular sketch plane and
@@ -320,8 +320,8 @@ placeOnto sketchPlane =
         placeDirection =
             Direction2d.placeOnto sketchPlane
     in
-        \axis ->
-            Axis3d
-                { originPoint = placePoint (originPoint axis)
-                , direction = placeDirection (direction axis)
-                }
+    \axis ->
+        Axis3d
+            { originPoint = placePoint (originPoint axis)
+            , direction = placeDirection (direction axis)
+            }

@@ -12,32 +12,32 @@
 
 module OpenSolid.Point2d
     exposing
-        ( origin
-        , polar
-        , midpoint
-        , interpolateFrom
-        , interpolate
-        , along
-        , in_
+        ( along
         , coordinates
-        , xCoordinate
-        , yCoordinate
-        , equalWithin
-        , vectorFrom
         , directionFrom
-        , distanceFrom
-        , squaredDistanceFrom
         , distanceAlong
-        , signedDistanceFrom
-        , scaleAbout
-        , rotateAround
-        , translateBy
+        , distanceFrom
+        , equalWithin
+        , hull
+        , in_
+        , interpolate
+        , interpolateFrom
+        , midpoint
         , mirrorAcross
-        , projectOnto
-        , relativeTo
+        , origin
         , placeIn
         , placeOnto
-        , hull
+        , polar
+        , projectOnto
+        , relativeTo
+        , rotateAround
+        , scaleAbout
+        , signedDistanceFrom
+        , squaredDistanceFrom
+        , translateBy
+        , vectorFrom
+        , xCoordinate
+        , yCoordinate
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/point2d.svg" alt="Point2d" width="160">
@@ -106,15 +106,15 @@ different coordinate frames.
 
 -}
 
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Vector2d as Vector2d
-import OpenSolid.Direction2d as Direction2d
-import OpenSolid.Scalar as Scalar
 import OpenSolid.Bootstrap.Axis2d as Axis2d
-import OpenSolid.Bootstrap.Frame2d as Frame2d
 import OpenSolid.Bootstrap.Direction3d as Direction3d
+import OpenSolid.Bootstrap.Frame2d as Frame2d
 import OpenSolid.Bootstrap.Point3d as Point3d
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
+import OpenSolid.Direction2d as Direction2d
+import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Scalar as Scalar
+import OpenSolid.Vector2d as Vector2d
 
 
 addTo : Point2d -> Vector2d -> Point2d
@@ -213,10 +213,10 @@ interpolateFrom p1 p2 t =
         ( x2, y2 ) =
             coordinates p2
     in
-        Point2d
-            ( Scalar.interpolateFrom x1 x2 t
-            , Scalar.interpolateFrom y1 y2 t
-            )
+    Point2d
+        ( Scalar.interpolateFrom x1 x2 t
+        , Scalar.interpolateFrom y1 y2 t
+        )
 
 
 {-| DEPRECATED: Alias for `interpolateFrom`, kept for compatibility. Use
@@ -358,7 +358,7 @@ vectorFrom firstPoint secondPoint =
         ( x2, y2 ) =
             coordinates secondPoint
     in
-        Vector2d ( x2 - x1, y2 - y1 )
+    Vector2d ( x2 - x1, y2 - y1 )
 
 
 {-| Attempt to find the direction from the first point to the second. If the two
@@ -511,7 +511,7 @@ signedDistanceFrom axis point =
         displacementVector =
             vectorFrom (Axis2d.originPoint axis) point
     in
-        Vector2d.crossProduct directionVector displacementVector
+    Vector2d.crossProduct directionVector displacementVector
 
 
 {-| Perform a uniform scaling about the given center point. The center point is
@@ -584,7 +584,7 @@ translateBy vector point =
         ( px, py ) =
             coordinates point
     in
-        Point2d ( px + vx, py + vy )
+    Point2d ( px + vx, py + vy )
 
 
 {-| Mirror a point across an axis. The result will be the same distance from the
@@ -712,12 +712,12 @@ placeOnto sketchPlane =
         ( vx, vy, vz ) =
             Direction3d.components (SketchPlane3d.yDirection sketchPlane)
     in
-        \(Point2d ( x, y )) ->
-            Point3d
-                ( x0 + x * ux + y * vx
-                , y0 + x * uy + y * vy
-                , z0 + x * uz + y * vz
-                )
+    \(Point2d ( x, y )) ->
+        Point3d
+            ( x0 + x * ux + y * vx
+            , y0 + x * uy + y * vy
+            , z0 + x * uz + y * vz
+            )
 
 
 {-| Construct a bounding box containing both of the given points.
@@ -746,9 +746,9 @@ hull firstPoint secondPoint =
         ( x2, y2 ) =
             coordinates secondPoint
     in
-        BoundingBox2d
-            { minX = min x1 x2
-            , maxX = max x1 x2
-            , minY = min y1 y2
-            , maxY = max y1 y2
-            }
+    BoundingBox2d
+        { minX = min x1 x2
+        , maxX = max x1 x2
+        , minY = min y1 y2
+        , maxY = max y1 y2
+        }

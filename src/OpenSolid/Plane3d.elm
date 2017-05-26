@@ -12,22 +12,22 @@
 
 module OpenSolid.Plane3d
     exposing
-        ( xy
+        ( flip
+        , mirrorAcross
+        , moveTo
+        , normalAxis
+        , normalDirection
+        , offsetBy
+        , originPoint
+        , placeIn
+        , relativeTo
+        , rotateAround
+        , sketchPlane
+        , throughPoints
+        , translateBy
+        , xy
         , yz
         , zx
-        , throughPoints
-        , originPoint
-        , normalDirection
-        , sketchPlane
-        , offsetBy
-        , flip
-        , normalAxis
-        , rotateAround
-        , translateBy
-        , moveTo
-        , mirrorAcross
-        , relativeTo
-        , placeIn
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/plane3d.svg" alt="Plane3d" width="160">
@@ -80,11 +80,11 @@ Planes can by constructed by passing a record with `originPoint` and
 
 -}
 
+import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
-import OpenSolid.Direction3d as Direction3d
-import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Triangle3d as Triangle3d
+import OpenSolid.Vector3d as Vector3d
 
 
 {-| The global XY plane, centered at the origin with a normal in the positive Z
@@ -249,11 +249,11 @@ sketchPlane plane =
         ( xDirection, yDirection ) =
             Direction3d.perpendicularBasis normal
     in
-        SketchPlane3d
-            { originPoint = originPoint plane
-            , xDirection = xDirection
-            , yDirection = yDirection
-            }
+    SketchPlane3d
+        { originPoint = originPoint plane
+        , xDirection = xDirection
+        , yDirection = yDirection
+        }
 
 
 {-| Shift a plane in its own normal direction by the given (signed) distance.
@@ -308,11 +308,11 @@ rotateAround axis angle =
         rotateDirection =
             Direction3d.rotateAround axis angle
     in
-        \plane ->
-            Plane3d
-                { originPoint = rotatePoint (originPoint plane)
-                , normalDirection = rotateDirection (normalDirection plane)
-                }
+    \plane ->
+        Plane3d
+            { originPoint = rotatePoint (originPoint plane)
+            , normalDirection = rotateDirection (normalDirection plane)
+            }
 
 
 {-| Translate a plane by a given displacement. Applies the given displacement to
@@ -388,11 +388,11 @@ mirrorAcross otherPlane =
         mirrorDirection =
             Direction3d.mirrorAcross otherPlane
     in
-        \plane ->
-            Plane3d
-                { originPoint = mirrorPoint (originPoint plane)
-                , normalDirection = mirrorDirection (normalDirection plane)
-                }
+    \plane ->
+        Plane3d
+            { originPoint = mirrorPoint (originPoint plane)
+            , normalDirection = mirrorDirection (normalDirection plane)
+            }
 
 
 {-| Take a plane defined in global coordinates, and return it expressed in local
@@ -423,11 +423,11 @@ relativeTo frame =
         relativeDirection =
             Direction3d.relativeTo frame
     in
-        \plane ->
-            Plane3d
-                { originPoint = relativePoint (originPoint plane)
-                , normalDirection = relativeDirection (normalDirection plane)
-                }
+    \plane ->
+        Plane3d
+            { originPoint = relativePoint (originPoint plane)
+            , normalDirection = relativeDirection (normalDirection plane)
+            }
 
 
 {-| Take a plane defined in local coordinates relative to a given reference
@@ -458,8 +458,8 @@ placeIn frame =
         placeDirection =
             Direction3d.placeIn frame
     in
-        \plane ->
-            Plane3d
-                { originPoint = placePoint (originPoint plane)
-                , normalDirection = placeDirection (normalDirection plane)
-                }
+    \plane ->
+        Plane3d
+            { originPoint = placePoint (originPoint plane)
+            , normalDirection = placeDirection (normalDirection plane)
+            }

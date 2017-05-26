@@ -1,7 +1,7 @@
 module OpenSolid.Bootstrap.Plane3d
     exposing
-        ( originPoint
-        , normalDirection
+        ( normalDirection
+        , originPoint
         )
 
 import OpenSolid.Geometry.Types exposing (..)

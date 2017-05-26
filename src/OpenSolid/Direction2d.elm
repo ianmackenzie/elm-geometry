@@ -12,30 +12,30 @@
 
 module OpenSolid.Direction2d
     exposing
-        ( x
-        , y
-        , positiveX
-        , negativeX
-        , positiveY
-        , negativeY
-        , perpendicularTo
-        , orthogonalize
-        , fromAngle
-        , toAngle
-        , angleFrom
-        , components
-        , xComponent
-        , yComponent
+        ( angleFrom
         , componentIn
+        , components
         , equalWithin
-        , toVector
         , flip
-        , scaleBy
-        , rotateBy
+        , fromAngle
         , mirrorAcross
-        , relativeTo
+        , negativeX
+        , negativeY
+        , orthogonalize
+        , perpendicularTo
         , placeIn
         , placeOnto
+        , positiveX
+        , positiveY
+        , relativeTo
+        , rotateBy
+        , scaleBy
+        , toAngle
+        , toVector
+        , x
+        , xComponent
+        , y
+        , yComponent
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/direction2d.svg" alt="Direction2d" width="160">
@@ -135,11 +135,11 @@ For the examples, assume the following frames have been defined:
 
 -}
 
+import OpenSolid.Bootstrap.Direction2d as Bootstrap
+import OpenSolid.Bootstrap.Direction3d as Direction3d
+import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
-import OpenSolid.Bootstrap.Direction2d as Bootstrap
-import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
-import OpenSolid.Bootstrap.Direction3d as Direction3d
 
 
 toDirection : Vector2d -> Direction2d
@@ -278,7 +278,7 @@ toAngle direction =
         ( x, y ) =
             components direction
     in
-        atan2 y x
+    atan2 y x
 
 
 {-| Find the counterclockwise angle in radians from the first direction to the
@@ -303,8 +303,8 @@ angleFrom firstDirection secondDirection =
         secondVector =
             toVector secondDirection
     in
-        atan2 (Vector2d.crossProduct firstVector secondVector)
-            (Vector2d.dotProduct firstVector secondVector)
+    atan2 (Vector2d.crossProduct firstVector secondVector)
+        (Vector2d.dotProduct firstVector secondVector)
 
 
 {-| Get the components of a direction as a tuple (the components it would have
@@ -539,8 +539,8 @@ placeOnto sketchPlane direction =
         ( vx, vy, vz ) =
             Direction3d.components (SketchPlane3d.yDirection sketchPlane)
     in
-        Direction3d
-            ( x * ux + y * vx
-            , x * uy + y * vy
-            , x * uz + y * vz
-            )
+    Direction3d
+        ( x * ux + y * vx
+        , x * uy + y * vy
+        , x * uz + y * vz
+        )

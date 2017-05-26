@@ -12,34 +12,34 @@
 
 module OpenSolid.Vector2d
     exposing
-        ( zero
-        , polar
-        , in_
-        , perpendicularTo
-        , interpolateFrom
+        ( componentIn
         , components
-        , xComponent
-        , yComponent
-        , componentIn
-        , equalWithin
-        , length
-        , squaredLength
-        , direction
-        , lengthAndDirection
-        , orthonormalize
-        , sum
-        , difference
-        , dotProduct
         , crossProduct
+        , difference
+        , direction
+        , dotProduct
+        , equalWithin
         , flip
-        , scaleBy
-        , rotateBy
+        , in_
+        , interpolateFrom
+        , length
+        , lengthAndDirection
         , mirrorAcross
-        , projectionIn
-        , projectOnto
-        , relativeTo
+        , orthonormalize
+        , perpendicularTo
         , placeIn
         , placeOnto
+        , polar
+        , projectOnto
+        , projectionIn
+        , relativeTo
+        , rotateBy
+        , scaleBy
+        , squaredLength
+        , sum
+        , xComponent
+        , yComponent
+        , zero
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/vector2d.svg" alt="Vector2d" width="160">
@@ -133,13 +133,13 @@ For the examples, assume the following frame has been defined:
 
 -}
 
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Scalar as Scalar
-import OpenSolid.Bootstrap.Direction2d as Direction2d
 import OpenSolid.Bootstrap.Axis2d as Axis2d
+import OpenSolid.Bootstrap.Direction2d as Direction2d
+import OpenSolid.Bootstrap.Direction3d as Direction3d
 import OpenSolid.Bootstrap.Frame2d as Frame2d
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
-import OpenSolid.Bootstrap.Direction3d as Direction3d
+import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Scalar as Scalar
 
 
 {-| The zero vector.
@@ -186,7 +186,7 @@ in_ direction length =
         ( dx, dy ) =
             Direction2d.components direction
     in
-        Vector2d ( length * dx, length * dy )
+    Vector2d ( length * dx, length * dy )
 
 
 {-| Construct a vector perpendicular to the given vector, by rotating the given
@@ -212,7 +212,7 @@ perpendicularTo vector =
         ( x, y ) =
             components vector
     in
-        Vector2d ( -y, x )
+    Vector2d ( -y, x )
 
 
 {-| Construct a vector by interpolating from the first given vector to the
@@ -257,10 +257,10 @@ interpolateFrom v1 v2 t =
         ( x2, y2 ) =
             components v2
     in
-        Vector2d
-            ( Scalar.interpolateFrom x1 x2 t
-            , Scalar.interpolateFrom y1 y2 t
-            )
+    Vector2d
+        ( Scalar.interpolateFrom x1 x2 t
+        , Scalar.interpolateFrom y1 y2 t
+        )
 
 
 {-| Extract the components of a vector.
@@ -332,7 +332,7 @@ componentIn direction vector =
         ( vx, vy ) =
             components vector
     in
-        vx * dx + vy * dy
+    vx * dx + vy * dy
 
 
 {-| Compare two vectors within a tolerance. Returns true if the difference
@@ -387,7 +387,7 @@ squaredLength vector =
         ( x, y ) =
             components vector
     in
-        x * x + y * y
+    x * x + y * y
 
 
 {-| Attempt to find the direction of a vector. In the case of a zero vector,
@@ -409,7 +409,7 @@ direction vector =
             normalizedVector =
                 scaleBy (1 / length vector) vector
         in
-            Just (Direction2d (components normalizedVector))
+        Just (Direction2d (components normalizedVector))
 
 
 {-| Attempt to find the length and direction of a vector. In the case of a zero
@@ -431,17 +431,17 @@ lengthAndDirection vector =
         vectorLength =
             length vector
     in
-        if vectorLength == 0.0 then
-            Nothing
-        else
-            let
-                normalizedVector =
-                    scaleBy (1 / vectorLength) vector
+    if vectorLength == 0.0 then
+        Nothing
+    else
+        let
+            normalizedVector =
+                scaleBy (1 / vectorLength) vector
 
-                vectorDirection =
-                    Direction2d (components normalizedVector)
-            in
-                Just ( vectorLength, vectorDirection )
+            vectorDirection =
+                Direction2d (components normalizedVector)
+        in
+        Just ( vectorLength, vectorDirection )
 
 
 {-| Attempt to form a pair of perpendicular directions from the two given
@@ -485,12 +485,12 @@ orthonormalize ( xVector, xyVector ) =
                     perpendicularComponent =
                         componentIn yDirection xyVector
                 in
-                    if perpendicularComponent > 0.0 then
-                        Just ( xDirection, yDirection )
-                    else if perpendicularComponent < 0.0 then
-                        Just ( xDirection, Direction2d.flip yDirection )
-                    else
-                        Nothing
+                if perpendicularComponent > 0.0 then
+                    Just ( xDirection, yDirection )
+                else if perpendicularComponent < 0.0 then
+                    Just ( xDirection, Direction2d.flip yDirection )
+                else
+                    Nothing
             )
 
 
@@ -515,7 +515,7 @@ sum firstVector secondVector =
         ( x2, y2 ) =
             components secondVector
     in
-        Vector2d ( x1 + x2, y1 + y2 )
+    Vector2d ( x1 + x2, y1 + y2 )
 
 
 {-| Find the difference between two vectors (the first vector minus the second).
@@ -539,7 +539,7 @@ difference firstVector secondVector =
         ( x2, y2 ) =
             components secondVector
     in
-        Vector2d ( x1 - x2, y1 - y2 )
+    Vector2d ( x1 - x2, y1 - y2 )
 
 
 {-| Find the dot product of two vectors.
@@ -563,7 +563,7 @@ dotProduct firstVector secondVector =
         ( x2, y2 ) =
             components secondVector
     in
-        x1 * x2 + y1 * y2
+    x1 * x2 + y1 * y2
 
 
 {-| Find the scalar 'cross product' of two vectors in 2D. This is defined as
@@ -615,7 +615,7 @@ crossProduct firstVector secondVector =
         ( x2, y2 ) =
             components secondVector
     in
-        x1 * y2 - y1 * x2
+    x1 * y2 - y1 * x2
 
 
 {-| Reverse the direction of a vector, negating its components.
@@ -630,7 +630,7 @@ flip vector =
         ( x, y ) =
             components vector
     in
-        Vector2d ( -x, -y )
+    Vector2d ( -x, -y )
 
 
 {-| Scale the length of a vector by a given scale.
@@ -645,7 +645,7 @@ scaleBy scale vector =
         ( x, y ) =
             components vector
     in
-        Vector2d ( x * scale, y * scale )
+    Vector2d ( x * scale, y * scale )
 
 
 {-| Rotate a vector counterclockwise by a given angle (in radians).
@@ -666,8 +666,8 @@ rotateBy angle =
         sine =
             sin angle
     in
-        \(Vector2d ( x, y )) ->
-            Vector2d ( x * cosine - y * sine, y * cosine + x * sine )
+    \(Vector2d ( x, y )) ->
+        Vector2d ( x * cosine - y * sine, y * cosine + x * sine )
 
 
 {-| Mirror a vector across a given axis.
@@ -703,7 +703,7 @@ mirrorAcross axis =
         c =
             1 - 2 * dx * dx
     in
-        \(Vector2d ( vx, vy )) -> Vector2d ( a * vx + b * vy, c * vy + b * vx )
+    \(Vector2d ( vx, vy )) -> Vector2d ( a * vx + b * vy, c * vy + b * vx )
 
 
 {-| Find the projection of a vector in a particular direction. Conceptually,
@@ -773,7 +773,7 @@ placeIn frame =
         ( x2, y2 ) =
             Direction2d.components (Frame2d.yDirection frame)
     in
-        \(Vector2d ( x, y )) -> Vector2d ( x1 * x + x2 * y, y1 * x + y2 * y )
+    \(Vector2d ( x, y )) -> Vector2d ( x1 * x + x2 * y, y1 * x + y2 * y )
 
 
 {-| Take a vector defined in 2D coordinates within a particular sketch plane and
@@ -813,8 +813,8 @@ placeOnto sketchPlane vector =
         ( x, y ) =
             components vector
     in
-        Vector3d
-            ( x * ux + y * vx
-            , x * uy + y * vy
-            , x * uz + y * vz
-            )
+    Vector3d
+        ( x * ux + y * vx
+        , x * uy + y * vy
+        , x * uz + y * vz
+        )

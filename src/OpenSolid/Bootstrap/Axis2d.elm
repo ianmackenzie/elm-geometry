@@ -1,7 +1,7 @@
 module OpenSolid.Bootstrap.Axis2d
     exposing
-        ( originPoint
-        , direction
+        ( direction
+        , originPoint
         )
 
 import OpenSolid.Geometry.Types exposing (..)

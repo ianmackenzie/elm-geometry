@@ -13,27 +13,27 @@
 module OpenSolid.LineSegment3d
     exposing
         ( along
-        , endpoints
-        , startPoint
+        , boundingBox
+        , direction
         , endPoint
-        , reverse
-        , midpoint
+        , endpoints
         , interpolate
         , length
-        , squaredLength
-        , direction
-        , normalDirection
-        , vector
-        , scaleAbout
-        , rotateAround
-        , translateBy
-        , mirrorAcross
-        , projectOnto
         , map
-        , relativeTo
+        , midpoint
+        , mirrorAcross
+        , normalDirection
         , placeIn
         , projectInto
-        , boundingBox
+        , projectOnto
+        , relativeTo
+        , reverse
+        , rotateAround
+        , scaleAbout
+        , squaredLength
+        , startPoint
+        , translateBy
+        , vector
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/lineSegment3d.svg" alt="LineSegment3d" width="160">
@@ -104,8 +104,8 @@ different coordinate frames.
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Point3d as Point3d
+import OpenSolid.Vector3d as Vector3d
 
 
 {-| Construct a line segment collinear with the given axis, with its endpoints
@@ -177,7 +177,7 @@ reverse lineSegment =
         ( p1, p2 ) =
             endpoints lineSegment
     in
-        LineSegment3d ( p2, p1 )
+    LineSegment3d ( p2, p1 )
 
 
 {-| Get the midpoint of a line segment.
@@ -209,7 +209,7 @@ interpolate lineSegment =
         ( start, end ) =
             endpoints lineSegment
     in
-        Point3d.interpolateFrom start end
+    Point3d.interpolateFrom start end
 
 
 {-| Get the length of a line segment.
@@ -272,7 +272,7 @@ vector lineSegment =
         ( p1, p2 ) =
             endpoints lineSegment
     in
-        Point3d.vectorFrom p1 p2
+    Point3d.vectorFrom p1 p2
 
 
 {-| Scale a line segment about the given center point by the given scale.
@@ -368,7 +368,7 @@ map function lineSegment =
         ( p1, p2 ) =
             endpoints lineSegment
     in
-        LineSegment3d ( function p1, function p2 )
+    LineSegment3d ( function p1, function p2 )
 
 
 {-| Take a line segment defined in global coordinates, and return it expressed
@@ -440,7 +440,7 @@ projectInto sketchPlane lineSegment =
         project =
             Point3d.projectInto sketchPlane
     in
-        LineSegment2d ( project p1, project p2 )
+    LineSegment2d ( project p1, project p2 )
 
 
 {-| Get the minimal bounding box containing a line segment.
@@ -462,4 +462,4 @@ boundingBox lineSegment =
         ( p1, p2 ) =
             endpoints lineSegment
     in
-        Point3d.hull p1 p2
+    Point3d.hull p1 p2

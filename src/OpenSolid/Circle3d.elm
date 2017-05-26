@@ -1,18 +1,18 @@
 module OpenSolid.Circle3d
     exposing
-        ( centerPoint
+        ( area
         , axialDirection
-        , radius
-        , diameter
-        , area
-        , circumference
-        , scaleAbout
-        , rotateAround
-        , translateBy
-        , mirrorAcross
-        , relativeTo
-        , placeIn
         , boundingBox
+        , centerPoint
+        , circumference
+        , diameter
+        , mirrorAcross
+        , placeIn
+        , radius
+        , relativeTo
+        , rotateAround
+        , scaleAbout
+        , translateBy
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/circle3d.svg" alt="Circle3d" width="160">
@@ -59,9 +59,9 @@ very useful circle).
 
 -}
 
+import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
-import OpenSolid.Direction3d as Direction3d
 
 
 {-| Get the center point of a circle.
@@ -120,7 +120,7 @@ area circle =
         r =
             radius circle
     in
-        pi * r * r
+    pi * r * r
 
 
 {-| Get the circumference of a circle.
@@ -176,12 +176,12 @@ rotateAround axis angle =
         rotateDirection =
             Direction3d.rotateAround axis angle
     in
-        \circle ->
-            Circle3d
-                { centerPoint = rotatePoint (centerPoint circle)
-                , radius = radius circle
-                , axialDirection = rotateDirection (axialDirection circle)
-                }
+    \circle ->
+        Circle3d
+            { centerPoint = rotatePoint (centerPoint circle)
+            , radius = radius circle
+            , axialDirection = rotateDirection (axialDirection circle)
+            }
 
 
 {-| Translate a circle by a given displacement.
@@ -225,12 +225,12 @@ mirrorAcross plane =
         mirrorDirection =
             Direction3d.mirrorAcross plane
     in
-        \circle ->
-            Circle3d
-                { centerPoint = mirrorPoint (centerPoint circle)
-                , radius = radius circle
-                , axialDirection = mirrorDirection (axialDirection circle)
-                }
+    \circle ->
+        Circle3d
+            { centerPoint = mirrorPoint (centerPoint circle)
+            , radius = radius circle
+            , axialDirection = mirrorDirection (axialDirection circle)
+            }
 
 
 {-| Take a circle defined in global coordinates, and return it expressed in
@@ -322,11 +322,11 @@ boundingBox circle =
         ( cx, cy, cz ) =
             Point3d.coordinates (centerPoint circle)
     in
-        BoundingBox3d
-            { minX = cx - dx
-            , maxX = cx + dx
-            , minY = cy - dy
-            , maxY = cy + dy
-            , minZ = cz - dz
-            , maxZ = cz + dz
-            }
+    BoundingBox3d
+        { minX = cx - dx
+        , maxX = cx + dx
+        , minY = cy - dy
+        , maxY = cy + dy
+        , minZ = cz - dz
+        , maxZ = cz + dz
+        }

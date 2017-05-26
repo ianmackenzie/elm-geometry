@@ -2,25 +2,25 @@ module OpenSolid.Arc2d
     exposing
         ( Length
         , WindingDirection
-        , short
-        , long
+        , centerPoint
         , clockwise
         , counterclockwise
-        , throughPoints
-        , fromEndpoints
-        , centerPoint
-        , radius
-        , startPoint
         , endPoint
-        , point
-        , sweptAngle
-        , scaleAbout
-        , rotateAround
-        , translateBy
+        , fromEndpoints
+        , long
         , mirrorAcross
-        , relativeTo
         , placeIn
         , placeOnto
+        , point
+        , radius
+        , relativeTo
+        , rotateAround
+        , scaleAbout
+        , short
+        , startPoint
+        , sweptAngle
+        , throughPoints
+        , translateBy
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/arc2d.svg" alt="Arc2d" width="160">
@@ -76,14 +76,14 @@ Arcs can be constructed explicitly by passing a record with `centerPoint`,
 
 -}
 
+import OpenSolid.Circle2d as Circle2d
+import OpenSolid.Direction2d as Direction2d
+import OpenSolid.Frame2d as Frame2d
 import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.LineSegment2d as LineSegment2d
 import OpenSolid.Point2d as Point2d
 import OpenSolid.SketchPlane3d as SketchPlane3d
-import OpenSolid.LineSegment2d as LineSegment2d
-import OpenSolid.Frame2d as Frame2d
 import OpenSolid.Vector2d as Vector2d
-import OpenSolid.Direction2d as Direction2d
-import OpenSolid.Circle2d as Circle2d
 
 
 {-| Argument type used in [`fromEndpoints`](#fromEndpoints).
@@ -187,36 +187,36 @@ throughPoints firstPoint secondPoint thirdPoint =
                     thirdVector =
                         Point2d.vectorFrom centerPoint thirdPoint
                 in
-                    Maybe.map3
-                        (\firstDirection secondDirection thirdDirection ->
-                            let
-                                partial =
-                                    Direction2d.angleFrom firstDirection
-                                        secondDirection
+                Maybe.map3
+                    (\firstDirection secondDirection thirdDirection ->
+                        let
+                            partial =
+                                Direction2d.angleFrom firstDirection
+                                    secondDirection
 
-                                full =
-                                    Direction2d.angleFrom firstDirection
-                                        thirdDirection
+                            full =
+                                Direction2d.angleFrom firstDirection
+                                    thirdDirection
 
-                                sweptAngle =
-                                    if partial >= 0 && full >= partial then
-                                        full
-                                    else if partial <= 0 && full <= partial then
-                                        full
-                                    else if full >= 0 then
-                                        full - 2 * pi
-                                    else
-                                        full + 2 * pi
-                            in
-                                Arc2d
-                                    { centerPoint = centerPoint
-                                    , startPoint = firstPoint
-                                    , sweptAngle = sweptAngle
-                                    }
-                        )
-                        (Vector2d.direction firstVector)
-                        (Vector2d.direction secondVector)
-                        (Vector2d.direction thirdVector)
+                            sweptAngle =
+                                if partial >= 0 && full >= partial then
+                                    full
+                                else if partial <= 0 && full <= partial then
+                                    full
+                                else if full >= 0 then
+                                    full - 2 * pi
+                                else
+                                    full + 2 * pi
+                        in
+                        Arc2d
+                            { centerPoint = centerPoint
+                            , startPoint = firstPoint
+                            , sweptAngle = sweptAngle
+                            }
+                    )
+                    (Vector2d.direction firstVector)
+                    (Vector2d.direction secondVector)
+                    (Vector2d.direction thirdVector)
             )
 
 
@@ -318,65 +318,65 @@ fromEndpoints startPoint endPoint radius lengthType windingDirection =
         squaredHalfLength =
             LineSegment2d.squaredLength chord / 4
     in
-        if squaredRadius >= squaredHalfLength then
-            LineSegment2d.normalDirection chord
-                |> Maybe.map
-                    (\offsetDirection ->
-                        let
-                            offsetMagnitude =
-                                sqrt (squaredRadius - squaredHalfLength)
+    if squaredRadius >= squaredHalfLength then
+        LineSegment2d.normalDirection chord
+            |> Maybe.map
+                (\offsetDirection ->
+                    let
+                        offsetMagnitude =
+                            sqrt (squaredRadius - squaredHalfLength)
 
-                            offsetDistance =
-                                case ( windingDirection, lengthType ) of
-                                    ( Counterclockwise, Short ) ->
-                                        offsetMagnitude
+                        offsetDistance =
+                            case ( windingDirection, lengthType ) of
+                                ( Counterclockwise, Short ) ->
+                                    offsetMagnitude
 
-                                    ( Clockwise, Long ) ->
-                                        offsetMagnitude
+                                ( Clockwise, Long ) ->
+                                    offsetMagnitude
 
-                                    ( Clockwise, Short ) ->
-                                        -offsetMagnitude
+                                ( Clockwise, Short ) ->
+                                    -offsetMagnitude
 
-                                    ( Counterclockwise, Long ) ->
-                                        -offsetMagnitude
+                                ( Counterclockwise, Long ) ->
+                                    -offsetMagnitude
 
-                            offset =
-                                Vector2d.in_ offsetDirection offsetDistance
+                        offset =
+                            Vector2d.in_ offsetDirection offsetDistance
 
-                            midpoint =
-                                LineSegment2d.midpoint chord
+                        midpoint =
+                            LineSegment2d.midpoint chord
 
-                            centerPoint =
-                                Point2d.translateBy offset midpoint
+                        centerPoint =
+                            Point2d.translateBy offset midpoint
 
-                            halfLength =
-                                sqrt squaredHalfLength
+                        halfLength =
+                            sqrt squaredHalfLength
 
-                            shortAngle =
-                                2 * asin (halfLength / radius)
+                        shortAngle =
+                            2 * asin (halfLength / radius)
 
-                            sweptAngle =
-                                case ( windingDirection, lengthType ) of
-                                    ( Counterclockwise, Short ) ->
-                                        shortAngle
+                        sweptAngle =
+                            case ( windingDirection, lengthType ) of
+                                ( Counterclockwise, Short ) ->
+                                    shortAngle
 
-                                    ( Clockwise, Short ) ->
-                                        -shortAngle
+                                ( Clockwise, Short ) ->
+                                    -shortAngle
 
-                                    ( Counterclockwise, Long ) ->
-                                        2 * pi - shortAngle
+                                ( Counterclockwise, Long ) ->
+                                    2 * pi - shortAngle
 
-                                    ( Clockwise, Long ) ->
-                                        shortAngle - 2 * pi
-                        in
-                            Arc2d
-                                { centerPoint = centerPoint
-                                , startPoint = startPoint
-                                , sweptAngle = sweptAngle
-                                }
-                    )
-        else
-            Nothing
+                                ( Clockwise, Long ) ->
+                                    shortAngle - 2 * pi
+                    in
+                    Arc2d
+                        { centerPoint = centerPoint
+                        , startPoint = startPoint
+                        , sweptAngle = sweptAngle
+                        }
+                )
+    else
+        Nothing
 
 
 {-| Get the center point of an arc.
@@ -451,7 +451,7 @@ point arc parameter =
         angle =
             parameter * sweptAngle arc
     in
-        Point2d.rotateAround (centerPoint arc) angle (startPoint arc)
+    Point2d.rotateAround (centerPoint arc) angle (startPoint arc)
 
 
 {-| Scale an arc about a given point by a given scale.
@@ -470,15 +470,15 @@ scaleAbout point scale arc =
         scalePoint =
             Point2d.scaleAbout point scale
     in
-        Arc2d
-            { centerPoint = scalePoint (centerPoint arc)
-            , startPoint = scalePoint (startPoint arc)
-            , sweptAngle =
-                if scale > 0 then
-                    sweptAngle arc
-                else
-                    -(sweptAngle arc)
-            }
+    Arc2d
+        { centerPoint = scalePoint (centerPoint arc)
+        , startPoint = scalePoint (startPoint arc)
+        , sweptAngle =
+            if scale > 0 then
+                sweptAngle arc
+            else
+                -(sweptAngle arc)
+        }
 
 
 {-| Rotate an arc around a given point by a given angle.
@@ -497,12 +497,12 @@ rotateAround point angle =
         rotatePoint =
             Point2d.rotateAround point angle
     in
-        \arc ->
-            Arc2d
-                { centerPoint = rotatePoint (centerPoint arc)
-                , startPoint = rotatePoint (startPoint arc)
-                , sweptAngle = sweptAngle arc
-                }
+    \arc ->
+        Arc2d
+            { centerPoint = rotatePoint (centerPoint arc)
+            , startPoint = rotatePoint (startPoint arc)
+            , sweptAngle = sweptAngle arc
+            }
 
 
 {-| Translate an arc by a given displacement.
@@ -524,11 +524,11 @@ translateBy displacement arc =
         translatePoint =
             Point2d.translateBy displacement
     in
-        Arc2d
-            { centerPoint = translatePoint (centerPoint arc)
-            , startPoint = translatePoint (startPoint arc)
-            , sweptAngle = sweptAngle arc
-            }
+    Arc2d
+        { centerPoint = translatePoint (centerPoint arc)
+        , startPoint = translatePoint (startPoint arc)
+        , sweptAngle = sweptAngle arc
+        }
 
 
 {-| Mirror an arc across a given axis.
@@ -547,12 +547,12 @@ mirrorAcross axis =
         mirrorPoint =
             Point2d.mirrorAcross axis
     in
-        \arc ->
-            Arc2d
-                { centerPoint = mirrorPoint (centerPoint arc)
-                , startPoint = mirrorPoint (startPoint arc)
-                , sweptAngle = -(sweptAngle arc)
-                }
+    \arc ->
+        Arc2d
+            { centerPoint = mirrorPoint (centerPoint arc)
+            , startPoint = mirrorPoint (startPoint arc)
+            , sweptAngle = -(sweptAngle arc)
+            }
 
 
 {-| Take an arc defined in global coordinates, and return it expressed in local
@@ -575,15 +575,15 @@ relativeTo frame arc =
         relativePoint =
             Point2d.relativeTo frame
     in
-        Arc2d
-            { centerPoint = relativePoint (centerPoint arc)
-            , startPoint = relativePoint (startPoint arc)
-            , sweptAngle =
-                if Frame2d.isRightHanded frame then
-                    (sweptAngle arc)
-                else
-                    -(sweptAngle arc)
-            }
+    Arc2d
+        { centerPoint = relativePoint (centerPoint arc)
+        , startPoint = relativePoint (startPoint arc)
+        , sweptAngle =
+            if Frame2d.isRightHanded frame then
+                sweptAngle arc
+            else
+                -(sweptAngle arc)
+        }
 
 
 {-| Take an arc considered to be defined in local coordinates relative to a
@@ -606,15 +606,15 @@ placeIn frame arc =
         placePoint =
             Point2d.placeIn frame
     in
-        Arc2d
-            { centerPoint = placePoint (centerPoint arc)
-            , startPoint = placePoint (startPoint arc)
-            , sweptAngle =
-                if Frame2d.isRightHanded frame then
-                    (sweptAngle arc)
-                else
-                    -(sweptAngle arc)
-            }
+    Arc2d
+        { centerPoint = placePoint (centerPoint arc)
+        , startPoint = placePoint (startPoint arc)
+        , sweptAngle =
+            if Frame2d.isRightHanded frame then
+                sweptAngle arc
+            else
+                -(sweptAngle arc)
+        }
 
 
 {-| Take an arc defined in 2D coordinates within a particular sketch plane and
@@ -644,8 +644,8 @@ placeOnto sketchPlane arc =
                 , direction = SketchPlane3d.normalDirection sketchPlane
                 }
     in
-        Arc3d
-            { axis = axis
-            , startPoint = place (startPoint arc)
-            , sweptAngle = sweptAngle arc
-            }
+    Arc3d
+        { axis = axis
+        , startPoint = place (startPoint arc)
+        , sweptAngle = sweptAngle arc
+        }

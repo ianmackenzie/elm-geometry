@@ -12,20 +12,20 @@
 
 module OpenSolid.Axis3d
     exposing
-        ( x
-        , y
-        , z
-        , originPoint
-        , direction
+        ( direction
         , flip
-        , moveTo
-        , rotateAround
-        , translateBy
         , mirrorAcross
-        , projectOnto
-        , relativeTo
+        , moveTo
+        , originPoint
         , placeIn
         , projectInto
+        , projectOnto
+        , relativeTo
+        , rotateAround
+        , translateBy
+        , x
+        , y
+        , z
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/axis3d.svg" alt="Axis3d" width="160">
@@ -76,9 +76,9 @@ different coordinate frames.
 
 -}
 
+import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
-import OpenSolid.Direction3d as Direction3d
 
 
 {-| The global X axis.
@@ -198,11 +198,11 @@ rotateAround otherAxis angle =
         rotateDirection =
             Direction3d.rotateAround otherAxis angle
     in
-        \axis ->
-            Axis3d
-                { originPoint = rotatePoint (originPoint axis)
-                , direction = rotateDirection (direction axis)
-                }
+    \axis ->
+        Axis3d
+            { originPoint = rotatePoint (originPoint axis)
+            , direction = rotateDirection (direction axis)
+            }
 
 
 {-| Translate an axis by a given displacement. Applies the given displacement to
@@ -244,11 +244,11 @@ mirrorAcross plane =
         mirrorDirection =
             Direction3d.mirrorAcross plane
     in
-        \axis ->
-            Axis3d
-                { originPoint = mirrorPoint (originPoint axis)
-                , direction = mirrorDirection (direction axis)
-                }
+    \axis ->
+        Axis3d
+            { originPoint = mirrorPoint (originPoint axis)
+            , direction = mirrorDirection (direction axis)
+            }
 
 
 {-| Project an axis onto a plane, returning the axis that is the 'shadow' of the
@@ -276,7 +276,7 @@ projectOnto plane axis =
         toAxis direction =
             Axis3d { originPoint = projectedOrigin, direction = direction }
     in
-        Maybe.map toAxis (Direction3d.projectOnto plane (direction axis))
+    Maybe.map toAxis (Direction3d.projectOnto plane (direction axis))
 
 
 {-| Take an axis defined in global coordinates, and return it expressed in local
@@ -301,11 +301,11 @@ relativeTo frame =
         relativeDirection =
             Direction3d.relativeTo frame
     in
-        \axis ->
-            Axis3d
-                { originPoint = relativePoint (originPoint axis)
-                , direction = relativeDirection (direction axis)
-                }
+    \axis ->
+        Axis3d
+            { originPoint = relativePoint (originPoint axis)
+            , direction = relativeDirection (direction axis)
+            }
 
 
 {-| Take an axis defined in local coordinates relative to a given reference
@@ -330,11 +330,11 @@ placeIn frame =
         placeDirection =
             Direction3d.placeIn frame
     in
-        \axis ->
-            Axis3d
-                { originPoint = placePoint (originPoint axis)
-                , direction = placeDirection (direction axis)
-                }
+    \axis ->
+        Axis3d
+            { originPoint = placePoint (originPoint axis)
+            , direction = placeDirection (direction axis)
+            }
 
 
 {-| Project an axis into a given sketch plane. Conceptually, this projects the
@@ -373,4 +373,4 @@ projectInto sketchPlane axis =
         toAxis direction =
             Axis2d { originPoint = projectedOrigin, direction = direction }
     in
-        Maybe.map toAxis (Direction3d.projectInto sketchPlane (direction axis))
+    Maybe.map toAxis (Direction3d.projectInto sketchPlane (direction axis))

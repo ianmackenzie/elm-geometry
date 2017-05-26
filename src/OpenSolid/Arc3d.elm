@@ -1,20 +1,20 @@
 module OpenSolid.Arc3d
     exposing
-        ( throughPoints
+        ( axialDirection
         , axis
         , centerPoint
-        , axialDirection
-        , radius
-        , startPoint
         , endPoint
-        , point
-        , sweptAngle
-        , scaleAbout
-        , rotateAround
-        , translateBy
         , mirrorAcross
-        , relativeTo
         , placeIn
+        , point
+        , radius
+        , relativeTo
+        , rotateAround
+        , scaleAbout
+        , startPoint
+        , sweptAngle
+        , throughPoints
+        , translateBy
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/arc3d.svg" alt="Arc3d" width="160">
@@ -64,12 +64,12 @@ arc's center point - here the origin point of the given axis is
 
 -}
 
-import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Arc2d as Arc2d
 import OpenSolid.Axis3d as Axis3d
-import OpenSolid.Point3d as Point3d
-import OpenSolid.Frame3d as Frame3d
 import OpenSolid.Direction3d as Direction3d
+import OpenSolid.Frame3d as Frame3d
+import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Point3d as Point3d
 import OpenSolid.SketchPlane3d as SketchPlane3d
 
 
@@ -109,11 +109,11 @@ throughPoints firstPoint secondPoint thirdPoint =
                     project =
                         Point3d.projectInto sketchPlane
                 in
-                    Arc2d.throughPoints
-                        (project firstPoint)
-                        (project secondPoint)
-                        (project thirdPoint)
-                        |> Maybe.map (Arc2d.placeOnto sketchPlane)
+                Arc2d.throughPoints
+                    (project firstPoint)
+                    (project secondPoint)
+                    (project thirdPoint)
+                    |> Maybe.map (Arc2d.placeOnto sketchPlane)
             )
 
 
@@ -203,7 +203,7 @@ point arc parameter =
         angle =
             parameter * sweptAngle arc
     in
-        Point3d.rotateAround (axis arc) angle (startPoint arc)
+    Point3d.rotateAround (axis arc) angle (startPoint arc)
 
 
 {-| Get the swept angle of an arc in radians.
@@ -262,11 +262,11 @@ scaleAbout point scale arc =
         scaledAxis =
             Axis3d { originPoint = scaledOrigin, direction = scaledDirection }
     in
-        Arc3d
-            { axis = scaledAxis
-            , startPoint = scalePoint (startPoint arc)
-            , sweptAngle = sweptAngle arc
-            }
+    Arc3d
+        { axis = scaledAxis
+        , startPoint = scalePoint (startPoint arc)
+        , sweptAngle = sweptAngle arc
+        }
 
 
 {-| Rotate an arc around a given axis by a given angle (in radians).
@@ -288,12 +288,12 @@ rotateAround rotationAxis angle =
         rotatePoint =
             Point3d.rotateAround rotationAxis angle
     in
-        \arc ->
-            Arc3d
-                { axis = rotateAxis (axis arc)
-                , startPoint = rotatePoint (startPoint arc)
-                , sweptAngle = sweptAngle arc
-                }
+    \arc ->
+        Arc3d
+            { axis = rotateAxis (axis arc)
+            , startPoint = rotatePoint (startPoint arc)
+            , sweptAngle = sweptAngle arc
+            }
 
 
 {-| Translate an arc by a given displacement.
@@ -343,12 +343,12 @@ mirrorAcross plane =
         mirrorPoint =
             Point3d.mirrorAcross plane
     in
-        \arc ->
-            Arc3d
-                { axis = mirrorAxis (axis arc)
-                , startPoint = mirrorPoint (startPoint arc)
-                , sweptAngle = -(sweptAngle arc)
-                }
+    \arc ->
+        Arc3d
+            { axis = mirrorAxis (axis arc)
+            , startPoint = mirrorPoint (startPoint arc)
+            , sweptAngle = -(sweptAngle arc)
+            }
 
 
 {-| Take an arc defined in global coordinates, and return it expressed in local
@@ -376,7 +376,7 @@ relativeTo frame arc =
         , startPoint = Point3d.relativeTo frame (startPoint arc)
         , sweptAngle =
             if Frame3d.isRightHanded frame then
-                (sweptAngle arc)
+                sweptAngle arc
             else
                 -(sweptAngle arc)
         }
@@ -407,7 +407,7 @@ placeIn frame arc =
         , startPoint = Point3d.placeIn frame (startPoint arc)
         , sweptAngle =
             if Frame3d.isRightHanded frame then
-                (sweptAngle arc)
+                sweptAngle arc
             else
                 -(sweptAngle arc)
         }

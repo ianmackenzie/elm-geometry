@@ -12,35 +12,35 @@
 
 module OpenSolid.Geometry.Decode
     exposing
-        ( vector2d
-        , vector3d
-        , direction2d
-        , direction3d
-        , point2d
-        , point3d
+        ( arc2d
+        , arc3d
         , axis2d
         , axis3d
-        , plane3d
-        , frame2d
-        , frame3d
-        , sketchPlane3d
-        , lineSegment2d
-        , lineSegment3d
-        , triangle2d
-        , triangle3d
         , boundingBox2d
         , boundingBox3d
-        , polyline2d
-        , polyline3d
-        , polygon2d
         , circle2d
         , circle3d
-        , arc2d
-        , arc3d
-        , quadraticSpline2d
-        , quadraticSpline3d
         , cubicSpline2d
         , cubicSpline3d
+        , direction2d
+        , direction3d
+        , frame2d
+        , frame3d
+        , lineSegment2d
+        , lineSegment3d
+        , plane3d
+        , point2d
+        , point3d
+        , polygon2d
+        , polyline2d
+        , polyline3d
+        , quadraticSpline2d
+        , quadraticSpline3d
+        , sketchPlane3d
+        , triangle2d
+        , triangle3d
+        , vector2d
+        , vector3d
         )
 
 {-| JSON decoders for the core OpenSolid types.

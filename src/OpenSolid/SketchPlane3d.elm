@@ -12,31 +12,31 @@
 
 module OpenSolid.SketchPlane3d
     exposing
-        ( xy
-        , yx
-        , yz
-        , zy
-        , zx
-        , xz
-        , throughPoints
-        , originPoint
-        , xDirection
-        , yDirection
-        , normalDirection
-        , xAxis
-        , yAxis
-        , normalAxis
-        , plane
-        , flipX
+        ( flipX
         , flipY
+        , mirrorAcross
         , moveTo
+        , normalAxis
+        , normalDirection
+        , originPoint
+        , placeIn
+        , plane
+        , relativeTo
         , rotateAround
         , rotateAroundOwn
-        , translateBy
+        , throughPoints
         , translateAlongOwn
-        , mirrorAcross
-        , relativeTo
-        , placeIn
+        , translateBy
+        , xAxis
+        , xDirection
+        , xy
+        , xz
+        , yAxis
+        , yDirection
+        , yx
+        , yz
+        , zx
+        , zy
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/sketchPlane3d.svg" alt="SketchPlane3d" width="160">
@@ -47,11 +47,11 @@ perpendicular to each other). Sketch planes are the primary tool for converting
 back and forth between 2D and 3D coordinates:
 
   - 3D geometry such as points, directions and line segments can be projected
-    *into* a sketch plane, which effectively projects the geometry *onto* the
-    sketch plane and then expresses the projected geometry *in* 2D coordinates.
-  - 2D geometry can be place *onto* a sketch plane to result in 3D geometry. For
+    _into_ a sketch plane, which effectively projects the geometry _onto_ the
+    sketch plane and then expresses the projected geometry _in_ 2D coordinates.
+  - 2D geometry can be place _onto_ a sketch plane to result in 3D geometry. For
     example, a 2D point placed onto a sketch plane will result in a 3D point
-    *on* that sketch plane that has the given 2D coordinate *in* the sketch
+    _on_ that sketch plane that has the given 2D coordinate _in_ the sketch
     plane.
 
 Many 3D data types have `projectInto` functions that return the corresponding 2D
@@ -128,11 +128,11 @@ point, and use the two indicated global axes as their X and Y axes. For example,
 
 -}
 
+import OpenSolid.Axis3d as Axis3d
+import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Vector3d as Vector3d
-import OpenSolid.Direction3d as Direction3d
-import OpenSolid.Axis3d as Axis3d
 
 
 {-| A sketch plane formed from the global X and Y axes.
@@ -265,15 +265,15 @@ throughPoints firstPoint secondPoint thirdPoint =
                     yVector =
                         Vector3d.crossProduct normalVector xDirectionVector
                 in
-                    Vector3d.direction yVector
-                        |> Maybe.map
-                            (\yDirection ->
-                                SketchPlane3d
-                                    { originPoint = firstPoint
-                                    , xDirection = xDirection
-                                    , yDirection = yDirection
-                                    }
-                            )
+                Vector3d.direction yVector
+                    |> Maybe.map
+                        (\yDirection ->
+                            SketchPlane3d
+                                { originPoint = firstPoint
+                                , xDirection = xDirection
+                                , yDirection = yDirection
+                                }
+                        )
             )
 
 
@@ -330,7 +330,7 @@ normalDirection sketchPlane =
                 (Direction3d.toVector (xDirection sketchPlane))
                 (Direction3d.toVector (yDirection sketchPlane))
     in
-        Direction3d (Vector3d.components normalVector)
+    Direction3d (Vector3d.components normalVector)
 
 
 {-| Get the X axis of a sketch plane. A 2D X coordinate within the sketch plane
@@ -476,12 +476,12 @@ rotateAround axis angle =
         rotateDirection =
             Direction3d.rotateAround axis angle
     in
-        \sketchPlane ->
-            SketchPlane3d
-                { originPoint = rotatePoint (originPoint sketchPlane)
-                , xDirection = rotateDirection (xDirection sketchPlane)
-                , yDirection = rotateDirection (yDirection sketchPlane)
-                }
+    \sketchPlane ->
+        SketchPlane3d
+            { originPoint = rotatePoint (originPoint sketchPlane)
+            , xDirection = rotateDirection (xDirection sketchPlane)
+            , yDirection = rotateDirection (yDirection sketchPlane)
+            }
 
 
 {-| Rotate a sketch plane around one of its own axes by a given angle (in
@@ -573,7 +573,7 @@ translateAlongOwn axis distance frame =
         direction =
             Axis3d.direction (axis frame)
     in
-        translateBy (Vector3d.in_ direction distance) frame
+    translateBy (Vector3d.in_ direction distance) frame
 
 
 {-| Mirror a sketch plane across a plane.
@@ -602,12 +602,12 @@ mirrorAcross plane =
         mirrorDirection =
             Direction3d.mirrorAcross plane
     in
-        \sketchPlane ->
-            SketchPlane3d
-                { originPoint = mirrorPoint (originPoint sketchPlane)
-                , xDirection = mirrorDirection (xDirection sketchPlane)
-                , yDirection = mirrorDirection (yDirection sketchPlane)
-                }
+    \sketchPlane ->
+        SketchPlane3d
+            { originPoint = mirrorPoint (originPoint sketchPlane)
+            , xDirection = mirrorDirection (xDirection sketchPlane)
+            , yDirection = mirrorDirection (yDirection sketchPlane)
+            }
 
 
 {-| Take a sketch plane defined in global coordinates, and return it expressed
@@ -622,12 +622,12 @@ relativeTo frame =
         relativeDirection =
             Direction3d.relativeTo frame
     in
-        \sketchPlane ->
-            SketchPlane3d
-                { originPoint = relativePoint (originPoint sketchPlane)
-                , xDirection = relativeDirection (xDirection sketchPlane)
-                , yDirection = relativeDirection (yDirection sketchPlane)
-                }
+    \sketchPlane ->
+        SketchPlane3d
+            { originPoint = relativePoint (originPoint sketchPlane)
+            , xDirection = relativeDirection (xDirection sketchPlane)
+            , yDirection = relativeDirection (yDirection sketchPlane)
+            }
 
 
 {-| Take a sketch plane defined in local coordinates relative to a given
@@ -642,9 +642,9 @@ placeIn frame =
         placeDirection =
             Direction3d.placeIn frame
     in
-        \sketchPlane ->
-            SketchPlane3d
-                { originPoint = placePoint (originPoint sketchPlane)
-                , xDirection = placeDirection (xDirection sketchPlane)
-                , yDirection = placeDirection (yDirection sketchPlane)
-                }
+    \sketchPlane ->
+        SketchPlane3d
+            { originPoint = placePoint (originPoint sketchPlane)
+            , xDirection = placeDirection (xDirection sketchPlane)
+            , yDirection = placeDirection (yDirection sketchPlane)
+            }

@@ -12,21 +12,21 @@
 
 module OpenSolid.Triangle3d
     exposing
-        ( vertices
-        , edges
+        ( area
+        , boundingBox
         , centroid
-        , area
-        , normalDirection
-        , scaleAbout
-        , rotateAround
-        , translateBy
-        , mirrorAcross
-        , projectOnto
+        , edges
         , map
-        , relativeTo
+        , mirrorAcross
+        , normalDirection
         , placeIn
         , projectInto
-        , boundingBox
+        , projectOnto
+        , relativeTo
+        , rotateAround
+        , scaleAbout
+        , translateBy
+        , vertices
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/triangle3d.svg" alt="Triangle3d" width="160">
@@ -86,8 +86,8 @@ different coordinate frames.
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Vector3d as Vector3d
 import OpenSolid.Point3d as Point3d
+import OpenSolid.Vector3d as Vector3d
 
 
 {-| Get the vertices of a triangle.
@@ -124,10 +124,10 @@ edges triangle =
         ( p1, p2, p3 ) =
             vertices triangle
     in
-        ( LineSegment3d ( p1, p2 )
-        , LineSegment3d ( p2, p3 )
-        , LineSegment3d ( p3, p1 )
-        )
+    ( LineSegment3d ( p1, p2 )
+    , LineSegment3d ( p2, p3 )
+    , LineSegment3d ( p3, p1 )
+    )
 
 
 {-| Get the centroid (center of mass) of a triangle.
@@ -151,7 +151,7 @@ centroid triangle =
         displacement =
             Vector3d.scaleBy (1.0 / 3.0) (Vector3d.sum firstVector secondVector)
     in
-        Point3d.translateBy displacement p1
+    Point3d.translateBy displacement p1
 
 
 {-| Get the area of a triangle. This value is always positive.
@@ -172,7 +172,7 @@ area triangle =
         secondVector =
             Point3d.vectorFrom p1 p3
     in
-        0.5 * Vector3d.length (Vector3d.crossProduct firstVector secondVector)
+    0.5 * Vector3d.length (Vector3d.crossProduct firstVector secondVector)
 
 
 {-| Attempt to find the normal direction to a triangle. The resulting direction
@@ -196,7 +196,7 @@ normalDirection triangle =
         v2 =
             Point3d.vectorFrom p2 p3
     in
-        Vector3d.direction (Vector3d.crossProduct v1 v2)
+    Vector3d.direction (Vector3d.crossProduct v1 v2)
 
 
 {-| Scale a triangle about a given point by a given scale.
@@ -301,7 +301,7 @@ map function triangle =
         ( p1, p2, p3 ) =
             vertices triangle
     in
-        Triangle3d ( function p1, function p2, function p3 )
+    Triangle3d ( function p1, function p2, function p3 )
 
 
 {-| Take a triangle defined in global coordinates, and return it expressed
@@ -370,7 +370,7 @@ projectInto sketchPlane triangle =
         project =
             Point3d.projectInto sketchPlane
     in
-        Triangle2d ( project p1, project p2, project p3 )
+    Triangle2d ( project p1, project p2, project p3 )
 
 
 {-| Get the minimal bounding box containing a given triangle.
@@ -401,11 +401,11 @@ boundingBox triangle =
         ( x3, y3, z3 ) =
             Point3d.coordinates p3
     in
-        BoundingBox3d
-            { minX = min x1 (min x2 x3)
-            , maxX = max x1 (max x2 x3)
-            , minY = min y1 (min y2 y3)
-            , maxY = max y1 (max y2 y3)
-            , minZ = min z1 (min z2 z3)
-            , maxZ = max z1 (max z2 z3)
-            }
+    BoundingBox3d
+        { minX = min x1 (min x2 x3)
+        , maxX = max x1 (max x2 x3)
+        , minY = min y1 (min y2 y3)
+        , maxY = max y1 (max y2 y3)
+        , minZ = min z1 (min z2 z3)
+        , maxZ = max z1 (max z2 z3)
+        }

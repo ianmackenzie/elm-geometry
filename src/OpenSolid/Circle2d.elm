@@ -1,21 +1,21 @@
 module OpenSolid.Circle2d
     exposing
-        ( unit
-        , throughPoints
+        ( area
+        , boundingBox
         , centerPoint
-        , radius
-        , diameter
-        , area
         , circumference
         , contains
-        , scaleAbout
-        , rotateAround
-        , translateBy
+        , diameter
         , mirrorAcross
-        , relativeTo
         , placeIn
         , placeOnto
-        , boundingBox
+        , radius
+        , relativeTo
+        , rotateAround
+        , scaleAbout
+        , throughPoints
+        , translateBy
+        , unit
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/circle2d.svg" alt="Circle2d" width="160">
@@ -159,49 +159,49 @@ throughPoints firstPoint secondPoint thirdPoint =
         sum =
             t1 + t2 + t3
     in
-        if sum == 0 then
-            Nothing
-        else
-            let
-                w1 =
-                    t1 / sum
+    if sum == 0 then
+        Nothing
+    else
+        let
+            w1 =
+                t1 / sum
 
-                w2 =
-                    t2 / sum
+            w2 =
+                t2 / sum
 
-                w3 =
-                    t3 / sum
+            w3 =
+                t3 / sum
 
-                ( x1, y1 ) =
-                    Point2d.coordinates firstPoint
+            ( x1, y1 ) =
+                Point2d.coordinates firstPoint
 
-                ( x2, y2 ) =
-                    Point2d.coordinates secondPoint
+            ( x2, y2 ) =
+                Point2d.coordinates secondPoint
 
-                ( x3, y3 ) =
-                    Point2d.coordinates thirdPoint
+            ( x3, y3 ) =
+                Point2d.coordinates thirdPoint
 
-                centerPoint =
-                    Point2d
-                        ( w1 * x3 + w2 * x1 + w3 * x2
-                        , w1 * y3 + w2 * y1 + w3 * y2
-                        )
-
-                r1 =
-                    Point2d.distanceFrom centerPoint firstPoint
-
-                r2 =
-                    Point2d.distanceFrom centerPoint secondPoint
-
-                r3 =
-                    Point2d.distanceFrom centerPoint thirdPoint
-            in
-                Just
-                    (Circle2d
-                        { centerPoint = centerPoint
-                        , radius = (r1 + r2 + r3) / 3
-                        }
+            centerPoint =
+                Point2d
+                    ( w1 * x3 + w2 * x1 + w3 * x2
+                    , w1 * y3 + w2 * y1 + w3 * y2
                     )
+
+            r1 =
+                Point2d.distanceFrom centerPoint firstPoint
+
+            r2 =
+                Point2d.distanceFrom centerPoint secondPoint
+
+            r3 =
+                Point2d.distanceFrom centerPoint thirdPoint
+        in
+        Just
+            (Circle2d
+                { centerPoint = centerPoint
+                , radius = (r1 + r2 + r3) / 3
+                }
+            )
 
 
 {-| Get the center point of a circle.
@@ -249,7 +249,7 @@ area circle =
         r =
             radius circle
     in
-        pi * r * r
+    pi * r * r
 
 
 {-| Get the circumference of a circle.
@@ -278,7 +278,7 @@ contains point circle =
         r =
             radius circle
     in
-        Point2d.squaredDistanceFrom (centerPoint circle) point <= r * r
+    Point2d.squaredDistanceFrom (centerPoint circle) point <= r * r
 
 
 {-| Scale a circle about a given point by a given scale.
@@ -302,11 +302,11 @@ scaleAbout point scale =
         scalePoint =
             Point2d.scaleAbout point scale
     in
-        \circle ->
-            Circle2d
-                { centerPoint = scalePoint (centerPoint circle)
-                , radius = scale * radius circle
-                }
+    \circle ->
+        Circle2d
+            { centerPoint = scalePoint (centerPoint circle)
+            , radius = scale * radius circle
+            }
 
 
 {-| Rotate a circle around a given point by a given angle (in radians).
@@ -324,11 +324,11 @@ rotateAround point angle =
         rotatePoint =
             Point2d.rotateAround point angle
     in
-        \circle ->
-            Circle2d
-                { centerPoint = rotatePoint (centerPoint circle)
-                , radius = radius circle
-                }
+    \circle ->
+        Circle2d
+            { centerPoint = rotatePoint (centerPoint circle)
+            , radius = radius circle
+            }
 
 
 {-| Translate a circle by a given displacement.
@@ -346,11 +346,11 @@ translateBy displacement =
         translatePoint =
             Point2d.translateBy displacement
     in
-        \circle ->
-            Circle2d
-                { centerPoint = translatePoint (centerPoint circle)
-                , radius = radius circle
-                }
+    \circle ->
+        Circle2d
+            { centerPoint = translatePoint (centerPoint circle)
+            , radius = radius circle
+            }
 
 
 {-| Mirror a circle across a given axis.
@@ -368,11 +368,11 @@ mirrorAcross axis =
         mirrorPoint =
             Point2d.mirrorAcross axis
     in
-        \circle ->
-            Circle2d
-                { centerPoint = mirrorPoint (centerPoint circle)
-                , radius = radius circle
-                }
+    \circle ->
+        Circle2d
+            { centerPoint = mirrorPoint (centerPoint circle)
+            , radius = radius circle
+            }
 
 
 {-| Take a circle defined in global coordinates, and return it expressed in
@@ -394,11 +394,11 @@ relativeTo frame =
         relativePoint =
             Point2d.relativeTo frame
     in
-        \circle ->
-            Circle2d
-                { centerPoint = relativePoint (centerPoint circle)
-                , radius = radius circle
-                }
+    \circle ->
+        Circle2d
+            { centerPoint = relativePoint (centerPoint circle)
+            , radius = radius circle
+            }
 
 
 {-| Take a circle considered to be defined in local coordinates relative to a
@@ -420,11 +420,11 @@ placeIn frame =
         placePoint =
             Point2d.placeIn frame
     in
-        \circle ->
-            Circle2d
-                { centerPoint = placePoint (centerPoint circle)
-                , radius = radius circle
-                }
+    \circle ->
+        Circle2d
+            { centerPoint = placePoint (centerPoint circle)
+            , radius = radius circle
+            }
 
 
 {-| Take a circle defined in 2D coordinates within a particular sketch plane and
@@ -467,9 +467,9 @@ boundingBox circle =
         r =
             radius circle
     in
-        BoundingBox2d
-            { minX = x - r
-            , maxX = x + r
-            , minY = y - r
-            , maxY = y + r
-            }
+    BoundingBox2d
+        { minX = x - r
+        , maxX = x + r
+        , minY = y - r
+        , maxY = y + r
+        }

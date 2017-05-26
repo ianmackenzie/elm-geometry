@@ -12,26 +12,26 @@
 
 module OpenSolid.BoundingBox3d
     exposing
-        ( singleton
+        ( centroid
         , containing
-        , hullOf
-        , extrema
-        , minX
-        , maxX
-        , minY
-        , maxY
-        , minZ
-        , maxZ
+        , contains
         , dimensions
+        , extrema
+        , hull
+        , hullOf
+        , intersection
+        , isContainedIn
+        , maxX
+        , maxY
+        , maxZ
         , midX
         , midY
         , midZ
-        , centroid
-        , contains
+        , minX
+        , minY
+        , minZ
         , overlaps
-        , isContainedIn
-        , hull
-        , intersection
+        , singleton
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/boundingBox3d.svg" alt="BoundingBox3d" width="160">
@@ -47,7 +47,7 @@ box of an object than the object itself, such as:
     and a triangle do not overlap, then the line segment and triangle cannot
     possibly intersect each other. Expensive intersection checking therefore
     only has to be performed for line segments and triangles whose bounding
-    boxes *do* overlap.
+    boxes _do_ overlap.
   - 3D rendering: When rendering a 3D scene, any object whose bounding box is
     not visible must itself be not visible, and therefore does not have to be
     drawn. This provides a simple form of culling.
@@ -121,14 +121,14 @@ singleton point =
         ( x, y, z ) =
             Point3d.coordinates point
     in
-        BoundingBox3d
-            { minX = x
-            , maxX = x
-            , minY = y
-            , maxY = y
-            , minZ = z
-            , maxZ = z
-            }
+    BoundingBox3d
+        { minX = x
+        , maxX = x
+        , minY = y
+        , maxY = y
+        , minZ = z
+        , maxZ = z
+        }
 
 
 {-| Construct a bounding box containing all points in the given list. If the
@@ -311,7 +311,7 @@ dimensions boundingBox =
         { minX, maxX, minY, maxY, minZ, maxZ } =
             extrema boundingBox
     in
-        ( maxX - minX, maxY - minY, maxZ - minZ )
+    ( maxX - minX, maxY - minY, maxZ - minZ )
 
 
 {-| Get the median X value of a bounding box.
@@ -326,7 +326,7 @@ midX boundingBox =
         { minX, maxX } =
             extrema boundingBox
     in
-        minX + 0.5 * (maxX - minX)
+    minX + 0.5 * (maxX - minX)
 
 
 {-| Get the median Y value of a bounding box.
@@ -341,7 +341,7 @@ midY boundingBox =
         { minY, maxY } =
             extrema boundingBox
     in
-        minY + 0.5 * (maxY - minY)
+    minY + 0.5 * (maxY - minY)
 
 
 {-| Get the median Z value of a bounding box.
@@ -356,7 +356,7 @@ midZ boundingBox =
         { minZ, maxZ } =
             extrema boundingBox
     in
-        minZ + 0.5 * (maxZ - minZ)
+    minZ + 0.5 * (maxZ - minZ)
 
 
 {-| Get the point at the center of a bounding box.
@@ -394,9 +394,9 @@ contains point boundingBox =
         { minX, maxX, minY, maxY, minZ, maxZ } =
             extrema boundingBox
     in
-        (minX <= x && x <= maxX)
-            && (minY <= y && y <= maxY)
-            && (minZ <= z && z <= maxZ)
+    (minX <= x && x <= maxX)
+        && (minY <= y && y <= maxY)
+        && (minZ <= z && z <= maxZ)
 
 
 {-| Test if one bounding box overlaps (touches) another.

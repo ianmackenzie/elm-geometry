@@ -12,34 +12,34 @@
 
 module OpenSolid.Vector3d
     exposing
-        ( zero
-        , in_
-        , perpendicularTo
-        , interpolateFrom
+        ( componentIn
         , components
+        , crossProduct
+        , difference
+        , direction
+        , dotProduct
+        , equalWithin
+        , flip
+        , in_
+        , interpolateFrom
+        , length
+        , lengthAndDirection
+        , mirrorAcross
+        , orthonormalize
+        , perpendicularTo
+        , placeIn
+        , projectInto
+        , projectOnto
+        , projectionIn
+        , relativeTo
+        , rotateAround
+        , scaleBy
+        , squaredLength
+        , sum
         , xComponent
         , yComponent
         , zComponent
-        , componentIn
-        , equalWithin
-        , length
-        , squaredLength
-        , direction
-        , lengthAndDirection
-        , orthonormalize
-        , flip
-        , scaleBy
-        , sum
-        , difference
-        , dotProduct
-        , crossProduct
-        , rotateAround
-        , mirrorAcross
-        , projectionIn
-        , projectOnto
-        , relativeTo
-        , placeIn
-        , projectInto
+        , zero
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/vector3d.svg" alt="Vector3d" width="160">
@@ -139,13 +139,13 @@ coordinates within a particular sketch plane.
 
 -}
 
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Scalar as Scalar
-import OpenSolid.Bootstrap.Direction3d as Direction3d
 import OpenSolid.Bootstrap.Axis3d as Axis3d
+import OpenSolid.Bootstrap.Direction3d as Direction3d
+import OpenSolid.Bootstrap.Frame3d as Frame3d
 import OpenSolid.Bootstrap.Plane3d as Plane3d
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
-import OpenSolid.Bootstrap.Frame3d as Frame3d
+import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Scalar as Scalar
 
 
 {-| The zero vector.
@@ -171,7 +171,7 @@ in_ direction length =
         ( dx, dy, dz ) =
             Direction3d.components direction
     in
-        Vector3d ( length * dx, length * dy, length * dz )
+    Vector3d ( length * dx, length * dy, length * dz )
 
 
 {-| Construct an arbitrary vector perpendicular to the given vector. The exact
@@ -204,15 +204,15 @@ perpendicularTo vector =
         absZ =
             abs z
     in
-        if absX <= absY then
-            if absX <= absZ then
-                Vector3d ( 0, -z, y )
-            else
-                Vector3d ( -y, x, 0 )
-        else if absY <= absZ then
-            Vector3d ( z, 0, -x )
+    if absX <= absY then
+        if absX <= absZ then
+            Vector3d ( 0, -z, y )
         else
             Vector3d ( -y, x, 0 )
+    else if absY <= absZ then
+        Vector3d ( z, 0, -x )
+    else
+        Vector3d ( -y, x, 0 )
 
 
 {-| Construct a vector by interpolating from the first given vector to the
@@ -257,11 +257,11 @@ interpolateFrom v1 v2 t =
         ( x2, y2, z2 ) =
             components v2
     in
-        Vector3d
-            ( Scalar.interpolateFrom x1 x2 t
-            , Scalar.interpolateFrom y1 y2 t
-            , Scalar.interpolateFrom z1 z2 t
-            )
+    Vector3d
+        ( Scalar.interpolateFrom x1 x2 t
+        , Scalar.interpolateFrom y1 y2 t
+        , Scalar.interpolateFrom z1 z2 t
+        )
 
 
 {-| Extract the components of a vector.
@@ -339,7 +339,7 @@ componentIn direction vector =
         ( vx, vy, vz ) =
             components vector
     in
-        vx * dx + vy * dy + vz * dz
+    vx * dx + vy * dy + vz * dz
 
 
 {-| Compare two vectors within a tolerance. Returns true if the difference
@@ -394,7 +394,7 @@ squaredLength vector =
         ( x, y, z ) =
             components vector
     in
-        x * x + y * y + z * z
+    x * x + y * y + z * z
 
 
 {-| Attempt to find the direction of a vector. In the case of a zero vector,
@@ -416,7 +416,7 @@ direction vector =
             normalizedVector =
                 scaleBy (1 / length vector) vector
         in
-            Just (Direction3d (components normalizedVector))
+        Just (Direction3d (components normalizedVector))
 
 
 {-| Attempt to find the length and direction of a vector. In the case of a zero
@@ -438,17 +438,17 @@ lengthAndDirection vector =
         vectorLength =
             length vector
     in
-        if vectorLength == 0.0 then
-            Nothing
-        else
-            let
-                normalizedVector =
-                    scaleBy (1 / vectorLength) vector
+    if vectorLength == 0.0 then
+        Nothing
+    else
+        let
+            normalizedVector =
+                scaleBy (1 / vectorLength) vector
 
-                vectorDirection =
-                    Direction3d (components normalizedVector)
-            in
-                Just ( vectorLength, vectorDirection )
+            vectorDirection =
+                Direction3d (components normalizedVector)
+        in
+        Just ( vectorLength, vectorDirection )
 
 
 {-| Attempt to form a set of three mutually perpendicular directions from the
@@ -497,35 +497,35 @@ orthonormalize ( xVector, xyVector, xyzVector ) =
                     yVector =
                         difference xyVector xProjection
                 in
-                    direction yVector
-                        |> Maybe.andThen
-                            (\yDirection ->
-                                let
-                                    xProjection =
-                                        projectionIn xDirection
-                                            xyzVector
+                direction yVector
+                    |> Maybe.andThen
+                        (\yDirection ->
+                            let
+                                xProjection =
+                                    projectionIn xDirection
+                                        xyzVector
 
-                                    yzVector =
-                                        difference xyzVector
-                                            xProjection
+                                yzVector =
+                                    difference xyzVector
+                                        xProjection
 
-                                    yProjection =
-                                        projectionIn yDirection
-                                            yzVector
+                                yProjection =
+                                    projectionIn yDirection
+                                        yzVector
 
-                                    zVector =
-                                        difference yzVector
-                                            yProjection
-                                in
-                                    direction zVector
-                                        |> Maybe.map
-                                            (\zDirection ->
-                                                ( xDirection
-                                                , yDirection
-                                                , zDirection
-                                                )
-                                            )
-                            )
+                                zVector =
+                                    difference yzVector
+                                        yProjection
+                            in
+                            direction zVector
+                                |> Maybe.map
+                                    (\zDirection ->
+                                        ( xDirection
+                                        , yDirection
+                                        , zDirection
+                                        )
+                                    )
+                        )
             )
 
 
@@ -550,7 +550,7 @@ sum firstVector secondVector =
         ( x2, y2, z2 ) =
             components secondVector
     in
-        Vector3d ( x1 + x2, y1 + y2, z1 + z2 )
+    Vector3d ( x1 + x2, y1 + y2, z1 + z2 )
 
 
 {-| Find the difference between two vectors (the first vector minus the second).
@@ -574,7 +574,7 @@ difference firstVector secondVector =
         ( x2, y2, z2 ) =
             components secondVector
     in
-        Vector3d ( x1 - x2, y1 - y2, z1 - z2 )
+    Vector3d ( x1 - x2, y1 - y2, z1 - z2 )
 
 
 {-| Find the dot product of two vectors.
@@ -598,7 +598,7 @@ dotProduct firstVector secondVector =
         ( x2, y2, z2 ) =
             components secondVector
     in
-        x1 * x2 + y1 * y2 + z1 * z2
+    x1 * x2 + y1 * y2 + z1 * z2
 
 
 {-| Find the cross product of two vectors.
@@ -622,11 +622,11 @@ crossProduct firstVector secondVector =
         ( x2, y2, z2 ) =
             components secondVector
     in
-        Vector3d
-            ( y1 * z2 - z1 * y2
-            , z1 * x2 - x1 * z2
-            , x1 * y2 - y1 * x2
-            )
+    Vector3d
+        ( y1 * z2 - z1 * y2
+        , z1 * x2 - x1 * z2
+        , x1 * y2 - y1 * x2
+        )
 
 
 {-| Reverse the direction of a vector, negating its components.
@@ -641,7 +641,7 @@ flip vector =
         ( x, y, z ) =
             components vector
     in
-        Vector3d ( -x, -y, -z )
+    Vector3d ( -x, -y, -z )
 
 
 {-| Scale the length of a vector by a given scale.
@@ -656,7 +656,7 @@ scaleBy scale vector =
         ( x, y, z ) =
             components vector
     in
-        Vector3d ( x * scale, y * scale, z * scale )
+    Vector3d ( x * scale, y * scale, z * scale )
 
 
 {-| Rotate a vector around a given axis by a given angle (in radians).
@@ -749,12 +749,12 @@ rotateAround axis angle =
         a22 =
             1 - 2 * (xx + yy)
     in
-        \(Vector3d ( x, y, z )) ->
-            Vector3d
-                ( a00 * x + a01 * y + a02 * z
-                , a10 * x + a11 * y + a12 * z
-                , a20 * x + a21 * y + a22 * z
-                )
+    \(Vector3d ( x, y, z )) ->
+        Vector3d
+            ( a00 * x + a01 * y + a02 * z
+            , a10 * x + a11 * y + a12 * z
+            , a20 * x + a21 * y + a22 * z
+            )
 
 
 {-| Mirror a vector across a plane.
@@ -793,12 +793,12 @@ mirrorAcross plane =
         f =
             -2 * dx * dy
     in
-        \(Vector3d ( x, y, z )) ->
-            Vector3d
-                ( a * x + f * y + e * z
-                , f * x + b * y + d * z
-                , e * x + d * y + c * z
-                )
+    \(Vector3d ( x, y, z )) ->
+        Vector3d
+            ( a * x + f * y + e * z
+            , f * x + b * y + d * z
+            , e * x + d * y + c * z
+            )
 
 
 {-| Find the projection of a vector in a particular direction. Conceptually,
@@ -885,11 +885,11 @@ placeIn frame vector =
         ( x, y, z ) =
             components vector
     in
-        Vector3d
-            ( x1 * x + x2 * y + x3 * z
-            , y1 * x + y2 * y + y3 * z
-            , z1 * x + z2 * y + z3 * z
-            )
+    Vector3d
+        ( x1 * x + x2 * y + x3 * z
+        , y1 * x + y2 * y + y3 * z
+        , z1 * x + z2 * y + z3 * z
+        )
 
 
 {-| Project a vector into a given sketch plane. Conceptually, this projects the

@@ -12,39 +12,39 @@
 
 module OpenSolid.Frame3d
     exposing
-        ( xyz
-        , at
-        , originPoint
-        , xDirection
-        , yDirection
-        , zDirection
-        , isRightHanded
-        , xAxis
-        , yAxis
-        , zAxis
-        , xyPlane
-        , yxPlane
-        , yzPlane
-        , zyPlane
-        , zxPlane
-        , xzPlane
-        , xySketchPlane
-        , yxSketchPlane
-        , yzSketchPlane
-        , zySketchPlane
-        , zxSketchPlane
-        , xzSketchPlane
+        ( at
         , flipX
         , flipY
         , flipZ
+        , isRightHanded
+        , mirrorAcross
         , moveTo
+        , originPoint
+        , placeIn
+        , relativeTo
         , rotateAround
         , rotateAroundOwn
-        , translateBy
         , translateAlongOwn
-        , mirrorAcross
-        , relativeTo
-        , placeIn
+        , translateBy
+        , xAxis
+        , xDirection
+        , xyPlane
+        , xySketchPlane
+        , xyz
+        , xzPlane
+        , xzSketchPlane
+        , yAxis
+        , yDirection
+        , yxPlane
+        , yxSketchPlane
+        , yzPlane
+        , yzSketchPlane
+        , zAxis
+        , zDirection
+        , zxPlane
+        , zxSketchPlane
+        , zyPlane
+        , zySketchPlane
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/frame3d.svg" alt="Frame3d" width="160">
@@ -165,10 +165,10 @@ corresponds to a global Z coordinate!
 
 -}
 
+import OpenSolid.Axis3d as Axis3d
+import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
-import OpenSolid.Direction3d as Direction3d
-import OpenSolid.Axis3d as Axis3d
 import OpenSolid.Vector3d as Vector3d
 
 
@@ -279,7 +279,7 @@ isRightHanded frame =
         zVector =
             Direction3d.toVector (zDirection frame)
     in
-        Vector3d.dotProduct zVector (Vector3d.crossProduct xVector yVector) > 0
+    Vector3d.dotProduct zVector (Vector3d.crossProduct xVector yVector) > 0
 
 
 {-| Get the X axis of a given frame (the axis formed from the frame's origin
@@ -564,13 +564,13 @@ rotateAround axis angle =
         rotateDirection =
             Direction3d.rotateAround axis angle
     in
-        \frame ->
-            Frame3d
-                { originPoint = rotatePoint (originPoint frame)
-                , xDirection = rotateDirection (xDirection frame)
-                , yDirection = rotateDirection (yDirection frame)
-                , zDirection = rotateDirection (zDirection frame)
-                }
+    \frame ->
+        Frame3d
+            { originPoint = rotatePoint (originPoint frame)
+            , xDirection = rotateDirection (xDirection frame)
+            , yDirection = rotateDirection (yDirection frame)
+            , zDirection = rotateDirection (zDirection frame)
+            }
 
 
 {-| Rotate a frame around one of its own axes by a given angle (in radians).
@@ -658,7 +658,7 @@ translateAlongOwn axis distance frame =
         direction =
             Axis3d.direction (axis frame)
     in
-        translateBy (Vector3d.in_ direction distance) frame
+    translateBy (Vector3d.in_ direction distance) frame
 
 
 {-| Mirror a frame across a plane.
@@ -687,13 +687,13 @@ mirrorAcross plane =
         mirrorDirection =
             Direction3d.mirrorAcross plane
     in
-        \frame ->
-            Frame3d
-                { originPoint = mirrorPoint (originPoint frame)
-                , xDirection = mirrorDirection (xDirection frame)
-                , yDirection = mirrorDirection (yDirection frame)
-                , zDirection = mirrorDirection (zDirection frame)
-                }
+    \frame ->
+        Frame3d
+            { originPoint = mirrorPoint (originPoint frame)
+            , xDirection = mirrorDirection (xDirection frame)
+            , yDirection = mirrorDirection (yDirection frame)
+            , zDirection = mirrorDirection (zDirection frame)
+            }
 
 
 {-| Take two frames defined in global coordinates, and return the second one
@@ -708,13 +708,13 @@ relativeTo otherFrame =
         relativeDirection =
             Direction3d.relativeTo otherFrame
     in
-        \frame ->
-            Frame3d
-                { originPoint = relativePoint (originPoint frame)
-                , xDirection = relativeDirection (xDirection frame)
-                , yDirection = relativeDirection (yDirection frame)
-                , zDirection = relativeDirection (zDirection frame)
-                }
+    \frame ->
+        Frame3d
+            { originPoint = relativePoint (originPoint frame)
+            , xDirection = relativeDirection (xDirection frame)
+            , yDirection = relativeDirection (yDirection frame)
+            , zDirection = relativeDirection (zDirection frame)
+            }
 
 
 {-| Take one frame defined in global coordinates and a second frame defined
@@ -730,10 +730,10 @@ placeIn otherFrame =
         placeDirection =
             Direction3d.placeIn otherFrame
     in
-        \frame ->
-            Frame3d
-                { originPoint = placePoint (originPoint frame)
-                , xDirection = placeDirection (xDirection frame)
-                , yDirection = placeDirection (yDirection frame)
-                , zDirection = placeDirection (zDirection frame)
-                }
+    \frame ->
+        Frame3d
+            { originPoint = placePoint (originPoint frame)
+            , xDirection = placeDirection (xDirection frame)
+            , yDirection = placeDirection (yDirection frame)
+            , zDirection = placeDirection (zDirection frame)
+            }

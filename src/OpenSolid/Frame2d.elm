@@ -12,24 +12,24 @@
 
 module OpenSolid.Frame2d
     exposing
-        ( xy
-        , at
-        , originPoint
-        , xDirection
-        , yDirection
-        , isRightHanded
-        , xAxis
-        , yAxis
+        ( at
         , flipX
         , flipY
-        , moveTo
-        , rotateBy
-        , rotateAround
-        , translateBy
-        , translateAlongOwn
+        , isRightHanded
         , mirrorAcross
-        , relativeTo
+        , moveTo
+        , originPoint
         , placeIn
+        , relativeTo
+        , rotateAround
+        , rotateBy
+        , translateAlongOwn
+        , translateBy
+        , xAxis
+        , xDirection
+        , xy
+        , yAxis
+        , yDirection
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/frame2d.svg" alt="Frame2d" width="160">
@@ -101,10 +101,10 @@ useful.
 
 -}
 
+import OpenSolid.Axis2d as Axis2d
+import OpenSolid.Direction2d as Direction2d
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point2d as Point2d
-import OpenSolid.Direction2d as Direction2d
-import OpenSolid.Axis2d as Axis2d
 import OpenSolid.Vector2d as Vector2d
 
 
@@ -198,7 +198,7 @@ isRightHanded frame =
         yVector =
             Direction2d.toVector (yDirection frame)
     in
-        Vector2d.crossProduct xVector yVector > 0
+    Vector2d.crossProduct xVector yVector > 0
 
 
 {-| Get the X axis of a given frame (the axis formed from the frame's origin
@@ -318,11 +318,11 @@ rotateBy angle frame =
         rotateDirection =
             Direction2d.rotateBy angle
     in
-        Frame2d
-            { originPoint = originPoint frame
-            , xDirection = rotateDirection (xDirection frame)
-            , yDirection = rotateDirection (yDirection frame)
-            }
+    Frame2d
+        { originPoint = originPoint frame
+        , xDirection = rotateDirection (xDirection frame)
+        , yDirection = rotateDirection (yDirection frame)
+        }
 
 
 {-| Rotate a frame counterclockwise around a given point by a given angle. The
@@ -349,12 +349,12 @@ rotateAround centerPoint angle =
         rotateDirection =
             Direction2d.rotateBy angle
     in
-        \frame ->
-            Frame2d
-                { originPoint = rotatePoint (originPoint frame)
-                , xDirection = rotateDirection (xDirection frame)
-                , yDirection = rotateDirection (yDirection frame)
-                }
+    \frame ->
+        Frame2d
+            { originPoint = rotatePoint (originPoint frame)
+            , xDirection = rotateDirection (xDirection frame)
+            , yDirection = rotateDirection (yDirection frame)
+            }
 
 
 {-| Translate a frame by a given displacement.
@@ -409,7 +409,7 @@ translateAlongOwn axis distance frame =
         direction =
             Axis2d.direction (axis frame)
     in
-        translateBy (Vector2d.in_ direction distance) frame
+    translateBy (Vector2d.in_ direction distance) frame
 
 
 {-| Mirror a frame across an axis.
@@ -437,12 +437,12 @@ mirrorAcross axis =
         mirrorDirection =
             Direction2d.mirrorAcross axis
     in
-        \frame ->
-            Frame2d
-                { originPoint = mirrorPoint (originPoint frame)
-                , xDirection = mirrorDirection (xDirection frame)
-                , yDirection = mirrorDirection (yDirection frame)
-                }
+    \frame ->
+        Frame2d
+            { originPoint = mirrorPoint (originPoint frame)
+            , xDirection = mirrorDirection (xDirection frame)
+            , yDirection = mirrorDirection (yDirection frame)
+            }
 
 
 {-| Take two frames defined in global coordinates, and return the second one
@@ -457,12 +457,12 @@ relativeTo otherFrame =
         relativeDirection =
             Direction2d.relativeTo otherFrame
     in
-        \frame ->
-            Frame2d
-                { originPoint = relativePoint (originPoint frame)
-                , xDirection = relativeDirection (xDirection frame)
-                , yDirection = relativeDirection (yDirection frame)
-                }
+    \frame ->
+        Frame2d
+            { originPoint = relativePoint (originPoint frame)
+            , xDirection = relativeDirection (xDirection frame)
+            , yDirection = relativeDirection (yDirection frame)
+            }
 
 
 {-| Take one frame defined in global coordinates and a second frame defined
@@ -478,9 +478,9 @@ placeIn otherFrame =
         placeDirection =
             Direction2d.placeIn otherFrame
     in
-        \frame ->
-            Frame2d
-                { originPoint = placePoint (originPoint frame)
-                , xDirection = placeDirection (xDirection frame)
-                , yDirection = placeDirection (yDirection frame)
-                }
+    \frame ->
+        Frame2d
+            { originPoint = placePoint (originPoint frame)
+            , xDirection = placeDirection (xDirection frame)
+            , yDirection = placeDirection (yDirection frame)
+            }

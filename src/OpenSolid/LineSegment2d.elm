@@ -13,28 +13,28 @@
 module OpenSolid.LineSegment2d
     exposing
         ( along
-        , endpoints
-        , startPoint
-        , endPoint
-        , reverse
-        , midpoint
-        , interpolate
-        , length
-        , squaredLength
+        , boundingBox
         , direction
-        , normalDirection
-        , vector
+        , endPoint
+        , endpoints
+        , interpolate
         , intersectionPoint
-        , scaleAbout
-        , rotateAround
-        , translateBy
-        , mirrorAcross
-        , projectOnto
+        , length
         , map
-        , relativeTo
+        , midpoint
+        , mirrorAcross
+        , normalDirection
         , placeIn
         , placeOnto
-        , boundingBox
+        , projectOnto
+        , relativeTo
+        , reverse
+        , rotateAround
+        , scaleAbout
+        , squaredLength
+        , startPoint
+        , translateBy
+        , vector
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/lineSegment2d.svg" alt="LineSegment2d" width="160">
@@ -110,8 +110,8 @@ different coordinate frames.
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Point2d as Point2d
+import OpenSolid.Vector2d as Vector2d
 
 
 {-| Construct a line segment collinear with the given axis, with its endpoints
@@ -183,7 +183,7 @@ reverse lineSegment =
         ( p1, p2 ) =
             endpoints lineSegment
     in
-        LineSegment2d ( p2, p1 )
+    LineSegment2d ( p2, p1 )
 
 
 {-| Get the midpoint of a line segment.
@@ -215,7 +215,7 @@ interpolate lineSegment =
         ( start, end ) =
             endpoints lineSegment
     in
-        Point2d.interpolateFrom start end
+    Point2d.interpolateFrom start end
 
 
 {-| Get the length of a line segment.
@@ -278,7 +278,7 @@ vector lineSegment =
         ( p1, p2 ) =
             endpoints lineSegment
     in
-        Point2d.vectorFrom p1 p2
+    Point2d.vectorFrom p1 p2
 
 
 {-| Attempt to find the unique intersection point of two line segments. If there
@@ -352,50 +352,50 @@ intersectionPoint lineSegment1 lineSegment2 =
             , pqXr + rXpq_
             )
     in
-        if tDenominator == 0 || uDenominator == 0 then
-            -- Segments are parallel or collinear.
-            -- In collinear case, we check if there is only one intersection point.
-            if Vector2d.dotProduct r s < 0 then
-                if p_ == q_ then
-                    -- p |----- p_ | q_ -----| q
-                    Just p_
-                else if p == q then
-                    -- q_ |----- q | p -----| p_
-                    Just p
-                else
-                    Nothing
-            else if p_ == q then
-                -- p |----- p_ | q -----| q_
+    if tDenominator == 0 || uDenominator == 0 then
+        -- Segments are parallel or collinear.
+        -- In collinear case, we check if there is only one intersection point.
+        if Vector2d.dotProduct r s < 0 then
+            if p_ == q_ then
+                -- p |----- p_ | q_ -----| q
                 Just p_
-            else if p == q_ then
-                -- q |----- q_ | p -----| p_
+            else if p == q then
+                -- q_ |----- q | p -----| p_
                 Just p
             else
                 Nothing
+        else if p_ == q then
+            -- p |----- p_ | q -----| q_
+            Just p_
+        else if p == q_ then
+            -- q |----- q_ | p -----| p_
+            Just p
         else
-            -- Segments are not parallel.
-            -- We search for the intersection point of the two lines.
+            Nothing
+    else
+        -- Segments are not parallel.
+        -- We search for the intersection point of the two lines.
+        let
+            ( t, u ) =
+                ( pqXs / tDenominator
+                , pqXr / uDenominator
+                )
+        in
+        if (0 <= t && t <= 1) && (0 <= u && u <= 1) then
+            -- Intersection is within both segments.
             let
-                ( t, u ) =
-                    ( pqXs / tDenominator
-                    , pqXr / uDenominator
-                    )
+                -- Ensure interpolation happens from the closest
+                -- endpoint (this should be more numerically stable, and
+                -- also mostly ensures that intersection is symmetric)
+                intersection =
+                    if min t (1 - t) <= min u (1 - u) then
+                        interpolate lineSegment1 t
+                    else
+                        interpolate lineSegment2 u
             in
-                if (0 <= t && t <= 1) && (0 <= u && u <= 1) then
-                    -- Intersection is within both segments.
-                    let
-                        -- Ensure interpolation happens from the closest
-                        -- endpoint (this should be more numerically stable, and
-                        -- also mostly ensures that intersection is symmetric)
-                        intersection =
-                            if min t (1 - t) <= min u (1 - u) then
-                                interpolate lineSegment1 t
-                            else
-                                interpolate lineSegment2 u
-                    in
-                        Just intersection
-                else
-                    Nothing
+            Just intersection
+        else
+            Nothing
 
 
 {-| Scale a line segment about the given center point by the given scale.
@@ -457,7 +457,7 @@ translateBy vector =
 
 Note that the endpoints of a mirrored segment are equal to the mirrored
 endpoints of the original segment, but as a result the normal direction of a
-mirrored segment is the *opposite* of the mirrored normal direction of the
+mirrored segment is the _opposite_ of the mirrored normal direction of the
 original segment (since the normal direction is always considered to be 'to the
 left' of the line segment).
 
@@ -504,7 +504,7 @@ map function lineSegment =
         ( p1, p2 ) =
             endpoints lineSegment
     in
-        LineSegment2d ( function p1, function p2 )
+    LineSegment2d ( function p1, function p2 )
 
 
 {-| Take a line segment defined in global coordinates, and return it expressed
@@ -560,12 +560,12 @@ placeOnto sketchPlane =
         place =
             Point2d.placeOnto sketchPlane
     in
-        \lineSegment ->
-            let
-                ( p1, p2 ) =
-                    endpoints lineSegment
-            in
-                LineSegment3d ( place p1, place p2 )
+    \lineSegment ->
+        let
+            ( p1, p2 ) =
+                endpoints lineSegment
+        in
+        LineSegment3d ( place p1, place p2 )
 
 
 {-| Get the minimal bounding box containing a given line segment.
@@ -585,4 +585,4 @@ boundingBox lineSegment =
         ( p1, p2 ) =
             endpoints lineSegment
     in
-        Point2d.hull p1 p2
+    Point2d.hull p1 p2

@@ -12,19 +12,19 @@
 
 module OpenSolid.Polyline3d
     exposing
-        ( vertices
-        , segments
+        ( boundingBox
         , length
-        , scaleAbout
-        , rotateAround
-        , translateBy
-        , mirrorAcross
-        , projectOnto
         , map
-        , relativeTo
+        , mirrorAcross
         , placeIn
         , projectInto
-        , boundingBox
+        , projectOnto
+        , relativeTo
+        , rotateAround
+        , scaleAbout
+        , segments
+        , translateBy
+        , vertices
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/polyline3d.svg" alt="Polyline3d" width="160">
@@ -81,10 +81,10 @@ Transforming a polyline is equivalent to transforming each of its vertices.
 
 -}
 
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Point3d as Point3d
 import OpenSolid.BoundingBox3d as BoundingBox3d
+import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.LineSegment3d as LineSegment3d
+import OpenSolid.Point3d as Point3d
 
 
 {-| Get the vertices of a polyline.

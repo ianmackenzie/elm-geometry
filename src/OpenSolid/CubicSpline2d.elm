@@ -1,21 +1,21 @@
 module OpenSolid.CubicSpline2d
     exposing
         ( bezier
-        , hermite
         , controlPoints
-        , startPoint
-        , endPoint
-        , startDerivative
-        , endDerivative
-        , point
         , derivative
-        , scaleAbout
-        , rotateAround
-        , translateBy
+        , endDerivative
+        , endPoint
+        , hermite
         , mirrorAcross
-        , relativeTo
         , placeIn
         , placeOnto
+        , point
+        , relativeTo
+        , rotateAround
+        , scaleAbout
+        , startDerivative
+        , startPoint
+        , translateBy
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/cubicSpline2d.svg" alt="CubicSpline2d" width="160">
@@ -114,7 +114,7 @@ hermite ( startPoint, startDerivative ) ( endPoint, endDerivative ) =
                 |> Point2d.translateBy
                     (Vector2d.scaleBy (-1 / 3) endDerivative)
     in
-        bezier startPoint startControlPoint endControlPoint endPoint
+    bezier startPoint startControlPoint endControlPoint endPoint
 
 
 {-| Get the control points of a spline as a tuple.
@@ -171,7 +171,7 @@ startDerivative spline =
         ( p1, p2, _, _ ) =
             controlPoints spline
     in
-        Point2d.vectorFrom p1 p2 |> Vector2d.scaleBy 3
+    Point2d.vectorFrom p1 p2 |> Vector2d.scaleBy 3
 
 
 {-| Get the end derivative of a spline. This is equal to three times the vector
@@ -187,7 +187,7 @@ endDerivative spline =
         ( _, _, p3, p4 ) =
             controlPoints spline
     in
-        Point2d.vectorFrom p3 p4 |> Vector2d.scaleBy 3
+    Point2d.vectorFrom p3 p4 |> Vector2d.scaleBy 3
 
 
 {-| Get a point along a spline, based on a parameter that ranges from 0 to 1. A
@@ -225,7 +225,7 @@ point spline t =
         r2 =
             Point2d.interpolateFrom q2 q3 t
     in
-        Point2d.interpolateFrom r1 r2 t
+    Point2d.interpolateFrom r1 r2 t
 
 
 {-| Get the deriative value at a point along a spline, based on a parameter that
@@ -257,15 +257,15 @@ derivative spline =
         v3 =
             Point2d.vectorFrom p3 p4
     in
-        \t ->
-            let
-                w1 =
-                    Vector2d.interpolateFrom v1 v2 t
+    \t ->
+        let
+            w1 =
+                Vector2d.interpolateFrom v1 v2 t
 
-                w2 =
-                    Vector2d.interpolateFrom v2 v3 t
-            in
-                Vector2d.interpolateFrom w1 w2 t |> Vector2d.scaleBy 3
+            w2 =
+                Vector2d.interpolateFrom v2 v3 t
+        in
+        Vector2d.interpolateFrom w1 w2 t |> Vector2d.scaleBy 3
 
 
 mapControlPoints : (Point2d -> Point2d) -> CubicSpline2d -> CubicSpline2d
@@ -274,7 +274,7 @@ mapControlPoints function spline =
         ( p1, p2, p3, p4 ) =
             controlPoints spline
     in
-        CubicSpline2d ( function p1, function p2, function p3, function p4 )
+    CubicSpline2d ( function p1, function p2, function p3, function p4 )
 
 
 {-| Scale a spline about the given center point by the given scale.
@@ -406,4 +406,4 @@ placeOnto sketchPlane spline =
         place =
             Point2d.placeOnto sketchPlane
     in
-        CubicSpline3d ( place p1, place p2, place p3, place p4 )
+    CubicSpline3d ( place p1, place p2, place p3, place p4 )

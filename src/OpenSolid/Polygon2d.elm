@@ -12,20 +12,20 @@
 
 module OpenSolid.Polygon2d
     exposing
-        ( vertices
-        , edges
-        , perimeter
-        , area
+        ( area
+        , boundingBox
         , clockwiseArea
         , counterclockwiseArea
-        , scaleAbout
-        , rotateAround
-        , translateBy
-        , mirrorAcross
+        , edges
         , map
-        , relativeTo
+        , mirrorAcross
+        , perimeter
         , placeIn
-        , boundingBox
+        , relativeTo
+        , rotateAround
+        , scaleAbout
+        , translateBy
+        , vertices
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/polygon2d.svg" alt="Polygon2d" width="160">
@@ -81,10 +81,10 @@ Transforming a polygon is equivalent to transforming each of its vertices.
 
 -}
 
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Point2d as Point2d
 import OpenSolid.BoundingBox2d as BoundingBox2d
+import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.LineSegment2d as LineSegment2d
+import OpenSolid.Point2d as Point2d
 import OpenSolid.Triangle2d as Triangle2d
 
 
@@ -189,7 +189,7 @@ counterclockwiseArea polygon =
                 segmentAreas =
                     List.map2 segmentArea (second :: rest) rest
             in
-                List.sum segmentAreas
+            List.sum segmentAreas
 
 
 {-| Scale a polygon about a given center point by a given scale.
