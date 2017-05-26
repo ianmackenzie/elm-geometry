@@ -12,14 +12,14 @@
 
 module Polyline2d exposing (suite)
 
+import Generic
+import OpenSolid.Geometry.Decode as Decode
+import OpenSolid.Geometry.Encode as Encode
+import OpenSolid.Geometry.Expect as Expect
+import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Polyline2d as Polyline2d
 import Test exposing (Test)
 import Test.Runner.Html as HtmlRunner
-import OpenSolid.Polyline2d as Polyline2d
-import OpenSolid.Geometry.Encode as Encode
-import OpenSolid.Geometry.Decode as Decode
-import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Geometry.Expect as Expect
-import Generic
 
 
 jsonRoundTrips : Test

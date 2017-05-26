@@ -12,21 +12,21 @@
 
 module Point3d exposing (suite)
 
-import Test exposing (Test)
-import Fuzz
 import Expect
-import Test.Runner.Html as HtmlRunner
+import Fuzz
+import Generic
+import OpenSolid.Direction3d as Direction3d
+import OpenSolid.Geometry.Decode as Decode
+import OpenSolid.Geometry.Encode as Encode
+import OpenSolid.Geometry.Expect as Expect
+import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Plane3d as Plane3d
+import OpenSolid.Point2d as Point2d
 import OpenSolid.Point3d as Point3d
 import OpenSolid.SketchPlane3d as SketchPlane3d
-import OpenSolid.Point2d as Point2d
-import OpenSolid.Plane3d as Plane3d
 import OpenSolid.Vector3d as Vector3d
-import OpenSolid.Direction3d as Direction3d
-import OpenSolid.Geometry.Encode as Encode
-import OpenSolid.Geometry.Decode as Decode
-import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Geometry.Expect as Expect
-import Generic
+import Test exposing (Test)
+import Test.Runner.Html as HtmlRunner
 
 
 rotationAboutAxisPreservesDistanceAlong : Test
@@ -46,9 +46,9 @@ rotationAboutAxisPreservesDistanceAlong =
                 rotatedDistance =
                     Point3d.distanceAlong axis rotatedPoint
             in
-                Expect.approximately distance rotatedDistance
+            Expect.approximately distance rotatedDistance
     in
-        Test.fuzz3 Fuzz.point3d Fuzz.axis3d Fuzz.scalar description expectation
+    Test.fuzz3 Fuzz.point3d Fuzz.axis3d Fuzz.scalar description expectation
 
 
 rotationAboutAxisPreservesRadialDistance : Test
@@ -68,9 +68,9 @@ rotationAboutAxisPreservesRadialDistance =
                 rotatedDistance =
                     Point3d.radialDistanceFrom axis rotatedPoint
             in
-                Expect.approximately radialDistance rotatedDistance
+            Expect.approximately radialDistance rotatedDistance
     in
-        Test.fuzz3 Fuzz.point3d Fuzz.axis3d Fuzz.scalar description expectation
+    Test.fuzz3 Fuzz.point3d Fuzz.axis3d Fuzz.scalar description expectation
 
 
 midpointIsEquidistant : Test
@@ -84,9 +84,9 @@ midpointIsEquidistant =
                 midpoint =
                     Point3d.midpoint p1 p2
             in
-                Expect.approximately
-                    (Point3d.distanceFrom p1 midpoint)
-                    (Point3d.distanceFrom p2 midpoint)
+            Expect.approximately
+                (Point3d.distanceFrom p1 midpoint)
+                (Point3d.distanceFrom p2 midpoint)
         )
 
 
@@ -111,9 +111,9 @@ projectIntoThenPlaceOntoIsProjectOnto =
                 plane =
                     SketchPlane3d.plane sketchPlane
             in
-                Point3d.projectInto sketchPlane point
-                    |> Point2d.placeOnto sketchPlane
-                    |> Expect.point3d (Point3d.projectOnto plane point)
+            Point3d.projectInto sketchPlane point
+                |> Point2d.placeOnto sketchPlane
+                |> Expect.point3d (Point3d.projectOnto plane point)
         )
 
 
@@ -127,9 +127,9 @@ mirrorFlipsSignedDistance =
                 signedDistance =
                     Point3d.signedDistanceFrom plane point
             in
-                Point3d.mirrorAcross plane point
-                    |> Point3d.signedDistanceFrom plane
-                    |> Expect.approximately -signedDistance
+            Point3d.mirrorAcross plane point
+                |> Point3d.signedDistanceFrom plane
+                |> Expect.approximately -signedDistance
         )
 
 
@@ -153,9 +153,9 @@ translationByPerpendicularDoesNotChangeSignedDistance =
                 displacement =
                     Vector3d.in_ perpendicularDirection distance
             in
-                Point3d.translateBy displacement point
-                    |> Point3d.signedDistanceFrom plane
-                    |> Expect.approximately originalSignedDistance
+            Point3d.translateBy displacement point
+                |> Point3d.signedDistanceFrom plane
+                |> Expect.approximately originalSignedDistance
         )
 
 

@@ -12,18 +12,18 @@
 
 module BoundingBox2d exposing (suite)
 
-import Json.Decode as Decode
-import Test exposing (Test)
-import Fuzz
 import Expect
-import Test.Runner.Html as HtmlRunner
-import OpenSolid.BoundingBox2d as BoundingBox2d
-import OpenSolid.Point2d as Point2d
-import OpenSolid.Geometry.Encode as Encode
-import OpenSolid.Geometry.Decode as Decode
-import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Geometry.Expect as Expect
+import Fuzz
 import Generic
+import Json.Decode as Decode
+import OpenSolid.BoundingBox2d as BoundingBox2d
+import OpenSolid.Geometry.Decode as Decode
+import OpenSolid.Geometry.Encode as Encode
+import OpenSolid.Geometry.Expect as Expect
+import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Point2d as Point2d
+import Test exposing (Test)
+import Test.Runner.Html as HtmlRunner
 
 
 jsonRoundTrips : Test
@@ -67,31 +67,31 @@ intersectionConsistentWithOverlaps =
                 intersection =
                     BoundingBox2d.intersection first second
             in
-                case ( overlaps, intersection ) of
-                    ( True, Just _ ) ->
-                        Expect.pass
+            case ( overlaps, intersection ) of
+                ( True, Just _ ) ->
+                    Expect.pass
 
-                    ( False, Nothing ) ->
-                        Expect.pass
+                ( False, Nothing ) ->
+                    Expect.pass
 
-                    ( True, Nothing ) ->
-                        Expect.fail
-                            (toString first
-                                ++ " and "
-                                ++ toString second
-                                ++ " considered to overlap, "
-                                ++ "but intersection is Nothing"
-                            )
+                ( True, Nothing ) ->
+                    Expect.fail
+                        (toString first
+                            ++ " and "
+                            ++ toString second
+                            ++ " considered to overlap, "
+                            ++ "but intersection is Nothing"
+                        )
 
-                    ( False, Just intersectionBox ) ->
-                        Expect.fail
-                            (toString first
-                                ++ " and "
-                                ++ toString second
-                                ++ " not considered to overlap, "
-                                ++ " but have valid intersection "
-                                ++ toString intersectionBox
-                            )
+                ( False, Just intersectionBox ) ->
+                    Expect.fail
+                        (toString first
+                            ++ " and "
+                            ++ toString second
+                            ++ " not considered to overlap, "
+                            ++ " but have valid intersection "
+                            ++ toString intersectionBox
+                        )
         )
 
 
@@ -108,8 +108,8 @@ hullContainsInputs =
                 isContained =
                     BoundingBox2d.isContainedIn hull
             in
-                Expect.true "Bounding box hull does not contain both inputs"
-                    (isContained first && isContained second)
+            Expect.true "Bounding box hull does not contain both inputs"
+                (isContained first && isContained second)
         )
 
 
@@ -119,7 +119,7 @@ intersectionIsValidOrNothing =
         Fuzz.boundingBox2d
         "intersection of two boxes is either Nothing or Just a valid box"
         (\first second ->
-            case (BoundingBox2d.intersection first second) of
+            case BoundingBox2d.intersection first second of
                 Nothing ->
                     Expect.pass
 
@@ -128,8 +128,8 @@ intersectionIsValidOrNothing =
                         { minX, maxX, minY, maxY } =
                             BoundingBox2d.extrema result
                     in
-                        Expect.true "expected extrema to be correctly ordered"
-                            ((minX <= maxX) && (minY <= maxY))
+                    Expect.true "expected extrema to be correctly ordered"
+                        ((minX <= maxX) && (minY <= maxY))
         )
 
 
@@ -142,8 +142,8 @@ boxContainsOwnCentroid =
                 centroid =
                     BoundingBox2d.centroid box
             in
-                Expect.true "bounding box does not contain its own centroid"
-                    (BoundingBox2d.contains centroid box)
+            Expect.true "bounding box does not contain its own centroid"
+                (BoundingBox2d.contains centroid box)
         )
 
 

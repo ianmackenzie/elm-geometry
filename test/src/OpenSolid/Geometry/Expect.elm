@@ -13,93 +13,93 @@
 module OpenSolid.Geometry.Expect
     exposing
         ( Comparison
-        , expect
-        , approximately
-        , within
         , angle
         , angleWithin
-        , vector2d
-        , vector2dWithin
-        , vector3d
-        , vector3dWithin
-        , validDirection2d
-        , direction2d
-        , direction2dWithin
-        , validDirection3d
-        , direction3d
-        , direction3dWithin
-        , point2d
-        , point2dWithin
-        , point3d
-        , point3dWithin
+        , approximately
+        , arc2d
+        , arc3d
         , axis2d
         , axis3d
-        , plane3d
-        , validFrame2d
-        , frame2d
-        , validFrame3d
-        , frame3d
-        , sketchPlane3d
-        , lineSegment2d
-        , lineSegment2dWithin
-        , lineSegment3d
-        , lineSegment3dWithin
-        , triangle2d
-        , triangle2dWithin
-        , triangle3d
-        , triangle3dWithin
         , boundingBox2d
         , boundingBox2dWithin
         , boundingBox3d
         , boundingBox3dWithin
+        , circle2d
+        , circle3d
+        , cubicSpline2d
+        , cubicSpline3d
+        , direction2d
+        , direction2dWithin
+        , direction3d
+        , direction3dWithin
+        , expect
+        , frame2d
+        , frame3d
+        , lineSegment2d
+        , lineSegment2dWithin
+        , lineSegment3d
+        , lineSegment3dWithin
+        , plane3d
+        , point2d
+        , point2dWithin
+        , point3d
+        , point3dWithin
+        , polygon2d
+        , polygon2dWithin
         , polyline2d
         , polyline2dWithin
         , polyline3d
         , polyline3dWithin
-        , polygon2d
-        , polygon2dWithin
-        , circle2d
-        , circle3d
-        , arc2d
-        , arc3d
         , quadraticSpline2d
         , quadraticSpline3d
-        , cubicSpline2d
-        , cubicSpline3d
+        , sketchPlane3d
+        , triangle2d
+        , triangle2dWithin
+        , triangle3d
+        , triangle3dWithin
+        , validDirection2d
+        , validDirection3d
+        , validFrame2d
+        , validFrame3d
+        , vector2d
+        , vector2dWithin
+        , vector3d
+        , vector3dWithin
+        , within
         )
 
 import Expect exposing (Expectation)
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Scalar as Scalar
-import OpenSolid.Vector2d as Vector2d
-import OpenSolid.Vector3d as Vector3d
-import OpenSolid.Direction2d as Direction2d
-import OpenSolid.Direction3d as Direction3d
-import OpenSolid.Point2d as Point2d
-import OpenSolid.Point3d as Point3d
-import OpenSolid.Axis2d as Axis2d
-import OpenSolid.Axis3d as Axis3d
-import OpenSolid.Plane3d as Plane3d
-import OpenSolid.Frame2d as Frame2d
-import OpenSolid.Frame3d as Frame3d
-import OpenSolid.SketchPlane3d as SketchPlane3d
-import OpenSolid.LineSegment2d as LineSegment2d
-import OpenSolid.LineSegment3d as LineSegment3d
-import OpenSolid.Triangle2d as Triangle2d
-import OpenSolid.Triangle3d as Triangle3d
-import OpenSolid.BoundingBox2d as BoundingBox2d
-import OpenSolid.BoundingBox3d as BoundingBox3d
-import OpenSolid.Polyline2d as Polyline2d
-import OpenSolid.Polyline3d as Polyline3d
-import OpenSolid.Polygon2d as Polygon2d
-import OpenSolid.Circle2d as Circle2d
-import OpenSolid.Circle3d as Circle3d
 import OpenSolid.Arc2d as Arc2d
 import OpenSolid.Arc3d as Arc3d
-import OpenSolid.QuadraticSpline2d as QuadraticSpline2d
-import OpenSolid.QuadraticSpline3d as QuadraticSpline3d
+import OpenSolid.Axis2d as Axis2d
+import OpenSolid.Axis3d as Axis3d
+import OpenSolid.BoundingBox2d as BoundingBox2d
+import OpenSolid.BoundingBox3d as BoundingBox3d
+import OpenSolid.Circle2d as Circle2d
+import OpenSolid.Circle3d as Circle3d
 import OpenSolid.CubicSpline2d as CubicSpline2d
 import OpenSolid.CubicSpline3d as CubicSpline3d
+import OpenSolid.Direction2d as Direction2d
+import OpenSolid.Direction3d as Direction3d
+import OpenSolid.Frame2d as Frame2d
+import OpenSolid.Frame3d as Frame3d
+import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.LineSegment2d as LineSegment2d
+import OpenSolid.LineSegment3d as LineSegment3d
+import OpenSolid.Plane3d as Plane3d
+import OpenSolid.Point2d as Point2d
+import OpenSolid.Point3d as Point3d
+import OpenSolid.Polygon2d as Polygon2d
+import OpenSolid.Polyline2d as Polyline2d
+import OpenSolid.Polyline3d as Polyline3d
+import OpenSolid.QuadraticSpline2d as QuadraticSpline2d
+import OpenSolid.QuadraticSpline3d as QuadraticSpline3d
+import OpenSolid.Scalar as Scalar
+import OpenSolid.SketchPlane3d as SketchPlane3d
+import OpenSolid.Triangle2d as Triangle2d
+import OpenSolid.Triangle3d as Triangle3d
+import OpenSolid.Vector2d as Vector2d
+import OpenSolid.Vector3d as Vector3d
 
 
 type alias Comparison a =
@@ -115,7 +115,7 @@ expect comparison first second =
             message =
                 "Expected " ++ toString first ++ ", got " ++ toString second
         in
-            Expect.fail message
+        Expect.fail message
 
 
 by : Comparison b -> (a -> b) -> Comparison a
@@ -141,8 +141,8 @@ listOf comparison firstList secondList =
             False
 
         ( firstHead :: firstTail, secondHead :: secondTail ) ->
-            (comparison firstHead secondHead)
-                && (listOf comparison firstTail secondTail)
+            comparison firstHead secondHead
+                && listOf comparison firstTail secondTail
 
 
 defaultTolerance : Float
@@ -173,9 +173,9 @@ angleWithin tolerance =
                 difference =
                     secondAngle - firstAngle
             in
-                abs (atan2 (sin difference) (cos difference)) <= tolerance
+            abs (atan2 (sin difference) (cos difference)) <= tolerance
     in
-        expect comparison
+    expect comparison
 
 
 vector2d : Vector2d -> Vector2d -> Expectation
@@ -204,15 +204,15 @@ validDirection2d direction =
         length =
             Vector2d.length (Direction2d.toVector direction)
     in
-        if abs (length - 1) <= defaultTolerance then
-            Expect.pass
-        else
-            Expect.fail
-                ("Expected "
-                    ++ toString direction
-                    ++ " to have length 1, but actually has length "
-                    ++ toString length
-                )
+    if abs (length - 1) <= defaultTolerance then
+        Expect.pass
+    else
+        Expect.fail
+            ("Expected "
+                ++ toString direction
+                ++ " to have length 1, but actually has length "
+                ++ toString length
+            )
 
 
 direction2d : Direction2d -> Direction2d -> Expectation
@@ -231,15 +231,15 @@ validDirection3d direction =
         length =
             Vector3d.length (Direction3d.toVector direction)
     in
-        if abs (length - 1) <= defaultTolerance then
-            Expect.pass
-        else
-            Expect.fail
-                ("Expected "
-                    ++ toString direction
-                    ++ " to have length 1, but actually has length "
-                    ++ toString length
-                )
+    if abs (length - 1) <= defaultTolerance then
+        Expect.pass
+    else
+        Expect.fail
+            ("Expected "
+                ++ toString direction
+                ++ " to have length 1, but actually has length "
+                ++ toString length
+            )
 
 
 direction3d : Direction3d -> Direction3d -> Expectation
@@ -309,7 +309,7 @@ validFrame2d =
     Expect.all
         [ Frame2d.xDirection >> validDirection2d
         , Frame2d.yDirection >> validDirection2d
-        , (\frame ->
+        , \frame ->
             let
                 xDirection =
                     Frame2d.xDirection frame
@@ -320,16 +320,15 @@ validFrame2d =
                 parallelComponent =
                     Direction2d.componentIn xDirection yDirection
             in
-                if abs parallelComponent <= defaultTolerance then
-                    Expect.pass
-                else
-                    Expect.fail
-                        ("Expected perpendicular basis directions, got "
-                            ++ toString xDirection
-                            ++ ", "
-                            ++ toString yDirection
-                        )
-          )
+            if abs parallelComponent <= defaultTolerance then
+                Expect.pass
+            else
+                Expect.fail
+                    ("Expected perpendicular basis directions, got "
+                        ++ toString xDirection
+                        ++ ", "
+                        ++ toString yDirection
+                    )
         ]
 
 
@@ -350,7 +349,7 @@ validFrame3d =
         [ Frame3d.xDirection >> validDirection3d
         , Frame3d.yDirection >> validDirection3d
         , Frame3d.zDirection >> validDirection3d
-        , (\frame ->
+        , \frame ->
             let
                 xDirection =
                     Frame3d.xDirection frame
@@ -370,22 +369,21 @@ validFrame3d =
                 zxComponent =
                     Direction3d.componentIn zDirection xDirection
             in
-                if
-                    (abs xyComponent <= defaultTolerance)
-                        && (abs yzComponent <= defaultTolerance)
-                        && (abs zxComponent <= defaultTolerance)
-                then
-                    Expect.pass
-                else
-                    Expect.fail
-                        ("Expected perpendicular basis directions, got "
-                            ++ toString xDirection
-                            ++ ", "
-                            ++ toString yDirection
-                            ++ ", "
-                            ++ toString zDirection
-                        )
-          )
+            if
+                (abs xyComponent <= defaultTolerance)
+                    && (abs yzComponent <= defaultTolerance)
+                    && (abs zxComponent <= defaultTolerance)
+            then
+                Expect.pass
+            else
+                Expect.fail
+                    ("Expected perpendicular basis directions, got "
+                        ++ toString xDirection
+                        ++ ", "
+                        ++ toString yDirection
+                        ++ ", "
+                        ++ toString zDirection
+                    )
         ]
 
 
@@ -464,11 +462,11 @@ triangle2dWithin tolerance =
                 equalPoints =
                     Point2d.equalWithin tolerance
             in
-                equalPoints firstVertex1 secondVertex1
-                    && equalPoints firstVertex2 secondVertex2
-                    && equalPoints firstVertex3 secondVertex3
+            equalPoints firstVertex1 secondVertex1
+                && equalPoints firstVertex2 secondVertex2
+                && equalPoints firstVertex3 secondVertex3
     in
-        expect comparison
+    expect comparison
 
 
 triangle3d : Triangle3d -> Triangle3d -> Expectation
@@ -490,11 +488,11 @@ triangle3dWithin tolerance =
                 equalPoints =
                     Point3d.equalWithin tolerance
             in
-                equalPoints firstVertex1 secondVertex1
-                    && equalPoints firstVertex2 secondVertex2
-                    && equalPoints firstVertex3 secondVertex3
+            equalPoints firstVertex1 secondVertex1
+                && equalPoints firstVertex2 secondVertex2
+                && equalPoints firstVertex3 secondVertex3
     in
-        expect comparison
+    expect comparison
 
 
 boundingBox2d : BoundingBox2d -> BoundingBox2d -> Expectation
@@ -624,7 +622,7 @@ quadraticSpline2d =
                 equal =
                     Point2d.equalWithin defaultTolerance
             in
-                equal p1 q1 && equal p2 q2 && equal p3 q3
+            equal p1 q1 && equal p2 q2 && equal p3 q3
         )
 
 
@@ -642,7 +640,7 @@ quadraticSpline3d =
                 equal =
                     Point3d.equalWithin defaultTolerance
             in
-                equal p1 q1 && equal p2 q2 && equal p3 q3
+            equal p1 q1 && equal p2 q2 && equal p3 q3
         )
 
 
@@ -660,7 +658,7 @@ cubicSpline2d =
                 equal =
                     Point2d.equalWithin defaultTolerance
             in
-                equal p1 q1 && equal p2 q2 && equal p3 q3 && equal p4 q4
+            equal p1 q1 && equal p2 q2 && equal p3 q3 && equal p4 q4
         )
 
 
@@ -678,5 +676,5 @@ cubicSpline3d =
                 equal =
                     Point3d.equalWithin defaultTolerance
             in
-                equal p1 q1 && equal p2 q2 && equal p3 q3 && equal p4 q4
+            equal p1 q1 && equal p2 q2 && equal p3 q3 && equal p4 q4
         )

@@ -12,14 +12,14 @@
 
 module Polygon2d exposing (suite)
 
+import Generic
+import OpenSolid.Geometry.Decode as Decode
+import OpenSolid.Geometry.Encode as Encode
+import OpenSolid.Geometry.Expect as Expect
+import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Polygon2d as Polygon2d
 import Test exposing (Test)
 import Test.Runner.Html as HtmlRunner
-import OpenSolid.Polygon2d as Polygon2d
-import OpenSolid.Geometry.Encode as Encode
-import OpenSolid.Geometry.Decode as Decode
-import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Geometry.Expect as Expect
-import Generic
 
 
 jsonRoundTrips : Test

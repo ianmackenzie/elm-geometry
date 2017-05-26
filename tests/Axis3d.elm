@@ -12,17 +12,17 @@
 
 module Axis3d exposing (suite)
 
+import Generic
+import OpenSolid.Axis3d as Axis3d
+import OpenSolid.Direction3d as Direction3d
+import OpenSolid.Geometry.Decode as Decode
+import OpenSolid.Geometry.Encode as Encode
+import OpenSolid.Geometry.Expect as Expect
+import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Point3d as Point3d
 import Test exposing (Test)
 import Test.Runner.Html as HtmlRunner
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Axis3d as Axis3d
-import OpenSolid.Point3d as Point3d
-import OpenSolid.Direction3d as Direction3d
-import OpenSolid.Geometry.Encode as Encode
-import OpenSolid.Geometry.Decode as Decode
-import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Geometry.Expect as Expect
-import Generic
 
 
 jsonRoundTrips : Test

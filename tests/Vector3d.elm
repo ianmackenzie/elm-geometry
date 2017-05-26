@@ -12,18 +12,18 @@
 
 module Vector3d exposing (suite)
 
-import Test exposing (Test)
-import Fuzz
 import Expect
-import Test.Runner.Html as HtmlRunner
+import Fuzz
+import Generic
+import OpenSolid.Geometry.Decode as Decode
+import OpenSolid.Geometry.Encode as Encode
+import OpenSolid.Geometry.Expect as Expect
+import OpenSolid.Geometry.Fuzz as Fuzz
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Vector3d as Vector3d
-import OpenSolid.Geometry.Encode as Encode
-import OpenSolid.Geometry.Decode as Decode
-import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Geometry.Expect as Expect
-import Generic
+import Test exposing (Test)
+import Test.Runner.Html as HtmlRunner
 
 
 jsonRoundTrips : Test
@@ -56,7 +56,7 @@ orthonormalizeProducesValidFrameBasis =
                             Vector3d.crossProduct v1 v2
                                 |> Vector3d.dotProduct v3
                     in
-                        Expect.approximately 0.0 tripleProduct
+                    Expect.approximately 0.0 tripleProduct
         )
 
 
@@ -71,7 +71,7 @@ orthonormalizingCoplanarVectorsReturnsNothing =
                     , Vector3d ( -1, 2, 0 )
                     )
             in
-                Expect.equal Nothing (Vector3d.orthonormalize vectors)
+            Expect.equal Nothing (Vector3d.orthonormalize vectors)
         )
 
 

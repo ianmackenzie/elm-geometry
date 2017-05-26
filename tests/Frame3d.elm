@@ -12,16 +12,16 @@
 
 module Frame3d exposing (suite)
 
+import Generic
+import OpenSolid.Direction3d as Direction3d
+import OpenSolid.Frame3d as Frame3d
+import OpenSolid.Geometry.Decode as Decode
+import OpenSolid.Geometry.Encode as Encode
+import OpenSolid.Geometry.Expect as Expect
+import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Vector3d as Vector3d
 import Test exposing (Test)
 import Test.Runner.Html as HtmlRunner
-import OpenSolid.Frame3d as Frame3d
-import OpenSolid.Direction3d as Direction3d
-import OpenSolid.Vector3d as Vector3d
-import OpenSolid.Geometry.Encode as Encode
-import OpenSolid.Geometry.Decode as Decode
-import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Geometry.Expect as Expect
-import Generic
 
 
 jsonRoundTrips : Test
@@ -54,7 +54,7 @@ frameDirectionsAreOrthonormal =
                     else
                         -1
             in
-                Expect.approximately expectedTripleProduct tripleProduct
+            Expect.approximately expectedTripleProduct tripleProduct
         )
 
 

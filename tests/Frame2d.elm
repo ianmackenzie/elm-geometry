@@ -12,15 +12,15 @@
 
 module Frame2d exposing (suite)
 
+import Generic
+import OpenSolid.Frame2d as Frame2d
+import OpenSolid.Geometry.Decode as Decode
+import OpenSolid.Geometry.Encode as Encode
+import OpenSolid.Geometry.Expect as Expect
+import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Point2d as Point2d
 import Test exposing (Test)
 import Test.Runner.Html as HtmlRunner
-import OpenSolid.Frame2d as Frame2d
-import OpenSolid.Point2d as Point2d
-import OpenSolid.Geometry.Encode as Encode
-import OpenSolid.Geometry.Decode as Decode
-import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Geometry.Expect as Expect
-import Generic
 
 
 jsonRoundTrips : Test
@@ -40,7 +40,7 @@ globalToGlobal =
                 |> Point2d.placeIn frame
                 |> Expect.point2d point
     in
-        Test.fuzz2 Fuzz.frame2d Fuzz.point2d description expectation
+    Test.fuzz2 Fuzz.frame2d Fuzz.point2d description expectation
 
 
 localToLocal : Test
@@ -55,7 +55,7 @@ localToLocal =
                 |> Point2d.relativeTo frame
                 |> Expect.point2d point
     in
-        Test.fuzz2 Fuzz.frame2d Fuzz.point2d description expectation
+    Test.fuzz2 Fuzz.frame2d Fuzz.point2d description expectation
 
 
 suite : Test

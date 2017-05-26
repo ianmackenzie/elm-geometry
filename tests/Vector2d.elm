@@ -12,20 +12,20 @@
 
 module Vector2d exposing (suite)
 
-import Test exposing (Test)
-import Fuzz
 import Expect
-import Test.Runner.Html as HtmlRunner
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Vector2d as Vector2d
-import OpenSolid.Point2d as Point2d
-import OpenSolid.Direction2d as Direction2d
-import OpenSolid.Axis2d as Axis2d
-import OpenSolid.Geometry.Encode as Encode
-import OpenSolid.Geometry.Decode as Decode
-import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Geometry.Expect as Expect
+import Fuzz
 import Generic
+import OpenSolid.Axis2d as Axis2d
+import OpenSolid.Direction2d as Direction2d
+import OpenSolid.Geometry.Decode as Decode
+import OpenSolid.Geometry.Encode as Encode
+import OpenSolid.Geometry.Expect as Expect
+import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Point2d as Point2d
+import OpenSolid.Vector2d as Vector2d
+import Test exposing (Test)
+import Test.Runner.Html as HtmlRunner
 
 
 jsonRoundTrips : Test
@@ -84,7 +84,7 @@ rotateByRotatesByTheCorrectAngle =
                     Maybe.map2 Direction2d.angleFrom direction rotatedDirection
                         |> Maybe.withDefault 0
             in
-                Expect.angle angle measuredAngle
+            Expect.angle angle measuredAngle
         )
 
 
@@ -98,10 +98,10 @@ mirrorAcrossPreservesParallelComponent =
                 parallelComponent =
                     Vector2d.componentIn (Axis2d.direction axis)
             in
-                vector
-                    |> Vector2d.mirrorAcross axis
-                    |> parallelComponent
-                    |> Expect.approximately (parallelComponent vector)
+            vector
+                |> Vector2d.mirrorAcross axis
+                |> parallelComponent
+                |> Expect.approximately (parallelComponent vector)
         )
 
 
@@ -118,10 +118,10 @@ mirrorAcrossNegatesPerpendicularComponent =
                 perpendicularComponent =
                     Vector2d.componentIn perpendicularDirection
             in
-                vector
-                    |> Vector2d.mirrorAcross axis
-                    |> perpendicularComponent
-                    |> Expect.approximately (-(perpendicularComponent vector))
+            vector
+                |> Vector2d.mirrorAcross axis
+                |> perpendicularComponent
+                |> Expect.approximately -(perpendicularComponent vector)
         )
 
 
@@ -148,7 +148,7 @@ orthonormalizeProducesValidFrameBasis =
                         crossProduct =
                             Vector2d.crossProduct v1 v2
                     in
-                        Expect.approximately 0.0 crossProduct
+                    Expect.approximately 0.0 crossProduct
         )
 
 
@@ -162,7 +162,7 @@ orthonormalizingParallelVectorsReturnsNothing =
                     , Vector2d ( -3, -6 )
                     )
             in
-                Expect.equal Nothing (Vector2d.orthonormalize vectors)
+            Expect.equal Nothing (Vector2d.orthonormalize vectors)
         )
 
 

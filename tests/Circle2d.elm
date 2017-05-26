@@ -12,16 +12,16 @@
 
 module Circle2d exposing (suite)
 
-import Test exposing (Test)
 import Expect
-import Test.Runner.Html as HtmlRunner
-import OpenSolid.Circle2d as Circle2d
-import OpenSolid.BoundingBox2d as BoundingBox2d
-import OpenSolid.Geometry.Encode as Encode
-import OpenSolid.Geometry.Decode as Decode
-import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Geometry.Expect as Expect
 import Generic
+import OpenSolid.BoundingBox2d as BoundingBox2d
+import OpenSolid.Circle2d as Circle2d
+import OpenSolid.Geometry.Decode as Decode
+import OpenSolid.Geometry.Encode as Encode
+import OpenSolid.Geometry.Expect as Expect
+import OpenSolid.Geometry.Fuzz as Fuzz
+import Test exposing (Test)
+import Test.Runner.Html as HtmlRunner
 
 
 jsonRoundTrips : Test
@@ -43,9 +43,9 @@ boundingBoxContainsCenter =
                 centerPoint =
                     Circle2d.centerPoint circle
             in
-                Expect.true
-                    "Circle bounding box does not contain the center point"
-                    (BoundingBox2d.contains centerPoint boundingBox)
+            Expect.true
+                "Circle bounding box does not contain the center point"
+                (BoundingBox2d.contains centerPoint boundingBox)
         )
 
 

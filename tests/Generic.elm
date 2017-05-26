@@ -10,13 +10,13 @@
 --------------------------------------------------------------------------------
 
 
-module Generic exposing (jsonRoundTrips, conversionRoundTrips)
+module Generic exposing (conversionRoundTrips, jsonRoundTrips)
 
-import Test exposing (Test)
-import Fuzz exposing (Fuzzer)
 import Expect
-import Json.Encode exposing (Value)
+import Fuzz exposing (Fuzzer)
 import Json.Decode as Decode exposing (Decoder)
+import Json.Encode exposing (Value)
+import Test exposing (Test)
 
 
 jsonRoundTrips : Fuzzer a -> (a -> Value) -> Decoder a -> Test

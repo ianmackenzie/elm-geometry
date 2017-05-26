@@ -12,15 +12,15 @@
 
 module Triangle2d exposing (suite)
 
-import Test exposing (Test)
 import Expect
-import Test.Runner.Html as HtmlRunner
-import OpenSolid.Triangle2d as Triangle2d
-import OpenSolid.Geometry.Encode as Encode
-import OpenSolid.Geometry.Decode as Decode
-import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Geometry.Expect as Expect
 import Generic
+import OpenSolid.Geometry.Decode as Decode
+import OpenSolid.Geometry.Encode as Encode
+import OpenSolid.Geometry.Expect as Expect
+import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Triangle2d as Triangle2d
+import Test exposing (Test)
+import Test.Runner.Html as HtmlRunner
 
 
 jsonRoundTrips : Test
@@ -40,8 +40,8 @@ triangleContainsOwnCentroid =
                 area =
                     Triangle2d.area triangle
             in
-                Expect.true "non-zero area triangle did not contain its own centroid"
-                    (area == 0.0 || Triangle2d.contains centroid triangle)
+            Expect.true "non-zero area triangle did not contain its own centroid"
+                (area == 0.0 || Triangle2d.contains centroid triangle)
         )
 
 

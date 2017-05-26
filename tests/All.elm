@@ -12,8 +12,6 @@
 
 module All exposing (..)
 
-import Test
-import Test.Runner.Html as HtmlRunner
 import Arc2d
 import Arc3d
 import Axis2d
@@ -38,6 +36,8 @@ import Polyline2d
 import Polyline3d
 import QuadraticSpline2d
 import QuadraticSpline3d
+import Test
+import Test.Runner.Html as HtmlRunner
 import Triangle2d
 import Triangle3d
 import Vector2d

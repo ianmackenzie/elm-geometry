@@ -12,19 +12,19 @@
 
 module Axis2d exposing (suite)
 
-import Test exposing (Test)
-import Test.Runner.Html as HtmlRunner
-import OpenSolid.Geometry.Types exposing (..)
+import Generic
 import OpenSolid.Axis2d as Axis2d
-import OpenSolid.Point2d as Point2d
 import OpenSolid.Direction2d as Direction2d
 import OpenSolid.Frame2d as Frame2d
-import OpenSolid.SketchPlane3d as SketchPlane3d
-import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Decode as Decode
-import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Expect as Expect
-import Generic
+import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Point2d as Point2d
+import OpenSolid.SketchPlane3d as SketchPlane3d
+import Test exposing (Test)
+import Test.Runner.Html as HtmlRunner
 
 
 jsonRoundTrips : Test
@@ -99,13 +99,13 @@ moveToExample =
                 newOrigin =
                     Point2d ( 4, 5 )
             in
-                Axis2d.moveTo newOrigin axis
-                    |> Expect.axis2d
-                        (Axis2d
-                            { originPoint = Point2d ( 4, 5 )
-                            , direction = Direction2d.y
-                            }
-                        )
+            Axis2d.moveTo newOrigin axis
+                |> Expect.axis2d
+                    (Axis2d
+                        { originPoint = Point2d ( 4, 5 )
+                        , direction = Direction2d.y
+                        }
+                    )
 
 
 rotateAroundExample : Test
@@ -124,13 +124,13 @@ translateByExample =
                 displacement =
                     Vector2d ( 2, 3 )
             in
-                Axis2d.translateBy displacement Axis2d.y
-                    |> Expect.axis2d
-                        (Axis2d
-                            { originPoint = Point2d ( 2, 3 )
-                            , direction = Direction2d.y
-                            }
-                        )
+            Axis2d.translateBy displacement Axis2d.y
+                |> Expect.axis2d
+                    (Axis2d
+                        { originPoint = Point2d ( 2, 3 )
+                        , direction = Direction2d.y
+                        }
+                    )
 
 
 mirrorAcrossExample : Test
@@ -144,13 +144,13 @@ mirrorAcrossExample =
                         , direction = Direction2d.fromAngle (degrees 30)
                         }
             in
-                Axis2d.mirrorAcross Axis2d.x axis
-                    |> Expect.axis2d
-                        (Axis2d
-                            { originPoint = Point2d ( 1, -2 )
-                            , direction = Direction2d.fromAngle (degrees -30)
-                            }
-                        )
+            Axis2d.mirrorAcross Axis2d.x axis
+                |> Expect.axis2d
+                    (Axis2d
+                        { originPoint = Point2d ( 1, -2 )
+                        , direction = Direction2d.fromAngle (degrees -30)
+                        }
+                    )
 
 
 relativeToExample : Test
@@ -161,13 +161,13 @@ relativeToExample =
                 originPoint =
                     Point2d ( 2, 3 )
             in
-                Axis2d.relativeTo (Frame2d.at originPoint) Axis2d.x
-                    |> Expect.axis2d
-                        (Axis2d
-                            { originPoint = Point2d ( -2, -3 )
-                            , direction = Direction2d.x
-                            }
-                        )
+            Axis2d.relativeTo (Frame2d.at originPoint) Axis2d.x
+                |> Expect.axis2d
+                    (Axis2d
+                        { originPoint = Point2d ( -2, -3 )
+                        , direction = Direction2d.x
+                        }
+                    )
 
 
 placeInExample : Test
@@ -178,13 +178,13 @@ placeInExample =
                 originPoint =
                     Point2d ( 2, 3 )
             in
-                Axis2d.placeIn (Frame2d.at originPoint) Axis2d.x
-                    |> Expect.axis2d
-                        (Axis2d
-                            { originPoint = Point2d ( 2, 3 )
-                            , direction = Direction2d.x
-                            }
-                        )
+            Axis2d.placeIn (Frame2d.at originPoint) Axis2d.x
+                |> Expect.axis2d
+                    (Axis2d
+                        { originPoint = Point2d ( 2, 3 )
+                        , direction = Direction2d.x
+                        }
+                    )
 
 
 placeOntoExamples : Test
@@ -196,26 +196,26 @@ placeOntoExamples =
                 , direction = Direction2d ( 0.6, 0.8 )
                 }
     in
-        Test.describe "Axis2d.placeOnto examples"
-            [ Test.test "First example" <|
-                \() ->
-                    Axis2d.placeOnto SketchPlane3d.xy axis
-                        |> Expect.axis3d
-                            (Axis3d
-                                { originPoint = Point3d ( 2, 3, 0 )
-                                , direction = Direction3d ( 0.6, 0.8, 0 )
-                                }
-                            )
-            , Test.test "Second example" <|
-                \() ->
-                    Axis2d.placeOnto SketchPlane3d.zx axis
-                        |> Expect.axis3d
-                            (Axis3d
-                                { originPoint = Point3d ( 3, 0, 2 )
-                                , direction = Direction3d ( 0.8, 0, 0.6 )
-                                }
-                            )
-            ]
+    Test.describe "Axis2d.placeOnto examples"
+        [ Test.test "First example" <|
+            \() ->
+                Axis2d.placeOnto SketchPlane3d.xy axis
+                    |> Expect.axis3d
+                        (Axis3d
+                            { originPoint = Point3d ( 2, 3, 0 )
+                            , direction = Direction3d ( 0.6, 0.8, 0 )
+                            }
+                        )
+        , Test.test "Second example" <|
+            \() ->
+                Axis2d.placeOnto SketchPlane3d.zx axis
+                    |> Expect.axis3d
+                        (Axis3d
+                            { originPoint = Point3d ( 3, 0, 2 )
+                            , direction = Direction3d ( 0.8, 0, 0.6 )
+                            }
+                        )
+        ]
 
 
 documentationExamples : Test

@@ -12,20 +12,20 @@
 
 module LineSegment2d exposing (suite)
 
-import Test exposing (Test)
 import Expect
 import Fuzz
-import Test.Runner.Html as HtmlRunner
+import Generic
+import OpenSolid.Geometry.Decode as Decode
+import OpenSolid.Geometry.Encode as Encode
+import OpenSolid.Geometry.Expect as Expect
+import OpenSolid.Geometry.Fuzz as Fuzz
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.LineSegment2d as LineSegment2d
 import OpenSolid.Point2d as Point2d
-import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Triangle2d as Triangle2d
-import OpenSolid.Geometry.Encode as Encode
-import OpenSolid.Geometry.Decode as Decode
-import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Geometry.Expect as Expect
-import Generic
+import OpenSolid.Vector2d as Vector2d
+import Test exposing (Test)
+import Test.Runner.Html as HtmlRunner
 
 
 jsonRoundTrips : Test
@@ -58,7 +58,7 @@ intersectionWorksProperly =
                                 area =
                                     Triangle2d.area triangle
                             in
-                                Expect.approximately 0 area
+                            Expect.approximately 0 area
 
                         -- Check that point is actually between the two
                         -- endpoints (almost enough of a check by itself, but
@@ -75,9 +75,9 @@ intersectionWorksProperly =
                                 secondDistance =
                                     Point2d.distanceFrom point endPoint
                             in
-                                Expect.approximately
-                                    (LineSegment2d.length segment)
-                                    (firstDistance + secondDistance)
+                            Expect.approximately
+                                (LineSegment2d.length segment)
+                                (firstDistance + secondDistance)
 
                         isOn segment =
                             Expect.all
@@ -85,8 +85,8 @@ intersectionWorksProperly =
                                 , isBetweenEndpointsOf segment
                                 ]
                     in
-                        Expect.all [ isOn firstSegment, isOn secondSegment ]
-                            point
+                    Expect.all [ isOn firstSegment, isOn secondSegment ]
+                        point
 
                 Nothing ->
                     case
@@ -138,7 +138,7 @@ intersectionWorksProperly =
                                             (startDistance < tolerance)
                                                 && (endDistance < tolerance)
                                     in
-                                        bothNonNegative || bothNonPositive
+                                    bothNonNegative || bothNonPositive
 
                                 -- Check if the first segment is fully on one
                                 -- side of the second
@@ -150,13 +150,13 @@ intersectionWorksProperly =
                                 secondBesideFirst =
                                     oneOneSideOf firstAxis secondSegment
                             in
-                                Expect.true "One segment is fully one one side of the other"
-                                    (secondBesideFirst || firstBesideSecond)
+                            Expect.true "One segment is fully one one side of the other"
+                                (secondBesideFirst || firstBesideSecond)
 
                         _ ->
                             Expect.pass
     in
-        Test.fuzz2 Fuzz.lineSegment2d Fuzz.lineSegment2d description expectation
+    Test.fuzz2 Fuzz.lineSegment2d Fuzz.lineSegment2d description expectation
 
 
 intersectionFindsCoincidentEndpoints : Test
@@ -182,17 +182,17 @@ intersectionFindsCoincidentEndpoints =
                 intersection =
                     LineSegment2d.intersectionPoint firstSegment secondSegment
             in
-                if Vector2d.crossProduct firstVector secondVector /= 0 then
-                    Expect.equal (Just sharedEnd) intersection
-                else
-                    Expect.pass
+            if Vector2d.crossProduct firstVector secondVector /= 0 then
+                Expect.equal (Just sharedEnd) intersection
+            else
+                Expect.pass
     in
-        Test.fuzz3
-            Fuzz.point2d
-            Fuzz.point2d
-            Fuzz.point2d
-            description
-            expectation
+    Test.fuzz3
+        Fuzz.point2d
+        Fuzz.point2d
+        Fuzz.point2d
+        description
+        expectation
 
 
 intersectionFindsCollinearCoincidentEndpoints : Test
@@ -233,20 +233,20 @@ intersectionFindsCollinearCoincidentEndpoints =
                         (LineSegment2d.reverse firstSegment)
                         (LineSegment2d.reverse secondSegment)
             in
-                Expect.all
-                    [ Expect.equal intersection1
-                    , Expect.equal intersection2
-                    , Expect.equal intersection3
-                    , Expect.equal intersection4
-                    ]
-                    (Just midPoint)
+            Expect.all
+                [ Expect.equal intersection1
+                , Expect.equal intersection2
+                , Expect.equal intersection3
+                , Expect.equal intersection4
+                ]
+                (Just midPoint)
     in
-        Test.fuzz3
-            Fuzz.point2d
-            Fuzz.vector2d
-            (Fuzz.floatRange 0 1)
-            description
-            expectation
+    Test.fuzz3
+        Fuzz.point2d
+        Fuzz.vector2d
+        (Fuzz.floatRange 0 1)
+        description
+        expectation
 
 
 intersectionOfEqualPointSegmentIsPoint : Test
@@ -259,8 +259,8 @@ intersectionOfEqualPointSegmentIsPoint =
                 segment =
                     LineSegment2d ( point, point )
             in
-                LineSegment2d.intersectionPoint segment segment
-                    |> Expect.equal (Just point)
+            LineSegment2d.intersectionPoint segment segment
+                |> Expect.equal (Just point)
         )
 
 
@@ -274,11 +274,11 @@ intersectionOfEqualLineSegmentsIsNothing =
                 ( start, end ) =
                     LineSegment2d.endpoints lineSegment
             in
-                if start == end then
-                    Expect.pass
-                else
-                    LineSegment2d.intersectionPoint lineSegment lineSegment
-                        |> Expect.equal Nothing
+            if start == end then
+                Expect.pass
+            else
+                LineSegment2d.intersectionPoint lineSegment lineSegment
+                    |> Expect.equal Nothing
         )
 
 
@@ -292,12 +292,12 @@ intersectionOfReversedEqualLineSegmentsIsNothing =
                 ( start, end ) =
                     LineSegment2d.endpoints lineSegment
             in
-                if start == end then
-                    Expect.pass
-                else
-                    LineSegment2d.reverse lineSegment
-                        |> LineSegment2d.intersectionPoint lineSegment
-                        |> Expect.equal Nothing
+            if start == end then
+                Expect.pass
+            else
+                LineSegment2d.reverse lineSegment
+                    |> LineSegment2d.intersectionPoint lineSegment
+                    |> Expect.equal Nothing
         )
 
 
@@ -333,56 +333,56 @@ sharedEndpointOnThirdSegmentInducesAnIntersection =
                     , Vector2d.crossProduct v3 v2
                     )
             in
-                if v3Xv1 == 0 || v3Xv2 == 0 then
-                    Expect.pass
-                else if v3Xv1 * v3Xv2 > 0 then
-                    -- point1 and point2 are on the same side of segment3
-                    case intersections of
-                        ( Nothing, Nothing ) ->
-                            Expect.pass
+            if v3Xv1 == 0 || v3Xv2 == 0 then
+                Expect.pass
+            else if v3Xv1 * v3Xv2 > 0 then
+                -- point1 and point2 are on the same side of segment3
+                case intersections of
+                    ( Nothing, Nothing ) ->
+                        Expect.pass
 
-                        ( Just p1, Just p2 ) ->
-                            -- If intersection points are found for both
-                            -- segments, they should be both be approximately
-                            -- equal to the shared endpoint
-                            sharedPoint
-                                |> Expect.all
-                                    [ Expect.point2d p1, Expect.point2d p2 ]
+                    ( Just p1, Just p2 ) ->
+                        -- If intersection points are found for both
+                        -- segments, they should be both be approximately
+                        -- equal to the shared endpoint
+                        sharedPoint
+                            |> Expect.all
+                                [ Expect.point2d p1, Expect.point2d p2 ]
 
-                        _ ->
-                            Expect.fail "Behaviors different for segments on the same side"
-                else
-                    -- point1 and point2 are on opposite sides of segment3
-                    case intersections of
-                        ( Nothing, Nothing ) ->
-                            Expect.fail "Shared endpoint intersection not found"
+                    _ ->
+                        Expect.fail "Behaviors different for segments on the same side"
+            else
+                -- point1 and point2 are on opposite sides of segment3
+                case intersections of
+                    ( Nothing, Nothing ) ->
+                        Expect.fail "Shared endpoint intersection not found"
 
-                        ( Just point, Nothing ) ->
-                            -- If an intersection point is found for one
-                            -- segment, it should be approximately equal to
-                            -- the shared endpoint
-                            point |> Expect.point2d sharedPoint
+                    ( Just point, Nothing ) ->
+                        -- If an intersection point is found for one
+                        -- segment, it should be approximately equal to
+                        -- the shared endpoint
+                        point |> Expect.point2d sharedPoint
 
-                        ( Nothing, Just point ) ->
-                            -- If an intersection point is found for one
-                            -- segment, it should be approximately equal to
-                            -- the shared endpoint
-                            point |> Expect.point2d sharedPoint
+                    ( Nothing, Just point ) ->
+                        -- If an intersection point is found for one
+                        -- segment, it should be approximately equal to
+                        -- the shared endpoint
+                        point |> Expect.point2d sharedPoint
 
-                        ( Just p1, Just p2 ) ->
-                            -- If intersection points are found for both
-                            -- segments, they should be both be approximately
-                            -- equal to the shared endpoint
-                            sharedPoint
-                                |> Expect.all
-                                    [ Expect.point2d p1, Expect.point2d p2 ]
+                    ( Just p1, Just p2 ) ->
+                        -- If intersection points are found for both
+                        -- segments, they should be both be approximately
+                        -- equal to the shared endpoint
+                        sharedPoint
+                            |> Expect.all
+                                [ Expect.point2d p1, Expect.point2d p2 ]
     in
-        Test.fuzz3
-            Fuzz.lineSegment2d
-            Fuzz.point2d
-            Fuzz.point2d
-            description
-            expectation
+    Test.fuzz3
+        Fuzz.lineSegment2d
+        Fuzz.point2d
+        Fuzz.point2d
+        description
+        expectation
 
 
 intersectionIsSymmetric : Test

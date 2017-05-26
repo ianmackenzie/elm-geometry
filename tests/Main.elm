@@ -1,8 +1,8 @@
 port module Main exposing (..)
 
 import All
-import Test.Runner.Node as NodeRunner
 import Json.Encode exposing (Value)
+import Test.Runner.Node as NodeRunner
 
 
 main : NodeRunner.TestProgram

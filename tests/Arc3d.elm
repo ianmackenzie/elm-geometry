@@ -12,16 +12,16 @@
 
 module Arc3d exposing (suite)
 
-import Test exposing (Test)
 import Expect
-import Test.Runner.Html as HtmlRunner
+import Generic
 import OpenSolid.Arc3d as Arc3d
 import OpenSolid.BoundingBox3d as BoundingBox3d
-import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Decode as Decode
-import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Expect as Expect
-import Generic
+import OpenSolid.Geometry.Fuzz as Fuzz
+import Test exposing (Test)
+import Test.Runner.Html as HtmlRunner
 
 
 jsonRoundTrips : Test

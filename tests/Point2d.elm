@@ -12,16 +12,16 @@
 
 module Point2d exposing (suite)
 
-import Test exposing (Test)
-import Fuzz
 import Expect
-import Test.Runner.Html as HtmlRunner
-import OpenSolid.Point2d as Point2d
-import OpenSolid.Geometry.Encode as Encode
-import OpenSolid.Geometry.Decode as Decode
-import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Geometry.Expect as Expect
+import Fuzz
 import Generic
+import OpenSolid.Geometry.Decode as Decode
+import OpenSolid.Geometry.Encode as Encode
+import OpenSolid.Geometry.Expect as Expect
+import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Point2d as Point2d
+import Test exposing (Test)
+import Test.Runner.Html as HtmlRunner
 
 
 rotationPreservesDistance : Test
@@ -41,9 +41,9 @@ rotationPreservesDistance =
                 rotatedDistance =
                     Point2d.distanceFrom centerPoint rotatedPoint
             in
-                Expect.approximately initialDistance rotatedDistance
+            Expect.approximately initialDistance rotatedDistance
     in
-        Test.fuzz3 Fuzz.point2d Fuzz.point2d Fuzz.scalar description expectation
+    Test.fuzz3 Fuzz.point2d Fuzz.point2d Fuzz.scalar description expectation
 
 
 projectionOntoAxisPreservesDistance : Test
@@ -63,9 +63,9 @@ projectionOntoAxisPreservesDistance =
                 projectedDistance =
                     Point2d.distanceAlong axis projectedPoint
             in
-                Expect.approximately projectedDistance distance
+            Expect.approximately projectedDistance distance
     in
-        Test.fuzz2 Fuzz.point2d Fuzz.axis2d description expectation
+    Test.fuzz2 Fuzz.point2d Fuzz.axis2d description expectation
 
 
 midpointIsEquidistant : Test
@@ -79,9 +79,9 @@ midpointIsEquidistant =
                 midpoint =
                     Point2d.midpoint p1 p2
             in
-                Expect.approximately
-                    (Point2d.distanceFrom p1 midpoint)
-                    (Point2d.distanceFrom p2 midpoint)
+            Expect.approximately
+                (Point2d.distanceFrom p1 midpoint)
+                (Point2d.distanceFrom p2 midpoint)
         )
 
 

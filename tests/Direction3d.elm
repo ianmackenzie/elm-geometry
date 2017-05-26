@@ -12,15 +12,15 @@
 
 module Direction3d exposing (suite)
 
-import Test exposing (Test)
 import Expect
-import Test.Runner.Html as HtmlRunner
-import OpenSolid.Direction3d as Direction3d
-import OpenSolid.Geometry.Encode as Encode
-import OpenSolid.Geometry.Decode as Decode
-import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Geometry.Expect as Expect
 import Generic
+import OpenSolid.Direction3d as Direction3d
+import OpenSolid.Geometry.Decode as Decode
+import OpenSolid.Geometry.Encode as Encode
+import OpenSolid.Geometry.Expect as Expect
+import OpenSolid.Geometry.Fuzz as Fuzz
+import Test exposing (Test)
+import Test.Runner.Html as HtmlRunner
 
 
 jsonRoundTrips : Test
@@ -40,11 +40,11 @@ angleFromAndEqualWithinAreConsistent =
                 angle =
                     Direction3d.angleFrom firstDirection secondDirection
             in
-                Expect.true "Two directions should be equal to within the angle between them"
-                    (Direction3d.equalWithin (angle + 1.0e-12)
-                        firstDirection
-                        secondDirection
-                    )
+            Expect.true "Two directions should be equal to within the angle between them"
+                (Direction3d.equalWithin (angle + 1.0e-12)
+                    firstDirection
+                    secondDirection
+                )
         )
 
 

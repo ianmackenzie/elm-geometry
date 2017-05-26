@@ -12,15 +12,15 @@
 
 module CubicSpline2d exposing (suite)
 
-import Test exposing (Test)
 import Expect
-import Test.Runner.Html as HtmlRunner
-import OpenSolid.CubicSpline2d as CubicSpline2d
-import OpenSolid.Geometry.Encode as Encode
-import OpenSolid.Geometry.Decode as Decode
-import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Geometry.Expect as Expect
 import Generic
+import OpenSolid.CubicSpline2d as CubicSpline2d
+import OpenSolid.Geometry.Decode as Decode
+import OpenSolid.Geometry.Encode as Encode
+import OpenSolid.Geometry.Expect as Expect
+import OpenSolid.Geometry.Fuzz as Fuzz
+import Test exposing (Test)
+import Test.Runner.Html as HtmlRunner
 
 
 jsonRoundTrips : Test
@@ -48,10 +48,10 @@ hermiteReproducesSpline =
                 endDerivative =
                     CubicSpline2d.endDerivative spline
             in
-                CubicSpline2d.hermite
-                    ( startPoint, startDerivative )
-                    ( endPoint, endDerivative )
-                    |> Expect.cubicSpline2d spline
+            CubicSpline2d.hermite
+                ( startPoint, startDerivative )
+                ( endPoint, endDerivative )
+                |> Expect.cubicSpline2d spline
         )
 
 
