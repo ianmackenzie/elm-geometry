@@ -1,16 +1,14 @@
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- This Source Code Form is subject to the terms of the Mozilla Public        --
--- License, v. 2.0. If a copy of the MPL was not distributed with this file,  --
--- you can obtain one at http://mozilla.org/MPL/2.0/.                         --
---                                                                            --
--- Copyright 2016 by Ian Mackenzie                                            --
--- ian.e.mackenzie@gmail.com                                                  --
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-
-
-module Point3d exposing (suite)
+module Point3d
+    exposing
+        ( interpolationReturnsExactEndpoints
+        , jsonRoundTrips
+        , midpointIsEquidistant
+        , mirrorFlipsSignedDistance
+        , projectIntoThenPlaceOntoIsProjectOnto
+        , rotationAboutAxisPreservesDistanceAlong
+        , rotationAboutAxisPreservesRadialDistance
+        , translationByPerpendicularDoesNotChangeSignedDistance
+        )
 
 import Expect
 import Fuzz
@@ -26,7 +24,6 @@ import OpenSolid.Point3d as Point3d
 import OpenSolid.SketchPlane3d as SketchPlane3d
 import OpenSolid.Vector3d as Vector3d
 import Test exposing (Test)
-import Test.Runner.Html as HtmlRunner
 
 
 rotationAboutAxisPreservesDistanceAlong : Test
@@ -162,22 +159,3 @@ translationByPerpendicularDoesNotChangeSignedDistance =
 jsonRoundTrips : Test
 jsonRoundTrips =
     Generic.jsonRoundTrips Fuzz.point3d Encode.point3d Decode.point3d
-
-
-suite : Test
-suite =
-    Test.describe "OpenSolid.Geometry.Point3d"
-        [ rotationAboutAxisPreservesDistanceAlong
-        , rotationAboutAxisPreservesRadialDistance
-        , midpointIsEquidistant
-        , interpolationReturnsExactEndpoints
-        , projectIntoThenPlaceOntoIsProjectOnto
-        , mirrorFlipsSignedDistance
-        , translationByPerpendicularDoesNotChangeSignedDistance
-        , jsonRoundTrips
-        ]
-
-
-main : HtmlRunner.TestProgram
-main =
-    HtmlRunner.run suite

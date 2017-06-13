@@ -1,16 +1,9 @@
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- This Source Code Form is subject to the terms of the Mozilla Public        --
--- License, v. 2.0. If a copy of the MPL was not distributed with this file,  --
--- you can obtain one at http://mozilla.org/MPL/2.0/.                         --
---                                                                            --
--- Copyright 2016 by Ian Mackenzie                                            --
--- ian.e.mackenzie@gmail.com                                                  --
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-
-
-module Vector3d exposing (suite)
+module Vector3d
+    exposing
+        ( jsonRoundTrips
+        , orthonormalizeProducesValidFrameBasis
+        , orthonormalizingCoplanarVectorsReturnsNothing
+        )
 
 import Expect
 import Fuzz
@@ -23,7 +16,6 @@ import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Vector3d as Vector3d
 import Test exposing (Test)
-import Test.Runner.Html as HtmlRunner
 
 
 jsonRoundTrips : Test
@@ -73,17 +65,3 @@ orthonormalizingCoplanarVectorsReturnsNothing =
             in
             Expect.equal Nothing (Vector3d.orthonormalize vectors)
         )
-
-
-suite : Test
-suite =
-    Test.describe "OpenSolid.Geometry.Vector3d"
-        [ jsonRoundTrips
-        , orthonormalizeProducesValidFrameBasis
-        , orthonormalizingCoplanarVectorsReturnsNothing
-        ]
-
-
-main : HtmlRunner.TestProgram
-main =
-    HtmlRunner.run suite

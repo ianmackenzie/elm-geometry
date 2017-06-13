@@ -1,16 +1,15 @@
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- This Source Code Form is subject to the terms of the Mozilla Public        --
--- License, v. 2.0. If a copy of the MPL was not distributed with this file,  --
--- you can obtain one at http://mozilla.org/MPL/2.0/.                         --
---                                                                            --
--- Copyright 2016 by Ian Mackenzie                                            --
--- ian.e.mackenzie@gmail.com                                                  --
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-
-
-module Vector2d exposing (suite)
+module Vector2d
+    exposing
+        ( dotProductWithSelfIsSquaredLength
+        , jsonRoundTrips
+        , mirrorAcrossNegatesPerpendicularComponent
+        , mirrorAcrossPreservesParallelComponent
+        , orthonormalizeProducesValidFrameBasis
+        , orthonormalizingParallelVectorsReturnsNothing
+        , perpendicularVectorIsPerpendicular
+        , rotateByPreservesLength
+        , rotateByRotatesByTheCorrectAngle
+        )
 
 import Expect
 import Fuzz
@@ -25,7 +24,6 @@ import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point2d as Point2d
 import OpenSolid.Vector2d as Vector2d
 import Test exposing (Test)
-import Test.Runner.Html as HtmlRunner
 
 
 jsonRoundTrips : Test
@@ -164,23 +162,3 @@ orthonormalizingParallelVectorsReturnsNothing =
             in
             Expect.equal Nothing (Vector2d.orthonormalize vectors)
         )
-
-
-suite : Test
-suite =
-    Test.describe "OpenSolid.Geometry.Vector2d"
-        [ jsonRoundTrips
-        , perpendicularVectorIsPerpendicular
-        , dotProductWithSelfIsSquaredLength
-        , rotateByPreservesLength
-        , rotateByRotatesByTheCorrectAngle
-        , mirrorAcrossPreservesParallelComponent
-        , mirrorAcrossNegatesPerpendicularComponent
-        , orthonormalizeProducesValidFrameBasis
-        , orthonormalizingParallelVectorsReturnsNothing
-        ]
-
-
-main : HtmlRunner.TestProgram
-main =
-    HtmlRunner.run suite

@@ -1,16 +1,8 @@
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- This Source Code Form is subject to the terms of the Mozilla Public        --
--- License, v. 2.0. If a copy of the MPL was not distributed with this file,  --
--- you can obtain one at http://mozilla.org/MPL/2.0/.                         --
---                                                                            --
--- Copyright 2016 by Ian Mackenzie                                            --
--- ian.e.mackenzie@gmail.com                                                  --
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-
-
-module Frame3d exposing (suite)
+module Frame3d
+    exposing
+        ( frameDirectionsAreOrthonormal
+        , jsonRoundTrips
+        )
 
 import Generic
 import OpenSolid.Direction3d as Direction3d
@@ -21,7 +13,6 @@ import OpenSolid.Geometry.Expect as Expect
 import OpenSolid.Geometry.Fuzz as Fuzz
 import OpenSolid.Vector3d as Vector3d
 import Test exposing (Test)
-import Test.Runner.Html as HtmlRunner
 
 
 jsonRoundTrips : Test
@@ -56,16 +47,3 @@ frameDirectionsAreOrthonormal =
             in
             Expect.approximately expectedTripleProduct tripleProduct
         )
-
-
-suite : Test
-suite =
-    Test.describe "OpenSolid.Geometry.Frame3d"
-        [ jsonRoundTrips
-        , frameDirectionsAreOrthonormal
-        ]
-
-
-main : HtmlRunner.TestProgram
-main =
-    HtmlRunner.run suite

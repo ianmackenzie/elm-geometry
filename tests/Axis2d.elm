@@ -1,16 +1,19 @@
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- This Source Code Form is subject to the terms of the Mozilla Public        --
--- License, v. 2.0. If a copy of the MPL was not distributed with this file,  --
--- you can obtain one at http://mozilla.org/MPL/2.0/.                         --
---                                                                            --
--- Copyright 2016 by Ian Mackenzie                                            --
--- ian.e.mackenzie@gmail.com                                                  --
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-
-
-module Axis2d exposing (suite)
+module Axis2d
+    exposing
+        ( directionExample
+        , flipExample
+        , jsonRoundTrips
+        , mirrorAcrossExample
+        , moveToExample
+        , originPointExample
+        , placeInExample
+        , placeOntoExamples
+        , relativeToExample
+        , rotateAroundExample
+        , translateByExample
+        , xExample
+        , yExample
+        )
 
 import Generic
 import OpenSolid.Axis2d as Axis2d
@@ -24,7 +27,6 @@ import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point2d as Point2d
 import OpenSolid.SketchPlane3d as SketchPlane3d
 import Test exposing (Test)
-import Test.Runner.Html as HtmlRunner
 
 
 jsonRoundTrips : Test
@@ -216,34 +218,3 @@ placeOntoExamples =
                             }
                         )
         ]
-
-
-documentationExamples : Test
-documentationExamples =
-    Test.describe "Documentation examples are correct"
-        [ xExample
-        , yExample
-        , originPointExample
-        , directionExample
-        , flipExample
-        , moveToExample
-        , rotateAroundExample
-        , translateByExample
-        , mirrorAcrossExample
-        , relativeToExample
-        , placeInExample
-        , placeOntoExamples
-        ]
-
-
-suite : Test
-suite =
-    Test.describe "OpenSolid.Geometry.Axis2d"
-        [ jsonRoundTrips
-        , documentationExamples
-        ]
-
-
-main : HtmlRunner.TestProgram
-main =
-    HtmlRunner.run suite

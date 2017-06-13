@@ -1,16 +1,7 @@
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- This Source Code Form is subject to the terms of the Mozilla Public        --
--- License, v. 2.0. If a copy of the MPL was not distributed with this file,  --
--- you can obtain one at http://mozilla.org/MPL/2.0/.                         --
---                                                                            --
--- Copyright 2016 by Ian Mackenzie                                            --
--- ian.e.mackenzie@gmail.com                                                  --
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-
-
-module Arc3d exposing (suite)
+module Arc3d
+    exposing
+        ( jsonRoundTrips
+        )
 
 import Expect
 import Generic
@@ -21,7 +12,6 @@ import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Expect as Expect
 import OpenSolid.Geometry.Fuzz as Fuzz
 import Test exposing (Test)
-import Test.Runner.Html as HtmlRunner
 
 
 jsonRoundTrips : Test
@@ -29,15 +19,3 @@ jsonRoundTrips =
     Generic.jsonRoundTrips Fuzz.arc3d
         Encode.arc3d
         Decode.arc3d
-
-
-suite : Test
-suite =
-    Test.describe "OpenSolid.Geometry.Arc3d"
-        [ jsonRoundTrips
-        ]
-
-
-main : HtmlRunner.TestProgram
-main =
-    HtmlRunner.run suite
