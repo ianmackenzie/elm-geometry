@@ -452,7 +452,29 @@ range 0 to π.
 -}
 angleFrom : Direction3d -> Direction3d -> Float
 angleFrom firstDirection secondDirection =
-    acos (componentIn firstDirection secondDirection)
+    let
+        ( x1, y1, z1 ) =
+            components firstDirection
+
+        ( x2, y2, z2 ) =
+            components secondDirection
+
+        x =
+            x1 * x2 + y1 * y2 + z1 * z2
+
+        cx =
+            y1 * z2 - z1 * y2
+
+        cy =
+            z1 * x2 - x1 * z2
+
+        cz =
+            x1 * y2 - y1 * x2
+
+        y =
+            sqrt (cx * cx + cy * cy + cz * cz)
+    in
+    atan2 y x
 
 
 {-| Reverse a direction.
