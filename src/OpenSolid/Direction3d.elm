@@ -21,6 +21,7 @@ module OpenSolid.Direction3d
         , negativeX
         , negativeY
         , negativeZ
+        , on
         , orthogonalize
         , perpendicularBasis
         , perpendicularTo
@@ -33,6 +34,7 @@ module OpenSolid.Direction3d
         , relativeTo
         , rotateAround
         , scaleBy
+        , spherical
         , toVector
         , x
         , xComponent
@@ -82,7 +84,7 @@ to start with existing directions and transform them as necessary.
 
 # Constructors
 
-@docs perpendicularTo, perpendicularBasis, orthogonalize
+@docs on, spherical, perpendicularTo, perpendicularBasis, orthogonalize
 
 
 # Components
@@ -133,6 +135,8 @@ global XYZ frame:
 
 -}
 
+import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
+import OpenSolid.Direction2d as Direction2d
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Vector3d as Vector3d
@@ -228,6 +232,85 @@ positiveZ =
 negativeZ : Direction3d
 negativeZ =
     Direction3d ( 0, 0, -1 )
+
+
+{-| Construct a direction on the given sketch plane, given a polar angle from
+the sketch plane's X direction towards its Y direction.
+
+    Direction3d.on SketchPlane3d.xy (degrees 45)
+    --> Direction3d ( 0.7071, 0.7071, 0 )
+
+    Direction3d.on SketchPlane3d.zx (degrees 30)
+    --> Direction3d ( 0.5, 0, 0.866 )
+
+-}
+on : SketchPlane3d -> Float -> Direction3d
+on sketchPlane angle =
+    Direction2d.fromAngle angle |> Direction2d.placeOnto sketchPlane
+
+
+{-| Construct a direction using spherical coordinates relative to the given
+sketch plane. The azimuth defines the angle on the sketch plane and the
+elevation defines the angle from the sketch plane (a positive elevation
+corresponds to a direction above the plane, in the same sense as the sketch
+plane's `normalDirection`.)
+
+    Direction3d.spherical SketchPlane3d.xy
+        { azimuth = degrees 45
+        , elevation = degrees 45
+        }
+    --> Direction3d ( 0.5, 0.5, 0.7071 )
+
+    Direction3d.spherical SketchPlane3d.zx
+        { azimuth = degrees 90
+        , elevation = degrees 30
+        }
+    --> Direction3d ( 0.866, 0.5, 0 )
+
+`on` can be thought of as a special case of `spherical`:
+
+    Direction3d.on sketchPlane angle
+
+is equivalent to
+
+    Direction3d.spherical sketchPlane { azimuth = angle, elevation = 0 }
+
+-}
+spherical : SketchPlane3d -> { azimuth : Float, elevation : Float } -> Direction3d
+spherical sketchPlane { azimuth, elevation } =
+    let
+        ( x1, y1, z1 ) =
+            components (SketchPlane3d.xDirection sketchPlane)
+
+        ( x2, y2, z2 ) =
+            components (SketchPlane3d.yDirection sketchPlane)
+
+        x3 =
+            y1 * z2 - z1 * y2
+
+        y3 =
+            z1 * x2 - x1 * z2
+
+        z3 =
+            x1 * y2 - y1 * x2
+
+        cosElevation =
+            cos elevation
+
+        x =
+            cosElevation * cos azimuth
+
+        y =
+            cosElevation * sin azimuth
+
+        z =
+            sin elevation
+    in
+    Direction3d
+        ( x * x1 + y * x2 + z * x3
+        , x * y1 + y * y2 + z * y3
+        , x * z1 + y * z2 + z * z3
+        )
 
 
 {-| Construct an arbitrary direction perpendicular to the given direction. The
