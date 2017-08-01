@@ -9,6 +9,7 @@ module OpenSolid.CubicSpline3d
         , mirrorAcross
         , placeIn
         , point
+        , pointOn
         , projectInto
         , projectOnto
         , relativeTo
@@ -53,7 +54,7 @@ Splines can be constructed by passing a tuple of control points to the
 
 # Evaluation
 
-@docs point, derivative
+@docs pointOn, point, derivative
 
 
 # Transformations
@@ -201,18 +202,18 @@ endDerivative spline =
 parameter value of 0 corresponds to the start point of the spline and a value of
 1 corresponds to the end point.
 
-    CubicSpline3d.point exampleSpline 0
+    CubicSpline3d.pointOn exampleSpline 0
     --> Point3d ( 1, 1, 1 )
 
-    CubicSpline3d.point exampleSpline 0.5
+    CubicSpline3d.pointOn exampleSpline 0.5
     --> Point3d ( 2.75, 2, 1.25 )
 
-    CubicSpline3d.point exampleSpline 1
+    CubicSpline3d.pointOn exampleSpline 1
     --> Point3d ( 3, 3, 3 )
 
 -}
-point : CubicSpline3d -> Float -> Point3d
-point spline t =
+pointOn : CubicSpline3d -> Float -> Point3d
+pointOn spline t =
     let
         ( p1, p2, p3, p4 ) =
             controlPoints spline
@@ -233,6 +234,14 @@ point spline t =
             Point3d.interpolateFrom q2 q3 t
     in
     Point3d.interpolateFrom r1 r2 t
+
+
+{-| DEPRECATED: Alias for `pointOn`, kept for compatibility. Use `pointOn`
+instead.
+-}
+point : CubicSpline3d -> Float -> Point3d
+point =
+    pointOn
 
 
 {-| Get the deriative value at a point along a spline, based on a parameter that

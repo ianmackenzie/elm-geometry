@@ -10,6 +10,7 @@ module OpenSolid.CubicSpline2d
         , placeIn
         , placeOnto
         , point
+        , pointOn
         , relativeTo
         , rotateAround
         , scaleAbout
@@ -52,7 +53,7 @@ Splines can be constructed by passing a tuple of control points to the
 
 # Evaluation
 
-@docs point, derivative
+@docs pointOn, point, derivative
 
 
 # Transformations
@@ -194,18 +195,18 @@ endDerivative spline =
 parameter value of 0 corresponds to the start point of the spline and a value of
 1 corresponds to the end point.
 
-    CubicSpline2d.point exampleSpline 0
+    CubicSpline2d.pointOn exampleSpline 0
     --> Point2d ( 1, 1 )
 
-    CubicSpline2d.point exampleSpline 0.5
+    CubicSpline2d.pointOn exampleSpline 0.5
     --> Point2d ( 4, 2.5 )
 
-    CubicSpline2d.point exampleSpline 1
+    CubicSpline2d.pointOn exampleSpline 1
     --> Point2d ( 7, 4 )
 
 -}
-point : CubicSpline2d -> Float -> Point2d
-point spline t =
+pointOn : CubicSpline2d -> Float -> Point2d
+pointOn spline t =
     let
         ( p1, p2, p3, p4 ) =
             controlPoints spline
@@ -226,6 +227,14 @@ point spline t =
             Point2d.interpolateFrom q2 q3 t
     in
     Point2d.interpolateFrom r1 r2 t
+
+
+{-| DEPRECATED: Alias for `pointOn`, kept for compatibility. Use `pointOn`
+instead.
+-}
+point : CubicSpline2d -> Float -> Point2d
+point =
+    pointOn
 
 
 {-| Get the deriative value at a point along a spline, based on a parameter that

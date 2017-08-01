@@ -8,6 +8,7 @@ module OpenSolid.QuadraticSpline3d
         , mirrorAcross
         , placeIn
         , point
+        , pointOn
         , projectInto
         , projectOnto
         , relativeTo
@@ -51,7 +52,7 @@ Splines can be constructed by passing a tuple of control points to the
 
 # Evaluation
 
-@docs point, derivative
+@docs pointOn, point, derivative
 
 
 # Transformations
@@ -166,18 +167,18 @@ endDerivative spline =
 parameter value of 0 corresponds to the start point of the spline and a value of
 1 corresponds to the end point.
 
-    QuadraticSpline3d.point exampleSpline 0
+    QuadraticSpline3d.pointOn exampleSpline 0
     --> Point3d ( 1, 1, 1 )
 
-    QuadraticSpline3d.point exampleSpline 0.5
+    QuadraticSpline3d.pointOn exampleSpline 0.5
     --> Point3d ( 2.5, 2, 1.5 )
 
-    QuadraticSpline3d.point exampleSpline 1
+    QuadraticSpline3d.pointOn exampleSpline 1
     --> Point3d ( 3, 3, 3 )
 
 -}
-point : QuadraticSpline3d -> Float -> Point3d
-point spline t =
+pointOn : QuadraticSpline3d -> Float -> Point3d
+pointOn spline t =
     let
         ( p1, p2, p3 ) =
             controlPoints spline
@@ -189,6 +190,14 @@ point spline t =
             Point3d.interpolateFrom p2 p3 t
     in
     Point3d.interpolateFrom q1 q2 t
+
+
+{-| DEPRECATED: Alias for `pointOn`, kept for compatibility. Use `pointOn`
+instead.
+-}
+point : QuadraticSpline3d -> Float -> Point3d
+point =
+    pointOn
 
 
 {-| Get the deriative value at a point along a spline, based on a parameter that

@@ -12,6 +12,7 @@ module OpenSolid.Arc2d
         , placeIn
         , placeOnto
         , point
+        , pointOn
         , radius
         , relativeTo
         , rotateAround
@@ -57,7 +58,7 @@ Arcs can be constructed explicitly by passing a record with `centerPoint`,
 
 # Evaluation
 
-@docs point
+@docs pointOn, point
 
 
 # Transformations
@@ -441,17 +442,25 @@ sweptAngle (Arc2d properties) =
 0 corresponds to the start point of the arc and a value of 1 corresponds to the
 end point.
 
-    Arc2d.point exampleArc 0.5
+    Arc2d.pointOn exampleArc 0.5
     --> Point2d ( 2.4142, 2.4142 )
 
 -}
-point : Arc2d -> Float -> Point2d
-point arc parameter =
+pointOn : Arc2d -> Float -> Point2d
+pointOn arc parameter =
     let
         angle =
             parameter * sweptAngle arc
     in
     Point2d.rotateAround (centerPoint arc) angle (startPoint arc)
+
+
+{-| DEPRECATED: Alias for `pointOn`, kept for compatibility. Use `pointOn`
+instead.
+-}
+point : Arc2d -> Float -> Point2d
+point =
+    pointOn
 
 
 {-| Scale an arc about a given point by a given scale.

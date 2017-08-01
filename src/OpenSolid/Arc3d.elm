@@ -7,6 +7,7 @@ module OpenSolid.Arc3d
         , mirrorAcross
         , placeIn
         , point
+        , pointOn
         , radius
         , relativeTo
         , rotateAround
@@ -50,7 +51,12 @@ arc's center point - here the origin point of the given axis is
 
 # Accessors
 
-@docs axis, centerPoint, axialDirection, radius, startPoint, endPoint, point, sweptAngle
+@docs axis, centerPoint, axialDirection, radius, startPoint, endPoint, sweptAngle
+
+
+# Evaluation
+
+@docs pointOn, point
 
 
 # Transformations
@@ -193,17 +199,25 @@ endPoint arc =
 0 corresponds to the start point of the arc and a value of 1 corresponds to the
 end point.
 
-    Arc3d.point exampleArc 0.5
+    Arc3d.pointOn exampleArc 0.5
     --> Point3d ( 1.4142, 1.4142, 1 )
 
 -}
-point : Arc3d -> Float -> Point3d
-point arc parameter =
+pointOn : Arc3d -> Float -> Point3d
+pointOn arc parameter =
     let
         angle =
             parameter * sweptAngle arc
     in
     Point3d.rotateAround (axis arc) angle (startPoint arc)
+
+
+{-| DEPRECATED: Alias for `pointOn`, kept for compatibility. Use `pointOn`
+instead.
+-}
+point : Arc3d -> Float -> Point3d
+point =
+    pointOn
 
 
 {-| Get the swept angle of an arc in radians.

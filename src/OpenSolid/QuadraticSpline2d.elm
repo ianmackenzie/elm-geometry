@@ -9,6 +9,7 @@ module OpenSolid.QuadraticSpline2d
         , placeIn
         , placeOnto
         , point
+        , pointOn
         , relativeTo
         , rotateAround
         , scaleAbout
@@ -50,7 +51,7 @@ Splines can be constructed by passing a tuple of control points to the
 
 # Evaluation
 
-@docs point, derivative
+@docs pointOn, point, derivative
 
 
 # Transformations
@@ -165,18 +166,18 @@ endDerivative spline =
 parameter value of 0 corresponds to the start point of the spline and a value of
 1 corresponds to the end point.
 
-    QuadraticSpline2d.point exampleSpline 0
+    QuadraticSpline2d.pointOn exampleSpline 0
     --> Point2d ( 1, 1 )
 
-    QuadraticSpline2d.point exampleSpline 0.5
+    QuadraticSpline2d.pointOn exampleSpline 0.5
     --> Point2d ( 3, 2.5 )
 
-    QuadraticSpline2d.point exampleSpline 1
+    QuadraticSpline2d.pointOn exampleSpline 1
     --> Point2d ( 5, 1 )
 
 -}
-point : QuadraticSpline2d -> Float -> Point2d
-point spline t =
+pointOn : QuadraticSpline2d -> Float -> Point2d
+pointOn spline t =
     let
         ( p1, p2, p3 ) =
             controlPoints spline
@@ -188,6 +189,14 @@ point spline t =
             Point2d.interpolateFrom p2 p3 t
     in
     Point2d.interpolateFrom q1 q2 t
+
+
+{-| DEPRECATED: Alias for `pointOn`, kept for compatibility. Use `pointOn`
+instead.
+-}
+point : QuadraticSpline2d -> Float -> Point2d
+point =
+    pointOn
 
 
 {-| Get the deriative value at a point along a spline, based on a parameter that
