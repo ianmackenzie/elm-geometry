@@ -15,6 +15,7 @@ module OpenSolid.Arc3d
         , startPoint
         , sweptAngle
         , throughPoints
+        , toPolyline
         , translateBy
         )
 
@@ -57,6 +58,11 @@ arc's center point - here the origin point of the given axis is
 # Evaluation
 
 @docs pointOn, point
+
+
+# Linear approximation
+
+@docs toPolyline
 
 
 # Transformations
@@ -218,6 +224,48 @@ instead.
 point : Arc3d -> Float -> Point3d
 point =
     pointOn
+
+
+{-| Approximate an arc as a polyline, within the specified tolerance.
+
+    Arc3d.toPolyline 0.1 exampleArc
+    --> Polyline3d
+    -->     [ Point3d ( 2, 0, 1 )
+    -->     , Point3d ( 1.732, 1, 1 )
+    -->     , Point3d ( 1, 1.732, 1 )
+    -->     , Point3d ( 0, 2, 1 )
+    -->     ]
+
+A tolerance of zero will be treated as infinity (a single line segment will be
+returned).
+
+-}
+toPolyline : Float -> Arc3d -> Polyline3d
+toPolyline tolerance arc =
+    if abs tolerance < radius arc then
+        let
+            maxSegmentAngle =
+                2 * acos (1 - abs tolerance / radius arc)
+        in
+        if maxSegmentAngle > 0.0 then
+            let
+                numSegments =
+                    ceiling (abs (sweptAngle arc) / maxSegmentAngle)
+
+                segmentAngle =
+                    sweptAngle arc / toFloat numSegments
+
+                point index =
+                    pointOn arc (toFloat index / toFloat numSegments)
+
+                points =
+                    List.range 0 numSegments |> List.map point
+            in
+            Polyline3d points
+        else
+            Polyline3d [ startPoint arc, endPoint arc ]
+    else
+        Polyline3d [ startPoint arc, endPoint arc ]
 
 
 {-| Get the swept angle of an arc in radians.

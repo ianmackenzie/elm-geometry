@@ -21,6 +21,7 @@ module OpenSolid.Arc2d
         , startPoint
         , sweptAngle
         , throughPoints
+        , toPolyline
         , translateBy
         )
 
@@ -59,6 +60,11 @@ Arcs can be constructed explicitly by passing a record with `centerPoint`,
 # Evaluation
 
 @docs pointOn, point
+
+
+# Linear approximation
+
+@docs toPolyline
 
 
 # Transformations
@@ -461,6 +467,48 @@ instead.
 point : Arc2d -> Float -> Point2d
 point =
     pointOn
+
+
+{-| Approximate an arc as a polyline, within the specified tolerance.
+
+    Arc2d.toPolyline 0.1 exampleArc
+    --> Polyline2d
+    -->     [ Point2d ( 3, 1 )
+    -->     , Point2d ( 2.732, 2 )
+    -->     , Point2d ( 2, 2.732 )
+    -->     , Point2d ( 1, 3 )
+    -->     ]
+
+A tolerance of zero will be treated as infinity (a single line segment will be
+returned).
+
+-}
+toPolyline : Float -> Arc2d -> Polyline2d
+toPolyline tolerance arc =
+    if abs tolerance < radius arc then
+        let
+            maxSegmentAngle =
+                2 * acos (1 - abs tolerance / radius arc)
+        in
+        if maxSegmentAngle > 0.0 then
+            let
+                numSegments =
+                    ceiling (abs (sweptAngle arc) / maxSegmentAngle)
+
+                segmentAngle =
+                    sweptAngle arc / toFloat numSegments
+
+                point index =
+                    pointOn arc (toFloat index / toFloat numSegments)
+
+                points =
+                    List.range 0 numSegments |> List.map point
+            in
+            Polyline2d points
+        else
+            Polyline2d [ startPoint arc, endPoint arc ]
+    else
+        Polyline2d [ startPoint arc, endPoint arc ]
 
 
 {-| Scale an arc about a given point by a given scale.
