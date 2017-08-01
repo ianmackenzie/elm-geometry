@@ -20,6 +20,7 @@ module OpenSolid.Frame2d
         , moveTo
         , originPoint
         , placeIn
+        , placeOnto
         , relativeTo
         , rotateAround
         , rotateBy
@@ -98,6 +99,11 @@ useful.
 # Coordinate frames
 
 @docs relativeTo, placeIn
+
+
+# Sketch planes
+
+@docs placeOnto
 
 -}
 
@@ -484,3 +490,34 @@ placeIn otherFrame =
             , xDirection = placeDirection (xDirection frame)
             , yDirection = placeDirection (yDirection frame)
             }
+
+
+{-| Place a 2D frame onto a 3D sketch plane; this results in a new 3D sketch
+plane, since a `SketchPlane3d` can be thought of as a `Frame2d` in 3D space.
+This function considers the given frame to be defined in 2D coordinates within
+the given sketch plane, and returns the corresponding 3D sketch plane.
+
+    frame =
+        Frame2d.at (Point2d ( 2, 3 ))
+            |> Frame2d.rotateBy (degrees 30)
+    --> Frame2d
+    -->     { originPoint = Point2d ( 2, 3 )
+    -->     , xDirection = Direction2d ( 0.866, 0.5 )
+    -->     , yDirection = Direction2d ( -0.5, 0.866 )
+    -->     }
+
+    Frame2d.placeOnto SketchPlane3d.yz frame
+    --> SketchPlane3d
+    -->     { originPoint = Point3d ( 0, 2, 3 )
+    -->     , xDirection = Direction3d ( 0, 0.866, 0.5 )
+    -->     , yDirection = Direction3d ( 0, -0.5, 0.866 )
+    -->     }
+
+-}
+placeOnto : SketchPlane3d -> Frame2d -> SketchPlane3d
+placeOnto sketchPlane frame =
+    SketchPlane3d
+        { originPoint = Point2d.placeOnto sketchPlane (originPoint frame)
+        , xDirection = Direction2d.placeOnto sketchPlane (xDirection frame)
+        , yDirection = Direction2d.placeOnto sketchPlane (yDirection frame)
+        }
