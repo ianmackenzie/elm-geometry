@@ -71,7 +71,7 @@ Splines can be constructed by passing a tuple of control points to the
 @docs placeOnto
 
 
-# Bisection
+# Subdivision
 
 @docs bisect, splitAt
 

@@ -72,7 +72,7 @@ Splines can be constructed by passing a tuple of control points to the
 @docs projectInto
 
 
-# Bisection
+# Subdivision
 
 @docs bisect, splitAt
 
