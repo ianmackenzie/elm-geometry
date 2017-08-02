@@ -252,9 +252,6 @@ toPolyline tolerance arc =
                 numSegments =
                     ceiling (abs (sweptAngle arc) / maxSegmentAngle)
 
-                segmentAngle =
-                    sweptAngle arc / toFloat numSegments
-
                 point index =
                     pointOn arc (toFloat index / toFloat numSegments)
 
