@@ -6,6 +6,7 @@ module OpenSolid.Arc2d
         , clockwise
         , counterclockwise
         , endPoint
+        , evaluate
         , fromEndpoints
         , long
         , mirrorAcross
@@ -59,7 +60,7 @@ Arcs can be constructed explicitly by passing a record with `centerPoint`,
 
 # Evaluation
 
-@docs pointOn, point
+@docs pointOn, point, evaluate
 
 
 # Linear approximation
@@ -467,6 +468,76 @@ instead.
 point : Arc2d -> Float -> Point2d
 point =
     pointOn
+
+
+{-| Evaluate an arc at a given parameter value, returning the point on the arc
+at that parameter value and the derivative with respect to that parameter value.
+
+    evaluate =
+        Arc2d.evaluate exampleArc
+
+    evaluate 0
+    --> ( Point2d ( 3, 1 ), Vector2d ( 0, 3.1416 ) )
+
+    evaluate 0.5
+    --> ( Point2d ( 2.4142, 2.4142 ), Vector2d ( -2.2214, 2.2214 ) )
+
+    evaluate 1
+    --> ( Point2d ( 1, 3 ), Vector2d ( -3.1416, 0 ) )
+
+For best efficiency, `evaluate` should be partially applied (called with just
+the arc argument) first, and then the returned function should be called
+multiple times, as in the example above. Note that this happens naturally in
+many common cases such as
+
+    List.map (Arc2d.evaluate arc) parameterValues
+
+-}
+evaluate : Arc2d -> Float -> ( Point2d, Vector2d )
+evaluate arc =
+    case Point2d.directionFrom (centerPoint arc) (startPoint arc) of
+        Just startRadialDirection ->
+            let
+                startAngle =
+                    Direction2d.toAngle startRadialDirection
+
+                ( centerX, centerY ) =
+                    Point2d.coordinates (centerPoint arc)
+
+                arcRadius =
+                    radius arc
+
+                arcSweptAngle =
+                    sweptAngle arc
+
+                derivativeMagnitude =
+                    arcRadius * arcSweptAngle
+            in
+            \t ->
+                let
+                    angle =
+                        startAngle + t * arcSweptAngle
+
+                    cosAngle =
+                        cos angle
+
+                    sinAngle =
+                        sin angle
+                in
+                ( Point2d
+                    ( centerX + arcRadius * cosAngle
+                    , centerY + arcRadius * sinAngle
+                    )
+                , Vector2d
+                    ( -derivativeMagnitude * sinAngle
+                    , derivativeMagnitude * cosAngle
+                    )
+                )
+
+        Nothing ->
+            -- Center and start points are coincident, so arc is just a single
+            -- point
+            always ( centerPoint arc, Vector2d.zero )
 
 
 numApproximationSegments : Float -> Arc2d -> Int
