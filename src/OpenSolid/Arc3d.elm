@@ -226,6 +226,18 @@ point =
     pointOn
 
 
+numApproximationSegments : Float -> Arc3d -> Int
+numApproximationSegments tolerance arc =
+    if 0 < tolerance && tolerance < radius arc then
+        let
+            maxSegmentAngle =
+                sqrt (8 * tolerance / radius arc)
+        in
+        ceiling (abs (sweptAngle arc) / maxSegmentAngle)
+    else
+        1
+
+
 {-| Approximate an arc as a polyline, within the specified tolerance.
 
     Arc3d.toPolyline 0.1 exampleArc
@@ -242,27 +254,17 @@ returned).
 -}
 toPolyline : Float -> Arc3d -> Polyline3d
 toPolyline tolerance arc =
-    if abs tolerance < radius arc then
-        let
-            maxSegmentAngle =
-                2 * acos (1 - abs tolerance / radius arc)
-        in
-        if maxSegmentAngle > 0.0 then
-            let
-                numSegments =
-                    ceiling (abs (sweptAngle arc) / maxSegmentAngle)
+    let
+        numSegments =
+            numApproximationSegments tolerance arc
 
-                point index =
-                    pointOn arc (toFloat index / toFloat numSegments)
+        point index =
+            pointOn arc (toFloat index / toFloat numSegments)
 
-                points =
-                    List.range 0 numSegments |> List.map point
-            in
-            Polyline3d points
-        else
-            Polyline3d [ startPoint arc, endPoint arc ]
-    else
-        Polyline3d [ startPoint arc, endPoint arc ]
+        points =
+            List.range 0 numSegments |> List.map point
+    in
+    Polyline3d points
 
 
 {-| Get the swept angle of an arc in radians.
