@@ -25,6 +25,7 @@ module OpenSolid.Vector2d
         , length
         , lengthAndDirection
         , mirrorAcross
+        , normalize
         , orthonormalize
         , perpendicularTo
         , placeIn
@@ -94,7 +95,7 @@ and [`Direction2d.y`](OpenSolid-Direction2d#y).
 
 # Length and direction
 
-@docs length, squaredLength, direction, lengthAndDirection, orthonormalize
+@docs length, squaredLength, direction, lengthAndDirection, orthonormalize, normalize
 
 
 # Arithmetic
@@ -492,6 +493,37 @@ orthonormalize ( xVector, xyVector ) =
                 else
                     Nothing
             )
+
+
+{-| Normalize a vector to have a length of one. Zero vectors are left as-is.
+
+    vector =
+        Vector2d ( 3, 4 )
+
+    Vector2d.normalize vector
+    --> Vector2d ( 0.6, 0.8 )
+
+    Vector2d.normalize Vector2d.zero
+    --> Vector2d.zero
+
+WARNING: `Vector2d.direction` is safer since it forces you to explicitly
+consider the case where the given vector is zero. `normalize` is primarily
+useful for cases like generating WebGL meshes, where defaulting to a zero vector
+for degenerate cases is acceptable, and the overhead of something like
+
+    Vector2d.direction vector
+        |> Maybe.map Direction2d.toVector
+        |> Maybe.withDefault Vector2d.zero
+
+(which is equivalent to `Vector2d.normalize vector`) is too high.
+
+-}
+normalize : Vector2d -> Vector2d
+normalize vector =
+    if vector == zero then
+        zero
+    else
+        scaleBy (1 / length vector) vector
 
 
 {-| Find the sum of two vectors.

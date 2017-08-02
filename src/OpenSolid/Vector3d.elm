@@ -25,6 +25,7 @@ module OpenSolid.Vector3d
         , length
         , lengthAndDirection
         , mirrorAcross
+        , normalize
         , orthonormalize
         , perpendicularTo
         , placeIn
@@ -95,7 +96,7 @@ will actually want their `Direction3d` versions [`Direction3d.x`](OpenSolid-Dire
 
 # Length and direction
 
-@docs length, squaredLength, direction, lengthAndDirection, orthonormalize
+@docs length, squaredLength, direction, lengthAndDirection, orthonormalize, normalize
 
 
 # Arithmetic
@@ -527,6 +528,37 @@ orthonormalize ( xVector, xyVector, xyzVector ) =
                                     )
                         )
             )
+
+
+{-| Normalize a vector to have a length of one. Zero vectors are left as-is.
+
+    vector =
+        Vector3d ( 3, 0, 4 )
+
+    Vector3d.normalize vector
+    --> Vector3d ( 0.6, 0, 0.8 )
+
+    Vector3d.normalize Vector3d.zero
+    --> Vector3d.zero
+
+WARNING: `Vector3d.direction` is safer since it forces you to explicitly
+consider the case where the given vector is zero. `normalize` is primarily
+useful for cases like generating WebGL meshes, where defaulting to a zero vector
+for degenerate cases is acceptable, and the overhead of something like
+
+    Vector3d.direction vector
+        |> Maybe.map Direction3d.toVector
+        |> Maybe.withDefault Vector3d.zero
+
+(which is equivalent to `Vector3d.normalize vector`) is too high.
+
+-}
+normalize : Vector3d -> Vector3d
+normalize vector =
+    if vector == zero then
+        zero
+    else
+        scaleBy (1 / length vector) vector
 
 
 {-| Find the sum of two vectors.
