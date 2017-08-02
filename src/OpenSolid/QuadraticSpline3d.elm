@@ -1,6 +1,7 @@
 module OpenSolid.QuadraticSpline3d
     exposing
         ( bezier
+        , bisect
         , controlPoints
         , derivative
         , endDerivative
@@ -14,6 +15,7 @@ module OpenSolid.QuadraticSpline3d
         , relativeTo
         , rotateAround
         , scaleAbout
+        , splitAt
         , startDerivative
         , startPoint
         , translateBy
@@ -68,6 +70,11 @@ Splines can be constructed by passing a tuple of control points to the
 # Sketch planes
 
 @docs projectInto
+
+
+# Bisection
+
+@docs bisect, splitAt
 
 -}
 
@@ -379,3 +386,61 @@ projectInto sketchPlane spline =
             Point3d.projectInto sketchPlane
     in
     QuadraticSpline2d ( project p1, project p2, project p3 )
+
+
+{-| Split a spline into two roughly equal halves. Equivalent to `splitAt 0.5`.
+
+    QuadraticSpline3d.bisect exampleSpline
+    --> ( QuadraticSpline3d
+    -->     ( Point3d ( 1, 1, 1 )
+    -->     , Point3d ( 2, 2.5 )
+    -->     , Point3d ( 3, 2.5 )
+    -->     )
+    --> , QuadraticSpline3d
+    -->     ( Point3d ( 3, 2.5 )
+    -->     , Point3d ( 4, 2.5 )
+    -->     , Point3d ( 3, 3, 3 )
+    -->     )
+    --> )
+
+-}
+bisect : QuadraticSpline3d -> ( QuadraticSpline3d, QuadraticSpline3d )
+bisect =
+    splitAt 0.5
+
+
+{-| Split a spline at a particular parameter value (in the range 0 to 1),
+resulting in two smaller splines.
+
+    QuadraticSpline3d.splitAt 0.75 exampleSpline
+    --> ( QuadraticSpline3d
+    -->     ( Point3d ( 1, 1, 1 )
+    -->     , Point3d ( 2, 1.5, 1 )
+    -->     , Point3d ( 2.5, 2, 1.5 )
+    -->     )
+    --> , QuadraticSpline3d
+    -->     ( Point3d ( 2.5, 2, 1.5 )
+    -->     , Point3d ( 3, 2.5, 2 )
+    -->     , Point3d ( 3, 3, 3 )
+    -->     )
+    --> )
+
+-}
+splitAt : Float -> QuadraticSpline3d -> ( QuadraticSpline3d, QuadraticSpline3d )
+splitAt t spline =
+    let
+        ( p1, p2, p3 ) =
+            controlPoints spline
+
+        q1 =
+            Point3d.interpolateFrom p1 p2 t
+
+        q2 =
+            Point3d.interpolateFrom p2 p3 t
+
+        r =
+            Point3d.interpolateFrom q1 q2 t
+    in
+    ( QuadraticSpline3d ( p1, q1, r )
+    , QuadraticSpline3d ( r, q2, p3 )
+    )

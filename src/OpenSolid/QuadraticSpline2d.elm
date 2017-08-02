@@ -1,6 +1,7 @@
 module OpenSolid.QuadraticSpline2d
     exposing
         ( bezier
+        , bisect
         , controlPoints
         , derivative
         , endDerivative
@@ -13,6 +14,7 @@ module OpenSolid.QuadraticSpline2d
         , relativeTo
         , rotateAround
         , scaleAbout
+        , splitAt
         , startDerivative
         , startPoint
         , translateBy
@@ -67,6 +69,11 @@ Splines can be constructed by passing a tuple of control points to the
 # Sketch planes
 
 @docs placeOnto
+
+
+# Bisection
+
+@docs bisect, splitAt
 
 -}
 
@@ -362,3 +369,61 @@ placeOnto sketchPlane spline =
             Point2d.placeOnto sketchPlane
     in
     QuadraticSpline3d ( place p1, place p2, place p3 )
+
+
+{-| Split a spline into two roughly equal halves. Equivalent to `splitAt 0.5`.
+
+    QuadraticSpline2d.bisect exampleSpline
+    --> ( QuadraticSpline2d
+    -->     ( Point2d ( 1, 1 )
+    -->     , Point2d ( 2, 2.5 )
+    -->     , Point2d ( 3, 2.5 )
+    -->     )
+    --> , QuadraticSpline2d
+    -->     ( Point2d ( 3, 2.5 )
+    -->     , Point2d ( 4, 2.5 )
+    -->     , Point2d ( 5, 1 )
+    -->     )
+    --> )
+
+-}
+bisect : QuadraticSpline2d -> ( QuadraticSpline2d, QuadraticSpline2d )
+bisect =
+    splitAt 0.5
+
+
+{-| Split a spline at a particular parameter value (in the range 0 to 1),
+resulting in two smaller splines.
+
+    QuadraticSpline2d.splitAt 0.75 exampleSpline
+    --> ( QuadraticSpline2d
+    -->     ( Point2d ( 1, 1 )
+    -->     , Point2d ( 2.5, 3.25 )
+    -->     , Point2d ( 4, 2.125 )
+    -->     )
+    --> , QuadraticSpline2d
+    -->     ( Point2d ( 4, 2.125 )
+    -->     , Point2d ( 4.5, 1.75 )
+    -->     , Point2d ( 5, 1 )
+    -->     )
+    --> )
+
+-}
+splitAt : Float -> QuadraticSpline2d -> ( QuadraticSpline2d, QuadraticSpline2d )
+splitAt t spline =
+    let
+        ( p1, p2, p3 ) =
+            controlPoints spline
+
+        q1 =
+            Point2d.interpolateFrom p1 p2 t
+
+        q2 =
+            Point2d.interpolateFrom p2 p3 t
+
+        r =
+            Point2d.interpolateFrom q1 q2 t
+    in
+    ( QuadraticSpline2d ( p1, q1, r )
+    , QuadraticSpline2d ( r, q2, p3 )
+    )
