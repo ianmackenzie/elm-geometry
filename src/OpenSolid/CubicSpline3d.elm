@@ -1,6 +1,7 @@
 module OpenSolid.CubicSpline3d
     exposing
         ( bezier
+        , bisect
         , controlPoints
         , derivative
         , endDerivative
@@ -15,6 +16,7 @@ module OpenSolid.CubicSpline3d
         , relativeTo
         , rotateAround
         , scaleAbout
+        , splitAt
         , startDerivative
         , startPoint
         , translateBy
@@ -70,6 +72,11 @@ Splines can be constructed by passing a tuple of control points to the
 # Sketch planes
 
 @docs projectInto
+
+
+# Subdivision
+
+@docs bisect, splitAt
 
 -}
 
@@ -442,3 +449,74 @@ projectInto sketchPlane spline =
             Point3d.projectInto sketchPlane
     in
     CubicSpline2d ( project p1, project p2, project p3, project p4 )
+
+
+{-| Split a spline into two roughly equal halves. Equivalent to `splitAt 0.5`.
+
+    CubicSpline3d.bisect exampleSpline
+    --> ( CubicSpline3d
+    -->     ( Point3d ( 1, 1, 1 )
+    -->     , Point3d ( 2, 1, 1 )
+    -->     , Point3d ( 2.5, 1.5, 1 )
+    -->     , Point3d ( 2.75, 2, 1.25 )
+    -->     )
+    --> , CubicSpline3d
+    -->     ( Point3d ( 2.75, 2, 1.25 )
+    -->     , Point3d ( 3, 2.5, 1.5 )
+    -->     , Point3d ( 3, 3, 2 )
+    -->     , Point3d ( 3, 3, 3 )
+    -->     )
+    --> )
+
+-}
+bisect : CubicSpline3d -> ( CubicSpline3d, CubicSpline3d )
+bisect =
+    splitAt 0.5
+
+
+{-| Split a spline at a particular parameter value (in the range 0 to 1),
+resulting in two smaller splines.
+
+    CubicSpline3d.splitAt 0.75 exampleSpline
+    --> ( CubicSpline3d
+    -->     ( Point3d ( 1, 1, 1 )
+    -->     , Point3d ( 2.5, 1, 1 )
+    -->     , Point3d ( 2.875, 2.125, 1 )
+    -->     , Point3d ( 2.96875, 2.6875, 1.84375 )
+    -->     )
+    --> , CubicSpline3d
+    -->     ( Point3d ( 2.96875, 2.6875, 1.84375 )
+    -->     , Point3d ( 3, 2.875, 2.125 )
+    -->     , Point3d ( 3, 3, 2.5 )
+    -->     , Point3d ( 3, 3, 3 )
+    -->     )
+    --> )
+
+-}
+splitAt : Float -> CubicSpline3d -> ( CubicSpline3d, CubicSpline3d )
+splitAt t spline =
+    let
+        ( p1, p2, p3, p4 ) =
+            controlPoints spline
+
+        q1 =
+            Point3d.interpolateFrom p1 p2 t
+
+        q2 =
+            Point3d.interpolateFrom p2 p3 t
+
+        q3 =
+            Point3d.interpolateFrom p3 p4 t
+
+        r1 =
+            Point3d.interpolateFrom q1 q2 t
+
+        r2 =
+            Point3d.interpolateFrom q2 q3 t
+
+        s =
+            Point3d.interpolateFrom r1 r2 t
+    in
+    ( CubicSpline3d ( p1, q1, r1, s )
+    , CubicSpline3d ( s, r2, q3, p4 )
+    )

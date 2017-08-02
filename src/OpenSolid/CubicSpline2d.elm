@@ -1,6 +1,7 @@
 module OpenSolid.CubicSpline2d
     exposing
         ( bezier
+        , bisect
         , controlPoints
         , derivative
         , endDerivative
@@ -14,6 +15,7 @@ module OpenSolid.CubicSpline2d
         , relativeTo
         , rotateAround
         , scaleAbout
+        , splitAt
         , startDerivative
         , startPoint
         , translateBy
@@ -69,6 +71,11 @@ Splines can be constructed by passing a tuple of control points to the
 # Sketch planes
 
 @docs placeOnto
+
+
+# Subdivision
+
+@docs bisect, splitAt
 
 -}
 
@@ -416,3 +423,74 @@ placeOnto sketchPlane spline =
             Point2d.placeOnto sketchPlane
     in
     CubicSpline3d ( place p1, place p2, place p3, place p4 )
+
+
+{-| Split a spline into two roughly equal halves. Equivalent to `splitAt 0.5`.
+
+    CubicSpline2d.bisect exampleSpline
+    --> ( CubicSpline2d
+    -->     ( Point2d ( 1, 1 )
+    -->     , Point2d ( 2, 2.5 )
+    -->     , Point2d ( 3, 2.5 )
+    -->     , Point2d ( 4, 2.5 )
+    -->     )
+    --> , CubicSpline2d
+    -->     ( Point2d ( 4, 2.5 )
+    -->     , Point2d ( 5, 2.5 )
+    -->     , Point2d ( 6, 2.5 )
+    -->     , Point2d ( 7, 4 )
+    -->     )
+    --> )
+
+-}
+bisect : CubicSpline2d -> ( CubicSpline2d, CubicSpline2d )
+bisect =
+    splitAt 0.5
+
+
+{-| Split a spline at a particular parameter value (in the range 0 to 1),
+resulting in two smaller splines.
+
+    CubicSpline2d.splitAt 0.75 exampleSpline
+    --> ( CubicSpline2d
+    -->     ( Point2d ( 1, 1 )
+    -->     , Point2d ( 2.5, 3.25 )
+    -->     , Point2d ( 4, 2.125 )
+    -->     , Point2d ( 5.5, 2.6875 )
+    -->     )
+    --> , CubicSpline2d
+    -->     ( Point2d ( 5.5, 2.6875 )
+    -->     , Point2d ( 6, 2.875 )
+    -->     , Point2d ( 6.5, 3.25 )
+    -->     , Point2d ( 7, 4 )
+    -->     )
+    --> )
+
+-}
+splitAt : Float -> CubicSpline2d -> ( CubicSpline2d, CubicSpline2d )
+splitAt t spline =
+    let
+        ( p1, p2, p3, p4 ) =
+            controlPoints spline
+
+        q1 =
+            Point2d.interpolateFrom p1 p2 t
+
+        q2 =
+            Point2d.interpolateFrom p2 p3 t
+
+        q3 =
+            Point2d.interpolateFrom p3 p4 t
+
+        r1 =
+            Point2d.interpolateFrom q1 q2 t
+
+        r2 =
+            Point2d.interpolateFrom q2 q3 t
+
+        s =
+            Point2d.interpolateFrom r1 r2 t
+    in
+    ( CubicSpline2d ( p1, q1, r1, s )
+    , CubicSpline2d ( s, r2, q3, p4 )
+    )
