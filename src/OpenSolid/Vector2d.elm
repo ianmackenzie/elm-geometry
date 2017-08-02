@@ -608,7 +608,7 @@ dotProduct firstVector secondVector =
             ( x2, y2 ) =
                 components secondVector
         in
-            x1 * y2 - y1 * x2
+        x1 * y2 - y1 * x2
 
 and is useful in many of the same ways as the 3D cross product:
 
