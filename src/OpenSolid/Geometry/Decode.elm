@@ -59,61 +59,142 @@ import Json.Decode as Decode exposing (Decoder)
 import OpenSolid.Geometry.Types exposing (..)
 
 
-{-| Decodes a `Vector2d` from a list of two floating-point components.
+{-| Decodes a `Vector2d` from either
+
+  - an object with `x` and `y` fields, or
+  - a list of two floating-point components.
+
 -}
 vector2d : Decoder Vector2d
 vector2d =
-    Decode.map2 (\x y -> Vector2d ( x, y ))
-        (Decode.index 0 Decode.float)
-        (Decode.index 1 Decode.float)
+    let
+        toVector x y =
+            Vector2d ( x, y )
+    in
+    Decode.oneOf
+        [ Decode.map2 toVector
+            (Decode.field "x" Decode.float)
+            (Decode.field "y" Decode.float)
+        , Decode.map2 toVector
+            (Decode.index 0 Decode.float)
+            (Decode.index 1 Decode.float)
+        ]
 
 
-{-| Decodes a `Vector3d` from a list of three floating-point components.
+{-| Decodes a `Vector3d` from either
+
+  - an object with `x`, `y` and `z` fields, or
+  - a list of three floating-point components.
+
 -}
 vector3d : Decoder Vector3d
 vector3d =
-    Decode.map3 (\x y z -> Vector3d ( x, y, z ))
-        (Decode.index 0 Decode.float)
-        (Decode.index 1 Decode.float)
-        (Decode.index 2 Decode.float)
+    let
+        toVector x y z =
+            Vector3d ( x, y, z )
+    in
+    Decode.oneOf
+        [ Decode.map3 toVector
+            (Decode.field "x" Decode.float)
+            (Decode.field "y" Decode.float)
+            (Decode.field "z" Decode.float)
+        , Decode.map3 toVector
+            (Decode.index 0 Decode.float)
+            (Decode.index 1 Decode.float)
+            (Decode.index 2 Decode.float)
+        ]
 
 
-{-| Decodes a `Direction2d` from a list of two floating-point components.
+{-| Decodes a `Direction2d` from either
+
+  - an object with `x` and `y` fields, or
+  - a list of two floating-point components.
+
 -}
 direction2d : Decoder Direction2d
 direction2d =
-    Decode.map2 (\x y -> Direction2d ( x, y ))
-        (Decode.index 0 Decode.float)
-        (Decode.index 1 Decode.float)
+    let
+        toDirection x y =
+            Direction2d ( x, y )
+    in
+    Decode.oneOf
+        [ Decode.map2 toDirection
+            (Decode.field "x" Decode.float)
+            (Decode.field "y" Decode.float)
+        , Decode.map2 toDirection
+            (Decode.index 0 Decode.float)
+            (Decode.index 1 Decode.float)
+        ]
 
 
-{-| Decodes a `Direction3d` from a list of three floating-point components.
+{-| Decodes a `Direction3d` from either
+
+  - an object with `x`, `y` and `z` fields, or
+  - a list of three floating-point components.
+
 -}
 direction3d : Decoder Direction3d
 direction3d =
-    Decode.map3 (\x y z -> Direction3d ( x, y, z ))
-        (Decode.index 0 Decode.float)
-        (Decode.index 1 Decode.float)
-        (Decode.index 2 Decode.float)
+    let
+        toDirection x y z =
+            Direction3d ( x, y, z )
+    in
+    Decode.oneOf
+        [ Decode.map3 toDirection
+            (Decode.field "x" Decode.float)
+            (Decode.field "y" Decode.float)
+            (Decode.field "z" Decode.float)
+        , Decode.map3 toDirection
+            (Decode.index 0 Decode.float)
+            (Decode.index 1 Decode.float)
+            (Decode.index 2 Decode.float)
+        ]
 
 
-{-| Decodes a `Point2d` from a list of two floating-point coordinates.
+{-| Decodes a `Point2d` from either
+
+  - an object with `x` and `y` fields, or
+  - a list of two floating-point coordinates.
+
 -}
 point2d : Decoder Point2d
 point2d =
-    Decode.map2 (\x y -> Point2d ( x, y ))
-        (Decode.index 0 Decode.float)
-        (Decode.index 1 Decode.float)
+    let
+        toPoint x y =
+            Point2d ( x, y )
+    in
+    Decode.oneOf
+        [ Decode.map2 toPoint
+            (Decode.field "x" Decode.float)
+            (Decode.field "y" Decode.float)
+        , Decode.map2 toPoint
+            (Decode.index 0 Decode.float)
+            (Decode.index 1 Decode.float)
+        ]
 
 
-{-| Decodes a `Point3d` from a list of three floating-point coordinates.
+{-| Decodes a `Point3d` from either
+
+  - an object with `x`, `y` and `z` fields, or
+  - a list of three floating-point coordinates.
+
 -}
 point3d : Decoder Point3d
 point3d =
-    Decode.map3 (\x y z -> Point3d ( x, y, z ))
-        (Decode.index 0 Decode.float)
-        (Decode.index 1 Decode.float)
-        (Decode.index 2 Decode.float)
+    let
+        toPoint x y z =
+            Point3d ( x, y, z )
+    in
+    Decode.oneOf
+        [ Decode.map3 toPoint
+            (Decode.field "x" Decode.float)
+            (Decode.field "y" Decode.float)
+            (Decode.field "z" Decode.float)
+        , Decode.map3 toPoint
+            (Decode.index 0 Decode.float)
+            (Decode.index 1 Decode.float)
+            (Decode.index 2 Decode.float)
+        ]
 
 
 {-| Decodes an `Axis2d` from an object with `originPoint` and `direction`
