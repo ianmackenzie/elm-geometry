@@ -6,6 +6,7 @@ module OpenSolid.QuadraticSpline3d
         , derivative
         , endDerivative
         , endPoint
+        , evaluate
         , mirrorAcross
         , placeIn
         , point
@@ -54,7 +55,7 @@ Splines can be constructed by passing a tuple of control points to the
 
 # Evaluation
 
-@docs pointOn, point, derivative
+@docs pointOn, point, derivative, evaluate
 
 
 # Transformations
@@ -236,6 +237,38 @@ derivative spline =
             Point3d.vectorFrom p2 p3
     in
     \t -> Vector3d.interpolateFrom v1 v2 t |> Vector3d.scaleBy 2
+
+
+{-| Evaluate a spline at a given parameter value, returning the point on the
+spline at that parameter value and the derivative with respect to that parameter
+value;
+
+    QuadraticSpline3d.evaluate spline t
+
+is equivalent to
+
+    ( QuadraticSpline3d.pointOn spline t
+    , QuadraticSpline3d.derivative spline t
+    )
+
+but is more efficient.
+
+-}
+evaluate : QuadraticSpline3d -> Float -> ( Point3d, Vector3d )
+evaluate spline t =
+    let
+        ( p1, p2, p3 ) =
+            controlPoints spline
+
+        q1 =
+            Point3d.interpolateFrom p1 p2 t
+
+        q2 =
+            Point3d.interpolateFrom p2 p3 t
+    in
+    ( Point3d.interpolateFrom q1 q2 t
+    , Point3d.vectorFrom q1 q2 |> Vector3d.scaleBy 2
+    )
 
 
 mapControlPoints : (Point3d -> Point3d) -> QuadraticSpline3d -> QuadraticSpline3d
