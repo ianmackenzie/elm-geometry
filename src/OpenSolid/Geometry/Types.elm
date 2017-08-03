@@ -22,6 +22,7 @@ module OpenSolid.Geometry.Types
         , Circle3d(Circle3d)
         , CubicSpline2d(CubicSpline2d)
         , CubicSpline3d(CubicSpline3d)
+        , Cuboid3d(Cuboid3d)
         , Direction2d(Direction2d)
         , Direction3d(Direction3d)
         , Frame2d(Frame2d)
@@ -36,6 +37,8 @@ module OpenSolid.Geometry.Types
         , Polyline3d(Polyline3d)
         , QuadraticSpline2d(QuadraticSpline2d)
         , QuadraticSpline3d(QuadraticSpline3d)
+        , Rectangle2d(Rectangle2d)
+        , Rectangle3d(Rectangle3d)
         , SketchPlane3d(SketchPlane3d)
         , Triangle2d(Triangle2d)
         , Triangle3d(Triangle3d)
@@ -120,6 +123,11 @@ useful for tasks such as fast spatial searching or culling non-visible objects
 during 3D rendering.
 
 @docs BoundingBox2d, BoundingBox3d
+
+
+# Rectangles and cuboids
+
+@docs Rectangle2d, Rectangle3d, Cuboid3d
 
 
 # Polylines
@@ -353,6 +361,39 @@ type BoundingBox3d
         , maxY : Float
         , minZ : Float
         , maxZ : Float
+        }
+
+
+{-| A rectangle in 2D, defined the frame that it is centered on and its overall
+dimensions (width, height). See the [`Rectangle2d`](OpenSolid-Rectangle2d)
+module for details.
+-}
+type Rectangle2d
+    = Rectangle2d
+        { centeredOn : Frame2d
+        , dimensions : ( Float, Float )
+        }
+
+
+{-| A rectangle in 3D, defined by the sketch plane that it is centered on and
+its overall dimensions (width, height). See the[`Rectangle3d`](OpenSolid-Rectangle3d)
+module for details.
+-}
+type Rectangle3d
+    = Rectangle3d
+        { centeredOn : SketchPlane3d
+        , dimensions : ( Float, Float )
+        }
+
+
+{-| A rectangular box in 3D, defined the frame that it is centered on and its
+overall dimensions (length, width, height). See the [`Cuboid3d`](OpenSolid-Cuboid3d)
+module for details.
+-}
+type Cuboid3d
+    = Cuboid3d
+        { centeredOn : Frame3d
+        , dimensions : ( Float, Float, Float )
         }
 
 
