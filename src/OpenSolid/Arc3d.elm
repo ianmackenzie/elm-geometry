@@ -212,12 +212,47 @@ end point.
 
 -}
 pointOn : Arc3d -> Float -> Point3d
-pointOn arc parameter =
+pointOn arc =
     let
-        angle =
-            parameter * sweptAngle arc
+        arcCenterPoint =
+            centerPoint arc
+
+        xVector =
+            Point3d.vectorFrom arcCenterPoint (startPoint arc)
+
+        yVector =
+            Vector3d.crossProduct
+                (axialDirection arc |> Direction3d.toVector)
+                xVector
+
+        ( x0, y0, z0 ) =
+            Point3d.coordinates arcCenterPoint
+
+        ( x1, y1, z1 ) =
+            Vector3d.components xVector
+
+        ( x2, y2, z2 ) =
+            Vector3d.components yVector
+
+        arcSweptAngle =
+            sweptAngle arc
     in
-    Point3d.rotateAround (axis arc) angle (startPoint arc)
+    \t ->
+        let
+            angle =
+                t * arcSweptAngle
+
+            cosAngle =
+                cos angle
+
+            sinAngle =
+                sin angle
+        in
+        Point3d
+            ( x0 + x1 * cosAngle + x2 * sinAngle
+            , y0 + y1 * cosAngle + y2 * sinAngle
+            , z0 + z1 * cosAngle + z2 * sinAngle
+            )
 
 
 {-| DEPRECATED: Alias for `pointOn`, kept for compatibility. Use `pointOn`
