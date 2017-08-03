@@ -2,6 +2,7 @@ module OpenSolid.Rectangle2d
     exposing
         ( area
           --, boundingBox
+        , axes
         , centerPoint
         , containing
         , contains
@@ -92,9 +93,14 @@ with { minX, maxX, minY, maxY } =
         }
 
 
+axes : Rectangle2d -> Frame2d
+axes (Rectangle2d { centeredOn }) =
+    centeredOn
+
+
 centerPoint : Rectangle2d -> Point2d
-centerPoint (Rectangle2d { centeredOn }) =
-    Frame2d.originPoint centeredOn
+centerPoint rectangle =
+    Frame2d.originPoint (axes rectangle)
 
 
 dimensions : Rectangle2d -> ( Float, Float )
@@ -112,13 +118,13 @@ area rectangle =
 
 
 vertices : Rectangle2d -> ( Point2d, Point2d, Point2d, Point2d )
-vertices (Rectangle2d { centeredOn, dimensions }) =
+vertices rectangle =
     let
         frame =
-            centeredOn
+            axes rectangle
 
         ( width, height ) =
-            dimensions
+            dimensions rectangle
 
         halfWidth =
             width / 2
@@ -134,13 +140,13 @@ vertices (Rectangle2d { centeredOn, dimensions }) =
 
 
 contains : Point2d -> Rectangle2d -> Bool
-contains point (Rectangle2d { centeredOn, dimensions }) =
+contains point rectangle =
     let
         frame =
-            centeredOn
+            axes rectangle
 
         ( width, height ) =
-            dimensions
+            dimensions rectangle
 
         ( x, y ) =
             Point2d.coordinates (Point2d.relativeTo frame point)
@@ -167,8 +173,8 @@ rotateAround point angle =
         rotateFrame =
             Frame2d.rotateAround point angle
     in
-    \(Rectangle2d { centeredOn, dimensions }) ->
+    \rectangle ->
         Rectangle2d
-            { centeredOn = rotateFrame centeredOn
-            , dimensions = dimensions
+            { centeredOn = rotateFrame (axes rectangle)
+            , dimensions = dimensions rectangle
             }
