@@ -256,60 +256,49 @@ evaluate arc =
     let
         arcCenterPoint =
             centerPoint arc
+
+        xVector =
+            Point3d.vectorFrom arcCenterPoint (startPoint arc)
+
+        yVector =
+            Vector3d.crossProduct
+                (axialDirection arc |> Direction3d.toVector)
+                xVector
+
+        ( x0, y0, z0 ) =
+            Point3d.coordinates arcCenterPoint
+
+        ( x1, y1, z1 ) =
+            Vector3d.components xVector
+
+        ( x2, y2, z2 ) =
+            Vector3d.components yVector
+
+        arcSweptAngle =
+            sweptAngle arc
     in
-    case Point3d.directionFrom arcCenterPoint (startPoint arc) of
-        Just xDirection ->
-            let
-                ( x0, y0, z0 ) =
-                    Point3d.coordinates arcCenterPoint
+    \t ->
+        let
+            angle =
+                t * arcSweptAngle
 
-                ( x1, y1, z1 ) =
-                    Direction3d.components xDirection
+            cosAngle =
+                cos angle
 
-                yVector =
-                    Vector3d.crossProduct
-                        (axialDirection arc |> Direction3d.toVector)
-                        (xDirection |> Direction3d.toVector)
-
-                ( x2, y2, z2 ) =
-                    Vector3d.components yVector
-
-                arcRadius =
-                    radius arc
-
-                arcSweptAngle =
-                    sweptAngle arc
-
-                derivativeMagnitude =
-                    arcRadius * arcSweptAngle
-            in
-            \t ->
-                let
-                    angle =
-                        t * arcSweptAngle
-
-                    cosAngle =
-                        cos angle
-
-                    sinAngle =
-                        sin angle
-                in
-                ( Point3d
-                    ( x0 + arcRadius * (x1 * cosAngle + x2 * sinAngle)
-                    , y0 + arcRadius * (y1 * cosAngle + y2 * sinAngle)
-                    , z0 + arcRadius * (z1 * cosAngle + z2 * sinAngle)
-                    )
-                , Vector3d
-                    ( derivativeMagnitude * (cosAngle * x2 - sinAngle * x1)
-                    , derivativeMagnitude * (cosAngle * y2 - sinAngle * y1)
-                    , derivativeMagnitude * (cosAngle * z2 - sinAngle * z1)
-                    )
-                )
-
-        Nothing ->
-            -- Center and start points are coincident, so arc is just a single
-            -- point
-            always ( centerPoint arc, Vector3d.zero )
+            sinAngle =
+                sin angle
+        in
+        ( Point3d
+            ( x0 + x1 * cosAngle + x2 * sinAngle
+            , y0 + y1 * cosAngle + y2 * sinAngle
+            , z0 + z1 * cosAngle + z2 * sinAngle
+            )
+        , Vector3d
+            ( arcSweptAngle * (cosAngle * x2 - sinAngle * x1)
+            , arcSweptAngle * (cosAngle * y2 - sinAngle * y1)
+            , arcSweptAngle * (cosAngle * z2 - sinAngle * z1)
+            )
+        )
 
 
 numApproximationSegments : Float -> Arc3d -> Int
