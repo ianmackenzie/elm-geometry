@@ -180,7 +180,7 @@ scaleAbout point scale rectangle =
             Frame2d.yDirection currentFrame
 
         newCenterPoint =
-            Point2d.scaleAbout point scale (Frame2d.originPoint frame)
+            Point2d.scaleAbout point scale (Frame2d.originPoint currentFrame)
 
         newAxes =
             if scale >= 0 then
