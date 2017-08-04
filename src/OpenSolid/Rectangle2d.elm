@@ -22,6 +22,7 @@ module OpenSolid.Rectangle2d
         , with
         )
 
+import OpenSolid.Direction2d as Direction2d
 import OpenSolid.Frame2d as Frame2d
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point2d as Point2d
