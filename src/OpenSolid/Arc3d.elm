@@ -4,6 +4,7 @@ module OpenSolid.Arc3d
         , axis
         , centerPoint
         , endPoint
+        , evaluate
         , mirrorAcross
         , placeIn
         , point
@@ -57,7 +58,7 @@ arc's center point - here the origin point of the given axis is
 
 # Evaluation
 
-@docs pointOn, point
+@docs pointOn, point, evaluate
 
 
 # Linear approximation
@@ -83,6 +84,7 @@ import OpenSolid.Frame3d as Frame3d
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.SketchPlane3d as SketchPlane3d
+import OpenSolid.Vector3d as Vector3d
 
 
 {-| Attempt to construct an arc that starts at the first given point, passes
@@ -210,12 +212,47 @@ end point.
 
 -}
 pointOn : Arc3d -> Float -> Point3d
-pointOn arc parameter =
+pointOn arc =
     let
-        angle =
-            parameter * sweptAngle arc
+        arcCenterPoint =
+            centerPoint arc
+
+        xVector =
+            Point3d.vectorFrom arcCenterPoint (startPoint arc)
+
+        yVector =
+            Vector3d.crossProduct
+                (axialDirection arc |> Direction3d.toVector)
+                xVector
+
+        ( x0, y0, z0 ) =
+            Point3d.coordinates arcCenterPoint
+
+        ( x1, y1, z1 ) =
+            Vector3d.components xVector
+
+        ( x2, y2, z2 ) =
+            Vector3d.components yVector
+
+        arcSweptAngle =
+            sweptAngle arc
     in
-    Point3d.rotateAround (axis arc) angle (startPoint arc)
+    \t ->
+        let
+            angle =
+                t * arcSweptAngle
+
+            cosAngle =
+                cos angle
+
+            sinAngle =
+                sin angle
+        in
+        Point3d
+            ( x0 + x1 * cosAngle + x2 * sinAngle
+            , y0 + y1 * cosAngle + y2 * sinAngle
+            , z0 + z1 * cosAngle + z2 * sinAngle
+            )
 
 
 {-| DEPRECATED: Alias for `pointOn`, kept for compatibility. Use `pointOn`
@@ -224,6 +261,79 @@ instead.
 point : Arc3d -> Float -> Point3d
 point =
     pointOn
+
+
+{-| Evaluate an arc at a given parameter value, returning the point on the arc
+at that parameter value and the derivative with respect to that parameter value.
+
+    evaluate =
+        Arc3d.evaluate exampleArc
+
+    evaluate 0
+    --> ( Point3d ( 2, 0, 1 ), Vector3d ( 0, 3.1416, 0 ) )
+
+    evaluate 0.5
+    --> ( Point3d ( 1.4142, 1.4142, 1 ), Vector3d ( -2.2214, 2.2214, 0 ) )
+
+    evaluate 1
+    --> ( Point3d ( 0, 2, 1 ), Vector3d ( -3.1416, 0, 0 ) )
+
+For best efficiency, `evaluate` should be partially applied (called with just
+the arc argument) first, and then the returned function should be called
+multiple times, as in the example above. Note that this happens naturally in
+many common cases such as
+
+    List.map (Arc3d.evaluate arc) parameterValues
+
+-}
+evaluate : Arc3d -> Float -> ( Point3d, Vector3d )
+evaluate arc =
+    let
+        arcCenterPoint =
+            centerPoint arc
+
+        xVector =
+            Point3d.vectorFrom arcCenterPoint (startPoint arc)
+
+        yVector =
+            Vector3d.crossProduct
+                (axialDirection arc |> Direction3d.toVector)
+                xVector
+
+        ( x0, y0, z0 ) =
+            Point3d.coordinates arcCenterPoint
+
+        ( x1, y1, z1 ) =
+            Vector3d.components xVector
+
+        ( x2, y2, z2 ) =
+            Vector3d.components yVector
+
+        arcSweptAngle =
+            sweptAngle arc
+    in
+    \t ->
+        let
+            angle =
+                t * arcSweptAngle
+
+            cosAngle =
+                cos angle
+
+            sinAngle =
+                sin angle
+        in
+        ( Point3d
+            ( x0 + x1 * cosAngle + x2 * sinAngle
+            , y0 + y1 * cosAngle + y2 * sinAngle
+            , z0 + z1 * cosAngle + z2 * sinAngle
+            )
+        , Vector3d
+            ( arcSweptAngle * (cosAngle * x2 - sinAngle * x1)
+            , arcSweptAngle * (cosAngle * y2 - sinAngle * y1)
+            , arcSweptAngle * (cosAngle * z2 - sinAngle * z1)
+            )
+        )
 
 
 numApproximationSegments : Float -> Arc3d -> Int

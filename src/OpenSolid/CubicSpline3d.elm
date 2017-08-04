@@ -6,6 +6,7 @@ module OpenSolid.CubicSpline3d
         , derivative
         , endDerivative
         , endPoint
+        , evaluate
         , hermite
         , mirrorAcross
         , placeIn
@@ -56,7 +57,7 @@ Splines can be constructed by passing a tuple of control points to the
 
 # Evaluation
 
-@docs pointOn, point, derivative
+@docs pointOn, point, derivative, evaluate
 
 
 # Transformations
@@ -291,6 +292,47 @@ derivative spline =
                 Vector3d.interpolateFrom v2 v3 t
         in
         Vector3d.interpolateFrom w1 w2 t |> Vector3d.scaleBy 3
+
+
+{-| Evaluate a spline at a given parameter value, returning the point on the
+spline at that parameter value and the derivative with respect to that parameter
+value;
+
+    CubicSpline3d.evaluate spline t
+
+is equivalent to
+
+    ( CubicSpline3d.pointOn spline t
+    , CubicSpline3d.derivative spline t
+    )
+
+but is more efficient.
+
+-}
+evaluate : CubicSpline3d -> Float -> ( Point3d, Vector3d )
+evaluate spline t =
+    let
+        ( p1, p2, p3, p4 ) =
+            controlPoints spline
+
+        q1 =
+            Point3d.interpolateFrom p1 p2 t
+
+        q2 =
+            Point3d.interpolateFrom p2 p3 t
+
+        q3 =
+            Point3d.interpolateFrom p3 p4 t
+
+        r1 =
+            Point3d.interpolateFrom q1 q2 t
+
+        r2 =
+            Point3d.interpolateFrom q2 q3 t
+    in
+    ( Point3d.interpolateFrom r1 r2 t
+    , Point3d.vectorFrom r1 r2 |> Vector3d.scaleBy 3
+    )
 
 
 mapControlPoints : (Point3d -> Point3d) -> CubicSpline3d -> CubicSpline3d

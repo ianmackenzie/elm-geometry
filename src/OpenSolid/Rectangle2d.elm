@@ -167,6 +167,50 @@ edges rectangle =
     )
 
 
+scaleAbout : Point2d -> Float -> Rectangle2d -> Rectangle2d
+scaleAbout point scale rectangle =
+    let
+        currentFrame =
+            axes rectangle
+
+        currentXDirection =
+            Frame2d.xDirection currentFrame
+
+        currentYDirection =
+            Frame2d.yDirection currentFrame
+
+        newCenterPoint =
+            Point2d.scaleAbout point scale (Frame2d.originPoint frame)
+
+        newAxes =
+            if scale >= 0 then
+                Frame2d
+                    { originPoint = newCenterPoint
+                    , xDirection = currentXDirection
+                    , yDirection = currentYDirection
+                    }
+            else
+                Frame2d
+                    { originPoint = newCenterPoint
+                    , xDirection = Direction2d.flip currentXDirection
+                    , yDirection = Direction2d.flip currentYDirection
+                    }
+
+        ( currentWidth, currentHeight ) =
+            dimensions rectangle
+
+        newWidth =
+            abs (scale * currentWidth)
+
+        newHeight =
+            abs (scale * currentHeight)
+    in
+    Rectangle2d
+        { centeredOn = newAxes
+        , dimensions = ( newWidth, newHeight )
+        }
+
+
 rotateAround : Point2d -> Float -> Rectangle2d -> Rectangle2d
 rotateAround point angle =
     let
@@ -178,3 +222,35 @@ rotateAround point angle =
             { centeredOn = rotateFrame (axes rectangle)
             , dimensions = dimensions rectangle
             }
+
+
+translateBy : Vector2d -> Rectangle2d -> Rectangle2d
+translateBy displacement rectangle =
+    Rectangle2d
+        { centeredOn = Frame2d.translateBy displacement (axes rectangle)
+        , dimensions = dimensions rectangle
+        }
+
+
+mirrorAcross : Axis2d -> Rectangle2d -> Rectangle2d
+mirrorAcross axis rectangle =
+    Rectangle2d
+        { centeredOn = Frame2d.mirrorAcross axis (axes rectangle)
+        , dimensions = dimensions rectangle
+        }
+
+
+placeIn : Frame2d -> Rectangle2d -> Rectangle2d
+placeIn frame rectangle =
+    Rectangle2d
+        { centeredOn = Frame2d.placeIn frame (axes rectangle)
+        , dimensions = dimensions rectangle
+        }
+
+
+relativeTo : Frame2d -> Rectangle2d -> Rectangle2d
+relativeTo frame rectangle =
+    Rectangle2d
+        { centeredOn = Frame2d.relativeTo frame (axes rectangle)
+        , dimensions = dimensions rectangle
+        }

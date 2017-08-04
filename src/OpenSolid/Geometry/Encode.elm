@@ -88,7 +88,7 @@ import OpenSolid.Vector2d as Vector2d
 import OpenSolid.Vector3d as Vector3d
 
 
-{-| Encode a `Vector2d` as a list of two floating-point components.
+{-| Encode a `Vector2d` as an object with `x` and `y` fields.
 -}
 vector2d : Vector2d -> Value
 vector2d vector =
@@ -96,10 +96,13 @@ vector2d vector =
         ( x, y ) =
             Vector2d.components vector
     in
-    Encode.list [ Encode.float x, Encode.float y ]
+    Encode.object
+        [ ( "x", Encode.float x )
+        , ( "y", Encode.float y )
+        ]
 
 
-{-| Encode a `Vector3d` as a list of three floating-point components.
+{-| Encode a `Vector3d` as an object with `x`, `y` and `z` fields.
 -}
 vector3d : Vector3d -> Value
 vector3d vector =
@@ -107,10 +110,14 @@ vector3d vector =
         ( x, y, z ) =
             Vector3d.components vector
     in
-    Encode.list [ Encode.float x, Encode.float y, Encode.float z ]
+    Encode.object
+        [ ( "x", Encode.float x )
+        , ( "y", Encode.float y )
+        , ( "z", Encode.float z )
+        ]
 
 
-{-| Encode a `Direction2d` as a list of two floating-point components.
+{-| Encode a `Direction2d` as an object with `x` and `y` fields.
 -}
 direction2d : Direction2d -> Value
 direction2d direction =
@@ -118,10 +125,13 @@ direction2d direction =
         ( x, y ) =
             Direction2d.components direction
     in
-    Encode.list [ Encode.float x, Encode.float y ]
+    Encode.object
+        [ ( "x", Encode.float x )
+        , ( "y", Encode.float y )
+        ]
 
 
-{-| Encode a `Direction3d` as as a list of three floating-point components.
+{-| Encode a `Direction3d` as an object with `x`, `y` and `z` fields.
 -}
 direction3d : Direction3d -> Value
 direction3d direction =
@@ -129,10 +139,14 @@ direction3d direction =
         ( x, y, z ) =
             Direction3d.components direction
     in
-    Encode.list [ Encode.float x, Encode.float y, Encode.float z ]
+    Encode.object
+        [ ( "x", Encode.float x )
+        , ( "y", Encode.float y )
+        , ( "z", Encode.float z )
+        ]
 
 
-{-| Encode a `Point2d` as as a list of two floating-point coordinates.
+{-| Encode a `Point2d` as an object with `x` and `y` fields.
 -}
 point2d : Point2d -> Value
 point2d point =
@@ -140,10 +154,13 @@ point2d point =
         ( x, y ) =
             Point2d.coordinates point
     in
-    Encode.list [ Encode.float x, Encode.float y ]
+    Encode.object
+        [ ( "x", Encode.float x )
+        , ( "y", Encode.float y )
+        ]
 
 
-{-| Encode a `Point3d` as as a list of three floating-point coordinates.
+{-| Encode a `Point3d` as an object with `x`, `y` and `z` fields.
 -}
 point3d : Point3d -> Value
 point3d point =
@@ -151,7 +168,11 @@ point3d point =
         ( x, y, z ) =
             Point3d.coordinates point
     in
-    Encode.list [ Encode.float x, Encode.float y, Encode.float z ]
+    Encode.object
+        [ ( "x", Encode.float x )
+        , ( "y", Encode.float y )
+        , ( "z", Encode.float z )
+        ]
 
 
 {-| Encode an `Axis2d` as an object with `originPoint` and `direction` fields.

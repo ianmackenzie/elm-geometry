@@ -6,6 +6,7 @@ module OpenSolid.QuadraticSpline2d
         , derivative
         , endDerivative
         , endPoint
+        , evaluate
         , mirrorAcross
         , placeIn
         , placeOnto
@@ -53,7 +54,7 @@ Splines can be constructed by passing a tuple of control points to the
 
 # Evaluation
 
-@docs pointOn, point, derivative
+@docs pointOn, point, derivative, evaluate
 
 
 # Transformations
@@ -235,6 +236,38 @@ derivative spline =
             Point2d.vectorFrom p2 p3
     in
     \t -> Vector2d.interpolateFrom v1 v2 t |> Vector2d.scaleBy 2
+
+
+{-| Evaluate a spline at a given parameter value, returning the point on the
+spline at that parameter value and the derivative with respect to that parameter
+value;
+
+    QuadraticSpline2d.evaluate spline t
+
+is equivalent to
+
+    ( QuadraticSpline2d.pointOn spline t
+    , QuadraticSpline2d.derivative spline t
+    )
+
+but is more efficient.
+
+-}
+evaluate : QuadraticSpline2d -> Float -> ( Point2d, Vector2d )
+evaluate spline t =
+    let
+        ( p1, p2, p3 ) =
+            controlPoints spline
+
+        q1 =
+            Point2d.interpolateFrom p1 p2 t
+
+        q2 =
+            Point2d.interpolateFrom p2 p3 t
+    in
+    ( Point2d.interpolateFrom q1 q2 t
+    , Point2d.vectorFrom q1 q2 |> Vector2d.scaleBy 2
+    )
 
 
 {-| Scale a spline about the given center point by the given scale.
