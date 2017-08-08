@@ -372,7 +372,7 @@ points are coincident, returns `Nothing`.
 -}
 directionFrom : Point3d -> Point3d -> Maybe Direction3d
 directionFrom firstPoint secondPoint =
-    Vector3d.direction (vectorFrom firstPoint secondPoint)
+    Vector3d.direction (Vector3d.from firstPoint secondPoint)
 
 
 {-| Find the distance between two points.
@@ -426,7 +426,7 @@ readable!
 -}
 squaredDistanceFrom : Point3d -> Point3d -> Float
 squaredDistanceFrom firstPoint secondPoint =
-    Vector3d.squaredLength (vectorFrom firstPoint secondPoint)
+    Vector3d.squaredLength (Vector3d.from firstPoint secondPoint)
 
 
 {-| Determine how far along an axis a particular point lies. Conceptually, the
@@ -453,7 +453,7 @@ it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
 -}
 distanceAlong : Axis3d -> Point3d -> Float
 distanceAlong axis point =
-    vectorFrom (Axis3d.originPoint axis) point
+    Vector3d.from (Axis3d.originPoint axis) point
         |> Vector3d.componentIn (Axis3d.direction axis)
 
 
@@ -486,7 +486,7 @@ with `distanceFrom`/`squaredDistanceFrom` this is slightly more efficient than
 -}
 squaredRadialDistanceFrom : Axis3d -> Point3d -> Float
 squaredRadialDistanceFrom axis point =
-    vectorFrom (Axis3d.originPoint axis) point
+    Vector3d.from (Axis3d.originPoint axis) point
         |> Vector3d.crossProduct (Direction3d.toVector (Axis3d.direction axis))
         |> Vector3d.squaredLength
 
@@ -559,7 +559,7 @@ rotation operations instead.
 -}
 scaleAbout : Point3d -> Float -> Point3d -> Point3d
 scaleAbout centerPoint scale point =
-    vectorFrom centerPoint point |> Vector3d.scaleBy scale |> addTo centerPoint
+    Vector3d.from centerPoint point |> Vector3d.scaleBy scale |> addTo centerPoint
 
 
 {-| Rotate a point around an axis by a given angle (in radians).
@@ -586,7 +586,7 @@ rotateAround axis angle point =
         originPoint =
             Axis3d.originPoint axis
     in
-    vectorFrom originPoint point
+    Vector3d.from originPoint point
         |> Vector3d.rotateAround axis angle
         |> addTo originPoint
 
@@ -647,7 +647,7 @@ mirrorAcross plane point =
         originPoint =
             Plane3d.originPoint plane
     in
-    vectorFrom originPoint point
+    Vector3d.from originPoint point
         |> Vector3d.mirrorAcross plane
         |> addTo originPoint
 
@@ -722,7 +722,7 @@ coordinates relative to a given reference frame.
 -}
 relativeTo : Frame3d -> Point3d -> Point3d
 relativeTo frame point =
-    vectorFrom (Frame3d.originPoint frame) point
+    Vector3d.from (Frame3d.originPoint frame) point
         |> Vector3d.relativeTo frame
         |> Vector3d.components
         |> Point3d

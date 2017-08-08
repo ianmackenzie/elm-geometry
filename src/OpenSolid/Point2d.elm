@@ -363,7 +363,7 @@ points are coincident, returns `Nothing`.
 -}
 directionFrom : Point2d -> Point2d -> Maybe Direction2d
 directionFrom firstPoint secondPoint =
-    Vector2d.direction (vectorFrom firstPoint secondPoint)
+    Vector2d.direction (Vector2d.from firstPoint secondPoint)
 
 
 {-| Find the distance between two points.
@@ -417,7 +417,7 @@ readable!
 -}
 squaredDistanceFrom : Point2d -> Point2d -> Float
 squaredDistanceFrom firstPoint secondPoint =
-    Vector2d.squaredLength (vectorFrom firstPoint secondPoint)
+    Vector2d.squaredLength (Vector2d.from firstPoint secondPoint)
 
 
 {-| Determine how far along an axis a particular point lies. Conceptually, the
@@ -444,7 +444,7 @@ it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
 -}
 distanceAlong : Axis2d -> Point2d -> Float
 distanceAlong axis point =
-    vectorFrom (Axis2d.originPoint axis) point
+    Vector2d.from (Axis2d.originPoint axis) point
         |> Vector2d.componentIn (Axis2d.direction axis)
 
 
@@ -493,7 +493,7 @@ signedDistanceFrom axis point =
             Direction2d.toVector (Axis2d.direction axis)
 
         displacementVector =
-            vectorFrom (Axis2d.originPoint axis) point
+            Vector2d.from (Axis2d.originPoint axis) point
     in
     Vector2d.crossProduct directionVector displacementVector
 
@@ -522,7 +522,9 @@ rotation operations instead.
 -}
 scaleAbout : Point2d -> Float -> Point2d -> Point2d
 scaleAbout centerPoint scale point =
-    vectorFrom centerPoint point |> Vector2d.scaleBy scale |> addTo centerPoint
+    Vector2d.from centerPoint point
+        |> Vector2d.scaleBy scale
+        |> addTo centerPoint
 
 
 {-| Rotate around a given center point counterclockwise by a given angle (in
@@ -544,7 +546,7 @@ given last.
 -}
 rotateAround : Point2d -> Float -> Point2d -> Point2d
 rotateAround centerPoint angle =
-    vectorFrom centerPoint >> Vector2d.rotateBy angle >> addTo centerPoint
+    Vector2d.from centerPoint >> Vector2d.rotateBy angle >> addTo centerPoint
 
 
 {-| Translate a point by a given displacement.
@@ -586,7 +588,7 @@ axis but on the opposite side.
 -}
 mirrorAcross : Axis2d -> Point2d -> Point2d
 mirrorAcross axis =
-    vectorFrom (Axis2d.originPoint axis)
+    Vector2d.from (Axis2d.originPoint axis)
         >> Vector2d.mirrorAcross axis
         >> addTo (Axis2d.originPoint axis)
 
@@ -616,7 +618,7 @@ The axis does not have to pass through the origin:
 -}
 projectOnto : Axis2d -> Point2d -> Point2d
 projectOnto axis =
-    vectorFrom (Axis2d.originPoint axis)
+    Vector2d.from (Axis2d.originPoint axis)
         >> Vector2d.projectOnto axis
         >> addTo (Axis2d.originPoint axis)
 
@@ -636,7 +638,7 @@ coordinates relative to a given reference frame.
 -}
 relativeTo : Frame2d -> Point2d -> Point2d
 relativeTo frame point =
-    vectorFrom (Frame2d.originPoint frame) point
+    Vector2d.from (Frame2d.originPoint frame) point
         |> Vector2d.relativeTo frame
         |> Vector2d.components
         |> Point2d
