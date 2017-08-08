@@ -17,6 +17,7 @@ module OpenSolid.Direction2d
         , components
         , equalWithin
         , flip
+        , from
         , fromAngle
         , mirrorAcross
         , negativeX
@@ -79,7 +80,7 @@ directions and transform them as necessary.
 
 # Constructors
 
-@docs perpendicularTo, orthogonalize
+@docs from, perpendicularTo, orthogonalize
 
 
 # Angles
@@ -203,6 +204,27 @@ positiveY =
 negativeY : Direction2d
 negativeY =
     Direction2d ( 0, -1 )
+
+
+{-| Attempt to construct the direction from the first given point to the second.
+If the two points are coincident, returns `Nothing`.
+
+    point =
+        Point2d ( 1, 1 )
+
+    Direction2d.from Point2d.origin point
+    --> Just (Direction2d ( 0.7071, 0.7071 ))
+
+    Direction2d.from point Point2d.origin
+    --> Just (Direction2d ( -0.7071, -0.7071 ))
+
+    Direction2d.from point point
+    --> Nothing
+
+-}
+from : Point2d -> Point2d -> Maybe Direction2d
+from firstPoint secondPoint =
+    Vector2d.direction (Vector2d.from firstPoint secondPoint)
 
 
 {-| Construct a direction perpendicular to the given direction, by rotating the

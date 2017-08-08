@@ -495,7 +495,7 @@ many common cases such as
 -}
 evaluate : Arc2d -> Float -> ( Point2d, Vector2d )
 evaluate arc =
-    case Point2d.directionFrom (centerPoint arc) (startPoint arc) of
+    case Direction2d.from (centerPoint arc) (startPoint arc) of
         Just startRadialDirection ->
             let
                 startAngle =

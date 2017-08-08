@@ -234,7 +234,7 @@ If the three given points are collinear, returns `Nothing`.
 -}
 throughPoints : Point3d -> Point3d -> Point3d -> Maybe SketchPlane3d
 throughPoints firstPoint secondPoint thirdPoint =
-    Vector3d.direction (Vector3d.from firstPoint secondPoint)
+    Direction3d.from firstPoint secondPoint
         |> Maybe.andThen
             (\xDirection ->
                 let

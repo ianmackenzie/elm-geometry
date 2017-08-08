@@ -17,6 +17,7 @@ module OpenSolid.Direction3d
         , components
         , equalWithin
         , flip
+        , from
         , mirrorAcross
         , negativeX
         , negativeY
@@ -84,7 +85,7 @@ to start with existing directions and transform them as necessary.
 
 # Constructors
 
-@docs on, spherical, perpendicularTo, perpendicularBasis, orthogonalize
+@docs on, spherical, from, perpendicularTo, perpendicularBasis, orthogonalize
 
 
 # Components
@@ -311,6 +312,27 @@ spherical sketchPlane { azimuth, elevation } =
         , x * y1 + y * y2 + z * y3
         , x * z1 + y * z2 + z * z3
         )
+
+
+{-| Attempt to construct the direction from the first given point to the second.
+If the two points are coincident, returns `Nothing`.
+
+    point =
+        Point3d ( 1, 0, 1 )
+
+    Direction3d.from Point3d.origin point
+    --> Just (Direction3d ( 0.7071, 0, 0.7071 ))
+
+    Direction3d.from point Point3d.origin
+    --> Just (Direction3d ( -0.7071, 0, -0.7071 ))
+
+    Direction3d.from point point
+    --> Nothing
+
+-}
+from : Point3d -> Point3d -> Maybe Direction3d
+from firstPoint secondPoint =
+    Vector3d.direction (Vector3d.from firstPoint secondPoint)
 
 
 {-| Construct an arbitrary direction perpendicular to the given direction. The

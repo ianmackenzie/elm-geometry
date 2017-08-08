@@ -354,25 +354,12 @@ vectorFrom =
     Vector3d.from
 
 
-{-| Attempt to find the direction from the first point to the second. If the two
-points are coincident, returns `Nothing`.
-
-    point =
-        Point3d ( 1, 0, 1 )
-
-    Point3d.directionFrom Point3d.origin point
-    --> Just (Direction3d ( 0.7071, 0, 0.7071 ))
-
-    Point3d.directionFrom point Point3d.origin
-    --> Just (Direction3d ( -0.7071, 0, -0.7071 ))
-
-    Point3d.directionFrom point point
-    --> Nothing
-
+{-| DEPRECATED: Alias for `Direction3d.from`, kept for compatibility. Use
+`Direction3d.from` instead.
 -}
 directionFrom : Point3d -> Point3d -> Maybe Direction3d
-directionFrom firstPoint secondPoint =
-    Vector3d.direction (Vector3d.from firstPoint secondPoint)
+directionFrom =
+    Direction3d.from
 
 
 {-| Find the distance between two points.

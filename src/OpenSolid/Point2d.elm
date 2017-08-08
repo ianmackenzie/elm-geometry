@@ -345,25 +345,12 @@ vectorFrom =
     Vector2d.from
 
 
-{-| Attempt to find the direction from the first point to the second. If the two
-points are coincident, returns `Nothing`.
-
-    point =
-        Point2d ( 1, 1 )
-
-    Point2d.directionFrom Point2d.origin point
-    --> Just (Direction2d ( 0.7071, 0.7071 ))
-
-    Point2d.directionFrom point Point2d.origin
-    --> Just (Direction2d ( -0.7071, -0.7071 ))
-
-    Point2d.directionFrom point point
-    --> Nothing
-
+{-| DEPRECATED: Alias for `Direction2d.from`, kept for compatibility. Use
+`Direction2d.from` instead.
 -}
 directionFrom : Point2d -> Point2d -> Maybe Direction2d
-directionFrom firstPoint secondPoint =
-    Vector2d.direction (Vector2d.from firstPoint secondPoint)
+directionFrom =
+    Direction2d.from
 
 
 {-| Find the distance between two points.
