@@ -346,28 +346,12 @@ equalWithin tolerance firstPoint secondPoint =
     squaredDistanceFrom firstPoint secondPoint <= tolerance * tolerance
 
 
-{-| Find the vector from one point to another.
-
-    startPoint =
-        Point3d ( 1, 1, 1 )
-
-    endPoint =
-        Point3d ( 4, 5, 6 )
-
-    Point3d.vectorFrom startPoint endPoint
-    --> Vector3d ( 3, 4, 5 )
-
+{-| DEPRECATED: Alias for `Vector3d.from`, kept for compatibility. Use
+`Vector3d.from` instead.
 -}
 vectorFrom : Point3d -> Point3d -> Vector3d
-vectorFrom firstPoint secondPoint =
-    let
-        ( x1, y1, z1 ) =
-            coordinates firstPoint
-
-        ( x2, y2, z2 ) =
-            coordinates secondPoint
-    in
-    Vector3d ( x2 - x1, y2 - y1, z2 - z1 )
+vectorFrom =
+    Vector3d.from
 
 
 {-| Attempt to find the direction from the first point to the second. If the two

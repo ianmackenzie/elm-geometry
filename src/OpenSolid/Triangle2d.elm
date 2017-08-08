@@ -149,10 +149,10 @@ centroid triangle =
             vertices triangle
 
         firstVector =
-            Point2d.vectorFrom p1 p2
+            Vector2d.from p1 p2
 
         secondVector =
-            Point2d.vectorFrom p1 p3
+            Vector2d.from p1 p3
 
         displacement =
             Vector2d.scaleBy (1.0 / 3.0) (Vector2d.sum firstVector secondVector)
@@ -184,10 +184,10 @@ contains point triangle =
         crossProduct startVertex endVertex =
             let
                 vectorToPoint =
-                    Point2d.vectorFrom startVertex point
+                    Vector2d.from startVertex point
 
                 segmentVector =
-                    Point2d.vectorFrom startVertex endVertex
+                    Vector2d.from startVertex endVertex
             in
             Vector2d.crossProduct segmentVector vectorToPoint
 
@@ -231,10 +231,10 @@ counterclockwiseArea triangle =
             vertices triangle
 
         firstVector =
-            Point2d.vectorFrom p1 p2
+            Vector2d.from p1 p2
 
         secondVector =
-            Point2d.vectorFrom p1 p3
+            Vector2d.from p1 p3
     in
     0.5 * Vector2d.crossProduct firstVector secondVector
 

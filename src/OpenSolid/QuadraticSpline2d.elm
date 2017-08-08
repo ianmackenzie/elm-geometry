@@ -151,7 +151,7 @@ startDerivative spline =
         ( p1, p2, _ ) =
             controlPoints spline
     in
-    Point2d.vectorFrom p1 p2 |> Vector2d.scaleBy 2
+    Vector2d.from p1 p2 |> Vector2d.scaleBy 2
 
 
 {-| Get the end derivative of a spline. This is equal to twice the vector from
@@ -167,7 +167,7 @@ endDerivative spline =
         ( _, p2, p3 ) =
             controlPoints spline
     in
-    Point2d.vectorFrom p2 p3 |> Vector2d.scaleBy 2
+    Vector2d.from p2 p3 |> Vector2d.scaleBy 2
 
 
 {-| Get a point along a spline, based on a parameter that ranges from 0 to 1. A
@@ -230,10 +230,10 @@ derivative spline =
             controlPoints spline
 
         v1 =
-            Point2d.vectorFrom p1 p2
+            Vector2d.from p1 p2
 
         v2 =
-            Point2d.vectorFrom p2 p3
+            Vector2d.from p2 p3
     in
     \t -> Vector2d.interpolateFrom v1 v2 t |> Vector2d.scaleBy 2
 
@@ -266,7 +266,7 @@ evaluate spline t =
             Point2d.interpolateFrom p2 p3 t
     in
     ( Point2d.interpolateFrom q1 q2 t
-    , Point2d.vectorFrom q1 q2 |> Vector2d.scaleBy 2
+    , Vector2d.from q1 q2 |> Vector2d.scaleBy 2
     )
 
 

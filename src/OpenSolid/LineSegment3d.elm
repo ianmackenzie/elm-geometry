@@ -272,7 +272,7 @@ vector lineSegment =
         ( p1, p2 ) =
             endpoints lineSegment
     in
-    Point3d.vectorFrom p1 p2
+    Vector3d.from p1 p2
 
 
 {-| Scale a line segment about the given center point by the given scale.

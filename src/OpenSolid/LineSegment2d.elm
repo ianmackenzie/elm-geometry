@@ -278,7 +278,7 @@ vector lineSegment =
         ( p1, p2 ) =
             endpoints lineSegment
     in
-    Point2d.vectorFrom p1 p2
+    Vector2d.from p1 p2
 
 
 {-| Attempt to find the unique intersection point of two line segments. If there
@@ -335,9 +335,9 @@ intersectionPoint lineSegment1 lineSegment2 =
         ( r, s, pq, pq_, qp_ ) =
             ( vector lineSegment1
             , vector lineSegment2
-            , Point2d.vectorFrom p q
-            , Point2d.vectorFrom p q_
-            , Point2d.vectorFrom q p_
+            , Vector2d.from p q
+            , Vector2d.from p q_
+            , Vector2d.from q p_
             )
 
         ( pqXr, pqXs, sXqp_, rXpq_ ) =

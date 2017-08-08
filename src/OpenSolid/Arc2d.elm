@@ -187,13 +187,13 @@ throughPoints firstPoint secondPoint thirdPoint =
                         Circle2d.centerPoint circle
 
                     firstVector =
-                        Point2d.vectorFrom centerPoint firstPoint
+                        Vector2d.from centerPoint firstPoint
 
                     secondVector =
-                        Point2d.vectorFrom centerPoint secondPoint
+                        Vector2d.from centerPoint secondPoint
 
                     thirdVector =
-                        Point2d.vectorFrom centerPoint thirdPoint
+                        Vector2d.from centerPoint thirdPoint
                 in
                 Maybe.map3
                     (\firstDirection secondDirection thirdDirection ->

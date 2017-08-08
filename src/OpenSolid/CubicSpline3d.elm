@@ -187,7 +187,7 @@ startDerivative spline =
         ( p1, p2, _, _ ) =
             controlPoints spline
     in
-    Point3d.vectorFrom p1 p2 |> Vector3d.scaleBy 3
+    Vector3d.from p1 p2 |> Vector3d.scaleBy 3
 
 
 {-| Get the end derivative of a spline. This is equal to three times the vector
@@ -203,7 +203,7 @@ endDerivative spline =
         ( _, _, p3, p4 ) =
             controlPoints spline
     in
-    Point3d.vectorFrom p3 p4 |> Vector3d.scaleBy 3
+    Vector3d.from p3 p4 |> Vector3d.scaleBy 3
 
 
 {-| Get a point along a spline, based on a parameter that ranges from 0 to 1. A
@@ -275,13 +275,13 @@ derivative spline =
             controlPoints spline
 
         v1 =
-            Point3d.vectorFrom p1 p2
+            Vector3d.from p1 p2
 
         v2 =
-            Point3d.vectorFrom p2 p3
+            Vector3d.from p2 p3
 
         v3 =
-            Point3d.vectorFrom p3 p4
+            Vector3d.from p3 p4
     in
     \t ->
         let
@@ -331,7 +331,7 @@ evaluate spline t =
             Point3d.interpolateFrom q2 q3 t
     in
     ( Point3d.interpolateFrom r1 r2 t
-    , Point3d.vectorFrom r1 r2 |> Vector3d.scaleBy 3
+    , Vector3d.from r1 r2 |> Vector3d.scaleBy 3
     )
 
 

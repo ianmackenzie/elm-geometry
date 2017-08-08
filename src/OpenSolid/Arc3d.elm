@@ -218,7 +218,7 @@ pointOn arc =
             centerPoint arc
 
         xVector =
-            Point3d.vectorFrom arcCenterPoint (startPoint arc)
+            Vector3d.from arcCenterPoint (startPoint arc)
 
         yVector =
             Vector3d.crossProduct
@@ -293,7 +293,7 @@ evaluate arc =
             centerPoint arc
 
         xVector =
-            Point3d.vectorFrom arcCenterPoint (startPoint arc)
+            Vector3d.from arcCenterPoint (startPoint arc)
 
         yVector =
             Vector3d.crossProduct

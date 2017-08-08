@@ -234,15 +234,15 @@ If the three given points are collinear, returns `Nothing`.
 -}
 throughPoints : Point3d -> Point3d -> Point3d -> Maybe SketchPlane3d
 throughPoints firstPoint secondPoint thirdPoint =
-    Vector3d.direction (Point3d.vectorFrom firstPoint secondPoint)
+    Vector3d.direction (Vector3d.from firstPoint secondPoint)
         |> Maybe.andThen
             (\xDirection ->
                 let
                     firstCandidate =
-                        Point3d.vectorFrom firstPoint thirdPoint
+                        Vector3d.from firstPoint thirdPoint
 
                     secondCandidate =
-                        Point3d.vectorFrom secondPoint thirdPoint
+                        Vector3d.from secondPoint thirdPoint
 
                     firstSquaredLength =
                         Vector3d.squaredLength firstCandidate

@@ -20,6 +20,7 @@ module OpenSolid.Vector3d
         , dotProduct
         , equalWithin
         , flip
+        , from
         , in_
         , interpolateFrom
         , length
@@ -81,7 +82,7 @@ will actually want their `Direction3d` versions [`Direction3d.x`](OpenSolid-Dire
 
 # Constructors
 
-@docs in_, perpendicularTo, interpolateFrom
+@docs from, in_, perpendicularTo, interpolateFrom
 
 
 # Components
@@ -144,6 +145,7 @@ import OpenSolid.Bootstrap.Axis3d as Axis3d
 import OpenSolid.Bootstrap.Direction3d as Direction3d
 import OpenSolid.Bootstrap.Frame3d as Frame3d
 import OpenSolid.Bootstrap.Plane3d as Plane3d
+import OpenSolid.Bootstrap.Point3d as Point3d
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Scalar as Scalar
@@ -158,6 +160,30 @@ import OpenSolid.Scalar as Scalar
 zero : Vector3d
 zero =
     Vector3d ( 0, 0, 0 )
+
+
+{-| Construct a vector from the first given point to the second.
+
+    startPoint =
+        Point3d ( 1, 1, 1 )
+
+    endPoint =
+        Point3d ( 4, 5, 6 )
+
+    Vector3d.from startPoint endPoint
+    --> Vector3d ( 3, 4, 5 )
+
+-}
+from : Point3d -> Point3d -> Vector3d
+from firstPoint secondPoint =
+    let
+        ( x1, y1, z1 ) =
+            Point3d.coordinates firstPoint
+
+        ( x2, y2, z2 ) =
+            Point3d.coordinates secondPoint
+    in
+    Vector3d ( x2 - x1, y2 - y1, z2 - z1 )
 
 
 {-| Construct a vector in the given direction with the given length.

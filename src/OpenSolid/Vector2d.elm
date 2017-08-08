@@ -20,6 +20,7 @@ module OpenSolid.Vector2d
         , dotProduct
         , equalWithin
         , flip
+        , from
         , in_
         , interpolateFrom
         , length
@@ -80,7 +81,7 @@ and [`Direction2d.y`](OpenSolid-Direction2d#y).
 
 # Constructors
 
-@docs polar, in_, perpendicularTo, interpolateFrom
+@docs polar, from, in_, perpendicularTo, interpolateFrom
 
 
 # Components
@@ -138,6 +139,7 @@ import OpenSolid.Bootstrap.Axis2d as Axis2d
 import OpenSolid.Bootstrap.Direction2d as Direction2d
 import OpenSolid.Bootstrap.Direction3d as Direction3d
 import OpenSolid.Bootstrap.Frame2d as Frame2d
+import OpenSolid.Bootstrap.Point2d as Point2d
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Scalar as Scalar
@@ -173,6 +175,30 @@ is equivalent to
 polar : ( Float, Float ) -> Vector2d
 polar coordinates =
     Vector2d (fromPolar coordinates)
+
+
+{-| Construct a vector from the first given point to the second.
+
+    startPoint =
+        Point2d ( 1, 1 )
+
+    endPoint =
+        Point2d ( 4, 5 )
+
+    Vector2d.from startPoint endPoint
+    --> Vector2d ( 3, 4 )
+
+-}
+from : Point2d -> Point2d -> Vector2d
+from firstPoint secondPoint =
+    let
+        ( x1, y1 ) =
+            Point2d.coordinates firstPoint
+
+        ( x2, y2 ) =
+            Point2d.coordinates secondPoint
+    in
+    Vector2d ( x2 - x1, y2 - y1 )
 
 
 {-| Construct a vector in the given direction with the given length.

@@ -143,10 +143,10 @@ centroid triangle =
             vertices triangle
 
         firstVector =
-            Point3d.vectorFrom p1 p2
+            Vector3d.from p1 p2
 
         secondVector =
-            Point3d.vectorFrom p1 p3
+            Vector3d.from p1 p3
 
         displacement =
             Vector3d.scaleBy (1.0 / 3.0) (Vector3d.sum firstVector secondVector)
@@ -167,10 +167,10 @@ area triangle =
             vertices triangle
 
         firstVector =
-            Point3d.vectorFrom p1 p2
+            Vector3d.from p1 p2
 
         secondVector =
-            Point3d.vectorFrom p1 p3
+            Vector3d.from p1 p3
     in
     0.5 * Vector3d.length (Vector3d.crossProduct firstVector secondVector)
 
@@ -191,10 +191,10 @@ normalDirection triangle =
             vertices triangle
 
         v1 =
-            Point3d.vectorFrom p1 p2
+            Vector3d.from p1 p2
 
         v2 =
-            Point3d.vectorFrom p2 p3
+            Vector3d.from p2 p3
     in
     Vector3d.direction (Vector3d.crossProduct v1 v2)
 
