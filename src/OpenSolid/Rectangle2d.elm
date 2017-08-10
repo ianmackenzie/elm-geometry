@@ -47,7 +47,7 @@ in_ frame { minX, maxX, minY, maxY } =
             Point2d.in_ frame ( midX, midY )
     in
     Rectangle2d
-        { centeredOn = Frame2d.at centerPoint
+        { axes = Frame2d.at centerPoint
         , dimensions = ( width, height )
         }
 
@@ -65,7 +65,7 @@ containing firstPoint secondPoint =
             Point2d.coordinates secondPoint
     in
     Rectangle2d
-        { centeredOn = Frame2d.at centerPoint
+        { axes = Frame2d.at centerPoint
         , dimensions = ( abs (x2 - x1), abs (y2 - y1) )
         }
 
@@ -89,14 +89,14 @@ with { minX, maxX, minY, maxY } =
             Point2d ( midX, midY )
     in
     Rectangle2d
-        { centeredOn = Frame2d.at centerPoint
+        { axes = Frame2d.at centerPoint
         , dimensions = ( width, height )
         }
 
 
 axes : Rectangle2d -> Frame2d
-axes (Rectangle2d { centeredOn }) =
-    centeredOn
+axes (Rectangle2d { axes }) =
+    axes
 
 
 centerPoint : Rectangle2d -> Point2d
@@ -207,7 +207,7 @@ scaleAbout point scale rectangle =
             abs (scale * currentHeight)
     in
     Rectangle2d
-        { centeredOn = newAxes
+        { axes = newAxes
         , dimensions = ( newWidth, newHeight )
         }
 
@@ -220,7 +220,7 @@ rotateAround point angle =
     in
     \rectangle ->
         Rectangle2d
-            { centeredOn = rotateFrame (axes rectangle)
+            { axes = rotateFrame (axes rectangle)
             , dimensions = dimensions rectangle
             }
 
@@ -228,7 +228,7 @@ rotateAround point angle =
 translateBy : Vector2d -> Rectangle2d -> Rectangle2d
 translateBy displacement rectangle =
     Rectangle2d
-        { centeredOn = Frame2d.translateBy displacement (axes rectangle)
+        { axes = Frame2d.translateBy displacement (axes rectangle)
         , dimensions = dimensions rectangle
         }
 
@@ -236,7 +236,7 @@ translateBy displacement rectangle =
 mirrorAcross : Axis2d -> Rectangle2d -> Rectangle2d
 mirrorAcross axis rectangle =
     Rectangle2d
-        { centeredOn = Frame2d.mirrorAcross axis (axes rectangle)
+        { axes = Frame2d.mirrorAcross axis (axes rectangle)
         , dimensions = dimensions rectangle
         }
 
@@ -244,7 +244,7 @@ mirrorAcross axis rectangle =
 placeIn : Frame2d -> Rectangle2d -> Rectangle2d
 placeIn frame rectangle =
     Rectangle2d
-        { centeredOn = Frame2d.placeIn frame (axes rectangle)
+        { axes = Frame2d.placeIn frame (axes rectangle)
         , dimensions = dimensions rectangle
         }
 
@@ -252,6 +252,6 @@ placeIn frame rectangle =
 relativeTo : Frame2d -> Rectangle2d -> Rectangle2d
 relativeTo frame rectangle =
     Rectangle2d
-        { centeredOn = Frame2d.relativeTo frame (axes rectangle)
+        { axes = Frame2d.relativeTo frame (axes rectangle)
         , dimensions = dimensions rectangle
         }

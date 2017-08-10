@@ -364,35 +364,35 @@ type BoundingBox3d
         }
 
 
-{-| A rectangle in 2D, defined the frame that it is centered on and its overall
-dimensions (width, height). See the [`Rectangle2d`](OpenSolid-Rectangle2d)
-module for details.
+{-| A rectangle in 2D, defined by the frame that it is centered on (the axes of
+the rectangle) and its overall dimensions (width, height). See the
+[`Rectangle2d`](OpenSolid-Rectangle2d) module for details.
 -}
 type Rectangle2d
     = Rectangle2d
-        { centeredOn : Frame2d
+        { axes : Frame2d
         , dimensions : ( Float, Float )
         }
 
 
-{-| A rectangle in 3D, defined by the sketch plane that it is centered on and
-its overall dimensions (width, height). See the[`Rectangle3d`](OpenSolid-Rectangle3d)
+{-| A rectangle in 3D, defined by the sketch plane that it is centered on (the
+axes of the rectangle) and its overall dimensions (width, height). See the [`Rectangle3d`](OpenSolid-Rectangle3d)
 module for details.
 -}
 type Rectangle3d
     = Rectangle3d
-        { centeredOn : SketchPlane3d
+        { axes : SketchPlane3d
         , dimensions : ( Float, Float )
         }
 
 
-{-| A rectangular box in 3D, defined the frame that it is centered on and its
-overall dimensions (length, width, height). See the [`Cuboid3d`](OpenSolid-Cuboid3d)
-module for details.
+{-| A rectangular box in 3D, defined the frame that it is centered on (the axes
+of the box) and its overall dimensions (length, width, height). See the
+[`Cuboid3d`](OpenSolid-Cuboid3d) module for details.
 -}
 type Cuboid3d
     = Cuboid3d
-        { centeredOn : Frame3d
+        { axes : Frame3d
         , dimensions : ( Float, Float, Float )
         }
 
