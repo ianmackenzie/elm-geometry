@@ -10,14 +10,14 @@ module OpenSolid.Rectangle2d
         , edges
         , in_
           --, interpolate
-          --, mirrorAcross
-          --, placeIn
+        , mirrorAcross
+        , placeIn
           --, placeOnto
           --, point
-          --, relativeTo
+        , relativeTo
         , rotateAround
-          --, scaleAbout
-          --, translateBy
+        , scaleAbout
+        , translateBy
         , vertices
         , with
         )
