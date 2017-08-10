@@ -47,7 +47,7 @@ in_ frame { minX, maxX, minY, maxY } =
             Point2d.in_ frame ( midX, midY )
     in
     Rectangle2d
-        { axes = Frame2d.at centerPoint
+        { axes = Frame2d.moveTo centerPoint frame
         , dimensions = ( width, height )
         }
 
