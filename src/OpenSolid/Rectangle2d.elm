@@ -1,8 +1,8 @@
 module OpenSolid.Rectangle2d
     exposing
         ( area
-          --, boundingBox
         , axes
+        , boundingBox
         , centerPoint
         , containing
         , contains
@@ -22,6 +22,7 @@ module OpenSolid.Rectangle2d
         , with
         )
 
+import OpenSolid.BoundingBox2d as BoundingBox2d
 import OpenSolid.Direction2d as Direction2d
 import OpenSolid.Frame2d as Frame2d
 import OpenSolid.Geometry.Types exposing (..)
@@ -255,3 +256,12 @@ relativeTo frame rectangle =
         { axes = Frame2d.relativeTo frame (axes rectangle)
         , dimensions = dimensions rectangle
         }
+
+
+boundingBox : Rectangle2d -> BoundingBox2d
+boundingBox rectangle =
+    let
+        ( p1, p2, p3, p4 ) =
+            vertices rectangle
+    in
+    BoundingBox2d.hull (Point2d.hull p1 p2) (Point2d.hull p3 p4)
