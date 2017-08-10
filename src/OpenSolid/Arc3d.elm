@@ -6,6 +6,7 @@ module OpenSolid.Arc3d
         , endPoint
         , evaluate
         , mirrorAcross
+        , on
         , placeIn
         , point
         , pointOn
@@ -48,7 +49,7 @@ arc's center point - here the origin point of the given axis is
 
 # Constructors
 
-@docs throughPoints
+@docs on, throughPoints
 
 
 # Accessors
@@ -85,6 +86,38 @@ import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.SketchPlane3d as SketchPlane3d
 import OpenSolid.Vector3d as Vector3d
+
+
+{-| Construct an arc on the given sketch plane from its center point and start
+point given in 2D coordinates within the sketch plane.
+
+    Arc3d.on SketchPlane3d.xz
+        { centerPoint = Point2d ( 1, 1 )
+        , startPoint = Point2d ( 3, 1 )
+        , sweptAngle = degrees 90
+        }
+    --> Arc3d
+    -->     { axis =
+    -->         Axis3d
+    -->             { originPoint = Point3d ( 1, 0, 1 )
+    -->             , direction = Direction3d.negativeY
+    -->             }
+    -->     , startPoint = Point3d ( 3, 0, 1 )
+    -->     , sweptAngle = degrees 90
+    -->     }
+
+This is a shortcut for calling `Arc2d.placeOnto`;
+
+    Arc3d.on sketchPlane { centerPoint = ... }
+
+is equivalent to
+
+    Arc2d.placeOnto sketchPlane (Arc2d { centerPoint = ... })
+
+-}
+on : SketchPlane3d -> { centerPoint : Point2d, startPoint : Point2d, sweptAngle : Float } -> Arc3d
+on sketchPlane properties =
+    Arc2d properties |> Arc2d.placeOnto sketchPlane
 
 
 {-| Attempt to construct an arc that starts at the first given point, passes
