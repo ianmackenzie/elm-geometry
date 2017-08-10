@@ -9,7 +9,6 @@ module OpenSolid.Rectangle2d
         , dimensions
         , edges
         , in_
-          --, interpolate
         , mirrorAcross
         , placeIn
           --, placeOnto
