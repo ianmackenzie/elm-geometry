@@ -23,6 +23,7 @@ module OpenSolid.LineSegment3d
         , midpoint
         , mirrorAcross
         , normalDirection
+        , on
         , placeIn
         , projectInto
         , projectOnto
@@ -58,7 +59,7 @@ the `LineSegment3d` constructor, for example
 
 # Constructors
 
-@docs along
+@docs along, on
 
 
 # Endpoints
@@ -104,6 +105,7 @@ different coordinate frames.
 -}
 
 import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Point2d as Point2d
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Vector3d as Vector3d
 
@@ -127,6 +129,35 @@ at the given distances from the axis' origin point.
 along : Axis3d -> Float -> Float -> LineSegment3d
 along axis start end =
     LineSegment3d ( Point3d.along axis start, Point3d.along axis end )
+
+
+{-| Construct a line segment on the given sketch plane, from the two endpoints
+given in 2D coordinates within the sketch plane.
+
+    LineSegment3d.on SketchPlane3d.yz
+        ( Point2d ( 1, 2 )
+        , Point2d ( 3, 4 )
+        )
+    --> LineSegment3d
+    -->     ( Point3d ( 0, 1, 2 )
+    -->     , Point3d ( 0, 3, 4 )
+    -->     )
+
+This is a shortcut for calling `LineSegment2d.placeOnto`;
+
+    LineSegment3d.on sketchPlane ( p1, p2 )
+
+is equivalent to
+
+    LineSegment2d.placeOnto sketchPlane (LineSegment2d ( p1, p2 ))
+
+-}
+on : SketchPlane3d -> ( Point2d, Point2d ) -> LineSegment3d
+on sketchPlane ( p1, p2 ) =
+    LineSegment3d
+        ( Point2d.placeOnto sketchPlane p1
+        , Point2d.placeOnto sketchPlane p2
+        )
 
 
 {-| Get the start point of a line segment.
