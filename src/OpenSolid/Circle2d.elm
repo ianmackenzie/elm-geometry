@@ -14,6 +14,7 @@ module OpenSolid.Circle2d
         , rotateAround
         , scaleAbout
         , throughPoints
+        , toArc
         , translateBy
         , unit
         )
@@ -50,6 +51,11 @@ very useful circle).
 # Accessors
 
 @docs centerPoint, radius, diameter, area, circumference
+
+
+# Conversions
+
+@docs toArc
 
 
 # Queries
@@ -261,6 +267,29 @@ area circle =
 circumference : Circle2d -> Float
 circumference circle =
     2 * pi * radius circle
+
+
+{-| Convert a circle to a 360 degree arc.
+
+    Circle2d.toArc exampleCircle
+    --> Arc2d
+    -->     { centerPoint = Point2d ( 1, 2 )
+    -->     , startPoint = Point2d ( 4, 2 )
+    -->     , sweptAngle = 2 * pi
+    -->     }
+
+-}
+toArc : Circle2d -> Arc2d
+toArc (Circle2d { centerPoint, radius }) =
+    let
+        ( x0, y0 ) =
+            Point2d.coordinates centerPoint
+    in
+    Arc2d
+        { centerPoint = centerPoint
+        , startPoint = Point2d ( x0 + radius, y0 )
+        , sweptAngle = 2 * pi
+        }
 
 
 {-| Check if a circle contains a given point.
