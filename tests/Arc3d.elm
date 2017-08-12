@@ -1,6 +1,8 @@
 module Arc3d
     exposing
-        ( jsonRoundTrips
+        ( evaluateOneIsEndPoint
+        , evaluateZeroIsStartPoint
+        , jsonRoundTrips
         )
 
 import Expect
@@ -19,3 +21,17 @@ jsonRoundTrips =
     Generic.jsonRoundTrips Fuzz.arc3d
         Encode.arc3d
         Decode.arc3d
+
+
+evaluateZeroIsStartPoint : Test
+evaluateZeroIsStartPoint =
+    Test.fuzz Fuzz.arc3d
+        "Evaluating at t=0 returns start point"
+        (\arc -> Arc3d.pointOn arc 0 |> Expect.point3d (Arc3d.startPoint arc))
+
+
+evaluateOneIsEndPoint : Test
+evaluateOneIsEndPoint =
+    Test.fuzz Fuzz.arc3d
+        "Evaluating at t=1 returns end point"
+        (\arc -> Arc3d.pointOn arc 1 |> Expect.point3d (Arc3d.endPoint arc))
