@@ -3,9 +3,11 @@ module Arc2d
         ( evaluateOneIsEndPoint
         , evaluateZeroIsStartPoint
         , jsonRoundTrips
+        , reverseFlipsDirection
         )
 
 import Expect
+import Fuzz
 import Generic
 import OpenSolid.Arc2d as Arc2d
 import OpenSolid.BoundingBox2d as BoundingBox2d
@@ -35,3 +37,14 @@ evaluateOneIsEndPoint =
     Test.fuzz Fuzz.arc2d
         "Evaluating at t=1 returns end point"
         (\arc -> Arc2d.pointOn arc 1 |> Expect.point2d (Arc2d.endPoint arc))
+
+
+reverseFlipsDirection : Test
+reverseFlipsDirection =
+    Test.fuzz2 Fuzz.arc2d
+        (Fuzz.floatRange 0 1)
+        "Reversing an arc is consistent with reversed evaluation"
+        (\arc t ->
+            Arc2d.pointOn (Arc2d.reverse arc) t
+                |> Expect.point2d (Arc2d.pointOn arc (1 - t))
+        )

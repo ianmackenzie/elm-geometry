@@ -12,6 +12,7 @@ module OpenSolid.Arc3d
         , pointOn
         , radius
         , relativeTo
+        , reverse
         , rotateAround
         , scaleAbout
         , startPoint
@@ -69,7 +70,7 @@ arc's center point - here the origin point of the given axis is
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross
+@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross
 
 
 # Coordinate frames
@@ -423,6 +424,26 @@ angle.
 sweptAngle : Arc3d -> Float
 sweptAngle (Arc3d properties) =
     properties.sweptAngle
+
+
+{-| Reverse the direction of an arc, so that the start point becomes the end
+point and vice versa.
+
+    Arc3d.reverse exampleArc
+    --> Arc3d
+    -->     { axis = Axis3d.z
+    -->     , startPoint = Point3d ( 0, 2, 1 )
+    -->     , sweptAngle = degrees -90
+    -->     }
+
+-}
+reverse : Arc3d -> Arc3d
+reverse arc =
+    Arc3d
+        { startPoint = endPoint arc
+        , axis = axis arc
+        , sweptAngle = -(sweptAngle arc)
+        }
 
 
 {-| Scale an arc about the given center point by the given scale.

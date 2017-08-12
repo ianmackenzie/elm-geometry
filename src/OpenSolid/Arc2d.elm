@@ -16,6 +16,7 @@ module OpenSolid.Arc2d
         , pointOn
         , radius
         , relativeTo
+        , reverse
         , rotateAround
         , scaleAbout
         , short
@@ -70,7 +71,7 @@ Arcs can be constructed explicitly by passing a record with `centerPoint`,
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross
+@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross
 
 
 # Coordinate frames
@@ -579,6 +580,26 @@ toPolyline tolerance arc =
             List.range 0 numSegments |> List.map point
     in
     Polyline2d points
+
+
+{-| Reverse the direction of an arc, so that the start point becomes the end
+point and vice versa.
+
+    Arc2d.reverse exampleArc
+    Arc2d
+        { startPoint = Point2d ( 1, 3 )
+        , centerPoint = Point2d ( 1, 1 )
+        , sweptAngle = degrees -90
+        }
+
+-}
+reverse : Arc2d -> Arc2d
+reverse arc =
+    Arc2d
+        { startPoint = endPoint arc
+        , centerPoint = centerPoint arc
+        , sweptAngle = -(sweptAngle arc)
+        }
 
 
 {-| Scale an arc about a given point by a given scale.
