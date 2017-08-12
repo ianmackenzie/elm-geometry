@@ -13,6 +13,7 @@ module OpenSolid.QuadraticSpline2d
         , point
         , pointOn
         , relativeTo
+        , reverse
         , rotateAround
         , scaleAbout
         , splitAt
@@ -59,7 +60,7 @@ Splines can be constructed by passing a tuple of control points to the
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross
+@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross
 
 
 # Coordinate frames
@@ -268,6 +269,26 @@ evaluate spline t =
     ( Point2d.interpolateFrom q1 q2 t
     , Vector2d.from q1 q2 |> Vector2d.scaleBy 2
     )
+
+
+{-| Reverse a spline so that the start point becomes the end point, and vice
+versa.
+
+    QuadraticSpline2d.reverse exampleSpline
+    --> QuadraticSpline2d
+    -->     ( Point2d ( 5, 1 )
+    -->     , Point2d ( 3, 4 )
+    -->     , Point2d ( 1, 1 )
+    -->     )
+
+-}
+reverse : QuadraticSpline2d -> QuadraticSpline2d
+reverse spline =
+    let
+        ( p1, p2, p3 ) =
+            controlPoints spline
+    in
+    QuadraticSpline2d ( p3, p2, p1 )
 
 
 {-| Scale a spline about the given center point by the given scale.

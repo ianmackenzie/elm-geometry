@@ -14,6 +14,7 @@ module OpenSolid.CubicSpline2d
         , point
         , pointOn
         , relativeTo
+        , reverse
         , rotateAround
         , scaleAbout
         , splitAt
@@ -61,7 +62,7 @@ Splines can be constructed by passing a tuple of control points to the
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross
+@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross
 
 
 # Coordinate frames
@@ -333,6 +334,27 @@ mapControlPoints function spline =
             controlPoints spline
     in
     CubicSpline2d ( function p1, function p2, function p3, function p4 )
+
+
+{-| Reverse a spline so that the start point becomes the end point, and vice
+versa.
+
+    CubicSpline2d.reverse exampleSpline
+    --> CubicSpline2d
+    -->     ( Point2d ( 7, 4 )
+    -->     , Point2d ( 5, 1 )
+    -->     , Point2d ( 3, 4 )
+    -->     , Point2d ( 1, 1 )
+    -->     )
+
+-}
+reverse : CubicSpline2d -> CubicSpline2d
+reverse spline =
+    let
+        ( p1, p2, p3, p4 ) =
+            controlPoints spline
+    in
+    CubicSpline2d ( p4, p3, p2, p1 )
 
 
 {-| Scale a spline about the given center point by the given scale.

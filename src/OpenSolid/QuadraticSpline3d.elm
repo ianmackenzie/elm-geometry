@@ -14,6 +14,7 @@ module OpenSolid.QuadraticSpline3d
         , projectInto
         , projectOnto
         , relativeTo
+        , reverse
         , rotateAround
         , scaleAbout
         , splitAt
@@ -60,7 +61,7 @@ Splines can be constructed by passing a tuple of control points to the
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto
+@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto
 
 
 # Coordinate frames
@@ -278,6 +279,26 @@ mapControlPoints function spline =
             controlPoints spline
     in
     QuadraticSpline3d ( function p1, function p2, function p3 )
+
+
+{-| Reverse a spline so that the start point becomes the end point, and vice
+versa.
+
+    QuadraticSpline3d.reverse exampleSpline
+    --> QuadraticSpline3d
+    -->     ( Point3d ( 3, 3, 3 )
+    -->     , Point3d ( 3, 2, 1 )
+    -->     , Point3d ( 1, 1, 1 )
+    -->     )
+
+-}
+reverse : QuadraticSpline3d -> QuadraticSpline3d
+reverse spline =
+    let
+        ( p1, p2, p3 ) =
+            controlPoints spline
+    in
+    QuadraticSpline3d ( p3, p2, p1 )
 
 
 {-| Scale a spline about the given center point by the given scale.
