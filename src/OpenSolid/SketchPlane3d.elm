@@ -25,6 +25,7 @@ module OpenSolid.SketchPlane3d
         , rotateAround
         , rotateAroundOwn
         , throughPoints
+        , toPlane
         , translateAlongOwn
         , translateBy
         , xAxis
@@ -114,7 +115,7 @@ point, and use the two indicated global axes as their X and Y axes. For example,
 
 # Conversions
 
-@docs plane
+@docs toPlane, plane
 
 
 # Transformations
@@ -384,19 +385,27 @@ normalAxis sketchPlane =
 {-| Conver a `SketchPlane3d` to a `Plane3d` with the same origin point and
 normal direction.
 
-    SketchPlane3d.plane SketchPlane3d.xy
+    SketchPlane3d.toPlane SketchPlane3d.xy
     --> Plane3d.xy
 
-    SketchPlane3d.plane SketchPlane3d.yx
+    SketchPlane3d.toPlane SketchPlane3d.yx
     --> Plane3d.flip Plane3d.xy
 
 -}
-plane : SketchPlane3d -> Plane3d
-plane sketchPlane =
+toPlane : SketchPlane3d -> Plane3d
+toPlane sketchPlane =
     Plane3d
         { originPoint = originPoint sketchPlane
         , normalDirection = normalDirection sketchPlane
         }
+
+
+{-| DEPRECATED: Alias for `toPlane`, kept for compatibility. Use `toPlane`
+instead.
+-}
+plane : SketchPlane3d -> Plane3d
+plane =
+    toPlane
 
 
 {-| Flip the X direction of a sketch plane, leaving its Y direction and origin
