@@ -24,6 +24,7 @@ module OpenSolid.Plane3d
         , rotateAround
         , sketchPlane
         , throughPoints
+        , toSketchPlane
         , translateBy
         , xy
         , yz
@@ -66,7 +67,7 @@ Planes can by constructed by passing a record with `originPoint` and
 
 # Conversions
 
-@docs normalAxis, sketchPlane
+@docs normalAxis, toSketchPlane, sketchPlane
 
 
 # Transformations
@@ -224,7 +225,7 @@ of the sketch plane
 
 but are otherwise arbitrary. For example, in the current implementation,
 
-    Plane3d.sketchPlane Plane3d.xy
+    Plane3d.toSketchPlane Plane3d.xy
     --> SketchPlane3d
     -->     { originPoint = Point3d.origin
     -->     , xDirection = Direction3d ( 0, -1, 0 )
@@ -240,8 +241,8 @@ construct those directions explicitly and directly construct a new
 `SketchPlane3d` from them.
 
 -}
-sketchPlane : Plane3d -> SketchPlane3d
-sketchPlane plane =
+toSketchPlane : Plane3d -> SketchPlane3d
+toSketchPlane plane =
     let
         normal =
             normalDirection plane
@@ -254,6 +255,14 @@ sketchPlane plane =
         , xDirection = xDirection
         , yDirection = yDirection
         }
+
+
+{-| DEPRECATED: Alias for `toSketchPlane`, kept for compatibility. Use
+`toSketchPlane` instead.
+-}
+sketchPlane : Plane3d -> SketchPlane3d
+sketchPlane =
+    toSketchPlane
 
 
 {-| Shift a plane in its own normal direction by the given (signed) distance.
