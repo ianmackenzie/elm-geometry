@@ -16,13 +16,13 @@ module OpenSolid.Geometry.Types
         , Arc3d(Arc3d)
         , Axis2d(Axis2d)
         , Axis3d(Axis3d)
+        , Block3d(Block3d)
         , BoundingBox2d(BoundingBox2d)
         , BoundingBox3d(BoundingBox3d)
         , Circle2d(Circle2d)
         , Circle3d(Circle3d)
         , CubicSpline2d(CubicSpline2d)
         , CubicSpline3d(CubicSpline3d)
-        , Cuboid3d(Cuboid3d)
         , Direction2d(Direction2d)
         , Direction3d(Direction3d)
         , Frame2d(Frame2d)
@@ -127,7 +127,7 @@ during 3D rendering.
 
 # Rectangles and cuboids
 
-@docs Rectangle2d, Rectangle3d, Cuboid3d
+@docs Rectangle2d, Rectangle3d, Block3d
 
 
 # Polylines
@@ -386,12 +386,12 @@ type Rectangle3d
         }
 
 
-{-| A rectangular box in 3D, defined the frame that it is centered on (the axes
-of the box) and its overall dimensions (length, width, height). See the
-[`Cuboid3d`](OpenSolid-Cuboid3d) module for details.
+{-| A rectangular block in 3D, defined the frame that it is centered on (the
+axes of the block) and its overall dimensions (length, width, height). See the
+[`Block3d`](OpenSolid-Block3d) module for details.
 -}
-type Cuboid3d
-    = Cuboid3d
+type Block3d
+    = Block3d
         { axes : Frame3d
         , dimensions : ( Float, Float, Float )
         }
