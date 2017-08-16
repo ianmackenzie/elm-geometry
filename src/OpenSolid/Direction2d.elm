@@ -12,7 +12,8 @@
 
 module OpenSolid.Direction2d
     exposing
-        ( angleFrom
+        ( Direction2d
+        , angleFrom
         , componentIn
         , components
         , equalWithin
@@ -33,6 +34,7 @@ module OpenSolid.Direction2d
         , scaleBy
         , toAngle
         , toVector
+        , withComponents
         , x
         , xComponent
         , y
@@ -53,24 +55,7 @@ several uses, such as:
   - Determining the (signed) angle between two directions
   - Defining the orientation of an axis or reference frame
 
-The simplest way to construct a `Direction2d` value is by passing a tuple of X
-and Y components to the `Direction2d` constructor, for example
-<code>Direction2d&nbsp;(&nbsp;1,&nbsp;0&nbsp;)</code>. However, if you do this
-**you must ensure that the sum of the squares of the given components is exactly
-one**:
-
-    Direction2d ( 1, 0 )
-    Direction2d ( 0, -1 )
-    Direction2d ( 0.6, 0.8 )
-
-are all valid but
-
-    Direction2d ( 2, 0 )
-    Direction2d ( 1, 1 )
-
-are not. Instead of manually constructing `Direction2d` values, it may be easier
-to use constructors like `Direction2d.fromAngle` or start with existing
-directions and transform them as necessary.
+@docs Direction2d
 
 
 # Predefined directions
@@ -80,7 +65,7 @@ directions and transform them as necessary.
 
 # Constructors
 
-@docs from, perpendicularTo, orthogonalize
+@docs withComponents, from, perpendicularTo, orthogonalize
 
 
 # Angles
@@ -139,13 +124,24 @@ For the examples, assume the following frames have been defined:
 import OpenSolid.Bootstrap.Direction2d as Bootstrap
 import OpenSolid.Bootstrap.Direction3d as Direction3d
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
-import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Geometry.Types as Types exposing (..)
 import OpenSolid.Vector2d as Vector2d
 
 
 toDirection : Vector2d -> Direction2d
 toDirection (Vector2d components) =
     Direction2d components
+
+
+{-| A direction in 2D. Can be constructed most directly using `withComponents`,
+for example
+
+    direction =
+        Direction2d.withComponents ( -1, 0 )
+
+-}
+type alias Direction2d =
+    Types.Direction2d
 
 
 {-| Synonym for `Direction2d.positiveX`.
@@ -204,6 +200,29 @@ positiveY =
 negativeY : Direction2d
 negativeY =
     Direction2d ( 0, -1 )
+
+
+{-| Construct a direction directly from its X and Y components. Note that **you
+must ensure that the sum of the squares of the given components is exactly
+one**:
+
+    Direction2d.withComponents ( 1, 0 )
+    Direction2d.withComponents ( 0, -1 )
+    Direction2d.withComponents ( 0.6, 0.8 )
+
+are all valid but
+
+    Direction2d.withComponents ( 2, 0 )
+    Direction2d.withComponents ( 1, 1 )
+
+are not. Instead of using `Direction2d.withComponents`, it may be easier to use
+constructors like `Direction2d.fromAngle` (which will always result in a valid
+direction) or start with existing directions and transform them as necessary.
+
+-}
+withComponents : ( Float, Float ) -> Direction2d
+withComponents =
+    Direction2d
 
 
 {-| Attempt to construct the direction from the first given point to the second.

@@ -12,7 +12,8 @@
 
 module OpenSolid.Vector2d
     exposing
-        ( componentIn
+        ( Vector2d
+        , componentIn
         , components
         , crossProduct
         , difference
@@ -39,6 +40,7 @@ module OpenSolid.Vector2d
         , scaleBy
         , squaredLength
         , sum
+        , withComponents
         , xComponent
         , yComponent
         , zero
@@ -61,11 +63,7 @@ directions and points. In most code it is actually more common to use `Point2d`
 and `Direction2d` than `Vector2d`, and much code can avoid working directly with
 `Vector2d` values at all!
 
-The simplest way to create a `Vector2d` is by passing a tuple of X and Y
-components to the `Vector2d` constructor, for example
-
-    vector =
-        Vector2d ( 2, 3 )
+@docs Vector2d
 
 
 # Predefined vectors
@@ -81,7 +79,7 @@ and [`Direction2d.y`](OpenSolid-Direction2d#y).
 
 # Constructors
 
-@docs polar, from, in_, perpendicularTo, interpolateFrom
+@docs withComponents, polar, from, in_, perpendicularTo, interpolateFrom
 
 
 # Components
@@ -141,40 +139,58 @@ import OpenSolid.Bootstrap.Direction3d as Direction3d
 import OpenSolid.Bootstrap.Frame2d as Frame2d
 import OpenSolid.Bootstrap.Point2d as Point2d
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
-import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Geometry.Types as Types exposing (Axis2d, Direction2d, Frame2d, Point2d, SketchPlane3d, Vector2d(..), Vector3d)
 import OpenSolid.Scalar as Scalar
+
+
+{-| A vector in 2D. Can be constructed most directly using `withComponents`,
+for example
+
+    vector =
+        Vector2d.withComponents ( 2, 3 )
+
+-}
+type alias Vector2d =
+    Types.Vector2d
 
 
 {-| The zero vector.
 
     Vector2d.zero
-    --> Vector2d ( 0, 0 )
+    --> Vector2d.withComponents ( 0, 0 )
 
 -}
 zero : Vector2d
 zero =
-    Vector2d ( 0, 0 )
+    withComponents ( 0, 0 )
+
+
+{-| Construct a vector from its X and Y components.
+-}
+withComponents : ( Float, Float ) -> Vector2d
+withComponents =
+    Types.Vector2d
 
 
 {-| Construct a vector from a length and angle. The angle is measured
 counterclockwise from the positive X direction.
 
     Vector2d.polar ( 2, degrees 135 )
-    -->Vector2d ( -1.4142, 1.4142 )
+    -->Vector2d.withComponents ( -1.4142, 1.4142 )
 
 This is shorthand for using Elm's built-in [`fromPolar`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#fromPolar)
-function and passing the result to the `Vector2d` constructor:
+function and passing the result to `Vector2d.withComponents`:
 
     Vector2d.polar ( r, theta )
 
 is equivalent to
 
-    Vector2d (fromPolar ( r, theta ))
+    Vector2d.withComponents (fromPolar ( r, theta ))
 
 -}
 polar : ( Float, Float ) -> Vector2d
 polar coordinates =
-    Vector2d (fromPolar coordinates)
+    withComponents (fromPolar coordinates)
 
 
 {-| Construct a vector from the first given point to the second.
@@ -186,7 +202,7 @@ polar coordinates =
         Point2d ( 4, 5 )
 
     Vector2d.from startPoint endPoint
-    --> Vector2d ( 3, 4 )
+    --> Vector2d.withComponents ( 3, 4 )
 
 -}
 from : Point2d -> Point2d -> Vector2d
@@ -198,13 +214,13 @@ from firstPoint secondPoint =
         ( x2, y2 ) =
             Point2d.coordinates secondPoint
     in
-    Vector2d ( x2 - x1, y2 - y1 )
+    withComponents ( x2 - x1, y2 - y1 )
 
 
 {-| Construct a vector in the given direction with the given length.
 
     Vector2d.in_ Direction2d.y 5
-    --> Vector2d ( 0, 5 )
+    --> Vector2d.withComponents ( 0, 5 )
 
 -}
 in_ : Direction2d -> Float -> Vector2d
@@ -213,21 +229,21 @@ in_ direction length =
         ( dx, dy ) =
             Direction2d.components direction
     in
-    Vector2d ( length * dx, length * dy )
+    withComponents ( length * dx, length * dy )
 
 
 {-| Construct a vector perpendicular to the given vector, by rotating the given
 vector 90 degrees counterclockwise. The constructed vector will have the same
 length as the given vector.
 
-    Vector2d.perpendicularTo (Vector2d ( 1, 0 ))
-    --> Vector2d ( 0, 1 )
+    Vector2d.perpendicularTo (Vector2d.withComponents ( 1, 0 ))
+    --> Vector2d.withComponents ( 0, 1 )
 
-    Vector2d.perpendicularTo (Vector2d ( 0, 2 ))
-    --> Vector2d ( -2, 0 )
+    Vector2d.perpendicularTo (Vector2d.withComponents ( 0, 2 ))
+    --> Vector2d.withComponents ( -2, 0 )
 
-    Vector2d.perpendicularTo (Vector2d ( 3, 1 ))
-    --> Vector2d ( -1, 3 )
+    Vector2d.perpendicularTo (Vector2d.withComponents ( 3, 1 ))
+    --> Vector2d.withComponents ( -1, 3 )
 
     Vector2d.perpendicularTo Vector2d.zero
     --> Vector2d.zero
@@ -239,7 +255,7 @@ perpendicularTo vector =
         ( x, y ) =
             components vector
     in
-    Vector2d ( -y, x )
+    withComponents ( -y, x )
 
 
 {-| Construct a vector by interpolating from the first given vector to the
@@ -249,10 +265,10 @@ second, based on a parameter that ranges from zero to one.
         Vector2d.zero
 
     endVector =
-        Vector2d ( 8, 12 )
+        Vector2d.withComponents ( 8, 12 )
 
     Vector2d.interpolateFrom startVector endVector 0.25
-    --> Vector2d ( 2, 3 )
+    --> Vector2d.withComponents ( 2, 3 )
 
 Partial application may be useful:
 
@@ -261,18 +277,18 @@ Partial application may be useful:
         Vector2d.interpolateFrom startVector endVector
 
     List.map interpolatedVector [ 0, 0.5, 1 ]
-    --> [ Vector2d ( 0, 0 )
-    --> , Vector2d ( 4, 6 )
-    --> , Vector2d ( 8, 12 )
+    --> [ Vector2d.withComponents ( 0, 0 )
+    --> , Vector2d.withComponents ( 4, 6 )
+    --> , Vector2d.withComponents ( 8, 12 )
     --> ]
 
 You can pass values less than zero or greater than one to extrapolate:
 
     interpolatedVector -0.5
-    --> Vector2d ( -4, -6 )
+    --> Vector2d.withComponents ( -4, -6 )
 
     interpolatedVector 1.25
-    --> Vector2d ( 10, 15 )
+    --> Vector2d.withComponents ( 10, 15 )
 
 -}
 interpolateFrom : Vector2d -> Vector2d -> Float -> Vector2d
@@ -284,7 +300,7 @@ interpolateFrom v1 v2 t =
         ( x2, y2 ) =
             components v2
     in
-    Vector2d
+    withComponents
         ( Scalar.interpolateFrom x1 x2 t
         , Scalar.interpolateFrom y1 y2 t
         )
@@ -292,7 +308,7 @@ interpolateFrom v1 v2 t =
 
 {-| Extract the components of a vector.
 
-    Vector2d.components (Vector2d ( 2, 3 ))
+    Vector2d.components (Vector2d.withComponents ( 2, 3 ))
     --> ( 2, 3 )
 
 This combined with Elm's built-in tuple destructuring provides a convenient way
@@ -309,29 +325,29 @@ function:
 
 -}
 components : Vector2d -> ( Float, Float )
-components (Vector2d components_) =
+components (Types.Vector2d components_) =
     components_
 
 
 {-| Get the X component of a vector.
 
-    Vector2d.xComponent (Vector2d ( 2, 3 ))
+    Vector2d.xComponent (Vector2d.withComponents ( 2, 3 ))
     --> 2
 
 -}
 xComponent : Vector2d -> Float
-xComponent (Vector2d ( x, _ )) =
+xComponent (Types.Vector2d ( x, _ )) =
     x
 
 
 {-| Get the Y component of a vector.
 
-    Vector2d.yComponent (Vector2d ( 2, 3 ))
+    Vector2d.yComponent (Vector2d.withComponents ( 2, 3 ))
     --> 3
 
 -}
 yComponent : Vector2d -> Float
-yComponent (Vector2d ( _, y )) =
+yComponent (Types.Vector2d ( _, y )) =
     y
 
 
@@ -366,10 +382,10 @@ componentIn direction vector =
 between the two given vectors has magnitude less than the given tolerance.
 
     firstVector =
-        Vector2d ( 1, 2 )
+        Vector2d.withComponents ( 1, 2 )
 
     secondVector =
-        Vector2d ( 0.9999, 2.0002 )
+        Vector2d.withComponents ( 0.9999, 2.0002 )
 
     Vector2d.equalWithin 1e-3 firstVector secondVector
     --> True
@@ -385,7 +401,7 @@ equalWithin tolerance firstVector secondVector =
 
 {-| Get the length (magnitude) of a vector.
 
-    Vector2d.length (Vector2d ( 3, 4 ))
+    Vector2d.length (Vector2d.withComponents ( 3, 4 ))
     --> 5
 
 -}
@@ -420,10 +436,10 @@ squaredLength vector =
 {-| Attempt to find the direction of a vector. In the case of a zero vector,
 return `Nothing`.
 
-    Vector2d.direction (Vector2d ( 3, 4 ))
-    --> Just (Direction2d ( 0.6, 0.8 ))
+    Vector2d.direction (Vector2d.withComponents ( 3, 4 ))
+    --> Just (Direction2d.withComponents ( 0.6, 0.8 ))
 
-    Vector2d.direction (Vector2d ( 0, 0 ))
+    Vector2d.direction (Vector2d.withComponents ( 0, 0 ))
     --> Nothing
 
 -}
@@ -436,17 +452,17 @@ direction vector =
             normalizedVector =
                 scaleBy (1 / length vector) vector
         in
-        Just (Direction2d (components normalizedVector))
+        Just (Direction2d.withComponents (components normalizedVector))
 
 
 {-| Attempt to find the length and direction of a vector. In the case of a zero
 vector, returns `Nothing`.
 
     vector =
-        Vector2d ( 3, 4 )
+        Vector2d.withComponents ( 3, 4 )
 
     Vector2d.lengthAndDirection vector
-    --> Just ( 5, Direction2d ( 0.6, 0.8 ) )
+    --> Just ( 5, Direction2d.withComponents ( 0.6, 0.8 ) )
 
     Vector2d.lengthAndDirection Vector2d.zero
     --> Nothing
@@ -466,7 +482,7 @@ lengthAndDirection vector =
                 scaleBy (1 / vectorLength) vector
 
             vectorDirection =
-                Direction2d (components normalizedVector)
+                Direction2d.withComponents (components normalizedVector)
         in
         Just ( vectorLength, vectorDirection )
 
@@ -483,17 +499,17 @@ If either of the given vectors are zero, or if the two vectors are parallel,
 `Nothing` will be returned.
 
     Vector2d.orthonormalize
-        ( Vector2d ( 4, 3 )
-        , Vector2d ( 0, -2 )
+        ( Vector2d.withComponents ( 4, 3 )
+        , Vector2d.withComponents ( 0, -2 )
         )
     --> Just
-    -->     ( Direction2d ( 0.8, 0.6 )
-    -->     , Direction2d ( 0.6, -0.8 )
+    -->     ( Direction2d.withComponents ( 0.8, 0.6 )
+    -->     , Direction2d.withComponents ( 0.6, -0.8 )
     -->     )
 
     Vector2d.orthonormalize
-        ( Vector2d ( 4, 3 )
-        , Vector2d ( 8, 6 )
+        ( Vector2d.withComponents ( 4, 3 )
+        , Vector2d.withComponents ( 8, 6 )
         )
     --> Nothing
 
@@ -524,10 +540,10 @@ orthonormalize ( xVector, xyVector ) =
 {-| Normalize a vector to have a length of one. Zero vectors are left as-is.
 
     vector =
-        Vector2d ( 3, 4 )
+        Vector2d.withComponents ( 3, 4 )
 
     Vector2d.normalize vector
-    --> Vector2d ( 0.6, 0.8 )
+    --> Vector2d.withComponents ( 0.6, 0.8 )
 
     Vector2d.normalize Vector2d.zero
     --> Vector2d.zero
@@ -555,13 +571,13 @@ normalize vector =
 {-| Find the sum of two vectors.
 
     firstVector =
-        Vector2d ( 1, 2 )
+        Vector2d.withComponents ( 1, 2 )
 
     secondVector =
-        Vector2d ( 3, 4 )
+        Vector2d.withComponents ( 3, 4 )
 
     Vector2d.sum firstVector secondVector
-    --> Vector2d ( 4, 6 )
+    --> Vector2d.withComponents ( 4, 6 )
 
 -}
 sum : Vector2d -> Vector2d -> Vector2d
@@ -573,19 +589,19 @@ sum firstVector secondVector =
         ( x2, y2 ) =
             components secondVector
     in
-    Vector2d ( x1 + x2, y1 + y2 )
+    withComponents ( x1 + x2, y1 + y2 )
 
 
 {-| Find the difference between two vectors (the first vector minus the second).
 
     firstVector =
-        Vector2d ( 5, 6 )
+        Vector2d.withComponents ( 5, 6 )
 
     secondVector =
-        Vector2d ( 1, 3 )
+        Vector2d.withComponents ( 1, 3 )
 
     Vector2d.difference firstVector secondVector
-    --> Vector2d ( 4, 3 )
+    --> Vector2d.withComponents ( 4, 3 )
 
 -}
 difference : Vector2d -> Vector2d -> Vector2d
@@ -597,16 +613,16 @@ difference firstVector secondVector =
         ( x2, y2 ) =
             components secondVector
     in
-    Vector2d ( x1 - x2, y1 - y2 )
+    withComponents ( x1 - x2, y1 - y2 )
 
 
 {-| Find the dot product of two vectors.
 
     firstVector =
-        Vector2d ( 1, 2 )
+        Vector2d.withComponents ( 1, 2 )
 
     secondVector =
-        Vector2d ( 3, 4 )
+        Vector2d.withComponents ( 3, 4 )
 
     Vector2d.dotProduct firstVector secondVector
     --> 11
@@ -649,10 +665,10 @@ and is useful in many of the same ways as the 3D cross product:
 Some examples:
 
     firstVector =
-        Vector2d ( 2, 0 )
+        Vector2d.withComponents ( 2, 0 )
 
     secondVector =
-        Vector2d ( 0, 3 )
+        Vector2d.withComponents ( 0, 3 )
 
     Vector2d.crossProduct firstVector secondVector
     --> 6
@@ -678,8 +694,8 @@ crossProduct firstVector secondVector =
 
 {-| Reverse the direction of a vector, negating its components.
 
-    Vector2d.flip (Vector2d ( -1, 2 ))
-    --> Vector2d ( 1, -2 )
+    Vector2d.flip (Vector2d.withComponents ( -1, 2 ))
+    --> Vector2d.withComponents ( 1, -2 )
 
 -}
 flip : Vector2d -> Vector2d
@@ -688,13 +704,13 @@ flip vector =
         ( x, y ) =
             components vector
     in
-    Vector2d ( -x, -y )
+    withComponents ( -x, -y )
 
 
 {-| Scale the length of a vector by a given scale.
 
-    Vector2d.scaleBy 3 (Vector2d ( 1, 2 ))
-    --> Vector2d ( 3, 6 )
+    Vector2d.scaleBy 3 (Vector2d.withComponents ( 1, 2 ))
+    --> Vector2d.withComponents ( 3, 6 )
 
 -}
 scaleBy : Float -> Vector2d -> Vector2d
@@ -703,16 +719,16 @@ scaleBy scale vector =
         ( x, y ) =
             components vector
     in
-    Vector2d ( x * scale, y * scale )
+    withComponents ( x * scale, y * scale )
 
 
 {-| Rotate a vector counterclockwise by a given angle (in radians).
 
-    Vector2d.rotateBy (degrees 45) (Vector2d ( 1, 1 ))
-    --> Vector2d ( 0, 1.4142 )
+    Vector2d.rotateBy (degrees 45) (Vector2d.withComponents ( 1, 1 ))
+    --> Vector2d.withComponents ( 0, 1.4142 )
 
-    Vector2d.rotateBy pi (Vector2d ( 1, 0 ))
-    --> Vector2d ( -1, 0 )
+    Vector2d.rotateBy pi (Vector2d.withComponents ( 1, 0 ))
+    --> Vector2d.withComponents ( -1, 0 )
 
 -}
 rotateBy : Float -> Vector2d -> Vector2d
@@ -724,17 +740,17 @@ rotateBy angle =
         sine =
             sin angle
     in
-    \(Vector2d ( x, y )) ->
-        Vector2d ( x * cosine - y * sine, y * cosine + x * sine )
+    \(Types.Vector2d ( x, y )) ->
+        withComponents ( x * cosine - y * sine, y * cosine + x * sine )
 
 
 {-| Mirror a vector across a given axis.
 
     vector =
-        Vector2d ( 2, 3 )
+        Vector2d.withComponents ( 2, 3 )
 
     Vector2d.mirrorAcross Axis2d.y vector
-    --> Vector2d ( -2, 3 )
+    --> Vector2d.withComponents ( -2, 3 )
 
     horizontalAxis =
         Axis2d
@@ -743,7 +759,7 @@ rotateBy angle =
             }
 
     Vector2d.mirrorAcross horizontalAxis vector
-    --> Vector2d ( 2, -3 )
+    --> Vector2d.withComponents ( 2, -3 )
 
 -}
 mirrorAcross : Axis2d -> Vector2d -> Vector2d
@@ -761,7 +777,8 @@ mirrorAcross axis =
         c =
             1 - 2 * dx * dx
     in
-    \(Vector2d ( vx, vy )) -> Vector2d ( a * vx + b * vy, c * vy + b * vx )
+    \(Types.Vector2d ( vx, vy )) ->
+        withComponents ( a * vx + b * vy, c * vy + b * vx )
 
 
 {-| Find the projection of a vector in a particular direction. Conceptually,
@@ -770,13 +787,13 @@ direction and a portion perpendicular to it, then returning the parallel
 portion.
 
     vector =
-        Vector2d ( 2, 3 )
+        Vector2d.withComponents ( 2, 3 )
 
     Vector2d.projectionIn Direction2d.x vector
-    --> Vector2d ( 2, 0 )
+    --> Vector2d.withComponents ( 2, 0 )
 
     Vector2d.projectionIn Direction2d.y vector
-    --> Vector2d ( 0, 3 )
+    --> Vector2d.withComponents ( 0, 3 )
 
 -}
 projectionIn : Direction2d -> Vector2d -> Vector2d
@@ -786,11 +803,11 @@ projectionIn direction vector =
 
 {-| Project a vector onto an axis.
 
-    Vector2d.projectOnto Axis2d.y (Vector2d ( 3, 4 ))
-    --> Vector2d ( 0, 4 )
+    Vector2d.projectOnto Axis2d.y (Vector2d.withComponents ( 3, 4 ))
+    --> Vector2d.withComponents ( 0, 4 )
 
-    Vector2d.projectOnto Axis2d.x (Vector2d ( -1, 2 ))
-    --> Vector2d ( -1, 0 )
+    Vector2d.projectOnto Axis2d.x (Vector2d.withComponents ( -1, 2 ))
+    --> Vector2d.withComponents ( -1, 0 )
 
 This is equivalent to finding the projection in the axis' direction.
 
@@ -803,13 +820,13 @@ projectOnto axis vector =
 {-| Take a vector defined in global coordinates, and return it expressed in
 local coordinates relative to a given reference frame.
 
-    Vector2d.relativeTo rotatedFrame (Vector2d ( 2, 0 ))
-    --> Vector2d ( 1.732, -1 )
+    Vector2d.relativeTo rotatedFrame (Vector2d.withComponents ( 2, 0 ))
+    --> Vector2d.withComponents ( 1.732, -1 )
 
 -}
 relativeTo : Frame2d -> Vector2d -> Vector2d
 relativeTo frame vector =
-    Vector2d
+    withComponents
         ( componentIn (Frame2d.xDirection frame) vector
         , componentIn (Frame2d.yDirection frame) vector
         )
@@ -818,8 +835,8 @@ relativeTo frame vector =
 {-| Take a vector defined in local coordinates relative to a given reference
 frame, and return that vector expressed in global coordinates.
 
-    Vector2d.placeIn rotatedFrame (Vector2d ( 2, 0 ))
-    --> Vector2d ( 1.732, 1 )
+    Vector2d.placeIn rotatedFrame (Vector2d.withComponents ( 2, 0 ))
+    --> Vector2d.withComponents ( 1.732, 1 )
 
 -}
 placeIn : Frame2d -> Vector2d -> Vector2d
@@ -831,14 +848,15 @@ placeIn frame =
         ( x2, y2 ) =
             Direction2d.components (Frame2d.yDirection frame)
     in
-    \(Vector2d ( x, y )) -> Vector2d ( x1 * x + x2 * y, y1 * x + y2 * y )
+    \(Types.Vector2d ( x, y )) ->
+        withComponents ( x1 * x + x2 * y, y1 * x + y2 * y )
 
 
 {-| Take a vector defined in 2D coordinates within a particular sketch plane and
 return the corresponding vector in 3D.
 
     vector =
-        Vector2d ( 2, 3 )
+        Vector2d.withComponents ( 2, 3 )
 
     Vector2d.placeOnto SketchPlane3d.xy vector
     --> Vector3d ( 2, 3, 0 )
@@ -855,7 +873,7 @@ A slightly more complex example:
         SketchPlane3d.xy
             |> SketchPlane3d.rotateAround Axis3d.x (degrees 45)
 
-    Vector2d.placeOnto tiltedSketchPlane (Vector2d ( 1, 1 ))
+    Vector2d.placeOnto tiltedSketchPlane (Vector2d.withComponents ( 1, 1 ))
     --> Vector3d ( 1, 0.7071, 0.7071 )
 
 -}
@@ -871,7 +889,7 @@ placeOnto sketchPlane vector =
         ( x, y ) =
             components vector
     in
-    Vector3d
+    Types.Vector3d
         ( x * ux + y * vx
         , x * uy + y * vy
         , x * uz + y * vz
