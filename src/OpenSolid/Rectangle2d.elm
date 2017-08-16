@@ -4,6 +4,7 @@ module OpenSolid.Rectangle2d
         , axes
         , boundingBox
         , centerPoint
+        , centeredOn
         , containing
         , contains
         , dimensions
@@ -26,6 +27,11 @@ import OpenSolid.Direction2d as Direction2d
 import OpenSolid.Frame2d as Frame2d
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point2d as Point2d
+
+
+centeredOn : Frame2d -> ( Float, Float ) -> Rectangle2d
+centeredOn axes dimensions =
+    Rectangle2d { axes = axes, dimensions = dimensions }
 
 
 in_ : Frame2d -> { minX : Float, maxX : Float, minY : Float, maxY : Float } -> Rectangle2d
