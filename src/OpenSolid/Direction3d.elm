@@ -12,7 +12,8 @@
 
 module OpenSolid.Direction3d
     exposing
-        ( angleFrom
+        ( Direction3d
+        , angleFrom
         , componentIn
         , components
         , equalWithin
@@ -37,6 +38,7 @@ module OpenSolid.Direction3d
         , scaleBy
         , spherical
         , toVector
+        , withComponents
         , x
         , xComponent
         , y
@@ -59,23 +61,7 @@ several uses, such as:
   - Determining the angle between two directions
   - Defining the orientation of an axis, plane or reference frame
 
-The simplest way to construct a `Direction3d` value is by passing a tuple of X,
-Y and Z components to the `Direction3d` constructor, for example
-<code>Direction3d&nbsp;(&nbsp;0,&nbsp;1,&nbsp;0&nbsp;)</code>. However, if you
-do this **you must ensure that the sum of the squares of the given components is
-exactly one**:
-
-    Direction3d ( 1, 0, 0 )
-    Direction3d ( 0, -1, 0 )
-    Direction3d ( 0.6, 0, 0.8 )
-
-are all valid but
-
-    Direction3d ( 2, 0, 0 )
-    Direction3d ( 1, 1, 1 )
-
-are not. Instead of manually constructing `Direction3d` values, it may be easier
-to start with existing directions and transform them as necessary.
+@docs Direction3d
 
 
 # Predefined directions
@@ -85,7 +71,7 @@ to start with existing directions and transform them as necessary.
 
 # Constructors
 
-@docs on, spherical, from, perpendicularTo, perpendicularBasis, orthogonalize
+@docs withComponents, on, spherical, from, perpendicularTo, perpendicularBasis, orthogonalize
 
 
 # Components
@@ -137,112 +123,147 @@ global XYZ frame:
 -}
 
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
-import OpenSolid.Direction2d as Direction2d
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Vector2d as Vector2d
-import OpenSolid.Vector3d as Vector3d
+import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
+import OpenSolid.Geometry.Types as Types exposing (Axis3d, Frame3d, Plane3d, Point3d, SketchPlane3d)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
+import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 
 toDirection : Vector3d -> Direction3d
-toDirection (Vector3d components) =
-    Direction3d components
+toDirection vector =
+    withComponents (Vector3d.components vector)
+
+
+{-| A direction in 3D. Can be constructed most directly using `withComponents`,
+for example
+
+    direction =
+        Direction3d.withComponents ( 0, -1, 0 )
+
+-}
+type alias Direction3d =
+    Types.Direction3d
 
 
 {-| Synonym for `Direction3d.positiveX`.
 -}
 x : Direction3d
 x =
-    Direction3d ( 1, 0, 0 )
+    withComponents ( 1, 0, 0 )
 
 
 {-| Synonym for `Direction3d.positiveY`.
 -}
 y : Direction3d
 y =
-    Direction3d ( 0, 1, 0 )
+    withComponents ( 0, 1, 0 )
 
 
 {-| Synonym for `Direction3d.positiveZ`.
 -}
 z : Direction3d
 z =
-    Direction3d ( 0, 0, 1 )
+    withComponents ( 0, 0, 1 )
 
 
 {-| The positive X direction.
 
     Direction3d.positiveX
-    --> Direction3d ( 1, 0, 0 )
+    --> Direction3d.withComponents ( 1, 0, 0 )
 
 -}
 positiveX : Direction3d
 positiveX =
-    Direction3d ( 1, 0, 0 )
+    withComponents ( 1, 0, 0 )
 
 
 {-| The negative X direction.
 
     Direction3d.negativeX
-    --> Direction3d ( -1, 0, 0 )
+    --> Direction3d.withComponents ( -1, 0, 0 )
 
 -}
 negativeX : Direction3d
 negativeX =
-    Direction3d ( -1, 0, 0 )
+    withComponents ( -1, 0, 0 )
 
 
 {-| The positive Y direction.
 
     Direction3d.positiveY
-    --> Direction3d ( 0, 1, 0 )
+    --> Direction3d.withComponents ( 0, 1, 0 )
 
 -}
 positiveY : Direction3d
 positiveY =
-    Direction3d ( 0, 1, 0 )
+    withComponents ( 0, 1, 0 )
 
 
 {-| The negative Y direction.
 
     Direction3d.negativeY
-    --> Direction3d ( 0, -1, 0 )
+    --> Direction3d.withComponents ( 0, -1, 0 )
 
 -}
 negativeY : Direction3d
 negativeY =
-    Direction3d ( 0, -1, 0 )
+    withComponents ( 0, -1, 0 )
 
 
 {-| The positive Z direction.
 
     Direction3d.positiveZ
-    --> Direction3d ( 0, 0, 1 )
+    --> Direction3d.withComponents ( 0, 0, 1 )
 
 -}
 positiveZ : Direction3d
 positiveZ =
-    Direction3d ( 0, 0, 1 )
+    withComponents ( 0, 0, 1 )
 
 
 {-| The negative Z direction.
 
     Direction3d.negativeZ
-    --> Direction3d ( 0, 0, -1 )
+    --> Direction3d.withComponents ( 0, 0, -1 )
 
 -}
 negativeZ : Direction3d
 negativeZ =
-    Direction3d ( 0, 0, -1 )
+    withComponents ( 0, 0, -1 )
+
+
+{-| Construct a direction directly from its X, Y and Z components. Note that
+**you must ensure that the sum of the squares of the given components is exactly
+one**:
+
+    Direction3d.withComponents ( 1, 0, 0 )
+    Direction3d.withComponents ( 0, -1, 0 )
+    Direction3d.withComponents ( 0.6, 0, 0.8 )
+
+are all valid but
+
+    Direction3d.withComponents ( 2, 0, 0 )
+    Direction3d.withComponents ( 1, 1, 1 )
+
+are not. Instead of using `Direction3d.withComponents`, it may be easier to use
+constructors like `Direction3d.on` or `Direction3d.spherical` (which will always
+result in a valid direction), or start with existing directions and transform
+them as necessary.
+
+-}
+withComponents : ( Float, Float, Float ) -> Direction3d
+withComponents =
+    Types.Direction3d
 
 
 {-| Construct a direction on the given sketch plane, given a polar angle from
 the sketch plane's X direction towards its Y direction.
 
     Direction3d.on SketchPlane3d.xy (degrees 45)
-    --> Direction3d ( 0.7071, 0.7071, 0 )
+    --> Direction3d.withComponents ( 0.7071, 0.7071, 0 )
 
     Direction3d.on SketchPlane3d.zx (degrees 30)
-    --> Direction3d ( 0.5, 0, 0.866 )
+    --> Direction3d.withComponents ( 0.5, 0, 0.866 )
 
 -}
 on : SketchPlane3d -> Float -> Direction3d
@@ -260,13 +281,13 @@ plane's `normalDirection`.)
         { azimuth = degrees 45
         , elevation = degrees 45
         }
-    --> Direction3d ( 0.5, 0.5, 0.7071 )
+    --> Direction3d.withComponents ( 0.5, 0.5, 0.7071 )
 
     Direction3d.spherical SketchPlane3d.zx
         { azimuth = degrees 90
         , elevation = degrees 30
         }
-    --> Direction3d ( 0.866, 0.5, 0 )
+    --> Direction3d.withComponents ( 0.866, 0.5, 0 )
 
 `on` can be thought of as a special case of `spherical`:
 
@@ -307,7 +328,7 @@ spherical sketchPlane { azimuth, elevation } =
         z =
             sin elevation
     in
-    Direction3d
+    withComponents
         ( x * x1 + y * x2 + z * x3
         , x * y1 + y * y2 + z * y3
         , x * z1 + y * z2 + z * z3
@@ -318,13 +339,13 @@ spherical sketchPlane { azimuth, elevation } =
 If the two points are coincident, returns `Nothing`.
 
     point =
-        Point3d ( 1, 0, 1 )
+        Point3d.withCoordinates ( 1, 0, 1 )
 
     Direction3d.from Point3d.origin point
-    --> Just (Direction3d ( 0.7071, 0, 0.7071 ))
+    --> Just (Direction3d.withComponents ( 0.7071, 0, 0.7071 ))
 
     Direction3d.from point Point3d.origin
-    --> Just (Direction3d ( -0.7071, 0, -0.7071 ))
+    --> Just (Direction3d.withComponents ( -0.7071, 0, -0.7071 ))
 
     Direction3d.from point point
     --> Nothing
@@ -340,16 +361,16 @@ exact resulting direction is not specified, but it is guaranteed to be
 perpendicular to the given direction.
 
     Direction3d.perpendicularTo Direction3d.x
-    --> Direction3d ( 0, 0, -1 )
+    --> Direction3d.withComponents ( 0, 0, -1 )
 
     Direction3d.perpendicularTo Direction3d.y
-    --> Direction3d ( 0, 0, 1 )
+    --> Direction3d.withComponents ( 0, 0, 1 )
 
     direction =
-        Direction3d ( 0.6, 0, 0.8 )
+        Direction3d.withComponents ( 0.6, 0, 0.8 )
 
     Direction3d.perpendicularTo direction
-    --> Direction3d ( 0.8, 0, -0.6 )
+    --> Direction3d.withComponents ( 0.8, 0, -0.6 )
 
 -}
 perpendicularTo : Direction3d -> Direction3d
@@ -374,16 +395,17 @@ The given direction and the two returned directions will form a
 [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 system (that is, a right-handed `Frame3d` could be constructed by using the
 given direction as the X direction and the two returned directions as the Y and
-Z directions).
+Z directions, or the given direction as the Z direction and the two returned
+directions as the X and Y directions).
 
     Direction3d.perpendicularBasis Direction3d.x
-    --> ( Direction3d ( 0, 0, -1 )
-    --> , Direction3d ( 0, 1, 0 )
+    --> ( Direction3d.withComponents ( 0, 0, -1 )
+    --> , Direction3d.withComponents ( 0, 1, 0 )
     --> )
 
     Direction3d.perpendicularBasis Direction3d.y
-    --> ( Direction3d ( 0, 0, 1 )
-    --> , Direction3d ( 1, 0, 0 )
+    --> ( Direction3d.withComponents ( 0, 0, 1 )
+    --> , Direction3d.withComponents ( 1, 0, 0 )
     --> )
 
 -}
@@ -435,7 +457,7 @@ as a unit vector, also know as its direction cosines).
 
 -}
 components : Direction3d -> ( Float, Float, Float )
-components (Direction3d components_) =
+components (Types.Direction3d components_) =
     components_
 
 
@@ -449,7 +471,7 @@ components (Direction3d components_) =
 
 -}
 xComponent : Direction3d -> Float
-xComponent (Direction3d ( x, _, _ )) =
+xComponent (Types.Direction3d ( x, _, _ )) =
     x
 
 
@@ -463,7 +485,7 @@ xComponent (Direction3d ( x, _, _ )) =
 
 -}
 yComponent : Direction3d -> Float
-yComponent (Direction3d ( _, y, _ )) =
+yComponent (Types.Direction3d ( _, y, _ )) =
     y
 
 
@@ -477,7 +499,7 @@ yComponent (Direction3d ( _, y, _ )) =
 
 -}
 zComponent : Direction3d -> Float
-zComponent (Direction3d ( _, _, z )) =
+zComponent (Types.Direction3d ( _, _, z )) =
     z
 
 
@@ -486,7 +508,7 @@ the cosine of the angle between the directions, or equivalently the dot product
 of the two directions converted to unit vectors.
 
     direction =
-        Direction3d ( 0.6, 0.8, 0 )
+        Direction3d.withComponents ( 0.6, 0.8, 0 )
 
     Direction3d.componentIn Direction3d.x direction
     --> 0.6
@@ -496,6 +518,9 @@ of the two directions converted to unit vectors.
 
     Direction3d.componentIn direction direction
     --> 1
+
+    Direction3d.componentIn (Direction3d.flip direction) direction
+    --> -1
 
 This is more general and flexible than using `xComponent`, `yComponent` or
 `zComponent`, all of which can be expressed in terms of `componentIn`; for
@@ -534,12 +559,12 @@ equalWithin angle firstDirection secondDirection =
 {-| Convert a direction to a unit vector.
 
     Direction3d.toVector Direction3d.y
-    --> Vector3d ( 0, 1, 0 )
+    --> Vector3d.withComponents ( 0, 1, 0 )
 
 -}
 toVector : Direction3d -> Vector3d
-toVector (Direction3d components) =
-    Vector3d components
+toVector direction =
+    Vector3d.withComponents (components direction)
 
 
 {-| Find the angle from one direction to another. The result will be in the
@@ -551,7 +576,7 @@ range 0 to π.
     Direction3d.angleFrom Direction3d.x Direction3d.z
     --> degrees 90
 
-    Direction3d.angleFrom Direction3d.y (Direction3d ( 0, -1, 0 ))
+    Direction3d.angleFrom Direction3d.y Direction3d.negativeY
     --> degrees 180
 
 -}
@@ -585,7 +610,7 @@ angleFrom firstDirection secondDirection =
 {-| Reverse a direction.
 
     Direction3d.flip Direction3d.y
-    --> Direction3d ( 0, -1, 0 )
+    --> Direction3d.negativeY
 
 -}
 flip : Direction3d -> Direction3d
@@ -594,7 +619,7 @@ flip direction =
         ( x, y, z ) =
             components direction
     in
-    Direction3d ( -x, -y, -z )
+    withComponents ( -x, -y, -z )
 
 
 {-| Construct a vector of a particular length by treating a direction as a unit
@@ -602,7 +627,7 @@ vector and scaling it by the given length. In many cases it may be shorter and
 more clear to use the [`Vector3d.in_`](OpenSolid-Vector3d#in_) constructor.
 
     Direction3d.scaleBy 3 Direction3d.z
-    --> Vector3d ( 0, 0, 3 )
+    --> Vector3d.withComponents ( 0, 0, 3 )
 
 The length can be negative, in which case the resulting vector will have the
 opposite direction.
@@ -623,7 +648,7 @@ its origin point, since directions are position-independent:
 
     offsetAxis =
         Axis3d
-            { originPoint = Point3d ( 100, 200, 300 )
+            { originPoint = Point3d.withCoordinates ( 100, 200, 300 )
             , direction = Direction3d.z
             }
 
@@ -639,10 +664,10 @@ rotateAround axis angle direction =
 {-| Mirror a direction across a plane.
 
     direction =
-        Direction3d ( 0.6, 0, 0.8 )
+        Direction3d.withComponents ( 0.6, 0, 0.8 )
 
     Direction3d.mirrorAcross Plane3d.xy direction
-    --> Direction3d ( 0.6, 0, -0.8 )
+    --> Direction3d.withComponents ( 0.6, 0, -0.8 )
 
 Note that only the normal direction of the plane affects the result, not the
 position of its origin point, since directions are position-independent:
@@ -651,7 +676,7 @@ position of its origin point, since directions are position-independent:
         Plane3d.offsetBy 10 Plane3d.yz
 
     Direction3d.mirrorAcross offsetPlane direction
-    --> Direction3d ( -0.6, 0, 0.8 )
+    --> Direction3d.withComponents ( -0.6, 0, 0.8 )
 
 -}
 mirrorAcross : Plane3d -> Direction3d -> Direction3d
@@ -664,16 +689,16 @@ given direction's 'shadow' on the given plane. If the given direction is
 exactly perpendicular to the given plane, then `Nothing` is returned.
 
     direction =
-        Direction3d ( 0.6, -0.8, 0 )
+        Direction3d.withComponents ( 0.6, -0.8, 0 )
 
     Direction3d.projectOnto Plane3d.xy direction
-    --> Just (Direction3d ( 0.6, -0.8, 0 ))
+    --> Just (Direction3d.withComponents ( 0.6, -0.8, 0 ))
 
     Direction3d.projectOnto Plane3d.xz direction
-    --> Just (Direction3d ( 1, 0, 0 ))
+    --> Just (Direction3d.withComponents ( 1, 0, 0 ))
 
     Direction3d.projectOnto Plane3d.yz direction
-    --> Just (Direction3d ( 0, -1, 0 ))
+    --> Just (Direction3d.withComponents ( 0, -1, 0 ))
 
     Direction3d.projectOnto Plane3d.xy Direction3d.z
     --> Nothing
@@ -688,13 +713,13 @@ projectOnto plane direction =
 local coordinates relative to a given reference frame.
 
     Direction3d.relativeTo rotatedFrame Direction3d.x
-    --> Direction3d ( 0.866, -0.5, 0 )
+    --> Direction3d.withComponents ( 0.866, -0.5, 0 )
 
     Direction3d.relativeTo rotatedFrame Direction3d.y
-    --> Direction3d ( 0.5, 0.866, 0 )
+    --> Direction3d.withComponents ( 0.5, 0.866, 0 )
 
     Direction3d.relativeTo rotatedFrame Direction3d.z
-    --> Direction3d ( 0, 0, 1 )
+    --> Direction3d.withComponents ( 0, 0, 1 )
 
 -}
 relativeTo : Frame3d -> Direction3d -> Direction3d
@@ -706,13 +731,13 @@ relativeTo frame direction =
 frame, and return that direction expressed in global coordinates.
 
     Direction3d.placeIn rotatedFrame Direction3d.x
-    --> Direction3d ( 0.866, 0.5, 0 )
+    --> Direction3d.withComponents ( 0.866, 0.5, 0 )
 
     Direction3d.placeIn rotatedFrame Direction3d.y
-    --> Direction3d ( -0.5, 0.866, 0 )
+    --> Direction3d.withComponents ( -0.5, 0.866, 0 )
 
     Direction3d.placeIn rotatedFrame Direction3d.z
-    --> Direction3d ( 0, 0, 1 )
+    --> Direction3d.withComponents ( 0, 0, 1 )
 
 -}
 placeIn : Frame3d -> Direction3d -> Direction3d
@@ -728,16 +753,16 @@ This is only possible if the direction is not perpendicular to the sketch
 plane; if it is perpendicular, `Nothing` is returned.
 
     direction =
-        Direction3d ( 0.6, -0.8, 0 )
+        Direction3d.withComponents ( 0.6, -0.8, 0 )
 
     Direction3d.projectInto SketchPlane3d.xy direction
-    --> Just (Direction2d ( 0.6, -0.8 ))
+    --> Just (Direction2d.withComponents ( 0.6, -0.8 ))
 
     Direction3d.projectInto SketchPlane3d.xz direction
-    --> Just (Direction2d ( 1, 0 ))
+    --> Just (Direction2d.withComponents ( 1, 0 ))
 
     Direction3d.projectInto SketchPlane3d.yz direction
-    --> Just (Direction2d ( -1, 0 ))
+    --> Just (Direction2d.withComponents ( -1, 0 ))
 
     Direction3d.projectInto SketchPlane3d.xy Direction3d.z
     --> Nothing
