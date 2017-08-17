@@ -167,6 +167,10 @@ zero =
 
 
 {-| Construct a vector from its X and Y components.
+
+    vector =
+        Vector2d.withComponents ( 2, 3 )
+
 -}
 withComponents : ( Float, Float ) -> Vector2d
 withComponents =
