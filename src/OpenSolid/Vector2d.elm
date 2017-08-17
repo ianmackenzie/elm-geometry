@@ -140,7 +140,7 @@ import OpenSolid.Bootstrap.Frame2d as Frame2d
 import OpenSolid.Bootstrap.Point2d as Point2d
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
 import OpenSolid.Bootstrap.Vector3d as Vector3d
-import OpenSolid.Geometry.Types as Types exposing (Axis2d, Direction2d, Frame2d, Point2d, SketchPlane3d, Vector2d(..), Vector3d)
+import OpenSolid.Geometry.Types as Types exposing (Axis2d, Direction2d, Frame2d, Point2d, SketchPlane3d, Vector3d)
 import OpenSolid.Scalar as Scalar
 
 
