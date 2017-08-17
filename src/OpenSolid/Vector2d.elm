@@ -139,6 +139,7 @@ import OpenSolid.Bootstrap.Direction3d as Direction3d
 import OpenSolid.Bootstrap.Frame2d as Frame2d
 import OpenSolid.Bootstrap.Point2d as Point2d
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
+import OpenSolid.Bootstrap.Vector3d as Vector3d
 import OpenSolid.Geometry.Types as Types exposing (Axis2d, Direction2d, Frame2d, Point2d, SketchPlane3d, Vector2d(..), Vector3d)
 import OpenSolid.Scalar as Scalar
 
@@ -740,7 +741,11 @@ rotateBy angle =
         sine =
             sin angle
     in
-    \(Types.Vector2d ( x, y )) ->
+    \vector ->
+        let
+            ( x, y ) =
+                components vector
+        in
         withComponents ( x * cosine - y * sine, y * cosine + x * sine )
 
 
@@ -777,7 +782,11 @@ mirrorAcross axis =
         c =
             1 - 2 * dx * dx
     in
-    \(Types.Vector2d ( vx, vy )) ->
+    \vector ->
+        let
+            ( vx, vy ) =
+                components vector
+        in
         withComponents ( a * vx + b * vy, c * vy + b * vx )
 
 
@@ -848,7 +857,11 @@ placeIn frame =
         ( x2, y2 ) =
             Direction2d.components (Frame2d.yDirection frame)
     in
-    \(Types.Vector2d ( x, y )) ->
+    \vector ->
+        let
+            ( x, y ) =
+                components vector
+        in
         withComponents ( x1 * x + x2 * y, y1 * x + y2 * y )
 
 
@@ -889,7 +902,7 @@ placeOnto sketchPlane vector =
         ( x, y ) =
             components vector
     in
-    Types.Vector3d
+    Vector3d.withComponents
         ( x * ux + y * vx
         , x * uy + y * vy
         , x * uz + y * vz
