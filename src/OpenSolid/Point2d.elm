@@ -12,7 +12,8 @@
 
 module OpenSolid.Point2d
     exposing
-        ( along
+        ( Point2d
+        , along
         , coordinates
         , directionFrom
         , distanceAlong
@@ -36,6 +37,7 @@ module OpenSolid.Point2d
         , squaredDistanceFrom
         , translateBy
         , vectorFrom
+        , withCoordinates
         , xCoordinate
         , yCoordinate
         )
@@ -50,11 +52,7 @@ as
   - Scaling, rotating, translating, mirroring and projecting points
   - Converting points between different coordinate systems
 
-The simplest way to construct a `Point2d` value is by passing a tuple of X and Y
-coordinates to the `Point2d` constructor, for example
-
-    point =
-        Point2d ( 2, 3 )
+@docs Point2d
 
 
 # Predefined points
@@ -64,7 +62,7 @@ coordinates to the `Point2d` constructor, for example
 
 # Constructors
 
-@docs polar, midpoint, interpolateFrom, interpolate, along, in_
+@docs withCoordinates, polar, midpoint, interpolateFrom, interpolate, along, in_
 
 
 # Coordinates
@@ -107,14 +105,15 @@ different coordinate frames.
 -}
 
 import OpenSolid.Bootstrap.Axis2d as Axis2d
-import OpenSolid.Bootstrap.Direction3d as Direction3d
+import OpenSolid.Bootstrap.BoundingBox2d as BoundingBox2d
 import OpenSolid.Bootstrap.Frame2d as Frame2d
 import OpenSolid.Bootstrap.Point3d as Point3d
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
-import OpenSolid.Direction2d as Direction2d
-import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
+import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
+import OpenSolid.Geometry.Types as Types exposing (Axis2d, BoundingBox2d, Frame2d, Point3d, SketchPlane3d)
 import OpenSolid.Scalar as Scalar
-import OpenSolid.Vector2d as Vector2d
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
 addTo : Point2d -> Vector2d -> Point2d
@@ -122,48 +121,70 @@ addTo point vector =
     translateBy vector point
 
 
+{-| A point in 2D. Can be constructed most directly using `withCoordinates`,
+for example
+
+    point =
+        Point2d.withCoordinates ( 2, 3 )
+
+-}
+type alias Point2d =
+    Types.Point2d
+
+
 {-| The point (0, 0).
 
     Point2d.origin
-    --> Point2d ( 0, 0 )
+    --> Point2d.withCoordinates ( 0, 0 )
 
 -}
 origin : Point2d
 origin =
-    Point2d ( 0, 0 )
+    withCoordinates ( 0, 0 )
+
+
+{-| Construct a point from its X and Y coordinates.
+
+    point =
+        Point2d.withCoordinates ( 2, 3 )
+
+-}
+withCoordinates : ( Float, Float ) -> Point2d
+withCoordinates =
+    Types.Point2d
 
 
 {-| Construct a point from a radius and angle. Radius is measured from the
 origin and angle is measured counterclockwise from the positive X direction.
 
     Point2d.polar ( 2, degrees 135 )
-    --> Point2d ( -1.4142, 1.4142 )
+    --> Point2d.withCoordinates ( -1.4142, 1.4142 )
 
 This is shorthand for using Elm's built-in [`fromPolar`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#fromPolar)
-function and passing the result to the `Point2d` constructor:
+function and passing the result to `Point2d.withCoordinates`:
 
     Point2d.polar ( r, theta )
 
 is equivalent to
 
-    Point2d (fromPolar ( r, theta ))
+    Point2d.withCoordinates (fromPolar ( r, theta ))
 
 -}
 polar : ( Float, Float ) -> Point2d
 polar coordinates =
-    Point2d (fromPolar coordinates)
+    withCoordinates (fromPolar coordinates)
 
 
 {-| Construct a point halfway between two other points.
 
     p1 =
-        Point2d ( 1, 1 )
+        Point2d.withCoordinates ( 1, 1 )
 
     p2 =
-        Point2d ( 3, 7 )
+        Point2d.withCoordinates ( 3, 7 )
 
     Point2d.midpoint p1 p2
-    --> Point2d ( 2, 4 )
+    --> Point2d.withCoordinates ( 2, 4 )
 
 -}
 midpoint : Point2d -> Point2d -> Point2d
@@ -178,10 +199,10 @@ based on a parameter that ranges from zero to one.
         Point2d.origin
 
     endPoint =
-        Point2d ( 8, 12 )
+        Point2d.withCoordinates ( 8, 12 )
 
     Point2d.interpolateFrom startPoint endPoint 0.25
-    --> Point2d ( 2, 3 )
+    --> Point2d.withCoordinates ( 2, 3 )
 
 Partial application may be useful:
 
@@ -190,18 +211,18 @@ Partial application may be useful:
         Point2d.interpolateFrom startPoint endPoint
 
     List.map interpolatedPoint [ 0, 0.5, 1 ]
-    --> [ Point2d ( 0, 0 )
-    --> , Point2d ( 4, 6 )
-    --> , Point2d ( 8, 12 )
+    --> [ Point2d.withCoordinates ( 0, 0 )
+    --> , Point2d.withCoordinates ( 4, 6 )
+    --> , Point2d.withCoordinates ( 8, 12 )
     --> ]
 
 You can pass values less than zero or greater than one to extrapolate:
 
     interpolatedPoint -0.5
-    --> Point2d ( -4, -6 )
+    --> Point2d.withCoordinates ( -4, -6 )
 
     interpolatedPoint 1.25
-    --> Point2d ( 10, 15 )
+    --> Point2d.withCoordinates ( 10, 15 )
 
 -}
 interpolateFrom : Point2d -> Point2d -> Float -> Point2d
@@ -213,7 +234,7 @@ interpolateFrom p1 p2 t =
         ( x2, y2 ) =
             coordinates p2
     in
-    Point2d
+    withCoordinates
         ( Scalar.interpolateFrom x1 x2 t
         , Scalar.interpolateFrom y1 y2 t
         )
@@ -231,22 +252,22 @@ interpolate =
 origin point.
 
     Point2d.along Axis2d.y 3
-    --> Point2d ( 0, 3 )
+    --> Point2d.withCoordinates ( 0, 3 )
 
 Positive and negative distances will be interpreted relative to the direction of
 the axis:
 
     horizontalAxis =
-        Axis2d
-            { originPoint = Point2d ( 1, 1 )
-            , direction = Direction2d ( -1, 0 )
+        Axis2d.with
+            { originPoint = Point2d.withCoordinates ( 1, 1 )
+            , direction = Direction2d.negativeX
             }
 
     Point2d.along horizontalAxis 3
-    --> Point2d ( -2, 1 )
+    --> Point2d.withCoordinates ( -2, 1 )
 
     Point2d.along horizontalAxis -3
-    --> Point2d ( 4, 1 )
+    --> Point2d.withCoordinates ( 4, 1 )
 
 -}
 along : Axis2d -> Float -> Point2d
@@ -261,7 +282,7 @@ along axis distance =
         Frame2d.xy |> Frame2d.rotateBy (degrees 45)
 
     Point2d.in_ rotatedFrame ( 2, 0 )
-    --> Point2d ( 1.4142, 1.4142 )
+    --> Point2d.withCoordinates ( 1.4142, 1.4142 )
 
 This is shorthand for using `Point2d.placeIn`;
 
@@ -269,12 +290,12 @@ This is shorthand for using `Point2d.placeIn`;
 
 is equivalent to
 
-    Point2d coordinates |> Point2d.placeIn frame
+    Point2d.withCoordinates coordinates |> Point2d.placeIn frame
 
 -}
 in_ : Frame2d -> ( Float, Float ) -> Point2d
 in_ frame coordinates =
-    placeIn frame (Point2d coordinates)
+    placeIn frame (withCoordinates coordinates)
 
 
 {-| Get the coordinates of a point as a tuple.
@@ -290,29 +311,29 @@ function:
 
 -}
 coordinates : Point2d -> ( Float, Float )
-coordinates (Point2d coordinates_) =
+coordinates (Types.Point2d coordinates_) =
     coordinates_
 
 
 {-| Get the X coordinate of a point.
 
-    Point2d.xCoordinate (Point2d ( 2, 3 ))
+    Point2d.xCoordinate (Point2d.withCoordinates ( 2, 3 ))
     --> 2
 
 -}
 xCoordinate : Point2d -> Float
-xCoordinate (Point2d ( x, _ )) =
+xCoordinate (Types.Point2d ( x, _ )) =
     x
 
 
 {-| Get the Y coordinate of a point.
 
-    Point2d.yCoordinate (Point2d ( 2, 3 ))
+    Point2d.yCoordinate (Point2d.withCoordinates ( 2, 3 ))
     --> 3
 
 -}
 yCoordinate : Point2d -> Float
-yCoordinate (Point2d ( _, y )) =
+yCoordinate (Types.Point2d ( _, y )) =
     y
 
 
@@ -320,10 +341,10 @@ yCoordinate (Point2d ( _, y )) =
 between the two given points is less than the given tolerance.
 
     firstPoint =
-        Point2d ( 1, 2 )
+        Point2d.withCoordinates ( 1, 2 )
 
     secondPoint =
-        Point2d ( 0.9999, 2.0002 )
+        Point2d.withCoordinates ( 0.9999, 2.0002 )
 
     Point2d.equalWithin 1e-3 firstPoint secondPoint
     --> True
@@ -356,10 +377,10 @@ directionFrom =
 {-| Find the distance between two points.
 
     p1 =
-        Point2d ( 2, 3 )
+        Point2d.withCoordinates ( 2, 3 )
 
     p2 =
-        Point2d ( 5, 7 )
+        Point2d.withCoordinates ( 5, 7 )
 
     Point2d.distanceFrom p1 p2
     --> 5
@@ -367,9 +388,9 @@ directionFrom =
 Partial application can be useful:
 
     points =
-        [ Point2d ( 3, 4 )
-        , Point2d ( 10, 0 )
-        , Point2d ( -1, 2 )
+        [ Point2d.withCoordinates ( 3, 4 )
+        , Point2d.withCoordinates ( 10, 0 )
+        , Point2d.withCoordinates ( -1, 2 )
         ]
 
     distanceFromOrigin : Point2d -> Float
@@ -377,9 +398,9 @@ Partial application can be useful:
         Point2d.distanceFrom Point2d.origin
 
     List.sortBy distanceFromOrigin points
-    --> [ Point2d ( -1, 2 )
-    --> , Point2d ( 3, 4 )
-    --> , Point2d ( 10, 0 )
+    --> [ Point2d.withCoordinates ( -1, 2 )
+    --> , Point2d.withCoordinates ( 3, 4 )
+    --> , Point2d.withCoordinates ( 10, 0 )
     --> ]
 
 -}
@@ -414,13 +435,13 @@ positive if the projected point is ahead the axis' origin point and negative if
 it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
 
     axis =
-        Axis2d
-            { originPoint = Point2d ( 1, 2 )
+        Axis2d.with
+            { originPoint = Point2d.withCoordinates ( 1, 2 )
             , direction = Direction2d.x
             }
 
     point =
-        Point2d ( 3, 3 )
+        Point2d.withCoordinates ( 3, 3 )
 
     Point2d.distanceAlong axis point
     --> 2
@@ -442,13 +463,13 @@ to the right, with the forwards direction defined by the direction of the axis.
     -- A horizontal axis through a point with a Y
     -- coordinate of 2 is effectively the line Y=2
     axis =
-        Axis2d
-            { originPoint = Point2d ( 1, 2 )
+        Axis2d.with
+            { originPoint = Point2d.withCoordinates ( 1, 2 )
             , direction = Direction2d.x
             }
 
     point =
-        Point2d ( 3, 3 )
+        Point2d.withCoordinates ( 3, 3 )
 
     -- Since the axis is in the positive X direction,
     -- points above the axis are to the left (positive)
@@ -491,16 +512,16 @@ expand about the center point by the given scale. Scaling by a factor of 1 is a
 no-op, and scaling by a factor of 0 collapses all points to the center point.
 
     centerPoint =
-        Point2d ( 1, 1 )
+        Point2d.withCoordinates ( 1, 1 )
 
     point =
-        Point2d ( 2, 3 )
+        Point2d.withCoordinates ( 2, 3 )
 
     Point2d.scaleAbout centerPoint 3 point
-    --> Point2d ( 4, 7 )
+    --> Point2d.withCoordinates ( 4, 7 )
 
     Point2d.scaleAbout centerPoint 0.5 point
-    --> Point2d ( 1.5, 2 )
+    --> Point2d.withCoordinates ( 1.5, 2 )
 
 Avoid scaling by a negative scaling factor - while this may sometimes do what
 you want it is confusing and error prone. Try a combination of mirror and/or
@@ -519,16 +540,16 @@ radians). The point to rotate around is given first and the point to rotate is
 given last.
 
     centerPoint =
-        Point2d ( 2, 0 )
+        Point2d.withCoordinates ( 2, 0 )
 
     angle =
         degrees 45
 
     point =
-        Point2d ( 3, 0 )
+        Point2d.withCoordinates ( 3, 0 )
 
     Point2d.rotateAround centerPoint angle point
-    --> Point2d ( 2.7071, 0.7071 )
+    --> Point2d.withCoordinates ( 2.7071, 0.7071 )
 
 -}
 rotateAround : Point2d -> Float -> Point2d -> Point2d
@@ -539,13 +560,13 @@ rotateAround centerPoint angle =
 {-| Translate a point by a given displacement.
 
     point =
-        Point2d ( 3, 4 )
+        Point2d.withCoordinates ( 3, 4 )
 
     displacement =
-        Vector2d ( 1, 2 )
+        Vector2d.withComponents ( 1, 2 )
 
     Point2d.translateBy displacement point
-    --> Point2d ( 4, 6 )
+    --> Point2d.withCoordinates ( 4, 6 )
 
 -}
 translateBy : Vector2d -> Point2d -> Point2d
@@ -557,20 +578,20 @@ translateBy vector point =
         ( px, py ) =
             coordinates point
     in
-    Point2d ( px + vx, py + vy )
+    withCoordinates ( px + vx, py + vy )
 
 
 {-| Mirror a point across an axis. The result will be the same distance from the
 axis but on the opposite side.
 
     point =
-        Point2d ( 2, 3 )
+        Point2d.withCoordinates ( 2, 3 )
 
     Point2d.mirrorAcross Axis2d.x point
-    --> Point2d ( 2, -3 )
+    --> Point2d.withCoordinates ( 2, -3 )
 
     Point2d.mirrorAcross Axis2d.y point
-    --> Point2d ( -2, 3 )
+    --> Point2d.withCoordinates ( -2, 3 )
 
 -}
 mirrorAcross : Axis2d -> Point2d -> Point2d
@@ -583,24 +604,24 @@ mirrorAcross axis =
 {-| Project a point perpendicularly onto an axis.
 
     point =
-        Point2d ( 2, 3 )
+        Point2d.withCoordinates ( 2, 3 )
 
     Point2d.projectOnto Axis2d.x point
-    --> Point2d ( 2, 0 )
+    --> Point2d.withCoordinates ( 2, 0 )
 
     Point2d.projectOnto Axis2d.y point
-    --> Point2d ( 0, 3 )
+    --> Point2d.withCoordinates ( 0, 3 )
 
 The axis does not have to pass through the origin:
 
     offsetYAxis =
-        Axis2d
-            { originPoint = Point2d ( 1, 0 )
+        Axis2d.with
+            { originPoint = Point2d.withCoordinates ( 1, 0 )
             , direction = Direction2d.y
             }
 
     Point2d.projectOnto offsetYAxis point
-    --> Point2d ( 1, 3 )
+    --> Point2d.withCoordinates ( 1, 3 )
 
 -}
 projectOnto : Axis2d -> Point2d -> Point2d
@@ -614,13 +635,15 @@ projectOnto axis =
 coordinates relative to a given reference frame.
 
     localFrame =
-        Frame2d.at (Point2d ( 1, 2 ))
+        Frame2d.at (Point2d.withCoordinates ( 1, 2 ))
 
-    Point2d.relativeTo localFrame (Point2d ( 4, 5 ))
-    --> Point2d ( 3, 3 )
+    Point2d.relativeTo localFrame
+        (Point2d.withCoordinates ( 4, 5 ))
+    --> Point2d.withCoordinates ( 3, 3 )
 
-    Point2d.relativeTo localFrame (Point2d ( 1, 1 ))
-    --> Point2d ( 0, -1 )
+    Point2d.relativeTo localFrame
+        (Point2d.withCoordinates ( 1, 1 ))
+    --> Point2d.withCoordinates ( 0, -1 )
 
 -}
 relativeTo : Frame2d -> Point2d -> Point2d
@@ -628,25 +651,27 @@ relativeTo frame point =
     Vector2d.from (Frame2d.originPoint frame) point
         |> Vector2d.relativeTo frame
         |> Vector2d.components
-        |> Point2d
+        |> withCoordinates
 
 
 {-| Take a point defined in local coordinates relative to a given reference
 frame, and return that point expressed in global coordinates.
 
     localFrame =
-        Frame2d.at (Point2d ( 1, 2 ))
+        Frame2d.at (Point2d.withCoordinates ( 1, 2 ))
 
-    Point2d.placeIn localFrame (Point2d ( 3, 3 ))
-    --> Point2d ( 4, 5 )
+    Point2d.placeIn localFrame
+        (Point2d.withCoordinates ( 3, 3 ))
+    --> Point2d.withCoordinates ( 4, 5 )
 
-    Point2d.placeIn localFrame (Point2d ( 0, 1 ))
-    --> Point2d ( 1, 1 )
+    Point2d.placeIn localFrame
+        (Point2d.withCoordinates ( 0, 1 ))
+    --> Point2d.withCoordinates ( 1, 1 )
 
 -}
 placeIn : Frame2d -> Point2d -> Point2d
 placeIn frame point =
-    Vector2d (coordinates point)
+    Vector2d.withComponents (coordinates point)
         |> Vector2d.placeIn frame
         |> addTo (Frame2d.originPoint frame)
 
@@ -655,13 +680,13 @@ placeIn frame point =
 return the corresponding point in 3D.
 
     point =
-        Point2d ( 2, 1 )
+        Point2d.withCoordinates ( 2, 1 )
 
     Point2d.placeOnto SketchPlane3d.xy point
-    --> Point3d ( 2, 1, 0 )
+    --> Point3d.withCoordinates ( 2, 1, 0 )
 
     Point2d.placeOnto SketchPlane3d.xz point
-    --> Point3d ( 2, 0, 1 )
+    --> Point3d.withCoordinates ( 2, 0, 1 )
 
 The sketch plane can have any position and orientation:
 
@@ -670,7 +695,7 @@ The sketch plane can have any position and orientation:
             |> SketchPlane3d.rotateAround Axis3d.x (degrees 45)
 
     Point2d.placeOnto tiltedSketchPlane point
-    --> Point3d ( 2, 0.7071, 0.7071 )
+    --> Point3d.withCoordinates ( 2, 0.7071, 0.7071 )
 
 -}
 placeOnto : SketchPlane3d -> Point2d -> Point3d
@@ -685,8 +710,12 @@ placeOnto sketchPlane =
         ( vx, vy, vz ) =
             Direction3d.components (SketchPlane3d.yDirection sketchPlane)
     in
-    \(Point2d ( x, y )) ->
-        Point3d
+    \point ->
+        let
+            ( x, y ) =
+                coordinates point
+        in
+        Point3d.withCoordinates
             ( x0 + x * ux + y * vx
             , y0 + x * uy + y * vy
             , z0 + x * uz + y * vz
@@ -696,13 +725,13 @@ placeOnto sketchPlane =
 {-| Construct a bounding box containing both of the given points.
 
     point1 =
-        Point2d ( 2, 3 )
+        Point2d.withCoordinates ( 2, 3 )
 
     point2 =
-        Point2d ( -1, 5 )
+        Point2d.withCoordinates ( -1, 5 )
 
     Point2d.hull point1 point2
-    --> BoundingBox2d
+    --> BoundingBox2d.with
     -->     { minX = -1
     -->     , maxX = 2
     -->     , minY = 3
@@ -719,7 +748,7 @@ hull firstPoint secondPoint =
         ( x2, y2 ) =
             coordinates secondPoint
     in
-    BoundingBox2d
+    BoundingBox2d.with
         { minX = min x1 x2
         , maxX = max x1 x2
         , minY = min y1 y2
