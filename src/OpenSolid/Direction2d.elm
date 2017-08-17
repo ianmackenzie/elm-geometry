@@ -124,13 +124,13 @@ For the examples, assume the following frames have been defined:
 import OpenSolid.Bootstrap.Direction2d as Bootstrap
 import OpenSolid.Bootstrap.Direction3d as Direction3d
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
-import OpenSolid.Geometry.Types as Types exposing (..)
-import OpenSolid.Vector2d as Vector2d
+import OpenSolid.Geometry.Types as Types exposing (Axis2d, Direction3d, Frame2d, Point2d, SketchPlane3d)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
 toDirection : Vector2d -> Direction2d
-toDirection (Vector2d components) =
-    Direction2d components
+toDirection vector =
+    withComponents (Vector2d.components vector)
 
 
 {-| A direction in 2D. Can be constructed most directly using `withComponents`,
@@ -148,58 +148,58 @@ type alias Direction2d =
 -}
 x : Direction2d
 x =
-    Direction2d ( 1, 0 )
+    withComponents ( 1, 0 )
 
 
 {-| Synonym for `Direction2d.positiveY`.
 -}
 y : Direction2d
 y =
-    Direction2d ( 0, 1 )
+    withComponents ( 0, 1 )
 
 
 {-| The positive X direction.
 
     Direction2d.positiveX
-    --> Direction2d ( 1, 0 )
+    --> Direction2d.withComponents ( 1, 0 )
 
 -}
 positiveX : Direction2d
 positiveX =
-    Direction2d ( 1, 0 )
+    withComponents ( 1, 0 )
 
 
 {-| The negative X direction.
 
     Direction2d.negativeX
-    --> Direction2d ( -1, 0 )
+    --> Direction2d.withComponents ( -1, 0 )
 
 -}
 negativeX : Direction2d
 negativeX =
-    Direction2d ( -1, 0 )
+    withComponents ( -1, 0 )
 
 
 {-| The positive Y direction.
 
     Direction2d.positiveY
-    --> Direction2d ( 0, 1 )
+    --> Direction2d.withComponents ( 0, 1 )
 
 -}
 positiveY : Direction2d
 positiveY =
-    Direction2d ( 0, 1 )
+    withComponents ( 0, 1 )
 
 
 {-| The negative Y direction.
 
     Direction2d.negativeY
-    --> Direction2d ( 0, -1 )
+    --> Direction2d.withComponents ( 0, -1 )
 
 -}
 negativeY : Direction2d
 negativeY =
-    Direction2d ( 0, -1 )
+    withComponents ( 0, -1 )
 
 
 {-| Construct a direction directly from its X and Y components. Note that **you
@@ -222,20 +222,20 @@ direction) or start with existing directions and transform them as necessary.
 -}
 withComponents : ( Float, Float ) -> Direction2d
 withComponents =
-    Direction2d
+    Types.Direction2d
 
 
 {-| Attempt to construct the direction from the first given point to the second.
 If the two points are coincident, returns `Nothing`.
 
     point =
-        Point2d ( 1, 1 )
+        Point2d.withCoordinates ( 1, 1 )
 
     Direction2d.from Point2d.origin point
-    --> Just (Direction2d ( 0.7071, 0.7071 ))
+    --> Just (Direction2d.withComponents ( 0.7071, 0.7071 ))
 
     Direction2d.from point Point2d.origin
-    --> Just (Direction2d ( -0.7071, -0.7071 ))
+    --> Just (Direction2d.withComponents ( -0.7071, -0.7071 ))
 
     Direction2d.from point point
     --> Nothing
@@ -253,7 +253,7 @@ given direction 90 degrees counterclockwise.
     --> Direction2d.y
 
     Direction2d.perpendicularTo Direction2d.y
-    --> Direction2d ( -1, 0 )
+    --> Direction2d.withComponents ( -1, 0 )
 
 -}
 perpendicularTo : Direction2d -> Direction2d
@@ -292,12 +292,12 @@ the positive X direction.
     --> Direction2d.y
 
     Direction2d.fromAngle (degrees 135)
-    --> Direction2d ( -0.7071, 0.7071 )
+    --> Direction2d.withComponents ( -0.7071, 0.7071 )
 
 -}
 fromAngle : Float -> Direction2d
 fromAngle angle =
-    Direction2d ( cos angle, sin angle )
+    withComponents ( cos angle, sin angle )
 
 
 {-| Convert a direction to a counterclockwise angle in radians from the positive
@@ -309,7 +309,7 @@ X direction. The result will be in the range -π to π.
     Direction2d.toAngle Direction2d.y
     --> degrees 90
 
-    Direction2d.toAngle (Direction2d ( 0, -1 ))
+    Direction2d.toAngle (Direction2d.withComponents ( 0, -1 ))
     --> degrees -90
 
 -}
@@ -370,7 +370,7 @@ components =
 
 -}
 xComponent : Direction2d -> Float
-xComponent (Direction2d ( x, _ )) =
+xComponent (Types.Direction2d ( x, _ )) =
     x
 
 
@@ -384,7 +384,7 @@ xComponent (Direction2d ( x, _ )) =
 
 -}
 yComponent : Direction2d -> Float
-yComponent (Direction2d ( _, y )) =
+yComponent (Types.Direction2d ( _, y )) =
     y
 
 
@@ -443,18 +443,18 @@ equalWithin angle firstDirection secondDirection =
 {-| Convert a direction to a unit vector.
 
     Direction2d.toVector Direction2d.x
-    --> Vector2d ( 1, 0 )
+    --> Vector2d.withComponents ( 1, 0 )
 
 -}
 toVector : Direction2d -> Vector2d
-toVector (Direction2d components) =
-    Vector2d components
+toVector direction =
+    Vector2d.withComponents (components direction)
 
 
 {-| Reverse a direction.
 
     Direction2d.flip Direction2d.y
-    --> Direction2d ( 0, -1 )
+    --> Direction2d.withComponents ( 0, -1 )
 
 -}
 flip : Direction2d -> Direction2d
@@ -467,10 +467,10 @@ vector and scaling it by the given length. In many cases it may be shorter and
 more clear to use the [`Vector2d.in_`](OpenSolid-Vector2d#in_) constructor.
 
     direction =
-        Direction2d ( 0.6, 0.8 )
+        Direction2d.withComponents ( 0.6, 0.8 )
 
     Direction2d.scaleBy 2 direction
-    --> Vector2d ( 1.2, 1.6 )
+    --> Vector2d.withComponents ( 1.2, 1.6 )
 
 The length can be negative, in which case the resulting vector will have the
 opposite direction.
@@ -484,7 +484,7 @@ scaleBy scale direction =
 {-| Rotate a direction counterclockwise by a given angle (in radians).
 
     Direction2d.rotateBy (degrees 45) Direction2d.x
-    --> Direction2d ( 0.7071, 0.7071 )
+    --> Direction2d.withComponents ( 0.7071, 0.7071 )
 
     Direction2d.rotateBy pi Direction2d.y
     --> Direction2d.negativeY
@@ -500,7 +500,7 @@ the axis affects the result, since directions are position-independent.
 
     slopedAxis =
         Axis2d
-            { originPoint = Point2d ( 100, 200 )
+            { originPoint = Point2d.withCoordinates ( 100, 200 )
             , direction = Direction2d.fromAngle (degrees 45)
             }
 
@@ -520,13 +520,13 @@ mirrorAcross axis direction =
 local coordinates relative to a given reference frame.
 
     Direction2d.relativeTo upsideDownFrame Direction2d.y
-    --> Direction2d ( 0, -1 )
+    --> Direction2d.withComponents ( 0, -1 )
 
     Direction2d.relativeTo rotatedFrame Direction2d.x
-    --> Direction2d ( 0.866, -0.5 )
+    --> Direction2d.withComponents ( 0.866, -0.5 )
 
     Direction2d.relativeTo rotatedFrame Direction2d.y
-    --> Direction2d ( 0.5, 0.866 )
+    --> Direction2d.withComponents ( 0.5, 0.866 )
 
 -}
 relativeTo : Frame2d -> Direction2d -> Direction2d
@@ -538,13 +538,13 @@ relativeTo frame direction =
 frame, and return that direction expressed in global coordinates.
 
     Direction2d.placeIn upsideDownFrame Direction2d.y
-    --> Direction2d ( 0, -1 )
+    --> Direction2d.withComponents ( 0, -1 )
 
     Direction2d.placeIn rotatedFrame Direction2d.x
-    --> Direction2d ( 0.866, 0.5 )
+    --> Direction2d.withComponents ( 0.866, 0.5 )
 
     Direction2d.placeIn rotatedFrame Direction2d.y
-    --> Direction2d ( -0.5, 0.866 )
+    --> Direction2d.withComponents ( -0.5, 0.866 )
 
 -}
 placeIn : Frame2d -> Direction2d -> Direction2d
@@ -556,16 +556,16 @@ placeIn frame direction =
 and return the corresponding direction in 3D.
 
     direction =
-        Direction2d ( 0.6, 0.8 )
+        Direction2d.withComponents ( 0.6, 0.8 )
 
     Direction2d.placeOnto SketchPlane3d.xy direction
-    --> Direction3d ( 0.6, 0.8, 0 )
+    --> Direction3d.withComponents ( 0.6, 0.8, 0 )
 
     Direction2d.placeOnto SketchPlane3d.yz direction
-    --> Direction3d ( 0, 0.6, 0.8 )
+    --> Direction3d.withComponents ( 0, 0.6, 0.8 )
 
     Direction2d.placeOnto SketchPlane3d.zx direction
-    --> Direction3d ( 0.8, 0, 0.6 )
+    --> Direction3d.withComponents ( 0.8, 0, 0.6 )
 
 -}
 placeOnto : SketchPlane3d -> Direction2d -> Direction3d
@@ -580,7 +580,7 @@ placeOnto sketchPlane direction =
         ( vx, vy, vz ) =
             Direction3d.components (SketchPlane3d.yDirection sketchPlane)
     in
-    Direction3d
+    Direction3d.withComponents
         ( x * ux + y * vx
         , x * uy + y * vy
         , x * uz + y * vz
