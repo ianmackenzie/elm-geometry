@@ -12,7 +12,8 @@
 
 module OpenSolid.Point3d
     exposing
-        ( along
+        ( Point3d
+        , along
         , coordinates
         , directionFrom
         , distanceAlong
@@ -39,6 +40,7 @@ module OpenSolid.Point3d
         , squaredRadialDistanceFrom
         , translateBy
         , vectorFrom
+        , withCoordinates
         , xCoordinate
         , yCoordinate
         , zCoordinate
@@ -55,11 +57,7 @@ as
   - Scaling, rotating, translating, mirroring and projecting points
   - Converting points between different coordinate systems
 
-The simplest way to construct a `Point3d` value is by passing a tuple of X, Y
-and Z coordinates to the `Point3d` constructor, for example
-
-    point =
-        Point3d ( 2, 1, 3 )
+@docs Point3d
 
 
 # Predefined points
@@ -69,7 +67,7 @@ and Z coordinates to the `Point3d` constructor, for example
 
 # Constructors
 
-@docs midpoint, interpolateFrom, interpolate, along, on, in_
+@docs withCoordinates, midpoint, interpolateFrom, interpolate, along, on, in_
 
 
 # Coordinates
@@ -112,14 +110,15 @@ different coordinate frames.
 -}
 
 import OpenSolid.Bootstrap.Axis3d as Axis3d
+import OpenSolid.Bootstrap.BoundingBox3d as BoundingBox3d
 import OpenSolid.Bootstrap.Frame3d as Frame3d
 import OpenSolid.Bootstrap.Plane3d as Plane3d
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
-import OpenSolid.Direction3d as Direction3d
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Point2d as Point2d
+import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
+import OpenSolid.Geometry.Types as Types exposing (Axis3d, BoundingBox3d, Frame3d, Plane3d, SketchPlane3d)
+import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Scalar as Scalar
-import OpenSolid.Vector3d as Vector3d
+import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 
 addTo : Point3d -> Vector3d -> Point3d
@@ -127,27 +126,49 @@ addTo =
     flip translateBy
 
 
+{-| A point in 3D. Can be constructed most directly using `withCoordinates`,
+for example
+
+    point =
+        Point3d.withCoordinates ( 2, 1, 3 )
+
+-}
+type alias Point3d =
+    Types.Point3d
+
+
 {-| The point (0, 0, 0).
 
     Point3d.origin
-    --> Point3d ( 0, 0, 0 )
+    --> Point3d.withCoordinates ( 0, 0, 0 )
 
 -}
 origin : Point3d
 origin =
-    Point3d ( 0, 0, 0 )
+    withCoordinates ( 0, 0, 0 )
+
+
+{-| Construct a point from its X, Y and Z coordinates.
+
+    point =
+        Point3d.withCoordinates ( 2, 1, 3 )
+
+-}
+withCoordinates : ( Float, Float, Float ) -> Point3d
+withCoordinates =
+    Types.Point3d
 
 
 {-| Construct a point halfway between two other points.
 
     p1 =
-        Point3d ( 1, 1, 1 )
+        Point3d.withCoordinates ( 1, 1, 1 )
 
     p2 =
-        Point3d ( 3, 7, 9 )
+        Point3d.withCoordinates ( 3, 7, 9 )
 
     Point3d.midpoint p1 p2
-    --> Point3d ( 2, 4, 5 )
+    --> Point3d.withCoordinates ( 2, 4, 5 )
 
 -}
 midpoint : Point3d -> Point3d -> Point3d
@@ -159,13 +180,13 @@ midpoint firstPoint secondPoint =
 based on a parameter that ranges from zero to one.
 
     startPoint =
-        Point3d ( 1, 2, 4 )
+        Point3d.withCoordinates ( 1, 2, 4 )
 
     endPoint =
-        Point3d ( 1, 2, 8 )
+        Point3d.withCoordinates ( 1, 2, 8 )
 
     Point3d.interpolateFrom startPoint endPoint 0.25
-    --> Point3d ( 1, 2, 5 )
+    --> Point3d.withCoordinates ( 1, 2, 5 )
 
 Partial application may be useful:
 
@@ -174,18 +195,18 @@ Partial application may be useful:
         Point3d.interpolateFrom startPoint endPoint
 
     List.map interpolatedPoint [ 0, 0.5, 1 ]
-    --> [ Point3d ( 1, 2, 4 )
-    --> , Point3d ( 1, 2, 6 )
-    --> , Point3d ( 1, 2, 8 )
+    --> [ Point3d.withCoordinates ( 1, 2, 4 )
+    --> , Point3d.withCoordinates ( 1, 2, 6 )
+    --> , Point3d.withCoordinates ( 1, 2, 8 )
     --> ]
 
 You can pass values less than zero or greater than one to extrapolate:
 
     interpolatedPoint -0.5
-    --> Point3d ( 1, 2, 2 )
+    --> Point3d.withCoordinates ( 1, 2, 2 )
 
     interpolatedPoint 1.25
-    --> Point3d ( 1, 2, 9 )
+    --> Point3d.withCoordinates ( 1, 2, 9 )
 
 -}
 interpolateFrom : Point3d -> Point3d -> Float -> Point3d
@@ -197,7 +218,7 @@ interpolateFrom p1 p2 t =
         ( x2, y2, z2 ) =
             coordinates p2
     in
-    Point3d
+    withCoordinates
         ( Scalar.interpolateFrom x1 x2 t
         , Scalar.interpolateFrom y1 y2 t
         , Scalar.interpolateFrom z1 z2 t
@@ -216,22 +237,22 @@ interpolate =
 origin point.
 
     Point3d.along Axis3d.z 2
-    --> Point3d ( 0, 0, 2 )
+    --> Point3d.withCoordinates ( 0, 0, 2 )
 
 Positive and negative distances are interpreted relative to the direction of the
 axis:
 
     horizontalAxis =
-        Axis3d
-            { originPoint = Point3d ( 1, 1, 1 )
-            , direction = Direction3d ( -1, 0, 0 )
+        Axis3d.with
+            { originPoint = Point3d.withCoordinates ( 1, 1, 1 )
+            , direction = Direction3d.negativeX
             }
 
     Point3d.along horizontalAxis 3
-    --> Point3d ( -2, 1, 1 )
+    --> Point3d.withCoordinates ( -2, 1, 1 )
 
     Point3d.along horizontalAxis -3
-    --> Point3d ( 4, 1, 1 )
+    --> Point3d.withCoordinates ( 4, 1, 1 )
 
 -}
 along : Axis3d -> Float -> Point3d
@@ -243,7 +264,7 @@ along axis distance =
 {-| Construct a point on a sketch plane with the given local coordinates.
 
     Point3d.on SketchPlane3d.xz ( 2, 3 )
-    --> Point3d ( 2, 0, 3 )
+    --> Point3d.withCoordinates ( 2, 0, 3 )
 
 This is shorthand for using `Point2d.placeOnto`;
 
@@ -251,21 +272,21 @@ This is shorthand for using `Point2d.placeOnto`;
 
 is equivalent to
 
-    Point2d coordinates |> Point2d.placeOnto sketchPlane
+    Point2d.placeOnto sketchPlane (Point2d.withCoordinates coordinates)
 
 -}
 on : SketchPlane3d -> ( Float, Float ) -> Point3d
 on sketchPlane coordinates =
-    Point2d.placeOnto sketchPlane (Point2d coordinates)
+    Point2d.placeOnto sketchPlane (Point2d.withCoordinates coordinates)
 
 
 {-| Construct a point given its local coordinates within a particular frame.
 
     frame =
-        Frame3d.at (Point3d ( 1, 1, 1 ))
+        Frame3d.at (Point3d.withCoordinates ( 1, 1, 1 ))
 
     Point3d.in_ frame ( 1, 2, 3 )
-    --> Point3d ( 2, 3, 4 )
+    --> Point3d.withCoordinates ( 2, 3, 4 )
 
 This is shorthand for using `Point3d.placeIn`;
 
@@ -273,12 +294,12 @@ This is shorthand for using `Point3d.placeIn`;
 
 is equivalent to
 
-    Point3d coordinates |> Point3d.placeIn frame
+    Point3d.placeIn frame (Point3d.withCoordinates coordinates)
 
 -}
 in_ : Frame3d -> ( Float, Float, Float ) -> Point3d
 in_ frame coordinates =
-    placeIn frame (Point3d coordinates)
+    placeIn frame (withCoordinates coordinates)
 
 
 {-| Get the coordinates of a point as a tuple.
@@ -288,40 +309,40 @@ in_ frame coordinates =
 
 -}
 coordinates : Point3d -> ( Float, Float, Float )
-coordinates (Point3d coordinates_) =
+coordinates (Types.Point3d coordinates_) =
     coordinates_
 
 
 {-| Get the X coordinate of a point.
 
-    Point3d.xCoordinate (Point3d ( 2, 1, 3 ))
+    Point3d.xCoordinate (Point3d.withCoordinates ( 2, 1, 3 ))
     --> 2
 
 -}
 xCoordinate : Point3d -> Float
-xCoordinate (Point3d ( x, _, _ )) =
+xCoordinate (Types.Point3d ( x, _, _ )) =
     x
 
 
 {-| Get the Y coordinate of a point.
 
-    Point3d.yCoordinate (Point3d ( 2, 1, 3 ))
+    Point3d.yCoordinate (Point3d.withCoordinates ( 2, 1, 3 ))
     --> 1
 
 -}
 yCoordinate : Point3d -> Float
-yCoordinate (Point3d ( _, y, _ )) =
+yCoordinate (Types.Point3d ( _, y, _ )) =
     y
 
 
 {-| Get the Z coordinate of a point.
 
-    Point3d.zCoordinate (Point3d ( 2, 1, 3 ))
+    Point3d.zCoordinate (Point3d.withCoordinates ( 2, 1, 3 ))
     --> 3
 
 -}
 zCoordinate : Point3d -> Float
-zCoordinate (Point3d ( _, _, z )) =
+zCoordinate (Types.Point3d ( _, _, z )) =
     z
 
 
@@ -329,10 +350,10 @@ zCoordinate (Point3d ( _, _, z )) =
 between the two given points is less than the given tolerance.
 
     firstPoint =
-        Point3d ( 2, 1, 3 )
+        Point3d.withCoordinates ( 2, 1, 3 )
 
     secondPoint =
-        Point3d ( 2.0002, 0.9999, 3.0001 )
+        Point3d.withCoordinates ( 2.0002, 0.9999, 3.0001 )
 
     Point3d.equalWithin 1e-3 firstPoint secondPoint
     --> True
@@ -365,10 +386,10 @@ directionFrom =
 {-| Find the distance between two points.
 
     p1 =
-        Point3d ( 1, 1, 2 )
+        Point3d.withCoordinates ( 1, 1, 2 )
 
     p2 =
-        Point3d ( 2, 3, 4 )
+        Point3d.withCoordinates ( 2, 3, 4 )
 
     Point3d.distanceFrom p1 p2
     --> 3
@@ -376,9 +397,9 @@ directionFrom =
 Partial application can be useful:
 
     points =
-        [ Point3d ( 3, 4, 5 )
-        , Point3d ( 10, 10, 10 )
-        , Point3d ( -1, 2, -3 )
+        [ Point3d.withCoordinates ( 3, 4, 5 )
+        , Point3d.withCoordinates ( 10, 10, 10 )
+        , Point3d.withCoordinates ( -1, 2, -3 )
         ]
 
     distanceFromOrigin : Point3d -> Float
@@ -386,9 +407,9 @@ Partial application can be useful:
         Point3d.distanceFrom Point3d.origin
 
     List.sortBy distanceFromOrigin points
-    --> [ Point3d ( -1, 2, -3 )
-    --> , Point3d ( 3, 4, 5 )
-    --> , Point3d ( 10, 10, 10 )
+    --> [ Point3d.withCoordinates ( -1, 2, -3 )
+    --> , Point3d.withCoordinates ( 3, 4, 5 )
+    --> , Point3d.withCoordinates ( 10, 10, 10 )
     --> ]
 
 -}
@@ -423,13 +444,13 @@ positive if the projected point is ahead the axis' origin point and negative if
 it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
 
     axis =
-        Axis3d
-            { originPoint = Point3d ( 1, 0, 0 )
+        Axis3d.with
+            { originPoint = Point3d.withCoordinates ( 1, 0, 0 )
             , direction = Direction3d.x
             }
 
     point =
-        Point3d ( 3, 3, 3 )
+        Point3d.withCoordinates ( 3, 3, 3 )
 
     Point3d.distanceAlong axis point
     --> 2
@@ -447,7 +468,7 @@ distanceAlong axis point =
 {-| Find the perpendicular (nearest) distance of a point from an axis.
 
     point =
-        Point3d ( -3, 4, 0 )
+        Point3d.withCoordinates ( -3, 4, 0 )
 
     Point3d.radialDistanceFrom Axis3d.x point
     --> 4
@@ -483,13 +504,13 @@ positive if the point is 'above' the plane and negative if it is 'below', with
 'up' defined by the normal direction of the plane.
 
     plane =
-        Plane3d
-            { originPoint = Point3d ( 1, 2, 3 )
+        Plane3d.with
+            { originPoint = Point3d.withCoordinates ( 1, 2, 3 )
             , normalDirection = Direction3d.y
             }
 
     point =
-        Point3d ( 3, 3, 3 )
+        Point3d.withCoordinates ( 3, 3, 3 )
 
     Point3d.signedDistanceFrom plane point
     --> 1
@@ -528,16 +549,16 @@ expand about the center point by the given scale. Scaling by a factor of 1 is a
 no-op, and scaling by a factor of 0 collapses all points to the center point.
 
     centerPoint =
-        Point3d ( 1, 1, 1 )
+        Point3d.withCoordinates ( 1, 1, 1 )
 
     point =
-        Point3d ( 1, 2, 3 )
+        Point3d.withCoordinates ( 1, 2, 3 )
 
     Point3d.scaleAbout centerPoint 3 point
-    --> Point3d ( 1, 4, 7 )
+    --> Point3d.withCoordinates ( 1, 4, 7 )
 
     Point3d.scaleAbout centerPoint 0.5 point
-    --> Point3d ( 1, 1.5, 2 )
+    --> Point3d.withCoordinates ( 1, 1.5, 2 )
 
 Avoid scaling by a negative scaling factor - while this may sometimes do what
 you want it is confusing and error prone. Try a combination of mirror and/or
@@ -546,7 +567,9 @@ rotation operations instead.
 -}
 scaleAbout : Point3d -> Float -> Point3d -> Point3d
 scaleAbout centerPoint scale point =
-    Vector3d.from centerPoint point |> Vector3d.scaleBy scale |> addTo centerPoint
+    Vector3d.from centerPoint point
+        |> Vector3d.scaleBy scale
+        |> addTo centerPoint
 
 
 {-| Rotate a point around an axis by a given angle (in radians).
@@ -558,10 +581,10 @@ scaleAbout centerPoint scale point =
         degrees 45
 
     point =
-        Point3d ( 3, 1, 0 )
+        Point3d.withCoordinates ( 3, 1, 0 )
 
     Point3d.rotateAround axis angle point
-    --> Point3d ( 3, 0.7071, 0.7071 )
+    --> Point3d.withCoordinates ( 3, 0.7071, 0.7071 )
 
 Rotation direction is given by the right-hand rule, counterclockwise around the
 direction of the axis.
@@ -581,13 +604,13 @@ rotateAround axis angle point =
 {-| Translate a point by a given displacement.
 
     point =
-        Point3d ( 3, 4, 5 )
+        Point3d.withCoordinates ( 3, 4, 5 )
 
     displacement =
-        Vector3d ( 1, 2, 3 )
+        Vector3d.withComponents ( 1, 2, 3 )
 
     Point3d.translateBy displacement point
-    --> Point3d ( 4, 6, 8 )
+    --> Point3d.withCoordinates ( 4, 6, 8 )
 
 -}
 translateBy : Vector3d -> Point3d -> Point3d
@@ -599,22 +622,22 @@ translateBy vector point =
         ( px, py, pz ) =
             coordinates point
     in
-    Point3d ( px + vx, py + vy, pz + vz )
+    withCoordinates ( px + vx, py + vy, pz + vz )
 
 
 {-| Mirror a point across a plane. The result will be the same distance from the
 plane but on the opposite side.
 
     point =
-        Point3d ( 1, 2, 3 )
+        Point3d.withCoordinates ( 1, 2, 3 )
 
     -- Plane3d.xy is the plane Z=0
     Point3d.mirrorAcross Plane3d.xy point
-    --> Point3d ( 1, 2, -3 )
+    --> Point3d.withCoordinates ( 1, 2, -3 )
 
     -- Plane3d.yz is the plane X=0
     Point3d.mirrorAcross Plane3d.yz point
-    --> Point3d ( -1, 2, 3 )
+    --> Point3d.withCoordinates ( -1, 2, 3 )
 
 The plane does not have to pass through the origin:
 
@@ -625,7 +648,7 @@ The plane does not have to pass through the origin:
     -- The origin point is 1 unit below the offset
     -- plane, so its mirrored copy is one unit above
     Point3d.mirrorAcross offsetPlane Point3d.origin
-    --> Point3d ( 0, 0, 2 )
+    --> Point3d.withCoordinates ( 0, 0, 2 )
 
 -}
 mirrorAcross : Plane3d -> Point3d -> Point3d
@@ -642,13 +665,13 @@ mirrorAcross plane point =
 {-| Project a point perpendicularly onto a plane.
 
     point =
-        Point3d ( 1, 2, 3 )
+        Point3d.withCoordinates ( 1, 2, 3 )
 
     Point3d.projectOnto Plane3d.xy point
-    --> Point3d ( 1, 2, 0 )
+    --> Point3d.withCoordinates ( 1, 2, 0 )
 
     Point3d.projectOnto Plane3d.yz point
-    --> Point3d ( 0, 2, 3 )
+    --> Point3d.withCoordinates ( 0, 2, 3 )
 
 The plane does not have to pass through the origin:
 
@@ -656,7 +679,7 @@ The plane does not have to pass through the origin:
         Plane3d.offsetBy 1 Plane3d.xy
 
     Point3d.projectOnto offsetPlane point
-    --> Point3d ( 1, 2, 1 )
+    --> Point3d.withCoordinates ( 1, 2, 1 )
 
 -}
 projectOnto : Plane3d -> Point3d -> Point3d
@@ -674,14 +697,14 @@ projectOnto plane point =
 {-| Project a point perpendicularly (radially) onto an axis.
 
     point =
-        Point3d ( 1, 2, 3 )
+        Point3d.withCoordinates ( 1, 2, 3 )
 
     Point3d.projectRadiallyOnto Axis3d.x
-    --> Point3d ( 1, 0, 0 )
+    --> Point3d.withCoordinates ( 1, 0, 0 )
 
     verticalAxis =
-        Axis3d
-            { originPoint = Point3d ( 0, 1, 2 )
+        Axis3d.with
+            { originPoint = Point3d.withCoordinates ( 0, 1, 2 )
             , direction = Direction3d.z
             }
 
@@ -698,13 +721,15 @@ projectRadiallyOnto axis point =
 coordinates relative to a given reference frame.
 
     localFrame =
-        Frame3d.at (Point3d ( 1, 2, 3 ))
+        Frame3d.at (Point3d.withCoordinates ( 1, 2, 3 ))
 
-    Point3d.relativeTo localFrame (Point3d ( 4, 5, 6 ))
-    --> Point3d ( 3, 3, 3 )
+    Point3d.relativeTo localFrame
+        (Point3d.withCoordinates ( 4, 5, 6 ))
+    --> Point3d.withCoordinates ( 3, 3, 3 )
 
-    Point3d.relativeTo localFrame (Point3d ( 1, 1, 1 ))
-    --> Point3d ( 0, -1, -2 )
+    Point3d.relativeTo localFrame
+        (Point3d.withCoordinates ( 1, 1, 1 ))
+    --> Point3d.withCoordinates ( 0, -1, -2 )
 
 -}
 relativeTo : Frame3d -> Point3d -> Point3d
@@ -712,25 +737,27 @@ relativeTo frame point =
     Vector3d.from (Frame3d.originPoint frame) point
         |> Vector3d.relativeTo frame
         |> Vector3d.components
-        |> Point3d
+        |> withCoordinates
 
 
 {-| Take a point defined in local coordinates relative to a given reference
 frame, and return that point expressed in global coordinates.
 
     localFrame =
-        Frame3d.at (Point3d ( 1, 2, 3 ))
+        Frame3d.at (Point3d.withCoordinates ( 1, 2, 3 ))
 
-    Point3d.placeIn localFrame (Point3d ( 3, 3, 3 ))
-    --> Point3d ( 4, 5, 6 )
+    Point3d.placeIn localFrame
+        (Point3d.withCoordinates ( 3, 3, 3 ))
+    --> Point3d.withCoordinates ( 4, 5, 6 )
 
-    Point3d.placeIn localFrame (Point3d ( 0, -1, -2 ))
-    --> Point3d ( 1, 1, 1 )
+    Point3d.placeIn localFrame
+        (Point3d.withCoordinates ( 0, -1, -2 ))
+    --> Point3d.withCoordinates ( 1, 1, 1 )
 
 -}
 placeIn : Frame3d -> Point3d -> Point3d
 placeIn frame point =
-    Vector3d (coordinates point)
+    Vector3d.withComponents (coordinates point)
         |> Vector3d.placeIn frame
         |> addTo (Frame3d.originPoint frame)
 
@@ -740,16 +767,16 @@ point onto the plane and then expresses the projected point in 2D sketch
 coordinates.
 
     point =
-        Point3d ( 2, 1, 3 )
+        Point3d.withCoordinates ( 2, 1, 3 )
 
     Point3d.projectInto SketchPlane3d.xy point
-    --> Point2d ( 2, 1 )
+    --> Point2d.withCoordinates ( 2, 1 )
 
     Point3d.projectInto SketchPlane3d.yz point
-    --> Point2d ( 1, 3 )
+    --> Point2d.withCoordinates ( 1, 3 )
 
     Point3d.projectInto SketchPlane3d.zx point
-    --> Point2d ( 3, 2 )
+    --> Point2d.withCoordinates ( 3, 2 )
 
 -}
 projectInto : SketchPlane3d -> Point3d -> Point2d
@@ -776,7 +803,7 @@ projectInto sketchPlane point =
         dz =
             z - z0
     in
-    Point2d
+    Point2d.withCoordinates
         ( dx * ux + dy * uy + dz * uz
         , dx * vx + dy * vy + dz * vz
         )
@@ -785,13 +812,13 @@ projectInto sketchPlane point =
 {-| Construct a bounding box containing both of the given points.
 
     point1 =
-        Point3d ( 2, 1, 3 )
+        Point3d.withCoordinates ( 2, 1, 3 )
 
     point2 =
-        Point3d ( -1, 5, -2 )
+        Point3d.withCoordinates ( -1, 5, -2 )
 
     Point3d.hull point1 point2
-    --> BoundingBox3d
+    --> BoundingBox3d.with
     -->     { minX = -1
     -->     , maxX = 2
     -->     , minY = 1
@@ -810,7 +837,7 @@ hull firstPoint secondPoint =
         ( x2, y2, z2 ) =
             coordinates secondPoint
     in
-    BoundingBox3d
+    BoundingBox3d.with
         { minX = min x1 x2
         , maxX = max x1 x2
         , minY = min y1 y2
