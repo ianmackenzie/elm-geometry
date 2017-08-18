@@ -441,7 +441,7 @@ squaredLength vector =
 
 
 {-| Attempt to find the direction of a vector. In the case of a zero vector,
-return `Nothing`.
+returns `Nothing`.
 
     Vector3d.direction (Vector3d.withComponents ( 3, 0, 4 ))
     --> Just (Direction3d.withComponents ( 0.6, 0, 0.8 ))
