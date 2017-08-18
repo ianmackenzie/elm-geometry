@@ -2,9 +2,15 @@ module OpenSolid.Bootstrap.Axis3d
     exposing
         ( direction
         , originPoint
+        , with
         )
 
 import OpenSolid.Geometry.Types exposing (..)
+
+
+with : { originPoint : Point3d, direction : Direction3d } -> Axis3d
+with =
+    Axis3d
 
 
 originPoint : Axis3d -> Point3d

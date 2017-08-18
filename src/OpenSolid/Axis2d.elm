@@ -12,7 +12,8 @@
 
 module OpenSolid.Axis2d
     exposing
-        ( direction
+        ( Axis2d
+        , direction
         , flip
         , mirrorAcross
         , moveTo
@@ -22,6 +23,7 @@ module OpenSolid.Axis2d
         , relativeTo
         , rotateAround
         , translateBy
+        , with
         , x
         , y
         )
@@ -35,19 +37,17 @@ an origin point and direction. Axes have several uses, such as:
   - Projecting onto the axis
   - Measuring distance along the axis
 
-Axes can by constructed by passing a record with `originPoint` and `direction`
-fields to the `Axis2d` constructor, for example:
-
-    exampleAxis =
-        Axis2d
-            { originPoint = Point2d ( 1, 3 )
-            , direction = Direction2d ( 0.8, 0.6 )
-            }
+@docs Axis2d
 
 
 # Predefined axes
 
 @docs x, y
+
+
+# Constructors
+
+@docs with
 
 
 # Accessors
@@ -74,9 +74,17 @@ different coordinate frames.
 
 -}
 
-import OpenSolid.Direction2d as Direction2d
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Point2d as Point2d
+import OpenSolid.Bootstrap.Axis3d as Axis3d
+import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
+import OpenSolid.Geometry.Types as Types exposing (Axis3d, Frame2d, SketchPlane3d)
+import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
+
+
+{-| An axis in 2D.
+-}
+type alias Axis2d =
+    Types.Axis2d
 
 
 {-| The global X axis.
@@ -90,7 +98,7 @@ import OpenSolid.Point2d as Point2d
 -}
 x : Axis2d
 x =
-    Axis2d { originPoint = Point2d.origin, direction = Direction2d.x }
+    with { originPoint = Point2d.origin, direction = Direction2d.x }
 
 
 {-| The global Y axis.
@@ -104,7 +112,21 @@ x =
 -}
 y : Axis2d
 y =
-    Axis2d { originPoint = Point2d.origin, direction = Direction2d.y }
+    with { originPoint = Point2d.origin, direction = Direction2d.y }
+
+
+{-| Construct an axis from its origin point and direction:
+
+    exampleAxis =
+        Axis2d.with
+            { originPoint = Point2d.withCoordinates ( 1, 3 )
+            , direction = Direction2d.withComponents ( 0.8, 0.6 )
+            }
+
+-}
+with : { originPoint : Point2d, direction : Direction2d } -> Axis2d
+with =
+    Types.Axis2d
 
 
 {-| Get the origin point of an axis.
@@ -114,7 +136,7 @@ y =
 
 -}
 originPoint : Axis2d -> Point2d
-originPoint (Axis2d properties) =
+originPoint (Types.Axis2d properties) =
     properties.originPoint
 
 
@@ -125,7 +147,7 @@ originPoint (Axis2d properties) =
 
 -}
 direction : Axis2d -> Direction2d
-direction (Axis2d properties) =
+direction (Types.Axis2d properties) =
     properties.direction
 
 
@@ -140,7 +162,7 @@ direction (Axis2d properties) =
 -}
 flip : Axis2d -> Axis2d
 flip axis =
-    Axis2d
+    with
         { originPoint = originPoint axis
         , direction = Direction2d.flip (direction axis)
         }
@@ -160,7 +182,7 @@ flip axis =
 -}
 moveTo : Point2d -> Axis2d -> Axis2d
 moveTo newOrigin axis =
-    Axis2d { originPoint = newOrigin, direction = direction axis }
+    with { originPoint = newOrigin, direction = direction axis }
 
 
 {-| Rotate an axis around a given center point by a given angle. Rotates the
@@ -184,7 +206,7 @@ rotateAround centerPoint angle =
             Direction2d.rotateBy angle
     in
     \axis ->
-        Axis2d
+        with
             { originPoint = rotatePoint (originPoint axis)
             , direction = rotateDirection (direction axis)
             }
@@ -205,7 +227,7 @@ the axis' origin point and leaves the direction unchanged.
 -}
 translateBy : Vector2d -> Axis2d -> Axis2d
 translateBy vector axis =
-    Axis2d
+    with
         { originPoint = Point2d.translateBy vector (originPoint axis)
         , direction = direction axis
         }
@@ -231,7 +253,7 @@ mirrorAcross otherAxis =
             Direction2d.mirrorAcross otherAxis
     in
     \axis ->
-        Axis2d
+        with
             { originPoint = mirrorPoint (originPoint axis)
             , direction = mirrorDirection (direction axis)
             }
@@ -260,7 +282,7 @@ relativeTo frame =
             Direction2d.relativeTo frame
     in
     \axis ->
-        Axis2d
+        with
             { originPoint = relativePoint (originPoint axis)
             , direction = relativeDirection (direction axis)
             }
@@ -289,7 +311,7 @@ placeIn frame =
             Direction2d.placeIn frame
     in
     \axis ->
-        Axis2d
+        with
             { originPoint = placePoint (originPoint axis)
             , direction = placeDirection (direction axis)
             }
@@ -321,7 +343,7 @@ placeOnto sketchPlane =
             Direction2d.placeOnto sketchPlane
     in
     \axis ->
-        Axis3d
+        Axis3d.with
             { originPoint = placePoint (originPoint axis)
             , direction = placeDirection (direction axis)
             }
