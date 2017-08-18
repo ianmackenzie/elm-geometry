@@ -290,7 +290,7 @@ This is shorthand for using `Point2d.placeIn`;
 
 is equivalent to
 
-    Point2d.withCoordinates coordinates |> Point2d.placeIn frame
+    Point2d.placeIn frame (Point2d.withCoordinates coordinates)
 
 -}
 in_ : Frame2d -> ( Float, Float ) -> Point2d
