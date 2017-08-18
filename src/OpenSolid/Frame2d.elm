@@ -12,7 +12,8 @@
 
 module OpenSolid.Frame2d
     exposing
-        ( at
+        ( Frame2d
+        , at
         , flipX
         , flipY
         , isRightHanded
@@ -26,6 +27,7 @@ module OpenSolid.Frame2d
         , rotateBy
         , translateAlongOwn
         , translateBy
+        , with
         , xAxis
         , xDirection
         , xy
@@ -49,21 +51,7 @@ always perpendicular to each other). It can be thought of as:
     Movement of the ship would then be done by translating and rotating the
     frame.
 
-Frames can by constructed by passing a record with `originPoint`, `xDirection`
-and `yDirection` fields to the `Frame2d` constructor, for example:
-
-    frame =
-        Frame2d
-            { originPoint = Point2d ( 2, 3 )
-            , xDirection = Direction2d.fromAngle (degrees 45)
-            , yDirection = Direction2d.fromAngle (degrees 135)
-            }
-
-In this case **you must be careful to ensure that the X and Y directions are
-perpendicular**. To construct pairs of perpendicular directions,
-[`Vector2d.orthonormalize`](OpenSolid-Vector2d#orthonormalize) or
-[`Direction2d.orthogonalize`](OpenSolid-Direction2d#orthogonalize) may be
-useful.
+@docs Frame2d
 
 
 # Predefined frames
@@ -73,7 +61,7 @@ useful.
 
 # Constructors
 
-@docs at
+@docs with, at
 
 
 # Accessors
@@ -107,17 +95,24 @@ useful.
 
 -}
 
-import OpenSolid.Axis2d as Axis2d
-import OpenSolid.Direction2d as Direction2d
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Point2d as Point2d
-import OpenSolid.Vector2d as Vector2d
+import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
+import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
+import OpenSolid.Geometry.Types as Types
+import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
+
+
+{-| A frame in 2D.
+-}
+type alias Frame2d =
+    Types.Frame2d
 
 
 {-| The global XY frame.
 
     Frame2d.xy
-    --> Frame2d
+    --> Frame2d.with
     -->     { originPoint = Point2d.origin
     -->     , xDirection = Direction2d.x
     -->     , yDirection = Direction2d.y
@@ -129,12 +124,33 @@ xy =
     at Point2d.origin
 
 
+{-| Construct a frame from its origin point and X and Y directions:
+
+    frame =
+        Frame2d.with
+            { originPoint = Point2d.withCoordinates ( 2, 3 )
+            , xDirection = Direction2d.fromAngle (degrees 45)
+            , yDirection = Direction2d.fromAngle (degrees 135)
+            }
+
+In this case **you must be careful to ensure that the X and Y directions are
+perpendicular**. To construct pairs of perpendicular directions,
+[`Vector2d.orthonormalize`](OpenSolid-Vector2d#orthonormalize) or
+[`Direction2d.orthogonalize`](OpenSolid-Direction2d#orthogonalize) may be
+useful.
+
+-}
+with : { originPoint : Point2d, xDirection : Direction2d, yDirection : Direction2d } -> Frame2d
+with =
+    Types.Frame2d
+
+
 {-| Construct a frame aligned with the global XY frame but with the given origin
 point.
 
-    Frame2d.at (Point2d ( 2, 3 ))
-    --> Frame2d
-    -->     { originPoint = Point2d ( 2, 3 )
+    Frame2d.at (Point2d.withCoordinates ( 2, 3 ))
+    --> Frame2d.with
+    -->     { originPoint = Point2d.withCoordinates ( 2, 3 )
     -->     , xDirection = Direction2d.x
     -->     , yDirection = Direction2d.y
     -->     }
@@ -142,7 +158,7 @@ point.
 -}
 at : Point2d -> Frame2d
 at point =
-    Frame2d
+    with
         { originPoint = point
         , xDirection = Direction2d.x
         , yDirection = Direction2d.y
@@ -156,7 +172,7 @@ at point =
 
 -}
 originPoint : Frame2d -> Point2d
-originPoint (Frame2d properties) =
+originPoint (Types.Frame2d properties) =
     properties.originPoint
 
 
@@ -167,7 +183,7 @@ originPoint (Frame2d properties) =
 
 -}
 xDirection : Frame2d -> Direction2d
-xDirection (Frame2d properties) =
+xDirection (Types.Frame2d properties) =
     properties.xDirection
 
 
@@ -178,7 +194,7 @@ xDirection (Frame2d properties) =
 
 -}
 yDirection : Frame2d -> Direction2d
-yDirection (Frame2d properties) =
+yDirection (Types.Frame2d properties) =
     properties.yDirection
 
 
@@ -216,7 +232,10 @@ point and X direction).
 -}
 xAxis : Frame2d -> Axis2d
 xAxis frame =
-    Axis2d { originPoint = originPoint frame, direction = xDirection frame }
+    Axis2d.with
+        { originPoint = originPoint frame
+        , direction = xDirection frame
+        }
 
 
 {-| Get the Y axis of a given frame (the axis formed from the frame's origin
@@ -228,14 +247,17 @@ point and Y direction).
 -}
 yAxis : Frame2d -> Axis2d
 yAxis frame =
-    Axis2d { originPoint = originPoint frame, direction = yDirection frame }
+    Axis2d.with
+        { originPoint = originPoint frame
+        , direction = yDirection frame
+        }
 
 
 {-| Reverse the X direction of a frame, leaving its Y direction and origin point
 the same.
 
     Frame2d.flipX Frame2d.xy
-    --> Frame2d
+    --> Frame2d.with
     -->     { originPoint = Point2d.origin
     -->     , xDirection = Direction2d.negativeX
     -->     , yDirection = Direction2d.positiveY
@@ -247,7 +269,7 @@ of the frame.
 -}
 flipX : Frame2d -> Frame2d
 flipX frame =
-    Frame2d
+    with
         { originPoint = originPoint frame
         , xDirection = Direction2d.flip (xDirection frame)
         , yDirection = yDirection frame
@@ -258,7 +280,7 @@ flipX frame =
 the same.
 
     Frame2d.flipY Frame2d.xy
-    --> Frame2d
+    --> Frame2d.with
     -->     { originPoint = Point2d.origin
     -->     , xDirection = Direction2d.positiveX
     -->     , yDirection = Direction2d.negativeY
@@ -270,7 +292,7 @@ of the frame.
 -}
 flipY : Frame2d -> Frame2d
 flipY frame =
-    Frame2d
+    with
         { originPoint = originPoint frame
         , xDirection = xDirection frame
         , yDirection = Direction2d.flip (yDirection frame)
@@ -280,23 +302,23 @@ flipY frame =
 {-| Move a frame so that it has the given origin point.
 
     frame =
-        Frame2d
-            { point = Point2d ( 2, 3 )
-            , xDirection = Direction2d ( 0.8, 0.6 )
-            , yDirection = Direction2d ( -0.6, 0.8 )
+        Frame2d.with
+            { point = Point2d.withCoordinates ( 2, 3 )
+            , xDirection = Direction2d.withComponents ( 0.8, 0.6 )
+            , yDirection = Direction2d.withComponents ( -0.6, 0.8 )
             }
 
-    Frame2d.moveTo (Point2d ( 1, 1 )) frame
-    --> Frame2d
-    -->     { point = Point2d ( 1, 1 )
-    -->     , xDirection = Direction2d ( 0.8, 0.6 )
-    -->     , yDirection = Direction2d ( -0.6, 0.8 )
+    Frame2d.moveTo (Point2d.withCoordinates ( 1, 1 )) frame
+    --> Frame2d.with
+    -->     { point = Point2d.withCoordinates ( 1, 1 )
+    -->     , xDirection = Direction2d.withComponents ( 0.8, 0.6 )
+    -->     , yDirection = Direction2d.withComponents ( -0.6, 0.8 )
     -->     }
 
 -}
 moveTo : Point2d -> Frame2d -> Frame2d
 moveTo newOrigin frame =
-    Frame2d
+    with
         { originPoint = newOrigin
         , xDirection = xDirection frame
         , yDirection = yDirection frame
@@ -308,13 +330,13 @@ origin point. The resulting frame will have the same origin point, and its X and
 Y directions will be rotated by the given angle.
 
     frame =
-        Frame2d.at (Point2d ( 1, 1 ))
+        Frame2d.at (Point2d.withCoordinates ( 1, 1 ))
 
     Frame2d.rotateBy (degrees 45) frame
-    --> Frame2d
-    -->     { originPoint = Point2d ( 1, 1 )
-    -->     , xDirection = Direction2d ( 0.7071, 0.7071 )
-    -->     , yDirection = Direction2d ( -0.7071, 0.7071 )
+    --> Frame2d.with
+    -->     { originPoint = Point2d.withCoordinates ( 1, 1 )
+    -->     , xDirection = Direction2d.withComponents ( 0.7071, 0.7071 )
+    -->     , yDirection = Direction2d.withComponents ( -0.7071, 0.7071 )
     -->     }
 
 -}
@@ -324,7 +346,7 @@ rotateBy angle frame =
         rotateDirection =
             Direction2d.rotateBy angle
     in
-    Frame2d
+    with
         { originPoint = originPoint frame
         , xDirection = rotateDirection (xDirection frame)
         , yDirection = rotateDirection (yDirection frame)
@@ -336,13 +358,13 @@ frame's origin point will be rotated around the given point by the given angle,
 and its X and Y basis directions will be rotated by the given angle.
 
     frame =
-        Frame2d.at (Point2d ( 1, 1 ))
+        Frame2d.at (Point2d.withCoordinates ( 1, 1 ))
 
     Frame2d.rotateAround Point2d.origin (degrees 45) frame
-    --> Frame2d
-    -->     { originPoint = Point2d ( 0, 1.4142 )
-    -->     , xDirection = Direction2d ( 0.7071, 0.7071 )
-    -->     , yDirection = Direction2d ( -0.7071, 0.7071 )
+    --> Frame2d.with
+    -->     { originPoint = Point2d.withCoordinates ( 0, 1.4142 )
+    -->     , xDirection = Direction2d.withComponents ( 0.7071, 0.7071 )
+    -->     , yDirection = Direction2d.withComponents ( -0.7071, 0.7071 )
     -->     }
 
 -}
@@ -356,7 +378,7 @@ rotateAround centerPoint angle =
             Direction2d.rotateBy angle
     in
     \frame ->
-        Frame2d
+        with
             { originPoint = rotatePoint (originPoint frame)
             , xDirection = rotateDirection (xDirection frame)
             , yDirection = rotateDirection (yDirection frame)
@@ -366,18 +388,18 @@ rotateAround centerPoint angle =
 {-| Translate a frame by a given displacement.
 
     frame =
-        Frame2d.at (Point2d ( 2, 3 ))
+        Frame2d.at (Point2d.withCoordinates ( 2, 3 ))
 
     displacement =
-        Vector2d ( 1, 1 )
+        Vector2d.withComponents ( 1, 1 )
 
     Frame2d.translateBy displacement frame
-    --> Frame2d.at (Point2d ( 3, 4 ))
+    --> Frame2d.at (Point2d.withCoordinates ( 3, 4 ))
 
 -}
 translateBy : Vector2d -> Frame2d -> Frame2d
 translateBy vector frame =
-    Frame2d
+    with
         { originPoint = Point2d.translateBy vector (originPoint frame)
         , xDirection = xDirection frame
         , yDirection = yDirection frame
@@ -394,7 +416,7 @@ translate along the given axis.
 This function is convenient when constructing frames via a series of
 transformations. For example,
 
-    Frame2d.at (Point2d ( 2, 0 ))
+    Frame2d.at (Point2d.withCoordinates ( 2, 0 ))
         |> Frame2d.rotateBy (degrees 45)
         |> Frame2d.translateAlongOwn Frame2d.xAxis 2
 
@@ -402,10 +424,10 @@ means "construct a frame at the point (2, 0), rotate it around its own origin
 point by 45 degrees, then translate it along its own X axis by 2 units",
 resulting in
 
-    Frame2d
-        { originPoint = Point2d ( 3.4142, 1.4142 )
-        , xDirection = Direction2d ( 0.7071, 0.7071 )
-        , yDirection = Direction2d ( -0.7071, 0.7071 )
+    Frame2d.with
+        { originPoint = Point2d.withCoordinates ( 3.4142, 1.4142 )
+        , xDirection = Direction2d.withComponents ( 0.7071, 0.7071 )
+        , yDirection = Direction2d.withComponents ( -0.7071, 0.7071 )
         }
 
 -}
@@ -421,11 +443,11 @@ translateAlongOwn axis distance frame =
 {-| Mirror a frame across an axis.
 
     frame =
-        Frame2d.at (Point2d ( 2, 3 ))
+        Frame2d.at (Point2d.withCoordinates ( 2, 3 ))
 
     Frame2d.mirrorAcross Axis2d.x frame
-    --> Frame2d
-    -->     { originPoint = Point2d ( 2, -3 )
+    --> Frame2d.with
+    -->     { originPoint = Point2d.withCoordinates ( 2, -3 )
     -->     , xDirection = Direction2d.positiveX
     -->     , yDirection = Direction2d.negativeY
     -->     }
@@ -444,7 +466,7 @@ mirrorAcross axis =
             Direction2d.mirrorAcross axis
     in
     \frame ->
-        Frame2d
+        with
             { originPoint = mirrorPoint (originPoint frame)
             , xDirection = mirrorDirection (xDirection frame)
             , yDirection = mirrorDirection (yDirection frame)
@@ -464,7 +486,7 @@ relativeTo otherFrame =
             Direction2d.relativeTo otherFrame
     in
     \frame ->
-        Frame2d
+        with
             { originPoint = relativePoint (originPoint frame)
             , xDirection = relativeDirection (xDirection frame)
             , yDirection = relativeDirection (yDirection frame)
@@ -485,7 +507,7 @@ placeIn otherFrame =
             Direction2d.placeIn otherFrame
     in
     \frame ->
-        Frame2d
+        with
             { originPoint = placePoint (originPoint frame)
             , xDirection = placeDirection (xDirection frame)
             , yDirection = placeDirection (yDirection frame)
@@ -498,25 +520,25 @@ This function considers the given frame to be defined in 2D coordinates within
 the given sketch plane, and returns the corresponding 3D sketch plane.
 
     frame =
-        Frame2d.at (Point2d ( 2, 3 ))
+        Frame2d.at (Point2d.withCoordinates ( 2, 3 ))
             |> Frame2d.rotateBy (degrees 30)
-    --> Frame2d
-    -->     { originPoint = Point2d ( 2, 3 )
-    -->     , xDirection = Direction2d ( 0.866, 0.5 )
-    -->     , yDirection = Direction2d ( -0.5, 0.866 )
+    --> Frame2d.with
+    -->     { originPoint = Point2d.withCoordinates ( 2, 3 )
+    -->     , xDirection = Direction2d.withComponents ( 0.866, 0.5 )
+    -->     , yDirection = Direction2d.withComponents ( -0.5, 0.866 )
     -->     }
 
     Frame2d.placeOnto SketchPlane3d.yz frame
-    --> SketchPlane3d
-    -->     { originPoint = Point3d ( 0, 2, 3 )
-    -->     , xDirection = Direction3d ( 0, 0.866, 0.5 )
-    -->     , yDirection = Direction3d ( 0, -0.5, 0.866 )
+    --> SketchPlane3d.with
+    -->     { originPoint = Point3d.withCoordinates ( 0, 2, 3 )
+    -->     , xDirection = Direction3d.withComponents ( 0, 0.866, 0.5 )
+    -->     , yDirection = Direction3d.withComponents ( 0, -0.5, 0.866 )
     -->     }
 
 -}
 placeOnto : SketchPlane3d -> Frame2d -> SketchPlane3d
 placeOnto sketchPlane frame =
-    SketchPlane3d
+    SketchPlane3d.with
         { originPoint = Point2d.placeOnto sketchPlane (originPoint frame)
         , xDirection = Direction2d.placeOnto sketchPlane (xDirection frame)
         , yDirection = Direction2d.placeOnto sketchPlane (yDirection frame)
