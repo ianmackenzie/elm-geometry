@@ -12,7 +12,8 @@
 
 module OpenSolid.SketchPlane3d
     exposing
-        ( flipX
+        ( SketchPlane3d
+        , flipX
         , flipY
         , mirrorAcross
         , moveTo
@@ -28,6 +29,7 @@ module OpenSolid.SketchPlane3d
         , toPlane
         , translateAlongOwn
         , translateBy
+        , with
         , xAxis
         , xDirection
         , xy
@@ -68,19 +70,7 @@ inverses of each other:
     is equivalent to <code>Point3d.projectOnto&nbsp;(SketchPlane3d.plane&nbsp;sketchPlane)</code>
     since the result will always be on the given sketch plane.
 
-Sketch planes can be constructed explicitly by passing a record with
-`originPoint`, `xDirection` and `yDirection` fields to the `SketchPlane3d`
-constructor, for example
-
-    sketchPlane =
-        SketchPlane3d
-            { originPoint = Point3d ( 2, 1, 3 )
-            , xDirection = Direction3d.positiveY
-            , yDirection = Direction3d.negativeZ
-            }
-
-If you construct a `SketchPlane3d` this way, **you must ensure that the X and Y
-basis directions are perpendicular to each other**.
+@docs SketchPlane3d
 
 
 # Predefined sketch planes
@@ -89,7 +79,7 @@ These predefined sketch planes all have the global origin point as their origin
 point, and use the two indicated global axes as their X and Y axes. For example,
 
     SketchPlane3d.yz
-    --> SketchPlane3d
+    --> SketchPlane3d.with
     -->     { originPoint = Point3d.origin
     -->     , xDirection = Direction3d.y
     -->     , yDirection = Direction3d.z
@@ -100,7 +90,7 @@ point, and use the two indicated global axes as their X and Y axes. For example,
 
 # Constructors
 
-@docs throughPoints
+@docs with, throughPoints
 
 
 # Accessors
@@ -129,18 +119,25 @@ point, and use the two indicated global axes as their X and Y axes. For example,
 
 -}
 
-import OpenSolid.Axis3d as Axis3d
-import OpenSolid.Direction3d as Direction3d
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Point3d as Point3d
-import OpenSolid.Vector3d as Vector3d
+import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
+import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
+import OpenSolid.Geometry.Types as Types exposing (Frame3d)
+import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
+import OpenSolid.Point3d as Point3d exposing (Point3d)
+import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
+
+
+{-| A sketch plane in 3D.
+-}
+type alias SketchPlane3d =
+    Types.SketchPlane3d
 
 
 {-| A sketch plane formed from the global X and Y axes.
 -}
 xy : SketchPlane3d
 xy =
-    SketchPlane3d
+    with
         { originPoint = Point3d.origin
         , xDirection = Direction3d.x
         , yDirection = Direction3d.y
@@ -151,7 +148,7 @@ xy =
 -}
 yx : SketchPlane3d
 yx =
-    SketchPlane3d
+    with
         { originPoint = Point3d.origin
         , xDirection = Direction3d.y
         , yDirection = Direction3d.x
@@ -162,7 +159,7 @@ yx =
 -}
 yz : SketchPlane3d
 yz =
-    SketchPlane3d
+    with
         { originPoint = Point3d.origin
         , xDirection = Direction3d.y
         , yDirection = Direction3d.z
@@ -173,7 +170,7 @@ yz =
 -}
 zy : SketchPlane3d
 zy =
-    SketchPlane3d
+    with
         { originPoint = Point3d.origin
         , xDirection = Direction3d.z
         , yDirection = Direction3d.y
@@ -184,7 +181,7 @@ zy =
 -}
 zx : SketchPlane3d
 zx =
-    SketchPlane3d
+    with
         { originPoint = Point3d.origin
         , xDirection = Direction3d.z
         , yDirection = Direction3d.x
@@ -195,11 +192,29 @@ zx =
 -}
 xz : SketchPlane3d
 xz =
-    SketchPlane3d
+    with
         { originPoint = Point3d.origin
         , xDirection = Direction3d.x
         , yDirection = Direction3d.z
         }
+
+
+{-| Construct a sketch plane from its origin point and X and Y directions:
+
+    sketchPlane =
+        SketchPlane3d.with
+            { originPoint = Point3d.withCoordinates ( 2, 1, 3 )
+            , xDirection = Direction3d.positiveY
+            , yDirection = Direction3d.negativeZ
+            }
+
+If you construct a `SketchPlane3d` this way, **you must ensure that the X and Y
+basis directions are perpendicular to each other**.
+
+-}
+with : { originPoint : Point3d, xDirection : Direction3d, yDirection : Direction3d } -> SketchPlane3d
+with =
+    Types.SketchPlane3d
 
 
 {-| Attempt to construct a sketch plane that passes through the three given
@@ -215,21 +230,21 @@ points. Returns a sketch plane where:
 If the three given points are collinear, returns `Nothing`.
 
     SketchPlane3d.throughPoints
-        (Point3d ( 2, 0, 0 ))
-        (Point3d ( 3, 0, 0 ))
-        (Point3d ( 4, 1, 1 ))
+        (Point3d.withCoordinates ( 2, 0, 0 ))
+        (Point3d.withCoordinates ( 3, 0, 0 ))
+        (Point3d.withCoordinates ( 4, 1, 1 ))
     --> Just
     -->     (SketchPlane3d
-    -->         { originPoint = Point3d ( 2, 0, 0 )
+    -->         { originPoint = Point3d.withCoordinates ( 2, 0, 0 )
     -->         , xDirection = Direction3d.x
-    -->         , yDirection = Direction3d ( 0, 0.7071, 0.7071 )
+    -->         , yDirection = Direction3d.withComponents ( 0, 0.7071, 0.7071 )
     -->         }
     -->     )
 
     SketchPlane3d.throughPoints
-        (Point3d ( 2, 0, 0 ))
-        (Point3d ( 3, 0, 0 ))
-        (Point3d ( 4, 0, 0 ))
+        (Point3d.withCoordinates ( 2, 0, 0 ))
+        (Point3d.withCoordinates ( 3, 0, 0 ))
+        (Point3d.withCoordinates ( 4, 0, 0 ))
     --> Nothing
 
 -}
@@ -269,7 +284,7 @@ throughPoints firstPoint secondPoint thirdPoint =
                 Vector3d.direction yVector
                     |> Maybe.map
                         (\yDirection ->
-                            SketchPlane3d
+                            with
                                 { originPoint = firstPoint
                                 , xDirection = xDirection
                                 , yDirection = yDirection
@@ -285,7 +300,7 @@ throughPoints firstPoint secondPoint thirdPoint =
 
 -}
 originPoint : SketchPlane3d -> Point3d
-originPoint (SketchPlane3d properties) =
+originPoint (Types.SketchPlane3d properties) =
     properties.originPoint
 
 
@@ -297,7 +312,7 @@ X axis).
 
 -}
 xDirection : SketchPlane3d -> Direction3d
-xDirection (SketchPlane3d properties) =
+xDirection (Types.SketchPlane3d properties) =
     properties.xDirection
 
 
@@ -309,7 +324,7 @@ Y axis).
 
 -}
 yDirection : SketchPlane3d -> Direction3d
-yDirection (SketchPlane3d properties) =
+yDirection (Types.SketchPlane3d properties) =
     properties.yDirection
 
 
@@ -331,7 +346,7 @@ normalDirection sketchPlane =
                 (Direction3d.toVector (xDirection sketchPlane))
                 (Direction3d.toVector (yDirection sketchPlane))
     in
-    Direction3d (Vector3d.components normalVector)
+    Direction3d.withComponents (Vector3d.components normalVector)
 
 
 {-| Get the X axis of a sketch plane. A 2D X coordinate within the sketch plane
@@ -343,7 +358,7 @@ corresponds to a distance along this axis in 3D.
 -}
 xAxis : SketchPlane3d -> Axis3d
 xAxis sketchPlane =
-    Axis3d
+    Axis3d.with
         { originPoint = originPoint sketchPlane
         , direction = xDirection sketchPlane
         }
@@ -358,7 +373,7 @@ corresponds to a distance along this axis in 3D.
 -}
 yAxis : SketchPlane3d -> Axis3d
 yAxis sketchPlane =
-    Axis3d
+    Axis3d.with
         { originPoint = originPoint sketchPlane
         , direction = yDirection sketchPlane
         }
@@ -376,7 +391,7 @@ plane's origin point and normal direction).
 -}
 normalAxis : SketchPlane3d -> Axis3d
 normalAxis sketchPlane =
-    Axis3d
+    Axis3d.with
         { originPoint = originPoint sketchPlane
         , direction = normalDirection sketchPlane
         }
@@ -394,7 +409,7 @@ normal direction.
 -}
 toPlane : SketchPlane3d -> Plane3d
 toPlane sketchPlane =
-    Plane3d
+    Plane3d.with
         { originPoint = originPoint sketchPlane
         , normalDirection = normalDirection sketchPlane
         }
@@ -412,7 +427,7 @@ plane =
 point unchanged.
 
     SketchPlane3d.flipX SketchPlane3d.yz
-    --> SketchPlane3d
+    --> SketchPlane3d.with
     -->     { originPoint = Point3d.origin
     -->     , xDirection = Direction3d.negativeY
     -->     , yDirection = Direction3d.positiveZ
@@ -421,7 +436,7 @@ point unchanged.
 -}
 flipX : SketchPlane3d -> SketchPlane3d
 flipX sketchPlane =
-    SketchPlane3d
+    with
         { originPoint = originPoint sketchPlane
         , xDirection = Direction3d.flip (xDirection sketchPlane)
         , yDirection = yDirection sketchPlane
@@ -432,7 +447,7 @@ flipX sketchPlane =
 point unchanged.
 
     SketchPlane3d.flipY SketchPlane3d.yz
-    --> SketchPlane3d
+    --> SketchPlane3d.with
     -->     { originPoint = Point3d.origin
     -->     , xDirection = Direction3d.positiveY
     -->     , yDirection = Direction3d.negativeZ
@@ -441,7 +456,7 @@ point unchanged.
 -}
 flipY : SketchPlane3d -> SketchPlane3d
 flipY sketchPlane =
-    SketchPlane3d
+    with
         { originPoint = originPoint sketchPlane
         , xDirection = xDirection sketchPlane
         , yDirection = Direction3d.flip (yDirection sketchPlane)
@@ -451,9 +466,12 @@ flipY sketchPlane =
 {-| Set the origin point of the given sketch plane to the given point, leaving
 its X and Y directions unchanged.
 
-    SketchPlane3d.moveTo (Point3d ( 2, 1, 3 )) SketchPlane3d.yz
+    newOrigin =
+        Point3d.withCoordinates ( 2, 1, 3 )
+
+    SketchPlane3d.moveTo newOrigin SketchPlane3d.yz
     --> SketchPlane3d
-    -->     { originPoint = Point3d ( 2, 1, 3 )
+    -->     { originPoint = newOrigin
     -->     , xDirection = Direction3d.y
     -->     , yDirection = Direction3d.z
     -->     }
@@ -461,7 +479,7 @@ its X and Y directions unchanged.
 -}
 moveTo : Point3d -> SketchPlane3d -> SketchPlane3d
 moveTo newOrigin sketchPlane =
-    SketchPlane3d
+    with
         { originPoint = newOrigin
         , xDirection = xDirection sketchPlane
         , yDirection = yDirection sketchPlane
@@ -486,7 +504,7 @@ rotateAround axis angle =
             Direction3d.rotateAround axis angle
     in
     \sketchPlane ->
-        SketchPlane3d
+        with
             { originPoint = rotatePoint (originPoint sketchPlane)
             , xDirection = rotateDirection (xDirection sketchPlane)
             , yDirection = rotateDirection (yDirection sketchPlane)
@@ -504,11 +522,11 @@ This function is convenient when constructing sketch planes via a series of
 transformations. For example,
 
     SketchPlane3d.xy
-        |> SketchPlane3d.translateBy (Vector3d ( 1, 0, 0 ))
+        |> SketchPlane3d.translateBy (Vector3d.withComponents ( 1, 0, 0 ))
         |> SketchPlane3d.rotateAroundOwn SketchPlane3d.yAxis (degrees -45)
-    --> SketchPlane3d
-    -->     { originPoint = Point3d ( 1, 0, 0 )
-    -->     , xDirection = Direction3d ( 0.7071, 0, 0.7071 )
+    --> SketchPlane3d.with
+    -->     { originPoint = Point3d.withCoordinates ( 1, 0, 0 )
+    -->     , xDirection = Direction3d.withComponents ( 0.7071, 0, 0.7071 )
     -->     , yDirection = Direction3d.y
     -->     }
 
@@ -517,11 +535,7 @@ passes through the sketch plane's origin point) instead of the global Y axis,
 the origin point itself was not affected by the rotation.
 
 -}
-rotateAroundOwn :
-    (SketchPlane3d -> Axis3d)
-    -> Float
-    -> SketchPlane3d
-    -> SketchPlane3d
+rotateAroundOwn : (SketchPlane3d -> Axis3d) -> Float -> SketchPlane3d -> SketchPlane3d
 rotateAroundOwn axis angle sketchPlane =
     rotateAround (axis sketchPlane) angle sketchPlane
 
@@ -529,11 +543,11 @@ rotateAroundOwn axis angle sketchPlane =
 {-| Translate a sketch plane by a given displacement.
 
     displacement =
-        Vector3d ( 2, 1, 3 )
+        Vector3d.withComponents ( 2, 1, 3 )
 
     SketchPlane3d.translateBy displacement SketchPlane3d.xy
-    --> SketchPlane3d
-    -->     { originPoint = Point3d ( 2, 1, 3 )
+    --> SketchPlane3d.with
+    -->     { originPoint = Point3d.withCoordinates ( 2, 1, 3 )
     -->     , xDirection = Direction3d.x
     -->     , yDirection = Direction3d.y
     -->     }
@@ -541,7 +555,7 @@ rotateAroundOwn axis angle sketchPlane =
 -}
 translateBy : Vector3d -> SketchPlane3d -> SketchPlane3d
 translateBy vector sketchPlane =
-    SketchPlane3d
+    with
         { originPoint = Point3d.translateBy vector (originPoint sketchPlane)
         , xDirection = xDirection sketchPlane
         , yDirection = yDirection sketchPlane
@@ -565,18 +579,14 @@ means 'take the global XY sketch plane, rotate it around the global X axis by
 45 degrees, then translate the result 2 units along its own (rotated) Y axis',
 resulting in
 
-    SketchPlane3d
-        { originPoint = Point3d ( 0, 1.4142, 1.4142 )
+    SketchPlane3d.with
+        { originPoint = Point3d.withCoordinates ( 0, 1.4142, 1.4142 )
         , xDirection = Direction3d.x
-        , yDirection = Direction3d ( 0, 0.7071, 0.7071 )
+        , yDirection = Direction3d.withComponents ( 0, 0.7071, 0.7071 )
         }
 
 -}
-translateAlongOwn :
-    (SketchPlane3d -> Axis3d)
-    -> Float
-    -> SketchPlane3d
-    -> SketchPlane3d
+translateAlongOwn : (SketchPlane3d -> Axis3d) -> Float -> SketchPlane3d -> SketchPlane3d
 translateAlongOwn axis distance frame =
     let
         direction =
@@ -588,15 +598,15 @@ translateAlongOwn axis distance frame =
 {-| Mirror a sketch plane across a plane.
 
     sketchPlane =
-        SketchPlane3d
-            { originPoint = Point2d ( 2, 1, 3 )
+        SketchPlane3d.with
+            { originPoint = Point2d.withCoordinates ( 2, 1, 3 )
             , xDirection = Direction3d.positiveY
             , yDirection = Direction3d.positiveZ
             }
 
     SketchPlane3d.mirrorAcross Plane3d.xy sketchPlane
-    --> SketchPlane3d
-    -->     { originPoint = Point2d ( 2, 1, -3 )
+    --> SketchPlane3d.with
+    -->     { originPoint = Point2d.withCoordinates ( 2, 1, -3 )
     -->     , xDirection = Direction3d.positiveY
     -->     , yDirection = Direction3d.negativeZ
     -->     }
@@ -612,7 +622,7 @@ mirrorAcross plane =
             Direction3d.mirrorAcross plane
     in
     \sketchPlane ->
-        SketchPlane3d
+        with
             { originPoint = mirrorPoint (originPoint sketchPlane)
             , xDirection = mirrorDirection (xDirection sketchPlane)
             , yDirection = mirrorDirection (yDirection sketchPlane)
@@ -632,7 +642,7 @@ relativeTo frame =
             Direction3d.relativeTo frame
     in
     \sketchPlane ->
-        SketchPlane3d
+        with
             { originPoint = relativePoint (originPoint sketchPlane)
             , xDirection = relativeDirection (xDirection sketchPlane)
             , yDirection = relativeDirection (yDirection sketchPlane)
@@ -652,7 +662,7 @@ placeIn frame =
             Direction3d.placeIn frame
     in
     \sketchPlane ->
-        SketchPlane3d
+        with
             { originPoint = placePoint (originPoint sketchPlane)
             , xDirection = placeDirection (xDirection sketchPlane)
             , yDirection = placeDirection (yDirection sketchPlane)
