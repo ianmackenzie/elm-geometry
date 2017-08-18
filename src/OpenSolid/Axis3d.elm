@@ -12,7 +12,8 @@
 
 module OpenSolid.Axis3d
     exposing
-        ( direction
+        ( Axis3d
+        , direction
         , flip
         , mirrorAcross
         , moveTo
@@ -23,6 +24,7 @@ module OpenSolid.Axis3d
         , relativeTo
         , rotateAround
         , translateBy
+        , with
         , x
         , y
         , z
@@ -37,19 +39,17 @@ an origin point and direction. Axes have several uses, such as:
   - Projecting onto the axis
   - Measuring distance along the axis
 
-Axes can by constructed by passing a record with `originPoint` and `direction`
-fields to the `Axis3d` constructor, for example:
-
-    exampleAxis =
-        Axis3d
-            { originPoint = Point3d ( -2, 1, 3 )
-            , direction = Direction3d ( 0, 0.8, -0.6 )
-            }
+@docs Axis3d
 
 
 # Predefined axes
 
 @docs x, y, z
+
+
+# Constructors
+
+@docs with
 
 
 # Accessors
@@ -76,15 +76,23 @@ different coordinate frames.
 
 -}
 
-import OpenSolid.Direction3d as Direction3d
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Point3d as Point3d
+import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
+import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
+import OpenSolid.Geometry.Types as Types exposing (Frame3d, Plane3d, SketchPlane3d)
+import OpenSolid.Point3d as Point3d exposing (Point3d)
+import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
+
+
+{-| An axis in 3D.
+-}
+type alias Axis3d =
+    Types.Axis3d
 
 
 {-| The global X axis.
 
     Axis3d.x
-    --> Axis3d
+    --> Axis3d.with
     -->     { originPoint = Point3d.origin
     -->     , direction = Direction3d.x
     -->     }
@@ -92,13 +100,13 @@ import OpenSolid.Point3d as Point3d
 -}
 x : Axis3d
 x =
-    Axis3d { originPoint = Point3d.origin, direction = Direction3d.x }
+    with { originPoint = Point3d.origin, direction = Direction3d.x }
 
 
 {-| The global Y axis.
 
     Axis3d.y
-    --> Axis3d
+    --> Axis3d.with
     -->     { originPoint = Point3d.origin
     -->     , direction = Direction3d.y
     -->     }
@@ -106,13 +114,13 @@ x =
 -}
 y : Axis3d
 y =
-    Axis3d { originPoint = Point3d.origin, direction = Direction3d.y }
+    with { originPoint = Point3d.origin, direction = Direction3d.y }
 
 
 {-| The global Z axis.
 
     Axis3d.z
-    --> Axis3d
+    --> Axis3d.with
     -->     { originPoint = Point3d.origin
     -->     , direction = Direction3d.z
     -->     }
@@ -120,43 +128,57 @@ y =
 -}
 z : Axis3d
 z =
-    Axis3d { originPoint = Point3d.origin, direction = Direction3d.z }
+    with { originPoint = Point3d.origin, direction = Direction3d.z }
+
+
+{-| Construct an axis from its origin point and direction:
+
+    exampleAxis =
+        Axis3d.with
+            { originPoint = Point3d.withCoordinates ( -2, 1, 3 )
+            , direction = Direction3d.withComponents ( 0, 0.8, -0.6 )
+            }
+
+-}
+with : { originPoint : Point3d, direction : Direction3d } -> Axis3d
+with =
+    Types.Axis3d
 
 
 {-| Get the origin point of an axis.
 
     Axis3d.originPoint exampleAxis
-    --> Point3d ( -2, 1, 3 )
+    --> Point3d.withCoordinates ( -2, 1, 3 )
 
 -}
 originPoint : Axis3d -> Point3d
-originPoint (Axis3d properties) =
+originPoint (Types.Axis3d properties) =
     properties.originPoint
 
 
 {-| Get the direction of an axis.
 
     Axis3d.direction exampleAxis
-    --> Direction3d ( 0, 0.8, -0.6 )
+    --> Direction3d.withComponents ( 0, 0.8, -0.6 )
 
 -}
 direction : Axis3d -> Direction3d
-direction (Axis3d properties) =
+direction (Types.Axis3d properties) =
     properties.direction
 
 
 {-| Reverse the direction of an axis while keeping the same origin point.
 
     Axis3d.flip exampleAxis
-    --> Axis3d
-    -->     { originPoint = Point3d ( -2, 1, 3 )
-    -->     , direction = Direction3d ( 0, -0.8, 0.6 )
+    --> Axis3d.with
+    -->     { originPoint = Point3d.withCoordinates ( -2, 1, 3 )
+    -->     , direction = Direction3d.withComponents ( 0, -0.8, 0.6 )
     -->     }
 
 -}
 flip : Axis3d -> Axis3d
 flip axis =
-    Axis3d
+    with
         { originPoint = originPoint axis
         , direction = Direction3d.flip (direction axis)
         }
@@ -165,27 +187,27 @@ flip axis =
 {-| Move an axis so that it has the given origin point but unchanged direction.
 
     newOrigin =
-        Point3d ( 3, 4, 5 )
+        Point3d.withCoordinates ( 3, 4, 5 )
 
     Axis3d.moveTo newOrigin exampleAxis
-    --> Axis3d
-    -->     { originPoint = Point3d ( 3, 4, 5 ),
-    -->     , direction = Direction3d ( 0, 0.8, -0.6 )
+    --> Axis3d.with
+    -->     { originPoint = Point3d.withCoordinates ( 3, 4, 5 ),
+    -->     , direction = Direction3d.withComponents ( 0, 0.8, -0.6 )
     -->     }
 
 -}
 moveTo : Point3d -> Axis3d -> Axis3d
 moveTo newOrigin axis =
-    Axis3d { originPoint = newOrigin, direction = direction axis }
+    with { originPoint = newOrigin, direction = direction axis }
 
 
 {-| Rotate an axis around another axis by a given angle. The axis to rotate
 around is given first and the axis to rotate is given last.
 
     Axis3d.rotateAround Axis3d.z (degrees 90) exampleAxis
-    --> Axis3d
-    -->     { originPoint = Point3d ( -1, -2, 3 )
-    -->     , direction = Direction3d ( -0.8, 0, -0.6 )
+    --> Axis3d.with
+    -->     { originPoint = Point3d.withCoordinates ( -1, -2, 3 )
+    -->     , direction = Direction3d.withComponents ( -0.8, 0, -0.6 )
     -->     }
 
 -}
@@ -199,7 +221,7 @@ rotateAround otherAxis angle =
             Direction3d.rotateAround otherAxis angle
     in
     \axis ->
-        Axis3d
+        with
             { originPoint = rotatePoint (originPoint axis)
             , direction = rotateDirection (direction axis)
             }
@@ -209,18 +231,18 @@ rotateAround otherAxis angle =
 the axis' origin point and leaves the direction unchanged.
 
     displacement =
-        Vector3d ( 3, 3, 3 )
+        Vector3d.withComponents ( 3, 3, 3 )
 
     Axis3d.translateBy displacement exampleAxis
-    --> Axis3d
-    -->     { originPoint = Point3d ( 1, 4, 6 )
-    -->     , direction = Direction3d ( 0, 0.8, -0.6 )
+    --> Axis3d.with
+    -->     { originPoint = Point3d.withCoordinates ( 1, 4, 6 )
+    -->     , direction = Direction3d.withComponents ( 0, 0.8, -0.6 )
     -->     }
 
 -}
 translateBy : Vector3d -> Axis3d -> Axis3d
 translateBy vector axis =
-    Axis3d
+    with
         { originPoint = Point3d.translateBy vector (originPoint axis)
         , direction = direction axis
         }
@@ -229,9 +251,9 @@ translateBy vector axis =
 {-| Mirror an axis across a plane.
 
     Axis3d.mirrorAcross Plane3d.xy exampleAxis
-    --> Axis3d
-    -->     { originPoint = Point3d ( -2, 1, -3 )
-    -->     , direction = Direction3d ( 0, 0.6, 0.8 )
+    --> Axis3d.with
+    -->     { originPoint = Point3d.withCoordinates ( -2, 1, -3 )
+    -->     , direction = Direction3d.withComponents ( 0, 0.6, 0.8 )
     -->     }
 
 -}
@@ -245,7 +267,7 @@ mirrorAcross plane =
             Direction3d.mirrorAcross plane
     in
     \axis ->
-        Axis3d
+        with
             { originPoint = mirrorPoint (originPoint axis)
             , direction = mirrorDirection (direction axis)
             }
@@ -257,9 +279,9 @@ given plane, returns `Nothing`.
 
     Axis3d.projectOnto Plane3d.xy exampleAxis
     --> Just
-    -->     (Axis3d
-    -->         { originPoint = Point3d ( -2, 1, 0 )
-    -->         , direction = Direction3d ( 0, 1, 0 )
+    -->     (Axis3d.with
+    -->         { originPoint = Point3d.withCoordinates ( -2, 1, 0 )
+    -->         , direction = Direction3d.withComponents ( 0, 1, 0 )
     -->         }
     -->     )
 
@@ -274,7 +296,7 @@ projectOnto plane axis =
             Point3d.projectOnto plane (originPoint axis)
 
         toAxis direction =
-            Axis3d { originPoint = projectedOrigin, direction = direction }
+            with { originPoint = projectedOrigin, direction = direction }
     in
     Maybe.map toAxis (Direction3d.projectOnto plane (direction axis))
 
@@ -283,12 +305,12 @@ projectOnto plane axis =
 coordinates relative to a given reference frame.
 
     originPoint =
-        Point3d ( 3, 3, 3 )
+        Point3d.withCoordinates ( 3, 3, 3 )
 
     Axis3d.relativeTo (Frame3d.at originPoint) exampleAxis
-    --> Axis3d
-    -->     { originPoint = Point3d ( -5, -2, 0 )
-    -->     , direction = Direction3d ( 0, 0.8, -0.6 )
+    --> Axis3d.with
+    -->     { originPoint = Point3d.withCoordinates ( -5, -2, 0 )
+    -->     , direction = Direction3d.withComponents ( 0, 0.8, -0.6 )
     -->     }
 
 -}
@@ -302,7 +324,7 @@ relativeTo frame =
             Direction3d.relativeTo frame
     in
     \axis ->
-        Axis3d
+        with
             { originPoint = relativePoint (originPoint axis)
             , direction = relativeDirection (direction axis)
             }
@@ -312,12 +334,12 @@ relativeTo frame =
 frame, and return that axis expressed in global coordinates.
 
     originPoint =
-        Point3d ( 3, 3, 3 )
+        Point3d.withCoordinates ( 3, 3, 3 )
 
     Axis3d.placeIn (Frame3d.at originPoint) exampleAxis
-    --> Axis3d
-    -->     { originPoint = Point3d ( 1, 4, 6 )
-    -->     , direction = Direction3d ( 0, 0.8, -0.6 )
+    --> Axis3d.with
+    -->     { originPoint = Point3d.withCoordinates ( 1, 4, 6 )
+    -->     , direction = Direction3d.withComponents ( 0, 0.8, -0.6 )
     -->     }
 
 -}
@@ -331,7 +353,7 @@ placeIn frame =
             Direction3d.placeIn frame
     in
     \axis ->
-        Axis3d
+        with
             { originPoint = placePoint (originPoint axis)
             , direction = placeDirection (direction axis)
             }
@@ -346,17 +368,17 @@ plane; if it is perpendicular, `Nothing` is returned.
 
     Axis3d.projectInto SketchPlane3d.yz exampleAxis
     --> Just
-    -->     (Axis2d
-    -->         { originPoint = Point2d ( 1, 3 )
-    -->         , direction = Direction2d ( 0.8, -0.6 )
+    -->     (Axis2d.with
+    -->         { originPoint = Point2d.withCoordinates ( 1, 3 )
+    -->         , direction = Direction2d.withComponents ( 0.8, -0.6 )
     -->         }
     -->     )
 
     Axis3d.projectInto SketchPlane3d.xy exampleAxis
     --> Just
-    -->     (Axis2d
-    -->         { originPoint = Point2d ( -2, 1 )
-    -->         , direction = Direction3d ( 0, 1 )
+    -->     (Axis2d.with
+    -->         { originPoint = Point2d.withCoordinates ( -2, 1 )
+    -->         , direction = Direction3d.withComponents ( 0, 1 )
     -->         }
     -->     )
 
@@ -371,6 +393,6 @@ projectInto sketchPlane axis =
             Point3d.projectInto sketchPlane (originPoint axis)
 
         toAxis direction =
-            Axis2d { originPoint = projectedOrigin, direction = direction }
+            Axis2d.with { originPoint = projectedOrigin, direction = direction }
     in
     Maybe.map toAxis (Direction3d.projectInto sketchPlane (direction axis))
