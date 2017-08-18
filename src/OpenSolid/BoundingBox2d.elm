@@ -233,8 +233,8 @@ extrema (Types.BoundingBox2d properties) =
 
 -}
 minX : BoundingBox2d -> Float
-minX (Types.BoundingBox2d properties) =
-    properties.minX
+minX boundingBox =
+    (extrema boundingBox).minX
 
 
 {-| Get the maximum X value of a bounding box.
@@ -244,8 +244,8 @@ minX (Types.BoundingBox2d properties) =
 
 -}
 maxX : BoundingBox2d -> Float
-maxX (Types.BoundingBox2d properties) =
-    properties.maxX
+maxX boundingBox =
+    (extrema boundingBox).maxX
 
 
 {-| Get the minimum Y value of a bounding box.
@@ -255,8 +255,8 @@ maxX (Types.BoundingBox2d properties) =
 
 -}
 minY : BoundingBox2d -> Float
-minY (Types.BoundingBox2d properties) =
-    properties.minY
+minY boundingBox =
+    (extrema boundingBox).minY
 
 
 {-| Get the maximum Y value of a bounding box.
@@ -266,8 +266,8 @@ minY (Types.BoundingBox2d properties) =
 
 -}
 maxY : BoundingBox2d -> Float
-maxY (Types.BoundingBox2d properties) =
-    properties.maxY
+maxY boundingBox =
+    (extrema boundingBox).maxY
 
 
 {-| Get the X and Y dimensions (width and height) of a bounding box.
