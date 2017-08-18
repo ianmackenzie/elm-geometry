@@ -196,10 +196,10 @@ polar coordinates =
 {-| Construct a vector from the first given point to the second.
 
     startPoint =
-        Point2d ( 1, 1 )
+        Point2d.withCoordinates ( 1, 1 )
 
     endPoint =
-        Point2d ( 4, 5 )
+        Point2d.withCoordinates ( 4, 5 )
 
     Vector2d.from startPoint endPoint
     --> Vector2d.withComponents ( 3, 4 )
@@ -757,8 +757,8 @@ rotateBy angle =
     --> Vector2d.withComponents ( -2, 3 )
 
     horizontalAxis =
-        Axis2d
-            { originPoint = Point2d ( 100, 200 )
+        Axis2d.with
+            { originPoint = Point2d.withCoordinates ( 100, 200 )
             , direction = Direction2d.x
             }
 
