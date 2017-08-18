@@ -756,6 +756,8 @@ rotateBy angle =
     Vector2d.mirrorAcross Axis2d.y vector
     --> Vector2d.withComponents ( -2, 3 )
 
+The position of the axis doesn't matter, only its orientation:
+
     horizontalAxis =
         Axis2d.with
             { originPoint = Point2d.withCoordinates ( 100, 200 )
