@@ -12,7 +12,8 @@
 
 module OpenSolid.BoundingBox2d
     exposing
-        ( centroid
+        ( BoundingBox2d
+        , centroid
         , containing
         , contains
         , dimensions
@@ -29,6 +30,7 @@ module OpenSolid.BoundingBox2d
         , minY
         , overlaps
         , singleton
+        , with
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/boundingBox2d.svg" alt="BoundingBox2d" width="160">
@@ -50,27 +52,12 @@ box of an object than the object itself, such as:
     area, and therefore does not have to be drawn. This provides a simple form
     of culling.
 
-Bounding boxes can be constructed by passing a record with `minX`, `maxX`,
-`minY` and `maxY` fields to the `BoundingBox2d` constructor, for example
-
-    exampleBox =
-        BoundingBox2d
-            { minX = 3
-            , maxX = 8
-            , minY = 2
-            , maxY = 6
-            }
-
-If you construct a `BoundingBox2d` this way, **you must ensure that the given
-values are properly ordered**: <code>minX&nbsp;<=&nbsp;maxX</code>,
-<code>minY&nbsp;<=&nbsp;maxY</code>. Alternately, you can construct bounding
-boxes using functions such as [`Point2d.hull`](OpenSolid-Point2d#hull) where the
-input order does not matter.
+@docs BoundingBox2d
 
 
 # Constructors
 
-@docs singleton, containing, hullOf
+@docs with, singleton, containing, hullOf
 
 
 # Accessors
@@ -90,8 +77,36 @@ input order does not matter.
 
 -}
 
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Point2d as Point2d
+import OpenSolid.Geometry.Types as Types
+import OpenSolid.Point2d as Point2d exposing (Point2d)
+
+
+{-| A bounding box in 2D.
+-}
+type alias BoundingBox2d =
+    Types.BoundingBox2d
+
+
+{-| Construct a bounding box from its minimum and maximum X and Y values:
+
+    exampleBox =
+        BoundingBox2d.with
+            { minX = 3
+            , maxX = 8
+            , minY = 2
+            , maxY = 6
+            }
+
+If you construct a `BoundingBox2d` this way, **you must ensure that the given
+values are properly ordered**: <code>minX&nbsp;<=&nbsp;maxX</code>,
+<code>minY&nbsp;<=&nbsp;maxY</code>. Alternately, you can construct bounding
+boxes using functions such as [`Point2d.hull`](OpenSolid-Point2d#hull) where the
+input order does not matter.
+
+-}
+with : { minX : Float, maxX : Float, minY : Float, maxY : Float } -> BoundingBox2d
+with =
+    Types.BoundingBox2d
 
 
 {-| Construct a zero-width bounding box containing a single point.
@@ -114,7 +129,7 @@ singleton point =
         ( x, y ) =
             Point2d.coordinates point
     in
-    BoundingBox2d { minX = x, maxX = x, minY = y, maxY = y }
+    with { minX = x, maxX = x, minY = y, maxY = y }
 
 
 {-| Construct a bounding box containing all points in the given list. If the
@@ -207,7 +222,7 @@ Can be useful when combined with record destructuring, for example
 
 -}
 extrema : BoundingBox2d -> { minX : Float, maxX : Float, minY : Float, maxY : Float }
-extrema (BoundingBox2d properties) =
+extrema (Types.BoundingBox2d properties) =
     properties
 
 
@@ -218,7 +233,7 @@ extrema (BoundingBox2d properties) =
 
 -}
 minX : BoundingBox2d -> Float
-minX (BoundingBox2d properties) =
+minX (Types.BoundingBox2d properties) =
     properties.minX
 
 
@@ -229,7 +244,7 @@ minX (BoundingBox2d properties) =
 
 -}
 maxX : BoundingBox2d -> Float
-maxX (BoundingBox2d properties) =
+maxX (Types.BoundingBox2d properties) =
     properties.maxX
 
 
@@ -240,7 +255,7 @@ maxX (BoundingBox2d properties) =
 
 -}
 minY : BoundingBox2d -> Float
-minY (BoundingBox2d properties) =
+minY (Types.BoundingBox2d properties) =
     properties.minY
 
 
@@ -251,7 +266,7 @@ minY (BoundingBox2d properties) =
 
 -}
 maxY : BoundingBox2d -> Float
-maxY (BoundingBox2d properties) =
+maxY (Types.BoundingBox2d properties) =
     properties.maxY
 
 
@@ -312,7 +327,7 @@ midY boundingBox =
 -}
 centroid : BoundingBox2d -> Point2d
 centroid boundingBox =
-    Point2d ( midX boundingBox, midY boundingBox )
+    Point2d.withCoordinates ( midX boundingBox, midY boundingBox )
 
 
 {-| Check if a bounding box contains a particular point.
@@ -446,7 +461,7 @@ isContainedIn other boundingBox =
 -}
 hull : BoundingBox2d -> BoundingBox2d -> BoundingBox2d
 hull firstBox secondBox =
-    BoundingBox2d
+    with
         { minX = min (minX firstBox) (minX secondBox)
         , maxX = max (maxX firstBox) (maxX secondBox)
         , minY = min (minY firstBox) (minY secondBox)
@@ -499,7 +514,7 @@ intersection : BoundingBox2d -> BoundingBox2d -> Maybe BoundingBox2d
 intersection firstBox secondBox =
     if overlaps firstBox secondBox then
         Just
-            (BoundingBox2d
+            (with
                 { minX = max (minX firstBox) (minX secondBox)
                 , maxX = min (maxX firstBox) (maxX secondBox)
                 , minY = max (minY firstBox) (minY secondBox)
