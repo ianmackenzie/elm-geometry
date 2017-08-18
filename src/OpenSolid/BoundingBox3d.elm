@@ -12,7 +12,8 @@
 
 module OpenSolid.BoundingBox3d
     exposing
-        ( centroid
+        ( BoundingBox3d
+        , centroid
         , containing
         , contains
         , dimensions
@@ -32,6 +33,7 @@ module OpenSolid.BoundingBox3d
         , minZ
         , overlaps
         , singleton
+        , with
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/boundingBox3d.svg" alt="BoundingBox3d" width="160">
@@ -52,30 +54,12 @@ box of an object than the object itself, such as:
     not visible must itself be not visible, and therefore does not have to be
     drawn. This provides a simple form of culling.
 
-Bounding boxes can be constructed by passing a record with `minX`, `maxX`,
-`minY`, `maxY`, `minZ` and `maxZ` fields to the `BoundingBox3d` constructor, for
-example
-
-    exampleBox =
-        BoundingBox3d
-            { minX = -2
-            , maxX = 2
-            , minY = 2
-            , maxY = 5
-            , minZ = 3
-            , maxZ = 4
-            }
-
-If you construct a `BoundingBox3d` this way, **you must ensure that the given
-values are properly ordered**: <code>minX&nbsp;<=&nbsp;maxX</code>,
-<code>minY&nbsp;<=&nbsp;maxY</code>, <code>minZ&nbsp;<=&nbsp;maxZ</code>.
-Alternately, you can construct bounding boxes using functions such as
-[`Point3d.hull`](OpenSolid-Point3d#hull) where the input order does not matter.
+@docs BoundingBox3d
 
 
 # Constructors
 
-@docs singleton, containing, hullOf
+@docs with, singleton, containing, hullOf
 
 
 # Accessors
@@ -95,17 +79,47 @@ Alternately, you can construct bounding boxes using functions such as
 
 -}
 
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Point3d as Point3d
+import OpenSolid.Geometry.Types as Types
+import OpenSolid.Point3d as Point3d exposing (Point3d)
+
+
+{-| A bounding box in 3D.
+-}
+type alias BoundingBox3d =
+    Types.BoundingBox3d
+
+
+{-| Construct a bounding box from its minimum and maximum X, Y and Z values:
+
+    exampleBox =
+        BoundingBox3d.with
+            { minX = -2
+            , maxX = 2
+            , minY = 2
+            , maxY = 5
+            , minZ = 3
+            , maxZ = 4
+            }
+
+If you construct a `BoundingBox3d` this way, **you must ensure that the given
+values are properly ordered**: <code>minX&nbsp;<=&nbsp;maxX</code>,
+<code>minY&nbsp;<=&nbsp;maxY</code>, <code>minZ&nbsp;<=&nbsp;maxZ</code>.
+Alternately, you can construct bounding boxes using functions such as
+[`Point3d.hull`](OpenSolid-Point3d#hull) where the input order does not matter.
+
+-}
+with : { minX : Float, maxX : Float, minY : Float, maxY : Float, minZ : Float, maxZ : Float } -> BoundingBox3d
+with =
+    Types.BoundingBox3d
 
 
 {-| Construct a zero-width bounding box containing a single point.
 
     point =
-        Point3d ( 2, 1, 3 )
+        Point3d.withCoordinates ( 2, 1, 3 )
 
     BoundingBox3d.singleton point
-    --> BoundingBox3d
+    --> BoundingBox3d.with
     -->     { minX = 2
     -->     , maxX = 2
     -->     , minY = 1
@@ -121,7 +135,7 @@ singleton point =
         ( x, y, z ) =
             Point3d.coordinates point
     in
-    BoundingBox3d
+    with
         { minX = x
         , maxX = x
         , minY = y
@@ -135,14 +149,14 @@ singleton point =
 list is empty, returns `Nothing`.
 
     points =
-        [ Point3d ( 2, 1, 3 )
-        , Point3d ( -1, 5, -2 )
-        , Point3d ( 6, 4, 2 )
+        [ Point3d.withCoordinates ( 2, 1, 3 )
+        , Point3d.withCoordinates ( -1, 5, -2 )
+        , Point3d.withCoordinates ( 6, 4, 2 )
         ]
 
     BoundingBox3d.containing points
     --> Just
-    -->     (BoundingBox3d
+    -->     (BoundingBox3d.with
     -->         { minX = -1
     -->         , maxX = 6
     -->         , minY = 1
@@ -168,11 +182,11 @@ containing points =
 the list is empty, returns `Nothing`.
 
     singletonBox =
-        BoundingBox3d.singleton (Point3d ( 2, 1, 0 ))
+        BoundingBox3d.singleton (Point3d.withCoordinates ( 2, 1, 0 ))
 
     BoundingBox3d.hullOf [ exampleBox, singletonBox ]
     --> Just
-    -->     (BoundingBox3d
+    -->     (BoundingBox3d.with
     -->         { minX = -2,
     -->         , maxX = 2
     -->         , minY = 1
@@ -229,7 +243,7 @@ Can be useful when combined with record destructuring, for example
 
 -}
 extrema : BoundingBox3d -> { minX : Float, maxX : Float, minY : Float, maxY : Float, minZ : Float, maxZ : Float }
-extrema (BoundingBox3d properties) =
+extrema (Types.BoundingBox3d properties) =
     properties
 
 
@@ -240,8 +254,8 @@ extrema (BoundingBox3d properties) =
 
 -}
 minX : BoundingBox3d -> Float
-minX (BoundingBox3d properties) =
-    properties.minX
+minX boundingBox =
+    (extrema boundingBox).minX
 
 
 {-| Get the maximum X value of a bounding box.
@@ -251,8 +265,8 @@ minX (BoundingBox3d properties) =
 
 -}
 maxX : BoundingBox3d -> Float
-maxX (BoundingBox3d properties) =
-    properties.maxX
+maxX boundingBox =
+    (extrema boundingBox).maxX
 
 
 {-| Get the minimum Y value of a bounding box.
@@ -262,8 +276,8 @@ maxX (BoundingBox3d properties) =
 
 -}
 minY : BoundingBox3d -> Float
-minY (BoundingBox3d properties) =
-    properties.minY
+minY boundingBox =
+    (extrema boundingBox).minY
 
 
 {-| Get the maximum Y value of a bounding box.
@@ -273,8 +287,8 @@ minY (BoundingBox3d properties) =
 
 -}
 maxY : BoundingBox3d -> Float
-maxY (BoundingBox3d properties) =
-    properties.maxY
+maxY boundingBox =
+    (extrema boundingBox).maxY
 
 
 {-| Get the minimum Z value of a bounding box.
@@ -284,8 +298,8 @@ maxY (BoundingBox3d properties) =
 
 -}
 minZ : BoundingBox3d -> Float
-minZ (BoundingBox3d properties) =
-    properties.minZ
+minZ boundingBox =
+    (extrema boundingBox).minZ
 
 
 {-| Get the maximum Z value of a bounding box.
@@ -295,8 +309,8 @@ minZ (BoundingBox3d properties) =
 
 -}
 maxZ : BoundingBox3d -> Float
-maxZ (BoundingBox3d properties) =
-    properties.maxZ
+maxZ boundingBox =
+    (extrema boundingBox).maxZ
 
 
 {-| Get the X, Y and Z dimensions (widths) of a bounding box.
@@ -362,21 +376,25 @@ midZ boundingBox =
 {-| Get the point at the center of a bounding box.
 
     BoundingBox3d.centroid exampleBox
-    --> Point3d ( 0, 3.5, 3.5 )
+    --> Point3d.withCoordinates ( 0, 3.5, 3.5 )
 
 -}
 centroid : BoundingBox3d -> Point3d
 centroid boundingBox =
-    Point3d ( midX boundingBox, midY boundingBox, midZ boundingBox )
+    Point3d.withCoordinates
+        ( midX boundingBox
+        , midY boundingBox
+        , midZ boundingBox
+        )
 
 
 {-| Check if a bounding box contains a particular point.
 
     firstPoint =
-        Point3d ( 1, 4, 3 )
+        Point3d.withCoordinates ( 1, 4, 3 )
 
     secondPoint =
-        Point3d ( 3, 4, 5 )
+        Point3d.withCoordinates ( 3, 4, 5 )
 
     BoundingBox3d.contains firstPoint exampleBox
     --> True
@@ -402,7 +420,7 @@ contains point boundingBox =
 {-| Test if one bounding box overlaps (touches) another.
 
     firstBox =
-        BoundingBox3d
+        BoundingBox3d.with
             { minX = 0
             , maxX = 3
             , minY = 0
@@ -412,7 +430,7 @@ contains point boundingBox =
             }
 
     secondBox =
-        BoundingBox3d
+        BoundingBox3d.with
             { minX = 0
             , maxX = 3
             , minY = 1
@@ -422,7 +440,7 @@ contains point boundingBox =
             }
 
     thirdBox =
-        BoundingBox3d
+        BoundingBox3d.with
             { minX = 0
             , maxX = 3
             , minY = 4
@@ -452,7 +470,7 @@ overlaps other boundingBox =
 (is a subset of it).
 
     outerBox =
-        BoundingBox3d
+        BoundingBox3d.with
             { minX = 0
             , maxX = 10
             , minY = 0
@@ -462,7 +480,7 @@ overlaps other boundingBox =
             }
 
     innerBox =
-        BoundingBox3d
+        BoundingBox3d.with
             { minX = 1
             , maxX = 5
             , minY = 3
@@ -472,7 +490,7 @@ overlaps other boundingBox =
             }
 
     overlappingBox =
-        BoundingBox3d
+        BoundingBox3d.with
             { minX = 1
             , maxX = 5
             , minY = 3
@@ -498,7 +516,7 @@ isContainedIn other boundingBox =
 {-| Build a bounding box that contains both given bounding boxes.
 
     firstBox =
-        BoundingBox3d
+        BoundingBox3d.with
             { minX = 1
             , maxX = 4
             , minY = 2
@@ -508,7 +526,7 @@ isContainedIn other boundingBox =
             }
 
     secondBox =
-        BoundingBox3d
+        BoundingBox3d.with
             { minX = -2
             , maxX = 2
             , minY = 4
@@ -518,7 +536,7 @@ isContainedIn other boundingBox =
             }
 
     BoundingBox3d.hull firstBox secondBox
-    --> BoundingBox3d
+    --> BoundingBox3d.with
     -->     { minX = -2
     -->     , maxX = 4
     -->     , minY = 2
@@ -530,7 +548,7 @@ isContainedIn other boundingBox =
 -}
 hull : BoundingBox3d -> BoundingBox3d -> BoundingBox3d
 hull firstBox secondBox =
-    BoundingBox3d
+    with
         { minX = min (minX firstBox) (minX secondBox)
         , maxX = max (maxX firstBox) (maxX secondBox)
         , minY = min (minY firstBox) (minY secondBox)
@@ -544,7 +562,7 @@ hull firstBox secondBox =
 given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
 
     firstBox =
-        BoundingBox3d
+        BoundingBox3d.with
             { minX = 1
             , maxX = 4
             , minY = 2
@@ -554,7 +572,7 @@ given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
             }
 
     secondBox =
-        BoundingBox3d
+        BoundingBox3d.with
             { minX = 2
             , maxX = 5
             , minY = 1
@@ -564,7 +582,7 @@ given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
             }
 
     thirdBox =
-        BoundingBox3d
+        BoundingBox3d.with
             { minX = 1
             , maxX = 4
             , minY = 4
@@ -575,7 +593,7 @@ given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
 
     BoundingBox3d.intersection firstBox secondBox
     --> Just
-    -->     (BoundingBox3d
+    -->     (BoundingBox3d.with
     -->         { minX = 2
     -->         , maxX = 4
     -->         , minY = 2
@@ -593,7 +611,7 @@ intersection : BoundingBox3d -> BoundingBox3d -> Maybe BoundingBox3d
 intersection firstBox secondBox =
     if overlaps firstBox secondBox then
         Just
-            (BoundingBox3d
+            (with
                 { minX = max (minX firstBox) (minX secondBox)
                 , maxX = min (maxX firstBox) (maxX secondBox)
                 , minY = max (minY firstBox) (minY secondBox)
