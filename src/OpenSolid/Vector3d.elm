@@ -150,12 +150,7 @@ import OpenSolid.Scalar as Scalar
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
-{-| A vector in 3D. Can be constructed most directly using `withComponents`,
-for example
-
-    vector =
-        Vector3d.withComponents ( 2, 1, 3 )
-
+{-| A vector in 3D.
 -}
 type alias Vector3d =
     Types.Vector3d

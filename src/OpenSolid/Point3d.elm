@@ -126,12 +126,7 @@ addTo =
     flip translateBy
 
 
-{-| A point in 3D. Can be constructed most directly using `withCoordinates`,
-for example
-
-    point =
-        Point3d.withCoordinates ( 2, 1, 3 )
-
+{-| A point in 3D.
 -}
 type alias Point3d =
     Types.Point3d

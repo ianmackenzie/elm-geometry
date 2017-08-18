@@ -133,12 +133,7 @@ toDirection vector =
     withComponents (Vector2d.components vector)
 
 
-{-| A direction in 2D. Can be constructed most directly using `withComponents`,
-for example
-
-    direction =
-        Direction2d.withComponents ( -1, 0 )
-
+{-| A direction in 2D.
 -}
 type alias Direction2d =
     Types.Direction2d

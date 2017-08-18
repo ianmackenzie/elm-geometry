@@ -121,12 +121,7 @@ addTo point vector =
     translateBy vector point
 
 
-{-| A point in 2D. Can be constructed most directly using `withCoordinates`,
-for example
-
-    point =
-        Point2d.withCoordinates ( 2, 3 )
-
+{-| A point in 2D.
 -}
 type alias Point2d =
     Types.Point2d

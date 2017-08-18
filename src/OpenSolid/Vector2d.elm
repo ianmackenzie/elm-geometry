@@ -144,12 +144,7 @@ import OpenSolid.Geometry.Types as Types exposing (Axis2d, Direction2d, Frame2d,
 import OpenSolid.Scalar as Scalar
 
 
-{-| A vector in 2D. Can be constructed most directly using `withComponents`,
-for example
-
-    vector =
-        Vector2d.withComponents ( 2, 3 )
-
+{-| A vector in 2D.
 -}
 type alias Vector2d =
     Types.Vector2d
