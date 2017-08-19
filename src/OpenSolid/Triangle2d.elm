@@ -12,7 +12,8 @@
 
 module OpenSolid.Triangle2d
     exposing
-        ( area
+        ( Triangle2d
+        , area
         , boundingBox
         , centroid
         , clockwiseArea
@@ -28,6 +29,7 @@ module OpenSolid.Triangle2d
         , scaleAbout
         , translateBy
         , vertices
+        , withVertices
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/triangle2d.svg" alt="Triangle2d" width="160">
@@ -39,15 +41,12 @@ vertices. This module contains triangle-related functionality such as:
   - Scaling, rotating, translating and mirroring triangles
   - Converting triangles between different coordinate systems
 
-Triangles can be constructed by passing a tuple of vertices to the `Triangle2d`
-constructor, for example
+@docs Triangle2d
 
-    exampleTriangle =
-        Triangle2d
-            ( Point2d ( 1, 1 )
-            , Point2d ( 2, 1 )
-            , Point2d ( 1, 3 )
-            )
+
+# Constructors
+
+@docs withVertices
 
 
 # Accessors
@@ -91,9 +90,36 @@ different coordinate frames.
 
 -}
 
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Point2d as Point2d
-import OpenSolid.Vector2d as Vector2d
+import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
+import OpenSolid.Bootstrap.Triangle3d as Triangle3d
+import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
+import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
+import OpenSolid.Geometry.Types as Types exposing (Triangle2d, Triangle3d)
+import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
+import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
+
+
+{-| A triangle in 2D.
+-}
+type alias Triangle2d =
+    Types.Triangle2d
+
+
+{-| Construct a triangle from its three vertices:
+
+    exampleTriangle =
+        Triangle2d.withVertices
+            ( Point2d.withCoordinates ( 1, 1 )
+            , Point2d.withCoordinates ( 2, 1 )
+            , Point2d.withCoordinates ( 1, 3 )
+            )
+
+-}
+withVertices : ( Point2d, Point2d, Point2d ) -> Triangle2d
+withVertices =
+    Types.Triangle2d
 
 
 {-| Get the vertices of a triangle.
@@ -102,13 +128,13 @@ import OpenSolid.Vector2d as Vector2d
         Triangle2d.vertices exampleTriangle
 
 
-    --> p1 = Point2d ( 1, 1 )
-    --> p2 = Point2d ( 2, 1 )
-    --> p3 = Point2d ( 1, 3 )
+    --> p1 = Point2d.withCoordinates ( 1, 1 )
+    --> p2 = Point2d.withCoordinates ( 2, 1 )
+    --> p3 = Point2d.withCoordinates ( 1, 3 )
 
 -}
 vertices : Triangle2d -> ( Point2d, Point2d, Point2d )
-vertices (Triangle2d vertices_) =
+vertices (Types.Triangle2d vertices_) =
     vertices_
 
 
@@ -119,9 +145,23 @@ second to the third, and from the third back to the first.
         Triangle2d.edges exampleTriangle
 
 
-    --> e1 = LineSegment2d ( Point2d ( 1, 1 ), Point2d ( 2, 1 ) )
-    --> e2 = LineSegment2d ( Point2d ( 2, 1 ), Point2d ( 1, 3 ) )
-    --> e3 = LineSegment2d ( Point2d ( 1, 3 ), Point2d ( 1, 1 ) )
+    --> e1 =
+    -->     LineSegment2d.withEndpoints
+    -->         ( Point2d.withCoordinates ( 1, 1 )
+    -->         , Point2d.withCoordinates ( 2, 1 )
+    -->         )
+    -->
+    --> e2 =
+    -->     LineSegment2d.withEndpoints
+    -->         ( Point2d.withCoordinates ( 2, 1 )
+    -->         , Point2d.withCoordinates ( 1, 3 )
+    -->         )
+    -->
+    --> e3 =
+    -->     LineSegment2d.withEndpoints
+    -->         ( Point2d.withCoordinates ( 1, 3 )
+    -->         , Point2d.withCoordinates ( 1, 1 )
+    -->         )
 
 -}
 edges : Triangle2d -> ( LineSegment2d, LineSegment2d, LineSegment2d )
@@ -130,16 +170,16 @@ edges triangle =
         ( p1, p2, p3 ) =
             vertices triangle
     in
-    ( LineSegment2d ( p1, p2 )
-    , LineSegment2d ( p2, p3 )
-    , LineSegment2d ( p3, p1 )
+    ( LineSegment2d.withEndpoints ( p1, p2 )
+    , LineSegment2d.withEndpoints ( p2, p3 )
+    , LineSegment2d.withEndpoints ( p3, p1 )
     )
 
 
 {-| Get the centroid (center of mass) of a triangle.
 
     Triangle2d.centroid exampleTriangle
-    --> Point2d ( 1.3333, 1.6667 )
+    --> Point2d.withCoordinates ( 1.3333, 1.6667 )
 
 -}
 centroid : Triangle2d -> Point2d
@@ -163,7 +203,7 @@ centroid triangle =
 {-| Check whether a given point is inside a given triangle.
 
     interiorPoint =
-        Point2d ( 1.5, 1.5 )
+        Point2d.withCoordinates ( 1.5, 1.5 )
 
     Triangle2d.contains interiorPoint exampleTriangle
     --> True
@@ -254,10 +294,10 @@ clockwiseArea triangle =
 {-| Scale a triangle about a given point by a given scale.
 
     Triangle2d.scaleAbout Point2d.origin 2 exampleTriangle
-    --> Triangle2d
-    -->     ( Point2d ( 2, 2 )
-    -->     , Point2d ( 4, 2 )
-    -->     , Point2d ( 2, 6 )
+    --> Triangle2d.withVertices
+    -->     ( Point2d.withCoordinates ( 2, 2 )
+    -->     , Point2d.withCoordinates ( 4, 2 )
+    -->     , Point2d.withCoordinates ( 2, 6 )
     -->     )
 
 Note that scaling by a negative value will result in the 'winding direction' of
@@ -274,10 +314,10 @@ scaleAbout point scale =
 {-| Rotate a triangle around a given point by a given angle (in radians).
 
     Triangle2d.rotateAround Point2d.origin (degrees 90) exampleTriangle
-    --> Triangle2d
-    -->     ( Point2d ( -1, 1 )
-    -->     , Point2d ( -1, 2 )
-    -->     , Point2d ( -3, 1 )
+    --> Triangle2d.withVertices
+    -->     ( Point2d.withCoordinates ( -1, 1 )
+    -->     , Point2d.withCoordinates ( -1, 2 )
+    -->     , Point2d.withCoordinates ( -3, 1 )
     -->     )
 
 -}
@@ -289,13 +329,13 @@ rotateAround centerPoint angle =
 {-| Translate a triangle by a given displacement.
 
     displacement =
-        Vector2d ( 2, -3 )
+        Vector2d.withComponents ( 2, -3 )
 
     Triangle2d.translateBy displacement exampleTriangle
-    --> Triangle2d
-    -->     ( Point2d ( 3, -2 )
-    -->     , Point2d ( 4, -2 )
-    -->     , Point2d ( 3, 0 )
+    --> Triangle2d.withVertices
+    -->     ( Point2d.withCoordinates ( 3, -2 )
+    -->     , Point2d.withCoordinates ( 4, -2 )
+    -->     , Point2d.withCoordinates ( 3, 0 )
     -->     )
 
 -}
@@ -307,10 +347,10 @@ translateBy vector =
 {-| Mirror a triangle across a given axis.
 
     Triangle2d.mirrorAcross Axis2d.y exampleTriangle
-    --> Triangle2d
-    -->     ( Point2d ( -1, 1 )
-    -->     , Point2d ( -2, 1 )
-    -->     , Point2d ( -1, 3 )
+    --> Triangle2d.withVertices
+    -->     ( Point2d.withCoordinates ( -1, 1 )
+    -->     , Point2d.withCoordinates ( -2, 1 )
+    -->     , Point2d.withCoordinates ( -1, 3 )
     -->     )
 
 Note that mirroring a triangle will result in its 'winding direction' being
@@ -340,20 +380,20 @@ map function triangle =
         ( p1, p2, p3 ) =
             vertices triangle
     in
-    Triangle2d ( function p1, function p2, function p3 )
+    withVertices ( function p1, function p2, function p3 )
 
 
 {-| Take a triangle defined in global coordinates, and return it expressed
 in local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame2d.at (Point2d ( 1, 2 ))
+        Frame2d.at (Point2d.withCoordinates ( 1, 2 ))
 
     Triangle2d.relativeTo localFrame exampleTriangle
-    --> Triangle2d
-    -->     ( Point2d ( 0, -1 )
-    -->     , Point2d ( 1, -1 )
-    -->     , Point2d ( 0, 1 )
+    --> Triangle2d.withVertices
+    -->     ( Point2d.withCoordinates ( 0, -1 )
+    -->     , Point2d.withCoordinates ( 1, -1 )
+    -->     , Point2d.withCoordinates ( 0, 1 )
     -->     )
 
 -}
@@ -366,13 +406,13 @@ relativeTo frame =
 given reference frame, and return that triangle expressed in global coordinates.
 
     localFrame =
-        Frame2d.at (Point2d ( 1, 2 ))
+        Frame2d.at (Point2d.withCoordinates ( 1, 2 ))
 
     Triangle2d.placeIn localFrame exampleTriangle
-    --> Triangle2d
-    -->     ( Point2d ( 2, 3 )
-    -->     , Point2d ( 3, 3 )
-    -->     , Point2d ( 2, 5 )
+    --> Triangle2d.withVertices
+    -->     ( Point2d.withCoordinates ( 2, 3 )
+    -->     , Point2d.withCoordinates ( 3, 3 )
+    -->     , Point2d.withCoordinates ( 2, 5 )
     -->     )
 
 -}
@@ -385,10 +425,10 @@ placeIn frame =
 plane and return the corresponding triangle in 3D.
 
     Triangle2d.placeOnto SketchPlane3d.xz exampleTriangle
-    --> Triangle3d
-    -->     ( Point3d ( 1, 0, 1 )
-    -->     , Point3d ( 2, 0, 1 )
-    -->     , Point3d ( 1, 0, 3 )
+    --> Triangle3d.withVertices
+    -->     ( Point3d.withCoordinates ( 1, 0, 1 )
+    -->     , Point3d.withCoordinates ( 2, 0, 1 )
+    -->     , Point3d.withCoordinates ( 1, 0, 3 )
     -->     )
 
 -}
@@ -403,13 +443,13 @@ placeOnto sketchPlane =
             ( p1, p2, p3 ) =
                 vertices triangle
         in
-        Triangle3d ( place p1, place p2, place p3 )
+        Triangle3d.withVertices ( place p1, place p2, place p3 )
 
 
 {-| Get the minimal bounding box containing a given triangle.
 
     Triangle2d.boundingBox exampleTriangle
-    --> BoundingBox2d
+    --> BoundingBox2d.with
     -->     { minX = 1
     -->     , maxX = 2
     -->     , minY = 1
@@ -432,7 +472,7 @@ boundingBox triangle =
         ( x3, y3 ) =
             Point2d.coordinates p3
     in
-    BoundingBox2d
+    BoundingBox2d.with
         { minX = min x1 (min x2 x3)
         , maxX = max x1 (max x2 x3)
         , minY = min y1 (min y2 y3)
