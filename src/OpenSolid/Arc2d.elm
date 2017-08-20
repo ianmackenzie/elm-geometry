@@ -1,6 +1,7 @@
 module OpenSolid.Arc2d
     exposing
-        ( Length
+        ( Arc2d
+        , Length
         , WindingDirection
         , centerPoint
         , clockwise
@@ -25,6 +26,7 @@ module OpenSolid.Arc2d
         , throughPoints
         , toPolyline
         , translateBy
+        , with
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/arc2d.svg" alt="Arc2d" width="160">
@@ -38,20 +40,12 @@ end point). This module includes functionality for
   - Converting arcs between different coordinate systems
   - Placing 2D arcs onto sketch planes to result in 3D arcs
 
-Arcs can be constructed explicitly by passing a record with `centerPoint`,
-`startPoint` and `sweptAngle` fields to the `Arc2d` constructor, for example
-
-    exampleArc =
-        Arc2d
-            { centerPoint = Point2d ( 1, 1 )
-            , startPoint = Point2d ( 3, 1 )
-            , sweptAngle = degrees 90
-            }
+@docs Arc2d
 
 
 # Constructors
 
-@docs Length, WindingDirection, short, long, clockwise, counterclockwise, throughPoints, fromEndpoints
+@docs with, Length, WindingDirection, short, long, clockwise, counterclockwise, throughPoints, fromEndpoints
 
 
 # Accessors
@@ -85,14 +79,43 @@ Arcs can be constructed explicitly by passing a record with `centerPoint`,
 
 -}
 
-import OpenSolid.Circle2d as Circle2d
-import OpenSolid.Direction2d as Direction2d
-import OpenSolid.Frame2d as Frame2d
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.LineSegment2d as LineSegment2d
-import OpenSolid.Point2d as Point2d
-import OpenSolid.SketchPlane3d as SketchPlane3d
-import OpenSolid.Vector2d as Vector2d
+import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
+import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
+import OpenSolid.Bootstrap.Arc3d as Arc3d
+import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
+import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
+import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
+import OpenSolid.Geometry.Types as Types exposing (Arc3d)
+import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
+import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.Polyline2d as Polyline2d exposing (Polyline2d)
+import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
+
+
+{-| An arc in 2D.
+-}
+type alias Arc2d =
+    Types.Arc2d
+
+
+{-| Construct an arc from its center point, start point, and swept angle:
+
+    exampleArc =
+        Arc2d.with
+            { centerPoint = Point2d.withCoordinates ( 1, 1 )
+            , startPoint = Point2d.withCoordinates ( 3, 1 )
+            , sweptAngle = degrees 90
+            }
+
+A positive swept angle means that the arc is formed by rotating the start point
+counterclockwise around the center point. A negative swept angle results in
+a clockwise arc instead.
+
+-}
+with : { startPoint : Point2d, centerPoint : Point2d, sweptAngle : Float } -> Arc2d
+with =
+    Types.Arc2d
 
 
 {-| Argument type used in [`fromEndpoints`](#fromEndpoints).
@@ -143,38 +166,38 @@ points are collinear, returns `Nothing`.
 
     Arc2d.throughPoints
         Point2d.origin
-        (Point2d ( 1, 0 ))
-        (Point2d ( 0, 1 ))
+        (Point2d.withCoordinates ( 1, 0 ))
+        (Point2d.withCoordinates ( 0, 1 ))
     --> Just
-    -->     (Arc2d
-    -->         { centerPoint = Point2d ( 0.5, 0.5 )
+    -->     (Arc2d.with
+    -->         { centerPoint = Point2d.withCoordinates ( 0.5, 0.5 )
     -->         , startPoint = Point2d.origin
     -->         , sweptAngle = degrees 270
     -->         }
     -->     )
 
     Arc2d.throughPoints
-        (Point2d ( 1, 0 ))
+        (Point2d.withCoordinates ( 1, 0 ))
         Point2d.origin
-        (Point2d ( 0, 1 ))
+        (Point2d.withCoordinates ( 0, 1 ))
     --> Just
-    -->     (Arc2d
-    -->         { centerPoint = Point2d ( 0.5, 0.5 )
-    -->         , startPoint = Point2d ( 1, 0 )
+    -->     (Arc2d.with
+    -->         { centerPoint = Point2d.withCoordinates ( 0.5, 0.5 )
+    -->         , startPoint = Point2d.withCoordinates ( 1, 0 )
     -->         , sweptAngle = degrees -180
     -->         }
     -->     )
 
     Arc2d.throughPoints
         Point2d.origin
-        (Point2d ( 1, 0 ))
-        (Point2d ( 2, 0 ))
+        (Point2d.withCoordinates ( 1, 0 ))
+        (Point2d.withCoordinates ( 2, 0 ))
     --> Nothing
 
     Arc2d.throughPoints
         Point2d.origin
         Point2d.origin
-        (Point2d ( 1, 0 ))
+        (Point2d.withCoordinates ( 1, 0 ))
     --> Nothing
 
 -}
@@ -217,7 +240,7 @@ throughPoints firstPoint secondPoint thirdPoint =
                                 else
                                     full + 2 * pi
                         in
-                        Arc2d
+                        with
                             { centerPoint = centerPoint
                             , startPoint = firstPoint
                             , sweptAngle = sweptAngle
@@ -245,15 +268,15 @@ arc to create:
 For example:
 
     p1 =
-        Point2d ( 1, 0 )
+        Point2d.withCoordinates ( 1, 0 )
 
     p2 =
-        Point2d ( 0, 1 )
+        Point2d.withCoordinates ( 0, 1 )
 
     Arc2d.fromEndpoints p1 p2 1 Arc2d.short Arc2d.counterclockwise
     --> Just
-    -->     (Arc2d
-    -->         { startPoint = Point2d ( 1, 0 )
+    -->     (Arc2d.with
+    -->         { startPoint = Point2d.withCoordinates ( 1, 0 )
     -->         , centerPoint = Point2d.origin
     -->         , sweptAngle = degrees 90
     -->         }
@@ -261,26 +284,26 @@ For example:
 
     Arc2d.fromEndpoints p1 p2 1 Arc2d.short Arc2d.clockwise
     --> Just
-    -->     (Arc2d
-    -->         { startPoint = Point2d ( 1, 0 )
-    -->         , centerPoint = Point2d ( 1, 1 )
+    -->     (Arc2d.with
+    -->         { startPoint = Point2d.withCoordinates ( 1, 0 )
+    -->         , centerPoint = Point2d.withCoordinates ( 1, 1 )
     -->         , sweptAngle = degrees -90
     -->         }
     -->     )
 
     Arc2d.fromEndpoints p1 p2 1 Arc2d.long Arc2d.counterclockwise
     --> Just
-    -->     (Arc2d
-    -->         { startPoint = Point2d ( 1, 0 )
-    -->         , centerPoint = Point2d ( 1, 1 )
+    -->     (Arc2d.with
+    -->         { startPoint = Point2d.withCoordinates ( 1, 0 )
+    -->         , centerPoint = Point2d.withCoordinates ( 1, 1 )
     -->         , sweptAngle = degrees 270
     -->         }
     -->     )
 
     Arc2d.fromEndpoints p1 p2 1 Arc2d.long Arc2d.clockwise
     --> Just
-    -->     (Arc2d
-    -->         { startPoint = Point2d ( 1, 0 )
+    -->     (Arc2d.with
+    -->         { startPoint = Point2d.withCoordinates ( 1, 0 )
     -->         , centerPoint = Point2d.origin
     -->         , sweptAngle = degrees -270
     -->         }
@@ -288,9 +311,9 @@ For example:
 
     Arc2d.fromEndpoints p1 p2 2 Arc2d.short Arc2d.counterclockwise
     --> Just
-    -->     (Arc2d
-    -->         { startPoint = Point2d ( 1, 0 )
-    -->         , centerPoint = Point2d ( -0.8229, -0.8229 )
+    -->     (Arc2d.with
+    -->         { startPoint = Point2d.withCoordinates ( 1, 0 )
+    -->         , centerPoint = Point2d.withCoordinates ( -0.8229, -0.8229 )
     -->         , sweptAngle = degrees 41.4096
     -->         }
     -->     )
@@ -308,7 +331,7 @@ the given radius. In this case it is safer to use a more specialized approach,
 such as
 
     halfCircle =
-        Arc2d
+        Arc2d.with
             { startPoint = firstPoint
             , centerPoint = Point2d.midpoint firstPoint secondPoint
             , sweptAngle = degrees 180 -- or 'degrees -180' for a clockwise arc
@@ -319,7 +342,7 @@ fromEndpoints : Point2d -> Point2d -> Float -> Length -> WindingDirection -> May
 fromEndpoints startPoint endPoint radius lengthType windingDirection =
     let
         chord =
-            LineSegment2d ( startPoint, endPoint )
+            LineSegment2d.withEndpoints ( startPoint, endPoint )
 
         squaredRadius =
             radius * radius
@@ -378,7 +401,7 @@ fromEndpoints startPoint endPoint radius lengthType windingDirection =
                                 ( Clockwise, Long ) ->
                                     shortAngle - 2 * pi
                     in
-                    Arc2d
+                    with
                         { centerPoint = centerPoint
                         , startPoint = startPoint
                         , sweptAngle = sweptAngle
@@ -391,11 +414,11 @@ fromEndpoints startPoint endPoint radius lengthType windingDirection =
 {-| Get the center point of an arc.
 
     Arc2d.centerPoint exampleArc
-    --> Point2d ( 1, 1 )
+    --> Point2d.withCoordinates ( 1, 1 )
 
 -}
 centerPoint : Arc2d -> Point2d
-centerPoint (Arc2d properties) =
+centerPoint (Types.Arc2d properties) =
     properties.centerPoint
 
 
@@ -413,18 +436,18 @@ radius arc =
 {-| Get the start point of an arc.
 
     Arc2d.startPoint exampleArc
-    --> Point2d ( 3, 1 )
+    --> Point2d.withCoordinates ( 3, 1 )
 
 -}
 startPoint : Arc2d -> Point2d
-startPoint (Arc2d properties) =
+startPoint (Types.Arc2d properties) =
     properties.startPoint
 
 
 {-| Get the end point of an arc.
 
     Arc2d.endPoint exampleArc
-    --> Point2d ( 1, 3 )
+    --> Point2d.withCoordinates ( 1, 3 )
 
 -}
 endPoint : Arc2d -> Point2d
@@ -442,7 +465,7 @@ clockwise one.
 
 -}
 sweptAngle : Arc2d -> Float
-sweptAngle (Arc2d properties) =
+sweptAngle (Types.Arc2d properties) =
     properties.sweptAngle
 
 
@@ -451,7 +474,7 @@ sweptAngle (Arc2d properties) =
 end point.
 
     Arc2d.pointOn exampleArc 0.5
-    --> Point2d ( 2.4142, 2.4142 )
+    --> Point2d.withCoordinates ( 2.4142, 2.4142 )
 
 -}
 pointOn : Arc2d -> Float -> Point2d
@@ -478,20 +501,19 @@ at that parameter value and the derivative with respect to that parameter value.
         Arc2d.evaluate exampleArc
 
     evaluate 0
-    --> ( Point2d ( 3, 1 ), Vector2d ( 0, 3.1416 ) )
+    --> ( Point2d.withCoordinates ( 3, 1 )
+    --> , Vector2d.withComponents ( 0, 3.1416 )
+    --> )
 
     evaluate 0.5
-    --> ( Point2d ( 2.4142, 2.4142 ), Vector2d ( -2.2214, 2.2214 ) )
+    --> ( Point2d.withCoordinates ( 2.4142, 2.4142 )
+    --> , Vector2d.withComponents ( -2.2214, 2.2214 )
+    --> )
 
     evaluate 1
-    --> ( Point2d ( 1, 3 ), Vector2d ( -3.1416, 0 ) )
-
-For best efficiency, `evaluate` should be partially applied (called with just
-the arc argument) first, and then the returned function should be called
-multiple times, as in the example above. Note that this happens naturally in
-many common cases such as
-
-    List.map (Arc2d.evaluate arc) parameterValues
+    --> ( Point2d.withCoordinates ( 1, 3 )
+    --> , Vector2d.withComponents ( -3.1416, 0 )
+    --> )
 
 -}
 evaluate : Arc2d -> Float -> ( Point2d, Vector2d )
@@ -525,11 +547,11 @@ evaluate arc =
                     sinAngle =
                         sin angle
                 in
-                ( Point2d
+                ( Point2d.withCoordinates
                     ( centerX + arcRadius * cosAngle
                     , centerY + arcRadius * sinAngle
                     )
-                , Vector2d
+                , Vector2d.withComponents
                     ( -derivativeMagnitude * sinAngle
                     , derivativeMagnitude * cosAngle
                     )
@@ -556,11 +578,11 @@ numApproximationSegments tolerance arc =
 {-| Approximate an arc as a polyline, within the specified tolerance.
 
     Arc2d.toPolyline 0.1 exampleArc
-    --> Polyline2d
-    -->     [ Point2d ( 3, 1 )
-    -->     , Point2d ( 2.732, 2 )
-    -->     , Point2d ( 2, 2.732 )
-    -->     , Point2d ( 1, 3 )
+    --> Polyline2d.withVertices
+    -->     [ Point2d.withCoordinates ( 3, 1 )
+    -->     , Point2d.withCoordinates ( 2.732, 2 )
+    -->     , Point2d.withCoordinates ( 2, 2.732 )
+    -->     , Point2d.withCoordinates ( 1, 3 )
     -->     ]
 
 A tolerance of zero will be treated as infinity (a single line segment will be
@@ -579,23 +601,23 @@ toPolyline tolerance arc =
         points =
             List.range 0 numSegments |> List.map point
     in
-    Polyline2d points
+    Polyline2d.withVertices points
 
 
 {-| Reverse the direction of an arc, so that the start point becomes the end
 point and vice versa.
 
     Arc2d.reverse exampleArc
-    Arc2d
-        { startPoint = Point2d ( 1, 3 )
-        , centerPoint = Point2d ( 1, 1 )
+    Arc2d.with
+        { startPoint = Point2d.withCoordinates ( 1, 3 )
+        , centerPoint = Point2d.withCoordinates ( 1, 1 )
         , sweptAngle = degrees -90
         }
 
 -}
 reverse : Arc2d -> Arc2d
 reverse arc =
-    Arc2d
+    with
         { startPoint = endPoint arc
         , centerPoint = centerPoint arc
         , sweptAngle = -(sweptAngle arc)
@@ -604,10 +626,10 @@ reverse arc =
 
 {-| Scale an arc about a given point by a given scale.
 
-    Arc2d.scaleAbout (Point2d ( 0, 1 )) 2 exampleArc
-    --> Arc2d
-    -->     { startPoint = Point2d ( 6, 1 )
-    -->     , centerPoint = Point2d ( 2, 1 )
+    Arc2d.scaleAbout (Point2d.withCoordinates ( 0, 1 )) 2 exampleArc
+    --> Arc2d.with
+    -->     { startPoint = Point2d.withCoordinates ( 6, 1 )
+    -->     , centerPoint = Point2d.withCoordinates ( 2, 1 )
     -->     , sweptAngle = degrees 90
     -->     }
 
@@ -618,7 +640,7 @@ scaleAbout point scale arc =
         scalePoint =
             Point2d.scaleAbout point scale
     in
-    Arc2d
+    with
         { centerPoint = scalePoint (centerPoint arc)
         , startPoint = scalePoint (startPoint arc)
         , sweptAngle =
@@ -632,11 +654,11 @@ scaleAbout point scale arc =
 {-| Rotate an arc around a given point by a given angle.
 
     Arc2d.rotateAround Point2d.origin (degrees 90)
-    Arc2d
-        { startPoint = Point2d ( -1, 3 )
-        , centerPoint = Point2d ( -1, 1 )
-        , sweptAngle = degrees 90
-        }
+    --> Arc2d.with
+    -->     { startPoint = Point2d.withCoordinates ( -1, 3 )
+    -->     , centerPoint = Point2d.withCoordinates ( -1, 1 )
+    -->     , sweptAngle = degrees 90
+    -->     }
 
 -}
 rotateAround : Point2d -> Float -> Arc2d -> Arc2d
@@ -646,7 +668,7 @@ rotateAround point angle =
             Point2d.rotateAround point angle
     in
     \arc ->
-        Arc2d
+        with
             { centerPoint = rotatePoint (centerPoint arc)
             , startPoint = rotatePoint (startPoint arc)
             , sweptAngle = sweptAngle arc
@@ -656,12 +678,12 @@ rotateAround point angle =
 {-| Translate an arc by a given displacement.
 
     displacement =
-        Vector2d ( 2, 3 )
+        Vector2d.withComponents ( 2, 3 )
 
     Arc2d.translateBy displacement exampleArc
-    --> Arc2d
-    -->     { startPoint = Point2d ( 5, 4 )
-    -->     , centerPoint = Point2d ( 3, 4 )
+    --> Arc2d.with
+    -->     { startPoint = Point2d.withCoordinates ( 5, 4 )
+    -->     , centerPoint = Point2d.withCoordinates ( 3, 4 )
     -->     , sweptAngle = degrees 90
     -->     }
 
@@ -672,7 +694,7 @@ translateBy displacement arc =
         translatePoint =
             Point2d.translateBy displacement
     in
-    Arc2d
+    with
         { centerPoint = translatePoint (centerPoint arc)
         , startPoint = translatePoint (startPoint arc)
         , sweptAngle = sweptAngle arc
@@ -682,9 +704,9 @@ translateBy displacement arc =
 {-| Mirror an arc across a given axis.
 
     Arc2d.mirrorAcross Axis2d.y exampleArc
-    --> Arc2d
-    -->     { startPoint = Point2d ( -3, 1 )
-    -->     , centerPoint = Point2d ( -1, 1 )
+    --> Arc2d.with
+    -->     { startPoint = Point2d.withCoordinates ( -3, 1 )
+    -->     , centerPoint = Point2d.withCoordinates ( -1, 1 )
     -->     , sweptAngle = degrees -90
     -->     }
 
@@ -696,7 +718,7 @@ mirrorAcross axis =
             Point2d.mirrorAcross axis
     in
     \arc ->
-        Arc2d
+        with
             { centerPoint = mirrorPoint (centerPoint arc)
             , startPoint = mirrorPoint (startPoint arc)
             , sweptAngle = -(sweptAngle arc)
@@ -707,12 +729,12 @@ mirrorAcross axis =
 coordinates relative to a given reference frame.
 
     localFrame =
-        Frame2d.at (Point2d ( 1, 2 ))
+        Frame2d.at (Point2d.withCoordinates ( 1, 2 ))
 
     Arc2d.relativeTo localFrame exampleArc
-    --> Arc2d
-    -->     { startPoint = Point2d ( 2, -1 )
-    -->     , centerPoint = Point2d ( 0, -1 )
+    --> Arc2d.with
+    -->     { startPoint = Point2d.withCoordinates ( 2, -1 )
+    -->     , centerPoint = Point2d.withCoordinates ( 0, -1 )
     -->     , sweptAngle = degrees 90
     -->     }
 
@@ -723,7 +745,7 @@ relativeTo frame arc =
         relativePoint =
             Point2d.relativeTo frame
     in
-    Arc2d
+    with
         { centerPoint = relativePoint (centerPoint arc)
         , startPoint = relativePoint (startPoint arc)
         , sweptAngle =
@@ -738,12 +760,12 @@ relativeTo frame arc =
 given reference frame, and return that arc expressed in global coordinates.
 
     localFrame =
-        Frame2d.at (Point2d ( 1, 2 ))
+        Frame2d.at (Point2d.withCoordinates ( 1, 2 ))
 
     Arc2d.placeIn localFrame exampleArc
-    --> Arc2d
-    -->     { startPoint = Point2d ( 4, 3 )
-    -->     , centerPoint = Point2d ( 2, 3 )
+    --> Arc2d.with
+    -->     { startPoint = Point2d.withCoordinates ( 4, 3 )
+    -->     , centerPoint = Point2d.withCoordinates ( 2, 3 )
     -->     , sweptAngle = degrees 90
     -->     }
 
@@ -754,7 +776,7 @@ placeIn frame arc =
         placePoint =
             Point2d.placeIn frame
     in
-    Arc2d
+    with
         { centerPoint = placePoint (centerPoint arc)
         , startPoint = placePoint (startPoint arc)
         , sweptAngle =
@@ -769,11 +791,11 @@ placeIn frame arc =
 return the corresponding arc in 3D.
 
     Arc2d.placeOnto SketchPlane3d.yz exampleArc
-    --> Arc3d
-    -->     { startPoint = Point3d ( 0, 3, 1 )
+    --> Arc3d.with
+    -->     { startPoint = Point3d.withCoordinates ( 0, 3, 1 )
     -->     , axis =
-    -->         Axis3d
-    -->             { originPoint = Point3d ( 0, 1, 1 )
+    -->         Axis3d.with
+    -->             { originPoint = Point3d.withCoordinates ( 0, 1, 1 )
     -->             , direction = Direction3d.x
     -->             }
     -->     , sweptAngle = degrees 90
@@ -787,12 +809,12 @@ placeOnto sketchPlane arc =
             Point2d.placeOnto sketchPlane
 
         axis =
-            Axis3d
+            Axis3d.with
                 { originPoint = place (centerPoint arc)
                 , direction = SketchPlane3d.normalDirection sketchPlane
                 }
     in
-    Arc3d
+    Arc3d.with
         { axis = axis
         , startPoint = place (startPoint arc)
         , sweptAngle = sweptAngle arc
