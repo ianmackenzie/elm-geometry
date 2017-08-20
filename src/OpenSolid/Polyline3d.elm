@@ -12,7 +12,8 @@
 
 module OpenSolid.Polyline3d
     exposing
-        ( boundingBox
+        ( Polyline3d
+        , boundingBox
         , length
         , map
         , mirrorAcross
@@ -25,6 +26,7 @@ module OpenSolid.Polyline3d
         , segments
         , translateBy
         , vertices
+        , withVertices
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/polyline3d.svg" alt="Polyline3d" width="160">
@@ -36,16 +38,12 @@ This module contains a variety of polyline-related functionality, such as
   - Scaling, rotating, translating and mirroring polylines
   - Converting polylines between different coordinate systems
 
-Polylines can be constructed by passing an ordered list of vertices to the
-`Polyline3d` constructor, for example
+@docs Polyline3d
 
-    examplePolyline =
-        Polyline3d
-            [ Point2d ( 0, 0, 0 )
-            , Point2d ( 1, 0, 0 )
-            , Point2d ( 1, 2, 0 )
-            , Point2d ( 1, 2, 3 )
-            ]
+
+# Constructors
+
+@docs withVertices
 
 
 # Accessors
@@ -81,33 +79,70 @@ Transforming a polyline is equivalent to transforming each of its vertices.
 
 -}
 
-import OpenSolid.BoundingBox3d as BoundingBox3d
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.LineSegment3d as LineSegment3d
-import OpenSolid.Point3d as Point3d
+import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
+import OpenSolid.BoundingBox3d as BoundingBox3d exposing (BoundingBox3d)
+import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
+import OpenSolid.Geometry.Types as Types
+import OpenSolid.LineSegment3d as LineSegment3d exposing (LineSegment3d)
+import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
+import OpenSolid.Point3d as Point3d exposing (Point3d)
+import OpenSolid.Polyline2d as Polyline2d exposing (Polyline2d)
+import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
+import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
+
+
+{-| A polyline in 3D.
+-}
+type alias Polyline3d =
+    Types.Polyline3d
+
+
+{-| Construct a polyline from its vertices:
+
+    examplePolyline =
+        Polyline3d.withVertices
+            [ Point2d.withCoordinates ( 0, 0, 0 )
+            , Point2d.withCoordinates ( 1, 0, 0 )
+            , Point2d.withCoordinates ( 1, 2, 0 )
+            , Point2d.withCoordinates ( 1, 2, 3 )
+            ]
+
+-}
+withVertices : List Point3d -> Polyline3d
+withVertices =
+    Types.Polyline3d
 
 
 {-| Get the vertices of a polyline.
 
     Polyline3d.vertices examplePolyline
-    --> [ Point3d ( 0, 0, 0 )
-    --> , Point3d ( 1, 0, 0 )
-    --> , Point3d ( 1, 2, 0 )
-    --> , Point3d ( 1, 2, 3 )
+    --> [ Point3d.withCoordinates ( 0, 0, 0 )
+    --> , Point3d.withCoordinates ( 1, 0, 0 )
+    --> , Point3d.withCoordinates ( 1, 2, 0 )
+    --> , Point3d.withCoordinates ( 1, 2, 3 )
     --> ]
 
 -}
 vertices : Polyline3d -> List Point3d
-vertices (Polyline3d vertices_) =
+vertices (Types.Polyline3d vertices_) =
     vertices_
 
 
 {-| Get the individual segments of a polyline.
 
     Polyline3d.segments examplePolyline
-    --> [ LineSegment3d ( Point3d ( 0, 0, 0 ), Point3d ( 1, 0, 0 ) )
-    --> , LineSegment3d ( Point3d ( 1, 0, 0 ), Point3d ( 1, 2, 0 ) )
-    --> , LineSegment3d ( Point3d ( 1, 2, 0 ), Point3d ( 1, 2, 3 ) )
+    --> [ LineSegment3d.withEndpoints
+    -->     ( Point3d.withCoordinates ( 0, 0, 0 )
+    -->     , Point3d.withCoordinates ( 1, 0, 0 )
+    -->     )
+    --> , LineSegment3d.withEndpoints
+    -->     ( Point3d.withCoordinates ( 1, 0, 0 )
+    -->     , Point3d.withCoordinates ( 1, 2, 0 )
+    -->     )
+    --> , LineSegment3d.withEndpoints
+    -->     ( Point3d.withCoordinates ( 1, 2, 0 )
+    -->     , Point3d.withCoordinates ( 1, 2, 3 )
+    -->     )
     --> ]
 
 -}
@@ -118,7 +153,10 @@ segments polyline =
             []
 
         (first :: rest) as all ->
-            List.map2 (\start end -> LineSegment3d ( start, end )) all rest
+            List.map2
+                (\start end -> LineSegment3d.withEndpoints ( start, end ))
+                all
+                rest
 
 
 {-| Get the overall length of a polyline (the sum of the lengths of its
@@ -136,14 +174,14 @@ length =
 {-| Scale a polyline about the given center point by the given scale.
 
     point =
-        Point3d ( 1, 0, 0 )
+        Point3d.withCoordinates ( 1, 0, 0 )
 
     Polyline3d.scaleAbout point 2 examplePolyline
-    --> Polyline3d
-    -->     [ Point3d ( -1, 0, 0 )
-    -->     , Point3d ( 1, 0, 0 )
-    -->     , Point3d ( 1, 4, 0 )
-    -->     , Point3d ( 1, 4, 6 )
+    --> Polyline3d.withVertices
+    -->     [ Point3d.withCoordinates ( -1, 0, 0 )
+    -->     , Point3d.withCoordinates ( 1, 0, 0 )
+    -->     , Point3d.withCoordinates ( 1, 4, 0 )
+    -->     , Point3d.withCoordinates ( 1, 4, 6 )
     -->     ]
 
 -}
@@ -155,11 +193,11 @@ scaleAbout point scale =
 {-| Rotate a polyline around the given axis by the given angle (in radians).
 
     Polyline3d.rotateAround Axis3d.z (degrees 90) examplePolyline
-    --> Polyline3d
-    -->     [ Point3d ( 0, 0, 0 )
-    -->     , Point3d ( 0, 1, 0 )
-    -->     , Point3d ( -2, 1, 0 )
-    -->     , Point3d ( -2, 1, 3 )
+    --> Polyline3d.withVertices
+    -->     [ Point3d.withCoordinates ( 0, 0, 0 )
+    -->     , Point3d.withCoordinates ( 0, 1, 0 )
+    -->     , Point3d.withCoordinates ( -2, 1, 0 )
+    -->     , Point3d.withCoordinates ( -2, 1, 3 )
     -->     ]
 
 -}
@@ -171,14 +209,14 @@ rotateAround axis angle =
 {-| Translate a polyline by the given displacement.
 
     displacement =
-        Vector3d ( 1, 2, 3 )
+        Vector3d.withComponents ( 1, 2, 3 )
 
     Polyline3d.translateBy displacement examplePolyline
-    --> Polyline3d
-    -->     [ Point3d ( 1, 2, 3 )
-    -->     , Point3d ( 2, 2, 3 )
-    -->     , Point3d ( 2, 4, 3 )
-    -->     , Point3d ( 2, 4, 6 )
+    --> Polyline3d.withVertices
+    -->     [ Point3d.withCoordinates ( 1, 2, 3 )
+    -->     , Point3d.withCoordinates ( 2, 2, 3 )
+    -->     , Point3d.withCoordinates ( 2, 4, 3 )
+    -->     , Point3d.withCoordinates ( 2, 4, 6 )
     -->     ]
 
 -}
@@ -190,11 +228,11 @@ translateBy vector =
 {-| Mirror a polyline across the given plane.
 
     Polyline3d.mirrorAcross Plane3d.xz examplePolyline
-    --> Polyline3d
-    -->     [ Point3d ( 0, 0, 0 )
-    -->     , Point3d ( 1, 0, 0 )
-    -->     , Point3d ( 1, -2, 0 )
-    -->     , Point3d ( 1, -2, 3 )
+    --> Polyline3d.withVertices
+    -->     [ Point3d.withCoordinates ( 0, 0, 0 )
+    -->     , Point3d.withCoordinates ( 1, 0, 0 )
+    -->     , Point3d.withCoordinates ( 1, -2, 0 )
+    -->     , Point3d.withCoordinates ( 1, -2, 3 )
     -->     ]
 
 -}
@@ -206,11 +244,11 @@ mirrorAcross plane =
 {-| Project (flatten) a polyline onto the given plane.
 
     Polyline3d.projectOnto Plane3d.xz examplePolyline
-    --> Polyline3d
-    -->     [ Point3d ( 0, 0, 0 )
-    -->     , Point3d ( 1, 0, 0 )
-    -->     , Point3d ( 1, 0, 0 )
-    -->     , Point3d ( 1, 0, 3 )
+    --> Polyline3d.withVertices
+    -->     [ Point3d.withCoordinates ( 0, 0, 0 )
+    -->     , Point3d.withCoordinates ( 1, 0, 0 )
+    -->     , Point3d.withCoordinates ( 1, 0, 0 )
+    -->     , Point3d.withCoordinates ( 1, 0, 3 )
     -->     ]
 
 -}
@@ -231,21 +269,21 @@ is equivalent to
 -}
 map : (Point3d -> Point3d) -> Polyline3d -> Polyline3d
 map function =
-    vertices >> List.map function >> Polyline3d
+    vertices >> List.map function >> withVertices
 
 
 {-| Take a polyline defined in global coordinates, and return it expressed
 in local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame3d.at (Point3d ( 1, 2, 3 ))
+        Frame3d.at (Point3d.withCoordinates ( 1, 2, 3 ))
 
     Polyline3d.relativeTo localFrame examplePolyline
-    --> Polyline3d
-    -->     [ Point3d ( -1, -2, -3 )
-    -->     , Point3d ( 0, -2, -3 )
-    -->     , Point3d ( 0, 0, -3 )
-    -->     , Point3d ( 0, 0, 0 )
+    --> Polyline3d.withVertices
+    -->     [ Point3d.withCoordinates ( -1, -2, -3 )
+    -->     , Point3d.withCoordinates ( 0, -2, -3 )
+    -->     , Point3d.withCoordinates ( 0, 0, -3 )
+    -->     , Point3d.withCoordinates ( 0, 0, 0 )
     -->     ]
 
 -}
@@ -259,14 +297,14 @@ to a given reference frame, and return that polyline expressed in global
 coordinates.
 
     localFrame =
-        Frame3d.at (Point3d ( 1, 2, 3 ))
+        Frame3d.at (Point3d.withCoordinates ( 1, 2, 3 ))
 
     Polyline3d.placeIn localFrame examplePolyline
-    --> Polyline3d
-    -->     [ Point3d ( 1, 2, 3 )
-    -->     , Point3d ( 2, 2, 3 )
-    -->     , Point3d ( 2, 4, 3 )
-    -->     , Point3d ( 2, 4, 6 )
+    --> Polyline3d.withVertices
+    -->     [ Point3d.withCoordinates ( 1, 2, 3 )
+    -->     , Point3d.withCoordinates ( 2, 2, 3 )
+    -->     , Point3d.withCoordinates ( 2, 4, 3 )
+    -->     , Point3d.withCoordinates ( 2, 4, 6 )
     -->     ]
 
 -}
@@ -280,17 +318,19 @@ the polyline onto the plane and then expresses the projected polyline in 2D
 sketch coordinates.
 
     Polyline3d.projectInto Plane3d.xy examplePolyline
-    --> Polyline2d
-    -->     [ Point2d ( 0, 0 )
-    -->     , Point2d ( 1, 0 )
-    -->     , Point2d ( 1, 2 )
-    -->     , Point2d ( 1, 2 )
+    --> Polyline2d.withVertices
+    -->     [ Point2d.withCoordinates ( 0, 0 )
+    -->     , Point2d.withCoordinates ( 1, 0 )
+    -->     , Point2d.withCoordinates ( 1, 2 )
+    -->     , Point2d.withCoordinates ( 1, 2 )
     -->     ]
 
 -}
 projectInto : SketchPlane3d -> Polyline3d -> Polyline2d
 projectInto sketchPlane =
-    vertices >> List.map (Point3d.projectInto sketchPlane) >> Polyline2d
+    vertices
+        >> List.map (Point3d.projectInto sketchPlane)
+        >> Polyline2d.withVertices
 
 
 {-| Get the minimal bounding box containing a given polyline. Returns `Nothing`
@@ -298,7 +338,7 @@ if the polyline has no vertices.
 
     Polyline3d.boundingBox examplePolyline
     --> Just
-    -->     (BoundingBox3d
+    -->     (BoundingBox3d.with
     -->         { minX = 0
     -->         , maxX = 1
     -->         , minY = 0
