@@ -1,6 +1,7 @@
 module OpenSolid.Arc3d
     exposing
-        ( axialDirection
+        ( Arc3d
+        , axialDirection
         , axis
         , centerPoint
         , endPoint
@@ -20,6 +21,7 @@ module OpenSolid.Arc3d
         , throughPoints
         , toPolyline
         , translateBy
+        , with
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/arc3d.svg" alt="Arc3d" width="160">
@@ -32,25 +34,12 @@ start point to the arc's end point). This module includes functionality for
   - Scaling, rotating, translating and mirroring arcs
   - Converting arcs between different coordinate systems
 
-Arcs can be constructed explicitly by passing a record with `axis`, `startPoint`
-and `sweptAngle` fields to the `Arc3d` constructor, for example
-
-    exampleArc =
-        Arc3d
-            { axis = Axis3d.z
-            , startPoint = Point3d ( 2, 0, 1 )
-            , sweptAngle = degrees 90
-            }
-
-Note that the origin point of the axis is not required to be the same as the
-arc's center point - here the origin point of the given axis is
-`Point3d.origin`, while the center point of the arc is `Point3d ( 0, 0, 1 )`
-(the start point of the arc projected onto the axis).
+@docs Arc3d
 
 
 # Constructors
 
-@docs on, throughPoints
+@docs with, on, throughPoints
 
 
 # Accessors
@@ -79,31 +68,61 @@ arc's center point - here the origin point of the given axis is
 
 -}
 
-import OpenSolid.Arc2d as Arc2d
-import OpenSolid.Axis3d as Axis3d
-import OpenSolid.Direction3d as Direction3d
-import OpenSolid.Frame3d as Frame3d
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Point3d as Point3d
-import OpenSolid.SketchPlane3d as SketchPlane3d
-import OpenSolid.Vector3d as Vector3d
+import OpenSolid.Arc2d as Arc2d exposing (Arc2d)
+import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
+import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
+import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
+import OpenSolid.Geometry.Types as Types
+import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
+import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.Point3d as Point3d exposing (Point3d)
+import OpenSolid.Polyline3d as Polyline3d exposing (Polyline3d)
+import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
+import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
+
+
+{-| An arc in 3D.
+-}
+type alias Arc3d =
+    Types.Arc3d
+
+
+{-| Construct an arc from its axis, start point and swept angle:
+
+    exampleArc =
+        Arc3d.with
+            { axis = Axis3d.z
+            , startPoint = Point3d.withCoordinates ( 2, 0, 1 )
+            , sweptAngle = degrees 90
+            }
+
+Note that the origin point of the axis is not required to be the same as the
+arc's center point - here the origin point of the given axis is
+`Point3d.origin`, while the center point of the arc is
+`Point3d.withCoordinates ( 0, 0, 1 )` (the start point of the arc projected onto
+the axis).
+
+-}
+with : { axis : Axis3d, startPoint : Point3d, sweptAngle : Float } -> Arc3d
+with =
+    Types.Arc3d
 
 
 {-| Construct an arc on the given sketch plane from its center point and start
 point given in 2D coordinates within the sketch plane.
 
     Arc3d.on SketchPlane3d.xz
-        { centerPoint = Point2d ( 1, 1 )
-        , startPoint = Point2d ( 3, 1 )
+        { centerPoint = Point2d.withCoordinates ( 1, 1 )
+        , startPoint = Point2d.withCoordinates ( 3, 1 )
         , sweptAngle = degrees 90
         }
-    --> Arc3d
+    --> Arc3d.with
     -->     { axis =
-    -->         Axis3d
-    -->             { originPoint = Point3d ( 1, 0, 1 )
+    -->         Axis3d.with
+    -->             { originPoint = Point3d.withCoordinates ( 1, 0, 1 )
     -->             , direction = Direction3d.negativeY
     -->             }
-    -->     , startPoint = Point3d ( 3, 0, 1 )
+    -->     , startPoint = Point3d.withCoordinates ( 3, 0, 1 )
     -->     , sweptAngle = degrees 90
     -->     }
 
@@ -113,12 +132,12 @@ This is a shortcut for calling `Arc2d.placeOnto`;
 
 is equivalent to
 
-    Arc2d.placeOnto sketchPlane (Arc2d { centerPoint = ... })
+    Arc2d.placeOnto sketchPlane (Arc2d.with { centerPoint = ... })
 
 -}
 on : SketchPlane3d -> { centerPoint : Point2d, startPoint : Point2d, sweptAngle : Float } -> Arc3d
 on sketchPlane properties =
-    Arc2d properties |> Arc2d.placeOnto sketchPlane
+    Arc2d.with properties |> Arc2d.placeOnto sketchPlane
 
 
 {-| Attempt to construct an arc that starts at the first given point, passes
@@ -126,23 +145,23 @@ through the second given point and ends at the third given point. If the three
 points are collinear, returns `Nothing`.
 
     p1 =
-        Point3d ( 0, 0, 1 )
+        Point3d.withCoordinates ( 0, 0, 1 )
 
     p2 =
         Point3d.origin
 
     p3 =
-        Point3d ( 0, 1, 0 )
+        Point3d.withCoordinates ( 0, 1, 0 )
 
     Arc3d.throughPoints p1 p2 p3
     --> Just
-    -->     (Arc3d
+    -->     (Arc3d.with
     -->         { axis =
-    -->             Axis3d
-    -->                 { originPoint = Point3d ( 0, 0.5, 0.5 )
-    -->                 , direction = Direction3d ( 1, 0, 0 )
+    -->             Axis3d.with
+    -->                 { originPoint = Point3d.withCoordinates ( 0, 0.5, 0.5 )
+    -->                 , direction = Direction3d.x
     -->                 }
-    -->         , startPoint = Point3d (0,0,1)
+    -->         , startPoint = Point3d.withCoordinates (0,0,1)
     -->         , sweptAngle = 3.1416
     -->         }
     -->     )
@@ -172,14 +191,14 @@ throughPoints firstPoint secondPoint thirdPoint =
 
 -}
 axis : Arc3d -> Axis3d
-axis (Arc3d properties) =
+axis (Types.Arc3d properties) =
     properties.axis
 
 
 {-| Get the center point of an arc.
 
     Arc3d.centerPoint exampleArc
-    --> Point3d ( 0, 0, 1 )
+    --> Point3d.withCoordinates ( 0, 0, 1 )
 
 The center point of an arc is equal to its start point projected onto its
 central axis, which may not be equal to the origin point of that axis.
@@ -218,18 +237,18 @@ radius arc =
 {-| Get the start point of an arc.
 
     Arc3d.startPoint exampleArc
-    --> Point3d ( 2, 0, 1 )
+    --> Point3d.withCoordinates ( 2, 0, 1 )
 
 -}
 startPoint : Arc3d -> Point3d
-startPoint (Arc3d properties) =
+startPoint (Types.Arc3d properties) =
     properties.startPoint
 
 
 {-| Get the end point of an arc.
 
     Arc3d.endPoint exampleArc
-    --> Point3d ( 0, 2, 1 )
+    --> Point3d.withCoordinates ( 0, 2, 1 )
 
 -}
 endPoint : Arc3d -> Point3d
@@ -242,7 +261,7 @@ endPoint arc =
 end point.
 
     Arc3d.pointOn exampleArc 0.5
-    --> Point3d ( 1.4142, 1.4142, 1 )
+    --> Point3d.withCoordinates ( 1.4142, 1.4142, 1 )
 
 -}
 pointOn : Arc3d -> Float -> Point3d
@@ -282,7 +301,7 @@ pointOn arc =
             sinAngle =
                 sin angle
         in
-        Point3d
+        Point3d.withCoordinates
             ( x0 + x1 * cosAngle + x2 * sinAngle
             , y0 + y1 * cosAngle + y2 * sinAngle
             , z0 + z1 * cosAngle + z2 * sinAngle
@@ -304,20 +323,19 @@ at that parameter value and the derivative with respect to that parameter value.
         Arc3d.evaluate exampleArc
 
     evaluate 0
-    --> ( Point3d ( 2, 0, 1 ), Vector3d ( 0, 3.1416, 0 ) )
+    --> ( Point3d.withCoordinates ( 2, 0, 1 )
+    --> , Vector3d.withComponents ( 0, 3.1416, 0 )
+    --> )
 
     evaluate 0.5
-    --> ( Point3d ( 1.4142, 1.4142, 1 ), Vector3d ( -2.2214, 2.2214, 0 ) )
+    --> ( Point3d.withCoordinates ( 1.4142, 1.4142, 1 )
+    --> , Vector3d.withComponents ( -2.2214, 2.2214, 0 )
+    --> )
 
     evaluate 1
-    --> ( Point3d ( 0, 2, 1 ), Vector3d ( -3.1416, 0, 0 ) )
-
-For best efficiency, `evaluate` should be partially applied (called with just
-the arc argument) first, and then the returned function should be called
-multiple times, as in the example above. Note that this happens naturally in
-many common cases such as
-
-    List.map (Arc3d.evaluate arc) parameterValues
+    --> ( Point3d.withCoordinates ( 0, 2, 1 )
+    --> , Vector3d.withComponents ( -3.1416, 0, 0 )
+    --> )
 
 -}
 evaluate : Arc3d -> Float -> ( Point3d, Vector3d )
@@ -357,12 +375,12 @@ evaluate arc =
             sinAngle =
                 sin angle
         in
-        ( Point3d
+        ( Point3d.withCoordinates
             ( x0 + x1 * cosAngle + x2 * sinAngle
             , y0 + y1 * cosAngle + y2 * sinAngle
             , z0 + z1 * cosAngle + z2 * sinAngle
             )
-        , Vector3d
+        , Vector3d.withComponents
             ( arcSweptAngle * (cosAngle * x2 - sinAngle * x1)
             , arcSweptAngle * (cosAngle * y2 - sinAngle * y1)
             , arcSweptAngle * (cosAngle * z2 - sinAngle * z1)
@@ -385,11 +403,11 @@ numApproximationSegments tolerance arc =
 {-| Approximate an arc as a polyline, within the specified tolerance.
 
     Arc3d.toPolyline 0.1 exampleArc
-    --> Polyline3d
-    -->     [ Point3d ( 2, 0, 1 )
-    -->     , Point3d ( 1.732, 1, 1 )
-    -->     , Point3d ( 1, 1.732, 1 )
-    -->     , Point3d ( 0, 2, 1 )
+    --> Polyline3d.withVertices
+    -->     [ Point3d.withCoordinates ( 2, 0, 1 )
+    -->     , Point3d.withCoordinates ( 1.732, 1, 1 )
+    -->     , Point3d.withCoordinates ( 1, 1.732, 1 )
+    -->     , Point3d.withCoordinates ( 0, 2, 1 )
     -->     ]
 
 A tolerance of zero will be treated as infinity (a single line segment will be
@@ -408,7 +426,7 @@ toPolyline tolerance arc =
         points =
             List.range 0 numSegments |> List.map point
     in
-    Polyline3d points
+    Polyline3d.withVertices points
 
 
 {-| Get the swept angle of an arc in radians.
@@ -422,7 +440,7 @@ angle.
 
 -}
 sweptAngle : Arc3d -> Float
-sweptAngle (Arc3d properties) =
+sweptAngle (Types.Arc3d properties) =
     properties.sweptAngle
 
 
@@ -430,16 +448,16 @@ sweptAngle (Arc3d properties) =
 point and vice versa.
 
     Arc3d.reverse exampleArc
-    --> Arc3d
+    --> Arc3d.with
     -->     { axis = Axis3d.z
-    -->     , startPoint = Point3d ( 0, 2, 1 )
+    -->     , startPoint = Point3d.withCoordinates ( 0, 2, 1 )
     -->     , sweptAngle = degrees -90
     -->     }
 
 -}
 reverse : Arc3d -> Arc3d
 reverse arc =
-    Arc3d
+    with
         { startPoint = endPoint arc
         , axis = axis arc
         , sweptAngle = -(sweptAngle arc)
@@ -449,16 +467,16 @@ reverse arc =
 {-| Scale an arc about the given center point by the given scale.
 
     point =
-        Point3d ( 1, 0, 1 )
+        Point3d.withCoordinates ( 1, 0, 1 )
 
     Arc3d.scaleAbout point 2 exampleArc
-    --> Arc3d
+    --> Arc3d.with
     -->     { axis =
-    -->         Axis3d
-    -->             { originPoint = Point3d ( -1, 0, -1 )
+    -->         Axis3d.with
+    -->             { originPoint = Point3d.withCoordinates ( -1, 0, -1 )
     -->             , direction = Direction3d.z
     -->             }
-    -->     , startPoint = Point3d ( 3, 0, 1 )
+    -->     , startPoint = Point3d.withCoordinates ( 3, 0, 1 )
     -->     , sweptAngle = degrees 90
     -->     }
 
@@ -485,9 +503,12 @@ scaleAbout point scale arc =
                 currentAxisDirection
 
         scaledAxis =
-            Axis3d { originPoint = scaledOrigin, direction = scaledDirection }
+            Axis3d.with
+                { originPoint = scaledOrigin
+                , direction = scaledDirection
+                }
     in
-    Arc3d
+    with
         { axis = scaledAxis
         , startPoint = scalePoint (startPoint arc)
         , sweptAngle = sweptAngle arc
@@ -497,9 +518,9 @@ scaleAbout point scale arc =
 {-| Rotate an arc around a given axis by a given angle (in radians).
 
     Arc3d.rotateAround Axis3d.x (degrees 90) exampleArc
-    --> Arc3d
+    --> Arc3d.with
     -->     { axis = Axis3d.flip Axis3d.y
-    -->     , startPoint = Point3d ( 2, -1, 0 )
+    -->     , startPoint = Point3d.withCoordinates ( 2, -1, 0 )
     -->     , sweptAngle = degrees 90
     -->     }
 
@@ -514,7 +535,7 @@ rotateAround rotationAxis angle =
             Point3d.rotateAround rotationAxis angle
     in
     \arc ->
-        Arc3d
+        with
             { axis = rotateAxis (axis arc)
             , startPoint = rotatePoint (startPoint arc)
             , sweptAngle = sweptAngle arc
@@ -524,23 +545,23 @@ rotateAround rotationAxis angle =
 {-| Translate an arc by a given displacement.
 
     displacement =
-        Vector3d ( 2, 1, 3 )
+        Vector3d.withComponents ( 2, 1, 3 )
 
     Arc3d.translateBy displacement exampleArc
-    --> Arc3d
+    --> Arc3d.with
     -->     { axis =
-    -->         Axis3d
-    -->             { originPoint = Point3d ( 2, 1, 3 )
+    -->         Axis3d.with
+    -->             { originPoint = Point3d.withCoordinates ( 2, 1, 3 )
     -->             , direction = Direction3d.z
     -->             }
-    -->     , startPoint = Point3d ( 4, 1, 4 )
+    -->     , startPoint = Point3d.withCoordinates ( 4, 1, 4 )
     -->     , sweptAngle = degrees 90
     -->     }
 
 -}
 translateBy : Vector3d -> Arc3d -> Arc3d
 translateBy displacement arc =
-    Arc3d
+    with
         { axis = Axis3d.translateBy displacement (axis arc)
         , startPoint = Point3d.translateBy displacement (startPoint arc)
         , sweptAngle = sweptAngle arc
@@ -550,11 +571,11 @@ translateBy displacement arc =
 {-| Mirror an arc across a given plane.
 
     Arc3d.mirrorAcross Plane3d.xy exampleArc
-    Arc3d
-        { axis = Axis3d.flip Axis3d.z
-        , startPoint = Point3d ( 2, 0, -1 )
-        , sweptAngle = degrees -90
-        }
+    --> Arc3d.with
+    -->     { axis = Axis3d.flip Axis3d.z
+    -->     , startPoint = Point3d.withCoordinates ( 2, 0, -1 )
+    -->     , sweptAngle = degrees -90
+    -->     }
 
 Note that this flips the sign of the arc's swept angle.
 
@@ -569,7 +590,7 @@ mirrorAcross plane =
             Point3d.mirrorAcross plane
     in
     \arc ->
-        Arc3d
+        with
             { axis = mirrorAxis (axis arc)
             , startPoint = mirrorPoint (startPoint arc)
             , sweptAngle = -(sweptAngle arc)
@@ -580,23 +601,23 @@ mirrorAcross plane =
 coordinates relative to a given reference frame.
 
     localFrame =
-        Frame3d.at (Point3d ( 1, 2, 3 ))
+        Frame3d.at (Point3d.withCoordinates ( 1, 2, 3 ))
 
     Arc3d.relativeTo localFrame exampleArc
-    --> Arc3d
+    --> Arc3d.with
     -->     { axis =
-    -->         Axis3d
-    -->             { originPoint = Point3d ( -1, -2, -3 )
+    -->         Axis3d.with
+    -->             { originPoint = Point3d.withCoordinates ( -1, -2, -3 )
     -->             , direction = Direction3d.z
     -->             }
-    -->     , startPoint = Point3d ( 1, -2, -2 )
+    -->     , startPoint = Point3d.withCoordinates ( 1, -2, -2 )
     -->     , sweptAngle = degrees 90
     -->     }
 
 -}
 relativeTo : Frame3d -> Arc3d -> Arc3d
 relativeTo frame arc =
-    Arc3d
+    with
         { axis = Axis3d.relativeTo frame (axis arc)
         , startPoint = Point3d.relativeTo frame (startPoint arc)
         , sweptAngle =
@@ -611,23 +632,23 @@ relativeTo frame arc =
 given reference frame, and return that arc expressed in global coordinates.
 
     localFrame =
-        Frame3d.at (Point3d ( 1, 2, 3 ))
+        Frame3d.at (Point3d.withCoordinates ( 1, 2, 3 ))
 
     Arc3d.placeIn localFrame exampleArc
-    --> Arc3d
+    --> Arc3d.with
     -->     { axis =
-    -->         Axis3d
-    -->             { originPoint = Point3d ( 1, 2, 3 )
+    -->         Axis3d.with
+    -->             { originPoint = Point3d.withCoordinates ( 1, 2, 3 )
     -->             , direction = Direction3d.z
     -->             }
-    -->     , startPoint = Point3d ( 3, 2, 4 )
+    -->     , startPoint = Point3d.withCoordinates ( 3, 2, 4 )
     -->     , sweptAngle = degrees 90
     -->     }
 
 -}
 placeIn : Frame3d -> Arc3d -> Arc3d
 placeIn frame arc =
-    Arc3d
+    with
         { axis = Axis3d.placeIn frame (axis arc)
         , startPoint = Point3d.placeIn frame (startPoint arc)
         , sweptAngle =
