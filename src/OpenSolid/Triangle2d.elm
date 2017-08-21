@@ -94,7 +94,7 @@ import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
 import OpenSolid.Bootstrap.Triangle3d as Triangle3d
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
-import OpenSolid.Geometry.Types as Types exposing (Triangle2d, Triangle3d)
+import OpenSolid.Geometry.Types as Types exposing (Triangle3d)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
