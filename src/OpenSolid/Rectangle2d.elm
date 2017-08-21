@@ -13,8 +13,6 @@ module OpenSolid.Rectangle2d
         , in_
         , mirrorAcross
         , placeIn
-          --, placeOnto
-          --, point
         , relativeTo
         , rotateAround
         , scaleAbout
