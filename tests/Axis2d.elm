@@ -17,15 +17,18 @@ module Axis2d
 
 import Generic
 import OpenSolid.Axis2d as Axis2d
+import OpenSolid.Axis3d as Axis3d
 import OpenSolid.Direction2d as Direction2d
+import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Frame2d as Frame2d
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Expect as Expect
 import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point2d as Point2d
+import OpenSolid.Point3d as Point3d
 import OpenSolid.SketchPlane3d as SketchPlane3d
+import OpenSolid.Vector2d as Vector2d
 import Test exposing (Test)
 
 
@@ -40,7 +43,7 @@ xExample =
         \() ->
             Axis2d.x
                 |> Expect.axis2d
-                    (Axis2d
+                    (Axis2d.with
                         { originPoint = Point2d.origin
                         , direction = Direction2d.x
                         }
@@ -53,7 +56,7 @@ yExample =
         \() ->
             Axis2d.y
                 |> Expect.axis2d
-                    (Axis2d
+                    (Axis2d.with
                         { originPoint = Point2d.origin
                         , direction = Direction2d.y
                         }
@@ -80,7 +83,7 @@ flipExample =
         \() ->
             Axis2d.flip Axis2d.x
                 |> Expect.axis2d
-                    (Axis2d
+                    (Axis2d.with
                         { originPoint = Point2d.origin
                         , direction = Direction2d.negativeX
                         }
@@ -93,18 +96,18 @@ moveToExample =
         \() ->
             let
                 axis =
-                    Axis2d
-                        { originPoint = Point2d ( 2, 3 )
+                    Axis2d.with
+                        { originPoint = Point2d.withCoordinates ( 2, 3 )
                         , direction = Direction2d.y
                         }
 
                 newOrigin =
-                    Point2d ( 4, 5 )
+                    Point2d.withCoordinates ( 4, 5 )
             in
             Axis2d.moveTo newOrigin axis
                 |> Expect.axis2d
-                    (Axis2d
-                        { originPoint = Point2d ( 4, 5 )
+                    (Axis2d.with
+                        { originPoint = Point2d.withCoordinates ( 4, 5 )
                         , direction = Direction2d.y
                         }
                     )
@@ -124,12 +127,12 @@ translateByExample =
         \() ->
             let
                 displacement =
-                    Vector2d ( 2, 3 )
+                    Vector2d.withComponents ( 2, 3 )
             in
             Axis2d.translateBy displacement Axis2d.y
                 |> Expect.axis2d
-                    (Axis2d
-                        { originPoint = Point2d ( 2, 3 )
+                    (Axis2d.with
+                        { originPoint = Point2d.withCoordinates ( 2, 3 )
                         , direction = Direction2d.y
                         }
                     )
@@ -141,15 +144,15 @@ mirrorAcrossExample =
         \() ->
             let
                 axis =
-                    Axis2d
-                        { originPoint = Point2d ( 1, 2 )
+                    Axis2d.with
+                        { originPoint = Point2d.withCoordinates ( 1, 2 )
                         , direction = Direction2d.fromAngle (degrees 30)
                         }
             in
             Axis2d.mirrorAcross Axis2d.x axis
                 |> Expect.axis2d
-                    (Axis2d
-                        { originPoint = Point2d ( 1, -2 )
+                    (Axis2d.with
+                        { originPoint = Point2d.withCoordinates ( 1, -2 )
                         , direction = Direction2d.fromAngle (degrees -30)
                         }
                     )
@@ -161,12 +164,12 @@ relativeToExample =
         \() ->
             let
                 originPoint =
-                    Point2d ( 2, 3 )
+                    Point2d.withCoordinates ( 2, 3 )
             in
             Axis2d.relativeTo (Frame2d.at originPoint) Axis2d.x
                 |> Expect.axis2d
-                    (Axis2d
-                        { originPoint = Point2d ( -2, -3 )
+                    (Axis2d.with
+                        { originPoint = Point2d.withCoordinates ( -2, -3 )
                         , direction = Direction2d.x
                         }
                     )
@@ -178,12 +181,12 @@ placeInExample =
         \() ->
             let
                 originPoint =
-                    Point2d ( 2, 3 )
+                    Point2d.withCoordinates ( 2, 3 )
             in
             Axis2d.placeIn (Frame2d.at originPoint) Axis2d.x
                 |> Expect.axis2d
-                    (Axis2d
-                        { originPoint = Point2d ( 2, 3 )
+                    (Axis2d.with
+                        { originPoint = Point2d.withCoordinates ( 2, 3 )
                         , direction = Direction2d.x
                         }
                     )
@@ -193,9 +196,9 @@ placeOntoExamples : Test
 placeOntoExamples =
     let
         axis =
-            Axis2d
-                { originPoint = Point2d ( 2, 3 )
-                , direction = Direction2d ( 0.6, 0.8 )
+            Axis2d.with
+                { originPoint = Point2d.withCoordinates ( 2, 3 )
+                , direction = Direction2d.withComponents ( 0.6, 0.8 )
                 }
     in
     Test.describe "Axis2d.placeOnto examples"
@@ -203,18 +206,22 @@ placeOntoExamples =
             \() ->
                 Axis2d.placeOnto SketchPlane3d.xy axis
                     |> Expect.axis3d
-                        (Axis3d
-                            { originPoint = Point3d ( 2, 3, 0 )
-                            , direction = Direction3d ( 0.6, 0.8, 0 )
+                        (Axis3d.with
+                            { originPoint =
+                                Point3d.withCoordinates ( 2, 3, 0 )
+                            , direction =
+                                Direction3d.withComponents ( 0.6, 0.8, 0 )
                             }
                         )
         , Test.test "Second example" <|
             \() ->
                 Axis2d.placeOnto SketchPlane3d.zx axis
                     |> Expect.axis3d
-                        (Axis3d
-                            { originPoint = Point3d ( 3, 0, 2 )
-                            , direction = Direction3d ( 0.8, 0, 0.6 )
+                        (Axis3d.with
+                            { originPoint =
+                                Point3d.withCoordinates ( 3, 0, 2 )
+                            , direction =
+                                Direction3d.withComponents ( 0.8, 0, 0.6 )
                             }
                         )
         ]

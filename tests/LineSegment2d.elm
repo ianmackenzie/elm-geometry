@@ -14,11 +14,11 @@ module LineSegment2d
 import Expect
 import Fuzz
 import Generic
+import OpenSolid.Axis2d as Axis2d
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Expect as Expect
 import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.LineSegment2d as LineSegment2d
 import OpenSolid.Point2d as Point2d
 import OpenSolid.Triangle2d as Triangle2d
@@ -51,7 +51,11 @@ intersectionWorksProperly =
                                     LineSegment2d.endpoints segment
 
                                 triangle =
-                                    Triangle2d ( startPoint, endPoint, point )
+                                    Triangle2d.withVertices
+                                        ( startPoint
+                                        , endPoint
+                                        , point
+                                        )
 
                                 area =
                                     Triangle2d.area triangle
@@ -101,13 +105,13 @@ intersectionWorksProperly =
                                     LineSegment2d.startPoint secondSegment
 
                                 firstAxis =
-                                    Axis2d
+                                    Axis2d.with
                                         { originPoint = firstStartPoint
                                         , direction = firstDirection
                                         }
 
                                 secondAxis =
-                                    Axis2d
+                                    Axis2d.with
                                         { originPoint = secondStartPoint
                                         , direction = secondDirection
                                         }
@@ -166,10 +170,10 @@ intersectionFindsCoincidentEndpoints =
         expectation firstStart secondStart sharedEnd =
             let
                 firstSegment =
-                    LineSegment2d ( firstStart, sharedEnd )
+                    LineSegment2d.withEndpoints ( firstStart, sharedEnd )
 
                 secondSegment =
-                    LineSegment2d ( secondStart, sharedEnd )
+                    LineSegment2d.withEndpoints ( secondStart, sharedEnd )
 
                 firstVector =
                     LineSegment2d.vector firstSegment
@@ -208,10 +212,10 @@ intersectionFindsCollinearCoincidentEndpoints =
                     Point2d.interpolateFrom startPoint endPoint t
 
                 firstSegment =
-                    LineSegment2d ( startPoint, midPoint )
+                    LineSegment2d.withEndpoints ( startPoint, midPoint )
 
                 secondSegment =
-                    LineSegment2d ( midPoint, endPoint )
+                    LineSegment2d.withEndpoints ( midPoint, endPoint )
 
                 intersection1 =
                     LineSegment2d.intersectionPoint firstSegment secondSegment
@@ -255,7 +259,7 @@ intersectionOfEqualPointSegmentIsPoint =
         (\point ->
             let
                 segment =
-                    LineSegment2d ( point, point )
+                    LineSegment2d.withEndpoints ( point, point )
             in
             LineSegment2d.intersectionPoint segment segment
                 |> Expect.equal (Just point)
@@ -311,8 +315,8 @@ sharedEndpointOnThirdSegmentInducesAnIntersection =
                     LineSegment2d.midpoint segment3
 
                 ( segment1, segment2 ) =
-                    ( LineSegment2d ( sharedPoint, point1 )
-                    , LineSegment2d ( sharedPoint, point2 )
+                    ( LineSegment2d.withEndpoints ( sharedPoint, point1 )
+                    , LineSegment2d.withEndpoints ( sharedPoint, point2 )
                     )
 
                 ( v1, v2, v3 ) =

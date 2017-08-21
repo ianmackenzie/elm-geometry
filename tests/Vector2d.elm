@@ -16,11 +16,11 @@ import Fuzz
 import Generic
 import OpenSolid.Axis2d as Axis2d
 import OpenSolid.Direction2d as Direction2d
+import OpenSolid.Frame2d as Frame2d
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Expect as Expect
 import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point2d as Point2d
 import OpenSolid.Vector2d as Vector2d
 import Test exposing (Test)
@@ -131,7 +131,7 @@ orthonormalizeProducesValidFrameBasis =
             case Vector2d.orthonormalize vectors of
                 Just ( xDirection, yDirection ) ->
                     Expect.validFrame2d
-                        (Frame2d
+                        (Frame2d.with
                             { originPoint = Point2d.origin
                             , xDirection = xDirection
                             , yDirection = yDirection
@@ -156,8 +156,8 @@ orthonormalizingParallelVectorsReturnsNothing =
         (\() ->
             let
                 vectors =
-                    ( Vector2d ( 1, 2 )
-                    , Vector2d ( -3, -6 )
+                    ( Vector2d.withComponents ( 1, 2 )
+                    , Vector2d.withComponents ( -3, -6 )
                     )
             in
             Expect.equal Nothing (Vector2d.orthonormalize vectors)

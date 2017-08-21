@@ -8,11 +8,11 @@ module Vector3d
 import Expect
 import Fuzz
 import Generic
+import OpenSolid.Frame3d as Frame3d
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Expect as Expect
 import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Vector3d as Vector3d
 import Test exposing (Test)
@@ -31,7 +31,7 @@ orthonormalizeProducesValidFrameBasis =
             case Vector3d.orthonormalize vectors of
                 Just ( xDirection, yDirection, zDirection ) ->
                     Expect.validFrame3d
-                        (Frame3d
+                        (Frame3d.with
                             { originPoint = Point3d.origin
                             , xDirection = xDirection
                             , yDirection = yDirection
@@ -58,9 +58,9 @@ orthonormalizingCoplanarVectorsReturnsNothing =
         (\() ->
             let
                 vectors =
-                    ( Vector3d ( 1, 0, 0 )
-                    , Vector3d ( 2, 3, 0 )
-                    , Vector3d ( -1, 2, 0 )
+                    ( Vector3d.withComponents ( 1, 0, 0 )
+                    , Vector3d.withComponents ( 2, 3, 0 )
+                    , Vector3d.withComponents ( -1, 2, 0 )
                     )
             in
             Expect.equal Nothing (Vector3d.orthonormalize vectors)

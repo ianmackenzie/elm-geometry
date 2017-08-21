@@ -15,7 +15,6 @@ import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Expect as Expect
 import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point3d as Point3d
 import Test exposing (Test)
 
@@ -31,7 +30,7 @@ xExample =
         \() ->
             Axis3d.x
                 |> Expect.axis3d
-                    (Axis3d
+                    (Axis3d.with
                         { originPoint = Point3d.origin
                         , direction = Direction3d.x
                         }
@@ -44,7 +43,7 @@ yExample =
         \() ->
             Axis3d.y
                 |> Expect.axis3d
-                    (Axis3d
+                    (Axis3d.with
                         { originPoint = Point3d.origin
                         , direction = Direction3d.y
                         }
@@ -57,7 +56,7 @@ zExample =
         \() ->
             Axis3d.z
                 |> Expect.axis3d
-                    (Axis3d
+                    (Axis3d.with
                         { originPoint = Point3d.origin
                         , direction = Direction3d.z
                         }
