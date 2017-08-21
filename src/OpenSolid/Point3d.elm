@@ -15,13 +15,11 @@ module OpenSolid.Point3d
         ( Point3d
         , along
         , coordinates
-        , directionFrom
         , distanceAlong
         , distanceFrom
         , equalWithin
         , hull
         , in_
-        , interpolate
         , interpolateFrom
         , midpoint
         , mirrorAcross
@@ -39,7 +37,6 @@ module OpenSolid.Point3d
         , squaredDistanceFrom
         , squaredRadialDistanceFrom
         , translateBy
-        , vectorFrom
         , withCoordinates
         , xCoordinate
         , yCoordinate
@@ -67,7 +64,7 @@ as
 
 # Constructors
 
-@docs withCoordinates, midpoint, interpolateFrom, interpolate, along, on, in_
+@docs withCoordinates, midpoint, interpolateFrom, along, on, in_
 
 
 # Coordinates
@@ -82,7 +79,7 @@ as
 
 # Displacement and distance
 
-@docs vectorFrom, directionFrom, distanceFrom, squaredDistanceFrom, distanceAlong, radialDistanceFrom, squaredRadialDistanceFrom, signedDistanceFrom
+@docs distanceFrom, squaredDistanceFrom, distanceAlong, radialDistanceFrom, squaredRadialDistanceFrom, signedDistanceFrom
 
 
 # Transformations
@@ -220,14 +217,6 @@ interpolateFrom p1 p2 t =
         )
 
 
-{-| DEPRECATED: Alias for `interpolateFrom`, kept for compatibility. Use
-`interpolateFrom` instead.
--}
-interpolate : Point3d -> Point3d -> Float -> Point3d
-interpolate =
-    interpolateFrom
-
-
 {-| Construct a point along an axis at a particular distance from the axis'
 origin point.
 
@@ -360,22 +349,6 @@ between the two given points is less than the given tolerance.
 equalWithin : Float -> Point3d -> Point3d -> Bool
 equalWithin tolerance firstPoint secondPoint =
     squaredDistanceFrom firstPoint secondPoint <= tolerance * tolerance
-
-
-{-| DEPRECATED: Alias for `Vector3d.from`, kept for compatibility. Use
-`Vector3d.from` instead.
--}
-vectorFrom : Point3d -> Point3d -> Vector3d
-vectorFrom =
-    Vector3d.from
-
-
-{-| DEPRECATED: Alias for `Direction3d.from`, kept for compatibility. Use
-`Direction3d.from` instead.
--}
-directionFrom : Point3d -> Point3d -> Maybe Direction3d
-directionFrom =
-    Direction3d.from
 
 
 {-| Find the distance between two points.

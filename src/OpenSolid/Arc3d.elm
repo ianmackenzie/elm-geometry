@@ -9,7 +9,6 @@ module OpenSolid.Arc3d
         , mirrorAcross
         , on
         , placeIn
-        , point
         , pointOn
         , radius
         , relativeTo
@@ -49,7 +48,7 @@ start point to the arc's end point). This module includes functionality for
 
 # Evaluation
 
-@docs pointOn, point, evaluate
+@docs pointOn, evaluate
 
 
 # Linear approximation
@@ -306,14 +305,6 @@ pointOn arc =
             , y0 + y1 * cosAngle + y2 * sinAngle
             , z0 + z1 * cosAngle + z2 * sinAngle
             )
-
-
-{-| DEPRECATED: Alias for `pointOn`, kept for compatibility. Use `pointOn`
-instead.
--}
-point : Arc3d -> Float -> Point3d
-point =
-    pointOn
 
 
 {-| Evaluate an arc at a given parameter value, returning the point on the arc

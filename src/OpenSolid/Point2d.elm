@@ -15,13 +15,11 @@ module OpenSolid.Point2d
         ( Point2d
         , along
         , coordinates
-        , directionFrom
         , distanceAlong
         , distanceFrom
         , equalWithin
         , hull
         , in_
-        , interpolate
         , interpolateFrom
         , midpoint
         , mirrorAcross
@@ -36,7 +34,6 @@ module OpenSolid.Point2d
         , signedDistanceFrom
         , squaredDistanceFrom
         , translateBy
-        , vectorFrom
         , withCoordinates
         , xCoordinate
         , yCoordinate
@@ -62,7 +59,7 @@ as
 
 # Constructors
 
-@docs withCoordinates, polar, midpoint, interpolateFrom, interpolate, along, in_
+@docs withCoordinates, polar, midpoint, interpolateFrom, along, in_
 
 
 # Coordinates
@@ -77,7 +74,7 @@ as
 
 # Displacement and distance
 
-@docs vectorFrom, directionFrom, distanceFrom, squaredDistanceFrom, distanceAlong, signedDistanceFrom
+@docs distanceFrom, squaredDistanceFrom, distanceAlong, signedDistanceFrom
 
 
 # Transformations
@@ -235,14 +232,6 @@ interpolateFrom p1 p2 t =
         )
 
 
-{-| DEPRECATED: Alias for `interpolateFrom`, kept for compatibility. Use
-`interpolateFrom` instead.
--}
-interpolate : Point2d -> Point2d -> Float -> Point2d
-interpolate =
-    interpolateFrom
-
-
 {-| Construct a point along an axis at a particular distance from the axis'
 origin point.
 
@@ -351,22 +340,6 @@ between the two given points is less than the given tolerance.
 equalWithin : Float -> Point2d -> Point2d -> Bool
 equalWithin tolerance firstPoint secondPoint =
     squaredDistanceFrom firstPoint secondPoint <= tolerance * tolerance
-
-
-{-| DEPRECATED: Alias for `Vector2d.from`, kept for compatibility. Use
-`Vector2d.from` instead.
--}
-vectorFrom : Point2d -> Point2d -> Vector2d
-vectorFrom =
-    Vector2d.from
-
-
-{-| DEPRECATED: Alias for `Direction2d.from`, kept for compatibility. Use
-`Direction2d.from` instead.
--}
-directionFrom : Point2d -> Point2d -> Maybe Direction2d
-directionFrom =
-    Direction2d.from
 
 
 {-| Find the distance between two points.

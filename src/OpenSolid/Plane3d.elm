@@ -23,7 +23,6 @@ module OpenSolid.Plane3d
         , placeIn
         , relativeTo
         , rotateAround
-        , sketchPlane
         , throughPoints
         , toSketchPlane
         , translateBy
@@ -62,7 +61,7 @@ and normal direction and is useful for several operations including:
 
 # Conversions
 
-@docs normalAxis, toSketchPlane, sketchPlane
+@docs normalAxis, toSketchPlane
 
 
 # Transformations
@@ -282,14 +281,6 @@ toSketchPlane plane =
         , xDirection = xDirection
         , yDirection = yDirection
         }
-
-
-{-| DEPRECATED: Alias for `toSketchPlane`, kept for compatibility. Use
-`toSketchPlane` instead.
--}
-sketchPlane : Plane3d -> SketchPlane3d
-sketchPlane =
-    toSketchPlane
 
 
 {-| Shift a plane in its own normal direction by the given (signed) distance.

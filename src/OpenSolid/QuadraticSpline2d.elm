@@ -10,7 +10,6 @@ module OpenSolid.QuadraticSpline2d
         , mirrorAcross
         , placeIn
         , placeOnto
-        , point
         , pointOn
         , relativeTo
         , reverse
@@ -48,7 +47,7 @@ in 2D defined by three control points. This module contains functionality for
 
 # Evaluation
 
-@docs pointOn, point, derivative, evaluate
+@docs pointOn, derivative, evaluate
 
 
 # Transformations
@@ -201,14 +200,6 @@ pointOn spline t =
             Point2d.interpolateFrom p2 p3 t
     in
     Point2d.interpolateFrom q1 q2 t
-
-
-{-| DEPRECATED: Alias for `pointOn`, kept for compatibility. Use `pointOn`
-instead.
--}
-point : QuadraticSpline2d -> Float -> Point2d
-point =
-    pointOn
 
 
 {-| Get the deriative value at a point along a spline, based on a parameter that

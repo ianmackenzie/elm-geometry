@@ -11,7 +11,6 @@ module OpenSolid.CubicSpline2d
         , mirrorAcross
         , placeIn
         , placeOnto
-        , point
         , pointOn
         , relativeTo
         , reverse
@@ -49,7 +48,7 @@ in 2D defined by four control points. This module contains functionality for
 
 # Evaluation
 
-@docs pointOn, point, derivative, evaluate
+@docs pointOn, derivative, evaluate
 
 
 # Transformations
@@ -244,14 +243,6 @@ pointOn spline t =
             Point2d.interpolateFrom q2 q3 t
     in
     Point2d.interpolateFrom r1 r2 t
-
-
-{-| DEPRECATED: Alias for `pointOn`, kept for compatibility. Use `pointOn`
-instead.
--}
-point : CubicSpline2d -> Float -> Point2d
-point =
-    pointOn
 
 
 {-| Get the deriative value at a point along a spline, based on a parameter that

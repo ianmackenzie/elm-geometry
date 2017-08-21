@@ -13,7 +13,6 @@ module OpenSolid.Arc2d
         , mirrorAcross
         , placeIn
         , placeOnto
-        , point
         , pointOn
         , radius
         , relativeTo
@@ -55,7 +54,7 @@ end point). This module includes functionality for
 
 # Evaluation
 
-@docs pointOn, point, evaluate
+@docs pointOn, evaluate
 
 
 # Linear approximation
@@ -484,14 +483,6 @@ pointOn arc parameter =
             parameter * sweptAngle arc
     in
     Point2d.rotateAround (centerPoint arc) angle (startPoint arc)
-
-
-{-| DEPRECATED: Alias for `pointOn`, kept for compatibility. Use `pointOn`
-instead.
--}
-point : Arc2d -> Float -> Point2d
-point =
-    pointOn
 
 
 {-| Evaluate an arc at a given parameter value, returning the point on the arc

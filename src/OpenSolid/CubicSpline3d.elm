@@ -10,7 +10,6 @@ module OpenSolid.CubicSpline3d
         , hermite
         , mirrorAcross
         , placeIn
-        , point
         , pointOn
         , projectInto
         , projectOnto
@@ -50,7 +49,7 @@ in 3D defined by four control points. This module contains functionality for
 
 # Evaluation
 
-@docs pointOn, point, derivative, evaluate
+@docs pointOn, derivative, evaluate
 
 
 # Transformations
@@ -252,14 +251,6 @@ pointOn spline t =
             Point3d.interpolateFrom q2 q3 t
     in
     Point3d.interpolateFrom r1 r2 t
-
-
-{-| DEPRECATED: Alias for `pointOn`, kept for compatibility. Use `pointOn`
-instead.
--}
-point : CubicSpline3d -> Float -> Point3d
-point =
-    pointOn
 
 
 {-| Get the deriative value at a point along a spline, based on a parameter that
