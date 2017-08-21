@@ -1,6 +1,6 @@
 module OpenSolid.QuadraticSpline2d
     exposing
-        ( bezier
+        ( QuadraticSpline2d
         , bisect
         , controlPoints
         , derivative
@@ -20,6 +20,7 @@ module OpenSolid.QuadraticSpline2d
         , startDerivative
         , startPoint
         , translateBy
+        , withControlPoints
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/quadraticSpline2d.svg" alt="QuadraticSpline2d" width="160">
@@ -32,20 +33,12 @@ in 2D defined by three control points. This module contains functionality for
   - Converting a spline between local and global coordinates in different
     reference frames
 
-Splines can be constructed by passing a tuple of control points to the
-`QuadraticSpline2d` constructor, for example
-
-    exampleSpline =
-        QuadraticSpline2d
-            ( Point2d ( 1, 1 )
-            , Point2d ( 3, 4 )
-            , Point2d ( 5, 1 )
-            )
+@docs QuadraticSpline2d
 
 
 # Constructors
 
-@docs bezier
+@docs withControlPoints
 
 
 # Accessors
@@ -79,24 +72,34 @@ Splines can be constructed by passing a tuple of control points to the
 
 -}
 
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Point2d as Point2d
-import OpenSolid.Vector2d as Vector2d
+import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
+import OpenSolid.Bootstrap.QuadraticSpline3d as QuadraticSpline3d
+import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
+import OpenSolid.Geometry.Types as Types exposing (QuadraticSpline3d)
+import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
-{-| Construct a spline from its three control points. This is the same as just
-using the `QuadraticSpline2d` constructor directly;
+{-| A quadratic spline in 2D.
+-}
+type alias QuadraticSpline2d =
+    Types.QuadraticSpline2d
 
-    QuadraticSpline2d.bezier p1 p2 p3
 
-is equivalent to
+{-| Construct a spline from its three control points:
 
-    QuadraticSpline2d ( p1, p2, p3 )
+    exampleSpline =
+        QuadraticSpline2d.withControlPoints
+            ( Point2d.withCoordinates ( 1, 1 )
+            , Point2d.withCoordinates ( 3, 4 )
+            , Point2d.withCoordinates ( 5, 1 )
+            )
 
 -}
-bezier : Point2d -> Point2d -> Point2d -> QuadraticSpline2d
-bezier firstPoint secondPoint thirdPoint =
-    QuadraticSpline2d ( firstPoint, secondPoint, thirdPoint )
+withControlPoints : ( Point2d, Point2d, Point2d ) -> QuadraticSpline2d
+withControlPoints =
+    Types.QuadraticSpline2d
 
 
 {-| Get the control points of a spline as a tuple.
@@ -105,13 +108,13 @@ bezier firstPoint secondPoint thirdPoint =
         QuadraticSpline2d.controlPoints exampleSpline
 
 
-    --> p1 = Point2d ( 1, 1 )
-    --> p2 = Point2d ( 3, 4 )
-    --> p3 = Point2d ( 5, 1 )
+    --> p1 = Point2d.withCoordinates ( 1, 1 )
+    --> p2 = Point2d.withCoordinates ( 3, 4 )
+    --> p3 = Point2d.withCoordinates ( 5, 1 )
 
 -}
 controlPoints : QuadraticSpline2d -> ( Point2d, Point2d, Point2d )
-controlPoints (QuadraticSpline2d controlPoints_) =
+controlPoints (Types.QuadraticSpline2d controlPoints_) =
     controlPoints_
 
 
@@ -119,11 +122,11 @@ controlPoints (QuadraticSpline2d controlPoints_) =
 point.
 
     QuadraticSpline2d.startPoint exampleSpline
-    --> Point2d ( 1, 1 )
+    --> Point2d.withCoordinates ( 1, 1 )
 
 -}
 startPoint : QuadraticSpline2d -> Point2d
-startPoint (QuadraticSpline2d ( p1, _, _ )) =
+startPoint (Types.QuadraticSpline2d ( p1, _, _ )) =
     p1
 
 
@@ -131,11 +134,11 @@ startPoint (QuadraticSpline2d ( p1, _, _ )) =
 point.
 
     QuadraticSpline2d.endPoint exampleSpline
-    --> Point2d ( 5, 1 )
+    --> Point2d.withCoordinates ( 5, 1 )
 
 -}
 endPoint : QuadraticSpline2d -> Point2d
-endPoint (QuadraticSpline2d ( _, _, p3 )) =
+endPoint (Types.QuadraticSpline2d ( _, _, p3 )) =
     p3
 
 
@@ -143,7 +146,7 @@ endPoint (QuadraticSpline2d ( _, _, p3 )) =
 the spline's first control point to its second.
 
     QuadraticSpline2d.startDerivative exampleSpline
-    --> Vector2d ( 4, 6 )
+    --> Vector2d.withComponents ( 4, 6 )
 
 -}
 startDerivative : QuadraticSpline2d -> Vector2d
@@ -159,7 +162,7 @@ startDerivative spline =
 the spline's second control point to its third.
 
     QuadraticSpline2d.endDerivative exampleSpline
-    --> Vector2d ( 4, -6 )
+    --> Vector2d.withComponents ( 4, -6 )
 
 -}
 endDerivative : QuadraticSpline2d -> Vector2d
@@ -176,13 +179,13 @@ parameter value of 0 corresponds to the start point of the spline and a value of
 1 corresponds to the end point.
 
     QuadraticSpline2d.pointOn exampleSpline 0
-    --> Point2d ( 1, 1 )
+    --> Point2d.withCoordinates ( 1, 1 )
 
     QuadraticSpline2d.pointOn exampleSpline 0.5
-    --> Point2d ( 3, 2.5 )
+    --> Point2d.withCoordinates ( 3, 2.5 )
 
     QuadraticSpline2d.pointOn exampleSpline 1
-    --> Point2d ( 5, 1 )
+    --> Point2d.withCoordinates ( 5, 1 )
 
 -}
 pointOn : QuadraticSpline2d -> Float -> Point2d
@@ -213,13 +216,13 @@ ranges from 0 to 1. A parameter value of 0 corresponds to the start derivative
 of the spline and a value of 1 corresponds to the end derivative.
 
     QuadraticSpline2d.derivative exampleSpline 0
-    --> Vector2d ( 4, 6 )
+    --> Vector2d.withComponents ( 4, 6 )
 
     QuadraticSpline2d.derivative exampleSpline 0.5
-    --> Vector2d ( 4, 0 )
+    --> Vector2d.withComponents ( 4, 0 )
 
     QuadraticSpline2d.derivative exampleSpline 1
-    --> Vector2d ( 4, -6 )
+    --> Vector2d.withComponents ( 4, -6 )
 
 Note that the derivative interpolates linearly from end to end.
 
@@ -275,10 +278,10 @@ evaluate spline t =
 versa.
 
     QuadraticSpline2d.reverse exampleSpline
-    --> QuadraticSpline2d
-    -->     ( Point2d ( 5, 1 )
-    -->     , Point2d ( 3, 4 )
-    -->     , Point2d ( 1, 1 )
+    --> QuadraticSpline2d.withControlPoints
+    -->     ( Point2d.withCoordinates ( 5, 1 )
+    -->     , Point2d.withCoordinates ( 3, 4 )
+    -->     , Point2d.withCoordinates ( 1, 1 )
     -->     )
 
 -}
@@ -288,16 +291,16 @@ reverse spline =
         ( p1, p2, p3 ) =
             controlPoints spline
     in
-    QuadraticSpline2d ( p3, p2, p1 )
+    withControlPoints ( p3, p2, p1 )
 
 
 {-| Scale a spline about the given center point by the given scale.
 
     QuadraticSpline2d.scaleAbout Point2d.origin 2 exampleSpline
-    --> QuadraticSpline2d
-    -->     ( Point2d ( 2, 2 )
-    -->     , Point2d ( 6, 8 )
-    -->     , Point2d ( 10, 2 )
+    --> QuadraticSpline2d.withControlPoints
+    -->     ( Point2d.withCoordinates ( 2, 2 )
+    -->     , Point2d.withCoordinates ( 6, 8 )
+    -->     , Point2d.withCoordinates ( 10, 2 )
     -->     )
 
 -}
@@ -310,10 +313,10 @@ scaleAbout point scale =
 angle (in radians).
 
     QuadraticSpline2d.rotateAround Point2d.origin (degrees 90) exampleSpline
-    --> QuadraticSpline2d
-    -->     ( Point2d ( -1, 1 )
-    -->     , Point2d ( -4, 3 )
-    -->     , Point2d ( -1, 5 )
+    --> QuadraticSpline2d.withControlPoints
+    -->     ( Point2d.withCoordinates ( -1, 1 )
+    -->     , Point2d.withCoordinates ( -4, 3 )
+    -->     , Point2d.withCoordinates ( -1, 5 )
     -->     )
 
 -}
@@ -325,13 +328,13 @@ rotateAround point angle =
 {-| Translate a spline by a given displacement.
 
     displacement =
-        Vector2d ( 2, 3 )
+        Vector2d.withComponents ( 2, 3 )
 
     QuadraticSpline2d.translateBy displacement exampleSpline
-    --> QuadraticSpline2d
-    -->     ( Point2d ( 3, 4 )
-    -->     , Point2d ( 5, 7 )
-    -->     , Point2d ( 7, 4 )
+    --> QuadraticSpline2d.withControlPoints
+    -->     ( Point2d.withCoordinates ( 3, 4 )
+    -->     , Point2d.withCoordinates ( 5, 7 )
+    -->     , Point2d.withCoordinates ( 7, 4 )
     -->     )
 
 -}
@@ -343,10 +346,10 @@ translateBy displacement =
 {-| Mirror a spline across an axis.
 
     QuadraticSpline2d.mirrorAcross Axis2d.x exampleSpline
-    --> QuadraticSpline2d
-    -->     ( Point2d ( 1, -1 )
-    -->     , Point2d ( 3, -4 )
-    -->     , Point2d ( 5, -1 )
+    --> QuadraticSpline2d.withControlPoints
+    -->     ( Point2d.withCoordinates ( 1, -1 )
+    -->     , Point2d.withCoordinates ( 3, -4 )
+    -->     , Point2d.withCoordinates ( 5, -1 )
     -->     )
 
 -}
@@ -361,20 +364,20 @@ mapControlPoints function spline =
         ( p1, p2, p3 ) =
             controlPoints spline
     in
-    QuadraticSpline2d ( function p1, function p2, function p3 )
+    withControlPoints ( function p1, function p2, function p3 )
 
 
 {-| Take a spline defined in global coordinates, and return it expressed in
 local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame2d.at (Point2d ( 1, 2 ))
+        Frame2d.at (Point2d.withCoordinates ( 1, 2 ))
 
     QuadraticSpline2d.relativeTo localFrame exampleSpline
-    --> QuadraticSpline2d
-    -->     ( Point2d ( 0, -1 )
-    -->     , Point2d ( 2, 2 )
-    -->     , Point2d ( 4, -1 )
+    --> QuadraticSpline2d.withControlPoints
+    -->     ( Point2d.withCoordinates ( 0, -1 )
+    -->     , Point2d.withCoordinates ( 2, 2 )
+    -->     , Point2d.withCoordinates ( 4, -1 )
     -->     )
 
 -}
@@ -387,13 +390,13 @@ relativeTo frame =
 given reference frame, and return that spline expressed in global coordinates.
 
     localFrame =
-        Frame2d.at (Point2d ( 1, 2 ))
+        Frame2d.at (Point2d.withCoordinates ( 1, 2 ))
 
     QuadraticSpline2d.placeIn localFrame exampleSpline
-    --> QuadraticSpline2d
-    -->     ( Point2d ( 2, 3 )
-    -->     , Point2d ( 4, 6 )
-    -->     , Point2d ( 6, 3 )
+    --> QuadraticSpline2d.withControlPoints
+    -->     ( Point2d.withCoordinates ( 2, 3 )
+    -->     , Point2d.withCoordinates ( 4, 6 )
+    -->     , Point2d.withCoordinates ( 6, 3 )
     -->     )
 
 -}
@@ -406,10 +409,10 @@ placeIn frame =
 plane and return the corresponding spline in 3D.
 
     QuadraticSpline2d.placeOnto SketchPlane3d.xz exampleSpline
-    --> QuadraticSpline3d
-    -->     ( Point3d ( 1, 0, 1 )
-    -->     , Point3d ( 3, 0, 4 )
-    -->     , Point3d ( 5, 0, 1 )
+    --> QuadraticSpline3d.withControlPoints
+    -->     ( Point3d.withCoordinates ( 1, 0, 1 )
+    -->     , Point3d.withCoordinates ( 3, 0, 4 )
+    -->     , Point3d.withCoordinates ( 5, 0, 1 )
     -->     )
 
 -}
@@ -422,21 +425,21 @@ placeOnto sketchPlane spline =
         place =
             Point2d.placeOnto sketchPlane
     in
-    QuadraticSpline3d ( place p1, place p2, place p3 )
+    QuadraticSpline3d.withControlPoints ( place p1, place p2, place p3 )
 
 
 {-| Split a spline into two roughly equal halves. Equivalent to `splitAt 0.5`.
 
     QuadraticSpline2d.bisect exampleSpline
-    --> ( QuadraticSpline2d
-    -->     ( Point2d ( 1, 1 )
-    -->     , Point2d ( 2, 2.5 )
-    -->     , Point2d ( 3, 2.5 )
+    --> ( QuadraticSpline2d.withControlPoints
+    -->     ( Point2d.withCoordinates ( 1, 1 )
+    -->     , Point2d.withCoordinates ( 2, 2.5 )
+    -->     , Point2d.withCoordinates ( 3, 2.5 )
     -->     )
-    --> , QuadraticSpline2d
-    -->     ( Point2d ( 3, 2.5 )
-    -->     , Point2d ( 4, 2.5 )
-    -->     , Point2d ( 5, 1 )
+    --> , QuadraticSpline2d.withControlPoints
+    -->     ( Point2d.withCoordinates ( 3, 2.5 )
+    -->     , Point2d.withCoordinates ( 4, 2.5 )
+    -->     , Point2d.withCoordinates ( 5, 1 )
     -->     )
     --> )
 
@@ -450,15 +453,15 @@ bisect =
 resulting in two smaller splines.
 
     QuadraticSpline2d.splitAt 0.75 exampleSpline
-    --> ( QuadraticSpline2d
-    -->     ( Point2d ( 1, 1 )
-    -->     , Point2d ( 2.5, 3.25 )
-    -->     , Point2d ( 4, 2.125 )
+    --> ( QuadraticSpline2d.withControlPoints
+    -->     ( Point2d.withCoordinates ( 1, 1 )
+    -->     , Point2d.withCoordinates ( 2.5, 3.25 )
+    -->     , Point2d.withCoordinates ( 4, 2.125 )
     -->     )
-    --> , QuadraticSpline2d
-    -->     ( Point2d ( 4, 2.125 )
-    -->     , Point2d ( 4.5, 1.75 )
-    -->     , Point2d ( 5, 1 )
+    --> , QuadraticSpline2d.withControlPoints
+    -->     ( Point2d.withCoordinates ( 4, 2.125 )
+    -->     , Point2d.withCoordinates ( 4.5, 1.75 )
+    -->     , Point2d.withCoordinates ( 5, 1 )
     -->     )
     --> )
 
@@ -478,6 +481,6 @@ splitAt t spline =
         r =
             Point2d.interpolateFrom q1 q2 t
     in
-    ( QuadraticSpline2d ( p1, q1, r )
-    , QuadraticSpline2d ( r, q2, p3 )
+    ( withControlPoints ( p1, q1, r )
+    , withControlPoints ( r, q2, p3 )
     )
