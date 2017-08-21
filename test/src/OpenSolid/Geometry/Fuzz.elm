@@ -45,12 +45,35 @@ module OpenSolid.Geometry.Fuzz
         )
 
 import Fuzz exposing (Fuzzer)
-import OpenSolid.BoundingBox2d as BoundingBox2d
-import OpenSolid.BoundingBox3d as BoundingBox3d
-import OpenSolid.Direction2d as Direction2d
-import OpenSolid.Direction3d as Direction3d
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.Vector3d as Vector3d
+import OpenSolid.Arc2d as Arc2d exposing (Arc2d)
+import OpenSolid.Arc3d as Arc3d exposing (Arc3d)
+import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
+import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
+import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
+import OpenSolid.BoundingBox3d as BoundingBox3d exposing (BoundingBox3d)
+import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
+import OpenSolid.Circle3d as Circle3d exposing (Circle3d)
+import OpenSolid.CubicSpline2d as CubicSpline2d exposing (CubicSpline2d)
+import OpenSolid.CubicSpline3d as CubicSpline3d exposing (CubicSpline3d)
+import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
+import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
+import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
+import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
+import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
+import OpenSolid.LineSegment3d as LineSegment3d exposing (LineSegment3d)
+import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
+import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.Point3d as Point3d exposing (Point3d)
+import OpenSolid.Polygon2d as Polygon2d exposing (Polygon2d)
+import OpenSolid.Polyline2d as Polyline2d exposing (Polyline2d)
+import OpenSolid.Polyline3d as Polyline3d exposing (Polyline3d)
+import OpenSolid.QuadraticSpline2d as QuadraticSpline2d exposing (QuadraticSpline2d)
+import OpenSolid.QuadraticSpline3d as QuadraticSpline3d exposing (QuadraticSpline3d)
+import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
+import OpenSolid.Triangle2d as Triangle2d exposing (Triangle2d)
+import OpenSolid.Triangle3d as Triangle3d exposing (Triangle3d)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
+import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 
 scalar : Fuzzer Float
@@ -60,12 +83,12 @@ scalar =
 
 vector2d : Fuzzer Vector2d
 vector2d =
-    Fuzz.map Vector2d (Fuzz.tuple ( scalar, scalar ))
+    Fuzz.map Vector2d.withComponents (Fuzz.tuple ( scalar, scalar ))
 
 
 vector3d : Fuzzer Vector3d
 vector3d =
-    Fuzz.map Vector3d (Fuzz.tuple3 ( scalar, scalar, scalar ))
+    Fuzz.map Vector3d.withComponents (Fuzz.tuple3 ( scalar, scalar, scalar ))
 
 
 direction2d : Fuzzer Direction2d
@@ -96,26 +119,26 @@ direction3d =
                 z =
                     cos phi
             in
-            Direction3d ( x, y, z )
+            Direction3d.withComponents ( x, y, z )
     in
     Fuzz.map2 direction phi theta
 
 
 point2d : Fuzzer Point2d
 point2d =
-    Fuzz.map Point2d (Fuzz.tuple ( scalar, scalar ))
+    Fuzz.map Point2d.withCoordinates (Fuzz.tuple ( scalar, scalar ))
 
 
 point3d : Fuzzer Point3d
 point3d =
-    Fuzz.map Point3d (Fuzz.tuple3 ( scalar, scalar, scalar ))
+    Fuzz.map Point3d.withCoordinates (Fuzz.tuple3 ( scalar, scalar, scalar ))
 
 
 axis2d : Fuzzer Axis2d
 axis2d =
     let
         axis originPoint direction =
-            Axis2d { originPoint = originPoint, direction = direction }
+            Axis2d.with { originPoint = originPoint, direction = direction }
     in
     Fuzz.map2 axis point2d direction2d
 
@@ -124,7 +147,7 @@ axis3d : Fuzzer Axis3d
 axis3d =
     let
         axis originPoint direction =
-            Axis3d { originPoint = originPoint, direction = direction }
+            Axis3d.with { originPoint = originPoint, direction = direction }
     in
     Fuzz.map2 axis point3d direction3d
 
@@ -133,7 +156,7 @@ plane3d : Fuzzer Plane3d
 plane3d =
     let
         plane originPoint normalDirection =
-            Plane3d
+            Plane3d.with
                 { originPoint = originPoint
                 , normalDirection = normalDirection
                 }
@@ -155,7 +178,7 @@ frame2d =
                     else
                         Direction2d.flip perpendicularDirection
             in
-            Frame2d
+            Frame2d.with
                 { originPoint = originPoint
                 , xDirection = xDirection
                 , yDirection = yDirection
@@ -172,7 +195,7 @@ frame3d =
                 ( yDirection, zDirection ) =
                     Direction3d.perpendicularBasis xDirection
             in
-            Frame3d
+            Frame3d.with
                 { originPoint = originPoint
                 , xDirection = xDirection
                 , yDirection =
@@ -194,7 +217,7 @@ sketchPlane3d : Fuzzer SketchPlane3d
 sketchPlane3d =
     let
         sketchPlane originPoint xDirection =
-            SketchPlane3d
+            SketchPlane3d.with
                 { originPoint = originPoint
                 , xDirection = xDirection
                 , yDirection = Direction3d.perpendicularTo xDirection
@@ -205,22 +228,22 @@ sketchPlane3d =
 
 lineSegment2d : Fuzzer LineSegment2d
 lineSegment2d =
-    Fuzz.map LineSegment2d (Fuzz.tuple ( point2d, point2d ))
+    Fuzz.map LineSegment2d.withEndpoints (Fuzz.tuple ( point2d, point2d ))
 
 
 lineSegment3d : Fuzzer LineSegment3d
 lineSegment3d =
-    Fuzz.map LineSegment3d (Fuzz.tuple ( point3d, point3d ))
+    Fuzz.map LineSegment3d.withEndpoints (Fuzz.tuple ( point3d, point3d ))
 
 
 triangle2d : Fuzzer Triangle2d
 triangle2d =
-    Fuzz.map Triangle2d (Fuzz.tuple3 ( point2d, point2d, point2d ))
+    Fuzz.map Triangle2d.withVertices (Fuzz.tuple3 ( point2d, point2d, point2d ))
 
 
 triangle3d : Fuzzer Triangle3d
 triangle3d =
-    Fuzz.map Triangle3d (Fuzz.tuple3 ( point3d, point3d, point3d ))
+    Fuzz.map Triangle3d.withVertices (Fuzz.tuple3 ( point3d, point3d, point3d ))
 
 
 interval : Fuzzer ( Float, Float )
@@ -239,7 +262,7 @@ boundingBox2d : Fuzzer BoundingBox2d
 boundingBox2d =
     let
         boundingBox ( minX, maxX ) ( minY, maxY ) =
-            BoundingBox2d
+            BoundingBox2d.with
                 { minX = minX
                 , maxX = maxX
                 , minY = minY
@@ -253,7 +276,7 @@ boundingBox3d : Fuzzer BoundingBox3d
 boundingBox3d =
     let
         boundingBox ( minX, maxX ) ( minY, maxY ) ( minZ, maxZ ) =
-            BoundingBox3d
+            BoundingBox3d.with
                 { minX = minX
                 , maxX = maxX
                 , minY = minY
@@ -267,24 +290,24 @@ boundingBox3d =
 
 polyline2d : Fuzzer Polyline2d
 polyline2d =
-    Fuzz.map Polyline2d (Fuzz.list point2d)
+    Fuzz.map Polyline2d.withVertices (Fuzz.list point2d)
 
 
 polyline3d : Fuzzer Polyline3d
 polyline3d =
-    Fuzz.map Polyline3d (Fuzz.list point3d)
+    Fuzz.map Polyline3d.withVertices (Fuzz.list point3d)
 
 
 polygon2d : Fuzzer Polygon2d
 polygon2d =
-    Fuzz.map Polygon2d (Fuzz.list point2d)
+    Fuzz.map Polygon2d.withVertices (Fuzz.list point2d)
 
 
 circle2d : Fuzzer Circle2d
 circle2d =
     let
         circle centerPoint radius =
-            Circle2d { centerPoint = centerPoint, radius = radius }
+            Circle2d.with { centerPoint = centerPoint, radius = radius }
     in
     Fuzz.map2 circle point2d (Fuzz.map abs scalar)
 
@@ -293,7 +316,7 @@ circle3d : Fuzzer Circle3d
 circle3d =
     let
         circle centerPoint axialDirection radius =
-            Circle3d
+            Circle3d.with
                 { centerPoint = centerPoint
                 , axialDirection = axialDirection
                 , radius = radius
@@ -306,7 +329,7 @@ arc2d : Fuzzer Arc2d
 arc2d =
     let
         arc centerPoint startPoint sweptAngle =
-            Arc2d
+            Arc2d.with
                 { centerPoint = centerPoint
                 , startPoint = startPoint
                 , sweptAngle = sweptAngle
@@ -319,7 +342,7 @@ arc3d : Fuzzer Arc3d
 arc3d =
     let
         arc axis startPoint sweptAngle =
-            Arc3d
+            Arc3d.with
                 { axis = axis
                 , startPoint = startPoint
                 , sweptAngle = sweptAngle
@@ -331,22 +354,22 @@ arc3d =
 quadraticSpline2d : Fuzzer QuadraticSpline2d
 quadraticSpline2d =
     Fuzz.tuple3 ( point2d, point2d, point2d )
-        |> Fuzz.map QuadraticSpline2d
+        |> Fuzz.map QuadraticSpline2d.withControlPoints
 
 
 quadraticSpline3d : Fuzzer QuadraticSpline3d
 quadraticSpline3d =
     Fuzz.tuple3 ( point3d, point3d, point3d )
-        |> Fuzz.map QuadraticSpline3d
+        |> Fuzz.map QuadraticSpline3d.withControlPoints
 
 
 cubicSpline2d : Fuzzer CubicSpline2d
 cubicSpline2d =
     Fuzz.tuple4 ( point2d, point2d, point2d, point2d )
-        |> Fuzz.map CubicSpline2d
+        |> Fuzz.map CubicSpline2d.withControlPoints
 
 
 cubicSpline3d : Fuzzer CubicSpline3d
 cubicSpline3d =
     Fuzz.tuple4 ( point3d, point3d, point3d, point3d )
-        |> Fuzz.map CubicSpline3d
+        |> Fuzz.map CubicSpline3d.withControlPoints
