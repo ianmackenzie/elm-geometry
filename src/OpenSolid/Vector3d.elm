@@ -145,7 +145,7 @@ import OpenSolid.Bootstrap.Frame3d as Frame3d
 import OpenSolid.Bootstrap.Plane3d as Plane3d
 import OpenSolid.Bootstrap.Point3d as Point3d
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
-import OpenSolid.Geometry.Types as Types exposing (Axis3d, Direction3d, Frame3d, Plane3d, Point3d, SketchPlane3d)
+import OpenSolid.Geometry.Internal as Internal exposing (Axis3d, Direction3d, Frame3d, Plane3d, Point3d, SketchPlane3d)
 import OpenSolid.Scalar as Scalar
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
@@ -153,7 +153,7 @@ import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 {-| A vector in 3D.
 -}
 type alias Vector3d =
-    Types.Vector3d
+    Internal.Vector3d
 
 
 {-| The zero vector.
@@ -175,7 +175,7 @@ zero =
 -}
 withComponents : ( Float, Float, Float ) -> Vector3d
 withComponents =
-    Types.Vector3d
+    Internal.Vector3d
 
 
 {-| Construct a vector from the first given point to the second.
@@ -320,7 +320,7 @@ to extract the X, Y and Z components of a vector in one line of code:
 
 -}
 components : Vector3d -> ( Float, Float, Float )
-components (Types.Vector3d components_) =
+components (Internal.Vector3d components_) =
     components_
 
 
@@ -331,7 +331,7 @@ components (Types.Vector3d components_) =
 
 -}
 xComponent : Vector3d -> Float
-xComponent (Types.Vector3d ( x, _, _ )) =
+xComponent (Internal.Vector3d ( x, _, _ )) =
     x
 
 
@@ -342,7 +342,7 @@ xComponent (Types.Vector3d ( x, _, _ )) =
 
 -}
 yComponent : Vector3d -> Float
-yComponent (Types.Vector3d ( _, y, _ )) =
+yComponent (Internal.Vector3d ( _, y, _ )) =
     y
 
 
@@ -353,7 +353,7 @@ yComponent (Types.Vector3d ( _, y, _ )) =
 
 -}
 zComponent : Vector3d -> Float
-zComponent (Types.Vector3d ( _, _, z )) =
+zComponent (Internal.Vector3d ( _, _, z )) =
     z
 
 

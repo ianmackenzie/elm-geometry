@@ -1,6 +1,6 @@
 module OpenSolid.Bootstrap.Vector3d exposing (components, withComponents)
 
-import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Geometry.Internal exposing (..)
 
 
 withComponents : ( Float, Float, Float ) -> Vector3d

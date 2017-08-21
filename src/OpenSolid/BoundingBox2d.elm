@@ -77,14 +77,14 @@ box of an object than the object itself, such as:
 
 -}
 
-import OpenSolid.Geometry.Types as Types
+import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 
 
 {-| A bounding box in 2D.
 -}
 type alias BoundingBox2d =
-    Types.BoundingBox2d
+    Internal.BoundingBox2d
 
 
 {-| Construct a bounding box from its minimum and maximum X and Y values:
@@ -106,7 +106,7 @@ input order does not matter.
 -}
 with : { minX : Float, maxX : Float, minY : Float, maxY : Float } -> BoundingBox2d
 with =
-    Types.BoundingBox2d
+    Internal.BoundingBox2d
 
 
 {-| Construct a zero-width bounding box containing a single point.
@@ -222,7 +222,7 @@ Can be useful when combined with record destructuring, for example
 
 -}
 extrema : BoundingBox2d -> { minX : Float, maxX : Float, minY : Float, maxY : Float }
-extrema (Types.BoundingBox2d properties) =
+extrema (Internal.BoundingBox2d properties) =
     properties
 
 

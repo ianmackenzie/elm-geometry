@@ -86,7 +86,7 @@ import OpenSolid.Bootstrap.Arc2d as Arc2d
 import OpenSolid.Bootstrap.Circle3d as Circle3d
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
-import OpenSolid.Geometry.Types as Types exposing (Arc2d, Circle3d)
+import OpenSolid.Geometry.Internal as Internal exposing (Arc2d, Circle3d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
@@ -95,7 +95,7 @@ import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 {-| A circle in 2D.
 -}
 type alias Circle2d =
-    Types.Circle2d
+    Internal.Circle2d
 
 
 {-| Construct a circle from its center point and radius:
@@ -112,7 +112,7 @@ very useful circle).
 -}
 with : { centerPoint : Point2d, radius : Float } -> Circle2d
 with =
-    Types.Circle2d
+    Internal.Circle2d
 
 
 {-| The unit circle, centered on the origin with a radius of 1.
@@ -238,7 +238,7 @@ throughPoints firstPoint secondPoint thirdPoint =
 
 -}
 centerPoint : Circle2d -> Point2d
-centerPoint (Types.Circle2d properties) =
+centerPoint (Internal.Circle2d properties) =
     properties.centerPoint
 
 
@@ -249,7 +249,7 @@ centerPoint (Types.Circle2d properties) =
 
 -}
 radius : Circle2d -> Float
-radius (Types.Circle2d properties) =
+radius (Internal.Circle2d properties) =
     properties.radius
 
 
@@ -301,7 +301,7 @@ circumference circle =
 
 -}
 toArc : Circle2d -> Arc2d
-toArc (Types.Circle2d { centerPoint, radius }) =
+toArc (Internal.Circle2d { centerPoint, radius }) =
     let
         ( x0, y0 ) =
             Point2d.coordinates centerPoint

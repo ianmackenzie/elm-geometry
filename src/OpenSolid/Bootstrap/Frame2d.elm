@@ -5,7 +5,7 @@ module OpenSolid.Bootstrap.Frame2d
         , yDirection
         )
 
-import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Geometry.Internal exposing (..)
 
 
 originPoint : Frame2d -> Point2d

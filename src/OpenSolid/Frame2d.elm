@@ -97,7 +97,7 @@ always perpendicular to each other). It can be thought of as:
 
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
-import OpenSolid.Geometry.Types as Types
+import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
@@ -106,7 +106,7 @@ import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 {-| A frame in 2D.
 -}
 type alias Frame2d =
-    Types.Frame2d
+    Internal.Frame2d
 
 
 {-| The global XY frame.
@@ -142,7 +142,7 @@ useful.
 -}
 with : { originPoint : Point2d, xDirection : Direction2d, yDirection : Direction2d } -> Frame2d
 with =
-    Types.Frame2d
+    Internal.Frame2d
 
 
 {-| Construct a frame aligned with the global XY frame but with the given origin
@@ -172,7 +172,7 @@ at point =
 
 -}
 originPoint : Frame2d -> Point2d
-originPoint (Types.Frame2d properties) =
+originPoint (Internal.Frame2d properties) =
     properties.originPoint
 
 
@@ -183,7 +183,7 @@ originPoint (Types.Frame2d properties) =
 
 -}
 xDirection : Frame2d -> Direction2d
-xDirection (Types.Frame2d properties) =
+xDirection (Internal.Frame2d properties) =
     properties.xDirection
 
 
@@ -194,7 +194,7 @@ xDirection (Types.Frame2d properties) =
 
 -}
 yDirection : Frame2d -> Direction2d
-yDirection (Types.Frame2d properties) =
+yDirection (Internal.Frame2d properties) =
     properties.yDirection
 
 

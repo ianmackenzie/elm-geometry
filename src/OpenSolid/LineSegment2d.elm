@@ -109,7 +109,7 @@ import OpenSolid.Bootstrap.LineSegment3d as LineSegment3d
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
-import OpenSolid.Geometry.Types as Types exposing (LineSegment3d)
+import OpenSolid.Geometry.Internal as Internal exposing (LineSegment3d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
@@ -118,7 +118,7 @@ import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 {-| A line segment in 2D.
 -}
 type alias LineSegment2d =
-    Types.LineSegment2d
+    Internal.LineSegment2d
 
 
 {-| Construct a line segment from its two endpoints:
@@ -132,7 +132,7 @@ type alias LineSegment2d =
 -}
 withEndpoints : ( Point2d, Point2d ) -> LineSegment2d
 withEndpoints =
-    Types.LineSegment2d
+    Internal.LineSegment2d
 
 
 {-| Construct a line segment lying on the given axis, with its endpoints at the
@@ -163,7 +163,7 @@ along axis start end =
 
 -}
 startPoint : LineSegment2d -> Point2d
-startPoint (Types.LineSegment2d ( start, _ )) =
+startPoint (Internal.LineSegment2d ( start, _ )) =
     start
 
 
@@ -174,7 +174,7 @@ startPoint (Types.LineSegment2d ( start, _ )) =
 
 -}
 endPoint : LineSegment2d -> Point2d
-endPoint (Types.LineSegment2d ( _, end )) =
+endPoint (Internal.LineSegment2d ( _, end )) =
     end
 
 
@@ -185,7 +185,7 @@ endPoint (Types.LineSegment2d ( _, end )) =
 
 -}
 endpoints : LineSegment2d -> ( Point2d, Point2d )
-endpoints (Types.LineSegment2d endpoints_) =
+endpoints (Internal.LineSegment2d endpoints_) =
     endpoints_
 
 

@@ -111,7 +111,7 @@ import OpenSolid.Bootstrap.Point3d as Point3d
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
-import OpenSolid.Geometry.Types as Types exposing (Axis2d, BoundingBox2d, Frame2d, Point3d, SketchPlane3d)
+import OpenSolid.Geometry.Internal as Internal exposing (Axis2d, BoundingBox2d, Frame2d, Point3d, SketchPlane3d)
 import OpenSolid.Scalar as Scalar
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
@@ -124,7 +124,7 @@ addTo point vector =
 {-| A point in 2D.
 -}
 type alias Point2d =
-    Types.Point2d
+    Internal.Point2d
 
 
 {-| The point (0, 0).
@@ -146,7 +146,7 @@ origin =
 -}
 withCoordinates : ( Float, Float ) -> Point2d
 withCoordinates =
-    Types.Point2d
+    Internal.Point2d
 
 
 {-| Construct a point from a radius and angle. Radius is measured from the
@@ -306,7 +306,7 @@ function:
 
 -}
 coordinates : Point2d -> ( Float, Float )
-coordinates (Types.Point2d coordinates_) =
+coordinates (Internal.Point2d coordinates_) =
     coordinates_
 
 
@@ -317,7 +317,7 @@ coordinates (Types.Point2d coordinates_) =
 
 -}
 xCoordinate : Point2d -> Float
-xCoordinate (Types.Point2d ( x, _ )) =
+xCoordinate (Internal.Point2d ( x, _ )) =
     x
 
 
@@ -328,7 +328,7 @@ xCoordinate (Types.Point2d ( x, _ )) =
 
 -}
 yCoordinate : Point2d -> Float
-yCoordinate (Types.Point2d ( _, y )) =
+yCoordinate (Internal.Point2d ( _, y )) =
     y
 
 

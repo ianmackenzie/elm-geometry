@@ -59,7 +59,7 @@ import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
 import OpenSolid.BoundingBox3d as BoundingBox3d exposing (BoundingBox3d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
-import OpenSolid.Geometry.Types as Types
+import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
 import OpenSolid.Point3d as Point3d exposing (Point3d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
@@ -68,7 +68,7 @@ import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 {-| A circle in 3D.
 -}
 type alias Circle3d =
-    Types.Circle3d
+    Internal.Circle3d
 
 
 {-| Construct a circle from its center point, axial direction and radius:
@@ -86,7 +86,7 @@ very useful circle).
 -}
 with : { centerPoint : Point3d, axialDirection : Direction3d, radius : Float } -> Circle3d
 with =
-    Types.Circle3d
+    Internal.Circle3d
 
 
 {-| Get the center point of a circle.
@@ -96,7 +96,7 @@ with =
 
 -}
 centerPoint : Circle3d -> Point3d
-centerPoint (Types.Circle3d properties) =
+centerPoint (Internal.Circle3d properties) =
     properties.centerPoint
 
 
@@ -107,7 +107,7 @@ centerPoint (Types.Circle3d properties) =
 
 -}
 axialDirection : Circle3d -> Direction3d
-axialDirection (Types.Circle3d properties) =
+axialDirection (Internal.Circle3d properties) =
     properties.axialDirection
 
 
@@ -118,7 +118,7 @@ axialDirection (Types.Circle3d properties) =
 
 -}
 radius : Circle3d -> Float
-radius (Types.Circle3d properties) =
+radius (Internal.Circle3d properties) =
     properties.radius
 
 

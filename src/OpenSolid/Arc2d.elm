@@ -85,7 +85,7 @@ import OpenSolid.Bootstrap.Arc3d as Arc3d
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
-import OpenSolid.Geometry.Types as Types exposing (Arc3d)
+import OpenSolid.Geometry.Internal as Internal exposing (Arc3d)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Polyline2d as Polyline2d exposing (Polyline2d)
@@ -96,7 +96,7 @@ import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 {-| An arc in 2D.
 -}
 type alias Arc2d =
-    Types.Arc2d
+    Internal.Arc2d
 
 
 {-| Construct an arc from its center point, start point, and swept angle:
@@ -115,7 +115,7 @@ a clockwise arc instead.
 -}
 with : { startPoint : Point2d, centerPoint : Point2d, sweptAngle : Float } -> Arc2d
 with =
-    Types.Arc2d
+    Internal.Arc2d
 
 
 {-| Argument type used in [`fromEndpoints`](#fromEndpoints).
@@ -418,7 +418,7 @@ fromEndpoints startPoint endPoint radius lengthType windingDirection =
 
 -}
 centerPoint : Arc2d -> Point2d
-centerPoint (Types.Arc2d properties) =
+centerPoint (Internal.Arc2d properties) =
     properties.centerPoint
 
 
@@ -440,7 +440,7 @@ radius arc =
 
 -}
 startPoint : Arc2d -> Point2d
-startPoint (Types.Arc2d properties) =
+startPoint (Internal.Arc2d properties) =
     properties.startPoint
 
 
@@ -465,7 +465,7 @@ clockwise one.
 
 -}
 sweptAngle : Arc2d -> Float
-sweptAngle (Types.Arc2d properties) =
+sweptAngle (Internal.Arc2d properties) =
     properties.sweptAngle
 
 

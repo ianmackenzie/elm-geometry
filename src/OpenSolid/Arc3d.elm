@@ -72,7 +72,7 @@ import OpenSolid.Arc2d as Arc2d exposing (Arc2d)
 import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
-import OpenSolid.Geometry.Types as Types
+import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Point3d as Point3d exposing (Point3d)
@@ -84,7 +84,7 @@ import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 {-| An arc in 3D.
 -}
 type alias Arc3d =
-    Types.Arc3d
+    Internal.Arc3d
 
 
 {-| Construct an arc from its axis, start point and swept angle:
@@ -105,7 +105,7 @@ the axis).
 -}
 with : { axis : Axis3d, startPoint : Point3d, sweptAngle : Float } -> Arc3d
 with =
-    Types.Arc3d
+    Internal.Arc3d
 
 
 {-| Construct an arc on the given sketch plane from its center point and start
@@ -191,7 +191,7 @@ throughPoints firstPoint secondPoint thirdPoint =
 
 -}
 axis : Arc3d -> Axis3d
-axis (Types.Arc3d properties) =
+axis (Internal.Arc3d properties) =
     properties.axis
 
 
@@ -241,7 +241,7 @@ radius arc =
 
 -}
 startPoint : Arc3d -> Point3d
-startPoint (Types.Arc3d properties) =
+startPoint (Internal.Arc3d properties) =
     properties.startPoint
 
 
@@ -440,7 +440,7 @@ angle.
 
 -}
 sweptAngle : Arc3d -> Float
-sweptAngle (Types.Arc3d properties) =
+sweptAngle (Internal.Arc3d properties) =
     properties.sweptAngle
 
 

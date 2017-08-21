@@ -124,7 +124,7 @@ For the examples, assume the following frames have been defined:
 import OpenSolid.Bootstrap.Direction2d as Bootstrap
 import OpenSolid.Bootstrap.Direction3d as Direction3d
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
-import OpenSolid.Geometry.Types as Types exposing (Axis2d, Direction3d, Frame2d, Point2d, SketchPlane3d)
+import OpenSolid.Geometry.Internal as Internal exposing (Axis2d, Direction3d, Frame2d, Point2d, SketchPlane3d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
@@ -136,7 +136,7 @@ toDirection vector =
 {-| A direction in 2D.
 -}
 type alias Direction2d =
-    Types.Direction2d
+    Internal.Direction2d
 
 
 {-| Synonym for `Direction2d.positiveX`.
@@ -217,7 +217,7 @@ direction) or start with existing directions and transform them as necessary.
 -}
 withComponents : ( Float, Float ) -> Direction2d
 withComponents =
-    Types.Direction2d
+    Internal.Direction2d
 
 
 {-| Attempt to construct the direction from the first given point to the second.
@@ -365,7 +365,7 @@ components =
 
 -}
 xComponent : Direction2d -> Float
-xComponent (Types.Direction2d ( x, _ )) =
+xComponent (Internal.Direction2d ( x, _ )) =
     x
 
 
@@ -379,7 +379,7 @@ xComponent (Types.Direction2d ( x, _ )) =
 
 -}
 yComponent : Direction2d -> Float
-yComponent (Types.Direction2d ( _, y )) =
+yComponent (Internal.Direction2d ( _, y )) =
     y
 
 

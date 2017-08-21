@@ -6,7 +6,7 @@ module OpenSolid.Bootstrap.SketchPlane3d
         , yDirection
         )
 
-import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Geometry.Internal exposing (..)
 
 
 with : { originPoint : Point3d, xDirection : Direction3d, yDirection : Direction3d } -> SketchPlane3d

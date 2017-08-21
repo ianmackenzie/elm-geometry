@@ -6,7 +6,7 @@ module OpenSolid.Bootstrap.Frame3d
         , zDirection
         )
 
-import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Geometry.Internal exposing (..)
 
 
 originPoint : Frame3d -> Point3d

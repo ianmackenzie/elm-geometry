@@ -75,7 +75,7 @@ in 3D defined by three control points. This module contains functionality for
 
 import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
-import OpenSolid.Geometry.Types as Types
+import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
 import OpenSolid.Point3d as Point3d exposing (Point3d)
 import OpenSolid.QuadraticSpline2d as QuadraticSpline2d exposing (QuadraticSpline2d)
@@ -86,7 +86,7 @@ import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 {-| A quadratic spline in 3D.
 -}
 type alias QuadraticSpline3d =
-    Types.QuadraticSpline3d
+    Internal.QuadraticSpline3d
 
 
 {-| Construct a spline from its three control points:
@@ -101,7 +101,7 @@ type alias QuadraticSpline3d =
 -}
 withControlPoints : ( Point3d, Point3d, Point3d ) -> QuadraticSpline3d
 withControlPoints =
-    Types.QuadraticSpline3d
+    Internal.QuadraticSpline3d
 
 
 {-| Get the control points of a spline as a tuple.
@@ -116,7 +116,7 @@ withControlPoints =
 
 -}
 controlPoints : QuadraticSpline3d -> ( Point3d, Point3d, Point3d )
-controlPoints (Types.QuadraticSpline3d controlPoints_) =
+controlPoints (Internal.QuadraticSpline3d controlPoints_) =
     controlPoints_
 
 
@@ -128,7 +128,7 @@ point.
 
 -}
 startPoint : QuadraticSpline3d -> Point3d
-startPoint (Types.QuadraticSpline3d ( p1, _, _ )) =
+startPoint (Internal.QuadraticSpline3d ( p1, _, _ )) =
     p1
 
 
@@ -140,7 +140,7 @@ point.
 
 -}
 endPoint : QuadraticSpline3d -> Point3d
-endPoint (Types.QuadraticSpline3d ( _, _, p3 )) =
+endPoint (Internal.QuadraticSpline3d ( _, _, p3 )) =
     p3
 
 

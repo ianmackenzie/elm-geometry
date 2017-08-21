@@ -4,7 +4,7 @@ module OpenSolid.Bootstrap.Axis2d
         , originPoint
         )
 
-import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Geometry.Internal exposing (..)
 
 
 originPoint : Axis2d -> Point2d

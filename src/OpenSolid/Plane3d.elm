@@ -79,7 +79,7 @@ and normal direction and is useful for several operations including:
 import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
-import OpenSolid.Geometry.Types as Types exposing (Frame3d, SketchPlane3d)
+import OpenSolid.Geometry.Internal as Internal exposing (Frame3d, SketchPlane3d)
 import OpenSolid.Point3d as Point3d exposing (Point3d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
@@ -87,7 +87,7 @@ import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 {-| A plane in 3D.
 -}
 type alias Plane3d =
-    Types.Plane3d
+    Internal.Plane3d
 
 
 {-| The global XY plane, centered at the origin with a normal in the positive Z
@@ -155,7 +155,7 @@ zx =
 -}
 with : { originPoint : Point3d, normalDirection : Direction3d } -> Plane3d
 with =
-    Types.Plane3d
+    Internal.Plane3d
 
 
 {-| Attempt to construct a plane passing through the three given points. The
@@ -213,7 +213,7 @@ throughPoints firstPoint secondPoint thirdPoint =
 
 -}
 originPoint : Plane3d -> Point3d
-originPoint (Types.Plane3d properties) =
+originPoint (Internal.Plane3d properties) =
     properties.originPoint
 
 
@@ -224,7 +224,7 @@ originPoint (Types.Plane3d properties) =
 
 -}
 normalDirection : Plane3d -> Direction3d
-normalDirection (Types.Plane3d properties) =
+normalDirection (Internal.Plane3d properties) =
     properties.normalDirection
 
 

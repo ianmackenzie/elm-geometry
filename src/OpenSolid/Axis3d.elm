@@ -78,7 +78,7 @@ different coordinate frames.
 
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
-import OpenSolid.Geometry.Types as Types exposing (Frame3d, Plane3d, SketchPlane3d)
+import OpenSolid.Geometry.Internal as Internal exposing (Frame3d, Plane3d, SketchPlane3d)
 import OpenSolid.Point3d as Point3d exposing (Point3d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
@@ -86,7 +86,7 @@ import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 {-| An axis in 3D.
 -}
 type alias Axis3d =
-    Types.Axis3d
+    Internal.Axis3d
 
 
 {-| The global X axis.
@@ -142,7 +142,7 @@ z =
 -}
 with : { originPoint : Point3d, direction : Direction3d } -> Axis3d
 with =
-    Types.Axis3d
+    Internal.Axis3d
 
 
 {-| Get the origin point of an axis.
@@ -152,7 +152,7 @@ with =
 
 -}
 originPoint : Axis3d -> Point3d
-originPoint (Types.Axis3d properties) =
+originPoint (Internal.Axis3d properties) =
     properties.originPoint
 
 
@@ -163,7 +163,7 @@ originPoint (Types.Axis3d properties) =
 
 -}
 direction : Axis3d -> Direction3d
-direction (Types.Axis3d properties) =
+direction (Internal.Axis3d properties) =
     properties.direction
 
 

@@ -94,7 +94,7 @@ import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
 import OpenSolid.Bootstrap.Triangle3d as Triangle3d
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
-import OpenSolid.Geometry.Types as Types exposing (Triangle3d)
+import OpenSolid.Geometry.Internal as Internal exposing (Triangle3d)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
@@ -104,7 +104,7 @@ import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 {-| A triangle in 2D.
 -}
 type alias Triangle2d =
-    Types.Triangle2d
+    Internal.Triangle2d
 
 
 {-| Construct a triangle from its three vertices:
@@ -119,7 +119,7 @@ type alias Triangle2d =
 -}
 withVertices : ( Point2d, Point2d, Point2d ) -> Triangle2d
 withVertices =
-    Types.Triangle2d
+    Internal.Triangle2d
 
 
 {-| Get the vertices of a triangle.
@@ -134,7 +134,7 @@ withVertices =
 
 -}
 vertices : Triangle2d -> ( Point2d, Point2d, Point2d )
-vertices (Types.Triangle2d vertices_) =
+vertices (Internal.Triangle2d vertices_) =
     vertices_
 
 

@@ -152,7 +152,7 @@ corresponds to a global Z coordinate!
 
 import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
-import OpenSolid.Geometry.Types as Types
+import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
 import OpenSolid.Point3d as Point3d exposing (Point3d)
 import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
@@ -162,7 +162,7 @@ import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 {-| A frame in 3D.
 -}
 type alias Frame3d =
-    Types.Frame3d
+    Internal.Frame3d
 
 
 {-| The global XYZ frame.
@@ -202,7 +202,7 @@ useful.
 -}
 with : { originPoint : Point3d, xDirection : Direction3d, yDirection : Direction3d, zDirection : Direction3d } -> Frame3d
 with =
-    Types.Frame3d
+    Internal.Frame3d
 
 
 {-| Construct a frame aligned with the global XYZ frame but with the given
@@ -234,7 +234,7 @@ at point =
 
 -}
 originPoint : Frame3d -> Point3d
-originPoint (Types.Frame3d properties) =
+originPoint (Internal.Frame3d properties) =
     properties.originPoint
 
 
@@ -245,7 +245,7 @@ originPoint (Types.Frame3d properties) =
 
 -}
 xDirection : Frame3d -> Direction3d
-xDirection (Types.Frame3d properties) =
+xDirection (Internal.Frame3d properties) =
     properties.xDirection
 
 
@@ -256,7 +256,7 @@ xDirection (Types.Frame3d properties) =
 
 -}
 yDirection : Frame3d -> Direction3d
-yDirection (Types.Frame3d properties) =
+yDirection (Internal.Frame3d properties) =
     properties.yDirection
 
 
@@ -267,7 +267,7 @@ yDirection (Types.Frame3d properties) =
 
 -}
 zDirection : Frame3d -> Direction3d
-zDirection (Types.Frame3d properties) =
+zDirection (Internal.Frame3d properties) =
     properties.zDirection
 
 

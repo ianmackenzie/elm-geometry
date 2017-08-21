@@ -76,7 +76,7 @@ in 2D defined by four control points. This module contains functionality for
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
 import OpenSolid.Bootstrap.CubicSpline3d as CubicSpline3d
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
-import OpenSolid.Geometry.Types as Types exposing (CubicSpline3d)
+import OpenSolid.Geometry.Internal as Internal exposing (CubicSpline3d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
@@ -85,7 +85,7 @@ import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 {-| A cubic spline in 2D.
 -}
 type alias CubicSpline2d =
-    Types.CubicSpline2d
+    Internal.CubicSpline2d
 
 
 {-| Construct a spline from its four control points:
@@ -101,7 +101,7 @@ type alias CubicSpline2d =
 -}
 withControlPoints : ( Point2d, Point2d, Point2d, Point2d ) -> CubicSpline2d
 withControlPoints =
-    Types.CubicSpline2d
+    Internal.CubicSpline2d
 
 
 {-| Construct a spline in Hermite form, from the position and derivative values
@@ -148,7 +148,7 @@ hermite ( startPoint, startDerivative ) ( endPoint, endDerivative ) =
 
 -}
 controlPoints : CubicSpline2d -> ( Point2d, Point2d, Point2d, Point2d )
-controlPoints (Types.CubicSpline2d controlPoints_) =
+controlPoints (Internal.CubicSpline2d controlPoints_) =
     controlPoints_
 
 
@@ -160,7 +160,7 @@ point.
 
 -}
 startPoint : CubicSpline2d -> Point2d
-startPoint (Types.CubicSpline2d ( p1, _, _, _ )) =
+startPoint (Internal.CubicSpline2d ( p1, _, _, _ )) =
     p1
 
 
@@ -172,7 +172,7 @@ point.
 
 -}
 endPoint : CubicSpline2d -> Point2d
-endPoint (Types.CubicSpline2d ( _, _, _, p4 )) =
+endPoint (Internal.CubicSpline2d ( _, _, _, p4 )) =
     p4
 
 

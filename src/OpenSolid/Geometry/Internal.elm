@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 
-module OpenSolid.Geometry.Types
+module OpenSolid.Geometry.Internal
     exposing
         ( Arc2d(Arc2d)
         , Arc3d(Arc3d)

@@ -77,7 +77,7 @@ in 3D defined by four control points. This module contains functionality for
 import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
 import OpenSolid.CubicSpline2d as CubicSpline2d exposing (CubicSpline2d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
-import OpenSolid.Geometry.Types as Types
+import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
 import OpenSolid.Point3d as Point3d exposing (Point3d)
 import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
@@ -87,7 +87,7 @@ import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 {-| A cubic spline in 3D.
 -}
 type alias CubicSpline3d =
-    Types.CubicSpline3d
+    Internal.CubicSpline3d
 
 
 {-| Construct a spline from its four control points:
@@ -103,7 +103,7 @@ type alias CubicSpline3d =
 -}
 withControlPoints : ( Point3d, Point3d, Point3d, Point3d ) -> CubicSpline3d
 withControlPoints =
-    Types.CubicSpline3d
+    Internal.CubicSpline3d
 
 
 {-| Construct a spline in Hermite form, from the position and derivative values
@@ -156,7 +156,7 @@ hermite start end =
 
 -}
 controlPoints : CubicSpline3d -> ( Point3d, Point3d, Point3d, Point3d )
-controlPoints (Types.CubicSpline3d controlPoints_) =
+controlPoints (Internal.CubicSpline3d controlPoints_) =
     controlPoints_
 
 
@@ -168,7 +168,7 @@ point.
 
 -}
 startPoint : CubicSpline3d -> Point3d
-startPoint (Types.CubicSpline3d ( p1, _, _, _ )) =
+startPoint (Internal.CubicSpline3d ( p1, _, _, _ )) =
     p1
 
 
@@ -180,7 +180,7 @@ point.
 
 -}
 endPoint : CubicSpline3d -> Point3d
-endPoint (Types.CubicSpline3d ( _, _, _, p4 )) =
+endPoint (Internal.CubicSpline3d ( _, _, _, p4 )) =
     p4
 
 

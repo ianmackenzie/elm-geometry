@@ -124,7 +124,7 @@ global XYZ frame:
 
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
-import OpenSolid.Geometry.Types as Types exposing (Axis3d, Frame3d, Plane3d, Point3d, SketchPlane3d)
+import OpenSolid.Geometry.Internal as Internal exposing (Axis3d, Frame3d, Plane3d, Point3d, SketchPlane3d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
@@ -137,7 +137,7 @@ toDirection vector =
 {-| A direction in 3D.
 -}
 type alias Direction3d =
-    Types.Direction3d
+    Internal.Direction3d
 
 
 {-| Synonym for `Direction3d.positiveX`.
@@ -248,7 +248,7 @@ them as necessary.
 -}
 withComponents : ( Float, Float, Float ) -> Direction3d
 withComponents =
-    Types.Direction3d
+    Internal.Direction3d
 
 
 {-| Construct a direction on the given sketch plane, given a polar angle from
@@ -452,7 +452,7 @@ as a unit vector, also know as its direction cosines).
 
 -}
 components : Direction3d -> ( Float, Float, Float )
-components (Types.Direction3d components_) =
+components (Internal.Direction3d components_) =
     components_
 
 
@@ -466,7 +466,7 @@ components (Types.Direction3d components_) =
 
 -}
 xComponent : Direction3d -> Float
-xComponent (Types.Direction3d ( x, _, _ )) =
+xComponent (Internal.Direction3d ( x, _, _ )) =
     x
 
 
@@ -480,7 +480,7 @@ xComponent (Types.Direction3d ( x, _, _ )) =
 
 -}
 yComponent : Direction3d -> Float
-yComponent (Types.Direction3d ( _, y, _ )) =
+yComponent (Internal.Direction3d ( _, y, _ )) =
     y
 
 
@@ -494,7 +494,7 @@ yComponent (Types.Direction3d ( _, y, _ )) =
 
 -}
 zComponent : Direction3d -> Float
-zComponent (Types.Direction3d ( _, _, z )) =
+zComponent (Internal.Direction3d ( _, _, z )) =
     z
 
 

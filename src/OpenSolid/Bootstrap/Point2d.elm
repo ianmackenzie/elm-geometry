@@ -1,6 +1,6 @@
 module OpenSolid.Bootstrap.Point2d exposing (coordinates, withCoordinates)
 
-import OpenSolid.Geometry.Types exposing (Point2d(..))
+import OpenSolid.Geometry.Internal exposing (..)
 
 
 withCoordinates : ( Float, Float ) -> Point2d

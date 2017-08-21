@@ -4,7 +4,7 @@ module OpenSolid.Bootstrap.Plane3d
         , originPoint
         )
 
-import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Geometry.Internal exposing (..)
 
 
 originPoint : Plane3d -> Point3d

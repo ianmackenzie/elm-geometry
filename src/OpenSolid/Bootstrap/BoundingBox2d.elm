@@ -1,6 +1,6 @@
 module OpenSolid.Bootstrap.BoundingBox2d exposing (with)
 
-import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Geometry.Internal exposing (..)
 
 
 with : { minX : Float, maxX : Float, minY : Float, maxY : Float } -> BoundingBox2d

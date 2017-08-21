@@ -140,14 +140,14 @@ import OpenSolid.Bootstrap.Frame2d as Frame2d
 import OpenSolid.Bootstrap.Point2d as Point2d
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
 import OpenSolid.Bootstrap.Vector3d as Vector3d
-import OpenSolid.Geometry.Types as Types exposing (Axis2d, Direction2d, Frame2d, Point2d, SketchPlane3d, Vector3d)
+import OpenSolid.Geometry.Internal as Internal exposing (Axis2d, Direction2d, Frame2d, Point2d, SketchPlane3d, Vector3d)
 import OpenSolid.Scalar as Scalar
 
 
 {-| A vector in 2D.
 -}
 type alias Vector2d =
-    Types.Vector2d
+    Internal.Vector2d
 
 
 {-| The zero vector.
@@ -169,7 +169,7 @@ zero =
 -}
 withComponents : ( Float, Float ) -> Vector2d
 withComponents =
-    Types.Vector2d
+    Internal.Vector2d
 
 
 {-| Construct a vector from a length and angle. The angle is measured
@@ -325,7 +325,7 @@ function:
 
 -}
 components : Vector2d -> ( Float, Float )
-components (Types.Vector2d components_) =
+components (Internal.Vector2d components_) =
     components_
 
 
@@ -336,7 +336,7 @@ components (Types.Vector2d components_) =
 
 -}
 xComponent : Vector2d -> Float
-xComponent (Types.Vector2d ( x, _ )) =
+xComponent (Internal.Vector2d ( x, _ )) =
     x
 
 
@@ -347,7 +347,7 @@ xComponent (Types.Vector2d ( x, _ )) =
 
 -}
 yComponent : Vector2d -> Float
-yComponent (Types.Vector2d ( _, y )) =
+yComponent (Internal.Vector2d ( _, y )) =
     y
 
 

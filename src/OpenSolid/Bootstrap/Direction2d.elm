@@ -6,7 +6,7 @@ module OpenSolid.Bootstrap.Direction2d
         , withComponents
         )
 
-import OpenSolid.Geometry.Types exposing (Direction2d(..))
+import OpenSolid.Geometry.Internal exposing (..)
 
 
 withComponents : ( Float, Float ) -> Direction2d

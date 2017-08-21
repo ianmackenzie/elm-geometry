@@ -121,7 +121,7 @@ point, and use the two indicated global axes as their X and Y axes. For example,
 
 import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
-import OpenSolid.Geometry.Types as Types exposing (Frame3d)
+import OpenSolid.Geometry.Internal as Internal exposing (Frame3d)
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
 import OpenSolid.Point3d as Point3d exposing (Point3d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
@@ -130,7 +130,7 @@ import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 {-| A sketch plane in 3D.
 -}
 type alias SketchPlane3d =
-    Types.SketchPlane3d
+    Internal.SketchPlane3d
 
 
 {-| A sketch plane formed from the global X and Y axes.
@@ -214,7 +214,7 @@ basis directions are perpendicular to each other**.
 -}
 with : { originPoint : Point3d, xDirection : Direction3d, yDirection : Direction3d } -> SketchPlane3d
 with =
-    Types.SketchPlane3d
+    Internal.SketchPlane3d
 
 
 {-| Attempt to construct a sketch plane that passes through the three given
@@ -300,7 +300,7 @@ throughPoints firstPoint secondPoint thirdPoint =
 
 -}
 originPoint : SketchPlane3d -> Point3d
-originPoint (Types.SketchPlane3d properties) =
+originPoint (Internal.SketchPlane3d properties) =
     properties.originPoint
 
 
@@ -312,7 +312,7 @@ X axis).
 
 -}
 xDirection : SketchPlane3d -> Direction3d
-xDirection (Types.SketchPlane3d properties) =
+xDirection (Internal.SketchPlane3d properties) =
     properties.xDirection
 
 
@@ -324,7 +324,7 @@ Y axis).
 
 -}
 yDirection : SketchPlane3d -> Direction3d
-yDirection (Types.SketchPlane3d properties) =
+yDirection (Internal.SketchPlane3d properties) =
     properties.yDirection
 
 

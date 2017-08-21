@@ -115,7 +115,7 @@ import OpenSolid.Bootstrap.Frame3d as Frame3d
 import OpenSolid.Bootstrap.Plane3d as Plane3d
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
-import OpenSolid.Geometry.Types as Types exposing (Axis3d, BoundingBox3d, Frame3d, Plane3d, SketchPlane3d)
+import OpenSolid.Geometry.Internal as Internal exposing (Axis3d, BoundingBox3d, Frame3d, Plane3d, SketchPlane3d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Scalar as Scalar
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
@@ -129,7 +129,7 @@ addTo =
 {-| A point in 3D.
 -}
 type alias Point3d =
-    Types.Point3d
+    Internal.Point3d
 
 
 {-| The point (0, 0, 0).
@@ -151,7 +151,7 @@ origin =
 -}
 withCoordinates : ( Float, Float, Float ) -> Point3d
 withCoordinates =
-    Types.Point3d
+    Internal.Point3d
 
 
 {-| Construct a point halfway between two other points.
@@ -304,7 +304,7 @@ in_ frame coordinates =
 
 -}
 coordinates : Point3d -> ( Float, Float, Float )
-coordinates (Types.Point3d coordinates_) =
+coordinates (Internal.Point3d coordinates_) =
     coordinates_
 
 
@@ -315,7 +315,7 @@ coordinates (Types.Point3d coordinates_) =
 
 -}
 xCoordinate : Point3d -> Float
-xCoordinate (Types.Point3d ( x, _, _ )) =
+xCoordinate (Internal.Point3d ( x, _, _ )) =
     x
 
 
@@ -326,7 +326,7 @@ xCoordinate (Types.Point3d ( x, _, _ )) =
 
 -}
 yCoordinate : Point3d -> Float
-yCoordinate (Types.Point3d ( _, y, _ )) =
+yCoordinate (Internal.Point3d ( _, y, _ )) =
     y
 
 
@@ -337,7 +337,7 @@ yCoordinate (Types.Point3d ( _, y, _ )) =
 
 -}
 zCoordinate : Point3d -> Float
-zCoordinate (Types.Point3d ( _, _, z )) =
+zCoordinate (Internal.Point3d ( _, _, z )) =
     z
 
 

@@ -5,7 +5,7 @@ module OpenSolid.Bootstrap.Axis3d
         , with
         )
 
-import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Geometry.Internal exposing (..)
 
 
 with : { originPoint : Point3d, direction : Direction3d } -> Axis3d

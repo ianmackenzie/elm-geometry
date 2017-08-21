@@ -82,7 +82,7 @@ Transforming a polyline is equivalent to transforming each of its vertices.
 import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
 import OpenSolid.BoundingBox3d as BoundingBox3d exposing (BoundingBox3d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
-import OpenSolid.Geometry.Types as Types
+import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.LineSegment3d as LineSegment3d exposing (LineSegment3d)
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
 import OpenSolid.Point3d as Point3d exposing (Point3d)
@@ -94,7 +94,7 @@ import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 {-| A polyline in 3D.
 -}
 type alias Polyline3d =
-    Types.Polyline3d
+    Internal.Polyline3d
 
 
 {-| Construct a polyline from its vertices:
@@ -110,7 +110,7 @@ type alias Polyline3d =
 -}
 withVertices : List Point3d -> Polyline3d
 withVertices =
-    Types.Polyline3d
+    Internal.Polyline3d
 
 
 {-| Get the vertices of a polyline.
@@ -124,7 +124,7 @@ withVertices =
 
 -}
 vertices : Polyline3d -> List Point3d
-vertices (Types.Polyline3d vertices_) =
+vertices (Internal.Polyline3d vertices_) =
     vertices_
 
 

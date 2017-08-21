@@ -9,7 +9,6 @@
     "exposed-modules": [
         "OpenSolid.Geometry.Decode",
         "OpenSolid.Geometry.Encode",
-        "OpenSolid.Geometry.Types",
         "OpenSolid.Arc2d",
         "OpenSolid.Arc3d",
         "OpenSolid.Axis2d",
