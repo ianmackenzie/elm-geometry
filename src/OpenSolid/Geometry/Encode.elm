@@ -56,36 +56,35 @@ module OpenSolid.Geometry.Encode
 -}
 
 import Json.Encode as Encode exposing (Value)
-import OpenSolid.Arc2d as Arc2d
-import OpenSolid.Arc3d as Arc3d
-import OpenSolid.Axis2d as Axis2d
-import OpenSolid.Axis3d as Axis3d
-import OpenSolid.BoundingBox2d as BoundingBox2d
-import OpenSolid.BoundingBox3d as BoundingBox3d
-import OpenSolid.Circle2d as Circle2d
-import OpenSolid.Circle3d as Circle3d
-import OpenSolid.CubicSpline2d as CubicSpline2d
-import OpenSolid.CubicSpline3d as CubicSpline3d
-import OpenSolid.Direction2d as Direction2d
-import OpenSolid.Direction3d as Direction3d
-import OpenSolid.Frame2d as Frame2d
-import OpenSolid.Frame3d as Frame3d
-import OpenSolid.Geometry.Types exposing (..)
-import OpenSolid.LineSegment2d as LineSegment2d
-import OpenSolid.LineSegment3d as LineSegment3d
-import OpenSolid.Plane3d as Plane3d
-import OpenSolid.Point2d as Point2d
-import OpenSolid.Point3d as Point3d
-import OpenSolid.Polygon2d as Polygon2d
-import OpenSolid.Polyline2d as Polyline2d
-import OpenSolid.Polyline3d as Polyline3d
-import OpenSolid.QuadraticSpline2d as QuadraticSpline2d
-import OpenSolid.QuadraticSpline3d as QuadraticSpline3d
-import OpenSolid.SketchPlane3d as SketchPlane3d
-import OpenSolid.Triangle2d as Triangle2d
-import OpenSolid.Triangle3d as Triangle3d
-import OpenSolid.Vector2d as Vector2d
-import OpenSolid.Vector3d as Vector3d
+import OpenSolid.Arc2d as Arc2d exposing (Arc2d)
+import OpenSolid.Arc3d as Arc3d exposing (Arc3d)
+import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
+import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
+import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
+import OpenSolid.BoundingBox3d as BoundingBox3d exposing (BoundingBox3d)
+import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
+import OpenSolid.Circle3d as Circle3d exposing (Circle3d)
+import OpenSolid.CubicSpline2d as CubicSpline2d exposing (CubicSpline2d)
+import OpenSolid.CubicSpline3d as CubicSpline3d exposing (CubicSpline3d)
+import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
+import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
+import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
+import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
+import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
+import OpenSolid.LineSegment3d as LineSegment3d exposing (LineSegment3d)
+import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
+import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.Point3d as Point3d exposing (Point3d)
+import OpenSolid.Polygon2d as Polygon2d exposing (Polygon2d)
+import OpenSolid.Polyline2d as Polyline2d exposing (Polyline2d)
+import OpenSolid.Polyline3d as Polyline3d exposing (Polyline3d)
+import OpenSolid.QuadraticSpline2d as QuadraticSpline2d exposing (QuadraticSpline2d)
+import OpenSolid.QuadraticSpline3d as QuadraticSpline3d exposing (QuadraticSpline3d)
+import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
+import OpenSolid.Triangle2d as Triangle2d exposing (Triangle2d)
+import OpenSolid.Triangle3d as Triangle3d exposing (Triangle3d)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
+import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 
 {-| Encode a `Vector2d` as an object with `x` and `y` fields.

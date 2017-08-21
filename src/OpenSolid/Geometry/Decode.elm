@@ -56,7 +56,35 @@ module OpenSolid.Geometry.Decode
 -}
 
 import Json.Decode as Decode exposing (Decoder)
-import OpenSolid.Geometry.Types exposing (..)
+import OpenSolid.Arc2d as Arc2d exposing (Arc2d)
+import OpenSolid.Arc3d as Arc3d exposing (Arc3d)
+import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
+import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
+import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
+import OpenSolid.BoundingBox3d as BoundingBox3d exposing (BoundingBox3d)
+import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
+import OpenSolid.Circle3d as Circle3d exposing (Circle3d)
+import OpenSolid.CubicSpline2d as CubicSpline2d exposing (CubicSpline2d)
+import OpenSolid.CubicSpline3d as CubicSpline3d exposing (CubicSpline3d)
+import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
+import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
+import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
+import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
+import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
+import OpenSolid.LineSegment3d as LineSegment3d exposing (LineSegment3d)
+import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
+import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.Point3d as Point3d exposing (Point3d)
+import OpenSolid.Polygon2d as Polygon2d exposing (Polygon2d)
+import OpenSolid.Polyline2d as Polyline2d exposing (Polyline2d)
+import OpenSolid.Polyline3d as Polyline3d exposing (Polyline3d)
+import OpenSolid.QuadraticSpline2d as QuadraticSpline2d exposing (QuadraticSpline2d)
+import OpenSolid.QuadraticSpline3d as QuadraticSpline3d exposing (QuadraticSpline3d)
+import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
+import OpenSolid.Triangle2d as Triangle2d exposing (Triangle2d)
+import OpenSolid.Triangle3d as Triangle3d exposing (Triangle3d)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
+import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 
 {-| Decodes a `Vector2d` from either
@@ -69,7 +97,7 @@ vector2d : Decoder Vector2d
 vector2d =
     let
         toVector x y =
-            Vector2d ( x, y )
+            Vector2d.withComponents ( x, y )
     in
     Decode.oneOf
         [ Decode.map2 toVector
@@ -91,7 +119,7 @@ vector3d : Decoder Vector3d
 vector3d =
     let
         toVector x y z =
-            Vector3d ( x, y, z )
+            Vector3d.withComponents ( x, y, z )
     in
     Decode.oneOf
         [ Decode.map3 toVector
@@ -115,7 +143,7 @@ direction2d : Decoder Direction2d
 direction2d =
     let
         toDirection x y =
-            Direction2d ( x, y )
+            Direction2d.withComponents ( x, y )
     in
     Decode.oneOf
         [ Decode.map2 toDirection
@@ -137,7 +165,7 @@ direction3d : Decoder Direction3d
 direction3d =
     let
         toDirection x y z =
-            Direction3d ( x, y, z )
+            Direction3d.withComponents ( x, y, z )
     in
     Decode.oneOf
         [ Decode.map3 toDirection
@@ -161,7 +189,7 @@ point2d : Decoder Point2d
 point2d =
     let
         toPoint x y =
-            Point2d ( x, y )
+            Point2d.withCoordinates ( x, y )
     in
     Decode.oneOf
         [ Decode.map2 toPoint
@@ -183,7 +211,7 @@ point3d : Decoder Point3d
 point3d =
     let
         toPoint x y z =
-            Point3d ( x, y, z )
+            Point3d.withCoordinates ( x, y, z )
     in
     Decode.oneOf
         [ Decode.map3 toPoint
@@ -204,7 +232,7 @@ axis2d : Decoder Axis2d
 axis2d =
     Decode.map2
         (\originPoint direction ->
-            Axis2d { originPoint = originPoint, direction = direction }
+            Axis2d.with { originPoint = originPoint, direction = direction }
         )
         (Decode.field "originPoint" point2d)
         (Decode.field "direction" direction2d)
@@ -217,7 +245,7 @@ axis3d : Decoder Axis3d
 axis3d =
     Decode.map2
         (\originPoint direction ->
-            Axis3d { originPoint = originPoint, direction = direction }
+            Axis3d.with { originPoint = originPoint, direction = direction }
         )
         (Decode.field "originPoint" point3d)
         (Decode.field "direction" direction3d)
@@ -230,7 +258,7 @@ plane3d : Decoder Plane3d
 plane3d =
     Decode.map2
         (\originPoint normalDirection ->
-            Plane3d
+            Plane3d.with
                 { originPoint = originPoint
                 , normalDirection = normalDirection
                 }
@@ -246,7 +274,7 @@ frame2d : Decoder Frame2d
 frame2d =
     Decode.map3
         (\originPoint xDirection yDirection ->
-            Frame2d
+            Frame2d.with
                 { originPoint = originPoint
                 , xDirection = xDirection
                 , yDirection = yDirection
@@ -264,7 +292,7 @@ frame3d : Decoder Frame3d
 frame3d =
     Decode.map4
         (\originPoint xDirection yDirection zDirection ->
-            Frame3d
+            Frame3d.with
                 { originPoint = originPoint
                 , xDirection = xDirection
                 , yDirection = yDirection
@@ -284,7 +312,7 @@ sketchPlane3d : Decoder SketchPlane3d
 sketchPlane3d =
     Decode.map3
         (\originPoint xDirection yDirection ->
-            SketchPlane3d
+            SketchPlane3d.with
                 { originPoint = originPoint
                 , xDirection = xDirection
                 , yDirection = yDirection
@@ -299,7 +327,7 @@ sketchPlane3d =
 -}
 lineSegment2d : Decoder LineSegment2d
 lineSegment2d =
-    Decode.map2 (\v1 v2 -> LineSegment2d ( v1, v2 ))
+    Decode.map2 (\v1 v2 -> LineSegment2d.withEndpoints ( v1, v2 ))
         (Decode.index 0 point2d)
         (Decode.index 1 point2d)
 
@@ -308,7 +336,7 @@ lineSegment2d =
 -}
 lineSegment3d : Decoder LineSegment3d
 lineSegment3d =
-    Decode.map2 (\v1 v2 -> LineSegment3d ( v1, v2 ))
+    Decode.map2 (\v1 v2 -> LineSegment3d.withEndpoints ( v1, v2 ))
         (Decode.index 0 point3d)
         (Decode.index 1 point3d)
 
@@ -317,7 +345,7 @@ lineSegment3d =
 -}
 triangle2d : Decoder Triangle2d
 triangle2d =
-    Decode.map3 (\v1 v2 v3 -> Triangle2d ( v1, v2, v3 ))
+    Decode.map3 (\v1 v2 v3 -> Triangle2d.withVertices ( v1, v2, v3 ))
         (Decode.index 0 point2d)
         (Decode.index 1 point2d)
         (Decode.index 2 point2d)
@@ -327,7 +355,7 @@ triangle2d =
 -}
 triangle3d : Decoder Triangle3d
 triangle3d =
-    Decode.map3 (\v1 v2 v3 -> Triangle3d ( v1, v2, v3 ))
+    Decode.map3 (\v1 v2 v3 -> Triangle3d.withVertices ( v1, v2, v3 ))
         (Decode.index 0 point3d)
         (Decode.index 1 point3d)
         (Decode.index 2 point3d)
@@ -340,7 +368,7 @@ boundingBox2d : Decoder BoundingBox2d
 boundingBox2d =
     Decode.map4
         (\minX maxX minY maxY ->
-            BoundingBox2d
+            BoundingBox2d.with
                 { minX = minX
                 , maxX = maxX
                 , minY = minY
@@ -360,7 +388,7 @@ boundingBox3d : Decoder BoundingBox3d
 boundingBox3d =
     Decode.map6
         (\minX maxX minY maxY minZ maxZ ->
-            BoundingBox3d
+            BoundingBox3d.with
                 { minX = minX
                 , maxX = maxX
                 , minY = minY
@@ -381,21 +409,21 @@ boundingBox3d =
 -}
 polyline2d : Decoder Polyline2d
 polyline2d =
-    Decode.map Polyline2d (Decode.list point2d)
+    Decode.map Polyline2d.withVertices (Decode.list point2d)
 
 
 {-| Decodes a `Polyline3d` from a list of vertices.
 -}
 polyline3d : Decoder Polyline3d
 polyline3d =
-    Decode.map Polyline3d (Decode.list point3d)
+    Decode.map Polyline3d.withVertices (Decode.list point3d)
 
 
 {-| Decodes a `Polygon2d` from a list of vertices.
 -}
 polygon2d : Decoder Polygon2d
 polygon2d =
-    Decode.map Polygon2d (Decode.list point2d)
+    Decode.map Polygon2d.withVertices (Decode.list point2d)
 
 
 {-| Decodes a `Circle2d` from an object with `centerPoint` and `radius` fields.
@@ -404,7 +432,7 @@ circle2d : Decoder Circle2d
 circle2d =
     Decode.map2
         (\centerPoint radius ->
-            Circle2d { centerPoint = centerPoint, radius = radius }
+            Circle2d.with { centerPoint = centerPoint, radius = radius }
         )
         (Decode.field "centerPoint" point2d)
         (Decode.field "radius" Decode.float)
@@ -417,7 +445,7 @@ circle3d : Decoder Circle3d
 circle3d =
     Decode.map3
         (\centerPoint axialDirection radius ->
-            Circle3d
+            Circle3d.with
                 { centerPoint = centerPoint
                 , axialDirection = axialDirection
                 , radius = radius
@@ -435,7 +463,7 @@ arc2d : Decoder Arc2d
 arc2d =
     Decode.map3
         (\centerPoint startPoint sweptAngle ->
-            Arc2d
+            Arc2d.with
                 { centerPoint = centerPoint
                 , startPoint = startPoint
                 , sweptAngle = sweptAngle
@@ -453,7 +481,7 @@ arc3d : Decoder Arc3d
 arc3d =
     Decode.map3
         (\axis startPoint sweptAngle ->
-            Arc3d
+            Arc3d.with
                 { axis = axis
                 , startPoint = startPoint
                 , sweptAngle = sweptAngle
@@ -468,7 +496,8 @@ arc3d =
 -}
 quadraticSpline2d : Decoder QuadraticSpline2d
 quadraticSpline2d =
-    Decode.map3 (\p1 p2 p3 -> QuadraticSpline2d ( p1, p2, p3 ))
+    Decode.map3
+        (\p1 p2 p3 -> QuadraticSpline2d.withControlPoints ( p1, p2, p3 ))
         (Decode.index 0 point2d)
         (Decode.index 1 point2d)
         (Decode.index 2 point2d)
@@ -478,7 +507,8 @@ quadraticSpline2d =
 -}
 quadraticSpline3d : Decoder QuadraticSpline3d
 quadraticSpline3d =
-    Decode.map3 (\p1 p2 p3 -> QuadraticSpline3d ( p1, p2, p3 ))
+    Decode.map3
+        (\p1 p2 p3 -> QuadraticSpline3d.withControlPoints ( p1, p2, p3 ))
         (Decode.index 0 point3d)
         (Decode.index 1 point3d)
         (Decode.index 2 point3d)
@@ -488,7 +518,8 @@ quadraticSpline3d =
 -}
 cubicSpline2d : Decoder CubicSpline2d
 cubicSpline2d =
-    Decode.map4 (\p1 p2 p3 p4 -> CubicSpline2d ( p1, p2, p3, p4 ))
+    Decode.map4
+        (\p1 p2 p3 p4 -> CubicSpline2d.withControlPoints ( p1, p2, p3, p4 ))
         (Decode.index 0 point2d)
         (Decode.index 1 point2d)
         (Decode.index 2 point2d)
@@ -499,7 +530,8 @@ cubicSpline2d =
 -}
 cubicSpline3d : Decoder CubicSpline3d
 cubicSpline3d =
-    Decode.map4 (\p1 p2 p3 p4 -> CubicSpline3d ( p1, p2, p3, p4 ))
+    Decode.map4
+        (\p1 p2 p3 p4 -> CubicSpline3d.withControlPoints ( p1, p2, p3, p4 ))
         (Decode.index 0 point3d)
         (Decode.index 1 point3d)
         (Decode.index 2 point3d)
