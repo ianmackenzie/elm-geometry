@@ -1,15 +1,13 @@
 module OpenSolid.Arc2d
     exposing
         ( Arc2d
-        , Length
-        , WindingDirection
+        , SweptAngle
         , centerPoint
-        , clockwise
-        , counterclockwise
         , endPoint
         , evaluate
         , fromEndpoints
-        , long
+        , largeNegative
+        , largePositive
         , mirrorAcross
         , placeIn
         , placeOnto
@@ -19,7 +17,8 @@ module OpenSolid.Arc2d
         , reverse
         , rotateAround
         , scaleAbout
-        , short
+        , smallNegative
+        , smallPositive
         , startPoint
         , sweptAngle
         , throughPoints
@@ -44,7 +43,7 @@ end point). This module includes functionality for
 
 # Constructors
 
-@docs with, Length, WindingDirection, short, long, clockwise, counterclockwise, throughPoints, fromEndpoints
+@docs with, throughPoints, SweptAngle, smallPositive, smallNegative, largePositive, largeNegative, fromEndpoints
 
 
 # Accessors
@@ -115,48 +114,6 @@ a clockwise arc instead.
 with : { startPoint : Point2d, centerPoint : Point2d, sweptAngle : Float } -> Arc2d
 with =
     Internal.Arc2d
-
-
-{-| Argument type used in [`fromEndpoints`](#fromEndpoints).
--}
-type Length
-    = Short
-    | Long
-
-
-{-| Argument type used in [`fromEndpoints`](#fromEndpoints).
--}
-type WindingDirection
-    = Clockwise
-    | Counterclockwise
-
-
-{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
--}
-short : Length
-short =
-    Short
-
-
-{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
--}
-long : Length
-long =
-    Long
-
-
-{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
--}
-clockwise : WindingDirection
-clockwise =
-    Clockwise
-
-
-{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
--}
-counterclockwise : WindingDirection
-counterclockwise =
-    Counterclockwise
 
 
 {-| Attempt to construct an arc that starts at the first given point, passes
@@ -251,18 +208,56 @@ throughPoints firstPoint secondPoint thirdPoint =
             )
 
 
+{-| Argument type used in [`fromEndpoints`](#fromEndpoints).
+-}
+type SweptAngle
+    = SmallPositive
+    | SmallNegative
+    | LargePositive
+    | LargeNegative
+
+
+{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
+-}
+smallPositive : SweptAngle
+smallPositive =
+    SmallPositive
+
+
+{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
+-}
+smallNegative : SweptAngle
+smallNegative =
+    SmallNegative
+
+
+{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
+-}
+largePositive : SweptAngle
+largePositive =
+    LargePositive
+
+
+{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
+-}
+largeNegative : SweptAngle
+largeNegative =
+    LargeNegative
+
+
 {-| Attempt to construct an arc with the given start point, end point and
 radius. For any given valid set of start point, end point and radius, there are
-four possible results, so two more arguments are required to fully specify the
+four possible results, so the `sweptAngle` argument is used to specify the
 arc to create:
 
-  - For the fourth argument, pass either [`Arc2d.short`](#short) or
-    [`Arc2d.long`](#long) to indicate whether the returned arc should be have a
-    swept angle less than or greater than 180 degrees respectively.
-  - For the fifth argument, pass either [`Arc2d.counterclockwise`](#counterclockwise)
-    or [`Arc2d.clockwise`](#clockwise) to indicate whether the returned arc
-    should be counterclockwise (have a positive swept angle) or clockwise (have
-    a negative swept angle).
+  - `Arc2d.smallPositive` will result in a counterclocwise arc with a swept
+    angle less than 180 degrees
+  - `Arc2d.smallNegative` will result in a clockwise arc with a swept angle less
+    than 180 degrees
+  - `Arc2d.largePositive` will result in a counterclocwise arc with a swept
+    angle greater than 180 degrees
+  - `Arc2d.largeNegative` will result in a clockwise arc with a swept angle
+    greater than 180 degrees
 
 For example:
 
@@ -272,7 +267,12 @@ For example:
     p2 =
         Point2d.withCoordinates ( 0, 1 )
 
-    Arc2d.fromEndpoints p1 p2 1 Arc2d.short Arc2d.counterclockwise
+    Arc2d.fromEndpoints
+        { startPoint = p1
+        , endPoint = p2
+        , radius = 1
+        , sweptAngle = Arc2d.smallPositive
+        }
     --> Just
     -->     (Arc2d.with
     -->         { startPoint = Point2d.withCoordinates ( 1, 0 )
@@ -281,7 +281,12 @@ For example:
     -->         }
     -->     )
 
-    Arc2d.fromEndpoints p1 p2 1 Arc2d.short Arc2d.clockwise
+    Arc2d.fromEndpoints
+        { startPoint = p1
+        , endPoint = p2
+        , radius = 1
+        , sweptAngle = Arc2d.smallNegative
+        }
     --> Just
     -->     (Arc2d.with
     -->         { startPoint = Point2d.withCoordinates ( 1, 0 )
@@ -290,7 +295,12 @@ For example:
     -->         }
     -->     )
 
-    Arc2d.fromEndpoints p1 p2 1 Arc2d.long Arc2d.counterclockwise
+    Arc2d.fromEndpoints
+        { startPoint = p1
+        , endPoint = p2
+        , radius = 1
+        , sweptAngle = Arc2d.largePositive
+        }
     --> Just
     -->     (Arc2d.with
     -->         { startPoint = Point2d.withCoordinates ( 1, 0 )
@@ -299,7 +309,12 @@ For example:
     -->         }
     -->     )
 
-    Arc2d.fromEndpoints p1 p2 1 Arc2d.long Arc2d.clockwise
+    Arc2d.fromEndpoints
+        { startPoint = p1
+        , endPoint = p2
+        , radius = 1
+        , sweptAngle = Arc2d.largeNegative
+        }
     --> Just
     -->     (Arc2d.with
     -->         { startPoint = Point2d.withCoordinates ( 1, 0 )
@@ -308,7 +323,12 @@ For example:
     -->         }
     -->     )
 
-    Arc2d.fromEndpoints p1 p2 2 Arc2d.short Arc2d.counterclockwise
+    Arc2d.fromEndpoints
+        { startPoint = p1
+        , endPoint = p2
+        , radius = 2
+        , sweptAngle = Arc2d.smallPositive
+        }
     --> Just
     -->     (Arc2d.with
     -->         { startPoint = Point2d.withCoordinates ( 1, 0 )
@@ -320,7 +340,12 @@ For example:
 If the start and end points are coincident or the distance between them is more
 than twice the given radius, returns `Nothing`:
 
-    Arc2d.fromEndpoints p1 p2 0.5 Arc2d.short Arc2d.counterclockwise
+    Arc2d.fromEndpoints
+        { startPoint = p1
+        , endPoint = p2
+        , radius = 0.5
+        , sweptAngle = Arc2d.smallPositive
+        }
     --> Nothing
 
 Note that this means it is dangerous to use this function to construct 180
@@ -337,8 +362,8 @@ such as
             }
 
 -}
-fromEndpoints : Point2d -> Point2d -> Float -> Length -> WindingDirection -> Maybe Arc2d
-fromEndpoints startPoint endPoint radius lengthType windingDirection =
+fromEndpoints : { startPoint : Point2d, endPoint : Point2d, radius : Float, sweptAngle : SweptAngle } -> Maybe Arc2d
+fromEndpoints { startPoint, endPoint, radius, sweptAngle } =
     let
         chord =
             LineSegment2d.withEndpoints ( startPoint, endPoint )
@@ -358,17 +383,17 @@ fromEndpoints startPoint endPoint radius lengthType windingDirection =
                             sqrt (squaredRadius - squaredHalfLength)
 
                         offsetDistance =
-                            case ( windingDirection, lengthType ) of
-                                ( Counterclockwise, Short ) ->
+                            case sweptAngle of
+                                SmallPositive ->
                                     offsetMagnitude
 
-                                ( Clockwise, Long ) ->
-                                    offsetMagnitude
-
-                                ( Clockwise, Short ) ->
+                                SmallNegative ->
                                     -offsetMagnitude
 
-                                ( Counterclockwise, Long ) ->
+                                LargeNegative ->
+                                    offsetMagnitude
+
+                                LargePositive ->
                                     -offsetMagnitude
 
                         offset =
@@ -386,24 +411,24 @@ fromEndpoints startPoint endPoint radius lengthType windingDirection =
                         shortAngle =
                             2 * asin (halfLength / radius)
 
-                        sweptAngle =
-                            case ( windingDirection, lengthType ) of
-                                ( Counterclockwise, Short ) ->
+                        sweptAngleInRadians =
+                            case sweptAngle of
+                                SmallPositive ->
                                     shortAngle
 
-                                ( Clockwise, Short ) ->
+                                SmallNegative ->
                                     -shortAngle
 
-                                ( Counterclockwise, Long ) ->
+                                LargePositive ->
                                     2 * pi - shortAngle
 
-                                ( Clockwise, Long ) ->
+                                LargeNegative ->
                                     shortAngle - 2 * pi
                     in
                     with
                         { centerPoint = centerPoint
                         , startPoint = startPoint
-                        , sweptAngle = sweptAngle
+                        , sweptAngle = sweptAngleInRadians
                         }
                 )
     else
