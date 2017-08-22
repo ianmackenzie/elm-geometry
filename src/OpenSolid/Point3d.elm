@@ -677,7 +677,7 @@ projectOnto plane point =
             }
 
     Point3d.projectRadiallyOnto verticalAxis
-    --> Point3d ( 0, 1, 3 )
+    --> Point3d.withCoordinates ( 0, 1, 3 )
 
 -}
 projectRadiallyOnto : Axis3d -> Point3d -> Point3d
