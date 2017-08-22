@@ -6,7 +6,7 @@ module Point3d
         , mirrorFlipsSignedDistance
         , projectIntoThenPlaceOntoIsProjectOnto
         , rotationAboutAxisPreservesDistanceAlong
-        , rotationAboutAxisPreservesRadialDistance
+        , rotationAboutAxisPreservesDistanceFrom
         , translationByPerpendicularDoesNotChangeSignedDistance
         )
 
@@ -48,24 +48,24 @@ rotationAboutAxisPreservesDistanceAlong =
     Test.fuzz3 Fuzz.point3d Fuzz.axis3d Fuzz.scalar description expectation
 
 
-rotationAboutAxisPreservesRadialDistance : Test
-rotationAboutAxisPreservesRadialDistance =
+rotationAboutAxisPreservesDistanceFrom : Test
+rotationAboutAxisPreservesDistanceFrom =
     let
         description =
-            "Rotation around an axis preserves radial distance from that axis"
+            "Rotation around an axis preserves distance from that axis"
 
         expectation point axis angle =
             let
-                radialDistance =
-                    Point3d.radialDistanceFrom axis point
+                distance =
+                    Point3d.distanceFromAxis axis point
 
                 rotatedPoint =
                     Point3d.rotateAround axis angle point
 
                 rotatedDistance =
-                    Point3d.radialDistanceFrom axis rotatedPoint
+                    Point3d.distanceFromAxis axis rotatedPoint
             in
-            Expect.approximately radialDistance rotatedDistance
+            Expect.approximately distance rotatedDistance
     in
     Test.fuzz3 Fuzz.point3d Fuzz.axis3d Fuzz.scalar description expectation
 

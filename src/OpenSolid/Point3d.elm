@@ -17,6 +17,7 @@ module OpenSolid.Point3d
         , coordinates
         , distanceAlong
         , distanceFrom
+        , distanceFromAxis
         , equalWithin
         , hull
         , in_
@@ -28,14 +29,13 @@ module OpenSolid.Point3d
         , placeIn
         , projectInto
         , projectOnto
-        , projectRadiallyOnto
-        , radialDistanceFrom
+        , projectOntoAxis
         , relativeTo
         , rotateAround
         , scaleAbout
         , signedDistanceFrom
         , squaredDistanceFrom
-        , squaredRadialDistanceFrom
+        , squaredDistanceFromAxis
         , translateBy
         , withCoordinates
         , xCoordinate
@@ -79,12 +79,12 @@ as
 
 # Displacement and distance
 
-@docs distanceFrom, squaredDistanceFrom, distanceAlong, radialDistanceFrom, squaredRadialDistanceFrom, signedDistanceFrom
+@docs distanceFrom, squaredDistanceFrom, distanceAlong, distanceFromAxis, squaredDistanceFromAxis, signedDistanceFrom
 
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, projectRadiallyOnto
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, projectOntoAxis
 
 
 # Coordinate frames
@@ -438,30 +438,30 @@ distanceAlong axis point =
     point =
         Point3d.withCoordinates ( -3, 4, 0 )
 
-    Point3d.radialDistanceFrom Axis3d.x point
+    Point3d.distanceFromAxis Axis3d.x point
     --> 4
 
-    Point3d.radialDistanceFrom Axis3d.y point
+    Point3d.distanceFromAxis Axis3d.y point
     --> 3
 
-    Point3d.radialDistanceFrom Axis3d.z point
+    Point3d.distanceFromAxis Axis3d.z point
     --> 5
 
 Note that unlike in 2D, the result is always positive (unsigned) since there is
 no such thing as the left or right side of an axis in 3D.
 
 -}
-radialDistanceFrom : Axis3d -> Point3d -> Float
-radialDistanceFrom axis point =
-    sqrt (squaredRadialDistanceFrom axis point)
+distanceFromAxis : Axis3d -> Point3d -> Float
+distanceFromAxis axis point =
+    sqrt (squaredDistanceFromAxis axis point)
 
 
 {-| Find the square of the perpendicular distance of a point from an axis. As
 with `distanceFrom`/`squaredDistanceFrom` this is slightly more efficient than
-`radialDistanceFrom` since it avoids a square root.
+`distanceFromAxis` since it avoids a square root.
 -}
-squaredRadialDistanceFrom : Axis3d -> Point3d -> Float
-squaredRadialDistanceFrom axis point =
+squaredDistanceFromAxis : Axis3d -> Point3d -> Float
+squaredDistanceFromAxis axis point =
     Vector3d.from (Axis3d.originPoint axis) point
         |> Vector3d.crossProduct (Direction3d.toVector (Axis3d.direction axis))
         |> Vector3d.squaredLength
@@ -662,12 +662,12 @@ projectOnto plane point =
     translateBy displacement point
 
 
-{-| Project a point perpendicularly (radially) onto an axis.
+{-| Project a point perpendicularly onto an axis.
 
     point =
         Point3d.withCoordinates ( 1, 2, 3 )
 
-    Point3d.projectRadiallyOnto Axis3d.x
+    Point3d.projectOntoAxis Axis3d.x
     --> Point3d.withCoordinates ( 1, 0, 0 )
 
     verticalAxis =
@@ -676,12 +676,12 @@ projectOnto plane point =
             , direction = Direction3d.z
             }
 
-    Point3d.projectRadiallyOnto verticalAxis
+    Point3d.projectOntoAxis verticalAxis
     --> Point3d.withCoordinates ( 0, 1, 3 )
 
 -}
-projectRadiallyOnto : Axis3d -> Point3d -> Point3d
-projectRadiallyOnto axis point =
+projectOntoAxis : Axis3d -> Point3d -> Point3d
+projectOntoAxis axis point =
     along axis (distanceAlong axis point)
 
 

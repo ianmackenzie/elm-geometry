@@ -205,7 +205,7 @@ central axis, which may not be equal to the origin point of that axis.
 -}
 centerPoint : Arc3d -> Point3d
 centerPoint arc =
-    Point3d.projectRadiallyOnto (axis arc) (startPoint arc)
+    Point3d.projectOntoAxis (axis arc) (startPoint arc)
 
 
 {-| Get direction of an arc's axis;
@@ -230,7 +230,7 @@ axialDirection arc =
 -}
 radius : Arc3d -> Float
 radius arc =
-    Point3d.radialDistanceFrom (axis arc) (startPoint arc)
+    Point3d.distanceFromAxis (axis arc) (startPoint arc)
 
 
 {-| Get the start point of an arc.
