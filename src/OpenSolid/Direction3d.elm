@@ -35,7 +35,6 @@ module OpenSolid.Direction3d
         , projectOnto
         , relativeTo
         , rotateAround
-        , scaleBy
         , spherical
         , toVector
         , withComponents
@@ -96,7 +95,7 @@ several uses, such as:
 
 # Transformations
 
-@docs flip, scaleBy, rotateAround, mirrorAcross, projectOnto
+@docs flip, rotateAround, mirrorAcross, projectOnto
 
 
 # Coordinate frames
@@ -615,22 +614,6 @@ flip direction =
             components direction
     in
     withComponents ( -x, -y, -z )
-
-
-{-| Construct a vector of a particular length by treating a direction as a unit
-vector and scaling it by the given length. In many cases it may be shorter and
-more clear to use the [`Vector3d.in_`](OpenSolid-Vector3d#in_) constructor.
-
-    Direction3d.scaleBy 3 Direction3d.z
-    --> Vector3d.withComponents ( 0, 0, 3 )
-
-The length can be negative, in which case the resulting vector will have the
-opposite direction.
-
--}
-scaleBy : Float -> Direction3d -> Vector3d
-scaleBy scale direction =
-    toVector direction |> Vector3d.scaleBy scale
 
 
 {-| Rotate a direction around an axis by a given angle.

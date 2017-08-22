@@ -31,7 +31,6 @@ module OpenSolid.Direction2d
         , positiveY
         , relativeTo
         , rotateBy
-        , scaleBy
         , toAngle
         , toVector
         , withComponents
@@ -90,7 +89,7 @@ several uses, such as:
 
 # Transformations
 
-@docs flip, scaleBy, rotateBy, mirrorAcross
+@docs flip, rotateBy, mirrorAcross
 
 
 # Coordinate frames
@@ -455,25 +454,6 @@ toVector direction =
 flip : Direction2d -> Direction2d
 flip =
     Bootstrap.flip
-
-
-{-| Construct a vector of a particular length by treating a direction as a unit
-vector and scaling it by the given length. In many cases it may be shorter and
-more clear to use the [`Vector2d.in_`](OpenSolid-Vector2d#in_) constructor.
-
-    direction =
-        Direction2d.withComponents ( 0.6, 0.8 )
-
-    Direction2d.scaleBy 2 direction
-    --> Vector2d.withComponents ( 1.2, 1.6 )
-
-The length can be negative, in which case the resulting vector will have the
-opposite direction.
-
--}
-scaleBy : Float -> Direction2d -> Vector2d
-scaleBy scale direction =
-    toVector direction |> Vector2d.scaleBy scale
 
 
 {-| Rotate a direction counterclockwise by a given angle (in radians).
