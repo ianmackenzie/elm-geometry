@@ -342,9 +342,8 @@ arc3d : Fuzzer Arc3d
 arc3d =
     let
         arc axis startPoint sweptAngle =
-            Arc3d.with
-                { axis = axis
-                , startPoint = startPoint
+            Arc3d.around axis
+                { startPoint = startPoint
                 , sweptAngle = sweptAngle
                 }
     in

@@ -807,13 +807,13 @@ placeIn frame arc =
 return the corresponding arc in 3D.
 
     Arc2d.placeOnto SketchPlane3d.yz exampleArc
-    --> Arc3d.with
+    --> Arc3d.around
+    -->     (Axis3d.with
+    -->         { originPoint = Point3d.withCoordinates ( 0, 1, 1 )
+    -->         , direction = Direction3d.x
+    -->         }
+    -->     )
     -->     { startPoint = Point3d.withCoordinates ( 0, 3, 1 )
-    -->     , axis =
-    -->         Axis3d.with
-    -->             { originPoint = Point3d.withCoordinates ( 0, 1, 1 )
-    -->             , direction = Direction3d.x
-    -->             }
     -->     , sweptAngle = degrees 90
     -->     }
 
@@ -830,8 +830,7 @@ placeOnto sketchPlane arc =
                 , direction = SketchPlane3d.normalDirection sketchPlane
                 }
     in
-    Arc3d.with
-        { axis = axis
-        , startPoint = place (startPoint arc)
+    Arc3d.around axis
+        { startPoint = place (startPoint arc)
         , sweptAngle = sweptAngle arc
         }

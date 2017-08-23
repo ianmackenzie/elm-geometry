@@ -70,6 +70,7 @@ import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
+import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.LineSegment3d as LineSegment3d exposing (LineSegment3d)
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
@@ -481,7 +482,7 @@ arc3d : Decoder Arc3d
 arc3d =
     Decode.map3
         (\axis startPoint sweptAngle ->
-            Arc3d.with
+            Internal.Arc3d
                 { axis = axis
                 , startPoint = startPoint
                 , sweptAngle = sweptAngle
