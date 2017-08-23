@@ -106,13 +106,13 @@ type alias Circle2d =
             , radius = 3
             }
 
-**You must ensure the provided radius is positive** (or zero, but that's not a
-very useful circle).
+The actual radius of the circle will be the absolute value of the given radius
+(passing `radius = -2` will have the same effect as `radius = 2`).
 
 -}
 with : { centerPoint : Point2d, radius : Float } -> Circle2d
-with =
-    Internal.Circle2d
+with properties =
+    Internal.Circle2d { properties | radius = abs properties.radius }
 
 
 {-| The unit circle, centered on the origin with a radius of 1.

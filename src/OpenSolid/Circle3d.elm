@@ -80,13 +80,13 @@ type alias Circle3d =
             , radius = 3
             }
 
-**You must ensure the provided radius is positive** (or zero, but that's not a
-very useful circle).
+The actual radius of the circle will be the absolute value of the given radius
+(passing `radius = -2` will have the same effect as `radius = 2`).
 
 -}
 with : { centerPoint : Point3d, axialDirection : Direction3d, radius : Float } -> Circle3d
-with =
-    Internal.Circle3d
+with properties =
+    Internal.Circle3d { properties | radius = abs properties.radius }
 
 
 {-| Get the center point of a circle.
