@@ -80,13 +80,13 @@ import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 
-{-| An arc in 3D.
--}
+{-| -}
 type alias Arc3d =
     Internal.Arc3d
 
 
-{-| Construct an arc from its axis, start point and swept angle:
+{-| Construct an arc around the given axis, with the given start point and swept
+angle:
 
     exampleArc =
         Arc3d.around Axis3d.z
@@ -99,6 +99,9 @@ type alias Arc3d =
 
     Arc3d.endPoint exampleArc
     --> Point3d.withCoordinates ( -1, 1, 0 )
+
+Positive swept angles result in a counterclockwise (right-handed) rotation
+around the given axis.
 
 -}
 around : Axis3d -> { startPoint : Point3d, sweptAngle : Float } -> Arc3d
@@ -144,8 +147,9 @@ This is a shortcut for calling `Arc2d.placeOnto`;
 is equivalent to
 
     Arc2d.placeOnto sketchPlane
-        (Arc2d.around centerPoint
-            { startPoint = p1
+        (Arc2d.with
+            { centerPoint = p0
+            , startPoint = p1
             , sweptAngle = theta
             }
         )
