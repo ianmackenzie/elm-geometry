@@ -171,7 +171,8 @@ This is a shortcut for calling `LineSegment2d.placeOnto`;
 
 is equivalent to
 
-    LineSegment2d.placeOnto sketchPlane (LineSegment2d.withEndpoints ( p1, p2 ))
+    LineSegment2d.placeOnto sketchPlane
+        (LineSegment2d.withEndpoints ( p1, p2 ))
 
 -}
 on : SketchPlane3d -> ( Point2d, Point2d ) -> LineSegment3d
