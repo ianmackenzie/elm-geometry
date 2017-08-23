@@ -22,7 +22,6 @@ module OpenSolid.Vector2d
         , equalWithin
         , flip
         , from
-        , in_
         , interpolateFrom
         , length
         , lengthAndDirection
@@ -41,6 +40,7 @@ module OpenSolid.Vector2d
         , squaredLength
         , sum
         , withComponents
+        , withLength
         , xComponent
         , yComponent
         , zero
@@ -79,7 +79,7 @@ and [`Direction2d.y`](OpenSolid-Direction2d#y).
 
 # Constructors
 
-@docs withComponents, polar, from, in_, perpendicularTo, interpolateFrom
+@docs withComponents, polar, from, withLength, perpendicularTo, interpolateFrom
 
 
 # Components
@@ -217,14 +217,14 @@ from firstPoint secondPoint =
     withComponents ( x2 - x1, y2 - y1 )
 
 
-{-| Construct a vector in the given direction with the given length.
+{-| Construct a vector with the given length in the given direction.
 
-    Vector2d.in_ Direction2d.y 5
+    Vector2d.withLength 5 Direction2d.y
     --> Vector2d.withComponents ( 0, 5 )
 
 -}
-in_ : Direction2d -> Float -> Vector2d
-in_ direction length =
+withLength : Float -> Direction2d -> Vector2d
+withLength length direction =
     let
         ( dx, dy ) =
             Direction2d.components direction
@@ -808,7 +808,7 @@ portion.
 -}
 projectionIn : Direction2d -> Vector2d -> Vector2d
 projectionIn direction vector =
-    in_ direction (componentIn direction vector)
+    withLength (componentIn direction vector) direction
 
 
 {-| Project a vector onto an axis.

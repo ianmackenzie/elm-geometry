@@ -257,7 +257,7 @@ the axis:
 along : Axis2d -> Float -> Point2d
 along axis distance =
     Axis2d.originPoint axis
-        |> translateBy (Vector2d.in_ (Axis2d.direction axis) distance)
+        |> translateBy (Vector2d.withLength distance (Axis2d.direction axis))
 
 
 {-| Construct a point given its local coordinates within a particular frame.

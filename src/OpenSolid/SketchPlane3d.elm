@@ -583,7 +583,7 @@ translateAlongOwn axis distance frame =
         direction =
             Axis3d.direction (axis frame)
     in
-    translateBy (Vector3d.in_ direction distance) frame
+    translateBy (Vector3d.withLength distance direction) frame
 
 
 {-| Mirror a sketch plane across a plane.

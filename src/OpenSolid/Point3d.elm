@@ -242,7 +242,7 @@ axis:
 along : Axis3d -> Float -> Point3d
 along axis distance =
     Axis3d.originPoint axis
-        |> translateBy (Vector3d.in_ (Axis3d.direction axis) distance)
+        |> translateBy (Vector3d.withLength distance (Axis3d.direction axis))
 
 
 {-| Construct a point on a sketch plane with the given local coordinates.
@@ -657,7 +657,7 @@ projectOnto plane point =
             signedDistanceFrom plane point
 
         displacement =
-            Vector3d.in_ (Plane3d.normalDirection plane) -signedDistance
+            Vector3d.withLength -signedDistance (Plane3d.normalDirection plane)
     in
     translateBy displacement point
 

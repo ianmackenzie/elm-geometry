@@ -22,7 +22,6 @@ module OpenSolid.Vector3d
         , equalWithin
         , flip
         , from
-        , in_
         , interpolateFrom
         , length
         , lengthAndDirection
@@ -40,6 +39,7 @@ module OpenSolid.Vector3d
         , squaredLength
         , sum
         , withComponents
+        , withLength
         , xComponent
         , yComponent
         , zComponent
@@ -80,7 +80,7 @@ will actually want their `Direction3d` versions [`Direction3d.x`](OpenSolid-Dire
 
 # Constructors
 
-@docs withComponents, from, in_, perpendicularTo, interpolateFrom
+@docs withComponents, from, withLength, perpendicularTo, interpolateFrom
 
 
 # Components
@@ -202,14 +202,14 @@ from firstPoint secondPoint =
     withComponents ( x2 - x1, y2 - y1, z2 - z1 )
 
 
-{-| Construct a vector in the given direction with the given length.
+{-| Construct a vector with the given length in the given direction.
 
-    Vector3d.in_ Direction3d.y 5
+    Vector3d.withLength 5 Direction3d.y
     --> Vector3d.withComponents ( 0, 5, 0 )
 
 -}
-in_ : Direction3d -> Float -> Vector3d
-in_ direction length =
+withLength : Float -> Direction3d -> Vector3d
+withLength length direction =
     let
         ( dx, dy, dz ) =
             Direction3d.components direction
@@ -900,7 +900,7 @@ portion.
 -}
 projectionIn : Direction3d -> Vector3d -> Vector3d
 projectionIn direction vector =
-    in_ direction (componentIn direction vector)
+    withLength (componentIn direction vector) direction
 
 
 {-| Project a vector onto a plane. Conceptually, this means splitting the

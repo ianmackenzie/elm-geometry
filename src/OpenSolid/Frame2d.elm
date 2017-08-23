@@ -437,7 +437,7 @@ translateAlongOwn axis distance frame =
         direction =
             Axis2d.direction (axis frame)
     in
-    translateBy (Vector2d.in_ direction distance) frame
+    translateBy (Vector2d.withLength distance direction) frame
 
 
 {-| Mirror a frame across an axis.

@@ -300,7 +300,7 @@ toSketchPlane plane =
 -}
 offsetBy : Float -> Plane3d -> Plane3d
 offsetBy distance plane =
-    translateBy (Vector3d.in_ (normalDirection plane) distance) plane
+    translateBy (Vector3d.withLength distance (normalDirection plane)) plane
 
 
 {-| Reverse a plane's normal direction while leaving its origin point unchanged.
