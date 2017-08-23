@@ -5,8 +5,7 @@
     "license": "MPL-2.0",
     "source-directories": [
         ".",
-        "../src",
-        "../test/src"
+        "../src"
     ],
     "exposed-modules": [],
     "dependencies": {
