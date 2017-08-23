@@ -35,8 +35,8 @@ module OpenSolid.Direction3d
         , projectOnto
         , relativeTo
         , rotateAround
-        , spherical
         , toVector
+        , with
         , withComponents
         , x
         , xComponent
@@ -70,7 +70,7 @@ several uses, such as:
 
 # Constructors
 
-@docs withComponents, on, spherical, from, perpendicularTo, perpendicularBasis, orthogonalize
+@docs withComponents, on, with, from, perpendicularTo, perpendicularBasis, orthogonalize
 
 
 # Components
@@ -240,7 +240,7 @@ are all valid but
     Direction3d.withComponents ( 1, 1, 1 )
 
 are not. Instead of using `Direction3d.withComponents`, it may be easier to use
-constructors like `Direction3d.on` or `Direction3d.spherical` (which will always
+constructors like `Direction3d.on` or `Direction3d.with` (which will always
 result in a valid direction), or start with existing directions and transform
 them as necessary.
 
@@ -265,41 +265,47 @@ on sketchPlane angle =
     Direction2d.fromAngle angle |> Direction2d.placeOnto sketchPlane
 
 
-{-| Construct a direction using spherical coordinates relative to the given
-sketch plane. The azimuth defines the angle on the sketch plane and the
-elevation defines the angle from the sketch plane (a positive elevation
-corresponds to a direction above the plane, in the same sense as the sketch
-plane's `normalDirection`.)
+{-| Construct a direction using azimuthal and elevation angles relative to the
+given reference plane. The azimuth defines the direction's polar angle within
+the reference plane (from its X direction towards its Y direction) and the
+elevation defines its angle out of the reference plane (towards the reference
+plane's normal direction).
 
-    Direction3d.spherical SketchPlane3d.xy
-        { azimuth = degrees 45
+    Direction3d.with
+        { referencePlane = SketchPlane3d.xy
+        , azimuth = degrees 45
         , elevation = degrees 45
         }
     --> Direction3d.withComponents ( 0.5, 0.5, 0.7071 )
 
-    Direction3d.spherical SketchPlane3d.zx
-        { azimuth = degrees 90
+    Direction3d.with
+        { referencePlane = SketchPlane3d.zx
+        , azimuth = degrees 90
         , elevation = degrees 30
         }
     --> Direction3d.withComponents ( 0.866, 0.5, 0 )
 
-`on` can be thought of as a special case of `spherical`:
+`on` can be thought of as a special case of `with`:
 
     Direction3d.on sketchPlane angle
 
 is equivalent to
 
-    Direction3d.spherical sketchPlane { azimuth = angle, elevation = 0 }
+    Direction3d.with
+        { referencePlane = sketchPlane
+        , azimuth = angle
+        , elevation = 0
+        }
 
 -}
-spherical : SketchPlane3d -> { azimuth : Float, elevation : Float } -> Direction3d
-spherical sketchPlane { azimuth, elevation } =
+with : { referencePlane : SketchPlane3d, azimuth : Float, elevation : Float } -> Direction3d
+with { referencePlane, azimuth, elevation } =
     let
         ( x1, y1, z1 ) =
-            components (SketchPlane3d.xDirection sketchPlane)
+            components (SketchPlane3d.xDirection referencePlane)
 
         ( x2, y2, z2 ) =
-            components (SketchPlane3d.yDirection sketchPlane)
+            components (SketchPlane3d.yDirection referencePlane)
 
         x3 =
             y1 * z2 - z1 * y2

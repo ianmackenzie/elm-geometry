@@ -2,7 +2,7 @@ module Direction3d
     exposing
         ( angleFromAndEqualWithinAreConsistent
         , jsonRoundTrips
-        , onIsSpecialCaseOfSpherical
+        , onIsSpecialCaseOfWith
         )
 
 import Expect
@@ -40,16 +40,17 @@ angleFromAndEqualWithinAreConsistent =
         )
 
 
-onIsSpecialCaseOfSpherical : Test
-onIsSpecialCaseOfSpherical =
+onIsSpecialCaseOfWith : Test
+onIsSpecialCaseOfWith =
     Test.fuzz2 Fuzz.sketchPlane3d
         Fuzz.scalar
-        "on is a special case of spherical"
+        "on is a special case of with"
         (\sketchPlane angle ->
             Direction3d.on sketchPlane angle
                 |> Expect.direction3d
-                    (Direction3d.spherical sketchPlane
-                        { azimuth = angle
+                    (Direction3d.with
+                        { referencePlane = sketchPlane
+                        , azimuth = angle
                         , elevation = 0
                         }
                     )
