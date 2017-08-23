@@ -91,8 +91,7 @@ import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
-{-| An arc in 2D.
--}
+{-| -}
 type alias Arc2d =
     Internal.Arc2d
 
@@ -111,7 +110,7 @@ counterclockwise around the center point. A negative swept angle results in
 a clockwise arc instead.
 
 -}
-with : { startPoint : Point2d, centerPoint : Point2d, sweptAngle : Float } -> Arc2d
+with : { centerPoint : Point2d, startPoint : Point2d, sweptAngle : Float } -> Arc2d
 with =
     Internal.Arc2d
 
