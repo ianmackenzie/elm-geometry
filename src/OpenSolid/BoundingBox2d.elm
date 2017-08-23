@@ -77,6 +77,7 @@ box of an object than the object itself, such as:
 
 -}
 
+import OpenSolid.Bootstrap.BoundingBox2d as Bootstrap
 import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 
@@ -97,16 +98,14 @@ type alias BoundingBox2d =
             , maxY = 6
             }
 
-If you construct a `BoundingBox2d` this way, **you must ensure that the given
-values are properly ordered**: <code>minX&nbsp;<=&nbsp;maxX</code>,
-<code>minY&nbsp;<=&nbsp;maxY</code>. Alternately, you can construct bounding
-boxes using functions such as [`Point2d.hull`](OpenSolid-Point2d#hull) where the
-input order does not matter.
+If the minimum and maximum values are provided in the wrong order (for example
+if <code>minX&nbsp;>&nbsp;maxX</code>), then they will be swapped so that the
+resulting bounding box is valid.
 
 -}
 with : { minX : Float, maxX : Float, minY : Float, maxY : Float } -> BoundingBox2d
 with =
-    Internal.BoundingBox2d
+    Bootstrap.with
 
 
 {-| Construct a zero-width bounding box containing a single point.

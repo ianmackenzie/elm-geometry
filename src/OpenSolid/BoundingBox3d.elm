@@ -79,6 +79,7 @@ box of an object than the object itself, such as:
 
 -}
 
+import OpenSolid.Bootstrap.BoundingBox3d as Bootstrap
 import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Point3d as Point3d exposing (Point3d)
 
@@ -101,16 +102,14 @@ type alias BoundingBox3d =
             , maxZ = 4
             }
 
-If you construct a `BoundingBox3d` this way, **you must ensure that the given
-values are properly ordered**: <code>minX&nbsp;<=&nbsp;maxX</code>,
-<code>minY&nbsp;<=&nbsp;maxY</code>, <code>minZ&nbsp;<=&nbsp;maxZ</code>.
-Alternately, you can construct bounding boxes using functions such as
-[`Point3d.hull`](OpenSolid-Point3d#hull) where the input order does not matter.
+If the minimum and maximum values are provided in the wrong order (for example
+if <code>minX&nbsp;>&nbsp;maxX</code>), then they will be swapped so that the
+resulting bounding box is valid.
 
 -}
 with : { minX : Float, maxX : Float, minY : Float, maxY : Float, minZ : Float, maxZ : Float } -> BoundingBox3d
 with =
-    Internal.BoundingBox3d
+    Bootstrap.with
 
 
 {-| Construct a zero-width bounding box containing a single point.
