@@ -14,8 +14,10 @@ module OpenSolid.Direction3d
     exposing
         ( Direction3d
         , angleFrom
+        , azimuth
         , componentIn
         , components
+        , elevation
         , equalWithin
         , flip
         , from
@@ -76,6 +78,11 @@ several uses, such as:
 # Components
 
 @docs components, xComponent, yComponent, zComponent, componentIn
+
+
+# Angles
+
+@docs azimuth, elevation
 
 
 # Comparison
@@ -502,6 +509,54 @@ is equivalent to
 componentIn : Direction3d -> Direction3d -> Float
 componentIn firstDirection secondDirection =
     Vector3d.componentIn firstDirection (toVector secondDirection)
+
+
+{-| Get the angle of a direction in the XY plane, measured from the X axis
+towards the Y axis (counterclockwise around the Z axis). The result will be in
+the range -π to π.
+
+    Direction3d.azimuth Direction3d.x
+    --> 0
+
+    Direction3d.azimuth Direction3d.y
+    --> degrees 90
+
+    Direction3d.azimuth Direction3d.negativeY
+    --> degrees -90
+
+    Direction3d.azimuth Direction3d.negativeX
+    --> degrees 180
+
+Vertical directions are considered to have an azimuth of zero:
+
+    Direction3d.azimuth Direction3d.z
+    --> 0
+
+-}
+azimuth : Direction3d -> Float
+azimuth direction =
+    atan2 (yComponent direction) (xComponent direction)
+
+
+{-| Get the angle of a direction from the XY plane towards positive Z. The
+result will be in the range -π/2 to π/2.
+
+    Direction3d.elevation Direction3d.x
+    --> 0
+
+    Direction3d.elevation Direction3d.negativeY
+    --> 0
+
+    Direction3d.elevation Direction3d.z
+    --> degrees 90
+
+    Direction3d.elevation Direction3d.negativeZ
+    --> degrees -90
+
+-}
+elevation : Direction3d -> Float
+elevation direction =
+    asin (zComponent direction)
 
 
 {-| Compare two directions within a tolerance. Returns true if the angle between
