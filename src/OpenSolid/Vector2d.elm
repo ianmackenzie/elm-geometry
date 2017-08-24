@@ -31,7 +31,6 @@ module OpenSolid.Vector2d
         , perpendicularTo
         , placeIn
         , placeOnto
-        , polar
         , projectOnto
         , projectionIn
         , relativeTo
@@ -41,6 +40,7 @@ module OpenSolid.Vector2d
         , sum
         , withComponents
         , withLength
+        , withPolarComponents
         , xComponent
         , yComponent
         , zero
@@ -79,7 +79,7 @@ and [`Direction2d.y`](OpenSolid-Direction2d#y).
 
 # Constructors
 
-@docs withComponents, polar, from, withLength, perpendicularTo, interpolateFrom
+@docs withComponents, withPolarComponents, from, withLength, perpendicularTo, interpolateFrom
 
 
 # Components
@@ -175,22 +175,13 @@ withComponents =
 {-| Construct a vector from a length and angle. The angle is measured
 counterclockwise from the positive X direction.
 
-    Vector2d.polar ( 2, degrees 135 )
+    Vector2d.withPolarComponents ( 2, degrees 135 )
     -->Vector2d.withComponents ( -1.4142, 1.4142 )
 
-This is shorthand for using Elm's built-in [`fromPolar`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#fromPolar)
-function and passing the result to `Vector2d.withComponents`:
-
-    Vector2d.polar ( r, theta )
-
-is equivalent to
-
-    Vector2d.withComponents (fromPolar ( r, theta ))
-
 -}
-polar : ( Float, Float ) -> Vector2d
-polar coordinates =
-    withComponents (fromPolar coordinates)
+withPolarComponents : ( Float, Float ) -> Vector2d
+withPolarComponents components =
+    withComponents (fromPolar components)
 
 
 {-| Construct a vector from the first given point to the second.
