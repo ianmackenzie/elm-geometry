@@ -119,7 +119,7 @@ direction3d =
                 z =
                     cos phi
             in
-            Direction3d.withComponents ( x, y, z )
+            Direction3d.unsafe ( x, y, z )
     in
     Fuzz.map2 direction phi theta
 

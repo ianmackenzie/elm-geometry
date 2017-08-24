@@ -198,7 +198,7 @@ placeOntoExamples =
         axis =
             Axis2d.with
                 { originPoint = Point2d.withCoordinates ( 2, 3 )
-                , direction = Direction2d.withComponents ( 0.6, 0.8 )
+                , direction = Direction2d.unsafe ( 0.6, 0.8 )
                 }
     in
     Test.describe "Axis2d.placeOnto examples"
@@ -210,7 +210,7 @@ placeOntoExamples =
                             { originPoint =
                                 Point3d.withCoordinates ( 2, 3, 0 )
                             , direction =
-                                Direction3d.withComponents ( 0.6, 0.8, 0 )
+                                Direction3d.unsafe ( 0.6, 0.8, 0 )
                             }
                         )
         , Test.test "Second example" <|
@@ -221,7 +221,7 @@ placeOntoExamples =
                             { originPoint =
                                 Point3d.withCoordinates ( 3, 0, 2 )
                             , direction =
-                                Direction3d.withComponents ( 0.8, 0, 0.6 )
+                                Direction3d.unsafe ( 0.8, 0, 0.6 )
                             }
                         )
         ]

@@ -223,7 +223,12 @@ around it according to the right-hand rule. If the triangle is degenerate (its
 three vertices are collinear), returns `Nothing`.
 
     Triangle3d.normalDirection exampleTriangle
-    --> Just (Direction3d.withComponents ( 0, -0.9487, 0.3162 ))
+    --> Just
+    -->    (Direction3d.with
+    -->        { azimuth = degrees -90
+    -->        , elevation = degrees 18.43
+    -->        }
+    -->    )
 
 -}
 normalDirection : Triangle3d -> Maybe Direction3d

@@ -282,7 +282,7 @@ line segment has zero length (the start and end points are the same), returns
 `Nothing`.
 
     LineSegment2d.direction exampleLineSegment
-    --> Just (Direction2d.withComponents ( 0.7071, 0.7071 ))
+    --> Just (Direction2d.withPolarAngle (degrees 45))
 
 -}
 direction : LineSegment2d -> Maybe Direction2d
@@ -294,7 +294,7 @@ direction =
 the line segment has zero length, returns `Nothing`.
 
     LineSegment2d.normalDirection exampleLineSegment
-    --> Just (Direction2d.withComponents ( -0.7071, 0.7071 ))
+    --> Just (Direction2d.withPolarAngle (degrees 135))
 
 -}
 normalDirection : LineSegment2d -> Maybe Direction2d

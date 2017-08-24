@@ -1,10 +1,10 @@
-module OpenSolid.Bootstrap.Direction3d exposing (components, withComponents)
+module OpenSolid.Bootstrap.Direction3d exposing (components, unsafe)
 
 import OpenSolid.Geometry.Internal exposing (..)
 
 
-withComponents : ( Float, Float, Float ) -> Direction3d
-withComponents =
+unsafe : ( Float, Float, Float ) -> Direction3d
+unsafe =
     Direction3d
 
 

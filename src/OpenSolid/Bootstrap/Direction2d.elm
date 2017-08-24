@@ -3,14 +3,14 @@ module OpenSolid.Bootstrap.Direction2d
         ( components
         , flip
         , perpendicularTo
-        , withComponents
+        , unsafe
         )
 
 import OpenSolid.Geometry.Internal exposing (..)
 
 
-withComponents : ( Float, Float ) -> Direction2d
-withComponents =
+unsafe : ( Float, Float ) -> Direction2d
+unsafe =
     Direction2d
 
 
@@ -25,7 +25,7 @@ flip direction =
         ( x, y ) =
             components direction
     in
-    withComponents ( -x, -y )
+    unsafe ( -x, -y )
 
 
 perpendicularTo : Direction2d -> Direction2d
@@ -34,4 +34,4 @@ perpendicularTo direction =
         ( x, y ) =
             components direction
     in
-    withComponents ( -y, x )
+    unsafe ( -y, x )

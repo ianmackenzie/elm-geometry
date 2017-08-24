@@ -236,7 +236,11 @@ If the three given points are collinear, returns `Nothing`.
     -->     (SketchPlane3d
     -->         { originPoint = Point3d.withCoordinates ( 2, 0, 0 )
     -->         , xDirection = Direction3d.x
-    -->         , yDirection = Direction3d.withComponents ( 0, 0.7071, 0.7071 )
+    -->         , yDirection =
+    -->             Direction3d.with
+    -->                 { azimuth = degrees 90
+    -->                 , elevation = degrees 45
+    -->                 }
     -->         }
     -->     )
 
@@ -345,7 +349,7 @@ normalDirection sketchPlane =
                 (Direction3d.toVector (xDirection sketchPlane))
                 (Direction3d.toVector (yDirection sketchPlane))
     in
-    Direction3d.withComponents (Vector3d.components normalVector)
+    Direction3d.unsafe (Vector3d.components normalVector)
 
 
 {-| Get the X axis of a sketch plane. A 2D X coordinate within the sketch plane
@@ -517,7 +521,11 @@ transformations. For example,
         |> SketchPlane3d.rotateAroundOwn SketchPlane3d.yAxis (degrees -45)
     --> SketchPlane3d.with
     -->     { originPoint = Point3d.withCoordinates ( 1, 0, 0 )
-    -->     , xDirection = Direction3d.withComponents ( 0.7071, 0, 0.7071 )
+    -->     , xDirection =
+    -->         Direction3d.with
+    -->             { azimuth = 0
+    -->             , elevation = degrees 45
+    -->             }
     -->     , yDirection = Direction3d.y
     -->     }
 
@@ -571,9 +579,14 @@ means 'take the global XY sketch plane, rotate it around the global X axis by
 resulting in
 
     SketchPlane3d.with
-        { originPoint = Point3d.withCoordinates ( 0, 1.4142, 1.4142 )
+        { originPoint =
+            Point3d.withCoordinates ( 0, 1.4142, 1.4142 )
         , xDirection = Direction3d.x
-        , yDirection = Direction3d.withComponents ( 0, 0.7071, 0.7071 )
+        , yDirection =
+            Direction3d.with
+                { azimuth = degrees 90
+                , elevation = degrees 45
+                }
         }
 
 -}

@@ -443,8 +443,8 @@ squaredLength vector =
 {-| Attempt to find the direction of a vector. In the case of a zero vector,
 returns `Nothing`.
 
-    Vector3d.direction (Vector3d.withComponents ( 3, 0, 4 ))
-    --> Just (Direction3d.withComponents ( 0.6, 0, 0.8 ))
+    Vector3d.direction (Vector3d.withComponents ( 3, 0, 3 ))
+    --> Just (Direction3d.with { azimuth = 0, elevation = degrees 45 })
 
     Vector3d.direction (Vector3d.withComponents ( 0, 0, 0 ))
     --> Nothing
@@ -459,17 +459,17 @@ direction vector =
             normalizedVector =
                 scaleBy (1 / length vector) vector
         in
-        Just (Direction3d.withComponents (components normalizedVector))
+        Just (Direction3d.unsafe (components normalizedVector))
 
 
 {-| Attempt to find the length and direction of a vector. In the case of a zero
 vector, returns `Nothing`.
 
     vector =
-        Vector3d.withComponents ( 3, 0, 4 )
+        Vector3d.withComponents ( 3, 0, 3 )
 
     Vector3d.lengthAndDirection vector
-    --> Just ( 5, Direction3d.withComponents ( 0.6, 0, 0.8 ) )
+    --> Just ( 5, Direction3d.with { azimuth = 0, elevation = degrees 45 } )
 
     Vector3d.lengthAndDirection Vector3d.zero
     --> Nothing
@@ -489,7 +489,7 @@ lengthAndDirection vector =
                 scaleBy (1 / vectorLength) vector
 
             vectorDirection =
-                Direction3d.withComponents (components normalizedVector)
+                Direction3d.unsafe (components normalizedVector)
         in
         Just ( vectorLength, vectorDirection )
 
@@ -508,16 +508,17 @@ If any of the given vectors are zero, any two of them are parallel, or the three
 are coplanar, `Nothing` will be returned.
 
     Vector3d.orthonormalize
-        ( Vector3d.withComponents ( 4, 3, 0 )
+        ( Vector3d.withComponents ( 3, 3, 0 )
         , Vector3d.withComponents ( 0, 2, 0 )
         , Vector3d.withComponents ( 1, 2, 3 )
         )
     --> Just
-    -->     ( Direction3d.withComponents ( 0.8, 0.6, 0 )
-    -->     , Direction3d.withComponents ( -0.6, 0.8, 0 )
-    -->     , Direction3d.withComponents ( 0, 0, 1 )
+    -->     ( Direction3d.with { azimuth = degrees 45, elevation = 0 }
+    -->     , Direction3d.with { azimuth = degrees 135, elevation = 0 }
+    -->     , Direction3d.positiveZ
     -->     )
 
+    -- Three vectors in the XY plane:
     Vector3d.orthonormalize
         ( Vector3d.withComponents ( 2, 0, 0 )
         , Vector3d.withComponents ( 3, 1, 0 )

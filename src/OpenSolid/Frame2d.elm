@@ -302,18 +302,12 @@ flipY frame =
 {-| Move a frame so that it has the given origin point.
 
     frame =
-        Frame2d.with
-            { point = Point2d.withCoordinates ( 2, 3 )
-            , xDirection = Direction2d.withComponents ( 0.8, 0.6 )
-            , yDirection = Direction2d.withComponents ( -0.6, 0.8 )
-            }
+        Frame2d.at (Point2d.withCoordinates ( 2, 3 ))
+            |> Frame2d.rotateBy (degrees 30)
 
     Frame2d.moveTo (Point2d.withCoordinates ( 1, 1 )) frame
-    --> Frame2d.with
-    -->     { point = Point2d.withCoordinates ( 1, 1 )
-    -->     , xDirection = Direction2d.withComponents ( 0.8, 0.6 )
-    -->     , yDirection = Direction2d.withComponents ( -0.6, 0.8 )
-    -->     }
+    --> Frame2d.at (Point2d.withCoordinates ( 1, 1 ))
+    -->     |> Frame2d.rotateBy (degrees 30)
 
 -}
 moveTo : Point2d -> Frame2d -> Frame2d
@@ -332,12 +326,14 @@ Y directions will be rotated by the given angle.
     frame =
         Frame2d.at (Point2d.withCoordinates ( 1, 1 ))
 
-    Frame2d.rotateBy (degrees 45) frame
-    --> Frame2d.with
-    -->     { originPoint = Point2d.withCoordinates ( 1, 1 )
-    -->     , xDirection = Direction2d.withComponents ( 0.7071, 0.7071 )
-    -->     , yDirection = Direction2d.withComponents ( -0.7071, 0.7071 )
-    -->     }
+    rotatedFrame =
+        Frame2d.rotateBy (degrees 30) frame
+
+    Frame2d.xDirection rotatedFrame
+    --> Direction2d.withPolarAngle (degrees 30)
+
+    Frame2d.yDirection rotatedFrame
+    --> Direction2d.withPolarAngle (degrees 120)
 
 -}
 rotateBy : Float -> Frame2d -> Frame2d
@@ -360,12 +356,17 @@ and its X and Y basis directions will be rotated by the given angle.
     frame =
         Frame2d.at (Point2d.withCoordinates ( 1, 1 ))
 
-    Frame2d.rotateAround Point2d.origin (degrees 45) frame
-    --> Frame2d.with
-    -->     { originPoint = Point2d.withCoordinates ( 0, 1.4142 )
-    -->     , xDirection = Direction2d.withComponents ( 0.7071, 0.7071 )
-    -->     , yDirection = Direction2d.withComponents ( -0.7071, 0.7071 )
-    -->     }
+    rotatedFrame =
+        Frame2d.rotateAround Point2d.origin (degrees 45) frame
+
+    Frame2d.originPoint rotatedFrame
+    --> Point2d.withCoordinates ( 0, 1.4142 )
+
+    Frame2d.xDirection rotatedFrame
+    --> Direction2d.withPolarAngle (degrees 45)
+
+    Frame2d.yDirection rotatedFrame
+    --> Direction2d.withPolarAngle (degrees 135)
 
 -}
 rotateAround : Point2d -> Float -> Frame2d -> Frame2d
@@ -416,19 +417,23 @@ translate along the given axis.
 This function is convenient when constructing frames via a series of
 transformations. For example,
 
-    Frame2d.at (Point2d.withCoordinates ( 2, 0 ))
-        |> Frame2d.rotateBy (degrees 45)
-        |> Frame2d.translateAlongOwn Frame2d.xAxis 2
+    frame =
+        Frame2d.at (Point2d.withCoordinates ( 2, 0 ))
+            |> Frame2d.rotateBy (degrees 45)
+            |> Frame2d.translateAlongOwn Frame2d.xAxis 2
 
 means "construct a frame at the point (2, 0), rotate it around its own origin
 point by 45 degrees, then translate it along its own X axis by 2 units",
 resulting in
 
-    Frame2d.with
-        { originPoint = Point2d.withCoordinates ( 3.4142, 1.4142 )
-        , xDirection = Direction2d.withComponents ( 0.7071, 0.7071 )
-        , yDirection = Direction2d.withComponents ( -0.7071, 0.7071 )
-        }
+    Frame2d.originPoint frame
+    --> Point2d.withCoordinates ( 3.4142, 1.4142 )
+
+    Frame2d.xDirection frame
+    --> Direction2d.withPolarAngle (degrees 45)
+
+    Frame2d.yDirection frame
+    --> Direction2d.withPolarAngle (degrees 135)
 
 -}
 translateAlongOwn : (Frame2d -> Axis2d) -> Float -> Frame2d -> Frame2d
@@ -522,18 +527,18 @@ the given sketch plane, and returns the corresponding 3D sketch plane.
     frame =
         Frame2d.at (Point2d.withCoordinates ( 2, 3 ))
             |> Frame2d.rotateBy (degrees 30)
-    --> Frame2d.with
-    -->     { originPoint = Point2d.withCoordinates ( 2, 3 )
-    -->     , xDirection = Direction2d.withComponents ( 0.866, 0.5 )
-    -->     , yDirection = Direction2d.withComponents ( -0.5, 0.866 )
-    -->     }
 
-    Frame2d.placeOnto SketchPlane3d.yz frame
-    --> SketchPlane3d.with
-    -->     { originPoint = Point3d.withCoordinates ( 0, 2, 3 )
-    -->     , xDirection = Direction3d.withComponents ( 0, 0.866, 0.5 )
-    -->     , yDirection = Direction3d.withComponents ( 0, -0.5, 0.866 )
-    -->     }
+    placed =
+        Frame2d.placeOnto SketchPlane3d.yz frame
+
+    SketchPlane3d.originPoint placed
+    --> Point3d.withCoordinates ( 0, 2, 3 )
+
+    SketchPlane3d.xDirection placed
+    --> Direction3d.with { azimuth = degrees 90, elevation = degrees 30 }
+
+    SketchPlane3d.yDirection placed
+    --> Direction3d.with { azimuth = degrees -90, elevation = degrees 60 }
 
 -}
 placeOnto : SketchPlane3d -> Frame2d -> SketchPlane3d

@@ -433,8 +433,8 @@ squaredLength vector =
 {-| Attempt to find the direction of a vector. In the case of a zero vector,
 return `Nothing`.
 
-    Vector2d.direction (Vector2d.withComponents ( 3, 4 ))
-    --> Just (Direction2d.withComponents ( 0.6, 0.8 ))
+    Vector2d.direction (Vector2d.withComponents ( 3, 3 ))
+    --> Just (Direction2d.withPolarAngle (degrees 45))
 
     Vector2d.direction (Vector2d.withComponents ( 0, 0 ))
     --> Nothing
@@ -449,17 +449,17 @@ direction vector =
             normalizedVector =
                 scaleBy (1 / length vector) vector
         in
-        Just (Direction2d.withComponents (components normalizedVector))
+        Just (Direction2d.unsafe (components normalizedVector))
 
 
 {-| Attempt to find the length and direction of a vector. In the case of a zero
 vector, returns `Nothing`.
 
     vector =
-        Vector2d.withComponents ( 3, 4 )
+        Vector2d.withComponents ( 1, 1 )
 
     Vector2d.lengthAndDirection vector
-    --> Just ( 5, Direction2d.withComponents ( 0.6, 0.8 ) )
+    --> Just ( 1.4142, Direction2d.withPolarAngle (degrees 45) )
 
     Vector2d.lengthAndDirection Vector2d.zero
     --> Nothing
@@ -479,7 +479,7 @@ lengthAndDirection vector =
                 scaleBy (1 / vectorLength) vector
 
             vectorDirection =
-                Direction2d.withComponents (components normalizedVector)
+                Direction2d.unsafe (components normalizedVector)
         in
         Just ( vectorLength, vectorDirection )
 
@@ -496,17 +496,17 @@ If either of the given vectors are zero, or if the two vectors are parallel,
 `Nothing` will be returned.
 
     Vector2d.orthonormalize
-        ( Vector2d.withComponents ( 4, 3 )
+        ( Vector2d.withComponents ( 3, 3 )
         , Vector2d.withComponents ( 0, -2 )
         )
     --> Just
-    -->     ( Direction2d.withComponents ( 0.8, 0.6 )
-    -->     , Direction2d.withComponents ( 0.6, -0.8 )
+    -->     ( Direction2d.withPolarAngle (degrees 45)
+    -->     , Direction2d.withPolarAngle (degrees -45)
     -->     )
 
     Vector2d.orthonormalize
-        ( Vector2d.withComponents ( 4, 3 )
-        , Vector2d.withComponents ( 8, 6 )
+        ( Vector2d.withComponents ( 3, 3 )
+        , Vector2d.withComponents ( -2, -2 )
         )
     --> Nothing
 

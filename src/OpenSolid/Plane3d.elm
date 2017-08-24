@@ -168,11 +168,14 @@ given points are collinear, returns `Nothing`.
         (Point3d.withCoordinates ( 3, 0, 0 ))
         (Point3d.withCoordinates ( 4, 1, 1 ))
     --> Just
-    -->     (Plane3d
+    -->     (Plane3d.with
     -->         { originPoint =
     -->             Point3d.withCoordinates ( 2, 0, 0 )
     -->         , normalDirection =
-    -->             Direction3d.withComponents ( 0, -0.7071, 0.7071 )
+    -->             Direction3d.with
+    -->                 { azimuth = degrees -90
+    -->                 , elevation = degrees 45
+    -->                 }
     -->         }
     -->     )
 

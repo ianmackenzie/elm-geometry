@@ -144,7 +144,7 @@ direction2d : Decoder Direction2d
 direction2d =
     let
         toDirection x y =
-            Direction2d.withComponents ( x, y )
+            Internal.Direction2d ( x, y )
     in
     Decode.oneOf
         [ Decode.map2 toDirection
@@ -166,7 +166,7 @@ direction3d : Decoder Direction3d
 direction3d =
     let
         toDirection x y z =
-            Direction3d.withComponents ( x, y, z )
+            Internal.Direction3d ( x, y, z )
     in
     Decode.oneOf
         [ Decode.map3 toDirection
