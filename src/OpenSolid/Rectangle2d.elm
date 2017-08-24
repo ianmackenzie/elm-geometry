@@ -173,10 +173,10 @@ edges rectangle =
         ( p1, p2, p3, p4 ) =
             vertices rectangle
     in
-    ( LineSegment2d.withEndpoints ( p1, p2 )
-    , LineSegment2d.withEndpoints ( p2, p3 )
-    , LineSegment2d.withEndpoints ( p3, p4 )
-    , LineSegment2d.withEndpoints ( p4, p1 )
+    ( LineSegment2d.from p1 p2
+    , LineSegment2d.from p2 p3
+    , LineSegment2d.from p3 p4
+    , LineSegment2d.from p4 p1
     )
 
 

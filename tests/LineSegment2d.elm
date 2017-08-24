@@ -170,10 +170,10 @@ intersectionFindsCoincidentEndpoints =
         expectation firstStart secondStart sharedEnd =
             let
                 firstSegment =
-                    LineSegment2d.withEndpoints ( firstStart, sharedEnd )
+                    LineSegment2d.from firstStart sharedEnd
 
                 secondSegment =
-                    LineSegment2d.withEndpoints ( secondStart, sharedEnd )
+                    LineSegment2d.from secondStart sharedEnd
 
                 firstVector =
                     LineSegment2d.vector firstSegment
@@ -212,10 +212,10 @@ intersectionFindsCollinearCoincidentEndpoints =
                     Point2d.interpolateFrom startPoint endPoint t
 
                 firstSegment =
-                    LineSegment2d.withEndpoints ( startPoint, midPoint )
+                    LineSegment2d.from startPoint midPoint
 
                 secondSegment =
-                    LineSegment2d.withEndpoints ( midPoint, endPoint )
+                    LineSegment2d.from midPoint endPoint
 
                 intersection1 =
                     LineSegment2d.intersectionPoint firstSegment secondSegment
@@ -315,8 +315,8 @@ sharedEndpointOnThirdSegmentInducesAnIntersection =
                     LineSegment2d.midpoint segment3
 
                 ( segment1, segment2 ) =
-                    ( LineSegment2d.withEndpoints ( sharedPoint, point1 )
-                    , LineSegment2d.withEndpoints ( sharedPoint, point2 )
+                    ( LineSegment2d.from sharedPoint point1
+                    , LineSegment2d.from sharedPoint point2
                     )
 
                 ( v1, v2, v3 ) =

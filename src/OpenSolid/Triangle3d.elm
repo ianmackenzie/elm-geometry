@@ -166,9 +166,9 @@ edges triangle =
         ( p1, p2, p3 ) =
             vertices triangle
     in
-    ( LineSegment3d.withEndpoints ( p1, p2 )
-    , LineSegment3d.withEndpoints ( p2, p3 )
-    , LineSegment3d.withEndpoints ( p3, p1 )
+    ( LineSegment3d.from p1 p2
+    , LineSegment3d.from p2 p3
+    , LineSegment3d.from p3 p1
     )
 
 

@@ -328,7 +328,7 @@ sketchPlane3d =
 -}
 lineSegment2d : Decoder LineSegment2d
 lineSegment2d =
-    Decode.map2 (\v1 v2 -> LineSegment2d.withEndpoints ( v1, v2 ))
+    Decode.map2 LineSegment2d.from
         (Decode.index 0 point2d)
         (Decode.index 1 point2d)
 
@@ -337,7 +337,7 @@ lineSegment2d =
 -}
 lineSegment3d : Decoder LineSegment3d
 lineSegment3d =
-    Decode.map2 (\v1 v2 -> LineSegment3d.withEndpoints ( v1, v2 ))
+    Decode.map2 LineSegment3d.from
         (Decode.index 0 point3d)
         (Decode.index 1 point3d)
 

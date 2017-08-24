@@ -365,7 +365,7 @@ fromEndpoints : { startPoint : Point2d, endPoint : Point2d, radius : Float, swep
 fromEndpoints { startPoint, endPoint, radius, sweptAngle } =
     let
         chord =
-            LineSegment2d.withEndpoints ( startPoint, endPoint )
+            LineSegment2d.from startPoint endPoint
 
         squaredRadius =
             radius * radius

@@ -331,7 +331,7 @@ is no such point (the two line segments do not touch, or they overlap), returns
 
     -- definition of some segments with those points
     ab =
-        LineSegment2d.withEndpoints ( a, b )
+        LineSegment2d.from a b
     ...
 
     -- searching for intersections

@@ -153,10 +153,7 @@ segments polyline =
             []
 
         (first :: rest) as all ->
-            List.map2
-                (\start end -> LineSegment3d.withEndpoints ( start, end ))
-                all
-                rest
+            List.map2 LineSegment3d.from all rest
 
 
 {-| Get the overall length of a polyline (the sum of the lengths of its

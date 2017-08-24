@@ -156,9 +156,7 @@ edges polygon =
             []
 
         (first :: rest) as all ->
-            List.map2 (\start end -> LineSegment2d.withEndpoints ( start, end ))
-                all
-                (rest ++ [ first ])
+            List.map2 LineSegment2d.from all (rest ++ [ first ])
 
 
 {-| Get the perimeter of a polygon (the sum of the lengths of its edges).
