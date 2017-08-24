@@ -31,6 +31,7 @@ module OpenSolid.Vector2d
         , perpendicularTo
         , placeIn
         , placeOnto
+        , polarComponents
         , projectOnto
         , projectionIn
         , relativeTo
@@ -84,7 +85,7 @@ and [`Direction2d.y`](OpenSolid-Direction2d#y).
 
 # Components
 
-@docs components, xComponent, yComponent, componentIn
+@docs components, xComponent, yComponent, componentIn, polarComponents
 
 
 # Comparison
@@ -308,12 +309,6 @@ to extract both the X and Y components of a vector in one line of code:
     ( x, y ) =
         Vector2d.components vector
 
-To get the polar components of a vector, you can use Elm's built-in [`toPolar`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#toPolar)
-function:
-
-    ( radius, angle ) =
-        toPolar (Vector2d.components vector)
-
 -}
 components : Vector2d -> ( Float, Float )
 components (Internal.Vector2d components_) =
@@ -367,6 +362,17 @@ componentIn direction vector =
             components vector
     in
     vx * dx + vy * dy
+
+
+{-| Get the polar components (length, polar angle) of a vector.
+
+    Vector2d.polarComponents (Vector2d.withComponents ( 1, 1 ))
+    --> ( 1.4142, degrees 45 )
+
+-}
+polarComponents : Vector2d -> ( Float, Float )
+polarComponents vector =
+    toPolar (components vector)
 
 
 {-| Compare two vectors within a tolerance. Returns true if the difference
