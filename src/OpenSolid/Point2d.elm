@@ -26,6 +26,7 @@ module OpenSolid.Point2d
         , origin
         , placeIn
         , placeOnto
+        , polarCoordinates
         , projectOnto
         , relativeTo
         , rotateAround
@@ -64,7 +65,7 @@ as
 
 # Coordinates
 
-@docs coordinates, xCoordinate, yCoordinate
+@docs coordinates, xCoordinate, yCoordinate, polarCoordinates
 
 
 # Comparison
@@ -278,12 +279,6 @@ in_ frame coordinates =
     ( x, y ) =
         Point2d.coordinates point
 
-To get the polar coordinates of a point, you can use Elm's built-in [`toPolar`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#toPolar)
-function:
-
-    ( radius, angle ) =
-        toPolar (Point2d.coordinates point)
-
 -}
 coordinates : Point2d -> ( Float, Float )
 coordinates (Internal.Point2d coordinates_) =
@@ -310,6 +305,17 @@ xCoordinate (Internal.Point2d ( x, _ )) =
 yCoordinate : Point2d -> Float
 yCoordinate (Internal.Point2d ( _, y )) =
     y
+
+
+{-| Get the polar coordinates (radius and polar angle) of a point.
+
+    Point2d.polarCoordinates (Point2d.withCoordinates ( 1, 1 ))
+    --> ( 1.4142, degrees 45 )
+
+-}
+polarCoordinates : Point2d -> ( Float, Float )
+polarCoordinates point =
+    toPolar (coordinates point)
 
 
 {-| Compare two points within a tolerance. Returns true if the distance
