@@ -474,7 +474,7 @@ rotateBy angle direction =
 the axis affects the result, since directions are position-independent.
 
     slopedAxis =
-        Axis2d
+        Axis2d.with
             { originPoint = Point2d.withCoordinates ( 100, 200 )
             , direction = Direction2d.fromAngle (degrees 45)
             }
