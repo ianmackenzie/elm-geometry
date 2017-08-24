@@ -26,7 +26,6 @@ module OpenSolid.Point2d
         , origin
         , placeIn
         , placeOnto
-        , polar
         , projectOnto
         , relativeTo
         , rotateAround
@@ -35,6 +34,7 @@ module OpenSolid.Point2d
         , squaredDistanceFrom
         , translateBy
         , withCoordinates
+        , withPolarCoordinates
         , xCoordinate
         , yCoordinate
         )
@@ -59,7 +59,7 @@ as
 
 # Constructors
 
-@docs withCoordinates, polar, midpoint, interpolateFrom, along, in_
+@docs withCoordinates, withPolarCoordinates, midpoint, interpolateFrom, along, in_
 
 
 # Coordinates
@@ -149,21 +149,12 @@ withCoordinates =
 {-| Construct a point from a radius and angle. Radius is measured from the
 origin and angle is measured counterclockwise from the positive X direction.
 
-    Point2d.polar ( 2, degrees 135 )
+    Point2d.withPolarCoordinates ( 2, degrees 135 )
     --> Point2d.withCoordinates ( -1.4142, 1.4142 )
 
-This is shorthand for using Elm's built-in [`fromPolar`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#fromPolar)
-function and passing the result to `Point2d.withCoordinates`:
-
-    Point2d.polar ( r, theta )
-
-is equivalent to
-
-    Point2d.withCoordinates (fromPolar ( r, theta ))
-
 -}
-polar : ( Float, Float ) -> Point2d
-polar coordinates =
+withPolarCoordinates : ( Float, Float ) -> Point2d
+withPolarCoordinates coordinates =
     withCoordinates (fromPolar coordinates)
 
 
