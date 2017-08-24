@@ -146,14 +146,14 @@ mirrorAcrossExample =
                 axis =
                     Axis2d.with
                         { originPoint = Point2d.withCoordinates ( 1, 2 )
-                        , direction = Direction2d.fromAngle (degrees 30)
+                        , direction = Direction2d.withPolarAngle (degrees 30)
                         }
             in
             Axis2d.mirrorAcross Axis2d.x axis
                 |> Expect.axis2d
                     (Axis2d.with
                         { originPoint = Point2d.withCoordinates ( 1, -2 )
-                        , direction = Direction2d.fromAngle (degrees -30)
+                        , direction = Direction2d.withPolarAngle (degrees -30)
                         }
                     )
 

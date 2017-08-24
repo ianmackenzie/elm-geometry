@@ -129,8 +129,8 @@ xy =
     frame =
         Frame2d.with
             { originPoint = Point2d.withCoordinates ( 2, 3 )
-            , xDirection = Direction2d.fromAngle (degrees 45)
-            , yDirection = Direction2d.fromAngle (degrees 135)
+            , xDirection = Direction2d.withPolarAngle (degrees 45)
+            , yDirection = Direction2d.withPolarAngle (degrees 135)
             }
 
 In this case **you must be careful to ensure that the X and Y directions are

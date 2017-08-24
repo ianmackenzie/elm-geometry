@@ -262,7 +262,7 @@ the sketch plane's X direction towards its Y direction.
 -}
 on : SketchPlane3d -> Float -> Direction3d
 on sketchPlane angle =
-    Direction2d.fromAngle angle |> Direction2d.placeOnto sketchPlane
+    Direction2d.withPolarAngle angle |> Direction2d.placeOnto sketchPlane
 
 
 {-| Construct a direction using azimuthal and elevation angles relative to the

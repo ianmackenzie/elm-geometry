@@ -537,7 +537,7 @@ evaluate arc =
         Just startRadialDirection ->
             let
                 startAngle =
-                    Direction2d.toAngle startRadialDirection
+                    Direction2d.polarAngle startRadialDirection
 
                 ( centerX, centerY ) =
                     Point2d.coordinates (centerPoint arc)

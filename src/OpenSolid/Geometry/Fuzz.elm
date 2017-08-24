@@ -93,7 +93,7 @@ vector3d =
 
 direction2d : Fuzzer Direction2d
 direction2d =
-    Fuzz.map Direction2d.fromAngle (Fuzz.floatRange -pi pi)
+    Fuzz.map Direction2d.withPolarAngle (Fuzz.floatRange -pi pi)
 
 
 direction3d : Fuzzer Direction3d

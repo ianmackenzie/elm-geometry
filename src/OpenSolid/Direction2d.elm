@@ -19,7 +19,6 @@ module OpenSolid.Direction2d
         , equalWithin
         , flip
         , from
-        , fromAngle
         , mirrorAcross
         , negativeX
         , negativeY
@@ -27,13 +26,14 @@ module OpenSolid.Direction2d
         , perpendicularTo
         , placeIn
         , placeOnto
+        , polarAngle
         , positiveX
         , positiveY
         , relativeTo
         , rotateBy
-        , toAngle
         , toVector
         , withComponents
+        , withPolarAngle
         , x
         , xComponent
         , y
@@ -64,17 +64,17 @@ several uses, such as:
 
 # Constructors
 
-@docs withComponents, from, perpendicularTo, orthogonalize
-
-
-# Angles
-
-@docs fromAngle, toAngle, angleFrom
+@docs withPolarAngle, withComponents, from, perpendicularTo, orthogonalize
 
 
 # Components
 
 @docs components, xComponent, yComponent, componentIn
+
+
+# Angles
+
+@docs polarAngle, angleFrom
 
 
 # Comparison
@@ -210,8 +210,9 @@ are all valid but
     Direction2d.withComponents ( 1, 1 )
 
 are not. Instead of using `Direction2d.withComponents`, it may be easier to use
-constructors like `Direction2d.fromAngle` (which will always result in a valid
-direction) or start with existing directions and transform them as necessary.
+constructors like `Direction2d.withPolarAngle` (which will always result in a
+valid direction) or start with existing directions and transform them as
+necessary.
 
 -}
 withComponents : ( Float, Float ) -> Direction2d
@@ -279,36 +280,36 @@ orthogonalize ( xDirection, yDirection ) =
 {-| Construct a direction from an angle in radians, given counterclockwise from
 the positive X direction.
 
-    Direction2d.fromAngle 0
+    Direction2d.withPolarAngle 0
     --> Direction2d.x
 
-    Direction2d.fromAngle (degrees 90)
+    Direction2d.withPolarAngle (degrees 90)
     --> Direction2d.y
 
-    Direction2d.fromAngle (degrees 135)
-    --> Direction2d.withComponents ( -0.7071, 0.7071 )
+    Direction2d.withPolarAngle (degrees -90)
+    --> Direction2d.negativeY
 
 -}
-fromAngle : Float -> Direction2d
-fromAngle angle =
+withPolarAngle : Float -> Direction2d
+withPolarAngle angle =
     withComponents ( cos angle, sin angle )
 
 
-{-| Convert a direction to a counterclockwise angle in radians from the positive
-X direction. The result will be in the range -π to π.
+{-| Get the polar angle of a vector (its counterclockwise angle in radians from
+the positive X direction). The result will be in the range -π to π.
 
-    Direction2d.toAngle Direction2d.x
+    Direction2d.polarAngle Direction2d.x
     --> 0
 
-    Direction2d.toAngle Direction2d.y
+    Direction2d.polarAngle Direction2d.y
     --> degrees 90
 
-    Direction2d.toAngle (Direction2d.withComponents ( 0, -1 ))
+    Direction2d.polarAngle Direction2d.negativeY
     --> degrees -90
 
 -}
-toAngle : Direction2d -> Float
-toAngle direction =
+polarAngle : Direction2d -> Float
+polarAngle direction =
     let
         ( x, y ) =
             components direction
@@ -320,7 +321,7 @@ toAngle direction =
 second. The result will be in the range -π to π.
 
     referenceDirection =
-        Direction2d.fromAngle (degrees 30)
+        Direction2d.withPolarAngle (degrees 30)
 
     Direction2d.angleFrom referenceDirection Direction2d.y
     --> degrees 60
@@ -387,7 +388,7 @@ the cosine of the angle between the directions, or equivalently the dot product
 of the two directions converted to unit vectors.
 
     direction =
-        Direction2d.fromAngle (degrees 60)
+        Direction2d.withPolarAngle (degrees 60)
 
     Direction2d.componentIn Direction2d.x direction
     --> 0.5
@@ -417,10 +418,10 @@ componentIn firstDirection secondDirection =
 the two given directions is less than the given tolerance.
 
     firstDirection =
-        Direction2d.fromAngle (degrees 45)
+        Direction2d.withPolarAngle (degrees 45)
 
     secondDirection =
-        Direction2d.fromAngle (degrees 47)
+        Direction2d.withPolarAngle (degrees 47)
 
     Direction2d.equalWithin (degrees 5) firstDirection secondDirection
     --> True
@@ -476,7 +477,7 @@ the axis affects the result, since directions are position-independent.
     slopedAxis =
         Axis2d.with
             { originPoint = Point2d.withCoordinates ( 100, 200 )
-            , direction = Direction2d.fromAngle (degrees 45)
+            , direction = Direction2d.withPolarAngle (degrees 45)
             }
 
     Direction2d.mirrorAcross slopedAxis Direction2d.x
