@@ -18,6 +18,7 @@ module OpenSolid.LineSegment3d
         , direction
         , endPoint
         , endpoints
+        , from
         , interpolate
         , length
         , map
@@ -54,7 +55,7 @@ functionality such as:
 
 # Constructors
 
-@docs withEndpoints, along, on
+@docs withEndpoints, from, along, on
 
 
 # Endpoints
@@ -130,6 +131,20 @@ type alias LineSegment3d =
 withEndpoints : ( Point3d, Point3d ) -> LineSegment3d
 withEndpoints =
     Internal.LineSegment3d
+
+
+{-| Construct a line segment from the first point to the second;
+
+    LineSegment3d.from firstPoint secondPoint
+
+is equivalent to
+
+    LineSegment3d.withEndpoints ( firstPoint, secondPoint )
+
+-}
+from : Point3d -> Point3d -> LineSegment3d
+from startPoint endPoint =
+    withEndpoints ( startPoint, endPoint )
 
 
 {-| Construct a line segment lying on the given axis, with its endpoints at the

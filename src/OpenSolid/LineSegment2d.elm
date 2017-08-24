@@ -18,6 +18,7 @@ module OpenSolid.LineSegment2d
         , direction
         , endPoint
         , endpoints
+        , from
         , interpolate
         , intersectionPoint
         , length
@@ -54,7 +55,7 @@ functionality such as:
 
 # Constructors
 
-@docs withEndpoints, along
+@docs withEndpoints, from, along
 
 
 # Endpoints
@@ -133,6 +134,20 @@ type alias LineSegment2d =
 withEndpoints : ( Point2d, Point2d ) -> LineSegment2d
 withEndpoints =
     Internal.LineSegment2d
+
+
+{-| Construct a line segment from the first point to the second;
+
+    LineSegment2d.from firstPoint secondPoint
+
+is equivalent to
+
+    LineSegment2d.withEndpoints ( firstPoint, secondPoint )
+
+-}
+from : Point2d -> Point2d -> LineSegment2d
+from startPoint endPoint =
+    withEndpoints ( startPoint, endPoint )
 
 
 {-| Construct a line segment lying on the given axis, with its endpoints at the
