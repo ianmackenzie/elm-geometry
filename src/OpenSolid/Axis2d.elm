@@ -81,8 +81,7 @@ import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
-{-| An axis in 2D.
--}
+{-| -}
 type alias Axis2d =
     Internal.Axis2d
 
