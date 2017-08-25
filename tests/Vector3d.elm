@@ -31,7 +31,7 @@ orthonormalizeProducesValidFrameBasis =
             case Vector3d.orthonormalize vectors of
                 Just ( xDirection, yDirection, zDirection ) ->
                     Expect.validFrame3d
-                        (Frame3d.with
+                        (Frame3d.unsafe
                             { originPoint = Point3d.origin
                             , xDirection = xDirection
                             , yDirection = yDirection

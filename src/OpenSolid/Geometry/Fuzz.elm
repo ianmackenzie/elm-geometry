@@ -195,7 +195,7 @@ frame3d =
                 ( yDirection, zDirection ) =
                     Direction3d.perpendicularBasis xDirection
             in
-            Frame3d.with
+            Frame3d.unsafe
                 { originPoint = originPoint
                 , xDirection = xDirection
                 , yDirection =

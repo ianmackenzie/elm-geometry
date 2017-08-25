@@ -293,7 +293,7 @@ frame3d : Decoder Frame3d
 frame3d =
     Decode.map4
         (\originPoint xDirection yDirection zDirection ->
-            Frame3d.with
+            Internal.Frame3d
                 { originPoint = originPoint
                 , xDirection = xDirection
                 , yDirection = yDirection
