@@ -245,23 +245,33 @@ along axis distance =
         |> translateBy (Vector3d.withLength distance (Axis3d.direction axis))
 
 
-{-| Construct a point on a sketch plane with the given local coordinates.
+{-| Construct a 3D point lying _on_ a sketch plane by providing a 2D point
+specified in XY coordinates _within_ the sketch plane.
 
-    Point3d.on SketchPlane3d.xz ( 2, 3 )
-    --> Point3d.withCoordinates ( 2, 0, 3 )
+    Point3d.on SketchPlane3d.xy <|
+        Point2d.withCoordinates ( 2, 1 )
+    --> Point3d.withCoordinates ( 2, 1, 0 )
 
-This is shorthand for using `Point2d.placeOnto`;
+    Point3d.on SketchPlane3d.xz <|
+        Point2d.withCoordinates ( 2, 1 )
+    --> Point3d.withCoordinates ( 2, 0, 1 )
 
-    Point3d.on sketchPlane coordinates
+The sketch plane can have any position and orientation:
 
-is equivalent to
+    tiltedSketchPlane =
+        SketchPlane3d.xy
+            |> SketchPlane3d.rotateAround Axis3d.x (degrees 45)
+            |> SketchPlane3d.moveTo
+                (Point3d.withCoordinates ( 10, 10, 10 ))
 
-    Point2d.placeOnto sketchPlane (Point2d.withCoordinates coordinates)
+    Point3d.on tiltedSketchPlane <|
+        Point2d.withCoordinates ( 2, 1 )
+    --> Point3d.withCoordinates ( 12, 10.7071, 10.7071 )
 
 -}
-on : SketchPlane3d -> ( Float, Float ) -> Point3d
-on sketchPlane coordinates =
-    Point2d.placeOnto sketchPlane (Point2d.withCoordinates coordinates)
+on : SketchPlane3d -> Point2d -> Point3d
+on =
+    Point2d.placeOnto
 
 
 {-| Construct a point given its local coordinates within a particular frame.

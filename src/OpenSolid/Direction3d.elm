@@ -256,19 +256,27 @@ unsafe =
     Internal.Direction3d
 
 
-{-| Construct a direction on the given sketch plane, given a polar angle from
-the sketch plane's X direction towards its Y direction.
+{-| Construct a 3D direction lying _on_ a sketch plane by providing a 2D
+direction specified in XY coordinates _within_ the sketch plane.
 
-    Direction3d.on SketchPlane3d.xy (degrees 45)
-    --> Direction3d.unsafe ( 0.7071, 0.7071, 0 )
+    horizontalDirection =
+        Direction3d.on SketchPlane3d.xy <|
+            Direction2d.withPolarAngle (degrees 45)
 
-    Direction3d.on SketchPlane3d.zx (degrees 30)
-    --> Direction3d.unsafe ( 0.5, 0, 0.866 )
+    Direction3d.components horizontalDirection
+    --> ( 0.7071, 0.7071, 0 )
+
+    thirtyDegreesFromZ =
+        Direction3d.on SketchPlane3d.zx <|
+            Direction2d.withPolarAngle (degrees 30)
+
+    Direction3d.components thirtyDegreesFromZ
+    --> ( 0.5, 0, 0.866 )
 
 -}
-on : SketchPlane3d -> Float -> Direction3d
-on sketchPlane angle =
-    Direction2d.withPolarAngle angle |> Direction2d.placeOnto sketchPlane
+on : SketchPlane3d -> Direction2d -> Direction3d
+on =
+    Direction2d.placeOnto
 
 
 {-| Construct a direction using azimuthal and elevation angles relative to the

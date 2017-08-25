@@ -73,7 +73,6 @@ import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
 import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
-import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Point3d as Point3d exposing (Point3d)
 import OpenSolid.Polyline3d as Polyline3d exposing (Polyline3d)
 import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
@@ -117,47 +116,30 @@ around axis { startPoint, sweptAngle } =
         }
 
 
-{-| Construct an arc on the given sketch plane from its center point and start
-point given in 2D coordinates within the sketch plane.
+{-| Construct a 3D arc lying _on_ a sketch plane by providing a 2D arc specified
+in XY coordinates _within_ the sketch plane.
 
     arc =
-        Arc3d.on SketchPlane3d.xz
-            { centerPoint = Point2d.withCoordinates ( 1, 1 )
-            , startPoint = Point2d.withCoordinates ( 3, 1 )
-            , sweptAngle = degrees 90
-            }
-
-    Arc3d.startPoint arc
-    --> Point3d.withCoordinates ( 3, 0, 1 )
+        Arc3d.on SketchPlane3d.xz <|
+            Arc2d.with
+                { centerPoint = Point2d.withCoordinates ( 1, 1 )
+                , startPoint = Point2d.withCoordinates ( 3, 1 )
+                , sweptAngle = degrees 90
+                }
 
     Arc3d.centerPoint arc
     --> Point3d.withCoordinates ( 1, 0, 1 )
 
+    Arc3d.startPoint arc
+    --> Point3d.withCoordinates ( 3, 0, 1 )
+
     Arc3d.endPoint arc
     --> Point3d.withCoordinates ( 1, 0, 3 )
 
-This is a shortcut for calling `Arc2d.placeOnto`;
-
-    Arc3d.on sketchPlane
-        { centerPoint = p0
-        , startPoint = p1
-        , sweptAngle = theta
-        }
-
-is equivalent to
-
-    Arc2d.placeOnto sketchPlane
-        (Arc2d.with
-            { centerPoint = p0
-            , startPoint = p1
-            , sweptAngle = theta
-            }
-        )
-
 -}
-on : SketchPlane3d -> { centerPoint : Point2d, startPoint : Point2d, sweptAngle : Float } -> Arc3d
-on sketchPlane properties =
-    Arc2d.with properties |> Arc2d.placeOnto sketchPlane
+on : SketchPlane3d -> Arc2d -> Arc3d
+on =
+    Arc2d.placeOnto
 
 
 {-| Attempt to construct an arc that starts at the first given point, passes

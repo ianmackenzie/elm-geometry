@@ -107,7 +107,6 @@ import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
 import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
-import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Point3d as Point3d exposing (Point3d)
 import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
@@ -168,34 +167,23 @@ along axis start end =
     withEndpoints ( Point3d.along axis start, Point3d.along axis end )
 
 
-{-| Construct a line segment on the given sketch plane, from the two endpoints
-given in 2D coordinates within the sketch plane.
+{-| Construct a 3D line segment lying _on_ a sketch plane by providing a 2D line
+segment specified in XY coordinates _within_ the sketch plane.
 
-    LineSegment3d.on SketchPlane3d.yz
-        ( Point2d.withCoordinates ( 1, 2 )
-        , Point2d.withCoordinates ( 3, 4 )
-        )
+    LineSegment3d.on SketchPlane3d.yz <|
+        LineSegment2d.withEndpoints
+            ( Point2d.withCoordinates ( 1, 2 )
+            , Point2d.withCoordinates ( 3, 4 )
+            )
     --> LineSegment3d.withEndpoints
     -->     ( Point3d.withCoordinates ( 0, 1, 2 )
     -->     , Point3d.withCoordinates ( 0, 3, 4 )
     -->     )
 
-This is a shortcut for calling `LineSegment2d.placeOnto`;
-
-    LineSegment3d.on sketchPlane ( p1, p2 )
-
-is equivalent to
-
-    LineSegment2d.placeOnto sketchPlane
-        (LineSegment2d.withEndpoints ( p1, p2 ))
-
 -}
-on : SketchPlane3d -> ( Point2d, Point2d ) -> LineSegment3d
-on sketchPlane ( p1, p2 ) =
-    withEndpoints
-        ( Point2d.placeOnto sketchPlane p1
-        , Point2d.placeOnto sketchPlane p2
-        )
+on : SketchPlane3d -> LineSegment2d -> LineSegment3d
+on =
+    LineSegment2d.placeOnto
 
 
 {-| Get the start point of a line segment.
