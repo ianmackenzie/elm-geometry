@@ -254,12 +254,17 @@ of the sketch plane
 
 but are otherwise arbitrary. For example, in the current implementation,
 
-    Plane3d.toSketchPlane Plane3d.xy
-    --> SketchPlane3d.with
-    -->     { originPoint = Point3d.origin
-    -->     , xDirection = Direction3d.negativeY
-    -->     , yDirection = Direction3d.positiveX
-    -->     }
+    sketchPlane =
+        Plane3d.toSketchPlane Plane3d.xy
+
+    SketchPlane3d.originPoint sketchPlane
+    --> Point3d.origin
+
+    SketchPlane3d.xDirection sketchPlane
+    --> Direction3d.negativeY
+
+    SketchPlane3d.yDirection sketchPlane
+    --> Direction3d.x
 
 which is coplanar with and has the same origin point as [`SketchPlane3d.xy`](OpenSolid-SketchPlane3d#xy),
 but is not equal to it as might be expected.
@@ -279,7 +284,7 @@ toSketchPlane plane =
         ( xDirection, yDirection ) =
             Direction3d.perpendicularBasis normal
     in
-    SketchPlane3d.with
+    SketchPlane3d.unsafe
         { originPoint = originPoint plane
         , xDirection = xDirection
         , yDirection = yDirection

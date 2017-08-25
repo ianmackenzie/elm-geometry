@@ -559,7 +559,7 @@ the given sketch plane, and returns the corresponding 3D sketch plane.
 -}
 placeOnto : SketchPlane3d -> Frame2d -> SketchPlane3d
 placeOnto sketchPlane frame =
-    SketchPlane3d.with
+    SketchPlane3d.unsafe
         { originPoint = Point2d.placeOnto sketchPlane (originPoint frame)
         , xDirection = Direction2d.placeOnto sketchPlane (xDirection frame)
         , yDirection = Direction2d.placeOnto sketchPlane (yDirection frame)

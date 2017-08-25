@@ -1,7 +1,7 @@
 module OpenSolid.Bootstrap.SketchPlane3d
     exposing
         ( originPoint
-        , with
+        , unsafe
         , xDirection
         , yDirection
         )
@@ -9,8 +9,8 @@ module OpenSolid.Bootstrap.SketchPlane3d
 import OpenSolid.Geometry.Internal exposing (..)
 
 
-with : { originPoint : Point3d, xDirection : Direction3d, yDirection : Direction3d } -> SketchPlane3d
-with =
+unsafe : { originPoint : Point3d, xDirection : Direction3d, yDirection : Direction3d } -> SketchPlane3d
+unsafe =
     SketchPlane3d
 
 

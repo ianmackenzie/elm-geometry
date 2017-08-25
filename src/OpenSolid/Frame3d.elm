@@ -125,12 +125,17 @@ These functions all form a `SketchPlane3d` from two axes of the given frame. The
 X and Y axes of the sketch plane will correspond to the two indicated axes. For
 example,
 
-    Frame3d.yzSketchPlane Frame3d.xyz
-    --> SketchPlane3d.with
-    -->     { originPoint = Point3d.origin
-    -->     , xDirection = Direction3d.y
-    -->     , yDirection = Direction3d.z
-    -->     }
+    yzSketchPlane =
+        Frame3d.yzSketchPlane Frame3d.xyz
+
+    SketchPlane3d.originPoint yzSketchPlane
+    --> Point3d.origin
+
+    SketchPlane3d.xDirection yzSketchPlane
+    --> Direction3d.y
+
+    SketchPlane3d.yDirection yzSketchPlane
+    --> Direction3d.z
 
 Note that this can be confusing - for example, a local X coordinate in the above
 sketch plane corresponds to a global Y coordinate, and a local Y coordinate
@@ -419,7 +424,7 @@ xzPlane frame =
 -}
 xySketchPlane : Frame3d -> SketchPlane3d
 xySketchPlane frame =
-    SketchPlane3d.with
+    SketchPlane3d.unsafe
         { originPoint = originPoint frame
         , xDirection = xDirection frame
         , yDirection = yDirection frame
@@ -430,7 +435,7 @@ xySketchPlane frame =
 -}
 yxSketchPlane : Frame3d -> SketchPlane3d
 yxSketchPlane frame =
-    SketchPlane3d.with
+    SketchPlane3d.unsafe
         { originPoint = originPoint frame
         , xDirection = yDirection frame
         , yDirection = xDirection frame
@@ -441,7 +446,7 @@ yxSketchPlane frame =
 -}
 yzSketchPlane : Frame3d -> SketchPlane3d
 yzSketchPlane frame =
-    SketchPlane3d.with
+    SketchPlane3d.unsafe
         { originPoint = originPoint frame
         , xDirection = yDirection frame
         , yDirection = zDirection frame
@@ -452,7 +457,7 @@ yzSketchPlane frame =
 -}
 zySketchPlane : Frame3d -> SketchPlane3d
 zySketchPlane frame =
-    SketchPlane3d.with
+    SketchPlane3d.unsafe
         { originPoint = originPoint frame
         , xDirection = zDirection frame
         , yDirection = yDirection frame
@@ -463,7 +468,7 @@ zySketchPlane frame =
 -}
 zxSketchPlane : Frame3d -> SketchPlane3d
 zxSketchPlane frame =
-    SketchPlane3d.with
+    SketchPlane3d.unsafe
         { originPoint = originPoint frame
         , xDirection = zDirection frame
         , yDirection = xDirection frame
@@ -474,7 +479,7 @@ zxSketchPlane frame =
 -}
 xzSketchPlane : Frame3d -> SketchPlane3d
 xzSketchPlane frame =
-    SketchPlane3d.with
+    SketchPlane3d.unsafe
         { originPoint = originPoint frame
         , xDirection = xDirection frame
         , yDirection = zDirection frame

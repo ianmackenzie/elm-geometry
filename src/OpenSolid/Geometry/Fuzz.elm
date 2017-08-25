@@ -217,7 +217,7 @@ sketchPlane3d : Fuzzer SketchPlane3d
 sketchPlane3d =
     let
         sketchPlane originPoint xDirection =
-            SketchPlane3d.with
+            SketchPlane3d.unsafe
                 { originPoint = originPoint
                 , xDirection = xDirection
                 , yDirection = Direction3d.perpendicularTo xDirection

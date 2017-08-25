@@ -313,7 +313,7 @@ sketchPlane3d : Decoder SketchPlane3d
 sketchPlane3d =
     Decode.map3
         (\originPoint xDirection yDirection ->
-            SketchPlane3d.with
+            Internal.SketchPlane3d
                 { originPoint = originPoint
                 , xDirection = xDirection
                 , yDirection = yDirection
