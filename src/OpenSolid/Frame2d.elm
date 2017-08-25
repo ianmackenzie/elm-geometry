@@ -28,6 +28,7 @@ module OpenSolid.Frame2d
         , translateAlongOwn
         , translateBy
         , unsafe
+        , with
         , xAxis
         , xDirection
         , xy
@@ -61,7 +62,7 @@ always perpendicular to each other). It can be thought of as:
 
 # Constructors
 
-@docs at, unsafe
+@docs at, with, unsafe
 
 
 # Accessors
@@ -124,6 +125,29 @@ type alias Frame2d =
 xy : Frame2d
 xy =
     at Point2d.origin
+
+
+{-| Construct a frame given its origin point and X axis direction. The Y axis
+direction will be constructed by rotating the given X direction 90 degrees
+counterclockwise:
+
+    frame =
+        Frame2d.with
+            { originPoint = Point2d.withCoordinates ( 2, 3 )
+            , xDirection = Direction2d.withPolarAngle (degrees 30)
+            }
+
+    Frame2d.yDirection frame
+    --> Direction2d.withPolarAngle (degrees 120)
+
+-}
+with : { originPoint : Point2d, xDirection : Direction2d } -> Frame2d
+with { originPoint, xDirection } =
+    unsafe
+        { originPoint = originPoint
+        , xDirection = xDirection
+        , yDirection = Direction2d.perpendicularTo xDirection
+        }
 
 
 {-| Construct a frame directly from its origin point and X and Y directions:
