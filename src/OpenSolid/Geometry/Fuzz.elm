@@ -169,20 +169,16 @@ frame2d =
     let
         frame originPoint xDirection rightHanded =
             let
-                perpendicularDirection =
-                    Direction2d.perpendicularTo xDirection
-
-                yDirection =
-                    if rightHanded then
-                        perpendicularDirection
-                    else
-                        Direction2d.flip perpendicularDirection
+                rightHandedFrame =
+                    Frame2d.with
+                        { originPoint = originPoint
+                        , xDirection = xDirection
+                        }
             in
-            Frame2d.unsafe
-                { originPoint = originPoint
-                , xDirection = xDirection
-                , yDirection = yDirection
-                }
+            if rightHanded then
+                rightHandedFrame
+            else
+                Frame2d.flipY rightHandedFrame
     in
     Fuzz.map3 frame point2d direction2d Fuzz.bool
 
