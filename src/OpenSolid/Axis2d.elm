@@ -322,13 +322,21 @@ return the corresponding axis in 3D.
     Axis2d.placeOnto SketchPlane3d.xy exampleAxis
     --> Axis3d.with
     -->     { originPoint = Point3d.withCoordinates ( 2, 3, 0 )
-    -->     , direction = Direction3d.withCoordinates ( 0.866, 0.5, 0 )
+    -->     , direction =
+    -->         Direction3d.with
+    -->             { azimuth = degrees 30
+    -->             , elevation = 0
+    -->             }
     -->     }
 
     Axis2d.placeOnto SketchPlane3d.zx exampleAxis
     --> Axis3d.with
     -->     { originPoint = Point3d.withCoordinates ( 3, 0, 2 )
-    -->     , direction = Direction3d.withCoordinates ( 0.5, 0, 0.866 )
+    -->     , direction =
+    -->         Direction3d.with
+    -->             { azimuth = 0
+    -->             , elevation = degrees 60
+    -->             }
     -->     }
 
 -}
