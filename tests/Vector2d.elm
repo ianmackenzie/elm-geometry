@@ -131,7 +131,7 @@ orthonormalizeProducesValidFrameBasis =
             case Vector2d.orthonormalize vectors of
                 Just ( xDirection, yDirection ) ->
                     Expect.validFrame2d
-                        (Frame2d.with
+                        (Frame2d.unsafe
                             { originPoint = Point2d.origin
                             , xDirection = xDirection
                             , yDirection = yDirection

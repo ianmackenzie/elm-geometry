@@ -197,13 +197,13 @@ scaleAbout point scale rectangle =
 
         newAxes =
             if scale >= 0 then
-                Frame2d.with
+                Frame2d.unsafe
                     { originPoint = newCenterPoint
                     , xDirection = currentXDirection
                     , yDirection = currentYDirection
                     }
             else
-                Frame2d.with
+                Frame2d.unsafe
                     { originPoint = newCenterPoint
                     , xDirection = Direction2d.flip currentXDirection
                     , yDirection = Direction2d.flip currentYDirection

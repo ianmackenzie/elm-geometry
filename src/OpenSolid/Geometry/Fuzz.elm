@@ -178,7 +178,7 @@ frame2d =
                     else
                         Direction2d.flip perpendicularDirection
             in
-            Frame2d.with
+            Frame2d.unsafe
                 { originPoint = originPoint
                 , xDirection = xDirection
                 , yDirection = yDirection

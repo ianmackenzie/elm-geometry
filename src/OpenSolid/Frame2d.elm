@@ -27,7 +27,7 @@ module OpenSolid.Frame2d
         , rotateBy
         , translateAlongOwn
         , translateBy
-        , with
+        , unsafe
         , xAxis
         , xDirection
         , xy
@@ -61,7 +61,7 @@ always perpendicular to each other). It can be thought of as:
 
 # Constructors
 
-@docs with, at
+@docs at, unsafe
 
 
 # Accessors
@@ -111,12 +111,14 @@ type alias Frame2d =
 
 {-| The global XY frame.
 
-    Frame2d.xy
-    --> Frame2d.with
-    -->     { originPoint = Point2d.origin
-    -->     , xDirection = Direction2d.x
-    -->     , yDirection = Direction2d.y
-    -->     }
+    Frame2d.originPoint Frame2d.xy
+    --> Point2d.origin
+
+    Frame2d.xDirection Frame2d.xy
+    --> Direction2d.x
+
+    Frame2d.yDirection Frame2d.xy
+    --> Direction2d.y
 
 -}
 xy : Frame2d
@@ -124,10 +126,10 @@ xy =
     at Point2d.origin
 
 
-{-| Construct a frame from its origin point and X and Y directions:
+{-| Construct a frame directly from its origin point and X and Y directions:
 
     frame =
-        Frame2d.with
+        Frame2d.unsafe
             { originPoint = Point2d.withCoordinates ( 2, 3 )
             , xDirection = Direction2d.withPolarAngle (degrees 45)
             , yDirection = Direction2d.withPolarAngle (degrees 135)
@@ -140,25 +142,30 @@ perpendicular**. To construct pairs of perpendicular directions,
 useful.
 
 -}
-with : { originPoint : Point2d, xDirection : Direction2d, yDirection : Direction2d } -> Frame2d
-with =
+unsafe : { originPoint : Point2d, xDirection : Direction2d, yDirection : Direction2d } -> Frame2d
+unsafe =
     Internal.Frame2d
 
 
 {-| Construct a frame aligned with the global XY frame but with the given origin
 point.
 
-    Frame2d.at (Point2d.withCoordinates ( 2, 3 ))
-    --> Frame2d.with
-    -->     { originPoint = Point2d.withCoordinates ( 2, 3 )
-    -->     , xDirection = Direction2d.x
-    -->     , yDirection = Direction2d.y
-    -->     }
+    frame =
+        Frame2d.at (Point2d.withCoordinates ( 2, 3 ))
+
+    Frame2d.originPoint frame
+    --> Point2d.withCoordinates ( 2, 3 )
+
+    Frame2d.xDirection frame
+    --> Direction2d.x
+
+    Frame2d.yDirection frame
+    --> Direction2d.y
 
 -}
 at : Point2d -> Frame2d
 at point =
-    with
+    unsafe
         { originPoint = point
         , xDirection = Direction2d.x
         , yDirection = Direction2d.y
@@ -208,7 +215,7 @@ yDirection (Internal.Frame2d properties) =
 
 All predefined frames are right-handed, and most operations on frames preserve
 handedness, so about the only ways to end up with a left-handed frame are by
-constructing one explicitly or by mirroring a right-handed frame.
+constructing one explicitly with `unsafe` or by mirroring a right-handed frame.
 
 -}
 isRightHanded : Frame2d -> Bool
@@ -256,12 +263,18 @@ yAxis frame =
 {-| Reverse the X direction of a frame, leaving its Y direction and origin point
 the same.
 
-    Frame2d.flipX Frame2d.xy
-    --> Frame2d.with
-    -->     { originPoint = Point2d.origin
-    -->     , xDirection = Direction2d.negativeX
-    -->     , yDirection = Direction2d.positiveY
-    -->     }
+    frame =
+        Frame2d.at (Point2d.withCoordinates ( 2, 3 ))
+            |> Frame2d.flipX
+
+    Frame2d.originPoint frame
+    --> Point2d.withCoordinates ( 2, 3 )
+
+    Frame2d.xDirection frame
+    --> Direction2d.negativeX
+
+    Frame2d.yDirection frame
+    --> Direction2d.y
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 of the frame.
@@ -269,7 +282,7 @@ of the frame.
 -}
 flipX : Frame2d -> Frame2d
 flipX frame =
-    with
+    unsafe
         { originPoint = originPoint frame
         , xDirection = Direction2d.flip (xDirection frame)
         , yDirection = yDirection frame
@@ -279,12 +292,18 @@ flipX frame =
 {-| Reverse the Y direction of a frame, leaving its X direction and origin point
 the same.
 
-    Frame2d.flipY Frame2d.xy
-    --> Frame2d.with
-    -->     { originPoint = Point2d.origin
-    -->     , xDirection = Direction2d.positiveX
-    -->     , yDirection = Direction2d.negativeY
-    -->     }
+    frame =
+        Frame2d.at (Point2d.withCoordinates ( 2, 3 ))
+            |> Frame2d.flipY
+
+    Frame2d.originPoint frame
+    --> Point2d.withCoordinates ( 2, 3 )
+
+    Frame2d.xDirection frame
+    --> Direction2d.x
+
+    Frame2d.yDirection frame
+    --> Direction2d.negativeY
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 of the frame.
@@ -292,7 +311,7 @@ of the frame.
 -}
 flipY : Frame2d -> Frame2d
 flipY frame =
-    with
+    unsafe
         { originPoint = originPoint frame
         , xDirection = xDirection frame
         , yDirection = Direction2d.flip (yDirection frame)
@@ -301,18 +320,13 @@ flipY frame =
 
 {-| Move a frame so that it has the given origin point.
 
-    frame =
-        Frame2d.at (Point2d.withCoordinates ( 2, 3 ))
-            |> Frame2d.rotateBy (degrees 30)
-
-    Frame2d.moveTo (Point2d.withCoordinates ( 1, 1 )) frame
+    Frame2d.moveTo (Point2d.withCoordinates ( 1, 1 )) Frame2d.xy
     --> Frame2d.at (Point2d.withCoordinates ( 1, 1 ))
-    -->     |> Frame2d.rotateBy (degrees 30)
 
 -}
 moveTo : Point2d -> Frame2d -> Frame2d
 moveTo newOrigin frame =
-    with
+    unsafe
         { originPoint = newOrigin
         , xDirection = xDirection frame
         , yDirection = yDirection frame
@@ -323,11 +337,8 @@ moveTo newOrigin frame =
 origin point. The resulting frame will have the same origin point, and its X and
 Y directions will be rotated by the given angle.
 
-    frame =
-        Frame2d.at (Point2d.withCoordinates ( 1, 1 ))
-
     rotatedFrame =
-        Frame2d.rotateBy (degrees 30) frame
+        Frame2d.rotateBy (degrees 30) Frame2d.xy
 
     Frame2d.xDirection rotatedFrame
     --> Direction2d.withPolarAngle (degrees 30)
@@ -342,7 +353,7 @@ rotateBy angle frame =
         rotateDirection =
             Direction2d.rotateBy angle
     in
-    with
+    unsafe
         { originPoint = originPoint frame
         , xDirection = rotateDirection (xDirection frame)
         , yDirection = rotateDirection (yDirection frame)
@@ -379,7 +390,7 @@ rotateAround centerPoint angle =
             Direction2d.rotateBy angle
     in
     \frame ->
-        with
+        unsafe
             { originPoint = rotatePoint (originPoint frame)
             , xDirection = rotateDirection (xDirection frame)
             , yDirection = rotateDirection (yDirection frame)
@@ -400,7 +411,7 @@ rotateAround centerPoint angle =
 -}
 translateBy : Vector2d -> Frame2d -> Frame2d
 translateBy vector frame =
-    with
+    unsafe
         { originPoint = Point2d.translateBy vector (originPoint frame)
         , xDirection = xDirection frame
         , yDirection = yDirection frame
@@ -450,12 +461,17 @@ translateAlongOwn axis distance frame =
     frame =
         Frame2d.at (Point2d.withCoordinates ( 2, 3 ))
 
-    Frame2d.mirrorAcross Axis2d.x frame
-    --> Frame2d.with
-    -->     { originPoint = Point2d.withCoordinates ( 2, -3 )
-    -->     , xDirection = Direction2d.positiveX
-    -->     , yDirection = Direction2d.negativeY
-    -->     }
+    mirroredFrame =
+        Frame2d.mirrorAcross Axis2d.x frame
+
+    Frame2d.originPoint mirroredFrame
+    --> Point2d.withCoordinates ( 2, -3 )
+
+    Frame2d.xDirection mirroredFrame
+    --> Direction2d.x
+
+    Frame2d.yDirection mirroredFrame
+    --> Direction2d.negativeY
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 of the frame.
@@ -471,7 +487,7 @@ mirrorAcross axis =
             Direction2d.mirrorAcross axis
     in
     \frame ->
-        with
+        unsafe
             { originPoint = mirrorPoint (originPoint frame)
             , xDirection = mirrorDirection (xDirection frame)
             , yDirection = mirrorDirection (yDirection frame)
@@ -491,7 +507,7 @@ relativeTo otherFrame =
             Direction2d.relativeTo otherFrame
     in
     \frame ->
-        with
+        unsafe
             { originPoint = relativePoint (originPoint frame)
             , xDirection = relativeDirection (xDirection frame)
             , yDirection = relativeDirection (yDirection frame)
@@ -512,7 +528,7 @@ placeIn otherFrame =
             Direction2d.placeIn otherFrame
     in
     \frame ->
-        with
+        unsafe
             { originPoint = placePoint (originPoint frame)
             , xDirection = placeDirection (xDirection frame)
             , yDirection = placeDirection (yDirection frame)

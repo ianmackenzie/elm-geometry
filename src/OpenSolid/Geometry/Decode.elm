@@ -275,7 +275,7 @@ frame2d : Decoder Frame2d
 frame2d =
     Decode.map3
         (\originPoint xDirection yDirection ->
-            Frame2d.with
+            Internal.Frame2d
                 { originPoint = originPoint
                 , xDirection = xDirection
                 , yDirection = yDirection
