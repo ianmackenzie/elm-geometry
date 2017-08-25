@@ -270,8 +270,25 @@ The sketch plane can have any position and orientation:
 
 -}
 on : SketchPlane3d -> Point2d -> Point3d
-on =
-    Point2d.placeOnto
+on sketchPlane point2d =
+    let
+        ( x0, y0, z0 ) =
+            coordinates (SketchPlane3d.originPoint sketchPlane)
+
+        ( ux, uy, uz ) =
+            Direction3d.components (SketchPlane3d.xDirection sketchPlane)
+
+        ( vx, vy, vz ) =
+            Direction3d.components (SketchPlane3d.yDirection sketchPlane)
+
+        ( x, y ) =
+            Point2d.coordinates point2d
+    in
+    withCoordinates
+        ( x0 + x * ux + y * vx
+        , y0 + x * uy + y * vy
+        , z0 + x * uz + y * vz
+        )
 
 
 {-| Construct a point given its local coordinates within a particular frame.

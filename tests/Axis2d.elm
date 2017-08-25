@@ -7,7 +7,6 @@ module Axis2d
         , moveToExample
         , originPointExample
         , placeInExample
-        , placeOntoExamples
         , relativeToExample
         , rotateAroundExample
         , translateByExample
@@ -17,17 +16,13 @@ module Axis2d
 
 import Generic
 import OpenSolid.Axis2d as Axis2d
-import OpenSolid.Axis3d as Axis3d
 import OpenSolid.Direction2d as Direction2d
-import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Frame2d as Frame2d
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Expect as Expect
 import OpenSolid.Geometry.Fuzz as Fuzz
 import OpenSolid.Point2d as Point2d
-import OpenSolid.Point3d as Point3d
-import OpenSolid.SketchPlane3d as SketchPlane3d
 import OpenSolid.Vector2d as Vector2d
 import Test exposing (Test)
 
@@ -190,38 +185,3 @@ placeInExample =
                         , direction = Direction2d.x
                         }
                     )
-
-
-placeOntoExamples : Test
-placeOntoExamples =
-    let
-        axis =
-            Axis2d.with
-                { originPoint = Point2d.withCoordinates ( 2, 3 )
-                , direction = Direction2d.unsafe ( 0.6, 0.8 )
-                }
-    in
-    Test.describe "Axis2d.placeOnto examples"
-        [ Test.test "First example" <|
-            \() ->
-                Axis2d.placeOnto SketchPlane3d.xy axis
-                    |> Expect.axis3d
-                        (Axis3d.with
-                            { originPoint =
-                                Point3d.withCoordinates ( 2, 3, 0 )
-                            , direction =
-                                Direction3d.unsafe ( 0.6, 0.8, 0 )
-                            }
-                        )
-        , Test.test "Second example" <|
-            \() ->
-                Axis2d.placeOnto SketchPlane3d.zx axis
-                    |> Expect.axis3d
-                        (Axis3d.with
-                            { originPoint =
-                                Point3d.withCoordinates ( 3, 0, 2 )
-                            , direction =
-                                Direction3d.unsafe ( 0.8, 0, 0.6 )
-                            }
-                        )
-        ]

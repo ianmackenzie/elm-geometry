@@ -30,7 +30,6 @@ module OpenSolid.Vector2d
         , orthonormalize
         , perpendicularTo
         , placeIn
-        , placeOnto
         , polarComponents
         , projectOnto
         , projectionIn
@@ -127,21 +126,13 @@ For the examples, assume the following frame has been defined:
 
 @docs relativeTo, placeIn
 
-
-# Sketch planes
-
-@docs placeOnto
-
 -}
 
 import OpenSolid.Bootstrap.Axis2d as Axis2d
 import OpenSolid.Bootstrap.Direction2d as Direction2d
-import OpenSolid.Bootstrap.Direction3d as Direction3d
 import OpenSolid.Bootstrap.Frame2d as Frame2d
 import OpenSolid.Bootstrap.Point2d as Point2d
-import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
-import OpenSolid.Bootstrap.Vector3d as Vector3d
-import OpenSolid.Geometry.Internal as Internal exposing (Axis2d, Direction2d, Frame2d, Point2d, SketchPlane3d, Vector3d)
+import OpenSolid.Geometry.Internal as Internal exposing (Axis2d, Direction2d, Frame2d, Point2d)
 import OpenSolid.Scalar as Scalar
 
 
@@ -861,47 +852,3 @@ placeIn frame =
                 components vector
         in
         withComponents ( x1 * x + x2 * y, y1 * x + y2 * y )
-
-
-{-| Take a vector defined in 2D coordinates within a particular sketch plane and
-return the corresponding vector in 3D.
-
-    vector =
-        Vector2d.withComponents ( 2, 3 )
-
-    Vector2d.placeOnto SketchPlane3d.xy vector
-    --> Vector3d ( 2, 3, 0 )
-
-    Vector2d.placeOnto SketchPlane3d.yz vector
-    --> Vector3d ( 0, 2, 3 )
-
-    Vector2d.placeOnto SketchPlane3d.zx vector
-    --> Vector3d ( 3, 0, 2 )
-
-A slightly more complex example:
-
-    tiltedSketchPlane =
-        SketchPlane3d.xy
-            |> SketchPlane3d.rotateAround Axis3d.x (degrees 45)
-
-    Vector2d.placeOnto tiltedSketchPlane (Vector2d.withComponents ( 1, 1 ))
-    --> Vector3d ( 1, 0.7071, 0.7071 )
-
--}
-placeOnto : SketchPlane3d -> Vector2d -> Vector3d
-placeOnto sketchPlane vector =
-    let
-        ( ux, uy, uz ) =
-            Direction3d.components (SketchPlane3d.xDirection sketchPlane)
-
-        ( vx, vy, vz ) =
-            Direction3d.components (SketchPlane3d.yDirection sketchPlane)
-
-        ( x, y ) =
-            components vector
-    in
-    Vector3d.withComponents
-        ( x * ux + y * vx
-        , x * uy + y * vy
-        , x * uz + y * vz
-        )

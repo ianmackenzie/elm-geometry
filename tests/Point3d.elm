@@ -102,14 +102,14 @@ projectIntoThenPlaceOntoIsProjectOnto : Test
 projectIntoThenPlaceOntoIsProjectOnto =
     Test.fuzz2 Fuzz.point3d
         Fuzz.sketchPlane3d
-        "Point3d.projectInto followed by Point2d.placeOnto is equivalent to Point3d.projectOnto"
+        "Point3d.projectInto followed by Point3d.on is equivalent to Point3d.projectOnto"
         (\point sketchPlane ->
             let
                 plane =
                     SketchPlane3d.toPlane sketchPlane
             in
             Point3d.projectInto sketchPlane point
-                |> Point2d.placeOnto sketchPlane
+                |> Point3d.on sketchPlane
                 |> Expect.point3d (Point3d.projectOnto plane point)
         )
 

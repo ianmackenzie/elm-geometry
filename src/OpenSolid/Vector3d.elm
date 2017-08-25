@@ -27,6 +27,7 @@ module OpenSolid.Vector3d
         , lengthAndDirection
         , mirrorAcross
         , normalize
+        , on
         , orthonormalize
         , perpendicularTo
         , placeIn
@@ -80,7 +81,7 @@ will actually want their `Direction3d` versions [`Direction3d.x`](OpenSolid-Dire
 
 # Constructors
 
-@docs withComponents, from, withLength, perpendicularTo, interpolateFrom
+@docs withComponents, from, withLength, on, perpendicularTo, interpolateFrom
 
 
 # Components
@@ -215,6 +216,50 @@ withLength length direction =
             Direction3d.components direction
     in
     withComponents ( length * dx, length * dy, length * dz )
+
+
+{-| Construct a 3D vector lying _on_ a sketch plane by providing a 2D vector
+specified in XY coordinates _within_ the sketch plane.
+
+    vector2d =
+        Vector2d.withComponents ( 2, 3 )
+
+    Vector3d.on SketchPlane3d.xy vector2d
+    --> Vector3d.withComponents ( 2, 3, 0 )
+
+    Vector3d.on SketchPlane3d.yz vector2d
+    --> Vector3d.withComponents ( 0, 2, 3 )
+
+    Vector3d.on SketchPlane3d.zx vector2d
+    --> Vector3d.withComponents ( 3, 0, 2 )
+
+A slightly more complex example:
+
+    tiltedSketchPlane =
+        SketchPlane3d.xy
+            |> SketchPlane3d.rotateAround Axis3d.x (degrees 45)
+
+    Vector3d.on tiltedSketchPlane (Vector2d.withComponents ( 1, 1 ))
+    --> Vector3d.withComponents ( 1, 0.7071, 0.7071 )
+
+-}
+on : SketchPlane3d -> Vector2d -> Vector3d
+on sketchPlane vector2d =
+    let
+        ( ux, uy, uz ) =
+            Direction3d.components (SketchPlane3d.xDirection sketchPlane)
+
+        ( vx, vy, vz ) =
+            Direction3d.components (SketchPlane3d.yDirection sketchPlane)
+
+        ( x, y ) =
+            Vector2d.components vector2d
+    in
+    withComponents
+        ( x * ux + y * vx
+        , x * uy + y * vy
+        , x * uz + y * vz
+        )
 
 
 {-| Construct an arbitrary vector perpendicular to the given vector. The exact

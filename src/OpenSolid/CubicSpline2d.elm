@@ -10,7 +10,6 @@ module OpenSolid.CubicSpline2d
         , hermite
         , mirrorAcross
         , placeIn
-        , placeOnto
         , pointOn
         , relativeTo
         , reverse
@@ -61,11 +60,6 @@ in 2D defined by four control points. This module contains functionality for
 @docs relativeTo, placeIn
 
 
-# Sketch planes
-
-@docs placeOnto
-
-
 # Subdivision
 
 @docs bisect, splitAt
@@ -73,11 +67,9 @@ in 2D defined by four control points. This module contains functionality for
 -}
 
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
-import OpenSolid.Bootstrap.CubicSpline3d as CubicSpline3d
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
-import OpenSolid.Geometry.Internal as Internal exposing (CubicSpline3d)
+import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Point2d as Point2d exposing (Point2d)
-import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
@@ -462,30 +454,6 @@ given reference frame, and return that spline expressed in global coordinates.
 placeIn : Frame2d -> CubicSpline2d -> CubicSpline2d
 placeIn frame =
     mapControlPoints (Point2d.placeIn frame)
-
-
-{-| Take a spline defined in 2D coordinates within a particular sketch
-plane and return the corresponding spline in 3D.
-
-    CubicSpline2d.placeOnto SketchPlane3d.xz exampleSpline
-    --> CubicSpline3d.withControlPoints
-    -->     ( Point3d.withCoordinates ( 1, 0, 1 )
-    -->     , Point3d.withCoordinates ( 3, 0, 4 )
-    -->     , Point3d.withCoordinates ( 5, 0, 1 )
-    -->     , Point3d.withCoordinates ( 7, 0, 4 )
-    -->     )
-
--}
-placeOnto : SketchPlane3d -> CubicSpline2d -> CubicSpline3d
-placeOnto sketchPlane spline =
-    let
-        ( p1, p2, p3, p4 ) =
-            controlPoints spline
-
-        place =
-            Point2d.placeOnto sketchPlane
-    in
-    CubicSpline3d.withControlPoints ( place p1, place p2, place p3, place p4 )
 
 
 {-| Split a spline into two roughly equal halves. Equivalent to `splitAt 0.5`.

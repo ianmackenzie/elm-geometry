@@ -2,6 +2,7 @@ module Axis3d
     exposing
         ( directionExample
         , jsonRoundTrips
+        , onExamples
         , originPointExample
         , xExample
         , yExample
@@ -9,13 +10,17 @@ module Axis3d
         )
 
 import Generic
+import OpenSolid.Axis2d as Axis2d
 import OpenSolid.Axis3d as Axis3d
+import OpenSolid.Direction2d as Direction2d
 import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Expect as Expect
 import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Point2d as Point2d
 import OpenSolid.Point3d as Point3d
+import OpenSolid.SketchPlane3d as SketchPlane3d
 import Test exposing (Test)
 
 
@@ -75,3 +80,44 @@ directionExample =
     Test.test "Axis3d.direction example" <|
         \() ->
             Axis3d.direction Axis3d.y |> Expect.direction3d Direction3d.y
+
+
+onExamples : Test
+onExamples =
+    let
+        axis2d =
+            Axis2d.with
+                { originPoint = Point2d.withCoordinates ( 1, 3 )
+                , direction = Direction2d.withPolarAngle (degrees 30)
+                }
+    in
+    Test.describe "Axis3d.on examples"
+        [ Test.test "First example" <|
+            \() ->
+                Axis3d.on SketchPlane3d.xy axis2d
+                    |> Expect.axis3d
+                        (Axis3d.with
+                            { originPoint =
+                                Point3d.withCoordinates ( 1, 3, 0 )
+                            , direction =
+                                Direction3d.with
+                                    { azimuth = degrees 30
+                                    , elevation = 0
+                                    }
+                            }
+                        )
+        , Test.test "Second example" <|
+            \() ->
+                Axis3d.on SketchPlane3d.zx axis2d
+                    |> Expect.axis3d
+                        (Axis3d.with
+                            { originPoint =
+                                Point3d.withCoordinates ( 3, 0, 1 )
+                            , direction =
+                                Direction3d.with
+                                    { azimuth = 0
+                                    , elevation = degrees 60
+                                    }
+                            }
+                        )
+        ]

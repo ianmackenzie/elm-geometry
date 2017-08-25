@@ -10,7 +10,6 @@ module OpenSolid.Arc2d
         , largePositive
         , mirrorAcross
         , placeIn
-        , placeOnto
         , pointOn
         , radius
         , relativeTo
@@ -70,24 +69,16 @@ end point). This module includes functionality for
 
 @docs relativeTo, placeIn
 
-
-# Sketch planes
-
-@docs placeOnto
-
 -}
 
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
-import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
-import OpenSolid.Bootstrap.Arc3d as Arc3d
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
-import OpenSolid.Geometry.Internal as Internal exposing (Arc3d)
+import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Polyline2d as Polyline2d exposing (Polyline2d)
-import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
@@ -799,37 +790,4 @@ placeIn frame arc =
                 sweptAngle arc
             else
                 -(sweptAngle arc)
-        }
-
-
-{-| Take an arc defined in 2D coordinates within a particular sketch plane and
-return the corresponding arc in 3D.
-
-    Arc2d.placeOnto SketchPlane3d.yz exampleArc
-    --> Arc3d.around
-    -->     (Axis3d.with
-    -->         { originPoint = Point3d.withCoordinates ( 0, 1, 1 )
-    -->         , direction = Direction3d.x
-    -->         }
-    -->     )
-    -->     { startPoint = Point3d.withCoordinates ( 0, 3, 1 )
-    -->     , sweptAngle = degrees 90
-    -->     }
-
--}
-placeOnto : SketchPlane3d -> Arc2d -> Arc3d
-placeOnto sketchPlane arc =
-    let
-        place =
-            Point2d.placeOnto sketchPlane
-
-        axis =
-            Axis3d.with
-                { originPoint = place (centerPoint arc)
-                , direction = SketchPlane3d.normalDirection sketchPlane
-                }
-    in
-    Arc3d.around axis
-        { startPoint = place (startPoint arc)
-        , sweptAngle = sweptAngle arc
         }

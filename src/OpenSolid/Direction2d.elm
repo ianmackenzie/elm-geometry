@@ -25,7 +25,6 @@ module OpenSolid.Direction2d
         , orthogonalize
         , perpendicularTo
         , placeIn
-        , placeOnto
         , polarAngle
         , positiveX
         , positiveY
@@ -113,17 +112,10 @@ For the examples, assume the following frames have been defined:
 
 @docs relativeTo, placeIn
 
-
-# Sketch planes
-
-@docs placeOnto
-
 -}
 
 import OpenSolid.Bootstrap.Direction2d as Bootstrap
-import OpenSolid.Bootstrap.Direction3d as Direction3d
-import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
-import OpenSolid.Geometry.Internal as Internal exposing (Axis2d, Direction3d, Frame2d, Point2d, SketchPlane3d)
+import OpenSolid.Geometry.Internal as Internal exposing (Axis2d, Frame2d, Point2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
@@ -526,47 +518,3 @@ frame, and return that direction expressed in global coordinates.
 placeIn : Frame2d -> Direction2d -> Direction2d
 placeIn frame direction =
     toVector direction |> Vector2d.placeIn frame |> toDirection
-
-
-{-| Take a direction defined in 2D coordinates within a particular sketch plane
-and return the corresponding direction in 3D.
-
-    direction =
-        Direction2d.withPolarAngle (degrees 30)
-
-    Direction2d.placeOnto SketchPlane3d.xy direction
-    --> Direction3d.with
-    -->     { azimuth = degrees 30
-    -->     , elevation = 0
-    -->     }
-
-    Direction2d.placeOnto SketchPlane3d.yz direction
-    --> Direction3d.with
-    -->     { azimuth = degrees 90
-    -->     , elevation = degrees 30
-    -->     }
-
-    Direction2d.placeOnto SketchPlane3d.zx direction
-    --> Direction3d.with
-    -->     { azimuth = 0
-    -->     , elevation = degrees 60
-    -->     }
-
--}
-placeOnto : SketchPlane3d -> Direction2d -> Direction3d
-placeOnto sketchPlane direction =
-    let
-        ( x, y ) =
-            components direction
-
-        ( ux, uy, uz ) =
-            Direction3d.components (SketchPlane3d.xDirection sketchPlane)
-
-        ( vx, vy, vz ) =
-            Direction3d.components (SketchPlane3d.yDirection sketchPlane)
-    in
-    Direction3d.unsafe
-        ( x * ux + y * vx
-        , x * uy + y * vy
-        , x * uz + y * vz
-        )

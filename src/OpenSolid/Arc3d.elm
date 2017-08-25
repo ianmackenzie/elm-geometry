@@ -138,8 +138,21 @@ in XY coordinates _within_ the sketch plane.
 
 -}
 on : SketchPlane3d -> Arc2d -> Arc3d
-on =
-    Arc2d.placeOnto
+on sketchPlane arc2d =
+    let
+        place =
+            Point3d.on sketchPlane
+
+        axis =
+            Axis3d.with
+                { originPoint = place (Arc2d.centerPoint arc2d)
+                , direction = SketchPlane3d.normalDirection sketchPlane
+                }
+    in
+    around axis
+        { startPoint = place (Arc2d.startPoint arc2d)
+        , sweptAngle = Arc2d.sweptAngle arc2d
+        }
 
 
 {-| Attempt to construct an arc that starts at the first given point, passes
@@ -178,7 +191,7 @@ throughPoints firstPoint secondPoint thirdPoint =
                     (project firstPoint)
                     (project secondPoint)
                     (project thirdPoint)
-                    |> Maybe.map (Arc2d.placeOnto sketchPlane)
+                    |> Maybe.map (on sketchPlane)
             )
 
 

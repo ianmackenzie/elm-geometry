@@ -23,7 +23,6 @@ module OpenSolid.Triangle2d
         , map
         , mirrorAcross
         , placeIn
-        , placeOnto
         , relativeTo
         , rotateAround
         , scaleAbout
@@ -79,11 +78,6 @@ different coordinate frames.
 @docs relativeTo, placeIn
 
 
-# Sketch planes
-
-@docs placeOnto
-
-
 # Bounds
 
 @docs boundingBox
@@ -91,13 +85,11 @@ different coordinate frames.
 -}
 
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
-import OpenSolid.Bootstrap.Triangle3d as Triangle3d
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
-import OpenSolid.Geometry.Internal as Internal exposing (Triangle3d)
+import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
-import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
@@ -419,31 +411,6 @@ given reference frame, and return that triangle expressed in global coordinates.
 placeIn : Frame2d -> Triangle2d -> Triangle2d
 placeIn frame =
     map (Point2d.placeIn frame)
-
-
-{-| Take a triangle defined in 2D coordinates within a particular sketch
-plane and return the corresponding triangle in 3D.
-
-    Triangle2d.placeOnto SketchPlane3d.xz exampleTriangle
-    --> Triangle3d.withVertices
-    -->     ( Point3d.withCoordinates ( 1, 0, 1 )
-    -->     , Point3d.withCoordinates ( 2, 0, 1 )
-    -->     , Point3d.withCoordinates ( 1, 0, 3 )
-    -->     )
-
--}
-placeOnto : SketchPlane3d -> Triangle2d -> Triangle3d
-placeOnto sketchPlane =
-    let
-        place =
-            Point2d.placeOnto sketchPlane
-    in
-    \triangle ->
-        let
-            ( p1, p2, p3 ) =
-                vertices triangle
-        in
-        Triangle3d.withVertices ( place p1, place p2, place p3 )
 
 
 {-| Get the minimal bounding box containing a given triangle.

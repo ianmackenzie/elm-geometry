@@ -17,6 +17,7 @@ module OpenSolid.Polyline3d
         , length
         , map
         , mirrorAcross
+        , on
         , placeIn
         , projectInto
         , projectOnto
@@ -43,7 +44,7 @@ This module contains a variety of polyline-related functionality, such as
 
 # Constructors
 
-@docs withVertices
+@docs withVertices, on
 
 
 # Accessors
@@ -111,6 +112,29 @@ type alias Polyline3d =
 withVertices : List Point3d -> Polyline3d
 withVertices =
     Internal.Polyline3d
+
+
+{-| Construct a 3D polyline lying _on_ a sketch plane by providing a 2D polyline
+specified in XY coordinates _within_ the sketch plane.
+
+    Polyline3d.on SketchPlane3d.yz <|
+        Polyline2d.withVertices
+            [ Point2d.withCoordinates ( 0, 0 )
+            , Point2d.withCoordinates ( 1, 0 )
+            , Point2d.withCoordinates ( 1, 1 )
+            , Point2d.withCoordinates ( 2, 1 )
+            ]
+    --> Polyline3d.withVertices
+    -->     [ Point3d.withCoordinates ( 0, 0, 0 )
+    -->     , Point3d.withCoordinates ( 0, 1, 0 )
+    -->     , Point3d.withCoordinates ( 0, 1, 1 )
+    -->     , Point3d.withCoordinates ( 0, 2, 1 )
+    -->     ]
+
+-}
+on : SketchPlane3d -> Polyline2d -> Polyline3d
+on sketchPlane =
+    Polyline2d.vertices >> List.map (Point3d.on sketchPlane) >> withVertices
 
 
 {-| Get the vertices of a polyline.

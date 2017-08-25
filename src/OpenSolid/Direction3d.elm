@@ -128,6 +128,7 @@ global XYZ frame:
 
 -}
 
+import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Geometry.Internal as Internal exposing (Axis3d, Frame3d, Plane3d, Point3d, SketchPlane3d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
@@ -275,8 +276,22 @@ direction specified in XY coordinates _within_ the sketch plane.
 
 -}
 on : SketchPlane3d -> Direction2d -> Direction3d
-on =
-    Direction2d.placeOnto
+on sketchPlane direction2d =
+    let
+        ( x, y ) =
+            Direction2d.components direction2d
+
+        ( ux, uy, uz ) =
+            components (SketchPlane3d.xDirection sketchPlane)
+
+        ( vx, vy, vz ) =
+            components (SketchPlane3d.yDirection sketchPlane)
+    in
+    unsafe
+        ( x * ux + y * vx
+        , x * uy + y * vy
+        , x * uz + y * vz
+        )
 
 
 {-| Construct a direction using azimuthal and elevation angles relative to the

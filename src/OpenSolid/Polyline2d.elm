@@ -18,7 +18,6 @@ module OpenSolid.Polyline2d
         , map
         , mirrorAcross
         , placeIn
-        , placeOnto
         , projectOnto
         , relativeTo
         , rotateAround
@@ -68,11 +67,6 @@ Transforming a polyline is equivalent to transforming each of its vertices.
 @docs relativeTo, placeIn
 
 
-# Sketch planes
-
-@docs placeOnto
-
-
 # Bounds
 
 @docs boundingBox
@@ -80,13 +74,11 @@ Transforming a polyline is equivalent to transforming each of its vertices.
 -}
 
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
-import OpenSolid.Bootstrap.Polyline3d as Polyline3d
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
-import OpenSolid.Geometry.Internal as Internal exposing (Polyline3d)
+import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
-import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
@@ -308,25 +300,6 @@ coordinates.
 placeIn : Frame2d -> Polyline2d -> Polyline2d
 placeIn frame =
     map (Point2d.placeIn frame)
-
-
-{-| Take a polyline defined in 2D coordinates within a particular sketch plane
-and return the corresponding polyline in 3D.
-
-    Polyline2d.placeOnto SketchPlane3d.yz stepShape
-    --> Polyline3d.withVertices
-    -->     [ Point3d.withCoordinates ( 0, 0, 0 )
-    -->     , Point3d.withCoordinates ( 0, 1, 0 )
-    -->     , Point3d.withCoordinates ( 0, 1, 1 )
-    -->     , Point3d.withCoordinates ( 0, 2, 1 )
-    -->     ]
-
--}
-placeOnto : SketchPlane3d -> Polyline2d -> Polyline3d
-placeOnto sketchPlane =
-    vertices
-        >> List.map (Point2d.placeOnto sketchPlane)
-        >> Polyline3d.withVertices
 
 
 {-| Get the minimal bounding box containing a given polyline. Returns `Nothing`

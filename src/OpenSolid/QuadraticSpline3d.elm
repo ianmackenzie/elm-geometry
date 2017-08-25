@@ -8,6 +8,7 @@ module OpenSolid.QuadraticSpline3d
         , endPoint
         , evaluate
         , mirrorAcross
+        , on
         , placeIn
         , pointOn
         , projectInto
@@ -38,7 +39,7 @@ in 3D defined by three control points. This module contains functionality for
 
 # Constructors
 
-@docs withControlPoints
+@docs withControlPoints, on
 
 
 # Accessors
@@ -101,6 +102,34 @@ type alias QuadraticSpline3d =
 withControlPoints : ( Point3d, Point3d, Point3d ) -> QuadraticSpline3d
 withControlPoints =
     Internal.QuadraticSpline3d
+
+
+{-| Construct a 3D spline lying _on_ a sketch plane by providing a 2D spline
+specified in XY coordinates _within_ the sketch plane.
+
+    QuadraticSpline3d.on SketchPlane3d.xz <|
+        QuadraticSpline2d.withControlPoints
+            ( Point2d.withCoordinates ( 1, 1 )
+            , Point2d.withCoordinates ( 3, 4 )
+            , Point2d.withCoordinates ( 5, 1 )
+            )
+    --> QuadraticSpline3d.withControlPoints
+    -->     ( Point3d.withCoordinates ( 1, 0, 1 )
+    -->     , Point3d.withCoordinates ( 3, 0, 4 )
+    -->     , Point3d.withCoordinates ( 5, 0, 1 )
+    -->     )
+
+-}
+on : SketchPlane3d -> QuadraticSpline2d -> QuadraticSpline3d
+on sketchPlane spline2d =
+    let
+        ( p1, p2, p3 ) =
+            QuadraticSpline2d.controlPoints spline2d
+
+        place =
+            Point3d.on sketchPlane
+    in
+    withControlPoints ( place p1, place p2, place p3 )
 
 
 {-| Get the control points of a spline as a tuple.

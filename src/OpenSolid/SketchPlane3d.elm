@@ -57,15 +57,15 @@ back and forth between 2D and 3D coordinates:
     plane.
 
 Many 3D data types have `projectInto` functions that return the corresponding 2D
-data type, and those 2D data types have `placeOnto` functions for converting
-back to 3D. For example, [`Triangle3d.projectInto`](OpenSolid-Triangle3d#projectInto)
-returns a `Triangle2d` and [`Triangle2d.placeOnto`](OpenSolid-Triangle2d#placeOnto)
-returns a `Triangle3d`. These pairs of functions are almost, but not quite,
-inverses of each other:
+data type, and `on` functions for converting back to 3D. For example,
+[`Triangle3d.projectInto`](OpenSolid-Triangle3d#projectInto) returns a
+`Triangle2d` and [`Triangle3d.on`](OpenSolid-Triangle3d#on) returns a
+`Triangle3d`. These pairs of functions are almost, but not quite, inverses of
+each other:
 
-  - <code>Point2d.placeOnto&nbsp;sketchPlane&nbsp;>>&nbsp;Point3d.projectInto&nbsp;sketchPlane</code>
+  - <code>Point3d.on&nbsp;sketchPlane&nbsp;>>&nbsp;Point3d.projectInto&nbsp;sketchPlane</code>
     will just return the original `Point2d` (within roundoff error).
-  - <code>Point3d.projectInto&nbsp;sketchPlane&nbsp;>>&nbsp;Point2d.placeOnto&nbsp;sketchPlane</code>
+  - <code>Point3d.projectInto&nbsp;sketchPlane&nbsp;>>&nbsp;Point3d.on&nbsp;sketchPlane</code>
     is equivalent to <code>Point3d.projectOnto&nbsp;(SketchPlane3d.plane&nbsp;sketchPlane)</code>
     since the result will always be on the given sketch plane.
 

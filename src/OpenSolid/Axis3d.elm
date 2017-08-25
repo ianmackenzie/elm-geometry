@@ -17,6 +17,7 @@ module OpenSolid.Axis3d
         , flip
         , mirrorAcross
         , moveTo
+        , on
         , originPoint
         , placeIn
         , projectInto
@@ -49,7 +50,7 @@ an origin point and direction. Axes have several uses, such as:
 
 # Constructors
 
-@docs with
+@docs with, on
 
 
 # Accessors
@@ -143,6 +144,52 @@ z =
 with : { originPoint : Point3d, direction : Direction3d } -> Axis3d
 with =
     Internal.Axis3d
+
+
+{-| Construct a 3D axis lying _on_ a sketch plane by providing a 2D axis
+specified in XY coordinates _within_ the sketch plane.
+
+    axis2d =
+        Axis2d.with
+            { originPoint = Point2d.withCoordinates ( 1, 3 )
+            , direction = Direction2d.withPolarAngle (degrees 30)
+            }
+
+    Axis3d.on SketchPlane3d.xy axis2d
+    --> Axis3d.with
+    -->     { originPoint = Point3d.withCoordinates ( 1, 3, 0 )
+    -->     , direction =
+    -->         Direction3d.with
+    -->             { azimuth = degrees 30
+    -->             , elevation = 0
+    -->             }
+    -->     }
+
+    Axis3d.on SketchPlane3d.zx axis2d
+    --> Axis3d.with
+    -->     { originPoint = Point3d.withCoordinates ( 3, 0, 1 )
+    -->     , direction =
+    -->         Direction3d.with
+    -->             { azimuth = 0
+    -->             , elevation = degrees 60
+    -->             }
+    -->     }
+
+-}
+on : SketchPlane3d -> Axis2d -> Axis3d
+on sketchPlane =
+    let
+        placePoint =
+            Point3d.on sketchPlane
+
+        placeDirection =
+            Direction3d.on sketchPlane
+    in
+    \axis2d ->
+        with
+            { originPoint = placePoint (Axis2d.originPoint axis2d)
+            , direction = placeDirection (Axis2d.direction axis2d)
+            }
 
 
 {-| Get the origin point of an axis.

@@ -27,7 +27,6 @@ module OpenSolid.LineSegment2d
         , mirrorAcross
         , normalDirection
         , placeIn
-        , placeOnto
         , projectOnto
         , relativeTo
         , reverse
@@ -94,11 +93,6 @@ different coordinate frames.
 @docs relativeTo, placeIn
 
 
-# Sketch planes
-
-@docs placeOnto
-
-
 # Bounds
 
 @docs boundingBox
@@ -106,13 +100,11 @@ different coordinate frames.
 -}
 
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
-import OpenSolid.Bootstrap.LineSegment3d as LineSegment3d
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
-import OpenSolid.Geometry.Internal as Internal exposing (LineSegment3d)
+import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Point2d as Point2d exposing (Point2d)
-import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
@@ -578,30 +570,6 @@ coordinates.
 placeIn : Frame2d -> LineSegment2d -> LineSegment2d
 placeIn frame =
     map (Point2d.placeIn frame)
-
-
-{-| Take a line segment defined in 2D coordinates within a particular sketch
-plane and return the corresponding line segment in 3D.
-
-    LineSegment2d.placeOnto SketchPlane3d.yz exampleLineSegment
-    --> LineSegment3d.withEndpoints
-    -->     ( Point3d.withCoordinates ( 0, 1, 2 )
-    -->     , Point3d.withCoordinates ( 0, 3, 4 )
-    -->     )
-
--}
-placeOnto : SketchPlane3d -> LineSegment2d -> LineSegment3d
-placeOnto sketchPlane =
-    let
-        place =
-            Point2d.placeOnto sketchPlane
-    in
-    \lineSegment ->
-        let
-            ( p1, p2 ) =
-                endpoints lineSegment
-        in
-        LineSegment3d.withEndpoints ( place p1, place p2 )
 
 
 {-| Get the minimal bounding box containing a given line segment.

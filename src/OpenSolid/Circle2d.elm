@@ -9,7 +9,6 @@ module OpenSolid.Circle2d
         , diameter
         , mirrorAcross
         , placeIn
-        , placeOnto
         , radius
         , relativeTo
         , rotateAround
@@ -70,11 +69,6 @@ particular point is contained, but this should increase in the future.
 @docs relativeTo, placeIn
 
 
-# Sketch planes
-
-@docs placeOnto
-
-
 # Bounds
 
 @docs boundingBox
@@ -83,12 +77,10 @@ particular point is contained, but this should increase in the future.
 
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
 import OpenSolid.Bootstrap.Arc2d as Arc2d
-import OpenSolid.Bootstrap.Circle3d as Circle3d
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
-import OpenSolid.Geometry.Internal as Internal exposing (Arc2d, Circle3d)
+import OpenSolid.Geometry.Internal as Internal exposing (Arc2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
-import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
@@ -475,26 +467,6 @@ placeIn frame =
             { centerPoint = placePoint (centerPoint circle)
             , radius = radius circle
             }
-
-
-{-| Take a circle defined in 2D coordinates within a particular sketch plane and
-return the corresponding circle in 3D.
-
-    Circle2d.placeOnto SketchPlane3d.yz exampleCircle
-    --> Circle3d.with
-    -->     { centerPoint = Point3d.withCoordinates ( 0, 1, 2 )
-    -->     , axialDirection = Direction3d.x
-    -->     , radius = 3
-    -->     }
-
--}
-placeOnto : SketchPlane3d -> Circle2d -> Circle3d
-placeOnto sketchPlane circle =
-    Circle3d.with
-        { centerPoint = Point2d.placeOnto sketchPlane (centerPoint circle)
-        , axialDirection = SketchPlane3d.normalDirection sketchPlane
-        , radius = radius circle
-        }
 
 
 {-| Get the minimal bounding box containing a given circle.

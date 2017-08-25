@@ -19,7 +19,6 @@ module OpenSolid.Axis2d
         , moveTo
         , originPoint
         , placeIn
-        , placeOnto
         , relativeTo
         , rotateAround
         , translateBy
@@ -67,16 +66,10 @@ different coordinate frames.
 
 @docs relativeTo, placeIn
 
-
-# Sketch planes
-
-@docs placeOnto
-
 -}
 
-import OpenSolid.Bootstrap.Axis3d as Axis3d
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
-import OpenSolid.Geometry.Internal as Internal exposing (Axis3d, Frame2d, SketchPlane3d)
+import OpenSolid.Geometry.Internal as Internal exposing (Frame2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
@@ -311,46 +304,6 @@ placeIn frame =
     in
     \axis ->
         with
-            { originPoint = placePoint (originPoint axis)
-            , direction = placeDirection (direction axis)
-            }
-
-
-{-| Take an axis defined in 2D coordinates within a particular sketch plane and
-return the corresponding axis in 3D.
-
-    Axis2d.placeOnto SketchPlane3d.xy exampleAxis
-    --> Axis3d.with
-    -->     { originPoint = Point3d.withCoordinates ( 2, 3, 0 )
-    -->     , direction =
-    -->         Direction3d.with
-    -->             { azimuth = degrees 30
-    -->             , elevation = 0
-    -->             }
-    -->     }
-
-    Axis2d.placeOnto SketchPlane3d.zx exampleAxis
-    --> Axis3d.with
-    -->     { originPoint = Point3d.withCoordinates ( 3, 0, 2 )
-    -->     , direction =
-    -->         Direction3d.with
-    -->             { azimuth = 0
-    -->             , elevation = degrees 60
-    -->             }
-    -->     }
-
--}
-placeOnto : SketchPlane3d -> Axis2d -> Axis3d
-placeOnto sketchPlane =
-    let
-        placePoint =
-            Point2d.placeOnto sketchPlane
-
-        placeDirection =
-            Direction2d.placeOnto sketchPlane
-    in
-    \axis ->
-        Axis3d.with
             { originPoint = placePoint (originPoint axis)
             , direction = placeDirection (direction axis)
             }

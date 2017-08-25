@@ -20,6 +20,7 @@ module OpenSolid.Triangle3d
         , map
         , mirrorAcross
         , normalDirection
+        , on
         , placeIn
         , projectInto
         , projectOnto
@@ -45,7 +46,7 @@ vertices. This module contains triangle-related functionality such as:
 
 # Constructors
 
-@docs withVertices
+@docs withVertices, on
 
 
 # Accessors
@@ -116,6 +117,35 @@ type alias Triangle3d =
 withVertices : ( Point3d, Point3d, Point3d ) -> Triangle3d
 withVertices =
     Internal.Triangle3d
+
+
+{-| Construct a 3D triangle lying _on_ a sketch plane by providing a 2D triangle
+specified in XY coordinates _within_ the sketch plane.
+
+    Triangle3d.on SketchPlane3d.xz <|
+        Triangle2d.withVertices
+            ( Point2d.withCoordinates ( 1, 1 )
+            , Point2d.withCoordinates ( 2, 1 )
+            , Point2d.withCoordinates ( 1, 3 )
+            )
+    --> Triangle3d.withVertices
+    -->     ( Point3d.withCoordinates ( 1, 0, 1 )
+    -->     , Point3d.withCoordinates ( 2, 0, 1 )
+    -->     , Point3d.withCoordinates ( 1, 0, 3 )
+    -->     )
+
+-}
+on : SketchPlane3d -> Triangle2d -> Triangle3d
+on sketchPlane triangle2d =
+    let
+        ( p1, p2, p3 ) =
+            Triangle2d.vertices triangle2d
+    in
+    withVertices
+        ( Point3d.on sketchPlane p1
+        , Point3d.on sketchPlane p2
+        , Point3d.on sketchPlane p3
+        )
 
 
 {-| Get the vertices of a triangle.

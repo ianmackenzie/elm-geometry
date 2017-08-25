@@ -182,8 +182,15 @@ segment specified in XY coordinates _within_ the sketch plane.
 
 -}
 on : SketchPlane3d -> LineSegment2d -> LineSegment3d
-on =
-    LineSegment2d.placeOnto
+on sketchPlane lineSegment2d =
+    let
+        ( p1, p2 ) =
+            LineSegment2d.endpoints lineSegment2d
+    in
+    withEndpoints
+        ( Point3d.on sketchPlane p1
+        , Point3d.on sketchPlane p2
+        )
 
 
 {-| Get the start point of a line segment.

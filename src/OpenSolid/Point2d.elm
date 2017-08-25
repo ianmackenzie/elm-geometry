@@ -25,7 +25,6 @@ module OpenSolid.Point2d
         , mirrorAcross
         , origin
         , placeIn
-        , placeOnto
         , polarCoordinates
         , projectOnto
         , relativeTo
@@ -91,11 +90,6 @@ different coordinate frames.
 @docs relativeTo, placeIn
 
 
-# Sketch planes
-
-@docs placeOnto
-
-
 # Bounds
 
 @docs hull
@@ -105,11 +99,8 @@ different coordinate frames.
 import OpenSolid.Bootstrap.Axis2d as Axis2d
 import OpenSolid.Bootstrap.BoundingBox2d as BoundingBox2d
 import OpenSolid.Bootstrap.Frame2d as Frame2d
-import OpenSolid.Bootstrap.Point3d as Point3d
-import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
-import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
-import OpenSolid.Geometry.Internal as Internal exposing (Axis2d, BoundingBox2d, Frame2d, Point3d, SketchPlane3d)
+import OpenSolid.Geometry.Internal as Internal exposing (Axis2d, BoundingBox2d, Frame2d)
 import OpenSolid.Scalar as Scalar
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
@@ -639,52 +630,6 @@ placeIn frame point =
     Vector2d.withComponents (coordinates point)
         |> Vector2d.placeIn frame
         |> addTo (Frame2d.originPoint frame)
-
-
-{-| Take a point defined in 2D coordinates within a particular sketch plane and
-return the corresponding point in 3D.
-
-    point =
-        Point2d.withCoordinates ( 2, 1 )
-
-    Point2d.placeOnto SketchPlane3d.xy point
-    --> Point3d.withCoordinates ( 2, 1, 0 )
-
-    Point2d.placeOnto SketchPlane3d.xz point
-    --> Point3d.withCoordinates ( 2, 0, 1 )
-
-The sketch plane can have any position and orientation:
-
-    tiltedSketchPlane =
-        SketchPlane3d.xy
-            |> SketchPlane3d.rotateAround Axis3d.x (degrees 45)
-
-    Point2d.placeOnto tiltedSketchPlane point
-    --> Point3d.withCoordinates ( 2, 0.7071, 0.7071 )
-
--}
-placeOnto : SketchPlane3d -> Point2d -> Point3d
-placeOnto sketchPlane =
-    let
-        ( x0, y0, z0 ) =
-            Point3d.coordinates (SketchPlane3d.originPoint sketchPlane)
-
-        ( ux, uy, uz ) =
-            Direction3d.components (SketchPlane3d.xDirection sketchPlane)
-
-        ( vx, vy, vz ) =
-            Direction3d.components (SketchPlane3d.yDirection sketchPlane)
-    in
-    \point ->
-        let
-            ( x, y ) =
-                coordinates point
-        in
-        Point3d.withCoordinates
-            ( x0 + x * ux + y * vx
-            , y0 + x * uy + y * vy
-            , z0 + x * uz + y * vz
-            )
 
 
 {-| Construct a bounding box containing both of the given points.

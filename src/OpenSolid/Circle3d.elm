@@ -8,6 +8,7 @@ module OpenSolid.Circle3d
         , circumference
         , diameter
         , mirrorAcross
+        , on
         , placeIn
         , radius
         , relativeTo
@@ -31,7 +32,7 @@ should increase in the future.
 
 # Constructors
 
-@docs with
+@docs with, on
 
 
 # Accessors
@@ -57,11 +58,13 @@ should increase in the future.
 
 import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
 import OpenSolid.BoundingBox3d as BoundingBox3d exposing (BoundingBox3d)
+import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
 import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
 import OpenSolid.Point3d as Point3d exposing (Point3d)
+import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 
@@ -87,6 +90,30 @@ The actual radius of the circle will be the absolute value of the given radius
 with : { centerPoint : Point3d, axialDirection : Direction3d, radius : Float } -> Circle3d
 with properties =
     Internal.Circle3d { properties | radius = abs properties.radius }
+
+
+{-| Construct a 3D circle lying _on_ a sketch plane by providing a 2D circle
+specified in XY coordinates _within_ the sketch plane.
+
+    Circle3d.on SketchPlane3d.yz <|
+        Circle2d.with
+            { centerPoint = Point2d.withCoordinates ( 1, 2 )
+            , radius = 3
+            }
+    --> Circle3d.with
+    -->     { centerPoint = Point3d.withCoordinates ( 0, 1, 2 )
+    -->     , axialDirection = Direction3d.x
+    -->     , radius = 3
+    -->     }
+
+-}
+on : SketchPlane3d -> Circle2d -> Circle3d
+on sketchPlane circle =
+    with
+        { centerPoint = Point3d.on sketchPlane (Circle2d.centerPoint circle)
+        , axialDirection = SketchPlane3d.normalDirection sketchPlane
+        , radius = Circle2d.radius circle
+        }
 
 
 {-| Get the center point of a circle.

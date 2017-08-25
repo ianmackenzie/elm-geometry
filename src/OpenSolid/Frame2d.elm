@@ -98,8 +98,10 @@ always perpendicular to each other). It can be thought of as:
 
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
+import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
 import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.Point3d as Point3d exposing (Point3d)
 import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
@@ -584,7 +586,7 @@ the given sketch plane, and returns the corresponding 3D sketch plane.
 placeOnto : SketchPlane3d -> Frame2d -> SketchPlane3d
 placeOnto sketchPlane frame =
     SketchPlane3d.unsafe
-        { originPoint = Point2d.placeOnto sketchPlane (originPoint frame)
-        , xDirection = Direction2d.placeOnto sketchPlane (xDirection frame)
-        , yDirection = Direction2d.placeOnto sketchPlane (yDirection frame)
+        { originPoint = Point3d.on sketchPlane (originPoint frame)
+        , xDirection = Direction3d.on sketchPlane (xDirection frame)
+        , yDirection = Direction3d.on sketchPlane (yDirection frame)
         }
