@@ -2,7 +2,6 @@ module Direction3d
     exposing
         ( angleFromAndEqualWithinAreConsistent
         , jsonRoundTrips
-        , onIsSpecialCaseOfWith
         )
 
 import Expect
@@ -37,21 +36,4 @@ angleFromAndEqualWithinAreConsistent =
                     firstDirection
                     secondDirection
                 )
-        )
-
-
-onIsSpecialCaseOfWith : Test
-onIsSpecialCaseOfWith =
-    Test.fuzz2 Fuzz.sketchPlane3d
-        Fuzz.scalar
-        "on is a special case of with"
-        (\sketchPlane angle ->
-            Direction3d.on sketchPlane angle
-                |> Expect.direction3d
-                    (Direction3d.with
-                        { referencePlane = sketchPlane
-                        , azimuth = angle
-                        , elevation = 0
-                        }
-                    )
         )
