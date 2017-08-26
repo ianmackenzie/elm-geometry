@@ -508,20 +508,17 @@ pointOn arc parameter =
 {-| Evaluate an arc at a given parameter value, returning the point on the arc
 at that parameter value and the derivative with respect to that parameter value.
 
-    evaluate =
-        Arc2d.evaluate exampleArc
-
-    evaluate 0
+    Arc2d.evaluate exampleArc 0
     --> ( Point2d.withCoordinates ( 3, 1 )
     --> , Vector2d.withComponents ( 0, 3.1416 )
     --> )
 
-    evaluate 0.5
+    Arc2d.evaluate exampleArc 0.5
     --> ( Point2d.withCoordinates ( 2.4142, 2.4142 )
     --> , Vector2d.withComponents ( -2.2214, 2.2214 )
     --> )
 
-    evaluate 1
+    Arc2d.evaluate exampleArc 1
     --> ( Point2d.withCoordinates ( 1, 3 )
     --> , Vector2d.withComponents ( -3.1416, 0 )
     --> )
