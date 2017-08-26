@@ -14,6 +14,7 @@ module OpenSolid.Circle3d
         , relativeTo
         , rotateAround
         , scaleAbout
+        , through
         , translateBy
         , with
         )
@@ -32,7 +33,7 @@ should increase in the future.
 
 # Constructors
 
-@docs with, on
+@docs with, on, through
 
 
 # Accessors
@@ -113,6 +114,36 @@ on sketchPlane circle =
         , axialDirection = SketchPlane3d.normalDirection sketchPlane
         , radius = Circle2d.radius circle
         }
+
+
+{-| Attempt to construct a circle that passes through the three given points. If
+the three given points are collinear, returns `Nothing`.
+-}
+through : ( Point3d, Point3d, Point3d ) -> Maybe Circle3d
+through points =
+    Maybe.map2
+        (\centerPoint plane ->
+            let
+                ( p1, p2, p3 ) =
+                    points
+
+                r1 =
+                    Point3d.distanceFrom centerPoint p1
+
+                r2 =
+                    Point3d.distanceFrom centerPoint p2
+
+                r3 =
+                    Point3d.distanceFrom centerPoint p3
+            in
+            with
+                { centerPoint = centerPoint
+                , axialDirection = Plane3d.normalDirection plane
+                , radius = (r1 + r2 + r3) / 3
+                }
+        )
+        (Point3d.circumcenter points)
+        (Plane3d.through points)
 
 
 {-| Get the center point of a circle.
