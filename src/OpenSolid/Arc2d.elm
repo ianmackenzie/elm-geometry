@@ -20,7 +20,7 @@ module OpenSolid.Arc2d
         , smallPositive
         , startPoint
         , sweptAngle
-        , throughPoints
+        , through
         , toPolyline
         , translateBy
         , with
@@ -42,7 +42,7 @@ end point). This module includes functionality for
 
 # Constructors
 
-@docs with, throughPoints, SweptAngle, smallPositive, smallNegative, largePositive, largeNegative, fromEndpoints
+@docs with, through, SweptAngle, smallPositive, smallNegative, largePositive, largeNegative, fromEndpoints
 
 
 # Accessors
@@ -72,7 +72,6 @@ end point). This module includes functionality for
 -}
 
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
-import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Geometry.Internal as Internal
@@ -110,10 +109,11 @@ with =
 through the second given point and ends at the third given point. If the three
 points are collinear, returns `Nothing`.
 
-    Arc2d.throughPoints
-        Point2d.origin
-        (Point2d.withCoordinates ( 1, 0 ))
-        (Point2d.withCoordinates ( 0, 1 ))
+    Arc2d.through
+        ( Point2d.origin
+        , Point2d.withCoordinates ( 1, 0 )
+        , Point2d.withCoordinates ( 0, 1 )
+        )
     --> Just
     -->     (Arc2d.with
     -->         { centerPoint = Point2d.withCoordinates ( 0.5, 0.5 )
@@ -122,10 +122,11 @@ points are collinear, returns `Nothing`.
     -->         }
     -->     )
 
-    Arc2d.throughPoints
-        (Point2d.withCoordinates ( 1, 0 ))
-        Point2d.origin
-        (Point2d.withCoordinates ( 0, 1 ))
+    Arc2d.through
+        ( Point2d.withCoordinates ( 1, 0 )
+        , Point2d.origin
+        , Point2d.withCoordinates ( 0, 1 )
+        )
     --> Just
     -->     (Arc2d.with
     -->         { centerPoint = Point2d.withCoordinates ( 0.5, 0.5 )
@@ -134,27 +135,29 @@ points are collinear, returns `Nothing`.
     -->         }
     -->     )
 
-    Arc2d.throughPoints
-        Point2d.origin
-        (Point2d.withCoordinates ( 1, 0 ))
-        (Point2d.withCoordinates ( 2, 0 ))
+    Arc2d.through
+        ( Point2d.origin
+        , Point2d.withCoordinates ( 1, 0 )
+        , Point2d.withCoordinates ( 2, 0 )
+        )
     --> Nothing
 
-    Arc2d.throughPoints
-        Point2d.origin
-        Point2d.origin
-        (Point2d.withCoordinates ( 1, 0 ))
+    Arc2d.through
+        ( Point2d.origin
+        , Point2d.origin
+        , Point2d.withCoordinates ( 1, 0 )
+        )
     --> Nothing
 
 -}
-throughPoints : Point2d -> Point2d -> Point2d -> Maybe Arc2d
-throughPoints firstPoint secondPoint thirdPoint =
-    Circle2d.throughPoints firstPoint secondPoint thirdPoint
+through : ( Point2d, Point2d, Point2d ) -> Maybe Arc2d
+through points =
+    Point2d.circumcenter points
         |> Maybe.andThen
-            (\circle ->
+            (\centerPoint ->
                 let
-                    centerPoint =
-                        Circle2d.centerPoint circle
+                    ( firstPoint, secondPoint, thirdPoint ) =
+                        points
 
                     firstVector =
                         Vector2d.from centerPoint firstPoint

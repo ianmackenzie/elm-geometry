@@ -23,7 +23,7 @@ module OpenSolid.Plane3d
         , placeIn
         , relativeTo
         , rotateAround
-        , throughPoints
+        , through
         , toSketchPlane
         , translateBy
         , with
@@ -51,7 +51,7 @@ and normal direction and is useful for several operations including:
 
 # Constructors
 
-@docs with, throughPoints
+@docs with, through
 
 
 # Accessors
@@ -162,10 +162,11 @@ the normal direction will be such that the three given points are in
 counterclockwise order around it according to the right-hand rule. If the three
 given points are collinear, returns `Nothing`.
 
-    Plane3d.throughPoints
-        (Point3d.withCoordinates ( 2, 0, 0 ))
-        (Point3d.withCoordinates ( 3, 0, 0 ))
-        (Point3d.withCoordinates ( 4, 1, 1 ))
+    Plane3d.through
+        ( Point3d.withCoordinates ( 2, 0, 0 )
+        , Point3d.withCoordinates ( 3, 0, 0 )
+        , Point3d.withCoordinates ( 4, 1, 1 )
+        )
     --> Just
     -->     (Plane3d.with
     -->         { originPoint =
@@ -178,15 +179,16 @@ given points are collinear, returns `Nothing`.
     -->         }
     -->     )
 
-    Plane3d.throughPoints
-        (Point3d.withCoordinates ( 2, 0, 0 ))
-        (Point3d.withCoordinates ( 3, 0, 0 ))
-        (Point3d.withCoordinates ( 4, 0, 0 ))
+    Plane3d.through
+        ( Point3d.withCoordinates ( 2, 0, 0 )
+        , Point3d.withCoordinates ( 3, 0, 0 )
+        , Point3d.withCoordinates ( 4, 0, 0 )
+        )
     --> Nothing
 
 -}
-throughPoints : Point3d -> Point3d -> Point3d -> Maybe Plane3d
-throughPoints firstPoint secondPoint thirdPoint =
+through : ( Point3d, Point3d, Point3d ) -> Maybe Plane3d
+through ( firstPoint, secondPoint, thirdPoint ) =
     let
         firstVector =
             Vector3d.from firstPoint secondPoint

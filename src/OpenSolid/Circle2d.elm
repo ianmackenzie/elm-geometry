@@ -13,7 +13,7 @@ module OpenSolid.Circle2d
         , relativeTo
         , rotateAround
         , scaleAbout
-        , throughPoints
+        , through
         , toArc
         , translateBy
         , unit
@@ -31,17 +31,12 @@ particular point is contained, but this should increase in the future.
 
 # Constructors
 
-@docs with
+@docs with, through
 
 
 # Predefined circles
 
 @docs unit
-
-
-# Constructors
-
-@docs throughPoints
 
 
 # Accessors
@@ -123,10 +118,11 @@ unit =
 {-| Attempt to construct a circle that passes through the three given points. If
 the three given points are collinear, returns `Nothing`.
 
-    Circle2d.throughPoints
-        Point2d.origin
-        (Point2d.withCoordinates ( 1, 0 ))
-        (Point2d.withCoordinates ( 0, 1 ))
+    Circle2d.through
+        ( Point2d.origin
+        , Point2d.withCoordinates ( 1, 0 )
+        , Point2d.withCoordinates ( 0, 1 )
+        )
     --> Just
     -->     (Circle2d.with
     -->         { centerPoint = Point2d.withCoordinates ( 0.5, 0.5 )
@@ -134,10 +130,11 @@ the three given points are collinear, returns `Nothing`.
     -->         }
     -->     )
 
-    Circle2d.throughPoints
-        Point2d.origin
-        (Point2d.withCoordinates ( 2, 1 ))
-        (Point2d.withCoordinates ( 4, 0 ))
+    Circle2d.through
+        ( Point2d.origin
+        , Point2d.withCoordinates ( 2, 1 )
+        , Point2d.withCoordinates ( 4, 0 )
+        )
     --> Just
     -->     (Circle2d.with
     -->         { centerPoint = Point2d.withCoordinates ( 2, -1.5 )
@@ -145,81 +142,41 @@ the three given points are collinear, returns `Nothing`.
     -->         }
     -->     )
 
-    Circle2d.throughPoints
-        Point2d.origin
-        (Point2d.withCoordinates ( 2, 0 ))
-        (Point2d.withCoordinates ( 4, 0 ))
+    Circle2d.through
+        ( Point2d.origin
+        , Point2d.withCoordinates ( 2, 0 )
+        , Point2d.withCoordinates ( 4, 0 )
+        )
     --> Nothing
 
-    Circle2d.throughPoints
-        Point2d.origin
-        Point2d.origin
-        (Point2d.withCoordinates ( 1, 0 ))
+    Circle2d.through
+        ( Point2d.origin
+        , Point2d.origin
+        , Point2d.withCoordinates ( 1, 0 )
+        )
     --> Nothing
 
 -}
-throughPoints : Point2d -> Point2d -> Point2d -> Maybe Circle2d
-throughPoints firstPoint secondPoint thirdPoint =
-    let
-        a2 =
-            Point2d.squaredDistanceFrom firstPoint secondPoint
+through : ( Point2d, Point2d, Point2d ) -> Maybe Circle2d
+through points =
+    Point2d.circumcenter points
+        |> Maybe.map
+            (\p0 ->
+                let
+                    ( p1, p2, p3 ) =
+                        points
 
-        b2 =
-            Point2d.squaredDistanceFrom secondPoint thirdPoint
+                    r1 =
+                        Point2d.distanceFrom p0 p1
 
-        c2 =
-            Point2d.squaredDistanceFrom thirdPoint firstPoint
+                    r2 =
+                        Point2d.distanceFrom p0 p2
 
-        t1 =
-            a2 * (b2 + c2 - a2)
-
-        t2 =
-            b2 * (c2 + a2 - b2)
-
-        t3 =
-            c2 * (a2 + b2 - c2)
-
-        sum =
-            t1 + t2 + t3
-    in
-    if sum == 0 then
-        Nothing
-    else
-        let
-            w1 =
-                t1 / sum
-
-            w2 =
-                t2 / sum
-
-            w3 =
-                t3 / sum
-
-            ( x1, y1 ) =
-                Point2d.coordinates firstPoint
-
-            ( x2, y2 ) =
-                Point2d.coordinates secondPoint
-
-            ( x3, y3 ) =
-                Point2d.coordinates thirdPoint
-
-            centerPoint =
-                Point2d.withCoordinates
-                    ( w1 * x3 + w2 * x1 + w3 * x2
-                    , w1 * y3 + w2 * y1 + w3 * y2
-                    )
-
-            r1 =
-                Point2d.distanceFrom centerPoint firstPoint
-
-            r2 =
-                Point2d.distanceFrom centerPoint secondPoint
-
-            r3 =
-                Point2d.distanceFrom centerPoint thirdPoint
-        in
-        Just (with { centerPoint = centerPoint, radius = (r1 + r2 + r3) / 3 })
+                    r3 =
+                        Point2d.distanceFrom p0 p3
+                in
+                with { centerPoint = p0, radius = (r1 + r2 + r3) / 3 }
+            )
 
 
 {-| Get the center point of a circle.

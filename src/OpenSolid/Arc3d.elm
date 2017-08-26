@@ -18,7 +18,7 @@ module OpenSolid.Arc3d
         , scaleAbout
         , startPoint
         , sweptAngle
-        , throughPoints
+        , through
         , toPolyline
         , translateBy
         )
@@ -38,7 +38,7 @@ start point to the arc's end point). This module includes functionality for
 
 # Constructors
 
-@docs around, on, throughPoints
+@docs around, on, through
 
 
 # Accessors
@@ -168,29 +168,31 @@ points are collinear, returns `Nothing`.
     p3 =
         Point3d.withCoordinates ( 0, 1, 0 )
 
-    Arc3d.throughPoints p1 p2 p3
+    Arc3d.through ( p1, p2, p3 )
     --> Just
-    -->     (Arc3d.on SketchPlane3d.yz
-    -->         { centerPoint = Point2d.withCoordinates ( 0.5, 0.5 )
-    -->         , startPoint = Point3d.withCoordinates ( 0, 1 )
-    -->         , sweptAngle = degrees 180
-    -->         }
+    -->     (Arc3d.on SketchPlane3d.yz <|
+    -->         Arc2d.with
+    -->             { centerPoint = Point2d.withCoordinates ( 0.5, 0.5 )
+    -->             , startPoint = Point3d.withCoordinates ( 0, 1 )
+    -->             , sweptAngle = degrees 180
+    -->             }
     -->     )
 
 -}
-throughPoints : Point3d -> Point3d -> Point3d -> Maybe Arc3d
-throughPoints firstPoint secondPoint thirdPoint =
-    SketchPlane3d.throughPoints firstPoint secondPoint thirdPoint
+through : ( Point3d, Point3d, Point3d ) -> Maybe Arc3d
+through points =
+    SketchPlane3d.through points
         |> Maybe.andThen
             (\sketchPlane ->
                 let
-                    project =
-                        Point3d.projectInto sketchPlane
+                    ( firstPoint, secondPoint, thirdPoint ) =
+                        points
                 in
-                Arc2d.throughPoints
-                    (project firstPoint)
-                    (project secondPoint)
-                    (project thirdPoint)
+                Arc2d.through
+                    ( Point3d.projectInto sketchPlane firstPoint
+                    , Point3d.projectInto sketchPlane secondPoint
+                    , Point3d.projectInto sketchPlane thirdPoint
+                    )
                     |> Maybe.map (on sketchPlane)
             )
 
