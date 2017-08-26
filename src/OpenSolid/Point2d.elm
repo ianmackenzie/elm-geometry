@@ -14,6 +14,7 @@ module OpenSolid.Point2d
     exposing
         ( Point2d
         , along
+        , circumcenter
         , coordinates
         , distanceAlong
         , distanceFrom
@@ -64,7 +65,7 @@ like you can add two vectors.
 
 # Constructors
 
-@docs withCoordinates, withPolarCoordinates, midpoint, interpolateFrom, along, in_
+@docs withCoordinates, withPolarCoordinates, midpoint, interpolateFrom, along, in_, circumcenter
 
 
 # Coordinates
@@ -267,6 +268,92 @@ is equivalent to
 in_ : Frame2d -> ( Float, Float ) -> Point2d
 in_ frame coordinates =
     placeIn frame (withCoordinates coordinates)
+
+
+{-| Attempt to find the circumcenter of three points; this is the center of the
+circle that passes through all three points. If the three given points are
+collinear, returns `Nothing`.
+
+    Point2d.circumcenter
+        ( Point2d.origin
+        , Point2d.withCoordinates ( 1, 0 )
+        , Point2d.withCoordinates ( 0, 1 )
+        )
+    --> Just (Point2d.withCoordinates ( 0.5, 0.5 ))
+
+    Point2d.circumcenter
+        ( Point2d.origin
+        , Point2d.withCoordinates ( 2, 1 )
+        , Point2d.withCoordinates ( 4, 0 )
+        )
+    --> Just (Point2d.withCoordinates ( 2, -1.5 ))
+
+    Point2d.circumCenter
+        ( Point2d.origin
+        , Point2d.withCoordinates ( 2, 0 )
+        , Point2d.withCoordinates ( 4, 0 )
+        )
+    --> Nothing
+
+    Point2d.circumCenter
+        ( Point2d.origin
+        , Point2d.origin
+        , Point2d.withCoordinates ( 1, 0 )
+        )
+    --> Nothing
+
+-}
+circumcenter : ( Point2d, Point2d, Point2d ) -> Maybe Point2d
+circumcenter ( p1, p2, p3 ) =
+    let
+        a2 =
+            squaredDistanceFrom p1 p2
+
+        b2 =
+            squaredDistanceFrom p2 p3
+
+        c2 =
+            squaredDistanceFrom p3 p1
+
+        t1 =
+            a2 * (b2 + c2 - a2)
+
+        t2 =
+            b2 * (c2 + a2 - b2)
+
+        t3 =
+            c2 * (a2 + b2 - c2)
+
+        sum =
+            t1 + t2 + t3
+    in
+    if sum == 0 then
+        Nothing
+    else
+        let
+            w1 =
+                t1 / sum
+
+            w2 =
+                t2 / sum
+
+            w3 =
+                t3 / sum
+
+            ( x1, y1 ) =
+                coordinates p1
+
+            ( x2, y2 ) =
+                coordinates p2
+
+            ( x3, y3 ) =
+                coordinates p3
+        in
+        Just <|
+            withCoordinates
+                ( w1 * x3 + w2 * x1 + w3 * x2
+                , w1 * y3 + w2 * y1 + w3 * y2
+                )
 
 
 {-| Get the coordinates of a point as a tuple.
