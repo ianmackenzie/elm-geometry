@@ -41,7 +41,7 @@ end point). This module includes functionality for
 
 # Constructors
 
-@docs with, through, SweptAngle, smallPositive, smallNegative, largePositive, largeNegative, fromEndpoints
+@docs with, through, fromEndpoints, SweptAngle, smallPositive, smallNegative, largePositive, largeNegative
 
 
 # Accessors
