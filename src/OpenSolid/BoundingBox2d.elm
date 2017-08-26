@@ -82,8 +82,7 @@ import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 
 
-{-| A bounding box in 2D.
--}
+{-| -}
 type alias BoundingBox2d =
     Internal.BoundingBox2d
 

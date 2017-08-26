@@ -110,8 +110,7 @@ addTo point vector =
     translateBy vector point
 
 
-{-| A point in 2D.
--}
+{-| -}
 type alias Point2d =
     Internal.Point2d
 

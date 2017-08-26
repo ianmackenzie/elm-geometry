@@ -68,8 +68,7 @@ import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 
-{-| A circle in 3D.
--}
+{-| -}
 type alias Circle3d =
     Internal.Circle3d
 

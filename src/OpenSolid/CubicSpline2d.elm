@@ -73,8 +73,7 @@ import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
-{-| A cubic spline in 2D.
--}
+{-| -}
 type alias CubicSpline2d =
     Internal.CubicSpline2d
 

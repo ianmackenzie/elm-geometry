@@ -86,8 +86,7 @@ import OpenSolid.Triangle2d as Triangle2d exposing (Triangle2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
-{-| A polygon in 2D.
--}
+{-| -}
 type alias Polygon2d =
     Internal.Polygon2d
 

@@ -165,8 +165,7 @@ import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 
-{-| A frame in 3D.
--}
+{-| -}
 type alias Frame3d =
     Internal.Frame3d
 

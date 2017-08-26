@@ -82,8 +82,7 @@ import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
-{-| A polyline in 2D.
--}
+{-| -}
 type alias Polyline2d =
     Internal.Polyline2d
 

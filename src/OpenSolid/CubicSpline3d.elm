@@ -84,8 +84,7 @@ import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 
-{-| A cubic spline in 3D.
--}
+{-| -}
 type alias CubicSpline3d =
     Internal.CubicSpline3d
 

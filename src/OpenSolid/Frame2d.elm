@@ -97,8 +97,7 @@ import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
-{-| A frame in 2D.
--}
+{-| -}
 type alias Frame2d =
     Internal.Frame2d
 

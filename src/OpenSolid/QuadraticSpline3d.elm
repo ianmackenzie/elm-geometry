@@ -83,8 +83,7 @@ import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 
-{-| A quadratic spline in 3D.
--}
+{-| -}
 type alias QuadraticSpline3d =
     Internal.QuadraticSpline3d
 

@@ -112,8 +112,7 @@ import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 
-{-| A line segment in 3D.
--}
+{-| -}
 type alias LineSegment3d =
     Internal.LineSegment3d
 

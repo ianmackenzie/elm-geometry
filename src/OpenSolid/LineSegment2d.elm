@@ -108,8 +108,7 @@ import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
-{-| A line segment in 2D.
--}
+{-| -}
 type alias LineSegment2d =
     Internal.LineSegment2d
 

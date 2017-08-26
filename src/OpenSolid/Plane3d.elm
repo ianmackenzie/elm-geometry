@@ -83,8 +83,7 @@ import OpenSolid.Point3d as Point3d exposing (Point3d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 
-{-| A plane in 3D.
--}
+{-| -}
 type alias Plane3d =
     Internal.Plane3d
 

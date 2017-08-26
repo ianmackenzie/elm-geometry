@@ -98,8 +98,7 @@ import OpenSolid.Triangle2d as Triangle2d exposing (Triangle2d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 
-{-| A triangle in 3D.
--}
+{-| -}
 type alias Triangle3d =
     Internal.Triangle3d
 

@@ -93,8 +93,7 @@ import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
-{-| A triangle in 2D.
--}
+{-| -}
 type alias Triangle2d =
     Internal.Triangle2d
 

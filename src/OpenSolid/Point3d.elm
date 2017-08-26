@@ -123,8 +123,7 @@ addTo =
     flip translateBy
 
 
-{-| A point in 3D.
--}
+{-| -}
 type alias Point3d =
     Internal.Point3d
 

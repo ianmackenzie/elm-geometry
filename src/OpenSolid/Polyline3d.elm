@@ -92,8 +92,7 @@ import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 
-{-| A polyline in 3D.
--}
+{-| -}
 type alias Polyline3d =
     Internal.Polyline3d
 

@@ -136,8 +136,7 @@ import OpenSolid.Geometry.Internal as Internal exposing (Axis2d, Direction2d, Fr
 import OpenSolid.Scalar as Scalar
 
 
-{-| A vector in 2D.
--}
+{-| -}
 type alias Vector2d =
     Internal.Vector2d
 

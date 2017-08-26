@@ -124,8 +124,7 @@ toDirection vector =
     unsafe (Vector2d.components vector)
 
 
-{-| A direction in 2D.
--}
+{-| -}
 type alias Direction2d =
     Internal.Direction2d
 

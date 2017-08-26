@@ -151,8 +151,7 @@ import OpenSolid.Scalar as Scalar
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
-{-| A vector in 3D.
--}
+{-| -}
 type alias Vector3d =
     Internal.Vector3d
 

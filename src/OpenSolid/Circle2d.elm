@@ -84,8 +84,7 @@ import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
-{-| A circle in 2D.
--}
+{-| -}
 type alias Circle2d =
     Internal.Circle2d
 

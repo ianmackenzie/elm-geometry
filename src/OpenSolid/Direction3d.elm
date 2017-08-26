@@ -140,8 +140,7 @@ toDirection vector =
     unsafe (Vector3d.components vector)
 
 
-{-| A direction in 3D.
--}
+{-| -}
 type alias Direction3d =
     Internal.Direction3d
 

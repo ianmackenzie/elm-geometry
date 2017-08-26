@@ -84,8 +84,7 @@ import OpenSolid.Point3d as Point3d exposing (Point3d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 
-{-| An axis in 3D.
--}
+{-| -}
 type alias Axis3d =
     Internal.Axis3d
 
