@@ -28,6 +28,7 @@ module OpenSolid.Frame3d
         , translateAlongOwn
         , translateBy
         , unsafe
+        , with
         , xAxis
         , xDirection
         , xyPlane
@@ -75,7 +76,7 @@ always perpendicular to each other). It can be thought of as:
 
 # Constructors
 
-@docs at, unsafe
+@docs at, with, unsafe
 
 
 # Accessors
@@ -188,6 +189,54 @@ type alias Frame3d =
 xyz : Frame3d
 xyz =
     at Point3d.origin
+
+
+{-| Construct a frame with the given origin point and Z direction. X and Y
+directions will be chosen arbitrarily such that the frame has the desired Z
+direction. This can be useful when constructing 'scratch' frames where the
+specific X/Y directions are unimportant.
+
+    frame =
+        Frame3d.with
+            { originPoint = Point3d.origin
+            , zDirection =
+                Direction3d.with
+                    { azimuth = 0
+                    , elevation = degrees 60
+                    }
+            }
+
+    Frame3d.originPoint sketchPlane
+    --> Point3d.origin
+
+    Frame3d.xDirection sketchPlane
+    --> Direction3d.with
+    -->     { azimuth = degrees 0
+    -->     , elevation = degrees -30
+    -->     }
+
+    Frame3d.yDirection sketchPlane
+    --> Direction3d.y
+
+    Frame3d.zDirection sketchPlane
+    --> Direction3d.with
+    -->     { azimuth = 0
+    -->     , elevation = degrees 60
+    -->     }
+
+-}
+with : { originPoint : Point3d, zDirection : Direction3d } -> Frame3d
+with { originPoint, zDirection } =
+    let
+        ( xDirection, yDirection ) =
+            Direction3d.perpendicularBasis zDirection
+    in
+    unsafe
+        { originPoint = originPoint
+        , xDirection = xDirection
+        , yDirection = yDirection
+        , zDirection = zDirection
+        }
 
 
 {-| Construct a frame directly from its origin point and X, Y and Z directions:
