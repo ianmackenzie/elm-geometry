@@ -94,6 +94,9 @@ type alias Arc2d =
             , sweptAngle = degrees 90
             }
 
+    Arc2d.endPoint exampleArc
+    --> Point2d.withCoordinates ( 1, 3 )
+
 A positive swept angle means that the arc is formed by rotating the start point
 counterclockwise around the center point. A negative swept angle results in
 a clockwise arc instead.
