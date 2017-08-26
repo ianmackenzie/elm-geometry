@@ -338,7 +338,7 @@ than twice the given radius, returns `Nothing`:
     Arc2d.fromEndpoints
         { startPoint = p1
         , endPoint = p2
-        , radius = 0.5
+        , radius = 0.5 -- too small!
         , sweptAngle = Arc2d.smallPositive
         }
     --> Nothing
