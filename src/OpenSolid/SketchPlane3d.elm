@@ -30,6 +30,7 @@ module OpenSolid.SketchPlane3d
         , translateAlongOwn
         , translateBy
         , unsafe
+        , with
         , xAxis
         , xDirection
         , xy
@@ -92,7 +93,7 @@ point, and use the two indicated global axes as their X and Y axes. For example,
 
 # Constructors
 
-@docs on, throughPoints, unsafe
+@docs with, on, throughPoints, unsafe
 
 
 # Accessors
@@ -199,6 +200,56 @@ xz =
         { originPoint = Point3d.origin
         , xDirection = Direction3d.x
         , yDirection = Direction3d.z
+        }
+
+
+{-| Construct a sketch plane with the given origin point and normal direction.
+X and Y basis directions will be chosen arbitrarily such that the sketch plane
+has the desired normal direction. This is useful when constructing 'scratch'
+sketch planes where the specific X/Y directions are unimportant.
+
+    sketchPlane =
+        SketchPlane3d.with
+            { originPoint = Point3d.origin
+            , normalDirection =
+                Direction3d.with
+                    { azimuth = 0
+                    , elevation = degrees 60
+                    }
+            }
+
+    SketchPlane3d.originPoint sketchPlane
+    --> Point3d.origin
+
+    SketchPlane3d.xDirection sketchPlane
+    --> Direction3d.with
+    -->     { azimuth = degrees 0
+    -->     , elevation = degrees -30
+    -->     }
+
+    SketchPlane3d.yDirection sketchPlane
+    --> Direction3d.y
+
+This is the same as constructing a `Plane3d` with the given point and normal and
+then converting it to a `SketchPlane3d`;
+
+    SketchPlane3d.with { ... }
+
+is equivalent to
+
+    Plane3d.toSketchPlane (Plane3d.with { ... })
+
+-}
+with : { originPoint : Point3d, normalDirection : Direction3d } -> SketchPlane3d
+with { originPoint, normalDirection } =
+    let
+        ( xDirection, yDirection ) =
+            Direction3d.perpendicularBasis normalDirection
+    in
+    unsafe
+        { originPoint = originPoint
+        , xDirection = xDirection
+        , yDirection = yDirection
         }
 
 
