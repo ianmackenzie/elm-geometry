@@ -16,6 +16,7 @@ module OpenSolid.Triangle2d
         , area
         , boundingBox
         , centroid
+        , circumcircle
         , clockwiseArea
         , contains
         , counterclockwiseArea
@@ -82,10 +83,16 @@ different coordinate frames.
 
 @docs boundingBox
 
+
+# Circumcircle
+
+@docs circumcircle
+
 -}
 
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
+import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
@@ -444,3 +451,21 @@ boundingBox triangle =
         , minY = min y1 (min y2 y3)
         , maxY = max y1 (max y2 y3)
         }
+
+
+{-| Attempt to find the circumcircle of a triangle, a circle that passes through
+each of the triangle's vertices;
+
+    Triangle2d.circumcircle triangle
+
+is equivalent to
+
+    Circle2d.through (Triangle2d.vertices triangle)
+
+If the triangle is degenerate (its three vertices are collinear), returns
+`Nothing`.
+
+-}
+circumcircle : Triangle2d -> Maybe Circle2d
+circumcircle triangle =
+    Circle2d.through (vertices triangle)

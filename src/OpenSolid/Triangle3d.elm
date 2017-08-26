@@ -16,6 +16,7 @@ module OpenSolid.Triangle3d
         , area
         , boundingBox
         , centroid
+        , circumcircle
         , edges
         , map
         , mirrorAcross
@@ -83,10 +84,16 @@ different coordinate frames.
 
 @docs boundingBox
 
+
+# Circumcircle
+
+@docs circumcircle
+
 -}
 
 import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
 import OpenSolid.BoundingBox3d as BoundingBox3d exposing (BoundingBox3d)
+import OpenSolid.Circle3d as Circle3d exposing (Circle3d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
 import OpenSolid.Geometry.Internal as Internal
@@ -485,3 +492,21 @@ boundingBox triangle =
         , minZ = min z1 (min z2 z3)
         , maxZ = max z1 (max z2 z3)
         }
+
+
+{-| Attempt to find the circumcircle of a triangle, a circle that passes through
+each of the triangle's vertices;
+
+    Triangle3d.circumcircle triangle
+
+is equivalent to
+
+    Circle3d.through (Triangle3d.vertices triangle)
+
+If the triangle is degenerate (its three vertices are collinear), returns
+`Nothing`.
+
+-}
+circumcircle : Triangle3d -> Maybe Circle3d
+circumcircle triangle =
+    Circle3d.through (vertices triangle)
