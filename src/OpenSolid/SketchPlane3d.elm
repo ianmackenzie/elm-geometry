@@ -58,6 +58,9 @@ back and forth between 2D and 3D coordinates:
     _on_ that sketch plane that has the given 2D coordinate _in_ the sketch
     plane.
 
+This allows you to create algorithms that project from 3D into 2D, perform some
+calculations in 2D, then convert the result back to 3D.
+
 Many 3D data types have `projectInto` functions that return the corresponding 2D
 data type, and `on` functions for converting back to 3D. For example,
 [`Triangle3d.projectInto`](OpenSolid-Triangle3d#projectInto) returns a
