@@ -35,7 +35,6 @@ end point). This module includes functionality for
   - Constructing arcs through given points and/or with a given radius
   - Scaling, rotating, translating and mirroring arcs
   - Converting arcs between different coordinate systems
-  - Placing 2D arcs onto sketch planes to result in 3D arcs
 
 @docs Arc2d
 
