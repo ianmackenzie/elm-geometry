@@ -54,6 +54,11 @@ as
   - Scaling, rotating, translating, mirroring and projecting points
   - Converting points between different coordinate systems
 
+Points are distinct from vectors but interact with them in well-defined ways;
+you can translate a point by a vector to result in a new point, or you can
+compute the vector from one point to another, but you cannot 'add' two points
+like you can add two vectors.
+
 @docs Point3d
 
 
