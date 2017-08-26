@@ -21,7 +21,6 @@ module OpenSolid.Frame2d
         , moveTo
         , originPoint
         , placeIn
-        , placeOnto
         , relativeTo
         , rotateAround
         , rotateBy
@@ -89,20 +88,12 @@ always perpendicular to each other). It can be thought of as:
 
 @docs relativeTo, placeIn
 
-
-# Sketch planes
-
-@docs placeOnto
-
 -}
 
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
-import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
 import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Point2d as Point2d exposing (Point2d)
-import OpenSolid.Point3d as Point3d exposing (Point3d)
-import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
@@ -559,34 +550,3 @@ placeIn otherFrame =
             , xDirection = placeDirection (xDirection frame)
             , yDirection = placeDirection (yDirection frame)
             }
-
-
-{-| Place a 2D frame onto a 3D sketch plane; this results in a new 3D sketch
-plane, since a `SketchPlane3d` can be thought of as a `Frame2d` in 3D space.
-This function considers the given frame to be defined in 2D coordinates within
-the given sketch plane, and returns the corresponding 3D sketch plane.
-
-    frame =
-        Frame2d.at (Point2d.withCoordinates ( 2, 3 ))
-            |> Frame2d.rotateBy (degrees 30)
-
-    placed =
-        Frame2d.placeOnto SketchPlane3d.yz frame
-
-    SketchPlane3d.originPoint placed
-    --> Point3d.withCoordinates ( 0, 2, 3 )
-
-    SketchPlane3d.xDirection placed
-    --> Direction3d.with { azimuth = degrees 90, elevation = degrees 30 }
-
-    SketchPlane3d.yDirection placed
-    --> Direction3d.with { azimuth = degrees -90, elevation = degrees 60 }
-
--}
-placeOnto : SketchPlane3d -> Frame2d -> SketchPlane3d
-placeOnto sketchPlane frame =
-    SketchPlane3d.unsafe
-        { originPoint = Point3d.on sketchPlane (originPoint frame)
-        , xDirection = Direction3d.on sketchPlane (xDirection frame)
-        , yDirection = Direction3d.on sketchPlane (yDirection frame)
-        }
