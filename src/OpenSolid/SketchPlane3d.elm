@@ -267,8 +267,8 @@ with { originPoint, normalDirection } =
         }
 
 
-{-| Construct one sketch plane lying on another sketch plane (but with a
-different origin point and X/Y directions). To do this, a `Frame2d` must be
+{-| Construct one sketch plane lying on another sketch plane, but with a
+different origin point and X/Y directions. To do this, a `Frame2d` must be
 provided that specifies the origin point and X/Y directions of the new sketch
 plane, in 2D coordinates within the existing sketch plane. Whew!
 
