@@ -149,6 +149,24 @@ on sketchPlane circle =
 
 {-| Attempt to construct a circle that passes through the three given points. If
 the three given points are collinear, returns `Nothing`.
+
+    Circle3d.through
+        ( Point3d.withCoordinates ( 1, 0, 0 )
+        , Point3d.withCoordinates ( 0, 1, 0 )
+        , Point3d.withCoordinates ( 0, 0, 1 )
+        )
+    --> Just <|
+    -->     Circle3d.with
+    -->         { centerPoint =
+    -->             Point3d.withCoordinates ( 0.333, 0.333, 0.333 )
+    -->         , axialDirection =
+    -->             Direction3d.with
+    -->                 { azimuth = degrees 45
+    -->                 , elevation = degrees 35.26
+    -->                 }
+    -->         , radius = 0.8165
+    -->         }
+
 -}
 through : ( Point3d, Point3d, Point3d ) -> Maybe Circle3d
 through points =
