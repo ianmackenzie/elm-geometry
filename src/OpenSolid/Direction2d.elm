@@ -63,7 +63,7 @@ several uses, such as:
 
 # Constructors
 
-@docs withPolarAngle, unsafe, from, perpendicularTo, orthogonalize
+@docs withPolarAngle, from, perpendicularTo, orthogonalize, unsafe
 
 
 # Components
