@@ -110,10 +110,10 @@ with =
 {-| Construct a zero-width bounding box containing a single point.
 
     point =
-        Point2d ( 2, 3 )
+        Point2d.withCoordinates ( 2, 3 )
 
     BoundingBox2d.singleton point
-    --> BoundingBox2d
+    --> BoundingBox2d.with
     -->     { minX = 2
     -->     , maxX = 2
     -->     , minY = 3
@@ -134,14 +134,14 @@ singleton point =
 list is empty, returns `Nothing`.
 
     points =
-        [ Point2d ( 2, 3 )
-        , Point2d ( -1, 5 )
-        , Point2d ( 6, 4 )
+        [ Point2d.withCoordinates ( 2, 3 )
+        , Point2d.withCoordinates ( -1, 5 )
+        , Point2d.withCoordinates ( 6, 4 )
         ]
 
     BoundingBox2d.containing points
     --> Just
-    -->     (BoundingBox2d
+    -->     (BoundingBox2d.with
     -->         { minX = -1
     -->         , maxX = 6
     -->         , minY = 3
@@ -165,11 +165,11 @@ containing points =
 the list is empty, returns `Nothing`.
 
     singletonBox =
-        BoundingBox2d.singleton (Point2d ( 1, 3 ))
+        BoundingBox2d.singleton (Point2d.withCoordinates ( 1, 3 ))
 
     BoundingBox2d.hullOf [ exampleBox, singletonBox ]
     --> Just
-    -->     (BoundingBox2d
+    -->     (BoundingBox2d.with
     -->         { minX = 1,
     -->         , maxX = 8
     -->         , minY = 2
@@ -320,7 +320,7 @@ midY boundingBox =
 {-| Get the point at the center of a bounding box.
 
     BoundingBox2d.centroid exampleBox
-    --> Point2d ( 5.5, 4 )
+    --> Point2d.withCoordinates ( 5.5, 4 )
 
 -}
 centroid : BoundingBox2d -> Point2d
@@ -330,7 +330,10 @@ centroid boundingBox =
 
 {-| Check if a bounding box contains a particular point.
 
-    BoundingBox2d.contains (Point2d ( 4, 3 )) exampleBox
+    point =
+        Point2d.withCoordinates ( 4, 3 )
+
+    BoundingBox2d.contains point exampleBox
     --> True
 
     BoundingBox2d.contains Point2d.origin exampleBox
@@ -352,7 +355,7 @@ contains point boundingBox =
 {-| Test if one bounding box overlaps (touches) another.
 
     firstBox =
-        BoundingBox2d
+        BoundingBox2d.with
             { minX = 0
             , maxX = 3
             , minY = 0
@@ -360,7 +363,7 @@ contains point boundingBox =
             }
 
     secondBox =
-        BoundingBox2d
+        BoundingBox2d.with
             { minX = 0
             , maxX = 3
             , minY = 1
@@ -368,7 +371,7 @@ contains point boundingBox =
             }
 
     thirdBox =
-        BoundingBox2d
+        BoundingBox2d.with
             { minX = 0
             , maxX = 3
             , minY = 4
@@ -394,7 +397,7 @@ overlaps other boundingBox =
 (is a subset of it).
 
     outerBox =
-        BoundingBox2d
+        BoundingBox2d.with
             { minX = 0
             , maxX = 10
             , minY = 0
@@ -402,7 +405,7 @@ overlaps other boundingBox =
             }
 
     innerBox =
-        BoundingBox2d
+        BoundingBox2d.with
             { minX = 1
             , maxX = 5
             , minY = 3
@@ -410,7 +413,7 @@ overlaps other boundingBox =
             }
 
     overlappingBox =
-        BoundingBox2d
+        BoundingBox2d.with
             { minX = 1
             , maxX = 5
             , minY = 3
@@ -433,7 +436,7 @@ isContainedIn other boundingBox =
 {-| Build a bounding box that contains both given bounding boxes.
 
     firstBox =
-        BoundingBox2d
+        BoundingBox2d.with
             { minX = 1
             , maxX = 4
             , minY = 2
@@ -441,7 +444,7 @@ isContainedIn other boundingBox =
             }
 
     secondBox =
-        BoundingBox2d
+        BoundingBox2d.with
             { minX = -2
             , maxX = 2
             , minY = 4
@@ -449,7 +452,7 @@ isContainedIn other boundingBox =
             }
 
     BoundingBox2d.hull firstBox secondBox
-    --> BoundingBox2d
+    --> BoundingBox2d.with
     -->     { minX = -2
     -->     , maxX = 4
     -->     , minY = 2
@@ -471,7 +474,7 @@ hull firstBox secondBox =
 given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
 
     firstBox =
-        BoundingBox2d
+        BoundingBox2d.with
             { minX = 1
             , maxX = 4
             , minY = 2
@@ -479,7 +482,7 @@ given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
             }
 
     secondBox =
-        BoundingBox2d
+        BoundingBox2d.with
             { minX = 2
             , maxX = 5
             , minY = 1
@@ -487,7 +490,7 @@ given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
             }
 
     thirdBox =
-        BoundingBox2d
+        BoundingBox2d.with
             { minX = 1
             , maxX = 4
             , minY = 4
@@ -496,7 +499,7 @@ given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
 
     BoundingBox2d.intersection firstBox secondBox
     --> Just
-    -->     (BoundingBox2d
+    -->     (BoundingBox2d.with
     -->         { minX = 2
     -->         , maxX = 4
     -->         , minY = 2
