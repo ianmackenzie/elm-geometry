@@ -535,7 +535,7 @@ orthonormalize ( xVector, xyVector ) =
     Vector2d.normalize Vector2d.zero
     --> Vector2d.zero
 
-WARNING: `Vector2d.direction` is safer since it forces you to explicitly
+**Warning**: `Vector2d.direction` is safer since it forces you to explicitly
 consider the case where the given vector is zero. `normalize` is primarily
 useful for cases like generating WebGL meshes, where defaulting to a zero vector
 for degenerate cases is acceptable, and the overhead of something like
@@ -544,7 +544,7 @@ for degenerate cases is acceptable, and the overhead of something like
         |> Maybe.map Direction2d.toVector
         |> Maybe.withDefault Vector2d.zero
 
-(which is equivalent to `Vector2d.normalize vector`) is too high.
+(which is functionally equivalent to `Vector2d.normalize vector`) is too high.
 
 -}
 normalize : Vector2d -> Vector2d
