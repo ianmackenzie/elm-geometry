@@ -60,7 +60,7 @@ functionality such as:
 
 # Endpoints
 
-@docs startPoint, endPoint, endpoints, reverse
+@docs startPoint, endPoint, endpoints
 
 
 # Interpolation
@@ -78,7 +78,7 @@ functionality such as:
 Transforming a line segment is equivalent to transforming its start and end
 points and forming a new line segment between the resulting points.
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
+@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
 
 
 # Coordinate frames
