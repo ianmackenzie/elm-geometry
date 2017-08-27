@@ -81,12 +81,7 @@ always perpendicular to each other). It can be thought of as:
 
 # Accessors
 
-@docs originPoint, xDirection, yDirection, zDirection
-
-
-# Handedness
-
-@docs isRightHanded
+@docs originPoint, xDirection, yDirection, zDirection, isRightHanded
 
 
 # Axes
