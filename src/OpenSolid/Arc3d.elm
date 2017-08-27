@@ -89,7 +89,8 @@ angle:
 
     exampleArc =
         Arc3d.around Axis3d.z
-            { startPoint = Point3d.withCoordinates ( 1, 1, 0 )
+            { startPoint =
+                Point3d.withCoordinates ( 1, 1, 0 )
             , sweptAngle = degrees 90
             }
 
@@ -122,8 +123,10 @@ in XY coordinates _within_ the sketch plane.
     arc =
         Arc3d.on SketchPlane3d.xz <|
             Arc2d.with
-                { centerPoint = Point2d.withCoordinates ( 1, 1 )
-                , startPoint = Point2d.withCoordinates ( 3, 1 )
+                { centerPoint =
+                    Point2d.withCoordinates ( 1, 1 )
+                , startPoint =
+                    Point2d.withCoordinates ( 3, 1 )
                 , sweptAngle = degrees 90
                 }
 
@@ -175,8 +178,11 @@ points are collinear, returns `Nothing`.
     --> Just
     -->     (Arc3d.on SketchPlane3d.yz <|
     -->         Arc2d.with
-    -->             { centerPoint = Point2d.withCoordinates ( 0.5, 0.5 )
-    -->             , startPoint = Point3d.withCoordinates ( 0, 1 )
+    -->             { centerPoint =
+    -->                 Point2d.withCoordinates
+    -->                     ( 0.5, 0.5 )
+    -->             , startPoint =
+    -->                 Point3d.withCoordinates ( 0, 1 )
     -->             , sweptAngle = degrees 180
     -->             }
     -->     )
@@ -453,7 +459,8 @@ but a swept angle with the opposite sign.
 
     Arc3d.reverse exampleArc
     --> Arc3d.around Axis3d.z
-    -->     { startPoint = Point3d.withCoordinates ( -1, 1, 0 )
+    -->     { startPoint =
+    -->         Point3d.withCoordinates ( -1, 1, 0 )
     -->     , sweptAngle = degrees -90
     -->     }
 
@@ -474,11 +481,13 @@ reverse arc =
     Arc3d.scaleAbout point 2 exampleArc
     --> Arc3d.around
     -->     (Axis3d.with
-    -->         { originPoint = Point3d.withCoordinates ( 0, 1, 0 )
+    -->         { originPoint =
+    -->             Point3d.withCoordinates ( 0, 1, 0 )
     -->         , direction = Direction3d.z
     -->         }
     -->     )
-    -->     { startPoint = Point3d.withCoordinates ( 2, 3, 0 )
+    -->     { startPoint =
+    -->         Point3d.withCoordinates ( 2, 3, 0 )
     -->     , sweptAngle = degrees 90
     -->     }
 
@@ -520,7 +529,8 @@ scaleAbout point scale arc =
 
     Arc3d.rotateAround Axis3d.x (degrees 90) exampleArc
     --> Arc3d.around (Axis3d.flip Axis3d.y)
-    -->     { startPoint = Point3d.withCoordinates ( 1, 0, 1 )
+    -->     { startPoint =
+    -->         Point3d.withCoordinates ( 1, 0, 1 )
     -->     , sweptAngle = degrees 90
     -->     }
 
@@ -553,7 +563,8 @@ rotateAround rotationAxis angle =
     -->         , direction = Direction3d.z
     -->         }
     -->     )
-    -->     { startPoint = Point3d.withCoordinates ( 3, 2, 3 )
+    -->     { startPoint =
+    -->         Point3d.withCoordinates ( 3, 2, 3 )
     -->     , sweptAngle = degrees 90
     -->     }
 
@@ -570,7 +581,8 @@ translateBy displacement arc =
 
     Arc3d.mirrorAcross Plane3d.xy exampleArc
     --> Arc3d.around (Axis3d.flip Axis3d.z)
-    -->     { startPoint = Point3d.withCoordinates ( 1, 1, 0 )
+    -->     { startPoint =
+    -->         Point3d.withCoordinates ( 1, 1, 0 )
     -->     , sweptAngle = degrees -90
     -->     }
 
@@ -600,15 +612,16 @@ coordinates relative to a given reference frame.
         Frame3d.at (Point3d.withCoordinates ( 1, 2, 3 ))
 
     Arc3d.relativeTo localFrame exampleArc
-    Arc3d.around
-        (Axis3d.with
-            { originPoint = Point3d ( -1, -2, -3 )
-            , direction = Direction3d.z
-            }
-        )
-        { startPoint = Point3d.withCoordinates ( 0, -1, -3 )
-        , sweptAngle = degrees 90
-        }
+    --> Arc3d.around
+    -->     (Axis3d.with
+    -->         { originPoint = Point3d ( -1, -2, -3 )
+    -->         , direction = Direction3d.z
+    -->         }
+    -->     )
+    -->     { startPoint =
+    -->         Point3d.withCoordinates ( 0, -1, -3 )
+    -->     , sweptAngle = degrees 90
+    -->     }
 
 -}
 relativeTo : Frame3d -> Arc3d -> Arc3d
@@ -630,15 +643,17 @@ given reference frame, and return that arc expressed in global coordinates.
         Frame3d.at (Point3d.withCoordinates ( 1, 2, 3 ))
 
     Arc3d.placeIn localFrame exampleArc
-    Arc3d.around
-        (Axis3d.with
-            { originPoint = Point3d.withCoordinates ( 1, 2, 3 )
-            , direction = Direction3d.z
-            }
-        )
-        { startPoint = Point3d.withCoordinates ( 2, 3, 3 )
-        , sweptAngle = degrees 90
-        }
+    --> Arc3d.around
+    -->     (Axis3d.with
+    -->         { originPoint =
+    -->             Point3d.withCoordinates ( 1, 2, 3 )
+    -->         , direction = Direction3d.z
+    -->         }
+    -->     )
+    -->     { startPoint =
+    -->         Point3d.withCoordinates ( 2, 3, 3 )
+    -->     , sweptAngle = degrees 90
+    -->     }
 
 -}
 placeIn : Frame3d -> Arc3d -> Arc3d

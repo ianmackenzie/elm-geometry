@@ -82,7 +82,8 @@ type alias Circle3d =
 
     exampleCircle =
         Circle3d.with
-            { centerPoint = Point3d.withCoordinates ( 2, 0, 1 )
+            { centerPoint =
+                Point3d.withCoordinates ( 2, 0, 1 )
             , axialDirection = Direction3d.z
             , radius = 3
             }
@@ -104,7 +105,8 @@ point.
 
     Circle3d.around Axis3d.z point
     --> Circle3d.with
-    -->     { centerPoint = Point3d.withCoordinates ( 0, 0, 2 )
+    -->     { centerPoint =
+    -->         Point3d.withCoordinates ( 0, 0, 2 )
     -->     , axialDirection = Direction3d.z
     -->     , radius = 3
     -->     }
@@ -128,11 +130,13 @@ specified in XY coordinates _within_ the sketch plane.
 
     Circle3d.on SketchPlane3d.yz <|
         Circle2d.with
-            { centerPoint = Point2d.withCoordinates ( 1, 2 )
+            { centerPoint =
+                Point2d.withCoordinates ( 1, 2 )
             , radius = 3
             }
     --> Circle3d.with
-    -->     { centerPoint = Point3d.withCoordinates ( 0, 1, 2 )
+    -->     { centerPoint =
+    -->         Point3d.withCoordinates ( 0, 1, 2 )
     -->     , axialDirection = Direction3d.x
     -->     , radius = 3
     -->     }
@@ -158,7 +162,8 @@ the three given points are collinear, returns `Nothing`.
     --> Just
     -->     (Circle3d.with
     -->         { centerPoint =
-    -->             Point3d.withCoordinates ( 0.333, 0.333, 0.333 )
+    -->             Point3d.withCoordinates
+    -->                 ( 0.333, 0.333, 0.333 )
     -->         , axialDirection =
     -->             Direction3d.with
     -->                 { azimuth = degrees 45
@@ -270,7 +275,8 @@ circumference circle =
 
     Circle3d.scaleAbout Point3d.origin 3 exampleCircle
     --> Circle3d.with
-    -->     { centerPoint = Point3d.withCoordinates ( 6, 0, 3 )
+    -->     { centerPoint =
+    -->         Point3d.withCoordinates ( 6, 0, 3 )
     -->     , axialDirection = Direction3d.z
     -->     , radius = 9
     -->     }
@@ -291,9 +297,11 @@ scaleAbout point scale circle =
 
 {-| Rotate a circle around a given axis by a given angle (in radians).
 
-    Circle3d.rotateAround Axis3d.y (degrees 90) exampleCircle
+    exampleCircle
+        |> Circle3d.rotateAround Axis3d.y (degrees 90)
     --> Circle3d.with
-    -->     { centerPoint = Point3d.withCoordinates ( 1, 0, -2 )
+    -->     { centerPoint =
+    -->         Point3d.withCoordinates ( 1, 0, -2 )
     -->     , axialDirection = Direction3d.x
     -->     , radius = 3
     -->     }
@@ -323,7 +331,8 @@ rotateAround axis angle =
 
     Circle3d.translateBy displacement exampleCircle
     --> Circle3d.with
-    -->     { centerPoint = Point3d.withCoordinates ( 4, 1, 4 )
+    -->     { centerPoint =
+    -->         Point3d.withCoordinates ( 4, 1, 4 )
     -->     , axialDirection = Direction3d.z
     -->     , radius = 3
     -->     }
@@ -342,7 +351,8 @@ translateBy displacement circle =
 
     Circle3d.mirrorAcross Plane3d.xy exampleCircle
     --> Circle3d.with
-    -->     { centerPoint = Point3d.withCoordinates ( 2, 0, -1 )
+    -->     { centerPoint =
+    -->         Point3d.withCoordinates ( 2, 0, -1 )
     -->     , axialDirection = Direction3d.negativeZ
     -->     , radius = 3
     -->     }
@@ -373,7 +383,8 @@ local coordinates relative to a given reference frame.
 
     Circle3d.relativeTo localFrame exampleCircle
     --> Circle3d.with
-    -->     { centerPoint = Point3d.withCoordinates ( 1, -2, -2 )
+    -->     { centerPoint =
+    -->         Point3d.withCoordinates ( 1, -2, -2 )
     -->     , axialDirection = Direction3d.z
     -->     , radius = 3
     -->     }
@@ -396,7 +407,8 @@ given reference frame, and return that circle expressed in global coordinates.
 
     Circle3d.placeIn localFrame exampleCircle
     --> Circle3d.with
-    -->     { centerPoint = Point3d.withCoordinates ( 3, 2, 4 )
+    -->     { centerPoint =
+    -->         Point3d.withCoordinates ( 3, 2, 4 )
     -->     , axialDirection = Direction3d.z
     -->     , radius = 3
     -->     }

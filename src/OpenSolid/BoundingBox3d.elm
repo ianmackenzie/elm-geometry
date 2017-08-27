@@ -180,7 +180,8 @@ containing points =
 the list is empty, returns `Nothing`.
 
     singletonBox =
-        BoundingBox3d.singleton (Point3d.withCoordinates ( 2, 1, 0 ))
+        BoundingBox3d.singleton
+            (Point3d.withCoordinates ( 2, 1, 0 ))
 
     BoundingBox3d.hullOf [ exampleBox, singletonBox ]
     --> Just

@@ -165,7 +165,8 @@ containing points =
 the list is empty, returns `Nothing`.
 
     singletonBox =
-        BoundingBox2d.singleton (Point2d.withCoordinates ( 1, 3 ))
+        BoundingBox2d.singleton
+            (Point2d.withCoordinates ( 1, 3 ))
 
     BoundingBox2d.hullOf [ exampleBox, singletonBox ]
     --> Just

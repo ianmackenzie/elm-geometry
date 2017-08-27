@@ -135,7 +135,8 @@ z =
 
     exampleAxis =
         Axis3d.with
-            { originPoint = Point3d.withCoordinates ( 1, 2, 3 )
+            { originPoint =
+                Point3d.withCoordinates ( 1, 2, 3 )
             , direction = Direction3d.y
             }
 
@@ -150,13 +151,16 @@ specified in XY coordinates _within_ the sketch plane.
 
     axis2d =
         Axis2d.with
-            { originPoint = Point2d.withCoordinates ( 1, 3 )
-            , direction = Direction2d.withPolarAngle (degrees 30)
+            { originPoint =
+                Point2d.withCoordinates ( 1, 3 )
+            , direction =
+                Direction2d.withPolarAngle (degrees 30)
             }
 
     Axis3d.on SketchPlane3d.xy axis2d
     --> Axis3d.with
-    -->     { originPoint = Point3d.withCoordinates ( 1, 3, 0 )
+    -->     { originPoint =
+    -->         Point3d.withCoordinates ( 1, 3, 0 )
     -->     , direction =
     -->         Direction3d.with
     -->             { azimuth = degrees 30
@@ -166,7 +170,8 @@ specified in XY coordinates _within_ the sketch plane.
 
     Axis3d.on SketchPlane3d.zx axis2d
     --> Axis3d.with
-    -->     { originPoint = Point3d.withCoordinates ( 3, 0, 1 )
+    -->     { originPoint =
+    -->         Point3d.withCoordinates ( 3, 0, 1 )
     -->     , direction =
     -->         Direction3d.with
     -->             { azimuth = 0
@@ -217,7 +222,8 @@ direction (Internal.Axis3d properties) =
 
     Axis3d.flip exampleAxis
     --> Axis3d.with
-    -->     { originPoint = Point3d.withCoordinates ( 1, 2, 3 )
+    -->     { originPoint =
+    -->         Point3d.withCoordinates ( 1, 2, 3 )
     -->     , direction = Direction3d.negativeY
     -->     }
 
@@ -237,7 +243,8 @@ flip axis =
 
     Axis3d.moveTo newOrigin exampleAxis
     --> Axis3d.with
-    -->     { originPoint = Point3d.withCoordinates ( 3, 4, 5 ),
+    -->     { originPoint =
+    -->         Point3d.withCoordinates ( 3, 4, 5 )
     -->     , direction = Direction3d.y
     -->     }
 
@@ -252,7 +259,8 @@ around is given first and the axis to rotate is given last.
 
     Axis3d.rotateAround Axis3d.z (degrees 90) exampleAxis
     --> Axis3d.with
-    -->     { originPoint = Point3d.withCoordinates ( -2, 1, 3 )
+    -->     { originPoint =
+    -->         Point3d.withCoordinates ( -2, 1, 3 )
     -->     , direction = Direction3d.negativeX
     -->     }
 
@@ -281,7 +289,8 @@ the axis' origin point and leaves the direction unchanged.
 
     Axis3d.translateBy displacement exampleAxis
     --> Axis3d.with
-    -->     { originPoint = Point3d.withCoordinates ( 4, 5, 6 )
+    -->     { originPoint =
+    -->         Point3d.withCoordinates ( 4, 5, 6 )
     -->     , direction = Direction3d.y
     -->     }
 
@@ -298,7 +307,8 @@ translateBy vector axis =
 
     Axis3d.mirrorAcross Plane3d.xy exampleAxis
     --> Axis3d.with
-    -->     { originPoint = Point3d.withCoordinates ( 1, 2, -3 )
+    -->     { originPoint =
+    -->         Point3d.withCoordinates ( 1, 2, -3 )
     -->     , direction = Direction3d.y
     -->     }
 
@@ -326,7 +336,8 @@ given plane, returns `Nothing`.
     Axis3d.projectOnto Plane3d.xy exampleAxis
     --> Just
     -->     (Axis3d.with
-    -->         { originPoint = Point3d.withCoordinates ( 1, 2, 0 )
+    -->         { originPoint =
+    -->             Point3d.withCoordinates ( 1, 2, 0 )
     -->         , direction = Direction3d.y
     -->         }
     -->     )
@@ -355,7 +366,8 @@ coordinates relative to a given reference frame.
 
     Axis3d.relativeTo (Frame3d.at originPoint) exampleAxis
     --> Axis3d.with
-    -->     { originPoint = Point3d.withCoordinates ( -2, -1, 0 )
+    -->     { originPoint =
+    -->         Point3d.withCoordinates ( -2, -1, 0 )
     -->     , direction = Direction3d.y
     -->     }
 
@@ -384,7 +396,8 @@ frame, and return that axis expressed in global coordinates.
 
     Axis3d.placeIn (Frame3d.at originPoint) exampleAxis
     --> Axis3d.with
-    -->     { originPoint = Point3d.withCoordinates ( 4, 5, 6 )
+    -->     { originPoint =
+    -->         Point3d.withCoordinates ( 4, 5, 6 )
     -->     , direction = Direction3d.y
     -->     }
 
@@ -415,7 +428,8 @@ plane; if it is perpendicular, `Nothing` is returned.
     Axis3d.projectInto SketchPlane3d.xy exampleAxis
     --> Just
     -->     (Axis2d.with
-    -->         { originPoint = Point2d.withCoordinates ( 1, 2 )
+    -->         { originPoint =
+    -->             Point2d.withCoordinates ( 1, 2 )
     -->         , direction = Direction2d.y
     -->         }
     -->     )
@@ -423,8 +437,10 @@ plane; if it is perpendicular, `Nothing` is returned.
     Axis3d.projectInto SketchPlane3d.yz exampleAxis
     --> Just
     -->     (Axis2d.with
-    -->         { originPoint = Point2d.withCoordinates ( 2, 3 )
-    -->         -- The global Y direction is the X direction of the YZ plane:
+    -->         { originPoint =
+    -->             Point2d.withCoordinates ( 2, 3 )
+    -->         -- The global Y direction is the X
+    -->         -- direction of the YZ plane:
     -->         , direction = Direction2d.x
     -->         }
     -->     )

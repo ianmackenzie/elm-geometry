@@ -111,8 +111,10 @@ y =
 
     exampleAxis =
         Axis2d.with
-            { originPoint = Point2d.withCoordinates ( 1, 3 )
-            , direction = Direction2d.withPolarAngle (degrees 30)
+            { originPoint =
+                Point2d.withCoordinates ( 1, 3 )
+            , direction =
+                Direction2d.withPolarAngle (degrees 30)
             }
 
 -}
@@ -147,8 +149,10 @@ direction (Internal.Axis2d properties) =
 
     Axis2d.flip exampleAxis
     --> Axis2d.with
-    -->     { originPoint = Point2d.withCoordinates ( 1, 3 )
-    -->     , direction = Direction2d.withPolarAngle (degrees -150)
+    -->     { originPoint =
+    -->         Point2d.withCoordinates ( 1, 3 )
+    -->     , direction =
+    -->         Direction2d.withPolarAngle (degrees -150)
     -->     }
 
 -}
@@ -167,8 +171,10 @@ flip axis =
 
     Axis2d.moveTo newOrigin exampleAxis
     --> Axis2d.with
-    -->     { originPoint = Point2d.withCoordinates ( 4, 5 )
-    -->     , direction = Direction2d.withPolarAngle (degrees 30)
+    -->     { originPoint =
+    -->         Point2d.withCoordinates ( 4, 5 )
+    -->     , direction =
+    -->         Direction2d.withPolarAngle (degrees 30)
     -->     }
 
 -}
@@ -181,10 +187,14 @@ moveTo newOrigin axis =
 axis' origin point around the given point by the given angle and the axis'
 direction by the given angle.
 
-    Axis2d.rotateAround Point2d.origin (degrees 90) exampleAxis
+    Axis2d.rotateAround Point2d.origin
+        (degrees 90)
+        exampleAxis
     --> Axis2d.with
-    -->     { originPoint = Point2d.withCoordinates ( -3, 1 )
-    -->     , direction = Direction2d.withPolarAngle (degrees 120)
+    -->     { originPoint =
+    -->         Point2d.withCoordinates ( -3, 1 )
+    -->     , direction =
+    -->         Direction2d.withPolarAngle (degrees 120)
     -->     }
 
 -}
@@ -212,8 +222,10 @@ the axis' origin point and leaves the direction unchanged.
 
     Axis2d.translateBy displacement exampleAxis
     --> Axis2d.with
-    -->     { originPoint = Point2d.withCoordinates ( 3, 6 )
-    -->     , direction = Direction2d.withPolarAngle (degrees 30)
+    -->     { originPoint =
+    -->         Point2d.withCoordinates ( 3, 6 )
+    -->     , direction =
+    -->         Direction2d.withPolarAngle (degrees 30)
     -->     }
 
 -}
@@ -230,8 +242,10 @@ the axis to mirror is given second.
 
     Axis2d.mirrorAcross Axis2d.x exampleAxis
     --> Axis2d.with
-    -->     { originPoint = Point2d.withCoordinates ( 1, -3 )
-    -->     , direction = Direction2d.withPolarAngle (degrees -30)
+    -->     { originPoint =
+    -->         Point2d.withCoordinates ( 1, -3 )
+    -->     , direction =
+    -->         Direction2d.withPolarAngle (degrees -30)
     -->     }
 
 -}
@@ -259,8 +273,10 @@ coordinates relative to a given reference frame.
 
     Axis2d.relativeTo (Frame2d.at originPoint) exampleAxis
     --> Axis2d.with
-    -->     { originPoint = Point2d.withCoordinates ( -1, 0 )
-    -->     , direction = Direction2d.withPolarAngle (degrees 30)
+    -->     { originPoint =
+    -->         Point2d.withCoordinates ( -1, 0 )
+    -->     , direction =
+    -->         Direction2d.withPolarAngle (degrees 30)
     -->     }
 
 -}
@@ -288,8 +304,10 @@ frame, and return that axis expressed in global coordinates.
 
     Axis2d.placeIn (Frame2d.at originPoint) exampleAxis
     --> Axis2d.with
-    -->     { originPoint = Point2d.withCoordinates ( 3, 6 )
-    -->     , direction = Direction2d.withPolarAngle (degrees 30)
+    -->     { originPoint =
+    -->         Point2d.withCoordinates ( 3, 6 )
+    -->     , direction =
+    -->         Direction2d.withPolarAngle (degrees 30)
     -->     }
 
 -}

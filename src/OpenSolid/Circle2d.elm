@@ -91,7 +91,8 @@ type alias Circle2d =
 
     exampleCircle =
         Circle2d.with
-            { centerPoint = Point2d.withCoordinates ( 1, 2 )
+            { centerPoint =
+                Point2d.withCoordinates ( 1, 2 )
             , radius = 3
             }
 
@@ -128,7 +129,8 @@ the three given points are collinear, returns `Nothing`.
         )
     --> Just
     -->     (Circle2d.with
-    -->         { centerPoint = Point2d.withCoordinates ( 0.5, 0.5 )
+    -->         { centerPoint =
+    -->             Point2d.withCoordinates ( 0.5, 0.5 )
     -->         , radius = 0.7071
     -->         }
     -->     )
@@ -140,7 +142,8 @@ the three given points are collinear, returns `Nothing`.
         )
     --> Just
     -->     (Circle2d.with
-    -->         { centerPoint = Point2d.withCoordinates ( 2, -1.5 )
+    -->         { centerPoint =
+    -->             Point2d.withCoordinates ( 2, -1.5 )
     -->         , radius = 2.5
     -->         }
     -->     )
@@ -245,8 +248,10 @@ circumference circle =
 
     Circle2d.toArc exampleCircle
     --> Arc2d.with
-    -->     { centerPoint = Point2d.withCoordinates ( 1, 2 )
-    -->     , startPoint = Point2d.withCoordinates ( 4, 2 )
+    -->     { centerPoint =
+    -->         Point2d.withCoordinates ( 1, 2 )
+    -->     , startPoint =
+    -->         Point2d.withCoordinates ( 4, 2 )
     -->     , sweptAngle = degrees 360
     -->     }
 
@@ -269,7 +274,9 @@ toArc (Internal.Circle2d { centerPoint, radius }) =
     Circle2d.contains Point2d.origin exampleCircle
     --> True
 
-    Circle2d.contains (Point2d.withCoordinates ( 10, 10 )) exampleCircle
+    exampleCircle
+        |> Circle2d.contains
+            (Point2d.withCoordinates ( 10, 10 ))
     --> False
 
 -}
@@ -286,13 +293,18 @@ contains point circle =
 
     Circle2d.scaleAbout Point2d.origin 2 exampleCircle
     --> Circle2d.with
-    -->     { centerPoint = Point2d.withCoordinates ( 2, 4 )
+    -->     { centerPoint =
+    -->         Point2d.withCoordinates ( 2, 4 )
     -->     , radius = 6
     -->     }
 
-    Circle2d.scaleAbout (Point2d.withCoordinates ( 1, 2 )) 0.5 exampleCircle
+    exampleCircle
+        |> Circle2d.scaleAbout
+            (Point2d.withCoordinates ( 1, 2 ))
+            0.5
     --> Circle2d.with
-    -->     { centerPoint = Point2d.withCoordinates ( 1, 2 )
+    -->     { centerPoint =
+    -->         Point2d.withCoordinates ( 1, 2 )
     -->     , radius = 1.5
     -->     }
 
@@ -312,9 +324,12 @@ scaleAbout point scale =
 
 {-| Rotate a circle around a given point by a given angle (in radians).
 
-    Circle2d.rotateAround Point2d.origin (degrees 90) exampleCircle
+    exampleCircle
+        |> Circle2d.rotateAround Point2d.origin
+            (degrees 90)
     --> Circle2d.with
-    -->     { centerPoint = Point2d.withCoordinates ( -2, 1 )
+    -->     { centerPoint =
+    -->         Point2d.withCoordinates ( -2, 1 )
     -->     , radius = 3
     -->     }
 
@@ -334,9 +349,12 @@ rotateAround point angle =
 
 {-| Translate a circle by a given displacement.
 
-    Circle2d.translateBy (Vector2d.withComponents ( 2, 2 )) exampleCircle
+    exampleCircle
+        |> Circle2d.translateBy
+            (Vector2d.withComponents ( 2, 2 ))
     --> Circle2d.with
-    -->     { centerPoint = Point2d.withCoordinates ( 3, 4 )
+    -->     { centerPoint =
+    -->         Point2d.withCoordinates ( 3, 4 )
     -->     , radius = 3
     -->     }
 
@@ -358,7 +376,8 @@ translateBy displacement =
 
     Circle2d.mirrorAcross Axis2d.x exampleCircle
     --> Circle2d.with
-    -->     { centerPoint = Point2d.withCoordinates ( 1, -2 )
+    -->     { centerPoint =
+    -->         Point2d.withCoordinates ( 1, -2 )
     -->     , radius = 3
     -->     }
 
@@ -384,7 +403,8 @@ local coordinates relative to a given reference frame.
 
     Circle2d.relativeTo localFrame exampleCircle
     --> Circle2d.with
-    -->     { centerPoint = Point2d.withCoordinates ( -1, -1 )
+    -->     { centerPoint =
+    -->         Point2d.withCoordinates ( -1, -1 )
     -->     , radius = 3
     -->     }
 
@@ -410,7 +430,8 @@ given reference frame, and return that circle expressed in global coordinates.
 
     Circle2d.placeIn localFrame exampleCircle
     --> Circle2d.with
-    -->     { centerPoint = Point2d.withCoordinates ( 3, 5 )
+    -->     { centerPoint =
+    -->         Point2d.withCoordinates ( 3, 5 )
     -->     , radius = 3
     -->     }
 
