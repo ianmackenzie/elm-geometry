@@ -213,7 +213,8 @@ scaleAbout point scale =
 
 {-| Rotate a polyline around the given axis by the given angle (in radians).
 
-    Polyline3d.rotateAround Axis3d.z (degrees 90) examplePolyline
+    examplePolyline
+        |> Polyline3d.rotateAround Axis3d.z (degrees 90)
     --> Polyline3d.withVertices
     -->     [ Point3d.withCoordinates ( 0, 0, 0 )
     -->     , Point3d.withCoordinates ( 0, 1, 0 )
@@ -281,11 +282,11 @@ projectOnto plane =
 {-| Transform each vertex of a polyline by the given function. All other
 transformations can be defined in terms of `map`; for example,
 
-    Polyline3d.mirrorAcross Plane3d.xz polyline
+    Polyline3d.mirrorAcross plane polyline
 
 is equivalent to
 
-    Polyline3d.map (Point3d.mirrorAcross Plane3d.xz) polyline
+    Polyline3d.map (Point3d.mirrorAcross plane) polyline
 
 -}
 map : (Point3d -> Point3d) -> Polyline3d -> Polyline3d

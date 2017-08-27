@@ -299,7 +299,8 @@ scaleAbout centerPoint scale =
 
 {-| Rotate a triangle around a given axis by a given angle (in radians).
 
-    Triangle3d.rotateAround Axis3d.z (degrees 90) exampleTriangle
+    exampleTriangle
+        |> Triangle3d.rotateAround Axis3d.z (degrees 90)
     --> Triangle3d.withVertices
     -->     ( Point3d.withCoordinates ( 0, 1, 0 )
     -->     , Point3d.withCoordinates ( 0, 2, 0 )

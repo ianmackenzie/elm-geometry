@@ -247,7 +247,9 @@ scaleAbout point scale =
 {-| Rotate a polygon around the given center point counterclockwise by the given
 angle (in radians).
 
-    Polygon2d.rotateAround Point2d.origin (degrees 90) rectangle
+    rectangle
+        |> Polygon2d.rotateAround Point2d.origin
+            (degrees 90)
     --> Polygon2d.withVertices
     -->     [ Point2d.withCoordinates ( -1, 1 )
     -->     , Point2d.withCoordinates ( -1, 3 )

@@ -283,10 +283,16 @@ plane, in 2D coordinates within the existing sketch plane. Whew!
     --> Point3d.withCoordinates ( 0, 2, 3 )
 
     SketchPlane3d.xDirection sketchPlane
-    --> Direction3d.with { azimuth = degrees 90, elevation = degrees -30 }
+    --> Direction3d.with
+    -->     { azimuth = degrees 90
+    -->     , elevation = degrees -30
+    -->     }
 
     SketchPlane3d.yDirection sketchPlane
-    --> Direction3d.with { azimuth = degrees 90, elevation = degrees 60 }
+    --> Direction3d.with
+    -->     { azimuth = degrees 90
+    -->     , elevation = degrees 60
+    -->     }
 
 -}
 on : SketchPlane3d -> Frame2d -> SketchPlane3d
@@ -303,7 +309,8 @@ directions:
 
     sketchPlane =
         SketchPlane3d.unsafe
-            { originPoint = Point3d.withCoordinates ( 2, 1, 3 )
+            { originPoint =
+                Point3d.withCoordinates ( 2, 1, 3 )
             , xDirection = Direction3d.positiveY
             , yDirection = Direction3d.negativeZ
             }
@@ -605,7 +612,8 @@ moveTo newOrigin sketchPlane =
 sketch plane's origin point and X and Y directions will all be rotated around
 the given axis.
 
-    SketchPlane3d.rotateAround Axis3d.x (degrees 90) SketchPlane3d.xy
+    SketchPlane3d.xy
+        |> SketchPlane3d.rotateAround Axis3d.x (degrees 90)
     --> SketchPlane3d.xz
 
 -}
@@ -638,8 +646,11 @@ transformations. For example,
 
     sketchPlane =
         SketchPlane3d.xy
-            |> SketchPlane3d.translateBy (Vector3d.withComponents ( 1, 0, 0 ))
-            |> SketchPlane3d.rotateAroundOwn SketchPlane3d.yAxis (degrees -45)
+            |> SketchPlane3d.translateBy
+                (Vector3d.withComponents ( 1, 0, 0 ))
+            |> SketchPlane3d.rotateAroundOwn
+                SketchPlane3d.yAxis
+                (degrees -45)
 
     SketchPlane3d.originPoint sketchPlane
     --> Point3d.withCoordinates ( 1, 0, 0 )
@@ -669,7 +680,8 @@ rotateAroundOwn axis angle sketchPlane =
         Vector3d.withComponents ( 2, 1, 3 )
 
     sketchPlane =
-        SketchPlane3d.translateBy displacement SketchPlane3d.xy
+        SketchPlane3d.xy
+            |> SketchPlane3d.translateBy displacement
 
     SketchPlane3d.originPoint sketchPlane
     --> Point3d.withCoordinates ( 2, 1, 3 )
@@ -701,8 +713,12 @@ transformations. For example,
 
     sketchPlane =
         SketchPlane3d.xy
-            |> SketchPlane3d.rotateAround Axis3d.x (degrees 45)
-            |> SketchPlane3d.translateAlongOwn SketchPlane3d.yAxis 2
+            |> SketchPlane3d.rotateAround
+                Axis3d.x
+                (degrees 45)
+            |> SketchPlane3d.translateAlongOwn
+                SketchPlane3d.yAxis
+                2
 
 means 'take the global XY sketch plane, rotate it around the global X axis by
 45 degrees, then translate the result 2 units along its own (rotated) Y axis',

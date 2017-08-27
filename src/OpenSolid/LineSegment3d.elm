@@ -367,7 +367,8 @@ scaleAbout point scale =
 
 {-| Rotate a line segment around a given axis by a given angle (in radians).
 
-    LineSegment3d.rotateAround Axis3d.z (degrees 90) exampleLineSegment
+    exampleLineSegment
+        |> LineSegment3d.rotateAround Axis3d.z (degrees 90)
     --> LineSegment3d.withEndpoints
     -->     ( Point3d.withCoordinates ( -2, 1, 3 )
     -->     , Point3d.withCoordinates ( -5, 4, 6 )
@@ -384,7 +385,8 @@ rotateAround axis angle =
     displacement =
         Vector3d.withComponents ( 1, 2, 3 )
 
-    LineSegment3d.translateBy displacement exampleLineSegment
+    exampleLineSegment
+        |> LineSegment3d.translateBy displacement
     --> LineSegment3d.withEndpoints
     -->     ( Point3d.withCoordinates ( 2, 4, 6 )
     -->     , Point3d.withCoordinates ( 5, 7, 9 )
@@ -398,7 +400,8 @@ translateBy vector =
 
 {-| Mirror a line segment across a plane.
 
-    LineSegment3d.mirrorAcross Plane3d.xy exampleLineSegment
+    exampleLineSegment
+        |> LineSegment3d.mirrorAcross Plane3d.xy
     --> LineSegment3d.withEndpoints
     -->     ( Point3d.withCoordinates ( 1, 2, -3 )
     -->     , Point3d.withCoordinates ( 4, 5, -6 )
@@ -485,19 +488,22 @@ placeIn frame =
 projects the line segment onto the plane and then expresses the projected
 line segment in 2D sketch coordinates.
 
-    LineSegment3d.projectInto SketchPlane3d.xy exampleLineSegment
+    exampleLineSegment
+        |> LineSegment3d.projectInto SketchPlane3d.xy
     --> LineSegment2d.withEndpoints
     -->     ( Point2d.withCoordinates ( 1, 2 )
     -->     , Point2d.withCoordinates ( 4, 5 )
     -->     )
 
-    LineSegment3d.projectInto SketchPlane3d.yz exampleLineSegment
+    exampleLineSegment
+        |> LineSegment3d.projectInto SketchPlane3d.yz
     --> LineSegment2d.withEndpoints
     -->     ( Point2d.withCoordinates ( 2, 3 )
     -->     , Point2d.withCoordinates ( 5, 6 )
     -->     )
 
-    LineSegment3d.projectInto SketchPlane3d.zx exampleLineSegment
+    exampleLineSegment
+        |> LineSegment3d.projectInto SketchPlane3d.zx
     --> LineSegment2d.withEndpoints
     -->     ( Point2d.withCoordinates ( 3, 1 )
     -->     , Point2d.withCoordinates ( 6, 4 )

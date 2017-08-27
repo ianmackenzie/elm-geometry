@@ -218,13 +218,16 @@ withLength length direction =
 vector 90 degrees counterclockwise. The constructed vector will have the same
 length as the given vector.
 
-    Vector2d.perpendicularTo (Vector2d.withComponents ( 1, 0 ))
+    Vector2d.perpendicularTo
+        (Vector2d.withComponents ( 1, 0 ))
     --> Vector2d.withComponents ( 0, 1 )
 
-    Vector2d.perpendicularTo (Vector2d.withComponents ( 0, 2 ))
+    Vector2d.perpendicularTo
+        (Vector2d.withComponents ( 0, 2 ))
     --> Vector2d.withComponents ( -2, 0 )
 
-    Vector2d.perpendicularTo (Vector2d.withComponents ( 3, 1 ))
+    Vector2d.perpendicularTo
+        (Vector2d.withComponents ( 3, 1 ))
     --> Vector2d.withComponents ( -1, 3 )
 
     Vector2d.perpendicularTo Vector2d.zero
@@ -356,7 +359,8 @@ componentIn direction vector =
 
 {-| Get the polar components (length, polar angle) of a vector.
 
-    Vector2d.polarComponents (Vector2d.withComponents ( 1, 1 ))
+    Vector2d.polarComponents
+        (Vector2d.withComponents ( 1, 1 ))
     --> ( 1.4142, degrees 45 )
 
 -}
@@ -426,7 +430,7 @@ return `Nothing`.
     Vector2d.direction (Vector2d.withComponents ( 3, 3 ))
     --> Just (Direction2d.withPolarAngle (degrees 45))
 
-    Vector2d.direction (Vector2d.withComponents ( 0, 0 ))
+    Vector2d.direction Vector2d.zero
     --> Nothing
 
 -}
@@ -449,7 +453,10 @@ vector, returns `Nothing`.
         Vector2d.withComponents ( 1, 1 )
 
     Vector2d.lengthAndDirection vector
-    --> Just ( 1.4142, Direction2d.withPolarAngle (degrees 45) )
+    --> Just
+    -->     ( 1.4142
+    -->     , Direction2d.withPolarAngle (degrees 45)
+    -->     )
 
     Vector2d.lengthAndDirection Vector2d.zero
     --> Nothing
@@ -711,10 +718,12 @@ scaleBy scale vector =
 
 {-| Rotate a vector counterclockwise by a given angle (in radians).
 
-    Vector2d.rotateBy (degrees 45) (Vector2d.withComponents ( 1, 1 ))
+    Vector2d.withComponents ( 1, 1 )
+        |> Vector2d.rotateBy (degrees 45)
     --> Vector2d.withComponents ( 0, 1.4142 )
 
-    Vector2d.rotateBy pi (Vector2d.withComponents ( 1, 0 ))
+    Vector2d.withComponents ( 1, 0 )
+        |> Vector2d.rotateBy pi
     --> Vector2d.withComponents ( -1, 0 )
 
 -}
@@ -747,7 +756,8 @@ The position of the axis doesn't matter, only its orientation:
 
     horizontalAxis =
         Axis2d.with
-            { originPoint = Point2d.withCoordinates ( 100, 200 )
+            { originPoint =
+                Point2d.withCoordinates ( 100, 200 )
             , direction = Direction2d.x
             }
 
@@ -800,10 +810,12 @@ projectionIn direction vector =
 
 {-| Project a vector onto an axis.
 
-    Vector2d.projectOnto Axis2d.y (Vector2d.withComponents ( 3, 4 ))
+    Vector2d.projectOnto Axis2d.y
+        (Vector2d.withComponents ( 3, 4 ))
     --> Vector2d.withComponents ( 0, 4 )
 
-    Vector2d.projectOnto Axis2d.x (Vector2d.withComponents ( -1, 2 ))
+    Vector2d.projectOnto Axis2d.x
+        (Vector2d.withComponents ( -1, 2 ))
     --> Vector2d.withComponents ( -1, 0 )
 
 This is equivalent to finding the projection in the axis' direction.
@@ -817,7 +829,8 @@ projectOnto axis vector =
 {-| Take a vector defined in global coordinates, and return it expressed in
 local coordinates relative to a given reference frame.
 
-    Vector2d.relativeTo rotatedFrame (Vector2d.withComponents ( 2, 0 ))
+    Vector2d.withComponents ( 2, 0 )
+        |> Vector2d.relativeTo rotatedFrame
     --> Vector2d.withComponents ( 1.732, -1 )
 
 -}
@@ -832,7 +845,8 @@ relativeTo frame vector =
 {-| Take a vector defined in local coordinates relative to a given reference
 frame, and return that vector expressed in global coordinates.
 
-    Vector2d.placeIn rotatedFrame (Vector2d.withComponents ( 2, 0 ))
+    Vector2d.withComponents ( 2, 0 )
+        |> Vector2d.placeIn rotatedFrame
     --> Vector2d.withComponents ( 1.732, 1 )
 
 -}

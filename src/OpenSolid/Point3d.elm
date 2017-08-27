@@ -233,7 +233,8 @@ axis:
 
     horizontalAxis =
         Axis3d.with
-            { originPoint = Point3d.withCoordinates ( 1, 1, 1 )
+            { originPoint =
+                Point3d.withCoordinates ( 1, 1, 1 )
             , direction = Direction3d.negativeX
             }
 
@@ -265,7 +266,8 @@ The sketch plane can have any position and orientation:
 
     tiltedSketchPlane =
         SketchPlane3d.xy
-            |> SketchPlane3d.rotateAround Axis3d.x (degrees 45)
+            |> SketchPlane3d.rotateAround Axis3d.x
+                (degrees 45)
             |> SketchPlane3d.moveTo
                 (Point3d.withCoordinates ( 10, 10, 10 ))
 
@@ -310,7 +312,8 @@ This is shorthand for using `Point3d.placeIn`;
 
 is equivalent to
 
-    Point3d.placeIn frame (Point3d.withCoordinates coordinates)
+    Point3d.placeIn frame
+        (Point3d.withCoordinates coordinates)
 
 -}
 in_ : Frame3d -> ( Float, Float, Float ) -> Point3d
@@ -327,7 +330,7 @@ collinear, returns `Nothing`.
         , Point3d.withCoordinates ( 0, 1, 0 )
         , Point3d.withCoordinates ( 0, 0, 1 )
         )
-    --> Just (Point3d.withCoordinates (0.333, 0.333, 0.333))
+    --> Just (Point3d.withCoordinates (0.33, 0.33, 0.33))
 
     Point3d.circumcenter
         ( Point3d.origin
@@ -404,7 +407,8 @@ coordinates (Internal.Point3d coordinates_) =
 
 {-| Get the X coordinate of a point.
 
-    Point3d.xCoordinate (Point3d.withCoordinates ( 2, 1, 3 ))
+    Point3d.withCoordinates ( 2, 1, 3 )
+        |> Point3d.xCoordinate
     --> 2
 
 -}
@@ -415,7 +419,8 @@ xCoordinate (Internal.Point3d ( x, _, _ )) =
 
 {-| Get the Y coordinate of a point.
 
-    Point3d.yCoordinate (Point3d.withCoordinates ( 2, 1, 3 ))
+    Point3d.withCoordinates ( 2, 1, 3 )
+        |> Point3d.yCoordinate
     --> 1
 
 -}
@@ -426,7 +431,8 @@ yCoordinate (Internal.Point3d ( _, y, _ )) =
 
 {-| Get the Z coordinate of a point.
 
-    Point3d.zCoordinate (Point3d.withCoordinates ( 2, 1, 3 ))
+    Point3d.withCoordinates ( 2, 1, 3 )
+        |> Point3d.zCoordinate
     --> 3
 
 -}
@@ -492,7 +498,8 @@ distanceFrom firstPoint secondPoint =
 {-| Find the square of the distance from one point to another.
 `squaredDistanceFrom` is slightly faster than `distanceFrom`, so for example
 
-    Point3d.squaredDistanceFrom p1 p2 > tolerance * tolerance
+    Point3d.squaredDistanceFrom p1 p2
+        > tolerance * tolerance
 
 is equivalent to but slightly more efficient than
 
@@ -516,7 +523,8 @@ it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
 
     axis =
         Axis3d.with
-            { originPoint = Point3d.withCoordinates ( 1, 0, 0 )
+            { originPoint =
+                Point3d.withCoordinates ( 1, 0, 0 )
             , direction = Direction3d.x
             }
 
@@ -576,7 +584,8 @@ positive if the point is 'above' the plane and negative if it is 'below', with
 
     plane =
         Plane3d.with
-            { originPoint = Point3d.withCoordinates ( 1, 2, 3 )
+            { originPoint =
+                Point3d.withCoordinates ( 1, 2, 3 )
             , normalDirection = Direction3d.y
             }
 
@@ -778,7 +787,8 @@ projectOnto plane point =
 
     verticalAxis =
         Axis3d.with
-            { originPoint = Point3d.withCoordinates ( 0, 1, 2 )
+            { originPoint =
+                Point3d.withCoordinates ( 0, 1, 2 )
             , direction = Direction3d.z
             }
 

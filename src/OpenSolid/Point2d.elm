@@ -231,7 +231,8 @@ the axis:
 
     horizontalAxis =
         Axis2d.with
-            { originPoint = Point2d.withCoordinates ( 1, 1 )
+            { originPoint =
+                Point2d.withCoordinates ( 1, 1 )
             , direction = Direction2d.negativeX
             }
 
@@ -262,7 +263,8 @@ This is shorthand for using `Point2d.placeIn`;
 
 is equivalent to
 
-    Point2d.placeIn frame (Point2d.withCoordinates coordinates)
+    Point2d.placeIn frame
+        (Point2d.withCoordinates coordinates)
 
 -}
 in_ : Frame2d -> ( Float, Float ) -> Point2d
@@ -391,7 +393,8 @@ yCoordinate (Internal.Point2d ( _, y )) =
 
 {-| Get the polar coordinates (radius and polar angle) of a point.
 
-    Point2d.polarCoordinates (Point2d.withCoordinates ( 1, 1 ))
+    Point2d.polarCoordinates
+        (Point2d.withCoordinates ( 1, 1 ))
     --> ( 1.4142, degrees 45 )
 
 -}
@@ -457,7 +460,8 @@ distanceFrom firstPoint secondPoint =
 {-| Find the square of the distance from one point to another.
 `squaredDistanceFrom` is slightly faster than `distanceFrom`, so for example
 
-    Point2d.squaredDistanceFrom p1 p2 > tolerance * tolerance
+    Point2d.squaredDistanceFrom p1 p2
+        > tolerance * tolerance
 
 is equivalent to but slightly more efficient than
 
@@ -481,7 +485,8 @@ it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
 
     axis =
         Axis2d.with
-            { originPoint = Point2d.withCoordinates ( 1, 2 )
+            { originPoint =
+                Point2d.withCoordinates ( 1, 2 )
             , direction = Direction2d.x
             }
 
@@ -509,7 +514,8 @@ to the right, with the forwards direction defined by the direction of the axis.
     -- coordinate of 2 is effectively the line Y=2
     axis =
         Axis2d.with
-            { originPoint = Point2d.withCoordinates ( 1, 2 )
+            { originPoint =
+                Point2d.withCoordinates ( 1, 2 )
             , direction = Direction2d.x
             }
 
@@ -661,7 +667,8 @@ The axis does not have to pass through the origin:
 
     offsetYAxis =
         Axis2d.with
-            { originPoint = Point2d.withCoordinates ( 1, 0 )
+            { originPoint =
+                Point2d.withCoordinates ( 1, 0 )
             , direction = Direction2d.y
             }
 

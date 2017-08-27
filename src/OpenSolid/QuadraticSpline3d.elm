@@ -326,7 +326,8 @@ reverse spline =
 
 {-| Scale a spline about the given center point by the given scale.
 
-    QuadraticSpline3d.scaleAbout Point3d.origin 2 exampleSpline
+    exampleSpline
+        |> QuadraticSpline3d.scaleAbout Point3d.origin 2
     --> QuadraticSpline3d.withControlPoints
     -->     ( Point3d.withCoordinates ( 2, 2, 2 )
     -->     , Point3d.withCoordinates ( 6, 4, 2 )
@@ -342,7 +343,9 @@ scaleAbout point scale =
 {-| Rotate a spline counterclockwise around a given axis by a given angle (in
 radians).
 
-    QuadraticSpline3d.rotateAround Axis3d.z (degrees 90) exampleSpline
+    exampleSpline
+        |> QuadraticSpline3d.rotateAround Axis3d.z
+            (degrees 90)
     --> QuadraticSpline3d.withControlPoints
     -->     ( Point3d.withCoordinates ( -1, 1, 1 )
     -->     , Point3d.withCoordinates ( -2, 3, 1 )
@@ -360,7 +363,8 @@ rotateAround axis angle =
     displacement =
         Vector3d.withComponents ( 2, 3, 1 )
 
-    QuadraticSpline3d.translateBy displacement exampleSpline
+    exampleSpline
+        |> QuadraticSpline3d.translateBy displacement
     --> QuadraticSpline3d.withControlPoints
     -->     ( Point3d.withCoordinates ( 3, 4, 2 )
     -->     , Point3d.withCoordinates ( 5, 5, 2 )
@@ -445,7 +449,8 @@ placeIn frame =
 projects the spline onto the plane and then expresses the projected
 spline in 2D sketch coordinates.
 
-    QuadraticSpline3d.projectInto SketchPlane3d.yz exampleSpline
+    exampleSpline
+        |> QuadraticSpline3d.projectInto SketchPlane3d.yz
     --> QuadraticSpline2d.withControlPoints
     -->     ( Point2d.withCoordinates ( 1, 1 )
     -->     , Point2d.withCoordinates ( 2, 1 )

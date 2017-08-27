@@ -236,9 +236,11 @@ A slightly more complex example:
 
     tiltedSketchPlane =
         SketchPlane3d.xy
-            |> SketchPlane3d.rotateAround Axis3d.x (degrees 45)
+            |> SketchPlane3d.rotateAround Axis3d.x
+                (degrees 45)
 
-    Vector3d.on tiltedSketchPlane (Vector2d.withComponents ( 1, 1 ))
+    Vector3d.on tiltedSketchPlane <|
+        Vector2d.withComponents ( 1, 1 )
     --> Vector3d.withComponents ( 1, 0.7071, 0.7071 )
 
 -}
@@ -266,10 +268,12 @@ length and direction of the resulting vector are not specified, but it is
 guaranteed to be perpendicular to the given vector and non-zero (unless the
 given vector is itself zero).
 
-    Vector3d.perpendicularTo (Vector3d.withComponents ( 3, 0, 0 ))
+    Vector3d.perpendicularTo
+        (Vector3d.withComponents ( 3, 0, 0 ))
     --> Vector3d.withComponents ( 0, 0, -3 )
 
-    Vector3d.perpendicularTo (Vector3d.withComponents ( 1, 2, 3 ))
+    Vector3d.perpendicularTo
+        (Vector3d.withComponents ( 1, 2, 3 ))
     --> Vector3d.withComponents ( 0, -3, 2 )
 
     Vector3d.perpendicularTo Vector3d.zero
@@ -353,7 +357,8 @@ interpolateFrom v1 v2 t =
 
 {-| Extract the components of a vector.
 
-    Vector3d.components (Vector3d.withComponents ( 2, 3, 4 ))
+    Vector3d.withComponents ( 2, 3, 4 )
+        |> Vector3d.components
     --> ( 2, 3, 4 )
 
 This combined with Elm's built-in tuple destructuring provides a convenient way
@@ -370,7 +375,8 @@ components (Internal.Vector3d components_) =
 
 {-| Get the X component of a vector.
 
-    Vector3d.xComponent (Vector3d.withComponents ( 1, 2, 3 ))
+    Vector3d.withComponents ( 1, 2, 3 )
+        |> Vector3d.xComponent
     --> 1
 
 -}
@@ -381,7 +387,8 @@ xComponent (Internal.Vector3d ( x, _, _ )) =
 
 {-| Get the Y component of a vector.
 
-    Vector3d.yComponent (Vector3d.withComponents ( 1, 2, 3 ))
+    Vector3d.withComponents ( 1, 2, 3 )
+        |> Vector3d.yComponent
     --> 2
 
 -}
@@ -392,7 +399,8 @@ yComponent (Internal.Vector3d ( _, y, _ )) =
 
 {-| Get the Z component of a vector.
 
-    Vector3d.zComponent (Vector3d.withComponents ( 1, 2, 3 ))
+    Vector3d.withComponents ( 1, 2, 3 )
+        |> Vector3d.zComponent
     --> 3
 
 -}
@@ -487,10 +495,16 @@ squaredLength vector =
 {-| Attempt to find the direction of a vector. In the case of a zero vector,
 returns `Nothing`.
 
-    Vector3d.direction (Vector3d.withComponents ( 3, 0, 3 ))
-    --> Just (Direction3d.with { azimuth = 0, elevation = degrees 45 })
+    Vector3d.withComponents ( 3, 0, 3 )
+        |> Vector3d.direction
+    --> Just
+    -->     (Direction3d.with
+    -->         { azimuth = 0
+    -->         , elevation = degrees 45
+    -->         }
+    -->     )
 
-    Vector3d.direction (Vector3d.withComponents ( 0, 0, 0 ))
+    Vector3d.direction Vector3d.zero
     --> Nothing
 
 -}
@@ -513,7 +527,13 @@ vector, returns `Nothing`.
         Vector3d.withComponents ( 3, 0, 3 )
 
     Vector3d.lengthAndDirection vector
-    --> Just ( 5, Direction3d.with { azimuth = 0, elevation = degrees 45 } )
+    --> Just
+    -->     ( 5
+    -->     , Direction3d.with
+    -->         { azimuth = 0
+    -->         , elevation = degrees 45
+    -->         }
+    -->     )
 
     Vector3d.lengthAndDirection Vector3d.zero
     --> Nothing
@@ -557,8 +577,14 @@ are coplanar, `Nothing` will be returned.
         , Vector3d.withComponents ( 1, 2, 3 )
         )
     --> Just
-    -->     ( Direction3d.with { azimuth = degrees 45, elevation = 0 }
-    -->     , Direction3d.with { azimuth = degrees 135, elevation = 0 }
+    -->     ( Direction3d.with
+    -->         { azimuth = degrees 45
+    -->         , elevation = 0
+    -->         }
+    -->     , Direction3d.with
+    -->         { azimuth = degrees 135
+    -->         , elevation = 0
+    -->         }
     -->     , Direction3d.positiveZ
     -->     )
 
@@ -765,7 +791,8 @@ flip vector =
 
 {-| Scale the length of a vector by a given scale.
 
-    Vector3d.scaleBy 3 (Vector3d.withComponents ( 1, 2, 3 ))
+    Vector3d.withComponents ( 1, 2, 3 )
+        |> Vector3d.scaleBy 3
     --> Vector3d.withComponents ( 3, 6, 9 )
 
 -}

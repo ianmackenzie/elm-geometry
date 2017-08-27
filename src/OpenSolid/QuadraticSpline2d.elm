@@ -278,7 +278,8 @@ reverse spline =
 
 {-| Scale a spline about the given center point by the given scale.
 
-    QuadraticSpline2d.scaleAbout Point2d.origin 2 exampleSpline
+    examplePolyline
+        |> QuadraticSpline2d.scaleAbout Point2d.origin 2
     --> QuadraticSpline2d.withControlPoints
     -->     ( Point2d.withCoordinates ( 2, 2 )
     -->     , Point2d.withCoordinates ( 6, 8 )
@@ -294,7 +295,9 @@ scaleAbout point scale =
 {-| Rotate a spline counterclockwise around a given center point by a given
 angle (in radians).
 
-    QuadraticSpline2d.rotateAround Point2d.origin (degrees 90) exampleSpline
+    examplePolyline
+        |> QuadraticSpline2d.rotateAround Point2d.origin
+            (degrees 90)
     --> QuadraticSpline2d.withControlPoints
     -->     ( Point2d.withCoordinates ( -1, 1 )
     -->     , Point2d.withCoordinates ( -4, 3 )
@@ -312,7 +315,8 @@ rotateAround point angle =
     displacement =
         Vector2d.withComponents ( 2, 3 )
 
-    QuadraticSpline2d.translateBy displacement exampleSpline
+    exampleSpline
+        |> QuadraticSpline2d.translateBy displacement
     --> QuadraticSpline2d.withControlPoints
     -->     ( Point2d.withCoordinates ( 3, 4 )
     -->     , Point2d.withCoordinates ( 5, 7 )

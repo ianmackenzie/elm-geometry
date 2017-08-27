@@ -328,10 +328,12 @@ is no such point (the two line segments do not touch, or they overlap), returns
     -- searching for intersections
 
     LineSegment2d.intersectionPoint ab bc
-    --> Just (Point2d.withCoordinates ( 1, 0 )) -- corner point b
+    --> Just (Point2d.withCoordinates ( 1, 0 ))
+    -- corner point b
 
     LineSegment2d.intersectionPoint ac bd
-    --> Just (Point2d.withCoordinates ( 0.5, 0.5 )) -- diagonal crossing at square center
+    --> Just (Point2d.withCoordinates ( 0.5, 0.5 ))
+    -- diagonal crossing at square center
 
     LineSegment2d.intersectionPoint ab cd
     --> Nothing -- parallel lines
@@ -445,7 +447,9 @@ scaleAbout point scale =
 {-| Rotate a line segment counterclockwise around a given center point by a
 given angle (in radians).
 
-    LineSegment2d.rotateAround Point2d.origin (degrees 90) exampleLineSegment
+    exampleLineSegment
+        |> LineSegment2d.rotateAround Point2d.origin
+            (degrees 90)
     --> LineSegment2d.withEndpoints
     -->     ( Point2d.withCoordinates ( -2, 1 )
     -->     , Point2d.withCoordinates ( -4, 3 )
@@ -462,7 +466,8 @@ rotateAround centerPoint angle =
     displacement =
         Vector2d.withComponents ( 1, 2 )
 
-    LineSegment2d.translateBy displacement exampleLineSegment
+    exampleLineSegment
+        |> LineSegment2d.translateBy displacement
     --> LineSegment2d.withEndpoints
     -->     ( Point2d.withCoordinates ( 2, 4 )
     -->     , Point2d.withCoordinates ( 4, 6 )

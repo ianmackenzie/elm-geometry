@@ -311,7 +311,9 @@ scaleAbout point scale =
 
 {-| Rotate a triangle around a given point by a given angle (in radians).
 
-    Triangle2d.rotateAround Point2d.origin (degrees 90) exampleTriangle
+    exampleTriangle
+        |> Triangle2d.rotateAround Point2d.origin
+            (degrees 90)
     --> Triangle2d.withVertices
     -->     ( Point2d.withCoordinates ( -1, 1 )
     -->     , Point2d.withCoordinates ( -1, 2 )
