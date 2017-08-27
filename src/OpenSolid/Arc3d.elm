@@ -130,6 +130,9 @@ in XY coordinates _within_ the sketch plane.
     Arc3d.centerPoint arc
     --> Point3d.withCoordinates ( 1, 0, 1 )
 
+    Arc3d.radius arc
+    --> 2
+
     Arc3d.startPoint arc
     --> Point3d.withCoordinates ( 3, 0, 1 )
 
