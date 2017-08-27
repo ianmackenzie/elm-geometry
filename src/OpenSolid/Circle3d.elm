@@ -2,6 +2,7 @@ module OpenSolid.Circle3d
     exposing
         ( Circle3d
         , area
+        , around
         , axialDirection
         , boundingBox
         , centerPoint
@@ -33,7 +34,7 @@ should increase in the future.
 
 # Constructors
 
-@docs with, on, through
+@docs with, around, on, through
 
 
 # Accessors
@@ -90,6 +91,33 @@ The actual radius of the circle will be the absolute value of the given radius
 with : { centerPoint : Point3d, axialDirection : Direction3d, radius : Float } -> Circle3d
 with properties =
     Internal.Circle3d { properties | radius = abs properties.radius }
+
+
+{-| Construct a circle centered on the given axis that passes through the given
+point.
+
+    point =
+        Point3d.withCoordinates ( 3, 0, 2 )
+
+    Circle3d.around Axis3d.z point
+    --> Circle3d.with
+    -->     { centerPoint = Point3d.withCoordinates ( 0, 0, 2 )
+    -->     , axialDirection = Direction3d.z
+    -->     , radius = 3
+    -->     }
+
+-}
+around : Axis3d -> Point3d -> Circle3d
+around axis point =
+    let
+        centerPoint =
+            Point3d.projectOntoAxis axis point
+    in
+    with
+        { centerPoint = centerPoint
+        , axialDirection = Axis3d.direction axis
+        , radius = Point3d.distanceFrom centerPoint point
+        }
 
 
 {-| Construct a 3D circle lying _on_ a sketch plane by providing a 2D circle
