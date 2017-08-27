@@ -155,8 +155,8 @@ the three given points are collinear, returns `Nothing`.
         , Point3d.withCoordinates ( 0, 1, 0 )
         , Point3d.withCoordinates ( 0, 0, 1 )
         )
-    --> Just <|
-    -->     Circle3d.with
+    --> Just
+    -->     (Circle3d.with
     -->         { centerPoint =
     -->             Point3d.withCoordinates ( 0.333, 0.333, 0.333 )
     -->         , axialDirection =
@@ -166,6 +166,7 @@ the three given points are collinear, returns `Nothing`.
     -->                 }
     -->         , radius = 0.8165
     -->         }
+    -->     )
 
 -}
 through : ( Point3d, Point3d, Point3d ) -> Maybe Circle3d
