@@ -405,8 +405,9 @@ componentIn firstDirection secondDirection =
     Vector2d.componentIn firstDirection (toVector secondDirection)
 
 
-{-| Compare two directions within a tolerance. Returns true if the angle between
-the two given directions is less than the given tolerance.
+{-| Compare two directions within a tolerance. Returns true if the absolute
+value of the angle between the two given directions is less than the given
+tolerance.
 
     firstDirection =
         Direction2d.withPolarAngle (degrees 45)
