@@ -120,8 +120,10 @@ counterclockwise:
 
     frame =
         Frame2d.with
-            { originPoint = Point2d.withCoordinates ( 2, 3 )
-            , xDirection = Direction2d.withPolarAngle (degrees 30)
+            { originPoint =
+                Point2d.withCoordinates ( 2, 3 )
+            , xDirection =
+                Direction2d.withPolarAngle (degrees 30)
             }
 
     Frame2d.yDirection frame
@@ -141,9 +143,12 @@ with { originPoint, xDirection } =
 
     frame =
         Frame2d.unsafe
-            { originPoint = Point2d.withCoordinates ( 2, 3 )
-            , xDirection = Direction2d.withPolarAngle (degrees 45)
-            , yDirection = Direction2d.withPolarAngle (degrees 135)
+            { originPoint =
+                Point2d.withCoordinates ( 2, 3 )
+            , xDirection =
+                Direction2d.withPolarAngle (degrees 45)
+            , yDirection =
+                Direction2d.withPolarAngle (degrees 135)
             }
 
 In this case **you must be careful to ensure that the X and Y directions are
@@ -331,7 +336,9 @@ flipY frame =
 
 {-| Move a frame so that it has the given origin point.
 
-    Frame2d.moveTo (Point2d.withCoordinates ( 1, 1 )) Frame2d.xy
+    Frame2d.xy
+        |> Frame2d.moveTo
+            (Point2d.withCoordinates ( 1, 1 ))
     --> Frame2d.at (Point2d.withCoordinates ( 1, 1 ))
 
 -}
@@ -379,7 +386,9 @@ and its X and Y basis directions will be rotated by the given angle.
         Frame2d.at (Point2d.withCoordinates ( 1, 1 ))
 
     rotatedFrame =
-        Frame2d.rotateAround Point2d.origin (degrees 45) frame
+        frame
+            |> Frame2d.rotateAround Point2d.origin
+                (degrees 45)
 
     Frame2d.originPoint rotatedFrame
     --> Point2d.withCoordinates ( 0, 1.4142 )

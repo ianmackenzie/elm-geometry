@@ -366,7 +366,9 @@ scaleAbout point scale =
 {-| Rotate a spline counterclockwise around a given center point by a given
 angle (in radians).
 
-    CubicSpline2d.rotateAround Point2d.origin (degrees 90) exampleSpline
+    exampleSpline
+        |> CubicSpline2d.rotateAround Point2d.origin
+            (degrees 90)
     --> CubicSpline2d.withControlPoints
     -->     ( Point2d.withCoordinates ( -1, 1 )
     -->     , Point2d.withCoordinates ( -4, 3 )

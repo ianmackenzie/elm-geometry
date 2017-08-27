@@ -237,10 +237,14 @@ with { originPoint, zDirection } =
 
     frame =
         Frame3d.unsafe
-            { originPoint = Point3d.withCoordinates ( 2, 1, 3 )
-            , xDirection = Direction3d.unsafe ( 0.8, 0.6, 0 )
-            , yDirection = Direction3d.unsafe ( -0.6, 0.8, 0 )
-            , zDirection = Direction3d.unsafe ( 0, 0, 1 )
+            { originPoint =
+                Point3d.withCoordinates ( 2, 1, 3 )
+            , xDirection =
+                Direction3d.unsafe ( 0.8, 0.6, 0 )
+            , yDirection =
+                Direction3d.unsafe ( -0.6, 0.8, 0 )
+            , zDirection =
+                Direction3d.unsafe ( 0, 0, 1 )
             }
 
 In this case **you must be careful to ensure that the X, Y and Z directions are
@@ -657,7 +661,9 @@ for `rotateAround`:
         Frame3d.at (Point3d.withCoordinates ( 2, 1, 3 ))
 
     rotatedFrame =
-        Frame3d.rotateAroundOwn Frame3d.zAxis (degrees 90) frame
+        frame
+            |> Frame3d.rotateAroundOwn Frame3d.zAxis
+                (degrees 90)
 
     Frame3d.originPoint rotatedFrame
     --> Point3d.withCoordinates ( 2, 1, 3 )
@@ -718,7 +724,8 @@ transformations. For example,
 
     frame =
         Frame3d.at (Point3d.withCoordinates ( 2, 0, 0 ))
-            |> Frame3d.rotateAroundOwn Frame3d.zAxis (degrees 45)
+            |> Frame3d.rotateAroundOwn Frame3d.zAxis
+                (degrees 45)
             |> Frame3d.translateAlongOwn Frame3d.xAxis 2
 
 means "construct a frame at the point (2, 0, 0), rotate it around its own Z axis
@@ -729,10 +736,16 @@ by 2 units", resulting in
     --> Point3d.withCoordinates ( 3.4142, 1.4142, 0 )
 
     Frame3d.xDirection frame
-    --> Direction3d.with { azimuth = degrees 45, elevation = 0 }
+    --> Direction3d.with
+    -->     { azimuth = degrees 45
+    -->     , elevation = 0
+    -->     }
 
     Frame3d.yDirection frame
-    --> Direction3d.with { azimuth = degrees 135, elevation = 0 }
+    --> Direction3d.with
+    -->     { azimuth = degrees 135
+    -->     , elevation = 0
+    -->     }
 
     Frame3d.zDirection frame
     --> Direction3d.z

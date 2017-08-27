@@ -415,10 +415,14 @@ tolerance.
     secondDirection =
         Direction2d.withPolarAngle (degrees 47)
 
-    Direction2d.equalWithin (degrees 5) firstDirection secondDirection
+    Direction2d.equalWithin (degrees 5)
+        firstDirection
+        secondDirection
     --> True
 
-    Direction2d.equalWithin (degrees 1) firstDirection secondDirection
+    Direction2d.equalWithin (degrees 1)
+        firstDirection
+        secondDirection
     --> False
 
 -}
@@ -468,8 +472,10 @@ the axis affects the result, since directions are position-independent.
 
     slopedAxis =
         Axis2d.with
-            { originPoint = Point2d.withCoordinates ( 100, 200 )
-            , direction = Direction2d.withPolarAngle (degrees 45)
+            { originPoint =
+                Point2d.withCoordinates ( 100, 200 )
+            , direction =
+                Direction2d.withPolarAngle (degrees 45)
             }
 
     Direction2d.mirrorAcross slopedAxis Direction2d.x

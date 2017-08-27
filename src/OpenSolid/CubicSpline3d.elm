@@ -415,7 +415,8 @@ scaleAbout point scale =
 {-| Rotate a spline counterclockwise around a given axis by a given angle (in
 radians).
 
-    CubicSpline3d.rotateAround Axis3d.z (degrees 90) exampleSpline
+    exampleSpline
+        |> CubicSpline3d.rotateAround Axis3d.z (degrees 90)
     --> CubicSpline3d.withControlPoints
     -->     ( Point3d.withCoordinates ( -1, 1, 1 )
     -->     , Point3d.withCoordinates ( -1, 3, 1 )
@@ -524,7 +525,8 @@ placeIn frame =
 projects the spline onto the plane and then expresses the projected
 spline in 2D sketch coordinates.
 
-    CubicSpline3d.projectInto SketchPlane3d.yz exampleSpline
+    exampleSpline
+        |> CubicSpline3d.projectInto SketchPlane3d.yz
     --> CubicSpline2d.withControlPoints
     -->     ( Point2d.withCoordinates ( 1, 1 )
     -->     , Point2d.withCoordinates ( 1, 1 )
@@ -580,12 +582,12 @@ resulting in two smaller splines.
     --> ( CubicSpline3d.withControlPoints
     -->     ( Point3d.withCoordinates ( 1, 1, 1 )
     -->     , Point3d.withCoordinates ( 2.5, 1, 1 )
-    -->     , Point3d.withCoordinates ( 2.875, 2.125, 1 )
-    -->     , Point3d.withCoordinates ( 2.96875, 2.6875, 1.84375 )
+    -->     , Point3d.withCoordinates ( 2.88, 2.13, 1 )
+    -->     , Point3d.withCoordinates ( 2.97, 2.69, 1.84 )
     -->     )
     --> , CubicSpline3d.withControlPoints
-    -->     ( Point3d.withCoordinates ( 2.96875, 2.6875, 1.84375 )
-    -->     , Point3d.withCoordinates ( 3, 2.875, 2.125 )
+    -->     ( Point3d.withCoordinates ( 2.97, 2.69, 1.84 )
+    -->     , Point3d.withCoordinates ( 3, 2.88, 2.13 )
     -->     , Point3d.withCoordinates ( 3, 3, 2.5 )
     -->     , Point3d.withCoordinates ( 3, 3, 3 )
     -->     )
