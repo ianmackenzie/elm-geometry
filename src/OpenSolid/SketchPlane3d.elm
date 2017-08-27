@@ -68,11 +68,23 @@ data type, and `on` functions for converting back to 3D. For example,
 `Triangle3d`. These pairs of functions are almost, but not quite, inverses of
 each other:
 
-  - <code>Point3d.on&nbsp;sketchPlane&nbsp;>>&nbsp;Point3d.projectInto&nbsp;sketchPlane</code>
-    will just return the original `Point2d` (within roundoff error).
-  - <code>Point3d.projectInto&nbsp;sketchPlane&nbsp;>>&nbsp;Point3d.on&nbsp;sketchPlane</code>
-    is equivalent to <code>Point3d.projectOnto&nbsp;(SketchPlane3d.plane&nbsp;sketchPlane)</code>
-    since the result will always be on the given sketch plane.
+    triangle2d
+        |> Triangle3d.on sketchPlane
+        |> Triangle3d.projectInto sketchPlane
+
+will just return the original `triangle2d` value (within roundoff error), while
+
+    triangle3d
+        |> Triangle3d.projectInto sketchPlane
+        |> Triangle3d.on sketchPlane
+
+is equivalent to
+
+    triangle3d
+        |> Triangle3d.projectOnto
+            (SketchPlane3d.toPlane sketchPlane)
+
+since the result will always be on the given sketch plane.
 
 @docs SketchPlane3d
 
