@@ -616,11 +616,11 @@ toPolyline tolerance arc =
 point and vice versa.
 
     Arc2d.reverse exampleArc
-    Arc2d.with
-        { startPoint = Point2d.withCoordinates ( 1, 3 )
-        , centerPoint = Point2d.withCoordinates ( 1, 1 )
-        , sweptAngle = degrees -90
-        }
+    --> Arc2d.with
+    -->     { startPoint = Point2d.withCoordinates ( 1, 3 )
+    -->     , centerPoint = Point2d.withCoordinates ( 1, 1 )
+    -->     , sweptAngle = degrees -90
+    -->     }
 
 -}
 reverse : Arc2d -> Arc2d
