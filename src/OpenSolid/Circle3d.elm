@@ -25,9 +25,12 @@ module OpenSolid.Circle3d
 A `Circle3d` is defined by its center point, axial direction and radius. The
 axial direction is the direction of the axis through the center of the circle
 that all points on the circle are equidistant from, or equivalently the normal
-direction of the plane defined by the circle. Currently you can only do a few
-basic things with circles, such as measuring the area or circumference, but this
-should increase in the future.
+direction of the plane defined by the circle. This module contains functionality
+for:
+
+  - Constructing circles around axes, on planes, or through points
+  - Scaling, rotating and translating circles
+  - Extracting circle properties like center point and area
 
 @docs Circle3d
 

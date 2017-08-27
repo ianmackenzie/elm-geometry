@@ -22,9 +22,12 @@ module OpenSolid.Circle2d
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/circle2d.svg" alt="Circle2d" width="160">
 
-A `Circle2d` is defined by its center point and radius. Currently you can only
-do a few basic things with circles, such as measuring the area or checking if a
-particular point is contained, but this should increase in the future.
+A `Circle2d` is defined by its center point and radius. This module includes
+functionality for
+
+  - Constructing circles through points or with a given center/radius
+  - Scaling, rotating and translating circles
+  - Extracting properties of circles like area, center point and radius
 
 @docs Circle2d
 
