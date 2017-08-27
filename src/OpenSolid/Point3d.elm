@@ -475,11 +475,9 @@ Partial application can be useful:
         , Point3d.withCoordinates ( -1, 2, -3 )
         ]
 
-    distanceFromOrigin : Point3d -> Float
-    distanceFromOrigin =
-        Point3d.distanceFrom Point3d.origin
-
-    List.sortBy distanceFromOrigin points
+    points
+        |> List.sortBy
+            (Point3d.distanceFrom Point3d.origin)
     --> [ Point3d.withCoordinates ( -1, 2, -3 )
     --> , Point3d.withCoordinates ( 3, 4, 5 )
     --> , Point3d.withCoordinates ( 10, 10, 10 )

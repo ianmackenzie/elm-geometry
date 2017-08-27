@@ -440,11 +440,9 @@ Partial application can be useful:
         , Point2d.withCoordinates ( -1, 2 )
         ]
 
-    distanceFromOrigin : Point2d -> Float
-    distanceFromOrigin =
-        Point2d.distanceFrom Point2d.origin
-
-    List.sortBy distanceFromOrigin points
+    points
+        |> List.sortBy
+            (Point2d.distanceFrom Point2d.origin)
     --> [ Point2d.withCoordinates ( -1, 2 )
     --> , Point2d.withCoordinates ( 3, 4 )
     --> , Point2d.withCoordinates ( 10, 0 )
