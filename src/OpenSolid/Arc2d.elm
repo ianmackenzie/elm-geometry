@@ -89,8 +89,10 @@ type alias Arc2d =
 
     exampleArc =
         Arc2d.with
-            { centerPoint = Point2d.withCoordinates ( 1, 1 )
-            , startPoint = Point2d.withCoordinates ( 3, 1 )
+            { centerPoint =
+                Point2d.withCoordinates ( 1, 1 )
+            , startPoint =
+                Point2d.withCoordinates ( 3, 1 )
             , sweptAngle = degrees 90
             }
 
@@ -118,7 +120,8 @@ points are collinear, returns `Nothing`.
         )
     --> Just
     -->     (Arc2d.with
-    -->         { centerPoint = Point2d.withCoordinates ( 0.5, 0.5 )
+    -->         { centerPoint =
+    -->             Point2d.withCoordinates ( 0.5, 0.5 )
     -->         , startPoint = Point2d.origin
     -->         , sweptAngle = degrees 270
     -->         }
@@ -131,8 +134,10 @@ points are collinear, returns `Nothing`.
         )
     --> Just
     -->     (Arc2d.with
-    -->         { centerPoint = Point2d.withCoordinates ( 0.5, 0.5 )
-    -->         , startPoint = Point2d.withCoordinates ( 1, 0 )
+    -->         { centerPoint =
+    -->             Point2d.withCoordinates ( 0.5, 0.5 )
+    -->         , startPoint =
+    -->             Point2d.withCoordinates ( 1, 0 )
     -->         , sweptAngle = degrees -180
     -->         }
     -->     )
@@ -270,7 +275,8 @@ For example:
         }
     --> Just
     -->     (Arc2d.with
-    -->         { startPoint = Point2d.withCoordinates ( 1, 0 )
+    -->         { startPoint =
+    -->             Point2d.withCoordinates ( 1, 0 )
     -->         , centerPoint = Point2d.origin
     -->         , sweptAngle = degrees 90
     -->         }
@@ -284,8 +290,10 @@ For example:
         }
     --> Just
     -->     (Arc2d.with
-    -->         { startPoint = Point2d.withCoordinates ( 1, 0 )
-    -->         , centerPoint = Point2d.withCoordinates ( 1, 1 )
+    -->         { startPoint =
+    -->             Point2d.withCoordinates ( 1, 0 )
+    -->         , centerPoint =
+    -->             Point2d.withCoordinates ( 1, 1 )
     -->         , sweptAngle = degrees -90
     -->         }
     -->     )
@@ -298,8 +306,10 @@ For example:
         }
     --> Just
     -->     (Arc2d.with
-    -->         { startPoint = Point2d.withCoordinates ( 1, 0 )
-    -->         , centerPoint = Point2d.withCoordinates ( 1, 1 )
+    -->         { startPoint =
+    -->             Point2d.withCoordinates ( 1, 0 )
+    -->         , centerPoint =
+    -->             Point2d.withCoordinates ( 1, 1 )
     -->         , sweptAngle = degrees 270
     -->         }
     -->     )
@@ -312,7 +322,8 @@ For example:
         }
     --> Just
     -->     (Arc2d.with
-    -->         { startPoint = Point2d.withCoordinates ( 1, 0 )
+    -->         { startPoint =
+    -->             Point2d.withCoordinates ( 1, 0 )
     -->         , centerPoint = Point2d.origin
     -->         , sweptAngle = degrees -270
     -->         }
@@ -326,8 +337,13 @@ For example:
         }
     --> Just
     -->     (Arc2d.with
-    -->         { startPoint = Point2d.withCoordinates ( 1, 0 )
-    -->         , centerPoint = Point2d.withCoordinates ( -0.8229, -0.8229 )
+    -->         { startPoint =
+    -->             Point2d.withCoordinates ( 1, 0 )
+    -->         , centerPoint =
+    -->             Point2d.withCoordinates
+    -->                 ( -0.8229
+    -->                 , -0.8229
+    -->                 )
     -->         , sweptAngle = degrees 41.4096
     -->         }
     -->     )
@@ -352,9 +368,12 @@ such as
     halfCircle =
         Arc2d.with
             { startPoint = firstPoint
-            , centerPoint = Point2d.midpoint firstPoint secondPoint
-            , sweptAngle = degrees 180 -- or 'degrees -180' for a clockwise arc
+            , centerPoint =
+                Point2d.midpoint firstPoint secondPoint
+            , sweptAngle = degrees 180
             }
+
+(Use `sweptAngle = degrees -180` for a clockwise arc.)
 
 -}
 fromEndpoints : { startPoint : Point2d, endPoint : Point2d, radius : Float, sweptAngle : SweptAngle } -> Maybe Arc2d
@@ -617,8 +636,10 @@ point and vice versa.
 
     Arc2d.reverse exampleArc
     --> Arc2d.with
-    -->     { startPoint = Point2d.withCoordinates ( 1, 3 )
-    -->     , centerPoint = Point2d.withCoordinates ( 1, 1 )
+    -->     { startPoint =
+    -->         Point2d.withCoordinates ( 1, 3 )
+    -->     , centerPoint =
+    -->         Point2d.withCoordinates ( 1, 1 )
     -->     , sweptAngle = degrees -90
     -->     }
 
@@ -634,10 +655,15 @@ reverse arc =
 
 {-| Scale an arc about a given point by a given scale.
 
-    Arc2d.scaleAbout (Point2d.withCoordinates ( 0, 1 )) 2 exampleArc
+    point =
+        Point2d.withCoordinates ( 0, 1 )
+
+    Arc2d.scaleAbout point 2 exampleArc
     --> Arc2d.with
-    -->     { startPoint = Point2d.withCoordinates ( 6, 1 )
-    -->     , centerPoint = Point2d.withCoordinates ( 2, 1 )
+    -->     { startPoint =
+    -->         Point2d.withCoordinates ( 6, 1 )
+    -->     , centerPoint =
+    -->         Point2d.withCoordinates ( 2, 1 )
     -->     , sweptAngle = degrees 90
     -->     }
 
@@ -663,8 +689,10 @@ scaleAbout point scale arc =
 
     Arc2d.rotateAround Point2d.origin (degrees 90)
     --> Arc2d.with
-    -->     { startPoint = Point2d.withCoordinates ( -1, 3 )
-    -->     , centerPoint = Point2d.withCoordinates ( -1, 1 )
+    -->     { startPoint =
+    -->         Point2d.withCoordinates ( -1, 3 )
+    -->     , centerPoint =
+    -->         Point2d.withCoordinates ( -1, 1 )
     -->     , sweptAngle = degrees 90
     -->     }
 
@@ -690,8 +718,10 @@ rotateAround point angle =
 
     Arc2d.translateBy displacement exampleArc
     --> Arc2d.with
-    -->     { startPoint = Point2d.withCoordinates ( 5, 4 )
-    -->     , centerPoint = Point2d.withCoordinates ( 3, 4 )
+    -->     { startPoint =
+    -->         Point2d.withCoordinates ( 5, 4 )
+    -->     , centerPoint =
+    -->         Point2d.withCoordinates ( 3, 4 )
     -->     , sweptAngle = degrees 90
     -->     }
 
@@ -713,8 +743,10 @@ translateBy displacement arc =
 
     Arc2d.mirrorAcross Axis2d.y exampleArc
     --> Arc2d.with
-    -->     { startPoint = Point2d.withCoordinates ( -3, 1 )
-    -->     , centerPoint = Point2d.withCoordinates ( -1, 1 )
+    -->     { startPoint =
+    -->         Point2d.withCoordinates ( -3, 1 )
+    -->     , centerPoint =
+    -->         Point2d.withCoordinates ( -1, 1 )
     -->     , sweptAngle = degrees -90
     -->     }
 
@@ -741,8 +773,10 @@ coordinates relative to a given reference frame.
 
     Arc2d.relativeTo localFrame exampleArc
     --> Arc2d.with
-    -->     { startPoint = Point2d.withCoordinates ( 2, -1 )
-    -->     , centerPoint = Point2d.withCoordinates ( 0, -1 )
+    -->     { startPoint =
+    -->         Point2d.withCoordinates ( 2, -1 )
+    -->     , centerPoint =
+    -->         Point2d.withCoordinates ( 0, -1 )
     -->     , sweptAngle = degrees 90
     -->     }
 
@@ -772,8 +806,10 @@ given reference frame, and return that arc expressed in global coordinates.
 
     Arc2d.placeIn localFrame exampleArc
     --> Arc2d.with
-    -->     { startPoint = Point2d.withCoordinates ( 4, 3 )
-    -->     , centerPoint = Point2d.withCoordinates ( 2, 3 )
+    -->     { startPoint =
+    -->         Point2d.withCoordinates ( 4, 3 )
+    -->     , centerPoint =
+    -->         Point2d.withCoordinates ( 2, 3 )
     -->     , sweptAngle = degrees 90
     -->     }
 
