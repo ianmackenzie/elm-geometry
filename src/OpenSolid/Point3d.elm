@@ -456,7 +456,7 @@ equalWithin tolerance firstPoint secondPoint =
     squaredDistanceFrom firstPoint secondPoint <= tolerance * tolerance
 
 
-{-| Find the distance between two points.
+{-| Find the distance from the first point to the second.
 
     p1 =
         Point3d.withCoordinates ( 1, 1, 2 )
