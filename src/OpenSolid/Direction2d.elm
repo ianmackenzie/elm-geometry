@@ -384,7 +384,7 @@ of the two directions converted to unit vectors.
     Direction2d.componentIn Direction2d.x direction
     --> 0.5
 
-    Direction2d.componentIn Direction2d.x Direction2d.x
+    Direction2d.componentIn direction direction
     --> 1
 
     Direction2d.componentIn Direction2d.x Direction2d.y
