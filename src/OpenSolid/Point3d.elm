@@ -600,6 +600,9 @@ the sign of the result of this function:
     Point3d.signedDistanceFrom flippedPlane point
     --> -1
 
+    Point3d.signedDistanceFrom flippedPlane Point3d.origin
+    --> 2
+
 -}
 signedDistanceFrom : Plane3d -> Point3d -> Float
 signedDistanceFrom plane point =
