@@ -577,7 +577,7 @@ circle3d =
             [ by (Point3d.equalWithin defaultTolerance)
                 Circle3d.centerPoint
             , by (Direction3d.equalWithin defaultTolerance)
-                Circle3d.axialDirection
+                (Circle3d.axis >> Axis3d.direction)
             , by (Scalar.equalWithin defaultTolerance)
                 Circle3d.radius
             ]

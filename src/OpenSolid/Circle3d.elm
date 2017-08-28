@@ -3,7 +3,7 @@ module OpenSolid.Circle3d
         ( Circle3d
         , area
         , around
-        , axialDirection
+        , axis
         , boundingBox
         , centerPoint
         , circumference
@@ -11,6 +11,7 @@ module OpenSolid.Circle3d
         , mirrorAcross
         , on
         , placeIn
+        , plane
         , radius
         , relativeTo
         , rotateAround
@@ -212,15 +213,47 @@ centerPoint (Internal.Circle3d properties) =
     properties.centerPoint
 
 
-{-| Get the axial direction of a circle.
-
-    Circle3d.axialDirection exampleCircle
-    --> Direction3d.z
-
--}
 axialDirection : Circle3d -> Direction3d
 axialDirection (Internal.Circle3d properties) =
     properties.axialDirection
+
+
+{-| Get the axis of a circle. The origin point of the axis will be the center
+point of the circle.
+
+    Circle3d.axis exampleCircle
+    --> Axis3d.with
+    -->     { originPoint =
+    -->         Point3d.withCoordinates ( 2, 0, 1 )
+    -->     , direction = Direction3d.z
+    -->     }
+
+-}
+axis : Circle3d -> Axis3d
+axis circle =
+    Axis3d.with
+        { originPoint = centerPoint circle
+        , direction = axialDirection circle
+        }
+
+
+{-| Get the plane of a circle. The origin point of the plane will be the center
+point of the circle.
+
+    Circle3d.plane exampleCircle
+    --> Plane3d.with
+    -->     { originPoint =
+    -->         Point3d.withCoordinates ( 2, 0, 1 )
+    -->     , normalDirection = Direction3d.z
+    -->     }
+
+-}
+plane : Circle3d -> Plane3d
+plane circle =
+    Plane3d.with
+        { originPoint = centerPoint circle
+        , normalDirection = axialDirection circle
+        }
 
 
 {-| Get the radius of a circle.
