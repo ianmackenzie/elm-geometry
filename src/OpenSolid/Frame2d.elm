@@ -54,7 +54,7 @@ always perpendicular to each other). It can be thought of as:
 @docs Frame2d
 
 
-# Predefined frames
+# Constants
 
 @docs xy
 
@@ -64,14 +64,9 @@ always perpendicular to each other). It can be thought of as:
 @docs at, with, unsafe
 
 
-# Accessors
+# Properties
 
-@docs originPoint, xDirection, yDirection, isRightHanded
-
-
-# Axes
-
-@docs xAxis, yAxis
+@docs originPoint, xDirection, yDirection, isRightHanded, xAxis, yAxis
 
 
 # Transformations
@@ -79,7 +74,7 @@ always perpendicular to each other). It can be thought of as:
 @docs flipX, flipY, moveTo, rotateBy, rotateAround, translateBy, translateAlongOwn, mirrorAcross
 
 
-# Coordinate frames
+# Coordinate conversions
 
 @docs relativeTo, placeIn
 

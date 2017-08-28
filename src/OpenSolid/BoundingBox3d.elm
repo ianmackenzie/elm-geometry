@@ -59,23 +59,17 @@ box of an object than the object itself, such as:
 
 # Constructors
 
-@docs with, singleton, containing, hullOf
+@docs with, singleton, containing, hull, intersection, hullOf
 
 
-# Accessors
+# Properties
 
-@docs extrema, minX, maxX, minY, maxY, minZ, maxZ
-@docs dimensions, midX, midY, midZ, centroid
+@docs extrema, minX, maxX, minY, maxY, minZ, maxZ, dimensions, midX, midY, midZ, centroid
 
 
-# Checks
+# Queries
 
 @docs contains, overlaps, isContainedIn
-
-
-# Boolean operations
-
-@docs hull, intersection
 
 -}
 

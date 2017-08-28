@@ -43,7 +43,7 @@ an origin point and direction. Axes have several uses, such as:
 @docs Axis3d
 
 
-# Predefined axes
+# Constants
 
 @docs x, y, z
 
@@ -53,7 +53,7 @@ an origin point and direction. Axes have several uses, such as:
 @docs with, on
 
 
-# Accessors
+# Properties
 
 @docs originPoint, direction
 
@@ -63,17 +63,12 @@ an origin point and direction. Axes have several uses, such as:
 @docs flip, moveTo, rotateAround, translateBy, mirrorAcross, projectOnto
 
 
-# Coordinate frames
+# Coordinate conversions
 
 Functions for transforming axes between local and global coordinates in
 different coordinate frames.
 
-@docs relativeTo, placeIn
-
-
-# Sketch planes
-
-@docs projectInto
+@docs relativeTo, placeIn, projectInto
 
 -}
 

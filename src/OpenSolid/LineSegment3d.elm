@@ -58,19 +58,14 @@ functionality such as:
 @docs withEndpoints, from, along, on
 
 
-# Endpoints
+# Properties
 
-@docs startPoint, endPoint, endpoints
+@docs startPoint, endPoint, endpoints, midpoint, length, squaredLength, direction, normalDirection, vector, boundingBox
 
 
 # Interpolation
 
-@docs midpoint, interpolate
-
-
-# Length and direction
-
-@docs length, squaredLength, direction, normalDirection, vector
+@docs interpolate
 
 
 # Transformations
@@ -81,22 +76,12 @@ points and forming a new line segment between the resulting points.
 @docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
 
 
-# Coordinate frames
+# Coordinate conversions
 
 Functions for transforming line segments between local and global coordinates in
 different coordinate frames.
 
-@docs relativeTo, placeIn
-
-
-# Sketch planes
-
-@docs projectInto
-
-
-# Bounds
-
-@docs boundingBox
+@docs relativeTo, placeIn, projectInto
 
 -}
 

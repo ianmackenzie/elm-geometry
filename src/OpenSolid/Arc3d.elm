@@ -40,7 +40,7 @@ start point to the arc's end point). This module includes functionality for
 @docs around, on, through
 
 
-# Accessors
+# Properties
 
 @docs axis, centerPoint, radius, startPoint, endPoint, sweptAngle
 
@@ -60,7 +60,7 @@ start point to the arc's end point). This module includes functionality for
 @docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross
 
 
-# Coordinate frames
+# Coordinate conversions
 
 @docs relativeTo, placeIn
 
@@ -100,7 +100,7 @@ angle:
     --> Point3d.withCoordinates ( -1, 1, 0 )
 
 Positive swept angles result in a counterclockwise (right-handed) rotation
-around the given axis.
+around the given axis and vice versa for negative swept angles.
 
 -}
 around : Axis3d -> { startPoint : Point3d, sweptAngle : Float } -> Arc3d

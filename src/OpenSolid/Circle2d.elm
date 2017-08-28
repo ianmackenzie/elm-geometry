@@ -32,22 +32,22 @@ functionality for
 @docs Circle2d
 
 
+# Constants
+
+@docs unit
+
+
 # Constructors
 
 @docs with, through
 
 
-# Predefined circles
+# Properties
 
-@docs unit
-
-
-# Accessors
-
-@docs centerPoint, radius, diameter, area, circumference
+@docs centerPoint, radius, diameter, area, circumference, boundingBox
 
 
-# Conversions
+# Conversion
 
 @docs toArc
 
@@ -62,14 +62,9 @@ functionality for
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross
 
 
-# Coordinate frames
+# Coordinate conversions
 
 @docs relativeTo, placeIn
-
-
-# Bounds
-
-@docs boundingBox
 
 -}
 

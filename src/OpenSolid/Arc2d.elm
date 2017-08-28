@@ -44,7 +44,7 @@ end point). This module includes functionality for
 @docs with, through, fromEndpoints, SweptAngle, smallPositive, smallNegative, largePositive, largeNegative
 
 
-# Accessors
+# Properties
 
 @docs centerPoint, radius, startPoint, endPoint, sweptAngle
 
@@ -64,7 +64,7 @@ end point). This module includes functionality for
 @docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross
 
 
-# Coordinate frames
+# Coordinate conversions
 
 @docs relativeTo, placeIn
 

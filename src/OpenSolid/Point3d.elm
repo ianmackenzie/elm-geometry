@@ -63,7 +63,7 @@ like you can add two vectors.
 @docs Point3d
 
 
-# Predefined points
+# Constants
 
 @docs origin
 
@@ -73,7 +73,7 @@ like you can add two vectors.
 @docs withCoordinates, midpoint, interpolateFrom, along, on, in_, circumcenter
 
 
-# Coordinates
+# Properties
 
 @docs coordinates, xCoordinate, yCoordinate, zCoordinate
 
@@ -83,7 +83,7 @@ like you can add two vectors.
 @docs equalWithin
 
 
-# Displacement and distance
+# Measurement
 
 @docs distanceFrom, squaredDistanceFrom, distanceAlong, distanceFromAxis, squaredDistanceFromAxis, signedDistanceFrom
 
@@ -93,20 +93,15 @@ like you can add two vectors.
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, projectOntoAxis
 
 
-# Coordinate frames
+# Coordinate conversions
 
 Functions for transforming points between local and global coordinates in
 different coordinate frames.
 
-@docs relativeTo, placeIn
+@docs relativeTo, placeIn, projectInto
 
 
-# Sketch planes
-
-@docs projectInto
-
-
-# Bounds
+# Bounding box construction
 
 @docs hull
 

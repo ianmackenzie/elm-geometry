@@ -41,9 +41,9 @@ for:
 @docs with, around, on, through
 
 
-# Accessors
+# Properties
 
-@docs centerPoint, axialDirection, radius, diameter, area, circumference
+@docs centerPoint, radius, diameter, axis, plane, area, circumference, boundingBox
 
 
 # Transformations
@@ -51,14 +51,9 @@ for:
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross
 
 
-# Coordinate frames
+# Coordinate conversions
 
 @docs relativeTo, placeIn
-
-
-# Bounds
-
-@docs boundingBox
 
 -}
 
@@ -94,8 +89,12 @@ The actual radius of the circle will be the absolute value of the given radius
 
 -}
 with : { centerPoint : Point3d, axialDirection : Direction3d, radius : Float } -> Circle3d
-with properties =
-    Internal.Circle3d { properties | radius = abs properties.radius }
+with { centerPoint, axialDirection, radius } =
+    Internal.Circle3d
+        { centerPoint = centerPoint
+        , axialDirection = axialDirection
+        , radius = abs radius
+        }
 
 
 {-| Construct a circle around the given axis that passes through the given

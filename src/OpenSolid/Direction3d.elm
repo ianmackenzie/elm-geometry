@@ -66,7 +66,7 @@ several uses, such as:
 @docs Direction3d
 
 
-# Predefined directions
+# Constants
 
 @docs x, y, z, positiveX, negativeX, positiveY, negativeY, positiveZ, negativeZ
 
@@ -76,14 +76,9 @@ several uses, such as:
 @docs with, from, on, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize, unsafe
 
 
-# Components
+# Properties
 
-@docs components, xComponent, yComponent, zComponent, componentIn
-
-
-# Angles
-
-@docs azimuth, elevation
+@docs components, xComponent, yComponent, zComponent, azimuth, elevation
 
 
 # Comparison
@@ -91,14 +86,14 @@ several uses, such as:
 @docs equalWithin
 
 
-# Vector conversion
+# Measurement
+
+@docs componentIn, angleFrom
+
+
+# Conversion
 
 @docs toVector
-
-
-# Angle measurement
-
-@docs angleFrom
 
 
 # Transformations
@@ -106,7 +101,7 @@ several uses, such as:
 @docs flip, rotateAround, mirrorAcross, projectOnto
 
 
-# Coordinate frames
+# Coordinate conversions
 
 Functions for transforming directions between local and global coordinates in
 different coordinate frames. Like other transformations, coordinate
@@ -121,12 +116,7 @@ global XYZ frame:
         Frame3d.xyz
             |> Frame3d.rotateAround Axis3d.z (degrees 30)
 
-@docs relativeTo, placeIn
-
-
-# Sketch planes
-
-@docs projectInto
+@docs relativeTo, placeIn, projectInto
 
 -}
 

@@ -43,7 +43,7 @@ and normal direction and is useful for several operations including:
 @docs Plane3d
 
 
-# Predefined planes
+# Constants
 
 @docs xy, yz, zx
 
@@ -63,7 +63,7 @@ and normal direction and is useful for several operations including:
 @docs offsetBy, flip, rotateAround, translateBy, moveTo, mirrorAcross
 
 
-# Coordinate frames
+# Coordinate conversions
 
 @docs relativeTo, placeIn
 

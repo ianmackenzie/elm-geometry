@@ -57,7 +57,7 @@ several uses, such as:
 @docs Direction2d
 
 
-# Predefined directions
+# Constants
 
 @docs x, y, positiveX, negativeX, positiveY, negativeY
 
@@ -67,14 +67,9 @@ several uses, such as:
 @docs withPolarAngle, from, perpendicularTo, orthonormalize, orthogonalize, unsafe
 
 
-# Components
+# Properties
 
-@docs components, xComponent, yComponent, componentIn
-
-
-# Angles
-
-@docs polarAngle, angleFrom
+@docs components, xComponent, yComponent, polarAngle
 
 
 # Comparison
@@ -82,7 +77,12 @@ several uses, such as:
 @docs equalWithin
 
 
-# Vector conversion
+# Measurement
+
+@docs componentIn, angleFrom
+
+
+# Conversion
 
 @docs toVector
 
@@ -92,7 +92,7 @@ several uses, such as:
 @docs flip, rotateBy, mirrorAcross
 
 
-# Coordinate frames
+# Coordinate conversions
 
 Functions for transforming directions between local and global coordinates in
 different coordinate frames. Like other transformations, coordinate

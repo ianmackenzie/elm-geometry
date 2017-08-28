@@ -85,7 +85,7 @@ will actually want their `Direction3d` versions [`Direction3d.x`](OpenSolid-Dire
 
 # Components
 
-@docs components, xComponent, yComponent, zComponent, componentIn
+@docs components, xComponent, yComponent, zComponent, length, squaredLength, direction, lengthAndDirection
 
 
 # Comparison
@@ -93,9 +93,9 @@ will actually want their `Direction3d` versions [`Direction3d.x`](OpenSolid-Dire
 @docs equalWithin
 
 
-# Length and direction
+# Measurement
 
-@docs length, squaredLength, direction, lengthAndDirection, orthonormalize, normalize
+@docs componentIn
 
 
 # Arithmetic
@@ -110,15 +110,15 @@ plane is relevant, since vectors are position-independent. Think of transforming
 a vector as placing its tail on the relevant axis or plane and then transforming
 its tip.
 
-@docs flip, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
+@docs flip, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
 
 
-# Coordinate frames
+# Coordinate conversions
 
 Functions for transforming vectors between local and global coordinates in
 different coordinate frames. Like other transformations, coordinate
 transformations of vectors depend only on the orientations of the relevant
-frames, not their positions.
+frames/sketch planes, not their positions.
 
 For the examples, assume the following definition of a local coordinate frame,
 one that is rotated 30 degrees counterclockwise around the Z axis from the
@@ -127,15 +127,7 @@ global XYZ frame:
     rotatedFrame =
         Frame3d.rotateAround Axis3d.z (degrees 30) Frame3d.xyz
 
-@docs relativeTo, placeIn
-
-
-# Sketch planes
-
-Functions for converting vectors between global 3D coordinates and 2D
-coordinates within a particular sketch plane.
-
-@docs projectInto
+@docs relativeTo, placeIn, projectInto
 
 -}
 

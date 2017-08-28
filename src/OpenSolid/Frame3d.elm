@@ -69,7 +69,7 @@ always perpendicular to each other). It can be thought of as:
 @docs Frame3d
 
 
-# Predefined frames
+# Constants
 
 @docs xyz
 
@@ -79,17 +79,9 @@ always perpendicular to each other). It can be thought of as:
 @docs at, with, unsafe
 
 
-# Accessors
+# Properties
 
-@docs originPoint, xDirection, yDirection, zDirection, isRightHanded
-
-
-# Axes
-
-@docs xAxis, yAxis, zAxis
-
-
-# Planes
+@docs originPoint, xDirection, yDirection, zDirection, isRightHanded, xAxis, yAxis, zAxis
 
 The following functions all return planes with the same origin point as the
 given plane, but with varying normal directions. In each case the normal
@@ -113,9 +105,6 @@ product reverses the sign of the result,
     -->     }
 
 @docs xyPlane, yxPlane, yzPlane, zyPlane, zxPlane, xzPlane
-
-
-# Sketch planes
 
 These functions all form a `SketchPlane3d` from two axes of the given frame. The
 X and Y axes of the sketch plane will correspond to the two indicated axes. For
@@ -145,7 +134,7 @@ corresponds to a global Z coordinate!
 @docs flipX, flipY, flipZ, moveTo, rotateAround, rotateAroundOwn, translateBy, translateAlongOwn, mirrorAcross
 
 
-# Coordinate frames
+# Coordinate conversions
 
 @docs relativeTo, placeIn
 

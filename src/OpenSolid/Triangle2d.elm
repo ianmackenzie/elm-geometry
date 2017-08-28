@@ -49,19 +49,14 @@ vertices. This module contains triangle-related functionality such as:
 @docs withVertices
 
 
-# Accessors
+# Properties
 
-@docs vertices, edges
-
-
-# Basics
-
-@docs centroid, contains
+@docs vertices, edges, centroid, area, counterclockwiseArea, clockwiseArea, boundingBox, circumcircle
 
 
-# Area
+# Queries
 
-@docs area, counterclockwiseArea, clockwiseArea
+@docs contains
 
 
 # Transformations
@@ -71,22 +66,12 @@ Transforming a triangle is equivalent to transforming its vertices.
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross, map
 
 
-# Coordinate frames
+# Coordinate conversions
 
 Functions for transforming triangles between local and global coordinates in
 different coordinate frames.
 
 @docs relativeTo, placeIn
-
-
-# Bounds
-
-@docs boundingBox
-
-
-# Circumcircle
-
-@docs circumcircle
 
 -}
 

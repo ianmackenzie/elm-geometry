@@ -42,7 +42,7 @@ in 3D defined by three control points. This module contains functionality for
 @docs withControlPoints, on
 
 
-# Accessors
+# Properties
 
 @docs controlPoints, startPoint, endPoint, startDerivative, endDerivative
 
@@ -57,7 +57,7 @@ in 3D defined by three control points. This module contains functionality for
 @docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto
 
 
-# Coordinate frames
+# Coordinate conversions
 
 @docs relativeTo, placeIn
 

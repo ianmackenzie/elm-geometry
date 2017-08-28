@@ -48,14 +48,9 @@ as
 @docs withVertices, on
 
 
-# Accessors
+# Properties
 
-@docs vertices, segments
-
-
-# Length
-
-@docs length
+@docs vertices, segments, length, boundingBox
 
 
 # Transformations
@@ -65,19 +60,9 @@ Transforming a polyline is equivalent to transforming each of its vertices.
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
 
 
-# Coordinate frames
+# Coordinate conversions
 
-@docs relativeTo, placeIn
-
-
-# Sketch planes
-
-@docs projectInto
-
-
-# Bounds
-
-@docs boundingBox
+@docs relativeTo, placeIn, projectInto
 
 -}
 

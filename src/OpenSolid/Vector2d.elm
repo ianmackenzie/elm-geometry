@@ -65,7 +65,7 @@ and `Direction2d` than `Vector2d`, and much code can avoid working directly with
 @docs Vector2d
 
 
-# Predefined vectors
+# Constants
 
 @docs zero
 
@@ -81,9 +81,9 @@ and [`Direction2d.y`](OpenSolid-Direction2d#y).
 @docs withComponents, withPolarComponents, from, withLength, perpendicularTo, interpolateFrom
 
 
-# Components
+# Properties
 
-@docs components, xComponent, yComponent, componentIn, polarComponents
+@docs components, xComponent, yComponent, polarComponents, length, squaredLength, direction, lengthAndDirection
 
 
 # Comparison
@@ -91,9 +91,9 @@ and [`Direction2d.y`](OpenSolid-Direction2d#y).
 @docs equalWithin
 
 
-# Length and direction
+# Measurement
 
-@docs length, squaredLength, direction, lengthAndDirection, orthonormalize, normalize
+@docs componentIn
 
 
 # Arithmetic
@@ -108,10 +108,10 @@ affects the result, since vectors are position-independent. Think of
 mirroring/projecting a vector across/onto an axis as moving the vector so its
 tail is on the axis, then mirroring/projecting its tip across/onto the axis.
 
-@docs flip, scaleBy, rotateBy, mirrorAcross, projectionIn, projectOnto
+@docs flip, normalize, scaleBy, rotateBy, mirrorAcross, projectionIn, projectOnto
 
 
-# Coordinate frames
+# Coordinate conversions
 
 Functions for transforming vectors between local and global coordinates in
 different coordinate frames. Like other transformations, coordinate conversions

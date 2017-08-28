@@ -48,14 +48,9 @@ as
 @docs withVertices
 
 
-# Accessors
+# Properties
 
-@docs vertices, edges
-
-
-# Perimeter and area
-
-@docs perimeter, area, clockwiseArea, counterclockwiseArea
+@docs vertices, edges, perimeter, area, clockwiseArea, counterclockwiseArea, boundingBox
 
 
 # Transformations
@@ -65,14 +60,9 @@ Transforming a polygon is equivalent to transforming each of its vertices.
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross, map
 
 
-# Coordinate frames
+# Coordinate conversions
 
 @docs relativeTo, placeIn
-
-
-# Bounds
-
-@docs boundingBox
 
 -}
 

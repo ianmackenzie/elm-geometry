@@ -50,14 +50,9 @@ vertices. This module contains triangle-related functionality such as:
 @docs withVertices, on
 
 
-# Accessors
+# Properties
 
-@docs vertices, edges
-
-
-# Basics
-
-@docs centroid, area, normalDirection
+@docs vertices, edges, centroid, area, normalDirection, boundingBox, circumcircle
 
 
 # Transformations
@@ -67,27 +62,12 @@ Transforming a triangle is equivalent to transforming its vertices.
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
 
 
-# Coordinate frames
+# Coordinate conversions
 
 Functions for transforming triangles between local and global coordinates in
 different coordinate frames.
 
-@docs relativeTo, placeIn
-
-
-# Sketch planes
-
-@docs projectInto
-
-
-# Bounds
-
-@docs boundingBox
-
-
-# Circumcircle
-
-@docs circumcircle
+@docs relativeTo, placeIn, projectInto
 
 -}
 

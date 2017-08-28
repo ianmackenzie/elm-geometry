@@ -58,7 +58,7 @@ like you can add two vectors.
 @docs Point2d
 
 
-# Predefined points
+# Constants
 
 @docs origin
 
@@ -68,7 +68,7 @@ like you can add two vectors.
 @docs withCoordinates, withPolarCoordinates, midpoint, interpolateFrom, along, in_, circumcenter
 
 
-# Coordinates
+# Properties
 
 @docs coordinates, xCoordinate, yCoordinate, polarCoordinates
 
@@ -78,7 +78,7 @@ like you can add two vectors.
 @docs equalWithin
 
 
-# Displacement and distance
+# Measurement
 
 @docs distanceFrom, squaredDistanceFrom, distanceAlong, signedDistanceFrom
 
@@ -88,7 +88,7 @@ like you can add two vectors.
 @docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto
 
 
-# Coordinate frames
+# Coordinate conversions
 
 Functions for transforming points between local and global coordinates in
 different coordinate frames.
@@ -96,7 +96,7 @@ different coordinate frames.
 @docs relativeTo, placeIn
 
 
-# Bounds
+# Bounding box construction
 
 @docs hull
 

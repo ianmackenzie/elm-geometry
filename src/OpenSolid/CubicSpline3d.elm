@@ -43,7 +43,7 @@ in 3D defined by four control points. This module contains functionality for
 @docs withControlPoints, hermite, on
 
 
-# Accessors
+# Properties
 
 @docs controlPoints, startPoint, endPoint, startDerivative, endDerivative
 
@@ -58,14 +58,9 @@ in 3D defined by four control points. This module contains functionality for
 @docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto
 
 
-# Coordinate frames
+# Coordinate conversions
 
-@docs relativeTo, placeIn
-
-
-# Sketch planes
-
-@docs projectInto
+@docs relativeTo, placeIn, projectInto
 
 
 # Subdivision

@@ -88,7 +88,7 @@ is equivalent to
 @docs SketchPlane3d
 
 
-# Predefined sketch planes
+# Constants
 
 These predefined sketch planes all have the global origin point as their origin
 point, and use the two indicated global axes as their X and Y axes. For example,
@@ -123,7 +123,7 @@ Sketch planes can also be constructed from `Frame3d` values using
 @docs flipX, flipY, moveTo, rotateAround, rotateAroundOwn, translateBy, translateAlongOwn, mirrorAcross
 
 
-# Coordinate frames
+# Coordinate conversions
 
 @docs relativeTo, placeIn
 
