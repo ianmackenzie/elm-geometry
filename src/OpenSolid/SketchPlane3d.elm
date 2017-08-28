@@ -107,6 +107,8 @@ point, and use the two indicated global axes as their X and Y axes. For example,
 
 # Constructors
 
+Sketch planes can also be constructed from `Frame3d` values using
+`Frame3d.xySketchPlane` etc.
 
 @docs with, on, through, fromPlane, unsafe
 
