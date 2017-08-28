@@ -97,7 +97,7 @@ with properties =
     Internal.Circle3d { properties | radius = abs properties.radius }
 
 
-{-| Construct a circle centered on the given axis that passes through the given
+{-| Construct a circle around the given axis that passes through the given
 point.
 
     point =
