@@ -217,8 +217,8 @@ axialDirection (Internal.Circle3d properties) =
     properties.axialDirection
 
 
-{-| Get the axis of a circle. The origin point of the axis will be the center
-point of the circle.
+{-| Get the central axis of a circle, perpendicular to its [`plane`](#plane).
+The origin point of the returned axis will be the center point of the circle.
 
     Circle3d.axis exampleCircle
     --> Axis3d.with
@@ -236,8 +236,8 @@ axis circle =
         }
 
 
-{-| Get the plane of a circle. The origin point of the plane will be the center
-point of the circle.
+{-| Get the plane that a circle lies in. The origin point of the returned plane
+will be the center point of the circle.
 
     Circle3d.plane exampleCircle
     --> Plane3d.with
