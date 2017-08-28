@@ -313,10 +313,10 @@ second, based on a parameter that ranges from zero to one.
         Vector3d.withComponents ( 1, 2, 4 )
 
     endVector =
-        Vector3d.withComponents ( 1, 2, 8 )
+        Vector3d.withComponents ( 1, 3, 8 )
 
     Vector3d.interpolateFrom startVector endVector 0.25
-    --> Vector3d.withComponents ( 1, 2, 5 )
+    --> Vector3d.withComponents ( 1, 2.25, 5 )
 
 Partial application may be useful:
 
