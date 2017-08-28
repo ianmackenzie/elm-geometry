@@ -153,7 +153,7 @@ with { originPoint, xDirection } =
 
 In this case **you must be careful to ensure that the X and Y directions are
 perpendicular**. To construct pairs of perpendicular directions,
-[`Vector2d.orthonormalize`](OpenSolid-Vector2d#orthonormalize) or
+[`Direction2d.orthonormalize`](OpenSolid-Direction2d#orthonormalize) or
 [`Direction2d.orthogonalize`](OpenSolid-Direction2d#orthogonalize) may be
 useful.
 
