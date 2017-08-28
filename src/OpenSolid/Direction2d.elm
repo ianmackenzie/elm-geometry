@@ -23,6 +23,7 @@ module OpenSolid.Direction2d
         , negativeX
         , negativeY
         , orthogonalize
+        , orthonormalize
         , perpendicularTo
         , placeIn
         , polarAngle
@@ -63,7 +64,7 @@ several uses, such as:
 
 # Constructors
 
-@docs withPolarAngle, from, perpendicularTo, orthogonalize, unsafe
+@docs withPolarAngle, from, perpendicularTo, orthonormalize, orthogonalize, unsafe
 
 
 # Components
@@ -248,13 +249,61 @@ perpendicularTo =
 
 
 {-| Attempt to form a pair of perpendicular directions from the two given
-directions by performing [Gram-Schmidt normalization](https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process);
+vectors by performing [Gram-Schmidt normalization](https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process):
+
+  - The first returned direction will be equal to the direction of the first
+    given vector
+  - The second returned direction will be as close as possible to the second
+    given vector while being perpendicular to the first returned direction
+
+If either of the given vectors are zero, or if the two vectors are parallel,
+`Nothing` will be returned.
+
+    Direction2d.orthonormalize
+        ( Vector2d.withComponents ( 3, 3 )
+        , Vector2d.withComponents ( 0, -2 )
+        )
+    --> Just
+    -->     ( Direction2d.withPolarAngle (degrees 45)
+    -->     , Direction2d.withPolarAngle (degrees -45)
+    -->     )
+
+    Direction2d.orthonormalize
+        ( Vector2d.withComponents ( 3, 3 )
+        , Vector2d.withComponents ( -2, -2 )
+        )
+    --> Nothing
+
+-}
+orthonormalize : ( Vector2d, Vector2d ) -> Maybe ( Direction2d, Direction2d )
+orthonormalize ( xVector, xyVector ) =
+    Vector2d.direction xVector
+        |> Maybe.andThen
+            (\xDirection ->
+                let
+                    yDirection =
+                        perpendicularTo xDirection
+
+                    perpendicularComponent =
+                        Vector2d.componentIn yDirection xyVector
+                in
+                if perpendicularComponent > 0.0 then
+                    Just ( xDirection, yDirection )
+                else if perpendicularComponent < 0.0 then
+                    Just ( xDirection, flip yDirection )
+                else
+                    Nothing
+            )
+
+
+{-| Attempt to form a pair of perpendicular directions from the two given
+directions;
 
     Direction2d.orthogonalize ( xDirection, yDirection )
 
 is equivalent to
 
-    Vector2d.orthonormalize
+    Direction2d.orthonormalize
         ( Direction2d.toVector xDirection
         , Direction2d.toVector yDirection
         )
@@ -262,7 +311,7 @@ is equivalent to
 -}
 orthogonalize : ( Direction2d, Direction2d ) -> Maybe ( Direction2d, Direction2d )
 orthogonalize ( xDirection, yDirection ) =
-    Vector2d.orthonormalize
+    orthonormalize
         ( toVector xDirection
         , toVector yDirection
         )

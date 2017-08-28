@@ -3,15 +3,21 @@ module Direction2d
         ( angleFromAndEqualWithinAreConsistent
         , angleFromAndRotateByAreConsistent
         , jsonRoundTrips
+        , orthonormalizeProducesValidFrameBasis
+        , orthonormalizingParallelVectorsReturnsNothing
         )
 
 import Expect
+import Fuzz
 import Generic
 import OpenSolid.Direction2d as Direction2d
+import OpenSolid.Frame2d as Frame2d
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Expect as Expect
 import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Point2d as Point2d
+import OpenSolid.Vector2d as Vector2d
 import Test exposing (Test)
 
 
@@ -53,4 +59,45 @@ angleFromAndRotateByAreConsistent =
             firstDirection
                 |> Direction2d.rotateBy angle
                 |> Expect.direction2d secondDirection
+        )
+
+
+orthonormalizeProducesValidFrameBasis : Test
+orthonormalizeProducesValidFrameBasis =
+    Test.fuzz (Fuzz.tuple ( Fuzz.vector2d, Fuzz.vector2d ))
+        "orthonormalize produces a valid frame basis"
+        (\vectors ->
+            case Direction2d.orthonormalize vectors of
+                Just ( xDirection, yDirection ) ->
+                    Expect.validFrame2d
+                        (Frame2d.unsafe
+                            { originPoint = Point2d.origin
+                            , xDirection = xDirection
+                            , yDirection = yDirection
+                            }
+                        )
+
+                Nothing ->
+                    let
+                        ( v1, v2 ) =
+                            vectors
+
+                        crossProduct =
+                            Vector2d.crossProduct v1 v2
+                    in
+                    Expect.approximately 0.0 crossProduct
+        )
+
+
+orthonormalizingParallelVectorsReturnsNothing : Test
+orthonormalizingParallelVectorsReturnsNothing =
+    Test.test "orthonormalizing parallel vectors returns Nothing"
+        (\() ->
+            let
+                vectors =
+                    ( Vector2d.withComponents ( 1, 2 )
+                    , Vector2d.withComponents ( -3, -6 )
+                    )
+            in
+            Expect.equal Nothing (Direction2d.orthonormalize vectors)
         )

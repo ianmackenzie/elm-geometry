@@ -4,8 +4,6 @@ module Vector2d
         , jsonRoundTrips
         , mirrorAcrossNegatesPerpendicularComponent
         , mirrorAcrossPreservesParallelComponent
-        , orthonormalizeProducesValidFrameBasis
-        , orthonormalizingParallelVectorsReturnsNothing
         , perpendicularVectorIsPerpendicular
         , rotateByPreservesLength
         , rotateByRotatesByTheCorrectAngle
@@ -120,45 +118,4 @@ mirrorAcrossNegatesPerpendicularComponent =
                 |> Vector2d.mirrorAcross axis
                 |> perpendicularComponent
                 |> Expect.approximately -(perpendicularComponent vector)
-        )
-
-
-orthonormalizeProducesValidFrameBasis : Test
-orthonormalizeProducesValidFrameBasis =
-    Test.fuzz (Fuzz.tuple ( Fuzz.vector2d, Fuzz.vector2d ))
-        "orthonormalize produces a valid frame basis"
-        (\vectors ->
-            case Vector2d.orthonormalize vectors of
-                Just ( xDirection, yDirection ) ->
-                    Expect.validFrame2d
-                        (Frame2d.unsafe
-                            { originPoint = Point2d.origin
-                            , xDirection = xDirection
-                            , yDirection = yDirection
-                            }
-                        )
-
-                Nothing ->
-                    let
-                        ( v1, v2 ) =
-                            vectors
-
-                        crossProduct =
-                            Vector2d.crossProduct v1 v2
-                    in
-                    Expect.approximately 0.0 crossProduct
-        )
-
-
-orthonormalizingParallelVectorsReturnsNothing : Test
-orthonormalizingParallelVectorsReturnsNothing =
-    Test.test "orthonormalizing parallel vectors returns Nothing"
-        (\() ->
-            let
-                vectors =
-                    ( Vector2d.withComponents ( 1, 2 )
-                    , Vector2d.withComponents ( -3, -6 )
-                    )
-            in
-            Expect.equal Nothing (Vector2d.orthonormalize vectors)
         )

@@ -27,6 +27,7 @@ module OpenSolid.Direction3d
         , negativeZ
         , on
         , orthogonalize
+        , orthonormalize
         , perpendicularBasis
         , perpendicularTo
         , placeIn
@@ -72,7 +73,7 @@ several uses, such as:
 
 # Constructors
 
-@docs with, from, on, perpendicularTo, perpendicularBasis, orthogonalize, unsafe
+@docs with, from, on, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize, unsafe
 
 
 # Components
@@ -425,7 +426,90 @@ perpendicularBasis direction =
 
 
 {-| Attempt to form a set of three mutually perpendicular directions from the
-three given directions by performing [Gram-Schmidt normalization](https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process);
+three given vectors by performing [Gram-Schmidt normalization](https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process):
+
+  - The first returned direction will be equal to the direction of the first
+    given vector
+  - The second returned direction will be as close as possible to the second
+    given vector while being perpendicular to the first returned direction
+  - The third returned direction will be as close as possible to the third given
+    vector while being perpendicular to the first and second returned directions
+
+If any of the given vectors are zero, any two of them are parallel, or the three
+are coplanar, `Nothing` will be returned.
+
+    Direction3d.orthonormalize
+        ( Vector3d.withComponents ( 3, 3, 0 )
+        , Vector3d.withComponents ( 0, 2, 0 )
+        , Vector3d.withComponents ( 1, 2, 3 )
+        )
+    --> Just
+    -->     ( Direction3d.with
+    -->         { azimuth = degrees 45
+    -->         , elevation = 0
+    -->         }
+    -->     , Direction3d.with
+    -->         { azimuth = degrees 135
+    -->         , elevation = 0
+    -->         }
+    -->     , Direction3d.positiveZ
+    -->     )
+
+    -- Three vectors in the XY plane:
+    Direction3d.orthonormalize
+        ( Vector3d.withComponents ( 2, 0, 0 )
+        , Vector3d.withComponents ( 3, 1, 0 )
+        , Vector3d.withComponents ( 4, 2, 0 )
+        )
+    --> Nothing
+
+-}
+orthonormalize : ( Vector3d, Vector3d, Vector3d ) -> Maybe ( Direction3d, Direction3d, Direction3d )
+orthonormalize ( xVector, xyVector, xyzVector ) =
+    Vector3d.direction xVector
+        |> Maybe.andThen
+            (\xDirection ->
+                let
+                    xProjection =
+                        Vector3d.projectionIn xDirection xyVector
+
+                    yVector =
+                        Vector3d.difference xyVector xProjection
+                in
+                Vector3d.direction yVector
+                    |> Maybe.andThen
+                        (\yDirection ->
+                            let
+                                xProjection =
+                                    Vector3d.projectionIn xDirection
+                                        xyzVector
+
+                                yzVector =
+                                    Vector3d.difference xyzVector
+                                        xProjection
+
+                                yProjection =
+                                    Vector3d.projectionIn yDirection
+                                        yzVector
+
+                                zVector =
+                                    Vector3d.difference yzVector
+                                        yProjection
+                            in
+                            Vector3d.direction zVector
+                                |> Maybe.map
+                                    (\zDirection ->
+                                        ( xDirection
+                                        , yDirection
+                                        , zDirection
+                                        )
+                                    )
+                        )
+            )
+
+
+{-| Attempt to form a set of three mutually perpendicular directions from the
+three given directions;
 
     Direction3d.orthogonalize
         ( xDirection
@@ -435,7 +519,7 @@ three given directions by performing [Gram-Schmidt normalization](https://en.wik
 
 is equivalent to
 
-    Vector3d.orthonormalize
+    Direction3d.orthonormalize
         ( Direction3d.toVector xDirection
         , Direction3d.toVector yDirection
         , Direction3d.toVector zDirection
@@ -444,7 +528,7 @@ is equivalent to
 -}
 orthogonalize : ( Direction3d, Direction3d, Direction3d ) -> Maybe ( Direction3d, Direction3d, Direction3d )
 orthogonalize ( xDirection, yDirection, zDirection ) =
-    Vector3d.orthonormalize
+    orthonormalize
         ( toVector xDirection
         , toVector yDirection
         , toVector zDirection

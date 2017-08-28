@@ -28,7 +28,6 @@ module OpenSolid.Vector3d
         , mirrorAcross
         , normalize
         , on
-        , orthonormalize
         , perpendicularTo
         , placeIn
         , projectInto
@@ -556,91 +555,6 @@ lengthAndDirection vector =
                 Direction3d.unsafe (components normalizedVector)
         in
         Just ( vectorLength, vectorDirection )
-
-
-{-| Attempt to form a set of three mutually perpendicular directions from the
-three given vectors by performing [Gram-Schmidt normalization](https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process):
-
-  - The first returned direction will be equal to the direction of the first
-    given vector
-  - The second returned direction will be as close as possible to the second
-    given vector while being perpendicular to the first returned direction
-  - The third returned direction will be as close as possible to the third given
-    vector while being perpendicular to the first and second returned directions
-
-If any of the given vectors are zero, any two of them are parallel, or the three
-are coplanar, `Nothing` will be returned.
-
-    Vector3d.orthonormalize
-        ( Vector3d.withComponents ( 3, 3, 0 )
-        , Vector3d.withComponents ( 0, 2, 0 )
-        , Vector3d.withComponents ( 1, 2, 3 )
-        )
-    --> Just
-    -->     ( Direction3d.with
-    -->         { azimuth = degrees 45
-    -->         , elevation = 0
-    -->         }
-    -->     , Direction3d.with
-    -->         { azimuth = degrees 135
-    -->         , elevation = 0
-    -->         }
-    -->     , Direction3d.positiveZ
-    -->     )
-
-    -- Three vectors in the XY plane:
-    Vector3d.orthonormalize
-        ( Vector3d.withComponents ( 2, 0, 0 )
-        , Vector3d.withComponents ( 3, 1, 0 )
-        , Vector3d.withComponents ( 4, 2, 0 )
-        )
-    --> Nothing
-
-See also [`Direction3d.orthogonalize`](OpenSolid-Direction3d#orthogonalize).
-
--}
-orthonormalize : ( Vector3d, Vector3d, Vector3d ) -> Maybe ( Direction3d, Direction3d, Direction3d )
-orthonormalize ( xVector, xyVector, xyzVector ) =
-    direction xVector
-        |> Maybe.andThen
-            (\xDirection ->
-                let
-                    xProjection =
-                        projectionIn xDirection xyVector
-
-                    yVector =
-                        difference xyVector xProjection
-                in
-                direction yVector
-                    |> Maybe.andThen
-                        (\yDirection ->
-                            let
-                                xProjection =
-                                    projectionIn xDirection
-                                        xyzVector
-
-                                yzVector =
-                                    difference xyzVector
-                                        xProjection
-
-                                yProjection =
-                                    projectionIn yDirection
-                                        yzVector
-
-                                zVector =
-                                    difference yzVector
-                                        yProjection
-                            in
-                            direction zVector
-                                |> Maybe.map
-                                    (\zDirection ->
-                                        ( xDirection
-                                        , yDirection
-                                        , zDirection
-                                        )
-                                    )
-                        )
-            )
 
 
 {-| Normalize a vector to have a length of one. Zero vectors are left as-is.
