@@ -344,7 +344,7 @@ zDirection (Internal.Frame3d properties) =
 
 All predefined frames are right-handed, and most operations on frames preserve
 handedness, so about the only ways to end up with a left-handed frame are by
-constructing one explicitly or by mirroring a right-handed frame.
+constructing one explicitly with `unsafe` or by mirroring a right-handed frame.
 
 -}
 isRightHanded : Frame3d -> Bool
