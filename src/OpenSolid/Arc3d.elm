@@ -2,7 +2,6 @@ module OpenSolid.Arc3d
     exposing
         ( Arc3d
         , around
-        , axialDirection
         , axis
         , centerPoint
         , endPoint
@@ -43,7 +42,7 @@ start point to the arc's end point). This module includes functionality for
 
 # Accessors
 
-@docs axis, centerPoint, axialDirection, radius, startPoint, endPoint, sweptAngle
+@docs axis, centerPoint, radius, startPoint, endPoint, sweptAngle
 
 
 # Evaluation
@@ -229,20 +228,6 @@ centerPoint arc =
     Axis3d.originPoint (axis arc)
 
 
-{-| Get direction of an arc's axis;
-
-    Arc3d.axialDirection arc
-
-is equivalent to
-
-    Axis3d.direction (Arc3d.axis arc)
-
--}
-axialDirection : Arc3d -> Direction3d
-axialDirection arc =
-    Axis3d.direction (axis arc)
-
-
 {-| Get the radius of an arc.
 
     Arc3d.radius exampleArc
@@ -290,13 +275,14 @@ pointOn arc =
         arcCenterPoint =
             centerPoint arc
 
+        axialVector =
+            Direction3d.toVector (Axis3d.direction (axis arc))
+
         xVector =
             Vector3d.from arcCenterPoint (startPoint arc)
 
         yVector =
-            Vector3d.crossProduct
-                (axialDirection arc |> Direction3d.toVector)
-                xVector
+            Vector3d.crossProduct axialVector xVector
 
         ( x0, y0, z0 ) =
             Point3d.coordinates arcCenterPoint
@@ -353,13 +339,14 @@ evaluate arc =
         arcCenterPoint =
             centerPoint arc
 
+        axialVector =
+            Direction3d.toVector (Axis3d.direction (axis arc))
+
         xVector =
             Vector3d.from arcCenterPoint (startPoint arc)
 
         yVector =
-            Vector3d.crossProduct
-                (axialDirection arc |> Direction3d.toVector)
-                xVector
+            Vector3d.crossProduct axialVector xVector
 
         ( x0, y0, z0 ) =
             Point3d.coordinates arcCenterPoint

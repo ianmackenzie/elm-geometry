@@ -600,7 +600,8 @@ arc3d =
     expect
         (allOf
             [ by (Point3d.equalWithin defaultTolerance) Arc3d.centerPoint
-            , by (Direction3d.equalWithin defaultTolerance) Arc3d.axialDirection
+            , by (Direction3d.equalWithin defaultTolerance)
+                (Arc3d.axis >> Axis3d.direction)
             , by (Point3d.equalWithin defaultTolerance) Arc3d.startPoint
             , by (Scalar.equalWithin defaultTolerance) Arc3d.sweptAngle
             ]
