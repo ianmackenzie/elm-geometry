@@ -84,8 +84,6 @@ is equivalent to
         |> Triangle3d.projectOnto
             (SketchPlane3d.toPlane sketchPlane)
 
-since the result will always be on the given sketch plane.
-
 @docs SketchPlane3d
 
 
