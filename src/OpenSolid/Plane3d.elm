@@ -24,7 +24,6 @@ module OpenSolid.Plane3d
         , relativeTo
         , rotateAround
         , through
-        , toSketchPlane
         , translateBy
         , with
         , xy
@@ -54,14 +53,9 @@ and normal direction and is useful for several operations including:
 @docs with, through
 
 
-# Accessors
+# Properties
 
-@docs originPoint, normalDirection
-
-
-# Conversions
-
-@docs normalAxis, toSketchPlane
+@docs originPoint, normalDirection, normalAxis
 
 
 # Transformations
@@ -76,9 +70,8 @@ and normal direction and is useful for several operations including:
 -}
 
 import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
-import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
-import OpenSolid.Geometry.Internal as Internal exposing (Frame3d, SketchPlane3d)
+import OpenSolid.Geometry.Internal as Internal exposing (Frame3d)
 import OpenSolid.Point3d as Point3d exposing (Point3d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
@@ -243,53 +236,6 @@ normalAxis plane =
     Axis3d.with
         { originPoint = originPoint plane
         , direction = normalDirection plane
-        }
-
-
-{-| Construct a SketchPlane3d from the given plane. The origin of the sketch
-plane will be the origin point of the given plane. The X and Y basis directions
-of the sketch plane
-
-  - will be perpendicular to each other,
-  - will both be perpendicular to the normal direction of the given plane, and
-  - will have a cross product equal to the normal direction of the given plane
-
-but are otherwise arbitrary. For example, in the current implementation,
-
-    sketchPlane =
-        Plane3d.toSketchPlane Plane3d.xy
-
-    SketchPlane3d.originPoint sketchPlane
-    --> Point3d.origin
-
-    SketchPlane3d.xDirection sketchPlane
-    --> Direction3d.negativeY
-
-    SketchPlane3d.yDirection sketchPlane
-    --> Direction3d.x
-
-which is coplanar with and has the same origin point as [`SketchPlane3d.xy`](OpenSolid-SketchPlane3d#xy),
-but is not equal to it as might be expected.
-
-As a result, this function is only useful if the exact X and Y basis directions
-of the resulting sketch plane are not important; if they are, you will need to
-construct those directions explicitly and directly construct a new
-`SketchPlane3d` from them.
-
--}
-toSketchPlane : Plane3d -> SketchPlane3d
-toSketchPlane plane =
-    let
-        normal =
-            normalDirection plane
-
-        ( xDirection, yDirection ) =
-            Direction3d.perpendicularBasis normal
-    in
-    SketchPlane3d.unsafe
-        { originPoint = originPoint plane
-        , xDirection = xDirection
-        , yDirection = yDirection
         }
 
 

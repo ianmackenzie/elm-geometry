@@ -15,6 +15,7 @@ module OpenSolid.SketchPlane3d
         ( SketchPlane3d
         , flipX
         , flipY
+        , fromPlane
         , mirrorAcross
         , moveTo
         , normalAxis
@@ -22,11 +23,11 @@ module OpenSolid.SketchPlane3d
         , on
         , originPoint
         , placeIn
+        , plane
         , relativeTo
         , rotateAround
         , rotateAroundOwn
         , through
-        , toPlane
         , translateAlongOwn
         , translateBy
         , unsafe
@@ -82,7 +83,7 @@ is equivalent to
 
     triangle3d
         |> Triangle3d.projectOnto
-            (SketchPlane3d.toPlane sketchPlane)
+            (SketchPlane3d.plane sketchPlane)
 
 @docs SketchPlane3d
 
@@ -106,22 +107,13 @@ point, and use the two indicated global axes as their X and Y axes. For example,
 
 # Constructors
 
-@docs with, on, through, unsafe
+
+@docs with, on, through, fromPlane, unsafe
 
 
-# Accessors
+# Properties
 
-@docs originPoint, xDirection, yDirection, normalDirection
-
-
-# Axes
-
-@docs xAxis, yAxis, normalAxis
-
-
-# Conversions
-
-@docs toPlane
+@docs originPoint, xDirection, yDirection, normalDirection, xAxis, yAxis, normalAxis, plane
 
 
 # Transformations
@@ -216,9 +208,14 @@ xz =
 
 
 {-| Construct a sketch plane with the given origin point and normal direction.
-X and Y basis directions will be chosen arbitrarily such that the sketch plane
-has the desired normal direction. This is useful when constructing 'scratch'
-sketch planes where the specific X/Y directions are unimportant.
+The X and Y basis directions of the sketch plane will:
+
+  - be perpendicular to each other,
+  - both be perpendicular to the given normal direction, and
+  - have a cross product equal to the given normal direction.
+
+This is useful when constructing 'scratch' sketch planes where the specific X/Y
+directions are unimportant.
 
     sketchPlane =
         SketchPlane3d.with
@@ -241,15 +238,6 @@ sketch planes where the specific X/Y directions are unimportant.
 
     SketchPlane3d.yDirection sketchPlane
     --> Direction3d.y
-
-This is the same as constructing a `Plane3d` with the given point and normal and
-then converting it to a `SketchPlane3d`;
-
-    SketchPlane3d.with { ... }
-
-is equivalent to
-
-    Plane3d.toSketchPlane (Plane3d.with { ... })
 
 -}
 with : { originPoint : Point3d, normalDirection : Direction3d } -> SketchPlane3d
@@ -299,6 +287,45 @@ on sketchPlane frame =
         { originPoint = Point3d.on sketchPlane (Frame2d.originPoint frame)
         , xDirection = Direction3d.on sketchPlane (Frame2d.xDirection frame)
         , yDirection = Direction3d.on sketchPlane (Frame2d.yDirection frame)
+        }
+
+
+{-| Construct a SketchPlane3d from the given plane;
+
+    SketchPlane3d.fromPlane plane
+
+is equivalent to
+
+    SketchPlane3d.with
+        { originPoint = Plane3d.originPoint plane
+        , normalDirection = Plane3d.normalDirection plane
+        }
+
+Note that because the X and Y directions of the resulting sketch plane are
+chosen arbitrarily, conversions may not work exactly as you expect. For example,
+in the current implementation,
+
+    sketchPlane =
+        SketchPlane3d.fromPlane Plane3d.xy
+
+is not equal to `SketchPlane3d.xy` (although the two sketch planes have the same
+origin point and are coplanar):
+
+    SketchPlane3d.originPoint sketchPlane
+    --> Point3d.origin
+
+    SketchPlane3d.xDirection sketchPlane
+    --> Direction3d.negativeY
+
+    SketchPlane3d.yDirection sketchPlane
+    --> Direction3d.positiveX
+
+-}
+fromPlane : Plane3d -> SketchPlane3d
+fromPlane plane =
+    with
+        { originPoint = Plane3d.originPoint plane
+        , normalDirection = Plane3d.normalDirection plane
         }
 
 
@@ -510,18 +537,18 @@ normalAxis sketchPlane =
         }
 
 
-{-| Conver a `SketchPlane3d` to a `Plane3d` with the same origin point and
-normal direction.
+{-| Get the plane of a sketch plane (the `Plane3d` with the same origin point
+and normal direction).
 
-    SketchPlane3d.toPlane SketchPlane3d.xy
+    SketchPlane3d.plane SketchPlane3d.xy
     --> Plane3d.xy
 
-    SketchPlane3d.toPlane SketchPlane3d.yx
+    SketchPlane3d.plane SketchPlane3d.yx
     --> Plane3d.flip Plane3d.xy
 
 -}
-toPlane : SketchPlane3d -> Plane3d
-toPlane sketchPlane =
+plane : SketchPlane3d -> Plane3d
+plane sketchPlane =
     Plane3d.with
         { originPoint = originPoint sketchPlane
         , normalDirection = normalDirection sketchPlane

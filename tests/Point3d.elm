@@ -106,7 +106,7 @@ projectIntoThenPlaceOntoIsProjectOnto =
         (\point sketchPlane ->
             let
                 plane =
-                    SketchPlane3d.toPlane sketchPlane
+                    SketchPlane3d.plane sketchPlane
             in
             Point3d.projectInto sketchPlane point
                 |> Point3d.on sketchPlane
