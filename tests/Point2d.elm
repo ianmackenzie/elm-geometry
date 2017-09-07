@@ -1,6 +1,8 @@
 module Point2d
     exposing
-        ( interpolationReturnsExactEndpoints
+        ( hullOfConsistentWithHull
+        , hullOfIsOrderIndependent
+        , interpolationReturnsExactEndpoints
         , jsonRoundTrips
         , midpointIsEquidistant
         , projectionOntoAxisPreservesDistance
@@ -87,6 +89,27 @@ interpolationReturnsExactEndpoints =
             [ \( p1, p2 ) -> Point2d.interpolateFrom p1 p2 0 |> Expect.equal p1
             , \( p1, p2 ) -> Point2d.interpolateFrom p1 p2 1 |> Expect.equal p2
             ]
+        )
+
+
+hullOfConsistentWithHull : Test
+hullOfConsistentWithHull =
+    Test.fuzz2 Fuzz.point2d
+        Fuzz.point2d
+        "'hullOf' is consistent with 'hull'"
+        (\firstPoint secondPoint ->
+            Point2d.hullOf [ firstPoint, secondPoint ]
+                |> Expect.equal (Just (Point2d.hull firstPoint secondPoint))
+        )
+
+
+hullOfIsOrderIndependent : Test
+hullOfIsOrderIndependent =
+    Test.fuzz (Fuzz.list Fuzz.point2d)
+        "'hullOf' does not depend on input order"
+        (\points ->
+            Point2d.hullOf (List.reverse points)
+                |> Expect.equal (Point2d.hullOf points)
         )
 
 

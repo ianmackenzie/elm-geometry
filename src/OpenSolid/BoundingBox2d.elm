@@ -14,7 +14,6 @@ module OpenSolid.BoundingBox2d
     exposing
         ( BoundingBox2d
         , centroid
-        , containing
         , contains
         , dimensions
         , extrema
@@ -57,7 +56,7 @@ box of an object than the object itself, such as:
 
 # Constructors
 
-@docs with, singleton, containing, hull, intersection, hullOf
+@docs with, singleton, hull, intersection, hullOf
 
 
 # Properties
@@ -72,8 +71,8 @@ box of an object than the object itself, such as:
 -}
 
 import OpenSolid.Bootstrap.BoundingBox2d as Bootstrap
-import OpenSolid.Geometry.Internal as Internal
-import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.Bootstrap.Point2d as Point2d
+import OpenSolid.Geometry.Internal as Internal exposing (Point2d)
 
 
 {-| -}
@@ -122,37 +121,6 @@ singleton point =
             Point2d.coordinates point
     in
     with { minX = x, maxX = x, minY = y, maxY = y }
-
-
-{-| Construct a bounding box containing all points in the given list. If the
-list is empty, returns `Nothing`.
-
-    points =
-        [ Point2d.withCoordinates ( 2, 3 )
-        , Point2d.withCoordinates ( -1, 5 )
-        , Point2d.withCoordinates ( 6, 4 )
-        ]
-
-    BoundingBox2d.containing points
-    --> Just
-    -->     (BoundingBox2d.with
-    -->         { minX = -1
-    -->         , maxX = 6
-    -->         , minY = 3
-    -->         , maxY = 5
-    -->         }
-    -->     )
-
-    BoundingBox2d.containing []
-    --> Nothing
-
-If you have exactly two points, you can use [`Point2d.hull`](OpenSolid-Point2d#hull)
-instead (which returns a `BoundingBox2d` instead of a `Maybe BoundingBox2d`).
-
--}
-containing : List Point2d -> Maybe BoundingBox2d
-containing points =
-    hullOf (List.map singleton points)
 
 
 {-| Construct a bounding box containing all bounding boxes in the given list. If

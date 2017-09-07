@@ -14,7 +14,6 @@ module OpenSolid.BoundingBox3d
     exposing
         ( BoundingBox3d
         , centroid
-        , containing
         , contains
         , dimensions
         , extrema
@@ -59,7 +58,7 @@ box of an object than the object itself, such as:
 
 # Constructors
 
-@docs with, singleton, containing, hull, intersection, hullOf
+@docs with, singleton, hull, intersection, hullOf
 
 
 # Properties
@@ -74,8 +73,8 @@ box of an object than the object itself, such as:
 -}
 
 import OpenSolid.Bootstrap.BoundingBox3d as Bootstrap
-import OpenSolid.Geometry.Internal as Internal
-import OpenSolid.Point3d as Point3d exposing (Point3d)
+import OpenSolid.Bootstrap.Point3d as Point3d
+import OpenSolid.Geometry.Internal as Internal exposing (Point3d)
 
 
 {-| -}
@@ -135,39 +134,6 @@ singleton point =
         , minZ = z
         , maxZ = z
         }
-
-
-{-| Construct a bounding box containing all points in the given list. If the
-list is empty, returns `Nothing`.
-
-    points =
-        [ Point3d.withCoordinates ( 2, 1, 3 )
-        , Point3d.withCoordinates ( -1, 5, -2 )
-        , Point3d.withCoordinates ( 6, 4, 2 )
-        ]
-
-    BoundingBox3d.containing points
-    --> Just
-    -->     (BoundingBox3d.with
-    -->         { minX = -1
-    -->         , maxX = 6
-    -->         , minY = 1
-    -->         , maxY = 5
-    -->         , minZ = -2
-    -->         , maxZ = 3
-    -->         }
-    -->     )
-
-    BoundingBox3d.containing []
-    --> Nothing
-
-If you have exactly two points, you can use [`Point3d.hull`](OpenSolid-Point3d#hull)
-instead (which returns a `BoundingBox3d` instead of a `Maybe BoundingBox3d`).
-
--}
-containing : List Point3d -> Maybe BoundingBox3d
-containing points =
-    hullOf (List.map singleton points)
 
 
 {-| Construct a bounding box containing all bounding boxes in the given list. If

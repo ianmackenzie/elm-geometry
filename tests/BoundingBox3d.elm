@@ -1,8 +1,6 @@
 module BoundingBox3d
     exposing
         ( boxContainsOwnCentroid
-        , containingConsistentWithHull
-        , containingIsOrderIndependent
         , hullContainsInputs
         , intersectionConsistentWithOverlaps
         , intersectionIsValidOrNothing
@@ -27,27 +25,6 @@ jsonRoundTrips =
     Generic.jsonRoundTrips Fuzz.boundingBox3d
         Encode.boundingBox3d
         Decode.boundingBox3d
-
-
-containingConsistentWithHull : Test
-containingConsistentWithHull =
-    Test.fuzz2 Fuzz.point3d
-        Fuzz.point3d
-        "'containing' is consistent with 'Point3d.hull'"
-        (\firstPoint secondPoint ->
-            BoundingBox3d.containing [ firstPoint, secondPoint ]
-                |> Expect.equal (Just (Point3d.hull firstPoint secondPoint))
-        )
-
-
-containingIsOrderIndependent : Test
-containingIsOrderIndependent =
-    Test.fuzz (Fuzz.list Fuzz.point3d)
-        "'containing' does not depend on input order"
-        (\points ->
-            BoundingBox3d.containing (List.reverse points)
-                |> Expect.equal (BoundingBox3d.containing points)
-        )
 
 
 intersectionConsistentWithOverlaps : Test

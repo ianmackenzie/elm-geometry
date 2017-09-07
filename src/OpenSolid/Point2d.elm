@@ -20,6 +20,7 @@ module OpenSolid.Point2d
         , distanceFrom
         , equalWithin
         , hull
+        , hullOf
         , in_
         , interpolateFrom
         , midpoint
@@ -98,15 +99,15 @@ different coordinate frames.
 
 # Bounding box construction
 
-@docs hull
+@docs hull, hullOf
 
 -}
 
 import OpenSolid.Bootstrap.Axis2d as Axis2d
-import OpenSolid.Bootstrap.BoundingBox2d as BoundingBox2d
 import OpenSolid.Bootstrap.Frame2d as Frame2d
+import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
-import OpenSolid.Geometry.Internal as Internal exposing (Axis2d, BoundingBox2d, Frame2d)
+import OpenSolid.Geometry.Internal as Internal exposing (Axis2d, Frame2d)
 import OpenSolid.Scalar as Scalar
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
@@ -760,3 +761,34 @@ hull firstPoint secondPoint =
         , minY = min y1 y2
         , maxY = max y1 y2
         }
+
+
+{-| Construct a bounding box containing all points in the given list. If the
+list is empty, returns `Nothing`.
+
+    points =
+        [ Point2d.withCoordinates ( 2, 3 )
+        , Point2d.withCoordinates ( -1, 5 )
+        , Point2d.withCoordinates ( 6, 4 )
+        ]
+
+    Point2d.hullOf points
+    --> Just
+    -->     (BoundingBox2d.with
+    -->         { minX = -1
+    -->         , maxX = 6
+    -->         , minY = 3
+    -->         , maxY = 5
+    -->         }
+    -->     )
+
+    Point2d.hullOf []
+    --> Nothing
+
+If you have exactly two points, you can use [`Point2d.hull`](#hull) instead
+(which returns a `BoundingBox2d` instead of a `Maybe BoundingBox2d`).
+
+-}
+hullOf : List Point2d -> Maybe BoundingBox2d
+hullOf points =
+    BoundingBox2d.hullOf (List.map BoundingBox2d.singleton points)

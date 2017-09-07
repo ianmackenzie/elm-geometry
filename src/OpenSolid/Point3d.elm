@@ -21,6 +21,7 @@ module OpenSolid.Point3d
         , distanceFromAxis
         , equalWithin
         , hull
+        , hullOf
         , in_
         , interpolateFrom
         , midpoint
@@ -103,17 +104,17 @@ different coordinate frames.
 
 # Bounding box construction
 
-@docs hull
+@docs hull, hullOf
 
 -}
 
 import OpenSolid.Bootstrap.Axis3d as Axis3d
-import OpenSolid.Bootstrap.BoundingBox3d as BoundingBox3d
 import OpenSolid.Bootstrap.Frame3d as Frame3d
 import OpenSolid.Bootstrap.Plane3d as Plane3d
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
+import OpenSolid.BoundingBox3d as BoundingBox3d exposing (BoundingBox3d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
-import OpenSolid.Geometry.Internal as Internal exposing (Axis3d, BoundingBox3d, Frame3d, Plane3d, SketchPlane3d)
+import OpenSolid.Geometry.Internal as Internal exposing (Axis3d, Frame3d, Plane3d, SketchPlane3d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Scalar as Scalar
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
@@ -924,3 +925,36 @@ hull firstPoint secondPoint =
         , minZ = min z1 z2
         , maxZ = max z1 z2
         }
+
+
+{-| Construct a bounding box containing all points in the given list. If the
+list is empty, returns `Nothing`.
+
+    points =
+        [ Point3d.withCoordinates ( 2, 1, 3 )
+        , Point3d.withCoordinates ( -1, 5, -2 )
+        , Point3d.withCoordinates ( 6, 4, 2 )
+        ]
+
+    Point3d.hullOf points
+    --> Just
+    -->     (BoundingBox3d.with
+    -->         { minX = -1
+    -->         , maxX = 6
+    -->         , minY = 1
+    -->         , maxY = 5
+    -->         , minZ = -2
+    -->         , maxZ = 3
+    -->         }
+    -->     )
+
+    Point3d.hullOf []
+    --> Nothing
+
+If you have exactly two points, you can use [`Point3d.hull`](#hull) instead
+(which returns a `BoundingBox3d` instead of a `Maybe BoundingBox3d`).
+
+-}
+hullOf : List Point3d -> Maybe BoundingBox3d
+hullOf points =
+    BoundingBox3d.hullOf (List.map BoundingBox3d.singleton points)

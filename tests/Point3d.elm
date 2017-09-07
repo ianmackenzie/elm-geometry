@@ -1,6 +1,8 @@
 module Point3d
     exposing
-        ( interpolationReturnsExactEndpoints
+        ( hullOfConsistentWithHull
+        , hullOfIsOrderIndependent
+        , interpolationReturnsExactEndpoints
         , jsonRoundTrips
         , midpointIsEquidistant
         , mirrorFlipsSignedDistance
@@ -153,6 +155,27 @@ translationByPerpendicularDoesNotChangeSignedDistance =
             Point3d.translateBy displacement point
                 |> Point3d.signedDistanceFrom plane
                 |> Expect.approximately originalSignedDistance
+        )
+
+
+hullOfConsistentWithHull : Test
+hullOfConsistentWithHull =
+    Test.fuzz2 Fuzz.point3d
+        Fuzz.point3d
+        "'hullOf' is consistent with 'hull'"
+        (\firstPoint secondPoint ->
+            Point3d.hullOf [ firstPoint, secondPoint ]
+                |> Expect.equal (Just (Point3d.hull firstPoint secondPoint))
+        )
+
+
+hullOfIsOrderIndependent : Test
+hullOfIsOrderIndependent =
+    Test.fuzz (Fuzz.list Fuzz.point3d)
+        "'hullOf' does not depend on input order"
+        (\points ->
+            Point3d.hullOf (List.reverse points)
+                |> Expect.equal (Point3d.hullOf points)
         )
 
 

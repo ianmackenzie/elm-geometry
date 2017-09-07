@@ -358,4 +358,4 @@ if the polyline has no vertices.
 -}
 boundingBox : Polyline3d -> Maybe BoundingBox3d
 boundingBox polyline =
-    BoundingBox3d.containing (vertices polyline)
+    Point3d.hullOf (vertices polyline)
