@@ -152,7 +152,9 @@ on sketchPlane circle =
         }
 
 
-{-| Attempt to construct a circle that passes through the three given points. If
+{-| Attempt to construct a circle that passes through the three given points.
+The axial direction of the returned circle will be such that the three points
+are in counterclockwise order around it, according to the right-hand rule. If
 the three given points are collinear, returns `Nothing`.
 
     Circle3d.through
@@ -244,7 +246,8 @@ axis circle =
 
 
 {-| Get the plane that a circle lies in. The origin point of the returned plane
-will be the center point of the circle.
+will be the center point of the circle, and its normal direction will be the
+axial direction of the circle.
 
     Circle3d.plane exampleCircle
     --> Plane3d.with
