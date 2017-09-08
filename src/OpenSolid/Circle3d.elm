@@ -3,6 +3,7 @@ module OpenSolid.Circle3d
         ( Circle3d
         , area
         , around
+        , axialDirection
         , axis
         , boundingBox
         , centerPoint
@@ -43,7 +44,7 @@ for:
 
 # Properties
 
-@docs centerPoint, radius, diameter, axis, plane, area, circumference, boundingBox
+@docs centerPoint, axialDirection, radius, diameter, axis, plane, area, circumference, boundingBox
 
 
 # Transformations
@@ -212,6 +213,12 @@ centerPoint (Internal.Circle3d properties) =
     properties.centerPoint
 
 
+{-| Get the axial direction of a circle.
+
+    Circle3d.axialDirection exampleCircle
+    --> Direction3d.z
+
+-}
 axialDirection : Circle3d -> Direction3d
 axialDirection (Internal.Circle3d properties) =
     properties.axialDirection
