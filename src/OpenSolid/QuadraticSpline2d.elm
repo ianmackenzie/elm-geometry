@@ -1,6 +1,8 @@
 module OpenSolid.QuadraticSpline2d
     exposing
         ( QuadraticSpline2d
+        , approximateLength
+        , arcLengthParameterization
         , bisect
         , controlPoints
         , derivative
@@ -41,7 +43,7 @@ in 2D defined by three control points. This module contains functionality for
 
 # Properties
 
-@docs controlPoints, startPoint, endPoint, startDerivative, endDerivative
+@docs controlPoints, startPoint, endPoint, startDerivative, endDerivative, approximateLength, arcLengthParameterization
 
 
 # Evaluation
@@ -70,6 +72,7 @@ import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
+import OpenSolid.Geometry.Approximate as Approximate exposing (asPolyline)
 
 
 {-| -}
@@ -145,7 +148,7 @@ startDerivative spline =
         ( p1, p2, _ ) =
             controlPoints spline
     in
-    Vector2d.from p1 p2 |> Vector2d.scaleBy 2
+        Vector2d.from p1 p2 |> Vector2d.scaleBy 2
 
 
 {-| Get the end derivative of a spline. This is equal to twice the vector from
@@ -161,7 +164,39 @@ endDerivative spline =
         ( _, p2, p3 ) =
             controlPoints spline
     in
-    Vector2d.from p2 p3 |> Vector2d.scaleBy 2
+        Vector2d.from p2 p3 |> Vector2d.scaleBy 2
+
+
+lengthConfig : Float -> Approximate.LengthConfig QuadraticSpline2d
+lengthConfig percentageError =
+    { split = splitAt
+    , percentageError = percentageError
+    , startAndEndpoint =
+        \s ->
+            let
+                ( p1, _, p3 ) =
+                    controlPoints s
+            in
+                ( p1, p3 )
+    }
+
+
+{-| -}
+approximateLength : Float -> QuadraticSpline2d -> Float
+approximateLength percentageError spline =
+    Approximate.length (lengthConfig percentageError) spline
+
+
+{-|
+   QuadraticSpline2d.arcLengthParameterization 0.001 exampleSpline 0
+   --> Just (Point2d ( 1, 1 ))
+
+   QuadraticSpline2d.arcLengthParameterization 0.001 exampleSpline -1
+   --> Nothing
+-}
+arcLengthParameterization : Float -> QuadraticSpline2d -> Float -> Maybe Point2d
+arcLengthParameterization percentageError spline arcLength =
+    Approximate.arcLengthParameterization_ (lengthConfig percentageError) spline arcLength
 
 
 {-| Get a point along a spline, based on a parameter that ranges from 0 to 1. A
@@ -190,7 +225,7 @@ pointOn spline t =
         q2 =
             Point2d.interpolateFrom p2 p3 t
     in
-    Point2d.interpolateFrom q1 q2 t
+        Point2d.interpolateFrom q1 q2 t
 
 
 {-| Get the deriative value at a point along a spline, based on a parameter that
@@ -221,7 +256,7 @@ derivative spline =
         v2 =
             Vector2d.from p2 p3
     in
-    \t -> Vector2d.interpolateFrom v1 v2 t |> Vector2d.scaleBy 2
+        \t -> Vector2d.interpolateFrom v1 v2 t |> Vector2d.scaleBy 2
 
 
 {-| Evaluate a spline at a given parameter value, returning the point on the
@@ -251,9 +286,9 @@ evaluate spline t =
         q2 =
             Point2d.interpolateFrom p2 p3 t
     in
-    ( Point2d.interpolateFrom q1 q2 t
-    , Vector2d.from q1 q2 |> Vector2d.scaleBy 2
-    )
+        ( Point2d.interpolateFrom q1 q2 t
+        , Vector2d.from q1 q2 |> Vector2d.scaleBy 2
+        )
 
 
 {-| Reverse a spline so that the start point becomes the end point, and vice
@@ -273,7 +308,7 @@ reverse spline =
         ( p1, p2, p3 ) =
             controlPoints spline
     in
-    withControlPoints ( p3, p2, p1 )
+        withControlPoints ( p3, p2, p1 )
 
 
 {-| Scale a spline about the given center point by the given scale.
@@ -350,7 +385,7 @@ mapControlPoints function spline =
         ( p1, p2, p3 ) =
             controlPoints spline
     in
-    withControlPoints ( function p1, function p2, function p3 )
+        withControlPoints ( function p1, function p2, function p3 )
 
 
 {-| Take a spline defined in global coordinates, and return it expressed in
@@ -444,6 +479,6 @@ splitAt t spline =
         r =
             Point2d.interpolateFrom q1 q2 t
     in
-    ( withControlPoints ( p1, q1, r )
-    , withControlPoints ( r, q2, p3 )
-    )
+        ( withControlPoints ( p1, q1, r )
+        , withControlPoints ( r, q2, p3 )
+        )
