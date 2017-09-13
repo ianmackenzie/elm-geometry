@@ -43,12 +43,16 @@ parameterization =
                     |> Expect.equal (Just (Point2d.withCoordinates ( 5, 1 )))
         , Test.test "at s=2.5 the result is the starting point of the spline" <|
             \_ ->
-                QuadraticSpline2d.arcLengthParameterization 0.001 line 2.5
+                QuadraticSpline2d.arcLengthParameterization 0.1 line 2.5
                     |> Expect.equal (Just (Point2d.withCoordinates ( 2.5, 1 )))
         , Test.test "at s=2.5 is about right" <|
             \_ ->
-                QuadraticSpline2d.arcLengthParameterization 0.001 exampleSpline 2.5
-                    |> Expect.equal (Just (Point2d.withCoordinates ( 2.5, 1 )))
+                let
+                    expected =
+                        Just (Point2d.withCoordinates ( 3.5195982005959814, 2.39798200912357 ))
+                in
+                    QuadraticSpline2d.arcLengthParameterization 0.001 exampleSpline 2.5
+                        |> Expect.equal expected
         , Test.test "length is as expected" <|
             \_ ->
                 QuadraticSpline2d.approximateLength 0.001 line
