@@ -98,7 +98,7 @@ vector2d : Decoder Vector2d
 vector2d =
     let
         toVector x y =
-            Vector2d.withComponents ( x, y )
+            Vector2d.fromComponents ( x, y )
     in
     Decode.oneOf
         [ Decode.map2 toVector
@@ -120,7 +120,7 @@ vector3d : Decoder Vector3d
 vector3d =
     let
         toVector x y z =
-            Vector3d.withComponents ( x, y, z )
+            Vector3d.fromComponents ( x, y, z )
     in
     Decode.oneOf
         [ Decode.map3 toVector
@@ -190,7 +190,7 @@ point2d : Decoder Point2d
 point2d =
     let
         toPoint x y =
-            Point2d.withCoordinates ( x, y )
+            Point2d.fromCoordinates ( x, y )
     in
     Decode.oneOf
         [ Decode.map2 toPoint
@@ -212,7 +212,7 @@ point3d : Decoder Point3d
 point3d =
     let
         toPoint x y z =
-            Point3d.withCoordinates ( x, y, z )
+            Point3d.fromCoordinates ( x, y, z )
     in
     Decode.oneOf
         [ Decode.map3 toPoint
@@ -346,7 +346,7 @@ lineSegment3d =
 -}
 triangle2d : Decoder Triangle2d
 triangle2d =
-    Decode.map3 (\v1 v2 v3 -> Triangle2d.withVertices ( v1, v2, v3 ))
+    Decode.map3 (\v1 v2 v3 -> Triangle2d.fromVertices ( v1, v2, v3 ))
         (Decode.index 0 point2d)
         (Decode.index 1 point2d)
         (Decode.index 2 point2d)
@@ -356,7 +356,7 @@ triangle2d =
 -}
 triangle3d : Decoder Triangle3d
 triangle3d =
-    Decode.map3 (\v1 v2 v3 -> Triangle3d.withVertices ( v1, v2, v3 ))
+    Decode.map3 (\v1 v2 v3 -> Triangle3d.fromVertices ( v1, v2, v3 ))
         (Decode.index 0 point3d)
         (Decode.index 1 point3d)
         (Decode.index 2 point3d)
@@ -410,21 +410,21 @@ boundingBox3d =
 -}
 polyline2d : Decoder Polyline2d
 polyline2d =
-    Decode.map Polyline2d.withVertices (Decode.list point2d)
+    Decode.map Polyline2d.fromVertices (Decode.list point2d)
 
 
 {-| Decodes a `Polyline3d` from a list of vertices.
 -}
 polyline3d : Decoder Polyline3d
 polyline3d =
-    Decode.map Polyline3d.withVertices (Decode.list point3d)
+    Decode.map Polyline3d.fromVertices (Decode.list point3d)
 
 
 {-| Decodes a `Polygon2d` from a list of vertices.
 -}
 polygon2d : Decoder Polygon2d
 polygon2d =
-    Decode.map Polygon2d.withVertices (Decode.list point2d)
+    Decode.map Polygon2d.fromVertices (Decode.list point2d)
 
 
 {-| Decodes a `Circle2d` from an object with `centerPoint` and `radius` fields.
@@ -498,7 +498,7 @@ arc3d =
 quadraticSpline2d : Decoder QuadraticSpline2d
 quadraticSpline2d =
     Decode.map3
-        (\p1 p2 p3 -> QuadraticSpline2d.withControlPoints ( p1, p2, p3 ))
+        (\p1 p2 p3 -> QuadraticSpline2d.fromControlPoints ( p1, p2, p3 ))
         (Decode.index 0 point2d)
         (Decode.index 1 point2d)
         (Decode.index 2 point2d)
@@ -509,7 +509,7 @@ quadraticSpline2d =
 quadraticSpline3d : Decoder QuadraticSpline3d
 quadraticSpline3d =
     Decode.map3
-        (\p1 p2 p3 -> QuadraticSpline3d.withControlPoints ( p1, p2, p3 ))
+        (\p1 p2 p3 -> QuadraticSpline3d.fromControlPoints ( p1, p2, p3 ))
         (Decode.index 0 point3d)
         (Decode.index 1 point3d)
         (Decode.index 2 point3d)
@@ -520,7 +520,7 @@ quadraticSpline3d =
 cubicSpline2d : Decoder CubicSpline2d
 cubicSpline2d =
     Decode.map4
-        (\p1 p2 p3 p4 -> CubicSpline2d.withControlPoints ( p1, p2, p3, p4 ))
+        (\p1 p2 p3 p4 -> CubicSpline2d.fromControlPoints ( p1, p2, p3, p4 ))
         (Decode.index 0 point2d)
         (Decode.index 1 point2d)
         (Decode.index 2 point2d)
@@ -532,7 +532,7 @@ cubicSpline2d =
 cubicSpline3d : Decoder CubicSpline3d
 cubicSpline3d =
     Decode.map4
-        (\p1 p2 p3 p4 -> CubicSpline3d.withControlPoints ( p1, p2, p3, p4 ))
+        (\p1 p2 p3 p4 -> CubicSpline3d.fromControlPoints ( p1, p2, p3, p4 ))
         (Decode.index 0 point3d)
         (Decode.index 1 point3d)
         (Decode.index 2 point3d)

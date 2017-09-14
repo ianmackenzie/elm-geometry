@@ -253,14 +253,14 @@ direction specified in XY coordinates _within_ the sketch plane.
 
     horizontalDirection =
         Direction3d.on SketchPlane3d.xy <|
-            Direction2d.withPolarAngle (degrees 45)
+            Direction2d.fromAngle (degrees 45)
 
     Direction3d.components horizontalDirection
     --> ( 0.7071, 0.7071, 0 )
 
     thirtyDegreesFromZ =
         Direction3d.on SketchPlane3d.zx <|
-            Direction2d.withPolarAngle (degrees 30)
+            Direction2d.fromAngle (degrees 30)
 
     Direction3d.components thirtyDegreesFromZ
     --> ( 0.5, 0, 0.866 )
@@ -316,7 +316,7 @@ with { azimuth, elevation } =
 If the two points are coincident, returns `Nothing`.
 
     point =
-        Point3d.withCoordinates ( 1, 0, 1 )
+        Point3d.fromCoordinates ( 1, 0, 1 )
 
     Direction3d.from Point3d.origin point
     --> Just
@@ -429,9 +429,9 @@ If any of the given vectors are zero, any two of them are parallel, or the three
 are coplanar, `Nothing` will be returned.
 
     Direction3d.orthonormalize
-        ( Vector3d.withComponents ( 3, 3, 0 )
-        , Vector3d.withComponents ( 0, 2, 0 )
-        , Vector3d.withComponents ( 1, 2, 3 )
+        ( Vector3d.fromComponents ( 3, 3, 0 )
+        , Vector3d.fromComponents ( 0, 2, 0 )
+        , Vector3d.fromComponents ( 1, 2, 3 )
         )
     --> Just
     -->     ( Direction3d.with
@@ -447,9 +447,9 @@ are coplanar, `Nothing` will be returned.
 
     -- Three vectors in the XY plane:
     Direction3d.orthonormalize
-        ( Vector3d.withComponents ( 2, 0, 0 )
-        , Vector3d.withComponents ( 3, 1, 0 )
-        , Vector3d.withComponents ( 4, 2, 0 )
+        ( Vector3d.fromComponents ( 2, 0, 0 )
+        , Vector3d.fromComponents ( 3, 1, 0 )
+        , Vector3d.fromComponents ( 4, 2, 0 )
         )
     --> Nothing
 
@@ -694,12 +694,12 @@ equalWithin angle firstDirection secondDirection =
 {-| Convert a direction to a unit vector.
 
     Direction3d.toVector Direction3d.y
-    --> Vector3d.withComponents ( 0, 1, 0 )
+    --> Vector3d.fromComponents ( 0, 1, 0 )
 
 -}
 toVector : Direction3d -> Vector3d
 toVector direction =
-    Vector3d.withComponents (components direction)
+    Vector3d.fromComponents (components direction)
 
 
 {-| Find the angle from one direction to another. The result will be in the
@@ -771,7 +771,7 @@ its origin point, since directions are position-independent:
     offsetAxis =
         Axis3d
             { originPoint =
-                Point3d.withCoordinates ( 100, 200, 300 )
+                Point3d.fromCoordinates ( 100, 200, 300 )
             , direction = Direction3d.z
             }
 
@@ -913,7 +913,7 @@ plane; if it is perpendicular, `Nothing` is returned.
             }
 
     Direction3d.projectInto SketchPlane3d.xy direction
-    --> Just (Direction2d.withPolarAngle (degrees -60))
+    --> Just (Direction2d.fromAngle (degrees -60))
 
     Direction3d.projectInto SketchPlane3d.xz direction
     --> Just Direction2d.x

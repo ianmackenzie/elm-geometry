@@ -227,7 +227,7 @@ with { originPoint, zDirection } =
     frame =
         Frame3d.unsafe
             { originPoint =
-                Point3d.withCoordinates ( 2, 1, 3 )
+                Point3d.fromCoordinates ( 2, 1, 3 )
             , xDirection =
                 Direction3d.unsafe ( 0.8, 0.6, 0 )
             , yDirection =
@@ -254,10 +254,10 @@ unsafe =
 origin point.
 
     frame =
-        Frame3d.at (Point3d.withCoordinates ( 2, 1, 3 ))
+        Frame3d.at (Point3d.fromCoordinates ( 2, 1, 3 ))
 
     Frame3d.originPoint frame
-    --> Point3d.withCoordinates ( 2, 1, 3 )
+    --> Point3d.fromCoordinates ( 2, 1, 3 )
 
     Frame3d.xDirection frame
     --> Direction3d.x
@@ -583,7 +583,7 @@ flipZ frame =
 orientation.
 
     point =
-        Point3d.withCoordinates ( 2, 1, 3 )
+        Point3d.fromCoordinates ( 2, 1, 3 )
 
     Frame3d.moveTo point Frame3d.xyz
     --> Frame3d.at point
@@ -603,13 +603,13 @@ moveTo newOrigin frame =
 origin point and basis directions will all be rotated around the given axis.
 
     frame =
-        Frame3d.at (Point3d.withCoordinates ( 2, 1, 3 ))
+        Frame3d.at (Point3d.fromCoordinates ( 2, 1, 3 ))
 
     rotatedFrame =
         Frame3d.rotateAround Axis3d.z (degrees 90) frame
 
     Frame3d.originPoint rotatedFrame
-    --> Point3d.withCoordinates ( -1, 2, 3 )
+    --> Point3d.fromCoordinates ( -1, 2, 3 )
 
     Frame3d.xDirection rotatedFrame
     --> Direction3d.y
@@ -647,7 +647,7 @@ the current frame. The majority of the time this will be either `Frame3d.xAxis`,
 for `rotateAround`:
 
     frame =
-        Frame3d.at (Point3d.withCoordinates ( 2, 1, 3 ))
+        Frame3d.at (Point3d.fromCoordinates ( 2, 1, 3 ))
 
     rotatedFrame =
         frame
@@ -655,7 +655,7 @@ for `rotateAround`:
                 (degrees 90)
 
     Frame3d.originPoint rotatedFrame
-    --> Point3d.withCoordinates ( 2, 1, 3 )
+    --> Point3d.fromCoordinates ( 2, 1, 3 )
 
     Frame3d.xDirection rotatedFrame
     --> Direction3d.y
@@ -683,13 +683,13 @@ rotateAroundOwn axis angle frame =
 {-| Translate a frame by a given displacement.
 
     frame =
-        Frame3d.at (Point3d.withCoordinates ( 2, 1, 3 ))
+        Frame3d.at (Point3d.fromCoordinates ( 2, 1, 3 ))
 
     displacement =
-        Vector3d.withComponents ( 1, 1, 1 )
+        Vector3d.fromComponents ( 1, 1, 1 )
 
     Frame3d.translateBy displacement frame
-    --> Frame3d.at (Point3d.withCoordinates ( 3, 2, 4 ))
+    --> Frame3d.at (Point3d.fromCoordinates ( 3, 2, 4 ))
 
 -}
 translateBy : Vector3d -> Frame3d -> Frame3d
@@ -712,7 +712,7 @@ This function is convenient when constructing frames via a series of
 transformations. For example,
 
     frame =
-        Frame3d.at (Point3d.withCoordinates ( 2, 0, 0 ))
+        Frame3d.at (Point3d.fromCoordinates ( 2, 0, 0 ))
             |> Frame3d.rotateAroundOwn Frame3d.zAxis
                 (degrees 45)
             |> Frame3d.translateAlongOwn Frame3d.xAxis 2
@@ -722,7 +722,7 @@ counterclockwise by 45 degrees, then translate it along its own (rotated) X axis
 by 2 units", resulting in
 
     Frame3d.originPoint frame
-    --> Point3d.withCoordinates ( 3.4142, 1.4142, 0 )
+    --> Point3d.fromCoordinates ( 3.4142, 1.4142, 0 )
 
     Frame3d.xDirection frame
     --> Direction3d.with
@@ -755,13 +755,13 @@ translateAlongOwn axis distance frame =
 {-| Mirror a frame across a plane.
 
     frame =
-        Frame3d.at (Point3d.withCoordinates ( 2, 1, 3 ))
+        Frame3d.at (Point3d.fromCoordinates ( 2, 1, 3 ))
 
     mirroredFrame =
         Frame3d.mirrorAcross Plane3d.xy frame
 
     Frame3d.originPoint mirroredFrame
-    --> Point3d.withCoordinates ( 2, 1, -3 )
+    --> Point3d.fromCoordinates ( 2, 1, -3 )
 
     Frame3d.xDirection mirroredFrame
     --> Direction3d.x

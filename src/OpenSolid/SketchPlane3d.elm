@@ -261,14 +261,14 @@ provided that specifies the origin point and X/Y directions of the new sketch
 plane, in 2D coordinates within the existing sketch plane. Whew!
 
     frame2d =
-        Frame2d.at (Point2d.withCoordinates ( 2, 3 ))
+        Frame2d.at (Point2d.fromCoordinates ( 2, 3 ))
             |> Frame2d.rotateBy (degrees -30)
 
     sketchPlane =
         SketchPlane3d.on SketchPlane3d.yz frame2d
 
     SketchPlane3d.originPoint sketchPlane
-    --> Point3d.withCoordinates ( 0, 2, 3 )
+    --> Point3d.fromCoordinates ( 0, 2, 3 )
 
     SketchPlane3d.xDirection sketchPlane
     --> Direction3d.with
@@ -337,7 +337,7 @@ directions:
     sketchPlane =
         SketchPlane3d.unsafe
             { originPoint =
-                Point3d.withCoordinates ( 2, 1, 3 )
+                Point3d.fromCoordinates ( 2, 1, 3 )
             , xDirection = Direction3d.positiveY
             , yDirection = Direction3d.negativeZ
             }
@@ -364,14 +364,14 @@ points. Returns a sketch plane where:
 If the three given points are collinear, returns `Nothing`.
 
     SketchPlane3d.through
-        ( Point3d.withCoordinates ( 2, 0, 0 )
-        , Point3d.withCoordinates ( 3, 0, 0 )
-        , Point3d.withCoordinates ( 4, 1, 1 )
+        ( Point3d.fromCoordinates ( 2, 0, 0 )
+        , Point3d.fromCoordinates ( 3, 0, 0 )
+        , Point3d.fromCoordinates ( 4, 1, 1 )
         )
     --> Just sketchPlane
 
     SketchPlane3d.originPoint sketchPlane
-    --> Point3d.withCoordinates ( 2, 0, 0 )
+    --> Point3d.fromCoordinates ( 2, 0, 0 )
 
     SketchPlane3d.xDirection sketchPlane
     --> Direction3d.x
@@ -383,9 +383,9 @@ If the three given points are collinear, returns `Nothing`.
     -->     }
 
     SketchPlane3d.through
-        ( Point3d.withCoordinates ( 2, 0, 0 )
-        , Point3d.withCoordinates ( 3, 0, 0 )
-        , Point3d.withCoordinates ( 4, 0, 0 )
+        ( Point3d.fromCoordinates ( 2, 0, 0 )
+        , Point3d.fromCoordinates ( 3, 0, 0 )
+        , Point3d.fromCoordinates ( 4, 0, 0 )
         )
     --> Nothing
 
@@ -611,7 +611,7 @@ flipY sketchPlane =
 its X and Y directions unchanged.
 
     newOrigin =
-        Point3d.withCoordinates ( 2, 1, 3 )
+        Point3d.fromCoordinates ( 2, 1, 3 )
 
     sketchPlane =
         SketchPlane3d.moveTo newOrigin SketchPlane3d.yz
@@ -674,13 +674,13 @@ transformations. For example,
     sketchPlane =
         SketchPlane3d.xy
             |> SketchPlane3d.translateBy
-                (Vector3d.withComponents ( 1, 0, 0 ))
+                (Vector3d.fromComponents ( 1, 0, 0 ))
             |> SketchPlane3d.rotateAroundOwn
                 SketchPlane3d.yAxis
                 (degrees -45)
 
     SketchPlane3d.originPoint sketchPlane
-    --> Point3d.withCoordinates ( 1, 0, 0 )
+    --> Point3d.fromCoordinates ( 1, 0, 0 )
 
     SketchPlane3d.xDirection sketchPlane
     --> Direction3d.with
@@ -704,14 +704,14 @@ rotateAroundOwn axis angle sketchPlane =
 {-| Translate a sketch plane by a given displacement.
 
     displacement =
-        Vector3d.withComponents ( 2, 1, 3 )
+        Vector3d.fromComponents ( 2, 1, 3 )
 
     sketchPlane =
         SketchPlane3d.xy
             |> SketchPlane3d.translateBy displacement
 
     SketchPlane3d.originPoint sketchPlane
-    --> Point3d.withCoordinates ( 2, 1, 3 )
+    --> Point3d.fromCoordinates ( 2, 1, 3 )
 
     SketchPlane3d.xDirection sketchPlane
     --> Direction3d.x
@@ -752,7 +752,7 @@ means 'take the global XY sketch plane, rotate it around the global X axis by
 resulting in
 
     SketchPlane3d.originPoint sketchPlane
-    --> Point3d.withCoordinates ( 0, 1.4142, 1.4142 )
+    --> Point3d.fromCoordinates ( 0, 1.4142, 1.4142 )
 
     SketchPlane3d.xDirection sketchPlane
     --> Direction3d.x
@@ -781,13 +781,13 @@ translateAlongOwn axis distance frame =
     sketchPlane =
         SketchPlane3d.yz
             |> SketchPlane3d.moveTo
-                (Point2d.withCoordinates ( 2, 1, 3 ))
+                (Point2d.fromCoordinates ( 2, 1, 3 ))
 
     mirroredSketchPlane =
         SketchPlane3d.mirrorAcross Plane3d.xy sketchPlane
 
     SketchPlane3d.originPoint sketchPlane
-    --> Point2d.withCoordinates ( 2, 1, -3 )
+    --> Point2d.fromCoordinates ( 2, 1, -3 )
 
     SketchPlane3d.xDirection sketchPlane
     --> Direction3d.y

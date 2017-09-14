@@ -51,7 +51,7 @@ intersectionWorksProperly =
                                     LineSegment2d.endpoints segment
 
                                 triangle =
-                                    Triangle2d.withVertices
+                                    Triangle2d.fromVertices
                                         ( startPoint
                                         , endPoint
                                         , point
@@ -259,7 +259,7 @@ intersectionOfEqualPointSegmentIsPoint =
         (\point ->
             let
                 segment =
-                    LineSegment2d.withEndpoints ( point, point )
+                    LineSegment2d.fromEndpoints ( point, point )
             in
             LineSegment2d.intersectionPoint segment segment
                 |> Expect.equal (Just point)

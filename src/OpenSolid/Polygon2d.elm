@@ -18,6 +18,7 @@ module OpenSolid.Polygon2d
         , clockwiseArea
         , counterclockwiseArea
         , edges
+        , fromVertices
         , map
         , mirrorAcross
         , perimeter
@@ -27,7 +28,6 @@ module OpenSolid.Polygon2d
         , scaleAbout
         , translateBy
         , vertices
-        , withVertices
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/polygon2d.svg" alt="Polygon2d" width="160">
@@ -45,7 +45,7 @@ as
 
 # Constructors
 
-@docs withVertices
+@docs fromVertices
 
 
 # Properties
@@ -84,29 +84,29 @@ type alias Polygon2d =
 {-| Construct a polygon from a list of its vertices:
 
     rectangle =
-        Polygon2d.withVertices
-            [ Point2d.withCoordinates ( 1, 1 )
-            , Point2d.withCoordinates ( 3, 1 )
-            , Point2d.withCoordinates ( 3, 2 )
-            , Point2d.withCoordinates ( 1, 2 )
+        Polygon2d.fromVertices
+            [ Point2d.fromCoordinates ( 1, 1 )
+            , Point2d.fromCoordinates ( 3, 1 )
+            , Point2d.fromCoordinates ( 3, 2 )
+            , Point2d.fromCoordinates ( 1, 2 )
             ]
 
 The last vertex is implicitly considered to be connected back to the first
 vertex (you do not have to close the polygon explicitly).
 
 -}
-withVertices : List Point2d -> Polygon2d
-withVertices =
+fromVertices : List Point2d -> Polygon2d
+fromVertices =
     Internal.Polygon2d
 
 
 {-| Get the vertices of a polygon.
 
     Polygon2d.vertices rectangle
-    --> [ Point2d.withCoordinates ( 1, 1 )
-    --> , Point2d.withCoordinates ( 3, 1 )
-    --> , Point2d.withCoordinates ( 3, 2 )
-    --> , Point2d.withCoordinates ( 1, 2 )
+    --> [ Point2d.fromCoordinates ( 1, 1 )
+    --> , Point2d.fromCoordinates ( 3, 1 )
+    --> , Point2d.fromCoordinates ( 3, 2 )
+    --> , Point2d.fromCoordinates ( 1, 2 )
     --> ]
 
 -}
@@ -119,21 +119,21 @@ vertices (Internal.Polygon2d vertices_) =
 back to the first point.
 
     Polygon2d.edges rectangle
-    --> [ LineSegment2d.withEndpoints
-    -->     ( Point2d.withCoordinates ( 1, 1 )
-    -->     , Point2d.withCoordinates ( 3, 1 )
+    --> [ LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 1, 1 )
+    -->     , Point2d.fromCoordinates ( 3, 1 )
     -->     )
-    --> , LineSegment2d.withEndpoints
-    -->     ( Point2d.withCoordinates ( 3, 1 )
-    -->     , Point2d.withCoordinates ( 3, 2 )
+    --> , LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 3, 1 )
+    -->     , Point2d.fromCoordinates ( 3, 2 )
     -->     )
-    --> , LineSegment2d.withEndpoints
-    -->     ( Point2d.withCoordinates ( 3, 2 )
-    -->     , Point2d.withCoordinates ( 1, 2 )
+    --> , LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 3, 2 )
+    -->     , Point2d.fromCoordinates ( 1, 2 )
     -->     )
-    --> , LineSegment2d.withEndpoints
-    -->     ( Point2d.withCoordinates ( 1, 2 )
-    -->     , Point2d.withCoordinates ( 1, 1 )
+    --> , LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 1, 2 )
+    -->     , Point2d.fromCoordinates ( 1, 1 )
     -->     )
     --> ]
 
@@ -207,7 +207,7 @@ counterclockwiseArea polygon =
             let
                 segmentArea start end =
                     Triangle2d.counterclockwiseArea
-                        (Triangle2d.withVertices ( first, start, end ))
+                        (Triangle2d.fromVertices ( first, start, end ))
 
                 segmentAreas =
                     List.map2 segmentArea (second :: rest) rest
@@ -218,14 +218,14 @@ counterclockwiseArea polygon =
 {-| Scale a polygon about a given center point by a given scale.
 
     point =
-        Point2d.withCoordinates ( 2, 1 )
+        Point2d.fromCoordinates ( 2, 1 )
 
     Polygon2d.scaleAbout point 2 rectangle
-    --> Polygon2d.withVertices
-    -->     [ Point2d.withCoordinates ( 0, 1 )
-    -->     , Point2d.withCoordinates ( 4, 1 )
-    -->     , Point2d.withCoordinates ( 4, 3 )
-    -->     , Point2d.withCoordinates ( 0, 3 )
+    --> Polygon2d.fromVertices
+    -->     [ Point2d.fromCoordinates ( 0, 1 )
+    -->     , Point2d.fromCoordinates ( 4, 1 )
+    -->     , Point2d.fromCoordinates ( 4, 3 )
+    -->     , Point2d.fromCoordinates ( 0, 3 )
     -->     ]
 
 -}
@@ -240,11 +240,11 @@ angle (in radians).
     rectangle
         |> Polygon2d.rotateAround Point2d.origin
             (degrees 90)
-    --> Polygon2d.withVertices
-    -->     [ Point2d.withCoordinates ( -1, 1 )
-    -->     , Point2d.withCoordinates ( -1, 3 )
-    -->     , Point2d.withCoordinates ( -2, 3 )
-    -->     , Point2d.withCoordinates ( -2, 1 )
+    --> Polygon2d.fromVertices
+    -->     [ Point2d.fromCoordinates ( -1, 1 )
+    -->     , Point2d.fromCoordinates ( -1, 3 )
+    -->     , Point2d.fromCoordinates ( -2, 3 )
+    -->     , Point2d.fromCoordinates ( -2, 1 )
     -->     ]
 
 -}
@@ -256,14 +256,14 @@ rotateAround point angle =
 {-| Translate a polygon by the given displacement.
 
     displacement =
-        Vector2d.withComponents ( 2, 3 )
+        Vector2d.fromComponents ( 2, 3 )
 
     Polygon2d.translateBy displacement rectangle
-    --> Polygon2d.withVertices
-    -->     [ Point2d.withCoordinates ( 3, 4 )
-    -->     , Point2d.withCoordinates ( 5, 4 )
-    -->     , Point2d.withCoordinates ( 5, 5 )
-    -->     , Point2d.withCoordinates ( 3, 5 )
+    --> Polygon2d.fromVertices
+    -->     [ Point2d.fromCoordinates ( 3, 4 )
+    -->     , Point2d.fromCoordinates ( 5, 4 )
+    -->     , Point2d.fromCoordinates ( 5, 5 )
+    -->     , Point2d.fromCoordinates ( 3, 5 )
     -->     ]
 
 -}
@@ -275,11 +275,11 @@ translateBy vector =
 {-| Mirror a polygon across the given axis.
 
     Polygon2d.mirrorAcross Axis2d.x rectangle
-    --> Polygon2d.withVertices
-    -->     [ Point2d.withCoordinates ( 1, -1 )
-    -->     , Point2d.withCoordinates ( 3, -1 )
-    -->     , Point2d.withCoordinates ( 3, -2 )
-    -->     , Point2d.withCoordinates ( 1, -2 )
+    --> Polygon2d.fromVertices
+    -->     [ Point2d.fromCoordinates ( 1, -1 )
+    -->     , Point2d.fromCoordinates ( 3, -1 )
+    -->     , Point2d.fromCoordinates ( 3, -2 )
+    -->     , Point2d.fromCoordinates ( 1, -2 )
     -->     ]
 
 Note that if a polygon's vertices were in counterclockwise order before
@@ -303,21 +303,21 @@ is equivalent to
 -}
 map : (Point2d -> Point2d) -> Polygon2d -> Polygon2d
 map function =
-    vertices >> List.map function >> withVertices
+    vertices >> List.map function >> fromVertices
 
 
 {-| Take a polygon defined in global coordinates, and return it expressed
 in local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame2d.at (Point2d.withCoordinates ( 1, 2 ))
+        Frame2d.at (Point2d.fromCoordinates ( 1, 2 ))
 
     Polygon2d.relativeTo localFrame rectangle
-    --> Polygon2d.withVertices
-    -->     [ Point2d.withCoordinates ( 0, -1 )
-    -->     , Point2d.withCoordinates ( 2, -1 )
-    -->     , Point2d.withCoordinates ( 2, 0 )
-    -->     , Point2d.withCoordinates ( 0, 0 )
+    --> Polygon2d.fromVertices
+    -->     [ Point2d.fromCoordinates ( 0, -1 )
+    -->     , Point2d.fromCoordinates ( 2, -1 )
+    -->     , Point2d.fromCoordinates ( 2, 0 )
+    -->     , Point2d.fromCoordinates ( 0, 0 )
     -->     ]
 
 -}
@@ -331,14 +331,14 @@ to a given reference frame, and return that polygon expressed in global
 coordinates.
 
     localFrame =
-        Frame2d.at (Point2d.withCoordinates ( 1, 2 ))
+        Frame2d.at (Point2d.fromCoordinates ( 1, 2 ))
 
     Polygon2d.placeIn localFrame rectangle
-    --> Polygon2d.withVertices
-    -->     [ Point2d.withCoordinates ( 2, 3 )
-    -->     , Point2d.withCoordinates ( 4, 3 )
-    -->     , Point2d.withCoordinates ( 4, 4 )
-    -->     , Point2d.withCoordinates ( 2, 4 )
+    --> Polygon2d.fromVertices
+    -->     [ Point2d.fromCoordinates ( 2, 3 )
+    -->     , Point2d.fromCoordinates ( 4, 3 )
+    -->     , Point2d.fromCoordinates ( 4, 4 )
+    -->     , Point2d.fromCoordinates ( 2, 4 )
     -->     ]
 
 -}

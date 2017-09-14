@@ -95,8 +95,8 @@ orthonormalizingParallelVectorsReturnsNothing =
         (\() ->
             let
                 vectors =
-                    ( Vector2d.withComponents ( 1, 2 )
-                    , Vector2d.withComponents ( -3, -6 )
+                    ( Vector2d.fromComponents ( 1, 2 )
+                    , Vector2d.fromComponents ( -3, -6 )
                     )
             in
             Expect.equal Nothing (Direction2d.orthonormalize vectors)

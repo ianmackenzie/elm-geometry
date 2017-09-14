@@ -7,6 +7,7 @@ module OpenSolid.QuadraticSpline3d
         , endDerivative
         , endPoint
         , evaluate
+        , fromControlPoints
         , mirrorAcross
         , on
         , placeIn
@@ -21,7 +22,6 @@ module OpenSolid.QuadraticSpline3d
         , startDerivative
         , startPoint
         , translateBy
-        , withControlPoints
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/quadraticSpline3d.svg" alt="QuadraticSpline3d" width="160">
@@ -39,7 +39,7 @@ in 3D defined by three control points. This module contains functionality for
 
 # Constructors
 
-@docs withControlPoints, on
+@docs fromControlPoints, on
 
 
 # Properties
@@ -91,15 +91,15 @@ type alias QuadraticSpline3d =
 {-| Construct a spline from its three control points:
 
     exampleSpline =
-        QuadraticSpline3d.withControlPoints
-            ( Point3d.withCoordinates ( 1, 1, 1 )
-            , Point3d.withCoordinates ( 3, 2, 1 )
-            , Point3d.withCoordinates ( 3, 3, 3 )
+        QuadraticSpline3d.fromControlPoints
+            ( Point3d.fromCoordinates ( 1, 1, 1 )
+            , Point3d.fromCoordinates ( 3, 2, 1 )
+            , Point3d.fromCoordinates ( 3, 3, 3 )
             )
 
 -}
-withControlPoints : ( Point3d, Point3d, Point3d ) -> QuadraticSpline3d
-withControlPoints =
+fromControlPoints : ( Point3d, Point3d, Point3d ) -> QuadraticSpline3d
+fromControlPoints =
     Internal.QuadraticSpline3d
 
 
@@ -107,15 +107,15 @@ withControlPoints =
 specified in XY coordinates _within_ the sketch plane.
 
     QuadraticSpline3d.on SketchPlane3d.xz <|
-        QuadraticSpline2d.withControlPoints
-            ( Point2d.withCoordinates ( 1, 1 )
-            , Point2d.withCoordinates ( 3, 4 )
-            , Point2d.withCoordinates ( 5, 1 )
+        QuadraticSpline2d.fromControlPoints
+            ( Point2d.fromCoordinates ( 1, 1 )
+            , Point2d.fromCoordinates ( 3, 4 )
+            , Point2d.fromCoordinates ( 5, 1 )
             )
-    --> QuadraticSpline3d.withControlPoints
-    -->     ( Point3d.withCoordinates ( 1, 0, 1 )
-    -->     , Point3d.withCoordinates ( 3, 0, 4 )
-    -->     , Point3d.withCoordinates ( 5, 0, 1 )
+    --> QuadraticSpline3d.fromControlPoints
+    -->     ( Point3d.fromCoordinates ( 1, 0, 1 )
+    -->     , Point3d.fromCoordinates ( 3, 0, 4 )
+    -->     , Point3d.fromCoordinates ( 5, 0, 1 )
     -->     )
 
 -}
@@ -128,7 +128,7 @@ on sketchPlane spline2d =
         place =
             Point3d.on sketchPlane
     in
-    withControlPoints ( place p1, place p2, place p3 )
+    fromControlPoints ( place p1, place p2, place p3 )
 
 
 {-| Get the control points of a spline as a tuple.
@@ -137,9 +137,9 @@ on sketchPlane spline2d =
         QuadraticSpline3d.controlPoints exampleSpline
 
 
-    --> p1 = Point3d.withCoordinates ( 1, 1, 1 )
-    --> p2 = Point3d.withCoordinates ( 3, 2, 1 )
-    --> p3 = Point3d.withCoordinates ( 3, 3, 3 )
+    --> p1 = Point3d.fromCoordinates ( 1, 1, 1 )
+    --> p2 = Point3d.fromCoordinates ( 3, 2, 1 )
+    --> p3 = Point3d.fromCoordinates ( 3, 3, 3 )
 
 -}
 controlPoints : QuadraticSpline3d -> ( Point3d, Point3d, Point3d )
@@ -151,7 +151,7 @@ controlPoints (Internal.QuadraticSpline3d controlPoints_) =
 point.
 
     QuadraticSpline3d.startPoint exampleSpline
-    --> Point3d.withCoordinates ( 1, 1, 1 )
+    --> Point3d.fromCoordinates ( 1, 1, 1 )
 
 -}
 startPoint : QuadraticSpline3d -> Point3d
@@ -163,7 +163,7 @@ startPoint (Internal.QuadraticSpline3d ( p1, _, _ )) =
 point.
 
     QuadraticSpline3d.endPoint exampleSpline
-    --> Point3d.withCoordinates ( 3, 3, 3 )
+    --> Point3d.fromCoordinates ( 3, 3, 3 )
 
 -}
 endPoint : QuadraticSpline3d -> Point3d
@@ -175,7 +175,7 @@ endPoint (Internal.QuadraticSpline3d ( _, _, p3 )) =
 the spline's first control point to its second.
 
     QuadraticSpline3d.startDerivative exampleSpline
-    --> Vector3d.withComponents ( 4, 2, 0 )
+    --> Vector3d.fromComponents ( 4, 2, 0 )
 
 -}
 startDerivative : QuadraticSpline3d -> Vector3d
@@ -191,7 +191,7 @@ startDerivative spline =
 the spline's second control point to its third.
 
     QuadraticSpline3d.endDerivative exampleSpline
-    --> Vector3d.withComponents ( 0, 2, 4 )
+    --> Vector3d.fromComponents ( 0, 2, 4 )
 
 -}
 endDerivative : QuadraticSpline3d -> Vector3d
@@ -208,13 +208,13 @@ parameter value of 0 corresponds to the start point of the spline and a value of
 1 corresponds to the end point.
 
     QuadraticSpline3d.pointOn exampleSpline 0
-    --> Point3d.withCoordinates ( 1, 1, 1 )
+    --> Point3d.fromCoordinates ( 1, 1, 1 )
 
     QuadraticSpline3d.pointOn exampleSpline 0.5
-    --> Point3d.withCoordinates ( 2.5, 2, 1.5 )
+    --> Point3d.fromCoordinates ( 2.5, 2, 1.5 )
 
     QuadraticSpline3d.pointOn exampleSpline 1
-    --> Point3d.withCoordinates ( 3, 3, 3 )
+    --> Point3d.fromCoordinates ( 3, 3, 3 )
 
 -}
 pointOn : QuadraticSpline3d -> Float -> Point3d
@@ -237,13 +237,13 @@ ranges from 0 to 1. A parameter value of 0 corresponds to the start derivative
 of the spline and a value of 1 corresponds to the end derivative.
 
     QuadraticSpline3d.derivative exampleSpline 0
-    --> Vector3d.withComponents ( 4, 2, 0 )
+    --> Vector3d.fromComponents ( 4, 2, 0 )
 
     QuadraticSpline3d.derivative exampleSpline 0.5
-    --> Vector3d.withComponents ( 2, 2, 2 )
+    --> Vector3d.fromComponents ( 2, 2, 2 )
 
     QuadraticSpline3d.derivative exampleSpline 1
-    --> Vector3d.withComponents ( 0, 2, 4 )
+    --> Vector3d.fromComponents ( 0, 2, 4 )
 
 Note that the derivative interpolates linearly from end to end.
 
@@ -301,17 +301,17 @@ mapControlPoints function spline =
         ( p1, p2, p3 ) =
             controlPoints spline
     in
-    withControlPoints ( function p1, function p2, function p3 )
+    fromControlPoints ( function p1, function p2, function p3 )
 
 
 {-| Reverse a spline so that the start point becomes the end point, and vice
 versa.
 
     QuadraticSpline3d.reverse exampleSpline
-    --> QuadraticSpline3d.withControlPoints
-    -->     ( Point3d.withCoordinates ( 3, 3, 3 )
-    -->     , Point3d.withCoordinates ( 3, 2, 1 )
-    -->     , Point3d.withCoordinates ( 1, 1, 1 )
+    --> QuadraticSpline3d.fromControlPoints
+    -->     ( Point3d.fromCoordinates ( 3, 3, 3 )
+    -->     , Point3d.fromCoordinates ( 3, 2, 1 )
+    -->     , Point3d.fromCoordinates ( 1, 1, 1 )
     -->     )
 
 -}
@@ -321,17 +321,17 @@ reverse spline =
         ( p1, p2, p3 ) =
             controlPoints spline
     in
-    withControlPoints ( p3, p2, p1 )
+    fromControlPoints ( p3, p2, p1 )
 
 
 {-| Scale a spline about the given center point by the given scale.
 
     exampleSpline
         |> QuadraticSpline3d.scaleAbout Point3d.origin 2
-    --> QuadraticSpline3d.withControlPoints
-    -->     ( Point3d.withCoordinates ( 2, 2, 2 )
-    -->     , Point3d.withCoordinates ( 6, 4, 2 )
-    -->     , Point3d.withCoordinates ( 6, 6, 6 )
+    --> QuadraticSpline3d.fromControlPoints
+    -->     ( Point3d.fromCoordinates ( 2, 2, 2 )
+    -->     , Point3d.fromCoordinates ( 6, 4, 2 )
+    -->     , Point3d.fromCoordinates ( 6, 6, 6 )
     -->     )
 
 -}
@@ -346,10 +346,10 @@ radians).
     exampleSpline
         |> QuadraticSpline3d.rotateAround Axis3d.z
             (degrees 90)
-    --> QuadraticSpline3d.withControlPoints
-    -->     ( Point3d.withCoordinates ( -1, 1, 1 )
-    -->     , Point3d.withCoordinates ( -2, 3, 1 )
-    -->     , Point3d.withCoordinates ( -3, 3, 3 )
+    --> QuadraticSpline3d.fromControlPoints
+    -->     ( Point3d.fromCoordinates ( -1, 1, 1 )
+    -->     , Point3d.fromCoordinates ( -2, 3, 1 )
+    -->     , Point3d.fromCoordinates ( -3, 3, 3 )
     -->     )
 
 -}
@@ -361,14 +361,14 @@ rotateAround axis angle =
 {-| Translate a spline by a given displacement.
 
     displacement =
-        Vector3d.withComponents ( 2, 3, 1 )
+        Vector3d.fromComponents ( 2, 3, 1 )
 
     exampleSpline
         |> QuadraticSpline3d.translateBy displacement
-    --> QuadraticSpline3d.withControlPoints
-    -->     ( Point3d.withCoordinates ( 3, 4, 2 )
-    -->     , Point3d.withCoordinates ( 5, 5, 2 )
-    -->     , Point3d.withCoordinates ( 5, 6, 4 )
+    --> QuadraticSpline3d.fromControlPoints
+    -->     ( Point3d.fromCoordinates ( 3, 4, 2 )
+    -->     , Point3d.fromCoordinates ( 5, 5, 2 )
+    -->     , Point3d.fromCoordinates ( 5, 6, 4 )
     -->     )
 
 -}
@@ -380,10 +380,10 @@ translateBy displacement =
 {-| Mirror a spline across a plane.
 
     QuadraticSpline3d.mirrorAcross Plane3d.xy exampleSpline
-    --> QuadraticSpline3d.withControlPoints
-    -->     ( Point3d.withCoordinates ( 1, 1, -1 )
-    -->     , Point3d.withCoordinates ( 3, 2, -1 )
-    -->     , Point3d.withCoordinates ( 3, 3, -3 )
+    --> QuadraticSpline3d.fromControlPoints
+    -->     ( Point3d.fromCoordinates ( 1, 1, -1 )
+    -->     , Point3d.fromCoordinates ( 3, 2, -1 )
+    -->     , Point3d.fromCoordinates ( 3, 3, -3 )
     -->     )
 
 -}
@@ -395,10 +395,10 @@ mirrorAcross plane =
 {-| Project a spline onto a plane.
 
     QuadraticSpline3d.projectOnto Plane3d.xy exampleSpline
-    --> QuadraticSpline3d.withControlPoints
-    -->     ( Point3d.withCoordinates ( 1, 1, 0 )
-    -->     , Point3d.withCoordinates ( 3, 2, 0 )
-    -->     , Point3d.withCoordinates ( 3, 3, 0 )
+    --> QuadraticSpline3d.fromControlPoints
+    -->     ( Point3d.fromCoordinates ( 1, 1, 0 )
+    -->     , Point3d.fromCoordinates ( 3, 2, 0 )
+    -->     , Point3d.fromCoordinates ( 3, 3, 0 )
     -->     )
 
 -}
@@ -411,13 +411,13 @@ projectOnto plane =
 local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame3d.at (Point3d.withCoordinates ( 1, 2, 3 ))
+        Frame3d.at (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     QuadraticSpline3d.relativeTo localFrame exampleSpline
-    --> QuadraticSpline3d.withControlPoints
-    -->     ( Point3d.withCoordinates ( 0, -1, -2 )
-    -->     , Point3d.withCoordinates ( 2, 0, -2 )
-    -->     , Point3d.withCoordinates ( 2, 1, 0 )
+    --> QuadraticSpline3d.fromControlPoints
+    -->     ( Point3d.fromCoordinates ( 0, -1, -2 )
+    -->     , Point3d.fromCoordinates ( 2, 0, -2 )
+    -->     , Point3d.fromCoordinates ( 2, 1, 0 )
     -->     )
 
 -}
@@ -430,13 +430,13 @@ relativeTo frame =
 given reference frame, and return that spline expressed in global coordinates.
 
     localFrame =
-        Frame3d.at (Point3d.withCoordinates ( 1, 2, 3 ))
+        Frame3d.at (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     QuadraticSpline3d.placeIn localFrame exampleSpline
-    --> QuadraticSpline3d.withControlPoints
-    -->     ( Point3d.withCoordinates ( 2, 3, 4 )
-    -->     , Point3d.withCoordinates ( 4, 4, 4 )
-    -->     , Point3d.withCoordinates ( 4, 5, 6 )
+    --> QuadraticSpline3d.fromControlPoints
+    -->     ( Point3d.fromCoordinates ( 2, 3, 4 )
+    -->     , Point3d.fromCoordinates ( 4, 4, 4 )
+    -->     , Point3d.fromCoordinates ( 4, 5, 6 )
     -->     )
 
 -}
@@ -451,10 +451,10 @@ spline in 2D sketch coordinates.
 
     exampleSpline
         |> QuadraticSpline3d.projectInto SketchPlane3d.yz
-    --> QuadraticSpline2d.withControlPoints
-    -->     ( Point2d.withCoordinates ( 1, 1 )
-    -->     , Point2d.withCoordinates ( 2, 1 )
-    -->     , Point2d.withCoordinates ( 3, 3 )
+    --> QuadraticSpline2d.fromControlPoints
+    -->     ( Point2d.fromCoordinates ( 1, 1 )
+    -->     , Point2d.fromCoordinates ( 2, 1 )
+    -->     , Point2d.fromCoordinates ( 3, 3 )
     -->     )
 
 -}
@@ -467,21 +467,21 @@ projectInto sketchPlane spline =
         project =
             Point3d.projectInto sketchPlane
     in
-    QuadraticSpline2d.withControlPoints ( project p1, project p2, project p3 )
+    QuadraticSpline2d.fromControlPoints ( project p1, project p2, project p3 )
 
 
 {-| Split a spline into two roughly equal halves. Equivalent to `splitAt 0.5`.
 
     QuadraticSpline3d.bisect exampleSpline
-    --> ( QuadraticSpline3d.withControlPoints
-    -->     ( Point3d.withCoordinates ( 1, 1, 1 )
-    -->     , Point3d.withCoordinates ( 2, 2.5 )
-    -->     , Point3d.withCoordinates ( 3, 2.5 )
+    --> ( QuadraticSpline3d.fromControlPoints
+    -->     ( Point3d.fromCoordinates ( 1, 1, 1 )
+    -->     , Point3d.fromCoordinates ( 2, 2.5 )
+    -->     , Point3d.fromCoordinates ( 3, 2.5 )
     -->     )
-    --> , QuadraticSpline3d.withControlPoints
-    -->     ( Point3d.withCoordinates ( 3, 2.5 )
-    -->     , Point3d.withCoordinates ( 4, 2.5 )
-    -->     , Point3d.withCoordinates ( 3, 3, 3 )
+    --> , QuadraticSpline3d.fromControlPoints
+    -->     ( Point3d.fromCoordinates ( 3, 2.5 )
+    -->     , Point3d.fromCoordinates ( 4, 2.5 )
+    -->     , Point3d.fromCoordinates ( 3, 3, 3 )
     -->     )
     --> )
 
@@ -495,15 +495,15 @@ bisect =
 resulting in two smaller splines.
 
     QuadraticSpline3d.splitAt 0.75 exampleSpline
-    --> ( QuadraticSpline3d.withControlPoints
-    -->     ( Point3d.withCoordinates ( 1, 1, 1 )
-    -->     , Point3d.withCoordinates ( 2, 1.5, 1 )
-    -->     , Point3d.withCoordinates ( 2.5, 2, 1.5 )
+    --> ( QuadraticSpline3d.fromControlPoints
+    -->     ( Point3d.fromCoordinates ( 1, 1, 1 )
+    -->     , Point3d.fromCoordinates ( 2, 1.5, 1 )
+    -->     , Point3d.fromCoordinates ( 2.5, 2, 1.5 )
     -->     )
-    --> , QuadraticSpline3d.withControlPoints
-    -->     ( Point3d.withCoordinates ( 2.5, 2, 1.5 )
-    -->     , Point3d.withCoordinates ( 3, 2.5, 2 )
-    -->     , Point3d.withCoordinates ( 3, 3, 3 )
+    --> , QuadraticSpline3d.fromControlPoints
+    -->     ( Point3d.fromCoordinates ( 2.5, 2, 1.5 )
+    -->     , Point3d.fromCoordinates ( 3, 2.5, 2 )
+    -->     , Point3d.fromCoordinates ( 3, 3, 3 )
     -->     )
     --> )
 
@@ -523,6 +523,6 @@ splitAt t spline =
         r =
             Point3d.interpolateFrom q1 q2 t
     in
-    ( withControlPoints ( p1, q1, r )
-    , withControlPoints ( r, q2, p3 )
+    ( fromControlPoints ( p1, q1, r )
+    , fromControlPoints ( r, q2, p3 )
     )

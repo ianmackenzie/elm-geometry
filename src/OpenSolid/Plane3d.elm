@@ -140,7 +140,7 @@ zx =
     plane =
         Plane3d.with
             { originPoint =
-                Point3d.withCoordinates ( 2, 1, 3 )
+                Point3d.fromCoordinates ( 2, 1, 3 )
             , normalDirection = Direction3d.y
             }
 
@@ -157,14 +157,14 @@ counterclockwise order around it according to the right-hand rule. If the three
 given points are collinear, returns `Nothing`.
 
     Plane3d.through
-        ( Point3d.withCoordinates ( 2, 0, 0 )
-        , Point3d.withCoordinates ( 3, 0, 0 )
-        , Point3d.withCoordinates ( 4, 1, 1 )
+        ( Point3d.fromCoordinates ( 2, 0, 0 )
+        , Point3d.fromCoordinates ( 3, 0, 0 )
+        , Point3d.fromCoordinates ( 4, 1, 1 )
         )
     --> Just
     -->     (Plane3d.with
     -->         { originPoint =
-    -->             Point3d.withCoordinates ( 2, 0, 0 )
+    -->             Point3d.fromCoordinates ( 2, 0, 0 )
     -->         , normalDirection =
     -->             Direction3d.with
     -->                 { azimuth = degrees -90
@@ -174,9 +174,9 @@ given points are collinear, returns `Nothing`.
     -->     )
 
     Plane3d.through
-        ( Point3d.withCoordinates ( 2, 0, 0 )
-        , Point3d.withCoordinates ( 3, 0, 0 )
-        , Point3d.withCoordinates ( 4, 0, 0 )
+        ( Point3d.fromCoordinates ( 2, 0, 0 )
+        , Point3d.fromCoordinates ( 3, 0, 0 )
+        , Point3d.fromCoordinates ( 4, 0, 0 )
         )
     --> Nothing
 
@@ -244,14 +244,14 @@ normalAxis plane =
     Plane3d.offsetBy 1.0 Plane3d.zx
     --> Plane3d.with
     -->     { originPoint =
-    -->         Point3d.withCoordinates ( 0, 1, 0 )
+    -->         Point3d.fromCoordinates ( 0, 1, 0 )
     -->     , normalDirection = Direction3d.y
     -->     }
 
     Plane3d.offsetBy -2.0 Plane3d.xy
     --> Plane3d.with
     -->     { originPoint =
-    -->         Point3d.withCoordinates ( 0, 0, -2 )
+    -->         Point3d.fromCoordinates ( 0, 0, -2 )
     -->     , normalDirection = Direction3d.z
     -->     }
 
@@ -313,17 +313,17 @@ the plane's origin point and leaves its normal direction unchanged.
     plane =
         Plane3d.with
             { originPoint =
-                Point3d.withCoordinates ( 1, 1, 1 )
+                Point3d.fromCoordinates ( 1, 1, 1 )
             , normalDirection = Direction3d.z
             }
 
     displacement =
-        Vector3d.withComponents ( 1, 2, 3 )
+        Vector3d.fromComponents ( 1, 2, 3 )
 
     Plane3d.translateBy displacement plane
     --> Plane3d
     -->     { originPoint =
-    -->         Point3d.withCoordinates ( 2, 3, 4 )
+    -->         Point3d.fromCoordinates ( 2, 3, 4 )
     -->     , normalDirection = Direction3d.z
     -->     }
 
@@ -340,7 +340,7 @@ translateBy vector plane =
 direction.
 
     newOrigin =
-        Point3d.withCoordinates ( 1, 2, 3 )
+        Point3d.fromCoordinates ( 1, 2, 3 )
 
     Plane3d.moveTo newOrigin Plane3d.xy
     --> Plane3d
@@ -363,14 +363,14 @@ and the plane to mirror is given second.
     plane =
         Plane3d.with
             { originPoint =
-                Point3d.withCoordinates ( 1, 2, 3 )
+                Point3d.fromCoordinates ( 1, 2, 3 )
             , normalDirection = Direction3d.z
             }
 
     Plane3d.mirrorAcross Plane3d.xy plane
     --> Plane3d.with
     -->     { originPoint =
-    -->         Point3d.withCoordinates ( 1, 2, -3 )
+    -->         Point3d.fromCoordinates ( 1, 2, -3 )
     -->     , normalDirection = Direction3d.negativeZ
     -->     }
 
@@ -395,19 +395,19 @@ mirrorAcross otherPlane =
 coordinates relative to a given reference frame.
 
     referenceFrame =
-        Frame3d.at (Point3d.withCoordinates ( 1, 1, 1 ))
+        Frame3d.at (Point3d.fromCoordinates ( 1, 1, 1 ))
 
     plane =
         Plane3d.with
             { originPoint =
-                Point3d.withCoordinates ( 0, 0, 2 )
+                Point3d.fromCoordinates ( 0, 0, 2 )
             , normalDirection = Direction3d.z
             }
 
     Plane3d.relativeTo referenceFrame plane
     --> Plane3d.with
     -->     { originPoint =
-    -->         Point3d.withCoordinates ( -1, -1, 1 )
+    -->         Point3d.fromCoordinates ( -1, -1, 1 )
     -->     , normalDirection = Direction3d.z
     -->     }
 
@@ -432,19 +432,19 @@ relativeTo frame =
 frame, and return that plane expressed in global coordinates.
 
     referenceFrame =
-        Frame3d.at (Point3d.withCoordinates ( 1, 1, 1 ))
+        Frame3d.at (Point3d.fromCoordinates ( 1, 1, 1 ))
 
     plane =
         Plane3d.with
             { originPoint =
-                Point3d.withCoordinates ( 1, 2, 3 )
+                Point3d.fromCoordinates ( 1, 2, 3 )
             , normalDirection = Direction3d.z
             }
 
     Plane3d.placeIn referenceFrame plane
     --> Plane3d.with
     -->     { originPoint =
-    -->         Point3d.withCoordinates ( 2, 3, 4 )
+    -->         Point3d.fromCoordinates ( 2, 3, 4 )
     -->     , normalDirection = Direction3d.z
     -->     }
 

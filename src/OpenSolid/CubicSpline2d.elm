@@ -7,6 +7,7 @@ module OpenSolid.CubicSpline2d
         , endDerivative
         , endPoint
         , evaluate
+        , fromControlPoints
         , hermite
         , mirrorAcross
         , placeIn
@@ -19,7 +20,6 @@ module OpenSolid.CubicSpline2d
         , startDerivative
         , startPoint
         , translateBy
-        , withControlPoints
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/cubicSpline2d.svg" alt="CubicSpline2d" width="160">
@@ -37,7 +37,7 @@ in 2D defined by four control points. This module contains functionality for
 
 # Constructors
 
-@docs withControlPoints, hermite
+@docs fromControlPoints, hermite
 
 
 # Properties
@@ -81,16 +81,16 @@ type alias CubicSpline2d =
 {-| Construct a spline from its four control points:
 
     exampleSpline =
-        CubicSpline2d.withControlPoints
-            ( Point2d.withCoordinates ( 1, 1 )
-            , Point2d.withCoordinates ( 3, 4 )
-            , Point2d.withCoordinates ( 5, 1 )
-            , Point2d.withCoordinates ( 7, 4 )
+        CubicSpline2d.fromControlPoints
+            ( Point2d.fromCoordinates ( 1, 1 )
+            , Point2d.fromCoordinates ( 3, 4 )
+            , Point2d.fromCoordinates ( 5, 1 )
+            , Point2d.fromCoordinates ( 7, 4 )
             )
 
 -}
-withControlPoints : ( Point2d, Point2d, Point2d, Point2d ) -> CubicSpline2d
-withControlPoints =
+fromControlPoints : ( Point2d, Point2d, Point2d, Point2d ) -> CubicSpline2d
+fromControlPoints =
     Internal.CubicSpline2d
 
 
@@ -117,7 +117,7 @@ hermite ( startPoint, startDerivative ) ( endPoint, endDerivative ) =
                 |> Point2d.translateBy
                     (Vector2d.scaleBy (-1 / 3) endDerivative)
     in
-    withControlPoints
+    fromControlPoints
         ( startPoint
         , startControlPoint
         , endControlPoint
@@ -131,10 +131,10 @@ hermite ( startPoint, startDerivative ) ( endPoint, endDerivative ) =
         CubicSpline2d.controlPoints exampleSpline
 
 
-    --> p1 = Point2d.withCoordinates ( 1, 1 )
-    --> p2 = Point2d.withCoordinates ( 3, 4 )
-    --> p3 = Point2d.withCoordinates ( 5, 1 )
-    --> p4 = Point2d.withCoordinates ( 7, 4 )
+    --> p1 = Point2d.fromCoordinates ( 1, 1 )
+    --> p2 = Point2d.fromCoordinates ( 3, 4 )
+    --> p3 = Point2d.fromCoordinates ( 5, 1 )
+    --> p4 = Point2d.fromCoordinates ( 7, 4 )
 
 -}
 controlPoints : CubicSpline2d -> ( Point2d, Point2d, Point2d, Point2d )
@@ -146,7 +146,7 @@ controlPoints (Internal.CubicSpline2d controlPoints_) =
 point.
 
     CubicSpline2d.startPoint exampleSpline
-    --> Point2d.withCoordinates ( 1, 1 )
+    --> Point2d.fromCoordinates ( 1, 1 )
 
 -}
 startPoint : CubicSpline2d -> Point2d
@@ -158,7 +158,7 @@ startPoint (Internal.CubicSpline2d ( p1, _, _, _ )) =
 point.
 
     CubicSpline2d.endPoint exampleSpline
-    --> Point2d.withCoordinates ( 7, 4 )
+    --> Point2d.fromCoordinates ( 7, 4 )
 
 -}
 endPoint : CubicSpline2d -> Point2d
@@ -170,7 +170,7 @@ endPoint (Internal.CubicSpline2d ( _, _, _, p4 )) =
 vector from the spline's first control point to its second.
 
     CubicSpline2d.startDerivative exampleSpline
-    --> Vector2d.withComponents ( 6, 9 )
+    --> Vector2d.fromComponents ( 6, 9 )
 
 -}
 startDerivative : CubicSpline2d -> Vector2d
@@ -186,7 +186,7 @@ startDerivative spline =
 from the spline's third control point to its fourth.
 
     CubicSpline2d.endDerivative exampleSpline
-    --> Vector2d.withComponents ( 6, 9 )
+    --> Vector2d.fromComponents ( 6, 9 )
 
 -}
 endDerivative : CubicSpline2d -> Vector2d
@@ -203,13 +203,13 @@ parameter value of 0 corresponds to the start point of the spline and a value of
 1 corresponds to the end point.
 
     CubicSpline2d.pointOn exampleSpline 0
-    --> Point2d.withCoordinates ( 1, 1 )
+    --> Point2d.fromCoordinates ( 1, 1 )
 
     CubicSpline2d.pointOn exampleSpline 0.5
-    --> Point2d.withCoordinates ( 4, 2.5 )
+    --> Point2d.fromCoordinates ( 4, 2.5 )
 
     CubicSpline2d.pointOn exampleSpline 1
-    --> Point2d.withCoordinates ( 7, 4 )
+    --> Point2d.fromCoordinates ( 7, 4 )
 
 -}
 pointOn : CubicSpline2d -> Float -> Point2d
@@ -241,13 +241,13 @@ ranges from 0 to 1. A parameter value of 0 corresponds to the start derivative
 of the spline and a value of 1 corresponds to the end derivative.
 
     CubicSpline2d.derivative exampleSpline 0
-    --> Vector2d.withComponents ( 6, 9 )
+    --> Vector2d.fromComponents ( 6, 9 )
 
     CubicSpline2d.derivative exampleSpline 0.5
-    --> Vector2d.withComponents ( 6, 0 )
+    --> Vector2d.fromComponents ( 6, 0 )
 
     CubicSpline2d.derivative exampleSpline 1
-    --> Vector2d.withComponents ( 6, 9 )
+    --> Vector2d.fromComponents ( 6, 9 )
 
 -}
 derivative : CubicSpline2d -> Float -> Vector2d
@@ -323,18 +323,18 @@ mapControlPoints function spline =
         ( p1, p2, p3, p4 ) =
             controlPoints spline
     in
-    withControlPoints ( function p1, function p2, function p3, function p4 )
+    fromControlPoints ( function p1, function p2, function p3, function p4 )
 
 
 {-| Reverse a spline so that the start point becomes the end point, and vice
 versa.
 
     CubicSpline2d.reverse exampleSpline
-    --> CubicSpline2d.withControlPoints
-    -->     ( Point2d.withCoordinates ( 7, 4 )
-    -->     , Point2d.withCoordinates ( 5, 1 )
-    -->     , Point2d.withCoordinates ( 3, 4 )
-    -->     , Point2d.withCoordinates ( 1, 1 )
+    --> CubicSpline2d.fromControlPoints
+    -->     ( Point2d.fromCoordinates ( 7, 4 )
+    -->     , Point2d.fromCoordinates ( 5, 1 )
+    -->     , Point2d.fromCoordinates ( 3, 4 )
+    -->     , Point2d.fromCoordinates ( 1, 1 )
     -->     )
 
 -}
@@ -344,17 +344,17 @@ reverse spline =
         ( p1, p2, p3, p4 ) =
             controlPoints spline
     in
-    withControlPoints ( p4, p3, p2, p1 )
+    fromControlPoints ( p4, p3, p2, p1 )
 
 
 {-| Scale a spline about the given center point by the given scale.
 
     CubicSpline2d.scaleAbout Point2d.origin 2 exampleSpline
-    --> CubicSpline2d.withControlPoints
-    -->     ( Point2d.withCoordinates ( 2, 2 )
-    -->     , Point2d.withCoordinates ( 6, 8 )
-    -->     , Point2d.withCoordinates ( 10, 2 )
-    -->     , Point2d.withCoordinates ( 14, 8 )
+    --> CubicSpline2d.fromControlPoints
+    -->     ( Point2d.fromCoordinates ( 2, 2 )
+    -->     , Point2d.fromCoordinates ( 6, 8 )
+    -->     , Point2d.fromCoordinates ( 10, 2 )
+    -->     , Point2d.fromCoordinates ( 14, 8 )
     -->     )
 
 -}
@@ -369,11 +369,11 @@ angle (in radians).
     exampleSpline
         |> CubicSpline2d.rotateAround Point2d.origin
             (degrees 90)
-    --> CubicSpline2d.withControlPoints
-    -->     ( Point2d.withCoordinates ( -1, 1 )
-    -->     , Point2d.withCoordinates ( -4, 3 )
-    -->     , Point2d.withCoordinates ( -1, 5 )
-    -->     , Point2d.withCoordinates ( -4, 7 )
+    --> CubicSpline2d.fromControlPoints
+    -->     ( Point2d.fromCoordinates ( -1, 1 )
+    -->     , Point2d.fromCoordinates ( -4, 3 )
+    -->     , Point2d.fromCoordinates ( -1, 5 )
+    -->     , Point2d.fromCoordinates ( -4, 7 )
     -->     )
 
 -}
@@ -385,14 +385,14 @@ rotateAround point angle =
 {-| Translate a spline by a given displacement.
 
     displacement =
-        Vector2d.withComponents ( 2, 3 )
+        Vector2d.fromComponents ( 2, 3 )
 
     CubicSpline2d.translateBy displacement exampleSpline
-    --> CubicSpline2d.withControlPoints
-    -->     ( Point2d.withCoordinates ( 3, 4 )
-    -->     , Point2d.withCoordinates ( 5, 7 )
-    -->     , Point2d.withCoordinates ( 7, 4 )
-    -->     , Point2d.withCoordinates ( 9, 7 )
+    --> CubicSpline2d.fromControlPoints
+    -->     ( Point2d.fromCoordinates ( 3, 4 )
+    -->     , Point2d.fromCoordinates ( 5, 7 )
+    -->     , Point2d.fromCoordinates ( 7, 4 )
+    -->     , Point2d.fromCoordinates ( 9, 7 )
     -->     )
 
 -}
@@ -404,11 +404,11 @@ translateBy displacement =
 {-| Mirror a spline across an axis.
 
     CubicSpline2d.mirrorAcross Axis2d.x exampleSpline
-    --> CubicSpline2d.withControlPoints
-    -->     ( Point2d.withCoordinates ( 1, -1 )
-    -->     , Point2d.withCoordinates ( 3, -4 )
-    -->     , Point2d.withCoordinates ( 5, -1 )
-    -->     , Point2d.withCoordinates ( 7, -4 )
+    --> CubicSpline2d.fromControlPoints
+    -->     ( Point2d.fromCoordinates ( 1, -1 )
+    -->     , Point2d.fromCoordinates ( 3, -4 )
+    -->     , Point2d.fromCoordinates ( 5, -1 )
+    -->     , Point2d.fromCoordinates ( 7, -4 )
     -->     )
 
 -}
@@ -421,14 +421,14 @@ mirrorAcross axis =
 local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame2d.at (Point2d.withCoordinates ( 1, 2 ))
+        Frame2d.at (Point2d.fromCoordinates ( 1, 2 ))
 
     CubicSpline2d.relativeTo localFrame exampleSpline
-    --> CubicSpline2d.withControlPoints
-    -->     ( Point2d.withCoordinates ( 0, -1 )
-    -->     , Point2d.withCoordinates ( 2, 2 )
-    -->     , Point2d.withCoordinates ( 4, -1 )
-    -->     , Point2d.withCoordinates ( 6, 2 )
+    --> CubicSpline2d.fromControlPoints
+    -->     ( Point2d.fromCoordinates ( 0, -1 )
+    -->     , Point2d.fromCoordinates ( 2, 2 )
+    -->     , Point2d.fromCoordinates ( 4, -1 )
+    -->     , Point2d.fromCoordinates ( 6, 2 )
     -->     )
 
 -}
@@ -441,14 +441,14 @@ relativeTo frame =
 given reference frame, and return that spline expressed in global coordinates.
 
     localFrame =
-        Frame2d.at (Point2d.withCoordinates ( 1, 2 ))
+        Frame2d.at (Point2d.fromCoordinates ( 1, 2 ))
 
     CubicSpline2d.placeIn localFrame exampleSpline
-    --> CubicSpline2d.withControlPoints
-    -->     ( Point2d.withCoordinates ( 2, 3 )
-    -->     , Point2d.withCoordinates ( 4, 6 )
-    -->     , Point2d.withCoordinates ( 6, 3 )
-    -->     , Point2d.withCoordinates ( 8, 6 )
+    --> CubicSpline2d.fromControlPoints
+    -->     ( Point2d.fromCoordinates ( 2, 3 )
+    -->     , Point2d.fromCoordinates ( 4, 6 )
+    -->     , Point2d.fromCoordinates ( 6, 3 )
+    -->     , Point2d.fromCoordinates ( 8, 6 )
     -->     )
 
 -}
@@ -460,17 +460,17 @@ placeIn frame =
 {-| Split a spline into two roughly equal halves. Equivalent to `splitAt 0.5`.
 
     CubicSpline2d.bisect exampleSpline
-    --> ( CubicSpline2d.withControlPoints
-    -->     ( Point2d.withCoordinates ( 1, 1 )
-    -->     , Point2d.withCoordinates ( 2, 2.5 )
-    -->     , Point2d.withCoordinates ( 3, 2.5 )
-    -->     , Point2d.withCoordinates ( 4, 2.5 )
+    --> ( CubicSpline2d.fromControlPoints
+    -->     ( Point2d.fromCoordinates ( 1, 1 )
+    -->     , Point2d.fromCoordinates ( 2, 2.5 )
+    -->     , Point2d.fromCoordinates ( 3, 2.5 )
+    -->     , Point2d.fromCoordinates ( 4, 2.5 )
     -->     )
-    --> , CubicSpline2d.withControlPoints
-    -->     ( Point2d.withCoordinates ( 4, 2.5 )
-    -->     , Point2d.withCoordinates ( 5, 2.5 )
-    -->     , Point2d.withCoordinates ( 6, 2.5 )
-    -->     , Point2d.withCoordinates ( 7, 4 )
+    --> , CubicSpline2d.fromControlPoints
+    -->     ( Point2d.fromCoordinates ( 4, 2.5 )
+    -->     , Point2d.fromCoordinates ( 5, 2.5 )
+    -->     , Point2d.fromCoordinates ( 6, 2.5 )
+    -->     , Point2d.fromCoordinates ( 7, 4 )
     -->     )
     --> )
 
@@ -484,17 +484,17 @@ bisect =
 resulting in two smaller splines.
 
     CubicSpline2d.splitAt 0.75 exampleSpline
-    --> ( CubicSpline2d.withControlPoints
-    -->     ( Point2d.withCoordinates ( 1, 1 )
-    -->     , Point2d.withCoordinates ( 2.5, 3.25 )
-    -->     , Point2d.withCoordinates ( 4, 2.125 )
-    -->     , Point2d.withCoordinates ( 5.5, 2.6875 )
+    --> ( CubicSpline2d.fromControlPoints
+    -->     ( Point2d.fromCoordinates ( 1, 1 )
+    -->     , Point2d.fromCoordinates ( 2.5, 3.25 )
+    -->     , Point2d.fromCoordinates ( 4, 2.125 )
+    -->     , Point2d.fromCoordinates ( 5.5, 2.6875 )
     -->     )
-    --> , CubicSpline2d.withControlPoints
-    -->     ( Point2d.withCoordinates ( 5.5, 2.6875 )
-    -->     , Point2d.withCoordinates ( 6, 2.875 )
-    -->     , Point2d.withCoordinates ( 6.5, 3.25 )
-    -->     , Point2d.withCoordinates ( 7, 4 )
+    --> , CubicSpline2d.fromControlPoints
+    -->     ( Point2d.fromCoordinates ( 5.5, 2.6875 )
+    -->     , Point2d.fromCoordinates ( 6, 2.875 )
+    -->     , Point2d.fromCoordinates ( 6.5, 3.25 )
+    -->     , Point2d.fromCoordinates ( 7, 4 )
     -->     )
     --> )
 
@@ -523,6 +523,6 @@ splitAt t spline =
         s =
             Point2d.interpolateFrom r1 r2 t
     in
-    ( withControlPoints ( p1, q1, r1, s )
-    , withControlPoints ( s, r2, q3, p4 )
+    ( fromControlPoints ( p1, q1, r1, s )
+    , fromControlPoints ( s, r2, q3, p4 )
     )

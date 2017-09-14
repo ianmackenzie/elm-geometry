@@ -98,7 +98,7 @@ with { minX, maxX, minY, maxY } =
             minY + 0.5 * height
 
         centerPoint =
-            Point2d.withCoordinates ( midX, midY )
+            Point2d.fromCoordinates ( midX, midY )
     in
     Internal.Rectangle2d
         { axes = Frame2d.at centerPoint
