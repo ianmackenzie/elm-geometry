@@ -20,7 +20,7 @@ module OpenSolid.Arc2d
         , smallPositive
         , startPoint
         , sweptAngle
-        , through
+        , throughPoints
         , toPolyline
         , translateBy
         , with
@@ -41,7 +41,7 @@ end point). This module includes functionality for
 
 # Constructors
 
-@docs with, through, fromEndpoints, SweptAngle, smallPositive, smallNegative, largePositive, largeNegative
+@docs with, throughPoints, fromEndpoints, SweptAngle, smallPositive, smallNegative, largePositive, largeNegative
 
 
 # Properties
@@ -113,7 +113,7 @@ with =
 through the second given point and ends at the third given point. If the three
 points are collinear, returns `Nothing`.
 
-    Arc2d.through
+    Arc2d.throughPoints
         ( Point2d.origin
         , Point2d.fromCoordinates ( 1, 0 )
         , Point2d.fromCoordinates ( 0, 1 )
@@ -127,7 +127,7 @@ points are collinear, returns `Nothing`.
     -->         }
     -->     )
 
-    Arc2d.through
+    Arc2d.throughPoints
         ( Point2d.fromCoordinates ( 1, 0 )
         , Point2d.origin
         , Point2d.fromCoordinates ( 0, 1 )
@@ -142,14 +142,14 @@ points are collinear, returns `Nothing`.
     -->         }
     -->     )
 
-    Arc2d.through
+    Arc2d.throughPoints
         ( Point2d.origin
         , Point2d.fromCoordinates ( 1, 0 )
         , Point2d.fromCoordinates ( 2, 0 )
         )
     --> Nothing
 
-    Arc2d.through
+    Arc2d.throughPoints
         ( Point2d.origin
         , Point2d.origin
         , Point2d.fromCoordinates ( 1, 0 )
@@ -157,8 +157,8 @@ points are collinear, returns `Nothing`.
     --> Nothing
 
 -}
-through : ( Point2d, Point2d, Point2d ) -> Maybe Arc2d
-through points =
+throughPoints : ( Point2d, Point2d, Point2d ) -> Maybe Arc2d
+throughPoints points =
     Point2d.circumcenter points
         |> Maybe.andThen
             (\centerPoint ->

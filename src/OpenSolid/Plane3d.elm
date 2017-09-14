@@ -23,7 +23,7 @@ module OpenSolid.Plane3d
         , placeIn
         , relativeTo
         , rotateAround
-        , through
+        , throughPoints
         , translateBy
         , with
         , xy
@@ -50,7 +50,7 @@ and normal direction and is useful for several operations including:
 
 # Constructors
 
-@docs with, through
+@docs with, throughPoints
 
 
 # Properties
@@ -156,7 +156,7 @@ the normal direction will be such that the three given points are in
 counterclockwise order around it according to the right-hand rule. If the three
 given points are collinear, returns `Nothing`.
 
-    Plane3d.through
+    Plane3d.throughPoints
         ( Point3d.fromCoordinates ( 2, 0, 0 )
         , Point3d.fromCoordinates ( 3, 0, 0 )
         , Point3d.fromCoordinates ( 4, 1, 1 )
@@ -173,7 +173,7 @@ given points are collinear, returns `Nothing`.
     -->         }
     -->     )
 
-    Plane3d.through
+    Plane3d.throughPoints
         ( Point3d.fromCoordinates ( 2, 0, 0 )
         , Point3d.fromCoordinates ( 3, 0, 0 )
         , Point3d.fromCoordinates ( 4, 0, 0 )
@@ -181,8 +181,8 @@ given points are collinear, returns `Nothing`.
     --> Nothing
 
 -}
-through : ( Point3d, Point3d, Point3d ) -> Maybe Plane3d
-through ( firstPoint, secondPoint, thirdPoint ) =
+throughPoints : ( Point3d, Point3d, Point3d ) -> Maybe Plane3d
+throughPoints ( firstPoint, secondPoint, thirdPoint ) =
     let
         firstVector =
             Vector3d.from firstPoint secondPoint

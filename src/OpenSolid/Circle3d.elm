@@ -17,7 +17,7 @@ module OpenSolid.Circle3d
         , relativeTo
         , rotateAround
         , scaleAbout
-        , through
+        , throughPoints
         , translateBy
         , with
         )
@@ -39,7 +39,7 @@ for:
 
 # Constructors
 
-@docs with, around, on, through
+@docs with, around, on, throughPoints
 
 
 # Properties
@@ -157,7 +157,7 @@ The axial direction of the returned circle will be such that the three points
 are in counterclockwise order around it, according to the right-hand rule. If
 the three given points are collinear, returns `Nothing`.
 
-    Circle3d.through
+    Circle3d.throughPoints
         ( Point3d.fromCoordinates ( 1, 0, 0 )
         , Point3d.fromCoordinates ( 0, 1, 0 )
         , Point3d.fromCoordinates ( 0, 0, 1 )
@@ -177,8 +177,8 @@ the three given points are collinear, returns `Nothing`.
     -->     )
 
 -}
-through : ( Point3d, Point3d, Point3d ) -> Maybe Circle3d
-through points =
+throughPoints : ( Point3d, Point3d, Point3d ) -> Maybe Circle3d
+throughPoints points =
     Maybe.map2
         (\centerPoint plane ->
             let
@@ -201,7 +201,7 @@ through points =
                 }
         )
         (Point3d.circumcenter points)
-        (Plane3d.through points)
+        (Plane3d.throughPoints points)
 
 
 {-| Get the center point of a circle.

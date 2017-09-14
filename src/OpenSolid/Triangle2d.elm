@@ -447,7 +447,7 @@ each of the triangle's vertices;
 
 is equivalent to
 
-    Circle2d.through (Triangle2d.vertices triangle)
+    Circle2d.throughPoints (Triangle2d.vertices triangle)
 
 If the triangle is degenerate (its three vertices are collinear), returns
 `Nothing`.
@@ -455,4 +455,4 @@ If the triangle is degenerate (its three vertices are collinear), returns
 -}
 circumcircle : Triangle2d -> Maybe Circle2d
 circumcircle triangle =
-    Circle2d.through (vertices triangle)
+    Circle2d.throughPoints (vertices triangle)

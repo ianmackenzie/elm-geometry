@@ -13,7 +13,7 @@ module OpenSolid.Circle2d
         , relativeTo
         , rotateAround
         , scaleAbout
-        , through
+        , throughPoints
         , toArc
         , translateBy
         , unit
@@ -39,7 +39,7 @@ functionality for
 
 # Constructors
 
-@docs with, through
+@docs with, throughPoints
 
 
 # Properties
@@ -117,7 +117,7 @@ unit =
 {-| Attempt to construct a circle that passes through the three given points. If
 the three given points are collinear, returns `Nothing`.
 
-    Circle2d.through
+    Circle2d.throughPoints
         ( Point2d.origin
         , Point2d.fromCoordinates ( 1, 0 )
         , Point2d.fromCoordinates ( 0, 1 )
@@ -130,7 +130,7 @@ the three given points are collinear, returns `Nothing`.
     -->         }
     -->     )
 
-    Circle2d.through
+    Circle2d.throughPoints
         ( Point2d.origin
         , Point2d.fromCoordinates ( 2, 1 )
         , Point2d.fromCoordinates ( 4, 0 )
@@ -143,14 +143,14 @@ the three given points are collinear, returns `Nothing`.
     -->         }
     -->     )
 
-    Circle2d.through
+    Circle2d.throughPoints
         ( Point2d.origin
         , Point2d.fromCoordinates ( 2, 0 )
         , Point2d.fromCoordinates ( 4, 0 )
         )
     --> Nothing
 
-    Circle2d.through
+    Circle2d.throughPoints
         ( Point2d.origin
         , Point2d.origin
         , Point2d.fromCoordinates ( 1, 0 )
@@ -158,8 +158,8 @@ the three given points are collinear, returns `Nothing`.
     --> Nothing
 
 -}
-through : ( Point2d, Point2d, Point2d ) -> Maybe Circle2d
-through points =
+throughPoints : ( Point2d, Point2d, Point2d ) -> Maybe Circle2d
+throughPoints points =
     Point2d.circumcenter points
         |> Maybe.map
             (\p0 ->

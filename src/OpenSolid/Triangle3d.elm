@@ -482,7 +482,7 @@ each of the triangle's vertices;
 
 is equivalent to
 
-    Circle3d.through (Triangle3d.vertices triangle)
+    Circle3d.throughPoints (Triangle3d.vertices triangle)
 
 If the triangle is degenerate (its three vertices are collinear), returns
 `Nothing`.
@@ -490,4 +490,4 @@ If the triangle is degenerate (its three vertices are collinear), returns
 -}
 circumcircle : Triangle3d -> Maybe Circle3d
 circumcircle triangle =
-    Circle3d.through (vertices triangle)
+    Circle3d.throughPoints (vertices triangle)

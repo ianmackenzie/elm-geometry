@@ -27,7 +27,7 @@ module OpenSolid.SketchPlane3d
         , relativeTo
         , rotateAround
         , rotateAroundOwn
-        , through
+        , throughPoints
         , translateAlongOwn
         , translateBy
         , unsafe
@@ -110,7 +110,7 @@ point, and use the two indicated global axes as their X and Y axes. For example,
 Sketch planes can also be constructed from `Frame3d` values using
 `Frame3d.xySketchPlane` etc.
 
-@docs with, on, through, fromPlane, unsafe
+@docs with, on, throughPoints, fromPlane, unsafe
 
 
 # Properties
@@ -363,7 +363,7 @@ points. Returns a sketch plane where:
 
 If the three given points are collinear, returns `Nothing`.
 
-    SketchPlane3d.through
+    SketchPlane3d.throughPoints
         ( Point3d.fromCoordinates ( 2, 0, 0 )
         , Point3d.fromCoordinates ( 3, 0, 0 )
         , Point3d.fromCoordinates ( 4, 1, 1 )
@@ -382,7 +382,7 @@ If the three given points are collinear, returns `Nothing`.
     -->     , elevation = degrees 45
     -->     }
 
-    SketchPlane3d.through
+    SketchPlane3d.throughPoints
         ( Point3d.fromCoordinates ( 2, 0, 0 )
         , Point3d.fromCoordinates ( 3, 0, 0 )
         , Point3d.fromCoordinates ( 4, 0, 0 )
@@ -390,8 +390,8 @@ If the three given points are collinear, returns `Nothing`.
     --> Nothing
 
 -}
-through : ( Point3d, Point3d, Point3d ) -> Maybe SketchPlane3d
-through ( firstPoint, secondPoint, thirdPoint ) =
+throughPoints : ( Point3d, Point3d, Point3d ) -> Maybe SketchPlane3d
+throughPoints ( firstPoint, secondPoint, thirdPoint ) =
     Direction3d.from firstPoint secondPoint
         |> Maybe.andThen
             (\xDirection ->
