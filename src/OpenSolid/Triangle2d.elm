@@ -372,7 +372,7 @@ map function triangle =
 in local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame2d.at (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     Triangle2d.relativeTo localFrame exampleTriangle
     --> Triangle2d.fromVertices
@@ -391,7 +391,7 @@ relativeTo frame =
 given reference frame, and return that triangle expressed in global coordinates.
 
     localFrame =
-        Frame2d.at (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     Triangle2d.placeIn localFrame exampleTriangle
     --> Triangle2d.fromVertices

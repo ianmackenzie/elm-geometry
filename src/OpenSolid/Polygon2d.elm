@@ -310,7 +310,7 @@ map function =
 in local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame2d.at (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     Polygon2d.relativeTo localFrame rectangle
     --> Polygon2d.fromVertices
@@ -331,7 +331,7 @@ to a given reference frame, and return that polygon expressed in global
 coordinates.
 
     localFrame =
-        Frame2d.at (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     Polygon2d.placeIn localFrame rectangle
     --> Polygon2d.fromVertices

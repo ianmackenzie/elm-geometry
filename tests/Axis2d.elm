@@ -161,7 +161,7 @@ relativeToExample =
                 originPoint =
                     Point2d.fromCoordinates ( 2, 3 )
             in
-            Axis2d.relativeTo (Frame2d.at originPoint) Axis2d.x
+            Axis2d.relativeTo (Frame2d.atPoint originPoint) Axis2d.x
                 |> Expect.axis2d
                     (Axis2d.with
                         { originPoint = Point2d.fromCoordinates ( -2, -3 )
@@ -178,7 +178,7 @@ placeInExample =
                 originPoint =
                     Point2d.fromCoordinates ( 2, 3 )
             in
-            Axis2d.placeIn (Frame2d.at originPoint) Axis2d.x
+            Axis2d.placeIn (Frame2d.atPoint originPoint) Axis2d.x
                 |> Expect.axis2d
                     (Axis2d.with
                         { originPoint = Point2d.fromCoordinates ( 2, 3 )

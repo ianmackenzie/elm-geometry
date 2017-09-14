@@ -13,7 +13,7 @@
 module OpenSolid.Frame2d
     exposing
         ( Frame2d
-        , at
+        , atPoint
         , flipX
         , flipY
         , isRightHanded
@@ -61,7 +61,7 @@ always perpendicular to each other). It can be thought of as:
 
 # Constructors
 
-@docs at, with, unsafe
+@docs atPoint, with, unsafe
 
 
 # Properties
@@ -106,7 +106,7 @@ type alias Frame2d =
 -}
 xy : Frame2d
 xy =
-    at Point2d.origin
+    atPoint Point2d.origin
 
 
 {-| Construct a frame given its origin point and X axis direction. The Y axis
@@ -161,11 +161,14 @@ unsafe =
 {-| Construct a frame aligned with the global XY frame but with the given origin
 point.
 
+    point =
+        Point2d.fromCoordinates ( 2, 3 )
+
     frame =
-        Frame2d.at (Point2d.fromCoordinates ( 2, 3 ))
+        Frame2d.atPoint point
 
     Frame2d.originPoint frame
-    --> Point2d.fromCoordinates ( 2, 3 )
+    --> point
 
     Frame2d.xDirection frame
     --> Direction2d.x
@@ -174,8 +177,8 @@ point.
     --> Direction2d.y
 
 -}
-at : Point2d -> Frame2d
-at point =
+atPoint : Point2d -> Frame2d
+atPoint point =
     unsafe
         { originPoint = point
         , xDirection = Direction2d.x
@@ -274,12 +277,14 @@ yAxis frame =
 {-| Reverse the X direction of a frame, leaving its Y direction and origin point
 the same.
 
+    point =
+        Point2d.fromCoordinates ( 2, 3 )
+
     frame =
-        Frame2d.at (Point2d.fromCoordinates ( 2, 3 ))
-            |> Frame2d.flipX
+        Frame2d.atPoint point |> Frame2d.flipX
 
     Frame2d.originPoint frame
-    --> Point2d.fromCoordinates ( 2, 3 )
+    --> point
 
     Frame2d.xDirection frame
     --> Direction2d.negativeX
@@ -303,12 +308,14 @@ flipX frame =
 {-| Reverse the Y direction of a frame, leaving its X direction and origin point
 the same.
 
+    point =
+        Point2d.fromCoordinates ( 2, 3 )
+
     frame =
-        Frame2d.at (Point2d.fromCoordinates ( 2, 3 ))
-            |> Frame2d.flipY
+        Frame2d.atPoint point |> Frame2d.flipY
 
     Frame2d.originPoint frame
-    --> Point2d.fromCoordinates ( 2, 3 )
+    --> point
 
     Frame2d.xDirection frame
     --> Direction2d.x
@@ -331,10 +338,11 @@ flipY frame =
 
 {-| Move a frame so that it has the given origin point.
 
-    Frame2d.xy
-        |> Frame2d.moveTo
-            (Point2d.fromCoordinates ( 1, 1 ))
-    --> Frame2d.at (Point2d.fromCoordinates ( 1, 1 ))
+    point =
+        Point2d.fromCoordinates ( 1, 1 )
+
+    Frame2d.xy |> Frame2d.moveTo point
+    --> Frame2d.atPoint point
 
 -}
 moveTo : Point2d -> Frame2d -> Frame2d
@@ -377,11 +385,8 @@ rotateBy angle frame =
 frame's origin point will be rotated around the given point by the given angle,
 and its X and Y basis directions will be rotated by the given angle.
 
-    frame =
-        Frame2d.at (Point2d.fromCoordinates ( 1, 1 ))
-
     rotatedFrame =
-        frame
+        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 1 ))
             |> Frame2d.rotateAround Point2d.origin
                 (degrees 45)
 
@@ -415,13 +420,13 @@ rotateAround centerPoint angle =
 {-| Translate a frame by a given displacement.
 
     frame =
-        Frame2d.at (Point2d.fromCoordinates ( 2, 3 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 2, 3 ))
 
     displacement =
         Vector2d.fromComponents ( 1, 1 )
 
     Frame2d.translateBy displacement frame
-    --> Frame2d.at (Point2d.fromCoordinates ( 3, 4 ))
+    --> Frame2d.atPoint (Point2d.fromCoordinates ( 3, 4 ))
 
 -}
 translateBy : Vector2d -> Frame2d -> Frame2d
@@ -444,7 +449,7 @@ This function is convenient when constructing frames via a series of
 transformations. For example,
 
     frame =
-        Frame2d.at (Point2d.fromCoordinates ( 2, 0 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 2, 0 ))
             |> Frame2d.rotateBy (degrees 45)
             |> Frame2d.translateAlongOwn Frame2d.xAxis 2
 
@@ -477,7 +482,7 @@ translateAlongOwn axis distance frame =
 {-| Mirror a frame across an axis.
 
     frame =
-        Frame2d.at (Point2d.fromCoordinates ( 2, 3 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 2, 3 ))
 
     mirroredFrame =
         Frame2d.mirrorAcross Axis2d.x frame

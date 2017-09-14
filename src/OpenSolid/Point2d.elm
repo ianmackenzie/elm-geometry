@@ -693,7 +693,7 @@ projectOnto axis =
 coordinates relative to a given reference frame.
 
     localFrame =
-        Frame2d.at (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     Point2d.relativeTo localFrame
         (Point2d.fromCoordinates ( 4, 5 ))
@@ -716,7 +716,7 @@ relativeTo frame point =
 frame, and return that point expressed in global coordinates.
 
     localFrame =
-        Frame2d.at (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     Point2d.placeIn localFrame
         (Point2d.fromCoordinates ( 3, 3 ))

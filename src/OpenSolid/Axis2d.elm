@@ -268,10 +268,10 @@ mirrorAcross otherAxis =
 {-| Take an axis defined in global coordinates, and return it expressed in local
 coordinates relative to a given reference frame.
 
-    originPoint =
-        Point2d.fromCoordinates ( 2, 3 )
+    frame =
+        Frame2d.atPoint (Point2d.fromCoordinates ( 2, 3 ))
 
-    Axis2d.relativeTo (Frame2d.at originPoint) exampleAxis
+    Axis2d.relativeTo frame exampleAxis
     --> Axis2d.with
     -->     { originPoint =
     -->         Point2d.fromCoordinates ( -1, 0 )
@@ -299,10 +299,10 @@ relativeTo frame =
 {-| Take an axis defined in local coordinates relative to a given reference
 frame, and return that axis expressed in global coordinates.
 
-    originPoint =
-        Point2d.fromCoordinates ( 2, 3 )
+    frame =
+        Frame2d.atPoint (Point2d.fromCoordinates ( 2, 3 ))
 
-    Axis2d.placeIn (Frame2d.at originPoint) exampleAxis
+    Axis2d.placeIn frame exampleAxis
     --> Axis2d.with
     -->     { originPoint =
     -->         Point2d.fromCoordinates ( 3, 6 )

@@ -394,7 +394,7 @@ mirrorAcross axis =
 local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame2d.at (Point2d.fromCoordinates ( 2, 3 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 2, 3 ))
 
     Circle2d.relativeTo localFrame exampleCircle
     --> Circle2d.with
@@ -421,7 +421,7 @@ relativeTo frame =
 given reference frame, and return that circle expressed in global coordinates.
 
     localFrame =
-        Frame2d.at (Point2d.fromCoordinates ( 2, 3 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 2, 3 ))
 
     Circle2d.placeIn localFrame exampleCircle
     --> Circle2d.with

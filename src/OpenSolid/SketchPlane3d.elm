@@ -261,7 +261,7 @@ provided that specifies the origin point and X/Y directions of the new sketch
 plane, in 2D coordinates within the existing sketch plane. Whew!
 
     frame2d =
-        Frame2d.at (Point2d.fromCoordinates ( 2, 3 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 2, 3 ))
             |> Frame2d.rotateBy (degrees -30)
 
     sketchPlane =

@@ -772,7 +772,7 @@ mirrorAcross axis =
 coordinates relative to a given reference frame.
 
     localFrame =
-        Frame2d.at (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     Arc2d.relativeTo localFrame exampleArc
     --> Arc2d.with
@@ -805,7 +805,7 @@ relativeTo frame arc =
 given reference frame, and return that arc expressed in global coordinates.
 
     localFrame =
-        Frame2d.at (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     Arc2d.placeIn localFrame exampleArc
     --> Arc2d.with

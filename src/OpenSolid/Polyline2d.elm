@@ -257,7 +257,7 @@ map function =
 in local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame2d.at (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     Polyline2d.relativeTo localFrame stepShape
     --> Polyline2d.fromVertices
@@ -278,7 +278,7 @@ to a given reference frame, and return that polyline expressed in global
 coordinates.
 
     localFrame =
-        Frame2d.at (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     Polyline2d.placeIn localFrame stepShape
     --> Polyline2d.fromVertices

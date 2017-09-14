@@ -533,7 +533,7 @@ map function lineSegment =
 in local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame2d.at (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     LineSegment2d.relativeTo localFrame exampleLineSegment
     --> LineSegment2d.fromEndpoints
@@ -552,7 +552,7 @@ to a given reference frame, and return that line segment expressed in global
 coordinates.
 
     localFrame =
-        Frame2d.at (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     LineSegment2d.placeIn localFrame exampleLineSegment
     --> LineSegment2d.fromEndpoints

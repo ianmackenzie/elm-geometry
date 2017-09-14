@@ -421,7 +421,7 @@ mirrorAcross axis =
 local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame2d.at (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     CubicSpline2d.relativeTo localFrame exampleSpline
     --> CubicSpline2d.fromControlPoints
@@ -441,7 +441,7 @@ relativeTo frame =
 given reference frame, and return that spline expressed in global coordinates.
 
     localFrame =
-        Frame2d.at (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     CubicSpline2d.placeIn localFrame exampleSpline
     --> CubicSpline2d.fromControlPoints

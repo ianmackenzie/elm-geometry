@@ -357,7 +357,7 @@ mapControlPoints function spline =
 local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame2d.at (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     QuadraticSpline2d.relativeTo localFrame exampleSpline
     --> QuadraticSpline2d.fromControlPoints
@@ -376,7 +376,7 @@ relativeTo frame =
 given reference frame, and return that spline expressed in global coordinates.
 
     localFrame =
-        Frame2d.at (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     QuadraticSpline2d.placeIn localFrame exampleSpline
     --> QuadraticSpline2d.fromControlPoints
