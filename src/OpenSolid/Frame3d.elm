@@ -743,10 +743,13 @@ by 2 units", resulting in
 translateAlongOwn : (Frame3d -> Axis3d) -> Float -> Frame3d -> Frame3d
 translateAlongOwn axis distance frame =
     let
-        direction =
-            Axis3d.direction (axis frame)
+        displacement =
+            Vector3d.with
+                { length = distance
+                , direction = Axis3d.direction (axis frame)
+                }
     in
-    translateBy (Vector3d.withLength distance direction) frame
+    translateBy displacement frame
 
 
 {-| Mirror a frame across a plane.

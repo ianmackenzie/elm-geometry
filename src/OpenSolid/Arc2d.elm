@@ -411,7 +411,10 @@ fromEndpoints { startPoint, endPoint, radius, sweptAngle } =
                                     -offsetMagnitude
 
                         offset =
-                            Vector2d.withLength offsetDistance offsetDirection
+                            Vector2d.with
+                                { length = offsetDistance
+                                , direction = offsetDirection
+                                }
 
                         midpoint =
                             LineSegment2d.midpoint chord

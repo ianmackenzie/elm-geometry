@@ -37,8 +37,8 @@ module OpenSolid.Vector2d
         , scaleBy
         , squaredLength
         , sum
+        , with
         , withComponents
-        , withLength
         , withPolarComponents
         , xComponent
         , yComponent
@@ -78,7 +78,7 @@ and [`Direction2d.y`](OpenSolid-Direction2d#y).
 
 # Constructors
 
-@docs withComponents, withPolarComponents, from, withLength, perpendicularTo, interpolateFrom
+@docs withComponents, withPolarComponents, from, with, perpendicularTo, interpolateFrom
 
 
 # Properties
@@ -200,12 +200,12 @@ from firstPoint secondPoint =
 
 {-| Construct a vector with the given length in the given direction.
 
-    Vector2d.withLength 5 Direction2d.y
+    Vector2d.with { length = 5, direction = Direction2d.y }
     --> Vector2d.withComponents ( 0, 5 )
 
 -}
-withLength : Float -> Direction2d -> Vector2d
-withLength length direction =
+with : { length : Float, direction : Direction2d } -> Vector2d
+with { length, direction } =
     let
         ( dx, dy ) =
             Direction2d.components direction
@@ -755,7 +755,7 @@ portion.
 -}
 projectionIn : Direction2d -> Vector2d -> Vector2d
 projectionIn direction vector =
-    withLength (componentIn direction vector) direction
+    with { direction = direction, length = componentIn direction vector }
 
 
 {-| Project a vector onto an axis.

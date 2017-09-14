@@ -465,10 +465,13 @@ resulting in
 translateAlongOwn : (Frame2d -> Axis2d) -> Float -> Frame2d -> Frame2d
 translateAlongOwn axis distance frame =
     let
-        direction =
-            Axis2d.direction (axis frame)
+        displacement =
+            Vector2d.with
+                { length = distance
+                , direction = Axis2d.direction (axis frame)
+                }
     in
-    translateBy (Vector2d.withLength distance direction) frame
+    translateBy displacement frame
 
 
 {-| Mirror a frame across an axis.
