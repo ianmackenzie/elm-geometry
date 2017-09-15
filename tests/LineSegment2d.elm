@@ -351,8 +351,27 @@ sharedEndpointOnThirdSegmentInducesAnIntersection =
                             |> Expect.all
                                 [ Expect.point2d p1, Expect.point2d p2 ]
 
-                    _ ->
-                        Expect.fail "Behaviors different for segments on the same side"
+                    ( Just p1, Nothing ) ->
+                        -- If an intersection point is found for only segment1,
+                        -- then that point should be approximately equal to
+                        -- sharedPoint and segment2 should be approximately
+                        -- parallel to segment3
+                        ( p1, v3Xv2 )
+                            |> Expect.all
+                                [ Tuple.first >> Expect.point2d sharedPoint
+                                , Tuple.second >> Expect.approximately 0
+                                ]
+
+                    ( Nothing, Just p2 ) ->
+                        -- If an intersection point is found for only segment2,
+                        -- then that point should be approximately equal to
+                        -- sharedPoint and segment1 should be approximately
+                        -- parallel to segment3
+                        ( p2, v3Xv1 )
+                            |> Expect.all
+                                [ Tuple.first >> Expect.point2d sharedPoint
+                                , Tuple.second >> Expect.approximately 0
+                                ]
             else
                 -- point1 and point2 are on opposite sides of segment3
                 case intersections of
