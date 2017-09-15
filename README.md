@@ -211,7 +211,7 @@ rotatedPoint =
   - [`opensolid/svg`](http://package.elm-lang.org/packages/opensolid/svg/latest)
     lets you create and manipulate SVG drawings using the data types from this
     package.
-  - [`opensolid/linear-algebra-interiop`](http://package.elm-lang.org/packages/opensolid/linear-algebra-interop/latest)
+  - [`opensolid/linear-algebra-interop`](http://package.elm-lang.org/packages/opensolid/linear-algebra-interop/latest)
     provides interop support between this package and
     [`elm-community/linear-algebra`](http://package.elm-lang.org/packages/elm-community/linear-algebra/latest).
 
