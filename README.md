@@ -222,13 +222,13 @@ run into a bug, if any documentation is missing/incorrect/confusing, or if
 there's a new feature that you would find useful. For general questions about
 using OpenSolid, try:
 
-  - Finding me (@ianmackenzie) on the [Elm Slack](http://elmlang.herokuapp.com/) -
+  - Sending me (@ianmackenzie) a message on the [Elm Slack](http://elmlang.herokuapp.com/) -
     even if you don't have any particular questions right now, just come say
     hello!
   - Posting to the [r/elm](https://reddit.com/r/elm) subreddit
   - Posting to the [elm-discuss](https://groups.google.com/forum/#!forum/elm-discuss)
-    Google Group (somewhat less active than the first two, but I still follow it
-    regularly if you prefer e-mail)
+    Google Group (somewhat less active than Slack and Reddit, but I still follow
+    it regularly if you prefer e-mail)
   - Or if you happen to be in the New York area, come on out to the
     [Elm NYC meetup](https://www.meetup.com/Elm-NYC/) =)
 
