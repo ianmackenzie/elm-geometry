@@ -144,8 +144,12 @@ Plane3d.offsetBy 3 Plane3d.xy
 rotatedFrame =
     Frame2d.xy |> Frame2d.rotateBy (degrees 30)
 
+-- convert from global coordinates to local coordinates
+-- (relative to the given coordinate frame)
 Vector2d.relativeTo rotatedFrame vector
 
+-- convert from local coordinates (relative to the given
+-- coordinate frame) to global coordinates
 Point2d.placeIn rotatedFrame point
 
 -- convert from global 3D coordinates to local 2D
