@@ -1,5 +1,7 @@
 # opensolid/geometry [![Travis build Status](https://travis-ci.org/opensolid/geometry.svg?branch=master)](https://travis-ci.org/opensolid/geometry)
 
+_Note: if you're upgrading from 1.x, make sure to check out the [release notes](https://github.com/opensolid/geometry/releases/tag/2.0.0)!_
+
 `opensolid/geometry` is an [Elm](http://elm-lang.org) package for working with
 2D and 3D geometry. It provides a wide variety of geometric data types such as
 points, vectors, arcs, spline curves and coordinate frames, along with functions
