@@ -147,7 +147,6 @@ rotatedFrame =
 Vector2d.relativeTo rotatedFrame vector
 
 Point2d.placeIn rotatedFrame point
---> Point2d ( 0.866, 0.5 )
 
 -- convert from global 3D coordinates to local 2D
 -- coordinates in the given sketch plane
