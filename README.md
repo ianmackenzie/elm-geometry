@@ -94,6 +94,12 @@ Arc2d.fromEndpoints
     , radius = 3
     , sweptAngle = Arc2d.smallPositive
     }
+
+QuadraticSpline3d.fromControlPoints ( p1, p2, p3 )
+
+CubicSpline2d.hermite
+    ( startPoint, startDerivative )
+    ( endPoint, endDerivative )
 ```
 
 ...point/vector arithmetic...
@@ -103,6 +109,10 @@ Vector3d.sum v1 v2
 
 -- the vector from the point p1 to the point p2
 Vector2d.from p1 p2
+
+Vector3d.crossProduct v1 v2
+
+Vector2d.length vector
 
 -- distance of a point from the origin point (0, 0)
 point |> Point2d.distanceFrom Point2d.origin
