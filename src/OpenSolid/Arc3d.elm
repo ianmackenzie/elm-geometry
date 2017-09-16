@@ -4,6 +4,7 @@ module OpenSolid.Arc3d
         , around
         , axis
         , centerPoint
+        , derivative
         , endPoint
         , evaluate
         , mirrorAcross
@@ -47,7 +48,7 @@ start point to the arc's end point). This module includes functionality for
 
 # Evaluation
 
-@docs pointOn, evaluate
+@docs pointOn, derivative, evaluate
 
 
 # Linear approximation
@@ -315,6 +316,55 @@ pointOn arc =
             )
 
 
+{-| Get the derivative of an arc with respect to a parameter that is 0 at the
+start point of the arc and 1 at the end point of the arc.
+
+    Arc3d.derivative exampleArc 0
+    --> Vector3d.fromComponents ( -1.5708, 1.5708, 0 )
+
+    Arc3d.derivative exampleArc 1
+    --> Vector3d.fromComponents ( -1.5708, -1.5708, 0 )
+
+-}
+derivative : Arc3d -> Float -> Vector3d
+derivative arc =
+    let
+        axialVector =
+            Direction3d.toVector (Axis3d.direction (axis arc))
+
+        xVector =
+            Vector3d.from (centerPoint arc) (startPoint arc)
+
+        yVector =
+            Vector3d.crossProduct axialVector xVector
+
+        ( x1, y1, z1 ) =
+            Vector3d.components xVector
+
+        ( x2, y2, z2 ) =
+            Vector3d.components yVector
+
+        arcSweptAngle =
+            sweptAngle arc
+    in
+    \t ->
+        let
+            angle =
+                t * arcSweptAngle
+
+            cosAngle =
+                cos angle
+
+            sinAngle =
+                sin angle
+        in
+        Vector3d.fromComponents
+            ( arcSweptAngle * (cosAngle * x2 - sinAngle * x1)
+            , arcSweptAngle * (cosAngle * y2 - sinAngle * y1)
+            , arcSweptAngle * (cosAngle * z2 - sinAngle * z1)
+            )
+
+
 {-| Evaluate an arc at a given parameter value, returning the point on the arc
 at that parameter value and the derivative with respect to that parameter value.
 
@@ -332,6 +382,9 @@ at that parameter value and the derivative with respect to that parameter value.
     --> ( Point3d.fromCoordinates ( -1, 1, 0 )
     --> , Vector3d.fromComponents ( -1.5708, -1.5708, 0 )
     --> )
+
+Equivalent to (but more efficient than) calling `pointOn` and `derivative`
+separately.
 
 -}
 evaluate : Arc3d -> Float -> ( Point3d, Vector3d )

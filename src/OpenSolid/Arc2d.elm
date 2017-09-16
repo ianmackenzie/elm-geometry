@@ -3,6 +3,7 @@ module OpenSolid.Arc2d
         ( Arc2d
         , SweptAngle
         , centerPoint
+        , derivative
         , endPoint
         , evaluate
         , fromEndpoints
@@ -51,7 +52,7 @@ end point). This module includes functionality for
 
 # Evaluation
 
-@docs pointOn, evaluate
+@docs pointOn, derivative, evaluate
 
 
 # Linear approximation
@@ -527,6 +528,30 @@ pointOn arc parameter =
     Point2d.rotateAround (centerPoint arc) angle (startPoint arc)
 
 
+{-| Get the derivative of an arc with respect to a parameter that is 0 at the
+start point of the arc and 1 at the end point of the arc.
+
+    Arc2d.derivative exampleArc 0
+    --> Vector2d.fromComponents ( 0, 3.1416 )
+
+    Arc2d.derivative exampleArc 1
+    --> Vector2d.fromComponents ( -3.1416, 0 )
+
+-}
+derivative : Arc2d -> Float -> Vector2d
+derivative arc parameter =
+    let
+        angle =
+            parameter * sweptAngle arc
+
+        startDerivative =
+            Vector2d.perpendicularTo
+                (Vector2d.from (centerPoint arc) (startPoint arc))
+                |> Vector2d.scaleBy (sweptAngle arc)
+    in
+    startDerivative |> Vector2d.rotateBy angle
+
+
 {-| Evaluate an arc at a given parameter value, returning the point on the arc
 at that parameter value and the derivative with respect to that parameter value.
 
@@ -544,6 +569,9 @@ at that parameter value and the derivative with respect to that parameter value.
     --> ( Point2d.fromCoordinates ( 1, 3 )
     --> , Vector2d.fromComponents ( -3.1416, 0 )
     --> )
+
+Equivalent to (but more efficient than) calling `pointOn` and `derivative`
+separately.
 
 -}
 evaluate : Arc2d -> Float -> ( Point2d, Vector2d )
