@@ -667,8 +667,8 @@ elevation direction =
     asin (zComponent direction)
 
 
-{-| Compare two directions within a tolerance. Returns true if the angle between
-the two given directions is less than the given tolerance.
+{-| Compare two directions within an angular tolerance. Returns true if the
+angle between the two given directions is less than the given tolerance.
 
     rotatedDirection =
         Direction3d.x

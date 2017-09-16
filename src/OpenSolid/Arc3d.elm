@@ -100,7 +100,8 @@ angle:
     --> Point3d.fromCoordinates ( -1, 1, 0 )
 
 Positive swept angles result in a counterclockwise (right-handed) rotation
-around the given axis and vice versa for negative swept angles.
+around the given axis and vice versa for negative swept angles. The center point
+of the returned arc will lie on the given axis.
 
 -}
 around : Axis3d -> { startPoint : Point3d, sweptAngle : Float } -> Arc3d
