@@ -959,9 +959,6 @@ list is empty, returns `Nothing`.
     Point3d.hullOf []
     --> Nothing
 
-If you have exactly two points, you can use [`Point3d.hull`](#hull) instead
-(which returns a `BoundingBox3d` instead of a `Maybe BoundingBox3d`).
-
 -}
 hullOf : List Point3d -> Maybe BoundingBox3d
 hullOf points =
