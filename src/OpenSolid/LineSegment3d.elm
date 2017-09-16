@@ -22,7 +22,7 @@ module OpenSolid.LineSegment3d
         , fromEndpoints
         , interpolate
         , length
-        , map
+        , mapEndpoints
         , midpoint
         , mirrorAcross
         , normalDirection
@@ -73,7 +73,7 @@ functionality such as:
 Transforming a line segment is equivalent to transforming its start and end
 points and forming a new line segment between the resulting points.
 
-@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
+@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, mapEndpoints
 
 
 # Coordinate conversions
@@ -347,7 +347,7 @@ vector lineSegment =
 -}
 scaleAbout : Point3d -> Float -> LineSegment3d -> LineSegment3d
 scaleAbout point scale =
-    map (Point3d.scaleAbout point scale)
+    mapEndpoints (Point3d.scaleAbout point scale)
 
 
 {-| Rotate a line segment around a given axis by a given angle (in radians).
@@ -362,7 +362,7 @@ scaleAbout point scale =
 -}
 rotateAround : Axis3d -> Float -> LineSegment3d -> LineSegment3d
 rotateAround axis angle =
-    map (Point3d.rotateAround axis angle)
+    mapEndpoints (Point3d.rotateAround axis angle)
 
 
 {-| Translate a line segment by a given displacement.
@@ -380,7 +380,7 @@ rotateAround axis angle =
 -}
 translateBy : Vector3d -> LineSegment3d -> LineSegment3d
 translateBy vector =
-    map (Point3d.translateBy vector)
+    mapEndpoints (Point3d.translateBy vector)
 
 
 {-| Mirror a line segment across a plane.
@@ -395,7 +395,7 @@ translateBy vector =
 -}
 mirrorAcross : Plane3d -> LineSegment3d -> LineSegment3d
 mirrorAcross plane =
-    map (Point3d.mirrorAcross plane)
+    mapEndpoints (Point3d.mirrorAcross plane)
 
 
 {-| Project a line segment onto a plane.
@@ -409,22 +409,22 @@ mirrorAcross plane =
 -}
 projectOnto : Plane3d -> LineSegment3d -> LineSegment3d
 projectOnto plane =
-    map (Point3d.projectOnto plane)
+    mapEndpoints (Point3d.projectOnto plane)
 
 
 {-| Transform the start and end points of a line segment by a given function
 and create a new line segment from the resulting points. Most other
-transformation functions can be defined in terms of `map`; for example,
+transformation functions can be defined in terms of `mapEndpoints`; for example,
 
-    LineSegment3d.projectOnto Plane3d.xy
+    LineSegment3d.projectOnto plane
 
 is equivalent to
 
-    LineSegment3d.map (Point3d.projectOnto Plane3d.xy)
+    LineSegment3d.mapEndpoints (Point3d.projectOnto plane)
 
 -}
-map : (Point3d -> Point3d) -> LineSegment3d -> LineSegment3d
-map function lineSegment =
+mapEndpoints : (Point3d -> Point3d) -> LineSegment3d -> LineSegment3d
+mapEndpoints function lineSegment =
     let
         ( p1, p2 ) =
             endpoints lineSegment
@@ -448,7 +448,7 @@ in local coordinates relative to a given reference frame.
 -}
 relativeTo : Frame3d -> LineSegment3d -> LineSegment3d
 relativeTo frame =
-    map (Point3d.relativeTo frame)
+    mapEndpoints (Point3d.relativeTo frame)
 
 
 {-| Take a line segment considered to be defined in local coordinates relative
@@ -468,7 +468,7 @@ coordinates.
 -}
 placeIn : Frame3d -> LineSegment3d -> LineSegment3d
 placeIn frame =
-    map (Point3d.placeIn frame)
+    mapEndpoints (Point3d.placeIn frame)
 
 
 {-| Project a line segment into a given sketch plane. Conceptually, this

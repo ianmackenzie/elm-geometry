@@ -19,7 +19,7 @@ module OpenSolid.Triangle3d
         , circumcircle
         , edges
         , fromVertices
-        , map
+        , mapVertices
         , mirrorAcross
         , normalDirection
         , on
@@ -59,7 +59,7 @@ vertices. This module contains triangle-related functionality such as:
 
 Transforming a triangle is equivalent to transforming its vertices.
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, mapVertices
 
 
 # Coordinate conversions
@@ -274,7 +274,7 @@ normalDirection triangle =
 -}
 scaleAbout : Point3d -> Float -> Triangle3d -> Triangle3d
 scaleAbout centerPoint scale =
-    map (Point3d.scaleAbout centerPoint scale)
+    mapVertices (Point3d.scaleAbout centerPoint scale)
 
 
 {-| Rotate a triangle around a given axis by a given angle (in radians).
@@ -290,7 +290,7 @@ scaleAbout centerPoint scale =
 -}
 rotateAround : Axis3d -> Float -> Triangle3d -> Triangle3d
 rotateAround axis angle =
-    map (Point3d.rotateAround axis angle)
+    mapVertices (Point3d.rotateAround axis angle)
 
 
 {-| Translate a triangle by a given displacement.
@@ -308,7 +308,7 @@ rotateAround axis angle =
 -}
 translateBy : Vector3d -> Triangle3d -> Triangle3d
 translateBy vector =
-    map (Point3d.translateBy vector)
+    mapVertices (Point3d.translateBy vector)
 
 
 {-| Mirror a triangle across a given plane.
@@ -323,7 +323,7 @@ translateBy vector =
 -}
 mirrorAcross : Plane3d -> Triangle3d -> Triangle3d
 mirrorAcross plane =
-    map (Point3d.mirrorAcross plane)
+    mapVertices (Point3d.mirrorAcross plane)
 
 
 {-| Project a triangle onto a given plane.
@@ -345,22 +345,22 @@ mirrorAcross plane =
 -}
 projectOnto : Plane3d -> Triangle3d -> Triangle3d
 projectOnto plane =
-    map (Point3d.projectOnto plane)
+    mapVertices (Point3d.projectOnto plane)
 
 
 {-| Transform each vertex of a triangle by a given function and create a new
 triangle from the resulting points. Most other transformation functions can be
-defined in terms of `map`; for example,
+defined in terms of `mapVertices`; for example,
 
-    Triangle.projectOnto Plane3d.xz triangle
+    Triangle3d.projectOnto plane
 
 is equivalent to
 
-    Triangle.map (Point3d.projectOnto Plane3d.xz) triangle
+    Triangle3d.mapVertices (Point3d.projectOnto plane)
 
 -}
-map : (Point3d -> Point3d) -> Triangle3d -> Triangle3d
-map function triangle =
+mapVertices : (Point3d -> Point3d) -> Triangle3d -> Triangle3d
+mapVertices function triangle =
     let
         ( p1, p2, p3 ) =
             vertices triangle
@@ -385,7 +385,7 @@ in local coordinates relative to a given reference frame.
 -}
 relativeTo : Frame3d -> Triangle3d -> Triangle3d
 relativeTo frame =
-    map (Point3d.relativeTo frame)
+    mapVertices (Point3d.relativeTo frame)
 
 
 {-| Take a triangle considered to be defined in local coordinates relative to a
@@ -405,7 +405,7 @@ given reference frame, and return that triangle expressed in global coordinates.
 -}
 placeIn : Frame3d -> Triangle3d -> Triangle3d
 placeIn frame =
-    map (Point3d.placeIn frame)
+    mapVertices (Point3d.placeIn frame)
 
 
 {-| Project a triangle into a given sketch plane. Conceptually, this projects

@@ -19,7 +19,7 @@ module OpenSolid.Polygon2d
         , counterclockwiseArea
         , edges
         , fromVertices
-        , map
+        , mapVertices
         , mirrorAcross
         , perimeter
         , placeIn
@@ -57,7 +57,7 @@ as
 
 Transforming a polygon is equivalent to transforming each of its vertices.
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, map
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross, mapVertices
 
 
 # Coordinate conversions
@@ -231,7 +231,7 @@ counterclockwiseArea polygon =
 -}
 scaleAbout : Point2d -> Float -> Polygon2d -> Polygon2d
 scaleAbout point scale =
-    map (Point2d.scaleAbout point scale)
+    mapVertices (Point2d.scaleAbout point scale)
 
 
 {-| Rotate a polygon around the given center point counterclockwise by the given
@@ -250,7 +250,7 @@ angle (in radians).
 -}
 rotateAround : Point2d -> Float -> Polygon2d -> Polygon2d
 rotateAround point angle =
-    map (Point2d.rotateAround point angle)
+    mapVertices (Point2d.rotateAround point angle)
 
 
 {-| Translate a polygon by the given displacement.
@@ -269,7 +269,7 @@ rotateAround point angle =
 -}
 translateBy : Vector2d -> Polygon2d -> Polygon2d
 translateBy vector =
-    map (Point2d.translateBy vector)
+    mapVertices (Point2d.translateBy vector)
 
 
 {-| Mirror a polygon across the given axis.
@@ -288,21 +288,21 @@ mirroring, they will be in clockwise order afterward, and vice versa.
 -}
 mirrorAcross : Axis2d -> Polygon2d -> Polygon2d
 mirrorAcross axis =
-    map (Point2d.mirrorAcross axis)
+    mapVertices (Point2d.mirrorAcross axis)
 
 
 {-| Transform each vertex of a polygon by the given function. All other
-transformations can be defined in terms of `map`; for example,
+transformations can be defined in terms of `mapVertices`; for example,
 
-    Polygon2d.mirrorAcross Axis2d.x polygon
+    Polygon2d.mirrorAcross axis
 
 is equivalent to
 
-    Polygon2d.map (Point2d.mirrorAcross Axis2d.x) polygon
+    Polygon2d.mapVertices (Point2d.mirrorAcross axis)
 
 -}
-map : (Point2d -> Point2d) -> Polygon2d -> Polygon2d
-map function =
+mapVertices : (Point2d -> Point2d) -> Polygon2d -> Polygon2d
+mapVertices function =
     vertices >> List.map function >> fromVertices
 
 
@@ -323,7 +323,7 @@ in local coordinates relative to a given reference frame.
 -}
 relativeTo : Frame2d -> Polygon2d -> Polygon2d
 relativeTo frame =
-    map (Point2d.relativeTo frame)
+    mapVertices (Point2d.relativeTo frame)
 
 
 {-| Take a polygon considered to be defined in local coordinates relative
@@ -344,7 +344,7 @@ coordinates.
 -}
 placeIn : Frame2d -> Polygon2d -> Polygon2d
 placeIn frame =
-    map (Point2d.placeIn frame)
+    mapVertices (Point2d.placeIn frame)
 
 
 {-| Get the minimal bounding box containing a given polygon. Returns `Nothing`
