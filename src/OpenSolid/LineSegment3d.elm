@@ -436,7 +436,8 @@ map function lineSegment =
 in local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame3d.at (Point3d.fromCoordinates ( 1, 2, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     LineSegment3d.relativeTo localFrame exampleLineSegment
     --> LineSegment3d.fromEndpoints
@@ -455,7 +456,8 @@ to a given reference frame, and return that line segment expressed in global
 coordinates.
 
     localFrame =
-        Frame3d.at (Point3d.fromCoordinates ( 1, 2, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     LineSegment3d.placeIn localFrame exampleLineSegment
     --> LineSegment3d.fromEndpoints

@@ -597,7 +597,8 @@ mirrorAcross plane =
 coordinates relative to a given reference frame.
 
     localFrame =
-        Frame3d.at (Point3d.fromCoordinates ( 1, 2, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     Arc3d.relativeTo localFrame exampleArc
     --> Arc3d.around
@@ -628,7 +629,8 @@ relativeTo frame arc =
 given reference frame, and return that arc expressed in global coordinates.
 
     localFrame =
-        Frame3d.at (Point3d.fromCoordinates ( 1, 2, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     Arc3d.placeIn localFrame exampleArc
     --> Arc3d.around

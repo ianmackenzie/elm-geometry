@@ -411,7 +411,8 @@ projectOnto plane =
 local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame3d.at (Point3d.fromCoordinates ( 1, 2, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     QuadraticSpline3d.relativeTo localFrame exampleSpline
     --> QuadraticSpline3d.fromControlPoints
@@ -430,7 +431,8 @@ relativeTo frame =
 given reference frame, and return that spline expressed in global coordinates.
 
     localFrame =
-        Frame3d.at (Point3d.fromCoordinates ( 1, 2, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     QuadraticSpline3d.placeIn localFrame exampleSpline
     --> QuadraticSpline3d.fromControlPoints

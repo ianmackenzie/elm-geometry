@@ -283,7 +283,8 @@ map function =
 in local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame3d.at (Point3d.fromCoordinates ( 1, 2, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     Polyline3d.relativeTo localFrame examplePolyline
     --> Polyline3d.fromVertices
@@ -304,7 +305,8 @@ to a given reference frame, and return that polyline expressed in global
 coordinates.
 
     localFrame =
-        Frame3d.at (Point3d.fromCoordinates ( 1, 2, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     Polyline3d.placeIn localFrame examplePolyline
     --> Polyline3d.fromVertices
