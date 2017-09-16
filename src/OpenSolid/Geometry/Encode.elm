@@ -88,7 +88,7 @@ import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 
-{-| Encode a `Vector2d` as an array of two floats.
+{-| Encode a `Vector2d` as an array of two floating-point components.
 -}
 vector2d : Vector2d -> Value
 vector2d vector =
@@ -99,7 +99,7 @@ vector2d vector =
     Encode.list [ Encode.float x, Encode.float y ]
 
 
-{-| Encode a `Vector3d` as an array of three floats.
+{-| Encode a `Vector3d` as an array of three floating-point components.
 -}
 vector3d : Vector3d -> Value
 vector3d vector =
@@ -110,7 +110,7 @@ vector3d vector =
     Encode.list [ Encode.float x, Encode.float y, Encode.float z ]
 
 
-{-| Encode a `Direction2d` as an array of two floats.
+{-| Encode a `Direction2d` as an array of two floating-point components.
 -}
 direction2d : Direction2d -> Value
 direction2d direction =
@@ -121,7 +121,7 @@ direction2d direction =
     Encode.list [ Encode.float x, Encode.float y ]
 
 
-{-| Encode a `Direction3d` as an array of three floats.
+{-| Encode a `Direction3d` as an array of three floating-point components.
 -}
 direction3d : Direction3d -> Value
 direction3d direction =
@@ -132,7 +132,7 @@ direction3d direction =
     Encode.list [ Encode.float x, Encode.float y, Encode.float z ]
 
 
-{-| Encode a `Point2d` as an array of two floats.
+{-| Encode a `Point2d` as an array of two floating-point coordinates.
 -}
 point2d : Point2d -> Value
 point2d point =
@@ -143,7 +143,7 @@ point2d point =
     Encode.list [ Encode.float x, Encode.float y ]
 
 
-{-| Encode a `Point3d` as an array of three floats.
+{-| Encode a `Point3d` as an array of three floating-point coordinates.
 -}
 point3d : Point3d -> Value
 point3d point =
@@ -222,7 +222,7 @@ sketchPlane3d sketchPlane =
         ]
 
 
-{-| Encode a `LineSegment2d` as a list of two endpoints.
+{-| Encode a `LineSegment2d` as an array of two endpoints.
 -}
 lineSegment2d : LineSegment2d -> Value
 lineSegment2d lineSegment =
@@ -233,7 +233,7 @@ lineSegment2d lineSegment =
     Encode.list [ point2d startPoint, point2d endPoint ]
 
 
-{-| Encode a `LineSegment3d` as a list of two endpoints.
+{-| Encode a `LineSegment3d` as an array of two endpoints.
 -}
 lineSegment3d : LineSegment3d -> Value
 lineSegment3d lineSegment =
@@ -244,7 +244,7 @@ lineSegment3d lineSegment =
     Encode.list [ point3d startPoint, point3d endPoint ]
 
 
-{-| Encode a `Triangle2d` as a list of three vertices.
+{-| Encode a `Triangle2d` as an array of three vertices.
 -}
 triangle2d : Triangle2d -> Value
 triangle2d triangle =
@@ -255,7 +255,7 @@ triangle2d triangle =
     Encode.list [ point2d v1, point2d v2, point2d v3 ]
 
 
-{-| Encode a `Triangle3d` as a list of three vertices.
+{-| Encode a `Triangle3d` as an array of three vertices.
 -}
 triangle3d : Triangle3d -> Value
 triangle3d triangle =
@@ -294,21 +294,21 @@ boundingBox3d boundingBox =
         ]
 
 
-{-| Encode a `Polyline2d` as a list of points.
+{-| Encode a `Polyline2d` as an array of vertices.
 -}
 polyline2d : Polyline2d -> Value
 polyline2d polyline =
     Encode.list (List.map point2d (Polyline2d.vertices polyline))
 
 
-{-| Encode a `Polyline3d` as a list of points.
+{-| Encode a `Polyline3d` as an array of vertices.
 -}
 polyline3d : Polyline3d -> Value
 polyline3d polyline =
     Encode.list (List.map point3d (Polyline3d.vertices polyline))
 
 
-{-| Encode a `Polygon2d` as a list of points.
+{-| Encode a `Polygon2d` as an array of vertices.
 -}
 polygon2d : Polygon2d -> Value
 polygon2d polygon =
@@ -361,7 +361,7 @@ arc3d arc =
         ]
 
 
-{-| Encode a `QuadraticSpline2d` as a list of three control points.
+{-| Encode a `QuadraticSpline2d` as an array of three control points.
 -}
 quadraticSpline2d : QuadraticSpline2d -> Value
 quadraticSpline2d spline =
@@ -372,7 +372,7 @@ quadraticSpline2d spline =
     Encode.list [ point2d p1, point2d p2, point2d p3 ]
 
 
-{-| Encode a `QuadraticSpline3d` as a list of three control points.
+{-| Encode a `QuadraticSpline3d` as an array of three control points.
 -}
 quadraticSpline3d : QuadraticSpline3d -> Value
 quadraticSpline3d spline =
@@ -383,7 +383,7 @@ quadraticSpline3d spline =
     Encode.list [ point3d p1, point3d p2, point3d p3 ]
 
 
-{-| Encode a `CubicSpline2d` as a list of four control points.
+{-| Encode a `CubicSpline2d` as an array of four control points.
 -}
 cubicSpline2d : CubicSpline2d -> Value
 cubicSpline2d spline =
@@ -394,7 +394,7 @@ cubicSpline2d spline =
     Encode.list [ point2d p1, point2d p2, point2d p3, point2d p4 ]
 
 
-{-| Encode a `CubicSpline3d` as a list of four control points.
+{-| Encode a `CubicSpline3d` as an array of four control points.
 -}
 cubicSpline3d : CubicSpline3d -> Value
 cubicSpline3d spline =
