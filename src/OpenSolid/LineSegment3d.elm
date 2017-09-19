@@ -19,9 +19,10 @@ module OpenSolid.LineSegment3d
         , endPoint
         , endpoints
         , from
+        , fromEndpoints
         , interpolate
         , length
-        , map
+        , mapEndpoints
         , midpoint
         , mirrorAcross
         , normalDirection
@@ -37,7 +38,6 @@ module OpenSolid.LineSegment3d
         , startPoint
         , translateBy
         , vector
-        , withEndpoints
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/lineSegment3d.svg" alt="LineSegment3d" width="160">
@@ -55,7 +55,7 @@ functionality such as:
 
 # Constructors
 
-@docs withEndpoints, from, along, on
+@docs fromEndpoints, from, along, on
 
 
 # Properties
@@ -73,7 +73,7 @@ functionality such as:
 Transforming a line segment is equivalent to transforming its start and end
 points and forming a new line segment between the resulting points.
 
-@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
+@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, mapEndpoints
 
 
 # Coordinate conversions
@@ -105,14 +105,14 @@ type alias LineSegment3d =
 {-| Construct a line segment from its two endpoints:
 
     exampleLineSegment =
-        LineSegment3d.withEndpoints
-            ( Point3d.withCoordinates ( 1, 2, 3 )
-            , Point3d.withCoordinates ( 4, 5, 6 )
+        LineSegment3d.fromEndpoints
+            ( Point3d.fromCoordinates ( 1, 2, 3 )
+            , Point3d.fromCoordinates ( 4, 5, 6 )
             )
 
 -}
-withEndpoints : ( Point3d, Point3d ) -> LineSegment3d
-withEndpoints =
+fromEndpoints : ( Point3d, Point3d ) -> LineSegment3d
+fromEndpoints =
     Internal.LineSegment3d
 
 
@@ -122,46 +122,46 @@ withEndpoints =
 
 is equivalent to
 
-    LineSegment3d.withEndpoints ( firstPoint, secondPoint )
+    LineSegment3d.fromEndpoints ( firstPoint, secondPoint )
 
 -}
 from : Point3d -> Point3d -> LineSegment3d
 from startPoint endPoint =
-    withEndpoints ( startPoint, endPoint )
+    fromEndpoints ( startPoint, endPoint )
 
 
 {-| Construct a line segment lying on the given axis, with its endpoints at the
 given distances from the axis' origin point.
 
     LineSegment3d.along Axis3d.x 3 5
-    --> LineSegment3d.withEndpoints
-    -->     ( Point3d.withCoordinates ( 3, 0, 0 )
-    -->     , Point3d.withCoordinates ( 5, 0, 0 )
+    --> LineSegment3d.fromEndpoints
+    -->     ( Point3d.fromCoordinates ( 3, 0, 0 )
+    -->     , Point3d.fromCoordinates ( 5, 0, 0 )
     -->     )
 
     LineSegment3d.along Axis3d.y 2 -4
-    --> LineSegment3d.withEndpoints
-    -->     ( Point3d.withCoordinates ( 0, 2, 0 )
-    -->     , Point3d.withCoordinates ( 0, -4, 0 )
+    --> LineSegment3d.fromEndpoints
+    -->     ( Point3d.fromCoordinates ( 0, 2, 0 )
+    -->     , Point3d.fromCoordinates ( 0, -4, 0 )
     -->     )
 
 -}
 along : Axis3d -> Float -> Float -> LineSegment3d
 along axis start end =
-    withEndpoints ( Point3d.along axis start, Point3d.along axis end )
+    fromEndpoints ( Point3d.along axis start, Point3d.along axis end )
 
 
 {-| Construct a 3D line segment lying _on_ a sketch plane by providing a 2D line
 segment specified in XY coordinates _within_ the sketch plane.
 
     LineSegment3d.on SketchPlane3d.yz <|
-        LineSegment2d.withEndpoints
-            ( Point2d.withCoordinates ( 1, 2 )
-            , Point2d.withCoordinates ( 3, 4 )
+        LineSegment2d.fromEndpoints
+            ( Point2d.fromCoordinates ( 1, 2 )
+            , Point2d.fromCoordinates ( 3, 4 )
             )
-    --> LineSegment3d.withEndpoints
-    -->     ( Point3d.withCoordinates ( 0, 1, 2 )
-    -->     , Point3d.withCoordinates ( 0, 3, 4 )
+    --> LineSegment3d.fromEndpoints
+    -->     ( Point3d.fromCoordinates ( 0, 1, 2 )
+    -->     , Point3d.fromCoordinates ( 0, 3, 4 )
     -->     )
 
 -}
@@ -171,7 +171,7 @@ on sketchPlane lineSegment2d =
         ( p1, p2 ) =
             LineSegment2d.endpoints lineSegment2d
     in
-    withEndpoints
+    fromEndpoints
         ( Point3d.on sketchPlane p1
         , Point3d.on sketchPlane p2
         )
@@ -180,7 +180,7 @@ on sketchPlane lineSegment2d =
 {-| Get the start point of a line segment.
 
     LineSegment3d.startPoint exampleLineSegment
-    --> Point3d.withCoordinates ( 1, 2, 3 )
+    --> Point3d.fromCoordinates ( 1, 2, 3 )
 
 -}
 startPoint : LineSegment3d -> Point3d
@@ -191,7 +191,7 @@ startPoint (Internal.LineSegment3d ( start, _ )) =
 {-| Get the end point of a line segment.
 
     LineSegment3d.endPoint exampleLineSegment
-    --> Point3d.withCoordinates ( 4, 5, 6 )
+    --> Point3d.fromCoordinates ( 4, 5, 6 )
 
 -}
 endPoint : LineSegment3d -> Point3d
@@ -213,9 +213,9 @@ endpoints (Internal.LineSegment3d endpoints_) =
 {-| Reverse a line segment, swapping its start and end points.
 
     LineSegment3d.reverse exampleLineSegment
-    --> LineSegment3d.withEndpoints
-    -->     ( Point3d.withCoordinates ( 4, 5, 6 )
-    -->     , Point3d.withCoordinates ( 1, 2, 3 )
+    --> LineSegment3d.fromEndpoints
+    -->     ( Point3d.fromCoordinates ( 4, 5, 6 )
+    -->     , Point3d.fromCoordinates ( 1, 2, 3 )
     -->     )
 
 -}
@@ -225,13 +225,13 @@ reverse lineSegment =
         ( p1, p2 ) =
             endpoints lineSegment
     in
-    withEndpoints ( p2, p1 )
+    fromEndpoints ( p2, p1 )
 
 
 {-| Get the midpoint of a line segment.
 
     LineSegment3d.midpoint exampleLineSegment
-    --> Point3d.withCoordinates ( 2.5, 3.5, 4.5 )
+    --> Point3d.fromCoordinates ( 2.5, 3.5, 4.5 )
 
 -}
 midpoint : LineSegment3d -> Point3d
@@ -245,10 +245,10 @@ to its midpoint and a value of 1.0 corresponds to its end point. Values less
 than 0.0 or greater than 1.0 can be used to extrapolate.
 
     LineSegment3d.interpolate exampleLineSegment (1 / 3)
-    --> Point3d.withCoordinates ( 2, 4, 5 )
+    --> Point3d.fromCoordinates ( 2, 4, 5 )
 
     LineSegment3d.interpolate exampleLineSegment (-1 / 3)
-    --> Point3d.withCoordinates ( 0, 1, 2 )
+    --> Point3d.fromCoordinates ( 0, 1, 2 )
 
 -}
 interpolate : LineSegment3d -> Float -> Point3d
@@ -321,7 +321,7 @@ normalDirection =
 {-| Get the vector from a line segment's start point to its end point.
 
     LineSegment3d.vector exampleLineSegment
-    --> Vector3d.withComponents ( 2, 2, 2 )
+    --> Vector3d.fromComponents ( 2, 2, 2 )
 
 -}
 vector : LineSegment3d -> Vector3d
@@ -336,118 +336,119 @@ vector lineSegment =
 {-| Scale a line segment about the given center point by the given scale.
 
     point =
-        Point3d.withCoordinates ( 1, 1, 1 )
+        Point3d.fromCoordinates ( 1, 1, 1 )
 
     LineSegment3d.scaleAbout point 2 exampleLineSegment
-    --> LineSegment3d.withEndpoints
-    -->     ( Point3d.withCoordinates ( 1, 3, 5 )
-    -->     , Point3d.withCoordinates ( 7, 9, 11 )
+    --> LineSegment3d.fromEndpoints
+    -->     ( Point3d.fromCoordinates ( 1, 3, 5 )
+    -->     , Point3d.fromCoordinates ( 7, 9, 11 )
     -->     )
 
 -}
 scaleAbout : Point3d -> Float -> LineSegment3d -> LineSegment3d
 scaleAbout point scale =
-    map (Point3d.scaleAbout point scale)
+    mapEndpoints (Point3d.scaleAbout point scale)
 
 
 {-| Rotate a line segment around a given axis by a given angle (in radians).
 
     exampleLineSegment
         |> LineSegment3d.rotateAround Axis3d.z (degrees 90)
-    --> LineSegment3d.withEndpoints
-    -->     ( Point3d.withCoordinates ( -2, 1, 3 )
-    -->     , Point3d.withCoordinates ( -5, 4, 6 )
+    --> LineSegment3d.fromEndpoints
+    -->     ( Point3d.fromCoordinates ( -2, 1, 3 )
+    -->     , Point3d.fromCoordinates ( -5, 4, 6 )
     -->     )
 
 -}
 rotateAround : Axis3d -> Float -> LineSegment3d -> LineSegment3d
 rotateAround axis angle =
-    map (Point3d.rotateAround axis angle)
+    mapEndpoints (Point3d.rotateAround axis angle)
 
 
 {-| Translate a line segment by a given displacement.
 
     displacement =
-        Vector3d.withComponents ( 1, 2, 3 )
+        Vector3d.fromComponents ( 1, 2, 3 )
 
     exampleLineSegment
         |> LineSegment3d.translateBy displacement
-    --> LineSegment3d.withEndpoints
-    -->     ( Point3d.withCoordinates ( 2, 4, 6 )
-    -->     , Point3d.withCoordinates ( 5, 7, 9 )
+    --> LineSegment3d.fromEndpoints
+    -->     ( Point3d.fromCoordinates ( 2, 4, 6 )
+    -->     , Point3d.fromCoordinates ( 5, 7, 9 )
     -->     )
 
 -}
 translateBy : Vector3d -> LineSegment3d -> LineSegment3d
 translateBy vector =
-    map (Point3d.translateBy vector)
+    mapEndpoints (Point3d.translateBy vector)
 
 
 {-| Mirror a line segment across a plane.
 
     exampleLineSegment
         |> LineSegment3d.mirrorAcross Plane3d.xy
-    --> LineSegment3d.withEndpoints
-    -->     ( Point3d.withCoordinates ( 1, 2, -3 )
-    -->     , Point3d.withCoordinates ( 4, 5, -6 )
+    --> LineSegment3d.fromEndpoints
+    -->     ( Point3d.fromCoordinates ( 1, 2, -3 )
+    -->     , Point3d.fromCoordinates ( 4, 5, -6 )
     -->     )
 
 -}
 mirrorAcross : Plane3d -> LineSegment3d -> LineSegment3d
 mirrorAcross plane =
-    map (Point3d.mirrorAcross plane)
+    mapEndpoints (Point3d.mirrorAcross plane)
 
 
 {-| Project a line segment onto a plane.
 
     LineSegment3d.projectOnto Plane3d.yz exampleLineSegment
-    --> LineSegment3d.withEndpoints
-    -->     ( Point3d.withCoordinates ( 0, 2, 3 )
-    -->     , Point3d.withCoordinates ( 0, 5, 6 )
+    --> LineSegment3d.fromEndpoints
+    -->     ( Point3d.fromCoordinates ( 0, 2, 3 )
+    -->     , Point3d.fromCoordinates ( 0, 5, 6 )
     -->     )
 
 -}
 projectOnto : Plane3d -> LineSegment3d -> LineSegment3d
 projectOnto plane =
-    map (Point3d.projectOnto plane)
+    mapEndpoints (Point3d.projectOnto plane)
 
 
 {-| Transform the start and end points of a line segment by a given function
 and create a new line segment from the resulting points. Most other
-transformation functions can be defined in terms of `map`; for example,
+transformation functions can be defined in terms of `mapEndpoints`; for example,
 
-    LineSegment3d.projectOnto Plane3d.xy
+    LineSegment3d.projectOnto plane
 
 is equivalent to
 
-    LineSegment3d.map (Point3d.projectOnto Plane3d.xy)
+    LineSegment3d.mapEndpoints (Point3d.projectOnto plane)
 
 -}
-map : (Point3d -> Point3d) -> LineSegment3d -> LineSegment3d
-map function lineSegment =
+mapEndpoints : (Point3d -> Point3d) -> LineSegment3d -> LineSegment3d
+mapEndpoints function lineSegment =
     let
         ( p1, p2 ) =
             endpoints lineSegment
     in
-    withEndpoints ( function p1, function p2 )
+    fromEndpoints ( function p1, function p2 )
 
 
 {-| Take a line segment defined in global coordinates, and return it expressed
 in local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame3d.at (Point3d.withCoordinates ( 1, 2, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     LineSegment3d.relativeTo localFrame exampleLineSegment
-    --> LineSegment3d.withEndpoints
-    -->     ( Point3d.withCoordinates ( 0, 0, 0 )
-    -->     , Point3d.withCoordinates ( 3, 3, 3 )
+    --> LineSegment3d.fromEndpoints
+    -->     ( Point3d.fromCoordinates ( 0, 0, 0 )
+    -->     , Point3d.fromCoordinates ( 3, 3, 3 )
     -->     )
 
 -}
 relativeTo : Frame3d -> LineSegment3d -> LineSegment3d
 relativeTo frame =
-    map (Point3d.relativeTo frame)
+    mapEndpoints (Point3d.relativeTo frame)
 
 
 {-| Take a line segment considered to be defined in local coordinates relative
@@ -455,18 +456,19 @@ to a given reference frame, and return that line segment expressed in global
 coordinates.
 
     localFrame =
-        Frame3d.at (Point3d.withCoordinates ( 1, 2, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     LineSegment3d.placeIn localFrame exampleLineSegment
-    --> LineSegment3d.withEndpoints
-    -->     ( Point3d.withCoordinates ( 2, 4, 6 )
-    -->     , Point3d.withCoordinates ( 5, 7, 9 )
+    --> LineSegment3d.fromEndpoints
+    -->     ( Point3d.fromCoordinates ( 2, 4, 6 )
+    -->     , Point3d.fromCoordinates ( 5, 7, 9 )
     -->     )
 
 -}
 placeIn : Frame3d -> LineSegment3d -> LineSegment3d
 placeIn frame =
-    map (Point3d.placeIn frame)
+    mapEndpoints (Point3d.placeIn frame)
 
 
 {-| Project a line segment into a given sketch plane. Conceptually, this
@@ -475,23 +477,23 @@ line segment in 2D sketch coordinates.
 
     exampleLineSegment
         |> LineSegment3d.projectInto SketchPlane3d.xy
-    --> LineSegment2d.withEndpoints
-    -->     ( Point2d.withCoordinates ( 1, 2 )
-    -->     , Point2d.withCoordinates ( 4, 5 )
+    --> LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 1, 2 )
+    -->     , Point2d.fromCoordinates ( 4, 5 )
     -->     )
 
     exampleLineSegment
         |> LineSegment3d.projectInto SketchPlane3d.yz
-    --> LineSegment2d.withEndpoints
-    -->     ( Point2d.withCoordinates ( 2, 3 )
-    -->     , Point2d.withCoordinates ( 5, 6 )
+    --> LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 2, 3 )
+    -->     , Point2d.fromCoordinates ( 5, 6 )
     -->     )
 
     exampleLineSegment
         |> LineSegment3d.projectInto SketchPlane3d.zx
-    --> LineSegment2d.withEndpoints
-    -->     ( Point2d.withCoordinates ( 3, 1 )
-    -->     , Point2d.withCoordinates ( 6, 4 )
+    --> LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 3, 1 )
+    -->     , Point2d.fromCoordinates ( 6, 4 )
     -->     )
 
 -}
@@ -504,7 +506,7 @@ projectInto sketchPlane lineSegment =
         project =
             Point3d.projectInto sketchPlane
     in
-    LineSegment2d.withEndpoints ( project p1, project p2 )
+    LineSegment2d.fromEndpoints ( project p1, project p2 )
 
 
 {-| Get the minimal bounding box containing a line segment.

@@ -19,10 +19,11 @@ module OpenSolid.LineSegment2d
         , endPoint
         , endpoints
         , from
+        , fromEndpoints
         , interpolate
         , intersectionPoint
         , length
-        , map
+        , mapEndpoints
         , midpoint
         , mirrorAcross
         , normalDirection
@@ -36,7 +37,6 @@ module OpenSolid.LineSegment2d
         , startPoint
         , translateBy
         , vector
-        , withEndpoints
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/lineSegment2d.svg" alt="LineSegment2d" width="160">
@@ -54,7 +54,7 @@ functionality such as:
 
 # Constructors
 
-@docs withEndpoints, from, along
+@docs fromEndpoints, from, along
 
 
 # Properties
@@ -77,7 +77,7 @@ functionality such as:
 Transforming a line segment is equivalent to transforming its start and end
 points and forming a new line segment between the resulting points.
 
-@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
+@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, mapEndpoints
 
 
 # Coordinate conversions
@@ -106,14 +106,14 @@ type alias LineSegment2d =
 {-| Construct a line segment from its two endpoints:
 
     exampleLineSegment =
-        LineSegment2d.withEndpoints
-            ( Point2d.withCoordinates ( 1, 2 )
-            , Point2d.withCoordinates ( 3, 4 )
+        LineSegment2d.fromEndpoints
+            ( Point2d.fromCoordinates ( 1, 2 )
+            , Point2d.fromCoordinates ( 3, 4 )
             )
 
 -}
-withEndpoints : ( Point2d, Point2d ) -> LineSegment2d
-withEndpoints =
+fromEndpoints : ( Point2d, Point2d ) -> LineSegment2d
+fromEndpoints =
     Internal.LineSegment2d
 
 
@@ -123,39 +123,39 @@ withEndpoints =
 
 is equivalent to
 
-    LineSegment2d.withEndpoints ( firstPoint, secondPoint )
+    LineSegment2d.fromEndpoints ( firstPoint, secondPoint )
 
 -}
 from : Point2d -> Point2d -> LineSegment2d
 from startPoint endPoint =
-    withEndpoints ( startPoint, endPoint )
+    fromEndpoints ( startPoint, endPoint )
 
 
 {-| Construct a line segment lying on the given axis, with its endpoints at the
 given distances from the axis' origin point.
 
     LineSegment2d.along Axis2d.x 3 5
-    --> LineSegment2d.withEndpoints
-    -->     ( Point2d.withCoordinates ( 3, 0 )
-    -->     , Point2d.withCoordinates ( 5, 0 )
+    --> LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 3, 0 )
+    -->     , Point2d.fromCoordinates ( 5, 0 )
     -->     )
 
     LineSegment2d.along Axis2d.y 2 -4
-    --> LineSegment2d.withEndpoints
-    -->     ( Point2d.withCoordinates ( 0, 2 )
-    -->     , Point2d.withCoordinates ( 0, -4 )
+    --> LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 0, 2 )
+    -->     , Point2d.fromCoordinates ( 0, -4 )
     -->     )
 
 -}
 along : Axis2d -> Float -> Float -> LineSegment2d
 along axis start end =
-    withEndpoints ( Point2d.along axis start, Point2d.along axis end )
+    fromEndpoints ( Point2d.along axis start, Point2d.along axis end )
 
 
 {-| Get the start point of a line segment.
 
     LineSegment2d.startPoint exampleLineSegment
-    --> Point2d.withCoordinates ( 1, 2 )
+    --> Point2d.fromCoordinates ( 1, 2 )
 
 -}
 startPoint : LineSegment2d -> Point2d
@@ -166,7 +166,7 @@ startPoint (Internal.LineSegment2d ( start, _ )) =
 {-| Get the end point of a line segment.
 
     LineSegment2d.endPoint exampleLineSegment
-    --> Point2d.withCoordinates ( 3, 4 )
+    --> Point2d.fromCoordinates ( 3, 4 )
 
 -}
 endPoint : LineSegment2d -> Point2d
@@ -188,9 +188,9 @@ endpoints (Internal.LineSegment2d endpoints_) =
 {-| Reverse a line segment, swapping its start and end points.
 
     LineSegment2d.reverse exampleLineSegment
-    --> LineSegment2d.withEndpoints
-    -->     ( Point2d.withCoordinates ( 3, 4 )
-    -->     , Point2d.withCoordinates ( 1, 2 )
+    --> LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 3, 4 )
+    -->     , Point2d.fromCoordinates ( 1, 2 )
     -->     )
 
 -}
@@ -200,13 +200,13 @@ reverse lineSegment =
         ( p1, p2 ) =
             endpoints lineSegment
     in
-    withEndpoints ( p2, p1 )
+    fromEndpoints ( p2, p1 )
 
 
 {-| Get the midpoint of a line segment.
 
     LineSegment2d.midpoint exampleLineSegment
-    --> Point2d.withCoordinates ( 2, 3 )
+    --> Point2d.fromCoordinates ( 2, 3 )
 
 -}
 midpoint : LineSegment2d -> Point2d
@@ -220,10 +220,10 @@ to its midpoint and a value of 1.0 corresponds to its end point. Values less
 than 0.0 or greater than 1.0 can be used to extrapolate.
 
     LineSegment2d.interpolate exampleLineSegment 0.25
-    --> Point2d.withCoordinates ( 1.5, 2.5 )
+    --> Point2d.fromCoordinates ( 1.5, 2.5 )
 
     LineSegment2d.interpolate exampleLineSegment 1.5
-    --> Point2d.withCoordinates ( 4, 5 )
+    --> Point2d.fromCoordinates ( 4, 5 )
 
 -}
 interpolate : LineSegment2d -> Float -> Point2d
@@ -263,7 +263,7 @@ line segment has zero length (the start and end points are the same), returns
 `Nothing`.
 
     LineSegment2d.direction exampleLineSegment
-    --> Just (Direction2d.withPolarAngle (degrees 45))
+    --> Just (Direction2d.fromAngle (degrees 45))
 
 -}
 direction : LineSegment2d -> Maybe Direction2d
@@ -275,7 +275,7 @@ direction =
 the line segment has zero length, returns `Nothing`.
 
     LineSegment2d.normalDirection exampleLineSegment
-    --> Just (Direction2d.withPolarAngle (degrees 135))
+    --> Just (Direction2d.fromAngle (degrees 135))
 
 -}
 normalDirection : LineSegment2d -> Maybe Direction2d
@@ -286,7 +286,7 @@ normalDirection =
 {-| Get the vector from a given line segment's start point to its end point.
 
     LineSegment2d.vector exampleLineSegment
-    --> Vector2d.withComponents ( 2, 2 )
+    --> Vector2d.fromComponents ( 2, 2 )
 
 -}
 vector : LineSegment2d -> Vector2d
@@ -304,10 +304,10 @@ is no such point (the two line segments do not touch, or they overlap), returns
 
     -- 4 corners of a square
     ( a, b, c, d ) =
-        ( Point2d.withCoordinates ( 0, 0 )
-        , Point2d.withCoordinates ( 1, 0 )
-        , Point2d.withCoordinates ( 1, 1 )
-        , Point2d.withCoordinates ( 0, 1 )
+        ( Point2d.fromCoordinates ( 0, 0 )
+        , Point2d.fromCoordinates ( 1, 0 )
+        , Point2d.fromCoordinates ( 1, 1 )
+        , Point2d.fromCoordinates ( 0, 1 )
         )
 
     -- definition of some segments with those points
@@ -318,11 +318,11 @@ is no such point (the two line segments do not touch, or they overlap), returns
     -- searching for intersections
 
     LineSegment2d.intersectionPoint ab bc
-    --> Just (Point2d.withCoordinates ( 1, 0 ))
+    --> Just (Point2d.fromCoordinates ( 1, 0 ))
     -- corner point b
 
     LineSegment2d.intersectionPoint ac bd
-    --> Just (Point2d.withCoordinates ( 0.5, 0.5 ))
+    --> Just (Point2d.fromCoordinates ( 0.5, 0.5 ))
     -- diagonal crossing at square center
 
     LineSegment2d.intersectionPoint ab cd
@@ -420,18 +420,18 @@ intersectionPoint lineSegment1 lineSegment2 =
 {-| Scale a line segment about the given center point by the given scale.
 
     point =
-        Point2d.withCoordinates ( 1, 1 )
+        Point2d.fromCoordinates ( 1, 1 )
 
     LineSegment2d.scaleAbout point 2 exampleLineSegment
-    --> LineSegment2d.withEndpoints
-    -->     ( Point2d.withCoordinates ( 1, 3 )
-    -->     , Point2d.withCoordinates ( 5, 7 )
+    --> LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 1, 3 )
+    -->     , Point2d.fromCoordinates ( 5, 7 )
     -->     )
 
 -}
 scaleAbout : Point2d -> Float -> LineSegment2d -> LineSegment2d
 scaleAbout point scale =
-    map (Point2d.scaleAbout point scale)
+    mapEndpoints (Point2d.scaleAbout point scale)
 
 
 {-| Rotate a line segment counterclockwise around a given center point by a
@@ -440,41 +440,41 @@ given angle (in radians).
     exampleLineSegment
         |> LineSegment2d.rotateAround Point2d.origin
             (degrees 90)
-    --> LineSegment2d.withEndpoints
-    -->     ( Point2d.withCoordinates ( -2, 1 )
-    -->     , Point2d.withCoordinates ( -4, 3 )
+    --> LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( -2, 1 )
+    -->     , Point2d.fromCoordinates ( -4, 3 )
     -->     )
 
 -}
 rotateAround : Point2d -> Float -> LineSegment2d -> LineSegment2d
 rotateAround centerPoint angle =
-    map (Point2d.rotateAround centerPoint angle)
+    mapEndpoints (Point2d.rotateAround centerPoint angle)
 
 
 {-| Translate a line segment by a given displacement.
 
     displacement =
-        Vector2d.withComponents ( 1, 2 )
+        Vector2d.fromComponents ( 1, 2 )
 
     exampleLineSegment
         |> LineSegment2d.translateBy displacement
-    --> LineSegment2d.withEndpoints
-    -->     ( Point2d.withCoordinates ( 2, 4 )
-    -->     , Point2d.withCoordinates ( 4, 6 )
+    --> LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 2, 4 )
+    -->     , Point2d.fromCoordinates ( 4, 6 )
     -->     )
 
 -}
 translateBy : Vector2d -> LineSegment2d -> LineSegment2d
 translateBy vector =
-    map (Point2d.translateBy vector)
+    mapEndpoints (Point2d.translateBy vector)
 
 
 {-| Mirror a line segment across an axis.
 
     LineSegment2d.mirrorAcross Axis2d.y exampleLineSegment
-    --> LineSegment2d.withEndpoints
-    -->     ( Point2d.withCoordinates ( -1, 2 )
-    -->     , Point2d.withCoordinates ( -3, 4 )
+    --> LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( -1, 2 )
+    -->     , Point2d.fromCoordinates ( -3, 4 )
     -->     )
 
 Note that the endpoints of a mirrored segment are equal to the mirrored
@@ -486,65 +486,65 @@ left' of the line segment).
 -}
 mirrorAcross : Axis2d -> LineSegment2d -> LineSegment2d
 mirrorAcross axis =
-    map (Point2d.mirrorAcross axis)
+    mapEndpoints (Point2d.mirrorAcross axis)
 
 
 {-| Project a line segment onto an axis.
 
     LineSegment2d.projectOnto Axis2d.x exampleLineSegment
-    --> LineSegment2d.withEndpoints
-    -->     ( Point2d.withCoordinates ( 1, 0 )
-    -->     , Point2d.withCoordinates ( 3, 0 )
+    --> LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 1, 0 )
+    -->     , Point2d.fromCoordinates ( 3, 0 )
     -->     )
 
     LineSegment2d.projectOnto Axis2d.y exampleLineSegment
-    --> LineSegment2d.withEndpoints
-    -->     ( Point2d.withCoordinates ( 0, 2 )
-    -->     , Point2d.withCoordinates ( 0, 4 )
+    --> LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 0, 2 )
+    -->     , Point2d.fromCoordinates ( 0, 4 )
     -->     )
 
 -}
 projectOnto : Axis2d -> LineSegment2d -> LineSegment2d
 projectOnto axis =
-    map (Point2d.projectOnto axis)
+    mapEndpoints (Point2d.projectOnto axis)
 
 
 {-| Transform the start and end points of a line segment by a given function
 and create a new line segment from the resulting points. Most other
-transformation functions can be defined in terms of `map`; for example,
+transformation functions can be defined in terms of `mapEndpoints`; for example,
 
-    LineSegment2d.projectOnto Axis2d.x
+    LineSegment2d.projectOnto axis
 
 is equivalent to
 
-    LineSegment2d.map (Point2d.projectOnto Axis2d.x)
+    LineSegment2d.mapEndpoints (Point2d.projectOnto axis)
 
 -}
-map : (Point2d -> Point2d) -> LineSegment2d -> LineSegment2d
-map function lineSegment =
+mapEndpoints : (Point2d -> Point2d) -> LineSegment2d -> LineSegment2d
+mapEndpoints function lineSegment =
     let
         ( p1, p2 ) =
             endpoints lineSegment
     in
-    withEndpoints ( function p1, function p2 )
+    fromEndpoints ( function p1, function p2 )
 
 
 {-| Take a line segment defined in global coordinates, and return it expressed
 in local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame2d.at (Point2d.withCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     LineSegment2d.relativeTo localFrame exampleLineSegment
-    --> LineSegment2d.withEndpoints
-    -->     ( Point2d.withCoordinates ( 0, 0 )
-    -->     , Point2d.withCoordinates ( 2, 2 )
+    --> LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 0, 0 )
+    -->     , Point2d.fromCoordinates ( 2, 2 )
     -->     )
 
 -}
 relativeTo : Frame2d -> LineSegment2d -> LineSegment2d
 relativeTo frame =
-    map (Point2d.relativeTo frame)
+    mapEndpoints (Point2d.relativeTo frame)
 
 
 {-| Take a line segment considered to be defined in local coordinates relative
@@ -552,18 +552,18 @@ to a given reference frame, and return that line segment expressed in global
 coordinates.
 
     localFrame =
-        Frame2d.at (Point2d.withCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     LineSegment2d.placeIn localFrame exampleLineSegment
-    --> LineSegment2d.withEndpoints
-    -->     ( Point2d.withCoordinates ( 2, 4 )
-    -->     , Point2d.withCoordinates ( 4, 6 )
+    --> LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 2, 4 )
+    -->     , Point2d.fromCoordinates ( 4, 6 )
     -->     )
 
 -}
 placeIn : Frame2d -> LineSegment2d -> LineSegment2d
 placeIn frame =
-    map (Point2d.placeIn frame)
+    mapEndpoints (Point2d.placeIn frame)
 
 
 {-| Get the minimal bounding box containing a given line segment.

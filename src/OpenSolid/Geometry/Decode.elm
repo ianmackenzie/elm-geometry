@@ -88,142 +88,85 @@ import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 
-{-| Decodes a `Vector2d` from either
-
-  - an object with `x` and `y` fields, or
-  - a list of two floating-point components.
-
+{-| Decodes a `Vector2d` from an array of two floating-point components.
 -}
 vector2d : Decoder Vector2d
 vector2d =
     let
         toVector x y =
-            Vector2d.withComponents ( x, y )
+            Vector2d.fromComponents ( x, y )
     in
-    Decode.oneOf
-        [ Decode.map2 toVector
-            (Decode.field "x" Decode.float)
-            (Decode.field "y" Decode.float)
-        , Decode.map2 toVector
-            (Decode.index 0 Decode.float)
-            (Decode.index 1 Decode.float)
-        ]
+    Decode.map2 toVector
+        (Decode.index 0 Decode.float)
+        (Decode.index 1 Decode.float)
 
 
-{-| Decodes a `Vector3d` from either
-
-  - an object with `x`, `y` and `z` fields, or
-  - a list of three floating-point components.
-
+{-| Decodes a `Vector3d` from an array of three floating-point components.
 -}
 vector3d : Decoder Vector3d
 vector3d =
     let
         toVector x y z =
-            Vector3d.withComponents ( x, y, z )
+            Vector3d.fromComponents ( x, y, z )
     in
-    Decode.oneOf
-        [ Decode.map3 toVector
-            (Decode.field "x" Decode.float)
-            (Decode.field "y" Decode.float)
-            (Decode.field "z" Decode.float)
-        , Decode.map3 toVector
-            (Decode.index 0 Decode.float)
-            (Decode.index 1 Decode.float)
-            (Decode.index 2 Decode.float)
-        ]
+    Decode.map3 toVector
+        (Decode.index 0 Decode.float)
+        (Decode.index 1 Decode.float)
+        (Decode.index 2 Decode.float)
 
 
-{-| Decodes a `Direction2d` from either
-
-  - an object with `x` and `y` fields, or
-  - a list of two floating-point components.
-
+{-| Decodes a `Direction2d` from an array of two floating-point components.
 -}
 direction2d : Decoder Direction2d
 direction2d =
     let
         toDirection x y =
-            Internal.Direction2d ( x, y )
+            Direction2d.unsafe ( x, y )
     in
-    Decode.oneOf
-        [ Decode.map2 toDirection
-            (Decode.field "x" Decode.float)
-            (Decode.field "y" Decode.float)
-        , Decode.map2 toDirection
-            (Decode.index 0 Decode.float)
-            (Decode.index 1 Decode.float)
-        ]
+    Decode.map2 toDirection
+        (Decode.index 0 Decode.float)
+        (Decode.index 1 Decode.float)
 
 
-{-| Decodes a `Direction3d` from either
-
-  - an object with `x`, `y` and `z` fields, or
-  - a list of three floating-point components.
-
+{-| Decodes a `Direction3d` from an array of three floating-point components.
 -}
 direction3d : Decoder Direction3d
 direction3d =
     let
         toDirection x y z =
-            Internal.Direction3d ( x, y, z )
+            Direction3d.unsafe ( x, y, z )
     in
-    Decode.oneOf
-        [ Decode.map3 toDirection
-            (Decode.field "x" Decode.float)
-            (Decode.field "y" Decode.float)
-            (Decode.field "z" Decode.float)
-        , Decode.map3 toDirection
-            (Decode.index 0 Decode.float)
-            (Decode.index 1 Decode.float)
-            (Decode.index 2 Decode.float)
-        ]
+    Decode.map3 toDirection
+        (Decode.index 0 Decode.float)
+        (Decode.index 1 Decode.float)
+        (Decode.index 2 Decode.float)
 
 
-{-| Decodes a `Point2d` from either
-
-  - an object with `x` and `y` fields, or
-  - a list of two floating-point coordinates.
-
+{-| Decodes a `Point2d` from an array of two floating-point coordinates.
 -}
 point2d : Decoder Point2d
 point2d =
     let
         toPoint x y =
-            Point2d.withCoordinates ( x, y )
+            Point2d.fromCoordinates ( x, y )
     in
-    Decode.oneOf
-        [ Decode.map2 toPoint
-            (Decode.field "x" Decode.float)
-            (Decode.field "y" Decode.float)
-        , Decode.map2 toPoint
-            (Decode.index 0 Decode.float)
-            (Decode.index 1 Decode.float)
-        ]
+    Decode.map2 toPoint
+        (Decode.index 0 Decode.float)
+        (Decode.index 1 Decode.float)
 
 
-{-| Decodes a `Point3d` from either
-
-  - an object with `x`, `y` and `z` fields, or
-  - a list of three floating-point coordinates.
-
+{-| Decodes a `Point3d` from an array of three floating-point coordinates.
 -}
 point3d : Decoder Point3d
 point3d =
     let
         toPoint x y z =
-            Point3d.withCoordinates ( x, y, z )
+            Point3d.fromCoordinates ( x, y, z )
     in
-    Decode.oneOf
-        [ Decode.map3 toPoint
-            (Decode.field "x" Decode.float)
-            (Decode.field "y" Decode.float)
-            (Decode.field "z" Decode.float)
-        , Decode.map3 toPoint
-            (Decode.index 0 Decode.float)
-            (Decode.index 1 Decode.float)
-            (Decode.index 2 Decode.float)
-        ]
+    Decode.map3 toPoint
+        (Decode.index 0 Decode.float)
+        (Decode.index 1 Decode.float)
+        (Decode.index 2 Decode.float)
 
 
 {-| Decodes an `Axis2d` from an object with `originPoint` and `direction`
@@ -324,7 +267,7 @@ sketchPlane3d =
         (Decode.field "yDirection" direction3d)
 
 
-{-| Decodes a `LineSegment2d` from a list of two endpoints.
+{-| Decodes a `LineSegment2d` from an array of two endpoints.
 -}
 lineSegment2d : Decoder LineSegment2d
 lineSegment2d =
@@ -333,7 +276,7 @@ lineSegment2d =
         (Decode.index 1 point2d)
 
 
-{-| Decodes a `LineSegment3d` from a list of two endpoints.
+{-| Decodes a `LineSegment3d` from an array of two endpoints.
 -}
 lineSegment3d : Decoder LineSegment3d
 lineSegment3d =
@@ -342,21 +285,21 @@ lineSegment3d =
         (Decode.index 1 point3d)
 
 
-{-| Decodes a `Triangle2d` from a list of three vertices.
+{-| Decodes a `Triangle2d` from an array of three vertices.
 -}
 triangle2d : Decoder Triangle2d
 triangle2d =
-    Decode.map3 (\v1 v2 v3 -> Triangle2d.withVertices ( v1, v2, v3 ))
+    Decode.map3 (\v1 v2 v3 -> Triangle2d.fromVertices ( v1, v2, v3 ))
         (Decode.index 0 point2d)
         (Decode.index 1 point2d)
         (Decode.index 2 point2d)
 
 
-{-| Decodes a `Triangle3d` from a list of three vertices.
+{-| Decodes a `Triangle3d` from an array of three vertices.
 -}
 triangle3d : Decoder Triangle3d
 triangle3d =
-    Decode.map3 (\v1 v2 v3 -> Triangle3d.withVertices ( v1, v2, v3 ))
+    Decode.map3 (\v1 v2 v3 -> Triangle3d.fromVertices ( v1, v2, v3 ))
         (Decode.index 0 point3d)
         (Decode.index 1 point3d)
         (Decode.index 2 point3d)
@@ -406,25 +349,25 @@ boundingBox3d =
         (Decode.field "maxZ" Decode.float)
 
 
-{-| Decodes a `Polyline2d` from a list of vertices.
+{-| Decodes a `Polyline2d` from an array of vertices.
 -}
 polyline2d : Decoder Polyline2d
 polyline2d =
-    Decode.map Polyline2d.withVertices (Decode.list point2d)
+    Decode.map Polyline2d.fromVertices (Decode.list point2d)
 
 
-{-| Decodes a `Polyline3d` from a list of vertices.
+{-| Decodes a `Polyline3d` from an array of vertices.
 -}
 polyline3d : Decoder Polyline3d
 polyline3d =
-    Decode.map Polyline3d.withVertices (Decode.list point3d)
+    Decode.map Polyline3d.fromVertices (Decode.list point3d)
 
 
-{-| Decodes a `Polygon2d` from a list of vertices.
+{-| Decodes a `Polygon2d` from an array of vertices.
 -}
 polygon2d : Decoder Polygon2d
 polygon2d =
-    Decode.map Polygon2d.withVertices (Decode.list point2d)
+    Decode.map Polygon2d.fromVertices (Decode.list point2d)
 
 
 {-| Decodes a `Circle2d` from an object with `centerPoint` and `radius` fields.
@@ -493,46 +436,46 @@ arc3d =
         (Decode.field "sweptAngle" Decode.float)
 
 
-{-| Decodes a `QuadraticSpline2d` from a list of three control points.
+{-| Decodes a `QuadraticSpline2d` from an array of three control points.
 -}
 quadraticSpline2d : Decoder QuadraticSpline2d
 quadraticSpline2d =
     Decode.map3
-        (\p1 p2 p3 -> QuadraticSpline2d.withControlPoints ( p1, p2, p3 ))
+        (\p1 p2 p3 -> QuadraticSpline2d.fromControlPoints ( p1, p2, p3 ))
         (Decode.index 0 point2d)
         (Decode.index 1 point2d)
         (Decode.index 2 point2d)
 
 
-{-| Decodes a `QuadraticSpline3d` from a list of three control points.
+{-| Decodes a `QuadraticSpline3d` from an array of three control points.
 -}
 quadraticSpline3d : Decoder QuadraticSpline3d
 quadraticSpline3d =
     Decode.map3
-        (\p1 p2 p3 -> QuadraticSpline3d.withControlPoints ( p1, p2, p3 ))
+        (\p1 p2 p3 -> QuadraticSpline3d.fromControlPoints ( p1, p2, p3 ))
         (Decode.index 0 point3d)
         (Decode.index 1 point3d)
         (Decode.index 2 point3d)
 
 
-{-| Decodes a `CubicSpline2d` from a list of four control points.
+{-| Decodes a `CubicSpline2d` from an array of four control points.
 -}
 cubicSpline2d : Decoder CubicSpline2d
 cubicSpline2d =
     Decode.map4
-        (\p1 p2 p3 p4 -> CubicSpline2d.withControlPoints ( p1, p2, p3, p4 ))
+        (\p1 p2 p3 p4 -> CubicSpline2d.fromControlPoints ( p1, p2, p3, p4 ))
         (Decode.index 0 point2d)
         (Decode.index 1 point2d)
         (Decode.index 2 point2d)
         (Decode.index 3 point2d)
 
 
-{-| Decodes a `CubicSpline3d` from a list of four control points.
+{-| Decodes a `CubicSpline3d` from an array of four control points.
 -}
 cubicSpline3d : Decoder CubicSpline3d
 cubicSpline3d =
     Decode.map4
-        (\p1 p2 p3 p4 -> CubicSpline3d.withControlPoints ( p1, p2, p3, p4 ))
+        (\p1 p2 p3 p4 -> CubicSpline3d.fromControlPoints ( p1, p2, p3, p4 ))
         (Decode.index 0 point3d)
         (Decode.index 1 point3d)
         (Decode.index 2 point3d)

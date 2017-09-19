@@ -80,9 +80,9 @@ orthonormalizingCoplanarVectorsReturnsNothing =
         (\() ->
             let
                 vectors =
-                    ( Vector3d.withComponents ( 1, 0, 0 )
-                    , Vector3d.withComponents ( 2, 3, 0 )
-                    , Vector3d.withComponents ( -1, 2, 0 )
+                    ( Vector3d.fromComponents ( 1, 0, 0 )
+                    , Vector3d.fromComponents ( 2, 3, 0 )
+                    , Vector3d.fromComponents ( -1, 2, 0 )
                     )
             in
             Expect.equal Nothing (Direction3d.orthonormalize vectors)

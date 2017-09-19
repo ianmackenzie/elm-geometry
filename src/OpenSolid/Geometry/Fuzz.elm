@@ -83,17 +83,17 @@ scalar =
 
 vector2d : Fuzzer Vector2d
 vector2d =
-    Fuzz.map Vector2d.withComponents (Fuzz.tuple ( scalar, scalar ))
+    Fuzz.map Vector2d.fromComponents (Fuzz.tuple ( scalar, scalar ))
 
 
 vector3d : Fuzzer Vector3d
 vector3d =
-    Fuzz.map Vector3d.withComponents (Fuzz.tuple3 ( scalar, scalar, scalar ))
+    Fuzz.map Vector3d.fromComponents (Fuzz.tuple3 ( scalar, scalar, scalar ))
 
 
 direction2d : Fuzzer Direction2d
 direction2d =
-    Fuzz.map Direction2d.withPolarAngle (Fuzz.floatRange -pi pi)
+    Fuzz.map Direction2d.fromAngle (Fuzz.floatRange -pi pi)
 
 
 direction3d : Fuzzer Direction3d
@@ -126,12 +126,12 @@ direction3d =
 
 point2d : Fuzzer Point2d
 point2d =
-    Fuzz.map Point2d.withCoordinates (Fuzz.tuple ( scalar, scalar ))
+    Fuzz.map Point2d.fromCoordinates (Fuzz.tuple ( scalar, scalar ))
 
 
 point3d : Fuzzer Point3d
 point3d =
-    Fuzz.map Point3d.withCoordinates (Fuzz.tuple3 ( scalar, scalar, scalar ))
+    Fuzz.map Point3d.fromCoordinates (Fuzz.tuple3 ( scalar, scalar, scalar ))
 
 
 axis2d : Fuzzer Axis2d
@@ -224,22 +224,22 @@ sketchPlane3d =
 
 lineSegment2d : Fuzzer LineSegment2d
 lineSegment2d =
-    Fuzz.map LineSegment2d.withEndpoints (Fuzz.tuple ( point2d, point2d ))
+    Fuzz.map LineSegment2d.fromEndpoints (Fuzz.tuple ( point2d, point2d ))
 
 
 lineSegment3d : Fuzzer LineSegment3d
 lineSegment3d =
-    Fuzz.map LineSegment3d.withEndpoints (Fuzz.tuple ( point3d, point3d ))
+    Fuzz.map LineSegment3d.fromEndpoints (Fuzz.tuple ( point3d, point3d ))
 
 
 triangle2d : Fuzzer Triangle2d
 triangle2d =
-    Fuzz.map Triangle2d.withVertices (Fuzz.tuple3 ( point2d, point2d, point2d ))
+    Fuzz.map Triangle2d.fromVertices (Fuzz.tuple3 ( point2d, point2d, point2d ))
 
 
 triangle3d : Fuzzer Triangle3d
 triangle3d =
-    Fuzz.map Triangle3d.withVertices (Fuzz.tuple3 ( point3d, point3d, point3d ))
+    Fuzz.map Triangle3d.fromVertices (Fuzz.tuple3 ( point3d, point3d, point3d ))
 
 
 interval : Fuzzer ( Float, Float )
@@ -286,17 +286,17 @@ boundingBox3d =
 
 polyline2d : Fuzzer Polyline2d
 polyline2d =
-    Fuzz.map Polyline2d.withVertices (Fuzz.list point2d)
+    Fuzz.map Polyline2d.fromVertices (Fuzz.list point2d)
 
 
 polyline3d : Fuzzer Polyline3d
 polyline3d =
-    Fuzz.map Polyline3d.withVertices (Fuzz.list point3d)
+    Fuzz.map Polyline3d.fromVertices (Fuzz.list point3d)
 
 
 polygon2d : Fuzzer Polygon2d
 polygon2d =
-    Fuzz.map Polygon2d.withVertices (Fuzz.list point2d)
+    Fuzz.map Polygon2d.fromVertices (Fuzz.list point2d)
 
 
 circle2d : Fuzzer Circle2d
@@ -349,22 +349,22 @@ arc3d =
 quadraticSpline2d : Fuzzer QuadraticSpline2d
 quadraticSpline2d =
     Fuzz.tuple3 ( point2d, point2d, point2d )
-        |> Fuzz.map QuadraticSpline2d.withControlPoints
+        |> Fuzz.map QuadraticSpline2d.fromControlPoints
 
 
 quadraticSpline3d : Fuzzer QuadraticSpline3d
 quadraticSpline3d =
     Fuzz.tuple3 ( point3d, point3d, point3d )
-        |> Fuzz.map QuadraticSpline3d.withControlPoints
+        |> Fuzz.map QuadraticSpline3d.fromControlPoints
 
 
 cubicSpline2d : Fuzzer CubicSpline2d
 cubicSpline2d =
     Fuzz.tuple4 ( point2d, point2d, point2d, point2d )
-        |> Fuzz.map CubicSpline2d.withControlPoints
+        |> Fuzz.map CubicSpline2d.fromControlPoints
 
 
 cubicSpline3d : Fuzzer CubicSpline3d
 cubicSpline3d =
     Fuzz.tuple4 ( point3d, point3d, point3d, point3d )
-        |> Fuzz.map CubicSpline3d.withControlPoints
+        |> Fuzz.map CubicSpline3d.fromControlPoints

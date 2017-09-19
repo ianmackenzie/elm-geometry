@@ -49,16 +49,16 @@ main =
                 }
 
         p1 =
-            Point2d.withCoordinates ( 50, 100 )
+            Point2d.fromCoordinates ( 50, 100 )
 
         p2 =
-            Point2d.withCoordinates ( 150, 100 )
+            Point2d.fromCoordinates ( 150, 100 )
 
         v1 =
-            Vector2d.withComponents ( 75, 75 )
+            Vector2d.fromComponents ( 75, 75 )
 
         v2 =
-            Vector2d.withComponents ( 50, -50 )
+            Vector2d.fromComponents ( 50, -50 )
 
         spline =
             CubicSpline2d.hermite ( p1, v1 ) ( p2, v2 )

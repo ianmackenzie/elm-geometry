@@ -13,7 +13,7 @@
 module OpenSolid.Frame3d
     exposing
         ( Frame3d
-        , at
+        , atPoint
         , flipX
         , flipY
         , flipZ
@@ -76,7 +76,7 @@ always perpendicular to each other). It can be thought of as:
 
 # Constructors
 
-@docs at, with, unsafe
+@docs atPoint, with, unsafe
 
 
 # Properties
@@ -171,7 +171,7 @@ type alias Frame3d =
 -}
 xyz : Frame3d
 xyz =
-    at Point3d.origin
+    atPoint Point3d.origin
 
 
 {-| Construct a frame with the given origin point and Z direction. X and Y
@@ -227,7 +227,7 @@ with { originPoint, zDirection } =
     frame =
         Frame3d.unsafe
             { originPoint =
-                Point3d.withCoordinates ( 2, 1, 3 )
+                Point3d.fromCoordinates ( 2, 1, 3 )
             , xDirection =
                 Direction3d.unsafe ( 0.8, 0.6, 0 )
             , yDirection =
@@ -240,9 +240,10 @@ In this case **you must be careful to ensure that the X, Y and Z directions are
 perpendicular**. (You will likely also want to make sure that they form a
 [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 coordinate system.) To construct sets of mutually perpendicular directions,
-[`Direction3d.orthonormalize`](OpenSolid-Direction3d#orthonormalize) or
-[`Direction3d.orthogonalize`](OpenSolid-Direction3d#orthogonalize) may be
-useful.
+[`Direction3d.orthonormalize`](OpenSolid-Direction3d#orthonormalize),
+[`Direction3d.orthogonalize`](OpenSolid-Direction3d#orthogonalize), or
+[`Direction3d.perpendicularBasis`](OpenSolid-Direction3d#perpendicularBasis) may
+be useful.
 
 -}
 unsafe : { originPoint : Point3d, xDirection : Direction3d, yDirection : Direction3d, zDirection : Direction3d } -> Frame3d
@@ -254,10 +255,11 @@ unsafe =
 origin point.
 
     frame =
-        Frame3d.at (Point3d.withCoordinates ( 2, 1, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 2, 1, 3 ))
 
     Frame3d.originPoint frame
-    --> Point3d.withCoordinates ( 2, 1, 3 )
+    --> Point3d.fromCoordinates ( 2, 1, 3 )
 
     Frame3d.xDirection frame
     --> Direction3d.x
@@ -269,8 +271,8 @@ origin point.
     --> Direction3d.z
 
 -}
-at : Point3d -> Frame3d
-at point =
+atPoint : Point3d -> Frame3d
+atPoint point =
     unsafe
         { originPoint = point
         , xDirection = Direction3d.x
@@ -583,10 +585,10 @@ flipZ frame =
 orientation.
 
     point =
-        Point3d.withCoordinates ( 2, 1, 3 )
+        Point3d.fromCoordinates ( 2, 1, 3 )
 
     Frame3d.moveTo point Frame3d.xyz
-    --> Frame3d.at point
+    --> Frame3d.atPoint point
 
 -}
 moveTo : Point3d -> Frame3d -> Frame3d
@@ -603,13 +605,14 @@ moveTo newOrigin frame =
 origin point and basis directions will all be rotated around the given axis.
 
     frame =
-        Frame3d.at (Point3d.withCoordinates ( 2, 1, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 2, 1, 3 ))
 
     rotatedFrame =
         Frame3d.rotateAround Axis3d.z (degrees 90) frame
 
     Frame3d.originPoint rotatedFrame
-    --> Point3d.withCoordinates ( -1, 2, 3 )
+    --> Point3d.fromCoordinates ( -1, 2, 3 )
 
     Frame3d.xDirection rotatedFrame
     --> Direction3d.y
@@ -647,7 +650,8 @@ the current frame. The majority of the time this will be either `Frame3d.xAxis`,
 for `rotateAround`:
 
     frame =
-        Frame3d.at (Point3d.withCoordinates ( 2, 1, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 2, 1, 3 ))
 
     rotatedFrame =
         frame
@@ -655,7 +659,7 @@ for `rotateAround`:
                 (degrees 90)
 
     Frame3d.originPoint rotatedFrame
-    --> Point3d.withCoordinates ( 2, 1, 3 )
+    --> Point3d.fromCoordinates ( 2, 1, 3 )
 
     Frame3d.xDirection rotatedFrame
     --> Direction3d.y
@@ -683,13 +687,15 @@ rotateAroundOwn axis angle frame =
 {-| Translate a frame by a given displacement.
 
     frame =
-        Frame3d.at (Point3d.withCoordinates ( 2, 1, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 2, 1, 3 ))
 
     displacement =
-        Vector3d.withComponents ( 1, 1, 1 )
+        Vector3d.fromComponents ( 1, 1, 1 )
 
     Frame3d.translateBy displacement frame
-    --> Frame3d.at (Point3d.withCoordinates ( 3, 2, 4 ))
+    --> Frame3d.atPoint
+    -->     (Point3d.fromCoordinates ( 3, 2, 4 ))
 
 -}
 translateBy : Vector3d -> Frame3d -> Frame3d
@@ -711,8 +717,11 @@ the current frame. The majority of the time this will be either `Frame3d.xAxis`,
 This function is convenient when constructing frames via a series of
 transformations. For example,
 
+    point =
+        Point3d.fromCoordinates ( 2, 0, 0 )
+
     frame =
-        Frame3d.at (Point3d.withCoordinates ( 2, 0, 0 ))
+        Frame3d.atPoint point
             |> Frame3d.rotateAroundOwn Frame3d.zAxis
                 (degrees 45)
             |> Frame3d.translateAlongOwn Frame3d.xAxis 2
@@ -722,7 +731,7 @@ counterclockwise by 45 degrees, then translate it along its own (rotated) X axis
 by 2 units", resulting in
 
     Frame3d.originPoint frame
-    --> Point3d.withCoordinates ( 3.4142, 1.4142, 0 )
+    --> Point3d.fromCoordinates ( 3.4142, 1.4142, 0 )
 
     Frame3d.xDirection frame
     --> Direction3d.with
@@ -743,22 +752,26 @@ by 2 units", resulting in
 translateAlongOwn : (Frame3d -> Axis3d) -> Float -> Frame3d -> Frame3d
 translateAlongOwn axis distance frame =
     let
-        direction =
-            Axis3d.direction (axis frame)
+        displacement =
+            Vector3d.with
+                { length = distance
+                , direction = Axis3d.direction (axis frame)
+                }
     in
-    translateBy (Vector3d.withLength distance direction) frame
+    translateBy displacement frame
 
 
 {-| Mirror a frame across a plane.
 
     frame =
-        Frame3d.at (Point3d.withCoordinates ( 2, 1, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 2, 1, 3 ))
 
     mirroredFrame =
         Frame3d.mirrorAcross Plane3d.xy frame
 
     Frame3d.originPoint mirroredFrame
-    --> Point3d.withCoordinates ( 2, 1, -3 )
+    --> Point3d.fromCoordinates ( 2, 1, -3 )
 
     Frame3d.xDirection mirroredFrame
     --> Direction3d.x

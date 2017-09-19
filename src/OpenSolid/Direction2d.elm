@@ -13,12 +13,14 @@
 module OpenSolid.Direction2d
     exposing
         ( Direction2d
+        , angle
         , angleFrom
         , componentIn
         , components
         , equalWithin
         , flip
         , from
+        , fromAngle
         , mirrorAcross
         , negativeX
         , negativeY
@@ -26,14 +28,12 @@ module OpenSolid.Direction2d
         , orthonormalize
         , perpendicularTo
         , placeIn
-        , polarAngle
         , positiveX
         , positiveY
         , relativeTo
         , rotateBy
         , toVector
         , unsafe
-        , withPolarAngle
         , x
         , xComponent
         , y
@@ -64,12 +64,12 @@ several uses, such as:
 
 # Constructors
 
-@docs withPolarAngle, from, perpendicularTo, orthonormalize, orthogonalize, unsafe
+@docs fromAngle, from, perpendicularTo, orthonormalize, orthogonalize, unsafe
 
 
 # Properties
 
-@docs components, xComponent, yComponent, polarAngle
+@docs components, xComponent, yComponent, angle
 
 
 # Comparison
@@ -202,9 +202,8 @@ are all valid but
     Direction2d.unsafe ( 1, 1 )
 
 are not. Instead of using `Direction2d.unsafe`, it may be easier to use
-constructors like `Direction2d.withPolarAngle` (which will always result in a
-valid direction) or start with existing directions and transform them as
-necessary.
+constructors like `Direction2d.fromAngle` (which will always result in a valid
+direction) or start with existing directions and transform them as necessary.
 
 -}
 unsafe : ( Float, Float ) -> Direction2d
@@ -216,13 +215,13 @@ unsafe =
 If the two points are coincident, returns `Nothing`.
 
     point =
-        Point2d.withCoordinates ( 1, 1 )
+        Point2d.fromCoordinates ( 1, 1 )
 
     Direction2d.from Point2d.origin point
-    --> Just (Direction2d.withPolarAngle (degrees 45))
+    --> Just (Direction2d.fromAngle (degrees 45))
 
     Direction2d.from point Point2d.origin
-    --> Just (Direction2d.withPolarAngle (degrees -135))
+    --> Just (Direction2d.fromAngle (degrees -135))
 
     Direction2d.from point point
     --> Nothing
@@ -260,17 +259,17 @@ If either of the given vectors are zero, or if the two vectors are parallel,
 `Nothing` will be returned.
 
     Direction2d.orthonormalize
-        ( Vector2d.withComponents ( 3, 3 )
-        , Vector2d.withComponents ( 0, -2 )
+        ( Vector2d.fromComponents ( 3, 3 )
+        , Vector2d.fromComponents ( 0, -2 )
         )
     --> Just
-    -->     ( Direction2d.withPolarAngle (degrees 45)
-    -->     , Direction2d.withPolarAngle (degrees -45)
+    -->     ( Direction2d.fromAngle (degrees 45)
+    -->     , Direction2d.fromAngle (degrees -45)
     -->     )
 
     Direction2d.orthonormalize
-        ( Vector2d.withComponents ( 3, 3 )
-        , Vector2d.withComponents ( -2, -2 )
+        ( Vector2d.fromComponents ( 3, 3 )
+        , Vector2d.fromComponents ( -2, -2 )
         )
     --> Nothing
 
@@ -320,36 +319,36 @@ orthogonalize ( xDirection, yDirection ) =
 {-| Construct a direction from an angle in radians, given counterclockwise from
 the positive X direction.
 
-    Direction2d.withPolarAngle 0
+    Direction2d.fromAngle 0
     --> Direction2d.x
 
-    Direction2d.withPolarAngle (degrees 90)
+    Direction2d.fromAngle (degrees 90)
     --> Direction2d.y
 
-    Direction2d.withPolarAngle (degrees -90)
+    Direction2d.fromAngle (degrees -90)
     --> Direction2d.negativeY
 
 -}
-withPolarAngle : Float -> Direction2d
-withPolarAngle angle =
+fromAngle : Float -> Direction2d
+fromAngle angle =
     unsafe ( cos angle, sin angle )
 
 
 {-| Get the polar angle of a vector (its counterclockwise angle in radians from
 the positive X direction). The result will be in the range -π to π.
 
-    Direction2d.polarAngle Direction2d.x
+    Direction2d.angle Direction2d.x
     --> 0
 
-    Direction2d.polarAngle Direction2d.y
+    Direction2d.angle Direction2d.y
     --> degrees 90
 
-    Direction2d.polarAngle Direction2d.negativeY
+    Direction2d.angle Direction2d.negativeY
     --> degrees -90
 
 -}
-polarAngle : Direction2d -> Float
-polarAngle direction =
+angle : Direction2d -> Float
+angle direction =
     let
         ( x, y ) =
             components direction
@@ -361,7 +360,7 @@ polarAngle direction =
 second. The result will be in the range -π to π.
 
     referenceDirection =
-        Direction2d.withPolarAngle (degrees 30)
+        Direction2d.fromAngle (degrees 30)
 
     Direction2d.angleFrom referenceDirection Direction2d.y
     --> degrees 60
@@ -428,7 +427,7 @@ the cosine of the angle between the directions, or equivalently the dot product
 of the two directions converted to unit vectors.
 
     direction =
-        Direction2d.withPolarAngle (degrees 60)
+        Direction2d.fromAngle (degrees 60)
 
     Direction2d.componentIn Direction2d.x direction
     --> 0.5
@@ -454,15 +453,15 @@ componentIn firstDirection secondDirection =
     Vector2d.componentIn firstDirection (toVector secondDirection)
 
 
-{-| Compare two directions within a tolerance. Returns true if the absolute
-value of the angle between the two given directions is less than the given
-tolerance.
+{-| Compare two directions within an angular tolerance. Returns true if the
+absolute value of the angle between the two given directions is less than the
+given tolerance.
 
     firstDirection =
-        Direction2d.withPolarAngle (degrees 45)
+        Direction2d.fromAngle (degrees 45)
 
     secondDirection =
-        Direction2d.withPolarAngle (degrees 47)
+        Direction2d.fromAngle (degrees 47)
 
     Direction2d.equalWithin (degrees 5)
         firstDirection
@@ -483,12 +482,12 @@ equalWithin angle firstDirection secondDirection =
 {-| Convert a direction to a unit vector.
 
     Direction2d.toVector Direction2d.x
-    --> Vector2d.withComponents ( 1, 0 )
+    --> Vector2d.fromComponents ( 1, 0 )
 
 -}
 toVector : Direction2d -> Vector2d
 toVector direction =
-    Vector2d.withComponents (components direction)
+    Vector2d.fromComponents (components direction)
 
 
 {-| Reverse a direction.
@@ -508,7 +507,7 @@ flip =
     --> Direction2d.negativeX
 
     Direction2d.rotateBy (degrees 45) Direction2d.y
-    --> Direction2d.withPolarAngle (degrees 135)
+    --> Direction2d.fromAngle (degrees 135)
 
 -}
 rotateBy : Float -> Direction2d -> Direction2d
@@ -522,9 +521,9 @@ the axis affects the result, since directions are position-independent.
     slopedAxis =
         Axis2d.with
             { originPoint =
-                Point2d.withCoordinates ( 100, 200 )
+                Point2d.fromCoordinates ( 100, 200 )
             , direction =
-                Direction2d.withPolarAngle (degrees 45)
+                Direction2d.fromAngle (degrees 45)
             }
 
     Direction2d.mirrorAcross slopedAxis Direction2d.x
@@ -546,10 +545,10 @@ local coordinates relative to a given reference frame.
     --> Direction2d.negativeY
 
     Direction2d.relativeTo rotatedFrame Direction2d.x
-    --> Direction2d.withPolarAngle (degrees -30)
+    --> Direction2d.fromAngle (degrees -30)
 
     Direction2d.relativeTo rotatedFrame Direction2d.y
-    --> Direction2d.withPolarAngle (degrees 60)
+    --> Direction2d.fromAngle (degrees 60)
 
 -}
 relativeTo : Frame2d -> Direction2d -> Direction2d
@@ -564,10 +563,10 @@ frame, and return that direction expressed in global coordinates.
     --> Direction2d.negativeY
 
     Direction2d.placeIn rotatedFrame Direction2d.x
-    --> Direction2d.withPolarAngle (degrees 30)
+    --> Direction2d.fromAngle (degrees 30)
 
     Direction2d.placeIn rotatedFrame Direction2d.y
-    --> Direction2d.withPolarAngle (degrees 120)
+    --> Direction2d.fromAngle (degrees 120)
 
 -}
 placeIn : Frame2d -> Direction2d -> Direction2d

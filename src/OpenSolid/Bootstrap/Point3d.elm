@@ -1,10 +1,10 @@
-module OpenSolid.Bootstrap.Point3d exposing (coordinates, withCoordinates)
+module OpenSolid.Bootstrap.Point3d exposing (coordinates, fromCoordinates)
 
 import OpenSolid.Geometry.Internal exposing (..)
 
 
-withCoordinates : ( Float, Float, Float ) -> Point3d
-withCoordinates =
+fromCoordinates : ( Float, Float, Float ) -> Point3d
+fromCoordinates =
     Point3d
 
 

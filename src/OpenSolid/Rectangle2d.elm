@@ -77,7 +77,7 @@ containing firstPoint secondPoint =
             Point2d.coordinates secondPoint
     in
     Internal.Rectangle2d
-        { axes = Frame2d.at centerPoint
+        { axes = Frame2d.atPoint centerPoint
         , dimensions = ( abs (x2 - x1), abs (y2 - y1) )
         }
 
@@ -98,10 +98,10 @@ with { minX, maxX, minY, maxY } =
             minY + 0.5 * height
 
         centerPoint =
-            Point2d.withCoordinates ( midX, midY )
+            Point2d.fromCoordinates ( midX, midY )
     in
     Internal.Rectangle2d
-        { axes = Frame2d.at centerPoint
+        { axes = Frame2d.atPoint centerPoint
         , dimensions = ( width, height )
         }
 

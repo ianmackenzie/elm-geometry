@@ -21,7 +21,6 @@ import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Expect as Expect
 import OpenSolid.Geometry.Fuzz as Fuzz
 import OpenSolid.Plane3d as Plane3d
-import OpenSolid.Point2d as Point2d
 import OpenSolid.Point3d as Point3d
 import OpenSolid.SketchPlane3d as SketchPlane3d
 import OpenSolid.Vector3d as Vector3d
@@ -150,7 +149,10 @@ translationByPerpendicularDoesNotChangeSignedDistance =
                     Direction3d.perpendicularTo normalDirection
 
                 displacement =
-                    Vector3d.withLength distance perpendicularDirection
+                    Vector3d.with
+                        { length = distance
+                        , direction = perpendicularDirection
+                        }
             in
             Point3d.translateBy displacement point
                 |> Point3d.signedDistanceFrom plane

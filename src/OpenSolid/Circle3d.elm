@@ -3,6 +3,7 @@ module OpenSolid.Circle3d
         ( Circle3d
         , area
         , around
+        , axialDirection
         , axis
         , boundingBox
         , centerPoint
@@ -16,7 +17,7 @@ module OpenSolid.Circle3d
         , relativeTo
         , rotateAround
         , scaleAbout
-        , through
+        , throughPoints
         , translateBy
         , with
         )
@@ -38,12 +39,12 @@ for:
 
 # Constructors
 
-@docs with, around, on, through
+@docs with, around, on, throughPoints
 
 
 # Properties
 
-@docs centerPoint, radius, diameter, axis, plane, area, circumference, boundingBox
+@docs centerPoint, axialDirection, radius, diameter, axis, plane, area, circumference, boundingBox
 
 
 # Transformations
@@ -79,7 +80,7 @@ type alias Circle3d =
     exampleCircle =
         Circle3d.with
             { centerPoint =
-                Point3d.withCoordinates ( 2, 0, 1 )
+                Point3d.fromCoordinates ( 2, 0, 1 )
             , axialDirection = Direction3d.z
             , radius = 3
             }
@@ -101,12 +102,12 @@ with { centerPoint, axialDirection, radius } =
 point.
 
     point =
-        Point3d.withCoordinates ( 3, 0, 2 )
+        Point3d.fromCoordinates ( 3, 0, 2 )
 
     Circle3d.around Axis3d.z point
     --> Circle3d.with
     -->     { centerPoint =
-    -->         Point3d.withCoordinates ( 0, 0, 2 )
+    -->         Point3d.fromCoordinates ( 0, 0, 2 )
     -->     , axialDirection = Direction3d.z
     -->     , radius = 3
     -->     }
@@ -131,12 +132,12 @@ specified in XY coordinates _within_ the sketch plane.
     Circle3d.on SketchPlane3d.yz <|
         Circle2d.with
             { centerPoint =
-                Point2d.withCoordinates ( 1, 2 )
+                Point2d.fromCoordinates ( 1, 2 )
             , radius = 3
             }
     --> Circle3d.with
     -->     { centerPoint =
-    -->         Point3d.withCoordinates ( 0, 1, 2 )
+    -->         Point3d.fromCoordinates ( 0, 1, 2 )
     -->     , axialDirection = Direction3d.x
     -->     , radius = 3
     -->     }
@@ -151,18 +152,20 @@ on sketchPlane circle =
         }
 
 
-{-| Attempt to construct a circle that passes through the three given points. If
+{-| Attempt to construct a circle that passes through the three given points.
+The axial direction of the returned circle will be such that the three points
+are in counterclockwise order around it, according to the right-hand rule. If
 the three given points are collinear, returns `Nothing`.
 
-    Circle3d.through
-        ( Point3d.withCoordinates ( 1, 0, 0 )
-        , Point3d.withCoordinates ( 0, 1, 0 )
-        , Point3d.withCoordinates ( 0, 0, 1 )
+    Circle3d.throughPoints
+        ( Point3d.fromCoordinates ( 1, 0, 0 )
+        , Point3d.fromCoordinates ( 0, 1, 0 )
+        , Point3d.fromCoordinates ( 0, 0, 1 )
         )
     --> Just
     -->     (Circle3d.with
     -->         { centerPoint =
-    -->             Point3d.withCoordinates
+    -->             Point3d.fromCoordinates
     -->                 ( 0.333, 0.333, 0.333 )
     -->         , axialDirection =
     -->             Direction3d.with
@@ -174,8 +177,8 @@ the three given points are collinear, returns `Nothing`.
     -->     )
 
 -}
-through : ( Point3d, Point3d, Point3d ) -> Maybe Circle3d
-through points =
+throughPoints : ( Point3d, Point3d, Point3d ) -> Maybe Circle3d
+throughPoints points =
     Maybe.map2
         (\centerPoint plane ->
             let
@@ -198,13 +201,13 @@ through points =
                 }
         )
         (Point3d.circumcenter points)
-        (Plane3d.through points)
+        (Plane3d.throughPoints points)
 
 
 {-| Get the center point of a circle.
 
     Circle3d.centerPoint exampleCircle
-    --> Point3d.withCoordinates ( 2, 0, 1 )
+    --> Point3d.fromCoordinates ( 2, 0, 1 )
 
 -}
 centerPoint : Circle3d -> Point3d
@@ -212,6 +215,12 @@ centerPoint (Internal.Circle3d properties) =
     properties.centerPoint
 
 
+{-| Get the axial direction of a circle.
+
+    Circle3d.axialDirection exampleCircle
+    --> Direction3d.z
+
+-}
 axialDirection : Circle3d -> Direction3d
 axialDirection (Internal.Circle3d properties) =
     properties.axialDirection
@@ -223,7 +232,7 @@ The origin point of the returned axis will be the center point of the circle.
     Circle3d.axis exampleCircle
     --> Axis3d.with
     -->     { originPoint =
-    -->         Point3d.withCoordinates ( 2, 0, 1 )
+    -->         Point3d.fromCoordinates ( 2, 0, 1 )
     -->     , direction = Direction3d.z
     -->     }
 
@@ -237,12 +246,13 @@ axis circle =
 
 
 {-| Get the plane that a circle lies in. The origin point of the returned plane
-will be the center point of the circle.
+will be the center point of the circle, and its normal direction will be the
+axial direction of the circle.
 
     Circle3d.plane exampleCircle
     --> Plane3d.with
     -->     { originPoint =
-    -->         Point3d.withCoordinates ( 2, 0, 1 )
+    -->         Point3d.fromCoordinates ( 2, 0, 1 )
     -->     , normalDirection = Direction3d.z
     -->     }
 
@@ -308,7 +318,7 @@ circumference circle =
     Circle3d.scaleAbout Point3d.origin 3 exampleCircle
     --> Circle3d.with
     -->     { centerPoint =
-    -->         Point3d.withCoordinates ( 6, 0, 3 )
+    -->         Point3d.fromCoordinates ( 6, 0, 3 )
     -->     , axialDirection = Direction3d.z
     -->     , radius = 9
     -->     }
@@ -333,7 +343,7 @@ scaleAbout point scale circle =
         |> Circle3d.rotateAround Axis3d.y (degrees 90)
     --> Circle3d.with
     -->     { centerPoint =
-    -->         Point3d.withCoordinates ( 1, 0, -2 )
+    -->         Point3d.fromCoordinates ( 1, 0, -2 )
     -->     , axialDirection = Direction3d.x
     -->     , radius = 3
     -->     }
@@ -359,12 +369,12 @@ rotateAround axis angle =
 {-| Translate a circle by a given displacement.
 
     displacement =
-        Vector3d.withComponents ( 2, 1, 3 )
+        Vector3d.fromComponents ( 2, 1, 3 )
 
     Circle3d.translateBy displacement exampleCircle
     --> Circle3d.with
     -->     { centerPoint =
-    -->         Point3d.withCoordinates ( 4, 1, 4 )
+    -->         Point3d.fromCoordinates ( 4, 1, 4 )
     -->     , axialDirection = Direction3d.z
     -->     , radius = 3
     -->     }
@@ -384,7 +394,7 @@ translateBy displacement circle =
     Circle3d.mirrorAcross Plane3d.xy exampleCircle
     --> Circle3d.with
     -->     { centerPoint =
-    -->         Point3d.withCoordinates ( 2, 0, -1 )
+    -->         Point3d.fromCoordinates ( 2, 0, -1 )
     -->     , axialDirection = Direction3d.negativeZ
     -->     , radius = 3
     -->     }
@@ -411,12 +421,13 @@ mirrorAcross plane =
 local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame3d.at (Point3d.withCoordinates ( 1, 2, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     Circle3d.relativeTo localFrame exampleCircle
     --> Circle3d.with
     -->     { centerPoint =
-    -->         Point3d.withCoordinates ( 1, -2, -2 )
+    -->         Point3d.fromCoordinates ( 1, -2, -2 )
     -->     , axialDirection = Direction3d.z
     -->     , radius = 3
     -->     }
@@ -435,12 +446,13 @@ relativeTo frame circle =
 given reference frame, and return that circle expressed in global coordinates.
 
     localFrame =
-        Frame3d.at (Point3d.withCoordinates ( 1, 2, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     Circle3d.placeIn localFrame exampleCircle
     --> Circle3d.with
     -->     { centerPoint =
-    -->         Point3d.withCoordinates ( 3, 2, 4 )
+    -->         Point3d.fromCoordinates ( 3, 2, 4 )
     -->     , axialDirection = Direction3d.z
     -->     , radius = 3
     -->     }

@@ -18,7 +18,8 @@ module OpenSolid.Triangle3d
         , centroid
         , circumcircle
         , edges
-        , map
+        , fromVertices
+        , mapVertices
         , mirrorAcross
         , normalDirection
         , on
@@ -30,7 +31,6 @@ module OpenSolid.Triangle3d
         , scaleAbout
         , translateBy
         , vertices
-        , withVertices
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/triangle3d.svg" alt="Triangle3d" width="160">
@@ -47,7 +47,7 @@ vertices. This module contains triangle-related functionality such as:
 
 # Constructors
 
-@docs withVertices, on
+@docs fromVertices, on
 
 
 # Properties
@@ -59,7 +59,7 @@ vertices. This module contains triangle-related functionality such as:
 
 Transforming a triangle is equivalent to transforming its vertices.
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, mapVertices
 
 
 # Coordinate conversions
@@ -93,15 +93,15 @@ type alias Triangle3d =
 {-| Construct a triangle from its three vertices:
 
     exampleTriangle =
-        Triangle3d.withVertices
-            ( Point3d.withCoordinates ( 1, 0, 0 )
-            , Point3d.withCoordinates ( 2, 0, 0 )
-            , Point3d.withCoordinates ( 2, 1, 3 )
+        Triangle3d.fromVertices
+            ( Point3d.fromCoordinates ( 1, 0, 0 )
+            , Point3d.fromCoordinates ( 2, 0, 0 )
+            , Point3d.fromCoordinates ( 2, 1, 3 )
             )
 
 -}
-withVertices : ( Point3d, Point3d, Point3d ) -> Triangle3d
-withVertices =
+fromVertices : ( Point3d, Point3d, Point3d ) -> Triangle3d
+fromVertices =
     Internal.Triangle3d
 
 
@@ -109,15 +109,15 @@ withVertices =
 specified in XY coordinates _within_ the sketch plane.
 
     Triangle3d.on SketchPlane3d.xz <|
-        Triangle2d.withVertices
-            ( Point2d.withCoordinates ( 1, 1 )
-            , Point2d.withCoordinates ( 2, 1 )
-            , Point2d.withCoordinates ( 1, 3 )
+        Triangle2d.fromVertices
+            ( Point2d.fromCoordinates ( 1, 1 )
+            , Point2d.fromCoordinates ( 2, 1 )
+            , Point2d.fromCoordinates ( 1, 3 )
             )
-    --> Triangle3d.withVertices
-    -->     ( Point3d.withCoordinates ( 1, 0, 1 )
-    -->     , Point3d.withCoordinates ( 2, 0, 1 )
-    -->     , Point3d.withCoordinates ( 1, 0, 3 )
+    --> Triangle3d.fromVertices
+    -->     ( Point3d.fromCoordinates ( 1, 0, 1 )
+    -->     , Point3d.fromCoordinates ( 2, 0, 1 )
+    -->     , Point3d.fromCoordinates ( 1, 0, 3 )
     -->     )
 
 -}
@@ -127,7 +127,7 @@ on sketchPlane triangle2d =
         ( p1, p2, p3 ) =
             Triangle2d.vertices triangle2d
     in
-    withVertices
+    fromVertices
         ( Point3d.on sketchPlane p1
         , Point3d.on sketchPlane p2
         , Point3d.on sketchPlane p3
@@ -140,9 +140,9 @@ on sketchPlane triangle2d =
         Triangle3d.vertices exampleTriangle
 
 
-    --> p1 = Point3d.withCoordinates ( 1, 0, 0 )
-    --> p2 = Point3d.withCoordinates ( 2, 0, 0 )
-    --> p3 = Point3d.withCoordinates ( 2, 1, 3 )
+    --> p1 = Point3d.fromCoordinates ( 1, 0, 0 )
+    --> p2 = Point3d.fromCoordinates ( 2, 0, 0 )
+    --> p3 = Point3d.fromCoordinates ( 2, 1, 3 )
 
 -}
 vertices : Triangle3d -> ( Point3d, Point3d, Point3d )
@@ -158,21 +158,21 @@ second to the third, and from the third back to the first.
 
 
     --> e1 =
-    -->     LineSegment3d.withEndpoints
-    -->         ( Point3d.withCoordinates ( 1, 0, 0 )
-    -->         , Point3d.withCoordinates ( 2, 0, 0 )
+    -->     LineSegment3d.fromEndpoints
+    -->         ( Point3d.fromCoordinates ( 1, 0, 0 )
+    -->         , Point3d.fromCoordinates ( 2, 0, 0 )
     -->         )
     -->
     --> e2 =
-    -->     LineSegment3d.withEndpoints
-    -->         ( Point3d.withCoordinates ( 2, 0, 0 )
-    -->         , Point3d.withCoordinates ( 2, 1, 3 )
+    -->     LineSegment3d.fromEndpoints
+    -->         ( Point3d.fromCoordinates ( 2, 0, 0 )
+    -->         , Point3d.fromCoordinates ( 2, 1, 3 )
     -->         )
     -->
     --> e3 =
-    -->     LineSegment3d.withEndpoints
-    -->         ( Point3d.withCoordinates ( 2, 1, 3 )
-    -->         , Point3d.withCoordinates ( 1, 0, 0 )
+    -->     LineSegment3d.fromEndpoints
+    -->         ( Point3d.fromCoordinates ( 2, 1, 3 )
+    -->         , Point3d.fromCoordinates ( 1, 0, 0 )
     -->         )
 
 -}
@@ -191,7 +191,7 @@ edges triangle =
 {-| Get the centroid (center of mass) of a triangle.
 
     Triangle3d.centroid exampleTriangle
-    --> Point3d.withCoordinates ( 1.6667, 0.6667, 1 )
+    --> Point3d.fromCoordinates ( 1.6667, 0.6667, 1 )
 
 -}
 centroid : Triangle3d -> Point3d
@@ -265,145 +265,147 @@ normalDirection triangle =
 {-| Scale a triangle about a given point by a given scale.
 
     Triangle3d.scaleAbout Point3d.origin 2 exampleTriangle
-    --> Triangle3d.withVertices
-    -->     ( Point3d.withCoordinates ( 2, 0, 0 )
-    -->     , Point3d.withCoordinates ( 4, 0, 0 )
-    -->     , Point3d.withCoordinates ( 4, 2, 6 )
+    --> Triangle3d.fromVertices
+    -->     ( Point3d.fromCoordinates ( 2, 0, 0 )
+    -->     , Point3d.fromCoordinates ( 4, 0, 0 )
+    -->     , Point3d.fromCoordinates ( 4, 2, 6 )
     -->     )
 
 -}
 scaleAbout : Point3d -> Float -> Triangle3d -> Triangle3d
 scaleAbout centerPoint scale =
-    map (Point3d.scaleAbout centerPoint scale)
+    mapVertices (Point3d.scaleAbout centerPoint scale)
 
 
 {-| Rotate a triangle around a given axis by a given angle (in radians).
 
     exampleTriangle
         |> Triangle3d.rotateAround Axis3d.z (degrees 90)
-    --> Triangle3d.withVertices
-    -->     ( Point3d.withCoordinates ( 0, 1, 0 )
-    -->     , Point3d.withCoordinates ( 0, 2, 0 )
-    -->     , Point3d.withCoordinates ( -1, 2, 3 )
+    --> Triangle3d.fromVertices
+    -->     ( Point3d.fromCoordinates ( 0, 1, 0 )
+    -->     , Point3d.fromCoordinates ( 0, 2, 0 )
+    -->     , Point3d.fromCoordinates ( -1, 2, 3 )
     -->     )
 
 -}
 rotateAround : Axis3d -> Float -> Triangle3d -> Triangle3d
 rotateAround axis angle =
-    map (Point3d.rotateAround axis angle)
+    mapVertices (Point3d.rotateAround axis angle)
 
 
 {-| Translate a triangle by a given displacement.
 
     displacement =
-        Vector3d.withComponents ( 2, -1, 3 )
+        Vector3d.fromComponents ( 2, -1, 3 )
 
     Triangle3d.translateBy displacement exampleTriangle
-    --> Triangle3d.withVertices
-    -->     ( Point3d.withCoordinates ( 3, -1, 3 )
-    -->     , Point3d.withCoordinates ( 4, -1, 3 )
-    -->     , Point3d.withCoordinates ( 4, 0, 6 )
+    --> Triangle3d.fromVertices
+    -->     ( Point3d.fromCoordinates ( 3, -1, 3 )
+    -->     , Point3d.fromCoordinates ( 4, -1, 3 )
+    -->     , Point3d.fromCoordinates ( 4, 0, 6 )
     -->     )
 
 -}
 translateBy : Vector3d -> Triangle3d -> Triangle3d
 translateBy vector =
-    map (Point3d.translateBy vector)
+    mapVertices (Point3d.translateBy vector)
 
 
 {-| Mirror a triangle across a given plane.
 
     Triangle3d.mirrorAcross Plane3d.yz exampleTriangle
-    --> Triangle3d.withVertices
-    -->     ( Point3d.withCoordinates ( -1, 0, 0 )
-    -->     ( Point3d.withCoordinates ( -2, 0, 0 )
-    -->     ( Point3d.withCoordinates ( -2, 1, 3 )
+    --> Triangle3d.fromVertices
+    -->     ( Point3d.fromCoordinates ( -1, 0, 0 )
+    -->     ( Point3d.fromCoordinates ( -2, 0, 0 )
+    -->     ( Point3d.fromCoordinates ( -2, 1, 3 )
     -->     )
 
 -}
 mirrorAcross : Plane3d -> Triangle3d -> Triangle3d
 mirrorAcross plane =
-    map (Point3d.mirrorAcross plane)
+    mapVertices (Point3d.mirrorAcross plane)
 
 
 {-| Project a triangle onto a given plane.
 
     Triangle3d.projectOnto Plane3d.xy exampleTriangle
-    --> Triangle3d.withVertices
-    -->     ( Point3d.withCoordinates ( 1, 0, 0 )
-    -->     , Point3d.withCoordinates ( 2, 0, 0 )
-    -->     , Point3d.withCoordinates ( 2, 1, 0 )
+    --> Triangle3d.fromVertices
+    -->     ( Point3d.fromCoordinates ( 1, 0, 0 )
+    -->     , Point3d.fromCoordinates ( 2, 0, 0 )
+    -->     , Point3d.fromCoordinates ( 2, 1, 0 )
     -->     )
 
     Triangle3d.projectOnto Plane3d.xz exampleTriangle
-    --> Triangle3d.withVertices
-    -->     ( Point3d.withCoordinates ( 1, 0, 0 )
-    -->     , Point3d.withCoordinates ( 2, 0, 0 )
-    -->     , Point3d.withCoordinates ( 2, 0, 3 )
+    --> Triangle3d.fromVertices
+    -->     ( Point3d.fromCoordinates ( 1, 0, 0 )
+    -->     , Point3d.fromCoordinates ( 2, 0, 0 )
+    -->     , Point3d.fromCoordinates ( 2, 0, 3 )
     -->     )
 
 -}
 projectOnto : Plane3d -> Triangle3d -> Triangle3d
 projectOnto plane =
-    map (Point3d.projectOnto plane)
+    mapVertices (Point3d.projectOnto plane)
 
 
 {-| Transform each vertex of a triangle by a given function and create a new
 triangle from the resulting points. Most other transformation functions can be
-defined in terms of `map`; for example,
+defined in terms of `mapVertices`; for example,
 
-    Triangle.projectOnto Plane3d.xz triangle
+    Triangle3d.projectOnto plane
 
 is equivalent to
 
-    Triangle.map (Point3d.projectOnto Plane3d.xz) triangle
+    Triangle3d.mapVertices (Point3d.projectOnto plane)
 
 -}
-map : (Point3d -> Point3d) -> Triangle3d -> Triangle3d
-map function triangle =
+mapVertices : (Point3d -> Point3d) -> Triangle3d -> Triangle3d
+mapVertices function triangle =
     let
         ( p1, p2, p3 ) =
             vertices triangle
     in
-    withVertices ( function p1, function p2, function p3 )
+    fromVertices ( function p1, function p2, function p3 )
 
 
 {-| Take a triangle defined in global coordinates, and return it expressed
 in local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame3d.at (Point3d.withCoordinates ( 2, 1, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 2, 1, 3 ))
 
     Triangle3d.relativeTo localFrame exampleTriangle
-    --> Triangle3d.withVertices
-    -->     ( Point3d.withCoordinates ( -1, -1, -3 )
-    -->     , Point3d.withCoordinates ( 0, -1, -3 )
-    -->     , Point3d.withCoordinates ( 0, 0, 0 )
+    --> Triangle3d.fromVertices
+    -->     ( Point3d.fromCoordinates ( -1, -1, -3 )
+    -->     , Point3d.fromCoordinates ( 0, -1, -3 )
+    -->     , Point3d.fromCoordinates ( 0, 0, 0 )
     -->     )
 
 -}
 relativeTo : Frame3d -> Triangle3d -> Triangle3d
 relativeTo frame =
-    map (Point3d.relativeTo frame)
+    mapVertices (Point3d.relativeTo frame)
 
 
 {-| Take a triangle considered to be defined in local coordinates relative to a
 given reference frame, and return that triangle expressed in global coordinates.
 
     localFrame =
-        Frame3d.at (Point3d.withCoordinates ( 2, 1, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 2, 1, 3 ))
 
     Triangle3d.placeIn localFrame exampleTriangle
-    --> Triangle3d.withVertices
-    -->     ( Point3d.withCoordinates ( 3, 1, 3 )
-    -->     , Point3d.withCoordinates ( 4, 1, 3 )
-    -->     , Point3d.withCoordinates ( 4, 2, 6 )
+    --> Triangle3d.fromVertices
+    -->     ( Point3d.fromCoordinates ( 3, 1, 3 )
+    -->     , Point3d.fromCoordinates ( 4, 1, 3 )
+    -->     , Point3d.fromCoordinates ( 4, 2, 6 )
     -->     )
 
 -}
 placeIn : Frame3d -> Triangle3d -> Triangle3d
 placeIn frame =
-    map (Point3d.placeIn frame)
+    mapVertices (Point3d.placeIn frame)
 
 
 {-| Project a triangle into a given sketch plane. Conceptually, this projects
@@ -411,17 +413,17 @@ the triangle onto the plane and then expresses the projected triangle in 2D
 sketch coordinates.
 
     Triangle3d.projectInto SketchPlane3d.xy exampleTriangle
-    --> Triangle2d.withVertices
-    -->     ( Point2d.withCoordinates ( 1, 0 )
-    -->     , Point2d.withCoordinates ( 2, 0 )
-    -->     , Point2d.withCoordinates ( 2, 1 )
+    --> Triangle2d.fromVertices
+    -->     ( Point2d.fromCoordinates ( 1, 0 )
+    -->     , Point2d.fromCoordinates ( 2, 0 )
+    -->     , Point2d.fromCoordinates ( 2, 1 )
     -->     )
 
     Triangle3d.projectInto SketchPlane3d.zx exampleTriangle
-    --> Triangle2d.withVertices
-    -->     ( Point2d.withCoordinates ( 0, 1 )
-    -->     , Point2d.withCoordinates ( 0, 2 )
-    -->     , Point2d.withCoordinates ( 3, 2 )
+    --> Triangle2d.fromVertices
+    -->     ( Point2d.fromCoordinates ( 0, 1 )
+    -->     , Point2d.fromCoordinates ( 0, 2 )
+    -->     , Point2d.fromCoordinates ( 3, 2 )
     -->     )
 
 -}
@@ -434,7 +436,7 @@ projectInto sketchPlane triangle =
         project =
             Point3d.projectInto sketchPlane
     in
-    Triangle2d.withVertices ( project p1, project p2, project p3 )
+    Triangle2d.fromVertices ( project p1, project p2, project p3 )
 
 
 {-| Get the minimal bounding box containing a given triangle.
@@ -482,7 +484,7 @@ each of the triangle's vertices;
 
 is equivalent to
 
-    Circle3d.through (Triangle3d.vertices triangle)
+    Circle3d.throughPoints (Triangle3d.vertices triangle)
 
 If the triangle is degenerate (its three vertices are collinear), returns
 `Nothing`.
@@ -490,4 +492,4 @@ If the triangle is degenerate (its three vertices are collinear), returns
 -}
 circumcircle : Triangle3d -> Maybe Circle3d
 circumcircle triangle =
-    Circle3d.through (vertices triangle)
+    Circle3d.throughPoints (vertices triangle)

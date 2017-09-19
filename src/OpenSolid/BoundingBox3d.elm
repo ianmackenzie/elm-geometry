@@ -107,7 +107,7 @@ with =
 {-| Construct a zero-width bounding box containing a single point.
 
     point =
-        Point3d.withCoordinates ( 2, 1, 3 )
+        Point3d.fromCoordinates ( 2, 1, 3 )
 
     BoundingBox3d.singleton point
     --> BoundingBox3d.with
@@ -141,7 +141,7 @@ the list is empty, returns `Nothing`.
 
     singletonBox =
         BoundingBox3d.singleton
-            (Point3d.withCoordinates ( 2, 1, 0 ))
+            (Point3d.fromCoordinates ( 2, 1, 0 ))
 
     BoundingBox3d.hullOf [ exampleBox, singletonBox ]
     --> Just
@@ -335,12 +335,12 @@ midZ boundingBox =
 {-| Get the point at the center of a bounding box.
 
     BoundingBox3d.centroid exampleBox
-    --> Point3d.withCoordinates ( 0, 3.5, 3.5 )
+    --> Point3d.fromCoordinates ( 0, 3.5, 3.5 )
 
 -}
 centroid : BoundingBox3d -> Point3d
 centroid boundingBox =
-    Point3d.withCoordinates
+    Point3d.fromCoordinates
         ( midX boundingBox
         , midY boundingBox
         , midZ boundingBox
@@ -350,10 +350,10 @@ centroid boundingBox =
 {-| Check if a bounding box contains a particular point.
 
     firstPoint =
-        Point3d.withCoordinates ( 1, 4, 3 )
+        Point3d.fromCoordinates ( 1, 4, 3 )
 
     secondPoint =
-        Point3d.withCoordinates ( 3, 4, 5 )
+        Point3d.fromCoordinates ( 3, 4, 5 )
 
     BoundingBox3d.contains firstPoint exampleBox
     --> True

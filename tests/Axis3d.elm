@@ -87,8 +87,8 @@ onExamples =
     let
         axis2d =
             Axis2d.with
-                { originPoint = Point2d.withCoordinates ( 1, 3 )
-                , direction = Direction2d.withPolarAngle (degrees 30)
+                { originPoint = Point2d.fromCoordinates ( 1, 3 )
+                , direction = Direction2d.fromAngle (degrees 30)
                 }
     in
     Test.describe "Axis3d.on examples"
@@ -98,7 +98,7 @@ onExamples =
                     |> Expect.axis3d
                         (Axis3d.with
                             { originPoint =
-                                Point3d.withCoordinates ( 1, 3, 0 )
+                                Point3d.fromCoordinates ( 1, 3, 0 )
                             , direction =
                                 Direction3d.with
                                     { azimuth = degrees 30
@@ -112,7 +112,7 @@ onExamples =
                     |> Expect.axis3d
                         (Axis3d.with
                             { originPoint =
-                                Point3d.withCoordinates ( 3, 0, 1 )
+                                Point3d.fromCoordinates ( 3, 0, 1 )
                             , direction =
                                 Direction3d.with
                                     { azimuth = 0
