@@ -23,7 +23,6 @@ length config object =
     asPolyline config object
         |> Polyline2d.segments
         |> SegmentTree2d.fromList
-        |> Maybe.map SegmentTree2d.recalculateLengths
         |> Maybe.map SegmentTree2d.length
         |> Maybe.withDefault 0
 
@@ -107,7 +106,7 @@ arcLengthParameterization : LengthConfig a -> a -> (Float -> Maybe Point2d)
 arcLengthParameterization config data =
     let
         tree =
-            asPolyline config data |> Polyline2d.segments |> SegmentTree2d.fromList |> Maybe.map SegmentTree2d.recalculateLengths
+            asPolyline config data |> Polyline2d.segments |> SegmentTree2d.fromList
     in
     case tree of
         Nothing ->
