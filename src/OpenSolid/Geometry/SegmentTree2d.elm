@@ -7,19 +7,9 @@ import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 {-| A tree for efficiently creating length parameterizations
 
 The nodes contain a line segment (pair of start and end points)
-
-Every node stores
-
-* left and right children
-* the height at which the node is
-* inforamation on the children
-    - total length of the children
-    - length at which the split is
-
-
 -}
 type alias SegmentTree =
-    Tree NodeValue LineSegment2d
+    Tree { lengthAtSplit : Float, lengthAtEnd : Float } LineSegment2d
 
 
 type alias Height =
@@ -41,8 +31,8 @@ foldr folder default tree =
             foldr folder (foldr folder default right) left
 
 
-fromList : (LineSegment2d -> LineSegment2d -> NodeValue) -> List LineSegment2d -> Maybe SegmentTree
-fromList nodeFromLeaves leaves =
+fromList : List LineSegment2d -> Maybe SegmentTree
+fromList leaves =
     case leaves of
         [] ->
             Nothing
@@ -50,26 +40,15 @@ fromList nodeFromLeaves leaves =
         x :: rest ->
             let
                 treeFromLeaves leaf1 leaf2 =
-                    tree (nodeFromLeaves leaf1 leaf2) (Leaf leaf1) (Leaf leaf2)
+                    tree (Leaf leaf1) (Leaf leaf2)
             in
-                List.foldl (extendRight treeFromLeaves) (Leaf x) rest
+                List.foldl extendRight (Leaf x) rest
                     |> Just
 
 
 toList : Tree a b -> List b
 toList =
     foldr (::) []
-
-
-type alias NodeValue =
-    { lengthAtSplit : Float, lengthAtEnd : Float }
-
-
-leavesToNode : LineSegment2d -> LineSegment2d -> NodeValue
-leavesToNode segment segment2 =
-    { lengthAtSplit = LineSegment2d.length segment
-    , lengthAtEnd = LineSegment2d.length segment + LineSegment2d.length segment2
-    }
 
 
 getHeight : Tree a b -> Int
@@ -92,97 +71,70 @@ length tree =
             lengthAtEnd
 
 
-extendRight_ : (leaf -> leaf -> Tree node leaf) -> leaf -> Tree node leaf -> Tree node leaf
-extendRight_ combine segment tree =
-    case tree of
-        Leaf segment2 ->
-            flip combine segment segment2
-
-        Node attributes height leftSubtree rightSubtree ->
-            let
-                newRight =
-                    extendRight_ combine segment rightSubtree
-            in
-                Node attributes (height + 1) leftSubtree newRight
-                    |> balance
-
-
 {-| Extend the tree with a new segment on the right
 -}
-extendRight : (LineSegment2d -> LineSegment2d -> Tree NodeValue LineSegment2d) -> LineSegment2d -> SegmentTree -> SegmentTree
-extendRight combine segment tree =
-    case tree of
+extendRight : LineSegment2d -> SegmentTree -> SegmentTree
+extendRight segment set =
+    case set of
         Leaf segment2 ->
-            flip combine segment segment2
+            tree (Leaf segment2) (Leaf segment)
 
         Node attributes height leftSubtree rightSubtree ->
             let
                 newRight =
-                    extendRight combine segment rightSubtree
+                    extendRight segment rightSubtree
             in
-                Node { attributes | lengthAtEnd = attributes.lengthAtSplit + length newRight } (height + 1) leftSubtree newRight
+                tree leftSubtree newRight
                     |> balance
 
 
 {-| Extend the tree with a new segment on the left
 -}
-extendLeft : (LineSegment2d -> LineSegment2d -> Tree NodeValue LineSegment2d) -> LineSegment2d -> SegmentTree -> SegmentTree
-extendLeft combine segment tree =
-    case tree of
+extendLeft : LineSegment2d -> SegmentTree -> SegmentTree
+extendLeft segment set =
+    case set of
         Leaf segment2 ->
-            flip combine segment segment2
+            tree (Leaf segment) (Leaf segment2)
 
         Node attributes height leftSubtree rightSubtree ->
             let
                 newLeft =
-                    extendLeft combine segment leftSubtree
-
-                leftLength =
-                    length newLeft
+                    extendLeft segment leftSubtree
             in
-                Node
-                    { attributes
-                        | lengthAtSplit = leftLength
-                        , lengthAtEnd = leftLength + (attributes.lengthAtEnd - attributes.lengthAtSplit)
-                    }
-                    (height + 1)
-                    newLeft
-                    rightSubtree
+                tree newLeft rightSubtree
                     |> balance
 
 
-tree : node -> Tree node a -> Tree node a -> Tree node a
-tree item left right =
+tree : SegmentTree -> SegmentTree -> SegmentTree
+tree left right =
     let
         maxHeight : Int
         maxHeight =
-            max
-                (getHeight left)
-                (getHeight right)
+            max (getHeight left) (getHeight right)
                 |> (+) 1
     in
-        Node item maxHeight left right
+        Node { lengthAtSplit = length left, lengthAtEnd = length left + length right } maxHeight left right
 
 
-{-| Rotate a tree to the left (for balancing).
+{-| rotate the tree to the left - used in balancing
 -}
-rotateLeft : Tree a b -> Tree a b
+rotateLeft : SegmentTree -> SegmentTree
 rotateLeft set =
     case set of
         Node root _ less (Node pivot _ between greater) ->
-            tree pivot (tree root less between) greater
+            tree (tree less between) greater
 
         _ ->
             set
 
 
-{-| Inversely, rotate a tree to the right (for balancing).
+{-| rotate the tree to the right - used in balancing
 -}
-rotateRight : Tree a b -> Tree a b
+rotateRight : SegmentTree -> SegmentTree
 rotateRight set =
     case set of
         Node root _ (Node pivot _ less between) greater ->
-            tree pivot less (tree root between greater)
+            tree less (tree between greater)
 
         _ ->
             set
@@ -198,7 +150,7 @@ heightDiff tree =
             getHeight right - getHeight left
 
 
-balance : Tree a b -> Tree a b
+balance : SegmentTree -> SegmentTree
 balance set =
     case set of
         Leaf _ ->
@@ -206,13 +158,13 @@ balance set =
 
         Node attributes _ left right ->
             if heightDiff set == -1 && heightDiff left > 0 then
-                tree attributes (rotateLeft left) right |> rotateRight
+                tree (rotateLeft left) right |> rotateRight
             else if heightDiff set < -1 then
                 -- Node leaning to the left
                 rotateRight set
             else if heightDiff set == 2 && heightDiff right < 0 then
                 -- Node leaning to the right with subtree leaning left
-                tree attributes left (rotateRight right) |> rotateLeft
+                tree left (rotateRight right) |> rotateLeft
             else if heightDiff set > 1 then
                 -- Node leaning to the right
                 rotateLeft set
@@ -260,12 +212,6 @@ recalculateLengths tree =
                             }
 
 
-buildTree : List LineSegment2d -> Maybe SegmentTree
-buildTree segments =
-    fromList leavesToNode segments
-        |> Maybe.map recalculateLengths
-
-
 evaluateTreeAt : SegmentTree -> Float -> Maybe Point2d
 evaluateTreeAt tree s =
     case tree of
@@ -289,13 +235,14 @@ evaluateTreeAt tree s =
                             |> Just
 
         Node { lengthAtSplit, lengthAtEnd } _ leftBranch rightBranch ->
-            if s < 0 || s > lengthAtEnd then
-                Nothing
-            else if s <= lengthAtSplit then
-                evaluateTreeAt leftBranch s
-            else
-                evaluateTreeAt rightBranch (s - lengthAtSplit)
-
-
-
-{- -}
+            let
+                _ =
+                    -- Debug.log "looking at" ( s, lengthAtSplit, lengthAtEnd )
+                    ()
+            in
+                if s < 0 || s > lengthAtEnd then
+                    Nothing
+                else if s <= lengthAtSplit then
+                    evaluateTreeAt leftBranch s
+                else
+                    evaluateTreeAt rightBranch (s - lengthAtSplit)

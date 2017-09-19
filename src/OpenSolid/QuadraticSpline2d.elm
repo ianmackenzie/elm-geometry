@@ -181,7 +181,8 @@ lengthConfig percentageError =
     }
 
 
-{-| -}
+{-| Approximate the length of a quadratic spline given a maximum error percentage
+-}
 approximateLength : Float -> QuadraticSpline2d -> Float
 approximateLength percentageError spline =
     Approximate.length (lengthConfig percentageError) spline
@@ -196,7 +197,7 @@ approximateLength percentageError spline =
 -}
 arcLengthParameterization : Float -> QuadraticSpline2d -> Float -> Maybe Point2d
 arcLengthParameterization percentageError spline arcLength =
-    Approximate.arcLengthParameterization_ (lengthConfig percentageError) spline arcLength
+    Approximate.arcLengthParameterization (lengthConfig percentageError) spline arcLength
 
 
 {-| Get a point along a spline, based on a parameter that ranges from 0 to 1. A

@@ -2,8 +2,7 @@ module OpenSolid.Geometry.Approximate exposing (..)
 
 import OpenSolid.Polyline2d as Polyline2d exposing (Polyline2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
-import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
-import OpenSolid.Geometry.SegmentTree2d exposing (..)
+import OpenSolid.Geometry.SegmentTree2d as SegmentTree2d exposing (..)
 
 
 type alias LengthConfig a =
@@ -13,12 +12,23 @@ type alias LengthConfig a =
     }
 
 
+{-| Approximate the length of some curve
+-}
 length : LengthConfig a -> a -> Float
 length config object =
+    {-
+       asPolyline config object
+           |> Polyline2d.length
+    -}
     asPolyline config object
-        |> Polyline2d.length
+        |> Polyline2d.segments
+        |> SegmentTree2d.fromList
+        |> Maybe.map SegmentTree2d.length
+        |> Maybe.withDefault 0
 
 
+{-| The approximation of some curve as a polyline
+-}
 asPolyline : LengthConfig a -> a -> Polyline2d
 asPolyline config curve =
     helper config [ curve ] []
@@ -26,6 +36,8 @@ asPolyline config curve =
         |> Polyline2d.withVertices
 
 
+{-| Recursively approximate a curve, gives points that can be assembled into a polyline
+-}
 segments : LengthConfig a -> List a -> List Point2d
 segments config elements =
     case elements of
@@ -88,20 +100,17 @@ helper config remaining accum =
                     helper config rest (left :: right :: accum)
 
 
-type alias ParameterizationConfig a =
-    { split : Float -> a -> ( a, a )
-    , percentageError : Float
-    , upperBound : a -> Float
-    , lowerBound : a -> Float
-    , startAndEndpoint : a -> ( Point2d, Point2d )
-    }
+{-| Given a length along the curve, give back the 2D location at that point
+-}
+arcLengthParameterization : LengthConfig a -> a -> (Float -> Maybe Point2d)
+arcLengthParameterization config data =
+    let
+        tree =
+            asPolyline config data |> Polyline2d.segments |> SegmentTree2d.fromList
+    in
+        case tree of
+            Nothing ->
+                \_ -> Nothing
 
-
-arcLengthParameterization_ : LengthConfig a -> a -> Float -> Maybe Point2d
-arcLengthParameterization_ config data =
-    case asPolyline config data |> Polyline2d.segments |> buildTree of
-        Nothing ->
-            \_ -> Nothing
-
-        Just tree ->
-            \s -> evaluateTreeAt tree s
+            Just tree ->
+                \s -> evaluateTreeAt tree s
