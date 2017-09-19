@@ -1,12 +1,13 @@
 module OpenSolid.Geometry.SegmentTree2d exposing (..)
 
-import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
+import OpenSolid.Point2d as Point2d exposing (Point2d)
 
 
 {-| A tree for efficiently creating length parameterizations
 
 The nodes contain a line segment (pair of start and end points)
+
 -}
 type alias SegmentTree =
     Tree { lengthAtSplit : Float, lengthAtEnd : Float } LineSegment2d
@@ -42,8 +43,8 @@ fromList leaves =
                 treeFromLeaves leaf1 leaf2 =
                     tree (Leaf leaf1) (Leaf leaf2)
             in
-                List.foldl extendRight (Leaf x) rest
-                    |> Just
+            List.foldl extendRight (Leaf x) rest
+                |> Just
 
 
 toList : Tree a b -> List b
@@ -84,8 +85,8 @@ extendRight segment set =
                 newRight =
                     extendRight segment rightSubtree
             in
-                tree leftSubtree newRight
-                    |> balance
+            tree leftSubtree newRight
+                |> balance
 
 
 {-| Extend the tree with a new segment on the left
@@ -101,8 +102,8 @@ extendLeft segment set =
                 newLeft =
                     extendLeft segment leftSubtree
             in
-                tree newLeft rightSubtree
-                    |> balance
+            tree newLeft rightSubtree
+                |> balance
 
 
 tree : SegmentTree -> SegmentTree -> SegmentTree
@@ -113,7 +114,7 @@ tree left right =
             max (getHeight left) (getHeight right)
                 |> (+) 1
     in
-        Node { lengthAtSplit = length left, lengthAtEnd = length left + length right } maxHeight left right
+    Node { lengthAtSplit = length left, lengthAtEnd = length left + length right } maxHeight left right
 
 
 {-| rotate the tree to the left - used in balancing
@@ -176,40 +177,13 @@ balance set =
 {-| recursivey, calculate the start, split and end lengths based on a node's children
 -}
 recalculateLengths : SegmentTree -> SegmentTree
-recalculateLengths tree =
-    case tree of
+recalculateLengths set =
+    case set of
         Leaf _ ->
-            tree
+            set
 
         Node _ height leftBranch rightBranch ->
-            let
-                build node =
-                    Node node height leftBranch rightBranch
-            in
-                case ( recalculateLengths leftBranch, recalculateLengths rightBranch ) of
-                    ( Node params1 _ _ _, Node params2 _ _ _ ) ->
-                        build
-                            { lengthAtSplit = params1.lengthAtEnd
-                            , lengthAtEnd = params1.lengthAtEnd + params2.lengthAtEnd
-                            }
-
-                    ( Node params _ _ _, Leaf segment ) ->
-                        build
-                            { lengthAtSplit = params.lengthAtEnd
-                            , lengthAtEnd = params.lengthAtEnd + LineSegment2d.length segment
-                            }
-
-                    ( Leaf segment, Node params _ leftsubsub rightsubsub ) ->
-                        build
-                            { lengthAtSplit = LineSegment2d.length segment
-                            , lengthAtEnd = params.lengthAtEnd + LineSegment2d.length segment
-                            }
-
-                    ( Leaf segment1, Leaf segment2 ) ->
-                        build
-                            { lengthAtSplit = LineSegment2d.length segment1
-                            , lengthAtEnd = LineSegment2d.length segment1 + LineSegment2d.length segment2
-                            }
+            tree (recalculateLengths leftBranch) (recalculateLengths rightBranch)
 
 
 evaluateTreeAt : SegmentTree -> Float -> Maybe Point2d
@@ -220,19 +194,19 @@ evaluateTreeAt tree s =
                 segmentLength =
                     LineSegment2d.length segment
             in
-                if s > segmentLength then
-                    Nothing
-                else
-                    let
-                        at =
-                            if s == 0 then
-                                0
-                            else
-                                s / segmentLength
-                    in
-                        at
-                            |> LineSegment2d.interpolate segment
-                            |> Just
+            if s > segmentLength then
+                Nothing
+            else
+                let
+                    at =
+                        if s == 0 then
+                            0
+                        else
+                            s / segmentLength
+                in
+                at
+                    |> LineSegment2d.interpolate segment
+                    |> Just
 
         Node { lengthAtSplit, lengthAtEnd } _ leftBranch rightBranch ->
             let
@@ -240,9 +214,9 @@ evaluateTreeAt tree s =
                     -- Debug.log "looking at" ( s, lengthAtSplit, lengthAtEnd )
                     ()
             in
-                if s < 0 || s > lengthAtEnd then
-                    Nothing
-                else if s <= lengthAtSplit then
-                    evaluateTreeAt leftBranch s
-                else
-                    evaluateTreeAt rightBranch (s - lengthAtSplit)
+            if s < 0 || s > lengthAtEnd then
+                Nothing
+            else if s <= lengthAtSplit then
+                evaluateTreeAt leftBranch s
+            else
+                evaluateTreeAt rightBranch (s - lengthAtSplit)

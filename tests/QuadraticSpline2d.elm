@@ -9,8 +9,8 @@ import Generic
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.QuadraticSpline2d as QuadraticSpline2d
 import OpenSolid.Point2d as Point2d
+import OpenSolid.QuadraticSpline2d as QuadraticSpline2d
 import Test exposing (Test)
 
 
@@ -40,17 +40,18 @@ parameterization =
             \spline ->
                 QuadraticSpline2d.arcLengthParameterization 0.001 spline 0
                     |> Expect.equal (Just <| QuadraticSpline2d.startPoint spline)
-          {- does not work - fails, but the shrinker is inefficient taking gigs of ram trying to shrink
-             , Test.fuzz Fuzz.quadraticSpline2d "at s = (length spline) the arcLengthParameterization gives the end point" <|
-                 \spline ->
-                     let
-                         error =
-                             1.0e-6
-                     in
-                         QuadraticSpline2d.approximateLength error spline
-                             |> QuadraticSpline2d.arcLengthParameterization error spline
-                             |> Expect.equal (Just <| QuadraticSpline2d.endPoint spline)
-          -}
+
+        {- does not work - fails, but the shrinker is inefficient taking gigs of ram trying to shrink
+           , Test.fuzz Fuzz.quadraticSpline2d "at s = (length spline) the arcLengthParameterization gives the end point" <|
+               \spline ->
+                   let
+                       error =
+                           1.0e-6
+                   in
+                       QuadraticSpline2d.approximateLength error spline
+                           |> QuadraticSpline2d.arcLengthParameterization error spline
+                           |> Expect.equal (Just <| QuadraticSpline2d.endPoint spline)
+        -}
         , Test.test "at s=5 the result is the starting point of the spline" <|
             \_ ->
                 QuadraticSpline2d.arcLengthParameterization 0.001 line 5
@@ -65,8 +66,8 @@ parameterization =
                     expected =
                         Just (Point2d.withCoordinates ( 2.901568908789561, 2.4953860425995105 ))
                 in
-                    QuadraticSpline2d.arcLengthParameterization 0.001 exampleSpline 2.5
-                        |> Expect.equal expected
+                QuadraticSpline2d.arcLengthParameterization 0.001 exampleSpline 2.5
+                    |> Expect.equal expected
         , Test.test "length is as expected" <|
             \_ ->
                 QuadraticSpline2d.approximateLength 0.001 line

@@ -1,8 +1,8 @@
 module OpenSolid.Geometry.Approximate exposing (..)
 
-import OpenSolid.Polyline2d as Polyline2d exposing (Polyline2d)
-import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Geometry.SegmentTree2d as SegmentTree2d exposing (..)
+import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.Polyline2d as Polyline2d exposing (Polyline2d)
 
 
 type alias LengthConfig a =
@@ -23,6 +23,7 @@ length config object =
     asPolyline config object
         |> Polyline2d.segments
         |> SegmentTree2d.fromList
+        |> Maybe.map SegmentTree2d.recalculateLengths
         |> Maybe.map SegmentTree2d.length
         |> Maybe.withDefault 0
 
@@ -55,14 +56,14 @@ segments config elements =
                 ( _, end ) =
                     config.startAndEndpoint y
             in
-                [ start, end ]
+            [ start, end ]
 
         x :: rest ->
             let
                 ( start, _ ) =
                     config.startAndEndpoint x
             in
-                start :: segments config rest
+            start :: segments config rest
 
 
 {-| make the split function tail-recursive
@@ -80,7 +81,7 @@ helper config remaining accum =
                         ( start, end ) =
                             config.startAndEndpoint item
                     in
-                        Point2d.distanceFrom start end
+                    Point2d.distanceFrom start end
 
                 ( left, right ) =
                     config.split 0.5 curve
@@ -94,10 +95,10 @@ helper config remaining accum =
                 average =
                     (lessAccurate + moreAccurate) / 2
             in
-                if (average - lessAccurate) / average > config.percentageError then
-                    helper config (right :: left :: rest) accum
-                else
-                    helper config rest (left :: right :: accum)
+            if (average - lessAccurate) / average > config.percentageError then
+                helper config (right :: left :: rest) accum
+            else
+                helper config rest (left :: right :: accum)
 
 
 {-| Given a length along the curve, give back the 2D location at that point
@@ -106,11 +107,11 @@ arcLengthParameterization : LengthConfig a -> a -> (Float -> Maybe Point2d)
 arcLengthParameterization config data =
     let
         tree =
-            asPolyline config data |> Polyline2d.segments |> SegmentTree2d.fromList
+            asPolyline config data |> Polyline2d.segments |> SegmentTree2d.fromList |> Maybe.map SegmentTree2d.recalculateLengths
     in
-        case tree of
-            Nothing ->
-                \_ -> Nothing
+    case tree of
+        Nothing ->
+            \_ -> Nothing
 
-            Just tree ->
-                \s -> evaluateTreeAt tree s
+        Just tree ->
+            \s -> evaluateTreeAt tree s
