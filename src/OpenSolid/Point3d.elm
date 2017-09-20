@@ -302,7 +302,8 @@ on sketchPlane point2d =
 {-| Construct a point given its local coordinates within a particular frame.
 
     frame =
-        Frame3d.at (Point3d.fromCoordinates ( 1, 1, 1 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 1, 1, 1 ))
 
     Point3d.in_ frame ( 1, 2, 3 )
     --> Point3d.fromCoordinates ( 2, 3, 4 )
@@ -806,7 +807,8 @@ projectOntoAxis axis point =
 coordinates relative to a given reference frame.
 
     localFrame =
-        Frame3d.at (Point3d.fromCoordinates ( 1, 2, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     Point3d.relativeTo localFrame
         (Point3d.fromCoordinates ( 4, 5, 6 ))
@@ -829,7 +831,8 @@ relativeTo frame point =
 frame, and return that point expressed in global coordinates.
 
     localFrame =
-        Frame3d.at (Point3d.fromCoordinates ( 1, 2, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     Point3d.placeIn localFrame
         (Point3d.fromCoordinates ( 3, 3, 3 ))
@@ -955,9 +958,6 @@ list is empty, returns `Nothing`.
 
     Point3d.hullOf []
     --> Nothing
-
-If you have exactly two points, you can use [`Point3d.hull`](#hull) instead
-(which returns a `BoundingBox3d` instead of a `Maybe BoundingBox3d`).
 
 -}
 hullOf : List Point3d -> Maybe BoundingBox3d

@@ -16,7 +16,7 @@ module OpenSolid.Polyline2d
         , boundingBox
         , fromVertices
         , length
-        , map
+        , mapVertices
         , mirrorAcross
         , placeIn
         , projectOnto
@@ -55,7 +55,7 @@ as
 
 Transforming a polyline is equivalent to transforming each of its vertices.
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, mapVertices
 
 
 # Coordinate conversions
@@ -165,7 +165,7 @@ length =
 -}
 scaleAbout : Point2d -> Float -> Polyline2d -> Polyline2d
 scaleAbout point scale =
-    map (Point2d.scaleAbout point scale)
+    mapVertices (Point2d.scaleAbout point scale)
 
 
 {-| Rotate a polyline around the given center point counterclockwise by the
@@ -184,7 +184,7 @@ given angle (in radians).
 -}
 rotateAround : Point2d -> Float -> Polyline2d -> Polyline2d
 rotateAround point angle =
-    map (Point2d.rotateAround point angle)
+    mapVertices (Point2d.rotateAround point angle)
 
 
 {-| Translate a polyline by the given displacement.
@@ -203,7 +203,7 @@ rotateAround point angle =
 -}
 translateBy : Vector2d -> Polyline2d -> Polyline2d
 translateBy vector =
-    map (Point2d.translateBy vector)
+    mapVertices (Point2d.translateBy vector)
 
 
 {-| Mirror a polyline across the given axis.
@@ -219,7 +219,7 @@ translateBy vector =
 -}
 mirrorAcross : Axis2d -> Polyline2d -> Polyline2d
 mirrorAcross axis =
-    map (Point2d.mirrorAcross axis)
+    mapVertices (Point2d.mirrorAcross axis)
 
 
 {-| Project (flatten) a polyline onto the given axis.
@@ -235,21 +235,21 @@ mirrorAcross axis =
 -}
 projectOnto : Axis2d -> Polyline2d -> Polyline2d
 projectOnto axis =
-    map (Point2d.projectOnto axis)
+    mapVertices (Point2d.projectOnto axis)
 
 
 {-| Transform each vertex of a polyline by the given function. All other
-transformations can be defined in terms of `map`; for example,
+transformations can be defined in terms of `mapVertices`; for example,
 
-    Polyline2d.mirrorAcross Axis2d.x polyline
+    Polyline2d.mirrorAcross axis
 
 is equivalent to
 
-    Polyline2d.map (Point2d.mirrorAcross Axis2d.x) polyline
+    Polyline2d.mapVertices (Point2d.mirrorAcross axis)
 
 -}
-map : (Point2d -> Point2d) -> Polyline2d -> Polyline2d
-map function =
+mapVertices : (Point2d -> Point2d) -> Polyline2d -> Polyline2d
+mapVertices function =
     vertices >> List.map function >> fromVertices
 
 
@@ -270,7 +270,7 @@ in local coordinates relative to a given reference frame.
 -}
 relativeTo : Frame2d -> Polyline2d -> Polyline2d
 relativeTo frame =
-    map (Point2d.relativeTo frame)
+    mapVertices (Point2d.relativeTo frame)
 
 
 {-| Take a polyline considered to be defined in local coordinates relative
@@ -291,7 +291,7 @@ coordinates.
 -}
 placeIn : Frame2d -> Polyline2d -> Polyline2d
 placeIn frame =
-    map (Point2d.placeIn frame)
+    mapVertices (Point2d.placeIn frame)
 
 
 {-| Get the minimal bounding box containing a given polyline. Returns `Nothing`

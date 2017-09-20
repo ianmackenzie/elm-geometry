@@ -23,7 +23,7 @@ module OpenSolid.LineSegment2d
         , interpolate
         , intersectionPoint
         , length
-        , map
+        , mapEndpoints
         , midpoint
         , mirrorAcross
         , normalDirection
@@ -77,7 +77,7 @@ functionality such as:
 Transforming a line segment is equivalent to transforming its start and end
 points and forming a new line segment between the resulting points.
 
-@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
+@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, mapEndpoints
 
 
 # Coordinate conversions
@@ -431,7 +431,7 @@ intersectionPoint lineSegment1 lineSegment2 =
 -}
 scaleAbout : Point2d -> Float -> LineSegment2d -> LineSegment2d
 scaleAbout point scale =
-    map (Point2d.scaleAbout point scale)
+    mapEndpoints (Point2d.scaleAbout point scale)
 
 
 {-| Rotate a line segment counterclockwise around a given center point by a
@@ -448,7 +448,7 @@ given angle (in radians).
 -}
 rotateAround : Point2d -> Float -> LineSegment2d -> LineSegment2d
 rotateAround centerPoint angle =
-    map (Point2d.rotateAround centerPoint angle)
+    mapEndpoints (Point2d.rotateAround centerPoint angle)
 
 
 {-| Translate a line segment by a given displacement.
@@ -466,7 +466,7 @@ rotateAround centerPoint angle =
 -}
 translateBy : Vector2d -> LineSegment2d -> LineSegment2d
 translateBy vector =
-    map (Point2d.translateBy vector)
+    mapEndpoints (Point2d.translateBy vector)
 
 
 {-| Mirror a line segment across an axis.
@@ -486,7 +486,7 @@ left' of the line segment).
 -}
 mirrorAcross : Axis2d -> LineSegment2d -> LineSegment2d
 mirrorAcross axis =
-    map (Point2d.mirrorAcross axis)
+    mapEndpoints (Point2d.mirrorAcross axis)
 
 
 {-| Project a line segment onto an axis.
@@ -506,22 +506,22 @@ mirrorAcross axis =
 -}
 projectOnto : Axis2d -> LineSegment2d -> LineSegment2d
 projectOnto axis =
-    map (Point2d.projectOnto axis)
+    mapEndpoints (Point2d.projectOnto axis)
 
 
 {-| Transform the start and end points of a line segment by a given function
 and create a new line segment from the resulting points. Most other
-transformation functions can be defined in terms of `map`; for example,
+transformation functions can be defined in terms of `mapEndpoints`; for example,
 
-    LineSegment2d.projectOnto Axis2d.x
+    LineSegment2d.projectOnto axis
 
 is equivalent to
 
-    LineSegment2d.map (Point2d.projectOnto Axis2d.x)
+    LineSegment2d.mapEndpoints (Point2d.projectOnto axis)
 
 -}
-map : (Point2d -> Point2d) -> LineSegment2d -> LineSegment2d
-map function lineSegment =
+mapEndpoints : (Point2d -> Point2d) -> LineSegment2d -> LineSegment2d
+mapEndpoints function lineSegment =
     let
         ( p1, p2 ) =
             endpoints lineSegment
@@ -544,7 +544,7 @@ in local coordinates relative to a given reference frame.
 -}
 relativeTo : Frame2d -> LineSegment2d -> LineSegment2d
 relativeTo frame =
-    map (Point2d.relativeTo frame)
+    mapEndpoints (Point2d.relativeTo frame)
 
 
 {-| Take a line segment considered to be defined in local coordinates relative
@@ -563,7 +563,7 @@ coordinates.
 -}
 placeIn : Frame2d -> LineSegment2d -> LineSegment2d
 placeIn frame =
-    map (Point2d.placeIn frame)
+    mapEndpoints (Point2d.placeIn frame)
 
 
 {-| Get the minimal bounding box containing a given line segment.

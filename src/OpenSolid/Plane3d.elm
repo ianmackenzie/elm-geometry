@@ -395,7 +395,8 @@ mirrorAcross otherPlane =
 coordinates relative to a given reference frame.
 
     referenceFrame =
-        Frame3d.at (Point3d.fromCoordinates ( 1, 1, 1 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 1, 1, 1 ))
 
     plane =
         Plane3d.with
@@ -432,7 +433,8 @@ relativeTo frame =
 frame, and return that plane expressed in global coordinates.
 
     referenceFrame =
-        Frame3d.at (Point3d.fromCoordinates ( 1, 1, 1 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 1, 1, 1 ))
 
     plane =
         Plane3d.with

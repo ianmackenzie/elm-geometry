@@ -16,7 +16,7 @@ module OpenSolid.Polyline3d
         , boundingBox
         , fromVertices
         , length
-        , map
+        , mapVertices
         , mirrorAcross
         , on
         , placeIn
@@ -57,7 +57,7 @@ as
 
 Transforming a polyline is equivalent to transforming each of its vertices.
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, map
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, mapVertices
 
 
 # Coordinate conversions
@@ -193,7 +193,7 @@ length =
 -}
 scaleAbout : Point3d -> Float -> Polyline3d -> Polyline3d
 scaleAbout point scale =
-    map (Point3d.scaleAbout point scale)
+    mapVertices (Point3d.scaleAbout point scale)
 
 
 {-| Rotate a polyline around the given axis by the given angle (in radians).
@@ -210,7 +210,7 @@ scaleAbout point scale =
 -}
 rotateAround : Axis3d -> Float -> Polyline3d -> Polyline3d
 rotateAround axis angle =
-    map (Point3d.rotateAround axis angle)
+    mapVertices (Point3d.rotateAround axis angle)
 
 
 {-| Translate a polyline by the given displacement.
@@ -229,7 +229,7 @@ rotateAround axis angle =
 -}
 translateBy : Vector3d -> Polyline3d -> Polyline3d
 translateBy vector =
-    map (Point3d.translateBy vector)
+    mapVertices (Point3d.translateBy vector)
 
 
 {-| Mirror a polyline across the given plane.
@@ -245,7 +245,7 @@ translateBy vector =
 -}
 mirrorAcross : Plane3d -> Polyline3d -> Polyline3d
 mirrorAcross plane =
-    map (Point3d.mirrorAcross plane)
+    mapVertices (Point3d.mirrorAcross plane)
 
 
 {-| Project (flatten) a polyline onto the given plane.
@@ -261,21 +261,21 @@ mirrorAcross plane =
 -}
 projectOnto : Plane3d -> Polyline3d -> Polyline3d
 projectOnto plane =
-    map (Point3d.projectOnto plane)
+    mapVertices (Point3d.projectOnto plane)
 
 
 {-| Transform each vertex of a polyline by the given function. All other
-transformations can be defined in terms of `map`; for example,
+transformations can be defined in terms of `mapVertices`; for example,
 
-    Polyline3d.mirrorAcross plane polyline
+    Polyline3d.mirrorAcross plane
 
 is equivalent to
 
-    Polyline3d.map (Point3d.mirrorAcross plane) polyline
+    Polyline3d.mapVertices (Point3d.mirrorAcross plane)
 
 -}
-map : (Point3d -> Point3d) -> Polyline3d -> Polyline3d
-map function =
+mapVertices : (Point3d -> Point3d) -> Polyline3d -> Polyline3d
+mapVertices function =
     vertices >> List.map function >> fromVertices
 
 
@@ -283,7 +283,8 @@ map function =
 in local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame3d.at (Point3d.fromCoordinates ( 1, 2, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     Polyline3d.relativeTo localFrame examplePolyline
     --> Polyline3d.fromVertices
@@ -296,7 +297,7 @@ in local coordinates relative to a given reference frame.
 -}
 relativeTo : Frame3d -> Polyline3d -> Polyline3d
 relativeTo frame =
-    map (Point3d.relativeTo frame)
+    mapVertices (Point3d.relativeTo frame)
 
 
 {-| Take a polyline considered to be defined in local coordinates relative
@@ -304,7 +305,8 @@ to a given reference frame, and return that polyline expressed in global
 coordinates.
 
     localFrame =
-        Frame3d.at (Point3d.fromCoordinates ( 1, 2, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     Polyline3d.placeIn localFrame examplePolyline
     --> Polyline3d.fromVertices
@@ -317,7 +319,7 @@ coordinates.
 -}
 placeIn : Frame3d -> Polyline3d -> Polyline3d
 placeIn frame =
-    map (Point3d.placeIn frame)
+    mapVertices (Point3d.placeIn frame)
 
 
 {-| Project a polyline into a given sketch plane. Conceptually, this projects

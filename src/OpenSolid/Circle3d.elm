@@ -421,7 +421,8 @@ mirrorAcross plane =
 local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame3d.at (Point3d.fromCoordinates ( 1, 2, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     Circle3d.relativeTo localFrame exampleCircle
     --> Circle3d.with
@@ -445,7 +446,8 @@ relativeTo frame circle =
 given reference frame, and return that circle expressed in global coordinates.
 
     localFrame =
-        Frame3d.at (Point3d.fromCoordinates ( 1, 2, 3 ))
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     Circle3d.placeIn localFrame exampleCircle
     --> Circle3d.with

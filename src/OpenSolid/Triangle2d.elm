@@ -22,7 +22,7 @@ module OpenSolid.Triangle2d
         , counterclockwiseArea
         , edges
         , fromVertices
-        , map
+        , mapVertices
         , mirrorAcross
         , placeIn
         , relativeTo
@@ -63,7 +63,7 @@ vertices. This module contains triangle-related functionality such as:
 
 Transforming a triangle is equivalent to transforming its vertices.
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, map
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross, mapVertices
 
 
 # Coordinate conversions
@@ -291,7 +291,7 @@ and vice versa.
 -}
 scaleAbout : Point2d -> Float -> Triangle2d -> Triangle2d
 scaleAbout point scale =
-    map (Point2d.scaleAbout point scale)
+    mapVertices (Point2d.scaleAbout point scale)
 
 
 {-| Rotate a triangle around a given point by a given angle (in radians).
@@ -308,7 +308,7 @@ scaleAbout point scale =
 -}
 rotateAround : Point2d -> Float -> Triangle2d -> Triangle2d
 rotateAround centerPoint angle =
-    map (Point2d.rotateAround centerPoint angle)
+    mapVertices (Point2d.rotateAround centerPoint angle)
 
 
 {-| Translate a triangle by a given displacement.
@@ -326,7 +326,7 @@ rotateAround centerPoint angle =
 -}
 translateBy : Vector2d -> Triangle2d -> Triangle2d
 translateBy vector =
-    map (Point2d.translateBy vector)
+    mapVertices (Point2d.translateBy vector)
 
 
 {-| Mirror a triangle across a given axis.
@@ -345,22 +345,22 @@ mirroring, they will be in clockwise order afterwards and vice versa.
 -}
 mirrorAcross : Axis2d -> Triangle2d -> Triangle2d
 mirrorAcross axis =
-    map (Point2d.mirrorAcross axis)
+    mapVertices (Point2d.mirrorAcross axis)
 
 
 {-| Transform each vertex of a triangle by a given function and create a new
 triangle from the resulting points. Most other transformation functions can be
-defined in terms of `map`; for example,
+defined in terms of `mapVertices`; for example,
 
-    Triangle.mirrorAcross Axis2d.x triangle
+    Triangle2d.mirrorAcross axis
 
 is equivalent to
 
-    Triangle.map (Point2d.mirrorAcross Axis2d.x) triangle
+    Triangle2d.mapVertices (Point2d.mirrorAcross axis)
 
 -}
-map : (Point2d -> Point2d) -> Triangle2d -> Triangle2d
-map function triangle =
+mapVertices : (Point2d -> Point2d) -> Triangle2d -> Triangle2d
+mapVertices function triangle =
     let
         ( p1, p2, p3 ) =
             vertices triangle
@@ -384,7 +384,7 @@ in local coordinates relative to a given reference frame.
 -}
 relativeTo : Frame2d -> Triangle2d -> Triangle2d
 relativeTo frame =
-    map (Point2d.relativeTo frame)
+    mapVertices (Point2d.relativeTo frame)
 
 
 {-| Take a triangle considered to be defined in local coordinates relative to a
@@ -403,7 +403,7 @@ given reference frame, and return that triangle expressed in global coordinates.
 -}
 placeIn : Frame2d -> Triangle2d -> Triangle2d
 placeIn frame =
-    map (Point2d.placeIn frame)
+    mapVertices (Point2d.placeIn frame)
 
 
 {-| Get the minimal bounding box containing a given triangle.

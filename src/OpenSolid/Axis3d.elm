@@ -356,10 +356,11 @@ projectOnto plane axis =
 {-| Take an axis defined in global coordinates, and return it expressed in local
 coordinates relative to a given reference frame.
 
-    originPoint =
-        Point3d.fromCoordinates ( 3, 3, 3 )
+    localFrame =
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 3, 3, 3 ))
 
-    Axis3d.relativeTo (Frame3d.at originPoint) exampleAxis
+    Axis3d.relativeTo localFrame exampleAxis
     --> Axis3d.with
     -->     { originPoint =
     -->         Point3d.fromCoordinates ( -2, -1, 0 )
@@ -386,10 +387,11 @@ relativeTo frame =
 {-| Take an axis defined in local coordinates relative to a given reference
 frame, and return that axis expressed in global coordinates.
 
-    originPoint =
-        Point3d.fromCoordinates ( 3, 3, 3 )
+    localFrame =
+        Frame3d.atPoint
+            (Point3d.fromCoordinates ( 3, 3, 3 ))
 
-    Axis3d.placeIn (Frame3d.at originPoint) exampleAxis
+    Axis3d.placeIn localFrame exampleAxis
     --> Axis3d.with
     -->     { originPoint =
     -->         Point3d.fromCoordinates ( 4, 5, 6 )
