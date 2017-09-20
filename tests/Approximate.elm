@@ -8,18 +8,18 @@ import Test exposing (Test, describe, test)
 
 
 segments =
-    [ LineSegment2d.withEndpoints ( Point2d.withCoordinates ( 0, 1 ), Point2d.withCoordinates ( 5, 1 ) )
-    , LineSegment2d.withEndpoints ( Point2d.withCoordinates ( 5, 1 ), Point2d.withCoordinates ( 10, 1 ) )
-    , LineSegment2d.withEndpoints ( Point2d.withCoordinates ( 10, 1 ), Point2d.withCoordinates ( 20, 1 ) )
+    [ LineSegment2d.fromEndpoints ( Point2d.fromCoordinates ( 0, 1 ), Point2d.fromCoordinates ( 5, 1 ) )
+    , LineSegment2d.fromEndpoints ( Point2d.fromCoordinates ( 5, 1 ), Point2d.fromCoordinates ( 10, 1 ) )
+    , LineSegment2d.fromEndpoints ( Point2d.fromCoordinates ( 10, 1 ), Point2d.fromCoordinates ( 20, 1 ) )
     ]
 
 
 point2d =
-    Point2d.withCoordinates
+    Point2d.fromCoordinates
 
 
 linesegment2d =
-    LineSegment2d.withEndpoints
+    LineSegment2d.fromEndpoints
 
 
 balancedTree =

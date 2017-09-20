@@ -33,7 +33,7 @@ asPolyline : LengthConfig a -> a -> Polyline2d
 asPolyline config curve =
     helper config [ curve ] []
         |> segments config
-        |> Polyline2d.withVertices
+        |> Polyline2d.fromVertices
 
 
 {-| Recursively approximate a curve, gives points that can be assembled into a polyline
