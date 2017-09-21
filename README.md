@@ -162,7 +162,7 @@ point2d =
 -- convert from local 2D coordinates in the given
 -- sketch plane back to global 3D coordinates
 point3d =
-    Point2d.placeOnto SketchPlane3d.yz point2d
+    Point3d.on SketchPlane3d.yz point2d
 ```
 
 Support is also provided for encoding/decoding values to and from JSON.
