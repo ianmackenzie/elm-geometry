@@ -1,7 +1,8 @@
 module OpenSolid.QuadraticSpline2d
     exposing
-        ( QuadraticSpline2d
-        , approximateLength
+        ( ArcLengthParameterization
+        , QuadraticSpline2d
+        , arcLength
         , arcLengthParameterization
         , bisect
         , controlPoints
@@ -11,7 +12,9 @@ module OpenSolid.QuadraticSpline2d
         , evaluate
         , fromControlPoints
         , mirrorAcross
+        , parameterValueAtLength
         , placeIn
+        , pointAtLength
         , pointOn
         , relativeTo
         , reverse
@@ -43,7 +46,7 @@ in 2D defined by three control points. This module contains functionality for
 
 # Properties
 
-@docs controlPoints, startPoint, endPoint, startDerivative, endDerivative, approximateLength, arcLengthParameterization
+@docs controlPoints, startPoint, endPoint, startDerivative, endDerivative
 
 
 # Evaluation
@@ -65,11 +68,16 @@ in 2D defined by three control points. This module contains functionality for
 
 @docs bisect, splitAt
 
+
+# Arc length parameterization
+
+@docs ArcLengthParameterization, arcLengthParameterization, arcLength, pointAtLength, parameterValueAtLength
+
 -}
 
+import OpenSolid.ArcLengthParameterization as ArcLengthParameterization
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
-import OpenSolid.Geometry.Approximate as Approximate exposing (asPolyline)
 import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
@@ -165,39 +173,6 @@ endDerivative spline =
             controlPoints spline
     in
     Vector2d.from p2 p3 |> Vector2d.scaleBy 2
-
-
-lengthConfig : Float -> Approximate.LengthConfig QuadraticSpline2d
-lengthConfig percentageError =
-    { split = splitAt
-    , percentageError = percentageError
-    , startAndEndpoint =
-        \s ->
-            let
-                ( p1, _, p3 ) =
-                    controlPoints s
-            in
-            ( p1, p3 )
-    }
-
-
-{-| Approximate the length of a quadratic spline given a maximum error percentage
--}
-approximateLength : Float -> QuadraticSpline2d -> Float
-approximateLength percentageError spline =
-    Approximate.length (lengthConfig percentageError) spline
-
-
-{-| QuadraticSpline2d.arcLengthParameterization 0.001 exampleSpline 0
---> Just (Point2d ( 1, 1 ))
-
-QuadraticSpline2d.arcLengthParameterization 0.001 exampleSpline -1
---> Nothing
-
--}
-arcLengthParameterization : Float -> QuadraticSpline2d -> Float -> Maybe Point2d
-arcLengthParameterization percentageError spline arcLength =
-    Approximate.arcLengthParameterization (lengthConfig percentageError) spline arcLength
 
 
 {-| Get a point along a spline, based on a parameter that ranges from 0 to 1. A
@@ -483,3 +458,61 @@ splitAt t spline =
     ( fromControlPoints ( p1, q1, r )
     , fromControlPoints ( r, q2, p3 )
     )
+
+
+{-| A parameterization of a quadratic spline by arc length.
+-}
+type ArcLengthParameterization
+    = ArcLengthParameterization QuadraticSpline2d ArcLengthParameterization.ArcLengthParameterization
+
+
+{-| Build an arc length parameterization of the given spline.
+-}
+arcLengthParameterization : Float -> QuadraticSpline2d -> ArcLengthParameterization
+arcLengthParameterization tolerance spline =
+    ArcLengthParameterization spline <|
+        ArcLengthParameterization.build parameterizationConfig tolerance spline
+
+
+parameterizationConfig : ArcLengthParameterization.Config QuadraticSpline2d
+parameterizationConfig =
+    { bisect = bisect
+    , lengthBounds = lengthBounds
+    }
+
+
+lengthBounds : QuadraticSpline2d -> ( Float, Float )
+lengthBounds spline =
+    let
+        ( p1, p2, p3 ) =
+            controlPoints spline
+
+        lowerBound =
+            Point2d.distanceFrom p1 p3
+
+        upperBound =
+            Point2d.distanceFrom p1 p2 + Point2d.distanceFrom p2 p3
+    in
+    ( lowerBound, upperBound )
+
+
+{-| Approximate the length of a spline given a maximum error percentage
+-}
+arcLength : ArcLengthParameterization -> Float
+arcLength (ArcLengthParameterization _ parameterization) =
+    ArcLengthParameterization.arcLength parameterization
+
+
+{-| Get the point on a spline at a given arc length.
+-}
+pointAtLength : ArcLengthParameterization -> Float -> Maybe Point2d
+pointAtLength (ArcLengthParameterization spline parameterization) s =
+    ArcLengthParameterization.parameterValue parameterization s
+        |> Maybe.map (pointOn spline)
+
+
+{-| Convert an arc length along a spline to the equivalent parameter value.
+-}
+parameterValueAtLength : ArcLengthParameterization -> Float -> Maybe Float
+parameterValueAtLength (ArcLengthParameterization _ parameterization) s =
+    ArcLengthParameterization.parameterValue parameterization s
