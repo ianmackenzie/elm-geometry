@@ -1,5 +1,5 @@
 {
-    "version": "1.2.0",
+    "version": "2.0.1",
     "summary": "2D/3D geometric data types and operations",
     "repository": "https://github.com/opensolid/geometry.git",
     "license": "MPL-2.0",
@@ -23,6 +23,7 @@
         "OpenSolid.Direction3d",
         "OpenSolid.Frame2d",
         "OpenSolid.Frame3d",
+        "OpenSolid.Interval",
         "OpenSolid.LineSegment2d",
         "OpenSolid.LineSegment3d",
         "OpenSolid.Plane3d",

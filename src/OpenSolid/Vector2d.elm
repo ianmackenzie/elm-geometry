@@ -69,11 +69,10 @@ and `Direction2d` than `Vector2d`, and much code can avoid working directly with
 
 @docs zero
 
-Although there are no predefined constants for
-<code>Vector2d&nbsp;(&nbsp;1,&nbsp;0&nbsp;)</code> and
-<code>Vector2d&nbsp;(&nbsp;0,&nbsp;1&nbsp;)</code>, in most cases you will
-actually want their `Direction2d` versions [`Direction2d.x`](OpenSolid-Direction2d#x)
-and [`Direction2d.y`](OpenSolid-Direction2d#y).
+Although there are no predefined constants for the vectors with components
+(1,&nbsp;0) and (0,&nbsp;1), in most cases you will actually want their
+`Direction2d` versions [`Direction2d.x`](OpenSolid-Direction2d#x) and
+[`Direction2d.y`](OpenSolid-Direction2d#y).
 
 
 # Constructors
