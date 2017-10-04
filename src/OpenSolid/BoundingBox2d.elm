@@ -29,6 +29,7 @@ module OpenSolid.BoundingBox2d
         , minY
         , overlaps
         , singleton
+        , strictlyOverlaps
         , with
         )
 
@@ -354,6 +355,14 @@ overlaps other boundingBox =
         && (maxX boundingBox >= minX other)
         && (minY boundingBox <= maxY other)
         && (maxY boundingBox >= minY other)
+
+
+strictlyOverlaps : BoundingBox2d -> BoundingBox2d -> Bool
+strictlyOverlaps other boundingBox =
+    (minX boundingBox < maxX other)
+        && (maxX boundingBox > minX other)
+        && (minY boundingBox < maxY other)
+        && (maxY boundingBox > minY other)
 
 
 {-| Test if the second given bounding box is fully contained within the first

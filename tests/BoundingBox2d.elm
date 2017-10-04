@@ -3,6 +3,7 @@ module BoundingBox2d
         ( boxContainsOwnCentroid
         , hullContainsInputs
         , intersectionConsistentWithOverlaps
+        , intersectionConsistentWithStrictlyOverlaps
         , intersectionIsValidOrNothing
         , jsonRoundTrips
         )
@@ -65,6 +66,68 @@ intersectionConsistentWithOverlaps =
                             ++ " but have valid intersection "
                             ++ toString intersectionBox
                         )
+        )
+
+
+intersectionConsistentWithStrictlyOverlaps : Test
+intersectionConsistentWithStrictlyOverlaps =
+    Test.fuzz2 Fuzz.boundingBox2d
+        Fuzz.boundingBox2d
+        "'intersection' is consistent with 'strictlyOverlaps'"
+        (\first second ->
+            let
+                strictlyOverlaps =
+                    BoundingBox2d.strictlyOverlaps first second
+
+                intersection =
+                    BoundingBox2d.intersection first second
+
+                intersectionDimensions =
+                    Maybe.map BoundingBox2d.dimensions intersection
+            in
+                case ( strictlyOverlaps, intersectionDimensions ) of
+                    ( True, Just ( width, height ) ) ->
+                        if width == 0 then
+                            Expect.fail
+                                (toString first
+                                    ++ " and "
+                                    ++ toString second
+                                    ++ " considered to strictly overlap, "
+                                    ++ "but intersection width is 0"
+                                )
+                        else if height == 0 then
+                            Expect.fail
+                                (toString first
+                                    ++ " and "
+                                    ++ toString second
+                                    ++ " considered to strictly overlap, "
+                                    ++ "but intersection height is 0"
+                                )
+                        else
+                            Expect.pass
+
+                    ( False, Nothing ) ->
+                        Expect.pass
+
+                    ( True, Nothing ) ->
+                        Expect.fail
+                            (toString first
+                                ++ " and "
+                                ++ toString second
+                                ++ " considered to strictly overlap, "
+                                ++ "but intersection is Nothing"
+                            )
+
+                    ( False, Just intersectionDimensions ) ->
+                        Expect.fail
+                            (toString first
+                                ++ " and "
+                                ++ toString second
+                                ++ " not considered to strictly overlap, "
+                                ++ "but have valid intersection "
+                                ++ "with dimensions "
+                                ++ toString intersectionDimensions
+                            )
         )
 
 
