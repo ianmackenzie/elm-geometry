@@ -11,10 +11,11 @@ requirement!
 # Contributing changes
 
 If you _are_ interested in contributing changes to OpenSolid, please fork this
-repository and make a pull request with your proposed changes (although please
-open an issue first for major contributions before writing too much code, so we
-can discuss different potential approaches). As part of your pull request, make
-sure that you add yourself to the [AUTHORS](https://github.com/opensolid/geometry/blob/master/AUTHORS)
+repository, make a new branch in your fork, commit your changes to that branch
+and then make a pull request from that branch (although please open an issue
+first for major contributions before writing too much code, so we can discuss
+different potential approaches). As part of your pull request, make sure that
+you add yourself to the [AUTHORS](https://github.com/opensolid/geometry/blob/master/AUTHORS)
 file! Definitely reach out on the [Elm Slack](http://elmlang.herokuapp.com/) if
 you have questions (I'm **ianmackenzie**).
 
@@ -25,7 +26,8 @@ in particular, this means:
 
   - Use [`elm-format`](https://github.com/avh4/elm-format) to format your code.
     I currently use `elm-format` version 0.7.0-exp.
-  - Wrap code to 80 columns.
+  - Wrap code (mostly) to 80 columns (type annotations and string literals can
+    be longer if you want).
 
 Don't worry too much about writing documentation - small fixes for things like
 typos and formatting are certainly welcome, but I would prefer to write the bulk
