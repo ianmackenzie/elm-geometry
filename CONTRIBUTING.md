@@ -15,7 +15,8 @@ repository and make a pull request with your proposed changes (although please
 open an issue first for major contributions before writing too much code, so we
 can discuss different potential approaches). As part of your pull request, make
 sure that you add yourself to the [AUTHORS](https://github.com/opensolid/geometry/blob/master/AUTHORS)
-file!
+file! Definitely reach out on the [Elm Slack](http://elmlang.herokuapp.com/) if
+you have questions (I'm **ianmackenzie**).
 
 ## Writing code
 
@@ -23,6 +24,7 @@ When writing your code, try to follow existing code style as much as possible -
 in particular, this means:
 
   - Use [`elm-format`](https://github.com/avh4/elm-format) to format your code.
+    I currently use `elm-format` version 0.7.0-exp.
   - Wrap code to 80 columns.
 
 Don't worry too much about writing documentation - small fixes for things like
