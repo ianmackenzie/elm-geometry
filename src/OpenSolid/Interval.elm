@@ -6,11 +6,11 @@ module OpenSolid.Interval
         , hull
         , hullOf
         , intersection
+        , intersects
         , isContainedIn
         , maxValue
         , midpoint
         , minValue
-        , overlaps
         , singleton
         , width
         , with
@@ -33,7 +33,7 @@ module OpenSolid.Interval
 
 # Queries
 
-@docs contains, overlaps, isContainedIn
+@docs contains, intersects, isContainedIn
 
 -}
 
@@ -93,7 +93,7 @@ hull firstInterval secondInterval =
 
 
 {-| Attempt to construct an interval containing all the values common to both
-given intervals. If the intervals do not overlap, returns `Nothing`.
+given intervals. If the intervals do not intersect, returns `Nothing`.
 
     firstInterval =
         Interval.with { minValue = 1, maxValue = 3 }
@@ -230,28 +230,30 @@ contains value (Interval { minValue, maxValue }) =
     minValue <= value && value <= maxValue
 
 
-{-| Check if two intervals overlap (have any values in common).
+{-| Check if two intervals touch or overlap (have any values in common).
 
     Interval.with { minValue = 0, maxValue = 10 }
-        |> Interval.overlaps exampleInterval
+        |> Interval.intersects exampleInterval
     --> True
 
     Interval.with { minValue = 10, maxValue = 20 }
-        |> Interval.overlaps exampleInterval
+        |> Interval.intersects exampleInterval
     --> False
 
-Intervals that just touch each other are considered to overlap:
+Intervals that just touch each other are considered to intersect (this is
+consistent with `intersection` which will return a zero-width interval for the
+intersection of two just-touching intervals):
 
     Interval.with { minValue = -3, maxValue = -1 }
-        |> Interval.overlaps exampleInterval
+        |> Interval.intersects exampleInterval
     --> True
 
 As with `contains`, though, if you are relying on this then there is a good
 chance your code is vulnerable to numerical roundoff!
 
 -}
-overlaps : Interval -> Interval -> Bool
-overlaps firstInterval secondInterval =
+intersects : Interval -> Interval -> Bool
+intersects firstInterval secondInterval =
     (minValue firstInterval <= maxValue secondInterval)
         && (maxValue firstInterval >= minValue secondInterval)
 
