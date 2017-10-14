@@ -13,7 +13,6 @@ module OpenSolid.Interval
         , maxValue
         , midpoint
         , minValue
-        , shift
         , sin
         , singleton
         , width
@@ -32,7 +31,7 @@ module OpenSolid.Interval
 
 # Properties
 
-@docs extrema, minValue, maxValue, midpoint, width, shift, sin, cos
+@docs extrema, minValue, maxValue, midpoint, width, sin, cos
 
 
 # Interpolation
@@ -332,12 +331,12 @@ isSingleton (Internal.Interval { minValue, maxValue }) =
 {-| Shift the interval by some amount in the positive direction.
 
     exampleInterval
-        |> shift 3
+        |> Interval.shiftBy 3
     --> Interval.with { minValue = 2, maxValue = 8 }
 
 -}
-shift : Float -> Interval -> Interval
-shift delta (Internal.Interval { minValue, maxValue }) =
+shiftBy : Float -> Interval -> Interval
+shiftBy delta (Internal.Interval { minValue, maxValue }) =
     Internal.Interval
         { minValue = minValue + delta
         , maxValue = maxValue + delta
@@ -418,7 +417,7 @@ accordingly.
 -}
 sinIncludesMinMax : Interval -> ( Bool, Bool )
 sinIncludesMinMax interval =
-    interval |> shift (-pi / 2) |> cosIncludesMinMax
+    interval |> shiftBy (-pi / 2) |> cosIncludesMinMax
 
 
 {-| cos(x + pi) = -cos(x), therefore if cos(interval + pi) includes the maximum,
@@ -426,7 +425,7 @@ that means cos(interval) includes the minimum.
 -}
 cosIncludesMinMax : Interval -> ( Bool, Bool )
 cosIncludesMinMax interval =
-    ( interval |> shift pi |> cosIncludesMax
+    ( interval |> shiftBy pi |> cosIncludesMax
     , interval |> cosIncludesMax
     )
 
