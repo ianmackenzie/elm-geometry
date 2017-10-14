@@ -285,3 +285,13 @@ isContainedIn : Interval -> Interval -> Bool
 isContainedIn firstInterval secondInterval =
     (minValue secondInterval >= minValue firstInterval)
         && (maxValue secondInterval <= maxValue firstInterval)
+
+
+isSingleton : Interval -> Bool
+isSingleton (Interval { minValue, maxValue }) =
+    minValue == maxValue
+
+
+shift : Float -> Interval -> Interval
+shift delta (Interval { minValue, maxValue }) =
+    Interval { minValue = minValue + delta, maxValue = maxValue + delta }
