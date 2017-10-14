@@ -351,7 +351,7 @@ shiftBy delta (Internal.Interval { minValue, maxValue }) =
 {-| Get the image of sin(x) applied on the interval.
 
     Interval.with { minValue = -pi / 2, maxValue = pi / 2}
-        |> sin
+        |> Interval.sin
     --> Interval.with { minValue = -1, maxValue = 1 }
 
 -}
@@ -385,7 +385,7 @@ sin ((Internal.Interval { minValue, maxValue }) as interval) =
 {-| Get the image of cos(x) applied on the interval.
 
     Interval.with { minValue = -pi / 2, maxValue = pi / 2}
-        |> cos
+        |> Interval.cos
     --> Interval.with { minValue = 0, maxValue = 1 }
 
 -}
