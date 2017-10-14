@@ -295,3 +295,81 @@ isSingleton (Interval { minValue, maxValue }) =
 shift : Float -> Interval -> Interval
 shift delta (Interval { minValue, maxValue }) =
     Interval { minValue = minValue + delta, maxValue = maxValue + delta }
+
+
+sin : Interval -> Interval
+sin ((Interval { minValue, maxValue }) as interval) =
+    if isSingleton interval then
+        singleton (Basics.sin minValue)
+    else
+        let
+            ( includesMin, includesMax ) =
+                sinIncludesMinMax interval
+
+            newMin =
+                if includesMin then
+                    -1
+                else
+                    min (Basics.sin minValue) (Basics.sin maxValue)
+
+            newMax =
+                if includesMax then
+                    1
+                else
+                    max (Basics.sin minValue) (Basics.sin maxValue)
+        in
+            Interval
+                { minValue = newMin
+                , maxValue = newMax
+                }
+
+
+cos : Interval -> Interval
+cos ((Interval { minValue, maxValue }) as interval) =
+    if isSingleton interval then
+        singleton (Basics.cos minValue)
+    else
+        let
+            ( includesMin, includesMax ) =
+                cosIncludesMinMax interval
+
+            newMin =
+                if includesMin then
+                    -1
+                else
+                    min (Basics.cos minValue) (Basics.cos maxValue)
+
+            newMax =
+                if includesMax then
+                    1
+                else
+                    max (Basics.cos minValue) (Basics.cos maxValue)
+        in
+            Interval
+                { minValue = newMin
+                , maxValue = newMax
+                }
+
+
+sinIncludesMinMax : Interval -> ( Bool, Bool )
+sinIncludesMinMax interval =
+    interval |> shift (-pi / 2) |> cosIncludesMinMax
+
+
+cosIncludesMinMax : Interval -> ( Bool, Bool )
+cosIncludesMinMax interval =
+    ( interval |> shift pi |> cosIncludesMax
+    , interval |> cosIncludesMax
+    )
+
+
+cosIncludesMax : Interval -> Bool
+cosIncludesMax (Interval { minValue, maxValue }) =
+    let
+        minBranch =
+            floor <| minValue / (2 * pi)
+
+        maxBranch =
+            floor <| maxValue / (2 * pi)
+    in
+        minBranch /= maxBranch
