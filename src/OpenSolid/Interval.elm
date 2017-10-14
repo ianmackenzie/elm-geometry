@@ -31,12 +31,17 @@ module OpenSolid.Interval
 
 # Properties
 
-@docs extrema, minValue, maxValue, midpoint, width, sin, cos
+@docs extrema, minValue, maxValue, midpoint, width
 
 
 # Interpolation
 
 @docs interpolate
+
+
+# Arithmetic
+
+@docs sin, cos
 
 
 # Queries
