@@ -6,6 +6,7 @@ module OpenSolid.Interval
         , extrema
         , hull
         , hullOf
+        , interpolate
         , intersection
         , intersects
         , isContainedIn
@@ -34,6 +35,11 @@ module OpenSolid.Interval
 @docs extrema, minValue, maxValue, midpoint, width, shift, sin, cos
 
 
+# Interpolation
+
+@docs interpolate
+
+
 # Queries
 
 @docs contains, intersects, isContainedIn
@@ -41,6 +47,8 @@ module OpenSolid.Interval
 -}
 
 import OpenSolid.Geometry.Internal as Internal
+import OpenSolid.Scalar as Scalar
+
 
 {-| Represents a bounded interval with a minimum and maximum value, for example
 the interval from 3 to 5.
@@ -214,6 +222,26 @@ midpoint (Internal.Interval { minValue, maxValue }) =
 width : Interval -> Float
 width (Internal.Interval { minValue, maxValue }) =
     maxValue - minValue
+
+
+{-| Interpolate an interval from its minimum to its maximum value; a value of
+0.0 corresponds to the minimum value of the interval, a value of 0.5 corresponds
+to its midpoint and a value of 1.0 corresponds to its maximum value. Values less
+than 0.0 or greater than 1.0 can be used to extrapolate.
+
+    Interval.interpolate 0 exampleInterval
+    --> -1
+
+    Interval.interpolate 0.75 exampleInterval
+    --> 3.5
+
+    Interval.interpolate -0.5 exampleInterval
+    --> -4
+
+-}
+interpolate : Float -> Interval -> Float
+interpolate t (Internal.Interval { minValue, maxValue }) =
+    Scalar.interpolateFrom minValue maxValue t
 
 
 {-| Check if an interval contains a given value.
