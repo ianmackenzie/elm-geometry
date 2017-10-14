@@ -287,16 +287,32 @@ isContainedIn firstInterval secondInterval =
         && (maxValue secondInterval <= maxValue firstInterval)
 
 
+{-| Check if the interval is a singleton.
+-}
 isSingleton : Interval -> Bool
 isSingleton (Interval { minValue, maxValue }) =
     minValue == maxValue
 
 
+{-| Shift the interval by some amount in the positive direction.
+
+    exampleInterval
+        |> shift 3
+    --> Interval.with { minValue = 2, maxValue = 8 }
+
+-}
 shift : Float -> Interval -> Interval
 shift delta (Interval { minValue, maxValue }) =
     Interval { minValue = minValue + delta, maxValue = maxValue + delta }
 
 
+{-| Get the image of sin(x) applied on the interval.
+
+    Interval.with { minValue = -pi / 2, maxValue = pi / 2}
+        |> sin
+    --> Interval.with { minValue = -1, maxValue = 1 }
+
+-}
 sin : Interval -> Interval
 sin ((Interval { minValue, maxValue }) as interval) =
     if isSingleton interval then
@@ -324,6 +340,13 @@ sin ((Interval { minValue, maxValue }) as interval) =
                 }
 
 
+{-| Get the image of cos(x) applied on the interval.
+
+    Interval.with { minValue = -pi / 2, maxValue = pi / 2}
+        |> cos
+    --> Interval.with { minValue = 0, maxValue = 1 }
+
+-}
 cos : Interval -> Interval
 cos ((Interval { minValue, maxValue }) as interval) =
     if isSingleton interval then
@@ -351,11 +374,20 @@ cos ((Interval { minValue, maxValue }) as interval) =
                 }
 
 
+{-|
+cos(x - pi/2) = sin(x), therefore if cos(interval - pi/2) includes
+the maximum/minimum, that means sin(interval) includes the maximum/minimum
+accordingly.
+-}
 sinIncludesMinMax : Interval -> ( Bool, Bool )
 sinIncludesMinMax interval =
     interval |> shift (-pi / 2) |> cosIncludesMinMax
 
 
+{-|
+cos(x + pi) = -cos(x), therefore if cos(interval + pi) includes the maximum,
+that means cos(interval) includes the minimum.
+-}
 cosIncludesMinMax : Interval -> ( Bool, Bool )
 cosIncludesMinMax interval =
     ( interval |> shift pi |> cosIncludesMax
@@ -363,6 +395,12 @@ cosIncludesMinMax interval =
     )
 
 
+{-|
+The maximum of cos(x) is x = 2 pi * k for every integer k.
+If `minValue` and `maxValue` are in different branches
+(meaning diffrent values of k), then the interval must pass through
+2 pi * k, which means the interval must include the maximum value.
+-}
 cosIncludesMax : Interval -> Bool
 cosIncludesMax (Interval { minValue, maxValue }) =
     let
