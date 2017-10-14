@@ -13,6 +13,9 @@ module OpenSolid.Interval
         , minValue
         , singleton
         , width
+        , shift
+        , sin
+        , cos
         , with
         )
 
@@ -28,7 +31,7 @@ module OpenSolid.Interval
 
 # Properties
 
-@docs extrema, minValue, maxValue, midpoint, width
+@docs extrema, minValue, maxValue, midpoint, width, shift, sin, cos
 
 
 # Queries
