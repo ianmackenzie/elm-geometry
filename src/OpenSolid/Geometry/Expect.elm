@@ -61,6 +61,7 @@ module OpenSolid.Geometry.Expect
         , validDirection3d
         , validFrame2d
         , validFrame3d
+        , valueIn
         , vector2d
         , vector2dWithin
         , vector3d
@@ -83,6 +84,7 @@ import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
+import OpenSolid.Interval as Interval exposing (Interval)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.LineSegment3d as LineSegment3d exposing (LineSegment3d)
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
@@ -175,6 +177,28 @@ angleWithin tolerance =
             abs (atan2 (sin difference) (cos difference)) <= tolerance
     in
     expect comparison
+
+
+valueIn : Interval -> Float -> Expectation
+valueIn interval value =
+    let
+        { minValue, maxValue } =
+            Interval.extrema interval
+
+        tolerance =
+            defaultTolerance
+    in
+    if minValue - tolerance <= value && value <= maxValue + tolerance then
+        Expect.pass
+    else
+        Expect.fail
+            (toString value
+                ++ " is not contained in the interval ["
+                ++ toString minValue
+                ++ ","
+                ++ toString maxValue
+                ++ "]"
+            )
 
 
 vector2d : Vector2d -> Vector2d -> Expectation
