@@ -2,6 +2,7 @@ module OpenSolid.Interval
     exposing
         ( Interval
         , contains
+        , cos
         , extrema
         , hull
         , hullOf
@@ -11,11 +12,10 @@ module OpenSolid.Interval
         , maxValue
         , midpoint
         , minValue
-        , singleton
-        , width
         , shift
         , sin
-        , cos
+        , singleton
+        , width
         , with
         )
 
@@ -40,12 +40,13 @@ module OpenSolid.Interval
 
 -}
 
+import OpenSolid.Geometry.Internal as Internal
 
 {-| Represents a bounded interval with a minimum and maximum value, for example
 the interval from 3 to 5.
 -}
-type Interval
-    = Interval { minValue : Float, maxValue : Float }
+type alias Interval =
+    Internal.Interval
 
 
 {-| Construct an interval with the given minimum and maximum values. They should
@@ -59,9 +60,12 @@ valid interval.
 with : { minValue : Float, maxValue : Float } -> Interval
 with extrema =
     if extrema.minValue <= extrema.maxValue then
-        Interval extrema
+        Internal.Interval extrema
     else
-        Interval { minValue = extrema.maxValue, maxValue = extrema.minValue }
+        Internal.Interval
+            { minValue = extrema.maxValue
+            , maxValue = extrema.minValue
+            }
 
 
 {-| Construct a zero-width interval containing a single value.
@@ -72,7 +76,7 @@ with extrema =
 -}
 singleton : Float -> Interval
 singleton value =
-    Interval { minValue = value, maxValue = value }
+    Internal.Interval { minValue = value, maxValue = value }
 
 
 {-| Construct an interval containing both of the given intervals.
@@ -89,7 +93,7 @@ singleton value =
 -}
 hull : Interval -> Interval -> Interval
 hull firstInterval secondInterval =
-    Interval
+    Internal.Interval
         { minValue = min (minValue firstInterval) (minValue secondInterval)
         , maxValue = max (maxValue firstInterval) (maxValue secondInterval)
         }
@@ -124,7 +128,7 @@ intersection firstInterval secondInterval =
             min (maxValue firstInterval) (maxValue secondInterval)
     in
     if resultMin <= resultMax then
-        Just (Interval { minValue = resultMin, maxValue = resultMax })
+        Just (Internal.Interval { minValue = resultMin, maxValue = resultMax })
     else
         Nothing
 
@@ -164,7 +168,7 @@ when combined with destructuring:
 
 -}
 extrema : Interval -> { minValue : Float, maxValue : Float }
-extrema (Interval extrema) =
+extrema (Internal.Interval extrema) =
     extrema
 
 
@@ -175,7 +179,7 @@ extrema (Interval extrema) =
 
 -}
 minValue : Interval -> Float
-minValue (Interval { minValue }) =
+minValue (Internal.Interval { minValue }) =
     minValue
 
 
@@ -186,7 +190,7 @@ minValue (Interval { minValue }) =
 
 -}
 maxValue : Interval -> Float
-maxValue (Interval { maxValue }) =
+maxValue (Internal.Interval { maxValue }) =
     maxValue
 
 
@@ -197,7 +201,7 @@ maxValue (Interval { maxValue }) =
 
 -}
 midpoint : Interval -> Float
-midpoint (Interval { minValue, maxValue }) =
+midpoint (Internal.Interval { minValue, maxValue }) =
     minValue + 0.5 * (maxValue - minValue)
 
 
@@ -208,7 +212,7 @@ midpoint (Interval { minValue, maxValue }) =
 
 -}
 width : Interval -> Float
-width (Interval { minValue, maxValue }) =
+width (Internal.Interval { minValue, maxValue }) =
     maxValue - minValue
 
 
@@ -229,7 +233,7 @@ your code is vulnerable to numerical roundoff!
 
 -}
 contains : Float -> Interval -> Bool
-contains value (Interval { minValue, maxValue }) =
+contains value (Internal.Interval { minValue, maxValue }) =
     minValue <= value && value <= maxValue
 
 
@@ -293,7 +297,7 @@ isContainedIn firstInterval secondInterval =
 {-| Check if the interval is a singleton.
 -}
 isSingleton : Interval -> Bool
-isSingleton (Interval { minValue, maxValue }) =
+isSingleton (Internal.Interval { minValue, maxValue }) =
     minValue == maxValue
 
 
@@ -305,8 +309,11 @@ isSingleton (Interval { minValue, maxValue }) =
 
 -}
 shift : Float -> Interval -> Interval
-shift delta (Interval { minValue, maxValue }) =
-    Interval { minValue = minValue + delta, maxValue = maxValue + delta }
+shift delta (Internal.Interval { minValue, maxValue }) =
+    Internal.Interval
+        { minValue = minValue + delta
+        , maxValue = maxValue + delta
+        }
 
 
 {-| Get the image of sin(x) applied on the interval.
@@ -317,7 +324,7 @@ shift delta (Interval { minValue, maxValue }) =
 
 -}
 sin : Interval -> Interval
-sin ((Interval { minValue, maxValue }) as interval) =
+sin ((Internal.Interval { minValue, maxValue }) as interval) =
     if isSingleton interval then
         singleton (Basics.sin minValue)
     else
@@ -337,10 +344,10 @@ sin ((Interval { minValue, maxValue }) as interval) =
                 else
                     max (Basics.sin minValue) (Basics.sin maxValue)
         in
-            Interval
-                { minValue = newMin
-                , maxValue = newMax
-                }
+        Internal.Interval
+            { minValue = newMin
+            , maxValue = newMax
+            }
 
 
 {-| Get the image of cos(x) applied on the interval.
@@ -351,7 +358,7 @@ sin ((Interval { minValue, maxValue }) as interval) =
 
 -}
 cos : Interval -> Interval
-cos ((Interval { minValue, maxValue }) as interval) =
+cos ((Internal.Interval { minValue, maxValue }) as interval) =
     if isSingleton interval then
         singleton (Basics.cos minValue)
     else
@@ -371,14 +378,13 @@ cos ((Interval { minValue, maxValue }) as interval) =
                 else
                     max (Basics.cos minValue) (Basics.cos maxValue)
         in
-            Interval
-                { minValue = newMin
-                , maxValue = newMax
-                }
+        Internal.Interval
+            { minValue = newMin
+            , maxValue = newMax
+            }
 
 
-{-|
-cos(x - pi/2) = sin(x), therefore if cos(interval - pi/2) includes
+{-| cos(x - pi/2) = sin(x), therefore if cos(interval - pi/2) includes
 the maximum/minimum, that means sin(interval) includes the maximum/minimum
 accordingly.
 -}
@@ -387,8 +393,7 @@ sinIncludesMinMax interval =
     interval |> shift (-pi / 2) |> cosIncludesMinMax
 
 
-{-|
-cos(x + pi) = -cos(x), therefore if cos(interval + pi) includes the maximum,
+{-| cos(x + pi) = -cos(x), therefore if cos(interval + pi) includes the maximum,
 that means cos(interval) includes the minimum.
 -}
 cosIncludesMinMax : Interval -> ( Bool, Bool )
@@ -398,14 +403,13 @@ cosIncludesMinMax interval =
     )
 
 
-{-|
-The maximum of cos(x) is x = 2 pi * k for every integer k.
+{-| The maximum of cos(x) is x = 2 pi * k for every integer k.
 If `minValue` and `maxValue` are in different branches
 (meaning diffrent values of k), then the interval must pass through
 2 pi * k, which means the interval must include the maximum value.
 -}
 cosIncludesMax : Interval -> Bool
-cosIncludesMax (Interval { minValue, maxValue }) =
+cosIncludesMax (Internal.Interval { minValue, maxValue }) =
     let
         minBranch =
             floor <| minValue / (2 * pi)
@@ -413,4 +417,4 @@ cosIncludesMax (Interval { minValue, maxValue }) =
         maxBranch =
             floor <| maxValue / (2 * pi)
     in
-        minBranch /= maxBranch
+    minBranch /= maxBranch
