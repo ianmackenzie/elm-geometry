@@ -26,6 +26,7 @@ module OpenSolid.Geometry.Fuzz
         , direction3d
         , frame2d
         , frame3d
+        , interval
         , lineSegment2d
         , lineSegment3d
         , plane3d
@@ -59,6 +60,7 @@ import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
+import OpenSolid.Interval as Interval exposing (Interval)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.LineSegment3d as LineSegment3d exposing (LineSegment3d)
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
@@ -69,6 +71,7 @@ import OpenSolid.Polyline2d as Polyline2d exposing (Polyline2d)
 import OpenSolid.Polyline3d as Polyline3d exposing (Polyline3d)
 import OpenSolid.QuadraticSpline2d as QuadraticSpline2d exposing (QuadraticSpline2d)
 import OpenSolid.QuadraticSpline3d as QuadraticSpline3d exposing (QuadraticSpline3d)
+import OpenSolid.Scalar as Scalar
 import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Triangle2d as Triangle2d exposing (Triangle2d)
 import OpenSolid.Triangle3d as Triangle3d exposing (Triangle3d)
@@ -79,6 +82,11 @@ import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 scalar : Fuzzer Float
 scalar =
     Fuzz.floatRange -10 10
+
+
+interval : Fuzzer Interval
+interval =
+    Fuzz.map2 Scalar.hull scalar scalar
 
 
 vector2d : Fuzzer Vector2d
@@ -242,27 +250,15 @@ triangle3d =
     Fuzz.map Triangle3d.fromVertices (Fuzz.tuple3 ( point3d, point3d, point3d ))
 
 
-interval : Fuzzer ( Float, Float )
-interval =
-    let
-        ordered firstValue secondValue =
-            if firstValue <= secondValue then
-                ( firstValue, secondValue )
-            else
-                ( secondValue, firstValue )
-    in
-    Fuzz.map2 ordered scalar scalar
-
-
 boundingBox2d : Fuzzer BoundingBox2d
 boundingBox2d =
     let
-        boundingBox ( minX, maxX ) ( minY, maxY ) =
+        boundingBox xInterval yInterval =
             BoundingBox2d.with
-                { minX = minX
-                , maxX = maxX
-                , minY = minY
-                , maxY = maxY
+                { minX = Interval.minValue xInterval
+                , maxX = Interval.maxValue xInterval
+                , minY = Interval.minValue yInterval
+                , maxY = Interval.maxValue yInterval
                 }
     in
     Fuzz.map2 boundingBox interval interval
@@ -271,14 +267,14 @@ boundingBox2d =
 boundingBox3d : Fuzzer BoundingBox3d
 boundingBox3d =
     let
-        boundingBox ( minX, maxX ) ( minY, maxY ) ( minZ, maxZ ) =
+        boundingBox xInterval yInterval zInterval =
             BoundingBox3d.with
-                { minX = minX
-                , maxX = maxX
-                , minY = minY
-                , maxY = maxY
-                , minZ = minZ
-                , maxZ = maxZ
+                { minX = Interval.minValue xInterval
+                , maxX = Interval.maxValue xInterval
+                , minY = Interval.minValue yInterval
+                , maxY = Interval.maxValue yInterval
+                , minZ = Interval.minValue zInterval
+                , maxZ = Interval.maxValue zInterval
                 }
     in
     Fuzz.map3 boundingBox interval interval interval
