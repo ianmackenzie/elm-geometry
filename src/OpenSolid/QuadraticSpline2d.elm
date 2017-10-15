@@ -472,12 +472,12 @@ arcLengthParameterized tolerance spline =
 arcLengthConfig : ArcLength.Config QuadraticSpline2d
 arcLengthConfig =
     { bisect = bisect
-    , speed = speed
+    , firstDerivativeMagnitude = firstDerivativeMagnitude
     }
 
 
-speed : QuadraticSpline2d -> Interval
-speed spline =
+firstDerivativeMagnitude : QuadraticSpline2d -> Interval
+firstDerivativeMagnitude spline =
     let
         vA =
             startDerivative spline

@@ -66,8 +66,7 @@ type SegmentTree
 
 {-| Build an arc length parameterization for a particular curve, within a given
 tolerance. A `Config` value must be supplied that defines how to bisect the
-curve and how to determine bounds on its 'speed' (the magnitude of its first
-derivative).
+curve and how to determine bounds on the magnitude of its first derivative.
 -}
 buildParameterization : Config c -> Float -> c -> ArcLengthParameterization
 buildParameterization config tolerance curve =
@@ -78,24 +77,24 @@ buildParameterization config tolerance curve =
 -}
 type alias Config c =
     { bisect : c -> ( c, c )
-    , speed : c -> Interval
+    , firstDerivativeMagnitude : c -> Interval
     }
 
 
 buildSegment : Config c -> Float -> c -> Float -> Float -> Float -> ArcLengthParameterization
 buildSegment config tolerance curve lengthAtStart paramAtStart paramAtEnd =
     let
-        speed =
-            config.speed curve
+        firstDerivativeMagnitude =
+            config.firstDerivativeMagnitude curve
 
         paramDelta =
             paramAtEnd - paramAtStart
 
         lowerBound =
-            Interval.minValue speed
+            Interval.minValue firstDerivativeMagnitude
 
         upperBound =
-            Interval.maxValue speed
+            Interval.maxValue firstDerivativeMagnitude
 
         maxError =
             (upperBound - lowerBound) / 2
