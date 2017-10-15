@@ -1,8 +1,9 @@
 module OpenSolid.ArcLength
     exposing
         ( ArcLengthParameterization
-        , ArcLengthParameterized
+        , ArcLengthParameterized(..)
         , Config
+        , buildParameterization
         , fromParameterValue
         , fromParameterization
         , parameterization
@@ -20,12 +21,12 @@ points. This module is primarily for use internally by those curve modules.
 
 # Constructing
 
-@docs parameterization, Config
+@docs buildParameterization, Config
 
 
 # Evaluating
 
-@docs fromParameterization, toParameterValue, fromParameterValue
+@docs parameterization, fromParameterization, toParameterValue, fromParameterValue
 
 -}
 
@@ -38,8 +39,8 @@ itself along with its associated arc length parameterization. Different curve
 modules contain functions for creating `ArcLengthParameterized` values and then
 evaluating them.
 -}
-type alias ArcLengthParameterized c =
-    ( c, ArcLengthParameterization )
+type ArcLengthParameterized c
+    = ArcLengthParameterized c ArcLengthParameterization
 
 
 {-| Contains a mapping from curve parameter value to arc length, and vice versa.
@@ -68,8 +69,8 @@ tolerance. A `Config` value must be supplied that defines how to bisect the
 curve and how to determine bounds on its 'speed' (the magnitude of its first
 derivative).
 -}
-parameterization : Config c -> Float -> c -> ArcLengthParameterization
-parameterization config tolerance curve =
+buildParameterization : Config c -> Float -> c -> ArcLengthParameterization
+buildParameterization config tolerance curve =
     buildSegment config tolerance curve 0 0 1
 
 
@@ -149,6 +150,13 @@ buildSegment config tolerance curve lengthAtStart paramAtStart paramAtEnd =
                     }
         in
         ArcLengthParameterization lengthAtEnd node
+
+
+{-| Get the arc length parameterization of a parameterized curve.
+-}
+parameterization : ArcLengthParameterized c -> ArcLengthParameterization
+parameterization (ArcLengthParameterized _ parameterization) =
+    parameterization
 
 
 {-| Get the total arc length of a curve given its arc length parameterization.

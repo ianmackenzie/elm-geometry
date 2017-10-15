@@ -166,8 +166,11 @@ parameterization =
         , Test.fuzz Fuzz.quadraticSpline2d "at s = (length spline) toParameterValue gives 1" <|
             \spline ->
                 let
-                    (( _, parameterization ) as parameterizedCurve) =
+                    parameterizedCurve =
                         QuadraticSpline2d.arcLengthParameterized 0.001 spline
+
+                    parameterization =
+                        ArcLength.parameterization parameterizedCurve
                 in
                 QuadraticSpline2d.arcLength parameterizedCurve
                     |> ArcLength.toParameterValue parameterization
@@ -180,7 +183,7 @@ parameterization =
                     tolerance =
                         0.001
 
-                    (( _, parameterization ) as parameterizedCurve) =
+                    parameterizedCurve =
                         QuadraticSpline2d.arcLengthParameterized tolerance
                             spline
                 in

@@ -74,7 +74,7 @@ in 2D defined by three control points. This module contains functionality for
 
 -}
 
-import OpenSolid.ArcLength as ArcLength exposing (ArcLengthParameterized)
+import OpenSolid.ArcLength as ArcLength exposing (ArcLengthParameterized(ArcLengthParameterized))
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
@@ -465,7 +465,8 @@ splitAt t spline =
 -}
 arcLengthParameterized : Float -> QuadraticSpline2d -> ArcLengthParameterized QuadraticSpline2d
 arcLengthParameterized tolerance spline =
-    ( spline, ArcLength.parameterization arcLengthConfig tolerance spline )
+    ArcLengthParameterized spline
+        (ArcLength.buildParameterization arcLengthConfig tolerance spline)
 
 
 arcLengthConfig : ArcLength.Config QuadraticSpline2d
@@ -518,21 +519,21 @@ speed spline =
 {-| Approximate the length of a spline given a maximum error percentage
 -}
 arcLength : ArcLengthParameterized QuadraticSpline2d -> Float
-arcLength ( _, parameterization ) =
+arcLength (ArcLengthParameterized _ parameterization) =
     ArcLength.fromParameterization parameterization
 
 
 {-| Get the point along a spline at a given arc length.
 -}
 pointAlong : ArcLengthParameterized QuadraticSpline2d -> Float -> Maybe Point2d
-pointAlong ( spline, parameterization ) s =
+pointAlong (ArcLengthParameterized spline parameterization) s =
     ArcLength.toParameterValue parameterization s |> Maybe.map (pointOn spline)
 
 
 {-| Get the tangent direction along a spline at a given arc length.
 -}
 tangentAlong : ArcLengthParameterized QuadraticSpline2d -> Float -> Maybe Direction2d
-tangentAlong ( spline, parameterization ) s =
+tangentAlong (ArcLengthParameterized spline parameterization) s =
     ArcLength.toParameterValue parameterization s
         |> Maybe.map (derivative spline)
         |> Maybe.andThen Vector2d.direction
