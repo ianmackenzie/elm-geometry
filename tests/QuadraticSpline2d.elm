@@ -1,7 +1,9 @@
 module QuadraticSpline2d
     exposing
-        ( jsonRoundTrips
+        ( analyticalLength
+        , curvedSpline
         , derivativeMagnitudeBoundsWorks
+        , jsonRoundTrips
         , parameterization
         )
 
