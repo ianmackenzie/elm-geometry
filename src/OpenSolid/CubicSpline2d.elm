@@ -8,6 +8,7 @@ module OpenSolid.CubicSpline2d
         , endPoint
         , evaluate
         , fromControlPoints
+        , fromQuadraticSpline
         , hermite
         , mirrorAcross
         , placeIn
@@ -37,7 +38,7 @@ in 2D defined by four control points. This module contains functionality for
 
 # Constructors
 
-@docs fromControlPoints, hermite
+@docs fromControlPoints, hermite, fromQuadraticSpline
 
 
 # Properties
@@ -70,6 +71,7 @@ import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.QuadraticSpline2d as QuadraticSpline2d exposing (QuadraticSpline2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
@@ -122,6 +124,39 @@ hermite ( startPoint, startDerivative ) ( endPoint, endDerivative ) =
         , startControlPoint
         , endControlPoint
         , endPoint
+        )
+
+
+{-| Convert a quadratic spline into the equivalent cubic spline (every quadratic
+spline can be represented exactly as a cubic spline).
+
+    quadraticSpline =
+        QuadraticSpline2d.fromControlPoints
+            ( Point2d.fromCoordinates ( 0, 0  )
+            , Point2d.fromCoordinates ( 3, 0 )
+            , Point2d.fromCoordinates ( 3, 3 )
+            )
+
+    CubicSpline2d.fromQuadraticSpline quadraticSpline
+    --> CubicSpline2d.fromControlPoints
+    -->     ( Point2d.fromCoordinates ( 0, 0 )
+    -->     , Point2d.fromCoordinates ( 2, 0 )
+    -->     , Point2d.fromCoordinates ( 3, 1 )
+    -->     , Point2d.fromCoordinates ( 3, 3 )
+    -->     )
+
+-}
+fromQuadraticSpline : QuadraticSpline2d -> CubicSpline2d
+fromQuadraticSpline quadraticSpline =
+    let
+        ( p1, p2, p3 ) =
+            QuadraticSpline2d.controlPoints quadraticSpline
+    in
+    fromControlPoints
+        ( p1
+        , Point2d.interpolateFrom p1 p2 (2 / 3)
+        , Point2d.interpolateFrom p3 p2 (2 / 3)
+        , p3
         )
 
 

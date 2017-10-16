@@ -8,6 +8,7 @@ module OpenSolid.CubicSpline3d
         , endPoint
         , evaluate
         , fromControlPoints
+        , fromQuadraticSpline
         , hermite
         , mirrorAcross
         , on
@@ -40,7 +41,7 @@ in 3D defined by four control points. This module contains functionality for
 
 # Constructors
 
-@docs fromControlPoints, hermite, on
+@docs fromControlPoints, hermite, on, fromQuadraticSpline
 
 
 # Properties
@@ -75,6 +76,7 @@ import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
 import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
 import OpenSolid.Point3d as Point3d exposing (Point3d)
+import OpenSolid.QuadraticSpline3d as QuadraticSpline3d exposing (QuadraticSpline3d)
 import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
@@ -165,6 +167,39 @@ on sketchPlane spline =
             Point3d.on sketchPlane
     in
     fromControlPoints ( place p1, place p2, place p3, place p4 )
+
+
+{-| Convert a quadratic spline into the equivalent cubic spline (every quadratic
+spline can be represented exactly as a cubic spline).
+
+    quadraticSpline =
+        QuadraticSpline3d.fromControlPoints
+            ( Point3d.fromCoordinates ( 0, 0, 0  )
+            , Point3d.fromCoordinates ( 3, 0, 0 )
+            , Point3d.fromCoordinates ( 3, 3, 0 )
+            )
+
+    CubicSpline3d.fromQuadraticSpline quadraticSpline
+    --> CubicSpline3d.fromControlPoints
+    -->     ( Point3d.fromCoordinates ( 0, 0, 0 )
+    -->     , Point3d.fromCoordinates ( 2, 0, 0 )
+    -->     , Point3d.fromCoordinates ( 3, 1, 0 )
+    -->     , Point3d.fromCoordinates ( 3, 3, 0 )
+    -->     )
+
+-}
+fromQuadraticSpline : QuadraticSpline3d -> CubicSpline3d
+fromQuadraticSpline quadraticSpline =
+    let
+        ( p1, p2, p3 ) =
+            QuadraticSpline3d.controlPoints quadraticSpline
+    in
+    fromControlPoints
+        ( p1
+        , Point3d.interpolateFrom p1 p2 (2 / 3)
+        , Point3d.interpolateFrom p3 p2 (2 / 3)
+        , p3
+        )
 
 
 {-| Get the control points of a spline as a tuple.
