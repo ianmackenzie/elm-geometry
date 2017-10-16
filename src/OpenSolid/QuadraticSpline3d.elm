@@ -1,6 +1,8 @@
 module OpenSolid.QuadraticSpline3d
     exposing
         ( QuadraticSpline3d
+        , arcLength
+        , arcLengthParameterized
         , bisect
         , controlPoints
         , derivative
@@ -11,6 +13,7 @@ module OpenSolid.QuadraticSpline3d
         , mirrorAcross
         , on
         , placeIn
+        , pointAlong
         , pointOn
         , projectInto
         , projectOnto
@@ -21,6 +24,7 @@ module OpenSolid.QuadraticSpline3d
         , splitAt
         , startDerivative
         , startPoint
+        , tangentAlong
         , translateBy
         )
 
@@ -71,11 +75,19 @@ in 3D defined by three control points. This module contains functionality for
 
 @docs bisect, splitAt
 
+
+# Arc length parameterization
+
+@docs arcLengthParameterized, arcLength, pointAlong, tangentAlong
+
 -}
 
+import OpenSolid.ArcLength as ArcLength exposing (ArcLengthParameterized(ArcLengthParameterized))
 import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
+import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
 import OpenSolid.Geometry.Internal as Internal
+import OpenSolid.Internal.QuadraticSpline3d as Internal
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
 import OpenSolid.Point3d as Point3d exposing (Point3d)
 import OpenSolid.QuadraticSpline2d as QuadraticSpline2d exposing (QuadraticSpline2d)
@@ -528,3 +540,41 @@ splitAt t spline =
     ( fromControlPoints ( p1, q1, r )
     , fromControlPoints ( r, q2, p3 )
     )
+
+
+{-| Build an arc length parameterization of the given spline.
+-}
+arcLengthParameterized : Float -> QuadraticSpline3d -> ArcLengthParameterized QuadraticSpline3d
+arcLengthParameterized tolerance spline =
+    ArcLengthParameterized spline
+        (ArcLength.buildParameterization arcLengthConfig tolerance spline)
+
+
+arcLengthConfig : ArcLength.Config QuadraticSpline3d
+arcLengthConfig =
+    { bisect = bisect
+    , derivativeMagnitudeBounds = Internal.derivativeMagnitudeBounds
+    }
+
+
+{-| Approximate the length of a spline given a maximum error percentage
+-}
+arcLength : ArcLengthParameterized QuadraticSpline3d -> Float
+arcLength (ArcLengthParameterized _ parameterization) =
+    ArcLength.fromParameterization parameterization
+
+
+{-| Get the point along a spline at a given arc length.
+-}
+pointAlong : ArcLengthParameterized QuadraticSpline3d -> Float -> Maybe Point3d
+pointAlong (ArcLengthParameterized spline parameterization) s =
+    ArcLength.toParameterValue parameterization s |> Maybe.map (pointOn spline)
+
+
+{-| Get the tangent direction along a spline at a given arc length.
+-}
+tangentAlong : ArcLengthParameterized QuadraticSpline3d -> Float -> Maybe Direction3d
+tangentAlong (ArcLengthParameterized spline parameterization) s =
+    ArcLength.toParameterValue parameterization s
+        |> Maybe.map (derivative spline)
+        |> Maybe.andThen Vector3d.direction
