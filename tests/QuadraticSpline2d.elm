@@ -1,6 +1,7 @@
 module QuadraticSpline2d
     exposing
         ( jsonRoundTrips
+        , derivativeMagnitudeBoundsWorks
         , parameterization
         )
 
@@ -10,10 +11,13 @@ import Generic
 import OpenSolid.ArcLength as ArcLength
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
+import OpenSolid.Geometry.Expect as Expect
 import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Internal.QuadraticSpline2d as Internal
 import OpenSolid.Point2d as Point2d
 import OpenSolid.QuadraticSpline2d as QuadraticSpline2d exposing (QuadraticSpline2d)
 import OpenSolid.Scalar as Scalar
+import OpenSolid.Vector2d as Vector2d
 import Test exposing (Test)
 
 
@@ -239,6 +243,20 @@ parameterization =
                 QuadraticSpline2d.pointAlong parameterizedCurve arcLength
                     |> Expect.equal (Just (Point2d.fromCoordinates ( 5, 1 )))
         ]
+
+
+derivativeMagnitudeBoundsWorks : Test
+derivativeMagnitudeBoundsWorks =
+    Test.fuzz2
+        Fuzz.quadraticSpline2d
+        (Fuzz.floatRange 0 1)
+        "derivativeMagnitudeBounds works properly"
+        (\spline t ->
+            QuadraticSpline2d.derivative spline t
+                |> Vector2d.length
+                |> Expect.valueIn
+                    (Internal.derivativeMagnitudeBounds spline)
+        )
 
 
 jsonRoundTrips : Test
