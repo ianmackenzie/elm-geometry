@@ -77,24 +77,24 @@ buildParameterization config tolerance curve =
 -}
 type alias Config c =
     { bisect : c -> ( c, c )
-    , firstDerivativeMagnitude : c -> Interval
+    , derivativeMagnitudeBounds : c -> Interval
     }
 
 
 buildSegment : Config c -> Float -> c -> Float -> Float -> Float -> ArcLengthParameterization
 buildSegment config tolerance curve lengthAtStart paramAtStart paramAtEnd =
     let
-        firstDerivativeMagnitude =
-            config.firstDerivativeMagnitude curve
+        derivativeMagnitudeBounds =
+            config.derivativeMagnitudeBounds curve
 
         paramDelta =
             paramAtEnd - paramAtStart
 
         lowerBound =
-            Interval.minValue firstDerivativeMagnitude
+            Interval.minValue derivativeMagnitudeBounds
 
         upperBound =
-            Interval.maxValue firstDerivativeMagnitude
+            Interval.maxValue derivativeMagnitudeBounds
 
         maxError =
             (upperBound - lowerBound) / 2

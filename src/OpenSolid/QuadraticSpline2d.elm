@@ -79,7 +79,7 @@ import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Geometry.Internal as Internal
-import OpenSolid.Interval as Interval exposing (Interval)
+import OpenSolid.Internal.QuadraticSpline2d as Internal
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
@@ -472,48 +472,8 @@ arcLengthParameterized tolerance spline =
 arcLengthConfig : ArcLength.Config QuadraticSpline2d
 arcLengthConfig =
     { bisect = bisect
-    , firstDerivativeMagnitude = firstDerivativeMagnitude
+    , derivativeMagnitudeBounds = Internal.derivativeMagnitudeBounds
     }
-
-
-firstDerivativeMagnitude : QuadraticSpline2d -> Interval
-firstDerivativeMagnitude spline =
-    let
-        vA =
-            startDerivative spline
-
-        vB =
-            endDerivative spline
-
-        vC =
-            Vector2d.difference vA vB
-
-        aSquared =
-            Vector2d.squaredLength vA
-
-        bSquared =
-            Vector2d.squaredLength vB
-
-        cSquared =
-            Vector2d.squaredLength vC
-
-        a =
-            sqrt aSquared
-
-        b =
-            sqrt bSquared
-
-        minValue =
-            if cSquared == 0 then
-                a
-            else if aSquared >= bSquared + cSquared then
-                b
-            else if bSquared >= aSquared + cSquared then
-                a
-            else
-                abs (Vector2d.crossProduct vA vB) / sqrt cSquared
-    in
-    Interval.with { minValue = minValue, maxValue = max a b }
 
 
 {-| Approximate the length of a spline given a maximum error percentage
