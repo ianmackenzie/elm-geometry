@@ -6,7 +6,7 @@ module OpenSolid.Scalar exposing (equalWithin, hull, hullOf, interpolateFrom)
 
 -}
 
-import OpenSolid.Interval as Interval exposing (Interval)
+import OpenSolid.Geometry.Internal as Internal
 
 
 {-| Check if two values are equal within a given tolerance.
@@ -60,9 +60,9 @@ given in either order).
     --> Interval.with { minValue = -1, maxValue = 5 }
 
 -}
-hull : Float -> Float -> Interval
+hull : Float -> Float -> Internal.Interval
 hull firstValue secondValue =
-    Interval.with
+    Internal.Interval
         { minValue = min firstValue secondValue
         , maxValue = max firstValue secondValue
         }
@@ -81,6 +81,24 @@ is empty, returns `Nothing`.
     --> Nothing
 
 -}
-hullOf : List Float -> Maybe Interval
+hullOf : List Float -> Maybe Internal.Interval
 hullOf values =
-    Interval.hullOf (List.map Interval.singleton values)
+    case values of
+        [] ->
+            Nothing
+
+        first :: rest ->
+            let
+                minValue =
+                    List.foldl min first rest
+
+                maxValue =
+                    List.foldl max first rest
+
+                result =
+                    Internal.Interval
+                        { minValue = minValue
+                        , maxValue = maxValue
+                        }
+            in
+            Just result
