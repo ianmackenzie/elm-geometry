@@ -77,7 +77,7 @@ intersectionConsistentWithStrictlyOverlaps =
         (\first second ->
             let
                 strictlyOverlaps =
-                    BoundingBox2d.strictlyOverlaps first second
+                    BoundingBox2d.overlapsBy GT 0 first second
 
                 intersection =
                     BoundingBox2d.intersection first second
@@ -85,47 +85,50 @@ intersectionConsistentWithStrictlyOverlaps =
                 intersectionDimensions =
                     Maybe.map BoundingBox2d.dimensions intersection
             in
-                case ( strictlyOverlaps, intersectionDimensions ) of
-                    ( True, Just ( width, height ) ) ->
-                        if width == 0 then
-                            Expect.fail
-                                (toString first
-                                    ++ " and "
-                                    ++ toString second
-                                    ++ " considered to strictly overlap, "
-                                    ++ "but intersection width is 0"
-                                )
-                        else if height == 0 then
-                            Expect.fail
-                                (toString first
-                                    ++ " and "
-                                    ++ toString second
-                                    ++ " considered to strictly overlap, "
-                                    ++ "but intersection height is 0"
-                                )
-                        else
-                            Expect.pass
-
-                    ( False, Nothing ) ->
-                        Expect.pass
-
-                    ( True, Nothing ) ->
+            case ( strictlyOverlaps, intersectionDimensions ) of
+                ( True, Just ( width, height ) ) ->
+                    if width == 0 then
                         Expect.fail
                             (toString first
                                 ++ " and "
                                 ++ toString second
                                 ++ " considered to strictly overlap, "
-                                ++ "but intersection is Nothing"
+                                ++ "but intersection width is 0"
                             )
+                    else if height == 0 then
+                        Expect.fail
+                            (toString first
+                                ++ " and "
+                                ++ toString second
+                                ++ " considered to strictly overlap, "
+                                ++ "but intersection height is 0"
+                            )
+                    else
+                        Expect.pass
 
-                    ( False, Just intersectionDimensions ) ->
+                ( False, Nothing ) ->
+                    Expect.pass
+
+                ( True, Nothing ) ->
+                    Expect.fail
+                        (toString first
+                            ++ " and "
+                            ++ toString second
+                            ++ " considered to strictly overlap, "
+                            ++ "but intersection is Nothing"
+                        )
+
+                ( False, Just ( width, height ) ) ->
+                    if height == 0 || width == 0 then
+                        Expect.pass
+                    else
                         Expect.fail
                             (toString first
                                 ++ " and "
                                 ++ toString second
                                 ++ " not considered to strictly overlap, "
                                 ++ "but have valid intersection "
-                                ++ "with dimensions "
+                                ++ "with non-zero dimensions "
                                 ++ toString intersectionDimensions
                             )
         )
