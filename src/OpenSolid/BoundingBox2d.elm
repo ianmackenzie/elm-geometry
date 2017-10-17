@@ -500,6 +500,36 @@ given bounding boxes. If the given boxes do not intersect, returns `Nothing`.
     BoundingBox2d.intersection firstBox thirdBox
     --> Nothing
 
+If two boxes just touch along an edge or at a corner, they are still considered
+to have an intersection, even though that intersection will have zero area (at
+least one of its dimensions will be zero):
+
+    firstBox =
+        BoundingBox2d.with
+            { minX = 0
+            , maxX = 1
+            , minY = 0
+            , maxY = 2
+            }
+
+    secondBox =
+        BoundingBox2d.with
+            { minX = 1
+            , maxX = 2
+            , minY = 1
+            , maxY = 3
+            }
+
+    BoundingBox2d.intersection firstBox secondBox
+    --> Just
+    -->     (BoundingBox2d.with
+    -->         { minX = 1
+    -->         , maxX = 1
+    -->         , minY = 1
+    -->         , maxY = 2
+    -->         }
+    -->     )
+
 -}
 intersection : BoundingBox2d -> BoundingBox2d -> Maybe BoundingBox2d
 intersection firstBox secondBox =
