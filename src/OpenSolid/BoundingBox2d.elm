@@ -20,6 +20,7 @@ module OpenSolid.BoundingBox2d
         , hull
         , hullOf
         , intersection
+        , intersects
         , isContainedIn
         , maxX
         , maxY
@@ -316,7 +317,16 @@ contains point boundingBox =
     (minX <= x && x <= maxX) && (minY <= y && y <= maxY)
 
 
-{-| Test if one bounding box overlaps (touches) another.
+{-| Test if two boxes touch or overlap at all (have any points in common);
+
+    BoundingBox2d.intersects firstBox secondBox
+
+is equivalent to
+
+    BoundingBox2d.intersection firstBox secondBox
+        /= Nothing
+
+but is more efficient.
 
     firstBox =
         BoundingBox2d.with
@@ -342,15 +352,15 @@ contains point boundingBox =
             , maxY = 5
             }
 
-    BoundingBox2d.overlaps firstBox secondBox
+    BoundingBox2d.intersects firstBox secondBox
     --> True
 
-    BoundingBox2d.overlaps firstBox thirdBox
+    BoundingBox2d.intersects firstBox thirdBox
     --> False
 
 -}
-overlaps : BoundingBox2d -> BoundingBox2d -> Bool
-overlaps other boundingBox =
+intersects : BoundingBox2d -> BoundingBox2d -> Bool
+intersects other boundingBox =
     (minX boundingBox <= maxX other)
         && (maxX boundingBox >= minX other)
         && (minY boundingBox <= maxY other)
@@ -363,6 +373,14 @@ strictlyOverlaps other boundingBox =
         && (maxX boundingBox > minX other)
         && (minY boundingBox < maxY other)
         && (maxY boundingBox > minY other)
+{-| DEPRECATED: Alias for `intersects`, kept for compatibility. Use `intersects`
+instead.
+-}
+overlaps : BoundingBox2d -> BoundingBox2d -> Bool
+overlaps =
+    intersects
+
+
 
 
 {-| Test if the second given bounding box is fully contained within the first
@@ -443,7 +461,7 @@ hull firstBox secondBox =
 
 
 {-| Attempt to build a bounding box that contains all points common to both
-given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
+given bounding boxes. If the given boxes do not intersect, returns `Nothing`.
 
     firstBox =
         BoundingBox2d.with
@@ -485,7 +503,7 @@ given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
 -}
 intersection : BoundingBox2d -> BoundingBox2d -> Maybe BoundingBox2d
 intersection firstBox secondBox =
-    if overlaps firstBox secondBox then
+    if intersects firstBox secondBox then
         Just
             (with
                 { minX = max (minX firstBox) (minX secondBox)
