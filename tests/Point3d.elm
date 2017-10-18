@@ -36,13 +36,13 @@ rotationAboutAxisPreservesDistanceAlong =
         expectation point axis angle =
             let
                 distance =
-                    Point3d.distanceAlong axis point
+                    Point3d.signedDistanceAlong axis point
 
                 rotatedPoint =
                     Point3d.rotateAround axis angle point
 
                 rotatedDistance =
-                    Point3d.distanceAlong axis rotatedPoint
+                    Point3d.signedDistanceAlong axis rotatedPoint
             in
             Expect.approximately distance rotatedDistance
     in
