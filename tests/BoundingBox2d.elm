@@ -6,6 +6,9 @@ module BoundingBox2d
         , intersectionConsistentWithStrictlyOverlaps
         , intersectionIsValidOrNothing
         , jsonRoundTrips
+        , overlappingBoxesCannotBySeparated
+        , overlapsByDetectsIntersection
+        , separatedBoxesCannotBeMadeToOverlap
         )
 
 import Expect
@@ -14,6 +17,7 @@ import OpenSolid.BoundingBox2d as BoundingBox2d
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Vector2d as Vector2d
 import Test exposing (Test)
 
 
@@ -179,4 +183,64 @@ boxContainsOwnCentroid =
             in
             Expect.true "bounding box does not contain its own centroid"
                 (BoundingBox2d.contains centroid box)
+        )
+
+
+overlapsByDetectsIntersection : Test
+overlapsByDetectsIntersection =
+    Test.fuzz2
+        Fuzz.boundingBox2d
+        Fuzz.boundingBox2d
+        "overlapsBy LT 0 detects non-intersecting boxes"
+        (\firstBox secondBox ->
+            case BoundingBox2d.intersection firstBox secondBox of
+                Just intersectionBox ->
+                    Expect.false "intersecting boxes should overlap by at least 0"
+                        (BoundingBox2d.overlapsBy LT 0 firstBox secondBox)
+
+                Nothing ->
+                    Expect.true "non-intersecting boxes should overlap by less than 0"
+                        (BoundingBox2d.overlapsBy LT 0 firstBox secondBox)
+        )
+
+
+overlappingBoxesCannotBySeparated : Test
+overlappingBoxesCannotBySeparated =
+    Test.fuzz3
+        Fuzz.boundingBox2d
+        Fuzz.boundingBox2d
+        Fuzz.vector2d
+        "boxes overlapping by greater than a distance cannot be separated by moving that distance"
+        (\firstBox secondBox displacement ->
+            let
+                tolerance =
+                    Vector2d.length displacement
+            in
+            if BoundingBox2d.overlapsBy GT tolerance firstBox secondBox then
+                BoundingBox2d.translateBy displacement firstBox
+                    |> BoundingBox2d.intersects secondBox
+                    |> Expect.true "displaced box should still intersect the other box"
+            else
+                Expect.pass
+        )
+
+
+separatedBoxesCannotBeMadeToOverlap : Test
+separatedBoxesCannotBeMadeToOverlap =
+    Test.fuzz3
+        Fuzz.boundingBox2d
+        Fuzz.boundingBox2d
+        Fuzz.vector2d
+        "boxes separated by greater than a distance cannot be made to overlap by moving that distance"
+        (\firstBox secondBox displacement ->
+            let
+                tolerance =
+                    Vector2d.length displacement
+            in
+            if BoundingBox2d.separatedBy GT tolerance firstBox secondBox then
+                BoundingBox2d.translateBy displacement firstBox
+                    |> BoundingBox2d.intersects secondBox
+                    |> Expect.false "displaced box should still not intersect the other box"
+            else
+                Expect.pass
         )
