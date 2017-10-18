@@ -9,15 +9,11 @@ module BoundingBox2d
         )
 
 import Expect
-import Fuzz
 import Generic
-import Json.Decode as Decode
 import OpenSolid.BoundingBox2d as BoundingBox2d
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
-import OpenSolid.Geometry.Expect as Expect
 import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Point2d as Point2d
 import Test exposing (Test)
 
 
