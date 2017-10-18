@@ -31,16 +31,16 @@ intersectionConsistentWithOverlaps : Test
 intersectionConsistentWithOverlaps =
     Test.fuzz2 Fuzz.boundingBox3d
         Fuzz.boundingBox3d
-        "'intersection' is consistent with 'overlaps'"
+        "'intersection' is consistent with 'intersects'"
         (\first second ->
             let
-                overlaps =
-                    BoundingBox3d.overlaps first second
+                intersects =
+                    BoundingBox3d.intersects first second
 
                 intersection =
                     BoundingBox3d.intersection first second
             in
-            case ( overlaps, intersection ) of
+            case ( intersects, intersection ) of
                 ( True, Just _ ) ->
                     Expect.pass
 
@@ -52,7 +52,7 @@ intersectionConsistentWithOverlaps =
                         (toString first
                             ++ " and "
                             ++ toString second
-                            ++ " considered to overlap, "
+                            ++ " considered to intersect, "
                             ++ "but intersection is Nothing"
                         )
 
@@ -61,7 +61,7 @@ intersectionConsistentWithOverlaps =
                         (toString first
                             ++ " and "
                             ++ toString second
-                            ++ " not considered to overlap, "
+                            ++ " not considered to intersect, "
                             ++ " but have valid intersection "
                             ++ toString intersectionBox
                         )

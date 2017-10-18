@@ -20,6 +20,7 @@ module OpenSolid.BoundingBox3d
         , hull
         , hullOf
         , intersection
+        , intersects
         , isContainedIn
         , maxX
         , maxY
@@ -68,7 +69,7 @@ box of an object than the object itself, such as:
 
 # Queries
 
-@docs contains, overlaps, isContainedIn
+@docs contains, isContainedIn, intersects, overlaps
 
 -}
 
@@ -376,7 +377,16 @@ contains point boundingBox =
         && (minZ <= z && z <= maxZ)
 
 
-{-| Test if one bounding box overlaps (touches) another.
+{-| Test if two boxes touch or overlap at all (have any points in common);
+
+    BoundingBox3d.intersects firstBox secondBox
+
+is equivalent to
+
+    BoundingBox3d.intersection firstBox secondBox
+        /= Nothing
+
+but is more efficient.
 
     firstBox =
         BoundingBox3d.with
@@ -408,21 +418,29 @@ contains point boundingBox =
             , maxZ = 2
             }
 
-    BoundingBox3d.overlaps firstBox secondBox
+    BoundingBox3d.intersects firstBox secondBox
     --> True
 
-    BoundingBox3d.overlaps firstBox thirdBox
+    BoundingBox3d.intersects firstBox thirdBox
     --> False
 
 -}
-overlaps : BoundingBox3d -> BoundingBox3d -> Bool
-overlaps other boundingBox =
+intersects : BoundingBox3d -> BoundingBox3d -> Bool
+intersects other boundingBox =
     (minX boundingBox <= maxX other)
         && (maxX boundingBox >= minX other)
         && (minY boundingBox <= maxY other)
         && (maxY boundingBox >= minY other)
         && (minZ boundingBox <= maxZ other)
         && (maxZ boundingBox >= minZ other)
+
+
+{-| DEPRECATED: Alias for `intersects`, kept for compatibility. Use `intersects`
+instead.
+-}
+overlaps : BoundingBox3d -> BoundingBox3d -> Bool
+overlaps =
+    intersects
 
 
 {-| Test if the second given bounding box is fully contained within the first
@@ -568,7 +586,7 @@ given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
 -}
 intersection : BoundingBox3d -> BoundingBox3d -> Maybe BoundingBox3d
 intersection firstBox secondBox =
-    if overlaps firstBox secondBox then
+    if intersects firstBox secondBox then
         Just
             (with
                 { minX = max (minX firstBox) (minX secondBox)
