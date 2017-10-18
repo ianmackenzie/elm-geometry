@@ -30,8 +30,10 @@ module OpenSolid.BoundingBox2d
         , minY
         , overlaps
         , overlapsBy
+        , scaleAbout
         , separatedBy
         , singleton
+        , translateBy
         , with
         )
 
@@ -71,11 +73,17 @@ box of an object than the object itself, such as:
 
 @docs contains, isContainedIn, intersects, overlaps, overlapsBy, separatedBy
 
+
+# Transformations
+
+@docs scaleAbout, translateBy
+
 -}
 
 import OpenSolid.Bootstrap.BoundingBox2d as Bootstrap
 import OpenSolid.Bootstrap.Point2d as Point2d
 import OpenSolid.Geometry.Internal as Internal exposing (Point2d)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
 {-| -}
@@ -781,3 +789,73 @@ intersection firstBox secondBox =
             )
     else
         Nothing
+
+
+{-| Scale a bounding box about a given point by a given scale.
+
+    point =
+        Point2d.fromCoordinates ( 4, 4 )
+
+    BoundingBox2d.scaleAbout point 2 exampleBox
+    --> BoundingBox2d.with
+    -->     { minX = 2
+    -->     , maxX = 12
+    -->     , minY = 0
+    -->     , maxY = 8
+    -->     }
+
+-}
+scaleAbout : Point2d -> Float -> BoundingBox2d -> BoundingBox2d
+scaleAbout point scale boundingBox =
+    let
+        { minX, minY, maxX, maxY } =
+            extrema boundingBox
+
+        ( x0, y0 ) =
+            Point2d.coordinates point
+    in
+    if scale >= 0 then
+        with
+            { minX = x0 + scale * (minX - x0)
+            , maxX = x0 + scale * (maxX - x0)
+            , minY = y0 + scale * (minY - y0)
+            , maxY = y0 + scale * (maxY - y0)
+            }
+    else
+        with
+            { minX = x0 + scale * (maxX - x0)
+            , maxX = x0 + scale * (minX - x0)
+            , minY = y0 + scale * (maxY - y0)
+            , maxY = y0 + scale * (minY - y0)
+            }
+
+
+{-| Translate a bounding box by a given displacement.
+
+    displacement =
+        Vector2d.fromComponents ( 2, -3 )
+
+    BoundingBox2d.translateBy displacement exampleBox
+    --> BoundingBox2d.with
+    -->     { minX = 5
+    -->     , maxX = 10
+    -->     , minY = -1
+    -->     , maxY = 3
+    -->     }
+
+-}
+translateBy : Vector2d -> BoundingBox2d -> BoundingBox2d
+translateBy displacement boundingBox =
+    let
+        { minX, minY, maxX, maxY } =
+            extrema boundingBox
+
+        ( dx, dy ) =
+            Vector2d.components displacement
+    in
+    with
+        { minX = minX + dx
+        , maxX = maxX + dx
+        , minY = minY + dy
+        , maxY = maxY + dy
+        }
