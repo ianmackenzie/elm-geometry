@@ -159,6 +159,13 @@ type Circle3d
         }
 
 
+type Sphere3d
+    = Sphere3d
+        { centerPoint : Point3d
+        , radius : Float
+        }
+
+
 type Arc2d
     = Arc2d { centerPoint : Point2d, startPoint : Point2d, sweptAngle : Float }
 
