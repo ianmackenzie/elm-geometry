@@ -756,7 +756,8 @@ mirrorAcross plane point =
         |> addTo originPoint
 
 
-{-| Project a point perpendicularly onto a plane.
+{-| Find the [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
+of a point onto a plane:
 
     point =
         Point3d.fromCoordinates ( 1, 2, 3 )
@@ -859,8 +860,9 @@ placeIn frame point =
         |> addTo (Frame3d.originPoint frame)
 
 
-{-| Project a point into a given sketch plane. Conceptually, this projects the
-point onto the plane and then expresses the projected point in 2D sketch
+{-| Project a point into a given sketch plane. Conceptually, this finds the
+[orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
+of the point onto the plane and then expresses the projected point in 2D sketch
 coordinates.
 
     point =

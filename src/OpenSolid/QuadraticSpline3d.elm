@@ -392,7 +392,8 @@ mirrorAcross plane =
     mapControlPoints (Point3d.mirrorAcross plane)
 
 
-{-| Project a spline onto a plane.
+{-| Find the [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
+of a spline onto a plane.
 
     QuadraticSpline3d.projectOnto Plane3d.xy exampleSpline
     --> QuadraticSpline3d.fromControlPoints
@@ -447,9 +448,10 @@ placeIn frame =
     mapControlPoints (Point3d.placeIn frame)
 
 
-{-| Project a spline into a given sketch plane. Conceptually, this
-projects the spline onto the plane and then expresses the projected
-spline in 2D sketch coordinates.
+{-| Project a spline into a given sketch plane. Conceptually, finds the
+[orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
+of the spline onto the plane and then expresses the projected spline in 2D
+sketch coordinates.
 
     exampleSpline
         |> QuadraticSpline3d.projectInto SketchPlane3d.yz

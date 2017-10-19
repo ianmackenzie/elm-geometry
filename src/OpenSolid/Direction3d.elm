@@ -823,9 +823,9 @@ mirrorAcross plane direction =
     toVector direction |> Vector3d.mirrorAcross plane |> toDirection
 
 
-{-| Project a direction onto a plane. This is effectively the direction of the
-given direction's 'shadow' on the given plane. If the given direction is
-exactly perpendicular to the given plane, then `Nothing` is returned.
+{-| Find the [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
+of a direction onto a plane (renormalized to have unit length). If the given
+direction is exactly perpendicular to the given plane, returns `Nothing`.
 
     direction =
         Direction3d.with
@@ -899,9 +899,10 @@ placeIn frame direction =
     toVector direction |> Vector3d.placeIn frame |> toDirection
 
 
-{-| Project a direction into a given sketch plane. Conceptually, this projects
-the direction onto the plane and then expresses the projected direction in 2D
-sketch coordinates.
+{-| Project a direction into a given sketch plane. Conceptually, this finds the
+[orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
+of the direction onto the plane, re-normalizes it to have unit length, and then
+expresses the projected direction in 2D sketch coordinates.
 
 This is only possible if the direction is not perpendicular to the sketch
 plane; if it is perpendicular, `Nothing` is returned.
