@@ -1,6 +1,8 @@
 module OpenSolid.CubicSpline3d
     exposing
         ( CubicSpline3d
+        , arcLength
+        , arcLengthParameterized
         , bisect
         , controlPoints
         , derivative
@@ -13,6 +15,7 @@ module OpenSolid.CubicSpline3d
         , mirrorAcross
         , on
         , placeIn
+        , pointAlong
         , pointOn
         , projectInto
         , projectOnto
@@ -23,6 +26,7 @@ module OpenSolid.CubicSpline3d
         , splitAt
         , startDerivative
         , startPoint
+        , tangentAlong
         , translateBy
         )
 
@@ -68,12 +72,20 @@ in 3D defined by four control points. This module contains functionality for
 
 @docs bisect, splitAt
 
+
+# Arc length parameterization
+
+@docs arcLengthParameterized, arcLength, pointAlong, tangentAlong
+
 -}
 
+import OpenSolid.ArcLength as ArcLength exposing (ArcLengthParameterized(ArcLengthParameterized))
 import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
 import OpenSolid.CubicSpline2d as CubicSpline2d exposing (CubicSpline2d)
+import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
 import OpenSolid.Geometry.Internal as Internal
+import OpenSolid.Internal.CubicSpline3d as Internal
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
 import OpenSolid.Point3d as Point3d exposing (Point3d)
 import OpenSolid.QuadraticSpline3d as QuadraticSpline3d exposing (QuadraticSpline3d)
@@ -653,3 +665,41 @@ splitAt t spline =
     ( fromControlPoints ( p1, q1, r1, s )
     , fromControlPoints ( s, r2, q3, p4 )
     )
+
+
+{-| Build an arc length parameterization of the given spline.
+-}
+arcLengthParameterized : Float -> CubicSpline3d -> ArcLengthParameterized CubicSpline3d
+arcLengthParameterized tolerance spline =
+    ArcLengthParameterized spline
+        (ArcLength.buildParameterization arcLengthConfig tolerance spline)
+
+
+arcLengthConfig : ArcLength.Config CubicSpline3d
+arcLengthConfig =
+    { bisect = bisect
+    , derivativeMagnitudeBounds = Internal.derivativeMagnitudeBounds
+    }
+
+
+{-| Approximate the length of a spline given a maximum error percentage
+-}
+arcLength : ArcLengthParameterized CubicSpline3d -> Float
+arcLength (ArcLengthParameterized _ parameterization) =
+    ArcLength.fromParameterization parameterization
+
+
+{-| Get the point along a spline at a given arc length.
+-}
+pointAlong : ArcLengthParameterized CubicSpline3d -> Float -> Maybe Point3d
+pointAlong (ArcLengthParameterized spline parameterization) s =
+    ArcLength.toParameterValue parameterization s |> Maybe.map (pointOn spline)
+
+
+{-| Get the tangent direction along a spline at a given arc length.
+-}
+tangentAlong : ArcLengthParameterized CubicSpline3d -> Float -> Maybe Direction3d
+tangentAlong (ArcLengthParameterized spline parameterization) s =
+    ArcLength.toParameterValue parameterization s
+        |> Maybe.map (derivative spline)
+        |> Maybe.andThen Vector3d.direction
