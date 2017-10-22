@@ -248,7 +248,8 @@ mirrorAcross plane =
     mapVertices (Point3d.mirrorAcross plane)
 
 
-{-| Project (flatten) a polyline onto the given plane.
+{-| Find the [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
+of a polyline onto a plane. This will flatten the polyline.
 
     Polyline3d.projectOnto Plane3d.xz examplePolyline
     --> Polyline3d.fromVertices
@@ -322,8 +323,9 @@ placeIn frame =
     mapVertices (Point3d.placeIn frame)
 
 
-{-| Project a polyline into a given sketch plane. Conceptually, this projects
-the polyline onto the plane and then expresses the projected polyline in 2D
+{-| Project a polyline into a given sketch plane. Conceptually, this finds the
+[orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
+of the polyline onto the plane and then expresses the projected polyline in 2D
 sketch coordinates.
 
     Polyline3d.projectInto Plane3d.xy examplePolyline

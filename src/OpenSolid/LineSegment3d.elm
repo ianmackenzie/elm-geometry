@@ -398,7 +398,8 @@ mirrorAcross plane =
     mapEndpoints (Point3d.mirrorAcross plane)
 
 
-{-| Project a line segment onto a plane.
+{-| Find the [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
+of a line segment onto a plane.
 
     LineSegment3d.projectOnto Plane3d.yz exampleLineSegment
     --> LineSegment3d.fromEndpoints
@@ -471,9 +472,10 @@ placeIn frame =
     mapEndpoints (Point3d.placeIn frame)
 
 
-{-| Project a line segment into a given sketch plane. Conceptually, this
-projects the line segment onto the plane and then expresses the projected
-line segment in 2D sketch coordinates.
+{-| Project a line segment into a given sketch plane. Conceptually, this finds
+the [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
+of the line segment onto the plane and then expresses the projected line segment
+in 2D sketch coordinates.
 
     exampleLineSegment
         |> LineSegment3d.projectInto SketchPlane3d.xy
