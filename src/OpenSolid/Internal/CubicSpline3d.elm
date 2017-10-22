@@ -1,6 +1,7 @@
 module OpenSolid.Internal.CubicSpline3d exposing (derivativeMagnitudeBounds)
 
 import OpenSolid.Geometry.Internal as Internal
+import OpenSolid.Point3d as Point3d exposing (Point3d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 
@@ -20,8 +21,8 @@ lineMin vA vB vAB aSquared bSquared a b =
         sqrt (Vector3d.squaredLength (Vector3d.crossProduct vA vB) / abSquared)
 
 
-derivativeMagnitudeBounds : Internal.CubicSpline3d -> Internal.Interval
-derivativeMagnitudeBounds (Internal.CubicSpline3d ( p1, p2, p3, p4 )) =
+accurateBounds : Internal.CubicSpline3d -> Internal.Interval
+accurateBounds (Internal.CubicSpline3d ( p1, p2, p3, p4 )) =
     let
         vA =
             Vector3d.from p1 p2
@@ -91,3 +92,116 @@ derivativeMagnitudeBounds (Internal.CubicSpline3d ( p1, p2, p3, p4 )) =
             3 * max a (max b c)
     in
     Internal.Interval { minValue = minValue, maxValue = maxValue }
+
+
+fastBounds : Internal.CubicSpline3d -> Internal.Interval
+fastBounds (Internal.CubicSpline3d ( p1, p2, p3, p4 )) =
+    let
+        ( x1, y1, z1 ) =
+            Point3d.coordinates p1
+
+        ( x2, y2, z2 ) =
+            Point3d.coordinates p2
+
+        ( x3, y3, z3 ) =
+            Point3d.coordinates p3
+
+        ( x4, y4, z4 ) =
+            Point3d.coordinates p4
+
+        ax =
+            x2 - x1
+
+        ay =
+            y2 - y1
+
+        az =
+            z2 - z1
+
+        bx =
+            x3 - x2
+
+        by =
+            y3 - y2
+
+        bz =
+            z3 - z2
+
+        cx =
+            x4 - x3
+
+        cy =
+            y4 - y3
+
+        cz =
+            z4 - z3
+
+        xMin =
+            min ax (min bx cx)
+
+        yMin =
+            min ay (min by cy)
+
+        zMin =
+            min az (min bz cz)
+
+        xMax =
+            max ax (max bx cx)
+
+        yMax =
+            max ay (max by cy)
+
+        zMax =
+            max az (max bz cz)
+
+        xMinSquared =
+            xMin * xMin
+
+        yMinSquared =
+            yMin * yMin
+
+        zMinSquared =
+            zMin * zMin
+
+        xMaxSquared =
+            xMax * xMax
+
+        yMaxSquared =
+            yMax * yMax
+
+        zMaxSquared =
+            zMax * zMax
+
+        ( xSquaredMin, xSquaredMax ) =
+            if xMin >= 0 then
+                ( xMinSquared, xMaxSquared )
+            else if xMax <= 0 then
+                ( xMaxSquared, xMinSquared )
+            else
+                ( 0, max xMinSquared xMaxSquared )
+
+        ( ySquaredMin, ySquaredMax ) =
+            if yMin >= 0 then
+                ( yMinSquared, yMaxSquared )
+            else if yMax <= 0 then
+                ( yMaxSquared, yMinSquared )
+            else
+                ( 0, max yMinSquared yMaxSquared )
+
+        ( zSquaredMin, zSquaredMax ) =
+            if zMin >= 0 then
+                ( zMinSquared, zMaxSquared )
+            else if zMax <= 0 then
+                ( zMaxSquared, zMinSquared )
+            else
+                ( 0, max zMinSquared zMaxSquared )
+    in
+    Internal.Interval
+        { minValue = 3 * sqrt (xSquaredMin + ySquaredMin + zSquaredMin)
+        , maxValue = 3 * sqrt (xSquaredMax + ySquaredMax + zSquaredMax)
+        }
+
+
+derivativeMagnitudeBounds : Internal.CubicSpline3d -> Internal.Interval
+derivativeMagnitudeBounds =
+    accurateBounds
