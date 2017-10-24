@@ -6,6 +6,7 @@ module OpenSolid.CubicSpline3d
         , bisect
         , controlPoints
         , derivative
+        , derivativeMagnitude
         , endDerivative
         , endPoint
         , evaluate
@@ -83,7 +84,7 @@ in 3D defined by four control points. This module contains functionality for
 
 Low level functionality that you are unlikely to need to use directly.
 
-@docs maxSecondDerivativeMagnitude
+@docs derivativeMagnitude, maxSecondDerivativeMagnitude
 
 -}
 
@@ -447,6 +448,129 @@ derivative spline t =
             , 3 * (wy2 + u * (wy1 - wy2))
             , 3 * (wz2 + u * (wz1 - wz2))
             )
+
+
+{-| Find the magnitude of the derivative to a spline at a particular parameter
+value;
+
+    CubicSpline3d.derivativeMagnitude spline t
+
+is equivalent to
+
+    Vector3d.length (CubicSpline3d.derivative spline t)
+
+but more efficient since it avoids any intermediate `Vector3d` allocation.
+
+-}
+derivativeMagnitude : CubicSpline3d -> Float -> Float
+derivativeMagnitude spline =
+    let
+        ( p1, p2, p3, p4 ) =
+            controlPoints spline
+
+        ( x1, y1, z1 ) =
+            Point3d.coordinates p1
+
+        ( x2, y2, z2 ) =
+            Point3d.coordinates p2
+
+        ( x3, y3, z3 ) =
+            Point3d.coordinates p3
+
+        ( x4, y4, z4 ) =
+            Point3d.coordinates p4
+
+        vx1 =
+            x2 - x1
+
+        vy1 =
+            y2 - y1
+
+        vz1 =
+            z2 - z1
+
+        vx2 =
+            x3 - x2
+
+        vy2 =
+            y3 - y2
+
+        vz2 =
+            z3 - z2
+
+        vx3 =
+            x4 - x3
+
+        vy3 =
+            y4 - y3
+
+        vz3 =
+            z4 - z3
+    in
+    \t ->
+        if t <= 0.5 then
+            let
+                wx1 =
+                    vx1 + t * (vx2 - vx1)
+
+                wy1 =
+                    vy1 + t * (vy2 - vy1)
+
+                wz1 =
+                    vz1 + t * (vz2 - vz1)
+
+                wx2 =
+                    vx2 + t * (vx3 - vx2)
+
+                wy2 =
+                    vy2 + t * (vy3 - vy2)
+
+                wz2 =
+                    vz2 + t * (vz3 - vz2)
+
+                dx =
+                    wx1 + t * (wx2 - wx1)
+
+                dy =
+                    wy1 + t * (wy2 - wy1)
+
+                dz =
+                    wz1 + t * (wz2 - wz1)
+            in
+            3 * sqrt (dx * dx + dy * dy + dz * dz)
+        else
+            let
+                u =
+                    1 - t
+
+                wx1 =
+                    vx2 + u * (vx1 - vx2)
+
+                wy1 =
+                    vy2 + u * (vy1 - vy2)
+
+                wz1 =
+                    vz2 + u * (vz1 - vz2)
+
+                wx2 =
+                    vx3 + u * (vx2 - vx3)
+
+                wy2 =
+                    vy3 + u * (vy2 - vy3)
+
+                wz2 =
+                    vz3 + u * (vz2 - vz3)
+
+                dx =
+                    wx2 + u * (wx1 - wx2)
+
+                dy =
+                    wy2 + u * (wy1 - wy2)
+
+                dz =
+                    wz2 + u * (wz1 - wz2)
+            in
+            3 * sqrt (dx * dx + dy * dy + dz * dz)
 
 
 {-| Evaluate a spline at a given parameter value, returning the point on the
