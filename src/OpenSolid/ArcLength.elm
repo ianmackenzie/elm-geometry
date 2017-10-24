@@ -57,11 +57,16 @@ type SegmentTree
         , rightBranch : SegmentTree
         }
     | Leaf
-        { lengthAtStart : Float
-        , lengthAtEnd : Float
-        , paramAtStart : Float
-        , lengthAtEnd : Float
-        , paramAtEnd : Float
+        { length0 : Float
+        , length1 : Float
+        , length2 : Float
+        , length3 : Float
+        , length4 : Float
+        , param0 : Float
+        , param1 : Float
+        , param2 : Float
+        , param3 : Float
+        , param4 : Float
         }
 
 
@@ -83,7 +88,7 @@ buildParameterization config =
                     numSegments =
                         maxSecondDerivativeMagnitude / (8 * tolerance)
                 in
-                max 0 (ceiling (logBase 2 numSegments))
+                max 0 (ceiling (logBase 2 (numSegments / 4)))
     in
     ArcLengthParameterization (buildTree derivativeMagnitude 0 0 1 height)
 
@@ -102,28 +107,64 @@ buildTree derivativeMagnitude lengthAtStart paramAtStart paramAtEnd height =
     let
         paramDelta =
             paramAtEnd - paramAtStart
-
-        paramAtMid =
-            paramAtStart + 0.5 * paramDelta
     in
     if height == 0 then
         let
-            segmentLength =
-                derivativeMagnitude paramAtMid * paramDelta
+            param0 =
+                paramAtStart
 
-            lengthAtEnd =
-                lengthAtStart + segmentLength
+            param1 =
+                paramAtStart + 0.25 * paramDelta
+
+            param2 =
+                paramAtStart + 0.5 * paramDelta
+
+            param3 =
+                paramAtEnd - 0.25 * paramDelta
+
+            param4 =
+                paramAtEnd
+
+            offset =
+                0.125 * paramDelta
+
+            paramStep =
+                0.25 * paramDelta
+
+            length0 =
+                lengthAtStart
+
+            length1 =
+                length0 + derivativeMagnitude (param0 + offset) * paramStep
+
+            length2 =
+                length1 + derivativeMagnitude (param1 + offset) * paramStep
+
+            length3 =
+                length2 + derivativeMagnitude (param2 + offset) * paramStep
+
+            length4 =
+                length3 + derivativeMagnitude (param3 + offset) * paramStep
         in
         Leaf
-            { lengthAtStart = lengthAtStart
-            , lengthAtEnd = lengthAtEnd
-            , paramAtStart = paramAtStart
-            , paramAtEnd = paramAtEnd
+            { param0 = param0
+            , param1 = param1
+            , param2 = param2
+            , param3 = param3
+            , param4 = param4
+            , length0 = length0
+            , length1 = length1
+            , length2 = length2
+            , length3 = length3
+            , length4 = length4
             }
     else
         let
             branchHeight =
                 height - 1
+
+            paramAtMid =
+                paramAtStart + 0.5 * paramDelta
 
             leftBranch =
                 buildTree derivativeMagnitude
@@ -180,12 +221,32 @@ toParameterValue (ArcLengthParameterization tree) s =
 unsafeToParameterValue : SegmentTree -> Float -> Float
 unsafeToParameterValue tree s =
     case tree of
-        Leaf { lengthAtStart, paramAtStart, lengthAtEnd, paramAtEnd } ->
-            let
-                lengthFraction =
-                    (s - lengthAtStart) / (lengthAtEnd - lengthAtStart)
-            in
-            Scalar.interpolateFrom paramAtStart paramAtEnd lengthFraction
+        Leaf { length0, length1, length2, length3, length4, param0, param1, param2, param3, param4 } ->
+            if s <= length2 then
+                if s <= length1 then
+                    let
+                        lengthFraction =
+                            (s - length0) / (length1 - length0)
+                    in
+                    Scalar.interpolateFrom param0 param1 lengthFraction
+                else
+                    let
+                        lengthFraction =
+                            (s - length1) / (length2 - length1)
+                    in
+                    Scalar.interpolateFrom param1 param2 lengthFraction
+            else if s <= length3 then
+                let
+                    lengthFraction =
+                        (s - length2) / (length3 - length2)
+                in
+                Scalar.interpolateFrom param2 param3 lengthFraction
+            else
+                let
+                    lengthFraction =
+                        (s - length3) / (length4 - length3)
+                in
+                Scalar.interpolateFrom param3 param4 lengthFraction
 
         Node { leftBranch, rightBranch } ->
             if s < lengthAtStart rightBranch then
@@ -200,8 +261,8 @@ lengthAtStart tree =
         Node { lengthAtStart } ->
             lengthAtStart
 
-        Leaf { lengthAtStart } ->
-            lengthAtStart
+        Leaf { length0 } ->
+            length0
 
 
 lengthAtEnd : SegmentTree -> Float
@@ -210,8 +271,8 @@ lengthAtEnd tree =
         Node { lengthAtEnd } ->
             lengthAtEnd
 
-        Leaf { lengthAtEnd } ->
-            lengthAtEnd
+        Leaf { length4 } ->
+            length4
 
 
 {-| Convert a parameter value to the corresponding arc length. If the given
@@ -228,12 +289,32 @@ fromParameterValue (ArcLengthParameterization tree) t =
 unsafeFromParameterValue : SegmentTree -> Float -> Float
 unsafeFromParameterValue tree t =
     case tree of
-        Leaf { lengthAtStart, paramAtStart, lengthAtEnd, paramAtEnd } ->
-            let
-                paramFraction =
-                    (t - paramAtStart) / (paramAtEnd - paramAtStart)
-            in
-            Scalar.interpolateFrom lengthAtStart lengthAtEnd paramFraction
+        Leaf { length0, length1, length2, length3, length4, param0, param1, param2, param3, param4 } ->
+            if t <= param2 then
+                if t <= param1 then
+                    let
+                        paramFraction =
+                            (t - param0) / (param1 - param0)
+                    in
+                    Scalar.interpolateFrom length0 length1 paramFraction
+                else
+                    let
+                        paramFraction =
+                            (t - param1) / (param2 - param1)
+                    in
+                    Scalar.interpolateFrom length1 length2 paramFraction
+            else if t <= param3 then
+                let
+                    paramFraction =
+                        (t - param2) / (param3 - param2)
+                in
+                Scalar.interpolateFrom length2 length3 paramFraction
+            else
+                let
+                    paramFraction =
+                        (t - param3) / (param4 - param3)
+                in
+                Scalar.interpolateFrom length3 length4 paramFraction
 
         Node { leftBranch, rightBranch } ->
             if t < paramAtStart rightBranch then
@@ -248,5 +329,5 @@ paramAtStart tree =
         Node { paramAtStart } ->
             paramAtStart
 
-        Leaf { paramAtStart } ->
-            paramAtStart
+        Leaf { param0 } ->
+            param0
