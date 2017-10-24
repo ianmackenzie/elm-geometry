@@ -18,6 +18,7 @@ module OpenSolid.QuadraticSpline2d
         , reverse
         , rotateAround
         , scaleAbout
+        , secondDerivative
         , splitAt
         , startDerivative
         , startPoint
@@ -71,6 +72,13 @@ in 2D defined by three control points. This module contains functionality for
 # Arc length parameterization
 
 @docs arcLengthParameterized, arcLength, pointAlong, tangentAlong
+
+
+# Low level
+
+Low level functionality that you are unlikely to need to use directly.
+
+@docs secondDerivative
 
 -}
 
@@ -497,3 +505,21 @@ tangentAlong (ArcLengthParameterized spline parameterization) s =
     ArcLength.toParameterValue parameterization s
         |> Maybe.map (derivative spline)
         |> Maybe.andThen Vector2d.direction
+
+
+{-| Get the second derivative of a spline (for a quadratic spline, this is a
+constant).
+-}
+secondDerivative : QuadraticSpline2d -> Vector2d
+secondDerivative spline =
+    let
+        ( p1, p2, p3 ) =
+            controlPoints spline
+
+        v1 =
+            Vector2d.from p1 p2
+
+        v2 =
+            Vector2d.from p2 p3
+    in
+    Vector2d.difference v2 v1 |> Vector2d.scaleBy 2
