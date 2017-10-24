@@ -89,7 +89,6 @@ import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Geometry.Internal as Internal
-import OpenSolid.Internal.CubicSpline2d as Internal
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.QuadraticSpline2d as QuadraticSpline2d exposing (QuadraticSpline2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
@@ -587,15 +586,17 @@ splitAt t spline =
 -}
 arcLengthParameterized : Float -> CubicSpline2d -> ArcLengthParameterized CubicSpline2d
 arcLengthParameterized tolerance spline =
-    ArcLengthParameterized spline
-        (ArcLength.buildParameterization arcLengthConfig tolerance spline)
+    let
+        derivativeMagnitude =
+            Vector2d.length << derivative spline
 
-
-arcLengthConfig : ArcLength.Config CubicSpline2d
-arcLengthConfig =
-    { bisect = bisect
-    , derivativeMagnitudeBounds = Internal.derivativeMagnitudeBounds
-    }
+        config =
+            { tolerance = tolerance
+            , derivativeMagnitude = derivativeMagnitude
+            , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude spline
+            }
+    in
+    ArcLengthParameterized spline (ArcLength.buildParameterization config)
 
 
 {-| Approximate the length of a spline given a maximum error percentage

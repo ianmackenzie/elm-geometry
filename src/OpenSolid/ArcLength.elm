@@ -30,7 +30,6 @@ points. This module is primarily for use internally by those curve modules.
 
 -}
 
-import OpenSolid.Interval as Interval exposing (Interval)
 import OpenSolid.Scalar as Scalar
 
 
@@ -46,18 +45,20 @@ type ArcLengthParameterized c
 {-| Contains a mapping from curve parameter value to arc length, and vice versa.
 -}
 type ArcLengthParameterization
-    = ArcLengthParameterization Float SegmentTree
+    = ArcLengthParameterization SegmentTree
 
 
 type SegmentTree
     = Node
         { lengthAtStart : Float
+        , lengthAtEnd : Float
         , paramAtStart : Float
         , leftBranch : SegmentTree
         , rightBranch : SegmentTree
         }
     | Leaf
         { lengthAtStart : Float
+        , lengthAtEnd : Float
         , paramAtStart : Float
         , lengthAtEnd : Float
         , paramAtEnd : Float
@@ -68,87 +69,86 @@ type SegmentTree
 tolerance. A `Config` value must be supplied that defines how to bisect the
 curve and how to determine bounds on the magnitude of its first derivative.
 -}
-buildParameterization : Config c -> Float -> c -> ArcLengthParameterization
-buildParameterization config tolerance curve =
-    buildSegment config tolerance curve 0 0 1
+buildParameterization : Config -> ArcLengthParameterization
+buildParameterization config =
+    let
+        { tolerance, derivativeMagnitude, maxSecondDerivativeMagnitude } =
+            config
+
+        height =
+            if tolerance <= 0 then
+                0
+            else
+                let
+                    numSegments =
+                        maxSecondDerivativeMagnitude / (8 * tolerance)
+                in
+                max 0 (ceiling (logBase 2 numSegments))
+    in
+    ArcLengthParameterization (buildTree derivativeMagnitude 0 0 1 height)
 
 
-{-| Type used as argument to `parameterization`.
+{-| Type used as argument to `buildParameterization`.
 -}
-type alias Config c =
-    { bisect : c -> ( c, c )
-    , derivativeMagnitudeBounds : c -> Interval
+type alias Config =
+    { tolerance : Float
+    , derivativeMagnitude : Float -> Float
+    , maxSecondDerivativeMagnitude : Float
     }
 
 
-buildSegment : Config c -> Float -> c -> Float -> Float -> Float -> ArcLengthParameterization
-buildSegment config tolerance curve lengthAtStart paramAtStart paramAtEnd =
+buildTree : (Float -> Float) -> Float -> Float -> Float -> Int -> SegmentTree
+buildTree derivativeMagnitude lengthAtStart paramAtStart paramAtEnd height =
     let
-        derivativeMagnitudeBounds =
-            config.derivativeMagnitudeBounds curve
-
         paramDelta =
             paramAtEnd - paramAtStart
 
-        lowerBound =
-            Interval.minValue derivativeMagnitudeBounds
-
-        upperBound =
-            Interval.maxValue derivativeMagnitudeBounds
-
-        maxError =
-            (upperBound - lowerBound) / 2
+        paramAtMid =
+            paramAtStart + 0.5 * paramDelta
     in
-    if maxError <= tolerance || tolerance <= 0 || paramAtStart == paramAtEnd then
+    if height == 0 then
         let
             segmentLength =
-                lowerBound + maxError
+                derivativeMagnitude paramAtMid * paramDelta
 
             lengthAtEnd =
                 lengthAtStart + segmentLength
-
-            leaf =
-                Leaf
-                    { lengthAtStart = lengthAtStart
-                    , paramAtStart = paramAtStart
-                    , lengthAtEnd = lengthAtEnd
-                    , paramAtEnd = paramAtEnd
-                    }
         in
-        ArcLengthParameterization lengthAtEnd leaf
+        Leaf
+            { lengthAtStart = lengthAtStart
+            , lengthAtEnd = lengthAtEnd
+            , paramAtStart = paramAtStart
+            , paramAtEnd = paramAtEnd
+            }
     else
         let
-            ( leftCurve, rightCurve ) =
-                config.bisect curve
+            branchHeight =
+                height - 1
 
-            paramAtSplit =
-                paramAtStart + 0.5 * paramDelta
-
-            (ArcLengthParameterization lengthAtLeftEnd leftBranch) =
-                buildSegment config
-                    (0.5 * tolerance)
-                    leftCurve
+            leftBranch =
+                buildTree derivativeMagnitude
                     lengthAtStart
                     paramAtStart
-                    paramAtSplit
+                    paramAtMid
+                    branchHeight
 
-            (ArcLengthParameterization lengthAtEnd rightBranch) =
-                buildSegment config
-                    (0.5 * tolerance)
-                    rightCurve
+            lengthAtLeftEnd =
+                lengthAtEnd leftBranch
+
+            rightBranch =
+                buildTree derivativeMagnitude
                     lengthAtLeftEnd
-                    paramAtSplit
+                    paramAtMid
                     paramAtEnd
-
-            node =
-                Node
-                    { lengthAtStart = lengthAtStart
-                    , paramAtStart = paramAtStart
-                    , leftBranch = leftBranch
-                    , rightBranch = rightBranch
-                    }
+                    branchHeight
         in
-        ArcLengthParameterization lengthAtEnd node
+        Node
+            { lengthAtStart = lengthAtStart
+            , lengthAtEnd = lengthAtEnd rightBranch
+            , paramAtStart = paramAtStart
+            , leftBranch = leftBranch
+            , rightBranch = rightBranch
+            }
 
 
 {-| Get the arc length parameterization of a parameterized curve.
@@ -161,8 +161,8 @@ parameterization (ArcLengthParameterized _ parameterization) =
 {-| Get the total arc length of a curve given its arc length parameterization.
 -}
 fromParameterization : ArcLengthParameterization -> Float
-fromParameterization (ArcLengthParameterization arcLength _) =
-    arcLength
+fromParameterization (ArcLengthParameterization tree) =
+    lengthAtEnd tree
 
 
 {-| Convert an arc length to the corresponding parameter value. If the given
@@ -170,9 +170,9 @@ arc length is less than zero or greater than the total arc length of the curve,
 returns `Nothing`.
 -}
 toParameterValue : ArcLengthParameterization -> Float -> Maybe Float
-toParameterValue (ArcLengthParameterization arcLength segmentTree) s =
-    if s >= 0 && s <= arcLength then
-        Just (unsafeToParameterValue segmentTree s)
+toParameterValue (ArcLengthParameterization tree) s =
+    if s >= 0 && s <= lengthAtEnd tree then
+        Just (unsafeToParameterValue tree s)
     else
         Nothing
 
@@ -204,13 +204,23 @@ lengthAtStart tree =
             lengthAtStart
 
 
+lengthAtEnd : SegmentTree -> Float
+lengthAtEnd tree =
+    case tree of
+        Node { lengthAtEnd } ->
+            lengthAtEnd
+
+        Leaf { lengthAtEnd } ->
+            lengthAtEnd
+
+
 {-| Convert a parameter value to the corresponding arc length. If the given
 parameter value is less than zero or greater than one, returns `Nothing`.
 -}
 fromParameterValue : ArcLengthParameterization -> Float -> Maybe Float
-fromParameterValue (ArcLengthParameterization arcLength segmentTree) t =
+fromParameterValue (ArcLengthParameterization tree) t =
     if t >= 0 && t <= 1 then
-        Just (unsafeFromParameterValue segmentTree t)
+        Just (unsafeFromParameterValue tree t)
     else
         Nothing
 

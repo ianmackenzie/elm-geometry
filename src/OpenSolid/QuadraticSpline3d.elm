@@ -95,7 +95,6 @@ import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
 import OpenSolid.Geometry.Internal as Internal
-import OpenSolid.Internal.QuadraticSpline3d as Internal
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
 import OpenSolid.Point3d as Point3d exposing (Point3d)
 import OpenSolid.QuadraticSpline2d as QuadraticSpline2d exposing (QuadraticSpline2d)
@@ -556,15 +555,20 @@ splitAt t spline =
 -}
 arcLengthParameterized : Float -> QuadraticSpline3d -> ArcLengthParameterized QuadraticSpline3d
 arcLengthParameterized tolerance spline =
-    ArcLengthParameterized spline
-        (ArcLength.buildParameterization arcLengthConfig tolerance spline)
+    let
+        derivativeMagnitude =
+            Vector3d.length << derivative spline
 
+        maxSecondDerivativeMagnitude =
+            Vector3d.length (secondDerivative spline)
 
-arcLengthConfig : ArcLength.Config QuadraticSpline3d
-arcLengthConfig =
-    { bisect = bisect
-    , derivativeMagnitudeBounds = Internal.derivativeMagnitudeBounds
-    }
+        config =
+            { tolerance = tolerance
+            , derivativeMagnitude = derivativeMagnitude
+            , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude
+            }
+    in
+    ArcLengthParameterized spline (ArcLength.buildParameterization config)
 
 
 {-| Approximate the length of a spline given a maximum error percentage

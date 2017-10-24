@@ -3,7 +3,6 @@ module QuadraticSpline3d
         ( analyticalLength
         , arcLengthMatchesAnalytical
         , curvedSpline
-        , derivativeMagnitudeBoundsWorks
         , jsonRoundTrips
         , pointAtArcLengthIsEnd
         , pointAtZeroLengthIsStart
@@ -14,12 +13,9 @@ import Fuzz exposing (Fuzzer)
 import Generic
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
-import OpenSolid.Geometry.Expect as Expect
 import OpenSolid.Geometry.Fuzz as Fuzz
-import OpenSolid.Internal.QuadraticSpline3d as Internal
 import OpenSolid.Point3d as Point3d
 import OpenSolid.QuadraticSpline3d as QuadraticSpline3d exposing (QuadraticSpline3d)
-import OpenSolid.Vector3d as Vector3d
 import QuadraticSpline2d as QuadraticSpline2d
 import Test exposing (Test)
 
@@ -137,18 +133,4 @@ pointAtArcLengthIsEnd =
             in
             QuadraticSpline3d.pointAlong parameterizedCurve arcLength
                 |> Expect.equal (Just (QuadraticSpline3d.endPoint spline))
-        )
-
-
-derivativeMagnitudeBoundsWorks : Test
-derivativeMagnitudeBoundsWorks =
-    Test.fuzz2
-        Fuzz.quadraticSpline3d
-        (Fuzz.floatRange 0 1)
-        "derivativeMagnitudeBounds works properly"
-        (\spline t ->
-            QuadraticSpline3d.derivative spline t
-                |> Vector3d.length
-                |> Expect.valueIn
-                    (Internal.derivativeMagnitudeBounds spline)
         )
