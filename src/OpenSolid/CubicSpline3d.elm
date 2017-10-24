@@ -12,6 +12,7 @@ module OpenSolid.CubicSpline3d
         , fromControlPoints
         , fromQuadraticSpline
         , hermite
+        , maxSecondDerivativeMagnitude
         , mirrorAcross
         , on
         , placeIn
@@ -76,6 +77,13 @@ in 3D defined by four control points. This module contains functionality for
 # Arc length parameterization
 
 @docs arcLengthParameterized, arcLength, pointAlong, tangentAlong
+
+
+# Low level
+
+Low level functionality that you are unlikely to need to use directly.
+
+@docs maxSecondDerivativeMagnitude
 
 -}
 
@@ -705,3 +713,29 @@ tangentAlong (ArcLengthParameterized spline parameterization) s =
     ArcLength.toParameterValue parameterization s
         |> Maybe.map (derivative spline)
         |> Maybe.andThen Vector3d.direction
+
+
+{-| Find an upper bound on the magnitude of the second derivative of a spline.
+-}
+maxSecondDerivativeMagnitude : CubicSpline3d -> Float
+maxSecondDerivativeMagnitude spline =
+    let
+        ( p1, p2, p3, p4 ) =
+            controlPoints spline
+
+        u1 =
+            Vector3d.from p1 p2
+
+        u2 =
+            Vector3d.from p2 p3
+
+        u3 =
+            Vector3d.from p3 p4
+
+        v1 =
+            Vector3d.difference u2 u1
+
+        v2 =
+            Vector3d.difference u3 u2
+    in
+    6 * max (Vector3d.length v1) (Vector3d.length v2)
