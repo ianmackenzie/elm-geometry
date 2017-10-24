@@ -350,29 +350,103 @@ Note that the derivative interpolates linearly from end to end.
 
 -}
 derivative : CubicSpline3d -> Float -> Vector3d
-derivative spline =
+derivative spline t =
     let
         ( p1, p2, p3, p4 ) =
             controlPoints spline
 
-        v1 =
-            Vector3d.from p1 p2
+        ( x1, y1, z1 ) =
+            Point3d.coordinates p1
 
-        v2 =
-            Vector3d.from p2 p3
+        ( x2, y2, z2 ) =
+            Point3d.coordinates p2
 
-        v3 =
-            Vector3d.from p3 p4
+        ( x3, y3, z3 ) =
+            Point3d.coordinates p3
+
+        ( x4, y4, z4 ) =
+            Point3d.coordinates p4
+
+        vx1 =
+            x2 - x1
+
+        vy1 =
+            y2 - y1
+
+        vz1 =
+            z2 - z1
+
+        vx2 =
+            x3 - x2
+
+        vy2 =
+            y3 - y2
+
+        vz2 =
+            z3 - z2
+
+        vx3 =
+            x4 - x3
+
+        vy3 =
+            y4 - y3
+
+        vz3 =
+            z4 - z3
     in
-    \t ->
+    if t <= 0.5 then
         let
-            w1 =
-                Vector3d.interpolateFrom v1 v2 t
+            wx1 =
+                vx1 + t * (vx2 - vx1)
 
-            w2 =
-                Vector3d.interpolateFrom v2 v3 t
+            wy1 =
+                vy1 + t * (vy2 - vy1)
+
+            wz1 =
+                vz1 + t * (vz2 - vz1)
+
+            wx2 =
+                vx2 + t * (vx3 - vx2)
+
+            wy2 =
+                vy2 + t * (vy3 - vy2)
+
+            wz2 =
+                vz2 + t * (vz3 - vz2)
         in
-        Vector3d.interpolateFrom w1 w2 t |> Vector3d.scaleBy 3
+        Vector3d.fromComponents
+            ( 3 * (wx1 + t * (wx2 - wx1))
+            , 3 * (wy1 + t * (wy2 - wy1))
+            , 3 * (wz1 + t * (wz2 - wz1))
+            )
+    else
+        let
+            u =
+                1 - t
+
+            wx1 =
+                vx2 + u * (vx1 - vx2)
+
+            wy1 =
+                vy2 + u * (vy1 - vy2)
+
+            wz1 =
+                vz2 + u * (vz1 - vz2)
+
+            wx2 =
+                vx3 + u * (vx2 - vx3)
+
+            wy2 =
+                vy3 + u * (vy2 - vy3)
+
+            wz2 =
+                vz3 + u * (vz2 - vz3)
+        in
+        Vector3d.fromComponents
+            ( 3 * (wx2 + u * (wx1 - wx2))
+            , 3 * (wy2 + u * (wy1 - wy2))
+            , 3 * (wz2 + u * (wz1 - wz2))
+            )
 
 
 {-| Evaluate a spline at a given parameter value, returning the point on the
