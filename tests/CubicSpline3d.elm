@@ -1,6 +1,7 @@
 module CubicSpline3d
     exposing
         ( arcLengthMatchesAnalytical
+        , derivativeAndMagnitudeAreConsistent
         , hermiteReproducesSpline
         , jsonRoundTrips
         , pointAtArcLengthIsEnd
@@ -8,12 +9,14 @@ module CubicSpline3d
         )
 
 import Expect exposing (FloatingPointTolerance(Absolute))
+import Fuzz
 import Generic
 import OpenSolid.CubicSpline3d as CubicSpline3d
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Expect as Expect
 import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Vector3d as Vector3d
 import QuadraticSpline3d
 import Test exposing (Test)
 
@@ -92,4 +95,18 @@ pointAtArcLengthIsEnd =
             in
             CubicSpline3d.pointAlong parameterizedCurve arcLength
                 |> Expect.equal (Just (CubicSpline3d.endPoint spline))
+        )
+
+
+derivativeAndMagnitudeAreConsistent : Test
+derivativeAndMagnitudeAreConsistent =
+    Test.fuzz2
+        Fuzz.cubicSpline3d
+        (Fuzz.floatRange 0 1)
+        "derivative and derivativeMagnitude are consistent"
+        (\spline t ->
+            CubicSpline3d.derivative spline t
+                |> Vector3d.length
+                |> Expect.approximately
+                    (CubicSpline3d.derivativeMagnitude spline t)
         )
