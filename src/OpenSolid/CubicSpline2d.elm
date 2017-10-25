@@ -305,29 +305,80 @@ of the spline and a value of 1 corresponds to the end derivative.
 
 -}
 derivative : CubicSpline2d -> Float -> Vector2d
-derivative spline =
+derivative spline t =
     let
         ( p1, p2, p3, p4 ) =
             controlPoints spline
 
-        v1 =
-            Vector2d.from p1 p2
+        ( x1, y1 ) =
+            Point2d.coordinates p1
 
-        v2 =
-            Vector2d.from p2 p3
+        ( x2, y2 ) =
+            Point2d.coordinates p2
 
-        v3 =
-            Vector2d.from p3 p4
+        ( x3, y3 ) =
+            Point2d.coordinates p3
+
+        ( x4, y4 ) =
+            Point2d.coordinates p4
+
+        vx1 =
+            x2 - x1
+
+        vy1 =
+            y2 - y1
+
+        vx2 =
+            x3 - x2
+
+        vy2 =
+            y3 - y2
+
+        vx3 =
+            x4 - x3
+
+        vy3 =
+            y4 - y3
     in
-    \t ->
+    if t <= 0.5 then
         let
-            w1 =
-                Vector2d.interpolateFrom v1 v2 t
+            wx1 =
+                vx1 + t * (vx2 - vx1)
 
-            w2 =
-                Vector2d.interpolateFrom v2 v3 t
+            wy1 =
+                vy1 + t * (vy2 - vy1)
+
+            wx2 =
+                vx2 + t * (vx3 - vx2)
+
+            wy2 =
+                vy2 + t * (vy3 - vy2)
         in
-        Vector2d.interpolateFrom w1 w2 t |> Vector2d.scaleBy 3
+        Vector2d.fromComponents
+            ( 3 * (wx1 + t * (wx2 - wx1))
+            , 3 * (wy1 + t * (wy2 - wy1))
+            )
+    else
+        let
+            u =
+                1 - t
+
+            wx1 =
+                vx2 + u * (vx1 - vx2)
+
+            wy1 =
+                vy2 + u * (vy1 - vy2)
+
+            wx2 =
+                vx3 + u * (vx2 - vx3)
+
+            wy2 =
+                vy3 + u * (vy2 - vy3)
+        in
+        Vector2d.fromComponents
+            ( 3 * (wx2 + u * (wx1 - wx2))
+            , 3 * (wy2 + u * (wy1 - wy2))
+            )
 
 
 {-| Evaluate a spline at a given parameter value, returning the point on the
