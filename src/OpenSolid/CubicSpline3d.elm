@@ -479,63 +479,81 @@ derivativeMagnitude spline =
         ( x4, y4, z4 ) =
             Point3d.coordinates p4
 
-        vx1 =
+        x12 =
             x2 - x1
 
-        vy1 =
+        y12 =
             y2 - y1
 
-        vz1 =
+        z12 =
             z2 - z1
 
-        vx2 =
+        x23 =
             x3 - x2
 
-        vy2 =
+        y23 =
             y3 - y2
 
-        vz2 =
+        z23 =
             z3 - z2
 
-        vx3 =
+        x34 =
             x4 - x3
 
-        vy3 =
+        y34 =
             y4 - y3
 
-        vz3 =
+        z34 =
             z4 - z3
+
+        x123 =
+            x23 - x12
+
+        y123 =
+            y23 - y12
+
+        z123 =
+            z23 - z12
+
+        x234 =
+            x34 - x23
+
+        y234 =
+            y34 - y23
+
+        z234 =
+            z34 - z23
     in
     \t ->
         let
-            wx1 =
-                vx1 + t * (vx2 - vx1)
+            x13 =
+                x12 + t * x123
 
-            wy1 =
-                vy1 + t * (vy2 - vy1)
+            y13 =
+                y12 + t * y123
 
-            wz1 =
-                vz1 + t * (vz2 - vz1)
+            z13 =
+                z12 + t * z123
 
-            wx2 =
-                vx2 + t * (vx3 - vx2)
+            x24 =
+                x23 + t * x234
 
-            wy2 =
-                vy2 + t * (vy3 - vy2)
+            y24 =
+                y23 + t * y234
 
-            wz2 =
-                vz2 + t * (vz3 - vz2)
+            z24 =
+                z23 + t * z234
 
-            dx =
-                wx1 + t * (wx2 - wx1)
+            x14 =
+                x13 + t * (x24 - x13)
 
-            dy =
-                wy1 + t * (wy2 - wy1)
+            y14 =
+                y13 + t * (y24 - y13)
 
-            dz =
-                wz1 + t * (wz2 - wz1)
+            z14 =
+                z13 + t * (z24 - z13)
         in
-        3 * sqrt (dx * dx + dy * dy + dz * dz)
+        3 * sqrt (x14 * x14 + y14 * y14 + z14 * z14)
 
 
 {-| Evaluate a spline at a given parameter value, returning the point on the
