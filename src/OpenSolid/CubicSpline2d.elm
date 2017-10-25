@@ -6,6 +6,7 @@ module OpenSolid.CubicSpline2d
         , bisect
         , controlPoints
         , derivative
+        , derivativeMagnitude
         , endDerivative
         , endPoint
         , evaluate
@@ -80,7 +81,7 @@ in 2D defined by four control points. This module contains functionality for
 
 Low level functionality that you are unlikely to need to use directly.
 
-@docs maxSecondDerivativeMagnitude
+@docs derivativeMagnitude, maxSecondDerivativeMagnitude
 
 -}
 
@@ -379,6 +380,89 @@ derivative spline t =
             ( 3 * (wx2 + u * (wx1 - wx2))
             , 3 * (wy2 + u * (wy1 - wy2))
             )
+
+
+{-| Find the magnitude of the derivative to a spline at a particular parameter
+value;
+
+    CubicSpline3d.derivativeMagnitude spline t
+
+is equivalent to
+
+    Vector3d.length (CubicSpline3d.derivative spline t)
+
+but more efficient since it avoids any intermediate `Vector3d` allocation.
+
+-}
+derivativeMagnitude : CubicSpline2d -> Float -> Float
+derivativeMagnitude spline =
+    let
+        ( p1, p2, p3, p4 ) =
+            controlPoints spline
+
+        ( x1, y1 ) =
+            Point2d.coordinates p1
+
+        ( x2, y2 ) =
+            Point2d.coordinates p2
+
+        ( x3, y3 ) =
+            Point2d.coordinates p3
+
+        ( x4, y4 ) =
+            Point2d.coordinates p4
+
+        x12 =
+            x2 - x1
+
+        y12 =
+            y2 - y1
+
+        x23 =
+            x3 - x2
+
+        y23 =
+            y3 - y2
+
+        x34 =
+            x4 - x3
+
+        y34 =
+            y4 - y3
+
+        x123 =
+            x23 - x12
+
+        y123 =
+            y23 - y12
+
+        x234 =
+            x34 - x23
+
+        y234 =
+            y34 - y23
+    in
+    \t ->
+        let
+            x13 =
+                x12 + t * x123
+
+            y13 =
+                y12 + t * y123
+
+            x24 =
+                x23 + t * x234
+
+            y24 =
+                y23 + t * y234
+
+            x14 =
+                x13 + t * (x24 - x13)
+
+            y14 =
+                y13 + t * (y24 - y13)
+        in
+        3 * sqrt (x14 * x14 + y14 * y14)
 
 
 {-| Evaluate a spline at a given parameter value, returning the point on the
