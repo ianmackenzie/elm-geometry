@@ -722,12 +722,9 @@ splitAt t spline =
 arcLengthParameterized : Float -> CubicSpline2d -> ArcLengthParameterized CubicSpline2d
 arcLengthParameterized tolerance spline =
     let
-        derivativeMagnitude =
-            Vector2d.length << derivative spline
-
         config =
             { tolerance = tolerance
-            , derivativeMagnitude = derivativeMagnitude
+            , derivativeMagnitude = derivativeMagnitude spline
             , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude spline
             }
     in
