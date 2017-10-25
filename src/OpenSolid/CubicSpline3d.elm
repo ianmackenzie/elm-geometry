@@ -507,69 +507,35 @@ derivativeMagnitude spline =
             z4 - z3
     in
     \t ->
-        if t <= 0.5 then
-            let
-                wx1 =
-                    vx1 + t * (vx2 - vx1)
+        let
+            wx1 =
+                vx1 + t * (vx2 - vx1)
 
-                wy1 =
-                    vy1 + t * (vy2 - vy1)
+            wy1 =
+                vy1 + t * (vy2 - vy1)
 
-                wz1 =
-                    vz1 + t * (vz2 - vz1)
+            wz1 =
+                vz1 + t * (vz2 - vz1)
 
-                wx2 =
-                    vx2 + t * (vx3 - vx2)
+            wx2 =
+                vx2 + t * (vx3 - vx2)
 
-                wy2 =
-                    vy2 + t * (vy3 - vy2)
+            wy2 =
+                vy2 + t * (vy3 - vy2)
 
-                wz2 =
-                    vz2 + t * (vz3 - vz2)
+            wz2 =
+                vz2 + t * (vz3 - vz2)
 
-                dx =
-                    wx1 + t * (wx2 - wx1)
+            dx =
+                wx1 + t * (wx2 - wx1)
 
-                dy =
-                    wy1 + t * (wy2 - wy1)
+            dy =
+                wy1 + t * (wy2 - wy1)
 
-                dz =
-                    wz1 + t * (wz2 - wz1)
-            in
-            3 * sqrt (dx * dx + dy * dy + dz * dz)
-        else
-            let
-                u =
-                    1 - t
-
-                wx1 =
-                    vx2 + u * (vx1 - vx2)
-
-                wy1 =
-                    vy2 + u * (vy1 - vy2)
-
-                wz1 =
-                    vz2 + u * (vz1 - vz2)
-
-                wx2 =
-                    vx3 + u * (vx2 - vx3)
-
-                wy2 =
-                    vy3 + u * (vy2 - vy3)
-
-                wz2 =
-                    vz3 + u * (vz2 - vz3)
-
-                dx =
-                    wx2 + u * (wx1 - wx2)
-
-                dy =
-                    wy2 + u * (wy1 - wy2)
-
-                dz =
-                    wz2 + u * (wz1 - wz2)
-            in
-            3 * sqrt (dx * dx + dy * dy + dz * dz)
+            dz =
+                wz1 + t * (wz2 - wz1)
+        in
+        3 * sqrt (dx * dx + dy * dy + dz * dz)
 
 
 {-| Evaluate a spline at a given parameter value, returning the point on the
