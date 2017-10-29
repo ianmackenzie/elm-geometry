@@ -115,7 +115,8 @@ hullOf values =
 -}
 roundTo : Int -> Float -> Float
 roundTo ndigits number =
-    (number * 10.0 ^ toFloat ndigits)
-        |> round
-        |> toFloat
-        |> flip (/) (10.0 ^ toFloat ndigits)
+    let
+        scale =
+            10.0 ^ toFloat ndigits
+    in
+    toFloat (round (scale * number)) / scale
