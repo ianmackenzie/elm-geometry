@@ -973,11 +973,9 @@ roundTo ndigits point =
     let
         ( x, y, z ) =
             coordinates point
-
-        newCoords =
-            ( Scalar.roundTo ndigits x
-            , Scalar.roundTo ndigits y
-            , Scalar.roundTo ndigits z
-            )
     in
-    fromCoordinates newCoords
+    fromCoordinates
+        ( Scalar.roundTo ndigits x
+        , Scalar.roundTo ndigits y
+        , Scalar.roundTo ndigits z
+        )
