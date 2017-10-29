@@ -324,9 +324,9 @@ mirrorAcross plane =
             }
 
 
-{-| Project an axis onto a plane, returning the axis that is the 'shadow' of the
-given axis on the given plane. If the given axis is exactly perpendicular to the
-given plane, returns `Nothing`.
+{-| Find the [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
+of an axis onto a plane. If the given axis is exactly perpendicular to the given
+plane, returns `Nothing`.
 
     Axis3d.projectOnto Plane3d.xy exampleAxis
     --> Just
@@ -415,8 +415,9 @@ placeIn frame =
             }
 
 
-{-| Project an axis into a given sketch plane. Conceptually, this projects the
-axis onto the plane and then expresses the projected axis in 2D sketch
+{-| Project an axis into a given sketch plane. Conceptually, this finds the
+[orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
+of the axis onto the plane and then expresses the projected axis in 2D sketch
 coordinates.
 
 This is only possible if the axis is not perpendicular to the sketch
