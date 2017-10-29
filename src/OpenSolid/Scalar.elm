@@ -104,13 +104,13 @@ hullOf values =
             Just result
 
 
-{-| Round a number to `ndigits` precision.
+{-| Round a value to a given number of digits.
 
-    roundTo 2 2.875
+    Scalar.roundTo 2 2.875
     --> 2.88
 
-    roundTo 0 2.875
-    --> 3.0
+    Scalar.roundTo 0 2.875
+    --> 3
 
 -}
 roundTo : Int -> Float -> Float
