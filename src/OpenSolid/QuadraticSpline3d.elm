@@ -6,6 +6,7 @@ module OpenSolid.QuadraticSpline3d
         , bisect
         , controlPoints
         , derivative
+        , derivativeMagnitude
         , endDerivative
         , endPoint
         , evaluate
@@ -86,7 +87,7 @@ in 3D defined by three control points. This module contains functionality for
 
 Low level functionality that you are unlikely to need to use directly.
 
-@docs secondDerivative
+@docs derivativeMagnitude, secondDerivative
 
 -}
 
@@ -280,6 +281,74 @@ derivative spline =
             Vector3d.from p2 p3
     in
     \t -> Vector3d.interpolateFrom v1 v2 t |> Vector3d.scaleBy 2
+
+
+{-| Find the magnitude of the derivative to a spline at a particular parameter
+value;
+
+    QuadraticSpline3d.derivativeMagnitude spline t
+
+is equivalent to
+
+    Vector3d.length (QuadraticSpline3d.derivative spline t)
+
+but more efficient since it avoids any intermediate `Vector3d` allocation.
+
+-}
+derivativeMagnitude : QuadraticSpline3d -> Float -> Float
+derivativeMagnitude spline =
+    let
+        ( p1, p2, p3 ) =
+            controlPoints spline
+
+        ( x1, y1, z1 ) =
+            Point3d.coordinates p1
+
+        ( x2, y2, z2 ) =
+            Point3d.coordinates p2
+
+        ( x3, y3, z3 ) =
+            Point3d.coordinates p3
+
+        x12 =
+            x2 - x1
+
+        y12 =
+            y2 - y1
+
+        z12 =
+            z2 - z1
+
+        x23 =
+            x3 - x2
+
+        y23 =
+            y3 - y2
+
+        z23 =
+            z3 - z2
+
+        x123 =
+            x23 - x12
+
+        y123 =
+            y23 - y12
+
+        z123 =
+            z23 - z12
+    in
+    \t ->
+        let
+            x13 =
+                x12 + t * x123
+
+            y13 =
+                y12 + t * y123
+
+            z13 =
+                z12 + t * z123
+        in
+        2 * sqrt (x13 * x13 + y13 * y13 + z13 * z13)
 
 
 {-| Evaluate a spline at a given parameter value, returning the point on the
@@ -556,15 +625,12 @@ splitAt t spline =
 arcLengthParameterized : Float -> QuadraticSpline3d -> ArcLengthParameterized QuadraticSpline3d
 arcLengthParameterized tolerance spline =
     let
-        derivativeMagnitude =
-            Vector3d.length << derivative spline
-
         maxSecondDerivativeMagnitude =
             Vector3d.length (secondDerivative spline)
 
         config =
             { tolerance = tolerance
-            , derivativeMagnitude = derivativeMagnitude
+            , derivativeMagnitude = derivativeMagnitude spline
             , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude
             }
     in

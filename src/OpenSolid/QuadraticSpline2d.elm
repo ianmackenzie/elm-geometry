@@ -6,6 +6,7 @@ module OpenSolid.QuadraticSpline2d
         , bisect
         , controlPoints
         , derivative
+        , derivativeMagnitude
         , endDerivative
         , endPoint
         , evaluate
@@ -78,7 +79,7 @@ in 2D defined by three control points. This module contains functionality for
 
 Low level functionality that you are unlikely to need to use directly.
 
-@docs secondDerivative
+@docs derivativeMagnitude, secondDerivative
 
 -}
 
@@ -241,6 +242,62 @@ derivative spline =
             Vector2d.from p2 p3
     in
     \t -> Vector2d.interpolateFrom v1 v2 t |> Vector2d.scaleBy 2
+
+
+{-| Find the magnitude of the derivative to a spline at a particular parameter
+value;
+
+    QuadraticSpline2d.derivativeMagnitude spline t
+
+is equivalent to
+
+    Vector2d.length (QuadraticSpline2d.derivative spline t)
+
+but more efficient since it avoids any intermediate `Vector2d` allocation.
+
+-}
+derivativeMagnitude : QuadraticSpline2d -> Float -> Float
+derivativeMagnitude spline =
+    let
+        ( p1, p2, p3 ) =
+            controlPoints spline
+
+        ( x1, y1 ) =
+            Point2d.coordinates p1
+
+        ( x2, y2 ) =
+            Point2d.coordinates p2
+
+        ( x3, y3 ) =
+            Point2d.coordinates p3
+
+        x12 =
+            x2 - x1
+
+        y12 =
+            y2 - y1
+
+        x23 =
+            x3 - x2
+
+        y23 =
+            y3 - y2
+
+        x123 =
+            x23 - x12
+
+        y123 =
+            y23 - y12
+    in
+    \t ->
+        let
+            x13 =
+                x12 + t * x123
+
+            y13 =
+                y12 + t * y123
+        in
+        2 * sqrt (x13 * x13 + y13 * y13)
 
 
 {-| Evaluate a spline at a given parameter value, returning the point on the
@@ -473,15 +530,12 @@ splitAt t spline =
 arcLengthParameterized : Float -> QuadraticSpline2d -> ArcLengthParameterized QuadraticSpline2d
 arcLengthParameterized tolerance spline =
     let
-        derivativeMagnitude =
-            Vector2d.length << derivative spline
-
         maxSecondDerivativeMagnitude =
             Vector2d.length (secondDerivative spline)
 
         config =
             { tolerance = tolerance
-            , derivativeMagnitude = derivativeMagnitude
+            , derivativeMagnitude = derivativeMagnitude spline
             , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude
             }
     in
