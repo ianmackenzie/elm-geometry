@@ -353,8 +353,8 @@ lengthAtEnd tree =
         Node { lengthAtEnd } ->
             lengthAtEnd
 
-        Leaf { length4 } ->
-            length4
+        Leaf { length8 } ->
+            length8
 
 
 {-| Convert a parameter value to the corresponding arc length. If the given
