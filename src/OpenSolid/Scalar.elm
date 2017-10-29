@@ -1,8 +1,8 @@
-module OpenSolid.Scalar exposing (equalWithin, hull, hullOf, interpolateFrom)
+module OpenSolid.Scalar exposing (equalWithin, hull, hullOf, interpolateFrom, roundTo)
 
 {-| Convenience functions for working with scalar (floating-point) values.
 
-@docs equalWithin, interpolateFrom, hull, hullOf
+@docs equalWithin, interpolateFrom, hull, hullOf, roundTo
 
 -}
 
@@ -102,3 +102,20 @@ hullOf values =
                         }
             in
             Just result
+
+
+{-| Round a number to `ndigits` precision.
+
+    roundTo 2 2.875
+    --> 2.88
+
+    roundTo 0 2.875
+    --> 3.0
+
+-}
+roundTo : Int -> Float -> Float
+roundTo ndigits number =
+    (number * 10.0 ^ toFloat ndigits)
+        |> round
+        |> toFloat
+        |> flip (/) (10.0 ^ toFloat ndigits)

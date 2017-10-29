@@ -35,6 +35,7 @@ module OpenSolid.Point3d
         , projectOntoAxis
         , relativeTo
         , rotateAround
+        , roundTo
         , scaleAbout
         , signedDistanceFrom
         , squaredDistanceFrom
@@ -91,7 +92,7 @@ like you can add two vectors.
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, projectOntoAxis
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, projectOntoAxis, roundTo
 
 
 # Coordinate conversions
@@ -963,3 +964,20 @@ list is empty, returns `Nothing`.
 hullOf : List Point3d -> Maybe BoundingBox3d
 hullOf points =
     BoundingBox3d.hullOf (List.map BoundingBox3d.singleton points)
+
+
+{-| Round every coordinate to `ndigits` precision
+-}
+roundTo : Int -> Point3d -> Point3d
+roundTo ndigits point =
+    let
+        ( x, y, z ) =
+            coordinates point
+
+        newCoords =
+            ( Scalar.roundTo ndigits x
+            , Scalar.roundTo ndigits y
+            , Scalar.roundTo ndigits z
+            )
+    in
+    fromCoordinates newCoords
