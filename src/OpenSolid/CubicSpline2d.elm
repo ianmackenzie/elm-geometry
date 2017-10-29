@@ -385,13 +385,13 @@ derivative spline t =
 {-| Find the magnitude of the derivative to a spline at a particular parameter
 value;
 
-    CubicSpline3d.derivativeMagnitude spline t
+    CubicSpline2d.derivativeMagnitude spline t
 
 is equivalent to
 
-    Vector3d.length (CubicSpline3d.derivative spline t)
+    Vector2d.length (CubicSpline2d.derivative spline t)
 
-but more efficient since it avoids any intermediate `Vector3d` allocation.
+but more efficient since it avoids any intermediate `Vector2d` allocation.
 
 -}
 derivativeMagnitude : CubicSpline2d -> Float -> Float
