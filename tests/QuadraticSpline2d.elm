@@ -9,7 +9,6 @@ module QuadraticSpline2d
 import Expect
 import Fuzz exposing (Fuzzer)
 import Generic
-import OpenSolid.ArcLength as ArcLength
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Fuzz as Fuzz
@@ -171,11 +170,12 @@ parameterization =
                     parameterizedCurve =
                         QuadraticSpline2d.arcLengthParameterized 0.001 spline
 
-                    parameterization =
-                        ArcLength.parameterization parameterizedCurve
+                    toParameterValue =
+                        QuadraticSpline2d.arcLengthToParameterValue
+                            parameterizedCurve
                 in
                 QuadraticSpline2d.arcLength parameterizedCurve
-                    |> ArcLength.toParameterValue parameterization
+                    |> toParameterValue
                     |> Expect.equal (Just 1)
         , Test.fuzz curvedSpline "arc length matches analytical formula" <|
             -- analyticalLength falls down for degenerate splines so just check
@@ -216,7 +216,11 @@ parameterization =
                             exampleSpline
 
                     expected =
-                        Just (Point2d.fromCoordinates ( 2.9008070813684963, 2.4963102868350115 ))
+                        Just <|
+                            Point2d.fromCoordinates
+                                ( 2.9008070813684963
+                                , 2.4963102868350115
+                                )
                 in
                 QuadraticSpline2d.pointAlong parameterizedCurve 2.5
                     |> Expect.equal expected

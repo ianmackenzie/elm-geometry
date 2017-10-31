@@ -1,8 +1,11 @@
 module OpenSolid.QuadraticSpline2d
     exposing
-        ( QuadraticSpline2d
+        ( ArcLengthParameterized
+        , QuadraticSpline2d
         , arcLength
+        , arcLengthFromParameterValue
         , arcLengthParameterized
+        , arcLengthToParameterValue
         , bisect
         , controlPoints
         , derivative
@@ -72,7 +75,7 @@ in 2D defined by three control points. This module contains functionality for
 
 # Arc length parameterization
 
-@docs arcLengthParameterized, arcLength, pointAlong, tangentAlong
+@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentAlong, arcLengthToParameterValue, arcLengthFromParameterValue
 
 
 # Low level
@@ -83,7 +86,7 @@ Low level functionality that you are unlikely to need to use directly.
 
 -}
 
-import OpenSolid.ArcLength as ArcLength exposing (ArcLengthParameterized(ArcLengthParameterized))
+import OpenSolid.ArcLength as ArcLength
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
@@ -525,44 +528,69 @@ splitAt t spline =
     )
 
 
+{-| A spline that has been parameterized by arc length.
+-}
+type ArcLengthParameterized
+    = ArcLengthParameterized QuadraticSpline2d ArcLength.Parameterization
+
+
 {-| Build an arc length parameterization of the given spline.
 -}
-arcLengthParameterized : Float -> QuadraticSpline2d -> ArcLengthParameterized QuadraticSpline2d
+arcLengthParameterized : Float -> QuadraticSpline2d -> ArcLengthParameterized
 arcLengthParameterized tolerance spline =
     let
         maxSecondDerivativeMagnitude =
             Vector2d.length (secondDerivative spline)
 
-        config =
-            { tolerance = tolerance
-            , derivativeMagnitude = derivativeMagnitude spline
-            , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude
-            }
+        parameterization =
+            ArcLength.parameterization
+                { tolerance = tolerance
+                , derivativeMagnitude = derivativeMagnitude spline
+                , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude
+                }
     in
-    ArcLengthParameterized spline (ArcLength.buildParameterization config)
+    ArcLengthParameterized spline parameterization
 
 
-{-| Approximate the length of a spline given a maximum error percentage
+{-| Find the total arc length of a spline. This will be accurate to within the
+tolerance given when calling `arcLengthParameterized`.
 -}
-arcLength : ArcLengthParameterized QuadraticSpline2d -> Float
+arcLength : ArcLengthParameterized -> Float
 arcLength (ArcLengthParameterized _ parameterization) =
     ArcLength.fromParameterization parameterization
 
 
 {-| Get the point along a spline at a given arc length.
 -}
-pointAlong : ArcLengthParameterized QuadraticSpline2d -> Float -> Maybe Point2d
+pointAlong : ArcLengthParameterized -> Float -> Maybe Point2d
 pointAlong (ArcLengthParameterized spline parameterization) s =
     ArcLength.toParameterValue parameterization s |> Maybe.map (pointOn spline)
 
 
 {-| Get the tangent direction along a spline at a given arc length.
 -}
-tangentAlong : ArcLengthParameterized QuadraticSpline2d -> Float -> Maybe Direction2d
+tangentAlong : ArcLengthParameterized -> Float -> Maybe Direction2d
 tangentAlong (ArcLengthParameterized spline parameterization) s =
     ArcLength.toParameterValue parameterization s
         |> Maybe.map (derivative spline)
         |> Maybe.andThen Vector2d.direction
+
+
+{-| Get the parameter value along a spline at a given arc length. If the given
+arc length is less than zero or greater than the arc length of the spline,
+returns `Nothing`.
+-}
+arcLengthToParameterValue : ArcLengthParameterized -> Float -> Maybe Float
+arcLengthToParameterValue (ArcLengthParameterized _ parameterization) s =
+    ArcLength.toParameterValue parameterization s
+
+
+{-| Get the arc length along a spline at a given parameter value. If the given
+parameter value is less than zero or greater than one, returns `Nothing`.
+-}
+arcLengthFromParameterValue : ArcLengthParameterized -> Float -> Maybe Float
+arcLengthFromParameterValue (ArcLengthParameterized _ parameterization) t =
+    ArcLength.fromParameterValue parameterization t
 
 
 {-| Get the second derivative of a spline (for a quadratic spline, this is a

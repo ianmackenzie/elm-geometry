@@ -1,9 +1,6 @@
 module OpenSolid.ArcLength
     exposing
-        ( ArcLengthParameterization
-        , ArcLengthParameterized(..)
-        , Config
-        , buildParameterization
+        ( Parameterization
         , fromParameterValue
         , fromParameterization
         , parameterization
@@ -16,36 +13,27 @@ should contain all the functionality you need to construct an arc length
 parameterization and use it to do things like evaluate a curve at evenly-spaced
 points. This module is primarily for use internally by those curve modules.
 
-@docs ArcLengthParameterized, ArcLengthParameterization
+@docs Parameterization
 
 
 # Constructing
 
-@docs buildParameterization, Config
+@docs parameterization
 
 
 # Evaluating
 
-@docs parameterization, fromParameterization, toParameterValue, fromParameterValue
+@docs fromParameterization, toParameterValue, fromParameterValue
 
 -}
 
 import OpenSolid.Scalar as Scalar
 
 
-{-| An arc length parameterized curve is simply a tuple containing the curve
-itself along with its associated arc length parameterization. Different curve
-modules contain functions for creating `ArcLengthParameterized` values and then
-evaluating them.
--}
-type ArcLengthParameterized c
-    = ArcLengthParameterized c ArcLengthParameterization
-
-
 {-| Contains a mapping from curve parameter value to arc length, and vice versa.
 -}
-type ArcLengthParameterization
-    = ArcLengthParameterization SegmentTree
+type Parameterization
+    = Parameterization SegmentTree
 
 
 type SegmentTree
@@ -83,12 +71,18 @@ segmentsPerLeaf =
     8
 
 
-{-| Build an arc length parameterization for a particular curve, within a given
-tolerance. A `Config` value must be supplied that defines how to bisect the
-curve and how to determine bounds on the magnitude of its first derivative.
+{-| Build an arc length parameterization for some curve. You must supply:
+
+  - A `derivativeMagnitude` function that returns the magnitude of the first
+    derivative of the curve at a given parameter value
+  - The maximum magnitude of the second derivative of the curve
+  - A tolerance specifying the maximum error of the resulting parameterization
+
+Curve parameter values are assumed to be in the range [0,1].
+
 -}
-buildParameterization : Config -> ArcLengthParameterization
-buildParameterization config =
+parameterization : { tolerance : Float, derivativeMagnitude : Float -> Float, maxSecondDerivativeMagnitude : Float } -> Parameterization
+parameterization config =
     let
         { tolerance, derivativeMagnitude, maxSecondDerivativeMagnitude } =
             config
@@ -106,16 +100,7 @@ buildParameterization config =
                 in
                 max 0 (ceiling (logBase 2 numLeaves))
     in
-    ArcLengthParameterization (buildTree derivativeMagnitude 0 0 1 height)
-
-
-{-| Type used as argument to `buildParameterization`.
--}
-type alias Config =
-    { tolerance : Float
-    , derivativeMagnitude : Float -> Float
-    , maxSecondDerivativeMagnitude : Float
-    }
+    Parameterization (buildTree derivativeMagnitude 0 0 1 height)
 
 
 buildTree : (Float -> Float) -> Float -> Float -> Float -> Int -> SegmentTree
@@ -240,26 +225,12 @@ buildTree derivativeMagnitude lengthAtStart paramAtStart paramAtEnd height =
             }
 
 
-{-| Get the arc length parameterization of a parameterized curve.
--}
-parameterization : ArcLengthParameterized c -> ArcLengthParameterization
-parameterization (ArcLengthParameterized _ parameterization) =
-    parameterization
-
-
-{-| Get the total arc length of a curve given its arc length parameterization.
--}
-fromParameterization : ArcLengthParameterization -> Float
-fromParameterization (ArcLengthParameterization tree) =
-    lengthAtEnd tree
-
-
 {-| Convert an arc length to the corresponding parameter value. If the given
 arc length is less than zero or greater than the total arc length of the curve,
 returns `Nothing`.
 -}
-toParameterValue : ArcLengthParameterization -> Float -> Maybe Float
-toParameterValue (ArcLengthParameterization tree) s =
+toParameterValue : Parameterization -> Float -> Maybe Float
+toParameterValue (Parameterization tree) s =
     if s >= 0 && s <= lengthAtEnd tree then
         Just (unsafeToParameterValue tree s)
     else
@@ -357,11 +328,28 @@ lengthAtEnd tree =
             length8
 
 
+{-| Find the total arc length of some curve given its arc length
+parameterization;
+
+    ArcLength.fromParameterization parameterization
+
+is similar to
+
+    ArcLength.fromParameterValue parameterization 1
+
+but is more efficient and returns a plain `Float` instead of a `Maybe Float`.
+
+-}
+fromParameterization : Parameterization -> Float
+fromParameterization (Parameterization tree) =
+    lengthAtEnd tree
+
+
 {-| Convert a parameter value to the corresponding arc length. If the given
 parameter value is less than zero or greater than one, returns `Nothing`.
 -}
-fromParameterValue : ArcLengthParameterization -> Float -> Maybe Float
-fromParameterValue (ArcLengthParameterization tree) t =
+fromParameterValue : Parameterization -> Float -> Maybe Float
+fromParameterValue (Parameterization tree) t =
     if t >= 0 && t <= 1 then
         Just (unsafeFromParameterValue tree t)
     else
