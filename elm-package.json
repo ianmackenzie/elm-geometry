@@ -13,7 +13,6 @@
         "OpenSolid.Arc3d",
         "OpenSolid.Axis2d",
         "OpenSolid.Axis3d",
-        "OpenSolid.ArcLength",
         "OpenSolid.BoundingBox2d",
         "OpenSolid.BoundingBox3d",
         "OpenSolid.Circle2d",
