@@ -68,7 +68,7 @@ module OpenSolid.Geometry.Expect
         , vector3dWithin
         )
 
-import Expect exposing (Expectation, FloatingPointTolerance(Absolute))
+import Expect exposing (Expectation)
 import OpenSolid.Arc2d as Arc2d exposing (Arc2d)
 import OpenSolid.Arc3d as Arc3d exposing (Arc3d)
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
@@ -152,7 +152,7 @@ defaultTolerance =
 
 approximately : Float -> Float -> Expectation
 approximately =
-    Expect.within (Absolute defaultTolerance)
+    Expect.within (Expect.Absolute defaultTolerance)
 
 
 angle : Float -> Float -> Expectation
