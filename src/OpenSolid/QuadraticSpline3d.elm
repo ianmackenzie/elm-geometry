@@ -1,9 +1,15 @@
 module OpenSolid.QuadraticSpline3d
     exposing
-        ( QuadraticSpline3d
+        ( ArcLengthParameterized
+        , QuadraticSpline3d
+        , arcLength
+        , arcLengthFromParameterValue
+        , arcLengthParameterized
+        , arcLengthToParameterValue
         , bisect
         , controlPoints
         , derivative
+        , derivativeMagnitude
         , endDerivative
         , endPoint
         , evaluate
@@ -11,6 +17,7 @@ module OpenSolid.QuadraticSpline3d
         , mirrorAcross
         , on
         , placeIn
+        , pointAlong
         , pointOn
         , projectInto
         , projectOnto
@@ -18,9 +25,11 @@ module OpenSolid.QuadraticSpline3d
         , reverse
         , rotateAround
         , scaleAbout
+        , secondDerivative
         , splitAt
         , startDerivative
         , startPoint
+        , tangentAlong
         , translateBy
         )
 
@@ -71,9 +80,23 @@ in 3D defined by three control points. This module contains functionality for
 
 @docs bisect, splitAt
 
+
+# Arc length parameterization
+
+@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentAlong, arcLengthToParameterValue, arcLengthFromParameterValue
+
+
+# Low level
+
+Low level functionality that you are unlikely to need to use directly.
+
+@docs derivativeMagnitude, secondDerivative
+
 -}
 
+import OpenSolid.ArcLength as ArcLength
 import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
+import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
 import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
@@ -261,6 +284,74 @@ derivative spline =
             Vector3d.from p2 p3
     in
     \t -> Vector3d.interpolateFrom v1 v2 t |> Vector3d.scaleBy 2
+
+
+{-| Find the magnitude of the derivative to a spline at a particular parameter
+value;
+
+    QuadraticSpline3d.derivativeMagnitude spline t
+
+is equivalent to
+
+    Vector3d.length (QuadraticSpline3d.derivative spline t)
+
+but more efficient since it avoids any intermediate `Vector3d` allocation.
+
+-}
+derivativeMagnitude : QuadraticSpline3d -> Float -> Float
+derivativeMagnitude spline =
+    let
+        ( p1, p2, p3 ) =
+            controlPoints spline
+
+        ( x1, y1, z1 ) =
+            Point3d.coordinates p1
+
+        ( x2, y2, z2 ) =
+            Point3d.coordinates p2
+
+        ( x3, y3, z3 ) =
+            Point3d.coordinates p3
+
+        x12 =
+            x2 - x1
+
+        y12 =
+            y2 - y1
+
+        z12 =
+            z2 - z1
+
+        x23 =
+            x3 - x2
+
+        y23 =
+            y3 - y2
+
+        z23 =
+            z3 - z2
+
+        x123 =
+            x23 - x12
+
+        y123 =
+            y23 - y12
+
+        z123 =
+            z23 - z12
+    in
+    \t ->
+        let
+            x13 =
+                x12 + t * x123
+
+            y13 =
+                y12 + t * y123
+
+            z13 =
+                z12 + t * z123
+        in
+        2 * sqrt (x13 * x13 + y13 * y13 + z13 * z13)
 
 
 {-| Evaluate a spline at a given parameter value, returning the point on the
@@ -530,3 +621,86 @@ splitAt t spline =
     ( fromControlPoints ( p1, q1, r )
     , fromControlPoints ( r, q2, p3 )
     )
+
+
+{-| A spline that has been parameterized by arc length.
+-}
+type ArcLengthParameterized
+    = ArcLengthParameterized QuadraticSpline3d ArcLength.Parameterization
+
+
+{-| Build an arc length parameterization of the given spline.
+-}
+arcLengthParameterized : Float -> QuadraticSpline3d -> ArcLengthParameterized
+arcLengthParameterized tolerance spline =
+    let
+        maxSecondDerivativeMagnitude =
+            Vector3d.length (secondDerivative spline)
+
+        parameterization =
+            ArcLength.parameterization
+                { tolerance = tolerance
+                , derivativeMagnitude = derivativeMagnitude spline
+                , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude
+                }
+    in
+    ArcLengthParameterized spline parameterization
+
+
+{-| Find the total arc length of a spline. This will be accurate to within the
+tolerance given when calling `arcLengthParameterized`.
+-}
+arcLength : ArcLengthParameterized -> Float
+arcLength (ArcLengthParameterized _ parameterization) =
+    ArcLength.fromParameterization parameterization
+
+
+{-| Get the point along a spline at a given arc length.
+-}
+pointAlong : ArcLengthParameterized -> Float -> Maybe Point3d
+pointAlong (ArcLengthParameterized spline parameterization) s =
+    ArcLength.toParameterValue parameterization s |> Maybe.map (pointOn spline)
+
+
+{-| Get the tangent direction along a spline at a given arc length.
+-}
+tangentAlong : ArcLengthParameterized -> Float -> Maybe Direction3d
+tangentAlong (ArcLengthParameterized spline parameterization) s =
+    ArcLength.toParameterValue parameterization s
+        |> Maybe.map (derivative spline)
+        |> Maybe.andThen Vector3d.direction
+
+
+{-| Get the parameter value along a spline at a given arc length. If the given
+arc length is less than zero or greater than the arc length of the spline,
+returns `Nothing`.
+-}
+arcLengthToParameterValue : ArcLengthParameterized -> Float -> Maybe Float
+arcLengthToParameterValue (ArcLengthParameterized _ parameterization) s =
+    ArcLength.toParameterValue parameterization s
+
+
+{-| Get the arc length along a spline at a given parameter value. If the given
+parameter value is less than zero or greater than one, returns `Nothing`.
+-}
+arcLengthFromParameterValue : ArcLengthParameterized -> Float -> Maybe Float
+arcLengthFromParameterValue (ArcLengthParameterized _ parameterization) t =
+    ArcLength.fromParameterValue parameterization t
+
+
+{-| Get the second derivative of a spline (for a quadratic spline, this is a
+constant).
+-}
+secondDerivative : QuadraticSpline3d -> Vector3d
+secondDerivative spline =
+    let
+        ( p1, p2, p3 ) =
+            controlPoints spline
+
+        v1 =
+            Vector3d.from p1 p2
+
+        v2 =
+            Vector3d.from p2 p3
+    in
+    Vector3d.difference v2 v1 |> Vector3d.scaleBy 2

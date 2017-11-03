@@ -1,17 +1,26 @@
 module OpenSolid.CubicSpline3d
     exposing
-        ( CubicSpline3d
+        ( ArcLengthParameterized
+        , CubicSpline3d
+        , arcLength
+        , arcLengthFromParameterValue
+        , arcLengthParameterized
+        , arcLengthToParameterValue
         , bisect
         , controlPoints
         , derivative
+        , derivativeMagnitude
         , endDerivative
         , endPoint
         , evaluate
         , fromControlPoints
+        , fromQuadraticSpline
         , hermite
+        , maxSecondDerivativeMagnitude
         , mirrorAcross
         , on
         , placeIn
+        , pointAlong
         , pointOn
         , projectInto
         , projectOnto
@@ -22,6 +31,7 @@ module OpenSolid.CubicSpline3d
         , splitAt
         , startDerivative
         , startPoint
+        , tangentAlong
         , translateBy
         )
 
@@ -40,7 +50,7 @@ in 3D defined by four control points. This module contains functionality for
 
 # Constructors
 
-@docs fromControlPoints, hermite, on
+@docs fromControlPoints, hermite, on, fromQuadraticSpline
 
 
 # Properties
@@ -67,14 +77,29 @@ in 3D defined by four control points. This module contains functionality for
 
 @docs bisect, splitAt
 
+
+# Arc length parameterization
+
+@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentAlong, arcLengthToParameterValue, arcLengthFromParameterValue
+
+
+# Low level
+
+Low level functionality that you are unlikely to need to use directly.
+
+@docs derivativeMagnitude, maxSecondDerivativeMagnitude
+
 -}
 
+import OpenSolid.ArcLength as ArcLength
 import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
 import OpenSolid.CubicSpline2d as CubicSpline2d exposing (CubicSpline2d)
+import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
 import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
 import OpenSolid.Point3d as Point3d exposing (Point3d)
+import OpenSolid.QuadraticSpline3d as QuadraticSpline3d exposing (QuadraticSpline3d)
 import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
@@ -165,6 +190,39 @@ on sketchPlane spline =
             Point3d.on sketchPlane
     in
     fromControlPoints ( place p1, place p2, place p3, place p4 )
+
+
+{-| Convert a quadratic spline into the equivalent cubic spline (every quadratic
+spline can be represented exactly as a cubic spline).
+
+    quadraticSpline =
+        QuadraticSpline3d.fromControlPoints
+            ( Point3d.fromCoordinates ( 0, 0, 0  )
+            , Point3d.fromCoordinates ( 3, 0, 0 )
+            , Point3d.fromCoordinates ( 3, 3, 0 )
+            )
+
+    CubicSpline3d.fromQuadraticSpline quadraticSpline
+    --> CubicSpline3d.fromControlPoints
+    -->     ( Point3d.fromCoordinates ( 0, 0, 0 )
+    -->     , Point3d.fromCoordinates ( 2, 0, 0 )
+    -->     , Point3d.fromCoordinates ( 3, 1, 0 )
+    -->     , Point3d.fromCoordinates ( 3, 3, 0 )
+    -->     )
+
+-}
+fromQuadraticSpline : QuadraticSpline3d -> CubicSpline3d
+fromQuadraticSpline quadraticSpline =
+    let
+        ( p1, p2, p3 ) =
+            QuadraticSpline3d.controlPoints quadraticSpline
+    in
+    fromControlPoints
+        ( p1
+        , Point3d.interpolateFrom p1 p2 (2 / 3)
+        , Point3d.interpolateFrom p3 p2 (2 / 3)
+        , p3
+        )
 
 
 {-| Get the control points of a spline as a tuple.
@@ -295,29 +353,210 @@ Note that the derivative interpolates linearly from end to end.
 
 -}
 derivative : CubicSpline3d -> Float -> Vector3d
-derivative spline =
+derivative spline t =
     let
         ( p1, p2, p3, p4 ) =
             controlPoints spline
 
-        v1 =
-            Vector3d.from p1 p2
+        ( x1, y1, z1 ) =
+            Point3d.coordinates p1
 
-        v2 =
-            Vector3d.from p2 p3
+        ( x2, y2, z2 ) =
+            Point3d.coordinates p2
 
-        v3 =
-            Vector3d.from p3 p4
+        ( x3, y3, z3 ) =
+            Point3d.coordinates p3
+
+        ( x4, y4, z4 ) =
+            Point3d.coordinates p4
+
+        vx1 =
+            x2 - x1
+
+        vy1 =
+            y2 - y1
+
+        vz1 =
+            z2 - z1
+
+        vx2 =
+            x3 - x2
+
+        vy2 =
+            y3 - y2
+
+        vz2 =
+            z3 - z2
+
+        vx3 =
+            x4 - x3
+
+        vy3 =
+            y4 - y3
+
+        vz3 =
+            z4 - z3
+    in
+    if t <= 0.5 then
+        let
+            wx1 =
+                vx1 + t * (vx2 - vx1)
+
+            wy1 =
+                vy1 + t * (vy2 - vy1)
+
+            wz1 =
+                vz1 + t * (vz2 - vz1)
+
+            wx2 =
+                vx2 + t * (vx3 - vx2)
+
+            wy2 =
+                vy2 + t * (vy3 - vy2)
+
+            wz2 =
+                vz2 + t * (vz3 - vz2)
+        in
+        Vector3d.fromComponents
+            ( 3 * (wx1 + t * (wx2 - wx1))
+            , 3 * (wy1 + t * (wy2 - wy1))
+            , 3 * (wz1 + t * (wz2 - wz1))
+            )
+    else
+        let
+            u =
+                1 - t
+
+            wx1 =
+                vx2 + u * (vx1 - vx2)
+
+            wy1 =
+                vy2 + u * (vy1 - vy2)
+
+            wz1 =
+                vz2 + u * (vz1 - vz2)
+
+            wx2 =
+                vx3 + u * (vx2 - vx3)
+
+            wy2 =
+                vy3 + u * (vy2 - vy3)
+
+            wz2 =
+                vz3 + u * (vz2 - vz3)
+        in
+        Vector3d.fromComponents
+            ( 3 * (wx2 + u * (wx1 - wx2))
+            , 3 * (wy2 + u * (wy1 - wy2))
+            , 3 * (wz2 + u * (wz1 - wz2))
+            )
+
+
+{-| Find the magnitude of the derivative to a spline at a particular parameter
+value;
+
+    CubicSpline3d.derivativeMagnitude spline t
+
+is equivalent to
+
+    Vector3d.length (CubicSpline3d.derivative spline t)
+
+but more efficient since it avoids any intermediate `Vector3d` allocation.
+
+-}
+derivativeMagnitude : CubicSpline3d -> Float -> Float
+derivativeMagnitude spline =
+    let
+        ( p1, p2, p3, p4 ) =
+            controlPoints spline
+
+        ( x1, y1, z1 ) =
+            Point3d.coordinates p1
+
+        ( x2, y2, z2 ) =
+            Point3d.coordinates p2
+
+        ( x3, y3, z3 ) =
+            Point3d.coordinates p3
+
+        ( x4, y4, z4 ) =
+            Point3d.coordinates p4
+
+        x12 =
+            x2 - x1
+
+        y12 =
+            y2 - y1
+
+        z12 =
+            z2 - z1
+
+        x23 =
+            x3 - x2
+
+        y23 =
+            y3 - y2
+
+        z23 =
+            z3 - z2
+
+        x34 =
+            x4 - x3
+
+        y34 =
+            y4 - y3
+
+        z34 =
+            z4 - z3
+
+        x123 =
+            x23 - x12
+
+        y123 =
+            y23 - y12
+
+        z123 =
+            z23 - z12
+
+        x234 =
+            x34 - x23
+
+        y234 =
+            y34 - y23
+
+        z234 =
+            z34 - z23
     in
     \t ->
         let
-            w1 =
-                Vector3d.interpolateFrom v1 v2 t
+            x13 =
+                x12 + t * x123
 
-            w2 =
-                Vector3d.interpolateFrom v2 v3 t
+            y13 =
+                y12 + t * y123
+
+            z13 =
+                z12 + t * z123
+
+            x24 =
+                x23 + t * x234
+
+            y24 =
+                y23 + t * y234
+
+            z24 =
+                z23 + t * z234
+
+            x14 =
+                x13 + t * (x24 - x13)
+
+            y14 =
+                y13 + t * (y24 - y13)
+
+            z14 =
+                z13 + t * (z24 - z13)
         in
-        Vector3d.interpolateFrom w1 w2 t |> Vector3d.scaleBy 3
+        3 * sqrt (x14 * x14 + y14 * y14 + z14 * z14)
 
 
 {-| Evaluate a spline at a given parameter value, returning the point on the
@@ -620,3 +859,92 @@ splitAt t spline =
     ( fromControlPoints ( p1, q1, r1, s )
     , fromControlPoints ( s, r2, q3, p4 )
     )
+
+
+{-| A spline that has been parameterized by arc length.
+-}
+type ArcLengthParameterized
+    = ArcLengthParameterized CubicSpline3d ArcLength.Parameterization
+
+
+{-| Build an arc length parameterization of the given spline.
+-}
+arcLengthParameterized : Float -> CubicSpline3d -> ArcLengthParameterized
+arcLengthParameterized tolerance spline =
+    let
+        parameterization =
+            ArcLength.parameterization
+                { tolerance = tolerance
+                , derivativeMagnitude = derivativeMagnitude spline
+                , maxSecondDerivativeMagnitude =
+                    maxSecondDerivativeMagnitude spline
+                }
+    in
+    ArcLengthParameterized spline parameterization
+
+
+{-| Find the total arc length of a spline. This will be accurate to within the
+tolerance given when calling `arcLengthParameterized`.
+-}
+arcLength : ArcLengthParameterized -> Float
+arcLength (ArcLengthParameterized _ parameterization) =
+    ArcLength.fromParameterization parameterization
+
+
+{-| Get the point along a spline at a given arc length.
+-}
+pointAlong : ArcLengthParameterized -> Float -> Maybe Point3d
+pointAlong (ArcLengthParameterized spline parameterization) s =
+    ArcLength.toParameterValue parameterization s |> Maybe.map (pointOn spline)
+
+
+{-| Get the tangent direction along a spline at a given arc length.
+-}
+tangentAlong : ArcLengthParameterized -> Float -> Maybe Direction3d
+tangentAlong (ArcLengthParameterized spline parameterization) s =
+    ArcLength.toParameterValue parameterization s
+        |> Maybe.map (derivative spline)
+        |> Maybe.andThen Vector3d.direction
+
+
+{-| Get the parameter value along a spline at a given arc length. If the given
+arc length is less than zero or greater than the arc length of the spline,
+returns `Nothing`.
+-}
+arcLengthToParameterValue : ArcLengthParameterized -> Float -> Maybe Float
+arcLengthToParameterValue (ArcLengthParameterized _ parameterization) s =
+    ArcLength.toParameterValue parameterization s
+
+
+{-| Get the arc length along a spline at a given parameter value. If the given
+parameter value is less than zero or greater than one, returns `Nothing`.
+-}
+arcLengthFromParameterValue : ArcLengthParameterized -> Float -> Maybe Float
+arcLengthFromParameterValue (ArcLengthParameterized _ parameterization) t =
+    ArcLength.fromParameterValue parameterization t
+
+
+{-| Find an upper bound on the magnitude of the second derivative of a spline.
+-}
+maxSecondDerivativeMagnitude : CubicSpline3d -> Float
+maxSecondDerivativeMagnitude spline =
+    let
+        ( p1, p2, p3, p4 ) =
+            controlPoints spline
+
+        u1 =
+            Vector3d.from p1 p2
+
+        u2 =
+            Vector3d.from p2 p3
+
+        u3 =
+            Vector3d.from p3 p4
+
+        v1 =
+            Vector3d.difference u2 u1
+
+        v2 =
+            Vector3d.difference u3 u2
+    in
+    6 * max (Vector3d.length v1) (Vector3d.length v2)
