@@ -14,7 +14,6 @@ module OpenSolid.Sphere3d
         , radius
         , relativeTo
         , rotateAround
-        , roundTo
         , scaleAbout
         , throughPoints
         , translateBy
@@ -57,7 +56,7 @@ This module contains functionality for:
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, rwound, roundTo
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross
 
 
 # Coordinate conversions
@@ -258,8 +257,7 @@ diameter sphere =
 {-| Get the circumference of a sphere.
 
     Sphere3d.circumference exampleSphere
-        |> Scalar.roundTo 4
-    --> 18.8496
+    -> 18.8496
 
 -}
 circumference : Sphere3d -> Float
@@ -300,12 +298,11 @@ scaleAbout point scale sphere =
 
     exampleSphere
         |> Sphere3d.rotateAround Axis3d.y (degrees 90)
-        |> Sphere3d.roundTo 0
-    --> Sphere3d.with
-    -->     { centerPoint =
-    -->         Point3d.fromCoordinates ( 1, 2, -1)
-    -->     , radius = 3
-    -->     }
+    -> Sphere3d.with
+            { centerPoint =
+                Point3d.fromCoordinates ( 1, 2, -1)
+            , radius = 3
+            }
 
 -}
 rotateAround : Axis3d -> Float -> Sphere3d -> Sphere3d
@@ -500,14 +497,4 @@ projectInto sketchPlane sphere =
     Circle2d.with
         { centerPoint = Point3d.projectInto sketchPlane (centerPoint sphere)
         , radius = radius sphere
-        }
-
-
-{-| Round all coordinates in centerPoint and the radius to `ndigits` precision.
--}
-roundTo : Int -> Sphere3d -> Sphere3d
-roundTo ndigits sphere =
-    with
-        { centerPoint = Point3d.roundTo ndigits (centerPoint sphere)
-        , radius = Scalar.roundTo ndigits (radius sphere)
         }

@@ -1,8 +1,8 @@
-module OpenSolid.Scalar exposing (equalWithin, hull, hullOf, interpolateFrom, roundTo)
+module OpenSolid.Scalar exposing (equalWithin, hull, hullOf, interpolateFrom)
 
 {-| Convenience functions for working with scalar (floating-point) values.
 
-@docs equalWithin, interpolateFrom, hull, hullOf, roundTo
+@docs equalWithin, interpolateFrom, hull, hullOf
 
 -}
 
@@ -102,21 +102,3 @@ hullOf values =
                         }
             in
             Just result
-
-
-{-| Round a value to a given number of digits.
-
-    Scalar.roundTo 2 2.875
-    --> 2.88
-
-    Scalar.roundTo 0 2.875
-    --> 3
-
--}
-roundTo : Int -> Float -> Float
-roundTo ndigits number =
-    let
-        scale =
-            10.0 ^ toFloat ndigits
-    in
-    toFloat (round (scale * number)) / scale
