@@ -15,6 +15,7 @@ import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Fuzz as Fuzz
 import OpenSolid.Point3d as Point3d
+import OpenSolid.Triangle3d as Triangle3d
 import Test exposing (Test)
 
 
@@ -35,25 +36,22 @@ throughPoints =
             (\p1 p2 p3 ->
                 let
                     -- if the first three points are collinear it is not possible to construct a circle
-                    -- that passes through them
+                    -- that passes through them.
+                    -- three points are collinear if the area of the triangle they form is zero.
                     isValidInput =
-                        Direction3d.from p1 p2
-                            |> Maybe.map
-                                (\direction ->
-                                    Axis3d.with { originPoint = p1, direction = direction }
-                                )
-                            |> Maybe.map
-                                (\axis ->
-                                    Point3d.squaredDistanceFromAxis axis p3 /= 0
-                                )
-                            |> Maybe.withDefault False
+                        let
+                            triangleArea =
+                                Triangle3d.fromVertices ( p1, p2, p3 )
+                                    |> Triangle3d.area
+                        in
+                        triangleArea > 1.0e-6
 
                     circle =
                         Circle3d.throughPoints ( p1, p2, p3 )
 
                     liesOnCircle point circle =
-                        Point3d.squaredDistanceFrom point (Circle3d.centerPoint circle)
-                            |> Expect.within (Expect.Absolute 1.0e-6) (Circle3d.radius circle ^ 2)
+                        Point3d.distanceFrom point (Circle3d.centerPoint circle)
+                            |> Expect.within (Expect.Absolute 1.0e-6) (Circle3d.radius circle)
                 in
                 case circle of
                     Just circle ->

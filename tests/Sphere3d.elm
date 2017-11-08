@@ -13,6 +13,8 @@ import OpenSolid.Geometry.Fuzz exposing (arc3d, axis3d, point3d, scalar, sphere3
 import OpenSolid.Plane3d as Plane3d
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Sphere3d as Sphere3d
+import OpenSolid.Triangle3d as Triangle3d
+import OpenSolid.Vector3d as Vector3d
 import Test exposing (Test, describe, fuzz, fuzz2, fuzz3, fuzz4, test)
 
 
@@ -47,35 +49,6 @@ with =
                 in
                 Sphere3d.centerPoint sphere
                     |> Expect.equal centerPoint
-            )
-        ]
-
-
-around : Test
-around =
-    describe "around"
-        [ fuzz2 axis3d
-            point3d
-            "A sphere constructed using `around` does contain the given point"
-            (\axis point ->
-                let
-                    sphere =
-                        Sphere3d.around axis point
-                in
-                Point3d.squaredDistanceFrom point (Sphere3d.centerPoint sphere)
-                    |> Expect.atMost (Sphere3d.radius sphere ^ 2 + 1.0e-6)
-            )
-        , fuzz2 axis3d
-            point3d
-            "The center point of a sphere constructed using `around` lies on the given axis"
-            (\axis point ->
-                let
-                    sphere =
-                        Sphere3d.around axis point
-                in
-                Sphere3d.centerPoint sphere
-                    |> Point3d.squaredDistanceFromAxis axis
-                    |> Expect.within (Absolute 1.0e-6) 0
             )
         ]
 
@@ -131,35 +104,34 @@ throughPointsFuzz =
         "All given points lie on the sphere constructed using `throughPoints`"
         (\p1 p2 p3 p4 ->
             let
-                -- if the first three points are collinear it is not possible to construct a circle
-                -- that passes through them
-                notCollinear =
-                    Direction3d.from p1 p2
-                        |> Maybe.map
-                            (\direction ->
-                                Axis3d.with { originPoint = p1, direction = direction }
-                            )
-                        |> Maybe.map
-                            (\axis ->
-                                Point3d.squaredDistanceFromAxis axis p3 /= 0
-                            )
-
-                -- it is not possible to construct a sphere from four points that are all in the same plane
-                notInTheSamePlane =
-                    Plane3d.throughPoints ( p1, p2, p3 )
-                        |> Maybe.map (flip Point3d.signedDistanceFrom p4)
-                        |> Maybe.map ((/=) 0)
-
+                {- If the first three of the four points are collinear no circle
+                       (and by extension no sphere) can be constructed going through them.
+                   If the fourth point is in the same plane as the three other points it is also
+                       not possible to construct a sphere going through them (it would need to have a height of zero).
+                   ==> volume of the tetrahedron formed by the four points needs to be greater than zero
+                -}
                 isValidInput =
-                    Maybe.map2 (&&) notCollinear notInTheSamePlane
-                        |> Maybe.withDefault False
+                    let
+                        v2 =
+                            Vector3d.from p1 p2
+
+                        v3 =
+                            Vector3d.from p1 p3
+
+                        v4 =
+                            Vector3d.from p1 p4
+
+                        volume =
+                            abs (Vector3d.dotProduct v4 (Vector3d.crossProduct v2 v3))
+                    in
+                    volume > 1.0e-6
 
                 sphere =
                     Sphere3d.throughPoints ( p1, p2, p3, p4 )
 
                 liesOnSphere point sphere =
-                    Point3d.squaredDistanceFrom point (Sphere3d.centerPoint sphere)
-                        |> Expect.within (Absolute 1.0e-6) (Sphere3d.radius sphere ^ 2)
+                    Point3d.distanceFrom point (Sphere3d.centerPoint sphere)
+                        |> Expect.within (Absolute 1.0e-6) (Sphere3d.radius sphere)
             in
             case sphere of
                 Just sphere ->

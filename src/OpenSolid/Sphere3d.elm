@@ -1,7 +1,6 @@
 module OpenSolid.Sphere3d
     exposing
         ( Sphere3d
-        , around
         , boundingBox
         , centerPoint
         , circumference
@@ -27,7 +26,7 @@ module OpenSolid.Sphere3d
 A `Sphere3d` is defined by its center point, axial direction and radius.
 This module contains functionality for:
 
-  - Constructing spheres around axes, or through points
+  - Constructing through points
   - Scaling, rotating and translating spheres
   - Extracting sphere properties like center point and volume
 
@@ -41,12 +40,12 @@ This module contains functionality for:
 
 # Constructors
 
-@docs with, around, throughPoints
+@docs with, throughPoints
 
 
 # Properties
 
-@docs centerPoint, radius, diameter, volume, circumference, boundingBox
+@docs centerPoint, radius, diameter, volume, surfaceArea, circumference, boundingBox
 
 
 # Queries
@@ -132,32 +131,6 @@ with properties =
     Internal.Sphere3d { properties | radius = abs properties.radius }
 
 
-{-| Construct a sphere around the given axis that passes through the given point.
-
-    point : Point3d
-    point =
-        Point3d.fromCoordinates ( 3, 0, 2 )
-
-    Sphere3d.around Axis3d.z point
-    --> Sphere3d.with
-    -->     { centerPoint =
-    -->         Point3d.fromCoordinates ( 0, 0, 2 )
-    -->     , radius = 3
-    -->     }
-
--}
-around : Axis3d -> Point3d -> Sphere3d
-around axis point =
-    let
-        centerPoint =
-            Point3d.projectOntoAxis axis point
-    in
-    with
-        { centerPoint = centerPoint
-        , radius = Point3d.distanceFrom centerPoint point
-        }
-
-
 {-| Attempt to construct a sphere that passes through the four given points.
 Returns `Nothing` if the first three of the four given points are collinear.
 Also returns `Nothing` if the fourth point lies in a plane with the three other ones.
@@ -185,40 +158,41 @@ Also returns `Nothing` if the fourth point lies in a plane with the three other 
 -}
 throughPoints : ( Point3d, Point3d, Point3d, Point3d ) -> Maybe Sphere3d
 throughPoints ( p1, p2, p3, p4 ) =
-    Maybe.andThen
-        {-
-           First three points define a circle.
-           All points M on the normal to this circle through the circle's center are equidistant to p1, p2 and p3.
-           Therefore: find this point M such that it is equidistant to p1, p2, p3 and p4,
-           this will be the center of the sphere.
-        -}
-        (\circle ->
-            let
-                normalAxis =
-                    Circle3d.axis circle
+    Circle3d.throughPoints ( p1, p2, p3 )
+        |> Maybe.andThen
+            {-
+               First three points define a circle.
+               All points M on the normal to this circle through the circle's center are equidistant to p1, p2 and p3.
+               Therefore: find this point M such that it is equidistant to p1, p2, p3 and p4,
+               this will be the center of the sphere.
+            -}
+            (\circle ->
+                let
+                    normalAxis =
+                        Circle3d.axis circle
 
-                r =
-                    Circle3d.radius circle
+                    r =
+                        Circle3d.radius circle
 
-                x =
-                    Point3d.distanceFromAxis normalAxis p4
+                    x =
+                        Point3d.distanceFromAxis normalAxis p4
 
-                y =
-                    Point3d.distanceAlong normalAxis p4
-
-                d =
-                    (r ^ 2 - x ^ 2 - y ^ 2) / (-2 * y)
-            in
-            if y /= 0 then
-                Just <|
-                    with
-                        { centerPoint = Point3d.along normalAxis d
-                        , radius = sqrt (r ^ 2 + d ^ 2)
-                        }
-            else
-                Nothing
-        )
-        (Circle3d.throughPoints ( p1, p2, p3 ))
+                    y =
+                        Point3d.distanceAlong normalAxis p4
+                in
+                if y /= 0 then
+                    let
+                        d =
+                            (r * r - x * x - y * y) / (-2 * y)
+                    in
+                    Just <|
+                        with
+                            { centerPoint = Point3d.along normalAxis d
+                            , radius = sqrt (r * r + d * d)
+                            }
+                else
+                    Nothing
+            )
 
 
 {-| Get the center point of a sphere.
@@ -265,6 +239,21 @@ circumference sphere =
     2 * pi * radius sphere
 
 
+{-| Get the surface area of a sphere.
+
+    Sphere3d.surfaceArea exampleSphere
+    -> 339.2920
+
+-}
+surfaceArea : Sphere3d -> Float
+surfaceArea sphere =
+    let
+        r =
+            radius sphere
+    in
+    4 * pi * r * r
+
+
 {-| Get the volume of a sphere.
 
     Sphere3d.diameter exampleSphere
@@ -273,7 +262,11 @@ circumference sphere =
 -}
 volume : Sphere3d -> Float
 volume sphere =
-    4 / 3 * pi * radius sphere ^ 3
+    let
+        r =
+            radius sphere
+    in
+    4 / 3 * pi * r * r * r
 
 
 {-| Scale a sphere around a given point by a given scale.
@@ -459,7 +452,11 @@ boundingBox sphere =
 -}
 contains : Point3d -> Sphere3d -> Bool
 contains point sphere =
-    Point3d.squaredDistanceFrom point (centerPoint sphere) <= radius sphere ^ 2
+    let
+        r =
+            radius sphere
+    in
+    Point3d.squaredDistanceFrom point (centerPoint sphere) <= r * r
 
 
 {-| Find the [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
