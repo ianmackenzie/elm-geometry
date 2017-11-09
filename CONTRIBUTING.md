@@ -36,18 +36,11 @@ of the documentation myself to ensure a consistent style and tone throughout.
 ## Testing
 
 During development, please run the existing tests periodically to make sure you
-haven't accidentally broken anything! To run the tests locally, you have two
-options:
+haven't accidentally broken anything! To run the tests:
 
-  - Run `elm reactor` inside the `tests` subdirectory. You should then be able
-    to open up `localhost:8000` in a browser and click on `All.elm` to run the
-    entire test suite. You can also click on any of the files named after
-    individual OpenSolid modules (for example, `LineSegment2d.elm`) to run only
-    the tests for that module.
-  - Run `elm package install` inside the `tests` subdirectory, install
-    [`elm-test`](https://github.com/rtfeldman/node-test-runner) by running
-    `npm install -g elm-test`, then run `elm-test` from the root directory of
-    this repository to run all the tests from the command line.
+  - Run `elm package install` inside the `tests` subdirectory
+  - Install [`elm-test`](https://github.com/rtfeldman/node-test-runner) by running `npm install -g elm-test`
+  - Run `elm-test` from the root directory of this repository
 
 If you are working on fixing a bug, please first add a test that catches the bug
 to the relevant file in the `tests` subdirectory, then add your fix and verify
