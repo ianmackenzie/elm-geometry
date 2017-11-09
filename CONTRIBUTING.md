@@ -4,9 +4,8 @@ Thanks for your interest in OpenSolid! Currently, the best way to contribute is
 simply to [open a new issue](https://github.com/opensolid/geometry/issues) for
 any new features you're interested in or any bugs you notice (including things
 like misleading or confusing documentation - documentation issues are just as
-important as code issues!). If you're willing to help fix the issue/implement
-the feature, please mention that in the issue, but it's certainly not a
-requirement!
+important as code issues!). If you're willing to help fix the bug/implement the
+feature, please mention that in the issue, but it's certainly not a requirement!
 
 In general, I try to follow [the Elm guidelines](https://twitter.com/czaplic/status/928359033844539393)
 and ask that you try to as well:
