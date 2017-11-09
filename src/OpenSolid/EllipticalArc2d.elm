@@ -36,7 +36,9 @@ import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Geometry.Internal as Internal
+import OpenSolid.Interval as Interval
 import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.Scalar as Scalar
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
@@ -343,10 +345,79 @@ relativeTo frame =
 maxSecondDerivativeMagnitude : EllipticalArc2d -> Float
 maxSecondDerivativeMagnitude arc =
     let
-        theta =
+        theta0 =
+            startAngle arc
+
+        dTheta =
             sweptAngle arc
+
+        theta1 =
+            theta0 + dTheta
+
+        dThetaSquared =
+            dTheta * dTheta
+
+        rx =
+            xRadius arc
+
+        ry =
+            yRadius arc
+
+        kx =
+            dThetaSquared * rx
+
+        ky =
+            dThetaSquared * ry
+
+        thetaInterval =
+            Scalar.hull theta0 theta1
+
+        sinThetaInterval =
+            Interval.sin thetaInterval
+
+        includeKx =
+            Interval.contains 0 sinThetaInterval
+
+        includeKy =
+            (Interval.maxValue sinThetaInterval == 1)
+                || (Interval.minValue sinThetaInterval == -1)
     in
-    theta * theta * max (xRadius arc) (yRadius arc)
+    if (kx >= ky) && includeKx then
+        -- kx is the global max and is included in the arc
+        kx
+    else if (ky >= kx) && includeKy then
+        -- ky is the global max and is included in the arc
+        ky
+    else
+        -- global max is not included in the arc, so max must be at an endpoint
+        let
+            rxSquared =
+                rx * rx
+
+            rySquared =
+                ry * ry
+
+            cosTheta0 =
+                cos theta0
+
+            sinTheta0 =
+                sin theta0
+
+            cosTheta1 =
+                cos theta1
+
+            sinTheta1 =
+                sin theta1
+
+            d0 =
+                (rxSquared * cosTheta0 * cosTheta0)
+                    + (rySquared * sinTheta0 * sinTheta0)
+
+            d1 =
+                (rxSquared * cosTheta1 * cosTheta1)
+                    + (rySquared * sinTheta1 * sinTheta1)
+        in
+        dThetaSquared * sqrt (max d0 d1)
 
 
 derivativeMagnitude : EllipticalArc2d -> Float -> Float
