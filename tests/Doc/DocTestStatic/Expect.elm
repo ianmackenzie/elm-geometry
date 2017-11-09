@@ -20,21 +20,6 @@ resulting strings are compared.
 equal : a -> a -> Expectation
 equal a b =
     let
-        --truncateToFourDigits number =
-        --    let
-        --        scale =
-        --            10000.0
-        --    in
-        --    toFloat (truncate (scale * number)) / scale
-        --truncateStrNumber str =
-        --    String.toFloat str
-        --        |> Result.map truncateToFourDigits
-        --        |> Result.map toString
-        --        |> Result.withDefault ("ERROR: This should never happen (" ++ str ++ ")")
-        --truncateNumsInStr str =
-        --    let
-        --    in
-        --    Regex.replace All anyNumber (.match >> truncateStrNumber) str
         strA =
             toString a
 
