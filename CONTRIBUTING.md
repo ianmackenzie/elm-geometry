@@ -8,6 +8,24 @@ important as code issues!). If you're willing to help fix the issue/implement
 the feature, please mention that in the issue, but it's certainly not a
 requirement!
 
+In general, I try to follow [the Elm guidelines](https://twitter.com/czaplic/status/928359033844539393)
+and ask that you try to as well:
+
+  - Be kind.
+  - Learn from everyone.
+  - Collaboration requires communication.
+  - Not every problem should be solved with code.
+  - Communication _is_ contribution.
+  - Understand the problem.
+  - Explore all possible solutions.
+  - Pick one.
+  - Simplicity is not just for beginners.
+  - It's better to do it _right_ than to do it _right now_.
+  - It's not done until the docs are great.
+  - Take responsibility for user experiences.
+  - Make impossible states impossible.
+  - There are worse things than being explicit...
+
 # Contributing changes
 
 If you _are_ interested in contributing changes to OpenSolid, please fork this
