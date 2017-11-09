@@ -1,4 +1,4 @@
-module Doc.DocTestStatic.Expect exposing (equal)
+module Doc.DocTestStatic.Expect exposing (equalWithinTolerance)
 
 import Expect exposing (Expectation)
 import OpenSolid.Scalar as Scalar
@@ -17,8 +17,8 @@ resulting strings are compared.
     It should never be used.
 
 -}
-equal : a -> a -> Expectation
-equal a b =
+equalWithinTolerance : a -> a -> Expectation
+equalWithinTolerance a b =
     let
         strA =
             toString a

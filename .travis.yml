@@ -35,5 +35,5 @@ install:
 
 script:
   - $TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus -n 2 elm-verify-examples
-  - sed -i "/import Expect/d" tests/Doc/OpenSolid/*
+  - sed -i "s/Expect.equal/Expect.equalWithinTolerance/" tests/Doc/OpenSolid/*
   - $TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus -n 2 elm-test
