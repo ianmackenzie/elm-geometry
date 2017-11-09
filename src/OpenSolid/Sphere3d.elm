@@ -14,6 +14,7 @@ module OpenSolid.Sphere3d
         , relativeTo
         , rotateAround
         , scaleAbout
+        , surfaceArea
         , throughPoints
         , translateBy
         , unit
@@ -81,6 +82,7 @@ import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 {--Imports for verifying the examples:
 
     import Doc.DocTestStatic.Sphere3d exposing (..)
+    import Doc.DocTestStatic.Expect as Expect
     import OpenSolid.Axis3d as Axis3d
     import OpenSolid.BoundingBox3d as BoundingBox3d
     import OpenSolid.Circle2d as Circle2d
@@ -231,7 +233,7 @@ diameter sphere =
 {-| Get the circumference of a sphere.
 
     Sphere3d.circumference exampleSphere
-    -> 18.8496
+    --> 18.8496
 
 -}
 circumference : Sphere3d -> Float
@@ -242,7 +244,7 @@ circumference sphere =
 {-| Get the surface area of a sphere.
 
     Sphere3d.surfaceArea exampleSphere
-    -> 339.2920
+    --> 113.0973
 
 -}
 surfaceArea : Sphere3d -> Float
@@ -291,7 +293,7 @@ scaleAbout point scale sphere =
 
     exampleSphere
         |> Sphere3d.rotateAround Axis3d.y (degrees 90)
-    -> Sphere3d.with
+    --> Sphere3d.with
             { centerPoint =
                 Point3d.fromCoordinates ( 1, 2, -1)
             , radius = 3
