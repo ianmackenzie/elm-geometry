@@ -363,6 +363,9 @@ derivativeMagnitude arc =
 
         dTheta =
             sweptAngle arc
+
+        absDTheta =
+            abs dTheta
     in
     \t ->
         let
@@ -375,4 +378,4 @@ derivativeMagnitude arc =
             dy =
                 ry * cos theta
         in
-        dTheta * sqrt (dx * dx + dy * dy)
+        absDTheta * sqrt (dx * dx + dy * dy)
