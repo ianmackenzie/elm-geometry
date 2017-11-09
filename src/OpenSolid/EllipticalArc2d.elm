@@ -8,12 +8,18 @@ module OpenSolid.EllipticalArc2d
         , fromEndpoints
         , largeNegative
         , largePositive
+        , mirrorAcross
+        , placeIn
         , pointOn
+        , relativeTo
+        , rotateAround
+        , scaleAbout
         , smallNegative
         , smallPositive
         , startAngle
         , startPoint
         , sweptAngle
+        , translateBy
         , with
         , xAxis
         , xDirection
@@ -253,3 +259,63 @@ xDirection arc =
 yDirection : EllipticalArc2d -> Direction2d
 yDirection arc =
     Frame2d.yDirection (axes arc)
+
+
+scaleAbout : Point2d -> Float -> EllipticalArc2d -> EllipticalArc2d
+scaleAbout point scale arc =
+    let
+        newCenterPoint =
+            Point2d.scaleAbout point scale (centerPoint arc)
+
+        newAxes =
+            if scale >= 0 then
+                Frame2d.unsafe
+                    { originPoint = newCenterPoint
+                    , xDirection = xDirection arc
+                    , yDirection = yDirection arc
+                    }
+            else
+                Frame2d.unsafe
+                    { originPoint = newCenterPoint
+                    , xDirection = Direction2d.flip (xDirection arc)
+                    , yDirection = Direction2d.flip (yDirection arc)
+                    }
+    in
+    Internal.EllipticalArc2d
+        { axes = newAxes
+        , xRadius = abs (scale * xRadius arc)
+        , yRadius = abs (scale * yRadius arc)
+        , startAngle = startAngle arc
+        , sweptAngle = sweptAngle arc
+        }
+
+
+transformBy : (Frame2d -> Frame2d) -> EllipticalArc2d -> EllipticalArc2d
+transformBy axesTransformation (Internal.EllipticalArc2d properties) =
+    Internal.EllipticalArc2d
+        { properties | axes = axesTransformation properties.axes }
+
+
+rotateAround : Point2d -> Float -> EllipticalArc2d -> EllipticalArc2d
+rotateAround point angle =
+    transformBy (Frame2d.rotateAround point angle)
+
+
+translateBy : Vector2d -> EllipticalArc2d -> EllipticalArc2d
+translateBy displacement =
+    transformBy (Frame2d.translateBy displacement)
+
+
+mirrorAcross : Axis2d -> EllipticalArc2d -> EllipticalArc2d
+mirrorAcross axis =
+    transformBy (Frame2d.mirrorAcross axis)
+
+
+placeIn : Frame2d -> EllipticalArc2d -> EllipticalArc2d
+placeIn frame =
+    transformBy (Frame2d.placeIn frame)
+
+
+relativeTo : Frame2d -> EllipticalArc2d -> EllipticalArc2d
+relativeTo frame =
+    transformBy (Frame2d.relativeTo frame)
