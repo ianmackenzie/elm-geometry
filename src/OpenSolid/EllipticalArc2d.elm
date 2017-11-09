@@ -4,10 +4,13 @@ module OpenSolid.EllipticalArc2d
         , SweptAngle
         , axes
         , centerPoint
+        , derivative
+        , derivativeMagnitude
         , endPoint
         , fromEndpoints
         , largeNegative
         , largePositive
+        , maxSecondDerivativeMagnitude
         , mirrorAcross
         , placeIn
         , pointOn
@@ -241,6 +244,22 @@ pointOn arc t =
             )
 
 
+derivative : EllipticalArc2d -> Float -> Vector2d
+derivative arc t =
+    let
+        deltaTheta =
+            sweptAngle arc
+
+        theta =
+            startAngle arc + t * deltaTheta
+    in
+    Vector2d.placeIn (axes arc) <|
+        Vector2d.fromComponents
+            ( -(xRadius arc) * deltaTheta * sin theta
+            , yRadius arc * deltaTheta * cos theta
+            )
+
+
 startPoint : EllipticalArc2d -> Point2d
 startPoint arc =
     pointOn arc 0
@@ -319,3 +338,41 @@ placeIn frame =
 relativeTo : Frame2d -> EllipticalArc2d -> EllipticalArc2d
 relativeTo frame =
     transformBy (Frame2d.relativeTo frame)
+
+
+maxSecondDerivativeMagnitude : EllipticalArc2d -> Float
+maxSecondDerivativeMagnitude arc =
+    let
+        theta =
+            sweptAngle arc
+    in
+    theta * theta * max (xRadius arc) (yRadius arc)
+
+
+derivativeMagnitude : EllipticalArc2d -> Float -> Float
+derivativeMagnitude arc =
+    let
+        rx =
+            xRadius arc
+
+        ry =
+            yRadius arc
+
+        theta0 =
+            startAngle arc
+
+        dTheta =
+            sweptAngle arc
+    in
+    \t ->
+        let
+            theta =
+                theta0 + t * dTheta
+
+            dx =
+                rx * sin theta
+
+            dy =
+                ry * cos theta
+        in
+        dTheta * sqrt (dx * dx + dy * dy)
