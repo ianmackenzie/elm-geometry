@@ -183,6 +183,25 @@ throughPointsFuzz =
         )
 
 
+properties : Test
+properties =
+    fuzz sphere3d
+        "A sphere has the correct properties (diameter, circumference, surfaceArea, volume)"
+        (\sphere ->
+            let
+                r =
+                    Sphere3d.radius sphere
+            in
+            sphere
+                |> Expect.all
+                    [ Sphere3d.diameter >> Expect.equal (2 * r)
+                    , Sphere3d.circumference >> Expect.equal (2 * pi * r)
+                    , Sphere3d.surfaceArea >> Expect.equal (4 * pi * r * r)
+                    , Sphere3d.volume >> Expect.equal (4 / 3 * pi * r * r * r)
+                    ]
+        )
+
+
 boundingBoxContainsCenter : Test
 boundingBoxContainsCenter =
     fuzz sphere3d
