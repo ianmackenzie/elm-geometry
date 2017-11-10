@@ -12,10 +12,26 @@ import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Fuzz exposing (arc3d, axis3d, point3d, scalar, sphere3d)
 import OpenSolid.Plane3d as Plane3d
 import OpenSolid.Point3d as Point3d
-import OpenSolid.Sphere3d as Sphere3d
+import OpenSolid.Sphere3d as Sphere3d exposing (Sphere3d)
 import OpenSolid.Triangle3d as Triangle3d
 import OpenSolid.Vector3d as Vector3d
 import Test exposing (Test, describe, fuzz, fuzz2, fuzz3, fuzz4, test)
+
+
+{-
+   Helper methods
+-}
+
+
+sphereFromTuple : ( ( Float, Float, Float ), Float ) -> Sphere3d
+sphereFromTuple ( centerPoint, radius ) =
+    Sphere3d.with { centerPoint = Point3d.fromCoordinates centerPoint, radius = radius }
+
+
+
+{-
+   Tests
+-}
 
 
 jsonRoundTrips : Test
@@ -94,17 +110,17 @@ throughPointsManual =
             , Point3d.fromCoordinates p4
             )
 
-        with ( centerPoint, radius ) =
-            Sphere3d.with { centerPoint = Point3d.fromCoordinates centerPoint, radius = radius }
+        testTitle inputPoints expectedSphere =
+            "Given " ++ toString (input inputPoints) ++ " throughPoints returns " ++ toString (sphereFromTuple expectedSphere)
     in
-    Test.concat <|
+    describe "throughPoints" <|
         List.map
             (\( inputPoints, expectedSphere ) ->
                 test
-                    ("Given " ++ toString (input inputPoints) ++ " throughPoints returns " ++ toString (with expectedSphere))
+                    (testTitle inputPoints expectedSphere)
                     (\_ ->
                         Sphere3d.throughPoints (input inputPoints)
-                            |> Maybe.map (Expect.equal (with expectedSphere))
+                            |> Maybe.map (Expect.equal (sphereFromTuple expectedSphere))
                             |> Maybe.withDefault (Expect.fail "throughPoints returned Nothing on valid input")
                     )
             )
@@ -145,13 +161,19 @@ throughPointsFuzz =
                 sphere =
                     Sphere3d.throughPoints ( p1, p2, p3, p4 )
 
-                liesOnSphere point sphere =
+                hasPointOnSurface point sphere =
                     Point3d.distanceFrom point (Sphere3d.centerPoint sphere)
                         |> Expect.within (Absolute 1.0e-6) (Sphere3d.radius sphere)
             in
             case sphere of
                 Just sphere ->
-                    Expect.all (List.map liesOnSphere [ p1, p2, p3 ]) sphere
+                    sphere
+                        |> Expect.all
+                            [ hasPointOnSurface p1
+                            , hasPointOnSurface p2
+                            , hasPointOnSurface p3
+                            , hasPointOnSurface p4
+                            ]
 
                 Nothing ->
                     if isValidInput then
