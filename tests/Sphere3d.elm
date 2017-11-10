@@ -25,6 +25,22 @@ jsonRoundTrips =
         Decode.sphere3d
 
 
+unit : Test
+unit =
+    describe "unit"
+        [ test "The sphere returned by unit has radius 1" <|
+            \_ ->
+                Sphere3d.unit
+                    |> Sphere3d.radius
+                    |> Expect.equal 1
+        , test "The sphere returned by unit is centered on the origin" <|
+            \_ ->
+                Sphere3d.unit
+                    |> Sphere3d.centerPoint
+                    |> Expect.equal Point3d.origin
+        ]
+
+
 with : Test
 with =
     describe "with"
