@@ -242,13 +242,13 @@ scaleAbout =
                     |> Expect.sphere3d sphere
             )
         , fuzz3 point3d
-            scalar
+            (Fuzz.intRange 2 10)
             sphere3d
             "scaling and unscaling has no effect on the sphere"
             (\point scale sphere ->
                 sphere
-                    |> Sphere3d.scaleAbout point scale
-                    |> Sphere3d.scaleAbout point (1 / scale)
+                    |> Sphere3d.scaleAbout point (toFloat scale)
+                    |> Sphere3d.scaleAbout point (1 / toFloat scale)
                     |> Expect.sphere3d sphere
             )
         , fuzz3 point3d
@@ -267,8 +267,11 @@ scaleAbout =
                 sphere
                     |> Sphere3d.scaleAbout point scale
                     |> Expect.all
-                        [ Sphere3d.radius >> Expect.approximately (originalRadius * abs scale)
-                        , Sphere3d.centerPoint >> Point3d.distanceFrom point >> Expect.approximately (originalDistance * abs scale)
+                        [ Sphere3d.radius
+                            >> Expect.approximately (originalRadius * abs scale)
+                        , Sphere3d.centerPoint
+                            >> Point3d.distanceFrom point
+                            >> Expect.approximately (originalDistance * abs scale)
                         ]
             )
         ]
@@ -276,18 +279,109 @@ scaleAbout =
 
 rotateAround : Test
 rotateAround =
-    fuzz3 axis3d
-        scalar
-        sphere3d
-        "A sphere gets rotated correctly"
-        (\axis angle sphere ->
-            sphere
-                |> Sphere3d.rotateAround axis angle
-                |> Expect.all
-                    [ Sphere3d.radius >> Expect.equal (Sphere3d.radius sphere)
-                    , Sphere3d.centerPoint >> Expect.equal (Point3d.rotateAround axis angle (Sphere3d.centerPoint sphere))
-                    ]
-        )
+    describe "rotateAround"
+        [ test
+            "correctly rotates a specific sphere"
+            (\_ ->
+                let
+                    axis =
+                        Axis3d.z
+
+                    -- 90 degrees
+                    angle =
+                        pi / 2
+
+                    originalCenter =
+                        Point3d.fromCoordinates ( 2, 0, 0 )
+
+                    rotatedCenter =
+                        Point3d.fromCoordinates ( 0, 2, 0 )
+
+                    radius =
+                        2
+                in
+                Sphere3d.with { centerPoint = originalCenter, radius = radius }
+                    |> Sphere3d.rotateAround axis angle
+                    |> Expect.sphere3d
+                        (Sphere3d.with { centerPoint = rotatedCenter, radius = radius })
+            )
+        , fuzz3 axis3d
+            scalar
+            sphere3d
+            "roating a sphere doesn't change its radius and its distance from the rotation axis"
+            (\axis angle sphere ->
+                let
+                    originalDistance =
+                        sphere
+                            |> Sphere3d.centerPoint
+                            |> Point3d.distanceFromAxis axis
+                in
+                sphere
+                    |> Sphere3d.rotateAround axis angle
+                    |> Expect.all
+                        [ Sphere3d.radius
+                            >> Expect.approximately (Sphere3d.radius sphere)
+                        , Sphere3d.centerPoint
+                            >> Point3d.distanceFromAxis axis
+                            >> Expect.approximately originalDistance
+                        ]
+            )
+        , fuzz3 axis3d
+            (Fuzz.floatRange 0 pi)
+            sphere3d
+            "rotates by the correct angle"
+            (\axis angle sphere ->
+                let
+                    {- find the direction of the vector connecting the axis with `point`
+                       that is orthogonal to the axis.
+                       can return `Nothing` if `point` is already on the `axis`
+                       (could happen when the fuzzer accidentally creates them like that)
+                    -}
+                    orthogonalDirectionFromAxisTo point =
+                        point
+                            |> Point3d.projectOntoAxis axis
+                            |> Direction3d.from point
+
+                    originalDirection =
+                        orthogonalDirectionFromAxisTo (Sphere3d.centerPoint sphere)
+
+                    rotatedDirection =
+                        sphere
+                            |> Sphere3d.rotateAround axis angle
+                            |> Sphere3d.centerPoint
+                            |> orthogonalDirectionFromAxisTo
+                in
+                case ( originalDirection, rotatedDirection ) of
+                    ( Just originalDirection, Just rotatedDirection ) ->
+                        let
+                            angleBetweenDirections =
+                                Direction3d.angleFrom originalDirection rotatedDirection
+                        in
+                        angleBetweenDirections
+                            |> Expect.approximately angle
+
+                    _ ->
+                        Expect.pass
+            )
+        , fuzz2 axis3d
+            sphere3d
+            "rotating by 2 pi doesn't change the sphere"
+            (\axis sphere ->
+                sphere
+                    |> Sphere3d.rotateAround axis (2 * pi)
+                    |> Expect.sphere3d sphere
+            )
+        , fuzz3 axis3d
+            scalar
+            sphere3d
+            "rotating and unrotating doesn't change the sphere"
+            (\axis angle sphere ->
+                sphere
+                    |> Sphere3d.rotateAround axis angle
+                    |> Sphere3d.rotateAround axis -angle
+                    |> Expect.sphere3d sphere
+            )
+        ]
 
 
 translateBy : Test
