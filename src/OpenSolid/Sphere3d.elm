@@ -301,16 +301,15 @@ scaleAbout point scale sphere =
 
 -}
 rotateAround : Axis3d -> Float -> Sphere3d -> Sphere3d
-rotateAround axis angle =
+rotateAround axis angle sphere =
     let
         rotatePoint =
             Point3d.rotateAround axis angle
     in
-    \sphere ->
-        with
-            { centerPoint = rotatePoint (centerPoint sphere)
-            , radius = radius sphere
-            }
+    with
+        { centerPoint = rotatePoint (centerPoint sphere)
+        , radius = radius sphere
+        }
 
 
 {-| Translate a sphere by a given displacement.
@@ -346,16 +345,15 @@ translateBy displacement sphere =
 
 -}
 mirrorAcross : Plane3d -> Sphere3d -> Sphere3d
-mirrorAcross plane =
+mirrorAcross plane sphere =
     let
         mirrorPoint =
             Point3d.mirrorAcross plane
     in
-    \sphere ->
-        with
-            { centerPoint = mirrorPoint (centerPoint sphere)
-            , radius = radius sphere
-            }
+    with
+        { centerPoint = mirrorPoint (centerPoint sphere)
+        , radius = radius sphere
+        }
 
 
 {-| Take a sphere defined in global coordinates, and return it expressed in
