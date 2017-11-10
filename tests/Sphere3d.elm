@@ -205,20 +205,73 @@ properties =
 
 scaleAbout : Test
 scaleAbout =
-    fuzz3 point3d
-        scalar
-        sphere3d
-        "A sphere gets scaled correctly"
-        (\point scale sphere ->
-            sphere
-                |> Sphere3d.scaleAbout point scale
-                |> Expect.equal
-                    (Sphere3d.with
-                        { radius = abs (scale * Sphere3d.radius sphere)
-                        , centerPoint = Point3d.scaleAbout point scale (Sphere3d.centerPoint sphere)
-                        }
-                    )
-        )
+    describe "scaleAbout"
+        [ test
+            "scaleAbout correctly scales a specific sphere"
+            (\_ ->
+                let
+                    scale =
+                        0.5
+
+                    aboutPoint =
+                        Point3d.fromCoordinates ( 1, 0, 0 )
+
+                    originalCenter =
+                        Point3d.fromCoordinates ( 1, 2, 0 )
+
+                    scaledCenter =
+                        Point3d.fromCoordinates ( 1, 1, 0 )
+
+                    originalRadius =
+                        2
+
+                    scaledRadius =
+                        1
+                in
+                Sphere3d.with { centerPoint = originalCenter, radius = originalRadius }
+                    |> Sphere3d.scaleAbout aboutPoint scale
+                    |> Expect.sphere3d
+                        (Sphere3d.with { centerPoint = scaledCenter, radius = scaledRadius })
+            )
+        , fuzz2 point3d
+            sphere3d
+            "scaling by 1 has no effect on the sphere"
+            (\point sphere ->
+                sphere
+                    |> Sphere3d.scaleAbout point 1
+                    |> Expect.sphere3d sphere
+            )
+        , fuzz3 point3d
+            scalar
+            sphere3d
+            "scaling and unscaling has no effect on the sphere"
+            (\point scale sphere ->
+                sphere
+                    |> Sphere3d.scaleAbout point scale
+                    |> Sphere3d.scaleAbout point (1 / scale)
+                    |> Expect.sphere3d sphere
+            )
+        , fuzz3 point3d
+            scalar
+            sphere3d
+            "scaling changes the radius and distance to the scaling point"
+            (\point scale sphere ->
+                let
+                    originalRadius =
+                        Sphere3d.radius sphere
+
+                    originalDistance =
+                        Sphere3d.centerPoint sphere
+                            |> Point3d.distanceFrom point
+                in
+                sphere
+                    |> Sphere3d.scaleAbout point scale
+                    |> Expect.all
+                        [ Sphere3d.radius >> Expect.approximately (originalRadius * abs scale)
+                        , Sphere3d.centerPoint >> Point3d.distanceFrom point >> Expect.approximately (originalDistance * abs scale)
+                        ]
+            )
+        ]
 
 
 rotateAround : Test
