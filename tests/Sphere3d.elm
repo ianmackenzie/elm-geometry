@@ -9,6 +9,7 @@ import OpenSolid.BoundingBox3d as BoundingBox3d
 import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
+import OpenSolid.Geometry.Expect as Expect
 import OpenSolid.Geometry.Fuzz exposing (arc3d, axis3d, plane3d, point3d, scalar, sphere3d, vector3d)
 import OpenSolid.Plane3d as Plane3d
 import OpenSolid.Point3d as Point3d
@@ -163,7 +164,7 @@ throughPointsFuzz =
 
                 hasPointOnSurface point sphere =
                     Point3d.distanceFrom point (Sphere3d.centerPoint sphere)
-                        |> Expect.within (Absolute 1.0e-6) (Sphere3d.radius sphere)
+                        |> Expect.approximately (Sphere3d.radius sphere)
             in
             case sphere of
                 Just sphere ->
