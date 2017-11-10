@@ -10,13 +10,13 @@ import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Expect as Expect
-import OpenSolid.Geometry.Fuzz exposing (arc3d, axis3d, plane3d, point3d, scalar, sphere3d, vector3d)
+import OpenSolid.Geometry.Fuzz as Fuzz
 import OpenSolid.Plane3d as Plane3d
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Sphere3d as Sphere3d exposing (Sphere3d)
 import OpenSolid.Triangle3d as Triangle3d
 import OpenSolid.Vector3d as Vector3d
-import Test exposing (Test, describe, fuzz, fuzz2, fuzz3, fuzz4, test)
+import Test exposing (Test)
 
 
 {-
@@ -37,20 +37,20 @@ sphereFromTuple ( centerPoint, radius ) =
 
 jsonRoundTrips : Test
 jsonRoundTrips =
-    Generic.jsonRoundTrips sphere3d
+    Generic.jsonRoundTrips Fuzz.sphere3d
         Encode.sphere3d
         Decode.sphere3d
 
 
 unit : Test
 unit =
-    describe "unit"
-        [ test "The sphere returned by unit has radius 1" <|
+    Test.describe "unit"
+        [ Test.test "The sphere returned by unit has radius 1" <|
             \_ ->
                 Sphere3d.unit
                     |> Sphere3d.radius
                     |> Expect.equal 1
-        , test "The sphere returned by unit is centered on the origin" <|
+        , Test.test "The sphere returned by unit is centered on the origin" <|
             \_ ->
                 Sphere3d.unit
                     |> Sphere3d.centerPoint
@@ -60,9 +60,9 @@ unit =
 
 with : Test
 with =
-    describe "with"
-        [ fuzz2 point3d
-            scalar
+    Test.describe "with"
+        [ Test.fuzz2 Fuzz.point3d
+            Fuzz.scalar
             "A sphere's radius gets set correctly"
             (\centerPoint radius ->
                 let
@@ -72,8 +72,8 @@ with =
                 Sphere3d.radius sphere
                     |> Expect.equal (abs radius)
             )
-        , fuzz2 point3d
-            scalar
+        , Test.fuzz2 Fuzz.point3d
+            Fuzz.scalar
             "A sphere's center points gets set correctly"
             (\centerPoint radius ->
                 let
@@ -114,10 +114,10 @@ throughPointsManual =
         testTitle inputPoints expectedSphere =
             "Given " ++ toString (input inputPoints) ++ " throughPoints returns " ++ toString (sphereFromTuple expectedSphere)
     in
-    describe "throughPoints" <|
+    Test.describe "throughPoints" <|
         List.map
             (\( inputPoints, expectedSphere ) ->
-                test
+                Test.test
                     (testTitle inputPoints expectedSphere)
                     (\_ ->
                         Sphere3d.throughPoints (input inputPoints)
@@ -130,10 +130,10 @@ throughPointsManual =
 
 throughPointsFuzz : Test
 throughPointsFuzz =
-    fuzz4 point3d
-        point3d
-        point3d
-        point3d
+    Test.fuzz4 Fuzz.point3d
+        Fuzz.point3d
+        Fuzz.point3d
+        Fuzz.point3d
         "All given points lie on the sphere constructed using `throughPoints`"
         (\p1 p2 p3 p4 ->
             let
@@ -186,7 +186,7 @@ throughPointsFuzz =
 
 properties : Test
 properties =
-    fuzz sphere3d
+    Test.fuzz Fuzz.sphere3d
         "A sphere has the correct properties (diameter, circumference, surfaceArea, volume)"
         (\sphere ->
             let
@@ -205,8 +205,8 @@ properties =
 
 scaleAbout : Test
 scaleAbout =
-    describe "scaleAbout"
-        [ test
+    Test.describe "scaleAbout"
+        [ Test.test
             "scaleAbout correctly scales a specific sphere"
             (\_ ->
                 let
@@ -233,17 +233,17 @@ scaleAbout =
                     |> Expect.sphere3d
                         (Sphere3d.with { centerPoint = scaledCenter, radius = scaledRadius })
             )
-        , fuzz2 point3d
-            sphere3d
+        , Test.fuzz2 Fuzz.point3d
+            Fuzz.sphere3d
             "scaling by 1 has no effect on the sphere"
             (\point sphere ->
                 sphere
                     |> Sphere3d.scaleAbout point 1
                     |> Expect.sphere3d sphere
             )
-        , fuzz3 point3d
+        , Test.fuzz3 Fuzz.point3d
             (Fuzz.intRange 2 10)
-            sphere3d
+            Fuzz.sphere3d
             "scaling and unscaling has no effect on the sphere"
             (\point scale sphere ->
                 sphere
@@ -251,9 +251,9 @@ scaleAbout =
                     |> Sphere3d.scaleAbout point (1 / toFloat scale)
                     |> Expect.sphere3d sphere
             )
-        , fuzz3 point3d
-            scalar
-            sphere3d
+        , Test.fuzz3 Fuzz.point3d
+            Fuzz.scalar
+            Fuzz.sphere3d
             "scaling changes the radius and distance to the scaling point"
             (\point scale sphere ->
                 let
@@ -279,8 +279,8 @@ scaleAbout =
 
 rotateAround : Test
 rotateAround =
-    describe "rotateAround"
-        [ test
+    Test.describe "rotateAround"
+        [ Test.test
             "correctly rotates a specific sphere"
             (\_ ->
                 let
@@ -305,9 +305,9 @@ rotateAround =
                     |> Expect.sphere3d
                         (Sphere3d.with { centerPoint = rotatedCenter, radius = radius })
             )
-        , fuzz3 axis3d
-            scalar
-            sphere3d
+        , Test.fuzz3 Fuzz.axis3d
+            Fuzz.scalar
+            Fuzz.sphere3d
             "roating a sphere doesn't change its radius and its distance from the rotation axis"
             (\axis angle sphere ->
                 let
@@ -326,9 +326,9 @@ rotateAround =
                             >> Expect.approximately originalDistance
                         ]
             )
-        , fuzz3 axis3d
+        , Test.fuzz3 Fuzz.axis3d
             (Fuzz.floatRange 0 pi)
-            sphere3d
+            Fuzz.sphere3d
             "rotates by the correct angle"
             (\axis angle sphere ->
                 let
@@ -363,17 +363,17 @@ rotateAround =
                     _ ->
                         Expect.pass
             )
-        , fuzz2 axis3d
-            sphere3d
+        , Test.fuzz2 Fuzz.axis3d
+            Fuzz.sphere3d
             "rotating by 2 pi doesn't change the sphere"
             (\axis sphere ->
                 sphere
                     |> Sphere3d.rotateAround axis (2 * pi)
                     |> Expect.sphere3d sphere
             )
-        , fuzz3 axis3d
-            scalar
-            sphere3d
+        , Test.fuzz3 Fuzz.axis3d
+            Fuzz.scalar
+            Fuzz.sphere3d
             "rotating and unrotating doesn't change the sphere"
             (\axis angle sphere ->
                 sphere
@@ -386,8 +386,8 @@ rotateAround =
 
 translateBy : Test
 translateBy =
-    fuzz2 vector3d
-        sphere3d
+    Test.fuzz2 Fuzz.vector3d
+        Fuzz.sphere3d
         "A sphere gets translated correctly"
         (\displacement sphere ->
             sphere
@@ -401,8 +401,8 @@ translateBy =
 
 mirrorAcross : Test
 mirrorAcross =
-    fuzz2 plane3d
-        sphere3d
+    Test.fuzz2 Fuzz.plane3d
+        Fuzz.sphere3d
         "A sphere gets mirrored across a plane correctly"
         (\plane sphere ->
             sphere
@@ -416,7 +416,7 @@ mirrorAcross =
 
 boundingBoxContainsCenter : Test
 boundingBoxContainsCenter =
-    fuzz sphere3d
+    Test.fuzz Fuzz.sphere3d
         "A sphere's bounding box contains its center point"
         (\sphere ->
             let
