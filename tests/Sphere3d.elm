@@ -9,7 +9,7 @@ import OpenSolid.BoundingBox3d as BoundingBox3d
 import OpenSolid.Direction3d as Direction3d
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
-import OpenSolid.Geometry.Fuzz exposing (arc3d, axis3d, point3d, scalar, sphere3d)
+import OpenSolid.Geometry.Fuzz exposing (arc3d, axis3d, plane3d, point3d, scalar, sphere3d, vector3d)
 import OpenSolid.Plane3d as Plane3d
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Sphere3d as Sphere3d exposing (Sphere3d)
@@ -198,6 +198,70 @@ properties =
                     , Sphere3d.circumference >> Expect.equal (2 * pi * r)
                     , Sphere3d.surfaceArea >> Expect.equal (4 * pi * r * r)
                     , Sphere3d.volume >> Expect.equal (4 / 3 * pi * r * r * r)
+                    ]
+        )
+
+
+scaleAbout : Test
+scaleAbout =
+    fuzz3 point3d
+        scalar
+        sphere3d
+        "A sphere gets scaled correctly"
+        (\point scale sphere ->
+            sphere
+                |> Sphere3d.scaleAbout point scale
+                |> Expect.equal
+                    (Sphere3d.with
+                        { radius = abs (scale * Sphere3d.radius sphere)
+                        , centerPoint = Point3d.scaleAbout point scale (Sphere3d.centerPoint sphere)
+                        }
+                    )
+        )
+
+
+rotateAround : Test
+rotateAround =
+    fuzz3 axis3d
+        scalar
+        sphere3d
+        "A sphere gets rotated correctly"
+        (\axis angle sphere ->
+            sphere
+                |> Sphere3d.rotateAround axis angle
+                |> Expect.all
+                    [ Sphere3d.radius >> Expect.equal (Sphere3d.radius sphere)
+                    , Sphere3d.centerPoint >> Expect.equal (Point3d.rotateAround axis angle (Sphere3d.centerPoint sphere))
+                    ]
+        )
+
+
+translateBy : Test
+translateBy =
+    fuzz2 vector3d
+        sphere3d
+        "A sphere gets translated correctly"
+        (\displacement sphere ->
+            sphere
+                |> Sphere3d.translateBy displacement
+                |> Expect.all
+                    [ Sphere3d.radius >> Expect.equal (Sphere3d.radius sphere)
+                    , Sphere3d.centerPoint >> Expect.equal (Point3d.translateBy displacement (Sphere3d.centerPoint sphere))
+                    ]
+        )
+
+
+mirrorAcross : Test
+mirrorAcross =
+    fuzz2 plane3d
+        sphere3d
+        "A sphere gets mirrored across a plane correctly"
+        (\plane sphere ->
+            sphere
+                |> Sphere3d.mirrorAcross plane
+                |> Expect.all
+                    [ Sphere3d.radius >> Expect.equal (Sphere3d.radius sphere)
+                    , Sphere3d.centerPoint >> Expect.equal (Point3d.mirrorAcross plane (Sphere3d.centerPoint sphere))
                     ]
         )
 
