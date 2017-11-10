@@ -880,10 +880,11 @@ projectionIn direction vector =
     with { direction = direction, length = componentIn direction vector }
 
 
-{-| Project a vector onto a plane. Conceptually, this means splitting the
-original vector into a portion parallel to the plane (perpendicular to the
-plane's normal direction) and a portion perpendicular to it (parallel to its
-normal direction), then returning the parallel (in-plane) portion.
+{-| Project a vector [orthographically](https://en.wikipedia.org/wiki/Orthographic_projection)
+onto a plane. Conceptually, this means splitting the original vector into a
+portion parallel to the plane (perpendicular to the plane's normal direction)
+and a portion perpendicular to it (parallel to its normal direction), then
+returning the parallel (in-plane) portion.
 
     vector =
         Vector3d.fromComponents ( 2, 1, 3 )
@@ -951,9 +952,10 @@ placeIn frame vector =
         )
 
 
-{-| Project a vector into a given sketch plane. Conceptually, this projects the
-vector onto the plane and then expresses the projected vector in 2D sketch
-coordinates.
+{-| Project a vector into a given sketch plane. Conceptually, this finds the
+[orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
+of the vector onto the plane and then expresses the projected vector in 2D
+sketch coordinates.
 
     vector =
         Vector3d.fromComponents ( 2, 1, 3 )

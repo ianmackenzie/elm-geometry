@@ -36,6 +36,7 @@ module OpenSolid.Point3d
         , relativeTo
         , rotateAround
         , scaleAbout
+        , signedDistanceAlong
         , signedDistanceFrom
         , squaredDistanceFrom
         , squaredDistanceFromAxis
@@ -86,7 +87,7 @@ like you can add two vectors.
 
 # Measurement
 
-@docs distanceFrom, squaredDistanceFrom, distanceAlong, distanceFromAxis, squaredDistanceFromAxis, signedDistanceFrom
+@docs distanceFrom, squaredDistanceFrom, signedDistanceAlong, distanceAlong, distanceFromAxis, squaredDistanceFromAxis, signedDistanceFrom
 
 
 # Transformations
@@ -533,17 +534,25 @@ it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
     point =
         Point3d.fromCoordinates ( 3, 3, 3 )
 
-    Point3d.distanceAlong axis point
+    Point3d.signedDistanceAlong axis point
     --> 2
 
-    Point3d.distanceAlong axis Point3d.origin
+    Point3d.signedDistanceAlong axis Point3d.origin
     --> -1
 
 -}
-distanceAlong : Axis3d -> Point3d -> Float
-distanceAlong axis point =
+signedDistanceAlong : Axis3d -> Point3d -> Float
+signedDistanceAlong axis point =
     Vector3d.from (Axis3d.originPoint axis) point
         |> Vector3d.componentIn (Axis3d.direction axis)
+
+
+{-| DEPRECATED: Alias for `signedDistanceAlong`, kept for compatibility. Use
+`signedDistanceAlong` instead.
+-}
+distanceAlong : Axis3d -> Point3d -> Float
+distanceAlong =
+    signedDistanceAlong
 
 
 {-| Find the perpendicular (nearest) distance of a point from an axis.
@@ -747,7 +756,8 @@ mirrorAcross plane point =
         |> addTo originPoint
 
 
-{-| Project a point perpendicularly onto a plane.
+{-| Find the [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
+of a point onto a plane:
 
     point =
         Point3d.fromCoordinates ( 1, 2, 3 )
@@ -800,7 +810,7 @@ projectOnto plane point =
 -}
 projectOntoAxis : Axis3d -> Point3d -> Point3d
 projectOntoAxis axis point =
-    along axis (distanceAlong axis point)
+    along axis (signedDistanceAlong axis point)
 
 
 {-| Take a point defined in global coordinates, and return it expressed in local
@@ -850,8 +860,9 @@ placeIn frame point =
         |> addTo (Frame3d.originPoint frame)
 
 
-{-| Project a point into a given sketch plane. Conceptually, this projects the
-point onto the plane and then expresses the projected point in 2D sketch
+{-| Project a point into a given sketch plane. Conceptually, this finds the
+[orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
+of the point onto the plane and then expresses the projected point in 2D sketch
 coordinates.
 
     point =

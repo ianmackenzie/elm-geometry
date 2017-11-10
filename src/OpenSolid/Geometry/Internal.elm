@@ -188,3 +188,13 @@ type CubicSpline2d
 
 type CubicSpline3d
     = CubicSpline3d ( Point3d, Point3d, Point3d, Point3d )
+
+
+type EllipticalArc2d
+    = EllipticalArc2d
+        { axes : Frame2d
+        , xRadius : Float
+        , yRadius : Float
+        , startAngle : Float
+        , sweptAngle : Float
+        }

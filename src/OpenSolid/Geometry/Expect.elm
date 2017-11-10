@@ -67,7 +67,6 @@ module OpenSolid.Geometry.Expect
         , vector2dWithin
         , vector3d
         , vector3dWithin
-        , within
         )
 
 import Expect exposing (Expectation)
@@ -155,12 +154,7 @@ defaultTolerance =
 
 approximately : Float -> Float -> Expectation
 approximately =
-    within defaultTolerance
-
-
-within : Float -> Float -> Float -> Expectation
-within tolerance =
-    expect (Scalar.equalWithin tolerance)
+    Expect.within (Expect.Absolute defaultTolerance)
 
 
 angle : Float -> Float -> Expectation

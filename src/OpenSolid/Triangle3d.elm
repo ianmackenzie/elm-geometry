@@ -326,7 +326,8 @@ mirrorAcross plane =
     mapVertices (Point3d.mirrorAcross plane)
 
 
-{-| Project a triangle onto a given plane.
+{-| Find the [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
+of a triangle onto a plane.
 
     Triangle3d.projectOnto Plane3d.xy exampleTriangle
     --> Triangle3d.fromVertices
@@ -408,8 +409,9 @@ placeIn frame =
     mapVertices (Point3d.placeIn frame)
 
 
-{-| Project a triangle into a given sketch plane. Conceptually, this projects
-the triangle onto the plane and then expresses the projected triangle in 2D
+{-| Project a triangle into a given sketch plane. Conceptually, this finds the
+[orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
+of the triangle onto the plane and then expresses the projected triangle in 2D
 sketch coordinates.
 
     Triangle3d.projectInto SketchPlane3d.xy exampleTriangle

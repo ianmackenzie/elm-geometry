@@ -34,6 +34,7 @@ module OpenSolid.Point2d
         , relativeTo
         , rotateAround
         , scaleAbout
+        , signedDistanceAlong
         , signedDistanceFrom
         , squaredDistanceFrom
         , translateBy
@@ -81,7 +82,7 @@ like you can add two vectors.
 
 # Measurement
 
-@docs distanceFrom, squaredDistanceFrom, distanceAlong, signedDistanceFrom
+@docs distanceFrom, squaredDistanceFrom, signedDistanceAlong, distanceAlong, signedDistanceFrom
 
 
 # Transformations
@@ -499,17 +500,25 @@ it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
     point =
         Point2d.fromCoordinates ( 3, 3 )
 
-    Point2d.distanceAlong axis point
+    Point2d.signedDistanceAlong axis point
     --> 2
 
-    Point2d.distanceAlong axis Point2d.origin
+    Point2d.signedDistanceAlong axis Point2d.origin
     --> -1
 
 -}
-distanceAlong : Axis2d -> Point2d -> Float
-distanceAlong axis point =
+signedDistanceAlong : Axis2d -> Point2d -> Float
+signedDistanceAlong axis point =
     Vector2d.from (Axis2d.originPoint axis) point
         |> Vector2d.componentIn (Axis2d.direction axis)
+
+
+{-| DEPRECATED: Alias for `signedDistanceAlong`, kept for compatibility. Use
+`signedDistanceAlong` instead.
+-}
+distanceAlong : Axis2d -> Point2d -> Float
+distanceAlong =
+    signedDistanceAlong
 
 
 {-| Find the perpendicular distance of a point from an axis. The result

@@ -4,9 +4,26 @@ Thanks for your interest in OpenSolid! Currently, the best way to contribute is
 simply to [open a new issue](https://github.com/opensolid/geometry/issues) for
 any new features you're interested in or any bugs you notice (including things
 like misleading or confusing documentation - documentation issues are just as
-important as code issues!). If you're willing to help fix the issue/implement
-the feature, please mention that in the issue, but it's certainly not a
-requirement!
+important as code issues!). If you're willing to help fix the bug/implement the
+feature, please mention that in the issue, but it's certainly not a requirement!
+
+In general, I try to follow [the Elm guidelines](https://twitter.com/czaplic/status/928359033844539393)
+and ask that you try to as well:
+
+  - Be kind.
+  - Learn from everyone.
+  - Collaboration requires communication.
+  - Not every problem should be solved with code.
+  - Communication _is_ contribution.
+  - Understand the problem.
+  - Explore all possible solutions.
+  - Pick one.
+  - Simplicity is not just for beginners.
+  - It's better to do it _right_ than to do it _right now_.
+  - It's not done until the docs are great.
+  - Take responsibility for user experiences.
+  - Make impossible states impossible.
+  - There are worse things than being explicit...
 
 # Contributing changes
 
@@ -36,18 +53,11 @@ of the documentation myself to ensure a consistent style and tone throughout.
 ## Testing
 
 During development, please run the existing tests periodically to make sure you
-haven't accidentally broken anything! To run the tests locally, you have two
-options:
+haven't accidentally broken anything! To run the tests:
 
-  - Run `elm reactor` inside the `tests` subdirectory. You should then be able
-    to open up `localhost:8000` in a browser and click on `All.elm` to run the
-    entire test suite. You can also click on any of the files named after
-    individual OpenSolid modules (for example, `LineSegment2d.elm`) to run only
-    the tests for that module.
-  - Run `elm package install` inside the `tests` subdirectory, install
-    [`elm-test`](https://github.com/rtfeldman/node-test-runner) by running
-    `npm install -g elm-test`, then run `elm-test` from the root directory of
-    this repository to run all the tests from the command line.
+  - Run `elm package install` inside the `tests` subdirectory
+  - Install [`elm-test`](https://github.com/rtfeldman/node-test-runner) by running `npm install -g elm-test`
+  - Run `elm-test` from the root directory of this repository
 
 If you are working on fixing a bug, please first add a test that catches the bug
 to the relevant file in the `tests` subdirectory, then add your fix and verify
