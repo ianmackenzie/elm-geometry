@@ -2,8 +2,8 @@ module BoundingBox2d
     exposing
         ( boxContainsOwnCentroid
         , hullContainsInputs
-        , intersectionConsistentWithOverlaps
-        , intersectionConsistentWithStrictlyOverlaps
+        , intersectionConsistentWithIntersects
+        , intersectionConsistentWithOverlapsBy
         , intersectionIsValidOrNothing
         , jsonRoundTrips
         , overlappingBoxesCannotBySeparated
@@ -28,20 +28,20 @@ jsonRoundTrips =
         Decode.boundingBox2d
 
 
-intersectionConsistentWithOverlaps : Test
-intersectionConsistentWithOverlaps =
+intersectionConsistentWithIntersects : Test
+intersectionConsistentWithIntersects =
     Test.fuzz2 Fuzz.boundingBox2d
         Fuzz.boundingBox2d
-        "'intersection' is consistent with 'overlaps'"
+        "'intersection' is consistent with 'intersects'"
         (\first second ->
             let
-                overlaps =
-                    BoundingBox2d.overlaps first second
+                intersects =
+                    BoundingBox2d.intersects first second
 
                 intersection =
                     BoundingBox2d.intersection first second
             in
-            case ( overlaps, intersection ) of
+            case ( intersects, intersection ) of
                 ( True, Just _ ) ->
                     Expect.pass
 
@@ -53,7 +53,7 @@ intersectionConsistentWithOverlaps =
                         (toString first
                             ++ " and "
                             ++ toString second
-                            ++ " considered to overlap, "
+                            ++ " considered to intersect, "
                             ++ "but intersection is Nothing"
                         )
 
@@ -62,21 +62,22 @@ intersectionConsistentWithOverlaps =
                         (toString first
                             ++ " and "
                             ++ toString second
-                            ++ " not considered to overlap, "
+                            ++ " not considered to intersect, "
                             ++ " but have valid intersection "
                             ++ toString intersectionBox
                         )
         )
 
 
-intersectionConsistentWithStrictlyOverlaps : Test
-intersectionConsistentWithStrictlyOverlaps =
-    Test.fuzz2 Fuzz.boundingBox2d
+intersectionConsistentWithOverlapsBy : Test
+intersectionConsistentWithOverlapsBy =
+    Test.fuzz2
         Fuzz.boundingBox2d
-        "'intersection' is consistent with 'strictlyOverlaps'"
+        Fuzz.boundingBox2d
+        "'intersection' is consistent with 'overlapsBy'"
         (\first second ->
             let
-                strictlyOverlaps =
+                overlaps =
                     BoundingBox2d.overlapsBy GT 0 first second
 
                 intersection =
@@ -85,7 +86,7 @@ intersectionConsistentWithStrictlyOverlaps =
                 intersectionDimensions =
                     Maybe.map BoundingBox2d.dimensions intersection
             in
-            case ( strictlyOverlaps, intersectionDimensions ) of
+            case ( overlaps, intersectionDimensions ) of
                 ( True, Just ( width, height ) ) ->
                     if width == 0 then
                         Expect.fail

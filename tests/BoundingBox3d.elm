@@ -2,7 +2,7 @@ module BoundingBox3d
     exposing
         ( boxContainsOwnCentroid
         , hullContainsInputs
-        , intersectionConsistentWithOverlaps
+        , intersectionConsistentWithIntersects
         , intersectionIsValidOrNothing
         , jsonRoundTrips
         )
@@ -27,8 +27,8 @@ jsonRoundTrips =
         Decode.boundingBox3d
 
 
-intersectionConsistentWithOverlaps : Test
-intersectionConsistentWithOverlaps =
+intersectionConsistentWithIntersects : Test
+intersectionConsistentWithIntersects =
     Test.fuzz2 Fuzz.boundingBox3d
         Fuzz.boundingBox3d
         "'intersection' is consistent with 'intersects'"
