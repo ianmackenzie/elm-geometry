@@ -272,8 +272,27 @@ separationIsCorrectForHorizontallyDisplacedBoxes =
                         , maxY = 1
                         }
             in
-            BoundingBox2d.separatedBy EQ 1 firstBox secondBox
-                |> Expect.true "separation is not equal to 1"
+            firstBox
+                |> Expect.all
+                    [ Expect.true "Expected separation to be equal to 1"
+                        << BoundingBox2d.separatedBy EQ 1 secondBox
+                    , Expect.true "Expected separation to be greater than 0.5"
+                        << BoundingBox2d.separatedBy GT 0.5 secondBox
+                    , Expect.true "Expected separation to be greater than 0"
+                        << BoundingBox2d.separatedBy GT 0 secondBox
+                    , Expect.true "Expected separation to be greater than -1"
+                        << BoundingBox2d.separatedBy GT -1 secondBox
+                    , Expect.true "Expected separation to be less than 2"
+                        << BoundingBox2d.separatedBy LT 2 secondBox
+                    , Expect.false "Expected separation to not be equal to 2"
+                        << BoundingBox2d.separatedBy EQ 2 secondBox
+                    , Expect.false "Expected separation to not be greater than 1"
+                        << BoundingBox2d.separatedBy GT 1 secondBox
+                    , Expect.false "Expected separation to not be less than 1"
+                        << BoundingBox2d.separatedBy LT 1 secondBox
+                    , Expect.false "Expected separation to not be less than 0"
+                        << BoundingBox2d.separatedBy LT 0 secondBox
+                    ]
         )
 
 
@@ -299,8 +318,27 @@ separationIsCorrectForVerticallyDisplacedBoxes =
                         , maxY = 3
                         }
             in
-            BoundingBox2d.separatedBy EQ 1 firstBox secondBox
-                |> Expect.true "separation is not equal to 1"
+            firstBox
+                |> Expect.all
+                    [ Expect.true "Expected separation to be equal to 1"
+                        << BoundingBox2d.separatedBy EQ 1 secondBox
+                    , Expect.true "Expected separation to be greater than 0.5"
+                        << BoundingBox2d.separatedBy GT 0.5 secondBox
+                    , Expect.true "Expected separation to be greater than 0"
+                        << BoundingBox2d.separatedBy GT 0 secondBox
+                    , Expect.true "Expected separation to be greater than -1"
+                        << BoundingBox2d.separatedBy GT -1 secondBox
+                    , Expect.true "Expected separation to be less than 2"
+                        << BoundingBox2d.separatedBy LT 2 secondBox
+                    , Expect.false "Expected separation to not be equal to 2"
+                        << BoundingBox2d.separatedBy EQ 2 secondBox
+                    , Expect.false "Expected separation to not be greater than 1"
+                        << BoundingBox2d.separatedBy GT 1 secondBox
+                    , Expect.false "Expected separation to not be less than 1"
+                        << BoundingBox2d.separatedBy LT 1 secondBox
+                    , Expect.false "Expected separation to not be less than 0"
+                        << BoundingBox2d.separatedBy LT 0 secondBox
+                    ]
         )
 
 
@@ -326,6 +364,25 @@ separationIsCorrectForDiagonallyDisplacedBoxes =
                         , maxY = 6
                         }
             in
-            BoundingBox2d.separatedBy EQ 5 firstBox secondBox
-                |> Expect.true "separation is not equal to 5"
+            firstBox
+                |> Expect.all
+                    [ Expect.true "Expected separation to be equal to 5"
+                        << BoundingBox2d.separatedBy EQ 5 secondBox
+                    , Expect.true "Expected separation to be greater than 4"
+                        << BoundingBox2d.separatedBy GT 4 secondBox
+                    , Expect.true "Expected separation to be greater than 0"
+                        << BoundingBox2d.separatedBy GT 0 secondBox
+                    , Expect.true "Expected separation to be greater than -1"
+                        << BoundingBox2d.separatedBy GT -1 secondBox
+                    , Expect.true "Expected separation to be less than 6"
+                        << BoundingBox2d.separatedBy LT 6 secondBox
+                    , Expect.false "Expected separation to not be equal to 6"
+                        << BoundingBox2d.separatedBy EQ 6 secondBox
+                    , Expect.false "Expected separation to not be greater than 5"
+                        << BoundingBox2d.separatedBy GT 5 secondBox
+                    , Expect.false "Expected separation to not be less than 5"
+                        << BoundingBox2d.separatedBy LT 5 secondBox
+                    , Expect.false "Expected separation to not be less than 0"
+                        << BoundingBox2d.separatedBy LT 0 secondBox
+                    ]
         )
