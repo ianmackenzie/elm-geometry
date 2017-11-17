@@ -447,8 +447,8 @@ boxes.
 
 Boxes that just touch are considered to have an overlap of zero, which is
 distinct from 'no overlap'. Boxes that do not touch or overlap at all are
-considered to have an overlap which is less than zero but not greater or less
-than any negative number.
+considered to have an overlap which is less than zero but not comparable to any
+negative number.
 
 
 ### Less than
@@ -547,7 +547,7 @@ not touch.
 
 Boxes that just touch are considered to have a separation of zero, which is
 distinct from 'no separation'. 'No separation' (overlap) is considered to be
-less than zero but not greater or less than any negative number.
+less than zero but not comparable to any negative number.
 
 
 ### Less than
