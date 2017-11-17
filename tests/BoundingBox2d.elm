@@ -9,6 +9,9 @@ module BoundingBox2d
         , overlappingBoxesCannotBySeparated
         , overlapsByDetectsIntersection
         , separatedBoxesCannotBeMadeToOverlap
+        , separationIsCorrectForDiagonallyDisplacedBoxes
+        , separationIsCorrectForHorizontallyDisplacedBoxes
+        , separationIsCorrectForVerticallyDisplacedBoxes
         )
 
 import Expect
@@ -244,4 +247,85 @@ separatedBoxesCannotBeMadeToOverlap =
                     |> Expect.false "displaced box should still not intersect the other box"
             else
                 Expect.pass
+        )
+
+
+separationIsCorrectForHorizontallyDisplacedBoxes : Test
+separationIsCorrectForHorizontallyDisplacedBoxes =
+    Test.test
+        "separation is determined correctly for horizontally displaced boxes"
+        (\_ ->
+            let
+                firstBox =
+                    BoundingBox2d.with
+                        { minX = 0
+                        , minY = 0
+                        , maxX = 1
+                        , maxY = 1
+                        }
+
+                secondBox =
+                    BoundingBox2d.with
+                        { minX = 2
+                        , minY = 0
+                        , maxX = 3
+                        , maxY = 1
+                        }
+            in
+            BoundingBox2d.separatedBy EQ 1 firstBox secondBox
+                |> Expect.true "separation is equal to 1"
+        )
+
+
+separationIsCorrectForVerticallyDisplacedBoxes : Test
+separationIsCorrectForVerticallyDisplacedBoxes =
+    Test.test
+        "separation is determined correctly for vertically displaced boxes"
+        (\_ ->
+            let
+                firstBox =
+                    BoundingBox2d.with
+                        { minX = 0
+                        , minY = 0
+                        , maxX = 1
+                        , maxY = 1
+                        }
+
+                secondBox =
+                    BoundingBox2d.with
+                        { minX = 0
+                        , minY = 2
+                        , maxX = 1
+                        , maxY = 3
+                        }
+            in
+            BoundingBox2d.separatedBy EQ 1 firstBox secondBox
+                |> Expect.true "separation is equal to 1"
+        )
+
+
+separationIsCorrectForDiagonallyDisplacedBoxes : Test
+separationIsCorrectForDiagonallyDisplacedBoxes =
+    Test.test
+        "separation is determined correctly for diagonally displaced boxes"
+        (\_ ->
+            let
+                firstBox =
+                    BoundingBox2d.with
+                        { minX = 0
+                        , minY = 0
+                        , maxX = 1
+                        , maxY = 1
+                        }
+
+                secondBox =
+                    BoundingBox2d.with
+                        { minX = 4
+                        , minY = 5
+                        , maxX = 5
+                        , maxY = 6
+                        }
+            in
+            BoundingBox2d.separatedBy EQ 5 firstBox secondBox
+                |> Expect.true "separation is equal to 5"
         )
