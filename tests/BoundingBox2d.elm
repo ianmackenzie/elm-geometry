@@ -273,7 +273,7 @@ separationIsCorrectForHorizontallyDisplacedBoxes =
                         }
             in
             BoundingBox2d.separatedBy EQ 1 firstBox secondBox
-                |> Expect.true "separation is equal to 1"
+                |> Expect.true "separation is not equal to 1"
         )
 
 
@@ -300,7 +300,7 @@ separationIsCorrectForVerticallyDisplacedBoxes =
                         }
             in
             BoundingBox2d.separatedBy EQ 1 firstBox secondBox
-                |> Expect.true "separation is equal to 1"
+                |> Expect.true "separation is not equal to 1"
         )
 
 
@@ -327,5 +327,5 @@ separationIsCorrectForDiagonallyDisplacedBoxes =
                         }
             in
             BoundingBox2d.separatedBy EQ 5 firstBox secondBox
-                |> Expect.true "separation is equal to 5"
+                |> Expect.true "separation is not equal to 5"
         )
