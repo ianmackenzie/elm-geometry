@@ -180,7 +180,7 @@ throughPoints ( p1, p2, p3, p4 ) =
                         Point3d.distanceFromAxis normalAxis p4
 
                     y =
-                        Point3d.distanceAlong normalAxis p4
+                        Point3d.signedDistanceAlong normalAxis p4
                 in
                 if y /= 0 then
                     let
