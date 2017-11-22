@@ -121,7 +121,7 @@ throughPointsManual =
                     (testTitle inputPoints expectedSphere)
                     (\_ ->
                         Sphere3d.throughPoints (input inputPoints)
-                            |> Maybe.map (Expect.equal (sphereFromTuple expectedSphere))
+                            |> Maybe.map (Expect.sphere3d (sphereFromTuple expectedSphere))
                             |> Maybe.withDefault (Expect.fail "throughPoints returned Nothing on valid input")
                     )
             )
@@ -195,10 +195,10 @@ properties =
             in
             sphere
                 |> Expect.all
-                    [ Sphere3d.diameter >> Expect.equal (2 * r)
-                    , Sphere3d.circumference >> Expect.equal (2 * pi * r)
-                    , Sphere3d.surfaceArea >> Expect.equal (4 * pi * r * r)
-                    , Sphere3d.volume >> Expect.equal (4 / 3 * pi * r * r * r)
+                    [ Sphere3d.diameter >> Expect.approximately (2 * r)
+                    , Sphere3d.circumference >> Expect.approximately (2 * pi * r)
+                    , Sphere3d.surfaceArea >> Expect.approximately (4 * pi * r * r)
+                    , Sphere3d.volume >> Expect.approximately (4 / 3 * pi * r * r * r)
                     ]
         )
 
@@ -393,8 +393,8 @@ translateBy =
             sphere
                 |> Sphere3d.translateBy displacement
                 |> Expect.all
-                    [ Sphere3d.radius >> Expect.equal (Sphere3d.radius sphere)
-                    , Sphere3d.centerPoint >> Expect.equal (Point3d.translateBy displacement (Sphere3d.centerPoint sphere))
+                    [ Sphere3d.radius >> Expect.approximately (Sphere3d.radius sphere)
+                    , Sphere3d.centerPoint >> Expect.point3d (Point3d.translateBy displacement (Sphere3d.centerPoint sphere))
                     ]
         )
 
@@ -408,8 +408,8 @@ mirrorAcross =
             sphere
                 |> Sphere3d.mirrorAcross plane
                 |> Expect.all
-                    [ Sphere3d.radius >> Expect.equal (Sphere3d.radius sphere)
-                    , Sphere3d.centerPoint >> Expect.equal (Point3d.mirrorAcross plane (Sphere3d.centerPoint sphere))
+                    [ Sphere3d.radius >> Expect.approximately (Sphere3d.radius sphere)
+                    , Sphere3d.centerPoint >> Expect.point3d (Point3d.mirrorAcross plane (Sphere3d.centerPoint sphere))
                     ]
         )
 
