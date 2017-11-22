@@ -10,7 +10,7 @@ documentation.json
 docs.json
 
 # elm-verify-examples generated tests
-tests/Doc/OpenSolid
+tests/Doc
 
 # =========================
 # Operating System Files

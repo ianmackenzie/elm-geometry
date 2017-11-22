@@ -1,4 +1,4 @@
-module Doc.DocTestStatic.Sphere3d exposing (..)
+module OpenSolid.Geometry.Examples.Sphere3d exposing (exampleSphere)
 
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Sphere3d as Sphere3d exposing (Sphere3d)

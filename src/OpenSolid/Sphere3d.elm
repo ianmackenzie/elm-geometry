@@ -81,8 +81,8 @@ import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 {--Imports for verifying the examples:
 
-    import Doc.DocTestStatic.Sphere3d exposing (..)
-    import Doc.DocTestStatic.Expect as Expect
+    import OpenSolid.Geometry.Examples.Sphere3d exposing (..)
+    import OpenSolid.Geometry.Examples.Expect as Expect
     import OpenSolid.Axis3d as Axis3d
     import OpenSolid.BoundingBox3d as BoundingBox3d
     import OpenSolid.Circle2d as Circle2d

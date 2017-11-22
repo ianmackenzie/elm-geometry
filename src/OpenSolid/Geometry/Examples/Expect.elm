@@ -1,13 +1,10 @@
-module Doc.DocTestStatic.Expect exposing (equalWithinTolerance)
+module OpenSolid.Geometry.Examples.Expect exposing (equalWithinTolerance)
 
 import Expect exposing (Expectation)
 import OpenSolid.Scalar as Scalar
 import Regex exposing (HowMany(All), regex)
 import Result
 import String
-
-
---import List
 
 
 {-| This is a very hacky function to compare arbitrary types and the numbers in them with a certain precision.
