@@ -3,11 +3,11 @@ module BoundingBox2d
         ( boxContainsOwnCentroid
         , hullContainsInputs
         , intersectionConsistentWithIntersects
-        , intersectionConsistentWithOverlapsBy
+        , intersectionConsistentWithOverlappingBy
         , intersectionIsValidOrNothing
         , jsonRoundTrips
         , overlappingBoxesCannotBySeparated
-        , overlapsByDetectsIntersection
+        , overlappingByDetectsIntersection
         , separatedBoxesCannotBeMadeToOverlap
         , separationIsCorrectForDiagonallyDisplacedBoxes
         , separationIsCorrectForHorizontallyDisplacedBoxes
@@ -72,16 +72,16 @@ intersectionConsistentWithIntersects =
         )
 
 
-intersectionConsistentWithOverlapsBy : Test
-intersectionConsistentWithOverlapsBy =
+intersectionConsistentWithOverlappingBy : Test
+intersectionConsistentWithOverlappingBy =
     Test.fuzz2
         Fuzz.boundingBox2d
         Fuzz.boundingBox2d
-        "'intersection' is consistent with 'overlapsBy'"
+        "'intersection' is consistent with 'overlappingBy'"
         (\first second ->
             let
-                overlaps =
-                    BoundingBox2d.overlapsBy GT 0 first second
+                overlapping =
+                    BoundingBox2d.overlappingBy GT 0 first second
 
                 intersection =
                     BoundingBox2d.intersection first second
@@ -89,7 +89,7 @@ intersectionConsistentWithOverlapsBy =
                 intersectionDimensions =
                     Maybe.map BoundingBox2d.dimensions intersection
             in
-            case ( overlaps, intersectionDimensions ) of
+            case ( overlapping, intersectionDimensions ) of
                 ( True, Just ( width, height ) ) ->
                     if width == 0 then
                         Expect.fail
@@ -190,21 +190,21 @@ boxContainsOwnCentroid =
         )
 
 
-overlapsByDetectsIntersection : Test
-overlapsByDetectsIntersection =
+overlappingByDetectsIntersection : Test
+overlappingByDetectsIntersection =
     Test.fuzz2
         Fuzz.boundingBox2d
         Fuzz.boundingBox2d
-        "overlapsBy LT 0 detects non-intersecting boxes"
+        "overlappingBy LT 0 detects non-intersecting boxes"
         (\firstBox secondBox ->
             case BoundingBox2d.intersection firstBox secondBox of
                 Just intersectionBox ->
                     Expect.false "intersecting boxes should overlap by at least 0"
-                        (BoundingBox2d.overlapsBy LT 0 firstBox secondBox)
+                        (BoundingBox2d.overlappingBy LT 0 firstBox secondBox)
 
                 Nothing ->
                     Expect.true "non-intersecting boxes should overlap by less than 0"
-                        (BoundingBox2d.overlapsBy LT 0 firstBox secondBox)
+                        (BoundingBox2d.overlappingBy LT 0 firstBox secondBox)
         )
 
 
@@ -220,7 +220,7 @@ overlappingBoxesCannotBySeparated =
                 tolerance =
                     Vector2d.length displacement
             in
-            if BoundingBox2d.overlapsBy GT tolerance firstBox secondBox then
+            if BoundingBox2d.overlappingBy GT tolerance firstBox secondBox then
                 BoundingBox2d.translateBy displacement firstBox
                     |> BoundingBox2d.intersects secondBox
                     |> Expect.true "displaced box should still intersect the other box"

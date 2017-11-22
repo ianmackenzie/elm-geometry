@@ -28,8 +28,8 @@ module OpenSolid.BoundingBox2d
         , midY
         , minX
         , minY
+        , overlappingBy
         , overlaps
-        , overlapsBy
         , scaleAbout
         , separatedBy
         , singleton
@@ -71,7 +71,7 @@ box of an object than the object itself, such as:
 
 # Queries
 
-@docs contains, isContainedIn, intersects, overlaps, overlapsBy, separatedBy
+@docs contains, isContainedIn, intersects, overlaps, overlappingBy, separatedBy
 
 
 # Transformations
@@ -435,7 +435,7 @@ returns true only if the boxes overlap by at least some small finite amount,
 and ignores boxes that just barely touch each other) as
 
     boxesCollide =
-        BoundingBox2d.overlapsBy GT 0.001 firstBox secondBox
+        BoundingBox2d.overlappingBy GT 0.001 firstBox secondBox
 
 (The [`Order`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#Order)
 type and its three values `LT`, `GT` and `EQ` are defined in Elm's `Basics`
@@ -453,23 +453,23 @@ negative number.
 
 ### Less than
 
-  - `overlapsBy LT 1e-3` will return true if the two boxes overlap by less than
+  - `overlappingBy LT 1e-3` will return true if the two boxes overlap by less than
     0.001 units or if they do not overlap at all (false if they overlap by more
     than 0.001 units).
-  - `overlapsBy LT 0` will return true only if the two boxes don't touch or
+  - `overlappingBy LT 0` will return true only if the two boxes don't touch or
     overlap at all.
-  - `overlapsBy LT -1e-3` will always return false! If you care about _how much_
-    two boxes are separated by, use `separatedBy` instead.
+  - `overlappingBy LT -1e-3` will always return false! If you care about _how
+    much_ two boxes are separated by, use `separatedBy` instead.
 
 
 ### Greater than
 
-  - `overlapsBy GT 1e-3` will return true if the two boxes overlap by at least
-    0.001 units (false if they overlap by less than that or do not overlap at
-    all).
-  - `overlapsBy GT 0` will return true if the two boxes overlap by any non-zero
-    amount (false if they just touch or do not overlap at all).
-  - `overlapsBy GT -1e-3` doesn't make a lot of sense but will return true if
+  - `overlappingBy GT 1e-3` will return true if the two boxes overlap by at
+    least 0.001 units (false if they overlap by less than that or do not overlap
+    at all).
+  - `overlappingBy GT 0` will return true if the two boxes overlap by any
+    non-zero amount (false if they just touch or do not overlap at all).
+  - `overlappingBy GT -1e-3` doesn't make a lot of sense but will return true if
     the boxes touch or overlap at all (false if they don't overlap, regardless
     of how close they are to overlapping).
 
@@ -479,15 +479,15 @@ negative number.
 Checking whether two boxes overlap by exactly a given amount is pretty weird and
 vulnerable to floating-point roundoff, but is defined as follows:
 
-  - `overlapsBy EQ 1e-3` will return true if the two boxes overlap by exactly
+  - `overlappingBy EQ 1e-3` will return true if the two boxes overlap by exactly
     0.001 units.
-  - `overlapsBy EQ 0` will return true if and only if the boxes just touch each
-    other.
-  - `overlapsBy EQ -1e-3` will always return false.
+  - `overlappingBy EQ 0` will return true if and only if the boxes just touch
+    each other.
+  - `overlappingBy EQ -1e-3` will always return false.
 
 -}
-overlapsBy : Order -> Float -> BoundingBox2d -> BoundingBox2d -> Bool
-overlapsBy order tolerance =
+overlappingBy : Order -> Float -> BoundingBox2d -> BoundingBox2d -> Bool
+overlappingBy order tolerance =
     case order of
         LT ->
             if tolerance > 0 then
@@ -558,7 +558,7 @@ less than zero but not comparable to any negative number.
   - `separatedBy LT 0` will return true only if the boxes overlap by some
     non-zero amount.
   - `separatedBy LT -1e-3` will always return false! If you care about _how
-    much_ two boxes overlap by, use `overlapsBy` instead.
+    much_ two boxes overlap by, use `overlappingBy` instead.
 
 
 ### Greater than
