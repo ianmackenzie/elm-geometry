@@ -424,8 +424,7 @@ boundingBox sphere =
             radius sphere
 
         ( cx, cy, cz ) =
-            Point3d.coordinates
-                (centerPoint sphere)
+            Point3d.coordinates (centerPoint sphere)
     in
     BoundingBox3d.with
         { minX = cx - r
@@ -456,7 +455,7 @@ contains point sphere =
         r =
             radius sphere
     in
-    Point3d.squaredDistanceFrom point (centerPoint sphere) <= r * r
+    Point3d.squaredDistanceFrom (centerPoint sphere) point <= r * r
 
 
 {-| Find the [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
