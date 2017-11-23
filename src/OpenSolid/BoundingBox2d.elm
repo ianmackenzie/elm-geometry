@@ -430,14 +430,15 @@ alwaysFalse firstBox secondBox =
 
 
 {-| Check if one box overlaps another by less than, greater than or equal to a
-given amount. You could perform a tolerant collision check (one that only
-returns true only if the boxes overlap by at least some small finite amount,
-and ignores boxes that just barely touch each other) as
+given amount. For example, you could perform a tolerant collision check (one
+that only returns true only if the boxes overlap by at least some small finite
+amount, and ignores boxes that just barely touch each other) as
 
     boxesCollide =
         BoundingBox2d.overlappingBy GT 0.001 box1 box2
 
-(The [`Order`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#Order)
+This can be read as "`box1` and `box2` are overlapping by greater than 0.001
+units". (The [`Order`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#Order)
 type and its three values `LT`, `GT` and `EQ` are defined in Elm's `Basics`
 module so are available by default in any Elm program.)
 
@@ -530,14 +531,16 @@ overlappingBy order tolerance =
 
 
 {-| Check if one box is separated from another by less than, greater than or
-equal to a given amount. If you were performing clash detection between some
-objects, you could use `separatedBy` on those objects' bounding boxes as a quick
-check to see if the objects had a gap of at least 1 cm between them:
+equal to a given amount. For example, if you were performing clash detection
+between some objects, you could use `separatedBy` on those objects' bounding
+boxes as a quick check to see if the objects had a gap of at least 1 cm between
+them:
 
     safelySeparated =
         BoundingBox2d.separatedBy GT 0.01 box1 box2
 
-(The [`Order`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#Order)
+This can be read as "`box1` and `box2` are separated by greater than 0.01
+units". (The [`Order`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#Order)
 type and its three values `LT`, `GT` and `EQ` are defined in Elm's `Basics`
 module so are available by default in any Elm program.)
 
