@@ -612,10 +612,9 @@ overlappingBy order tolerance =
 
 
 {-| Check if one box is separated from another by less than, greater than or
-equal to a given amount. For example, if you were performing clash detection
-between some objects, you could use `separatedBy` on those objects' bounding
-boxes as a quick check to see if the objects had a gap of at least 1 cm between
-them:
+equal to a given amount. For example, to perform clash detection between some
+objects, you could use `separatedBy` on those objects' bounding boxes as a quick
+check to see if the objects had a gap of at least 1 cm between them:
 
     safelySeparated =
         BoundingBox3d.separatedBy GT 0.01 box1 box2
