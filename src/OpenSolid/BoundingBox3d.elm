@@ -516,7 +516,7 @@ returns true only if the boxes overlap by at least some small finite amount,
 and ignores boxes that just barely touch each other) as
 
     boxesCollide =
-        BoundingBox3d.overlappingBy GT 0.001 firstBox secondBox
+        BoundingBox3d.overlappingBy GT 0.001 box1 box2
 
 (The [`Order`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#Order)
 type and its three values `LT`, `GT` and `EQ` are defined in Elm's `Basics`
@@ -616,7 +616,7 @@ objects, you could use `separatedBy` on those objects' bounding boxes as a quick
 check to see if the objects had a gap of at least 1 cm between them:
 
     safelySeparated =
-        BoundingBox3d.separatedBy GT 1.0e-2 firstBox secondBox
+        BoundingBox3d.separatedBy GT 0.01 box1 box2
 
 (The [`Order`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#Order)
 type and its three values `LT`, `GT` and `EQ` are defined in Elm's `Basics`
