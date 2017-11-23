@@ -512,7 +512,7 @@ alwaysFalse firstBox secondBox =
 
 {-| Check if one box overlaps another by less than, greater than or equal to a
 given amount. For example, you could perform a tolerant collision check (one
-that only returns true only if the boxes overlap by at least some small finite
+that only returns true if the boxes overlap by at least some small finite
 amount, and ignores boxes that just barely touch each other) as
 
     boxesCollide =
