@@ -31,8 +31,10 @@ module OpenSolid.BoundingBox3d
         , minX
         , minY
         , minZ
+        , overlappingBy
         , overlaps
         , scaleAbout
+        , separatedBy
         , singleton
         , translateBy
         , with
@@ -71,7 +73,7 @@ box of an object than the object itself, such as:
 
 # Queries
 
-@docs contains, isContainedIn, intersects, overlaps
+@docs contains, isContainedIn, intersects, overlaps, overlappingBy, separatedBy
 
 
 # Transformations
@@ -449,6 +451,262 @@ instead.
 overlaps : BoundingBox3d -> BoundingBox3d -> Bool
 overlaps =
     intersects
+
+
+overlapAmount : BoundingBox3d -> BoundingBox3d -> Maybe Float
+overlapAmount firstBox secondBox =
+    let
+        xOverlap =
+            min (maxX firstBox) (maxX secondBox)
+                - max (minX firstBox) (minX secondBox)
+
+        yOverlap =
+            min (maxY firstBox) (maxY secondBox)
+                - max (minY firstBox) (minY secondBox)
+
+        zOverlap =
+            min (maxZ firstBox) (maxZ secondBox)
+                - max (minZ firstBox) (minZ secondBox)
+    in
+    if xOverlap >= 0 && yOverlap >= 0 && zOverlap >= 0 then
+        Just (min xOverlap (min yOverlap zOverlap))
+    else
+        Nothing
+
+
+squaredSeparationAmount : BoundingBox3d -> BoundingBox3d -> Maybe Float
+squaredSeparationAmount firstBox secondBox =
+    let
+        xSeparation =
+            max (minX firstBox) (minX secondBox)
+                - min (maxX firstBox) (maxX secondBox)
+
+        ySeparation =
+            max (minY firstBox) (minY secondBox)
+                - min (maxY firstBox) (maxY secondBox)
+
+        zSeparation =
+            max (minZ firstBox) (minZ secondBox)
+                - min (maxZ firstBox) (maxZ secondBox)
+    in
+    if xSeparation >= 0 || ySeparation >= 0 || zSeparation >= 0 then
+        let
+            dX =
+                max xSeparation 0
+
+            dY =
+                max ySeparation 0
+
+            dZ =
+                max zSeparation 0
+        in
+        Just (dX * dX + dY * dY + dZ * dZ)
+    else
+        Nothing
+
+
+alwaysFalse : BoundingBox3d -> BoundingBox3d -> Bool
+alwaysFalse firstBox secondBox =
+    False
+
+
+{-| Check if one box overlaps another by less than, greater than or equal to a
+given amount. You could perform a tolerant collision check (one that only
+returns true only if the boxes overlap by at least some small finite amount,
+and ignores boxes that just barely touch each other) as
+
+    boxesCollide =
+        BoundingBox3d.overlappingBy GT 0.001 firstBox secondBox
+
+(The [`Order`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#Order)
+type and its three values `LT`, `GT` and `EQ` are defined in Elm's `Basics`
+module so are available by default in any Elm program.)
+
+Overlap is defined as the _minimum_ distance one box would have to move so that
+it did not touch the other, and is always positive for any two overlapping
+boxes.
+
+Boxes that just touch are considered to have an overlap of zero, which is
+distinct from 'no overlap'. Boxes that do not touch or overlap at all are
+considered to have an overlap which is less than zero but not comparable to any
+negative number.
+
+
+### Less than
+
+  - `overlappingBy LT 1e-3` will return true if the two boxes overlap by less
+    than 0.001 units or if they do not overlap at all (false if they overlap by
+    more than 0.001 units).
+  - `overlappingBy LT 0` will return true only if the two boxes don't touch or
+    overlap at all.
+  - `overlappingBy LT -1e-3` will always return false! If you care about _how
+    much_ two boxes are separated by, use `separatedBy` instead.
+
+
+### Greater than
+
+  - `overlappingBy GT 1e-3` will return true if the two boxes overlap by at
+    least 0.001 units (false if they overlap by less than that or do not overlap
+    at all).
+  - `overlappingBy GT 0` will return true if the two boxes overlap by any
+    non-zero amount (false if they just touch or do not overlap at all).
+  - `overlappingBy GT -1e-3` doesn't make a lot of sense but will return true if
+    the boxes touch or overlap at all (false if they don't overlap, regardless
+    of how close they are to overlapping).
+
+
+### Equal to
+
+Checking whether two boxes overlap by exactly a given amount is pretty weird and
+vulnerable to floating-point roundoff, but is defined as follows:
+
+  - `overlappingBy EQ 1e-3` will return true if the two boxes overlap by exactly
+    0.001 units.
+  - `overlappingBy EQ 0` will return true if and only if the boxes just touch
+    each other.
+  - `overlappingBy EQ -1e-3` will always return false.
+
+-}
+overlappingBy : Order -> Float -> BoundingBox3d -> BoundingBox3d -> Bool
+overlappingBy order tolerance =
+    case order of
+        LT ->
+            if tolerance > 0 then
+                \firstBox secondBox ->
+                    case overlapAmount firstBox secondBox of
+                        Just distance ->
+                            distance < tolerance
+
+                        Nothing ->
+                            True
+            else if tolerance == 0 then
+                \firstBox secondBox ->
+                    overlapAmount firstBox secondBox == Nothing
+            else
+                alwaysFalse
+
+        GT ->
+            if tolerance >= 0 then
+                \firstBox secondBox ->
+                    case overlapAmount firstBox secondBox of
+                        Just distance ->
+                            distance > tolerance
+
+                        Nothing ->
+                            False
+            else
+                \firstBox secondBox ->
+                    overlapAmount firstBox secondBox /= Nothing
+
+        EQ ->
+            if tolerance >= 0 then
+                let
+                    expected =
+                        Just tolerance
+                in
+                \firstBox secondBox ->
+                    overlapAmount firstBox secondBox == expected
+            else
+                alwaysFalse
+
+
+{-| Check if one box is separated from another by less than, greater than or
+equal to a given amount. If you were performing clash detection between some
+objects, you could use `separatedBy` on those objects' bounding boxes as a quick
+check to see if the objects had a gap of at least 1 cm between them:
+
+    safelySeparated =
+        BoundingBox3d.separatedBy GT 1.0e-2 firstBox secondBox
+
+(The [`Order`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#Order)
+type and its three values `LT`, `GT` and `EQ` are defined in Elm's `Basics`
+module so are available by default in any Elm program.)
+
+Separation is defined as the _minimum_ distance one box would have to move
+so that it touched the other, and is always positive for any two boxes that do
+not touch.
+
+Boxes that just touch are considered to have a separation of zero, which is
+distinct from 'no separation'. 'No separation' (overlap) is considered to be
+less than zero but not comparable to any negative number.
+
+
+### Less than
+
+  - `separatedBy LT 1e-3` will return true if the two boxes are separated by
+    less than 0.001 units or if they touch or overlap (false if they are
+    separated by at least 0.001 units).
+  - `separatedBy LT 0` will return true only if the boxes overlap by some
+    non-zero amount.
+  - `separatedBy LT -1e-3` will always return false! If you care about _how
+    much_ two boxes overlap by, use `overlappingBy` instead.
+
+
+### Greater than
+
+  - `separatedBy GT 1e-3` will return true if the two boxes are separated by at
+    least 0.001 units (false if they are separated by less than that or if they
+    touch or overlap).
+  - `separatedBy GT 0` will return true if the two boxes are separated by any
+    non-zero amount (false if they touch or overlap).
+  - `separatedBy GT -1e-3` doesn't make a lot of sense but will return true if
+    the boxes just touch or are separated by any amount (false if they overlap
+    by any non-zero amount).
+
+
+### Equal to
+
+Checking whether two boxes are separated by exactly a given amount is pretty
+weird and vulnerable to floating-point roundoff, but is defined as follows:
+
+  - `separatedBy EQ 1e-3` will return true if the two boxes are separated by
+    exactly 0.001 units.
+  - `separatedBy EQ 0` will return true if and only if the boxes just touch each
+    other.
+  - `separatedBy EQ -3` will always return false.
+
+-}
+separatedBy : Order -> Float -> BoundingBox3d -> BoundingBox3d -> Bool
+separatedBy order tolerance =
+    case order of
+        LT ->
+            if tolerance > 0 then
+                \firstBox secondBox ->
+                    case squaredSeparationAmount firstBox secondBox of
+                        Just squaredDistance ->
+                            squaredDistance < tolerance * tolerance
+
+                        Nothing ->
+                            True
+            else if tolerance == 0 then
+                \firstBox secondBox ->
+                    squaredSeparationAmount firstBox secondBox == Nothing
+            else
+                alwaysFalse
+
+        GT ->
+            if tolerance >= 0 then
+                \firstBox secondBox ->
+                    case squaredSeparationAmount firstBox secondBox of
+                        Just squaredDistance ->
+                            squaredDistance > tolerance * tolerance
+
+                        Nothing ->
+                            False
+            else
+                \firstBox secondBox ->
+                    squaredSeparationAmount firstBox secondBox /= Nothing
+
+        EQ ->
+            if tolerance >= 0 then
+                let
+                    expected =
+                        Just (tolerance * tolerance)
+                in
+                \firstBox secondBox ->
+                    squaredSeparationAmount firstBox secondBox == expected
+            else
+                alwaysFalse
 
 
 {-| Test if the second given bounding box is fully contained within the first
