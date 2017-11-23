@@ -453,9 +453,9 @@ negative number.
 
 ### Less than
 
-  - `overlappingBy LT 1e-3` will return true if the two boxes overlap by less than
-    0.001 units or if they do not overlap at all (false if they overlap by more
-    than 0.001 units).
+  - `overlappingBy LT 1e-3` will return true if the two boxes overlap by less
+    than 0.001 units or if they do not overlap at all (false if they overlap by
+    more than 0.001 units).
   - `overlappingBy LT 0` will return true only if the two boxes don't touch or
     overlap at all.
   - `overlappingBy LT -1e-3` will always return false! If you care about _how
