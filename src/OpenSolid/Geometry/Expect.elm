@@ -53,6 +53,7 @@ module OpenSolid.Geometry.Expect
         , quadraticSpline2d
         , quadraticSpline3d
         , sketchPlane3d
+        , sphere3d
         , triangle2d
         , triangle2dWithin
         , triangle3d
@@ -96,6 +97,7 @@ import OpenSolid.QuadraticSpline2d as QuadraticSpline2d exposing (QuadraticSplin
 import OpenSolid.QuadraticSpline3d as QuadraticSpline3d exposing (QuadraticSpline3d)
 import OpenSolid.Scalar as Scalar
 import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
+import OpenSolid.Sphere3d as Sphere3d exposing (Sphere3d)
 import OpenSolid.Triangle2d as Triangle2d exposing (Triangle2d)
 import OpenSolid.Triangle3d as Triangle3d exposing (Triangle3d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
@@ -598,6 +600,16 @@ circle3d =
                 (Circle3d.axis >> Axis3d.direction)
             , by (Scalar.equalWithin defaultTolerance)
                 Circle3d.radius
+            ]
+        )
+
+
+sphere3d : Sphere3d -> Sphere3d -> Expectation
+sphere3d =
+    expect
+        (allOf
+            [ by (Point3d.equalWithin defaultTolerance) Sphere3d.centerPoint
+            , by (Scalar.equalWithin defaultTolerance) Sphere3d.radius
             ]
         )
 

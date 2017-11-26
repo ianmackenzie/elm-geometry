@@ -37,6 +37,7 @@ module OpenSolid.Geometry.Decode
         , quadraticSpline2d
         , quadraticSpline3d
         , sketchPlane3d
+        , sphere3d
         , triangle2d
         , triangle3d
         , vector2d
@@ -82,6 +83,7 @@ import OpenSolid.Polyline3d as Polyline3d exposing (Polyline3d)
 import OpenSolid.QuadraticSpline2d as QuadraticSpline2d exposing (QuadraticSpline2d)
 import OpenSolid.QuadraticSpline3d as QuadraticSpline3d exposing (QuadraticSpline3d)
 import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
+import OpenSolid.Sphere3d as Sphere3d exposing (Sphere3d)
 import OpenSolid.Triangle2d as Triangle2d exposing (Triangle2d)
 import OpenSolid.Triangle3d as Triangle3d exposing (Triangle3d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
@@ -397,6 +399,18 @@ circle3d =
         )
         (Decode.field "centerPoint" point3d)
         (Decode.field "axialDirection" direction3d)
+        (Decode.field "radius" Decode.float)
+
+
+{-| Decodes a `Sphere3d` from an object with `centerPoint` and `radius` fields.
+-}
+sphere3d : Decoder Sphere3d
+sphere3d =
+    Decode.map2
+        (\centerPoint radius ->
+            Sphere3d.with { centerPoint = centerPoint, radius = radius }
+        )
+        (Decode.field "centerPoint" point3d)
         (Decode.field "radius" Decode.float)
 
 

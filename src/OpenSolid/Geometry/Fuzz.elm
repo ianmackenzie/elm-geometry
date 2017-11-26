@@ -40,6 +40,7 @@ module OpenSolid.Geometry.Fuzz
         , quadraticSpline3d
         , scalar
         , sketchPlane3d
+        , sphere3d
         , triangle2d
         , triangle3d
         , vector2d
@@ -75,6 +76,7 @@ import OpenSolid.QuadraticSpline2d as QuadraticSpline2d exposing (QuadraticSplin
 import OpenSolid.QuadraticSpline3d as QuadraticSpline3d exposing (QuadraticSpline3d)
 import OpenSolid.Scalar as Scalar
 import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
+import OpenSolid.Sphere3d as Sphere3d exposing (Sphere3d)
 import OpenSolid.Triangle2d as Triangle2d exposing (Triangle2d)
 import OpenSolid.Triangle3d as Triangle3d exposing (Triangle3d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
@@ -317,6 +319,15 @@ circle3d =
                 }
     in
     Fuzz.map3 circle point3d direction3d (Fuzz.map abs scalar)
+
+
+sphere3d : Fuzzer Sphere3d
+sphere3d =
+    let
+        sphere centerPoint radius =
+            Sphere3d.with { centerPoint = centerPoint, radius = radius }
+    in
+    Fuzz.map2 sphere point3d (Fuzz.map abs scalar)
 
 
 arc2d : Fuzzer Arc2d
