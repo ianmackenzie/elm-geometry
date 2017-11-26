@@ -24,6 +24,7 @@ module OpenSolid.Geometry.Fuzz
         , cubicSpline3d
         , direction2d
         , direction3d
+        , ellipticalArc2d
         , frame2d
         , frame3d
         , interval
@@ -58,6 +59,7 @@ import OpenSolid.CubicSpline2d as CubicSpline2d exposing (CubicSpline2d)
 import OpenSolid.CubicSpline3d as CubicSpline3d exposing (CubicSpline3d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
+import OpenSolid.EllipticalArc2d as EllipticalArc2d exposing (EllipticalArc2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
 import OpenSolid.Interval as Interval exposing (Interval)
@@ -364,3 +366,28 @@ cubicSpline3d : Fuzzer CubicSpline3d
 cubicSpline3d =
     Fuzz.tuple4 ( point3d, point3d, point3d, point3d )
         |> Fuzz.map CubicSpline3d.fromControlPoints
+
+
+ellipticalArc2d : Fuzzer EllipticalArc2d
+ellipticalArc2d =
+    let
+        radius =
+            Fuzz.map abs scalar
+
+        angle =
+            Fuzz.floatRange -(2 * pi) (2 * pi)
+
+        ellipticalArc ( centerPoint, xDirection ) ( xRadius, yRadius ) ( startAngle, sweptAngle ) =
+            EllipticalArc2d.with
+                { centerPoint = centerPoint
+                , xDirection = xDirection
+                , xRadius = xRadius
+                , yRadius = yRadius
+                , startAngle = startAngle
+                , sweptAngle = sweptAngle
+                }
+    in
+    Fuzz.map3 ellipticalArc
+        (Fuzz.tuple ( point2d, direction2d ))
+        (Fuzz.tuple ( radius, radius ))
+        (Fuzz.tuple ( angle, angle ))
