@@ -3,7 +3,6 @@ module Sphere3d exposing (..)
 import Expect exposing (FloatingPointTolerance(Absolute, AbsoluteOrRelative))
 import Fuzz
 import Generic
-import OpenSolid.Arc3d as Arc3d
 import OpenSolid.Axis3d as Axis3d
 import OpenSolid.BoundingBox3d as BoundingBox3d
 import OpenSolid.Direction3d as Direction3d
@@ -14,7 +13,6 @@ import OpenSolid.Geometry.Fuzz as Fuzz
 import OpenSolid.Plane3d as Plane3d
 import OpenSolid.Point3d as Point3d
 import OpenSolid.Sphere3d as Sphere3d exposing (Sphere3d)
-import OpenSolid.Triangle3d as Triangle3d
 import OpenSolid.Vector3d as Vector3d
 import Test exposing (Test)
 
@@ -386,32 +384,95 @@ rotateAround =
 
 translateBy : Test
 translateBy =
-    Test.fuzz2 Fuzz.vector3d
-        Fuzz.sphere3d
-        "A sphere gets translated correctly"
-        (\displacement sphere ->
-            sphere
-                |> Sphere3d.translateBy displacement
-                |> Expect.all
-                    [ Sphere3d.radius >> Expect.approximately (Sphere3d.radius sphere)
-                    , Sphere3d.centerPoint >> Expect.point3d (Point3d.translateBy displacement (Sphere3d.centerPoint sphere))
-                    ]
-        )
+    Test.describe "translateBy"
+        [ Test.fuzz2
+            Fuzz.vector3d
+            Fuzz.sphere3d
+            "translating a sphere doesn't change its radius"
+            (\vector sphere ->
+                sphere
+                    |> Sphere3d.translateBy vector
+                    |> Sphere3d.radius
+                    |> Expect.approximately (Sphere3d.radius sphere)
+            )
+        , Test.fuzz2
+            Fuzz.vector3d
+            Fuzz.sphere3d
+            "a sphere is translated by the right amount"
+            (\vector sphere ->
+                sphere
+                    |> Sphere3d.translateBy vector
+                    |> Sphere3d.centerPoint
+                    |> Vector3d.from (Sphere3d.centerPoint sphere)
+                    |> Expect.vector3d vector
+            )
+        , Test.fuzz
+            Fuzz.sphere3d
+            "translating by the zero vector doesn't change the sphere"
+            (\sphere ->
+                sphere
+                    |> Sphere3d.translateBy Vector3d.zero
+                    |> Expect.sphere3d sphere
+            )
+        ]
 
 
 mirrorAcross : Test
 mirrorAcross =
-    Test.fuzz2 Fuzz.plane3d
-        Fuzz.sphere3d
-        "A sphere gets mirrored across a plane correctly"
-        (\plane sphere ->
-            sphere
-                |> Sphere3d.mirrorAcross plane
-                |> Expect.all
-                    [ Sphere3d.radius >> Expect.approximately (Sphere3d.radius sphere)
-                    , Sphere3d.centerPoint >> Expect.point3d (Point3d.mirrorAcross plane (Sphere3d.centerPoint sphere))
-                    ]
-        )
+    Test.describe "mirrorAcross"
+        [ Test.test
+            "mirrors a specific sphere correctly"
+            (\_ ->
+                let
+                    plane =
+                        Plane3d.xy
+
+                    originalCenter =
+                        Point3d.fromCoordinates ( 2, 2, 1 )
+
+                    mirroredCenter =
+                        Point3d.fromCoordinates ( 2, 2, -1 )
+
+                    radius =
+                        0.5
+                in
+                Sphere3d.with { centerPoint = originalCenter, radius = radius }
+                    |> Sphere3d.mirrorAcross plane
+                    |> Expect.sphere3d (Sphere3d.with { centerPoint = mirroredCenter, radius = radius })
+            )
+        , Test.fuzz2
+            Fuzz.plane3d
+            Fuzz.sphere3d
+            "mirroring a sphere doesn't change its radius"
+            (\plane sphere ->
+                sphere
+                    |> Sphere3d.mirrorAcross plane
+                    |> Sphere3d.radius
+                    |> Expect.approximately (Sphere3d.radius sphere)
+            )
+        , Test.fuzz2
+            Fuzz.plane3d
+            Fuzz.sphere3d
+            "mirroring a sphere across a plane doesn't change the distance from the plane"
+            (\plane sphere ->
+                sphere
+                    |> Sphere3d.mirrorAcross plane
+                    |> Sphere3d.centerPoint
+                    |> Point3d.signedDistanceFrom plane
+                    |> Expect.approximately
+                        (-1 * Point3d.signedDistanceFrom plane (Sphere3d.centerPoint sphere))
+            )
+        , Test.fuzz2
+            Fuzz.plane3d
+            Fuzz.sphere3d
+            "mirroring a sphere twice yields the original sphere"
+            (\plane sphere ->
+                sphere
+                    |> Sphere3d.mirrorAcross plane
+                    |> Sphere3d.mirrorAcross plane
+                    |> Expect.sphere3d sphere
+            )
+        ]
 
 
 boundingBoxContainsCenter : Test
