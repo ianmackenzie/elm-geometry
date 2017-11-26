@@ -19,7 +19,7 @@ before_install:
 install:
   - node --version
   - npm --version
-  - npm install -g elm@$ELM_VERSION elm-test
+  - npm install -g elm@$ELM_VERSION elm-test elm-verify-examples
   - git clone https://github.com/NoRedInk/elm-ops-tooling
   - elm-ops-tooling/with_retry.rb elm package install --yes
   # Faster compile on Travis.
@@ -34,4 +34,6 @@ install:
     fi
 
 script:
+  - $TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus -n 2 elm-verify-examples
+  - sed -i "s/Expect.equal/Expect.equalWithinTolerance/" tests/Doc/OpenSolid/*
   - $TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus -n 2 elm-test
