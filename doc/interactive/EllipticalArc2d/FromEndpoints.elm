@@ -150,6 +150,14 @@ update (InteractionMsg interactionMsg) model =
                         _ ->
                             model
 
+                Just (Interaction.Tap [ target ]) ->
+                    case target of
+                        Section sweptAngle ->
+                            { model | sweptAngle = sweptAngle }
+
+                        _ ->
+                            model
+
                 _ ->
                     model
     in
