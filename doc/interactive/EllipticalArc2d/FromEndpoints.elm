@@ -453,31 +453,43 @@ view model =
                 Nothing ->
                     Svg.text ""
     in
-    Svg.render2d boundingBox <|
-        Interaction.container InteractionMsg
-            { target = Elsewhere
-            , renderBounds = boundingBox
-            }
-            [ ellipseSvg
-            , directionHandle
-            , drawPoint model.startPoint
-            , pointHandle StartPoint model.startPoint
-            , drawPoint model.endPoint
-            , pointHandle EndPoint model.endPoint
-            , Svg.boundingBox2d
-                [ Svg.Attributes.stroke "rgb(192, 192, 192)"
-                , Svg.Attributes.rx "3"
-                , Svg.Attributes.ry "3"
-                , noFill
+    Html.div []
+        [ Svg.render2d boundingBox <|
+            Interaction.container InteractionMsg
+                { target = Elsewhere
+                , renderBounds = boundingBox
+                }
+                [ ellipseSvg
+                , directionHandle
+                , drawPoint model.startPoint
+                , pointHandle StartPoint model.startPoint
+                , drawPoint model.endPoint
+                , pointHandle EndPoint model.endPoint
+                , Svg.boundingBox2d
+                    [ Svg.Attributes.stroke "rgb(192, 192, 192)"
+                    , Svg.Attributes.rx "3"
+                    , Svg.Attributes.ry "3"
+                    , noFill
+                    ]
+                    (BoundingBox2d.with
+                        { minX = BoundingBox2d.minX boundingBox + 0.5
+                        , minY = BoundingBox2d.minY boundingBox + 0.5
+                        , maxX = BoundingBox2d.maxX boundingBox - 0.5
+                        , maxY = BoundingBox2d.maxY boundingBox - 0.5
+                        }
+                    )
                 ]
-                (BoundingBox2d.with
-                    { minX = BoundingBox2d.minX boundingBox + 0.5
-                    , minY = BoundingBox2d.minY boundingBox + 0.5
-                    , maxX = BoundingBox2d.maxX boundingBox - 0.5
-                    , maxY = BoundingBox2d.maxY boundingBox - 0.5
-                    }
-                )
+        , Html.div []
+            [ Html.h2 [] [ Html.text "Instructions" ]
+            , Html.ul []
+                [ Html.li [] [ Html.text "Drag start and end point" ]
+                , Html.li [] [ Html.text "Drag tip of X direction" ]
+                , Html.li [] [ Html.text "Click dashed segments to switch to them" ]
+                , Html.li [] [ Html.text "Drag center point to move the whole ellipse" ]
+                , Html.li [] [ Html.text "Click either radial line to select it and then scroll to change that radius" ]
+                ]
             ]
+        ]
 
 
 subscriptions : Model -> Sub Msg
