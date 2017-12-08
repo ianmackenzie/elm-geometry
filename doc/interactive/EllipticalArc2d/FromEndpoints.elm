@@ -1,6 +1,8 @@
 module EllipticalArc2d.FromEndpoints exposing (..)
 
+import Char
 import Html exposing (Html)
+import Html.Attributes
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.EllipticalArc2d as EllipticalArc2d exposing (EllipticalArc2d)
@@ -205,6 +207,11 @@ whiteFill =
     Svg.Attributes.fill "white"
 
 
+blackFill : Svg.Attribute msg
+blackFill =
+    Svg.Attributes.fill "black"
+
+
 blackStroke : Svg.Attribute msg
 blackStroke =
     Svg.Attributes.stroke "black"
@@ -315,6 +322,14 @@ isActive target model =
         || (model.selected == Just target)
 
 
+sweptAngleString : EllipticalArc2d.SweptAngle -> String
+sweptAngleString sweptAngle =
+    toString sweptAngle
+        |> String.uncons
+        |> Maybe.map (\( first, rest ) -> String.cons (Char.toLower first) rest)
+        |> Maybe.withDefault ""
+
+
 view : Model -> Html Msg
 view model =
     let
@@ -404,6 +419,30 @@ view model =
                                 blueStroke
                             else
                                 lightStroke
+
+                        midPoint =
+                            EllipticalArc2d.pointOn arc 0.5
+
+                        midTangent =
+                            EllipticalArc2d.derivative arc 0.5
+                                |> Vector2d.direction
+
+                        directionIndicator =
+                            case midTangent of
+                                Just direction ->
+                                    Svg.direction2d
+                                        { length = 10
+                                        , tipLength = 10
+                                        , tipWidth = 10
+                                        , tipAttributes = [ blackStroke, blackFill ]
+                                        , stemAttributes = []
+                                        , groupAttributes = []
+                                        }
+                                        midPoint
+                                        direction
+
+                                Nothing ->
+                                    Svg.text ""
                     in
                     Svg.g []
                         [ dashedEllipses
@@ -414,6 +453,7 @@ view model =
                             , lineSegmentHandle YRadius yRadialLine
                             ]
                         , Svg.ellipticalArc2d [ noFill, blackStroke ] arc
+                        , directionIndicator
                         , drawDirection centerPoint model.xDirection
                         , Interaction.directionTipHandle
                             centerPoint
@@ -452,8 +492,11 @@ view model =
 
                 Nothing ->
                     Svg.text ""
+
+        { maxX, minY } =
+            BoundingBox2d.extrema boundingBox
     in
-    Html.div []
+    Html.div [ Html.Attributes.style [ ( "margin", "20px" ) ] ]
         [ Svg.render2d boundingBox <|
             Interaction.container InteractionMsg
                 { target = Elsewhere
@@ -478,15 +521,22 @@ view model =
                         , maxY = BoundingBox2d.maxY boundingBox - 0.5
                         }
                     )
+                , Svg.text2d
+                    [ Svg.Attributes.textAnchor "end"
+                    , Svg.Attributes.alignmentBaseline "baseline"
+                    , Svg.Attributes.fontFamily "monospace"
+                    ]
+                    (Point2d.fromCoordinates ( maxX - 10, minY + 10 ))
+                    ("sweptAngle = EllipticalArc2d." ++ sweptAngleString model.sweptAngle)
                 ]
         , Html.div []
             [ Html.h2 [] [ Html.text "Instructions" ]
             , Html.ul []
                 [ Html.li [] [ Html.text "Drag start and end point" ]
-                , Html.li [] [ Html.text "Drag tip of X direction" ]
+                , Html.li [] [ Html.text "Drag tip of X direction to change orientation" ]
                 , Html.li [] [ Html.text "Click dashed segments to switch to them" ]
                 , Html.li [] [ Html.text "Drag center point to move the whole ellipse" ]
-                , Html.li [] [ Html.text "Click either radial line to select it and then scroll to change that radius" ]
+                , Html.li [] [ Html.text "Click either radial line to select it, then scroll to change that radius" ]
                 ]
             ]
         ]
