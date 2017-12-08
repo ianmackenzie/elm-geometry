@@ -4,9 +4,11 @@ import Html exposing (Html)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.EllipticalArc2d as EllipticalArc2d exposing (EllipticalArc2d)
+import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Svg as Svg
 import OpenSolid.Svg.Interaction as Interaction
+import OpenSolid.Svg.Interaction.ScrollAmount as ScrollAmount exposing (ScrollAmount)
 import OpenSolid.Vector2d as Vector2d
 import Svg exposing (Svg)
 import Svg.Attributes
@@ -42,6 +44,7 @@ type alias Model =
     , sweptAngle : EllipticalArc2d.SweptAngle
     , interactionModel : Interaction.Model Target
     , dragRotationCenter : Maybe Point2d
+    , selected : Maybe Target
     }
 
 
@@ -59,6 +62,7 @@ init =
       , sweptAngle = EllipticalArc2d.smallPositive
       , interactionModel = Interaction.model
       , dragRotationCenter = Nothing
+      , selected = Nothing
       }
     , Cmd.none
     )
@@ -145,15 +149,42 @@ update (InteractionMsg interactionMsg) model =
                 Just (Interaction.Click target modifiers) ->
                     case target of
                         Section sweptAngle ->
-                            { model | sweptAngle = sweptAngle }
+                            { model
+                                | sweptAngle = sweptAngle
+                                , selected = Nothing
+                            }
+
+                        XRadius ->
+                            { model | selected = Just XRadius }
+
+                        YRadius ->
+                            { model | selected = Just YRadius }
 
                         _ ->
-                            model
+                            { model | selected = Nothing }
 
                 Just (Interaction.Tap [ target ]) ->
                     case target of
                         Section sweptAngle ->
                             { model | sweptAngle = sweptAngle }
+
+                        _ ->
+                            model
+
+                Just (Interaction.Scroll target modifiers scrollAmount) ->
+                    let
+                        scale =
+                            if ScrollAmount.isPositive scrollAmount then
+                                1 / 1.1
+                            else
+                                1.1
+                    in
+                    case model.selected of
+                        Just XRadius ->
+                            { model | xRadius = scale * model.xRadius }
+
+                        Just YRadius ->
+                            { model | yRadius = scale * model.yRadius }
 
                         _ ->
                             model
@@ -177,6 +208,16 @@ whiteFill =
 blackStroke : Svg.Attribute msg
 blackStroke =
     Svg.Attributes.stroke "black"
+
+
+lightStroke : Svg.Attribute msg
+lightStroke =
+    Svg.Attributes.stroke "rgba(0, 0, 0, 0.25)"
+
+
+blueStroke : Svg.Attribute msg
+blueStroke =
+    Svg.Attributes.stroke "blue"
 
 
 lightGreyStroke : Svg.Attribute msg
@@ -246,6 +287,16 @@ sectionHandle sweptAngle arc =
         |> Svg.map InteractionMsg
 
 
+lineSegmentHandle : Target -> LineSegment2d -> Svg Msg
+lineSegmentHandle target lineSegment =
+    Interaction.lineSegmentHandle lineSegment
+        { target = target
+        , padding = 5
+        , renderBounds = boundingBox
+        }
+        |> Svg.map InteractionMsg
+
+
 constructArc : Model -> Maybe EllipticalArc2d
 constructArc model =
     EllipticalArc2d.fromEndpoints
@@ -256,6 +307,12 @@ constructArc model =
         , yRadius = model.yRadius
         , sweptAngle = model.sweptAngle
         }
+
+
+isActive : Target -> Model -> Bool
+isActive target model =
+    Interaction.isHovering target model.interactionModel
+        || (model.selected == Just target)
 
 
 view : Model -> Html Msg
@@ -309,9 +366,53 @@ view model =
                     let
                         centerPoint =
                             EllipticalArc2d.centerPoint arc
+
+                        xPoint =
+                            centerPoint
+                                |> Point2d.translateBy
+                                    (Vector2d.with
+                                        { length = model.xRadius
+                                        , direction = model.xDirection
+                                        }
+                                    )
+
+                        yPoint =
+                            centerPoint
+                                |> Point2d.translateBy
+                                    (Vector2d.with
+                                        { length = model.yRadius
+                                        , direction =
+                                            Direction2d.perpendicularTo
+                                                model.xDirection
+                                        }
+                                    )
+
+                        xRadialLine =
+                            LineSegment2d.from centerPoint xPoint
+
+                        yRadialLine =
+                            LineSegment2d.from centerPoint yPoint
+
+                        xStroke =
+                            if isActive XRadius model then
+                                blueStroke
+                            else
+                                lightStroke
+
+                        yStroke =
+                            if isActive YRadius model then
+                                blueStroke
+                            else
+                                lightStroke
                     in
                     Svg.g []
                         [ dashedEllipses
+                        , Svg.g [ noFill ]
+                            [ Svg.lineSegment2d [ xStroke ] xRadialLine
+                            , Svg.lineSegment2d [ yStroke ] yRadialLine
+                            , lineSegmentHandle XRadius xRadialLine
+                            , lineSegmentHandle YRadius yRadialLine
+                            ]
                         , Svg.ellipticalArc2d [ noFill, blackStroke ] arc
                         , drawDirection centerPoint model.xDirection
                         , Interaction.directionTipHandle
