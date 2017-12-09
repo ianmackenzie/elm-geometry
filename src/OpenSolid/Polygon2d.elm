@@ -27,6 +27,7 @@ module OpenSolid.Polygon2d
         , rotateAround
         , scaleAbout
         , translateBy
+        , triangulate
         , vertices
         )
 
@@ -64,6 +65,11 @@ Transforming a polygon is equivalent to transforming each of its vertices.
 
 @docs relativeTo, placeIn
 
+
+# Triangulation
+
+@docs triangulate
+
 -}
 
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
@@ -71,6 +77,7 @@ import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
+import OpenSolid.Mesh as Mesh exposing (Mesh)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Triangle2d as Triangle2d exposing (Triangle2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
@@ -364,3 +371,15 @@ if the polygon has no vertices.
 boundingBox : Polygon2d -> Maybe BoundingBox2d
 boundingBox polygon =
     Point2d.hullOf (vertices polygon)
+
+
+{-| Triangulate a polygon.
+-}
+triangulate : Polygon2d -> Mesh Point2d
+triangulate polygon =
+    Mesh.empty
+
+
+toMonotonePolygons : Polygon2d -> List Polygon2d
+toMonotonePolygons polygon =
+    []
