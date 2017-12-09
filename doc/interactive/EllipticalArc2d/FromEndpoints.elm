@@ -453,7 +453,7 @@ view model =
                             EllipticalArc2d.arcLength parameterized
 
                         numSegments =
-                            12
+                            20
 
                         arcLengths =
                             List.range 1 (numSegments - 1)
