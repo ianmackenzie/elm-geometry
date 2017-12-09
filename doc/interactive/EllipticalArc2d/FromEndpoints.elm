@@ -421,15 +421,16 @@ view model =
                                 lightStroke
 
                         midPoint =
-                            EllipticalArc2d.pointOn arc 0.5
+                            EllipticalArc2d.pointAlong parameterized
+                                (0.5 * arcLength)
 
                         midTangent =
-                            EllipticalArc2d.derivative arc 0.5
-                                |> Vector2d.direction
+                            EllipticalArc2d.tangentAlong parameterized
+                                (0.5 * arcLength)
 
                         directionIndicator =
-                            case midTangent of
-                                Just direction ->
+                            Maybe.map2
+                                (\point direction ->
                                     Svg.direction2d
                                         { length = 10
                                         , tipLength = 10
@@ -438,11 +439,38 @@ view model =
                                         , stemAttributes = []
                                         , groupAttributes = []
                                         }
-                                        midPoint
+                                        point
                                         direction
+                                )
+                                midPoint
+                                midTangent
+                                |> Maybe.withDefault (Svg.text "")
 
-                                Nothing ->
-                                    Svg.text ""
+                        parameterized =
+                            EllipticalArc2d.arcLengthParameterized 0.5 arc
+
+                        arcLength =
+                            EllipticalArc2d.arcLength parameterized
+
+                        numSegments =
+                            12
+
+                        arcLengths =
+                            List.range 1 (numSegments - 1)
+                                |> List.map
+                                    (\n -> arcLength * toFloat n / numSegments)
+
+                        points =
+                            arcLengths
+                                |> List.filterMap
+                                    (EllipticalArc2d.pointAlong parameterized)
+                                |> List.map
+                                    (Svg.point2d
+                                        { radius = 1.5
+                                        , attributes =
+                                            [ blackFill, blackStroke ]
+                                        }
+                                    )
                     in
                     Svg.g []
                         [ dashedEllipses
@@ -453,6 +481,7 @@ view model =
                             , lineSegmentHandle YRadius yRadialLine
                             ]
                         , Svg.ellipticalArc2d [ noFill, blackStroke ] arc
+                        , Svg.g [] points
                         , directionIndicator
                         , drawDirection centerPoint model.xDirection
                         , Interaction.directionTipHandle
