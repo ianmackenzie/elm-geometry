@@ -1,7 +1,12 @@
 module OpenSolid.EllipticalArc2d
     exposing
-        ( EllipticalArc2d
+        ( ArcLengthParameterized
+        , EllipticalArc2d
         , SweptAngle
+        , arcLength
+        , arcLengthFromParameterValue
+        , arcLengthParameterized
+        , arcLengthToParameterValue
         , axes
         , centerPoint
         , derivative
@@ -13,6 +18,7 @@ module OpenSolid.EllipticalArc2d
         , maxSecondDerivativeMagnitude
         , mirrorAcross
         , placeIn
+        , pointAlong
         , pointOn
         , relativeTo
         , rotateAround
@@ -22,6 +28,7 @@ module OpenSolid.EllipticalArc2d
         , startAngle
         , startPoint
         , sweptAngle
+        , tangentAlong
         , translateBy
         , with
         , xAxis
@@ -32,6 +39,7 @@ module OpenSolid.EllipticalArc2d
         , yRadius
         )
 
+import OpenSolid.ArcLength as ArcLength
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
@@ -450,3 +458,67 @@ derivativeMagnitude arc =
                 ry * cos theta
         in
         absDTheta * sqrt (dx * dx + dy * dy)
+
+
+{-| An elliptical arc that has been parameterized by arc length.
+-}
+type ArcLengthParameterized
+    = ArcLengthParameterized EllipticalArc2d ArcLength.Parameterization
+
+
+{-| Build an arc length parameterization of the given elliptical arc.
+-}
+arcLengthParameterized : Float -> EllipticalArc2d -> ArcLengthParameterized
+arcLengthParameterized tolerance arc =
+    let
+        parameterization =
+            ArcLength.parameterization
+                { tolerance = tolerance
+                , derivativeMagnitude = derivativeMagnitude arc
+                , maxSecondDerivativeMagnitude =
+                    maxSecondDerivativeMagnitude arc
+                }
+    in
+    ArcLengthParameterized arc parameterization
+
+
+{-| Find the total arc length of an elliptical arc. This will be accurate to
+within the tolerance given when calling `arcLengthParameterized`.
+-}
+arcLength : ArcLengthParameterized -> Float
+arcLength (ArcLengthParameterized _ parameterization) =
+    ArcLength.fromParameterization parameterization
+
+
+{-| Get the point along an elliptical arc at a given arc length.
+-}
+pointAlong : ArcLengthParameterized -> Float -> Maybe Point2d
+pointAlong (ArcLengthParameterized arc parameterization) s =
+    ArcLength.toParameterValue parameterization s |> Maybe.map (pointOn arc)
+
+
+{-| Get the tangent direction along an elliptical arc at a given arc length.
+-}
+tangentAlong : ArcLengthParameterized -> Float -> Maybe Direction2d
+tangentAlong (ArcLengthParameterized arc parameterization) s =
+    ArcLength.toParameterValue parameterization s
+        |> Maybe.map (derivative arc)
+        |> Maybe.andThen Vector2d.direction
+
+
+{-| Get the parameter value along an elliptical arc at a given arc length. If
+the given arc length is less than zero or greater than the arc length of the
+arc, returns `Nothing`.
+-}
+arcLengthToParameterValue : ArcLengthParameterized -> Float -> Maybe Float
+arcLengthToParameterValue (ArcLengthParameterized _ parameterization) s =
+    ArcLength.toParameterValue parameterization s
+
+
+{-| Get the arc length along an elliptical arc at a given parameter value. If
+the given parameter value is less than zero or greater than one, returns
+`Nothing`.
+-}
+arcLengthFromParameterValue : ArcLengthParameterized -> Float -> Maybe Float
+arcLengthFromParameterValue (ArcLengthParameterized _ parameterization) t =
+    ArcLength.fromParameterValue parameterization t
