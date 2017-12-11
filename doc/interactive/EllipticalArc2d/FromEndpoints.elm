@@ -70,6 +70,75 @@ init =
     )
 
 
+drag : Target -> Point2d -> Point2d -> Model -> Model
+drag target previousPoint currentPoint model =
+    let
+        displacement =
+            Vector2d.from previousPoint currentPoint
+    in
+    case target of
+        StartPoint ->
+            { model
+                | startPoint =
+                    Point2d.translateBy displacement
+                        model.startPoint
+            }
+
+        EndPoint ->
+            { model
+                | endPoint =
+                    Point2d.translateBy displacement
+                        model.endPoint
+            }
+
+        CenterPoint ->
+            { model
+                | startPoint =
+                    Point2d.translateBy displacement
+                        model.startPoint
+                , endPoint =
+                    Point2d.translateBy displacement
+                        model.endPoint
+            }
+
+        XDirection ->
+            let
+                currentCenter =
+                    case model.dragRotationCenter of
+                        Just existingCenter ->
+                            Just existingCenter
+
+                        Nothing ->
+                            constructArc model
+                                |> Maybe.map
+                                    EllipticalArc2d.centerPoint
+
+                rotatedDirection =
+                    case currentCenter of
+                        Just centerPoint ->
+                            let
+                                rotationAngle =
+                                    Interaction.rotationAround
+                                        centerPoint
+                                        previousPoint
+                                        currentPoint
+                            in
+                            Direction2d.rotateBy rotationAngle
+                                model.xDirection
+
+                        Nothing ->
+                            model.xDirection
+            in
+            { model
+                | dragRotationCenter =
+                    currentCenter
+                , xDirection = rotatedDirection
+            }
+
+        _ ->
+            model
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update (InteractionMsg interactionMsg) model =
     let
@@ -78,72 +147,8 @@ update (InteractionMsg interactionMsg) model =
 
         updatedModel =
             case notification of
-                Just (Interaction.Drag target modifiers { previousPoint, currentPoint }) ->
-                    let
-                        displacement =
-                            Vector2d.from previousPoint currentPoint
-                    in
-                    case target of
-                        StartPoint ->
-                            { model
-                                | startPoint =
-                                    Point2d.translateBy displacement
-                                        model.startPoint
-                            }
-
-                        EndPoint ->
-                            { model
-                                | endPoint =
-                                    Point2d.translateBy displacement
-                                        model.endPoint
-                            }
-
-                        CenterPoint ->
-                            { model
-                                | startPoint =
-                                    Point2d.translateBy displacement
-                                        model.startPoint
-                                , endPoint =
-                                    Point2d.translateBy displacement
-                                        model.endPoint
-                            }
-
-                        XDirection ->
-                            let
-                                currentCenter =
-                                    case model.dragRotationCenter of
-                                        Just existingCenter ->
-                                            Just existingCenter
-
-                                        Nothing ->
-                                            constructArc model
-                                                |> Maybe.map
-                                                    EllipticalArc2d.centerPoint
-
-                                rotatedDirection =
-                                    case currentCenter of
-                                        Just centerPoint ->
-                                            let
-                                                rotationAngle =
-                                                    Interaction.rotationAround
-                                                        centerPoint
-                                                        previousPoint
-                                                        currentPoint
-                                            in
-                                            Direction2d.rotateBy rotationAngle
-                                                model.xDirection
-
-                                        Nothing ->
-                                            model.xDirection
-                            in
-                            { model
-                                | dragRotationCenter =
-                                    currentCenter
-                                , xDirection = rotatedDirection
-                            }
-
-                        _ ->
-                            model
+                Just (Interaction.Drag target _ { previousPoint, currentPoint }) ->
+                    drag target previousPoint currentPoint model
 
                 Just (Interaction.Release XDirection _ _) ->
                     { model | dragRotationCenter = Nothing }
@@ -172,6 +177,13 @@ update (InteractionMsg interactionMsg) model =
 
                         _ ->
                             model
+
+                Just (Interaction.Gesture touches) ->
+                    let
+                        applyDrag (Interaction.Touch target { previousPoint, currentPoint }) model =
+                            drag target previousPoint currentPoint model
+                    in
+                    List.foldl applyDrag model touches
 
                 Just (Interaction.Scroll target modifiers scrollAmount) ->
                     let
@@ -273,7 +285,7 @@ pointHandle : Target -> Point2d -> Svg Msg
 pointHandle target point =
     Interaction.pointHandle point
         { target = target
-        , radius = 5
+        , radius = 15
         }
         |> Svg.map InteractionMsg
 
@@ -294,7 +306,7 @@ lineSegmentHandle : Target -> LineSegment2d -> Svg Msg
 lineSegmentHandle target lineSegment =
     Interaction.lineSegmentHandle lineSegment
         { target = target
-        , padding = 5
+        , padding = 15
         }
         |> Svg.map InteractionMsg
 
@@ -486,7 +498,7 @@ view model =
                             , tipLength = 10
                             , tipWidth = 10
                             , target = XDirection
-                            , padding = 5
+                            , padding = 15
                             }
                             |> Svg.map InteractionMsg
                         , drawPoint centerPoint
