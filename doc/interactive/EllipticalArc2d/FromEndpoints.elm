@@ -274,7 +274,6 @@ pointHandle target point =
     Interaction.pointHandle point
         { target = target
         , radius = 5
-        , renderBounds = boundingBox
         }
         |> Svg.map InteractionMsg
 
@@ -287,10 +286,7 @@ sectionHandle sweptAngle arc =
                 [ noFill, transparentStroke, thickStroke, roundCap ]
                 arc
     in
-    Interaction.customHandle shape
-        { target = Section sweptAngle
-        , renderBounds = boundingBox
-        }
+    Interaction.customHandle shape (Section sweptAngle)
         |> Svg.map InteractionMsg
 
 
@@ -299,7 +295,6 @@ lineSegmentHandle target lineSegment =
     Interaction.lineSegmentHandle lineSegment
         { target = target
         , padding = 5
-        , renderBounds = boundingBox
         }
         |> Svg.map InteractionMsg
 
@@ -492,7 +487,6 @@ view model =
                             , tipWidth = 10
                             , target = XDirection
                             , padding = 5
-                            , renderBounds = boundingBox
                             }
                             |> Svg.map InteractionMsg
                         , drawPoint centerPoint
