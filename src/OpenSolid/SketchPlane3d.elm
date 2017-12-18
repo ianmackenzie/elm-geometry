@@ -20,6 +20,7 @@ module OpenSolid.SketchPlane3d
         , moveTo
         , normalAxis
         , normalDirection
+        , offsetBy
         , on
         , originPoint
         , placeIn
@@ -120,7 +121,7 @@ Sketch planes can also be constructed from `Frame3d` values using
 
 # Transformations
 
-@docs flipX, flipY, moveTo, rotateAround, rotateAroundOwn, translateBy, translateAlongOwn, mirrorAcross
+@docs offsetBy, flipX, flipY, moveTo, rotateAround, rotateAroundOwn, translateBy, translateAlongOwn, mirrorAcross
 
 
 # Coordinate conversions
@@ -555,6 +556,30 @@ plane sketchPlane =
         { originPoint = originPoint sketchPlane
         , normalDirection = normalDirection sketchPlane
         }
+
+
+{-| Shift a sketch plane in its own normal direction by the given (signed)
+distance.
+
+    SketchPlane3d.offsetBy -2.0 SketchPlane3d.xy
+        |> SketchPlane3d.originPoint
+    --> Point3d.fromCoordinates ( 0, 0, -2 )
+
+    SketchPlane3d.offsetBy 1.0 SketchPlane3d.zx
+        |> SketchPlane3d.originPoint
+    --> Point3d.fromCoordinates ( 0, 1, 0 )
+
+-}
+offsetBy : Float -> SketchPlane3d -> SketchPlane3d
+offsetBy distance sketchPlane =
+    let
+        displacement =
+            Vector3d.with
+                { length = distance
+                , direction = normalDirection sketchPlane
+                }
+    in
+    translateBy displacement sketchPlane
 
 
 {-| Flip the X direction of a sketch plane, leaving its Y direction and origin
