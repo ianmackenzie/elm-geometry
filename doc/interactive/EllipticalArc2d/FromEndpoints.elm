@@ -530,6 +530,46 @@ view model =
 
         { maxX, minY } =
             BoundingBox2d.extrema boundingBox
+
+        largeArcFlag =
+            if
+                (model.sweptAngle == EllipticalArc2d.largePositive)
+                    || (model.sweptAngle == EllipticalArc2d.largeNegative)
+            then
+                "1"
+            else
+                "0"
+
+        sweepFlag =
+            if
+                (model.sweptAngle == EllipticalArc2d.smallNegative)
+                    || (model.sweptAngle == EllipticalArc2d.largeNegative)
+            then
+                "0"
+            else
+                "1"
+
+        builtInEllipseSvg =
+            Svg.path
+                [ Svg.Attributes.d <|
+                    String.join " "
+                        [ "M"
+                        , toString (Point2d.xCoordinate model.startPoint)
+                        , toString (Point2d.yCoordinate model.startPoint)
+                        , "A"
+                        , toString model.xRadius
+                        , toString model.yRadius
+                        , toString (Direction2d.angle model.xDirection / degrees 1)
+                        , largeArcFlag
+                        , sweepFlag
+                        , toString (Point2d.xCoordinate model.endPoint)
+                        , toString (Point2d.yCoordinate model.endPoint)
+                        ]
+                , Svg.Attributes.stroke "fuchsia"
+                , Svg.Attributes.strokeDasharray "5 5"
+                , Svg.Attributes.fill "none"
+                ]
+                []
     in
     Html.div [ Html.Attributes.style [ ( "margin", "20px" ) ] ]
         [ Svg.render2d boundingBox <|
@@ -538,6 +578,7 @@ view model =
                 , renderBounds = boundingBox
                 }
                 [ ellipseSvg
+                , builtInEllipseSvg
                 , directionHandle
                 , drawPoint model.startPoint
                 , pointHandle StartPoint model.startPoint
