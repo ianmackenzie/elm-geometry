@@ -268,23 +268,6 @@ dashed =
     Svg.Attributes.strokeDasharray "5 5"
 
 
-drawPoint : List (Svg.Attribute msg) -> Point2d -> Svg msg
-drawPoint attributes =
-    Svg.point2d { radius = 3, attributes = attributes }
-
-
-drawDirection : List (Svg.Attribute msg) -> Point2d -> Direction2d -> Svg msg
-drawDirection attributes =
-    Svg.direction2d
-        { length = 50
-        , tipLength = 10
-        , tipWidth = 10
-        , tipAttributes = []
-        , stemAttributes = []
-        , groupAttributes = attributes
-        }
-
-
 pointHandle : Target -> Point2d -> Svg Msg
 pointHandle target point =
     Interaction.pointHandle point
@@ -448,14 +431,12 @@ view model =
                         directionIndicator =
                             Maybe.map2
                                 (\point direction ->
-                                    Svg.direction2d
+                                    Svg.direction2dWith
                                         { length = 10
                                         , tipLength = 10
                                         , tipWidth = 10
-                                        , tipAttributes = [ blackStroke, blackFill ]
-                                        , stemAttributes = []
-                                        , groupAttributes = []
                                         }
+                                        [ blackStroke, blackFill ]
                                         point
                                         direction
                                 )
@@ -473,10 +454,10 @@ view model =
                             ]
                         , Svg.ellipticalArc2d [ noFill, blackStroke ] arc
                         , directionIndicator
-                        , drawDirection [ noFill, blackStroke ]
+                        , Svg.direction2d [ noFill, blackStroke ]
                             centerPoint
                             model.xDirection
-                        , drawPoint [ whiteFill, blackStroke ] centerPoint
+                        , Svg.point2d [ whiteFill, blackStroke ] centerPoint
                         , pointHandle CenterPoint centerPoint
                         ]
 
@@ -487,8 +468,8 @@ view model =
             case model.dragRotationCenter of
                 Just centerPoint ->
                     Svg.g [ lightGreyStroke, whiteFill ]
-                        [ drawDirection [] centerPoint model.xDirection
-                        , drawPoint [] centerPoint
+                        [ Svg.direction2d [] centerPoint model.xDirection
+                        , Svg.point2d [] centerPoint
                         ]
 
                 Nothing ->
@@ -522,9 +503,9 @@ view model =
             [ ellipseSvg
             , anchoredDirection
             , directionTipHandle
-            , drawPoint [ whiteFill, blackStroke ] model.startPoint
+            , Svg.point2d [ whiteFill, blackStroke ] model.startPoint
             , pointHandle StartPoint model.startPoint
-            , drawPoint [ whiteFill, blackStroke ] model.endPoint
+            , Svg.point2d [ whiteFill, blackStroke ] model.endPoint
             , pointHandle EndPoint model.endPoint
             , Svg.boundingBox2d
                 [ Svg.Attributes.stroke "rgb(238, 238, 238)"
