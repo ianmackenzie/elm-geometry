@@ -1,5 +1,6 @@
 module HermiteCubicSpline2d exposing (..)
 
+import FillsAndStrokes exposing (..)
 import Html exposing (Html)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.CubicSpline2d as CubicSpline2d exposing (CubicSpline2d)
@@ -7,34 +8,6 @@ import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Svg as Svg
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import Svg exposing (Svg)
-import Svg.Attributes as Attributes
-
-
-drawPoint : Point2d -> Svg Never
-drawPoint =
-    Svg.point2d
-        { radius = 3
-        , attributes = [ Attributes.fill "white", Attributes.stroke "black" ]
-        }
-
-
-drawVector : Point2d -> Vector2d -> Svg Never
-drawVector =
-    Svg.vector2d
-        { tipAttributes = [ Attributes.fill "grey" ]
-        , stemAttributes = [ Attributes.stroke "grey" ]
-        , groupAttributes = []
-        , tipLength = 10
-        , tipWidth = 8
-        }
-
-
-drawSpline : CubicSpline2d -> Svg Never
-drawSpline =
-    Svg.cubicSpline2d
-        [ Attributes.stroke "black"
-        , Attributes.fill "none"
-        ]
 
 
 main : Html Never
@@ -65,11 +38,11 @@ main =
 
         svg =
             Svg.g []
-                [ drawSpline spline
-                , drawVector p1 v1
-                , drawVector p2 v2
-                , drawPoint p1
-                , drawPoint p2
+                [ Svg.cubicSpline2d [ blackStroke, noFill ] spline
+                , Svg.vector2d [ greyStroke, greyFill ] p1 v1
+                , Svg.vector2d [ greyStroke, greyFill ] p2 v2
+                , Svg.point2d [ whiteFill, blackStroke ] p1
+                , Svg.point2d [ whiteFill, blackStroke ] p2
                 ]
     in
     Svg.render2d bounds svg
