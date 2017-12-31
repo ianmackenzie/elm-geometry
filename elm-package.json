@@ -38,6 +38,7 @@
         "OpenSolid.QuadraticSpline3d",
         "OpenSolid.Scalar",
         "OpenSolid.SketchPlane3d",
+        "OpenSolid.Sphere3d",
         "OpenSolid.Triangle2d",
         "OpenSolid.Triangle3d",
         "OpenSolid.Vector2d",
