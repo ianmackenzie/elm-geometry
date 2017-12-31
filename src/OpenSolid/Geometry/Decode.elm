@@ -24,6 +24,8 @@ module OpenSolid.Geometry.Decode
         , cubicSpline3d
         , direction2d
         , direction3d
+        , ellipse2d
+        , ellipticalArc2d
         , frame2d
         , frame3d
         , lineSegment2d
@@ -51,7 +53,7 @@ module OpenSolid.Geometry.Decode
 @docs lineSegment2d, lineSegment3d, triangle2d, triangle3d
 @docs boundingBox2d, boundingBox3d
 @docs polyline2d, polyline3d, polygon2d
-@docs circle2d, circle3d, arc2d, arc3d, sphere3d
+@docs circle2d, circle3d, ellipse2d, arc2d, arc3d, ellipticalArc2d, sphere3d
 @docs quadraticSpline2d, quadraticSpline3d, cubicSpline2d, cubicSpline3d
 
 -}
@@ -69,6 +71,8 @@ import OpenSolid.CubicSpline2d as CubicSpline2d exposing (CubicSpline2d)
 import OpenSolid.CubicSpline3d as CubicSpline3d exposing (CubicSpline3d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
+import OpenSolid.Ellipse2d as Ellipse2d exposing (Ellipse2d)
+import OpenSolid.EllipticalArc2d as EllipticalArc2d exposing (EllipticalArc2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
 import OpenSolid.Geometry.Internal as Internal
@@ -384,6 +388,26 @@ circle2d =
         (Decode.field "radius" Decode.float)
 
 
+{-| Decodes an `Ellipse2d` from an object with `centerPoint`, `xDirection`,
+`xRadius` and `yRadius` fields.
+-}
+ellipse2d : Decoder Ellipse2d
+ellipse2d =
+    Decode.map4
+        (\centerPoint xDirection xRadius yRadius ->
+            Ellipse2d.with
+                { centerPoint = centerPoint
+                , xDirection = xDirection
+                , xRadius = xRadius
+                , yRadius = yRadius
+                }
+        )
+        (Decode.field "centerPoint" point2d)
+        (Decode.field "xDirection" direction2d)
+        (Decode.field "xRadius" Decode.float)
+        (Decode.field "yRadius" Decode.float)
+
+
 {-| Decodes a `Circle3d` from an object with `centerPoint`, `axialDirection` and
 `radius` fields.
 -}
@@ -447,6 +471,30 @@ arc3d =
         )
         (Decode.field "axis" axis3d)
         (Decode.field "startPoint" point3d)
+        (Decode.field "sweptAngle" Decode.float)
+
+
+{-| Decodes an `EllipticalArc2d` from an object with `centerPoint`,
+`xDirection`, `xRadius`, `yRadius`, `startAngle` and `sweptAngle` fields.
+-}
+ellipticalArc2d : Decoder EllipticalArc2d
+ellipticalArc2d =
+    Decode.map6
+        (\centerPoint xDirection xRadius yRadius startAngle sweptAngle ->
+            EllipticalArc2d.with
+                { centerPoint = centerPoint
+                , xDirection = xDirection
+                , xRadius = xRadius
+                , yRadius = yRadius
+                , startAngle = startAngle
+                , sweptAngle = sweptAngle
+                }
+        )
+        (Decode.field "centerPoint" point2d)
+        (Decode.field "xDirection" direction2d)
+        (Decode.field "xRadius" Decode.float)
+        (Decode.field "yRadius" Decode.float)
+        (Decode.field "startAngle" Decode.float)
         (Decode.field "sweptAngle" Decode.float)
 
 

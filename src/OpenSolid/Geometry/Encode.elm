@@ -24,6 +24,8 @@ module OpenSolid.Geometry.Encode
         , cubicSpline3d
         , direction2d
         , direction3d
+        , ellipse2d
+        , ellipticalArc2d
         , frame2d
         , frame3d
         , lineSegment2d
@@ -51,7 +53,7 @@ module OpenSolid.Geometry.Encode
 @docs lineSegment2d, lineSegment3d, triangle2d, triangle3d
 @docs boundingBox2d, boundingBox3d
 @docs polyline2d, polyline3d, polygon2d
-@docs circle2d, circle3d, arc2d, arc3d, sphere3d
+@docs circle2d, circle3d, ellipse2d, arc2d, arc3d, ellipticalArc2d, sphere3d
 @docs quadraticSpline2d, quadraticSpline3d, cubicSpline2d, cubicSpline3d
 
 -}
@@ -69,6 +71,8 @@ import OpenSolid.CubicSpline2d as CubicSpline2d exposing (CubicSpline2d)
 import OpenSolid.CubicSpline3d as CubicSpline3d exposing (CubicSpline3d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
+import OpenSolid.Ellipse2d as Ellipse2d exposing (Ellipse2d)
+import OpenSolid.EllipticalArc2d as EllipticalArc2d exposing (EllipticalArc2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
@@ -338,6 +342,19 @@ circle3d circle =
         ]
 
 
+{-| Encode an `Ellipse2d` as an object with `centerPoint`, `xDirection`,
+`xRadius` and `yRadius` fields.
+-}
+ellipse2d : Ellipse2d -> Value
+ellipse2d ellipse =
+    Encode.object
+        [ ( "centerPoint", point2d (Ellipse2d.centerPoint ellipse) )
+        , ( "xDirection", direction2d (Ellipse2d.xDirection ellipse) )
+        , ( "xRadius", Encode.float (Ellipse2d.xRadius ellipse) )
+        , ( "yRadius", Encode.float (Ellipse2d.yRadius ellipse) )
+        ]
+
+
 {-| Encode a `Sphere` as an object with `centerPoint` and `radius` fields.
 -}
 sphere3d : Sphere3d -> Value
@@ -369,6 +386,21 @@ arc3d arc =
         [ ( "axis", axis3d (Arc3d.axis arc) )
         , ( "startPoint", point3d (Arc3d.startPoint arc) )
         , ( "sweptAngle", Encode.float (Arc3d.sweptAngle arc) )
+        ]
+
+
+{-| Encode an `EllipticalArc2d` as an object with `centerPoint`, `xDirection`,
+`xRadius`, `yRadius`, `startAngle` and `sweptAngle` fields.
+-}
+ellipticalArc2d : EllipticalArc2d -> Value
+ellipticalArc2d arc =
+    Encode.object
+        [ ( "centerPoint", point2d (EllipticalArc2d.centerPoint arc) )
+        , ( "xDirection", direction2d (EllipticalArc2d.xDirection arc) )
+        , ( "xRadius", Encode.float (EllipticalArc2d.xRadius arc) )
+        , ( "yRadius", Encode.float (EllipticalArc2d.yRadius arc) )
+        , ( "startAngle", Encode.float (EllipticalArc2d.startAngle arc) )
+        , ( "sweptAngle", Encode.float (EllipticalArc2d.sweptAngle arc) )
         ]
 
 
