@@ -2,13 +2,23 @@ module EllipticalArc2d exposing (..)
 
 import Expect
 import Fuzz exposing (Fuzzer)
+import Generic
 import OpenSolid.Arc2d as Arc2d exposing (Arc2d)
 import OpenSolid.EllipticalArc2d as EllipticalArc2d
+import OpenSolid.Geometry.Decode as Decode
+import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Expect as Expect
 import OpenSolid.Geometry.Fuzz as Fuzz
 import OpenSolid.Point2d as Point2d
 import OpenSolid.Vector2d as Vector2d
 import Test exposing (Test)
+
+
+jsonRoundTrips : Test
+jsonRoundTrips =
+    Generic.jsonRoundTrips Fuzz.ellipticalArc2d
+        Encode.ellipticalArc2d
+        Decode.ellipticalArc2d
 
 
 reproducibleArc : Fuzzer Arc2d
