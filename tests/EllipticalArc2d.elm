@@ -3,6 +3,7 @@ module EllipticalArc2d exposing (..)
 import Expect
 import Fuzz exposing (Fuzzer)
 import Generic
+import Generic.Curve2d
 import OpenSolid.Arc2d as Arc2d exposing (Arc2d)
 import OpenSolid.EllipticalArc2d as EllipticalArc2d
 import OpenSolid.Geometry.Decode as Decode
@@ -89,3 +90,19 @@ fromEndpointsReplicatesArc =
                     EllipticalArc2d.centerPoint ellipticalArc
                         |> Expect.point2d (Arc2d.centerPoint arc)
         )
+
+
+scaling : Test
+scaling =
+    Generic.Curve2d.scaling
+        Fuzz.ellipticalArc2d
+        EllipticalArc2d.scaleAbout
+        EllipticalArc2d.pointOn
+
+
+translation : Test
+translation =
+    Generic.Curve2d.translation
+        Fuzz.ellipticalArc2d
+        EllipticalArc2d.translateBy
+        EllipticalArc2d.pointOn
