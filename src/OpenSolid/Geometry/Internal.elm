@@ -200,9 +200,7 @@ type CubicSpline3d
 
 type EllipticalArc2d
     = EllipticalArc2d
-        { axes : Frame2d
-        , xRadius : Float
-        , yRadius : Float
+        { ellipse : Ellipse2d
         , startAngle : Float
         , sweptAngle : Float
         }
