@@ -21,6 +21,8 @@
         "OpenSolid.CubicSpline3d",
         "OpenSolid.Direction2d",
         "OpenSolid.Direction3d",
+        "OpenSolid.Ellipse2d",
+        "OpenSolid.EllipticalArc2d",
         "OpenSolid.Frame2d",
         "OpenSolid.Frame3d",
         "OpenSolid.Interval",
