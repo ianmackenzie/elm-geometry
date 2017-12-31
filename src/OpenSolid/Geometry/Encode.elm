@@ -71,7 +71,6 @@ import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
-import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.LineSegment3d as LineSegment3d exposing (LineSegment3d)
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
@@ -331,11 +330,11 @@ circle2d circle =
 `radius` fields.
 -}
 circle3d : Circle3d -> Value
-circle3d (Internal.Circle3d properties) =
+circle3d circle =
     Encode.object
-        [ ( "centerPoint", point3d properties.centerPoint )
-        , ( "axialDirection", direction3d properties.axialDirection )
-        , ( "radius", Encode.float properties.radius )
+        [ ( "centerPoint", point3d (Circle3d.centerPoint circle) )
+        , ( "axialDirection", direction3d (Circle3d.axialDirection circle) )
+        , ( "radius", Encode.float (Circle3d.radius circle) )
         ]
 
 
