@@ -88,6 +88,11 @@ scalar =
     Fuzz.floatRange -10 10
 
 
+positiveScalar : Fuzzer Float
+positiveScalar =
+    Fuzz.map abs scalar
+
+
 interval : Fuzzer Interval
 interval =
     Fuzz.map2 Scalar.hull scalar scalar
@@ -305,7 +310,7 @@ circle2d =
         circle centerPoint radius =
             Circle2d.with { centerPoint = centerPoint, radius = radius }
     in
-    Fuzz.map2 circle point2d (Fuzz.map abs scalar)
+    Fuzz.map2 circle point2d positiveScalar
 
 
 circle3d : Fuzzer Circle3d
@@ -318,7 +323,7 @@ circle3d =
                 , radius = radius
                 }
     in
-    Fuzz.map3 circle point3d direction3d (Fuzz.map abs scalar)
+    Fuzz.map3 circle point3d direction3d positiveScalar
 
 
 sphere3d : Fuzzer Sphere3d
@@ -327,7 +332,7 @@ sphere3d =
         sphere centerPoint radius =
             Sphere3d.with { centerPoint = centerPoint, radius = radius }
     in
-    Fuzz.map2 sphere point3d (Fuzz.map abs scalar)
+    Fuzz.map2 sphere point3d positiveScalar
 
 
 arc2d : Fuzzer Arc2d
@@ -382,9 +387,6 @@ cubicSpline3d =
 ellipticalArc2d : Fuzzer EllipticalArc2d
 ellipticalArc2d =
     let
-        radius =
-            Fuzz.map abs scalar
-
         angle =
             Fuzz.floatRange -(2 * pi) (2 * pi)
 
@@ -400,5 +402,5 @@ ellipticalArc2d =
     in
     Fuzz.map3 ellipticalArc
         (Fuzz.tuple ( point2d, direction2d ))
-        (Fuzz.tuple ( radius, radius ))
+        (Fuzz.tuple ( positiveScalar, positiveScalar ))
         (Fuzz.tuple ( angle, angle ))
