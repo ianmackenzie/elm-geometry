@@ -24,6 +24,7 @@ module OpenSolid.Geometry.Fuzz
         , cubicSpline3d
         , direction2d
         , direction3d
+        , ellipse2d
         , ellipticalArc2d
         , frame2d
         , frame3d
@@ -60,6 +61,7 @@ import OpenSolid.CubicSpline2d as CubicSpline2d exposing (CubicSpline2d)
 import OpenSolid.CubicSpline3d as CubicSpline3d exposing (CubicSpline3d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
+import OpenSolid.Ellipse2d as Ellipse2d exposing (Ellipse2d)
 import OpenSolid.EllipticalArc2d as EllipticalArc2d exposing (EllipticalArc2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
@@ -382,6 +384,20 @@ cubicSpline3d : Fuzzer CubicSpline3d
 cubicSpline3d =
     Fuzz.tuple4 ( point3d, point3d, point3d, point3d )
         |> Fuzz.map CubicSpline3d.fromControlPoints
+
+
+ellipse2d : Fuzzer Ellipse2d
+ellipse2d =
+    let
+        ellipse centerPoint xDirection xRadius yRadius =
+            Ellipse2d.with
+                { centerPoint = centerPoint
+                , xDirection = xDirection
+                , xRadius = xRadius
+                , yRadius = yRadius
+                }
+    in
+    Fuzz.map4 ellipse point2d direction2d positiveScalar positiveScalar
 
 
 ellipticalArc2d : Fuzzer EllipticalArc2d
