@@ -18,9 +18,9 @@ parameterValue =
 
 
 scaling : Fuzzer a -> (Point2d -> Float -> a -> a) -> (a -> Float -> Point2d) -> Test
-scaling fuzzer scaleAbout pointOn =
+scaling curveFuzzer scaleAbout pointOn =
     Test.fuzz4
-        fuzzer
+        curveFuzzer
         Fuzz.point2d
         Fuzz.scalar
         parameterValue
@@ -44,9 +44,9 @@ scaling fuzzer scaleAbout pointOn =
 
 
 translation : Fuzzer a -> (Vector2d -> a -> a) -> (a -> Float -> Point2d) -> Test
-translation fuzzer translateBy pointOn =
+translation curveFuzzer translateBy pointOn =
     Test.fuzz3
-        fuzzer
+        curveFuzzer
         Fuzz.vector2d
         parameterValue
         "translateBy"
