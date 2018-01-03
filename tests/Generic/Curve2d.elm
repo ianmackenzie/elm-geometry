@@ -1,6 +1,7 @@
 module Generic.Curve2d
     exposing
-        ( scaling
+        ( rotation
+        , scaling
         , translation
         )
 
@@ -65,4 +66,30 @@ translation curveFuzzer translateBy pointOn =
                     Point2d.translateBy displacement originalPoint
             in
             pointOnTranslatedCurve |> Expect.point2d translatedPoint
+        )
+
+
+rotation : Fuzzer a -> (Point2d -> Float -> a -> a) -> (a -> Float -> Point2d) -> Test
+rotation curveFuzzer rotateAround pointOn =
+    Test.fuzz4
+        curveFuzzer
+        Fuzz.point2d
+        (Fuzz.floatRange (-2 * pi) (2 * pi))
+        parameterValue
+        "rotateAround"
+        (\curve centerPoint angle t ->
+            let
+                rotatedCurve =
+                    rotateAround centerPoint angle curve
+
+                originalPoint =
+                    pointOn curve t
+
+                pointOnRotatedCurve =
+                    pointOn rotatedCurve t
+
+                rotatedPoint =
+                    Point2d.rotateAround centerPoint angle originalPoint
+            in
+            pointOnRotatedCurve |> Expect.point2d rotatedPoint
         )
