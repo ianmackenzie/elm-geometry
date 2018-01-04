@@ -771,7 +771,7 @@ arcLength (ArcLengthParameterized _ parameterization) =
 
 
 {-| Try to get the point along a spline at a given arc length. For example, to
-get the point a quarter of the way along a spline:
+get the point a quarter of the way along `exampleSpline`:
 
     CubicSpline2d.pointAlong parameterizedSpline
         (arcLength / 4)
@@ -783,7 +783,7 @@ Note that this is not the same as evaulating at a parameter value of 1/4:
     --> Point2d.fromCoordinates ( 2.5, 2.3125 )
 
 If the given arc length is less than zero or greater than the arc length of the
-curve, `Nothing` is returned.
+spline, `Nothing` is returned.
 
 -}
 pointAlong : ArcLengthParameterized -> Float -> Maybe Point2d
