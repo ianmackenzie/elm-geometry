@@ -108,3 +108,18 @@ scaling =
 translation : Test
 translation =
     Generic.Curve2d.translation curveConfig EllipticalArc2d.translateBy
+
+
+rotation : Test
+rotation =
+    Generic.Curve2d.rotation curveConfig EllipticalArc2d.rotateAround
+
+
+localization : Test
+localization =
+    Generic.Curve2d.localization curveConfig EllipticalArc2d.relativeTo
+
+
+globalization : Test
+globalization =
+    Generic.Curve2d.globalization curveConfig EllipticalArc2d.placeIn
