@@ -5,7 +5,7 @@ import Fuzz exposing (Fuzzer)
 import Generic
 import Generic.Curve2d
 import OpenSolid.Arc2d as Arc2d exposing (Arc2d)
-import OpenSolid.EllipticalArc2d as EllipticalArc2d
+import OpenSolid.EllipticalArc2d as EllipticalArc2d exposing (EllipticalArc2d)
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Expect as Expect
@@ -92,17 +92,19 @@ fromEndpointsReplicatesArc =
         )
 
 
+curveConfig : Generic.Curve2d.Config EllipticalArc2d
+curveConfig =
+    { fuzzer = Fuzz.ellipticalArc2d
+    , pointOn = EllipticalArc2d.pointOn
+    , derivative = EllipticalArc2d.derivative
+    }
+
+
 scaling : Test
 scaling =
-    Generic.Curve2d.scaling
-        Fuzz.ellipticalArc2d
-        EllipticalArc2d.scaleAbout
-        EllipticalArc2d.pointOn
+    Generic.Curve2d.scaling curveConfig EllipticalArc2d.scaleAbout
 
 
 translation : Test
 translation =
-    Generic.Curve2d.translation
-        Fuzz.ellipticalArc2d
-        EllipticalArc2d.translateBy
-        EllipticalArc2d.pointOn
+    Generic.Curve2d.translation curveConfig EllipticalArc2d.translateBy
