@@ -805,7 +805,7 @@ arcLength (ArcLengthParameterized _ parameterization) =
 
 
 {-| Try to get the point along an elliptical arc at a given arc length. For
-example, to get the true midpoint of an elliptical arc:
+example, to get the true midpoint of `exampleArc`:
 
     EllipticalArc2d.pointAlong parameterizedArc
         (arcLength / 2)
@@ -817,7 +817,7 @@ Note that this is not the same as evaulating at a parameter value of 0.5:
     --> Point2d.fromCoordinates ( 1.4142, 0.7071 )
 
 If the given arc length is less than zero or greater than the arc length of the
-curve, `Nothing` is returned.
+arc, `Nothing` is returned.
 
 -}
 pointAlong : ArcLengthParameterized -> Float -> Maybe Point2d
