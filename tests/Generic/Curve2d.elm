@@ -1,6 +1,7 @@
 module Generic.Curve2d
     exposing
-        ( rotation
+        ( Config
+        , rotation
         , scaling
         , translation
         )
@@ -13,15 +14,22 @@ import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import Test exposing (Test)
 
 
+type alias Config curve =
+    { fuzzer : Fuzzer curve
+    , pointOn : curve -> Float -> Point2d
+    , derivative : curve -> Float -> Vector2d
+    }
+
+
 parameterValue : Fuzzer Float
 parameterValue =
     Fuzz.floatRange 0 1
 
 
-scaling : Fuzzer a -> (Point2d -> Float -> a -> a) -> (a -> Float -> Point2d) -> Test
-scaling curveFuzzer scaleAbout pointOn =
+scaling : Config curve -> (Point2d -> Float -> curve -> curve) -> Test
+scaling config scaleAbout =
     Test.fuzz4
-        curveFuzzer
+        config.fuzzer
         Fuzz.point2d
         Fuzz.scalar
         parameterValue
@@ -32,10 +40,10 @@ scaling curveFuzzer scaleAbout pointOn =
                     scaleAbout basePoint scale curve
 
                 originalPoint =
-                    pointOn curve t
+                    config.pointOn curve t
 
                 pointOnScaledCurve =
-                    pointOn scaledCurve t
+                    config.pointOn scaledCurve t
 
                 scaledPoint =
                     Point2d.scaleAbout basePoint scale originalPoint
@@ -44,10 +52,10 @@ scaling curveFuzzer scaleAbout pointOn =
         )
 
 
-translation : Fuzzer a -> (Vector2d -> a -> a) -> (a -> Float -> Point2d) -> Test
-translation curveFuzzer translateBy pointOn =
+translation : Config curve -> (Vector2d -> curve -> curve) -> Test
+translation config translateBy =
     Test.fuzz3
-        curveFuzzer
+        config.fuzzer
         Fuzz.vector2d
         parameterValue
         "translateBy"
@@ -57,10 +65,10 @@ translation curveFuzzer translateBy pointOn =
                     translateBy displacement curve
 
                 originalPoint =
-                    pointOn curve t
+                    config.pointOn curve t
 
                 pointOnTranslatedCurve =
-                    pointOn translatedCurve t
+                    config.pointOn translatedCurve t
 
                 translatedPoint =
                     Point2d.translateBy displacement originalPoint
@@ -69,10 +77,10 @@ translation curveFuzzer translateBy pointOn =
         )
 
 
-rotation : Fuzzer a -> (Point2d -> Float -> a -> a) -> (a -> Float -> Point2d) -> Test
-rotation curveFuzzer rotateAround pointOn =
+rotation : Config curve -> (Point2d -> Float -> curve -> curve) -> Test
+rotation config rotateAround =
     Test.fuzz4
-        curveFuzzer
+        config.fuzzer
         Fuzz.point2d
         (Fuzz.floatRange (-2 * pi) (2 * pi))
         parameterValue
@@ -83,10 +91,10 @@ rotation curveFuzzer rotateAround pointOn =
                     rotateAround centerPoint angle curve
 
                 originalPoint =
-                    pointOn curve t
+                    config.pointOn curve t
 
                 pointOnRotatedCurve =
-                    pointOn rotatedCurve t
+                    config.pointOn rotatedCurve t
 
                 rotatedPoint =
                     Point2d.rotateAround centerPoint angle originalPoint
