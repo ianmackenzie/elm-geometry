@@ -1,12 +1,15 @@
 module Generic.Curve2d
     exposing
         ( Config
+        , globalization
+        , localization
         , rotation
         , scaling
         , translation
         )
 
 import Fuzz exposing (Fuzzer)
+import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Geometry.Expect as Expect
 import OpenSolid.Geometry.Fuzz as Fuzz
 import OpenSolid.Point2d as Point2d exposing (Point2d)
@@ -100,4 +103,54 @@ rotation config rotateAround =
                     Point2d.rotateAround centerPoint angle originalPoint
             in
             pointOnRotatedCurve |> Expect.point2d rotatedPoint
+        )
+
+
+localization : Config curve -> (Frame2d -> curve -> curve) -> Test
+localization config relativeTo =
+    Test.fuzz3
+        config.fuzzer
+        Fuzz.frame2d
+        parameterValue
+        "relativeTo"
+        (\curve frame t ->
+            let
+                localCurve =
+                    relativeTo frame curve
+
+                originalPoint =
+                    config.pointOn curve t
+
+                pointOnLocalCurve =
+                    config.pointOn localCurve t
+
+                localPoint =
+                    Point2d.relativeTo frame originalPoint
+            in
+            pointOnLocalCurve |> Expect.point2d localPoint
+        )
+
+
+globalization : Config curve -> (Frame2d -> curve -> curve) -> Test
+globalization config placeIn =
+    Test.fuzz3
+        config.fuzzer
+        Fuzz.frame2d
+        parameterValue
+        "placeIn"
+        (\curve frame t ->
+            let
+                globalCurve =
+                    placeIn frame curve
+
+                originalPoint =
+                    config.pointOn curve t
+
+                pointOnGlobalCurve =
+                    config.pointOn globalCurve t
+
+                localPoint =
+                    Point2d.placeIn frame originalPoint
+            in
+            pointOnGlobalCurve |> Expect.point2d localPoint
         )
