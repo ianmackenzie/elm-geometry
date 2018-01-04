@@ -811,7 +811,10 @@ example, to get the true midpoint of an elliptical arc:
         (arcLength / 2)
     --> Just (Point2d.fromCoordinates ( 1.1889, 0.8041 ))
 
-Note that this is not the same as evaulating at a parameter value of 0.5!
+Note that this is not the same as evaulating at a parameter value of 0.5:
+
+    EllipticalArc2d.pointOn exampleArc 0.5
+    --> Point2d.fromCoordinates ( 1.4142, 0.7071 )
 
 If the given arc length is less than zero or greater than the arc length of the
 curve, `Nothing` is returned.
