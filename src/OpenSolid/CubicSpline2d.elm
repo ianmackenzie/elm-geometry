@@ -810,8 +810,8 @@ tangentAlong (ArcLengthParameterized spline parameterization) s =
         |> Maybe.andThen Vector2d.direction
 
 
-{-| Try to get the parameter value along a spline at a given arc length. If the given
-arc length is less than zero or greater than the arc length of the spline,
+{-| Try to get the parameter value along a spline at a given arc length. If the
+given arc length is less than zero or greater than the arc length of the spline,
 returns `Nothing`.
 
     CubicSpline2d.arcLengthToParameterValue
@@ -825,8 +825,8 @@ arcLengthToParameterValue (ArcLengthParameterized _ parameterization) s =
     ArcLength.toParameterValue parameterization s
 
 
-{-| Try to get the arc length along a spline at a given parameter value. If the given
-parameter value is less than zero or greater than one, returns `Nothing`.
+{-| Try to get the arc length along a spline at a given parameter value. If the
+given parameter value is less than zero or greater than one, returns `Nothing`.
 
     CubicSpline2d.arcLengthFromParameterValue
         parameterizedSpline
