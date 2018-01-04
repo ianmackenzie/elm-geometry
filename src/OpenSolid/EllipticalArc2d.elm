@@ -822,16 +822,16 @@ pointAlong (ArcLengthParameterized arc parameterization) s =
     ArcLength.toParameterValue parameterization s |> Maybe.map (pointOn arc)
 
 
-{-| Get the tangent direction along an elliptical arc at a given arc length. To
-get the tangent direction at the midpoint of `exampleArc`:
+{-| Try to get the tangent direction along an elliptical arc at a given arc
+length. To get the tangent direction at the midpoint of `exampleArc`:
 
     EllipticalArc2d.tangentAlong parameterizedArc
         (arcLength / 2)
     --> Just (Direction2d.fromAngle (degrees 159.71))
 
 If the given arc length is less than zero or greater than the arc length of the
-curve (or if the derivative of the arc happens to be exactly zero at the given
-arc length), `Nothing` is returned.
+arc (or if the derivative of the arc happens to be exactly zero at the given arc
+length), `Nothing` is returned.
 
 -}
 tangentAlong : ArcLengthParameterized -> Float -> Maybe Direction2d
@@ -841,9 +841,9 @@ tangentAlong (ArcLengthParameterized arc parameterization) s =
         |> Maybe.andThen Vector2d.direction
 
 
-{-| Get the parameter value along an elliptical arc at a given arc length. If
-the given arc length is less than zero or greater than the arc length of the
-arc, returns `Nothing`.
+{-| Try to get the parameter value along an elliptical arc at a given arc
+length. If the given arc length is less than zero or greater than the arc length
+of the arc, returns `Nothing`.
 
     EllipticalArc2d.arcLengthToParameterValue
         parameterizedArc
