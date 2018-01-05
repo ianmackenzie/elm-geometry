@@ -534,7 +534,19 @@ type ArcLengthParameterized
     = ArcLengthParameterized QuadraticSpline2d ArcLength.Parameterization
 
 
-{-| Build an arc length parameterization of the given spline.
+{-| Build an arc length parameterization of the given spline, within
+a given tolerance. Generally speaking, all operations on the resulting
+`ArcLengthParameterized` value will be accurate to within the given arc length
+tolerance.
+
+    tolerance =
+        1.0e-4
+
+    parameterizedSpline =
+        QuadraticSpline2d.arcLengthParameterized
+            tolerance
+            exampleSpline
+
 -}
 arcLengthParameterized : Float -> QuadraticSpline2d -> ArcLengthParameterized
 arcLengthParameterized tolerance spline =
@@ -554,20 +566,52 @@ arcLengthParameterized tolerance spline =
 
 {-| Find the total arc length of a spline. This will be accurate to within the
 tolerance given when calling `arcLengthParameterized`.
+
+    arcLength : Float
+    arcLength =
+        QuadraticSpline2d.arcLength parameterizedSpline
+
+    arcLength
+    --> 5.1986
+
 -}
 arcLength : ArcLengthParameterized -> Float
 arcLength (ArcLengthParameterized _ parameterization) =
     ArcLength.fromParameterization parameterization
 
 
-{-| Get the point along a spline at a given arc length.
+{-| Try to get the point along a spline at a given arc length. For example, to
+get the point a quarter of the way along `exampleSpline`:
+
+    QuadraticSpline2d.pointAlong parameterizedSpline
+        (arcLength / 4)
+    --> Just (Point2d.fromCoordinates ( 1.8350, 1.9911 ))
+
+Note that this is not the same as evaulating at a parameter value of 1/4:
+
+    QuadraticSpline2d.pointOn exampleSpline 0.25
+    --> Point2d.fromCoordinates ( 2, 2.125 )
+
+If the given arc length is less than zero or greater than the arc length of the
+spline, `Nothing` is returned.
+
 -}
 pointAlong : ArcLengthParameterized -> Float -> Maybe Point2d
 pointAlong (ArcLengthParameterized spline parameterization) s =
     ArcLength.toParameterValue parameterization s |> Maybe.map (pointOn spline)
 
 
-{-| Get the tangent direction along a spline at a given arc length.
+{-| Try to get the tangent direction along a spline at a given arc length. To
+get the tangent direction a quarter of the way along `exampleSpline`:
+
+    QuadraticSpline2d.tangentAlong parameterizedSpline
+        (arcLength / 4)
+    --> Just (Direction2d.fromAngle (degrees 41.145))
+
+If the given arc length is less than zero or greater than the arc length of the
+spline (or if the derivative of the spline happens to be exactly zero at the
+given arc length), `Nothing` is returned.
+
 -}
 tangentAlong : ArcLengthParameterized -> Float -> Maybe Direction2d
 tangentAlong (ArcLengthParameterized spline parameterization) s =
@@ -576,17 +620,29 @@ tangentAlong (ArcLengthParameterized spline parameterization) s =
         |> Maybe.andThen Vector2d.direction
 
 
-{-| Get the parameter value along a spline at a given arc length. If the given
-arc length is less than zero or greater than the arc length of the spline,
+{-| Try to get the parameter value along a spline at a given arc length. If the
+given arc length is less than zero or greater than the arc length of the spline,
 returns `Nothing`.
+
+    QuadraticSpline2d.arcLengthToParameterValue
+        parameterizedSpline
+        (arcLength / 4)
+    --> Just 0.2088
+
 -}
 arcLengthToParameterValue : ArcLengthParameterized -> Float -> Maybe Float
 arcLengthToParameterValue (ArcLengthParameterized _ parameterization) s =
     ArcLength.toParameterValue parameterization s
 
 
-{-| Get the arc length along a spline at a given parameter value. If the given
-parameter value is less than zero or greater than one, returns `Nothing`.
+{-| Try to get the arc length along a spline at a given parameter value. If the
+given parameter value is less than zero or greater than one, returns `Nothing`.
+
+    QuadraticSpline2d.arcLengthFromParameterValue
+        parameterizedSpline
+        0.25
+    --> Just 1.5122
+
 -}
 arcLengthFromParameterValue : ArcLengthParameterized -> Float -> Maybe Float
 arcLengthFromParameterValue (ArcLengthParameterized _ parameterization) t =
