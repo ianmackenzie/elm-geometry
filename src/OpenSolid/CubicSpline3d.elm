@@ -978,7 +978,7 @@ given parameter value is less than zero or greater than one, returns `Nothing`.
     CubicSpline3d.arcLengthFromParameterValue
         parameterizedSpline
         0.25
-    --> 1.2163
+    --> Just 1.2163
 
 -}
 arcLengthFromParameterValue : ArcLengthParameterized -> Float -> Maybe Float
