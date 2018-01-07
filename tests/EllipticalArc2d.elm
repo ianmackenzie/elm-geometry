@@ -45,7 +45,13 @@ reproducibleArc =
         Fuzz.point2d
         Fuzz.direction2d
         (Fuzz.floatRange 0.1 10)
-        (Fuzz.floatRange -(3 * pi / 2) (3 * pi / 2))
+        (Fuzz.oneOf
+            [ Fuzz.floatRange (degrees 1) (degrees 179)
+            , Fuzz.floatRange (degrees 181) (degrees 359)
+            , Fuzz.floatRange (degrees -179) (degrees -1)
+            , Fuzz.floatRange (degrees -359) (degrees -181)
+            ]
+        )
 
 
 fromEndpointsReplicatesArc : Test
