@@ -6,11 +6,9 @@ module Arc3d
         , reverseFlipsDirection
         )
 
-import Expect
 import Fuzz
 import Generic
 import OpenSolid.Arc3d as Arc3d
-import OpenSolid.BoundingBox3d as BoundingBox3d
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Expect as Expect
