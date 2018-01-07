@@ -472,7 +472,8 @@ negative number.
     non-zero amount (false if they just touch or do not overlap at all).
   - `overlappingBy GT -1e-3` doesn't make a lot of sense but will return true if
     the boxes touch or overlap at all (false if they don't overlap, regardless
-    of how close they are to overlapping).
+    of how close they are to overlapping). In this case, though, it would make
+    more sense to just user `intersects` instead.
 
 
 ### Equal to
