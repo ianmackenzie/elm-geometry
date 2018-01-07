@@ -32,6 +32,8 @@ module OpenSolid.Direction2d
         , positiveY
         , relativeTo
         , rotateBy
+        , rotateClockwise
+        , rotateCounterclockwise
         , toVector
         , unsafe
         , x
@@ -89,7 +91,7 @@ several uses, such as:
 
 # Transformations
 
-@docs flip, rotateBy, mirrorAcross
+@docs flip, rotateClockwise, rotateCounterclockwise, rotateBy, mirrorAcross
 
 
 # Coordinate conversions
@@ -233,7 +235,8 @@ from firstPoint secondPoint =
 
 
 {-| Construct a direction perpendicular to the given direction, by rotating the
-given direction 90 degrees counterclockwise.
+given direction 90 degrees counterclockwise. Synonym for
+`rotateCounterclockwise`.
 
     Direction2d.perpendicularTo Direction2d.x
     --> Direction2d.y
@@ -499,6 +502,42 @@ toVector direction =
 flip : Direction2d -> Direction2d
 flip =
     Bootstrap.flip
+
+
+{-| Rotate a direction by 90 degrees clockwise.
+
+    Direction2d.rotateClockwise Direction2d.y
+    --> Direction2d.x
+
+    Direction2d.rotateClockwise Direction2d.x
+    --> Direction2d.negativeY
+
+-}
+rotateClockwise : Direction2d -> Direction2d
+rotateClockwise direction =
+    let
+        ( x, y ) =
+            components direction
+    in
+    unsafe ( y, -x )
+
+
+{-| Rotate a direction by 90 degrees counterclockwise.
+
+    Direction2d.rotateClockwise Direction2d.x
+    --> Direction2d.y
+
+    Direction2d.rotateClockwise Direction2d.y
+    --> Direction2d.negativeX
+
+-}
+rotateCounterclockwise : Direction2d -> Direction2d
+rotateCounterclockwise direction =
+    let
+        ( x, y ) =
+            components direction
+    in
+    unsafe ( -y, x )
 
 
 {-| Rotate a direction counterclockwise by a given angle (in radians).
