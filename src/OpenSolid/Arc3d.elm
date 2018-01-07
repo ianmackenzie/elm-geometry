@@ -2,6 +2,7 @@ module OpenSolid.Arc3d
     exposing
         ( Arc3d
         , around
+        , axialDirection
         , axis
         , centerPoint
         , derivative
@@ -43,7 +44,7 @@ start point to the arc's end point). This module includes functionality for
 
 # Properties
 
-@docs axis, centerPoint, radius, startPoint, endPoint, sweptAngle
+@docs axialDirection, axis, centerPoint, radius, startPoint, endPoint, sweptAngle
 
 
 # Evaluation
@@ -205,6 +206,17 @@ throughPoints points =
                     )
                     |> Maybe.map (on sketchPlane)
             )
+
+
+{-| Get the axial direction of an arc.
+
+    Arc3d.axialDirection exampleArc
+    --> Direction3d.z
+
+-}
+axialDirection : Arc3d -> Direction3d
+axialDirection arc =
+    Axis3d.direction (axis arc)
 
 
 {-| Get the central axis of an arc. The origin point of the axis will be equal
