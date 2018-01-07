@@ -132,8 +132,7 @@ with properties =
 
 
 {-| Attempt to construct a sphere that passes through the four given points.
-Returns `Nothing` if the first three of the four given points are collinear.
-Also returns `Nothing` if the fourth point lies in a plane with the three other ones.
+Returns `Nothing` if four given points are coplanar.
 
     Sphere3d.throughPoints
         ( Point3d.fromCoordinates (1, 0, 0)
