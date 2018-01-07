@@ -56,12 +56,12 @@ functionality for:
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, projectInto
 
 
 # Coordinate conversions
 
-@docs relativeTo, placeIn, projectOnto, projectInto
+@docs relativeTo, placeIn
 
 -}
 
