@@ -662,6 +662,38 @@ mirrorAcross plane =
 
 
 {-| Project an arc into a sketch plane.
+
+    axis : Axis3d
+    axis =
+        Axis3d.with
+            { originPoint =
+                Point3d.fromCoordinates ( 1, 2, 3 )
+            , direction =
+                Direction3d.with
+                    { azimuth = 0
+                    , elevation = degrees 45
+                    }
+            }
+
+    arc : Arc3d
+    arc =
+        Arc3d.around axis
+            { startPoint =
+                Point3d.fromCoordinates ( 1, 4, 3 )
+            , sweptAngle = degrees 45
+            }
+
+    Arc3d.projectInto SketchPlane3d.xy arc
+    --> EllipticalArc2d.with
+    -->     { centerPoint =
+    -->         Point2d.fromCoordinates ( 1, 2 )
+    -->     , xDirection = Direction2d.y
+    -->     , xRadius = 2
+    -->     , yRadius = 1.4142
+    -->     , startAngle = degrees 0
+    -->     , sweptAngle = degrees 45
+    -->     }
+
 -}
 projectInto : SketchPlane3d -> Arc3d -> Internal.EllipticalArc2d
 projectInto sketchPlane arc =
