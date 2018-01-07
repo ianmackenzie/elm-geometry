@@ -259,8 +259,8 @@ surfaceArea sphere =
 
 {-| Get the volume of a sphere.
 
-    Sphere3d.diameter exampleSphere
-    --> 6
+    Sphere3d.volume exampleSphere
+    --> 113.0973
 
 -}
 volume : Sphere3d -> Float
