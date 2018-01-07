@@ -24,10 +24,10 @@ module OpenSolid.Sphere3d
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/sphere3d.svg" alt="Sphere3d" width="160">
 
-A `Sphere3d` is defined by its center point, axial direction and radius.
-This module contains functionality for:
+A `Sphere3d` is defined by its center point and radius. This module contains
+functionality for:
 
-  - Constructing through points
+  - Constructing spheres through points
   - Scaling, rotating and translating spheres
   - Extracting sphere properties like center point and volume
 
