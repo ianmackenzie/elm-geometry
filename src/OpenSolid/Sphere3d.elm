@@ -138,22 +138,22 @@ with properties =
 Returns `Nothing` if four given points are coplanar.
 
     Sphere3d.throughPoints
-        ( Point3d.fromCoordinates (1, 0, 0)
-        , Point3d.fromCoordinates (-1, 0, 0)
-        , Point3d.fromCoordinates (0, 1, 0)
-        , Point3d.fromCoordinates (0, 0, 0.5)
+        ( Point3d.fromCoordinates ( 1, 0, 0 )
+        , Point3d.fromCoordinates ( -1, 0, 0 )
+        , Point3d.fromCoordinates ( 0, 1, 0 )
+        , Point3d.fromCoordinates ( 0, 0, 0.5 )
         )
     --> Just <| Sphere3d.with
         { centerPoint =
-            Point3d.fromCoordinates (0, 0, -0.75)
+            Point3d.fromCoordinates ( 0, 0, -0.75 )
             , radius = 1.25
             }
 
     Sphere3d.throughPoints
-        ( Point3d.fromCoordinates (1, 0, 0)
-        , Point3d.fromCoordinates (-1, 0, 0)
-        , Point3d.fromCoordinates (0, 1, 0)
-        , Point3d.fromCoordinates (0, -1, 0)
+        ( Point3d.fromCoordinates ( 1, 0, 0 )
+        , Point3d.fromCoordinates ( -1, 0, 0 )
+        , Point3d.fromCoordinates ( 0, 1, 0 )
+        , Point3d.fromCoordinates ( 0, -1, 0 )
         )
     --> Nothing
 
@@ -295,10 +295,10 @@ scaleAbout point scale sphere =
     exampleSphere
         |> Sphere3d.rotateAround Axis3d.y (degrees 90)
     --> Sphere3d.with
-            { centerPoint =
-                Point3d.fromCoordinates ( 1, 2, -1)
-            , radius = 3
-            }
+    -->     { centerPoint =
+    -->         Point3d.fromCoordinates ( 1, 2, -1 )
+    -->     , radius = 3
+    -->     }
 
 -}
 rotateAround : Axis3d -> Float -> Sphere3d -> Sphere3d
@@ -440,12 +440,12 @@ boundingBox sphere =
 {-| Check if a sphere contains a given point.
 
     Sphere3d.contains
-        (Point3d.fromCoordinates (4, 2, 1))
+        (Point3d.fromCoordinates ( 4, 2, 1 ))
         exampleSphere
     --> True
 
     Sphere3d.contains
-        (Point3d.fromCoordinates (4.00001, 2, 1))
+        (Point3d.fromCoordinates ( 4.00001, 2, 1 ))
         exampleSphere
     --> False
 
@@ -464,7 +464,8 @@ of a sphere onto a plane.
 
     Sphere3d.projectOnto Plane3d.xy exampleSphere
     --> Circle3d.with
-    -->     { centerPoint = Point3d.fromCoordinates (1, 2, 0)
+    -->     { centerPoint =
+    -->         Point3d.fromCoordinates ( 1, 2, 0 )
     -->     , axialDirection = Direction3d.z
     -->     , radius = 3.0
     -->     }
@@ -484,9 +485,10 @@ of a sphere into a sketch plane.
 
     Sphere3d.projectInto SketchPlane3d.xy exampleSphere
     --> Circle2d.with
-    -->     { centerPoint = Point2d.fromCoordinates (1, 2)
+    -->     { centerPoint =
+    -->         Point2d.fromCoordinates ( 1, 2 )
     -->     , radius = 3.0
-    -->      }
+    -->     }
 
 -}
 projectInto : SketchPlane3d -> Sphere3d -> Circle2d
