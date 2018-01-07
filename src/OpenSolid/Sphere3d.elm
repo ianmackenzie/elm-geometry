@@ -125,6 +125,9 @@ unit =
             , radius = 3
             }
 
+A negative radius will be interpreted as positive (the absolute value will be
+used).
+
 -}
 with : { centerPoint : Point3d, radius : Float } -> Sphere3d
 with properties =
@@ -227,7 +230,8 @@ diameter sphere =
     2 * radius sphere
 
 
-{-| Get the circumference of a sphere.
+{-| Get the circumference of a sphere (the circumference of a [great circle](https://en.wikipedia.org/wiki/Great_circle)
+of the sphere).
 
     Sphere3d.circumference exampleSphere
     --> 18.8496
