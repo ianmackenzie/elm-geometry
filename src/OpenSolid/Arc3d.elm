@@ -666,7 +666,7 @@ mirrorAcross plane =
 projectInto : SketchPlane3d -> Arc3d -> Internal.EllipticalArc2d
 projectInto sketchPlane arc =
     let
-        xDirection2d =
+        candidateXDirection2d =
             case Direction3d.projectInto sketchPlane (axialDirection arc) of
                 Just yDirection2d ->
                     yDirection2d |> Direction2d.rotateClockwise
@@ -674,8 +674,19 @@ projectInto sketchPlane arc =
                 Nothing ->
                     Direction2d.x
 
-        xDirection3d =
-            Direction3d.on sketchPlane xDirection2d
+        candidateXDirection3d =
+            Direction3d.on sketchPlane candidateXDirection2d
+
+        radialVector =
+            Vector3d.from (centerPoint arc) (startPoint arc)
+
+        ( xDirection2d, xDirection3d ) =
+            if Vector3d.componentIn candidateXDirection3d radialVector >= 0 then
+                ( candidateXDirection2d, candidateXDirection3d )
+            else
+                ( Direction2d.flip candidateXDirection2d
+                , Direction3d.flip candidateXDirection3d
+                )
 
         arcRadius =
             radius arc
@@ -690,9 +701,6 @@ projectInto sketchPlane arc =
 
         ellipticalStartAngle =
             let
-                radialVector =
-                    Vector3d.from (centerPoint arc) (startPoint arc)
-
                 xVector =
                     Direction3d.toVector xDirection3d
 
