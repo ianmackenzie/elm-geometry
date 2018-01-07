@@ -13,6 +13,7 @@ module OpenSolid.Circle3d
         , on
         , placeIn
         , plane
+        , projectInto
         , radius
         , relativeTo
         , rotateAround
@@ -49,7 +50,7 @@ for:
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectInto
 
 
 # Coordinate conversions
@@ -61,12 +62,15 @@ for:
 import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
 import OpenSolid.BoundingBox3d as BoundingBox3d exposing (BoundingBox3d)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
+import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
+import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
 import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
 import OpenSolid.Point3d as Point3d exposing (Point3d)
 import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 
@@ -415,6 +419,82 @@ mirrorAcross plane =
             , radius = radius circle
             , axialDirection = mirrorDirection (axialDirection circle)
             }
+
+
+{-| Project a circle into a sketch plane.
+
+    inclinedCircle : Circle3d
+    inclinedCircle =
+        Circle3d.with
+            { centerPoint =
+                Point3d.fromCoordinates ( 1, 2, 3 )
+            , radius = 1
+            , axialDirection =
+                Direction3d.with
+                    { azimuth = 0
+                    , elevation = degrees 45
+                    }
+            }
+
+    Circle3d.projectInto SketchPlane3d.xy inclinedCircle
+    --> Ellipse2d.with
+    -->     { centerPoint =
+    -->         Point2d.fromCoordinates ( 1, 2 )
+    -->     , xDirection = Direction2d.negativeY
+    -->     , xRadius = 1
+    -->     , yRadius = 0.7071
+    -->     }
+
+-}
+projectInto : SketchPlane3d -> Circle3d -> Internal.Ellipse2d
+projectInto sketchPlane circle =
+    let
+        projectedAxialDirection =
+            axialDirection circle
+                |> Direction3d.toVector
+                |> Vector3d.projectInto sketchPlane
+
+        projectedCenter =
+            centerPoint circle |> Point3d.projectInto sketchPlane
+
+        xRadius =
+            radius circle
+    in
+    case Vector2d.direction projectedAxialDirection of
+        Just yDirection ->
+            let
+                xDirection =
+                    yDirection |> Direction2d.rotateClockwise
+
+                normalDirection =
+                    SketchPlane3d.normalDirection sketchPlane
+
+                yRatio =
+                    axialDirection circle
+                        |> Direction3d.componentIn normalDirection
+                        |> abs
+
+                yRadius =
+                    yRatio * xRadius
+
+                axes =
+                    Frame2d.with
+                        { originPoint = projectedCenter
+                        , xDirection = xDirection
+                        }
+            in
+            Internal.Ellipse2d
+                { axes = axes
+                , xRadius = xRadius
+                , yRadius = yRadius
+                }
+
+        Nothing ->
+            Internal.Ellipse2d
+                { axes = Frame2d.atPoint projectedCenter
+                , xRadius = xRadius
+                , yRadius = xRadius
+                }
 
 
 {-| Take a circle defined in global coordinates, and return it expressed in
