@@ -12,6 +12,7 @@ module OpenSolid.Arc3d
         , on
         , placeIn
         , pointOn
+        , projectInto
         , radius
         , relativeTo
         , reverse
@@ -59,7 +60,7 @@ start point to the arc's end point). This module includes functionality for
 
 # Transformations
 
-@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross
+@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross, projectInto
 
 
 # Coordinate conversions
@@ -70,7 +71,9 @@ start point to the arc's end point). This module includes functionality for
 
 import OpenSolid.Arc2d as Arc2d exposing (Arc2d)
 import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
+import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
+import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
 import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
@@ -656,6 +659,82 @@ mirrorAcross plane =
             { startPoint = mirrorPoint (startPoint arc)
             , sweptAngle = -(sweptAngle arc)
             }
+
+
+{-| Project an arc into a sketch plane.
+-}
+projectInto : SketchPlane3d -> Arc3d -> Internal.EllipticalArc2d
+projectInto sketchPlane arc =
+    let
+        xDirection2d =
+            case Direction3d.projectInto sketchPlane (axialDirection arc) of
+                Just yDirection2d ->
+                    yDirection2d |> Direction2d.rotateClockwise
+
+                Nothing ->
+                    Direction2d.x
+
+        xDirection3d =
+            Direction3d.on sketchPlane xDirection2d
+
+        arcRadius =
+            radius arc
+
+        normalComponent =
+            axialDirection arc
+                |> Direction3d.componentIn
+                    (SketchPlane3d.normalDirection sketchPlane)
+
+        yRatio =
+            abs normalComponent
+
+        ellipticalStartAngle =
+            let
+                radialVector =
+                    Vector3d.from (centerPoint arc) (startPoint arc)
+
+                xVector =
+                    Direction3d.toVector xDirection3d
+
+                crossProduct =
+                    Vector3d.crossProduct xVector radialVector
+
+                y =
+                    crossProduct
+                        |> Vector3d.componentIn (axialDirection arc)
+
+                x =
+                    Vector3d.dotProduct radialVector xVector
+
+                arcStartAngle =
+                    atan2 y x
+            in
+            if normalComponent >= 0 then
+                arcStartAngle
+            else
+                -arcStartAngle
+
+        ellipticalSweptAngle =
+            if normalComponent >= 0 then
+                sweptAngle arc
+            else
+                -(sweptAngle arc)
+    in
+    Internal.EllipticalArc2d
+        { ellipse =
+            Internal.Ellipse2d
+                { axes =
+                    Frame2d.with
+                        { originPoint =
+                            centerPoint arc |> Point3d.projectInto sketchPlane
+                        , xDirection = xDirection2d
+                        }
+                , xRadius = arcRadius
+                , yRadius = arcRadius * yRatio
+                }
+        , startAngle = ellipticalStartAngle
+        , sweptAngle = ellipticalSweptAngle
+        }
 
 
 {-| Take an arc defined in global coordinates, and return it expressed in local

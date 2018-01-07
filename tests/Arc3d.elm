@@ -3,16 +3,19 @@ module Arc3d
         ( evaluateOneIsEndPoint
         , evaluateZeroIsStartPoint
         , jsonRoundTrips
+        , projectInto
         , reverseFlipsDirection
         )
 
 import Fuzz
 import Generic
 import OpenSolid.Arc3d as Arc3d
+import OpenSolid.EllipticalArc2d as EllipticalArc2d
 import OpenSolid.Geometry.Decode as Decode
 import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Expect as Expect
 import OpenSolid.Geometry.Fuzz as Fuzz
+import OpenSolid.Point3d as Point3d
 import Test exposing (Test)
 
 
@@ -45,4 +48,29 @@ reverseFlipsDirection =
         (\arc t ->
             Arc3d.pointOn (Arc3d.reverse arc) t
                 |> Expect.point3d (Arc3d.pointOn arc (1 - t))
+        )
+
+
+projectInto : Test
+projectInto =
+    Test.fuzz3
+        Fuzz.arc3d
+        Fuzz.sketchPlane3d
+        (Fuzz.floatRange 0 1)
+        "Projecting an arc works properly"
+        (\arc sketchPlane parameterValue ->
+            let
+                projectedArc =
+                    Arc3d.projectInto sketchPlane arc
+
+                pointOnOriginalArc =
+                    Arc3d.pointOn arc parameterValue
+
+                pointOnProjectedArc =
+                    EllipticalArc2d.pointOn projectedArc parameterValue
+
+                projectedPoint =
+                    Point3d.projectInto sketchPlane pointOnOriginalArc
+            in
+            pointOnProjectedArc |> Expect.point2d projectedPoint
         )
