@@ -38,7 +38,7 @@ A wide variety of data types are supported:
     ![Frame3d](https://opensolid.github.io/images/geometry/icons/frame3d.svg)
     ![SketchPlane3d](https://opensolid.github.io/images/geometry/icons/sketchPlane3d.svg)
 
-  - `BoundingBox2d`, `BoundingBox3d`
+  - `BoundingBox2d`, `BoundingBox3d`, `Interval`
 
     ![BoundingBox2d](https://opensolid.github.io/images/geometry/icons/boundingBox2d.svg)
     ![BoundingBox3d](https://opensolid.github.io/images/geometry/icons/boundingBox3d.svg)
@@ -62,6 +62,11 @@ A wide variety of data types are supported:
     ![Circle3d](https://opensolid.github.io/images/geometry/icons/circle3d.svg)
     ![Arc2d](https://opensolid.github.io/images/geometry/icons/arc2d.svg)
     ![Arc3d](https://opensolid.github.io/images/geometry/icons/arc3d.svg)
+
+  - `Ellipse2d`, `EllipticalArc2d`
+
+    ![Ellipse2d](https://opensolid.github.io/images/geometry/icons/ellipse2d.svg)
+    ![EllipticalArc2d](https://opensolid.github.io/images/geometry/icons/ellipticalArc2d.svg)
 
   - `QuadraticSpline2d`, `QuadraticSpline3d`, `CubicSpline2d`, `CubicSpline3d`
 
@@ -227,10 +232,8 @@ using OpenSolid, try:
   - Sending me (@ianmackenzie) a message on the [Elm Slack](http://elmlang.herokuapp.com/) -
     even if you don't have any particular questions right now, just come say
     hello!
+  - Posting to the [Elm Discourse](https://discourse.elm-lang.org/) forums
   - Posting to the [r/elm](https://reddit.com/r/elm) subreddit
-  - Posting to the [elm-discuss](https://groups.google.com/forum/#!forum/elm-discuss)
-    Google Group (somewhat less active than Slack and Reddit, but I still follow
-    it regularly if you prefer e-mail)
   - Or if you happen to be in the New York area, come on out to the
     [Elm NYC meetup](https://www.meetup.com/Elm-NYC/) =)
 
