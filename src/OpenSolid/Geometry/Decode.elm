@@ -28,6 +28,7 @@ module OpenSolid.Geometry.Decode
         , ellipticalArc2d
         , frame2d
         , frame3d
+        , interval
         , lineSegment2d
         , lineSegment3d
         , plane3d
@@ -51,7 +52,7 @@ module OpenSolid.Geometry.Decode
 @docs vector2d, vector3d, direction2d, direction3d, point2d, point3d
 @docs axis2d, axis3d, plane3d, frame2d, frame3d, sketchPlane3d
 @docs lineSegment2d, lineSegment3d, triangle2d, triangle3d
-@docs boundingBox2d, boundingBox3d
+@docs interval, boundingBox2d, boundingBox3d
 @docs polyline2d, polyline3d, polygon2d
 @docs circle2d, circle3d, ellipse2d, arc2d, arc3d, ellipticalArc2d, sphere3d
 @docs quadraticSpline2d, quadraticSpline3d, cubicSpline2d, cubicSpline3d
@@ -76,6 +77,7 @@ import OpenSolid.EllipticalArc2d as EllipticalArc2d exposing (EllipticalArc2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
 import OpenSolid.Geometry.Internal as Internal
+import OpenSolid.Interval as Interval exposing (Interval)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.LineSegment3d as LineSegment3d exposing (LineSegment3d)
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
@@ -309,6 +311,18 @@ triangle3d =
         (Decode.index 0 point3d)
         (Decode.index 1 point3d)
         (Decode.index 2 point3d)
+
+
+{-| Decodes an `Interval` from an object with `minValue` and `maxValue` fields.
+-}
+interval : Decoder Interval
+interval =
+    Decode.map2
+        (\minValue maxValue ->
+            Interval.with { minValue = minValue, maxValue = maxValue }
+        )
+        (Decode.field "minValue" Decode.float)
+        (Decode.field "maxValue" Decode.float)
 
 
 {-| Decodes a `BoundingBox2d` from an object with `minX`, `maxX`, `minY` and
