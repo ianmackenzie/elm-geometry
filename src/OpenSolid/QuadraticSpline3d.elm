@@ -3,7 +3,6 @@ module OpenSolid.QuadraticSpline3d
         ( ArcLengthParameterized
         , QuadraticSpline3d
         , arcLength
-        , arcLengthFromParameterValue
         , arcLengthParameterized
         , arcLengthToParameterValue
         , bisect
@@ -16,6 +15,7 @@ module OpenSolid.QuadraticSpline3d
         , fromControlPoints
         , mirrorAcross
         , on
+        , parameterValueToArcLength
         , placeIn
         , pointAlong
         , pointOn
@@ -83,7 +83,7 @@ in 3D defined by three control points. This module contains functionality for
 
 # Arc length parameterization
 
-@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentAlong, arcLengthToParameterValue, arcLengthFromParameterValue
+@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentAlong, arcLengthToParameterValue, parameterValueToArcLength
 
 
 # Low level
@@ -739,14 +739,14 @@ arcLengthToParameterValue (ArcLengthParameterized _ parameterization) s =
 {-| Try to get the arc length along a spline at a given parameter value. If the
 given parameter value is less than zero or greater than one, returns `Nothing`.
 
-    QuadraticSpline3d.arcLengthFromParameterValue
+    QuadraticSpline3d.parameterValueToArcLength
         parameterizedSpline
         0.25
     --> Just 1.0192
 
 -}
-arcLengthFromParameterValue : ArcLengthParameterized -> Float -> Maybe Float
-arcLengthFromParameterValue (ArcLengthParameterized _ parameterization) t =
+parameterValueToArcLength : ArcLengthParameterized -> Float -> Maybe Float
+parameterValueToArcLength (ArcLengthParameterized _ parameterization) t =
     ArcLength.fromParameterValue parameterization t
 
 

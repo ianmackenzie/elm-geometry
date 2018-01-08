@@ -4,7 +4,6 @@ module OpenSolid.EllipticalArc2d
         , EllipticalArc2d
         , SweptAngle
         , arcLength
-        , arcLengthFromParameterValue
         , arcLengthParameterized
         , arcLengthToParameterValue
         , axes
@@ -17,6 +16,7 @@ module OpenSolid.EllipticalArc2d
         , largePositive
         , maxSecondDerivativeMagnitude
         , mirrorAcross
+        , parameterValueToArcLength
         , placeIn
         , pointAlong
         , pointOn
@@ -92,7 +92,7 @@ details.
 
 # Arc length parameterization
 
-@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentAlong, arcLengthToParameterValue, arcLengthFromParameterValue
+@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentAlong, arcLengthToParameterValue, parameterValueToArcLength
 
 
 # Low level
@@ -863,12 +863,12 @@ arcLengthToParameterValue (ArcLengthParameterized _ parameterization) s =
 the given parameter value is less than zero or greater than one, returns
 `Nothing`.
 
-    EllipticalArc2d.arcLengthFromParameterValue
+    EllipticalArc2d.parameterValueToArcLength
         parameterizedArc
         0.5
     --> Just 0.9657
 
 -}
-arcLengthFromParameterValue : ArcLengthParameterized -> Float -> Maybe Float
-arcLengthFromParameterValue (ArcLengthParameterized _ parameterization) t =
+parameterValueToArcLength : ArcLengthParameterized -> Float -> Maybe Float
+parameterValueToArcLength (ArcLengthParameterized _ parameterization) t =
     ArcLength.fromParameterValue parameterization t
