@@ -19,7 +19,14 @@ main =
         arcLengths =
             List.range 0 numSegments
                 |> List.map
-                    (\n -> toFloat n * overallArcLength / toFloat numSegments)
+                    (\n ->
+                        let
+                            fraction =
+                                toFloat n
+                                    / toFloat numSegments
+                        in
+                        fraction * overallArcLength
+                    )
 
         points =
             arcLengths
