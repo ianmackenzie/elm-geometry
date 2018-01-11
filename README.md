@@ -1,6 +1,7 @@
 # opensolid/geometry [![Travis build Status](https://travis-ci.org/opensolid/geometry.svg?branch=master)](https://travis-ci.org/opensolid/geometry)
 
-_Note: if you're upgrading from 1.x, make sure to check out the [release notes](https://github.com/opensolid/geometry/releases/tag/2.0.0)!_
+_Note: Release notes for version 2.1 are [here](https://github.com/opensolid/geometry/releases/tag/2.1.0).
+If you're upgrading from 1.x, make sure to also check out the [release notes for 2.0](https://github.com/opensolid/geometry/releases/tag/2.0.0)._
 
 `opensolid/geometry` is an [Elm](http://elm-lang.org) package for working with
 2D and 3D geometry. It provides a wide variety of geometric data types such as
@@ -185,16 +186,16 @@ elm package install opensolid/geometry
 in a command prompt inside your project directory or by adding
 
 ```json
-"opensolid/geometry": "2.0.0 <= v < 3.0.0"
+"opensolid/geometry": "2.1.0 <= v < 3.0.0"
 ```
 
 to the `dependencies` field in your project's `elm-package.json`.
 
 ## Documentation
 
-[Full API documentation](http://package.elm-lang.org/packages/opensolid/geometry/2.0.0)
+[Full API documentation](http://package.elm-lang.org/packages/opensolid/geometry/2.1.0)
 is available for each module. Most modules are associated with a particular data
-type (for example, the [`Point3d`](http://package.elm-lang.org/packages/opensolid/geometry/2.0.0/OpenSolid-Point3d)
+type (for example, the [`Point3d`](http://package.elm-lang.org/packages/opensolid/geometry/2.1.0/OpenSolid-Point3d)
 module contains functions for creating and manipulating `Point3d` values).
 
 ## Usage details
