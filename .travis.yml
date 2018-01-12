@@ -19,7 +19,7 @@ before_install:
 install:
   - node --version
   - npm --version
-  - npm install -g elm@$ELM_VERSION elm-test elm-verify-examples
+  - npm install -g elm@$ELM_VERSION elm-test elm-verify-examples@2.2.0
   - git clone https://github.com/NoRedInk/elm-ops-tooling
   - elm-ops-tooling/with_retry.rb elm package install --yes
   # Faster compile on Travis.
