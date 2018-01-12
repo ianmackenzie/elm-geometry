@@ -144,7 +144,8 @@ Returns `Nothing` if four given points are coplanar.
         , Point3d.fromCoordinates ( 0, 0, 0.5 )
         )
     --> Just <| Sphere3d.with
-    -->     { centerPoint = Point3d.fromCoordinates ( 0, 0, -0.75 )
+    -->     { centerPoint =
+    -->         Point3d.fromCoordinates ( 0, 0, -0.75 )
     -->     , radius = 1.25
     --> }
 
@@ -314,7 +315,9 @@ rotateAround axis angle sphere =
 
 {-| Translate a sphere by a given displacement.
 
-    Sphere3d.translateBy (Vector3d.fromComponents ( 2, 1, 3 )) exampleSphere
+    exampleSphere
+        |> Sphere3d.translateBy
+            (Vector3d.fromComponents ( 2, 1, 3 ))
     --> Sphere3d.with
     -->     { centerPoint =
     -->         Point3d.fromCoordinates ( 3, 3, 4 )
@@ -355,7 +358,11 @@ mirrorAcross plane sphere =
 {-| Take a sphere defined in global coordinates, and return it expressed in
 local coordinates relative to a given reference frame.
 
-    Sphere3d.relativeTo (Frame3d.atPoint (Point3d.fromCoordinates ( 1, 2, 3 ))) exampleSphere
+    exampleSphere
+        |> Sphere3d.relativeTo
+            (Frame3d.atPoint
+                (Point3d.fromCoordinates ( 1, 2, 3 ))
+            )
     --> Sphere3d.with
     -->     { centerPoint =
     -->         Point3d.fromCoordinates ( 0, 0, -2 )
@@ -374,7 +381,11 @@ relativeTo frame sphere =
 {-| Take a sphere considered to be defined in local coordinates relative to a
 given reference frame, and return that sphere expressed in global coordinates.
 
-    Sphere3d.placeIn (Frame3d.atPoint (Point3d.fromCoordinates ( 1, 2, 3 ))) exampleSphere
+    exampleSphere
+        |> Sphere3d.placeIn
+            (Frame3d.atPoint
+                (Point3d.fromCoordinates ( 1, 2, 3 ))
+            )
     --> Sphere3d.with
     -->     { centerPoint =
     -->         Point3d.fromCoordinates ( 2, 4, 4 )
