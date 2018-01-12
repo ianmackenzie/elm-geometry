@@ -10,7 +10,7 @@ documentation.json
 docs.json
 
 # elm-verify-examples generated tests
-tests/Doc
+tests/VerifyExamples
 
 # =========================
 # Operating System Files
