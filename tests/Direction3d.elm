@@ -49,28 +49,28 @@ orthonormalizeProducesValidFrameBasis : Test
 orthonormalizeProducesValidFrameBasis =
     Test.fuzz (Fuzz.tuple3 ( Fuzz.vector3d, Fuzz.vector3d, Fuzz.vector3d ))
         "orthonormalize produces a valid frame basis"
-        (\vectors ->
-            case Direction3d.orthonormalize vectors of
-                Just ( xDirection, yDirection, zDirection ) ->
-                    Expect.validFrame3d
-                        (Frame3d.unsafe
-                            { originPoint = Point3d.origin
-                            , xDirection = xDirection
-                            , yDirection = yDirection
-                            , zDirection = zDirection
-                            }
-                        )
+        (\( v1, v2, v3 ) ->
+            let
+                tripleProduct =
+                    Vector3d.crossProduct v1 v2
+                        |> Vector3d.dotProduct v3
+            in
+            if abs tripleProduct > 1.0e-6 then
+                case Direction3d.orthonormalize ( v1, v2, v3 ) of
+                    Just ( xDirection, yDirection, zDirection ) ->
+                        Expect.validFrame3d
+                            (Frame3d.unsafe
+                                { originPoint = Point3d.origin
+                                , xDirection = xDirection
+                                , yDirection = yDirection
+                                , zDirection = zDirection
+                                }
+                            )
 
-                Nothing ->
-                    let
-                        ( v1, v2, v3 ) =
-                            vectors
-
-                        tripleProduct =
-                            Vector3d.crossProduct v1 v2
-                                |> Vector3d.dotProduct v3
-                    in
-                    Expect.approximately 0.0 tripleProduct
+                    Nothing ->
+                        Expect.fail "Could not orthonormalize valid set of vectors"
+            else
+                Expect.pass
         )
 
 

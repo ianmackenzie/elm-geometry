@@ -24,6 +24,7 @@ module OpenSolid.Geometry.Fuzz
         , cubicSpline3d
         , direction2d
         , direction3d
+        , ellipse2d
         , ellipticalArc2d
         , frame2d
         , frame3d
@@ -60,6 +61,7 @@ import OpenSolid.CubicSpline2d as CubicSpline2d exposing (CubicSpline2d)
 import OpenSolid.CubicSpline3d as CubicSpline3d exposing (CubicSpline3d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
+import OpenSolid.Ellipse2d as Ellipse2d exposing (Ellipse2d)
 import OpenSolid.EllipticalArc2d as EllipticalArc2d exposing (EllipticalArc2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
@@ -86,6 +88,11 @@ import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 scalar : Fuzzer Float
 scalar =
     Fuzz.floatRange -10 10
+
+
+positiveScalar : Fuzzer Float
+positiveScalar =
+    Fuzz.map abs scalar
 
 
 interval : Fuzzer Interval
@@ -305,7 +312,7 @@ circle2d =
         circle centerPoint radius =
             Circle2d.with { centerPoint = centerPoint, radius = radius }
     in
-    Fuzz.map2 circle point2d (Fuzz.map abs scalar)
+    Fuzz.map2 circle point2d positiveScalar
 
 
 circle3d : Fuzzer Circle3d
@@ -318,7 +325,7 @@ circle3d =
                 , radius = radius
                 }
     in
-    Fuzz.map3 circle point3d direction3d (Fuzz.map abs scalar)
+    Fuzz.map3 circle point3d direction3d positiveScalar
 
 
 sphere3d : Fuzzer Sphere3d
@@ -327,7 +334,7 @@ sphere3d =
         sphere centerPoint radius =
             Sphere3d.with { centerPoint = centerPoint, radius = radius }
     in
-    Fuzz.map2 sphere point3d (Fuzz.map abs scalar)
+    Fuzz.map2 sphere point3d positiveScalar
 
 
 arc2d : Fuzzer Arc2d
@@ -379,12 +386,23 @@ cubicSpline3d =
         |> Fuzz.map CubicSpline3d.fromControlPoints
 
 
+ellipse2d : Fuzzer Ellipse2d
+ellipse2d =
+    let
+        ellipse centerPoint xDirection xRadius yRadius =
+            Ellipse2d.with
+                { centerPoint = centerPoint
+                , xDirection = xDirection
+                , xRadius = xRadius
+                , yRadius = yRadius
+                }
+    in
+    Fuzz.map4 ellipse point2d direction2d positiveScalar positiveScalar
+
+
 ellipticalArc2d : Fuzzer EllipticalArc2d
 ellipticalArc2d =
     let
-        radius =
-            Fuzz.map abs scalar
-
         angle =
             Fuzz.floatRange -(2 * pi) (2 * pi)
 
@@ -400,5 +418,5 @@ ellipticalArc2d =
     in
     Fuzz.map3 ellipticalArc
         (Fuzz.tuple ( point2d, direction2d ))
-        (Fuzz.tuple ( radius, radius ))
+        (Fuzz.tuple ( positiveScalar, positiveScalar ))
         (Fuzz.tuple ( angle, angle ))

@@ -24,10 +24,10 @@ module OpenSolid.Sphere3d
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/sphere3d.svg" alt="Sphere3d" width="160">
 
-A `Sphere3d` is defined by its center point, axial direction and radius.
-This module contains functionality for:
+A `Sphere3d` is defined by its center point and radius. This module contains
+functionality for:
 
-  - Constructing through points
+  - Constructing spheres through points
   - Scaling, rotating and translating spheres
   - Extracting sphere properties like center point and volume
 
@@ -56,12 +56,12 @@ This module contains functionality for:
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, projectInto
 
 
 # Coordinate conversions
 
-@docs relativeTo, placeIn, projectOnto, projectInto
+@docs relativeTo, placeIn
 
 -}
 
@@ -69,12 +69,10 @@ import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
 import OpenSolid.BoundingBox3d as BoundingBox3d exposing (BoundingBox3d)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
 import OpenSolid.Circle3d as Circle3d exposing (Circle3d)
-import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
 import OpenSolid.Geometry.Internal as Internal exposing (Sphere3d)
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
 import OpenSolid.Point3d as Point3d exposing (Point3d)
-import OpenSolid.Scalar as Scalar
 import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
@@ -127,6 +125,9 @@ unit =
             , radius = 3
             }
 
+A negative radius will be interpreted as positive (the absolute value will be
+used).
+
 -}
 with : { centerPoint : Point3d, radius : Float } -> Sphere3d
 with properties =
@@ -134,26 +135,25 @@ with properties =
 
 
 {-| Attempt to construct a sphere that passes through the four given points.
-Returns `Nothing` if the first three of the four given points are collinear.
-Also returns `Nothing` if the fourth point lies in a plane with the three other ones.
+Returns `Nothing` if four given points are coplanar.
 
     Sphere3d.throughPoints
-        ( Point3d.fromCoordinates (1, 0, 0)
-        , Point3d.fromCoordinates (-1, 0, 0)
-        , Point3d.fromCoordinates (0, 1, 0)
-        , Point3d.fromCoordinates (0, 0, 0.5)
+        ( Point3d.fromCoordinates ( 1, 0, 0 )
+        , Point3d.fromCoordinates ( -1, 0, 0 )
+        , Point3d.fromCoordinates ( 0, 1, 0 )
+        , Point3d.fromCoordinates ( 0, 0, 0.5 )
         )
     --> Just <| Sphere3d.with
-        { centerPoint =
-            Point3d.fromCoordinates (0, 0, -0.75)
-            , radius = 1.25
-            }
+    -->     { centerPoint =
+    -->         Point3d.fromCoordinates ( 0, 0, -0.75 )
+    -->     , radius = 1.25
+    --> }
 
     Sphere3d.throughPoints
-        ( Point3d.fromCoordinates (1, 0, 0)
-        , Point3d.fromCoordinates (-1, 0, 0)
-        , Point3d.fromCoordinates (0, 1, 0)
-        , Point3d.fromCoordinates (0, -1, 0)
+        ( Point3d.fromCoordinates ( 1, 0, 0 )
+        , Point3d.fromCoordinates ( -1, 0, 0 )
+        , Point3d.fromCoordinates ( 0, 1, 0 )
+        , Point3d.fromCoordinates ( 0, -1, 0 )
         )
     --> Nothing
 
@@ -230,7 +230,8 @@ diameter sphere =
     2 * radius sphere
 
 
-{-| Get the circumference of a sphere.
+{-| Get the circumference of a sphere (the circumference of a [great circle](https://en.wikipedia.org/wiki/Great_circle)
+of the sphere).
 
     Sphere3d.circumference exampleSphere
     --> 18.8496
@@ -258,8 +259,8 @@ surfaceArea sphere =
 
 {-| Get the volume of a sphere.
 
-    Sphere3d.diameter exampleSphere
-    --> 6
+    Sphere3d.volume exampleSphere
+    --> 113.0973
 
 -}
 volume : Sphere3d -> Float
@@ -294,10 +295,10 @@ scaleAbout point scale sphere =
     exampleSphere
         |> Sphere3d.rotateAround Axis3d.y (degrees 90)
     --> Sphere3d.with
-            { centerPoint =
-                Point3d.fromCoordinates ( 1, 2, -1)
-            , radius = 3
-            }
+    -->     { centerPoint =
+    -->         Point3d.fromCoordinates ( 1, 2, -1 )
+    -->     , radius = 3
+    -->     }
 
 -}
 rotateAround : Axis3d -> Float -> Sphere3d -> Sphere3d
@@ -314,11 +315,9 @@ rotateAround axis angle sphere =
 
 {-| Translate a sphere by a given displacement.
 
-    displacement : Vector3d
-    displacement =
-        Vector3d.fromComponents ( 2, 1, 3 )
-
-    Sphere3d.translateBy displacement exampleSphere
+    exampleSphere
+        |> Sphere3d.translateBy
+            (Vector3d.fromComponents ( 2, 1, 3 ))
     --> Sphere3d.with
     -->     { centerPoint =
     -->         Point3d.fromCoordinates ( 3, 3, 4 )
@@ -359,12 +358,11 @@ mirrorAcross plane sphere =
 {-| Take a sphere defined in global coordinates, and return it expressed in
 local coordinates relative to a given reference frame.
 
-    localFrame : Frame3d
-    localFrame =
-        Frame3d.atPoint
-            (Point3d.fromCoordinates ( 1, 2, 3 ))
-
-    Sphere3d.relativeTo localFrame exampleSphere
+    exampleSphere
+        |> Sphere3d.relativeTo
+            (Frame3d.atPoint
+                (Point3d.fromCoordinates ( 1, 2, 3 ))
+            )
     --> Sphere3d.with
     -->     { centerPoint =
     -->         Point3d.fromCoordinates ( 0, 0, -2 )
@@ -383,12 +381,11 @@ relativeTo frame sphere =
 {-| Take a sphere considered to be defined in local coordinates relative to a
 given reference frame, and return that sphere expressed in global coordinates.
 
-    localFrame : Frame3d
-    localFrame =
-        Frame3d.atPoint
-            (Point3d.fromCoordinates ( 1, 2, 3 ))
-
-    Sphere3d.placeIn localFrame exampleSphere
+    exampleSphere
+        |> Sphere3d.placeIn
+            (Frame3d.atPoint
+                (Point3d.fromCoordinates ( 1, 2, 3 ))
+            )
     --> Sphere3d.with
     -->     { centerPoint =
     -->         Point3d.fromCoordinates ( 2, 4, 4 )
@@ -439,12 +436,12 @@ boundingBox sphere =
 {-| Check if a sphere contains a given point.
 
     Sphere3d.contains
-        (Point3d.fromCoordinates (4, 2, 1))
+        (Point3d.fromCoordinates ( 4, 2, 1 ))
         exampleSphere
     --> True
 
     Sphere3d.contains
-        (Point3d.fromCoordinates (4.00001, 2, 1))
+        (Point3d.fromCoordinates ( 4.00001, 2, 1 ))
         exampleSphere
     --> False
 
@@ -463,7 +460,8 @@ of a sphere onto a plane.
 
     Sphere3d.projectOnto Plane3d.xy exampleSphere
     --> Circle3d.with
-    -->     { centerPoint = Point3d.fromCoordinates (1, 2, 0)
+    -->     { centerPoint =
+    -->         Point3d.fromCoordinates ( 1, 2, 0 )
     -->     , axialDirection = Direction3d.z
     -->     , radius = 3.0
     -->     }
@@ -483,9 +481,10 @@ of a sphere into a sketch plane.
 
     Sphere3d.projectInto SketchPlane3d.xy exampleSphere
     --> Circle2d.with
-    -->     { centerPoint = Point2d.fromCoordinates (1, 2)
+    -->     { centerPoint =
+    -->         Point2d.fromCoordinates ( 1, 2 )
     -->     , radius = 3.0
-    -->      }
+    -->     }
 
 -}
 projectInto : SketchPlane3d -> Sphere3d -> Circle2d

@@ -159,6 +159,14 @@ type Circle3d
         }
 
 
+type Ellipse2d
+    = Ellipse2d
+        { axes : Frame2d
+        , xRadius : Float
+        , yRadius : Float
+        }
+
+
 type Sphere3d
     = Sphere3d
         { centerPoint : Point3d
@@ -192,9 +200,7 @@ type CubicSpline3d
 
 type EllipticalArc2d
     = EllipticalArc2d
-        { axes : Frame2d
-        , xRadius : Float
-        , yRadius : Float
+        { ellipse : Ellipse2d
         , startAngle : Float
         , sweptAngle : Float
         }

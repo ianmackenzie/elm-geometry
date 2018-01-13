@@ -2,7 +2,6 @@ module EllipticalArc2d.FromEndpoints exposing (..)
 
 import Char
 import Html exposing (Html)
-import Html.Attributes
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.EllipticalArc2d as EllipticalArc2d exposing (EllipticalArc2d)
@@ -70,85 +69,92 @@ init =
     )
 
 
+currrentDragCenter : Model -> Maybe Point2d
+currrentDragCenter model =
+    case model.dragRotationCenter of
+        Just existingCenter ->
+            Just existingCenter
+
+        Nothing ->
+            constructArc model
+                |> Maybe.map
+                    EllipticalArc2d.centerPoint
+
+
+drag : Target -> Point2d -> Point2d -> Model -> Model
+drag target previousPoint currentPoint model =
+    let
+        displacement =
+            Vector2d.from previousPoint currentPoint
+    in
+    case target of
+        StartPoint ->
+            { model
+                | startPoint =
+                    Point2d.translateBy displacement
+                        model.startPoint
+            }
+
+        EndPoint ->
+            { model
+                | endPoint =
+                    Point2d.translateBy displacement
+                        model.endPoint
+            }
+
+        CenterPoint ->
+            { model
+                | startPoint =
+                    Point2d.translateBy displacement
+                        model.startPoint
+                , endPoint =
+                    Point2d.translateBy displacement
+                        model.endPoint
+            }
+
+        XDirection ->
+            let
+                currentCenter =
+                    currrentDragCenter model
+
+                rotatedDirection =
+                    case currentCenter of
+                        Just centerPoint ->
+                            let
+                                rotationAngle =
+                                    Interaction.rotationAround centerPoint
+                                        previousPoint
+                                        currentPoint
+                            in
+                            Direction2d.rotateBy rotationAngle model.xDirection
+
+                        Nothing ->
+                            model.xDirection
+            in
+            { model
+                | dragRotationCenter = currentCenter
+                , xDirection = rotatedDirection
+            }
+
+        _ ->
+            model
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update (InteractionMsg interactionMsg) model =
     let
-        ( updatedInteractionModel, notification ) =
+        ( updatedInteractionModel, interactions ) =
             Interaction.update interactionMsg model.interactionModel
 
-        updatedModel =
-            case notification of
-                Just (Interaction.Drag target modifiers { previousPoint, currentPoint }) ->
-                    let
-                        displacement =
-                            Vector2d.from previousPoint currentPoint
-                    in
-                    case target of
-                        StartPoint ->
-                            { model
-                                | startPoint =
-                                    Point2d.translateBy displacement
-                                        model.startPoint
-                            }
+        handleInteraction interaction model =
+            case interaction of
+                Interaction.Drag target _ { previousPoint, currentPoint } ->
+                    drag target previousPoint currentPoint model
 
-                        EndPoint ->
-                            { model
-                                | endPoint =
-                                    Point2d.translateBy displacement
-                                        model.endPoint
-                            }
-
-                        CenterPoint ->
-                            { model
-                                | startPoint =
-                                    Point2d.translateBy displacement
-                                        model.startPoint
-                                , endPoint =
-                                    Point2d.translateBy displacement
-                                        model.endPoint
-                            }
-
-                        XDirection ->
-                            let
-                                currentCenter =
-                                    case model.dragRotationCenter of
-                                        Just existingCenter ->
-                                            Just existingCenter
-
-                                        Nothing ->
-                                            constructArc model
-                                                |> Maybe.map
-                                                    EllipticalArc2d.centerPoint
-
-                                rotatedDirection =
-                                    case currentCenter of
-                                        Just centerPoint ->
-                                            let
-                                                rotationAngle =
-                                                    Interaction.rotationAround
-                                                        centerPoint
-                                                        previousPoint
-                                                        currentPoint
-                                            in
-                                            Direction2d.rotateBy rotationAngle
-                                                model.xDirection
-
-                                        Nothing ->
-                                            model.xDirection
-                            in
-                            { model
-                                | dragRotationCenter =
-                                    currentCenter
-                                , xDirection = rotatedDirection
-                            }
-
-                        _ ->
-                            model
-
-                Just (Interaction.Release XDirection _ _) ->
+                Interaction.Release XDirection _ _ ->
                     { model | dragRotationCenter = Nothing }
 
-                Just (Interaction.Click target modifiers) ->
+                Interaction.Click target modifiers ->
                     case target of
                         Section sweptAngle ->
                             { model
@@ -165,7 +171,7 @@ update (InteractionMsg interactionMsg) model =
                         _ ->
                             { model | selected = Nothing }
 
-                Just (Interaction.Tap [ target ]) ->
+                Interaction.Tap target ->
                     case target of
                         Section sweptAngle ->
                             { model | sweptAngle = sweptAngle }
@@ -173,7 +179,10 @@ update (InteractionMsg interactionMsg) model =
                         _ ->
                             model
 
-                Just (Interaction.Scroll target modifiers scrollAmount) ->
+                Interaction.Slide target { previousPoint, currentPoint } ->
+                    drag target previousPoint currentPoint model
+
+                Interaction.Scroll target modifiers scrollAmount ->
                     let
                         scale =
                             if ScrollAmount.isPositive scrollAmount then
@@ -191,10 +200,17 @@ update (InteractionMsg interactionMsg) model =
                         _ ->
                             model
 
+                Interaction.Lift XDirection ->
+                    { model | dragRotationCenter = Nothing }
+
                 _ ->
                     model
     in
-    ( { updatedModel | interactionModel = updatedInteractionModel }, Cmd.none )
+    ( List.foldl handleInteraction
+        { model | interactionModel = updatedInteractionModel }
+        interactions
+    , Cmd.none
+    )
 
 
 noFill : Svg.Attribute msg
@@ -252,29 +268,11 @@ dashed =
     Svg.Attributes.strokeDasharray "5 5"
 
 
-drawPoint : Point2d -> Svg msg
-drawPoint =
-    Svg.point2d { radius = 3, attributes = [ whiteFill, blackStroke ] }
-
-
-drawDirection : Point2d -> Direction2d -> Svg msg
-drawDirection =
-    Svg.direction2d
-        { length = 50
-        , tipLength = 10
-        , tipWidth = 10
-        , tipAttributes = [ whiteFill ]
-        , stemAttributes = []
-        , groupAttributes = [ blackStroke ]
-        }
-
-
 pointHandle : Target -> Point2d -> Svg Msg
 pointHandle target point =
     Interaction.pointHandle point
         { target = target
-        , radius = 5
-        , renderBounds = boundingBox
+        , radius = 15
         }
         |> Svg.map InteractionMsg
 
@@ -287,10 +285,7 @@ sectionHandle sweptAngle arc =
                 [ noFill, transparentStroke, thickStroke, roundCap ]
                 arc
     in
-    Interaction.customHandle shape
-        { target = Section sweptAngle
-        , renderBounds = boundingBox
-        }
+    Interaction.customHandle shape (Section sweptAngle)
         |> Svg.map InteractionMsg
 
 
@@ -298,8 +293,7 @@ lineSegmentHandle : Target -> LineSegment2d -> Svg Msg
 lineSegmentHandle target lineSegment =
     Interaction.lineSegmentHandle lineSegment
         { target = target
-        , padding = 5
-        , renderBounds = boundingBox
+        , padding = 15
         }
         |> Svg.map InteractionMsg
 
@@ -420,6 +414,12 @@ view model =
                             else
                                 lightStroke
 
+                        parameterized =
+                            EllipticalArc2d.arcLengthParameterized 0.5 arc
+
+                        arcLength =
+                            EllipticalArc2d.arcLength parameterized
+
                         midPoint =
                             EllipticalArc2d.pointAlong parameterized
                                 (0.5 * arcLength)
@@ -431,46 +431,18 @@ view model =
                         directionIndicator =
                             Maybe.map2
                                 (\point direction ->
-                                    Svg.direction2d
+                                    Svg.direction2dWith
                                         { length = 10
                                         , tipLength = 10
                                         , tipWidth = 10
-                                        , tipAttributes = [ blackStroke, blackFill ]
-                                        , stemAttributes = []
-                                        , groupAttributes = []
                                         }
+                                        [ blackStroke, blackFill ]
                                         point
                                         direction
                                 )
                                 midPoint
                                 midTangent
                                 |> Maybe.withDefault (Svg.text "")
-
-                        parameterized =
-                            EllipticalArc2d.arcLengthParameterized 0.5 arc
-
-                        arcLength =
-                            EllipticalArc2d.arcLength parameterized
-
-                        numSegments =
-                            20
-
-                        arcLengths =
-                            List.range 1 (numSegments - 1)
-                                |> List.map
-                                    (\n -> arcLength * toFloat n / numSegments)
-
-                        points =
-                            arcLengths
-                                |> List.filterMap
-                                    (EllipticalArc2d.pointAlong parameterized)
-                                |> List.map
-                                    (Svg.point2d
-                                        { radius = 1.5
-                                        , attributes =
-                                            [ blackFill, blackStroke ]
-                                        }
-                                    )
                     in
                     Svg.g []
                         [ dashedEllipses
@@ -481,43 +453,41 @@ view model =
                             , lineSegmentHandle YRadius yRadialLine
                             ]
                         , Svg.ellipticalArc2d [ noFill, blackStroke ] arc
-                        , Svg.g [] points
                         , directionIndicator
-                        , drawDirection centerPoint model.xDirection
-                        , Interaction.directionTipHandle
+                        , Svg.direction2d [ noFill, blackStroke ]
                             centerPoint
                             model.xDirection
-                            { length = 50
-                            , tipLength = 10
-                            , tipWidth = 10
-                            , target = XDirection
-                            , padding = 5
-                            , renderBounds = boundingBox
-                            }
-                            |> Svg.map InteractionMsg
-                        , drawPoint centerPoint
+                        , Svg.point2d [ whiteFill, blackStroke ] centerPoint
                         , pointHandle CenterPoint centerPoint
-                        , directionHandle
                         ]
 
                 Nothing ->
                     Svg.text ""
 
-        directionHandle =
+        anchoredDirection =
             case model.dragRotationCenter of
                 Just centerPoint ->
                     Svg.g [ lightGreyStroke, whiteFill ]
-                        [ Svg.direction2d
-                            { length = 50
-                            , tipLength = 10
-                            , tipWidth = 10
-                            , groupAttributes = []
-                            , tipAttributes = []
-                            , stemAttributes = []
-                            }
-                            centerPoint
-                            model.xDirection
+                        [ Svg.direction2d [] centerPoint model.xDirection
+                        , Svg.point2d [] centerPoint
                         ]
+
+                Nothing ->
+                    Svg.text ""
+
+        directionTipHandle =
+            case currrentDragCenter model of
+                Just currentCenter ->
+                    Interaction.directionTipHandle
+                        currentCenter
+                        model.xDirection
+                        { length = 50
+                        , tipLength = 10
+                        , tipWidth = 10
+                        , target = XDirection
+                        , padding = 15
+                        }
+                        |> Svg.map InteractionMsg
 
                 Nothing ->
                     Svg.text ""
@@ -525,50 +495,39 @@ view model =
         { maxX, minY } =
             BoundingBox2d.extrema boundingBox
     in
-    Html.div [ Html.Attributes.style [ ( "margin", "20px" ) ] ]
-        [ Svg.render2d boundingBox <|
-            Interaction.container InteractionMsg
-                { target = Elsewhere
-                , renderBounds = boundingBox
-                }
-                [ ellipseSvg
-                , directionHandle
-                , drawPoint model.startPoint
-                , pointHandle StartPoint model.startPoint
-                , drawPoint model.endPoint
-                , pointHandle EndPoint model.endPoint
-                , Svg.boundingBox2d
-                    [ Svg.Attributes.stroke "rgb(192, 192, 192)"
-                    , Svg.Attributes.rx "3"
-                    , Svg.Attributes.ry "3"
-                    , noFill
-                    ]
-                    (BoundingBox2d.with
-                        { minX = BoundingBox2d.minX boundingBox + 0.5
-                        , minY = BoundingBox2d.minY boundingBox + 0.5
-                        , maxX = BoundingBox2d.maxX boundingBox - 0.5
-                        , maxY = BoundingBox2d.maxY boundingBox - 0.5
-                        }
-                    )
-                , Svg.text2d
-                    [ Svg.Attributes.textAnchor "end"
-                    , Svg.Attributes.alignmentBaseline "baseline"
-                    , Svg.Attributes.fontFamily "monospace"
-                    ]
-                    (Point2d.fromCoordinates ( maxX - 10, minY + 10 ))
-                    ("sweptAngle = EllipticalArc2d." ++ sweptAngleString model.sweptAngle)
+    Svg.render2d boundingBox <|
+        Interaction.container InteractionMsg
+            { target = Elsewhere
+            , renderBounds = boundingBox
+            }
+            [ ellipseSvg
+            , anchoredDirection
+            , directionTipHandle
+            , Svg.point2d [ whiteFill, blackStroke ] model.startPoint
+            , pointHandle StartPoint model.startPoint
+            , Svg.point2d [ whiteFill, blackStroke ] model.endPoint
+            , pointHandle EndPoint model.endPoint
+            , Svg.boundingBox2d
+                [ Svg.Attributes.stroke "rgb(238, 238, 238)"
+                , Svg.Attributes.rx "6"
+                , Svg.Attributes.ry "6"
+                , noFill
                 ]
-        , Html.div []
-            [ Html.h2 [] [ Html.text "Instructions" ]
-            , Html.ul []
-                [ Html.li [] [ Html.text "Drag start and end point" ]
-                , Html.li [] [ Html.text "Drag tip of X direction to change orientation" ]
-                , Html.li [] [ Html.text "Click dashed segments to switch to them" ]
-                , Html.li [] [ Html.text "Drag center point to move the whole ellipse" ]
-                , Html.li [] [ Html.text "Click either radial line to select it, then scroll to change that radius" ]
+                (BoundingBox2d.with
+                    { minX = BoundingBox2d.minX boundingBox + 0.5
+                    , minY = BoundingBox2d.minY boundingBox + 0.5
+                    , maxX = BoundingBox2d.maxX boundingBox - 0.5
+                    , maxY = BoundingBox2d.maxY boundingBox - 0.5
+                    }
+                )
+            , Svg.text2d
+                [ Svg.Attributes.textAnchor "end"
+                , Svg.Attributes.alignmentBaseline "baseline"
+                , Svg.Attributes.fontFamily "monospace"
                 ]
+                (Point2d.fromCoordinates ( maxX - 10, minY + 10 ))
+                ("sweptAngle = EllipticalArc2d." ++ sweptAngleString model.sweptAngle)
             ]
-        ]
 
 
 subscriptions : Model -> Sub Msg

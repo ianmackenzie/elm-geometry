@@ -1,6 +1,7 @@
 # opensolid/geometry [![Travis build Status](https://travis-ci.org/opensolid/geometry.svg?branch=master)](https://travis-ci.org/opensolid/geometry)
 
-_Note: if you're upgrading from 1.x, make sure to check out the [release notes](https://github.com/opensolid/geometry/releases/tag/2.0.0)!_
+_Note: Release notes for version 2.1 are [here](https://github.com/opensolid/geometry/releases/tag/2.1.0).
+If you're upgrading from 1.x, make sure to also check out the [release notes for 2.0](https://github.com/opensolid/geometry/releases/tag/2.0.0)._
 
 `opensolid/geometry` is an [Elm](http://elm-lang.org) package for working with
 2D and 3D geometry. It provides a wide variety of geometric data types such as
@@ -38,7 +39,7 @@ A wide variety of data types are supported:
     ![Frame3d](https://opensolid.github.io/images/geometry/icons/frame3d.svg)
     ![SketchPlane3d](https://opensolid.github.io/images/geometry/icons/sketchPlane3d.svg)
 
-  - `BoundingBox2d`, `BoundingBox3d`
+  - `BoundingBox2d`, `BoundingBox3d`, `Interval`
 
     ![BoundingBox2d](https://opensolid.github.io/images/geometry/icons/boundingBox2d.svg)
     ![BoundingBox3d](https://opensolid.github.io/images/geometry/icons/boundingBox3d.svg)
@@ -62,6 +63,11 @@ A wide variety of data types are supported:
     ![Circle3d](https://opensolid.github.io/images/geometry/icons/circle3d.svg)
     ![Arc2d](https://opensolid.github.io/images/geometry/icons/arc2d.svg)
     ![Arc3d](https://opensolid.github.io/images/geometry/icons/arc3d.svg)
+
+  - `Ellipse2d`, `EllipticalArc2d`
+
+    ![Ellipse2d](https://opensolid.github.io/images/geometry/icons/ellipse2d.svg)
+    ![EllipticalArc2d](https://opensolid.github.io/images/geometry/icons/ellipticalArc2d.svg)
 
   - `QuadraticSpline2d`, `QuadraticSpline3d`, `CubicSpline2d`, `CubicSpline3d`
 
@@ -180,16 +186,16 @@ elm package install opensolid/geometry
 in a command prompt inside your project directory or by adding
 
 ```json
-"opensolid/geometry": "2.0.0 <= v < 3.0.0"
+"opensolid/geometry": "2.1.0 <= v < 3.0.0"
 ```
 
 to the `dependencies` field in your project's `elm-package.json`.
 
 ## Documentation
 
-[Full API documentation](http://package.elm-lang.org/packages/opensolid/geometry/2.0.0)
+[Full API documentation](http://package.elm-lang.org/packages/opensolid/geometry/2.1.0)
 is available for each module. Most modules are associated with a particular data
-type (for example, the [`Point3d`](http://package.elm-lang.org/packages/opensolid/geometry/2.0.0/OpenSolid-Point3d)
+type (for example, the [`Point3d`](http://package.elm-lang.org/packages/opensolid/geometry/2.1.0/OpenSolid-Point3d)
 module contains functions for creating and manipulating `Point3d` values).
 
 ## Usage details
@@ -227,10 +233,8 @@ using OpenSolid, try:
   - Sending me (@ianmackenzie) a message on the [Elm Slack](http://elmlang.herokuapp.com/) -
     even if you don't have any particular questions right now, just come say
     hello!
+  - Posting to the [Elm Discourse](https://discourse.elm-lang.org/) forums
   - Posting to the [r/elm](https://reddit.com/r/elm) subreddit
-  - Posting to the [elm-discuss](https://groups.google.com/forum/#!forum/elm-discuss)
-    Google Group (somewhat less active than Slack and Reddit, but I still follow
-    it regularly if you prefer e-mail)
   - Or if you happen to be in the New York area, come on out to the
     [Elm NYC meetup](https://www.meetup.com/Elm-NYC/) =)
 

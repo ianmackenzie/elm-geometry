@@ -24,8 +24,11 @@ module OpenSolid.Geometry.Encode
         , cubicSpline3d
         , direction2d
         , direction3d
+        , ellipse2d
+        , ellipticalArc2d
         , frame2d
         , frame3d
+        , interval
         , lineSegment2d
         , lineSegment3d
         , plane3d
@@ -49,9 +52,9 @@ module OpenSolid.Geometry.Encode
 @docs vector2d, vector3d, direction2d, direction3d, point2d, point3d
 @docs axis2d, axis3d, plane3d, frame2d, frame3d, sketchPlane3d
 @docs lineSegment2d, lineSegment3d, triangle2d, triangle3d
-@docs boundingBox2d, boundingBox3d
+@docs interval, boundingBox2d, boundingBox3d
 @docs polyline2d, polyline3d, polygon2d
-@docs circle2d, circle3d, arc2d, arc3d
+@docs circle2d, circle3d, ellipse2d, arc2d, arc3d, ellipticalArc2d, sphere3d
 @docs quadraticSpline2d, quadraticSpline3d, cubicSpline2d, cubicSpline3d
 
 -}
@@ -69,9 +72,11 @@ import OpenSolid.CubicSpline2d as CubicSpline2d exposing (CubicSpline2d)
 import OpenSolid.CubicSpline3d as CubicSpline3d exposing (CubicSpline3d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
+import OpenSolid.Ellipse2d as Ellipse2d exposing (Ellipse2d)
+import OpenSolid.EllipticalArc2d as EllipticalArc2d exposing (EllipticalArc2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
-import OpenSolid.Geometry.Internal as Internal
+import OpenSolid.Interval as Interval exposing (Interval)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.LineSegment3d as LineSegment3d exposing (LineSegment3d)
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
@@ -268,6 +273,16 @@ triangle3d triangle =
     Encode.list [ point3d v1, point3d v2, point3d v3 ]
 
 
+{-| Encode an `Interval` as an object with `minValue` and `maxValue` fields.
+-}
+interval : Interval -> Value
+interval interval_ =
+    Encode.object
+        [ ( "minValue", Encode.float (Interval.minValue interval_) )
+        , ( "maxValue", Encode.float (Interval.maxValue interval_) )
+        ]
+
+
 {-| Encode a `BoundingBox2d` as an object with `minX`, `maxX`, `minY` and `maxY`
 fields.
 -}
@@ -331,11 +346,24 @@ circle2d circle =
 `radius` fields.
 -}
 circle3d : Circle3d -> Value
-circle3d (Internal.Circle3d properties) =
+circle3d circle =
     Encode.object
-        [ ( "centerPoint", point3d properties.centerPoint )
-        , ( "axialDirection", direction3d properties.axialDirection )
-        , ( "radius", Encode.float properties.radius )
+        [ ( "centerPoint", point3d (Circle3d.centerPoint circle) )
+        , ( "axialDirection", direction3d (Circle3d.axialDirection circle) )
+        , ( "radius", Encode.float (Circle3d.radius circle) )
+        ]
+
+
+{-| Encode an `Ellipse2d` as an object with `centerPoint`, `xDirection`,
+`xRadius` and `yRadius` fields.
+-}
+ellipse2d : Ellipse2d -> Value
+ellipse2d ellipse =
+    Encode.object
+        [ ( "centerPoint", point2d (Ellipse2d.centerPoint ellipse) )
+        , ( "xDirection", direction2d (Ellipse2d.xDirection ellipse) )
+        , ( "xRadius", Encode.float (Ellipse2d.xRadius ellipse) )
+        , ( "yRadius", Encode.float (Ellipse2d.yRadius ellipse) )
         ]
 
 
@@ -370,6 +398,21 @@ arc3d arc =
         [ ( "axis", axis3d (Arc3d.axis arc) )
         , ( "startPoint", point3d (Arc3d.startPoint arc) )
         , ( "sweptAngle", Encode.float (Arc3d.sweptAngle arc) )
+        ]
+
+
+{-| Encode an `EllipticalArc2d` as an object with `centerPoint`, `xDirection`,
+`xRadius`, `yRadius`, `startAngle` and `sweptAngle` fields.
+-}
+ellipticalArc2d : EllipticalArc2d -> Value
+ellipticalArc2d arc =
+    Encode.object
+        [ ( "centerPoint", point2d (EllipticalArc2d.centerPoint arc) )
+        , ( "xDirection", direction2d (EllipticalArc2d.xDirection arc) )
+        , ( "xRadius", Encode.float (EllipticalArc2d.xRadius arc) )
+        , ( "yRadius", Encode.float (EllipticalArc2d.yRadius arc) )
+        , ( "startAngle", Encode.float (EllipticalArc2d.startAngle arc) )
+        , ( "sweptAngle", Encode.float (EllipticalArc2d.sweptAngle arc) )
         ]
 
 

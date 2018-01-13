@@ -155,7 +155,7 @@ throughPointsFuzz =
                         volume =
                             abs (Vector3d.dotProduct v4 (Vector3d.crossProduct v2 v3))
                     in
-                    volume > 1.0e-6
+                    volume > 1
 
                 sphere =
                     Sphere3d.throughPoints ( p1, p2, p3, p4 )
@@ -164,21 +164,21 @@ throughPointsFuzz =
                     Point3d.distanceFrom point (Sphere3d.centerPoint sphere)
                         |> Expect.approximately (Sphere3d.radius sphere)
             in
-            case sphere of
-                Just sphere ->
-                    sphere
-                        |> Expect.all
-                            [ hasPointOnSurface p1
-                            , hasPointOnSurface p2
-                            , hasPointOnSurface p3
-                            , hasPointOnSurface p4
-                            ]
+            if isValidInput then
+                case sphere of
+                    Just sphere ->
+                        sphere
+                            |> Expect.all
+                                [ hasPointOnSurface p1
+                                , hasPointOnSurface p2
+                                , hasPointOnSurface p3
+                                , hasPointOnSurface p4
+                                ]
 
-                Nothing ->
-                    if isValidInput then
+                    Nothing ->
                         Expect.fail "throughPoints returned Nothing on valid input"
-                    else
-                        Expect.pass
+            else
+                Expect.pass
         )
 
 

@@ -2,6 +2,7 @@ module OpenSolid.Arc3d
     exposing
         ( Arc3d
         , around
+        , axialDirection
         , axis
         , centerPoint
         , derivative
@@ -11,6 +12,7 @@ module OpenSolid.Arc3d
         , on
         , placeIn
         , pointOn
+        , projectInto
         , radius
         , relativeTo
         , reverse
@@ -43,7 +45,7 @@ start point to the arc's end point). This module includes functionality for
 
 # Properties
 
-@docs axis, centerPoint, radius, startPoint, endPoint, sweptAngle
+@docs axialDirection, axis, centerPoint, radius, startPoint, endPoint, sweptAngle
 
 
 # Evaluation
@@ -58,7 +60,7 @@ start point to the arc's end point). This module includes functionality for
 
 # Transformations
 
-@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross
+@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross, projectInto
 
 
 # Coordinate conversions
@@ -69,7 +71,9 @@ start point to the arc's end point). This module includes functionality for
 
 import OpenSolid.Arc2d as Arc2d exposing (Arc2d)
 import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
+import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
+import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Frame3d as Frame3d exposing (Frame3d)
 import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Plane3d as Plane3d exposing (Plane3d)
@@ -205,6 +209,17 @@ throughPoints points =
                     )
                     |> Maybe.map (on sketchPlane)
             )
+
+
+{-| Get the axial direction of an arc.
+
+    Arc3d.axialDirection exampleArc
+    --> Direction3d.z
+
+-}
+axialDirection : Arc3d -> Direction3d
+axialDirection arc =
+    Axis3d.direction (axis arc)
 
 
 {-| Get the central axis of an arc. The origin point of the axis will be equal
@@ -644,6 +659,122 @@ mirrorAcross plane =
             { startPoint = mirrorPoint (startPoint arc)
             , sweptAngle = -(sweptAngle arc)
             }
+
+
+{-| Project an arc into a sketch plane.
+
+    axis : Axis3d
+    axis =
+        Axis3d.with
+            { originPoint =
+                Point3d.fromCoordinates ( 1, 2, 3 )
+            , direction =
+                Direction3d.with
+                    { azimuth = 0
+                    , elevation = degrees 45
+                    }
+            }
+
+    arc : Arc3d
+    arc =
+        Arc3d.around axis
+            { startPoint =
+                Point3d.fromCoordinates ( 1, 4, 3 )
+            , sweptAngle = degrees 45
+            }
+
+    Arc3d.projectInto SketchPlane3d.xy arc
+    --> EllipticalArc2d.with
+    -->     { centerPoint =
+    -->         Point2d.fromCoordinates ( 1, 2 )
+    -->     , xDirection = Direction2d.y
+    -->     , xRadius = 2
+    -->     , yRadius = 1.4142
+    -->     , startAngle = degrees 0
+    -->     , sweptAngle = degrees 45
+    -->     }
+
+-}
+projectInto : SketchPlane3d -> Arc3d -> Internal.EllipticalArc2d
+projectInto sketchPlane arc =
+    let
+        candidateXDirection2d =
+            case Direction3d.projectInto sketchPlane (axialDirection arc) of
+                Just yDirection2d ->
+                    yDirection2d |> Direction2d.rotateClockwise
+
+                Nothing ->
+                    Direction2d.x
+
+        candidateXDirection3d =
+            Direction3d.on sketchPlane candidateXDirection2d
+
+        radialVector =
+            Vector3d.from (centerPoint arc) (startPoint arc)
+
+        ( xDirection2d, xDirection3d ) =
+            if Vector3d.componentIn candidateXDirection3d radialVector >= 0 then
+                ( candidateXDirection2d, candidateXDirection3d )
+            else
+                ( Direction2d.flip candidateXDirection2d
+                , Direction3d.flip candidateXDirection3d
+                )
+
+        arcRadius =
+            radius arc
+
+        normalComponent =
+            axialDirection arc
+                |> Direction3d.componentIn
+                    (SketchPlane3d.normalDirection sketchPlane)
+
+        yRatio =
+            abs normalComponent
+
+        ellipticalStartAngle =
+            let
+                xVector =
+                    Direction3d.toVector xDirection3d
+
+                crossProduct =
+                    Vector3d.crossProduct xVector radialVector
+
+                y =
+                    crossProduct
+                        |> Vector3d.componentIn (axialDirection arc)
+
+                x =
+                    Vector3d.dotProduct radialVector xVector
+
+                arcStartAngle =
+                    atan2 y x
+            in
+            if normalComponent >= 0 then
+                arcStartAngle
+            else
+                -arcStartAngle
+
+        ellipticalSweptAngle =
+            if normalComponent >= 0 then
+                sweptAngle arc
+            else
+                -(sweptAngle arc)
+    in
+    Internal.EllipticalArc2d
+        { ellipse =
+            Internal.Ellipse2d
+                { axes =
+                    Frame2d.with
+                        { originPoint =
+                            centerPoint arc |> Point3d.projectInto sketchPlane
+                        , xDirection = xDirection2d
+                        }
+                , xRadius = arcRadius
+                , yRadius = arcRadius * yRatio
+                }
+        , startAngle = ellipticalStartAngle
+        , sweptAngle = ellipticalSweptAngle
+        }
 
 
 {-| Take an arc defined in global coordinates, and return it expressed in local

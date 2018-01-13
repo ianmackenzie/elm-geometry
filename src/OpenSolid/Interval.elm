@@ -129,6 +129,13 @@ given intervals. If the intervals do not intersect, returns `Nothing`.
     Interval.intersection firstInterval thirdInterval
     --> Nothing
 
+If the two intervals just touch, a singleton interval will be returned:
+
+    Interval.intersection
+        (Interval.with { minValue = 1, maxValue = 2 })
+        (Interval.with { minValue = 2, maxValue = 3 })
+    --> Just (Interval.with { minValue = 2, maxValue = 2})
+
 -}
 intersection : Interval -> Interval -> Maybe Interval
 intersection firstInterval secondInterval =
