@@ -303,7 +303,9 @@ polyline3d =
 
 polygon2d : Fuzzer Polygon2d
 polygon2d =
-    Fuzz.map Polygon2d.fromVertices (Fuzz.list point2d)
+    Fuzz.map2 Polygon2d.withHoles
+        (Fuzz.list point2d)
+        (Fuzz.list (Fuzz.list point2d))
 
 
 circle2d : Fuzzer Circle2d

@@ -577,7 +577,16 @@ polygon2d =
 
 polygon2dWithin : Float -> Polygon2d -> Polygon2d -> Expectation
 polygon2dWithin tolerance =
-    expect (by (listOf (Point2d.equalWithin tolerance)) Polygon2d.vertices)
+    let
+        equalLoops =
+            listOf (Point2d.equalWithin tolerance)
+    in
+    expect
+        (allOf
+            [ by equalLoops Polygon2d.outerLoop
+            , by (listOf equalLoops) Polygon2d.innerLoops
+            ]
+        )
 
 
 circle2d : Circle2d -> Circle2d -> Expectation

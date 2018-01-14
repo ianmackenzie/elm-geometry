@@ -144,7 +144,10 @@ type Polyline3d
 
 
 type Polygon2d
-    = Polygon2d (List Point2d)
+    = Polygon2d
+        { outerLoop : List Point2d
+        , innerLoops : List (List Point2d)
+        }
 
 
 type Circle2d
