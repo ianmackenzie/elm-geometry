@@ -1,10 +1,10 @@
-module OpenSolid.Bootstrap.BoundingBox2d exposing (with)
+module OpenSolid.Bootstrap.BoundingBox2d exposing (fromExtrema)
 
 import OpenSolid.Geometry.Internal exposing (..)
 
 
-with : { minX : Float, maxX : Float, minY : Float, maxY : Float } -> BoundingBox2d
-with ({ minX, maxX, minY, maxY } as extrema) =
+fromExtrema : { minX : Float, maxX : Float, minY : Float, maxY : Float } -> BoundingBox2d
+fromExtrema ({ minX, maxX, minY, maxY } as extrema) =
     if minX <= maxX && minY <= maxY then
         BoundingBox2d extrema
     else

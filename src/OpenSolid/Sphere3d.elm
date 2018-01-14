@@ -404,7 +404,7 @@ placeIn frame sphere =
 {-| Get the minimal bounding box containing a given sphere.
 
     Sphere3d.boundingBox exampleSphere
-    --> BoundingBox3d.with
+    --> BoundingBox3d.fromExtrema
     -->     { minX = -2
     -->     , maxX = 4
     -->     , minY = -1
@@ -423,7 +423,7 @@ boundingBox sphere =
         ( cx, cy, cz ) =
             Point3d.coordinates (centerPoint sphere)
     in
-    BoundingBox3d.with
+    BoundingBox3d.fromExtrema
         { minX = cx - r
         , maxX = cx + r
         , minY = cy - r

@@ -917,7 +917,7 @@ projectInto sketchPlane point =
         Point3d.fromCoordinates ( -1, 5, -2 )
 
     Point3d.hull point1 point2
-    --> BoundingBox3d.with
+    --> BoundingBox3d.fromExtrema
     -->     { minX = -1
     -->     , maxX = 2
     -->     , minY = 1
@@ -936,7 +936,7 @@ hull firstPoint secondPoint =
         ( x2, y2, z2 ) =
             coordinates secondPoint
     in
-    BoundingBox3d.with
+    BoundingBox3d.fromExtrema
         { minX = min x1 x2
         , maxX = max x1 x2
         , minY = min y1 y2
@@ -957,7 +957,7 @@ list is empty, returns `Nothing`.
 
     Point3d.hullOf points
     --> Just
-    -->     (BoundingBox3d.with
+    -->     (BoundingBox3d.fromExtrema
     -->         { minX = -1
     -->         , maxX = 6
     -->         , minY = 1

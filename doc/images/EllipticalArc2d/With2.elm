@@ -53,7 +53,7 @@ main =
             10
 
         bounds =
-            BoundingBox2d.with
+            BoundingBox2d.fromExtrema
                 { minX = minX - padding
                 , maxX = maxX + padding
                 , minY = minY - padding

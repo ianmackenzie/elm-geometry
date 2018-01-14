@@ -17,6 +17,7 @@ module OpenSolid.BoundingBox3d
         , contains
         , dimensions
         , extrema
+        , fromExtrema
         , hull
         , hullOf
         , intersection
@@ -37,7 +38,6 @@ module OpenSolid.BoundingBox3d
         , separatedBy
         , singleton
         , translateBy
-        , with
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/boundingBox3d.svg" alt="BoundingBox3d" width="160">
@@ -63,7 +63,7 @@ box of an object than the object itself, such as:
 
 # Constructors
 
-@docs with, singleton, hull, intersection, hullOf
+@docs fromExtrema, singleton, hull, intersection, hullOf
 
 
 # Properties
@@ -96,7 +96,7 @@ type alias BoundingBox3d =
 {-| Construct a bounding box from its minimum and maximum X, Y and Z values:
 
     exampleBox =
-        BoundingBox3d.with
+        BoundingBox3d.fromExtrema
             { minX = -2
             , maxX = 2
             , minY = 2
@@ -110,9 +110,9 @@ if <code>minX&nbsp;>&nbsp;maxX</code>), then they will be swapped so that the
 resulting bounding box is valid.
 
 -}
-with : { minX : Float, maxX : Float, minY : Float, maxY : Float, minZ : Float, maxZ : Float } -> BoundingBox3d
-with =
-    Bootstrap.with
+fromExtrema : { minX : Float, maxX : Float, minY : Float, maxY : Float, minZ : Float, maxZ : Float } -> BoundingBox3d
+fromExtrema =
+    Bootstrap.fromExtrema
 
 
 {-| Construct a zero-width bounding box containing a single point.
@@ -121,7 +121,7 @@ with =
         Point3d.fromCoordinates ( 2, 1, 3 )
 
     BoundingBox3d.singleton point
-    --> BoundingBox3d.with
+    --> BoundingBox3d.fromExtrema
     -->     { minX = 2
     -->     , maxX = 2
     -->     , minY = 1
@@ -137,7 +137,7 @@ singleton point =
         ( x, y, z ) =
             Point3d.coordinates point
     in
-    with
+    fromExtrema
         { minX = x
         , maxX = x
         , minY = y
@@ -156,7 +156,7 @@ the list is empty, returns `Nothing`.
 
     BoundingBox3d.hullOf [ exampleBox, singletonBox ]
     --> Just
-    -->     (BoundingBox3d.with
+    -->     (BoundingBox3d.fromExtrema
     -->         { minX = -2,
     -->         , maxX = 2
     -->         , minY = 1
@@ -399,7 +399,7 @@ is equivalent to
 but is more efficient.
 
     firstBox =
-        BoundingBox3d.with
+        BoundingBox3d.fromExtrema
             { minX = 0
             , maxX = 3
             , minY = 0
@@ -409,7 +409,7 @@ but is more efficient.
             }
 
     secondBox =
-        BoundingBox3d.with
+        BoundingBox3d.fromExtrema
             { minX = 0
             , maxX = 3
             , minY = 1
@@ -419,7 +419,7 @@ but is more efficient.
             }
 
     thirdBox =
-        BoundingBox3d.with
+        BoundingBox3d.fromExtrema
             { minX = 0
             , maxX = 3
             , minY = 4
@@ -716,7 +716,7 @@ separatedBy order tolerance =
 (is a subset of it).
 
     outerBox =
-        BoundingBox3d.with
+        BoundingBox3d.fromExtrema
             { minX = 0
             , maxX = 10
             , minY = 0
@@ -726,7 +726,7 @@ separatedBy order tolerance =
             }
 
     innerBox =
-        BoundingBox3d.with
+        BoundingBox3d.fromExtrema
             { minX = 1
             , maxX = 5
             , minY = 3
@@ -736,7 +736,7 @@ separatedBy order tolerance =
             }
 
     overlappingBox =
-        BoundingBox3d.with
+        BoundingBox3d.fromExtrema
             { minX = 1
             , maxX = 5
             , minY = 3
@@ -762,7 +762,7 @@ isContainedIn other boundingBox =
 {-| Build a bounding box that contains both given bounding boxes.
 
     firstBox =
-        BoundingBox3d.with
+        BoundingBox3d.fromExtrema
             { minX = 1
             , maxX = 4
             , minY = 2
@@ -772,7 +772,7 @@ isContainedIn other boundingBox =
             }
 
     secondBox =
-        BoundingBox3d.with
+        BoundingBox3d.fromExtrema
             { minX = -2
             , maxX = 2
             , minY = 4
@@ -782,7 +782,7 @@ isContainedIn other boundingBox =
             }
 
     BoundingBox3d.hull firstBox secondBox
-    --> BoundingBox3d.with
+    --> BoundingBox3d.fromExtrema
     -->     { minX = -2
     -->     , maxX = 4
     -->     , minY = 2
@@ -794,7 +794,7 @@ isContainedIn other boundingBox =
 -}
 hull : BoundingBox3d -> BoundingBox3d -> BoundingBox3d
 hull firstBox secondBox =
-    with
+    fromExtrema
         { minX = min (minX firstBox) (minX secondBox)
         , maxX = max (maxX firstBox) (maxX secondBox)
         , minY = min (minY firstBox) (minY secondBox)
@@ -808,7 +808,7 @@ hull firstBox secondBox =
 given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
 
     firstBox =
-        BoundingBox3d.with
+        BoundingBox3d.fromExtrema
             { minX = 1
             , maxX = 4
             , minY = 2
@@ -818,7 +818,7 @@ given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
             }
 
     secondBox =
-        BoundingBox3d.with
+        BoundingBox3d.fromExtrema
             { minX = 2
             , maxX = 5
             , minY = 1
@@ -828,7 +828,7 @@ given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
             }
 
     thirdBox =
-        BoundingBox3d.with
+        BoundingBox3d.fromExtrema
             { minX = 1
             , maxX = 4
             , minY = 4
@@ -839,7 +839,7 @@ given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
 
     BoundingBox3d.intersection firstBox secondBox
     --> Just
-    -->     (BoundingBox3d.with
+    -->     (BoundingBox3d.fromExtrema
     -->         { minX = 2
     -->         , maxX = 4
     -->         , minY = 2
@@ -857,7 +857,7 @@ intersection : BoundingBox3d -> BoundingBox3d -> Maybe BoundingBox3d
 intersection firstBox secondBox =
     if intersects firstBox secondBox then
         Just
-            (with
+            (fromExtrema
                 { minX = max (minX firstBox) (minX secondBox)
                 , maxX = min (maxX firstBox) (maxX secondBox)
                 , minY = max (minY firstBox) (minY secondBox)
@@ -876,7 +876,7 @@ intersection firstBox secondBox =
         Point3d.fromCoordinates ( 2, 2, 2 )
 
     BoundingBox3d.scaleAbout point 2 exampleBox
-    --> BoundingBox3d.with
+    --> BoundingBox3d.fromExtrema
     -->     { minX = -6
     -->     , maxX = 2
     -->     , minY = 2
@@ -896,7 +896,7 @@ scaleAbout point scale boundingBox =
             Point3d.coordinates point
     in
     if scale >= 0 then
-        with
+        fromExtrema
             { minX = x0 + scale * (minX - x0)
             , maxX = x0 + scale * (maxX - x0)
             , minY = y0 + scale * (minY - y0)
@@ -905,7 +905,7 @@ scaleAbout point scale boundingBox =
             , maxZ = z0 + scale * (maxZ - z0)
             }
     else
-        with
+        fromExtrema
             { minX = x0 + scale * (maxX - x0)
             , maxX = x0 + scale * (minX - x0)
             , minY = y0 + scale * (maxY - y0)
@@ -921,7 +921,7 @@ scaleAbout point scale boundingBox =
         Vector3d.fromComponents ( 2, -3, 1 )
 
     BoundingBox3d.translateBy displacement exampleBox
-    --> BoundingBox3d.with
+    --> BoundingBox3d.fromExtrema
     -->     { minX = 0
     -->     , maxX = 4
     -->     , minY = -1
@@ -940,7 +940,7 @@ translateBy displacement boundingBox =
         ( dx, dy, dz ) =
             Vector3d.components displacement
     in
-    with
+    fromExtrema
         { minX = minX + dx
         , maxX = maxX + dx
         , minY = minY + dy

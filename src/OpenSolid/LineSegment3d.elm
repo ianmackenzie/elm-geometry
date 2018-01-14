@@ -514,7 +514,7 @@ projectInto sketchPlane lineSegment =
 {-| Get the minimal bounding box containing a line segment.
 
     LineSegment3d.boundingBox exampleLineSegment
-    --> BoundingBox3d.with
+    --> BoundingBox3d.fromExtrema
     -->     { minX = 1
     -->     , maxX = 4
     -->     , minY = 2

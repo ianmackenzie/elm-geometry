@@ -569,7 +569,7 @@ placeIn frame =
 {-| Get the minimal bounding box containing a given line segment.
 
     LineSegment2d.boundingBox exampleLineSegment
-    --> BoundingBox2d.with
+    --> BoundingBox2d.fromExtrema
     -->     { minX = 1
     -->     , maxX = 3
     -->     , minY = 2

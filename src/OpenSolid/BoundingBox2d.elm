@@ -17,6 +17,7 @@ module OpenSolid.BoundingBox2d
         , contains
         , dimensions
         , extrema
+        , fromExtrema
         , hull
         , hullOf
         , intersection
@@ -34,7 +35,6 @@ module OpenSolid.BoundingBox2d
         , separatedBy
         , singleton
         , translateBy
-        , with
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/boundingBox2d.svg" alt="BoundingBox2d" width="160">
@@ -61,7 +61,7 @@ box of an object than the object itself, such as:
 
 # Constructors
 
-@docs with, singleton, hull, intersection, hullOf
+@docs fromExtrema, singleton, hull, intersection, hullOf
 
 
 # Properties
@@ -94,7 +94,7 @@ type alias BoundingBox2d =
 {-| Construct a bounding box from its minimum and maximum X and Y values:
 
     exampleBox =
-        BoundingBox2d.with
+        BoundingBox2d.fromExtrema
             { minX = 3
             , maxX = 8
             , minY = 2
@@ -106,9 +106,9 @@ if <code>minX&nbsp;>&nbsp;maxX</code>), then they will be swapped so that the
 resulting bounding box is valid.
 
 -}
-with : { minX : Float, maxX : Float, minY : Float, maxY : Float } -> BoundingBox2d
-with =
-    Bootstrap.with
+fromExtrema : { minX : Float, maxX : Float, minY : Float, maxY : Float } -> BoundingBox2d
+fromExtrema =
+    Bootstrap.fromExtrema
 
 
 {-| Construct a zero-width bounding box containing a single point.
@@ -117,7 +117,7 @@ with =
         Point2d.fromCoordinates ( 2, 3 )
 
     BoundingBox2d.singleton point
-    --> BoundingBox2d.with
+    --> BoundingBox2d.fromExtrema
     -->     { minX = 2
     -->     , maxX = 2
     -->     , minY = 3
@@ -131,7 +131,7 @@ singleton point =
         ( x, y ) =
             Point2d.coordinates point
     in
-    with { minX = x, maxX = x, minY = y, maxY = y }
+    fromExtrema { minX = x, maxX = x, minY = y, maxY = y }
 
 
 {-| Construct a bounding box containing all bounding boxes in the given list. If
@@ -143,7 +143,7 @@ the list is empty, returns `Nothing`.
 
     BoundingBox2d.hullOf [ exampleBox, singletonBox ]
     --> Just
-    -->     (BoundingBox2d.with
+    -->     (BoundingBox2d.fromExtrema
     -->         { minX = 1,
     -->         , maxX = 8
     -->         , minY = 2
@@ -338,7 +338,7 @@ is equivalent to
 but is more efficient.
 
     firstBox =
-        BoundingBox2d.with
+        BoundingBox2d.fromExtrema
             { minX = 0
             , maxX = 3
             , minY = 0
@@ -346,7 +346,7 @@ but is more efficient.
             }
 
     secondBox =
-        BoundingBox2d.with
+        BoundingBox2d.fromExtrema
             { minX = 0
             , maxX = 3
             , minY = 1
@@ -354,7 +354,7 @@ but is more efficient.
             }
 
     thirdBox =
-        BoundingBox2d.with
+        BoundingBox2d.fromExtrema
             { minX = 0
             , maxX = 3
             , minY = 4
@@ -635,7 +635,7 @@ separatedBy order tolerance =
 (is a subset of it).
 
     outerBox =
-        BoundingBox2d.with
+        BoundingBox2d.fromExtrema
             { minX = 0
             , maxX = 10
             , minY = 0
@@ -643,7 +643,7 @@ separatedBy order tolerance =
             }
 
     innerBox =
-        BoundingBox2d.with
+        BoundingBox2d.fromExtrema
             { minX = 1
             , maxX = 5
             , minY = 3
@@ -651,7 +651,7 @@ separatedBy order tolerance =
             }
 
     overlappingBox =
-        BoundingBox2d.with
+        BoundingBox2d.fromExtrema
             { minX = 1
             , maxX = 5
             , minY = 3
@@ -674,7 +674,7 @@ isContainedIn other boundingBox =
 {-| Build a bounding box that contains both given bounding boxes.
 
     firstBox =
-        BoundingBox2d.with
+        BoundingBox2d.fromExtrema
             { minX = 1
             , maxX = 4
             , minY = 2
@@ -682,7 +682,7 @@ isContainedIn other boundingBox =
             }
 
     secondBox =
-        BoundingBox2d.with
+        BoundingBox2d.fromExtrema
             { minX = -2
             , maxX = 2
             , minY = 4
@@ -690,7 +690,7 @@ isContainedIn other boundingBox =
             }
 
     BoundingBox2d.hull firstBox secondBox
-    --> BoundingBox2d.with
+    --> BoundingBox2d.fromExtrema
     -->     { minX = -2
     -->     , maxX = 4
     -->     , minY = 2
@@ -700,7 +700,7 @@ isContainedIn other boundingBox =
 -}
 hull : BoundingBox2d -> BoundingBox2d -> BoundingBox2d
 hull firstBox secondBox =
-    with
+    fromExtrema
         { minX = min (minX firstBox) (minX secondBox)
         , maxX = max (maxX firstBox) (maxX secondBox)
         , minY = min (minY firstBox) (minY secondBox)
@@ -712,7 +712,7 @@ hull firstBox secondBox =
 given bounding boxes. If the given boxes do not intersect, returns `Nothing`.
 
     firstBox =
-        BoundingBox2d.with
+        BoundingBox2d.fromExtrema
             { minX = 1
             , maxX = 4
             , minY = 2
@@ -720,7 +720,7 @@ given bounding boxes. If the given boxes do not intersect, returns `Nothing`.
             }
 
     secondBox =
-        BoundingBox2d.with
+        BoundingBox2d.fromExtrema
             { minX = 2
             , maxX = 5
             , minY = 1
@@ -728,7 +728,7 @@ given bounding boxes. If the given boxes do not intersect, returns `Nothing`.
             }
 
     thirdBox =
-        BoundingBox2d.with
+        BoundingBox2d.fromExtrema
             { minX = 1
             , maxX = 4
             , minY = 4
@@ -737,7 +737,7 @@ given bounding boxes. If the given boxes do not intersect, returns `Nothing`.
 
     BoundingBox2d.intersection firstBox secondBox
     --> Just
-    -->     (BoundingBox2d.with
+    -->     (BoundingBox2d.fromExtrema
     -->         { minX = 2
     -->         , maxX = 4
     -->         , minY = 2
@@ -753,7 +753,7 @@ to have an intersection, even though that intersection will have zero area (at
 least one of its dimensions will be zero):
 
     firstBox =
-        BoundingBox2d.with
+        BoundingBox2d.fromExtrema
             { minX = 0
             , maxX = 1
             , minY = 0
@@ -761,7 +761,7 @@ least one of its dimensions will be zero):
             }
 
     secondBox =
-        BoundingBox2d.with
+        BoundingBox2d.fromExtrema
             { minX = 1
             , maxX = 2
             , minY = 1
@@ -770,7 +770,7 @@ least one of its dimensions will be zero):
 
     BoundingBox2d.intersection firstBox secondBox
     --> Just
-    -->     (BoundingBox2d.with
+    -->     (BoundingBox2d.fromExtrema
     -->         { minX = 1
     -->         , maxX = 1
     -->         , minY = 1
@@ -783,7 +783,7 @@ intersection : BoundingBox2d -> BoundingBox2d -> Maybe BoundingBox2d
 intersection firstBox secondBox =
     if intersects firstBox secondBox then
         Just
-            (with
+            (fromExtrema
                 { minX = max (minX firstBox) (minX secondBox)
                 , maxX = min (maxX firstBox) (maxX secondBox)
                 , minY = max (minY firstBox) (minY secondBox)
@@ -800,7 +800,7 @@ intersection firstBox secondBox =
         Point2d.fromCoordinates ( 4, 4 )
 
     BoundingBox2d.scaleAbout point 2 exampleBox
-    --> BoundingBox2d.with
+    --> BoundingBox2d.fromExtrema
     -->     { minX = 2
     -->     , maxX = 12
     -->     , minY = 0
@@ -818,14 +818,14 @@ scaleAbout point scale boundingBox =
             Point2d.coordinates point
     in
     if scale >= 0 then
-        with
+        fromExtrema
             { minX = x0 + scale * (minX - x0)
             , maxX = x0 + scale * (maxX - x0)
             , minY = y0 + scale * (minY - y0)
             , maxY = y0 + scale * (maxY - y0)
             }
     else
-        with
+        fromExtrema
             { minX = x0 + scale * (maxX - x0)
             , maxX = x0 + scale * (minX - x0)
             , minY = y0 + scale * (maxY - y0)
@@ -839,7 +839,7 @@ scaleAbout point scale boundingBox =
         Vector2d.fromComponents ( 2, -3 )
 
     BoundingBox2d.translateBy displacement exampleBox
-    --> BoundingBox2d.with
+    --> BoundingBox2d.fromExtrema
     -->     { minX = 5
     -->     , maxX = 10
     -->     , minY = -1
@@ -856,7 +856,7 @@ translateBy displacement boundingBox =
         ( dx, dy ) =
             Vector2d.components displacement
     in
-    with
+    fromExtrema
         { minX = minX + dx
         , maxX = maxX + dx
         , minY = minY + dy

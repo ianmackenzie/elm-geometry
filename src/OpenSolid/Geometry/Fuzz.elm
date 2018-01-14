@@ -265,7 +265,7 @@ boundingBox2d : Fuzzer BoundingBox2d
 boundingBox2d =
     let
         boundingBox xInterval yInterval =
-            BoundingBox2d.with
+            BoundingBox2d.fromExtrema
                 { minX = Interval.minValue xInterval
                 , maxX = Interval.maxValue xInterval
                 , minY = Interval.minValue yInterval
@@ -279,7 +279,7 @@ boundingBox3d : Fuzzer BoundingBox3d
 boundingBox3d =
     let
         boundingBox xInterval yInterval zInterval =
-            BoundingBox3d.with
+            BoundingBox3d.fromExtrema
                 { minX = Interval.minValue xInterval
                 , maxX = Interval.maxValue xInterval
                 , minY = Interval.minValue yInterval

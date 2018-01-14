@@ -257,7 +257,7 @@ separationIsCorrectForHorizontallyDisplacedBoxes =
         (\_ ->
             let
                 firstBox =
-                    BoundingBox2d.with
+                    BoundingBox2d.fromExtrema
                         { minX = 0
                         , minY = 0
                         , maxX = 1
@@ -265,7 +265,7 @@ separationIsCorrectForHorizontallyDisplacedBoxes =
                         }
 
                 secondBox =
-                    BoundingBox2d.with
+                    BoundingBox2d.fromExtrema
                         { minX = 2
                         , minY = 0
                         , maxX = 3
@@ -303,7 +303,7 @@ separationIsCorrectForVerticallyDisplacedBoxes =
         (\_ ->
             let
                 firstBox =
-                    BoundingBox2d.with
+                    BoundingBox2d.fromExtrema
                         { minX = 0
                         , minY = 0
                         , maxX = 1
@@ -311,7 +311,7 @@ separationIsCorrectForVerticallyDisplacedBoxes =
                         }
 
                 secondBox =
-                    BoundingBox2d.with
+                    BoundingBox2d.fromExtrema
                         { minX = 0
                         , minY = 2
                         , maxX = 1
@@ -349,7 +349,7 @@ separationIsCorrectForDiagonallyDisplacedBoxes =
         (\_ ->
             let
                 firstBox =
-                    BoundingBox2d.with
+                    BoundingBox2d.fromExtrema
                         { minX = 0
                         , minY = 0
                         , maxX = 1
@@ -357,7 +357,7 @@ separationIsCorrectForDiagonallyDisplacedBoxes =
                         }
 
                 secondBox =
-                    BoundingBox2d.with
+                    BoundingBox2d.fromExtrema
                         { minX = 4
                         , minY = 5
                         , maxX = 5

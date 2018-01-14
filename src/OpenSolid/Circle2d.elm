@@ -447,7 +447,7 @@ placeIn frame =
 {-| Get the minimal bounding box containing a given circle.
 
     Circle2d.boundingBox exampleCircle
-    --> BoundingBox2d.with
+    --> BoundingBox2d.fromExtrema
     -->     { minX = -2
     -->     , maxX = 4
     -->     , minY = -1
@@ -464,7 +464,7 @@ boundingBox circle =
         r =
             radius circle
     in
-    BoundingBox2d.with
+    BoundingBox2d.fromExtrema
         { minX = x - r
         , maxX = x + r
         , minY = y - r
