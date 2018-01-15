@@ -13,13 +13,15 @@
 module OpenSolid.BoundingBox2d
     exposing
         ( BoundingBox2d
+        , aggregate
         , centroid
+        , containing
         , contains
         , dimensions
+        , enclosure
         , extrema
         , fromExtrema
         , hull
-        , hullOf
         , intersection
         , intersects
         , isContainedIn
@@ -61,7 +63,7 @@ box of an object than the object itself, such as:
 
 # Constructors
 
-@docs fromExtrema, singleton, hull, intersection, hullOf
+@docs fromExtrema, singleton, containing, hull, intersection, aggregate, enclosure
 
 
 # Properties
@@ -80,9 +82,8 @@ box of an object than the object itself, such as:
 
 -}
 
-import OpenSolid.Bootstrap.BoundingBox2d as Bootstrap
-import OpenSolid.Bootstrap.Point2d as Point2d
-import OpenSolid.Geometry.Internal as Internal exposing (Point2d)
+import OpenSolid.Geometry.Internal as Internal
+import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
@@ -107,8 +108,16 @@ resulting bounding box is valid.
 
 -}
 fromExtrema : { minX : Float, maxX : Float, minY : Float, maxY : Float } -> BoundingBox2d
-fromExtrema =
-    Bootstrap.fromExtrema
+fromExtrema ({ minX, maxX, minY, maxY } as extrema) =
+    if minX <= maxX && minY <= maxY then
+        Internal.BoundingBox2d extrema
+    else
+        Internal.BoundingBox2d
+            { minX = min minX maxX
+            , maxX = max minX maxX
+            , minY = min minY maxY
+            , maxY = max minY maxY
+            }
 
 
 {-| Construct a zero-width bounding box containing a single point.
@@ -134,6 +143,36 @@ singleton point =
     fromExtrema { minX = x, maxX = x, minY = y, maxY = y }
 
 
+{-| Construct a bounding box containing both of the given points.
+
+    BoundingBox2d.containing
+        (Point2d.fromCoordinates ( 2, 3 ))
+        (Point2d.fromCoordinates ( -1, 5 ))
+    --> BoundingBox2d.fromExtrema
+    -->     { minX = -1
+    -->     , maxX = 2
+    -->     , minY = 3
+    -->     , maxY = 5
+    -->     }
+
+-}
+containing : Point2d -> Point2d -> BoundingBox2d
+containing firstPoint secondPoint =
+    let
+        ( x1, y1 ) =
+            Point2d.coordinates firstPoint
+
+        ( x2, y2 ) =
+            Point2d.coordinates secondPoint
+    in
+    fromExtrema
+        { minX = min x1 x2
+        , maxX = max x1 x2
+        , minY = min y1 y2
+        , maxY = max y1 y2
+        }
+
+
 {-| Construct a bounding box containing all bounding boxes in the given list. If
 the list is empty, returns `Nothing`.
 
@@ -141,7 +180,7 @@ the list is empty, returns `Nothing`.
         BoundingBox2d.singleton
             (Point2d.fromCoordinates ( 1, 3 ))
 
-    BoundingBox2d.hullOf [ exampleBox, singletonBox ]
+    BoundingBox2d.aggregate [ exampleBox, singletonBox ]
     --> Just
     -->     (BoundingBox2d.fromExtrema
     -->         { minX = 1,
@@ -151,24 +190,49 @@ the list is empty, returns `Nothing`.
     -->         }
     -->     )
 
-    BoundingBox2d.hullOf [ exampleBox ]
+    BoundingBox2d.aggregate [ exampleBox ]
     --> Just exampleBox
 
-    BoundingBox2d.hullOf []
+    BoundingBox2d.aggregate []
     --> Nothing
 
 If you have exactly two bounding boxes, you can use [`BoundingBox2d.hull`](#hull)
 instead (which returns a `BoundingBox2d` instead of a `Maybe BoundingBox2d`).
 
 -}
-hullOf : List BoundingBox2d -> Maybe BoundingBox2d
-hullOf boundingBoxes =
+aggregate : List BoundingBox2d -> Maybe BoundingBox2d
+aggregate boundingBoxes =
     case boundingBoxes of
         first :: rest ->
             Just (List.foldl hull first rest)
 
         [] ->
             Nothing
+
+
+{-| Construct a bounding box containing all points in the given list. If the
+list is empty, returns `Nothing`.
+
+    BoundingBox2d.enclosure
+        [ Point2d.fromCoordinates ( 2, 3 )
+        , Point2d.fromCoordinates ( -1, 5 )
+        , Point2d.fromCoordinates ( 6, 4 )
+        ]
+    --> Just <|
+    -->     BoundingBox2d.fromExtrema
+    -->         { minX = -1
+    -->         , maxX = 6
+    -->         , minY = 3
+    -->         , maxY = 5
+    -->         }
+
+    BoundingBox2d.enclosure []
+    --> Nothing
+
+-}
+enclosure : List Point2d -> Maybe BoundingBox2d
+enclosure points =
+    aggregate (List.map singleton points)
 
 
 {-| Get the minimum and maximum X and Y values of a bounding box in a single

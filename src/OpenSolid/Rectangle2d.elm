@@ -274,5 +274,22 @@ boundingBox rectangle =
     let
         ( p1, p2, p3, p4 ) =
             vertices rectangle
+
+        ( x1, y1, z1 ) =
+            Point2d.coordinates p1
+
+        ( x2, y2, z2 ) =
+            Point2d.coordinates p2
+
+        ( x3, y3, z3 ) =
+            Point2d.coordinates p3
+
+        ( x4, y4, z4 ) =
+            Point2d.coordinates p4
     in
-    BoundingBox2d.hull (Point2d.hull p1 p2) (Point2d.hull p3 p4)
+    BoundingBox2d.fromExtrema
+        { minX = min (min x1 x2) (min x3 x4)
+        , maxX = max (max x1 x2) (max x3 x4)
+        , minY = min (min y1 y2) (min y3 y4)
+        , maxY = max (max y1 y2) (max y3 y4)
+        }

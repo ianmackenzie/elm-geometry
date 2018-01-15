@@ -13,13 +13,15 @@
 module OpenSolid.BoundingBox3d
     exposing
         ( BoundingBox3d
+        , aggregate
         , centroid
+        , containing
         , contains
         , dimensions
+        , enclosure
         , extrema
         , fromExtrema
         , hull
-        , hullOf
         , intersection
         , intersects
         , isContainedIn
@@ -63,7 +65,7 @@ box of an object than the object itself, such as:
 
 # Constructors
 
-@docs fromExtrema, singleton, hull, intersection, hullOf
+@docs fromExtrema, singleton, containing, hull, intersection, aggregate, enclosure
 
 
 # Properties
@@ -82,9 +84,8 @@ box of an object than the object itself, such as:
 
 -}
 
-import OpenSolid.Bootstrap.BoundingBox3d as Bootstrap
-import OpenSolid.Bootstrap.Point3d as Point3d
-import OpenSolid.Geometry.Internal as Internal exposing (Point3d)
+import OpenSolid.Geometry.Internal as Internal
+import OpenSolid.Point3d as Point3d exposing (Point3d)
 import OpenSolid.Vector3d as Vector3d exposing (Vector3d)
 
 
@@ -111,8 +112,18 @@ resulting bounding box is valid.
 
 -}
 fromExtrema : { minX : Float, maxX : Float, minY : Float, maxY : Float, minZ : Float, maxZ : Float } -> BoundingBox3d
-fromExtrema =
-    Bootstrap.fromExtrema
+fromExtrema ({ minX, maxX, minY, maxY, minZ, maxZ } as extrema) =
+    if minX <= maxX && minY <= maxY && minZ <= maxZ then
+        Internal.BoundingBox3d extrema
+    else
+        Internal.BoundingBox3d
+            { minX = min minX maxX
+            , maxX = max minX maxX
+            , minY = min minY maxY
+            , maxY = max minY maxY
+            , minZ = min minZ maxZ
+            , maxZ = max minZ maxZ
+            }
 
 
 {-| Construct a zero-width bounding box containing a single point.
@@ -147,6 +158,40 @@ singleton point =
         }
 
 
+{-| Construct a bounding box containing both of the given points.
+
+    BoundingBox3d.containing
+        (Point3d.fromCoordinates ( 2, 1, 3 ))
+        (Point3d.fromCoordinates ( -1, 5, -2 ))
+    --> BoundingBox3d.fromExtrema
+    -->     { minX = -1
+    -->     , maxX = 2
+    -->     , minY = 1
+    -->     , maxY = 5
+    -->     , minZ = -2
+    -->     , maxZ = 3
+    -->     }
+
+-}
+containing : Point3d -> Point3d -> BoundingBox3d
+containing firstPoint secondPoint =
+    let
+        ( x1, y1, z1 ) =
+            Point3d.coordinates firstPoint
+
+        ( x2, y2, z2 ) =
+            Point3d.coordinates secondPoint
+    in
+    fromExtrema
+        { minX = min x1 x2
+        , maxX = max x1 x2
+        , minY = min y1 y2
+        , maxY = max y1 y2
+        , minZ = min z1 z2
+        , maxZ = max z1 z2
+        }
+
+
 {-| Construct a bounding box containing all bounding boxes in the given list. If
 the list is empty, returns `Nothing`.
 
@@ -154,7 +199,7 @@ the list is empty, returns `Nothing`.
         BoundingBox3d.singleton
             (Point3d.fromCoordinates ( 2, 1, 0 ))
 
-    BoundingBox3d.hullOf [ exampleBox, singletonBox ]
+    BoundingBox3d.aggregate [ exampleBox, singletonBox ]
     --> Just
     -->     (BoundingBox3d.fromExtrema
     -->         { minX = -2,
@@ -166,24 +211,51 @@ the list is empty, returns `Nothing`.
     -->         }
     -->     )
 
-    BoundingBox3d.hullOf [ exampleBox ]
+    BoundingBox3d.aggregate [ exampleBox ]
     --> Just exampleBox
 
-    BoundingBox3d.hullOf []
+    BoundingBox3d.aggregate []
     --> Nothing
 
 If you have exactly two bounding boxes, you can use [`BoundingBox3d.hull`](#hull)
 instead (which returns a `BoundingBox3d` instead of a `Maybe BoundingBox3d`).
 
 -}
-hullOf : List BoundingBox3d -> Maybe BoundingBox3d
-hullOf boundingBoxes =
+aggregate : List BoundingBox3d -> Maybe BoundingBox3d
+aggregate boundingBoxes =
     case boundingBoxes of
         first :: rest ->
             Just (List.foldl hull first rest)
 
         [] ->
             Nothing
+
+
+{-| Construct a bounding box containing all points in the given list. If the
+list is empty, returns `Nothing`.
+
+    BoundingBox3d.enclosure
+        [ Point3d.fromCoordinates ( 2, 1, 3 )
+        , Point3d.fromCoordinates ( -1, 5, -2 )
+        , Point3d.fromCoordinates ( 6, 4, 2 )
+        ]
+    --> Just <|
+    -->     BoundingBox3d.fromExtrema
+    -->         { minX = -1
+    -->         , maxX = 6
+    -->         , minY = 1
+    -->         , maxY = 5
+    -->         , minZ = -2
+    -->         , maxZ = 3
+    -->         }
+
+    BoundingBox3d.enclosure []
+    --> Nothing
+
+-}
+enclosure : List Point3d -> Maybe BoundingBox3d
+enclosure points =
+    aggregate (List.map singleton points)
 
 
 {-| Get the minimum and maximum X, Y and Z values of a bounding box in a single

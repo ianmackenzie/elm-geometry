@@ -21,8 +21,6 @@ module OpenSolid.Point3d
         , distanceFromAxis
         , equalWithin
         , fromCoordinates
-        , hull
-        , hullOf
         , in_
         , interpolateFrom
         , midpoint
@@ -102,18 +100,12 @@ different coordinate frames.
 
 @docs relativeTo, placeIn, projectInto
 
-
-# Bounding box construction
-
-@docs hull, hullOf
-
 -}
 
 import OpenSolid.Bootstrap.Axis3d as Axis3d
 import OpenSolid.Bootstrap.Frame3d as Frame3d
 import OpenSolid.Bootstrap.Plane3d as Plane3d
 import OpenSolid.Bootstrap.SketchPlane3d as SketchPlane3d
-import OpenSolid.BoundingBox3d as BoundingBox3d exposing (BoundingBox3d)
 import OpenSolid.Direction3d as Direction3d exposing (Direction3d)
 import OpenSolid.Geometry.Internal as Internal exposing (Axis3d, Frame3d, Plane3d, SketchPlane3d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
@@ -906,71 +898,3 @@ projectInto sketchPlane point =
         ( dx * ux + dy * uy + dz * uz
         , dx * vx + dy * vy + dz * vz
         )
-
-
-{-| Construct a bounding box containing both of the given points.
-
-    point1 =
-        Point3d.fromCoordinates ( 2, 1, 3 )
-
-    point2 =
-        Point3d.fromCoordinates ( -1, 5, -2 )
-
-    Point3d.hull point1 point2
-    --> BoundingBox3d.fromExtrema
-    -->     { minX = -1
-    -->     , maxX = 2
-    -->     , minY = 1
-    -->     , maxY = 5
-    -->     , minZ = -2
-    -->     , maxZ = 3
-    -->     }
-
--}
-hull : Point3d -> Point3d -> BoundingBox3d
-hull firstPoint secondPoint =
-    let
-        ( x1, y1, z1 ) =
-            coordinates firstPoint
-
-        ( x2, y2, z2 ) =
-            coordinates secondPoint
-    in
-    BoundingBox3d.fromExtrema
-        { minX = min x1 x2
-        , maxX = max x1 x2
-        , minY = min y1 y2
-        , maxY = max y1 y2
-        , minZ = min z1 z2
-        , maxZ = max z1 z2
-        }
-
-
-{-| Construct a bounding box containing all points in the given list. If the
-list is empty, returns `Nothing`.
-
-    points =
-        [ Point3d.fromCoordinates ( 2, 1, 3 )
-        , Point3d.fromCoordinates ( -1, 5, -2 )
-        , Point3d.fromCoordinates ( 6, 4, 2 )
-        ]
-
-    Point3d.hullOf points
-    --> Just
-    -->     (BoundingBox3d.fromExtrema
-    -->         { minX = -1
-    -->         , maxX = 6
-    -->         , minY = 1
-    -->         , maxY = 5
-    -->         , minZ = -2
-    -->         , maxZ = 3
-    -->         }
-    -->     )
-
-    Point3d.hullOf []
-    --> Nothing
-
--}
-hullOf : List Point3d -> Maybe BoundingBox3d
-hullOf points =
-    BoundingBox3d.hullOf (List.map BoundingBox3d.singleton points)

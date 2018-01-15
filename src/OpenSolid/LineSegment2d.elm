@@ -583,4 +583,4 @@ boundingBox lineSegment =
         ( p1, p2 ) =
             endpoints lineSegment
     in
-    Point2d.hull p1 p2
+    BoundingBox2d.containing p1 p2

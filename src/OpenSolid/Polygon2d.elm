@@ -363,4 +363,4 @@ if the polygon has no vertices.
 -}
 boundingBox : Polygon2d -> Maybe BoundingBox2d
 boundingBox polygon =
-    Point2d.hullOf (vertices polygon)
+    BoundingBox2d.enclosure (vertices polygon)

@@ -21,8 +21,6 @@ module OpenSolid.Point2d
         , equalWithin
         , fromCoordinates
         , fromPolarCoordinates
-        , hull
-        , hullOf
         , in_
         , interpolateFrom
         , midpoint
@@ -97,16 +95,10 @@ different coordinate frames.
 
 @docs relativeTo, placeIn
 
-
-# Bounding box construction
-
-@docs hull, hullOf
-
 -}
 
 import OpenSolid.Bootstrap.Axis2d as Axis2d
 import OpenSolid.Bootstrap.Frame2d as Frame2d
-import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
 import OpenSolid.Geometry.Internal as Internal exposing (Axis2d, Frame2d)
 import OpenSolid.Scalar as Scalar
@@ -741,65 +733,3 @@ placeIn frame point =
     Vector2d.fromComponents (coordinates point)
         |> Vector2d.placeIn frame
         |> addTo (Frame2d.originPoint frame)
-
-
-{-| Construct a bounding box containing both of the given points.
-
-    point1 =
-        Point2d.fromCoordinates ( 2, 3 )
-
-    point2 =
-        Point2d.fromCoordinates ( -1, 5 )
-
-    Point2d.hull point1 point2
-    --> BoundingBox2d.fromExtrema
-    -->     { minX = -1
-    -->     , maxX = 2
-    -->     , minY = 3
-    -->     , maxY = 5
-    -->     }
-
--}
-hull : Point2d -> Point2d -> BoundingBox2d
-hull firstPoint secondPoint =
-    let
-        ( x1, y1 ) =
-            coordinates firstPoint
-
-        ( x2, y2 ) =
-            coordinates secondPoint
-    in
-    BoundingBox2d.fromExtrema
-        { minX = min x1 x2
-        , maxX = max x1 x2
-        , minY = min y1 y2
-        , maxY = max y1 y2
-        }
-
-
-{-| Construct a bounding box containing all points in the given list. If the
-list is empty, returns `Nothing`.
-
-    points =
-        [ Point2d.fromCoordinates ( 2, 3 )
-        , Point2d.fromCoordinates ( -1, 5 )
-        , Point2d.fromCoordinates ( 6, 4 )
-        ]
-
-    Point2d.hullOf points
-    --> Just
-    -->     (BoundingBox2d.fromExtrema
-    -->         { minX = -1
-    -->         , maxX = 6
-    -->         , minY = 3
-    -->         , maxY = 5
-    -->         }
-    -->     )
-
-    Point2d.hullOf []
-    --> Nothing
-
--}
-hullOf : List Point2d -> Maybe BoundingBox2d
-hullOf points =
-    BoundingBox2d.hullOf (List.map BoundingBox2d.singleton points)

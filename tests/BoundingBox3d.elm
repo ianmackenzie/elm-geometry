@@ -1,6 +1,8 @@
 module BoundingBox3d
     exposing
         ( boxContainsOwnCentroid
+        , enclosureConsistentWithContaining
+        , enclosureIsOrderIndependent
         , hullContainsInputs
         , intersectionConsistentWithIntersects
         , intersectionConsistentWithOverlappingBy
@@ -15,6 +17,7 @@ module BoundingBox3d
         )
 
 import Expect
+import Fuzz
 import Generic
 import OpenSolid.BoundingBox3d as BoundingBox3d
 import OpenSolid.Geometry.Decode as Decode
@@ -405,4 +408,27 @@ separationIsCorrectForDiagonallyDisplacedBoxes =
                     , Expect.false "Expected separation to not be less than 0"
                         << BoundingBox3d.separatedBy LT 0 secondBox
                     ]
+        )
+
+
+enclosureConsistentWithContaining : Test
+enclosureConsistentWithContaining =
+    Test.fuzz2
+        Fuzz.point3d
+        Fuzz.point3d
+        "'enclosure' is consistent with 'containing'"
+        (\firstPoint secondPoint ->
+            BoundingBox3d.enclosure [ firstPoint, secondPoint ]
+                |> Expect.equal
+                    (Just (BoundingBox3d.containing firstPoint secondPoint))
+        )
+
+
+enclosureIsOrderIndependent : Test
+enclosureIsOrderIndependent =
+    Test.fuzz (Fuzz.list Fuzz.point3d)
+        "'enclosure' does not depend on input order"
+        (\points ->
+            BoundingBox3d.enclosure (List.reverse points)
+                |> Expect.equal (BoundingBox3d.enclosure points)
         )
