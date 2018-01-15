@@ -10,7 +10,8 @@ module OpenSolid.Rectangle2d
         , contains
         , dimensions
         , edges
-        , in_
+        , fromExtrema
+        , fromExtremaIn
         , mirrorAcross
         , placeIn
         , relativeTo
@@ -18,7 +19,6 @@ module OpenSolid.Rectangle2d
         , scaleAbout
         , translateBy
         , vertices
-        , with
         )
 
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
@@ -40,8 +40,8 @@ centeredOn axes dimensions =
     Internal.Rectangle2d { axes = axes, dimensions = dimensions }
 
 
-in_ : Frame2d -> { minX : Float, maxX : Float, minY : Float, maxY : Float } -> Rectangle2d
-in_ frame { minX, maxX, minY, maxY } =
+fromExtremaIn : Frame2d -> { minX : Float, maxX : Float, minY : Float, maxY : Float } -> Rectangle2d
+fromExtremaIn localFrame { minX, maxX, minY, maxY } =
     let
         width =
             maxX - minX
@@ -56,10 +56,10 @@ in_ frame { minX, maxX, minY, maxY } =
             minY + 0.5 * height
 
         centerPoint =
-            Point2d.in_ frame ( midX, midY )
+            Point2d.fromCoordinatesIn localFrame ( midX, midY )
     in
     Internal.Rectangle2d
-        { axes = Frame2d.moveTo centerPoint frame
+        { axes = Frame2d.moveTo centerPoint localFrame
         , dimensions = ( width, height )
         }
 
@@ -82,8 +82,8 @@ containing firstPoint secondPoint =
         }
 
 
-with : { minX : Float, maxX : Float, minY : Float, maxY : Float } -> Rectangle2d
-with { minX, maxX, minY, maxY } =
+fromExtrema : { minX : Float, maxX : Float, minY : Float, maxY : Float } -> Rectangle2d
+fromExtrema { minX, maxX, minY, maxY } =
     let
         width =
             maxX - minX
@@ -133,7 +133,7 @@ area rectangle =
 vertices : Rectangle2d -> ( Point2d, Point2d, Point2d, Point2d )
 vertices rectangle =
     let
-        frame =
+        localFrame =
             axes rectangle
 
         ( width, height ) =
@@ -145,24 +145,24 @@ vertices rectangle =
         halfHeight =
             height / 2
     in
-    ( Point2d.in_ frame ( -halfWidth, -halfHeight )
-    , Point2d.in_ frame ( halfWidth, -halfHeight )
-    , Point2d.in_ frame ( halfWidth, halfHeight )
-    , Point2d.in_ frame ( -halfWidth, halfHeight )
+    ( Point2d.fromCoordinatesIn localFrame ( -halfWidth, -halfHeight )
+    , Point2d.fromCoordinatesIn localFrame ( halfWidth, -halfHeight )
+    , Point2d.fromCoordinatesIn localFrame ( halfWidth, halfHeight )
+    , Point2d.fromCoordinatesIn localFrame ( -halfWidth, halfHeight )
     )
 
 
 contains : Point2d -> Rectangle2d -> Bool
 contains point rectangle =
     let
-        frame =
+        localFrame =
             axes rectangle
 
         ( width, height ) =
             dimensions rectangle
 
         ( x, y ) =
-            Point2d.coordinates (Point2d.relativeTo frame point)
+            Point2d.coordinates (Point2d.relativeTo localFrame point)
     in
     abs x <= width / 2 && abs y <= height / 2
 
