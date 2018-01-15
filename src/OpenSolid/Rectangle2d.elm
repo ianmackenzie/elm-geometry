@@ -275,16 +275,16 @@ boundingBox rectangle =
         ( p1, p2, p3, p4 ) =
             vertices rectangle
 
-        ( x1, y1, z1 ) =
+        ( x1, y1 ) =
             Point2d.coordinates p1
 
-        ( x2, y2, z2 ) =
+        ( x2, y2 ) =
             Point2d.coordinates p2
 
-        ( x3, y3, z3 ) =
+        ( x3, y3 ) =
             Point2d.coordinates p3
 
-        ( x4, y4, z4 ) =
+        ( x4, y4 ) =
             Point2d.coordinates p4
     in
     BoundingBox2d.fromExtrema
