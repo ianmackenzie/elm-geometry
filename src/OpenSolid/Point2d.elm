@@ -20,8 +20,8 @@ module OpenSolid.Point2d
         , distanceFrom
         , equalWithin
         , fromCoordinates
+        , fromCoordinatesIn
         , fromPolarCoordinates
-        , in_
         , interpolateFrom
         , midpoint
         , mirrorAcross
@@ -65,7 +65,7 @@ like you can add two vectors.
 
 # Constructors
 
-@docs fromCoordinates, fromPolarCoordinates, midpoint, interpolateFrom, along, in_, circumcenter
+@docs fromCoordinates, fromPolarCoordinates, midpoint, interpolateFrom, along, fromCoordinatesIn, circumcenter
 
 
 # Properties
@@ -253,21 +253,21 @@ along axis distance =
     rotatedFrame =
         Frame2d.xy |> Frame2d.rotateBy (degrees 45)
 
-    Point2d.in_ rotatedFrame ( 2, 0 )
+    Point2d.fromCoordinatesIn rotatedFrame ( 2, 0 )
     --> Point2d.fromCoordinates ( 1.4142, 1.4142 )
 
 This is shorthand for using `Point2d.placeIn`;
 
-    Point2d.in_ frame coordinates
+    Point2d.fromCoordinatesIn frame localCoordinates
 
 is equivalent to
 
-    Point2d.placeIn frame
-        (Point2d.fromCoordinates coordinates)
+    Point2d.fromCoordinates localCoordinates
+        |> Point2d.placeIn frame
 
 -}
-in_ : Frame2d -> ( Float, Float ) -> Point2d
-in_ frame coordinates =
+fromCoordinatesIn : Frame2d -> ( Float, Float ) -> Point2d
+fromCoordinatesIn frame coordinates =
     placeIn frame (fromCoordinates coordinates)
 
 

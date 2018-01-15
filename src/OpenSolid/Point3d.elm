@@ -21,7 +21,7 @@ module OpenSolid.Point3d
         , distanceFromAxis
         , equalWithin
         , fromCoordinates
-        , in_
+        , fromCoordinatesIn
         , interpolateFrom
         , midpoint
         , mirrorAcross
@@ -70,7 +70,7 @@ like you can add two vectors.
 
 # Constructors
 
-@docs fromCoordinates, midpoint, interpolateFrom, along, on, in_, circumcenter
+@docs fromCoordinates, midpoint, interpolateFrom, along, on, fromCoordinatesIn, circumcenter
 
 
 # Properties
@@ -298,21 +298,21 @@ on sketchPlane point2d =
         Frame3d.atPoint
             (Point3d.fromCoordinates ( 1, 1, 1 ))
 
-    Point3d.in_ frame ( 1, 2, 3 )
+    Point3d.fromCoordinatesIn frame ( 1, 2, 3 )
     --> Point3d.fromCoordinates ( 2, 3, 4 )
 
 This is shorthand for using `Point3d.placeIn`;
 
-    Point3d.in_ frame coordinates
+    Point3d.fromCoordinatesIn frame localCoordinates
 
 is equivalent to
 
-    Point3d.placeIn frame
-        (Point3d.fromCoordinates coordinates)
+    Point3d.fromCoordinates localCoordinates
+        |> Point3d.placeIn frame
 
 -}
-in_ : Frame3d -> ( Float, Float, Float ) -> Point3d
-in_ frame coordinates =
+fromCoordinatesIn : Frame3d -> ( Float, Float, Float ) -> Point3d
+fromCoordinatesIn frame coordinates =
     placeIn frame (fromCoordinates coordinates)
 
 
