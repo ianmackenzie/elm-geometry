@@ -12,6 +12,7 @@ import OpenSolid.Geometry.Encode as Encode
 import OpenSolid.Geometry.Expect as Expect
 import OpenSolid.Geometry.Fuzz as Fuzz
 import OpenSolid.Interval as Interval exposing (Interval)
+import OpenSolid.Scalar as Scalar
 import Test exposing (Test)
 
 
@@ -31,7 +32,7 @@ sinWorksProperly =
         (\interval t ->
             let
                 valueInInterval =
-                    Interval.interpolate t interval
+                    Interval.interpolate interval t
             in
             sin valueInInterval |> Expect.valueIn (Interval.sin interval)
         )
@@ -46,7 +47,7 @@ cosWorksProperly =
         (\interval t ->
             let
                 valueInInterval =
-                    Interval.interpolate t interval
+                    Interval.interpolate interval t
             in
             cos valueInInterval |> Expect.valueIn (Interval.cos interval)
         )

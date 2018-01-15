@@ -76,7 +76,6 @@ import OpenSolid.Polyline2d as Polyline2d exposing (Polyline2d)
 import OpenSolid.Polyline3d as Polyline3d exposing (Polyline3d)
 import OpenSolid.QuadraticSpline2d as QuadraticSpline2d exposing (QuadraticSpline2d)
 import OpenSolid.QuadraticSpline3d as QuadraticSpline3d exposing (QuadraticSpline3d)
-import OpenSolid.Scalar as Scalar
 import OpenSolid.SketchPlane3d as SketchPlane3d exposing (SketchPlane3d)
 import OpenSolid.Sphere3d as Sphere3d exposing (Sphere3d)
 import OpenSolid.Triangle2d as Triangle2d exposing (Triangle2d)
@@ -97,7 +96,7 @@ positiveScalar =
 
 interval : Fuzzer Interval
 interval =
-    Fuzz.map2 Scalar.hull scalar scalar
+    Fuzz.map2 Interval.from scalar scalar
 
 
 vector2d : Fuzzer Vector2d

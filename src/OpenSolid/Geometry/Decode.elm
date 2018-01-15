@@ -317,10 +317,7 @@ triangle3d =
 -}
 interval : Decoder Interval
 interval =
-    Decode.map2
-        (\minValue maxValue ->
-            Interval.with { minValue = minValue, maxValue = maxValue }
-        )
+    Decode.map2 Interval.from
         (Decode.field "minValue" Decode.float)
         (Decode.field "maxValue" Decode.float)
 
