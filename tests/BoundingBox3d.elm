@@ -1,8 +1,8 @@
 module BoundingBox3d
     exposing
         ( boxContainsOwnCentroid
-        , enclosureConsistentWithContaining
-        , enclosureIsOrderIndependent
+        , containingPointsConsistentWithFromCorners
+        , containingPointsIsOrderIndependent
         , hullContainsInputs
         , intersectionConsistentWithIntersects
         , intersectionConsistentWithOverlappingBy
@@ -411,14 +411,14 @@ separationIsCorrectForDiagonallyDisplacedBoxes =
         )
 
 
-enclosureConsistentWithContaining : Test
-enclosureConsistentWithContaining =
+containingPointsConsistentWithFromCorners : Test
+containingPointsConsistentWithFromCorners =
     Test.fuzz2
         Fuzz.point3d
         Fuzz.point3d
-        "'enclosure' is consistent with 'containing'"
+        "'containingPoints' is consistent with 'fromCorners'"
         (\firstPoint secondPoint ->
-            BoundingBox3d.enclosure [ firstPoint, secondPoint ]
+            BoundingBox3d.containingPoints [ firstPoint, secondPoint ]
                 |> Expect.equal
                     (Just <|
                         BoundingBox3d.fromCorners ( firstPoint, secondPoint )
@@ -426,11 +426,11 @@ enclosureConsistentWithContaining =
         )
 
 
-enclosureIsOrderIndependent : Test
-enclosureIsOrderIndependent =
+containingPointsIsOrderIndependent : Test
+containingPointsIsOrderIndependent =
     Test.fuzz (Fuzz.list Fuzz.point3d)
-        "'enclosure' does not depend on input order"
+        "'containingPoints' does not depend on input order"
         (\points ->
-            BoundingBox3d.enclosure (List.reverse points)
-                |> Expect.equal (BoundingBox3d.enclosure points)
+            BoundingBox3d.containingPoints (List.reverse points)
+                |> Expect.equal (BoundingBox3d.containingPoints points)
         )

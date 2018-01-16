@@ -310,4 +310,4 @@ if the polyline has no vertices.
 -}
 boundingBox : Polyline2d -> Maybe BoundingBox2d
 boundingBox polyline =
-    BoundingBox2d.enclosure (vertices polyline)
+    BoundingBox2d.containingPoints (vertices polyline)

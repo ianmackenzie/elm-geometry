@@ -15,9 +15,9 @@ module OpenSolid.BoundingBox2d
         ( BoundingBox2d
         , aggregate
         , centroid
+        , containingPoints
         , contains
         , dimensions
-        , enclosure
         , extrema
         , fromCorners
         , fromExtrema
@@ -63,7 +63,7 @@ box of an object than the object itself, such as:
 
 # Constructors
 
-@docs fromExtrema, singleton, fromCorners, hull, intersection, aggregate, enclosure
+@docs fromExtrema, singleton, fromCorners, hull, intersection, aggregate, containingPoints
 
 
 # Properties
@@ -216,7 +216,7 @@ aggregate boundingBoxes =
 {-| Construct a bounding box containing all points in the given list. If the
 list is empty, returns `Nothing`.
 
-    BoundingBox2d.enclosure
+    BoundingBox2d.containingPoints
         [ Point2d.fromCoordinates ( 2, 3 )
         , Point2d.fromCoordinates ( -1, 5 )
         , Point2d.fromCoordinates ( 6, 4 )
@@ -229,12 +229,12 @@ list is empty, returns `Nothing`.
     -->         , maxY = 5
     -->         }
 
-    BoundingBox2d.enclosure []
+    BoundingBox2d.containingPoints []
     --> Nothing
 
 -}
-enclosure : List Point2d -> Maybe BoundingBox2d
-enclosure points =
+containingPoints : List Point2d -> Maybe BoundingBox2d
+containingPoints points =
     aggregate (List.map singleton points)
 
 
