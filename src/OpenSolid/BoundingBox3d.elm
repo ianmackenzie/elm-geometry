@@ -15,11 +15,11 @@ module OpenSolid.BoundingBox3d
         ( BoundingBox3d
         , aggregate
         , centroid
-        , containing
         , contains
         , dimensions
         , enclosure
         , extrema
+        , fromCorners
         , fromExtrema
         , hull
         , intersection
@@ -65,7 +65,7 @@ box of an object than the object itself, such as:
 
 # Constructors
 
-@docs fromExtrema, singleton, containing, hull, intersection, aggregate, enclosure
+@docs fromExtrema, singleton, fromCorners, hull, intersection, aggregate, enclosure
 
 
 # Properties
@@ -158,11 +158,14 @@ singleton point =
         }
 
 
-{-| Construct a bounding box containing both of the given points.
+{-| Construct a bounding box with the two given points as two of its corners.
+The points can be given in any order and don't have to represent the 'primary'
+diagonal of the bounding box.
 
-    BoundingBox3d.containing
-        (Point3d.fromCoordinates ( 2, 1, 3 ))
-        (Point3d.fromCoordinates ( -1, 5, -2 ))
+    BoundingBox3d.fromCorners
+        ( Point3d.fromCoordinates ( 2, 1, 3 )
+        , Point3d.fromCoordinates ( -1, 5, -2 )
+        )
     --> BoundingBox3d.fromExtrema
     -->     { minX = -1
     -->     , maxX = 2
@@ -173,8 +176,8 @@ singleton point =
     -->     }
 
 -}
-containing : Point3d -> Point3d -> BoundingBox3d
-containing firstPoint secondPoint =
+fromCorners : ( Point3d, Point3d ) -> BoundingBox3d
+fromCorners ( firstPoint, secondPoint ) =
     let
         ( x1, y1, z1 ) =
             Point3d.coordinates firstPoint

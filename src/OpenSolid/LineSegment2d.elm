@@ -579,8 +579,4 @@ placeIn frame =
 -}
 boundingBox : LineSegment2d -> BoundingBox2d
 boundingBox lineSegment =
-    let
-        ( p1, p2 ) =
-            endpoints lineSegment
-    in
-    BoundingBox2d.containing p1 p2
+    BoundingBox2d.fromCorners (endpoints lineSegment)

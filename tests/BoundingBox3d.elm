@@ -420,7 +420,9 @@ enclosureConsistentWithContaining =
         (\firstPoint secondPoint ->
             BoundingBox3d.enclosure [ firstPoint, secondPoint ]
                 |> Expect.equal
-                    (Just (BoundingBox3d.containing firstPoint secondPoint))
+                    (Just <|
+                        BoundingBox3d.fromCorners ( firstPoint, secondPoint )
+                    )
         )
 
 

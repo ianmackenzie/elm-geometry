@@ -15,11 +15,11 @@ module OpenSolid.BoundingBox2d
         ( BoundingBox2d
         , aggregate
         , centroid
-        , containing
         , contains
         , dimensions
         , enclosure
         , extrema
+        , fromCorners
         , fromExtrema
         , hull
         , intersection
@@ -63,7 +63,7 @@ box of an object than the object itself, such as:
 
 # Constructors
 
-@docs fromExtrema, singleton, containing, hull, intersection, aggregate, enclosure
+@docs fromExtrema, singleton, fromCorners, hull, intersection, aggregate, enclosure
 
 
 # Properties
@@ -143,11 +143,14 @@ singleton point =
     fromExtrema { minX = x, maxX = x, minY = y, maxY = y }
 
 
-{-| Construct a bounding box containing both of the given points.
+{-| Construct a bounding box with the two given points as two of its corners.
+The points can be given in any order and don't have to represent the 'primary'
+diagonal of the bounding box.
 
-    BoundingBox2d.containing
-        (Point2d.fromCoordinates ( 2, 3 ))
-        (Point2d.fromCoordinates ( -1, 5 ))
+    BoundingBox2d.fromCorners
+        ( Point2d.fromCoordinates ( 2, 3 )
+        , Point2d.fromCoordinates ( -1, 5 )
+        )
     --> BoundingBox2d.fromExtrema
     -->     { minX = -1
     -->     , maxX = 2
@@ -156,8 +159,8 @@ singleton point =
     -->     }
 
 -}
-containing : Point2d -> Point2d -> BoundingBox2d
-containing firstPoint secondPoint =
+fromCorners : ( Point2d, Point2d ) -> BoundingBox2d
+fromCorners ( firstPoint, secondPoint ) =
     let
         ( x1, y1 ) =
             Point2d.coordinates firstPoint
