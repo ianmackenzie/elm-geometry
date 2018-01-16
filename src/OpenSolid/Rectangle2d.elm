@@ -6,10 +6,10 @@ module OpenSolid.Rectangle2d
         , boundingBox
         , centerPoint
         , centeredOn
-        , containing
         , contains
         , dimensions
         , edges
+        , fromCorners
         , fromExtrema
         , fromExtremaIn
         , mirrorAcross
@@ -64,8 +64,8 @@ fromExtremaIn localFrame { minX, maxX, minY, maxY } =
         }
 
 
-containing : Point2d -> Point2d -> Rectangle2d
-containing firstPoint secondPoint =
+fromCorners : ( Point2d, Point2d ) -> Rectangle2d
+fromCorners ( firstPoint, secondPoint ) =
     let
         centerPoint =
             Point2d.midpoint firstPoint secondPoint
