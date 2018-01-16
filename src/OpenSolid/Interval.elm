@@ -2,9 +2,9 @@ module OpenSolid.Interval
     exposing
         ( Interval
         , aggregate
+        , containingValues
         , contains
         , cos
-        , enclosure
         , endpoints
         , from
         , fromEndpoints
@@ -28,7 +28,7 @@ module OpenSolid.Interval
 
 # Constructors
 
-@docs singleton, fromEndpoints, from, enclosure, aggregate, hull, intersection
+@docs singleton, fromEndpoints, from, containingValues, aggregate, hull, intersection
 
 
 # Properties
@@ -122,18 +122,18 @@ from firstValue secondValue =
 {-| Construct an interval containing all values in the given list. If the list
 is empty, returns `Nothing`.
 
-    Interval.enclosure [ 2, 1, 3 ]
+    Interval.containingValues [ 2, 1, 3 ]
     --> Just (Interval.from 1 3)
 
-    Interval.enclosure [ -3 ]
+    Interval.containingValues [ -3 ]
     --> Just (Interval.singleton -3)
 
-    Interval.enclosure []
+    Interval.containingValues []
     --> Nothing
 
 -}
-enclosure : List Float -> Maybe Interval
-enclosure values =
+containingValues : List Float -> Maybe Interval
+containingValues values =
     Maybe.map2 from (List.minimum values) (List.maximum values)
 
 
