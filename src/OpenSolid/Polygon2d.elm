@@ -28,6 +28,7 @@ module OpenSolid.Polygon2d
         , scaleAbout
         , translateBy
         , vertices
+        , fromConvexHull
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/polygon2d.svg" alt="Polygon2d" width="160">
@@ -45,7 +46,7 @@ as
 
 # Constructors
 
-@docs fromVertices
+@docs fromVertices, fromConvexHull
 
 
 # Properties
@@ -69,7 +70,7 @@ Transforming a polygon is equivalent to transforming each of its vertices.
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
-import OpenSolid.Geometry.Internal as Internal
+import OpenSolid.Geometry.Internal as Internal exposing (Vector3d)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Triangle2d as Triangle2d exposing (Triangle2d)
@@ -98,6 +99,58 @@ vertex (you do not have to close the polygon explicitly).
 fromVertices : List Point2d -> Polygon2d
 fromVertices =
     Internal.Polygon2d
+
+
+clockwise : Vector2d -> Vector2d -> Vector2d -> Bool
+clockwise o a b =
+    Vector2d.crossProduct (Vector2d.difference a o) (Vector2d.difference b o) <= 0
+
+
+xThenY : Point2d -> Point2d -> Order
+xThenY a b =
+    compare (Point2d.coordinates a) (Point2d.coordinates b)
+
+
+chainHelp : List Vector2d -> List Vector2d -> List Vector2d
+chainHelp acc list =
+    case ( acc, list ) of
+        ( r1 :: r2 :: rs, x :: xs ) ->
+            if clockwise r2 r1 x then
+                chainHelp (r2 :: rs) (x :: xs)
+            else
+                chainHelp (x :: acc) xs
+
+        ( _, x :: xs ) ->
+            chainHelp (x :: acc) xs
+
+        ( _, [] ) ->
+            acc
+                |> List.tail
+                |> Maybe.withDefault []
+
+
+chain : List Vector2d -> List Vector2d
+chain =
+    chainHelp []
+
+
+{-| Computes the [convex hull](https://en.wikipedia.org/wiki/Convex_hull) of a list of points. This is an O(n log n) operation.
+-}
+fromConvexHull : List Point2d -> Polygon2d
+fromConvexHull points =
+    let
+        sorted =
+            List.sortWith xThenY points |> List.map (Point2d.coordinates >> Vector2d.fromComponents)
+
+        lower =
+            chain sorted
+
+        upper =
+            chain (List.reverse sorted)
+    in
+        (lower ++ upper)
+            |> List.map (Vector2d.components >> Point2d.fromCoordinates)
+            |> fromVertices
 
 
 {-| Get the vertices of a polygon.
