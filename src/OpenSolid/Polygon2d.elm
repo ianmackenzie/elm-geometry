@@ -18,6 +18,7 @@ module OpenSolid.Polygon2d
         , clockwiseArea
         , counterclockwiseArea
         , edges
+        , fromConvexHull
         , fromVertices
         , mapVertices
         , mirrorAcross
@@ -28,7 +29,6 @@ module OpenSolid.Polygon2d
         , scaleAbout
         , translateBy
         , vertices
-        , fromConvexHull
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/polygon2d.svg" alt="Polygon2d" width="160">
