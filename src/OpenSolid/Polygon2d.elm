@@ -70,7 +70,7 @@ Transforming a polygon is equivalent to transforming each of its vertices.
 import OpenSolid.Axis2d as Axis2d exposing (Axis2d)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
-import OpenSolid.Geometry.Internal as Internal exposing (Vector3d)
+import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Triangle2d as Triangle2d exposing (Triangle2d)
