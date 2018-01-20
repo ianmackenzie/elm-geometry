@@ -101,21 +101,16 @@ fromVertices =
     Internal.Polygon2d
 
 
-clockwise : Vector2d -> Vector2d -> Vector2d -> Bool
-clockwise o a b =
-    Vector2d.crossProduct (Vector2d.difference a o) (Vector2d.difference b o) <= 0
+counterclockwiseAround : Point2d -> Point2d -> Point2d -> Bool
+counterclockwiseAround origin a b =
+    Vector2d.crossProduct (Vector2d.from origin a) (Vector2d.from origin b) >= 0
 
 
-xThenY : Point2d -> Point2d -> Order
-xThenY a b =
-    compare (Point2d.coordinates a) (Point2d.coordinates b)
-
-
-chainHelp : List Vector2d -> List Vector2d -> List Vector2d
+chainHelp : List Point2d -> List Point2d -> List Point2d
 chainHelp acc list =
     case ( acc, list ) of
         ( r1 :: r2 :: rs, x :: xs ) ->
-            if clockwise r2 r1 x then
+            if counterclockwiseAround r2 r1 x then
                 chainHelp (r2 :: rs) (x :: xs)
             else
                 chainHelp (x :: acc) xs
@@ -124,12 +119,10 @@ chainHelp acc list =
             chainHelp (x :: acc) xs
 
         ( _, [] ) ->
-            acc
-                |> List.tail
-                |> Maybe.withDefault []
+            List.drop 1 acc
 
 
-chain : List Vector2d -> List Vector2d
+chain : List Point2d -> List Point2d
 chain =
     chainHelp []
 
@@ -140,7 +133,7 @@ fromConvexHull : List Point2d -> Polygon2d
 fromConvexHull points =
     let
         sorted =
-            List.sortWith xThenY points |> List.map (Point2d.coordinates >> Vector2d.fromComponents)
+            points |> List.sortBy Point2d.coordinates
 
         lower =
             chain sorted
@@ -148,9 +141,7 @@ fromConvexHull points =
         upper =
             chain (List.reverse sorted)
     in
-        (lower ++ upper)
-            |> List.map (Vector2d.components >> Point2d.fromCoordinates)
-            |> fromVertices
+    fromVertices (lower ++ upper)
 
 
 {-| Get the vertices of a polygon.
