@@ -317,10 +317,7 @@ triangle3d =
 -}
 interval : Decoder Interval
 interval =
-    Decode.map2
-        (\minValue maxValue ->
-            Interval.with { minValue = minValue, maxValue = maxValue }
-        )
+    Decode.map2 Interval.from
         (Decode.field "minValue" Decode.float)
         (Decode.field "maxValue" Decode.float)
 
@@ -332,7 +329,7 @@ boundingBox2d : Decoder BoundingBox2d
 boundingBox2d =
     Decode.map4
         (\minX maxX minY maxY ->
-            BoundingBox2d.with
+            BoundingBox2d.fromExtrema
                 { minX = minX
                 , maxX = maxX
                 , minY = minY
@@ -352,7 +349,7 @@ boundingBox3d : Decoder BoundingBox3d
 boundingBox3d =
     Decode.map6
         (\minX maxX minY maxY minZ maxZ ->
-            BoundingBox3d.with
+            BoundingBox3d.fromExtrema
                 { minX = minX
                 , maxX = maxX
                 , minY = minY

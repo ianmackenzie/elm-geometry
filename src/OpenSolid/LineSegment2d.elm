@@ -569,7 +569,7 @@ placeIn frame =
 {-| Get the minimal bounding box containing a given line segment.
 
     LineSegment2d.boundingBox exampleLineSegment
-    --> BoundingBox2d.with
+    --> BoundingBox2d.fromExtrema
     -->     { minX = 1
     -->     , maxX = 3
     -->     , minY = 2
@@ -579,8 +579,4 @@ placeIn frame =
 -}
 boundingBox : LineSegment2d -> BoundingBox2d
 boundingBox lineSegment =
-    let
-        ( p1, p2 ) =
-            endpoints lineSegment
-    in
-    Point2d.hull p1 p2
+    BoundingBox2d.fromCorners (endpoints lineSegment)

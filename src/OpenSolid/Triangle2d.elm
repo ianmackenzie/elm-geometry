@@ -409,7 +409,7 @@ placeIn frame =
 {-| Get the minimal bounding box containing a given triangle.
 
     Triangle2d.boundingBox exampleTriangle
-    --> BoundingBox2d.with
+    --> BoundingBox2d.fromExtrema
     -->     { minX = 1
     -->     , maxX = 2
     -->     , minY = 1
@@ -432,7 +432,7 @@ boundingBox triangle =
         ( x3, y3 ) =
             Point2d.coordinates p3
     in
-    BoundingBox2d.with
+    BoundingBox2d.fromExtrema
         { minX = min x1 (min x2 x3)
         , maxX = max x1 (max x2 x3)
         , minY = min y1 (min y2 y3)

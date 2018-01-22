@@ -1,6 +1,8 @@
 module BoundingBox2d
     exposing
         ( boxContainsOwnCentroid
+        , containingPointsConsistentWithFromCorners
+        , containingPointsIsOrderIndependent
         , hullContainsInputs
         , intersectionConsistentWithIntersects
         , intersectionConsistentWithOverlappingBy
@@ -15,6 +17,7 @@ module BoundingBox2d
         )
 
 import Expect
+import Fuzz
 import Generic
 import OpenSolid.BoundingBox2d as BoundingBox2d
 import OpenSolid.Geometry.Decode as Decode
@@ -257,7 +260,7 @@ separationIsCorrectForHorizontallyDisplacedBoxes =
         (\_ ->
             let
                 firstBox =
-                    BoundingBox2d.with
+                    BoundingBox2d.fromExtrema
                         { minX = 0
                         , minY = 0
                         , maxX = 1
@@ -265,7 +268,7 @@ separationIsCorrectForHorizontallyDisplacedBoxes =
                         }
 
                 secondBox =
-                    BoundingBox2d.with
+                    BoundingBox2d.fromExtrema
                         { minX = 2
                         , minY = 0
                         , maxX = 3
@@ -303,7 +306,7 @@ separationIsCorrectForVerticallyDisplacedBoxes =
         (\_ ->
             let
                 firstBox =
-                    BoundingBox2d.with
+                    BoundingBox2d.fromExtrema
                         { minX = 0
                         , minY = 0
                         , maxX = 1
@@ -311,7 +314,7 @@ separationIsCorrectForVerticallyDisplacedBoxes =
                         }
 
                 secondBox =
-                    BoundingBox2d.with
+                    BoundingBox2d.fromExtrema
                         { minX = 0
                         , minY = 2
                         , maxX = 1
@@ -349,7 +352,7 @@ separationIsCorrectForDiagonallyDisplacedBoxes =
         (\_ ->
             let
                 firstBox =
-                    BoundingBox2d.with
+                    BoundingBox2d.fromExtrema
                         { minX = 0
                         , minY = 0
                         , maxX = 1
@@ -357,7 +360,7 @@ separationIsCorrectForDiagonallyDisplacedBoxes =
                         }
 
                 secondBox =
-                    BoundingBox2d.with
+                    BoundingBox2d.fromExtrema
                         { minX = 4
                         , minY = 5
                         , maxX = 5
@@ -385,4 +388,29 @@ separationIsCorrectForDiagonallyDisplacedBoxes =
                     , Expect.false "Expected separation to not be less than 0"
                         << BoundingBox2d.separatedBy LT 0 secondBox
                     ]
+        )
+
+
+containingPointsConsistentWithFromCorners : Test
+containingPointsConsistentWithFromCorners =
+    Test.fuzz2
+        Fuzz.point2d
+        Fuzz.point2d
+        "'containingPoints' is consistent with 'fromCorners'"
+        (\firstPoint secondPoint ->
+            BoundingBox2d.containingPoints [ firstPoint, secondPoint ]
+                |> Expect.equal
+                    (Just <|
+                        BoundingBox2d.fromCorners ( firstPoint, secondPoint )
+                    )
+        )
+
+
+containingPointsIsOrderIndependent : Test
+containingPointsIsOrderIndependent =
+    Test.fuzz (Fuzz.list Fuzz.point2d)
+        "'containingPoints' does not depend on input order"
+        (\points ->
+            BoundingBox2d.containingPoints (List.reverse points)
+                |> Expect.equal (BoundingBox2d.containingPoints points)
         )

@@ -1,11 +1,14 @@
 module OpenSolid.Interval
     exposing
         ( Interval
+        , aggregate
+        , containingValues
         , contains
         , cos
-        , extrema
+        , endpoints
+        , from
+        , fromEndpoints
         , hull
-        , hullOf
         , interpolate
         , intersection
         , intersects
@@ -16,7 +19,6 @@ module OpenSolid.Interval
         , sin
         , singleton
         , width
-        , with
         )
 
 {-|
@@ -26,12 +28,12 @@ module OpenSolid.Interval
 
 # Constructors
 
-@docs with, singleton, hull, intersection, hullOf
+@docs singleton, fromEndpoints, from, containingValues, aggregate, hull, intersection
 
 
 # Properties
 
-@docs extrema, minValue, maxValue, midpoint, width
+@docs endpoints, minValue, maxValue, midpoint, width
 
 
 # Interpolation
@@ -50,104 +52,153 @@ module OpenSolid.Interval
 
 -}
 
-import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Scalar as Scalar
 
 
-{-| Represents a bounded interval with a minimum and maximum value, for example
-the interval from 3 to 5.
+{-| Represents a finite, bounded interval with a minimum and maximum value, for
+example the interval from 3 to 5.
 -}
-type alias Interval =
-    Internal.Interval
-
-
-{-| Construct an interval with the given minimum and maximum values. They should
-be provided in the correct order but will be flipped if necessary to result in a
-valid interval.
-
-    exampleInterval =
-        Interval.with { minValue = -1, maxValue = 5 }
-
--}
-with : { minValue : Float, maxValue : Float } -> Interval
-with extrema =
-    if extrema.minValue <= extrema.maxValue then
-        Internal.Interval extrema
-    else
-        Internal.Interval
-            { minValue = extrema.maxValue
-            , maxValue = extrema.minValue
-            }
+type Interval
+    = Interval ( Float, Float )
 
 
 {-| Construct a zero-width interval containing a single value.
 
     Interval.singleton 3
-    --> Interval.with { minValue = 3, maxValue = 3 }
+    --> Interval.fromEndpoints ( 3, 3 )
 
 -}
 singleton : Float -> Interval
 singleton value =
-    Internal.Interval { minValue = value, maxValue = value }
+    Interval ( value, value )
+
+
+{-| Construct an interval from its endpoints (the minimum and maximum values of
+the interval).
+
+    rgbRange =
+        Interval.fromEndpoints ( 0, 255 )
+
+    alphaRange =
+        Interval.fromEndpoints ( 0, 1 )
+
+The two values should be given in order but will be swapped if
+necessary to ensure a valid interval is returned:
+
+    Interval.endpoints (Interval.fromEndpoints ( 3, 2 ))
+    --> ( 2, 3 )
+
+-}
+fromEndpoints : ( Float, Float ) -> Interval
+fromEndpoints endpoints =
+    let
+        ( firstValue, secondValue ) =
+            endpoints
+    in
+    if firstValue <= secondValue then
+        Interval endpoints
+    else
+        Interval ( secondValue, firstValue )
+
+
+{-| Construct an interval containing the two given values (which can be provided
+in either order).
+
+    Interval.endpoints (Interval.from 2 5)
+    --> ( 2, 5 )
+
+    Interval.endpoints (Interval.from 5 2)
+    --> ( 2, 5 )
+
+-}
+from : Float -> Float -> Interval
+from firstValue secondValue =
+    if firstValue <= secondValue then
+        Interval ( firstValue, secondValue )
+    else
+        Interval ( secondValue, firstValue )
+
+
+{-| Construct an interval containing all values in the given list. If the list
+is empty, returns `Nothing`.
+
+    Interval.containingValues [ 2, 1, 3 ]
+    --> Just (Interval.from 1 3)
+
+    Interval.containingValues [ -3 ]
+    --> Just (Interval.singleton -3)
+
+    Interval.containingValues []
+    --> Nothing
+
+-}
+containingValues : List Float -> Maybe Interval
+containingValues values =
+    Maybe.map2 from (List.minimum values) (List.maximum values)
 
 
 {-| Construct an interval containing both of the given intervals.
 
     firstInterval =
-        Interval.with { minValue = 1, maxValue = 2 }
+        Interval.fromExtrema { minValue = 1, maxValue = 2 }
 
     secondInterval =
-        Interval.with { minValue = 3, maxValue = 6 }
+        Interval.fromExtrema { minValue = 3, maxValue = 6 }
 
     Interval.hull firstInterval secondInterval
-    --> Interval.with { minValue = 1, maxValue = 6 }
+    --> Interval.fromExtrema { minValue = 1, maxValue = 6 }
 
 -}
 hull : Interval -> Interval -> Interval
 hull firstInterval secondInterval =
-    Internal.Interval
-        { minValue = min (minValue firstInterval) (minValue secondInterval)
-        , maxValue = max (maxValue firstInterval) (maxValue secondInterval)
-        }
+    let
+        ( min1, max1 ) =
+            endpoints firstInterval
+
+        ( min2, max2 ) =
+            endpoints secondInterval
+    in
+    Interval ( min min1 min2, max max1 max2 )
 
 
 {-| Attempt to construct an interval containing all the values common to both
 given intervals. If the intervals do not intersect, returns `Nothing`.
 
-    firstInterval =
-        Interval.with { minValue = 1, maxValue = 3 }
+    Interval.intersection
+        (Interval.from 1 3)
+        (Interval.from 2 5)
+    --> Just (Interval.from 2 3)
 
-    secondInterval =
-        Interval.with { minValue = 2, maxValue = 5 }
-
-    thirdInterval =
-        Interval.with { minValue = 4, maxValue = 7 }
-
-    Interval.intersection firstInterval secondInterval
-    --> Just (Interval.with { minValue = 2, maxValue = 3 })
-
-    Interval.intersection firstInterval thirdInterval
+    Interval.intersection
+        (Interval.from 1 3)
+        (Interval.from 4 7)
     --> Nothing
 
 If the two intervals just touch, a singleton interval will be returned:
 
     Interval.intersection
-        (Interval.with { minValue = 1, maxValue = 2 })
-        (Interval.with { minValue = 2, maxValue = 3 })
-    --> Just (Interval.with { minValue = 2, maxValue = 2})
+        (Interval.from 1 3)
+        (Interval.from 3 5)
+    --> Just (Interval.singleton 3)
 
 -}
 intersection : Interval -> Interval -> Maybe Interval
 intersection firstInterval secondInterval =
     let
-        resultMin =
-            max (minValue firstInterval) (minValue secondInterval)
+        ( min1, max1 ) =
+            endpoints firstInterval
 
-        resultMax =
-            min (maxValue firstInterval) (maxValue secondInterval)
+        ( min2, max2 ) =
+            endpoints secondInterval
+
+        minValue =
+            max min1 min2
+
+        maxValue =
+            min max1 max2
     in
-    if resultMin <= resultMax then
-        Just (Internal.Interval { minValue = resultMin, maxValue = resultMax })
+    if minValue <= maxValue then
+        Just (Interval ( minValue, maxValue ))
     else
         Nothing
 
@@ -155,18 +206,18 @@ intersection firstInterval secondInterval =
 {-| Construct an interval containing all of the intervals in the given list. If
 the list is empty, returns `Nothing`.
 
-    Interval.hullOf
+    Interval.aggregate
         [ Interval.singleton 2
-        , Interval.with { minValue = 3, maxValue = 4 }
+        , Interval.from 3 4
         ]
-    --> Just (Interval.with { minValue = 2, maxValue = 4 })
+    --> Just (Interval.from 2 4)
 
-    Interval.hullOf []
+    Interval.aggregate []
     --> Nothing
 
 -}
-hullOf : List Interval -> Maybe Interval
-hullOf intervals =
+aggregate : List Interval -> Maybe Interval
+aggregate intervals =
     case intervals of
         first :: rest ->
             Just (List.foldl hull first rest)
@@ -175,123 +226,145 @@ hullOf intervals =
             Nothing
 
 
-{-| Get the minimum and maximum values of an interval as a single record. Useful
-when combined with destructuring:
+{-| Get the endpoints of an interval (its minimum and maximum values) as a
+tuple. The first value will always be less than or equal to the second.
 
-    { minValue, maxValue } =
-        Interval.extrema exampleInterval
+    ( minValue, maxValue ) =
+        Interval.endpoints someInterval
 
+For any interval,
 
-    --> minValue = -1
-    --> maxValue = 5
+    Interval.endpoints interval
+
+is equivalent to (but more efficient than)
+
+    ( Interval.minValue interval
+    , Interval.maxValue interval
+    )
 
 -}
-extrema : Interval -> { minValue : Float, maxValue : Float }
-extrema (Internal.Interval extrema) =
-    extrema
+endpoints : Interval -> ( Float, Float )
+endpoints (Interval endpoints) =
+    endpoints
 
 
 {-| Get the minimum value of an interval.
 
-    Interval.minValue exampleInterval
-    --> -1
+    Interval.minValue (Interval.from 1 3)
+    --> 1
 
 -}
 minValue : Interval -> Float
-minValue (Internal.Interval { minValue }) =
-    minValue
+minValue interval =
+    Tuple.first (endpoints interval)
 
 
 {-| Get the maximum value of an interval.
 
-    Interval.maxValue exampleInterval
-    --> 5
+    Interval.maxValue (Interval.from 1 3)
+    --> 3
 
 -}
 maxValue : Interval -> Float
-maxValue (Internal.Interval { maxValue }) =
-    maxValue
+maxValue interval =
+    Tuple.second (endpoints interval)
 
 
 {-| Get the midpoint of an interval.
 
-    Interval.midpoint exampleInterval
-    --> 2
+    Interval.midpoint (Interval.from 1 5)
+    --> 3
 
 -}
 midpoint : Interval -> Float
-midpoint (Internal.Interval { minValue, maxValue }) =
+midpoint interval =
+    let
+        ( minValue, maxValue ) =
+            endpoints interval
+    in
     minValue + 0.5 * (maxValue - minValue)
 
 
 {-| Get the width of an interval.
 
-    Interval.width exampleInterval
-    --> 6
+    Interval.width (Interval.from 1 5)
+    --> 4
 
 -}
 width : Interval -> Float
-width (Internal.Interval { minValue, maxValue }) =
+width interval =
+    let
+        ( minValue, maxValue ) =
+            endpoints interval
+    in
     maxValue - minValue
 
 
-{-| Interpolate an interval from its minimum to its maximum value; a value of
-0.0 corresponds to the minimum value of the interval, a value of 0.5 corresponds
-to its midpoint and a value of 1.0 corresponds to its maximum value. Values less
-than 0.0 or greater than 1.0 can be used to extrapolate.
+{-| Interpolate between an interval's endpoints; a value of 0.0 corresponds to
+the minimum value of the interval, a value of 0.5 corresponds to its midpoint
+and a value of 1.0 corresponds to its maximum value. Values less than 0.0 or
+greater than 1.0 can be used to extrapolate.
 
-    Interval.interpolate 0 exampleInterval
+    Interval.interpolate (Interval.from -1 5) 0
     --> -1
 
-    Interval.interpolate 0.75 exampleInterval
+    Interval.interpolate (Interval.from -1 5) 0.75
     --> 3.5
 
-    Interval.interpolate -0.5 exampleInterval
+    Interval.interpolate (Interval.from -1 5) -0.5
     --> -4
 
 -}
-interpolate : Float -> Interval -> Float
-interpolate t (Internal.Interval { minValue, maxValue }) =
+interpolate : Interval -> Float -> Float
+interpolate interval t =
+    let
+        ( minValue, maxValue ) =
+            endpoints interval
+    in
     Scalar.interpolateFrom minValue maxValue t
 
 
 {-| Check if an interval contains a given value.
 
-    Interval.contains 0 exampleInterval
+    Interval.contains 0 (Interval.from -1 3)
     --> True
 
-    Interval.contains 10 exampleInterval
+    Interval.contains 5 (Interval.from -1 3)
     --> False
 
 The minimum and maximum values of an interval are considered to be contained in
 the interval, although if you are relying on this then there is a good chance
 your code is vulnerable to numerical roundoff!
 
-    Interval.contains -1 exampleInterval
+    Interval.contains 3 (Interval.from -1 3)
     --> True
 
 -}
 contains : Float -> Interval -> Bool
-contains value (Internal.Interval { minValue, maxValue }) =
+contains value interval =
+    let
+        ( minValue, maxValue ) =
+            endpoints interval
+    in
     minValue <= value && value <= maxValue
 
 
 {-| Check if two intervals touch or overlap (have any values in common).
 
-    Interval.with { minValue = 0, maxValue = 10 }
-        |> Interval.intersects exampleInterval
+    Interval.from -5 5
+        |> Interval.intersects (Interval.from 0 10)
     --> True
 
-    Interval.with { minValue = 10, maxValue = 20 }
-        |> Interval.intersects exampleInterval
+    Interval.from -5 5
+        |> Interval.intersects (Interval.from 10 20)
     --> False
 
 Intervals that just touch each other are considered to intersect (this is
 consistent with `intersection` which will return a zero-width interval for the
 intersection of two just-touching intervals):
 
-    Interval.with { minValue = -3, maxValue = -1 }
-        |> Interval.intersects exampleInterval
+    Interval.from -5 5
+        |> Interval.intersects (Interval.from 5 10)
     --> True
 
 As with `contains`, though, if you are relying on this then there is a good
@@ -300,76 +373,100 @@ chance your code is vulnerable to numerical roundoff!
 -}
 intersects : Interval -> Interval -> Bool
 intersects firstInterval secondInterval =
-    (minValue firstInterval <= maxValue secondInterval)
-        && (maxValue firstInterval >= minValue secondInterval)
+    let
+        ( min1, max1 ) =
+            endpoints firstInterval
+
+        ( min2, max2 ) =
+            endpoints secondInterval
+    in
+    min1 <= max2 && max1 >= min2
 
 
 {-| Check if the second interval is fully contained in the first.
 
-    -- Note that here exampleInterval is actually the
-    -- *second* interval due to how |> works
-    exampleInterval
-        |> Interval.isContainedIn
-            (Interval.with
-                { minValue = 0
-                , maxValue = 10
-                }
-            )
+    Interval.from -5 5
+        |> Interval.isContainedIn (Interval.from 0 10)
     --> False
 
-    exampleInterval
-        |> Interval.isContainedIn
-            (Interval.with
-                { minValue = -10
-                , maxValue = 10
-                }
-            )
+    Interval.from -5 5
+        |> Interval.isContainedIn (Interval.from -10 10)
+    --> True
+
+Be careful with the argument order! If not using the `|>` operator, the second
+example would be written as:
+
+    Interval.isContainedIn (Interval.from -10 10)
+        (Interval.from -5 5)
     --> True
 
 -}
 isContainedIn : Interval -> Interval -> Bool
 isContainedIn firstInterval secondInterval =
-    (minValue secondInterval >= minValue firstInterval)
-        && (maxValue secondInterval <= maxValue firstInterval)
+    let
+        ( min1, max1 ) =
+            endpoints firstInterval
+
+        ( min2, max2 ) =
+            endpoints secondInterval
+    in
+    min1 <= min2 && max2 <= max1
 
 
-{-| Check if the interval is a singleton.
+{-| Check if the interval is a singleton (the minimum and maximum values are the
+same).
+
+    Interval.isSingleton (Interval.fromEndpoints ( 2, 2 ))
+    --> True
+
+    Interval.isSingleton (Interval.fromEndpoints ( 2, 3 ))
+    --> False
+
 -}
 isSingleton : Interval -> Bool
-isSingleton (Internal.Interval { minValue, maxValue }) =
+isSingleton interval =
+    let
+        ( minValue, maxValue ) =
+            endpoints interval
+    in
     minValue == maxValue
 
 
-{-| Shift the interval by some amount in the positive direction.
+{-| Add the given amount to both endpoints of the given interval.
 
-    exampleInterval
-        |> Interval.shiftBy 3
-    --> Interval.with { minValue = 2, maxValue = 8 }
+    Interval.shiftBy 3 (Interval.from -1 5)
+    --> Interval.from 2 8
 
 -}
 shiftBy : Float -> Interval -> Interval
-shiftBy delta (Internal.Interval { minValue, maxValue }) =
-    Internal.Interval
-        { minValue = minValue + delta
-        , maxValue = maxValue + delta
-        }
+shiftBy delta interval =
+    let
+        ( minValue, maxValue ) =
+            endpoints interval
+    in
+    Interval ( minValue + delta, maxValue + delta )
 
 
 {-| Get the image of sin(x) applied on the interval.
 
-    Interval.with { minValue = -pi / 2, maxValue = pi / 2}
-        |> Interval.sin
-    --> Interval.with { minValue = -1, maxValue = 1 }
+    Interval.sin (Interval.from 0 (degrees 45))
+    --> Interval.from 0 0.7071
+
+    Interval.sin (Interval.from 0 pi)
+    --> Interval.from 0 1
 
 -}
 sin : Interval -> Interval
-sin ((Internal.Interval { minValue, maxValue }) as interval) =
+sin interval =
     if isSingleton interval then
-        singleton (Basics.sin minValue)
+        singleton (Basics.sin (minValue interval))
     else
         let
             ( includesMin, includesMax ) =
                 sinIncludesMinMax interval
+
+            ( minValue, maxValue ) =
+                endpoints interval
 
             newMin =
                 if includesMin then
@@ -383,27 +480,29 @@ sin ((Internal.Interval { minValue, maxValue }) as interval) =
                 else
                     max (Basics.sin minValue) (Basics.sin maxValue)
         in
-        Internal.Interval
-            { minValue = newMin
-            , maxValue = newMax
-            }
+        fromEndpoints ( newMin, newMax )
 
 
 {-| Get the image of cos(x) applied on the interval.
 
-    Interval.with { minValue = -pi / 2, maxValue = pi / 2}
-        |> Interval.cos
-    --> Interval.with { minValue = 0, maxValue = 1 }
+    Interval.cos (Interval.from 0 (degrees 45))
+    --> Interval.from 0.7071 1
+
+    Interval.cos (Interval.from 0 pi)
+    --> Interval.from -1 1
 
 -}
 cos : Interval -> Interval
-cos ((Internal.Interval { minValue, maxValue }) as interval) =
+cos interval =
     if isSingleton interval then
-        singleton (Basics.cos minValue)
+        singleton (Basics.cos (minValue interval))
     else
         let
             ( includesMin, includesMax ) =
                 cosIncludesMinMax interval
+
+            ( minValue, maxValue ) =
+                endpoints interval
 
             newMin =
                 if includesMin then
@@ -417,10 +516,7 @@ cos ((Internal.Interval { minValue, maxValue }) as interval) =
                 else
                     max (Basics.cos minValue) (Basics.cos maxValue)
         in
-        Internal.Interval
-            { minValue = newMin
-            , maxValue = newMax
-            }
+        fromEndpoints ( newMin, newMax )
 
 
 {-| cos(x - pi/2) = sin(x), therefore if cos(interval - pi/2) includes
@@ -448,8 +544,11 @@ If `minValue` and `maxValue` are in different branches
 2 pi * k, which means the interval must include the maximum value.
 -}
 cosIncludesMax : Interval -> Bool
-cosIncludesMax (Internal.Interval { minValue, maxValue }) =
+cosIncludesMax interval =
     let
+        ( minValue, maxValue ) =
+            endpoints interval
+
         minBranch =
             floor <| minValue / (2 * pi)
 

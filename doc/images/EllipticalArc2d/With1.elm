@@ -39,7 +39,7 @@ main =
                 ]
 
         bounds =
-            BoundingBox2d.with
+            BoundingBox2d.fromExtrema
                 { minX = -10
                 , maxX = 210
                 , minY = -10

@@ -13,10 +13,6 @@
 module OpenSolid.Geometry.Internal exposing (..)
 
 
-type Interval
-    = Interval { minValue : Float, maxValue : Float }
-
-
 type Vector2d
     = Vector2d ( Float, Float )
 

@@ -178,8 +178,8 @@ angleWithin tolerance =
 valueIn : Interval -> Float -> Expectation
 valueIn interval value =
     let
-        { minValue, maxValue } =
-            Interval.extrema interval
+        ( minValue, maxValue ) =
+            Interval.endpoints interval
 
         tolerance =
             defaultTolerance

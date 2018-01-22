@@ -550,7 +550,7 @@ placeIn frame circle =
 {-| Get the minimal bounding box containing a given circle.
 
     Circle3d.boundingBox exampleCircle
-    --> BoundingBox3d.with
+    --> BoundingBox3d.fromExtrema
     -->     { minX = -1
     -->     , maxX = 5
     -->     , minY = -3
@@ -590,7 +590,7 @@ boundingBox circle =
         ( cx, cy, cz ) =
             Point3d.coordinates (centerPoint circle)
     in
-    BoundingBox3d.with
+    BoundingBox3d.fromExtrema
         { minX = cx - dx
         , maxX = cx + dx
         , minY = cy - dy

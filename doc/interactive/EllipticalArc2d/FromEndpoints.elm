@@ -17,7 +17,7 @@ import Svg.Attributes
 
 boundingBox : BoundingBox2d
 boundingBox =
-    BoundingBox2d.with
+    BoundingBox2d.fromExtrema
         { minX = 0
         , minY = 0
         , maxX = 500
@@ -513,7 +513,7 @@ view model =
                 , Svg.Attributes.ry "6"
                 , noFill
                 ]
-                (BoundingBox2d.with
+                (BoundingBox2d.fromExtrema
                     { minX = BoundingBox2d.minX boundingBox + 0.5
                     , minY = BoundingBox2d.minY boundingBox + 0.5
                     , maxX = BoundingBox2d.maxX boundingBox - 0.5

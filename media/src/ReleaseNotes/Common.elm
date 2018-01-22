@@ -24,7 +24,7 @@ numSegments =
 
 renderBounds : BoundingBox2d
 renderBounds =
-    BoundingBox2d.with
+    BoundingBox2d.fromExtrema
         { minX = 80
         , maxX = 320
         , minY = 80

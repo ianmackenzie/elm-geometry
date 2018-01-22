@@ -444,7 +444,7 @@ projectInto sketchPlane triangle =
 {-| Get the minimal bounding box containing a given triangle.
 
     Triangle3d.boundingBox exampleTriangle
-    --> BoundingBox3d.with
+    --> BoundingBox3d.fromExtrema
     -->     { minX = 1
     -->     , maxX = 2
     -->     , minY = 0
@@ -469,7 +469,7 @@ boundingBox triangle =
         ( x3, y3, z3 ) =
             Point3d.coordinates p3
     in
-    BoundingBox3d.with
+    BoundingBox3d.fromExtrema
         { minX = min x1 (min x2 x3)
         , maxX = max x1 (max x2 x3)
         , minY = min y1 (min y2 y3)

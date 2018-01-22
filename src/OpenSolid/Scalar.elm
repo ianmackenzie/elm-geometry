@@ -1,12 +1,10 @@
-module OpenSolid.Scalar exposing (equalWithin, hull, hullOf, interpolateFrom)
+module OpenSolid.Scalar exposing (equalWithin, interpolateFrom)
 
 {-| Convenience functions for working with scalar (floating-point) values.
 
-@docs equalWithin, interpolateFrom, hull, hullOf
+@docs equalWithin, interpolateFrom
 
 -}
-
-import OpenSolid.Geometry.Internal as Internal
 
 
 {-| Check if two values are equal within a given tolerance.
@@ -48,57 +46,3 @@ interpolateFrom start end parameter =
         start + parameter * (end - start)
     else
         end + (1 - parameter) * (start - end)
-
-
-{-| Construct an interval containing both of the given values (which can be
-given in either order).
-
-    Scalar.hull 2 3
-    --> Interval.with { minValue = 2, maxValue = 3 }
-
-    Scalar.hull 5 -1
-    --> Interval.with { minValue = -1, maxValue = 5 }
-
--}
-hull : Float -> Float -> Internal.Interval
-hull firstValue secondValue =
-    Internal.Interval
-        { minValue = min firstValue secondValue
-        , maxValue = max firstValue secondValue
-        }
-
-
-{-| Construct an interval containing all values in the given list. If the list
-is empty, returns `Nothing`.
-
-    Scalar.hullOf [ 2, 1, 3 ]
-    --> Just (Interval.with { minValue = 1, maxValue = 3 })
-
-    Scalar.hullOf [ -3 ]
-    --> Just (Interval.singleton -3)
-
-    Scalar.hullOf []
-    --> Nothing
-
--}
-hullOf : List Float -> Maybe Internal.Interval
-hullOf values =
-    case values of
-        [] ->
-            Nothing
-
-        first :: rest ->
-            let
-                minValue =
-                    List.foldl min first rest
-
-                maxValue =
-                    List.foldl max first rest
-
-                result =
-                    Internal.Interval
-                        { minValue = minValue
-                        , maxValue = maxValue
-                        }
-            in
-            Just result

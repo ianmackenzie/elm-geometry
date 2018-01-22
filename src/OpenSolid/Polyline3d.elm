@@ -349,7 +349,7 @@ if the polyline has no vertices.
 
     Polyline3d.boundingBox examplePolyline
     --> Just
-    -->     (BoundingBox3d.with
+    -->     (BoundingBox3d.fromExtrema
     -->         { minX = 0
     -->         , maxX = 1
     -->         , minY = 0
@@ -362,4 +362,4 @@ if the polyline has no vertices.
 -}
 boundingBox : Polyline3d -> Maybe BoundingBox3d
 boundingBox polyline =
-    Point3d.hullOf (vertices polyline)
+    BoundingBox3d.containingPoints (vertices polyline)

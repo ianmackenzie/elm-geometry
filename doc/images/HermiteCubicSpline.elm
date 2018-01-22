@@ -14,7 +14,7 @@ main : Html Never
 main =
     let
         bounds =
-            BoundingBox2d.with
+            BoundingBox2d.fromExtrema
                 { minX = 30
                 , maxX = 220
                 , minY = 30

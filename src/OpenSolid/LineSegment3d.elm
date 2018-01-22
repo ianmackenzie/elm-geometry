@@ -514,7 +514,7 @@ projectInto sketchPlane lineSegment =
 {-| Get the minimal bounding box containing a line segment.
 
     LineSegment3d.boundingBox exampleLineSegment
-    --> BoundingBox3d.with
+    --> BoundingBox3d.fromExtrema
     -->     { minX = 1
     -->     , maxX = 4
     -->     , minY = 2
@@ -526,8 +526,4 @@ projectInto sketchPlane lineSegment =
 -}
 boundingBox : LineSegment3d -> BoundingBox3d
 boundingBox lineSegment =
-    let
-        ( p1, p2 ) =
-            endpoints lineSegment
-    in
-    Point3d.hull p1 p2
+    BoundingBox3d.fromCorners (endpoints lineSegment)

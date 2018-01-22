@@ -111,7 +111,6 @@ import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.Interval as Interval
 import OpenSolid.Point2d as Point2d exposing (Point2d)
-import OpenSolid.Scalar as Scalar
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
@@ -671,7 +670,7 @@ maxSecondDerivativeMagnitude arc =
             dThetaSquared * ry
 
         thetaInterval =
-            Scalar.hull theta0 theta1
+            Interval.from theta0 theta1
 
         sinThetaInterval =
             Interval.sin thetaInterval

@@ -397,7 +397,7 @@ if the polygon has no vertices.
 
     Polygon2d.boundingBox rectangle
     --> Just
-    -->     (BoundingBox2d.with
+    -->     (BoundingBox2d.fromExtrema
     -->         { minX = 1
     -->         , maxX = 3
     -->         , minY = 1
@@ -408,7 +408,7 @@ if the polygon has no vertices.
 -}
 boundingBox : Polygon2d -> Maybe BoundingBox2d
 boundingBox polygon =
-    Point2d.hullOf (outerLoop polygon)
+    BoundingBox2d.containingPoints (outerLoop polygon)
 
 
 {-| Triangulate a polygon.
