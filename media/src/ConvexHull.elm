@@ -71,7 +71,7 @@ view : Model -> Html Msg
 view model =
     let
         convexHull =
-            Polygon2d.fromConvexHull model.points
+            Polygon2d.convexHull model.points
     in
     Html.div [ Html.Events.onClick Click ]
         [ Svg.render2d renderBounds <|

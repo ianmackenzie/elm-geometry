@@ -32,7 +32,7 @@ convexHullIsConvex =
         (\points ->
             let
                 convexHull =
-                    Polygon2d.fromConvexHull points
+                    Polygon2d.convexHull points
 
                 edgeVectors =
                     Polygon2d.edges convexHull |> List.map LineSegment2d.vector
@@ -66,7 +66,7 @@ convexHullContainsAllPoints =
         (\points ->
             let
                 convexHull =
-                    Polygon2d.fromConvexHull points
+                    Polygon2d.convexHull points
 
                 edges =
                     Polygon2d.edges convexHull

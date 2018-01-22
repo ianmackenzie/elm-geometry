@@ -18,7 +18,7 @@ module OpenSolid.Polygon2d
         , clockwiseArea
         , counterclockwiseArea
         , edges
-        , fromConvexHull
+        , convexHull
         , fromVertices
         , mapVertices
         , mirrorAcross
@@ -46,7 +46,7 @@ as
 
 # Constructors
 
-@docs fromVertices, fromConvexHull
+@docs fromVertices, convexHull
 
 
 # Properties
@@ -129,8 +129,9 @@ chain =
 
 {-| Computes the [convex hull](https://en.wikipedia.org/wiki/Convex_hull) of a list of points. This is an O(n log n) operation.
 -}
-fromConvexHull : List Point2d -> Polygon2d
-fromConvexHull points =
+convexHull : List Point2d -> Polygon2d
+convexHull points =
+    -- See http://www.algorithmist.com/index.php/Monotone_Chain_Convex_Hull for a description of the algorithm.
     let
         sorted =
             points |> List.sortBy Point2d.coordinates
