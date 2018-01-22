@@ -17,6 +17,7 @@ module OpenSolid.Polygon2d
         , allVertices
         , area
         , boundingBox
+        , convexHull
         , innerEdges
         , innerLoops
         , mirrorAcross
@@ -48,7 +49,7 @@ as
 
 # Constructors
 
-@docs singleLoop, withHoles
+@docs singleLoop, withHoles, convexHull
 
 
 # Properties
@@ -161,6 +162,50 @@ withHoles outerLoop innerLoops =
         { outerLoop = makeOuterLoop outerLoop
         , innerLoops = List.map makeInnerLoop innerLoops
         }
+
+
+counterclockwiseAround : Point2d -> Point2d -> Point2d -> Bool
+counterclockwiseAround origin a b =
+    Vector2d.crossProduct (Vector2d.from origin a) (Vector2d.from origin b) >= 0
+
+
+chainHelp : List Point2d -> List Point2d -> List Point2d
+chainHelp acc list =
+    case ( acc, list ) of
+        ( r1 :: r2 :: rs, x :: xs ) ->
+            if counterclockwiseAround r2 r1 x then
+                chainHelp (r2 :: rs) (x :: xs)
+            else
+                chainHelp (x :: acc) xs
+
+        ( _, x :: xs ) ->
+            chainHelp (x :: acc) xs
+
+        ( _, [] ) ->
+            List.drop 1 acc
+
+
+chain : List Point2d -> List Point2d
+chain =
+    chainHelp []
+
+
+{-| Computes the [convex hull](https://en.wikipedia.org/wiki/Convex_hull) of a list of points. This is an O(n log n) operation.
+-}
+convexHull : List Point2d -> Polygon2d
+convexHull points =
+    -- See http://www.algorithmist.com/index.php/Monotone_Chain_Convex_Hull for a description of the algorithm.
+    let
+        sorted =
+            points |> List.sortBy Point2d.coordinates
+
+        lower =
+            chain sorted
+
+        upper =
+            chain (List.reverse sorted)
+    in
+    singleLoop (lower ++ upper)
 
 
 {-| -}
