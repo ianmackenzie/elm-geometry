@@ -460,31 +460,30 @@ orthonormalize ( xVector, xyVector, xyzVector ) =
         |> Maybe.andThen
             (\xDirection ->
                 let
-                    xProjection =
-                        Vector3d.projectionIn xDirection xyVector
-
                     yVector =
-                        Vector3d.difference xyVector xProjection
+                        Vector3d.crossProduct
+                            (Vector3d.crossProduct xVector xyVector)
+                            xVector
                 in
                 Vector3d.direction yVector
                     |> Maybe.andThen
                         (\yDirection ->
                             let
-                                xProjection =
-                                    Vector3d.projectionIn xDirection
+                                rightHandedZVector =
+                                    Vector3d.crossProduct xVector yVector
+
+                                dotProduct =
+                                    Vector3d.dotProduct
                                         xyzVector
-
-                                yzVector =
-                                    Vector3d.difference xyzVector
-                                        xProjection
-
-                                yProjection =
-                                    Vector3d.projectionIn yDirection
-                                        yzVector
+                                        rightHandedZVector
 
                                 zVector =
-                                    Vector3d.difference yzVector
-                                        yProjection
+                                    if dotProduct > 0 then
+                                        rightHandedZVector
+                                    else if dotProduct < 0 then
+                                        Vector3d.flip rightHandedZVector
+                                    else
+                                        Vector3d.zero
                             in
                             Vector3d.direction zVector
                                 |> Maybe.map

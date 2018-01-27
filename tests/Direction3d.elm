@@ -2,6 +2,7 @@ module Direction3d
     exposing
         ( angleFromAndEqualWithinAreConsistent
         , jsonRoundTrips
+        , orthonormalizeFollowsOriginalVectors
         , orthonormalizeProducesValidFrameBasis
         , orthonormalizingCoplanarVectorsReturnsNothing
         )
@@ -71,6 +72,40 @@ orthonormalizeProducesValidFrameBasis =
                         Expect.fail "Could not orthonormalize valid set of vectors"
             else
                 Expect.pass
+        )
+
+
+orthonormalizeFollowsOriginalVectors : Test
+orthonormalizeFollowsOriginalVectors =
+    Test.fuzz (Fuzz.tuple3 ( Fuzz.vector3d, Fuzz.vector3d, Fuzz.vector3d ))
+        "orthonormalized directions follow original vectors properly"
+        (\( v1, v2, v3 ) ->
+            case Direction3d.orthonormalize ( v1, v2, v3 ) of
+                Just directions ->
+                    directions
+                        |> Expect.all
+                            [ \( xDirection, _, _ ) ->
+                                Vector3d.componentIn xDirection v1
+                                    |> Expect.greaterThan 0
+                            , \( _, yDirection, _ ) ->
+                                Vector3d.componentIn yDirection v1
+                                    |> Expect.approximately 0
+                            , \( _, _, zDirection ) ->
+                                Vector3d.componentIn zDirection v1
+                                    |> Expect.approximately 0
+                            , \( _, yDirection, _ ) ->
+                                Vector3d.componentIn yDirection v2
+                                    |> Expect.greaterThan 0
+                            , \( _, _, zDirection ) ->
+                                Vector3d.componentIn zDirection v2
+                                    |> Expect.approximately 0
+                            , \( _, _, zDirection ) ->
+                                Vector3d.componentIn zDirection v3
+                                    |> Expect.greaterThan 0
+                            ]
+
+                Nothing ->
+                    Expect.pass
         )
 
 
