@@ -10,12 +10,14 @@ import OpenSolid.Geometry.Internal as Internal exposing (Polygon2d(..))
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Polygon2d.EdgeSet as EdgeSet exposing (EdgeSet)
+import Set
 
 
 type Kind
     = Start
     | End
-    | Regular
+    | Left
+    | Right
     | Split
     | Merge
 
@@ -77,8 +79,10 @@ kind previous current next =
             End
         else
             Merge
+    else if compareToPrevious == GT then
+        Right
     else
-        Regular
+        Left
 
 
 toVertices : List Point2d -> List Vertex
@@ -135,11 +139,31 @@ type alias Loops =
     }
 
 
+removeDuplicates : List Point2d -> List Point2d -> List Point2d
+removeDuplicates points accumulatedPoints =
+    case points of
+        [] ->
+            List.reverse accumulatedPoints
+
+        firstPoint :: remainingPoints ->
+            case accumulatedPoints of
+                [] ->
+                    removeDuplicates remainingPoints [ firstPoint ]
+
+                firstAccumulatedPoint :: _ ->
+                    if firstPoint == firstAccumulatedPoint then
+                        removeDuplicates remainingPoints accumulatedPoints
+                    else
+                        removeDuplicates remainingPoints
+                            (firstPoint :: accumulatedPoints)
+
+
 init : Polygon2d -> Loops
 init (Polygon2d { outerLoop, innerLoops }) =
     let
         allLoops =
-            outerLoop :: innerLoops
+            (outerLoop :: innerLoops)
+                |> List.map (\loop -> removeDuplicates loop [])
 
         vertices =
             allLoops
@@ -186,9 +210,37 @@ type alias State =
     }
 
 
+if_ : Bool -> (State -> State) -> State -> State
+if_ condition operation state =
+    if condition then
+        operation state
+    else
+        state
+
+
+getVertex : Int -> State -> Maybe Vertex
+getVertex index state =
+    Array.get index state.vertices
+
+
+getEdge : Int -> State -> Maybe Edge
+getEdge index state =
+    Array.get index state.edges
+
+
+fallBackTo : State -> Maybe State -> State
+fallBackTo defaultState maybeState =
+    case maybeState of
+        Just actualState ->
+            actualState
+
+        Nothing ->
+            Debug.crash "Unexpected"
+
+
 processLeftEdge : (EdgeSet.Edge -> EdgeSet -> EdgeSet) -> Int -> State -> State
 processLeftEdge insertOrRemove edgeIndex state =
-    Array.get edgeIndex state.edges
+    getEdge edgeIndex state
         |> Maybe.andThen
             (\edge ->
                 Maybe.map2
@@ -206,10 +258,10 @@ processLeftEdge insertOrRemove edgeIndex state =
                                     |> insertOrRemove ( edgeIndex, lineSegment )
                         }
                     )
-                    (Array.get edge.startVertexIndex state.vertices)
-                    (Array.get edge.endVertexIndex state.vertices)
+                    (getVertex edge.startVertexIndex state)
+                    (getVertex edge.endVertexIndex state)
             )
-        |> Maybe.withDefault state
+        |> fallBackTo state
 
 
 insertLeftEdge : Int -> State -> State
@@ -222,8 +274,8 @@ removeLeftEdge =
     processLeftEdge EdgeSet.remove
 
 
-setHelper : Int -> Int -> State -> State
-setHelper edgeIndex vertexIndex state =
+setHelperOf : Int -> Int -> State -> State
+setHelperOf edgeIndex vertexIndex state =
     { state
         | helpers =
             Dict.insert edgeIndex vertexIndex state.helpers
@@ -234,7 +286,7 @@ handleStartVertex : Int -> State -> State
 handleStartVertex index state =
     state
         |> insertLeftEdge index
-        |> setHelper index index
+        |> setHelperOf index index
 
 
 updateAt : Int -> (a -> a) -> Array a -> Array a
@@ -290,43 +342,205 @@ addDiagonal i j state =
         (Array.get j state.vertices)
         (Array.get i state.edges)
         (Array.get j state.edges)
-        |> Maybe.withDefault state
+        |> fallBackTo state
 
 
 vertexIsMerge : Int -> State -> Bool
 vertexIsMerge vertexIndex state =
-    case Array.get vertexIndex state.vertices of
-        Just vertex ->
-            vertex.kind == Merge
-
-        Nothing ->
-            False
+    getVertex vertexIndex state
+        |> Maybe.map (\vertex -> vertex.kind == Merge)
+        |> Maybe.withDefault False
 
 
-if_ : Bool -> (a -> a) -> a -> a
-if_ condition function argument =
-    if condition then
-        function argument
-    else
-        argument
+getHelperOf : Int -> State -> Maybe Int
+getHelperOf edgeIndex state =
+    Dict.get edgeIndex state.helpers
 
 
 handleEndVertex : Int -> State -> State
 handleEndVertex index state =
-    case Array.get index state.edges of
-        Just edge ->
-            case Dict.get edge.previousEdgeIndex state.helpers of
-                Just helperVertexIndex ->
-                    state
-                        |> if_ (vertexIsMerge helperVertexIndex state)
-                            (addDiagonal index helperVertexIndex)
-                        |> removeLeftEdge edge.previousEdgeIndex
+    getEdge index state
+        |> Maybe.andThen
+            (\edge ->
+                getHelperOf edge.previousEdgeIndex state
+                    |> Maybe.map
+                        (\helperVertexIndex ->
+                            state
+                                |> if_ (vertexIsMerge helperVertexIndex state)
+                                    (addDiagonal index helperVertexIndex)
+                                |> removeLeftEdge edge.previousEdgeIndex
+                        )
+            )
+        |> fallBackTo state
 
-                Nothing ->
-                    state
 
-        Nothing ->
-            state
+getLeftEdge : Point2d -> State -> Maybe Int
+getLeftEdge point state =
+    EdgeSet.leftOf point state.edgeSet
+
+
+handleSplitVertex : Int -> Point2d -> State -> State
+handleSplitVertex index point state =
+    getLeftEdge point state
+        |> Maybe.andThen
+            (\edgeIndex ->
+                getHelperOf edgeIndex state
+                    |> Maybe.map
+                        (\helperVertexIndex ->
+                            state
+                                |> addDiagonal index helperVertexIndex
+                                |> setHelperOf edgeIndex index
+                                |> insertLeftEdge index
+                                |> setHelperOf index index
+                        )
+            )
+        |> fallBackTo state
+
+
+handleMergeVertex : Int -> Point2d -> State -> State
+handleMergeVertex index point state =
+    getEdge index state
+        |> Maybe.andThen
+            (\edge ->
+                getHelperOf edge.previousEdgeIndex state
+                    |> Maybe.andThen
+                        (\previousEdgeHelper ->
+                            let
+                                updatedState =
+                                    state
+                                        |> if_ (vertexIsMerge previousEdgeHelper state)
+                                            (addDiagonal index previousEdgeHelper)
+                                        |> removeLeftEdge edge.previousEdgeIndex
+                            in
+                            getLeftEdge point updatedState
+                                |> Maybe.andThen
+                                    (\leftEdgeIndex ->
+                                        getHelperOf leftEdgeIndex state
+                                            |> Maybe.map
+                                                (\leftEdgeHelper ->
+                                                    updatedState
+                                                        |> if_ (vertexIsMerge leftEdgeHelper updatedState)
+                                                            (addDiagonal index leftEdgeHelper)
+                                                        |> setHelperOf leftEdgeIndex index
+                                                )
+                                    )
+                        )
+            )
+        |> fallBackTo state
+
+
+
+--handleMergeVertex : Int -> Point2d -> State -> State
+--handleMergeVertex index point state =
+--    Maybe.map2 (,) (getEdge index state) (getLeftEdge point state)
+--        |> Maybe.andThen
+--            (\( edge, leftEdgeIndex ) ->
+--                Maybe.map2 (,)
+--                    (getHelperOf edge.previousEdgeIndex state)
+--                    (getHelperOf leftEdgeIndex state)
+--                    |> Maybe.map
+--                        (\( previousEdgeHelper, leftEdgeHelper ) ->
+--                            state
+--                                |> if_ (vertexIsMerge previousEdgeHelper state)
+--                                    (addDiagonal index previousEdgeHelper)
+--                                |> removeLeftEdge edge.previousEdgeIndex
+--                                |> if_ (vertexIsMerge leftEdgeHelper state)
+--                                    (addDiagonal index leftEdgeHelper)
+--                                |> setHelperOf leftEdgeIndex index
+--                        )
+--            )
+--        |> fallBackTo state
+
+
+handleRightVertex : Int -> Point2d -> State -> State
+handleRightVertex index point state =
+    getLeftEdge point state
+        |> Maybe.andThen
+            (\leftEdgeIndex ->
+                getHelperOf leftEdgeIndex state
+                    |> Maybe.map
+                        (\helperVertexIndex ->
+                            state
+                                |> if_ (vertexIsMerge helperVertexIndex state)
+                                    (addDiagonal index helperVertexIndex)
+                                |> setHelperOf leftEdgeIndex index
+                        )
+            )
+        |> fallBackTo state
+
+
+handleLeftVertex : Int -> State -> State
+handleLeftVertex index state =
+    getEdge index state
+        |> Maybe.andThen
+            (\edge ->
+                getHelperOf edge.previousEdgeIndex state
+                    |> Maybe.map
+                        (\helperVertexIndex ->
+                            state
+                                |> if_ (vertexIsMerge helperVertexIndex state)
+                                    (addDiagonal index helperVertexIndex)
+                                |> removeLeftEdge edge.previousEdgeIndex
+                                |> insertLeftEdge index
+                                |> setHelperOf index index
+                        )
+            )
+        |> fallBackTo state
+
+
+collectMonotoneLoops : State -> ( Array Point2d, List (Array Int) )
+collectMonotoneLoops state =
+    let
+        points =
+            state.vertices |> Array.map .position
+
+        buildLoop startIndex currentIndex ( processedEdgeIndices, accumulated ) =
+            getEdge currentIndex state
+                |> Maybe.map
+                    (\currentEdge ->
+                        let
+                            updatedEdgeIndices =
+                                Set.insert currentIndex processedEdgeIndices
+
+                            newAccumulated =
+                                currentEdge.startVertexIndex :: accumulated
+
+                            nextIndex =
+                                currentEdge.nextEdgeIndex
+                        in
+                        if nextIndex == startIndex then
+                            ( updatedEdgeIndices
+                            , Array.fromList (List.reverse newAccumulated)
+                            )
+                        else
+                            buildLoop
+                                startIndex
+                                nextIndex
+                                ( updatedEdgeIndices, newAccumulated )
+                    )
+                |> Maybe.withDefault ( processedEdgeIndices, Array.empty )
+
+        processStartEdge index currentState =
+            let
+                ( processedEdgeIndices, loops ) =
+                    currentState
+            in
+            if Set.member index processedEdgeIndices then
+                currentState
+            else
+                let
+                    ( updatedEdgeIndices, loop ) =
+                        buildLoop index index ( processedEdgeIndices, [] )
+                in
+                ( updatedEdgeIndices, loop :: loops )
+
+        allEdgeIndices =
+            List.range 0 (Array.length state.edges - 1)
+
+        ( _, loops ) =
+            List.foldl processStartEdge ( Set.empty, [] ) allEdgeIndices
+    in
+    ( points, loops )
 
 
 polygons : Polygon2d -> ( Array Point2d, List (Array Int) )
@@ -361,16 +575,25 @@ polygons polygon =
                 End ->
                     handleEndVertex index current
 
-                Regular ->
-                    current
+                Right ->
+                    handleRightVertex index vertex.position current
+
+                Left ->
+                    handleLeftVertex index current
 
                 Split ->
-                    current
+                    handleSplitVertex index vertex.position current
 
                 Merge ->
-                    current
+                    handleMergeVertex index vertex.position current
 
         finalState =
             List.foldl handleVertex initialState priorityQueue
+
+        _ =
+            finalState.edges
+                |> Array.toList
+                |> List.map (\edge -> ( edge.previousEdgeIndex, ( edge.startVertexIndex, edge.endVertexIndex ), edge.nextEdgeIndex ))
+                |> Debug.log "edges"
     in
-    ( Array.empty, [] )
+    collectMonotoneLoops finalState
