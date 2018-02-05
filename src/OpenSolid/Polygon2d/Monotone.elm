@@ -628,11 +628,5 @@ polygons polygon =
 
         finalState =
             List.foldl handleVertex initialState priorityQueue
-
-        _ =
-            finalState.edges
-                |> Array.toList
-                |> List.map (\edge -> ( edge.previousEdgeIndex, ( edge.startVertexIndex, edge.endVertexIndex ), edge.nextEdgeIndex ))
-                |> Debug.log "edges"
     in
     collectMonotoneLoops finalState
