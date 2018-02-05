@@ -202,6 +202,13 @@ init (Polygon2d { outerLoop, innerLoops }) =
     }
 
 
+type alias HelperVertex =
+    { vertexIndex : Int
+    , previousEdgeIndex : Int
+    , nextEdgeIndex : Int
+    }
+
+
 type alias State =
     { edgeSet : EdgeSet
     , helpers : Dict Int Int
