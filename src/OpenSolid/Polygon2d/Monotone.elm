@@ -349,7 +349,7 @@ addDiagonal i j state =
         (Array.get j state.vertices)
         (Array.get i state.edges)
         (Array.get j state.edges)
-        |> fallBackTo state
+        |> defaultTo state
 
 
 vertexIsMerge : Int -> State -> Bool
