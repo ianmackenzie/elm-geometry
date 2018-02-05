@@ -325,11 +325,29 @@ polyline3d polyline =
     Encode.list (List.map point3d (Polyline3d.vertices polyline))
 
 
-{-| Encode a `Polygon2d` as an array of vertices.
+{-| Encode a `Polygon2d` as an object with:
+
+  - an `outerLoop` field which is an array of encoded `Point2d` values
+  - an `innerLoops` field which is an array of arrays of encoded `Point2d`
+    values
+
 -}
 polygon2d : Polygon2d -> Value
 polygon2d polygon =
-    Encode.list (List.map point2d (Polygon2d.vertices polygon))
+    let
+        encodeLoop vertices =
+            Encode.list (List.map point2d vertices)
+
+        outerLoop =
+            Polygon2d.outerLoop polygon
+
+        innerLoops =
+            Polygon2d.innerLoops polygon
+    in
+    Encode.object
+        [ ( "outerLoop", encodeLoop outerLoop )
+        , ( "innerLoops", Encode.list (List.map encodeLoop innerLoops) )
+        ]
 
 
 {-| Encode a `Circle2d` as an object with `centerPoint` and `radius` fields.

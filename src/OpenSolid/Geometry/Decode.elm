@@ -380,11 +380,27 @@ polyline3d =
     Decode.map Polyline3d.fromVertices (Decode.list point3d)
 
 
-{-| Decodes a `Polygon2d` from an array of vertices.
+{-| Decodes a `Polygon2d` from either:
+
+  - an array of vertices defining a single-loop polygon, or
+  - an object with:
+      - an `outerLoop` field which is an array of encoded `Point2d` values
+      - an `innerLoops` field which is an array of arrays of encoded `Point2d`
+        values
+
 -}
 polygon2d : Decoder Polygon2d
 polygon2d =
-    Decode.map Polygon2d.fromVertices (Decode.list point2d)
+    let
+        decodeLoop =
+            Decode.list point2d
+    in
+    Decode.oneOf
+        [ Decode.map Polygon2d.singleLoop decodeLoop
+        , Decode.map2 Polygon2d.withHoles
+            (Decode.field "outerLoop" decodeLoop)
+            (Decode.field "innerLoops" (Decode.list decodeLoop))
+        ]
 
 
 {-| Decodes a `Circle2d` from an object with `centerPoint` and `radius` fields.

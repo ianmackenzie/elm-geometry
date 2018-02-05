@@ -13,22 +13,25 @@
 module OpenSolid.Polygon2d
     exposing
         ( Polygon2d
+        , allEdges
+        , allVertices
         , area
         , boundingBox
-        , clockwiseArea
-        , counterclockwiseArea
-        , edges
         , convexHull
-        , fromVertices
-        , mapVertices
+        , innerEdges
+        , innerLoops
         , mirrorAcross
+        , outerEdges
+        , outerLoop
         , perimeter
         , placeIn
         , relativeTo
         , rotateAround
         , scaleAbout
+        , singleLoop
         , translateBy
-        , vertices
+        , triangulate
+        , withHoles
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/polygon2d.svg" alt="Polygon2d" width="160">
@@ -46,24 +49,29 @@ as
 
 # Constructors
 
-@docs fromVertices, convexHull
+@docs singleLoop, withHoles, convexHull
 
 
 # Properties
 
-@docs vertices, edges, perimeter, area, clockwiseArea, counterclockwiseArea, boundingBox
+@docs outerLoop, innerLoops, outerEdges, innerEdges, allVertices, allEdges, perimeter, area, boundingBox
 
 
 # Transformations
 
 Transforming a polygon is equivalent to transforming each of its vertices.
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, mapVertices
+@docs scaleAbout, rotateAround, translateBy, mirrorAcross
 
 
 # Coordinate conversions
 
 @docs relativeTo, placeIn
+
+
+# Triangulation
+
+@docs triangulate
 
 -}
 
@@ -72,6 +80,7 @@ import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Frame2d as Frame2d exposing (Frame2d)
 import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
+import OpenSolid.Mesh as Mesh exposing (Mesh)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Triangle2d as Triangle2d exposing (Triangle2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
@@ -82,10 +91,50 @@ type alias Polygon2d =
     Internal.Polygon2d
 
 
-{-| Construct a polygon from a list of its vertices:
+counterclockwiseArea : List Point2d -> Float
+counterclockwiseArea vertices =
+    case vertices of
+        [] ->
+            0
+
+        [ single ] ->
+            0
+
+        [ first, second ] ->
+            0
+
+        first :: second :: rest ->
+            let
+                segmentArea start end =
+                    Triangle2d.counterclockwiseArea
+                        (Triangle2d.fromVertices ( first, start, end ))
+
+                segmentAreas =
+                    List.map2 segmentArea (second :: rest) rest
+            in
+            List.sum segmentAreas
+
+
+makeOuterLoop : List Point2d -> List Point2d
+makeOuterLoop vertices =
+    if counterclockwiseArea vertices >= 0 then
+        vertices
+    else
+        List.reverse vertices
+
+
+makeInnerLoop : List Point2d -> List Point2d
+makeInnerLoop vertices =
+    if counterclockwiseArea vertices <= 0 then
+        vertices
+    else
+        List.reverse vertices
+
+
+{-| Construct a polygon without holes from a list of its vertices:
 
     rectangle =
-        Polygon2d.fromVertices
+        Polygon2d.singleLoop
             [ Point2d.fromCoordinates ( 1, 1 )
             , Point2d.fromCoordinates ( 3, 1 )
             , Point2d.fromCoordinates ( 3, 2 )
@@ -93,12 +142,26 @@ type alias Polygon2d =
             ]
 
 The last vertex is implicitly considered to be connected back to the first
-vertex (you do not have to close the polygon explicitly).
+vertex (you do not have to close the polygon explicitly). Vertices should be
+provided in counterclockwise order; if they are provided in clockwise order they
+will be reversed.
 
 -}
-fromVertices : List Point2d -> Polygon2d
-fromVertices =
+singleLoop : List Point2d -> Polygon2d
+singleLoop vertices =
     Internal.Polygon2d
+        { outerLoop = makeOuterLoop vertices
+        , innerLoops = []
+        }
+
+
+{-| -}
+withHoles : List Point2d -> List (List Point2d) -> Polygon2d
+withHoles outerLoop innerLoops =
+    Internal.Polygon2d
+        { outerLoop = makeOuterLoop outerLoop
+        , innerLoops = List.map makeInnerLoop innerLoops
+        }
 
 
 counterclockwiseAround : Point2d -> Point2d -> Point2d -> Bool
@@ -142,22 +205,47 @@ convexHull points =
         upper =
             chain (List.reverse sorted)
     in
-    fromVertices (lower ++ upper)
+    singleLoop (lower ++ upper)
 
 
-{-| Get the vertices of a polygon.
+{-| -}
+outerLoop : Polygon2d -> List Point2d
+outerLoop (Internal.Polygon2d { outerLoop }) =
+    outerLoop
 
-    Polygon2d.vertices rectangle
-    --> [ Point2d.fromCoordinates ( 1, 1 )
-    --> , Point2d.fromCoordinates ( 3, 1 )
-    --> , Point2d.fromCoordinates ( 3, 2 )
-    --> , Point2d.fromCoordinates ( 1, 2 )
-    --> ]
 
--}
-vertices : Polygon2d -> List Point2d
-vertices (Internal.Polygon2d vertices_) =
-    vertices_
+{-| -}
+innerLoops : Polygon2d -> List (List Point2d)
+innerLoops (Internal.Polygon2d { innerLoops }) =
+    innerLoops
+
+
+{-| -}
+allVertices : Polygon2d -> List Point2d
+allVertices polygon =
+    List.concat (outerLoop polygon :: innerLoops polygon)
+
+
+loopEdges : List Point2d -> List LineSegment2d
+loopEdges vertices =
+    case vertices of
+        [] ->
+            []
+
+        (first :: rest) as all ->
+            List.map2 LineSegment2d.from all (rest ++ [ first ])
+
+
+{-| -}
+outerEdges : Polygon2d -> List LineSegment2d
+outerEdges polygon =
+    loopEdges (outerLoop polygon)
+
+
+{-| -}
+innerEdges : Polygon2d -> List (List LineSegment2d)
+innerEdges polygon =
+    List.map loopEdges (innerLoops polygon)
 
 
 {-| Get the edges of a polygon. This will include an edge from the last point
@@ -183,14 +271,9 @@ back to the first point.
     --> ]
 
 -}
-edges : Polygon2d -> List LineSegment2d
-edges polygon =
-    case vertices polygon of
-        [] ->
-            []
-
-        (first :: rest) as all ->
-            List.map2 LineSegment2d.from all (rest ++ [ first ])
+allEdges : Polygon2d -> List LineSegment2d
+allEdges polygon =
+    List.concat (outerEdges polygon :: innerEdges polygon)
 
 
 {-| Get the perimeter of a polygon (the sum of the lengths of its edges).
@@ -201,7 +284,7 @@ edges polygon =
 -}
 perimeter : Polygon2d -> Float
 perimeter =
-    edges >> List.map LineSegment2d.length >> List.sum
+    allEdges >> List.map LineSegment2d.length >> List.sum
 
 
 {-| Get the area of a polygon. This value will never be negative.
@@ -211,53 +294,9 @@ perimeter =
 
 -}
 area : Polygon2d -> Float
-area =
-    abs << counterclockwiseArea
-
-
-{-| Get the signed area of a polygon, with polygons with vertices in clockwise
-order considered to have positive area and polygons with vertices in
-counterclockwise order considered to have negative area.
-
-    Polygon2d.clockwiseArea rectangle
-    --> -6
-
--}
-clockwiseArea : Polygon2d -> Float
-clockwiseArea polygon =
-    -(counterclockwiseArea polygon)
-
-
-{-| Get the signed area of a polygon, with polygons with vertices in
-counterclockwise order considered to have positive area and polygons with
-vertices in clockwise order considered to have negative area.
-
-    Polygon2d.counterclockwiseArea rectangle
-    --> 6
-
--}
-counterclockwiseArea : Polygon2d -> Float
-counterclockwiseArea polygon =
-    case vertices polygon of
-        [] ->
-            0
-
-        [ single ] ->
-            0
-
-        [ first, second ] ->
-            0
-
-        first :: second :: rest ->
-            let
-                segmentArea start end =
-                    Triangle2d.counterclockwiseArea
-                        (Triangle2d.fromVertices ( first, start, end ))
-
-                segmentAreas =
-                    List.map2 segmentArea (second :: rest) rest
-            in
-            List.sum segmentAreas
+area polygon =
+    counterclockwiseArea (outerLoop polygon)
+        + List.sum (List.map counterclockwiseArea (innerLoops polygon))
 
 
 {-| Scale a polygon about a given center point by a given scale.
@@ -266,7 +305,7 @@ counterclockwiseArea polygon =
         Point2d.fromCoordinates ( 2, 1 )
 
     Polygon2d.scaleAbout point 2 rectangle
-    --> Polygon2d.fromVertices
+    --> Polygon2d.singleLoop
     -->     [ Point2d.fromCoordinates ( 0, 1 )
     -->     , Point2d.fromCoordinates ( 4, 1 )
     -->     , Point2d.fromCoordinates ( 4, 3 )
@@ -276,7 +315,7 @@ counterclockwiseArea polygon =
 -}
 scaleAbout : Point2d -> Float -> Polygon2d -> Polygon2d
 scaleAbout point scale =
-    mapVertices (Point2d.scaleAbout point scale)
+    mapVertices (Point2d.scaleAbout point scale) (scale < 0)
 
 
 {-| Rotate a polygon around the given center point counterclockwise by the given
@@ -285,7 +324,7 @@ angle (in radians).
     rectangle
         |> Polygon2d.rotateAround Point2d.origin
             (degrees 90)
-    --> Polygon2d.fromVertices
+    --> Polygon2d.singleLoop
     -->     [ Point2d.fromCoordinates ( -1, 1 )
     -->     , Point2d.fromCoordinates ( -1, 3 )
     -->     , Point2d.fromCoordinates ( -2, 3 )
@@ -295,7 +334,7 @@ angle (in radians).
 -}
 rotateAround : Point2d -> Float -> Polygon2d -> Polygon2d
 rotateAround point angle =
-    mapVertices (Point2d.rotateAround point angle)
+    mapVertices (Point2d.rotateAround point angle) False
 
 
 {-| Translate a polygon by the given displacement.
@@ -304,7 +343,7 @@ rotateAround point angle =
         Vector2d.fromComponents ( 2, 3 )
 
     Polygon2d.translateBy displacement rectangle
-    --> Polygon2d.fromVertices
+    --> Polygon2d.singleLoop
     -->     [ Point2d.fromCoordinates ( 3, 4 )
     -->     , Point2d.fromCoordinates ( 5, 4 )
     -->     , Point2d.fromCoordinates ( 5, 5 )
@@ -314,13 +353,13 @@ rotateAround point angle =
 -}
 translateBy : Vector2d -> Polygon2d -> Polygon2d
 translateBy vector =
-    mapVertices (Point2d.translateBy vector)
+    mapVertices (Point2d.translateBy vector) False
 
 
 {-| Mirror a polygon across the given axis.
 
     Polygon2d.mirrorAcross Axis2d.x rectangle
-    --> Polygon2d.fromVertices
+    --> Polygon2d.singleLoop
     -->     [ Point2d.fromCoordinates ( 1, -1 )
     -->     , Point2d.fromCoordinates ( 3, -1 )
     -->     , Point2d.fromCoordinates ( 3, -2 )
@@ -333,22 +372,28 @@ mirroring, they will be in clockwise order afterward, and vice versa.
 -}
 mirrorAcross : Axis2d -> Polygon2d -> Polygon2d
 mirrorAcross axis =
-    mapVertices (Point2d.mirrorAcross axis)
+    mapVertices (Point2d.mirrorAcross axis) True
 
 
-{-| Transform each vertex of a polygon by the given function. All other
-transformations can be defined in terms of `mapVertices`; for example,
+mapVertices : (Point2d -> Point2d) -> Bool -> Polygon2d -> Polygon2d
+mapVertices function invert polygon =
+    let
+        mappedOuterLoop =
+            List.map function (outerLoop polygon)
 
-    Polygon2d.mirrorAcross axis
-
-is equivalent to
-
-    Polygon2d.mapVertices (Point2d.mirrorAcross axis)
-
--}
-mapVertices : (Point2d -> Point2d) -> Polygon2d -> Polygon2d
-mapVertices function =
-    vertices >> List.map function >> fromVertices
+        mappedInnerLoops =
+            List.map (List.map function) (innerLoops polygon)
+    in
+    if invert then
+        Internal.Polygon2d
+            { outerLoop = List.reverse mappedOuterLoop
+            , innerLoops = List.map List.reverse mappedInnerLoops
+            }
+    else
+        Internal.Polygon2d
+            { outerLoop = mappedOuterLoop
+            , innerLoops = mappedInnerLoops
+            }
 
 
 {-| Take a polygon defined in global coordinates, and return it expressed
@@ -358,7 +403,7 @@ in local coordinates relative to a given reference frame.
         Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     Polygon2d.relativeTo localFrame rectangle
-    --> Polygon2d.fromVertices
+    --> Polygon2d.singleLoop
     -->     [ Point2d.fromCoordinates ( 0, -1 )
     -->     , Point2d.fromCoordinates ( 2, -1 )
     -->     , Point2d.fromCoordinates ( 2, 0 )
@@ -368,7 +413,7 @@ in local coordinates relative to a given reference frame.
 -}
 relativeTo : Frame2d -> Polygon2d -> Polygon2d
 relativeTo frame =
-    mapVertices (Point2d.relativeTo frame)
+    mapVertices (Point2d.relativeTo frame) (not (Frame2d.isRightHanded frame))
 
 
 {-| Take a polygon considered to be defined in local coordinates relative
@@ -379,7 +424,7 @@ coordinates.
         Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     Polygon2d.placeIn localFrame rectangle
-    --> Polygon2d.fromVertices
+    --> Polygon2d.singleLoop
     -->     [ Point2d.fromCoordinates ( 2, 3 )
     -->     , Point2d.fromCoordinates ( 4, 3 )
     -->     , Point2d.fromCoordinates ( 4, 4 )
@@ -389,7 +434,7 @@ coordinates.
 -}
 placeIn : Frame2d -> Polygon2d -> Polygon2d
 placeIn frame =
-    mapVertices (Point2d.placeIn frame)
+    mapVertices (Point2d.placeIn frame) (not (Frame2d.isRightHanded frame))
 
 
 {-| Get the minimal bounding box containing a given polygon. Returns `Nothing`
@@ -408,4 +453,16 @@ if the polygon has no vertices.
 -}
 boundingBox : Polygon2d -> Maybe BoundingBox2d
 boundingBox polygon =
-    BoundingBox2d.containingPoints (vertices polygon)
+    BoundingBox2d.containingPoints (outerLoop polygon)
+
+
+{-| Triangulate a polygon.
+-}
+triangulate : Polygon2d -> Mesh Point2d
+triangulate polygon =
+    Mesh.empty
+
+
+toMonotonePolygons : Polygon2d -> List Polygon2d
+toMonotonePolygons polygon =
+    []
