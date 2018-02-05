@@ -521,30 +521,30 @@ collectMonotoneLoops state =
             state.vertices |> Array.map .position
 
         buildLoop startIndex currentIndex ( processedEdgeIndices, accumulated ) =
-            getEdge currentIndex state
-                |> Maybe.map
-                    (\currentEdge ->
-                        let
-                            updatedEdgeIndices =
-                                Set.insert currentIndex processedEdgeIndices
+            case getEdge currentIndex state of
+                Just currentEdge ->
+                    let
+                        updatedEdgeIndices =
+                            Set.insert currentIndex processedEdgeIndices
 
-                            newAccumulated =
-                                currentEdge.startVertexIndex :: accumulated
+                        newAccumulated =
+                            currentEdge.startVertexIndex :: accumulated
 
-                            nextIndex =
-                                currentEdge.nextEdgeIndex
-                        in
-                        if nextIndex == startIndex then
-                            ( updatedEdgeIndices
-                            , Array.fromList (List.reverse newAccumulated)
-                            )
-                        else
-                            buildLoop
-                                startIndex
-                                nextIndex
-                                ( updatedEdgeIndices, newAccumulated )
-                    )
-                |> defaultTo ( processedEdgeIndices, Array.empty )
+                        nextIndex =
+                            currentEdge.nextEdgeIndex
+                    in
+                    if nextIndex == startIndex then
+                        ( updatedEdgeIndices
+                        , Array.fromList (List.reverse newAccumulated)
+                        )
+                    else
+                        buildLoop
+                            startIndex
+                            nextIndex
+                            ( updatedEdgeIndices, newAccumulated )
+
+                Nothing ->
+                    error ( processedEdgeIndices, Array.empty )
 
         processStartEdge index accumulated =
             let
