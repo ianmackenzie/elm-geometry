@@ -231,6 +231,11 @@ getEdge index state =
     Array.get index state.edges
 
 
+error : a -> a
+error defaultValue =
+    Debug.crash "Unexpected"
+
+
 defaultTo : a -> Maybe a -> a
 defaultTo defaultValue maybeValue =
     case maybeValue of
@@ -238,7 +243,7 @@ defaultTo defaultValue maybeValue =
             actualValue
 
         Nothing ->
-            Debug.crash "Unexpected"
+            error defaultValue
 
 
 processLeftEdge : (EdgeSet.Edge -> EdgeSet -> EdgeSet) -> Int -> State -> State
