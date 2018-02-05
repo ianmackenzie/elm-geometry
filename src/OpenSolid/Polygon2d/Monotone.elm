@@ -520,13 +520,13 @@ collectMonotoneLoops state =
                     )
                 |> defaultTo ( processedEdgeIndices, Array.empty )
 
-        processStartEdge index currentState =
+        processStartEdge index accumulated =
             let
                 ( processedEdgeIndices, loops ) =
-                    currentState
+                    accumulated
             in
             if Set.member index processedEdgeIndices then
-                currentState
+                accumulated
             else
                 let
                     ( updatedEdgeIndices, loop ) =
