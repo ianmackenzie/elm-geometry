@@ -7,10 +7,9 @@ module OpenSolid.Polygon2d.Monotone
 
 import Array.Hamt as Array exposing (Array)
 import Dict exposing (Dict)
-import OpenSolid.Geometry.Internal as Internal
+import OpenSolid.Geometry.Internal as Internal exposing (Polygon2d(..))
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
-import OpenSolid.Polygon2d as Polygon2d exposing (Polygon2d)
 import OpenSolid.Polygon2d.EdgeSet as EdgeSet exposing (EdgeSet)
 import Set
 
@@ -161,7 +160,7 @@ removeDuplicates points accumulatedPoints =
 
 
 init : Polygon2d -> Loops
-init (Internal.Polygon2d { outerLoop, innerLoops }) =
+init (Polygon2d { outerLoop, innerLoops }) =
     let
         allLoops =
             (outerLoop :: innerLoops)
@@ -583,7 +582,7 @@ testPolygon =
             , loop [ ( 3, 2 ), ( 4, 1.5 ), ( 3, 1 ) ]
             ]
     in
-    Polygon2d.withHoles outerLoop innerLoops
+    Polygon2d { outerLoop = outerLoop, innerLoops = innerLoops }
 
 
 polygons : Polygon2d -> ( Array Point2d, List (Array Int) )
