@@ -228,11 +228,11 @@ getEdge index state =
     Array.get index state.edges
 
 
-fallBackTo : State -> Maybe State -> State
-fallBackTo defaultState maybeState =
-    case maybeState of
-        Just actualState ->
-            actualState
+defaultTo : a -> Maybe a -> a
+defaultTo defaultValue maybeValue =
+    case maybeValue of
+        Just actualValue ->
+            actualValue
 
         Nothing ->
             Debug.crash "Unexpected"
@@ -261,7 +261,7 @@ processLeftEdge insertOrRemove edgeIndex state =
                     (getVertex edge.startVertexIndex state)
                     (getVertex edge.endVertexIndex state)
             )
-        |> fallBackTo state
+        |> defaultTo state
 
 
 insertLeftEdge : Int -> State -> State
@@ -371,7 +371,7 @@ handleEndVertex index state =
                                 |> removeLeftEdge edge.previousEdgeIndex
                         )
             )
-        |> fallBackTo state
+        |> defaultTo state
 
 
 getLeftEdge : Point2d -> State -> Maybe Int
@@ -394,7 +394,7 @@ handleSplitVertex index point state =
                                 |> setHelperOf index index
                         )
             )
-        |> fallBackTo state
+        |> defaultTo state
 
 
 handleMergeVertex : Int -> Point2d -> State -> State
@@ -426,7 +426,7 @@ handleMergeVertex index point state =
                                     )
                         )
             )
-        |> fallBackTo state
+        |> defaultTo state
 
 
 
@@ -466,7 +466,7 @@ handleRightVertex index point state =
                                 |> setHelperOf leftEdgeIndex index
                         )
             )
-        |> fallBackTo state
+        |> defaultTo state
 
 
 handleLeftVertex : Int -> State -> State
@@ -485,7 +485,7 @@ handleLeftVertex index state =
                                 |> setHelperOf index index
                         )
             )
-        |> fallBackTo state
+        |> defaultTo state
 
 
 collectMonotoneLoops : State -> ( Array Point2d, List (Array Int) )
@@ -518,7 +518,7 @@ collectMonotoneLoops state =
                                 nextIndex
                                 ( updatedEdgeIndices, newAccumulated )
                     )
-                |> Maybe.withDefault ( processedEdgeIndices, Array.empty )
+                |> defaultTo ( processedEdgeIndices, Array.empty )
 
         processStartEdge index currentState =
             let
