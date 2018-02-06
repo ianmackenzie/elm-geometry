@@ -165,7 +165,7 @@ view model =
                     "hsla(" ++ hueString ++ ",50%, 50%,0.5)"
 
                 strokeColor =
-                    "hsl(" ++ hueString ++ ",50%, 25%)"
+                    "hsla(" ++ hueString ++ ",50%, 40%, 0.5)"
             in
             vertexIndices
                 |> Array.toList
