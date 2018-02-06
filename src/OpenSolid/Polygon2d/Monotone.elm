@@ -203,21 +203,19 @@ init (Polygon2d { outerLoop, innerLoops }) =
     }
 
 
-type alias State =
-    { edgeSet : EdgeSet
-    , helpers : Dict Int Int -- helper vertex index by edge index
-    , outgoingEdges : Dict Int Int -- outgoing edge index by vertex index
-    , vertices : Array Vertex
-    , edges : Array Edge
+type alias HelperVertex =
+    { index : Int
+    , outgoingEdgeIndex : Int
+    , isMerge : Bool
     }
 
 
-if_ : Bool -> (State -> State) -> State -> State
-if_ condition operation state =
-    if condition then
-        operation state
-    else
-        state
+type alias State =
+    { edgeSet : EdgeSet
+    , helpers : Dict Int HelperVertex -- helper vertex by edge index
+    , vertices : Array Vertex
+    , edges : Array Edge
+    }
 
 
 getVertex : Int -> State -> Maybe Vertex
@@ -281,11 +279,11 @@ removeLeftEdge =
     processLeftEdge EdgeSet.remove
 
 
-setHelperOf : Int -> Int -> State -> State
-setHelperOf edgeIndex vertexIndex state =
+setHelperOf : Int -> HelperVertex -> State -> State
+setHelperOf edgeIndex helperVertex state =
     { state
         | helpers =
-            Dict.insert edgeIndex vertexIndex state.helpers
+            Dict.insert edgeIndex helperVertex state.helpers
     }
 
 
@@ -293,7 +291,7 @@ handleStartVertex : Int -> State -> State
 handleStartVertex index state =
     state
         |> insertLeftEdge index
-        |> setHelperOf index index
+        |> setHelperOf index (HelperVertex index index False)
 
 
 updateAt : Int -> (a -> a) -> Array a -> Array a
@@ -316,68 +314,47 @@ setNextEdge index edge =
     { edge | nextEdgeIndex = index }
 
 
-outgoingEdgeIndex : Int -> State -> Int
-outgoingEdgeIndex vertexIndex state =
-    Dict.get vertexIndex state.outgoingEdges |> Maybe.withDefault vertexIndex
-
-
-addDiagonal : Int -> Int -> Bool -> State -> State
-addDiagonal i j replaceOutgoing state =
+addDiagonal : Int -> HelperVertex -> State -> ( State, Int )
+addDiagonal vertexIndex helperVertex state =
     let
         n =
             Array.length state.edges
-
-        outgoingEdgeIndexI =
-            outgoingEdgeIndex i state
-
-        outgoingEdgeIndexJ =
-            outgoingEdgeIndex j state
     in
     Maybe.map4
         (\vi vj ei ej ->
-            { state
+            ( { state
                 | edges =
                     state.edges
-                        |> updateAt outgoingEdgeIndexI (setPreviousEdge (n + 1))
-                        |> updateAt outgoingEdgeIndexJ (setPreviousEdge n)
+                        |> updateAt vertexIndex (setPreviousEdge (n + 1))
+                        |> updateAt helperVertex.outgoingEdgeIndex (setPreviousEdge n)
                         |> updateAt ei.previousEdgeIndex (setNextEdge n)
                         |> updateAt ej.previousEdgeIndex (setNextEdge (n + 1))
                         |> Array.push
                             -- edge index n
-                            { startVertexIndex = i
-                            , endVertexIndex = j
+                            { startVertexIndex = vertexIndex
+                            , endVertexIndex = helperVertex.index
                             , previousEdgeIndex = ei.previousEdgeIndex
-                            , nextEdgeIndex = outgoingEdgeIndexJ
+                            , nextEdgeIndex = helperVertex.outgoingEdgeIndex
                             }
                         |> Array.push
                             -- edge index n + 1
-                            { startVertexIndex = j
-                            , endVertexIndex = i
+                            { startVertexIndex = helperVertex.index
+                            , endVertexIndex = vertexIndex
                             , previousEdgeIndex = ej.previousEdgeIndex
-                            , nextEdgeIndex = outgoingEdgeIndexI
+                            , nextEdgeIndex = vertexIndex
                             }
-                , outgoingEdges =
-                    if replaceOutgoing then
-                        Dict.insert i n state.outgoingEdges
-                    else
-                        state.outgoingEdges
-            }
+              }
+            , n
+            )
         )
-        (Array.get i state.vertices)
-        (Array.get j state.vertices)
-        (Array.get outgoingEdgeIndexI state.edges)
-        (Array.get outgoingEdgeIndexJ state.edges)
-        |> defaultTo state
+        (Array.get vertexIndex state.vertices)
+        (Array.get helperVertex.index state.vertices)
+        (Array.get vertexIndex state.edges)
+        (Array.get helperVertex.outgoingEdgeIndex state.edges)
+        |> defaultTo ( state, -1 )
 
 
-vertexIsMerge : Int -> State -> Bool
-vertexIsMerge vertexIndex state =
-    getVertex vertexIndex state
-        |> Maybe.map (\vertex -> vertex.kind == Merge)
-        |> Maybe.withDefault False
-
-
-getHelperOf : Int -> State -> Maybe Int
+getHelperOf : Int -> State -> Maybe HelperVertex
 getHelperOf edgeIndex state =
     Dict.get edgeIndex state.helpers
 
@@ -389,10 +366,17 @@ handleEndVertex index state =
             (\edge ->
                 getHelperOf edge.previousEdgeIndex state
                     |> Maybe.map
-                        (\helperVertexIndex ->
-                            state
-                                |> if_ (vertexIsMerge helperVertexIndex state)
-                                    (addDiagonal index helperVertexIndex False)
+                        (\helperVertex ->
+                            let
+                                diagonalAdded =
+                                    if helperVertex.isMerge then
+                                        state
+                                            |> addDiagonal index helperVertex
+                                            |> Tuple.first
+                                    else
+                                        state
+                            in
+                            diagonalAdded
                                 |> removeLeftEdge edge.previousEdgeIndex
                         )
             )
@@ -411,12 +395,15 @@ handleSplitVertex index point state =
             (\edgeIndex ->
                 getHelperOf edgeIndex state
                     |> Maybe.map
-                        (\helperVertexIndex ->
-                            state
-                                |> addDiagonal index helperVertexIndex False
-                                |> setHelperOf edgeIndex index
+                        (\helperVertex ->
+                            let
+                                ( updatedState, outgoingEdgeIndex ) =
+                                    addDiagonal index helperVertex state
+                            in
+                            updatedState
+                                |> setHelperOf edgeIndex (HelperVertex index outgoingEdgeIndex False)
                                 |> insertLeftEdge index
-                                |> setHelperOf index index
+                                |> setHelperOf index (HelperVertex index index False)
                         )
             )
         |> defaultTo state
@@ -429,24 +416,36 @@ handleMergeVertex index point state =
             (\edge ->
                 getHelperOf edge.previousEdgeIndex state
                     |> Maybe.andThen
-                        (\previousEdgeHelper ->
+                        (\rightHelper ->
                             let
-                                updatedState =
-                                    state
-                                        |> if_ (vertexIsMerge previousEdgeHelper state)
-                                            (addDiagonal index previousEdgeHelper False)
+                                rightDiagonalAdded =
+                                    if rightHelper.isMerge then
+                                        state
+                                            |> addDiagonal index rightHelper
+                                            |> Tuple.first
+                                    else
+                                        state
+
+                                rightUpdated =
+                                    rightDiagonalAdded
                                         |> removeLeftEdge edge.previousEdgeIndex
                             in
-                            getLeftEdge point updatedState
+                            getLeftEdge point rightUpdated
                                 |> Maybe.andThen
                                     (\leftEdgeIndex ->
                                         getHelperOf leftEdgeIndex state
                                             |> Maybe.map
-                                                (\leftEdgeHelper ->
-                                                    updatedState
-                                                        |> if_ (vertexIsMerge leftEdgeHelper updatedState)
-                                                            (addDiagonal index leftEdgeHelper True)
-                                                        |> setHelperOf leftEdgeIndex index
+                                                (\leftHelper ->
+                                                    let
+                                                        ( leftDiagonalAdded, leftOutgoing ) =
+                                                            if leftHelper.isMerge then
+                                                                rightUpdated
+                                                                    |> addDiagonal index leftHelper
+                                                            else
+                                                                ( rightUpdated, index )
+                                                    in
+                                                    leftDiagonalAdded
+                                                        |> setHelperOf leftEdgeIndex (HelperVertex index leftOutgoing True)
                                                 )
                                     )
                         )
@@ -461,11 +460,17 @@ handleRightVertex index point state =
             (\leftEdgeIndex ->
                 getHelperOf leftEdgeIndex state
                     |> Maybe.map
-                        (\helperVertexIndex ->
-                            state
-                                |> if_ (vertexIsMerge helperVertexIndex state)
-                                    (addDiagonal index helperVertexIndex True)
-                                |> setHelperOf leftEdgeIndex index
+                        (\helperVertex ->
+                            let
+                                ( diagonalAdded, outgoingEdgeIndex ) =
+                                    if helperVertex.isMerge then
+                                        state
+                                            |> addDiagonal index helperVertex
+                                    else
+                                        ( state, index )
+                            in
+                            diagonalAdded
+                                |> setHelperOf leftEdgeIndex (HelperVertex index outgoingEdgeIndex False)
                         )
             )
         |> defaultTo state
@@ -478,13 +483,20 @@ handleLeftVertex index state =
             (\edge ->
                 getHelperOf edge.previousEdgeIndex state
                     |> Maybe.map
-                        (\helperVertexIndex ->
-                            state
-                                |> if_ (vertexIsMerge helperVertexIndex state)
-                                    (addDiagonal index helperVertexIndex False)
+                        (\helperVertex ->
+                            let
+                                diagonalAdded =
+                                    if helperVertex.isMerge then
+                                        state
+                                            |> addDiagonal index helperVertex
+                                            |> Tuple.first
+                                    else
+                                        state
+                            in
+                            diagonalAdded
                                 |> removeLeftEdge edge.previousEdgeIndex
                                 |> insertLeftEdge index
-                                |> setHelperOf index index
+                                |> setHelperOf index (HelperVertex index index False)
                         )
             )
         |> defaultTo state
@@ -579,7 +591,6 @@ polygons polygon =
         initialState =
             { edgeSet = EdgeSet.empty
             , helpers = Dict.empty
-            , outgoingEdges = Dict.empty
             , vertices = Array.fromList vertices
             , edges = edges
             }
