@@ -162,7 +162,7 @@ view model =
                     toString (360 * toFloat loopIndex / toFloat numLoops)
 
                 fillColor =
-                    "hsla(" ++ hueString ++ ",50%, 50%,0.5)"
+                    "hsla(" ++ hueString ++ ",50%, 50%, 0.5)"
 
                 strokeColor =
                     "hsla(" ++ hueString ++ ",50%, 40%, 0.5)"
