@@ -454,29 +454,6 @@ handleMergeVertex index point state =
         |> defaultTo state
 
 
-
---handleMergeVertex : Int -> Point2d -> State -> State
---handleMergeVertex index point state =
---    Maybe.map2 (,) (getEdge index state) (getLeftEdge point state)
---        |> Maybe.andThen
---            (\( edge, leftEdgeIndex ) ->
---                Maybe.map2 (,)
---                    (getHelperOf edge.previousEdgeIndex state)
---                    (getHelperOf leftEdgeIndex state)
---                    |> Maybe.map
---                        (\( previousEdgeHelper, leftEdgeHelper ) ->
---                            state
---                                |> if_ (vertexIsMerge previousEdgeHelper state)
---                                    (addDiagonal index previousEdgeHelper)
---                                |> removeLeftEdge edge.previousEdgeIndex
---                                |> if_ (vertexIsMerge leftEdgeHelper state)
---                                    (addDiagonal index leftEdgeHelper)
---                                |> setHelperOf leftEdgeIndex index
---                        )
---            )
---        |> fallBackTo state
-
-
 handleRightVertex : Int -> Point2d -> State -> State
 handleRightVertex index point state =
     getLeftEdge point state
