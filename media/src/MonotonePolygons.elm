@@ -148,7 +148,7 @@ view model =
                 model.polygon
 
         ( points, loops ) =
-            Monotone.polygons rotatedPolygon
+            Monotone.monotonePolygons rotatedPolygon
 
         numLoops =
             List.length loops

@@ -2,7 +2,7 @@ module OpenSolid.Polygon2d.Monotone
     exposing
         ( faces
         , init
-        , polygons
+        , monotonePolygons
         , testPolygon
         )
 
@@ -594,8 +594,8 @@ testPolygon =
     Polygon2d { outerLoop = outerLoop, innerLoops = innerLoops }
 
 
-polygons : Polygon2d -> ( Array Point2d, List (List MonotoneVertex) )
-polygons polygon =
+monotonePolygons : Polygon2d -> ( Array Point2d, List (List MonotoneVertex) )
+monotonePolygons polygon =
     let
         { vertices, edges } =
             init polygon
