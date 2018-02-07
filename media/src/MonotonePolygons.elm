@@ -1,5 +1,6 @@
 module MonotonePolygones exposing (..)
 
+import Array.Hamt as Array
 import Html exposing (Html)
 import Html.Attributes
 import Html.Events
@@ -9,6 +10,7 @@ import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Polygon2d as Polygon2d exposing (Polygon2d)
 import OpenSolid.Polygon2d.Monotone as Monotone
 import OpenSolid.Svg as Svg
+import OpenSolid.Triangle2d as Triangle2d exposing (Triangle2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import Random exposing (Generator)
 import Svg
@@ -145,7 +147,7 @@ view model =
                 (degrees model.angleInDegrees)
                 model.polygon
 
-        ( _, loops ) =
+        ( points, loops ) =
             Monotone.polygons rotatedPolygon
 
         numLoops =
@@ -161,14 +163,31 @@ view model =
 
                 strokeColor =
                     "hsla(" ++ hueString ++ ",50%, 40%, 0.5)"
+
+                faceIndices =
+                    Monotone.faces vertices
+
+                triangles =
+                    faceIndices
+                        |> List.filterMap
+                            (\( i, j, k ) ->
+                                Maybe.map3
+                                    (\p1 p2 p3 ->
+                                        Triangle2d.fromVertices ( p1, p2, p3 )
+                                    )
+                                    (Array.get i points)
+                                    (Array.get j points)
+                                    (Array.get k points)
+                            )
             in
-            vertices
-                |> List.map .position
-                |> Polygon2d.singleLoop
-                |> Svg.polygon2d
-                    [ Svg.Attributes.fill fillColor
-                    , Svg.Attributes.stroke strokeColor
-                    ]
+            triangles
+                |> List.map
+                    (Svg.triangle2d
+                        [ Svg.Attributes.fill fillColor
+                        , Svg.Attributes.stroke strokeColor
+                        ]
+                    )
+                |> Svg.g []
     in
     Html.div []
         [ Html.div [ Html.Events.onClick Click ]
