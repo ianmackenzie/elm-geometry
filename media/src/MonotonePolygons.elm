@@ -1,6 +1,5 @@
 module MonotonePolygones exposing (..)
 
-import Array.Hamt as Array
 import Html exposing (Html)
 import Html.Attributes
 import Html.Events
@@ -135,10 +134,6 @@ update message model =
             ( { model | angleInDegrees = angleInDegrees }, Cmd.none )
 
 
-
---( Array Point2d, List (Array Int) )
-
-
 view : Model -> Html Msg
 view model =
     let
@@ -150,13 +145,13 @@ view model =
                 (degrees model.angleInDegrees)
                 model.polygon
 
-        ( vertices, loops ) =
+        ( _, loops ) =
             Monotone.polygons rotatedPolygon
 
         numLoops =
             List.length loops
 
-        drawLoop loopIndex vertexIndices =
+        drawLoop loopIndex vertices =
             let
                 hueString =
                     toString (360 * toFloat loopIndex / toFloat numLoops)
@@ -167,9 +162,8 @@ view model =
                 strokeColor =
                     "hsla(" ++ hueString ++ ",50%, 40%, 0.5)"
             in
-            vertexIndices
-                |> Array.toList
-                |> List.filterMap (\index -> Array.get index vertices)
+            vertices
+                |> List.map .position
                 |> Polygon2d.singleLoop
                 |> Svg.polygon2d
                     [ Svg.Attributes.fill fillColor

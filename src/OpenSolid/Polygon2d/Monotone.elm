@@ -11,6 +11,7 @@ import OpenSolid.Geometry.Internal as Internal exposing (Polygon2d(..))
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Polygon2d.EdgeSet as EdgeSet exposing (EdgeSet)
+import OpenSolid.Triangle2d as Triangle2d exposing (Triangle2d)
 import Set
 
 
@@ -502,7 +503,14 @@ handleLeftVertex index state =
         |> defaultTo state
 
 
-collectMonotoneLoops : State -> ( Array Point2d, List (Array Int) )
+type alias MonotoneVertex =
+    { index : Int
+    , position : Point2d
+    , nextVertexIndex : Int
+    }
+
+
+collectMonotoneLoops : State -> ( Array Point2d, List (List MonotoneVertex) )
 collectMonotoneLoops state =
     let
         points =
@@ -511,28 +519,39 @@ collectMonotoneLoops state =
         buildLoop startIndex currentIndex ( processedEdgeIndices, accumulated ) =
             case getEdge currentIndex state of
                 Just currentEdge ->
-                    let
-                        updatedEdgeIndices =
-                            Set.insert currentIndex processedEdgeIndices
+                    case Array.get currentEdge.startVertexIndex points of
+                        Just vertexPosition ->
+                            let
+                                updatedEdgeIndices =
+                                    Set.insert currentIndex processedEdgeIndices
 
-                        newAccumulated =
-                            currentEdge.startVertexIndex :: accumulated
+                                newVertex =
+                                    { index = currentEdge.startVertexIndex
+                                    , position = vertexPosition
+                                    , nextVertexIndex = currentEdge.endVertexIndex
+                                    }
 
-                        nextIndex =
-                            currentEdge.nextEdgeIndex
-                    in
-                    if nextIndex == startIndex then
-                        ( updatedEdgeIndices
-                        , Array.fromList (List.reverse newAccumulated)
-                        )
-                    else
-                        buildLoop
-                            startIndex
-                            nextIndex
-                            ( updatedEdgeIndices, newAccumulated )
+                                newAccumulated =
+                                    newVertex :: accumulated
+
+                                nextIndex =
+                                    currentEdge.nextEdgeIndex
+                            in
+                            if nextIndex == startIndex then
+                                ( updatedEdgeIndices
+                                , List.reverse newAccumulated
+                                )
+                            else
+                                buildLoop
+                                    startIndex
+                                    nextIndex
+                                    ( updatedEdgeIndices, newAccumulated )
+
+                        Nothing ->
+                            error ( processedEdgeIndices, [] )
 
                 Nothing ->
-                    error ( processedEdgeIndices, Array.empty )
+                    error ( processedEdgeIndices, [] )
 
         processStartEdge index accumulated =
             let
@@ -574,7 +593,7 @@ testPolygon =
     Polygon2d { outerLoop = outerLoop, innerLoops = innerLoops }
 
 
-polygons : Polygon2d -> ( Array Point2d, List (Array Int) )
+polygons : Polygon2d -> ( Array Point2d, List (List MonotoneVertex) )
 polygons polygon =
     let
         { vertices, edges } =
@@ -622,3 +641,82 @@ polygons polygon =
             List.foldl handleVertex initialState priorityQueue
     in
     collectMonotoneLoops finalState
+
+
+type alias TriangulationState =
+    { chainStart : MonotoneVertex
+    , chainInterior : List MonotoneVertex
+    , chainEnd : MonotoneVertex
+    , faces : List ( Int, Int, Int )
+    }
+
+
+positiveArea : MonotoneVertex -> MonotoneVertex -> MonotoneVertex -> Bool
+positiveArea first second third =
+    let
+        triangle =
+            Triangle2d.fromVertices
+                ( first.position
+                , second.position
+                , third.position
+                )
+    in
+    Triangle2d.counterclockwiseArea triangle > 0
+
+
+addChainVertex : MonotoneVertex -> TriangulationState -> TriangulationState
+addChainVertex vertex state =
+    case state.chainInterior of
+        [] ->
+            state
+
+        first :: rest ->
+            state
+
+
+faces : List MonotoneVertex -> List ( Int, Int, Int )
+faces vertices =
+    let
+        sortedVertices =
+            vertices
+                |> List.sortWith
+                    (\first second ->
+                        comparePoints first.position second.position
+                    )
+    in
+    case sortedVertices of
+        [] ->
+            []
+
+        [ single ] ->
+            []
+
+        first :: second :: rest ->
+            let
+                initialState =
+                    { chainStart = first
+                    , chainInterior = []
+                    , chainEnd = second
+                    , faces = []
+                    }
+
+                processVertex vertex state =
+                    let
+                        { chainStart, chainInterior, chainEnd, faces } =
+                            state
+
+                        continuingRight =
+                            chainEnd.nextVertexIndex == vertex.index
+
+                        continuingLeft =
+                            vertex.nextVertexIndex == chainEnd.index
+                    in
+                    if continuingLeft || continuingRight then
+                        -- continuing chain
+                        state
+                    else
+                        -- on other side
+                        state
+            in
+            List.foldl processVertex initialState vertices
+                |> .faces
