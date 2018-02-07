@@ -82,6 +82,7 @@ import OpenSolid.Geometry.Internal as Internal
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.Mesh as Mesh exposing (Mesh)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.Polygon2d.Monotone as Monotone
 import OpenSolid.Triangle2d as Triangle2d exposing (Triangle2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
@@ -460,9 +461,4 @@ boundingBox polygon =
 -}
 triangulate : Polygon2d -> Mesh Point2d
 triangulate polygon =
-    Mesh.empty
-
-
-toMonotonePolygons : Polygon2d -> List Polygon2d
-toMonotonePolygons polygon =
-    []
+    Monotone.triangulation polygon

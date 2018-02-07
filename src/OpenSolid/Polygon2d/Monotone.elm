@@ -4,12 +4,14 @@ module OpenSolid.Polygon2d.Monotone
         , init
         , monotonePolygons
         , testPolygon
+        , triangulation
         )
 
 import Array.Hamt as Array exposing (Array)
 import Dict exposing (Dict)
 import OpenSolid.Geometry.Internal as Internal exposing (Polygon2d(..))
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
+import OpenSolid.Mesh as Mesh exposing (Mesh)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Polygon2d.EdgeSet as EdgeSet exposing (EdgeSet)
 import OpenSolid.Triangle2d as Triangle2d exposing (Triangle2d)
@@ -869,3 +871,15 @@ faces vertices =
                         error state
             in
             List.foldl processVertex initialState rest |> .faces
+
+
+triangulation : Polygon2d -> Mesh Point2d
+triangulation polygon =
+    let
+        ( points, loops ) =
+            monotonePolygons polygon
+    in
+    Mesh.with
+        { vertices = points
+        , faceIndices = List.map faces loops |> List.concat
+        }
