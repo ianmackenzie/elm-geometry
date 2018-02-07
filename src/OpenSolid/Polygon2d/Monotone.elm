@@ -681,7 +681,7 @@ faces vertices =
             vertices
                 |> List.sortWith
                     (\first second ->
-                        comparePoints first.position second.position
+                        comparePoints second.position first.position
                     )
     in
     case sortedVertices of
