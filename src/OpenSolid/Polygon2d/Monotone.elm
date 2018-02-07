@@ -1,6 +1,7 @@
 module OpenSolid.Polygon2d.Monotone
     exposing
-        ( init
+        ( faces
+        , init
         , polygons
         , testPolygon
         )
@@ -651,27 +652,172 @@ type alias TriangulationState =
     }
 
 
-positiveArea : MonotoneVertex -> MonotoneVertex -> MonotoneVertex -> Bool
-positiveArea first second third =
-    let
-        triangle =
-            Triangle2d.fromVertices
-                ( first.position
-                , second.position
-                , third.position
-                )
-    in
-    Triangle2d.counterclockwiseArea triangle > 0
+signedArea : MonotoneVertex -> MonotoneVertex -> MonotoneVertex -> Float
+signedArea first second third =
+    Triangle2d.counterclockwiseArea <|
+        Triangle2d.fromVertices
+            ( first.position
+            , second.position
+            , third.position
+            )
 
 
-addChainVertex : MonotoneVertex -> TriangulationState -> TriangulationState
-addChainVertex vertex state =
+addLeftChainVertex : MonotoneVertex -> TriangulationState -> TriangulationState
+addLeftChainVertex vertex state =
     case state.chainInterior of
         [] ->
-            state
+            if signedArea state.chainStart state.chainEnd vertex > 0 then
+                let
+                    newFace =
+                        ( state.chainStart.index
+                        , state.chainEnd.index
+                        , vertex.index
+                        )
+                in
+                { chainStart = state.chainStart
+                , chainInterior = []
+                , chainEnd = vertex
+                , faces = newFace :: state.faces
+                }
+            else
+                { chainStart = state.chainStart
+                , chainInterior = [ state.chainEnd ]
+                , chainEnd = vertex
+                , faces = state.faces
+                }
 
-        first :: rest ->
-            state
+        firstInterior :: restInterior ->
+            if signedArea firstInterior state.chainEnd vertex > 0 then
+                let
+                    newFace =
+                        ( firstInterior.index
+                        , state.chainEnd.index
+                        , vertex.index
+                        )
+                in
+                addLeftChainVertex vertex
+                    { chainStart = state.chainStart
+                    , chainInterior = restInterior
+                    , chainEnd = firstInterior
+                    , faces = newFace :: state.faces
+                    }
+            else
+                { chainStart = state.chainStart
+                , chainInterior = state.chainEnd :: state.chainInterior
+                , chainEnd = vertex
+                , faces = state.faces
+                }
+
+
+addRightChainVertex : MonotoneVertex -> TriangulationState -> TriangulationState
+addRightChainVertex vertex state =
+    case state.chainInterior of
+        [] ->
+            if signedArea vertex state.chainEnd state.chainStart > 0 then
+                let
+                    newFace =
+                        ( vertex.index
+                        , state.chainEnd.index
+                        , state.chainStart.index
+                        )
+                in
+                { chainStart = state.chainStart
+                , chainInterior = []
+                , chainEnd = vertex
+                , faces = newFace :: state.faces
+                }
+            else
+                { chainStart = state.chainStart
+                , chainInterior = [ state.chainEnd ]
+                , chainEnd = vertex
+                , faces = state.faces
+                }
+
+        firstInterior :: restInterior ->
+            if signedArea vertex state.chainEnd firstInterior > 0 then
+                let
+                    newFace =
+                        ( vertex.index
+                        , state.chainEnd.index
+                        , firstInterior.index
+                        )
+                in
+                addRightChainVertex vertex
+                    { chainStart = state.chainStart
+                    , chainInterior = restInterior
+                    , chainEnd = firstInterior
+                    , faces = newFace :: state.faces
+                    }
+            else
+                { chainStart = state.chainStart
+                , chainInterior = state.chainEnd :: state.chainInterior
+                , chainEnd = vertex
+                , faces = state.faces
+                }
+
+
+startNewRightChain : MonotoneVertex -> TriangulationState -> TriangulationState
+startNewRightChain vertex state =
+    let
+        collectFaces firstVertex otherVertices accumulated =
+            case otherVertices of
+                [] ->
+                    let
+                        newFace =
+                            ( firstVertex.index
+                            , vertex.index
+                            , state.chainStart.index
+                            )
+                    in
+                    newFace :: accumulated
+
+                firstOther :: restOther ->
+                    let
+                        newFace =
+                            ( firstVertex.index
+                            , vertex.index
+                            , firstOther.index
+                            )
+                    in
+                    collectFaces firstOther restOther (newFace :: accumulated)
+    in
+    { chainStart = state.chainEnd
+    , chainInterior = []
+    , chainEnd = vertex
+    , faces = collectFaces state.chainEnd state.chainInterior state.faces
+    }
+
+
+startNewLeftChain : MonotoneVertex -> TriangulationState -> TriangulationState
+startNewLeftChain vertex state =
+    let
+        collectFaces firstVertex otherVertices accumulated =
+            case otherVertices of
+                [] ->
+                    let
+                        newFace =
+                            ( vertex.index
+                            , firstVertex.index
+                            , state.chainStart.index
+                            )
+                    in
+                    newFace :: accumulated
+
+                firstOther :: restOther ->
+                    let
+                        newFace =
+                            ( vertex.index
+                            , firstVertex.index
+                            , firstOther.index
+                            )
+                    in
+                    collectFaces firstOther restOther (newFace :: accumulated)
+    in
+    { chainStart = state.chainEnd
+    , chainInterior = []
+    , chainEnd = vertex
+    , faces = collectFaces state.chainEnd state.chainInterior state.faces
+    }
 
 
 faces : List MonotoneVertex -> List ( Int, Int, Int )
@@ -704,19 +850,22 @@ faces vertices =
                     let
                         { chainStart, chainInterior, chainEnd, faces } =
                             state
-
-                        continuingRight =
-                            chainEnd.nextVertexIndex == vertex.index
-
-                        continuingLeft =
-                            vertex.nextVertexIndex == chainEnd.index
                     in
-                    if continuingLeft || continuingRight then
-                        -- continuing chain
-                        state
+                    if vertex.nextVertexIndex == chainStart.index then
+                        -- new vertex on the right will connect to all chain
+                        -- vertices on the left
+                        startNewRightChain vertex state
+                    else if chainStart.nextVertexIndex == vertex.index then
+                        -- new vertex on the left will connect to all chain
+                        -- vertices on the right
+                        startNewLeftChain vertex state
+                    else if vertex.nextVertexIndex == chainEnd.index then
+                        -- continuing left chain
+                        addRightChainVertex vertex state
+                    else if chainEnd.nextVertexIndex == vertex.index then
+                        -- continuing right chain
+                        addLeftChainVertex vertex state
                     else
-                        -- on other side
-                        state
+                        error state
             in
-            List.foldl processVertex initialState vertices
-                |> .faces
+            List.foldl processVertex initialState rest |> .faces
