@@ -206,7 +206,6 @@ view model =
             { min = -180, max = 180, step = 1 }
             model.angleInDegrees
             |> Html.map SetAngleInDegrees
-        , Html.div [] [ Html.text (toString numLoops ++ " loops") ]
         ]
 
 
