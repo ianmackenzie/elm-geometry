@@ -15,7 +15,7 @@ import OpenSolid.Mesh as Mesh exposing (Mesh)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Polygon2d.EdgeSet as EdgeSet exposing (EdgeSet)
 import OpenSolid.Triangle2d as Triangle2d exposing (Triangle2d)
-import Set
+import Set exposing (Set)
 
 
 type Kind
@@ -513,48 +513,52 @@ type alias MonotoneVertex =
     }
 
 
+buildLoop : State -> Array Point2d -> Int -> Int -> ( Set Int, List MonotoneVertex ) -> ( Set Int, List MonotoneVertex )
+buildLoop state points startIndex currentIndex ( processedEdgeIndices, accumulated ) =
+    case getEdge currentIndex state of
+        Just currentEdge ->
+            case Array.get currentEdge.startVertexIndex points of
+                Just vertexPosition ->
+                    let
+                        updatedEdgeIndices =
+                            Set.insert currentIndex processedEdgeIndices
+
+                        newVertex =
+                            { index = currentEdge.startVertexIndex
+                            , position = vertexPosition
+                            , nextVertexIndex = currentEdge.endVertexIndex
+                            }
+
+                        newAccumulated =
+                            newVertex :: accumulated
+
+                        nextIndex =
+                            currentEdge.nextEdgeIndex
+                    in
+                    if nextIndex == startIndex then
+                        ( updatedEdgeIndices
+                        , List.reverse newAccumulated
+                        )
+                    else
+                        buildLoop
+                            state
+                            points
+                            startIndex
+                            nextIndex
+                            ( updatedEdgeIndices, newAccumulated )
+
+                Nothing ->
+                    error ( processedEdgeIndices, [] )
+
+        Nothing ->
+            error ( processedEdgeIndices, [] )
+
+
 collectMonotoneLoops : State -> ( Array Point2d, List (List MonotoneVertex) )
 collectMonotoneLoops state =
     let
         points =
             state.vertices |> Array.map .position
-
-        buildLoop startIndex currentIndex ( processedEdgeIndices, accumulated ) =
-            case getEdge currentIndex state of
-                Just currentEdge ->
-                    case Array.get currentEdge.startVertexIndex points of
-                        Just vertexPosition ->
-                            let
-                                updatedEdgeIndices =
-                                    Set.insert currentIndex processedEdgeIndices
-
-                                newVertex =
-                                    { index = currentEdge.startVertexIndex
-                                    , position = vertexPosition
-                                    , nextVertexIndex = currentEdge.endVertexIndex
-                                    }
-
-                                newAccumulated =
-                                    newVertex :: accumulated
-
-                                nextIndex =
-                                    currentEdge.nextEdgeIndex
-                            in
-                            if nextIndex == startIndex then
-                                ( updatedEdgeIndices
-                                , List.reverse newAccumulated
-                                )
-                            else
-                                buildLoop
-                                    startIndex
-                                    nextIndex
-                                    ( updatedEdgeIndices, newAccumulated )
-
-                        Nothing ->
-                            error ( processedEdgeIndices, [] )
-
-                Nothing ->
-                    error ( processedEdgeIndices, [] )
 
         processStartEdge index accumulated =
             let
@@ -566,7 +570,7 @@ collectMonotoneLoops state =
             else
                 let
                     ( updatedEdgeIndices, loop ) =
-                        buildLoop index index ( processedEdgeIndices, [] )
+                        buildLoop state points index index ( processedEdgeIndices, [] )
                 in
                 ( updatedEdgeIndices, loop :: loops )
 
