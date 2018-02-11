@@ -1,19 +1,18 @@
 module PolygonTriangulation exposing (..)
 
+import BoundingBox2d exposing (BoundingBox2d)
 import Html exposing (Html)
 import Html.Attributes
 import Html.Events
 import Kintail.InputWidget as InputWidget
-import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
-import OpenSolid.Mesh as Mesh
-import OpenSolid.Point2d as Point2d exposing (Point2d)
-import OpenSolid.Polygon2d as Polygon2d exposing (Polygon2d)
-import OpenSolid.Svg as Svg
-import OpenSolid.Triangle2d as Triangle2d exposing (Triangle2d)
-import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
+import Mesh
+import Point2d exposing (Point2d)
+import Polygon2d exposing (Polygon2d)
 import Random exposing (Generator)
 import Svg
 import Svg.Attributes
+import Triangle2d exposing (Triangle2d)
+import Vector2d exposing (Vector2d)
 
 
 type alias Model =

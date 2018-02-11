@@ -1,8 +1,7 @@
 module ReleaseNotes.ArcLengthParameterization exposing (..)
 
+import CubicSpline2d
 import Html exposing (Html)
-import OpenSolid.CubicSpline2d as CubicSpline2d
-import OpenSolid.Svg as Svg
 import ReleaseNotes.Common exposing (..)
 import Svg
 

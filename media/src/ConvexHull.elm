@@ -1,11 +1,10 @@
 module ConvexHull exposing (..)
 
+import BoundingBox2d exposing (BoundingBox2d)
 import Html exposing (Html)
 import Html.Events
-import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
-import OpenSolid.Point2d as Point2d exposing (Point2d)
-import OpenSolid.Polygon2d as Polygon2d
-import OpenSolid.Svg as Svg
+import Point2d exposing (Point2d)
+import Polygon2d
 import Random exposing (Generator)
 import Svg
 import Svg.Attributes

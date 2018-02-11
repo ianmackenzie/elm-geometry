@@ -1,8 +1,8 @@
 module ReleaseNotes.Common exposing (..)
 
-import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
-import OpenSolid.CubicSpline2d as CubicSpline2d exposing (CubicSpline2d)
-import OpenSolid.Point2d as Point2d exposing (Point2d)
+import BoundingBox2d exposing (BoundingBox2d)
+import CubicSpline2d exposing (CubicSpline2d)
+import Point2d exposing (Point2d)
 import Svg exposing (Attribute)
 import Svg.Attributes as Attributes
 

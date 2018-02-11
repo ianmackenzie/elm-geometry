@@ -1,18 +1,17 @@
 module EllipticalArc2d.FromEndpoints exposing (..)
 
+import BoundingBox2d exposing (BoundingBox2d)
 import Char
+import Direction2d exposing (Direction2d)
+import EllipticalArc2d exposing (EllipticalArc2d)
 import Html exposing (Html)
-import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
-import OpenSolid.Direction2d as Direction2d exposing (Direction2d)
-import OpenSolid.EllipticalArc2d as EllipticalArc2d exposing (EllipticalArc2d)
-import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
-import OpenSolid.Point2d as Point2d exposing (Point2d)
-import OpenSolid.Svg as Svg
-import OpenSolid.Svg.Interaction as Interaction
-import OpenSolid.Svg.Interaction.ScrollAmount as ScrollAmount exposing (ScrollAmount)
-import OpenSolid.Vector2d as Vector2d
+import LineSegment2d exposing (LineSegment2d)
+import Point2d exposing (Point2d)
 import Svg exposing (Svg)
 import Svg.Attributes
+import Svg.Interaction as Interaction
+import Svg.Interaction.ScrollAmount as ScrollAmount exposing (ScrollAmount)
+import Vector2d
 
 
 boundingBox : BoundingBox2d
