@@ -1,9 +1,8 @@
-# opensolid/geometry [![Travis build Status](https://travis-ci.org/opensolid/geometry.svg?branch=master)](https://travis-ci.org/opensolid/geometry)
+# ianmackenzie/elm-geometry [![Travis build Status](https://travis-ci.org/ianmackenzie/elm-geometry.svg?branch=master)](https://travis-ci.org/ianmackenzie/elm-geometry)
 
-_Note: Release notes for version 2.1 are [here](https://github.com/opensolid/geometry/releases/tag/2.1.0).
-If you're upgrading from 1.x, make sure to also check out the [release notes for 2.0](https://github.com/opensolid/geometry/releases/tag/2.0.0)._
+_Note: this repository previously existed as [`opensolid/geometry`](https://github.com/opensolid/geometry)._
 
-`opensolid/geometry` is an [Elm](http://elm-lang.org) package for working with
+`elm-geometry` is an [Elm](http://elm-lang.org) package for working with
 2D and 3D geometry. It provides a wide variety of geometric data types such as
 points, vectors, arcs, spline curves and coordinate frames, along with functions
 for transforming and combining them in many different ways. You can:
@@ -177,58 +176,47 @@ Support is also provided for encoding/decoding values to and from JSON.
 
 Assuming you have [installed Elm](https://guide.elm-lang.org/install.html) and
 started a new project, use [elm-package](https://guide.elm-lang.org/install.html#elm-package)
-to install `opensolid/geometry`, either by running
+to install `elm-geometry`, either by running
 
 ```
-elm package install opensolid/geometry
+elm package install ianmackenzie/elm-geometry
 ```
 
 in a command prompt inside your project directory or by adding
 
 ```json
-"opensolid/geometry": "2.1.0 <= v < 3.0.0"
+"ianmackenzie/elm-geometry": "1.0.0 <= v < 2.0.0"
 ```
 
 to the `dependencies` field in your project's `elm-package.json`.
 
 ## Documentation
 
-[Full API documentation](http://package.elm-lang.org/packages/opensolid/geometry/2.1.0)
+[Full API documentation](http://package.elm-lang.org/packages/ianmackenzie/elm-geometry/1.0.0)
 is available for each module. Most modules are associated with a particular data
-type (for example, the [`Point3d`](http://package.elm-lang.org/packages/opensolid/geometry/2.1.0/OpenSolid-Point3d)
+type (for example, the [`Point3d`](http://package.elm-lang.org/packages/ianmackenzie/elm-geometry/1.0.0/Point3d)
 module contains functions for creating and manipulating `Point3d` values).
 
 ## Usage details
 
 Following the [Elm package design guidelines](http://package.elm-lang.org/help/design-guidelines#module-names-should-not-reappear-in-function-names),
-most OpenSolid modules are designed to be imported using `as` and then used as
-prefixes for the functions and values that they define. Types are designed to
-be imported unqualified using `exposing`:
+most modules are designed to be imported using `as` and then used as prefixes
+for the functions and values that they define:
 
 ```elm
-import OpenSolid.Point3d as Point3d exposing (Point3d)
-import OpenSolid.Axis3d as Axis3d exposing (Axis3d)
+import Point3d exposing (Point3d)
+import Axis3d exposing (Axis3d)
 
 rotatedPoint : Point3d
 rotatedPoint =
     Point3d.rotateAround Axis3d.x (degrees 30) originalPoint
 ```
 
-## Related projects
-
-  - [`opensolid/svg`](http://package.elm-lang.org/packages/opensolid/svg/latest)
-    lets you create and manipulate SVG drawings using the data types from this
-    package.
-  - [`opensolid/linear-algebra-interop`](http://package.elm-lang.org/packages/opensolid/linear-algebra-interop/latest)
-    provides interop support between this package and
-    [`elm-community/linear-algebra`](http://package.elm-lang.org/packages/elm-community/linear-algebra/latest).
-
 ## Questions? Comments?
 
-Please [open a new issue](https://github.com/opensolid/geometry/issues) if you
-run into a bug, if any documentation is missing/incorrect/confusing, or if
-there's a new feature that you would find useful. For general questions about
-using OpenSolid, try:
+Please [open a new issue](https://github.com/ianmackenzie/elm-geometry/issues)
+if you run into a bug, if any documentation is missing/incorrect/confusing, or
+if there's a new feature that you would find useful. For general questions, try:
 
   - Sending me (@ianmackenzie) a message on the [Elm Slack](http://elmlang.herokuapp.com/) -
     even if you don't have any particular questions right now, just come say
@@ -239,5 +227,5 @@ using OpenSolid, try:
     [Elm NYC meetup](https://www.meetup.com/Elm-NYC/) =)
 
 You can also find me on Twitter ([@ianemackenzie](https://twitter.com/ianemackenzie)),
-where I occasionally post OpenSolid-related stuff like demos or new releases.
-Have fun, and don't be afraid to ask for help!
+where I occasionally post stuff like demos or new releases. Have fun, and don't
+be afraid to ask for help!
