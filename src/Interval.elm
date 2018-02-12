@@ -140,13 +140,13 @@ containingValues values =
 {-| Construct an interval containing both of the given intervals.
 
     firstInterval =
-        Interval.fromExtrema { minValue = 1, maxValue = 2 }
+        Interval.from 1 2
 
     secondInterval =
-        Interval.fromExtrema { minValue = 3, maxValue = 6 }
+        Interval.from 3 6
 
     Interval.hull firstInterval secondInterval
-    --> Interval.fromExtrema { minValue = 1, maxValue = 6 }
+    --> Interval.from 1 6
 
 -}
 hull : Interval -> Interval -> Interval
