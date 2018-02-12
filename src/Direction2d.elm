@@ -13,7 +13,6 @@
 module Direction2d
     exposing
         ( Direction2d
-        , angle
         , angleFrom
         , componentIn
         , components
@@ -34,6 +33,7 @@ module Direction2d
         , rotateBy
         , rotateClockwise
         , rotateCounterclockwise
+        , toAngle
         , toVector
         , unsafe
         , x
@@ -66,12 +66,17 @@ several uses, such as:
 
 # Constructors
 
-@docs fromAngle, from, perpendicularTo, orthonormalize, orthogonalize, unsafe
+@docs from, perpendicularTo, orthonormalize, orthogonalize, unsafe
+
+
+# Conversions
+
+@docs fromAngle, toAngle
 
 
 # Properties
 
-@docs components, xComponent, yComponent, angle
+@docs components, xComponent, yComponent
 
 
 # Comparison
@@ -337,21 +342,21 @@ fromAngle angle =
     unsafe ( cos angle, sin angle )
 
 
-{-| Get the polar angle of a vector (its counterclockwise angle in radians from
-the positive X direction). The result will be in the range -π to π.
+{-| Convert a direction to a polar angle (the counterclockwise angle in radians
+from the positive X direction). The result will be in the range -π to π.
 
-    Direction2d.angle Direction2d.x
+    Direction2d.toAngle Direction2d.x
     --> 0
 
-    Direction2d.angle Direction2d.y
+    Direction2d.toAngle Direction2d.y
     --> degrees 90
 
-    Direction2d.angle Direction2d.negativeY
+    Direction2d.toAngle Direction2d.negativeY
     --> degrees -90
 
 -}
-angle : Direction2d -> Float
-angle direction =
+toAngle : Direction2d -> Float
+toAngle direction =
     let
         ( x, y ) =
             components direction
