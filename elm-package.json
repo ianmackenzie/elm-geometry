@@ -25,7 +25,6 @@
         "EllipticalArc2d",
         "Frame2d",
         "Frame3d",
-        "Interval",
         "LineSegment2d",
         "LineSegment3d",
         "Plane3d",

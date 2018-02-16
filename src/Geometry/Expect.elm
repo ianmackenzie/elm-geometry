@@ -62,7 +62,6 @@ module Geometry.Expect
         , validDirection3d
         , validFrame2d
         , validFrame3d
-        , valueIn
         , vector2d
         , vector2dWithin
         , vector3d
@@ -84,7 +83,6 @@ import Direction3d exposing (Direction3d)
 import Expect exposing (Expectation)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
-import Interval exposing (Interval)
 import LineSegment2d exposing (LineSegment2d)
 import LineSegment3d exposing (LineSegment3d)
 import Plane3d exposing (Plane3d)
@@ -173,28 +171,6 @@ angleWithin tolerance =
             abs (atan2 (sin difference) (cos difference)) <= tolerance
     in
     expect comparison
-
-
-valueIn : Interval -> Float -> Expectation
-valueIn interval value =
-    let
-        ( minValue, maxValue ) =
-            Interval.endpoints interval
-
-        tolerance =
-            defaultTolerance
-    in
-    if minValue - tolerance <= value && value <= maxValue + tolerance then
-        Expect.pass
-    else
-        Expect.fail
-            (toString value
-                ++ " is not contained in the interval ["
-                ++ toString minValue
-                ++ ","
-                ++ toString maxValue
-                ++ "]"
-            )
 
 
 vector2d : Vector2d -> Vector2d -> Expectation

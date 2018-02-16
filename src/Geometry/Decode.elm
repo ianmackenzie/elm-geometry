@@ -28,7 +28,6 @@ module Geometry.Decode
         , ellipticalArc2d
         , frame2d
         , frame3d
-        , interval
         , lineSegment2d
         , lineSegment3d
         , plane3d
@@ -52,7 +51,7 @@ module Geometry.Decode
 @docs vector2d, vector3d, direction2d, direction3d, point2d, point3d
 @docs axis2d, axis3d, plane3d, frame2d, frame3d, sketchPlane3d
 @docs lineSegment2d, lineSegment3d, triangle2d, triangle3d
-@docs interval, boundingBox2d, boundingBox3d
+@docs boundingBox2d, boundingBox3d
 @docs polyline2d, polyline3d, polygon2d
 @docs circle2d, circle3d, ellipse2d, arc2d, arc3d, ellipticalArc2d, sphere3d
 @docs quadraticSpline2d, quadraticSpline3d, cubicSpline2d, cubicSpline3d
@@ -76,7 +75,6 @@ import EllipticalArc2d exposing (EllipticalArc2d)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
 import Geometry.Internal as Internal
-import Interval exposing (Interval)
 import Json.Decode as Decode exposing (Decoder)
 import LineSegment2d exposing (LineSegment2d)
 import LineSegment3d exposing (LineSegment3d)
@@ -311,15 +309,6 @@ triangle3d =
         (Decode.index 0 point3d)
         (Decode.index 1 point3d)
         (Decode.index 2 point3d)
-
-
-{-| Decodes an `Interval` from an object with `minValue` and `maxValue` fields.
--}
-interval : Decoder Interval
-interval =
-    Decode.map2 Interval.from
-        (Decode.field "minValue" Decode.float)
-        (Decode.field "maxValue" Decode.float)
 
 
 {-| Decodes a `BoundingBox2d` from an object with `minX`, `maxX`, `minY` and

@@ -28,7 +28,6 @@ module Geometry.Fuzz
         , ellipticalArc2d
         , frame2d
         , frame3d
-        , interval
         , lineSegment2d
         , lineSegment3d
         , plane3d
@@ -65,7 +64,6 @@ import EllipticalArc2d exposing (EllipticalArc2d)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
 import Fuzz exposing (Fuzzer)
-import Interval exposing (Interval)
 import LineSegment2d exposing (LineSegment2d)
 import LineSegment3d exposing (LineSegment3d)
 import Plane3d exposing (Plane3d)
@@ -92,11 +90,6 @@ scalar =
 positiveScalar : Fuzzer Float
 positiveScalar =
     Fuzz.map abs scalar
-
-
-interval : Fuzzer Interval
-interval =
-    Fuzz.map2 Interval.from scalar scalar
 
 
 vector2d : Fuzzer Vector2d
@@ -262,32 +255,12 @@ triangle3d =
 
 boundingBox2d : Fuzzer BoundingBox2d
 boundingBox2d =
-    let
-        boundingBox xInterval yInterval =
-            BoundingBox2d.fromExtrema
-                { minX = Interval.minValue xInterval
-                , maxX = Interval.maxValue xInterval
-                , minY = Interval.minValue yInterval
-                , maxY = Interval.maxValue yInterval
-                }
-    in
-    Fuzz.map2 boundingBox interval interval
+    Fuzz.map BoundingBox2d.fromCorners (Fuzz.map2 (,) point2d point2d)
 
 
 boundingBox3d : Fuzzer BoundingBox3d
 boundingBox3d =
-    let
-        boundingBox xInterval yInterval zInterval =
-            BoundingBox3d.fromExtrema
-                { minX = Interval.minValue xInterval
-                , maxX = Interval.maxValue xInterval
-                , minY = Interval.minValue yInterval
-                , maxY = Interval.maxValue yInterval
-                , minZ = Interval.minValue zInterval
-                , maxZ = Interval.maxValue zInterval
-                }
-    in
-    Fuzz.map3 boundingBox interval interval interval
+    Fuzz.map BoundingBox3d.fromCorners (Fuzz.map2 (,) point3d point3d)
 
 
 polyline2d : Fuzzer Polyline2d

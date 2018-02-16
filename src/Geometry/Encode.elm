@@ -28,7 +28,6 @@ module Geometry.Encode
         , ellipticalArc2d
         , frame2d
         , frame3d
-        , interval
         , lineSegment2d
         , lineSegment3d
         , plane3d
@@ -52,7 +51,7 @@ module Geometry.Encode
 @docs vector2d, vector3d, direction2d, direction3d, point2d, point3d
 @docs axis2d, axis3d, plane3d, frame2d, frame3d, sketchPlane3d
 @docs lineSegment2d, lineSegment3d, triangle2d, triangle3d
-@docs interval, boundingBox2d, boundingBox3d
+@docs boundingBox2d, boundingBox3d
 @docs polyline2d, polyline3d, polygon2d
 @docs circle2d, circle3d, ellipse2d, arc2d, arc3d, ellipticalArc2d, sphere3d
 @docs quadraticSpline2d, quadraticSpline3d, cubicSpline2d, cubicSpline3d
@@ -75,7 +74,6 @@ import Ellipse2d exposing (Ellipse2d)
 import EllipticalArc2d exposing (EllipticalArc2d)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
-import Interval exposing (Interval)
 import Json.Encode as Encode exposing (Value)
 import LineSegment2d exposing (LineSegment2d)
 import LineSegment3d exposing (LineSegment3d)
@@ -271,16 +269,6 @@ triangle3d triangle =
             Triangle3d.vertices triangle
     in
     Encode.list [ point3d v1, point3d v2, point3d v3 ]
-
-
-{-| Encode an `Interval` as an object with `minValue` and `maxValue` fields.
--}
-interval : Interval -> Value
-interval interval_ =
-    Encode.object
-        [ ( "minValue", Encode.float (Interval.minValue interval_) )
-        , ( "maxValue", Encode.float (Interval.maxValue interval_) )
-        ]
 
 
 {-| Encode a `BoundingBox2d` as an object with `minX`, `maxX`, `minY` and `maxY`
