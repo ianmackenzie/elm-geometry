@@ -457,7 +457,8 @@ boundingBox polygon =
     BoundingBox2d.containingPoints (outerLoop polygon)
 
 
-{-| Triangulate a polygon.
+{-| Triangulate a polygon. This uses the `TriangularMesh` data types from
+[`ianmackenzie/elm-triangular-mesh`](http://package.elm-lang.org/packages/ianmackenzie/elm-triangular-mesh/latest).
 -}
 triangulate : Polygon2d -> TriangularMesh Point2d
 triangulate polygon =
