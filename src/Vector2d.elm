@@ -130,8 +130,8 @@ import Bootstrap.Axis2d as Axis2d
 import Bootstrap.Direction2d as Direction2d
 import Bootstrap.Frame2d as Frame2d
 import Bootstrap.Point2d as Point2d
+import Float.Extra as Float
 import Geometry.Internal as Internal exposing (Axis2d, Direction2d, Frame2d, Point2d)
-import Scalar
 
 
 {-| -}
@@ -284,8 +284,8 @@ interpolateFrom v1 v2 t =
             components v2
     in
     fromComponents
-        ( Scalar.interpolateFrom x1 x2 t
-        , Scalar.interpolateFrom y1 y2 t
+        ( Float.interpolateFrom x1 x2 t
+        , Float.interpolateFrom y1 y2 t
         )
 
 

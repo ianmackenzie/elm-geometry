@@ -100,8 +100,8 @@ different coordinate frames.
 import Bootstrap.Axis2d as Axis2d
 import Bootstrap.Frame2d as Frame2d
 import Direction2d exposing (Direction2d)
+import Float.Extra as Float
 import Geometry.Internal as Internal exposing (Axis2d, Frame2d)
-import Scalar
 import Vector2d exposing (Vector2d)
 
 
@@ -209,8 +209,8 @@ interpolateFrom p1 p2 t =
             coordinates p2
     in
     fromCoordinates
-        ( Scalar.interpolateFrom x1 x2 t
-        , Scalar.interpolateFrom y1 y2 t
+        ( Float.interpolateFrom x1 x2 t
+        , Float.interpolateFrom y1 y2 t
         )
 
 

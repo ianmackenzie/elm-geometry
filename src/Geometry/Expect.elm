@@ -81,6 +81,7 @@ import CubicSpline3d exposing (CubicSpline3d)
 import Direction2d exposing (Direction2d)
 import Direction3d exposing (Direction3d)
 import Expect exposing (Expectation)
+import Float.Extra as Float
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
 import LineSegment2d exposing (LineSegment2d)
@@ -93,7 +94,6 @@ import Polyline2d exposing (Polyline2d)
 import Polyline3d exposing (Polyline3d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
 import QuadraticSpline3d exposing (QuadraticSpline3d)
-import Scalar
 import SketchPlane3d exposing (SketchPlane3d)
 import Sphere3d exposing (Sphere3d)
 import Triangle2d exposing (Triangle2d)
@@ -499,10 +499,10 @@ boundingBox2dWithin : Float -> BoundingBox2d -> BoundingBox2d -> Expectation
 boundingBox2dWithin tolerance =
     expect
         (allOf
-            [ by (Scalar.equalWithin tolerance) BoundingBox2d.minX
-            , by (Scalar.equalWithin tolerance) BoundingBox2d.maxX
-            , by (Scalar.equalWithin tolerance) BoundingBox2d.minY
-            , by (Scalar.equalWithin tolerance) BoundingBox2d.maxY
+            [ by (Float.equalWithin tolerance) BoundingBox2d.minX
+            , by (Float.equalWithin tolerance) BoundingBox2d.maxX
+            , by (Float.equalWithin tolerance) BoundingBox2d.minY
+            , by (Float.equalWithin tolerance) BoundingBox2d.maxY
             ]
         )
 
@@ -516,12 +516,12 @@ boundingBox3dWithin : Float -> BoundingBox3d -> BoundingBox3d -> Expectation
 boundingBox3dWithin tolerance =
     expect
         (allOf
-            [ by (Scalar.equalWithin tolerance) BoundingBox3d.minX
-            , by (Scalar.equalWithin tolerance) BoundingBox3d.maxX
-            , by (Scalar.equalWithin tolerance) BoundingBox3d.minY
-            , by (Scalar.equalWithin tolerance) BoundingBox3d.maxY
-            , by (Scalar.equalWithin tolerance) BoundingBox3d.minZ
-            , by (Scalar.equalWithin tolerance) BoundingBox3d.maxZ
+            [ by (Float.equalWithin tolerance) BoundingBox3d.minX
+            , by (Float.equalWithin tolerance) BoundingBox3d.maxX
+            , by (Float.equalWithin tolerance) BoundingBox3d.minY
+            , by (Float.equalWithin tolerance) BoundingBox3d.maxY
+            , by (Float.equalWithin tolerance) BoundingBox3d.minZ
+            , by (Float.equalWithin tolerance) BoundingBox3d.maxZ
             ]
         )
 
@@ -570,7 +570,7 @@ circle2d =
     expect
         (allOf
             [ by (Point2d.equalWithin defaultTolerance) Circle2d.centerPoint
-            , by (Scalar.equalWithin defaultTolerance) Circle2d.radius
+            , by (Float.equalWithin defaultTolerance) Circle2d.radius
             ]
         )
 
@@ -583,7 +583,7 @@ circle3d =
                 Circle3d.centerPoint
             , by (Direction3d.equalWithin defaultTolerance)
                 (Circle3d.axis >> Axis3d.direction)
-            , by (Scalar.equalWithin defaultTolerance)
+            , by (Float.equalWithin defaultTolerance)
                 Circle3d.radius
             ]
         )
@@ -594,7 +594,7 @@ sphere3d =
     expect
         (allOf
             [ by (Point3d.equalWithin defaultTolerance) Sphere3d.centerPoint
-            , by (Scalar.equalWithin defaultTolerance) Sphere3d.radius
+            , by (Float.equalWithin defaultTolerance) Sphere3d.radius
             ]
         )
 
@@ -605,7 +605,7 @@ arc2d =
         (allOf
             [ by (Point2d.equalWithin defaultTolerance) Arc2d.centerPoint
             , by (Point2d.equalWithin defaultTolerance) Arc2d.startPoint
-            , by (Scalar.equalWithin defaultTolerance) Arc2d.sweptAngle
+            , by (Float.equalWithin defaultTolerance) Arc2d.sweptAngle
             ]
         )
 
@@ -618,7 +618,7 @@ arc3d =
             , by (Direction3d.equalWithin defaultTolerance)
                 (Arc3d.axis >> Axis3d.direction)
             , by (Point3d.equalWithin defaultTolerance) Arc3d.startPoint
-            , by (Scalar.equalWithin defaultTolerance) Arc3d.sweptAngle
+            , by (Float.equalWithin defaultTolerance) Arc3d.sweptAngle
             ]
         )
 

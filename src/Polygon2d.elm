@@ -80,10 +80,10 @@ import BoundingBox2d exposing (BoundingBox2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Internal as Internal
 import LineSegment2d exposing (LineSegment2d)
-import OpenSolid.Mesh as Mesh exposing (Mesh)
 import Point2d exposing (Point2d)
 import Polygon2d.Monotone as Monotone
 import Triangle2d exposing (Triangle2d)
+import TriangularMesh exposing (TriangularMesh)
 import Vector2d exposing (Vector2d)
 
 
@@ -459,6 +459,6 @@ boundingBox polygon =
 
 {-| Triangulate a polygon.
 -}
-triangulate : Polygon2d -> Mesh Point2d
+triangulate : Polygon2d -> TriangularMesh Point2d
 triangulate polygon =
     Monotone.triangulation polygon

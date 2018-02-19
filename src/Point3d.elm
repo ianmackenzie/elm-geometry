@@ -107,9 +107,9 @@ import Bootstrap.Frame3d as Frame3d
 import Bootstrap.Plane3d as Plane3d
 import Bootstrap.SketchPlane3d as SketchPlane3d
 import Direction3d exposing (Direction3d)
+import Float.Extra as Float
 import Geometry.Internal as Internal exposing (Axis3d, Frame3d, Plane3d, SketchPlane3d)
 import Point2d exposing (Point2d)
-import Scalar
 import Vector3d exposing (Vector3d)
 
 
@@ -205,9 +205,9 @@ interpolateFrom p1 p2 t =
             coordinates p2
     in
     fromCoordinates
-        ( Scalar.interpolateFrom x1 x2 t
-        , Scalar.interpolateFrom y1 y2 t
-        , Scalar.interpolateFrom z1 z2 t
+        ( Float.interpolateFrom x1 x2 t
+        , Float.interpolateFrom y1 y2 t
+        , Float.interpolateFrom z1 z2 t
         )
 
 

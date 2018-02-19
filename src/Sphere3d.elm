@@ -86,11 +86,11 @@ import Vector3d exposing (Vector3d)
     import Circle2d
     import Circle3d
     import Direction3d
+    import Float.Extra as Float
     import Frame3d exposing (Frame3d)
     import Plane3d
     import Point2d
     import Point3d exposing (Point3d)
-    import Scalar
     import SketchPlane3d
     import Sphere3d
     import Vector3d exposing (Vector3d)

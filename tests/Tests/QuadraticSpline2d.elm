@@ -7,13 +7,13 @@ module Tests.QuadraticSpline2d
         )
 
 import Expect
+import Float.Extra as Float
 import Fuzz exposing (Fuzzer)
 import Geometry.Decode as Decode
 import Geometry.Encode as Encode
 import Geometry.Fuzz as Fuzz
 import Point2d
 import QuadraticSpline2d exposing (QuadraticSpline2d)
-import Scalar
 import Test exposing (Test)
 import Tests.Generic as Generic
 
@@ -30,7 +30,7 @@ curvedSpline =
                     length / 2
 
                 x1 =
-                    Scalar.interpolateFrom x0 x2 interpolationParameter
+                    Float.interpolateFrom x0 x2 interpolationParameter
 
                 y1 =
                     if flipSide then

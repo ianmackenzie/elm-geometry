@@ -1,9 +1,9 @@
 module Geometry.Examples.Expect exposing (equalWithinTolerance)
 
 import Expect exposing (Expectation)
+import Float.Extra as Float
 import Regex exposing (HowMany(All), regex)
 import Result
-import Scalar
 import String
 
 
@@ -41,7 +41,7 @@ equalWithinTolerance a b =
                 numB =
                     String.toFloat b
             in
-            Result.map2 (Scalar.equalWithin 1.0e-4) numA numB
+            Result.map2 (Float.equalWithin 1.0e-4) numA numB
                 |> Result.withDefault False
 
         sameNumbers =

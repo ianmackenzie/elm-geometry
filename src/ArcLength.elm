@@ -27,7 +27,7 @@ points. This module is primarily for use internally by those curve modules.
 
 -}
 
-import Scalar
+import Float.Extra as Float
 
 
 {-| Contains a mapping from curve parameter value to arc length, and vice versa.
@@ -249,28 +249,28 @@ unsafeToParameterValue tree s =
                             lengthFraction =
                                 (s - length0) / (length1 - length0)
                         in
-                        Scalar.interpolateFrom param0 param1 lengthFraction
+                        Float.interpolateFrom param0 param1 lengthFraction
                     else
                         -- 1 to 2
                         let
                             lengthFraction =
                                 (s - length1) / (length2 - length1)
                         in
-                        Scalar.interpolateFrom param1 param2 lengthFraction
+                        Float.interpolateFrom param1 param2 lengthFraction
                 else if s <= length3 then
                     -- 2 to 3
                     let
                         lengthFraction =
                             (s - length2) / (length3 - length2)
                     in
-                    Scalar.interpolateFrom param2 param3 lengthFraction
+                    Float.interpolateFrom param2 param3 lengthFraction
                 else
                     -- 3 to 4
                     let
                         lengthFraction =
                             (s - length3) / (length4 - length3)
                     in
-                    Scalar.interpolateFrom param3 param4 lengthFraction
+                    Float.interpolateFrom param3 param4 lengthFraction
             else if s <= length6 then
                 if s <= length5 then
                     -- 4 to 5
@@ -278,28 +278,28 @@ unsafeToParameterValue tree s =
                         lengthFraction =
                             (s - length4) / (length5 - length4)
                     in
-                    Scalar.interpolateFrom param4 param5 lengthFraction
+                    Float.interpolateFrom param4 param5 lengthFraction
                 else
                     -- 5 to 6
                     let
                         lengthFraction =
                             (s - length5) / (length6 - length5)
                     in
-                    Scalar.interpolateFrom param5 param6 lengthFraction
+                    Float.interpolateFrom param5 param6 lengthFraction
             else if s <= length7 then
                 -- 6 to 7
                 let
                     lengthFraction =
                         (s - length6) / (length7 - length6)
                 in
-                Scalar.interpolateFrom param6 param7 lengthFraction
+                Float.interpolateFrom param6 param7 lengthFraction
             else
                 -- 7 to 8
                 let
                     lengthFraction =
                         (s - length7) / (length8 - length7)
                 in
-                Scalar.interpolateFrom param7 param8 lengthFraction
+                Float.interpolateFrom param7 param8 lengthFraction
 
         Node { leftBranch, rightBranch } ->
             if s < lengthAtStart rightBranch then
@@ -368,28 +368,28 @@ unsafeFromParameterValue tree t =
                             paramFraction =
                                 (t - param0) / (param1 - param0)
                         in
-                        Scalar.interpolateFrom length0 length1 paramFraction
+                        Float.interpolateFrom length0 length1 paramFraction
                     else
                         -- 1 to 2
                         let
                             paramFraction =
                                 (t - param1) / (param2 - param1)
                         in
-                        Scalar.interpolateFrom length1 length2 paramFraction
+                        Float.interpolateFrom length1 length2 paramFraction
                 else if t <= param3 then
                     -- 2 to 3
                     let
                         paramFraction =
                             (t - param2) / (param3 - param2)
                     in
-                    Scalar.interpolateFrom length2 length3 paramFraction
+                    Float.interpolateFrom length2 length3 paramFraction
                 else
                     -- 3 to 4
                     let
                         paramFraction =
                             (t - param3) / (param4 - param3)
                     in
-                    Scalar.interpolateFrom length3 length4 paramFraction
+                    Float.interpolateFrom length3 length4 paramFraction
             else if t <= param6 then
                 if t <= param5 then
                     -- 4 to 5
@@ -397,28 +397,28 @@ unsafeFromParameterValue tree t =
                         paramFraction =
                             (t - param4) / (param5 - param4)
                     in
-                    Scalar.interpolateFrom length4 length5 paramFraction
+                    Float.interpolateFrom length4 length5 paramFraction
                 else
                     -- 5 to 6
                     let
                         paramFraction =
                             (t - param5) / (param6 - param5)
                     in
-                    Scalar.interpolateFrom length5 length6 paramFraction
+                    Float.interpolateFrom length5 length6 paramFraction
             else if t <= param7 then
                 -- 6 to 7
                 let
                     paramFraction =
                         (t - param6) / (param7 - param6)
                 in
-                Scalar.interpolateFrom length6 length7 paramFraction
+                Float.interpolateFrom length6 length7 paramFraction
             else
                 -- 7 to 8
                 let
                     paramFraction =
                         (t - param7) / (param8 - param7)
                 in
-                Scalar.interpolateFrom length7 length8 paramFraction
+                Float.interpolateFrom length7 length8 paramFraction
 
         Node { leftBranch, rightBranch } ->
             if t < paramAtStart rightBranch then

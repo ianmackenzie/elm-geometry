@@ -135,8 +135,8 @@ import Bootstrap.Frame3d as Frame3d
 import Bootstrap.Plane3d as Plane3d
 import Bootstrap.Point3d as Point3d
 import Bootstrap.SketchPlane3d as SketchPlane3d
+import Float.Extra as Float
 import Geometry.Internal as Internal exposing (Axis3d, Direction3d, Frame3d, Plane3d, Point3d, SketchPlane3d)
-import Scalar
 import Vector2d exposing (Vector2d)
 
 
@@ -338,9 +338,9 @@ interpolateFrom v1 v2 t =
             components v2
     in
     fromComponents
-        ( Scalar.interpolateFrom x1 x2 t
-        , Scalar.interpolateFrom y1 y2 t
-        , Scalar.interpolateFrom z1 z2 t
+        ( Float.interpolateFrom x1 x2 t
+        , Float.interpolateFrom y1 y2 t
+        , Float.interpolateFrom z1 z2 t
         )
 
 

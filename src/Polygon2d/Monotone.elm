@@ -11,11 +11,11 @@ import Array.Hamt as Array exposing (Array)
 import Dict exposing (Dict)
 import Geometry.Internal as Internal exposing (Polygon2d(..))
 import LineSegment2d exposing (LineSegment2d)
-import OpenSolid.Mesh as Mesh exposing (Mesh)
 import Point2d exposing (Point2d)
 import Polygon2d.EdgeSet as EdgeSet exposing (EdgeSet)
 import Set exposing (Set)
 import Triangle2d exposing (Triangle2d)
+import TriangularMesh exposing (TriangularMesh)
 
 
 type Kind
@@ -877,13 +877,10 @@ faces vertices =
             List.foldl processVertex initialState rest |> .faces
 
 
-triangulation : Polygon2d -> Mesh Point2d
+triangulation : Polygon2d -> TriangularMesh Point2d
 triangulation polygon =
     let
         ( points, loops ) =
             monotonePolygons polygon
     in
-    Mesh.with
-        { vertices = points
-        , faceIndices = List.map faces loops |> List.concat
-        }
+    TriangularMesh.indexed points (List.map faces loops |> List.concat)
