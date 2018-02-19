@@ -7,8 +7,6 @@
         "src"
     ],
     "exposed-modules": [
-        "Geometry.Decode",
-        "Geometry.Encode",
         "Arc2d",
         "Arc3d",
         "Axis2d",
