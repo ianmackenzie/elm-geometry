@@ -10,10 +10,11 @@ import Geometry.Encode as Encode
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Plane3d
-import Point3d
+import Point3d exposing (Point3d)
 import Sphere3d exposing (Sphere3d)
 import Test exposing (Test)
 import Tests.Generic as Generic
+import Triangle3d
 import Vector3d
 
 
@@ -126,6 +127,78 @@ throughPointsManual =
             testCases
 
 
+triangleArea : Point3d -> Point3d -> Point3d -> Float
+triangleArea p1 p2 p3 =
+    Triangle3d.fromVertices ( p1, p2, p3 ) |> Triangle3d.area
+
+
+tetrahedronVolume : Point3d -> Point3d -> Point3d -> Point3d -> Float
+tetrahedronVolume p1 p2 p3 p4 =
+    let
+        v2 =
+            Vector3d.from p1 p2
+
+        v3 =
+            Vector3d.from p1 p3
+
+        v4 =
+            Vector3d.from p1 p4
+    in
+    abs (Vector3d.dotProduct v4 (Vector3d.crossProduct v2 v3)) / 6
+
+
+validTetrahedron : Point3d -> Point3d -> Point3d -> Point3d -> Bool
+validTetrahedron p1 p2 p3 p4 =
+    let
+        volume =
+            tetrahedronVolume p1 p2 p3 p4
+
+        limit =
+            20
+
+        isValid a b c d =
+            let
+                area =
+                    triangleArea a b c
+
+                isValidTriangle p q r =
+                    let
+                        base =
+                            Point3d.distanceFrom p q
+
+                        hIdeal =
+                            base * sqrt 3 / 2
+
+                        hMeasured =
+                            2 * area / base
+
+                        hRatio =
+                            hIdeal / hMeasured
+                    in
+                    (1 / limit) < hRatio && hRatio < limit
+            in
+            isValidTriangle a b c
+                && isValidTriangle b c a
+                && isValidTriangle c a b
+                && (let
+                        yIdeal =
+                            sqrt (8 * area / (3 * sqrt 3))
+
+                        yMeasured =
+                            3 * volume / area
+
+                        ratio =
+                            yIdeal / yMeasured
+                    in
+                    (1 / limit) < ratio && ratio < limit
+                   )
+    in
+    isValid p1 p2 p3 p4
+        && isValid p2 p3 p4 p1
+        && isValid p3 p4 p1 p2
+        && isValid p4 p1 p2 p3
+
+
 throughPointsFuzz : Test
 throughPointsFuzz =
     Test.fuzz4 Fuzz.point3d
@@ -134,37 +207,15 @@ throughPointsFuzz =
         Fuzz.point3d
         "All given points lie on the sphere constructed using `throughPoints`"
         (\p1 p2 p3 p4 ->
-            let
-                {- If the first three of the four points are collinear no circle
-                       (and by extension no sphere) can be constructed going through them.
-                   If the fourth point is in the same plane as the three other points it is also
-                       not possible to construct a sphere going through them (it would need to have a height of zero).
-                   ==> volume of the tetrahedron formed by the four points needs to be greater than zero
-                -}
-                isValidInput =
-                    let
-                        v2 =
-                            Vector3d.from p1 p2
+            if validTetrahedron p1 p2 p3 p4 then
+                let
+                    sphere =
+                        Sphere3d.throughPoints ( p1, p2, p3, p4 )
 
-                        v3 =
-                            Vector3d.from p1 p3
-
-                        v4 =
-                            Vector3d.from p1 p4
-
-                        volume =
-                            abs (Vector3d.dotProduct v4 (Vector3d.crossProduct v2 v3))
-                    in
-                    volume > 1
-
-                sphere =
-                    Sphere3d.throughPoints ( p1, p2, p3, p4 )
-
-                hasPointOnSurface point sphere =
-                    Point3d.distanceFrom point (Sphere3d.centerPoint sphere)
-                        |> Expect.approximately (Sphere3d.radius sphere)
-            in
-            if isValidInput then
+                    hasPointOnSurface point sphere =
+                        Point3d.distanceFrom point (Sphere3d.centerPoint sphere)
+                            |> Expect.approximately (Sphere3d.radius sphere)
+                in
                 case sphere of
                     Just sphere ->
                         sphere
