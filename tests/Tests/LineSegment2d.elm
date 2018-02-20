@@ -8,6 +8,7 @@ module Tests.LineSegment2d
         , intersectionOfReversedEqualLineSegmentsIsNothing
         , intersectionWorksProperly
         , jsonRoundTrips
+        , reversingDoesNotAffectIntersection
         , sharedEndpointOnThirdSegmentInducesAnIntersection
         )
 
@@ -426,4 +427,28 @@ intersectionIsSymmetric =
 
                 _ ->
                     Expect.equal intersection12 intersection21
+        )
+
+
+reversingDoesNotAffectIntersection : Test
+reversingDoesNotAffectIntersection =
+    Test.fuzz2
+        Fuzz.lineSegment2d
+        Fuzz.lineSegment2d
+        "Reversing one line segment should not change the intersection point"
+        (\lineSegment1 lineSegment2 ->
+            let
+                normalIntersection =
+                    LineSegment2d.intersectionPoint lineSegment1 lineSegment2
+
+                reversedIntersection =
+                    LineSegment2d.intersectionPoint lineSegment1
+                        (LineSegment2d.reverse lineSegment2)
+            in
+            case ( normalIntersection, reversedIntersection ) of
+                ( Just p1, Just p2 ) ->
+                    p1 |> Expect.point2d p2
+
+                _ ->
+                    Expect.equal normalIntersection reversedIntersection
         )
