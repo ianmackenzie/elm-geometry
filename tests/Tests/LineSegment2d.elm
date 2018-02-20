@@ -411,9 +411,19 @@ intersectionIsSymmetric =
     Test.fuzz2
         Fuzz.lineSegment2d
         Fuzz.lineSegment2d
-        "Intersection should be symmetric"
+        "Intersection should be (approximately) symmetric"
         (\lineSegment1 lineSegment2 ->
-            Expect.equal
-                (LineSegment2d.intersectionPoint lineSegment1 lineSegment2)
-                (LineSegment2d.intersectionPoint lineSegment2 lineSegment1)
+            let
+                intersection12 =
+                    LineSegment2d.intersectionPoint lineSegment1 lineSegment2
+
+                intersection21 =
+                    LineSegment2d.intersectionPoint lineSegment2 lineSegment1
+            in
+            case ( intersection12, intersection21 ) of
+                ( Just p1, Just p2 ) ->
+                    p1 |> Expect.point2d p2
+
+                _ ->
+                    Expect.equal intersection12 intersection21
         )
