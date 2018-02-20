@@ -381,36 +381,43 @@ rotateAround =
             "rotates by the correct angle"
             (\axis angle sphere ->
                 let
-                    {- find the direction of the vector connecting the axis with `point`
-                       that is orthogonal to the axis.
-                       can return `Nothing` if `point` is already on the `axis`
-                       (could happen when the fuzzer accidentally creates them like that)
-                    -}
-                    orthogonalDirectionFromAxisTo point =
-                        point
-                            |> Point3d.projectOntoAxis axis
-                            |> Direction3d.from point
-
-                    originalDirection =
-                        orthogonalDirectionFromAxisTo (Sphere3d.centerPoint sphere)
-
-                    rotatedDirection =
-                        sphere
-                            |> Sphere3d.rotateAround axis angle
-                            |> Sphere3d.centerPoint
-                            |> orthogonalDirectionFromAxisTo
+                    centerDistanceFromAxis =
+                        Point3d.distanceFromAxis axis
+                            (Sphere3d.centerPoint sphere)
                 in
-                case ( originalDirection, rotatedDirection ) of
-                    ( Just originalDirection, Just rotatedDirection ) ->
-                        let
-                            angleBetweenDirections =
-                                Direction3d.angleFrom originalDirection rotatedDirection
-                        in
-                        angleBetweenDirections
-                            |> Expect.approximately angle
+                if centerDistanceFromAxis > 0.001 then
+                    let
+                        orthogonalDirectionFromAxisTo point =
+                            point
+                                |> Point3d.projectOntoAxis axis
+                                |> Direction3d.from point
 
-                    _ ->
-                        Expect.pass
+                        originalDirection =
+                            orthogonalDirectionFromAxisTo
+                                (Sphere3d.centerPoint sphere)
+
+                        rotatedDirection =
+                            sphere
+                                |> Sphere3d.rotateAround axis angle
+                                |> Sphere3d.centerPoint
+                                |> orthogonalDirectionFromAxisTo
+                    in
+                    case ( originalDirection, rotatedDirection ) of
+                        ( Just originalDirection, Just rotatedDirection ) ->
+                            let
+                                angleBetweenDirections =
+                                    Direction3d.angleFrom originalDirection
+                                        rotatedDirection
+                            in
+                            angleBetweenDirections
+                                |> Expect.approximately angle
+
+                        _ ->
+                            Expect.fail "Failed to compute radial directions"
+                else
+                    -- Don't bother checking with very small radii since
+                    -- computing directions and angles is then prone to roundoff
+                    Expect.pass
             )
         , Test.fuzz2 Fuzz.axis3d
             Fuzz.sphere3d
