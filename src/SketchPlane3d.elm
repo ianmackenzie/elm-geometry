@@ -24,11 +24,11 @@ module SketchPlane3d
         , on
         , originPoint
         , placeIn
-        , plane
         , relativeTo
         , rotateAround
         , rotateAroundOwn
         , throughPoints
+        , toPlane
         , translateAlongOwn
         , translateBy
         , unsafe
@@ -82,9 +82,11 @@ will just return the original `triangle2d` value (within roundoff error), while
 
 is equivalent to
 
+    plane =
+        SketchPlane3d.toPlane sketchPlane
+
     triangle3d
-        |> Triangle3d.projectOnto
-            (SketchPlane3d.plane sketchPlane)
+        |> Triangle3d.projectOnto plane
 
 @docs SketchPlane3d
 
@@ -540,18 +542,18 @@ normalAxis sketchPlane =
         }
 
 
-{-| Get the plane of a sketch plane (the `Plane3d` with the same origin point
-and normal direction).
+{-| Convert a `SketchPlane3d` to a `Plane3d` with the same origin point and
+normal direction.
 
-    SketchPlane3d.plane SketchPlane3d.xy
+    SketchPlane3d.toPlane SketchPlane3d.xy
     --> Plane3d.xy
 
-    SketchPlane3d.plane SketchPlane3d.yx
+    SketchPlane3d.toPlane SketchPlane3d.yx
     --> Plane3d.flip Plane3d.xy
 
 -}
-plane : SketchPlane3d -> Plane3d
-plane sketchPlane =
+toPlane : SketchPlane3d -> Plane3d
+toPlane sketchPlane =
     Plane3d.with
         { originPoint = originPoint sketchPlane
         , normalDirection = normalDirection sketchPlane
