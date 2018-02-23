@@ -116,9 +116,14 @@ Sketch planes can also be constructed from `Frame3d` values using
 @docs with, on, throughPoints, fromPlane, unsafe
 
 
+# Conversions
+
+@docs toPlane
+
+
 # Properties
 
-@docs originPoint, xDirection, yDirection, normalDirection, xAxis, yAxis, normalAxis, plane
+@docs originPoint, xDirection, yDirection, normalDirection, xAxis, yAxis, normalAxis
 
 
 # Transformations
