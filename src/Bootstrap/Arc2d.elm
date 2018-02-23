@@ -1,8 +1,12 @@
-module Bootstrap.Arc2d exposing (with)
+module Bootstrap.Arc2d exposing (sweptAround)
 
 import Geometry.Internal exposing (..)
 
 
-with : { centerPoint : Point2d, startPoint : Point2d, sweptAngle : Float } -> Arc2d
-with =
+sweptAround : Point2d -> Float -> Point2d -> Arc2d
+sweptAround centerPoint sweptAngle startPoint =
     Arc2d
+        { centerPoint = centerPoint
+        , sweptAngle = sweptAngle
+        , startPoint = startPoint
+        }

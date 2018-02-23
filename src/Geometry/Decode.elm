@@ -459,17 +459,10 @@ sphere3d =
 -}
 arc2d : Decoder Arc2d
 arc2d =
-    Decode.map3
-        (\centerPoint startPoint sweptAngle ->
-            Arc2d.with
-                { centerPoint = centerPoint
-                , startPoint = startPoint
-                , sweptAngle = sweptAngle
-                }
-        )
+    Decode.map3 Arc2d.sweptAround
         (Decode.field "centerPoint" point2d)
-        (Decode.field "startPoint" point2d)
         (Decode.field "sweptAngle" Decode.float)
+        (Decode.field "startPoint" point2d)
 
 
 {-| Decodes an `Arc3d` from an object with `axis`, `startPoint` and `sweptAngle`

@@ -313,15 +313,10 @@ sphere3d =
 
 arc2d : Fuzzer Arc2d
 arc2d =
-    let
-        arc centerPoint startPoint sweptAngle =
-            Arc2d.with
-                { centerPoint = centerPoint
-                , startPoint = startPoint
-                , sweptAngle = sweptAngle
-                }
-    in
-    Fuzz.map3 arc point2d point2d (Fuzz.floatRange (-3 * pi) (3 * pi))
+    Fuzz.map3 Arc2d.sweptAround
+        point2d
+        (Fuzz.floatRange (-3 * pi) (3 * pi))
+        point2d
 
 
 arc3d : Fuzzer Arc3d

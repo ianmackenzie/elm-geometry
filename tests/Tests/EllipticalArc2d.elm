@@ -32,11 +32,7 @@ reproducibleArc =
                         |> Point2d.translateBy
                             (Vector2d.withLength radius startDirection)
             in
-            Arc2d.with
-                { centerPoint = centerPoint
-                , startPoint = startPoint
-                , sweptAngle = sweptAngle
-                }
+            startPoint |> Arc2d.sweptAround centerPoint sweptAngle
         )
         Fuzz.point2d
         Fuzz.direction2d

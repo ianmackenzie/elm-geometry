@@ -126,14 +126,12 @@ around axis { startPoint, sweptAngle } =
 in XY coordinates _within_ the sketch plane.
 
     arc =
-        Arc3d.on SketchPlane3d.xz <|
-            Arc2d.with
-                { centerPoint =
-                    Point2d.fromCoordinates ( 1, 1 )
-                , startPoint =
-                    Point2d.fromCoordinates ( 3, 1 )
-                , sweptAngle = degrees 90
-                }
+        Arc3d.on SketchPlane3d.xz
+            (Point2d.fromCoordinates ( 3, 1 )
+                |> Arc2d.sweptAround
+                    (Point2d.fromCoordinates ( 1, 1 )
+                    (degrees 90)
+            )
 
     Arc3d.centerPoint arc
     --> Point3d.fromCoordinates ( 1, 0, 1 )
@@ -181,15 +179,13 @@ points are collinear, returns `Nothing`.
 
     Arc3d.throughPoints ( p1, p2, p3 )
     --> Just
-    -->     (Arc3d.on SketchPlane3d.yz <|
-    -->         Arc2d.with
-    -->             { centerPoint =
-    -->                 Point2d.fromCoordinates
+    -->     (Arc3d.on SketchPlane3d.yz
+    -->         Point2d.fromCoordinates ( 0, 1 )
+    -->             |> Arc2d.sweptAround
+    -->                 (Point2d.fromCoordinates
     -->                     ( 0.5, 0.5 )
-    -->             , startPoint =
-    -->                 Point3d.fromCoordinates ( 0, 1 )
-    -->             , sweptAngle = degrees 180
-    -->             }
+    -->                 )
+    -->                 (degrees 180)
     -->     )
 
 -}

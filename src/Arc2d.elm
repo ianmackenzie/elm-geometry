@@ -21,10 +21,10 @@ module Arc2d
         , smallPositive
         , startPoint
         , sweptAngle
+        , sweptAround
         , throughPoints
         , toPolyline
         , translateBy
-        , with
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/arc2d.svg" alt="Arc2d" width="160">
@@ -42,7 +42,7 @@ end point). This module includes functionality for
 
 # Constructors
 
-@docs with, throughPoints, fromEndpoints, SweptAngle, smallPositive, smallNegative, largePositive, largeNegative
+@docs sweptAround, throughPoints, fromEndpoints, SweptAngle, smallPositive, smallNegative, largePositive, largeNegative
 
 
 # Properties
@@ -86,33 +86,47 @@ type alias Arc2d =
     Internal.Arc2d
 
 
-{-| Construct an arc from its center point, start point, and swept angle:
+{-| Construct an arc by sweeping (rotating) a given start point around a given
+center point by a given angle. The center point to sweep around is given first
+and the start point to be swept is given last.
 
     exampleArc =
-        Arc2d.with
-            { centerPoint =
-                Point2d.fromCoordinates ( 1, 1 )
-            , startPoint =
-                Point2d.fromCoordinates ( 3, 1 )
-            , sweptAngle = degrees 90
-            }
+        Point2d.fromCoordinates ( 3, 1 )
+            |> Arc2d.sweptAround
+                (Point2d.fromCoordinates ( 1, 1 ))
+                (degrees 90)
 
     Arc2d.endPoint exampleArc
     --> Point2d.fromCoordinates ( 1, 3 )
+
+Note that the 'actual' form of this function is
+
+    arc =
+        Arc2d.sweptAround centerPoint sweptAngle startPoint
+
+but it is generally written using the pipe operator `|>` (as in the first
+example) to improve readability:
+
+    arc =
+        startPoint
+            |> Arc2d.sweptAround centerPoint sweptAngle
 
 A positive swept angle means that the arc is formed by rotating the start point
 counterclockwise around the center point. A negative swept angle results in
 a clockwise arc instead.
 
 -}
-with : { centerPoint : Point2d, startPoint : Point2d, sweptAngle : Float } -> Arc2d
-with =
+sweptAround : Point2d -> Float -> Point2d -> Arc2d
+sweptAround centerPoint sweptAngle startPoint =
     Internal.Arc2d
+        { centerPoint = centerPoint
+        , sweptAngle = sweptAngle
+        , startPoint = startPoint
+        }
 
 
 {-| Attempt to construct an arc that starts at the first given point, passes
-through the second given point and ends at the third given point. If the three
-points are collinear, returns `Nothing`.
+through the second given point and ends at the third given point:
 
     Arc2d.throughPoints
         ( Point2d.origin
@@ -120,12 +134,10 @@ points are collinear, returns `Nothing`.
         , Point2d.fromCoordinates ( 0, 1 )
         )
     --> Just
-    -->     (Arc2d.with
-    -->         { centerPoint =
-    -->             Point2d.fromCoordinates ( 0.5, 0.5 )
-    -->         , startPoint = Point2d.origin
-    -->         , sweptAngle = degrees 270
-    -->         }
+    -->     (Point2d.origin
+    -->         |> Arc2d.sweptAround
+    -->             (Point2d.fromCoordinates ( 0.5, 0.5 ))
+    -->             (degrees 270)
     -->     )
 
     Arc2d.throughPoints
@@ -134,14 +146,13 @@ points are collinear, returns `Nothing`.
         , Point2d.fromCoordinates ( 0, 1 )
         )
     --> Just
-    -->     (Arc2d.with
-    -->         { centerPoint =
-    -->             Point2d.fromCoordinates ( 0.5, 0.5 )
-    -->         , startPoint =
-    -->             Point2d.fromCoordinates ( 1, 0 )
-    -->         , sweptAngle = degrees -180
-    -->         }
+    -->     (Point2d.fromCoordinates ( 1, 0 )
+    -->         |> Arc2d.sweptAround
+    -->             (Point2d.fromCoordinates ( 0.5, 0.5 ))
+    -->             (degrees -180)
     -->     )
+
+If the three points are collinear, returns `Nothing`:
 
     Arc2d.throughPoints
         ( Point2d.origin
@@ -197,11 +208,7 @@ throughPoints points =
                                 else
                                     full + 2 * pi
                         in
-                        with
-                            { centerPoint = centerPoint
-                            , startPoint = firstPoint
-                            , sweptAngle = sweptAngle
-                            }
+                        firstPoint |> sweptAround centerPoint sweptAngle
                     )
                     (Vector2d.direction firstVector)
                     (Vector2d.direction secondVector)
@@ -275,12 +282,9 @@ For example:
         , sweptAngle = Arc2d.smallPositive
         }
     --> Just
-    -->     (Arc2d.with
-    -->         { startPoint =
-    -->             Point2d.fromCoordinates ( 1, 0 )
-    -->         , centerPoint = Point2d.origin
-    -->         , sweptAngle = degrees 90
-    -->         }
+    -->     (Point2d.fromCoordinates ( 1, 0 )
+    -->         |> Arc2d.sweptAround Point2d.origin
+    -->             (degrees 90)
     -->     )
 
     Arc2d.fromEndpoints
@@ -290,13 +294,10 @@ For example:
         , sweptAngle = Arc2d.smallNegative
         }
     --> Just
-    -->     (Arc2d.with
-    -->         { startPoint =
-    -->             Point2d.fromCoordinates ( 1, 0 )
-    -->         , centerPoint =
-    -->             Point2d.fromCoordinates ( 1, 1 )
-    -->         , sweptAngle = degrees -90
-    -->         }
+    -->     (Point2d.fromCoordinates ( 1, 0 )
+    -->         |> Arc2d.sweptAround
+    -->             (Point2d.fromCoordinates ( 1, 1 ))
+    -->             (degrees -90)
     -->     )
 
     Arc2d.fromEndpoints
@@ -306,13 +307,10 @@ For example:
         , sweptAngle = Arc2d.largePositive
         }
     --> Just
-    -->     (Arc2d.with
-    -->         { startPoint =
-    -->             Point2d.fromCoordinates ( 1, 0 )
-    -->         , centerPoint =
-    -->             Point2d.fromCoordinates ( 1, 1 )
-    -->         , sweptAngle = degrees 270
-    -->         }
+    -->     (Point2d.fromCoordinates ( 1, 0 )
+    -->         |> Arc2d.sweptAround
+    -->             (Point2d.fromCoordinates ( 1, 1 ))
+    -->             (degrees 270)
     -->     )
 
     Arc2d.fromEndpoints
@@ -322,12 +320,9 @@ For example:
         , sweptAngle = Arc2d.largeNegative
         }
     --> Just
-    -->     (Arc2d.with
-    -->         { startPoint =
-    -->             Point2d.fromCoordinates ( 1, 0 )
-    -->         , centerPoint = Point2d.origin
-    -->         , sweptAngle = degrees -270
-    -->         }
+    -->     (Point2d.fromCoordinates ( 1, 0 )
+    -->         |> Arc2d.sweptAround Point2d.origin
+    -->             (degrees -270)
     -->     )
 
     Arc2d.fromEndpoints
@@ -337,16 +332,12 @@ For example:
         , sweptAngle = Arc2d.smallPositive
         }
     --> Just
-    -->     (Arc2d.with
-    -->         { startPoint =
-    -->             Point2d.fromCoordinates ( 1, 0 )
-    -->         , centerPoint =
-    -->             Point2d.fromCoordinates
-    -->                 ( -0.8229
-    -->                 , -0.8229
-    -->                 )
-    -->         , sweptAngle = degrees 41.4096
-    -->         }
+    -->     (Point2d.fromCoordinates ( 1, 0 )
+    -->         |> Arc2d.sweptAround
+    -->             (Point2d.fromCoordinates
+    -->                 ( -0.8229, -0.8229 )
+    -->             )
+    -->             (degrees 41.4096)
     -->     )
 
 If the start and end points are coincident or the distance between them is more
@@ -364,17 +355,15 @@ Note that this means it is dangerous to use this function to construct 180
 degree arcs (half circles), since in this case due to numerical roundoff the
 distance between the two given points may appear to be slightly more than twice
 the given radius. In this case it is safer to use a more specialized approach,
-such as
+such as (for a counterclockwise arc):
 
     halfCircle =
-        Arc2d.with
-            { startPoint = firstPoint
-            , centerPoint =
-                Point2d.midpoint firstPoint secondPoint
-            , sweptAngle = degrees 180
-            }
+        firstPoint
+            |> Arc2d.sweptAround
+                (Point2d.midPoint firstPoint secondPoint)
+                (degrees 180)
 
-(Use `sweptAngle = degrees -180` for a clockwise arc.)
+(Use `degrees -180` for a clockwise arc.)
 
 -}
 fromEndpoints : { startPoint : Point2d, endPoint : Point2d, radius : Float, sweptAngle : SweptAngle } -> Maybe Arc2d
@@ -440,11 +429,7 @@ fromEndpoints { startPoint, endPoint, radius, sweptAngle } =
                                 LargeNegative ->
                                     shortAngle - 2 * pi
                     in
-                    with
-                        { centerPoint = centerPoint
-                        , startPoint = startPoint
-                        , sweptAngle = sweptAngleInRadians
-                        }
+                    startPoint |> sweptAround centerPoint sweptAngleInRadians
                 )
     else
         Nothing
@@ -663,18 +648,15 @@ toPolyline tolerance arc =
 point and vice versa.
 
     Arc2d.reverse exampleArc
-    --> Arc2d.with
-    -->     { startPoint =
-    -->         Point2d.fromCoordinates ( 1, 3 )
-    -->     , centerPoint =
-    -->         Point2d.fromCoordinates ( 1, 1 )
-    -->     , sweptAngle = degrees -90
-    -->     }
+    --> Point2d.fromCoordinates ( 1, 3 )
+    -->     |> Arc2d.sweptAround
+    -->         (Point2d.fromCoordinates ( 1, 1 ))
+    -->         (degrees -90)
 
 -}
 reverse : Arc2d -> Arc2d
 reverse arc =
-    with
+    Internal.Arc2d
         { startPoint = endPoint arc
         , centerPoint = centerPoint arc
         , sweptAngle = -(sweptAngle arc)
@@ -687,13 +669,10 @@ reverse arc =
         Point2d.fromCoordinates ( 0, 1 )
 
     Arc2d.scaleAbout point 2 exampleArc
-    --> Arc2d.with
-    -->     { startPoint =
-    -->         Point2d.fromCoordinates ( 6, 1 )
-    -->     , centerPoint =
-    -->         Point2d.fromCoordinates ( 2, 1 )
-    -->     , sweptAngle = degrees 90
-    -->     }
+    --> Point2d.fromCoordinates ( 6, 1 )
+    -->     |> Arc2d.sweptAround
+    -->         (Point2d.fromCoordinates ( 2, 1 ))
+    -->         (degrees 90)
 
 -}
 scaleAbout : Point2d -> Float -> Arc2d -> Arc2d
@@ -702,7 +681,7 @@ scaleAbout point scale arc =
         scalePoint =
             Point2d.scaleAbout point scale
     in
-    with
+    Internal.Arc2d
         { centerPoint = scalePoint (centerPoint arc)
         , startPoint = scalePoint (startPoint arc)
         , sweptAngle =
@@ -716,13 +695,10 @@ scaleAbout point scale arc =
 {-| Rotate an arc around a given point by a given angle.
 
     Arc2d.rotateAround Point2d.origin (degrees 90)
-    --> Arc2d.with
-    -->     { startPoint =
-    -->         Point2d.fromCoordinates ( -1, 3 )
-    -->     , centerPoint =
-    -->         Point2d.fromCoordinates ( -1, 1 )
-    -->     , sweptAngle = degrees 90
-    -->     }
+    --> Point2d.fromCoordinates ( -1, 3 )
+    -->     |> Arc2d.sweptAround
+    -->         (Point2d.fromCoordinates ( -1, 1 ))
+    -->         (degrees 90)
 
 -}
 rotateAround : Point2d -> Float -> Arc2d -> Arc2d
@@ -732,7 +708,7 @@ rotateAround point angle =
             Point2d.rotateAround point angle
     in
     \arc ->
-        with
+        Internal.Arc2d
             { centerPoint = rotatePoint (centerPoint arc)
             , startPoint = rotatePoint (startPoint arc)
             , sweptAngle = sweptAngle arc
@@ -745,13 +721,10 @@ rotateAround point angle =
         Vector2d.fromComponents ( 2, 3 )
 
     Arc2d.translateBy displacement exampleArc
-    --> Arc2d.with
-    -->     { startPoint =
-    -->         Point2d.fromCoordinates ( 5, 4 )
-    -->     , centerPoint =
-    -->         Point2d.fromCoordinates ( 3, 4 )
-    -->     , sweptAngle = degrees 90
-    -->     }
+    --> Point2d.fromCoordinates ( 5, 4 )
+    -->     |> Arc2d.sweptAround
+    -->         (Point2d.fromCoordinates ( 3, 4 ))
+    -->         (degrees 90)
 
 -}
 translateBy : Vector2d -> Arc2d -> Arc2d
@@ -760,7 +733,7 @@ translateBy displacement arc =
         translatePoint =
             Point2d.translateBy displacement
     in
-    with
+    Internal.Arc2d
         { centerPoint = translatePoint (centerPoint arc)
         , startPoint = translatePoint (startPoint arc)
         , sweptAngle = sweptAngle arc
@@ -770,13 +743,10 @@ translateBy displacement arc =
 {-| Mirror an arc across a given axis.
 
     Arc2d.mirrorAcross Axis2d.y exampleArc
-    --> Arc2d.with
-    -->     { startPoint =
-    -->         Point2d.fromCoordinates ( -3, 1 )
-    -->     , centerPoint =
-    -->         Point2d.fromCoordinates ( -1, 1 )
-    -->     , sweptAngle = degrees -90
-    -->     }
+    --> Point2d.fromCoordinates ( -3, 1 )
+    -->     |> Arc2d.sweptAround
+    -->         (Point2d.fromCoordinates ( -1, 1 ))
+    -->         (degrees -90)
 
 -}
 mirrorAcross : Axis2d -> Arc2d -> Arc2d
@@ -786,7 +756,7 @@ mirrorAcross axis =
             Point2d.mirrorAcross axis
     in
     \arc ->
-        with
+        Internal.Arc2d
             { centerPoint = mirrorPoint (centerPoint arc)
             , startPoint = mirrorPoint (startPoint arc)
             , sweptAngle = -(sweptAngle arc)
@@ -800,13 +770,10 @@ coordinates relative to a given reference frame.
         Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     Arc2d.relativeTo localFrame exampleArc
-    --> Arc2d.with
-    -->     { startPoint =
-    -->         Point2d.fromCoordinates ( 2, -1 )
-    -->     , centerPoint =
-    -->         Point2d.fromCoordinates ( 0, -1 )
-    -->     , sweptAngle = degrees 90
-    -->     }
+    --> Point2d.fromCoordinates ( 2, -1 )
+    -->     |> Arc2d.sweptAround
+    -->         (Point2d.fromCoordinates ( 0, -1 ))
+    -->         (degrees 90)
 
 -}
 relativeTo : Frame2d -> Arc2d -> Arc2d
@@ -815,7 +782,7 @@ relativeTo frame arc =
         relativePoint =
             Point2d.relativeTo frame
     in
-    with
+    Internal.Arc2d
         { centerPoint = relativePoint (centerPoint arc)
         , startPoint = relativePoint (startPoint arc)
         , sweptAngle =
@@ -833,13 +800,10 @@ given reference frame, and return that arc expressed in global coordinates.
         Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
 
     Arc2d.placeIn localFrame exampleArc
-    --> Arc2d.with
-    -->     { startPoint =
-    -->         Point2d.fromCoordinates ( 4, 3 )
-    -->     , centerPoint =
-    -->         Point2d.fromCoordinates ( 2, 3 )
-    -->     , sweptAngle = degrees 90
-    -->     }
+    --> Point2d.fromCoordinates ( 4, 3 )
+    -->     |> Arc2d.sweptAround
+    -->         (Point2d.fromCoordinates ( 2, 3 ))
+    -->         (degrees 90)
 
 -}
 placeIn : Frame2d -> Arc2d -> Arc2d
@@ -848,7 +812,7 @@ placeIn frame arc =
         placePoint =
             Point2d.placeIn frame
     in
-    with
+    Internal.Arc2d
         { centerPoint = placePoint (centerPoint arc)
         , startPoint = placePoint (startPoint arc)
         , sweptAngle =

@@ -242,13 +242,10 @@ circumference circle =
 {-| Convert a circle to a 360 degree arc.
 
     Circle2d.toArc exampleCircle
-    --> Arc2d.with
-    -->     { centerPoint =
-    -->         Point2d.fromCoordinates ( 1, 2 )
-    -->     , startPoint =
-    -->         Point2d.fromCoordinates ( 4, 2 )
-    -->     , sweptAngle = degrees 360
-    -->     }
+    --> Point2d.fromCoordinates ( 4, 2 )
+    -->     |> Arc2d.sweptAround
+    -->         (Point2d.fromCoordinates ( 1, 2 ))
+    -->         (degrees 360)
 
 -}
 toArc : Circle2d -> Arc2d
@@ -257,11 +254,8 @@ toArc (Internal.Circle2d { centerPoint, radius }) =
         ( x0, y0 ) =
             Point2d.coordinates centerPoint
     in
-    Arc2d.with
-        { centerPoint = centerPoint
-        , startPoint = Point2d.fromCoordinates ( x0 + radius, y0 )
-        , sweptAngle = 2 * pi
-        }
+    Point2d.fromCoordinates ( x0 + radius, y0 )
+        |> Arc2d.sweptAround centerPoint (2 * pi)
 
 
 {-| Check if a circle contains a given point.
