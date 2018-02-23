@@ -2,7 +2,6 @@ module Circle3d
     exposing
         ( Circle3d
         , area
-        , around
         , axialDirection
         , axis
         , boundingBox
@@ -18,6 +17,7 @@ module Circle3d
         , relativeTo
         , rotateAround
         , scaleAbout
+        , sweptAround
         , throughPoints
         , translateBy
         , with
@@ -40,7 +40,7 @@ for:
 
 # Constructors
 
-@docs with, around, on, throughPoints
+@docs with, sweptAround, on, throughPoints
 
 
 # Properties
@@ -102,13 +102,12 @@ with { centerPoint, axialDirection, radius } =
         }
 
 
-{-| Construct a circle around the given axis that passes through the given
-point.
+{-| Construct a circle by sweeping the given point around the given axis.
 
     point =
         Point3d.fromCoordinates ( 3, 0, 2 )
 
-    Circle3d.around Axis3d.z point
+    Circle3d.sweptAround Axis3d.z point
     --> Circle3d.with
     -->     { centerPoint =
     -->         Point3d.fromCoordinates ( 0, 0, 2 )
@@ -117,8 +116,8 @@ point.
     -->     }
 
 -}
-around : Axis3d -> Point3d -> Circle3d
-around axis point =
+sweptAround : Axis3d -> Point3d -> Circle3d
+sweptAround axis point =
     let
         centerPoint =
             Point3d.projectOntoAxis axis point
