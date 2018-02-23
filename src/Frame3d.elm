@@ -764,10 +764,7 @@ translateAlongOwn : (Frame3d -> Axis3d) -> Float -> Frame3d -> Frame3d
 translateAlongOwn axis distance frame =
     let
         displacement =
-            Vector3d.with
-                { length = distance
-                , direction = Axis3d.direction (axis frame)
-                }
+            Vector3d.withLength distance (Axis3d.direction (axis frame))
     in
     translateBy displacement frame
 

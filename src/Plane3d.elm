@@ -260,10 +260,7 @@ offsetBy : Float -> Plane3d -> Plane3d
 offsetBy distance plane =
     let
         displacement =
-            Vector3d.with
-                { length = distance
-                , direction = normalDirection plane
-                }
+            Vector3d.withLength distance (normalDirection plane)
     in
     translateBy displacement plane
 

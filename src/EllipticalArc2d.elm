@@ -207,11 +207,7 @@ fromEndpoints { startPoint, endPoint, xDirection, xRadius, yRadius, sweptAngle }
                     { originPoint =
                         startPoint
                             |> Point2d.translateBy
-                                (Vector2d.with
-                                    { direction = xDirection
-                                    , length = -xRadius
-                                    }
-                                )
+                                (Vector2d.withLength -xRadius xDirection)
                     , xDirection = xDirection
                     }
 

@@ -237,12 +237,7 @@ axis:
 along : Axis3d -> Float -> Point3d
 along axis distance =
     Axis3d.originPoint axis
-        |> translateBy
-            (Vector3d.with
-                { length = distance
-                , direction = Axis3d.direction axis
-                }
-            )
+        |> translateBy (Vector3d.withLength distance (Axis3d.direction axis))
 
 
 {-| Construct a 3D point lying _on_ a sketch plane by providing a 2D point
@@ -773,10 +768,8 @@ projectOnto : Plane3d -> Point3d -> Point3d
 projectOnto plane point =
     let
         displacement =
-            Vector3d.with
-                { length = -(signedDistanceFrom plane point)
-                , direction = Plane3d.normalDirection plane
-                }
+            Vector3d.withLength -(signedDistanceFrom plane point)
+                (Plane3d.normalDirection plane)
     in
     translateBy displacement point
 

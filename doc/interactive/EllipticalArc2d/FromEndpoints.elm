@@ -378,21 +378,17 @@ view model =
                         xPoint =
                             centerPoint
                                 |> Point2d.translateBy
-                                    (Vector2d.with
-                                        { length = model.xRadius
-                                        , direction = model.xDirection
-                                        }
+                                    (Vector2d.withLength model.xRadius
+                                        model.xDirection
                                     )
 
                         yPoint =
                             centerPoint
                                 |> Point2d.translateBy
-                                    (Vector2d.with
-                                        { length = model.yRadius
-                                        , direction =
-                                            Direction2d.perpendicularTo
-                                                model.xDirection
-                                        }
+                                    (Vector2d.withLength model.yRadius
+                                        (Direction2d.perpendicularTo
+                                            model.xDirection
+                                        )
                                     )
 
                         xRadialLine =

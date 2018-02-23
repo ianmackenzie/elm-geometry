@@ -30,11 +30,7 @@ reproducibleArc =
                 startPoint =
                     centerPoint
                         |> Point2d.translateBy
-                            (Vector2d.with
-                                { length = radius
-                                , direction = startDirection
-                                }
-                            )
+                            (Vector2d.withLength radius startDirection)
             in
             Arc2d.with
                 { centerPoint = centerPoint

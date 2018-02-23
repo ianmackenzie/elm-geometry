@@ -39,7 +39,7 @@ module Vector3d
         , scaleBy
         , squaredLength
         , sum
-        , with
+        , withLength
         , xComponent
         , yComponent
         , zComponent
@@ -78,7 +78,7 @@ you will actually want their `Direction3d` versions [`Direction3d.x`](OpenSolid-
 
 # Constructors
 
-@docs fromComponents, from, with, on, perpendicularTo, interpolateFrom
+@docs fromComponents, from, withLength, on, perpendicularTo, interpolateFrom
 
 
 # Components
@@ -193,12 +193,12 @@ from firstPoint secondPoint =
 
 {-| Construct a vector with the given length in the given direction.
 
-    Vector3d.with { length = 5, direction = Direction3d.y }
+    Vector3d.withLength 5 Direction3d.y
     --> Vector3d.fromComponents ( 0, 5, 0 )
 
 -}
-with : { length : Float, direction : Direction3d } -> Vector3d
-with { length, direction } =
+withLength : Float -> Direction3d -> Vector3d
+withLength length direction =
     let
         ( dx, dy, dz ) =
             Direction3d.components direction
@@ -877,7 +877,7 @@ portion.
 -}
 projectionIn : Direction3d -> Vector3d -> Vector3d
 projectionIn direction vector =
-    with { direction = direction, length = componentIn direction vector }
+    direction |> withLength (vector |> componentIn direction)
 
 
 {-| Project a vector [orthographically](https://en.wikipedia.org/wiki/Orthographic_projection)

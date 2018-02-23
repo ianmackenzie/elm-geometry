@@ -143,14 +143,9 @@ translationByPerpendicularDoesNotChangeSignedDistance =
                 normalDirection =
                     Plane3d.normalDirection plane
 
-                perpendicularDirection =
-                    Direction3d.perpendicularTo normalDirection
-
                 displacement =
-                    Vector3d.with
-                        { length = distance
-                        , direction = perpendicularDirection
-                        }
+                    Vector3d.withLength distance
+                        (Direction3d.perpendicularTo normalDirection)
             in
             Point3d.translateBy displacement point
                 |> Point3d.signedDistanceFrom plane

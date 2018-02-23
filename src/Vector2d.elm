@@ -39,7 +39,7 @@ module Vector2d
         , scaleBy
         , squaredLength
         , sum
-        , with
+        , withLength
         , xComponent
         , yComponent
         , zero
@@ -77,7 +77,7 @@ Although there are no predefined constants for the vectors with components
 
 # Constructors
 
-@docs fromComponents, fromPolarComponents, from, with, perpendicularTo, interpolateFrom
+@docs fromComponents, fromPolarComponents, from, withLength, perpendicularTo, interpolateFrom
 
 
 # Properties
@@ -199,12 +199,12 @@ from firstPoint secondPoint =
 
 {-| Construct a vector with the given length in the given direction.
 
-    Vector2d.with { length = 5, direction = Direction2d.y }
+    Vector2d.withLength 5 Direction2d.y
     --> Vector2d.fromComponents ( 0, 5 )
 
 -}
-with : { length : Float, direction : Direction2d } -> Vector2d
-with { length, direction } =
+withLength : Float -> Direction2d -> Vector2d
+withLength length direction =
     let
         ( dx, dy ) =
             Direction2d.components direction
@@ -754,7 +754,7 @@ portion.
 -}
 projectionIn : Direction2d -> Vector2d -> Vector2d
 projectionIn direction vector =
-    with { direction = direction, length = componentIn direction vector }
+    direction |> withLength (vector |> componentIn direction)
 
 
 {-| Project a vector onto an axis.

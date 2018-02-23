@@ -576,10 +576,7 @@ offsetBy : Float -> SketchPlane3d -> SketchPlane3d
 offsetBy distance sketchPlane =
     let
         displacement =
-            Vector3d.with
-                { length = distance
-                , direction = normalDirection sketchPlane
-                }
+            Vector3d.withLength distance (normalDirection sketchPlane)
     in
     translateBy displacement sketchPlane
 
@@ -795,10 +792,7 @@ translateAlongOwn : (SketchPlane3d -> Axis3d) -> Float -> SketchPlane3d -> Sketc
 translateAlongOwn axis distance frame =
     let
         displacement =
-            Vector3d.with
-                { length = distance
-                , direction = Axis3d.direction (axis frame)
-                }
+            Vector3d.withLength distance (Axis3d.direction (axis frame))
     in
     translateBy displacement frame
 
