@@ -2,7 +2,6 @@ module EllipticalArc2d
     exposing
         ( ArcLengthParameterized
         , EllipticalArc2d
-        , SweptAngle
         , arcLength
         , arcLengthParameterized
         , arcLengthToParameterValue
@@ -12,8 +11,6 @@ module EllipticalArc2d
         , derivativeMagnitude
         , endPoint
         , fromEndpoints
-        , largeNegative
-        , largePositive
         , maxSecondDerivativeMagnitude
         , mirrorAcross
         , parameterValueToArcLength
@@ -24,8 +21,6 @@ module EllipticalArc2d
         , reverse
         , rotateAround
         , scaleAbout
-        , smallNegative
-        , smallPositive
         , startAngle
         , startPoint
         , sweptAngle
@@ -61,7 +56,7 @@ treat them as actual angles and everything will work out.
 
 # Constructors
 
-@docs with, fromEndpoints, SweptAngle, smallPositive, smallNegative, largePositive, largeNegative
+@docs with, fromEndpoints
 
 
 # Properties
@@ -109,6 +104,7 @@ import Direction2d exposing (Direction2d)
 import Ellipse2d exposing (Ellipse2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Internal as Internal
+import Geometry.SweptAngle as SweptAngle exposing (SweptAngle)
 import Interval
 import Point2d exposing (Point2d)
 import Vector2d exposing (Vector2d)
@@ -241,22 +237,22 @@ fromEndpoints { startPoint, endPoint, xDirection, xRadius, yRadius, sweptAngle }
 
                 ( startAngle, sweptAngleInRadians ) =
                     case sweptAngle of
-                        SmallPositive ->
+                        Internal.SmallPositive ->
                             ( midAngle + offsetAngle
                             , pi - 2 * offsetAngle
                             )
 
-                        SmallNegative ->
+                        Internal.SmallNegative ->
                             ( midAngle - offsetAngle
                             , -pi + 2 * offsetAngle
                             )
 
-                        LargePositive ->
+                        Internal.LargePositive ->
                             ( midAngle - offsetAngle
                             , pi + 2 * offsetAngle
                             )
 
-                        LargeNegative ->
+                        Internal.LargeNegative ->
                             ( midAngle + offsetAngle
                             , -pi - 2 * offsetAngle
                             )
@@ -290,43 +286,6 @@ fromEndpoints { startPoint, endPoint, xDirection, xRadius, yRadius, sweptAngle }
             Nothing
     else
         Nothing
-
-
-{-| Argument type used in [`fromEndpoints`](#fromEndpoints).
--}
-type SweptAngle
-    = SmallPositive
-    | SmallNegative
-    | LargePositive
-    | LargeNegative
-
-
-{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
--}
-smallPositive : SweptAngle
-smallPositive =
-    SmallPositive
-
-
-{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
--}
-smallNegative : SweptAngle
-smallNegative =
-    SmallNegative
-
-
-{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
--}
-largePositive : SweptAngle
-largePositive =
-    LargePositive
-
-
-{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
--}
-largeNegative : SweptAngle
-largeNegative =
-    LargeNegative
 
 
 {-| -}

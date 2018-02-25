@@ -173,6 +173,13 @@ type Sphere3d
         }
 
 
+type SweptAngle
+    = SmallPositive
+    | SmallNegative
+    | LargePositive
+    | LargeNegative
+
+
 type Arc2d
     = Arc2d { centerPoint : Point2d, startPoint : Point2d, sweptAngle : Float }
 

@@ -1,14 +1,11 @@
 module Arc2d
     exposing
         ( Arc2d
-        , SweptAngle
         , centerPoint
         , derivative
         , endPoint
         , evaluate
         , fromEndpoints
-        , largeNegative
-        , largePositive
         , mirrorAcross
         , placeIn
         , pointOn
@@ -17,8 +14,6 @@ module Arc2d
         , reverse
         , rotateAround
         , scaleAbout
-        , smallNegative
-        , smallPositive
         , startPoint
         , sweptAngle
         , sweptAround
@@ -42,7 +37,7 @@ end point). This module includes functionality for
 
 # Constructors
 
-@docs sweptAround, throughPoints, fromEndpoints, SweptAngle, smallPositive, smallNegative, largePositive, largeNegative
+@docs sweptAround, throughPoints, fromEndpoints
 
 
 # Properties
@@ -75,6 +70,7 @@ import Axis2d exposing (Axis2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Internal as Internal
+import Geometry.SweptAngle as SweptAngle exposing (SweptAngle)
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
 import Polyline2d exposing (Polyline2d)
@@ -216,55 +212,18 @@ throughPoints points =
             )
 
 
-{-| Argument type used in [`fromEndpoints`](#fromEndpoints).
--}
-type SweptAngle
-    = SmallPositive
-    | SmallNegative
-    | LargePositive
-    | LargeNegative
-
-
-{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
--}
-smallPositive : SweptAngle
-smallPositive =
-    SmallPositive
-
-
-{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
--}
-smallNegative : SweptAngle
-smallNegative =
-    SmallNegative
-
-
-{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
--}
-largePositive : SweptAngle
-largePositive =
-    LargePositive
-
-
-{-| Flag used as argument to [`fromEndpoints`](#fromEndpoints).
--}
-largeNegative : SweptAngle
-largeNegative =
-    LargeNegative
-
-
 {-| Attempt to construct an arc with the given start point, end point and
 radius. For any given valid set of start point, end point and radius, there are
 four possible results, so the `sweptAngle` argument is used to specify which
 arc to create:
 
-  - `Arc2d.smallPositive` will result in a counterclockwise arc with a small
-    swept angle (in the range 0..180 degrees)
-  - `Arc2d.smallNegative` will result in a clockwise arc with a small swept
+  - `SweptAngle.smallPositive` will result in a counterclockwise arc with a
+    small swept angle (in the range 0..180 degrees)
+  - `SweptAngle.smallNegative` will result in a clockwise arc with a small swept
     angle (in the range -180..0 degrees)
-  - `Arc2d.largePositive` will result in a counterclockwise arc with a large
-    swept angle (in the range 180..360 degrees)
-  - `Arc2d.largeNegative` will result in a clockwise arc with a large swept
+  - `SweptAngle.largePositive` will result in a counterclockwise arc with a
+    large swept angle (in the range 180..360 degrees)
+  - `SweptAngle.largeNegative` will result in a clockwise arc with a large swept
     angle (in the range -360..-180 degrees)
 
 For example:
@@ -279,7 +238,7 @@ For example:
         { startPoint = p1
         , endPoint = p2
         , radius = 1
-        , sweptAngle = Arc2d.smallPositive
+        , sweptAngle = SweptAngle.smallPositive
         }
     --> Just
     -->     (Point2d.fromCoordinates ( 1, 0 )
@@ -291,7 +250,7 @@ For example:
         { startPoint = p1
         , endPoint = p2
         , radius = 1
-        , sweptAngle = Arc2d.smallNegative
+        , sweptAngle = SweptAngle.smallNegative
         }
     --> Just
     -->     (Point2d.fromCoordinates ( 1, 0 )
@@ -304,7 +263,7 @@ For example:
         { startPoint = p1
         , endPoint = p2
         , radius = 1
-        , sweptAngle = Arc2d.largePositive
+        , sweptAngle = SweptAngle.largePositive
         }
     --> Just
     -->     (Point2d.fromCoordinates ( 1, 0 )
@@ -317,7 +276,7 @@ For example:
         { startPoint = p1
         , endPoint = p2
         , radius = 1
-        , sweptAngle = Arc2d.largeNegative
+        , sweptAngle = SweptAngle.largeNegative
         }
     --> Just
     -->     (Point2d.fromCoordinates ( 1, 0 )
@@ -329,7 +288,7 @@ For example:
         { startPoint = p1
         , endPoint = p2
         , radius = 2
-        , sweptAngle = Arc2d.smallPositive
+        , sweptAngle = SweptAngle.smallPositive
         }
     --> Just
     -->     (Point2d.fromCoordinates ( 1, 0 )
@@ -347,7 +306,7 @@ than twice the given radius, returns `Nothing`:
         { startPoint = p1
         , endPoint = p2
         , radius = 0.5 -- too small!
-        , sweptAngle = Arc2d.smallPositive
+        , sweptAngle = SweptAngle.smallPositive
         }
     --> Nothing
 
@@ -360,7 +319,7 @@ such as (for a counterclockwise arc):
     halfCircle =
         firstPoint
             |> Arc2d.sweptAround
-                (Point2d.midPoint firstPoint secondPoint)
+                (Point2d.midpoint firstPoint secondPoint)
                 (degrees 180)
 
 (Use `degrees -180` for a clockwise arc.)
@@ -388,16 +347,16 @@ fromEndpoints { startPoint, endPoint, radius, sweptAngle } =
 
                         offsetDistance =
                             case sweptAngle of
-                                SmallPositive ->
+                                Internal.SmallPositive ->
                                     offsetMagnitude
 
-                                SmallNegative ->
+                                Internal.SmallNegative ->
                                     -offsetMagnitude
 
-                                LargeNegative ->
+                                Internal.LargeNegative ->
                                     offsetMagnitude
 
-                                LargePositive ->
+                                Internal.LargePositive ->
                                     -offsetMagnitude
 
                         offset =
@@ -417,16 +376,16 @@ fromEndpoints { startPoint, endPoint, radius, sweptAngle } =
 
                         sweptAngleInRadians =
                             case sweptAngle of
-                                SmallPositive ->
+                                Internal.SmallPositive ->
                                     shortAngle
 
-                                SmallNegative ->
+                                Internal.SmallNegative ->
                                     -shortAngle
 
-                                LargePositive ->
+                                Internal.LargePositive ->
                                     2 * pi - shortAngle
 
-                                LargeNegative ->
+                                Internal.LargeNegative ->
                                     shortAngle - 2 * pi
                     in
                     startPoint |> sweptAround centerPoint sweptAngleInRadians
