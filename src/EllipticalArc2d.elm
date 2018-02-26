@@ -10,7 +10,7 @@ module EllipticalArc2d
         , derivative
         , derivativeMagnitude
         , endPoint
-        , fromEndpoints
+        , fromEndpointsAndRadii
         , maxSecondDerivativeMagnitude
         , mirrorAcross
         , parameterValueToArcLength
@@ -56,7 +56,7 @@ treat them as actual angles and everything will work out.
 
 # Constructors
 
-@docs with, fromEndpoints
+@docs with, fromEndpointsAndRadii
 
 
 # Properties
@@ -194,8 +194,8 @@ solution being found and not - for 180 degree arcs it is safer to use
 `EllipticalArc2d.with` instead.
 
 -}
-fromEndpoints : { startPoint : Point2d, endPoint : Point2d, xDirection : Direction2d, xRadius : Float, yRadius : Float, sweptAngle : SweptAngle } -> Maybe EllipticalArc2d
-fromEndpoints { startPoint, endPoint, xDirection, xRadius, yRadius, sweptAngle } =
+fromEndpointsAndRadii : { startPoint : Point2d, endPoint : Point2d, xRadius : Float, yRadius : Float, xDirection : Direction2d, sweptAngle : SweptAngle } -> Maybe EllipticalArc2d
+fromEndpointsAndRadii { startPoint, endPoint, xRadius, yRadius, xDirection, sweptAngle } =
     if xRadius > 0 && yRadius > 0 then
         let
             temporaryFrame =

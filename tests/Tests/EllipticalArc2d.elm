@@ -72,7 +72,7 @@ fromEndpointsReplicatesArc =
                         SweptAngle.largeNegative
 
                 result =
-                    EllipticalArc2d.fromEndpoints
+                    EllipticalArc2d.fromEndpointsAndRadii
                         { startPoint = Arc2d.startPoint arc
                         , endPoint = Arc2d.endPoint arc
                         , xRadius = radius
