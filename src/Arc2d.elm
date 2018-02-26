@@ -5,7 +5,6 @@ module Arc2d
         , derivative
         , endPoint
         , evaluate
-        , fromEndpoints
         , mirrorAcross
         , placeIn
         , pointOn
@@ -20,6 +19,8 @@ module Arc2d
         , throughPoints
         , toPolyline
         , translateBy
+        , withRadius
+        , withSweptAngle
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/arc2d.svg" alt="Arc2d" width="160">
@@ -37,7 +38,7 @@ end point). This module includes functionality for
 
 # Constructors
 
-@docs sweptAround, throughPoints, fromEndpoints
+@docs sweptAround, throughPoints, withSweptAngle, withRadius
 
 
 # Properties
@@ -212,10 +213,90 @@ throughPoints points =
             )
 
 
-{-| Attempt to construct an arc with the given start point, end point and
-radius. For any given valid set of start point, end point and radius, there are
-four possible results, so the `sweptAngle` argument is used to specify which
-arc to create:
+{-| Attempt to construct an arc with the given swept angle between the given
+start and end points. This will always be possible unless the swept angle is
+zero or some other multiple of 360 degrees (and the given points are not
+coincident), in which case `Nothing` will be returned.
+
+    p1 =
+        Point2d.fromCoordinates ( 2, 1 )
+
+    p2 =
+        Point2d.fromCoordinates ( 1, 2 )
+
+    Arc2d.withSweptAngle (degrees 90) p1 p2
+        |> Maybe.map Arc2d.centerPoint
+    --> Just (Point2d.fromCoordinates ( 1, 1 ))
+
+    Arc2d.withSweptAngle (degrees -90) p1 p2
+        |> Maybe.map Arc2d.centerPoint
+    --> Just (Point2d.fromCoordinates ( 2, 2 ))
+
+    Arc2d.withSweptAngle (degrees 180) p1 p2
+        |> Maybe.map Arc2d.centerPoint
+    --> Just (Point2d.fromCoordinates ( 1.5, 1.5 ))
+
+    Arc2d.withSweptAngle (degrees -180) p1 p2
+        |> Maybe.map Arc2d.centerPoint
+    --> Just (Point2d.fromCoordinates ( 1.5, 1.5 ))
+
+    Arc2d.withSweptAngle (degrees 45) p1 p2
+        |> Maybe.map Arc2d.centerPoint
+    --> Just (Point2d.fromCoordinates ( 0.2929, 0.2929 ))
+
+    Arc2d.withSweptAngle 0 p1 p2
+    --> Nothing
+
+-}
+withSweptAngle : Float -> Point2d -> Point2d -> Maybe Arc2d
+withSweptAngle sweptAngle startPoint endPoint =
+    let
+        displacement =
+            Vector2d.from startPoint endPoint
+    in
+    case Vector2d.lengthAndDirection displacement of
+        Just ( length, direction ) ->
+            let
+                midpoint =
+                    Point2d.midpoint startPoint endPoint
+
+                tanHalfHangle =
+                    tan (sweptAngle / 2)
+            in
+            if tanHalfHangle == 0 then
+                Nothing
+            else
+                let
+                    offset =
+                        length / (2 * tanHalfHangle)
+
+                    centerPoint =
+                        midpoint
+                            |> Point2d.translateBy
+                                (Vector2d.withLength offset
+                                    (Direction2d.perpendicularTo direction)
+                                )
+                in
+                Just <|
+                    Internal.Arc2d
+                        { startPoint = startPoint
+                        , centerPoint = centerPoint
+                        , sweptAngle = sweptAngle
+                        }
+
+        Nothing ->
+            Just <|
+                Internal.Arc2d
+                    { startPoint = startPoint
+                    , centerPoint = startPoint
+                    , sweptAngle = sweptAngle
+                    }
+
+
+{-| Attempt to construct an arc with the given radius between the given start
+and end points. Note that this is only possible if the given radius is large
+enough! For any given valid radius, start point and end point, there are four
+possible results, so the second argument is used to specify which arc to create:
 
   - `SweptAngle.smallPositive` will result in a counterclockwise arc with a
     small swept angle (in the range 0..180 degrees)
@@ -234,24 +315,14 @@ For example:
     p2 =
         Point2d.fromCoordinates ( 0, 1 )
 
-    Arc2d.fromEndpoints
-        { startPoint = p1
-        , endPoint = p2
-        , radius = 1
-        , sweptAngle = SweptAngle.smallPositive
-        }
+    Arc2d.withRadius 1 SweptAngle.smallPositive p1 p2
     --> Just
     -->     (Point2d.fromCoordinates ( 1, 0 )
     -->         |> Arc2d.sweptAround Point2d.origin
     -->             (degrees 90)
     -->     )
 
-    Arc2d.fromEndpoints
-        { startPoint = p1
-        , endPoint = p2
-        , radius = 1
-        , sweptAngle = SweptAngle.smallNegative
-        }
+    Arc2d.withRadius 1 SweptAngle.smallNegative p1 p2
     --> Just
     -->     (Point2d.fromCoordinates ( 1, 0 )
     -->         |> Arc2d.sweptAround
@@ -259,12 +330,7 @@ For example:
     -->             (degrees -90)
     -->     )
 
-    Arc2d.fromEndpoints
-        { startPoint = p1
-        , endPoint = p2
-        , radius = 1
-        , sweptAngle = SweptAngle.largePositive
-        }
+    Arc2d.withRadius 1 SweptAngle.largePositive p1 p2
     --> Just
     -->     (Point2d.fromCoordinates ( 1, 0 )
     -->         |> Arc2d.sweptAround
@@ -272,24 +338,14 @@ For example:
     -->             (degrees 270)
     -->     )
 
-    Arc2d.fromEndpoints
-        { startPoint = p1
-        , endPoint = p2
-        , radius = 1
-        , sweptAngle = SweptAngle.largeNegative
-        }
+    Arc2d.withRadius 1 SweptAngle.largeNegative p1 p2
     --> Just
     -->     (Point2d.fromCoordinates ( 1, 0 )
     -->         |> Arc2d.sweptAround Point2d.origin
     -->             (degrees -270)
     -->     )
 
-    Arc2d.fromEndpoints
-        { startPoint = p1
-        , endPoint = p2
-        , radius = 2
-        , sweptAngle = SweptAngle.smallPositive
-        }
+    Arc2d.withRadius 2 SweptAngle.smallPositive p1 p2
     --> Just
     -->     (Point2d.fromCoordinates ( 1, 0 )
     -->         |> Arc2d.sweptAround
@@ -302,31 +358,25 @@ For example:
 If the start and end points are coincident or the distance between them is more
 than twice the given radius, returns `Nothing`:
 
-    Arc2d.fromEndpoints
-        { startPoint = p1
-        , endPoint = p2
-        , radius = 0.5 -- too small!
-        , sweptAngle = SweptAngle.smallPositive
-        }
+    -- p1 and p2 are too far apart to be connected by an
+    -- arc of radius 0.5
+    Arc2d.withRadius 0.5 SweptAngle.smallPositive p1 p2
     --> Nothing
 
 Note that this means it is dangerous to use this function to construct 180
 degree arcs (half circles), since in this case due to numerical roundoff the
 distance between the two given points may appear to be slightly more than twice
-the given radius. In this case it is safer to use a more specialized approach,
-such as (for a counterclockwise arc):
+the given radius. In this case it is safer to use `Arc2d.withAngle`, such as
+(for a counterclockwise arc):
 
     halfCircle =
-        firstPoint
-            |> Arc2d.sweptAround
-                (Point2d.midpoint firstPoint secondPoint)
-                (degrees 180)
+        Arc2d.withAngle pi firstPoint secondPoint
 
-(Use `degrees -180` for a clockwise arc.)
+(Use `-pi` for a clockwise arc.)
 
 -}
-fromEndpoints : { startPoint : Point2d, endPoint : Point2d, radius : Float, sweptAngle : SweptAngle } -> Maybe Arc2d
-fromEndpoints { startPoint, endPoint, radius, sweptAngle } =
+withRadius : Float -> SweptAngle -> Point2d -> Point2d -> Maybe Arc2d
+withRadius radius sweptAngle startPoint endPoint =
     let
         chord =
             LineSegment2d.from startPoint endPoint

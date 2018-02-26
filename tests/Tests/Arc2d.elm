@@ -4,14 +4,19 @@ module Tests.Arc2d
         , evaluateZeroIsStartPoint
         , jsonRoundTrips
         , reverseFlipsDirection
+        , withRadius
+        , withSweptAngle
         )
 
 import Arc2d
+import Expect
 import Fuzz
 import Geometry.Decode as Decode
 import Geometry.Encode as Encode
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Geometry.SweptAngle as SweptAngle
+import Point2d
 import Test exposing (Test)
 import Tests.Generic as Generic
 
@@ -45,4 +50,63 @@ reverseFlipsDirection =
         (\arc t ->
             Arc2d.pointOn (Arc2d.reverse arc) t
                 |> Expect.point2d (Arc2d.pointOn arc (1 - t))
+        )
+
+
+withSweptAngle : Test
+withSweptAngle =
+    let
+        validAngle =
+            Fuzz.oneOf
+                [ Fuzz.floatRange (degrees 1) (degrees 359)
+                , Fuzz.floatRange (degrees -359) (degrees -1)
+                ]
+    in
+    Test.fuzz3
+        validAngle
+        Fuzz.point2d
+        Fuzz.point2d
+        "Arc2d.withSweptAngle produces the expected end point and swept angle"
+        (\sweptAngle startPoint endPoint ->
+            case Arc2d.withSweptAngle sweptAngle startPoint endPoint of
+                Just arc ->
+                    arc
+                        |> Expect.all
+                            [ Arc2d.endPoint
+                                >> Expect.point2d endPoint
+                            , Arc2d.sweptAngle
+                                >> Expect.approximately sweptAngle
+                            ]
+
+                Nothing ->
+                    Expect.fail
+                        "Arc2d.withSweptAngle did not produce a valid arc"
+        )
+
+
+withRadius : Test
+withRadius =
+    let
+        sweptAngleTypes =
+            List.map Fuzz.constant
+                [ SweptAngle.smallPositive
+                , SweptAngle.smallNegative
+                , SweptAngle.largePositive
+                , SweptAngle.largeNegative
+                ]
+    in
+    Test.fuzz4
+        (Fuzz.map abs Fuzz.scalar)
+        (Fuzz.oneOf sweptAngleTypes)
+        Fuzz.point2d
+        Fuzz.point2d
+        "Arc2d.withRadius produces the expected end point"
+        (\radius sweptAngleType startPoint endPoint ->
+            case Arc2d.withRadius radius sweptAngleType startPoint endPoint of
+                Just arc ->
+                    arc |> Arc2d.endPoint |> Expect.point2d endPoint
+
+                Nothing ->
+                    Point2d.distanceFrom startPoint endPoint
+                        |> Expect.greaterThan (2 * radius)
         )
