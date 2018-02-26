@@ -8,6 +8,7 @@ import Geometry.Decode as Decode
 import Geometry.Encode as Encode
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Geometry.SweptAngle as SweptAngle
 import Point2d
 import Test exposing (Test)
 import Tests.Generic as Generic
@@ -62,13 +63,13 @@ fromEndpointsReplicatesArc =
 
                 sweptAngle =
                     if arcSweptAngle >= pi then
-                        EllipticalArc2d.largePositive
+                        SweptAngle.largePositive
                     else if arcSweptAngle >= 0 then
-                        EllipticalArc2d.smallPositive
+                        SweptAngle.smallPositive
                     else if arcSweptAngle >= -pi then
-                        EllipticalArc2d.smallNegative
+                        SweptAngle.smallNegative
                     else
-                        EllipticalArc2d.largeNegative
+                        SweptAngle.largeNegative
 
                 result =
                     EllipticalArc2d.fromEndpoints
