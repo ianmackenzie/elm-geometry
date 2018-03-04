@@ -7,6 +7,7 @@
         "src"
     ],
     "exposed-modules": [
+        "Geometry.Parameter",
         "Arc2d",
         "Arc3d",
         "Axis2d",
