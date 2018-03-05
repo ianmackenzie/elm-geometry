@@ -81,7 +81,6 @@ import CubicSpline3d exposing (CubicSpline3d)
 import Direction2d exposing (Direction2d)
 import Direction3d exposing (Direction3d)
 import Expect exposing (Expectation)
-import Float.Extra as Float
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
 import LineSegment2d exposing (LineSegment2d)
@@ -152,12 +151,17 @@ defaultTolerance =
 
 approximately : Float -> Float -> Expectation
 approximately =
-    Expect.within (Expect.Absolute defaultTolerance)
+    Expect.within (Expect.AbsoluteOrRelative defaultTolerance defaultTolerance)
+
+
+absoluteToleranceFor : Float -> Float
+absoluteToleranceFor magnitude =
+    max defaultTolerance (defaultTolerance * abs magnitude)
 
 
 angle : Float -> Float -> Expectation
-angle =
-    angleWithin defaultTolerance
+angle first second =
+    angleWithin (absoluteToleranceFor (abs first)) first second
 
 
 angleWithin : Float -> Float -> Float -> Expectation
@@ -174,8 +178,8 @@ angleWithin tolerance =
 
 
 vector2d : Vector2d -> Vector2d -> Expectation
-vector2d =
-    vector2dWithin defaultTolerance
+vector2d first second =
+    vector2dWithin (absoluteToleranceFor (Vector2d.length first)) first second
 
 
 vector2dWithin : Float -> Vector2d -> Vector2d -> Expectation
@@ -184,8 +188,8 @@ vector2dWithin tolerance =
 
 
 vector3d : Vector3d -> Vector3d -> Expectation
-vector3d =
-    vector3dWithin defaultTolerance
+vector3d first second =
+    vector3dWithin (absoluteToleranceFor (Vector3d.length first)) first second
 
 
 vector3dWithin : Float -> Vector3d -> Vector3d -> Expectation
@@ -247,9 +251,14 @@ direction3dWithin tolerance =
     expect (Direction3d.equalWithin tolerance)
 
 
+point2dTolerance : Point2d -> Float
+point2dTolerance point =
+    absoluteToleranceFor (Point2d.distanceFrom Point2d.origin point)
+
+
 point2d : Point2d -> Point2d -> Expectation
-point2d =
-    point2dWithin defaultTolerance
+point2d first second =
+    point2dWithin (point2dTolerance first) first second
 
 
 point2dWithin : Float -> Point2d -> Point2d -> Expectation
@@ -257,9 +266,14 @@ point2dWithin tolerance =
     expect (Point2d.equalWithin tolerance)
 
 
+point3dTolerance : Point3d -> Float
+point3dTolerance point =
+    absoluteToleranceFor (Point3d.distanceFrom Point3d.origin point)
+
+
 point3d : Point3d -> Point3d -> Expectation
-point3d =
-    point3dWithin defaultTolerance
+point3d first second =
+    point3dWithin (point3dTolerance first) first second
 
 
 point3dWithin : Float -> Point3d -> Point3d -> Expectation
@@ -268,35 +282,27 @@ point3dWithin tolerance =
 
 
 axis2d : Axis2d -> Axis2d -> Expectation
-axis2d =
-    expect
-        (allOf
-            [ by (Point2d.equalWithin defaultTolerance) Axis2d.originPoint
-            , by (Direction2d.equalWithin defaultTolerance) Axis2d.direction
-            ]
-        )
+axis2d first =
+    Expect.all
+        [ Axis2d.originPoint >> point2d (Axis2d.originPoint first)
+        , Axis2d.direction >> direction2d (Axis2d.direction first)
+        ]
 
 
 axis3d : Axis3d -> Axis3d -> Expectation
-axis3d =
-    expect
-        (allOf
-            [ by (Point3d.equalWithin defaultTolerance) Axis3d.originPoint
-            , by (Direction3d.equalWithin defaultTolerance) Axis3d.direction
-            ]
-        )
+axis3d first =
+    Expect.all
+        [ Axis3d.originPoint >> point3d (Axis3d.originPoint first)
+        , Axis3d.direction >> direction3d (Axis3d.direction first)
+        ]
 
 
 plane3d : Plane3d -> Plane3d -> Expectation
-plane3d =
-    expect
-        (allOf
-            [ by (Point3d.equalWithin defaultTolerance)
-                Plane3d.originPoint
-            , by (Direction3d.equalWithin defaultTolerance)
-                Plane3d.normalDirection
-            ]
-        )
+plane3d first =
+    Expect.all
+        [ Plane3d.originPoint >> point3d (Plane3d.originPoint first)
+        , Plane3d.normalDirection >> direction3d (Plane3d.normalDirection first)
+        ]
 
 
 validFrame2d : Frame2d -> Expectation
@@ -328,14 +334,12 @@ validFrame2d =
 
 
 frame2d : Frame2d -> Frame2d -> Expectation
-frame2d =
-    expect
-        (allOf
-            [ by (Point2d.equalWithin defaultTolerance) Frame2d.originPoint
-            , by (Direction2d.equalWithin defaultTolerance) Frame2d.xDirection
-            , by (Direction2d.equalWithin defaultTolerance) Frame2d.yDirection
-            ]
-        )
+frame2d first =
+    Expect.all
+        [ Frame2d.originPoint >> point2d (Frame2d.originPoint first)
+        , Frame2d.xDirection >> direction2d (Frame2d.xDirection first)
+        , Frame2d.yDirection >> direction2d (Frame2d.yDirection first)
+        ]
 
 
 validFrame3d : Frame3d -> Expectation
@@ -383,313 +387,457 @@ validFrame3d =
 
 
 frame3d : Frame3d -> Frame3d -> Expectation
-frame3d =
-    expect
-        (allOf
-            [ by (Point3d.equalWithin defaultTolerance) Frame3d.originPoint
-            , by (Direction3d.equalWithin defaultTolerance) Frame3d.xDirection
-            , by (Direction3d.equalWithin defaultTolerance) Frame3d.yDirection
-            , by (Direction3d.equalWithin defaultTolerance) Frame3d.zDirection
-            ]
-        )
+frame3d first =
+    Expect.all
+        [ Frame3d.originPoint >> point3d (Frame3d.originPoint first)
+        , Frame3d.xDirection >> direction3d (Frame3d.xDirection first)
+        , Frame3d.yDirection >> direction3d (Frame3d.yDirection first)
+        , Frame3d.zDirection >> direction3d (Frame3d.zDirection first)
+        ]
 
 
 sketchPlane3d : SketchPlane3d -> SketchPlane3d -> Expectation
-sketchPlane3d =
-    expect
-        (allOf
-            [ by (Point3d.equalWithin defaultTolerance)
-                SketchPlane3d.originPoint
-            , by (Direction3d.equalWithin defaultTolerance)
-                SketchPlane3d.xDirection
-            , by (Direction3d.equalWithin defaultTolerance)
-                SketchPlane3d.yDirection
-            ]
-        )
+sketchPlane3d first =
+    Expect.all
+        [ SketchPlane3d.originPoint
+            >> point3d (SketchPlane3d.originPoint first)
+        , SketchPlane3d.xDirection
+            >> direction3d (SketchPlane3d.xDirection first)
+        , SketchPlane3d.yDirection
+            >> direction3d (SketchPlane3d.yDirection first)
+        ]
 
 
 lineSegment2d : LineSegment2d -> LineSegment2d -> Expectation
-lineSegment2d =
-    lineSegment2dWithin defaultTolerance
+lineSegment2d first =
+    Expect.all
+        [ LineSegment2d.startPoint
+            >> point2d (LineSegment2d.startPoint first)
+        , LineSegment2d.endPoint
+            >> point2d (LineSegment2d.endPoint first)
+        ]
 
 
 lineSegment2dWithin : Float -> LineSegment2d -> LineSegment2d -> Expectation
-lineSegment2dWithin tolerance =
-    expect
-        (allOf
-            [ by (Point2d.equalWithin tolerance) LineSegment2d.startPoint
-            , by (Point2d.equalWithin tolerance) LineSegment2d.endPoint
-            ]
-        )
+lineSegment2dWithin tolerance first =
+    Expect.all
+        [ LineSegment2d.startPoint
+            >> point2dWithin tolerance (LineSegment2d.startPoint first)
+        , LineSegment2d.endPoint
+            >> point2dWithin tolerance (LineSegment2d.endPoint first)
+        ]
 
 
 lineSegment3d : LineSegment3d -> LineSegment3d -> Expectation
-lineSegment3d =
-    lineSegment3dWithin defaultTolerance
+lineSegment3d first =
+    Expect.all
+        [ LineSegment3d.startPoint
+            >> point3d (LineSegment3d.startPoint first)
+        , LineSegment3d.endPoint
+            >> point3d (LineSegment3d.endPoint first)
+        ]
 
 
 lineSegment3dWithin : Float -> LineSegment3d -> LineSegment3d -> Expectation
-lineSegment3dWithin tolerance =
-    expect
-        (allOf
-            [ by (Point3d.equalWithin tolerance) LineSegment3d.startPoint
-            , by (Point3d.equalWithin tolerance) LineSegment3d.endPoint
-            ]
-        )
+lineSegment3dWithin tolerance first =
+    Expect.all
+        [ LineSegment3d.startPoint
+            >> point3dWithin tolerance (LineSegment3d.startPoint first)
+        , LineSegment3d.endPoint
+            >> point3dWithin tolerance (LineSegment3d.endPoint first)
+        ]
+
+
+triangle2dBy : (Point2d -> Point2d -> Expectation) -> Triangle2d -> Triangle2d -> Expectation
+triangle2dBy equalTo first =
+    let
+        vertex1 triangle =
+            let
+                ( vertex, _, _ ) =
+                    Triangle2d.vertices triangle
+            in
+            vertex
+
+        vertex2 triangle =
+            let
+                ( _, vertex, _ ) =
+                    Triangle2d.vertices triangle
+            in
+            vertex
+
+        vertex3 triangle =
+            let
+                ( _, _, vertex ) =
+                    Triangle2d.vertices triangle
+            in
+            vertex
+    in
+    Expect.all
+        [ vertex1 >> equalTo (vertex1 first)
+        , vertex2 >> equalTo (vertex2 first)
+        , vertex3 >> equalTo (vertex3 first)
+        ]
 
 
 triangle2d : Triangle2d -> Triangle2d -> Expectation
 triangle2d =
-    triangle2dWithin defaultTolerance
+    triangle2dBy point2d
 
 
 triangle2dWithin : Float -> Triangle2d -> Triangle2d -> Expectation
 triangle2dWithin tolerance =
+    triangle2dBy (point2dWithin tolerance)
+
+
+triangle3dBy : (Point3d -> Point3d -> Expectation) -> Triangle3d -> Triangle3d -> Expectation
+triangle3dBy equalTo first =
     let
-        comparison firstTriangle secondTriangle =
+        vertex1 triangle =
             let
-                ( firstVertex1, firstVertex2, firstVertex3 ) =
-                    Triangle2d.vertices firstTriangle
-
-                ( secondVertex1, secondVertex2, secondVertex3 ) =
-                    Triangle2d.vertices secondTriangle
-
-                equalPoints =
-                    Point2d.equalWithin tolerance
+                ( vertex, _, _ ) =
+                    Triangle3d.vertices triangle
             in
-            equalPoints firstVertex1 secondVertex1
-                && equalPoints firstVertex2 secondVertex2
-                && equalPoints firstVertex3 secondVertex3
+            vertex
+
+        vertex2 triangle =
+            let
+                ( _, vertex, _ ) =
+                    Triangle3d.vertices triangle
+            in
+            vertex
+
+        vertex3 triangle =
+            let
+                ( _, _, vertex ) =
+                    Triangle3d.vertices triangle
+            in
+            vertex
     in
-    expect comparison
+    Expect.all
+        [ vertex1 >> equalTo (vertex1 first)
+        , vertex2 >> equalTo (vertex2 first)
+        , vertex3 >> equalTo (vertex3 first)
+        ]
 
 
 triangle3d : Triangle3d -> Triangle3d -> Expectation
 triangle3d =
-    triangle3dWithin defaultTolerance
+    triangle3dBy point3d
 
 
 triangle3dWithin : Float -> Triangle3d -> Triangle3d -> Expectation
 triangle3dWithin tolerance =
-    let
-        comparison firstTriangle secondTriangle =
-            let
-                ( firstVertex1, firstVertex2, firstVertex3 ) =
-                    Triangle3d.vertices firstTriangle
+    triangle3dBy (point3dWithin tolerance)
 
-                ( secondVertex1, secondVertex2, secondVertex3 ) =
-                    Triangle3d.vertices secondTriangle
 
-                equalPoints =
-                    Point3d.equalWithin tolerance
-            in
-            equalPoints firstVertex1 secondVertex1
-                && equalPoints firstVertex2 secondVertex2
-                && equalPoints firstVertex3 secondVertex3
-    in
-    expect comparison
+boundingBox2dBy : (Float -> Float -> Expectation) -> BoundingBox2d -> BoundingBox2d -> Expectation
+boundingBox2dBy equalTo first =
+    Expect.all
+        [ BoundingBox2d.minX >> equalTo (BoundingBox2d.minX first)
+        , BoundingBox2d.maxX >> equalTo (BoundingBox2d.maxX first)
+        , BoundingBox2d.minY >> equalTo (BoundingBox2d.minY first)
+        , BoundingBox2d.maxY >> equalTo (BoundingBox2d.maxY first)
+        ]
 
 
 boundingBox2d : BoundingBox2d -> BoundingBox2d -> Expectation
 boundingBox2d =
-    boundingBox2dWithin defaultTolerance
+    boundingBox2dBy approximately
 
 
 boundingBox2dWithin : Float -> BoundingBox2d -> BoundingBox2d -> Expectation
 boundingBox2dWithin tolerance =
-    expect
-        (allOf
-            [ by (Float.equalWithin tolerance) BoundingBox2d.minX
-            , by (Float.equalWithin tolerance) BoundingBox2d.maxX
-            , by (Float.equalWithin tolerance) BoundingBox2d.minY
-            , by (Float.equalWithin tolerance) BoundingBox2d.maxY
-            ]
-        )
+    boundingBox2dBy (Expect.within (Expect.Absolute tolerance))
+
+
+boundingBox3dBy : (Float -> Float -> Expectation) -> BoundingBox3d -> BoundingBox3d -> Expectation
+boundingBox3dBy equalTo first =
+    Expect.all
+        [ BoundingBox3d.minX >> equalTo (BoundingBox3d.minX first)
+        , BoundingBox3d.maxX >> equalTo (BoundingBox3d.maxX first)
+        , BoundingBox3d.minY >> equalTo (BoundingBox3d.minY first)
+        , BoundingBox3d.maxY >> equalTo (BoundingBox3d.maxY first)
+        , BoundingBox3d.minZ >> equalTo (BoundingBox3d.minZ first)
+        , BoundingBox3d.maxZ >> equalTo (BoundingBox3d.maxZ first)
+        ]
 
 
 boundingBox3d : BoundingBox3d -> BoundingBox3d -> Expectation
 boundingBox3d =
-    boundingBox3dWithin defaultTolerance
+    boundingBox3dBy approximately
 
 
 boundingBox3dWithin : Float -> BoundingBox3d -> BoundingBox3d -> Expectation
 boundingBox3dWithin tolerance =
-    expect
-        (allOf
-            [ by (Float.equalWithin tolerance) BoundingBox3d.minX
-            , by (Float.equalWithin tolerance) BoundingBox3d.maxX
-            , by (Float.equalWithin tolerance) BoundingBox3d.minY
-            , by (Float.equalWithin tolerance) BoundingBox3d.maxY
-            , by (Float.equalWithin tolerance) BoundingBox3d.minZ
-            , by (Float.equalWithin tolerance) BoundingBox3d.maxZ
-            ]
-        )
+    boundingBox3dBy (Expect.within (Expect.Absolute tolerance))
+
+
+polyline2dBy : (Point2d -> Point2d -> Expectation) -> Polyline2d -> Polyline2d -> Expectation
+polyline2dBy equalTo first =
+    Expect.all
+        [ Polyline2d.vertices
+            >> List.length
+            >> Expect.equal (List.length (Polyline2d.vertices first))
+        , \second ->
+            Expect.all
+                (List.map2
+                    (\firstVertex secondVertex ->
+                        \_ -> secondVertex |> equalTo firstVertex
+                    )
+                    (Polyline2d.vertices first)
+                    (Polyline2d.vertices second)
+                )
+                second
+        ]
 
 
 polyline2d : Polyline2d -> Polyline2d -> Expectation
 polyline2d =
-    polyline2dWithin defaultTolerance
+    polyline2dBy point2d
 
 
 polyline2dWithin : Float -> Polyline2d -> Polyline2d -> Expectation
 polyline2dWithin tolerance =
-    expect (by (listOf (Point2d.equalWithin tolerance)) Polyline2d.vertices)
+    polyline2dBy (point2dWithin tolerance)
+
+
+polyline3dBy : (Point3d -> Point3d -> Expectation) -> Polyline3d -> Polyline3d -> Expectation
+polyline3dBy equalPoints first =
+    Expect.all
+        [ Polyline3d.vertices
+            >> List.length
+            >> Expect.equal (List.length (Polyline3d.vertices first))
+        , \second ->
+            Expect.all
+                (List.map2
+                    (\firstVertex secondVertex ->
+                        \_ -> equalPoints firstVertex secondVertex
+                    )
+                    (Polyline3d.vertices first)
+                    (Polyline3d.vertices second)
+                )
+                second
+        ]
 
 
 polyline3d : Polyline3d -> Polyline3d -> Expectation
 polyline3d =
-    polyline3dWithin defaultTolerance
+    polyline3dBy point3d
 
 
 polyline3dWithin : Float -> Polyline3d -> Polyline3d -> Expectation
 polyline3dWithin tolerance =
-    expect (by (listOf (Point3d.equalWithin tolerance)) Polyline3d.vertices)
+    polyline3dBy (point3dWithin tolerance)
+
+
+polygon2dBy : (Point2d -> Point2d -> Expectation) -> Polygon2d -> Polygon2d -> Expectation
+polygon2dBy equalPoints first =
+    Expect.all
+        [ Polygon2d.allVertices
+            >> List.length
+            >> Expect.equal (List.length (Polygon2d.allVertices first))
+        , \second ->
+            Expect.all
+                (List.map2
+                    (\firstVertex secondVertex ->
+                        \_ -> equalPoints firstVertex secondVertex
+                    )
+                    (Polygon2d.allVertices first)
+                    (Polygon2d.allVertices second)
+                )
+                second
+        ]
 
 
 polygon2d : Polygon2d -> Polygon2d -> Expectation
 polygon2d =
-    polygon2dWithin defaultTolerance
+    polygon2dBy point2d
 
 
 polygon2dWithin : Float -> Polygon2d -> Polygon2d -> Expectation
 polygon2dWithin tolerance =
-    let
-        equalLoops =
-            listOf (Point2d.equalWithin tolerance)
-    in
-    expect
-        (allOf
-            [ by equalLoops Polygon2d.outerLoop
-            , by (listOf equalLoops) Polygon2d.innerLoops
-            ]
-        )
+    polygon2dBy (point2dWithin tolerance)
 
 
 circle2d : Circle2d -> Circle2d -> Expectation
-circle2d =
-    expect
-        (allOf
-            [ by (Point2d.equalWithin defaultTolerance) Circle2d.centerPoint
-            , by (Float.equalWithin defaultTolerance) Circle2d.radius
-            ]
-        )
+circle2d first =
+    Expect.all
+        [ Circle2d.centerPoint >> point2d (Circle2d.centerPoint first)
+        , Circle2d.radius >> approximately (Circle2d.radius first)
+        ]
 
 
 circle3d : Circle3d -> Circle3d -> Expectation
-circle3d =
-    expect
-        (allOf
-            [ by (Point3d.equalWithin defaultTolerance)
-                Circle3d.centerPoint
-            , by (Direction3d.equalWithin defaultTolerance)
-                (Circle3d.axis >> Axis3d.direction)
-            , by (Float.equalWithin defaultTolerance)
-                Circle3d.radius
-            ]
-        )
+circle3d first =
+    Expect.all
+        [ Circle3d.centerPoint >> point3d (Circle3d.centerPoint first)
+        , Circle3d.axialDirection >> direction3d (Circle3d.axialDirection first)
+        , Circle3d.radius >> approximately (Circle3d.radius first)
+        ]
 
 
 sphere3d : Sphere3d -> Sphere3d -> Expectation
-sphere3d =
-    expect
-        (allOf
-            [ by (Point3d.equalWithin defaultTolerance) Sphere3d.centerPoint
-            , by (Float.equalWithin defaultTolerance) Sphere3d.radius
-            ]
-        )
+sphere3d first =
+    Expect.all
+        [ Sphere3d.centerPoint >> point3d (Sphere3d.centerPoint first)
+        , Sphere3d.radius >> approximately (Sphere3d.radius first)
+        ]
 
 
 arc2d : Arc2d -> Arc2d -> Expectation
-arc2d =
-    expect
-        (allOf
-            [ by (Point2d.equalWithin defaultTolerance) Arc2d.centerPoint
-            , by (Point2d.equalWithin defaultTolerance) Arc2d.startPoint
-            , by (Float.equalWithin defaultTolerance) Arc2d.sweptAngle
-            ]
-        )
+arc2d first =
+    Expect.all
+        [ Arc2d.startPoint >> point2d (Arc2d.startPoint first)
+        , Arc2d.endPoint >> point2d (Arc2d.endPoint first)
+        , Arc2d.sweptAngle >> approximately (Arc2d.sweptAngle first)
+        ]
 
 
 arc3d : Arc3d -> Arc3d -> Expectation
-arc3d =
-    expect
-        (allOf
-            [ by (Point3d.equalWithin defaultTolerance) Arc3d.centerPoint
-            , by (Direction3d.equalWithin defaultTolerance)
-                (Arc3d.axis >> Axis3d.direction)
-            , by (Point3d.equalWithin defaultTolerance) Arc3d.startPoint
-            , by (Float.equalWithin defaultTolerance) Arc3d.sweptAngle
-            ]
-        )
+arc3d first =
+    Expect.all
+        [ Arc3d.startPoint >> point3d (Arc3d.startPoint first)
+        , Arc3d.endPoint >> point3d (Arc3d.endPoint first)
+        , Arc3d.sweptAngle >> approximately (Arc3d.sweptAngle first)
+        , Arc3d.axialDirection >> direction3d (Arc3d.axialDirection first)
+        ]
 
 
 quadraticSpline2d : QuadraticSpline2d -> QuadraticSpline2d -> Expectation
-quadraticSpline2d =
-    expect
-        (\firstSpline secondSpline ->
+quadraticSpline2d first =
+    let
+        controlPoint1 spline =
             let
-                ( p1, p2, p3 ) =
-                    QuadraticSpline2d.controlPoints firstSpline
-
-                ( q1, q2, q3 ) =
-                    QuadraticSpline2d.controlPoints secondSpline
-
-                equal =
-                    Point2d.equalWithin defaultTolerance
+                ( controlPoint, _, _ ) =
+                    QuadraticSpline2d.controlPoints spline
             in
-            equal p1 q1 && equal p2 q2 && equal p3 q3
-        )
+            controlPoint
+
+        controlPoint2 spline =
+            let
+                ( _, controlPoint, _ ) =
+                    QuadraticSpline2d.controlPoints spline
+            in
+            controlPoint
+
+        controlPoint3 spline =
+            let
+                ( _, _, controlPoint ) =
+                    QuadraticSpline2d.controlPoints spline
+            in
+            controlPoint
+    in
+    Expect.all
+        [ controlPoint1 >> point2d (controlPoint1 first)
+        , controlPoint2 >> point2d (controlPoint2 first)
+        , controlPoint3 >> point2d (controlPoint3 first)
+        ]
 
 
 quadraticSpline3d : QuadraticSpline3d -> QuadraticSpline3d -> Expectation
-quadraticSpline3d =
-    expect
-        (\firstSpline secondSpline ->
+quadraticSpline3d first =
+    let
+        controlPoint1 spline =
             let
-                ( p1, p2, p3 ) =
-                    QuadraticSpline3d.controlPoints firstSpline
-
-                ( q1, q2, q3 ) =
-                    QuadraticSpline3d.controlPoints secondSpline
-
-                equal =
-                    Point3d.equalWithin defaultTolerance
+                ( controlPoint, _, _ ) =
+                    QuadraticSpline3d.controlPoints spline
             in
-            equal p1 q1 && equal p2 q2 && equal p3 q3
-        )
+            controlPoint
+
+        controlPoint2 spline =
+            let
+                ( _, controlPoint, _ ) =
+                    QuadraticSpline3d.controlPoints spline
+            in
+            controlPoint
+
+        controlPoint3 spline =
+            let
+                ( _, _, controlPoint ) =
+                    QuadraticSpline3d.controlPoints spline
+            in
+            controlPoint
+    in
+    Expect.all
+        [ controlPoint1 >> point3d (controlPoint1 first)
+        , controlPoint2 >> point3d (controlPoint2 first)
+        , controlPoint3 >> point3d (controlPoint3 first)
+        ]
 
 
 cubicSpline2d : CubicSpline2d -> CubicSpline2d -> Expectation
-cubicSpline2d =
-    expect
-        (\firstSpline secondSpline ->
+cubicSpline2d first =
+    let
+        controlPoint1 spline =
             let
-                ( p1, p2, p3, p4 ) =
-                    CubicSpline2d.controlPoints firstSpline
-
-                ( q1, q2, q3, q4 ) =
-                    CubicSpline2d.controlPoints secondSpline
-
-                equal =
-                    Point2d.equalWithin defaultTolerance
+                ( controlPoint, _, _, _ ) =
+                    CubicSpline2d.controlPoints spline
             in
-            equal p1 q1 && equal p2 q2 && equal p3 q3 && equal p4 q4
-        )
+            controlPoint
+
+        controlPoint2 spline =
+            let
+                ( _, controlPoint, _, _ ) =
+                    CubicSpline2d.controlPoints spline
+            in
+            controlPoint
+
+        controlPoint3 spline =
+            let
+                ( _, _, controlPoint, _ ) =
+                    CubicSpline2d.controlPoints spline
+            in
+            controlPoint
+
+        controlPoint4 spline =
+            let
+                ( _, _, _, controlPoint ) =
+                    CubicSpline2d.controlPoints spline
+            in
+            controlPoint
+    in
+    Expect.all
+        [ controlPoint1 >> point2d (controlPoint1 first)
+        , controlPoint2 >> point2d (controlPoint2 first)
+        , controlPoint3 >> point2d (controlPoint3 first)
+        , controlPoint4 >> point2d (controlPoint4 first)
+        ]
 
 
 cubicSpline3d : CubicSpline3d -> CubicSpline3d -> Expectation
-cubicSpline3d =
-    expect
-        (\firstSpline secondSpline ->
+cubicSpline3d first =
+    let
+        controlPoint1 spline =
             let
-                ( p1, p2, p3, p4 ) =
-                    CubicSpline3d.controlPoints firstSpline
-
-                ( q1, q2, q3, q4 ) =
-                    CubicSpline3d.controlPoints secondSpline
-
-                equal =
-                    Point3d.equalWithin defaultTolerance
+                ( controlPoint, _, _, _ ) =
+                    CubicSpline3d.controlPoints spline
             in
-            equal p1 q1 && equal p2 q2 && equal p3 q3 && equal p4 q4
-        )
+            controlPoint
+
+        controlPoint2 spline =
+            let
+                ( _, controlPoint, _, _ ) =
+                    CubicSpline3d.controlPoints spline
+            in
+            controlPoint
+
+        controlPoint3 spline =
+            let
+                ( _, _, controlPoint, _ ) =
+                    CubicSpline3d.controlPoints spline
+            in
+            controlPoint
+
+        controlPoint4 spline =
+            let
+                ( _, _, _, controlPoint ) =
+                    CubicSpline3d.controlPoints spline
+            in
+            controlPoint
+    in
+    Expect.all
+        [ controlPoint1 >> point3d (controlPoint1 first)
+        , controlPoint2 >> point3d (controlPoint2 first)
+        , controlPoint3 >> point3d (controlPoint3 first)
+        , controlPoint4 >> point3d (controlPoint4 first)
+        ]
