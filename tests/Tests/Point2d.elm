@@ -9,6 +9,7 @@ import Geometry.Fuzz as Fuzz
 import Point2d
 import Test exposing (Test)
 import Tests.Generic as Generic
+import Vector2d
 
 
 rotationPreservesDistance : Test
@@ -86,3 +87,21 @@ interpolationReturnsExactEndpoints =
 jsonRoundTrips : Test
 jsonRoundTrips =
     Generic.jsonRoundTrips Fuzz.point2d Encode.point2d Decode.point2d
+
+
+translateByAndInAreConsistent : Test
+translateByAndInAreConsistent =
+    Test.fuzz3
+        Fuzz.point2d
+        Fuzz.direction2d
+        Fuzz.scalar
+        "translateBy and translateIn are consistent"
+        (\point direction distance ->
+            let
+                displacement =
+                    Vector2d.withLength distance direction
+            in
+            point
+                |> Point2d.translateIn direction distance
+                |> Expect.point2d (Point2d.translateBy displacement point)
+        )

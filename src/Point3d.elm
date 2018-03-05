@@ -39,6 +39,7 @@ module Point3d
         , squaredDistanceFrom
         , squaredDistanceFromAxis
         , translateBy
+        , translateIn
         , xCoordinate
         , yCoordinate
         , zCoordinate
@@ -90,7 +91,7 @@ like you can add two vectors.
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, projectOntoAxis
+@docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectOntoAxis
 
 
 # Coordinate conversions
@@ -704,6 +705,39 @@ translateBy vector point =
             coordinates point
     in
     fromCoordinates ( px + vx, py + vy, pz + vz )
+
+
+{-| Translate a point in a given direction by a given distance.
+
+    point =
+        Point3d.fromCoordinates ( 3, 4, 5 )
+
+    point |> Point3d.translateIn Direction3d.x 2
+    --> Point3d.fromCoordinates ( 5, 4, 5 )
+
+    point |> Point3d.translateIn Direction3d.y 2
+    --> Point3d.fromCoordinates ( 3, 6, 5 )
+
+The distance can be negative:
+
+    Point3d.translateIn Direction3d.x -2
+    --> Point3d.fromCoordinates ( 1, 4, 5 )
+
+-}
+translateIn : Direction3d -> Float -> Point3d -> Point3d
+translateIn direction distance point =
+    let
+        ( dx, dy, dz ) =
+            Direction3d.components direction
+
+        ( px, py, pz ) =
+            coordinates point
+    in
+    fromCoordinates
+        ( px + distance * dx
+        , py + distance * dy
+        , pz + distance * dz
+        )
 
 
 {-| Mirror a point across a plane. The result will be the same distance from the

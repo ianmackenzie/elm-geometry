@@ -146,3 +146,21 @@ translationByPerpendicularDoesNotChangeSignedDistance =
 jsonRoundTrips : Test
 jsonRoundTrips =
     Generic.jsonRoundTrips Fuzz.point3d Encode.point3d Decode.point3d
+
+
+translateByAndInAreConsistent : Test
+translateByAndInAreConsistent =
+    Test.fuzz3
+        Fuzz.point3d
+        Fuzz.direction3d
+        Fuzz.scalar
+        "translateBy and translateIn are consistent"
+        (\point direction distance ->
+            let
+                displacement =
+                    Vector3d.withLength distance direction
+            in
+            point
+                |> Point3d.translateIn direction distance
+                |> Expect.point3d (Point3d.translateBy displacement point)
+        )

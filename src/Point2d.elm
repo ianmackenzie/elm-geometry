@@ -36,6 +36,7 @@ module Point2d
         , signedDistanceFrom
         , squaredDistanceFrom
         , translateBy
+        , translateIn
         , xCoordinate
         , yCoordinate
         )
@@ -85,7 +86,7 @@ like you can add two vectors.
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto
+@docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
 
 
 # Coordinate conversions
@@ -632,6 +633,41 @@ translateBy vector point =
             coordinates point
     in
     fromCoordinates ( px + vx, py + vy )
+
+
+{-| Translate a point in a given direction by a given distance.
+
+    point =
+        Point2d.fromCoordinates ( 3, 4 )
+
+    point |> Point2d.translateIn Direction2d.x 2
+    --> Point2d.fromCoordinates ( 5, 4 )
+
+    point |> Point2d.translateIn Direction2d.y 2
+    --> Point2d.fromCoordinates ( 3, 6 )
+
+    angledDirection =
+        Direction2d.fromAngle (degrees 45)
+
+    point |> Point2d.translateIn angledDirection 1
+    --> Point2d.fromCoordinates ( 3.7071, 4.7071 )
+
+The distance can be negative:
+
+    Point2d.translateIn Direction2d.x -2
+    --> Point2d.fromCoordinates ( 1, 4 )
+
+-}
+translateIn : Direction2d -> Float -> Point2d -> Point2d
+translateIn direction distance point =
+    let
+        ( dx, dy ) =
+            Direction2d.components direction
+
+        ( px, py ) =
+            coordinates point
+    in
+    fromCoordinates ( px + distance * dx, py + distance * dy )
 
 
 {-| Mirror a point across an axis. The result will be the same distance from the
