@@ -390,12 +390,9 @@ polygon2d =
 -}
 circle2d : Decoder Circle2d
 circle2d =
-    Decode.map2
-        (\centerPoint radius ->
-            Circle2d.with { centerPoint = centerPoint, radius = radius }
-        )
-        (Decode.field "centerPoint" point2d)
+    Decode.map2 Circle2d.withRadius
         (Decode.field "radius" Decode.float)
+        (Decode.field "centerPoint" point2d)
 
 
 {-| Decodes an `Ellipse2d` from an object with `centerPoint`, `xDirection`,

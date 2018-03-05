@@ -133,11 +133,9 @@ sweptAround axis point =
 specified in XY coordinates _within_ the sketch plane.
 
     Circle3d.on SketchPlane3d.yz <|
-        Circle2d.with
-            { centerPoint =
-                Point2d.fromCoordinates ( 1, 2 )
-            , radius = 3
-            }
+        Circle2d.withRadius 3
+            (Point2d.fromCoordinates ( 1, 2 ))
+
     --> Circle3d.with
     -->     { centerPoint =
     -->         Point3d.fromCoordinates ( 0, 1, 2 )

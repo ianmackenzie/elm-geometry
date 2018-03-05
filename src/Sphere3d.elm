@@ -480,16 +480,11 @@ projectOnto plane sphere =
 of a sphere into a sketch plane.
 
     Sphere3d.projectInto SketchPlane3d.xy exampleSphere
-    --> Circle2d.with
-    -->     { centerPoint =
-    -->         Point2d.fromCoordinates ( 1, 2 )
-    -->     , radius = 3.0
-    -->     }
+    --> Circle2d.withRadius 3
+    -->     (Point2d.fromCoordinates ( 1, 2 ))
 
 -}
 projectInto : SketchPlane3d -> Sphere3d -> Circle2d
 projectInto sketchPlane sphere =
-    Circle2d.with
-        { centerPoint = Point3d.projectInto sketchPlane (centerPoint sphere)
-        , radius = radius sphere
-        }
+    Circle2d.withRadius (radius sphere)
+        (Point3d.projectInto sketchPlane (centerPoint sphere))

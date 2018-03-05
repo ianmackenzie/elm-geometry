@@ -282,11 +282,7 @@ polygon2d =
 
 circle2d : Fuzzer Circle2d
 circle2d =
-    let
-        circle centerPoint radius =
-            Circle2d.with { centerPoint = centerPoint, radius = radius }
-    in
-    Fuzz.map2 circle point2d positiveScalar
+    Fuzz.map2 Circle2d.withRadius positiveScalar point2d
 
 
 circle3d : Fuzzer Circle3d

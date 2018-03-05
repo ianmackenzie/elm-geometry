@@ -17,7 +17,7 @@ module Circle2d
         , toArc
         , translateBy
         , unit
-        , with
+        , withRadius
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/circle2d.svg" alt="Circle2d" width="160">
@@ -39,7 +39,7 @@ functionality for
 
 # Constructors
 
-@docs with, throughPoints
+@docs withRadius, throughPoints
 
 
 # Properties
@@ -82,36 +82,30 @@ type alias Circle2d =
     Internal.Circle2d
 
 
-{-| Construct a circle from its center point and radius:
+{-| Construct a circle from its radius and center point:
 
     exampleCircle =
-        Circle2d.with
-            { centerPoint =
-                Point2d.fromCoordinates ( 1, 2 )
-            , radius = 3
-            }
+        Circle2d.withRadius 3
+            (Point2d.fromCoordinates ( 1, 2 ))
 
 The actual radius of the circle will be the absolute value of the given radius
-(passing `radius = -2` will have the same effect as `radius = 2`).
+(passing -3 will have the same effect as 3).
 
 -}
-with : { centerPoint : Point2d, radius : Float } -> Circle2d
-with properties =
-    Internal.Circle2d { properties | radius = abs properties.radius }
+withRadius : Float -> Point2d -> Circle2d
+withRadius radius centerPoint =
+    Internal.Circle2d { radius = abs radius, centerPoint = centerPoint }
 
 
 {-| The unit circle, centered on the origin with a radius of 1.
 
     Circle2d.unit
-    --> Circle2d.with
-    -->     { centerPoint = Point2d.origin
-    -->     , radius = 1
-    -->     }
+    --> Circle2d.withRadius 1 Point2d.origin
 
 -}
 unit : Circle2d
 unit =
-    with { centerPoint = Point2d.origin, radius = 1 }
+    withRadius 1 Point2d.origin
 
 
 {-| Attempt to construct a circle that passes through the three given points. If
@@ -123,11 +117,8 @@ the three given points are collinear, returns `Nothing`.
         , Point2d.fromCoordinates ( 0, 1 )
         )
     --> Just
-    -->     (Circle2d.with
-    -->         { centerPoint =
-    -->             Point2d.fromCoordinates ( 0.5, 0.5 )
-    -->         , radius = 0.7071
-    -->         }
+    -->     (Circle2d.withRadius 0.7071
+    -->         (Point2d.fromCoordinates ( 0.5, 0.5 ))
     -->     )
 
     Circle2d.throughPoints
@@ -136,11 +127,8 @@ the three given points are collinear, returns `Nothing`.
         , Point2d.fromCoordinates ( 4, 0 )
         )
     --> Just
-    -->     (Circle2d.with
-    -->         { centerPoint =
-    -->             Point2d.fromCoordinates ( 2, -1.5 )
-    -->         , radius = 2.5
-    -->         }
+    -->     (Circle2d.withRadius 2.5
+    -->         (Point2d.fromCoordinates ( 2, -1.5 ))
     -->     )
 
     Circle2d.throughPoints
@@ -175,8 +163,11 @@ throughPoints points =
 
                     r3 =
                         Point2d.distanceFrom p0 p3
+
+                    r =
+                        (r1 + r2 + r3) / 3
                 in
-                with { centerPoint = p0, radius = (r1 + r2 + r3) / 3 }
+                withRadius r p0
             )
 
 
@@ -285,34 +276,21 @@ contains point circle =
 {-| Scale a circle about a given point by a given scale.
 
     Circle2d.scaleAbout Point2d.origin 2 exampleCircle
-    --> Circle2d.with
-    -->     { centerPoint =
-    -->         Point2d.fromCoordinates ( 2, 4 )
-    -->     , radius = 6
-    -->     }
+    --> Circle2d.withRadius 6
+    -->     (Point2d.fromCoordinates ( 2, 4 ))
 
     exampleCircle
         |> Circle2d.scaleAbout
             (Point2d.fromCoordinates ( 1, 2 ))
             0.5
-    --> Circle2d.with
-    -->     { centerPoint =
-    -->         Point2d.fromCoordinates ( 1, 2 )
-    -->     , radius = 1.5
-    -->     }
+    --> Circle2d.withRadius 1.5
+    -->     (Point2d.fromCoordinates ( 1, 2 ))
 
 -}
 scaleAbout : Point2d -> Float -> Circle2d -> Circle2d
-scaleAbout point scale =
-    let
-        scalePoint =
-            Point2d.scaleAbout point scale
-    in
-    \circle ->
-        with
-            { centerPoint = scalePoint (centerPoint circle)
-            , radius = scale * radius circle
-            }
+scaleAbout point scale (Internal.Circle2d circle) =
+    withRadius (abs scale * circle.radius)
+        (Point2d.scaleAbout point scale circle.centerPoint)
 
 
 {-| Rotate a circle around a given point by a given angle (in radians).
@@ -320,11 +298,8 @@ scaleAbout point scale =
     exampleCircle
         |> Circle2d.rotateAround Point2d.origin
             (degrees 90)
-    --> Circle2d.with
-    -->     { centerPoint =
-    -->         Point2d.fromCoordinates ( -2, 1 )
-    -->     , radius = 3
-    -->     }
+    --> Circle2d.withRadius 3
+    -->     (Point2d.fromCoordinates ( -2, 1 ))
 
 -}
 rotateAround : Point2d -> Float -> Circle2d -> Circle2d
@@ -333,11 +308,8 @@ rotateAround point angle =
         rotatePoint =
             Point2d.rotateAround point angle
     in
-    \circle ->
-        with
-            { centerPoint = rotatePoint (centerPoint circle)
-            , radius = radius circle
-            }
+    \(Internal.Circle2d circle) ->
+        withRadius circle.radius (rotatePoint circle.centerPoint)
 
 
 {-| Translate a circle by a given displacement.
@@ -345,47 +317,26 @@ rotateAround point angle =
     exampleCircle
         |> Circle2d.translateBy
             (Vector2d.fromComponents ( 2, 2 ))
-    --> Circle2d.with
-    -->     { centerPoint =
-    -->         Point2d.fromCoordinates ( 3, 4 )
-    -->     , radius = 3
-    -->     }
+    --> Circle2d.withRadius 3
+    -->     (Point2d.fromCoordinates ( 3, 4 ))
 
 -}
 translateBy : Vector2d -> Circle2d -> Circle2d
-translateBy displacement =
-    let
-        translatePoint =
-            Point2d.translateBy displacement
-    in
-    \circle ->
-        with
-            { centerPoint = translatePoint (centerPoint circle)
-            , radius = radius circle
-            }
+translateBy displacement (Internal.Circle2d circle) =
+    withRadius circle.radius
+        (Point2d.translateBy displacement circle.centerPoint)
 
 
 {-| Mirror a circle across a given axis.
 
     Circle2d.mirrorAcross Axis2d.x exampleCircle
-    --> Circle2d.with
-    -->     { centerPoint =
-    -->         Point2d.fromCoordinates ( 1, -2 )
-    -->     , radius = 3
-    -->     }
+    --> Circle2d.withRadius 3
+    -->     (Point2d.fromCoordinates ( 1, -2 ))
 
 -}
 mirrorAcross : Axis2d -> Circle2d -> Circle2d
-mirrorAcross axis =
-    let
-        mirrorPoint =
-            Point2d.mirrorAcross axis
-    in
-    \circle ->
-        with
-            { centerPoint = mirrorPoint (centerPoint circle)
-            , radius = radius circle
-            }
+mirrorAcross axis (Internal.Circle2d circle) =
+    withRadius circle.radius (Point2d.mirrorAcross axis circle.centerPoint)
 
 
 {-| Take a circle defined in global coordinates, and return it expressed in
@@ -395,24 +346,13 @@ local coordinates relative to a given reference frame.
         Frame2d.atPoint (Point2d.fromCoordinates ( 2, 3 ))
 
     Circle2d.relativeTo localFrame exampleCircle
-    --> Circle2d.with
-    -->     { centerPoint =
-    -->         Point2d.fromCoordinates ( -1, -1 )
-    -->     , radius = 3
-    -->     }
+    --> Circle2d.withRadius 3
+    -->     (Point2d.fromCoordinates ( -1, -1 ))
 
 -}
 relativeTo : Frame2d -> Circle2d -> Circle2d
-relativeTo frame =
-    let
-        relativePoint =
-            Point2d.relativeTo frame
-    in
-    \circle ->
-        with
-            { centerPoint = relativePoint (centerPoint circle)
-            , radius = radius circle
-            }
+relativeTo frame (Internal.Circle2d circle) =
+    withRadius circle.radius (Point2d.relativeTo frame circle.centerPoint)
 
 
 {-| Take a circle considered to be defined in local coordinates relative to a
@@ -422,24 +362,13 @@ given reference frame, and return that circle expressed in global coordinates.
         Frame2d.atPoint (Point2d.fromCoordinates ( 2, 3 ))
 
     Circle2d.placeIn localFrame exampleCircle
-    --> Circle2d.with
-    -->     { centerPoint =
-    -->         Point2d.fromCoordinates ( 3, 5 )
-    -->     , radius = 3
-    -->     }
+    --> Circle2d.withRadius 3
+    -->     (Point2d.fromCoordinates ( 3, 5 ))
 
 -}
 placeIn : Frame2d -> Circle2d -> Circle2d
-placeIn frame =
-    let
-        placePoint =
-            Point2d.placeIn frame
-    in
-    \circle ->
-        with
-            { centerPoint = placePoint (centerPoint circle)
-            , radius = radius circle
-            }
+placeIn frame (Internal.Circle2d circle) =
+    withRadius circle.radius (Point2d.placeIn frame circle.centerPoint)
 
 
 {-| Get the minimal bounding box containing a given circle.
