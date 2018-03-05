@@ -81,34 +81,16 @@ fromEndpointsReplicatesArc =
         )
 
 
-curveConfig : Tests.Generic.Curve2d.Config EllipticalArc2d
-curveConfig =
-    { fuzzer = Fuzz.ellipticalArc2d
-    , pointOn = EllipticalArc2d.pointOn
-    , derivative = EllipticalArc2d.derivative
-    }
-
-
-scaling : Test
-scaling =
-    Tests.Generic.Curve2d.scaling curveConfig EllipticalArc2d.scaleAbout
-
-
-translation : Test
-translation =
-    Tests.Generic.Curve2d.translation curveConfig EllipticalArc2d.translateBy
-
-
-rotation : Test
-rotation =
-    Tests.Generic.Curve2d.rotation curveConfig EllipticalArc2d.rotateAround
-
-
-localization : Test
-localization =
-    Tests.Generic.Curve2d.localization curveConfig EllipticalArc2d.relativeTo
-
-
-globalization : Test
-globalization =
-    Tests.Generic.Curve2d.globalization curveConfig EllipticalArc2d.placeIn
+transformations : Test
+transformations =
+    Tests.Generic.Curve2d.transformations
+        { fuzzer = Fuzz.ellipticalArc2d
+        , pointOn = EllipticalArc2d.pointOn
+        , derivative = EllipticalArc2d.derivative
+        , scaleAbout = EllipticalArc2d.scaleAbout
+        , translateBy = EllipticalArc2d.translateBy
+        , rotateAround = EllipticalArc2d.rotateAround
+        , mirrorAcross = EllipticalArc2d.mirrorAcross
+        , relativeTo = EllipticalArc2d.relativeTo
+        , placeIn = EllipticalArc2d.placeIn
+        }
