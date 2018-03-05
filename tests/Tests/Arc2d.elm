@@ -1,12 +1,4 @@
-module Tests.Arc2d
-    exposing
-        ( evaluateOneIsEndPoint
-        , evaluateZeroIsStartPoint
-        , jsonRoundTrips
-        , reverseFlipsDirection
-        , withRadius
-        , withSweptAngle
-        )
+module Tests.Arc2d exposing (..)
 
 import Arc2d
 import Expect

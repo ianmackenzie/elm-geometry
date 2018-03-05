@@ -1,14 +1,4 @@
-module Tests.Point3d
-    exposing
-        ( interpolationReturnsExactEndpoints
-        , jsonRoundTrips
-        , midpointIsEquidistant
-        , mirrorFlipsSignedDistance
-        , projectIntoThenPlaceOntoIsProjectOnto
-        , rotationAboutAxisPreservesDistanceAlong
-        , rotationAboutAxisPreservesDistanceFrom
-        , translationByPerpendicularDoesNotChangeSignedDistance
-        )
+module Tests.Point3d exposing (..)
 
 import Direction3d
 import Expect

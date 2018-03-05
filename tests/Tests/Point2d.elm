@@ -1,11 +1,4 @@
-module Tests.Point2d
-    exposing
-        ( interpolationReturnsExactEndpoints
-        , jsonRoundTrips
-        , midpointIsEquidistant
-        , projectionOntoAxisPreservesDistance
-        , rotationPreservesDistance
-        )
+module Tests.Point2d exposing (..)
 
 import Expect
 import Fuzz
