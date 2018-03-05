@@ -8,6 +8,7 @@ import Geometry.Fuzz as Fuzz
 import Geometry.SweptAngle as SweptAngle
 import Point2d
 import Test exposing (Test)
+import Tests.Generic.Curve2d
 
 
 evaluateZeroIsStartPoint : Test
@@ -84,4 +85,39 @@ withRadius =
                 Nothing ->
                     Point2d.distanceFrom startPoint endPoint
                         |> Expect.greaterThan (2 * radius)
+        )
+
+
+transformations : Test
+transformations =
+    Tests.Generic.Curve2d.transformations
+        { fuzzer = Fuzz.arc2d
+        , pointOn = Arc2d.pointOn
+        , derivative = Arc2d.derivative
+        , scaleAbout = Arc2d.scaleAbout
+        , translateBy = Arc2d.translateBy
+        , rotateAround = Arc2d.rotateAround
+        , mirrorAcross = Arc2d.mirrorAcross
+        , relativeTo = Arc2d.relativeTo
+        , placeIn = Arc2d.placeIn
+        }
+
+
+mirroredCenterPoint : Test
+mirroredCenterPoint =
+    Test.fuzz2
+        Fuzz.arc2d
+        Fuzz.axis2d
+        "Center point of a mirrored finite-radius arc is the mirror of the original center point"
+        (\arc axis ->
+            if Arc2d.radius arc < 100 then
+                let
+                    mirroredArc =
+                        Arc2d.mirrorAcross axis arc
+                in
+                Arc2d.centerPoint mirroredArc
+                    |> Expect.point2d
+                        (Point2d.mirrorAcross axis (Arc2d.centerPoint arc))
+            else
+                Expect.pass
         )

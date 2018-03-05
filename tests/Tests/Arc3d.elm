@@ -7,6 +7,7 @@ import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Point3d
 import Test exposing (Test)
+import Tests.Generic.Curve3d
 
 
 evaluateZeroIsStartPoint : Test
@@ -57,3 +58,18 @@ projectInto =
             in
             pointOnProjectedArc |> Expect.point2d projectedPoint
         )
+
+
+transformations : Test
+transformations =
+    Tests.Generic.Curve3d.transformations
+        { fuzzer = Fuzz.arc3d
+        , pointOn = Arc3d.pointOn
+        , derivative = Arc3d.derivative
+        , scaleAbout = Arc3d.scaleAbout
+        , translateBy = Arc3d.translateBy
+        , rotateAround = Arc3d.rotateAround
+        , mirrorAcross = Arc3d.mirrorAcross
+        , relativeTo = Arc3d.relativeTo
+        , placeIn = Arc3d.placeIn
+        }
