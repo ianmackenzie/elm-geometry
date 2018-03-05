@@ -69,8 +69,8 @@ functionality for
 -}
 
 import Axis2d exposing (Axis2d)
-import Bootstrap.Arc2d as Arc2d
 import BoundingBox2d exposing (BoundingBox2d)
+import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Internal as Internal exposing (Arc2d)
 import Point2d exposing (Point2d)
@@ -254,8 +254,12 @@ toArc (Internal.Circle2d { centerPoint, radius }) =
         ( x0, y0 ) =
             Point2d.coordinates centerPoint
     in
-    Point2d.fromCoordinates ( x0 + radius, y0 )
-        |> Arc2d.sweptAround centerPoint (2 * pi)
+    Internal.Arc2d
+        { startPoint = Point2d.fromCoordinates ( x0 + radius, y0 )
+        , xDirection = Direction2d.y
+        , sweptAngle = 2 * pi
+        , signedLength = 2 * pi * radius
+        }
 
 
 {-| Check if a circle contains a given point.

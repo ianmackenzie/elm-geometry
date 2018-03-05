@@ -181,11 +181,22 @@ type SweptAngle
 
 
 type Arc2d
-    = Arc2d { centerPoint : Point2d, startPoint : Point2d, sweptAngle : Float }
+    = Arc2d
+        { startPoint : Point2d
+        , xDirection : Direction2d
+        , signedLength : Float
+        , sweptAngle : Float
+        }
 
 
 type Arc3d
-    = Arc3d { axis : Axis3d, startPoint : Point3d, sweptAngle : Float }
+    = Arc3d
+        { startPoint : Point3d
+        , xDirection : Direction3d
+        , yDirection : Direction3d
+        , signedLength : Float
+        , sweptAngle : Float
+        }
 
 
 type QuadraticSpline2d

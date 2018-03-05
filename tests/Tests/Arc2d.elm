@@ -35,34 +35,27 @@ reverseFlipsDirection =
         )
 
 
-withSweptAngle : Test
-withSweptAngle =
+from : Test
+from =
     let
         validAngle =
             Fuzz.oneOf
-                [ Fuzz.floatRange (degrees 1) (degrees 359)
-                , Fuzz.floatRange (degrees -359) (degrees -1)
+                [ Fuzz.floatRange (degrees -359) (degrees 359)
+                , Fuzz.floatRange (degrees 361) (degrees 719)
+                , Fuzz.floatRange (degrees -719) (degrees -361)
                 ]
     in
     Test.fuzz3
+        Fuzz.point2d
+        Fuzz.point2d
         validAngle
-        Fuzz.point2d
-        Fuzz.point2d
-        "Arc2d.withSweptAngle produces the expected end point and swept angle"
-        (\sweptAngle startPoint endPoint ->
-            case Arc2d.withSweptAngle sweptAngle startPoint endPoint of
-                Just arc ->
-                    arc
-                        |> Expect.all
-                            [ Arc2d.endPoint
-                                >> Expect.point2d endPoint
-                            , Arc2d.sweptAngle
-                                >> Expect.approximately sweptAngle
-                            ]
-
-                Nothing ->
-                    Expect.fail
-                        "Arc2d.withSweptAngle did not produce a valid arc"
+        "Arc2d.from produces the expected end point and swept angle"
+        (\startPoint endPoint sweptAngle ->
+            Arc2d.from startPoint endPoint sweptAngle
+                |> Expect.all
+                    [ Arc2d.endPoint >> Expect.point2d endPoint
+                    , Arc2d.sweptAngle >> Expect.approximately sweptAngle
+                    ]
         )
 
 

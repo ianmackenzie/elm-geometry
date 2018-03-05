@@ -5,6 +5,7 @@ module Arc2d
         , derivative
         , endPoint
         , evaluate
+        , from
         , mirrorAcross
         , placeIn
         , pointOn
@@ -20,7 +21,6 @@ module Arc2d
         , toPolyline
         , translateBy
         , withRadius
-        , withSweptAngle
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/arc2d.svg" alt="Arc2d" width="160">
@@ -38,7 +38,7 @@ end point). This module includes functionality for
 
 # Constructors
 
-@docs sweptAround, throughPoints, withSweptAngle, withRadius
+@docs from, sweptAround, throughPoints, withRadius
 
 
 # Properties
@@ -71,6 +71,7 @@ import Axis2d exposing (Axis2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Internal as Internal
+import Geometry.Parameter as Parameter
 import Geometry.SweptAngle as SweptAngle exposing (SweptAngle)
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
@@ -81,6 +82,87 @@ import Vector2d exposing (Vector2d)
 {-| -}
 type alias Arc2d =
     Internal.Arc2d
+
+
+twoPi : Float
+twoPi =
+    2 * pi
+
+
+{-| Construct an arc with from the first given point to the second, with the
+given swept angle.
+
+    p1 =
+        Point2d.fromCoordinates ( 2, 1 )
+
+    p2 =
+        Point2d.fromCoordinates ( 1, 2 )
+
+    arc1 =
+        Arc2d.from p1 p2 (degrees 90)
+
+    Arc2d.centerPoint arc1
+    --> Point2d.fromCoordinates ( 1, 1 )
+
+    arc2 =
+        Arc2d.from p1 p2 (degrees -90)
+
+    Arc2d.centerPoint arc2
+    --> Point2d.fromCoordinates ( 2, 2 )
+
+    arc3 =
+        Arc2d.from p1 p2 (degrees 180)
+
+    Arc2d.centerPoint arc3
+    --> Point2d.fromCoordinates ( 1.5, 1.5 )
+
+    arc4 =
+        Arc2d.from p1 p2 (degrees -180)
+
+    Arc2d.centerPoint arc4
+    --> Point2d.fromCoordinates ( 1.5, 1.5 )
+
+    arc5 =
+        Arc2d.from p1 p2 (degrees 45)
+
+    Arc2d.centerPoint arc5
+    --> Point2d.fromCoordinates ( 0.2929, 0.2929 )
+
+-}
+from : Point2d -> Point2d -> Float -> Arc2d
+from startPoint endPoint sweptAngle =
+    let
+        displacement =
+            Vector2d.from startPoint endPoint
+    in
+    case Vector2d.lengthAndDirection displacement of
+        Just ( distance, direction ) ->
+            let
+                angleModTwoPi =
+                    sweptAngle - twoPi * toFloat (floor (sweptAngle / twoPi))
+
+                radius =
+                    distance / (2 * abs (sin (sweptAngle / 2)))
+            in
+            Internal.Arc2d
+                { startPoint = startPoint
+                , sweptAngle = sweptAngle
+                , xDirection =
+                    direction |> Direction2d.rotateBy (-angleModTwoPi / 2)
+                , signedLength =
+                    if sweptAngle == 0.0 then
+                        distance
+                    else
+                        radius * sweptAngle
+                }
+
+        Nothing ->
+            Internal.Arc2d
+                { startPoint = startPoint
+                , sweptAngle = sweptAngle
+                , xDirection = Direction2d.x
+                , signedLength = 0
+                }
 
 
 {-| Construct an arc by sweeping (rotating) a given start point around a given
@@ -115,11 +197,22 @@ a clockwise arc instead.
 -}
 sweptAround : Point2d -> Float -> Point2d -> Arc2d
 sweptAround centerPoint sweptAngle startPoint =
-    Internal.Arc2d
-        { centerPoint = centerPoint
-        , sweptAngle = sweptAngle
-        , startPoint = startPoint
-        }
+    case Vector2d.lengthAndDirection (Vector2d.from startPoint centerPoint) of
+        Just ( radius, yDirection ) ->
+            Internal.Arc2d
+                { startPoint = startPoint
+                , xDirection = yDirection |> Direction2d.rotateClockwise
+                , sweptAngle = sweptAngle
+                , signedLength = radius * sweptAngle
+                }
+
+        Nothing ->
+            Internal.Arc2d
+                { startPoint = startPoint
+                , xDirection = Direction2d.x
+                , sweptAngle = sweptAngle
+                , signedLength = 0
+                }
 
 
 {-| Attempt to construct an arc that starts at the first given point, passes
@@ -211,86 +304,6 @@ throughPoints points =
                     (Vector2d.direction secondVector)
                     (Vector2d.direction thirdVector)
             )
-
-
-{-| Attempt to construct an arc with the given swept angle between the given
-start and end points. This will always be possible unless the swept angle is
-zero or some other multiple of 360 degrees (and the given points are not
-coincident), in which case `Nothing` will be returned.
-
-    p1 =
-        Point2d.fromCoordinates ( 2, 1 )
-
-    p2 =
-        Point2d.fromCoordinates ( 1, 2 )
-
-    Arc2d.withSweptAngle (degrees 90) p1 p2
-        |> Maybe.map Arc2d.centerPoint
-    --> Just (Point2d.fromCoordinates ( 1, 1 ))
-
-    Arc2d.withSweptAngle (degrees -90) p1 p2
-        |> Maybe.map Arc2d.centerPoint
-    --> Just (Point2d.fromCoordinates ( 2, 2 ))
-
-    Arc2d.withSweptAngle (degrees 180) p1 p2
-        |> Maybe.map Arc2d.centerPoint
-    --> Just (Point2d.fromCoordinates ( 1.5, 1.5 ))
-
-    Arc2d.withSweptAngle (degrees -180) p1 p2
-        |> Maybe.map Arc2d.centerPoint
-    --> Just (Point2d.fromCoordinates ( 1.5, 1.5 ))
-
-    Arc2d.withSweptAngle (degrees 45) p1 p2
-        |> Maybe.map Arc2d.centerPoint
-    --> Just (Point2d.fromCoordinates ( 0.2929, 0.2929 ))
-
-    Arc2d.withSweptAngle 0 p1 p2
-    --> Nothing
-
--}
-withSweptAngle : Float -> Point2d -> Point2d -> Maybe Arc2d
-withSweptAngle sweptAngle startPoint endPoint =
-    let
-        displacement =
-            Vector2d.from startPoint endPoint
-    in
-    case Vector2d.lengthAndDirection displacement of
-        Just ( length, direction ) ->
-            let
-                midpoint =
-                    Point2d.midpoint startPoint endPoint
-
-                tanHalfHangle =
-                    tan (sweptAngle / 2)
-            in
-            if tanHalfHangle == 0 then
-                Nothing
-            else
-                let
-                    offset =
-                        length / (2 * tanHalfHangle)
-
-                    centerPoint =
-                        midpoint
-                            |> Point2d.translateBy
-                                (Vector2d.withLength offset
-                                    (Direction2d.perpendicularTo direction)
-                                )
-                in
-                Just <|
-                    Internal.Arc2d
-                        { startPoint = startPoint
-                        , centerPoint = centerPoint
-                        , sweptAngle = sweptAngle
-                        }
-
-        Nothing ->
-            Just <|
-                Internal.Arc2d
-                    { startPoint = startPoint
-                    , centerPoint = startPoint
-                    , sweptAngle = sweptAngle
-                    }
 
 
 {-| Attempt to construct an arc with the given radius between the given start
@@ -451,8 +464,18 @@ withRadius radius sweptAngle startPoint endPoint =
 
 -}
 centerPoint : Arc2d -> Point2d
-centerPoint (Internal.Arc2d properties) =
-    properties.centerPoint
+centerPoint (Internal.Arc2d arc) =
+    let
+        ( x0, y0 ) =
+            Point2d.coordinates arc.startPoint
+
+        ( dx, dy ) =
+            Direction2d.components arc.xDirection
+
+        r =
+            arc.signedLength / arc.sweptAngle
+    in
+    Point2d.fromCoordinates ( x0 - r * dy, y0 + r * dx )
 
 
 {-| Get the radius of an arc.
@@ -462,8 +485,8 @@ centerPoint (Internal.Arc2d properties) =
 
 -}
 radius : Arc2d -> Float
-radius arc =
-    Point2d.distanceFrom (centerPoint arc) (startPoint arc)
+radius (Internal.Arc2d arc) =
+    arc.signedLength / arc.sweptAngle
 
 
 {-| Get the start point of an arc.
@@ -485,7 +508,7 @@ startPoint (Internal.Arc2d properties) =
 -}
 endPoint : Arc2d -> Point2d
 endPoint arc =
-    Point2d.rotateAround (centerPoint arc) (sweptAngle arc) (startPoint arc)
+    pointOn arc 1.0
 
 
 {-| Get the swept angle of an arc in radians.
@@ -511,12 +534,50 @@ end point.
 
 -}
 pointOn : Arc2d -> Float -> Point2d
-pointOn arc parameter =
+pointOn (Internal.Arc2d arc) =
     let
-        angle =
-            parameter * sweptAngle arc
+        ( x0, y0 ) =
+            Point2d.coordinates arc.startPoint
+
+        ( dx, dy ) =
+            Direction2d.components arc.xDirection
+
+        arcSignedLength =
+            arc.signedLength
+
+        arcSweptAngle =
+            arc.sweptAngle
     in
-    Point2d.rotateAround (centerPoint arc) angle (startPoint arc)
+    if arcSweptAngle == 0.0 then
+        \t ->
+            let
+                distance =
+                    t * arcSignedLength
+            in
+            Point2d.fromCoordinates ( x0 + distance * dx, y0 + distance * dy )
+    else
+        let
+            arcRadius =
+                arcSignedLength / arcSweptAngle
+        in
+        \t ->
+            let
+                theta =
+                    t * arcSweptAngle
+
+                x =
+                    arcRadius * sin theta
+
+                y =
+                    if abs theta < pi / 2 then
+                        x * tan (theta / 2)
+                    else
+                        arcRadius * (1 - cos theta)
+            in
+            Point2d.fromCoordinates
+                ( x0 + x * dx - y * dy
+                , y0 + x * dy + y * dx
+                )
 
 
 {-| Get the derivative of an arc with respect to a parameter that is 0 at the
@@ -530,17 +591,12 @@ start point of the arc and 1 at the end point of the arc.
 
 -}
 derivative : Arc2d -> Float -> Vector2d
-derivative arc parameter =
+derivative (Internal.Arc2d arc) =
     let
-        angle =
-            parameter * sweptAngle arc
-
         startDerivative =
-            Vector2d.perpendicularTo
-                (Vector2d.from (centerPoint arc) (startPoint arc))
-                |> Vector2d.scaleBy (sweptAngle arc)
+            Vector2d.withLength arc.signedLength arc.xDirection
     in
-    startDerivative |> Vector2d.rotateBy angle
+    \t -> startDerivative |> Vector2d.rotateBy (t * arc.sweptAngle)
 
 
 {-| Evaluate an arc at a given parameter value, returning the point on the arc
@@ -561,67 +617,38 @@ at that parameter value and the derivative with respect to that parameter value.
     --> , Vector2d.fromComponents ( -3.1416, 0 )
     --> )
 
-Equivalent to (but more efficient than) calling `pointOn` and `derivative`
-separately.
+Equivalent to calling `pointOn` and `derivative` separately.
 
 -}
 evaluate : Arc2d -> Float -> ( Point2d, Vector2d )
 evaluate arc =
-    case Direction2d.from (centerPoint arc) (startPoint arc) of
-        Just startRadialDirection ->
-            let
-                startAngle =
-                    Direction2d.toAngle startRadialDirection
+    let
+        pointOnArc =
+            pointOn arc
 
-                ( centerX, centerY ) =
-                    Point2d.coordinates (centerPoint arc)
-
-                arcRadius =
-                    radius arc
-
-                arcSweptAngle =
-                    sweptAngle arc
-
-                derivativeMagnitude =
-                    arcRadius * arcSweptAngle
-            in
-            \t ->
-                let
-                    angle =
-                        startAngle + t * arcSweptAngle
-
-                    cosAngle =
-                        cos angle
-
-                    sinAngle =
-                        sin angle
-                in
-                ( Point2d.fromCoordinates
-                    ( centerX + arcRadius * cosAngle
-                    , centerY + arcRadius * sinAngle
-                    )
-                , Vector2d.fromComponents
-                    ( -derivativeMagnitude * sinAngle
-                    , derivativeMagnitude * cosAngle
-                    )
-                )
-
-        Nothing ->
-            -- Center and start points are coincident, so arc is just a single
-            -- point
-            always ( centerPoint arc, Vector2d.zero )
+        derivativeOfArc =
+            derivative arc
+    in
+    \t -> ( pointOnArc t, derivativeOfArc t )
 
 
 numApproximationSegments : Float -> Arc2d -> Int
 numApproximationSegments tolerance arc =
-    if 0 < tolerance && tolerance < radius arc then
-        let
-            maxSegmentAngle =
-                sqrt (8 * tolerance / radius arc)
-        in
-        ceiling (abs (sweptAngle arc) / maxSegmentAngle)
-    else
+    if sweptAngle arc == 0 then
         1
+    else
+        let
+            arcRadius =
+                radius arc
+        in
+        if 0 < tolerance && tolerance < arcRadius then
+            let
+                maxSegmentAngle =
+                    sqrt (8 * tolerance / arcRadius)
+            in
+            ceiling (abs (sweptAngle arc) / maxSegmentAngle)
+        else
+            1
 
 
 {-| Approximate an arc as a polyline, within the specified tolerance.
@@ -644,11 +671,11 @@ toPolyline tolerance arc =
         numSegments =
             numApproximationSegments tolerance arc
 
-        point index =
-            pointOn arc (toFloat index / toFloat numSegments)
+        parameterValues =
+            Parameter.values (Parameter.numSteps numSegments)
 
         points =
-            List.range 0 numSegments |> List.map point
+            List.map (pointOn arc) parameterValues
     in
     Polyline2d.fromVertices points
 
@@ -664,11 +691,12 @@ point and vice versa.
 
 -}
 reverse : Arc2d -> Arc2d
-reverse arc =
+reverse ((Internal.Arc2d arc) as arc_) =
     Internal.Arc2d
-        { startPoint = endPoint arc
-        , centerPoint = centerPoint arc
-        , sweptAngle = -(sweptAngle arc)
+        { startPoint = endPoint arc_
+        , sweptAngle = -arc.sweptAngle
+        , signedLength = -arc.signedLength
+        , xDirection = arc.xDirection |> Direction2d.rotateBy arc.sweptAngle
         }
 
 
@@ -685,19 +713,16 @@ reverse arc =
 
 -}
 scaleAbout : Point2d -> Float -> Arc2d -> Arc2d
-scaleAbout point scale arc =
-    let
-        scalePoint =
-            Point2d.scaleAbout point scale
-    in
+scaleAbout point scale (Internal.Arc2d arc) =
     Internal.Arc2d
-        { centerPoint = scalePoint (centerPoint arc)
-        , startPoint = scalePoint (startPoint arc)
-        , sweptAngle =
-            if scale > 0 then
-                sweptAngle arc
+        { startPoint = Point2d.scaleAbout point scale arc.startPoint
+        , sweptAngle = arc.sweptAngle
+        , signedLength = abs scale * arc.signedLength
+        , xDirection =
+            if scale >= 0 then
+                arc.xDirection
             else
-                -(sweptAngle arc)
+                Direction2d.flip arc.xDirection
         }
 
 
@@ -715,12 +740,16 @@ rotateAround point angle =
     let
         rotatePoint =
             Point2d.rotateAround point angle
+
+        rotateDirection =
+            Direction2d.rotateBy angle
     in
-    \arc ->
+    \(Internal.Arc2d arc) ->
         Internal.Arc2d
-            { centerPoint = rotatePoint (centerPoint arc)
-            , startPoint = rotatePoint (startPoint arc)
-            , sweptAngle = sweptAngle arc
+            { startPoint = rotatePoint arc.startPoint
+            , sweptAngle = arc.sweptAngle
+            , signedLength = arc.signedLength
+            , xDirection = rotateDirection arc.xDirection
             }
 
 
@@ -737,15 +766,12 @@ rotateAround point angle =
 
 -}
 translateBy : Vector2d -> Arc2d -> Arc2d
-translateBy displacement arc =
-    let
-        translatePoint =
-            Point2d.translateBy displacement
-    in
+translateBy displacement (Internal.Arc2d arc) =
     Internal.Arc2d
-        { centerPoint = translatePoint (centerPoint arc)
-        , startPoint = translatePoint (startPoint arc)
-        , sweptAngle = sweptAngle arc
+        { startPoint = Point2d.translateBy displacement arc.startPoint
+        , sweptAngle = arc.sweptAngle
+        , signedLength = arc.signedLength
+        , xDirection = arc.xDirection
         }
 
 
@@ -763,12 +789,16 @@ mirrorAcross axis =
     let
         mirrorPoint =
             Point2d.mirrorAcross axis
+
+        mirrorDirection =
+            Direction2d.mirrorAcross axis
     in
-    \arc ->
+    \(Internal.Arc2d arc) ->
         Internal.Arc2d
-            { centerPoint = mirrorPoint (centerPoint arc)
-            , startPoint = mirrorPoint (startPoint arc)
-            , sweptAngle = -(sweptAngle arc)
+            { startPoint = mirrorPoint arc.startPoint
+            , sweptAngle = -arc.sweptAngle
+            , signedLength = -arc.signedLength
+            , xDirection = Direction2d.flip (mirrorDirection arc.xDirection)
             }
 
 
@@ -786,20 +816,22 @@ coordinates relative to a given reference frame.
 
 -}
 relativeTo : Frame2d -> Arc2d -> Arc2d
-relativeTo frame arc =
-    let
-        relativePoint =
-            Point2d.relativeTo frame
-    in
-    Internal.Arc2d
-        { centerPoint = relativePoint (centerPoint arc)
-        , startPoint = relativePoint (startPoint arc)
-        , sweptAngle =
-            if Frame2d.isRightHanded frame then
-                sweptAngle arc
-            else
-                -(sweptAngle arc)
-        }
+relativeTo frame (Internal.Arc2d arc) =
+    if Frame2d.isRightHanded frame then
+        Internal.Arc2d
+            { startPoint = Point2d.relativeTo frame arc.startPoint
+            , sweptAngle = arc.sweptAngle
+            , signedLength = arc.signedLength
+            , xDirection = Direction2d.relativeTo frame arc.xDirection
+            }
+    else
+        Internal.Arc2d
+            { startPoint = Point2d.relativeTo frame arc.startPoint
+            , sweptAngle = -arc.sweptAngle
+            , signedLength = -arc.signedLength
+            , xDirection =
+                Direction2d.flip (Direction2d.relativeTo frame arc.xDirection)
+            }
 
 
 {-| Take an arc considered to be defined in local coordinates relative to a
@@ -816,17 +848,19 @@ given reference frame, and return that arc expressed in global coordinates.
 
 -}
 placeIn : Frame2d -> Arc2d -> Arc2d
-placeIn frame arc =
-    let
-        placePoint =
-            Point2d.placeIn frame
-    in
-    Internal.Arc2d
-        { centerPoint = placePoint (centerPoint arc)
-        , startPoint = placePoint (startPoint arc)
-        , sweptAngle =
-            if Frame2d.isRightHanded frame then
-                sweptAngle arc
-            else
-                -(sweptAngle arc)
-        }
+placeIn frame (Internal.Arc2d arc) =
+    if Frame2d.isRightHanded frame then
+        Internal.Arc2d
+            { startPoint = Point2d.placeIn frame arc.startPoint
+            , sweptAngle = arc.sweptAngle
+            , signedLength = arc.signedLength
+            , xDirection = Direction2d.placeIn frame arc.xDirection
+            }
+    else
+        Internal.Arc2d
+            { startPoint = Point2d.placeIn frame arc.startPoint
+            , sweptAngle = -arc.sweptAngle
+            , signedLength = -arc.signedLength
+            , xDirection =
+                Direction2d.flip (Direction2d.placeIn frame arc.xDirection)
+            }

@@ -313,22 +313,20 @@ sphere3d =
 
 arc2d : Fuzzer Arc2d
 arc2d =
-    Fuzz.map3 Arc2d.sweptAround
+    Fuzz.map3 Arc2d.from
         point2d
-        (Fuzz.floatRange (-3 * pi) (3 * pi))
         point2d
+        (Fuzz.oneOf
+            [ Fuzz.floatRange (degrees -359) (degrees 359)
+            , Fuzz.floatRange (degrees 361) (degrees 719)
+            , Fuzz.floatRange (degrees -719) (degrees -361)
+            ]
+        )
 
 
 arc3d : Fuzzer Arc3d
 arc3d =
-    let
-        arc axis startPoint sweptAngle =
-            Arc3d.around axis
-                { startPoint = startPoint
-                , sweptAngle = sweptAngle
-                }
-    in
-    Fuzz.map3 arc axis3d point3d (Fuzz.floatRange (-3 * pi) (3 * pi))
+    Fuzz.map2 Arc3d.on sketchPlane3d arc2d
 
 
 quadraticSpline2d : Fuzzer QuadraticSpline2d
