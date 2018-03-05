@@ -13,6 +13,7 @@ module Circle2d
         , relativeTo
         , rotateAround
         , scaleAbout
+        , sweptAround
         , throughPoints
         , toArc
         , translateBy
@@ -39,7 +40,7 @@ functionality for
 
 # Constructors
 
-@docs withRadius, throughPoints
+@docs withRadius, throughPoints, sweptAround
 
 
 # Properties
@@ -169,6 +170,33 @@ throughPoints points =
                 in
                 withRadius r p0
             )
+
+
+{-| Construct a circle by rotating a point on the circle around a given center
+point. The center point is given first and the point on the circle is given
+second.
+
+    Circle2d.sweptAround Point2d.origin
+        (Point2d.fromCoordinates ( 2, 0 ))
+    --> Circle2d.withRadius 2 Point2d.origin
+
+The above example could be rewritten as
+
+    Point2d.fromCoordinates ( 2, 0 )
+        |> Circle2d.sweptAround Point2d.origin
+
+and if you wanted to create many concentric circles all centered on the origin
+but passing through several other different points, you could use something like
+
+    concentricCircles =
+        points
+            |> List.map
+                (Circle2d.sweptAround Point2d.origin)
+
+-}
+sweptAround : Point2d -> Point2d -> Circle2d
+sweptAround centerPoint point =
+    withRadius (Point2d.distanceFrom centerPoint point) centerPoint
 
 
 {-| Get the center point of a circle.
