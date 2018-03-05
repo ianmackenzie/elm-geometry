@@ -4,23 +4,13 @@ import Arc2d exposing (Arc2d)
 import EllipticalArc2d exposing (EllipticalArc2d)
 import Expect
 import Fuzz exposing (Fuzzer)
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Geometry.SweptAngle as SweptAngle
 import Point2d
 import Test exposing (Test)
-import Tests.Generic as Generic
 import Tests.Generic.Curve2d
 import Vector2d
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.ellipticalArc2d
-        Encode.ellipticalArc2d
-        Decode.ellipticalArc2d
 
 
 reproducibleArc : Fuzzer Arc2d

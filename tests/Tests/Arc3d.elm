@@ -10,20 +10,10 @@ module Tests.Arc3d
 import Arc3d
 import EllipticalArc2d
 import Fuzz
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Point3d
 import Test exposing (Test)
-import Tests.Generic as Generic
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.arc3d
-        Encode.arc3d
-        Decode.arc3d
 
 
 evaluateZeroIsStartPoint : Test

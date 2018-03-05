@@ -11,21 +11,11 @@ module Tests.Arc2d
 import Arc2d
 import Expect
 import Fuzz
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Geometry.SweptAngle as SweptAngle
 import Point2d
 import Test exposing (Test)
-import Tests.Generic as Generic
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.arc2d
-        Encode.arc2d
-        Decode.arc2d
 
 
 evaluateZeroIsStartPoint : Test

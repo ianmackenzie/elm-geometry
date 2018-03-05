@@ -12,9 +12,7 @@
 
 module Geometry.Encode
     exposing
-        ( arc2d
-        , arc3d
-        , axis2d
+        ( axis2d
         , axis3d
         , boundingBox2d
         , boundingBox3d
@@ -25,7 +23,6 @@ module Geometry.Encode
         , direction2d
         , direction3d
         , ellipse2d
-        , ellipticalArc2d
         , frame2d
         , frame3d
         , lineSegment2d
@@ -53,13 +50,11 @@ module Geometry.Encode
 @docs lineSegment2d, lineSegment3d, triangle2d, triangle3d
 @docs boundingBox2d, boundingBox3d
 @docs polyline2d, polyline3d, polygon2d
-@docs circle2d, circle3d, ellipse2d, arc2d, arc3d, ellipticalArc2d, sphere3d
+@docs circle2d, circle3d, ellipse2d, sphere3d
 @docs quadraticSpline2d, quadraticSpline3d, cubicSpline2d, cubicSpline3d
 
 -}
 
-import Arc2d exposing (Arc2d)
-import Arc3d exposing (Arc3d)
 import Axis2d exposing (Axis2d)
 import Axis3d exposing (Axis3d)
 import BoundingBox2d exposing (BoundingBox2d)
@@ -71,7 +66,6 @@ import CubicSpline3d exposing (CubicSpline3d)
 import Direction2d exposing (Direction2d)
 import Direction3d exposing (Direction3d)
 import Ellipse2d exposing (Ellipse2d)
-import EllipticalArc2d exposing (EllipticalArc2d)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
 import Json.Encode as Encode exposing (Value)
@@ -380,45 +374,6 @@ sphere3d sphere =
     Encode.object
         [ ( "centerPoint", point3d (Sphere3d.centerPoint sphere) )
         , ( "radius", Encode.float (Sphere3d.radius sphere) )
-        ]
-
-
-{-| Encode an `Arc2d` as an object with `centerPoint`, `startPoint` and
-`sweptAngle` fields.
--}
-arc2d : Arc2d -> Value
-arc2d arc =
-    Encode.object
-        [ ( "centerPoint", point2d (Arc2d.centerPoint arc) )
-        , ( "startPoint", point2d (Arc2d.startPoint arc) )
-        , ( "sweptAngle", Encode.float (Arc2d.sweptAngle arc) )
-        ]
-
-
-{-| Encode an `Arc3d` as an object with `axis`, `startPoint` and `sweptAngle`
-fields.
--}
-arc3d : Arc3d -> Value
-arc3d arc =
-    Encode.object
-        [ ( "axis", axis3d (Arc3d.axis arc) )
-        , ( "startPoint", point3d (Arc3d.startPoint arc) )
-        , ( "sweptAngle", Encode.float (Arc3d.sweptAngle arc) )
-        ]
-
-
-{-| Encode an `EllipticalArc2d` as an object with `centerPoint`, `xDirection`,
-`xRadius`, `yRadius`, `startAngle` and `sweptAngle` fields.
--}
-ellipticalArc2d : EllipticalArc2d -> Value
-ellipticalArc2d arc =
-    Encode.object
-        [ ( "centerPoint", point2d (EllipticalArc2d.centerPoint arc) )
-        , ( "xDirection", direction2d (EllipticalArc2d.xDirection arc) )
-        , ( "xRadius", Encode.float (EllipticalArc2d.xRadius arc) )
-        , ( "yRadius", Encode.float (EllipticalArc2d.yRadius arc) )
-        , ( "startAngle", Encode.float (EllipticalArc2d.startAngle arc) )
-        , ( "sweptAngle", Encode.float (EllipticalArc2d.sweptAngle arc) )
         ]
 
 

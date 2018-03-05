@@ -12,9 +12,7 @@
 
 module Geometry.Decode
     exposing
-        ( arc2d
-        , arc3d
-        , axis2d
+        ( axis2d
         , axis3d
         , boundingBox2d
         , boundingBox3d
@@ -25,7 +23,6 @@ module Geometry.Decode
         , direction2d
         , direction3d
         , ellipse2d
-        , ellipticalArc2d
         , frame2d
         , frame3d
         , lineSegment2d
@@ -53,13 +50,11 @@ module Geometry.Decode
 @docs lineSegment2d, lineSegment3d, triangle2d, triangle3d
 @docs boundingBox2d, boundingBox3d
 @docs polyline2d, polyline3d, polygon2d
-@docs circle2d, circle3d, ellipse2d, arc2d, arc3d, ellipticalArc2d, sphere3d
+@docs circle2d, circle3d, ellipse2d, sphere3d
 @docs quadraticSpline2d, quadraticSpline3d, cubicSpline2d, cubicSpline3d
 
 -}
 
-import Arc2d exposing (Arc2d)
-import Arc3d exposing (Arc3d)
 import Axis2d exposing (Axis2d)
 import Axis3d exposing (Axis3d)
 import BoundingBox2d exposing (BoundingBox2d)
@@ -71,7 +66,6 @@ import CubicSpline3d exposing (CubicSpline3d)
 import Direction2d exposing (Direction2d)
 import Direction3d exposing (Direction3d)
 import Ellipse2d exposing (Ellipse2d)
-import EllipticalArc2d exposing (EllipticalArc2d)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
 import Geometry.Internal as Internal
@@ -452,59 +446,6 @@ sphere3d =
         )
         (Decode.field "centerPoint" point3d)
         (Decode.field "radius" Decode.float)
-
-
-{-| Decodes an `Arc2d` from an object with `centerPoint`, `startPoint` and
-`sweptAngle` fields.
--}
-arc2d : Decoder Arc2d
-arc2d =
-    Decode.map3 Arc2d.sweptAround
-        (Decode.field "centerPoint" point2d)
-        (Decode.field "sweptAngle" Decode.float)
-        (Decode.field "startPoint" point2d)
-
-
-{-| Decodes an `Arc3d` from an object with `axis`, `startPoint` and `sweptAngle`
-fields.
--}
-arc3d : Decoder Arc3d
-arc3d =
-    Decode.map3
-        (\axis startPoint sweptAngle ->
-            Internal.Arc3d
-                { axis = axis
-                , startPoint = startPoint
-                , sweptAngle = sweptAngle
-                }
-        )
-        (Decode.field "axis" axis3d)
-        (Decode.field "startPoint" point3d)
-        (Decode.field "sweptAngle" Decode.float)
-
-
-{-| Decodes an `EllipticalArc2d` from an object with `centerPoint`,
-`xDirection`, `xRadius`, `yRadius`, `startAngle` and `sweptAngle` fields.
--}
-ellipticalArc2d : Decoder EllipticalArc2d
-ellipticalArc2d =
-    Decode.map6
-        (\centerPoint xDirection xRadius yRadius startAngle sweptAngle ->
-            EllipticalArc2d.with
-                { centerPoint = centerPoint
-                , xDirection = xDirection
-                , xRadius = xRadius
-                , yRadius = yRadius
-                , startAngle = startAngle
-                , sweptAngle = sweptAngle
-                }
-        )
-        (Decode.field "centerPoint" point2d)
-        (Decode.field "xDirection" direction2d)
-        (Decode.field "xRadius" Decode.float)
-        (Decode.field "yRadius" Decode.float)
-        (Decode.field "startAngle" Decode.float)
-        (Decode.field "sweptAngle" Decode.float)
 
 
 {-| Decodes a `QuadraticSpline2d` from an array of three control points.
