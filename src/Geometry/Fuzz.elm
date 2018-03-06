@@ -292,11 +292,7 @@ circle3d =
 
 sphere3d : Fuzzer Sphere3d
 sphere3d =
-    let
-        sphere centerPoint radius =
-            Sphere3d.with { centerPoint = centerPoint, radius = radius }
-    in
-    Fuzz.map2 sphere point3d positiveScalar
+    Fuzz.map2 Sphere3d.withRadius positiveScalar point3d
 
 
 arc2d : Fuzzer Arc2d

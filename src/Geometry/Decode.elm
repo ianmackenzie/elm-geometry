@@ -430,12 +430,9 @@ circle3d =
 -}
 sphere3d : Decoder Sphere3d
 sphere3d =
-    Decode.map2
-        (\centerPoint radius ->
-            Sphere3d.with { centerPoint = centerPoint, radius = radius }
-        )
-        (Decode.field "centerPoint" point3d)
+    Decode.map2 Sphere3d.withRadius
         (Decode.field "radius" Decode.float)
+        (Decode.field "centerPoint" point3d)
 
 
 {-| Decodes a `QuadraticSpline2d` from an array of three control points.

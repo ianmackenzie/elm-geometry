@@ -19,7 +19,7 @@ module Sphere3d
         , translateBy
         , unit
         , volume
-        , with
+        , withRadius
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/sphere3d.svg" alt="Sphere3d" width="160">
@@ -41,7 +41,7 @@ functionality for:
 
 # Constructors
 
-@docs with, throughPoints
+@docs withRadius, throughPoints
 
 
 # Properties
@@ -105,33 +105,30 @@ type alias Sphere3d =
 {-| The unit sphere, centered on the origin with a radius of 1.
 
     Sphere3d.unit
-    --> Sphere3d.with
-    -->     { centerPoint = Point3d.origin
-    -->     , radius = 1
-    -->     }
+    --> Sphere3d.withRadius 1 Point3d.origin
 
 -}
 unit : Sphere3d
 unit =
-    with { centerPoint = Point3d.origin, radius = 1 }
+    withRadius 1 Point3d.origin
 
 
-{-| Construct a sphere from its center point and radius:
+{-| Construct a sphere from its radius and center point:
 
     exampleSphere =
-        Sphere3d.with
-            { centerPoint =
-                Point3d.fromCoordinates ( 1, 2, 1 )
-            , radius = 3
-            }
+        Sphere3d.withRadius 3
+            (Point3d.fromCoordinates ( 1, 2, 1 ))
 
 A negative radius will be interpreted as positive (the absolute value will be
 used).
 
 -}
-with : { centerPoint : Point3d, radius : Float } -> Sphere3d
-with properties =
-    Internal.Sphere3d { properties | radius = abs properties.radius }
+withRadius : Float -> Point3d -> Sphere3d
+withRadius radius centerPoint =
+    Internal.Sphere3d
+        { radius = abs radius
+        , centerPoint = centerPoint
+        }
 
 
 {-| Attempt to construct a sphere that passes through the four given points.
@@ -143,11 +140,10 @@ Returns `Nothing` if four given points are coplanar.
         , Point3d.fromCoordinates ( 0, 1, 0 )
         , Point3d.fromCoordinates ( 0, 0, 0.5 )
         )
-    --> Just <| Sphere3d.with
-    -->     { centerPoint =
-    -->         Point3d.fromCoordinates ( 0, 0, -0.75 )
-    -->     , radius = 1.25
-    --> }
+    --> Just
+    -->     (Sphere3d.withRadius 1.25
+    -->         (Point3d.fromCoordinates ( 0, 0, -0.75 ))
+    -->     )
 
     Sphere3d.throughPoints
         ( Point3d.fromCoordinates ( 1, 0, 0 )
@@ -188,10 +184,8 @@ throughPoints ( p1, p2, p3, p4 ) =
                             (r * r - x * x - y * y) / (-2 * y)
                     in
                     Just <|
-                        with
-                            { centerPoint = Point3d.along normalAxis d
-                            , radius = sqrt (r * r + d * d)
-                            }
+                        withRadius (sqrt (r * r + d * d))
+                            (Point3d.along normalAxis d)
                 else
                     Nothing
             )
@@ -275,42 +269,33 @@ volume sphere =
 {-| Scale a sphere around a given point by a given scale.
 
     Sphere3d.scaleAbout Point3d.origin 3 exampleSphere
-    --> Sphere3d.with
-    -->     { centerPoint =
-    -->         Point3d.fromCoordinates ( 3, 6, 3 )
-    -->     , radius = 9
-    -->     }
+    --> Sphere3d.withRadius 9
+    -->     (Point3d.fromCoordinates ( 3, 6, 3 ))
 
 -}
 scaleAbout : Point3d -> Float -> Sphere3d -> Sphere3d
 scaleAbout point scale sphere =
-    with
-        { centerPoint = Point3d.scaleAbout point scale (centerPoint sphere)
-        , radius = abs (scale * radius sphere)
-        }
+    withRadius (abs scale * radius sphere)
+        (Point3d.scaleAbout point scale (centerPoint sphere))
 
 
 {-| Rotate a sphere around a given axis by a given angle (in radians).
 
     exampleSphere
         |> Sphere3d.rotateAround Axis3d.y (degrees 90)
-    --> Sphere3d.with
-    -->     { centerPoint =
-    -->         Point3d.fromCoordinates ( 1, 2, -1 )
-    -->     , radius = 3
-    -->     }
+    --> Sphere3d.withRadius 3
+    -->     (Point3d.fromCoordinates ( 1, 2, -1 ))
 
 -}
 rotateAround : Axis3d -> Float -> Sphere3d -> Sphere3d
-rotateAround axis angle sphere =
+rotateAround axis angle =
     let
         rotatePoint =
             Point3d.rotateAround axis angle
     in
-    with
-        { centerPoint = rotatePoint (centerPoint sphere)
-        , radius = radius sphere
-        }
+    \sphere ->
+        withRadius (radius sphere)
+            (rotatePoint (centerPoint sphere))
 
 
 {-| Translate a sphere by a given displacement.
@@ -318,41 +303,27 @@ rotateAround axis angle sphere =
     exampleSphere
         |> Sphere3d.translateBy
             (Vector3d.fromComponents ( 2, 1, 3 ))
-    --> Sphere3d.with
-    -->     { centerPoint =
-    -->         Point3d.fromCoordinates ( 3, 3, 4 )
-    -->     , radius = 3
-    -->     }
+    --> Sphere3d.withRadius 3
+    -->     (Point3d.fromCoordinates ( 3, 3, 4 ))
 
 -}
 translateBy : Vector3d -> Sphere3d -> Sphere3d
 translateBy displacement sphere =
-    with
-        { centerPoint = Point3d.translateBy displacement (centerPoint sphere)
-        , radius = radius sphere
-        }
+    withRadius (radius sphere)
+        (Point3d.translateBy displacement (centerPoint sphere))
 
 
 {-| Mirror a sphere across a given plane.
 
     Sphere3d.mirrorAcross Plane3d.xy exampleSphere
-    --> Sphere3d.with
-    -->     { centerPoint =
-    -->         Point3d.fromCoordinates ( 1, 2, -1 )
-    -->     , radius = 3
-    -->     }
+    --> Sphere3d.withRadius 3
+    -->     (Point3d.fromCoordinates ( 1, 2, -1 ))
 
 -}
 mirrorAcross : Plane3d -> Sphere3d -> Sphere3d
 mirrorAcross plane sphere =
-    let
-        mirrorPoint =
-            Point3d.mirrorAcross plane
-    in
-    with
-        { centerPoint = mirrorPoint (centerPoint sphere)
-        , radius = radius sphere
-        }
+    withRadius (radius sphere)
+        (Point3d.mirrorAcross plane (centerPoint sphere))
 
 
 {-| Take a sphere defined in global coordinates, and return it expressed in
@@ -363,19 +334,14 @@ local coordinates relative to a given reference frame.
             (Frame3d.atPoint
                 (Point3d.fromCoordinates ( 1, 2, 3 ))
             )
-    --> Sphere3d.with
-    -->     { centerPoint =
-    -->         Point3d.fromCoordinates ( 0, 0, -2 )
-    -->     , radius = 3
-    -->     }
+    --> Sphere3d.withRadius 3
+    -->     (Point3d.fromCoordinates ( 0, 0, -2 ))
 
 -}
 relativeTo : Frame3d -> Sphere3d -> Sphere3d
 relativeTo frame sphere =
-    with
-        { centerPoint = Point3d.relativeTo frame (centerPoint sphere)
-        , radius = radius sphere
-        }
+    withRadius (radius sphere)
+        (Point3d.relativeTo frame (centerPoint sphere))
 
 
 {-| Take a sphere considered to be defined in local coordinates relative to a
@@ -386,19 +352,14 @@ given reference frame, and return that sphere expressed in global coordinates.
             (Frame3d.atPoint
                 (Point3d.fromCoordinates ( 1, 2, 3 ))
             )
-    --> Sphere3d.with
-    -->     { centerPoint =
-    -->         Point3d.fromCoordinates ( 2, 4, 4 )
-    -->     , radius = 3
-    -->     }
+    --> Sphere3d.withRadius 3
+    -->     (Point3d.fromCoordinates ( 2, 4, 4 ))
 
 -}
 placeIn : Frame3d -> Sphere3d -> Sphere3d
 placeIn frame sphere =
-    with
-        { centerPoint = Point3d.placeIn frame (centerPoint sphere)
-        , radius = radius sphere
-        }
+    withRadius (radius sphere)
+        (Point3d.placeIn frame (centerPoint sphere))
 
 
 {-| Get the minimal bounding box containing a given sphere.

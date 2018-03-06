@@ -25,7 +25,7 @@ import Vector3d
 
 sphereFromTuple : ( ( Float, Float, Float ), Float ) -> Sphere3d
 sphereFromTuple ( centerPoint, radius ) =
-    Sphere3d.with { centerPoint = Point3d.fromCoordinates centerPoint, radius = radius }
+    Sphere3d.withRadius radius (Point3d.fromCoordinates centerPoint)
 
 
 
@@ -60,26 +60,22 @@ unit =
 with : Test
 with =
     Test.describe "with"
-        [ Test.fuzz2 Fuzz.point3d
+        [ Test.fuzz2
+            Fuzz.point3d
             Fuzz.scalar
             "A sphere's radius gets set correctly"
             (\centerPoint radius ->
-                let
-                    sphere =
-                        Sphere3d.with { centerPoint = centerPoint, radius = radius }
-                in
-                Sphere3d.radius sphere
+                Sphere3d.withRadius radius centerPoint
+                    |> Sphere3d.radius
                     |> Expect.equal (abs radius)
             )
-        , Test.fuzz2 Fuzz.point3d
+        , Test.fuzz2
+            Fuzz.point3d
             Fuzz.scalar
             "A sphere's center points gets set correctly"
             (\centerPoint radius ->
-                let
-                    sphere =
-                        Sphere3d.with { centerPoint = centerPoint, radius = radius }
-                in
-                Sphere3d.centerPoint sphere
+                Sphere3d.withRadius radius centerPoint
+                    |> Sphere3d.centerPoint
                     |> Expect.equal centerPoint
             )
         ]
@@ -277,10 +273,10 @@ scaleAbout =
                     scaledRadius =
                         1
                 in
-                Sphere3d.with { centerPoint = originalCenter, radius = originalRadius }
+                Sphere3d.withRadius originalRadius originalCenter
                     |> Sphere3d.scaleAbout aboutPoint scale
                     |> Expect.sphere3d
-                        (Sphere3d.with { centerPoint = scaledCenter, radius = scaledRadius })
+                        (Sphere3d.withRadius scaledRadius scaledCenter)
             )
         , Test.fuzz2 Fuzz.point3d
             Fuzz.sphere3d
@@ -349,10 +345,10 @@ rotateAround =
                     radius =
                         2
                 in
-                Sphere3d.with { centerPoint = originalCenter, radius = radius }
+                Sphere3d.withRadius radius originalCenter
                     |> Sphere3d.rotateAround axis angle
                     |> Expect.sphere3d
-                        (Sphere3d.with { centerPoint = rotatedCenter, radius = radius })
+                        (Sphere3d.withRadius radius rotatedCenter)
             )
         , Test.fuzz3 Fuzz.axis3d
             Fuzz.scalar
@@ -494,9 +490,10 @@ mirrorAcross =
                     radius =
                         0.5
                 in
-                Sphere3d.with { centerPoint = originalCenter, radius = radius }
+                Sphere3d.withRadius radius originalCenter
                     |> Sphere3d.mirrorAcross plane
-                    |> Expect.sphere3d (Sphere3d.with { centerPoint = mirroredCenter, radius = radius })
+                    |> Expect.sphere3d
+                        (Sphere3d.withRadius radius mirroredCenter)
             )
         , Test.fuzz2
             Fuzz.plane3d
@@ -518,7 +515,9 @@ mirrorAcross =
                     |> Sphere3d.centerPoint
                     |> Point3d.signedDistanceFrom plane
                     |> Expect.approximately
-                        (-1 * Point3d.signedDistanceFrom plane (Sphere3d.centerPoint sphere))
+                        -(Point3d.signedDistanceFrom plane
+                            (Sphere3d.centerPoint sphere)
+                         )
             )
         , Test.fuzz2
             Fuzz.plane3d
