@@ -194,29 +194,23 @@ specific X/Y directions are unimportant.
         Frame3d.with
             { originPoint = Point3d.origin
             , zDirection =
-                Direction3d.with
-                    { azimuth = 0
-                    , elevation = degrees 60
-                    }
+                Direction3d.fromAzimuthAndElevation
+                    ( 0, degrees 60 )
             }
 
     Frame3d.originPoint sketchPlane
     --> Point3d.origin
 
     Frame3d.xDirection sketchPlane
-    --> Direction3d.with
-    -->     { azimuth = degrees 0
-    -->     , elevation = degrees -30
-    -->     }
+    --> Direction3d.fromAzimuthAndElevation
+    -->     ( 0, degrees -30 )
 
     Frame3d.yDirection sketchPlane
     --> Direction3d.y
 
     Frame3d.zDirection sketchPlane
-    --> Direction3d.with
-    -->     { azimuth = 0
-    -->     , elevation = degrees 60
-    -->     }
+    --> Direction3d.fromAzimuthAndElevation
+    -->     ( 0, degrees 60 )
 
 -}
 with : { originPoint : Point3d, zDirection : Direction3d } -> Frame3d
@@ -745,16 +739,12 @@ by 2 units", resulting in
     --> Point3d.fromCoordinates ( 3.4142, 1.4142, 0 )
 
     Frame3d.xDirection frame
-    --> Direction3d.with
-    -->     { azimuth = degrees 45
-    -->     , elevation = 0
-    -->     }
+    --> Direction3d.fromAzimuthAndElevation
+    -->     ( degrees 45, 0 )
 
     Frame3d.yDirection frame
-    --> Direction3d.with
-    -->     { azimuth = degrees 135
-    -->     , elevation = 0
-    -->     }
+    --> Direction3d.fromAzimuthAndElevation
+    -->     ( degrees 135, 0 )
 
     Frame3d.zDirection frame
     --> Direction3d.z

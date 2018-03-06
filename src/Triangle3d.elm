@@ -240,10 +240,8 @@ three vertices are collinear), returns `Nothing`.
 
     Triangle3d.normalDirection exampleTriangle
     --> Just
-    -->    (Direction3d.with
-    -->        { azimuth = degrees -90
-    -->        , elevation = degrees 18.43
-    -->        }
+    -->    (Direction3d.fromAzimuthAndElevation
+    -->        ( degrees -90, degrees 18.43 )
     -->    )
 
 -}

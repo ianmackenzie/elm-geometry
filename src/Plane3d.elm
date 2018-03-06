@@ -166,10 +166,8 @@ given points are collinear, returns `Nothing`.
     -->         { originPoint =
     -->             Point3d.fromCoordinates ( 2, 0, 0 )
     -->         , normalDirection =
-    -->             Direction3d.with
-    -->                 { azimuth = degrees -90
-    -->                 , elevation = degrees 45
-    -->                 }
+    -->             Direction3d.fromAzimuthAndElevation
+    -->                 ( degrees -90, degrees 45 )
     -->         }
     -->     )
 

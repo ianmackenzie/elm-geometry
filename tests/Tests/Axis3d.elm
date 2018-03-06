@@ -100,10 +100,8 @@ onExamples =
                             { originPoint =
                                 Point3d.fromCoordinates ( 1, 3, 0 )
                             , direction =
-                                Direction3d.with
-                                    { azimuth = degrees 30
-                                    , elevation = 0
-                                    }
+                                Direction3d.fromAzimuthAndElevation
+                                    ( degrees 30, 0 )
                             }
                         )
         , Test.test "Second example" <|
@@ -114,10 +112,8 @@ onExamples =
                             { originPoint =
                                 Point3d.fromCoordinates ( 3, 0, 1 )
                             , direction =
-                                Direction3d.with
-                                    { azimuth = 0
-                                    , elevation = degrees 60
-                                    }
+                                Direction3d.fromAzimuthAndElevation
+                                    ( 0, degrees 60 )
                             }
                         )
         ]

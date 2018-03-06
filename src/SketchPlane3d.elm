@@ -231,20 +231,16 @@ directions are unimportant.
         SketchPlane3d.with
             { originPoint = Point3d.origin
             , normalDirection =
-                Direction3d.with
-                    { azimuth = 0
-                    , elevation = degrees 60
-                    }
+                Direction3d.fromAzimuthAndElevation
+                    ( 0, degrees 60 )
             }
 
     SketchPlane3d.originPoint sketchPlane
     --> Point3d.origin
 
     SketchPlane3d.xDirection sketchPlane
-    --> Direction3d.with
-    -->     { azimuth = degrees 0
-    -->     , elevation = degrees -30
-    -->     }
+    --> Direction3d.fromAzimuthAndElevation
+    -->     ( 0, degrees -30 )
 
     SketchPlane3d.yDirection sketchPlane
     --> Direction3d.y
@@ -279,16 +275,12 @@ plane, in 2D coordinates within the existing sketch plane. Whew!
     --> Point3d.fromCoordinates ( 0, 2, 3 )
 
     SketchPlane3d.xDirection sketchPlane
-    --> Direction3d.with
-    -->     { azimuth = degrees 90
-    -->     , elevation = degrees -30
-    -->     }
+    --> Direction3d.fromAzimuthAndElevation
+    -->     ( degrees 90, degrees -30 )
 
     SketchPlane3d.yDirection sketchPlane
-    --> Direction3d.with
-    -->     { azimuth = degrees 90
-    -->     , elevation = degrees 60
-    -->     }
+    --> Direction3d.fromAzimuthAndElevation
+    -->     ( degrees 90, degrees 60 )
 
 -}
 on : SketchPlane3d -> Frame2d -> SketchPlane3d
@@ -385,10 +377,8 @@ If the three given points are collinear, returns `Nothing`.
     --> Direction3d.x
 
     SketchPlane3d.yDirection sketchPlane
-    --> Direction3d.with
-    -->     { azimuth = degrees 90
-    -->     , elevation = degrees 45
-    -->     }
+    --> Direction3d.fromAzimuthAndElevation
+    -->     ( degrees 90, degrees 45 )
 
     SketchPlane3d.throughPoints
         ( Point3d.fromCoordinates ( 2, 0, 0 )
@@ -712,10 +702,8 @@ transformations. For example,
     --> Point3d.fromCoordinates ( 1, 0, 0 )
 
     SketchPlane3d.xDirection sketchPlane
-    --> Direction3d.with
-    -->     { azimuth = 0
-    -->     , elevation = degrees 45
-    -->     }
+    --> Direction3d.fromAzimuthAndElevation
+    -->     ( 0, degrees 45 )
 
     SketchPlane3d.yDirection sketchPlane
     --> Direction3d.y
@@ -787,10 +775,8 @@ resulting in
     --> Direction3d.x
 
     SketchPlane3d.yDirection sketchPlane
-    --> Direction3d.with
-    -->     { azimuth = degrees 90
-    -->     , elevation = degrees 45
-    -->     }
+    --> Direction3d.fromAzimuthAndElevation
+    -->     ( degrees 90, degrees 45 )
 
 -}
 translateAlongOwn : (SketchPlane3d -> Axis3d) -> Float -> SketchPlane3d -> SketchPlane3d

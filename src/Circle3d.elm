@@ -150,10 +150,8 @@ the three given points are collinear, returns `Nothing`.
         )
     --> Just
     -->     (Circle3d.withRadius 0.8165
-    -->         (Direction3d.with
-    -->             { azimuth = degrees 45
-    -->             , elevation = degrees 35.26
-    -->             }
+    -->         (Direction3d.fromAzimuthAndElevation
+    -->             ( degrees 45, degrees 35.26 )
     -->         )
     -->         (Point3d.fromCoordinates
     -->             ( 0.333, 0.333, 0.333 )
@@ -377,10 +375,8 @@ mirrorAcross plane circle =
     inclinedCircle : Circle3d
     inclinedCircle =
         Circle3d.withRadius 1
-            (Direction3d.with
-                { azimuth = 0
-                , elevation = degrees 45
-                }
+            (Direction3d.fromAzimuthAndElevation
+                ( 0, degrees 45 )
             )
             (Point3d.fromCoordinates ( 1, 2, 3 ))
 

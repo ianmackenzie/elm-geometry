@@ -695,10 +695,8 @@ mirrorAcross plane =
             { originPoint =
                 Point3d.fromCoordinates ( 1, 2, 3 )
             , direction =
-                Direction3d.with
-                    { azimuth = 0
-                    , elevation = degrees 45
-                    }
+                Direction3d.fromAzimuthAndElevation
+                    ( 0, degrees 45 )
             }
 
     arc : Arc3d

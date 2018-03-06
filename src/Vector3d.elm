@@ -487,10 +487,8 @@ returns `Nothing`.
     Vector3d.fromComponents ( 3, 0, 3 )
         |> Vector3d.direction
     --> Just
-    -->     (Direction3d.with
-    -->         { azimuth = 0
-    -->         , elevation = degrees 45
-    -->         }
+    -->     (Direction3d.fromAzimuthAndElevation
+    -->         ( 0, degrees 45 )
     -->     )
 
     Vector3d.direction Vector3d.zero
@@ -517,11 +515,9 @@ vector, returns `Nothing`.
 
     Vector3d.lengthAndDirection vector
     --> Just
-    -->     ( 5
-    -->     , Direction3d.with
-    -->         { azimuth = 0
-    -->         , elevation = degrees 45
-    -->         }
+    -->     ( 4.2426
+    -->     , Direction3d.fromAzimuthAndElevation
+    -->         ( 0, degrees 45 )
     -->     )
 
     Vector3d.lengthAndDirection Vector3d.zero

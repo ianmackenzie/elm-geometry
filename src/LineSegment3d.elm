@@ -289,10 +289,8 @@ line segment has zero length (the start and end points are the same), returns
 
     LineSegment3d.direction exampleLineSegment
     --> Just
-    -->    (Direction3d.with
-    -->        { azimuth = degrees 45
-    -->        , elevation = degrees 35.26
-    -->        }
+    -->    (Direction3d.fromAzimuthAndElevation
+    -->        ( degrees 45, degrees 35.26 )
     -->    )
 
 -}
@@ -306,10 +304,8 @@ segment has zero length, returns `Nothing`.
 
     LineSegment3d.normalDirection exampleLineSegment
     --> Just
-    -->    (Direction3d.with
-    -->        { azimuth = degrees -90
-    -->        , elevation = degrees 45
-    -->        }
+    -->    (Direction3d.fromAzimuthAndElevation
+    -->        ( degrees -90, degrees 45 )
     -->    )
 
 -}

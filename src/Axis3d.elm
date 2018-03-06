@@ -157,10 +157,8 @@ specified in XY coordinates _within_ the sketch plane.
     -->     { originPoint =
     -->         Point3d.fromCoordinates ( 1, 3, 0 )
     -->     , direction =
-    -->         Direction3d.with
-    -->             { azimuth = degrees 30
-    -->             , elevation = 0
-    -->             }
+    -->         Direction3d.fromAzimuthAndElevation
+    -->             ( degrees 30, 0 )
     -->     }
 
     Axis3d.on SketchPlane3d.zx axis2d
@@ -168,10 +166,8 @@ specified in XY coordinates _within_ the sketch plane.
     -->     { originPoint =
     -->         Point3d.fromCoordinates ( 3, 0, 1 )
     -->     , direction =
-    -->         Direction3d.with
-    -->             { azimuth = 0
-    -->             , elevation = degrees 60
-    -->             }
+    -->         Direction3d.fromAzimuthAndElevation
+    -->             ( 0, degrees 60 )
     -->     }
 
 -}

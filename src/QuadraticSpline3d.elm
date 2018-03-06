@@ -704,10 +704,8 @@ get the tangent direction a quarter of the way along `exampleSpline`:
     QuadraticSpline3d.tangentAlong parameterizedSpline
         (arcLength / 4)
     --> Just <|
-    -->     Direction3d.with
-    -->         { azimuth = degrees 33.091
-    -->         , elevation = degrees 14.260
-    -->         }
+    -->     Direction3d.fromAzimuthAndElevation
+    -->         ( degrees 33.091, degrees 14.260 )
 
 If the given arc length is less than zero or greater than the arc length of the
 spline (or if the derivative of the spline happens to be exactly zero at the
