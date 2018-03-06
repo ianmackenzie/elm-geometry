@@ -57,9 +57,9 @@ unit =
         ]
 
 
-with : Test
-with =
-    Test.describe "with"
+withRadius : Test
+withRadius =
+    Test.describe "withRadius"
         [ Test.fuzz2
             Fuzz.point3d
             Fuzz.scalar
