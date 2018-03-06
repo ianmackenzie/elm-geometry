@@ -459,21 +459,16 @@ contains point sphere =
 of a sphere onto a plane.
 
     Sphere3d.projectOnto Plane3d.xy exampleSphere
-    --> Circle3d.with
-    -->     { centerPoint =
-    -->         Point3d.fromCoordinates ( 1, 2, 0 )
-    -->     , axialDirection = Direction3d.z
-    -->     , radius = 3.0
-    -->     }
+    --> Circle3d.withRadius 3
+    -->     Direction3d.z
+    -->     (Point3d.fromCoordinates ( 1, 2, 0 ))
 
 -}
 projectOnto : Plane3d -> Sphere3d -> Circle3d
 projectOnto plane sphere =
-    Circle3d.with
-        { centerPoint = Point3d.projectOnto plane (centerPoint sphere)
-        , axialDirection = Plane3d.normalDirection plane
-        , radius = radius sphere
-        }
+    Circle3d.withRadius (radius sphere)
+        (Plane3d.normalDirection plane)
+        (Point3d.projectOnto plane (centerPoint sphere))
 
 
 {-| Find the [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)

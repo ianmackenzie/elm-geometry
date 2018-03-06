@@ -287,15 +287,7 @@ circle2d =
 
 circle3d : Fuzzer Circle3d
 circle3d =
-    let
-        circle centerPoint axialDirection radius =
-            Circle3d.with
-                { centerPoint = centerPoint
-                , axialDirection = axialDirection
-                , radius = radius
-                }
-    in
-    Fuzz.map3 circle point3d direction3d positiveScalar
+    Fuzz.map3 Circle3d.withRadius positiveScalar direction3d point3d
 
 
 sphere3d : Fuzzer Sphere3d

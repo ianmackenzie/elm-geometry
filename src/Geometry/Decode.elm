@@ -420,17 +420,10 @@ ellipse2d =
 -}
 circle3d : Decoder Circle3d
 circle3d =
-    Decode.map3
-        (\centerPoint axialDirection radius ->
-            Circle3d.with
-                { centerPoint = centerPoint
-                , axialDirection = axialDirection
-                , radius = radius
-                }
-        )
-        (Decode.field "centerPoint" point3d)
-        (Decode.field "axialDirection" direction3d)
+    Decode.map3 Circle3d.withRadius
         (Decode.field "radius" Decode.float)
+        (Decode.field "axialDirection" direction3d)
+        (Decode.field "centerPoint" point3d)
 
 
 {-| Decodes a `Sphere3d` from an object with `centerPoint` and `radius` fields.
