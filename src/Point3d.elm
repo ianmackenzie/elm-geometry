@@ -103,7 +103,6 @@ different coordinate frames.
 
 -}
 
-import Bootstrap.Axis3d as Axis3d
 import Bootstrap.Frame3d as Frame3d
 import Bootstrap.Plane3d as Plane3d
 import Bootstrap.SketchPlane3d as SketchPlane3d
@@ -236,9 +235,9 @@ axis:
 
 -}
 along : Axis3d -> Float -> Point3d
-along axis distance =
-    Axis3d.originPoint axis
-        |> translateBy (Vector3d.withLength distance (Axis3d.direction axis))
+along (Internal.Axis3d axis) distance =
+    axis.originPoint
+        |> translateBy (Vector3d.withLength distance axis.direction)
 
 
 {-| Construct a 3D point lying _on_ a sketch plane by providing a 2D point
@@ -530,9 +529,8 @@ it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
 
 -}
 signedDistanceAlong : Axis3d -> Point3d -> Float
-signedDistanceAlong axis point =
-    Vector3d.from (Axis3d.originPoint axis) point
-        |> Vector3d.componentIn (Axis3d.direction axis)
+signedDistanceAlong (Internal.Axis3d axis) point =
+    Vector3d.from axis.originPoint point |> Vector3d.componentIn axis.direction
 
 
 {-| DEPRECATED: Alias for `signedDistanceAlong`, kept for compatibility. Use
@@ -571,9 +569,9 @@ with `distanceFrom`/`squaredDistanceFrom` this is slightly more efficient than
 `distanceFromAxis` since it avoids a square root.
 -}
 squaredDistanceFromAxis : Axis3d -> Point3d -> Float
-squaredDistanceFromAxis axis point =
-    Vector3d.from (Axis3d.originPoint axis) point
-        |> Vector3d.crossProduct (Direction3d.toVector (Axis3d.direction axis))
+squaredDistanceFromAxis (Internal.Axis3d axis) point =
+    Vector3d.from axis.originPoint point
+        |> Vector3d.crossProduct (Direction3d.toVector axis.direction)
         |> Vector3d.squaredLength
 
 
@@ -673,14 +671,10 @@ direction of the axis.
 
 -}
 rotateAround : Axis3d -> Float -> Point3d -> Point3d
-rotateAround axis angle point =
-    let
-        originPoint =
-            Axis3d.originPoint axis
-    in
-    Vector3d.from originPoint point
-        |> Vector3d.rotateAround axis angle
-        |> addTo originPoint
+rotateAround ((Internal.Axis3d axis) as axis_) angle point =
+    Vector3d.from axis.originPoint point
+        |> Vector3d.rotateAround axis_ angle
+        |> addTo axis.originPoint
 
 
 {-| Translate a point by a given displacement.
