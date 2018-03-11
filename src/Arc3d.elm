@@ -255,10 +255,7 @@ to the center point of the arc.
 -}
 axis : Arc3d -> Axis3d
 axis arc =
-    Axis3d.with
-        { originPoint = centerPoint arc
-        , direction = axialDirection arc
-        }
+    Axis3d.withDirection (axialDirection arc) (centerPoint arc)
 
 
 {-| Get the center point of an arc.
