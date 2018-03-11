@@ -123,12 +123,9 @@ axes (Internal.Ellipse2d { axes }) =
 {-| Get the X axis of an ellipse.
 
     Ellipse2d.xAxis exampleEllipse
-    --> Axis2d.with
-    -->     { originPoint =
-    -->          Point2d.fromCoordinates ( 10, 10 )
-    -->      , direction =
-    -->         Direction2d.fromAngle (degrees 30)
-    -->     }
+    --> Axis2d.withDirection
+    -->     (Direction2d.fromAngle (degrees 30))
+    -->     (Point2d.fromCoordinates ( 10, 10 ))
 
 -}
 xAxis : Ellipse2d -> Axis2d
@@ -139,12 +136,9 @@ xAxis ellipse =
 {-| Get the Y axis of an ellipse.
 
     Ellipse2d.yAxis exampleEllipse
-    --> Axis2d.with
-    -->     { originPoint =
-    -->          Point2d.fromCoordinates ( 10, 10 )
-    -->      , direction =
-    -->         Direction2d.fromAngle (degrees 120)
-    -->     }
+    --> Axis2d.withDirection
+    -->     (Direction2d.fromAngle (degrees 120))
+    -->     (Point2d.fromCoordinates ( 10, 10 ))
 
 -}
 yAxis : Ellipse2d -> Axis2d

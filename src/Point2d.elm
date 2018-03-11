@@ -225,11 +225,8 @@ Positive and negative distances will be interpreted relative to the direction of
 the axis:
 
     horizontalAxis =
-        Axis2d.with
-            { originPoint =
-                Point2d.fromCoordinates ( 1, 1 )
-            , direction = Direction2d.negativeX
-            }
+        Axis2d.withDirection Direction2d.negativeX
+            (Point2d.fromCoordinates ( 1, 1 ))
 
     Point2d.along horizontalAxis 3
     --> Point2d.fromCoordinates ( -2, 1 )
@@ -479,11 +476,8 @@ positive if the projected point is ahead the axis' origin point and negative if
 it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
 
     axis =
-        Axis2d.with
-            { originPoint =
-                Point2d.fromCoordinates ( 1, 2 )
-            , direction = Direction2d.x
-            }
+        Axis2d.withDirection Direction2d.x
+            (Point2d.fromCoordinates ( 1, 2 ))
 
     point =
         Point2d.fromCoordinates ( 3, 3 )
@@ -516,11 +510,8 @@ to the right, with the forwards direction defined by the direction of the axis.
     -- A horizontal axis through a point with a Y
     -- coordinate of 2 is effectively the line Y=2
     axis =
-        Axis2d.with
-            { originPoint =
-                Point2d.fromCoordinates ( 1, 2 )
-            , direction = Direction2d.x
-            }
+        Axis2d.withDirection Direction2d.x
+            (Point2d.fromCoordinates ( 1, 2 ))
 
     point =
         Point2d.fromCoordinates ( 3, 3 )
@@ -704,11 +695,8 @@ mirrorAcross axis =
 The axis does not have to pass through the origin:
 
     offsetYAxis =
-        Axis2d.with
-            { originPoint =
-                Point2d.fromCoordinates ( 1, 0 )
-            , direction = Direction2d.y
-            }
+        Axis2d.withDirection Direction2d.y
+            (Point2d.fromCoordinates ( 1, 0 ))
 
     Point2d.projectOnto offsetYAxis point
     --> Point2d.fromCoordinates ( 1, 3 )

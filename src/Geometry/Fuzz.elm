@@ -147,20 +147,12 @@ point3d =
 
 axis2d : Fuzzer Axis2d
 axis2d =
-    let
-        axis originPoint direction =
-            Axis2d.with { originPoint = originPoint, direction = direction }
-    in
-    Fuzz.map2 axis point2d direction2d
+    Fuzz.map2 Axis2d.withDirection direction2d point2d
 
 
 axis3d : Fuzzer Axis3d
 axis3d =
-    let
-        axis originPoint direction =
-            Axis3d.with { originPoint = originPoint, direction = direction }
-    in
-    Fuzz.map2 axis point3d direction3d
+    Fuzz.map2 Axis3d.withDirection direction3d point3d
 
 
 plane3d : Fuzzer Plane3d

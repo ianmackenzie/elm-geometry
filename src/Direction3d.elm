@@ -752,11 +752,8 @@ Note that only the direction of the axis affects the result, not the position of
 its origin point, since directions are position-independent:
 
     offsetAxis =
-        Axis3d.with
-            { originPoint =
-                Point3d.fromCoordinates ( 100, 200, 300 )
-            , direction = Direction3d.z
-            }
+        Axis3d.withDirection Direction3d.z
+            (Point3d.fromCoordinates ( 100, 200, 300 ))
 
     Direction3d.x
         |> Direction3d.rotateAround offsetAxis (degrees 90)

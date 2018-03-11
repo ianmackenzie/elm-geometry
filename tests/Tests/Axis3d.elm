@@ -35,11 +35,7 @@ xExample =
         \() ->
             Axis3d.x
                 |> Expect.axis3d
-                    (Axis3d.with
-                        { originPoint = Point3d.origin
-                        , direction = Direction3d.x
-                        }
-                    )
+                    (Axis3d.withDirection Direction3d.x Point3d.origin)
 
 
 yExample : Test
@@ -48,11 +44,7 @@ yExample =
         \() ->
             Axis3d.y
                 |> Expect.axis3d
-                    (Axis3d.with
-                        { originPoint = Point3d.origin
-                        , direction = Direction3d.y
-                        }
-                    )
+                    (Axis3d.withDirection Direction3d.y Point3d.origin)
 
 
 zExample : Test
@@ -61,11 +53,7 @@ zExample =
         \() ->
             Axis3d.z
                 |> Expect.axis3d
-                    (Axis3d.with
-                        { originPoint = Point3d.origin
-                        , direction = Direction3d.z
-                        }
-                    )
+                    (Axis3d.withDirection Direction3d.z Point3d.origin)
 
 
 originPointExample : Test
@@ -86,34 +74,29 @@ onExamples : Test
 onExamples =
     let
         axis2d =
-            Axis2d.with
-                { originPoint = Point2d.fromCoordinates ( 1, 3 )
-                , direction = Direction2d.fromAngle (degrees 30)
-                }
+            Axis2d.withDirection
+                (Direction2d.fromAngle (degrees 30))
+                (Point2d.fromCoordinates ( 1, 3 ))
     in
     Test.describe "Axis3d.on examples"
         [ Test.test "First example" <|
             \() ->
                 Axis3d.on SketchPlane3d.xy axis2d
                     |> Expect.axis3d
-                        (Axis3d.with
-                            { originPoint =
-                                Point3d.fromCoordinates ( 1, 3, 0 )
-                            , direction =
-                                Direction3d.fromAzimuthAndElevation
-                                    ( degrees 30, 0 )
-                            }
+                        (Axis3d.withDirection
+                            (Direction3d.fromAzimuthAndElevation
+                                ( degrees 30, 0 )
+                            )
+                            (Point3d.fromCoordinates ( 1, 3, 0 ))
                         )
         , Test.test "Second example" <|
             \() ->
                 Axis3d.on SketchPlane3d.zx axis2d
                     |> Expect.axis3d
-                        (Axis3d.with
-                            { originPoint =
-                                Point3d.fromCoordinates ( 3, 0, 1 )
-                            , direction =
-                                Direction3d.fromAzimuthAndElevation
-                                    ( 0, degrees 60 )
-                            }
+                        (Axis3d.withDirection
+                            (Direction3d.fromAzimuthAndElevation
+                                ( 0, degrees 60 )
+                            )
+                            (Point3d.fromCoordinates ( 3, 0, 1 ))
                         )
         ]

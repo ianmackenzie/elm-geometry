@@ -208,8 +208,8 @@ throughPoints ( firstPoint, secondPoint, thirdPoint ) =
 
 -}
 originPoint : Plane3d -> Point3d
-originPoint (Internal.Plane3d properties) =
-    properties.originPoint
+originPoint (Internal.Plane3d plane) =
+    plane.originPoint
 
 
 {-| Get the normal direction of a plane.
@@ -219,8 +219,8 @@ originPoint (Internal.Plane3d properties) =
 
 -}
 normalDirection : Plane3d -> Direction3d
-normalDirection (Internal.Plane3d properties) =
-    properties.normalDirection
+normalDirection (Internal.Plane3d plane) =
+    plane.normalDirection
 
 
 {-| Construct an axis from the origin point and normal direction of a plane.
@@ -230,11 +230,8 @@ normalDirection (Internal.Plane3d properties) =
 
 -}
 normalAxis : Plane3d -> Axis3d
-normalAxis plane =
-    Axis3d.with
-        { originPoint = originPoint plane
-        , direction = normalDirection plane
-        }
+normalAxis (Internal.Plane3d plane) =
+    Axis3d.withDirection plane.normalDirection plane.originPoint
 
 
 {-| Shift a plane in its own normal direction by the given (signed) distance.

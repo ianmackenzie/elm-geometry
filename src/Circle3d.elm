@@ -192,8 +192,8 @@ throughPoints points =
 
 -}
 centerPoint : Circle3d -> Point3d
-centerPoint (Internal.Circle3d properties) =
-    properties.centerPoint
+centerPoint (Internal.Circle3d circle) =
+    circle.centerPoint
 
 
 {-| Get the axial direction of a circle.
@@ -203,27 +203,21 @@ centerPoint (Internal.Circle3d properties) =
 
 -}
 axialDirection : Circle3d -> Direction3d
-axialDirection (Internal.Circle3d properties) =
-    properties.axialDirection
+axialDirection (Internal.Circle3d circle) =
+    circle.axialDirection
 
 
 {-| Get the central axis of a circle, perpendicular to its [`plane`](#plane).
 The origin point of the returned axis will be the center point of the circle.
 
     Circle3d.axis exampleCircle
-    --> Axis3d.with
-    -->     { originPoint =
-    -->         Point3d.fromCoordinates ( 2, 0, 1 )
-    -->     , direction = Direction3d.z
-    -->     }
+    --> Axis3d.withDirection Direction3d.z
+    -->     (Point3d.fromCoordinates ( 2, 0, 1 ))
 
 -}
 axis : Circle3d -> Axis3d
-axis circle =
-    Axis3d.with
-        { originPoint = centerPoint circle
-        , direction = axialDirection circle
-        }
+axis (Internal.Circle3d circle) =
+    Axis3d.withDirection circle.axialDirection circle.centerPoint
 
 
 {-| Get the plane that a circle lies in. The origin point of the returned plane

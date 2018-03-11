@@ -38,11 +38,7 @@ xExample =
         \() ->
             Axis2d.x
                 |> Expect.axis2d
-                    (Axis2d.with
-                        { originPoint = Point2d.origin
-                        , direction = Direction2d.x
-                        }
-                    )
+                    (Axis2d.withDirection Direction2d.x Point2d.origin)
 
 
 yExample : Test
@@ -51,11 +47,7 @@ yExample =
         \() ->
             Axis2d.y
                 |> Expect.axis2d
-                    (Axis2d.with
-                        { originPoint = Point2d.origin
-                        , direction = Direction2d.y
-                        }
-                    )
+                    (Axis2d.withDirection Direction2d.y Point2d.origin)
 
 
 originPointExample : Test
@@ -78,11 +70,7 @@ flipExample =
         \() ->
             Axis2d.flip Axis2d.x
                 |> Expect.axis2d
-                    (Axis2d.with
-                        { originPoint = Point2d.origin
-                        , direction = Direction2d.negativeX
-                        }
-                    )
+                    (Axis2d.withDirection Direction2d.negativeX Point2d.origin)
 
 
 moveToExample : Test
@@ -91,20 +79,16 @@ moveToExample =
         \() ->
             let
                 axis =
-                    Axis2d.with
-                        { originPoint = Point2d.fromCoordinates ( 2, 3 )
-                        , direction = Direction2d.y
-                        }
+                    Axis2d.withDirection Direction2d.y
+                        (Point2d.fromCoordinates ( 2, 3 ))
 
                 newOrigin =
                     Point2d.fromCoordinates ( 4, 5 )
             in
             Axis2d.moveTo newOrigin axis
                 |> Expect.axis2d
-                    (Axis2d.with
-                        { originPoint = Point2d.fromCoordinates ( 4, 5 )
-                        , direction = Direction2d.y
-                        }
+                    (Axis2d.withDirection Direction2d.y
+                        (Point2d.fromCoordinates ( 4, 5 ))
                     )
 
 
@@ -126,10 +110,8 @@ translateByExample =
             in
             Axis2d.translateBy displacement Axis2d.y
                 |> Expect.axis2d
-                    (Axis2d.with
-                        { originPoint = Point2d.fromCoordinates ( 2, 3 )
-                        , direction = Direction2d.y
-                        }
+                    (Axis2d.withDirection Direction2d.y
+                        (Point2d.fromCoordinates ( 2, 3 ))
                     )
 
 
@@ -139,17 +121,15 @@ mirrorAcrossExample =
         \() ->
             let
                 axis =
-                    Axis2d.with
-                        { originPoint = Point2d.fromCoordinates ( 1, 2 )
-                        , direction = Direction2d.fromAngle (degrees 30)
-                        }
+                    Axis2d.withDirection
+                        (Direction2d.fromAngle (degrees 30))
+                        (Point2d.fromCoordinates ( 1, 2 ))
             in
             Axis2d.mirrorAcross Axis2d.x axis
                 |> Expect.axis2d
-                    (Axis2d.with
-                        { originPoint = Point2d.fromCoordinates ( 1, -2 )
-                        , direction = Direction2d.fromAngle (degrees -30)
-                        }
+                    (Axis2d.withDirection
+                        (Direction2d.fromAngle (degrees -30))
+                        (Point2d.fromCoordinates ( 1, -2 ))
                     )
 
 
@@ -163,10 +143,8 @@ relativeToExample =
             in
             Axis2d.relativeTo (Frame2d.atPoint originPoint) Axis2d.x
                 |> Expect.axis2d
-                    (Axis2d.with
-                        { originPoint = Point2d.fromCoordinates ( -2, -3 )
-                        , direction = Direction2d.x
-                        }
+                    (Axis2d.withDirection Direction2d.x
+                        (Point2d.fromCoordinates ( -2, -3 ))
                     )
 
 
@@ -180,8 +158,6 @@ placeInExample =
             in
             Axis2d.placeIn (Frame2d.atPoint originPoint) Axis2d.x
                 |> Expect.axis2d
-                    (Axis2d.with
-                        { originPoint = Point2d.fromCoordinates ( 2, 3 )
-                        , direction = Direction2d.x
-                        }
+                    (Axis2d.withDirection Direction2d.x
+                        (Point2d.fromCoordinates ( 2, 3 ))
                     )

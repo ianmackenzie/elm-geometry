@@ -193,8 +193,8 @@ atPoint point =
 
 -}
 originPoint : Frame2d -> Point2d
-originPoint (Internal.Frame2d properties) =
-    properties.originPoint
+originPoint (Internal.Frame2d frame) =
+    frame.originPoint
 
 
 {-| Get the X direction of a given frame.
@@ -204,8 +204,8 @@ originPoint (Internal.Frame2d properties) =
 
 -}
 xDirection : Frame2d -> Direction2d
-xDirection (Internal.Frame2d properties) =
-    properties.xDirection
+xDirection (Internal.Frame2d frame) =
+    frame.xDirection
 
 
 {-| Get the Y direction of a given frame.
@@ -215,8 +215,8 @@ xDirection (Internal.Frame2d properties) =
 
 -}
 yDirection : Frame2d -> Direction2d
-yDirection (Internal.Frame2d properties) =
-    properties.yDirection
+yDirection (Internal.Frame2d frame) =
+    frame.yDirection
 
 
 {-| Check if a frame is [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness).
@@ -252,11 +252,8 @@ point and X direction).
 
 -}
 xAxis : Frame2d -> Axis2d
-xAxis frame =
-    Axis2d.with
-        { originPoint = originPoint frame
-        , direction = xDirection frame
-        }
+xAxis (Internal.Frame2d frame) =
+    Axis2d.withDirection frame.xDirection frame.originPoint
 
 
 {-| Get the Y axis of a given frame (the axis formed from the frame's origin
@@ -267,11 +264,8 @@ point and Y direction).
 
 -}
 yAxis : Frame2d -> Axis2d
-yAxis frame =
-    Axis2d.with
-        { originPoint = originPoint frame
-        , direction = yDirection frame
-        }
+yAxis (Internal.Frame2d frame) =
+    Axis2d.withDirection frame.yDirection frame.originPoint
 
 
 {-| Reverse the X direction of a frame, leaving its Y direction and origin point

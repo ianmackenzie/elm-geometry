@@ -174,12 +174,9 @@ fields.
 -}
 axis2d : Decoder Axis2d
 axis2d =
-    Decode.map2
-        (\originPoint direction ->
-            Axis2d.with { originPoint = originPoint, direction = direction }
-        )
-        (Decode.field "originPoint" point2d)
+    Decode.map2 Axis2d.withDirection
         (Decode.field "direction" direction2d)
+        (Decode.field "originPoint" point2d)
 
 
 {-| Decodes an `Axis3d` from an object with `originPoint` and `direction`
@@ -187,12 +184,9 @@ fields.
 -}
 axis3d : Decoder Axis3d
 axis3d =
-    Decode.map2
-        (\originPoint direction ->
-            Axis3d.with { originPoint = originPoint, direction = direction }
-        )
-        (Decode.field "originPoint" point3d)
+    Decode.map2 Axis3d.withDirection
         (Decode.field "direction" direction3d)
+        (Decode.field "originPoint" point3d)
 
 
 {-| Decodes a `Plane3d` from an object with `originPoint` and `normalDirection`

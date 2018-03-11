@@ -236,11 +236,8 @@ the axis' origin point and leaves the direction unchanged.
         Vector3d.fromComponents ( 3, 3, 3 )
 
     Axis3d.translateBy displacement exampleAxis
-    --> Axis3d.with
-    -->     { originPoint =
-    -->         Point3d.fromCoordinates ( 4, 5, 6 )
-    -->     , direction = Direction3d.y
-    -->     }
+    --> Axis3d.withDirection Direction3d.y
+    -->     (Point3d.fromCoordinates ( 4, 5, 6 ))
 
 -}
 translateBy : Vector3d -> Axis3d -> Axis3d

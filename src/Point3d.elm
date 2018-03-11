@@ -221,11 +221,8 @@ Positive and negative distances are interpreted relative to the direction of the
 axis:
 
     horizontalAxis =
-        Axis3d.with
-            { originPoint =
-                Point3d.fromCoordinates ( 1, 1, 1 )
-            , direction = Direction3d.negativeX
-            }
+        Axis3d.withDirection Direction3d.negativeX
+            (Point3d.fromCoordinates ( 1, 1, 1 ))
 
     Point3d.along horizontalAxis 3
     --> Point3d.fromCoordinates ( -2, 1, 1 )
@@ -512,11 +509,8 @@ positive if the projected point is ahead the axis' origin point and negative if
 it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
 
     axis =
-        Axis3d.with
-            { originPoint =
-                Point3d.fromCoordinates ( 1, 0, 0 )
-            , direction = Direction3d.x
-            }
+        Axis3d.withDirection Direction3d.x
+            (Point3d.fromCoordinates ( 1, 0, 0 ))
 
     point =
         Point3d.fromCoordinates ( 3, 3, 3 )
@@ -811,11 +805,8 @@ projectOnto plane point =
     --> Point3d.fromCoordinates ( 1, 0, 0 )
 
     verticalAxis =
-        Axis3d.with
-            { originPoint =
-                Point3d.fromCoordinates ( 0, 1, 2 )
-            , direction = Direction3d.z
-            }
+        Axis3d.withDirection Direction3d.z
+            (Point3d.fromCoordinates ( 0, 1, 2 ))
 
     Point3d.projectOntoAxis verticalAxis
     --> Point3d.fromCoordinates ( 0, 1, 3 )
