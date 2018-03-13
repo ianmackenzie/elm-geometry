@@ -225,19 +225,13 @@ will be the center point of the circle, and its normal direction will be the
 axial direction of the circle.
 
     Circle3d.plane exampleCircle
-    --> Plane3d.with
-    -->     { originPoint =
-    -->         Point3d.fromCoordinates ( 2, 0, 1 )
-    -->     , normalDirection = Direction3d.z
-    -->     }
+    --> Plane3d.withNormalDirection Direction3d.z
+    -->     (Point3d.fromCoordinates ( 2, 0, 1 ))
 
 -}
 plane : Circle3d -> Plane3d
 plane circle =
-    Plane3d.with
-        { originPoint = centerPoint circle
-        , normalDirection = axialDirection circle
-        }
+    Plane3d.through (centerPoint circle) (axialDirection circle)
 
 
 {-| Get the radius of a circle.

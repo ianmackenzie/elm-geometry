@@ -194,13 +194,7 @@ fields.
 -}
 plane3d : Decoder Plane3d
 plane3d =
-    Decode.map2
-        (\originPoint normalDirection ->
-            Plane3d.with
-                { originPoint = originPoint
-                , normalDirection = normalDirection
-                }
-        )
+    Decode.map2 Plane3d.through
         (Decode.field "originPoint" point3d)
         (Decode.field "normalDirection" direction3d)
 

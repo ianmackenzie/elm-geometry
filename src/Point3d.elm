@@ -574,11 +574,8 @@ positive if the point is 'above' the plane and negative if it is 'below', with
 'up' defined by the normal direction of the plane.
 
     plane =
-        Plane3d.with
-            { originPoint =
-                Point3d.fromCoordinates ( 1, 2, 3 )
-            , normalDirection = Direction3d.y
-            }
+        Plane3d.withNormalDirection Direction3d.y
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     point =
         Point3d.fromCoordinates ( 3, 3, 3 )

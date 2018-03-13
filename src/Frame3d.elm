@@ -97,20 +97,16 @@ direction of the resulting plane is given by the cross product of the two
 indicated basis directions (assuming a right-handed frame); for example,
 
     Frame3d.xyPlane Frame3d.xyz
-    --> Plane3d.with
-    -->     { originPoint = Point3d.origin
-    -->     , normalDirection = Direction3d.positiveZ
-    -->     }
+    --> Plane3d.through Point3d.origin
+    -->     Direction3d.positiveZ
 
 since the cross product of the X and Y basis directions of a frame is equal to
 its Z basis direction. And since reversing the order of arguments in a cross
 product reverses the sign of the result,
 
     Frame3d.yxPlane Frame3d.xyz
-    --> Plane3d.with
-    -->     { originPoint = Point3d.origin
-    -->     , normalDirection = Direction3d.negativeZ
-    -->     }
+    --> Plane3d.through Point3d.origin
+    -->     Direction3d.negativeZ
 
 @docs xyPlane, yxPlane, yzPlane, zyPlane, zxPlane, xzPlane
 
@@ -397,61 +393,43 @@ zAxis (Internal.Frame3d frame) =
 {-| Get a plane with normal direction equal to the frame's positive Z direction.
 -}
 xyPlane : Frame3d -> Plane3d
-xyPlane frame =
-    Plane3d.with
-        { originPoint = originPoint frame
-        , normalDirection = zDirection frame
-        }
+xyPlane (Internal.Frame3d frame) =
+    Plane3d.through frame.originPoint frame.zDirection
 
 
 {-| Get a plane with normal direction equal to the frame's negative Z direction.
 -}
 yxPlane : Frame3d -> Plane3d
-yxPlane frame =
-    Plane3d.with
-        { originPoint = originPoint frame
-        , normalDirection = Direction3d.flip (zDirection frame)
-        }
+yxPlane (Internal.Frame3d frame) =
+    Plane3d.through frame.originPoint (Direction3d.flip frame.zDirection)
 
 
 {-| Get a plane with normal direction equal to the frame's positive X direction.
 -}
 yzPlane : Frame3d -> Plane3d
-yzPlane frame =
-    Plane3d.with
-        { originPoint = originPoint frame
-        , normalDirection = xDirection frame
-        }
+yzPlane (Internal.Frame3d frame) =
+    Plane3d.through frame.originPoint frame.xDirection
 
 
 {-| Get a plane with normal direction equal to the frame's negative X direction.
 -}
 zyPlane : Frame3d -> Plane3d
-zyPlane frame =
-    Plane3d.with
-        { originPoint = originPoint frame
-        , normalDirection = Direction3d.flip (xDirection frame)
-        }
+zyPlane (Internal.Frame3d frame) =
+    Plane3d.through frame.originPoint (Direction3d.flip frame.xDirection)
 
 
 {-| Get a plane with normal direction equal to the frame's positive Y direction.
 -}
 zxPlane : Frame3d -> Plane3d
-zxPlane frame =
-    Plane3d.with
-        { originPoint = originPoint frame
-        , normalDirection = yDirection frame
-        }
+zxPlane (Internal.Frame3d frame) =
+    Plane3d.through frame.originPoint frame.yDirection
 
 
 {-| Get a plane with normal direction equal to the frame's negative Y direction.
 -}
 xzPlane : Frame3d -> Plane3d
-xzPlane frame =
-    Plane3d.with
-        { originPoint = originPoint frame
-        , normalDirection = Direction3d.flip (yDirection frame)
-        }
+xzPlane (Internal.Frame3d frame) =
+    Plane3d.through frame.originPoint (Direction3d.flip frame.yDirection)
 
 
 {-| Form a sketch plane from the given frame's X and Y axes.

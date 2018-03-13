@@ -23,9 +23,10 @@ module Plane3d
         , placeIn
         , relativeTo
         , rotateAround
+        , through
         , throughPoints
         , translateBy
-        , with
+        , withNormalDirection
         , xy
         , yz
         , zx
@@ -50,7 +51,7 @@ and normal direction and is useful for several operations including:
 
 # Constructors
 
-@docs with, throughPoints
+@docs through, withNormalDirection, throughPoints
 
 
 # Properties
@@ -85,69 +86,66 @@ type alias Plane3d =
 direction.
 
     Plane3d.xy
-    --> Plane3d.with
-    -->     { originPoint = Point3d.origin
-    -->     , normalDirection = Direction3d.z
-    -->     }
+    --> Plane3d.through Point3d.origin Direction3d.z
 
 -}
 xy : Plane3d
 xy =
-    with
-        { originPoint = Point3d.origin
-        , normalDirection = Direction3d.z
-        }
+    through Point3d.origin Direction3d.z
 
 
 {-| The global YZ plane, centered at the origin with a normal in the positive X
 direction.
 
     Plane3d.yz
-    --> Plane3d.with
-    -->     { originPoint = Point3d.origin
-    -->     , normalDirection = Direction3d.x
-    -->     }
+    --> Plane3d.through Point3d.origin Direction3d.x
 
 -}
 yz : Plane3d
 yz =
-    with
-        { originPoint = Point3d.origin
-        , normalDirection = Direction3d.x
-        }
+    through Point3d.origin Direction3d.x
 
 
 {-| The global ZX plane, centered at the origin with a normal in the positive Y
 direction.
 
     Plane3d.zx
-    --> Plane3d.with
-    -->     { originPoint = Point3d.origin
-    -->     , normalDirection = Direction3d.y
-    -->     }
+    --> through Point3d.origin Direction3d.y
 
 -}
 zx : Plane3d
 zx =
-    with
-        { originPoint = Point3d.origin
-        , normalDirection = Direction3d.y
+    through Point3d.origin Direction3d.y
+
+
+{-| Construct a plane through the given point, with the given normal direction.
+
+    xyPlane =
+        Plane3d.through Point3d.origin Direction3d.z
+
+-}
+through : Point3d -> Direction3d -> Plane3d
+through point normalDirection =
+    Internal.Plane3d
+        { originPoint = point
+        , normalDirection = normalDirection
         }
 
 
-{-| Construct a plane from its origin point and normal direction:
+{-| Construct a plane with the given normal direction, through the given point.
+Flipped version of `through`.
 
     plane =
-        Plane3d.with
-            { originPoint =
-                Point3d.fromCoordinates ( 2, 1, 3 )
-            , normalDirection = Direction3d.y
-            }
+        Plane3d.withNormalDirection Direction3d.y
+            (Point3d.fromCoordinates ( 2, 1, 3 ))
 
 -}
-with : { originPoint : Point3d, normalDirection : Direction3d } -> Plane3d
-with =
+withNormalDirection : Direction3d -> Point3d -> Plane3d
+withNormalDirection normalDirection originPoint =
     Internal.Plane3d
+        { normalDirection = normalDirection
+        , originPoint = originPoint
+        }
 
 
 {-| Attempt to construct a plane passing through the three given points. The
@@ -162,13 +160,11 @@ given points are collinear, returns `Nothing`.
         , Point3d.fromCoordinates ( 4, 1, 1 )
         )
     --> Just
-    -->     (Plane3d.with
-    -->         { originPoint =
-    -->             Point3d.fromCoordinates ( 2, 0, 0 )
-    -->         , normalDirection =
-    -->             Direction3d.fromAzimuthAndElevation
-    -->                 ( degrees -90, degrees 45 )
-    -->         }
+    -->     (Plane3d.through
+    -->         (Point3d.fromCoordinates ( 2, 0, 0 ))
+    -->         (Direction3d.fromAzimuthAndElevation
+    -->             ( degrees -90, degrees 45 )
+    -->         )
     -->     )
 
     Plane3d.throughPoints
@@ -191,14 +187,7 @@ throughPoints ( firstPoint, secondPoint, thirdPoint ) =
         crossProduct =
             Vector3d.crossProduct firstVector secondVector
     in
-    Vector3d.direction crossProduct
-        |> Maybe.map
-            (\normalDirection ->
-                with
-                    { originPoint = firstPoint
-                    , normalDirection = normalDirection
-                    }
-            )
+    Vector3d.direction crossProduct |> Maybe.map (through firstPoint)
 
 
 {-| Get the origin point of a plane.
@@ -237,18 +226,12 @@ normalAxis (Internal.Plane3d plane) =
 {-| Shift a plane in its own normal direction by the given (signed) distance.
 
     Plane3d.offsetBy 1.0 Plane3d.zx
-    --> Plane3d.with
-    -->     { originPoint =
-    -->         Point3d.fromCoordinates ( 0, 1, 0 )
-    -->     , normalDirection = Direction3d.y
-    -->     }
+    --> Plane3d.withNormalDirection Direction3d.y
+    -->     (Point3d.fromCoordinates ( 0, 1, 0 ))
 
     Plane3d.offsetBy -2.0 Plane3d.xy
-    --> Plane3d.with
-    -->     { originPoint =
-    -->         Point3d.fromCoordinates ( 0, 0, -2 )
-    -->     , normalDirection = Direction3d.z
-    -->     }
+    --> Plane3d.withNormalDirection Direction3d.z
+    -->     (Point3d.fromCoordinates ( 0, 0, -2 ))
 
 -}
 offsetBy : Float -> Plane3d -> Plane3d
@@ -263,18 +246,13 @@ offsetBy distance plane =
 {-| Reverse a plane's normal direction while leaving its origin point unchanged.
 
     Plane3d.flip Plane3d.xy
-    --> Plane3d.with
-    -->     { originPoint = Point3d.origin
-    -->     , normalDirection = Direction3d.negativeZ
-    -->     }
+    --> Plane3d.through Point3d.origin
+    -->     Direction3d.negativeZ
 
 -}
 flip : Plane3d -> Plane3d
-flip plane =
-    with
-        { originPoint = originPoint plane
-        , normalDirection = Direction3d.flip (normalDirection plane)
-        }
+flip (Internal.Plane3d plane) =
+    through plane.originPoint (Direction3d.flip plane.normalDirection)
 
 
 {-| Rotate a plane around an axis by a given angle.
@@ -292,40 +270,30 @@ rotateAround axis angle =
         rotateDirection =
             Direction3d.rotateAround axis angle
     in
-    \plane ->
-        with
-            { originPoint = rotatePoint (originPoint plane)
-            , normalDirection = rotateDirection (normalDirection plane)
-            }
+    \(Internal.Plane3d plane) ->
+        through (rotatePoint plane.originPoint)
+            (rotateDirection plane.normalDirection)
 
 
 {-| Translate a plane by a given displacement. Applies the given displacement to
 the plane's origin point and leaves its normal direction unchanged.
 
     plane =
-        Plane3d.with
-            { originPoint =
-                Point3d.fromCoordinates ( 1, 1, 1 )
-            , normalDirection = Direction3d.z
-            }
+        Plane3d.withNormalDirection Direction3d.z
+            (Point3d.fromCoordinates ( 1, 1, 1 ))
 
     displacement =
         Vector3d.fromComponents ( 1, 2, 3 )
 
     Plane3d.translateBy displacement plane
-    --> Plane3d
-    -->     { originPoint =
-    -->         Point3d.fromCoordinates ( 2, 3, 4 )
-    -->     , normalDirection = Direction3d.z
-    -->     }
+    --> Plane3d.withNormalDirection Direction3d.z
+    -->     (Point3d.fromCoordinates ( 2, 3, 4 ))
 
 -}
 translateBy : Vector3d -> Plane3d -> Plane3d
-translateBy vector plane =
-    with
-        { originPoint = Point3d.translateBy vector (originPoint plane)
-        , normalDirection = normalDirection plane
-        }
+translateBy vector (Internal.Plane3d plane) =
+    withNormalDirection plane.normalDirection
+        (Point3d.translateBy vector plane.originPoint)
 
 
 {-| Move a plane so that it has the given origin point but unchanged normal
@@ -335,52 +303,30 @@ direction.
         Point3d.fromCoordinates ( 1, 2, 3 )
 
     Plane3d.moveTo newOrigin Plane3d.xy
-    --> Plane3d
-    -->     { originPoint = newOrigin
-    -->     , normalDirection = Direction3d.z
-    -->     }
+    --> Plane3d.through newOrigin Direction3d.z
 
 -}
 moveTo : Point3d -> Plane3d -> Plane3d
-moveTo newOrigin plane =
-    with
-        { originPoint = newOrigin
-        , normalDirection = normalDirection plane
-        }
+moveTo newOrigin (Internal.Plane3d plane) =
+    through newOrigin plane.normalDirection
 
 
 {-| Mirror one plane across another. The plane to mirror across is given first
 and the plane to mirror is given second.
 
     plane =
-        Plane3d.with
-            { originPoint =
-                Point3d.fromCoordinates ( 1, 2, 3 )
-            , normalDirection = Direction3d.z
-            }
+        Plane3d.withNormalDirection Direction3d.z
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     Plane3d.mirrorAcross Plane3d.xy plane
-    --> Plane3d.with
-    -->     { originPoint =
-    -->         Point3d.fromCoordinates ( 1, 2, -3 )
-    -->     , normalDirection = Direction3d.negativeZ
-    -->     }
+    --> Plane3d.withNormalDirection Direction3d.negativeZ
+    -->     (Point3d.fromCoordinates ( 1, 2, -3 ))
 
 -}
 mirrorAcross : Plane3d -> Plane3d -> Plane3d
-mirrorAcross otherPlane =
-    let
-        mirrorPoint =
-            Point3d.mirrorAcross otherPlane
-
-        mirrorDirection =
-            Direction3d.mirrorAcross otherPlane
-    in
-    \plane ->
-        with
-            { originPoint = mirrorPoint (originPoint plane)
-            , normalDirection = mirrorDirection (normalDirection plane)
-            }
+mirrorAcross otherPlane (Internal.Plane3d plane) =
+    through (Point3d.mirrorAcross otherPlane plane.originPoint)
+        (Direction3d.mirrorAcross otherPlane plane.normalDirection)
 
 
 {-| Take a plane defined in global coordinates, and return it expressed in local
@@ -391,34 +337,18 @@ coordinates relative to a given reference frame.
             (Point3d.fromCoordinates ( 1, 1, 1 ))
 
     plane =
-        Plane3d.with
-            { originPoint =
-                Point3d.fromCoordinates ( 0, 0, 2 )
-            , normalDirection = Direction3d.z
-            }
+        Plane3d.withNormalDirection Direction3d.z
+            (Point3d.fromCoordinates ( 0, 0, 2 ))
 
     Plane3d.relativeTo referenceFrame plane
-    --> Plane3d.with
-    -->     { originPoint =
-    -->         Point3d.fromCoordinates ( -1, -1, 1 )
-    -->     , normalDirection = Direction3d.z
-    -->     }
+    --> Plane3d.withNormalDirection Direction3d.z
+    -->     (Point3d.fromCoordinates ( -1, -1, 1 ))
 
 -}
 relativeTo : Frame3d -> Plane3d -> Plane3d
-relativeTo frame =
-    let
-        relativePoint =
-            Point3d.relativeTo frame
-
-        relativeDirection =
-            Direction3d.relativeTo frame
-    in
-    \plane ->
-        with
-            { originPoint = relativePoint (originPoint plane)
-            , normalDirection = relativeDirection (normalDirection plane)
-            }
+relativeTo frame (Internal.Plane3d plane) =
+    through (Point3d.relativeTo frame plane.originPoint)
+        (Direction3d.relativeTo frame plane.normalDirection)
 
 
 {-| Take a plane defined in local coordinates relative to a given reference
@@ -429,31 +359,15 @@ frame, and return that plane expressed in global coordinates.
             (Point3d.fromCoordinates ( 1, 1, 1 ))
 
     plane =
-        Plane3d.with
-            { originPoint =
-                Point3d.fromCoordinates ( 1, 2, 3 )
-            , normalDirection = Direction3d.z
-            }
+        Plane3d.withNormalDirection Direction3d.z
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     Plane3d.placeIn referenceFrame plane
-    --> Plane3d.with
-    -->     { originPoint =
-    -->         Point3d.fromCoordinates ( 2, 3, 4 )
-    -->     , normalDirection = Direction3d.z
-    -->     }
+    --> Plane3d.withNormalDirection Direction3d.z
+    -->     (Point3d.fromCoordinates ( 2, 3, 4 ))
 
 -}
 placeIn : Frame3d -> Plane3d -> Plane3d
-placeIn frame =
-    let
-        placePoint =
-            Point3d.placeIn frame
-
-        placeDirection =
-            Direction3d.placeIn frame
-    in
-    \plane ->
-        with
-            { originPoint = placePoint (originPoint plane)
-            , normalDirection = placeDirection (normalDirection plane)
-            }
+placeIn frame (Internal.Plane3d plane) =
+    through (Point3d.placeIn frame plane.originPoint)
+        (Direction3d.placeIn frame plane.normalDirection)

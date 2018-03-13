@@ -157,14 +157,7 @@ axis3d =
 
 plane3d : Fuzzer Plane3d
 plane3d =
-    let
-        plane originPoint normalDirection =
-            Plane3d.with
-                { originPoint = originPoint
-                , normalDirection = normalDirection
-                }
-    in
-    Fuzz.map2 plane point3d direction3d
+    Fuzz.map2 Plane3d.through point3d direction3d
 
 
 frame2d : Fuzzer Frame2d

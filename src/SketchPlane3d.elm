@@ -540,10 +540,7 @@ normal direction.
 -}
 toPlane : SketchPlane3d -> Plane3d
 toPlane sketchPlane =
-    Plane3d.with
-        { originPoint = originPoint sketchPlane
-        , normalDirection = normalDirection sketchPlane
-        }
+    Plane3d.through (originPoint sketchPlane) (normalDirection sketchPlane)
 
 
 {-| Shift a sketch plane in its own normal direction by the given (signed)
