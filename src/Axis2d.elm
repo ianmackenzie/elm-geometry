@@ -21,6 +21,7 @@ module Axis2d
         , placeIn
         , relativeTo
         , rotateAround
+        , through
         , translateBy
         , withDirection
         , x
@@ -46,7 +47,7 @@ an origin point and direction. Axes have several uses, such as:
 
 # Constructors
 
-@docs withDirection
+@docs through, withDirection
 
 
 # Properties
@@ -82,32 +83,39 @@ type alias Axis2d =
 {-| The global X axis.
 
     Axis2d.x
-    --> Axis2d.withDirection Direction2d.x Point2d.origin
+    --> Axis2d.through Point2d.origin Direction2d.x
 
 -}
 x : Axis2d
 x =
-    withDirection Direction2d.x Point2d.origin
+    through Point2d.origin Direction2d.x
 
 
 {-| The global Y axis.
 
     Axis2d.y
-    --> Axis2d.withDirection Direction2d.y Point2d.origin
+    --> Axis2d.through Point2d.origin Direction2d.y
 
 -}
 y : Axis2d
 y =
-    withDirection Direction2d.y Point2d.origin
+    through Point2d.origin Direction2d.y
 
 
-{-| Construct an axis with the given direction having the given origin point:
+{-| Construct an axis through the given origin point with the given direction.
 
     exampleAxis =
-        Axis2d.withDirection
+        Axis2d.through (Point2d.fromCoordinates ( 1, 3 ))
             (Direction2d.fromAngle (degrees 30))
-            (Point2d.fromCoordinates ( 1, 3 ))
 
+-}
+through : Point2d -> Direction2d -> Axis2d
+through point direction =
+    Internal.Axis2d { originPoint = point, direction = direction }
+
+
+{-| Construct an axis with the given direction, through the given origin point.
+Flipped version of `through`.
 -}
 withDirection : Direction2d -> Point2d -> Axis2d
 withDirection direction originPoint =
@@ -139,14 +147,13 @@ direction (Internal.Axis2d axis) =
 {-| Reverse the direction of an axis while keeping the same origin point.
 
     Axis2d.flip exampleAxis
-    --> Axis2d.withDirection
+    --> Axis2d.through (Point2d.fromCoordinates ( 1, 3 ))
     -->     (Direction2d.fromAngle (degrees -150))
-    -->     (Point2d.fromCoordinates ( 1, 3 ))
 
 -}
 flip : Axis2d -> Axis2d
 flip (Internal.Axis2d axis) =
-    withDirection (Direction2d.flip axis.direction) axis.originPoint
+    through axis.originPoint (Direction2d.flip axis.direction)
 
 
 {-| Move an axis so that it has the given origin point but unchanged direction.
@@ -155,14 +162,13 @@ flip (Internal.Axis2d axis) =
         Point2d.fromCoordinates ( 4, 5 )
 
     Axis2d.moveTo newOrigin exampleAxis
-    --> Axis2d.withDirection
+    --> Axis2d.through (Point2d.fromCoordinates ( 4, 5 ))
     -->     (Direction2d.fromAngle (degrees 30))
-    -->     (Point2d.fromCoordinates ( 4, 5 ))
 
 -}
 moveTo : Point2d -> Axis2d -> Axis2d
 moveTo newOrigin (Internal.Axis2d axis) =
-    withDirection axis.direction newOrigin
+    through newOrigin axis.direction
 
 
 {-| Rotate an axis around a given center point by a given angle. Rotates the
@@ -171,9 +177,8 @@ direction by the given angle.
 
     exampleAxis
         |> Axis2d.rotateAround Point2d.origin (degrees 90)
-    --> Axis2d.withDirection
+    --> Axis2d.through (Point2d.fromCoordinates ( -3, 1 ))
     -->     (Direction2d.fromAngle (degrees 120))
-    -->     (Point2d.fromCoordinates ( -3, 1 ))
 
 -}
 rotateAround : Point2d -> Float -> Axis2d -> Axis2d
@@ -186,8 +191,7 @@ rotateAround centerPoint angle =
             Direction2d.rotateBy angle
     in
     \(Internal.Axis2d axis) ->
-        withDirection (rotateDirection axis.direction)
-            (rotatePoint axis.originPoint)
+        through (rotatePoint axis.originPoint) (rotateDirection axis.direction)
 
 
 {-| Translate an axis by a given displacement. Applies the given displacement to
@@ -197,29 +201,27 @@ the axis' origin point and leaves the direction unchanged.
         Vector2d.fromComponents ( 2, 3 )
 
     Axis2d.translateBy displacement exampleAxis
-    --> Axis2d.withDirection
+    --> Axis2d.through (Point2d.fromCoordinates ( 3, 6 ))
     -->     (Direction2d.fromAngle (degrees 30))
-    -->     (Point2d.fromCoordinates ( 3, 6 ))
 
 -}
 translateBy : Vector2d -> Axis2d -> Axis2d
 translateBy vector (Internal.Axis2d axis) =
-    withDirection axis.direction (Point2d.translateBy vector axis.originPoint)
+    through (Point2d.translateBy vector axis.originPoint) axis.direction
 
 
 {-| Mirror one axis across another. The axis to mirror across is given first and
 the axis to mirror is given second.
 
     Axis2d.mirrorAcross Axis2d.x exampleAxis
-    --> Axis2d.withDirection
+    --> Axis2d.through (Point2d.fromCoordinates ( 1, -3 ))
     -->     (Direction2d.fromAngle (degrees -30))
-    -->     (Point2d.fromCoordinates ( 1, -3 ))
 
 -}
 mirrorAcross : Axis2d -> Axis2d -> Axis2d
 mirrorAcross otherAxis (Internal.Axis2d axis) =
-    withDirection (Direction2d.mirrorAcross otherAxis axis.direction)
-        (Point2d.mirrorAcross otherAxis axis.originPoint)
+    through (Point2d.mirrorAcross otherAxis axis.originPoint)
+        (Direction2d.mirrorAcross otherAxis axis.direction)
 
 
 {-| Take an axis defined in global coordinates, and return it expressed in local
@@ -229,15 +231,14 @@ coordinates relative to a given reference frame.
         Frame2d.atPoint (Point2d.fromCoordinates ( 2, 3 ))
 
     Axis2d.relativeTo frame exampleAxis
-    --> Axis2d.withDirection
+    --> Axis2d.through (Point2d.fromCoordinates ( -1, 0 ))
     -->     (Direction2d.fromAngle (degrees 30))
-    -->     (Point2d.fromCoordinates ( -1, 0 ))
 
 -}
 relativeTo : Frame2d -> Axis2d -> Axis2d
 relativeTo frame (Internal.Axis2d axis) =
-    withDirection (Direction2d.relativeTo frame axis.direction)
-        (Point2d.relativeTo frame axis.originPoint)
+    through (Point2d.relativeTo frame axis.originPoint)
+        (Direction2d.relativeTo frame axis.direction)
 
 
 {-| Take an axis defined in local coordinates relative to a given reference
@@ -247,12 +248,11 @@ frame, and return that axis expressed in global coordinates.
         Frame2d.atPoint (Point2d.fromCoordinates ( 2, 3 ))
 
     Axis2d.placeIn frame exampleAxis
-    --> Axis2d.withDirection
+    --> Axis2d.through (Point2d.fromCoordinates ( 3, 6 ))
     -->     (Direction2d.fromAngle (degrees 30))
-    -->     (Point2d.fromCoordinates ( 3, 6 ))
 
 -}
 placeIn : Frame2d -> Axis2d -> Axis2d
 placeIn frame (Internal.Axis2d axis) =
-    withDirection (Direction2d.placeIn frame axis.direction)
-        (Point2d.placeIn frame axis.originPoint)
+    through (Point2d.placeIn frame axis.originPoint)
+        (Direction2d.placeIn frame axis.direction)
