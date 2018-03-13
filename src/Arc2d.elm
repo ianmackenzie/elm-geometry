@@ -401,7 +401,7 @@ withRadius radius sweptAngle startPoint endPoint =
             LineSegment2d.squaredLength chord / 4
     in
     if squaredRadius >= squaredHalfLength then
-        LineSegment2d.normalDirection chord
+        LineSegment2d.perpendicularDirection chord
             |> Maybe.map
                 (\offsetDirection ->
                     let

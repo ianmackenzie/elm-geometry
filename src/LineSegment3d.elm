@@ -25,8 +25,8 @@ module LineSegment3d
         , mapEndpoints
         , midpoint
         , mirrorAcross
-        , normalDirection
         , on
+        , perpendicularDirection
         , placeIn
         , projectInto
         , projectOnto
@@ -60,7 +60,7 @@ functionality such as:
 
 # Properties
 
-@docs startPoint, endPoint, endpoints, midpoint, length, squaredLength, direction, normalDirection, vector, boundingBox
+@docs startPoint, endPoint, endpoints, midpoint, length, squaredLength, direction, perpendicularDirection, vector, boundingBox
 
 
 # Interpolation
@@ -302,15 +302,15 @@ direction =
 {-| Get an arbitrary direction perpendicular to a line segment. If the line
 segment has zero length, returns `Nothing`.
 
-    LineSegment3d.normalDirection exampleLineSegment
+    LineSegment3d.perpendicularDirection exampleLineSegment
     --> Just
     -->    (Direction3d.fromAzimuthAndElevation
     -->        ( degrees -90, degrees 45 )
     -->    )
 
 -}
-normalDirection : LineSegment3d -> Maybe Direction3d
-normalDirection =
+perpendicularDirection : LineSegment3d -> Maybe Direction3d
+perpendicularDirection =
     vector >> Vector3d.perpendicularTo >> Vector3d.direction
 
 

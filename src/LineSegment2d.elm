@@ -26,7 +26,7 @@ module LineSegment2d
         , mapEndpoints
         , midpoint
         , mirrorAcross
-        , normalDirection
+        , perpendicularDirection
         , placeIn
         , projectOnto
         , relativeTo
@@ -59,7 +59,7 @@ functionality such as:
 
 # Properties
 
-@docs startPoint, endPoint, endpoints, midpoint, length, squaredLength, direction, normalDirection, vector, boundingBox
+@docs startPoint, endPoint, endpoints, midpoint, length, squaredLength, direction, perpendicularDirection, vector, boundingBox
 
 
 # Interpolation
@@ -274,12 +274,12 @@ direction =
 {-| Get the direction perpendicular to a line segment, pointing to the left. If
 the line segment has zero length, returns `Nothing`.
 
-    LineSegment2d.normalDirection exampleLineSegment
+    LineSegment2d.perpendicularDirection exampleLineSegment
     --> Just (Direction2d.fromAngle (degrees 135))
 
 -}
-normalDirection : LineSegment2d -> Maybe Direction2d
-normalDirection =
+perpendicularDirection : LineSegment2d -> Maybe Direction2d
+perpendicularDirection =
     vector >> Vector2d.perpendicularTo >> Vector2d.direction
 
 
