@@ -38,7 +38,7 @@ an origin point and direction. Axes have several uses, such as:
 
   - Rotating around the axis
   - Projecting onto the axis
-  - Measuring distance along the axis
+  - Measuring distance along the axis from the origin point
 
 @docs Axis3d
 
