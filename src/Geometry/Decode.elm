@@ -174,9 +174,9 @@ fields.
 -}
 axis2d : Decoder Axis2d
 axis2d =
-    Decode.map2 Axis2d.withDirection
-        (Decode.field "direction" direction2d)
+    Decode.map2 Axis2d.through
         (Decode.field "originPoint" point2d)
+        (Decode.field "direction" direction2d)
 
 
 {-| Decodes an `Axis3d` from an object with `originPoint` and `direction`

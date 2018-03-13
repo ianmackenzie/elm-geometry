@@ -37,8 +37,7 @@ xExample =
     Test.test "Axis2d.x example" <|
         \() ->
             Axis2d.x
-                |> Expect.axis2d
-                    (Axis2d.withDirection Direction2d.x Point2d.origin)
+                |> Expect.axis2d (Axis2d.through Point2d.origin Direction2d.x)
 
 
 yExample : Test
@@ -46,8 +45,7 @@ yExample =
     Test.test "Axis2d.y example" <|
         \() ->
             Axis2d.y
-                |> Expect.axis2d
-                    (Axis2d.withDirection Direction2d.y Point2d.origin)
+                |> Expect.axis2d (Axis2d.through Point2d.origin Direction2d.y)
 
 
 originPointExample : Test
@@ -70,7 +68,7 @@ flipExample =
         \() ->
             Axis2d.flip Axis2d.x
                 |> Expect.axis2d
-                    (Axis2d.withDirection Direction2d.negativeX Point2d.origin)
+                    (Axis2d.through Point2d.origin Direction2d.negativeX)
 
 
 moveToExample : Test
@@ -121,15 +119,15 @@ mirrorAcrossExample =
         \() ->
             let
                 axis =
-                    Axis2d.withDirection
-                        (Direction2d.fromAngle (degrees 30))
+                    Axis2d.through
                         (Point2d.fromCoordinates ( 1, 2 ))
+                        (Direction2d.fromAngle (degrees 30))
             in
             Axis2d.mirrorAcross Axis2d.x axis
                 |> Expect.axis2d
-                    (Axis2d.withDirection
-                        (Direction2d.fromAngle (degrees -30))
+                    (Axis2d.through
                         (Point2d.fromCoordinates ( 1, -2 ))
+                        (Direction2d.fromAngle (degrees -30))
                     )
 
 

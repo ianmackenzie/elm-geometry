@@ -106,12 +106,12 @@ intersectionWorksProperly =
                                     LineSegment2d.startPoint secondSegment
 
                                 firstAxis =
-                                    Axis2d.withDirection firstDirection
-                                        firstStartPoint
+                                    Axis2d.through firstStartPoint
+                                        firstDirection
 
                                 secondAxis =
-                                    Axis2d.withDirection secondDirection
-                                        secondStartPoint
+                                    Axis2d.through secondStartPoint
+                                        secondDirection
 
                                 oneOneSideOf axis segment =
                                     let

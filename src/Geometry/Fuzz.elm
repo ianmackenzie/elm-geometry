@@ -147,7 +147,7 @@ point3d =
 
 axis2d : Fuzzer Axis2d
 axis2d =
-    Fuzz.map2 Axis2d.withDirection direction2d point2d
+    Fuzz.map2 Axis2d.through point2d direction2d
 
 
 axis3d : Fuzzer Axis3d

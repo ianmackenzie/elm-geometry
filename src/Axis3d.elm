@@ -133,9 +133,8 @@ withDirection direction originPoint =
 specified in XY coordinates _within_ the sketch plane.
 
     axis2d =
-        Axis2d.withDirection
+        Axis2d.through (Point2d.fromCoordinates ( 1, 3 ))
             (Direction2d.fromAngle (degrees 30))
-            (Point2d.fromCoordinates ( 1, 3 ))
 
     Axis3d.on SketchPlane3d.xy axis2d
     --> Axis3d.withDirection
@@ -348,11 +347,9 @@ plane; if it is perpendicular, `Nothing` is returned.
 -}
 projectInto : SketchPlane3d -> Axis3d -> Maybe Axis2d
 projectInto sketchPlane (Internal.Axis3d axis) =
-    case Direction3d.projectInto sketchPlane axis.direction of
-        Just projectedDirection ->
-            Just <|
-                Axis2d.withDirection projectedDirection
-                    (Point3d.projectInto sketchPlane axis.originPoint)
-
-        Nothing ->
-            Nothing
+    let
+        projectedOrigin =
+            Point3d.projectInto sketchPlane axis.originPoint
+    in
+    Direction3d.projectInto sketchPlane axis.direction
+        |> Maybe.map (Axis2d.through projectedOrigin)

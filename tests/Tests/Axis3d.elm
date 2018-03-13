@@ -74,9 +74,9 @@ onExamples : Test
 onExamples =
     let
         axis2d =
-            Axis2d.withDirection
-                (Direction2d.fromAngle (degrees 30))
+            Axis2d.through
                 (Point2d.fromCoordinates ( 1, 3 ))
+                (Direction2d.fromAngle (degrees 30))
     in
     Test.describe "Axis3d.on examples"
         [ Test.test "First example" <|

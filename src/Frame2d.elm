@@ -253,7 +253,7 @@ point and X direction).
 -}
 xAxis : Frame2d -> Axis2d
 xAxis (Internal.Frame2d frame) =
-    Axis2d.withDirection frame.xDirection frame.originPoint
+    Axis2d.through frame.originPoint frame.xDirection
 
 
 {-| Get the Y axis of a given frame (the axis formed from the frame's origin
@@ -265,7 +265,7 @@ point and Y direction).
 -}
 yAxis : Frame2d -> Axis2d
 yAxis (Internal.Frame2d frame) =
-    Axis2d.withDirection frame.yDirection frame.originPoint
+    Axis2d.through frame.originPoint frame.yDirection
 
 
 {-| Reverse the X direction of a frame, leaving its Y direction and origin point

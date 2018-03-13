@@ -563,9 +563,9 @@ rotateBy angle direction =
 the axis affects the result, since directions are position-independent.
 
     slopedAxis =
-        Axis2d.withDirection
-            (Direction2d.fromAngle (degrees 45))
+        Axis2d.through
             (Point2d.fromCoordinates ( 100, 200 ))
+            (Direction2d.fromAngle (degrees 45))
 
     Direction2d.mirrorAcross slopedAxis Direction2d.x
     --> Direction2d.y
