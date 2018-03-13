@@ -304,9 +304,9 @@ segment has zero length, returns `Nothing`.
 
     LineSegment3d.perpendicularDirection exampleLineSegment
     --> Just
-    -->    (Direction3d.fromAzimuthAndElevation
-    -->        ( degrees -90, degrees 45 )
-    -->    )
+    -->     (Direction3d.fromAzimuthAndElevation
+    -->         ( degrees -90, degrees 45 )
+    -->     )
 
 -}
 perpendicularDirection : LineSegment3d -> Maybe Direction3d
