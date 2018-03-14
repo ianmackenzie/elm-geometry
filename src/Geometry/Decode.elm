@@ -184,9 +184,9 @@ fields.
 -}
 axis3d : Decoder Axis3d
 axis3d =
-    Decode.map2 Axis3d.withDirection
-        (Decode.field "direction" direction3d)
+    Decode.map2 Axis3d.through
         (Decode.field "originPoint" point3d)
+        (Decode.field "direction" direction3d)
 
 
 {-| Decodes a `Plane3d` from an object with `originPoint` and `normalDirection`

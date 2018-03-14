@@ -220,7 +220,7 @@ normalDirection (Internal.Plane3d plane) =
 -}
 normalAxis : Plane3d -> Axis3d
 normalAxis (Internal.Plane3d plane) =
-    Axis3d.withDirection plane.normalDirection plane.originPoint
+    Axis3d.through plane.originPoint plane.normalDirection
 
 
 {-| Shift a plane in its own normal direction by the given (signed) distance.

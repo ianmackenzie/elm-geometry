@@ -498,7 +498,7 @@ corresponds to a distance along this axis in 3D.
 -}
 xAxis : SketchPlane3d -> Axis3d
 xAxis (Internal.SketchPlane3d sketchPlane) =
-    Axis3d.withDirection sketchPlane.xDirection sketchPlane.originPoint
+    Axis3d.through sketchPlane.originPoint sketchPlane.xDirection
 
 
 {-| Get the Y axis of a sketch plane. A 2D Y coordinate within the sketch plane
@@ -510,7 +510,7 @@ corresponds to a distance along this axis in 3D.
 -}
 yAxis : SketchPlane3d -> Axis3d
 yAxis (Internal.SketchPlane3d sketchPlane) =
-    Axis3d.withDirection sketchPlane.yDirection sketchPlane.originPoint
+    Axis3d.through sketchPlane.originPoint sketchPlane.yDirection
 
 
 {-| Get the normal axis to a sketch plane (the axis formed from the sketch
@@ -525,7 +525,7 @@ plane's origin point and normal direction).
 -}
 normalAxis : SketchPlane3d -> Axis3d
 normalAxis sketchPlane =
-    Axis3d.withDirection (normalDirection sketchPlane) (originPoint sketchPlane)
+    Axis3d.through (originPoint sketchPlane) (normalDirection sketchPlane)
 
 
 {-| Convert a `SketchPlane3d` to a `Plane3d` with the same origin point and

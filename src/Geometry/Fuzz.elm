@@ -152,7 +152,7 @@ axis2d =
 
 axis3d : Fuzzer Axis3d
 axis3d =
-    Fuzz.map2 Axis3d.withDirection direction3d point3d
+    Fuzz.map2 Axis3d.through point3d direction3d
 
 
 plane3d : Fuzzer Plane3d

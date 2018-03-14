@@ -255,7 +255,7 @@ to the center point of the arc.
 -}
 axis : Arc3d -> Axis3d
 axis arc =
-    Axis3d.withDirection (axialDirection arc) (centerPoint arc)
+    Axis3d.through (centerPoint arc) (axialDirection arc)
 
 
 {-| Get the center point of an arc.
@@ -673,11 +673,11 @@ mirrorAcross plane =
 
     axis : Axis3d
     axis =
-        Axis3d.withDirection
+        Axis3d.through
+            (Point3d.fromCoordinates ( 1, 2, 3 ))
             (Direction3d.fromAzimuthAndElevation
                 ( 0, degrees 45 )
             )
-            (Point3d.fromCoordinates ( 1, 2, 3 ))
 
     arc : Arc3d
     arc =
