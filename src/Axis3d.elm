@@ -24,6 +24,7 @@ module Axis3d
         , projectOnto
         , relativeTo
         , rotateAround
+        , through
         , translateBy
         , withDirection
         , x
@@ -50,7 +51,7 @@ an origin point and direction. Axes have several uses, such as:
 
 # Constructors
 
-@docs withDirection, on
+@docs through, withDirection, on
 
 
 # Properties
@@ -87,42 +88,51 @@ type alias Axis3d =
 {-| The global X axis.
 
     Axis3d.x
-    --> Axis3d.withDirection Direction3d.x Point3d.origin
+    --> Axis3d.through Point3d.origin Direction3d.x
 
 -}
 x : Axis3d
 x =
-    withDirection Direction3d.x Point3d.origin
+    through Point3d.origin Direction3d.x
 
 
 {-| The global Y axis.
 
     Axis3d.y
-    --> Axis3d.withDiretion Direction3d.y Point3d.origin
+    --> Axis3d.through Point3d.origin Direction3d.y
 
 -}
 y : Axis3d
 y =
-    withDirection Direction3d.y Point3d.origin
+    through Point3d.origin Direction3d.y
 
 
 {-| The global Z axis.
 
     Axis3d.z
-    --> Axis3d.withDirection Direction3d.z Point3d.origin
+    --> Axis3d.through Point3d.origin Direction3d.z
 
 -}
 z : Axis3d
 z =
-    withDirection Direction3d.z Point3d.origin
+    through Point3d.origin Direction3d.z
 
 
-{-| Construct an axis with the given direction having the given origin point:
+{-| Construct an axis through the given point, with the given direction.
 
     exampleAxis =
-        Axis3d.withDirection Direction3d.y
+        Axis3d.through
             (Point3d.fromCoordinates ( 1, 2, 3 ))
+            Direction3d.y
 
+-}
+through : Point3d -> Direction3d -> Axis3d
+through point direction =
+    Internal.Axis3d { originPoint = point, direction = direction }
+
+
+{-| Construct an axis with the given directoin, through the given point. Flipped
+version of `through`.
 -}
 withDirection : Direction3d -> Point3d -> Axis3d
 withDirection direction originPoint =
@@ -137,24 +147,24 @@ specified in XY coordinates _within_ the sketch plane.
             (Direction2d.fromAngle (degrees 30))
 
     Axis3d.on SketchPlane3d.xy axis2d
-    --> Axis3d.withDirection
+    --> Axis3d.through
+    -->     (Point3d.fromCoordinates ( 1, 3, 0 ))
     -->     (Direction3d.fromAzimuthAndElevation
     -->         ( degrees 30, 0 )
     -->     )
-    -->     (Point3d.fromCoordinates ( 1, 3, 0 ))
 
     Axis3d.on SketchPlane3d.zx axis2d
-    --> Axis3d.withDirection
+    --> Axis3d.through
+    -->     (Point3d.fromCoordinates ( 3, 0, 1 ))
     -->     (Direction3d.fromAzimuthAndElevation
     -->         ( 0, degrees 60 )
     -->     )
-    -->     (Point3d.fromCoordinates ( 3, 0, 1 ))
 
 -}
 on : SketchPlane3d -> Axis2d -> Axis3d
 on sketchPlane (Internal.Axis2d axis2d) =
-    withDirection (Direction3d.on sketchPlane axis2d.direction)
-        (Point3d.on sketchPlane axis2d.originPoint)
+    through (Point3d.on sketchPlane axis2d.originPoint)
+        (Direction3d.on sketchPlane axis2d.direction)
 
 
 {-| Get the origin point of an axis.
@@ -188,7 +198,7 @@ direction (Internal.Axis3d axis) =
 -}
 flip : Axis3d -> Axis3d
 flip (Internal.Axis3d axis) =
-    withDirection (Direction3d.flip axis.direction) axis.originPoint
+    through axis.originPoint (Direction3d.flip axis.direction)
 
 
 {-| Move an axis so that it has the given origin point but unchanged direction.
@@ -203,7 +213,7 @@ flip (Internal.Axis3d axis) =
 -}
 moveTo : Point3d -> Axis3d -> Axis3d
 moveTo newOrigin (Internal.Axis3d axis) =
-    withDirection axis.direction newOrigin
+    through newOrigin axis.direction
 
 
 {-| Rotate an axis around another axis by a given angle. The axis to rotate
@@ -224,8 +234,7 @@ rotateAround otherAxis angle =
             Direction3d.rotateAround otherAxis angle
     in
     \(Internal.Axis3d axis) ->
-        withDirection (rotateDirection axis.direction)
-            (rotatePoint axis.originPoint)
+        through (rotatePoint axis.originPoint) (rotateDirection axis.direction)
 
 
 {-| Translate an axis by a given displacement. Applies the given displacement to
@@ -241,7 +250,7 @@ the axis' origin point and leaves the direction unchanged.
 -}
 translateBy : Vector3d -> Axis3d -> Axis3d
 translateBy vector (Internal.Axis3d axis) =
-    withDirection axis.direction (Point3d.translateBy vector axis.originPoint)
+    through (Point3d.translateBy vector axis.originPoint) axis.direction
 
 
 {-| Mirror an axis across a plane.
@@ -253,8 +262,8 @@ translateBy vector (Internal.Axis3d axis) =
 -}
 mirrorAcross : Plane3d -> Axis3d -> Axis3d
 mirrorAcross plane (Internal.Axis3d axis) =
-    withDirection (Direction3d.mirrorAcross plane axis.direction)
-        (Point3d.mirrorAcross plane axis.originPoint)
+    through (Point3d.mirrorAcross plane axis.originPoint)
+        (Direction3d.mirrorAcross plane axis.direction)
 
 
 {-| Find the [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
@@ -273,14 +282,12 @@ plane, returns `Nothing`.
 -}
 projectOnto : Plane3d -> Axis3d -> Maybe Axis3d
 projectOnto plane (Internal.Axis3d axis) =
-    case Direction3d.projectOnto plane axis.direction of
-        Just projectedDirection ->
-            Just <|
-                withDirection projectedDirection
-                    (Point3d.projectOnto plane axis.originPoint)
-
-        Nothing ->
-            Nothing
+    let
+        projectedOrigin =
+            Point3d.projectOnto plane axis.originPoint
+    in
+    Direction3d.projectOnto plane axis.direction
+        |> Maybe.map (through projectedOrigin)
 
 
 {-| Take an axis defined in global coordinates, and return it expressed in local
@@ -297,8 +304,8 @@ coordinates relative to a given reference frame.
 -}
 relativeTo : Frame3d -> Axis3d -> Axis3d
 relativeTo frame (Internal.Axis3d axis) =
-    withDirection (Direction3d.relativeTo frame axis.direction)
-        (Point3d.relativeTo frame axis.originPoint)
+    through (Point3d.relativeTo frame axis.originPoint)
+        (Direction3d.relativeTo frame axis.direction)
 
 
 {-| Take an axis defined in local coordinates relative to a given reference
@@ -315,8 +322,8 @@ frame, and return that axis expressed in global coordinates.
 -}
 placeIn : Frame3d -> Axis3d -> Axis3d
 placeIn frame (Internal.Axis3d axis) =
-    withDirection (Direction3d.placeIn frame axis.direction)
-        (Point3d.placeIn frame axis.originPoint)
+    through (Point3d.placeIn frame axis.originPoint)
+        (Direction3d.placeIn frame axis.direction)
 
 
 {-| Project an axis into a given sketch plane. Conceptually, this finds the

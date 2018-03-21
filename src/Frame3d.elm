@@ -363,7 +363,7 @@ point and X direction).
 -}
 xAxis : Frame3d -> Axis3d
 xAxis (Internal.Frame3d frame) =
-    Axis3d.withDirection frame.xDirection frame.originPoint
+    Axis3d.through frame.originPoint frame.xDirection
 
 
 {-| Get the Y axis of a given frame (the axis formed from the frame's origin
@@ -375,7 +375,7 @@ point and Y direction).
 -}
 yAxis : Frame3d -> Axis3d
 yAxis (Internal.Frame3d frame) =
-    Axis3d.withDirection frame.yDirection frame.originPoint
+    Axis3d.through frame.originPoint frame.yDirection
 
 
 {-| Get the Z axis of a given frame (the axis formed from the frame's origin
@@ -387,7 +387,7 @@ point and Z direction).
 -}
 zAxis : Frame3d -> Axis3d
 zAxis (Internal.Frame3d frame) =
-    Axis3d.withDirection frame.zDirection frame.originPoint
+    Axis3d.through frame.originPoint frame.zDirection
 
 
 {-| Get a plane with normal direction equal to the frame's positive Z direction.

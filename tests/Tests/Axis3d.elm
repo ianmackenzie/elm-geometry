@@ -34,8 +34,7 @@ xExample =
     Test.test "Axis3d.x example" <|
         \() ->
             Axis3d.x
-                |> Expect.axis3d
-                    (Axis3d.withDirection Direction3d.x Point3d.origin)
+                |> Expect.axis3d (Axis3d.through Point3d.origin Direction3d.x)
 
 
 yExample : Test
@@ -43,8 +42,7 @@ yExample =
     Test.test "Axis3d.y example" <|
         \() ->
             Axis3d.y
-                |> Expect.axis3d
-                    (Axis3d.withDirection Direction3d.y Point3d.origin)
+                |> Expect.axis3d (Axis3d.through Point3d.origin Direction3d.y)
 
 
 zExample : Test
@@ -52,8 +50,7 @@ zExample =
     Test.test "Axis3d.z example" <|
         \() ->
             Axis3d.z
-                |> Expect.axis3d
-                    (Axis3d.withDirection Direction3d.z Point3d.origin)
+                |> Expect.axis3d (Axis3d.through Point3d.origin Direction3d.z)
 
 
 originPointExample : Test
@@ -83,20 +80,20 @@ onExamples =
             \() ->
                 Axis3d.on SketchPlane3d.xy axis2d
                     |> Expect.axis3d
-                        (Axis3d.withDirection
+                        (Axis3d.through
+                            (Point3d.fromCoordinates ( 1, 3, 0 ))
                             (Direction3d.fromAzimuthAndElevation
                                 ( degrees 30, 0 )
                             )
-                            (Point3d.fromCoordinates ( 1, 3, 0 ))
                         )
         , Test.test "Second example" <|
             \() ->
                 Axis3d.on SketchPlane3d.zx axis2d
                     |> Expect.axis3d
-                        (Axis3d.withDirection
+                        (Axis3d.through
+                            (Point3d.fromCoordinates ( 3, 0, 1 ))
                             (Direction3d.fromAzimuthAndElevation
                                 ( 0, degrees 60 )
                             )
-                            (Point3d.fromCoordinates ( 3, 0, 1 ))
                         )
         ]

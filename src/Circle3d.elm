@@ -217,7 +217,7 @@ The origin point of the returned axis will be the center point of the circle.
 -}
 axis : Circle3d -> Axis3d
 axis (Internal.Circle3d circle) =
-    Axis3d.withDirection circle.axialDirection circle.centerPoint
+    Axis3d.through circle.centerPoint circle.axialDirection
 
 
 {-| Get the plane that a circle lies in. The origin point of the returned plane
