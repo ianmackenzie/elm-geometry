@@ -166,10 +166,7 @@ frame2d =
         frame originPoint xDirection rightHanded =
             let
                 rightHandedFrame =
-                    Frame2d.with
-                        { originPoint = originPoint
-                        , xDirection = xDirection
-                        }
+                    Frame2d.withXDirection xDirection originPoint
             in
             if rightHanded then
                 rightHandedFrame

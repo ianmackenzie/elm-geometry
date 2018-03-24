@@ -62,7 +62,6 @@ for:
 import Axis3d exposing (Axis3d)
 import BoundingBox3d exposing (BoundingBox3d)
 import Circle2d exposing (Circle2d)
-import Direction2d exposing (Direction2d)
 import Direction3d exposing (Direction3d)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
@@ -395,9 +394,6 @@ projectInto sketchPlane circle =
     case Vector2d.direction projectedAxialDirection of
         Just yDirection ->
             let
-                xDirection =
-                    yDirection |> Direction2d.rotateClockwise
-
                 normalDirection =
                     SketchPlane3d.normalDirection sketchPlane
 
@@ -410,10 +406,7 @@ projectInto sketchPlane circle =
                     yRatio * xRadius
 
                 axes =
-                    Frame2d.with
-                        { originPoint = projectedCenter
-                        , xDirection = xDirection
-                        }
+                    Frame2d.withYDirection yDirection projectedCenter
             in
             Internal.Ellipse2d
                 { axes = axes

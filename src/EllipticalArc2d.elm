@@ -199,13 +199,8 @@ fromEndpointsAndRadii { startPoint, endPoint, xRadius, yRadius, xDirection, swep
     if xRadius > 0 && yRadius > 0 then
         let
             temporaryFrame =
-                Frame2d.with
-                    { originPoint =
-                        startPoint
-                            |> Point2d.translateBy
-                                (Vector2d.withLength -xRadius xDirection)
-                    , xDirection = xDirection
-                    }
+                Frame2d.withXDirection xDirection
+                    (startPoint |> Point2d.translateIn xDirection -xRadius)
 
             ( x2Ellipse, y2Ellipse ) =
                 endPoint

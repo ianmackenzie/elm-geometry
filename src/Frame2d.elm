@@ -27,7 +27,8 @@ module Frame2d
         , translateAlongOwn
         , translateBy
         , unsafe
-        , with
+        , withXDirection
+        , withYDirection
         , xAxis
         , xDirection
         , xy
@@ -61,7 +62,7 @@ always perpendicular to each other). It can be thought of as:
 
 # Constructors
 
-@docs atPoint, with, unsafe
+@docs atPoint, withXDirection, withYDirection, unsafe
 
 
 # Properties
@@ -109,28 +110,47 @@ xy =
     atPoint Point2d.origin
 
 
-{-| Construct a frame given its origin point and X axis direction. The Y axis
-direction will be constructed by rotating the given X direction 90 degrees
-counterclockwise:
+{-| Construct a frame with the given X axis direction, having the given origin
+point. The Y axis direction will be constructed by rotating the given X
+direction 90 degrees counterclockwise:
 
     frame =
-        Frame2d.with
-            { originPoint =
-                Point2d.fromCoordinates ( 2, 3 )
-            , xDirection =
-                Direction2d.fromAngle (degrees 30)
-            }
+        Frame2d.withXDirection
+            (Direction2d.fromAngle (degrees 30))
+            (Point2d.fromCoordinates ( 2, 3 ))
 
     Frame2d.yDirection frame
     --> Direction2d.fromAngle (degrees 120)
 
 -}
-with : { originPoint : Point2d, xDirection : Direction2d } -> Frame2d
-with { originPoint, xDirection } =
+withXDirection : Direction2d -> Point2d -> Frame2d
+withXDirection xDirection originPoint =
     unsafe
         { originPoint = originPoint
         , xDirection = xDirection
-        , yDirection = Direction2d.perpendicularTo xDirection
+        , yDirection = xDirection |> Direction2d.rotateCounterclockwise
+        }
+
+
+{-| Construct a frame with the given Y axis direction, having the given origin
+point. The X axis direction will be constructed by rotating the given X
+direction 90 degrees clockwise:
+
+    frame =
+        Frame2d.withYDirection
+            (Direction2d.fromAngle (degrees 30))
+            (Point2d.fromCoordinates ( 2, 3 ))
+
+    Frame2d.yDirection frame
+    --> Direction2d.fromAngle (degrees -60)
+
+-}
+withYDirection : Direction2d -> Point2d -> Frame2d
+withYDirection yDirection originPoint =
+    unsafe
+        { originPoint = originPoint
+        , xDirection = yDirection |> Direction2d.rotateClockwise
+        , yDirection = yDirection
         }
 
 

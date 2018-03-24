@@ -766,11 +766,8 @@ projectInto sketchPlane arc =
         { ellipse =
             Internal.Ellipse2d
                 { axes =
-                    Frame2d.with
-                        { originPoint =
-                            centerPoint arc |> Point3d.projectInto sketchPlane
-                        , xDirection = xDirection2d
-                        }
+                    Frame2d.withXDirection xDirection2d
+                        (centerPoint arc |> Point3d.projectInto sketchPlane)
                 , xRadius = arcRadius
                 , yRadius = arcRadius * yRatio
                 }

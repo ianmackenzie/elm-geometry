@@ -86,8 +86,7 @@ used).
 with : { centerPoint : Point2d, xDirection : Direction2d, xRadius : Float, yRadius : Float } -> Ellipse2d
 with { centerPoint, xDirection, xRadius, yRadius } =
     Internal.Ellipse2d
-        { axes =
-            Frame2d.with { originPoint = centerPoint, xDirection = xDirection }
+        { axes = Frame2d.withXDirection xDirection centerPoint
         , xRadius = abs xRadius
         , yRadius = abs yRadius
         }
@@ -107,12 +106,9 @@ centerPoint ellipse =
 {-| Get the X and Y axes of an ellipse as a `Frame2d`.
 
     Ellipse2d.axes exampleEllipse
-    --> Frame2d.with
-    -->     { originPoint =
-    -->         Point2d.fromCoordinates ( 10, 10 )
-    -->     , xDirection =
-    -->         Direction2d.fromAngle (degrees 30)
-    -->     }
+    --> Frame2d.withXDirection
+    -->     (Direction2d.fromAngle (degrees 30))
+    -->     (Point2d.fromCoordinates ( 10, 10 ))
 
 -}
 axes : Ellipse2d -> Frame2d
