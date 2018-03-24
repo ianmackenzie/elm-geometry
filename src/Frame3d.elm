@@ -28,7 +28,9 @@ module Frame3d
         , translateAlongOwn
         , translateBy
         , unsafe
-        , with
+        , withXDirection
+        , withYDirection
+        , withZDirection
         , xAxis
         , xDirection
         , xyPlane
@@ -76,7 +78,38 @@ always perpendicular to each other). It can be thought of as:
 
 # Constructors
 
-@docs atPoint, with, unsafe
+The `withXDirection`, `withYDirection` and `withZDirection` functions all
+construct a new `Frame3d` with the given axis direction, having the given origin
+point. The other two directions will be chosen arbitrarily. This can be useful
+when constructing 'scratch' frames where (for example) you want a particular Z
+direction but the specific X/Y directions are unimportant:
+
+    zDirection =
+        Direction3d.fromAzimuthAndElevation
+            ( 0, degrees 60 )
+
+    frame =
+        Frame3d.withZDirection zDirection Point3d.origin
+
+    Frame3d.zDirection frame
+    --> Direction3d.fromAzimuthAndElevation
+    -->     ( 0, degrees 60 )
+
+    Frame3d.originPoint frame
+    --> Point3d.origin
+
+    Frame3d.xDirection frame
+    --> Direction3d.fromAzimuthAndElevation
+    -->     ( 0, degrees -30 )
+
+    Frame3d.yDirection frame
+    --> Direction3d.y
+
+No guarantees are given about the other two directions other than that the three
+directions will be mutually perpendicular, and will be oriented so that the
+resulting frame is [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness).
+
+@docs withXDirection, withYDirection, withZDirection, atPoint, unsafe
 
 
 # Properties
@@ -181,36 +214,42 @@ xyz =
     atPoint Point3d.origin
 
 
-{-| Construct a frame with the given origin point and Z direction. X and Y
-directions will be chosen arbitrarily such that the frame has the desired Z
-direction. This can be useful when constructing 'scratch' frames where the
-specific X/Y directions are unimportant.
-
-    frame =
-        Frame3d.with
-            { originPoint = Point3d.origin
-            , zDirection =
-                Direction3d.fromAzimuthAndElevation
-                    ( 0, degrees 60 )
-            }
-
-    Frame3d.originPoint sketchPlane
-    --> Point3d.origin
-
-    Frame3d.xDirection sketchPlane
-    --> Direction3d.fromAzimuthAndElevation
-    -->     ( 0, degrees -30 )
-
-    Frame3d.yDirection sketchPlane
-    --> Direction3d.y
-
-    Frame3d.zDirection sketchPlane
-    --> Direction3d.fromAzimuthAndElevation
-    -->     ( 0, degrees 60 )
-
+{-| Construct a frame with the given origin point and X direction.
 -}
-with : { originPoint : Point3d, zDirection : Direction3d } -> Frame3d
-with { originPoint, zDirection } =
+withXDirection : Direction3d -> Point3d -> Frame3d
+withXDirection xDirection originPoint =
+    let
+        ( yDirection, zDirection ) =
+            Direction3d.perpendicularBasis xDirection
+    in
+    unsafe
+        { originPoint = originPoint
+        , xDirection = xDirection
+        , yDirection = yDirection
+        , zDirection = zDirection
+        }
+
+
+{-| Construct a frame with the given origin point and Y direction.
+-}
+withYDirection : Direction3d -> Point3d -> Frame3d
+withYDirection yDirection originPoint =
+    let
+        ( zDirection, xDirection ) =
+            Direction3d.perpendicularBasis yDirection
+    in
+    unsafe
+        { originPoint = originPoint
+        , xDirection = xDirection
+        , yDirection = yDirection
+        , zDirection = zDirection
+        }
+
+
+{-| Construct a frame with the given origin point and Z direction.
+-}
+withZDirection : Direction3d -> Point3d -> Frame3d
+withZDirection zDirection originPoint =
     let
         ( xDirection, yDirection ) =
             Direction3d.perpendicularBasis zDirection
