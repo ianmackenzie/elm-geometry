@@ -299,7 +299,7 @@ lineSegmentHandle target lineSegment =
 
 constructArc : Model -> Maybe EllipticalArc2d
 constructArc model =
-    EllipticalArc2d.fromEndpointsAndRadii
+    EllipticalArc2d.fromEndpoints
         { startPoint = model.startPoint
         , endPoint = model.endPoint
         , xDirection = model.xDirection
@@ -336,7 +336,7 @@ view model =
             }
 
         computedArc =
-            EllipticalArc2d.fromEndpointsAndRadii properties
+            EllipticalArc2d.fromEndpoints properties
 
         sweptAngleTypes =
             [ EllipticalArc2d.smallPositive
@@ -351,7 +351,7 @@ view model =
                     (\sweptAngle ->
                         { properties | sweptAngle = sweptAngle }
                     )
-                |> List.map EllipticalArc2d.fromEndpointsAndRadii
+                |> List.map EllipticalArc2d.fromEndpoints
                 |> List.map2 (,) sweptAngleTypes
                 |> List.filterMap
                     (\( sweptAngle, computedArc ) ->
