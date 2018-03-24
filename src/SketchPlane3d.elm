@@ -32,7 +32,7 @@ module SketchPlane3d
         , translateAlongOwn
         , translateBy
         , unsafe
-        , with
+        , withNormalDirection
         , xAxis
         , xDirection
         , xy
@@ -113,7 +113,7 @@ point, and use the two indicated global axes as their X and Y axes. For example,
 Sketch planes can also be constructed from `Frame3d` values using
 `Frame3d.xySketchPlane` etc.
 
-@docs with, on, throughPoints, fromPlane, unsafe
+@docs withNormalDirection, on, throughPoints, fromPlane, unsafe
 
 
 # Conversions
@@ -217,8 +217,8 @@ xz =
         }
 
 
-{-| Construct a sketch plane with the given origin point and normal direction.
-The X and Y basis directions of the sketch plane will:
+{-| Construct a sketch plane with the given normal direction, having the given
+origin point. The X and Y basis directions of the sketch plane will:
 
   - be perpendicular to each other,
   - both be perpendicular to the given normal direction, and
@@ -228,12 +228,11 @@ This is useful when constructing 'scratch' sketch planes where the specific X/Y
 directions are unimportant.
 
     sketchPlane =
-        SketchPlane3d.with
-            { originPoint = Point3d.origin
-            , normalDirection =
-                Direction3d.fromAzimuthAndElevation
-                    ( 0, degrees 60 )
-            }
+        SketchPlane3d.withNormalDirection
+            (Direction3d.fromAzimuthAndElevation
+                ( 0, degrees 60)
+            )
+            Point3d.origin
 
     SketchPlane3d.originPoint sketchPlane
     --> Point3d.origin
@@ -246,8 +245,8 @@ directions are unimportant.
     --> Direction3d.y
 
 -}
-with : { originPoint : Point3d, normalDirection : Direction3d } -> SketchPlane3d
-with { originPoint, normalDirection } =
+withNormalDirection : Direction3d -> Point3d -> SketchPlane3d
+withNormalDirection normalDirection originPoint =
     let
         ( xDirection, yDirection ) =
             Direction3d.perpendicularBasis normalDirection
@@ -298,10 +297,9 @@ on sketchPlane frame =
 
 is equivalent to
 
-    SketchPlane3d.with
-        { originPoint = Plane3d.originPoint plane
-        , normalDirection = Plane3d.normalDirection plane
-        }
+    SketchPlane3d.withNormalDirection
+        (Plane3d.normalDirection plane)
+        (Plane3d.originPoint plane)
 
 Note that because the X and Y directions of the resulting sketch plane are
 chosen arbitrarily, conversions may not work exactly as you expect. For example,
@@ -325,10 +323,8 @@ origin point and are coplanar):
 -}
 fromPlane : Plane3d -> SketchPlane3d
 fromPlane plane =
-    with
-        { originPoint = Plane3d.originPoint plane
-        , normalDirection = Plane3d.normalDirection plane
-        }
+    withNormalDirection (Plane3d.normalDirection plane)
+        (Plane3d.originPoint plane)
 
 
 {-| Construct a sketch plane directly from its origin point and X and Y
