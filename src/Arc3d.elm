@@ -484,11 +484,8 @@ toPolyline tolerance arc =
         numSegments =
             numApproximationSegments tolerance arc
 
-        parameterValues =
-            Parameter.values (Parameter.numSteps numSegments)
-
         points =
-            List.map (pointOn arc) parameterValues
+            List.map (pointOn arc) (Parameter.numSteps numSegments)
     in
     Polyline3d.fromVertices points
 
