@@ -25,6 +25,7 @@ module CubicSpline2d
         , reverse
         , rotateAround
         , scaleAbout
+        , secondDerivative
         , splitAt
         , startDerivative
         , startPoint
@@ -85,7 +86,7 @@ in 2D defined by four control points. This module contains functionality for
 
 Low level functionality that you are unlikely to need to use directly.
 
-@docs derivativeMagnitude, maxSecondDerivativeMagnitude
+@docs secondDerivative, derivativeMagnitude, maxSecondDerivativeMagnitude
 
 -}
 
@@ -872,3 +873,41 @@ maxSecondDerivativeMagnitude spline =
             Vector2d.difference u3 u2
     in
     6 * max (Vector2d.length v1) (Vector2d.length v2)
+
+
+{-| Get the second derivative value at a point along a spline, based on a
+parameter that ranges from 0 to 1. A parameter value of 0 corresponds to the
+start of the spline and a value of 1 corresponds to the end.
+
+    CubicSpline2d.secondDerivative exampleSpline 0
+    --> Vector2d.fromComponents ( 0, -36 )
+
+    CubicSpline2d.secondDerivative exampleSpline 0.5
+    --> Vector2d.fromComponents ( 0, 0 )
+
+    CubicSpline2d.secondDerivative exampleSpline 1
+    --> Vector2d.fromComponents ( 0, 36 )
+
+-}
+secondDerivative : CubicSpline2d -> Float -> Vector2d
+secondDerivative spline t =
+    let
+        ( p1, p2, p3, p4 ) =
+            controlPoints spline
+
+        u1 =
+            Vector2d.from p1 p2
+
+        u2 =
+            Vector2d.from p2 p3
+
+        u3 =
+            Vector2d.from p3 p4
+
+        v1 =
+            Vector2d.difference u2 u1
+
+        v2 =
+            Vector2d.difference u3 u2
+    in
+    Vector2d.scaleBy 6 (Vector2d.interpolateFrom v1 v2 t)
