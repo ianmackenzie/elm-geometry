@@ -26,6 +26,7 @@ module EllipticalArc2d
         , sweptAngle
         , tangentAlong
         , translateBy
+        , underlyingArc
         , with
         , xAxis
         , xDirection
@@ -87,7 +88,7 @@ details.
 
 # Arc length parameterization
 
-@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentAlong, arcLengthToParameterValue, parameterValueToArcLength
+@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentAlong, arcLengthToParameterValue, parameterValueToArcLength, underlyingArc
 
 
 # Low level
@@ -821,3 +822,11 @@ the given parameter value is less than zero or greater than one, returns
 parameterValueToArcLength : ArcLengthParameterized -> Float -> Maybe Float
 parameterValueToArcLength (ArcLengthParameterized _ parameterization) t =
     ArcLength.fromParameterValue parameterization t
+
+
+{-| Get the original `EllipticalArc2d` from which an `ArcLengthParameterized`
+value was constructed.
+-}
+underlyingArc : ArcLengthParameterized -> EllipticalArc2d
+underlyingArc (ArcLengthParameterized arc _) =
+    arc

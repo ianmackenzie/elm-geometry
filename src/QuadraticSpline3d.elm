@@ -31,6 +31,7 @@ module QuadraticSpline3d
         , startPoint
         , tangentAlong
         , translateBy
+        , underlyingSpline
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/quadraticSpline3d.svg" alt="QuadraticSpline3d" width="160">
@@ -83,7 +84,7 @@ in 3D defined by three control points. This module contains functionality for
 
 # Arc length parameterization
 
-@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentAlong, arcLengthToParameterValue, parameterValueToArcLength
+@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentAlong, arcLengthToParameterValue, parameterValueToArcLength, underlyingSpline
 
 
 # Low level
@@ -746,6 +747,14 @@ given parameter value is less than zero or greater than one, returns `Nothing`.
 parameterValueToArcLength : ArcLengthParameterized -> Float -> Maybe Float
 parameterValueToArcLength (ArcLengthParameterized _ parameterization) t =
     ArcLength.fromParameterValue parameterization t
+
+
+{-| Get the original `QuadraticSpline3d` from which an `ArcLengthParameterized`
+value was constructed.
+-}
+underlyingSpline : ArcLengthParameterized -> QuadraticSpline3d
+underlyingSpline (ArcLengthParameterized spline _) =
+    spline
 
 
 {-| Get the second derivative of a spline (for a quadratic spline, this is a

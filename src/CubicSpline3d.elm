@@ -33,6 +33,7 @@ module CubicSpline3d
         , startPoint
         , tangentAlong
         , translateBy
+        , underlyingSpline
         )
 
 {-| <img src="https://opensolid.github.io/images/geometry/icons/cubicSpline3d.svg" alt="CubicSpline3d" width="160">
@@ -80,7 +81,7 @@ in 3D defined by four control points. This module contains functionality for
 
 # Arc length parameterization
 
-@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentAlong, arcLengthToParameterValue, parameterValueToArcLength
+@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentAlong, arcLengthToParameterValue, parameterValueToArcLength, underlyingSpline
 
 
 # Low level
@@ -982,6 +983,14 @@ given parameter value is less than zero or greater than one, returns `Nothing`.
 parameterValueToArcLength : ArcLengthParameterized -> Float -> Maybe Float
 parameterValueToArcLength (ArcLengthParameterized _ parameterization) t =
     ArcLength.fromParameterValue parameterization t
+
+
+{-| Get the original `CubicSpline3d` from which an `ArcLengthParameterized`
+value was constructed.
+-}
+underlyingSpline : ArcLengthParameterized -> CubicSpline3d
+underlyingSpline (ArcLengthParameterized spline _) =
+    spline
 
 
 {-| Find an upper bound on the magnitude of the second derivative of a spline.
