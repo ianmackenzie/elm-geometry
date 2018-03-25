@@ -295,9 +295,9 @@ pointOn spline t =
     Point2d.interpolateFrom r1 r2 t
 
 
-{-| Get the deriative value at a point along a spline, based on a parameter that
-ranges from 0 to 1. A parameter value of 0 corresponds to the start derivative
-of the spline and a value of 1 corresponds to the end derivative.
+{-| Get the derivative value at a point along a spline, based on a parameter
+that ranges from 0 to 1. A parameter value of 0 corresponds to the start
+derivative of the spline and a value of 1 corresponds to the end derivative.
 
     CubicSpline2d.derivative exampleSpline 0
     --> Vector2d.fromComponents ( 6, 9 )
