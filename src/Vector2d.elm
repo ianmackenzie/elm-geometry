@@ -36,6 +36,8 @@ module Vector2d
         , projectionIn
         , relativeTo
         , rotateBy
+        , rotateClockwise
+        , rotateCounterclockwise
         , scaleBy
         , squaredLength
         , sum
@@ -107,7 +109,7 @@ affects the result, since vectors are position-independent. Think of
 mirroring/projecting a vector across/onto an axis as moving the vector so its
 tail is on the axis, then mirroring/projecting its tip across/onto the axis.
 
-@docs flip, normalize, scaleBy, rotateBy, mirrorAcross, projectionIn, projectOnto
+@docs flip, normalize, scaleBy, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
 
 
 # Coordinate conversions
@@ -214,7 +216,7 @@ withLength length direction =
 
 {-| Construct a vector perpendicular to the given vector, by rotating the given
 vector 90 degrees counterclockwise. The constructed vector will have the same
-length as the given vector.
+length as the given vector. Alias for `Vector2d.rotateCounterclockwise`.
 
     Vector2d.perpendicularTo
         (Vector2d.fromComponents ( 1, 0 ))
@@ -234,11 +236,7 @@ length as the given vector.
 -}
 perpendicularTo : Vector2d -> Vector2d
 perpendicularTo vector =
-    let
-        ( x, y ) =
-            components vector
-    in
-    fromComponents ( -y, x )
+    rotateCounterclockwise vector
 
 
 {-| Construct a vector by interpolating from the first given vector to the
@@ -691,6 +689,46 @@ rotateBy angle =
                 components vector
         in
         fromComponents ( x * cosine - y * sine, y * cosine + x * sine )
+
+
+{-| Rotate the given vector 90 degrees counterclockwise;
+
+    Vector2d.rotateCounterclockwise vector
+
+is equivalent to
+
+    Vector2d.rotateBy (degrees 90) vector
+
+but is more efficient.
+
+-}
+rotateCounterclockwise : Vector2d -> Vector2d
+rotateCounterclockwise vector =
+    let
+        ( x, y ) =
+            components vector
+    in
+    fromComponents ( -y, x )
+
+
+{-| Rotate the given vector 90 degrees clockwise;
+
+    Vector2d.rotateClockwise vector
+
+is equivalent to
+
+    Vector2d.rotateBy (degrees -90) vector
+
+but is more efficient.
+
+-}
+rotateClockwise : Vector2d -> Vector2d
+rotateClockwise vector =
+    let
+        ( x, y ) =
+            components vector
+    in
+    fromComponents ( y, -x )
 
 
 {-| Mirror a vector across a given axis.
