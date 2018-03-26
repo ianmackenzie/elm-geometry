@@ -22,6 +22,7 @@ module Point2d
         , fromCoordinates
         , fromCoordinatesIn
         , fromPolarCoordinates
+        , fromPolarCoordinatesIn
         , interpolateFrom
         , midpoint
         , mirrorAcross
@@ -66,7 +67,7 @@ like you can add two vectors.
 
 # Constructors
 
-@docs fromCoordinates, fromPolarCoordinates, midpoint, interpolateFrom, along, fromCoordinatesIn, circumcenter
+@docs fromCoordinates, fromPolarCoordinates, midpoint, interpolateFrom, along, fromCoordinatesIn, fromPolarCoordinatesIn, circumcenter
 
 
 # Properties
@@ -262,6 +263,22 @@ is equivalent to
 fromCoordinatesIn : Frame2d -> ( Float, Float ) -> Point2d
 fromCoordinatesIn frame coordinates =
     placeIn frame (fromCoordinates coordinates)
+
+
+{-| Construct a point given its local polar coordinates within a particular
+frame.
+
+    localFrame =
+        Frame2d.atPoint (Point2d.fromCoordinates ( 2, 1 ))
+
+    Point2d.fromPolarCoordinatesIn localFrame
+        ( 2, degrees 45 )
+    --> Point2d.fromCoordinates ( 3.4142, 2.4142 )
+
+-}
+fromPolarCoordinatesIn : Frame2d -> ( Float, Float ) -> Point2d
+fromPolarCoordinatesIn frame polarCoordinates =
+    placeIn frame (fromPolarCoordinates polarCoordinates)
 
 
 {-| Attempt to find the circumcenter of three points; this is the center of the
