@@ -20,6 +20,7 @@ module Arc2d
         , throughPoints
         , toPolyline
         , translateBy
+        , with
         , withRadius
         )
 
@@ -38,7 +39,7 @@ end point). This module includes functionality for
 
 # Constructors
 
-@docs from, sweptAround, throughPoints, withRadius
+@docs from, with, sweptAround, throughPoints, withRadius
 
 
 # Properties
@@ -163,6 +164,43 @@ from startPoint endPoint sweptAngle =
                 , xDirection = Direction2d.x
                 , signedLength = 0
                 }
+
+
+{-| Construct an arc with the given center point, radius, start angle and swept
+angle:
+
+    arc =
+        Arc2d.with
+            { centerPoint =
+                Point2d.fromCoordinates ( 2, 0 )
+            , radius = 1
+            , startAngle = degrees 45
+            , sweptAngle = degrees -90
+            }
+
+    Arc2d.startPoint arc
+    --> Point2d.fromCoordinates ( 2.7071, 0.7071 )
+
+    Arc2d.endPoint arc
+    --> Point2d.fromCoordinates ( 2.7071, -0.7071 )
+
+-}
+with : { centerPoint : Point2d, radius : Float, startAngle : Float, sweptAngle : Float } -> Arc2d
+with { centerPoint, radius, startAngle, sweptAngle } =
+    let
+        ( x0, y0 ) =
+            Point2d.coordinates centerPoint
+    in
+    Internal.Arc2d
+        { startPoint =
+            Point2d.fromCoordinates
+                ( x0 + radius * cos startAngle
+                , y0 + radius * sin startAngle
+                )
+        , sweptAngle = sweptAngle
+        , xDirection = Direction2d.fromAngle (startAngle + degrees 90)
+        , signedLength = abs radius * sweptAngle
+        }
 
 
 {-| Construct an arc by sweeping (rotating) a given start point around a given
