@@ -17,6 +17,7 @@ module Rectangle2d
         , relativeTo
         , rotateAround
         , scaleAbout
+        , toPolygon
         , translateBy
         , vertices
         )
@@ -28,6 +29,7 @@ import Frame2d exposing (Frame2d)
 import Geometry.Internal as Internal
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
+import Polygon2d exposing (Polygon2d)
 import Vector2d exposing (Vector2d)
 
 
@@ -104,6 +106,15 @@ fromExtrema { minX, maxX, minY, maxY } =
         { axes = Frame2d.atPoint centerPoint
         , dimensions = ( width, height )
         }
+
+
+toPolygon : Rectangle2d -> Polygon2d
+toPolygon rectangle =
+    let
+        ( p1, p2, p3, p4 ) =
+            vertices rectangle
+    in
+    Polygon2d.singleLoop [ p1, p2, p3, p4 ]
 
 
 axes : Rectangle2d -> Frame2d
