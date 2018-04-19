@@ -6,6 +6,7 @@ module CubicSpline2d
         , arcLengthParameterized
         , arcLengthToParameterValue
         , bisect
+        , boundingBox
         , controlPoints
         , derivative
         , derivativeMagnitude
@@ -54,7 +55,7 @@ in 2D defined by four control points. This module contains functionality for
 
 # Properties
 
-@docs controlPoints, startPoint, endPoint, startDerivative, endDerivative
+@docs controlPoints, startPoint, endPoint, startDerivative, endDerivative, boundingBox
 
 
 # Evaluation
@@ -92,6 +93,7 @@ Low level functionality that you are unlikely to need to use directly.
 
 import ArcLength
 import Axis2d exposing (Axis2d)
+import BoundingBox2d exposing (BoundingBox2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Internal as Internal
@@ -256,6 +258,32 @@ endDerivative spline =
             controlPoints spline
     in
     Vector2d.from p3 p4 |> Vector2d.scaleBy 3
+
+
+boundingBox : CubicSpline2d -> BoundingBox2d
+boundingBox spline =
+    let
+        ( p1, p2, p3, p4 ) =
+            controlPoints spline
+
+        ( x1, y1 ) =
+            Point2d.coordinates p1
+
+        ( x2, y2 ) =
+            Point2d.coordinates p2
+
+        ( x3, y3 ) =
+            Point2d.coordinates p3
+
+        ( x4, y4 ) =
+            Point2d.coordinates p4
+    in
+    BoundingBox2d.fromExtrema
+        { minX = min (min x1 x2) (min x3 x4)
+        , maxX = max (max x1 x2) (max x3 x4)
+        , minY = min (min y1 y2) (min y3 y4)
+        , maxY = max (max y1 y2) (max y3 y4)
+        }
 
 
 {-| Get a point along a spline, based on a parameter that ranges from 0 to 1. A
