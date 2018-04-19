@@ -98,7 +98,7 @@ Low level functionality that you are unlikely to need to use directly.
 
 import ArcLength
 import Axis3d exposing (Axis3d)
-import BoundingBox2d exposing (BoundingBox2d)
+import BoundingBox3d exposing (BoundingBox3d)
 import Direction3d exposing (Direction3d)
 import Frame3d exposing (Frame3d)
 import Geometry.Internal as Internal
