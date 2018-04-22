@@ -133,7 +133,7 @@ For example, to construct a simple 90 degree elliptical arc, you might use
             , sweptAngle = degrees 90
             }
 
-![90 degree elliptical arc](https://opensolid.github.io/geometry/2.1.0/doc/images/EllipticalArc2d/with1.svg)
+![90 degree elliptical arc](https://ianmackenzie.github.io/elm-geometry/1.0.0/EllipticalArc2d/with1.svg)
 
 To make an inclined 180 degree elliptical arc, you might use
 
@@ -146,7 +146,7 @@ To make an inclined 180 degree elliptical arc, you might use
         , sweptAngle = degrees 180
         }
 
-![180 degree inclined elliptical arc](https://opensolid.github.io/geometry/2.1.0/doc/images/EllipticalArc2d/with2.svg)
+![180 degree inclined elliptical arc](https://ianmackenzie.github.io/elm-geometry/1.0.0/EllipticalArc2d/with2.svg)
 
 -}
 with : { centerPoint : Point2d, xDirection : Direction2d, xRadius : Float, yRadius : Float, startAngle : Float, sweptAngle : Float } -> EllipticalArc2d
@@ -176,8 +176,8 @@ X direction (or the center point to move the whole arc), clicking on the X or Y
 radial lines and then scrolling to changet that radius, or clicking/tapping on
 the various dashed arcs to switch what kind of swept angle to use.
 
-<iframe src="https://opensolid.github.io/geometry/2.1.0/doc/interactive/EllipticalArc2d/fromEndpoints.html" style="width: 500px; height: 400px" scrolling=no frameborder=0>
-`https://opensolid.github.io/geometry/2.1.0/doc/interactive/EllipticalArc2d/fromEndpoints.html`
+<iframe src="https://ianmackenzie.github.io/elm-geometry/1.0.0/EllipticalArc2d/fromEndpoints.html" style="width: 500px; height: 400px" scrolling=no frameborder=0>
+`https://ianmackenzie.github.io/elm-geometry/1.0.0/EllipticalArc2d/fromEndpoints.html`
 </iframe>
 
 This function will return `Nothing` if no solution can found. Typically this
