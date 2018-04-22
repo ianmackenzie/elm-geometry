@@ -45,7 +45,7 @@ module SketchPlane3d
         , zy
         )
 
-{-| <img src="https://opensolid.github.io/images/geometry/icons/sketchPlane3d.svg" alt="SketchPlane3d" width="160">
+{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/SketchPlane3d/icon.svg" alt="SketchPlane3d" width="160">
 
 A `SketchPlane3d` represents a 2D planar coordinate system in 3D space, and is
 defined by its origin point and X and Y directions (which are always

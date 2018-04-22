@@ -52,7 +52,7 @@ module Frame3d
         , zySketchPlane
         )
 
-{-| <img src="https://opensolid.github.io/images/geometry/icons/frame3d.svg" alt="Frame3d" width="160">
+{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Frame3d/icon.svg" alt="Frame3d" width="160">
 
 A `Frame3d` has an origin point and a set of X, Y and Z directions (which are
 always perpendicular to each other). It can be thought of as:

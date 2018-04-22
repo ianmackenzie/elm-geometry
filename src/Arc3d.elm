@@ -25,7 +25,7 @@ module Arc3d
         , translateBy
         )
 
-{-| <img src="https://opensolid.github.io/images/geometry/icons/arc3d.svg" alt="Arc3d" width="160">
+{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Arc3d/icon.svg" alt="Arc3d" width="160">
 
 An `Arc3d` is a section of a circle in 3D, defined by its central axis,
 start point and swept angle (the counterclockwise angle around the axis from the

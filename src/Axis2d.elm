@@ -28,7 +28,7 @@ module Axis2d
         , y
         )
 
-{-| <img src="https://opensolid.github.io/images/geometry/icons/axis2d.svg" alt="Axis2d" width="160">
+{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Axis2d/icon.svg" alt="Axis2d" width="160">
 
 An `Axis2d` represents an infinitely long straight line in 2D and is defined by
 an origin point and direction. Axes have several uses, such as:

@@ -34,7 +34,7 @@ module Polygon2d
         , withHoles
         )
 
-{-| <img src="https://opensolid.github.io/images/geometry/icons/polygon2d.svg" alt="Polygon2d" width="160">
+{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Polygon2d/icon.svg" alt="Polygon2d" width="160">
 
 A `Polygon2d` represents a closed polygon in 2D, and is defined by a list of
 vertices. This module contains a variety of polygon-related functionality, such

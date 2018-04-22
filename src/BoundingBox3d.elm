@@ -42,7 +42,7 @@ module BoundingBox3d
         , translateBy
         )
 
-{-| <img src="https://opensolid.github.io/images/geometry/icons/boundingBox3d.svg" alt="BoundingBox3d" width="160">
+{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/BoundingBox3d/icon.svg" alt="BoundingBox3d" width="160">
 
 A `BoundingBox3d` is a rectangular box in 3D defined by its minimum and maximum
 X, Y and Z values. It is possible to generate bounding boxes for most geometric

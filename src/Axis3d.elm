@@ -32,7 +32,7 @@ module Axis3d
         , z
         )
 
-{-| <img src="https://opensolid.github.io/images/geometry/icons/axis3d.svg" alt="Axis3d" width="160">
+{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Axis3d/icon.svg" alt="Axis3d" width="160">
 
 An `Axis3d` represents an infinitely long straight line in 3D and is defined by
 an origin point and direction. Axes have several uses, such as:

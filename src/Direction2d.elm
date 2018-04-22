@@ -42,7 +42,7 @@ module Direction2d
         , yComponent
         )
 
-{-| <img src="https://opensolid.github.io/images/geometry/icons/direction2d.svg" alt="Direction2d" width="160">
+{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Direction2d/icon.svg" alt="Direction2d" width="160">
 
 A `Direction2d` represents a direction like 'up' or 'north' or 'forwards'. They
 are represented using X and Y components, and can be converted to vectors if

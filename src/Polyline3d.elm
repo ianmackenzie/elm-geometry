@@ -30,7 +30,7 @@ module Polyline3d
         , vertices
         )
 
-{-| <img src="https://opensolid.github.io/images/geometry/icons/polyline3d.svg" alt="Polyline3d" width="160">
+{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Polyline3d/icon.svg" alt="Polyline3d" width="160">
 
 A `Polyline3d` represents a sequence of vertices in 3D connected by line
 segments. This module contains a variety of polyline-related functionality, such

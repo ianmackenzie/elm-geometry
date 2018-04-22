@@ -32,7 +32,7 @@ module Plane3d
         , zx
         )
 
-{-| <img src="https://opensolid.github.io/images/geometry/icons/plane3d.svg" alt="Plane3d" width="160">
+{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Plane3d/icon.svg" alt="Plane3d" width="160">
 
 A `Plane3d` is an infinite flat plane in 3D. It is defined by an origin point
 and normal direction and is useful for several operations including:

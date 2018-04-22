@@ -40,7 +40,7 @@ module LineSegment3d
         , vector
         )
 
-{-| <img src="https://opensolid.github.io/images/geometry/icons/lineSegment3d.svg" alt="LineSegment3d" width="160">
+{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/LineSegment3d/icon.svg" alt="LineSegment3d" width="160">
 
 A `LineSegment3d` is a line between two points in 3D. This module contains
 functionality such as:

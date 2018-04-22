@@ -21,7 +21,7 @@ module Circle2d
         , withRadius
         )
 
-{-| <img src="https://opensolid.github.io/images/geometry/icons/circle2d.svg" alt="Circle2d" width="160">
+{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Circle2d/icon.svg" alt="Circle2d" width="160">
 
 A `Circle2d` is defined by its center point and radius. This module includes
 functionality for

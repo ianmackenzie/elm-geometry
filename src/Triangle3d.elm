@@ -33,7 +33,7 @@ module Triangle3d
         , vertices
         )
 
-{-| <img src="https://opensolid.github.io/images/geometry/icons/triangle3d.svg" alt="Triangle3d" width="160">
+{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Triangle3d/icon.svg" alt="Triangle3d" width="160">
 
 A `Triangle3d` represents a triangle in 3D space, and is defined by its three
 vertices. This module contains triangle-related functionality such as:

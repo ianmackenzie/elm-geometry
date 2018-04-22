@@ -19,7 +19,7 @@ module Ellipse2d
         , yRadius
         )
 
-{-| <img src="https://opensolid.github.io/images/geometry/icons/ellipse2d.svg" alt="Ellipse2d" width="160">
+{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Ellipse2d/icon.svg" alt="Ellipse2d" width="160">
 
 An [ellipse](https://en.wikipedia.org/wiki/Ellipse) is defined by a center
 point, X and Y radius, and X and Y axes (which will always be perpendicular to

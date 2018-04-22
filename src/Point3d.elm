@@ -45,7 +45,7 @@ module Point3d
         , zCoordinate
         )
 
-{-| <img src="https://opensolid.github.io/images/geometry/icons/point3d.svg" alt="Point3d" width="160">
+{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Point3d/icon.svg" alt="Point3d" width="160">
 
 A `Point3d` represents a position in 3D space and is defined by its X, Y and Z
 coordinates. This module contains a variety of point-related functionality, such

@@ -46,7 +46,7 @@ module Vector3d
         , zero
         )
 
-{-| <img src="https://opensolid.github.io/images/geometry/icons/vector3d.svg" alt="Vector3d" width="160">
+{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Vector3d/icon.svg" alt="Vector3d" width="160">
 
 A `Vector3d` represents a quantity such as a displacement or velocity in 3D, and
 is defined by its X, Y and Z components. This module contains a variety of

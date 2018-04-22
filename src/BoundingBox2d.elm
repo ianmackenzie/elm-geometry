@@ -39,7 +39,7 @@ module BoundingBox2d
         , translateBy
         )
 
-{-| <img src="https://opensolid.github.io/images/geometry/icons/boundingBox2d.svg" alt="BoundingBox2d" width="160">
+{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/BoundingBox2d/icon.svg" alt="BoundingBox2d" width="160">
 
 A `BoundingBox2d` is a rectangular box in 2D defined by its minimum and maximum
 X and Y values. It is possible to generate bounding boxes for most geometric

@@ -22,7 +22,7 @@ module Sphere3d
         , withRadius
         )
 
-{-| <img src="https://opensolid.github.io/images/geometry/icons/sphere3d.svg" alt="Sphere3d" width="160">
+{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Sphere3d/icon.svg" alt="Sphere3d" width="160">
 
 A `Sphere3d` is defined by its center point and radius. This module contains
 functionality for:

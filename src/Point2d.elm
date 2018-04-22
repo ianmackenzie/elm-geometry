@@ -42,7 +42,7 @@ module Point2d
         , yCoordinate
         )
 
-{-| <img src="https://opensolid.github.io/images/geometry/icons/point2d.svg" alt="Point2d" width="160">
+{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Point2d/icon.svg" alt="Point2d" width="160">
 
 A `Point2d` represents a position in 2D space and is defined by its X and Y
 coordinates. This module contains a variety of point-related functionality, such

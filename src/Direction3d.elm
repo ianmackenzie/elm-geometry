@@ -49,7 +49,7 @@ module Direction3d
         , zComponent
         )
 
-{-| <img src="https://opensolid.github.io/images/geometry/icons/direction3d.svg" alt="Direction3d" width="160">
+{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Direction3d/icon.svg" alt="Direction3d" width="160">
 
 A `Direction3d` represents a direction like 'up' or 'north' or 'forwards'. They
 are represented using X, Y and Z components, and can be converted to vectors if
