@@ -14,8 +14,8 @@ module CubicSpline2d
         , endPoint
         , evaluate
         , fromControlPoints
+        , fromEndpoints
         , fromQuadraticSpline
-        , hermite
         , maxSecondDerivativeMagnitude
         , mirrorAcross
         , parameterValueToArcLength
@@ -50,7 +50,7 @@ in 2D defined by four control points. This module contains functionality for
 
 # Constructors
 
-@docs fromControlPoints, hermite, fromQuadraticSpline
+@docs fromControlPoints, fromEndpoints, fromQuadraticSpline
 
 
 # Properties
@@ -123,8 +123,8 @@ fromControlPoints =
     Internal.CubicSpline2d
 
 
-{-| Construct a spline in Hermite form, from the position and derivative values
-at its start and end points, like so:
+{-| Construct a spline from the position and derivative values at its start and
+end points, like so:
 
 ![Hermite cubic spline](https://opensolid.github.io/images/geometry/1.2/hermiteCubicSpline.svg)
 
@@ -133,8 +133,8 @@ cases the length of each derivative vector should be roughly equal to the length
 of the resulting spline.
 
 -}
-hermite : ( Point2d, Vector2d ) -> ( Point2d, Vector2d ) -> CubicSpline2d
-hermite ( startPoint, startDerivative ) ( endPoint, endDerivative ) =
+fromEndpoints : ( Point2d, Vector2d ) -> ( Point2d, Vector2d ) -> CubicSpline2d
+fromEndpoints ( startPoint, startDerivative ) ( endPoint, endDerivative ) =
     let
         startControlPoint =
             startPoint
