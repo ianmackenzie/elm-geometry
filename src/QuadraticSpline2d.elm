@@ -190,6 +190,20 @@ endDerivative spline =
     Vector2d.from p2 p3 |> Vector2d.scaleBy 2
 
 
+{-| Compute a bounding box for a given spline. It is not guaranteed that the
+result will be the _smallest_ possible bounding box, since for efficiency the
+bounding box is computed from the spline's control points (which cover a larger
+area than the spline itself).
+
+    QuadraticSpline2d.boundingBox exampleSpline
+    --> BoundingBox2d.fromExtrema
+    -->     { minX = 1
+    -->     , maxX = 5
+    -->     , minY = 1
+    -->     , maxY = 4
+    -->     }
+
+-}
 boundingBox : QuadraticSpline2d -> BoundingBox2d
 boundingBox spline =
     let

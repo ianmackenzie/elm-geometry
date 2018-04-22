@@ -229,6 +229,22 @@ endDerivative spline =
     Vector3d.from p2 p3 |> Vector3d.scaleBy 2
 
 
+{-| Compute a bounding box for a given spline. It is not guaranteed that the
+result will be the _smallest_ possible bounding box, since for efficiency the
+bounding box is computed from the spline's control points (which cover a larger
+volume than the spline itself).
+
+    QuadraticSpline3d.boundingBox exampleSpline
+    --> BoundingBox3d.fromExtrema
+    -->     { minX = 1
+    -->     , maxX = 3
+    -->     , minY = 1
+    -->     , maxY = 3
+    -->     , minZ = 1
+    -->     , maxZ = 3
+    -->     }
+
+-}
 boundingBox : QuadraticSpline3d -> BoundingBox3d
 boundingBox spline =
     let
