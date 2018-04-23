@@ -71,6 +71,7 @@ end point). This module includes functionality for
 import Axis2d exposing (Axis2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
+import Geometry.Accuracy exposing (Accuracy)
 import Geometry.Internal as Internal
 import Geometry.Parameter as Parameter
 import Geometry.SweptAngle as SweptAngle exposing (SweptAngle)
@@ -686,9 +687,9 @@ numApproximationSegments tolerance arc =
         ceiling (abs (sweptAngle arc) / maxSegmentAngle)
 
 
-{-| Approximate an arc as a polyline, within the specified tolerance.
+{-| Approximate an arc as a polyline.
 
-    Arc2d.toPolyline 0.1 exampleArc
+    Arc2d.toPolyline (Accuracy.maxError 0.1) exampleArc
     --> Polyline2d.fromVertices
     -->     [ Point2d.fromCoordinates ( 3, 1 )
     -->     , Point2d.fromCoordinates ( 2.732, 2 )
@@ -696,12 +697,13 @@ numApproximationSegments tolerance arc =
     -->     , Point2d.fromCoordinates ( 1, 3 )
     -->     ]
 
-A tolerance of zero will be treated as infinity (a single line segment will be
-returned).
+The accuracy of the approximation is controlled by the first argument; in the
+above example, every point on the returned polyline will be within 0.1 units of
+the original arc.
 
 -}
-toPolyline : Float -> Arc2d -> Polyline2d
-toPolyline tolerance arc =
+toPolyline : Accuracy -> Arc2d -> Polyline2d
+toPolyline (Internal.MaxError tolerance) arc =
     let
         numSegments =
             numApproximationSegments tolerance arc

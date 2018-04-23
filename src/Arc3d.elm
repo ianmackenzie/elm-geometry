@@ -75,6 +75,7 @@ import Direction2d exposing (Direction2d)
 import Direction3d exposing (Direction3d)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
+import Geometry.Accuracy exposing (Accuracy)
 import Geometry.Internal as Internal
 import Geometry.Parameter as Parameter
 import Plane3d exposing (Plane3d)
@@ -461,9 +462,9 @@ numApproximationSegments tolerance arc =
         ceiling (abs (sweptAngle arc) / maxSegmentAngle)
 
 
-{-| Approximate an arc as a polyline, within the specified tolerance.
+{-| Approximate an arc as a polyline.
 
-    Arc3d.toPolyline 0.1 exampleArc
+    Arc3d.toPolyline (Accuracy.maxError 0.1) exampleArc
     --> Polyline3d.fromVertices
     -->     [ Point3d.fromCoordinates ( 1, 1, 0 )
     -->     , Point3d.fromCoordinates ( 0.366, 1.366, 0 )
@@ -471,12 +472,13 @@ numApproximationSegments tolerance arc =
     -->     , Point3d.fromCoordinates ( -1, 1, 0 )
     -->     ]
 
-A tolerance of zero will be treated as infinity (a single line segment will be
-returned).
+The accuracy of the approximation is controlled by the first argument; in the
+above example, every point on the returned polyline will be within 0.1 units of
+the original arc.
 
 -}
-toPolyline : Float -> Arc3d -> Polyline3d
-toPolyline tolerance arc =
+toPolyline : Accuracy -> Arc3d -> Polyline3d
+toPolyline (Internal.MaxError tolerance) arc =
     let
         numSegments =
             numApproximationSegments tolerance arc

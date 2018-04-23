@@ -9,6 +9,7 @@ module Tests.QuadraticSpline2d
 import Expect
 import Float.Extra as Float
 import Fuzz exposing (Fuzzer)
+import Geometry.Accuracy as Accuracy
 import Geometry.Decode as Decode
 import Geometry.Encode as Encode
 import Geometry.Fuzz as Fuzz
@@ -136,7 +137,8 @@ parameterization =
             \_ ->
                 let
                     parameterizedCurve =
-                        QuadraticSpline2d.arcLengthParameterized 0.001
+                        QuadraticSpline2d.arcLengthParameterized
+                            (Accuracy.maxError 0.001)
                             exampleSpline
                 in
                 QuadraticSpline2d.pointAlong parameterizedCurve 0
@@ -145,7 +147,9 @@ parameterization =
             \spline ->
                 let
                     parameterizedCurve =
-                        QuadraticSpline2d.arcLengthParameterized 0.001 spline
+                        QuadraticSpline2d.arcLengthParameterized
+                            (Accuracy.maxError 0.001)
+                            spline
 
                     startPoint =
                         QuadraticSpline2d.startPoint spline
@@ -156,7 +160,9 @@ parameterization =
             \spline ->
                 let
                     parameterizedCurve =
-                        QuadraticSpline2d.arcLengthParameterized 0.001 spline
+                        QuadraticSpline2d.arcLengthParameterized
+                            (Accuracy.maxError 0.001)
+                            spline
 
                     endPoint =
                         QuadraticSpline2d.endPoint spline
@@ -168,7 +174,9 @@ parameterization =
             \spline ->
                 let
                     parameterizedCurve =
-                        QuadraticSpline2d.arcLengthParameterized 0.001 spline
+                        QuadraticSpline2d.arcLengthParameterized
+                            (Accuracy.maxError 0.001)
+                            spline
 
                     toParameterValue =
                         QuadraticSpline2d.arcLengthToParameterValue
@@ -186,7 +194,8 @@ parameterization =
                         0.001
 
                     parameterizedCurve =
-                        QuadraticSpline2d.arcLengthParameterized tolerance
+                        QuadraticSpline2d.arcLengthParameterized
+                            (Accuracy.maxError 0.001)
                             spline
                 in
                 QuadraticSpline2d.arcLength parameterizedCurve
@@ -196,7 +205,9 @@ parameterization =
             \_ ->
                 let
                     parameterizedCurve =
-                        QuadraticSpline2d.arcLengthParameterized 0.1 line
+                        QuadraticSpline2d.arcLengthParameterized
+                            (Accuracy.maxError 0.1)
+                            line
                 in
                 QuadraticSpline2d.pointAlong parameterizedCurve 5
                     |> Expect.equal (Just (Point2d.fromCoordinates ( 5, 1 )))
@@ -204,7 +215,9 @@ parameterization =
             \_ ->
                 let
                     parameterizedCurve =
-                        QuadraticSpline2d.arcLengthParameterized 0.1 line
+                        QuadraticSpline2d.arcLengthParameterized
+                            (Accuracy.maxError 0.1)
+                            line
                 in
                 QuadraticSpline2d.pointAlong parameterizedCurve 2.5
                     |> Expect.equal (Just (Point2d.fromCoordinates ( 2.5, 1 )))
@@ -212,7 +225,8 @@ parameterization =
             \_ ->
                 let
                     parameterizedCurve =
-                        QuadraticSpline2d.arcLengthParameterized 0.001
+                        QuadraticSpline2d.arcLengthParameterized
+                            (Accuracy.maxError 0.001)
                             exampleSpline
 
                     expected =
@@ -228,7 +242,9 @@ parameterization =
             \_ ->
                 let
                     parameterizedCurve =
-                        QuadraticSpline2d.arcLengthParameterized 0.001 line
+                        QuadraticSpline2d.arcLengthParameterized
+                            (Accuracy.maxError 0.001)
+                            line
                 in
                 QuadraticSpline2d.arcLength parameterizedCurve
                     |> Expect.equal 5
@@ -236,7 +252,8 @@ parameterization =
             \_ ->
                 let
                     parameterizedCurve =
-                        QuadraticSpline2d.arcLengthParameterized 0.001
+                        QuadraticSpline2d.arcLengthParameterized
+                            (Accuracy.maxError 0.001)
                             exampleSpline
 
                     arcLength =

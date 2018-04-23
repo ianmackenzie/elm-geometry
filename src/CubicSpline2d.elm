@@ -96,6 +96,7 @@ import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
+import Geometry.Accuracy exposing (Accuracy)
 import Geometry.Internal as Internal
 import Point2d exposing (Point2d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
@@ -770,22 +771,20 @@ type ArcLengthParameterized
     = ArcLengthParameterized CubicSpline2d ArcLength.Parameterization
 
 
-{-| Build an arc length parameterization of the given spline, within
-a given tolerance. Generally speaking, all operations on the resulting
-`ArcLengthParameterized` value will be accurate to within the given arc length
-tolerance.
-
-    tolerance =
-        1.0e-4
+{-| Build an arc length parameterization of the given spline:
 
     parameterizedSpline =
         CubicSpline2d.arcLengthParameterized
-            tolerance
+            (Accuracy.maxError 1.0e-4)
             exampleSpline
 
+The accuracy of the parameterization is controlled by the first argument; this
+affects the accuracy of results returned from functions such as `arcLength` and
+`pointAlong`.
+
 -}
-arcLengthParameterized : Float -> CubicSpline2d -> ArcLengthParameterized
-arcLengthParameterized tolerance spline =
+arcLengthParameterized : Accuracy -> CubicSpline2d -> ArcLengthParameterized
+arcLengthParameterized (Internal.MaxError tolerance) spline =
     let
         parameterization =
             ArcLength.parameterization
@@ -798,15 +797,13 @@ arcLengthParameterized tolerance spline =
     ArcLengthParameterized spline parameterization
 
 
-{-| Find the total arc length of a spline. This will be accurate to within the
-tolerance given when calling `arcLengthParameterized`.
+{-| Find the total arc length of a spline:
 
-    arcLength : Float
-    arcLength =
-        CubicSpline2d.arcLength parameterizedSpline
-
-    arcLength
+    CubicSpline2d.arcLength parameterizedSpline
     --> 7.0952
+
+In this example, the result will be accurate to within `1.0e-4` since that was
+the tolerance used when constructing `parameterizedSpline`.
 
 -}
 arcLength : ArcLengthParameterized -> Float
