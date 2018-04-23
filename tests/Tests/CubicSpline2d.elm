@@ -2,7 +2,7 @@ module Tests.CubicSpline2d
     exposing
         ( arcLengthMatchesAnalytical
         , derivativeAndMagnitudeAreConsistent
-        , hermiteReproducesSpline
+        , fromEndpointsReproducesSpline
         , jsonRoundTrips
         , pointAtArcLengthIsEnd
         , pointAtZeroLengthIsStart
@@ -28,10 +28,10 @@ jsonRoundTrips =
         Decode.cubicSpline2d
 
 
-hermiteReproducesSpline : Test
-hermiteReproducesSpline =
+fromEndpointsReproducesSpline : Test
+fromEndpointsReproducesSpline =
     Test.fuzz Fuzz.cubicSpline2d
-        "CubicSpline2d.hermite reproduces original spline"
+        "CubicSpline2d.fromEndpoints reproduces original spline"
         (\spline ->
             let
                 startPoint =
@@ -46,7 +46,7 @@ hermiteReproducesSpline =
                 endDerivative =
                     CubicSpline2d.endDerivative spline
             in
-            CubicSpline2d.hermite
+            CubicSpline2d.fromEndpoints
                 ( startPoint, startDerivative )
                 ( endPoint, endDerivative )
                 |> Expect.cubicSpline2d spline
