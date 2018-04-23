@@ -231,7 +231,9 @@ returns `Nothing`.
 -}
 toParameterValue : Parameterization -> Float -> Maybe Float
 toParameterValue (Parameterization tree) s =
-    if s >= 0 && s <= lengthAtEnd tree then
+    if s == 0 then
+        Just 0
+    else if s > 0 && s <= lengthAtEnd tree then
         Just (unsafeToParameterValue tree s)
     else
         Nothing
@@ -350,7 +352,9 @@ parameter value is less than zero or greater than one, returns `Nothing`.
 -}
 fromParameterValue : Parameterization -> Float -> Maybe Float
 fromParameterValue (Parameterization tree) t =
-    if t >= 0 && t <= 1 then
+    if t == 0 then
+        Just 0
+    else if t > 0 && t <= 1 then
         Just (unsafeFromParameterValue tree t)
     else
         Nothing
