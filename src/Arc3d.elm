@@ -23,6 +23,7 @@ module Arc3d
         , throughPoints
         , toPolyline
         , translateBy
+        , translateIn
         )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Arc3d/icon.svg" alt="Arc3d" width="160">
@@ -60,7 +61,7 @@ start point to the arc's end point). This module includes functionality for
 
 # Transformations
 
-@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross, projectInto
+@docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
 
 
 # Coordinate conversions
@@ -634,6 +635,21 @@ translateBy displacement (Internal.Arc3d arc) =
         , xDirection = arc.xDirection
         , yDirection = arc.yDirection
         }
+
+
+{-| Translate an arc in a given direction by a given distance;
+
+    Arc3d.translateIn direction distance
+
+is equivalent to
+
+    Arc3d.translateBy
+        (Vector3d.withLength distance direction)
+
+-}
+translateIn : Direction3d -> Float -> Arc3d -> Arc3d
+translateIn direction distance arc =
+    translateBy (Vector3d.withLength distance direction) arc
 
 
 {-| Mirror an arc across a given plane.

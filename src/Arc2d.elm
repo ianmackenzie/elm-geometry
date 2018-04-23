@@ -20,6 +20,7 @@ module Arc2d
         , throughPoints
         , toPolyline
         , translateBy
+        , translateIn
         , with
         , withRadius
         )
@@ -59,7 +60,7 @@ end point). This module includes functionality for
 
 # Transformations
 
-@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross
+@docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
 
 
 # Coordinate conversions
@@ -807,6 +808,21 @@ translateBy displacement (Internal.Arc2d arc) =
         , signedLength = arc.signedLength
         , xDirection = arc.xDirection
         }
+
+
+{-| Translate an arc in a given direction by a given distance;
+
+    Arc2d.translateIn direction distance
+
+is equivalent to
+
+    Arc2d.translateBy
+        (Vector2d.withLength distance direction)
+
+-}
+translateIn : Direction2d -> Float -> Arc2d -> Arc2d
+translateIn direction distance arc =
+    translateBy (Vector2d.withLength distance direction) arc
 
 
 {-| Mirror an arc across a given axis.
