@@ -419,13 +419,13 @@ than twice the given radius, returns `Nothing`:
 Note that this means it is dangerous to use this function to construct 180
 degree arcs (half circles), since in this case due to numerical roundoff the
 distance between the two given points may appear to be slightly more than twice
-the given radius. In this case it is safer to use `Arc2d.withAngle`, such as
-(for a counterclockwise arc):
+the given radius. In this case it is safer to use `Arc2d.from`, such as (for a
+counterclockwise arc):
 
     halfCircle =
-        Arc2d.withAngle pi firstPoint secondPoint
+        Arc2d.from firstPoint secondPoint (degrees 180)
 
-(Use `-pi` for a clockwise arc.)
+(Use `degrees -180` for a clockwise arc.)
 
 -}
 withRadius : Float -> SweptAngle -> Point2d -> Point2d -> Maybe Arc2d
