@@ -674,19 +674,16 @@ numApproximationSegments : Float -> Arc2d -> Int
 numApproximationSegments tolerance arc =
     if sweptAngle arc == 0 then
         1
+    else if tolerance <= 0 then
+        0
+    else if tolerance >= 2 * radius arc then
+        1
     else
         let
-            arcRadius =
-                radius arc
+            maxSegmentAngle =
+                2 * acos (tolerance / radius arc - 1)
         in
-        if 0 < tolerance && tolerance < arcRadius then
-            let
-                maxSegmentAngle =
-                    sqrt (8 * tolerance / arcRadius)
-            in
-            ceiling (abs (sweptAngle arc) / maxSegmentAngle)
-        else
-            1
+        ceiling (abs (sweptAngle arc) / maxSegmentAngle)
 
 
 {-| Approximate an arc as a polyline, within the specified tolerance.
