@@ -19,6 +19,15 @@ import Test exposing (Test)
 import Tests.Generic as Generic
 
 
+degenerateSpline : Fuzzer QuadraticSpline2d
+degenerateSpline =
+    Fuzz.point2d
+        |> Fuzz.map
+            (\point ->
+                QuadraticSpline2d.fromControlPoints ( point, point, point )
+            )
+
+
 curvedSpline : Fuzzer QuadraticSpline2d
 curvedSpline =
     Fuzz.map5
@@ -156,7 +165,7 @@ parameterization =
                 in
                 QuadraticSpline2d.pointAlong parameterizedCurve 0
                     |> Expect.equal (Just startPoint)
-        , Test.fuzz Fuzz.quadraticSpline2d "at s = (length spline) the arcLengthParameterized curve gives the end point" <|
+        , Test.fuzz (Fuzz.oneOf [ Fuzz.quadraticSpline2d, degenerateSpline ]) "at s = (length spline) the arcLengthParameterized curve gives the end point" <|
             \spline ->
                 let
                     parameterizedCurve =
@@ -170,7 +179,7 @@ parameterization =
                 QuadraticSpline2d.arcLength parameterizedCurve
                     |> QuadraticSpline2d.pointAlong parameterizedCurve
                     |> Expect.equal (Just endPoint)
-        , Test.fuzz Fuzz.quadraticSpline2d "at s = (length spline) toParameterValue gives 1" <|
+        , Test.fuzz (Fuzz.oneOf [ Fuzz.quadraticSpline2d, degenerateSpline ]) "at s = (length spline) toParameterValue gives 1" <|
             \spline ->
                 let
                     parameterizedCurve =
@@ -178,13 +187,18 @@ parameterization =
                             (Accuracy.maxError 0.001)
                             spline
 
-                    toParameterValue =
+                    arcLength =
+                        QuadraticSpline2d.arcLength parameterizedCurve
+
+                    parameterValue =
                         QuadraticSpline2d.arcLengthToParameterValue
                             parameterizedCurve
+                            arcLength
                 in
-                QuadraticSpline2d.arcLength parameterizedCurve
-                    |> toParameterValue
-                    |> Expect.equal (Just 1)
+                if arcLength == 0 then
+                    parameterValue |> Expect.equal (Just 0)
+                else
+                    parameterValue |> Expect.equal (Just 1)
         , Test.fuzz curvedSpline "arc length matches analytical formula" <|
             -- analyticalLength falls down for degenerate splines so just check
             -- curved ones
