@@ -13,8 +13,8 @@ module CubicSpline2d
         , endDerivative
         , endPoint
         , evaluate
+        , from
         , fromControlPoints
-        , fromEndpoints
         , fromQuadraticSpline
         , maxSecondDerivativeMagnitude
         , mirrorAcross
@@ -51,7 +51,7 @@ in 2D defined by four control points. This module contains functionality for
 
 # Constructors
 
-@docs fromControlPoints, fromEndpoints, fromQuadraticSpline
+@docs fromControlPoints, from, fromQuadraticSpline
 
 
 # Properties
@@ -125,18 +125,18 @@ fromControlPoints =
     Internal.CubicSpline2d
 
 
-{-| Construct a spline from the position and derivative values at its start and
-end points, like so:
+{-| Construct a spline from a given start point with a given start derivative,
+to a given end point with a given end derivative, like so:
 
-![Cubic spline from endpoints](https://ianmackenzie.github.io/elm-geometry/1.0.0/CubicSpline2d/fromEndpoints.svg)
+![Cubic spline from endpoints](https://ianmackenzie.github.io/elm-geometry/1.0.0/CubicSpline2d/from.svg)
 
 The spline is based on a parameter that ranges from 0 to 1; as a result, in most
 cases the length of each derivative vector should be roughly equal to the length
 of the resulting spline.
 
 -}
-fromEndpoints : ( Point2d, Vector2d ) -> ( Point2d, Vector2d ) -> CubicSpline2d
-fromEndpoints ( startPoint, startDerivative ) ( endPoint, endDerivative ) =
+from : Point2d -> Vector2d -> Point2d -> Vector2d -> CubicSpline2d
+from startPoint startDerivative endPoint endDerivative =
     let
         startControlPoint =
             startPoint
