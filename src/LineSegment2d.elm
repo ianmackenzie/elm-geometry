@@ -36,6 +36,7 @@ module LineSegment2d
         , squaredLength
         , startPoint
         , translateBy
+        , translateIn
         , vector
         )
 
@@ -77,7 +78,7 @@ functionality such as:
 Transforming a line segment is equivalent to transforming its start and end
 points and forming a new line segment between the resulting points.
 
-@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, mapEndpoints
+@docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapEndpoints
 
 
 # Coordinate conversions
@@ -467,6 +468,21 @@ rotateAround centerPoint angle =
 translateBy : Vector2d -> LineSegment2d -> LineSegment2d
 translateBy vector =
     mapEndpoints (Point2d.translateBy vector)
+
+
+{-| Translate a line segment in a given direction by a given distance;
+
+    LineSegment2d.translateIn direction distance
+
+is equivalent to
+
+    LineSegment2d.translateBy
+        (Vector2d.withLength distance direction)
+
+-}
+translateIn : Direction2d -> Float -> LineSegment2d -> LineSegment2d
+translateIn direction distance lineSegment =
+    translateBy (Vector2d.withLength distance direction) lineSegment
 
 
 {-| Mirror a line segment across an axis.

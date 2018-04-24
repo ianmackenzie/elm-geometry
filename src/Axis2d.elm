@@ -23,6 +23,7 @@ module Axis2d
         , rotateAround
         , through
         , translateBy
+        , translateIn
         , withDirection
         , x
         , y
@@ -57,7 +58,7 @@ an origin point and direction. Axes have several uses, such as:
 
 # Transformations
 
-@docs flip, moveTo, rotateAround, translateBy, mirrorAcross
+@docs flip, moveTo, rotateAround, translateBy, translateIn, mirrorAcross
 
 
 # Coordinate conversions
@@ -208,6 +209,21 @@ the axis' origin point and leaves the direction unchanged.
 translateBy : Vector2d -> Axis2d -> Axis2d
 translateBy vector (Internal.Axis2d axis) =
     through (Point2d.translateBy vector axis.originPoint) axis.direction
+
+
+{-| Translate an axis in a given direction by a given distance;
+
+    Axis2d.translateIn direction distance
+
+is equivalent to
+
+    Axis2d.translateBy
+        (Vector2d.withLength distance direction)
+
+-}
+translateIn : Direction2d -> Float -> Axis2d -> Axis2d
+translateIn direction distance axis =
+    translateBy (Vector2d.withLength distance direction) axis
 
 
 {-| Mirror one axis across another. The axis to mirror across is given first and

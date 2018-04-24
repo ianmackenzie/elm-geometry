@@ -29,6 +29,7 @@ module QuadraticSpline2d
         , startPoint
         , tangentAlong
         , translateBy
+        , translateIn
         , underlyingSpline
         )
 
@@ -62,7 +63,7 @@ in 2D defined by three control points. This module contains functionality for
 
 # Transformations
 
-@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross
+@docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
 
 
 # Coordinate conversions
@@ -447,6 +448,21 @@ rotateAround point angle =
 translateBy : Vector2d -> QuadraticSpline2d -> QuadraticSpline2d
 translateBy displacement =
     mapControlPoints (Point2d.translateBy displacement)
+
+
+{-| Translate a spline in a given direction by a given distance;
+
+    QuadraticSpline2d.translateIn direction distance
+
+is equivalent to
+
+    QuadraticSpline2d.translateBy
+        (Vector2d.withLength distance direction)
+
+-}
+translateIn : Direction2d -> Float -> QuadraticSpline2d -> QuadraticSpline2d
+translateIn direction distance spline =
+    translateBy (Vector2d.withLength distance direction) spline
 
 
 {-| Mirror a spline across an axis.

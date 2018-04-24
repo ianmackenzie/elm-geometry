@@ -40,6 +40,7 @@ module BoundingBox3d
         , separatedBy
         , singleton
         , translateBy
+        , translateIn
         )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/BoundingBox3d/icon.svg" alt="BoundingBox3d" width="160">
@@ -80,10 +81,11 @@ box of an object than the object itself, such as:
 
 # Transformations
 
-@docs scaleAbout, translateBy
+@docs scaleAbout, translateBy, translateIn
 
 -}
 
+import Direction3d exposing (Direction3d)
 import Geometry.Internal as Internal
 import Point3d exposing (Point3d)
 import Vector3d exposing (Vector3d)
@@ -1023,3 +1025,18 @@ translateBy displacement boundingBox =
         , minZ = minZ + dz
         , maxZ = maxZ + dz
         }
+
+
+{-| Translate a bounding box in a given direction by a given distance;
+
+    BoundingBox3d.translateIn direction distance
+
+is equivalent to
+
+    BoundingBox3d.translateBy
+        (Vector3d.withLength distance direction)
+
+-}
+translateIn : Direction3d -> Float -> BoundingBox3d -> BoundingBox3d
+translateIn direction distance boundingBox =
+    translateBy (Vector3d.withLength distance direction) boundingBox

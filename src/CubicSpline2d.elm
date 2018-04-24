@@ -32,6 +32,7 @@ module CubicSpline2d
         , startPoint
         , tangentAlong
         , translateBy
+        , translateIn
         , underlyingSpline
         )
 
@@ -65,7 +66,7 @@ in 2D defined by four control points. This module contains functionality for
 
 # Transformations
 
-@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross
+@docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
 
 
 # Coordinate conversions
@@ -636,6 +637,21 @@ rotateAround point angle =
 translateBy : Vector2d -> CubicSpline2d -> CubicSpline2d
 translateBy displacement =
     mapControlPoints (Point2d.translateBy displacement)
+
+
+{-| Translate a spline in a given direction by a given distance;
+
+    CubicSpline2d.translateIn direction distance
+
+is equivalent to
+
+    CubicSpline2d.translateBy
+        (Vector2d.withLength distance direction)
+
+-}
+translateIn : Direction2d -> Float -> CubicSpline2d -> CubicSpline2d
+translateIn direction distance spline =
+    translateBy (Vector2d.withLength distance direction) spline
 
 
 {-| Mirror a spline across an axis.

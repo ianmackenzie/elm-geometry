@@ -20,6 +20,7 @@ module Circle3d
         , sweptAround
         , throughPoints
         , translateBy
+        , translateIn
         , withRadius
         )
 
@@ -50,7 +51,7 @@ for:
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectInto
+@docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
 
 
 # Coordinate conversions
@@ -340,6 +341,21 @@ translateBy displacement circle =
     withRadius (radius circle)
         (axialDirection circle)
         (Point3d.translateBy displacement (centerPoint circle))
+
+
+{-| Translate a circle in a given direction by a given distance;
+
+    Circle3d.translateIn direction distance
+
+is equivalent to
+
+    Circle3d.translateBy
+        (Vector3d.withLength distance direction)
+
+-}
+translateIn : Direction3d -> Float -> Circle3d -> Circle3d
+translateIn direction distance circle =
+    translateBy (Vector3d.withLength distance direction) circle
 
 
 {-| Mirror a circle across a given plane.

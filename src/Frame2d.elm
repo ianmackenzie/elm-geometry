@@ -26,6 +26,7 @@ module Frame2d
         , rotateBy
         , translateAlongOwn
         , translateBy
+        , translateIn
         , unsafe
         , withXDirection
         , withYDirection
@@ -72,7 +73,7 @@ always perpendicular to each other). It can be thought of as:
 
 # Transformations
 
-@docs flipX, flipY, moveTo, rotateBy, rotateAround, translateBy, translateAlongOwn, mirrorAcross
+@docs flipX, flipY, moveTo, rotateBy, rotateAround, translateBy, translateIn, translateAlongOwn, mirrorAcross
 
 
 # Coordinate conversions
@@ -450,6 +451,21 @@ translateBy vector frame =
         , xDirection = xDirection frame
         , yDirection = yDirection frame
         }
+
+
+{-| Translate a frame in a given direction by a given distance;
+
+    Frame2d.translateIn direction distance
+
+is equivalent to
+
+    Frame2d.translateBy
+        (Vector2d.withLength distance direction)
+
+-}
+translateIn : Direction2d -> Float -> Frame2d -> Frame2d
+translateIn direction distance frame =
+    translateBy (Vector2d.withLength distance direction) frame
 
 
 {-| Translate a frame along one of its own axes by a given distance.

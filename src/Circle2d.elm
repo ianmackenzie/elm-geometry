@@ -17,6 +17,7 @@ module Circle2d
         , throughPoints
         , toArc
         , translateBy
+        , translateIn
         , unit
         , withRadius
         )
@@ -60,7 +61,7 @@ functionality for
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross
+@docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
 
 
 # Coordinate conversions
@@ -353,6 +354,21 @@ translateBy : Vector2d -> Circle2d -> Circle2d
 translateBy displacement (Internal.Circle2d circle) =
     withRadius circle.radius
         (Point2d.translateBy displacement circle.centerPoint)
+
+
+{-| Translate a circle in a given direction by a given distance;
+
+    Circle2d.translateIn direction distance
+
+is equivalent to
+
+    Circle2d.translateBy
+        (Vector2d.withLength distance direction)
+
+-}
+translateIn : Direction2d -> Float -> Circle2d -> Circle2d
+translateIn direction distance circle =
+    translateBy (Vector2d.withLength distance direction) circle
 
 
 {-| Mirror a circle across a given axis.

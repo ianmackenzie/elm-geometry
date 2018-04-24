@@ -29,6 +29,7 @@ module Triangle2d
         , rotateAround
         , scaleAbout
         , translateBy
+        , translateIn
         , vertices
         )
 
@@ -63,7 +64,7 @@ vertices. This module contains triangle-related functionality such as:
 
 Transforming a triangle is equivalent to transforming its vertices.
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, mapVertices
+@docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, mapVertices
 
 
 # Coordinate conversions
@@ -78,6 +79,7 @@ different coordinate frames.
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Circle2d exposing (Circle2d)
+import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Internal as Internal
 import LineSegment2d exposing (LineSegment2d)
@@ -327,6 +329,21 @@ rotateAround centerPoint angle =
 translateBy : Vector2d -> Triangle2d -> Triangle2d
 translateBy vector =
     mapVertices (Point2d.translateBy vector)
+
+
+{-| Translate a triangle in a given direction by a given distance;
+
+    Triangle2d.translateIn direction distance
+
+is equivalent to
+
+    Triangle2d.translateBy
+        (Vector2d.withLength distance direction)
+
+-}
+translateIn : Direction2d -> Float -> Triangle2d -> Triangle2d
+translateIn direction distance triangle =
+    translateBy (Vector2d.withLength distance direction) triangle
 
 
 {-| Mirror a triangle across a given axis.

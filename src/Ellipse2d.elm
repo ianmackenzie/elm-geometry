@@ -10,6 +10,7 @@ module Ellipse2d
         , rotateAround
         , scaleAbout
         , translateBy
+        , translateIn
         , with
         , xAxis
         , xDirection
@@ -45,7 +46,7 @@ includes functionality for
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross
+@docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
 
 
 # Coordinate conversions
@@ -284,6 +285,21 @@ rotateAround point angle =
 translateBy : Vector2d -> Ellipse2d -> Ellipse2d
 translateBy displacement =
     transformBy (Frame2d.translateBy displacement)
+
+
+{-| Translate an ellipse in a given direction by a given distance;
+
+    Ellipse2d.translateIn direction distance
+
+is equivalent to
+
+    Ellipse2d.translateBy
+        (Vector2d.withLength distance direction)
+
+-}
+translateIn : Direction2d -> Float -> Ellipse2d -> Ellipse2d
+translateIn direction distance ellipse =
+    translateBy (Vector2d.withLength distance direction) ellipse
 
 
 {-| Mirror an ellipse across a given axis.

@@ -37,6 +37,7 @@ module LineSegment3d
         , squaredLength
         , startPoint
         , translateBy
+        , translateIn
         , vector
         )
 
@@ -73,7 +74,7 @@ functionality such as:
 Transforming a line segment is equivalent to transforming its start and end
 points and forming a new line segment between the resulting points.
 
-@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, mapEndpoints
+@docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapEndpoints
 
 
 # Coordinate conversions
@@ -377,6 +378,21 @@ rotateAround axis angle =
 translateBy : Vector3d -> LineSegment3d -> LineSegment3d
 translateBy vector =
     mapEndpoints (Point3d.translateBy vector)
+
+
+{-| Translate a line segment in a given direction by a given distance;
+
+    LineSegment3d.translateIn direction distance
+
+is equivalent to
+
+    LineSegment3d.translateBy
+        (Vector3d.withLength distance direction)
+
+-}
+translateIn : Direction3d -> Float -> LineSegment3d -> LineSegment3d
+translateIn direction distance lineSegment =
+    translateBy (Vector3d.withLength distance direction) lineSegment
 
 
 {-| Mirror a line segment across a plane.

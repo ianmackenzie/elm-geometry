@@ -35,6 +35,7 @@ module CubicSpline3d
         , startPoint
         , tangentAlong
         , translateBy
+        , translateIn
         , underlyingSpline
         )
 
@@ -68,7 +69,7 @@ in 3D defined by four control points. This module contains functionality for
 
 # Transformations
 
-@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto
+@docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
 
 
 # Coordinate conversions
@@ -730,6 +731,21 @@ rotateAround axis angle =
 translateBy : Vector3d -> CubicSpline3d -> CubicSpline3d
 translateBy displacement =
     mapControlPoints (Point3d.translateBy displacement)
+
+
+{-| Translate a spline in a given direction by a given distance;
+
+    CubicSpline3d.translateIn direction distance
+
+is equivalent to
+
+    CubicSpline3d.translateBy
+        (Vector3d.withLength distance direction)
+
+-}
+translateIn : Direction3d -> Float -> CubicSpline3d -> CubicSpline3d
+translateIn direction distance spline =
+    translateBy (Vector3d.withLength distance direction) spline
 
 
 {-| Mirror a spline across a plane.

@@ -27,6 +27,7 @@ module Polyline3d
         , scaleAbout
         , segments
         , translateBy
+        , translateIn
         , vertices
         )
 
@@ -57,7 +58,7 @@ as
 
 Transforming a polyline is equivalent to transforming each of its vertices.
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, mapVertices
+@docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapVertices
 
 
 # Coordinate conversions
@@ -68,6 +69,7 @@ Transforming a polyline is equivalent to transforming each of its vertices.
 
 import Axis3d exposing (Axis3d)
 import BoundingBox3d exposing (BoundingBox3d)
+import Direction3d exposing (Direction3d)
 import Frame3d exposing (Frame3d)
 import Geometry.Internal as Internal
 import LineSegment3d exposing (LineSegment3d)
@@ -230,6 +232,21 @@ rotateAround axis angle =
 translateBy : Vector3d -> Polyline3d -> Polyline3d
 translateBy vector =
     mapVertices (Point3d.translateBy vector)
+
+
+{-| Translate a polyline in a given direction by a given distance;
+
+    Polyline3d.translateIn direction distance
+
+is equivalent to
+
+    Polyline3d.translateBy
+        (Vector3d.withLength distance direction)
+
+-}
+translateIn : Direction3d -> Float -> Polyline3d -> Polyline3d
+translateIn direction distance polyline =
+    translateBy (Vector3d.withLength distance direction) polyline
 
 
 {-| Mirror a polyline across the given plane.

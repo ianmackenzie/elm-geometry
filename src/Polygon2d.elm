@@ -30,6 +30,7 @@ module Polygon2d
         , scaleAbout
         , singleLoop
         , translateBy
+        , translateIn
         , triangulate
         , withHoles
         )
@@ -61,7 +62,7 @@ as
 
 Transforming a polygon is equivalent to transforming each of its vertices.
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross
+@docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
 
 
 # Coordinate conversions
@@ -77,6 +78,7 @@ Transforming a polygon is equivalent to transforming each of its vertices.
 
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
+import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Internal as Internal
 import LineSegment2d exposing (LineSegment2d)
@@ -355,6 +357,21 @@ rotateAround point angle =
 translateBy : Vector2d -> Polygon2d -> Polygon2d
 translateBy vector =
     mapVertices (Point2d.translateBy vector) False
+
+
+{-| Translate a polygon in a given direction by a given distance;
+
+    Polygon2d.translateIn direction distance
+
+is equivalent to
+
+    Polygon2d.translateBy
+        (Vector2d.withLength distance direction)
+
+-}
+translateIn : Direction2d -> Float -> Polygon2d -> Polygon2d
+translateIn direction distance polygon =
+    translateBy (Vector2d.withLength distance direction) polygon
 
 
 {-| Mirror a polygon across the given axis.

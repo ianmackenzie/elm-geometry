@@ -31,6 +31,7 @@ module SketchPlane3d
         , toPlane
         , translateAlongOwn
         , translateBy
+        , translateIn
         , unsafe
         , withNormalDirection
         , xAxis
@@ -128,7 +129,7 @@ Sketch planes can also be constructed from `Frame3d` values using
 
 # Transformations
 
-@docs offsetBy, flipX, flipY, moveTo, rotateAround, rotateAroundOwn, translateBy, translateAlongOwn, mirrorAcross
+@docs offsetBy, flipX, flipY, moveTo, rotateAround, rotateAroundOwn, translateBy, translateIn, translateAlongOwn, mirrorAcross
 
 
 # Coordinate conversions
@@ -728,6 +729,21 @@ translateBy vector sketchPlane =
         , xDirection = xDirection sketchPlane
         , yDirection = yDirection sketchPlane
         }
+
+
+{-| Translate a sketch plane in a given direction by a given distance;
+
+    SketchPlane3d.translateIn direction distance
+
+is equivalent to
+
+    SketchPlane3d.translateBy
+        (Vector3d.withLength distance direction)
+
+-}
+translateIn : Direction3d -> Float -> SketchPlane3d -> SketchPlane3d
+translateIn direction distance sketchPlane =
+    translateBy (Vector3d.withLength distance direction) sketchPlane
 
 
 {-| Translate a sketch plane along one of its own axes by a given distance.

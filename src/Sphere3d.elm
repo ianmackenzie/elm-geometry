@@ -17,6 +17,7 @@ module Sphere3d
         , surfaceArea
         , throughPoints
         , translateBy
+        , translateIn
         , unit
         , volume
         , withRadius
@@ -56,7 +57,7 @@ functionality for:
 
 # Transformations
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, projectInto
+@docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectInto
 
 
 # Coordinate conversions
@@ -69,6 +70,7 @@ import Axis3d exposing (Axis3d)
 import BoundingBox3d exposing (BoundingBox3d)
 import Circle2d exposing (Circle2d)
 import Circle3d exposing (Circle3d)
+import Direction3d exposing (Direction3d)
 import Frame3d exposing (Frame3d)
 import Geometry.Internal as Internal exposing (Sphere3d)
 import Plane3d exposing (Plane3d)
@@ -311,6 +313,21 @@ translateBy : Vector3d -> Sphere3d -> Sphere3d
 translateBy displacement sphere =
     withRadius (radius sphere)
         (Point3d.translateBy displacement (centerPoint sphere))
+
+
+{-| Translate a sphere in a given direction by a given distance;
+
+    Sphere3d.translateIn direction distance
+
+is equivalent to
+
+    Sphere3d.translateBy
+        (Vector3d.withLength distance direction)
+
+-}
+translateIn : Direction3d -> Float -> Sphere3d -> Sphere3d
+translateIn direction distance sphere =
+    translateBy (Vector3d.withLength distance direction) sphere
 
 
 {-| Mirror a sphere across a given plane.

@@ -32,6 +32,7 @@ module QuadraticSpline3d
         , startPoint
         , tangentAlong
         , translateBy
+        , translateIn
         , underlyingSpline
         )
 
@@ -65,7 +66,7 @@ in 3D defined by three control points. This module contains functionality for
 
 # Transformations
 
-@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto
+@docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
 
 
 # Coordinate conversions
@@ -511,6 +512,21 @@ rotateAround axis angle =
 translateBy : Vector3d -> QuadraticSpline3d -> QuadraticSpline3d
 translateBy displacement =
     mapControlPoints (Point3d.translateBy displacement)
+
+
+{-| Translate an arc in a given direction by a given distance;
+
+    QuadraticSpline3d.translateIn direction distance
+
+is equivalent to
+
+    QuadraticSpline3d.translateBy
+        (Vector3d.withLength distance direction)
+
+-}
+translateIn : Direction3d -> Float -> QuadraticSpline3d -> QuadraticSpline3d
+translateIn direction distance spline =
+    translateBy (Vector3d.withLength distance direction) spline
 
 
 {-| Mirror a spline across a plane.

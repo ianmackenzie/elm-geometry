@@ -25,6 +25,7 @@ module Polyline2d
         , scaleAbout
         , segments
         , translateBy
+        , translateIn
         , vertices
         )
 
@@ -55,7 +56,7 @@ as
 
 Transforming a polyline is equivalent to transforming each of its vertices.
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, mapVertices
+@docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapVertices
 
 
 # Coordinate conversions
@@ -66,6 +67,7 @@ Transforming a polyline is equivalent to transforming each of its vertices.
 
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
+import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Internal as Internal
 import LineSegment2d exposing (LineSegment2d)
@@ -204,6 +206,21 @@ rotateAround point angle =
 translateBy : Vector2d -> Polyline2d -> Polyline2d
 translateBy vector =
     mapVertices (Point2d.translateBy vector)
+
+
+{-| Translate a polyline in a given direction by a given distance;
+
+    Polyline2d.translateIn direction distance
+
+is equivalent to
+
+    Polyline2d.translateBy
+        (Vector2d.withLength distance direction)
+
+-}
+translateIn : Direction2d -> Float -> Polyline2d -> Polyline2d
+translateIn direction distance polyline =
+    translateBy (Vector2d.withLength distance direction) polyline
 
 
 {-| Mirror a polyline across the given axis.

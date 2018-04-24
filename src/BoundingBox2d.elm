@@ -37,6 +37,7 @@ module BoundingBox2d
         , separatedBy
         , singleton
         , translateBy
+        , translateIn
         )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/BoundingBox2d/icon.svg" alt="BoundingBox2d" width="160">
@@ -78,10 +79,11 @@ box of an object than the object itself, such as:
 
 # Transformations
 
-@docs scaleAbout, translateBy
+@docs scaleAbout, translateBy, translateIn
 
 -}
 
+import Direction2d exposing (Direction2d)
 import Geometry.Internal as Internal
 import Point2d exposing (Point2d)
 import Vector2d exposing (Vector2d)
@@ -929,3 +931,18 @@ translateBy displacement boundingBox =
         , minY = minY + dy
         , maxY = maxY + dy
         }
+
+
+{-| Translate a bounding box in a given direction by a given distance;
+
+    BoundingBox2d.translateIn direction distance
+
+is equivalent to
+
+    BoundingBox2d.translateBy
+        (Vector2d.withLength distance direction)
+
+-}
+translateIn : Direction2d -> Float -> BoundingBox2d -> BoundingBox2d
+translateIn direction distance boundingBox =
+    translateBy (Vector2d.withLength distance direction) boundingBox

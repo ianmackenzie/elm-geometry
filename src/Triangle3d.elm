@@ -30,6 +30,7 @@ module Triangle3d
         , rotateAround
         , scaleAbout
         , translateBy
+        , translateIn
         , vertices
         )
 
@@ -59,7 +60,7 @@ vertices. This module contains triangle-related functionality such as:
 
 Transforming a triangle is equivalent to transforming its vertices.
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross, projectOnto, mapVertices
+@docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapVertices
 
 
 # Coordinate conversions
@@ -307,6 +308,21 @@ rotateAround axis angle =
 translateBy : Vector3d -> Triangle3d -> Triangle3d
 translateBy vector =
     mapVertices (Point3d.translateBy vector)
+
+
+{-| Translate a triangle in a given direction by a given distance;
+
+    Triangle3d.translateIn direction distance
+
+is equivalent to
+
+    Triangle3d.translateBy
+        (Vector3d.withLength distance direction)
+
+-}
+translateIn : Direction3d -> Float -> Triangle3d -> Triangle3d
+translateIn direction distance triangle =
+    translateBy (Vector3d.withLength distance direction) triangle
 
 
 {-| Mirror a triangle across a given plane.

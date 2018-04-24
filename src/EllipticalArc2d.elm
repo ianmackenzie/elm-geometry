@@ -26,6 +26,7 @@ module EllipticalArc2d
         , sweptAngle
         , tangentAlong
         , translateBy
+        , translateIn
         , underlyingArc
         , with
         , xAxis
@@ -78,7 +79,7 @@ details.
 
 # Transformations
 
-@docs reverse, scaleAbout, rotateAround, translateBy, mirrorAcross
+@docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
 
 
 # Coordinate conversions
@@ -525,6 +526,21 @@ rotateAround point angle =
 translateBy : Vector2d -> EllipticalArc2d -> EllipticalArc2d
 translateBy displacement =
     transformBy (Ellipse2d.translateBy displacement)
+
+
+{-| Translate an elliptical arc in a given direction by a given distance;
+
+    EllipticalArc2d.translateIn direction distance
+
+is equivalent to
+
+    EllipticalArc2d.translateBy
+        (Vector2d.withLength distance direction)
+
+-}
+translateIn : Direction2d -> Float -> EllipticalArc2d -> EllipticalArc2d
+translateIn direction distance arc =
+    translateBy (Vector2d.withLength distance direction) arc
 
 
 {-| Mirror an elliptical arc across a given axis.

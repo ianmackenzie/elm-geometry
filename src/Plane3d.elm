@@ -26,6 +26,7 @@ module Plane3d
         , through
         , throughPoints
         , translateBy
+        , translateIn
         , withNormalDirection
         , xy
         , yz
@@ -61,7 +62,7 @@ and normal direction and is useful for several operations including:
 
 # Transformations
 
-@docs offsetBy, flip, rotateAround, translateBy, moveTo, mirrorAcross
+@docs offsetBy, flip, rotateAround, translateBy, translateIn, moveTo, mirrorAcross
 
 
 # Coordinate conversions
@@ -294,6 +295,21 @@ translateBy : Vector3d -> Plane3d -> Plane3d
 translateBy vector (Internal.Plane3d plane) =
     withNormalDirection plane.normalDirection
         (Point3d.translateBy vector plane.originPoint)
+
+
+{-| Translate a plane in a given direction by a given distance;
+
+    Plane3d.translateIn direction distance
+
+is equivalent to
+
+    Plane3d.translateBy
+        (Vector3d.withLength distance direction)
+
+-}
+translateIn : Direction3d -> Float -> Plane3d -> Plane3d
+translateIn direction distance plane =
+    translateBy (Vector3d.withLength distance direction) plane
 
 
 {-| Move a plane so that it has the given origin point but unchanged normal

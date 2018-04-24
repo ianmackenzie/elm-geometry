@@ -19,6 +19,7 @@ module Rectangle2d
         , scaleAbout
         , toPolygon
         , translateBy
+        , translateIn
         , vertices
         )
 
@@ -254,6 +255,21 @@ translateBy displacement rectangle =
         { axes = Frame2d.translateBy displacement (axes rectangle)
         , dimensions = dimensions rectangle
         }
+
+
+{-| Translate a rectangle in a given direction by a given distance;
+
+    Rectangle2d.translateIn direction distance
+
+is equivalent to
+
+    Rectangle2d.translateBy
+        (Vector2d.withLength distance direction)
+
+-}
+translateIn : Direction2d -> Float -> Rectangle2d -> Rectangle2d
+translateIn direction distance rectangle =
+    translateBy (Vector2d.withLength distance direction) rectangle
 
 
 mirrorAcross : Axis2d -> Rectangle2d -> Rectangle2d

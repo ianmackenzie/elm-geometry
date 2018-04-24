@@ -27,6 +27,7 @@ module Frame3d
         , rotateAroundOwn
         , translateAlongOwn
         , translateBy
+        , translateIn
         , unsafe
         , withXDirection
         , withYDirection
@@ -171,7 +172,7 @@ corresponds to a global Z coordinate!
 
 # Transformations
 
-@docs flipX, flipY, flipZ, moveTo, rotateAround, rotateAroundOwn, translateBy, translateAlongOwn, mirrorAcross
+@docs flipX, flipY, flipZ, moveTo, rotateAround, rotateAroundOwn, translateBy, translateIn, translateAlongOwn, mirrorAcross
 
 
 # Coordinate conversions
@@ -719,6 +720,21 @@ translateBy vector frame =
         , yDirection = yDirection frame
         , zDirection = zDirection frame
         }
+
+
+{-| Translate a frame in a given direction by a given distance;
+
+    Frame3d.translateIn direction distance
+
+is equivalent to
+
+    Frame3d.translateBy
+        (Vector3d.withLength distance direction)
+
+-}
+translateIn : Direction3d -> Float -> Frame3d -> Frame3d
+translateIn direction distance frame =
+    translateBy (Vector3d.withLength distance direction) frame
 
 
 {-| Translate a frame along one of its own axes by a given distance.
