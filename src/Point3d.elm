@@ -70,7 +70,7 @@ like you can add two vectors.
 
 # Constructors
 
-@docs fromCoordinates, midpoint, interpolateFrom, along, on, fromCoordinatesIn, circumcenter
+@docs fromCoordinates, fromCoordinatesIn, midpoint, interpolateFrom, along, on, circumcenter
 
 
 # Properties

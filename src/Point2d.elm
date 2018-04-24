@@ -66,7 +66,7 @@ like you can add two vectors.
 
 # Constructors
 
-@docs fromCoordinates, fromPolarCoordinates, midpoint, interpolateFrom, along, fromCoordinatesIn, fromPolarCoordinatesIn, circumcenter
+@docs fromCoordinates, fromCoordinatesIn, fromPolarCoordinates, fromPolarCoordinatesIn, midpoint, interpolateFrom, along, circumcenter
 
 
 # Properties
