@@ -35,7 +35,6 @@ module BoundingBox3d
         , minY
         , minZ
         , overlappingBy
-        , overlaps
         , scaleAbout
         , separatedBy
         , singleton
@@ -76,7 +75,7 @@ box of an object than the object itself, such as:
 
 # Queries
 
-@docs contains, isContainedIn, intersects, overlaps, overlappingBy, separatedBy
+@docs contains, isContainedIn, intersects, overlappingBy, separatedBy
 
 
 # Transformations
@@ -520,14 +519,6 @@ intersects other boundingBox =
         && (maxY boundingBox >= minY other)
         && (minZ boundingBox <= maxZ other)
         && (maxZ boundingBox >= minZ other)
-
-
-{-| DEPRECATED: Alias for `intersects`, kept for compatibility. Use `intersects`
-instead.
--}
-overlaps : BoundingBox3d -> BoundingBox3d -> Bool
-overlaps =
-    intersects
 
 
 overlapAmount : BoundingBox3d -> BoundingBox3d -> Maybe Float

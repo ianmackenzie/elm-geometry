@@ -16,7 +16,6 @@ module Point3d
         , along
         , circumcenter
         , coordinates
-        , distanceAlong
         , distanceFrom
         , distanceFromAxis
         , equalWithin
@@ -86,7 +85,7 @@ like you can add two vectors.
 
 # Measurement
 
-@docs distanceFrom, squaredDistanceFrom, signedDistanceAlong, distanceAlong, distanceFromAxis, squaredDistanceFromAxis, signedDistanceFrom
+@docs distanceFrom, squaredDistanceFrom, signedDistanceAlong, distanceFromAxis, squaredDistanceFromAxis, signedDistanceFrom
 
 
 # Transformations
@@ -525,14 +524,6 @@ it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
 signedDistanceAlong : Axis3d -> Point3d -> Float
 signedDistanceAlong (Internal.Axis3d axis) point =
     Vector3d.from axis.originPoint point |> Vector3d.componentIn axis.direction
-
-
-{-| DEPRECATED: Alias for `signedDistanceAlong`, kept for compatibility. Use
-`signedDistanceAlong` instead.
--}
-distanceAlong : Axis3d -> Point3d -> Float
-distanceAlong =
-    signedDistanceAlong
 
 
 {-| Find the perpendicular (nearest) distance of a point from an axis.

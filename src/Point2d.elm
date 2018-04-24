@@ -16,7 +16,6 @@ module Point2d
         , along
         , circumcenter
         , coordinates
-        , distanceAlong
         , distanceFrom
         , equalWithin
         , fromCoordinates
@@ -82,7 +81,7 @@ like you can add two vectors.
 
 # Measurement
 
-@docs distanceFrom, squaredDistanceFrom, signedDistanceAlong, distanceAlong, signedDistanceFrom
+@docs distanceFrom, squaredDistanceFrom, signedDistanceAlong, signedDistanceFrom
 
 
 # Transformations
@@ -510,14 +509,6 @@ signedDistanceAlong : Axis2d -> Point2d -> Float
 signedDistanceAlong axis point =
     Vector2d.from (Axis2d.originPoint axis) point
         |> Vector2d.componentIn (Axis2d.direction axis)
-
-
-{-| DEPRECATED: Alias for `signedDistanceAlong`, kept for compatibility. Use
-`signedDistanceAlong` instead.
--}
-distanceAlong : Axis2d -> Point2d -> Float
-distanceAlong =
-    signedDistanceAlong
 
 
 {-| Find the perpendicular distance of a point from an axis. The result
