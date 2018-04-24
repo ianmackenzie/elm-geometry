@@ -126,7 +126,7 @@ resulting frame is [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordi
 ## Planes
 
 The following functions all return planes with the same origin point as the
-given plane, but with varying normal directions. In each case the normal
+given frame, but with varying normal directions. In each case the normal
 direction of the resulting plane is given by the cross product of the two
 indicated basis directions (assuming a right-handed frame); for example,
 
