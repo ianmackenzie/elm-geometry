@@ -1,17 +1,18 @@
 module PolygonTriangulation exposing (..)
 
 import BoundingBox2d exposing (BoundingBox2d)
+import Color
+import Drawing2d
+import Drawing2d.Attributes as Attributes
 import Html exposing (Html)
 import Html.Attributes
 import Html.Events
 import Kintail.InputWidget as InputWidget
-import Mesh
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
 import Random exposing (Generator)
-import Svg
-import Svg.Attributes
 import Triangle2d exposing (Triangle2d)
+import TriangularMesh
 import Vector2d exposing (Vector2d)
 
 
@@ -149,25 +150,23 @@ view model =
             Polygon2d.triangulate rotatedPolygon
 
         triangles =
-            Mesh.faces mesh |> List.map Triangle2d.fromVertices
+            TriangularMesh.faceVertices mesh
+                |> List.map Triangle2d.fromVertices
 
         drawTriangle =
-            Svg.triangle2d
-                [ Svg.Attributes.fill "rgba(127, 127, 127, 0.25)"
-                , Svg.Attributes.stroke "rgb(127, 127, 127)"
+            Drawing2d.triangleWith
+                [ Attributes.fillColor (Color.rgba 127 127 127 0.25)
+                , Attributes.strokeColor (Color.rgb 127 127 127)
                 ]
     in
     Html.div []
         [ Html.div [ Html.Events.onClick Click ]
-            [ Svg.render2d renderBounds <|
-                Svg.g []
-                    [ Svg.g [] (List.map drawTriangle triangles)
-                    , Svg.polygon2d
-                        [ Svg.Attributes.fill "none"
-                        , Svg.Attributes.stroke "black"
-                        ]
-                        rotatedPolygon
-                    ]
+            [ Drawing2d.toHtml renderBounds [] <|
+                [ Drawing2d.group (List.map drawTriangle triangles)
+                , Drawing2d.polygonWith
+                    [ Attributes.noFill, Attributes.blackStroke ]
+                    rotatedPolygon
+                ]
             ]
         , InputWidget.slider
             [ Html.Attributes.style [ ( "width", toString width ++ "px" ) ] ]
