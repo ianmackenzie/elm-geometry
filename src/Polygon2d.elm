@@ -197,7 +197,8 @@ chain =
 -}
 convexHull : List Point2d -> Polygon2d
 convexHull points =
-    -- See http://www.algorithmist.com/index.php/Monotone_Chain_Convex_Hull for a description of the algorithm.
+    -- See http://www.algorithmist.com/index.php/Monotone_Chain_Convex_Hull
+    -- for a description of the algorithm.
     let
         sorted =
             points |> List.sortBy Point2d.coordinates
