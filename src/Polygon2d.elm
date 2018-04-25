@@ -19,10 +19,10 @@ module Polygon2d
         , boundingBox
         , convexHull
         , innerEdges
-        , innerLoops
+        , innerVertices
         , mirrorAcross
         , outerEdges
-        , outerLoop
+        , outerVertices
         , perimeter
         , placeIn
         , relativeTo
@@ -55,7 +55,7 @@ as
 
 # Properties
 
-@docs outerLoop, innerLoops, outerEdges, innerEdges, allVertices, allEdges, perimeter, area, boundingBox
+@docs outerVertices, innerVertices, outerEdges, innerEdges, allVertices, allEdges, perimeter, area, boundingBox
 
 
 # Transformations
@@ -212,21 +212,21 @@ convexHull points =
 
 
 {-| -}
-outerLoop : Polygon2d -> List Point2d
-outerLoop (Internal.Polygon2d { outerLoop }) =
+outerVertices : Polygon2d -> List Point2d
+outerVertices (Internal.Polygon2d { outerLoop }) =
     outerLoop
 
 
 {-| -}
-innerLoops : Polygon2d -> List (List Point2d)
-innerLoops (Internal.Polygon2d { innerLoops }) =
+innerVertices : Polygon2d -> List (List Point2d)
+innerVertices (Internal.Polygon2d { innerLoops }) =
     innerLoops
 
 
 {-| -}
 allVertices : Polygon2d -> List Point2d
 allVertices polygon =
-    List.concat (outerLoop polygon :: innerLoops polygon)
+    List.concat (outerVertices polygon :: innerVertices polygon)
 
 
 loopEdges : List Point2d -> List LineSegment2d
@@ -242,13 +242,13 @@ loopEdges vertices =
 {-| -}
 outerEdges : Polygon2d -> List LineSegment2d
 outerEdges polygon =
-    loopEdges (outerLoop polygon)
 
+    loopEdges (outerVertices polygon)
 
 {-| -}
 innerEdges : Polygon2d -> List (List LineSegment2d)
 innerEdges polygon =
-    List.map loopEdges (innerLoops polygon)
+    List.map loopEdges (innerVertices polygon)
 
 
 {-| Get the edges of a polygon. This will include an edge from the last point
@@ -298,8 +298,8 @@ perimeter =
 -}
 area : Polygon2d -> Float
 area polygon =
-    counterclockwiseArea (outerLoop polygon)
-        + List.sum (List.map counterclockwiseArea (innerLoops polygon))
+    counterclockwiseArea (outerVertices polygon)
+        + List.sum (List.map counterclockwiseArea (innerVertices polygon))
 
 
 {-| Scale a polygon about a given center point by a given scale.
@@ -397,10 +397,10 @@ mapVertices : (Point2d -> Point2d) -> Bool -> Polygon2d -> Polygon2d
 mapVertices function invert polygon =
     let
         mappedOuterLoop =
-            List.map function (outerLoop polygon)
+            List.map function (outerVertices polygon)
 
         mappedInnerLoops =
-            List.map (List.map function) (innerLoops polygon)
+            List.map (List.map function) (innerVertices polygon)
     in
     if invert then
         Internal.Polygon2d
@@ -471,7 +471,7 @@ if the polygon has no vertices.
 -}
 boundingBox : Polygon2d -> Maybe BoundingBox2d
 boundingBox polygon =
-    BoundingBox2d.containingPoints (outerLoop polygon)
+    BoundingBox2d.containingPoints (outerVertices polygon)
 
 
 {-| Triangulate a polygon. This uses the `TriangularMesh` data types from

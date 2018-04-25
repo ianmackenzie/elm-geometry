@@ -309,8 +309,8 @@ polyline3d polyline =
 
 {-| Encode a `Polygon2d` as an object with:
 
-  - an `outerLoop` field which is an array of encoded `Point2d` values
-  - an `innerLoops` field which is an array of arrays of encoded `Point2d`
+  - an `outerVertices` field which is an array of encoded `Point2d` values
+  - an `innerVertices` field which is an array of arrays of encoded `Point2d`
     values
 
 -}
@@ -320,15 +320,15 @@ polygon2d polygon =
         encodeLoop vertices =
             Encode.list (List.map point2d vertices)
 
-        outerLoop =
-            Polygon2d.outerLoop polygon
+        outerVertices =
+            Polygon2d.outerVertices polygon
 
-        innerLoops =
-            Polygon2d.innerLoops polygon
+        innerVertices =
+            Polygon2d.innerVertices polygon
     in
     Encode.object
-        [ ( "outerLoop", encodeLoop outerLoop )
-        , ( "innerLoops", Encode.list (List.map encodeLoop innerLoops) )
+        [ ( "outerVertices", encodeLoop outerVertices )
+        , ( "innerVertices", Encode.list (List.map encodeLoop innerVertices) )
         ]
 
 
