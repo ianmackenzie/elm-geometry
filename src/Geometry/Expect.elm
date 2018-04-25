@@ -633,17 +633,17 @@ polyline3dWithin tolerance =
 polygon2dBy : (Point2d -> Point2d -> Expectation) -> Polygon2d -> Polygon2d -> Expectation
 polygon2dBy equalPoints first =
     Expect.all
-        [ Polygon2d.allVertices
+        [ Polygon2d.vertices
             >> List.length
-            >> Expect.equal (List.length (Polygon2d.allVertices first))
+            >> Expect.equal (List.length (Polygon2d.vertices first))
         , \second ->
             Expect.all
                 (List.map2
                     (\firstVertex secondVertex ->
                         \_ -> equalPoints firstVertex secondVertex
                     )
-                    (Polygon2d.allVertices first)
-                    (Polygon2d.allVertices second)
+                    (Polygon2d.vertices first)
+                    (Polygon2d.vertices second)
                 )
                 second
         ]

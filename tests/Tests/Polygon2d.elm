@@ -35,8 +35,7 @@ convexHullIsConvex =
                     Polygon2d.convexHull points
 
                 edgeVectors =
-                    Polygon2d.outerEdges convexHull
-                        |> List.map LineSegment2d.vector
+                    Polygon2d.edges convexHull |> List.map LineSegment2d.vector
             in
             case edgeVectors of
                 [] ->
@@ -70,7 +69,7 @@ convexHullContainsAllPoints =
                     Polygon2d.convexHull points
 
                 edges =
-                    Polygon2d.outerEdges convexHull
+                    Polygon2d.edges convexHull
 
                 isNonNegativeArea point edge =
                     let

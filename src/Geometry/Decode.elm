@@ -355,9 +355,9 @@ polyline3d =
 
   - an array of vertices defining a single-loop polygon, or
   - an object with:
-      - an `outerVertices` field which is an array of encoded `Point2d` values
-      - an `innerVertices` field which is an array of arrays of encoded
-        `Point2d` values
+      - an `outerLoop` field which is an array of encoded `Point2d` values
+      - an `innerLoops` field which is an array of arrays of encoded `Point2d`
+        values
 
 -}
 polygon2d : Decoder Polygon2d
@@ -368,9 +368,15 @@ polygon2d =
     in
     Decode.oneOf
         [ Decode.map Polygon2d.singleLoop decodeLoop
-        , Decode.map2 Polygon2d.withHoles
-            (Decode.field "outerVertices" decodeLoop)
-            (Decode.field "innerVertices" (Decode.list decodeLoop))
+        , Decode.map2
+            (\outerLoop innerLoops ->
+                Polygon2d.with
+                    { outerLoop = outerLoop
+                    , innerLoops = innerLoops
+                    }
+            )
+            (Decode.field "outerLoop" decodeLoop)
+            (Decode.field "innerLoops" (Decode.list decodeLoop))
         ]
 
 

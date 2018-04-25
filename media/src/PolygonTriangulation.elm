@@ -104,8 +104,10 @@ polygonGenerator =
                     |> Random.map List.unzip
                     |> Random.map
                         (\( innerLoop, outerLoop ) ->
-                            Polygon2d.withHoles outerLoop
-                                [ List.reverse innerLoop ]
+                            Polygon2d.with
+                                { outerLoop = outerLoop
+                                , innerLoops = [ List.reverse innerLoop ]
+                                }
                         )
             )
 

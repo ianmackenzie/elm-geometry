@@ -257,7 +257,13 @@ polyline3d =
 
 polygon2d : Fuzzer Polygon2d
 polygon2d =
-    Fuzz.map2 Polygon2d.withHoles
+    Fuzz.map2
+        (\outerLoop innerLoops ->
+            Polygon2d.with
+                { outerLoop = outerLoop
+                , innerLoops = innerLoops
+                }
+        )
         (Fuzz.list point2d)
         (Fuzz.list (Fuzz.list point2d))
 
