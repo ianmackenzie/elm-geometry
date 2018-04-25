@@ -83,8 +83,14 @@ withRadius =
                     arc |> Arc2d.endPoint |> Expect.point2d endPoint
 
                 Nothing ->
-                    Point2d.distanceFrom startPoint endPoint
-                        |> Expect.greaterThan (2 * radius)
+                    let
+                        distance =
+                            Point2d.distanceFrom startPoint endPoint
+                    in
+                    if distance == 0 then
+                        Expect.pass
+                    else
+                        distance |> Expect.greaterThan (2 * radius)
         )
 
 
