@@ -37,13 +37,14 @@ module Polygon2d
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Polygon2d/icon.svg" alt="Polygon2d" width="160">
 
-A `Polygon2d` represents a closed polygon in 2D, and is defined by a list of
-vertices. This module contains a variety of polygon-related functionality, such
-as
+A `Polygon2d` represents a closed polygon in 2D, optionally with holes. It is
+defined by an outer loop of vertices and a list of inner loops defining any
+holes. This module contains a variety of polygon-related functionality, such as
 
   - Computing the perimeter and area of polygons
   - Scaling, rotating, translating and mirroring polygons
   - Converting polygons between different coordinate systems
+  - Triangulating polygons
 
 @docs Polygon2d
 
@@ -145,9 +146,9 @@ makeInnerLoop vertices =
             ]
 
 The last vertex is implicitly considered to be connected back to the first
-vertex (you do not have to close the polygon explicitly). Vertices should be
-provided in counterclockwise order; if they are provided in clockwise order they
-will be reversed.
+vertex (you do not have to close the polygon explicitly). Vertices should
+ideally be provided in counterclockwise order; if they are provided in clockwise
+order they will be reversed.
 
 -}
 singleLoop : List Point2d -> Polygon2d
@@ -158,7 +159,32 @@ singleLoop vertices =
         }
 
 
-{-| -}
+{-| Construct a polygon with holes from one outer loop and a list of inner
+loops. The loops must not touch or intersect each other.
+
+    outerVertices =
+        [ Point2d.fromCoordinates ( 0, 0 )
+        , Point2d.fromCoordinates ( 3, 0 )
+        , Point2d.fromCoordinates ( 3, 3 )
+        , Point2d.fromCoordinates ( 0, 3 )
+        ]
+
+    innerVertices =
+        [ Point2d.fromCoordinates ( 1, 1 )
+        , Point2d.fromCoordinates ( 1, 2 )
+        , Point2d.fromCoordinates ( 2, 2 )
+        , Point2d.fromCoordinates ( 2, 1 )
+        ]
+
+    squareWithHole =
+        Polygon2d.withHoles outerVertices [ innerVertices ]
+
+As with `Polygon2d.singleLoop`, the last vertex of each loop is considered to be
+connected back to the first. Vertices of the outer loop should ideally be
+provided in counterclockwise order and vertices of the inner loops should
+ideally be provided in clockwise order.
+
+-}
 withHoles : List Point2d -> List (List Point2d) -> Polygon2d
 withHoles outerLoop innerLoops =
     Internal.Polygon2d
@@ -193,7 +219,13 @@ chain =
     chainHelp []
 
 
-{-| Computes the [convex hull](https://en.wikipedia.org/wiki/Convex_hull) of a list of points. This is an O(n log n) operation.
+{-| Build the [convex hull](https://en.wikipedia.org/wiki/Convex_hull) of a list
+of points:
+
+![Convex hull of a set of points](https://ianmackenzie.github.io/elm-geometry/1.0.0/Polygon2d/convexHull.svg)
+
+This is an O(n log n) operation.
+
 -}
 convexHull : List Point2d -> Polygon2d
 convexHull points =
@@ -212,19 +244,55 @@ convexHull points =
     singleLoop (lower ++ upper)
 
 
-{-| -}
+{-| Get the list of vertices definining the outer loop (border) of a polygon.
+The vertices will be in counterclockwise order.
+
+    Polygon2d.outerVertices squareWithHole
+    --> [ Point2d.fromCoordinates ( 0, 0 )
+    --> , Point2d.fromCoordinates ( 3, 0 )
+    --> , Point2d.fromCoordinates ( 3, 3 )
+    --> , Point2d.fromCoordinates ( 0, 3 )
+    --> ]
+
+-}
 outerVertices : Polygon2d -> List Point2d
 outerVertices (Internal.Polygon2d { outerLoop }) =
     outerLoop
 
 
-{-| -}
+{-| Get the holes (if any) of a polygon, each defined by a list of vertices.
+Each list of vertices will be in clockwise order.
+
+    Polygon2d.innerVertices squareWithHole
+    --> [ [ Point2d.fromCoordinates ( 1, 1 )
+    -->   , Point2d.fromCoordinates ( 1, 2 )
+    -->   , Point2d.fromCoordinates ( 2, 2 )
+    -->   , Point2d.fromCoordinates ( 2, 1 )
+    -->   ]
+    --> ]
+
+-}
 innerVertices : Polygon2d -> List (List Point2d)
 innerVertices (Internal.Polygon2d { innerLoops }) =
     innerLoops
 
 
-{-| -}
+{-| Find all vertices of a polygon; this will include vertices from the outer
+loop of the polygon and all inner loops. The order of the returned vertices is
+undefined.
+
+    Polygon2d.allVertices squareWithHole
+    --> [ Point2d ( 0, 0 )
+    --> , Point2d ( 3, 0 )
+    --> , Point2d ( 3, 3 )
+    --> , Point2d ( 0, 3 )
+    --> , Point2d ( 1, 1 )
+    --> , Point2d ( 1, 2 )
+    --> , Point2d ( 2, 2 )
+    --> , Point2d ( 2, 1 )
+    --> ]
+
+-}
 allVertices : Polygon2d -> List Point2d
 allVertices polygon =
     List.concat (outerVertices polygon :: innerVertices polygon)
@@ -240,36 +308,95 @@ loopEdges vertices =
             List.map2 LineSegment2d.from all (rest ++ [ first ])
 
 
-{-| -}
+{-| Get the outer edges of a polygon (the edges forming the outer border).
+
+    Polygon2d.outerEdges squareWithHole
+    --> [ LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 0, 0 )
+    -->     , Point2d.fromCoordinates ( 3, 0 )
+    -->     )
+    --> , LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 3, 0 )
+    -->     , Point2d.fromCoordinates ( 3, 3 )
+    -->     )
+    --> , LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 3, 3 )
+    -->     , Point2d.fromCoordinates ( 0, 3 )
+    -->     )
+    --> , LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 0, 3 )
+    -->     , Point2d.fromCoordinates ( 0, 0 )
+    -->     )
+    --> ]
+
+-}
 outerEdges : Polygon2d -> List LineSegment2d
 outerEdges polygon =
-
     loopEdges (outerVertices polygon)
 
-{-| -}
+
+{-| Get the holes (if any) of a polygon, each as a list of edges.
+
+    Polygon2d.innerEdges squareWithHole
+    --> [ [ LineSegment2d.fromEndpoints
+    -->         ( Point2d.fromCoordinates ( 1, 1 )
+    -->         , Point2d.fromCoordinates ( 1, 2 )
+    -->         )
+    -->   , LineSegment2d.fromEndpoints
+    -->         ( Point2d.fromCoordinates ( 1, 2 )
+    -->         , Point2d.fromCoordinates ( 2, 2 )
+    -->         )
+    -->   , LineSegment2d.fromEndpoints
+    -->         ( Point2d.fromCoordinates ( 2, 2 )
+    -->         , Point2d.fromCoordinates ( 2, 1 )
+    -->         )
+    -->   , LineSegment2d.fromEndpoints
+    -->         ( Point2d.fromCoordinates ( 2, 1 )
+    -->         , Point2d.fromCoordinates ( 1, 1 )
+    -->         )
+    -->   ]
+    --> ]
+
+-}
 innerEdges : Polygon2d -> List (List LineSegment2d)
 innerEdges polygon =
     List.map loopEdges (innerVertices polygon)
 
 
-{-| Get the edges of a polygon. This will include an edge from the last point
-back to the first point.
+{-| Get all edges of a polygon. This will include both outer edges and inner
+(hole) edges.
 
-    Polygon2d.edges rectangle
+    Polygon2d.allEdges squareWithHole
     --> [ LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 0, 0 )
+    -->     , Point2d.fromCoordinates ( 3, 0 )
+    -->     )
+    --> , LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 3, 0 )
+    -->     , Point2d.fromCoordinates ( 3, 3 )
+    -->     )
+    --> , LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 3, 3 )
+    -->     , Point2d.fromCoordinates ( 0, 3 )
+    -->     )
+    --> , LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 0, 3 )
+    -->     , Point2d.fromCoordinates ( 0, 0 )
+    -->     )
+    --> , LineSegment2d.fromEndpoints
     -->     ( Point2d.fromCoordinates ( 1, 1 )
-    -->     , Point2d.fromCoordinates ( 3, 1 )
-    -->     )
-    --> , LineSegment2d.fromEndpoints
-    -->     ( Point2d.fromCoordinates ( 3, 1 )
-    -->     , Point2d.fromCoordinates ( 3, 2 )
-    -->     )
-    --> , LineSegment2d.fromEndpoints
-    -->     ( Point2d.fromCoordinates ( 3, 2 )
     -->     , Point2d.fromCoordinates ( 1, 2 )
     -->     )
     --> , LineSegment2d.fromEndpoints
     -->     ( Point2d.fromCoordinates ( 1, 2 )
+    -->     , Point2d.fromCoordinates ( 2, 2 )
+    -->     )
+    --> , LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 2, 2 )
+    -->     , Point2d.fromCoordinates ( 2, 1 )
+    -->     )
+    --> , LineSegment2d.fromEndpoints
+    -->     ( Point2d.fromCoordinates ( 2, 1 )
     -->     , Point2d.fromCoordinates ( 1, 1 )
     -->     )
     --> ]
@@ -280,10 +407,11 @@ allEdges polygon =
     List.concat (outerEdges polygon :: innerEdges polygon)
 
 
-{-| Get the perimeter of a polygon (the sum of the lengths of its edges).
+{-| Get the perimeter of a polygon (the sum of the lengths of its edges). This
+includes the outer perimeter and the perimeter of any holes.
 
-    Polygon2d.perimeter rectangle
-    --> 6
+    Polygon2d.perimeter squareWithHole
+    --> 16
 
 -}
 perimeter : Polygon2d -> Float
@@ -293,8 +421,8 @@ perimeter =
 
 {-| Get the area of a polygon. This value will never be negative.
 
-    Polygon2d.area rectangle
-    --> 2
+    Polygon2d.area squareWithHole
+    --> 8
 
 -}
 area : Polygon2d -> Float
@@ -315,6 +443,10 @@ area polygon =
     -->     , Point2d.fromCoordinates ( 4, 3 )
     -->     , Point2d.fromCoordinates ( 0, 3 )
     -->     ]
+
+If the given scale is negative, the order of the polygon's vertices will be
+reversed so that the resulting polygon still has its outer vertices in
+counterclockwise order and its inner vertices in clockwise order.
 
 -}
 scaleAbout : Point2d -> Float -> Polygon2d -> Polygon2d
@@ -385,8 +517,9 @@ translateIn direction distance polygon =
     -->     , Point2d.fromCoordinates ( 1, -2 )
     -->     ]
 
-Note that if a polygon's vertices were in counterclockwise order before
-mirroring, they will be in clockwise order afterward, and vice versa.
+The order of the polygon's vertices will be reversed so that the resulting
+polygon still has its outer vertices in counterclockwise order and its inner
+vertices in clockwise order.
 
 -}
 mirrorAcross : Axis2d -> Polygon2d -> Polygon2d
@@ -429,6 +562,10 @@ in local coordinates relative to a given reference frame.
     -->     , Point2d.fromCoordinates ( 0, 0 )
     -->     ]
 
+If the given frame is left-handed, the order of the polygon's vertices will be
+reversed so that the resulting polygon still has its outer vertices in
+counterclockwise order and its inner vertices in clockwise order.
+
 -}
 relativeTo : Frame2d -> Polygon2d -> Polygon2d
 relativeTo frame =
@@ -449,6 +586,10 @@ coordinates.
     -->     , Point2d.fromCoordinates ( 4, 4 )
     -->     , Point2d.fromCoordinates ( 2, 4 )
     -->     ]
+
+If the given frame is left-handed, the order of the polygon's vertices will be
+reversed so that the resulting polygon still has its outer vertices in
+counterclockwise order and its inner vertices in clockwise order.
 
 -}
 placeIn : Frame2d -> Polygon2d -> Polygon2d
@@ -477,6 +618,16 @@ boundingBox polygon =
 
 {-| Triangulate a polygon. This uses the `TriangularMesh` data types from
 [`ianmackenzie/elm-triangular-mesh`](http://package.elm-lang.org/packages/ianmackenzie/elm-triangular-mesh/latest).
+Triangulation is useful for things like WebGL rendering; you can define a
+polygon just by specifying its outline (and holes, if it has any)
+
+![Polygon with hole](https://ianmackenzie.github.io/elm-geometry/1.0.0/Polygon2d/triangulate1.svg)
+
+then use this function to turn that polygon into a list of triangles which you
+can render using WebGL:
+
+![Polygon with hole](https://ianmackenzie.github.io/elm-geometry/1.0.0/Polygon2d/triangulate2.svg)
+
 -}
 triangulate : Polygon2d -> TriangularMesh Point2d
 triangulate polygon =
