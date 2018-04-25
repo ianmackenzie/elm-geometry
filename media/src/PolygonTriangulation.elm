@@ -32,9 +32,9 @@ renderBounds : BoundingBox2d
 renderBounds =
     BoundingBox2d.fromExtrema
         { minX = 0
-        , maxX = 800
+        , maxX = 300
         , minY = 0
-        , maxY = 600
+        , maxY = 300
         }
 
 
@@ -62,7 +62,7 @@ polygonGenerator =
         outerRadiusGenerator =
             Random.float (midRadius + 5) maxRadius
     in
-    Random.int 3 32
+    Random.int 5 10
         |> Random.andThen
             (\numPoints ->
                 Random.list numPoints
@@ -158,14 +158,22 @@ view model =
                 [ Attributes.fillColor (Color.rgba 127 127 127 0.25)
                 , Attributes.strokeColor (Color.rgb 127 127 127)
                 ]
+
+        polygonElement =
+            Drawing2d.polygonWith
+                [ Attributes.noFill, Attributes.blackStroke ]
+                rotatedPolygon
     in
     Html.div []
         [ Html.div [ Html.Events.onClick Click ]
             [ Drawing2d.toHtml renderBounds [] <|
+                [ polygonElement
+                ]
+            ]
+        , Html.div [ Html.Events.onClick Click ]
+            [ Drawing2d.toHtml renderBounds [] <|
                 [ Drawing2d.group (List.map drawTriangle triangles)
-                , Drawing2d.polygonWith
-                    [ Attributes.noFill, Attributes.blackStroke ]
-                    rotatedPolygon
+                , polygonElement
                 ]
             ]
         , InputWidget.slider
