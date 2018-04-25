@@ -1,13 +1,13 @@
 module ConvexHull exposing (..)
 
 import BoundingBox2d exposing (BoundingBox2d)
+import Drawing2d
+import Drawing2d.Attributes as Attributes
 import Html exposing (Html)
 import Html.Events
 import Point2d exposing (Point2d)
 import Polygon2d
 import Random exposing (Generator)
-import Svg
-import Svg.Attributes
 
 
 type alias Model =
@@ -24,9 +24,9 @@ renderBounds : BoundingBox2d
 renderBounds =
     BoundingBox2d.fromExtrema
         { minX = 0
-        , maxX = 800
+        , maxX = 300
         , minY = 0
-        , maxY = 600
+        , maxY = 300
         }
 
 
@@ -73,19 +73,12 @@ view model =
             Polygon2d.convexHull model.points
     in
     Html.div [ Html.Events.onClick Click ]
-        [ Svg.render2d renderBounds <|
-            Svg.g []
-                [ Svg.polygon2d
-                    [ Svg.Attributes.fill "lightblue"
-                    , Svg.Attributes.stroke "blue"
-                    ]
-                    convexHull
-                , Svg.g [] <|
-                    List.indexedMap
-                        (\index point -> Svg.text2d [] point (toString index))
-                        (Polygon2d.vertices convexHull)
-                , Svg.g [] (List.map (Svg.point2d []) model.points)
-                ]
+        [ Drawing2d.toHtml renderBounds [] <|
+            [ Drawing2d.polygonWith
+                [ Attributes.noFill, Attributes.blackStroke ]
+                convexHull
+            , Drawing2d.group (List.map Drawing2d.dot model.points)
+            ]
         ]
 
 
