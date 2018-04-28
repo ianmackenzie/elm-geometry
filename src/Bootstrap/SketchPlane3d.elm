@@ -6,7 +6,7 @@ module Bootstrap.SketchPlane3d
         , yDirection
         )
 
-import Geometry.Internal exposing (..)
+import Geometry.Types exposing (..)
 
 
 unsafe : { originPoint : Point3d, xDirection : Direction3d, yDirection : Direction3d } -> SketchPlane3d

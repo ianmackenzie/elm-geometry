@@ -9,7 +9,7 @@ module Polygon2d.Monotone
 
 import Array.Hamt as Array exposing (Array)
 import Dict exposing (Dict)
-import Geometry.Internal as Internal exposing (Polygon2d(..))
+import Geometry.Types as Types exposing (Polygon2d(..))
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
 import Polygon2d.EdgeSet as EdgeSet exposing (EdgeSet)

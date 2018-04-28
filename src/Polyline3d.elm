@@ -71,7 +71,7 @@ import Axis3d exposing (Axis3d)
 import BoundingBox3d exposing (BoundingBox3d)
 import Direction3d exposing (Direction3d)
 import Frame3d exposing (Frame3d)
-import Geometry.Internal as Internal
+import Geometry.Types as Types
 import LineSegment3d exposing (LineSegment3d)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
@@ -82,7 +82,7 @@ import Vector3d exposing (Vector3d)
 
 {-| -}
 type alias Polyline3d =
-    Internal.Polyline3d
+    Types.Polyline3d
 
 
 {-| Construct a polyline from its vertices:
@@ -98,7 +98,7 @@ type alias Polyline3d =
 -}
 fromVertices : List Point3d -> Polyline3d
 fromVertices =
-    Internal.Polyline3d
+    Types.Polyline3d
 
 
 {-| Construct a 3D polyline lying _on_ a sketch plane by providing a 2D polyline
@@ -135,7 +135,7 @@ on sketchPlane =
 
 -}
 vertices : Polyline3d -> List Point3d
-vertices (Internal.Polyline3d vertices_) =
+vertices (Types.Polyline3d vertices_) =
     vertices_
 
 

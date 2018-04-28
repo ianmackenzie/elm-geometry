@@ -79,7 +79,7 @@ import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
-import Geometry.Internal as Internal
+import Geometry.Types as Types
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
 import Polygon2d.Monotone as Monotone
@@ -90,7 +90,7 @@ import Vector2d exposing (Vector2d)
 
 {-| -}
 type alias Polygon2d =
-    Internal.Polygon2d
+    Types.Polygon2d
 
 
 counterclockwiseArea : List Point2d -> Float
@@ -151,7 +151,7 @@ order they will be reversed.
 -}
 singleLoop : List Point2d -> Polygon2d
 singleLoop vertices =
-    Internal.Polygon2d
+    Types.Polygon2d
         { outerLoop = makeOuterLoop vertices
         , innerLoops = []
         }
@@ -188,7 +188,7 @@ ideally be provided in clockwise order.
 -}
 with : { outerLoop : List Point2d, innerLoops : List (List Point2d) } -> Polygon2d
 with { outerLoop, innerLoops } =
-    Internal.Polygon2d
+    Types.Polygon2d
         { outerLoop = makeOuterLoop outerLoop
         , innerLoops = List.map makeInnerLoop innerLoops
         }
@@ -257,7 +257,7 @@ The vertices will be in counterclockwise order.
 
 -}
 outerLoop : Polygon2d -> List Point2d
-outerLoop (Internal.Polygon2d { outerLoop }) =
+outerLoop (Types.Polygon2d { outerLoop }) =
     outerLoop
 
 
@@ -274,7 +274,7 @@ Each list of vertices will be in clockwise order.
 
 -}
 innerLoops : Polygon2d -> List (List Point2d)
-innerLoops (Internal.Polygon2d { innerLoops }) =
+innerLoops (Types.Polygon2d { innerLoops }) =
     innerLoops
 
 
@@ -490,12 +490,12 @@ mapVertices function invert polygon =
             List.map (List.map function) (innerLoops polygon)
     in
     if invert then
-        Internal.Polygon2d
+        Types.Polygon2d
             { outerLoop = List.reverse mappedOuterLoop
             , innerLoops = List.map List.reverse mappedInnerLoops
             }
     else
-        Internal.Polygon2d
+        Types.Polygon2d
             { outerLoop = mappedOuterLoop
             , innerLoops = mappedInnerLoops
             }

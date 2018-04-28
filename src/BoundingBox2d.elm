@@ -83,14 +83,14 @@ box of an object than the object itself, such as:
 -}
 
 import Direction2d exposing (Direction2d)
-import Geometry.Internal as Internal
+import Geometry.Types as Types
 import Point2d exposing (Point2d)
 import Vector2d exposing (Vector2d)
 
 
 {-| -}
 type alias BoundingBox2d =
-    Internal.BoundingBox2d
+    Types.BoundingBox2d
 
 
 {-| Construct a bounding box from its minimum and maximum X and Y values:
@@ -111,9 +111,9 @@ resulting bounding box is valid.
 fromExtrema : { minX : Float, maxX : Float, minY : Float, maxY : Float } -> BoundingBox2d
 fromExtrema ({ minX, maxX, minY, maxY } as extrema) =
     if minX <= maxX && minY <= maxY then
-        Internal.BoundingBox2d extrema
+        Types.BoundingBox2d extrema
     else
-        Internal.BoundingBox2d
+        Types.BoundingBox2d
             { minX = min minX maxX
             , maxX = max minX maxX
             , minY = min minY maxY
@@ -265,7 +265,7 @@ Can be useful when combined with record destructuring, for example
 
 -}
 extrema : BoundingBox2d -> { minX : Float, maxX : Float, minY : Float, maxY : Float }
-extrema (Internal.BoundingBox2d properties) =
+extrema (Types.BoundingBox2d properties) =
     properties
 
 

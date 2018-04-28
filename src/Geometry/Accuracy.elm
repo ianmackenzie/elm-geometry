@@ -7,7 +7,7 @@ as `Arc2d.toPolyline` and `CubicSpline3d.arcLengthParameterized`.
 
 -}
 
-import Geometry.Internal as Internal
+import Geometry.Types as Types
 
 
 {-| Opaque type used to specify the accuracy of some approximation. Currently
@@ -15,7 +15,7 @@ the only supported way to specify accuracy is 'maximum error', but in the future
 other criteria such as 'number of approximating segments' may be added.
 -}
 type alias Accuracy =
-    Internal.Accuracy
+    Types.Accuracy
 
 
 {-| Specify the maximum error for a given approximation. For example, calling
@@ -28,4 +28,4 @@ will never be greater than 0.001 units.
 -}
 maxError : Float -> Accuracy
 maxError =
-    Internal.MaxError
+    Types.MaxError

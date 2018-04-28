@@ -77,8 +77,8 @@ import Direction3d exposing (Direction3d)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
 import Geometry.Accuracy exposing (Accuracy)
-import Geometry.Internal as Internal
 import Geometry.Parameter as Parameter
+import Geometry.Types as Types
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Polyline3d exposing (Polyline3d)
@@ -88,7 +88,7 @@ import Vector3d exposing (Vector3d)
 
 {-| -}
 type alias Arc3d =
-    Internal.Arc3d
+    Types.Arc3d
 
 
 {-| Construct a 3D arc lying _on_ a sketch plane by providing a 2D arc specified
@@ -116,8 +116,8 @@ in XY coordinates _within_ the sketch plane.
 
 -}
 on : SketchPlane3d -> Arc2d -> Arc3d
-on sketchPlane (Internal.Arc2d arc2d) =
-    Internal.Arc3d
+on sketchPlane (Types.Arc2d arc2d) =
+    Types.Arc3d
         { startPoint = Point3d.on sketchPlane arc2d.startPoint
         , xDirection = Direction3d.on sketchPlane arc2d.xDirection
         , yDirection =
@@ -166,7 +166,7 @@ sweptAround axis sweptAngle startPoint =
                 xDirection =
                     Direction3d.unsafe (Vector3d.components xDirectionVector)
             in
-            Internal.Arc3d
+            Types.Arc3d
                 { startPoint = startPoint
                 , sweptAngle = sweptAngle
                 , signedLength = radius * sweptAngle
@@ -179,7 +179,7 @@ sweptAround axis sweptAngle startPoint =
                 ( xDirection, yDirection ) =
                     Direction3d.perpendicularBasis axisDirection
             in
-            Internal.Arc3d
+            Types.Arc3d
                 { startPoint = startPoint
                 , sweptAngle = sweptAngle
                 , signedLength = 0
@@ -238,7 +238,7 @@ throughPoints points =
 
 -}
 axialDirection : Arc3d -> Direction3d
-axialDirection (Internal.Arc3d arc) =
+axialDirection (Types.Arc3d arc) =
     let
         axialDirectionVector =
             Vector3d.crossProduct
@@ -267,7 +267,7 @@ axis arc =
 
 -}
 centerPoint : Arc3d -> Point3d
-centerPoint (Internal.Arc3d arc) =
+centerPoint (Types.Arc3d arc) =
     let
         radius =
             arc.signedLength / arc.sweptAngle
@@ -282,7 +282,7 @@ centerPoint (Internal.Arc3d arc) =
 
 -}
 radius : Arc3d -> Float
-radius (Internal.Arc3d arc) =
+radius (Types.Arc3d arc) =
     arc.signedLength / arc.sweptAngle
 
 
@@ -293,7 +293,7 @@ radius (Internal.Arc3d arc) =
 
 -}
 startPoint : Arc3d -> Point3d
-startPoint (Internal.Arc3d arc) =
+startPoint (Types.Arc3d arc) =
     arc.startPoint
 
 
@@ -317,7 +317,7 @@ end point.
 
 -}
 pointOn : Arc3d -> Float -> Point3d
-pointOn (Internal.Arc3d arc) =
+pointOn (Types.Arc3d arc) =
     let
         ( x0, y0, z0 ) =
             Point3d.coordinates arc.startPoint
@@ -382,7 +382,7 @@ start point of the arc and 1 at the end point of the arc.
 
 -}
 derivative : Arc3d -> Float -> Vector3d
-derivative (Internal.Arc3d arc) =
+derivative (Types.Arc3d arc) =
     let
         ( x1, y1, z1 ) =
             Direction3d.components arc.xDirection
@@ -479,7 +479,7 @@ the original arc.
 
 -}
 toPolyline : Accuracy -> Arc3d -> Polyline3d
-toPolyline (Internal.MaxError tolerance) arc =
+toPolyline (Types.MaxError tolerance) arc =
     let
         numSegments =
             numApproximationSegments tolerance arc
@@ -501,7 +501,7 @@ angle.
 
 -}
 sweptAngle : Arc3d -> Float
-sweptAngle (Internal.Arc3d properties) =
+sweptAngle (Types.Arc3d properties) =
     properties.sweptAngle
 
 
@@ -516,7 +516,7 @@ but a swept angle with the opposite sign.
 
 -}
 reverse : Arc3d -> Arc3d
-reverse ((Internal.Arc3d arc) as arc_) =
+reverse ((Types.Arc3d arc) as arc_) =
     let
         ( x1, y1, z1 ) =
             Direction3d.components arc.xDirection
@@ -533,7 +533,7 @@ reverse ((Internal.Arc3d arc) as arc_) =
         sinAngle =
             sin arcSweptAngle
     in
-    Internal.Arc3d
+    Types.Arc3d
         { startPoint = endPoint arc_
         , sweptAngle = -arcSweptAngle
         , signedLength = -arc.signedLength
@@ -567,8 +567,8 @@ reverse ((Internal.Arc3d arc) as arc_) =
 
 -}
 scaleAbout : Point3d -> Float -> Arc3d -> Arc3d
-scaleAbout point scale (Internal.Arc3d arc) =
-    Internal.Arc3d
+scaleAbout point scale (Types.Arc3d arc) =
+    Types.Arc3d
         { startPoint = Point3d.scaleAbout point scale arc.startPoint
         , sweptAngle = arc.sweptAngle
         , signedLength = abs scale * arc.signedLength
@@ -602,8 +602,8 @@ rotateAround rotationAxis angle =
         rotateDirection =
             Direction3d.rotateAround rotationAxis angle
     in
-    \(Internal.Arc3d arc) ->
-        Internal.Arc3d
+    \(Types.Arc3d arc) ->
+        Types.Arc3d
             { startPoint = rotatePoint arc.startPoint
             , sweptAngle = arc.sweptAngle
             , signedLength = arc.signedLength
@@ -627,8 +627,8 @@ rotateAround rotationAxis angle =
 
 -}
 translateBy : Vector3d -> Arc3d -> Arc3d
-translateBy displacement (Internal.Arc3d arc) =
-    Internal.Arc3d
+translateBy displacement (Types.Arc3d arc) =
+    Types.Arc3d
         { startPoint = Point3d.translateBy displacement arc.startPoint
         , sweptAngle = arc.sweptAngle
         , signedLength = arc.signedLength
@@ -671,8 +671,8 @@ mirrorAcross plane =
         mirrorDirection =
             Direction3d.mirrorAcross plane
     in
-    \(Internal.Arc3d arc) ->
-        Internal.Arc3d
+    \(Types.Arc3d arc) ->
+        Types.Arc3d
             { startPoint = mirrorPoint arc.startPoint
             , sweptAngle = -arc.sweptAngle
             , signedLength = -arc.signedLength
@@ -709,7 +709,7 @@ mirrorAcross plane =
     -->     }
 
 -}
-projectInto : SketchPlane3d -> Arc3d -> Internal.EllipticalArc2d
+projectInto : SketchPlane3d -> Arc3d -> Types.EllipticalArc2d
 projectInto sketchPlane arc =
     let
         candidateXDirection2d =
@@ -774,9 +774,9 @@ projectInto sketchPlane arc =
             else
                 -(sweptAngle arc)
     in
-    Internal.EllipticalArc2d
+    Types.EllipticalArc2d
         { ellipse =
-            Internal.Ellipse2d
+            Types.Ellipse2d
                 { axes =
                     Frame2d.withXDirection xDirection2d
                         (centerPoint arc |> Point3d.projectInto sketchPlane)
@@ -805,9 +805,9 @@ coordinates relative to a given reference frame.
 
 -}
 relativeTo : Frame3d -> Arc3d -> Arc3d
-relativeTo frame (Internal.Arc3d arc) =
+relativeTo frame (Types.Arc3d arc) =
     if Frame3d.isRightHanded frame then
-        Internal.Arc3d
+        Types.Arc3d
             { startPoint = Point3d.relativeTo frame arc.startPoint
             , sweptAngle = arc.sweptAngle
             , signedLength = arc.signedLength
@@ -815,7 +815,7 @@ relativeTo frame (Internal.Arc3d arc) =
             , yDirection = Direction3d.relativeTo frame arc.yDirection
             }
     else
-        Internal.Arc3d
+        Types.Arc3d
             { startPoint = Point3d.relativeTo frame arc.startPoint
             , sweptAngle = -arc.sweptAngle
             , signedLength = -arc.signedLength
@@ -843,9 +843,9 @@ given reference frame, and return that arc expressed in global coordinates.
 
 -}
 placeIn : Frame3d -> Arc3d -> Arc3d
-placeIn frame (Internal.Arc3d arc) =
+placeIn frame (Types.Arc3d arc) =
     if Frame3d.isRightHanded frame then
-        Internal.Arc3d
+        Types.Arc3d
             { startPoint = Point3d.placeIn frame arc.startPoint
             , sweptAngle = arc.sweptAngle
             , signedLength = arc.signedLength
@@ -853,7 +853,7 @@ placeIn frame (Internal.Arc3d arc) =
             , yDirection = Direction3d.placeIn frame arc.yDirection
             }
     else
-        Internal.Arc3d
+        Types.Arc3d
             { startPoint = Point3d.placeIn frame arc.startPoint
             , sweptAngle = -arc.sweptAngle
             , signedLength = -arc.signedLength

@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 
-module Geometry.Internal exposing (..)
+module Geometry.Types exposing (..)
 
 
 type Vector2d

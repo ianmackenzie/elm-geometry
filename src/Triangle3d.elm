@@ -77,7 +77,7 @@ import BoundingBox3d exposing (BoundingBox3d)
 import Circle3d exposing (Circle3d)
 import Direction3d exposing (Direction3d)
 import Frame3d exposing (Frame3d)
-import Geometry.Internal as Internal
+import Geometry.Types as Types
 import LineSegment3d exposing (LineSegment3d)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
@@ -88,7 +88,7 @@ import Vector3d exposing (Vector3d)
 
 {-| -}
 type alias Triangle3d =
-    Internal.Triangle3d
+    Types.Triangle3d
 
 
 {-| Construct a triangle from its three vertices:
@@ -103,7 +103,7 @@ type alias Triangle3d =
 -}
 fromVertices : ( Point3d, Point3d, Point3d ) -> Triangle3d
 fromVertices =
-    Internal.Triangle3d
+    Types.Triangle3d
 
 
 {-| Construct a 3D triangle lying _on_ a sketch plane by providing a 2D triangle
@@ -147,7 +147,7 @@ on sketchPlane triangle2d =
 
 -}
 vertices : Triangle3d -> ( Point3d, Point3d, Point3d )
-vertices (Internal.Triangle3d vertices_) =
+vertices (Types.Triangle3d vertices_) =
     vertices_
 
 

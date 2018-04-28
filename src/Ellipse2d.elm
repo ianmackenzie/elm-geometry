@@ -58,7 +58,7 @@ includes functionality for
 import Axis2d exposing (Axis2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
-import Geometry.Internal as Internal
+import Geometry.Types as Types
 import Point2d exposing (Point2d)
 import Vector2d exposing (Vector2d)
 
@@ -66,7 +66,7 @@ import Vector2d exposing (Vector2d)
 {-| An ellipse in 2D.
 -}
 type alias Ellipse2d =
-    Internal.Ellipse2d
+    Types.Ellipse2d
 
 
 {-| Construct an ellipse from its center point, X direction, and X and Y radii.
@@ -86,7 +86,7 @@ used).
 -}
 with : { centerPoint : Point2d, xDirection : Direction2d, xRadius : Float, yRadius : Float } -> Ellipse2d
 with { centerPoint, xDirection, xRadius, yRadius } =
-    Internal.Ellipse2d
+    Types.Ellipse2d
         { axes = Frame2d.withXDirection xDirection centerPoint
         , xRadius = abs xRadius
         , yRadius = abs yRadius
@@ -113,7 +113,7 @@ centerPoint ellipse =
 
 -}
 axes : Ellipse2d -> Frame2d
-axes (Internal.Ellipse2d { axes }) =
+axes (Types.Ellipse2d { axes }) =
     axes
 
 
@@ -151,7 +151,7 @@ minimum or maximum radius.
 
 -}
 xRadius : Ellipse2d -> Float
-xRadius (Internal.Ellipse2d { xRadius }) =
+xRadius (Types.Ellipse2d { xRadius }) =
     xRadius
 
 
@@ -163,7 +163,7 @@ minimum or maximum radius.
 
 -}
 yRadius : Ellipse2d -> Float
-yRadius (Internal.Ellipse2d { yRadius }) =
+yRadius (Types.Ellipse2d { yRadius }) =
     yRadius
 
 
@@ -234,7 +234,7 @@ scaleAbout point scale ellipse =
                     , yDirection = Direction2d.flip (yDirection ellipse)
                     }
     in
-    Internal.Ellipse2d
+    Types.Ellipse2d
         { axes = newAxes
         , xRadius = abs (scale * xRadius ellipse)
         , yRadius = abs (scale * yRadius ellipse)
@@ -242,8 +242,8 @@ scaleAbout point scale ellipse =
 
 
 transformBy : (Frame2d -> Frame2d) -> Ellipse2d -> Ellipse2d
-transformBy axesTransformation (Internal.Ellipse2d properties) =
-    Internal.Ellipse2d
+transformBy axesTransformation (Types.Ellipse2d properties) =
+    Types.Ellipse2d
         { properties | axes = axesTransformation properties.axes }
 
 

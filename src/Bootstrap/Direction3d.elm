@@ -1,6 +1,6 @@
 module Bootstrap.Direction3d exposing (components, unsafe)
 
-import Geometry.Internal exposing (..)
+import Geometry.Types exposing (..)
 
 
 unsafe : ( Float, Float, Float ) -> Direction3d

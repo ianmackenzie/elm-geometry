@@ -27,7 +27,7 @@ import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
-import Geometry.Internal as Internal
+import Geometry.Types as Types
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
@@ -35,12 +35,12 @@ import Vector2d exposing (Vector2d)
 
 
 type alias Rectangle2d =
-    Internal.Rectangle2d
+    Types.Rectangle2d
 
 
 centeredOn : Frame2d -> ( Float, Float ) -> Rectangle2d
 centeredOn axes dimensions =
-    Internal.Rectangle2d { axes = axes, dimensions = dimensions }
+    Types.Rectangle2d { axes = axes, dimensions = dimensions }
 
 
 fromExtremaIn : Frame2d -> { minX : Float, maxX : Float, minY : Float, maxY : Float } -> Rectangle2d
@@ -61,7 +61,7 @@ fromExtremaIn localFrame { minX, maxX, minY, maxY } =
         centerPoint =
             Point2d.fromCoordinatesIn localFrame ( midX, midY )
     in
-    Internal.Rectangle2d
+    Types.Rectangle2d
         { axes = Frame2d.moveTo centerPoint localFrame
         , dimensions = ( width, height )
         }
@@ -79,7 +79,7 @@ from firstPoint secondPoint =
         ( x2, y2 ) =
             Point2d.coordinates secondPoint
     in
-    Internal.Rectangle2d
+    Types.Rectangle2d
         { axes = Frame2d.atPoint centerPoint
         , dimensions = ( abs (x2 - x1), abs (y2 - y1) )
         }
@@ -103,7 +103,7 @@ fromExtrema { minX, maxX, minY, maxY } =
         centerPoint =
             Point2d.fromCoordinates ( midX, midY )
     in
-    Internal.Rectangle2d
+    Types.Rectangle2d
         { axes = Frame2d.atPoint centerPoint
         , dimensions = ( width, height )
         }
@@ -119,7 +119,7 @@ toPolygon rectangle =
 
 
 axes : Rectangle2d -> Frame2d
-axes (Internal.Rectangle2d { axes }) =
+axes (Types.Rectangle2d { axes }) =
     axes
 
 
@@ -129,7 +129,7 @@ centerPoint rectangle =
 
 
 dimensions : Rectangle2d -> ( Float, Float )
-dimensions (Internal.Rectangle2d { dimensions }) =
+dimensions (Types.Rectangle2d { dimensions }) =
     dimensions
 
 
@@ -230,7 +230,7 @@ scaleAbout point scale rectangle =
         newHeight =
             abs (scale * currentHeight)
     in
-    Internal.Rectangle2d
+    Types.Rectangle2d
         { axes = newAxes
         , dimensions = ( newWidth, newHeight )
         }
@@ -243,7 +243,7 @@ rotateAround point angle =
             Frame2d.rotateAround point angle
     in
     \rectangle ->
-        Internal.Rectangle2d
+        Types.Rectangle2d
             { axes = rotateFrame (axes rectangle)
             , dimensions = dimensions rectangle
             }
@@ -251,7 +251,7 @@ rotateAround point angle =
 
 translateBy : Vector2d -> Rectangle2d -> Rectangle2d
 translateBy displacement rectangle =
-    Internal.Rectangle2d
+    Types.Rectangle2d
         { axes = Frame2d.translateBy displacement (axes rectangle)
         , dimensions = dimensions rectangle
         }
@@ -274,7 +274,7 @@ translateIn direction distance rectangle =
 
 mirrorAcross : Axis2d -> Rectangle2d -> Rectangle2d
 mirrorAcross axis rectangle =
-    Internal.Rectangle2d
+    Types.Rectangle2d
         { axes = Frame2d.mirrorAcross axis (axes rectangle)
         , dimensions = dimensions rectangle
         }
@@ -282,7 +282,7 @@ mirrorAcross axis rectangle =
 
 placeIn : Frame2d -> Rectangle2d -> Rectangle2d
 placeIn frame rectangle =
-    Internal.Rectangle2d
+    Types.Rectangle2d
         { axes = Frame2d.placeIn frame (axes rectangle)
         , dimensions = dimensions rectangle
         }
@@ -290,7 +290,7 @@ placeIn frame rectangle =
 
 relativeTo : Frame2d -> Rectangle2d -> Rectangle2d
 relativeTo frame rectangle =
-    Internal.Rectangle2d
+    Types.Rectangle2d
         { axes = Frame2d.relativeTo frame (axes rectangle)
         , dimensions = dimensions rectangle
         }

@@ -102,7 +102,7 @@ import CubicSpline2d exposing (CubicSpline2d)
 import Direction3d exposing (Direction3d)
 import Frame3d exposing (Frame3d)
 import Geometry.Accuracy exposing (Accuracy)
-import Geometry.Internal as Internal
+import Geometry.Types as Types
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import QuadraticSpline3d exposing (QuadraticSpline3d)
@@ -112,7 +112,7 @@ import Vector3d exposing (Vector3d)
 
 {-| -}
 type alias CubicSpline3d =
-    Internal.CubicSpline3d
+    Types.CubicSpline3d
 
 
 {-| Construct a spline from its four control points:
@@ -128,7 +128,7 @@ type alias CubicSpline3d =
 -}
 fromControlPoints : ( Point3d, Point3d, Point3d, Point3d ) -> CubicSpline3d
 fromControlPoints =
-    Internal.CubicSpline3d
+    Types.CubicSpline3d
 
 
 {-| Construct a spline from a given start point with a given start derivative,
@@ -238,7 +238,7 @@ fromQuadraticSpline quadraticSpline =
 
 -}
 controlPoints : CubicSpline3d -> ( Point3d, Point3d, Point3d, Point3d )
-controlPoints (Internal.CubicSpline3d controlPoints_) =
+controlPoints (Types.CubicSpline3d controlPoints_) =
     controlPoints_
 
 
@@ -250,7 +250,7 @@ point.
 
 -}
 startPoint : CubicSpline3d -> Point3d
-startPoint (Internal.CubicSpline3d ( p1, _, _, _ )) =
+startPoint (Types.CubicSpline3d ( p1, _, _, _ )) =
     p1
 
 
@@ -262,7 +262,7 @@ point.
 
 -}
 endPoint : CubicSpline3d -> Point3d
-endPoint (Internal.CubicSpline3d ( _, _, _, p4 )) =
+endPoint (Types.CubicSpline3d ( _, _, _, p4 )) =
     p4
 
 
@@ -939,7 +939,7 @@ affects the accuracy of results returned from functions such as `arcLength` and
 
 -}
 arcLengthParameterized : Accuracy -> CubicSpline3d -> ArcLengthParameterized
-arcLengthParameterized (Internal.MaxError tolerance) spline =
+arcLengthParameterized (Types.MaxError tolerance) spline =
     let
         parameterization =
             ArcLength.parameterization

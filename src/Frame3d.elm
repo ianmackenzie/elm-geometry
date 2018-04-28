@@ -183,7 +183,7 @@ corresponds to a global Z coordinate!
 
 import Axis3d exposing (Axis3d)
 import Direction3d exposing (Direction3d)
-import Geometry.Internal as Internal
+import Geometry.Types as Types
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import SketchPlane3d exposing (SketchPlane3d)
@@ -192,7 +192,7 @@ import Vector3d exposing (Vector3d)
 
 {-| -}
 type alias Frame3d =
-    Internal.Frame3d
+    Types.Frame3d
 
 
 {-| The global XYZ frame.
@@ -289,7 +289,7 @@ be useful.
 -}
 unsafe : { originPoint : Point3d, xDirection : Direction3d, yDirection : Direction3d, zDirection : Direction3d } -> Frame3d
 unsafe =
-    Internal.Frame3d
+    Types.Frame3d
 
 
 {-| Construct a frame aligned with the global XYZ frame but with the given
@@ -329,7 +329,7 @@ atPoint point =
 
 -}
 originPoint : Frame3d -> Point3d
-originPoint (Internal.Frame3d properties) =
+originPoint (Types.Frame3d properties) =
     properties.originPoint
 
 
@@ -340,7 +340,7 @@ originPoint (Internal.Frame3d properties) =
 
 -}
 xDirection : Frame3d -> Direction3d
-xDirection (Internal.Frame3d properties) =
+xDirection (Types.Frame3d properties) =
     properties.xDirection
 
 
@@ -351,7 +351,7 @@ xDirection (Internal.Frame3d properties) =
 
 -}
 yDirection : Frame3d -> Direction3d
-yDirection (Internal.Frame3d properties) =
+yDirection (Types.Frame3d properties) =
     properties.yDirection
 
 
@@ -362,7 +362,7 @@ yDirection (Internal.Frame3d properties) =
 
 -}
 zDirection : Frame3d -> Direction3d
-zDirection (Internal.Frame3d properties) =
+zDirection (Types.Frame3d properties) =
     properties.zDirection
 
 
@@ -402,7 +402,7 @@ point and X direction).
 
 -}
 xAxis : Frame3d -> Axis3d
-xAxis (Internal.Frame3d frame) =
+xAxis (Types.Frame3d frame) =
     Axis3d.through frame.originPoint frame.xDirection
 
 
@@ -414,7 +414,7 @@ point and Y direction).
 
 -}
 yAxis : Frame3d -> Axis3d
-yAxis (Internal.Frame3d frame) =
+yAxis (Types.Frame3d frame) =
     Axis3d.through frame.originPoint frame.yDirection
 
 
@@ -426,49 +426,49 @@ point and Z direction).
 
 -}
 zAxis : Frame3d -> Axis3d
-zAxis (Internal.Frame3d frame) =
+zAxis (Types.Frame3d frame) =
     Axis3d.through frame.originPoint frame.zDirection
 
 
 {-| Get a plane with normal direction equal to the frame's positive Z direction.
 -}
 xyPlane : Frame3d -> Plane3d
-xyPlane (Internal.Frame3d frame) =
+xyPlane (Types.Frame3d frame) =
     Plane3d.through frame.originPoint frame.zDirection
 
 
 {-| Get a plane with normal direction equal to the frame's negative Z direction.
 -}
 yxPlane : Frame3d -> Plane3d
-yxPlane (Internal.Frame3d frame) =
+yxPlane (Types.Frame3d frame) =
     Plane3d.through frame.originPoint (Direction3d.flip frame.zDirection)
 
 
 {-| Get a plane with normal direction equal to the frame's positive X direction.
 -}
 yzPlane : Frame3d -> Plane3d
-yzPlane (Internal.Frame3d frame) =
+yzPlane (Types.Frame3d frame) =
     Plane3d.through frame.originPoint frame.xDirection
 
 
 {-| Get a plane with normal direction equal to the frame's negative X direction.
 -}
 zyPlane : Frame3d -> Plane3d
-zyPlane (Internal.Frame3d frame) =
+zyPlane (Types.Frame3d frame) =
     Plane3d.through frame.originPoint (Direction3d.flip frame.xDirection)
 
 
 {-| Get a plane with normal direction equal to the frame's positive Y direction.
 -}
 zxPlane : Frame3d -> Plane3d
-zxPlane (Internal.Frame3d frame) =
+zxPlane (Types.Frame3d frame) =
     Plane3d.through frame.originPoint frame.yDirection
 
 
 {-| Get a plane with normal direction equal to the frame's negative Y direction.
 -}
 xzPlane : Frame3d -> Plane3d
-xzPlane (Internal.Frame3d frame) =
+xzPlane (Types.Frame3d frame) =
     Plane3d.through frame.originPoint (Direction3d.flip frame.yDirection)
 
 

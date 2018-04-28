@@ -133,12 +133,12 @@ import Bootstrap.Direction2d as Direction2d
 import Bootstrap.Frame2d as Frame2d
 import Bootstrap.Point2d as Point2d
 import Float.Extra as Float
-import Geometry.Internal as Internal exposing (Axis2d, Direction2d, Frame2d, Point2d)
+import Geometry.Types as Types exposing (Axis2d, Direction2d, Frame2d, Point2d)
 
 
 {-| -}
 type alias Vector2d =
-    Internal.Vector2d
+    Types.Vector2d
 
 
 {-| The zero vector.
@@ -160,7 +160,7 @@ zero =
 -}
 fromComponents : ( Float, Float ) -> Vector2d
 fromComponents =
-    Internal.Vector2d
+    Types.Vector2d
 
 
 {-| Construct a vector from a length and angle. The angle is measured
@@ -300,7 +300,7 @@ to extract both the X and Y components of a vector in one line of code:
 
 -}
 components : Vector2d -> ( Float, Float )
-components (Internal.Vector2d components_) =
+components (Types.Vector2d components_) =
     components_
 
 
@@ -311,7 +311,7 @@ components (Internal.Vector2d components_) =
 
 -}
 xComponent : Vector2d -> Float
-xComponent (Internal.Vector2d ( x, _ )) =
+xComponent (Types.Vector2d ( x, _ )) =
     x
 
 
@@ -322,7 +322,7 @@ xComponent (Internal.Vector2d ( x, _ )) =
 
 -}
 yComponent : Vector2d -> Float
-yComponent (Internal.Vector2d ( _, y )) =
+yComponent (Types.Vector2d ( _, y )) =
     y
 
 

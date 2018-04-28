@@ -135,13 +135,13 @@ import Bootstrap.Plane3d as Plane3d
 import Bootstrap.Point3d as Point3d
 import Bootstrap.SketchPlane3d as SketchPlane3d
 import Float.Extra as Float
-import Geometry.Internal as Internal exposing (Axis3d, Direction3d, Frame3d, Plane3d, Point3d, SketchPlane3d)
+import Geometry.Types as Types exposing (Axis3d, Direction3d, Frame3d, Plane3d, Point3d, SketchPlane3d)
 import Vector2d exposing (Vector2d)
 
 
 {-| -}
 type alias Vector3d =
-    Internal.Vector3d
+    Types.Vector3d
 
 
 {-| The zero vector.
@@ -163,7 +163,7 @@ zero =
 -}
 fromComponents : ( Float, Float, Float ) -> Vector3d
 fromComponents =
-    Internal.Vector3d
+    Types.Vector3d
 
 
 {-| Construct a vector from the first given point to the second.
@@ -357,7 +357,7 @@ to extract the X, Y and Z components of a vector in one line of code:
 
 -}
 components : Vector3d -> ( Float, Float, Float )
-components (Internal.Vector3d components_) =
+components (Types.Vector3d components_) =
     components_
 
 
@@ -369,7 +369,7 @@ components (Internal.Vector3d components_) =
 
 -}
 xComponent : Vector3d -> Float
-xComponent (Internal.Vector3d ( x, _, _ )) =
+xComponent (Types.Vector3d ( x, _, _ )) =
     x
 
 
@@ -381,7 +381,7 @@ xComponent (Internal.Vector3d ( x, _, _ )) =
 
 -}
 yComponent : Vector3d -> Float
-yComponent (Internal.Vector3d ( _, y, _ )) =
+yComponent (Types.Vector3d ( _, y, _ )) =
     y
 
 
@@ -393,7 +393,7 @@ yComponent (Internal.Vector3d ( _, y, _ )) =
 
 -}
 zComponent : Vector3d -> Float
-zComponent (Internal.Vector3d ( _, _, z )) =
+zComponent (Types.Vector3d ( _, _, z )) =
     z
 
 
@@ -718,7 +718,7 @@ scaleBy scale vector =
 
 -}
 rotateAround : Axis3d -> Float -> Vector3d -> Vector3d
-rotateAround (Internal.Axis3d axis) angle =
+rotateAround (Types.Axis3d axis) angle =
     let
         ( dx, dy, dz ) =
             Direction3d.components axis.direction

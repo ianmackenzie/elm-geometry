@@ -72,7 +72,7 @@ import Circle2d exposing (Circle2d)
 import Circle3d exposing (Circle3d)
 import Direction3d exposing (Direction3d)
 import Frame3d exposing (Frame3d)
-import Geometry.Internal as Internal exposing (Sphere3d)
+import Geometry.Types as Types exposing (Sphere3d)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import SketchPlane3d exposing (SketchPlane3d)
@@ -101,7 +101,7 @@ import Vector3d exposing (Vector3d)
 
 {-| -}
 type alias Sphere3d =
-    Internal.Sphere3d
+    Types.Sphere3d
 
 
 {-| The unit sphere, centered on the origin with a radius of 1.
@@ -127,7 +127,7 @@ used).
 -}
 withRadius : Float -> Point3d -> Sphere3d
 withRadius radius centerPoint =
-    Internal.Sphere3d
+    Types.Sphere3d
         { radius = abs radius
         , centerPoint = centerPoint
         }
@@ -200,7 +200,7 @@ throughPoints ( p1, p2, p3, p4 ) =
 
 -}
 centerPoint : Sphere3d -> Point3d
-centerPoint (Internal.Sphere3d properties) =
+centerPoint (Types.Sphere3d properties) =
     properties.centerPoint
 
 
@@ -211,7 +211,7 @@ centerPoint (Internal.Sphere3d properties) =
 
 -}
 radius : Sphere3d -> Float
-radius (Internal.Sphere3d properties) =
+radius (Types.Sphere3d properties) =
     properties.radius
 
 

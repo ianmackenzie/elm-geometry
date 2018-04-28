@@ -71,14 +71,14 @@ different coordinate frames.
 -}
 
 import Direction2d exposing (Direction2d)
-import Geometry.Internal as Internal exposing (Frame2d)
+import Geometry.Types as Types exposing (Frame2d)
 import Point2d exposing (Point2d)
 import Vector2d exposing (Vector2d)
 
 
 {-| -}
 type alias Axis2d =
-    Internal.Axis2d
+    Types.Axis2d
 
 
 {-| The global X axis.
@@ -112,7 +112,7 @@ y =
 -}
 through : Point2d -> Direction2d -> Axis2d
 through point direction =
-    Internal.Axis2d { originPoint = point, direction = direction }
+    Types.Axis2d { originPoint = point, direction = direction }
 
 
 {-| Construct an axis with the given direction, through the given origin point.
@@ -120,7 +120,7 @@ Flipped version of `through`.
 -}
 withDirection : Direction2d -> Point2d -> Axis2d
 withDirection direction originPoint =
-    Internal.Axis2d { originPoint = originPoint, direction = direction }
+    Types.Axis2d { originPoint = originPoint, direction = direction }
 
 
 {-| Get the origin point of an axis.
@@ -130,7 +130,7 @@ withDirection direction originPoint =
 
 -}
 originPoint : Axis2d -> Point2d
-originPoint (Internal.Axis2d axis) =
+originPoint (Types.Axis2d axis) =
     axis.originPoint
 
 
@@ -141,7 +141,7 @@ originPoint (Internal.Axis2d axis) =
 
 -}
 direction : Axis2d -> Direction2d
-direction (Internal.Axis2d axis) =
+direction (Types.Axis2d axis) =
     axis.direction
 
 
@@ -153,7 +153,7 @@ direction (Internal.Axis2d axis) =
 
 -}
 flip : Axis2d -> Axis2d
-flip (Internal.Axis2d axis) =
+flip (Types.Axis2d axis) =
     through axis.originPoint (Direction2d.flip axis.direction)
 
 
@@ -168,7 +168,7 @@ flip (Internal.Axis2d axis) =
 
 -}
 moveTo : Point2d -> Axis2d -> Axis2d
-moveTo newOrigin (Internal.Axis2d axis) =
+moveTo newOrigin (Types.Axis2d axis) =
     through newOrigin axis.direction
 
 
@@ -191,7 +191,7 @@ rotateAround centerPoint angle =
         rotateDirection =
             Direction2d.rotateBy angle
     in
-    \(Internal.Axis2d axis) ->
+    \(Types.Axis2d axis) ->
         through (rotatePoint axis.originPoint) (rotateDirection axis.direction)
 
 
@@ -207,7 +207,7 @@ the axis' origin point and leaves the direction unchanged.
 
 -}
 translateBy : Vector2d -> Axis2d -> Axis2d
-translateBy vector (Internal.Axis2d axis) =
+translateBy vector (Types.Axis2d axis) =
     through (Point2d.translateBy vector axis.originPoint) axis.direction
 
 
@@ -235,7 +235,7 @@ the axis to mirror is given second.
 
 -}
 mirrorAcross : Axis2d -> Axis2d -> Axis2d
-mirrorAcross otherAxis (Internal.Axis2d axis) =
+mirrorAcross otherAxis (Types.Axis2d axis) =
     through (Point2d.mirrorAcross otherAxis axis.originPoint)
         (Direction2d.mirrorAcross otherAxis axis.direction)
 
@@ -252,7 +252,7 @@ coordinates relative to a given reference frame.
 
 -}
 relativeTo : Frame2d -> Axis2d -> Axis2d
-relativeTo frame (Internal.Axis2d axis) =
+relativeTo frame (Types.Axis2d axis) =
     through (Point2d.relativeTo frame axis.originPoint)
         (Direction2d.relativeTo frame axis.direction)
 
@@ -269,6 +269,6 @@ frame, and return that axis expressed in global coordinates.
 
 -}
 placeIn : Frame2d -> Axis2d -> Axis2d
-placeIn frame (Internal.Axis2d axis) =
+placeIn frame (Types.Axis2d axis) =
     through (Point2d.placeIn frame axis.originPoint)
         (Direction2d.placeIn frame axis.direction)

@@ -68,7 +68,7 @@ import Direction3d exposing (Direction3d)
 import Ellipse2d exposing (Ellipse2d)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
-import Geometry.Internal as Internal
+import Geometry.Types as Types
 import Json.Decode as Decode exposing (Decoder)
 import LineSegment2d exposing (LineSegment2d)
 import LineSegment3d exposing (LineSegment3d)
@@ -206,7 +206,7 @@ frame2d : Decoder Frame2d
 frame2d =
     Decode.map3
         (\originPoint xDirection yDirection ->
-            Internal.Frame2d
+            Types.Frame2d
                 { originPoint = originPoint
                 , xDirection = xDirection
                 , yDirection = yDirection
@@ -224,7 +224,7 @@ frame3d : Decoder Frame3d
 frame3d =
     Decode.map4
         (\originPoint xDirection yDirection zDirection ->
-            Internal.Frame3d
+            Types.Frame3d
                 { originPoint = originPoint
                 , xDirection = xDirection
                 , yDirection = yDirection
@@ -244,7 +244,7 @@ sketchPlane3d : Decoder SketchPlane3d
 sketchPlane3d =
     Decode.map3
         (\originPoint xDirection yDirection ->
-            Internal.SketchPlane3d
+            Types.SketchPlane3d
                 { originPoint = originPoint
                 , xDirection = xDirection
                 , yDirection = yDirection

@@ -69,7 +69,7 @@ import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
-import Geometry.Internal as Internal
+import Geometry.Types as Types
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
 import Vector2d exposing (Vector2d)
@@ -77,7 +77,7 @@ import Vector2d exposing (Vector2d)
 
 {-| -}
 type alias Polyline2d =
-    Internal.Polyline2d
+    Types.Polyline2d
 
 
 {-| Construct a polyline from a list of vertices:
@@ -93,7 +93,7 @@ type alias Polyline2d =
 -}
 fromVertices : List Point2d -> Polyline2d
 fromVertices =
-    Internal.Polyline2d
+    Types.Polyline2d
 
 
 {-| Get the vertices of a polyline.
@@ -107,7 +107,7 @@ fromVertices =
 
 -}
 vertices : Polyline2d -> List Point2d
-vertices (Internal.Polyline2d vertices_) =
+vertices (Types.Polyline2d vertices_) =
     vertices_
 
 

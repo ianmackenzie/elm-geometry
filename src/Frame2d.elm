@@ -84,14 +84,14 @@ always perpendicular to each other). It can be thought of as:
 
 import Axis2d exposing (Axis2d)
 import Direction2d exposing (Direction2d)
-import Geometry.Internal as Internal
+import Geometry.Types as Types
 import Point2d exposing (Point2d)
 import Vector2d exposing (Vector2d)
 
 
 {-| -}
 type alias Frame2d =
-    Internal.Frame2d
+    Types.Frame2d
 
 
 {-| The global XY frame.
@@ -176,7 +176,7 @@ useful.
 -}
 unsafe : { originPoint : Point2d, xDirection : Direction2d, yDirection : Direction2d } -> Frame2d
 unsafe =
-    Internal.Frame2d
+    Types.Frame2d
 
 
 {-| Construct a frame aligned with the global XY frame but with the given origin
@@ -214,7 +214,7 @@ atPoint point =
 
 -}
 originPoint : Frame2d -> Point2d
-originPoint (Internal.Frame2d frame) =
+originPoint (Types.Frame2d frame) =
     frame.originPoint
 
 
@@ -225,7 +225,7 @@ originPoint (Internal.Frame2d frame) =
 
 -}
 xDirection : Frame2d -> Direction2d
-xDirection (Internal.Frame2d frame) =
+xDirection (Types.Frame2d frame) =
     frame.xDirection
 
 
@@ -236,7 +236,7 @@ xDirection (Internal.Frame2d frame) =
 
 -}
 yDirection : Frame2d -> Direction2d
-yDirection (Internal.Frame2d frame) =
+yDirection (Types.Frame2d frame) =
     frame.yDirection
 
 
@@ -273,7 +273,7 @@ point and X direction).
 
 -}
 xAxis : Frame2d -> Axis2d
-xAxis (Internal.Frame2d frame) =
+xAxis (Types.Frame2d frame) =
     Axis2d.through frame.originPoint frame.xDirection
 
 
@@ -285,7 +285,7 @@ point and Y direction).
 
 -}
 yAxis : Frame2d -> Axis2d
-yAxis (Internal.Frame2d frame) =
+yAxis (Types.Frame2d frame) =
     Axis2d.through frame.originPoint frame.yDirection
 
 

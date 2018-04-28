@@ -4,7 +4,7 @@ module Bootstrap.Plane3d
         , originPoint
         )
 
-import Geometry.Internal exposing (..)
+import Geometry.Types exposing (..)
 
 
 originPoint : Plane3d -> Point3d

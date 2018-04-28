@@ -74,14 +74,14 @@ import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
-import Geometry.Internal as Internal exposing (Arc2d)
+import Geometry.Types as Types exposing (Arc2d)
 import Point2d exposing (Point2d)
 import Vector2d exposing (Vector2d)
 
 
 {-| -}
 type alias Circle2d =
-    Internal.Circle2d
+    Types.Circle2d
 
 
 {-| Construct a circle from its radius and center point:
@@ -96,7 +96,7 @@ The actual radius of the circle will be the absolute value of the given radius
 -}
 withRadius : Float -> Point2d -> Circle2d
 withRadius radius centerPoint =
-    Internal.Circle2d { radius = abs radius, centerPoint = centerPoint }
+    Types.Circle2d { radius = abs radius, centerPoint = centerPoint }
 
 
 {-| The unit circle, centered on the origin with a radius of 1.
@@ -207,7 +207,7 @@ sweptAround centerPoint point =
 
 -}
 centerPoint : Circle2d -> Point2d
-centerPoint (Internal.Circle2d properties) =
+centerPoint (Types.Circle2d properties) =
     properties.centerPoint
 
 
@@ -218,7 +218,7 @@ centerPoint (Internal.Circle2d properties) =
 
 -}
 radius : Circle2d -> Float
-radius (Internal.Circle2d properties) =
+radius (Types.Circle2d properties) =
     properties.radius
 
 
@@ -269,12 +269,12 @@ circumference circle =
 
 -}
 toArc : Circle2d -> Arc2d
-toArc (Internal.Circle2d { centerPoint, radius }) =
+toArc (Types.Circle2d { centerPoint, radius }) =
     let
         ( x0, y0 ) =
             Point2d.coordinates centerPoint
     in
-    Internal.Arc2d
+    Types.Arc2d
         { startPoint = Point2d.fromCoordinates ( x0 + radius, y0 )
         , xDirection = Direction2d.y
         , sweptAngle = 2 * pi
@@ -317,7 +317,7 @@ contains point circle =
 
 -}
 scaleAbout : Point2d -> Float -> Circle2d -> Circle2d
-scaleAbout point scale (Internal.Circle2d circle) =
+scaleAbout point scale (Types.Circle2d circle) =
     withRadius (abs scale * circle.radius)
         (Point2d.scaleAbout point scale circle.centerPoint)
 
@@ -337,7 +337,7 @@ rotateAround point angle =
         rotatePoint =
             Point2d.rotateAround point angle
     in
-    \(Internal.Circle2d circle) ->
+    \(Types.Circle2d circle) ->
         withRadius circle.radius (rotatePoint circle.centerPoint)
 
 
@@ -351,7 +351,7 @@ rotateAround point angle =
 
 -}
 translateBy : Vector2d -> Circle2d -> Circle2d
-translateBy displacement (Internal.Circle2d circle) =
+translateBy displacement (Types.Circle2d circle) =
     withRadius circle.radius
         (Point2d.translateBy displacement circle.centerPoint)
 
@@ -379,7 +379,7 @@ translateIn direction distance circle =
 
 -}
 mirrorAcross : Axis2d -> Circle2d -> Circle2d
-mirrorAcross axis (Internal.Circle2d circle) =
+mirrorAcross axis (Types.Circle2d circle) =
     withRadius circle.radius (Point2d.mirrorAcross axis circle.centerPoint)
 
 
@@ -395,7 +395,7 @@ local coordinates relative to a given reference frame.
 
 -}
 relativeTo : Frame2d -> Circle2d -> Circle2d
-relativeTo frame (Internal.Circle2d circle) =
+relativeTo frame (Types.Circle2d circle) =
     withRadius circle.radius (Point2d.relativeTo frame circle.centerPoint)
 
 
@@ -411,7 +411,7 @@ given reference frame, and return that circle expressed in global coordinates.
 
 -}
 placeIn : Frame2d -> Circle2d -> Circle2d
-placeIn frame (Internal.Circle2d circle) =
+placeIn frame (Types.Circle2d circle) =
     withRadius circle.radius (Point2d.placeIn frame circle.centerPoint)
 
 

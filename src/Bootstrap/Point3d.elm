@@ -1,6 +1,6 @@
 module Bootstrap.Point3d exposing (coordinates, fromCoordinates)
 
-import Geometry.Internal exposing (..)
+import Geometry.Types exposing (..)
 
 
 fromCoordinates : ( Float, Float, Float ) -> Point3d

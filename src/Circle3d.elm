@@ -66,7 +66,7 @@ import Circle2d exposing (Circle2d)
 import Direction3d exposing (Direction3d)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
-import Geometry.Internal as Internal
+import Geometry.Types as Types
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import SketchPlane3d exposing (SketchPlane3d)
@@ -76,7 +76,7 @@ import Vector3d exposing (Vector3d)
 
 {-| -}
 type alias Circle3d =
-    Internal.Circle3d
+    Types.Circle3d
 
 
 {-| Construct a circle from its radius, axial direction and center point:
@@ -92,7 +92,7 @@ The actual radius of the circle will be the absolute value of the given radius
 -}
 withRadius : Float -> Direction3d -> Point3d -> Circle3d
 withRadius radius axialDirection centerPoint =
-    Internal.Circle3d
+    Types.Circle3d
         { centerPoint = centerPoint
         , axialDirection = axialDirection
         , radius = abs radius
@@ -192,7 +192,7 @@ throughPoints points =
 
 -}
 centerPoint : Circle3d -> Point3d
-centerPoint (Internal.Circle3d circle) =
+centerPoint (Types.Circle3d circle) =
     circle.centerPoint
 
 
@@ -203,7 +203,7 @@ centerPoint (Internal.Circle3d circle) =
 
 -}
 axialDirection : Circle3d -> Direction3d
-axialDirection (Internal.Circle3d circle) =
+axialDirection (Types.Circle3d circle) =
     circle.axialDirection
 
 
@@ -216,7 +216,7 @@ The origin point of the returned axis will be the center point of the circle.
 
 -}
 axis : Circle3d -> Axis3d
-axis (Internal.Circle3d circle) =
+axis (Types.Circle3d circle) =
     Axis3d.through circle.centerPoint circle.axialDirection
 
 
@@ -241,7 +241,7 @@ plane circle =
 
 -}
 radius : Circle3d -> Float
-radius (Internal.Circle3d properties) =
+radius (Types.Circle3d properties) =
     properties.radius
 
 
@@ -393,7 +393,7 @@ mirrorAcross plane circle =
     -->     }
 
 -}
-projectInto : SketchPlane3d -> Circle3d -> Internal.Ellipse2d
+projectInto : SketchPlane3d -> Circle3d -> Types.Ellipse2d
 projectInto sketchPlane circle =
     let
         projectedAxialDirection =
@@ -424,14 +424,14 @@ projectInto sketchPlane circle =
                 axes =
                     Frame2d.withYDirection yDirection projectedCenter
             in
-            Internal.Ellipse2d
+            Types.Ellipse2d
                 { axes = axes
                 , xRadius = xRadius
                 , yRadius = yRadius
                 }
 
         Nothing ->
-            Internal.Ellipse2d
+            Types.Ellipse2d
                 { axes = Frame2d.atPoint projectedCenter
                 , xRadius = xRadius
                 , yRadius = xRadius

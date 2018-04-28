@@ -102,7 +102,7 @@ import Bootstrap.Axis2d as Axis2d
 import Bootstrap.Frame2d as Frame2d
 import Direction2d exposing (Direction2d)
 import Float.Extra as Float
-import Geometry.Internal as Internal exposing (Axis2d, Frame2d)
+import Geometry.Types as Types exposing (Axis2d, Frame2d)
 import Vector2d exposing (Vector2d)
 
 
@@ -113,7 +113,7 @@ addTo point vector =
 
 {-| -}
 type alias Point2d =
-    Internal.Point2d
+    Types.Point2d
 
 
 {-| The point (0, 0).
@@ -135,7 +135,7 @@ origin =
 -}
 fromCoordinates : ( Float, Float ) -> Point2d
 fromCoordinates =
-    Internal.Point2d
+    Types.Point2d
 
 
 {-| Construct a point from a radius and angle. Radius is measured from the
@@ -373,7 +373,7 @@ circumcenter ( p1, p2, p3 ) =
 
 -}
 coordinates : Point2d -> ( Float, Float )
-coordinates (Internal.Point2d coordinates_) =
+coordinates (Types.Point2d coordinates_) =
     coordinates_
 
 
@@ -384,7 +384,7 @@ coordinates (Internal.Point2d coordinates_) =
 
 -}
 xCoordinate : Point2d -> Float
-xCoordinate (Internal.Point2d ( x, _ )) =
+xCoordinate (Types.Point2d ( x, _ )) =
     x
 
 
@@ -395,7 +395,7 @@ xCoordinate (Internal.Point2d ( x, _ )) =
 
 -}
 yCoordinate : Point2d -> Float
-yCoordinate (Internal.Point2d ( _, y )) =
+yCoordinate (Types.Point2d ( _, y )) =
     y
 
 

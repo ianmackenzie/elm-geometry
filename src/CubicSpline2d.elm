@@ -98,7 +98,7 @@ import BoundingBox2d exposing (BoundingBox2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Accuracy exposing (Accuracy)
-import Geometry.Internal as Internal
+import Geometry.Types as Types
 import Point2d exposing (Point2d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
 import Vector2d exposing (Vector2d)
@@ -106,7 +106,7 @@ import Vector2d exposing (Vector2d)
 
 {-| -}
 type alias CubicSpline2d =
-    Internal.CubicSpline2d
+    Types.CubicSpline2d
 
 
 {-| Construct a spline from its four control points:
@@ -122,7 +122,7 @@ type alias CubicSpline2d =
 -}
 fromControlPoints : ( Point2d, Point2d, Point2d, Point2d ) -> CubicSpline2d
 fromControlPoints =
-    Internal.CubicSpline2d
+    Types.CubicSpline2d
 
 
 {-| Construct a spline from a given start point with a given start derivative,
@@ -202,7 +202,7 @@ fromQuadraticSpline quadraticSpline =
 
 -}
 controlPoints : CubicSpline2d -> ( Point2d, Point2d, Point2d, Point2d )
-controlPoints (Internal.CubicSpline2d controlPoints_) =
+controlPoints (Types.CubicSpline2d controlPoints_) =
     controlPoints_
 
 
@@ -214,7 +214,7 @@ point.
 
 -}
 startPoint : CubicSpline2d -> Point2d
-startPoint (Internal.CubicSpline2d ( p1, _, _, _ )) =
+startPoint (Types.CubicSpline2d ( p1, _, _, _ )) =
     p1
 
 
@@ -226,7 +226,7 @@ point.
 
 -}
 endPoint : CubicSpline2d -> Point2d
-endPoint (Internal.CubicSpline2d ( _, _, _, p4 )) =
+endPoint (Types.CubicSpline2d ( _, _, _, p4 )) =
     p4
 
 
@@ -800,7 +800,7 @@ affects the accuracy of results returned from functions such as `arcLength` and
 
 -}
 arcLengthParameterized : Accuracy -> CubicSpline2d -> ArcLengthParameterized
-arcLengthParameterized (Internal.MaxError tolerance) spline =
+arcLengthParameterized (Types.MaxError tolerance) spline =
     let
         parameterization =
             ArcLength.parameterization

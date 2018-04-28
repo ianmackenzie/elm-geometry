@@ -5,7 +5,7 @@ module Bootstrap.Frame2d
         , yDirection
         )
 
-import Geometry.Internal exposing (..)
+import Geometry.Types exposing (..)
 
 
 originPoint : Frame2d -> Point2d

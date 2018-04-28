@@ -103,7 +103,7 @@ import BoundingBox3d exposing (BoundingBox3d)
 import Direction3d exposing (Direction3d)
 import Frame3d exposing (Frame3d)
 import Geometry.Accuracy exposing (Accuracy)
-import Geometry.Internal as Internal
+import Geometry.Types as Types
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
@@ -113,7 +113,7 @@ import Vector3d exposing (Vector3d)
 
 {-| -}
 type alias QuadraticSpline3d =
-    Internal.QuadraticSpline3d
+    Types.QuadraticSpline3d
 
 
 {-| Construct a spline from its three control points:
@@ -128,7 +128,7 @@ type alias QuadraticSpline3d =
 -}
 fromControlPoints : ( Point3d, Point3d, Point3d ) -> QuadraticSpline3d
 fromControlPoints =
-    Internal.QuadraticSpline3d
+    Types.QuadraticSpline3d
 
 
 {-| Construct a 3D spline lying _on_ a sketch plane by providing a 2D spline
@@ -171,7 +171,7 @@ on sketchPlane spline2d =
 
 -}
 controlPoints : QuadraticSpline3d -> ( Point3d, Point3d, Point3d )
-controlPoints (Internal.QuadraticSpline3d controlPoints_) =
+controlPoints (Types.QuadraticSpline3d controlPoints_) =
     controlPoints_
 
 
@@ -183,7 +183,7 @@ point.
 
 -}
 startPoint : QuadraticSpline3d -> Point3d
-startPoint (Internal.QuadraticSpline3d ( p1, _, _ )) =
+startPoint (Types.QuadraticSpline3d ( p1, _, _ )) =
     p1
 
 
@@ -195,7 +195,7 @@ point.
 
 -}
 endPoint : QuadraticSpline3d -> Point3d
-endPoint (Internal.QuadraticSpline3d ( _, _, p3 )) =
+endPoint (Types.QuadraticSpline3d ( _, _, p3 )) =
     p3
 
 
@@ -702,7 +702,7 @@ the tolerance used when constructing `parameterizedSpline`.
 
 -}
 arcLengthParameterized : Accuracy -> QuadraticSpline3d -> ArcLengthParameterized
-arcLengthParameterized (Internal.MaxError tolerance) spline =
+arcLengthParameterized (Types.MaxError tolerance) spline =
     let
         maxSecondDerivativeMagnitude =
             Vector3d.length (secondDerivative spline)

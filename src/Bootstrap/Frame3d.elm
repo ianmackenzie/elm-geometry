@@ -6,7 +6,7 @@ module Bootstrap.Frame3d
         , zDirection
         )
 
-import Geometry.Internal exposing (..)
+import Geometry.Types exposing (..)
 
 
 originPoint : Frame3d -> Point3d

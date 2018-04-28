@@ -4,7 +4,7 @@ module Bootstrap.Axis2d
         , originPoint
         )
 
-import Geometry.Internal exposing (..)
+import Geometry.Types exposing (..)
 
 
 originPoint : Axis2d -> Point2d

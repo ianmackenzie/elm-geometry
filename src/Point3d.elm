@@ -107,7 +107,7 @@ import Bootstrap.Plane3d as Plane3d
 import Bootstrap.SketchPlane3d as SketchPlane3d
 import Direction3d exposing (Direction3d)
 import Float.Extra as Float
-import Geometry.Internal as Internal exposing (Axis3d, Frame3d, Plane3d, SketchPlane3d)
+import Geometry.Types as Types exposing (Axis3d, Frame3d, Plane3d, SketchPlane3d)
 import Point2d exposing (Point2d)
 import Vector3d exposing (Vector3d)
 
@@ -119,7 +119,7 @@ addTo =
 
 {-| -}
 type alias Point3d =
-    Internal.Point3d
+    Types.Point3d
 
 
 {-| The point (0, 0, 0).
@@ -141,7 +141,7 @@ origin =
 -}
 fromCoordinates : ( Float, Float, Float ) -> Point3d
 fromCoordinates =
-    Internal.Point3d
+    Types.Point3d
 
 
 {-| Construct a point halfway between two other points.
@@ -231,7 +231,7 @@ axis:
 
 -}
 along : Axis3d -> Float -> Point3d
-along (Internal.Axis3d axis) distance =
+along (Types.Axis3d axis) distance =
     axis.originPoint
         |> translateBy (Vector3d.withLength distance axis.direction)
 
@@ -387,7 +387,7 @@ circumcenter ( p1, p2, p3 ) =
 
 -}
 coordinates : Point3d -> ( Float, Float, Float )
-coordinates (Internal.Point3d coordinates_) =
+coordinates (Types.Point3d coordinates_) =
     coordinates_
 
 
@@ -399,7 +399,7 @@ coordinates (Internal.Point3d coordinates_) =
 
 -}
 xCoordinate : Point3d -> Float
-xCoordinate (Internal.Point3d ( x, _, _ )) =
+xCoordinate (Types.Point3d ( x, _, _ )) =
     x
 
 
@@ -411,7 +411,7 @@ xCoordinate (Internal.Point3d ( x, _, _ )) =
 
 -}
 yCoordinate : Point3d -> Float
-yCoordinate (Internal.Point3d ( _, y, _ )) =
+yCoordinate (Types.Point3d ( _, y, _ )) =
     y
 
 
@@ -423,7 +423,7 @@ yCoordinate (Internal.Point3d ( _, y, _ )) =
 
 -}
 zCoordinate : Point3d -> Float
-zCoordinate (Internal.Point3d ( _, _, z )) =
+zCoordinate (Types.Point3d ( _, _, z )) =
     z
 
 
@@ -522,7 +522,7 @@ it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
 
 -}
 signedDistanceAlong : Axis3d -> Point3d -> Float
-signedDistanceAlong (Internal.Axis3d axis) point =
+signedDistanceAlong (Types.Axis3d axis) point =
     Vector3d.from axis.originPoint point |> Vector3d.componentIn axis.direction
 
 
@@ -554,7 +554,7 @@ with `distanceFrom`/`squaredDistanceFrom` this is slightly more efficient than
 `distanceFromAxis` since it avoids a square root.
 -}
 squaredDistanceFromAxis : Axis3d -> Point3d -> Float
-squaredDistanceFromAxis (Internal.Axis3d axis) point =
+squaredDistanceFromAxis (Types.Axis3d axis) point =
     Vector3d.from axis.originPoint point
         |> Vector3d.crossProduct (Direction3d.toVector axis.direction)
         |> Vector3d.squaredLength
@@ -653,7 +653,7 @@ direction of the axis.
 
 -}
 rotateAround : Axis3d -> Float -> Point3d -> Point3d
-rotateAround ((Internal.Axis3d axis) as axis_) angle point =
+rotateAround ((Types.Axis3d axis) as axis_) angle point =
     Vector3d.from axis.originPoint point
         |> Vector3d.rotateAround axis_ angle
         |> addTo axis.originPoint

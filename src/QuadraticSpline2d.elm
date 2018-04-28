@@ -95,14 +95,14 @@ import BoundingBox2d exposing (BoundingBox2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Accuracy exposing (Accuracy)
-import Geometry.Internal as Internal
+import Geometry.Types as Types
 import Point2d exposing (Point2d)
 import Vector2d exposing (Vector2d)
 
 
 {-| -}
 type alias QuadraticSpline2d =
-    Internal.QuadraticSpline2d
+    Types.QuadraticSpline2d
 
 
 {-| Construct a spline from its three control points:
@@ -117,7 +117,7 @@ type alias QuadraticSpline2d =
 -}
 fromControlPoints : ( Point2d, Point2d, Point2d ) -> QuadraticSpline2d
 fromControlPoints =
-    Internal.QuadraticSpline2d
+    Types.QuadraticSpline2d
 
 
 {-| Get the control points of a spline as a tuple.
@@ -132,7 +132,7 @@ fromControlPoints =
 
 -}
 controlPoints : QuadraticSpline2d -> ( Point2d, Point2d, Point2d )
-controlPoints (Internal.QuadraticSpline2d controlPoints_) =
+controlPoints (Types.QuadraticSpline2d controlPoints_) =
     controlPoints_
 
 
@@ -144,7 +144,7 @@ point.
 
 -}
 startPoint : QuadraticSpline2d -> Point2d
-startPoint (Internal.QuadraticSpline2d ( p1, _, _ )) =
+startPoint (Types.QuadraticSpline2d ( p1, _, _ )) =
     p1
 
 
@@ -156,7 +156,7 @@ point.
 
 -}
 endPoint : QuadraticSpline2d -> Point2d
-endPoint (Internal.QuadraticSpline2d ( _, _, p3 )) =
+endPoint (Types.QuadraticSpline2d ( _, _, p3 )) =
     p3
 
 
@@ -604,7 +604,7 @@ affects the accuracy of results returned from functions such as `arcLength` and
 
 -}
 arcLengthParameterized : Accuracy -> QuadraticSpline2d -> ArcLengthParameterized
-arcLengthParameterized (Internal.MaxError tolerance) spline =
+arcLengthParameterized (Types.MaxError tolerance) spline =
     let
         maxSecondDerivativeMagnitude =
             Vector2d.length (secondDerivative spline)

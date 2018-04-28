@@ -94,14 +94,14 @@ import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
-import Geometry.Internal as Internal
+import Geometry.Types as Types
 import Point2d exposing (Point2d)
 import Vector2d exposing (Vector2d)
 
 
 {-| -}
 type alias LineSegment2d =
-    Internal.LineSegment2d
+    Types.LineSegment2d
 
 
 {-| Construct a line segment from its two endpoints:
@@ -115,7 +115,7 @@ type alias LineSegment2d =
 -}
 fromEndpoints : ( Point2d, Point2d ) -> LineSegment2d
 fromEndpoints =
-    Internal.LineSegment2d
+    Types.LineSegment2d
 
 
 {-| Construct a line segment from the first point to the second;
@@ -160,7 +160,7 @@ along axis start end =
 
 -}
 startPoint : LineSegment2d -> Point2d
-startPoint (Internal.LineSegment2d ( start, _ )) =
+startPoint (Types.LineSegment2d ( start, _ )) =
     start
 
 
@@ -171,7 +171,7 @@ startPoint (Internal.LineSegment2d ( start, _ )) =
 
 -}
 endPoint : LineSegment2d -> Point2d
-endPoint (Internal.LineSegment2d ( _, end )) =
+endPoint (Types.LineSegment2d ( _, end )) =
     end
 
 
@@ -182,7 +182,7 @@ endPoint (Internal.LineSegment2d ( _, end )) =
 
 -}
 endpoints : LineSegment2d -> ( Point2d, Point2d )
-endpoints (Internal.LineSegment2d endpoints_) =
+endpoints (Types.LineSegment2d endpoints_) =
     endpoints_
 
 

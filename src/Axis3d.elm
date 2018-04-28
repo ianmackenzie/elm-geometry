@@ -76,14 +76,14 @@ different coordinate frames.
 
 import Axis2d exposing (Axis2d)
 import Direction3d exposing (Direction3d)
-import Geometry.Internal as Internal exposing (Frame3d, Plane3d, SketchPlane3d)
+import Geometry.Types as Types exposing (Frame3d, Plane3d, SketchPlane3d)
 import Point3d exposing (Point3d)
 import Vector3d exposing (Vector3d)
 
 
 {-| -}
 type alias Axis3d =
-    Internal.Axis3d
+    Types.Axis3d
 
 
 {-| The global X axis.
@@ -129,7 +129,7 @@ z =
 -}
 through : Point3d -> Direction3d -> Axis3d
 through point direction =
-    Internal.Axis3d { originPoint = point, direction = direction }
+    Types.Axis3d { originPoint = point, direction = direction }
 
 
 {-| Construct an axis with the given directoin, through the given point. Flipped
@@ -137,7 +137,7 @@ version of `through`.
 -}
 withDirection : Direction3d -> Point3d -> Axis3d
 withDirection direction originPoint =
-    Internal.Axis3d { direction = direction, originPoint = originPoint }
+    Types.Axis3d { direction = direction, originPoint = originPoint }
 
 
 {-| Construct a 3D axis lying _on_ a sketch plane by providing a 2D axis
@@ -163,7 +163,7 @@ specified in XY coordinates _within_ the sketch plane.
 
 -}
 on : SketchPlane3d -> Axis2d -> Axis3d
-on sketchPlane (Internal.Axis2d axis2d) =
+on sketchPlane (Types.Axis2d axis2d) =
     through (Point3d.on sketchPlane axis2d.originPoint)
         (Direction3d.on sketchPlane axis2d.direction)
 
@@ -175,7 +175,7 @@ on sketchPlane (Internal.Axis2d axis2d) =
 
 -}
 originPoint : Axis3d -> Point3d
-originPoint (Internal.Axis3d axis) =
+originPoint (Types.Axis3d axis) =
     axis.originPoint
 
 
@@ -186,7 +186,7 @@ originPoint (Internal.Axis3d axis) =
 
 -}
 direction : Axis3d -> Direction3d
-direction (Internal.Axis3d axis) =
+direction (Types.Axis3d axis) =
     axis.direction
 
 
@@ -198,7 +198,7 @@ direction (Internal.Axis3d axis) =
 
 -}
 flip : Axis3d -> Axis3d
-flip (Internal.Axis3d axis) =
+flip (Types.Axis3d axis) =
     through axis.originPoint (Direction3d.flip axis.direction)
 
 
@@ -213,7 +213,7 @@ flip (Internal.Axis3d axis) =
 
 -}
 moveTo : Point3d -> Axis3d -> Axis3d
-moveTo newOrigin (Internal.Axis3d axis) =
+moveTo newOrigin (Types.Axis3d axis) =
     through newOrigin axis.direction
 
 
@@ -234,7 +234,7 @@ rotateAround otherAxis angle =
         rotateDirection =
             Direction3d.rotateAround otherAxis angle
     in
-    \(Internal.Axis3d axis) ->
+    \(Types.Axis3d axis) ->
         through (rotatePoint axis.originPoint) (rotateDirection axis.direction)
 
 
@@ -250,7 +250,7 @@ the axis' origin point and leaves the direction unchanged.
 
 -}
 translateBy : Vector3d -> Axis3d -> Axis3d
-translateBy vector (Internal.Axis3d axis) =
+translateBy vector (Types.Axis3d axis) =
     through (Point3d.translateBy vector axis.originPoint) axis.direction
 
 
@@ -277,7 +277,7 @@ translateIn direction distance axis =
 
 -}
 mirrorAcross : Plane3d -> Axis3d -> Axis3d
-mirrorAcross plane (Internal.Axis3d axis) =
+mirrorAcross plane (Types.Axis3d axis) =
     through (Point3d.mirrorAcross plane axis.originPoint)
         (Direction3d.mirrorAcross plane axis.direction)
 
@@ -297,7 +297,7 @@ plane, returns `Nothing`.
 
 -}
 projectOnto : Plane3d -> Axis3d -> Maybe Axis3d
-projectOnto plane (Internal.Axis3d axis) =
+projectOnto plane (Types.Axis3d axis) =
     let
         projectedOrigin =
             Point3d.projectOnto plane axis.originPoint
@@ -319,7 +319,7 @@ coordinates relative to a given reference frame.
 
 -}
 relativeTo : Frame3d -> Axis3d -> Axis3d
-relativeTo frame (Internal.Axis3d axis) =
+relativeTo frame (Types.Axis3d axis) =
     through (Point3d.relativeTo frame axis.originPoint)
         (Direction3d.relativeTo frame axis.direction)
 
@@ -337,7 +337,7 @@ frame, and return that axis expressed in global coordinates.
 
 -}
 placeIn : Frame3d -> Axis3d -> Axis3d
-placeIn frame (Internal.Axis3d axis) =
+placeIn frame (Types.Axis3d axis) =
     through (Point3d.placeIn frame axis.originPoint)
         (Direction3d.placeIn frame axis.direction)
 
@@ -369,7 +369,7 @@ plane; if it is perpendicular, `Nothing` is returned.
 
 -}
 projectInto : SketchPlane3d -> Axis3d -> Maybe Axis2d
-projectInto sketchPlane (Internal.Axis3d axis) =
+projectInto sketchPlane (Types.Axis3d axis) =
     let
         projectedOrigin =
             Point3d.projectInto sketchPlane axis.originPoint

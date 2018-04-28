@@ -105,8 +105,8 @@ import Axis2d exposing (Axis2d)
 import Direction2d exposing (Direction2d)
 import Ellipse2d exposing (Ellipse2d)
 import Frame2d exposing (Frame2d)
-import Geometry.Internal as Internal
 import Geometry.SweptAngle as SweptAngle exposing (SweptAngle)
+import Geometry.Types as Types
 import Interval
 import Point2d exposing (Point2d)
 import Vector2d exposing (Vector2d)
@@ -115,7 +115,7 @@ import Vector2d exposing (Vector2d)
 {-| An elliptical arc in 2D.
 -}
 type alias EllipticalArc2d =
-    Internal.EllipticalArc2d
+    Types.EllipticalArc2d
 
 
 {-| Construct an elliptical arc from its center point, X direction, X and Y
@@ -152,7 +152,7 @@ To make an inclined 180 degree elliptical arc, you might use
 -}
 with : { centerPoint : Point2d, xDirection : Direction2d, xRadius : Float, yRadius : Float, startAngle : Float, sweptAngle : Float } -> EllipticalArc2d
 with { centerPoint, xDirection, xRadius, yRadius, startAngle, sweptAngle } =
-    Internal.EllipticalArc2d
+    Types.EllipticalArc2d
         { ellipse =
             Ellipse2d.with
                 { centerPoint = centerPoint
@@ -234,22 +234,22 @@ fromEndpoints { startPoint, endPoint, xRadius, yRadius, xDirection, sweptAngle }
 
                 ( startAngle, sweptAngleInRadians ) =
                     case sweptAngle of
-                        Internal.SmallPositive ->
+                        Types.SmallPositive ->
                             ( midAngle + offsetAngle
                             , pi - 2 * offsetAngle
                             )
 
-                        Internal.SmallNegative ->
+                        Types.SmallNegative ->
                             ( midAngle - offsetAngle
                             , -pi + 2 * offsetAngle
                             )
 
-                        Internal.LargePositive ->
+                        Types.LargePositive ->
                             ( midAngle - offsetAngle
                             , pi + 2 * offsetAngle
                             )
 
-                        Internal.LargeNegative ->
+                        Types.LargeNegative ->
                             ( midAngle + offsetAngle
                             , -pi - 2 * offsetAngle
                             )
@@ -287,37 +287,37 @@ fromEndpoints { startPoint, endPoint, xRadius, yRadius, xDirection, sweptAngle }
 
 {-| -}
 centerPoint : EllipticalArc2d -> Point2d
-centerPoint (Internal.EllipticalArc2d { ellipse }) =
+centerPoint (Types.EllipticalArc2d { ellipse }) =
     Ellipse2d.centerPoint ellipse
 
 
 {-| -}
 axes : EllipticalArc2d -> Frame2d
-axes (Internal.EllipticalArc2d { ellipse }) =
+axes (Types.EllipticalArc2d { ellipse }) =
     Ellipse2d.axes ellipse
 
 
 {-| -}
 xAxis : EllipticalArc2d -> Axis2d
-xAxis (Internal.EllipticalArc2d { ellipse }) =
+xAxis (Types.EllipticalArc2d { ellipse }) =
     Ellipse2d.xAxis ellipse
 
 
 {-| -}
 yAxis : EllipticalArc2d -> Axis2d
-yAxis (Internal.EllipticalArc2d { ellipse }) =
+yAxis (Types.EllipticalArc2d { ellipse }) =
     Ellipse2d.yAxis ellipse
 
 
 {-| -}
 xRadius : EllipticalArc2d -> Float
-xRadius (Internal.EllipticalArc2d { ellipse }) =
+xRadius (Types.EllipticalArc2d { ellipse }) =
     Ellipse2d.xRadius ellipse
 
 
 {-| -}
 yRadius : EllipticalArc2d -> Float
-yRadius (Internal.EllipticalArc2d { ellipse }) =
+yRadius (Types.EllipticalArc2d { ellipse }) =
     Ellipse2d.yRadius ellipse
 
 
@@ -329,7 +329,7 @@ at the start point of the arc.
 
 -}
 startAngle : EllipticalArc2d -> Float
-startAngle (Internal.EllipticalArc2d { startAngle }) =
+startAngle (Types.EllipticalArc2d { startAngle }) =
     startAngle
 
 
@@ -342,7 +342,7 @@ at the start and end points of the arc.
 
 -}
 sweptAngle : EllipticalArc2d -> Float
-sweptAngle (Internal.EllipticalArc2d { sweptAngle }) =
+sweptAngle (Types.EllipticalArc2d { sweptAngle }) =
     sweptAngle
 
 
@@ -454,8 +454,8 @@ properties of the underlying ellipse.
 
 -}
 reverse : EllipticalArc2d -> EllipticalArc2d
-reverse (Internal.EllipticalArc2d properties) =
-    Internal.EllipticalArc2d
+reverse (Types.EllipticalArc2d properties) =
+    Types.EllipticalArc2d
         { properties
             | startAngle = properties.startAngle + properties.sweptAngle
             , sweptAngle = -properties.sweptAngle
@@ -463,8 +463,8 @@ reverse (Internal.EllipticalArc2d properties) =
 
 
 transformBy : (Ellipse2d -> Ellipse2d) -> EllipticalArc2d -> EllipticalArc2d
-transformBy ellipseTransformation (Internal.EllipticalArc2d properties) =
-    Internal.EllipticalArc2d
+transformBy ellipseTransformation (Types.EllipticalArc2d properties) =
+    Types.EllipticalArc2d
         { properties | ellipse = ellipseTransformation properties.ellipse }
 
 

@@ -81,7 +81,7 @@ import BoundingBox2d exposing (BoundingBox2d)
 import Circle2d exposing (Circle2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
-import Geometry.Internal as Internal
+import Geometry.Types as Types
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
 import Vector2d exposing (Vector2d)
@@ -89,7 +89,7 @@ import Vector2d exposing (Vector2d)
 
 {-| -}
 type alias Triangle2d =
-    Internal.Triangle2d
+    Types.Triangle2d
 
 
 {-| Construct a triangle from its three vertices:
@@ -104,7 +104,7 @@ type alias Triangle2d =
 -}
 fromVertices : ( Point2d, Point2d, Point2d ) -> Triangle2d
 fromVertices =
-    Internal.Triangle2d
+    Types.Triangle2d
 
 
 {-| Get the vertices of a triangle.
@@ -119,7 +119,7 @@ fromVertices =
 
 -}
 vertices : Triangle2d -> ( Point2d, Point2d, Point2d )
-vertices (Internal.Triangle2d vertices_) =
+vertices (Types.Triangle2d vertices_) =
     vertices_
 
 

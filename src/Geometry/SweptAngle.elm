@@ -23,14 +23,14 @@ The `SweptAngle` type is used in these cases to specify which arc you want.
 
 -}
 
-import Geometry.Internal as Internal
+import Geometry.Types as Types
 
 
 {-| Indicate which of four possible arcs you would like to construct. Used by
 [`Arc2d.withRadius`](Arc2d#withRadius) and [`EllipticalArc2d.fromEndpoints`](EllipticalArc2d#fromEndpoints).
 -}
 type alias SweptAngle =
-    Internal.SweptAngle
+    Types.SweptAngle
 
 
 {-| Construct a counterclockwise arc with a swept angle between 0 and 180
@@ -38,14 +38,14 @@ degrees.
 -}
 smallPositive : SweptAngle
 smallPositive =
-    Internal.SmallPositive
+    Types.SmallPositive
 
 
 {-| Construct a clockwise arc with a swept angle between 0 and -180 degrees.
 -}
 smallNegative : SweptAngle
 smallNegative =
-    Internal.SmallNegative
+    Types.SmallNegative
 
 
 {-| Construct a counterclockwise arc with a swept angle between 180 and 360
@@ -53,11 +53,11 @@ degrees.
 -}
 largePositive : SweptAngle
 largePositive =
-    Internal.LargePositive
+    Types.LargePositive
 
 
 {-| Construct a clockwise arc with a swept angle between -180 and -360 degrees.
 -}
 largeNegative : SweptAngle
 largeNegative =
-    Internal.LargeNegative
+    Types.LargeNegative

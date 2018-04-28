@@ -141,7 +141,7 @@ Sketch planes can also be constructed from `Frame3d` values using
 import Axis3d exposing (Axis3d)
 import Direction3d exposing (Direction3d)
 import Frame2d exposing (Frame2d)
-import Geometry.Internal as Internal exposing (Frame3d)
+import Geometry.Types as Types exposing (Frame3d)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Vector3d exposing (Vector3d)
@@ -149,7 +149,7 @@ import Vector3d exposing (Vector3d)
 
 {-| -}
 type alias SketchPlane3d =
-    Internal.SketchPlane3d
+    Types.SketchPlane3d
 
 
 {-| A sketch plane formed from the global X and Y axes.
@@ -345,7 +345,7 @@ basis directions are perpendicular to each other**.
 -}
 unsafe : { originPoint : Point3d, xDirection : Direction3d, yDirection : Direction3d } -> SketchPlane3d
 unsafe =
-    Internal.SketchPlane3d
+    Types.SketchPlane3d
 
 
 {-| Attempt to construct a sketch plane that passes through the three given
@@ -437,7 +437,7 @@ throughPoints ( firstPoint, secondPoint, thirdPoint ) =
 
 -}
 originPoint : SketchPlane3d -> Point3d
-originPoint (Internal.SketchPlane3d properties) =
+originPoint (Types.SketchPlane3d properties) =
     properties.originPoint
 
 
@@ -449,7 +449,7 @@ X axis).
 
 -}
 xDirection : SketchPlane3d -> Direction3d
-xDirection (Internal.SketchPlane3d properties) =
+xDirection (Types.SketchPlane3d properties) =
     properties.xDirection
 
 
@@ -461,7 +461,7 @@ Y axis).
 
 -}
 yDirection : SketchPlane3d -> Direction3d
-yDirection (Internal.SketchPlane3d properties) =
+yDirection (Types.SketchPlane3d properties) =
     properties.yDirection
 
 
@@ -494,7 +494,7 @@ corresponds to a distance along this axis in 3D.
 
 -}
 xAxis : SketchPlane3d -> Axis3d
-xAxis (Internal.SketchPlane3d sketchPlane) =
+xAxis (Types.SketchPlane3d sketchPlane) =
     Axis3d.through sketchPlane.originPoint sketchPlane.xDirection
 
 
@@ -506,7 +506,7 @@ corresponds to a distance along this axis in 3D.
 
 -}
 yAxis : SketchPlane3d -> Axis3d
-yAxis (Internal.SketchPlane3d sketchPlane) =
+yAxis (Types.SketchPlane3d sketchPlane) =
     Axis3d.through sketchPlane.originPoint sketchPlane.yDirection
 
 

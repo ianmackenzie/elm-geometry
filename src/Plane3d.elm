@@ -73,14 +73,14 @@ and normal direction and is useful for several operations including:
 
 import Axis3d exposing (Axis3d)
 import Direction3d exposing (Direction3d)
-import Geometry.Internal as Internal exposing (Frame3d)
+import Geometry.Types as Types exposing (Frame3d)
 import Point3d exposing (Point3d)
 import Vector3d exposing (Vector3d)
 
 
 {-| -}
 type alias Plane3d =
-    Internal.Plane3d
+    Types.Plane3d
 
 
 {-| The global XY plane, centered at the origin with a normal in the positive Z
@@ -127,7 +127,7 @@ zx =
 -}
 through : Point3d -> Direction3d -> Plane3d
 through point normalDirection =
-    Internal.Plane3d
+    Types.Plane3d
         { originPoint = point
         , normalDirection = normalDirection
         }
@@ -143,7 +143,7 @@ Flipped version of `through`.
 -}
 withNormalDirection : Direction3d -> Point3d -> Plane3d
 withNormalDirection normalDirection originPoint =
-    Internal.Plane3d
+    Types.Plane3d
         { normalDirection = normalDirection
         , originPoint = originPoint
         }
@@ -198,7 +198,7 @@ throughPoints ( firstPoint, secondPoint, thirdPoint ) =
 
 -}
 originPoint : Plane3d -> Point3d
-originPoint (Internal.Plane3d plane) =
+originPoint (Types.Plane3d plane) =
     plane.originPoint
 
 
@@ -209,7 +209,7 @@ originPoint (Internal.Plane3d plane) =
 
 -}
 normalDirection : Plane3d -> Direction3d
-normalDirection (Internal.Plane3d plane) =
+normalDirection (Types.Plane3d plane) =
     plane.normalDirection
 
 
@@ -220,7 +220,7 @@ normalDirection (Internal.Plane3d plane) =
 
 -}
 normalAxis : Plane3d -> Axis3d
-normalAxis (Internal.Plane3d plane) =
+normalAxis (Types.Plane3d plane) =
     Axis3d.through plane.originPoint plane.normalDirection
 
 
@@ -252,7 +252,7 @@ offsetBy distance plane =
 
 -}
 flip : Plane3d -> Plane3d
-flip (Internal.Plane3d plane) =
+flip (Types.Plane3d plane) =
     through plane.originPoint (Direction3d.flip plane.normalDirection)
 
 
@@ -271,7 +271,7 @@ rotateAround axis angle =
         rotateDirection =
             Direction3d.rotateAround axis angle
     in
-    \(Internal.Plane3d plane) ->
+    \(Types.Plane3d plane) ->
         through (rotatePoint plane.originPoint)
             (rotateDirection plane.normalDirection)
 
@@ -292,7 +292,7 @@ the plane's origin point and leaves its normal direction unchanged.
 
 -}
 translateBy : Vector3d -> Plane3d -> Plane3d
-translateBy vector (Internal.Plane3d plane) =
+translateBy vector (Types.Plane3d plane) =
     withNormalDirection plane.normalDirection
         (Point3d.translateBy vector plane.originPoint)
 
@@ -323,7 +323,7 @@ direction.
 
 -}
 moveTo : Point3d -> Plane3d -> Plane3d
-moveTo newOrigin (Internal.Plane3d plane) =
+moveTo newOrigin (Types.Plane3d plane) =
     through newOrigin plane.normalDirection
 
 
@@ -340,7 +340,7 @@ and the plane to mirror is given second.
 
 -}
 mirrorAcross : Plane3d -> Plane3d -> Plane3d
-mirrorAcross otherPlane (Internal.Plane3d plane) =
+mirrorAcross otherPlane (Types.Plane3d plane) =
     through (Point3d.mirrorAcross otherPlane plane.originPoint)
         (Direction3d.mirrorAcross otherPlane plane.normalDirection)
 
@@ -362,7 +362,7 @@ coordinates relative to a given reference frame.
 
 -}
 relativeTo : Frame3d -> Plane3d -> Plane3d
-relativeTo frame (Internal.Plane3d plane) =
+relativeTo frame (Types.Plane3d plane) =
     through (Point3d.relativeTo frame plane.originPoint)
         (Direction3d.relativeTo frame plane.normalDirection)
 
@@ -384,6 +384,6 @@ frame, and return that plane expressed in global coordinates.
 
 -}
 placeIn : Frame3d -> Plane3d -> Plane3d
-placeIn frame (Internal.Plane3d plane) =
+placeIn frame (Types.Plane3d plane) =
     through (Point3d.placeIn frame plane.originPoint)
         (Direction3d.placeIn frame plane.normalDirection)

@@ -85,14 +85,14 @@ box of an object than the object itself, such as:
 -}
 
 import Direction3d exposing (Direction3d)
-import Geometry.Internal as Internal
+import Geometry.Types as Types
 import Point3d exposing (Point3d)
 import Vector3d exposing (Vector3d)
 
 
 {-| -}
 type alias BoundingBox3d =
-    Internal.BoundingBox3d
+    Types.BoundingBox3d
 
 
 {-| Construct a bounding box from its minimum and maximum X, Y and Z values:
@@ -115,9 +115,9 @@ resulting bounding box is valid.
 fromExtrema : { minX : Float, maxX : Float, minY : Float, maxY : Float, minZ : Float, maxZ : Float } -> BoundingBox3d
 fromExtrema ({ minX, maxX, minY, maxY, minZ, maxZ } as extrema) =
     if minX <= maxX && minY <= maxY && minZ <= maxZ then
-        Internal.BoundingBox3d extrema
+        Types.BoundingBox3d extrema
     else
-        Internal.BoundingBox3d
+        Types.BoundingBox3d
             { minX = min minX maxX
             , maxX = max minX maxX
             , minY = min minY maxY
@@ -292,7 +292,7 @@ Can be useful when combined with record destructuring, for example
 
 -}
 extrema : BoundingBox3d -> { minX : Float, maxX : Float, minY : Float, maxY : Float, minZ : Float, maxZ : Float }
-extrema (Internal.BoundingBox3d properties) =
+extrema (Types.BoundingBox3d properties) =
     properties
 
 

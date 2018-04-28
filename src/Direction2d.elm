@@ -123,7 +123,7 @@ For the examples, assume the following frames have been defined:
 -}
 
 import Bootstrap.Direction2d as Bootstrap
-import Geometry.Internal as Internal exposing (Axis2d, Frame2d, Point2d)
+import Geometry.Types as Types exposing (Axis2d, Frame2d, Point2d)
 import Vector2d exposing (Vector2d)
 
 
@@ -134,7 +134,7 @@ toDirection vector =
 
 {-| -}
 type alias Direction2d =
-    Internal.Direction2d
+    Types.Direction2d
 
 
 {-| Synonym for `Direction2d.positiveX`.
@@ -215,7 +215,7 @@ direction) or start with existing directions and transform them as necessary.
 -}
 unsafe : ( Float, Float ) -> Direction2d
 unsafe =
-    Internal.Direction2d
+    Types.Direction2d
 
 
 {-| Attempt to construct the direction from the first given point to the second.
@@ -412,7 +412,7 @@ components =
 
 -}
 xComponent : Direction2d -> Float
-xComponent (Internal.Direction2d ( x, _ )) =
+xComponent (Types.Direction2d ( x, _ )) =
     x
 
 
@@ -426,7 +426,7 @@ xComponent (Internal.Direction2d ( x, _ )) =
 
 -}
 yComponent : Direction2d -> Float
-yComponent (Internal.Direction2d ( _, y )) =
+yComponent (Types.Direction2d ( _, y )) =
     y
 
 

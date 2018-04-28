@@ -6,7 +6,7 @@ module Bootstrap.Direction2d
         , unsafe
         )
 
-import Geometry.Internal exposing (..)
+import Geometry.Types exposing (..)
 
 
 unsafe : ( Float, Float ) -> Direction2d
