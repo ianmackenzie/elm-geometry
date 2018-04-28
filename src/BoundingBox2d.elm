@@ -19,7 +19,7 @@ module BoundingBox2d
         , contains
         , dimensions
         , extrema
-        , fromCorners
+        , from
         , fromExtrema
         , hull
         , intersection
@@ -63,7 +63,7 @@ box of an object than the object itself, such as:
 
 # Constructors
 
-@docs fromExtrema, singleton, fromCorners, hull, intersection, aggregate, containingPoints
+@docs fromExtrema, singleton, from, hull, intersection, aggregate, containingPoints
 
 
 # Properties
@@ -148,10 +148,13 @@ singleton point =
 The points can be given in any order and don't have to represent the 'primary'
 diagonal of the bounding box.
 
-    BoundingBox2d.fromCorners
-        ( Point2d.fromCoordinates ( 2, 3 )
-        , Point2d.fromCoordinates ( -1, 5 )
-        )
+    firstPoint =
+        Point2d.fromCoordinates ( 2, 3 )
+
+    secondPoint =
+        Point2d.fromCoordinates ( -1, 5 )
+
+    BoundingBox2d.from firstPoint secondPoint
     --> BoundingBox2d.fromExtrema
     -->     { minX = -1
     -->     , maxX = 2
@@ -160,8 +163,8 @@ diagonal of the bounding box.
     -->     }
 
 -}
-fromCorners : ( Point2d, Point2d ) -> BoundingBox2d
-fromCorners ( firstPoint, secondPoint ) =
+from : Point2d -> Point2d -> BoundingBox2d
+from firstPoint secondPoint =
     let
         ( x1, y1 ) =
             Point2d.coordinates firstPoint

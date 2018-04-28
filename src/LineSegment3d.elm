@@ -538,4 +538,8 @@ projectInto sketchPlane lineSegment =
 -}
 boundingBox : LineSegment3d -> BoundingBox3d
 boundingBox lineSegment =
-    BoundingBox3d.fromCorners (endpoints lineSegment)
+    let
+        ( p1, p2 ) =
+            endpoints lineSegment
+    in
+    BoundingBox3d.from p1 p2

@@ -396,13 +396,11 @@ containingPointsConsistentWithFromCorners =
     Test.fuzz2
         Fuzz.point2d
         Fuzz.point2d
-        "'containingPoints' is consistent with 'fromCorners'"
+        "'containingPoints' is consistent with from"
         (\firstPoint secondPoint ->
             BoundingBox2d.containingPoints [ firstPoint, secondPoint ]
                 |> Expect.equal
-                    (Just <|
-                        BoundingBox2d.fromCorners ( firstPoint, secondPoint )
-                    )
+                    (Just (BoundingBox2d.from firstPoint secondPoint))
         )
 
 

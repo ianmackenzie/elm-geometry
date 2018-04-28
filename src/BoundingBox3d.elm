@@ -19,7 +19,7 @@ module BoundingBox3d
         , contains
         , dimensions
         , extrema
-        , fromCorners
+        , from
         , fromExtrema
         , hull
         , intersection
@@ -65,7 +65,7 @@ box of an object than the object itself, such as:
 
 # Constructors
 
-@docs fromExtrema, singleton, fromCorners, hull, intersection, aggregate, containingPoints
+@docs fromExtrema, singleton, from, hull, intersection, aggregate, containingPoints
 
 
 # Properties
@@ -163,10 +163,13 @@ singleton point =
 The points can be given in any order and don't have to represent the 'primary'
 diagonal of the bounding box.
 
-    BoundingBox3d.fromCorners
-        ( Point3d.fromCoordinates ( 2, 1, 3 )
-        , Point3d.fromCoordinates ( -1, 5, -2 )
-        )
+    firstPoint =
+        Point3d.fromCoordinates ( 2, 1, 3 )
+
+    secondPoint =
+        Point3d.fromCoordinates ( -1, 5, -2 )
+
+    BoundingBox3d.from firstPoint secondPoint
     --> BoundingBox3d.fromExtrema
     -->     { minX = -1
     -->     , maxX = 2
@@ -177,8 +180,8 @@ diagonal of the bounding box.
     -->     }
 
 -}
-fromCorners : ( Point3d, Point3d ) -> BoundingBox3d
-fromCorners ( firstPoint, secondPoint ) =
+from : Point3d -> Point3d -> BoundingBox3d
+from firstPoint secondPoint =
     let
         ( x1, y1, z1 ) =
             Point3d.coordinates firstPoint
