@@ -9,7 +9,7 @@ module Rectangle2d
         , contains
         , dimensions
         , edges
-        , fromCorners
+        , from
         , fromExtrema
         , fromExtremaIn
         , mirrorAcross
@@ -67,8 +67,8 @@ fromExtremaIn localFrame { minX, maxX, minY, maxY } =
         }
 
 
-fromCorners : ( Point2d, Point2d ) -> Rectangle2d
-fromCorners ( firstPoint, secondPoint ) =
+from : Point2d -> Point2d -> Rectangle2d
+from firstPoint secondPoint =
     let
         centerPoint =
             Point2d.midpoint firstPoint secondPoint
