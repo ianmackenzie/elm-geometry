@@ -47,7 +47,9 @@ fromEndpointsReproducesSpline =
                 endDerivative =
                     CubicSpline2d.endDerivative spline
             in
-            CubicSpline2d.from startPoint startDerivative endPoint endDerivative
+            CubicSpline2d.from
+                ( startPoint, startDerivative )
+                ( endPoint, endDerivative )
                 |> Expect.cubicSpline2d spline
         )
 

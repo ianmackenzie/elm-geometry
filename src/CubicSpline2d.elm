@@ -135,8 +135,8 @@ cases the length of each derivative vector should be roughly equal to the length
 of the resulting spline.
 
 -}
-from : Point2d -> Vector2d -> Point2d -> Vector2d -> CubicSpline2d
-from startPoint startDerivative endPoint endDerivative =
+from : ( Point2d, Vector2d ) -> ( Point2d, Vector2d ) -> CubicSpline2d
+from ( startPoint, startDerivative ) ( endPoint, endDerivative ) =
     let
         startControlPoint =
             startPoint
