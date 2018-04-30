@@ -3,16 +3,19 @@ module Arc2d
         ( Arc2d
         , centerPoint
         , derivative
+        , derivatives
         , endPoint
-        , evaluate
         , from
         , mirrorAcross
         , placeIn
         , pointOn
+        , pointsOn
         , radius
         , relativeTo
         , reverse
         , rotateAround
+        , sample
+        , samples
         , scaleAbout
         , startPoint
         , sweptAngle
@@ -50,7 +53,7 @@ end point). This module includes functionality for
 
 # Evaluation
 
-@docs pointOn, derivative, evaluate
+@docs pointOn, pointsOn, derivative, derivatives, sample, samples
 
 
 # Linear approximation
@@ -620,6 +623,23 @@ pointOn (Types.Arc2d arc) =
                 )
 
 
+{-| Convenient shorthand for evaluating multiple points;
+
+    Arc2d.pointsOn arc parameterValues
+
+is equivalent to
+
+    List.map (Arc2d.pointOn arc) parameterValues
+
+To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
+module.
+
+-}
+pointsOn : Arc2d -> List Float -> List Point2d
+pointsOn arc parameterValues =
+    List.map (pointOn arc) parameterValues
+
+
 {-| Get the derivative of an arc with respect to a parameter that is 0 at the
 start point of the arc and 1 at the end point of the arc.
 
@@ -639,29 +659,45 @@ derivative (Types.Arc2d arc) =
     \t -> startDerivative |> Vector2d.rotateBy (t * arc.sweptAngle)
 
 
-{-| Evaluate an arc at a given parameter value, returning the point on the arc
-at that parameter value and the derivative with respect to that parameter value.
+{-| Convenient shorthand for evaluating multiple derivatives;
 
-    Arc2d.evaluate exampleArc 0
+    Arc2d.derivatives arc parameterValues
+
+is equivalent to
+
+    List.map (Arc2d.derivative arc) parameterValues
+
+To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
+module.
+
+-}
+derivatives : Arc2d -> List Float -> List Vector2d
+derivatives arc parameterValues =
+    List.map (derivative arc) parameterValues
+
+
+{-| Sample an arc at a given parameter value to get both the position and
+derivative at that parameter value. Equivalent to calling `pointOn` and
+`derivative` separately.
+
+    Arc2d.sample exampleArc 0
     --> ( Point2d.fromCoordinates ( 3, 1 )
     --> , Vector2d.fromComponents ( 0, 3.1416 )
     --> )
 
-    Arc2d.evaluate exampleArc 0.5
+    Arc2d.sample exampleArc 0.5
     --> ( Point2d.fromCoordinates ( 2.4142, 2.4142 )
     --> , Vector2d.fromComponents ( -2.2214, 2.2214 )
     --> )
 
-    Arc2d.evaluate exampleArc 1
+    Arc2d.sample exampleArc 1
     --> ( Point2d.fromCoordinates ( 1, 3 )
     --> , Vector2d.fromComponents ( -3.1416, 0 )
     --> )
 
-Equivalent to calling `pointOn` and `derivative` separately.
-
 -}
-evaluate : Arc2d -> Float -> ( Point2d, Vector2d )
-evaluate arc =
+sample : Arc2d -> Float -> ( Point2d, Vector2d )
+sample arc =
     let
         pointOnArc =
             pointOn arc
@@ -670,6 +706,23 @@ evaluate arc =
             derivative arc
     in
     \t -> ( pointOnArc t, derivativeOfArc t )
+
+
+{-| Convenient shorthand for evaluating multiple samples;
+
+    Arc2d.samples arc parameterValues
+
+is equivalent to
+
+    List.map (Arc2d.sample arc) parameterValues
+
+To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
+module.
+
+-}
+samples : Arc2d -> List Float -> List ( Point2d, Vector2d )
+samples arc parameterValues =
+    List.map (sample arc) parameterValues
 
 
 numApproximationSegments : Float -> Arc2d -> Int

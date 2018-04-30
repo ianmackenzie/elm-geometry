@@ -10,9 +10,9 @@ module CubicSpline2d
         , controlPoints
         , derivative
         , derivativeMagnitude
+        , derivatives
         , endDerivative
         , endPoint
-        , evaluate
         , from
         , fromControlPoints
         , fromQuadraticSpline
@@ -22,11 +22,15 @@ module CubicSpline2d
         , placeIn
         , pointAlong
         , pointOn
+        , pointsOn
         , relativeTo
         , reverse
         , rotateAround
+        , sample
+        , samples
         , scaleAbout
         , secondDerivative
+        , secondDerivatives
         , splitAt
         , startDerivative
         , startPoint
@@ -61,7 +65,7 @@ in 2D defined by four control points. This module contains functionality for
 
 # Evaluation
 
-@docs pointOn, derivative, evaluate
+@docs pointOn, pointsOn, derivative, derivatives, sample, samples
 
 
 # Transformations
@@ -88,7 +92,7 @@ in 2D defined by four control points. This module contains functionality for
 
 Low level functionality that you are unlikely to need to use directly.
 
-@docs secondDerivative, derivativeMagnitude, maxSecondDerivativeMagnitude
+@docs secondDerivative, secondDerivatives, derivativeMagnitude, maxSecondDerivativeMagnitude
 
 -}
 
@@ -340,6 +344,23 @@ pointOn spline t =
     Point2d.interpolateFrom r1 r2 t
 
 
+{-| Convenient shorthand for evaluating multiple points;
+
+    CubicSpline2d.pointsOn spline parameterValues
+
+is equivalent to
+
+    List.map (CubicSpline2d.pointOn spline) parameterValues
+
+To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
+module.
+
+-}
+pointsOn : CubicSpline2d -> List Float -> List Point2d
+pointsOn spline parameterValues =
+    List.map (pointOn spline) parameterValues
+
+
 {-| Get the derivative value at a point along a spline, based on a parameter
 that ranges from 0 to 1. A parameter value of 0 corresponds to the start
 derivative of the spline and a value of 1 corresponds to the end derivative.
@@ -431,6 +452,23 @@ derivative spline t =
             )
 
 
+{-| Convenient shorthand for evaluating multiple derivatives;
+
+    CubicSpline2d.derivatives spline parameterValues
+
+is equivalent to
+
+    List.map (CubicSpline2d.derivative spline) parameterValues
+
+To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
+module.
+
+-}
+derivatives : CubicSpline2d -> List Float -> List Vector2d
+derivatives spline parameterValues =
+    List.map (derivative spline) parameterValues
+
+
 {-| Find the magnitude of the derivative to a spline at a particular parameter
 value;
 
@@ -514,11 +552,10 @@ derivativeMagnitude spline =
         3 * sqrt (x14 * x14 + y14 * y14)
 
 
-{-| Evaluate a spline at a given parameter value, returning the point on the
-spline at that parameter value and the derivative with respect to that parameter
-value;
+{-| Sample a spline at a given parameter value to get both the position and
+derivative at that parameter value;
 
-    CubicSpline2d.evaluate spline t
+    CubicSpline2d.sample spline t
 
 is equivalent to
 
@@ -529,8 +566,8 @@ is equivalent to
 but is more efficient.
 
 -}
-evaluate : CubicSpline2d -> Float -> ( Point2d, Vector2d )
-evaluate spline t =
+sample : CubicSpline2d -> Float -> ( Point2d, Vector2d )
+sample spline t =
     let
         ( p1, p2, p3, p4 ) =
             controlPoints spline
@@ -553,6 +590,23 @@ evaluate spline t =
     ( Point2d.interpolateFrom r1 r2 t
     , Vector2d.from r1 r2 |> Vector2d.scaleBy 3
     )
+
+
+{-| Convenient shorthand for evaluating multiple samples;
+
+    CubicSpline2d.samples spline parameterValues
+
+is equivalent to
+
+    List.map (CubicSpline2d.sample spline) parameterValues
+
+To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
+module.
+
+-}
+samples : CubicSpline2d -> List Float -> List ( Point2d, Vector2d )
+samples spline parameterValues =
+    List.map (sample spline) parameterValues
 
 
 mapControlPoints : (Point2d -> Point2d) -> CubicSpline2d -> CubicSpline2d
@@ -966,3 +1020,21 @@ secondDerivative spline t =
             Vector2d.difference u3 u2
     in
     Vector2d.scaleBy 6 (Vector2d.interpolateFrom v1 v2 t)
+
+
+{-| Convenient shorthand for evaluating multiple second derivatives;
+
+    CubicSpline2d.secondDerivatives spline parameterValues
+
+is equivalent to
+
+    List.map (CubicSpline2d.secondDerivative spline)
+        parameterValues
+
+To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
+module.
+
+-}
+secondDerivatives : CubicSpline2d -> List Float -> List Vector2d
+secondDerivatives spline parameterValues =
+    List.map (secondDerivative spline) parameterValues

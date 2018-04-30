@@ -12,23 +12,16 @@ the end point as
 and a list of 5 points along the arc (including the start and end points) by
 using a list of parameter values:
 
-    parameterValues =
-        [ 0, 0.25, 0.5, 0.75, 1 ]
-
-    points =
-        List.map (Arc3d.pointOn arc) parameterValues
+    Arc3d.pointsOn arc [ 0, 0.25, 0.5, 0.75, 1 ]
 
 This module helps create such lists of evenly-spaced parameter values, where the
 values always range from 0 to 1. For example, the above could be rewritten as
 
-    points =
-        List.map (Arc3d.pointOn arc) (Parameter.numSteps 4)
+    Arc3d.pointsOn arc (Parameter.numSteps 4)
 
 or
 
-    points =
-        List.map (Arc3d.pointOn arc)
-            (Parameter.maxStepSize 0.25)
+    Arc3d.pointsOn arc (Parameter.maxStepSize 0.25)
 
 @docs numSteps, maxStepSize
 

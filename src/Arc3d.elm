@@ -5,17 +5,20 @@ module Arc3d
         , axis
         , centerPoint
         , derivative
+        , derivatives
         , endPoint
-        , evaluate
         , mirrorAcross
         , on
         , placeIn
         , pointOn
+        , pointsOn
         , projectInto
         , radius
         , relativeTo
         , reverse
         , rotateAround
+        , sample
+        , samples
         , scaleAbout
         , startPoint
         , sweptAngle
@@ -51,7 +54,7 @@ start point to the arc's end point). This module includes functionality for
 
 # Evaluation
 
-@docs pointOn, derivative, evaluate
+@docs pointOn, pointsOn, derivative, derivatives, sample, samples
 
 
 # Linear approximation
@@ -371,6 +374,23 @@ pointOn (Types.Arc3d arc) =
                 )
 
 
+{-| Convenient shorthand for evaluating multiple points;
+
+    Arc3d.pointsOn arc parameterValues
+
+is equivalent to
+
+    List.map (Arc3d.pointOn arc) parameterValues
+
+To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
+module.
+
+-}
+pointsOn : Arc3d -> List Float -> List Point3d
+pointsOn arc parameterValues =
+    List.map (pointOn arc) parameterValues
+
+
 {-| Get the derivative of an arc with respect to a parameter that is 0 at the
 start point of the arc and 1 at the end point of the arc.
 
@@ -414,29 +434,45 @@ derivative (Types.Arc3d arc) =
             )
 
 
-{-| Evaluate an arc at a given parameter value, returning the point on the arc
-at that parameter value and the derivative with respect to that parameter value.
+{-| Convenient shorthand for evaluating multiple derivatives;
 
-    Arc3d.evaluate exampleArc 0
+    Arc3d.derivatives arc parameterValues
+
+is equivalent to
+
+    List.map (Arc3d.derivative arc) parameterValues
+
+To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
+module.
+
+-}
+derivatives : Arc3d -> List Float -> List Vector3d
+derivatives arc parameterValues =
+    List.map (derivative arc) parameterValues
+
+
+{-| Sample an arc at a given parameter value to get both the position and
+derivative at that parameter value. Equivalent to calling `pointOn` and
+`derivative` separately.
+
+    Arc3d.sample exampleArc 0
     --> ( Point3d.fromCoordinates ( 1, 1, 0 )
     --> , Vector3d.fromComponents ( -1.5708, 1.5708, 0 )
     --> )
 
-    Arc3d.evaluate exampleArc 0.5
+    Arc3d.sample exampleArc 0.5
     --> ( Point3d.fromCoordinates ( 1.4142, 0, 0 )
     --> , Vector3d.fromComponents ( -2.2214, 0, 0 )
     --> )
 
-    Arc3d.evaluate exampleArc 1
+    Arc3d.sample exampleArc 1
     --> ( Point3d.fromCoordinates ( -1, 1, 0 )
     --> , Vector3d.fromComponents ( -1.5708, -1.5708, 0 )
     --> )
 
-Equivalent to calling `pointOn` and `derivative` separately.
-
 -}
-evaluate : Arc3d -> Float -> ( Point3d, Vector3d )
-evaluate arc =
+sample : Arc3d -> Float -> ( Point3d, Vector3d )
+sample arc =
     let
         pointOnArc =
             pointOn arc
@@ -445,6 +481,23 @@ evaluate arc =
             derivative arc
     in
     \t -> ( pointOnArc t, derivativeOfArc t )
+
+
+{-| Convenient shorthand for evaluating multiple samples;
+
+    Arc3d.samples arc parameterValues
+
+is equivalent to
+
+    List.map (Arc3d.sample arc) parameterValues
+
+To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
+module.
+
+-}
+samples : Arc3d -> List Float -> List ( Point3d, Vector3d )
+samples arc parameterValues =
+    List.map (sample arc) parameterValues
 
 
 numApproximationSegments : Float -> Arc3d -> Int

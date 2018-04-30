@@ -9,6 +9,7 @@ module EllipticalArc2d
         , centerPoint
         , derivative
         , derivativeMagnitude
+        , derivatives
         , endPoint
         , fromEndpoints
         , maxSecondDerivativeMagnitude
@@ -17,9 +18,12 @@ module EllipticalArc2d
         , placeIn
         , pointAlong
         , pointOn
+        , pointsOn
         , relativeTo
         , reverse
         , rotateAround
+        , sample
+        , samples
         , scaleAbout
         , startAngle
         , startPoint
@@ -74,7 +78,7 @@ details.
 
 # Evaluation
 
-@docs pointOn, derivative
+@docs pointOn, pointsOn, derivative, derivatives, sample, samples
 
 
 # Transformations
@@ -373,6 +377,23 @@ pointOn arc t =
             )
 
 
+{-| Convenient shorthand for evaluating multiple points;
+
+    EllipticalArc2d.pointsOn arc parameterValues
+
+is equivalent to
+
+    List.map (EllipticalArc2d.pointOn arc) parameterValues
+
+To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
+module.
+
+-}
+pointsOn : EllipticalArc2d -> List Float -> List Point2d
+pointsOn arc parameterValues =
+    List.map (pointOn arc) parameterValues
+
+
 {-| Get the derivative value at a point along an elliptical arc, based on a
 parameter that ranges from 0 to 1. A parameter value of 0 corresponds to the
 derivative at the start point of the arc and a value of 1 corresponds to the
@@ -402,6 +423,59 @@ derivative arc t =
             ( -(xRadius arc) * deltaTheta * sin theta
             , yRadius arc * deltaTheta * cos theta
             )
+
+
+{-| Convenient shorthand for evaluating multiple derivatives;
+
+    EllipticalArc2d.derivatives arc parameterValues
+
+is equivalent to
+
+    List.map (EllipticalArc2d.derivative arc) parameterValues
+
+To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
+module.
+
+-}
+derivatives : EllipticalArc2d -> List Float -> List Vector2d
+derivatives arc parameterValues =
+    List.map (derivative arc) parameterValues
+
+
+{-| Sample an elliptical arc at a given parameter value to get both the position and
+derivative at that parameter value;
+
+    EllipticalArc2d.sample spline t
+
+is equivalent to
+
+    ( EllipticalArc2d.pointOn spline t
+    , EllipticalArc2d.derivative spline t
+    )
+
+-}
+sample : EllipticalArc2d -> Float -> ( Point2d, Vector2d )
+sample arc t =
+    ( pointOn arc t
+    , derivative arc t
+    )
+
+
+{-| Convenient shorthand for evaluating multiple samples;
+
+    EllipticalArc2d.samples arc parameterValues
+
+is equivalent to
+
+    List.map (EllipticalArc2d.sample arc) parameterValues
+
+To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
+module.
+
+-}
+samples : EllipticalArc2d -> List Float -> List ( Point2d, Vector2d )
+samples arc parameterValues =
+    List.map (sample arc) parameterValues
 
 
 {-| Get the start point of an elliptical arc.

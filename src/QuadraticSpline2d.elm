@@ -10,18 +10,21 @@ module QuadraticSpline2d
         , controlPoints
         , derivative
         , derivativeMagnitude
+        , derivatives
         , endDerivative
         , endPoint
-        , evaluate
         , fromControlPoints
         , mirrorAcross
         , parameterValueToArcLength
         , placeIn
         , pointAlong
         , pointOn
+        , pointsOn
         , relativeTo
         , reverse
         , rotateAround
+        , sample
+        , samples
         , scaleAbout
         , secondDerivative
         , splitAt
@@ -58,7 +61,7 @@ in 2D defined by three control points. This module contains functionality for
 
 # Evaluation
 
-@docs pointOn, derivative, evaluate
+@docs pointOn, pointsOn, derivative, derivatives, sample, samples
 
 
 # Transformations
@@ -258,6 +261,23 @@ pointOn spline t =
     Point2d.interpolateFrom q1 q2 t
 
 
+{-| Convenient shorthand for evaluating multiple points;
+
+    QuadraticSpline2d.pointsOn arc parameterValues
+
+is equivalent to
+
+    List.map (QuadraticSpline2d.pointOn arc) parameterValues
+
+To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
+module.
+
+-}
+pointsOn : QuadraticSpline2d -> List Float -> List Point2d
+pointsOn arc parameterValues =
+    List.map (pointOn arc) parameterValues
+
+
 {-| Get the derivative value at a point along a spline, based on a parameter
 that ranges from 0 to 1. A parameter value of 0 corresponds to the start
 derivative of the spline and a value of 1 corresponds to the end derivative.
@@ -287,6 +307,23 @@ derivative spline =
             Vector2d.from p2 p3
     in
     \t -> Vector2d.interpolateFrom v1 v2 t |> Vector2d.scaleBy 2
+
+
+{-| Convenient shorthand for evaluating multiple derivatives;
+
+    QuadraticSpline2d.derivatives spline parameterValues
+
+is equivalent to
+
+    List.map (QuadraticSpline2d.derivative spline) parameterValues
+
+To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
+module.
+
+-}
+derivatives : QuadraticSpline2d -> List Float -> List Vector2d
+derivatives spline parameterValues =
+    List.map (derivative spline) parameterValues
 
 
 {-| Find the magnitude of the derivative to a spline at a particular parameter
@@ -345,11 +382,10 @@ derivativeMagnitude spline =
         2 * sqrt (x13 * x13 + y13 * y13)
 
 
-{-| Evaluate a spline at a given parameter value, returning the point on the
-spline at that parameter value and the derivative with respect to that parameter
-value;
+{-| Sample a spline at a given parameter value to get both the position and
+derivative at that parameter value;
 
-    QuadraticSpline2d.evaluate spline t
+    QuadraticSpline2d.sample spline t
 
 is equivalent to
 
@@ -360,8 +396,8 @@ is equivalent to
 but is more efficient.
 
 -}
-evaluate : QuadraticSpline2d -> Float -> ( Point2d, Vector2d )
-evaluate spline t =
+sample : QuadraticSpline2d -> Float -> ( Point2d, Vector2d )
+sample spline t =
     let
         ( p1, p2, p3 ) =
             controlPoints spline
@@ -375,6 +411,23 @@ evaluate spline t =
     ( Point2d.interpolateFrom q1 q2 t
     , Vector2d.from q1 q2 |> Vector2d.scaleBy 2
     )
+
+
+{-| Convenient shorthand for evaluating multiple samples;
+
+    QuadraticSpline2d.samples spline parameterValues
+
+is equivalent to
+
+    List.map (QuadraticSpline2d.sample spline) parameterValues
+
+To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
+module.
+
+-}
+samples : QuadraticSpline2d -> List Float -> List ( Point2d, Vector2d )
+samples spline parameterValues =
+    List.map (sample spline) parameterValues
 
 
 {-| Reverse a spline so that the start point becomes the end point, and vice

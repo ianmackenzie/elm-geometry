@@ -10,9 +10,9 @@ module QuadraticSpline3d
         , controlPoints
         , derivative
         , derivativeMagnitude
+        , derivatives
         , endDerivative
         , endPoint
-        , evaluate
         , fromControlPoints
         , mirrorAcross
         , on
@@ -20,11 +20,14 @@ module QuadraticSpline3d
         , placeIn
         , pointAlong
         , pointOn
+        , pointsOn
         , projectInto
         , projectOnto
         , relativeTo
         , reverse
         , rotateAround
+        , sample
+        , samples
         , scaleAbout
         , secondDerivative
         , splitAt
@@ -61,7 +64,7 @@ in 3D defined by three control points. This module contains functionality for
 
 # Evaluation
 
-@docs pointOn, derivative, evaluate
+@docs pointOn, pointsOn, derivative, derivatives, sample, samples
 
 
 # Transformations
@@ -301,6 +304,23 @@ pointOn spline t =
     Point3d.interpolateFrom q1 q2 t
 
 
+{-| Convenient shorthand for evaluating multiple points;
+
+    QuadraticSpline3d.pointsOn spline parameterValues
+
+is equivalent to
+
+    List.map (QuadraticSpline3d.pointOn spline) parameterValues
+
+To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
+module.
+
+-}
+pointsOn : QuadraticSpline3d -> List Float -> List Point3d
+pointsOn spline parameterValues =
+    List.map (pointOn spline) parameterValues
+
+
 {-| Get the derivative value at a point along a spline, based on a parameter
 that ranges from 0 to 1. A parameter value of 0 corresponds to the start
 derivative of the spline and a value of 1 corresponds to the end derivative.
@@ -330,6 +350,23 @@ derivative spline =
             Vector3d.from p2 p3
     in
     \t -> Vector3d.interpolateFrom v1 v2 t |> Vector3d.scaleBy 2
+
+
+{-| Convenient shorthand for evaluating multiple derivatives;
+
+    QuadraticSpline3d.derivatives spline parameterValues
+
+is equivalent to
+
+    List.map (QuadraticSpline3d.derivative spline) parameterValues
+
+To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
+module.
+
+-}
+derivatives : QuadraticSpline3d -> List Float -> List Vector3d
+derivatives spline parameterValues =
+    List.map (derivative spline) parameterValues
 
 
 {-| Find the magnitude of the derivative to a spline at a particular parameter
@@ -400,11 +437,10 @@ derivativeMagnitude spline =
         2 * sqrt (x13 * x13 + y13 * y13 + z13 * z13)
 
 
-{-| Evaluate a spline at a given parameter value, returning the point on the
-spline at that parameter value and the derivative with respect to that parameter
-value;
+{-| Sample a spline at a given parameter value to get both the position and
+derivative at that parameter value;
 
-    QuadraticSpline3d.evaluate spline t
+    QuadraticSpline3d.sample spline t
 
 is equivalent to
 
@@ -415,8 +451,8 @@ is equivalent to
 but is more efficient.
 
 -}
-evaluate : QuadraticSpline3d -> Float -> ( Point3d, Vector3d )
-evaluate spline t =
+sample : QuadraticSpline3d -> Float -> ( Point3d, Vector3d )
+sample spline t =
     let
         ( p1, p2, p3 ) =
             controlPoints spline
@@ -430,6 +466,23 @@ evaluate spline t =
     ( Point3d.interpolateFrom q1 q2 t
     , Vector3d.from q1 q2 |> Vector3d.scaleBy 2
     )
+
+
+{-| Convenient shorthand for evaluating multiple samples;
+
+    QuadraticSpline3d.samples spline parameterValues
+
+is equivalent to
+
+    List.map (QuadraticSpline3d.sample spline) parameterValues
+
+To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
+module.
+
+-}
+samples : QuadraticSpline3d -> List Float -> List ( Point3d, Vector3d )
+samples spline parameterValues =
+    List.map (sample spline) parameterValues
 
 
 mapControlPoints : (Point3d -> Point3d) -> QuadraticSpline3d -> QuadraticSpline3d
