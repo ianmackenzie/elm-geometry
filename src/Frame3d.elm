@@ -13,6 +13,7 @@
 module Frame3d
     exposing
         ( Frame3d
+        , atCoordinates
         , atPoint
         , flipX
         , flipY
@@ -110,7 +111,7 @@ No guarantees are given about the other two directions other than that the three
 directions will be mutually perpendicular, and will be oriented so that the
 resulting frame is [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness).
 
-@docs withXDirection, withYDirection, withZDirection, atPoint, unsafe
+@docs withXDirection, withYDirection, withZDirection, atPoint, atCoordinates, unsafe
 
 
 # Properties
@@ -320,6 +321,20 @@ atPoint point =
         , yDirection = Direction3d.y
         , zDirection = Direction3d.z
         }
+
+
+{-| Shorthand for `Frame3d.atPoint`;
+
+    Frame3d.atCoordinates ( x, y, z )
+
+is equivalent to
+
+    Frame3d.atPoint (Point3d.fromCoordinates ( x, y, z ))
+
+-}
+atCoordinates : ( Float, Float, Float ) -> Frame3d
+atCoordinates coordinates =
+    atPoint (Point3d.fromCoordinates coordinates)
 
 
 {-| Get the origin point of a given frame.

@@ -13,6 +13,7 @@
 module Frame2d
     exposing
         ( Frame2d
+        , atCoordinates
         , atPoint
         , flipX
         , flipY
@@ -63,7 +64,7 @@ always perpendicular to each other). It can be thought of as:
 
 # Constructors
 
-@docs atPoint, withXDirection, withYDirection, unsafe
+@docs atPoint, atCoordinates, withXDirection, withYDirection, unsafe
 
 
 # Properties
@@ -205,6 +206,20 @@ atPoint point =
         , xDirection = Direction2d.x
         , yDirection = Direction2d.y
         }
+
+
+{-| Shorthand for `Frame2d.atPoint`;
+
+    Frame2d.atCoordinates ( x, y )
+
+is equivalent to
+
+    Frame2d.atPoint (Point2d.fromCoordinates ( x, y ))
+
+-}
+atCoordinates : ( Float, Float ) -> Frame2d
+atCoordinates coordinates =
+    atPoint (Point2d.fromCoordinates coordinates)
 
 
 {-| Get the origin point of a given frame.
