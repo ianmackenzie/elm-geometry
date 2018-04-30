@@ -21,6 +21,7 @@
         "elm-lang/http": "1.0.0 <= v < 2.0.0",
         "elm-lang/mouse": "1.0.1 <= v < 2.0.0",
         "elm-lang/svg": "2.0.0 <= v < 3.0.0",
+        "elm-lang/virtual-dom": "2.0.4 <= v < 3.0.0",
         "ianmackenzie/elm-float-extra": "1.0.0 <= v < 2.0.0",
         "ianmackenzie/elm-interval": "1.0.0 <= v < 2.0.0",
         "ianmackenzie/elm-triangular-mesh": "1.0.1 <= v < 2.0.0",
