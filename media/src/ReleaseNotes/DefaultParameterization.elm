@@ -16,5 +16,5 @@ main =
     Drawing2d.toHtml renderBounds
         []
         [ Drawing2d.cubicSpline spline
-        , Drawing2d.group (List.map Drawing2d.dot points)
+        , Drawing2d.dots points
         ]

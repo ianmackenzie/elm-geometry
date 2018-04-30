@@ -77,7 +77,7 @@ view model =
             [ Drawing2d.polygonWith
                 [ Attributes.noFill, Attributes.blackStroke ]
                 convexHull
-            , Drawing2d.group (List.map Drawing2d.dot model.points)
+            , Drawing2d.dots model.points
             ]
         ]
 
