@@ -2,7 +2,6 @@ module ConvexHull exposing (..)
 
 import BoundingBox2d exposing (BoundingBox2d)
 import Drawing2d
-import Drawing2d.Attributes as Attributes
 import Html exposing (Html)
 import Html.Events
 import Point2d exposing (Point2d)
@@ -74,9 +73,7 @@ view model =
     in
     Html.div [ Html.Events.onClick Click ]
         [ Drawing2d.toHtml renderBounds [] <|
-            [ Drawing2d.polygonWith
-                [ Attributes.noFill, Attributes.blackStroke ]
-                convexHull
+            [ Drawing2d.polygon convexHull
             , Drawing2d.dots model.points
             ]
         ]
