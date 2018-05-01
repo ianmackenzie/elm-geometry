@@ -431,7 +431,8 @@ derivative arc t =
 
 is equivalent to
 
-    List.map (EllipticalArc2d.derivative arc) parameterValues
+    List.map (EllipticalArc2d.derivative arc)
+        parameterValues
 
 To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
 module.
