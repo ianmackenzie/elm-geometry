@@ -113,6 +113,7 @@ import Axis2d exposing (Axis2d)
 import Direction2d exposing (Direction2d)
 import Ellipse2d exposing (Ellipse2d)
 import Frame2d exposing (Frame2d)
+import Geometry.Accuracy as Accuracy exposing (Accuracy)
 import Geometry.SweptAngle as SweptAngle exposing (SweptAngle)
 import Geometry.Types as Types
 import Interval
@@ -819,8 +820,8 @@ tolerance.
             exampleArc
 
 -}
-arcLengthParameterized : Float -> EllipticalArc2d -> ArcLengthParameterized
-arcLengthParameterized tolerance arc =
+arcLengthParameterized : Accuracy -> EllipticalArc2d -> ArcLengthParameterized
+arcLengthParameterized (Types.MaxError tolerance) arc =
     let
         parameterization =
             ArcLength.parameterization
