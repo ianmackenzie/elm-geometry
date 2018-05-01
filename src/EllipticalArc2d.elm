@@ -18,17 +18,21 @@ module EllipticalArc2d
         , placeIn
         , pointAlong
         , pointOn
+        , pointsAlong
         , pointsOn
         , relativeTo
         , reverse
         , rotateAround
         , sample
+        , sampleAlong
         , samples
+        , samplesAlong
         , scaleAbout
         , startAngle
         , startPoint
         , sweptAngle
         , tangentAlong
+        , tangentsAlong
         , translateBy
         , translateIn
         , underlyingArc
@@ -93,7 +97,7 @@ details.
 
 # Arc length parameterization
 
-@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentAlong, arcLengthToParameterValue, parameterValueToArcLength, underlyingArc
+@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, pointsAlong, tangentAlong, tangentsAlong, sampleAlong, samplesAlong, arcLengthToParameterValue, parameterValueToArcLength, underlyingArc
 
 
 # Low level
@@ -866,6 +870,25 @@ pointAlong (ArcLengthParameterized arc parameterization) s =
     ArcLength.toParameterValue parameterization s |> Maybe.map (pointOn arc)
 
 
+{-| Convenient shorthand for evaluating points along an elliptical arc at
+multiple arc length values;
+
+    Arc2d.pointsAlong parameterizedArc lengths
+
+is equivalent to
+
+    List.filterMap (Arc2d.pointAlong parameterizedArc)
+        lengths
+
+No results will be produced for arc length values less than zero or greater than
+the overall arc length of the elliptical arc.
+
+-}
+pointsAlong : ArcLengthParameterized -> List Float -> List Point2d
+pointsAlong parameterizedArc distances =
+    List.filterMap (pointAlong parameterizedArc) distances
+
+
 {-| Try to get the tangent direction along an elliptical arc at a given arc
 length. To get the tangent direction at the midpoint of `exampleArc`:
 
@@ -883,6 +906,65 @@ tangentAlong (ArcLengthParameterized arc parameterization) s =
     ArcLength.toParameterValue parameterization s
         |> Maybe.map (derivative arc)
         |> Maybe.andThen Vector2d.direction
+
+
+{-| Convenient shorthand for evaluating tangent directions along an elliptical
+arc at multiple arc length values;
+
+    Arc2d.tangentsAlong parameterizedArc lengths
+
+is equivalent to
+
+    List.filterMap (Arc2d.tangentAlong parameterizedArc)
+        lengths
+
+No results will be produced for arc length values less than zero or greater than
+the overall arc length of the elliptical arc (or for points where the derivative
+vector is zero).
+
+-}
+tangentsAlong : ArcLengthParameterized -> List Float -> List Direction2d
+tangentsAlong parameterizedArc distances =
+    List.filterMap (tangentAlong parameterizedArc) distances
+
+
+{-| Try to sample along an elliptical arc at a given arc length to get the
+position and tangent direction at that arc length. Equivalent to calling
+`EllipticalArc2d.pointAlong` and `EllipticalArc2d.tangentAlong` separately.
+-}
+sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point2d, Direction2d )
+sampleAlong (ArcLengthParameterized arc parameterization) s =
+    ArcLength.toParameterValue parameterization s
+        |> Maybe.map (sample arc)
+        |> Maybe.andThen
+            (\( point, vector ) ->
+                case Vector2d.direction vector of
+                    Just tangent ->
+                        Just ( point, tangent )
+
+                    Nothing ->
+                        Nothing
+            )
+
+
+{-| Convenient shorthand for evaluating positions and tangent directions along
+an elliptical arc at multiple arc length values;
+
+    Arc2d.samplesAlong parameterizedArc lengths
+
+is equivalent to
+
+    List.filterMap (Arc2d.sampleAlong parameterizedArc)
+        lengths
+
+No results will be produced for arc length values less than zero or greater than
+the overall arc length of the elliptical arc (or for points where the derivative
+vector is zero).
+
+-}
+samplesAlong : ArcLengthParameterized -> List Float -> List ( Point2d, Direction2d )
+samplesAlong parameterizedArc distances =
+    List.filterMap (sampleAlong parameterizedArc) distances
 
 
 {-| Try to get the parameter value along an elliptical arc at a given arc
