@@ -394,7 +394,7 @@ pointsOn arc parameterValues =
     List.map (pointOn arc) parameterValues
 
 
-{-| Get the derivative value at a point along an elliptical arc, based on a
+{-| Get the derivative vector at a point along an elliptical arc, based on a
 parameter that ranges from 0 to 1. A parameter value of 0 corresponds to the
 derivative at the start point of the arc and a value of 1 corresponds to the
 derivative at the end point.
@@ -442,8 +442,8 @@ derivatives arc parameterValues =
     List.map (derivative arc) parameterValues
 
 
-{-| Sample an elliptical arc at a given parameter value to get both the position and
-derivative at that parameter value;
+{-| Sample an elliptical arc at a given parameter value to get both the position
+and derivative vector at that parameter value;
 
     EllipticalArc2d.sample spline t
 
