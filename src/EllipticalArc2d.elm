@@ -59,7 +59,7 @@ The `startAngle` and `sweptAngle` values referred to below are not actually
 proper angles but instead refer to values of the [ellipse parameter](https://en.wikipedia.org/wiki/Ellipse#Parametric_representation).
 However, in simple cases you don't need to worry about the difference - if
 `startAngle` and `sweptAngle` are both multiples of 90 degrees, then you can
-treat them as actual angles and everything will work out.
+treat them as actual angles and everything will behave as you expect.
 
 @docs EllipticalArc2d
 
