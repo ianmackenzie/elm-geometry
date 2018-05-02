@@ -21,6 +21,8 @@ module Rectangle2d
         , translateBy
         , translateIn
         , vertices
+        , xAxis
+        , yAxis
         )
 
 import Axis2d exposing (Axis2d)
@@ -121,6 +123,16 @@ toPolygon rectangle =
 axes : Rectangle2d -> Frame2d
 axes (Types.Rectangle2d { axes }) =
     axes
+
+
+xAxis : Rectangle2d -> Axis2d
+xAxis rectangle =
+    Frame2d.xAxis (axes rectangle)
+
+
+yAxis : Rectangle2d -> Axis2d
+yAxis rectangle =
+    Frame2d.yAxis (axes rectangle)
 
 
 centerPoint : Rectangle2d -> Point2d
