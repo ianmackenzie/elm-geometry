@@ -18,17 +18,21 @@ module EllipticalArc2d
         , placeIn
         , pointAlong
         , pointOn
+        , pointsAlong
         , pointsOn
         , relativeTo
         , reverse
         , rotateAround
         , sample
+        , sampleAlong
         , samples
+        , samplesAlong
         , scaleAbout
         , startAngle
         , startPoint
         , sweptAngle
         , tangentAlong
+        , tangentsAlong
         , translateBy
         , translateIn
         , underlyingArc
@@ -55,7 +59,7 @@ The `startAngle` and `sweptAngle` values referred to below are not actually
 proper angles but instead refer to values of the [ellipse parameter](https://en.wikipedia.org/wiki/Ellipse#Parametric_representation).
 However, in simple cases you don't need to worry about the difference - if
 `startAngle` and `sweptAngle` are both multiples of 90 degrees, then you can
-treat them as actual angles and everything will work out.
+treat them as actual angles and everything will behave as you expect.
 
 @docs EllipticalArc2d
 
@@ -93,7 +97,7 @@ details.
 
 # Arc length parameterization
 
-@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentAlong, arcLengthToParameterValue, parameterValueToArcLength, underlyingArc
+@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, pointsAlong, tangentAlong, tangentsAlong, sampleAlong, samplesAlong, arcLengthToParameterValue, parameterValueToArcLength, underlyingArc
 
 
 # Low level
@@ -109,6 +113,7 @@ import Axis2d exposing (Axis2d)
 import Direction2d exposing (Direction2d)
 import Ellipse2d exposing (Ellipse2d)
 import Frame2d exposing (Frame2d)
+import Geometry.Accuracy as Accuracy exposing (Accuracy)
 import Geometry.SweptAngle as SweptAngle exposing (SweptAngle)
 import Geometry.Types as Types
 import Interval
@@ -394,7 +399,7 @@ pointsOn arc parameterValues =
     List.map (pointOn arc) parameterValues
 
 
-{-| Get the derivative value at a point along an elliptical arc, based on a
+{-| Get the derivative vector at a point along an elliptical arc, based on a
 parameter that ranges from 0 to 1. A parameter value of 0 corresponds to the
 derivative at the start point of the arc and a value of 1 corresponds to the
 derivative at the end point.
@@ -431,7 +436,8 @@ derivative arc t =
 
 is equivalent to
 
-    List.map (EllipticalArc2d.derivative arc) parameterValues
+    List.map (EllipticalArc2d.derivative arc)
+        parameterValues
 
 To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
 module.
@@ -442,8 +448,8 @@ derivatives arc parameterValues =
     List.map (derivative arc) parameterValues
 
 
-{-| Sample an elliptical arc at a given parameter value to get both the position and
-derivative at that parameter value;
+{-| Sample an elliptical arc at a given parameter value to get both the position
+and derivative vector at that parameter value;
 
     EllipticalArc2d.sample spline t
 
@@ -814,8 +820,8 @@ tolerance.
             exampleArc
 
 -}
-arcLengthParameterized : Float -> EllipticalArc2d -> ArcLengthParameterized
-arcLengthParameterized tolerance arc =
+arcLengthParameterized : Accuracy -> EllipticalArc2d -> ArcLengthParameterized
+arcLengthParameterized (Types.MaxError tolerance) arc =
     let
         parameterization =
             ArcLength.parameterization
@@ -865,6 +871,25 @@ pointAlong (ArcLengthParameterized arc parameterization) s =
     ArcLength.toParameterValue parameterization s |> Maybe.map (pointOn arc)
 
 
+{-| Convenient shorthand for evaluating points along an elliptical arc at
+multiple arc length values;
+
+    Arc2d.pointsAlong parameterizedArc lengths
+
+is equivalent to
+
+    List.filterMap (Arc2d.pointAlong parameterizedArc)
+        lengths
+
+No results will be produced for arc length values less than zero or greater than
+the overall arc length of the elliptical arc.
+
+-}
+pointsAlong : ArcLengthParameterized -> List Float -> List Point2d
+pointsAlong parameterizedArc distances =
+    List.filterMap (pointAlong parameterizedArc) distances
+
+
 {-| Try to get the tangent direction along an elliptical arc at a given arc
 length. To get the tangent direction at the midpoint of `exampleArc`:
 
@@ -882,6 +907,65 @@ tangentAlong (ArcLengthParameterized arc parameterization) s =
     ArcLength.toParameterValue parameterization s
         |> Maybe.map (derivative arc)
         |> Maybe.andThen Vector2d.direction
+
+
+{-| Convenient shorthand for evaluating tangent directions along an elliptical
+arc at multiple arc length values;
+
+    Arc2d.tangentsAlong parameterizedArc lengths
+
+is equivalent to
+
+    List.filterMap (Arc2d.tangentAlong parameterizedArc)
+        lengths
+
+No results will be produced for arc length values less than zero or greater than
+the overall arc length of the elliptical arc (or for points where the derivative
+vector is zero).
+
+-}
+tangentsAlong : ArcLengthParameterized -> List Float -> List Direction2d
+tangentsAlong parameterizedArc distances =
+    List.filterMap (tangentAlong parameterizedArc) distances
+
+
+{-| Try to sample along an elliptical arc at a given arc length to get the
+position and tangent direction at that arc length. Equivalent to calling
+`EllipticalArc2d.pointAlong` and `EllipticalArc2d.tangentAlong` separately.
+-}
+sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point2d, Direction2d )
+sampleAlong (ArcLengthParameterized arc parameterization) s =
+    ArcLength.toParameterValue parameterization s
+        |> Maybe.map (sample arc)
+        |> Maybe.andThen
+            (\( point, vector ) ->
+                case Vector2d.direction vector of
+                    Just tangent ->
+                        Just ( point, tangent )
+
+                    Nothing ->
+                        Nothing
+            )
+
+
+{-| Convenient shorthand for evaluating positions and tangent directions along
+an elliptical arc at multiple arc length values;
+
+    Arc2d.samplesAlong parameterizedArc lengths
+
+is equivalent to
+
+    List.filterMap (Arc2d.sampleAlong parameterizedArc)
+        lengths
+
+No results will be produced for arc length values less than zero or greater than
+the overall arc length of the elliptical arc (or for points where the derivative
+vector is zero).
+
+-}
+samplesAlong : ArcLengthParameterized -> List Float -> List ( Point2d, Direction2d )
+samplesAlong parameterizedArc distances =
+    List.filterMap (sampleAlong parameterizedArc) distances
 
 
 {-| Try to get the parameter value along an elliptical arc at a given arc

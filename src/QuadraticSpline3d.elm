@@ -321,7 +321,7 @@ pointsOn spline parameterValues =
     List.map (pointOn spline) parameterValues
 
 
-{-| Get the derivative value at a point along a spline, based on a parameter
+{-| Get the derivative vector at a point along a spline, based on a parameter
 that ranges from 0 to 1. A parameter value of 0 corresponds to the start
 derivative of the spline and a value of 1 corresponds to the end derivative.
 
@@ -438,7 +438,7 @@ derivativeMagnitude spline =
 
 
 {-| Sample a spline at a given parameter value to get both the position and
-derivative at that parameter value;
+derivative vector at that parameter value;
 
     QuadraticSpline3d.sample spline t
 

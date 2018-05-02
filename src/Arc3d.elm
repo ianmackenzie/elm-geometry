@@ -452,7 +452,7 @@ derivatives arc parameterValues =
 
 
 {-| Sample an arc at a given parameter value to get both the position and
-derivative at that parameter value. Equivalent to calling `pointOn` and
+derivative vector at that parameter value. Equivalent to calling `pointOn` and
 `derivative` separately.
 
     Arc3d.sample exampleArc 0
