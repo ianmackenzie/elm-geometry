@@ -511,7 +511,7 @@ numApproximationSegments tolerance arc =
     else
         let
             maxSegmentAngle =
-                2 * acos (tolerance / radius arc - 1)
+                2 * acos (1 - tolerance / radius arc)
         in
         ceiling (abs (sweptAngle arc) / maxSegmentAngle)
 
