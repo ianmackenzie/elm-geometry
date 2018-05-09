@@ -35,10 +35,12 @@ module Geometry.Expect
         , expect
         , frame2d
         , frame3d
+        , just
         , lineSegment2d
         , lineSegment2dWithin
         , lineSegment3d
         , lineSegment3dWithin
+        , maybe
         , plane3d
         , point2d
         , point2dWithin
@@ -142,6 +144,32 @@ listOf comparison firstList secondList =
         ( firstHead :: firstTail, secondHead :: secondTail ) ->
             comparison firstHead secondHead
                 && listOf comparison firstTail secondTail
+
+
+just : (expected -> actual -> Expectation) -> expected -> Maybe actual -> Expectation
+just expect expectedValue actualMaybe =
+    case actualMaybe of
+        Just actualValue ->
+            actualValue |> expect expectedValue
+
+        Nothing ->
+            Expect.fail "Expected a Just but got Nothing"
+
+
+maybe : (expected -> actual -> Expectation) -> Maybe expected -> Maybe actual -> Expectation
+maybe expect expectedMaybe actualMaybe =
+    case ( expectedMaybe, actualMaybe ) of
+        ( Just expectedValue, Just actualValue ) ->
+            actualValue |> expect expectedValue
+
+        ( Just _, Nothing ) ->
+            Expect.fail "Expected a Just but got Nothing"
+
+        ( Nothing, Just _ ) ->
+            Expect.fail "Expected Nothing but got a Just"
+
+        ( Nothing, Nothing ) ->
+            Expect.pass
 
 
 defaultTolerance : Float
