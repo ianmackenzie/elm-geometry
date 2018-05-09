@@ -2,8 +2,8 @@ module Arc2d
     exposing
         ( Arc2d
         , centerPoint
-        , derivative
-        , derivatives
+        , derivativeVector
+        , derivativeVectors
         , endPoint
         , from
         , mirrorAcross
@@ -53,7 +53,7 @@ end point). This module includes functionality for
 
 # Evaluation
 
-@docs pointOn, pointsOn, derivative, derivatives, sample, samples
+@docs pointOn, pointsOn, derivativeVector, derivativeVectors, sample, samples
 
 
 # Linear approximation
@@ -660,18 +660,18 @@ pointsOn arc parameterValues =
     List.filterMap (pointOn arc) parameterValues
 
 
-{-| Get the derivative of an arc with respect to a parameter that is 0 at the
-start point of the arc and 1 at the end point of the arc.
+{-| Get the derivative vector of an arc with respect to a parameter that is 0 at
+the start point of the arc and 1 at the end point of the arc.
 
-    Arc2d.derivative exampleArc 0
-    --> Vector2d.fromComponents ( 0, 3.1416 )
+    Arc2d.derivativeVector exampleArc 0
+    --> Just (Vector2d.fromComponents ( 0, 3.1416 ))
 
-    Arc2d.derivative exampleArc 1
-    --> Vector2d.fromComponents ( -3.1416, 0 )
+    Arc2d.derivativeVector exampleArc 1
+    --> Just (Vector2d.fromComponents ( -3.1416, 0 ))
 
 -}
-derivative : Arc2d -> Float -> Maybe Vector2d
-derivative (Types.Arc2d arc) =
+derivativeVector : Arc2d -> Float -> Maybe Vector2d
+derivativeVector (Types.Arc2d arc) =
     let
         startDerivative =
             Vector2d.withLength arc.signedLength arc.xDirection
@@ -683,21 +683,22 @@ derivative (Types.Arc2d arc) =
             Nothing
 
 
-{-| Convenient shorthand for evaluating multiple derivatives;
+{-| Convenient shorthand for evaluating multiple derivative vectors;
 
-    Arc2d.derivatives arc parameterValues
+    Arc2d.derivativeVectors arc parameterValues
 
 is equivalent to
 
-    List.map (Arc2d.derivative arc) parameterValues
+    List.filterMap (Arc2d.derivativeVector arc)
+        parameterValues
 
 To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
 module.
 
 -}
-derivatives : Arc2d -> List Float -> List Vector2d
-derivatives arc parameterValues =
-    List.filterMap (derivative arc) parameterValues
+derivativeVectors : Arc2d -> List Float -> List Vector2d
+derivativeVectors arc parameterValues =
+    List.filterMap (derivativeVector arc) parameterValues
 
 
 {-| Sample an arc at a given parameter value to get both the position and
@@ -727,7 +728,7 @@ sample arc =
             pointOn arc
 
         derivativeOfArc =
-            derivative arc
+            derivativeVector arc
     in
     \t -> Maybe.map2 (,) (pointOnArc t) (derivativeOfArc t)
 
