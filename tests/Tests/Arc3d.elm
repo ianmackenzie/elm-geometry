@@ -14,14 +14,20 @@ evaluateZeroIsStartPoint : Test
 evaluateZeroIsStartPoint =
     Test.fuzz Fuzz.arc3d
         "Evaluating at t=0 returns start point"
-        (\arc -> Arc3d.pointOn arc 0 |> Expect.point3d (Arc3d.startPoint arc))
+        (\arc ->
+            Arc3d.pointOn arc 0
+                |> Expect.just Expect.point3d (Arc3d.startPoint arc)
+        )
 
 
 evaluateOneIsEndPoint : Test
 evaluateOneIsEndPoint =
     Test.fuzz Fuzz.arc3d
         "Evaluating at t=1 returns end point"
-        (\arc -> Arc3d.pointOn arc 1 |> Expect.point3d (Arc3d.endPoint arc))
+        (\arc ->
+            Arc3d.pointOn arc 1
+                |> Expect.just Expect.point3d (Arc3d.endPoint arc)
+        )
 
 
 reverseFlipsDirection : Test
@@ -31,7 +37,7 @@ reverseFlipsDirection =
         "Reversing an arc is consistent with reversed evaluation"
         (\arc t ->
             Arc3d.pointOn (Arc3d.reverse arc) t
-                |> Expect.point3d (Arc3d.pointOn arc (1 - t))
+                |> Expect.maybe Expect.point3d (Arc3d.pointOn arc (1 - t))
         )
 
 
@@ -54,9 +60,10 @@ projectInto =
                     EllipticalArc2d.pointOn projectedArc parameterValue
 
                 projectedPoint =
-                    Point3d.projectInto sketchPlane pointOnOriginalArc
+                    pointOnOriginalArc
+                        |> Maybe.map (Point3d.projectInto sketchPlane)
             in
-            pointOnProjectedArc |> Expect.point2d projectedPoint
+            pointOnProjectedArc |> Expect.maybe Expect.point2d projectedPoint
         )
 
 

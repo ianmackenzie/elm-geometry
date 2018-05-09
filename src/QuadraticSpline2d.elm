@@ -27,7 +27,6 @@ module QuadraticSpline2d
         , samples
         , scaleAbout
         , secondDerivative
-        , splitAt
         , startDerivative
         , startPoint
         , tangentAlong
@@ -76,7 +75,7 @@ in 2D defined by three control points. This module contains functionality for
 
 # Subdivision
 
-@docs bisect, splitAt
+@docs bisect
 
 
 # Arc length parameterization
@@ -246,19 +245,22 @@ parameter value of 0 corresponds to the start point of the spline and a value of
     --> Point2d.fromCoordinates ( 5, 1 )
 
 -}
-pointOn : QuadraticSpline2d -> Float -> Point2d
+pointOn : QuadraticSpline2d -> Float -> Maybe Point2d
 pointOn spline t =
-    let
-        ( p1, p2, p3 ) =
-            controlPoints spline
+    if 0 <= t && t <= 1 then
+        let
+            ( p1, p2, p3 ) =
+                controlPoints spline
 
-        q1 =
-            Point2d.interpolateFrom p1 p2 t
+            q1 =
+                Point2d.interpolateFrom p1 p2 t
 
-        q2 =
-            Point2d.interpolateFrom p2 p3 t
-    in
-    Point2d.interpolateFrom q1 q2 t
+            q2 =
+                Point2d.interpolateFrom p2 p3 t
+        in
+        Just <| Point2d.interpolateFrom q1 q2 t
+    else
+        Nothing
 
 
 {-| Convenient shorthand for evaluating multiple points;
@@ -275,7 +277,7 @@ module.
 -}
 pointsOn : QuadraticSpline2d -> List Float -> List Point2d
 pointsOn arc parameterValues =
-    List.map (pointOn arc) parameterValues
+    List.filterMap (pointOn arc) parameterValues
 
 
 {-| Get the derivative vector at a point along a spline, based on a parameter
@@ -294,19 +296,22 @@ derivative of the spline and a value of 1 corresponds to the end derivative.
 Note that the derivative interpolates linearly from end to end.
 
 -}
-derivative : QuadraticSpline2d -> Float -> Vector2d
-derivative spline =
-    let
-        ( p1, p2, p3 ) =
-            controlPoints spline
+derivative : QuadraticSpline2d -> Float -> Maybe Vector2d
+derivative spline t =
+    if 0 <= t && t <= 1 then
+        let
+            ( p1, p2, p3 ) =
+                controlPoints spline
 
-        v1 =
-            Vector2d.from p1 p2
+            v1 =
+                Vector2d.from p1 p2
 
-        v2 =
-            Vector2d.from p2 p3
-    in
-    \t -> Vector2d.interpolateFrom v1 v2 t |> Vector2d.scaleBy 2
+            v2 =
+                Vector2d.from p2 p3
+        in
+        Just (Vector2d.interpolateFrom v1 v2 t |> Vector2d.scaleBy 2)
+    else
+        Nothing
 
 
 {-| Convenient shorthand for evaluating multiple derivatives;
@@ -323,7 +328,7 @@ module.
 -}
 derivatives : QuadraticSpline2d -> List Float -> List Vector2d
 derivatives spline parameterValues =
-    List.map (derivative spline) parameterValues
+    List.filterMap (derivative spline) parameterValues
 
 
 {-| Find the magnitude of the derivative to a spline at a particular parameter
@@ -372,14 +377,17 @@ derivativeMagnitude spline =
             y23 - y12
     in
     \t ->
-        let
-            x13 =
-                x12 + t * x123
+        if 0 <= t && t <= 1 then
+            let
+                x13 =
+                    x12 + t * x123
 
-            y13 =
-                y12 + t * y123
-        in
-        2 * sqrt (x13 * x13 + y13 * y13)
+                y13 =
+                    y12 + t * y123
+            in
+            2 * sqrt (x13 * x13 + y13 * y13)
+        else
+            0
 
 
 {-| Sample a spline at a given parameter value to get both the position and
@@ -396,21 +404,25 @@ is equivalent to
 but is more efficient.
 
 -}
-sample : QuadraticSpline2d -> Float -> ( Point2d, Vector2d )
+sample : QuadraticSpline2d -> Float -> Maybe ( Point2d, Vector2d )
 sample spline t =
-    let
-        ( p1, p2, p3 ) =
-            controlPoints spline
+    if 0 <= t && t <= 1 then
+        let
+            ( p1, p2, p3 ) =
+                controlPoints spline
 
-        q1 =
-            Point2d.interpolateFrom p1 p2 t
+            q1 =
+                Point2d.interpolateFrom p1 p2 t
 
-        q2 =
-            Point2d.interpolateFrom p2 p3 t
-    in
-    ( Point2d.interpolateFrom q1 q2 t
-    , Vector2d.from q1 q2 |> Vector2d.scaleBy 2
-    )
+            q2 =
+                Point2d.interpolateFrom p2 p3 t
+        in
+        Just <|
+            ( Point2d.interpolateFrom q1 q2 t
+            , Vector2d.from q1 q2 |> Vector2d.scaleBy 2
+            )
+    else
+        Nothing
 
 
 {-| Convenient shorthand for evaluating multiple samples;
@@ -427,7 +439,7 @@ module.
 -}
 samples : QuadraticSpline2d -> List Float -> List ( Point2d, Vector2d )
 samples spline parameterValues =
-    List.map (sample spline) parameterValues
+    List.filterMap (sample spline) parameterValues
 
 
 {-| Reverse a spline so that the start point becomes the end point, and vice
@@ -704,7 +716,8 @@ spline, `Nothing` is returned.
 -}
 pointAlong : ArcLengthParameterized -> Float -> Maybe Point2d
 pointAlong (ArcLengthParameterized spline parameterization) s =
-    ArcLength.toParameterValue parameterization s |> Maybe.map (pointOn spline)
+    ArcLength.toParameterValue parameterization s
+        |> Maybe.andThen (pointOn spline)
 
 
 {-| Try to get the tangent direction along a spline at a given arc length. To
@@ -722,7 +735,7 @@ given arc length), `Nothing` is returned.
 tangentAlong : ArcLengthParameterized -> Float -> Maybe Direction2d
 tangentAlong (ArcLengthParameterized spline parameterization) s =
     ArcLength.toParameterValue parameterization s
-        |> Maybe.map (derivative spline)
+        |> Maybe.andThen (derivative spline)
         |> Maybe.andThen Vector2d.direction
 
 

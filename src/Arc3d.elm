@@ -308,7 +308,12 @@ startPoint (Types.Arc3d arc) =
 -}
 endPoint : Arc3d -> Point3d
 endPoint arc =
-    pointOn arc 1.0
+    case pointOn arc 1.0 of
+        Just point ->
+            point
+
+        Nothing ->
+            startPoint arc
 
 
 {-| Get the point along an arc at a given parameter value. A parameter value of
@@ -319,7 +324,7 @@ end point.
     --> Point3d.fromCoordinates ( 0, 1.4142, 0 )
 
 -}
-pointOn : Arc3d -> Float -> Point3d
+pointOn : Arc3d -> Float -> Maybe Point3d
 pointOn (Types.Arc3d arc) =
     let
         ( x0, y0, z0 ) =
@@ -339,39 +344,47 @@ pointOn (Types.Arc3d arc) =
     in
     if arcSweptAngle == 0.0 then
         \t ->
-            let
-                distance =
-                    t * arcSignedLength
-            in
-            Point3d.fromCoordinates
-                ( x0 + distance * x1
-                , y0 + distance * y1
-                , z0 + distance * z1
-                )
+            if 0 <= t && t <= 1 then
+                let
+                    distance =
+                        t * arcSignedLength
+                in
+                Just <|
+                    Point3d.fromCoordinates
+                        ( x0 + distance * x1
+                        , y0 + distance * y1
+                        , z0 + distance * z1
+                        )
+            else
+                Nothing
     else
         let
             arcRadius =
                 arcSignedLength / arcSweptAngle
         in
         \t ->
-            let
-                theta =
-                    t * arcSweptAngle
+            if 0 <= t && t <= 1 then
+                let
+                    theta =
+                        t * arcSweptAngle
 
-                x =
-                    arcRadius * sin theta
+                    x =
+                        arcRadius * sin theta
 
-                y =
-                    if abs theta < pi / 2 then
-                        x * tan (theta / 2)
-                    else
-                        arcRadius * (1 - cos theta)
-            in
-            Point3d.fromCoordinates
-                ( x0 + x * x1 + y * x2
-                , y0 + x * y1 + y * y2
-                , z0 + x * z1 + y * z2
-                )
+                    y =
+                        if abs theta < pi / 2 then
+                            x * tan (theta / 2)
+                        else
+                            arcRadius * (1 - cos theta)
+                in
+                Just <|
+                    Point3d.fromCoordinates
+                        ( x0 + x * x1 + y * x2
+                        , y0 + x * y1 + y * y2
+                        , z0 + x * z1 + y * z2
+                        )
+            else
+                Nothing
 
 
 {-| Convenient shorthand for evaluating multiple points;
@@ -388,7 +401,7 @@ module.
 -}
 pointsOn : Arc3d -> List Float -> List Point3d
 pointsOn arc parameterValues =
-    List.map (pointOn arc) parameterValues
+    List.filterMap (pointOn arc) parameterValues
 
 
 {-| Get the derivative of an arc with respect to a parameter that is 0 at the
@@ -401,7 +414,7 @@ start point of the arc and 1 at the end point of the arc.
     --> Vector3d.fromComponents ( -1.5708, -1.5708, 0 )
 
 -}
-derivative : Arc3d -> Float -> Vector3d
+derivative : Arc3d -> Float -> Maybe Vector3d
 derivative (Types.Arc3d arc) =
     let
         ( x1, y1, z1 ) =
@@ -417,21 +430,25 @@ derivative (Types.Arc3d arc) =
             arc.signedLength
     in
     \t ->
-        let
-            angle =
-                t * arcSweptAngle
+        if 0 <= t && t <= 1 then
+            let
+                angle =
+                    t * arcSweptAngle
 
-            cosAngle =
-                cos angle
+                cosAngle =
+                    cos angle
 
-            sinAngle =
-                sin angle
-        in
-        Vector3d.fromComponents
-            ( arcSignedLength * (cosAngle * x1 + sinAngle * x2)
-            , arcSignedLength * (cosAngle * y1 + sinAngle * y2)
-            , arcSignedLength * (cosAngle * z1 + sinAngle * z2)
-            )
+                sinAngle =
+                    sin angle
+            in
+            Just <|
+                Vector3d.fromComponents
+                    ( arcSignedLength * (cosAngle * x1 + sinAngle * x2)
+                    , arcSignedLength * (cosAngle * y1 + sinAngle * y2)
+                    , arcSignedLength * (cosAngle * z1 + sinAngle * z2)
+                    )
+        else
+            Nothing
 
 
 {-| Convenient shorthand for evaluating multiple derivatives;
@@ -448,7 +465,7 @@ module.
 -}
 derivatives : Arc3d -> List Float -> List Vector3d
 derivatives arc parameterValues =
-    List.map (derivative arc) parameterValues
+    List.filterMap (derivative arc) parameterValues
 
 
 {-| Sample an arc at a given parameter value to get both the position and
@@ -471,7 +488,7 @@ derivative vector at that parameter value. Equivalent to calling `pointOn` and
     --> )
 
 -}
-sample : Arc3d -> Float -> ( Point3d, Vector3d )
+sample : Arc3d -> Float -> Maybe ( Point3d, Vector3d )
 sample arc =
     let
         pointOnArc =
@@ -480,7 +497,7 @@ sample arc =
         derivativeOfArc =
             derivative arc
     in
-    \t -> ( pointOnArc t, derivativeOfArc t )
+    \t -> Maybe.map2 (,) (pointOnArc t) (derivativeOfArc t)
 
 
 {-| Convenient shorthand for evaluating multiple samples;
@@ -497,7 +514,7 @@ module.
 -}
 samples : Arc3d -> List Float -> List ( Point3d, Vector3d )
 samples arc parameterValues =
-    List.map (sample arc) parameterValues
+    List.filterMap (sample arc) parameterValues
 
 
 numApproximationSegments : Float -> Arc3d -> Int
@@ -538,7 +555,7 @@ toPolyline (Types.MaxError tolerance) arc =
             numApproximationSegments tolerance arc
 
         points =
-            List.map (pointOn arc) (Parameter.numSteps numSegments)
+            pointsOn arc (Parameter.numSteps numSegments)
     in
     Polyline3d.fromVertices points
 

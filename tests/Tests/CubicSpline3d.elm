@@ -112,7 +112,7 @@ derivativeAndMagnitudeAreConsistent =
         "derivative and derivativeMagnitude are consistent"
         (\spline t ->
             CubicSpline3d.derivative spline t
-                |> Vector3d.length
-                |> Expect.approximately
+                |> Maybe.map Vector3d.length
+                |> Expect.just Expect.approximately
                     (CubicSpline3d.derivativeMagnitude spline t)
         )

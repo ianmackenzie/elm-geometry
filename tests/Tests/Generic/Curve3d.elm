@@ -13,8 +13,8 @@ import Vector3d exposing (Vector3d)
 
 type alias Config curve =
     { fuzzer : Fuzzer curve
-    , pointOn : curve -> Float -> Point3d
-    , derivative : curve -> Float -> Vector3d
+    , pointOn : curve -> Float -> Maybe Point3d
+    , derivative : curve -> Float -> Maybe Vector3d
     , scaleAbout : Point3d -> Float -> curve -> curve
     , translateBy : Vector3d -> curve -> curve
     , rotateAround : Axis3d -> Float -> curve -> curve
@@ -50,9 +50,12 @@ transformations config =
                         config.pointOn scaledCurve t
 
                     scaledPoint =
-                        Point3d.scaleAbout basePoint scale originalPoint
+                        originalPoint
+                            |> Maybe.map
+                                (Point3d.scaleAbout basePoint scale)
                 in
-                pointOnScaledCurve |> Expect.point3d scaledPoint
+                pointOnScaledCurve
+                    |> Expect.maybe Expect.point3d scaledPoint
             )
         , Test.fuzz3
             config.fuzzer
@@ -71,9 +74,11 @@ transformations config =
                         config.pointOn translatedCurve t
 
                     translatedPoint =
-                        Point3d.translateBy displacement originalPoint
+                        originalPoint
+                            |> Maybe.map (Point3d.translateBy displacement)
                 in
-                pointOnTranslatedCurve |> Expect.point3d translatedPoint
+                pointOnTranslatedCurve
+                    |> Expect.maybe Expect.point3d translatedPoint
             )
         , Test.fuzz4
             config.fuzzer
@@ -93,9 +98,11 @@ transformations config =
                         config.pointOn rotatedCurve t
 
                     rotatedPoint =
-                        Point3d.rotateAround axis angle originalPoint
+                        originalPoint
+                            |> Maybe.map
+                                (Point3d.rotateAround axis angle)
                 in
-                pointOnRotatedCurve |> Expect.point3d rotatedPoint
+                pointOnRotatedCurve |> Expect.maybe Expect.point3d rotatedPoint
             )
         , Test.fuzz3
             config.fuzzer
@@ -114,9 +121,10 @@ transformations config =
                         config.pointOn mirroredCurve t
 
                     mirroredPoint =
-                        Point3d.mirrorAcross plane originalPoint
+                        originalPoint |> Maybe.map (Point3d.mirrorAcross plane)
                 in
-                pointOnMirroredCurve |> Expect.point3d mirroredPoint
+                pointOnMirroredCurve
+                    |> Expect.maybe Expect.point3d mirroredPoint
             )
         , Test.fuzz3
             config.fuzzer
@@ -135,9 +143,9 @@ transformations config =
                         config.pointOn localCurve t
 
                     localPoint =
-                        Point3d.relativeTo frame originalPoint
+                        originalPoint |> Maybe.map (Point3d.relativeTo frame)
                 in
-                pointOnLocalCurve |> Expect.point3d localPoint
+                pointOnLocalCurve |> Expect.maybe Expect.point3d localPoint
             )
         , Test.fuzz3
             config.fuzzer
@@ -155,9 +163,9 @@ transformations config =
                     pointOnGlobalCurve =
                         config.pointOn globalCurve t
 
-                    localPoint =
-                        Point3d.placeIn frame originalPoint
+                    globalPoint =
+                        originalPoint |> Maybe.map (Point3d.placeIn frame)
                 in
-                pointOnGlobalCurve |> Expect.point3d localPoint
+                pointOnGlobalCurve |> Expect.maybe Expect.point3d globalPoint
             )
         ]

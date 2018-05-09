@@ -34,7 +34,6 @@ module CubicSpline3d
         , scaleAbout
         , secondDerivative
         , secondDerivatives
-        , splitAt
         , startDerivative
         , startPoint
         , tangentAlong
@@ -83,7 +82,7 @@ in 3D defined by four control points. This module contains functionality for
 
 # Subdivision
 
-@docs bisect, splitAt
+@docs bisect
 
 
 # Arc length parameterization
@@ -360,28 +359,31 @@ parameter value of 0 corresponds to the start point of the spline and a value of
     --> Point3d.fromCoordinates ( 3, 3, 3 )
 
 -}
-pointOn : CubicSpline3d -> Float -> Point3d
+pointOn : CubicSpline3d -> Float -> Maybe Point3d
 pointOn spline t =
-    let
-        ( p1, p2, p3, p4 ) =
-            controlPoints spline
+    if 0 <= t && t <= 1 then
+        let
+            ( p1, p2, p3, p4 ) =
+                controlPoints spline
 
-        q1 =
-            Point3d.interpolateFrom p1 p2 t
+            q1 =
+                Point3d.interpolateFrom p1 p2 t
 
-        q2 =
-            Point3d.interpolateFrom p2 p3 t
+            q2 =
+                Point3d.interpolateFrom p2 p3 t
 
-        q3 =
-            Point3d.interpolateFrom p3 p4 t
+            q3 =
+                Point3d.interpolateFrom p3 p4 t
 
-        r1 =
-            Point3d.interpolateFrom q1 q2 t
+            r1 =
+                Point3d.interpolateFrom q1 q2 t
 
-        r2 =
-            Point3d.interpolateFrom q2 q3 t
-    in
-    Point3d.interpolateFrom r1 r2 t
+            r2 =
+                Point3d.interpolateFrom q2 q3 t
+        in
+        Just <| Point3d.interpolateFrom r1 r2 t
+    else
+        Nothing
 
 
 {-| Convenient shorthand for evaluating multiple points;
@@ -398,7 +400,7 @@ module.
 -}
 pointsOn : CubicSpline3d -> List Float -> List Point3d
 pointsOn spline parameterValues =
-    List.map (pointOn spline) parameterValues
+    List.filterMap (pointOn spline) parameterValues
 
 
 {-| Get the derivative vector at a point along a spline, based on a parameter
@@ -417,104 +419,109 @@ derivative of the spline and a value of 1 corresponds to the end derivative.
 Note that the derivative interpolates linearly from end to end.
 
 -}
-derivative : CubicSpline3d -> Float -> Vector3d
+derivative : CubicSpline3d -> Float -> Maybe Vector3d
 derivative spline t =
-    let
-        ( p1, p2, p3, p4 ) =
-            controlPoints spline
-
-        ( x1, y1, z1 ) =
-            Point3d.coordinates p1
-
-        ( x2, y2, z2 ) =
-            Point3d.coordinates p2
-
-        ( x3, y3, z3 ) =
-            Point3d.coordinates p3
-
-        ( x4, y4, z4 ) =
-            Point3d.coordinates p4
-
-        vx1 =
-            x2 - x1
-
-        vy1 =
-            y2 - y1
-
-        vz1 =
-            z2 - z1
-
-        vx2 =
-            x3 - x2
-
-        vy2 =
-            y3 - y2
-
-        vz2 =
-            z3 - z2
-
-        vx3 =
-            x4 - x3
-
-        vy3 =
-            y4 - y3
-
-        vz3 =
-            z4 - z3
-    in
-    if t <= 0.5 then
+    if 0 <= t && t <= 1 then
         let
-            wx1 =
-                vx1 + t * (vx2 - vx1)
+            ( p1, p2, p3, p4 ) =
+                controlPoints spline
 
-            wy1 =
-                vy1 + t * (vy2 - vy1)
+            ( x1, y1, z1 ) =
+                Point3d.coordinates p1
 
-            wz1 =
-                vz1 + t * (vz2 - vz1)
+            ( x2, y2, z2 ) =
+                Point3d.coordinates p2
 
-            wx2 =
-                vx2 + t * (vx3 - vx2)
+            ( x3, y3, z3 ) =
+                Point3d.coordinates p3
 
-            wy2 =
-                vy2 + t * (vy3 - vy2)
+            ( x4, y4, z4 ) =
+                Point3d.coordinates p4
 
-            wz2 =
-                vz2 + t * (vz3 - vz2)
+            vx1 =
+                x2 - x1
+
+            vy1 =
+                y2 - y1
+
+            vz1 =
+                z2 - z1
+
+            vx2 =
+                x3 - x2
+
+            vy2 =
+                y3 - y2
+
+            vz2 =
+                z3 - z2
+
+            vx3 =
+                x4 - x3
+
+            vy3 =
+                y4 - y3
+
+            vz3 =
+                z4 - z3
         in
-        Vector3d.fromComponents
-            ( 3 * (wx1 + t * (wx2 - wx1))
-            , 3 * (wy1 + t * (wy2 - wy1))
-            , 3 * (wz1 + t * (wz2 - wz1))
-            )
+        if t <= 0.5 then
+            let
+                wx1 =
+                    vx1 + t * (vx2 - vx1)
+
+                wy1 =
+                    vy1 + t * (vy2 - vy1)
+
+                wz1 =
+                    vz1 + t * (vz2 - vz1)
+
+                wx2 =
+                    vx2 + t * (vx3 - vx2)
+
+                wy2 =
+                    vy2 + t * (vy3 - vy2)
+
+                wz2 =
+                    vz2 + t * (vz3 - vz2)
+            in
+            Just <|
+                Vector3d.fromComponents
+                    ( 3 * (wx1 + t * (wx2 - wx1))
+                    , 3 * (wy1 + t * (wy2 - wy1))
+                    , 3 * (wz1 + t * (wz2 - wz1))
+                    )
+        else
+            let
+                u =
+                    1 - t
+
+                wx1 =
+                    vx2 + u * (vx1 - vx2)
+
+                wy1 =
+                    vy2 + u * (vy1 - vy2)
+
+                wz1 =
+                    vz2 + u * (vz1 - vz2)
+
+                wx2 =
+                    vx3 + u * (vx2 - vx3)
+
+                wy2 =
+                    vy3 + u * (vy2 - vy3)
+
+                wz2 =
+                    vz3 + u * (vz2 - vz3)
+            in
+            Just <|
+                Vector3d.fromComponents
+                    ( 3 * (wx2 + u * (wx1 - wx2))
+                    , 3 * (wy2 + u * (wy1 - wy2))
+                    , 3 * (wz2 + u * (wz1 - wz2))
+                    )
     else
-        let
-            u =
-                1 - t
-
-            wx1 =
-                vx2 + u * (vx1 - vx2)
-
-            wy1 =
-                vy2 + u * (vy1 - vy2)
-
-            wz1 =
-                vz2 + u * (vz1 - vz2)
-
-            wx2 =
-                vx3 + u * (vx2 - vx3)
-
-            wy2 =
-                vy3 + u * (vy2 - vy3)
-
-            wz2 =
-                vz3 + u * (vz2 - vz3)
-        in
-        Vector3d.fromComponents
-            ( 3 * (wx2 + u * (wx1 - wx2))
-            , 3 * (wy2 + u * (wy1 - wy2))
-            , 3 * (wz2 + u * (wz1 - wz2))
-            )
+        Nothing
 
 
 {-| Convenient shorthand for evaluating multiple derivatives;
@@ -531,7 +538,7 @@ module.
 -}
 derivatives : CubicSpline3d -> List Float -> List Vector3d
 derivatives spline parameterValues =
-    List.map (derivative spline) parameterValues
+    List.filterMap (derivative spline) parameterValues
 
 
 {-| Find the magnitude of the derivative to a spline at a particular parameter
@@ -541,7 +548,9 @@ value;
 
 is equivalent to
 
-    Vector3d.length (CubicSpline3d.derivative spline t)
+    CubicSpline3d.derivative spline t
+        |> Maybe.map Vector3d.length
+        |> Maybe.withDefault 0
 
 but more efficient since it avoids any intermediate `Vector3d` allocation.
 
@@ -610,35 +619,38 @@ derivativeMagnitude spline =
             z34 - z23
     in
     \t ->
-        let
-            x13 =
-                x12 + t * x123
+        if 0 <= t && t <= 1 then
+            let
+                x13 =
+                    x12 + t * x123
 
-            y13 =
-                y12 + t * y123
+                y13 =
+                    y12 + t * y123
 
-            z13 =
-                z12 + t * z123
+                z13 =
+                    z12 + t * z123
 
-            x24 =
-                x23 + t * x234
+                x24 =
+                    x23 + t * x234
 
-            y24 =
-                y23 + t * y234
+                y24 =
+                    y23 + t * y234
 
-            z24 =
-                z23 + t * z234
+                z24 =
+                    z23 + t * z234
 
-            x14 =
-                x13 + t * (x24 - x13)
+                x14 =
+                    x13 + t * (x24 - x13)
 
-            y14 =
-                y13 + t * (y24 - y13)
+                y14 =
+                    y13 + t * (y24 - y13)
 
-            z14 =
-                z13 + t * (z24 - z13)
-        in
-        3 * sqrt (x14 * x14 + y14 * y14 + z14 * z14)
+                z14 =
+                    z13 + t * (z24 - z13)
+            in
+            3 * sqrt (x14 * x14 + y14 * y14 + z14 * z14)
+        else
+            0
 
 
 {-| Sample a spline at a given parameter value to get both the position and
@@ -655,30 +667,34 @@ is equivalent to
 but is more efficient.
 
 -}
-sample : CubicSpline3d -> Float -> ( Point3d, Vector3d )
+sample : CubicSpline3d -> Float -> Maybe ( Point3d, Vector3d )
 sample spline t =
-    let
-        ( p1, p2, p3, p4 ) =
-            controlPoints spline
+    if 0 <= t && t <= 1 then
+        let
+            ( p1, p2, p3, p4 ) =
+                controlPoints spline
 
-        q1 =
-            Point3d.interpolateFrom p1 p2 t
+            q1 =
+                Point3d.interpolateFrom p1 p2 t
 
-        q2 =
-            Point3d.interpolateFrom p2 p3 t
+            q2 =
+                Point3d.interpolateFrom p2 p3 t
 
-        q3 =
-            Point3d.interpolateFrom p3 p4 t
+            q3 =
+                Point3d.interpolateFrom p3 p4 t
 
-        r1 =
-            Point3d.interpolateFrom q1 q2 t
+            r1 =
+                Point3d.interpolateFrom q1 q2 t
 
-        r2 =
-            Point3d.interpolateFrom q2 q3 t
-    in
-    ( Point3d.interpolateFrom r1 r2 t
-    , Vector3d.from r1 r2 |> Vector3d.scaleBy 3
-    )
+            r2 =
+                Point3d.interpolateFrom q2 q3 t
+        in
+        Just <|
+            ( Point3d.interpolateFrom r1 r2 t
+            , Vector3d.from r1 r2 |> Vector3d.scaleBy 3
+            )
+    else
+        Nothing
 
 
 {-| Convenient shorthand for evaluating multiple samples;
@@ -695,7 +711,7 @@ module.
 -}
 samples : CubicSpline3d -> List Float -> List ( Point3d, Vector3d )
 samples spline parameterValues =
-    List.map (sample spline) parameterValues
+    List.filterMap (sample spline) parameterValues
 
 
 mapControlPoints : (Point3d -> Point3d) -> CubicSpline3d -> CubicSpline3d
@@ -1040,7 +1056,8 @@ spline, `Nothing` is returned.
 -}
 pointAlong : ArcLengthParameterized -> Float -> Maybe Point3d
 pointAlong (ArcLengthParameterized spline parameterization) s =
-    ArcLength.toParameterValue parameterization s |> Maybe.map (pointOn spline)
+    ArcLength.toParameterValue parameterization s
+        |> Maybe.andThen (pointOn spline)
 
 
 {-| Try to get the tangent direction along a spline at a given arc length. To
@@ -1060,7 +1077,7 @@ given arc length), `Nothing` is returned.
 tangentAlong : ArcLengthParameterized -> Float -> Maybe Direction3d
 tangentAlong (ArcLengthParameterized spline parameterization) s =
     ArcLength.toParameterValue parameterization s
-        |> Maybe.map (derivative spline)
+        |> Maybe.andThen (derivative spline)
         |> Maybe.andThen Vector3d.direction
 
 

@@ -12,8 +12,8 @@ import Vector2d exposing (Vector2d)
 
 type alias Config curve =
     { fuzzer : Fuzzer curve
-    , pointOn : curve -> Float -> Point2d
-    , derivative : curve -> Float -> Vector2d
+    , pointOn : curve -> Float -> Maybe Point2d
+    , derivative : curve -> Float -> Maybe Vector2d
     , scaleAbout : Point2d -> Float -> curve -> curve
     , translateBy : Vector2d -> curve -> curve
     , rotateAround : Point2d -> Float -> curve -> curve
@@ -50,9 +50,12 @@ transformations config =
                             config.pointOn scaledCurve t
 
                         scaledPoint =
-                            Point2d.scaleAbout basePoint scale originalPoint
+                            originalPoint
+                                |> Maybe.map
+                                    (Point2d.scaleAbout basePoint scale)
                     in
-                    pointOnScaledCurve |> Expect.point2d scaledPoint
+                    pointOnScaledCurve
+                        |> Expect.maybe Expect.point2d scaledPoint
                 )
             , Test.fuzz4
                 config.fuzzer
@@ -72,9 +75,11 @@ transformations config =
                             config.derivative scaledCurve t
 
                         scaledDerivative =
-                            Vector2d.scaleBy scale originalDerivative
+                            originalDerivative
+                                |> Maybe.map (Vector2d.scaleBy scale)
                     in
-                    derivativeOfScaledCurve |> Expect.vector2d scaledDerivative
+                    derivativeOfScaledCurve
+                        |> Expect.maybe Expect.vector2d scaledDerivative
                 )
             ]
         , Test.fuzz3
@@ -94,9 +99,11 @@ transformations config =
                         config.pointOn translatedCurve t
 
                     translatedPoint =
-                        Point2d.translateBy displacement originalPoint
+                        originalPoint
+                            |> Maybe.map (Point2d.translateBy displacement)
                 in
-                pointOnTranslatedCurve |> Expect.point2d translatedPoint
+                pointOnTranslatedCurve
+                    |> Expect.maybe Expect.point2d translatedPoint
             )
         , Test.fuzz4
             config.fuzzer
@@ -116,9 +123,11 @@ transformations config =
                         config.pointOn rotatedCurve t
 
                     rotatedPoint =
-                        Point2d.rotateAround centerPoint angle originalPoint
+                        originalPoint
+                            |> Maybe.map
+                                (Point2d.rotateAround centerPoint angle)
                 in
-                pointOnRotatedCurve |> Expect.point2d rotatedPoint
+                pointOnRotatedCurve |> Expect.maybe Expect.point2d rotatedPoint
             )
         , Test.fuzz3
             config.fuzzer
@@ -137,9 +146,10 @@ transformations config =
                         config.pointOn mirroredCurve t
 
                     mirroredPoint =
-                        Point2d.mirrorAcross axis originalPoint
+                        originalPoint |> Maybe.map (Point2d.mirrorAcross axis)
                 in
-                pointOnMirroredCurve |> Expect.point2d mirroredPoint
+                pointOnMirroredCurve
+                    |> Expect.maybe Expect.point2d mirroredPoint
             )
         , Test.fuzz3
             config.fuzzer
@@ -158,9 +168,9 @@ transformations config =
                         config.pointOn localCurve t
 
                     localPoint =
-                        Point2d.relativeTo frame originalPoint
+                        originalPoint |> Maybe.map (Point2d.relativeTo frame)
                 in
-                pointOnLocalCurve |> Expect.point2d localPoint
+                pointOnLocalCurve |> Expect.maybe Expect.point2d localPoint
             )
         , Test.fuzz3
             config.fuzzer
@@ -178,9 +188,9 @@ transformations config =
                     pointOnGlobalCurve =
                         config.pointOn globalCurve t
 
-                    localPoint =
-                        Point2d.placeIn frame originalPoint
+                    globalPoint =
+                        originalPoint |> Maybe.map (Point2d.placeIn frame)
                 in
-                pointOnGlobalCurve |> Expect.point2d localPoint
+                pointOnGlobalCurve |> Expect.maybe Expect.point2d globalPoint
             )
         ]

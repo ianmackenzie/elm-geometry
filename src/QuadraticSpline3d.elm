@@ -30,7 +30,6 @@ module QuadraticSpline3d
         , samples
         , scaleAbout
         , secondDerivative
-        , splitAt
         , startDerivative
         , startPoint
         , tangentAlong
@@ -84,7 +83,7 @@ in 3D defined by three control points. This module contains functionality for
 
 # Subdivision
 
-@docs bisect, splitAt
+@docs bisect
 
 
 # Arc length parameterization
@@ -289,19 +288,22 @@ parameter value of 0 corresponds to the start point of the spline and a value of
     --> Point3d.fromCoordinates ( 3, 3, 3 )
 
 -}
-pointOn : QuadraticSpline3d -> Float -> Point3d
+pointOn : QuadraticSpline3d -> Float -> Maybe Point3d
 pointOn spline t =
-    let
-        ( p1, p2, p3 ) =
-            controlPoints spline
+    if 0 <= t && t <= 1 then
+        let
+            ( p1, p2, p3 ) =
+                controlPoints spline
 
-        q1 =
-            Point3d.interpolateFrom p1 p2 t
+            q1 =
+                Point3d.interpolateFrom p1 p2 t
 
-        q2 =
-            Point3d.interpolateFrom p2 p3 t
-    in
-    Point3d.interpolateFrom q1 q2 t
+            q2 =
+                Point3d.interpolateFrom p2 p3 t
+        in
+        Just <| Point3d.interpolateFrom q1 q2 t
+    else
+        Nothing
 
 
 {-| Convenient shorthand for evaluating multiple points;
@@ -318,7 +320,7 @@ module.
 -}
 pointsOn : QuadraticSpline3d -> List Float -> List Point3d
 pointsOn spline parameterValues =
-    List.map (pointOn spline) parameterValues
+    List.filterMap (pointOn spline) parameterValues
 
 
 {-| Get the derivative vector at a point along a spline, based on a parameter
@@ -337,19 +339,22 @@ derivative of the spline and a value of 1 corresponds to the end derivative.
 Note that the derivative interpolates linearly from end to end.
 
 -}
-derivative : QuadraticSpline3d -> Float -> Vector3d
-derivative spline =
-    let
-        ( p1, p2, p3 ) =
-            controlPoints spline
+derivative : QuadraticSpline3d -> Float -> Maybe Vector3d
+derivative spline t =
+    if 0 <= t && t <= 1 then
+        let
+            ( p1, p2, p3 ) =
+                controlPoints spline
 
-        v1 =
-            Vector3d.from p1 p2
+            v1 =
+                Vector3d.from p1 p2
 
-        v2 =
-            Vector3d.from p2 p3
-    in
-    \t -> Vector3d.interpolateFrom v1 v2 t |> Vector3d.scaleBy 2
+            v2 =
+                Vector3d.from p2 p3
+        in
+        Just (Vector3d.interpolateFrom v1 v2 t |> Vector3d.scaleBy 2)
+    else
+        Nothing
 
 
 {-| Convenient shorthand for evaluating multiple derivatives;
@@ -366,7 +371,7 @@ module.
 -}
 derivatives : QuadraticSpline3d -> List Float -> List Vector3d
 derivatives spline parameterValues =
-    List.map (derivative spline) parameterValues
+    List.filterMap (derivative spline) parameterValues
 
 
 {-| Find the magnitude of the derivative to a spline at a particular parameter
@@ -451,21 +456,25 @@ is equivalent to
 but is more efficient.
 
 -}
-sample : QuadraticSpline3d -> Float -> ( Point3d, Vector3d )
+sample : QuadraticSpline3d -> Float -> Maybe ( Point3d, Vector3d )
 sample spline t =
-    let
-        ( p1, p2, p3 ) =
-            controlPoints spline
+    if 0 <= t && t <= 1 then
+        let
+            ( p1, p2, p3 ) =
+                controlPoints spline
 
-        q1 =
-            Point3d.interpolateFrom p1 p2 t
+            q1 =
+                Point3d.interpolateFrom p1 p2 t
 
-        q2 =
-            Point3d.interpolateFrom p2 p3 t
-    in
-    ( Point3d.interpolateFrom q1 q2 t
-    , Vector3d.from q1 q2 |> Vector3d.scaleBy 2
-    )
+            q2 =
+                Point3d.interpolateFrom p2 p3 t
+        in
+        Just
+            ( Point3d.interpolateFrom q1 q2 t
+            , Vector3d.from q1 q2 |> Vector3d.scaleBy 2
+            )
+    else
+        Nothing
 
 
 {-| Convenient shorthand for evaluating multiple samples;
@@ -482,7 +491,7 @@ module.
 -}
 samples : QuadraticSpline3d -> List Float -> List ( Point3d, Vector3d )
 samples spline parameterValues =
-    List.map (sample spline) parameterValues
+    List.filterMap (sample spline) parameterValues
 
 
 mapControlPoints : (Point3d -> Point3d) -> QuadraticSpline3d -> QuadraticSpline3d
@@ -804,7 +813,8 @@ spline, `Nothing` is returned.
 -}
 pointAlong : ArcLengthParameterized -> Float -> Maybe Point3d
 pointAlong (ArcLengthParameterized spline parameterization) s =
-    ArcLength.toParameterValue parameterization s |> Maybe.map (pointOn spline)
+    ArcLength.toParameterValue parameterization s
+        |> Maybe.andThen (pointOn spline)
 
 
 {-| Try to get the tangent direction along a spline at a given arc length. To
@@ -824,7 +834,7 @@ given arc length), `Nothing` is returned.
 tangentAlong : ArcLengthParameterized -> Float -> Maybe Direction3d
 tangentAlong (ArcLengthParameterized spline parameterization) s =
     ArcLength.toParameterValue parameterization s
-        |> Maybe.map (derivative spline)
+        |> Maybe.andThen (derivative spline)
         |> Maybe.andThen Vector3d.direction
 
 

@@ -369,17 +369,20 @@ value of 1 corresponds to the end point.
     --> Point2d.fromCoordinates ( 0, 1 )
 
 -}
-pointOn : EllipticalArc2d -> Float -> Point2d
+pointOn : EllipticalArc2d -> Float -> Maybe Point2d
 pointOn arc t =
-    let
-        theta =
-            startAngle arc + t * sweptAngle arc
-    in
-    Point2d.placeIn (axes arc) <|
-        Point2d.fromCoordinates
-            ( xRadius arc * cos theta
-            , yRadius arc * sin theta
-            )
+    if 0 <= t && t <= 1 then
+        let
+            theta =
+                startAngle arc + t * sweptAngle arc
+        in
+        Just <|
+            Point2d.fromCoordinatesIn (axes arc)
+                ( xRadius arc * cos theta
+                , yRadius arc * sin theta
+                )
+    else
+        Nothing
 
 
 {-| Convenient shorthand for evaluating multiple points;
@@ -396,7 +399,7 @@ module.
 -}
 pointsOn : EllipticalArc2d -> List Float -> List Point2d
 pointsOn arc parameterValues =
-    List.map (pointOn arc) parameterValues
+    List.filterMap (pointOn arc) parameterValues
 
 
 {-| Get the derivative vector at a point along an elliptical arc, based on a
@@ -414,20 +417,24 @@ derivative at the end point.
     --> Vector2d.fromComponents ( -3.1416, 0 )
 
 -}
-derivative : EllipticalArc2d -> Float -> Vector2d
+derivative : EllipticalArc2d -> Float -> Maybe Vector2d
 derivative arc t =
-    let
-        deltaTheta =
-            sweptAngle arc
+    if 0 <= t && t <= 1 then
+        let
+            deltaTheta =
+                sweptAngle arc
 
-        theta =
-            startAngle arc + t * deltaTheta
-    in
-    Vector2d.placeIn (axes arc) <|
-        Vector2d.fromComponents
-            ( -(xRadius arc) * deltaTheta * sin theta
-            , yRadius arc * deltaTheta * cos theta
-            )
+            theta =
+                startAngle arc + t * deltaTheta
+        in
+        Just <|
+            Vector2d.placeIn (axes arc) <|
+                Vector2d.fromComponents
+                    ( -(xRadius arc) * deltaTheta * sin theta
+                    , yRadius arc * deltaTheta * cos theta
+                    )
+    else
+        Nothing
 
 
 {-| Convenient shorthand for evaluating multiple derivatives;
@@ -445,7 +452,7 @@ module.
 -}
 derivatives : EllipticalArc2d -> List Float -> List Vector2d
 derivatives arc parameterValues =
-    List.map (derivative arc) parameterValues
+    List.filterMap (derivative arc) parameterValues
 
 
 {-| Sample an elliptical arc at a given parameter value to get both the position
@@ -455,16 +462,14 @@ and derivative vector at that parameter value;
 
 is equivalent to
 
-    ( EllipticalArc2d.pointOn spline t
-    , EllipticalArc2d.derivative spline t
-    )
+    Maybe.map2 (,)
+        (EllipticalArc2d.pointOn spline t)
+        (EllipticalArc2d.derivative spline t)
 
 -}
-sample : EllipticalArc2d -> Float -> ( Point2d, Vector2d )
+sample : EllipticalArc2d -> Float -> Maybe ( Point2d, Vector2d )
 sample arc t =
-    ( pointOn arc t
-    , derivative arc t
-    )
+    Maybe.map2 (,) (pointOn arc t) (derivative arc t)
 
 
 {-| Convenient shorthand for evaluating multiple samples;
@@ -481,7 +486,7 @@ module.
 -}
 samples : EllipticalArc2d -> List Float -> List ( Point2d, Vector2d )
 samples arc parameterValues =
-    List.map (sample arc) parameterValues
+    List.filterMap (sample arc) parameterValues
 
 
 {-| Get the start point of an elliptical arc.
@@ -492,7 +497,12 @@ samples arc parameterValues =
 -}
 startPoint : EllipticalArc2d -> Point2d
 startPoint arc =
-    pointOn arc 0
+    case pointOn arc 0 of
+        Just point ->
+            point
+
+        Nothing ->
+            centerPoint arc
 
 
 {-| Get the end point of an elliptical arc.
@@ -503,7 +513,12 @@ startPoint arc =
 -}
 endPoint : EllipticalArc2d -> Point2d
 endPoint arc =
-    pointOn arc 1
+    case pointOn arc 1 of
+        Just point ->
+            point
+
+        Nothing ->
+            centerPoint arc
 
 
 {-| -}
@@ -868,7 +883,8 @@ arc, `Nothing` is returned.
 -}
 pointAlong : ArcLengthParameterized -> Float -> Maybe Point2d
 pointAlong (ArcLengthParameterized arc parameterization) s =
-    ArcLength.toParameterValue parameterization s |> Maybe.map (pointOn arc)
+    ArcLength.toParameterValue parameterization s
+        |> Maybe.andThen (pointOn arc)
 
 
 {-| Convenient shorthand for evaluating points along an elliptical arc at
@@ -905,7 +921,7 @@ length), `Nothing` is returned.
 tangentAlong : ArcLengthParameterized -> Float -> Maybe Direction2d
 tangentAlong (ArcLengthParameterized arc parameterization) s =
     ArcLength.toParameterValue parameterization s
-        |> Maybe.map (derivative arc)
+        |> Maybe.andThen (derivative arc)
         |> Maybe.andThen Vector2d.direction
 
 
@@ -936,7 +952,7 @@ position and tangent direction at that arc length. Equivalent to calling
 sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point2d, Direction2d )
 sampleAlong (ArcLengthParameterized arc parameterization) s =
     ArcLength.toParameterValue parameterization s
-        |> Maybe.map (sample arc)
+        |> Maybe.andThen (sample arc)
         |> Maybe.andThen
             (\( point, vector ) ->
                 case Vector2d.direction vector of

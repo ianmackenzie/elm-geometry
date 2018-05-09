@@ -551,7 +551,12 @@ startPoint (Types.Arc2d properties) =
 -}
 endPoint : Arc2d -> Point2d
 endPoint arc =
-    pointOn arc 1.0
+    case pointOn arc 1.0 of
+        Just point ->
+            point
+
+        Nothing ->
+            startPoint arc
 
 
 {-| Get the swept angle of an arc in radians.
@@ -570,13 +575,17 @@ sweptAngle (Types.Arc2d properties) =
 
 {-| Get the point along an arc at a given parameter value. A parameter value of
 0 corresponds to the start point of the arc and a value of 1 corresponds to the
-end point.
+end point. Only parameter values from 0 to 1 (inclusive) are valid; passing an
+invalid parameter value will result in `Nothing`.
 
     Arc2d.pointOn exampleArc 0.5
-    --> Point2d.fromCoordinates ( 2.4142, 2.4142 )
+    --> Just (Point2d.fromCoordinates ( 2.4142, 2.4142 ))
+
+    Arc2d.pointOn exampleArc 1.5
+    --> Nothing
 
 -}
-pointOn : Arc2d -> Float -> Point2d
+pointOn : Arc2d -> Float -> Maybe Point2d
 pointOn (Types.Arc2d arc) =
     let
         ( x0, y0 ) =
@@ -593,34 +602,45 @@ pointOn (Types.Arc2d arc) =
     in
     if arcSweptAngle == 0.0 then
         \t ->
-            let
-                distance =
-                    t * arcSignedLength
-            in
-            Point2d.fromCoordinates ( x0 + distance * dx, y0 + distance * dy )
+            if 0 <= t && t <= 1 then
+                let
+                    distance =
+                        t * arcSignedLength
+                in
+                Just <|
+                    Point2d.fromCoordinates
+                        ( x0 + distance * dx
+                        , y0 + distance * dy
+                        )
+            else
+                Nothing
     else
         let
             arcRadius =
                 arcSignedLength / arcSweptAngle
         in
         \t ->
-            let
-                theta =
-                    t * arcSweptAngle
+            if 0 <= t && t <= 1 then
+                let
+                    theta =
+                        t * arcSweptAngle
 
-                x =
-                    arcRadius * sin theta
+                    x =
+                        arcRadius * sin theta
 
-                y =
-                    if abs theta < pi / 2 then
-                        x * tan (theta / 2)
-                    else
-                        arcRadius * (1 - cos theta)
-            in
-            Point2d.fromCoordinates
-                ( x0 + x * dx - y * dy
-                , y0 + x * dy + y * dx
-                )
+                    y =
+                        if abs theta < pi / 2 then
+                            x * tan (theta / 2)
+                        else
+                            arcRadius * (1 - cos theta)
+                in
+                Just <|
+                    Point2d.fromCoordinates
+                        ( x0 + x * dx - y * dy
+                        , y0 + x * dy + y * dx
+                        )
+            else
+                Nothing
 
 
 {-| Convenient shorthand for evaluating multiple points;
@@ -637,7 +657,7 @@ module.
 -}
 pointsOn : Arc2d -> List Float -> List Point2d
 pointsOn arc parameterValues =
-    List.map (pointOn arc) parameterValues
+    List.filterMap (pointOn arc) parameterValues
 
 
 {-| Get the derivative of an arc with respect to a parameter that is 0 at the
@@ -650,13 +670,17 @@ start point of the arc and 1 at the end point of the arc.
     --> Vector2d.fromComponents ( -3.1416, 0 )
 
 -}
-derivative : Arc2d -> Float -> Vector2d
+derivative : Arc2d -> Float -> Maybe Vector2d
 derivative (Types.Arc2d arc) =
     let
         startDerivative =
             Vector2d.withLength arc.signedLength arc.xDirection
     in
-    \t -> startDerivative |> Vector2d.rotateBy (t * arc.sweptAngle)
+    \t ->
+        if 0 <= t && t <= 1 then
+            Just (startDerivative |> Vector2d.rotateBy (t * arc.sweptAngle))
+        else
+            Nothing
 
 
 {-| Convenient shorthand for evaluating multiple derivatives;
@@ -673,7 +697,7 @@ module.
 -}
 derivatives : Arc2d -> List Float -> List Vector2d
 derivatives arc parameterValues =
-    List.map (derivative arc) parameterValues
+    List.filterMap (derivative arc) parameterValues
 
 
 {-| Sample an arc at a given parameter value to get both the position and
@@ -696,7 +720,7 @@ derivative vector at that parameter value. Equivalent to calling `pointOn` and
     --> )
 
 -}
-sample : Arc2d -> Float -> ( Point2d, Vector2d )
+sample : Arc2d -> Float -> Maybe ( Point2d, Vector2d )
 sample arc =
     let
         pointOnArc =
@@ -705,7 +729,7 @@ sample arc =
         derivativeOfArc =
             derivative arc
     in
-    \t -> ( pointOnArc t, derivativeOfArc t )
+    \t -> Maybe.map2 (,) (pointOnArc t) (derivativeOfArc t)
 
 
 {-| Convenient shorthand for evaluating multiple samples;
@@ -722,7 +746,7 @@ module.
 -}
 samples : Arc2d -> List Float -> List ( Point2d, Vector2d )
 samples arc parameterValues =
-    List.map (sample arc) parameterValues
+    List.filterMap (sample arc) parameterValues
 
 
 numApproximationSegments : Float -> Arc2d -> Int
@@ -763,7 +787,7 @@ toPolyline (Types.MaxError tolerance) arc =
             numApproximationSegments tolerance arc
 
         points =
-            List.map (pointOn arc) (Parameter.numSteps numSegments)
+            pointsOn arc (Parameter.numSteps numSegments)
     in
     Polyline2d.fromVertices points
 
