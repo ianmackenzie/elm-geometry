@@ -99,12 +99,12 @@ Low level functionality that you are unlikely to need to use directly.
 
 -}
 
-import ArcLength
 import Axis3d exposing (Axis3d)
 import BoundingBox3d exposing (BoundingBox3d)
 import Direction3d exposing (Direction3d)
 import Frame3d exposing (Frame3d)
 import Geometry.Accuracy exposing (Accuracy)
+import Geometry.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
 import Geometry.Types as Types
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
@@ -749,7 +749,7 @@ splitAt t spline =
 {-| A spline that has been parameterized by arc length.
 -}
 type ArcLengthParameterized
-    = ArcLengthParameterized QuadraticSpline3d ArcLength.Parameterization
+    = ArcLengthParameterized QuadraticSpline3d ArcLengthParameterization
 
 
 {-| Build an arc length parameterization of the given spline:
@@ -770,7 +770,7 @@ arcLengthParameterized (Types.MaxError tolerance) spline =
             Vector3d.length (secondDerivative spline)
 
         parameterization =
-            ArcLength.parameterization
+            ArcLengthParameterization.build
                 { tolerance = tolerance
                 , derivativeMagnitude = derivativeMagnitude spline
                 , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude
@@ -790,7 +790,7 @@ the tolerance used when constructing `parameterizedSpline`.
 -}
 arcLength : ArcLengthParameterized -> Float
 arcLength (ArcLengthParameterized _ parameterization) =
-    ArcLength.fromParameterization parameterization
+    ArcLengthParameterization.totalArcLength parameterization
 
 
 {-| Try to get the point along a spline at a given arc length. For example, to
@@ -813,7 +813,8 @@ spline, `Nothing` is returned.
 -}
 pointAlong : ArcLengthParameterized -> Float -> Maybe Point3d
 pointAlong (ArcLengthParameterized spline parameterization) s =
-    ArcLength.toParameterValue parameterization s
+    parameterization
+        |> ArcLengthParameterization.arcLengthToParameterValue s
         |> Maybe.andThen (pointOn spline)
 
 
@@ -833,7 +834,8 @@ given arc length), `Nothing` is returned.
 -}
 tangentAlong : ArcLengthParameterized -> Float -> Maybe Direction3d
 tangentAlong (ArcLengthParameterized spline parameterization) s =
-    ArcLength.toParameterValue parameterization s
+    parameterization
+        |> ArcLengthParameterization.arcLengthToParameterValue s
         |> Maybe.andThen (derivative spline)
         |> Maybe.andThen Vector3d.direction
 
@@ -850,7 +852,7 @@ returns `Nothing`.
 -}
 arcLengthToParameterValue : ArcLengthParameterized -> Float -> Maybe Float
 arcLengthToParameterValue (ArcLengthParameterized _ parameterization) s =
-    ArcLength.toParameterValue parameterization s
+    ArcLengthParameterization.arcLengthToParameterValue s parameterization
 
 
 {-| Try to get the arc length along a spline at a given parameter value. If the
@@ -864,7 +866,7 @@ given parameter value is less than zero or greater than one, returns `Nothing`.
 -}
 parameterValueToArcLength : ArcLengthParameterized -> Float -> Maybe Float
 parameterValueToArcLength (ArcLengthParameterized _ parameterization) t =
-    ArcLength.fromParameterValue parameterization t
+    ArcLengthParameterization.parameterValueToArcLength t parameterization
 
 
 {-| Get the original `QuadraticSpline3d` from which an `ArcLengthParameterized`

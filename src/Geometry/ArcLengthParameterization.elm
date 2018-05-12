@@ -1,10 +1,10 @@
-module ArcLength
+module Geometry.ArcLengthParameterization
     exposing
-        ( Parameterization
-        , fromParameterValue
-        , fromParameterization
-        , parameterization
-        , toParameterValue
+        ( ArcLengthParameterization
+        , arcLengthToParameterValue
+        , build
+        , parameterValueToArcLength
+        , totalArcLength
         )
 
 {-| _You will likely never need to use this module directly._ In the vast
@@ -13,7 +13,7 @@ should contain all the functionality you need to construct an arc length
 parameterization and use it to do things like evaluate a curve at evenly-spaced
 points. This module is primarily for use internally by those curve modules.
 
-@docs Parameterization
+@docs ArcLengthParameterization
 
 
 # Constructing
@@ -32,8 +32,8 @@ import Float.Extra as Float
 
 {-| Contains a mapping from curve parameter value to arc length, and vice versa.
 -}
-type Parameterization
-    = Parameterization SegmentTree
+type ArcLengthParameterization
+    = ArcLengthParameterization SegmentTree
 
 
 type SegmentTree
@@ -81,12 +81,9 @@ segmentsPerLeaf =
 Curve parameter values are assumed to be in the range [0,1].
 
 -}
-parameterization : { tolerance : Float, derivativeMagnitude : Float -> Float, maxSecondDerivativeMagnitude : Float } -> Parameterization
-parameterization config =
+build : { tolerance : Float, derivativeMagnitude : Float -> Float, maxSecondDerivativeMagnitude : Float } -> ArcLengthParameterization
+build { tolerance, derivativeMagnitude, maxSecondDerivativeMagnitude } =
     let
-        { tolerance, derivativeMagnitude, maxSecondDerivativeMagnitude } =
-            config
-
         height =
             if tolerance <= 0 then
                 0
@@ -100,7 +97,7 @@ parameterization config =
                 in
                 max 0 (ceiling (logBase 2 numLeaves))
     in
-    Parameterization (buildTree derivativeMagnitude 0 0 1 height)
+    ArcLengthParameterization (buildTree derivativeMagnitude 0 0 1 height)
 
 
 buildTree : (Float -> Float) -> Float -> Float -> Float -> Int -> SegmentTree
@@ -229,8 +226,8 @@ buildTree derivativeMagnitude lengthAtStart paramAtStart paramAtEnd height =
 arc length is less than zero or greater than the total arc length of the curve,
 returns `Nothing`.
 -}
-toParameterValue : Parameterization -> Float -> Maybe Float
-toParameterValue (Parameterization tree) s =
+arcLengthToParameterValue : Float -> ArcLengthParameterization -> Maybe Float
+arcLengthToParameterValue s (ArcLengthParameterization tree) =
     if s == 0 then
         Just 0
     else if s > 0 && s <= lengthAtEnd tree then
@@ -333,35 +330,35 @@ lengthAtEnd tree =
 {-| Find the total arc length of some curve given its arc length
 parameterization;
 
-    ArcLength.fromParameterization parameterization
+    ArcLengthParameterization.totalArcLength parameterization
 
-is similar to
+is equivalent to
 
-    ArcLength.fromParameterValue parameterization 1
+    ArcLengthParameterization.parameterValueToArcLength parameterization 1
 
 but is more efficient and returns a plain `Float` instead of a `Maybe Float`.
 
 -}
-fromParameterization : Parameterization -> Float
-fromParameterization (Parameterization tree) =
+totalArcLength : ArcLengthParameterization -> Float
+totalArcLength (ArcLengthParameterization tree) =
     lengthAtEnd tree
 
 
 {-| Convert a parameter value to the corresponding arc length. If the given
 parameter value is less than zero or greater than one, returns `Nothing`.
 -}
-fromParameterValue : Parameterization -> Float -> Maybe Float
-fromParameterValue (Parameterization tree) t =
+parameterValueToArcLength : Float -> ArcLengthParameterization -> Maybe Float
+parameterValueToArcLength t (ArcLengthParameterization tree) =
     if t == 0 then
         Just 0
     else if t > 0 && t <= 1 then
-        Just (unsafeFromParameterValue tree t)
+        Just (unsafeToArcLength tree t)
     else
         Nothing
 
 
-unsafeFromParameterValue : SegmentTree -> Float -> Float
-unsafeFromParameterValue tree t =
+unsafeToArcLength : SegmentTree -> Float -> Float
+unsafeToArcLength tree t =
     case tree of
         Leaf { length0, length1, length2, length3, length4, length5, length6, length7, length8, param0, param1, param2, param3, param4, param5, param6, param7, param8 } ->
             if t <= param4 then
@@ -426,9 +423,9 @@ unsafeFromParameterValue tree t =
 
         Node { leftBranch, rightBranch } ->
             if t < paramAtStart rightBranch then
-                unsafeFromParameterValue leftBranch t
+                unsafeToArcLength leftBranch t
             else
-                unsafeFromParameterValue rightBranch t
+                unsafeToArcLength rightBranch t
 
 
 paramAtStart : SegmentTree -> Float

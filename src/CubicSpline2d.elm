@@ -95,12 +95,12 @@ Low level functionality that you are unlikely to need to use directly.
 
 -}
 
-import ArcLength
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Accuracy exposing (Accuracy)
+import Geometry.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
 import Geometry.Types as Types
 import Point2d exposing (Point2d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
@@ -855,7 +855,7 @@ splitAt t spline =
 {-| A spline that has been parameterized by arc length.
 -}
 type ArcLengthParameterized
-    = ArcLengthParameterized CubicSpline2d ArcLength.Parameterization
+    = ArcLengthParameterized CubicSpline2d ArcLengthParameterization
 
 
 {-| Build an arc length parameterization of the given spline:
@@ -874,7 +874,7 @@ arcLengthParameterized : Accuracy -> CubicSpline2d -> ArcLengthParameterized
 arcLengthParameterized (Types.MaxError tolerance) spline =
     let
         parameterization =
-            ArcLength.parameterization
+            ArcLengthParameterization.build
                 { tolerance = tolerance
                 , derivativeMagnitude = derivativeMagnitude spline
                 , maxSecondDerivativeMagnitude =
@@ -895,7 +895,7 @@ the tolerance used when constructing `parameterizedSpline`.
 -}
 arcLength : ArcLengthParameterized -> Float
 arcLength (ArcLengthParameterized _ parameterization) =
-    ArcLength.fromParameterization parameterization
+    ArcLengthParameterization.totalArcLength parameterization
 
 
 {-| Try to get the point along a spline at a given arc length. For example, to
@@ -916,7 +916,8 @@ spline, `Nothing` is returned.
 -}
 pointAlong : ArcLengthParameterized -> Float -> Maybe Point2d
 pointAlong (ArcLengthParameterized spline parameterization) s =
-    ArcLength.toParameterValue parameterization s
+    parameterization
+        |> ArcLengthParameterization.arcLengthToParameterValue s
         |> Maybe.andThen (pointOn spline)
 
 
@@ -934,7 +935,8 @@ given arc length), `Nothing` is returned.
 -}
 tangentAlong : ArcLengthParameterized -> Float -> Maybe Direction2d
 tangentAlong (ArcLengthParameterized spline parameterization) s =
-    ArcLength.toParameterValue parameterization s
+    parameterization
+        |> ArcLengthParameterization.arcLengthToParameterValue s
         |> Maybe.andThen (derivative spline)
         |> Maybe.andThen Vector2d.direction
 
@@ -951,7 +953,7 @@ returns `Nothing`.
 -}
 arcLengthToParameterValue : ArcLengthParameterized -> Float -> Maybe Float
 arcLengthToParameterValue (ArcLengthParameterized _ parameterization) s =
-    ArcLength.toParameterValue parameterization s
+    ArcLengthParameterization.arcLengthToParameterValue s parameterization
 
 
 {-| Try to get the arc length along a spline at a given parameter value. If the
@@ -965,7 +967,7 @@ given parameter value is less than zero or greater than one, returns `Nothing`.
 -}
 parameterValueToArcLength : ArcLengthParameterized -> Float -> Maybe Float
 parameterValueToArcLength (ArcLengthParameterized _ parameterization) t =
-    ArcLength.fromParameterValue parameterization t
+    ArcLengthParameterization.parameterValueToArcLength t parameterization
 
 
 {-| Get the original `CubicSpline2d` from which an `ArcLengthParameterized`

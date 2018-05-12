@@ -108,12 +108,12 @@ Low level functionality that you are unlikely to need to use directly.
 
 -}
 
-import ArcLength
 import Axis2d exposing (Axis2d)
 import Direction2d exposing (Direction2d)
 import Ellipse2d exposing (Ellipse2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Accuracy as Accuracy exposing (Accuracy)
+import Geometry.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
 import Geometry.SweptAngle as SweptAngle exposing (SweptAngle)
 import Geometry.Types as Types
 import Interval
@@ -818,7 +818,7 @@ derivativeMagnitude arc =
 {-| An elliptical arc that has been parameterized by arc length.
 -}
 type ArcLengthParameterized
-    = ArcLengthParameterized EllipticalArc2d ArcLength.Parameterization
+    = ArcLengthParameterized EllipticalArc2d ArcLengthParameterization
 
 
 {-| Build an arc length parameterization of the given elliptical arc, within
@@ -839,7 +839,7 @@ arcLengthParameterized : Accuracy -> EllipticalArc2d -> ArcLengthParameterized
 arcLengthParameterized (Types.MaxError tolerance) arc =
     let
         parameterization =
-            ArcLength.parameterization
+            ArcLengthParameterization.build
                 { tolerance = tolerance
                 , derivativeMagnitude = derivativeMagnitude arc
                 , maxSecondDerivativeMagnitude =
@@ -862,7 +862,7 @@ within the tolerance given when calling `arcLengthParameterized`.
 -}
 arcLength : ArcLengthParameterized -> Float
 arcLength (ArcLengthParameterized _ parameterization) =
-    ArcLength.fromParameterization parameterization
+    ArcLengthParameterization.totalArcLength parameterization
 
 
 {-| Try to get the point along an elliptical arc at a given arc length. For
@@ -883,7 +883,8 @@ arc, `Nothing` is returned.
 -}
 pointAlong : ArcLengthParameterized -> Float -> Maybe Point2d
 pointAlong (ArcLengthParameterized arc parameterization) s =
-    ArcLength.toParameterValue parameterization s
+    parameterization
+        |> ArcLengthParameterization.arcLengthToParameterValue s
         |> Maybe.andThen (pointOn arc)
 
 
@@ -920,7 +921,8 @@ length), `Nothing` is returned.
 -}
 tangentAlong : ArcLengthParameterized -> Float -> Maybe Direction2d
 tangentAlong (ArcLengthParameterized arc parameterization) s =
-    ArcLength.toParameterValue parameterization s
+    parameterization
+        |> ArcLengthParameterization.arcLengthToParameterValue s
         |> Maybe.andThen (derivative arc)
         |> Maybe.andThen Vector2d.direction
 
@@ -951,7 +953,8 @@ position and tangent direction at that arc length. Equivalent to calling
 -}
 sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point2d, Direction2d )
 sampleAlong (ArcLengthParameterized arc parameterization) s =
-    ArcLength.toParameterValue parameterization s
+    parameterization
+        |> ArcLengthParameterization.arcLengthToParameterValue s
         |> Maybe.andThen (sample arc)
         |> Maybe.andThen
             (\( point, vector ) ->
@@ -996,7 +999,7 @@ of the arc, returns `Nothing`.
 -}
 arcLengthToParameterValue : ArcLengthParameterized -> Float -> Maybe Float
 arcLengthToParameterValue (ArcLengthParameterized _ parameterization) s =
-    ArcLength.toParameterValue parameterization s
+    ArcLengthParameterization.arcLengthToParameterValue s parameterization
 
 
 {-| Get the arc length along an elliptical arc at a given parameter value. If
@@ -1011,7 +1014,7 @@ the given parameter value is less than zero or greater than one, returns
 -}
 parameterValueToArcLength : ArcLengthParameterized -> Float -> Maybe Float
 parameterValueToArcLength (ArcLengthParameterized _ parameterization) t =
-    ArcLength.fromParameterValue parameterization t
+    ArcLengthParameterization.parameterValueToArcLength t parameterization
 
 
 {-| Get the original `EllipticalArc2d` from which an `ArcLengthParameterized`
