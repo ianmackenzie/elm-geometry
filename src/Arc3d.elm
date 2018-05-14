@@ -150,16 +150,16 @@ of the returned arc will lie on the given axis.
 
 -}
 sweptAround : Axis3d -> Float -> Point3d -> Arc3d
-sweptAround axis sweptAngle startPoint =
+sweptAround axis_ sweptAngle_ startPoint_ =
     let
-        centerPoint =
-            startPoint |> Point3d.projectOntoAxis axis
+        centerPoint_ =
+            startPoint_ |> Point3d.projectOntoAxis axis_
 
         axisDirection =
-            Axis3d.direction axis
+            Axis3d.direction axis_
     in
-    case Vector3d.lengthAndDirection (Vector3d.from startPoint centerPoint) of
-        Just ( radius, yDirection ) ->
+    case Vector3d.lengthAndDirection (Vector3d.from startPoint_ centerPoint_) of
+        Just ( radius_, yDirection ) ->
             let
                 xDirectionVector =
                     Vector3d.crossProduct
@@ -170,9 +170,9 @@ sweptAround axis sweptAngle startPoint =
                     Direction3d.unsafe (Vector3d.components xDirectionVector)
             in
             Types.Arc3d
-                { startPoint = startPoint
-                , sweptAngle = sweptAngle
-                , signedLength = radius * sweptAngle
+                { startPoint = startPoint_
+                , sweptAngle = sweptAngle_
+                , signedLength = radius_ * sweptAngle_
                 , xDirection = xDirection
                 , yDirection = yDirection
                 }
@@ -183,8 +183,8 @@ sweptAround axis sweptAngle startPoint =
                     Direction3d.perpendicularBasis axisDirection
             in
             Types.Arc3d
-                { startPoint = startPoint
-                , sweptAngle = sweptAngle
+                { startPoint = startPoint_
+                , sweptAngle = sweptAngle_
                 , signedLength = 0
                 , xDirection = xDirection
                 , yDirection = yDirection
@@ -272,10 +272,10 @@ axis arc =
 centerPoint : Arc3d -> Point3d
 centerPoint (Types.Arc3d arc) =
     let
-        radius =
+        radius_ =
             arc.signedLength / arc.sweptAngle
     in
-    arc.startPoint |> Point3d.translateIn arc.yDirection radius
+    arc.startPoint |> Point3d.translateIn arc.yDirection radius_
 
 
 {-| Get the radius of an arc.
@@ -498,7 +498,7 @@ sample arc =
         derivativeOfArc =
             derivativeVector arc
     in
-    \t -> Maybe.map2 (,) (pointOnArc t) (derivativeOfArc t)
+    \t -> Maybe.map2 Tuple.pair (pointOnArc t) (derivativeOfArc t)
 
 
 {-| Convenient shorthand for evaluating multiple samples;

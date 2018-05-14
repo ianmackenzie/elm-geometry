@@ -113,8 +113,8 @@ import Vector3d exposing (Vector3d)
 
 
 addTo : Point3d -> Vector3d -> Point3d
-addTo =
-    flip translateBy
+addTo point vector =
+    translateBy vector point
 
 
 {-| -}
@@ -303,8 +303,8 @@ is equivalent to
 
 -}
 fromCoordinatesIn : Frame3d -> ( Float, Float, Float ) -> Point3d
-fromCoordinatesIn frame coordinates =
-    placeIn frame (fromCoordinates coordinates)
+fromCoordinatesIn frame localCoordinates =
+    placeIn frame (fromCoordinates localCoordinates)
 
 
 {-| Attempt to find the circumcenter of three points; this is the center of the

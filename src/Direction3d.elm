@@ -269,7 +269,7 @@ direction specified in XY coordinates _within_ the sketch plane.
 on : SketchPlane3d -> Direction2d -> Direction3d
 on sketchPlane direction2d =
     let
-        ( x, y ) =
+        ( dx, dy ) =
             Direction2d.components direction2d
 
         ( ux, uy, uz ) =
@@ -279,9 +279,9 @@ on sketchPlane direction2d =
             components (SketchPlane3d.yDirection sketchPlane)
     in
     unsafe
-        ( x * ux + y * vx
-        , x * uy + y * vy
-        , x * uz + y * vz
+        ( dx * ux + dy * vx
+        , dx * uy + dy * vy
+        , dx * uz + dy * vz
         )
 
 
@@ -298,15 +298,15 @@ plane towards positive Z.
 
 -}
 fromAzimuthAndElevation : ( Float, Float ) -> Direction3d
-fromAzimuthAndElevation ( azimuth, elevation ) =
+fromAzimuthAndElevation ( azimuth_, elevation_ ) =
     let
         cosElevation =
-            cos elevation
+            cos elevation_
     in
     unsafe
-        ( cosElevation * cos azimuth
-        , cosElevation * sin azimuth
-        , sin elevation
+        ( cosElevation * cos azimuth_
+        , cosElevation * sin azimuth_
+        , sin elevation_
         )
 
 
@@ -532,8 +532,8 @@ components (Types.Direction3d components_) =
 
 -}
 xComponent : Direction3d -> Float
-xComponent (Types.Direction3d ( x, _, _ )) =
-    x
+xComponent (Types.Direction3d ( xComponent_, _, _ )) =
+    xComponent_
 
 
 {-| Get the Y component of a direction.
@@ -546,8 +546,8 @@ xComponent (Types.Direction3d ( x, _, _ )) =
 
 -}
 yComponent : Direction3d -> Float
-yComponent (Types.Direction3d ( _, y, _ )) =
-    y
+yComponent (Types.Direction3d ( _, yComponent_, _ )) =
+    yComponent_
 
 
 {-| Get the Z component of a direction.
@@ -560,8 +560,8 @@ yComponent (Types.Direction3d ( _, y, _ )) =
 
 -}
 zComponent : Direction3d -> Float
-zComponent (Types.Direction3d ( _, _, z )) =
-    z
+zComponent (Types.Direction3d ( _, _, zComponent_ )) =
+    zComponent_
 
 
 {-| Find the component of one direction in another direction. This is equal to
@@ -709,7 +709,7 @@ angleFrom firstDirection secondDirection =
         ( x2, y2, z2 ) =
             components secondDirection
 
-        x =
+        relativeX =
             x1 * x2 + y1 * y2 + z1 * z2
 
         cx =
@@ -721,10 +721,10 @@ angleFrom firstDirection secondDirection =
         cz =
             x1 * y2 - y1 * x2
 
-        y =
+        relativeY =
             sqrt (cx * cx + cy * cy + cz * cz)
     in
-    atan2 y x
+    atan2 relativeY relativeX
 
 
 {-| Reverse a direction.
@@ -736,10 +736,10 @@ angleFrom firstDirection secondDirection =
 flip : Direction3d -> Direction3d
 flip direction =
     let
-        ( x, y, z ) =
+        ( dx, dy, dz ) =
             components direction
     in
-    unsafe ( -x, -y, -z )
+    unsafe ( -dx, -dy, -dz )
 
 
 {-| Rotate a direction around an axis by a given angle.

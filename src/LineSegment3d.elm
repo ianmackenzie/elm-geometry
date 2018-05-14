@@ -127,8 +127,8 @@ is equivalent to
 
 -}
 from : Point3d -> Point3d -> LineSegment3d
-from startPoint endPoint =
-    fromEndpoints ( startPoint, endPoint )
+from startPoint_ endPoint_ =
+    fromEndpoints ( startPoint_, endPoint_ )
 
 
 {-| Construct a line segment lying on the given axis, with its endpoints at the
@@ -376,8 +376,8 @@ rotateAround axis angle =
 
 -}
 translateBy : Vector3d -> LineSegment3d -> LineSegment3d
-translateBy vector =
-    mapEndpoints (Point3d.translateBy vector)
+translateBy displacementVector =
+    mapEndpoints (Point3d.translateBy displacementVector)
 
 
 {-| Translate a line segment in a given direction by a given distance;
@@ -391,8 +391,8 @@ is equivalent to
 
 -}
 translateIn : Direction3d -> Float -> LineSegment3d -> LineSegment3d
-translateIn direction distance lineSegment =
-    translateBy (Vector3d.withLength distance direction) lineSegment
+translateIn translationDirection distance lineSegment =
+    translateBy (Vector3d.withLength distance translationDirection) lineSegment
 
 
 {-| Mirror a line segment across a plane.

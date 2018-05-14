@@ -171,8 +171,8 @@ counterclockwise from the positive X direction.
 
 -}
 fromPolarComponents : ( Float, Float ) -> Vector2d
-fromPolarComponents components =
-    fromComponents (fromPolar components)
+fromPolarComponents polarComponents_ =
+    fromComponents (fromPolar polarComponents_)
 
 
 {-| Construct a vector from the first given point to the second.
@@ -206,12 +206,12 @@ from firstPoint secondPoint =
 
 -}
 withLength : Float -> Direction2d -> Vector2d
-withLength length direction =
+withLength length_ direction_ =
     let
         ( dx, dy ) =
-            Direction2d.components direction
+            Direction2d.components direction_
     in
-    fromComponents ( length * dx, length * dy )
+    fromComponents ( length_ * dx, length_ * dy )
 
 
 {-| Construct a vector perpendicular to the given vector, by rotating the given
@@ -342,10 +342,10 @@ is equivalent to
 
 -}
 componentIn : Direction2d -> Vector2d -> Float
-componentIn direction vector =
+componentIn direction_ vector =
     let
         ( dx, dy ) =
-            Direction2d.components direction
+            Direction2d.components direction_
 
         ( vx, vy ) =
             components vector
@@ -788,8 +788,8 @@ portion.
 
 -}
 projectionIn : Direction2d -> Vector2d -> Vector2d
-projectionIn direction vector =
-    direction |> withLength (vector |> componentIn direction)
+projectionIn direction_ vector =
+    direction_ |> withLength (vector |> componentIn direction_)
 
 
 {-| Project a vector onto an axis.

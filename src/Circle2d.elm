@@ -95,8 +95,8 @@ The actual radius of the circle will be the absolute value of the given radius
 
 -}
 withRadius : Float -> Point2d -> Circle2d
-withRadius radius centerPoint =
-    Types.Circle2d { radius = abs radius, centerPoint = centerPoint }
+withRadius radius_ centerPoint_ =
+    Types.Circle2d { radius = abs radius_, centerPoint = centerPoint_ }
 
 
 {-| The unit circle, centered on the origin with a radius of 1.
@@ -196,8 +196,8 @@ but passing through several other different points, you could use something like
 
 -}
 sweptAround : Point2d -> Point2d -> Circle2d
-sweptAround centerPoint point =
-    withRadius (Point2d.distanceFrom centerPoint point) centerPoint
+sweptAround centerPoint_ point =
+    withRadius (Point2d.distanceFrom centerPoint_ point) centerPoint_
 
 
 {-| Get the center point of a circle.
@@ -269,16 +269,16 @@ circumference circle =
 
 -}
 toArc : Circle2d -> Arc2d
-toArc (Types.Circle2d { centerPoint, radius }) =
+toArc (Types.Circle2d circle) =
     let
         ( x0, y0 ) =
-            Point2d.coordinates centerPoint
+            Point2d.coordinates circle.centerPoint
     in
     Types.Arc2d
-        { startPoint = Point2d.fromCoordinates ( x0 + radius, y0 )
+        { startPoint = Point2d.fromCoordinates ( x0 + circle.radius, y0 )
         , xDirection = Direction2d.y
         , sweptAngle = 2 * pi
-        , signedLength = 2 * pi * radius
+        , signedLength = 2 * pi * circle.radius
         }
 
 

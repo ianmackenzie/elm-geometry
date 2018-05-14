@@ -85,11 +85,12 @@ used).
 
 -}
 with : { centerPoint : Point2d, xDirection : Direction2d, xRadius : Float, yRadius : Float } -> Ellipse2d
-with { centerPoint, xDirection, xRadius, yRadius } =
+with properties =
     Types.Ellipse2d
-        { axes = Frame2d.withXDirection xDirection centerPoint
-        , xRadius = abs xRadius
-        , yRadius = abs yRadius
+        { axes =
+            Frame2d.withXDirection properties.xDirection properties.centerPoint
+        , xRadius = abs properties.xRadius
+        , yRadius = abs properties.yRadius
         }
 
 
@@ -113,8 +114,8 @@ centerPoint ellipse =
 
 -}
 axes : Ellipse2d -> Frame2d
-axes (Types.Ellipse2d { axes }) =
-    axes
+axes (Types.Ellipse2d ellipse) =
+    ellipse.axes
 
 
 {-| Get the X axis of an ellipse.
@@ -151,8 +152,8 @@ minimum or maximum radius.
 
 -}
 xRadius : Ellipse2d -> Float
-xRadius (Types.Ellipse2d { xRadius }) =
-    xRadius
+xRadius (Types.Ellipse2d ellipse) =
+    ellipse.xRadius
 
 
 {-| Get the radius of an ellipse along its Y axis. This may be either the
@@ -163,8 +164,8 @@ minimum or maximum radius.
 
 -}
 yRadius : Ellipse2d -> Float
-yRadius (Types.Ellipse2d { yRadius }) =
-    yRadius
+yRadius (Types.Ellipse2d ellipse) =
+    ellipse.yRadius
 
 
 {-| Get the direction of the ellipse's X axis.

@@ -7,7 +7,7 @@ module Polygon2d.Monotone
         , triangulation
         )
 
-import Array.Hamt as Array exposing (Array)
+import Array exposing (Array)
 import Dict exposing (Dict)
 import Geometry.Types as Types exposing (Polygon2d(..))
 import LineSegment2d exposing (LineSegment2d)
@@ -96,38 +96,37 @@ toVertices points =
         [] ->
             []
 
-        first :: rest ->
+        firstPoint :: rest ->
             let
-                last =
-                    List.foldl always first rest
+                lastPoint =
+                    List.foldl always firstPoint rest
 
-                collect previous points accumulated =
-                    case points of
+                collect previousPoint currentPoints accumulated =
+                    case currentPoints of
                         [] ->
                             []
 
-                        [ last ] ->
+                        currentPoint :: currentRest ->
                             let
                                 newVertex =
-                                    { position = last
-                                    , kind = kind previous last first
+                                    { position = currentPoint
+                                    , kind =
+                                        kind previousPoint
+                                            currentPoint
+                                            firstPoint
                                     }
                             in
-                            List.reverse (newVertex :: accumulated)
+                            case currentRest of
+                                [] ->
+                                    List.reverse (newVertex :: accumulated)
 
-                        current :: next :: rest ->
-                            let
-                                newVertex =
-                                    { position = current
-                                    , kind = kind previous current next
-                                    }
-                            in
-                            collect
-                                current
-                                (next :: rest)
-                                (newVertex :: accumulated)
+                                _ ->
+                                    collect
+                                        currentPoint
+                                        currentRest
+                                        (newVertex :: accumulated)
             in
-            collect last points []
+            collect lastPoint points []
 
 
 type alias Edge =
@@ -188,11 +187,14 @@ init (Polygon2d { outerLoop, innerLoops }) =
                                     { startVertexIndex =
                                         index + offset
                                     , endVertexIndex =
-                                        ((index + 1) % length) + offset
+                                        ((index + 1) |> remainderBy length)
+                                            + offset
                                     , nextEdgeIndex =
-                                        ((index + 1) % length) + offset
+                                        ((index + 1) |> remainderBy length)
+                                            + offset
                                     , previousEdgeIndex =
-                                        ((index - 1) % length) + offset
+                                        ((index - 1) |> remainderBy length)
+                                            + offset
                                     }
                                 )
                     in
@@ -567,7 +569,7 @@ collectMonotoneLoops state =
 
         processStartEdge index accumulated =
             let
-                ( processedEdgeIndices, loops ) =
+                ( processedEdgeIndices, accumulatedLoops ) =
                     accumulated
             in
             if Set.member index processedEdgeIndices then
@@ -577,7 +579,7 @@ collectMonotoneLoops state =
                     ( updatedEdgeIndices, loop ) =
                         buildLoop state points index index ( processedEdgeIndices, [] )
                 in
-                ( updatedEdgeIndices, loop :: loops )
+                ( updatedEdgeIndices, loop :: accumulatedLoops )
 
         allEdgeIndices =
             List.range 0 (Array.length state.edges - 1)
@@ -613,7 +615,7 @@ monotonePolygons polygon =
 
         priorityQueue =
             vertices
-                |> List.indexedMap (,)
+                |> List.indexedMap Tuple.pair
                 |> List.sortWith
                     (\( _, firstVertex ) ( _, secondVertex ) ->
                         comparePoints secondVertex.position firstVertex.position
@@ -858,22 +860,18 @@ faces vertices =
                     }
 
                 processVertex vertex state =
-                    let
-                        { chainStart, chainInterior, chainEnd, faces } =
-                            state
-                    in
-                    if vertex.nextVertexIndex == chainStart.index then
+                    if vertex.nextVertexIndex == state.chainStart.index then
                         -- new vertex on the right will connect to all chain
                         -- vertices on the left
                         startNewRightChain vertex state
-                    else if chainStart.nextVertexIndex == vertex.index then
+                    else if state.chainStart.nextVertexIndex == vertex.index then
                         -- new vertex on the left will connect to all chain
                         -- vertices on the right
                         startNewLeftChain vertex state
-                    else if vertex.nextVertexIndex == chainEnd.index then
+                    else if vertex.nextVertexIndex == state.chainEnd.index then
                         -- continuing left chain
                         addRightChainVertex vertex state
-                    else if chainEnd.nextVertexIndex == vertex.index then
+                    else if state.chainEnd.nextVertexIndex == vertex.index then
                         -- continuing right chain
                         addLeftChainVertex vertex state
                     else

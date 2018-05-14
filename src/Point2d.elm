@@ -146,8 +146,8 @@ origin and angle is measured counterclockwise from the positive X direction.
 
 -}
 fromPolarCoordinates : ( Float, Float ) -> Point2d
-fromPolarCoordinates coordinates =
-    fromCoordinates (fromPolar coordinates)
+fromPolarCoordinates polarCoordinates_ =
+    fromCoordinates (fromPolar polarCoordinates_)
 
 
 {-| Construct a point halfway between two other points.
@@ -260,8 +260,8 @@ is equivalent to
 
 -}
 fromCoordinatesIn : Frame2d -> ( Float, Float ) -> Point2d
-fromCoordinatesIn frame coordinates =
-    placeIn frame (fromCoordinates coordinates)
+fromCoordinatesIn frame localCoordinates =
+    placeIn frame (fromCoordinates localCoordinates)
 
 
 {-| Construct a point given its local polar coordinates within a particular
@@ -276,8 +276,8 @@ frame.
 
 -}
 fromPolarCoordinatesIn : Frame2d -> ( Float, Float ) -> Point2d
-fromPolarCoordinatesIn frame polarCoordinates =
-    placeIn frame (fromPolarCoordinates polarCoordinates)
+fromPolarCoordinatesIn frame polarCoordinates_ =
+    placeIn frame (fromPolarCoordinates polarCoordinates_)
 
 
 {-| Attempt to find the circumcenter of three points; this is the center of the

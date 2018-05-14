@@ -128,8 +128,8 @@ is equivalent to
 
 -}
 from : Point2d -> Point2d -> LineSegment2d
-from startPoint endPoint =
-    fromEndpoints ( startPoint, endPoint )
+from startPoint_ endPoint_ =
+    fromEndpoints ( startPoint_, endPoint_ )
 
 
 {-| Construct a line segment lying on the given axis, with its endpoints at the
@@ -352,25 +352,38 @@ intersectionPoint lineSegment1 lineSegment2 =
         ( q, q_ ) =
             endpoints lineSegment2
 
-        ( r, s, pq, pq_, qp_ ) =
-            ( vector lineSegment1
-            , vector lineSegment2
-            , Vector2d.from p q
-            , Vector2d.from p q_
-            , Vector2d.from q p_
-            )
+        r =
+            vector lineSegment1
 
-        ( pqXr, pqXs, sXqp_, rXpq_ ) =
-            ( Vector2d.crossProduct pq r
-            , Vector2d.crossProduct pq s
-            , Vector2d.crossProduct s qp_
-            , Vector2d.crossProduct r pq_
-            )
+        s =
+            vector lineSegment2
 
-        ( tDenominator, uDenominator ) =
-            ( pqXs - sXqp_
-            , pqXr + rXpq_
-            )
+        pq =
+            Vector2d.from p q
+
+        pq_ =
+            Vector2d.from p q_
+
+        qp_ =
+            Vector2d.from q p_
+
+        pqXr =
+            Vector2d.crossProduct pq r
+
+        pqXs =
+            Vector2d.crossProduct pq s
+
+        sXqp_ =
+            Vector2d.crossProduct s qp_
+
+        rXpq_ =
+            Vector2d.crossProduct r pq_
+
+        tDenominator =
+            pqXs - sXqp_
+
+        uDenominator =
+            pqXr + rXpq_
     in
     if tDenominator == 0 || uDenominator == 0 then
         -- Segments are parallel or collinear.
@@ -396,10 +409,11 @@ intersectionPoint lineSegment1 lineSegment2 =
         -- Segments are not parallel.
         -- We search for the intersection point of the two lines.
         let
-            ( t, u ) =
-                ( pqXs / tDenominator
-                , pqXr / uDenominator
-                )
+            t =
+                pqXs / tDenominator
+
+            u =
+                pqXr / uDenominator
         in
         if (0 <= t && t <= 1) && (0 <= u && u <= 1) then
             -- Intersection is within both segments.
@@ -466,8 +480,8 @@ rotateAround centerPoint angle =
 
 -}
 translateBy : Vector2d -> LineSegment2d -> LineSegment2d
-translateBy vector =
-    mapEndpoints (Point2d.translateBy vector)
+translateBy displacementVector =
+    mapEndpoints (Point2d.translateBy displacementVector)
 
 
 {-| Translate a line segment in a given direction by a given distance;
@@ -481,8 +495,8 @@ is equivalent to
 
 -}
 translateIn : Direction2d -> Float -> LineSegment2d -> LineSegment2d
-translateIn direction distance lineSegment =
-    translateBy (Vector2d.withLength distance direction) lineSegment
+translateIn translationDirection distance lineSegment =
+    translateBy (Vector2d.withLength distance translationDirection) lineSegment
 
 
 {-| Mirror a line segment across an axis.

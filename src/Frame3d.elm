@@ -219,48 +219,48 @@ xyz =
 {-| Construct a frame with the given origin point and X direction.
 -}
 withXDirection : Direction3d -> Point3d -> Frame3d
-withXDirection xDirection originPoint =
+withXDirection xDirection_ originPoint_ =
     let
-        ( yDirection, zDirection ) =
-            Direction3d.perpendicularBasis xDirection
+        ( yDirection_, zDirection_ ) =
+            Direction3d.perpendicularBasis xDirection_
     in
     unsafe
-        { originPoint = originPoint
-        , xDirection = xDirection
-        , yDirection = yDirection
-        , zDirection = zDirection
+        { originPoint = originPoint_
+        , xDirection = xDirection_
+        , yDirection = yDirection_
+        , zDirection = zDirection_
         }
 
 
 {-| Construct a frame with the given origin point and Y direction.
 -}
 withYDirection : Direction3d -> Point3d -> Frame3d
-withYDirection yDirection originPoint =
+withYDirection yDirection_ originPoint_ =
     let
-        ( zDirection, xDirection ) =
-            Direction3d.perpendicularBasis yDirection
+        ( zDirection_, xDirection_ ) =
+            Direction3d.perpendicularBasis yDirection_
     in
     unsafe
-        { originPoint = originPoint
-        , xDirection = xDirection
-        , yDirection = yDirection
-        , zDirection = zDirection
+        { originPoint = originPoint_
+        , xDirection = xDirection_
+        , yDirection = yDirection_
+        , zDirection = zDirection_
         }
 
 
 {-| Construct a frame with the given origin point and Z direction.
 -}
 withZDirection : Direction3d -> Point3d -> Frame3d
-withZDirection zDirection originPoint =
+withZDirection zDirection_ originPoint_ =
     let
-        ( xDirection, yDirection ) =
-            Direction3d.perpendicularBasis zDirection
+        ( xDirection_, yDirection_ ) =
+            Direction3d.perpendicularBasis zDirection_
     in
     unsafe
-        { originPoint = originPoint
-        , xDirection = xDirection
-        , yDirection = yDirection
-        , zDirection = zDirection
+        { originPoint = originPoint_
+        , xDirection = xDirection_
+        , yDirection = yDirection_
+        , zDirection = zDirection_
         }
 
 

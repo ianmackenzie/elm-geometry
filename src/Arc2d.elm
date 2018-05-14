@@ -136,36 +136,36 @@ given swept angle.
 
 -}
 from : Point2d -> Point2d -> Float -> Arc2d
-from startPoint endPoint sweptAngle =
+from startPoint_ endPoint_ sweptAngle_ =
     let
         displacement =
-            Vector2d.from startPoint endPoint
+            Vector2d.from startPoint_ endPoint_
     in
     case Vector2d.lengthAndDirection displacement of
         Just ( distance, direction ) ->
             let
                 angleModTwoPi =
-                    sweptAngle - twoPi * toFloat (floor (sweptAngle / twoPi))
+                    sweptAngle_ - twoPi * toFloat (floor (sweptAngle_ / twoPi))
 
-                radius =
-                    distance / (2 * abs (sin (sweptAngle / 2)))
+                radius_ =
+                    distance / (2 * abs (sin (sweptAngle_ / 2)))
             in
             Types.Arc2d
-                { startPoint = startPoint
-                , sweptAngle = sweptAngle
+                { startPoint = startPoint_
+                , sweptAngle = sweptAngle_
                 , xDirection =
                     direction |> Direction2d.rotateBy (-angleModTwoPi / 2)
                 , signedLength =
-                    if sweptAngle == 0.0 then
+                    if sweptAngle_ == 0.0 then
                         distance
                     else
-                        radius * sweptAngle
+                        radius_ * sweptAngle_
                 }
 
         Nothing ->
             Types.Arc2d
-                { startPoint = startPoint
-                , sweptAngle = sweptAngle
+                { startPoint = startPoint_
+                , sweptAngle = sweptAngle_
                 , xDirection = Direction2d.x
                 , signedLength = 0
                 }
@@ -191,20 +191,21 @@ angle:
 
 -}
 with : { centerPoint : Point2d, radius : Float, startAngle : Float, sweptAngle : Float } -> Arc2d
-with { centerPoint, radius, startAngle, sweptAngle } =
+with properties =
     let
         ( x0, y0 ) =
-            Point2d.coordinates centerPoint
+            Point2d.coordinates properties.centerPoint
     in
     Types.Arc2d
         { startPoint =
             Point2d.fromCoordinates
-                ( x0 + radius * cos startAngle
-                , y0 + radius * sin startAngle
+                ( x0 + properties.radius * cos properties.startAngle
+                , y0 + properties.radius * sin properties.startAngle
                 )
-        , sweptAngle = sweptAngle
-        , xDirection = Direction2d.fromAngle (startAngle + degrees 90)
-        , signedLength = abs radius * sweptAngle
+        , sweptAngle = properties.sweptAngle
+        , xDirection =
+            Direction2d.fromAngle (properties.startAngle + degrees 90)
+        , signedLength = abs properties.radius * properties.sweptAngle
         }
 
 
@@ -239,21 +240,21 @@ a clockwise arc instead.
 
 -}
 sweptAround : Point2d -> Float -> Point2d -> Arc2d
-sweptAround centerPoint sweptAngle startPoint =
-    case Vector2d.lengthAndDirection (Vector2d.from startPoint centerPoint) of
-        Just ( radius, yDirection ) ->
+sweptAround centerPoint_ sweptAngle_ startPoint_ =
+    case Vector2d.lengthAndDirection (Vector2d.from startPoint_ centerPoint_) of
+        Just ( radius_, yDirection ) ->
             Types.Arc2d
-                { startPoint = startPoint
+                { startPoint = startPoint_
                 , xDirection = yDirection |> Direction2d.rotateClockwise
-                , sweptAngle = sweptAngle
-                , signedLength = radius * sweptAngle
+                , sweptAngle = sweptAngle_
+                , signedLength = radius_ * sweptAngle_
                 }
 
         Nothing ->
             Types.Arc2d
-                { startPoint = startPoint
+                { startPoint = startPoint_
                 , xDirection = Direction2d.x
-                , sweptAngle = sweptAngle
+                , sweptAngle = sweptAngle_
                 , signedLength = 0
                 }
 
@@ -306,19 +307,19 @@ throughPoints : ( Point2d, Point2d, Point2d ) -> Maybe Arc2d
 throughPoints points =
     Point2d.circumcenter points
         |> Maybe.andThen
-            (\centerPoint ->
+            (\centerPoint_ ->
                 let
                     ( firstPoint, secondPoint, thirdPoint ) =
                         points
 
                     firstVector =
-                        Vector2d.from centerPoint firstPoint
+                        Vector2d.from centerPoint_ firstPoint
 
                     secondVector =
-                        Vector2d.from centerPoint secondPoint
+                        Vector2d.from centerPoint_ secondPoint
 
                     thirdVector =
-                        Vector2d.from centerPoint thirdPoint
+                        Vector2d.from centerPoint_ thirdPoint
                 in
                 Maybe.map3
                     (\firstDirection secondDirection thirdDirection ->
@@ -331,7 +332,7 @@ throughPoints points =
                                 Direction2d.angleFrom firstDirection
                                     thirdDirection
 
-                            sweptAngle =
+                            sweptAngle_ =
                                 if partial >= 0 && full >= partial then
                                     full
                                 else if partial <= 0 && full <= partial then
@@ -341,7 +342,7 @@ throughPoints points =
                                 else
                                     full + 2 * pi
                         in
-                        firstPoint |> sweptAround centerPoint sweptAngle
+                        firstPoint |> sweptAround centerPoint_ sweptAngle_
                     )
                     (Vector2d.direction firstVector)
                     (Vector2d.direction secondVector)
@@ -432,13 +433,13 @@ counterclockwise arc):
 
 -}
 withRadius : Float -> SweptAngle -> Point2d -> Point2d -> Maybe Arc2d
-withRadius radius sweptAngle startPoint endPoint =
+withRadius radius_ sweptAngle_ startPoint_ endPoint_ =
     let
         chord =
-            LineSegment2d.from startPoint endPoint
+            LineSegment2d.from startPoint_ endPoint_
 
         squaredRadius =
-            radius * radius
+            radius_ * radius_
 
         squaredHalfLength =
             LineSegment2d.squaredLength chord / 4
@@ -452,7 +453,7 @@ withRadius radius sweptAngle startPoint endPoint =
                             sqrt (squaredRadius - squaredHalfLength)
 
                         offsetDistance =
-                            case sweptAngle of
+                            case sweptAngle_ of
                                 Types.SmallPositive ->
                                     offsetMagnitude
 
@@ -471,17 +472,17 @@ withRadius radius sweptAngle startPoint endPoint =
                         midpoint =
                             LineSegment2d.midpoint chord
 
-                        centerPoint =
+                        centerPoint_ =
                             Point2d.translateBy offset midpoint
 
                         halfLength =
                             sqrt squaredHalfLength
 
                         shortAngle =
-                            2 * asin (halfLength / radius)
+                            2 * asin (halfLength / radius_)
 
                         sweptAngleInRadians =
-                            case sweptAngle of
+                            case sweptAngle_ of
                                 Types.SmallPositive ->
                                     shortAngle
 
@@ -494,7 +495,7 @@ withRadius radius sweptAngle startPoint endPoint =
                                 Types.LargeNegative ->
                                     shortAngle - 2 * pi
                     in
-                    startPoint |> sweptAround centerPoint sweptAngleInRadians
+                    startPoint_ |> sweptAround centerPoint_ sweptAngleInRadians
                 )
     else
         Nothing
@@ -730,7 +731,7 @@ sample arc =
         derivativeOfArc =
             derivativeVector arc
     in
-    \t -> Maybe.map2 (,) (pointOnArc t) (derivativeOfArc t)
+    \t -> Maybe.map2 Tuple.pair (pointOnArc t) (derivativeOfArc t)
 
 
 {-| Convenient shorthand for evaluating multiple samples;

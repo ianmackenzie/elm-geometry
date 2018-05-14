@@ -200,19 +200,37 @@ type Arc3d
 
 
 type QuadraticSpline2d
-    = QuadraticSpline2d ( Point2d, Point2d, Point2d )
+    = QuadraticSpline2d
+        { startPoint : Point2d
+        , controlPoint : Point2d
+        , endPoint : Point2d
+        }
 
 
 type QuadraticSpline3d
-    = QuadraticSpline3d ( Point3d, Point3d, Point3d )
+    = QuadraticSpline3d
+        { startPoint : Point3d
+        , controlPoint : Point3d
+        , endPoint : Point3d
+        }
 
 
 type CubicSpline2d
-    = CubicSpline2d ( Point2d, Point2d, Point2d, Point2d )
+    = CubicSpline2d
+        { startPoint : Point2d
+        , startControlPoint : Point2d
+        , endControlPoint : Point2d
+        , endPoint : Point2d
+        }
 
 
 type CubicSpline3d
-    = CubicSpline3d ( Point3d, Point3d, Point3d, Point3d )
+    = CubicSpline3d
+        { startPoint : Point3d
+        , startControlPoint : Point3d
+        , endControlPoint : Point3d
+        , endPoint : Point3d
+        }
 
 
 type EllipticalArc2d

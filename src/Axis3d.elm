@@ -128,16 +128,16 @@ z =
 
 -}
 through : Point3d -> Direction3d -> Axis3d
-through point direction =
-    Types.Axis3d { originPoint = point, direction = direction }
+through point direction_ =
+    Types.Axis3d { originPoint = point, direction = direction_ }
 
 
 {-| Construct an axis with the given directoin, through the given point. Flipped
 version of `through`.
 -}
 withDirection : Direction3d -> Point3d -> Axis3d
-withDirection direction originPoint =
-    Types.Axis3d { direction = direction, originPoint = originPoint }
+withDirection direction_ originPoint_ =
+    Types.Axis3d { direction = direction_, originPoint = originPoint_ }
 
 
 {-| Construct a 3D axis lying _on_ a sketch plane by providing a 2D axis
@@ -265,8 +265,8 @@ is equivalent to
 
 -}
 translateIn : Direction3d -> Float -> Axis3d -> Axis3d
-translateIn direction distance axis =
-    translateBy (Vector3d.withLength distance direction) axis
+translateIn translationDirection distance axis =
+    translateBy (Vector3d.withLength distance translationDirection) axis
 
 
 {-| Mirror an axis across a plane.

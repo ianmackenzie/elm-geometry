@@ -94,8 +94,8 @@ type alias Polygon2d =
 
 
 counterclockwiseArea : List Point2d -> Float
-counterclockwiseArea vertices =
-    case vertices of
+counterclockwiseArea vertices_ =
+    case vertices_ of
         [] ->
             0
 
@@ -118,19 +118,19 @@ counterclockwiseArea vertices =
 
 
 makeOuterLoop : List Point2d -> List Point2d
-makeOuterLoop vertices =
-    if counterclockwiseArea vertices >= 0 then
-        vertices
+makeOuterLoop vertices_ =
+    if counterclockwiseArea vertices_ >= 0 then
+        vertices_
     else
-        List.reverse vertices
+        List.reverse vertices_
 
 
 makeInnerLoop : List Point2d -> List Point2d
-makeInnerLoop vertices =
-    if counterclockwiseArea vertices <= 0 then
-        vertices
+makeInnerLoop vertices_ =
+    if counterclockwiseArea vertices_ <= 0 then
+        vertices_
     else
-        List.reverse vertices
+        List.reverse vertices_
 
 
 {-| Construct a polygon without holes from a list of its vertices:
@@ -150,9 +150,9 @@ order they will be reversed.
 
 -}
 singleLoop : List Point2d -> Polygon2d
-singleLoop vertices =
+singleLoop vertices_ =
     Types.Polygon2d
-        { outerLoop = makeOuterLoop vertices
+        { outerLoop = makeOuterLoop vertices_
         , innerLoops = []
         }
 
@@ -187,10 +187,10 @@ ideally be provided in clockwise order.
 
 -}
 with : { outerLoop : List Point2d, innerLoops : List (List Point2d) } -> Polygon2d
-with { outerLoop, innerLoops } =
+with arguments =
     Types.Polygon2d
-        { outerLoop = makeOuterLoop outerLoop
-        , innerLoops = List.map makeInnerLoop innerLoops
+        { outerLoop = makeOuterLoop arguments.outerLoop
+        , innerLoops = List.map makeInnerLoop arguments.innerLoops
         }
 
 
@@ -257,8 +257,8 @@ The vertices will be in counterclockwise order.
 
 -}
 outerLoop : Polygon2d -> List Point2d
-outerLoop (Types.Polygon2d { outerLoop }) =
-    outerLoop
+outerLoop (Types.Polygon2d polygon) =
+    polygon.outerLoop
 
 
 {-| Get the holes (if any) of a polygon, each defined by a list of vertices.
@@ -274,8 +274,8 @@ Each list of vertices will be in clockwise order.
 
 -}
 innerLoops : Polygon2d -> List (List Point2d)
-innerLoops (Types.Polygon2d { innerLoops }) =
-    innerLoops
+innerLoops (Types.Polygon2d polygon) =
+    polygon.innerLoops
 
 
 {-| Get all vertices of a polygon; this will include vertices from the outer
@@ -300,8 +300,8 @@ vertices polygon =
 
 
 loopEdges : List Point2d -> List LineSegment2d
-loopEdges vertices =
-    case vertices of
+loopEdges vertices_ =
+    case vertices_ of
         [] ->
             []
 

@@ -126,11 +126,11 @@ direction 90 degrees counterclockwise:
 
 -}
 withXDirection : Direction2d -> Point2d -> Frame2d
-withXDirection xDirection originPoint =
+withXDirection xDirection_ originPoint_ =
     unsafe
-        { originPoint = originPoint
-        , xDirection = xDirection
-        , yDirection = xDirection |> Direction2d.rotateCounterclockwise
+        { originPoint = originPoint_
+        , xDirection = xDirection_
+        , yDirection = xDirection_ |> Direction2d.rotateCounterclockwise
         }
 
 
@@ -148,11 +148,11 @@ direction 90 degrees clockwise:
 
 -}
 withYDirection : Direction2d -> Point2d -> Frame2d
-withYDirection yDirection originPoint =
+withYDirection yDirection_ originPoint_ =
     unsafe
-        { originPoint = originPoint
-        , xDirection = yDirection |> Direction2d.rotateClockwise
-        , yDirection = yDirection
+        { originPoint = originPoint_
+        , xDirection = yDirection_ |> Direction2d.rotateClockwise
+        , yDirection = yDirection_
         }
 
 

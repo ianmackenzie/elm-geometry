@@ -160,17 +160,17 @@ To make an inclined 180 degree elliptical arc, you might use
 
 -}
 with : { centerPoint : Point2d, xDirection : Direction2d, xRadius : Float, yRadius : Float, startAngle : Float, sweptAngle : Float } -> EllipticalArc2d
-with { centerPoint, xDirection, xRadius, yRadius, startAngle, sweptAngle } =
+with properties =
     Types.EllipticalArc2d
         { ellipse =
             Ellipse2d.with
-                { centerPoint = centerPoint
-                , xDirection = xDirection
-                , xRadius = xRadius
-                , yRadius = yRadius
+                { centerPoint = properties.centerPoint
+                , xDirection = properties.xDirection
+                , xRadius = properties.xRadius
+                , yRadius = properties.yRadius
                 }
-        , startAngle = startAngle
-        , sweptAngle = sweptAngle
+        , startAngle = properties.startAngle
+        , sweptAngle = properties.sweptAngle
         }
 
 
@@ -206,23 +206,26 @@ solution being found and not - for 180 degree arcs it is safer to use
 
 -}
 fromEndpoints : { startPoint : Point2d, endPoint : Point2d, xRadius : Float, yRadius : Float, xDirection : Direction2d, sweptAngle : SweptAngle } -> Maybe EllipticalArc2d
-fromEndpoints { startPoint, endPoint, xRadius, yRadius, xDirection, sweptAngle } =
-    if xRadius > 0 && yRadius > 0 then
+fromEndpoints arguments =
+    if arguments.xRadius > 0 && arguments.yRadius > 0 then
         let
             temporaryFrame =
-                Frame2d.withXDirection xDirection
-                    (startPoint |> Point2d.translateIn xDirection -xRadius)
+                Frame2d.withXDirection arguments.xDirection
+                    (arguments.startPoint
+                        |> Point2d.translateIn arguments.xDirection
+                            -arguments.xRadius
+                    )
 
             ( x2Ellipse, y2Ellipse ) =
-                endPoint
+                arguments.endPoint
                     |> Point2d.relativeTo temporaryFrame
                     |> Point2d.coordinates
 
             x2 =
-                x2Ellipse / xRadius
+                x2Ellipse / arguments.xRadius
 
             y2 =
-                y2Ellipse / yRadius
+                y2Ellipse / arguments.yRadius
 
             cx2 =
                 x2 - 1
@@ -241,8 +244,8 @@ fromEndpoints { startPoint, endPoint, xRadius, yRadius, xDirection, sweptAngle }
                 offsetAngle =
                     acos d
 
-                ( startAngle, sweptAngleInRadians ) =
-                    case sweptAngle of
+                ( startAngle_, sweptAngleInRadians ) =
+                    case arguments.sweptAngle of
                         Types.SmallPositive ->
                             ( midAngle + offsetAngle
                             , pi - 2 * offsetAngle
@@ -263,29 +266,25 @@ fromEndpoints { startPoint, endPoint, xRadius, yRadius, xDirection, sweptAngle }
                             , -pi - 2 * offsetAngle
                             )
 
-                yDirection =
-                    Direction2d.perpendicularTo xDirection
-
-                centerPoint =
-                    Point2d.placeIn temporaryFrame <|
-                        Point2d.fromCoordinates
-                            ( xRadius - xRadius * cos startAngle
-                            , -yRadius * sin startAngle
-                            )
+                centerPoint_ =
+                    Point2d.fromCoordinatesIn temporaryFrame
+                        ( arguments.xRadius * (1 - cos startAngle_)
+                        , -arguments.yRadius * sin startAngle_
+                        )
             in
             Just <|
                 with
-                    { centerPoint = centerPoint
-                    , xDirection = xDirection
-                    , xRadius = xRadius
-                    , yRadius = yRadius
+                    { centerPoint = centerPoint_
+                    , xDirection = arguments.xDirection
+                    , xRadius = arguments.xRadius
+                    , yRadius = arguments.yRadius
                     , startAngle =
-                        if startAngle > pi then
-                            startAngle - 2 * pi
-                        else if startAngle < -pi then
-                            startAngle + 2 * pi
+                        if startAngle_ > pi then
+                            startAngle_ - 2 * pi
+                        else if startAngle_ < -pi then
+                            startAngle_ + 2 * pi
                         else
-                            startAngle
+                            startAngle_
                     , sweptAngle = sweptAngleInRadians
                     }
         else
@@ -296,38 +295,38 @@ fromEndpoints { startPoint, endPoint, xRadius, yRadius, xDirection, sweptAngle }
 
 {-| -}
 centerPoint : EllipticalArc2d -> Point2d
-centerPoint (Types.EllipticalArc2d { ellipse }) =
-    Ellipse2d.centerPoint ellipse
+centerPoint (Types.EllipticalArc2d arc) =
+    Ellipse2d.centerPoint arc.ellipse
 
 
 {-| -}
 axes : EllipticalArc2d -> Frame2d
-axes (Types.EllipticalArc2d { ellipse }) =
-    Ellipse2d.axes ellipse
+axes (Types.EllipticalArc2d arc) =
+    Ellipse2d.axes arc.ellipse
 
 
 {-| -}
 xAxis : EllipticalArc2d -> Axis2d
-xAxis (Types.EllipticalArc2d { ellipse }) =
-    Ellipse2d.xAxis ellipse
+xAxis (Types.EllipticalArc2d arc) =
+    Ellipse2d.xAxis arc.ellipse
 
 
 {-| -}
 yAxis : EllipticalArc2d -> Axis2d
-yAxis (Types.EllipticalArc2d { ellipse }) =
-    Ellipse2d.yAxis ellipse
+yAxis (Types.EllipticalArc2d arc) =
+    Ellipse2d.yAxis arc.ellipse
 
 
 {-| -}
 xRadius : EllipticalArc2d -> Float
-xRadius (Types.EllipticalArc2d { ellipse }) =
-    Ellipse2d.xRadius ellipse
+xRadius (Types.EllipticalArc2d arc) =
+    Ellipse2d.xRadius arc.ellipse
 
 
 {-| -}
 yRadius : EllipticalArc2d -> Float
-yRadius (Types.EllipticalArc2d { ellipse }) =
-    Ellipse2d.yRadius ellipse
+yRadius (Types.EllipticalArc2d arc) =
+    Ellipse2d.yRadius arc.ellipse
 
 
 {-| The start angle of an elliptical arc is the value of the [ellipse parameter](https://en.wikipedia.org/wiki/Ellipse#Parametric_representation)
@@ -338,8 +337,8 @@ at the start point of the arc.
 
 -}
 startAngle : EllipticalArc2d -> Float
-startAngle (Types.EllipticalArc2d { startAngle }) =
-    startAngle
+startAngle (Types.EllipticalArc2d arc) =
+    arc.startAngle
 
 
 {-| The swept angle of an elliptical arc is the difference between values of the
@@ -351,8 +350,8 @@ at the start and end points of the arc.
 
 -}
 sweptAngle : EllipticalArc2d -> Float
-sweptAngle (Types.EllipticalArc2d { sweptAngle }) =
-    sweptAngle
+sweptAngle (Types.EllipticalArc2d arc) =
+    arc.sweptAngle
 
 
 {-| Get a point along an elliptical arc, based on a parameter that ranges from 0
@@ -469,7 +468,7 @@ is equivalent to
 -}
 sample : EllipticalArc2d -> Float -> Maybe ( Point2d, Vector2d )
 sample arc t =
-    Maybe.map2 (,) (pointOn arc t) (derivative arc t)
+    Maybe.map2 Tuple.pair (pointOn arc t) (derivative arc t)
 
 
 {-| Convenient shorthand for evaluating multiple samples;

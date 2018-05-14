@@ -113,17 +113,21 @@ resulting bounding box is valid.
 
 -}
 fromExtrema : { minX : Float, maxX : Float, minY : Float, maxY : Float, minZ : Float, maxZ : Float } -> BoundingBox3d
-fromExtrema ({ minX, maxX, minY, maxY, minZ, maxZ } as extrema) =
-    if minX <= maxX && minY <= maxY && minZ <= maxZ then
-        Types.BoundingBox3d extrema
+fromExtrema extrema_ =
+    if
+        (extrema_.minX <= extrema_.maxX)
+            && (extrema_.minY <= extrema_.maxY)
+            && (extrema_.minZ <= extrema_.maxZ)
+    then
+        Types.BoundingBox3d extrema_
     else
         Types.BoundingBox3d
-            { minX = min minX maxX
-            , maxX = max minX maxX
-            , minY = min minY maxY
-            , maxY = max minY maxY
-            , minZ = min minZ maxZ
-            , maxZ = max minZ maxZ
+            { minX = min extrema_.minX extrema_.maxX
+            , maxX = max extrema_.minX extrema_.maxX
+            , minY = min extrema_.minY extrema_.maxY
+            , maxY = max extrema_.minY extrema_.maxY
+            , minZ = min extrema_.minZ extrema_.maxZ
+            , maxZ = max extrema_.minZ extrema_.maxZ
             }
 
 
@@ -292,8 +296,8 @@ Can be useful when combined with record destructuring, for example
 
 -}
 extrema : BoundingBox3d -> { minX : Float, maxX : Float, minY : Float, maxY : Float, minZ : Float, maxZ : Float }
-extrema (Types.BoundingBox3d properties) =
-    properties
+extrema (Types.BoundingBox3d extrema_) =
+    extrema_
 
 
 {-| Get the minimum X value of a bounding box.
@@ -303,8 +307,8 @@ extrema (Types.BoundingBox3d properties) =
 
 -}
 minX : BoundingBox3d -> Float
-minX boundingBox =
-    (extrema boundingBox).minX
+minX (Types.BoundingBox3d boundingBox) =
+    boundingBox.minX
 
 
 {-| Get the maximum X value of a bounding box.
@@ -314,8 +318,8 @@ minX boundingBox =
 
 -}
 maxX : BoundingBox3d -> Float
-maxX boundingBox =
-    (extrema boundingBox).maxX
+maxX (Types.BoundingBox3d boundingBox) =
+    boundingBox.maxX
 
 
 {-| Get the minimum Y value of a bounding box.
@@ -325,8 +329,8 @@ maxX boundingBox =
 
 -}
 minY : BoundingBox3d -> Float
-minY boundingBox =
-    (extrema boundingBox).minY
+minY (Types.BoundingBox3d boundingBox) =
+    boundingBox.minY
 
 
 {-| Get the maximum Y value of a bounding box.
@@ -336,8 +340,8 @@ minY boundingBox =
 
 -}
 maxY : BoundingBox3d -> Float
-maxY boundingBox =
-    (extrema boundingBox).maxY
+maxY (Types.BoundingBox3d boundingBox) =
+    boundingBox.maxY
 
 
 {-| Get the minimum Z value of a bounding box.
@@ -347,8 +351,8 @@ maxY boundingBox =
 
 -}
 minZ : BoundingBox3d -> Float
-minZ boundingBox =
-    (extrema boundingBox).minZ
+minZ (Types.BoundingBox3d boundingBox) =
+    boundingBox.minZ
 
 
 {-| Get the maximum Z value of a bounding box.
@@ -358,8 +362,8 @@ minZ boundingBox =
 
 -}
 maxZ : BoundingBox3d -> Float
-maxZ boundingBox =
-    (extrema boundingBox).maxZ
+maxZ (Types.BoundingBox3d boundingBox) =
+    boundingBox.maxZ
 
 
 {-| Get the X, Y and Z dimensions (widths) of a bounding box.
@@ -370,11 +374,10 @@ maxZ boundingBox =
 -}
 dimensions : BoundingBox3d -> ( Float, Float, Float )
 dimensions boundingBox =
-    let
-        { minX, maxX, minY, maxY, minZ, maxZ } =
-            extrema boundingBox
-    in
-    ( maxX - minX, maxY - minY, maxZ - minZ )
+    ( maxX boundingBox - minX boundingBox
+    , maxY boundingBox - minY boundingBox
+    , maxZ boundingBox - minZ boundingBox
+    )
 
 
 {-| Get the median X value of a bounding box.
@@ -384,12 +387,8 @@ dimensions boundingBox =
 
 -}
 midX : BoundingBox3d -> Float
-midX boundingBox =
-    let
-        { minX, maxX } =
-            extrema boundingBox
-    in
-    minX + 0.5 * (maxX - minX)
+midX (Types.BoundingBox3d boundingBox) =
+    boundingBox.minX + 0.5 * (boundingBox.maxX - boundingBox.minX)
 
 
 {-| Get the median Y value of a bounding box.
@@ -399,12 +398,8 @@ midX boundingBox =
 
 -}
 midY : BoundingBox3d -> Float
-midY boundingBox =
-    let
-        { minY, maxY } =
-            extrema boundingBox
-    in
-    minY + 0.5 * (maxY - minY)
+midY (Types.BoundingBox3d boundingBox) =
+    boundingBox.minY + 0.5 * (boundingBox.maxY - boundingBox.minY)
 
 
 {-| Get the median Z value of a bounding box.
@@ -414,12 +409,8 @@ midY boundingBox =
 
 -}
 midZ : BoundingBox3d -> Float
-midZ boundingBox =
-    let
-        { minZ, maxZ } =
-            extrema boundingBox
-    in
-    minZ + 0.5 * (maxZ - minZ)
+midZ (Types.BoundingBox3d boundingBox) =
+    boundingBox.minZ + 0.5 * (boundingBox.maxZ - boundingBox.minZ)
 
 
 {-| Get the point at the center of a bounding box.
@@ -457,13 +448,10 @@ contains point boundingBox =
     let
         ( x, y, z ) =
             Point3d.coordinates point
-
-        { minX, maxX, minY, maxY, minZ, maxZ } =
-            extrema boundingBox
     in
-    (minX <= x && x <= maxX)
-        && (minY <= y && y <= maxY)
-        && (minZ <= z && z <= maxZ)
+    (minX boundingBox <= x && x <= maxX boundingBox)
+        && (minY boundingBox <= y && y <= maxY boundingBox)
+        && (minZ boundingBox <= z && y <= maxZ boundingBox)
 
 
 {-| Test if two boxes touch or overlap at all (have any points in common);
@@ -960,29 +948,26 @@ intersection firstBox secondBox =
 scaleAbout : Point3d -> Float -> BoundingBox3d -> BoundingBox3d
 scaleAbout point scale boundingBox =
     let
-        { minX, minY, minZ, maxX, maxY, maxZ } =
-            extrema boundingBox
-
         ( x0, y0, z0 ) =
             Point3d.coordinates point
     in
     if scale >= 0 then
         fromExtrema
-            { minX = x0 + scale * (minX - x0)
-            , maxX = x0 + scale * (maxX - x0)
-            , minY = y0 + scale * (minY - y0)
-            , maxY = y0 + scale * (maxY - y0)
-            , minZ = z0 + scale * (minZ - z0)
-            , maxZ = z0 + scale * (maxZ - z0)
+            { minX = x0 + scale * (minX boundingBox - x0)
+            , maxX = x0 + scale * (maxX boundingBox - x0)
+            , minY = y0 + scale * (minY boundingBox - y0)
+            , maxY = y0 + scale * (maxY boundingBox - y0)
+            , minZ = z0 + scale * (minZ boundingBox - z0)
+            , maxZ = z0 + scale * (maxZ boundingBox - z0)
             }
     else
         fromExtrema
-            { minX = x0 + scale * (maxX - x0)
-            , maxX = x0 + scale * (minX - x0)
-            , minY = y0 + scale * (maxY - y0)
-            , maxY = y0 + scale * (minY - y0)
-            , minZ = z0 + scale * (maxZ - z0)
-            , maxZ = z0 + scale * (minZ - z0)
+            { minX = x0 + scale * (maxX boundingBox - x0)
+            , maxX = x0 + scale * (minX boundingBox - x0)
+            , minY = y0 + scale * (maxY boundingBox - y0)
+            , maxY = y0 + scale * (minY boundingBox - y0)
+            , minZ = z0 + scale * (maxZ boundingBox - z0)
+            , maxZ = z0 + scale * (minZ boundingBox - z0)
             }
 
 
@@ -1005,19 +990,16 @@ scaleAbout point scale boundingBox =
 translateBy : Vector3d -> BoundingBox3d -> BoundingBox3d
 translateBy displacement boundingBox =
     let
-        { minX, minY, minZ, maxX, maxY, maxZ } =
-            extrema boundingBox
-
         ( dx, dy, dz ) =
             Vector3d.components displacement
     in
     fromExtrema
-        { minX = minX + dx
-        , maxX = maxX + dx
-        , minY = minY + dy
-        , maxY = maxY + dy
-        , minZ = minZ + dz
-        , maxZ = maxZ + dz
+        { minX = minX boundingBox + dx
+        , maxX = maxX boundingBox + dx
+        , minY = minY boundingBox + dy
+        , maxY = maxY boundingBox + dy
+        , minZ = minZ boundingBox + dz
+        , maxZ = maxZ boundingBox + dz
         }
 
 

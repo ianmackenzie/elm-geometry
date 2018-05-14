@@ -247,15 +247,15 @@ directions are unimportant.
 
 -}
 withNormalDirection : Direction3d -> Point3d -> SketchPlane3d
-withNormalDirection normalDirection originPoint =
+withNormalDirection normalDirection_ originPoint_ =
     let
-        ( xDirection, yDirection ) =
-            Direction3d.perpendicularBasis normalDirection
+        ( xDirection_, yDirection_ ) =
+            Direction3d.perpendicularBasis normalDirection_
     in
     unsafe
-        { originPoint = originPoint
-        , xDirection = xDirection
-        , yDirection = yDirection
+        { originPoint = originPoint_
+        , xDirection = xDirection_
+        , yDirection = yDirection_
         }
 
 
@@ -389,7 +389,7 @@ throughPoints : ( Point3d, Point3d, Point3d ) -> Maybe SketchPlane3d
 throughPoints ( firstPoint, secondPoint, thirdPoint ) =
     Direction3d.from firstPoint secondPoint
         |> Maybe.andThen
-            (\xDirection ->
+            (\xDirection_ ->
                 let
                     firstCandidate =
                         Vector3d.from firstPoint thirdPoint
@@ -410,7 +410,7 @@ throughPoints ( firstPoint, secondPoint, thirdPoint ) =
                             secondCandidate
 
                     xDirectionVector =
-                        Direction3d.toVector xDirection
+                        Direction3d.toVector xDirection_
 
                     normalVector =
                         Vector3d.crossProduct xDirectionVector chosenVector
@@ -420,11 +420,11 @@ throughPoints ( firstPoint, secondPoint, thirdPoint ) =
                 in
                 Vector3d.direction yVector
                     |> Maybe.map
-                        (\yDirection ->
+                        (\yDirection_ ->
                             unsafe
                                 { originPoint = firstPoint
-                                , xDirection = xDirection
-                                , yDirection = yDirection
+                                , xDirection = xDirection_
+                                , yDirection = yDirection_
                                 }
                         )
             )

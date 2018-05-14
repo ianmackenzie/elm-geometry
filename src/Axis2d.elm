@@ -111,16 +111,16 @@ y =
 
 -}
 through : Point2d -> Direction2d -> Axis2d
-through point direction =
-    Types.Axis2d { originPoint = point, direction = direction }
+through point direction_ =
+    Types.Axis2d { originPoint = point, direction = direction_ }
 
 
 {-| Construct an axis with the given direction, through the given origin point.
 Flipped version of `through`.
 -}
 withDirection : Direction2d -> Point2d -> Axis2d
-withDirection direction originPoint =
-    Types.Axis2d { originPoint = originPoint, direction = direction }
+withDirection direction_ originPoint_ =
+    Types.Axis2d { originPoint = originPoint_, direction = direction_ }
 
 
 {-| Get the origin point of an axis.
@@ -222,8 +222,8 @@ is equivalent to
 
 -}
 translateIn : Direction2d -> Float -> Axis2d -> Axis2d
-translateIn direction distance axis =
-    translateBy (Vector2d.withLength distance direction) axis
+translateIn translationDirection distance axis =
+    translateBy (Vector2d.withLength distance translationDirection) axis
 
 
 {-| Mirror one axis across another. The axis to mirror across is given first and

@@ -126,10 +126,10 @@ zx =
 
 -}
 through : Point3d -> Direction3d -> Plane3d
-through point normalDirection =
+through point normalDirection_ =
     Types.Plane3d
         { originPoint = point
-        , normalDirection = normalDirection
+        , normalDirection = normalDirection_
         }
 
 
@@ -142,10 +142,10 @@ Flipped version of `through`.
 
 -}
 withNormalDirection : Direction3d -> Point3d -> Plane3d
-withNormalDirection normalDirection originPoint =
+withNormalDirection normalDirection_ originPoint_ =
     Types.Plane3d
-        { normalDirection = normalDirection
-        , originPoint = originPoint
+        { normalDirection = normalDirection_
+        , originPoint = originPoint_
         }
 
 

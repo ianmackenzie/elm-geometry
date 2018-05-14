@@ -91,11 +91,11 @@ The actual radius of the circle will be the absolute value of the given radius
 
 -}
 withRadius : Float -> Direction3d -> Point3d -> Circle3d
-withRadius radius axialDirection centerPoint =
+withRadius radius_ axialDirection_ centerPoint_ =
     Types.Circle3d
-        { centerPoint = centerPoint
-        , axialDirection = axialDirection
-        , radius = abs radius
+        { centerPoint = centerPoint_
+        , axialDirection = axialDirection_
+        , radius = abs radius_
         }
 
 
@@ -109,14 +109,14 @@ withRadius radius axialDirection centerPoint =
 
 -}
 sweptAround : Axis3d -> Point3d -> Circle3d
-sweptAround axis point =
+sweptAround axis_ point =
     let
-        centerPoint =
-            Point3d.projectOntoAxis axis point
+        centerPoint_ =
+            Point3d.projectOntoAxis axis_ point
     in
-    withRadius (Point3d.distanceFrom centerPoint point)
-        (Axis3d.direction axis)
-        centerPoint
+    withRadius (Point3d.distanceFrom centerPoint_ point)
+        (Axis3d.direction axis_)
+        centerPoint_
 
 
 {-| Construct a 3D circle lying _on_ a sketch plane by providing a 2D circle
@@ -162,24 +162,24 @@ the three given points are collinear, returns `Nothing`.
 throughPoints : ( Point3d, Point3d, Point3d ) -> Maybe Circle3d
 throughPoints points =
     Maybe.map2
-        (\centerPoint plane ->
+        (\centerPoint_ plane_ ->
             let
                 ( p1, p2, p3 ) =
                     points
 
                 r1 =
-                    Point3d.distanceFrom centerPoint p1
+                    Point3d.distanceFrom centerPoint_ p1
 
                 r2 =
-                    Point3d.distanceFrom centerPoint p2
+                    Point3d.distanceFrom centerPoint_ p2
 
                 r3 =
-                    Point3d.distanceFrom centerPoint p3
+                    Point3d.distanceFrom centerPoint_ p3
 
                 r =
                     (r1 + r2 + r3) / 3
             in
-            withRadius r (Plane3d.normalDirection plane) centerPoint
+            withRadius r (Plane3d.normalDirection plane_) centerPoint_
         )
         (Point3d.circumcenter points)
         (Plane3d.throughPoints points)
@@ -311,13 +311,13 @@ scaleAbout point scale circle =
 
 -}
 rotateAround : Axis3d -> Float -> Circle3d -> Circle3d
-rotateAround axis angle =
+rotateAround axis_ angle =
     let
         rotatePoint =
-            Point3d.rotateAround axis angle
+            Point3d.rotateAround axis_ angle
 
         rotateDirection =
-            Direction3d.rotateAround axis angle
+            Direction3d.rotateAround axis_ angle
     in
     \circle ->
         withRadius (radius circle)
@@ -367,10 +367,10 @@ translateIn direction distance circle =
 
 -}
 mirrorAcross : Plane3d -> Circle3d -> Circle3d
-mirrorAcross plane circle =
+mirrorAcross plane_ circle =
     withRadius (radius circle)
-        (Direction3d.mirrorAcross plane (axialDirection circle))
-        (Point3d.mirrorAcross plane (centerPoint circle))
+        (Direction3d.mirrorAcross plane_ (axialDirection circle))
+        (Point3d.mirrorAcross plane_ (centerPoint circle))
 
 
 {-| Project a circle into a sketch plane.

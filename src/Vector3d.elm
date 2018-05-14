@@ -197,12 +197,12 @@ from firstPoint secondPoint =
 
 -}
 withLength : Float -> Direction3d -> Vector3d
-withLength length direction =
+withLength length_ direction_ =
     let
         ( dx, dy, dz ) =
-            Direction3d.components direction
+            Direction3d.components direction_
     in
-    fromComponents ( length * dx, length * dy, length * dz )
+    fromComponents ( length_ * dx, length_ * dy, length_ * dz )
 
 
 {-| Construct a 3D vector lying _on_ a sketch plane by providing a 2D vector
@@ -414,10 +414,10 @@ is equivalent to
 
 -}
 componentIn : Direction3d -> Vector3d -> Float
-componentIn direction vector =
+componentIn direction_ vector =
     let
         ( dx, dy, dz ) =
-            Direction3d.components direction
+            Direction3d.components direction_
 
         ( vx, vy, vz ) =
             components vector
@@ -729,44 +729,44 @@ rotateAround (Types.Axis3d axis) angle =
         sinHalfAngle =
             sin halfAngle
 
-        x =
+        qx =
             dx * sinHalfAngle
 
-        y =
+        qy =
             dy * sinHalfAngle
 
-        z =
+        qz =
             dz * sinHalfAngle
 
-        w =
+        qw =
             cos halfAngle
 
         wx =
-            w * x
+            qw * qx
 
         wy =
-            w * y
+            qw * qy
 
         wz =
-            w * z
+            qw * qz
 
         xx =
-            x * x
+            qx * qx
 
         xy =
-            x * y
+            qx * qy
 
         xz =
-            x * z
+            qx * qz
 
         yy =
-            y * y
+            qy * qy
 
         yz =
-            y * z
+            qy * qz
 
         zz =
-            z * z
+            qz * qz
 
         a00 =
             1 - 2 * (yy + zz)
@@ -871,8 +871,8 @@ portion.
 
 -}
 projectionIn : Direction3d -> Vector3d -> Vector3d
-projectionIn direction vector =
-    direction |> withLength (vector |> componentIn direction)
+projectionIn direction_ vector =
+    direction_ |> withLength (vector |> componentIn direction_)
 
 
 {-| Project a vector [orthographically](https://en.wikipedia.org/wiki/Orthographic_projection)

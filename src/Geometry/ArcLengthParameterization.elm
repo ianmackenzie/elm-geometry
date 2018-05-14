@@ -101,27 +101,27 @@ build { tolerance, derivativeMagnitude, maxSecondDerivativeMagnitude } =
 
 
 buildTree : (Float -> Float) -> Float -> Float -> Float -> Int -> SegmentTree
-buildTree derivativeMagnitude lengthAtStart paramAtStart paramAtEnd height =
+buildTree derivativeMagnitude lengthAtStart_ paramAtStart_ paramAtEnd height =
     let
         paramDelta =
-            paramAtEnd - paramAtStart
+            paramAtEnd - paramAtStart_
     in
     if height == 0 then
         let
             param0 =
-                paramAtStart
+                paramAtStart_
 
             param1 =
-                paramAtStart + 0.125 * paramDelta
+                paramAtStart_ + 0.125 * paramDelta
 
             param2 =
-                paramAtStart + 0.25 * paramDelta
+                paramAtStart_ + 0.25 * paramDelta
 
             param3 =
-                paramAtStart + 0.375 * paramDelta
+                paramAtStart_ + 0.375 * paramDelta
 
             param4 =
-                paramAtStart + 0.5 * paramDelta
+                paramAtStart_ + 0.5 * paramDelta
 
             param5 =
                 paramAtEnd - 0.375 * paramDelta
@@ -142,7 +142,7 @@ buildTree derivativeMagnitude lengthAtStart paramAtStart paramAtEnd height =
                 0.125 * paramDelta
 
             length0 =
-                lengthAtStart
+                lengthAtStart_
 
             length1 =
                 length0 + derivativeMagnitude (param0 + offset) * paramStep
@@ -194,12 +194,12 @@ buildTree derivativeMagnitude lengthAtStart paramAtStart paramAtEnd height =
                 height - 1
 
             paramAtMid =
-                paramAtStart + 0.5 * paramDelta
+                paramAtStart_ + 0.5 * paramDelta
 
             leftBranch =
                 buildTree derivativeMagnitude
-                    lengthAtStart
-                    paramAtStart
+                    lengthAtStart_
+                    paramAtStart_
                     paramAtMid
                     branchHeight
 
@@ -214,9 +214,9 @@ buildTree derivativeMagnitude lengthAtStart paramAtStart paramAtEnd height =
                     branchHeight
         in
         Node
-            { lengthAtStart = lengthAtStart
+            { lengthAtStart = lengthAtStart_
             , lengthAtEnd = lengthAtEnd rightBranch
-            , paramAtStart = paramAtStart
+            , paramAtStart = paramAtStart_
             , leftBranch = leftBranch
             , rightBranch = rightBranch
             }
@@ -310,21 +310,21 @@ unsafeToParameterValue tree s =
 lengthAtStart : SegmentTree -> Float
 lengthAtStart tree =
     case tree of
-        Node { lengthAtStart } ->
-            lengthAtStart
+        Node node ->
+            node.lengthAtStart
 
-        Leaf { length0 } ->
-            length0
+        Leaf leaf ->
+            leaf.length0
 
 
 lengthAtEnd : SegmentTree -> Float
 lengthAtEnd tree =
     case tree of
-        Node { lengthAtEnd } ->
-            lengthAtEnd
+        Node node ->
+            node.lengthAtEnd
 
-        Leaf { length8 } ->
-            length8
+        Leaf leaf ->
+            leaf.length8
 
 
 {-| Find the total arc length of some curve given its arc length
@@ -431,8 +431,8 @@ unsafeToArcLength tree t =
 paramAtStart : SegmentTree -> Float
 paramAtStart tree =
     case tree of
-        Node { paramAtStart } ->
-            paramAtStart
+        Node node ->
+            node.paramAtStart
 
-        Leaf { param0 } ->
-            param0
+        Leaf leaf ->
+            leaf.param0

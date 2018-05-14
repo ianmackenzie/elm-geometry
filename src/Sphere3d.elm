@@ -126,10 +126,10 @@ used).
 
 -}
 withRadius : Float -> Point3d -> Sphere3d
-withRadius radius centerPoint =
+withRadius radius_ centerPoint_ =
     Types.Sphere3d
-        { radius = abs radius
-        , centerPoint = centerPoint
+        { radius = abs radius_
+        , centerPoint = centerPoint_
         }
 
 
@@ -137,27 +137,25 @@ withRadius radius centerPoint =
 Returns `Nothing` if four given points are coplanar.
 
     Sphere3d.throughPoints
-        ( Point3d.fromCoordinates ( 1, 0, 0 )
-        , Point3d.fromCoordinates ( -1, 0, 0 )
-        , Point3d.fromCoordinates ( 0, 1, 0 )
-        , Point3d.fromCoordinates ( 0, 0, 0.5 )
-        )
+        (Point3d.fromCoordinates ( 1, 0, 0 ))
+        (Point3d.fromCoordinates ( -1, 0, 0 ))
+        (Point3d.fromCoordinates ( 0, 1, 0 ))
+        (Point3d.fromCoordinates ( 0, 0, 0.5 ))
     --> Just
     -->     (Sphere3d.withRadius 1.25
     -->         (Point3d.fromCoordinates ( 0, 0, -0.75 ))
     -->     )
 
     Sphere3d.throughPoints
-        ( Point3d.fromCoordinates ( 1, 0, 0 )
-        , Point3d.fromCoordinates ( -1, 0, 0 )
-        , Point3d.fromCoordinates ( 0, 1, 0 )
-        , Point3d.fromCoordinates ( 0, -1, 0 )
-        )
+        (Point3d.fromCoordinates ( 1, 0, 0 ))
+        (Point3d.fromCoordinates ( -1, 0, 0 ))
+        (Point3d.fromCoordinates ( 0, 1, 0 ))
+        (Point3d.fromCoordinates ( 0, -1, 0 ))
     --> Nothing
 
 -}
-throughPoints : ( Point3d, Point3d, Point3d, Point3d ) -> Maybe Sphere3d
-throughPoints ( p1, p2, p3, p4 ) =
+throughPoints : Point3d -> Point3d -> Point3d -> Point3d -> Maybe Sphere3d
+throughPoints p1 p2 p3 p4 =
     Circle3d.throughPoints ( p1, p2, p3 )
         |> Maybe.andThen
             {-

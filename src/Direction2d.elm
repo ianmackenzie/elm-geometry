@@ -358,10 +358,10 @@ from the positive X direction). The result will be in the range -π to π.
 toAngle : Direction2d -> Float
 toAngle direction =
     let
-        ( x, y ) =
+        ( xComponent_, yComponent_ ) =
             components direction
     in
-    atan2 y x
+    atan2 yComponent_ xComponent_
 
 
 {-| Find the counterclockwise angle in radians from the first direction to the
@@ -412,8 +412,8 @@ components =
 
 -}
 xComponent : Direction2d -> Float
-xComponent (Types.Direction2d ( x, _ )) =
-    x
+xComponent (Types.Direction2d ( xComponent_, _ )) =
+    xComponent_
 
 
 {-| Get the Y component of a direction.
@@ -426,8 +426,8 @@ xComponent (Types.Direction2d ( x, _ )) =
 
 -}
 yComponent : Direction2d -> Float
-yComponent (Types.Direction2d ( _, y )) =
-    y
+yComponent (Types.Direction2d ( _, yComponent_ )) =
+    yComponent_
 
 
 {-| Find the component of one direction in another direction. This is equal to
@@ -521,10 +521,10 @@ flip =
 rotateClockwise : Direction2d -> Direction2d
 rotateClockwise direction =
     let
-        ( x, y ) =
+        ( xComponent_, yComponent_ ) =
             components direction
     in
-    unsafe ( y, -x )
+    unsafe ( yComponent_, -xComponent_ )
 
 
 {-| Rotate a direction by 90 degrees counterclockwise.
@@ -539,10 +539,10 @@ rotateClockwise direction =
 rotateCounterclockwise : Direction2d -> Direction2d
 rotateCounterclockwise direction =
     let
-        ( x, y ) =
+        ( xComponent_, yComponent_ ) =
             components direction
     in
-    unsafe ( -y, x )
+    unsafe ( -yComponent_, xComponent_ )
 
 
 {-| Rotate a direction counterclockwise by a given angle (in radians).
