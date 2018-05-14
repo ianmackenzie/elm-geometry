@@ -57,7 +57,7 @@ orthonormalizeProducesValidFrameBasis =
                         |> Vector3d.dotProduct v3
             in
             if abs tripleProduct > 1.0e-6 then
-                case Direction3d.orthonormalize ( v1, v2, v3 ) of
+                case Direction3d.orthonormalize v1 v2 v3 of
                     Just ( xDirection, yDirection, zDirection ) ->
                         Expect.validFrame3d
                             (Frame3d.unsafe
@@ -80,7 +80,7 @@ orthonormalizeFollowsOriginalVectors =
     Test.fuzz (Fuzz.tuple3 ( Fuzz.vector3d, Fuzz.vector3d, Fuzz.vector3d ))
         "orthonormalized directions follow original vectors properly"
         (\( v1, v2, v3 ) ->
-            case Direction3d.orthonormalize ( v1, v2, v3 ) of
+            case Direction3d.orthonormalize v1 v2 v3 of
                 Just directions ->
                     directions
                         |> Expect.all
@@ -114,11 +114,14 @@ orthonormalizingCoplanarVectorsReturnsNothing =
     Test.test "orthonormalizing coplanar vectors returns Nothing"
         (\() ->
             let
-                vectors =
-                    ( Vector3d.fromComponents ( 1, 0, 0 )
-                    , Vector3d.fromComponents ( 2, 3, 0 )
-                    , Vector3d.fromComponents ( -1, 2, 0 )
-                    )
+                v1 =
+                    Vector3d.fromComponents ( 1, 0, 0 )
+
+                v2 =
+                    Vector3d.fromComponents ( 2, 3, 0 )
+
+                v3 =
+                    Vector3d.fromComponents ( -1, 2, 0 )
             in
-            Expect.equal Nothing (Direction3d.orthonormalize vectors)
+            Expect.equal Nothing (Direction3d.orthonormalize v1 v2 v3)
         )

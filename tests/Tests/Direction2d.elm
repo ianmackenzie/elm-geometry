@@ -66,8 +66,8 @@ orthonormalizeProducesValidFrameBasis : Test
 orthonormalizeProducesValidFrameBasis =
     Test.fuzz (Fuzz.tuple ( Fuzz.vector2d, Fuzz.vector2d ))
         "orthonormalize produces a valid frame basis"
-        (\vectors ->
-            case Direction2d.orthonormalize vectors of
+        (\( xVector, yVector ) ->
+            case Direction2d.orthonormalize xVector yVector of
                 Just ( xDirection, yDirection ) ->
                     Expect.validFrame2d
                         (Frame2d.unsafe
@@ -79,11 +79,8 @@ orthonormalizeProducesValidFrameBasis =
 
                 Nothing ->
                     let
-                        ( v1, v2 ) =
-                            vectors
-
                         crossProduct =
-                            Vector2d.crossProduct v1 v2
+                            Vector2d.crossProduct xVector yVector
                     in
                     Expect.approximately 0.0 crossProduct
         )
@@ -94,10 +91,11 @@ orthonormalizingParallelVectorsReturnsNothing =
     Test.test "orthonormalizing parallel vectors returns Nothing"
         (\() ->
             let
-                vectors =
-                    ( Vector2d.fromComponents ( 1, 2 )
-                    , Vector2d.fromComponents ( -3, -6 )
-                    )
+                xVector =
+                    Vector2d.fromComponents ( 1, 2 )
+
+                yVector =
+                    Vector2d.fromComponents ( -3, -6 )
             in
-            Expect.equal Nothing (Direction2d.orthonormalize vectors)
+            Expect.equal Nothing (Direction2d.orthonormalize xVector yVector)
         )

@@ -83,7 +83,8 @@ onExamples =
                         (Axis3d.through
                             (Point3d.fromCoordinates ( 1, 3, 0 ))
                             (Direction3d.fromAzimuthAndElevation
-                                ( degrees 30, 0 )
+                                (degrees 30)
+                                (degrees 0)
                             )
                         )
         , Test.test "Second example" <|
@@ -93,7 +94,8 @@ onExamples =
                         (Axis3d.through
                             (Point3d.fromCoordinates ( 3, 0, 1 ))
                             (Direction3d.fromAzimuthAndElevation
-                                ( 0, degrees 60 )
+                                (degrees 0)
+                                (degrees 60)
                             )
                         )
         ]

@@ -99,23 +99,27 @@ throughPointsManual =
               )
             ]
 
-        input ( p1, p2, p3, p4 ) =
-            ( Point3d.fromCoordinates p1
-            , Point3d.fromCoordinates p2
-            , Point3d.fromCoordinates p3
-            , Point3d.fromCoordinates p4
+        inputPoints ( c1, c2, c3, c4 ) =
+            ( Point3d.fromCoordinates c1
+            , Point3d.fromCoordinates c2
+            , Point3d.fromCoordinates c3
+            , Point3d.fromCoordinates c4
             )
 
-        testTitle inputPoints expectedSphere =
-            "Given " ++ toString (input inputPoints) ++ " throughPoints returns " ++ toString (sphereFromTuple expectedSphere)
+        testTitle inputCoordinates expectedSphere =
+            "Given " ++ toString inputCoordinates ++ " throughPoints returns " ++ toString (sphereFromTuple expectedSphere)
     in
     Test.describe "throughPoints" <|
         List.map
-            (\( inputPoints, expectedSphere ) ->
+            (\( inputCoordinates, expectedSphere ) ->
                 Test.test
-                    (testTitle inputPoints expectedSphere)
+                    (testTitle inputCoordinates expectedSphere)
                     (\_ ->
-                        Sphere3d.throughPoints (input inputPoints)
+                        let
+                            ( p1, p2, p3, p4 ) =
+                                inputPoints inputCoordinates
+                        in
+                        Sphere3d.throughPoints p1 p2 p3 p4
                             |> Maybe.map (Expect.sphere3d (sphereFromTuple expectedSphere))
                             |> Maybe.withDefault (Expect.fail "throughPoints returned Nothing on valid input")
                     )
@@ -206,7 +210,7 @@ throughPointsFuzz =
             if validTetrahedron p1 p2 p3 p4 then
                 let
                     sphere =
-                        Sphere3d.throughPoints ( p1, p2, p3, p4 )
+                        Sphere3d.throughPoints p1 p2 p3 p4
 
                     hasPointOnSurface point sphere =
                         Point3d.distanceFrom point (Sphere3d.centerPoint sphere)
