@@ -468,7 +468,7 @@ is equivalent to
 -}
 sample : EllipticalArc2d -> Float -> Maybe ( Point2d, Vector2d )
 sample arc t =
-    Maybe.map2 Tuple.pair (pointOn arc t) (derivative arc t)
+    Maybe.map2 (\p v -> ( p, v )) (pointOn arc t) (derivative arc t)
 
 
 {-| Convenient shorthand for evaluating multiple samples;

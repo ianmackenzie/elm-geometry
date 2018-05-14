@@ -724,7 +724,7 @@ sample arc =
         derivativeOfArc =
             derivativeVector arc
     in
-    \t -> Maybe.map2 Tuple.pair (pointOnArc t) (derivativeOfArc t)
+    \t -> Maybe.map2 (\p v -> ( p, v )) (pointOnArc t) (derivativeOfArc t)
 
 
 {-| Convenient shorthand for evaluating multiple samples;

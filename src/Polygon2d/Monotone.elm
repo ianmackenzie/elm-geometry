@@ -7,7 +7,7 @@ module Polygon2d.Monotone
         , triangulation
         )
 
-import Array exposing (Array)
+import Array.Hamt as Array exposing (Array)
 import Dict exposing (Dict)
 import Geometry.Types as Types exposing (Polygon2d(..))
 import LineSegment2d exposing (LineSegment2d)
@@ -187,14 +187,11 @@ init (Polygon2d { outerLoop, innerLoops }) =
                                     { startVertexIndex =
                                         index + offset
                                     , endVertexIndex =
-                                        ((index + 1) |> remainderBy length)
-                                            + offset
+                                        ((index + 1) % length) + offset
                                     , nextEdgeIndex =
-                                        ((index + 1) |> remainderBy length)
-                                            + offset
+                                        ((index + 1) % length) + offset
                                     , previousEdgeIndex =
-                                        ((index - 1) |> remainderBy length)
-                                            + offset
+                                        ((index - 1) % length) + offset
                                     }
                                 )
                     in
@@ -615,7 +612,7 @@ monotonePolygons polygon =
 
         priorityQueue =
             vertices
-                |> List.indexedMap Tuple.pair
+                |> List.indexedMap (\i v -> ( i, v ))
                 |> List.sortWith
                     (\( _, firstVertex ) ( _, secondVertex ) ->
                         comparePoints secondVertex.position firstVertex.position
