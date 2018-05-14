@@ -263,10 +263,9 @@ sweptAround centerPoint_ sweptAngle_ startPoint_ =
 through the second given point and ends at the third given point:
 
     Arc2d.throughPoints
-        ( Point2d.origin
-        , Point2d.fromCoordinates ( 1, 0 )
-        , Point2d.fromCoordinates ( 0, 1 )
-        )
+        Point2d.origin
+        (Point2d.fromCoordinates ( 1, 0 ))
+        (Point2d.fromCoordinates ( 0, 1 ))
     --> Just
     -->     (Point2d.origin
     -->         |> Arc2d.sweptAround
@@ -275,10 +274,9 @@ through the second given point and ends at the third given point:
     -->     )
 
     Arc2d.throughPoints
-        ( Point2d.fromCoordinates ( 1, 0 )
-        , Point2d.origin
-        , Point2d.fromCoordinates ( 0, 1 )
-        )
+        (Point2d.fromCoordinates ( 1, 0 ))
+        Point2d.origin
+        (Point2d.fromCoordinates ( 0, 1 ))
     --> Just
     -->     (Point2d.fromCoordinates ( 1, 0 )
     -->         |> Arc2d.sweptAround
@@ -289,29 +287,24 @@ through the second given point and ends at the third given point:
 If the three points are collinear, returns `Nothing`:
 
     Arc2d.throughPoints
-        ( Point2d.origin
-        , Point2d.fromCoordinates ( 1, 0 )
-        , Point2d.fromCoordinates ( 2, 0 )
-        )
+        Point2d.origin
+        (Point2d.fromCoordinates ( 1, 0 ))
+        (Point2d.fromCoordinates ( 2, 0 ))
     --> Nothing
 
     Arc2d.throughPoints
-        ( Point2d.origin
-        , Point2d.origin
-        , Point2d.fromCoordinates ( 1, 0 )
-        )
+        Point2d.origin
+        Point2d.origin
+        (Point2d.fromCoordinates ( 1, 0 ))
     --> Nothing
 
 -}
-throughPoints : ( Point2d, Point2d, Point2d ) -> Maybe Arc2d
-throughPoints points =
-    Point2d.circumcenter points
+throughPoints : Point2d -> Point2d -> Point2d -> Maybe Arc2d
+throughPoints firstPoint secondPoint thirdPoint =
+    Point2d.circumcenter firstPoint secondPoint thirdPoint
         |> Maybe.andThen
             (\centerPoint_ ->
                 let
-                    ( firstPoint, secondPoint, thirdPoint ) =
-                        points
-
                     firstVector =
                         Vector2d.from centerPoint_ firstPoint
 

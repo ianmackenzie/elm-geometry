@@ -292,13 +292,14 @@ plane towards positive Z.
 
     Direction3d.components
         (Direction3d.fromAzimuthAndElevation
-            ( degrees 45, degrees 45 )
+            (degrees 45)
+            (degrees 45)
         )
     --> ( 0.5, 0.5, 0.7071 )
 
 -}
-fromAzimuthAndElevation : ( Float, Float ) -> Direction3d
-fromAzimuthAndElevation ( azimuth_, elevation_ ) =
+fromAzimuthAndElevation : Float -> Float -> Direction3d
+fromAzimuthAndElevation azimuth_ elevation_ =
     let
         cosElevation =
             cos elevation_
@@ -319,13 +320,15 @@ If the two points are coincident, returns `Nothing`.
     Direction3d.from Point3d.origin point
     --> Just
     -->     (Direction3d.fromAzimuthAndElevation
-    -->         ( 0, degrees 45 )
+    -->         (degrees 0)
+    -->         (degrees 45)
     -->     )
 
     Direction3d.from point Point3d.origin
     --> Just
     -->     (Direction3d.fromAzimuthAndElevation
-    -->         ( degrees 180, degrees -45 )
+    -->         (degrees 180)
+    -->         (degrees -45)
     -->     )
 
     Direction3d.from point point
@@ -349,11 +352,13 @@ perpendicular to the given direction.
 
     direction =
         Direction3d.fromAzimuthAndElevation
-            ( 0, degrees 60 )
+            (degrees 0)
+            (degrees 60)
 
     Direction3d.perpendicularTo direction
     --> Direction3d.fromAzimuthAndElevation
-    -->     ( 0, degrees -30 )
+    -->     (degrees 0)
+    -->     (degrees -30)
 
 -}
 perpendicularTo : Direction3d -> Direction3d
@@ -419,29 +424,29 @@ If any of the given vectors are zero, any two of them are parallel, or the three
 are coplanar, `Nothing` will be returned.
 
     Direction3d.orthonormalize
-        ( Vector3d.fromComponents ( 3, 3, 0 )
-        , Vector3d.fromComponents ( 0, 2, 0 )
-        , Vector3d.fromComponents ( 1, 2, 3 )
-        )
+        (Vector3d.fromComponents ( 3, 3, 0 ))
+        (Vector3d.fromComponents ( 0, 2, 0 ))
+        (Vector3d.fromComponents ( 1, 2, 3 ))
     --> Just
     -->     ( Direction3d.fromAzimuthAndElevation
-    -->         ( degrees 45, 0 )
+    -->         (degrees 45)
+    -->         (degrees 0)
     -->     , Direction3d.fromAzimuthAndElevation
-    -->         ( degrees 135, 0 )
+    -->         (degrees 135)
+    -->         (degrees 0)
     -->     , Direction3d.positiveZ
     -->     )
 
     -- Three vectors in the XY plane:
     Direction3d.orthonormalize
-        ( Vector3d.fromComponents ( 2, 0, 0 )
-        , Vector3d.fromComponents ( 3, 1, 0 )
-        , Vector3d.fromComponents ( 4, 2, 0 )
-        )
+        (Vector3d.fromComponents ( 2, 0, 0 ))
+        (Vector3d.fromComponents ( 3, 1, 0 ))
+        (Vector3d.fromComponents ( 4, 2, 0 ))
     --> Nothing
 
 -}
-orthonormalize : ( Vector3d, Vector3d, Vector3d ) -> Maybe ( Direction3d, Direction3d, Direction3d )
-orthonormalize ( xVector, xyVector, xyzVector ) =
+orthonormalize : Vector3d -> Vector3d -> Vector3d -> Maybe ( Direction3d, Direction3d, Direction3d )
+orthonormalize xVector xyVector xyzVector =
     Vector3d.direction xVector
         |> Maybe.andThen
             (\xDirection ->
@@ -487,27 +492,24 @@ orthonormalize ( xVector, xyVector, xyzVector ) =
 three given directions;
 
     Direction3d.orthogonalize
-        ( xDirection
-        , yDirection
-        , zDirection
-        )
+        xDirection
+        yDirection
+        zDirection
 
 is equivalent to
 
     Direction3d.orthonormalize
-        ( Direction3d.toVector xDirection
-        , Direction3d.toVector yDirection
-        , Direction3d.toVector zDirection
-        )
+        (Direction3d.toVector xDirection)
+        (Direction3d.toVector yDirection)
+        (Direction3d.toVector zDirection)
 
 -}
-orthogonalize : ( Direction3d, Direction3d, Direction3d ) -> Maybe ( Direction3d, Direction3d, Direction3d )
-orthogonalize ( xDirection, yDirection, zDirection ) =
+orthogonalize : Direction3d -> Direction3d -> Direction3d -> Maybe ( Direction3d, Direction3d, Direction3d )
+orthogonalize xDirection yDirection zDirection =
     orthonormalize
-        ( toVector xDirection
-        , toVector yDirection
-        , toVector zDirection
-        )
+        (toVector xDirection)
+        (toVector yDirection)
+        (toVector zDirection)
 
 
 {-| Get the components of a direction as a tuple (the components it would have
@@ -570,7 +572,8 @@ of the two directions converted to unit vectors.
 
     direction =
         Direction3d.fromAzimuthAndElevation
-            ( 0, degrees 60 )
+            (degrees 0)
+            (degrees 60)
 
     Direction3d.componentIn Direction3d.x direction
     --> 0.5
@@ -769,25 +772,29 @@ rotateAround axis angle direction =
 
     direction =
         Direction3d.fromAzimuthAndElevation
-            ( degrees 30, degrees 60 )
+            (degrees 30)
+            (degrees 60)
 
     Direction3d.mirrorAcross Plane3d.xy direction
     --> Direction3d.fromAzimuthAndElevation
-    -->     ( degrees 30, degrees -60 )
+    -->     (degrees 30)
+    -->     (degrees -60)
 
 Note that only the normal direction of the plane affects the result, not the
 position of its origin point, since directions are position-independent:
 
     Direction3d.mirrorAcross Plane3d.yz direction
     --> Direction3d.fromAzimuthAndElevation
-    -->     ( degrees 150, degrees 60 )
+    -->     (degrees 150)
+    -->     (degrees 60)
 
     offsetPlane =
         Plane3d.offsetBy 10 Plane3d.yz
 
     Direction3d.mirrorAcross offsetPlane direction
     --> Direction3d.fromAzimuthAndElevation
-    -->     ( degrees 150, degrees 60 )
+    -->     (degrees 150)
+    -->     (degrees 60)
 
 -}
 mirrorAcross : Plane3d -> Direction3d -> Direction3d
@@ -801,7 +808,8 @@ direction is exactly perpendicular to the given plane, returns `Nothing`.
 
     direction =
         Direction3d.fromAzimuthAndElevation
-            ( degrees -60, 0 )
+            (degrees -60)
+            (degrees 0)
 
     Direction3d.projectOnto Plane3d.xy direction
     --> Just direction
@@ -826,11 +834,13 @@ local coordinates relative to a given reference frame.
 
     Direction3d.relativeTo rotatedFrame Direction3d.x
     --> Direction3d.fromAzimuthAndElevation
-    -->     ( degrees -30, 0 )
+    -->     (degrees -30)
+    -->     (degrees 0)
 
     Direction3d.relativeTo rotatedFrame Direction3d.y
     --> Direction3d.fromAzimuthAndElevation
-    -->     ( degrees 60, 0 )
+    -->     (degrees 60)
+    -->     (degrees 0)
 
     Direction3d.relativeTo rotatedFrame Direction3d.z
     --> Direction3d.z
@@ -846,11 +856,13 @@ frame, and return that direction expressed in global coordinates.
 
     Direction3d.placeIn rotatedFrame Direction3d.x
     --> Direction3d.fromAzimuthAndElevation
-    -->     ( degrees 30, 0 )
+    -->     (degrees 30)
+    -->     (degrees 0)
 
     Direction3d.placeIn rotatedFrame Direction3d.y
     --> Direction3d.fromAzimuthAndElevation
-    -->     ( degrees 120, 0 )
+    -->     (degrees 120)
+    -->     (degrees 0)
 
     Direction3d.placeIn rotatedFrame Direction3d.z
     --> Direction3d.z
@@ -871,7 +883,8 @@ plane; if it is perpendicular, `Nothing` is returned.
 
     direction =
         Direction3d.fromAzimuthAndElevation
-            ( degrees -60, 0 )
+            (degrees -60)
+            (degrees 0)
 
     Direction3d.projectInto SketchPlane3d.xy direction
     --> Just (Direction2d.fromAngle (degrees -60))

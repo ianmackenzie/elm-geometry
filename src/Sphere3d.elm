@@ -156,7 +156,7 @@ Returns `Nothing` if four given points are coplanar.
 -}
 throughPoints : Point3d -> Point3d -> Point3d -> Point3d -> Maybe Sphere3d
 throughPoints p1 p2 p3 p4 =
-    Circle3d.throughPoints ( p1, p2, p3 )
+    Circle3d.throughPoints p1 p2 p3
         |> Maybe.andThen
             {-
                First three points define a circle.

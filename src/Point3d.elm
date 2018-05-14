@@ -312,22 +312,20 @@ circle that passes through all three points. If the three given points are
 collinear, returns `Nothing`.
 
     Point3d.circumcenter
-        ( Point3d.fromCoordinates ( 1, 0, 0 )
-        , Point3d.fromCoordinates ( 0, 1, 0 )
-        , Point3d.fromCoordinates ( 0, 0, 1 )
-        )
+        (Point3d.fromCoordinates ( 1, 0, 0 ))
+        (Point3d.fromCoordinates ( 0, 1, 0 ))
+        (Point3d.fromCoordinates ( 0, 0, 1 ))
     --> Just (Point3d.fromCoordinates (0.33, 0.33, 0.33))
 
     Point3d.circumcenter
-        ( Point3d.origin
-        , Point3d.fromCoordinates ( 1, 0, 0 )
-        , Point3d.fromCoordinates ( 2, 0, 0 )
-        )
+        Point3d.origin
+        (Point3d.fromCoordinates ( 1, 0, 0 ))
+        (Point3d.fromCoordinates ( 2, 0, 0 ))
     --> Nothing
 
 -}
-circumcenter : ( Point3d, Point3d, Point3d ) -> Maybe Point3d
-circumcenter ( p1, p2, p3 ) =
+circumcenter : Point3d -> Point3d -> Point3d -> Maybe Point3d
+circumcenter p1 p2 p3 =
     let
         a2 =
             squaredDistanceFrom p1 p2

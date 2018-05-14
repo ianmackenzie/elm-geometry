@@ -204,7 +204,7 @@ points are collinear, returns `Nothing`.
     p3 =
         Point3d.fromCoordinates ( 0, 1, 0 )
 
-    Arc3d.throughPoints ( p1, p2, p3 )
+    Arc3d.throughPoints p1 p2 p3
     --> Just
     -->     (Arc3d.on SketchPlane3d.yz
     -->         Point2d.fromCoordinates ( 0, 1 )
@@ -216,20 +216,15 @@ points are collinear, returns `Nothing`.
     -->     )
 
 -}
-throughPoints : ( Point3d, Point3d, Point3d ) -> Maybe Arc3d
-throughPoints points =
-    SketchPlane3d.throughPoints points
+throughPoints : Point3d -> Point3d -> Point3d -> Maybe Arc3d
+throughPoints firstPoint secondPoint thirdPoint =
+    SketchPlane3d.throughPoints firstPoint secondPoint thirdPoint
         |> Maybe.andThen
             (\sketchPlane ->
-                let
-                    ( firstPoint, secondPoint, thirdPoint ) =
-                        points
-                in
                 Arc2d.throughPoints
-                    ( Point3d.projectInto sketchPlane firstPoint
-                    , Point3d.projectInto sketchPlane secondPoint
-                    , Point3d.projectInto sketchPlane thirdPoint
-                    )
+                    (Point3d.projectInto sketchPlane firstPoint)
+                    (Point3d.projectInto sketchPlane secondPoint)
+                    (Point3d.projectInto sketchPlane thirdPoint)
                     |> Maybe.map (on sketchPlane)
             )
 
@@ -759,7 +754,8 @@ mirrorAcross plane =
         Axis3d.through
             (Point3d.fromCoordinates ( 1, 2, 3 ))
             (Direction3d.fromAzimuthAndElevation
-                ( 0, degrees 45 )
+                (degrees 0)
+                (degrees 45)
             )
 
     arc : Arc3d

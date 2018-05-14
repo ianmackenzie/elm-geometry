@@ -241,9 +241,10 @@ three vertices are collinear), returns `Nothing`.
 
     Triangle3d.normalDirection exampleTriangle
     --> Just
-    -->    (Direction3d.fromAzimuthAndElevation
-    -->        ( degrees -90, degrees 18.43 )
-    -->    )
+    -->     (Direction3d.fromAzimuthAndElevation
+    -->         (degrees -90)
+    -->         (degrees 18.43)
+    -->     )
 
 -}
 normalDirection : Triangle3d -> Maybe Direction3d
@@ -508,4 +509,8 @@ If the triangle is degenerate (its three vertices are collinear), returns
 -}
 circumcircle : Triangle3d -> Maybe Circle3d
 circumcircle triangle =
-    Circle3d.throughPoints (vertices triangle)
+    let
+        ( p1, p2, p3 ) =
+            vertices triangle
+    in
+    Circle3d.throughPoints p1 p2 p3

@@ -290,9 +290,10 @@ line segment has zero length (the start and end points are the same), returns
 
     LineSegment3d.direction exampleLineSegment
     --> Just
-    -->    (Direction3d.fromAzimuthAndElevation
-    -->        ( degrees 45, degrees 35.26 )
-    -->    )
+    -->     (Direction3d.fromAzimuthAndElevation
+    -->         (degrees 45)
+    -->         (degrees 35.26)
+    -->     )
 
 -}
 direction : LineSegment3d -> Maybe Direction3d
@@ -306,7 +307,8 @@ segment has zero length, returns `Nothing`.
     LineSegment3d.perpendicularDirection exampleLineSegment
     --> Just
     -->     (Direction3d.fromAzimuthAndElevation
-    -->         ( degrees -90, degrees 45 )
+    -->         (degrees -90)
+    -->         (degrees 45)
     -->     )
 
 -}

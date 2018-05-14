@@ -114,49 +114,42 @@ unit =
 the three given points are collinear, returns `Nothing`.
 
     Circle2d.throughPoints
-        ( Point2d.origin
-        , Point2d.fromCoordinates ( 1, 0 )
-        , Point2d.fromCoordinates ( 0, 1 )
-        )
+        Point2d.origin
+        (Point2d.fromCoordinates ( 1, 0 ))
+        (Point2d.fromCoordinates ( 0, 1 ))
     --> Just
     -->     (Circle2d.withRadius 0.7071
     -->         (Point2d.fromCoordinates ( 0.5, 0.5 ))
     -->     )
 
     Circle2d.throughPoints
-        ( Point2d.origin
-        , Point2d.fromCoordinates ( 2, 1 )
-        , Point2d.fromCoordinates ( 4, 0 )
-        )
+        Point2d.origin
+        (Point2d.fromCoordinates ( 2, 1 ))
+        (Point2d.fromCoordinates ( 4, 0 ))
     --> Just
     -->     (Circle2d.withRadius 2.5
     -->         (Point2d.fromCoordinates ( 2, -1.5 ))
     -->     )
 
     Circle2d.throughPoints
-        ( Point2d.origin
-        , Point2d.fromCoordinates ( 2, 0 )
-        , Point2d.fromCoordinates ( 4, 0 )
-        )
+        Point2d.origin
+        (Point2d.fromCoordinates ( 2, 0 ))
+        (Point2d.fromCoordinates ( 4, 0 ))
     --> Nothing
 
     Circle2d.throughPoints
-        ( Point2d.origin
-        , Point2d.origin
-        , Point2d.fromCoordinates ( 1, 0 )
-        )
+        Point2d.origin
+        Point2d.origin
+        (Point2d.fromCoordinates ( 1, 0 ))
     --> Nothing
 
 -}
-throughPoints : ( Point2d, Point2d, Point2d ) -> Maybe Circle2d
-throughPoints points =
-    Point2d.circumcenter points
+throughPoints : Point2d -> Point2d -> Point2d -> Maybe Circle2d
+throughPoints p1 p2 p3 =
+    Point2d.circumcenter p1 p2 p3
         |> Maybe.map
             (\p0 ->
                 let
-                    ( p1, p2, p3 ) =
-                        points
-
                     r1 =
                         Point2d.distanceFrom p0 p1
 

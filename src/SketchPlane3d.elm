@@ -231,7 +231,8 @@ directions are unimportant.
     sketchPlane =
         SketchPlane3d.withNormalDirection
             (Direction3d.fromAzimuthAndElevation
-                ( 0, degrees 60)
+                (degrees 0)
+                (degrees 60)
             )
             Point3d.origin
 
@@ -240,7 +241,8 @@ directions are unimportant.
 
     SketchPlane3d.xDirection sketchPlane
     --> Direction3d.fromAzimuthAndElevation
-    -->     ( 0, degrees -30 )
+    -->     (degrees 0)
+    -->     (degrees -30)
 
     SketchPlane3d.yDirection sketchPlane
     --> Direction3d.y
@@ -276,11 +278,13 @@ plane, in 2D coordinates within the existing sketch plane. Whew!
 
     SketchPlane3d.xDirection sketchPlane
     --> Direction3d.fromAzimuthAndElevation
-    -->     ( degrees 90, degrees -30 )
+    -->     (degrees 90)
+    -->     (degrees -30)
 
     SketchPlane3d.yDirection sketchPlane
     --> Direction3d.fromAzimuthAndElevation
-    -->     ( degrees 90, degrees 60 )
+    -->     (degrees 90)
+    -->     (degrees 60)
 
 -}
 on : SketchPlane3d -> Frame2d -> SketchPlane3d
@@ -361,10 +365,9 @@ points. Returns a sketch plane where:
 If the three given points are collinear, returns `Nothing`.
 
     SketchPlane3d.throughPoints
-        ( Point3d.fromCoordinates ( 2, 0, 0 )
-        , Point3d.fromCoordinates ( 3, 0, 0 )
-        , Point3d.fromCoordinates ( 4, 1, 1 )
-        )
+        (Point3d.fromCoordinates ( 2, 0, 0 ))
+        (Point3d.fromCoordinates ( 3, 0, 0 ))
+        (Point3d.fromCoordinates ( 4, 1, 1 ))
     --> Just sketchPlane
 
     SketchPlane3d.originPoint sketchPlane
@@ -375,18 +378,18 @@ If the three given points are collinear, returns `Nothing`.
 
     SketchPlane3d.yDirection sketchPlane
     --> Direction3d.fromAzimuthAndElevation
-    -->     ( degrees 90, degrees 45 )
+    -->     (degrees 90)
+    -->     (degrees 45)
 
     SketchPlane3d.throughPoints
-        ( Point3d.fromCoordinates ( 2, 0, 0 )
-        , Point3d.fromCoordinates ( 3, 0, 0 )
-        , Point3d.fromCoordinates ( 4, 0, 0 )
-        )
+        (Point3d.fromCoordinates ( 2, 0, 0 ))
+        (Point3d.fromCoordinates ( 3, 0, 0 ))
+        (Point3d.fromCoordinates ( 4, 0, 0 ))
     --> Nothing
 
 -}
-throughPoints : ( Point3d, Point3d, Point3d ) -> Maybe SketchPlane3d
-throughPoints ( firstPoint, secondPoint, thirdPoint ) =
+throughPoints : Point3d -> Point3d -> Point3d -> Maybe SketchPlane3d
+throughPoints firstPoint secondPoint thirdPoint =
     Direction3d.from firstPoint secondPoint
         |> Maybe.andThen
             (\xDirection_ ->
@@ -688,7 +691,8 @@ transformations. For example,
 
     SketchPlane3d.xDirection sketchPlane
     --> Direction3d.fromAzimuthAndElevation
-    -->     ( 0, degrees 45 )
+    -->     (degrees 0)
+    -->     (degrees 45)
 
     SketchPlane3d.yDirection sketchPlane
     --> Direction3d.y
@@ -776,7 +780,8 @@ resulting in
 
     SketchPlane3d.yDirection sketchPlane
     --> Direction3d.fromAzimuthAndElevation
-    -->     ( degrees 90, degrees 45 )
+    -->     (degrees 90)
+    -->     (degrees 45)
 
 -}
 translateAlongOwn : (SketchPlane3d -> Axis3d) -> Float -> SketchPlane3d -> SketchPlane3d

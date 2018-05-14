@@ -487,7 +487,8 @@ returns `Nothing`.
         |> Vector3d.direction
     --> Just
     -->     (Direction3d.fromAzimuthAndElevation
-    -->         ( 0, degrees 45 )
+    -->         (degrees 0)
+    -->         (degrees 45)
     -->     )
 
     Vector3d.direction Vector3d.zero
@@ -516,7 +517,8 @@ vector, returns `Nothing`.
     --> Just
     -->     ( 4.2426
     -->     , Direction3d.fromAzimuthAndElevation
-    -->         ( 0, degrees 45 )
+    -->         (degrees 0)
+    -->         (degrees 45)
     -->     )
 
     Vector3d.lengthAndDirection Vector3d.zero

@@ -88,21 +88,24 @@ direction but the specific X/Y directions are unimportant:
 
     zDirection =
         Direction3d.fromAzimuthAndElevation
-            ( 0, degrees 60 )
+            (degrees 0)
+            (degrees 60)
 
     frame =
         Frame3d.withZDirection zDirection Point3d.origin
 
     Frame3d.zDirection frame
     --> Direction3d.fromAzimuthAndElevation
-    -->     ( 0, degrees 60 )
+    -->     (degrees 0)
+    -->     (degrees 60)
 
     Frame3d.originPoint frame
     --> Point3d.origin
 
     Frame3d.xDirection frame
     --> Direction3d.fromAzimuthAndElevation
-    -->     ( 0, degrees -30 )
+    -->     (degrees 0)
+    -->     (degrees -30)
 
     Frame3d.yDirection frame
     --> Direction3d.y
@@ -779,11 +782,13 @@ by 2 units", resulting in
 
     Frame3d.xDirection frame
     --> Direction3d.fromAzimuthAndElevation
-    -->     ( degrees 45, 0 )
+    -->     (degrees 45)
+    -->     (degrees 0)
 
     Frame3d.yDirection frame
     --> Direction3d.fromAzimuthAndElevation
-    -->     ( degrees 135, 0 )
+    -->     (degrees 135)
+    -->     (degrees 0)
 
     Frame3d.zDirection frame
     --> Direction3d.z

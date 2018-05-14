@@ -313,8 +313,8 @@ collinear, returns `Nothing`.
     --> Nothing
 
 -}
-circumcenter : ( Point2d, Point2d, Point2d ) -> Maybe Point2d
-circumcenter ( p1, p2, p3 ) =
+circumcenter : Point2d -> Point2d -> Point2d -> Maybe Point2d
+circumcenter p1 p2 p3 =
     let
         a2 =
             squaredDistanceFrom p1 p2

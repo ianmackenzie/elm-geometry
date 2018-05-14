@@ -156,28 +156,27 @@ counterclockwise order around it according to the right-hand rule. If the three
 given points are collinear, returns `Nothing`.
 
     Plane3d.throughPoints
-        ( Point3d.fromCoordinates ( 2, 0, 0 )
-        , Point3d.fromCoordinates ( 3, 0, 0 )
-        , Point3d.fromCoordinates ( 4, 1, 1 )
-        )
+        (Point3d.fromCoordinates ( 2, 0, 0 ))
+        (Point3d.fromCoordinates ( 3, 0, 0 ))
+        (Point3d.fromCoordinates ( 4, 1, 1 ))
     --> Just
     -->     (Plane3d.through
     -->         (Point3d.fromCoordinates ( 2, 0, 0 ))
     -->         (Direction3d.fromAzimuthAndElevation
-    -->             ( degrees -90, degrees 45 )
+    -->             (degrees -90)
+    -->             (degrees 45)
     -->         )
     -->     )
 
     Plane3d.throughPoints
-        ( Point3d.fromCoordinates ( 2, 0, 0 )
-        , Point3d.fromCoordinates ( 3, 0, 0 )
-        , Point3d.fromCoordinates ( 4, 0, 0 )
-        )
+        (Point3d.fromCoordinates ( 2, 0, 0 ))
+        (Point3d.fromCoordinates ( 3, 0, 0 ))
+        (Point3d.fromCoordinates ( 4, 0, 0 ))
     --> Nothing
 
 -}
-throughPoints : ( Point3d, Point3d, Point3d ) -> Maybe Plane3d
-throughPoints ( firstPoint, secondPoint, thirdPoint ) =
+throughPoints : Point3d -> Point3d -> Point3d -> Maybe Plane3d
+throughPoints firstPoint secondPoint thirdPoint =
     let
         firstVector =
             Vector3d.from firstPoint secondPoint

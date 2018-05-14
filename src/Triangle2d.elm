@@ -472,4 +472,8 @@ If the triangle is degenerate (its three vertices are collinear), returns
 -}
 circumcircle : Triangle2d -> Maybe Circle2d
 circumcircle triangle =
-    Circle2d.throughPoints (vertices triangle)
+    let
+        ( p1, p2, p3 ) =
+            vertices triangle
+    in
+    Circle2d.throughPoints p1 p2 p3

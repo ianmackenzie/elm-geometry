@@ -144,14 +144,14 @@ are in counterclockwise order around it, according to the right-hand rule. If
 the three given points are collinear, returns `Nothing`.
 
     Circle3d.throughPoints
-        ( Point3d.fromCoordinates ( 1, 0, 0 )
-        , Point3d.fromCoordinates ( 0, 1, 0 )
-        , Point3d.fromCoordinates ( 0, 0, 1 )
-        )
+        (Point3d.fromCoordinates ( 1, 0, 0 ))
+        (Point3d.fromCoordinates ( 0, 1, 0 ))
+        (Point3d.fromCoordinates ( 0, 0, 1 ))
     --> Just
     -->     (Circle3d.withRadius 0.8165
     -->         (Direction3d.fromAzimuthAndElevation
-    -->             ( degrees 45, degrees 35.26 )
+    -->             (degrees 45)
+    -->             (degrees 35.26)
     -->         )
     -->         (Point3d.fromCoordinates
     -->             ( 0.333, 0.333, 0.333 )
@@ -159,14 +159,11 @@ the three given points are collinear, returns `Nothing`.
     -->     )
 
 -}
-throughPoints : ( Point3d, Point3d, Point3d ) -> Maybe Circle3d
-throughPoints points =
+throughPoints : Point3d -> Point3d -> Point3d -> Maybe Circle3d
+throughPoints p1 p2 p3 =
     Maybe.map2
         (\centerPoint_ plane_ ->
             let
-                ( p1, p2, p3 ) =
-                    points
-
                 r1 =
                     Point3d.distanceFrom centerPoint_ p1
 
@@ -181,8 +178,8 @@ throughPoints points =
             in
             withRadius r (Plane3d.normalDirection plane_) centerPoint_
         )
-        (Point3d.circumcenter points)
-        (Plane3d.throughPoints points)
+        (Point3d.circumcenter p1 p2 p3)
+        (Plane3d.throughPoints p1 p2 p3)
 
 
 {-| Get the center point of a circle.
@@ -379,7 +376,8 @@ mirrorAcross plane_ circle =
     inclinedCircle =
         Circle3d.withRadius 1
             (Direction3d.fromAzimuthAndElevation
-                ( 0, degrees 45 )
+                (degrees 0)
+                (degrees 45)
             )
             (Point3d.fromCoordinates ( 1, 2, 3 ))
 

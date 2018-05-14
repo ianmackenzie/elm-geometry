@@ -267,23 +267,21 @@ If either of the given vectors are zero, or if the two vectors are parallel,
 `Nothing` will be returned.
 
     Direction2d.orthonormalize
-        ( Vector2d.fromComponents ( 3, 3 )
-        , Vector2d.fromComponents ( 0, -2 )
-        )
+        (Vector2d.fromComponents ( 3, 3 ))
+        (Vector2d.fromComponents ( 0, -2 ))
     --> Just
     -->     ( Direction2d.fromAngle (degrees 45)
     -->     , Direction2d.fromAngle (degrees -45)
     -->     )
 
     Direction2d.orthonormalize
-        ( Vector2d.fromComponents ( 3, 3 )
-        , Vector2d.fromComponents ( -2, -2 )
-        )
+        (Vector2d.fromComponents ( 3, 3 ))
+        (Vector2d.fromComponents ( -2, -2 ))
     --> Nothing
 
 -}
-orthonormalize : ( Vector2d, Vector2d ) -> Maybe ( Direction2d, Direction2d )
-orthonormalize ( xVector, xyVector ) =
+orthonormalize : Vector2d -> Vector2d -> Maybe ( Direction2d, Direction2d )
+orthonormalize xVector xyVector =
     Vector2d.direction xVector
         |> Maybe.andThen
             (\xDirection ->
@@ -306,22 +304,18 @@ orthonormalize ( xVector, xyVector ) =
 {-| Attempt to form a pair of perpendicular directions from the two given
 directions;
 
-    Direction2d.orthogonalize ( xDirection, yDirection )
+    Direction2d.orthogonalize xDirection yDirection
 
 is equivalent to
 
     Direction2d.orthonormalize
-        ( Direction2d.toVector xDirection
-        , Direction2d.toVector yDirection
-        )
+        (Direction2d.toVector xDirection)
+        (Direction2d.toVector yDirection)
 
 -}
-orthogonalize : ( Direction2d, Direction2d ) -> Maybe ( Direction2d, Direction2d )
-orthogonalize ( xDirection, yDirection ) =
-    orthonormalize
-        ( toVector xDirection
-        , toVector yDirection
-        )
+orthogonalize : Direction2d -> Direction2d -> Maybe ( Direction2d, Direction2d )
+orthogonalize xDirection yDirection =
+    orthonormalize (toVector xDirection) (toVector yDirection)
 
 
 {-| Construct a direction from an angle in radians, given counterclockwise from
