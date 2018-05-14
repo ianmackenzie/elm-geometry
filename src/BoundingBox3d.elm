@@ -451,7 +451,7 @@ contains point boundingBox =
     in
     (minX boundingBox <= x && x <= maxX boundingBox)
         && (minY boundingBox <= y && y <= maxY boundingBox)
-        && (minZ boundingBox <= z && y <= maxZ boundingBox)
+        && (minZ boundingBox <= z && z <= maxZ boundingBox)
 
 
 {-| Test if two boxes touch or overlap at all (have any points in common);
