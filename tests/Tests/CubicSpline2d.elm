@@ -32,7 +32,7 @@ jsonRoundTrips =
 fromEndpointsReproducesSpline : Test
 fromEndpointsReproducesSpline =
     Test.fuzz Fuzz.cubicSpline2d
-        "CubicSpline2d.from reproduces original spline"
+        "CubicSpline2d.fromEndpoints reproduces original spline"
         (\spline ->
             let
                 startPoint =
@@ -47,9 +47,12 @@ fromEndpointsReproducesSpline =
                 endDerivative =
                     CubicSpline2d.endDerivative spline
             in
-            CubicSpline2d.from
-                ( startPoint, startDerivative )
-                ( endPoint, endDerivative )
+            CubicSpline2d.fromEndpoints
+                { startPoint = startPoint
+                , startDerivative = startDerivative
+                , endPoint = endPoint
+                , endDerivative = endDerivative
+                }
                 |> Expect.cubicSpline2d spline
         )
 

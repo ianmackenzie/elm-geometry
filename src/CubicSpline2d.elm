@@ -13,7 +13,7 @@ module CubicSpline2d
         , endControlPoint
         , endDerivative
         , endPoint
-        , from
+        , fromEndpoints
         , fromQuadraticSpline
         , maxSecondDerivativeMagnitude
         , mirrorAcross
@@ -55,7 +55,7 @@ in 2D defined by four control points. This module contains functionality for
 
 # Constructors
 
-@docs with, from, fromQuadraticSpline
+@docs with, fromEndpoints, fromQuadraticSpline
 
 
 # Properties
@@ -139,24 +139,24 @@ cases the length of each derivative vector should be roughly equal to the length
 of the resulting spline.
 
 -}
-from : ( Point2d, Vector2d ) -> ( Point2d, Vector2d ) -> CubicSpline2d
-from ( startPoint_, startDerivative_ ) ( endPoint_, endDerivative_ ) =
+fromEndpoints : { startPoint : Point2d, startDerivative : Vector2d, endPoint : Point2d, endDerivative : Vector2d } -> CubicSpline2d
+fromEndpoints arguments =
     let
         startControlPoint_ =
-            startPoint_
+            arguments.startPoint
                 |> Point2d.translateBy
-                    (Vector2d.scaleBy (1 / 3) startDerivative_)
+                    (Vector2d.scaleBy (1 / 3) arguments.startDerivative)
 
         endControlPoint_ =
-            endPoint_
+            arguments.endPoint
                 |> Point2d.translateBy
-                    (Vector2d.scaleBy (-1 / 3) endDerivative_)
+                    (Vector2d.scaleBy (-1 / 3) arguments.endDerivative)
     in
     with
-        { startPoint = startPoint_
+        { startPoint = arguments.startPoint
         , startControlPoint = startControlPoint_
         , endControlPoint = endControlPoint_
-        , endPoint = endPoint_
+        , endPoint = arguments.endPoint
         }
 
 
