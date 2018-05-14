@@ -5,10 +5,8 @@ module Tests.Circle3d
         , throughPoints
         )
 
-import Axis3d
 import BoundingBox3d
 import Circle3d
-import Direction3d
 import Expect
 import Geometry.Decode as Decode
 import Geometry.Encode as Encode

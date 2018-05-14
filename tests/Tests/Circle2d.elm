@@ -9,7 +9,6 @@ import Circle2d
 import Expect
 import Geometry.Decode as Decode
 import Geometry.Encode as Encode
-import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Test exposing (Test)
 import Tests.Generic as Generic
