@@ -63,7 +63,7 @@ in 3D defined by four control points. This module contains functionality for
 
 # Properties
 
-@docs controlPoints, startPoint, endPoint, startDerivative, endDerivative, boundingBox
+@docs startPoint, endPoint, startControlPoint, endControlPoint, startDerivative, endDerivative, boundingBox
 
 
 # Evaluation
