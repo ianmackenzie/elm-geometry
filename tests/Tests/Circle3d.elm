@@ -5,10 +5,8 @@ module Tests.Circle3d
         , throughPoints
         )
 
-import Axis3d
 import BoundingBox3d
 import Circle3d
-import Direction3d
 import Expect
 import Geometry.Decode as Decode
 import Geometry.Encode as Encode
@@ -47,7 +45,7 @@ throughPoints =
                         triangleArea > 1.0e-6
 
                     circle =
-                        Circle3d.throughPoints ( p1, p2, p3 )
+                        Circle3d.throughPoints p1 p2 p3
 
                     liesOnCircle point circle =
                         Point3d.distanceFrom point (Circle3d.centerPoint circle)

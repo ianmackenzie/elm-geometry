@@ -24,7 +24,11 @@ degenerateSpline =
     Fuzz.point2d
         |> Fuzz.map
             (\point ->
-                QuadraticSpline2d.fromControlPoints ( point, point, point )
+                QuadraticSpline2d.with
+                    { startPoint = point
+                    , controlPoint = point
+                    , endPoint = point
+                    }
             )
 
 
@@ -57,7 +61,11 @@ curvedSpline =
                 p2 =
                     Point2d.fromCoordinates ( x2, 0 )
             in
-            QuadraticSpline2d.fromControlPoints ( p0, p1, p2 )
+            QuadraticSpline2d.with
+                { startPoint = p0
+                , controlPoint = p1
+                , endPoint = p2
+                }
                 |> QuadraticSpline2d.rotateAround Point2d.origin angle
         )
         (Fuzz.floatRange 0 (2 * pi))
@@ -70,8 +78,14 @@ curvedSpline =
 analyticalLength : QuadraticSpline2d -> Float
 analyticalLength spline =
     let
-        ( p0, p1, p2 ) =
-            QuadraticSpline2d.controlPoints spline
+        p0 =
+            QuadraticSpline2d.startPoint spline
+
+        p1 =
+            QuadraticSpline2d.controlPoint spline
+
+        p2 =
+            QuadraticSpline2d.endPoint spline
 
         ( x0, y0 ) =
             Point2d.coordinates p0
@@ -123,20 +137,20 @@ analyticalLength spline =
 
 exampleSpline : QuadraticSpline2d
 exampleSpline =
-    QuadraticSpline2d.fromControlPoints
-        ( Point2d.fromCoordinates ( 1, 1 )
-        , Point2d.fromCoordinates ( 3, 4 )
-        , Point2d.fromCoordinates ( 5, 1 )
-        )
+    QuadraticSpline2d.with
+        { startPoint = Point2d.fromCoordinates ( 1, 1 )
+        , controlPoint = Point2d.fromCoordinates ( 3, 4 )
+        , endPoint = Point2d.fromCoordinates ( 5, 1 )
+        }
 
 
 line : QuadraticSpline2d
 line =
-    QuadraticSpline2d.fromControlPoints
-        ( Point2d.fromCoordinates ( 0, 1 )
-        , Point2d.fromCoordinates ( 2.5, 1 )
-        , Point2d.fromCoordinates ( 5, 1 )
-        )
+    QuadraticSpline2d.with
+        { startPoint = Point2d.fromCoordinates ( 0, 1 )
+        , controlPoint = Point2d.fromCoordinates ( 2.5, 1 )
+        , endPoint = Point2d.fromCoordinates ( 5, 1 )
+        }
 
 
 parameterization : Test

@@ -381,41 +381,43 @@ sphere3d sphere =
 -}
 quadraticSpline2d : QuadraticSpline2d -> Value
 quadraticSpline2d spline =
-    let
-        ( p1, p2, p3 ) =
-            QuadraticSpline2d.controlPoints spline
-    in
-    Encode.list [ point2d p1, point2d p2, point2d p3 ]
+    Encode.list
+        [ point2d (QuadraticSpline2d.startPoint spline)
+        , point2d (QuadraticSpline2d.controlPoint spline)
+        , point2d (QuadraticSpline2d.endPoint spline)
+        ]
 
 
 {-| Encode a `QuadraticSpline3d` as an array of three control points.
 -}
 quadraticSpline3d : QuadraticSpline3d -> Value
 quadraticSpline3d spline =
-    let
-        ( p1, p2, p3 ) =
-            QuadraticSpline3d.controlPoints spline
-    in
-    Encode.list [ point3d p1, point3d p2, point3d p3 ]
+    Encode.list
+        [ point3d (QuadraticSpline3d.startPoint spline)
+        , point3d (QuadraticSpline3d.controlPoint spline)
+        , point3d (QuadraticSpline3d.endPoint spline)
+        ]
 
 
 {-| Encode a `CubicSpline2d` as an array of four control points.
 -}
 cubicSpline2d : CubicSpline2d -> Value
 cubicSpline2d spline =
-    let
-        ( p1, p2, p3, p4 ) =
-            CubicSpline2d.controlPoints spline
-    in
-    Encode.list [ point2d p1, point2d p2, point2d p3, point2d p4 ]
+    Encode.list
+        [ point2d (CubicSpline2d.startPoint spline)
+        , point2d (CubicSpline2d.startControlPoint spline)
+        , point2d (CubicSpline2d.endControlPoint spline)
+        , point2d (CubicSpline2d.endPoint spline)
+        ]
 
 
 {-| Encode a `CubicSpline3d` as an array of four control points.
 -}
 cubicSpline3d : CubicSpline3d -> Value
 cubicSpline3d spline =
-    let
-        ( p1, p2, p3, p4 ) =
-            CubicSpline3d.controlPoints spline
-    in
-    Encode.list [ point3d p1, point3d p2, point3d p3, point3d p4 ]
+    Encode.list
+        [ point3d (CubicSpline3d.startPoint spline)
+        , point3d (CubicSpline3d.startControlPoint spline)
+        , point3d (CubicSpline3d.endControlPoint spline)
+        , point3d (CubicSpline3d.endPoint spline)
+        ]
