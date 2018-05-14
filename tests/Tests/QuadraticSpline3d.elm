@@ -31,8 +31,14 @@ jsonRoundTrips =
 analyticalLength : QuadraticSpline3d -> Float
 analyticalLength spline =
     let
-        ( p0, p1, p2 ) =
-            QuadraticSpline3d.controlPoints spline
+        p0 =
+            QuadraticSpline3d.startPoint spline
+
+        p1 =
+            QuadraticSpline3d.controlPoint spline
+
+        p2 =
+            QuadraticSpline3d.endPoint spline
 
         ( x0, y0, z0 ) =
             Point3d.coordinates p0

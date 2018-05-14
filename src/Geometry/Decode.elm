@@ -434,7 +434,13 @@ sphere3d =
 quadraticSpline2d : Decoder QuadraticSpline2d
 quadraticSpline2d =
     Decode.map3
-        (\p1 p2 p3 -> QuadraticSpline2d.fromControlPoints ( p1, p2, p3 ))
+        (\startPoint controlPoint endPoint ->
+            QuadraticSpline2d.with
+                { startPoint = startPoint
+                , controlPoint = controlPoint
+                , endPoint = endPoint
+                }
+        )
         (Decode.index 0 point2d)
         (Decode.index 1 point2d)
         (Decode.index 2 point2d)
@@ -445,7 +451,13 @@ quadraticSpline2d =
 quadraticSpline3d : Decoder QuadraticSpline3d
 quadraticSpline3d =
     Decode.map3
-        (\p1 p2 p3 -> QuadraticSpline3d.fromControlPoints ( p1, p2, p3 ))
+        (\startPoint controlPoint endPoint ->
+            QuadraticSpline3d.with
+                { startPoint = startPoint
+                , controlPoint = controlPoint
+                , endPoint = endPoint
+                }
+        )
         (Decode.index 0 point3d)
         (Decode.index 1 point3d)
         (Decode.index 2 point3d)
@@ -456,7 +468,14 @@ quadraticSpline3d =
 cubicSpline2d : Decoder CubicSpline2d
 cubicSpline2d =
     Decode.map4
-        (\p1 p2 p3 p4 -> CubicSpline2d.fromControlPoints ( p1, p2, p3, p4 ))
+        (\startPoint startControlPoint endControlPoint endPoint ->
+            CubicSpline2d.with
+                { startPoint = startPoint
+                , startControlPoint = startControlPoint
+                , endControlPoint = endControlPoint
+                , endPoint = endPoint
+                }
+        )
         (Decode.index 0 point2d)
         (Decode.index 1 point2d)
         (Decode.index 2 point2d)
@@ -468,7 +487,14 @@ cubicSpline2d =
 cubicSpline3d : Decoder CubicSpline3d
 cubicSpline3d =
     Decode.map4
-        (\p1 p2 p3 p4 -> CubicSpline3d.fromControlPoints ( p1, p2, p3, p4 ))
+        (\startPoint startControlPoint endControlPoint endPoint ->
+            CubicSpline3d.with
+                { startPoint = startPoint
+                , startControlPoint = startControlPoint
+                , endControlPoint = endControlPoint
+                , endPoint = endPoint
+                }
+        )
         (Decode.index 0 point3d)
         (Decode.index 1 point3d)
         (Decode.index 2 point3d)

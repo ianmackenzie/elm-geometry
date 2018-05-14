@@ -733,139 +733,51 @@ arc3d first =
 
 quadraticSpline2d : QuadraticSpline2d -> QuadraticSpline2d -> Expectation
 quadraticSpline2d first =
-    let
-        controlPoint1 spline =
-            let
-                ( controlPoint, _, _ ) =
-                    QuadraticSpline2d.controlPoints spline
-            in
-            controlPoint
-
-        controlPoint2 spline =
-            let
-                ( _, controlPoint, _ ) =
-                    QuadraticSpline2d.controlPoints spline
-            in
-            controlPoint
-
-        controlPoint3 spline =
-            let
-                ( _, _, controlPoint ) =
-                    QuadraticSpline2d.controlPoints spline
-            in
-            controlPoint
-    in
     Expect.all
-        [ controlPoint1 >> point2d (controlPoint1 first)
-        , controlPoint2 >> point2d (controlPoint2 first)
-        , controlPoint3 >> point2d (controlPoint3 first)
+        [ QuadraticSpline2d.startPoint
+            >> point2d (QuadraticSpline2d.startPoint first)
+        , QuadraticSpline2d.controlPoint
+            >> point2d (QuadraticSpline2d.controlPoint first)
+        , QuadraticSpline2d.endPoint
+            >> point2d (QuadraticSpline2d.endPoint first)
         ]
 
 
 quadraticSpline3d : QuadraticSpline3d -> QuadraticSpline3d -> Expectation
 quadraticSpline3d first =
-    let
-        controlPoint1 spline =
-            let
-                ( controlPoint, _, _ ) =
-                    QuadraticSpline3d.controlPoints spline
-            in
-            controlPoint
-
-        controlPoint2 spline =
-            let
-                ( _, controlPoint, _ ) =
-                    QuadraticSpline3d.controlPoints spline
-            in
-            controlPoint
-
-        controlPoint3 spline =
-            let
-                ( _, _, controlPoint ) =
-                    QuadraticSpline3d.controlPoints spline
-            in
-            controlPoint
-    in
     Expect.all
-        [ controlPoint1 >> point3d (controlPoint1 first)
-        , controlPoint2 >> point3d (controlPoint2 first)
-        , controlPoint3 >> point3d (controlPoint3 first)
+        [ QuadraticSpline3d.startPoint
+            >> point3d (QuadraticSpline3d.startPoint first)
+        , QuadraticSpline3d.controlPoint
+            >> point3d (QuadraticSpline3d.controlPoint first)
+        , QuadraticSpline3d.endPoint
+            >> point3d (QuadraticSpline3d.endPoint first)
         ]
 
 
 cubicSpline2d : CubicSpline2d -> CubicSpline2d -> Expectation
 cubicSpline2d first =
-    let
-        controlPoint1 spline =
-            let
-                ( controlPoint, _, _, _ ) =
-                    CubicSpline2d.controlPoints spline
-            in
-            controlPoint
-
-        controlPoint2 spline =
-            let
-                ( _, controlPoint, _, _ ) =
-                    CubicSpline2d.controlPoints spline
-            in
-            controlPoint
-
-        controlPoint3 spline =
-            let
-                ( _, _, controlPoint, _ ) =
-                    CubicSpline2d.controlPoints spline
-            in
-            controlPoint
-
-        controlPoint4 spline =
-            let
-                ( _, _, _, controlPoint ) =
-                    CubicSpline2d.controlPoints spline
-            in
-            controlPoint
-    in
     Expect.all
-        [ controlPoint1 >> point2d (controlPoint1 first)
-        , controlPoint2 >> point2d (controlPoint2 first)
-        , controlPoint3 >> point2d (controlPoint3 first)
-        , controlPoint4 >> point2d (controlPoint4 first)
+        [ CubicSpline2d.startPoint
+            >> point2d (CubicSpline2d.startPoint first)
+        , CubicSpline2d.startControlPoint
+            >> point2d (CubicSpline2d.startControlPoint first)
+        , CubicSpline2d.endControlPoint
+            >> point2d (CubicSpline2d.endControlPoint first)
+        , CubicSpline2d.endPoint
+            >> point2d (CubicSpline2d.endPoint first)
         ]
 
 
 cubicSpline3d : CubicSpline3d -> CubicSpline3d -> Expectation
 cubicSpline3d first =
-    let
-        controlPoint1 spline =
-            let
-                ( controlPoint, _, _, _ ) =
-                    CubicSpline3d.controlPoints spline
-            in
-            controlPoint
-
-        controlPoint2 spline =
-            let
-                ( _, controlPoint, _, _ ) =
-                    CubicSpline3d.controlPoints spline
-            in
-            controlPoint
-
-        controlPoint3 spline =
-            let
-                ( _, _, controlPoint, _ ) =
-                    CubicSpline3d.controlPoints spline
-            in
-            controlPoint
-
-        controlPoint4 spline =
-            let
-                ( _, _, _, controlPoint ) =
-                    CubicSpline3d.controlPoints spline
-            in
-            controlPoint
-    in
     Expect.all
-        [ controlPoint1 >> point3d (controlPoint1 first)
-        , controlPoint2 >> point3d (controlPoint2 first)
-        , controlPoint3 >> point3d (controlPoint3 first)
-        , controlPoint4 >> point3d (controlPoint4 first)
+        [ CubicSpline3d.startPoint
+            >> point3d (CubicSpline3d.startPoint first)
+        , CubicSpline3d.startControlPoint
+            >> point3d (CubicSpline3d.startControlPoint first)
+        , CubicSpline3d.endControlPoint
+            >> point3d (CubicSpline3d.endControlPoint first)
+        , CubicSpline3d.endPoint
+            >> point3d (CubicSpline3d.endPoint first)
         ]
