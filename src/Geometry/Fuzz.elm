@@ -303,26 +303,66 @@ arc3d =
 
 quadraticSpline2d : Fuzzer QuadraticSpline2d
 quadraticSpline2d =
-    Fuzz.tuple3 ( point2d, point2d, point2d )
-        |> Fuzz.map QuadraticSpline2d.fromControlPoints
+    Fuzz.map3
+        (\startPoint controlPoint endPoint ->
+            QuadraticSpline2d.with
+                { startPoint = startPoint
+                , controlPoint = controlPoint
+                , endPoint = endPoint
+                }
+        )
+        point2d
+        point2d
+        point2d
 
 
 quadraticSpline3d : Fuzzer QuadraticSpline3d
 quadraticSpline3d =
-    Fuzz.tuple3 ( point3d, point3d, point3d )
-        |> Fuzz.map QuadraticSpline3d.fromControlPoints
+    Fuzz.map3
+        (\startPoint controlPoint endPoint ->
+            QuadraticSpline3d.with
+                { startPoint = startPoint
+                , controlPoint = controlPoint
+                , endPoint = endPoint
+                }
+        )
+        point3d
+        point3d
+        point3d
 
 
 cubicSpline2d : Fuzzer CubicSpline2d
 cubicSpline2d =
-    Fuzz.tuple4 ( point2d, point2d, point2d, point2d )
-        |> Fuzz.map CubicSpline2d.fromControlPoints
+    Fuzz.map4
+        (\startPoint startControlPoint endControlPoint endPoint ->
+            CubicSpline2d.with
+                { startPoint = startPoint
+                , startControlPoint = startControlPoint
+                , endControlPoint = endControlPoint
+                , endPoint = endPoint
+                }
+        )
+        point2d
+        point2d
+        point2d
+        point2d
 
 
 cubicSpline3d : Fuzzer CubicSpline3d
 cubicSpline3d =
-    Fuzz.tuple4 ( point3d, point3d, point3d, point3d )
-        |> Fuzz.map CubicSpline3d.fromControlPoints
+    Fuzz.map4
+        (\startPoint startControlPoint endControlPoint endPoint ->
+            CubicSpline3d.with
+                { startPoint = startPoint
+                , startControlPoint = startControlPoint
+                , endControlPoint = endControlPoint
+                , endPoint = endPoint
+                }
+        )
+        point3d
+        point3d
+        point3d
+        point3d
 
 
 ellipse2d : Fuzzer Ellipse2d
