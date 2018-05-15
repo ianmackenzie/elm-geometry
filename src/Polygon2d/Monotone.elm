@@ -143,23 +143,48 @@ type alias Loops =
     }
 
 
-removeDuplicates : List Point2d -> List Point2d -> List Point2d
-removeDuplicates points accumulatedPoints =
+removeDuplicates : List Point2d -> List Point2d
+removeDuplicates points =
     case points of
         [] ->
-            List.reverse accumulatedPoints
+            []
 
-        firstPoint :: remainingPoints ->
+        firstPoint :: rest ->
+            let
+                -- Strip out adjacent duplicates
+                accumulatedPoints =
+                    accumulateDistinctPoints firstPoint rest []
+            in
             case accumulatedPoints of
-                [] ->
-                    removeDuplicates remainingPoints [ firstPoint ]
-
-                firstAccumulatedPoint :: _ ->
-                    if firstPoint == firstAccumulatedPoint then
-                        removeDuplicates remainingPoints accumulatedPoints
+                lastPoint :: otherPoints ->
+                    if lastPoint == firstPoint then
+                        -- Drop the last point since it's equal to the
+                        -- first
+                        firstPoint :: List.reverse otherPoints
                     else
-                        removeDuplicates remainingPoints
-                            (firstPoint :: accumulatedPoints)
+                        -- Keep all points
+                        firstPoint :: List.reverse accumulatedPoints
+
+                [] ->
+                    -- Just have the first point
+                    [ firstPoint ]
+
+
+accumulateDistinctPoints : Point2d -> List Point2d -> List Point2d -> List Point2d
+accumulateDistinctPoints previousPoint points accumulatedPoints =
+    case points of
+        [] ->
+            accumulatedPoints
+
+        point :: rest ->
+            let
+                updatedPoints =
+                    if point == previousPoint then
+                        accumulatedPoints
+                    else
+                        point :: accumulatedPoints
+            in
+            accumulateDistinctPoints point rest updatedPoints
 
 
 init : Polygon2d -> Loops
@@ -167,7 +192,7 @@ init (Polygon2d { outerLoop, innerLoops }) =
     let
         allLoops =
             (outerLoop :: innerLoops)
-                |> List.map (\loop -> removeDuplicates loop [])
+                |> List.map (\loop -> removeDuplicates loop)
 
         vertices =
             allLoops
