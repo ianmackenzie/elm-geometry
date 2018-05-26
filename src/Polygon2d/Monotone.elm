@@ -96,37 +96,58 @@ toVertices points =
         [] ->
             []
 
-        firstPoint :: rest ->
+        [ singlePoint ] ->
+            -- TODO use as combined split/merge vertex
+            []
+
+        [ firstPoint, secondPoint ] ->
+            if comparePoints firstPoint secondPoint == GT then
+                [ { position = firstPoint, kind = Split }
+                , { position = secondPoint, kind = Merge }
+                ]
+            else
+                [ { position = firstPoint, kind = Merge }
+                , { position = secondPoint, kind = Split }
+                ]
+
+        firstPoint :: secondPoint :: thirdPoint :: rest ->
             let
                 lastPoint =
-                    List.foldl always firstPoint rest
+                    List.foldl always thirdPoint rest
 
-                collect previousPoint currentPoints accumulated =
-                    case currentPoints of
+                collect previousPoint currentPoint remainingPoints accumulated =
+                    case remainingPoints of
                         [] ->
-                            []
-
-                        currentPoint :: currentRest ->
                             let
-                                newVertex =
+                                lastVertex =
                                     { position = currentPoint
                                     , kind =
-                                        kind previousPoint
+                                        kind
+                                            previousPoint
                                             currentPoint
                                             firstPoint
                                     }
                             in
-                            case currentRest of
-                                [] ->
-                                    List.reverse (newVertex :: accumulated)
+                            List.reverse (lastVertex :: accumulated)
 
-                                _ ->
-                                    collect
-                                        currentPoint
-                                        currentRest
-                                        (newVertex :: accumulated)
+                        nextPoint :: followingPoints ->
+                            let
+                                newVertex =
+                                    { position = currentPoint
+                                    , kind =
+                                        kind
+                                            previousPoint
+                                            currentPoint
+                                            nextPoint
+                                    }
+                            in
+                            collect
+                                currentPoint
+                                nextPoint
+                                followingPoints
+                                (newVertex :: accumulated)
             in
-            collect lastPoint points []
+            collect lastPoint firstPoint (secondPoint :: thirdPoint :: rest) []
 
 
 type alias Edge =
