@@ -70,10 +70,12 @@ import Plane3d exposing (Plane3d)
 import Point2d exposing (Point2d)
 import Point3d exposing (Point3d)
 import Polygon2d exposing (Polygon2d)
+import Polygon2d.Random as Random
 import Polyline2d exposing (Polyline2d)
 import Polyline3d exposing (Polyline3d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
 import QuadraticSpline3d exposing (QuadraticSpline3d)
+import Shrink
 import SketchPlane3d exposing (SketchPlane3d)
 import Sphere3d exposing (Sphere3d)
 import Triangle2d exposing (Triangle2d)
@@ -257,15 +259,16 @@ polyline3d =
 
 polygon2d : Fuzzer Polygon2d
 polygon2d =
-    Fuzz.map2
-        (\outerLoop innerLoops ->
-            Polygon2d.with
-                { outerLoop = outerLoop
-                , innerLoops = innerLoops
+    let
+        boundingBox =
+            BoundingBox2d.fromExtrema
+                { minX = -10
+                , maxX = 10
+                , minY = -10
+                , maxY = 10
                 }
-        )
-        (Fuzz.list point2d)
-        (Fuzz.list (Fuzz.list point2d))
+    in
+    Fuzz.custom (Random.polygon2d boundingBox) Shrink.noShrink
 
 
 circle2d : Fuzzer Circle2d
