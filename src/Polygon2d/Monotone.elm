@@ -208,6 +208,15 @@ accumulateDistinctPoints previousPoint points accumulatedPoints =
             accumulateDistinctPoints point rest updatedPoints
 
 
+wrapped index length =
+    if index == -1 then
+        length - 1
+    else if index == length then
+        0
+    else
+        index
+
+
 init : Polygon2d -> Loops
 init (Polygon2d { outerLoop, innerLoops }) =
     let
@@ -233,14 +242,11 @@ init (Polygon2d { outerLoop, innerLoops }) =
                                     { startVertexIndex =
                                         index + offset
                                     , endVertexIndex =
-                                        ((index + 1) |> remainderBy length)
-                                            + offset
+                                        wrapped (index + 1) length + offset
                                     , nextEdgeIndex =
-                                        ((index + 1) |> remainderBy length)
-                                            + offset
+                                        wrapped (index + 1) length + offset
                                     , previousEdgeIndex =
-                                        ((index - 1) |> remainderBy length)
-                                            + offset
+                                        wrapped (index - 1) length + offset
                                     }
                                 )
                     in
