@@ -11,23 +11,27 @@ module Geometry.ArcLengthParameterization
 majority of cases the individual curve modules such as `QuadraticSpline2d`
 should contain all the functionality you need to construct an arc length
 parameterization and use it to do things like evaluate a curve at evenly-spaced
-points. This module is primarily for use internally by those curve modules.
+points. This module is primarily for use internally by those curve modules, but
+may be useful if you want to do some fancy mapping between arc length and curve
+parameter values.
 
 @docs ArcLengthParameterization
 
 
 # Constructing
 
-@docs parameterization
+@docs build
 
 
 # Evaluating
 
-@docs fromParameterization, toParameterValue, fromParameterValue
+@docs totalArcLength, arcLengthToParameterValue, parameterValueToArcLength
 
 -}
 
 import Float.Extra as Float
+import Geometry.Accuracy as Accuracy exposing (Accuracy)
+import Geometry.Types as Types
 
 
 {-| Contains a mapping from curve parameter value to arc length, and vice versa.
@@ -81,9 +85,12 @@ segmentsPerLeaf =
 Curve parameter values are assumed to be in the range [0,1].
 
 -}
-build : { tolerance : Float, derivativeMagnitude : Float -> Float, maxSecondDerivativeMagnitude : Float } -> ArcLengthParameterization
-build { tolerance, derivativeMagnitude, maxSecondDerivativeMagnitude } =
+build : { accuracy : Accuracy, derivativeMagnitude : Float -> Float, maxSecondDerivativeMagnitude : Float } -> ArcLengthParameterization
+build { accuracy, derivativeMagnitude, maxSecondDerivativeMagnitude } =
     let
+        (Types.MaxError tolerance) =
+            accuracy
+
         height =
             if tolerance <= 0 then
                 0

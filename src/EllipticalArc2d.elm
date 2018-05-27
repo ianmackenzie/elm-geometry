@@ -825,21 +825,18 @@ a given tolerance. Generally speaking, all operations on the resulting
 `ArcLengthParameterized` value will be accurate to within the given arc length
 tolerance.
 
-    tolerance =
-        1.0e-4
-
     parameterizedArc =
         EllipticalArc2d.arcLengthParameterized
-            tolerance
+            (Accuracy.maxError 1.0e-4)
             exampleArc
 
 -}
 arcLengthParameterized : Accuracy -> EllipticalArc2d -> ArcLengthParameterized
-arcLengthParameterized (Types.MaxError tolerance) arc =
+arcLengthParameterized accuracy arc =
     let
         parameterization =
             ArcLengthParameterization.build
-                { tolerance = tolerance
+                { accuracy = accuracy
                 , derivativeMagnitude = derivativeMagnitude arc
                 , maxSecondDerivativeMagnitude =
                     maxSecondDerivativeMagnitude arc
