@@ -551,7 +551,8 @@ toPolyline (Types.MaxError tolerance) arc =
             numApproximationSegments tolerance arc
 
         points =
-            pointsOn arc (Parameter.numSteps numSegments)
+            pointsOn arc
+                (Parameter.forEach (Parameter.steps numSegments) identity)
     in
     Polyline3d.fromVertices points
 
