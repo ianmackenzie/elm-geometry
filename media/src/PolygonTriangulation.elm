@@ -8,12 +8,11 @@ import Html exposing (Html)
 import Html.Attributes
 import Html.Events
 import Kintail.InputWidget as InputWidget
-import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
+import Polygon2d.Random as Random
 import Random exposing (Generator)
 import Triangle2d exposing (Triangle2d)
 import TriangularMesh
-import Vector2d exposing (Vector2d)
 
 
 type alias Model =
@@ -38,83 +37,9 @@ renderBounds =
         }
 
 
-polygonGenerator : Generator Polygon2d
-polygonGenerator =
-    let
-        centerPoint =
-            BoundingBox2d.centroid renderBounds
-
-        ( width, height ) =
-            BoundingBox2d.dimensions renderBounds
-
-        minRadius =
-            10
-
-        maxRadius =
-            0.5 * min width height - 10
-
-        midRadius =
-            (minRadius + maxRadius) / 2
-
-        innerRadiusGenerator =
-            Random.float minRadius (midRadius - 5)
-
-        outerRadiusGenerator =
-            Random.float (midRadius + 5) maxRadius
-    in
-    Random.int 5 10
-        |> Random.andThen
-            (\numPoints ->
-                Random.list numPoints
-                    (Random.pair innerRadiusGenerator outerRadiusGenerator)
-                    |> Random.map
-                        (List.indexedMap
-                            (\index ( innerRadius, outerRadius ) ->
-                                let
-                                    angle =
-                                        turns 1
-                                            * toFloat index
-                                            / toFloat numPoints
-
-                                    innerRadialVector =
-                                        Vector2d.fromPolarComponents
-                                            ( innerRadius
-                                            , angle
-                                            )
-
-                                    outerRadialVector =
-                                        Vector2d.fromPolarComponents
-                                            ( outerRadius
-                                            , angle
-                                            )
-
-                                    innerPoint =
-                                        centerPoint
-                                            |> Point2d.translateBy
-                                                innerRadialVector
-
-                                    outerPoint =
-                                        centerPoint
-                                            |> Point2d.translateBy
-                                                outerRadialVector
-                                in
-                                ( innerPoint, outerPoint )
-                            )
-                        )
-                    |> Random.map List.unzip
-                    |> Random.map
-                        (\( innerLoop, outerLoop ) ->
-                            Polygon2d.with
-                                { outerLoop = outerLoop
-                                , innerLoops = [ List.reverse innerLoop ]
-                                }
-                        )
-            )
-
-
 generateNewPolygon : Cmd Msg
 generateNewPolygon =
-    Random.generate NewPolygon polygonGenerator
+    Random.generate NewPolygon (Random.polygon2d renderBounds)
 
 
 init : ( Model, Cmd Msg )
