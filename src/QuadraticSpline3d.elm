@@ -777,14 +777,14 @@ the tolerance used when constructing `parameterizedSpline`.
 
 -}
 arcLengthParameterized : Accuracy -> QuadraticSpline3d -> ArcLengthParameterized
-arcLengthParameterized (Types.MaxError tolerance) spline =
+arcLengthParameterized accuracy spline =
     let
         maxSecondDerivativeMagnitude =
             Vector3d.length (secondDerivative spline)
 
         parameterization =
             ArcLengthParameterization.build
-                { tolerance = tolerance
+                { accuracy = accuracy
                 , derivativeMagnitude = derivativeMagnitude spline
                 , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude
                 }

@@ -832,11 +832,11 @@ tolerance.
 
 -}
 arcLengthParameterized : Accuracy -> EllipticalArc2d -> ArcLengthParameterized
-arcLengthParameterized (Types.MaxError tolerance) arc =
+arcLengthParameterized accuracy arc =
     let
         parameterization =
             ArcLengthParameterization.build
-                { tolerance = tolerance
+                { accuracy = accuracy
                 , derivativeMagnitude = derivativeMagnitude arc
                 , maxSecondDerivativeMagnitude =
                     maxSecondDerivativeMagnitude arc

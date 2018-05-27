@@ -675,14 +675,14 @@ affects the accuracy of results returned from functions such as `arcLength` and
 
 -}
 arcLengthParameterized : Accuracy -> QuadraticSpline2d -> ArcLengthParameterized
-arcLengthParameterized (Types.MaxError tolerance) spline =
+arcLengthParameterized accuracy spline =
     let
         maxSecondDerivativeMagnitude =
             Vector2d.length (secondDerivative spline)
 
         parameterization =
             ArcLengthParameterization.build
-                { tolerance = tolerance
+                { accuracy = accuracy
                 , derivativeMagnitude = derivativeMagnitude spline
                 , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude
                 }

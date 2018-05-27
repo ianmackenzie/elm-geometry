@@ -81,9 +81,12 @@ segmentsPerLeaf =
 Curve parameter values are assumed to be in the range [0,1].
 
 -}
-build : { tolerance : Float, derivativeMagnitude : Float -> Float, maxSecondDerivativeMagnitude : Float } -> ArcLengthParameterization
-build { tolerance, derivativeMagnitude, maxSecondDerivativeMagnitude } =
+build : { accuracy : Accuracy, derivativeMagnitude : Float -> Float, maxSecondDerivativeMagnitude : Float } -> ArcLengthParameterization
+build { accuracy, derivativeMagnitude, maxSecondDerivativeMagnitude } =
     let
+        (Types.MaxError tolerance) =
+            accuracy
+
         height =
             if tolerance <= 0 then
                 0
