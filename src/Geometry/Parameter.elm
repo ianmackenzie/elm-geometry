@@ -25,7 +25,7 @@ type Values
 {-| Provide a plain list of parameter values, which should all be in the range
 0 to 1. Values out of range will be discarded, so
 
-    Parameter.values [ 0, 0.5, 1, 1.5 ]
+    Parameter.values [ -0.5, 0, 0.5, 1, 1.5 ]
 
 is equivalent to
 
