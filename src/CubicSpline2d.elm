@@ -523,13 +523,35 @@ tangentFunction spline =
         Just thirdDerivativeDirection ->
             Just <|
                 \t ->
-                    case Vector2d.direction (unsafeFirstDerivative spline t) of
+                    let
+                        firstDerivative =
+                            unsafeFirstDerivative spline t
+                    in
+                    case Vector2d.direction firstDerivative of
                         Just firstDerivativeDirection ->
                             firstDerivativeDirection
 
                         Nothing ->
-                            case Vector2d.direction (unsafeSecondDerivative spline t) of
+                            let
+                                secondDerivative =
+                                    unsafeSecondDerivative spline t
+                            in
+                            case Vector2d.direction secondDerivative of
                                 Just secondDerivativeDirection ->
+                                    -- Zero first derivative and non-zero second
+                                    -- derivative mean we have reached a
+                                    -- reversal point, where the tangent
+                                    -- direction just afterwards is equal to the
+                                    -- second derivative direction and the
+                                    -- tangent direction just before is equal to
+                                    -- the flipped second derivative direction.
+                                    -- If we happen to be right at the end of
+                                    -- the spline, choose the tangent direction
+                                    -- just before the end (instead of one that
+                                    -- is off the spline!), otherwise choose the
+                                    -- tangent direction just after the point
+                                    -- (necessary for t = 0, arbitrary for all
+                                    -- other points).
                                     if t == 1 then
                                         Direction2d.flip
                                             secondDerivativeDirection
@@ -540,11 +562,19 @@ tangentFunction spline =
                                     thirdDerivativeDirection
 
         Nothing ->
-            case Vector2d.direction (unsafeSecondDerivative spline 0) of
+            let
+                secondDerivative =
+                    unsafeSecondDerivative spline 0
+            in
+            case Vector2d.direction secondDerivative of
                 Just secondDerivativeDirection ->
                     Just <|
                         \t ->
-                            case Vector2d.direction (unsafeFirstDerivative spline t) of
+                            let
+                                firstDerivative =
+                                    unsafeFirstDerivative spline t
+                            in
+                            case Vector2d.direction firstDerivative of
                                 Just firstDerivativeDirection ->
                                     firstDerivativeDirection
 
@@ -552,9 +582,13 @@ tangentFunction spline =
                                     secondDerivativeDirection
 
                 Nothing ->
-                    case Vector2d.direction (unsafeFirstDerivative spline 0) of
-                        Just direction ->
-                            Just (always direction)
+                    let
+                        firstDerivative =
+                            unsafeFirstDerivative spline 0
+                    in
+                    case Vector2d.direction firstDerivative of
+                        Just firstDerivativeDirection ->
+                            Just (always firstDerivativeDirection)
 
                         Nothing ->
                             Nothing
