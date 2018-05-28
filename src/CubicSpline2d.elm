@@ -43,6 +43,7 @@ A `CubicSpline2d` is a cubic [Bézier curve](https://en.wikipedia.org/wiki/B%C3%
 in 2D defined by a start point, end point and two control points. This module
 contains functionality for
 
+  - Constructing splines
   - Evaluating points and tangent directions along a spline
   - Scaling, rotating, translating or mirroring a spline
   - Converting a spline between local and global coordinates in different
