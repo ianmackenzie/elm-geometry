@@ -424,7 +424,8 @@ sampleAt parameterValue spline =
 {-| Get points along a spline at a given set of parameter values.
 
     exampleSpline
-        |> CubicSpline2d.pointsAt (Parameter.steps 2)
+        |> CubicSpline2d.pointsAt
+            (Parameter.values [ 0, 0.5, 1 ])
     --> [ Point2d.fromCoordinates ( 1, 1 )
     --> , Point2d.fromCoordinates ( 4, 2.5 )
     --> , Point2d.fromCoordinates ( 7, 4 )
@@ -440,7 +441,8 @@ pointsAt parameterValues spline =
 given by a set of parameter values.
 
     exampleSpline
-        |> CubicSpline2d.samplesAt (Parameter.steps 2)
+        |> CubicSpline2d.samplesAt
+            (Parameter.values [ 0, 0.5, 1 ])
     --> [ ( Point2d.fromCoordinates ( 1, 1 )
     -->   , Direction2d.fromAngle (degrees 56.31)
     -->   )
