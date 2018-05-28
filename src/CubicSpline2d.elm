@@ -7,10 +7,10 @@ module CubicSpline2d
         , arcLengthParameterized
         , bisect
         , boundingBox
-        , derivativeMagnitude
         , endControlPoint
         , endDerivative
         , endPoint
+        , firstDerivativeAt
         , fromEndpoints
         , fromQuadraticSpline
         , maxSecondDerivativeMagnitude
@@ -26,9 +26,11 @@ module CubicSpline2d
         , sampleAt
         , samplesAt
         , scaleAbout
+        , secondDerivativeAt
         , startControlPoint
         , startDerivative
         , startPoint
+        , thirdDerivative
         , translateBy
         , translateIn
         , underlyingSpline
@@ -94,7 +96,7 @@ functions to extract those two values separately.
 
 Low level functionality that you are unlikely to need to use directly.
 
-@docs derivativeMagnitude, maxSecondDerivativeMagnitude
+@docs firstDerivativeAt, secondDerivativeAt, thirdDerivative, maxSecondDerivativeMagnitude
 
 -}
 
@@ -376,21 +378,6 @@ samplesAt parameterValues spline =
             []
 
 
-{-| Find the magnitude of the derivative to a spline at a particular parameter
-value;
-
-    CubicSpline2d.derivativeMagnitude spline t
-
-is equivalent to
-
-    CubicSpline2d.derivative spline t
-        |> Maybe.map Vector2d.length
-        |> Maybe.withDefault 0
-
-but more efficient since it avoids any intermediate `Vector2d` and `Maybe`
-allocations.
-
--}
 derivativeMagnitude : CubicSpline2d -> Float -> Float
 derivativeMagnitude spline =
     let
@@ -880,7 +867,95 @@ underlyingSpline (ArcLengthParameterized spline _) =
     spline
 
 
+{-| Get the derivative vector at a point along a spline, based on a parameter
+that ranges from 0 to 1. A parameter value of 0 corresponds to the start
+derivative of the spline and a value of 1 corresponds to the end derivative.
+
+    exampleSpline
+        |> CubicSpline2d.firstDerivativeAt
+            (Parameter.value 0)
+    --> Vector2d.fromComponents ( 6, 9 )
+
+    exampleSpline
+        |> CubicSpline2d.firstDerivativeAt
+            (Parameter.value 0.5)
+    --> Vector2d.fromComponents ( 6, 0 )
+
+    exampleSpline
+        |> CubicSpline2d.firstDerivativeAt
+            (Parameter.value 1)
+    --> Vector2d.fromComponents ( 6, 9 )
+
+-}
+firstDerivativeAt : Parameter.Value -> CubicSpline2d -> Maybe Vector2d
+firstDerivativeAt parameterValue spline =
+    Parameter.with parameterValue (unsafeFirstDerivative spline)
+
+
+{-| Get the second derivative value at a point along a spline, based on a
+parameter that ranges from 0 to 1. A parameter value of 0 corresponds to the
+start of the spline and a value of 1 corresponds to the end.
+
+    exampleSpline
+        |> CubicSpline2d.secondDerivativeAt
+            (Parameter.value 0)
+    --> Vector2d.fromComponents ( 0, -36 )
+
+    exampleSpline
+        |> CubicSpline2d.secondDerivativeAt
+            (Parameter.value 0.5)
+    --> Vector2d.fromComponents ( 0, 0 )
+
+    exampleSpline
+        |> CubicSpline2d.secondDerivativeAt
+            (Parameter.value 1)
+    --> Vector2d.fromComponents ( 0, 36 )
+
+-}
+secondDerivativeAt : Parameter.Value -> CubicSpline2d -> Maybe Vector2d
+secondDerivativeAt parameterValue spline =
+    Parameter.with parameterValue (unsafeSecondDerivative spline)
+
+
+{-| Get the third derivative of a spline (for a cubic spline, this is a
+constant).
+-}
+thirdDerivative : CubicSpline2d -> Vector2d
+thirdDerivative spline =
+    let
+        p1 =
+            startPoint spline
+
+        p2 =
+            startControlPoint spline
+
+        p3 =
+            endControlPoint spline
+
+        p4 =
+            endPoint spline
+
+        u1 =
+            Vector2d.from p1 p2
+
+        u2 =
+            Vector2d.from p2 p3
+
+        u3 =
+            Vector2d.from p3 p4
+
+        v1 =
+            Vector2d.difference u2 u1
+
+        v2 =
+            Vector2d.difference u3 u2
+    in
+    Vector2d.scaleBy 6 (Vector2d.difference v2 v1)
+
+
 {-| Find an upper bound on the magnitude of the second derivative of a spline.
+This can be useful when determining error bounds for various kinds of linear
+approximations.
 -}
 maxSecondDerivativeMagnitude : CubicSpline2d -> Float
 maxSecondDerivativeMagnitude spline =
@@ -948,20 +1023,6 @@ unsafePointOn spline t =
     Point2d.interpolateFrom r1 r2 t
 
 
-{-| Get the derivative vector at a point along a spline, based on a parameter
-that ranges from 0 to 1. A parameter value of 0 corresponds to the start
-derivative of the spline and a value of 1 corresponds to the end derivative.
-
-    CubicSpline2d.derivative exampleSpline 0
-    --> Vector2d.fromComponents ( 6, 9 )
-
-    CubicSpline2d.derivative exampleSpline 0.5
-    --> Vector2d.fromComponents ( 6, 0 )
-
-    CubicSpline2d.derivative exampleSpline 1
-    --> Vector2d.fromComponents ( 6, 9 )
-
--}
 unsafeFirstDerivative : CubicSpline2d -> Float -> Vector2d
 unsafeFirstDerivative spline t =
     let
@@ -1048,20 +1109,6 @@ unsafeFirstDerivative spline t =
             )
 
 
-{-| Get the second derivative value at a point along a spline, based on a
-parameter that ranges from 0 to 1. A parameter value of 0 corresponds to the
-start of the spline and a value of 1 corresponds to the end.
-
-    CubicSpline2d.secondDerivative exampleSpline 0
-    --> Vector2d.fromComponents ( 0, -36 )
-
-    CubicSpline2d.secondDerivative exampleSpline 0.5
-    --> Vector2d.fromComponents ( 0, 0 )
-
-    CubicSpline2d.secondDerivative exampleSpline 1
-    --> Vector2d.fromComponents ( 0, 36 )
-
--}
 unsafeSecondDerivative : CubicSpline2d -> Float -> Vector2d
 unsafeSecondDerivative spline t =
     let
@@ -1093,36 +1140,3 @@ unsafeSecondDerivative spline t =
             Vector2d.difference u3 u2
     in
     Vector2d.scaleBy 6 (Vector2d.interpolateFrom v1 v2 t)
-
-
-thirdDerivative : CubicSpline2d -> Vector2d
-thirdDerivative spline =
-    let
-        p1 =
-            startPoint spline
-
-        p2 =
-            startControlPoint spline
-
-        p3 =
-            endControlPoint spline
-
-        p4 =
-            endPoint spline
-
-        u1 =
-            Vector2d.from p1 p2
-
-        u2 =
-            Vector2d.from p2 p3
-
-        u3 =
-            Vector2d.from p3 p4
-
-        v1 =
-            Vector2d.difference u2 u1
-
-        v2 =
-            Vector2d.difference u3 u2
-    in
-    Vector2d.scaleBy 6 (Vector2d.difference v2 v1)
