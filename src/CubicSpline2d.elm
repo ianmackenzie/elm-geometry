@@ -838,7 +838,7 @@ placeIn frame =
     -->         Point2d.fromCoordinates ( 3, 2.5 )
     -->     , endPoint =
     -->         Point2d.fromCoordinates ( 4, 2.5 )
-    -->     )
+    -->     }
     --> , CubicSpline2d.with
     -->     { startPoint =
     -->         Point2d.fromCoordinates ( 4, 2.5 )
@@ -848,7 +848,7 @@ placeIn frame =
     -->         Point2d.fromCoordinates ( 6, 2.5 )
     -->     , endPoint =
     -->         Point2d.fromCoordinates ( 7, 4 )
-    -->     )
+    -->     }
     --> )
 
 -}
