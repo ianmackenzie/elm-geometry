@@ -6,7 +6,13 @@ module Geometry.Parameter
         , values
         )
 
-{-|
+{-| Many things in `elm-geometry` make use of parameter values that vary from 0
+to 1. For example, to get a point on a curve, you supply a parameter value
+between 0 and 1 - passing 0 will return the start point of the curve, passing 1
+will return the end point, and values in between will return points in between.
+Similarly, interpolation functions such as [`Point3d.interpolateFrom`](Point3d#interpolateFrom)
+take a value between 0 and 1 as an argument. This module helps define ranges of
+parameter values between 0 and 1 conveniently and efficiently.
 
 @docs Values, values, steps, forEach
 
