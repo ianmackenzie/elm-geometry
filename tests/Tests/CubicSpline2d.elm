@@ -2,7 +2,6 @@ module Tests.CubicSpline2d exposing (..)
 
 import CubicSpline2d
 import Expect exposing (FloatingPointTolerance(Absolute))
-import Fuzz
 import Geometry.Accuracy as Accuracy
 import Geometry.Decode as Decode
 import Geometry.Encode as Encode
@@ -11,7 +10,6 @@ import Geometry.Fuzz as Fuzz
 import Test exposing (Test)
 import Tests.Generic as Generic
 import Tests.QuadraticSpline2d
-import Vector2d
 
 
 jsonRoundTrips : Test
