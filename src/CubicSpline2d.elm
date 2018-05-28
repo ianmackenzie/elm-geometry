@@ -104,9 +104,10 @@ these two values separately.
 
 # Differentiation
 
-Low level functionality that you are unlikely to need to use directly. As with
-the other curve evaluation functions, passing a parameter value outside the
-range 0 to 1 will result in `Nothing`.
+You are unlikely to need to use these functions directly, but they are useful if
+you are writing low-level geometric algorithms. As with the other curve
+evaluation functions, passing a parameter value outside the range 0 to 1 will
+result in `Nothing`.
 
 @docs firstDerivativeAt, secondDerivativeAt, thirdDerivative, maxSecondDerivativeMagnitude
 
