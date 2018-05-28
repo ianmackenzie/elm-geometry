@@ -1020,7 +1020,7 @@ underlyingSpline (ArcLengthParameterized spline _) =
     spline
 
 
-{-| Get the derivative vector at a given parameter value.
+{-| Get the first derivative of a spline at a given parameter value.
 
     CubicSpline2d.firstDerivativeAt 0 exampleSpline
     --> Just (Vector2d.fromComponents ( 6, 9 ))
@@ -1040,9 +1040,7 @@ firstDerivativeAt parameterValue spline =
         Nothing
 
 
-{-| Get the second derivative value at a point along a spline, based on a
-parameter that ranges from 0 to 1. A parameter value of 0 corresponds to the
-start of the spline and a value of 1 corresponds to the end.
+{-| Get the second derivative of a spline at a given parameter value.
 
     CubicSpline2d.secondDerivativeAt 0 exampleSpline
     --> Just (Vector2d.fromComponents ( 0, -36 ))
