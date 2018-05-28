@@ -417,8 +417,7 @@ pointsAt parameterValues spline =
 
 
 {-| Find the positions and tangent directions at several points along a spline,
-given by a set of parameter values. Parameter values less than zero or greater
-than one will be discarded.
+given by a set of parameter values.
 
 If the given spline is degenerate (all control points are identical), it has no
 tangent directions and so the result will always be an empty list.
