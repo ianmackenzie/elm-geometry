@@ -230,8 +230,8 @@ buildTree derivativeMagnitude lengthAtStart_ paramAtStart_ paramAtEnd height =
 
 
 {-| Convert an arc length to the corresponding parameter value. If the given
-arc length is less than zero or greater than the total arc length of the curve,
-returns `Nothing`.
+arc length is less than zero or greater than the total arc length of the curve
+(as reported by `totalArcLength`), returns `Nothing`.
 -}
 arcLengthToParameterValue : Float -> ArcLengthParameterization -> Maybe Float
 arcLengthToParameterValue s (ArcLengthParameterization tree) =
@@ -337,11 +337,13 @@ lengthAtEnd tree =
 {-| Find the total arc length of some curve given its arc length
 parameterization;
 
-    ArcLengthParameterization.totalArcLength parameterization
+    ArcLengthParameterization.totalArcLength
+        parameterization
 
 is equivalent to
 
-    ArcLengthParameterization.parameterValueToArcLength parameterization 1
+    ArcLengthParameterization.parameterValueToArcLength 1
+        parameterization
 
 but is more efficient and returns a plain `Float` instead of a `Maybe Float`.
 
