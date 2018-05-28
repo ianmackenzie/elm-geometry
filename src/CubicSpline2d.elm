@@ -11,6 +11,7 @@ module CubicSpline2d
         , endDerivative
         , endPoint
         , firstDerivativeAt
+        , firstDerivativesAt
         , fromEndpoints
         , fromQuadraticSpline
         , maxSecondDerivativeMagnitude
@@ -27,6 +28,7 @@ module CubicSpline2d
         , samplesAt
         , scaleAbout
         , secondDerivativeAt
+        , secondDerivativesAt
         , startControlPoint
         , startDerivative
         , startPoint
@@ -110,7 +112,7 @@ you are writing low-level geometric algorithms. As with the other curve
 evaluation functions, passing a parameter value outside the range 0 to 1 will
 result in `Nothing`.
 
-@docs firstDerivativeAt, secondDerivativeAt, thirdDerivative, maxSecondDerivativeMagnitude
+@docs firstDerivativeAt, secondDerivativeAt, firstDerivativesAt, secondDerivativesAt, thirdDerivative, maxSecondDerivativeMagnitude
 
 -}
 
@@ -893,6 +895,38 @@ secondDerivativeAt parameterValue spline =
         Just (unsafeSecondDerivative spline parameterValue)
     else
         Nothing
+
+
+{-| Evaluate the first derivative of a spline at a range of parameter values.
+
+    exampleSpline
+        |> CubicSpline2d.firstDerivativesAt
+            (Parameter.values [ 0, 0.5, 1 ])
+    --> [ Vector2d.fromComponents ( 6, 9 )
+    --> , Vector2d.fromComponents ( 6, 0 )
+    --> , Vector2d.fromComponents ( 6, 9 )
+    --> ]
+
+-}
+firstDerivativesAt : Parameter.Values -> CubicSpline2d -> List Vector2d
+firstDerivativesAt parameterValues spline =
+    Parameter.forEach parameterValues (unsafeFirstDerivative spline)
+
+
+{-| Evaluate the second derivative of a spline at a range of parameter values.
+
+    exampleSpline
+        |> CubicSpline2d.secondDerivativesAt
+            (Parameter.values [ 0, 0.5, 1 ])
+    --> [ Vector2d.fromComponents ( 0, -36 )
+    --> , Vector2d.fromComponents ( 0, 0 )
+    --> , Vector2d.fromComponents ( 0, 36 )
+    --> ]
+
+-}
+secondDerivativesAt : Parameter.Values -> CubicSpline2d -> List Vector2d
+secondDerivativesAt parameterValues spline =
+    Parameter.forEach parameterValues (unsafeSecondDerivative spline)
 
 
 {-| Get the third derivative of a spline (for a cubic spline, this is a
