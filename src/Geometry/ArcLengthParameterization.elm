@@ -337,7 +337,8 @@ lengthAtEnd tree =
 {-| Find the total arc length of some curve given its arc length
 parameterization;
 
-    ArcLengthParameterization.totalArcLength parameterization
+    ArcLengthParameterization.totalArcLength
+        parameterization
 
 is equivalent to
 
