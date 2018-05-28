@@ -342,7 +342,8 @@ parameterization;
 
 is equivalent to
 
-    ArcLengthParameterization.parameterValueToArcLength parameterization 1
+    ArcLengthParameterization.parameterValueToArcLength 1
+        parameterization
 
 but is more efficient and returns a plain `Float` instead of a `Maybe Float`.
 
