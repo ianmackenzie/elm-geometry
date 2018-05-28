@@ -137,7 +137,7 @@ with =
 {-| Construct a spline from a given start point with a given start derivative,
 to a given end point with a given end derivative, like so:
 
-![Cubic spline from endpoints](https://ianmackenzie.github.io/elm-geometry/1.0.0/CubicSpline2d/from.svg)
+![Cubic spline from endpoints](https://ianmackenzie.github.io/elm-geometry/1.0.0/CubicSpline2d/fromEndpoints.svg)
 
 The spline is based on a parameter that ranges from 0 to 1; as a result, in most
 cases the length of each derivative vector should be roughly equal to the length
