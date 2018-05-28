@@ -1100,9 +1100,9 @@ thirdDerivative spline =
     Vector2d.scaleBy 6 (Vector2d.difference v2 v1)
 
 
-{-| Find an upper bound on the magnitude of the second derivative of a spline.
-This can be useful when determining error bounds for various kinds of linear
-approximations.
+{-| Find a conservative upper bound on the magnitude of the second derivative of
+a spline. This can be useful when determining error bounds for various kinds of
+linear approximations.
 
     exampleSpline
         |> CubicSpline2d.maxSecondDerivativeMagnitude
