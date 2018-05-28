@@ -79,8 +79,21 @@ call function parameterValue accumulated =
 {-| Call the given function for each parameter value, returning a `List` of
 results.
 
-    Parameter.forEach (Parameter.steps 5) toString
-    --> [ "0", "0.2", "0.4", "0.6", "0.8", "1" ]
+    p1 =
+        Point2d.origin
+
+    p2 =
+        Point2d.fromCoordinates ( 2, 3 )
+
+    Parameter.forEach (Parameter.steps 5)
+        (Point2d.interpolateFrom p1 p2)
+    --> [ Point2d.fromCoordinates ( 0, 0 )
+    --> , Point2d.fromCoordinates ( 0.4, 0.6 )
+    --> , Point2d.fromCoordinates ( 0.8, 1.2 )
+    --> , Point2d.fromCoordinates ( 1.2, 1.8 )
+    --> , Point2d.fromCoordinates ( 1.6, 2.4 )
+    --> , Point2d.fromCoordinates ( 2, 3 )
+    --> ]
 
 -}
 forEach : Values -> (Float -> a) -> List a
