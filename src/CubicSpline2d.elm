@@ -939,7 +939,10 @@ arcLengthParameterized accuracy spline =
 
 {-| Find the total arc length of a spline:
 
-    CubicSpline2d.arcLength parameterizedSpline
+    arcLength =
+        CubicSpline2d.arcLength parameterizedSpline
+
+    arcLength
     --> 7.0952
 
 In this example, the result will be accurate to within `1.0e-4` since that was
@@ -952,7 +955,8 @@ arcLength (ArcLengthParameterized _ parameterization) =
 
 
 {-| Try to get the point along a spline at a given arc length. For example, to
-get the point a quarter of the way along `exampleSpline`:
+get the point a quarter of the way along `exampleSpline`, using `arcLength` as
+computed above:
 
     CubicSpline2d.pointAlong parameterizedSpline
         (0.25 * arcLength)
