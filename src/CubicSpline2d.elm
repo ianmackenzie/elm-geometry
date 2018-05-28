@@ -40,7 +40,8 @@ module CubicSpline2d
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/CubicSpline2d/icon.svg" alt="CubicSpline2d" width="160">
 
 A `CubicSpline2d` is a cubic [Bézier curve](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)
-in 2D defined by four control points. This module contains functionality for
+in 2D defined by a start point, end point and two control points. This module
+contains functionality for
 
   - Evaluating points and tangent directions along a spline
   - Scaling, rotating, translating or mirroring a spline
@@ -90,19 +91,23 @@ dropped from the result list for `pointsAt` and `samplesAt`).
 
 @docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, sampleAlong
 
-An `ArcLengthParameterized` value is really just a combination of an
+
+## Low level
+
+An `ArcLengthParameterized` value is a combination of an
 [`ArcLengthParameterization`](Geometry-ArcLengthParameterization) and an
-underlying `CubicSpline2d`. If you need to do something fancy, you can use these
-functions to extract those two values separately.
+underlying `CubicSpline2d`. If you need to do something fancy, you can extract
+these two values separately.
 
 @docs arcLengthParameterization, underlyingSpline
 
 
 # Differentiation
 
-Low level functionality that you are unlikely to need to use directly. As with
-the other curve evaluation functions, passing a parameter value outside the
-range 0 to 1 will result in `Nothing`.
+You are unlikely to need to use these functions directly, but they are useful if
+you are writing low-level geometric algorithms. As with the other curve
+evaluation functions, passing a parameter value outside the range 0 to 1 will
+result in `Nothing`.
 
 @docs firstDerivativeAt, secondDerivativeAt, thirdDerivative, maxSecondDerivativeMagnitude
 
@@ -423,7 +428,8 @@ sampleAt parameterValue spline =
 {-| Get points along a spline at a given set of parameter values.
 
     exampleSpline
-        |> CubicSpline2d.pointsAt (Parameter.steps 2)
+        |> CubicSpline2d.pointsAt
+            (Parameter.values [ 0, 0.5, 1 ])
     --> [ Point2d.fromCoordinates ( 1, 1 )
     --> , Point2d.fromCoordinates ( 4, 2.5 )
     --> , Point2d.fromCoordinates ( 7, 4 )
@@ -439,7 +445,8 @@ pointsAt parameterValues spline =
 given by a set of parameter values.
 
     exampleSpline
-        |> CubicSpline2d.samplesAt (Parameter.steps 2)
+        |> CubicSpline2d.samplesAt
+            (Parameter.values [ 0, 0.5, 1 ])
     --> [ ( Point2d.fromCoordinates ( 1, 1 )
     -->   , Direction2d.fromAngle (degrees 56.31)
     -->   )
@@ -831,7 +838,7 @@ placeIn frame =
     -->         Point2d.fromCoordinates ( 3, 2.5 )
     -->     , endPoint =
     -->         Point2d.fromCoordinates ( 4, 2.5 )
-    -->     )
+    -->     }
     --> , CubicSpline2d.with
     -->     { startPoint =
     -->         Point2d.fromCoordinates ( 4, 2.5 )
@@ -841,7 +848,7 @@ placeIn frame =
     -->         Point2d.fromCoordinates ( 6, 2.5 )
     -->     , endPoint =
     -->         Point2d.fromCoordinates ( 7, 4 )
-    -->     )
+    -->     }
     --> )
 
 -}
@@ -932,7 +939,10 @@ arcLengthParameterized accuracy spline =
 
 {-| Find the total arc length of a spline:
 
-    CubicSpline2d.arcLength parameterizedSpline
+    arcLength =
+        CubicSpline2d.arcLength parameterizedSpline
+
+    arcLength
     --> 7.0952
 
 In this example, the result will be accurate to within `1.0e-4` since that was
@@ -945,7 +955,8 @@ arcLength (ArcLengthParameterized _ parameterization) =
 
 
 {-| Try to get the point along a spline at a given arc length. For example, to
-get the point a quarter of the way along `exampleSpline`:
+get the point a quarter of the way along `exampleSpline`, using `arcLength` as
+computed above:
 
     CubicSpline2d.pointAlong parameterizedSpline
         (0.25 * arcLength)
@@ -1009,7 +1020,7 @@ underlyingSpline (ArcLengthParameterized spline _) =
     spline
 
 
-{-| Get the derivative vector at a given parameter value.
+{-| Get the first derivative of a spline at a given parameter value.
 
     CubicSpline2d.firstDerivativeAt 0 exampleSpline
     --> Just (Vector2d.fromComponents ( 6, 9 ))
@@ -1029,9 +1040,7 @@ firstDerivativeAt parameterValue spline =
         Nothing
 
 
-{-| Get the second derivative value at a point along a spline, based on a
-parameter that ranges from 0 to 1. A parameter value of 0 corresponds to the
-start of the spline and a value of 1 corresponds to the end.
+{-| Get the second derivative of a spline at a given parameter value.
 
     CubicSpline2d.secondDerivativeAt 0 exampleSpline
     --> Just (Vector2d.fromComponents ( 0, -36 ))
@@ -1091,9 +1100,9 @@ thirdDerivative spline =
     Vector2d.scaleBy 6 (Vector2d.difference v2 v1)
 
 
-{-| Find an upper bound on the magnitude of the second derivative of a spline.
-This can be useful when determining error bounds for various kinds of linear
-approximations.
+{-| Find a conservative upper bound on the magnitude of the second derivative of
+a spline. This can be useful when determining error bounds for various kinds of
+linear approximations.
 
     exampleSpline
         |> CubicSpline2d.maxSecondDerivativeMagnitude
