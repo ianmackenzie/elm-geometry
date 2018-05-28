@@ -42,7 +42,7 @@ values =
     Values
 
 
-{-| Specify the number of steps to take between 0 and 1;
+{-| Specify the number of steps to take from 0 to 1;
 
     Parameter.steps 2
 
