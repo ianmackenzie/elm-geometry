@@ -1,20 +1,17 @@
-module Tests.Polygon2d
-    exposing
-        ( convexHullContainsAllPoints
-        , convexHullIsConvex
-        , jsonRoundTrips
-        )
+module Tests.Polygon2d exposing (..)
 
 import Expect
 import Fuzz
 import Geometry.Decode as Decode
 import Geometry.Encode as Encode
+import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import LineSegment2d
 import Polygon2d
 import Test exposing (Test)
 import Tests.Generic as Generic
 import Triangle2d
+import TriangularMesh
 import Vector2d
 
 
@@ -86,4 +83,52 @@ convexHullContainsAllPoints =
             in
             Expect.true "Convex hull should contain all points" <|
                 List.all isContained points
+        )
+
+
+triangulationHasCorrectArea : Test
+triangulationHasCorrectArea =
+    Test.fuzz Fuzz.polygon2d
+        "The triangulation of a polygon has the same area as the polygon itself"
+        (\polygon ->
+            let
+                polygonArea =
+                    Polygon2d.area polygon
+
+                triangles =
+                    Polygon2d.triangulate polygon
+                        |> TriangularMesh.faceVertices
+                        |> List.map Triangle2d.fromVertices
+
+                triangleArea =
+                    List.sum (List.map Triangle2d.area triangles)
+            in
+            triangleArea |> Expect.approximately polygonArea
+        )
+
+
+triangulationHasCorrectNumberOfTriangles : Test
+triangulationHasCorrectNumberOfTriangles =
+    Test.fuzz Fuzz.polygon2d
+        "The triangulation of a polygon with n vertices and h holes has n + 2h - 2 triangles"
+        (\polygon ->
+            let
+                innerLoops =
+                    Polygon2d.innerLoops polygon
+
+                numberOfVertices =
+                    List.length (Polygon2d.outerLoop polygon)
+                        + List.sum (List.map List.length innerLoops)
+
+                numberOfHoles =
+                    List.length innerLoops
+
+                expectedNumberOfTriangles =
+                    numberOfVertices + 2 * numberOfHoles - 2
+            in
+            polygon
+                |> Polygon2d.triangulate
+                |> TriangularMesh.faceVertices
+                |> List.length
+                |> Expect.equal expectedNumberOfTriangles
         )
