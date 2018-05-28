@@ -1,12 +1,4 @@
-module Tests.CubicSpline2d
-    exposing
-        ( arcLengthMatchesAnalytical
-        , derivativeAndMagnitudeAreConsistent
-        , fromEndpointsReproducesSpline
-        , jsonRoundTrips
-        , pointAtArcLengthIsEnd
-        , pointAtZeroLengthIsStart
-        )
+module Tests.CubicSpline2d exposing (..)
 
 import CubicSpline2d
 import Expect exposing (FloatingPointTolerance(Absolute))
@@ -107,15 +99,16 @@ pointAtArcLengthIsEnd =
         )
 
 
-derivativeAndMagnitudeAreConsistent : Test
-derivativeAndMagnitudeAreConsistent =
-    Test.fuzz2
-        Fuzz.cubicSpline2d
-        (Fuzz.floatRange 0 1)
-        "derivative and derivativeMagnitude are consistent"
-        (\spline t ->
-            CubicSpline2d.derivative spline t
-                |> Maybe.map Vector2d.length
-                |> Expect.just Expect.approximately
-                    (CubicSpline2d.derivativeMagnitude spline t)
-        )
+
+--derivativeAndMagnitudeAreConsistent : Test
+--derivativeAndMagnitudeAreConsistent =
+--    Test.fuzz2
+--        Fuzz.cubicSpline2d
+--        (Fuzz.floatRange 0 1)
+--        "derivative and derivativeMagnitude are consistent"
+--        (\spline t ->
+--            CubicSpline2d.derivative spline t
+--                |> Maybe.map Vector2d.length
+--                |> Expect.just Expect.approximately
+--                    (CubicSpline2d.derivativeMagnitude spline t)
+--        )
