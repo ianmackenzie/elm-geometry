@@ -76,7 +76,7 @@ call function parameterValue accumulated =
         accumulated
 
 
-{-| Call the given function for each parameter value, returning a list of
+{-| Call the given function for each parameter value, returning a `List` of
 results.
 
     Parameter.forEach (Parameter.steps 5) toString
