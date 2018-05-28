@@ -1,47 +1,18 @@
 module Geometry.Parameter
     exposing
-        ( Value
-        , Values
+        ( Values
         , forEach
         , steps
-        , value
         , values
-        , with
         )
 
 {-|
 
-@docs Value, value, with, Values, values, steps, forEach
+@docs Values, values, steps, forEach
 
 -}
 
 import Float.Range as Range exposing (Range)
-
-
-{-| Represents a single parameter value along a curve. Parameter values range
-from 0 to 1.
--}
-type Value
-    = Value Float
-
-
-{-| Convert a `Float` value to a parameter value. The given value should be
-between 0 and 1.
--}
-value : Float -> Value
-value =
-    Value
-
-
-{-| Call a function with a given parameter value. Will return `Nothing` if the
-given parameter value is not between 0 and 1.
--}
-with : Value -> (Float -> a) -> Maybe a
-with (Value value_) function =
-    if isValid value_ then
-        Just (function value_)
-    else
-        Nothing
 
 
 {-| Represents a list or range of parameter values.
@@ -93,11 +64,6 @@ produced:
 steps : Int -> Values
 steps =
     Steps
-
-
-isValid : Float -> Bool
-isValid parameter =
-    0 <= parameter && parameter <= 1
 
 
 call : (Float -> a) -> Float -> List a -> List a
