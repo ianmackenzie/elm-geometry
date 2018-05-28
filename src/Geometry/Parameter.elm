@@ -42,23 +42,25 @@ values =
     Values
 
 
-{-| Specify the number of steps to take between 0 and 1. Note that the number of
-parameter values will be one greater than the number of steps!
-
-    Parameter.steps 1
-    --> Parameter.values [ 0, 1 ]
+{-| Specify the number of steps to take between 0 and 1;
 
     Parameter.steps 2
-    --> Parameter.values [ 0, 0.5, 1 ]
 
-    Parameter.steps 5
-    --> Parameter.values [ 0, 0.2, 0.4, 0.6, 0.8, 1 ]
+is equivalent to (but has a more efficient internal representation than)
+
+    Parameter.values [ 0, 0.5, 1 ]
+
+Note that the number of parameter values will be one greater than the number of
+steps!
 
 Passing a negative or zero number of steps will result in no values being
-produced:
+produced;
 
     Parameter.steps 0
-    --> Parameter.values []
+
+is equivalent to
+
+    Parameter.values []
 
 -}
 steps : Int -> Values
