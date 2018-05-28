@@ -62,6 +62,12 @@ in 2D defined by four control points. This module contains functionality for
 
 # Evaluation
 
+Curve evaluation is based on a parameter that ranges from 0 to 1, where a
+parameter value of 0 corresponds to the start point of the curve and a parameter
+value of 1 corresponds to the end point. Parameter values outside of this range
+will be discarded (resulting in `Nothing` for `pointAt` and `sampleAt`, or being
+dropped from the result list for `pointsAt` and `samplesAt`).
+
 @docs pointAt, sampleAt, pointsAt, samplesAt
 
 
@@ -94,7 +100,9 @@ functions to extract those two values separately.
 
 # Differentiation
 
-Low level functionality that you are unlikely to need to use directly.
+Low level functionality that you are unlikely to need to use directly. As with
+the other curve evaluation functions, passing a parameter value outside the
+range 0 to 1 will result in `Nothing`.
 
 @docs firstDerivativeAt, secondDerivativeAt, thirdDerivative, maxSecondDerivativeMagnitude
 
@@ -322,13 +330,6 @@ boundingBox spline =
     CubicSpline2d.pointAt 1 exampleSpline
     --> Just (Point2d.fromCoordinates ( 7, 4 ))
 
-If the given parameter value is less than zero or greater than one, returns
-`Nothing`:
-
-    exampleSpline
-        |> CubicSpline2d.pointAt (Parameter.value 1.5)
-    --> Nothing
-
 -}
 pointAt : Float -> CubicSpline2d -> Maybe Point2d
 pointAt parameterValue spline =
@@ -400,8 +401,7 @@ sampleAt parameterValue spline =
         Nothing
 
 
-{-| Get points along a spline at a given set of parameter values. Values less
-than zero or greater than one will be discarded.
+{-| Get points along a spline at a given set of parameter values.
 
     exampleSpline
         |> CubicSpline2d.pointsAt (Parameter.steps 2)
