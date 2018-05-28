@@ -208,15 +208,6 @@ accumulateDistinctPoints previousPoint points accumulatedPoints =
             accumulateDistinctPoints point rest updatedPoints
 
 
-wrapped index length =
-    if index == -1 then
-        length - 1
-    else if index == length then
-        0
-    else
-        index
-
-
 init : Polygon2d -> Loops
 init (Polygon2d { outerLoop, innerLoops }) =
     let
@@ -239,15 +230,36 @@ init (Polygon2d { outerLoop, innerLoops }) =
                         newEdges =
                             Array.initialize length
                                 (\index ->
-                                    { startVertexIndex =
-                                        index + offset
-                                    , endVertexIndex =
-                                        wrapped (index + 1) length + offset
-                                    , nextEdgeIndex =
-                                        wrapped (index + 1) length + offset
-                                    , previousEdgeIndex =
-                                        wrapped (index - 1) length + offset
-                                    }
+                                    if index == 0 then
+                                        { startVertexIndex =
+                                            offset
+                                        , endVertexIndex =
+                                            offset + 1
+                                        , nextEdgeIndex =
+                                            offset + 1
+                                        , previousEdgeIndex =
+                                            offset + length - 1
+                                        }
+                                    else if index == length - 1 then
+                                        { startVertexIndex =
+                                            offset + index
+                                        , endVertexIndex =
+                                            offset
+                                        , nextEdgeIndex =
+                                            offset
+                                        , previousEdgeIndex =
+                                            offset + index - 1
+                                        }
+                                    else
+                                        { startVertexIndex =
+                                            offset + index
+                                        , endVertexIndex =
+                                            offset + index + 1
+                                        , nextEdgeIndex =
+                                            offset + index + 1
+                                        , previousEdgeIndex =
+                                            offset + index - 1
+                                        }
                                 )
                     in
                     ( offset + length, Array.append accumulated newEdges )
