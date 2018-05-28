@@ -91,10 +91,13 @@ dropped from the result list for `pointsAt` and `samplesAt`).
 
 @docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, sampleAlong
 
-An `ArcLengthParameterized` value is really just a combination of an
+
+## Low level
+
+An `ArcLengthParameterized` value is a combination of an
 [`ArcLengthParameterization`](Geometry-ArcLengthParameterization) and an
-underlying `CubicSpline2d`. If you need to do something fancy, you can use these
-functions to extract those two values separately.
+underlying `CubicSpline2d`. If you need to do something fancy, you can extract
+these two values separately.
 
 @docs arcLengthParameterization, underlyingSpline
 
