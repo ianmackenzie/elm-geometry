@@ -46,11 +46,12 @@ values =
 
     Parameter.steps 2
 
-is equivalent to (but has a more efficient internal representation than)
+is equivalent to
 
     Parameter.values [ 0, 0.5, 1 ]
 
-Note that the number of parameter values will be one greater than the number of
+but more efficient since there is no need to actually construct the list. Note
+that the number of parameter values will be one greater than the number of
 steps!
 
 Passing a negative or zero number of steps will result in no values being
