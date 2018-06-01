@@ -80,7 +80,7 @@ import Direction3d exposing (Direction3d)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
 import Geometry.Accuracy exposing (Accuracy)
-import Geometry.Parameter as Parameter
+import Geometry.ParameterValues as ParameterValues
 import Geometry.Types as Types
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
@@ -552,7 +552,7 @@ toPolyline (Types.MaxError tolerance) arc =
 
         points =
             pointsOn arc
-                (Parameter.forEach (Parameter.steps numSegments) identity)
+                (ParameterValues.toList (ParameterValues.steps numSegments))
     in
     Polyline3d.fromVertices points
 

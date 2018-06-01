@@ -122,7 +122,7 @@ import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Accuracy exposing (Accuracy)
 import Geometry.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
-import Geometry.Parameter as Parameter
+import Geometry.ParameterValues as ParameterValues exposing (ParameterValues)
 import Geometry.Types as Types
 import Point2d exposing (Point2d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
@@ -435,16 +435,16 @@ sampleAt parameterValue spline =
 
     exampleSpline
         |> CubicSpline2d.pointsAt
-            (Parameter.values [ 0, 0.5, 1 ])
+            (ParameterValues.steps 2)
     --> [ Point2d.fromCoordinates ( 1, 1 )
     --> , Point2d.fromCoordinates ( 4, 2.5 )
     --> , Point2d.fromCoordinates ( 7, 4 )
     --> ]
 
 -}
-pointsAt : Parameter.Values -> CubicSpline2d -> List Point2d
+pointsAt : ParameterValues -> CubicSpline2d -> List Point2d
 pointsAt parameterValues spline =
-    Parameter.forEach parameterValues (unsafePointOn spline)
+    ParameterValues.forEach parameterValues (unsafePointOn spline)
 
 
 {-| Find the positions and tangent directions at several points along a spline,
@@ -468,11 +468,11 @@ If the given spline is degenerate (all control points are identical), it has no
 tangent directions and so the result will always be an empty list.
 
 -}
-samplesAt : Parameter.Values -> CubicSpline2d -> List ( Point2d, Direction2d )
+samplesAt : ParameterValues -> CubicSpline2d -> List ( Point2d, Direction2d )
 samplesAt parameterValues spline =
     case samplingFunction spline of
         Just unsafeSample ->
-            Parameter.forEach parameterValues unsafeSample
+            ParameterValues.forEach parameterValues unsafeSample
 
         Nothing ->
             []
@@ -901,32 +901,32 @@ secondDerivativeAt parameterValue spline =
 
     exampleSpline
         |> CubicSpline2d.firstDerivativesAt
-            (Parameter.values [ 0, 0.5, 1 ])
+            (ParameterValues.steps 2)
     --> [ Vector2d.fromComponents ( 6, 9 )
     --> , Vector2d.fromComponents ( 6, 0 )
     --> , Vector2d.fromComponents ( 6, 9 )
     --> ]
 
 -}
-firstDerivativesAt : Parameter.Values -> CubicSpline2d -> List Vector2d
+firstDerivativesAt : ParameterValues -> CubicSpline2d -> List Vector2d
 firstDerivativesAt parameterValues spline =
-    Parameter.forEach parameterValues (unsafeFirstDerivative spline)
+    ParameterValues.forEach parameterValues (unsafeFirstDerivative spline)
 
 
 {-| Evaluate the second derivative of a spline at a range of parameter values.
 
     exampleSpline
         |> CubicSpline2d.secondDerivativesAt
-            (Parameter.values [ 0, 0.5, 1 ])
+            (ParameterValues.steps 2)
     --> [ Vector2d.fromComponents ( 0, -36 )
     --> , Vector2d.fromComponents ( 0, 0 )
     --> , Vector2d.fromComponents ( 0, 36 )
     --> ]
 
 -}
-secondDerivativesAt : Parameter.Values -> CubicSpline2d -> List Vector2d
+secondDerivativesAt : ParameterValues -> CubicSpline2d -> List Vector2d
 secondDerivativesAt parameterValues spline =
-    Parameter.forEach parameterValues (unsafeSecondDerivative spline)
+    ParameterValues.forEach parameterValues (unsafeSecondDerivative spline)
 
 
 {-| Get the third derivative of a spline (for a cubic spline, this is a

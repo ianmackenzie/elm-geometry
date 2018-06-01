@@ -76,7 +76,7 @@ import Axis2d exposing (Axis2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Accuracy exposing (Accuracy)
-import Geometry.Parameter as Parameter
+import Geometry.ParameterValues as ParameterValues
 import Geometry.SweptAngle as SweptAngle exposing (SweptAngle)
 import Geometry.Types as Types
 import LineSegment2d exposing (LineSegment2d)
@@ -783,7 +783,7 @@ toPolyline (Types.MaxError tolerance) arc =
 
         points =
             pointsOn arc
-                (Parameter.forEach (Parameter.steps numSegments) identity)
+                (ParameterValues.toList (ParameterValues.steps numSegments))
     in
     Polyline2d.fromVertices points
 
