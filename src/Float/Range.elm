@@ -4,6 +4,7 @@ module Float.Range
         , Resolution
         , dropFirst
         , dropLast
+        , empty
         , forEach
         , from
         , map
@@ -25,6 +26,11 @@ type Range
     = Range Float Float Int
     | Singleton Float
     | Empty
+
+
+empty : Range
+empty =
+    Empty
 
 
 singleton : Float -> Range
