@@ -3,6 +3,8 @@ module Geometry.ParameterValues
         ( ParameterValues
         , clamped
         , filtered
+        , foldl
+        , foldr
         , forEach
         , inBetween
         , leading
@@ -196,3 +198,83 @@ map function parameterValues =
 toList : ParameterValues -> List Float
 toList parameterValues =
     forEach parameterValues identity
+
+
+foldl : (Float -> a -> a) -> a -> ParameterValues -> a
+foldl accumulator init parameterValues =
+    case parameterValues of
+        Endpoints startIndex endIndex divisor ->
+            foldlEndpoints startIndex endIndex divisor accumulator init
+
+        Midpoints endIndex divisor ->
+            foldlMidpoints 1 endIndex divisor accumulator init
+
+        Values values ->
+            List.foldl accumulator init values
+
+        Empty ->
+            init
+
+
+foldlEndpoints : Int -> Int -> Float -> (Float -> a -> a) -> a -> a
+foldlEndpoints index endIndex divisor accumulator accumulated =
+    let
+        newAccumulated =
+            accumulator (toFloat index / divisor) accumulated
+    in
+    if index == endIndex then
+        newAccumulated
+    else
+        foldlEndpoints (index + 1) endIndex divisor accumulator newAccumulated
+
+
+foldlMidpoints : Int -> Int -> Float -> (Float -> a -> a) -> a -> a
+foldlMidpoints index endIndex divisor accumulator accumulated =
+    let
+        newAccumulated =
+            accumulator (toFloat index / divisor) accumulated
+    in
+    if index == endIndex then
+        newAccumulated
+    else
+        foldlMidpoints (index + 2) endIndex divisor accumulator newAccumulated
+
+
+foldr : (Float -> a -> a) -> a -> ParameterValues -> a
+foldr accumulator init parameterValues =
+    case parameterValues of
+        Endpoints startIndex endIndex divisor ->
+            foldrEndpoints endIndex startIndex divisor accumulator init
+
+        Midpoints endIndex divisor ->
+            foldrMidpoints endIndex divisor accumulator init
+
+        Values values ->
+            List.foldr accumulator init values
+
+        Empty ->
+            init
+
+
+foldrEndpoints : Int -> Int -> Float -> (Float -> a -> a) -> a -> a
+foldrEndpoints index startIndex divisor accumulator accumulated =
+    let
+        newAccumulated =
+            accumulator (toFloat index / divisor) accumulated
+    in
+    if index == startIndex then
+        newAccumulated
+    else
+        foldrEndpoints (index - 1) startIndex divisor accumulator newAccumulated
+
+
+foldrMidpoints : Int -> Float -> (Float -> a -> a) -> a -> a
+foldrMidpoints index divisor accumulator accumulated =
+    let
+        newAccumulated =
+            accumulator (toFloat index / divisor) accumulated
+    in
+    if index == 1 then
+        newAccumulated
+    else
+        foldrMidpoints (index - 2) divisor accumulator newAccumulated
