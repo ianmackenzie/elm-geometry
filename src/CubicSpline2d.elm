@@ -10,7 +10,7 @@ module CubicSpline2d
         , endControlPoint
         , endDerivative
         , endPoint
-        , firstDerivativeAt
+        , firstDerivative
         , firstDerivativesAt
         , fromEndpoints
         , fromQuadraticSpline
@@ -18,16 +18,16 @@ module CubicSpline2d
         , mirrorAcross
         , placeIn
         , pointAlong
-        , pointAt
+        , pointOn
         , pointsAt
         , relativeTo
         , reverse
         , rotateAround
+        , sample
         , sampleAlong
-        , sampleAt
         , samplesAt
         , scaleAbout
-        , secondDerivativeAt
+        , secondDerivative
         , secondDerivativesAt
         , startControlPoint
         , startDerivative
@@ -72,7 +72,7 @@ value of 1 corresponds to the end point. Parameter values outside of this range
 will be discarded (resulting in `Nothing` for `pointAt` and `sampleAt`, or being
 dropped from the result list for `pointsAt` and `samplesAt`).
 
-@docs pointAt, sampleAt, pointsAt, samplesAt
+@docs pointOn, sample, pointsAt, samplesAt
 
 
 # Transformations
@@ -112,7 +112,7 @@ you are writing low-level geometric algorithms. As with the other curve
 evaluation functions, passing a parameter value outside the range 0 to 1 will
 result in `Nothing`.
 
-@docs firstDerivativeAt, secondDerivativeAt, firstDerivativesAt, secondDerivativesAt, thirdDerivative, maxSecondDerivativeMagnitude
+@docs firstDerivative, secondDerivative, firstDerivativesAt, secondDerivativesAt, thirdDerivative, maxSecondDerivativeMagnitude
 
 -}
 
@@ -358,8 +358,8 @@ boundingBox spline =
     --> Just (Point2d.fromCoordinates ( 7, 4 ))
 
 -}
-pointAt : Float -> CubicSpline2d -> Maybe Point2d
-pointAt parameterValue spline =
+pointOn : CubicSpline2d -> Float -> Maybe Point2d
+pointOn spline parameterValue =
     if 0 <= parameterValue && parameterValue <= 1 then
         Just (unsafePointOn spline parameterValue)
     else
@@ -379,26 +379,26 @@ If the spline is degenerate (all control points are identical), returns
 `Nothing`.
 
 -}
-sampleAt : Float -> CubicSpline2d -> Maybe ( Point2d, Direction2d )
-sampleAt parameterValue spline =
+sample : CubicSpline2d -> Float -> Maybe ( Point2d, Direction2d )
+sample spline parameterValue =
     if 0 <= parameterValue && parameterValue <= 1 then
         let
             point =
                 unsafePointOn spline parameterValue
 
-            firstDerivative =
+            firstDerivativeVector =
                 unsafeFirstDerivative spline parameterValue
         in
-        case Vector2d.direction firstDerivative of
+        case Vector2d.direction firstDerivativeVector of
             Just firstDerivativeDirection ->
                 Just ( point, firstDerivativeDirection )
 
             Nothing ->
                 let
-                    secondDerivative =
+                    secondDerivativeVector =
                         unsafeSecondDerivative spline parameterValue
                 in
-                case Vector2d.direction secondDerivative of
+                case Vector2d.direction secondDerivativeVector of
                     Just secondDerivativeDirection ->
                         -- Zero first derivative and non-zero second derivative
                         -- mean we have reached a reversal point, where the
@@ -869,8 +869,8 @@ underlyingSpline (ArcLengthParameterized spline _) =
     --> Just (Vector2d.fromComponents ( 6, 9 ))
 
 -}
-firstDerivativeAt : Float -> CubicSpline2d -> Maybe Vector2d
-firstDerivativeAt parameterValue spline =
+firstDerivative : CubicSpline2d -> Float -> Maybe Vector2d
+firstDerivative spline parameterValue =
     if 0 <= parameterValue && parameterValue <= 1 then
         Just (unsafeFirstDerivative spline parameterValue)
     else
@@ -889,8 +889,8 @@ firstDerivativeAt parameterValue spline =
     --> Just (Vector2d.fromComponents ( 0, 36 ))
 
 -}
-secondDerivativeAt : Float -> CubicSpline2d -> Maybe Vector2d
-secondDerivativeAt parameterValue spline =
+secondDerivative : CubicSpline2d -> Float -> Maybe Vector2d
+secondDerivative spline parameterValue =
     if 0 <= parameterValue && parameterValue <= 1 then
         Just (unsafeSecondDerivative spline parameterValue)
     else
@@ -1256,19 +1256,19 @@ samplingFunction spline =
                         point =
                             unsafePointOn spline t
 
-                        firstDerivative =
+                        firstDerivativeVector =
                             unsafeFirstDerivative spline t
                     in
-                    case Vector2d.direction firstDerivative of
+                    case Vector2d.direction firstDerivativeVector of
                         Just firstDerivativeDirection ->
                             ( point, firstDerivativeDirection )
 
                         Nothing ->
                             let
-                                secondDerivative =
+                                secondDerivativeVector =
                                     unsafeSecondDerivative spline t
                             in
-                            case Vector2d.direction secondDerivative of
+                            case Vector2d.direction secondDerivativeVector of
                                 Just secondDerivativeDirection ->
                                     -- Zero first derivative and non-zero second
                                     -- derivative mean we have reached a
@@ -1297,10 +1297,10 @@ samplingFunction spline =
 
         Nothing ->
             let
-                secondDerivative =
+                secondDerivativeVector =
                     unsafeSecondDerivative spline 0
             in
-            case Vector2d.direction secondDerivative of
+            case Vector2d.direction secondDerivativeVector of
                 Just secondDerivativeDirection ->
                     Just <|
                         \t ->
@@ -1308,10 +1308,10 @@ samplingFunction spline =
                                 point =
                                     unsafePointOn spline t
 
-                                firstDerivative =
+                                firstDerivativeVector =
                                     unsafeFirstDerivative spline t
                             in
-                            case Vector2d.direction firstDerivative of
+                            case Vector2d.direction firstDerivativeVector of
                                 Just firstDerivativeDirection ->
                                     ( point, firstDerivativeDirection )
 
@@ -1320,10 +1320,10 @@ samplingFunction spline =
 
                 Nothing ->
                     let
-                        firstDerivative =
+                        firstDerivativeVector =
                             unsafeFirstDerivative spline 0
                     in
-                    case Vector2d.direction firstDerivative of
+                    case Vector2d.direction firstDerivativeVector of
                         Just firstDerivativeDirection ->
                             Just <|
                                 \t ->
