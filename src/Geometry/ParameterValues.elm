@@ -33,13 +33,15 @@ parameter values between 0 and 1 conveniently and efficiently.
 
 -}
 
-import Float.Range as Range exposing (Range)
 
 
 {-| Represents a list or range of parameter values.
 -}
 type ParameterValues
-    = ParameterValues Range
+    = Endpoints Int Int Float
+    | Midpoints Int Float
+    | Values (List Float)
+    | Empty
 
 
 {-| Get the full range of parameter values for a given number of steps,
@@ -60,62 +62,42 @@ steps!
 -}
 steps : Int -> ParameterValues
 steps n =
-    ParameterValues (Range.from 0 1 (Range.numSteps n))
-
-
-stepSize : Int -> Float
-stepSize n =
-    1 / toFloat n
+    if n < 1 then
+        Empty
+    else
+        Endpoints 0 n (toFloat n)
 
 
 leading : Int -> ParameterValues
 leading n =
-    ParameterValues <|
-        if n < 1 then
-            Range.empty
-        else if n == 1 then
-            Range.singleton 0
-        else
-            -- n > 1
-            Range.from 0 (1 - stepSize n) (Range.numSteps (n - 1))
+    if n < 1 then
+        Empty
+    else
+        Endpoints 0 (n - 1) (toFloat n)
 
 
 trailing : Int -> ParameterValues
 trailing n =
-    ParameterValues <|
-        if n < 1 then
-            Range.empty
-        else if n == 1 then
-            Range.singleton 1
-        else
-            -- n > 1
-            Range.from (stepSize n) 1 (Range.numSteps (n - 1))
+    if n < 1 then
+        Empty
+    else
+        Endpoints 1 n (toFloat n)
 
 
 inBetween : Int -> ParameterValues
 inBetween n =
-    ParameterValues <|
-        if n < 2 then
-            Range.empty
-        else if n == 2 then
-            Range.singleton 0.5
-        else
-            -- n > 2
-            Range.from (stepSize n) (1 - stepSize n) (Range.numSteps (n - 2))
+    if n < 2 then
+        Empty
+    else
+        Endpoints 1 (n - 1) (toFloat n)
 
 
 midpoints : Int -> ParameterValues
 midpoints n =
-    ParameterValues <|
-        if n < 1 then
-            Range.empty
-        else if n == 1 then
-            Range.singleton 0.5
-        else
-            Range.from
-                (stepSize n / 2)
-                (1 - stepSize n / 2)
-                (Range.numSteps (n - 1))
+    if n < 1 then
+        Empty
+    else
+        Midpoints (2 * n - 1) (2 * toFloat n)
 
 
 {-| Call the given function for each parameter value, returning a `List` of
@@ -139,8 +121,43 @@ results.
 
 -}
 forEach : ParameterValues -> (Float -> a) -> List a
-forEach (ParameterValues range) function =
-    Range.forEach range function
+forEach parameterValues function =
+    case parameterValues of
+        Endpoints startIndex endIndex divisor ->
+            endpointsHelp endIndex startIndex divisor function []
+
+        Midpoints endIndex divisor ->
+            midpointsHelp endIndex divisor function []
+
+        Values values ->
+            List.map function values
+
+        Empty ->
+            []
+
+
+endpointsHelp : Int -> Int -> Float -> (Float -> a) -> List a -> List a
+endpointsHelp index startIndex divisor function accumulated =
+    let
+        newAccumulated =
+            function (toFloat index / divisor) :: accumulated
+    in
+    if index == startIndex then
+        newAccumulated
+    else
+        endpointsHelp (index - 1) startIndex divisor function newAccumulated
+
+
+midpointsHelp : Int -> Float -> (Float -> a) -> List a -> List a
+midpointsHelp index divisor function accumulated =
+    let
+        newAccumulated =
+            function (toFloat index / divisor) :: accumulated
+    in
+    if index == 1 then
+        newAccumulated
+    else
+        midpointsHelp (index - 2) divisor function newAccumulated
 
 
 map : (Float -> a) -> ParameterValues -> List a
