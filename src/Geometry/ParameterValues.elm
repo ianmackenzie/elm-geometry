@@ -1,6 +1,8 @@
 module Geometry.ParameterValues
     exposing
         ( ParameterValues
+        , clamped
+        , filtered
         , forEach
         , inBetween
         , leading
@@ -29,10 +31,14 @@ parameter values between 0 and 1 conveniently and efficiently.
 
 # Evaluation
 
-@docs map, forEach, foldl, foldr, toList
+@docs map, forEach, foldl, foldr
+
+
+# Conversions
+
+@docs filtered, clamped, toList
 
 -}
-
 
 
 {-| Represents a list or range of parameter values.
@@ -98,6 +104,28 @@ midpoints n =
         Empty
     else
         Midpoints (2 * n - 1) (2 * toFloat n)
+
+
+isValid : Float -> Bool
+isValid value =
+    0 <= value && value <= 1 && not (isNaN value)
+
+
+filtered : List Float -> ParameterValues
+filtered values =
+    Values (List.filter isValid values)
+
+
+clamp value =
+    if isNaN value then
+        value
+    else
+        Basics.clamp 0 1 value
+
+
+clamped : List Float -> ParameterValues
+clamped values =
+    Values (List.map clamp values)
 
 
 {-| Call the given function for each parameter value, returning a `List` of
