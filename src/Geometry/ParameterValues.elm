@@ -42,13 +42,15 @@ parameter values between 0 and 1 conveniently and efficiently.
 
 -}
 
+import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
+
 
 {-| Represents a list or range of parameter values.
 -}
 type ParameterValues
     = Endpoints Int Int Float
     | Midpoints Int Float
-    | Values (List Float)
+    | Values (List ParameterValue)
     | Empty
 
 
@@ -115,23 +117,35 @@ isValid value =
 
 filtered : List Float -> ParameterValues
 filtered values =
-    Values (List.filter isValid values)
-
-
-clamp value =
-    if isNaN value then
-        value
-    else
-        Basics.clamp 0 1 value
+    Values (List.filterMap ParameterValue.checked values)
 
 
 clamped : List Float -> ParameterValues
 clamped values =
-    Values (List.map clamp values)
+    Values (List.map ParameterValue.clamped values)
 
 
-{-| Call the given function for each parameter value, returning a `List` of
+{-| Call the given function with each parameter value, returning a `List` of
 results.
+-}
+map : (ParameterValue -> a) -> ParameterValues -> List a
+map function parameterValues =
+    case parameterValues of
+        Endpoints startIndex endIndex divisor ->
+            endpointsHelp endIndex startIndex divisor function []
+
+        Midpoints endIndex divisor ->
+            midpointsHelp endIndex divisor function []
+
+        Values values ->
+            List.map function values
+
+        Empty ->
+            []
+
+
+{-| Convert each parameter value to a `Float` and call the given function with
+it, returning a `List` of results.
 
     p1 =
         Point2d.origin
@@ -152,25 +166,17 @@ results.
 -}
 forEach : ParameterValues -> (Float -> a) -> List a
 forEach parameterValues function =
-    case parameterValues of
-        Endpoints startIndex endIndex divisor ->
-            endpointsHelp endIndex startIndex divisor function []
-
-        Midpoints endIndex divisor ->
-            midpointsHelp endIndex divisor function []
-
-        Values values ->
-            List.map function values
-
-        Empty ->
-            []
+    map (ParameterValue.toFloat >> function) parameterValues
 
 
-endpointsHelp : Int -> Int -> Float -> (Float -> a) -> List a -> List a
+endpointsHelp : Int -> Int -> Float -> (ParameterValue -> a) -> List a -> List a
 endpointsHelp index startIndex divisor function accumulated =
     let
+        parameterValue =
+            ParameterValue.unsafe (toFloat index / divisor)
+
         newAccumulated =
-            function (toFloat index / divisor) :: accumulated
+            function parameterValue :: accumulated
     in
     if index == startIndex then
         newAccumulated
@@ -178,11 +184,14 @@ endpointsHelp index startIndex divisor function accumulated =
         endpointsHelp (index - 1) startIndex divisor function newAccumulated
 
 
-midpointsHelp : Int -> Float -> (Float -> a) -> List a -> List a
+midpointsHelp : Int -> Float -> (ParameterValue -> a) -> List a -> List a
 midpointsHelp index divisor function accumulated =
     let
+        parameterValue =
+            ParameterValue.unsafe (toFloat index / divisor)
+
         newAccumulated =
-            function (toFloat index / divisor) :: accumulated
+            function parameterValue :: accumulated
     in
     if index == 1 then
         newAccumulated
@@ -190,17 +199,17 @@ midpointsHelp index divisor function accumulated =
         midpointsHelp (index - 2) divisor function newAccumulated
 
 
-map : (Float -> a) -> ParameterValues -> List a
-map function parameterValues =
-    forEach parameterValues function
-
-
-toList : ParameterValues -> List Float
+toList : ParameterValues -> List ParameterValue
 toList parameterValues =
-    forEach parameterValues identity
+    case parameterValues of
+        Values values ->
+            values
+
+        _ ->
+            map identity parameterValues
 
 
-foldl : (Float -> a -> a) -> a -> ParameterValues -> a
+foldl : (ParameterValue -> a -> a) -> a -> ParameterValues -> a
 foldl accumulator init parameterValues =
     case parameterValues of
         Endpoints startIndex endIndex divisor ->
@@ -216,11 +225,14 @@ foldl accumulator init parameterValues =
             init
 
 
-foldlEndpoints : Int -> Int -> Float -> (Float -> a -> a) -> a -> a
+foldlEndpoints : Int -> Int -> Float -> (ParameterValue -> a -> a) -> a -> a
 foldlEndpoints index endIndex divisor accumulator accumulated =
     let
+        parameterValue =
+            ParameterValue.unsafe (toFloat index / divisor)
+
         newAccumulated =
-            accumulator (toFloat index / divisor) accumulated
+            accumulator parameterValue accumulated
     in
     if index == endIndex then
         newAccumulated
@@ -228,11 +240,14 @@ foldlEndpoints index endIndex divisor accumulator accumulated =
         foldlEndpoints (index + 1) endIndex divisor accumulator newAccumulated
 
 
-foldlMidpoints : Int -> Int -> Float -> (Float -> a -> a) -> a -> a
+foldlMidpoints : Int -> Int -> Float -> (ParameterValue -> a -> a) -> a -> a
 foldlMidpoints index endIndex divisor accumulator accumulated =
     let
+        parameterValue =
+            ParameterValue.unsafe (toFloat index / divisor)
+
         newAccumulated =
-            accumulator (toFloat index / divisor) accumulated
+            accumulator parameterValue accumulated
     in
     if index == endIndex then
         newAccumulated
@@ -240,7 +255,7 @@ foldlMidpoints index endIndex divisor accumulator accumulated =
         foldlMidpoints (index + 2) endIndex divisor accumulator newAccumulated
 
 
-foldr : (Float -> a -> a) -> a -> ParameterValues -> a
+foldr : (ParameterValue -> a -> a) -> a -> ParameterValues -> a
 foldr accumulator init parameterValues =
     case parameterValues of
         Endpoints startIndex endIndex divisor ->
@@ -256,11 +271,14 @@ foldr accumulator init parameterValues =
             init
 
 
-foldrEndpoints : Int -> Int -> Float -> (Float -> a -> a) -> a -> a
+foldrEndpoints : Int -> Int -> Float -> (ParameterValue -> a -> a) -> a -> a
 foldrEndpoints index startIndex divisor accumulator accumulated =
     let
+        parameterValue =
+            ParameterValue.unsafe (toFloat index / divisor)
+
         newAccumulated =
-            accumulator (toFloat index / divisor) accumulated
+            accumulator parameterValue accumulated
     in
     if index == startIndex then
         newAccumulated
@@ -268,11 +286,14 @@ foldrEndpoints index startIndex divisor accumulator accumulated =
         foldrEndpoints (index - 1) startIndex divisor accumulator newAccumulated
 
 
-foldrMidpoints : Int -> Float -> (Float -> a -> a) -> a -> a
+foldrMidpoints : Int -> Float -> (ParameterValue -> a -> a) -> a -> a
 foldrMidpoints index divisor accumulator accumulated =
     let
+        parameterValue =
+            ParameterValue.unsafe (toFloat index / divisor)
+
         newAccumulated =
-            accumulator (toFloat index / divisor) accumulated
+            accumulator parameterValue accumulated
     in
     if index == 1 then
         newAccumulated
