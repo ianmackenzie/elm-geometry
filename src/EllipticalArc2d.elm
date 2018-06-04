@@ -380,7 +380,7 @@ pointOn : EllipticalArc2d -> ParameterValue -> Point2d
 pointOn arc parameterValue =
     let
         t =
-            ParameterValue.toFloat parameterValue
+            ParameterValue.value parameterValue
 
         theta =
             startAngle arc + t * sweptAngle arc
@@ -416,7 +416,7 @@ firstDerivative : EllipticalArc2d -> ParameterValue -> Vector2d
 firstDerivative arc parameterValue =
     let
         t =
-            ParameterValue.toFloat parameterValue
+            ParameterValue.value parameterValue
 
         deltaTheta =
             sweptAngle arc
@@ -501,7 +501,7 @@ sampler arc =
                         pointOnArc parameterValue
 
                     t =
-                        ParameterValue.toFloat parameterValue
+                        ParameterValue.value parameterValue
 
                     angle =
                         startAngle_ + t * sweptAngle_
@@ -525,7 +525,7 @@ sampler arc =
                         pointOnArc parameterValue
 
                     t =
-                        ParameterValue.toFloat parameterValue
+                        ParameterValue.value parameterValue
 
                     angle =
                         startAngle_ + t * sweptAngle_
@@ -545,7 +545,7 @@ sampler arc =
                         pointOnArc parameterValue
 
                     t =
-                        ParameterValue.toFloat parameterValue
+                        ParameterValue.value parameterValue
 
                     angle =
                         startAngle_ + t * sweptAngle_

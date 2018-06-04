@@ -336,7 +336,7 @@ pointOn (Types.Arc3d arc) =
         \parameterValue ->
             let
                 t =
-                    ParameterValue.toFloat parameterValue
+                    ParameterValue.value parameterValue
 
                 distance =
                     t * arcSignedLength
@@ -354,7 +354,7 @@ pointOn (Types.Arc3d arc) =
         \parameterValue ->
             let
                 t =
-                    ParameterValue.toFloat parameterValue
+                    ParameterValue.value parameterValue
 
                 theta =
                     t * arcSweptAngle
@@ -408,7 +408,7 @@ firstDerivative (Types.Arc3d arc) =
     \parameterValue ->
         let
             t =
-                ParameterValue.toFloat parameterValue
+                ParameterValue.value parameterValue
 
             angle =
                 t * arcSweptAngle
@@ -480,7 +480,7 @@ sampler arc =
                         pointOnArc parameterValue
 
                     t =
-                        ParameterValue.toFloat parameterValue
+                        ParameterValue.value parameterValue
 
                     angle =
                         t * arcSweptAngle

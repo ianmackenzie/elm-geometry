@@ -362,7 +362,7 @@ parameterValueToArcLength parameterValue (ArcLengthParameterization tree) =
     if parameterValue == ParameterValue.zero then
         0
     else
-        unsafeToArcLength tree (ParameterValue.toFloat parameterValue)
+        unsafeToArcLength tree (ParameterValue.value parameterValue)
 
 
 unsafeToArcLength : SegmentTree -> Float -> Float

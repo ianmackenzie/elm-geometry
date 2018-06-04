@@ -403,7 +403,7 @@ pointOn : CubicSpline3d -> ParameterValue -> Point3d
 pointOn spline parameterValue =
     let
         t =
-            ParameterValue.toFloat parameterValue
+            ParameterValue.value parameterValue
 
         p1 =
             startPoint spline
@@ -883,7 +883,7 @@ splitAt : ParameterValue -> CubicSpline3d -> ( CubicSpline3d, CubicSpline3d )
 splitAt parameterValue spline =
     let
         t =
-            ParameterValue.toFloat parameterValue
+            ParameterValue.value parameterValue
 
         p1 =
             startPoint spline
@@ -1063,7 +1063,7 @@ firstDerivative : CubicSpline3d -> ParameterValue -> Vector3d
 firstDerivative spline parameterValue =
     let
         t =
-            ParameterValue.toFloat parameterValue
+            ParameterValue.value parameterValue
 
         p1 =
             startPoint spline
@@ -1208,7 +1208,7 @@ secondDerivative : CubicSpline3d -> ParameterValue -> Vector3d
 secondDerivative spline parameterValue =
     let
         t =
-            ParameterValue.toFloat parameterValue
+            ParameterValue.value parameterValue
 
         p1 =
             startPoint spline

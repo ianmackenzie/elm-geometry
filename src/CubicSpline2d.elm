@@ -359,7 +359,7 @@ pointOn : CubicSpline2d -> ParameterValue -> Point2d
 pointOn spline parameterValue =
     let
         t =
-            ParameterValue.toFloat parameterValue
+            ParameterValue.value parameterValue
 
         p1 =
             startPoint spline
@@ -826,7 +826,7 @@ splitAt : ParameterValue -> CubicSpline2d -> ( CubicSpline2d, CubicSpline2d )
 splitAt parameterValue spline =
     let
         t =
-            ParameterValue.toFloat parameterValue
+            ParameterValue.value parameterValue
 
         p1 =
             startPoint spline
@@ -1009,7 +1009,7 @@ firstDerivative : CubicSpline2d -> ParameterValue -> Vector2d
 firstDerivative spline parameterValue =
     let
         t =
-            ParameterValue.toFloat parameterValue
+            ParameterValue.value parameterValue
 
         p1 =
             startPoint spline
@@ -1126,7 +1126,7 @@ secondDerivative : CubicSpline2d -> ParameterValue -> Vector2d
 secondDerivative spline parameterValue =
     let
         t =
-            ParameterValue.toFloat parameterValue
+            ParameterValue.value parameterValue
 
         p1 =
             startPoint spline

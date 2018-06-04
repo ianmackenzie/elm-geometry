@@ -13,6 +13,7 @@ module Geometry.ParameterValues
         , steps
         , toList
         , trailing
+        , values
         )
 
 {-| Many things in `elm-geometry` make use of parameter values that vary from 0
@@ -31,14 +32,14 @@ parameter values between 0 and 1 conveniently and efficiently.
 @docs steps, leading, trailing, inBetween, midpoints
 
 
+## From lists
+
+@docs fromList, filtered, clamped
+
+
 # Evaluation
 
-@docs map, forEach, foldl, foldr
-
-
-# Conversions
-
-@docs filtered, clamped, toList
+@docs map, forEach, toList, values, foldl, foldr
 
 -}
 
@@ -57,13 +58,16 @@ type ParameterValues
 {-| Get the full range of parameter values for a given number of steps,
 including 0 and 1:
 
-    ParameterValues.toList (ParameterValues.steps 1)
+    ParameterValues.values (ParameterValues.steps 0)
+    --> []
+
+    ParameterValues.values (ParameterValues.steps 1)
     --> [ 0, 1 ]
 
-    ParameterValues.toList (ParameterValues.steps 2)
+    ParameterValues.values (ParameterValues.steps 2)
     --> [ 0, 0.5, 1 ]
 
-    ParameterValues.toList (ParameterValues.steps 5)
+    ParameterValues.values (ParameterValues.steps 5)
     --> [ 0, 0.2, 0.4, 0.6. 0.8, 1 ]
 
 Note that the number of parameter values is one greater than the number of
@@ -78,6 +82,21 @@ steps n =
         Endpoints 0 n (toFloat n)
 
 
+{-| Get all parameter values except 1, for a given number of steps:
+
+    ParameterValues.values (ParameterValues.leading 0)
+    --> []
+
+    ParameterValues.values (ParameterValues.leading 1)
+    --> [ 0 ]
+
+    ParameterValues.values (ParameterValues.leading 2)
+    --> [ 0, 0.5 ]
+
+    ParameterValues.values (ParameterValues.leading 5)
+    --> [ 0, 0.2, 0.4, 0.6. 0.8 ]
+
+-}
 leading : Int -> ParameterValues
 leading n =
     if n < 1 then
@@ -86,6 +105,21 @@ leading n =
         Endpoints 0 (n - 1) (toFloat n)
 
 
+{-| Get all parameter values except 0, for a given number of steps:
+
+    ParameterValues.values (ParameterValues.trailing 0)
+    --> []
+
+    ParameterValues.values (ParameterValues.trailing 1)
+    --> [ 1 ]
+
+    ParameterValues.values (ParameterValues.trailing 2)
+    --> [ 0.5, 1 ]
+
+    ParameterValues.values (ParameterValues.trailing 5)
+    --> [ 0.2, 0.4, 0.6. 0.8, 1 ]
+
+-}
 trailing : Int -> ParameterValues
 trailing n =
     if n < 1 then
@@ -116,13 +150,13 @@ isValid value =
 
 
 filtered : List Float -> ParameterValues
-filtered values =
-    Values (List.filterMap ParameterValue.checked values)
+filtered givenValues =
+    Values (List.filterMap ParameterValue.checked givenValues)
 
 
 clamped : List Float -> ParameterValues
-clamped values =
-    Values (List.map ParameterValue.clamped values)
+clamped givenValues =
+    Values (List.map ParameterValue.clamped givenValues)
 
 
 {-| Call the given function with each parameter value, returning a `List` of
@@ -137,8 +171,8 @@ map function parameterValues =
         Midpoints endIndex divisor ->
             midpointsHelp endIndex divisor function []
 
-        Values values ->
-            List.map function values
+        Values values_ ->
+            List.map function values_
 
         Empty ->
             []
@@ -166,7 +200,7 @@ it, returning a `List` of results.
 -}
 forEach : ParameterValues -> (Float -> a) -> List a
 forEach parameterValues function =
-    map (ParameterValue.toFloat >> function) parameterValues
+    map (ParameterValue.value >> function) parameterValues
 
 
 endpointsHelp : Int -> Int -> Float -> (ParameterValue -> a) -> List a -> List a
@@ -202,8 +236,8 @@ midpointsHelp index divisor function accumulated =
 toList : ParameterValues -> List ParameterValue
 toList parameterValues =
     case parameterValues of
-        Values values ->
-            values
+        Values values_ ->
+            values_
 
         _ ->
             map identity parameterValues
@@ -218,8 +252,8 @@ foldl accumulator init parameterValues =
         Midpoints endIndex divisor ->
             foldlMidpoints 1 endIndex divisor accumulator init
 
-        Values values ->
-            List.foldl accumulator init values
+        Values values_ ->
+            List.foldl accumulator init values_
 
         Empty ->
             init
@@ -264,8 +298,8 @@ foldr accumulator init parameterValues =
         Midpoints endIndex divisor ->
             foldrMidpoints endIndex divisor accumulator init
 
-        Values values ->
-            List.foldr accumulator init values
+        Values values_ ->
+            List.foldr accumulator init values_
 
         Empty ->
             init
@@ -299,3 +333,8 @@ foldrMidpoints index divisor accumulator accumulated =
         newAccumulated
     else
         foldrMidpoints (index - 2) divisor accumulator newAccumulated
+
+
+values : ParameterValues -> List Float
+values parameterValues =
+    map ParameterValue.value parameterValues
