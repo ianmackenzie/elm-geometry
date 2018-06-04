@@ -13,6 +13,7 @@ module Geometry.ParameterValues
         , steps
         , toList
         , trailing
+        , values
         )
 
 {-| Many things in `elm-geometry` make use of parameter values that vary from 0
@@ -31,14 +32,14 @@ parameter values between 0 and 1 conveniently and efficiently.
 @docs steps, leading, trailing, inBetween, midpoints
 
 
+## From lists
+
+@docs fromList, filtered, clamped
+
+
 # Evaluation
 
-@docs map, forEach, foldl, foldr
-
-
-# Conversions
-
-@docs filtered, clamped, toList
+@docs map, forEach, toList, values, foldl, foldr
 
 -}
 
@@ -116,13 +117,13 @@ isValid value =
 
 
 filtered : List Float -> ParameterValues
-filtered values =
-    Values (List.filterMap ParameterValue.checked values)
+filtered givenValues =
+    Values (List.filterMap ParameterValue.checked givenValues)
 
 
 clamped : List Float -> ParameterValues
-clamped values =
-    Values (List.map ParameterValue.clamped values)
+clamped givenValues =
+    Values (List.map ParameterValue.clamped givenValues)
 
 
 {-| Call the given function with each parameter value, returning a `List` of
@@ -137,8 +138,8 @@ map function parameterValues =
         Midpoints endIndex divisor ->
             midpointsHelp endIndex divisor function []
 
-        Values values ->
-            List.map function values
+        Values values_ ->
+            List.map function values_
 
         Empty ->
             []
@@ -202,8 +203,8 @@ midpointsHelp index divisor function accumulated =
 toList : ParameterValues -> List ParameterValue
 toList parameterValues =
     case parameterValues of
-        Values values ->
-            values
+        Values values_ ->
+            values_
 
         _ ->
             map identity parameterValues
@@ -218,8 +219,8 @@ foldl accumulator init parameterValues =
         Midpoints endIndex divisor ->
             foldlMidpoints 1 endIndex divisor accumulator init
 
-        Values values ->
-            List.foldl accumulator init values
+        Values values_ ->
+            List.foldl accumulator init values_
 
         Empty ->
             init
@@ -264,8 +265,8 @@ foldr accumulator init parameterValues =
         Midpoints endIndex divisor ->
             foldrMidpoints endIndex divisor accumulator init
 
-        Values values ->
-            List.foldr accumulator init values
+        Values values_ ->
+            List.foldr accumulator init values_
 
         Empty ->
             init
@@ -299,3 +300,8 @@ foldrMidpoints index divisor accumulator accumulated =
         newAccumulated
     else
         foldrMidpoints (index - 2) divisor accumulator newAccumulated
+
+
+values : ParameterValues -> List Float
+values parameterValues =
+    map ParameterValue.value parameterValues
