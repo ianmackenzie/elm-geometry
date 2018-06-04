@@ -58,6 +58,9 @@ type ParameterValues
 {-| Get the full range of parameter values for a given number of steps,
 including 0 and 1:
 
+    ParameterValues.values (ParameterValues.steps 0)
+    --> []
+
     ParameterValues.values (ParameterValues.steps 1)
     --> [ 0, 1 ]
 
