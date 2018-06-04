@@ -82,6 +82,21 @@ steps n =
         Endpoints 0 n (toFloat n)
 
 
+{-| Get all parameter values except 1, for a given number of steps:
+
+    ParameterValues.values (ParameterValues.leading 0)
+    --> []
+
+    ParameterValues.values (ParameterValues.leading 1)
+    --> [ 0 ]
+
+    ParameterValues.values (ParameterValues.leading 2)
+    --> [ 0, 0.5 ]
+
+    ParameterValues.values (ParameterValues.leading 5)
+    --> [ 0, 0.2, 0.4, 0.6. 0.8 ]
+
+-}
 leading : Int -> ParameterValues
 leading n =
     if n < 1 then
@@ -90,6 +105,21 @@ leading n =
         Endpoints 0 (n - 1) (toFloat n)
 
 
+{-| Get all parameter values except 0, for a given number of steps:
+
+    ParameterValues.values (ParameterValues.trailing 0)
+    --> []
+
+    ParameterValues.values (ParameterValues.trailing 1)
+    --> [ 1 ]
+
+    ParameterValues.values (ParameterValues.trailing 2)
+    --> [ 0.5, 1 ]
+
+    ParameterValues.values (ParameterValues.trailing 5)
+    --> [ 0.2, 0.4, 0.6. 0.8, 1 ]
+
+-}
 trailing : Int -> ParameterValues
 trailing n =
     if n < 1 then
