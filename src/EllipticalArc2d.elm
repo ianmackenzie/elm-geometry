@@ -3,36 +3,30 @@ module EllipticalArc2d
         ( ArcLengthParameterized
         , EllipticalArc2d
         , arcLength
+        , arcLengthParameterization
         , arcLengthParameterized
-        , arcLengthToParameterValue
         , axes
         , centerPoint
-        , derivative
-        , derivativeMagnitude
-        , derivatives
         , endPoint
+        , firstDerivative
+        , firstDerivativesAt
         , fromEndpoints
         , maxSecondDerivativeMagnitude
         , mirrorAcross
-        , parameterValueToArcLength
         , placeIn
         , pointAlong
         , pointOn
-        , pointsAlong
-        , pointsOn
+        , pointsAt
         , relativeTo
         , reverse
         , rotateAround
-        , sample
         , sampleAlong
-        , samples
-        , samplesAlong
+        , sampler
+        , samplesAt
         , scaleAbout
         , startAngle
         , startPoint
         , sweptAngle
-        , tangentAlong
-        , tangentsAlong
         , translateBy
         , translateIn
         , underlyingArc
@@ -82,7 +76,7 @@ details.
 
 # Evaluation
 
-@docs pointOn, pointsOn, derivative, derivatives, sample, samples
+@docs pointOn, pointsAt, sampler, samplesAt
 
 
 # Transformations
@@ -97,14 +91,25 @@ details.
 
 # Arc length parameterization
 
-@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, pointsAlong, tangentAlong, tangentsAlong, sampleAlong, samplesAlong, arcLengthToParameterValue, parameterValueToArcLength, underlyingArc
+@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, sampleAlong
 
 
-# Low level
+## Low level
 
-Low level functionality that you are unlikely to need to use directly.
+An `ArcLengthParameterized` value is a combination of an
+[`ArcLengthParameterization`](Geometry-ArcLengthParameterization) and an
+underlying `EllipticalArc2d`. If you need to do something fancy, you can extract
+these two values separately.
 
-@docs derivativeMagnitude, maxSecondDerivativeMagnitude
+@docs arcLengthParameterization, underlyingArc
+
+
+# Differentiation
+
+You are unlikely to need to use these functions directly, but they are useful if
+you are writing low-level geometric algorithms.
+
+@docs firstDerivative, firstDerivativesAt, maxSecondDerivativeMagnitude
 
 -}
 
@@ -115,6 +120,8 @@ import Frame2d exposing (Frame2d)
 import Future.Tuple as Tuple
 import Geometry.Accuracy as Accuracy exposing (Accuracy)
 import Geometry.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
+import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
+import Geometry.ParameterValues as ParameterValues exposing (ParameterValues)
 import Geometry.SweptAngle as SweptAngle exposing (SweptAngle)
 import Geometry.Types as Types
 import Interval
@@ -369,37 +376,25 @@ value of 1 corresponds to the end point.
     --> Point2d.fromCoordinates ( 0, 1 )
 
 -}
-pointOn : EllipticalArc2d -> Float -> Maybe Point2d
-pointOn arc t =
-    if 0 <= t && t <= 1 then
-        let
-            theta =
-                startAngle arc + t * sweptAngle arc
-        in
-        Just <|
-            Point2d.fromCoordinatesIn (axes arc)
-                ( xRadius arc * cos theta
-                , yRadius arc * sin theta
-                )
-    else
-        Nothing
+pointOn : EllipticalArc2d -> ParameterValue -> Point2d
+pointOn arc parameterValue =
+    let
+        t =
+            ParameterValue.toFloat parameterValue
+
+        theta =
+            startAngle arc + t * sweptAngle arc
+    in
+    Point2d.fromCoordinatesIn (axes arc)
+        ( xRadius arc * cos theta
+        , yRadius arc * sin theta
+        )
 
 
-{-| Convenient shorthand for evaluating multiple points;
-
-    EllipticalArc2d.pointsOn arc parameterValues
-
-is equivalent to
-
-    List.map (EllipticalArc2d.pointOn arc) parameterValues
-
-To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
-module.
-
--}
-pointsOn : EllipticalArc2d -> List Float -> List Point2d
-pointsOn arc parameterValues =
-    List.filterMap (pointOn arc) parameterValues
+{-| -}
+pointsAt : ParameterValues -> EllipticalArc2d -> List Point2d
+pointsAt parameterValues arc =
+    ParameterValues.map (pointOn arc) parameterValues
 
 
 {-| Get the derivative vector at a point along an elliptical arc, based on a
@@ -417,24 +412,23 @@ derivative at the end point.
     --> Vector2d.fromComponents ( -3.1416, 0 )
 
 -}
-derivative : EllipticalArc2d -> Float -> Maybe Vector2d
-derivative arc t =
-    if 0 <= t && t <= 1 then
-        let
-            deltaTheta =
-                sweptAngle arc
+firstDerivative : EllipticalArc2d -> ParameterValue -> Vector2d
+firstDerivative arc parameterValue =
+    let
+        t =
+            ParameterValue.toFloat parameterValue
 
-            theta =
-                startAngle arc + t * deltaTheta
-        in
-        Just <|
-            Vector2d.placeIn (axes arc) <|
-                Vector2d.fromComponents
-                    ( -(xRadius arc) * deltaTheta * sin theta
-                    , yRadius arc * deltaTheta * cos theta
-                    )
-    else
-        Nothing
+        deltaTheta =
+            sweptAngle arc
+
+        theta =
+            startAngle arc + t * deltaTheta
+    in
+    Vector2d.placeIn (axes arc) <|
+        Vector2d.fromComponents
+            ( -(xRadius arc) * deltaTheta * sin theta
+            , yRadius arc * deltaTheta * cos theta
+            )
 
 
 {-| Convenient shorthand for evaluating multiple derivatives;
@@ -450,9 +444,9 @@ To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry
 module.
 
 -}
-derivatives : EllipticalArc2d -> List Float -> List Vector2d
-derivatives arc parameterValues =
-    List.filterMap (derivative arc) parameterValues
+firstDerivativesAt : ParameterValues -> EllipticalArc2d -> List Vector2d
+firstDerivativesAt parameterValues arc =
+    ParameterValues.map (firstDerivative arc) parameterValues
 
 
 {-| Sample an elliptical arc at a given parameter value to get both the position
@@ -467,26 +461,129 @@ is equivalent to
         (EllipticalArc2d.derivative spline t)
 
 -}
-sample : EllipticalArc2d -> Float -> Maybe ( Point2d, Vector2d )
-sample arc t =
-    Maybe.map2 Tuple.pair (pointOn arc t) (derivative arc t)
+sampler : EllipticalArc2d -> Maybe (ParameterValue -> ( Point2d, Direction2d ))
+sampler arc =
+    let
+        startAngle_ =
+            startAngle arc
+
+        sweptAngle_ =
+            sweptAngle arc
+
+        xRadius_ =
+            xRadius arc
+
+        yRadius_ =
+            yRadius arc
+
+        xDirection_ =
+            xDirection arc
+
+        yDirection_ =
+            yDirection arc
+
+        pointOnArc =
+            pointOn arc
+    in
+    if sweptAngle_ == 0 then
+        Nothing
+    else if xRadius_ == 0 && yRadius_ == 0 then
+        Nothing
+    else if xRadius_ == 0 then
+        let
+            negativeXDirection =
+                Direction2d.flip xDirection_
+        in
+        Just <|
+            \parameterValue ->
+                let
+                    point =
+                        pointOnArc parameterValue
+
+                    t =
+                        ParameterValue.toFloat parameterValue
+
+                    angle =
+                        startAngle_ + t * sweptAngle_
+
+                    tangentDirection =
+                        if cos angle >= 0 then
+                            xDirection_
+                        else
+                            negativeXDirection
+                in
+                ( point, tangentDirection )
+    else if yRadius_ == 0 then
+        let
+            negativeYDirection =
+                Direction2d.flip yDirection_
+        in
+        Just <|
+            \parameterValue ->
+                let
+                    point =
+                        pointOnArc parameterValue
+
+                    t =
+                        ParameterValue.toFloat parameterValue
+
+                    angle =
+                        startAngle_ + t * sweptAngle_
+
+                    tangentDirection =
+                        if sin angle >= 0 then
+                            negativeYDirection
+                        else
+                            yDirection_
+                in
+                ( point, tangentDirection )
+    else
+        Just <|
+            \parameterValue ->
+                let
+                    point =
+                        pointOnArc parameterValue
+
+                    t =
+                        ParameterValue.toFloat parameterValue
+
+                    angle =
+                        startAngle_ + t * sweptAngle_
+
+                    sinAngle =
+                        sin angle
+
+                    cosAngle =
+                        cos angle
+
+                    vx =
+                        -xRadius_ * sinAngle
+
+                    vy =
+                        yRadius_ * cosAngle
+
+                    -- Since xRadius_ and yRadius_ are both non-zero and at
+                    -- least one of sinAngle or cosAngle must be non-zero, one
+                    -- of vx or vy will always be non-zero and therefore
+                    -- normalizing the vector (vx, vy) is safe
+                    tangentDirection =
+                        Vector2d.fromComponents ( vx, vy )
+                            |> Vector2d.normalize
+                            |> Vector2d.components
+                            |> Direction2d.unsafe
+                in
+                ( point, tangentDirection )
 
 
-{-| Convenient shorthand for evaluating multiple samples;
+{-| -}
+samplesAt : ParameterValues -> EllipticalArc2d -> List ( Point2d, Direction2d )
+samplesAt parameterValues arc =
+    case sampler arc of
+        Just sampler_ ->
+            ParameterValues.map sampler_ parameterValues
 
-    EllipticalArc2d.samples arc parameterValues
-
-is equivalent to
-
-    List.map (EllipticalArc2d.sample arc) parameterValues
-
-To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
-module.
-
--}
-samples : EllipticalArc2d -> List Float -> List ( Point2d, Vector2d )
-samples arc parameterValues =
-    List.filterMap (sample arc) parameterValues
+        Nothing ->
+            []
 
 
 {-| Get the start point of an elliptical arc.
@@ -497,12 +594,7 @@ samples arc parameterValues =
 -}
 startPoint : EllipticalArc2d -> Point2d
 startPoint arc =
-    case pointOn arc 0 of
-        Just point ->
-            point
-
-        Nothing ->
-            centerPoint arc
+    pointOn arc ParameterValue.zero
 
 
 {-| Get the end point of an elliptical arc.
@@ -513,12 +605,7 @@ startPoint arc =
 -}
 endPoint : EllipticalArc2d -> Point2d
 endPoint arc =
-    case pointOn arc 1 of
-        Just point ->
-            point
-
-        Nothing ->
-            centerPoint arc
+    pointOn arc ParameterValue.one
 
 
 {-| -}
@@ -858,8 +945,9 @@ within the tolerance given when calling `arcLengthParameterized`.
 
 -}
 arcLength : ArcLengthParameterized -> Float
-arcLength (ArcLengthParameterized _ parameterization) =
-    ArcLengthParameterization.totalArcLength parameterization
+arcLength parameterizedArc =
+    arcLengthParameterization parameterizedArc
+        |> ArcLengthParameterization.totalArcLength
 
 
 {-| Try to get the point along an elliptical arc at a given arc length. For
@@ -871,7 +959,8 @@ example, to get the true midpoint of `exampleArc`:
 
 Note that this is not the same as evaulating at a parameter value of 0.5:
 
-    EllipticalArc2d.pointOn exampleArc 0.5
+    EllipticalArc2d.pointOn exampleArc
+        ParameterValue.oneHalf
     --> Point2d.fromCoordinates ( 1.4142, 0.7071 )
 
 If the given arc length is less than zero or greater than the arc length of the
@@ -879,144 +968,34 @@ arc, `Nothing` is returned.
 
 -}
 pointAlong : ArcLengthParameterized -> Float -> Maybe Point2d
-pointAlong (ArcLengthParameterized arc parameterization) s =
+pointAlong (ArcLengthParameterized arc parameterization) distance =
     parameterization
-        |> ArcLengthParameterization.arcLengthToParameterValue s
-        |> Maybe.andThen (pointOn arc)
+        |> ArcLengthParameterization.arcLengthToParameterValue distance
+        |> Maybe.map (pointOn arc)
 
 
-{-| Convenient shorthand for evaluating points along an elliptical arc at
-multiple arc length values;
-
-    Arc2d.pointsAlong parameterizedArc lengths
-
-is equivalent to
-
-    List.filterMap (Arc2d.pointAlong parameterizedArc)
-        lengths
-
-No results will be produced for arc length values less than zero or greater than
-the overall arc length of the elliptical arc.
-
--}
-pointsAlong : ArcLengthParameterized -> List Float -> List Point2d
-pointsAlong parameterizedArc distances =
-    List.filterMap (pointAlong parameterizedArc) distances
-
-
-{-| Try to get the tangent direction along an elliptical arc at a given arc
-length. To get the tangent direction at the midpoint of `exampleArc`:
-
-    EllipticalArc2d.tangentAlong parameterizedArc
-        (arcLength / 2)
-    --> Just (Direction2d.fromAngle (degrees 159.71))
-
-If the given arc length is less than zero or greater than the arc length of the
-arc (or if the derivative of the arc happens to be exactly zero at the given arc
-length), `Nothing` is returned.
-
--}
-tangentAlong : ArcLengthParameterized -> Float -> Maybe Direction2d
-tangentAlong (ArcLengthParameterized arc parameterization) s =
-    parameterization
-        |> ArcLengthParameterization.arcLengthToParameterValue s
-        |> Maybe.andThen (derivative arc)
-        |> Maybe.andThen Vector2d.direction
-
-
-{-| Convenient shorthand for evaluating tangent directions along an elliptical
-arc at multiple arc length values;
-
-    Arc2d.tangentsAlong parameterizedArc lengths
-
-is equivalent to
-
-    List.filterMap (Arc2d.tangentAlong parameterizedArc)
-        lengths
-
-No results will be produced for arc length values less than zero or greater than
-the overall arc length of the elliptical arc (or for points where the derivative
-vector is zero).
-
--}
-tangentsAlong : ArcLengthParameterized -> List Float -> List Direction2d
-tangentsAlong parameterizedArc distances =
-    List.filterMap (tangentAlong parameterizedArc) distances
-
-
-{-| Try to sample along an elliptical arc at a given arc length to get the
-position and tangent direction at that arc length. Equivalent to calling
-`EllipticalArc2d.pointAlong` and `EllipticalArc2d.tangentAlong` separately.
--}
+{-| -}
 sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point2d, Direction2d )
-sampleAlong (ArcLengthParameterized arc parameterization) s =
+sampleAlong (ArcLengthParameterized arc parameterization) =
+    case sampler arc of
+        Just toSample ->
+            \distance ->
+                parameterization
+                    |> ArcLengthParameterization.arcLengthToParameterValue
+                        distance
+                    |> Maybe.map toSample
+
+        Nothing ->
+            always Nothing
+
+
+{-| -}
+arcLengthParameterization : ArcLengthParameterized -> ArcLengthParameterization
+arcLengthParameterization (ArcLengthParameterized _ parameterization) =
     parameterization
-        |> ArcLengthParameterization.arcLengthToParameterValue s
-        |> Maybe.andThen (sample arc)
-        |> Maybe.andThen
-            (\( point, vector ) ->
-                case Vector2d.direction vector of
-                    Just tangent ->
-                        Just ( point, tangent )
-
-                    Nothing ->
-                        Nothing
-            )
 
 
-{-| Convenient shorthand for evaluating positions and tangent directions along
-an elliptical arc at multiple arc length values;
-
-    Arc2d.samplesAlong parameterizedArc lengths
-
-is equivalent to
-
-    List.filterMap (Arc2d.sampleAlong parameterizedArc)
-        lengths
-
-No results will be produced for arc length values less than zero or greater than
-the overall arc length of the elliptical arc (or for points where the derivative
-vector is zero).
-
--}
-samplesAlong : ArcLengthParameterized -> List Float -> List ( Point2d, Direction2d )
-samplesAlong parameterizedArc distances =
-    List.filterMap (sampleAlong parameterizedArc) distances
-
-
-{-| Try to get the parameter value along an elliptical arc at a given arc
-length. If the given arc length is less than zero or greater than the arc length
-of the arc, returns `Nothing`.
-
-    EllipticalArc2d.arcLengthToParameterValue
-        parameterizedArc
-        (arcLength / 2)
-    --> Just 0.5947
-
--}
-arcLengthToParameterValue : ArcLengthParameterized -> Float -> Maybe Float
-arcLengthToParameterValue (ArcLengthParameterized _ parameterization) s =
-    ArcLengthParameterization.arcLengthToParameterValue s parameterization
-
-
-{-| Get the arc length along an elliptical arc at a given parameter value. If
-the given parameter value is less than zero or greater than one, returns
-`Nothing`.
-
-    EllipticalArc2d.parameterValueToArcLength
-        parameterizedArc
-        0.5
-    --> Just 0.9657
-
--}
-parameterValueToArcLength : ArcLengthParameterized -> Float -> Maybe Float
-parameterValueToArcLength (ArcLengthParameterized _ parameterization) t =
-    ArcLengthParameterization.parameterValueToArcLength t parameterization
-
-
-{-| Get the original `EllipticalArc2d` from which an `ArcLengthParameterized`
-value was constructed.
--}
+{-| -}
 underlyingArc : ArcLengthParameterized -> EllipticalArc2d
 underlyingArc (ArcLengthParameterized arc _) =
     arc

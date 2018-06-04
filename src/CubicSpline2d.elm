@@ -10,7 +10,7 @@ module CubicSpline2d
         , endControlPoint
         , endDerivative
         , endPoint
-        , firstDerivativeAt
+        , firstDerivative
         , firstDerivativesAt
         , fromEndpoints
         , fromQuadraticSpline
@@ -18,17 +18,18 @@ module CubicSpline2d
         , mirrorAcross
         , placeIn
         , pointAlong
-        , pointAt
+        , pointOn
         , pointsAt
         , relativeTo
         , reverse
         , rotateAround
         , sampleAlong
-        , sampleAt
+        , sampler
         , samplesAt
         , scaleAbout
-        , secondDerivativeAt
+        , secondDerivative
         , secondDerivativesAt
+        , splitAt
         , startControlPoint
         , startDerivative
         , startPoint
@@ -66,13 +67,7 @@ contains functionality for
 
 # Evaluation
 
-Curve evaluation is based on a parameter that ranges from 0 to 1, where a
-parameter value of 0 corresponds to the start point of the curve and a parameter
-value of 1 corresponds to the end point. Parameter values outside of this range
-will be discarded (resulting in `Nothing` for `pointAt` and `sampleAt`, or being
-dropped from the result list for `pointsAt` and `samplesAt`).
-
-@docs pointAt, sampleAt, pointsAt, samplesAt
+@docs pointOn, pointsAt, sampler, samplesAt
 
 
 # Transformations
@@ -87,7 +82,7 @@ dropped from the result list for `pointsAt` and `samplesAt`).
 
 # Subdivision
 
-@docs bisect
+@docs bisect, splitAt
 
 
 # Arc length parameterization
@@ -108,11 +103,9 @@ these two values separately.
 # Differentiation
 
 You are unlikely to need to use these functions directly, but they are useful if
-you are writing low-level geometric algorithms. As with the other curve
-evaluation functions, passing a parameter value outside the range 0 to 1 will
-result in `Nothing`.
+you are writing low-level geometric algorithms.
 
-@docs firstDerivativeAt, secondDerivativeAt, firstDerivativesAt, secondDerivativesAt, thirdDerivative, maxSecondDerivativeMagnitude
+@docs firstDerivative, firstDerivativesAt, secondDerivative, secondDerivativesAt, thirdDerivative, maxSecondDerivativeMagnitude
 
 -}
 
@@ -122,7 +115,8 @@ import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Accuracy exposing (Accuracy)
 import Geometry.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
-import Geometry.Parameter as Parameter
+import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
+import Geometry.ParameterValues as ParameterValues exposing (ParameterValues)
 import Geometry.Types as Types
 import Point2d exposing (Point2d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
@@ -348,103 +342,215 @@ boundingBox spline =
 
 {-| Get a point at a given parameter value.
 
-    CubicSpline2d.pointAt 0 exampleSpline
-    --> Just (Point2d.fromCoordinates ( 1, 1 ))
+    CubicSpline2d.pointOn exampleSpline
+        ParameterValue.zero
+    --> Point2d.fromCoordinates ( 1, 1 )
 
-    CubicSpline2d.pointAt 0.5 exampleSpline
-    --> Just (Point2d.fromCoordinates ( 4, 2.5 ))
+    CubicSpline2d.pointOn exampleSpline
+        ParameterValue.oneHalf
+    --> Point2d.fromCoordinates ( 4, 2.5 )
 
-    CubicSpline2d.pointAt 1 exampleSpline
-    --> Just (Point2d.fromCoordinates ( 7, 4 ))
-
--}
-pointAt : Float -> CubicSpline2d -> Maybe Point2d
-pointAt parameterValue spline =
-    if 0 <= parameterValue && parameterValue <= 1 then
-        Just (unsafePointOn spline parameterValue)
-    else
-        Nothing
-
-
-{-| Find the point and tangent direction along a spline at given parameter
-value.
-
-    CubicSpline2d.sampleAt 0.5 exampleSpline
-    --> Just
-    -->     ( Point2d.fromCoordinates ( 4, 2.5 )
-    -->     , Direction2d.x
-    -->     )
-
-If the spline is degenerate (all control points are identical), returns
-`Nothing`.
+    CubicSpline2d.pointOn exampleSpline
+        ParameterValue.one
+    --> Point2d.fromCoordinates ( 7, 4 )
 
 -}
-sampleAt : Float -> CubicSpline2d -> Maybe ( Point2d, Direction2d )
-sampleAt parameterValue spline =
-    if 0 <= parameterValue && parameterValue <= 1 then
-        let
-            point =
-                unsafePointOn spline parameterValue
+pointOn : CubicSpline2d -> ParameterValue -> Point2d
+pointOn spline parameterValue =
+    let
+        t =
+            ParameterValue.toFloat parameterValue
 
-            firstDerivative =
-                unsafeFirstDerivative spline parameterValue
-        in
-        case Vector2d.direction firstDerivative of
-            Just firstDerivativeDirection ->
-                Just ( point, firstDerivativeDirection )
+        p1 =
+            startPoint spline
 
-            Nothing ->
-                let
-                    secondDerivative =
-                        unsafeSecondDerivative spline parameterValue
-                in
-                case Vector2d.direction secondDerivative of
-                    Just secondDerivativeDirection ->
-                        -- Zero first derivative and non-zero second derivative
-                        -- mean we have reached a reversal point, where the
-                        -- tangent direction just afterwards is equal to the
-                        -- second derivative direction and the tangent direction
-                        -- just before is equal to the flipped second derivative
-                        -- direction. If we happen to be right at the end of the
-                        -- spline, choose the tangent direction just before the
-                        -- end (instead of one that is off the spline!),
-                        -- otherwise choose the tangent direction just after the
-                        -- point (necessary for t = 0, arbitrary for all other
-                        -- points).
-                        if parameterValue == 1 then
-                            Just
-                                ( point
-                                , Direction2d.flip secondDerivativeDirection
-                                )
-                        else
-                            Just ( point, secondDerivativeDirection )
+        p2 =
+            startControlPoint spline
 
-                    Nothing ->
-                        case Vector2d.direction (thirdDerivative spline) of
-                            Just thirdDerivativeDirection ->
-                                Just ( point, thirdDerivativeDirection )
+        p3 =
+            endControlPoint spline
 
-                            Nothing ->
-                                -- Degenerate spline - all control points equal
-                                Nothing
-    else
-        Nothing
+        p4 =
+            endPoint spline
+
+        q1 =
+            Point2d.interpolateFrom p1 p2 t
+
+        q2 =
+            Point2d.interpolateFrom p2 p3 t
+
+        q3 =
+            Point2d.interpolateFrom p3 p4 t
+
+        r1 =
+            Point2d.interpolateFrom q1 q2 t
+
+        r2 =
+            Point2d.interpolateFrom q2 q3 t
+    in
+    Point2d.interpolateFrom r1 r2 t
 
 
 {-| Get points along a spline at a given set of parameter values.
 
     exampleSpline
         |> CubicSpline2d.pointsAt
-            (Parameter.values [ 0, 0.5, 1 ])
+            (ParameterValues.steps 2)
     --> [ Point2d.fromCoordinates ( 1, 1 )
     --> , Point2d.fromCoordinates ( 4, 2.5 )
     --> , Point2d.fromCoordinates ( 7, 4 )
     --> ]
 
 -}
-pointsAt : Parameter.Values -> CubicSpline2d -> List Point2d
+pointsAt : ParameterValues -> CubicSpline2d -> List Point2d
 pointsAt parameterValues spline =
-    Parameter.forEach parameterValues (unsafePointOn spline)
+    ParameterValues.map (pointOn spline) parameterValues
+
+
+{-| Attempt to construct a function for evaluating points and tangent directions
+along a spline; if
+
+    CubicSpline2d.sampler spline
+
+returns `Just sampleAt`, then
+
+    sampleAt ParameterValue.zero
+
+will return the start point of the spline along with the tangent direction at
+the start point,
+
+    sampleAt ParameterValue.one
+
+will return the end point and the corresponding tangent tangent direction, etc.
+
+If the spline is degenerate (all control points are identical), returns
+`Nothing`.
+
+-}
+sampler : CubicSpline2d -> Maybe (ParameterValue -> ( Point2d, Direction2d ))
+sampler spline =
+    case Vector2d.direction (thirdDerivative spline) of
+        Just thirdDerivativeDirection ->
+            -- Third derivative is non-zero, so if all else fails we can fall
+            -- back on it to provide a tangent direction
+            Just <|
+                nonZeroThirdDerivativeSampler spline
+                    thirdDerivativeDirection
+
+        Nothing ->
+            let
+                -- Third derivative is zero, so second derivative is constant -
+                -- evaluate it at an arbitrary point to get its value
+                secondDerivativeVector =
+                    secondDerivative spline ParameterValue.zero
+            in
+            case Vector2d.direction secondDerivativeVector of
+                Just secondDerivativeDirection ->
+                    -- Second derivative is non-zero, so if all else fails we
+                    -- can fall back on it to provide a tangent direction
+                    Just <|
+                        nonZeroSecondDerivativeSampler spline
+                            secondDerivativeDirection
+
+                Nothing ->
+                    let
+                        -- Second and third derivatives are zero, so first
+                        -- derivative is constant - evaluate it at an arbitrary
+                        -- point to get its value
+                        firstDerivativeVector =
+                            firstDerivative spline ParameterValue.zero
+                    in
+                    case Vector2d.direction firstDerivativeVector of
+                        Just firstDerivativeDirection ->
+                            Just <|
+                                nonZeroFirstDerivativeSampler spline
+                                    firstDerivativeDirection
+
+                        Nothing ->
+                            Nothing
+
+
+nonZeroFirstDerivativeSampler : CubicSpline2d -> Direction2d -> ParameterValue -> ( Point2d, Direction2d )
+nonZeroFirstDerivativeSampler spline firstDerivativeDirection =
+    -- Tangent direction is always equal to the (constant) first derivative
+    -- direction
+    \parameterValue ->
+        ( pointOn spline parameterValue
+        , firstDerivativeDirection
+        )
+
+
+nonZeroSecondDerivativeSampler : CubicSpline2d -> Direction2d -> ParameterValue -> ( Point2d, Direction2d )
+nonZeroSecondDerivativeSampler spline secondDerivativeDirection =
+    \parameterValue ->
+        let
+            point =
+                pointOn spline parameterValue
+
+            firstDerivativeVector =
+                firstDerivative spline parameterValue
+        in
+        case Vector2d.direction firstDerivativeVector of
+            Just firstDerivativeDirection ->
+                -- First derivative is non-zero, so use its direction as the
+                -- tangent direction
+                ( point, firstDerivativeDirection )
+
+            Nothing ->
+                -- Zero first derivative and non-zero second derivative mean we
+                -- have reached a reversal point, where the tangent direction
+                -- just afterwards is equal to the second derivative direction
+                -- and the tangent direction just before is equal to the flipped
+                -- second derivative direction. If we happen to be right at the
+                -- end of the spline, choose the tangent direction just before
+                -- the end (instead of one that is off the spline!), otherwise
+                -- choose the tangent direction just after the point (necessary
+                -- for t = 0, arbitrary for all other points).
+                if parameterValue == ParameterValue.one then
+                    ( point, Direction2d.flip secondDerivativeDirection )
+                else
+                    ( point, secondDerivativeDirection )
+
+
+nonZeroThirdDerivativeSampler : CubicSpline2d -> Direction2d -> ParameterValue -> ( Point2d, Direction2d )
+nonZeroThirdDerivativeSampler spline thirdDerivativeDirection =
+    \parameterValue ->
+        let
+            point =
+                pointOn spline parameterValue
+
+            firstDerivativeVector =
+                firstDerivative spline parameterValue
+        in
+        case Vector2d.direction firstDerivativeVector of
+            Just firstDerivativeDirection ->
+                -- First derivative is non-zero, so just use its
+                -- direction as the tangent direction (normal case)
+                ( point, firstDerivativeDirection )
+
+            Nothing ->
+                let
+                    secondDerivativeVector =
+                        secondDerivative spline parameterValue
+                in
+                case Vector2d.direction secondDerivativeVector of
+                    Just secondDerivativeDirection ->
+                        -- Zero first derivative and non-zero second
+                        -- derivative mean we have reached a
+                        -- reversal point, as above in
+                        -- nonZeroSecondDerivativeSampler
+                        if parameterValue == ParameterValue.one then
+                            ( point
+                            , Direction2d.flip secondDerivativeDirection
+                            )
+                        else
+                            ( point, secondDerivativeDirection )
+
+                    Nothing ->
+                        -- First and second derivatives are zero, so
+                        -- fall back to the third dervative
+                        -- direction
+                        ( point, thirdDerivativeDirection )
 
 
 {-| Find the positions and tangent directions at several points along a spline,
@@ -452,7 +558,7 @@ given by a set of parameter values.
 
     exampleSpline
         |> CubicSpline2d.samplesAt
-            (Parameter.values [ 0, 0.5, 1 ])
+            (ParameterValues.steps 2)
     --> [ ( Point2d.fromCoordinates ( 1, 1 )
     -->   , Direction2d.fromAngle (degrees 56.31)
     -->   )
@@ -468,11 +574,11 @@ If the given spline is degenerate (all control points are identical), it has no
 tangent directions and so the result will always be an empty list.
 
 -}
-samplesAt : Parameter.Values -> CubicSpline2d -> List ( Point2d, Direction2d )
+samplesAt : ParameterValues -> CubicSpline2d -> List ( Point2d, Direction2d )
 samplesAt parameterValues spline =
-    case samplingFunction spline of
-        Just unsafeSample ->
-            Parameter.forEach parameterValues unsafeSample
+    case sampler spline of
+        Just sampleAt ->
+            ParameterValues.map sampleAt parameterValues
 
         Nothing ->
             []
@@ -691,12 +797,37 @@ mapControlPoints function spline =
 -}
 bisect : CubicSpline2d -> ( CubicSpline2d, CubicSpline2d )
 bisect =
-    splitAt 0.5
+    splitAt ParameterValue.oneHalf
 
 
-splitAt : Float -> CubicSpline2d -> ( CubicSpline2d, CubicSpline2d )
-splitAt t spline =
+{-| Split a spline at a particular parameter value, resulting in two smaller
+splines.
+
+    parameterValue =
+        ParameterValue.clamped 0.75
+
+    CubicSpline2d.splitAt parameterValue exampleSpline
+    --> ( CubicSpline2d.fromControlPoints
+    -->     ( Point2d.fromCoordinates ( 1, 1 )
+    -->     , Point2d.fromCoordinates ( 2.5, 3.25 )
+    -->     , Point2d.fromCoordinates ( 4, 2.125 )
+    -->     , Point2d.fromCoordinates ( 5.5, 2.6875 )
+    -->     )
+    --> , CubicSpline2d.fromControlPoints
+    -->     ( Point2d.fromCoordinates ( 5.5, 2.6875 )
+    -->     , Point2d.fromCoordinates ( 6, 2.875 )
+    -->     , Point2d.fromCoordinates ( 6.5, 3.25 )
+    -->     , Point2d.fromCoordinates ( 7, 4 )
+    -->     )
+    --> )
+
+-}
+splitAt : ParameterValue -> CubicSpline2d -> ( CubicSpline2d, CubicSpline2d )
+splitAt parameterValue spline =
     let
+        t =
+            ParameterValue.toFloat parameterValue
+
         p1 =
             startPoint spline
 
@@ -766,7 +897,7 @@ arcLengthParameterized accuracy spline =
         parameterization =
             ArcLengthParameterization.build
                 { accuracy = accuracy
-                , derivativeMagnitude = unsafeDerivativeMagnitude spline
+                , derivativeMagnitude = derivativeMagnitude spline
                 , maxSecondDerivativeMagnitude =
                     maxSecondDerivativeMagnitude spline
                 }
@@ -787,8 +918,9 @@ the tolerance used when constructing `parameterizedSpline`.
 
 -}
 arcLength : ArcLengthParameterized -> Float
-arcLength (ArcLengthParameterized _ parameterization) =
-    ArcLengthParameterization.totalArcLength parameterization
+arcLength parameterizedSpline =
+    arcLengthParameterization parameterizedSpline
+        |> ArcLengthParameterization.totalArcLength
 
 
 {-| Try to get the point along a spline at a given arc length. For example, to
@@ -801,7 +933,8 @@ computed above:
 
 Note that this is not the same as evaulating at a parameter value of 0.25:
 
-    CubicSpline2d.pointAt 0.25 exampleSpline
+    CubicSpline2d.pointOn exampleSpline
+        (ParameterValue.clamped 0.25)
     --> Just (Point2d.fromCoordinates ( 2.5, 2.3125 ))
 
 If the given arc length is less than zero or greater than the arc length of the
@@ -812,7 +945,7 @@ pointAlong : ArcLengthParameterized -> Float -> Maybe Point2d
 pointAlong (ArcLengthParameterized spline parameterization) distance =
     parameterization
         |> ArcLengthParameterization.arcLengthToParameterValue distance
-        |> Maybe.map (unsafePointOn spline)
+        |> Maybe.map (pointOn spline)
 
 
 {-| Try to get the point and tangent direction along a spline at a given arc
@@ -833,13 +966,13 @@ given arc length), `Nothing` is returned.
 -}
 sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point2d, Direction2d )
 sampleAlong (ArcLengthParameterized spline parameterization) =
-    case samplingFunction spline of
-        Just unsafeSample ->
+    case sampler spline of
+        Just toSample ->
             \distance ->
-                ArcLengthParameterization.arcLengthToParameterValue
-                    distance
-                    parameterization
-                    |> Maybe.map unsafeSample
+                parameterization
+                    |> ArcLengthParameterization.arcLengthToParameterValue
+                        distance
+                    |> Maybe.map toSample
 
         Nothing ->
             always Nothing
@@ -859,22 +992,122 @@ underlyingSpline (ArcLengthParameterized spline _) =
 
 {-| Get the first derivative of a spline at a given parameter value.
 
-    CubicSpline2d.firstDerivativeAt 0 exampleSpline
+    CubicSpline2d.firstDerivative exampleSpline
+        ParameterValue.zero
     --> Just (Vector2d.fromComponents ( 6, 9 ))
 
-    CubicSpline2d.firstDerivativeAt 0.5 exampleSpline
+    CubicSpline2d.firstDerivative exampleSpline
+        ParameterValue.oneHalf
     --> Just (Vector2d.fromComponents ( 6, 0 ))
 
-    CubicSpline2d.firstDerivativeAt 1 exampleSpline
+    CubicSpline2d.firstDerivative exampleSpline
+        ParameterValue.one
     --> Just (Vector2d.fromComponents ( 6, 9 ))
 
 -}
-firstDerivativeAt : Float -> CubicSpline2d -> Maybe Vector2d
-firstDerivativeAt parameterValue spline =
-    if 0 <= parameterValue && parameterValue <= 1 then
-        Just (unsafeFirstDerivative spline parameterValue)
+firstDerivative : CubicSpline2d -> ParameterValue -> Vector2d
+firstDerivative spline parameterValue =
+    let
+        t =
+            ParameterValue.toFloat parameterValue
+
+        p1 =
+            startPoint spline
+
+        p2 =
+            startControlPoint spline
+
+        p3 =
+            endControlPoint spline
+
+        p4 =
+            endPoint spline
+
+        ( x1, y1 ) =
+            Point2d.coordinates p1
+
+        ( x2, y2 ) =
+            Point2d.coordinates p2
+
+        ( x3, y3 ) =
+            Point2d.coordinates p3
+
+        ( x4, y4 ) =
+            Point2d.coordinates p4
+
+        vx1 =
+            x2 - x1
+
+        vy1 =
+            y2 - y1
+
+        vx2 =
+            x3 - x2
+
+        vy2 =
+            y3 - y2
+
+        vx3 =
+            x4 - x3
+
+        vy3 =
+            y4 - y3
+    in
+    if t <= 0.5 then
+        let
+            wx1 =
+                vx1 + t * (vx2 - vx1)
+
+            wy1 =
+                vy1 + t * (vy2 - vy1)
+
+            wx2 =
+                vx2 + t * (vx3 - vx2)
+
+            wy2 =
+                vy2 + t * (vy3 - vy2)
+        in
+        Vector2d.fromComponents
+            ( 3 * (wx1 + t * (wx2 - wx1))
+            , 3 * (wy1 + t * (wy2 - wy1))
+            )
     else
-        Nothing
+        let
+            u =
+                1 - t
+
+            wx1 =
+                vx2 + u * (vx1 - vx2)
+
+            wy1 =
+                vy2 + u * (vy1 - vy2)
+
+            wx2 =
+                vx3 + u * (vx2 - vx3)
+
+            wy2 =
+                vy3 + u * (vy2 - vy3)
+        in
+        Vector2d.fromComponents
+            ( 3 * (wx2 + u * (wx1 - wx2))
+            , 3 * (wy2 + u * (wy1 - wy2))
+            )
+
+
+{-| Evaluate the first derivative of a spline at a range of parameter values.
+
+    exampleSpline
+        |> CubicSpline2d.firstDerivativesAt
+            (ParameterValues.steps 2)
+    --> [ Vector2d.fromComponents ( 6, 9 )
+    --> , Vector2d.fromComponents ( 6, 0 )
+    --> , Vector2d.fromComponents ( 6, 9 )
+    --> ]
+
+-}
+firstDerivativesAt : ParameterValues -> CubicSpline2d -> List Vector2d
+firstDerivativesAt parameterValues spline =
+    ParameterValues.map (firstDerivative spline) parameterValues
 
 
 {-| Get the second derivative of a spline at a given parameter value.
@@ -889,44 +1122,56 @@ firstDerivativeAt parameterValue spline =
     --> Just (Vector2d.fromComponents ( 0, 36 ))
 
 -}
-secondDerivativeAt : Float -> CubicSpline2d -> Maybe Vector2d
-secondDerivativeAt parameterValue spline =
-    if 0 <= parameterValue && parameterValue <= 1 then
-        Just (unsafeSecondDerivative spline parameterValue)
-    else
-        Nothing
+secondDerivative : CubicSpline2d -> ParameterValue -> Vector2d
+secondDerivative spline parameterValue =
+    let
+        t =
+            ParameterValue.toFloat parameterValue
 
+        p1 =
+            startPoint spline
 
-{-| Evaluate the first derivative of a spline at a range of parameter values.
+        p2 =
+            startControlPoint spline
 
-    exampleSpline
-        |> CubicSpline2d.firstDerivativesAt
-            (Parameter.values [ 0, 0.5, 1 ])
-    --> [ Vector2d.fromComponents ( 6, 9 )
-    --> , Vector2d.fromComponents ( 6, 0 )
-    --> , Vector2d.fromComponents ( 6, 9 )
-    --> ]
+        p3 =
+            endControlPoint spline
 
--}
-firstDerivativesAt : Parameter.Values -> CubicSpline2d -> List Vector2d
-firstDerivativesAt parameterValues spline =
-    Parameter.forEach parameterValues (unsafeFirstDerivative spline)
+        p4 =
+            endPoint spline
+
+        u1 =
+            Vector2d.from p1 p2
+
+        u2 =
+            Vector2d.from p2 p3
+
+        u3 =
+            Vector2d.from p3 p4
+
+        v1 =
+            Vector2d.difference u2 u1
+
+        v2 =
+            Vector2d.difference u3 u2
+    in
+    Vector2d.scaleBy 6 (Vector2d.interpolateFrom v1 v2 t)
 
 
 {-| Evaluate the second derivative of a spline at a range of parameter values.
 
     exampleSpline
         |> CubicSpline2d.secondDerivativesAt
-            (Parameter.values [ 0, 0.5, 1 ])
+            (ParameterValues.steps 2)
     --> [ Vector2d.fromComponents ( 0, -36 )
     --> , Vector2d.fromComponents ( 0, 0 )
     --> , Vector2d.fromComponents ( 0, 36 )
     --> ]
 
 -}
-secondDerivativesAt : Parameter.Values -> CubicSpline2d -> List Vector2d
+secondDerivativesAt : ParameterValues -> CubicSpline2d -> List Vector2d
 secondDerivativesAt parameterValues spline =
-    Parameter.forEach parameterValues (unsafeSecondDerivative spline)
+    ParameterValues.map (secondDerivative spline) parameterValues
 
 
 {-| Get the third derivative of a spline (for a cubic spline, this is a
@@ -1011,127 +1256,8 @@ maxSecondDerivativeMagnitude spline =
     6 * max (Vector2d.length v1) (Vector2d.length v2)
 
 
-unsafePointOn : CubicSpline2d -> Float -> Point2d
-unsafePointOn spline t =
-    let
-        p1 =
-            startPoint spline
-
-        p2 =
-            startControlPoint spline
-
-        p3 =
-            endControlPoint spline
-
-        p4 =
-            endPoint spline
-
-        q1 =
-            Point2d.interpolateFrom p1 p2 t
-
-        q2 =
-            Point2d.interpolateFrom p2 p3 t
-
-        q3 =
-            Point2d.interpolateFrom p3 p4 t
-
-        r1 =
-            Point2d.interpolateFrom q1 q2 t
-
-        r2 =
-            Point2d.interpolateFrom q2 q3 t
-    in
-    Point2d.interpolateFrom r1 r2 t
-
-
-unsafeFirstDerivative : CubicSpline2d -> Float -> Vector2d
-unsafeFirstDerivative spline t =
-    let
-        p1 =
-            startPoint spline
-
-        p2 =
-            startControlPoint spline
-
-        p3 =
-            endControlPoint spline
-
-        p4 =
-            endPoint spline
-
-        ( x1, y1 ) =
-            Point2d.coordinates p1
-
-        ( x2, y2 ) =
-            Point2d.coordinates p2
-
-        ( x3, y3 ) =
-            Point2d.coordinates p3
-
-        ( x4, y4 ) =
-            Point2d.coordinates p4
-
-        vx1 =
-            x2 - x1
-
-        vy1 =
-            y2 - y1
-
-        vx2 =
-            x3 - x2
-
-        vy2 =
-            y3 - y2
-
-        vx3 =
-            x4 - x3
-
-        vy3 =
-            y4 - y3
-    in
-    if t <= 0.5 then
-        let
-            wx1 =
-                vx1 + t * (vx2 - vx1)
-
-            wy1 =
-                vy1 + t * (vy2 - vy1)
-
-            wx2 =
-                vx2 + t * (vx3 - vx2)
-
-            wy2 =
-                vy2 + t * (vy3 - vy2)
-        in
-        Vector2d.fromComponents
-            ( 3 * (wx1 + t * (wx2 - wx1))
-            , 3 * (wy1 + t * (wy2 - wy1))
-            )
-    else
-        let
-            u =
-                1 - t
-
-            wx1 =
-                vx2 + u * (vx1 - vx2)
-
-            wy1 =
-                vy2 + u * (vy1 - vy2)
-
-            wx2 =
-                vx3 + u * (vx2 - vx3)
-
-            wy2 =
-                vy3 + u * (vy2 - vy3)
-        in
-        Vector2d.fromComponents
-            ( 3 * (wx2 + u * (wx1 - wx2))
-            , 3 * (wy2 + u * (wy1 - wy2))
-            )
-
-
-unsafeDerivativeMagnitude : CubicSpline2d -> Float -> Float
-unsafeDerivativeMagnitude spline =
+derivativeMagnitude : CubicSpline2d -> Float -> Float
+derivativeMagnitude spline =
     let
         p1 =
             startPoint spline
@@ -1188,148 +1314,23 @@ unsafeDerivativeMagnitude spline =
             y34 - y23
     in
     \t ->
-        if 0 <= t && t <= 1 then
-            let
-                x13 =
-                    x12 + t * x123
+        let
+            x13 =
+                x12 + t * x123
 
-                y13 =
-                    y12 + t * y123
+            y13 =
+                y12 + t * y123
 
-                x24 =
-                    x23 + t * x234
+            x24 =
+                x23 + t * x234
 
-                y24 =
-                    y23 + t * y234
+            y24 =
+                y23 + t * y234
 
-                x14 =
-                    x13 + t * (x24 - x13)
+            x14 =
+                x13 + t * (x24 - x13)
 
-                y14 =
-                    y13 + t * (y24 - y13)
-            in
-            3 * sqrt (x14 * x14 + y14 * y14)
-        else
-            0
-
-
-unsafeSecondDerivative : CubicSpline2d -> Float -> Vector2d
-unsafeSecondDerivative spline t =
-    let
-        p1 =
-            startPoint spline
-
-        p2 =
-            startControlPoint spline
-
-        p3 =
-            endControlPoint spline
-
-        p4 =
-            endPoint spline
-
-        u1 =
-            Vector2d.from p1 p2
-
-        u2 =
-            Vector2d.from p2 p3
-
-        u3 =
-            Vector2d.from p3 p4
-
-        v1 =
-            Vector2d.difference u2 u1
-
-        v2 =
-            Vector2d.difference u3 u2
-    in
-    Vector2d.scaleBy 6 (Vector2d.interpolateFrom v1 v2 t)
-
-
-samplingFunction : CubicSpline2d -> Maybe (Float -> ( Point2d, Direction2d ))
-samplingFunction spline =
-    case Vector2d.direction (thirdDerivative spline) of
-        Just thirdDerivativeDirection ->
-            Just <|
-                \t ->
-                    let
-                        point =
-                            unsafePointOn spline t
-
-                        firstDerivative =
-                            unsafeFirstDerivative spline t
-                    in
-                    case Vector2d.direction firstDerivative of
-                        Just firstDerivativeDirection ->
-                            ( point, firstDerivativeDirection )
-
-                        Nothing ->
-                            let
-                                secondDerivative =
-                                    unsafeSecondDerivative spline t
-                            in
-                            case Vector2d.direction secondDerivative of
-                                Just secondDerivativeDirection ->
-                                    -- Zero first derivative and non-zero second
-                                    -- derivative mean we have reached a
-                                    -- reversal point, where the tangent
-                                    -- direction just afterwards is equal to the
-                                    -- second derivative direction and the
-                                    -- tangent direction just before is equal to
-                                    -- the flipped second derivative direction.
-                                    -- If we happen to be right at the end of
-                                    -- the spline, choose the tangent direction
-                                    -- just before the end (instead of one that
-                                    -- is off the spline!), otherwise choose the
-                                    -- tangent direction just after the point
-                                    -- (necessary for t = 0, arbitrary for all
-                                    -- other points).
-                                    if t == 1 then
-                                        ( point
-                                        , Direction2d.flip
-                                            secondDerivativeDirection
-                                        )
-                                    else
-                                        ( point, secondDerivativeDirection )
-
-                                Nothing ->
-                                    ( point, thirdDerivativeDirection )
-
-        Nothing ->
-            let
-                secondDerivative =
-                    unsafeSecondDerivative spline 0
-            in
-            case Vector2d.direction secondDerivative of
-                Just secondDerivativeDirection ->
-                    Just <|
-                        \t ->
-                            let
-                                point =
-                                    unsafePointOn spline t
-
-                                firstDerivative =
-                                    unsafeFirstDerivative spline t
-                            in
-                            case Vector2d.direction firstDerivative of
-                                Just firstDerivativeDirection ->
-                                    ( point, firstDerivativeDirection )
-
-                                Nothing ->
-                                    ( point, secondDerivativeDirection )
-
-                Nothing ->
-                    let
-                        firstDerivative =
-                            unsafeFirstDerivative spline 0
-                    in
-                    case Vector2d.direction firstDerivative of
-                        Just firstDerivativeDirection ->
-                            Just <|
-                                \t ->
-                                    ( unsafePointOn spline t
-                                    , firstDerivativeDirection
-                                    )
-
-                        Nothing ->
-                            Nothing
+            y14 =
+                y13 + t * (y24 - y13)
+        in
+        3 * sqrt (x14 * x14 + y14 * y14)

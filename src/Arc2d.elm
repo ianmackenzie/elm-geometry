@@ -2,20 +2,18 @@ module Arc2d
     exposing
         ( Arc2d
         , centerPoint
-        , derivativeVector
-        , derivativeVectors
         , endPoint
         , from
         , mirrorAcross
         , placeIn
         , pointOn
-        , pointsOn
+        , pointsAt
         , radius
         , relativeTo
         , reverse
         , rotateAround
-        , sample
-        , samples
+        , sampler
+        , samplesAt
         , scaleAbout
         , startPoint
         , sweptAngle
@@ -53,7 +51,7 @@ end point). This module includes functionality for
 
 # Evaluation
 
-@docs pointOn, pointsOn, derivativeVector, derivativeVectors, sample, samples
+@docs pointOn, pointsAt, sampler, samplesAt
 
 
 # Linear approximation
@@ -77,7 +75,8 @@ import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Future.Tuple as Tuple
 import Geometry.Accuracy exposing (Accuracy)
-import Geometry.Parameter as Parameter
+import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
+import Geometry.ParameterValues as ParameterValues exposing (ParameterValues)
 import Geometry.SweptAngle as SweptAngle exposing (SweptAngle)
 import Geometry.Types as Types
 import LineSegment2d exposing (LineSegment2d)
@@ -546,12 +545,7 @@ startPoint (Types.Arc2d properties) =
 -}
 endPoint : Arc2d -> Point2d
 endPoint arc =
-    case pointOn arc 1.0 of
-        Just point ->
-            point
-
-        Nothing ->
-            startPoint arc
+    pointOn arc ParameterValue.one
 
 
 {-| Get the swept angle of an arc in radians.
@@ -568,19 +562,13 @@ sweptAngle (Types.Arc2d properties) =
     properties.sweptAngle
 
 
-{-| Get the point along an arc at a given parameter value. A parameter value of
-0 corresponds to the start point of the arc and a value of 1 corresponds to the
-end point. Only parameter values from 0 to 1 (inclusive) are valid; passing an
-invalid parameter value will result in `Nothing`.
+{-| Get the point along an arc at a given parameter value.
 
-    Arc2d.pointOn exampleArc 0.5
-    --> Just (Point2d.fromCoordinates ( 2.4142, 2.4142 ))
-
-    Arc2d.pointOn exampleArc 1.5
-    --> Nothing
+    Arc2d.pointOn exampleArc ParameterValue.oneHalf
+    --> Point2d.fromCoordinates ( 2.4142, 2.4142 )
 
 -}
-pointOn : Arc2d -> Float -> Maybe Point2d
+pointOn : Arc2d -> ParameterValue -> Point2d
 pointOn (Types.Arc2d arc) =
     let
         ( x0, y0 ) =
@@ -596,86 +584,74 @@ pointOn (Types.Arc2d arc) =
             arc.sweptAngle
     in
     if arcSweptAngle == 0.0 then
-        \t ->
-            if 0 <= t && t <= 1 then
-                let
-                    distance =
-                        t * arcSignedLength
-                in
-                Just <|
-                    Point2d.fromCoordinates
-                        ( x0 + distance * dx
-                        , y0 + distance * dy
-                        )
-            else
-                Nothing
+        \parameterValue ->
+            let
+                t =
+                    ParameterValue.toFloat parameterValue
+
+                distance =
+                    t * arcSignedLength
+            in
+            Point2d.fromCoordinates
+                ( x0 + distance * dx
+                , y0 + distance * dy
+                )
     else
         let
             arcRadius =
                 arcSignedLength / arcSweptAngle
         in
-        \t ->
-            if 0 <= t && t <= 1 then
-                let
-                    theta =
-                        t * arcSweptAngle
+        \parameterValue ->
+            let
+                t =
+                    ParameterValue.toFloat parameterValue
 
-                    x =
-                        arcRadius * sin theta
+                theta =
+                    t * arcSweptAngle
 
-                    y =
-                        if abs theta < pi / 2 then
-                            x * tan (theta / 2)
-                        else
-                            arcRadius * (1 - cos theta)
-                in
-                Just <|
-                    Point2d.fromCoordinates
-                        ( x0 + x * dx - y * dy
-                        , y0 + x * dy + y * dx
-                        )
-            else
-                Nothing
+                x =
+                    arcRadius * sin theta
+
+                y =
+                    if abs theta < pi / 2 then
+                        x * tan (theta / 2)
+                    else
+                        arcRadius * (1 - cos theta)
+            in
+            Point2d.fromCoordinates
+                ( x0 + x * dx - y * dy
+                , y0 + x * dy + y * dx
+                )
 
 
-{-| Convenient shorthand for evaluating multiple points;
-
-    Arc2d.pointsOn arc parameterValues
-
-is equivalent to
-
-    List.map (Arc2d.pointOn arc) parameterValues
-
-To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
-module.
-
--}
-pointsOn : Arc2d -> List Float -> List Point2d
-pointsOn arc parameterValues =
-    List.filterMap (pointOn arc) parameterValues
+{-| -}
+pointsAt : ParameterValues -> Arc2d -> List Point2d
+pointsAt parameterValues arc =
+    ParameterValues.map (pointOn arc) parameterValues
 
 
 {-| Get the derivative vector of an arc with respect to a parameter that is 0 at
 the start point of the arc and 1 at the end point of the arc.
 
-    Arc2d.derivativeVector exampleArc 0
-    --> Just (Vector2d.fromComponents ( 0, 3.1416 ))
+    Arc2d.firstDerivative exampleArc ParameterValue.zero
+    --> Vector2d.fromComponents ( 0, 3.1416 )
 
-    Arc2d.derivativeVector exampleArc 1
-    --> Just (Vector2d.fromComponents ( -3.1416, 0 ))
+    Arc2d.firstDerivative exampleArc ParameterValue.one
+    --> Vector2d.fromComponents ( -3.1416, 0 )
 
 -}
-derivativeVector : Arc2d -> Float -> Maybe Vector2d
-derivativeVector (Types.Arc2d arc) =
+firstDerivative : Arc2d -> ParameterValue -> Vector2d
+firstDerivative (Types.Arc2d arc) =
     let
         startDerivative =
             Vector2d.withLength arc.signedLength arc.xDirection
     in
-    \t ->
-        if 0 <= t && t <= 1 then
-            Just (startDerivative |> Vector2d.rotateBy (t * arc.sweptAngle))
-        else
-            Nothing
+    \parameterValue ->
+        let
+            t =
+                ParameterValue.toFloat parameterValue
+        in
+        startDerivative |> Vector2d.rotateBy (t * arc.sweptAngle)
 
 
 {-| Convenient shorthand for evaluating multiple derivative vectors;
@@ -691,9 +667,9 @@ To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry
 module.
 
 -}
-derivativeVectors : Arc2d -> List Float -> List Vector2d
-derivativeVectors arc parameterValues =
-    List.filterMap (derivativeVector arc) parameterValues
+firstDerivativesAt : ParameterValues -> Arc2d -> List Vector2d
+firstDerivativesAt parameterValues arc =
+    ParameterValues.map (firstDerivative arc) parameterValues
 
 
 {-| Sample an arc at a given parameter value to get both the position and
@@ -716,33 +692,44 @@ derivative vector at that parameter value. Equivalent to calling `pointOn` and
     --> )
 
 -}
-sample : Arc2d -> Float -> Maybe ( Point2d, Vector2d )
-sample arc =
+sampler : Arc2d -> Maybe (ParameterValue -> ( Point2d, Direction2d ))
+sampler arc =
     let
-        pointOnArc =
-            pointOn arc
-
-        derivativeOfArc =
-            derivativeVector arc
+        (Types.Arc2d properties) =
+            arc
     in
-    \t -> Maybe.map2 Tuple.pair (pointOnArc t) (derivativeOfArc t)
+    if properties.signedLength == 0 then
+        Nothing
+    else
+        let
+            pointOnArc =
+                pointOn arc
+        in
+        Just <|
+            \parameterValue ->
+                let
+                    point =
+                        pointOnArc parameterValue
+
+                    t =
+                        ParameterValue.toFloat parameterValue
+
+                    tangentDirection =
+                        properties.xDirection
+                            |> Direction2d.rotateBy (t * properties.sweptAngle)
+                in
+                ( point, tangentDirection )
 
 
-{-| Convenient shorthand for evaluating multiple samples;
+{-| -}
+samplesAt : ParameterValues -> Arc2d -> List ( Point2d, Direction2d )
+samplesAt parameterValues arc =
+    case sampler arc of
+        Just sampler_ ->
+            ParameterValues.map sampler_ parameterValues
 
-    Arc2d.samples arc parameterValues
-
-is equivalent to
-
-    List.map (Arc2d.sample arc) parameterValues
-
-To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
-module.
-
--}
-samples : Arc2d -> List Float -> List ( Point2d, Vector2d )
-samples arc parameterValues =
-    List.filterMap (sample arc) parameterValues
+        Nothing ->
+            []
 
 
 numApproximationSegments : Float -> Arc2d -> Int
@@ -783,8 +770,7 @@ toPolyline (Types.MaxError tolerance) arc =
             numApproximationSegments tolerance arc
 
         points =
-            pointsOn arc
-                (Parameter.forEach (Parameter.steps numSegments) identity)
+            arc |> pointsAt (ParameterValues.steps numSegments)
     in
     Polyline2d.fromVertices points
 

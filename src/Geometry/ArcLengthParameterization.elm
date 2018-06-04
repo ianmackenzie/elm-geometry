@@ -31,6 +31,7 @@ parameter values.
 
 import Float.Extra as Float
 import Geometry.Accuracy as Accuracy exposing (Accuracy)
+import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
 import Geometry.Types as Types
 
 
@@ -233,12 +234,12 @@ buildTree derivativeMagnitude lengthAtStart_ paramAtStart_ paramAtEnd height =
 arc length is less than zero or greater than the total arc length of the curve
 (as reported by `totalArcLength`), returns `Nothing`.
 -}
-arcLengthToParameterValue : Float -> ArcLengthParameterization -> Maybe Float
+arcLengthToParameterValue : Float -> ArcLengthParameterization -> Maybe ParameterValue
 arcLengthToParameterValue s (ArcLengthParameterization tree) =
     if s == 0 then
-        Just 0
+        Just ParameterValue.zero
     else if s > 0 && s <= lengthAtEnd tree then
-        Just (unsafeToParameterValue tree s)
+        Just (ParameterValue.unsafe (unsafeToParameterValue tree s))
     else
         Nothing
 
@@ -356,14 +357,12 @@ totalArcLength (ArcLengthParameterization tree) =
 {-| Convert a parameter value to the corresponding arc length. If the given
 parameter value is less than zero or greater than one, returns `Nothing`.
 -}
-parameterValueToArcLength : Float -> ArcLengthParameterization -> Maybe Float
-parameterValueToArcLength t (ArcLengthParameterization tree) =
-    if t == 0 then
-        Just 0
-    else if t > 0 && t <= 1 then
-        Just (unsafeToArcLength tree t)
+parameterValueToArcLength : ParameterValue -> ArcLengthParameterization -> Float
+parameterValueToArcLength parameterValue (ArcLengthParameterization tree) =
+    if parameterValue == ParameterValue.zero then
+        0
     else
-        Nothing
+        unsafeToArcLength tree (ParameterValue.toFloat parameterValue)
 
 
 unsafeToArcLength : SegmentTree -> Float -> Float

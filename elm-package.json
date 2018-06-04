@@ -9,7 +9,8 @@
     "exposed-modules": [
         "Geometry.Accuracy",
         "Geometry.ArcLengthParameterization",
-        "Geometry.Parameter",
+        "Geometry.ParameterValue",
+        "Geometry.ParameterValues",
         "Geometry.SweptAngle",
         "Arc2d",
         "Arc3d",
