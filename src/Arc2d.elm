@@ -75,6 +75,7 @@ end point). This module includes functionality for
 import Axis2d exposing (Axis2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
+import Future.Tuple as Tuple
 import Geometry.Accuracy exposing (Accuracy)
 import Geometry.Parameter as Parameter
 import Geometry.SweptAngle as SweptAngle exposing (SweptAngle)
@@ -724,7 +725,7 @@ sample arc =
         derivativeOfArc =
             derivativeVector arc
     in
-    \t -> Maybe.map2 (\p v -> ( p, v )) (pointOnArc t) (derivativeOfArc t)
+    \t -> Maybe.map2 Tuple.pair (pointOnArc t) (derivativeOfArc t)
 
 
 {-| Convenient shorthand for evaluating multiple samples;

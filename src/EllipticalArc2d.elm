@@ -112,6 +112,7 @@ import Axis2d exposing (Axis2d)
 import Direction2d exposing (Direction2d)
 import Ellipse2d exposing (Ellipse2d)
 import Frame2d exposing (Frame2d)
+import Future.Tuple as Tuple
 import Geometry.Accuracy as Accuracy exposing (Accuracy)
 import Geometry.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
 import Geometry.SweptAngle as SweptAngle exposing (SweptAngle)
@@ -468,7 +469,7 @@ is equivalent to
 -}
 sample : EllipticalArc2d -> Float -> Maybe ( Point2d, Vector2d )
 sample arc t =
-    Maybe.map2 (\p v -> ( p, v )) (pointOn arc t) (derivative arc t)
+    Maybe.map2 Tuple.pair (pointOn arc t) (derivative arc t)
 
 
 {-| Convenient shorthand for evaluating multiple samples;

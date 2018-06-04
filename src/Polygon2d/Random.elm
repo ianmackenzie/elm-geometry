@@ -1,6 +1,7 @@
 module Polygon2d.Random exposing (polygon2d)
 
 import BoundingBox2d exposing (BoundingBox2d)
+import Future.Tuple as Tuple
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
 import Random.Pcg as Random exposing (Generator)
@@ -89,7 +90,7 @@ type alias GridPolygon =
 
 localCoordinates : Generator ( Float, Float )
 localCoordinates =
-    Random.map2 (,) (Random.float 0.1 0.9) (Random.float 0.1 0.9)
+    Random.map2 Tuple.pair (Random.float 0.1 0.9) (Random.float 0.1 0.9)
 
 
 loopPoints : BoundingBox2d -> List ( Int, Int ) -> Generator (List Point2d)

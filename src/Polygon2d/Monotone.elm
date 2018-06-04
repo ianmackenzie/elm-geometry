@@ -9,6 +9,7 @@ module Polygon2d.Monotone
 
 import Array.Hamt as Array exposing (Array)
 import Dict exposing (Dict)
+import Future.Tuple as Tuple
 import Geometry.Types as Types exposing (Polygon2d(..))
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
@@ -679,7 +680,7 @@ monotonePolygons polygon =
 
         priorityQueue =
             vertices
-                |> List.indexedMap (\i v -> ( i, v ))
+                |> List.indexedMap Tuple.pair
                 |> List.sortWith
                     (\( _, firstVertex ) ( _, secondVertex ) ->
                         comparePoints secondVertex.position firstVertex.position
