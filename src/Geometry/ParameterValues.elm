@@ -58,13 +58,13 @@ type ParameterValues
 {-| Get the full range of parameter values for a given number of steps,
 including 0 and 1:
 
-    ParameterValues.toList (ParameterValues.steps 1)
+    ParameterValues.values (ParameterValues.steps 1)
     --> [ 0, 1 ]
 
-    ParameterValues.toList (ParameterValues.steps 2)
+    ParameterValues.values (ParameterValues.steps 2)
     --> [ 0, 0.5, 1 ]
 
-    ParameterValues.toList (ParameterValues.steps 5)
+    ParameterValues.values (ParameterValues.steps 5)
     --> [ 0, 0.2, 0.4, 0.6. 0.8, 1 ]
 
 Note that the number of parameter values is one greater than the number of
