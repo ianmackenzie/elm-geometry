@@ -586,7 +586,7 @@ pointOn (Types.Arc2d arc) =
         \parameterValue ->
             let
                 t =
-                    ParameterValue.toFloat parameterValue
+                    ParameterValue.value parameterValue
 
                 distance =
                     t * arcSignedLength
@@ -603,7 +603,7 @@ pointOn (Types.Arc2d arc) =
         \parameterValue ->
             let
                 t =
-                    ParameterValue.toFloat parameterValue
+                    ParameterValue.value parameterValue
 
                 theta =
                     t * arcSweptAngle
@@ -648,7 +648,7 @@ firstDerivative (Types.Arc2d arc) =
     \parameterValue ->
         let
             t =
-                ParameterValue.toFloat parameterValue
+                ParameterValue.value parameterValue
         in
         startDerivative |> Vector2d.rotateBy (t * arc.sweptAngle)
 
@@ -711,7 +711,7 @@ sampler arc =
                         pointOnArc parameterValue
 
                     t =
-                        ParameterValue.toFloat parameterValue
+                        ParameterValue.value parameterValue
 
                     tangentDirection =
                         properties.xDirection

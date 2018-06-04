@@ -290,7 +290,7 @@ pointOn : QuadraticSpline3d -> ParameterValue -> Point3d
 pointOn spline parameterValue =
     let
         t =
-            ParameterValue.toFloat parameterValue
+            ParameterValue.value parameterValue
 
         p1 =
             startPoint spline
@@ -348,7 +348,7 @@ firstDerivative : QuadraticSpline3d -> ParameterValue -> Vector3d
 firstDerivative spline parameterValue =
     let
         t =
-            ParameterValue.toFloat parameterValue
+            ParameterValue.value parameterValue
 
         p1 =
             startPoint spline
@@ -781,7 +781,7 @@ splitAt : ParameterValue -> QuadraticSpline3d -> ( QuadraticSpline3d, QuadraticS
 splitAt parameterValue spline =
     let
         t =
-            ParameterValue.toFloat parameterValue
+            ParameterValue.value parameterValue
 
         p1 =
             startPoint spline

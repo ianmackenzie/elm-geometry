@@ -6,8 +6,8 @@ module Geometry.ParameterValue
         , midpoint
         , one
         , oneHalf
-        , toFloat
         , unsafe
+        , value
         , zero
         )
 
@@ -36,19 +36,19 @@ one =
 
 
 clamped : Float -> ParameterValue
-clamped value =
-    if isNaN value then
-        ParameterValue value
+clamped givenValue =
+    if isNaN givenValue then
+        ParameterValue givenValue
     else
-        ParameterValue (clamp 0 1 value)
+        ParameterValue (clamp 0 1 givenValue)
 
 
 checked : Float -> Maybe ParameterValue
-checked value =
-    if isNaN value then
+checked givenValue =
+    if isNaN givenValue then
         Nothing
-    else if 0 <= value && value <= 1 then
-        Just (ParameterValue value)
+    else if 0 <= givenValue && givenValue <= 1 then
+        Just (ParameterValue givenValue)
     else
         Nothing
 
@@ -63,6 +63,6 @@ midpoint (ParameterValue firstValue) (ParameterValue secondValue) =
     ParameterValue (firstValue + (secondValue - firstValue) / 2)
 
 
-toFloat : ParameterValue -> Float
-toFloat (ParameterValue value) =
-    value
+value : ParameterValue -> Float
+value (ParameterValue value_) =
+    value_

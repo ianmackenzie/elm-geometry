@@ -166,7 +166,7 @@ it, returning a `List` of results.
 -}
 forEach : ParameterValues -> (Float -> a) -> List a
 forEach parameterValues function =
-    map (ParameterValue.toFloat >> function) parameterValues
+    map (ParameterValue.value >> function) parameterValues
 
 
 endpointsHelp : Int -> Int -> Float -> (ParameterValue -> a) -> List a -> List a
