@@ -5,7 +5,6 @@
     "license": "MPL-2.0",
     "version": "2.1.0",
     "exposed-modules": [
-        "Geometry.Accuracy",
         "Geometry.ArcLengthParameterization",
         "Geometry.ParameterValue",
         "Geometry.ParameterValues",

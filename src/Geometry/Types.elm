@@ -239,7 +239,3 @@ type EllipticalArc2d
         , startAngle : Float
         , sweptAngle : Float
         }
-
-
-type Accuracy
-    = MaxError Float

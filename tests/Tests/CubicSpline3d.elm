@@ -11,7 +11,6 @@ module Tests.CubicSpline3d
 import CubicSpline3d
 import Expect exposing (FloatingPointTolerance(Absolute))
 import Fuzz
-import Geometry.Accuracy as Accuracy
 import Geometry.Decode as Decode
 import Geometry.Encode as Encode
 import Geometry.Expect as Expect
@@ -64,8 +63,7 @@ arcLengthMatchesAnalytical =
         (\quadraticSpline ->
             quadraticSpline
                 |> CubicSpline3d.fromQuadraticSpline
-                |> CubicSpline3d.arcLengthParameterized
-                    (Accuracy.maxError 1.0e-3)
+                |> CubicSpline3d.arcLengthParameterized { maxError = 1.0e-3 }
                 |> CubicSpline3d.arcLength
                 |> Expect.within (Absolute 1.0e-3)
                     (Tests.QuadraticSpline3d.analyticalLength quadraticSpline)
@@ -79,9 +77,9 @@ pointAtZeroLengthIsStart =
         (\spline ->
             let
                 parameterizedCurve =
-                    CubicSpline3d.arcLengthParameterized
-                        (Accuracy.maxError 1.0e-3)
-                        spline
+                    spline
+                        |> CubicSpline3d.arcLengthParameterized
+                            { maxError = 1.0e-3 }
             in
             CubicSpline3d.pointAlong parameterizedCurve 0
                 |> Expect.equal (Just (CubicSpline3d.startPoint spline))
@@ -95,9 +93,9 @@ pointAtArcLengthIsEnd =
         (\spline ->
             let
                 parameterizedCurve =
-                    CubicSpline3d.arcLengthParameterized
-                        (Accuracy.maxError 1.0e-3)
-                        spline
+                    spline
+                        |> CubicSpline3d.arcLengthParameterized
+                            { maxError = 1.0e-3 }
 
                 arcLength =
                     CubicSpline3d.arcLength parameterizedCurve

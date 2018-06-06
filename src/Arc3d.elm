@@ -78,7 +78,6 @@ import Direction3d exposing (Direction3d)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
 import Future.Tuple as Tuple
-import Geometry.Accuracy exposing (Accuracy)
 import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
 import Geometry.ParameterValues as ParameterValues exposing (ParameterValues)
 import Geometry.Types as Types
@@ -513,24 +512,24 @@ samplesAt parameterValues arc =
 
 
 numApproximationSegments : Float -> Arc3d -> Int
-numApproximationSegments tolerance arc =
+numApproximationSegments maxError arc =
     if sweptAngle arc == 0 then
         1
-    else if tolerance <= 0 then
+    else if maxError <= 0 then
         0
-    else if tolerance >= 2 * radius arc then
+    else if maxError >= 2 * radius arc then
         1
     else
         let
             maxSegmentAngle =
-                2 * acos (1 - tolerance / radius arc)
+                2 * acos (1 - maxError / radius arc)
         in
         ceiling (abs (sweptAngle arc) / maxSegmentAngle)
 
 
-{-| Approximate an arc as a polyline.
+{-| Approximate an arc as a polyline, within a given tolerance:
 
-    Arc3d.toPolyline (Accuracy.maxError 0.1) exampleArc
+    exampleArc |> Arc3d.toPolyline { maxError = 0.1 }
     --> Polyline3d.fromVertices
     -->     [ Point3d.fromCoordinates ( 1, 1, 0 )
     -->     , Point3d.fromCoordinates ( 0.366, 1.366, 0 )
@@ -538,16 +537,15 @@ numApproximationSegments tolerance arc =
     -->     , Point3d.fromCoordinates ( -1, 1, 0 )
     -->     ]
 
-The accuracy of the approximation is controlled by the first argument; in the
-above example, every point on the returned polyline will be within 0.1 units of
-the original arc.
+In this example, every point on the returned polyline will be within 0.1 units
+of the original arc.
 
 -}
-toPolyline : Accuracy -> Arc3d -> Polyline3d
-toPolyline (Types.MaxError tolerance) arc =
+toPolyline : { maxError : Float } -> Arc3d -> Polyline3d
+toPolyline { maxError } arc =
     let
         numSegments =
-            numApproximationSegments tolerance arc
+            numApproximationSegments maxError arc
 
         points =
             arc |> pointsAt (ParameterValues.steps numSegments)

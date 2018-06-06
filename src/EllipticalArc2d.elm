@@ -118,7 +118,6 @@ import Direction2d exposing (Direction2d)
 import Ellipse2d exposing (Ellipse2d)
 import Frame2d exposing (Frame2d)
 import Future.Tuple as Tuple
-import Geometry.Accuracy as Accuracy exposing (Accuracy)
 import Geometry.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
 import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
 import Geometry.ParameterValues as ParameterValues exposing (ParameterValues)
@@ -908,23 +907,23 @@ type ArcLengthParameterized
     = ArcLengthParameterized EllipticalArc2d ArcLengthParameterization
 
 
-{-| Build an arc length parameterization of the given elliptical arc, within
-a given tolerance. Generally speaking, all operations on the resulting
-`ArcLengthParameterized` value will be accurate to within the given arc length
-tolerance.
+{-| Build an arc length parameterization of the given elliptical arc, with a
+given accuracy. Generally speaking, all operations on the resulting
+`ArcLengthParameterized` value will be accurate to within the specified maximum
+error.
 
     parameterizedArc =
-        EllipticalArc2d.arcLengthParameterized
-            (Accuracy.maxError 1.0e-4)
-            exampleArc
+        exampleArc
+            |> EllipticalArc2d.arcLengthParameterized
+                { maxError = 1.0e-4 }
 
 -}
-arcLengthParameterized : Accuracy -> EllipticalArc2d -> ArcLengthParameterized
-arcLengthParameterized accuracy arc =
+arcLengthParameterized : { maxError : Float } -> EllipticalArc2d -> ArcLengthParameterized
+arcLengthParameterized { maxError } arc =
     let
         parameterization =
             ArcLengthParameterization.build
-                { accuracy = accuracy
+                { maxError = maxError
                 , derivativeMagnitude = derivativeMagnitude arc
                 , maxSecondDerivativeMagnitude =
                     maxSecondDerivativeMagnitude arc

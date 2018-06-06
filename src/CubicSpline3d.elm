@@ -119,7 +119,6 @@ import BoundingBox3d exposing (BoundingBox3d)
 import CubicSpline2d exposing (CubicSpline2d)
 import Direction3d exposing (Direction3d)
 import Frame3d exposing (Frame3d)
-import Geometry.Accuracy exposing (Accuracy)
 import Geometry.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
 import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
 import Geometry.ParameterValues as ParameterValues exposing (ParameterValues)
@@ -936,24 +935,23 @@ type ArcLengthParameterized
     = ArcLengthParameterized CubicSpline3d ArcLengthParameterization
 
 
-{-| Build an arc length parameterization of the given spline:
+{-| Build an arc length parameterization of the given spline, with a given
+accuracy. Generally speaking, all operations on the resulting
+`ArcLengthParameterized` value will be accurate to within the specified maximum
+error.
 
     parameterizedSpline =
-        CubicSpline3d.arcLengthParameterized
-            (Accuracy.maxError 1.0e-4)
-            exampleSpline
-
-The accuracy of the parameterization is controlled by the first argument; this
-affects the accuracy of results returned from functions such as `arcLength` and
-`pointAlong`.
+        exampleSpline
+            |> CubicSpline3d.arcLengthParameterized
+                { maxError = 1.0e-4 }
 
 -}
-arcLengthParameterized : Accuracy -> CubicSpline3d -> ArcLengthParameterized
-arcLengthParameterized accuracy spline =
+arcLengthParameterized : { maxError : Float } -> CubicSpline3d -> ArcLengthParameterized
+arcLengthParameterized { maxError } spline =
     let
         parameterization =
             ArcLengthParameterization.build
-                { accuracy = accuracy
+                { maxError = maxError
                 , derivativeMagnitude = derivativeMagnitude spline
                 , maxSecondDerivativeMagnitude =
                     maxSecondDerivativeMagnitude spline

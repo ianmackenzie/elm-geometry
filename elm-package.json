@@ -7,7 +7,6 @@
         "src"
     ],
     "exposed-modules": [
-        "Geometry.Accuracy",
         "Geometry.ArcLengthParameterization",
         "Geometry.ParameterValue",
         "Geometry.ParameterValues",

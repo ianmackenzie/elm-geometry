@@ -30,9 +30,7 @@ parameter values.
 -}
 
 import Float.Extra as Float
-import Geometry.Accuracy as Accuracy exposing (Accuracy)
 import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
-import Geometry.Types as Types
 
 
 {-| Contains a mapping from curve parameter value to arc length, and vice versa.
@@ -86,19 +84,16 @@ segmentsPerLeaf =
 Curve parameter values are assumed to be in the range [0,1].
 
 -}
-build : { accuracy : Accuracy, derivativeMagnitude : Float -> Float, maxSecondDerivativeMagnitude : Float } -> ArcLengthParameterization
-build { accuracy, derivativeMagnitude, maxSecondDerivativeMagnitude } =
+build : { maxError : Float, derivativeMagnitude : Float -> Float, maxSecondDerivativeMagnitude : Float } -> ArcLengthParameterization
+build { maxError, derivativeMagnitude, maxSecondDerivativeMagnitude } =
     let
-        (Types.MaxError tolerance) =
-            accuracy
-
         height =
-            if tolerance <= 0 then
+            if maxError <= 0 then
                 0
             else
                 let
                     numSegments =
-                        maxSecondDerivativeMagnitude / (8 * tolerance)
+                        maxSecondDerivativeMagnitude / (8 * maxError)
 
                     numLeaves =
                         numSegments / toFloat segmentsPerLeaf

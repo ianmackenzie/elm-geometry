@@ -114,7 +114,6 @@ import Axis3d exposing (Axis3d)
 import BoundingBox3d exposing (BoundingBox3d)
 import Direction3d exposing (Direction3d)
 import Frame3d exposing (Frame3d)
-import Geometry.Accuracy exposing (Accuracy)
 import Geometry.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
 import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
 import Geometry.ParameterValues as ParameterValues exposing (ParameterValues)
@@ -812,26 +811,26 @@ type ArcLengthParameterized
     = ArcLengthParameterized QuadraticSpline3d ArcLengthParameterization
 
 
-{-| Build an arc length parameterization of the given spline:
+{-| Build an arc length parameterization of the given spline, with a given
+accuracy. Generally speaking, all operations on the resulting
+`ArcLengthParameterized` value will be accurate to within the specified maximum
+error.
 
     parameterizedSpline =
-        QuadraticSpline3d.arcLengthParameterized
-            (Accuracy.maxError 1.0e-4)
-            exampleSpline
-
-In this example, the result will be accurate to within `1.0e-4` since that was
-the tolerance used when constructing `parameterizedSpline`.
+        exampleSpline
+            |> QuadraticSpline3d.arcLengthParameterized
+                { maxError = 1.0e-4 }
 
 -}
-arcLengthParameterized : Accuracy -> QuadraticSpline3d -> ArcLengthParameterized
-arcLengthParameterized accuracy spline =
+arcLengthParameterized : { maxError : Float } -> QuadraticSpline3d -> ArcLengthParameterized
+arcLengthParameterized { maxError } spline =
     let
         maxSecondDerivativeMagnitude =
             Vector3d.length (secondDerivative spline)
 
         parameterization =
             ArcLengthParameterization.build
-                { accuracy = accuracy
+                { maxError = maxError
                 , derivativeMagnitude = derivativeMagnitude spline
                 , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude
                 }
