@@ -10,7 +10,6 @@ module Tests.QuadraticSpline3d
 
 import Expect exposing (FloatingPointTolerance(Absolute))
 import Fuzz exposing (Fuzzer)
-import Geometry.Accuracy as Accuracy
 import Geometry.Decode as Decode
 import Geometry.Encode as Encode
 import Geometry.Fuzz as Fuzz
@@ -106,9 +105,9 @@ arcLengthMatchesAnalytical =
     Test.fuzz curvedSpline
         "arc length matches analytical formula"
         (\spline ->
-            QuadraticSpline3d.arcLengthParameterized
-                (Accuracy.maxError 1.0e-3)
-                spline
+            spline
+                |> QuadraticSpline3d.arcLengthParameterized
+                    { maxError = 1.0e-3 }
                 |> QuadraticSpline3d.arcLength
                 |> Expect.within (Absolute 1.0e-3) (analyticalLength spline)
         )
@@ -121,9 +120,9 @@ pointAtZeroLengthIsStart =
         (\spline ->
             let
                 parameterizedCurve =
-                    QuadraticSpline3d.arcLengthParameterized
-                        (Accuracy.maxError 1.0e-3)
-                        spline
+                    spline
+                        |> QuadraticSpline3d.arcLengthParameterized
+                            { maxError = 1.0e-3 }
             in
             QuadraticSpline3d.pointAlong parameterizedCurve 0
                 |> Expect.equal (Just (QuadraticSpline3d.startPoint spline))
@@ -137,9 +136,9 @@ pointAtArcLengthIsEnd =
         (\spline ->
             let
                 parameterizedCurve =
-                    QuadraticSpline3d.arcLengthParameterized
-                        (Accuracy.maxError 1.0e-3)
-                        spline
+                    spline
+                        |> QuadraticSpline3d.arcLengthParameterized
+                            { maxError = 1.0e-3 }
 
                 arcLength =
                     QuadraticSpline3d.arcLength parameterizedCurve
