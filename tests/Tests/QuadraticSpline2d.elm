@@ -9,6 +9,7 @@ module Tests.QuadraticSpline2d
 import Expect
 import Float.Extra as Float
 import Fuzz exposing (Fuzzer)
+import Geometry.ArcLengthParameterization as ArcLengthParameterization
 import Geometry.Decode as Decode
 import Geometry.Encode as Encode
 import Geometry.Fuzz as Fuzz
