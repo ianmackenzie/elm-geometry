@@ -116,7 +116,6 @@ import Direction3d exposing (Direction3d)
 import Frame3d exposing (Frame3d)
 import Geometry.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
 import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
-import Geometry.ParameterValues as ParameterValues exposing (ParameterValues)
 import Geometry.Types as Types
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
@@ -321,9 +320,9 @@ To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry
 module.
 
 -}
-pointsAt : ParameterValues -> QuadraticSpline3d -> List Point3d
+pointsAt : List ParameterValue -> QuadraticSpline3d -> List Point3d
 pointsAt parameterValues spline =
-    ParameterValues.map (pointOn spline) parameterValues
+    List.map (pointOn spline) parameterValues
 
 
 {-| Get the first derivative of a spline at a given parameter value.
@@ -379,9 +378,9 @@ To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry
 module.
 
 -}
-firstDerivativesAt : ParameterValues -> QuadraticSpline3d -> List Vector3d
+firstDerivativesAt : List ParameterValue -> QuadraticSpline3d -> List Vector3d
 firstDerivativesAt parameterValues spline =
-    ParameterValues.map (firstDerivative spline) parameterValues
+    List.map (firstDerivative spline) parameterValues
 
 
 {-| Find the magnitude of the derivative to a spline at a particular parameter
@@ -532,11 +531,11 @@ nonZeroSecondDerivativeSampler spline secondDerivativeDirection =
 
 
 {-| -}
-samplesAt : ParameterValues -> QuadraticSpline3d -> List ( Point3d, Direction3d )
+samplesAt : List ParameterValue -> QuadraticSpline3d -> List ( Point3d, Direction3d )
 samplesAt parameterValues spline =
     case sampler spline of
         Just sampler_ ->
-            ParameterValues.map sampler_ parameterValues
+            List.map sampler_ parameterValues
 
         Nothing ->
             []

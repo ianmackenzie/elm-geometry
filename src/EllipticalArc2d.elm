@@ -119,7 +119,6 @@ import Ellipse2d exposing (Ellipse2d)
 import Frame2d exposing (Frame2d)
 import Geometry.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
 import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
-import Geometry.ParameterValues as ParameterValues exposing (ParameterValues)
 import Geometry.SweptAngle as SweptAngle exposing (SweptAngle)
 import Geometry.Types as Types
 import Interval
@@ -390,9 +389,9 @@ pointOn arc parameterValue =
 
 
 {-| -}
-pointsAt : ParameterValues -> EllipticalArc2d -> List Point2d
+pointsAt : List ParameterValue -> EllipticalArc2d -> List Point2d
 pointsAt parameterValues arc =
-    ParameterValues.map (pointOn arc) parameterValues
+    List.map (pointOn arc) parameterValues
 
 
 {-| Get the derivative vector at a point along an elliptical arc, based on a
@@ -442,9 +441,9 @@ To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry
 module.
 
 -}
-firstDerivativesAt : ParameterValues -> EllipticalArc2d -> List Vector2d
+firstDerivativesAt : List ParameterValue -> EllipticalArc2d -> List Vector2d
 firstDerivativesAt parameterValues arc =
-    ParameterValues.map (firstDerivative arc) parameterValues
+    List.map (firstDerivative arc) parameterValues
 
 
 {-| Sample an elliptical arc at a given parameter value to get both the position
@@ -574,11 +573,11 @@ sampler arc =
 
 
 {-| -}
-samplesAt : ParameterValues -> EllipticalArc2d -> List ( Point2d, Direction2d )
+samplesAt : List ParameterValue -> EllipticalArc2d -> List ( Point2d, Direction2d )
 samplesAt parameterValues arc =
     case sampler arc of
         Just sampler_ ->
-            ParameterValues.map sampler_ parameterValues
+            List.map sampler_ parameterValues
 
         Nothing ->
             []

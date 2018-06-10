@@ -3,10 +3,14 @@ module Geometry.ParameterValue
         ( ParameterValue
         , checked
         , clamped
+        , leading
         , midpoint
+        , midpoints
         , one
         , oneHalf
-        , unsafe
+        , range
+        , steps
+        , trailing
         , value
         , zero
         )
@@ -23,7 +27,12 @@ module Geometry.ParameterValue
 
 # Construction
 
-@docs clamped, checked, midpoint, unsafe
+@docs clamped, checked, midpoint
+
+
+# Ranges
+
+@docs steps, leading, trailing, midpoints, range
 
 
 # Conversion
@@ -115,22 +124,98 @@ checked givenValue =
         Nothing
 
 
-{-| Construct a `ParameterValue` directly from a `Float` without checking if it
-is valid. Where possible, use `ParameterValue.clamped` or
-`ParameterValue.checked` instead. If you need to produce a range of parameter
-values, check out the [`ParameterValues`](Geometry-ParameterValues) module.
--}
-unsafe : Float -> ParameterValue
-unsafe =
-    ParameterValue
-
-
 {-| Construct a parameter value by finding the midpoint between two other
 parameter values.
 -}
 midpoint : ParameterValue -> ParameterValue -> ParameterValue
 midpoint (ParameterValue firstValue) (ParameterValue secondValue) =
     ParameterValue (firstValue + (secondValue - firstValue) / 2)
+
+
+steps : Int -> List ParameterValue
+steps n =
+    if n < 1 then
+        []
+    else
+        endpointsHelp 0 n (toFloat n) []
+
+
+leading : Int -> List ParameterValue
+leading n =
+    if n < 1 then
+        []
+    else
+        endpointsHelp 0 (n - 1) (toFloat n) []
+
+
+trailing : Int -> List ParameterValue
+trailing n =
+    if n < 1 then
+        []
+    else
+        endpointsHelp 1 n (toFloat n) []
+
+
+endpointsHelp : Int -> Int -> Float -> List ParameterValue -> List ParameterValue
+endpointsHelp startIndex index divisor accumulated =
+    let
+        parameterValue =
+            ParameterValue (toFloat index / divisor)
+
+        newAccumulated =
+            parameterValue :: accumulated
+    in
+    if index == startIndex then
+        newAccumulated
+    else
+        endpointsHelp startIndex (index - 1) divisor newAccumulated
+
+
+midpoints : Int -> List ParameterValue
+midpoints n =
+    if n < 1 then
+        []
+    else
+        midpointsHelp (2 * n - 1) (2 * toFloat n) []
+
+
+midpointsHelp : Int -> Float -> List ParameterValue -> List ParameterValue
+midpointsHelp index divisor accumulated =
+    let
+        parameterValue =
+            ParameterValue (toFloat index / divisor)
+
+        newAccumulated =
+            parameterValue :: accumulated
+    in
+    if index == 1 then
+        newAccumulated
+    else
+        midpointsHelp (index - 2) divisor newAccumulated
+
+
+range : { numSteps : Int, includeStart : Bool, includeEnd : Bool } -> List ParameterValue
+range { numSteps, includeStart, includeEnd } =
+    if numSteps < 1 then
+        []
+    else
+        let
+            startIndex =
+                if includeStart then
+                    0
+                else
+                    1
+
+            endIndex =
+                if includeEnd then
+                    numSteps
+                else
+                    numSteps - 1
+        in
+        if startIndex <= endIndex then
+            endpointsHelp startIndex endIndex (toFloat numSteps) []
+        else
+            []
 
 
 {-| Convert a `ParameterValue` to a plain `Float` value between 0 and 1.

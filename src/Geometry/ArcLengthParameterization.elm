@@ -234,7 +234,7 @@ arcLengthToParameterValue s (ArcLengthParameterization tree) =
     if s == 0 then
         Just ParameterValue.zero
     else if s > 0 && s <= lengthAtEnd tree then
-        Just (ParameterValue.unsafe (unsafeToParameterValue tree s))
+        Just (ParameterValue.clamped (unsafeToParameterValue tree s))
     else
         Nothing
 

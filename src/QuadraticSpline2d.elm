@@ -108,7 +108,6 @@ import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
 import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
-import Geometry.ParameterValues as ParameterValues exposing (ParameterValues)
 import Geometry.Types as Types
 import Point2d exposing (Point2d)
 import Vector2d exposing (Vector2d)
@@ -277,9 +276,9 @@ To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry
 module.
 
 -}
-pointsAt : ParameterValues -> QuadraticSpline2d -> List Point2d
+pointsAt : List ParameterValue -> QuadraticSpline2d -> List Point2d
 pointsAt parameterValues spline =
-    ParameterValues.map (pointOn spline) parameterValues
+    List.map (pointOn spline) parameterValues
 
 
 {-| Get the first derivative of a spline at a given parameter value.
@@ -335,9 +334,9 @@ To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry
 module.
 
 -}
-firstDerivativesAt : ParameterValues -> QuadraticSpline2d -> List Vector2d
+firstDerivativesAt : List ParameterValue -> QuadraticSpline2d -> List Vector2d
 firstDerivativesAt parameterValues spline =
-    ParameterValues.map (firstDerivative spline) parameterValues
+    List.map (firstDerivative spline) parameterValues
 
 
 {-| Find the magnitude of the derivative to a spline at a particular parameter
@@ -487,11 +486,11 @@ if `QuadraticSpline2d.sampler spline` returns `Just sampler`, and and empty
 list otherwise.
 
 -}
-samplesAt : ParameterValues -> QuadraticSpline2d -> List ( Point2d, Direction2d )
+samplesAt : List ParameterValue -> QuadraticSpline2d -> List ( Point2d, Direction2d )
 samplesAt parameterValues spline =
     case sampler spline of
         Just sampler_ ->
-            ParameterValues.map sampler_ parameterValues
+            List.map sampler_ parameterValues
 
         Nothing ->
             []

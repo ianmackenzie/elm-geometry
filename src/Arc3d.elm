@@ -78,7 +78,6 @@ import Direction3d exposing (Direction3d)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
 import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
-import Geometry.ParameterValues as ParameterValues exposing (ParameterValues)
 import Geometry.Types as Types
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
@@ -374,9 +373,9 @@ pointOn (Types.Arc3d arc) =
 
 
 {-| -}
-pointsAt : ParameterValues -> Arc3d -> List Point3d
+pointsAt : List ParameterValue -> Arc3d -> List Point3d
 pointsAt parameterValues arc =
-    ParameterValues.map (pointOn arc) parameterValues
+    List.map (pointOn arc) parameterValues
 
 
 {-| Get the first derivative of an arc at a given parameter value.
@@ -424,9 +423,9 @@ firstDerivative (Types.Arc3d arc) =
             )
 
 
-firstDerivativesAt : ParameterValues -> Arc3d -> List Vector3d
+firstDerivativesAt : List ParameterValue -> Arc3d -> List Vector3d
 firstDerivativesAt parameterValues arc =
-    ParameterValues.map (firstDerivative arc) parameterValues
+    List.map (firstDerivative arc) parameterValues
 
 
 {-| Sample an arc at a given parameter value to get both the position and
@@ -500,11 +499,11 @@ sampler arc =
 
 
 {-| -}
-samplesAt : ParameterValues -> Arc3d -> List ( Point3d, Direction3d )
+samplesAt : List ParameterValue -> Arc3d -> List ( Point3d, Direction3d )
 samplesAt parameterValues arc =
     case sampler arc of
         Just sampler_ ->
-            ParameterValues.map sampler_ parameterValues
+            List.map sampler_ parameterValues
 
         Nothing ->
             []
@@ -547,7 +546,7 @@ toPolyline { maxError } arc =
             numApproximationSegments maxError arc
 
         points =
-            arc |> pointsAt (ParameterValues.steps numSegments)
+            arc |> pointsAt (ParameterValue.steps numSegments)
     in
     Polyline3d.fromVertices points
 

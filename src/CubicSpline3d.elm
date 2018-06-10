@@ -121,7 +121,6 @@ import Direction3d exposing (Direction3d)
 import Frame3d exposing (Frame3d)
 import Geometry.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
 import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
-import Geometry.ParameterValues as ParameterValues exposing (ParameterValues)
 import Geometry.Types as Types
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
@@ -438,16 +437,16 @@ pointOn spline parameterValue =
 
     exampleSpline
         |> CubicSpline3d.pointsAt
-            (ParameterValues.steps 2)
+            (ParameterValue.steps 2)
     --> [ Point2d.fromCoordinates ( 1, 1, 1 )
     --> , Point2d.fromCoordinates ( 2.75, 2, 1.25 )
     --> , Point2d.fromCoordinates ( 3, 3, 3 )
     --> ]
 
 -}
-pointsAt : ParameterValues -> CubicSpline3d -> List Point3d
+pointsAt : List ParameterValue -> CubicSpline3d -> List Point3d
 pointsAt parameterValues spline =
-    ParameterValues.map (pointOn spline) parameterValues
+    List.map (pointOn spline) parameterValues
 
 
 {-| Attempt to construct a function for evaluating points and tangent directions
@@ -601,7 +600,7 @@ given by a set of parameter values.
 
     exampleSpline
         |> CubicSpline3d.samplesAt
-            (ParameterValues.steps 2)
+            (ParameterValue.steps 2)
     --> [ ( Point2d.fromCoordinates ( 1, 1 )
     -->   , Direction2d.fromAngle (degrees 56.31)
     -->   )
@@ -617,11 +616,11 @@ If the given spline is degenerate (all control points are identical), it has no
 tangent directions and so the result will always be an empty list.
 
 -}
-samplesAt : ParameterValues -> CubicSpline3d -> List ( Point3d, Direction3d )
+samplesAt : List ParameterValue -> CubicSpline3d -> List ( Point3d, Direction3d )
 samplesAt parameterValues spline =
     case sampler spline of
         Just sampleAt ->
-            ParameterValues.map sampleAt parameterValues
+            List.map sampleAt parameterValues
 
         Nothing ->
             []
@@ -1173,16 +1172,16 @@ firstDerivative spline parameterValue =
 
     exampleSpline
         |> CubicSpline3d.firstDerivativesAt
-            (ParameterValues.steps 2)
+            (ParameterValue.steps 2)
     --> [ Vector3d.fromComponents ( 6, 0, 0 )
     --> , Vector3d.fromComponents ( 1.5, 3, 1.5 )
     --> , Vector3d.fromComponents ( 0, 0, 6 )
     --> ]
 
 -}
-firstDerivativesAt : ParameterValues -> CubicSpline3d -> List Vector3d
+firstDerivativesAt : List ParameterValue -> CubicSpline3d -> List Vector3d
 firstDerivativesAt parameterValues spline =
-    ParameterValues.map (firstDerivative spline) parameterValues
+    List.map (firstDerivative spline) parameterValues
 
 
 {-| Get the second derivative value at a point along a spline, based on a
@@ -1242,16 +1241,16 @@ secondDerivative spline parameterValue =
 
     exampleSpline
         |> CubicSpline3d.secondDerivativesAt
-            (ParameterValues.steps 2)
+            (ParameterValue.steps 2)
     --> [ Vector3d.fromComponents ( -12, 12, 0 )
     --> , Vector3d.fromComponents ( -6, 0, 6 )
     --> , Vector3d.fromComponents ( 0, -12, 12 )
     --> ]
 
 -}
-secondDerivativesAt : ParameterValues -> CubicSpline3d -> List Vector3d
+secondDerivativesAt : List ParameterValue -> CubicSpline3d -> List Vector3d
 secondDerivativesAt parameterValues spline =
-    ParameterValues.map (secondDerivative spline) parameterValues
+    List.map (secondDerivative spline) parameterValues
 
 
 {-| Get the third derivative of a spline (for a cubic spline, this is a

@@ -74,7 +74,6 @@ import Axis2d exposing (Axis2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
-import Geometry.ParameterValues as ParameterValues exposing (ParameterValues)
 import Geometry.SweptAngle as SweptAngle exposing (SweptAngle)
 import Geometry.Types as Types
 import LineSegment2d exposing (LineSegment2d)
@@ -623,9 +622,9 @@ pointOn (Types.Arc2d arc) =
 
 
 {-| -}
-pointsAt : ParameterValues -> Arc2d -> List Point2d
+pointsAt : List ParameterValue -> Arc2d -> List Point2d
 pointsAt parameterValues arc =
-    ParameterValues.map (pointOn arc) parameterValues
+    List.map (pointOn arc) parameterValues
 
 
 {-| Get the derivative vector of an arc with respect to a parameter that is 0 at
@@ -665,9 +664,9 @@ To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry
 module.
 
 -}
-firstDerivativesAt : ParameterValues -> Arc2d -> List Vector2d
+firstDerivativesAt : List ParameterValue -> Arc2d -> List Vector2d
 firstDerivativesAt parameterValues arc =
-    ParameterValues.map (firstDerivative arc) parameterValues
+    List.map (firstDerivative arc) parameterValues
 
 
 {-| Sample an arc at a given parameter value to get both the position and
@@ -720,11 +719,11 @@ sampler arc =
 
 
 {-| -}
-samplesAt : ParameterValues -> Arc2d -> List ( Point2d, Direction2d )
+samplesAt : List ParameterValue -> Arc2d -> List ( Point2d, Direction2d )
 samplesAt parameterValues arc =
     case sampler arc of
         Just sampler_ ->
-            ParameterValues.map sampler_ parameterValues
+            List.map sampler_ parameterValues
 
         Nothing ->
             []
@@ -767,7 +766,7 @@ toPolyline { maxError } arc =
             numApproximationSegments maxError arc
 
         points =
-            arc |> pointsAt (ParameterValues.steps numSegments)
+            arc |> pointsAt (ParameterValue.steps numSegments)
     in
     Polyline2d.fromVertices points
 

@@ -115,7 +115,6 @@ import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
 import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
-import Geometry.ParameterValues as ParameterValues exposing (ParameterValues)
 import Geometry.Types as Types
 import Point2d exposing (Point2d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
@@ -394,16 +393,16 @@ pointOn spline parameterValue =
 
     exampleSpline
         |> CubicSpline2d.pointsAt
-            (ParameterValues.steps 2)
+            (ParameterValue.steps 2)
     --> [ Point2d.fromCoordinates ( 1, 1 )
     --> , Point2d.fromCoordinates ( 4, 2.5 )
     --> , Point2d.fromCoordinates ( 7, 4 )
     --> ]
 
 -}
-pointsAt : ParameterValues -> CubicSpline2d -> List Point2d
+pointsAt : List ParameterValue -> CubicSpline2d -> List Point2d
 pointsAt parameterValues spline =
-    ParameterValues.map (pointOn spline) parameterValues
+    List.map (pointOn spline) parameterValues
 
 
 {-| Attempt to construct a function for evaluating points and tangent directions
@@ -557,7 +556,7 @@ given by a set of parameter values.
 
     exampleSpline
         |> CubicSpline2d.samplesAt
-            (ParameterValues.steps 2)
+            (ParameterValue.steps 2)
     --> [ ( Point2d.fromCoordinates ( 1, 1 )
     -->   , Direction2d.fromAngle (degrees 56.31)
     -->   )
@@ -573,11 +572,11 @@ If the given spline is degenerate (all control points are identical), it has no
 tangent directions and so the result will always be an empty list.
 
 -}
-samplesAt : ParameterValues -> CubicSpline2d -> List ( Point2d, Direction2d )
+samplesAt : List ParameterValue -> CubicSpline2d -> List ( Point2d, Direction2d )
 samplesAt parameterValues spline =
     case sampler spline of
         Just sampleAt ->
-            ParameterValues.map sampleAt parameterValues
+            List.map sampleAt parameterValues
 
         Nothing ->
             []
@@ -1099,16 +1098,16 @@ firstDerivative spline parameterValue =
 
     exampleSpline
         |> CubicSpline2d.firstDerivativesAt
-            (ParameterValues.steps 2)
+            (ParameterValue.steps 2)
     --> [ Vector2d.fromComponents ( 6, 9 )
     --> , Vector2d.fromComponents ( 6, 0 )
     --> , Vector2d.fromComponents ( 6, 9 )
     --> ]
 
 -}
-firstDerivativesAt : ParameterValues -> CubicSpline2d -> List Vector2d
+firstDerivativesAt : List ParameterValue -> CubicSpline2d -> List Vector2d
 firstDerivativesAt parameterValues spline =
-    ParameterValues.map (firstDerivative spline) parameterValues
+    List.map (firstDerivative spline) parameterValues
 
 
 {-| Get the second derivative of a spline at a given parameter value.
@@ -1163,16 +1162,16 @@ secondDerivative spline parameterValue =
 
     exampleSpline
         |> CubicSpline2d.secondDerivativesAt
-            (ParameterValues.steps 2)
+            (ParameterValue.steps 2)
     --> [ Vector2d.fromComponents ( 0, -36 )
     --> , Vector2d.fromComponents ( 0, 0 )
     --> , Vector2d.fromComponents ( 0, 36 )
     --> ]
 
 -}
-secondDerivativesAt : ParameterValues -> CubicSpline2d -> List Vector2d
+secondDerivativesAt : List ParameterValue -> CubicSpline2d -> List Vector2d
 secondDerivativesAt parameterValues spline =
-    ParameterValues.map (secondDerivative spline) parameterValues
+    List.map (secondDerivative spline) parameterValues
 
 
 {-| Get the third derivative of a spline (for a cubic spline, this is a
