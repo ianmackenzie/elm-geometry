@@ -1,22 +1,13 @@
-module Tests.QuadraticSpline2d
-    exposing
-        ( analyticalLength
-        , curvedSpline
-        , jsonRoundTrips
-        , parameterization
-        )
+module Tests.QuadraticSpline2d exposing (..)
 
 import Curve.ArcLengthParameterization as ArcLengthParameterization
 import Expect
 import Float.Extra as Float
 import Fuzz exposing (Fuzzer)
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Fuzz as Fuzz
 import Point2d
 import QuadraticSpline2d exposing (QuadraticSpline2d)
 import Test exposing (Test)
-import Tests.Generic as Generic
 
 
 degenerateSpline : Fuzzer QuadraticSpline2d
@@ -291,10 +282,3 @@ parameterization =
                 QuadraticSpline2d.pointAlong parameterizedCurve arcLength
                     |> Expect.equal (Just (Point2d.fromCoordinates ( 5, 1 )))
         ]
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.quadraticSpline2d
-        Encode.quadraticSpline2d
-        Decode.quadraticSpline2d

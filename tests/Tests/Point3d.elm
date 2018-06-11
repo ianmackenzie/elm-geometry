@@ -3,15 +3,12 @@ module Tests.Point3d exposing (..)
 import Direction3d
 import Expect
 import Fuzz
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Plane3d
 import Point3d
 import SketchPlane3d
 import Test exposing (Test)
-import Tests.Generic as Generic
 import Vector3d
 
 
@@ -141,11 +138,6 @@ translationByPerpendicularDoesNotChangeSignedDistance =
                 |> Point3d.signedDistanceFrom plane
                 |> Expect.approximately originalSignedDistance
         )
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.point3d Encode.point3d Decode.point3d
 
 
 translateByAndInAreConsistent : Test

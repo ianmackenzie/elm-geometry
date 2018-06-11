@@ -1,27 +1,12 @@
-module Tests.Circle3d
-    exposing
-        ( boundingBoxContainsCenter
-        , jsonRoundTrips
-        , throughPoints
-        )
+module Tests.Circle3d exposing (..)
 
 import BoundingBox3d
 import Circle3d
 import Expect
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Fuzz as Fuzz
 import Point3d
 import Test exposing (Test)
-import Tests.Generic as Generic
 import Triangle3d
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.circle3d
-        Encode.circle3d
-        Decode.circle3d
 
 
 throughPoints : Test

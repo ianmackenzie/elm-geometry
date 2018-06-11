@@ -5,15 +5,12 @@ import BoundingBox3d
 import Direction3d
 import Expect exposing (FloatingPointTolerance(Absolute, AbsoluteOrRelative))
 import Fuzz
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Plane3d
 import Point3d exposing (Point3d)
 import Sphere3d exposing (Sphere3d)
 import Test exposing (Test)
-import Tests.Generic as Generic
 import Triangle3d
 import Vector3d
 
@@ -32,13 +29,6 @@ sphereFromTuple ( centerPoint, radius ) =
 {-
    Tests
 -}
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.sphere3d
-        Encode.sphere3d
-        Decode.sphere3d
 
 
 unit : Test

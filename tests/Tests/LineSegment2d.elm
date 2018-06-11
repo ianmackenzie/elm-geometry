@@ -1,37 +1,15 @@
-module Tests.LineSegment2d
-    exposing
-        ( intersectionFindsCoincidentEndpoints
-        , intersectionFindsCollinearCoincidentEndpoints
-        , intersectionIsSymmetric
-        , intersectionOfEqualLineSegmentsIsNothing
-        , intersectionOfEqualPointSegmentIsPoint
-        , intersectionOfReversedEqualLineSegmentsIsNothing
-        , intersectionWorksProperly
-        , jsonRoundTrips
-        , reversingDoesNotAffectIntersection
-        , sharedEndpointOnThirdSegmentInducesAnIntersection
-        )
+module Tests.LineSegment2d exposing (..)
 
 import Axis2d
 import Expect
 import Fuzz
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import LineSegment2d
 import Point2d
 import Test exposing (Test)
-import Tests.Generic as Generic
 import Triangle2d
 import Vector2d
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.lineSegment2d
-        Encode.lineSegment2d
-        Decode.lineSegment2d
 
 
 intersectionWorksProperly : Test

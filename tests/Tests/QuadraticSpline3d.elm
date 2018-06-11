@@ -1,30 +1,12 @@
-module Tests.QuadraticSpline3d
-    exposing
-        ( analyticalLength
-        , arcLengthMatchesAnalytical
-        , curvedSpline
-        , jsonRoundTrips
-        , pointAtArcLengthIsEnd
-        , pointAtZeroLengthIsStart
-        )
+module Tests.QuadraticSpline3d exposing (..)
 
 import Expect exposing (FloatingPointTolerance(Absolute))
 import Fuzz exposing (Fuzzer)
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Fuzz as Fuzz
 import Point3d
 import QuadraticSpline3d exposing (QuadraticSpline3d)
 import Test exposing (Test)
-import Tests.Generic as Generic
 import Tests.QuadraticSpline2d
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.quadraticSpline3d
-        Encode.quadraticSpline3d
-        Decode.quadraticSpline3d
 
 
 analyticalLength : QuadraticSpline3d -> Float

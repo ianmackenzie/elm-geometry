@@ -1,23 +1,11 @@
-module Tests.Frame3d
-    exposing
-        ( frameDirectionsAreOrthonormal
-        , jsonRoundTrips
-        )
+module Tests.Frame3d exposing (..)
 
 import Direction3d
 import Frame3d
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Test exposing (Test)
-import Tests.Generic as Generic
 import Vector3d
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.frame3d Encode.frame3d Decode.frame3d
 
 
 frameDirectionsAreOrthonormal : Test

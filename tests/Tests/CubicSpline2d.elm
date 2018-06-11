@@ -1,21 +1,11 @@
 module Tests.CubicSpline2d exposing (..)
 
 import CubicSpline2d
-import Expect exposing (FloatingPointTolerance(Absolute))
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
+import Expect exposing (FloatingPointTolerance(..))
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Test exposing (Test)
-import Tests.Generic as Generic
 import Tests.QuadraticSpline2d
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.cubicSpline2d
-        Encode.cubicSpline2d
-        Decode.cubicSpline2d
 
 
 fromEndpointsReproducesSpline : Test

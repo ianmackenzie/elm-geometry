@@ -1,37 +1,11 @@
-module Tests.BoundingBox2d
-    exposing
-        ( boxContainsOwnCentroid
-        , containingPointsConsistentWithFromCorners
-        , containingPointsIsOrderIndependent
-        , hullContainsInputs
-        , intersectionConsistentWithIntersects
-        , intersectionConsistentWithOverlappingBy
-        , intersectionIsValidOrNothing
-        , jsonRoundTrips
-        , overlappingBoxesCannotBySeparated
-        , overlappingByDetectsIntersection
-        , separatedBoxesCannotBeMadeToOverlap
-        , separationIsCorrectForDiagonallyDisplacedBoxes
-        , separationIsCorrectForHorizontallyDisplacedBoxes
-        , separationIsCorrectForVerticallyDisplacedBoxes
-        )
+module Tests.BoundingBox2d exposing (..)
 
 import BoundingBox2d
 import Expect
 import Fuzz
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Fuzz as Fuzz
 import Test exposing (Test)
-import Tests.Generic as Generic
 import Vector2d
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.boundingBox2d
-        Encode.boundingBox2d
-        Decode.boundingBox2d
 
 
 intersectionConsistentWithIntersects : Test

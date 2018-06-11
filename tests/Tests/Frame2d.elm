@@ -1,23 +1,10 @@
-module Tests.Frame2d
-    exposing
-        ( globalToGlobal
-        , jsonRoundTrips
-        , localToLocal
-        )
+module Tests.Frame2d exposing (..)
 
 import Frame2d
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Point2d
 import Test exposing (Test)
-import Tests.Generic as Generic
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.frame2d Encode.frame2d Decode.frame2d
 
 
 globalToGlobal : Test
