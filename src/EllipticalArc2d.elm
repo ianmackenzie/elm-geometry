@@ -114,10 +114,10 @@ you are writing low-level geometric algorithms.
 -}
 
 import Axis2d exposing (Axis2d)
+import Curve.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
 import Direction2d exposing (Direction2d)
 import Ellipse2d exposing (Ellipse2d)
 import Frame2d exposing (Frame2d)
-import Geometry.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
 import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
 import Geometry.SweptAngle as SweptAngle exposing (SweptAngle)
 import Geometry.Types as Types

@@ -5,7 +5,7 @@
     "license": "MPL-2.0",
     "version": "2.1.0",
     "exposed-modules": [
-        "Geometry.ArcLengthParameterization",
+        "Curve.ArcLengthParameterization",
         "Geometry.ParameterValue",
         "Geometry.SweptAngle",
         "Arc2d",

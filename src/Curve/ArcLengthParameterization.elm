@@ -1,4 +1,4 @@
-module Geometry.ArcLengthParameterization
+module Curve.ArcLengthParameterization
     exposing
         ( ArcLengthParameterization
         , arcLengthToParameterValue
