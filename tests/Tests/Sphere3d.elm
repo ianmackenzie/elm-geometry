@@ -38,12 +38,12 @@ unit =
             \_ ->
                 Sphere3d.unit
                     |> Sphere3d.radius
-                    |> Expect.equal 1
+                    |> Expect.approximately 1
         , Test.test "The sphere returned by unit is centered on the origin" <|
             \_ ->
                 Sphere3d.unit
                     |> Sphere3d.centerPoint
-                    |> Expect.equal Point3d.origin
+                    |> Expect.point3d Point3d.origin
         ]
 
 
@@ -57,7 +57,7 @@ withRadius =
             (\centerPoint radius ->
                 Sphere3d.withRadius radius centerPoint
                     |> Sphere3d.radius
-                    |> Expect.equal (abs radius)
+                    |> Expect.approximately (abs radius)
             )
         , Test.fuzz2
             Fuzz.point3d
@@ -66,7 +66,7 @@ withRadius =
             (\centerPoint radius ->
                 Sphere3d.withRadius radius centerPoint
                     |> Sphere3d.centerPoint
-                    |> Expect.equal centerPoint
+                    |> Expect.point3d centerPoint
             )
         ]
 
