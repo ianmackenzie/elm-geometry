@@ -3,7 +3,7 @@ module Tests.Sphere3d exposing (..)
 import Axis3d
 import BoundingBox3d
 import Direction3d
-import Expect exposing (FloatingPointTolerance(Absolute, AbsoluteOrRelative))
+import Expect exposing (FloatingPointTolerance(..))
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz

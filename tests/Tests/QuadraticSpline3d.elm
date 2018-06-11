@@ -1,6 +1,6 @@
 module Tests.QuadraticSpline3d exposing (..)
 
-import Expect exposing (FloatingPointTolerance(Absolute))
+import Expect exposing (FloatingPointTolerance(..))
 import Fuzz exposing (Fuzzer)
 import Geometry.Fuzz as Fuzz
 import Point3d
