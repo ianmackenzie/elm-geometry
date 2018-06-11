@@ -5,6 +5,7 @@ import Expect
 import Float.Extra as Float
 import Fuzz exposing (Fuzzer)
 import Geometry.Fuzz as Fuzz
+import Geometry.ParameterValue as ParameterValue
 import Point2d
 import QuadraticSpline2d exposing (QuadraticSpline2d)
 import Test exposing (Test)
@@ -202,9 +203,9 @@ parameterization =
                                 arcLength
                 in
                 if arcLength == 0 then
-                    parameterValue |> Expect.equal (Just 0)
+                    parameterValue |> Expect.equal (Just ParameterValue.zero)
                 else
-                    parameterValue |> Expect.equal (Just 1)
+                    parameterValue |> Expect.equal (Just ParameterValue.one)
         , Test.fuzz curvedSpline "arc length matches analytical formula" <|
             -- analyticalLength falls down for degenerate splines so just check
             -- curved ones
