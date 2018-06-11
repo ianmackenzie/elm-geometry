@@ -147,20 +147,20 @@ listOf comparison firstList secondList =
 
 
 just : (expected -> actual -> Expectation) -> expected -> Maybe actual -> Expectation
-just expect expectedValue actualMaybe =
+just expect_ expectedValue actualMaybe =
     case actualMaybe of
         Just actualValue ->
-            actualValue |> expect expectedValue
+            actualValue |> expect_ expectedValue
 
         Nothing ->
             Expect.fail "Expected a Just but got Nothing"
 
 
 maybe : (expected -> actual -> Expectation) -> Maybe expected -> Maybe actual -> Expectation
-maybe expect expectedMaybe actualMaybe =
+maybe expect_ expectedMaybe actualMaybe =
     case ( expectedMaybe, actualMaybe ) of
         ( Just expectedValue, Just actualValue ) ->
-            actualValue |> expect expectedValue
+            actualValue |> expect_ expectedValue
 
         ( Just _, Nothing ) ->
             Expect.fail "Expected a Just but got Nothing"

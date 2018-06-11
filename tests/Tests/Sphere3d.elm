@@ -209,14 +209,14 @@ throughPointsFuzz =
         (\p1 p2 p3 p4 ->
             if validTetrahedron p1 p2 p3 p4 then
                 let
-                    sphere =
+                    maybeSphere =
                         Sphere3d.throughPoints p1 p2 p3 p4
 
                     hasPointOnSurface point sphere =
                         Point3d.distanceFrom point (Sphere3d.centerPoint sphere)
                             |> Expect.approximately (Sphere3d.radius sphere)
                 in
-                case sphere of
+                case maybeSphere of
                     Just sphere ->
                         sphere
                             |> Expect.all
@@ -392,17 +392,17 @@ rotateAround =
                                 |> Point3d.projectOntoAxis axis
                                 |> Direction3d.from point
 
-                        originalDirection =
+                        maybeOriginalDirection =
                             orthogonalDirectionFromAxisTo
                                 (Sphere3d.centerPoint sphere)
 
-                        rotatedDirection =
+                        maybeRotatedDirection =
                             sphere
                                 |> Sphere3d.rotateAround axis angle
                                 |> Sphere3d.centerPoint
                                 |> orthogonalDirectionFromAxisTo
                     in
-                    case ( originalDirection, rotatedDirection ) of
+                    case ( maybeOriginalDirection, maybeRotatedDirection ) of
                         ( Just originalDirection, Just rotatedDirection ) ->
                             let
                                 angleBetweenDirections =

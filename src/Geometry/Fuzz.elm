@@ -112,13 +112,13 @@ direction2d =
 direction3d : Fuzzer Direction3d
 direction3d =
     let
-        phi =
+        phiFuzzer =
             Fuzz.map acos (Fuzz.floatRange -1 1)
 
-        theta =
+        thetaFuzzer =
             Fuzz.floatRange -pi pi
 
-        direction phi theta =
+        toDirection phi theta =
             let
                 r =
                     sin phi
@@ -134,7 +134,7 @@ direction3d =
             in
             Direction3d.unsafe ( x, y, z )
     in
-    Fuzz.map2 direction phi theta
+    Fuzz.map2 toDirection phiFuzzer thetaFuzzer
 
 
 point2d : Fuzzer Point2d

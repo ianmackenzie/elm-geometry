@@ -42,7 +42,7 @@ intersectionWorksProperly =
 
         expectation firstSegment secondSegment =
             case LineSegment2d.intersectionPoint firstSegment secondSegment of
-                Just point ->
+                Just intersectionPoint ->
                     let
                         -- Not enough by itself - point might be collinear with
                         -- but not actually on the segment (e.g. past the end)
@@ -89,7 +89,7 @@ intersectionWorksProperly =
                                 ]
                     in
                     Expect.all [ isOn firstSegment, isOn secondSegment ]
-                        point
+                        intersectionPoint
 
                 Nothing ->
                     case
