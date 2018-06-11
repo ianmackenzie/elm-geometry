@@ -85,17 +85,3 @@ pointAtArcLengthIsEnd =
             CubicSpline3d.pointAlong parameterizedCurve arcLength
                 |> Expect.equal (Just (CubicSpline3d.endPoint spline))
         )
-
-
-derivativeAndMagnitudeAreConsistent : Test
-derivativeAndMagnitudeAreConsistent =
-    Test.fuzz2
-        Fuzz.cubicSpline3d
-        (Fuzz.floatRange 0 1)
-        "derivative and derivativeMagnitude are consistent"
-        (\spline t ->
-            CubicSpline3d.derivative spline t
-                |> Maybe.map Vector3d.length
-                |> Expect.just Expect.approximately
-                    (CubicSpline3d.derivativeMagnitude spline t)
-        )
