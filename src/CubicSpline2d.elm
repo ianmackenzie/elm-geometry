@@ -340,16 +340,13 @@ boundingBox spline =
 
 {-| Get a point at a given parameter value.
 
-    CubicSpline2d.pointOn exampleSpline
-        ParameterValue.zero
+    CubicSpline2d.pointOn exampleSpline ParameterValue.zero
     --> Point2d.fromCoordinates ( 1, 1 )
 
-    CubicSpline2d.pointOn exampleSpline
-        ParameterValue.oneHalf
+    CubicSpline2d.pointOn exampleSpline ParameterValue.half
     --> Point2d.fromCoordinates ( 4, 2.5 )
 
-    CubicSpline2d.pointOn exampleSpline
-        ParameterValue.one
+    CubicSpline2d.pointOn exampleSpline ParameterValue.one
     --> Point2d.fromCoordinates ( 7, 4 )
 
 -}
@@ -795,7 +792,7 @@ mapControlPoints function spline =
 -}
 bisect : CubicSpline2d -> ( CubicSpline2d, CubicSpline2d )
 bisect =
-    splitAt ParameterValue.oneHalf
+    splitAt ParameterValue.half
 
 
 {-| Split a spline at a particular parameter value, resulting in two smaller
@@ -997,7 +994,7 @@ underlyingSpline (ArcLengthParameterized spline _) =
     --> Just (Vector2d.fromComponents ( 6, 9 ))
 
     CubicSpline2d.firstDerivative exampleSpline
-        ParameterValue.oneHalf
+        ParameterValue.half
     --> Just (Vector2d.fromComponents ( 6, 0 ))
 
     CubicSpline2d.firstDerivative exampleSpline

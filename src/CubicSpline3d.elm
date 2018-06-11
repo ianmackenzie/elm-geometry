@@ -384,16 +384,13 @@ boundingBox spline =
 
 {-| Get a point at a given parameter value.
 
-    CubicSpline3d.pointOn exampleSpline
-        ParameterValue.zero
+    CubicSpline3d.pointOn exampleSpline ParameterValue.zero
     --> Point3d.fromCoordinates ( 1, 1, 1 )
 
-    CubicSpline3d.pointOn exampleSpline
-        ParameterValue.oneHalf
+    CubicSpline3d.pointOn exampleSpline ParameterValue.half
     --> Point3d.fromCoordinates ( 2.75, 2, 1.25 )
 
-    CubicSpline3d.pointOn exampleSpline
-        ParameterValue.one
+    CubicSpline3d.pointOn exampleSpline ParameterValue.one
     --> Point3d.fromCoordinates ( 3, 3, 3 )
 
 -}
@@ -847,12 +844,12 @@ mapControlPoints function spline =
     -->     )
     --> )
 
-Equivalent to `CubicSpline3d.splitAt ParameterValue.oneHalf`.
+Equivalent to `CubicSpline3d.splitAt ParameterValue.half`.
 
 -}
 bisect : CubicSpline3d -> ( CubicSpline3d, CubicSpline3d )
 bisect =
-    splitAt ParameterValue.oneHalf
+    splitAt ParameterValue.half
 
 
 {-| Split a spline at a particular parameter value, resulting in two smaller
@@ -1048,7 +1045,7 @@ underlyingSpline (ArcLengthParameterized spline _) =
     --> Vector3d.fromComponents ( 6, 0, 0 )
 
     CubicSpline3d.derivative exampleSpline
-        ParameterValue.oneHalf
+        ParameterValue.half
     --> Vector3d.fromComponents ( 1.5, 3, 1.5 )
 
     CubicSpline3d.derivative exampleSpline
@@ -1193,7 +1190,7 @@ start of the spline and a value of 1 corresponds to the end.
     --> Vector3d.fromComponents ( -12, 12, 0 )
 
     CubicSpline3d.secondDerivative exampleSpline
-        ParameterValue.oneHalf
+        ParameterValue.half
     --> Vector3d.fromComponents ( -6, 0, 6 )
 
     CubicSpline3d.secondDerivative exampleSpline

@@ -957,7 +957,7 @@ example, to get the true midpoint of `exampleArc`:
 Note that this is not the same as evaulating at a parameter value of 0.5:
 
     EllipticalArc2d.pointOn exampleArc
-        ParameterValue.oneHalf
+        ParameterValue.half
     --> Point2d.fromCoordinates ( 1.4142, 0.7071 )
 
 If the given arc length is less than zero or greater than the arc length of the

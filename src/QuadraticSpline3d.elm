@@ -332,7 +332,7 @@ pointsAt parameterValues spline =
     --> Vector3d.fromComponents ( 4, 2, 0 )
 
     QuadraticSpline3d.derivative exampleSpline
-        ParameterValue.oneHalf
+        ParameterValue.half
     --> Vector3d.fromComponents ( 2, 2, 2 )
 
     QuadraticSpline3d.derivative exampleSpline
@@ -747,12 +747,12 @@ mapControlPoints function spline =
     -->     )
     --> )
 
-Equivalent to `QuadraticSpline3d.splitAt ParameterValue.oneHalf`.
+Equivalent to `QuadraticSpline3d.splitAt ParameterValue.half`.
 
 -}
 bisect : QuadraticSpline3d -> ( QuadraticSpline3d, QuadraticSpline3d )
 bisect =
-    splitAt ParameterValue.oneHalf
+    splitAt ParameterValue.half
 
 
 {-| Split a spline at a particular parameter value, resulting in two smaller

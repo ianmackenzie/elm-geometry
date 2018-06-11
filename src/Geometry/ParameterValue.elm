@@ -3,11 +3,11 @@ module Geometry.ParameterValue
         ( ParameterValue
         , checked
         , clamped
+        , half
         , leading
         , midpoint
         , midpoints
         , one
-        , oneHalf
         , oneMinus
         , range
         , steps
@@ -23,7 +23,7 @@ module Geometry.ParameterValue
 
 # Constants
 
-@docs zero, oneHalf, one
+@docs zero, half, one
 
 
 # Construction
@@ -62,12 +62,12 @@ zero =
 
 {-| The parameter value 0.5.
 
-    ParameterValue.oneHalf
+    ParameterValue.half
     --> ParameterValue 0.5
 
 -}
-oneHalf : ParameterValue
-oneHalf =
+half : ParameterValue
+half =
     ParameterValue 0.5
 
 

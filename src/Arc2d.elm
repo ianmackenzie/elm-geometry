@@ -561,7 +561,7 @@ sweptAngle (Types.Arc2d properties) =
 
 {-| Get the point along an arc at a given parameter value.
 
-    Arc2d.pointOn exampleArc ParameterValue.oneHalf
+    Arc2d.pointOn exampleArc ParameterValue.half
     --> Point2d.fromCoordinates ( 2.4142, 2.4142 )
 
 -}
