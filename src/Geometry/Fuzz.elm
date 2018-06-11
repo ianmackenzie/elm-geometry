@@ -30,6 +30,7 @@ module Geometry.Fuzz
         , frame3d
         , lineSegment2d
         , lineSegment3d
+        , parameterValue
         , plane3d
         , point2d
         , point3d
@@ -64,6 +65,7 @@ import EllipticalArc2d exposing (EllipticalArc2d)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
 import Fuzz exposing (Fuzzer)
+import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
 import LineSegment2d exposing (LineSegment2d)
 import LineSegment3d exposing (LineSegment3d)
 import Plane3d exposing (Plane3d)
@@ -92,6 +94,11 @@ scalar =
 positiveScalar : Fuzzer Float
 positiveScalar =
     Fuzz.map abs scalar
+
+
+parameterValue : Fuzzer ParameterValue
+parameterValue =
+    Fuzz.map ParameterValue.clamped (Fuzz.floatRange 0 1)
 
 
 vector2d : Fuzzer Vector2d
