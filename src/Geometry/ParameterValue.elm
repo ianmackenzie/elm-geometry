@@ -8,6 +8,7 @@ module Geometry.ParameterValue
         , midpoints
         , one
         , oneHalf
+        , oneMinus
         , range
         , steps
         , trailing
@@ -27,7 +28,7 @@ module Geometry.ParameterValue
 
 # Construction
 
-@docs clamped, checked, midpoint
+@docs clamped, checked, midpoint, oneMinus
 
 
 # Ranges
@@ -130,6 +131,11 @@ parameter values.
 midpoint : ParameterValue -> ParameterValue -> ParameterValue
 midpoint (ParameterValue firstValue) (ParameterValue secondValue) =
     ParameterValue (firstValue + (secondValue - firstValue) / 2)
+
+
+oneMinus : ParameterValue -> ParameterValue
+oneMinus (ParameterValue value_) =
+    ParameterValue (1 - value_)
 
 
 steps : Int -> List ParameterValue
