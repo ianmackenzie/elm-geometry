@@ -30,21 +30,21 @@ intersectionConsistentWithIntersects =
 
                 ( True, Nothing ) ->
                     Expect.fail
-                        (toString first
+                        (Debug.toString first
                             ++ " and "
-                            ++ toString second
+                            ++ Debug.toString second
                             ++ " considered to intersect, "
                             ++ "but intersection is Nothing"
                         )
 
                 ( False, Just intersectionBox ) ->
                     Expect.fail
-                        (toString first
+                        (Debug.toString first
                             ++ " and "
-                            ++ toString second
+                            ++ Debug.toString second
                             ++ " not considered to intersect, "
                             ++ " but have valid intersection "
-                            ++ toString intersectionBox
+                            ++ Debug.toString intersectionBox
                         )
         )
 
@@ -70,25 +70,25 @@ intersectionConsistentWithOverlappingBy =
                 ( True, Just ( length, width, height ) ) ->
                     if length == 0 then
                         Expect.fail
-                            (toString first
+                            (Debug.toString first
                                 ++ " and "
-                                ++ toString second
+                                ++ Debug.toString second
                                 ++ " considered to strictly overlap, "
                                 ++ "but intersection length is 0"
                             )
                     else if width == 0 then
                         Expect.fail
-                            (toString first
+                            (Debug.toString first
                                 ++ " and "
-                                ++ toString second
+                                ++ Debug.toString second
                                 ++ " considered to strictly overlap, "
                                 ++ "but intersection width is 0"
                             )
                     else if height == 0 then
                         Expect.fail
-                            (toString first
+                            (Debug.toString first
                                 ++ " and "
-                                ++ toString second
+                                ++ Debug.toString second
                                 ++ " considered to strictly overlap, "
                                 ++ "but intersection height is 0"
                             )
@@ -100,9 +100,9 @@ intersectionConsistentWithOverlappingBy =
 
                 ( True, Nothing ) ->
                     Expect.fail
-                        (toString first
+                        (Debug.toString first
                             ++ " and "
-                            ++ toString second
+                            ++ Debug.toString second
                             ++ " considered to strictly overlap, "
                             ++ "but intersection is Nothing"
                         )
@@ -112,13 +112,13 @@ intersectionConsistentWithOverlappingBy =
                         Expect.pass
                     else
                         Expect.fail
-                            (toString first
+                            (Debug.toString first
                                 ++ " and "
-                                ++ toString second
+                                ++ Debug.toString second
                                 ++ " not considered to strictly overlap, "
                                 ++ "but have valid intersection "
                                 ++ "with non-zero dimensions "
-                                ++ toString intersectionDimensions
+                                ++ Debug.toString intersectionDimensions
                             )
         )
 

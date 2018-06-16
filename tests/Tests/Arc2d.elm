@@ -9,6 +9,7 @@ import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
 import Geometry.SweptAngle as SweptAngle exposing (SweptAngle)
 import Point2d exposing (Point2d)
 import Test exposing (Test)
+import Test.FuzzN as Test
 import Tests.Generic.Curve2d
 
 
@@ -107,7 +108,6 @@ transformations =
     Tests.Generic.Curve2d.transformations
         { fuzzer = Fuzz.arc2d
         , pointOn = Arc2d.pointOn
-        , derivative = Arc2d.derivativeVector
         , scaleAbout = Arc2d.scaleAbout
         , translateBy = Arc2d.translateBy
         , rotateAround = Arc2d.rotateAround

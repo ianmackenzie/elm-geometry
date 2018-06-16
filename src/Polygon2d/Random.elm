@@ -3,7 +3,7 @@ module Polygon2d.Random exposing (polygon2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
-import Random.Pcg as Random exposing (Generator)
+import Random exposing (Generator)
 import Vector2d exposing (Vector2d)
 
 
@@ -89,7 +89,7 @@ type alias GridPolygon =
 
 localCoordinates : Generator ( Float, Float )
 localCoordinates =
-    Random.map2 (,) (Random.float 0.1 0.9) (Random.float 0.1 0.9)
+    Random.map2 Tuple.pair (Random.float 0.1 0.9) (Random.float 0.1 0.9)
 
 
 loopPoints : BoundingBox2d -> List ( Int, Int ) -> Generator (List Point2d)
@@ -347,13 +347,14 @@ polygon2d boundingBox =
                 |> Polygon2d.rotateAround (BoundingBox2d.centroid boundingBox)
                     angle
         )
-        (Random.choices
-            [ radialPolygonWithHole boundingBox
-            , gridPolygon boundingBox squarish
+        (Random.uniform
+            (radialPolygonWithHole boundingBox)
+            [ gridPolygon boundingBox squarish
             , gridPolygon boundingBox lShaped
             , gridPolygon boundingBox squareWithHole
             , gridPolygon boundingBox squareWithTwoHoles
             , gridPolygon boundingBox interlocking
             ]
+            |> Random.andThen identity
         )
         (Random.float -pi pi)

@@ -114,7 +114,7 @@ expect comparison first second =
     else
         let
             message =
-                "Expected " ++ toString first ++ ", got " ++ toString second
+                "Expected " ++ Debug.toString first ++ ", got " ++ Debug.toString second
         in
         Expect.fail message
 
@@ -236,9 +236,9 @@ validDirection2d direction =
     else
         Expect.fail
             ("Expected "
-                ++ toString direction
+                ++ Debug.toString direction
                 ++ " to have length 1, but actually has length "
-                ++ toString length
+                ++ String.fromFloat length
             )
 
 
@@ -263,9 +263,9 @@ validDirection3d direction =
     else
         Expect.fail
             ("Expected "
-                ++ toString direction
+                ++ Debug.toString direction
                 ++ " to have length 1, but actually has length "
-                ++ toString length
+                ++ String.fromFloat length
             )
 
 
@@ -354,9 +354,9 @@ validFrame2d =
             else
                 Expect.fail
                     ("Expected perpendicular basis directions, got "
-                        ++ toString xDirection
+                        ++ Debug.toString xDirection
                         ++ ", "
-                        ++ toString yDirection
+                        ++ Debug.toString yDirection
                     )
         ]
 
@@ -405,11 +405,11 @@ validFrame3d =
             else
                 Expect.fail
                     ("Expected perpendicular basis directions, got "
-                        ++ toString xDirection
+                        ++ Debug.toString xDirection
                         ++ ", "
-                        ++ toString yDirection
+                        ++ Debug.toString yDirection
                         ++ ", "
-                        ++ toString zDirection
+                        ++ Debug.toString zDirection
                     )
         ]
 

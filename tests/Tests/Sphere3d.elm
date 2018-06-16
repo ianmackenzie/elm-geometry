@@ -11,6 +11,7 @@ import Plane3d
 import Point3d exposing (Point3d)
 import Sphere3d exposing (Sphere3d)
 import Test exposing (Test)
+import Test.FuzzN as Test
 import Triangle3d
 import Vector3d
 
@@ -75,29 +76,29 @@ throughPointsManual : Test
 throughPointsManual =
     let
         testCases =
-            [ ( ( ( 1, 0, 0 ), ( 0, 1, 0 ), ( -1, 0, 0 ), ( 0, 0, 1 ) )
+            [ ( { c1 = ( 1, 0, 0 ), c2 = ( 0, 1, 0 ), c3 = ( -1, 0, 0 ), c4 = ( 0, 0, 1 ) }
               , ( ( 0, 0, 0 ), 1 )
               )
-            , ( ( ( 1, 0, 0 ), ( 0, 1, 0 ), ( -1, 0, 0 ), ( 0, 0, -1 ) )
+            , ( { c1 = ( 1, 0, 0 ), c2 = ( 0, 1, 0 ), c3 = ( -1, 0, 0 ), c4 = ( 0, 0, -1 ) }
               , ( ( 0, 0, 0 ), 1 )
               )
-            , ( ( ( 1, 0, 0 ), ( 0, 1, 0 ), ( -1, 0, 0 ), ( 0, 0, 0.5 ) )
+            , ( { c1 = ( 1, 0, 0 ), c2 = ( 0, 1, 0 ), c3 = ( -1, 0, 0 ), c4 = ( 0, 0, 0.5 ) }
               , ( ( 0, 0, -0.75 ), 1.25 )
               )
-            , ( ( ( 1, 0, 0 ), ( 0, 1, 0 ), ( -1, 0, 0 ), ( 0, 0, -0.5 ) )
+            , ( { c1 = ( 1, 0, 0 ), c2 = ( 0, 1, 0 ), c3 = ( -1, 0, 0 ), c4 = ( 0, 0, -0.5 ) }
               , ( ( 0, 0, 0.75 ), 1.25 )
               )
             ]
 
-        inputPoints ( c1, c2, c3, c4 ) =
-            ( Point3d.fromCoordinates c1
-            , Point3d.fromCoordinates c2
-            , Point3d.fromCoordinates c3
-            , Point3d.fromCoordinates c4
-            )
+        inputPoints { c1, c2, c3, c4 } =
+            { p1 = Point3d.fromCoordinates c1
+            , p2 = Point3d.fromCoordinates c2
+            , p3 = Point3d.fromCoordinates c3
+            , p4 = Point3d.fromCoordinates c4
+            }
 
         testTitle inputCoordinates expectedSphere =
-            "Given " ++ toString inputCoordinates ++ " throughPoints returns " ++ toString (sphereFromTuple expectedSphere)
+            "Given " ++ Debug.toString inputCoordinates ++ " throughPoints returns " ++ Debug.toString (sphereFromTuple expectedSphere)
     in
     Test.describe "throughPoints" <|
         List.map
@@ -106,7 +107,7 @@ throughPointsManual =
                     (testTitle inputCoordinates expectedSphere)
                     (\_ ->
                         let
-                            ( p1, p2, p3, p4 ) =
+                            { p1, p2, p3, p4 } =
                                 inputPoints inputCoordinates
                         in
                         Sphere3d.throughPoints p1 p2 p3 p4
@@ -191,7 +192,8 @@ validTetrahedron p1 p2 p3 p4 =
 
 throughPointsFuzz : Test
 throughPointsFuzz =
-    Test.fuzz4 Fuzz.point3d
+    Test.fuzz4
+        Fuzz.point3d
         Fuzz.point3d
         Fuzz.point3d
         Fuzz.point3d
