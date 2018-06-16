@@ -73,11 +73,11 @@ start point to the arc's end point). This module includes functionality for
 
 import Arc2d exposing (Arc2d)
 import Axis3d exposing (Axis3d)
+import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Direction2d exposing (Direction2d)
 import Direction3d exposing (Direction3d)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
-import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
 import Geometry.Types as Types
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)

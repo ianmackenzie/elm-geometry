@@ -113,9 +113,9 @@ you are writing low-level geometric algorithms.
 import Axis3d exposing (Axis3d)
 import BoundingBox3d exposing (BoundingBox3d)
 import Curve.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
+import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Direction3d exposing (Direction3d)
 import Frame3d exposing (Frame3d)
-import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
 import Geometry.Types as Types
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)

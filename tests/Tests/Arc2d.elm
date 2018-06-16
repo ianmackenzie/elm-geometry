@@ -1,12 +1,12 @@
 module Tests.Arc2d exposing (..)
 
+import Arc.SweptAngle as SweptAngle exposing (SweptAngle)
 import Arc2d
+import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Expect
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
-import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
-import Geometry.SweptAngle as SweptAngle exposing (SweptAngle)
 import Point2d exposing (Point2d)
 import Test exposing (Test)
 import Test.FuzzN as Test

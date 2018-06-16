@@ -29,8 +29,8 @@ parameter values.
 
 -}
 
+import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Float.Extra as Float
-import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
 
 
 {-| Contains a mapping from curve parameter value to arc length, and vice versa.

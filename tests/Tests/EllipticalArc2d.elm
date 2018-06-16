@@ -1,12 +1,12 @@
 module Tests.EllipticalArc2d exposing (..)
 
+import Arc.SweptAngle as SweptAngle
 import Arc2d exposing (Arc2d)
 import EllipticalArc2d exposing (EllipticalArc2d)
 import Expect
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
-import Geometry.SweptAngle as SweptAngle
 import Point2d
 import Test exposing (Test)
 import Tests.Generic.Curve2d

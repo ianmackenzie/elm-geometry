@@ -1,11 +1,11 @@
 module Tests.Arc3d exposing (..)
 
 import Arc3d
+import Curve.ParameterValue as ParameterValue
 import EllipticalArc2d
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
-import Geometry.ParameterValue as ParameterValue
 import Point3d
 import Test exposing (Test)
 import Tests.Generic.Curve3d

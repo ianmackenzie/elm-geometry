@@ -1,4 +1,4 @@
-module Geometry.SweptAngle
+module Arc.SweptAngle
     exposing
         ( SweptAngle
         , largeNegative

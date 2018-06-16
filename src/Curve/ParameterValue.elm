@@ -1,4 +1,4 @@
-module Geometry.ParameterValue
+module Curve.ParameterValue
     exposing
         ( ParameterValue
         , checked

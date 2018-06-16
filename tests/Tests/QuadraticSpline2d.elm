@@ -1,11 +1,11 @@
 module Tests.QuadraticSpline2d exposing (..)
 
 import Curve.ArcLengthParameterization as ArcLengthParameterization
+import Curve.ParameterValue as ParameterValue
 import Expect
 import Float.Extra as Float
 import Fuzz exposing (Fuzzer)
 import Geometry.Fuzz as Fuzz
-import Geometry.ParameterValue as ParameterValue
 import Point2d
 import QuadraticSpline2d exposing (QuadraticSpline2d)
 import Test exposing (Test)

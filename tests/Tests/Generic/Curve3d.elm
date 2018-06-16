@@ -1,11 +1,11 @@
 module Tests.Generic.Curve3d exposing (Config, transformations)
 
 import Axis3d exposing (Axis3d)
+import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Frame3d exposing (Frame3d)
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
-import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Test exposing (Test)
