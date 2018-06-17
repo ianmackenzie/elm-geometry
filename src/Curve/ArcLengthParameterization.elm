@@ -1,4 +1,4 @@
-module Geometry.ArcLengthParameterization
+module Curve.ArcLengthParameterization
     exposing
         ( ArcLengthParameterization
         , arcLengthToParameterValue
@@ -29,8 +29,8 @@ parameter values.
 
 -}
 
+import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Float.Extra as Float
-import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
 
 
 {-| Contains a mapping from curve parameter value to arc length, and vice versa.
@@ -234,7 +234,7 @@ arcLengthToParameterValue s (ArcLengthParameterization tree) =
     if s == 0 then
         Just ParameterValue.zero
     else if s > 0 && s <= lengthAtEnd tree then
-        Just (ParameterValue.unsafe (unsafeToParameterValue tree s))
+        Just (ParameterValue.clamped (unsafeToParameterValue tree s))
     else
         Nothing
 

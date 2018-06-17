@@ -113,15 +113,14 @@ you are writing low-level geometric algorithms.
 
 -}
 
+import Arc.SweptAngle as SweptAngle exposing (SweptAngle)
 import Axis2d exposing (Axis2d)
+import Curve.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
+import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Direction2d exposing (Direction2d)
 import Ellipse2d exposing (Ellipse2d)
 import Frame2d exposing (Frame2d)
 import Future.Tuple as Tuple
-import Geometry.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
-import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
-import Geometry.ParameterValues as ParameterValues exposing (ParameterValues)
-import Geometry.SweptAngle as SweptAngle exposing (SweptAngle)
 import Geometry.Types as Types
 import Interval
 import Point2d exposing (Point2d)
@@ -391,9 +390,9 @@ pointOn arc parameterValue =
 
 
 {-| -}
-pointsAt : ParameterValues -> EllipticalArc2d -> List Point2d
+pointsAt : List ParameterValue -> EllipticalArc2d -> List Point2d
 pointsAt parameterValues arc =
-    ParameterValues.map (pointOn arc) parameterValues
+    List.map (pointOn arc) parameterValues
 
 
 {-| Get the derivative vector at a point along an elliptical arc, based on a
@@ -443,9 +442,9 @@ To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry
 module.
 
 -}
-firstDerivativesAt : ParameterValues -> EllipticalArc2d -> List Vector2d
+firstDerivativesAt : List ParameterValue -> EllipticalArc2d -> List Vector2d
 firstDerivativesAt parameterValues arc =
-    ParameterValues.map (firstDerivative arc) parameterValues
+    List.map (firstDerivative arc) parameterValues
 
 
 {-| Sample an elliptical arc at a given parameter value to get both the position
@@ -575,11 +574,11 @@ sampler arc =
 
 
 {-| -}
-samplesAt : ParameterValues -> EllipticalArc2d -> List ( Point2d, Direction2d )
+samplesAt : List ParameterValue -> EllipticalArc2d -> List ( Point2d, Direction2d )
 samplesAt parameterValues arc =
     case sampler arc of
         Just sampler_ ->
-            ParameterValues.map sampler_ parameterValues
+            List.map sampler_ parameterValues
 
         Nothing ->
             []
@@ -904,7 +903,11 @@ derivativeMagnitude arc =
 {-| An elliptical arc that has been parameterized by arc length.
 -}
 type ArcLengthParameterized
-    = ArcLengthParameterized EllipticalArc2d ArcLengthParameterization
+    = ArcLengthParameterized
+        { underlyingArc : EllipticalArc2d
+        , parameterization : ArcLengthParameterization
+        , sampler : Maybe (ParameterValue -> ( Point2d, Direction2d ))
+        }
 
 
 {-| Build an arc length parameterization of the given elliptical arc, with a
@@ -929,7 +932,11 @@ arcLengthParameterized { maxError } arc =
                     maxSecondDerivativeMagnitude arc
                 }
     in
-    ArcLengthParameterized arc parameterization
+    ArcLengthParameterized
+        { underlyingArc = arc
+        , parameterization = parameterization
+        , sampler = sampler arc
+        }
 
 
 {-| Find the total arc length of an elliptical arc. This will be accurate to
@@ -959,7 +966,7 @@ example, to get the true midpoint of `exampleArc`:
 Note that this is not the same as evaulating at a parameter value of 0.5:
 
     EllipticalArc2d.pointOn exampleArc
-        ParameterValue.oneHalf
+        ParameterValue.half
     --> Point2d.fromCoordinates ( 1.4142, 0.7071 )
 
 If the given arc length is less than zero or greater than the arc length of the
@@ -967,34 +974,32 @@ arc, `Nothing` is returned.
 
 -}
 pointAlong : ArcLengthParameterized -> Float -> Maybe Point2d
-pointAlong (ArcLengthParameterized arc parameterization) distance =
-    parameterization
+pointAlong (ArcLengthParameterized parameterized) distance =
+    parameterized.parameterization
         |> ArcLengthParameterization.arcLengthToParameterValue distance
-        |> Maybe.map (pointOn arc)
+        |> Maybe.map (pointOn parameterized.underlyingArc)
 
 
 {-| -}
 sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point2d, Direction2d )
-sampleAlong (ArcLengthParameterized arc parameterization) =
-    case sampler arc of
+sampleAlong (ArcLengthParameterized parameterized) distance =
+    case parameterized.sampler of
         Just toSample ->
-            \distance ->
-                parameterization
-                    |> ArcLengthParameterization.arcLengthToParameterValue
-                        distance
-                    |> Maybe.map toSample
+            parameterized.parameterization
+                |> ArcLengthParameterization.arcLengthToParameterValue distance
+                |> Maybe.map toSample
 
         Nothing ->
-            always Nothing
+            Nothing
 
 
 {-| -}
 arcLengthParameterization : ArcLengthParameterized -> ArcLengthParameterization
-arcLengthParameterization (ArcLengthParameterized _ parameterization) =
-    parameterization
+arcLengthParameterization (ArcLengthParameterized parameterized) =
+    parameterized.parameterization
 
 
 {-| -}
 underlyingArc : ArcLengthParameterized -> EllipticalArc2d
-underlyingArc (ArcLengthParameterized arc _) =
-    arc
+underlyingArc (ArcLengthParameterized parameterized) =
+    parameterized.underlyingArc

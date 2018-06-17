@@ -2,13 +2,10 @@ module Tests.Point2d exposing (..)
 
 import Expect
 import Fuzz
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Point2d
 import Test exposing (Test)
-import Tests.Generic as Generic
 import Vector2d
 
 
@@ -82,11 +79,6 @@ interpolationReturnsExactEndpoints =
             , \( p1, p2 ) -> Point2d.interpolateFrom p1 p2 1 |> Expect.equal p2
             ]
         )
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.point2d Encode.point2d Decode.point2d
 
 
 translateByAndInAreConsistent : Test

@@ -1,35 +1,13 @@
-module Tests.Axis2d
-    exposing
-        ( directionExample
-        , flipExample
-        , jsonRoundTrips
-        , mirrorAcrossExample
-        , moveToExample
-        , originPointExample
-        , placeInExample
-        , relativeToExample
-        , rotateAroundExample
-        , translateByExample
-        , xExample
-        , yExample
-        )
+module Tests.Axis2d exposing (..)
 
 import Axis2d
 import Direction2d
 import Frame2d
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Point2d
 import Test exposing (Test)
-import Tests.Generic as Generic
 import Vector2d
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.axis2d Encode.axis2d Decode.axis2d
 
 
 xExample : Test

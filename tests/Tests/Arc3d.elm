@@ -1,6 +1,7 @@
 module Tests.Arc3d exposing (..)
 
 import Arc3d
+import Curve.ParameterValue as ParameterValue
 import EllipticalArc2d
 import Fuzz
 import Geometry.Expect as Expect
@@ -15,8 +16,8 @@ evaluateZeroIsStartPoint =
     Test.fuzz Fuzz.arc3d
         "Evaluating at t=0 returns start point"
         (\arc ->
-            Arc3d.pointOn arc 0
-                |> Expect.just Expect.point3d (Arc3d.startPoint arc)
+            Arc3d.pointOn arc ParameterValue.zero
+                |> Expect.point3d (Arc3d.startPoint arc)
         )
 
 
@@ -25,19 +26,20 @@ evaluateOneIsEndPoint =
     Test.fuzz Fuzz.arc3d
         "Evaluating at t=1 returns end point"
         (\arc ->
-            Arc3d.pointOn arc 1
-                |> Expect.just Expect.point3d (Arc3d.endPoint arc)
+            Arc3d.pointOn arc ParameterValue.one
+                |> Expect.point3d (Arc3d.endPoint arc)
         )
 
 
 reverseFlipsDirection : Test
 reverseFlipsDirection =
     Test.fuzz2 Fuzz.arc3d
-        (Fuzz.floatRange 0 1)
+        Fuzz.parameterValue
         "Reversing an arc is consistent with reversed evaluation"
-        (\arc t ->
-            Arc3d.pointOn (Arc3d.reverse arc) t
-                |> Expect.maybe Expect.point3d (Arc3d.pointOn arc (1 - t))
+        (\arc parameterValue ->
+            Arc3d.pointOn (Arc3d.reverse arc) parameterValue
+                |> Expect.point3d
+                    (Arc3d.pointOn arc (ParameterValue.oneMinus parameterValue))
         )
 
 
@@ -46,7 +48,7 @@ projectInto =
     Test.fuzz3
         Fuzz.arc3d
         Fuzz.sketchPlane3d
-        (Fuzz.floatRange 0 1)
+        Fuzz.parameterValue
         "Projecting an arc works properly"
         (\arc sketchPlane parameterValue ->
             let
@@ -60,10 +62,9 @@ projectInto =
                     EllipticalArc2d.pointOn projectedArc parameterValue
 
                 projectedPoint =
-                    pointOnOriginalArc
-                        |> Maybe.map (Point3d.projectInto sketchPlane)
+                    pointOnOriginalArc |> Point3d.projectInto sketchPlane
             in
-            pointOnProjectedArc |> Expect.maybe Expect.point2d projectedPoint
+            pointOnProjectedArc |> Expect.point2d projectedPoint
         )
 
 
@@ -72,7 +73,7 @@ transformations =
     Tests.Generic.Curve3d.transformations
         { fuzzer = Fuzz.arc3d
         , pointOn = Arc3d.pointOn
-        , derivative = Arc3d.derivativeVector
+        , firstDerivative = Arc3d.firstDerivative
         , scaleAbout = Arc3d.scaleAbout
         , translateBy = Arc3d.translateBy
         , rotateAround = Arc3d.rotateAround

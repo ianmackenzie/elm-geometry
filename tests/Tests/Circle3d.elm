@@ -1,27 +1,12 @@
-module Tests.Circle3d
-    exposing
-        ( boundingBoxContainsCenter
-        , jsonRoundTrips
-        , throughPoints
-        )
+module Tests.Circle3d exposing (..)
 
 import BoundingBox3d
 import Circle3d
 import Expect
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Fuzz as Fuzz
 import Point3d
 import Test exposing (Test)
-import Tests.Generic as Generic
 import Triangle3d
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.circle3d
-        Encode.circle3d
-        Decode.circle3d
 
 
 throughPoints : Test
@@ -44,14 +29,14 @@ throughPoints =
                         in
                         triangleArea > 1.0e-6
 
-                    circle =
+                    maybeCircle =
                         Circle3d.throughPoints p1 p2 p3
 
                     liesOnCircle point circle =
                         Point3d.distanceFrom point (Circle3d.centerPoint circle)
                             |> Expect.within (Expect.Absolute 1.0e-6) (Circle3d.radius circle)
                 in
-                case circle of
+                case maybeCircle of
                     Just circle ->
                         Expect.all (List.map liesOnCircle [ p1, p2, p3 ]) circle
 

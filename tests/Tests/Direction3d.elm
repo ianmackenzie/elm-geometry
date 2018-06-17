@@ -1,31 +1,14 @@
-module Tests.Direction3d
-    exposing
-        ( angleFromAndEqualWithinAreConsistent
-        , jsonRoundTrips
-        , orthonormalizeFollowsOriginalVectors
-        , orthonormalizeProducesValidFrameBasis
-        , orthonormalizingCoplanarVectorsReturnsNothing
-        )
+module Tests.Direction3d exposing (..)
 
 import Direction3d
 import Expect
 import Frame3d
 import Fuzz
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Point3d
 import Test exposing (Test)
-import Tests.Generic as Generic
 import Vector3d
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.direction3d
-        Encode.direction3d
-        Decode.direction3d
 
 
 angleFromAndEqualWithinAreConsistent : Test

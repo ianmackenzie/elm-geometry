@@ -1,32 +1,15 @@
-module Tests.Axis3d
-    exposing
-        ( directionExample
-        , jsonRoundTrips
-        , onExamples
-        , originPointExample
-        , xExample
-        , yExample
-        , zExample
-        )
+module Tests.Axis3d exposing (..)
 
 import Axis2d
 import Axis3d
 import Direction2d
 import Direction3d
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Point2d
 import Point3d
 import SketchPlane3d
 import Test exposing (Test)
-import Tests.Generic as Generic
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.axis3d Encode.axis3d Decode.axis3d
 
 
 xExample : Test

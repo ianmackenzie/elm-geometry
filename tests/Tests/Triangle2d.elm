@@ -1,21 +1,9 @@
-module Tests.Triangle2d
-    exposing
-        ( jsonRoundTrips
-        , triangleContainsOwnCentroid
-        )
+module Tests.Triangle2d exposing (..)
 
 import Expect
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Fuzz as Fuzz
 import Test exposing (Test)
-import Tests.Generic as Generic
 import Triangle2d
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.triangle2d Encode.triangle2d Decode.triangle2d
 
 
 triangleContainsOwnCentroid : Test

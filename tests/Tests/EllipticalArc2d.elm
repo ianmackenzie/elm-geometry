@@ -1,12 +1,12 @@
 module Tests.EllipticalArc2d exposing (..)
 
+import Arc.SweptAngle as SweptAngle
 import Arc2d exposing (Arc2d)
 import EllipticalArc2d exposing (EllipticalArc2d)
 import Expect
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
-import Geometry.SweptAngle as SweptAngle
 import Point2d
 import Test exposing (Test)
 import Tests.Generic.Curve2d
@@ -86,7 +86,7 @@ transformations =
     Tests.Generic.Curve2d.transformations
         { fuzzer = Fuzz.ellipticalArc2d
         , pointOn = EllipticalArc2d.pointOn
-        , derivative = EllipticalArc2d.derivative
+        , firstDerivative = EllipticalArc2d.firstDerivative
         , scaleAbout = EllipticalArc2d.scaleAbout
         , translateBy = EllipticalArc2d.translateBy
         , rotateAround = EllipticalArc2d.rotateAround

@@ -1,31 +1,14 @@
-module Tests.Direction2d
-    exposing
-        ( angleFromAndEqualWithinAreConsistent
-        , angleFromAndRotateByAreConsistent
-        , jsonRoundTrips
-        , orthonormalizeProducesValidFrameBasis
-        , orthonormalizingParallelVectorsReturnsNothing
-        )
+module Tests.Direction2d exposing (..)
 
 import Direction2d
 import Expect
 import Frame2d
 import Fuzz
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Point2d
 import Test exposing (Test)
-import Tests.Generic as Generic
 import Vector2d
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.direction2d
-        Encode.direction2d
-        Decode.direction2d
 
 
 angleFromAndEqualWithinAreConsistent : Test

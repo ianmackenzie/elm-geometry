@@ -5,12 +5,9 @@
     "license": "MPL-2.0",
     "version": "2.1.0",
     "exposed-modules": [
-        "Geometry.ArcLengthParameterization",
-        "Geometry.ParameterValue",
-        "Geometry.ParameterValues",
-        "Geometry.SweptAngle",
         "Arc2d",
         "Arc3d",
+        "Arc.SweptAngle",
         "Axis2d",
         "Axis3d",
         "BoundingBox2d",
@@ -19,6 +16,8 @@
         "Circle3d",
         "CubicSpline2d",
         "CubicSpline3d",
+        "Curve.ArcLengthParameterization",
+        "Curve.ParameterValue",
         "Direction2d",
         "Direction3d",
         "Ellipse2d",
@@ -49,5 +48,9 @@
         "ianmackenzie/elm-interval": "1.0.0 <= v < 2.0.0",
         "ianmackenzie/elm-triangular-mesh": "1.0.0 <= v < 2.0.0"
     },
-    "test-dependencies": {}
+    "test-dependencies": {
+        "elm-explorations/test": "1.0.0 <= v < 2.0.0",
+        "eeue56/elm-shrink": "2.0.0 <= v < 3.0.0",
+        "elm/random": "1.0.0 <= v < 2.0.0"
+    }
 }

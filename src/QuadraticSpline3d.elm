@@ -112,11 +112,10 @@ you are writing low-level geometric algorithms.
 
 import Axis3d exposing (Axis3d)
 import BoundingBox3d exposing (BoundingBox3d)
+import Curve.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
+import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Direction3d exposing (Direction3d)
 import Frame3d exposing (Frame3d)
-import Geometry.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
-import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
-import Geometry.ParameterValues as ParameterValues exposing (ParameterValues)
 import Geometry.Types as Types
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
@@ -321,9 +320,9 @@ To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry
 module.
 
 -}
-pointsAt : ParameterValues -> QuadraticSpline3d -> List Point3d
+pointsAt : List ParameterValue -> QuadraticSpline3d -> List Point3d
 pointsAt parameterValues spline =
-    ParameterValues.map (pointOn spline) parameterValues
+    List.map (pointOn spline) parameterValues
 
 
 {-| Get the first derivative of a spline at a given parameter value.
@@ -333,7 +332,7 @@ pointsAt parameterValues spline =
     --> Vector3d.fromComponents ( 4, 2, 0 )
 
     QuadraticSpline3d.derivative exampleSpline
-        ParameterValue.oneHalf
+        ParameterValue.half
     --> Vector3d.fromComponents ( 2, 2, 2 )
 
     QuadraticSpline3d.derivative exampleSpline
@@ -379,9 +378,9 @@ To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry
 module.
 
 -}
-firstDerivativesAt : ParameterValues -> QuadraticSpline3d -> List Vector3d
+firstDerivativesAt : List ParameterValue -> QuadraticSpline3d -> List Vector3d
 firstDerivativesAt parameterValues spline =
-    ParameterValues.map (firstDerivative spline) parameterValues
+    List.map (firstDerivative spline) parameterValues
 
 
 {-| Find the magnitude of the derivative to a spline at a particular parameter
@@ -532,11 +531,11 @@ nonZeroSecondDerivativeSampler spline secondDerivativeDirection =
 
 
 {-| -}
-samplesAt : ParameterValues -> QuadraticSpline3d -> List ( Point3d, Direction3d )
+samplesAt : List ParameterValue -> QuadraticSpline3d -> List ( Point3d, Direction3d )
 samplesAt parameterValues spline =
     case sampler spline of
         Just sampler_ ->
-            ParameterValues.map sampler_ parameterValues
+            List.map sampler_ parameterValues
 
         Nothing ->
             []
@@ -748,12 +747,12 @@ mapControlPoints function spline =
     -->     )
     --> )
 
-Equivalent to `QuadraticSpline3d.splitAt ParameterValue.oneHalf`.
+Equivalent to `QuadraticSpline3d.splitAt ParameterValue.half`.
 
 -}
 bisect : QuadraticSpline3d -> ( QuadraticSpline3d, QuadraticSpline3d )
 bisect =
-    splitAt ParameterValue.oneHalf
+    splitAt ParameterValue.half
 
 
 {-| Split a spline at a particular parameter value, resulting in two smaller
@@ -808,7 +807,11 @@ splitAt parameterValue spline =
 {-| A spline that has been parameterized by arc length.
 -}
 type ArcLengthParameterized
-    = ArcLengthParameterized QuadraticSpline3d ArcLengthParameterization
+    = ArcLengthParameterized
+        { underlyingSpline : QuadraticSpline3d
+        , parameterization : ArcLengthParameterization
+        , sampler : Maybe (ParameterValue -> ( Point3d, Direction3d ))
+        }
 
 
 {-| Build an arc length parameterization of the given spline, with a given
@@ -825,17 +828,19 @@ error.
 arcLengthParameterized : { maxError : Float } -> QuadraticSpline3d -> ArcLengthParameterized
 arcLengthParameterized { maxError } spline =
     let
-        maxSecondDerivativeMagnitude =
-            Vector3d.length (secondDerivative spline)
-
         parameterization =
             ArcLengthParameterization.build
                 { maxError = maxError
                 , derivativeMagnitude = derivativeMagnitude spline
-                , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude
+                , maxSecondDerivativeMagnitude =
+                    Vector3d.length (secondDerivative spline)
                 }
     in
-    ArcLengthParameterized spline parameterization
+    ArcLengthParameterized
+        { underlyingSpline = spline
+        , parameterization = parameterization
+        , sampler = sampler spline
+        }
 
 
 {-| Find the total arc length of a spline.
@@ -872,10 +877,10 @@ spline, `Nothing` is returned.
 
 -}
 pointAlong : ArcLengthParameterized -> Float -> Maybe Point3d
-pointAlong (ArcLengthParameterized spline parameterization) distance =
-    parameterization
+pointAlong (ArcLengthParameterized parameterized) distance =
+    parameterized.parameterization
         |> ArcLengthParameterization.arcLengthToParameterValue distance
-        |> Maybe.map (pointOn spline)
+        |> Maybe.map (pointOn parameterized.underlyingSpline)
 
 
 {-| Try to get the tangent direction along a spline at a given arc length. To
@@ -894,31 +899,29 @@ given arc length), `Nothing` is returned.
 
 -}
 sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point3d, Direction3d )
-sampleAlong (ArcLengthParameterized spline parameterization) =
-    case sampler spline of
+sampleAlong (ArcLengthParameterized parameterized) distance =
+    case parameterized.sampler of
         Just toSample ->
-            \distance ->
-                parameterization
-                    |> ArcLengthParameterization.arcLengthToParameterValue
-                        distance
-                    |> Maybe.map toSample
+            parameterized.parameterization
+                |> ArcLengthParameterization.arcLengthToParameterValue distance
+                |> Maybe.map toSample
 
         Nothing ->
-            always Nothing
+            Nothing
 
 
 {-| -}
 arcLengthParameterization : ArcLengthParameterized -> ArcLengthParameterization
-arcLengthParameterization (ArcLengthParameterized _ parameterization) =
-    parameterization
+arcLengthParameterization (ArcLengthParameterized parameterized) =
+    parameterized.parameterization
 
 
 {-| Get the original `QuadraticSpline3d` from which an `ArcLengthParameterized`
 value was constructed.
 -}
 underlyingSpline : ArcLengthParameterized -> QuadraticSpline3d
-underlyingSpline (ArcLengthParameterized spline _) =
-    spline
+underlyingSpline (ArcLengthParameterized parameterized) =
+    parameterized.underlyingSpline
 
 
 {-| Get the second derivative of a spline (for a quadratic spline, this is a

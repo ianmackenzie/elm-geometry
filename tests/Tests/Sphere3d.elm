@@ -3,17 +3,15 @@ module Tests.Sphere3d exposing (..)
 import Axis3d
 import BoundingBox3d
 import Direction3d
-import Expect exposing (FloatingPointTolerance(Absolute, AbsoluteOrRelative))
+import Expect exposing (FloatingPointTolerance(..))
 import Fuzz
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Plane3d
 import Point3d exposing (Point3d)
 import Sphere3d exposing (Sphere3d)
 import Test exposing (Test)
-import Tests.Generic as Generic
+import Test.FuzzN as Test
 import Triangle3d
 import Vector3d
 
@@ -34,13 +32,6 @@ sphereFromTuple ( centerPoint, radius ) =
 -}
 
 
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.sphere3d
-        Encode.sphere3d
-        Decode.sphere3d
-
-
 unit : Test
 unit =
     Test.describe "unit"
@@ -48,12 +39,12 @@ unit =
             \_ ->
                 Sphere3d.unit
                     |> Sphere3d.radius
-                    |> Expect.equal 1
+                    |> Expect.approximately 1
         , Test.test "The sphere returned by unit is centered on the origin" <|
             \_ ->
                 Sphere3d.unit
                     |> Sphere3d.centerPoint
-                    |> Expect.equal Point3d.origin
+                    |> Expect.point3d Point3d.origin
         ]
 
 
@@ -67,7 +58,7 @@ withRadius =
             (\centerPoint radius ->
                 Sphere3d.withRadius radius centerPoint
                     |> Sphere3d.radius
-                    |> Expect.equal (abs radius)
+                    |> Expect.approximately (abs radius)
             )
         , Test.fuzz2
             Fuzz.point3d
@@ -76,7 +67,7 @@ withRadius =
             (\centerPoint radius ->
                 Sphere3d.withRadius radius centerPoint
                     |> Sphere3d.centerPoint
-                    |> Expect.equal centerPoint
+                    |> Expect.point3d centerPoint
             )
         ]
 
@@ -85,29 +76,29 @@ throughPointsManual : Test
 throughPointsManual =
     let
         testCases =
-            [ ( ( ( 1, 0, 0 ), ( 0, 1, 0 ), ( -1, 0, 0 ), ( 0, 0, 1 ) )
+            [ ( { c1 = ( 1, 0, 0 ), c2 = ( 0, 1, 0 ), c3 = ( -1, 0, 0 ), c4 = ( 0, 0, 1 ) }
               , ( ( 0, 0, 0 ), 1 )
               )
-            , ( ( ( 1, 0, 0 ), ( 0, 1, 0 ), ( -1, 0, 0 ), ( 0, 0, -1 ) )
+            , ( { c1 = ( 1, 0, 0 ), c2 = ( 0, 1, 0 ), c3 = ( -1, 0, 0 ), c4 = ( 0, 0, -1 ) }
               , ( ( 0, 0, 0 ), 1 )
               )
-            , ( ( ( 1, 0, 0 ), ( 0, 1, 0 ), ( -1, 0, 0 ), ( 0, 0, 0.5 ) )
+            , ( { c1 = ( 1, 0, 0 ), c2 = ( 0, 1, 0 ), c3 = ( -1, 0, 0 ), c4 = ( 0, 0, 0.5 ) }
               , ( ( 0, 0, -0.75 ), 1.25 )
               )
-            , ( ( ( 1, 0, 0 ), ( 0, 1, 0 ), ( -1, 0, 0 ), ( 0, 0, -0.5 ) )
+            , ( { c1 = ( 1, 0, 0 ), c2 = ( 0, 1, 0 ), c3 = ( -1, 0, 0 ), c4 = ( 0, 0, -0.5 ) }
               , ( ( 0, 0, 0.75 ), 1.25 )
               )
             ]
 
-        inputPoints ( c1, c2, c3, c4 ) =
-            ( Point3d.fromCoordinates c1
-            , Point3d.fromCoordinates c2
-            , Point3d.fromCoordinates c3
-            , Point3d.fromCoordinates c4
-            )
+        inputPoints { c1, c2, c3, c4 } =
+            { p1 = Point3d.fromCoordinates c1
+            , p2 = Point3d.fromCoordinates c2
+            , p3 = Point3d.fromCoordinates c3
+            , p4 = Point3d.fromCoordinates c4
+            }
 
         testTitle inputCoordinates expectedSphere =
-            "Given " ++ toString inputCoordinates ++ " throughPoints returns " ++ toString (sphereFromTuple expectedSphere)
+            "Given " ++ Debug.toString inputCoordinates ++ " throughPoints returns " ++ Debug.toString (sphereFromTuple expectedSphere)
     in
     Test.describe "throughPoints" <|
         List.map
@@ -116,7 +107,7 @@ throughPointsManual =
                     (testTitle inputCoordinates expectedSphere)
                     (\_ ->
                         let
-                            ( p1, p2, p3, p4 ) =
+                            { p1, p2, p3, p4 } =
                                 inputPoints inputCoordinates
                         in
                         Sphere3d.throughPoints p1 p2 p3 p4
@@ -201,7 +192,8 @@ validTetrahedron p1 p2 p3 p4 =
 
 throughPointsFuzz : Test
 throughPointsFuzz =
-    Test.fuzz4 Fuzz.point3d
+    Test.fuzz4
+        Fuzz.point3d
         Fuzz.point3d
         Fuzz.point3d
         Fuzz.point3d
@@ -209,14 +201,14 @@ throughPointsFuzz =
         (\p1 p2 p3 p4 ->
             if validTetrahedron p1 p2 p3 p4 then
                 let
-                    sphere =
+                    maybeSphere =
                         Sphere3d.throughPoints p1 p2 p3 p4
 
                     hasPointOnSurface point sphere =
                         Point3d.distanceFrom point (Sphere3d.centerPoint sphere)
                             |> Expect.approximately (Sphere3d.radius sphere)
                 in
-                case sphere of
+                case maybeSphere of
                     Just sphere ->
                         sphere
                             |> Expect.all
@@ -392,17 +384,17 @@ rotateAround =
                                 |> Point3d.projectOntoAxis axis
                                 |> Direction3d.from point
 
-                        originalDirection =
+                        maybeOriginalDirection =
                             orthogonalDirectionFromAxisTo
                                 (Sphere3d.centerPoint sphere)
 
-                        rotatedDirection =
+                        maybeRotatedDirection =
                             sphere
                                 |> Sphere3d.rotateAround axis angle
                                 |> Sphere3d.centerPoint
                                 |> orthogonalDirectionFromAxisTo
                     in
-                    case ( originalDirection, rotatedDirection ) of
+                    case ( maybeOriginalDirection, maybeRotatedDirection ) of
                         ( Just originalDirection, Just rotatedDirection ) ->
                             let
                                 angleBetweenDirections =

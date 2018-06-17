@@ -2,24 +2,14 @@ module Tests.Polygon2d exposing (..)
 
 import Expect
 import Fuzz
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import LineSegment2d
 import Polygon2d
 import Test exposing (Test)
-import Tests.Generic as Generic
 import Triangle2d
 import TriangularMesh
 import Vector2d
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.polygon2d
-        Encode.polygon2d
-        Decode.polygon2d
 
 
 convexHullIsConvex : Test

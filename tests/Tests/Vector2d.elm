@@ -1,28 +1,11 @@
-module Tests.Vector2d
-    exposing
-        ( dotProductWithSelfIsSquaredLength
-        , jsonRoundTrips
-        , mirrorAcrossNegatesPerpendicularComponent
-        , mirrorAcrossPreservesParallelComponent
-        , perpendicularVectorIsPerpendicular
-        , rotateByPreservesLength
-        , rotateByRotatesByTheCorrectAngle
-        )
+module Tests.Vector2d exposing (..)
 
 import Axis2d
 import Direction2d
-import Geometry.Decode as Decode
-import Geometry.Encode as Encode
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Test exposing (Test)
-import Tests.Generic as Generic
 import Vector2d
-
-
-jsonRoundTrips : Test
-jsonRoundTrips =
-    Generic.jsonRoundTrips Fuzz.vector2d Encode.vector2d Decode.vector2d
 
 
 perpendicularVectorIsPerpendicular : Test

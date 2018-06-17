@@ -30,6 +30,7 @@ module Geometry.Fuzz
         , frame3d
         , lineSegment2d
         , lineSegment3d
+        , parameterValue
         , plane3d
         , point2d
         , point3d
@@ -57,6 +58,7 @@ import Circle2d exposing (Circle2d)
 import Circle3d exposing (Circle3d)
 import CubicSpline2d exposing (CubicSpline2d)
 import CubicSpline3d exposing (CubicSpline3d)
+import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Direction2d exposing (Direction2d)
 import Direction3d exposing (Direction3d)
 import Ellipse2d exposing (Ellipse2d)
@@ -94,6 +96,11 @@ positiveScalar =
     Fuzz.map abs scalar
 
 
+parameterValue : Fuzzer ParameterValue
+parameterValue =
+    Fuzz.map ParameterValue.clamped (Fuzz.floatRange 0 1)
+
+
 vector2d : Fuzzer Vector2d
 vector2d =
     Fuzz.map Vector2d.fromComponents (Fuzz.tuple ( scalar, scalar ))
@@ -112,13 +119,13 @@ direction2d =
 direction3d : Fuzzer Direction3d
 direction3d =
     let
-        phi =
+        phiFuzzer =
             Fuzz.map acos (Fuzz.floatRange -1 1)
 
-        theta =
+        thetaFuzzer =
             Fuzz.floatRange -pi pi
 
-        direction phi theta =
+        toDirection phi theta =
             let
                 r =
                     sin phi
@@ -134,7 +141,7 @@ direction3d =
             in
             Direction3d.unsafe ( x, y, z )
     in
-    Fuzz.map2 direction phi theta
+    Fuzz.map2 toDirection phiFuzzer thetaFuzzer
 
 
 point2d : Fuzzer Point2d

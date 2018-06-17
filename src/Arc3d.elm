@@ -5,6 +5,8 @@ module Arc3d
         , axis
         , centerPoint
         , endPoint
+        , firstDerivative
+        , firstDerivativesAt
         , mirrorAcross
         , on
         , placeIn
@@ -69,17 +71,24 @@ start point to the arc's end point). This module includes functionality for
 
 @docs relativeTo, placeIn
 
+
+# Differentiation
+
+You are unlikely to need to use these functions directly, but they are useful if
+you are writing low-level geometric algorithms.
+
+@docs firstDerivative, firstDerivativesAt
+
 -}
 
 import Arc2d exposing (Arc2d)
 import Axis3d exposing (Axis3d)
+import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Direction2d exposing (Direction2d)
 import Direction3d exposing (Direction3d)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
 import Future.Tuple as Tuple
-import Geometry.ParameterValue as ParameterValue exposing (ParameterValue)
-import Geometry.ParameterValues as ParameterValues exposing (ParameterValues)
 import Geometry.Types as Types
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
@@ -309,7 +318,7 @@ endPoint arc =
 0 corresponds to the start point of the arc and a value of 1 corresponds to the
 end point.
 
-    Arc3d.pointOn exampleArc 0.5
+    Arc3d.pointOn exampleArc ParameterValue.half
     --> Point3d.fromCoordinates ( 0, 1.4142, 0 )
 
 -}
@@ -374,10 +383,18 @@ pointOn (Types.Arc3d arc) =
                 )
 
 
-{-| -}
-pointsAt : ParameterValues -> Arc3d -> List Point3d
+{-| Get points along an arc at a given set of parameter values.
+
+    exampleArc |> Arc3d.pointsAt (ParameterValue.steps 2)
+    --> [ Point3d ( 1, 1, 0 )
+    --> , Point3d ( 0, 1.4142, 0 )
+    --> , Point3d ( -1, 1, 0 )
+    --> ]
+
+-}
+pointsAt : List ParameterValue -> Arc3d -> List Point3d
 pointsAt parameterValues arc =
-    ParameterValues.map (pointOn arc) parameterValues
+    List.map (pointOn arc) parameterValues
 
 
 {-| Get the first derivative of an arc at a given parameter value.
@@ -425,29 +442,53 @@ firstDerivative (Types.Arc3d arc) =
             )
 
 
-firstDerivativesAt : ParameterValues -> Arc3d -> List Vector3d
+{-| Evaluate the first derivative of an arc at a range of parameter values.
+
+    exampleArc
+        |> Arc3d.firstDerivativesAt
+            (ParameterValue.steps 2)
+    --> [ Vector3d ( -1.5708, 1.5708, 0 )
+    --> , Vector3d ( -2.2214, 0, 0 )
+    --> , Vector3d ( -1.5708, -1.5708, 0 )
+    --> ]
+
+-}
+firstDerivativesAt : List ParameterValue -> Arc3d -> List Vector3d
 firstDerivativesAt parameterValues arc =
-    ParameterValues.map (firstDerivative arc) parameterValues
+    List.map (firstDerivative arc) parameterValues
 
 
-{-| Sample an arc at a given parameter value to get both the position and
-derivative vector at that parameter value. Equivalent to calling `pointOn` and
-`derivative` separately.
+{-| Attempt to construct a function for evaluating points and tangent directions
+along an arc:
 
-    Arc3d.sample exampleArc 0
+    Arc3d.sampler exampleArc
+    --> Just <function>
+
+If `Just` a function is returned, the function can then be used to evaluate
+(point, tangent direction) pairs along the arc. For example, if the return value
+above was <code>Just&nbsp;exampleArcSampler</code>, then:
+
+    exampleArcSampler ParameterValue.zero
     --> ( Point3d.fromCoordinates ( 1, 1, 0 )
-    --> , Vector3d.fromComponents ( -1.5708, 1.5708, 0 )
+    --> , Direction3d.fromAzimuthAndElevation
+    -->     (degrees 135)
+    -->     (degrees 0)
     --> )
 
-    Arc3d.sample exampleArc 0.5
-    --> ( Point3d.fromCoordinates ( 1.4142, 0, 0 )
-    --> , Vector3d.fromComponents ( -2.2214, 0, 0 )
+    exampleArcSampler ParameterValue.half
+    --> ( Point3d.fromCoordinates ( 0, 1.4142, 0 )
+    --> , Direction3d.negativeX
     --> )
 
-    Arc3d.sample exampleArc 1
+    exampleArcSampler ParameterValue.one
     --> ( Point3d.fromCoordinates ( -1, 1, 0 )
-    --> , Vector3d.fromComponents ( -1.5708, -1.5708, 0 )
+    --> , Direction3d.fromAzimuthAndElevation
+    -->     (degrees 225)
+    -->     (degrees 0)
     --> )
+
+If the arc is degenerate (start point and end point are equal), returns
+`Nothing`.
 
 -}
 sampler : Arc3d -> Maybe (ParameterValue -> ( Point3d, Direction3d ))
@@ -500,12 +541,34 @@ sampler arc =
                 ( point, tangentDirection )
 
 
-{-| -}
-samplesAt : ParameterValues -> Arc3d -> List ( Point3d, Direction3d )
+{-| Attempt to find points and tangent directions along an arc at many parameter
+values:
+
+    Arc3d.samplesAt (ParameterValue.steps 2) exampleArc
+    --> [ ( Point3d.fromCoordinates ( 1, 1, 0 )
+    -->   , Direction3d.fromAzimuthAndElevation
+    -->         (degrees 135)
+    -->         (degrees 0)
+    -->   )
+    --> , ( Point3d.fromCoordinates ( 0, 1.4142, 0 )
+    -->   , Direction3d.negativeX
+    -->   )
+    --> , ( Point3d.fromCoordinates ( -1, 1, 0 )
+    -->   , Direction3d.fromAzimuthAndElevation
+    -->         (degrees 225)
+    -->         (degrees 0)
+    -->   )
+    --> ]
+
+If the arc is degenerate (start point and end point are equal), returns an
+empty list.
+
+-}
+samplesAt : List ParameterValue -> Arc3d -> List ( Point3d, Direction3d )
 samplesAt parameterValues arc =
     case sampler arc of
         Just sampler_ ->
-            ParameterValues.map sampler_ parameterValues
+            List.map sampler_ parameterValues
 
         Nothing ->
             []
@@ -548,7 +611,7 @@ toPolyline { maxError } arc =
             numApproximationSegments maxError arc
 
         points =
-            arc |> pointsAt (ParameterValues.steps numSegments)
+            arc |> pointsAt (ParameterValue.steps numSegments)
     in
     Polyline3d.fromVertices points
 
