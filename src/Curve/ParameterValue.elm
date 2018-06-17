@@ -135,8 +135,7 @@ checked givenValue =
         Nothing
 
 
-{-| Construct a parameter value by finding the midpoint between two other
-parameter values.
+{-| Find the midpoint between two parameter values.
 
     ParameterValue.midpoint
         ParameterValue.zero
@@ -158,6 +157,9 @@ value.
 
     ParameterValue.oneMinus ParameterValue.zero
     --> ParameterValue.one
+
+    ParameterValue.oneMinus ParameterValue.half
+    --> ParameterValue.half
 
 -}
 oneMinus : ParameterValue -> ParameterValue
