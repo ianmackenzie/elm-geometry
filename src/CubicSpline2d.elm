@@ -413,17 +413,17 @@ If `Just` a function is returned, the function can then be used to evaluate
 above was <code>Just&nbsp;exampleSplineSampler</code>, then:
 
     exampleSplineSampler ParameterValue.zero
-    --> ( Point2d ( 1, 1 )
+    --> ( Point2d.fromCoordinates ( 1, 1 )
     --> , Direction2d.fromAngle (degrees 56.31)
     --> )
 
     exampleSplineSampler ParameterValue.half
-    --> ( Point2d ( 4, 2.5 )
+    --> ( Point2d.fromCoordinates ( 4, 2.5 )
     --> , Direction2d.fromAngle (degrees 0)
     --> )
 
     exampleSplineSampler ParameterValue.one
-    --> ( Point2d ( 7, 4 )
+    --> ( Point2d.fromCoordinates ( 7, 4 )
     --> , Direction2d.fromAngle (degrees 56.31)
     --> )
 
