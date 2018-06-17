@@ -991,15 +991,15 @@ underlyingSpline (ArcLengthParameterized spline _) =
 
     CubicSpline2d.firstDerivative exampleSpline
         ParameterValue.zero
-    --> Just (Vector2d.fromComponents ( 6, 9 ))
+    --> Vector2d.fromComponents ( 6, 9 )
 
     CubicSpline2d.firstDerivative exampleSpline
         ParameterValue.half
-    --> Just (Vector2d.fromComponents ( 6, 0 ))
+    --> Vector2d.fromComponents ( 6, 0 )
 
     CubicSpline2d.firstDerivative exampleSpline
         ParameterValue.one
-    --> Just (Vector2d.fromComponents ( 6, 9 ))
+    --> Vector2d.fromComponents ( 6, 9 )
 
 -}
 firstDerivative : CubicSpline2d -> ParameterValue -> Vector2d
