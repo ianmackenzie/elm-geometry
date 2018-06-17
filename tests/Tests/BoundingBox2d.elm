@@ -2,6 +2,7 @@ module Tests.BoundingBox2d exposing (..)
 
 import BoundingBox2d
 import Expect
+import Future.Debug as Debug
 import Fuzz
 import Geometry.Fuzz as Fuzz
 import Test exposing (Test)

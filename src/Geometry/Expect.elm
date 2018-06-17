@@ -85,6 +85,8 @@ import Direction3d exposing (Direction3d)
 import Expect exposing (Expectation)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
+import Future.Debug as Debug
+import Future.String as String
 import LineSegment2d exposing (LineSegment2d)
 import LineSegment3d exposing (LineSegment3d)
 import Plane3d exposing (Plane3d)

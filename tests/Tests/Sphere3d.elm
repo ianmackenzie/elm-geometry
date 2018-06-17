@@ -4,6 +4,7 @@ import Axis3d
 import BoundingBox3d
 import Direction3d
 import Expect exposing (FloatingPointTolerance(..))
+import Future.Debug as Debug
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
