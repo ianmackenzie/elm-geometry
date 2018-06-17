@@ -879,7 +879,11 @@ splitAt parameterValue spline =
 {-| A spline that has been parameterized by arc length.
 -}
 type ArcLengthParameterized
-    = ArcLengthParameterized CubicSpline2d ArcLengthParameterization
+    = ArcLengthParameterized
+        { underlyingSpline : CubicSpline2d
+        , parameterization : ArcLengthParameterization
+        , sampler : Maybe (ParameterValue -> ( Point2d, Direction2d ))
+        }
 
 
 {-| Build an arc length parameterization of the given spline, with a given
@@ -907,7 +911,11 @@ arcLengthParameterized { maxError } spline =
                     maxSecondDerivativeMagnitude spline
                 }
     in
-    ArcLengthParameterized spline parameterization
+    ArcLengthParameterized
+        { underlyingSpline = spline
+        , parameterization = parameterization
+        , sampler = sampler spline
+        }
 
 
 {-| Find the total arc length of a spline:
@@ -947,10 +955,10 @@ spline, `Nothing` is returned.
 
 -}
 pointAlong : ArcLengthParameterized -> Float -> Maybe Point2d
-pointAlong (ArcLengthParameterized spline parameterization) distance =
-    parameterization
+pointAlong (ArcLengthParameterized parameterized) distance =
+    parameterized.parameterization
         |> ArcLengthParameterization.arcLengthToParameterValue distance
-        |> Maybe.map (pointOn spline)
+        |> Maybe.map (pointOn parameterized.underlyingSpline)
 
 
 {-| Try to get the point and tangent direction along a spline at a given arc
@@ -970,29 +978,27 @@ given arc length), `Nothing` is returned.
 
 -}
 sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point2d, Direction2d )
-sampleAlong (ArcLengthParameterized spline parameterization) =
-    case sampler spline of
+sampleAlong (ArcLengthParameterized parameterized) distance =
+    case parameterized.sampler of
         Just toSample ->
-            \distance ->
-                parameterization
-                    |> ArcLengthParameterization.arcLengthToParameterValue
-                        distance
-                    |> Maybe.map toSample
+            parameterized.parameterization
+                |> ArcLengthParameterization.arcLengthToParameterValue distance
+                |> Maybe.map toSample
 
         Nothing ->
-            always Nothing
+            Nothing
 
 
 {-| -}
 arcLengthParameterization : ArcLengthParameterized -> ArcLengthParameterization
-arcLengthParameterization (ArcLengthParameterized _ parameterization) =
-    parameterization
+arcLengthParameterization (ArcLengthParameterized parameterized) =
+    parameterized.parameterization
 
 
 {-| -}
 underlyingSpline : ArcLengthParameterized -> CubicSpline2d
-underlyingSpline (ArcLengthParameterized spline _) =
-    spline
+underlyingSpline (ArcLengthParameterized parameterized) =
+    parameterized.underlyingSpline
 
 
 {-| Get the first derivative of a spline at a given parameter value.

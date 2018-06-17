@@ -902,7 +902,11 @@ derivativeMagnitude arc =
 {-| An elliptical arc that has been parameterized by arc length.
 -}
 type ArcLengthParameterized
-    = ArcLengthParameterized EllipticalArc2d ArcLengthParameterization
+    = ArcLengthParameterized
+        { underlyingArc : EllipticalArc2d
+        , parameterization : ArcLengthParameterization
+        , sampler : Maybe (ParameterValue -> ( Point2d, Direction2d ))
+        }
 
 
 {-| Build an arc length parameterization of the given elliptical arc, with a
@@ -927,7 +931,11 @@ arcLengthParameterized { maxError } arc =
                     maxSecondDerivativeMagnitude arc
                 }
     in
-    ArcLengthParameterized arc parameterization
+    ArcLengthParameterized
+        { underlyingArc = arc
+        , parameterization = parameterization
+        , sampler = sampler arc
+        }
 
 
 {-| Find the total arc length of an elliptical arc. This will be accurate to
@@ -965,34 +973,32 @@ arc, `Nothing` is returned.
 
 -}
 pointAlong : ArcLengthParameterized -> Float -> Maybe Point2d
-pointAlong (ArcLengthParameterized arc parameterization) distance =
-    parameterization
+pointAlong (ArcLengthParameterized parameterized) distance =
+    parameterized.parameterization
         |> ArcLengthParameterization.arcLengthToParameterValue distance
-        |> Maybe.map (pointOn arc)
+        |> Maybe.map (pointOn parameterized.underlyingArc)
 
 
 {-| -}
 sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point2d, Direction2d )
-sampleAlong (ArcLengthParameterized arc parameterization) =
-    case sampler arc of
+sampleAlong (ArcLengthParameterized parameterized) distance =
+    case parameterized.sampler of
         Just toSample ->
-            \distance ->
-                parameterization
-                    |> ArcLengthParameterization.arcLengthToParameterValue
-                        distance
-                    |> Maybe.map toSample
+            parameterized.parameterization
+                |> ArcLengthParameterization.arcLengthToParameterValue distance
+                |> Maybe.map toSample
 
         Nothing ->
-            always Nothing
+            Nothing
 
 
 {-| -}
 arcLengthParameterization : ArcLengthParameterized -> ArcLengthParameterization
-arcLengthParameterization (ArcLengthParameterized _ parameterization) =
-    parameterization
+arcLengthParameterization (ArcLengthParameterized parameterized) =
+    parameterized.parameterization
 
 
 {-| -}
 underlyingArc : ArcLengthParameterized -> EllipticalArc2d
-underlyingArc (ArcLengthParameterized arc _) =
-    arc
+underlyingArc (ArcLengthParameterized parameterized) =
+    parameterized.underlyingArc

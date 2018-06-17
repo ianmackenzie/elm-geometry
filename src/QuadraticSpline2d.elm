@@ -719,7 +719,11 @@ splitAt parameterValue spline =
 {-| A spline that has been parameterized by arc length.
 -}
 type ArcLengthParameterized
-    = ArcLengthParameterized QuadraticSpline2d ArcLengthParameterization
+    = ArcLengthParameterized
+        { underlyingSpline : QuadraticSpline2d
+        , parameterization : ArcLengthParameterization
+        , sampler : Maybe (ParameterValue -> ( Point2d, Direction2d ))
+        }
 
 
 {-| Build an arc length parameterization of the given spline, with a given
@@ -736,17 +740,19 @@ error.
 arcLengthParameterized : { maxError : Float } -> QuadraticSpline2d -> ArcLengthParameterized
 arcLengthParameterized { maxError } spline =
     let
-        maxSecondDerivativeMagnitude =
-            Vector2d.length (secondDerivative spline)
-
         parameterization =
             ArcLengthParameterization.build
                 { maxError = maxError
                 , derivativeMagnitude = derivativeMagnitude spline
-                , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude
+                , maxSecondDerivativeMagnitude =
+                    Vector2d.length (secondDerivative spline)
                 }
     in
-    ArcLengthParameterized spline parameterization
+    ArcLengthParameterized
+        { underlyingSpline = spline
+        , parameterization = parameterization
+        , sampler = sampler spline
+        }
 
 
 {-| Find the total arc length of a spline:
@@ -781,10 +787,10 @@ spline, `Nothing` is returned.
 
 -}
 pointAlong : ArcLengthParameterized -> Float -> Maybe Point2d
-pointAlong (ArcLengthParameterized spline parameterization) distance =
-    parameterization
+pointAlong (ArcLengthParameterized parameterized) distance =
+    parameterized.parameterization
         |> ArcLengthParameterization.arcLengthToParameterValue distance
-        |> Maybe.map (pointOn spline)
+        |> Maybe.map (pointOn parameterized.underlyingSpline)
 
 
 {-| Try to get the tangent direction along a spline at a given arc length. To
@@ -800,31 +806,29 @@ given arc length), `Nothing` is returned.
 
 -}
 sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point2d, Direction2d )
-sampleAlong (ArcLengthParameterized spline parameterization) =
-    case sampler spline of
+sampleAlong (ArcLengthParameterized parameterized) distance =
+    case parameterized.sampler of
         Just toSample ->
-            \distance ->
-                parameterization
-                    |> ArcLengthParameterization.arcLengthToParameterValue
-                        distance
-                    |> Maybe.map toSample
+            parameterized.parameterization
+                |> ArcLengthParameterization.arcLengthToParameterValue distance
+                |> Maybe.map toSample
 
         Nothing ->
-            always Nothing
+            Nothing
 
 
 {-| -}
 arcLengthParameterization : ArcLengthParameterized -> ArcLengthParameterization
-arcLengthParameterization (ArcLengthParameterized _ parameterization) =
-    parameterization
+arcLengthParameterization (ArcLengthParameterized parameterized) =
+    parameterized.parameterization
 
 
 {-| Get the original `QuadraticSpline2d` from which an `ArcLengthParameterized`
 value was constructed.
 -}
 underlyingSpline : ArcLengthParameterized -> QuadraticSpline2d
-underlyingSpline (ArcLengthParameterized spline _) =
-    spline
+underlyingSpline (ArcLengthParameterized parameterized) =
+    parameterized.underlyingSpline
 
 
 {-| Get the second derivative of a spline (for a quadratic spline, this is a
