@@ -88,7 +88,6 @@ import Direction2d exposing (Direction2d)
 import Direction3d exposing (Direction3d)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
-import Future.Tuple as Tuple
 import Geometry.Types as Types
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)

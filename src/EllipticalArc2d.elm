@@ -120,7 +120,6 @@ import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Direction2d exposing (Direction2d)
 import Ellipse2d exposing (Ellipse2d)
 import Frame2d exposing (Frame2d)
-import Future.Tuple as Tuple
 import Geometry.Types as Types
 import Interval
 import Point2d exposing (Point2d)
