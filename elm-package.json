@@ -7,9 +7,7 @@
         "src"
     ],
     "exposed-modules": [
-        "Geometry.ArcLengthParameterization",
-        "Geometry.ParameterValue",
-        "Geometry.SweptAngle",
+        "Arc.SweptAngle",
         "Arc2d",
         "Arc3d",
         "Axis2d",
@@ -20,6 +18,8 @@
         "Circle3d",
         "CubicSpline2d",
         "CubicSpline3d",
+        "Curve.ArcLengthParameterization",
+        "Curve.ParameterValue",
         "Direction2d",
         "Direction3d",
         "Ellipse2d",
