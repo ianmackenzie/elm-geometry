@@ -108,6 +108,7 @@ transformations =
     Tests.Generic.Curve2d.transformations
         { fuzzer = Fuzz.arc2d
         , pointOn = Arc2d.pointOn
+        , firstDerivative = Arc2d.firstDerivative
         , scaleAbout = Arc2d.scaleAbout
         , translateBy = Arc2d.translateBy
         , rotateAround = Arc2d.rotateAround

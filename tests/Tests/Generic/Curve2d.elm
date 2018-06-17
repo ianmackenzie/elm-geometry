@@ -15,6 +15,7 @@ import Vector2d exposing (Vector2d)
 type alias Config curve =
     { fuzzer : Fuzzer curve
     , pointOn : curve -> ParameterValue -> Point2d
+    , firstDerivative : curve -> ParameterValue -> Vector2d
     , scaleAbout : Point2d -> Float -> curve -> curve
     , translateBy : Vector2d -> curve -> curve
     , rotateAround : Point2d -> Float -> curve -> curve
@@ -49,6 +50,28 @@ transformations config =
                             originalPoint |> Point2d.scaleAbout basePoint scale
                     in
                     pointOnScaledCurve |> Expect.point2d scaledPoint
+                )
+            , Test.fuzz4
+                config.fuzzer
+                Fuzz.point2d
+                Fuzz.scalar
+                Fuzz.parameterValue
+                "firstDerivative"
+                (\curve basePoint scale t ->
+                    let
+                        scaledCurve =
+                            config.scaleAbout basePoint scale curve
+
+                        originalDerivative =
+                            config.firstDerivative curve t
+
+                        derivativeOfScaledCurve =
+                            config.firstDerivative scaledCurve t
+
+                        scaledDerivative =
+                            originalDerivative |> Vector2d.scaleBy scale
+                    in
+                    derivativeOfScaledCurve |> Expect.vector2d scaledDerivative
                 )
             ]
         , Test.fuzz3

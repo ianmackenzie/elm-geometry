@@ -3,6 +3,8 @@ module Arc2d
         ( Arc2d
         , centerPoint
         , endPoint
+        , firstDerivative
+        , firstDerivativesAt
         , from
         , mirrorAcross
         , placeIn
@@ -67,6 +69,14 @@ end point). This module includes functionality for
 # Coordinate conversions
 
 @docs relativeTo, placeIn
+
+
+# Differentiation
+
+You are unlikely to need to use these functions directly, but they are useful if
+you are writing low-level geometric algorithms.
+
+@docs firstDerivative, firstDerivativesAt
 
 -}
 

@@ -5,6 +5,8 @@ module Arc3d
         , axis
         , centerPoint
         , endPoint
+        , firstDerivative
+        , firstDerivativesAt
         , mirrorAcross
         , on
         , placeIn
@@ -68,6 +70,14 @@ start point to the arc's end point). This module includes functionality for
 # Coordinate conversions
 
 @docs relativeTo, placeIn
+
+
+# Differentiation
+
+You are unlikely to need to use these functions directly, but they are useful if
+you are writing low-level geometric algorithms.
+
+@docs firstDerivative, firstDerivativesAt
 
 -}
 

@@ -86,6 +86,7 @@ transformations =
     Tests.Generic.Curve2d.transformations
         { fuzzer = Fuzz.ellipticalArc2d
         , pointOn = EllipticalArc2d.pointOn
+        , firstDerivative = EllipticalArc2d.firstDerivative
         , scaleAbout = EllipticalArc2d.scaleAbout
         , translateBy = EllipticalArc2d.translateBy
         , rotateAround = EllipticalArc2d.rotateAround

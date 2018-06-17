@@ -73,6 +73,7 @@ transformations =
     Tests.Generic.Curve3d.transformations
         { fuzzer = Fuzz.arc3d
         , pointOn = Arc3d.pointOn
+        , firstDerivative = Arc3d.firstDerivative
         , scaleAbout = Arc3d.scaleAbout
         , translateBy = Arc3d.translateBy
         , rotateAround = Arc3d.rotateAround

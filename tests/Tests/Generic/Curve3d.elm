@@ -16,6 +16,7 @@ import Vector3d exposing (Vector3d)
 type alias Config curve =
     { fuzzer : Fuzzer curve
     , pointOn : curve -> ParameterValue -> Point3d
+    , firstDerivative : curve -> ParameterValue -> Vector3d
     , scaleAbout : Point3d -> Float -> curve -> curve
     , translateBy : Vector3d -> curve -> curve
     , rotateAround : Axis3d -> Float -> curve -> curve
