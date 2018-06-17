@@ -9,7 +9,6 @@ import Geometry.Fuzz as Fuzz
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Test exposing (Test)
-import Test.FuzzN as Test
 import Vector3d exposing (Vector3d)
 
 

@@ -11,7 +11,6 @@ import Plane3d
 import Point3d exposing (Point3d)
 import Sphere3d exposing (Sphere3d)
 import Test exposing (Test)
-import Test.FuzzN as Test
 import Triangle3d
 import Vector3d
 

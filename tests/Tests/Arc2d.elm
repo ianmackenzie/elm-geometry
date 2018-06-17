@@ -9,7 +9,6 @@ import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Point2d exposing (Point2d)
 import Test exposing (Test)
-import Test.FuzzN as Test
 import Tests.Generic.Curve2d
 
 
