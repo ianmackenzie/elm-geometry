@@ -571,8 +571,14 @@ sweptAngle (Types.Arc2d properties) =
 
 {-| Get the point along an arc at a given parameter value.
 
+    Arc2d.pointOn exampleArc ParameterValue.zero
+    --> Point2d.fromCoordinates ( 3, 1 )
+
     Arc2d.pointOn exampleArc ParameterValue.half
     --> Point2d.fromCoordinates ( 2.4142, 2.4142 )
+
+    Arc2d.pointOn exampleArc ParameterValue.one
+    --> Point2d.fromCoordinates ( 1, 3 )
 
 -}
 pointOn : Arc2d -> ParameterValue -> Point2d
@@ -631,17 +637,27 @@ pointOn (Types.Arc2d arc) =
                 )
 
 
-{-| -}
+{-| Get points along an arc at a given set of parameter values.
+
+    exampleArc |> Arc2d.pointsAt (ParameterValue.steps 2)
+    --> [ Point2d.fromCoordinates ( 3, 1 )
+    --> , Point2d.fromCoordinates ( 2.4142, 2.4142 )
+    --> , Point2d.fromCoordinates ( 1, 3 )
+    --> ]
+
+-}
 pointsAt : List ParameterValue -> Arc2d -> List Point2d
 pointsAt parameterValues arc =
     List.map (pointOn arc) parameterValues
 
 
-{-| Get the derivative vector of an arc with respect to a parameter that is 0 at
-the start point of the arc and 1 at the end point of the arc.
+{-| Get the first derivative of an arc at a given parameter value.
 
     Arc2d.firstDerivative exampleArc ParameterValue.zero
     --> Vector2d.fromComponents ( 0, 3.1416 )
+
+    Arc2d.firstDerivative exampleArc ParameterValue.half
+    --> Vector2d.fromComponents ( -2.2214, 2.2214 )
 
     Arc2d.firstDerivative exampleArc ParameterValue.one
     --> Vector2d.fromComponents ( -3.1416, 0 )
@@ -661,17 +677,15 @@ firstDerivative (Types.Arc2d arc) =
         startDerivative |> Vector2d.rotateBy (t * arc.sweptAngle)
 
 
-{-| Convenient shorthand for evaluating multiple derivative vectors;
+{-| Evaluate the first derivative of an arc at a given set of parameter values.
 
-    Arc2d.derivativeVectors arc parameterValues
-
-is equivalent to
-
-    List.filterMap (Arc2d.derivativeVector arc)
-        parameterValues
-
-To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
-module.
+    exampleArc
+        |> Arc2d.firstDerivativesAt
+            (ParameterValue.steps 2)
+    --> [ Vector2d.fromComponents ( 0, 3.1416 )
+    --> , Vector2d.fromComponents ( -2.2214, 2.2214 )
+    --> , Vector2d.fromComponents ( -3.1416, 0 )
+    --> ]
 
 -}
 firstDerivativesAt : List ParameterValue -> Arc2d -> List Vector2d
@@ -679,24 +693,33 @@ firstDerivativesAt parameterValues arc =
     List.map (firstDerivative arc) parameterValues
 
 
-{-| Sample an arc at a given parameter value to get both the position and
-derivative vector at that parameter value. Equivalent to calling `pointOn` and
-`derivative` separately.
+{-| Attempt to construct a function for evaluating points and tangent directions
+along an arc:
 
-    Arc2d.sample exampleArc 0
+    Arc2d.sampler exampleArc
+    --> Just <function>
+
+If `Just` a function is returned, the function can then be used to evaluate
+(point, tangent direction) pairs along the arc. For example, if the return value
+above was <code>Just&nbsp;sampleAt</code>, then:
+
+    sampleAt ParameterValue.zero
     --> ( Point2d.fromCoordinates ( 3, 1 )
-    --> , Vector2d.fromComponents ( 0, 3.1416 )
+    --> , Direction2d.fromAngle (degrees 90)
     --> )
 
-    Arc2d.sample exampleArc 0.5
+    sampleAt ParameterValue.half
     --> ( Point2d.fromCoordinates ( 2.4142, 2.4142 )
-    --> , Vector2d.fromComponents ( -2.2214, 2.2214 )
+    --> , Direction2d.fromAngle (degrees 135)
     --> )
 
-    Arc2d.sample exampleArc 1
+    sampleAt ParameterValue.one
     --> ( Point2d.fromCoordinates ( 1, 3 )
-    --> , Vector2d.fromComponents ( -3.1416, 0 )
+    --> , Direction2d.fromAngle (degrees 180)
     --> )
+
+If the arc is degenerate (start point and end point are equal), returns
+`Nothing`.
 
 -}
 sampler : Arc2d -> Maybe (ParameterValue -> ( Point2d, Direction2d ))
@@ -728,7 +751,26 @@ sampler arc =
                 ( point, tangentDirection )
 
 
-{-| -}
+{-| Get points and tangent directions along an arc at a given set of parameter
+values:
+
+    exampleArc
+        |> Arc2d.samplesAt (ParameterValue.steps 2)
+    --> [ ( Point2d.fromCoordinates ( 3, 1 )
+    -->   , Direction2d.fromAngle (degrees 90)
+    -->   )
+    --> , ( Point2d.fromCoordinates ( 2.4142, 2.4142 )
+    -->   , Direction2d.fromAngle (degrees 135)
+    -->   )
+    --> , ( Point2d.fromCoordinates ( 1, 3 )
+    -->   , Direction2d.fromAngle (degrees 180)
+    -->   )
+    --> ]
+
+If the arc is degenerate (start point and end point are equal), returns an
+empty list.
+
+-}
 samplesAt : List ParameterValue -> Arc2d -> List ( Point2d, Direction2d )
 samplesAt parameterValues arc =
     case sampler arc of
