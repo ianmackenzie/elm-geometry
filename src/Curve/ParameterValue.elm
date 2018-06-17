@@ -17,7 +17,9 @@ module Curve.ParameterValue
         )
 
 {-| Curves in `elm-geometry` are [parameterized](https://en.wikipedia.org/wiki/Parametric_equation)
-by a value that ranges from 0 to 1. This module contains functionality for
+by a value that ranges from 0 to 1. A value of 0 corresponds to the start point
+of the curve and a value of 1 corresponds to the end point. This module contains
+functionality for:
 
   - Constructing parameter values that are guaranteed to be in the range 0 to 1
   - Constructing ranges of evenly-spaced parameter values
