@@ -732,8 +732,8 @@ sampler arc =
 samplesAt : List ParameterValue -> Arc2d -> List ( Point2d, Direction2d )
 samplesAt parameterValues arc =
     case sampler arc of
-        Just sampler_ ->
-            List.map sampler_ parameterValues
+        Just sampleAt ->
+            List.map sampleAt parameterValues
 
         Nothing ->
             []
