@@ -338,7 +338,7 @@ boundingBox spline =
         }
 
 
-{-| Get a point at a given parameter value.
+{-| Get the point along a spline at a given parameter value.
 
     CubicSpline2d.pointOn exampleSpline ParameterValue.zero
     --> Point2d.fromCoordinates ( 1, 1 )
@@ -403,23 +403,31 @@ pointsAt parameterValues spline =
 
 
 {-| Attempt to construct a function for evaluating points and tangent directions
-along a spline; if
+along a spline:
 
-    CubicSpline2d.sampler spline
+    CubicSpline2d.sampler exampleSpline
+    --> Just <function>
 
-returns `Just sampleAt`, then
+If `Just` a function is returned, the function can then be used to evaluate
+(point, tangent direction) pairs along the arc. For example, if the return value
+above was <code>Just&nbsp;exampleSplineSampler</code>, then:
 
-    sampleAt ParameterValue.zero
+    exampleSplineSampler ParameterValue.zero
+    --> ( Point2d ( 1, 1 )
+    --> , Direction2d.fromAngle (degrees 56.31)
+    --> )
 
-will return the start point of the spline along with the tangent direction at
-the start point,
+    exampleSplineSampler ParameterValue.half
+    --> ( Point2d ( 4, 2.5 )
+    --> , Direction2d.fromAngle (degrees 0)
+    --> )
 
-    sampleAt ParameterValue.one
+    exampleSplineSampler ParameterValue.one
+    --> ( Point2d ( 7, 4 )
+    --> , Direction2d.fromAngle (degrees 56.31)
+    --> )
 
-will return the end point and the corresponding tangent tangent direction, etc.
-
-If the spline is degenerate (all control points are identical), returns
-`Nothing`.
+If the spline is degenerate (all control points are equal), returns `Nothing`.
 
 -}
 sampler : CubicSpline2d -> Maybe (ParameterValue -> ( Point2d, Direction2d ))
@@ -548,8 +556,8 @@ nonZeroThirdDerivativeSampler spline thirdDerivativeDirection =
                         ( point, thirdDerivativeDirection )
 
 
-{-| Find the positions and tangent directions at several points along a spline,
-given by a set of parameter values.
+{-| Get points and tangent directions along a spline at a given set of parameter
+values:
 
     exampleSpline
         |> CubicSpline2d.samplesAt
@@ -558,14 +566,14 @@ given by a set of parameter values.
     -->   , Direction2d.fromAngle (degrees 56.31)
     -->   )
     --> , ( Point2d.fromCoordinates ( 4, 2.5 )
-    -->   , Direction2d.x
+    -->   , Direction2d.fromAngle (degrees 0)
     -->   )
     --> , ( Point2d.fromCoordinates ( 7, 4 )
     -->   , Direction2d.fromAngle (degrees 56.31)
     -->   )
     --> ]
 
-If the given spline is degenerate (all control points are identical), it has no
+If the given spline is degenerate (all control points are equal), it has no
 tangent directions and so the result will always be an empty list.
 
 -}
@@ -1091,7 +1099,8 @@ firstDerivative spline parameterValue =
             )
 
 
-{-| Evaluate the first derivative of a spline at a range of parameter values.
+{-| Evaluate the first derivative of a spline at a given set of parameter
+values.
 
     exampleSpline
         |> CubicSpline2d.firstDerivativesAt
@@ -1107,7 +1116,7 @@ firstDerivativesAt parameterValues spline =
     List.map (firstDerivative spline) parameterValues
 
 
-{-| Get the second derivative of a spline at a given parameter value.
+{-| Evaluate the second derivative of a spline at a given parameter value.
 
     CubicSpline2d.secondDerivativeAt 0 exampleSpline
     --> Just (Vector2d.fromComponents ( 0, -36 ))
@@ -1155,7 +1164,8 @@ secondDerivative spline parameterValue =
     Vector2d.scaleBy 6 (Vector2d.interpolateFrom v1 v2 t)
 
 
-{-| Evaluate the second derivative of a spline at a range of parameter values.
+{-| Evaluate the second derivative of a spline at a given set of parameter
+values.
 
     exampleSpline
         |> CubicSpline2d.secondDerivativesAt
