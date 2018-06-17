@@ -148,9 +148,7 @@ midpoint (ParameterValue firstValue) (ParameterValue secondValue) =
     ParameterValue (firstValue + (secondValue - firstValue) / 2)
 
 
-{-| Construct a parameter value by subtracting an existing parameter value from
-1.0. This can be thought of as the 'negation' or 'complement' of a parameter
-value.
+{-| Subtract a parameter value from 1 to give a new parameter value.
 
     ParameterValue.oneMinus ParameterValue.one
     --> ParameterValue.zero
@@ -160,6 +158,11 @@ value.
 
     ParameterValue.oneMinus ParameterValue.half
     --> ParameterValue.half
+
+This can be thought of as the 'negation' or 'complement' of a parameter value.
+For example, evaluating a reversed curve at a parameter value `t` is generally
+equivalent to evaluating the original curve at a parameter value
+<code>1&nbsp;-&nbsp;t</code>, and vice versa.
 
 -}
 oneMinus : ParameterValue -> ParameterValue
