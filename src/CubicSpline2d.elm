@@ -410,19 +410,19 @@ along a spline:
 
 If `Just` a function is returned, the function can then be used to evaluate
 (point, tangent direction) pairs along the arc. For example, if the return value
-above was <code>Just&nbsp;exampleSplineSampler</code>, then:
+above was <code>Just&nbsp;sampleAt</code>, then:
 
-    exampleSplineSampler ParameterValue.zero
+    sampleAt ParameterValue.zero
     --> ( Point2d.fromCoordinates ( 1, 1 )
     --> , Direction2d.fromAngle (degrees 56.31)
     --> )
 
-    exampleSplineSampler ParameterValue.half
+    sampleAt ParameterValue.half
     --> ( Point2d.fromCoordinates ( 4, 2.5 )
     --> , Direction2d.fromAngle (degrees 0)
     --> )
 
-    exampleSplineSampler ParameterValue.one
+    sampleAt ParameterValue.one
     --> ( Point2d.fromCoordinates ( 7, 4 )
     --> , Direction2d.fromAngle (degrees 56.31)
     --> )
@@ -573,8 +573,8 @@ values:
     -->   )
     --> ]
 
-If the given spline is degenerate (all control points are equal), it has no
-tangent directions and so the result will always be an empty list.
+If the given spline is degenerate (all control points are equal), returns an
+empty list.
 
 -}
 samplesAt : List ParameterValue -> CubicSpline2d -> List ( Point2d, Direction2d )
