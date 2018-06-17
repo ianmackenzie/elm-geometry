@@ -12,6 +12,9 @@ docs.json
 # elm-verify-examples generated tests
 tests/VerifyExamples
 
+# Local Elm compiler
+elm.exe
+
 # =========================
 # Operating System Files
 # =========================
