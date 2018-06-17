@@ -32,9 +32,9 @@ functionality for:
 @docs zero, half, one
 
 
-# Construction
+# Conversion to and from `Float` values
 
-@docs clamped, checked, midpoint, oneMinus
+@docs clamped, checked, value
 
 
 # Ranges
@@ -42,9 +42,9 @@ functionality for:
 @docs steps, leading, trailing, midpoints, range
 
 
-# Conversion
+# Arithmetic
 
-@docs value
+@docs midpoint, oneMinus
 
 -}
 
