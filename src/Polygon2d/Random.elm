@@ -4,7 +4,7 @@ import BoundingBox2d exposing (BoundingBox2d)
 import Future.Tuple as Tuple
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
-import Random exposing (Generator)
+import Random.Pcg as Random exposing (Generator)
 import Vector2d exposing (Vector2d)
 
 
@@ -348,14 +348,13 @@ polygon2d boundingBox =
                 |> Polygon2d.rotateAround (BoundingBox2d.centroid boundingBox)
                     angle
         )
-        (Random.uniform
-            (radialPolygonWithHole boundingBox)
-            [ gridPolygon boundingBox squarish
+        (Random.choices
+            [ radialPolygonWithHole boundingBox
+            , gridPolygon boundingBox squarish
             , gridPolygon boundingBox lShaped
             , gridPolygon boundingBox squareWithHole
             , gridPolygon boundingBox squareWithTwoHoles
             , gridPolygon boundingBox interlocking
             ]
-            |> Random.andThen identity
         )
         (Random.float -pi pi)
