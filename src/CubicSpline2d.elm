@@ -338,7 +338,7 @@ boundingBox spline =
         }
 
 
-{-| Get the point along a spline at a given parameter value.
+{-| Get the point along a spline at a given parameter value:
 
     CubicSpline2d.pointOn exampleSpline ParameterValue.zero
     --> Point2d.fromCoordinates ( 1, 1 )
@@ -386,7 +386,7 @@ pointOn spline parameterValue =
     Point2d.interpolateFrom r1 r2 t
 
 
-{-| Get points along a spline at a given set of parameter values.
+{-| Get points along a spline at a given set of parameter values:
 
     exampleSpline
         |> CubicSpline2d.pointsAt
@@ -1001,7 +1001,7 @@ underlyingSpline (ArcLengthParameterized parameterized) =
     parameterized.underlyingSpline
 
 
-{-| Get the first derivative of a spline at a given parameter value.
+{-| Get the first derivative of a spline at a given parameter value:
 
     CubicSpline2d.firstDerivative exampleSpline
         ParameterValue.zero
@@ -1106,7 +1106,7 @@ firstDerivative spline parameterValue =
 
 
 {-| Evaluate the first derivative of a spline at a given set of parameter
-values.
+values:
 
     exampleSpline
         |> CubicSpline2d.firstDerivativesAt
@@ -1122,7 +1122,7 @@ firstDerivativesAt parameterValues spline =
     List.map (firstDerivative spline) parameterValues
 
 
-{-| Evaluate the second derivative of a spline at a given parameter value.
+{-| Evaluate the second derivative of a spline at a given parameter value:
 
     CubicSpline2d.secondDerivativeAt 0 exampleSpline
     --> Just (Vector2d.fromComponents ( 0, -36 ))
@@ -1171,7 +1171,7 @@ secondDerivative spline parameterValue =
 
 
 {-| Evaluate the second derivative of a spline at a given set of parameter
-values.
+values:
 
     exampleSpline
         |> CubicSpline2d.secondDerivativesAt
@@ -1188,7 +1188,7 @@ secondDerivativesAt parameterValues spline =
 
 
 {-| Get the third derivative of a spline (for a cubic spline, this is a
-constant).
+constant):
 
     CubicSpline2d.thirdDerivative exampleSpline
     --> Vector2d.fromComponents ( 0, 72 )
