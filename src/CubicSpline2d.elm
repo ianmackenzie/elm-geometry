@@ -998,9 +998,8 @@ pointAlong (ArcLengthParameterized parameterized) distance =
         |> Maybe.map (pointOn parameterized.underlyingSpline)
 
 
-{-| Try to get the point and tangent direction along a spline at a given arc
-length. To get the point and tangent direction a quarter of the way along
-`exampleSpline`:
+{-| Try to get the tangent direction along a spline at a given arc length. To
+get the tangent direction a quarter of the way along `exampleSpline`:
 
     CubicSpline2d.tangentDirectionAlong parameterizedSpline
         (0.25 * arcLength)
