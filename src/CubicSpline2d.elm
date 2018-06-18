@@ -985,7 +985,7 @@ Note that this is not the same as evaulating at a parameter value of 0.25:
 
     CubicSpline2d.pointOn exampleSpline
         (ParameterValue.clamped 0.25)
-    --> Just (Point2d.fromCoordinates ( 2.5, 2.3125 ))
+    --> Point2d.fromCoordinates ( 2.5, 2.3125 )
 
 If the given arc length is less than zero or greater than the arc length of the
 spline, `Nothing` is returned.
