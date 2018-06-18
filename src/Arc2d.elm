@@ -353,18 +353,8 @@ throughPoints firstPoint secondPoint thirdPoint =
 {-| Attempt to construct an arc with the given radius between the given start
 and end points. Note that this is only possible if the given radius is large
 enough! For any given valid radius, start point and end point, there are four
-possible results, so the second argument is used to specify which arc to create:
-
-  - `SweptAngle.smallPositive` will result in a counterclockwise arc with a
-    small swept angle (in the range 0..180 degrees)
-  - `SweptAngle.smallNegative` will result in a clockwise arc with a small swept
-    angle (in the range -180..0 degrees)
-  - `SweptAngle.largePositive` will result in a counterclockwise arc with a
-    large swept angle (in the range 180..360 degrees)
-  - `SweptAngle.largeNegative` will result in a clockwise arc with a large swept
-    angle (in the range -360..-180 degrees)
-
-For example:
+possible results, so the [`SweptAngle`](Arc-SweptAngle) argument is used to
+specify which arc to create. For example:
 
     p1 =
         Point2d.fromCoordinates ( 1, 0 )
@@ -569,7 +559,7 @@ sweptAngle (Types.Arc2d properties) =
     properties.sweptAngle
 
 
-{-| Get the point along an arc at a given parameter value.
+{-| Get the point along an arc at a given parameter value:
 
     Arc2d.pointOn exampleArc ParameterValue.zero
     --> Point2d.fromCoordinates ( 3, 1 )
@@ -637,7 +627,7 @@ pointOn (Types.Arc2d arc) =
                 )
 
 
-{-| Get points along an arc at a given set of parameter values.
+{-| Get points along an arc at a given set of parameter values:
 
     exampleArc |> Arc2d.pointsAt (ParameterValue.steps 2)
     --> [ Point2d.fromCoordinates ( 3, 1 )
@@ -651,7 +641,7 @@ pointsAt parameterValues arc =
     List.map (pointOn arc) parameterValues
 
 
-{-| Get the first derivative of an arc at a given parameter value.
+{-| Get the first derivative of an arc at a given parameter value:
 
     Arc2d.firstDerivative exampleArc ParameterValue.zero
     --> Vector2d.fromComponents ( 0, 3.1416 )
@@ -677,7 +667,7 @@ firstDerivative (Types.Arc2d arc) =
         startDerivative |> Vector2d.rotateBy (t * arc.sweptAngle)
 
 
-{-| Evaluate the first derivative of an arc at a given set of parameter values.
+{-| Evaluate the first derivative of an arc at a given set of parameter values:
 
     exampleArc
         |> Arc2d.firstDerivativesAt

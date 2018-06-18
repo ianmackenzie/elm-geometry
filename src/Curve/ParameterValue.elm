@@ -309,9 +309,9 @@ midpointsHelp index divisor accumulated =
 {-| Construct a list of evenly-spaced parameter values between 0 and 1 by
 specifying:
 
-    - the number of steps to take from 0 to 1
-    - whether to include the start value (0)
-    - whether to include the end value (1)
+  - the number of steps to take from 0 to 1
+  - whether to include the start value (0)
+  - whether to include the end value (1)
 
 This is more general form of `steps`, `leading` and `trailing`; for example,
 
@@ -363,6 +363,10 @@ range { numSteps, includeStart, includeEnd } =
 
 
 {-| Convert a `ParameterValue` to a plain `Float` value between 0 and 1.
+
+    ParameterValue.value (ParameterValue.half)
+    --> 0.5
+
 -}
 value : ParameterValue -> Float
 value (ParameterValue value_) =
