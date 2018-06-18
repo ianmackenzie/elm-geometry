@@ -559,7 +559,7 @@ sweptAngle (Types.Arc2d properties) =
     properties.sweptAngle
 
 
-{-| Get the point along an arc at a given parameter value.
+{-| Get the point along an arc at a given parameter value:
 
     Arc2d.pointOn exampleArc ParameterValue.zero
     --> Point2d.fromCoordinates ( 3, 1 )
@@ -627,7 +627,7 @@ pointOn (Types.Arc2d arc) =
                 )
 
 
-{-| Get points along an arc at a given set of parameter values.
+{-| Get points along an arc at a given set of parameter values:
 
     exampleArc |> Arc2d.pointsAt (ParameterValue.steps 2)
     --> [ Point2d.fromCoordinates ( 3, 1 )
@@ -641,7 +641,7 @@ pointsAt parameterValues arc =
     List.map (pointOn arc) parameterValues
 
 
-{-| Get the first derivative of an arc at a given parameter value.
+{-| Get the first derivative of an arc at a given parameter value:
 
     Arc2d.firstDerivative exampleArc ParameterValue.zero
     --> Vector2d.fromComponents ( 0, 3.1416 )
@@ -667,7 +667,7 @@ firstDerivative (Types.Arc2d arc) =
         startDerivative |> Vector2d.rotateBy (t * arc.sweptAngle)
 
 
-{-| Evaluate the first derivative of an arc at a given set of parameter values.
+{-| Evaluate the first derivative of an arc at a given set of parameter values:
 
     exampleArc
         |> Arc2d.firstDerivativesAt
