@@ -353,18 +353,8 @@ throughPoints firstPoint secondPoint thirdPoint =
 {-| Attempt to construct an arc with the given radius between the given start
 and end points. Note that this is only possible if the given radius is large
 enough! For any given valid radius, start point and end point, there are four
-possible results, so the second argument is used to specify which arc to create:
-
-  - `SweptAngle.smallPositive` will result in a counterclockwise arc with a
-    small swept angle (in the range 0..180 degrees)
-  - `SweptAngle.smallNegative` will result in a clockwise arc with a small swept
-    angle (in the range -180..0 degrees)
-  - `SweptAngle.largePositive` will result in a counterclockwise arc with a
-    large swept angle (in the range 180..360 degrees)
-  - `SweptAngle.largeNegative` will result in a clockwise arc with a large swept
-    angle (in the range -360..-180 degrees)
-
-For example:
+possible results, so the [`SweptAngle`](Arc-SweptAngle) argument is used to
+specify which arc to create. For example:
 
     p1 =
         Point2d.fromCoordinates ( 1, 0 )
