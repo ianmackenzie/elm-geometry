@@ -572,7 +572,7 @@ sweptAngle (Types.Arc2d properties) =
 
 -}
 pointOn : Arc2d -> ParameterValue -> Point2d
-pointOn (Types.Arc2d arc) =
+pointOn (Types.Arc2d arc) parameterValue =
     let
         ( x0, y0 ) =
             Point2d.coordinates arc.startPoint
@@ -585,46 +585,40 @@ pointOn (Types.Arc2d arc) =
 
         arcSweptAngle =
             arc.sweptAngle
+
+        t =
+            ParameterValue.value parameterValue
     in
     if arcSweptAngle == 0.0 then
-        \parameterValue ->
-            let
-                t =
-                    ParameterValue.value parameterValue
-
-                distance =
-                    t * arcSignedLength
-            in
-            Point2d.fromCoordinates
-                ( x0 + distance * dx
-                , y0 + distance * dy
-                )
+        let
+            distance =
+                t * arcSignedLength
+        in
+        Point2d.fromCoordinates
+            ( x0 + distance * dx
+            , y0 + distance * dy
+            )
     else
         let
+            theta =
+                t * arcSweptAngle
+
             arcRadius =
                 arcSignedLength / arcSweptAngle
+
+            x =
+                arcRadius * sin theta
+
+            y =
+                if abs theta < pi / 2 then
+                    x * tan (theta / 2)
+                else
+                    arcRadius * (1 - cos theta)
         in
-        \parameterValue ->
-            let
-                t =
-                    ParameterValue.value parameterValue
-
-                theta =
-                    t * arcSweptAngle
-
-                x =
-                    arcRadius * sin theta
-
-                y =
-                    if abs theta < pi / 2 then
-                        x * tan (theta / 2)
-                    else
-                        arcRadius * (1 - cos theta)
-            in
-            Point2d.fromCoordinates
-                ( x0 + x * dx - y * dy
-                , y0 + x * dy + y * dx
-                )
+        Point2d.fromCoordinates
+            ( x0 + x * dx - y * dy
+            , y0 + x * dy + y * dx
+            )
 
 
 {-| Get points along an arc at a given set of parameter values:
