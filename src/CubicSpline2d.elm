@@ -410,6 +410,15 @@ pointsAt parameterValues spline =
     List.map (pointOn spline) parameterValues
 
 
+{-| If a curve has zero length (consists of just a single point), then we say
+that it is 'degenerate'. Some operations such as computing tangent directions
+are not defined on degenerate curves.
+
+A `Nondegenerate` value represents a spline that is definitely not degenerate.
+It is used as input to functions such as `CubicSpline2d.tangentDirection` and
+can be constructed using `CubicSpline2d.nondegenerate`.
+
+-}
 type Nondegenerate
     = NonZeroThirdDerivative CubicSpline2d Direction2d
     | NonZeroSecondDerivative CubicSpline2d Direction2d
@@ -480,7 +489,7 @@ fromNondegenerate nondegenerateSpline =
             spline
 
 
-{-| Get the tangent direction to a non-degenerate spline at a given parameter
+{-| Get the tangent direction to a nondegenerate spline at a given parameter
 value.
 
     CubicSpline2d.tangentDirection
@@ -985,7 +994,7 @@ Note that this is not the same as evaulating at a parameter value of 0.25:
 
     CubicSpline2d.pointOn exampleSpline
         (ParameterValue.clamped 0.25)
-    --> Just (Point2d.fromCoordinates ( 2.5, 2.3125 ))
+    --> Point2d.fromCoordinates ( 2.5, 2.3125 )
 
 If the given arc length is less than zero or greater than the arc length of the
 spline, `Nothing` is returned.
@@ -998,9 +1007,8 @@ pointAlong (ArcLengthParameterized parameterized) distance =
         |> Maybe.map (pointOn parameterized.underlyingSpline)
 
 
-{-| Try to get the point and tangent direction along a spline at a given arc
-length. To get the point and tangent direction a quarter of the way along
-`exampleSpline`:
+{-| Try to get the tangent direction along a spline at a given arc length. To
+get the tangent direction a quarter of the way along `exampleSpline`:
 
     CubicSpline2d.tangentDirectionAlong parameterizedSpline
         (0.25 * arcLength)
@@ -1022,6 +1030,21 @@ tangentDirectionAlong (ArcLengthParameterized parameterized) distance =
             Nothing
 
 
+{-| Try to get the point and tangent direction along a spline at a given arc
+length. To get the point and tangent direction a quarter of the way along
+`exampleSpline`:
+
+    CubicSpline2d.sampleAlong parameterizedSpline
+        (0.25 * arcLength)
+    --> Just
+    -->     ( Point2d.fromCoordinates ( 2.2681, 2.2114 )
+    -->     , Direction2d.fromAngle (degrees 26.5611)
+    -->     )
+
+If the given arc length is less than zero or greater than the arc length of the
+spline (or if the spline is degenerate), `Nothing` is returned.
+
+-}
 sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point2d, Direction2d )
 sampleAlong (ArcLengthParameterized parameterized) distance =
     case parameterized.nondegenerateSpline of

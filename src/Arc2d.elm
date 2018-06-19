@@ -1,12 +1,15 @@
 module Arc2d
     exposing
         ( Arc2d
+        , Nondegenerate
         , centerPoint
         , endPoint
         , firstDerivative
         , firstDerivativesAt
         , from
+        , fromNondegenerate
         , mirrorAcross
+        , nondegenerate
         , placeIn
         , pointOn
         , pointsAt
@@ -14,12 +17,14 @@ module Arc2d
         , relativeTo
         , reverse
         , rotateAround
-        , sampler
+        , sample
         , samplesAt
         , scaleAbout
         , startPoint
         , sweptAngle
         , sweptAround
+        , tangentDirection
+        , tangentDirectionsAt
         , throughPoints
         , toPolyline
         , translateBy
@@ -53,7 +58,9 @@ end point). This module includes functionality for
 
 # Evaluation
 
-@docs pointOn, pointsAt, sampler, samplesAt
+@docs pointOn, pointsAt
+@docs Nondegenerate, nondegenerate, fromNondegenerate
+@docs tangentDirection, tangentDirectionsAt, sample, samplesAt
 
 
 # Linear approximation
@@ -572,7 +579,7 @@ sweptAngle (Types.Arc2d properties) =
 
 -}
 pointOn : Arc2d -> ParameterValue -> Point2d
-pointOn (Types.Arc2d arc) =
+pointOn (Types.Arc2d arc) parameterValue =
     let
         ( x0, y0 ) =
             Point2d.coordinates arc.startPoint
@@ -585,46 +592,40 @@ pointOn (Types.Arc2d arc) =
 
         arcSweptAngle =
             arc.sweptAngle
+
+        t =
+            ParameterValue.value parameterValue
     in
     if arcSweptAngle == 0.0 then
-        \parameterValue ->
-            let
-                t =
-                    ParameterValue.value parameterValue
-
-                distance =
-                    t * arcSignedLength
-            in
-            Point2d.fromCoordinates
-                ( x0 + distance * dx
-                , y0 + distance * dy
-                )
+        let
+            distance =
+                t * arcSignedLength
+        in
+        Point2d.fromCoordinates
+            ( x0 + distance * dx
+            , y0 + distance * dy
+            )
     else
         let
+            theta =
+                t * arcSweptAngle
+
             arcRadius =
                 arcSignedLength / arcSweptAngle
+
+            x =
+                arcRadius * sin theta
+
+            y =
+                if abs theta < pi / 2 then
+                    x * tan (theta / 2)
+                else
+                    arcRadius * (1 - cos theta)
         in
-        \parameterValue ->
-            let
-                t =
-                    ParameterValue.value parameterValue
-
-                theta =
-                    t * arcSweptAngle
-
-                x =
-                    arcRadius * sin theta
-
-                y =
-                    if abs theta < pi / 2 then
-                        x * tan (theta / 2)
-                    else
-                        arcRadius * (1 - cos theta)
-            in
-            Point2d.fromCoordinates
-                ( x0 + x * dx - y * dy
-                , y0 + x * dy + y * dx
-                )
+        Point2d.fromCoordinates
+            ( x0 + x * dx - y * dy
+            , y0 + x * dy + y * dx
+            )
 
 
 {-| Get points along an arc at a given set of parameter values:
@@ -683,37 +684,28 @@ firstDerivativesAt parameterValues arc =
     List.map (firstDerivative arc) parameterValues
 
 
-{-| Attempt to construct a function for evaluating points and tangent directions
-along an arc:
+{-| If a curve has zero length (consists of just a single point), then we say
+that it is 'degenerate'. Some operations such as computing tangent directions
+are not defined on degenerate curves.
 
-    Arc2d.sampler exampleArc
-    --> Just <function>
-
-If `Just` a function is returned, the function can then be used to evaluate
-(point, tangent direction) pairs along the arc. For example, if the return value
-above was <code>Just&nbsp;sampleAt</code>, then:
-
-    sampleAt ParameterValue.zero
-    --> ( Point2d.fromCoordinates ( 3, 1 )
-    --> , Direction2d.fromAngle (degrees 90)
-    --> )
-
-    sampleAt ParameterValue.half
-    --> ( Point2d.fromCoordinates ( 2.4142, 2.4142 )
-    --> , Direction2d.fromAngle (degrees 135)
-    --> )
-
-    sampleAt ParameterValue.one
-    --> ( Point2d.fromCoordinates ( 1, 3 )
-    --> , Direction2d.fromAngle (degrees 180)
-    --> )
-
-If the arc is degenerate (start point and end point are equal), returns
-`Nothing`.
+A `Nondegenerate` value represents an arc that is definitely not degenerate. It
+is used as input to functions such as `Arc2d.tangentDirection` and can be
+constructed using `Arc2d.nondegenerate`.
 
 -}
-sampler : Arc2d -> Maybe (ParameterValue -> ( Point2d, Direction2d ))
-sampler arc =
+type Nondegenerate
+    = Nondegenerate Arc2d
+
+
+{-| Attempt to construct a nondegenerate arc from a general `Arc2d`. Returns
+`Nothing` if the arc is in fact degenerate.
+
+    Arc2d.nondegenerate exampleArc
+    --> Just nondegenerateExampleArc
+
+-}
+nondegenerate : Arc2d -> Maybe Nondegenerate
+nondegenerate arc =
     let
         (Types.Arc2d properties) =
             arc
@@ -721,30 +713,95 @@ sampler arc =
     if properties.signedLength == 0 then
         Nothing
     else
-        let
-            pointOnArc =
-                pointOn arc
-        in
-        Just <|
-            \parameterValue ->
-                let
-                    point =
-                        pointOnArc parameterValue
-
-                    t =
-                        ParameterValue.value parameterValue
-
-                    tangentDirection =
-                        properties.xDirection
-                            |> Direction2d.rotateBy (t * properties.sweptAngle)
-                in
-                ( point, tangentDirection )
+        Just (Nondegenerate arc)
 
 
-{-| Get points and tangent directions along an arc at a given set of parameter
+{-| Convert a nondegenerate arc back to a general `Arc2d`.
+
+    Arc2d.fromNondegenerate nondegenerateExampleArc
+    --> exampleArc
+
+-}
+fromNondegenerate : Nondegenerate -> Arc2d
+fromNondegenerate (Nondegenerate arc) =
+    arc
+
+
+{-| Get the tangent direction to a nondegenerate arc at a given parameter
+value.
+
+    Arc2d.tangentDirection nondegenerateExampleArc
+        ParameterValue.zero
+    --> Direction2d.fromAngle (degrees 90)
+
+    Arc2d.tangentDirection nondegenerateExampleArc
+        ParameterValue.half
+    --> Direction2d.fromAngle (degrees 135)
+
+    Arc2d.tangentDirection nondegenerateExampleArc
+        ParameterValue.one
+    --> Direction2d.fromAngle (degrees 180)
+
+-}
+tangentDirection : Nondegenerate -> ParameterValue -> Direction2d
+tangentDirection (Nondegenerate (Types.Arc2d arc)) parameterValue =
+    let
+        t =
+            ParameterValue.value parameterValue
+    in
+    arc.xDirection |> Direction2d.rotateBy (t * arc.sweptAngle)
+
+
+{-| Get tangent directions to a nondegenerate arc at a given set of parameter
 values:
 
-    exampleArc
+    nondegenerateExampleArc
+        |> Arc2d.tangentDirectionsAt
+            (ParameterValue.steps 2)
+    --> [ Direction2d.fromAngle (degrees 90)
+    --> , Direction2d.fromAngle (degrees 135)
+    --> , Direction2d.fromAngle (degrees 180)
+    --> ]
+
+-}
+tangentDirectionsAt : List ParameterValue -> Nondegenerate -> List Direction2d
+tangentDirectionsAt parameterValues nondegenerateArc =
+    List.map (tangentDirection nondegenerateArc) parameterValues
+
+
+{-| Get both the point and tangent direction of a nondegenerate arc at a given
+parameter value:
+
+    Arc2d.sample nondegenerateExampleArc
+        ParameterValue.zero
+    --> ( Point2d.fromCoordinates ( 3, 1 )
+    --> , Direction2d.fromAngle (degrees 90)
+    --> )
+
+    Arc2d.sample nondegenerateExampleArc
+        ParameterValue.half
+    --> ( Point2d.fromCoordinates ( 2.4142, 2.4142 )
+    --> , Direction2d.fromAngle (degrees 135)
+    --> )
+
+    Arc2d.sample nondegenerateExampleArc
+        ParameterValue.one
+    --> ( Point2d.fromCoordinates ( 1, 3 )
+    --> , Direction2d.fromAngle (degrees 180)
+    --> )
+
+-}
+sample : Nondegenerate -> ParameterValue -> ( Point2d, Direction2d )
+sample nondegenerateArc parameterValue =
+    ( pointOn (fromNondegenerate nondegenerateArc) parameterValue
+    , tangentDirection nondegenerateArc parameterValue
+    )
+
+
+{-| Get points and tangent directions of a nondegenerate arc at a given set of
+parameter values:
+
+    nondegenerateExampleArc
         |> Arc2d.samplesAt (ParameterValue.steps 2)
     --> [ ( Point2d.fromCoordinates ( 3, 1 )
     -->   , Direction2d.fromAngle (degrees 90)
@@ -757,18 +814,10 @@ values:
     -->   )
     --> ]
 
-If the arc is degenerate (start point and end point are equal), returns an
-empty list.
-
 -}
-samplesAt : List ParameterValue -> Arc2d -> List ( Point2d, Direction2d )
-samplesAt parameterValues arc =
-    case sampler arc of
-        Just sampleAt ->
-            List.map sampleAt parameterValues
-
-        Nothing ->
-            []
+samplesAt : List ParameterValue -> Nondegenerate -> List ( Point2d, Direction2d )
+samplesAt parameterValues nondegenerateArc =
+    List.map (sample nondegenerateArc) parameterValues
 
 
 numApproximationSegments : Float -> Arc2d -> Int
