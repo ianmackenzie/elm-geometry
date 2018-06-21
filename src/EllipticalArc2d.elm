@@ -84,7 +84,7 @@ details.
 
 @docs pointOn, pointsAt
 @docs Nondegenerate, nondegenerate, fromNondegenerate
-@docs sample, samplesAt
+@docs tangentDirection, tangentDirectionsAt, sample, samplesAt
 
 
 # Transformations
@@ -99,7 +99,7 @@ details.
 
 # Arc length parameterization
 
-@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, sampleAlong
+@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentDirectionAlong, sampleAlong
 
 
 ## Low level
@@ -505,6 +505,12 @@ nondegenerate arc =
         Just (Curved arc)
 
 
+{-| Convert a nondegenerate elliptical arc back to a general `EllipticalArc2d`.
+
+    EllipticalArc2d.fromNondegenerate nondegenerateExampleArc
+    --> exampleArc
+
+-}
 fromNondegenerate : Nondegenerate -> EllipticalArc2d
 fromNondegenerate nondegenerateArc =
     case nondegenerateArc of
@@ -518,6 +524,22 @@ fromNondegenerate nondegenerateArc =
             arc
 
 
+{-| Get the tangent direction to a nondegenerate elliptical arc at a given
+parameter value:
+
+    EllipticalArc2d.tangentDirection nondegenerateExampleArc
+        ParameterValue.zero
+    --> Direction2d.fromAngle (degrees 90)
+
+    EllipticalArc2d.tangentDirection nondegenerateExampleArc
+        ParameterValue.half
+    --> Direction2d.fromAngle (degrees 153.4)
+
+    EllipticalArc2d.tangentDirection nondegenerateExampleArc
+        ParameterValue.one
+    --> Direction2d.fromAngle (degrees 180)
+
+-}
 tangentDirection : Nondegenerate -> ParameterValue -> Direction2d
 tangentDirection nondegenerateArc parameterValue =
     let
@@ -568,11 +590,45 @@ tangentDirection nondegenerateArc parameterValue =
                 xDirection horizontalArc
 
 
+{-| Get tangent directions to a nondegenerate elliptical arc at a given set of
+parameter values:
+
+    nondegenerateExampleArc
+        |> EllipticalArc2d.tangentDirectionsAt
+            (ParameterValue.steps 2)
+    --> [ Direction2d.fromAngle (degrees 90)
+    --> , Direction2d.fromAngle (degrees 153.4)
+    --> , Direction2d.fromAngle (degrees 180)
+    --> ]
+
+-}
 tangentDirectionsAt : List ParameterValue -> Nondegenerate -> List Direction2d
 tangentDirectionsAt parameterValues nondegenerateArc =
     List.map (tangentDirection nondegenerateArc) parameterValues
 
 
+{-| Get both the point tangent direction of a nondegenerate elliptical arc at a
+given parameter value:
+
+    EllipticalArc2d.sample nondegenerateExampleArc
+        ParameterValue.zero
+    --> ( Point2d.fromCoordinates ( 2, 0 )
+    --> , Direction2d.fromAngle (degrees 90)
+    --> )
+
+    EllipticalArc2d.sample nondegenerateExampleArc
+        ParameterValue.half
+    --> ( Point2d.fromCoordinates ( 1.4142, 0.7071 )
+    --> , Direction2d.fromAngle (degrees 153.4)
+    --> )
+
+    EllipticalArc2d.sample nondegenerateExampleArc
+        ParameterValue.one
+    --> ( Point2d.fromCoordinates ( 0, 1 )
+    --> , Direction2d.fromAngle (degrees 180)
+    --> )
+
+-}
 sample : Nondegenerate -> ParameterValue -> ( Point2d, Direction2d )
 sample nondegenerateArc parameterValue =
     ( pointOn (fromNondegenerate nondegenerateArc) parameterValue
@@ -580,6 +636,23 @@ sample nondegenerateArc parameterValue =
     )
 
 
+{-| Get points and tangent directions of a nondegenerate arc at a given set of
+parameter values:
+
+    nondegenerateExampleArc
+        |> EllipticalArc2d.samplesAt (ParameterValue.steps 2)
+    --> [ ( Point2d.fromCoordinates ( 2, 0 )
+    -->   , Direction2d.fromAngle (degrees 90)
+    -->   )
+    --> , ( Point2d.fromCoordinates ( 1.4142, 0.7071 )
+    -->   , Direction2d.fromAngle (degrees 153.4)
+    -->   )
+    --> , ( Point2d.fromCoordinates ( 0, 1 )
+    -->   , Direction2d.fromAngle (degrees 180)
+    -->   )
+    --> ]
+
+-}
 samplesAt : List ParameterValue -> Nondegenerate -> List ( Point2d, Direction2d )
 samplesAt parameterValues nondegenerateArc =
     List.map (sample nondegenerateArc) parameterValues
@@ -789,7 +862,15 @@ placeIn frame =
     transformBy (Ellipse2d.placeIn frame)
 
 
-{-| -}
+{-| Find a conservative upper bound on the magnitude of the second derivative of
+an elliptical arc. This can be useful when determining error bounds for various
+kinds of linear approximations.
+
+    exampleArc
+        |> EllipticalArc2d.maxSecondDerivativeMagnitude
+    --> 4.935
+
+-}
 maxSecondDerivativeMagnitude : EllipticalArc2d -> Float
 maxSecondDerivativeMagnitude arc =
     let
@@ -868,7 +949,6 @@ maxSecondDerivativeMagnitude arc =
         dThetaSquared * sqrt (max d0 d1)
 
 
-{-| -}
 derivativeMagnitude : EllipticalArc2d -> Float -> Float
 derivativeMagnitude arc =
     let
@@ -981,6 +1061,17 @@ pointAlong (ArcLengthParameterized parameterized) distance =
         |> Maybe.map (pointOn parameterized.underlyingArc)
 
 
+{-| Try to get the tangent direction along an elliptical arc at a given arc
+length. To get the tangent direction at the midpoint of `exampleArc`:
+
+    EllipticalArc2d.tangentDirectionAlong parameterizedArc
+        (arcLength / 2)
+    --> Just (Direction2d.fromAngle (degrees 159.7))
+
+If the given arc length is less than zero or greater than the arc length of the
+elliptical arc (or if the elliptical arc is degenerate), `Nothing` is returned.
+
+-}
 tangentDirectionAlong : ArcLengthParameterized -> Float -> Maybe Direction2d
 tangentDirectionAlong (ArcLengthParameterized parameterized) distance =
     case parameterized.nondegenerateArc of
@@ -993,6 +1084,21 @@ tangentDirectionAlong (ArcLengthParameterized parameterized) distance =
             Nothing
 
 
+{-| Try to get the point and tangent direction along an elliptical arc at a
+given arc length. To get the point and tangent direction at the midpoint of
+`exampleArc`:
+
+    EllipticalArc2d.sampleAlong parameterizedArc
+        (arcLength / 2)
+    --> Just
+    -->     ( Point2d.fromCoordinates ( 1.1889, 0.8041 )
+    -->     , Direction2d.fromAngle (degrees 159.7)
+    -->     )
+
+If the given arc length is less than zero or greater than the arc length of the
+spline (or if the spline is degenerate), `Nothing` is returned.
+
+-}
 sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point2d, Direction2d )
 sampleAlong (ArcLengthParameterized parameterized) distance =
     case parameterized.nondegenerateArc of
