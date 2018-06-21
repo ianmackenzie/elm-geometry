@@ -728,7 +728,7 @@ fromNondegenerate (Nondegenerate arc) =
 
 
 {-| Get the tangent direction to a nondegenerate arc at a given parameter
-value.
+value:
 
     Arc2d.tangentDirection nondegenerateExampleArc
         ParameterValue.zero
