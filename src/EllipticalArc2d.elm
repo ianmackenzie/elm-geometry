@@ -355,7 +355,7 @@ startAngle (Types.EllipticalArc2d arc) =
 
 {-| The swept angle of an elliptical arc is the difference between values of the
 [ellipse parameter](https://en.wikipedia.org/wiki/Ellipse#Parametric_representation)
-at the start and end points of the arc.
+from the start point to the end point of the arc.
 
     EllipticalArc2d.sweptAngle exampleArc
     --> degrees 90
