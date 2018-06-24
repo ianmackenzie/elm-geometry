@@ -2,6 +2,7 @@ module CubicSpline3d
     exposing
         ( ArcLengthParameterized
         , CubicSpline3d
+        , Nondegenerate
         , arcLength
         , arcLengthParameterization
         , arcLengthParameterized
@@ -12,10 +13,13 @@ module CubicSpline3d
         , endPoint
         , firstDerivative
         , firstDerivativesAt
+        , fromArcLengthParameterized
         , fromEndpoints
+        , fromNondegenerate
         , fromQuadraticSpline
         , maxSecondDerivativeMagnitude
         , mirrorAcross
+        , nondegenerate
         , on
         , placeIn
         , pointAlong
@@ -26,8 +30,8 @@ module CubicSpline3d
         , relativeTo
         , reverse
         , rotateAround
+        , sample
         , sampleAlong
-        , sampler
         , samplesAt
         , scaleAbout
         , secondDerivative
@@ -36,10 +40,12 @@ module CubicSpline3d
         , startControlPoint
         , startDerivative
         , startPoint
+        , tangentDirection
+        , tangentDirectionAlong
+        , tangentDirectionsAt
         , thirdDerivative
         , translateBy
         , translateIn
-        , underlyingSpline
         , with
         )
 
@@ -70,7 +76,9 @@ contains functionality for
 
 # Evaluation
 
-@docs pointOn, pointsAt, sampler, samplesAt
+@docs pointOn, pointsAt
+@docs Nondegenerate, nondegenerate, fromNondegenerate
+@docs tangentDirection, tangentDirectionsAt, sample, samplesAt
 
 
 # Transformations
@@ -90,7 +98,7 @@ contains functionality for
 
 # Arc length parameterization
 
-@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, sampleAlong
+@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentDirectionAlong, sampleAlong
 
 
 ## Low level
@@ -100,7 +108,7 @@ An `ArcLengthParameterized` value is a combination of an
 underlying `CubicSpline3d`. If you need to do something fancy, you can extract
 these two values separately.
 
-@docs arcLengthParameterization, underlyingSpline
+@docs arcLengthParameterization, fromArcLengthParameterized
 
 
 # Differentiation
@@ -446,35 +454,35 @@ pointsAt parameterValues spline =
     List.map (pointOn spline) parameterValues
 
 
-{-| Attempt to construct a function for evaluating points and tangent directions
-along a spline; if
+{-| If a curve has zero length (consists of just a single point), then we say
+that it is 'degenerate'. Some operations such as computing tangent directions
+are not defined on degenerate curves.
 
-    CubicSpline3d.sampler spline
-
-returns `Just sampleAt`, then
-
-    sampleAt ParameterValue.zero
-
-will return the start point of the spline along with the tangent direction at
-the start point,
-
-    sampleAt ParameterValue.one
-
-will return the end point and the corresponding tangent tangent direction, etc.
-
-If the spline is degenerate (all control points are identical), returns
-`Nothing`.
+A `Nondegenerate` value represents a spline that is definitely not degenerate.
+It is used as input to functions such as `CubicSpline3d.tangentDirection` and
+can be constructed using `CubicSpline3d.nondegenerate`.
 
 -}
-sampler : CubicSpline3d -> Maybe (ParameterValue -> ( Point3d, Direction3d ))
-sampler spline =
+type Nondegenerate
+    = NonZeroThirdDerivative CubicSpline3d Direction3d
+    | NonZeroSecondDerivative CubicSpline3d Direction3d
+    | NonZeroFirstDerivative CubicSpline3d Direction3d
+
+
+{-| Attempt to construct a nondegenerate spline from a general `CubicSpline3d`.
+Returns `Nothing` if the spline is in fact degenerate.
+
+    CubicSpline3d.nondegenerate exampleSpline
+    --> Just nondegenerateExampleSpline
+
+-}
+nondegenerate : CubicSpline3d -> Maybe Nondegenerate
+nondegenerate spline =
     case Vector3d.direction (thirdDerivative spline) of
-        Just thirdDerivativeDirection ->
+        Just direction ->
             -- Third derivative is non-zero, so if all else fails we can fall
             -- back on it to provide a tangent direction
-            Just <|
-                nonZeroThirdDerivativeSampler spline
-                    thirdDerivativeDirection
+            Just (NonZeroThirdDerivative spline direction)
 
         Nothing ->
             let
@@ -484,12 +492,10 @@ sampler spline =
                     secondDerivative spline ParameterValue.zero
             in
             case Vector3d.direction secondDerivativeVector of
-                Just secondDerivativeDirection ->
+                Just direction ->
                     -- Second derivative is non-zero, so if all else fails we
                     -- can fall back on it to provide a tangent direction
-                    Just <|
-                        nonZeroSecondDerivativeSampler spline
-                            secondDerivativeDirection
+                    Just (NonZeroSecondDerivative spline direction)
 
                 Nothing ->
                     let
@@ -500,127 +506,183 @@ sampler spline =
                             firstDerivative spline ParameterValue.zero
                     in
                     case Vector3d.direction firstDerivativeVector of
-                        Just firstDerivativeDirection ->
-                            Just <|
-                                nonZeroFirstDerivativeSampler spline
-                                    firstDerivativeDirection
+                        Just direction ->
+                            Just (NonZeroFirstDerivative spline direction)
 
                         Nothing ->
                             Nothing
 
 
-nonZeroFirstDerivativeSampler : CubicSpline3d -> Direction3d -> ParameterValue -> ( Point3d, Direction3d )
-nonZeroFirstDerivativeSampler spline firstDerivativeDirection =
-    -- Tangent direction is always equal to the (constant) first derivative
-    -- direction
-    \parameterValue ->
-        ( pointOn spline parameterValue
-        , firstDerivativeDirection
-        )
+{-| Convert a nondegenerate spline back to a general `CubicSpline3d`.
+
+    CubicSpline3d.fromNondegenerate
+        nondegenerateExampleSpline
+    --> exampleSpline
+
+-}
+fromNondegenerate : Nondegenerate -> CubicSpline3d
+fromNondegenerate nondegenerateSpline =
+    case nondegenerateSpline of
+        NonZeroThirdDerivative spline _ ->
+            spline
+
+        NonZeroSecondDerivative spline _ ->
+            spline
+
+        NonZeroFirstDerivative spline _ ->
+            spline
 
 
-nonZeroSecondDerivativeSampler : CubicSpline3d -> Direction3d -> ParameterValue -> ( Point3d, Direction3d )
-nonZeroSecondDerivativeSampler spline secondDerivativeDirection =
-    \parameterValue ->
-        let
-            point =
-                pointOn spline parameterValue
+{-| Get the tangent direction to a nondegenerate spline at a given parameter
+value:
 
-            firstDerivativeVector =
-                firstDerivative spline parameterValue
-        in
-        case Vector3d.direction firstDerivativeVector of
-            Just firstDerivativeDirection ->
-                -- First derivative is non-zero, so use its direction as the
-                -- tangent direction
-                ( point, firstDerivativeDirection )
+    CubicSpline3d.tangentDirection
+        nondegenerateExampleSpline
+        ParameterValue.zero
+    --> Direction3d.x
 
-            Nothing ->
-                -- Zero first derivative and non-zero second derivative mean we
-                -- have reached a reversal point, where the tangent direction
-                -- just afterwards is equal to the second derivative direction
-                -- and the tangent direction just before is equal to the flipped
-                -- second derivative direction. If we happen to be right at the
-                -- end of the spline, choose the tangent direction just before
-                -- the end (instead of one that is off the spline!), otherwise
-                -- choose the tangent direction just after the point (necessary
-                -- for t = 0, arbitrary for all other points).
-                if parameterValue == ParameterValue.one then
-                    ( point, Direction3d.flip secondDerivativeDirection )
-                else
-                    ( point, secondDerivativeDirection )
+    CubicSpline3d.tangentDirection
+        nondegenerateExampleSpline
+        ParameterValue.half
+    --> Direction3d.fromAzimuthAndElevation
+    -->     (degrees 63.43)
+    -->     (degrees 24.09)
+
+    CubicSpline3d.tangentDirection
+        nondegenerateExampleSpline
+        ParameterValue.one
+    --> Direction3d.z
+
+-}
+tangentDirection : Nondegenerate -> ParameterValue -> Direction3d
+tangentDirection nondegenerateSpline parameterValue =
+    case nondegenerateSpline of
+        NonZeroFirstDerivative spline firstDerivativeDirection ->
+            -- Tangent direction is always equal to the (constant) first
+            -- derivative direction
+            firstDerivativeDirection
+
+        NonZeroSecondDerivative spline secondDerivativeDirection ->
+            let
+                firstDerivativeVector =
+                    firstDerivative spline parameterValue
+            in
+            case Vector3d.direction firstDerivativeVector of
+                Just firstDerivativeDirection ->
+                    -- First derivative is non-zero, so use its direction as the
+                    -- tangent direction
+                    firstDerivativeDirection
+
+                Nothing ->
+                    -- Zero first derivative and non-zero second derivative mean we
+                    -- have reached a reversal point, where the tangent direction
+                    -- just afterwards is equal to the second derivative direction
+                    -- and the tangent direction just before is equal to the flipped
+                    -- second derivative direction. If we happen to be right at the
+                    -- end of the spline, choose the tangent direction just before
+                    -- the end (instead of one that is off the spline!), otherwise
+                    -- choose the tangent direction just after the point (necessary
+                    -- for t = 0, arbitrary for all other points).
+                    if parameterValue == ParameterValue.one then
+                        Direction3d.flip secondDerivativeDirection
+                    else
+                        secondDerivativeDirection
+
+        NonZeroThirdDerivative spline thirdDerivativeDirection ->
+            let
+                firstDerivativeVector =
+                    firstDerivative spline parameterValue
+            in
+            case Vector3d.direction firstDerivativeVector of
+                Just firstDerivativeDirection ->
+                    -- First derivative is non-zero, so just use its
+                    -- direction as the tangent direction (normal case)
+                    firstDerivativeDirection
+
+                Nothing ->
+                    let
+                        secondDerivativeVector =
+                            secondDerivative spline parameterValue
+                    in
+                    case Vector3d.direction secondDerivativeVector of
+                        Just secondDerivativeDirection ->
+                            -- Zero first derivative and non-zero second
+                            -- derivative mean we have reached a
+                            -- reversal point, as above in
+                            -- nonZeroSecondDerivativeSampler
+                            if parameterValue == ParameterValue.one then
+                                Direction3d.flip secondDerivativeDirection
+                            else
+                                secondDerivativeDirection
+
+                        Nothing ->
+                            -- First and second derivatives are zero, so
+                            -- fall back to the third dervative
+                            -- direction
+                            thirdDerivativeDirection
 
 
-nonZeroThirdDerivativeSampler : CubicSpline3d -> Direction3d -> ParameterValue -> ( Point3d, Direction3d )
-nonZeroThirdDerivativeSampler spline thirdDerivativeDirection =
-    \parameterValue ->
-        let
-            point =
-                pointOn spline parameterValue
+{-| Get tangent directions to a nondegenerate spline at a given set of parameter
+values:
 
-            firstDerivativeVector =
-                firstDerivative spline parameterValue
-        in
-        case Vector3d.direction firstDerivativeVector of
-            Just firstDerivativeDirection ->
-                -- First derivative is non-zero, so just use its
-                -- direction as the tangent direction (normal case)
-                ( point, firstDerivativeDirection )
+    nondegenerateExampleSpline
+        |> CubicSpline3d.tangentDirectionsAt
+            (ParameterValue.steps 2)
+    --> [ Direction3d.x
+    --> , Direction3d.fromAzimuthAndElevation
+    -->     (degrees 63.43)
+    -->     (degrees 24.09)
+    --> , Direction3d.z
+    --> ]
 
-            Nothing ->
-                let
-                    secondDerivativeVector =
-                        secondDerivative spline parameterValue
-                in
-                case Vector3d.direction secondDerivativeVector of
-                    Just secondDerivativeDirection ->
-                        -- Zero first derivative and non-zero second
-                        -- derivative mean we have reached a
-                        -- reversal point, as above in
-                        -- nonZeroSecondDerivativeSampler
-                        if parameterValue == ParameterValue.one then
-                            ( point
-                            , Direction3d.flip secondDerivativeDirection
-                            )
-                        else
-                            ( point, secondDerivativeDirection )
-
-                    Nothing ->
-                        -- First and second derivatives are zero, so
-                        -- fall back to the third dervative
-                        -- direction
-                        ( point, thirdDerivativeDirection )
+-}
+tangentDirectionsAt : List ParameterValue -> Nondegenerate -> List Direction3d
+tangentDirectionsAt parameterValues nondegenerateSpline =
+    List.map (tangentDirection nondegenerateSpline) parameterValues
 
 
-{-| Find the positions and tangent directions at several points along a spline,
-given by a set of parameter values.
+{-| Get both the point and tangent direction of a nondegenerate spline at a
+given parameter value:
 
-    exampleSpline
+    CubicSpline3d.sample nondegenerateExampleSpline
+        ParameterValue.half
+    --> ( Point3d.fromCoordinates ( 2.75, 2, 1.25 )
+    --> , Direction3d.fromAzimuthAndElevation
+    -->     (degrees 63.43)
+    -->     (degrees 24.09)
+    --> )
+
+-}
+sample : Nondegenerate -> ParameterValue -> ( Point3d, Direction3d )
+sample nondegenerateSpline parameterValue =
+    ( pointOn (fromNondegenerate nondegenerateSpline) parameterValue
+    , tangentDirection nondegenerateSpline parameterValue
+    )
+
+
+{-| Get points and tangent directions of a nondegenerate spline at a given set
+of parameter values:
+
+    nondegenerateExampleSpline
         |> CubicSpline3d.samplesAt
             (ParameterValue.steps 2)
-    --> [ ( Point2d.fromCoordinates ( 1, 1 )
-    -->   , Direction2d.fromAngle (degrees 56.31)
+    --> [ ( Point3d.fromCoordinates ( 1, 1, 1 )
+    -->   , Direction3d.x
     -->   )
-    --> , ( Point2d.fromCoordinates ( 4, 2.5 )
-    -->   , Direction2d.x
+    --> , ( Point3d.fromCoordinates ( 2.75, 2, 1.25 )
+    -->   , Direction3d.fromAzimuthAndElevation
+    -->         (degrees 63.43)
+    -->         (degrees 24.09)
     -->   )
-    --> , ( Point2d.fromCoordinates ( 7, 4 )
-    -->   , Direction2d.fromAngle (degrees 56.31)
+    --> , ( Point3d.fromCoordinates ( 3, 3, 3 )
+    -->   , Direction3d.z
     -->   )
     --> ]
 
-If the given spline is degenerate (all control points are identical), it has no
-tangent directions and so the result will always be an empty list.
-
 -}
-samplesAt : List ParameterValue -> CubicSpline3d -> List ( Point3d, Direction3d )
-samplesAt parameterValues spline =
-    case sampler spline of
-        Just sampleAt ->
-            List.map sampleAt parameterValues
-
-        Nothing ->
-            []
+samplesAt : List ParameterValue -> Nondegenerate -> List ( Point3d, Direction3d )
+samplesAt parameterValues nondegenerateSpline =
+    List.map (sample nondegenerateSpline) parameterValues
 
 
 {-| Reverse a spline so that the start point becomes the end point, and vice
@@ -931,7 +993,7 @@ type ArcLengthParameterized
     = ArcLengthParameterized
         { underlyingSpline : CubicSpline3d
         , parameterization : ArcLengthParameterization
-        , sampler : Maybe (ParameterValue -> ( Point3d, Direction3d ))
+        , nondegenerateSpline : Maybe Nondegenerate
         }
 
 
@@ -960,7 +1022,7 @@ arcLengthParameterized { maxError } spline =
     ArcLengthParameterized
         { underlyingSpline = spline
         , parameterization = parameterization
-        , sampler = sampler spline
+        , nondegenerateSpline = nondegenerate spline
         }
 
 
@@ -1008,25 +1070,58 @@ pointAlong (ArcLengthParameterized parameterized) distance =
         |> Maybe.map (pointOn parameterized.underlyingSpline)
 
 
+{-| Try to get the tangent direction along a spline at a given arc length. To
+get the tangent direction a quarter of the way along `exampleSpline`:
+
+    CubicSpline3d.tangentDirectionAlong parameterizedSpline
+        (0.25 * arcLength)
+    --> Just
+    -->     (Direction3d.fromAzimuthAndElevation
+    -->         (degrees 29.1)
+    -->         (degrees 3.871)
+    -->     )
+
+If the given arc length is less than zero or greater than the arc length of the
+spline (or if the spline is degenerate), `Nothing` is returned.
+
+-}
+tangentDirectionAlong : ArcLengthParameterized -> Float -> Maybe Direction3d
+tangentDirectionAlong (ArcLengthParameterized parameterized) distance =
+    case parameterized.nondegenerateSpline of
+        Just nondegenerateSpline ->
+            parameterized.parameterization
+                |> ArcLengthParameterization.arcLengthToParameterValue distance
+                |> Maybe.map (tangentDirection nondegenerateSpline)
+
+        Nothing ->
+            Nothing
+
+
 {-| Try to get the point and tangent direction along a spline at a given arc
 length. To get the point and tangent direction a quarter of the way along
 `exampleSpline`:
 
     CubicSpline3d.sampleAlong parameterizedSpline
         (0.25 * arcLength)
+    --> Just
+    -->     ( Point3d.fromCoordinates
+    -->         ( 2.0425, 1.2431, 1.0206 )
+    -->     , Direction3d.fromAzimuthAndElevation
+    -->         (degrees 29.1)
+    -->         (degrees 3.871)
+    -->     )
 
 If the given arc length is less than zero or greater than the arc length of the
-spline (or if the derivative of the spline happens to be exactly zero at the
-given arc length), `Nothing` is returned.
+spline (or if the spline is degenerate), `Nothing` is returned.
 
 -}
 sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point3d, Direction3d )
 sampleAlong (ArcLengthParameterized parameterized) distance =
-    case parameterized.sampler of
-        Just toSample ->
+    case parameterized.nondegenerateSpline of
+        Just nondegenerateSpline ->
             parameterized.parameterization
                 |> ArcLengthParameterization.arcLengthToParameterValue distance
-                |> Maybe.map toSample
+                |> Maybe.map (sample nondegenerateSpline)
 
         Nothing ->
             Nothing
@@ -1039,8 +1134,8 @@ arcLengthParameterization (ArcLengthParameterized parameterized) =
 
 
 {-| -}
-underlyingSpline : ArcLengthParameterized -> CubicSpline3d
-underlyingSpline (ArcLengthParameterized parameterized) =
+fromArcLengthParameterized : ArcLengthParameterized -> CubicSpline3d
+fromArcLengthParameterized (ArcLengthParameterized parameterized) =
     parameterized.underlyingSpline
 
 
