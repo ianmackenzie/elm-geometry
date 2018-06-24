@@ -1010,7 +1010,7 @@ Note that this is not the same as evaulating at a parameter value of 1/4:
     --> Point3d.fromCoordinates ( 1.875, 1.5, 1.125 )
 
 If the given arc length is less than zero or greater than the arc length of the
-spline, `Nothing` is returned.
+spline, returns `Nothing`.
 
 -}
 pointAlong : ArcLengthParameterized -> Float -> Maybe Point3d
@@ -1032,8 +1032,7 @@ get the tangent direction a quarter of the way along `exampleSpline`:
     -->         (degrees 14.26)
 
 If the given arc length is less than zero or greater than the arc length of the
-spline (or if the derivative of the spline happens to be exactly zero at the
-given arc length), `Nothing` is returned.
+spline (or if the spline is degenerate), returns `Nothing`.
 
 -}
 tangentDirectionAlong : ArcLengthParameterized -> Float -> Maybe Direction3d

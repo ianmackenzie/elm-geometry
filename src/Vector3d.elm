@@ -58,7 +58,7 @@ vector-related functionality, such as
   - Converting vectors between different coordinate systems
 
 Note that unlike in many other geometry packages where vectors are used as a
-general-purpose data type, OpenSolid has separate data types for vectors,
+general-purpose data type, `elm-geometry` has separate data types for vectors,
 directions and points. In most code it is actually more common to use `Point3d`
 and `Direction3d` than `Vector3d`, and much code can avoid working directly with
 `Vector3d` values at all!
@@ -72,8 +72,8 @@ and `Direction3d` than `Vector3d`, and much code can avoid working directly with
 
 Although there are no predefined constants for the vectors with components
 (1,&nbsp;0,&nbsp;0), (0,&nbsp;1,&nbsp;0) and (0,&nbsp;0,&nbsp;1), in most cases
-you will actually want their `Direction3d` versions [`Direction3d.x`](OpenSolid-Direction3d#x),
-[`Direction3d.y`](OpenSolid-Direction3d#y) and [`Direction3d.z`](OpenSolid-Direction3d#z).
+you will actually want their `Direction3d` versions [`Direction3d.x`](Direction3d#x),
+[`Direction3d.y`](Direction3d#y) and [`Direction3d.z`](Direction3d#z).
 
 
 # Constructors

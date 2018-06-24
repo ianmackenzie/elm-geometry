@@ -170,9 +170,8 @@ withYDirection yDirection_ originPoint_ =
 
 In this case **you must be careful to ensure that the X and Y directions are
 perpendicular**. To construct pairs of perpendicular directions,
-[`Direction2d.orthonormalize`](OpenSolid-Direction2d#orthonormalize) or
-[`Direction2d.orthogonalize`](OpenSolid-Direction2d#orthogonalize) may be
-useful.
+[`Direction2d.orthonormalize`](Direction2d#orthonormalize) or
+[`Direction2d.orthogonalize`](Direction2d#orthogonalize) may be useful.
 
 -}
 unsafe : { originPoint : Point2d, xDirection : Direction2d, yDirection : Direction2d } -> Frame2d

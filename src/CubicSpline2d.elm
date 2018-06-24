@@ -1007,7 +1007,7 @@ Note that this is not the same as evaulating at a parameter value of 0.25:
     --> Point2d.fromCoordinates ( 2.5, 2.3125 )
 
 If the given arc length is less than zero or greater than the arc length of the
-spline, `Nothing` is returned.
+spline, returns `Nothing`.
 
 -}
 pointAlong : ArcLengthParameterized -> Float -> Maybe Point2d
@@ -1025,7 +1025,7 @@ get the tangent direction a quarter of the way along `exampleSpline`:
     --> Just (Direction2d.fromAngle (degrees 26.5611))
 
 If the given arc length is less than zero or greater than the arc length of the
-spline (or if the spline is degenerate), `Nothing` is returned.
+spline (or if the spline is degenerate), returns `Nothing`.
 
 -}
 tangentDirectionAlong : ArcLengthParameterized -> Float -> Maybe Direction2d
@@ -1052,7 +1052,7 @@ length. To get the point and tangent direction a quarter of the way along
     -->     )
 
 If the given arc length is less than zero or greater than the arc length of the
-spline (or if the spline is degenerate), `Nothing` is returned.
+spline (or if the spline is degenerate), returns `Nothing`.
 
 -}
 sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point2d, Direction2d )

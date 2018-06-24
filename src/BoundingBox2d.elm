@@ -43,10 +43,10 @@ module BoundingBox2d
 
 A `BoundingBox2d` is a rectangular box in 2D defined by its minimum and maximum
 X and Y values. It is possible to generate bounding boxes for most geometric
-objects; for example, [`Triangle2d.boundingBox`](OpenSolid-Triangle2d#boundingBox)
-takes a `Triangle2d` and returns a `BoundingBox2d` that contains that triangle.
-There are several use cases where it is more efficient to deal with the bounding
-box of an object than the object itself, such as:
+objects; for example, [`Triangle2d.boundingBox`](Triangle2d#boundingBox) takes a
+`Triangle2d` and returns a `BoundingBox2d` that contains that triangle. There
+are several use cases where it is more efficient to deal with the bounding box
+of an object than the object itself, such as:
 
   - Intersection checking: If (for example) the bounding boxes of a line segment
     and a triangle do not overlap, then the line segment and triangle cannot

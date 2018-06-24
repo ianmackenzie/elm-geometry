@@ -74,8 +74,7 @@ treat them as actual angles and everything will behave as you expect.
 @docs startAngle, sweptAngle, startPoint, endPoint
 
 All remaining properties of elliptical arcs are actually just properties of the
-underlying ellipse; check out the [Ellipse2d](OpenSolid-Ellipse2d) module for
-details.
+underlying ellipse; check out the <Ellipse2d> module for details.
 
 @docs centerPoint, axes, xAxis, yAxis, xDirection, yDirection, xRadius, yRadius
 
@@ -134,8 +133,7 @@ import Point2d exposing (Point2d)
 import Vector2d exposing (Vector2d)
 
 
-{-| An elliptical arc in 2D.
--}
+{-| -}
 type alias EllipticalArc2d =
     Types.EllipticalArc2d
 
@@ -356,7 +354,7 @@ startAngle (Types.EllipticalArc2d arc) =
 
 {-| The swept angle of an elliptical arc is the difference between values of the
 [ellipse parameter](https://en.wikipedia.org/wiki/Ellipse#Parametric_representation)
-at the start and end points of the arc.
+from the start point to the end point of the arc.
 
     EllipticalArc2d.sweptAngle exampleArc
     --> degrees 90
@@ -1051,7 +1049,7 @@ Note that this is not the same as evaulating at a parameter value of 0.5:
     --> Point2d.fromCoordinates ( 1.4142, 0.7071 )
 
 If the given arc length is less than zero or greater than the arc length of the
-arc, `Nothing` is returned.
+arc, returns `Nothing`.
 
 -}
 pointAlong : ArcLengthParameterized -> Float -> Maybe Point2d
@@ -1069,7 +1067,7 @@ length. To get the tangent direction at the midpoint of `exampleArc`:
     --> Just (Direction2d.fromAngle (degrees 159.7))
 
 If the given arc length is less than zero or greater than the arc length of the
-elliptical arc (or if the elliptical arc is degenerate), `Nothing` is returned.
+elliptical arc (or if the elliptical arc is degenerate), returns `Nothing`.
 
 -}
 tangentDirectionAlong : ArcLengthParameterized -> Float -> Maybe Direction2d
@@ -1096,7 +1094,7 @@ given arc length. To get the point and tangent direction at the midpoint of
     -->     )
 
 If the given arc length is less than zero or greater than the arc length of the
-spline (or if the spline is degenerate), `Nothing` is returned.
+spline (or if the spline is degenerate), returns `Nothing`.
 
 -}
 sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point2d, Direction2d )
