@@ -338,7 +338,8 @@ parameterization;
 
 is equivalent to
 
-    ArcLengthParameterization.parameterValueToArcLength 1
+    ArcLengthParameterization.parameterValueToArcLength
+        ParameterValue.one
         parameterization
 
 but is more efficient and returns a plain `Float` instead of a `Maybe Float`.
@@ -349,8 +350,7 @@ totalArcLength (ArcLengthParameterization tree) =
     lengthAtEnd tree
 
 
-{-| Convert a parameter value to the corresponding arc length. If the given
-parameter value is less than zero or greater than one, returns `Nothing`.
+{-| Convert a parameter value to the corresponding arc length.
 -}
 parameterValueToArcLength : ParameterValue -> ArcLengthParameterization -> Float
 parameterValueToArcLength parameterValue (ArcLengthParameterization tree) =
