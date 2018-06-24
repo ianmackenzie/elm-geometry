@@ -365,7 +365,7 @@ range { numSteps, includeStart, includeEnd } =
 
 {-| Convert a `ParameterValue` to a plain `Float` value between 0 and 1.
 
-    ParameterValue.value (ParameterValue.half)
+    ParameterValue.value ParameterValue.half
     --> 0.5
 
 -}
