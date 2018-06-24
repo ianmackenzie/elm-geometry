@@ -967,7 +967,7 @@ arcLengthParameterized { maxError } spline =
 {-| Find the total arc length of a spline:
 
     arcLength =
-        CubicSpline2d.arcLength parameterizedSpline
+        CubicSpline3d.arcLength parameterizedSpline
 
     arcLength
     --> 4.3303
