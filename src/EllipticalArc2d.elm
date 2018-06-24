@@ -1049,7 +1049,7 @@ Note that this is not the same as evaulating at a parameter value of 0.5:
     --> Point2d.fromCoordinates ( 1.4142, 0.7071 )
 
 If the given arc length is less than zero or greater than the arc length of the
-arc, `Nothing` is returned.
+arc, returns `Nothing`.
 
 -}
 pointAlong : ArcLengthParameterized -> Float -> Maybe Point2d
@@ -1067,7 +1067,7 @@ length. To get the tangent direction at the midpoint of `exampleArc`:
     --> Just (Direction2d.fromAngle (degrees 159.7))
 
 If the given arc length is less than zero or greater than the arc length of the
-elliptical arc (or if the elliptical arc is degenerate), `Nothing` is returned.
+elliptical arc (or if the elliptical arc is degenerate), returns `Nothing`.
 
 -}
 tangentDirectionAlong : ArcLengthParameterized -> Float -> Maybe Direction2d
@@ -1094,7 +1094,7 @@ given arc length. To get the point and tangent direction at the midpoint of
     -->     )
 
 If the given arc length is less than zero or greater than the arc length of the
-spline (or if the spline is degenerate), `Nothing` is returned.
+spline (or if the spline is degenerate), returns `Nothing`.
 
 -}
 sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point2d, Direction2d )
