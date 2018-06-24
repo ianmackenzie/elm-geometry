@@ -314,7 +314,7 @@ specifying:
   - whether to include the start value (0)
   - whether to include the end value (1)
 
-This is more general form of `steps`, `leading` and `trailing`; for example,
+This is a more general form of `steps`, `leading` and `trailing`; for example,
 
     ParameterValue.steps 10
 
