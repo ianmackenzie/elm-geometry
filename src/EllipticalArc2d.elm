@@ -505,7 +505,8 @@ nondegenerate arc =
 
 {-| Convert a nondegenerate elliptical arc back to a general `EllipticalArc2d`.
 
-    EllipticalArc2d.fromNondegenerate nondegenerateExampleArc
+    EllipticalArc2d.fromNondegenerate
+        nondegenerateExampleArc
     --> exampleArc
 
 -}
