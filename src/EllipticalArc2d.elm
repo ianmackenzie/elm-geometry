@@ -639,7 +639,8 @@ sample nondegenerateArc parameterValue =
 parameter values:
 
     nondegenerateExampleArc
-        |> EllipticalArc2d.samplesAt (ParameterValue.steps 2)
+        |> EllipticalArc2d.samplesAt
+            (ParameterValue.steps 2)
     --> [ ( Point2d.fromCoordinates ( 2, 0 )
     -->   , Direction2d.fromAngle (degrees 90)
     -->   )
