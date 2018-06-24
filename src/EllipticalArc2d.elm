@@ -134,8 +134,7 @@ import Point2d exposing (Point2d)
 import Vector2d exposing (Vector2d)
 
 
-{-| An elliptical arc in 2D.
--}
+{-| -}
 type alias EllipticalArc2d =
     Types.EllipticalArc2d
 
