@@ -130,9 +130,12 @@ type alias QuadraticSpline2d =
 
     exampleSpline =
         QuadraticSpline2d.with
-            { startPoint = Point2d.fromCoordinates ( 1, 1 )
-            , controlPoint = Point2d.fromCoordinates ( 3, 4 )
-            , endPoint = Point2d.fromCoordinates ( 5, 1 )
+            { startPoint =
+                Point2d.fromCoordinates ( 1, 1 )
+            , controlPoint =
+                Point2d.fromCoordinates ( 3, 4 )
+            , endPoint =
+                Point2d.fromCoordinates ( 5, 1 )
             }
 
 -}
@@ -562,9 +565,12 @@ versa.
 
     QuadraticSpline2d.reverse exampleSpline
     --> QuadraticSpline2d.with
-    -->     { startPoint = Point2d.fromCoordinates ( 5, 1 )
-    -->     , controlPoint = Point2d.fromCoordinates ( 3, 4 )
-    -->     , endPoint = Point2d.fromCoordinates ( 1, 1 )
+    -->     { startPoint =
+    -->         Point2d.fromCoordinates ( 5, 1 )
+    -->     , controlPoint =
+    -->         Point2d.fromCoordinates ( 3, 4 )
+    -->     , endPoint =
+    -->         Point2d.fromCoordinates ( 1, 1 )
     -->     }
 
 -}
@@ -582,9 +588,12 @@ reverse spline =
     examplePolyline
         |> QuadraticSpline2d.scaleAbout Point2d.origin 2
     --> QuadraticSpline2d.with
-    -->     { startPoint = Point2d.fromCoordinates ( 2, 2 )
-    -->     , controlPoint = Point2d.fromCoordinates ( 6, 8 )
-    -->     , endPoint = Point2d.fromCoordinates ( 10, 2 )
+    -->     { startPoint =
+    -->         Point2d.fromCoordinates ( 2, 2 )
+    -->     , controlPoint =
+    -->         Point2d.fromCoordinates ( 6, 8 )
+    -->     , endPoint =
+    -->         Point2d.fromCoordinates ( 10, 2 )
     -->     }
 
 -}
@@ -600,9 +609,12 @@ angle (in radians).
         |> QuadraticSpline2d.rotateAround Point2d.origin
             (degrees 90)
     --> QuadraticSpline2d.with
-    -->     { startPoint = Point2d.fromCoordinates ( -1, 1 )
-    -->     , controlPoint = Point2d.fromCoordinates ( -4, 3 )
-    -->     , endPoint = Point2d.fromCoordinates ( -1, 5 )
+    -->     { startPoint =
+    -->         Point2d.fromCoordinates ( -1, 1 )
+    -->     , controlPoint =
+    -->         Point2d.fromCoordinates ( -4, 3 )
+    -->     , endPoint =
+    -->         Point2d.fromCoordinates ( -1, 5 )
     -->     }
 
 -}
@@ -619,9 +631,12 @@ rotateAround point angle =
     exampleSpline
         |> QuadraticSpline2d.translateBy displacement
     --> QuadraticSpline2d.with
-    -->     { startPoint = Point2d.fromCoordinates ( 3, 4 )
-    -->     , controlPoint = Point2d.fromCoordinates ( 5, 7 )
-    -->     , endPoint = Point2d.fromCoordinates ( 7, 4 )
+    -->     { startPoint =
+    -->         Point2d.fromCoordinates ( 3, 4 )
+    -->     , controlPoint =
+    -->         Point2d.fromCoordinates ( 5, 7 )
+    -->     , endPoint =
+    -->         Point2d.fromCoordinates ( 7, 4 )
     -->     )
 
 -}
@@ -649,9 +664,12 @@ translateIn direction distance spline =
 
     QuadraticSpline2d.mirrorAcross Axis2d.x exampleSpline
     --> QuadraticSpline2d.with
-    -->     { startPoint = Point2d.fromCoordinates ( 1, -1 )
-    -->     , controlPoint = Point2d.fromCoordinates ( 3, -4 )
-    -->     , endPoint = Point2d.fromCoordinates ( 5, -1 )
+    -->     { startPoint =
+    -->         Point2d.fromCoordinates ( 1, -1 )
+    -->     , controlPoint =
+    -->         Point2d.fromCoordinates ( 3, -4 )
+    -->     , endPoint =
+    -->         Point2d.fromCoordinates ( 5, -1 )
     -->     }
 
 -}
@@ -668,9 +686,12 @@ local coordinates relative to a given reference frame.
 
     QuadraticSpline2d.relativeTo localFrame exampleSpline
     --> QuadraticSpline2d.with
-    -->     { startPoint = Point2d.fromCoordinates ( 0, -1 )
-    -->     , controlPoint = Point2d.fromCoordinates ( 2, 2 )
-    -->     , endPoint = Point2d.fromCoordinates ( 4, -1 )
+    -->     { startPoint =
+    -->         Point2d.fromCoordinates ( 0, -1 )
+    -->     , controlPoint =
+    -->         Point2d.fromCoordinates ( 2, 2 )
+    -->     , endPoint =
+    -->         Point2d.fromCoordinates ( 4, -1 )
     -->     }
 
 -}
@@ -687,9 +708,12 @@ given reference frame, and return that spline expressed in global coordinates.
 
     QuadraticSpline2d.placeIn localFrame exampleSpline
     --> QuadraticSpline2d.with
-    -->     { startPoint = Point2d.fromCoordinates ( 2, 3 )
-    -->     , controlPoint = Point2d.fromCoordinates ( 4, 6 )
-    -->     , endPoint = Point2d.fromCoordinates ( 6, 3 )
+    -->     { startPoint =
+    -->         Point2d.fromCoordinates ( 2, 3 )
+    -->     , controlPoint =
+    -->         Point2d.fromCoordinates ( 4, 6 )
+    -->     , endPoint =
+    -->         Point2d.fromCoordinates ( 6, 3 )
     -->     }
 
 -}
@@ -711,14 +735,20 @@ mapControlPoints function spline =
 
     QuadraticSpline2d.bisect exampleSpline
     --> ( QuadraticSpline2d.with
-    -->     { startPoint = Point2d.fromCoordinates ( 1, 1 )
-    -->     , controlPoint = Point2d.fromCoordinates ( 2, 2.5 )
-    -->     , endPoint = Point2d.fromCoordinates ( 3, 2.5 )
+    -->     { startPoint =
+    -->         Point2d.fromCoordinates ( 1, 1 )
+    -->     , controlPoint =
+    -->         Point2d.fromCoordinates ( 2, 2.5 )
+    -->     , endPoint =
+    -->         Point2d.fromCoordinates ( 3, 2.5 )
     -->     }
     --> , QuadraticSpline2d.with
-    -->     { startPoint = Point2d.fromCoordinates ( 3, 2.5 )
-    -->     , controlPoint = Point2d.fromCoordinates ( 4, 2.5 )
-    -->     , endPoint = Point2d.fromCoordinates ( 5, 1 )
+    -->     { startPoint =
+    -->         Point2d.fromCoordinates ( 3, 2.5 )
+    -->     , controlPoint =
+    -->         Point2d.fromCoordinates ( 4, 2.5 )
+    -->     , endPoint =
+    -->         Point2d.fromCoordinates ( 5, 1 )
     -->     }
     --> )
 
@@ -738,14 +768,20 @@ splines.
 
     QuadraticSpline2d.splitAt parameterValue exampleSpline
     --> ( QuadraticSpline2d.with
-    -->     { startPoint = Point2d.fromCoordinates ( 1, 1 )
-    -->     , controlPoint = Point2d.fromCoordinates ( 2.5, 3.25 )
-    -->     , endPoint = Point2d.fromCoordinates ( 4, 2.125 )
+    -->     { startPoint =
+    -->         Point2d.fromCoordinates ( 1, 1 )
+    -->     , controlPoint =
+    -->         Point2d.fromCoordinates ( 2.5, 3.25 )
+    -->     , endPoint =
+    -->         Point2d.fromCoordinates ( 4, 2.125 )
     -->     }
     --> , QuadraticSpline2d.with
-    -->     { startPoint = Point2d.fromCoordinates ( 4, 2.125 )
-    -->     , controlPoint = Point2d.fromCoordinates ( 4.5, 1.75 )
-    -->     , endPoint = Point2d.fromCoordinates ( 5, 1 )
+    -->     { startPoint =
+    -->         Point2d.fromCoordinates ( 4, 2.125 )
+    -->     , controlPoint =
+    -->         Point2d.fromCoordinates ( 4.5, 1.75 )
+    -->     , endPoint =
+    -->         Point2d.fromCoordinates ( 5, 1 )
     -->     }
     --> )
 

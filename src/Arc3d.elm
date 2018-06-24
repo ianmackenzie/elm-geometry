@@ -320,9 +320,7 @@ endPoint arc =
     pointOn arc ParameterValue.one
 
 
-{-| Get the point along an arc at a given parameter value. A parameter value of
-0 corresponds to the start point of the arc and a value of 1 corresponds to the
-end point.
+{-| Get the point along an arc at a given parameter value:
 
     Arc3d.pointOn exampleArc ParameterValue.half
     --> Point3d.fromCoordinates ( 0, 1.4142, 0 )

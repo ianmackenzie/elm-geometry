@@ -51,7 +51,8 @@ functionality for:
 
 {-| A parameter value between 0 and 1. Curve types such as [`Arc2d`](Arc2d) and
 [`CubicSpline3d`](CubicSpline3d) use `ParameterValue` arguments for curve
-evaluation functions such as `Arc2d.pointOn` or `CubicSpline3d.samplesAt`.
+evaluation functions such as [`Arc2d.pointOn`](Arc2d#pointOn) or
+[`CubicSpline3d.samplesAt`](CubicSpline3d#samplesAt).
 -}
 type ParameterValue
     = ParameterValue Float
@@ -313,7 +314,7 @@ specifying:
   - whether to include the start value (0)
   - whether to include the end value (1)
 
-This is more general form of `steps`, `leading` and `trailing`; for example,
+This is a more general form of `steps`, `leading` and `trailing`; for example,
 
     ParameterValue.steps 10
 
@@ -364,7 +365,7 @@ range { numSteps, includeStart, includeEnd } =
 
 {-| Convert a `ParameterValue` to a plain `Float` value between 0 and 1.
 
-    ParameterValue.value (ParameterValue.half)
+    ParameterValue.value ParameterValue.half
     --> 0.5
 
 -}

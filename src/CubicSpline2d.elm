@@ -843,6 +843,8 @@ mapControlPoints function spline =
     -->     }
     --> )
 
+Equivalent to `CubicSpline2d.splitAt ParameterValue.half`.
+
 -}
 bisect : CubicSpline2d -> ( CubicSpline2d, CubicSpline2d )
 bisect =
@@ -856,18 +858,26 @@ splines.
         ParameterValue.clamped 0.75
 
     CubicSpline2d.splitAt parameterValue exampleSpline
-    --> ( CubicSpline2d.fromControlPoints
-    -->     ( Point2d.fromCoordinates ( 1, 1 )
-    -->     , Point2d.fromCoordinates ( 2.5, 3.25 )
-    -->     , Point2d.fromCoordinates ( 4, 2.125 )
-    -->     , Point2d.fromCoordinates ( 5.5, 2.6875 )
-    -->     )
-    --> , CubicSpline2d.fromControlPoints
-    -->     ( Point2d.fromCoordinates ( 5.5, 2.6875 )
-    -->     , Point2d.fromCoordinates ( 6, 2.875 )
-    -->     , Point2d.fromCoordinates ( 6.5, 3.25 )
-    -->     , Point2d.fromCoordinates ( 7, 4 )
-    -->     )
+    --> ( CubicSpline2d.with
+    -->     { startPoint =
+    -->         Point2d.fromCoordinates ( 1, 1 )
+    -->     , startControlPoint =
+    -->         Point2d.fromCoordinates ( 2.5, 3.25 )
+    -->     , endControlPoint =
+    -->         Point2d.fromCoordinates ( 4, 2.125 )
+    -->     , endPoint =
+    -->         Point2d.fromCoordinates ( 5.5, 2.6875 )
+    -->     }
+    --> , CubicSpline2d.with
+    -->     { startPoint =
+    -->         Point2d.fromCoordinates ( 5.5, 2.6875 )
+    -->     , startControlPoint =
+    -->         Point2d.fromCoordinates ( 6, 2.875 )
+    -->     , endControlPoint =
+    -->         Point2d.fromCoordinates ( 6.5, 3.25 )
+    -->     , endPoint =
+    -->         Point2d.fromCoordinates ( 7, 4 )
+    -->     }
     --> )
 
 -}
