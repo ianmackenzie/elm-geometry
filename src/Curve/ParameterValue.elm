@@ -51,7 +51,8 @@ functionality for:
 
 {-| A parameter value between 0 and 1. Curve types such as [`Arc2d`](Arc2d) and
 [`CubicSpline3d`](CubicSpline3d) use `ParameterValue` arguments for curve
-evaluation functions such as `Arc2d.pointOn` or `CubicSpline3d.samplesAt`.
+evaluation functions such as [`Arc2d.pointOn`](Arc2d#pointOn) or
+[`CubicSpline3d.samplesAt`](CubicSpline3d#samplesAt).
 -}
 type ParameterValue
     = ParameterValue Float
