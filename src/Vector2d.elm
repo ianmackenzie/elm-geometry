@@ -59,7 +59,7 @@ vector-related functionality, such as
   - Converting vectors between different coordinate systems
 
 Note that unlike in many other geometry packages where vectors are used as a
-general-purpose data type, OpenSolid has separate data types for vectors,
+general-purpose data type, `elm-geometry` has separate data types for vectors,
 directions and points. In most code it is actually more common to use `Point2d`
 and `Direction2d` than `Vector2d`, and much code can avoid working directly with
 `Vector2d` values at all!
@@ -73,8 +73,7 @@ and `Direction2d` than `Vector2d`, and much code can avoid working directly with
 
 Although there are no predefined constants for the vectors with components
 (1,&nbsp;0) and (0,&nbsp;1), in most cases you will actually want their
-`Direction2d` versions [`Direction2d.x`](OpenSolid-Direction2d#x) and
-[`Direction2d.y`](OpenSolid-Direction2d#y).
+`Direction2d` versions [`Direction2d.x`](Direction2d#x) and [`Direction2d.y`](Direction2d#y).
 
 
 # Constructors

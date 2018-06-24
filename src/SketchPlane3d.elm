@@ -66,10 +66,9 @@ calculations in 2D, then convert the result back to 3D.
 
 Many 3D data types have `projectInto` functions that return the corresponding 2D
 data type, and `on` functions for converting back to 3D. For example,
-[`Triangle3d.projectInto`](OpenSolid-Triangle3d#projectInto) returns a
-`Triangle2d` and [`Triangle3d.on`](OpenSolid-Triangle3d#on) returns a
-`Triangle3d`. These pairs of functions are almost, but not quite, inverses of
-each other:
+[`Triangle3d.projectInto`](Triangle3d#projectInto) returns a `Triangle2d` and
+[`Triangle3d.on`](Triangle3d#on) returns a `Triangle3d`. These pairs of
+functions are almost, but not quite, inverses of each other:
 
     triangle2d
         |> Triangle3d.on sketchPlane

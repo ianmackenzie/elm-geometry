@@ -285,10 +285,10 @@ In this case **you must be careful to ensure that the X, Y and Z directions are
 perpendicular**. (You will likely also want to make sure that they form a
 [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 coordinate system.) To construct sets of mutually perpendicular directions,
-[`Direction3d.orthonormalize`](OpenSolid-Direction3d#orthonormalize),
-[`Direction3d.orthogonalize`](OpenSolid-Direction3d#orthogonalize), or
-[`Direction3d.perpendicularBasis`](OpenSolid-Direction3d#perpendicularBasis) may
-be useful.
+[`Direction3d.orthonormalize`](Direction3d#orthonormalize),
+[`Direction3d.orthogonalize`](Direction3d#orthogonalize), or
+[`Direction3d.perpendicularBasis`](Direction3d#perpendicularBasis) may be
+useful.
 
 -}
 unsafe : { originPoint : Point3d, xDirection : Direction3d, yDirection : Direction3d, zDirection : Direction3d } -> Frame3d
