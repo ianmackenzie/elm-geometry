@@ -1,6 +1,7 @@
 module QuadraticSpline2d
     exposing
         ( ArcLengthParameterized
+        , Nondegenerate
         , QuadraticSpline2d
         , arcLength
         , arcLengthParameterization
@@ -12,7 +13,10 @@ module QuadraticSpline2d
         , endPoint
         , firstDerivative
         , firstDerivativesAt
+        , fromArcLengthParameterized
+        , fromNondegenerate
         , mirrorAcross
+        , nondegenerate
         , placeIn
         , pointAlong
         , pointOn
@@ -20,17 +24,19 @@ module QuadraticSpline2d
         , relativeTo
         , reverse
         , rotateAround
+        , sample
         , sampleAlong
-        , sampler
         , samplesAt
         , scaleAbout
         , secondDerivative
         , splitAt
         , startDerivative
         , startPoint
+        , tangentDirection
+        , tangentDirectionAlong
+        , tangentDirectionsAt
         , translateBy
         , translateIn
-        , underlyingSpline
         , with
         )
 
@@ -60,7 +66,9 @@ contains functionality for
 
 # Evaluation
 
-@docs pointOn, pointsAt, sampler, samplesAt
+@docs pointOn, pointsAt
+@docs Nondegenerate, nondegenerate, fromNondegenerate
+@docs tangentDirection, tangentDirectionsAt, sample, samplesAt
 
 
 # Transformations
@@ -80,7 +88,7 @@ contains functionality for
 
 # Arc length parameterization
 
-@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, sampleAlong
+@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentDirectionAlong, sampleAlong
 
 
 ## Low level
@@ -90,7 +98,7 @@ An `ArcLengthParameterized` value is a combination of an
 underlying `QuadraticSpline2d`. If you need to do something fancy, you can
 extract these two values separately.
 
-@docs arcLengthParameterization, underlyingSpline
+@docs arcLengthParameterization, fromArcLengthParameterized
 
 
 # Differentiation
@@ -264,16 +272,15 @@ pointOn spline parameterValue =
     Point2d.interpolateFrom q1 q2 t
 
 
-{-| Convenient shorthand for evaluating multiple points;
+{-| Get points along a spline at a given set of parameter values:
 
-    QuadraticSpline2d.pointsOn spline parameterValues
-
-is equivalent to
-
-    List.map (QuadraticSpline2d.pointOn spline) parameterValues
-
-To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
-module.
+    exampleSpline
+        |> QuadraticSpline2d.pointsAt
+            (ParameterValue.steps 2)
+    --> [ Point2d.fromCoordinates ( 1, 1 )
+    --> , Point2d.fromCoordinates ( 3, 2.5 )
+    --> , Point2d.fromCoordinates ( 5, 1 )
+    --> ]
 
 -}
 pointsAt : List ParameterValue -> QuadraticSpline2d -> List Point2d
@@ -322,16 +329,15 @@ firstDerivative spline parameterValue =
     Vector2d.interpolateFrom v1 v2 t |> Vector2d.scaleBy 2
 
 
-{-| Convenient shorthand for evaluating multiple derivatives;
+{-| Evaluate the first derivative of a spline at a range of parameter values:
 
-    QuadraticSpline2d.derivatives spline parameterValues
-
-is equivalent to
-
-    List.map (QuadraticSpline2d.derivative spline) parameterValues
-
-To generate evenly-spaced parameter values, check out the [`Parameter`](Geometry-Parameter)
-module.
+    exampleSpline
+        |> QuadraticSpline2d.firstDerivativesAt
+            (ParameterValue.steps 2)
+    --> [ Vector2d.fromComponents ( 4, 6 )
+    --> , Vector2d.fromComponents ( 4, 0 )
+    --> , Vector2d.fromComponents ( 4, -6 )
+    --> ]
 
 -}
 firstDerivativesAt : List ParameterValue -> QuadraticSpline2d -> List Vector2d
@@ -339,18 +345,6 @@ firstDerivativesAt parameterValues spline =
     List.map (firstDerivative spline) parameterValues
 
 
-{-| Find the magnitude of the derivative to a spline at a particular parameter
-value;
-
-    QuadraticSpline2d.derivativeMagnitude spline t
-
-is equivalent to
-
-    Vector2d.length (QuadraticSpline2d.derivative spline t)
-
-but more efficient since it avoids any intermediate `Vector2d` allocation.
-
--}
 derivativeMagnitude : QuadraticSpline2d -> Float -> Float
 derivativeMagnitude spline =
     let
@@ -392,108 +386,175 @@ derivativeMagnitude spline =
         2 * sqrt (x13 * x13 + y13 * y13)
 
 
-{-| Sample a spline at a given parameter value to get both the position and
-derivative vector at that parameter value;
+{-| If a curve has zero length (consists of just a single point), then we say
+that it is 'degenerate'. Some operations such as computing tangent directions
+are not defined on degenerate curves.
 
-    QuadraticSpline2d.sample spline t
-
-is equivalent to
-
-    ( QuadraticSpline2d.pointOn spline t
-    , QuadraticSpline2d.derivative spline t
-    )
-
-but is more efficient.
+A `Nondegenerate` value represents a spline that is definitely not degenerate.
+It is used as input to functions such as `QuadraticSpline2d.tangentDirection`
+and can be constructed using `QuadraticSpline2d.nondegenerate`.
 
 -}
-sampler : QuadraticSpline2d -> Maybe (ParameterValue -> ( Point2d, Direction2d ))
-sampler spline =
+type Nondegenerate
+    = NonZeroSecondDerivative QuadraticSpline2d Direction2d
+    | NonZeroFirstDerivative QuadraticSpline2d Direction2d
+
+
+{-| Attempt to construct a nondegenerate spline from a general
+`QuadraticSpline2d`. Returns `Nothing` if the spline is in fact degenerate.
+
+    QuadraticSpline2d.nondegenerate exampleSpline
+    --> Just nondegenerateExampleSpline
+
+-}
+nondegenerate : QuadraticSpline2d -> Maybe Nondegenerate
+nondegenerate spline =
     case Vector2d.direction (secondDerivative spline) of
-        Just secondDerivativeDirection ->
-            Just <|
-                nonZeroSecondDerivativeSampler spline
-                    secondDerivativeDirection
+        Just direction ->
+            Just (NonZeroSecondDerivative spline direction)
 
         Nothing ->
             let
-                -- Second and third derivatives are zero, so first
-                -- derivative is constant - evaluate it at an arbitrary
-                -- point to get its value
+                -- Second derivative is zero, so first derivative is constant -
+                -- evaluate it at an arbitrary point to get its value
                 firstDerivativeVector =
                     firstDerivative spline ParameterValue.zero
             in
             case Vector2d.direction firstDerivativeVector of
-                Just firstDerivativeDirection ->
-                    Just <|
-                        nonZeroFirstDerivativeSampler spline
-                            firstDerivativeDirection
+                Just direction ->
+                    Just (NonZeroFirstDerivative spline direction)
 
                 Nothing ->
                     Nothing
 
 
-nonZeroFirstDerivativeSampler : QuadraticSpline2d -> Direction2d -> ParameterValue -> ( Point2d, Direction2d )
-nonZeroFirstDerivativeSampler spline firstDerivativeDirection =
-    -- Tangent direction is always equal to the (constant) first derivative
-    -- direction
-    \parameterValue ->
-        ( pointOn spline parameterValue
-        , firstDerivativeDirection
-        )
+{-| Convert a nondegenerate spline back to a general `QuadraticSpline2d`.
 
-
-nonZeroSecondDerivativeSampler : QuadraticSpline2d -> Direction2d -> ParameterValue -> ( Point2d, Direction2d )
-nonZeroSecondDerivativeSampler spline secondDerivativeDirection =
-    \parameterValue ->
-        let
-            point =
-                pointOn spline parameterValue
-
-            firstDerivativeVector =
-                firstDerivative spline parameterValue
-        in
-        case Vector2d.direction firstDerivativeVector of
-            Just firstDerivativeDirection ->
-                -- First derivative is non-zero, so use its direction as the
-                -- tangent direction
-                ( point, firstDerivativeDirection )
-
-            Nothing ->
-                -- Zero first derivative and non-zero second derivative mean we
-                -- have reached a reversal point, where the tangent direction
-                -- just afterwards is equal to the second derivative direction
-                -- and the tangent direction just before is equal to the flipped
-                -- second derivative direction. If we happen to be right at the
-                -- end of the spline, choose the tangent direction just before
-                -- the end (instead of one that is off the spline!), otherwise
-                -- choose the tangent direction just after the point (necessary
-                -- for t = 0, arbitrary for all other points).
-                if parameterValue == ParameterValue.one then
-                    ( point, Direction2d.flip secondDerivativeDirection )
-                else
-                    ( point, secondDerivativeDirection )
-
-
-{-| Convenient shorthand for evaluating multiple samples;
-
-    QuadraticSpline2d.samples spline parameterValues
-
-is equivalent to
-
-    List.map sampler parameterValues
-
-if `QuadraticSpline2d.sampler spline` returns `Just sampler`, and and empty
-list otherwise.
+    QuadraticSpline2d.fromNondegenerate
+        nondegenerateExampleSpline
+    --> exampleSpline
 
 -}
-samplesAt : List ParameterValue -> QuadraticSpline2d -> List ( Point2d, Direction2d )
-samplesAt parameterValues spline =
-    case sampler spline of
-        Just sampler_ ->
-            List.map sampler_ parameterValues
+fromNondegenerate : Nondegenerate -> QuadraticSpline2d
+fromNondegenerate nondegenerateSpline =
+    case nondegenerateSpline of
+        NonZeroSecondDerivative spline _ ->
+            spline
 
-        Nothing ->
-            []
+        NonZeroFirstDerivative spline _ ->
+            spline
+
+
+{-| Get the tangent direction to a nondegenerate spline at a given parameter
+value:
+
+    QuadraticSpline2d.tangentDirection
+        nondegenerateExampleSpline
+        ParameterValue.zero
+    --> Direction2d.fromAngle (degrees 56.31)
+
+    QuadraticSpline2d.tangentDirection
+        nondegenerateExampleSpline
+        ParameterValue.half
+    --> Direction2d.x
+
+    QuadraticSpline2d.tangentDirection
+        nondegenerateExampleSpline
+        ParameterValue.one
+    --> Direction2d.fromAngle (degrees -56.31)
+
+-}
+tangentDirection : Nondegenerate -> ParameterValue -> Direction2d
+tangentDirection nondegenerateSpline parameterValue =
+    case nondegenerateSpline of
+        NonZeroSecondDerivative spline secondDerivativeDirection ->
+            let
+                firstDerivativeVector =
+                    firstDerivative spline parameterValue
+            in
+            case Vector2d.direction firstDerivativeVector of
+                Just firstDerivativeDirection ->
+                    -- First derivative is non-zero, so use its direction as the
+                    -- tangent direction
+                    firstDerivativeDirection
+
+                Nothing ->
+                    -- Zero first derivative and non-zero second derivative mean
+                    -- we have reached a reversal point, where the tangent
+                    -- direction just afterwards is equal to the second
+                    -- derivative direction and the tangent direction just
+                    -- before is equal to the flipped second derivative
+                    -- direction. If we happen to be right at the end of the
+                    -- spline, choose the tangent direction just before the end
+                    -- (instead of one that is off the spline!), otherwise
+                    -- choose the tangent direction just after the point
+                    -- (necessary for t = 0, arbitrary for all other points).
+                    if parameterValue == ParameterValue.one then
+                        Direction2d.flip secondDerivativeDirection
+                    else
+                        secondDerivativeDirection
+
+        NonZeroFirstDerivative spline firstDerivativeDirection ->
+            -- Tangent direction is always equal to the (constant) first
+            -- derivative direction
+            firstDerivativeDirection
+
+
+{-| Get tangent directions to a nondegenerate spline at a given set of parameter
+values:
+
+    nondegenerateExampleSpline
+        |> QuadraticSpline2d.tangentDirectionsAt
+            (ParameterValue.steps 2)
+    --> [ Direction2d.fromAngle (degrees 56.31)
+    --> , Direction2d.x
+    --> , Direction2d.fromAngle (degrees -56.31)
+    --> ]
+
+-}
+tangentDirectionsAt : List ParameterValue -> Nondegenerate -> List Direction2d
+tangentDirectionsAt parameterValues nondegenerateSpline =
+    List.map (tangentDirection nondegenerateSpline) parameterValues
+
+
+{-| Get both the point and tangent direction of a nondegenerate spline at a
+given parameter value:
+
+    QuadraticSpline2d.sample nondegenerateExampleSpline
+        ParameterValue.half
+    --> ( Point2d.fromCoordinates ( 3, 2.5 )
+    --> , Direction2d.x
+    --> )
+
+-}
+sample : Nondegenerate -> ParameterValue -> ( Point2d, Direction2d )
+sample nondegenerateSpline parameterValue =
+    ( pointOn (fromNondegenerate nondegenerateSpline) parameterValue
+    , tangentDirection nondegenerateSpline parameterValue
+    )
+
+
+{-| Get points and tangent directions of a nondegenerate spline at a given set
+of parameter values:
+
+    nondegenerateExampleSpline
+        |> QuadraticSpline2d.samplesAt
+            (ParameterValue.steps 2)
+    --> [ ( Point2d.fromCoordinates ( 1, 1 )
+    -->   , Direction2d.fromAngle (degrees 56.31)
+    -->   )
+    --> , ( Point2d.fromCoordinates ( 3, 2.5 )
+    -->   , Direction2d.x
+    -->   )
+    --> , ( Point2d.fromCoordinates ( 5, 1 )
+    -->   , Direction2d.fromAngle (degrees -56.31)
+    -->   )
+    --> ]
+
+-}
+samplesAt : List ParameterValue -> Nondegenerate -> List ( Point2d, Direction2d )
+samplesAt parameterValues nondegenerateSpline =
+    List.map (sample nondegenerateSpline) parameterValues
 
 
 {-| Reverse a spline so that the start point becomes the end point, and vice
@@ -661,6 +722,8 @@ mapControlPoints function spline =
     -->     }
     --> )
 
+Equivalent to `QuadraticSpline2d.splitAt ParameterValue.half`.
+
 -}
 bisect : QuadraticSpline2d -> ( QuadraticSpline2d, QuadraticSpline2d )
 bisect =
@@ -722,7 +785,7 @@ type ArcLengthParameterized
     = ArcLengthParameterized
         { underlyingSpline : QuadraticSpline2d
         , parameterization : ArcLengthParameterization
-        , sampler : Maybe (ParameterValue -> ( Point2d, Direction2d ))
+        , nondegenerateSpline : Maybe Nondegenerate
         }
 
 
@@ -751,7 +814,7 @@ arcLengthParameterized { maxError } spline =
     ArcLengthParameterized
         { underlyingSpline = spline
         , parameterization = parameterization
-        , sampler = sampler spline
+        , nondegenerateSpline = nondegenerate spline
         }
 
 
@@ -796,7 +859,8 @@ pointAlong (ArcLengthParameterized parameterized) distance =
 {-| Try to get the tangent direction along a spline at a given arc length. To
 get the tangent direction a quarter of the way along `exampleSpline`:
 
-    QuadraticSpline2d.tangentAlong parameterizedSpline
+    QuadraticSpline2d.tangentDirectionAlong
+        parameterizedSpline
         (arcLength / 4)
     --> Just (Direction2d.fromAngle (degrees 41.145))
 
@@ -805,13 +869,40 @@ spline (or if the derivative of the spline happens to be exactly zero at the
 given arc length), `Nothing` is returned.
 
 -}
-sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point2d, Direction2d )
-sampleAlong (ArcLengthParameterized parameterized) distance =
-    case parameterized.sampler of
-        Just toSample ->
+tangentDirectionAlong : ArcLengthParameterized -> Float -> Maybe Direction2d
+tangentDirectionAlong (ArcLengthParameterized parameterized) distance =
+    case parameterized.nondegenerateSpline of
+        Just nondegenerateSpline ->
             parameterized.parameterization
                 |> ArcLengthParameterization.arcLengthToParameterValue distance
-                |> Maybe.map toSample
+                |> Maybe.map (tangentDirection nondegenerateSpline)
+
+        Nothing ->
+            Nothing
+
+
+{-| Try to get the point and tangent direction along a spline at a given arc
+length. To get the point and tangent direction a quarter of the way along
+`exampleSpline`:
+
+    QuadraticSpline2d.sampleAlong parameterizedSpline
+        (0.25 * arcLength)
+    --> Just
+    -->     ( Point2d.fromCoordinates ( 1.8350, 1.9911 )
+    -->     , Direction2d.fromAngle (degrees 41.145)
+    -->     )
+
+If the given arc length is less than zero or greater than the arc length of the
+spline (or if the spline is degenerate), `Nothing` is returned.
+
+-}
+sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point2d, Direction2d )
+sampleAlong (ArcLengthParameterized parameterized) distance =
+    case parameterized.nondegenerateSpline of
+        Just nondegenerateSpline ->
+            parameterized.parameterization
+                |> ArcLengthParameterization.arcLengthToParameterValue distance
+                |> Maybe.map (sample nondegenerateSpline)
 
         Nothing ->
             Nothing
@@ -826,8 +917,8 @@ arcLengthParameterization (ArcLengthParameterized parameterized) =
 {-| Get the original `QuadraticSpline2d` from which an `ArcLengthParameterized`
 value was constructed.
 -}
-underlyingSpline : ArcLengthParameterized -> QuadraticSpline2d
-underlyingSpline (ArcLengthParameterized parameterized) =
+fromArcLengthParameterized : ArcLengthParameterized -> QuadraticSpline2d
+fromArcLengthParameterized (ArcLengthParameterized parameterized) =
     parameterized.underlyingSpline
 
 

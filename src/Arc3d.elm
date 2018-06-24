@@ -1,13 +1,16 @@
 module Arc3d
     exposing
         ( Arc3d
+        , Nondegenerate
         , axialDirection
         , axis
         , centerPoint
         , endPoint
         , firstDerivative
         , firstDerivativesAt
+        , fromNondegenerate
         , mirrorAcross
+        , nondegenerate
         , on
         , placeIn
         , pointOn
@@ -17,12 +20,14 @@ module Arc3d
         , relativeTo
         , reverse
         , rotateAround
-        , sampler
+        , sample
         , samplesAt
         , scaleAbout
         , startPoint
         , sweptAngle
         , sweptAround
+        , tangentDirection
+        , tangentDirectionsAt
         , throughPoints
         , toPolyline
         , translateBy
@@ -54,7 +59,9 @@ start point to the arc's end point). This module includes functionality for
 
 # Evaluation
 
-@docs pointOn, pointsAt, sampler, samplesAt
+@docs pointOn, pointsAt
+@docs Nondegenerate, nondegenerate, fromNondegenerate
+@docs tangentDirection, tangentDirectionsAt, sample, samplesAt
 
 
 # Linear approximation
@@ -322,7 +329,7 @@ end point.
 
 -}
 pointOn : Arc3d -> ParameterValue -> Point3d
-pointOn (Types.Arc3d arc) =
+pointOn (Types.Arc3d arc) parameterValue =
     let
         ( x0, y0, z0 ) =
             Point3d.coordinates arc.startPoint
@@ -338,48 +345,42 @@ pointOn (Types.Arc3d arc) =
 
         arcSweptAngle =
             arc.sweptAngle
+
+        t =
+            ParameterValue.value parameterValue
     in
     if arcSweptAngle == 0.0 then
-        \parameterValue ->
-            let
-                t =
-                    ParameterValue.value parameterValue
-
-                distance =
-                    t * arcSignedLength
-            in
-            Point3d.fromCoordinates
-                ( x0 + distance * x1
-                , y0 + distance * y1
-                , z0 + distance * z1
-                )
+        let
+            distance =
+                t * arcSignedLength
+        in
+        Point3d.fromCoordinates
+            ( x0 + distance * x1
+            , y0 + distance * y1
+            , z0 + distance * z1
+            )
     else
         let
+            theta =
+                t * arcSweptAngle
+
             arcRadius =
                 arcSignedLength / arcSweptAngle
+
+            x =
+                arcRadius * sin theta
+
+            y =
+                if abs theta < pi / 2 then
+                    x * tan (theta / 2)
+                else
+                    arcRadius * (1 - cos theta)
         in
-        \parameterValue ->
-            let
-                t =
-                    ParameterValue.value parameterValue
-
-                theta =
-                    t * arcSweptAngle
-
-                x =
-                    arcRadius * sin theta
-
-                y =
-                    if abs theta < pi / 2 then
-                        x * tan (theta / 2)
-                    else
-                        arcRadius * (1 - cos theta)
-            in
-            Point3d.fromCoordinates
-                ( x0 + x * x1 + y * x2
-                , y0 + x * y1 + y * y2
-                , z0 + x * z1 + y * z2
-                )
+        Point3d.fromCoordinates
+            ( x0 + x * x1 + y * x2
+            , y0 + x * y1 + y * y2
+            , z0 + x * z1 + y * z2
+            )
 
 
 {-| Get points along an arc at a given set of parameter values.
@@ -457,41 +458,28 @@ firstDerivativesAt parameterValues arc =
     List.map (firstDerivative arc) parameterValues
 
 
-{-| Attempt to construct a function for evaluating points and tangent directions
-along an arc:
+{-| If a curve has zero length (consists of just a single point), then we say
+that it is 'degenerate'. Some operations such as computing tangent directions
+are not defined on degenerate curves.
 
-    Arc3d.sampler exampleArc
-    --> Just <function>
-
-If `Just` a function is returned, the function can then be used to evaluate
-(point, tangent direction) pairs along the arc. For example, if the return value
-above was <code>Just&nbsp;exampleArcSampler</code>, then:
-
-    exampleArcSampler ParameterValue.zero
-    --> ( Point3d.fromCoordinates ( 1, 1, 0 )
-    --> , Direction3d.fromAzimuthAndElevation
-    -->     (degrees 135)
-    -->     (degrees 0)
-    --> )
-
-    exampleArcSampler ParameterValue.half
-    --> ( Point3d.fromCoordinates ( 0, 1.4142, 0 )
-    --> , Direction3d.negativeX
-    --> )
-
-    exampleArcSampler ParameterValue.one
-    --> ( Point3d.fromCoordinates ( -1, 1, 0 )
-    --> , Direction3d.fromAzimuthAndElevation
-    -->     (degrees 225)
-    -->     (degrees 0)
-    --> )
-
-If the arc is degenerate (start point and end point are equal), returns
-`Nothing`.
+A `Nondegenerate` value represents an arc that is definitely not degenerate. It
+is used as input to functions such as `Arc3d.tangentDirection` and can be
+constructed using `Arc3d.nondegenerate`.
 
 -}
-sampler : Arc3d -> Maybe (ParameterValue -> ( Point3d, Direction3d ))
-sampler arc =
+type Nondegenerate
+    = Nondegenerate Arc3d
+
+
+{-| Attempt to construct a nondegenerate arc from a general `Arc3d`. Returns
+`Nothing` if the arc is in fact degenerate.
+
+    Arc3d.nondegenerate exampleArc
+    --> Just nondegenerateExampleArc
+
+-}
+nondegenerate : Arc3d -> Maybe Nondegenerate
+nondegenerate arc =
     let
         (Types.Arc3d properties) =
             arc
@@ -499,51 +487,130 @@ sampler arc =
     if properties.signedLength == 0 then
         Nothing
     else
-        let
-            pointOnArc =
-                pointOn arc
-
-            ( x1, y1, z1 ) =
-                Direction3d.components properties.xDirection
-
-            ( x2, y2, z2 ) =
-                Direction3d.components properties.yDirection
-
-            arcSweptAngle =
-                properties.sweptAngle
-        in
-        Just <|
-            \parameterValue ->
-                let
-                    point =
-                        pointOnArc parameterValue
-
-                    t =
-                        ParameterValue.value parameterValue
-
-                    angle =
-                        t * arcSweptAngle
-
-                    cosAngle =
-                        cos angle
-
-                    sinAngle =
-                        sin angle
-
-                    tangentDirection =
-                        Direction3d.unsafe
-                            ( cosAngle * x1 + sinAngle * x2
-                            , cosAngle * y1 + sinAngle * y2
-                            , cosAngle * z1 + sinAngle * z2
-                            )
-                in
-                ( point, tangentDirection )
+        Just (Nondegenerate arc)
 
 
-{-| Attempt to find points and tangent directions along an arc at many parameter
+{-| Convert a nondegenerate arc back to a general `Arc3d`.
+
+    Arc3d.fromNondegenerate nondegenerateExampleArc
+    --> exampleArc
+
+-}
+fromNondegenerate : Nondegenerate -> Arc3d
+fromNondegenerate (Nondegenerate arc) =
+    arc
+
+
+{-| Get the tangent direction to a nondegenerate arc at a given parameter
+value:
+
+    Arc3d.tangentDirection nondegenerateExampleArc
+        ParameterValue.zero
+    --> Direction3d.fromAzimuthAndElevation
+    -->     (degrees 135)
+    -->     (degrees 0)
+
+    Arc3d.tangentDirection nondegenerateExampleArc
+        ParameterValue.half
+    --> Direction3d.negativeX
+
+    Arc3d.tangentDirection nondegenerateExampleArc
+        ParameterValue.zero
+    --> Direction3d.fromAzimuthAndElevation
+    -->     (degrees 225)
+    -->     (degrees 0)
+
+-}
+tangentDirection : Nondegenerate -> ParameterValue -> Direction3d
+tangentDirection (Nondegenerate (Types.Arc3d arc)) parameterValue =
+    let
+        ( x1, y1, z1 ) =
+            Direction3d.components arc.xDirection
+
+        ( x2, y2, z2 ) =
+            Direction3d.components arc.yDirection
+
+        arcSweptAngle =
+            arc.sweptAngle
+
+        t =
+            ParameterValue.value parameterValue
+
+        angle =
+            t * arcSweptAngle
+
+        cosAngle =
+            cos angle
+
+        sinAngle =
+            sin angle
+    in
+    Direction3d.unsafe
+        ( cosAngle * x1 + sinAngle * x2
+        , cosAngle * y1 + sinAngle * y2
+        , cosAngle * z1 + sinAngle * z2
+        )
+
+
+{-| Get tangent directions to a nondegenerate arc at a given set of parameter
 values:
 
-    Arc3d.samplesAt (ParameterValue.steps 2) exampleArc
+    nondegenerateExampleArc
+        |> Arc3d.tangentDirectionsAt
+            (ParameterValue.steps 2)
+    --> [ Direction3d.fromAzimuthAndElevation
+    -->     (degrees 135)
+    -->     (degrees 0)
+    --> , Direction3d.negativeX
+    --> , Direction3d.fromAzimuthAndElevation
+    -->     (degrees 225)
+    -->     (degrees 0)
+    --> ]
+
+-}
+tangentDirectionsAt : List ParameterValue -> Nondegenerate -> List Direction3d
+tangentDirectionsAt parameterValues nondegenerateArc =
+    List.map (tangentDirection nondegenerateArc) parameterValues
+
+
+{-| Get both the point and tangent direction of a nondegenerate arc at a given
+parameter value:
+
+    Arc3d.sample nondegenerateExampleArc
+        ParameterValue.zero
+    --> ( Point3d.fromCoordinates ( 1, 1, 0 )
+    --> , Direction3d.fromAzimuthAndElevation
+    -->     (degrees 135)
+    -->     (degrees 0)
+    --> )
+
+    Arc3d.sample nondegenerateExampleArc
+        ParameterValue.half
+    --> ( Point3d.fromCoordinates ( 0, 1.4142, 0 )
+    --> , Direction3d.negativeX
+    --> )
+
+    Arc3d.sample nondegenerateExampleArc
+        ParameterValue.one
+    --> ( Point3d.fromCoordinates ( -1, 1, 0 )
+    --> , Direction3d.fromAzimuthAndElevation
+    -->     (degrees 225)
+    -->     (degrees 0)
+    --> )
+
+-}
+sample : Nondegenerate -> ParameterValue -> ( Point3d, Direction3d )
+sample nondegenerateArc parameterValue =
+    ( pointOn (fromNondegenerate nondegenerateArc) parameterValue
+    , tangentDirection nondegenerateArc parameterValue
+    )
+
+
+{-| Get points and tangent directions of a nondegenerate arc at a given set of
+parameter values:
+
+    nondegenerateExampleArc
+        |> Arc3d.samplesAt (ParameterValue.steps 2)
     --> [ ( Point3d.fromCoordinates ( 1, 1, 0 )
     -->   , Direction3d.fromAzimuthAndElevation
     -->         (degrees 135)
@@ -563,14 +630,9 @@ If the arc is degenerate (start point and end point are equal), returns an
 empty list.
 
 -}
-samplesAt : List ParameterValue -> Arc3d -> List ( Point3d, Direction3d )
-samplesAt parameterValues arc =
-    case sampler arc of
-        Just sampler_ ->
-            List.map sampler_ parameterValues
-
-        Nothing ->
-            []
+samplesAt : List ParameterValue -> Nondegenerate -> List ( Point3d, Direction3d )
+samplesAt parameterValues nondegenerateArc =
+    List.map (sample nondegenerateArc) parameterValues
 
 
 numApproximationSegments : Float -> Arc3d -> Int

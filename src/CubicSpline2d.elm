@@ -490,7 +490,7 @@ fromNondegenerate nondegenerateSpline =
 
 
 {-| Get the tangent direction to a nondegenerate spline at a given parameter
-value.
+value:
 
     CubicSpline2d.tangentDirection
         nondegenerateExampleSpline
