@@ -435,9 +435,9 @@ pointOn spline parameterValue =
     exampleSpline
         |> CubicSpline3d.pointsAt
             (ParameterValue.steps 2)
-    --> [ Point2d.fromCoordinates ( 1, 1, 1 )
-    --> , Point2d.fromCoordinates ( 2.75, 2, 1.25 )
-    --> , Point2d.fromCoordinates ( 3, 3, 3 )
+    --> [ Point3d.fromCoordinates ( 1, 1, 1 )
+    --> , Point3d.fromCoordinates ( 2.75, 2, 1.25 )
+    --> , Point3d.fromCoordinates ( 3, 3, 3 )
     --> ]
 
 -}
