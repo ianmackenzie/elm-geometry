@@ -843,6 +843,8 @@ mapControlPoints function spline =
     -->     }
     --> )
 
+Equivalent to `CubicSpline2d.splitAt ParameterValue.half`.
+
 -}
 bisect : CubicSpline2d -> ( CubicSpline2d, CubicSpline2d )
 bisect =
