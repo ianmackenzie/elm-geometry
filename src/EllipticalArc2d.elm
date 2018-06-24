@@ -606,8 +606,8 @@ tangentDirectionsAt parameterValues nondegenerateArc =
     List.map (tangentDirection nondegenerateArc) parameterValues
 
 
-{-| Get both the point tangent direction of a nondegenerate elliptical arc at a
-given parameter value:
+{-| Get both the point and tangent direction of a nondegenerate elliptical arc
+at a given parameter value:
 
     EllipticalArc2d.sample nondegenerateExampleArc
         ParameterValue.zero
