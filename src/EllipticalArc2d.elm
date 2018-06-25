@@ -505,7 +505,8 @@ nondegenerate arc =
 
 {-| Convert a nondegenerate elliptical arc back to a general `EllipticalArc2d`.
 
-    EllipticalArc2d.fromNondegenerate nondegenerateExampleArc
+    EllipticalArc2d.fromNondegenerate
+        nondegenerateExampleArc
     --> exampleArc
 
 -}
@@ -605,8 +606,8 @@ tangentDirectionsAt parameterValues nondegenerateArc =
     List.map (tangentDirection nondegenerateArc) parameterValues
 
 
-{-| Get both the point tangent direction of a nondegenerate elliptical arc at a
-given parameter value:
+{-| Get both the point and tangent direction of a nondegenerate elliptical arc
+at a given parameter value:
 
     EllipticalArc2d.sample nondegenerateExampleArc
         ParameterValue.zero
@@ -638,7 +639,8 @@ sample nondegenerateArc parameterValue =
 parameter values:
 
     nondegenerateExampleArc
-        |> EllipticalArc2d.samplesAt (ParameterValue.steps 2)
+        |> EllipticalArc2d.samplesAt
+            (ParameterValue.steps 2)
     --> [ ( Point2d.fromCoordinates ( 2, 0 )
     -->   , Direction2d.fromAngle (degrees 90)
     -->   )

@@ -141,9 +141,12 @@ type alias QuadraticSpline3d =
 
     exampleSpline =
         QuadraticSpline3d.with
-            { startPoint = Point3d.fromCoordinates ( 1, 1, 1 )
-            , controlPoint = Point3d.fromCoordinates ( 3, 2, 1 )
-            , endPoint = Point3d.fromCoordinates ( 3, 3, 3 )
+            { startPoint =
+                Point3d.fromCoordinates ( 1, 1, 1 )
+            , controlPoint =
+                Point3d.fromCoordinates ( 3, 2, 1 )
+            , endPoint =
+                Point3d.fromCoordinates ( 3, 3, 3 )
             }
 
 -}
