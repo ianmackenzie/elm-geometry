@@ -342,7 +342,7 @@ is equivalent to
         ParameterValue.one
         parameterization
 
-but is more efficient and returns a plain `Float` instead of a `Maybe Float`.
+but is more efficient.
 
 -}
 totalArcLength : ArcLengthParameterization -> Float

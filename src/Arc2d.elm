@@ -697,23 +697,24 @@ type Nondegenerate
     = Nondegenerate Arc2d
 
 
-{-| Attempt to construct a nondegenerate arc from a general `Arc2d`. Returns
-`Nothing` if the arc is in fact degenerate.
+{-| Attempt to construct a nondegenerate arc from a general `Arc2d`. If the arc
+is in fact degenerate (consists of a single point), returns an `Err` with that
+point.
 
     Arc2d.nondegenerate exampleArc
-    --> Just nondegenerateExampleArc
+    --> Ok nondegenerateExampleArc
 
 -}
-nondegenerate : Arc2d -> Maybe Nondegenerate
+nondegenerate : Arc2d -> Result Point2d Nondegenerate
 nondegenerate arc =
     let
         (Types.Arc2d properties) =
             arc
     in
     if properties.signedLength == 0 then
-        Nothing
+        Err (startPoint arc)
     else
-        Just (Nondegenerate arc)
+        Ok (Nondegenerate arc)
 
 
 {-| Convert a nondegenerate arc back to a general `Arc2d`.

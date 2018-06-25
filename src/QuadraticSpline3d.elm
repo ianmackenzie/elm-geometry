@@ -141,9 +141,12 @@ type alias QuadraticSpline3d =
 
     exampleSpline =
         QuadraticSpline3d.with
-            { startPoint = Point3d.fromCoordinates ( 1, 1, 1 )
-            , controlPoint = Point3d.fromCoordinates ( 3, 2, 1 )
-            , endPoint = Point3d.fromCoordinates ( 3, 3, 3 )
+            { startPoint =
+                Point3d.fromCoordinates ( 1, 1, 1 )
+            , controlPoint =
+                Point3d.fromCoordinates ( 3, 2, 1 )
+            , endPoint =
+                Point3d.fromCoordinates ( 3, 3, 3 )
             }
 
 -}
@@ -463,17 +466,18 @@ type Nondegenerate
 
 
 {-| Attempt to construct a nondegenerate spline from a general
-`QuadraticSpline3d`. Returns `Nothing` if the spline is in fact degenerate.
+`QuadraticSpline3d`. If the spline is in fact degenerate (consists of a single
+point), returns an `Err` with that point.
 
     QuadraticSpline3d.nondegenerate exampleSpline
-    --> Just nondegenerateExampleSpline
+    --> Ok nondegenerateExampleSpline
 
 -}
-nondegenerate : QuadraticSpline3d -> Maybe Nondegenerate
+nondegenerate : QuadraticSpline3d -> Result Point3d Nondegenerate
 nondegenerate spline =
     case Vector3d.direction (secondDerivative spline) of
         Just direction ->
-            Just (NonZeroSecondDerivative spline direction)
+            Ok (NonZeroSecondDerivative spline direction)
 
         Nothing ->
             let
@@ -484,10 +488,10 @@ nondegenerate spline =
             in
             case Vector3d.direction firstDerivativeVector of
                 Just direction ->
-                    Just (NonZeroFirstDerivative spline direction)
+                    Ok (NonZeroFirstDerivative spline direction)
 
                 Nothing ->
-                    Nothing
+                    Err (startPoint spline)
 
 
 {-| Convert a nondegenerate spline back to a general `QuadraticSpline3d`.
@@ -976,7 +980,7 @@ arcLengthParameterized { maxError } spline =
     ArcLengthParameterized
         { underlyingSpline = spline
         , parameterization = parameterization
-        , nondegenerateSpline = nondegenerate spline
+        , nondegenerateSpline = Result.toMaybe (nondegenerate spline)
         }
 
 

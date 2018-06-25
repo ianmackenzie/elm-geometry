@@ -475,14 +475,14 @@ type Nondegenerate
 
 
 {-| Attempt to construct a nondegenerate elliptical arc from a general
-`EllipticalArc2d`. Returns `Nothing` if the elliptical arc is in fact
-degenerate.
+`EllipticalArc2d`. If the arc is in fact degenerate (consists of a single
+point), returns an `Err` with that point.
 
     EllipticalArc2d.nondegenerate exampleArc
-    --> Just nondegenerateExampleArc
+    --> Ok nondegenerateExampleArc
 
 -}
-nondegenerate : EllipticalArc2d -> Maybe Nondegenerate
+nondegenerate : EllipticalArc2d -> Result Point2d Nondegenerate
 nondegenerate arc =
     let
         rx =
@@ -492,20 +492,21 @@ nondegenerate arc =
             yRadius arc
     in
     if sweptAngle arc == 0 then
-        Nothing
+        Err (startPoint arc)
     else if rx == 0 && ry == 0 then
-        Nothing
+        Err (startPoint arc)
     else if rx == 0 then
-        Just (Vertical arc)
+        Ok (Vertical arc)
     else if ry == 0 then
-        Just (Horizontal arc)
+        Ok (Horizontal arc)
     else
-        Just (Curved arc)
+        Ok (Curved arc)
 
 
 {-| Convert a nondegenerate elliptical arc back to a general `EllipticalArc2d`.
 
-    EllipticalArc2d.fromNondegenerate nondegenerateExampleArc
+    EllipticalArc2d.fromNondegenerate
+        nondegenerateExampleArc
     --> exampleArc
 
 -}
@@ -605,8 +606,8 @@ tangentDirectionsAt parameterValues nondegenerateArc =
     List.map (tangentDirection nondegenerateArc) parameterValues
 
 
-{-| Get both the point tangent direction of a nondegenerate elliptical arc at a
-given parameter value:
+{-| Get both the point and tangent direction of a nondegenerate elliptical arc
+at a given parameter value:
 
     EllipticalArc2d.sample nondegenerateExampleArc
         ParameterValue.zero
@@ -638,7 +639,8 @@ sample nondegenerateArc parameterValue =
 parameter values:
 
     nondegenerateExampleArc
-        |> EllipticalArc2d.samplesAt (ParameterValue.steps 2)
+        |> EllipticalArc2d.samplesAt
+            (ParameterValue.steps 2)
     --> [ ( Point2d.fromCoordinates ( 2, 0 )
     -->   , Direction2d.fromAngle (degrees 90)
     -->   )
@@ -1014,7 +1016,7 @@ arcLengthParameterized { maxError } arc =
     ArcLengthParameterized
         { underlyingArc = arc
         , parameterization = parameterization
-        , nondegenerateArc = nondegenerate arc
+        , nondegenerateArc = Result.toMaybe (nondegenerate arc)
         }
 
 
