@@ -475,14 +475,14 @@ type Nondegenerate
 
 
 {-| Attempt to construct a nondegenerate elliptical arc from a general
-`EllipticalArc2d`. Returns `Nothing` if the elliptical arc is in fact
-degenerate.
+`EllipticalArc2d`. If the arc is in fact degenerate (consists of a single
+point), returns an `Err` with that point.
 
     EllipticalArc2d.nondegenerate exampleArc
-    --> Just nondegenerateExampleArc
+    --> Ok nondegenerateExampleArc
 
 -}
-nondegenerate : EllipticalArc2d -> Maybe Nondegenerate
+nondegenerate : EllipticalArc2d -> Result Point2d Nondegenerate
 nondegenerate arc =
     let
         rx =
@@ -492,15 +492,15 @@ nondegenerate arc =
             yRadius arc
     in
     if sweptAngle arc == 0 then
-        Nothing
+        Err (startPoint arc)
     else if rx == 0 && ry == 0 then
-        Nothing
+        Err (startPoint arc)
     else if rx == 0 then
-        Just (Vertical arc)
+        Ok (Vertical arc)
     else if ry == 0 then
-        Just (Horizontal arc)
+        Ok (Horizontal arc)
     else
-        Just (Curved arc)
+        Ok (Curved arc)
 
 
 {-| Convert a nondegenerate elliptical arc back to a general `EllipticalArc2d`.
@@ -1016,7 +1016,7 @@ arcLengthParameterized { maxError } arc =
     ArcLengthParameterized
         { underlyingArc = arc
         , parameterization = parameterization
-        , nondegenerateArc = nondegenerate arc
+        , nondegenerateArc = Result.toMaybe (nondegenerate arc)
         }
 
 

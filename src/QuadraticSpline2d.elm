@@ -404,17 +404,18 @@ type Nondegenerate
 
 
 {-| Attempt to construct a nondegenerate spline from a general
-`QuadraticSpline2d`. Returns `Nothing` if the spline is in fact degenerate.
+`QuadraticSpline2d`. If the spline is in fact degenerate (consists of a single
+point), returns an `Err` with that point.
 
     QuadraticSpline2d.nondegenerate exampleSpline
-    --> Just nondegenerateExampleSpline
+    --> Ok nondegenerateExampleSpline
 
 -}
-nondegenerate : QuadraticSpline2d -> Maybe Nondegenerate
+nondegenerate : QuadraticSpline2d -> Result Point2d Nondegenerate
 nondegenerate spline =
     case Vector2d.direction (secondDerivative spline) of
         Just direction ->
-            Just (NonZeroSecondDerivative spline direction)
+            Ok (NonZeroSecondDerivative spline direction)
 
         Nothing ->
             let
@@ -425,10 +426,10 @@ nondegenerate spline =
             in
             case Vector2d.direction firstDerivativeVector of
                 Just direction ->
-                    Just (NonZeroFirstDerivative spline direction)
+                    Ok (NonZeroFirstDerivative spline direction)
 
                 Nothing ->
-                    Nothing
+                    Err (startPoint spline)
 
 
 {-| Convert a nondegenerate spline back to a general `QuadraticSpline2d`.
@@ -850,7 +851,7 @@ arcLengthParameterized { maxError } spline =
     ArcLengthParameterized
         { underlyingSpline = spline
         , parameterization = parameterization
-        , nondegenerateSpline = nondegenerate spline
+        , nondegenerateSpline = Result.toMaybe (nondegenerate spline)
         }
 
 
