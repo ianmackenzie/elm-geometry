@@ -41,38 +41,41 @@ type alias Rectangle2d =
 
 
 centeredOn : Frame2d -> ( Float, Float ) -> Rectangle2d
-centeredOn axes dimensions =
-    Types.Rectangle2d { axes = axes, dimensions = dimensions }
+centeredOn givenAxes ( givenWidth, givenHeight ) =
+    Types.Rectangle2d
+        { axes = givenAxes
+        , dimensions = ( abs givenWidth, abs givenHeight )
+        }
 
 
 fromExtremaIn : Frame2d -> { minX : Float, maxX : Float, minY : Float, maxY : Float } -> Rectangle2d
 fromExtremaIn localFrame { minX, maxX, minY, maxY } =
     let
-        width =
+        dx =
             maxX - minX
 
-        height =
+        dy =
             maxY - minY
 
         midX =
-            minX + 0.5 * width
+            minX + 0.5 * dx
 
         midY =
-            minY + 0.5 * height
+            minY + 0.5 * dy
 
-        centerPoint =
+        computedCenterPoint =
             Point2d.fromCoordinatesIn localFrame ( midX, midY )
     in
     Types.Rectangle2d
-        { axes = Frame2d.moveTo centerPoint localFrame
-        , dimensions = ( width, height )
+        { axes = Frame2d.moveTo computedCenterPoint localFrame
+        , dimensions = ( abs dx, abs dy )
         }
 
 
 from : Point2d -> Point2d -> Rectangle2d
 from firstPoint secondPoint =
     let
-        centerPoint =
+        computedCenterPoint =
             Point2d.midpoint firstPoint secondPoint
 
         ( x1, y1 ) =
@@ -82,7 +85,7 @@ from firstPoint secondPoint =
             Point2d.coordinates secondPoint
     in
     Types.Rectangle2d
-        { axes = Frame2d.atPoint centerPoint
+        { axes = Frame2d.atPoint computedCenterPoint
         , dimensions = ( abs (x2 - x1), abs (y2 - y1) )
         }
 
@@ -90,24 +93,24 @@ from firstPoint secondPoint =
 fromExtrema : { minX : Float, maxX : Float, minY : Float, maxY : Float } -> Rectangle2d
 fromExtrema { minX, maxX, minY, maxY } =
     let
-        width =
+        dx =
             maxX - minX
 
-        height =
+        dy =
             maxY - minY
 
         midX =
-            minX + 0.5 * width
+            minX + 0.5 * dx
 
         midY =
-            minY + 0.5 * height
+            minY + 0.5 * dy
 
-        centerPoint =
+        computedCenterPoint =
             Point2d.fromCoordinates ( midX, midY )
     in
     Types.Rectangle2d
-        { axes = Frame2d.atPoint centerPoint
-        , dimensions = ( width, height )
+        { axes = Frame2d.atPoint computedCenterPoint
+        , dimensions = ( abs dx, abs dy )
         }
 
 
@@ -121,8 +124,8 @@ toPolygon rectangle =
 
 
 axes : Rectangle2d -> Frame2d
-axes (Types.Rectangle2d { axes }) =
-    axes
+axes (Types.Rectangle2d rectangle) =
+    rectangle.axes
 
 
 xAxis : Rectangle2d -> Axis2d
@@ -141,8 +144,8 @@ centerPoint rectangle =
 
 
 dimensions : Rectangle2d -> ( Float, Float )
-dimensions (Types.Rectangle2d { dimensions }) =
-    dimensions
+dimensions (Types.Rectangle2d rectangle) =
+    rectangle.dimensions
 
 
 area : Rectangle2d -> Float
