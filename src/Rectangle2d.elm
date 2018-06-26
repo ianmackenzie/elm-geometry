@@ -3,6 +3,9 @@ module Rectangle2d
         ( Rectangle2d
         , area
         , axes
+        , bottomEdge
+        , bottomLeftVertex
+        , bottomRightVertex
         , boundingBox
         , centerPoint
         , centeredOn
@@ -12,12 +15,17 @@ module Rectangle2d
         , from
         , fromExtrema
         , fromExtremaIn
+        , leftEdge
         , mirrorAcross
         , placeIn
         , relativeTo
+        , rightEdge
         , rotateAround
         , scaleAbout
         , toPolygon
+        , topEdge
+        , topLeftVertex
+        , topRightVertex
         , translateBy
         , translateIn
         , vertices
@@ -117,10 +125,10 @@ fromExtrema { minX, maxX, minY, maxY } =
 toPolygon : Rectangle2d -> Polygon2d
 toPolygon rectangle =
     let
-        ( p1, p2, p3, p4 ) =
+        { bottomLeft, bottomRight, topRight, topLeft } =
             vertices rectangle
     in
-    Polygon2d.singleLoop [ p1, p2, p3, p4 ]
+    Polygon2d.singleLoop [ bottomLeft, bottomRight, topRight, topLeft ]
 
 
 axes : Rectangle2d -> Frame2d
@@ -157,7 +165,7 @@ area rectangle =
     width * height
 
 
-vertices : Rectangle2d -> ( Point2d, Point2d, Point2d, Point2d )
+vertices : Rectangle2d -> { bottomLeft : Point2d, bottomRight : Point2d, topRight : Point2d, topLeft : Point2d }
 vertices rectangle =
     let
         localFrame =
@@ -172,11 +180,63 @@ vertices rectangle =
         halfHeight =
             height / 2
     in
-    ( Point2d.fromCoordinatesIn localFrame ( -halfWidth, -halfHeight )
-    , Point2d.fromCoordinatesIn localFrame ( halfWidth, -halfHeight )
-    , Point2d.fromCoordinatesIn localFrame ( halfWidth, halfHeight )
-    , Point2d.fromCoordinatesIn localFrame ( -halfWidth, halfHeight )
-    )
+    { bottomLeft =
+        Point2d.fromCoordinatesIn localFrame ( -halfWidth, -halfHeight )
+    , bottomRight =
+        Point2d.fromCoordinatesIn localFrame ( halfWidth, -halfHeight )
+    , topRight =
+        Point2d.fromCoordinatesIn localFrame ( halfWidth, halfHeight )
+    , topLeft =
+        Point2d.fromCoordinatesIn localFrame ( -halfWidth, halfHeight )
+    }
+
+
+bottomLeftVertex : Rectangle2d -> Point2d
+bottomLeftVertex rectangle =
+    let
+        localFrame =
+            axes rectangle
+
+        ( width, height ) =
+            dimensions rectangle
+    in
+    Point2d.fromCoordinatesIn localFrame ( -width / 2, -height / 2 )
+
+
+bottomRightVertex : Rectangle2d -> Point2d
+bottomRightVertex rectangle =
+    let
+        localFrame =
+            axes rectangle
+
+        ( width, height ) =
+            dimensions rectangle
+    in
+    Point2d.fromCoordinatesIn localFrame ( width / 2, -height / 2 )
+
+
+topRightVertex : Rectangle2d -> Point2d
+topRightVertex rectangle =
+    let
+        localFrame =
+            axes rectangle
+
+        ( width, height ) =
+            dimensions rectangle
+    in
+    Point2d.fromCoordinatesIn localFrame ( width / 2, height / 2 )
+
+
+topLeftVertex : Rectangle2d -> Point2d
+topLeftVertex rectangle =
+    let
+        localFrame =
+            axes rectangle
+
+        ( width, height ) =
+            dimensions rectangle
+    in
+    Point2d.fromCoordinatesIn localFrame ( -width / 2, height / 2 )
 
 
 contains : Point2d -> Rectangle2d -> Bool
@@ -194,17 +254,45 @@ contains point rectangle =
     abs x <= width / 2 && abs y <= height / 2
 
 
-edges : Rectangle2d -> ( LineSegment2d, LineSegment2d, LineSegment2d, LineSegment2d )
+edges : Rectangle2d -> { bottom : LineSegment2d, right : LineSegment2d, top : LineSegment2d, left : LineSegment2d }
 edges rectangle =
     let
-        ( p1, p2, p3, p4 ) =
+        { bottomLeft, bottomRight, topRight, topLeft } =
             vertices rectangle
     in
-    ( LineSegment2d.from p1 p2
-    , LineSegment2d.from p2 p3
-    , LineSegment2d.from p3 p4
-    , LineSegment2d.from p4 p1
-    )
+    { bottom = LineSegment2d.from bottomLeft bottomRight
+    , right = LineSegment2d.from bottomRight topRight
+    , top = LineSegment2d.from topRight topLeft
+    , left = LineSegment2d.from topLeft bottomLeft
+    }
+
+
+bottomEdge : Rectangle2d -> LineSegment2d
+bottomEdge rectangle =
+    LineSegment2d.from
+        (bottomLeftVertex rectangle)
+        (bottomRightVertex rectangle)
+
+
+rightEdge : Rectangle2d -> LineSegment2d
+rightEdge rectangle =
+    LineSegment2d.from
+        (bottomRightVertex rectangle)
+        (topRightVertex rectangle)
+
+
+topEdge : Rectangle2d -> LineSegment2d
+topEdge rectangle =
+    LineSegment2d.from
+        (topRightVertex rectangle)
+        (topLeftVertex rectangle)
+
+
+leftEdge : Rectangle2d -> LineSegment2d
+leftEdge rectangle =
+    LineSegment2d.from
+        (topLeftVertex rectangle)
+        (bottomLeftVertex rectangle)
 
 
 scaleAbout : Point2d -> Float -> Rectangle2d -> Rectangle2d
@@ -314,20 +402,20 @@ relativeTo frame rectangle =
 boundingBox : Rectangle2d -> BoundingBox2d
 boundingBox rectangle =
     let
-        ( p1, p2, p3, p4 ) =
+        { bottomLeft, bottomRight, topRight, topLeft } =
             vertices rectangle
 
         ( x1, y1 ) =
-            Point2d.coordinates p1
+            Point2d.coordinates bottomLeft
 
         ( x2, y2 ) =
-            Point2d.coordinates p2
+            Point2d.coordinates bottomRight
 
         ( x3, y3 ) =
-            Point2d.coordinates p3
+            Point2d.coordinates topRight
 
         ( x4, y4 ) =
-            Point2d.coordinates p4
+            Point2d.coordinates topLeft
     in
     BoundingBox2d.fromExtrema
         { minX = min (min x1 x2) (min x3 x4)
