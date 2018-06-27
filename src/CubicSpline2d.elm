@@ -528,7 +528,7 @@ tangentDirection nondegenerateSpline parameterValue =
             case Vector2d.direction firstDerivativeVector of
                 Just firstDerivativeDirection ->
                     -- First derivative is non-zero, so use its direction as the
-                    -- tangent direction
+                    -- tangent direction (normal case)
                     firstDerivativeDirection
 
                 Nothing ->
@@ -553,8 +553,8 @@ tangentDirection nondegenerateSpline parameterValue =
             in
             case Vector2d.direction firstDerivativeVector of
                 Just firstDerivativeDirection ->
-                    -- First derivative is non-zero, so just use its
-                    -- direction as the tangent direction (normal case)
+                    -- First derivative is non-zero, so use its direction as the
+                    -- tangent direction (normal case)
                     firstDerivativeDirection
 
                 Nothing ->
