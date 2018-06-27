@@ -911,6 +911,42 @@ given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
     BoundingBox3d.intersection firstBox thirdBox
     --> Nothing
 
+If two boxes just touch along an edge or at a corner, they are still considered
+to have an intersection, even though that intersection will have zero area (at
+least one of its dimensions will be zero):
+
+    firstBox =
+        BoundingBox3d.fromExtrema
+            { minX = 0
+            , maxX = 1
+            , minY = 0
+            , maxY = 2
+            , minZ = 0
+            , maxZ = 3
+            }
+
+    secondBox =
+        BoundingBox3d.fromExtrema
+            { minX = 1
+            , maxX = 2
+            , minY = 1
+            , maxY = 3
+            , minZ = 1
+            , maxZ = 4
+            }
+
+    BoundingBox3d.intersection firstBox secondBox
+    --> Just
+    -->     (BoundingBox3d.fromExtrema
+    -->         { minX = 1
+    -->         , maxX = 1
+    -->         , minY = 1
+    -->         , maxY = 2
+    -->         , minZ = 1
+    -->         , maxZ = 3
+    -->         }
+    -->     )
+
 -}
 intersection : BoundingBox3d -> BoundingBox3d -> Maybe BoundingBox3d
 intersection firstBox secondBox =
