@@ -264,7 +264,7 @@ vectors by performing [Gram-Schmidt normalization](https://en.wikipedia.org/wiki
     given vector while being perpendicular to the first returned direction
 
 If either of the given vectors are zero, or if the two vectors are parallel,
-`Nothing` will be returned.
+returns `Nothing`.
 
     Direction2d.orthonormalize
         (Vector2d.fromComponents ( 3, 3 ))
