@@ -81,8 +81,6 @@ segmentsPerLeaf =
   - The maximum magnitude of the second derivative of the curve
   - A tolerance specifying the maximum error of the resulting parameterization
 
-Curve parameter values are assumed to be in the range [0,1].
-
 -}
 build : { maxError : Float, derivativeMagnitude : ParameterValue -> Float, maxSecondDerivativeMagnitude : Float } -> ArcLengthParameterization
 build { maxError, derivativeMagnitude, maxSecondDerivativeMagnitude } =
