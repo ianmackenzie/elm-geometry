@@ -915,7 +915,9 @@ projectInto sketchPlane arc =
 
         ( xDirection2d, xDirection3d ) =
             if Vector3d.componentIn candidateXDirection3d radialVector >= 0 then
-                ( candidateXDirection2d, candidateXDirection3d )
+                ( candidateXDirection2d
+                , candidateXDirection3d
+                )
             else
                 ( Direction2d.reverse candidateXDirection2d
                 , Direction3d.reverse candidateXDirection3d
