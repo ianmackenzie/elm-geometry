@@ -508,6 +508,9 @@ nondegenerate spline =
                     in
                     case Vector3d.direction firstDerivativeVector of
                         Just direction ->
+                            -- First derivative is constant and non-zero, so the
+                            -- tangent direction will always be equal to the
+                            -- first derivative direction
                             Ok (NonZeroFirstDerivative spline direction)
 
                         Nothing ->
