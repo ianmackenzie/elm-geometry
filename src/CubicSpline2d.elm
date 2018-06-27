@@ -539,7 +539,7 @@ tangentDirection nondegenerateSpline parameterValue =
                     -- choose the tangent direction just after the point (necessary
                     -- for t = 0, arbitrary for all other points).
                     if parameterValue == ParameterValue.one then
-                        Direction2d.flip secondDerivativeDirection
+                        Direction2d.reverse secondDerivativeDirection
                     else
                         secondDerivativeDirection
 
@@ -566,7 +566,7 @@ tangentDirection nondegenerateSpline parameterValue =
                             -- reversal point, as above in
                             -- nonZeroSecondDerivativeSampler
                             if parameterValue == ParameterValue.one then
-                                Direction2d.flip secondDerivativeDirection
+                                Direction2d.reverse secondDerivativeDirection
                             else
                                 secondDerivativeDirection
 

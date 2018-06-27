@@ -293,7 +293,7 @@ scaleAbout point scale circle =
         (if scale >= 0 then
             axialDirection circle
          else
-            Direction3d.flip (axialDirection circle)
+            Direction3d.reverse (axialDirection circle)
         )
         (Point3d.scaleAbout point scale (centerPoint circle))
 

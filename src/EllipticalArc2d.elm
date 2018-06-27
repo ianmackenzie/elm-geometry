@@ -580,11 +580,11 @@ tangentDirection nondegenerateArc parameterValue =
             if cos angle >= 0 then
                 yDirection verticalArc
             else
-                Direction2d.flip (yDirection verticalArc)
+                Direction2d.reverse (yDirection verticalArc)
 
         Horizontal horizontalArc ->
             if sin angle >= 0 then
-                Direction2d.flip (xDirection horizontalArc)
+                Direction2d.reverse (xDirection horizontalArc)
             else
                 xDirection horizontalArc
 

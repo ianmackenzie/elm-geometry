@@ -15,15 +15,15 @@ module Frame3d
         ( Frame3d
         , atCoordinates
         , atPoint
-        , flipX
-        , flipY
-        , flipZ
         , isRightHanded
         , mirrorAcross
         , moveTo
         , originPoint
         , placeIn
         , relativeTo
+        , reverseX
+        , reverseY
+        , reverseZ
         , rotateAround
         , rotateAroundOwn
         , translateAlongOwn
@@ -176,7 +176,7 @@ corresponds to a global Z coordinate!
 
 # Transformations
 
-@docs flipX, flipY, flipZ, moveTo, rotateAround, rotateAroundOwn, translateBy, translateIn, translateAlongOwn, mirrorAcross
+@docs reverseX, reverseY, reverseZ, moveTo, rotateAround, rotateAroundOwn, translateBy, translateIn, translateAlongOwn, mirrorAcross
 
 
 # Coordinate conversions
@@ -389,7 +389,7 @@ zDirection (Types.Frame3d properties) =
     Frame3d.isRightHanded Frame3d.xyz
     --> True
 
-    Frame3d.isRightHanded (Frame3d.flipZ Frame3d.xyz)
+    Frame3d.isRightHanded (Frame3d.reverseZ Frame3d.xyz)
     --> False
 
 All predefined frames are right-handed, and most operations on frames preserve
@@ -459,7 +459,7 @@ xyPlane (Types.Frame3d frame) =
 -}
 yxPlane : Frame3d -> Plane3d
 yxPlane (Types.Frame3d frame) =
-    Plane3d.through frame.originPoint (Direction3d.flip frame.zDirection)
+    Plane3d.through frame.originPoint (Direction3d.reverse frame.zDirection)
 
 
 {-| Get a plane with normal direction equal to the frame's positive X direction.
@@ -473,7 +473,7 @@ yzPlane (Types.Frame3d frame) =
 -}
 zyPlane : Frame3d -> Plane3d
 zyPlane (Types.Frame3d frame) =
-    Plane3d.through frame.originPoint (Direction3d.flip frame.xDirection)
+    Plane3d.through frame.originPoint (Direction3d.reverse frame.xDirection)
 
 
 {-| Get a plane with normal direction equal to the frame's positive Y direction.
@@ -487,7 +487,7 @@ zxPlane (Types.Frame3d frame) =
 -}
 xzPlane : Frame3d -> Plane3d
 xzPlane (Types.Frame3d frame) =
-    Plane3d.through frame.originPoint (Direction3d.flip frame.yDirection)
+    Plane3d.through frame.originPoint (Direction3d.reverse frame.yDirection)
 
 
 {-| Form a sketch plane from the given frame's X and Y axes.
@@ -558,18 +558,18 @@ xzSketchPlane frame =
 
 {-| Reverse the X direction of a frame.
 
-    Frame3d.xDirection (Frame3d.flipX Frame3d.xyz)
+    Frame3d.xDirection (Frame3d.reverseX Frame3d.xyz)
     --> Direction3d.negativeX
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 of the frame.
 
 -}
-flipX : Frame3d -> Frame3d
-flipX frame =
+reverseX : Frame3d -> Frame3d
+reverseX frame =
     unsafe
         { originPoint = originPoint frame
-        , xDirection = Direction3d.flip (xDirection frame)
+        , xDirection = Direction3d.reverse (xDirection frame)
         , yDirection = yDirection frame
         , zDirection = zDirection frame
         }
@@ -577,39 +577,39 @@ flipX frame =
 
 {-| Reverse the Y direction of a frame.
 
-    Frame3d.yDirection (Frame3d.flipY Frame3d.xyz)
+    Frame3d.yDirection (Frame3d.reverseY Frame3d.xyz)
     --> Direction3d.negativeY
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 of the frame.
 
 -}
-flipY : Frame3d -> Frame3d
-flipY frame =
+reverseY : Frame3d -> Frame3d
+reverseY frame =
     unsafe
         { originPoint = originPoint frame
         , xDirection = xDirection frame
-        , yDirection = Direction3d.flip (yDirection frame)
+        , yDirection = Direction3d.reverse (yDirection frame)
         , zDirection = zDirection frame
         }
 
 
 {-| Reverse the Z direction of a frame.
 
-    Frame3d.zDirection (Frame3d.flipZ Frame3d.xyz)
+    Frame3d.zDirection (Frame3d.reverseZ Frame3d.xyz)
     --> Direction3d.negativeZ
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 of the frame.
 
 -}
-flipZ : Frame3d -> Frame3d
-flipZ frame =
+reverseZ : Frame3d -> Frame3d
+reverseZ frame =
     unsafe
         { originPoint = originPoint frame
         , xDirection = xDirection frame
         , yDirection = yDirection frame
-        , zDirection = Direction3d.flip (zDirection frame)
+        , zDirection = Direction3d.reverse (zDirection frame)
         }
 
 

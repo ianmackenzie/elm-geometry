@@ -579,7 +579,7 @@ This means that flipping a plane (reversing its normal direction) will also flip
 the sign of the result of this function:
 
     flippedPlane =
-        Plane3d.flip plane
+        Plane3d.reverseNormal plane
 
     Point3d.signedDistanceFrom flippedPlane point
     --> -1

@@ -320,8 +320,8 @@ scaleAbout point scale rectangle =
             else
                 Frame2d.unsafe
                     { originPoint = newCenterPoint
-                    , xDirection = Direction2d.flip currentXDirection
-                    , yDirection = Direction2d.flip currentYDirection
+                    , xDirection = Direction2d.reverse currentXDirection
+                    , yDirection = Direction2d.reverse currentYDirection
                     }
 
         ( currentWidth, currentHeight ) =

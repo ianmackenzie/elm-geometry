@@ -533,17 +533,17 @@ to the right, with the forwards direction defined by the direction of the axis.
     Point2d.signedDistanceFrom axis Point2d.origin
     --> -2
 
-This means that flipping an axis will also flip the sign of the result of this
+This means that reversing an axis will also flip the sign of the result of this
 function:
 
-    -- Flipping an axis reverses its direction
-    flippedAxis =
-        Axis2d.flip axis
+    -- Reversing an axis reverses its direction
+    reversedAxis =
+        Axis2d.reverse axis
 
-    Point2d.signedDistanceFrom flippedAxis point
+    Point2d.signedDistanceFrom reversedAxis point
     --> -1
 
-    Point2d.signedDistanceFrom flippedAxis Point2d.origin
+    Point2d.signedDistanceFrom reversedAxis Point2d.origin
     --> 2
 
 -}

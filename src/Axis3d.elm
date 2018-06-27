@@ -14,7 +14,6 @@ module Axis3d
     exposing
         ( Axis3d
         , direction
-        , flip
         , mirrorAcross
         , moveTo
         , on
@@ -23,6 +22,7 @@ module Axis3d
         , projectInto
         , projectOnto
         , relativeTo
+        , reverse
         , rotateAround
         , through
         , translateBy
@@ -62,7 +62,7 @@ an origin point and direction. Axes have several uses, such as:
 
 # Transformations
 
-@docs flip, moveTo, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
+@docs reverse, moveTo, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
 
 
 # Coordinate conversions
@@ -204,14 +204,14 @@ direction (Types.Axis3d axis) =
 
 {-| Reverse the direction of an axis while keeping the same origin point.
 
-    Axis3d.flip exampleAxis
+    Axis3d.reverse exampleAxis
     --> Axis3d.withDirection Direction3d.negativeY
     -->     (Point3d.fromCoordinates ( 1, 2, 3 ))
 
 -}
-flip : Axis3d -> Axis3d
-flip (Types.Axis3d axis) =
-    through axis.originPoint (Direction3d.flip axis.direction)
+reverse : Axis3d -> Axis3d
+reverse (Types.Axis3d axis) =
+    through axis.originPoint (Direction3d.reverse axis.direction)
 
 
 {-| Move an axis so that it has the given origin point but unchanged direction.

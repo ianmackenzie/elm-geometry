@@ -20,7 +20,6 @@ module Vector2d
         , direction
         , dotProduct
         , equalWithin
-        , flip
         , from
         , fromComponents
         , fromPolarComponents
@@ -35,6 +34,7 @@ module Vector2d
         , projectOnto
         , projectionIn
         , relativeTo
+        , reverse
         , rotateBy
         , rotateClockwise
         , rotateCounterclockwise
@@ -108,7 +108,7 @@ affects the result, since vectors are position-independent. Think of
 mirroring/projecting a vector across/onto an axis as moving the vector so its
 tail is on the axis, then mirroring/projecting its tip across/onto the axis.
 
-@docs flip, normalize, scaleBy, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
+@docs reverse, normalize, scaleBy, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
 
 
 # Coordinate conversions
@@ -634,12 +634,12 @@ crossProduct firstVector secondVector =
 
 {-| Reverse the direction of a vector, negating its components.
 
-    Vector2d.flip (Vector2d.fromComponents ( -1, 2 ))
+    Vector2d.reverse (Vector2d.fromComponents ( -1, 2 ))
     --> Vector2d.fromComponents ( 1, -2 )
 
 -}
-flip : Vector2d -> Vector2d
-flip vector =
+reverse : Vector2d -> Vector2d
+reverse vector =
     let
         ( x, y ) =
             components vector

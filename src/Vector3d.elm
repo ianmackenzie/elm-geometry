@@ -20,7 +20,6 @@ module Vector3d
         , direction
         , dotProduct
         , equalWithin
-        , flip
         , from
         , fromComponents
         , interpolateFrom
@@ -35,6 +34,7 @@ module Vector3d
         , projectOnto
         , projectionIn
         , relativeTo
+        , reverse
         , rotateAround
         , scaleBy
         , squaredLength
@@ -108,7 +108,7 @@ plane is relevant, since vectors are position-independent. Think of transforming
 a vector as placing its tail on the relevant axis or plane and then transforming
 its tip.
 
-@docs flip, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
+@docs reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
 
 
 # Coordinate conversions
@@ -678,12 +678,12 @@ crossProduct firstVector secondVector =
 
 {-| Reverse the direction of a vector, negating its components.
 
-    Vector3d.flip (Vector3d.fromComponents ( 1, -3, 2 ))
+    Vector3d.reverse (Vector3d.fromComponents ( 1, -3, 2 ))
     --> Vector3d.fromComponents ( -1, 3, -2 )
 
 -}
-flip : Vector3d -> Vector3d
-flip vector =
+reverse : Vector3d -> Vector3d
+reverse vector =
     let
         ( x, y, z ) =
             components vector
