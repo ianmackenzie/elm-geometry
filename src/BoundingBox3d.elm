@@ -570,11 +570,11 @@ alwaysFalse firstBox secondBox =
 
 
 {-| Check if one box overlaps another by less than, greater than or equal to a
-given amount. For example, you could perform a tolerant collision check (one
+given amount. For example, you could implement a tolerant collision check (one
 that only returns true if the boxes overlap by at least some small finite
 amount, and ignores boxes that just barely touch each other) as
 
-    boxesCollide =
+    boxesCollide box1 box2 =
         BoundingBox3d.overlappingBy GT 0.001 box1 box2
 
 This can be read as "`box1` and `box2` are overlapping by greater than 0.001
@@ -676,7 +676,7 @@ equal to a given amount. For example, to perform clash detection between some
 objects, you could use `separatedBy` on those objects' bounding boxes as a quick
 check to see if the objects had a gap of at least 1 cm between them:
 
-    safelySeparated =
+    safelySeparated box1 box2 =
         BoundingBox3d.separatedBy GT 0.01 box1 box2
 
 This can be read as "`box1` and `box2` are separated by greater than 0.01
