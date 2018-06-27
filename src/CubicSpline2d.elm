@@ -1350,7 +1350,7 @@ maxSecondDerivativeMagnitude spline =
     6 * max (Vector2d.length v1) (Vector2d.length v2)
 
 
-derivativeMagnitude : CubicSpline2d -> Float -> Float
+derivativeMagnitude : CubicSpline2d -> ParameterValue -> Float
 derivativeMagnitude spline =
     let
         p1 =
@@ -1407,8 +1407,11 @@ derivativeMagnitude spline =
         y234 =
             y34 - y23
     in
-    \t ->
+    \parameterValue ->
         let
+            t =
+                ParameterValue.value parameterValue
+
             x13 =
                 x12 + t * x123
 
