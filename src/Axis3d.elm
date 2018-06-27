@@ -133,7 +133,17 @@ through point direction_ =
 
 
 {-| Construct an axis with the given directoin, through the given point. Flipped
-version of `through`.
+version of `through`. Having both versions allow you to do different
+things with partial application:
+
+    -- A list of axes in different directions all passing
+    -- through the same origin point
+    List.map (Axis3d.through point) directions
+
+    -- A list of parallel axes (all having the same
+    -- direction) through different points
+    List.map (Axis3d.withDirection direction) points
+
 -}
 withDirection : Direction3d -> Point3d -> Axis3d
 withDirection direction_ originPoint_ =
