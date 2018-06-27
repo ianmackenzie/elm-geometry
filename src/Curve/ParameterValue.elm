@@ -61,7 +61,7 @@ type ParameterValue
 
 {-| The parameter value 0.
 
-    ParameterValue.value (ParameterValue.zero)
+    ParameterValue.value ParameterValue.zero
     --> 0
 
 -}
@@ -72,7 +72,7 @@ zero =
 
 {-| The parameter value 0.5.
 
-    ParameterValue.value (ParameterValue.half)
+    ParameterValue.value ParameterValue.half
     --> 0.5
 
 -}
@@ -83,7 +83,7 @@ half =
 
 {-| The parameter value 1.
 
-    ParameterValue.value (ParameterValue.one)
+    ParameterValue.value ParameterValue.one
     --> 1
 
 -}
