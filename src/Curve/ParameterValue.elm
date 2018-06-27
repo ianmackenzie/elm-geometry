@@ -12,6 +12,7 @@ module Curve.ParameterValue
         , range
         , steps
         , trailing
+        , unsafe
         , value
         , zero
         )
@@ -34,7 +35,7 @@ functionality for:
 
 # Conversion to and from `Float` values
 
-@docs clamped, checked, value
+@docs clamped, checked, unsafe, value
 
 
 # Ranges
@@ -134,6 +135,17 @@ checked givenValue =
         Just (ParameterValue givenValue)
     else
         Nothing
+
+
+{-| Directly construct a `ParameterValue` from a `Float` without checking
+whether it is valid. `ParameterValue.clamped` should generally be used instead,
+unless you are **very** sure you know what you are doing and
+profiling/benchmarking shows that `ParameterValue.clamped` is a performance
+bottleneck.
+-}
+unsafe : Float -> ParameterValue
+unsafe =
+    ParameterValue
 
 
 {-| Find the midpoint between two parameter values.
