@@ -13,7 +13,6 @@
 module Plane3d
     exposing
         ( Plane3d
-        , flip
         , mirrorAcross
         , moveTo
         , normalAxis
@@ -22,6 +21,7 @@ module Plane3d
         , originPoint
         , placeIn
         , relativeTo
+        , reverseNormal
         , rotateAround
         , through
         , throughPoints
@@ -62,7 +62,7 @@ and normal direction and is useful for several operations including:
 
 # Transformations
 
-@docs offsetBy, flip, rotateAround, translateBy, translateIn, moveTo, mirrorAcross
+@docs offsetBy, reverseNormal, rotateAround, translateBy, translateIn, moveTo, mirrorAcross
 
 
 # Coordinate conversions
@@ -245,14 +245,14 @@ offsetBy distance plane =
 
 {-| Reverse a plane's normal direction while leaving its origin point unchanged.
 
-    Plane3d.flip Plane3d.xy
+    Plane3d.reverseNormal Plane3d.xy
     --> Plane3d.through Point3d.origin
     -->     Direction3d.negativeZ
 
 -}
-flip : Plane3d -> Plane3d
-flip (Types.Plane3d plane) =
-    through plane.originPoint (Direction3d.flip plane.normalDirection)
+reverseNormal : Plane3d -> Plane3d
+reverseNormal (Types.Plane3d plane) =
+    through plane.originPoint (Direction3d.reverse plane.normalDirection)
 
 
 {-| Rotate a plane around an axis by a given angle.

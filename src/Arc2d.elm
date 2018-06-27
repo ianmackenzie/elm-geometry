@@ -905,7 +905,7 @@ scaleAbout point scale (Types.Arc2d arc) =
             if scale >= 0 then
                 arc.xDirection
             else
-                Direction2d.flip arc.xDirection
+                Direction2d.reverse arc.xDirection
         }
 
 
@@ -996,7 +996,7 @@ mirrorAcross axis =
             { startPoint = mirrorPoint arc.startPoint
             , sweptAngle = -arc.sweptAngle
             , signedLength = -arc.signedLength
-            , xDirection = Direction2d.flip (mirrorDirection arc.xDirection)
+            , xDirection = Direction2d.reverse (mirrorDirection arc.xDirection)
             }
 
 
@@ -1028,7 +1028,8 @@ relativeTo frame (Types.Arc2d arc) =
             , sweptAngle = -arc.sweptAngle
             , signedLength = -arc.signedLength
             , xDirection =
-                Direction2d.flip (Direction2d.relativeTo frame arc.xDirection)
+                Direction2d.reverse
+                    (Direction2d.relativeTo frame arc.xDirection)
             }
 
 
@@ -1060,5 +1061,5 @@ placeIn frame (Types.Arc2d arc) =
             , sweptAngle = -arc.sweptAngle
             , signedLength = -arc.signedLength
             , xDirection =
-                Direction2d.flip (Direction2d.placeIn frame arc.xDirection)
+                Direction2d.reverse (Direction2d.placeIn frame arc.xDirection)
             }

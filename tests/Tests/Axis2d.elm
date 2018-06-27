@@ -40,11 +40,11 @@ directionExample =
             Axis2d.direction Axis2d.y |> Expect.direction2d Direction2d.y
 
 
-flipExample : Test
-flipExample =
-    Test.test "Axis2d.flip example" <|
+reverseExample : Test
+reverseExample =
+    Test.test "Axis2d.reverse example" <|
         \() ->
-            Axis2d.flip Axis2d.x
+            Axis2d.reverse Axis2d.x
                 |> Expect.axis2d
                     (Axis2d.through Point2d.origin Direction2d.negativeX)
 

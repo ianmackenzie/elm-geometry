@@ -464,6 +464,9 @@ nondegenerate spline =
                     in
                     case Vector2d.direction firstDerivativeVector of
                         Just direction ->
+                            -- First derivative is constant and non-zero, so the
+                            -- tangent direction will always be equal to the
+                            -- first derivative direction
                             Ok (NonZeroFirstDerivative spline direction)
 
                         Nothing ->
@@ -525,21 +528,22 @@ tangentDirection nondegenerateSpline parameterValue =
             case Vector2d.direction firstDerivativeVector of
                 Just firstDerivativeDirection ->
                     -- First derivative is non-zero, so use its direction as the
-                    -- tangent direction
+                    -- tangent direction (normal case)
                     firstDerivativeDirection
 
                 Nothing ->
-                    -- Zero first derivative and non-zero second derivative mean we
-                    -- have reached a reversal point, where the tangent direction
-                    -- just afterwards is equal to the second derivative direction
-                    -- and the tangent direction just before is equal to the flipped
-                    -- second derivative direction. If we happen to be right at the
-                    -- end of the spline, choose the tangent direction just before
-                    -- the end (instead of one that is off the spline!), otherwise
-                    -- choose the tangent direction just after the point (necessary
-                    -- for t = 0, arbitrary for all other points).
+                    -- Zero first derivative and non-zero second derivative mean
+                    -- we have reached a reversal point, where the tangent
+                    -- direction just afterwards is equal to the second
+                    -- derivative direction and the tangent direction just
+                    -- before is equal to the reversed second derivative
+                    -- direction. If we happen to be right at the end of the
+                    -- spline, choose the tangent direction just before the end
+                    -- (instead of one that is off the spline!), otherwise
+                    -- choose the tangent direction just after the point
+                    -- (necessary for t = 0, arbitrary for all other points).
                     if parameterValue == ParameterValue.one then
-                        Direction2d.flip secondDerivativeDirection
+                        Direction2d.reverse secondDerivativeDirection
                     else
                         secondDerivativeDirection
 
@@ -550,8 +554,8 @@ tangentDirection nondegenerateSpline parameterValue =
             in
             case Vector2d.direction firstDerivativeVector of
                 Just firstDerivativeDirection ->
-                    -- First derivative is non-zero, so just use its
-                    -- direction as the tangent direction (normal case)
+                    -- First derivative is non-zero, so use its direction as the
+                    -- tangent direction (normal case)
                     firstDerivativeDirection
 
                 Nothing ->
@@ -562,18 +566,16 @@ tangentDirection nondegenerateSpline parameterValue =
                     case Vector2d.direction secondDerivativeVector of
                         Just secondDerivativeDirection ->
                             -- Zero first derivative and non-zero second
-                            -- derivative mean we have reached a
-                            -- reversal point, as above in
-                            -- nonZeroSecondDerivativeSampler
+                            -- derivative mean we have reached a reversal point,
+                            -- as above in the NonZeroSecondDerivative case
                             if parameterValue == ParameterValue.one then
-                                Direction2d.flip secondDerivativeDirection
+                                Direction2d.reverse secondDerivativeDirection
                             else
                                 secondDerivativeDirection
 
                         Nothing ->
-                            -- First and second derivatives are zero, so
-                            -- fall back to the third dervative
-                            -- direction
+                            -- First and second derivatives are zero, so fall
+                            -- back to the third derivative direction
                             thirdDerivativeDirection
 
 

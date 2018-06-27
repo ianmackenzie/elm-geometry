@@ -487,14 +487,14 @@ tangentDirection nondegenerateSpline parameterValue =
                     -- we have reached a reversal point, where the tangent
                     -- direction just afterwards is equal to the second
                     -- derivative direction and the tangent direction just
-                    -- before is equal to the flipped second derivative
+                    -- before is equal to the reversed second derivative
                     -- direction. If we happen to be right at the end of the
                     -- spline, choose the tangent direction just before the end
                     -- (instead of one that is off the spline!), otherwise
                     -- choose the tangent direction just after the point
                     -- (necessary for t = 0, arbitrary for all other points).
                     if parameterValue == ParameterValue.one then
-                        Direction2d.flip secondDerivativeDirection
+                        Direction2d.reverse secondDerivativeDirection
                     else
                         secondDerivativeDirection
 

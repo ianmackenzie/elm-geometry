@@ -14,12 +14,12 @@ module Axis2d
     exposing
         ( Axis2d
         , direction
-        , flip
         , mirrorAcross
         , moveTo
         , originPoint
         , placeIn
         , relativeTo
+        , reverse
         , rotateAround
         , through
         , translateBy
@@ -58,7 +58,7 @@ an origin point and direction. Axes have several uses, such as:
 
 # Transformations
 
-@docs flip, moveTo, rotateAround, translateBy, translateIn, mirrorAcross
+@docs reverse, moveTo, rotateAround, translateBy, translateIn, mirrorAcross
 
 
 # Coordinate conversions
@@ -116,7 +116,17 @@ through point direction_ =
 
 
 {-| Construct an axis with the given direction, through the given origin point.
-Flipped version of `through`.
+Flipped version of `through`. Having both versions allow you to do different
+things with partial application:
+
+    -- A list of axes in different directions all passing
+    -- through the same origin point
+    List.map (Axis2d.through point) directions
+
+    -- A list of parallel axes (all having the same
+    -- direction) through different points
+    List.map (Axis2d.withDirection direction) points
+
 -}
 withDirection : Direction2d -> Point2d -> Axis2d
 withDirection direction_ originPoint_ =
@@ -147,14 +157,14 @@ direction (Types.Axis2d axis) =
 
 {-| Reverse the direction of an axis while keeping the same origin point.
 
-    Axis2d.flip exampleAxis
+    Axis2d.reverse exampleAxis
     --> Axis2d.through (Point2d.fromCoordinates ( 1, 3 ))
     -->     (Direction2d.fromAngle (degrees -150))
 
 -}
-flip : Axis2d -> Axis2d
-flip (Types.Axis2d axis) =
-    through axis.originPoint (Direction2d.flip axis.direction)
+reverse : Axis2d -> Axis2d
+reverse (Types.Axis2d axis) =
+    through axis.originPoint (Direction2d.reverse axis.direction)
 
 
 {-| Move an axis so that it has the given origin point but unchanged direction.
