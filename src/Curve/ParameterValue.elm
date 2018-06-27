@@ -35,7 +35,7 @@ functionality for:
 
 # Conversion to and from `Float` values
 
-@docs clamped, checked, unsafe, value
+@docs value, clamped, checked, unsafe
 
 
 # Ranges
