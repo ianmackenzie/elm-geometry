@@ -216,8 +216,8 @@ run into a bug, if any documentation is missing/incorrect/confusing, or if
 there's a new feature that you would find useful. For general questions about
 using `elm-geometry`, try:
 
-  - Joining the #geometry channel on the [Elm Slack](http://elmlang.herokuapp.com/),
-    or sending me (@ianmackenzie) a message - even if you don't have any
+  - Joining the **#geometry** channel on the [Elm Slack](http://elmlang.herokuapp.com/),
+    or sending me (**@ianmackenzie**) a message - even if you don't have any
     particular questions right now, it would be great to know what you're hoping
     to do with the package!
   - Posting to the [Elm Discourse](https://discourse.elm-lang.org/) forums
