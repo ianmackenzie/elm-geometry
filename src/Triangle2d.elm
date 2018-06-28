@@ -464,7 +464,10 @@ each of the triangle's vertices;
 
 is equivalent to
 
-    Circle2d.throughPoints (Triangle2d.vertices triangle)
+    ( p1, p2, p3 ) =
+        Triangle2d.vertices triangle
+
+    Circle2d.throughPoints p1 p2 p3
 
 If the triangle is degenerate (its three vertices are collinear), returns
 `Nothing`.
