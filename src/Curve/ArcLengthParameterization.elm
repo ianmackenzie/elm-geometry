@@ -81,10 +81,8 @@ segmentsPerLeaf =
   - The maximum magnitude of the second derivative of the curve
   - A tolerance specifying the maximum error of the resulting parameterization
 
-Curve parameter values are assumed to be in the range [0,1].
-
 -}
-build : { maxError : Float, derivativeMagnitude : Float -> Float, maxSecondDerivativeMagnitude : Float } -> ArcLengthParameterization
+build : { maxError : Float, derivativeMagnitude : ParameterValue -> Float, maxSecondDerivativeMagnitude : Float } -> ArcLengthParameterization
 build { maxError, derivativeMagnitude, maxSecondDerivativeMagnitude } =
     let
         height =
@@ -103,7 +101,7 @@ build { maxError, derivativeMagnitude, maxSecondDerivativeMagnitude } =
     ArcLengthParameterization (buildTree derivativeMagnitude 0 0 1 height)
 
 
-buildTree : (Float -> Float) -> Float -> Float -> Float -> Int -> SegmentTree
+buildTree : (ParameterValue -> Float) -> Float -> Float -> Float -> Int -> SegmentTree
 buildTree derivativeMagnitude lengthAtStart_ paramAtStart_ paramAtEnd height =
     let
         paramDelta =
@@ -144,32 +142,56 @@ buildTree derivativeMagnitude lengthAtStart_ paramAtStart_ paramAtEnd height =
             paramStep =
                 0.125 * paramDelta
 
+            derivativeMagnitude0 =
+                derivativeMagnitude (ParameterValue.unsafe (param0 + offset))
+
+            derivativeMagnitude1 =
+                derivativeMagnitude (ParameterValue.unsafe (param1 + offset))
+
+            derivativeMagnitude2 =
+                derivativeMagnitude (ParameterValue.unsafe (param2 + offset))
+
+            derivativeMagnitude3 =
+                derivativeMagnitude (ParameterValue.unsafe (param3 + offset))
+
+            derivativeMagnitude4 =
+                derivativeMagnitude (ParameterValue.unsafe (param4 + offset))
+
+            derivativeMagnitude5 =
+                derivativeMagnitude (ParameterValue.unsafe (param5 + offset))
+
+            derivativeMagnitude6 =
+                derivativeMagnitude (ParameterValue.unsafe (param6 + offset))
+
+            derivativeMagnitude7 =
+                derivativeMagnitude (ParameterValue.unsafe (param7 + offset))
+
             length0 =
                 lengthAtStart_
 
             length1 =
-                length0 + derivativeMagnitude (param0 + offset) * paramStep
+                length0 + paramStep * derivativeMagnitude0
 
             length2 =
-                length1 + derivativeMagnitude (param1 + offset) * paramStep
+                length1 + paramStep * derivativeMagnitude1
 
             length3 =
-                length2 + derivativeMagnitude (param2 + offset) * paramStep
+                length2 + paramStep * derivativeMagnitude2
 
             length4 =
-                length3 + derivativeMagnitude (param3 + offset) * paramStep
+                length3 + paramStep * derivativeMagnitude3
 
             length5 =
-                length4 + derivativeMagnitude (param4 + offset) * paramStep
+                length4 + paramStep * derivativeMagnitude4
 
             length6 =
-                length5 + derivativeMagnitude (param5 + offset) * paramStep
+                length5 + paramStep * derivativeMagnitude5
 
             length7 =
-                length6 + derivativeMagnitude (param6 + offset) * paramStep
+                length6 + paramStep * derivativeMagnitude6
 
             length8 =
-                length7 + derivativeMagnitude (param7 + offset) * paramStep
+                length7 + paramStep * derivativeMagnitude7
         in
         Leaf
             { param0 = param0

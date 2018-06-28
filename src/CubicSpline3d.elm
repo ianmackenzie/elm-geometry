@@ -1479,7 +1479,7 @@ maxSecondDerivativeMagnitude spline =
     6 * max (Vector3d.length v1) (Vector3d.length v2)
 
 
-derivativeMagnitude : CubicSpline3d -> Float -> Float
+derivativeMagnitude : CubicSpline3d -> ParameterValue -> Float
 derivativeMagnitude spline =
     let
         p1 =
@@ -1551,8 +1551,11 @@ derivativeMagnitude spline =
         z234 =
             z34 - z23
     in
-    \t ->
+    \parameterValue ->
         let
+            t =
+                ParameterValue.value parameterValue
+
             x13 =
                 x12 + t * x123
 

@@ -348,7 +348,7 @@ firstDerivativesAt parameterValues spline =
     List.map (firstDerivative spline) parameterValues
 
 
-derivativeMagnitude : QuadraticSpline2d -> Float -> Float
+derivativeMagnitude : QuadraticSpline2d -> ParameterValue -> Float
 derivativeMagnitude spline =
     let
         ( x1, y1 ) =
@@ -378,8 +378,11 @@ derivativeMagnitude spline =
         y123 =
             y23 - y12
     in
-    \t ->
+    \parameterValue ->
         let
+            t =
+                ParameterValue.value parameterValue
+
             x13 =
                 x12 + t * x123
 

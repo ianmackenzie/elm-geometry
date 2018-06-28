@@ -949,7 +949,7 @@ maxSecondDerivativeMagnitude arc =
         dThetaSquared * sqrt (max d0 d1)
 
 
-derivativeMagnitude : EllipticalArc2d -> Float -> Float
+derivativeMagnitude : EllipticalArc2d -> ParameterValue -> Float
 derivativeMagnitude arc =
     let
         rx =
@@ -967,8 +967,11 @@ derivativeMagnitude arc =
         absDTheta =
             abs dTheta
     in
-    \t ->
+    \parameterValue ->
         let
+            t =
+                ParameterValue.value parameterValue
+
             theta =
                 theta0 + t * dTheta
 

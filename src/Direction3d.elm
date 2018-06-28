@@ -421,7 +421,7 @@ three given vectors by performing [Gram-Schmidt normalization](https://en.wikipe
     vector while being perpendicular to the first and second returned directions
 
 If any of the given vectors are zero, any two of them are parallel, or the three
-are coplanar, `Nothing` will be returned.
+are coplanar, returns `Nothing`.
 
     Direction3d.orthonormalize
         (Vector3d.fromComponents ( 3, 3, 0 ))

@@ -12,6 +12,7 @@ module Curve.ParameterValue
         , range
         , steps
         , trailing
+        , unsafe
         , value
         , zero
         )
@@ -34,7 +35,7 @@ functionality for:
 
 # Conversion to and from `Float` values
 
-@docs clamped, checked, value
+@docs value, clamped, checked, unsafe
 
 
 # Ranges
@@ -51,7 +52,7 @@ functionality for:
 
 {-| A parameter value between 0 and 1. Curve types such as [`Arc2d`](Arc2d) and
 [`CubicSpline3d`](CubicSpline3d) use `ParameterValue` arguments for curve
-evaluation functions such as [`Arc2d.pointOn`](Arc2d#pointOn) or
+evaluation functions such as [`Arc2d.pointOn`](Arc2d#pointOn) and
 [`CubicSpline3d.samplesAt`](CubicSpline3d#samplesAt).
 -}
 type ParameterValue
@@ -60,7 +61,7 @@ type ParameterValue
 
 {-| The parameter value 0.
 
-    ParameterValue.value (ParameterValue.zero)
+    ParameterValue.value ParameterValue.zero
     --> 0
 
 -}
@@ -71,7 +72,7 @@ zero =
 
 {-| The parameter value 0.5.
 
-    ParameterValue.value (ParameterValue.half)
+    ParameterValue.value ParameterValue.half
     --> 0.5
 
 -}
@@ -82,7 +83,7 @@ half =
 
 {-| The parameter value 1.
 
-    ParameterValue.value (ParameterValue.one)
+    ParameterValue.value ParameterValue.one
     --> 1
 
 -}
@@ -134,6 +135,17 @@ checked givenValue =
         Just (ParameterValue givenValue)
     else
         Nothing
+
+
+{-| Directly construct a `ParameterValue` from a `Float` without checking
+whether it is valid. `ParameterValue.clamped` should generally be used instead,
+unless you are **very** sure you know what you are doing and
+profiling/benchmarking shows that `ParameterValue.clamped` is a performance
+bottleneck.
+-}
+unsafe : Float -> ParameterValue
+unsafe =
+    ParameterValue
 
 
 {-| Find the midpoint between two parameter values.
