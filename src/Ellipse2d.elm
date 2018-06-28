@@ -63,8 +63,7 @@ import Point2d exposing (Point2d)
 import Vector2d exposing (Vector2d)
 
 
-{-| An ellipse in 2D.
--}
+{-| -}
 type alias Ellipse2d =
     Types.Ellipse2d
 
