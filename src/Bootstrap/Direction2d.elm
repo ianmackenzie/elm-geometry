@@ -1,8 +1,8 @@
 module Bootstrap.Direction2d
     exposing
         ( components
-        , flip
         , perpendicularTo
+        , reverse
         , unsafe
         )
 
@@ -19,8 +19,8 @@ components (Direction2d components_) =
     components_
 
 
-flip : Direction2d -> Direction2d
-flip direction =
+reverse : Direction2d -> Direction2d
+reverse direction =
     let
         ( x, y ) =
             components direction

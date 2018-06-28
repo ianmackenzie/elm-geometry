@@ -19,7 +19,6 @@ module Direction3d
         , components
         , elevation
         , equalWithin
-        , flip
         , from
         , fromAzimuthAndElevation
         , mirrorAcross
@@ -38,6 +37,7 @@ module Direction3d
         , projectInto
         , projectOnto
         , relativeTo
+        , reverse
         , rotateAround
         , toVector
         , unsafe
@@ -98,7 +98,7 @@ several uses, such as:
 
 # Transformations
 
-@docs flip, rotateAround, mirrorAcross, projectOnto
+@docs reverse, rotateAround, mirrorAcross, projectOnto
 
 
 # Coordinate conversions
@@ -472,7 +472,7 @@ orthonormalize xVector xyVector xyzVector =
                                     if dotProduct > 0 then
                                         rightHandedZVector
                                     else if dotProduct < 0 then
-                                        Vector3d.flip rightHandedZVector
+                                        Vector3d.reverse rightHandedZVector
                                     else
                                         Vector3d.zero
                             in
@@ -586,7 +586,7 @@ of the two directions converted to unit vectors.
 
     direction
         |> Direction3d.componentIn
-            (Direction3d.flip direction)
+            (Direction3d.reverse direction)
     --> -1
 
 This is more general and flexible than using `xComponent`, `yComponent` or
@@ -732,12 +732,12 @@ angleFrom firstDirection secondDirection =
 
 {-| Reverse a direction.
 
-    Direction3d.flip Direction3d.y
+    Direction3d.reverse Direction3d.y
     --> Direction3d.negativeY
 
 -}
-flip : Direction3d -> Direction3d
-flip direction =
+reverse : Direction3d -> Direction3d
+reverse direction =
     let
         ( dx, dy, dz ) =
             components direction

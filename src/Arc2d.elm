@@ -697,23 +697,24 @@ type Nondegenerate
     = Nondegenerate Arc2d
 
 
-{-| Attempt to construct a nondegenerate arc from a general `Arc2d`. Returns
-`Nothing` if the arc is in fact degenerate.
+{-| Attempt to construct a nondegenerate arc from a general `Arc2d`. If the arc
+is in fact degenerate (consists of a single point), returns an `Err` with that
+point.
 
     Arc2d.nondegenerate exampleArc
-    --> Just nondegenerateExampleArc
+    --> Ok nondegenerateExampleArc
 
 -}
-nondegenerate : Arc2d -> Maybe Nondegenerate
+nondegenerate : Arc2d -> Result Point2d Nondegenerate
 nondegenerate arc =
     let
         (Types.Arc2d properties) =
             arc
     in
     if properties.signedLength == 0 then
-        Nothing
+        Err (startPoint arc)
     else
-        Just (Nondegenerate arc)
+        Ok (Nondegenerate arc)
 
 
 {-| Convert a nondegenerate arc back to a general `Arc2d`.
@@ -904,7 +905,7 @@ scaleAbout point scale (Types.Arc2d arc) =
             if scale >= 0 then
                 arc.xDirection
             else
-                Direction2d.flip arc.xDirection
+                Direction2d.reverse arc.xDirection
         }
 
 
@@ -995,7 +996,7 @@ mirrorAcross axis =
             { startPoint = mirrorPoint arc.startPoint
             , sweptAngle = -arc.sweptAngle
             , signedLength = -arc.signedLength
-            , xDirection = Direction2d.flip (mirrorDirection arc.xDirection)
+            , xDirection = Direction2d.reverse (mirrorDirection arc.xDirection)
             }
 
 
@@ -1027,7 +1028,8 @@ relativeTo frame (Types.Arc2d arc) =
             , sweptAngle = -arc.sweptAngle
             , signedLength = -arc.signedLength
             , xDirection =
-                Direction2d.flip (Direction2d.relativeTo frame arc.xDirection)
+                Direction2d.reverse
+                    (Direction2d.relativeTo frame arc.xDirection)
             }
 
 
@@ -1059,5 +1061,5 @@ placeIn frame (Types.Arc2d arc) =
             , sweptAngle = -arc.sweptAngle
             , signedLength = -arc.signedLength
             , xDirection =
-                Direction2d.flip (Direction2d.placeIn frame arc.xDirection)
+                Direction2d.reverse (Direction2d.placeIn frame arc.xDirection)
             }

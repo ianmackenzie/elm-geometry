@@ -466,17 +466,18 @@ type Nondegenerate
 
 
 {-| Attempt to construct a nondegenerate spline from a general
-`QuadraticSpline3d`. Returns `Nothing` if the spline is in fact degenerate.
+`QuadraticSpline3d`. If the spline is in fact degenerate (consists of a single
+point), returns an `Err` with that point.
 
     QuadraticSpline3d.nondegenerate exampleSpline
-    --> Just nondegenerateExampleSpline
+    --> Ok nondegenerateExampleSpline
 
 -}
-nondegenerate : QuadraticSpline3d -> Maybe Nondegenerate
+nondegenerate : QuadraticSpline3d -> Result Point3d Nondegenerate
 nondegenerate spline =
     case Vector3d.direction (secondDerivative spline) of
         Just direction ->
-            Just (NonZeroSecondDerivative spline direction)
+            Ok (NonZeroSecondDerivative spline direction)
 
         Nothing ->
             let
@@ -487,10 +488,10 @@ nondegenerate spline =
             in
             case Vector3d.direction firstDerivativeVector of
                 Just direction ->
-                    Just (NonZeroFirstDerivative spline direction)
+                    Ok (NonZeroFirstDerivative spline direction)
 
                 Nothing ->
-                    Nothing
+                    Err (startPoint spline)
 
 
 {-| Convert a nondegenerate spline back to a general `QuadraticSpline3d`.
@@ -554,14 +555,14 @@ tangentDirection nondegenerateSpline parameterValue =
                     -- we have reached a reversal point, where the tangent
                     -- direction just afterwards is equal to the second
                     -- derivative direction and the tangent direction just
-                    -- before is equal to the flipped second derivative
+                    -- before is equal to the reversed second derivative
                     -- direction. If we happen to be right at the end of the
                     -- spline, choose the tangent direction just before the end
                     -- (instead of one that is off the spline!), otherwise
                     -- choose the tangent direction just after the point
                     -- (necessary for t = 0, arbitrary for all other points).
                     if parameterValue == ParameterValue.one then
-                        Direction3d.flip secondDerivativeDirection
+                        Direction3d.reverse secondDerivativeDirection
                     else
                         secondDerivativeDirection
 
@@ -979,7 +980,7 @@ arcLengthParameterized { maxError } spline =
     ArcLengthParameterized
         { underlyingSpline = spline
         , parameterization = parameterization
-        , nondegenerateSpline = nondegenerate spline
+        , nondegenerateSpline = Result.toMaybe (nondegenerate spline)
         }
 
 

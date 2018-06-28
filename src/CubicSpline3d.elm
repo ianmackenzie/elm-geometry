@@ -470,19 +470,20 @@ type Nondegenerate
 
 
 {-| Attempt to construct a nondegenerate spline from a general `CubicSpline3d`.
-Returns `Nothing` if the spline is in fact degenerate.
+If the spline is in fact degenerate (consists of a single point), returns an
+`Err` with that point.
 
     CubicSpline3d.nondegenerate exampleSpline
-    --> Just nondegenerateExampleSpline
+    --> Ok nondegenerateExampleSpline
 
 -}
-nondegenerate : CubicSpline3d -> Maybe Nondegenerate
+nondegenerate : CubicSpline3d -> Result Point3d Nondegenerate
 nondegenerate spline =
     case Vector3d.direction (thirdDerivative spline) of
         Just direction ->
             -- Third derivative is non-zero, so if all else fails we can fall
             -- back on it to provide a tangent direction
-            Just (NonZeroThirdDerivative spline direction)
+            Ok (NonZeroThirdDerivative spline direction)
 
         Nothing ->
             let
@@ -495,7 +496,7 @@ nondegenerate spline =
                 Just direction ->
                     -- Second derivative is non-zero, so if all else fails we
                     -- can fall back on it to provide a tangent direction
-                    Just (NonZeroSecondDerivative spline direction)
+                    Ok (NonZeroSecondDerivative spline direction)
 
                 Nothing ->
                     let
@@ -507,10 +508,13 @@ nondegenerate spline =
                     in
                     case Vector3d.direction firstDerivativeVector of
                         Just direction ->
-                            Just (NonZeroFirstDerivative spline direction)
+                            -- First derivative is constant and non-zero, so the
+                            -- tangent direction will always be equal to the
+                            -- first derivative direction
+                            Ok (NonZeroFirstDerivative spline direction)
 
                         Nothing ->
-                            Nothing
+                            Err (startPoint spline)
 
 
 {-| Convert a nondegenerate spline back to a general `CubicSpline3d`.
@@ -570,21 +574,22 @@ tangentDirection nondegenerateSpline parameterValue =
             case Vector3d.direction firstDerivativeVector of
                 Just firstDerivativeDirection ->
                     -- First derivative is non-zero, so use its direction as the
-                    -- tangent direction
+                    -- tangent direction (normal case)
                     firstDerivativeDirection
 
                 Nothing ->
-                    -- Zero first derivative and non-zero second derivative mean we
-                    -- have reached a reversal point, where the tangent direction
-                    -- just afterwards is equal to the second derivative direction
-                    -- and the tangent direction just before is equal to the flipped
-                    -- second derivative direction. If we happen to be right at the
-                    -- end of the spline, choose the tangent direction just before
-                    -- the end (instead of one that is off the spline!), otherwise
-                    -- choose the tangent direction just after the point (necessary
-                    -- for t = 0, arbitrary for all other points).
+                    -- Zero first derivative and non-zero second derivative mean
+                    -- we have reached a reversal point, where the tangent
+                    -- direction just afterwards is equal to the second
+                    -- derivative direction and the tangent direction just
+                    -- before is equal to the reversed second derivative
+                    -- direction. If we happen to be right at the end of the
+                    -- spline, choose the tangent direction just before the end
+                    -- (instead of one that is off the spline!), otherwise
+                    -- choose the tangent direction just after the point
+                    -- (necessary for t = 0, arbitrary for all other points).
                     if parameterValue == ParameterValue.one then
-                        Direction3d.flip secondDerivativeDirection
+                        Direction3d.reverse secondDerivativeDirection
                     else
                         secondDerivativeDirection
 
@@ -595,8 +600,8 @@ tangentDirection nondegenerateSpline parameterValue =
             in
             case Vector3d.direction firstDerivativeVector of
                 Just firstDerivativeDirection ->
-                    -- First derivative is non-zero, so just use its
-                    -- direction as the tangent direction (normal case)
+                    -- First derivative is non-zero, so use its direction as the
+                    -- tangent direction (normal case)
                     firstDerivativeDirection
 
                 Nothing ->
@@ -607,18 +612,16 @@ tangentDirection nondegenerateSpline parameterValue =
                     case Vector3d.direction secondDerivativeVector of
                         Just secondDerivativeDirection ->
                             -- Zero first derivative and non-zero second
-                            -- derivative mean we have reached a
-                            -- reversal point, as above in
-                            -- nonZeroSecondDerivativeSampler
+                            -- derivative mean we have reached a reversal point,
+                            -- as above in the NonZeroSecondDerivative case
                             if parameterValue == ParameterValue.one then
-                                Direction3d.flip secondDerivativeDirection
+                                Direction3d.reverse secondDerivativeDirection
                             else
                                 secondDerivativeDirection
 
                         Nothing ->
-                            -- First and second derivatives are zero, so
-                            -- fall back to the third dervative
-                            -- direction
+                            -- First and second derivatives are zero, so fall
+                            -- back to the third derivative direction
                             thirdDerivativeDirection
 
 
@@ -1074,7 +1077,7 @@ arcLengthParameterized { maxError } spline =
     ArcLengthParameterized
         { underlyingSpline = spline
         , parameterization = parameterization
-        , nondegenerateSpline = nondegenerate spline
+        , nondegenerateSpline = Result.toMaybe (nondegenerate spline)
         }
 
 

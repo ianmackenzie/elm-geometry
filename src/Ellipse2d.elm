@@ -231,8 +231,8 @@ scaleAbout point scale ellipse =
             else
                 Frame2d.unsafe
                     { originPoint = newCenterPoint
-                    , xDirection = Direction2d.flip (xDirection ellipse)
-                    , yDirection = Direction2d.flip (yDirection ellipse)
+                    , xDirection = Direction2d.reverse (xDirection ellipse)
+                    , yDirection = Direction2d.reverse (yDirection ellipse)
                     }
     in
     Types.Ellipse2d

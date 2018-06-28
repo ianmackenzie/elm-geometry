@@ -13,8 +13,6 @@
 module SketchPlane3d
     exposing
         ( SketchPlane3d
-        , flipX
-        , flipY
         , fromPlane
         , mirrorAcross
         , moveTo
@@ -25,6 +23,8 @@ module SketchPlane3d
         , originPoint
         , placeIn
         , relativeTo
+        , reverseX
+        , reverseY
         , rotateAround
         , rotateAroundOwn
         , throughPoints
@@ -128,7 +128,7 @@ Sketch planes can also be constructed from `Frame3d` values using
 
 # Transformations
 
-@docs offsetBy, flipX, flipY, moveTo, rotateAround, rotateAroundOwn, translateBy, translateIn, translateAlongOwn, mirrorAcross
+@docs offsetBy, reverseX, reverseY, moveTo, rotateAround, rotateAroundOwn, translateBy, translateIn, translateAlongOwn, mirrorAcross
 
 
 # Coordinate conversions
@@ -519,7 +519,7 @@ plane's origin point and normal direction).
     --> Axis3d.z
 
     SketchPlane3d.normalAxis SketchPlane3d.xz
-    --> Axis3d.flip Axis3d.y
+    --> Axis3d.reverse Axis3d.y
 
 -}
 normalAxis : SketchPlane3d -> Axis3d
@@ -534,7 +534,7 @@ normal direction.
     --> Plane3d.xy
 
     SketchPlane3d.toPlane SketchPlane3d.yx
-    --> Plane3d.flip Plane3d.xy
+    --> Plane3d.reverseNormal Plane3d.xy
 
 -}
 toPlane : SketchPlane3d -> Plane3d
@@ -567,7 +567,7 @@ offsetBy distance sketchPlane =
 point unchanged.
 
     sketchPlane =
-        SketchPlane3d.flipX SketchPlane3d.yz
+        SketchPlane3d.reverseX SketchPlane3d.yz
 
     SketchPlane3d.originPoint sketchPlane
     --> Point3d.origin
@@ -579,11 +579,11 @@ point unchanged.
     --> Direction3d.z
 
 -}
-flipX : SketchPlane3d -> SketchPlane3d
-flipX sketchPlane =
+reverseX : SketchPlane3d -> SketchPlane3d
+reverseX sketchPlane =
     unsafe
         { originPoint = originPoint sketchPlane
-        , xDirection = Direction3d.flip (xDirection sketchPlane)
+        , xDirection = Direction3d.reverse (xDirection sketchPlane)
         , yDirection = yDirection sketchPlane
         }
 
@@ -592,7 +592,7 @@ flipX sketchPlane =
 point unchanged.
 
     sketchPlane =
-        SketchPlane3d.flipY SketchPlane3d.yz
+        SketchPlane3d.reverseY SketchPlane3d.yz
 
     SketchPlane3d.originPoint sketchPlane
     --> Point3d.origin
@@ -604,12 +604,12 @@ point unchanged.
     --> Direction3d.negativeZ
 
 -}
-flipY : SketchPlane3d -> SketchPlane3d
-flipY sketchPlane =
+reverseY : SketchPlane3d -> SketchPlane3d
+reverseY sketchPlane =
     unsafe
         { originPoint = originPoint sketchPlane
         , xDirection = xDirection sketchPlane
-        , yDirection = Direction3d.flip (yDirection sketchPlane)
+        , yDirection = Direction3d.reverse (yDirection sketchPlane)
         }
 
 

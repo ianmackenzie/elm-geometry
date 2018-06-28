@@ -15,14 +15,14 @@ module Frame2d
         ( Frame2d
         , atCoordinates
         , atPoint
-        , flipX
-        , flipY
         , isRightHanded
         , mirrorAcross
         , moveTo
         , originPoint
         , placeIn
         , relativeTo
+        , reverseX
+        , reverseY
         , rotateAround
         , rotateBy
         , translateAlongOwn
@@ -74,7 +74,7 @@ always perpendicular to each other). It can be thought of as:
 
 # Transformations
 
-@docs flipX, flipY, moveTo, rotateBy, rotateAround, translateBy, translateIn, translateAlongOwn, mirrorAcross
+@docs reverseX, reverseY, moveTo, rotateBy, rotateAround, translateBy, translateIn, translateAlongOwn, mirrorAcross
 
 
 # Coordinate conversions
@@ -259,7 +259,7 @@ yDirection (Types.Frame2d frame) =
     Frame2d.isRightHanded Frame2d.xy
     --> True
 
-    Frame2d.isRightHanded (Frame2d.flipX Frame2d.xy)
+    Frame2d.isRightHanded (Frame2d.reverseX Frame2d.xy)
     --> False
 
 All predefined frames are right-handed, and most operations on frames preserve
@@ -310,7 +310,7 @@ the same.
         Point2d.fromCoordinates ( 2, 3 )
 
     frame =
-        Frame2d.atPoint point |> Frame2d.flipX
+        Frame2d.atPoint point |> Frame2d.reverseX
 
     Frame2d.originPoint frame
     --> point
@@ -325,11 +325,11 @@ Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartes
 of the frame.
 
 -}
-flipX : Frame2d -> Frame2d
-flipX frame =
+reverseX : Frame2d -> Frame2d
+reverseX frame =
     unsafe
         { originPoint = originPoint frame
-        , xDirection = Direction2d.flip (xDirection frame)
+        , xDirection = Direction2d.reverse (xDirection frame)
         , yDirection = yDirection frame
         }
 
@@ -341,7 +341,7 @@ the same.
         Point2d.fromCoordinates ( 2, 3 )
 
     frame =
-        Frame2d.atPoint point |> Frame2d.flipY
+        Frame2d.atPoint point |> Frame2d.reverseY
 
     Frame2d.originPoint frame
     --> point
@@ -356,12 +356,12 @@ Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartes
 of the frame.
 
 -}
-flipY : Frame2d -> Frame2d
-flipY frame =
+reverseY : Frame2d -> Frame2d
+reverseY frame =
     unsafe
         { originPoint = originPoint frame
         , xDirection = xDirection frame
-        , yDirection = Direction2d.flip (yDirection frame)
+        , yDirection = Direction2d.reverse (yDirection frame)
         }
 
 

@@ -17,7 +17,6 @@ module Direction2d
         , componentIn
         , components
         , equalWithin
-        , flip
         , from
         , fromAngle
         , mirrorAcross
@@ -30,6 +29,7 @@ module Direction2d
         , positiveX
         , positiveY
         , relativeTo
+        , reverse
         , rotateBy
         , rotateClockwise
         , rotateCounterclockwise
@@ -96,7 +96,7 @@ several uses, such as:
 
 # Transformations
 
-@docs flip, rotateClockwise, rotateCounterclockwise, rotateBy, mirrorAcross
+@docs reverse, rotateClockwise, rotateCounterclockwise, rotateBy, mirrorAcross
 
 
 # Coordinate conversions
@@ -295,7 +295,7 @@ orthonormalize xVector xyVector =
                 if perpendicularComponent > 0.0 then
                     Just ( xDirection, yDirection )
                 else if perpendicularComponent < 0.0 then
-                    Just ( xDirection, flip yDirection )
+                    Just ( xDirection, reverse yDirection )
                 else
                     Nothing
             )
@@ -494,13 +494,13 @@ toVector direction =
 
 {-| Reverse a direction.
 
-    Direction2d.flip Direction2d.y
+    Direction2d.reverse Direction2d.y
     --> Direction2d.negativeY
 
 -}
-flip : Direction2d -> Direction2d
-flip =
-    Bootstrap.flip
+reverse : Direction2d -> Direction2d
+reverse =
+    Bootstrap.reverse
 
 
 {-| Rotate a direction by 90 degrees clockwise.

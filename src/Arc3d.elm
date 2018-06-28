@@ -469,23 +469,24 @@ type Nondegenerate
     = Nondegenerate Arc3d
 
 
-{-| Attempt to construct a nondegenerate arc from a general `Arc3d`. Returns
-`Nothing` if the arc is in fact degenerate.
+{-| Attempt to construct a nondegenerate arc from a general `Arc3d`. If the arc
+is in fact degenerate (consists of a single point), returns an `Err` with that
+point.
 
     Arc3d.nondegenerate exampleArc
-    --> Just nondegenerateExampleArc
+    --> Ok nondegenerateExampleArc
 
 -}
-nondegenerate : Arc3d -> Maybe Nondegenerate
+nondegenerate : Arc3d -> Result Point3d Nondegenerate
 nondegenerate arc =
     let
         (Types.Arc3d properties) =
             arc
     in
     if properties.signedLength == 0 then
-        Nothing
+        Err (startPoint arc)
     else
-        Just (Nondegenerate arc)
+        Ok (Nondegenerate arc)
 
 
 {-| Convert a nondegenerate arc back to a general `Arc3d`.
@@ -761,19 +762,19 @@ scaleAbout point scale (Types.Arc3d arc) =
             if scale >= 0 then
                 arc.xDirection
             else
-                Direction3d.flip arc.xDirection
+                Direction3d.reverse arc.xDirection
         , yDirection =
             if scale >= 0 then
                 arc.yDirection
             else
-                Direction3d.flip arc.yDirection
+                Direction3d.reverse arc.yDirection
         }
 
 
 {-| Rotate an arc around a given axis by a given angle (in radians).
 
     Arc3d.rotateAround Axis3d.x (degrees 90) exampleArc
-    --> Arc3d.sweptAround (Axis3d.flip Axis3d.y)
+    --> Arc3d.sweptAround (Axis3d.reverse Axis3d.y)
     -->     (degrees 90)
     -->     (Point3d.fromCoordinates ( 1, 0, 1 ))
 
@@ -840,7 +841,7 @@ translateIn direction distance arc =
 {-| Mirror an arc across a given plane.
 
     Arc3d.mirrorAcross Plane3d.xy exampleArc
-    --> Arc3d.sweptAround (Axis3d.flip Axis3d.z)
+    --> Arc3d.sweptAround (Axis3d.reverse Axis3d.z)
     -->     (degrees -90)
     -->     (Point3d.fromCoordinates ( 1, 1, 0 ))
 
@@ -861,7 +862,7 @@ mirrorAcross plane =
             { startPoint = mirrorPoint arc.startPoint
             , sweptAngle = -arc.sweptAngle
             , signedLength = -arc.signedLength
-            , xDirection = Direction3d.flip (mirrorDirection arc.xDirection)
+            , xDirection = Direction3d.reverse (mirrorDirection arc.xDirection)
             , yDirection = mirrorDirection arc.yDirection
             }
 
@@ -914,10 +915,12 @@ projectInto sketchPlane arc =
 
         ( xDirection2d, xDirection3d ) =
             if Vector3d.componentIn candidateXDirection3d radialVector >= 0 then
-                ( candidateXDirection2d, candidateXDirection3d )
+                ( candidateXDirection2d
+                , candidateXDirection3d
+                )
             else
-                ( Direction2d.flip candidateXDirection2d
-                , Direction3d.flip candidateXDirection3d
+                ( Direction2d.reverse candidateXDirection2d
+                , Direction3d.reverse candidateXDirection3d
                 )
 
         arcRadius =
@@ -1007,7 +1010,7 @@ relativeTo frame (Types.Arc3d arc) =
             , signedLength = -arc.signedLength
             , xDirection =
                 Direction3d.relativeTo frame arc.xDirection
-                    |> Direction3d.flip
+                    |> Direction3d.reverse
             , yDirection = Direction3d.relativeTo frame arc.yDirection
             }
 
@@ -1045,6 +1048,6 @@ placeIn frame (Types.Arc3d arc) =
             , signedLength = -arc.signedLength
             , xDirection =
                 Direction3d.placeIn frame arc.xDirection
-                    |> Direction3d.flip
+                    |> Direction3d.reverse
             , yDirection = Direction3d.placeIn frame arc.yDirection
             }

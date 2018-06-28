@@ -180,7 +180,7 @@ frame2d =
             if rightHanded then
                 rightHandedFrame
             else
-                Frame2d.flipY rightHandedFrame
+                Frame2d.reverseY rightHandedFrame
     in
     Fuzz.map3 frame point2d direction2d Fuzz.bool
 
@@ -188,7 +188,7 @@ frame2d =
 frame3d : Fuzzer Frame3d
 frame3d =
     let
-        frame originPoint xDirection flipY flipZ =
+        frame originPoint xDirection reverseY reverseZ =
             let
                 ( yDirection, zDirection ) =
                     Direction3d.perpendicularBasis xDirection
@@ -197,13 +197,13 @@ frame3d =
                 { originPoint = originPoint
                 , xDirection = xDirection
                 , yDirection =
-                    if flipY then
-                        Direction3d.flip yDirection
+                    if reverseY then
+                        Direction3d.reverse yDirection
                     else
                         yDirection
                 , zDirection =
-                    if flipZ then
-                        Direction3d.flip zDirection
+                    if reverseZ then
+                        Direction3d.reverse zDirection
                     else
                         zDirection
                 }
