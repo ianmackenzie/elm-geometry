@@ -304,14 +304,21 @@ is no such point (the two line segments do not touch, or they overlap), returns
 `Nothing`.
 
     -- 4 corners of a square
-    ( a, b, c, d ) =
-        ( Point2d.fromCoordinates ( 0, 0 )
-        , Point2d.fromCoordinates ( 1, 0 )
-        , Point2d.fromCoordinates ( 1, 1 )
-        , Point2d.fromCoordinates ( 0, 1 )
-        )
+
+    a =
+        Point2d.fromCoordinates ( 0, 0 )
+
+    b =
+        Point2d.fromCoordinates ( 1, 0 )
+
+    c =
+        Point2d.fromCoordinates ( 1, 1 )
+
+    d =
+        Point2d.fromCoordinates ( 0, 1 )
 
     -- definition of some segments with those points
+
     ab =
         LineSegment2d.from a b
     ...
