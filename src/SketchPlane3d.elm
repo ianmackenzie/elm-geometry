@@ -561,8 +561,8 @@ offsetBy distance sketchPlane =
     translateBy displacement sketchPlane
 
 
-{-| Flip the X direction of a sketch plane, leaving its Y direction and origin
-point unchanged.
+{-| Reverse the X direction of a sketch plane, leaving its Y direction and
+origin point unchanged.
 
     sketchPlane =
         SketchPlane3d.reverseX SketchPlane3d.yz
@@ -586,8 +586,8 @@ reverseX sketchPlane =
         }
 
 
-{-| Flip the Y direction of a sketch plane, leaving its X direction and origin
-point unchanged.
+{-| Reverse the Y direction of a sketch plane, leaving its X direction and
+origin point unchanged.
 
     sketchPlane =
         SketchPlane3d.reverseY SketchPlane3d.yz
