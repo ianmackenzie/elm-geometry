@@ -121,8 +121,7 @@ unit =
         Sphere3d.withRadius 3
             (Point3d.fromCoordinates ( 1, 2, 1 ))
 
-A negative radius will be interpreted as positive (the absolute value will be
-used).
+If you pass a negative radius, the absolute value will be used.
 
 -}
 withRadius : Float -> Point3d -> Sphere3d
