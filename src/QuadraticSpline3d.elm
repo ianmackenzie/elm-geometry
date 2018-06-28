@@ -287,9 +287,7 @@ boundingBox spline =
         }
 
 
-{-| Get a point along a spline, based on a parameter that ranges from 0 to 1. A
-parameter value of 0 corresponds to the start point of the spline and a value of
-1 corresponds to the end point.
+{-| Get the point along a spline at a given parameter value:
 
     QuadraticSpline3d.pointOn exampleSpline 0
     --> Point3d.fromCoordinates ( 1, 1, 1 )
