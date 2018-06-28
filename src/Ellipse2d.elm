@@ -70,8 +70,7 @@ type alias Ellipse2d =
 
 
 {-| Construct an ellipse from its center point, X direction, and X and Y radii.
-Negative radii will be interpreted as positive (the absolute value will be
-used).
+If you pass a negative radius, the absolute value will be used.
 
     exampleEllipse =
         Ellipse2d.with

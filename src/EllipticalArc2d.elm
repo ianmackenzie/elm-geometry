@@ -139,8 +139,8 @@ type alias EllipticalArc2d =
 
 
 {-| Construct an elliptical arc from its center point, X direction, X and Y
-radii, start angle and swept angle. Any negative sign on `xRadius` or `yRadius`
-will be ignored (the absolute values will be used).
+radii, start angle and swept angle. If you pass a negative radius, the absolute
+value will be used.
 
 For example, to construct a simple 90 degree elliptical arc, you might use
 

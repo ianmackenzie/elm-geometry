@@ -90,8 +90,7 @@ type alias Circle2d =
         Circle2d.withRadius 3
             (Point2d.fromCoordinates ( 1, 2 ))
 
-The actual radius of the circle will be the absolute value of the given radius
-(passing -3 will have the same effect as 3).
+If you pass a negative radius, the absolute value will be used.
 
 -}
 withRadius : Float -> Point2d -> Circle2d

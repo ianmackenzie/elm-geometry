@@ -86,8 +86,7 @@ type alias Circle3d =
             Direction3d.z
             (Point3d.fromCoordinates ( 2, 0, 1 ))
 
-The actual radius of the circle will be the absolute value of the given radius
-(passing `-3` will have the same effect as `3`).
+If you pass a negative radius, the absolute value will be used.
 
 -}
 withRadius : Float -> Direction3d -> Point3d -> Circle3d
