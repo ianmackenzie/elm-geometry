@@ -82,11 +82,9 @@ will just return the original `triangle2d` value (within roundoff error), while
 
 is equivalent to
 
-    plane =
-        SketchPlane3d.toPlane sketchPlane
-
     triangle3d
-        |> Triangle3d.projectOnto plane
+        |> Triangle3d.projectOnto
+            (SketchPlane3d.toPlane sketchPlane)
 
 @docs SketchPlane3d
 
