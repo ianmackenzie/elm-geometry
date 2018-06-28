@@ -1,4 +1,4 @@
-# elm-geometry [![Build Status](https://travis-ci.org/ianmackenzie/elm-geometry.svg?branch=elm-0.18)](https://travis-ci.org/ianmackenzie/elm-geometry)
+# elm-geometry [![Build Status](https://travis-ci.org/ianmackenzie/elm-geometry.svg?branch=master)](https://travis-ci.org/ianmackenzie/elm-geometry)
 
 `elm-geometry` is an [Elm](http://elm-lang.org) package for working with 2D and
 3D geometry. It provides a wide variety of geometric data types such as points,
@@ -172,20 +172,13 @@ point3d =
 ## Installation
 
 Assuming you have [installed Elm](https://guide.elm-lang.org/install.html) and
-started a new project, use [elm-package](https://guide.elm-lang.org/install.html#elm-package)
-to install `elm-geometry`, either by running
+started a new project, you can install `elm-geometry` by running
 
 ```
-elm package install ianmackenzie/elm-geometry
+elm install ianmackenzie/elm-geometry
 ```
 
-in a command prompt inside your project directory or by adding
-
-```json
-"ianmackenzie/elm-geometry": "1.0.0 <= v < 2.0.0"
-```
-
-to the `dependencies` field in your project's `elm-package.json`.
+in a command prompt inside your project directory.
 
 ## Documentation
 
