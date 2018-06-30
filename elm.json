@@ -49,8 +49,6 @@
         "ianmackenzie/elm-triangular-mesh": "1.0.0 <= v < 2.0.0"
     },
     "test-dependencies": {
-        "elm-explorations/test": "1.0.0 <= v < 2.0.0",
-        "eeue56/elm-shrink": "2.0.0 <= v < 3.0.0",
         "elm/random": "1.0.0 <= v < 2.0.0"
     }
 }
