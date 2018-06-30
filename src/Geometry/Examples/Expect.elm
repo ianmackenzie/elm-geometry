@@ -7,13 +7,7 @@ import Result
 import String
 
 
-{-| This is a very hacky function to compare arbitrary types and the numbers in them with a certain precision.
-In order to achieve this all numbers in the string representation of the two objects are truncated and then the
-resulting strings are compared.
-
-    It should never be used.
-
--}
+{-| -}
 equalWithinTolerance : a -> a -> Expectation
 equalWithinTolerance a b =
     let

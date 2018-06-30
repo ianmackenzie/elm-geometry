@@ -122,51 +122,13 @@ toList range =
     map identity range
 
 
-{-| Specify the number of steps to take between 0 and 1. Note that the number of
-values in the range will be one greater than the number of steps!
-
-    Range.values (Range.from 0 5 (Range.numSteps 1))
-    --> [ 0, 5 ]
-
-    Range.values (Range.from 0 1 (Range.numSteps 2))
-    --> [ 0, 0.5, 1 ]
-
-    Range.values (Range.from 0 1 (Range.numSteps 5))
-    --> [ 0, 0.2, 0.4, 0.6, 0.8, 1 ]
-
-Passing a negative or zero number of steps will result in an empty range:
-
-    Range.values (Range.from 0 1 (Range.numSteps 0))
-    --> []
-
--}
+{-| -}
 numSteps : Int -> Resolution
 numSteps =
     NumSteps
 
 
-{-| Specify the _maximum_ step size from one parameter value to the next. The
-actual step size will be chosen to result in an even parameter spacing.
-
-    Range.values (Range.from 0 1 (Range.maxStepSize 0.5))
-    --> [ 0, 0.5, 1 ]
-
-    Range.values (Range.from 0 1 (Range.maxStepSize 0.499))
-    --> [ 0, 0.3333, 0.6667, 1 ]
-
-    Range.values (Range.from 0 1 (Range.maxStepSize 1))
-    --> [ 0, 1 ]
-
-    Range.values (Range.from 0 1 (Range.maxStepSize 1.5))
-    --> [ 0, 1 ]
-
-Passing a negative or zero maximum step size will result in no values being
-produced:
-
-    Range.values (Range.from 0 1 (Range.maxStepSize 0))
-    --> []
-
--}
+{-| -}
 maxStepSize : Float -> Resolution
 maxStepSize =
     MaxStepSize
