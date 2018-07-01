@@ -1,5 +1,8 @@
 # elm-geometry [![Build Status](https://travis-ci.org/ianmackenzie/elm-geometry.svg?branch=elm-0.18)](https://travis-ci.org/ianmackenzie/elm-geometry)
 
+_Release notes for version 1.0 (relative to `opensolid/geometry` 2.1.0) are
+[here](https://github.com/ianmackenzie/elm-geometry/releases/tag/1.0.0)._
+
 `elm-geometry` is an [Elm](http://elm-lang.org) package for working with 2D and
 3D geometry. It provides a wide variety of geometric data types such as points,
 vectors, arcs, spline curves and coordinate frames, along with functions for
@@ -189,9 +192,9 @@ to the `dependencies` field in your project's `elm-package.json`.
 
 ## Documentation
 
-[Full API documentation](http://package.elm-lang.org/packages/ianmackenzie/elm-geometry/1.0.0)
+[Full API documentation](http://package.elm-lang.org/packages/ianmackenzie/elm-geometry/1.0.2)
 is available for each module. Most modules are associated with a particular data
-type (for example, the [`Point3d`](http://package.elm-lang.org/packages/ianmackenzie/elm-geometry/1.0.0/Point3d)
+type (for example, the [`Point3d`](http://package.elm-lang.org/packages/ianmackenzie/elm-geometry/1.0.2/Point3d)
 module contains functions for creating and manipulating `Point3d` values).
 
 ## Usage details
