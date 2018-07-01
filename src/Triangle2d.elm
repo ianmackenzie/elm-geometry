@@ -69,9 +69,6 @@ Transforming a triangle is equivalent to transforming its vertices.
 
 # Coordinate conversions
 
-Functions for transforming triangles between local and global coordinates in
-different coordinate frames.
-
 @docs relativeTo, placeIn
 
 -}

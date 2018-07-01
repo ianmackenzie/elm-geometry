@@ -67,9 +67,6 @@ an origin point and direction. Axes have several uses, such as:
 
 # Coordinate conversions
 
-Functions for transforming axes between local and global coordinates in
-different coordinate frames.
-
 @docs relativeTo, placeIn, projectInto
 
 -}

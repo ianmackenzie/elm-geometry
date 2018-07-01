@@ -301,11 +301,6 @@ getEdge index state =
 
 error : a -> a
 error defaultValue =
-    let
-        _ =
-            Debug.log "ERROR: please file a bug report at https://github.com/ianmackenzie/elm-geometry/issues"
-                "Internal error in Polygon2d.Monotone module"
-    in
     defaultValue
 
 

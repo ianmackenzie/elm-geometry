@@ -113,10 +113,8 @@ tail is on the axis, then mirroring/projecting its tip across/onto the axis.
 
 # Coordinate conversions
 
-Functions for transforming vectors between local and global coordinates in
-different coordinate frames. Like other transformations, coordinate conversions
-of vectors depend only on the orientations of the relevant frames, not the
-positions of their origin points.
+Like other transformations, coordinate conversions of vectors depend only on the
+orientations of the relevant frames, not the positions of their origin points.
 
 For the examples, assume the following frame has been defined:
 
