@@ -95,9 +95,6 @@ like you can add two vectors.
 
 # Coordinate conversions
 
-Functions for transforming points between local and global coordinates in
-different coordinate frames.
-
 @docs relativeTo, placeIn, projectInto
 
 -}

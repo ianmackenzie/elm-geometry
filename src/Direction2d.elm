@@ -101,10 +101,9 @@ several uses, such as:
 
 # Coordinate conversions
 
-Functions for transforming directions between local and global coordinates in
-different coordinate frames. Like other transformations, coordinate
-transformations of directions depend only on the orientations of the relevant
-frames, not the positions of their origin points.
+Like other transformations, coordinate transformations of directions depend only
+on the orientations of the relevant frames, not the positions of their origin
+points.
 
 For the examples, assume the following frames have been defined:
 
