@@ -175,7 +175,7 @@ Assuming you have [installed Elm](https://guide.elm-lang.org/install.html) and
 started a new project, you can install `elm-geometry` by running
 
 ```
-elm install ianmackenzie/elm-geometry
+elm-package install ianmackenzie/elm-geometry
 ```
 
 in a command prompt inside your project directory.
