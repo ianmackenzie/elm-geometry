@@ -36,6 +36,7 @@
         "QuadraticSpline3d",
         "SketchPlane3d",
         "Sphere3d",
+        "Tesselation2d",
         "Triangle2d",
         "Triangle3d",
         "Vector2d",
