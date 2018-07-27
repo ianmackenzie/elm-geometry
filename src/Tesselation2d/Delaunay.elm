@@ -286,11 +286,11 @@ createFaces ( pointIndex, point ) boundary geometryState =
                     go rest indexed newGeometryState
 
 
-toTriangularMesh : GeometryState -> TriangularMesh Point2d
-toTriangularMesh ({ edges } as state) =
+toTriangularMesh : Array vertex -> GeometryState -> TriangularMesh vertex
+toTriangularMesh points ({ edges } as state) =
     let
         vertices =
-            Array.slice 3 (Array.length state.points - 1) state.points
+            points
 
         folder face accum =
             let
