@@ -3,11 +3,10 @@ module Tesselation2d.Delaunay exposing (..)
 import Point2d exposing (Point2d)
 import Triangle2d exposing (Triangle2d)
 import Circle2d
-import Direction2d
+import Direction2d exposing (Direction2d)
 import Axis2d
 import Array exposing (Array)
 import Set
-import BoundingBox2d
 import TriangularMesh exposing (TriangularMesh)
 import Polygon2d exposing (Polygon2d)
 import Dict exposing (Dict)
@@ -57,7 +56,7 @@ type alias Edge =
 createGeometry : Array Point2d -> GeometryState
 createGeometry rawPoints =
     let
-        ( superTriangle, points ) =
+        points =
             checkInput identity rawPoints
 
         initialGeometryState : GeometryState
@@ -69,8 +68,10 @@ createGeometry rawPoints =
                         |> Array.push { start = 1, end = 2, face = 0, coedge = Nothing, next = 2 }
                         |> Array.push { start = 2, end = 0, face = 0, coedge = Nothing, next = 0 }
 
+                -- center and radius are never used for the supertriangle
+                -- so we provide dummy values
                 ( center, radius ) =
-                    circumcenterAndRadius superTriangle
+                    ( Point2d.origin, 1 / 0 )
 
                 initialFace =
                     { edge1 = 0
@@ -110,10 +111,10 @@ createGeometry rawPoints =
             |> Array.foldl folder initialGeometryState
 
 
-checkInput : (vertex -> Point2d) -> Array vertex -> ( Triangle2d, Array Point2d )
+checkInput : (vertex -> Point2d) -> Array vertex -> Array Point2d
 checkInput toPoint vertices =
     let
-        folder vertex ( seenPoints, boundingBoxAccum, vertexAccum ) =
+        folder vertex ( seenPoints, vertexAccum ) =
             let
                 point =
                     toPoint vertex
@@ -122,46 +123,19 @@ checkInput toPoint vertices =
                     Point2d.coordinates point
             in
                 if Set.member coordinates seenPoints then
-                    ( seenPoints, boundingBoxAccum, vertexAccum )
+                    ( seenPoints, vertexAccum )
                 else
                     ( Set.insert coordinates seenPoints
-                    , BoundingBox2d.hull (BoundingBox2d.singleton point) boundingBoxAccum
                     , point :: vertexAccum
                     )
 
-        ( points, boundingBox, uniqueVertices ) =
-            Array.foldl folder ( Set.empty, BoundingBox2d.singleton Point2d.origin, [] ) vertices
-
-        extrema =
-            let
-                e =
-                    BoundingBox2d.extrema boundingBox
-            in
-                { e
-                    | minX = e.minX - 10
-                    , minY = e.minY - 10
-                    , maxX = e.maxX + 10
-                    , maxY = e.maxY + 10
-                }
-
-        superP1 =
-            Point2d.fromCoordinates ( extrema.minX, extrema.minY )
-
-        superP2 =
-            Point2d.fromCoordinates ( extrema.maxX * 2, extrema.minY )
-
-        superP3 =
-            Point2d.fromCoordinates ( extrema.minX, extrema.maxY * 2 )
-
-        superTriangle =
-            Triangle2d.fromVertices ( superP1, superP2, superP3 )
+        ( points, uniqueVertices ) =
+            Array.foldl folder ( Set.empty, [] ) vertices
     in
-        ( superTriangle
-        , uniqueVertices
+        uniqueVertices
             |> List.reverse
-            |> (\list -> [ superP1, superP2, superP3 ] ++ list)
+            |> (\list -> [ Point2d.origin, Point2d.origin, Point2d.origin ] ++ list)
             |> Array.fromList
-        )
 
 
 createNewFace : ( Int, Point2d ) -> ( Int, Edge ) -> GeometryState -> ( Int, GeometryState )
@@ -245,34 +219,6 @@ createNewFace ( pointIndex, point ) ( edgeIndex, edge ) =
 createFaces : ( Int, Point2d ) -> List ( Int, Edge ) -> GeometryState -> GeometryState
 createFaces ( pointIndex, point ) boundary geometryState =
     let
-        mapper : ( Bool, Int ) -> ( Bool, Int ) -> ( Bool, Int ) -> GeometryState -> GeometryState
-        mapper ( _, first ) ( isLast, currentIndex ) ( _, previousIndex ) ({ edges, faces } as state) =
-            case ( Array.get currentIndex faces, Array.get previousIndex faces ) of
-                ( Just current, Just previous ) ->
-                    let
-                        connectToStart =
-                            if not isLast then
-                                identity
-                            else
-                                case Array.get first faces of
-                                    Just firstFace ->
-                                        updateArray firstFace.edge1 (\edge -> { edge | coedge = Just current.edge3 })
-                                            >> updateArray current.edge3 (\edge -> { edge | coedge = Just firstFace.edge1 })
-
-                                    _ ->
-                                        identity
-                    in
-                        { state
-                            | edges =
-                                edges
-                                    |> updateArray current.edge1 (\edge -> { edge | coedge = Just previous.edge3 })
-                                    |> updateArray previous.edge3 (\edge -> { edge | coedge = Just current.edge1 })
-                                    |> connectToStart
-                        }
-
-                _ ->
-                    state
-
         traverse : (a -> s -> ( b, s )) -> List a -> s -> ( List b, s )
         traverse tagger list initialState =
             let
@@ -292,14 +238,52 @@ createFaces ( pointIndex, point ) boundary geometryState =
         numberOfFaces =
             List.length newFaces - 1
     in
-        case List.indexedMap (\i e -> ( i == numberOfFaces, e )) newFaces of
+        case newFaces of
             [] ->
                 newGeometryState
 
-            (x :: xs) as indexed ->
-                List.map2 (mapper x) (xs ++ [ x ]) indexed
-                    |> List.foldl (>>) identity
-                    |> (\f -> f newGeometryState)
+            (first :: rest) as indexed ->
+                let
+                    -- We have to jump through some hoops here to link up the final edge with the first edge
+                    mapper : Bool -> Int -> Int -> GeometryState -> GeometryState
+                    mapper isLast currentIndex previousIndex ({ edges, faces } as state) =
+                        case ( Array.get currentIndex faces, Array.get previousIndex faces ) of
+                            ( Just current, Just previous ) ->
+                                let
+                                    connectToStart edgesArray =
+                                        if isLast then
+                                            edgesArray
+                                                |> updateArray current.edge1 (\edge -> { edge | coedge = Just previous.edge3 })
+                                                |> updateArray previous.edge3 (\edge -> { edge | coedge = Just current.edge1 })
+                                        else
+                                            edgesArray
+                                in
+                                    { state
+                                        | edges =
+                                            edges
+                                                |> updateArray current.edge1 (\edge -> { edge | coedge = Just previous.edge3 })
+                                                |> updateArray previous.edge3 (\edge -> { edge | coedge = Just current.edge1 })
+                                                |> connectToStart
+                                    }
+
+                            _ ->
+                                state
+
+                    go currentList previousList state =
+                        case ( currentList, previousList ) of
+                            ( c :: cs, p :: ps ) ->
+                                go cs ps (mapper False c p state)
+
+                            -- `indexed` will have one more element than `rest`, and its final element is the final edge
+                            -- when it is encountered, we give the first edge as an argument again so the first and final
+                            -- edge are linked
+                            ( [], p :: _ ) ->
+                                mapper True first p state
+
+                            _ ->
+                                state
+                in
+                    go rest indexed newGeometryState
 
 
 toTriangularMesh : GeometryState -> TriangularMesh Point2d
@@ -353,15 +337,18 @@ centerPointsPerVertex { faces, edges } =
                 Dict.update key updater dict
 
         folder face accum =
-            case getVertexIndices face edges of
-                Nothing ->
-                    accum
+            if face.marked || face.superTrianglePoints /= Zero then
+                accum
+            else
+                case getVertexIndices face edges of
+                    Nothing ->
+                        accum
 
-                Just ( p1, p2, p3 ) ->
-                    accum
-                        |> insertWith p1 (::) [] face.center
-                        |> insertWith p2 (::) [] face.center
-                        |> insertWith p3 (::) [] face.center
+                    Just ( p1, p2, p3 ) ->
+                        accum
+                            |> insertWith p1 (::) [] face.center
+                            |> insertWith p2 (::) [] face.center
+                            |> insertWith p3 (::) [] face.center
     in
         Array.foldl folder Dict.empty faces
 
@@ -483,6 +470,27 @@ findSuperTrianglePoints ( i1, i2, i3 ) =
         Three
 
 
+{-|
+    2
+    |\
+    0-1
+-}
+getSuperTriangleDirection : Int -> Maybe Direction2d
+getSuperTriangleDirection index =
+    case index of
+        0 ->
+            Direction2d.from Point2d.origin (Point2d.fromCoordinates ( -1, -1 ))
+
+        1 ->
+            Direction2d.from Point2d.origin (Point2d.fromCoordinates ( 1, 0 ))
+
+        2 ->
+            Direction2d.from Point2d.origin (Point2d.fromCoordinates ( 0, 1 ))
+
+        _ ->
+            Nothing
+
+
 {-| Actually determine whether a face should be removed given a new point
 
 Most sources only consider triangles that don't share vertices with the initial triangle.
@@ -509,46 +517,61 @@ removeFace point face superTrianglePoints points =
             -}
             let
                 vertices =
-                    Maybe.map3 (\a b c -> ( a, b, c ))
-                        (Array.get shared points)
+                    Maybe.map2 (\x y -> ( x, y ))
                         (Array.get other1 points)
                         (Array.get other2 points)
 
-                rest ( sharedPoint, p1, p2 ) =
-                    case Maybe.map (Axis2d.through p1) (Direction2d.from p1 p2) of
-                        Just axis ->
-                            case compare (Point2d.signedDistanceFrom axis point) 0 of
-                                EQ ->
-                                    False
+                rest p1 p2 axis directionOfInfinity =
+                    let
+                        forPoint =
+                            Point2d.signedDistanceFrom axis point
 
-                                LT ->
-                                    case compare (Point2d.signedDistanceFrom axis sharedPoint) 0 of
-                                        GT ->
-                                            False
+                        -- move the new point a bit in the direction of infinity
+                        forPointAtInfinity =
+                            p1
+                                |> Point2d.translateIn directionOfInfinity 1
+                                |> (\p -> Triangle2d.fromVertices ( p1, p, p2 ))
+                                |> Triangle2d.clockwiseArea
+                    in
+                        case compare forPoint 0 of
+                            EQ ->
+                                False
 
-                                        EQ ->
-                                            -- never happens
-                                            True
+                            LT ->
+                                case compare forPointAtInfinity 0 of
+                                    GT ->
+                                        False
 
-                                        LT ->
-                                            True
+                                    EQ ->
+                                        -- never happens
+                                        True
 
-                                GT ->
-                                    case compare (Point2d.signedDistanceFrom axis sharedPoint) 0 of
-                                        LT ->
-                                            False
+                                    LT ->
+                                        True
 
-                                        EQ ->
-                                            -- never happens
-                                            True
+                            GT ->
+                                case compare forPointAtInfinity 0 of
+                                    LT ->
+                                        False
 
-                                        GT ->
-                                            True
+                                    EQ ->
+                                        -- never happens
+                                        True
 
-                        Nothing ->
-                            True
+                                    GT ->
+                                        True
+
+                optionalAxis p1 p2 =
+                    Maybe.map (Axis2d.through p1) (Direction2d.from p1 p2)
+
+                optionalDirection sharedIndex =
+                    getSuperTriangleDirection sharedIndex
+
+                helper ( p1, p2 ) =
+                    Maybe.map2 (rest p1 p2) (optionalAxis p1 p2) (optionalDirection shared)
             in
-                Maybe.map rest vertices
+                vertices
+                    |> Maybe.andThen helper
                     |> Maybe.withDefault True
 
         Two { shared1, shared2, other } ->
@@ -564,12 +587,18 @@ removeFace point face superTrianglePoints points =
             let
                 vertices =
                     Maybe.map3 (\a b c -> ( a, b, c ))
-                        (Array.get shared1 points)
-                        (Array.get shared2 points)
+                        (getSuperTriangleDirection shared1)
+                        (getSuperTriangleDirection shared2)
                         (Array.get other points)
 
+                directionBetween : Direction2d -> Direction2d -> Maybe Direction2d
+                directionBetween d1 d2 =
+                    Direction2d.from
+                        (d1 |> Direction2d.components |> Point2d.fromCoordinates)
+                        (d2 |> Direction2d.components |> Point2d.fromCoordinates)
+
                 rest ( inf1, inf2, oth ) =
-                    case Maybe.map (Axis2d.through oth) (Direction2d.from inf1 inf2) of
+                    case Maybe.map (Axis2d.through oth) (directionBetween inf1 inf2) of
                         Just axis ->
                             case compare (Point2d.signedDistanceFrom axis point) 0 of
                                 EQ ->
