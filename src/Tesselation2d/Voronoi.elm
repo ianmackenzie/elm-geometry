@@ -1,26 +1,20 @@
 module Tesselation2d.Voronoi exposing (..)
 
 import Point2d exposing (Point2d)
-import Triangle2d exposing (Triangle2d)
-import Circle2d
 import Direction2d exposing (Direction2d)
 import Vector2d exposing (Vector2d)
-import Axis2d
+import LineSegment2d exposing (LineSegment2d)
 import Array exposing (Array)
-import Set
-import TriangularMesh exposing (TriangularMesh)
-import Polygon2d exposing (Polygon2d)
 import Dict exposing (Dict)
 import Tesselation2d.Delaunay as Delaunay exposing (GeometryState, SuperTrianglePoints(..))
 
 
--- Validate points at infinity
-
-
+{-| Validate points at infinity
+-}
 type Accumulator
     = NoneAtInfinity (List Point2d)
-    | OneAtInfinity (List Point2d) Direction2d
-    | TwoAtInfinity (List Point2d) Direction2d Direction2d
+    | OneAtInfinity (List Point2d) ( Point2d, Direction2d )
+    | TwoAtInfinity (List Point2d) ( Point2d, Direction2d ) ( Point2d, Direction2d )
     | MoreAtInfinity
 
 
@@ -30,19 +24,28 @@ These triangles are needed to create good voronoi regions at the outside of the 
 `centerPointsPerVertex` will annotate a circle's center point with whether its triangle shared a vertex with the supertriangle.
 Here we check that there are either 0 or 2 such center points (these are the only two numbers that make sense).
 -}
-validatePointsAtInfinity : Accumulator -> List CircleCenter -> Accumulator
-validatePointsAtInfinity accumulator remaining =
+validatePointsAtInfinity : Point2d -> List CircleCenter -> Accumulator -> Accumulator
+validatePointsAtInfinity datapoint remaining accumulator =
     case remaining of
         (At vertex) :: rest ->
             case accumulator of
                 NoneAtInfinity vertices ->
-                    validatePointsAtInfinity (NoneAtInfinity (vertex :: vertices)) rest
+                    validatePointsAtInfinity
+                        datapoint
+                        rest
+                        (NoneAtInfinity (vertex :: vertices))
 
                 OneAtInfinity vertices atInfinity1 ->
-                    validatePointsAtInfinity (OneAtInfinity (vertex :: vertices) atInfinity1) rest
+                    validatePointsAtInfinity
+                        datapoint
+                        rest
+                        (OneAtInfinity (vertex :: vertices) atInfinity1)
 
                 TwoAtInfinity vertices atInfinity1 atInfinity2 ->
-                    validatePointsAtInfinity (TwoAtInfinity (vertex :: vertices) atInfinity1 atInfinity2) rest
+                    validatePointsAtInfinity
+                        datapoint
+                        rest
+                        (TwoAtInfinity (vertex :: vertices) atInfinity1 atInfinity2)
 
                 MoreAtInfinity ->
                     MoreAtInfinity
@@ -50,12 +53,12 @@ validatePointsAtInfinity accumulator remaining =
         (AtInfinity atInfinity) :: rest ->
             case accumulator of
                 NoneAtInfinity vertices ->
-                    validatePointsAtInfinity (OneAtInfinity vertices atInfinity) rest
+                    validatePointsAtInfinity datapoint rest (OneAtInfinity vertices atInfinity)
 
                 OneAtInfinity vertices atInfinity1 ->
-                    validatePointsAtInfinity (TwoAtInfinity vertices atInfinity1 atInfinity) rest
+                    validatePointsAtInfinity datapoint rest (TwoAtInfinity vertices atInfinity1 atInfinity)
 
-                TwoAtInfinity vertices atInfinity1 atInfinity2 ->
+                TwoAtInfinity _ _ _ ->
                     MoreAtInfinity
 
                 MoreAtInfinity ->
@@ -67,7 +70,7 @@ validatePointsAtInfinity accumulator remaining =
 
 type CircleCenter
     = At Point2d
-    | AtInfinity Direction2d
+    | AtInfinity ( Point2d, Direction2d )
 
 
 {-| Find the direction of a point of the supertriangle.
@@ -113,38 +116,53 @@ centerPointsPerVertex { faces, edges, points } =
                 case face.superTrianglePoints of
                     One { shared, other1, other2 } ->
                         let
-                            -- find the direction perpendicular to the direction between the other two vertices of the face
-                            direction =
-                                case Maybe.map2 Direction2d.from (Array.get other1 points) (Array.get other2 points) |> Maybe.andThen identity of
-                                    Just edge ->
-                                        let
-                                            -- there are two perpendicular directions
-                                            -- we want the one closes to the actual point at infinity
-                                            clockwise =
-                                                Direction2d.rotateClockwise edge
-
-                                            v1 =
-                                                lookupDirection shared
-                                                    |> Direction2d.toVector
-
-                                            v2 =
-                                                Direction2d.toVector clockwise
-                                        in
-                                            if Vector2d.dotProduct v1 v2 < 0 then
-                                                Direction2d.rotateCounterclockwise edge
-                                            else
-                                                clockwise
-
+                            -- the direction perpendicular to the edge between the other points
+                            -- and the midpoint of that edge
+                            perpendicularDirection =
+                                case Maybe.map2 Tuple.pair (Array.get other1 points) (Array.get other2 points) of
                                     Nothing ->
-                                        Direction2d.x
+                                        Nothing
 
-                            pointAtInfinity =
-                                AtInfinity direction
+                                    Just ( start, end ) ->
+                                        case Direction2d.from start end of
+                                            Just edge ->
+                                                let
+                                                    rotatedClockwise =
+                                                        Direction2d.rotateClockwise edge
+
+                                                    v1 =
+                                                        lookupDirection shared
+                                                            |> Direction2d.toVector
+
+                                                    v2 =
+                                                        Direction2d.toVector rotatedClockwise
+
+                                                    middle =
+                                                        LineSegment2d.interpolate (LineSegment2d.from start end) 0.5
+                                                in
+                                                    Just <|
+                                                        if Vector2d.dotProduct v1 v2 >= 0 then
+                                                            AtInfinity ( middle, rotatedClockwise )
+                                                        else
+                                                            AtInfinity ( middle, (Direction2d.rotateCounterclockwise edge) )
+
+                                            Nothing ->
+                                                Nothing
                         in
-                            accum
-                                |> insertWith shared (::) [] pointAtInfinity
-                                |> insertWith other1 (::) [] pointAtInfinity
-                                |> insertWith other2 (::) [] pointAtInfinity
+                            case Delaunay.getVertexIndices face edges of
+                                Nothing ->
+                                    accum
+
+                                Just ( p1, p2, p3 ) ->
+                                    case perpendicularDirection of
+                                        Nothing ->
+                                            accum
+
+                                        Just newPoint ->
+                                            accum
+                                                |> insertWith p1 (::) [] newPoint
+                                                |> insertWith p2 (::) [] newPoint
+                                                |> insertWith p3 (::) [] newPoint
 
                     Zero ->
                         case Delaunay.getVertexIndices face edges of

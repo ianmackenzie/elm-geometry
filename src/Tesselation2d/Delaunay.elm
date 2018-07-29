@@ -293,18 +293,21 @@ toTriangularMesh points ({ edges } as state) =
             points
 
         folder face accum =
-            let
-                faceEdges =
-                    Maybe.map2 Tuple.pair
-                        (Array.get face.edge1 edges)
-                        (Array.get face.edge3 edges)
-            in
-                case faceEdges of
-                    Just ( firstEdge, lastEdge ) ->
-                        ( firstEdge.start, firstEdge.end, lastEdge.start ) :: accum
+            if face.marked then
+                accum
+            else
+                let
+                    faceEdges =
+                        Maybe.map2 Tuple.pair
+                            (Array.get face.edge1 edges)
+                            (Array.get face.edge3 edges)
+                in
+                    case faceEdges of
+                        Just ( firstEdge, lastEdge ) ->
+                            ( firstEdge.start - 3, firstEdge.end - 3, lastEdge.start - 3 ) :: accum
 
-                    Nothing ->
-                        accum
+                        Nothing ->
+                            accum
 
         triangles =
             Array.foldr folder [] state.faces
