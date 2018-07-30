@@ -1,0 +1,32 @@
+{
+    "type": "application",
+    "source-directories": [
+        ".",
+        "src",
+        "../src",
+        "../../elm-geometry-svg-0.19/src"
+    ],
+    "elm-version": "0.19.0",
+    "dependencies": {
+        "direct": {
+            "elm/browser": "1.0.0",
+            "elm/core": "1.0.0",
+            "elm/html": "1.0.0",
+            "elm/random": "1.0.0",
+            "elm/svg": "1.0.0",
+            "elm/virtual-dom": "1.0.0",
+            "ianmackenzie/elm-float-extra": "1.0.1",
+            "ianmackenzie/elm-interval": "1.0.1",
+            "ianmackenzie/elm-triangular-mesh": "1.0.2"
+        },
+        "indirect": {
+            "elm/json": "1.0.0",
+            "elm/time": "1.0.0",
+            "elm/url": "1.0.0"
+        }
+    },
+    "test-dependencies": {
+        "direct": {},
+        "indirect": {}
+    }
+}
