@@ -11,18 +11,6 @@ import Triangle2d exposing (Triangle2d)
 import TriangularMesh exposing (TriangularMesh)
 
 
-type OuterVertex
-    = TopOuterVertex
-    | LeftOuterVertex
-    | RightOuterVertex
-
-
-type OuterEdge
-    = LeftOuterEdge
-    | RightOuterEdge
-    | BottomOuterEdge
-
-
 type alias Vertex =
     { index : Int
     , position : Point2d
@@ -31,248 +19,194 @@ type alias Vertex =
 
 type Face
     = ThreeVertexFace Vertex Vertex Vertex Circle2d
-    | TwoVertexFace Vertex Vertex OuterVertex Axis2d
-    | OneVertexFace Vertex OuterEdge Axis2d
+    | TwoVertexFace Vertex Vertex Int Direction2d
+    | OneVertexFace Vertex Int Int Direction2d
 
 
 type Edge
     = InnerEdge Vertex Vertex
-    | InnerToOuterEdge Vertex OuterVertex
-    | OuterToInnerEdge OuterVertex Vertex
-    | OuterEdge OuterEdge
+    | InnerToOuterEdge Vertex Int
+    | OuterToInnerEdge Int Vertex
+    | OuterEdge Direction2d Int Int
 
 
-innerEdge : Int -> Vertex -> Vertex -> ( Int, Edge )
-innerEdge numVertices firstVertex secondVertex =
+edgeKey : Int -> Int -> Int -> Int
+edgeKey numVertices i j =
+    if i <= j then
+        i * numVertices + j
+    else
+        j * numVertices + i
+
+
+signedDistance : Point2d -> Point2d -> Direction2d -> Float
+signedDistance point vertexPoint edgeDirection =
     let
-        i =
-            firstVertex.index
+        ( x, y ) =
+            Point2d.coordinates point
 
-        j =
-            secondVertex.index
+        ( x0, y0 ) =
+            Point2d.coordinates vertexPoint
 
-        key =
-            if i <= j then
-                i * numVertices + j
-            else
-                j * numVertices + i
+        ( dx, dy ) =
+            Direction2d.components edgeDirection
     in
-    ( key, InnerEdge firstVertex secondVertex )
+    (y - y0) * dx - (x - x0) * dy
 
 
-mixedEdgeKey : Int -> Vertex -> OuterVertex -> Int
-mixedEdgeKey numVertices vertex outerVertex =
-    let
-        i =
-            vertex.index
-    in
-    case outerVertex of
-        TopOuterVertex ->
-            -numVertices + i
+addEdge : Edge -> Maybe Edge -> Maybe Edge
+addEdge newEdge maybeEdge =
+    case maybeEdge of
+        Just edge ->
+            Nothing
 
-        LeftOuterVertex ->
-            -2 * numVertices + i
-
-        RightOuterVertex ->
-            -3 * numVertices + i
+        Nothing ->
+            Just newEdge
 
 
-innerToOuterEdge : Int -> Vertex -> OuterVertex -> ( Int, Edge )
-innerToOuterEdge numVertices vertex outerVertex =
-    ( mixedEdgeKey numVertices vertex outerVertex
-    , InnerToOuterEdge vertex outerVertex
-    )
-
-
-outerToInnerEdge : Int -> OuterVertex -> Vertex -> ( Int, Edge )
-outerToInnerEdge numVertices outerVertex vertex =
-    ( mixedEdgeKey numVertices vertex outerVertex
-    , OuterToInnerEdge outerVertex vertex
-    )
-
-
-outerEdge : Int -> OuterEdge -> ( Int, Edge )
-outerEdge numVertices whichEdge =
-    let
-        key =
-            case whichEdge of
-                LeftOuterEdge ->
-                    -4 * numVertices
-
-                RightOuterEdge ->
-                    -5 * numVertices
-
-                BottomOuterEdge ->
-                    -6 * numVertices
-    in
-    ( key, OuterEdge whichEdge )
-
-
-contains : Point2d -> Face -> Bool
-contains point face =
-    case face of
-        ThreeVertexFace _ _ _ circle ->
-            Circle2d.contains point circle
-
-        TwoVertexFace _ _ _ axis ->
-            Point2d.signedDistanceFrom axis point > 0
-
-        OneVertexFace _ _ axis ->
-            Point2d.signedDistanceFrom axis point > 0
-
-
-processFaces : List Face -> Int -> Vertex -> List Face -> List ( Int, Edge ) -> ( List Face, List ( Int, Edge ) )
-processFaces faces numVertices newVertex retainedFaces accumulatedEdges =
+processFaces : List Face -> Int -> Vertex -> List Face -> Dict Int Edge -> ( List Face, List Edge )
+processFaces faces numVertices newVertex retainedFaces edgesByKey =
     case faces of
         firstFace :: remainingFaces ->
-            if contains newVertex.position firstFace then
-                case firstFace of
-                    ThreeVertexFace vertex1 vertex2 vertex3 _ ->
+            case firstFace of
+                ThreeVertexFace firstVertex secondVertex thirdVertex circumcircle ->
+                    if Circle2d.contains newVertex.position circumcircle then
                         let
+                            firstIndex =
+                                firstVertex.index
+
+                            secondIndex =
+                                secondVertex.index
+
+                            thirdIndex =
+                                thirdVertex.index
+
+                            key1 =
+                                edgeKey numVertices firstIndex secondIndex
+
                             edge1 =
-                                innerEdge numVertices vertex1 vertex2
+                                InnerEdge firstVertex secondVertex
+
+                            key2 =
+                                edgeKey numVertices secondIndex thirdIndex
 
                             edge2 =
-                                innerEdge numVertices vertex2 vertex3
+                                InnerEdge secondVertex thirdVertex
+
+                            key3 =
+                                edgeKey numVertices thirdIndex firstIndex
 
                             edge3 =
-                                innerEdge numVertices vertex3 vertex1
+                                InnerEdge thirdVertex firstVertex
+
+                            updatedEdges =
+                                edgesByKey
+                                    |> Dict.update key1 (addEdge edge1)
+                                    |> Dict.update key2 (addEdge edge2)
+                                    |> Dict.update key3 (addEdge edge3)
                         in
                         processFaces remainingFaces
                             numVertices
                             newVertex
                             retainedFaces
-                            (edge1 :: edge2 :: edge3 :: accumulatedEdges)
+                            updatedEdges
+                    else
+                        processFaces remainingFaces
+                            numVertices
+                            newVertex
+                            (firstFace :: retainedFaces)
+                            edgesByKey
 
-                    TwoVertexFace firstVertex secondVertex outerVertex _ ->
+                TwoVertexFace firstVertex secondVertex outerIndex edgeDirection ->
+                    if signedDistance newVertex.position firstVertex.position edgeDirection > 0 then
                         let
+                            firstIndex =
+                                firstVertex.index
+
+                            secondIndex =
+                                secondVertex.index
+
+                            key1 =
+                                edgeKey numVertices firstIndex secondIndex
+
                             edge1 =
-                                innerToOuterEdge numVertices
-                                    secondVertex
-                                    outerVertex
+                                InnerEdge firstVertex secondVertex
+
+                            key2 =
+                                edgeKey numVertices secondIndex outerIndex
 
                             edge2 =
-                                outerToInnerEdge numVertices
-                                    outerVertex
-                                    firstVertex
+                                InnerToOuterEdge secondVertex outerIndex
+
+                            key3 =
+                                edgeKey numVertices outerIndex firstIndex
 
                             edge3 =
-                                innerEdge numVertices firstVertex secondVertex
+                                OuterToInnerEdge outerIndex firstVertex
+
+                            updatedEdges =
+                                edgesByKey
+                                    |> Dict.update key1 (addEdge edge1)
+                                    |> Dict.update key2 (addEdge edge2)
+                                    |> Dict.update key3 (addEdge edge3)
                         in
                         processFaces remainingFaces
                             numVertices
                             newVertex
                             retainedFaces
-                            (edge1 :: edge2 :: edge3 :: accumulatedEdges)
+                            updatedEdges
+                    else
+                        processFaces remainingFaces
+                            numVertices
+                            newVertex
+                            (firstFace :: retainedFaces)
+                            edgesByKey
 
-                    OneVertexFace vertex LeftOuterEdge _ ->
+                OneVertexFace vertex firstOuterIndex secondOuterIndex edgeDirection ->
+                    if signedDistance newVertex.position vertex.position edgeDirection < 0 then
                         let
+                            vertexIndex =
+                                vertex.index
+
+                            key1 =
+                                edgeKey numVertices vertexIndex firstOuterIndex
+
                             edge1 =
-                                innerToOuterEdge numVertices
-                                    vertex
-                                    TopOuterVertex
+                                InnerToOuterEdge vertex firstOuterIndex
+
+                            key2 =
+                                edgeKey numVertices firstOuterIndex secondOuterIndex
 
                             edge2 =
-                                outerEdge numVertices LeftOuterEdge
+                                OuterEdge edgeDirection
+                                    firstOuterIndex
+                                    secondOuterIndex
+
+                            key3 =
+                                edgeKey numVertices secondOuterIndex vertexIndex
 
                             edge3 =
-                                outerToInnerEdge numVertices
-                                    LeftOuterVertex
-                                    vertex
+                                OuterToInnerEdge secondOuterIndex vertex
+
+                            updatedEdges =
+                                edgesByKey
+                                    |> Dict.update key1 (addEdge edge1)
+                                    |> Dict.update key2 (addEdge edge2)
+                                    |> Dict.update key3 (addEdge edge3)
                         in
                         processFaces remainingFaces
                             numVertices
                             newVertex
                             retainedFaces
-                            (edge1 :: edge2 :: edge3 :: accumulatedEdges)
-
-                    OneVertexFace vertex RightOuterEdge _ ->
-                        let
-                            edge1 =
-                                innerToOuterEdge numVertices
-                                    vertex
-                                    RightOuterVertex
-
-                            edge2 =
-                                outerEdge numVertices RightOuterEdge
-
-                            edge3 =
-                                outerToInnerEdge numVertices
-                                    TopOuterVertex
-                                    vertex
-                        in
+                            updatedEdges
+                    else
                         processFaces remainingFaces
                             numVertices
                             newVertex
-                            retainedFaces
-                            (edge1 :: edge2 :: edge3 :: accumulatedEdges)
-
-                    OneVertexFace vertex BottomOuterEdge _ ->
-                        let
-                            edge1 =
-                                innerToOuterEdge numVertices
-                                    vertex
-                                    LeftOuterVertex
-
-                            edge2 =
-                                outerEdge numVertices BottomOuterEdge
-
-                            edge3 =
-                                outerToInnerEdge numVertices
-                                    RightOuterVertex
-                                    vertex
-                        in
-                        processFaces remainingFaces
-                            numVertices
-                            newVertex
-                            retainedFaces
-                            (edge1 :: edge2 :: edge3 :: accumulatedEdges)
-            else
-                processFaces remainingFaces
-                    numVertices
-                    newVertex
-                    (firstFace :: retainedFaces)
-                    accumulatedEdges
+                            (firstFace :: retainedFaces)
+                            edgesByKey
 
         [] ->
-            ( retainedFaces, accumulatedEdges )
-
-
-addEdge : ( Int, Edge ) -> Dict Int Edge -> Dict Int Edge
-addEdge ( key, edge ) edgesByKey =
-    edgesByKey
-        |> Dict.update key
-            (\entry ->
-                case entry of
-                    Just _ ->
-                        Nothing
-
-                    Nothing ->
-                        Just edge
-            )
-
-
-collectStarEdges : List ( Int, Edge ) -> Dict Int Edge -> List Edge
-collectStarEdges edges edgesByKey =
-    case edges of
-        firstEdge :: remainingEdges ->
-            collectStarEdges remainingEdges (addEdge firstEdge edgesByKey)
-
-        [] ->
-            Dict.values edgesByKey
-
-
-directionToOuterVertex : OuterVertex -> Direction2d
-directionToOuterVertex outerVertex =
-    case outerVertex of
-        TopOuterVertex ->
-            Direction2d.positiveY
-
-        LeftOuterVertex ->
-            Direction2d.negativeX
-
-        RightOuterVertex ->
-            Direction2d.positiveX
+            ( retainedFaces, Dict.values edgesByKey )
 
 
 addNewFaces : Vertex -> List Edge -> List Face -> List Face
@@ -306,19 +240,16 @@ addNewFaces newVertex edges faces =
                         Nothing ->
                             addNewFaces newVertex remainingEdges faces
 
-                InnerToOuterEdge vertex outerVertex ->
+                InnerToOuterEdge vertex outerIndex ->
                     case Direction2d.from newVertex.position vertex.position of
-                        Just direction ->
+                        Just edgeDirection ->
                             let
-                                axis =
-                                    Axis2d.through newVertex.position direction
-
                                 newFace =
                                     TwoVertexFace
                                         newVertex
                                         vertex
-                                        outerVertex
-                                        axis
+                                        outerIndex
+                                        edgeDirection
 
                                 updatedFaces =
                                     newFace :: faces
@@ -328,19 +259,16 @@ addNewFaces newVertex edges faces =
                         Nothing ->
                             addNewFaces newVertex remainingEdges faces
 
-                OuterToInnerEdge outerVertex vertex ->
+                OuterToInnerEdge outerIndex vertex ->
                     case Direction2d.from vertex.position newVertex.position of
-                        Just direction ->
+                        Just edgeDirection ->
                             let
-                                axis =
-                                    Axis2d.through vertex.position direction
-
                                 newFace =
                                     TwoVertexFace
                                         vertex
                                         newVertex
-                                        outerVertex
-                                        axis
+                                        outerIndex
+                                        edgeDirection
 
                                 updatedFaces =
                                     newFace :: faces
@@ -350,24 +278,13 @@ addNewFaces newVertex edges faces =
                         Nothing ->
                             addNewFaces newVertex remainingEdges faces
 
-                OuterEdge whichEdge ->
+                OuterEdge edgeDirection firstOuterIndex secondOuterIndex ->
                     let
-                        direction =
-                            case whichEdge of
-                                LeftOuterEdge ->
-                                    Direction2d.positiveY
-
-                                RightOuterEdge ->
-                                    Direction2d.negativeY
-
-                                BottomOuterEdge ->
-                                    Direction2d.negativeX
-
-                        axis =
-                            Axis2d.through newVertex.position direction
-
                         newFace =
-                            OneVertexFace newVertex whichEdge axis
+                            OneVertexFace newVertex
+                                firstOuterIndex
+                                secondOuterIndex
+                                edgeDirection
 
                         updatedFaces =
                             newFace :: faces
@@ -383,11 +300,8 @@ addVertices numVertices vertices faces =
     case vertices of
         firstVertex :: remainingVertices ->
             let
-                ( retainedFaces, accumulatedEdges ) =
-                    processFaces faces numVertices firstVertex [] []
-
-                starEdges =
-                    collectStarEdges accumulatedEdges Dict.empty
+                ( retainedFaces, starEdges ) =
+                    processFaces faces numVertices firstVertex [] Dict.empty
 
                 updatedFaces =
                     addNewFaces firstVertex starEdges retainedFaces
@@ -415,6 +329,18 @@ triangulation points =
         uniqueVertices =
             List.foldl insertVertex Dict.empty vertices
                 |> Dict.values
+
+        topOuterIndex =
+            numVertices
+
+        leftOuterIndex =
+            numVertices + 1
+
+        rightOuterIndex =
+            numVertices + 2
+
+        totalNumVertices =
+            numVertices + 3
     in
     case uniqueVertices of
         firstVertex :: remainingVertices ->
@@ -424,17 +350,20 @@ triangulation points =
 
                 initialFaces =
                     [ OneVertexFace firstVertex
-                        LeftOuterEdge
-                        (Axis2d.through firstPoint Direction2d.positiveY)
+                        topOuterIndex
+                        leftOuterIndex
+                        Direction2d.positiveY
                     , OneVertexFace firstVertex
-                        RightOuterEdge
-                        (Axis2d.through firstPoint Direction2d.negativeY)
+                        leftOuterIndex
+                        rightOuterIndex
+                        Direction2d.negativeX
                     , OneVertexFace firstVertex
-                        BottomOuterEdge
-                        (Axis2d.through firstPoint Direction2d.negativeX)
+                        rightOuterIndex
+                        topOuterIndex
+                        Direction2d.negativeY
                     ]
             in
-            addVertices numVertices remainingVertices initialFaces
+            addVertices totalNumVertices remainingVertices initialFaces
 
         [] ->
             []
