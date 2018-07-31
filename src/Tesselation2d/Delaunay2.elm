@@ -63,7 +63,7 @@ addEdge newEdge maybeEdge =
             Just newEdge
 
 
-processFaces : List Face -> Int -> Vertex -> List Face -> Dict Int Edge -> ( List Face, List Edge )
+processFaces : List Face -> Int -> Vertex -> List Face -> Dict Int Edge -> ( List Face, Dict Int Edge )
 processFaces faces numVertices newVertex retainedFaces edgesByKey =
     case faces of
         firstFace :: remainingFaces ->
@@ -224,93 +224,76 @@ processFaces faces numVertices newVertex retainedFaces edgesByKey =
                             edgesByKey
 
         [] ->
-            ( retainedFaces, Dict.values edgesByKey )
+            ( retainedFaces, edgesByKey )
 
 
-addNewFaces : Vertex -> List Edge -> List Face -> List Face
-addNewFaces newVertex edges faces =
-    case edges of
-        firstEdge :: remainingEdges ->
-            case firstEdge of
-                InnerEdge firstVertex secondVertex ->
-                    let
-                        maybeCircumcircle =
-                            Circle2d.throughPoints
-                                newVertex.position
-                                firstVertex.position
-                                secondVertex.position
-                    in
-                    case maybeCircumcircle of
-                        Just circumcircle ->
-                            let
-                                newFace =
-                                    ThreeVertexFace
-                                        newVertex
-                                        firstVertex
-                                        secondVertex
-                                        circumcircle
-
-                                updatedFaces =
-                                    newFace :: faces
-                            in
-                            addNewFaces newVertex remainingEdges updatedFaces
-
-                        Nothing ->
-                            addNewFaces newVertex remainingEdges faces
-
-                InnerToOuterEdge vertex outerIndex ->
-                    case Direction2d.from newVertex.position vertex.position of
-                        Just edgeDirection ->
-                            let
-                                newFace =
-                                    TwoVertexFace
-                                        newVertex
-                                        vertex
-                                        outerIndex
-                                        edgeDirection
-
-                                updatedFaces =
-                                    newFace :: faces
-                            in
-                            addNewFaces newVertex remainingEdges updatedFaces
-
-                        Nothing ->
-                            addNewFaces newVertex remainingEdges faces
-
-                OuterToInnerEdge outerIndex vertex ->
-                    case Direction2d.from vertex.position newVertex.position of
-                        Just edgeDirection ->
-                            let
-                                newFace =
-                                    TwoVertexFace
-                                        vertex
-                                        newVertex
-                                        outerIndex
-                                        edgeDirection
-
-                                updatedFaces =
-                                    newFace :: faces
-                            in
-                            addNewFaces newVertex remainingEdges updatedFaces
-
-                        Nothing ->
-                            addNewFaces newVertex remainingEdges faces
-
-                OuterEdge edgeDirection firstOuterIndex secondOuterIndex ->
+addNewFace : Vertex -> Int -> Edge -> List Face -> List Face
+addNewFace newVertex _ edge faces =
+    case edge of
+        InnerEdge firstVertex secondVertex ->
+            let
+                maybeCircumcircle =
+                    Circle2d.throughPoints
+                        newVertex.position
+                        firstVertex.position
+                        secondVertex.position
+            in
+            case maybeCircumcircle of
+                Just circumcircle ->
                     let
                         newFace =
-                            OneVertexFace newVertex
-                                firstOuterIndex
-                                secondOuterIndex
-                                edgeDirection
-
-                        updatedFaces =
-                            newFace :: faces
+                            ThreeVertexFace
+                                newVertex
+                                firstVertex
+                                secondVertex
+                                circumcircle
                     in
-                    addNewFaces newVertex remainingEdges updatedFaces
+                    newFace :: faces
 
-        [] ->
-            faces
+                Nothing ->
+                    faces
+
+        InnerToOuterEdge vertex outerIndex ->
+            case Direction2d.from newVertex.position vertex.position of
+                Just edgeDirection ->
+                    let
+                        newFace =
+                            TwoVertexFace
+                                newVertex
+                                vertex
+                                outerIndex
+                                edgeDirection
+                    in
+                    newFace :: faces
+
+                Nothing ->
+                    faces
+
+        OuterToInnerEdge outerIndex vertex ->
+            case Direction2d.from vertex.position newVertex.position of
+                Just edgeDirection ->
+                    let
+                        newFace =
+                            TwoVertexFace
+                                vertex
+                                newVertex
+                                outerIndex
+                                edgeDirection
+                    in
+                    newFace :: faces
+
+                Nothing ->
+                    faces
+
+        OuterEdge edgeDirection firstOuterIndex secondOuterIndex ->
+            let
+                newFace =
+                    OneVertexFace newVertex
+                        firstOuterIndex
+                        secondOuterIndex
+                        edgeDirection
+            in
+            newFace :: faces
 
 
 addVertices : Int -> List Vertex -> List Face -> List Face
@@ -322,7 +305,7 @@ addVertices numVertices vertices faces =
                     processFaces faces numVertices firstVertex [] Dict.empty
 
                 updatedFaces =
-                    addNewFaces firstVertex starEdges retainedFaces
+                    Dict.foldl (addNewFace firstVertex) retainedFaces starEdges
             in
             addVertices numVertices remainingVertices updatedFaces
 
