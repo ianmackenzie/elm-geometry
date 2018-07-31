@@ -117,7 +117,15 @@ processFaces faces numVertices newVertex retainedFaces edgesByKey =
                             edgesByKey
 
                 TwoVertexFace firstVertex secondVertex outerIndex edgeDirection ->
-                    if signedDistance newVertex.position firstVertex.position edgeDirection > 0 then
+                    let
+                        insideInfiniteCircle =
+                            signedDistance
+                                newVertex.position
+                                firstVertex.position
+                                edgeDirection
+                                > 0
+                    in
+                    if insideInfiniteCircle then
                         let
                             firstIndex =
                                 firstVertex.index
@@ -162,7 +170,15 @@ processFaces faces numVertices newVertex retainedFaces edgesByKey =
                             edgesByKey
 
                 OneVertexFace vertex firstOuterIndex secondOuterIndex edgeDirection ->
-                    if signedDistance newVertex.position vertex.position edgeDirection < 0 then
+                    let
+                        insideInfiniteCircle =
+                            signedDistance
+                                newVertex.position
+                                vertex.position
+                                edgeDirection
+                                < 0
+                    in
+                    if insideInfiniteCircle then
                         let
                             vertexIndex =
                                 vertex.index
@@ -174,7 +190,9 @@ processFaces faces numVertices newVertex retainedFaces edgesByKey =
                                 InnerToOuterEdge vertex firstOuterIndex
 
                             key2 =
-                                edgeKey numVertices firstOuterIndex secondOuterIndex
+                                edgeKey numVertices
+                                    firstOuterIndex
+                                    secondOuterIndex
 
                             edge2 =
                                 OuterEdge edgeDirection
