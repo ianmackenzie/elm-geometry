@@ -39,13 +39,13 @@ edgeKey numVertices i j =
 
 
 signedDistance : Point2d -> Point2d -> Direction2d -> Float
-signedDistance point vertexPoint edgeDirection =
+signedDistance point vertexPosition edgeDirection =
     let
         ( x, y ) =
             Point2d.coordinates point
 
         ( x0, y0 ) =
-            Point2d.coordinates vertexPoint
+            Point2d.coordinates vertexPosition
 
         ( dx, dy ) =
             Direction2d.components edgeDirection
