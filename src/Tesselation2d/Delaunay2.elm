@@ -7,8 +7,13 @@ import Dict exposing (Dict)
 import Direction2d exposing (Direction2d)
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
+import Polygon2d exposing (Polygon2d)
+import Polyline2d exposing (Polyline2d)
 import Triangle2d exposing (Triangle2d)
 import TriangularMesh exposing (TriangularMesh)
+
+
+-- DELAUNAY TRIANGULATION
 
 
 type alias Vertex =
@@ -368,3 +373,172 @@ triangulation points =
 
         [] ->
             []
+
+
+
+-- VORONOI REGIONS
+
+
+type VoronoiRegion
+    = FiniteRegion Polygon2d
+    | InfiniteRegion Polyline2d Direction2d Direction2d
+
+
+type alias VoronoiAccumulator =
+    { interiorPoints : List Point2d
+    , startAxis : Maybe Axis2d
+    , endAxis : Maybe Axis2d
+    }
+
+
+addInterior : Point2d -> Maybe VoronoiAccumulator -> Maybe VoronoiAccumulator
+addInterior point entry =
+    case entry of
+        Just accumulator ->
+            Just
+                { accumulator
+                    | interiorPoints = point :: accumulator.interiorPoints
+                }
+
+        Nothing ->
+            Just
+                { interiorPoints = [ point ]
+                , startAxis = Nothing
+                , endAxis = Nothing
+                }
+
+
+addStartAxis : Axis2d -> Maybe VoronoiAccumulator -> Maybe VoronoiAccumulator
+addStartAxis axis entry =
+    case entry of
+        Just accumulator ->
+            Just { accumulator | startAxis = Just axis }
+
+        Nothing ->
+            Just
+                { interiorPoints = []
+                , startAxis = Just axis
+                , endAxis = Nothing
+                }
+
+
+addEndAxis : Axis2d -> Maybe VoronoiAccumulator -> Maybe VoronoiAccumulator
+addEndAxis axis entry =
+    case entry of
+        Just accumulator ->
+            Just { accumulator | endAxis = Just axis }
+
+        Nothing ->
+            Just
+                { interiorPoints = []
+                , startAxis = Nothing
+                , endAxis = Just axis
+                }
+
+
+accumulateRegions : Face -> Dict Int VoronoiAccumulator -> Dict Int VoronoiAccumulator
+accumulateRegions face accumulators =
+    case face of
+        ThreeVertexFace firstVertex secondVertex thirdVertex circumcircle ->
+            let
+                centerPoint =
+                    Circle2d.centerPoint circumcircle
+            in
+            accumulators
+                |> Dict.update firstVertex.index (addInterior centerPoint)
+                |> Dict.update secondVertex.index (addInterior centerPoint)
+                |> Dict.update thirdVertex.index (addInterior centerPoint)
+
+        TwoVertexFace firstVertex secondVertex _ edgeDirection ->
+            let
+                point =
+                    Point2d.midpoint firstVertex.position secondVertex.position
+
+                direction =
+                    Direction2d.rotateCounterclockwise edgeDirection
+
+                axis =
+                    Axis2d.through point direction
+            in
+            accumulators
+                |> Dict.update firstVertex.index (addEndAxis axis)
+                |> Dict.update secondVertex.index (addStartAxis axis)
+
+        OneVertexFace _ _ _ _ ->
+            -- Infinite triangles with only one actual vertex do not
+            -- contribute to the Voronoi regions
+            accumulators
+
+
+pseudoAngle : Point2d -> Point2d -> Float
+pseudoAngle startPoint endPoint =
+    let
+        ( x0, y0 ) =
+            Point2d.coordinates startPoint
+
+        ( x1, y1 ) =
+            Point2d.coordinates endPoint
+
+        dx =
+            x1 - x0
+
+        dy =
+            y1 - y0
+
+        p =
+            dx / (abs dx + abs dy)
+    in
+    if dy < 0 then
+        p - 1
+    else
+        1 - p
+
+
+createRegion : Vertex -> Dict Int VoronoiAccumulator -> VoronoiRegion
+createRegion vertex accumulatorsByIndex =
+    case Dict.get vertex.index accumulatorsByIndex of
+        Just { interiorPoints, startAxis, endAxis } ->
+            case ( startAxis, endAxis ) of
+                ( Nothing, Nothing ) ->
+                    let
+                        sortedPoints =
+                            interiorPoints
+                                |> List.sortBy (pseudoAngle vertex.position)
+                    in
+                    FiniteRegion (Polygon2d.singleLoop sortedPoints)
+
+                ( Just startAxis_, Just endAxis_ ) ->
+                    let
+                        startPoint =
+                            Axis2d.originPoint startAxis_
+
+                        endPoint =
+                            Axis2d.originPoint endAxis_
+                    in
+                    case Direction2d.from startPoint endPoint of
+                        Just direction ->
+                            let
+                                axis =
+                                    Axis2d.through startPoint direction
+
+                                sortedPoints =
+                                    (endPoint :: interiorPoints)
+                                        |> List.sortBy
+                                            (Point2d.signedDistanceAlong axis)
+
+                                polyline =
+                                    Polyline2d.fromVertices
+                                        (startPoint :: sortedPoints)
+                            in
+                            InfiniteRegion polyline
+                                (Axis2d.direction startAxis_)
+                                (Axis2d.direction endAxis_)
+
+                        Nothing ->
+                            FiniteRegion (Polygon2d.singleLoop [])
+
+                _ ->
+                    FiniteRegion (Polygon2d.singleLoop [])
+
+        Nothing ->
+            FiniteRegion (Polygon2d.singleLoop [])
