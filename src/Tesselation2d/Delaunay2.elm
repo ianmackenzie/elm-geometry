@@ -323,8 +323,8 @@ insertVertex vertex dict =
     Dict.insert (Point2d.coordinates vertex.position) vertex dict
 
 
-triangulation : Array Point2d -> List Face
-triangulation points =
+triangulate : Array Point2d -> ( List Vertex, List Face )
+triangulate points =
     let
         vertices =
             points |> Array.toList |> List.indexedMap Vertex
@@ -368,11 +368,14 @@ triangulation points =
                         topOuterIndex
                         Direction2d.negativeY
                     ]
+
+                faces =
+                    addVertices totalNumVertices remainingVertices initialFaces
             in
-            addVertices totalNumVertices remainingVertices initialFaces
+            ( vertices, faces )
 
         [] ->
-            []
+            ( vertices, [] )
 
 
 
@@ -385,9 +388,9 @@ type VoronoiRegion
 
 
 type alias VoronoiAccumulator =
-    { interiorPoints : List Point2d
-    , startAxis : Maybe Axis2d
-    , endAxis : Maybe Axis2d
+    { points : List Point2d
+    , startDirection : Maybe Direction2d
+    , endDirection : Maybe Direction2d
     }
 
 
@@ -397,42 +400,42 @@ addInterior point entry =
         Just accumulator ->
             Just
                 { accumulator
-                    | interiorPoints = point :: accumulator.interiorPoints
+                    | points = point :: accumulator.points
                 }
 
         Nothing ->
             Just
-                { interiorPoints = [ point ]
-                , startAxis = Nothing
-                , endAxis = Nothing
+                { points = [ point ]
+                , startDirection = Nothing
+                , endDirection = Nothing
                 }
 
 
-addStartAxis : Axis2d -> Maybe VoronoiAccumulator -> Maybe VoronoiAccumulator
-addStartAxis axis entry =
+addStartDirection : Direction2d -> Maybe VoronoiAccumulator -> Maybe VoronoiAccumulator
+addStartDirection direction entry =
     case entry of
         Just accumulator ->
-            Just { accumulator | startAxis = Just axis }
+            Just { accumulator | startDirection = Just direction }
 
         Nothing ->
             Just
-                { interiorPoints = []
-                , startAxis = Just axis
-                , endAxis = Nothing
+                { points = []
+                , startDirection = Just direction
+                , endDirection = Nothing
                 }
 
 
-addEndAxis : Axis2d -> Maybe VoronoiAccumulator -> Maybe VoronoiAccumulator
-addEndAxis axis entry =
+addEndDirection : Direction2d -> Maybe VoronoiAccumulator -> Maybe VoronoiAccumulator
+addEndDirection direction entry =
     case entry of
         Just accumulator ->
-            Just { accumulator | endAxis = Just axis }
+            Just { accumulator | endDirection = Just direction }
 
         Nothing ->
             Just
-                { interiorPoints = []
-                , startAxis = Nothing
-                , endAxis = Just axis
+                { points = []
+                , startDirection = Nothing
+                , endDirection = Just direction
                 }
 
 
@@ -456,13 +459,10 @@ accumulateRegions face accumulators =
 
                 direction =
                     Direction2d.rotateCounterclockwise edgeDirection
-
-                axis =
-                    Axis2d.through point direction
             in
             accumulators
-                |> Dict.update firstVertex.index (addEndAxis axis)
-                |> Dict.update secondVertex.index (addStartAxis axis)
+                |> Dict.update firstVertex.index (addEndDirection direction)
+                |> Dict.update secondVertex.index (addStartDirection direction)
 
         OneVertexFace _ _ _ _ ->
             -- Infinite triangles with only one actual vertex do not
@@ -494,51 +494,50 @@ pseudoAngle startPoint endPoint =
         1 - p
 
 
-createRegion : Vertex -> Dict Int VoronoiAccumulator -> VoronoiRegion
-createRegion vertex accumulatorsByIndex =
+createRegion : Dict Int VoronoiAccumulator -> Vertex -> VoronoiRegion
+createRegion accumulatorsByIndex vertex =
     case Dict.get vertex.index accumulatorsByIndex of
-        Just { interiorPoints, startAxis, endAxis } ->
-            case ( startAxis, endAxis ) of
+        Just { points, startDirection, endDirection } ->
+            case ( startDirection, endDirection ) of
                 ( Nothing, Nothing ) ->
                     let
                         sortedPoints =
-                            interiorPoints
-                                |> List.sortBy (pseudoAngle vertex.position)
+                            points |> List.sortBy (pseudoAngle vertex.position)
                     in
                     FiniteRegion (Polygon2d.singleLoop sortedPoints)
 
-                ( Just startAxis_, Just endAxis_ ) ->
+                ( Just startDirection_, Just endDirection_ ) ->
                     let
-                        startPoint =
-                            Axis2d.originPoint startAxis_
+                        sortDirection =
+                            startDirection_ |> Direction2d.rotateClockwise
 
-                        endPoint =
-                            Axis2d.originPoint endAxis_
+                        sortAxis =
+                            Axis2d.through Point2d.origin sortDirection
+
+                        sortedPoints =
+                            points
+                                |> List.sortBy
+                                    (Point2d.signedDistanceAlong sortAxis)
+
+                        polyline =
+                            Polyline2d.fromVertices sortedPoints
                     in
-                    case Direction2d.from startPoint endPoint of
-                        Just direction ->
-                            let
-                                axis =
-                                    Axis2d.through startPoint direction
-
-                                sortedPoints =
-                                    (endPoint :: interiorPoints)
-                                        |> List.sortBy
-                                            (Point2d.signedDistanceAlong axis)
-
-                                polyline =
-                                    Polyline2d.fromVertices
-                                        (startPoint :: sortedPoints)
-                            in
-                            InfiniteRegion polyline
-                                (Axis2d.direction startAxis_)
-                                (Axis2d.direction endAxis_)
-
-                        Nothing ->
-                            FiniteRegion (Polygon2d.singleLoop [])
+                    InfiniteRegion polyline startDirection_ endDirection_
 
                 _ ->
                     FiniteRegion (Polygon2d.singleLoop [])
 
         Nothing ->
             FiniteRegion (Polygon2d.singleLoop [])
+
+
+voronoiRegions : Array Point2d -> List VoronoiRegion
+voronoiRegions points =
+    let
+        ( vertices, faces ) =
+            triangulate points
+
+        accumulators =
+            List.foldl accumulateRegions Dict.empty faces
+    in
+    List.map (createRegion accumulators) vertices
