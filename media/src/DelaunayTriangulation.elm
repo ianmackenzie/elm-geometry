@@ -7,6 +7,7 @@ import Browser
 import Circle2d
 import Geometry.Svg as Svg
 import Html exposing (Html)
+import Html.Attributes
 import Html.Events
 import LineSegment2d
 import Point2d exposing (Point2d)
@@ -120,9 +121,9 @@ drawInfiniteRegion region =
                         Svg.g [ Svg.Attributes.stroke "blue" ]
                             [ Svg.polyline2d [] polyline
                             , Svg.lineSegment2d [ Svg.Attributes.strokeDasharray "3 3" ]
-                                (LineSegment2d.from startPoint (Point2d.along startAxis 100))
+                                (LineSegment2d.from startPoint (Point2d.along startAxis 700))
                             , Svg.lineSegment2d [ Svg.Attributes.strokeDasharray "3 3" ]
-                                (LineSegment2d.from endPoint (Point2d.along endAxis 100))
+                                (LineSegment2d.from endPoint (Point2d.along endAxis 700))
                             ]
 
                 [] ->
@@ -154,6 +155,7 @@ view model =
                 , Svg.Attributes.height "700"
                 , Svg.Attributes.fill "white"
                 , Svg.Attributes.stroke "black"
+                , Html.Attributes.style "border" "1px solid black"
                 ]
                 [ Svg.g [] (List.filterMap drawFiniteRegion voronoiRegions)
                 , Svg.g [] (List.filterMap drawInfiniteRegion voronoiRegions)
