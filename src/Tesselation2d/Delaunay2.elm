@@ -512,7 +512,7 @@ createRegion accumulatorsByIndex vertex =
                             startDirection_ |> Direction2d.rotateClockwise
 
                         sortAxis =
-                            Axis2d.through Point2d.origin sortDirection
+                            Axis2d.through vertex.position sortDirection
 
                         sortedPoints =
                             points
