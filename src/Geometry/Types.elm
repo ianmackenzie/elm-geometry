@@ -12,6 +12,8 @@
 
 module Geometry.Types exposing (..)
 
+import Array exposing (Array)
+
 
 type Vector2d
     = Vector2d ( Float, Float )
@@ -238,4 +240,25 @@ type EllipticalArc2d
         { ellipse : Ellipse2d
         , startAngle : Float
         , sweptAngle : Float
+        }
+
+
+type alias DelaunayVertex vertex =
+    { vertex : vertex
+    , index : Int
+    , position : Point2d
+    }
+
+
+type DelaunayFace vertex
+    = ThreeVertexFace (DelaunayVertex vertex) (DelaunayVertex vertex) (DelaunayVertex vertex) Circle2d
+    | TwoVertexFace (DelaunayVertex vertex) (DelaunayVertex vertex) Int Direction2d
+    | OneVertexFace (DelaunayVertex vertex) Int Int Direction2d
+
+
+type DelaunayTriangulation2d vertex
+    = EmptyDelaunayTriangulation2d
+    | DelaunayTriangulation2d
+        { vertices : Array vertex
+        , faces : List (DelaunayFace vertex)
         }
