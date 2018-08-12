@@ -17,7 +17,8 @@
             "elm/virtual-dom": "1.0.0",
             "ianmackenzie/elm-float-extra": "1.0.1",
             "ianmackenzie/elm-interval": "1.0.1",
-            "ianmackenzie/elm-triangular-mesh": "1.0.2"
+            "ianmackenzie/elm-triangular-mesh": "1.0.2",
+            "mpizenberg/elm-pointer-events": "4.0.0"
         },
         "indirect": {
             "elm/json": "1.0.0",
