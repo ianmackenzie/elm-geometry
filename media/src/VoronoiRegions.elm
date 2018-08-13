@@ -1,7 +1,7 @@
-module DelaunayTriangulation exposing (..)
+module VoronoiRegions exposing (..)
 
 import Array
-import Axis2d
+import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Browser
 import Circle2d
@@ -60,7 +60,7 @@ pointsGenerator =
                 (Random.float (minX + 30) (maxX - 30))
                 (Random.float (minY + 30) (maxY - 30))
     in
-    Random.int 50 500
+    Random.int 3 500
         |> Random.andThen
             (\listSize -> Random.list listSize pointGenerator)
 
@@ -100,6 +100,37 @@ update message model =
             ( { model | mousePosition = Just point }, Cmd.none )
 
 
+drawFiniteRegion : { vertex : Point2d, region : Polygon2d } -> Svg msg
+drawFiniteRegion region =
+    Svg.polygon2d
+        [ Svg.Attributes.stroke "black"
+        , Svg.Attributes.fill "rgb(246,246,250)"
+        ]
+        region.region
+
+
+drawInfiniteRegion : { vertex : Point2d, leftAxis : Axis2d, rightAxis : Axis2d, finitePortion : Polyline2d } -> Svg msg
+drawInfiniteRegion region =
+    let
+        leftSegment =
+            LineSegment2d.from
+                (Axis2d.originPoint region.leftAxis)
+                (Point2d.along region.leftAxis 1000)
+
+        rightSegment =
+            LineSegment2d.from
+                (Axis2d.originPoint region.rightAxis)
+                (Point2d.along region.rightAxis 1000)
+    in
+    Svg.g [ Svg.Attributes.stroke "blue" ]
+        [ Svg.polyline2d [] region.finitePortion
+        , Svg.lineSegment2d [ Svg.Attributes.strokeDasharray "3 3" ]
+            leftSegment
+        , Svg.lineSegment2d [ Svg.Attributes.strokeDasharray "3 3" ]
+            rightSegment
+        ]
+
+
 view : Model -> Browser.Document Msg
 view model =
     let
@@ -112,11 +143,11 @@ view model =
                 Nothing ->
                     model.baseTriangulation
 
-        triangles =
-            DelaunayTriangulation2d.triangles triangulation
-
         points =
             Array.toList (DelaunayTriangulation2d.vertices triangulation)
+
+        voronoiRegions =
+            DelaunayTriangulation2d.voronoiRegions triangulation
 
         mousePointElement =
             case model.mousePosition of
@@ -137,7 +168,7 @@ view model =
                 , Point2d.fromCoordinates ( 0, height )
                 ]
     in
-    { title = "Delaunay Triangulation"
+    { title = "Voronoi Regions"
     , body =
         [ Html.div [ Html.Events.onClick Click ]
             [ Svg.svg
@@ -148,7 +179,8 @@ view model =
                 , Html.Attributes.style "border" "1px solid black"
                 , Mouse.onMove MouseMove
                 ]
-                [ Svg.g [] (triangles |> List.map (Svg.triangle2d []))
+                [ Svg.g [] (List.map drawFiniteRegion voronoiRegions.finite)
+                , Svg.g [] (List.map drawInfiniteRegion voronoiRegions.infinite)
                 , Svg.g [] (points |> List.map (Circle2d.withRadius 2.5 >> Svg.circle2d []))
                 , mousePointElement
                 , Svg.polygon2d [ Svg.Attributes.fill "transparent" ] overlayPolygon
