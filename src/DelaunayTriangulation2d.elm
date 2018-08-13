@@ -288,12 +288,19 @@ type Edge vertex
     | OuterEdge Direction2d Int Int
 
 
-edgeKey : Int -> Int -> ( Int, Int )
+edgeKey : Int -> Int -> Float
 edgeKey i j =
-    if i <= j then
-        ( i, j )
+    let
+        x =
+            toFloat (i + 3)
+
+        y =
+            toFloat (j + 3)
+    in
+    if x >= y then
+        x * x + y
     else
-        ( j, i )
+        y * y + x
 
 
 signedDistance : Point2d -> Point2d -> Direction2d -> Float
@@ -321,7 +328,7 @@ addEdge newEdge maybeEdge =
             Just newEdge
 
 
-processFaces : List (DelaunayFace vertex) -> DelaunayVertex vertex -> List (DelaunayFace vertex) -> Dict ( Int, Int ) (Edge vertex) -> ( List (DelaunayFace vertex), Dict ( Int, Int ) (Edge vertex) )
+processFaces : List (DelaunayFace vertex) -> DelaunayVertex vertex -> List (DelaunayFace vertex) -> Dict Float (Edge vertex) -> ( List (DelaunayFace vertex), Dict Float (Edge vertex) )
 processFaces facesToProcess newVertex retainedFaces edgesByKey =
     case facesToProcess of
         firstFace :: remainingFaces ->
@@ -477,7 +484,7 @@ processFaces facesToProcess newVertex retainedFaces edgesByKey =
             ( retainedFaces, edgesByKey )
 
 
-addNewFace : DelaunayVertex vertex -> ( Int, Int ) -> Edge vertex -> List (DelaunayFace vertex) -> List (DelaunayFace vertex)
+addNewFace : DelaunayVertex vertex -> Float -> Edge vertex -> List (DelaunayFace vertex) -> List (DelaunayFace vertex)
 addNewFace newVertex ignoredEdgeKey edge currentFaces =
     case edge of
         InnerEdge firstDelaunayVertex secondDelaunayVertex ->
