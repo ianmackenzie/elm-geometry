@@ -260,5 +260,6 @@ type DelaunayTriangulation2d vertex
     = EmptyDelaunayTriangulation2d
     | DelaunayTriangulation2d
         { vertices : Array vertex
+        , delaunayVertices : List (DelaunayVertex vertex)
         , faces : List (DelaunayFace vertex)
         }

@@ -12,14 +12,18 @@ module DelaunayTriangulation2d
         , toMesh
         , triangles
         , vertices
+        , voronoiRegions
         )
 
 import Array exposing (Array)
+import Axis2d exposing (Axis2d)
 import Circle2d exposing (Circle2d)
 import Dict exposing (Dict)
 import Direction2d exposing (Direction2d)
 import Geometry.Types as Types exposing (DelaunayFace(..), DelaunayVertex)
 import Point2d exposing (Point2d)
+import Polygon2d exposing (Polygon2d)
+import Polyline2d exposing (Polyline2d)
 import Triangle2d exposing (Triangle2d)
 import TriangularMesh exposing (TriangularMesh)
 
@@ -87,13 +91,13 @@ createInitialFaces firstVertex =
 fromVerticesBy : (vertex -> Point2d) -> Array vertex -> DelaunayTriangulation2d vertex
 fromVerticesBy getPosition givenVertices =
     let
-        distinctDelaunayVertices =
+        delaunayVertices =
             givenVertices
                 |> Array.foldl (insertVertex getPosition) ( 0, Dict.empty )
                 |> Tuple.second
                 |> Dict.values
     in
-    case distinctDelaunayVertices of
+    case delaunayVertices of
         firstDelaunayVertex :: remainingDelaunayVertices ->
             let
                 initialFaces =
@@ -104,6 +108,7 @@ fromVerticesBy getPosition givenVertices =
             in
             Types.DelaunayTriangulation2d
                 { vertices = givenVertices
+                , delaunayVertices = delaunayVertices
                 , faces = faces_
                 }
 
@@ -116,34 +121,57 @@ insertPoint point delaunayTriangulation =
     insertVertexBy identity point delaunayTriangulation
 
 
+isNewPoint : Point2d -> List (DelaunayVertex vertex) -> Bool
+isNewPoint point delaunayVertices =
+    case delaunayVertices of
+        [] ->
+            True
+
+        firstDelaunayVertex :: remainingDelaunayVertices ->
+            if point == firstDelaunayVertex.position then
+                False
+            else
+                isNewPoint point remainingDelaunayVertices
+
+
 insertVertexBy : (vertex -> Point2d) -> vertex -> DelaunayTriangulation2d vertex -> DelaunayTriangulation2d vertex
 insertVertexBy getPosition vertex delaunayTriangulation =
+    let
+        position =
+            getPosition vertex
+    in
     case delaunayTriangulation of
         Types.EmptyDelaunayTriangulation2d ->
             let
                 initialDelaunayVertex =
                     { vertex = vertex
-                    , position = getPosition vertex
+                    , position = position
                     , index = 0
                     }
             in
             Types.DelaunayTriangulation2d
                 { vertices = Array.repeat 1 vertex
                 , faces = createInitialFaces initialDelaunayVertex
+                , delaunayVertices = [ initialDelaunayVertex ]
                 }
 
         Types.DelaunayTriangulation2d current ->
-            let
-                newDelaunayVertex =
-                    { vertex = vertex
-                    , position = getPosition vertex
-                    , index = Array.length current.vertices
+            if isNewPoint position current.delaunayVertices then
+                let
+                    newDelaunayVertex =
+                        { vertex = vertex
+                        , position = position
+                        , index = Array.length current.vertices
+                        }
+                in
+                Types.DelaunayTriangulation2d
+                    { vertices = current.vertices |> Array.push vertex
+                    , delaunayVertices =
+                        newDelaunayVertex :: current.delaunayVertices
+                    , faces = addVertex newDelaunayVertex current.faces
                     }
-            in
-            Types.DelaunayTriangulation2d
-                { vertices = current.vertices |> Array.push vertex
-                , faces = addVertex newDelaunayVertex current.faces
-                }
+            else
+                delaunayTriangulation
 
 
 collectHelp : (DelaunayVertex vertex -> DelaunayVertex vertex -> DelaunayVertex vertex -> Circle2d -> a) -> List (DelaunayFace vertex) -> List a -> List a
@@ -525,3 +553,213 @@ addVertex vertex faces_ =
             processFaces faces_ vertex [] Dict.empty
     in
     starEdges |> Dict.foldl (addNewFace vertex) retainedFaces
+
+
+
+---------- VORONOI REGIONS ----------
+
+
+type alias VoronoiAccumulator =
+    { points : List Point2d
+    , startDirection : Maybe Direction2d
+    , endDirection : Maybe Direction2d
+    }
+
+
+addInterior : Point2d -> Maybe VoronoiAccumulator -> Maybe VoronoiAccumulator
+addInterior point entry =
+    case entry of
+        Just accumulator ->
+            Just
+                { accumulator
+                    | points = point :: accumulator.points
+                }
+
+        Nothing ->
+            Just
+                { points = [ point ]
+                , startDirection = Nothing
+                , endDirection = Nothing
+                }
+
+
+addStartDirection : Direction2d -> Maybe VoronoiAccumulator -> Maybe VoronoiAccumulator
+addStartDirection direction entry =
+    case entry of
+        Just accumulator ->
+            Just { accumulator | startDirection = Just direction }
+
+        Nothing ->
+            Just
+                { points = []
+                , startDirection = Just direction
+                , endDirection = Nothing
+                }
+
+
+addEndDirection : Direction2d -> Maybe VoronoiAccumulator -> Maybe VoronoiAccumulator
+addEndDirection direction entry =
+    case entry of
+        Just accumulator ->
+            Just { accumulator | endDirection = Just direction }
+
+        Nothing ->
+            Just
+                { points = []
+                , startDirection = Nothing
+                , endDirection = Just direction
+                }
+
+
+accumulateRegions : DelaunayFace vertex -> Dict Int VoronoiAccumulator -> Dict Int VoronoiAccumulator
+accumulateRegions face accumulators =
+    case face of
+        ThreeVertexFace firstVertex secondVertex thirdVertex circumcircle ->
+            let
+                centerPoint =
+                    Circle2d.centerPoint circumcircle
+            in
+            accumulators
+                |> Dict.update firstVertex.index (addInterior centerPoint)
+                |> Dict.update secondVertex.index (addInterior centerPoint)
+                |> Dict.update thirdVertex.index (addInterior centerPoint)
+
+        TwoVertexFace firstVertex secondVertex _ edgeDirection ->
+            let
+                point =
+                    Point2d.midpoint firstVertex.position secondVertex.position
+
+                direction =
+                    Direction2d.rotateCounterclockwise edgeDirection
+            in
+            accumulators
+                |> Dict.update firstVertex.index (addEndDirection direction)
+                |> Dict.update secondVertex.index (addStartDirection direction)
+
+        OneVertexFace _ _ _ _ ->
+            -- Infinite triangles with only one actual vertex do not
+            -- contribute to the Voronoi regions
+            accumulators
+
+
+pseudoAngle : Point2d -> Point2d -> Float
+pseudoAngle startPoint endPoint =
+    let
+        ( x0, y0 ) =
+            Point2d.coordinates startPoint
+
+        ( x1, y1 ) =
+            Point2d.coordinates endPoint
+
+        dx =
+            x1 - x0
+
+        dy =
+            y1 - y0
+
+        p =
+            dx / (abs dx + abs dy)
+    in
+    if dy < 0 then
+        p - 1
+    else
+        1 - p
+
+
+createRegion : Dict Int VoronoiAccumulator -> DelaunayVertex vertex -> VoronoiRegions vertex -> VoronoiRegions vertex
+createRegion accumulatorsByIndex delaunayVertex regions =
+    case Dict.get delaunayVertex.index accumulatorsByIndex of
+        Just { points, startDirection, endDirection } ->
+            case ( startDirection, endDirection ) of
+                ( Nothing, Nothing ) ->
+                    let
+                        sortedPoints =
+                            points
+                                |> List.sortBy
+                                    (pseudoAngle delaunayVertex.position)
+
+                        finiteRegion =
+                            { vertex = delaunayVertex.vertex
+                            , region = Polygon2d.singleLoop sortedPoints
+                            }
+                    in
+                    { regions | finite = finiteRegion :: regions.finite }
+
+                ( Just startDirection_, Just endDirection_ ) ->
+                    let
+                        sortDirection =
+                            startDirection_ |> Direction2d.rotateClockwise
+
+                        sortAxis =
+                            Axis2d.through delaunayVertex.position sortDirection
+
+                        sortedPoints =
+                            points
+                                |> List.sortBy
+                                    (Point2d.signedDistanceAlong sortAxis)
+                    in
+                    case sortedPoints of
+                        startPoint :: remainingPoints ->
+                            let
+                                endPoint =
+                                    List.foldl always
+                                        startPoint
+                                        remainingPoints
+
+                                leftAxis =
+                                    Axis2d.through startPoint startDirection_
+
+                                rightAxis =
+                                    Axis2d.through endPoint endDirection_
+
+                                polyline =
+                                    Polyline2d.fromVertices sortedPoints
+
+                                infiniteRegion =
+                                    { vertex = delaunayVertex.vertex
+                                    , leftAxis = leftAxis
+                                    , rightAxis = rightAxis
+                                    , finitePortion = polyline
+                                    }
+                            in
+                            { regions
+                                | infinite = infiniteRegion :: regions.infinite
+                            }
+
+                        [] ->
+                            regions
+
+                _ ->
+                    regions
+
+        Nothing ->
+            regions
+
+
+type alias VoronoiRegions vertex =
+    { finite : List { vertex : vertex, region : Polygon2d }
+    , infinite : List { vertex : vertex, leftAxis : Axis2d, rightAxis : Axis2d, finitePortion : Polyline2d }
+    }
+
+
+emptyRegions : VoronoiRegions vertex
+emptyRegions =
+    { finite = []
+    , infinite = []
+    }
+
+
+voronoiRegions : DelaunayTriangulation2d vertex -> VoronoiRegions vertex
+voronoiRegions delaunayTriangulation =
+    case delaunayTriangulation of
+        Types.EmptyDelaunayTriangulation2d ->
+            emptyRegions
+
+        Types.DelaunayTriangulation2d triangulation ->
+            let
+                accumulators =
+                    List.foldl accumulateRegions Dict.empty triangulation.faces
+            in
+            List.foldl (createRegion accumulators)
+                emptyRegions
+                triangulation.delaunayVertices
