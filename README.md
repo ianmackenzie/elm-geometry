@@ -204,15 +204,19 @@ rotatedPoint =
 
 ## Questions? Comments?
 
-Please [open a new issue](https://github.com/ianmackenzie/elm-geometry/issues) if you
-run into a bug, if any documentation is missing/incorrect/confusing, or if
-there's a new feature that you would find useful. For general questions about
-using `elm-geometry`, try:
+Please [open a new issue](https://github.com/ianmackenzie/elm-geometry/issues)
+if you run into a bug, if any documentation is missing/incorrect/confusing, or
+if there's a new feature that you would find useful. For general questions about
+using `elm-geometry`, the best place is probably the **#geometry** channel on
+the friendly [Elm Slack](http://elmlang.herokuapp.com/):
 
-  - Joining the **#geometry** channel on the [Elm Slack](http://elmlang.herokuapp.com/),
-    or sending me (**@ianmackenzie**) a message - even if you don't have any
-    particular questions right now, it would be great to know what you're hoping
-    to do with the package!
+![Elm Slack #geometry channel conversation](https://ianmackenzie.github.io/elm-geometry/1.0.0/README/Slack.png)
+
+You can also try:
+
+  - Sending me (**@ianmackenzie**) a message on Slack - even if you don't have
+    any particular questions right now, it would be great to know what you're
+    hoping to do with the package!
   - Posting to the [Elm Discourse](https://discourse.elm-lang.org/) forums
   - Or if you happen to be in the New York area, come on out to the
     [Elm NYC meetup](https://www.meetup.com/Elm-NYC/) =)

@@ -22,6 +22,7 @@ module LineSegment2d
         , fromEndpoints
         , interpolate
         , intersectionPoint
+        , intersectionWithAxis
         , length
         , mapEndpoints
         , midpoint
@@ -70,7 +71,7 @@ functionality such as:
 
 # Intersection
 
-@docs intersectionPoint
+@docs intersectionPoint, intersectionWithAxis
 
 
 # Transformations
@@ -434,6 +435,46 @@ intersectionPoint lineSegment1 lineSegment2 =
             Just intersection
         else
             Nothing
+
+
+intersectionWithAxis : Axis2d -> LineSegment2d -> Maybe Point2d
+intersectionWithAxis axis lineSegment =
+    let
+        ( p1, p2 ) =
+            endpoints lineSegment
+
+        d1 =
+            Point2d.signedDistanceFrom axis p1
+
+        d2 =
+            Point2d.signedDistanceFrom axis p2
+
+        product =
+            d1 * d2
+    in
+    if product < 0 then
+        -- The two points are on opposite sides of the axis, so there is a
+        -- unique intersection point in between them
+        Just (Point2d.interpolateFrom p1 p2 (d1 / (d1 - d2)))
+    else if product > 0 then
+        -- Both points are on the same side of the axis, so no intersection
+        -- point exists
+        Nothing
+    else if d1 /= 0 then
+        -- d2 must be zero since the product is zero, so only p2 is on the axis
+        Just p2
+    else if d2 /= 0 then
+        -- d1 must be zero since the product is zero, so only p1 is on the axis
+        Just p1
+    else if p1 == p2 then
+        -- Both d1 and d2 are zero, so both p1 and p2 are on the axis but also
+        -- happen to be equal to each other, so the line segment is actually
+        -- just a single point on the axis
+        Just p1
+    else
+        -- Both endpoints lie on the axis and are not equal to each other - no
+        -- unique intersection point
+        Nothing
 
 
 {-| Scale a line segment about the given center point by the given scale.
