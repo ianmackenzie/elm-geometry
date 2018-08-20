@@ -11,11 +11,13 @@ module VoronoiDiagram2d
 
 import Array exposing (Array)
 import Axis2d exposing (Axis2d)
+import BoundingBox2d exposing (BoundingBox2d)
 import Circle2d exposing (Circle2d)
 import DelaunayTriangulation2d exposing (DelaunayTriangulation2d)
 import Dict exposing (Dict)
 import Direction2d exposing (Direction2d)
 import Geometry.Types as Types exposing (DelaunayFace(..), DelaunayVertex)
+import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
 import Polyline2d exposing (Polyline2d)
@@ -222,6 +224,93 @@ voronoiRegions delaunayTriangulation =
             List.foldl (collectRegions accumulatorsByIndex)
                 []
                 triangulation.delaunayVertices
+
+
+type alias TrimRegion =
+    { boundingBox : BoundingBox2d
+    , leftEdge : LineSegment2d
+    , rightEdge : LineSegment2d
+    , topEdge : LineSegment2d
+    , bottomEdge : LineSegment2d
+    }
+
+
+addContainedPoint : TrimRegion -> Point2d -> List Point2d -> List Point2d
+addContainedPoint trimRegion point accumulated =
+    if BoundingBox2d.contains point trimRegion.boundingBox then
+        point :: accumulated
+    else
+        accumulated
+
+
+addEdgeIntersection : LineSegment2d -> LineSegment2d -> List Point2d -> List Point2d
+addEdgeIntersection firstLineSegment secondLineSegment accumulated =
+    case LineSegment2d.intersectionPoint firstLineSegment secondLineSegment of
+        Just point ->
+            point :: accumulated
+
+        Nothing ->
+            accumulated
+
+
+addEdgeIntersections : TrimRegion -> LineSegment2d -> List Point2d -> List Point2d
+addEdgeIntersections trimRegion lineSegment accumulated =
+    accumulated
+        |> addEdgeIntersection trimRegion.leftEdge lineSegment
+        |> addEdgeIntersection trimRegion.rightEdge lineSegment
+        |> addEdgeIntersection trimRegion.topEdge lineSegment
+        |> addEdgeIntersection trimRegion.bottomEdge lineSegment
+
+
+addAxisIntersection : LineSegment2d -> Axis2d -> List Point2d -> List Point2d
+addAxisIntersection lineSegment axis accumulated =
+    case LineSegment2d.intersectionWithAxis axis lineSegment of
+        Just point ->
+            point :: accumulated
+
+        Nothing ->
+            accumulated
+
+
+leftOfSegment : LineSegment2d -> Point2d -> Bool
+leftOfSegment lineSegment point =
+    let
+        ( p1, p2 ) =
+            LineSegment2d.endpoints lineSegment
+
+        ( x1, y1 ) =
+            Point2d.coordinates p1
+
+        ( x2, y2 ) =
+            Point2d.coordinates p2
+
+        ( x, y ) =
+            Point2d.coordinates point
+    in
+    (x - x1) * (y1 - y2) + (y - y1) * (x2 - x1) >= 0
+
+
+leftOf : List LineSegment2d -> Point2d -> Bool
+leftOf lineSegments point =
+    case lineSegments of
+        first :: rest ->
+            if leftOfSegment first point then
+                leftOf rest point
+            else
+                False
+
+        [] ->
+            True
+
+
+trimInfiniteRegion : TrimRegion -> Axis2d -> Axis2d -> Polyline2d -> Maybe Polygon2d
+trimInfiniteRegion trimRegion leftAxis rightAxis polyline =
+    Nothing
+
+
+trimFiniteRegion : TrimRegion -> Polygon2d -> Maybe Polygon2d
+trimFiniteRegion trimRegion polygon =
+    Nothing
 
 
 empty : VoronoiDiagram2d vertex
