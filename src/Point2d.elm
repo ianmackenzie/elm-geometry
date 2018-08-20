@@ -14,6 +14,7 @@ module Point2d
     exposing
         ( Point2d
         , along
+        , centroid
         , circumcenter
         , coordinates
         , distanceFrom
@@ -66,7 +67,7 @@ like you can add two vectors.
 
 # Constructors
 
-@docs fromCoordinates, fromCoordinatesIn, fromPolarCoordinates, fromPolarCoordinatesIn, midpoint, interpolateFrom, along, circumcenter
+@docs fromCoordinates, fromCoordinatesIn, fromPolarCoordinates, fromPolarCoordinatesIn, midpoint, centroid, interpolateFrom, along, circumcenter
 
 
 # Properties
@@ -162,6 +163,59 @@ fromPolarCoordinates polarCoordinates_ =
 midpoint : Point2d -> Point2d -> Point2d
 midpoint firstPoint secondPoint =
     interpolateFrom firstPoint secondPoint 0.5
+
+
+{-| Find the centroid of a list of points. Returns `Nothing` if the list is
+empty.
+
+    p0 =
+        Point2d.origin
+
+    p1 =
+        Point2d.fromCoordinates ( 1, 0 )
+
+    p2 =
+        Point2d.fromCoordinates ( 1, 1 )
+
+    Point2d.centroid [ p0, p1, p2 ]
+    --> Just (Point2d.fromCoordinates ( 0.6667, 0.3333 ))
+
+-}
+centroid : List Point2d -> Maybe Point2d
+centroid points =
+    case points of
+        [] ->
+            Nothing
+
+        first :: rest ->
+            let
+                ( x0, y0 ) =
+                    coordinates first
+            in
+            Just (centroidHelp x0 y0 1 0 0 rest)
+
+
+centroidHelp : Float -> Float -> Float -> Float -> Float -> List Point2d -> Point2d
+centroidHelp x0 y0 count dx dy points =
+    case points of
+        point :: remaining ->
+            let
+                ( x, y ) =
+                    coordinates point
+
+                newDx =
+                    dx + (x - x0)
+
+                newDy =
+                    dy + (y - y0)
+            in
+            centroidHelp x0 y0 (count + 1) newDx newDy remaining
+
+        [] ->
+            fromCoordinates
+                ( x0 + dx / count
+                , y0 + dy / count
+                )
 
 
 {-| Construct a point by interpolating from the first given point to the second,
