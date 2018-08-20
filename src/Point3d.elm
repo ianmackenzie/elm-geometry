@@ -14,6 +14,7 @@ module Point3d
     exposing
         ( Point3d
         , along
+        , centroid
         , circumcenter
         , coordinates
         , distanceFrom
@@ -70,7 +71,7 @@ like you can add two vectors.
 
 # Constructors
 
-@docs fromCoordinates, fromCoordinatesIn, midpoint, interpolateFrom, along, on, circumcenter
+@docs fromCoordinates, fromCoordinatesIn, midpoint, centroid, interpolateFrom, along, on, circumcenter
 
 
 # Properties
@@ -156,6 +157,63 @@ fromCoordinates =
 midpoint : Point3d -> Point3d -> Point3d
 midpoint firstPoint secondPoint =
     interpolateFrom firstPoint secondPoint 0.5
+
+
+{-| Find the centroid of a list of points. Returns `Nothing` if the list is
+empty.
+
+    p0 =
+        Point3d.origin
+
+    p1 =
+        Point3d.fromCoordinates ( 1, 0, 1 )
+
+    p2 =
+        Point3d.fromCoordinates ( 0, 1, 1 )
+
+    Point3d.centroid [ p0, p1, p2 ]
+    --> Just (Point3d.fromCoordinates ( 0.3333, 0.3333, 0.6667 ))
+
+-}
+centroid : List Point3d -> Maybe Point3d
+centroid points =
+    case points of
+        [] ->
+            Nothing
+
+        first :: rest ->
+            let
+                ( x0, y0, z0 ) =
+                    coordinates first
+            in
+            Just (centroidHelp x0 y0 z0 1 0 0 0 rest)
+
+
+centroidHelp : Float -> Float -> Float -> Float -> Float -> Float -> Float -> List Point3d -> Point3d
+centroidHelp x0 y0 z0 count dx dy dz points =
+    case points of
+        point :: remaining ->
+            let
+                ( x, y, z ) =
+                    coordinates point
+
+                newDx =
+                    dx + (x - x0)
+
+                newDy =
+                    dy + (y - y0)
+
+                newDz =
+                    dz + (z - z0)
+            in
+            centroidHelp x0 y0 z0 (count + 1) newDx newDy newDz remaining
+
+        [] ->
+            fromCoordinates
+                ( x0 + dx / count
+                , y0 + dy / count
+                , z0 + dz / count
+                )
 
 
 {-| Construct a point by interpolating from the first given point to the second,
