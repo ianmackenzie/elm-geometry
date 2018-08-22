@@ -437,6 +437,23 @@ intersectionPoint lineSegment1 lineSegment2 =
             Nothing
 
 
+{-| Attempt to find the unique intersection point of a line segment with an
+axis. If there is no such point (the line segment does not touch the axis, or
+lies perfectly along it), returns `Nothing`.
+
+    lineSegment =
+        LineSegment2d.fromEndpoints
+            ( Point2d.fromCoordinates ( 1, -1 )
+            , Point2d.fromCoordinates ( 4, 1 )
+            )
+
+    LineSegment2d.intersectionWithAxis Axis2d.x lineSegment
+    --> Just (Point2d.fromCoordinates ( 2.5, 0 ))
+
+    LineSegment2d.intersectionWithAxis Axis2d.y lineSegment
+    --> Nothing
+
+-}
 intersectionWithAxis : Axis2d -> LineSegment2d -> Maybe Point2d
 intersectionWithAxis axis lineSegment =
     let
