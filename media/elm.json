@@ -4,7 +4,7 @@
         ".",
         "src",
         "../src",
-        "../../elm-geometry-svg-0.19/src"
+        "../../elm-geometry-svg/src"
     ],
     "elm-version": "0.19.0",
     "dependencies": {
@@ -18,7 +18,7 @@
             "ianmackenzie/elm-float-extra": "1.0.1",
             "ianmackenzie/elm-interval": "1.0.1",
             "ianmackenzie/elm-triangular-mesh": "1.0.2",
-            "mpizenberg/elm-pointer-events": "4.0.0"
+            "mpizenberg/elm-pointer-events": "3.0.0"
         },
         "indirect": {
             "elm/json": "1.0.0",
