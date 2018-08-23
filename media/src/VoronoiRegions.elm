@@ -5,7 +5,6 @@ import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Browser
 import Circle2d
-import DelaunayTriangulation2d exposing (DelaunayTriangulation2d)
 import Geometry.Svg as Svg
 import Html exposing (Html)
 import Html.Attributes
@@ -20,10 +19,11 @@ import Svg exposing (Svg)
 import Svg.Attributes
 import Triangle2d exposing (Triangle2d)
 import TriangularMesh exposing (TriangularMesh)
+import VoronoiDiagram2d exposing (VoronoiDiagram2d)
 
 
 type alias Model =
-    { baseTriangulation : DelaunayTriangulation2d Point2d
+    { baseDiagram : VoronoiDiagram2d Point2d
     , mousePosition : Maybe Point2d
     }
 
@@ -72,7 +72,7 @@ generateNewPoints =
 
 init : ( Model, Cmd Msg )
 init =
-    ( { baseTriangulation = DelaunayTriangulation2d.empty
+    ( { baseDiagram = VoronoiDiagram2d.empty
       , mousePosition = Nothing
       }
     , generateNewPoints
@@ -87,10 +87,10 @@ update message model =
 
         NewRandomPoints points ->
             let
-                triangulation =
-                    DelaunayTriangulation2d.fromPoints (Array.fromList points)
+                diagram =
+                    VoronoiDiagram2d.fromPoints (Array.fromList points)
             in
-            ( { model | baseTriangulation = triangulation }, Cmd.none )
+            ( { model | baseDiagram = diagram }, Cmd.none )
 
         MouseMove event ->
             let
@@ -100,54 +100,40 @@ update message model =
             ( { model | mousePosition = Just point }, Cmd.none )
 
 
-drawFiniteRegion : { vertex : Point2d, region : Polygon2d } -> Svg msg
-drawFiniteRegion region =
+drawPolygon : Polygon2d -> Svg msg
+drawPolygon polygon =
     Svg.polygon2d
         [ Svg.Attributes.stroke "black"
         , Svg.Attributes.fill "rgb(246,246,250)"
         ]
-        region.region
-
-
-drawInfiniteRegion : { vertex : Point2d, leftAxis : Axis2d, rightAxis : Axis2d, finitePortion : Polyline2d } -> Svg msg
-drawInfiniteRegion region =
-    let
-        leftSegment =
-            LineSegment2d.from
-                (Axis2d.originPoint region.leftAxis)
-                (Point2d.along region.leftAxis 1000)
-
-        rightSegment =
-            LineSegment2d.from
-                (Axis2d.originPoint region.rightAxis)
-                (Point2d.along region.rightAxis 1000)
-    in
-    Svg.g [ Svg.Attributes.stroke "blue" ]
-        [ Svg.polyline2d [] region.finitePortion
-        , Svg.lineSegment2d [ Svg.Attributes.strokeDasharray "3 3" ]
-            leftSegment
-        , Svg.lineSegment2d [ Svg.Attributes.strokeDasharray "3 3" ]
-            rightSegment
-        ]
+        polygon
 
 
 view : Model -> Browser.Document Msg
 view model =
     let
-        triangulation =
+        voronoiDiagram =
             case model.mousePosition of
                 Just point ->
-                    model.baseTriangulation
-                        |> DelaunayTriangulation2d.insertPoint point
+                    model.baseDiagram
+                        |> VoronoiDiagram2d.insertPoint point
 
                 Nothing ->
-                    model.baseTriangulation
+                    model.baseDiagram
 
         points =
-            Array.toList (DelaunayTriangulation2d.vertices triangulation)
+            Array.toList (VoronoiDiagram2d.vertices voronoiDiagram)
 
-        voronoiRegions =
-            DelaunayTriangulation2d.voronoiRegions triangulation
+        trimBox =
+            BoundingBox2d.fromExtrema
+                { minX = 150
+                , maxX = 550
+                , minY = 150
+                , maxY = 550
+                }
+
+        polygons =
+            VoronoiDiagram2d.polygons trimBox voronoiDiagram
 
         mousePointElement =
             case model.mousePosition of
@@ -179,8 +165,7 @@ view model =
                 , Html.Attributes.style "border" "1px solid black"
                 , Mouse.onMove MouseMove
                 ]
-                [ Svg.g [] (List.map drawFiniteRegion voronoiRegions.finite)
-                , Svg.g [] (List.map drawInfiniteRegion voronoiRegions.infinite)
+                [ Svg.g [] (List.map (Tuple.second >> drawPolygon) polygons)
                 , Svg.g [] (points |> List.map (Circle2d.withRadius 2.5 >> Svg.circle2d []))
                 , mousePointElement
                 , Svg.polygon2d [ Svg.Attributes.fill "transparent" ] overlayPolygon

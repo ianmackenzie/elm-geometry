@@ -6,6 +6,7 @@ module VoronoiDiagram2d
         , fromVerticesBy
         , insertPoint
         , insertVertexBy
+        , polygons
         , vertices
         )
 
@@ -226,21 +227,30 @@ voronoiRegions delaunayTriangulation =
                 triangulation.delaunayVertices
 
 
-type alias TrimRegion =
+type alias TrimBox =
     { boundingBox : BoundingBox2d
     , leftEdge : LineSegment2d
     , rightEdge : LineSegment2d
     , topEdge : LineSegment2d
     , bottomEdge : LineSegment2d
+    , topLeftVertex : Point2d
+    , topRightVertex : Point2d
+    , bottomLeftVertex : Point2d
+    , bottomRightVertex : Point2d
     }
 
 
-addContainedPoint : TrimRegion -> Point2d -> List Point2d -> List Point2d
-addContainedPoint trimRegion point accumulated =
-    if BoundingBox2d.contains point trimRegion.boundingBox then
+addContainedPoint : BoundingBox2d -> Point2d -> List Point2d -> List Point2d
+addContainedPoint boundingBox point accumulated =
+    if BoundingBox2d.contains point boundingBox then
         point :: accumulated
     else
         accumulated
+
+
+addContainedPoints : TrimBox -> List Point2d -> List Point2d -> List Point2d
+addContainedPoints trimBox points accumulated =
+    List.foldl (addContainedPoint trimBox.boundingBox) accumulated points
 
 
 addEdgeIntersection : LineSegment2d -> LineSegment2d -> List Point2d -> List Point2d
@@ -253,23 +263,41 @@ addEdgeIntersection firstLineSegment secondLineSegment accumulated =
             accumulated
 
 
-addEdgeIntersections : TrimRegion -> LineSegment2d -> List Point2d -> List Point2d
-addEdgeIntersections trimRegion lineSegment accumulated =
+addEdgeIntersections : TrimBox -> LineSegment2d -> List Point2d -> List Point2d
+addEdgeIntersections trimBox lineSegment accumulated =
     accumulated
-        |> addEdgeIntersection trimRegion.leftEdge lineSegment
-        |> addEdgeIntersection trimRegion.rightEdge lineSegment
-        |> addEdgeIntersection trimRegion.topEdge lineSegment
-        |> addEdgeIntersection trimRegion.bottomEdge lineSegment
+        |> addEdgeIntersection trimBox.leftEdge lineSegment
+        |> addEdgeIntersection trimBox.rightEdge lineSegment
+        |> addEdgeIntersection trimBox.topEdge lineSegment
+        |> addEdgeIntersection trimBox.bottomEdge lineSegment
+
+
+addAllEdgeIntersections : TrimBox -> List LineSegment2d -> List Point2d -> List Point2d
+addAllEdgeIntersections trimBox lineSegments accumulated =
+    List.foldl (addEdgeIntersections trimBox) accumulated lineSegments
 
 
 addAxisIntersection : LineSegment2d -> Axis2d -> List Point2d -> List Point2d
 addAxisIntersection lineSegment axis accumulated =
     case LineSegment2d.intersectionWithAxis axis lineSegment of
         Just point ->
-            point :: accumulated
+            -- We only want points ahead of the axis' origin point, not behind
+            if Point2d.signedDistanceAlong axis point >= 0 then
+                point :: accumulated
+            else
+                accumulated
 
         Nothing ->
             accumulated
+
+
+addAxisIntersections : TrimBox -> Axis2d -> List Point2d -> List Point2d
+addAxisIntersections trimBox axis accumulated =
+    accumulated
+        |> addAxisIntersection trimBox.leftEdge axis
+        |> addAxisIntersection trimBox.rightEdge axis
+        |> addAxisIntersection trimBox.topEdge axis
+        |> addAxisIntersection trimBox.bottomEdge axis
 
 
 leftOfSegment : LineSegment2d -> Point2d -> Bool
@@ -303,14 +331,165 @@ leftOf lineSegments point =
             True
 
 
-trimInfiniteRegion : TrimRegion -> Axis2d -> Axis2d -> Polyline2d -> Maybe Polygon2d
-trimInfiniteRegion trimRegion leftAxis rightAxis polyline =
-    Nothing
+addPointInsideInfiniteRegion : Axis2d -> Axis2d -> List LineSegment2d -> Point2d -> List Point2d -> List Point2d
+addPointInsideInfiniteRegion leftAxis rightAxis lineSegments point accumulated =
+    if
+        leftOf lineSegments point
+            && (Point2d.signedDistanceFrom leftAxis point <= 0)
+            && (Point2d.signedDistanceFrom rightAxis point >= 0)
+    then
+        point :: accumulated
+    else
+        accumulated
 
 
-trimFiniteRegion : TrimRegion -> Polygon2d -> Maybe Polygon2d
-trimFiniteRegion trimRegion polygon =
-    Nothing
+addPointsInsideInfiniteRegion : Axis2d -> Axis2d -> List LineSegment2d -> TrimBox -> List Point2d -> List Point2d
+addPointsInsideInfiniteRegion leftAxis rightAxis lineSegments trimBox accumulated =
+    accumulated
+        |> addPointInsideInfiniteRegion
+            leftAxis
+            rightAxis
+            lineSegments
+            trimBox.topLeftVertex
+        |> addPointInsideInfiniteRegion
+            leftAxis
+            rightAxis
+            lineSegments
+            trimBox.topRightVertex
+        |> addPointInsideInfiniteRegion
+            leftAxis
+            rightAxis
+            lineSegments
+            trimBox.bottomLeftVertex
+        |> addPointInsideInfiniteRegion
+            leftAxis
+            rightAxis
+            lineSegments
+            trimBox.bottomRightVertex
+
+
+addPointInsideFiniteRegion : List LineSegment2d -> Point2d -> List Point2d -> List Point2d
+addPointInsideFiniteRegion edges point accumulated =
+    if leftOf edges point then
+        point :: accumulated
+    else
+        accumulated
+
+
+addPointsInsideFiniteRegion : List LineSegment2d -> TrimBox -> List Point2d -> List Point2d
+addPointsInsideFiniteRegion edges trimBox accumulated =
+    accumulated
+        |> addPointInsideFiniteRegion edges trimBox.topLeftVertex
+        |> addPointInsideFiniteRegion edges trimBox.topRightVertex
+        |> addPointInsideFiniteRegion edges trimBox.bottomLeftVertex
+        |> addPointInsideFiniteRegion edges trimBox.bottomRightVertex
+
+
+deduplicate : List Point2d -> List Point2d
+deduplicate points =
+    case points of
+        first :: rest ->
+            deduplicateHelp first rest [ first ]
+
+        [] ->
+            []
+
+
+deduplicateHelp : Point2d -> List Point2d -> List Point2d -> List Point2d
+deduplicateHelp head rest accumulated =
+    case rest of
+        next :: remaining ->
+            if head == next then
+                deduplicateHelp head remaining accumulated
+            else
+                deduplicateHelp next remaining (next :: accumulated)
+
+        [] ->
+            accumulated
+
+
+trimInfiniteRegion : TrimBox -> vertex -> Axis2d -> Axis2d -> Polyline2d -> Maybe ( vertex, Polygon2d )
+trimInfiniteRegion trimBox vertex leftAxis rightAxis polyline =
+    let
+        polylineVertices =
+            Polyline2d.vertices polyline
+
+        polylineSegments =
+            Polyline2d.segments polyline
+
+        trimmedVertices =
+            []
+                |> addContainedPoints trimBox polylineVertices
+                |> addAxisIntersections trimBox leftAxis
+                |> addAxisIntersections trimBox rightAxis
+                |> addAllEdgeIntersections trimBox polylineSegments
+                |> addPointsInsideInfiniteRegion
+                    leftAxis
+                    rightAxis
+                    polylineSegments
+                    trimBox
+    in
+    case Point2d.centroid trimmedVertices of
+        Just centroid ->
+            let
+                sortedVertices =
+                    trimmedVertices
+                        |> List.sortBy (pseudoAngle centroid >> negate)
+                        |> deduplicate
+            in
+            Just ( vertex, Polygon2d.singleLoop sortedVertices )
+
+        Nothing ->
+            Nothing
+
+
+trimFiniteRegion : TrimBox -> vertex -> Polygon2d -> Maybe ( vertex, Polygon2d )
+trimFiniteRegion trimBox vertex polygon =
+    case Polygon2d.boundingBox polygon of
+        Just polygonBoundingBox ->
+            if polygonBoundingBox |> BoundingBox2d.isContainedIn trimBox.boundingBox then
+                Just ( vertex, polygon )
+            else
+                let
+                    polygonVertices =
+                        Polygon2d.vertices polygon
+
+                    polygonEdges =
+                        Polygon2d.edges polygon
+
+                    trimmedVertices =
+                        []
+                            |> addContainedPoints trimBox polygonVertices
+                            |> addAllEdgeIntersections trimBox polygonEdges
+                            |> addPointsInsideFiniteRegion
+                                polygonEdges
+                                trimBox
+                in
+                case Point2d.centroid trimmedVertices of
+                    Just centroid ->
+                        let
+                            sortedVertices =
+                                trimmedVertices
+                                    |> List.sortBy (pseudoAngle centroid >> negate)
+                                    |> deduplicate
+                        in
+                        Just ( vertex, Polygon2d.singleLoop sortedVertices )
+
+                    Nothing ->
+                        Nothing
+
+        Nothing ->
+            Nothing
+
+
+trimRegion : TrimBox -> Region vertex -> Maybe ( vertex, Polygon2d )
+trimRegion trimBox region =
+    case region of
+        Finite vertex polygon ->
+            trimFiniteRegion trimBox vertex polygon
+
+        Infinite vertex leftAxis rightAxis polyline ->
+            trimInfiniteRegion trimBox vertex leftAxis rightAxis polyline
 
 
 empty : VoronoiDiagram2d vertex
@@ -365,3 +544,36 @@ insertVertexBy getPosition vertex (VoronoiDiagram2d current) =
 vertices : VoronoiDiagram2d vertex -> Array vertex
 vertices (VoronoiDiagram2d voronoiDiagram) =
     DelaunayTriangulation2d.vertices voronoiDiagram.delaunayTriangulation
+
+
+polygons : BoundingBox2d -> VoronoiDiagram2d vertex -> List ( vertex, Polygon2d )
+polygons boundingBox (VoronoiDiagram2d voronoiDiagram) =
+    let
+        { minX, minY, maxX, maxY } =
+            BoundingBox2d.extrema boundingBox
+
+        topLeftVertex =
+            Point2d.fromCoordinates ( minX, maxY )
+
+        topRightVertex =
+            Point2d.fromCoordinates ( maxX, maxY )
+
+        bottomLeftVertex =
+            Point2d.fromCoordinates ( minX, minY )
+
+        bottomRightVertex =
+            Point2d.fromCoordinates ( maxX, minY )
+
+        trimBox =
+            { boundingBox = boundingBox
+            , topLeftVertex = topLeftVertex
+            , topRightVertex = topRightVertex
+            , bottomLeftVertex = bottomLeftVertex
+            , bottomRightVertex = bottomRightVertex
+            , leftEdge = LineSegment2d.from topLeftVertex bottomLeftVertex
+            , bottomEdge = LineSegment2d.from bottomLeftVertex bottomRightVertex
+            , rightEdge = LineSegment2d.from bottomRightVertex topRightVertex
+            , topEdge = LineSegment2d.from topRightVertex topLeftVertex
+            }
+    in
+    List.filterMap (trimRegion trimBox) voronoiDiagram.regions
