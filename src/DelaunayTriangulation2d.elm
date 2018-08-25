@@ -1,6 +1,7 @@
 module DelaunayTriangulation2d
     exposing
-        ( DelaunayTriangulation2d
+        ( CoincidentVertices(..)
+        , DelaunayTriangulation2d
         , Face
         , circumcircles
         , empty
@@ -31,6 +32,10 @@ type alias DelaunayTriangulation2d vertex =
     Types.DelaunayTriangulation2d vertex
 
 
+type CoincidentVertices vertex
+    = CoincidentVertices vertex vertex
+
+
 type alias Face vertex =
     { vertices : ( vertex, vertex, vertex )
     , triangle : Triangle2d
@@ -43,27 +48,74 @@ empty =
     Types.EmptyDelaunayTriangulation2d
 
 
-fromPoints : Array Point2d -> DelaunayTriangulation2d Point2d
+fromPoints : Array Point2d -> Result (CoincidentVertices Point2d) (DelaunayTriangulation2d Point2d)
 fromPoints points =
     fromVerticesBy identity points
 
 
-insertVertex : (vertex -> Point2d) -> vertex -> ( Int, Dict ( Float, Float ) (DelaunayVertex vertex) ) -> ( Int, Dict ( Float, Float ) (DelaunayVertex vertex) )
-insertVertex getPosition vertex ( index, dict ) =
+prependDelaunayVertex : (vertex -> Point2d) -> vertex -> List (DelaunayVertex vertex) -> List (DelaunayVertex vertex)
+prependDelaunayVertex getPosition vertex accumulated =
     let
-        position =
-            getPosition vertex
+        index =
+            case accumulated of
+                [] ->
+                    0
 
-        delaunayVertex =
+                previous :: _ ->
+                    previous.index + 1
+
+        newDelaunayVertex =
             { vertex = vertex
             , index = index
-            , position = position
+            , position = getPosition vertex
             }
-
-        updatedDict =
-            dict |> Dict.insert (Point2d.coordinates position) delaunayVertex
     in
-    ( index + 1, updatedDict )
+    newDelaunayVertex :: accumulated
+
+
+delaunayVertexCoordinates : DelaunayVertex vertex -> ( Float, Float )
+delaunayVertexCoordinates delaunayVertex =
+    Point2d.coordinates delaunayVertex.position
+
+
+checkDistinct : List (DelaunayVertex vertex) -> Result (CoincidentVertices vertex) ()
+checkDistinct sortedDelaunayVertices =
+    case sortedDelaunayVertices of
+        [] ->
+            Ok ()
+
+        first :: rest ->
+            checkDistinctHelp first rest
+
+
+checkDistinctHelp : DelaunayVertex vertex -> List (DelaunayVertex vertex) -> Result (CoincidentVertices vertex) ()
+checkDistinctHelp previous sortedDelaunayVertices =
+    case sortedDelaunayVertices of
+        [] ->
+            Ok ()
+
+        first :: rest ->
+            if previous.position == first.position then
+                Err (CoincidentVertices previous.vertex first.vertex)
+            else
+                checkDistinctHelp first rest
+
+
+collectDelaunayVertices : (vertex -> Point2d) -> Array vertex -> Result (CoincidentVertices vertex) (List (DelaunayVertex vertex))
+collectDelaunayVertices getPosition givenVertices =
+    let
+        allDelaunayVertices =
+            Array.foldl (prependDelaunayVertex getPosition) [] givenVertices
+
+        sortedDelaunayVertices =
+            allDelaunayVertices |> List.sortBy delaunayVertexCoordinates
+    in
+    case checkDistinct sortedDelaunayVertices of
+        Ok () ->
+            Ok sortedDelaunayVertices
+
+        Err coincidentVertices ->
+            Err coincidentVertices
 
 
 createInitialFaces : DelaunayVertex vertex -> List (DelaunayFace vertex)
@@ -87,53 +139,52 @@ createInitialFaces firstVertex =
     ]
 
 
-fromVerticesBy : (vertex -> Point2d) -> Array vertex -> DelaunayTriangulation2d vertex
+fromVerticesBy : (vertex -> Point2d) -> Array vertex -> Result (CoincidentVertices vertex) (DelaunayTriangulation2d vertex)
 fromVerticesBy getPosition givenVertices =
-    let
-        delaunayVertices =
-            givenVertices
-                |> Array.foldl (insertVertex getPosition) ( 0, Dict.empty )
-                |> Tuple.second
-                |> Dict.values
-    in
-    case delaunayVertices of
-        firstDelaunayVertex :: remainingDelaunayVertices ->
-            let
-                initialFaces =
-                    createInitialFaces firstDelaunayVertex
+    case collectDelaunayVertices getPosition givenVertices of
+        Ok delaunayVertices ->
+            case delaunayVertices of
+                firstDelaunayVertex :: remainingDelaunayVertices ->
+                    let
+                        initialFaces =
+                            createInitialFaces firstDelaunayVertex
 
-                faces_ =
-                    List.foldl addVertex initialFaces remainingDelaunayVertices
-            in
-            Types.DelaunayTriangulation2d
-                { vertices = givenVertices
-                , delaunayVertices = delaunayVertices
-                , faces = faces_
-                }
+                        faces_ =
+                            List.foldl addVertex initialFaces remainingDelaunayVertices
+                    in
+                    Ok <|
+                        Types.DelaunayTriangulation2d
+                            { vertices = givenVertices
+                            , delaunayVertices = delaunayVertices
+                            , faces = faces_
+                            }
 
-        [] ->
-            Types.EmptyDelaunayTriangulation2d
+                [] ->
+                    Ok Types.EmptyDelaunayTriangulation2d
+
+        Err err ->
+            Err err
 
 
-insertPoint : Point2d -> DelaunayTriangulation2d Point2d -> DelaunayTriangulation2d Point2d
+insertPoint : Point2d -> DelaunayTriangulation2d Point2d -> Result (CoincidentVertices Point2d) (DelaunayTriangulation2d Point2d)
 insertPoint point delaunayTriangulation =
     insertVertexBy identity point delaunayTriangulation
 
 
-isNewPoint : Point2d -> List (DelaunayVertex vertex) -> Bool
-isNewPoint point delaunayVertices =
+checkForCoincidentVertex : vertex -> Point2d -> List (DelaunayVertex vertex) -> Result (CoincidentVertices vertex) ()
+checkForCoincidentVertex vertex point delaunayVertices =
     case delaunayVertices of
         [] ->
-            True
+            Ok ()
 
         firstDelaunayVertex :: remainingDelaunayVertices ->
             if point == firstDelaunayVertex.position then
-                False
+                Err (CoincidentVertices firstDelaunayVertex.vertex vertex)
             else
-                isNewPoint point remainingDelaunayVertices
+                checkForCoincidentVertex vertex point remainingDelaunayVertices
 
 
-insertVertexBy : (vertex -> Point2d) -> vertex -> DelaunayTriangulation2d vertex -> DelaunayTriangulation2d vertex
+insertVertexBy : (vertex -> Point2d) -> vertex -> DelaunayTriangulation2d vertex -> Result (CoincidentVertices vertex) (DelaunayTriangulation2d vertex)
 insertVertexBy getPosition vertex delaunayTriangulation =
     let
         position =
@@ -148,29 +199,33 @@ insertVertexBy getPosition vertex delaunayTriangulation =
                     , index = 0
                     }
             in
-            Types.DelaunayTriangulation2d
-                { vertices = Array.repeat 1 vertex
-                , faces = createInitialFaces initialDelaunayVertex
-                , delaunayVertices = [ initialDelaunayVertex ]
-                }
+            Ok <|
+                Types.DelaunayTriangulation2d
+                    { vertices = Array.repeat 1 vertex
+                    , faces = createInitialFaces initialDelaunayVertex
+                    , delaunayVertices = [ initialDelaunayVertex ]
+                    }
 
         Types.DelaunayTriangulation2d current ->
-            if isNewPoint position current.delaunayVertices then
-                let
-                    newDelaunayVertex =
-                        { vertex = vertex
-                        , position = position
-                        , index = Array.length current.vertices
-                        }
-                in
-                Types.DelaunayTriangulation2d
-                    { vertices = current.vertices |> Array.push vertex
-                    , delaunayVertices =
-                        newDelaunayVertex :: current.delaunayVertices
-                    , faces = addVertex newDelaunayVertex current.faces
-                    }
-            else
-                delaunayTriangulation
+            case checkForCoincidentVertex vertex position current.delaunayVertices of
+                Ok () ->
+                    let
+                        newDelaunayVertex =
+                            { vertex = vertex
+                            , position = position
+                            , index = Array.length current.vertices
+                            }
+                    in
+                    Ok <|
+                        Types.DelaunayTriangulation2d
+                            { vertices = current.vertices |> Array.push vertex
+                            , delaunayVertices =
+                                newDelaunayVertex :: current.delaunayVertices
+                            , faces = addVertex newDelaunayVertex current.faces
+                            }
+
+                Err coincidentVertices ->
+                    Err coincidentVertices
 
 
 collectHelp : (DelaunayVertex vertex -> DelaunayVertex vertex -> DelaunayVertex vertex -> Circle2d -> a) -> List (DelaunayFace vertex) -> List a -> List a

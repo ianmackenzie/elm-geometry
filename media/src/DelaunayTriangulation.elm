@@ -5,7 +5,7 @@ import Axis2d
 import BoundingBox2d exposing (BoundingBox2d)
 import Browser
 import Circle2d
-import DelaunayTriangulation2d exposing (DelaunayTriangulation2d)
+import DelaunayTriangulation2d exposing (CoincidentVertices, DelaunayTriangulation2d)
 import Geometry.Svg as Svg
 import Html exposing (Html)
 import Html.Attributes
@@ -23,7 +23,7 @@ import TriangularMesh exposing (TriangularMesh)
 
 
 type alias Model =
-    { baseTriangulation : DelaunayTriangulation2d Point2d
+    { baseTriangulation : Result (CoincidentVertices Point2d) (DelaunayTriangulation2d Point2d)
     , mousePosition : Maybe Point2d
     }
 
@@ -72,7 +72,7 @@ generateNewPoints =
 
 init : ( Model, Cmd Msg )
 init =
-    ( { baseTriangulation = DelaunayTriangulation2d.empty
+    ( { baseTriangulation = Ok DelaunayTriangulation2d.empty
       , mousePosition = Nothing
       }
     , generateNewPoints
@@ -107,16 +107,21 @@ view model =
             case model.mousePosition of
                 Just point ->
                     model.baseTriangulation
-                        |> DelaunayTriangulation2d.insertPoint point
+                        |> Result.andThen
+                            (DelaunayTriangulation2d.insertPoint point)
 
                 Nothing ->
                     model.baseTriangulation
 
         triangles =
-            DelaunayTriangulation2d.triangles triangulation
+            triangulation
+                |> Result.map DelaunayTriangulation2d.triangles
+                |> Result.withDefault []
 
         points =
-            Array.toList (DelaunayTriangulation2d.vertices triangulation)
+            triangulation
+                |> Result.map (DelaunayTriangulation2d.vertices >> Array.toList)
+                |> Result.withDefault []
 
         mousePointElement =
             case model.mousePosition of
