@@ -19,11 +19,11 @@ import Svg exposing (Svg)
 import Svg.Attributes
 import Triangle2d exposing (Triangle2d)
 import TriangularMesh exposing (TriangularMesh)
-import VoronoiDiagram2d exposing (VoronoiDiagram2d)
+import VoronoiDiagram2d exposing (CoincidentVertices, VoronoiDiagram2d)
 
 
 type alias Model =
-    { baseDiagram : VoronoiDiagram2d Point2d
+    { baseDiagram : Result (CoincidentVertices Point2d) (VoronoiDiagram2d Point2d)
     , mousePosition : Maybe Point2d
     }
 
@@ -72,7 +72,7 @@ generateNewPoints =
 
 init : ( Model, Cmd Msg )
 init =
-    ( { baseDiagram = VoronoiDiagram2d.empty
+    ( { baseDiagram = Ok VoronoiDiagram2d.empty
       , mousePosition = Nothing
       }
     , generateNewPoints
@@ -116,13 +116,15 @@ view model =
             case model.mousePosition of
                 Just point ->
                     model.baseDiagram
-                        |> VoronoiDiagram2d.insertPoint point
+                        |> Result.andThen (VoronoiDiagram2d.insertPoint point)
 
                 Nothing ->
                     model.baseDiagram
 
         points =
-            Array.toList (VoronoiDiagram2d.vertices voronoiDiagram)
+            voronoiDiagram
+                |> Result.map (VoronoiDiagram2d.vertices >> Array.toList)
+                |> Result.withDefault []
 
         trimBox =
             BoundingBox2d.fromExtrema
@@ -133,7 +135,9 @@ view model =
                 }
 
         polygons =
-            VoronoiDiagram2d.polygons trimBox voronoiDiagram
+            voronoiDiagram
+                |> Result.map (VoronoiDiagram2d.polygons trimBox)
+                |> Result.withDefault []
 
         mousePointElement =
             case model.mousePosition of

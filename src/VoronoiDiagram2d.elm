@@ -1,6 +1,7 @@
 module VoronoiDiagram2d
     exposing
-        ( VoronoiDiagram2d
+        ( CoincidentVertices(..)
+        , VoronoiDiagram2d
         , empty
         , fromPoints
         , fromVerticesBy
@@ -34,6 +35,10 @@ type VoronoiDiagram2d vertex
         { delaunayTriangulation : DelaunayTriangulation2d vertex
         , regions : List (Region vertex)
         }
+
+
+type CoincidentVertices vertex
+    = CoincidentVertices vertex vertex
 
 
 type alias Accumulator =
@@ -500,45 +505,50 @@ empty =
         }
 
 
-fromPoints : Array Point2d -> VoronoiDiagram2d Point2d
+fromPoints : Array Point2d -> Result (CoincidentVertices Point2d) (VoronoiDiagram2d Point2d)
 fromPoints points =
     fromVerticesBy identity points
 
 
-fromVerticesBy : (vertex -> Point2d) -> Array vertex -> VoronoiDiagram2d vertex
+fromVerticesBy : (vertex -> Point2d) -> Array vertex -> Result (CoincidentVertices vertex) (VoronoiDiagram2d vertex)
 fromVerticesBy getPosition givenVertices =
-    let
-        delaunayTriangulation =
-            DelaunayTriangulation2d.fromVerticesBy getPosition givenVertices
+    case DelaunayTriangulation2d.fromVerticesBy getPosition givenVertices of
+        Ok delaunayTriangulation ->
+            let
+                regions =
+                    voronoiRegions delaunayTriangulation
+            in
+            Ok <|
+                VoronoiDiagram2d
+                    { delaunayTriangulation = delaunayTriangulation
+                    , regions = regions
+                    }
 
-        regions =
-            voronoiRegions delaunayTriangulation
-    in
-    VoronoiDiagram2d
-        { delaunayTriangulation = delaunayTriangulation
-        , regions = regions
-        }
+        Err (DelaunayTriangulation2d.CoincidentVertices firstVertex secondVertex) ->
+            Err (CoincidentVertices firstVertex secondVertex)
 
 
-insertPoint : Point2d -> VoronoiDiagram2d Point2d -> VoronoiDiagram2d Point2d
+insertPoint : Point2d -> VoronoiDiagram2d Point2d -> Result (CoincidentVertices Point2d) (VoronoiDiagram2d Point2d)
 insertPoint point voronoiDiagram =
     insertVertexBy identity point voronoiDiagram
 
 
-insertVertexBy : (vertex -> Point2d) -> vertex -> VoronoiDiagram2d vertex -> VoronoiDiagram2d vertex
+insertVertexBy : (vertex -> Point2d) -> vertex -> VoronoiDiagram2d vertex -> Result (CoincidentVertices vertex) (VoronoiDiagram2d vertex)
 insertVertexBy getPosition vertex (VoronoiDiagram2d current) =
-    let
-        updatedTriangulation =
-            current.delaunayTriangulation
-                |> DelaunayTriangulation2d.insertVertexBy getPosition vertex
+    case current.delaunayTriangulation |> DelaunayTriangulation2d.insertVertexBy getPosition vertex of
+        Ok updatedTriangulation ->
+            let
+                updatedRegions =
+                    voronoiRegions updatedTriangulation
+            in
+            Ok <|
+                VoronoiDiagram2d
+                    { delaunayTriangulation = updatedTriangulation
+                    , regions = updatedRegions
+                    }
 
-        updatedRegions =
-            voronoiRegions updatedTriangulation
-    in
-    VoronoiDiagram2d
-        { delaunayTriangulation = updatedTriangulation
-        , regions = updatedRegions
-        }
+        Err (DelaunayTriangulation2d.CoincidentVertices firstVertex secondVertex) ->
+            Err (CoincidentVertices firstVertex secondVertex)
 
 
 vertices : VoronoiDiagram2d vertex -> Array vertex
