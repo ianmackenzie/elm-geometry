@@ -26,8 +26,11 @@ import Polyline2d exposing (Polyline2d)
 
 
 type Region vertex
-    = Finite vertex Polygon2d
-    | Infinite vertex Axis2d Axis2d Polyline2d
+    = Polygonal vertex Polygon2d
+    | UShaped vertex Axis2d Axis2d Polyline2d
+    | Strip vertex Axis2d Axis2d
+    | HalfPlane vertex Axis2d
+    | Unbounded vertex
 
 
 type VoronoiDiagram2d vertex
@@ -163,10 +166,10 @@ collectRegions accumulatorsByIndex delaunayVertex accumulatedRegions =
                         polygon =
                             Polygon2d.singleLoop sortedPoints
 
-                        finiteRegion =
-                            Finite delaunayVertex.vertex polygon
+                        polygonalRegion =
+                            Polygonal delaunayVertex.vertex polygon
                     in
-                    finiteRegion :: accumulatedRegions
+                    polygonalRegion :: accumulatedRegions
 
                 ( Just startDirection_, Just endDirection_ ) ->
                     let
@@ -198,13 +201,13 @@ collectRegions accumulatorsByIndex delaunayVertex accumulatedRegions =
                                 polyline =
                                     Polyline2d.fromVertices sortedPoints
 
-                                infiniteRegion =
-                                    Infinite delaunayVertex.vertex
+                                uShapedRegion =
+                                    UShaped delaunayVertex.vertex
                                         leftAxis
                                         rightAxis
                                         polyline
                             in
-                            infiniteRegion :: accumulatedRegions
+                            uShapedRegion :: accumulatedRegions
 
                         [] ->
                             accumulatedRegions
@@ -390,8 +393,8 @@ addPointsInsideFiniteRegion edges trimBox accumulated =
         |> addPointInsideFiniteRegion edges trimBox.bottomRightVertex
 
 
-deduplicate : List Point2d -> List Point2d
-deduplicate points =
+deduplicateAndReverse : List Point2d -> List Point2d
+deduplicateAndReverse points =
     case points of
         first :: rest ->
             deduplicateHelp first rest [ first ]
@@ -413,8 +416,24 @@ deduplicateHelp head rest accumulated =
             accumulated
 
 
-trimInfiniteRegion : TrimBox -> vertex -> Axis2d -> Axis2d -> Polyline2d -> Maybe ( vertex, Polygon2d )
-trimInfiniteRegion trimBox vertex leftAxis rightAxis polyline =
+constructPolygon : vertex -> List Point2d -> Maybe ( vertex, Polygon2d )
+constructPolygon vertex points =
+    case Point2d.centroid points of
+        Just centroid ->
+            let
+                sortedPoints =
+                    points
+                        |> List.sortBy (pseudoAngle centroid >> negate)
+                        |> deduplicateAndReverse
+            in
+            Just ( vertex, Polygon2d.singleLoop sortedPoints )
+
+        Nothing ->
+            Nothing
+
+
+trimUShapedRegion : TrimBox -> vertex -> Axis2d -> Axis2d -> Polyline2d -> Maybe ( vertex, Polygon2d )
+trimUShapedRegion trimBox vertex leftAxis rightAxis polyline =
     let
         polylineVertices =
             Polyline2d.vertices polyline
@@ -434,22 +453,11 @@ trimInfiniteRegion trimBox vertex leftAxis rightAxis polyline =
                     polylineSegments
                     trimBox
     in
-    case Point2d.centroid trimmedVertices of
-        Just centroid ->
-            let
-                sortedVertices =
-                    trimmedVertices
-                        |> List.sortBy (pseudoAngle centroid >> negate)
-                        |> deduplicate
-            in
-            Just ( vertex, Polygon2d.singleLoop sortedVertices )
-
-        Nothing ->
-            Nothing
+    constructPolygon vertex trimmedVertices
 
 
-trimFiniteRegion : TrimBox -> vertex -> Polygon2d -> Maybe ( vertex, Polygon2d )
-trimFiniteRegion trimBox vertex polygon =
+trimPolygonalRegion : TrimBox -> vertex -> Polygon2d -> Maybe ( vertex, Polygon2d )
+trimPolygonalRegion trimBox vertex polygon =
     case Polygon2d.boundingBox polygon of
         Just polygonBoundingBox ->
             if polygonBoundingBox |> BoundingBox2d.isContainedIn trimBox.boundingBox then
@@ -470,31 +478,98 @@ trimFiniteRegion trimBox vertex polygon =
                                 polygonEdges
                                 trimBox
                 in
-                case Point2d.centroid trimmedVertices of
-                    Just centroid ->
-                        let
-                            sortedVertices =
-                                trimmedVertices
-                                    |> List.sortBy (pseudoAngle centroid >> negate)
-                                    |> deduplicate
-                        in
-                        Just ( vertex, Polygon2d.singleLoop sortedVertices )
-
-                    Nothing ->
-                        Nothing
+                constructPolygon vertex trimmedVertices
 
         Nothing ->
             Nothing
 
 
+addPointBetweenAxes : Axis2d -> Axis2d -> Point2d -> List Point2d -> List Point2d
+addPointBetweenAxes leftAxis rightAxis point accumulated =
+    if
+        (Point2d.signedDistanceFrom leftAxis point <= 0)
+            && (Point2d.signedDistanceFrom rightAxis point >= 0)
+    then
+        point :: accumulated
+    else
+        accumulated
+
+
+trimStripRegion : TrimBox -> vertex -> Axis2d -> Axis2d -> Maybe ( vertex, Polygon2d )
+trimStripRegion trimBox vertex leftAxis rightAxis =
+    let
+        trimmedVertices =
+            []
+                |> addAxisIntersections trimBox leftAxis
+                |> addAxisIntersections trimBox rightAxis
+                |> addPointBetweenAxes
+                    leftAxis
+                    rightAxis
+                    trimBox.bottomLeftVertex
+                |> addPointBetweenAxes
+                    leftAxis
+                    rightAxis
+                    trimBox.bottomRightVertex
+                |> addPointBetweenAxes
+                    leftAxis
+                    rightAxis
+                    trimBox.topRightVertex
+                |> addPointBetweenAxes
+                    leftAxis
+                    rightAxis
+                    trimBox.topLeftVertex
+    in
+    constructPolygon vertex trimmedVertices
+
+
+addPointBesideAxis : Axis2d -> Point2d -> List Point2d -> List Point2d
+addPointBesideAxis leftAxis point accumulated =
+    if Point2d.signedDistanceFrom leftAxis point <= 0 then
+        point :: accumulated
+    else
+        accumulated
+
+
+trimHalfPlane : TrimBox -> vertex -> Axis2d -> Maybe ( vertex, Polygon2d )
+trimHalfPlane trimBox vertex leftAxis =
+    let
+        trimmedVertices =
+            []
+                |> addAxisIntersections trimBox leftAxis
+                |> addPointBesideAxis leftAxis trimBox.bottomLeftVertex
+                |> addPointBesideAxis leftAxis trimBox.bottomRightVertex
+                |> addPointBesideAxis leftAxis trimBox.topRightVertex
+                |> addPointBesideAxis leftAxis trimBox.topLeftVertex
+    in
+    constructPolygon vertex trimmedVertices
+
+
 trimRegion : TrimBox -> Region vertex -> Maybe ( vertex, Polygon2d )
 trimRegion trimBox region =
     case region of
-        Finite vertex polygon ->
-            trimFiniteRegion trimBox vertex polygon
+        Polygonal vertex polygon ->
+            trimPolygonalRegion trimBox vertex polygon
 
-        Infinite vertex leftAxis rightAxis polyline ->
-            trimInfiniteRegion trimBox vertex leftAxis rightAxis polyline
+        UShaped vertex leftAxis rightAxis polyline ->
+            trimUShapedRegion trimBox vertex leftAxis rightAxis polyline
+
+        Strip vertex leftAxis rightAxis ->
+            trimStripRegion trimBox vertex leftAxis rightAxis
+
+        HalfPlane vertex leftAxis ->
+            trimHalfPlane trimBox vertex leftAxis
+
+        Unbounded vertex ->
+            let
+                boundingBoxRectangle =
+                    Polygon2d.singleLoop
+                        [ trimBox.bottomLeftVertex
+                        , trimBox.bottomRightVertex
+                        , trimBox.topRightVertex
+                        , trimBox.topLeftVertex
+                        ]
+            in
+            Just ( vertex, boundingBoxRectangle )
 
 
 empty : VoronoiDiagram2d vertex
