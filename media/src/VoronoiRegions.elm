@@ -96,15 +96,29 @@ verticesGenerator =
                 (Random.float (minX + 30) (maxX - 30))
                 (Random.float (minY + 30) (maxY - 30))
     in
-    Random.int 3 500
-        |> Random.andThen
-            (\listSize -> Random.list listSize pointGenerator)
+    Random.int 0 4
+        |> Random.andThen (\listSize -> Random.list listSize pointGenerator)
+        |> Random.map assignColors
+
+
+collinearVerticesGenerator : Generator (List Vertex)
+collinearVerticesGenerator =
+    let
+        { minX, maxX, minY, maxY } =
+            BoundingBox2d.extrema renderBounds
+
+        pointGenerator =
+            Random.map (\x -> Point2d.fromCoordinates ( x, x ))
+                (Random.float (minX + 30) (maxX - 30))
+    in
+    Random.int 1 5
+        |> Random.andThen (\listSize -> Random.list listSize pointGenerator)
         |> Random.map assignColors
 
 
 generateNewVertices : Cmd Msg
 generateNewVertices =
-    Random.generate NewRandomVertices verticesGenerator
+    Random.generate NewRandomVertices collinearVerticesGenerator
 
 
 init : ( Model, Cmd Msg )
@@ -137,42 +151,56 @@ update message model =
             ( { model | mousePosition = Just point }, Cmd.none )
 
 
-drawPolygon : ( Vertex, Polygon2d ) -> Svg msg
-drawPolygon ( vertex, polygon ) =
+fillColor : Vertex -> String
+fillColor vertex =
+    let
+        ( r, g, b ) =
+            vertex.color
+    in
+    String.concat
+        [ "rgb("
+        , String.fromFloat (255 * r)
+        , ","
+        , String.fromFloat (255 * g)
+        , ","
+        , String.fromFloat (255 * b)
+        , ")"
+        ]
+
+
+strokeColor : Vertex -> String
+strokeColor vertex =
     let
         ( r, g, b ) =
             vertex.color
 
-        fillColor =
-            String.concat
-                [ "rgb("
-                , String.fromFloat (255 * r)
-                , ","
-                , String.fromFloat (255 * g)
-                , ","
-                , String.fromFloat (255 * b)
-                , ")"
-                ]
-
         darkenScale =
             0.8
-
-        strokeColor =
-            String.concat
-                [ "rgb("
-                , String.fromFloat (255 * r * darkenScale)
-                , ","
-                , String.fromFloat (255 * g * darkenScale)
-                , ","
-                , String.fromFloat (255 * b * darkenScale)
-                , ")"
-                ]
     in
+    String.concat
+        [ "rgb("
+        , String.fromFloat (255 * r * darkenScale)
+        , ","
+        , String.fromFloat (255 * g * darkenScale)
+        , ","
+        , String.fromFloat (255 * b * darkenScale)
+        , ")"
+        ]
+
+
+drawPolygon : ( Vertex, Polygon2d ) -> Svg msg
+drawPolygon ( vertex, polygon ) =
     Svg.polygon2d
-        [ Svg.Attributes.stroke strokeColor
-        , Svg.Attributes.fill fillColor
+        [ Svg.Attributes.stroke (strokeColor vertex)
+        , Svg.Attributes.fill (fillColor vertex)
         ]
         polygon
+
+
+drawVertex : Vertex -> Svg msg
+drawVertex vertex =
+    Svg.circle2d [ Svg.Attributes.fill (strokeColor vertex) ]
+        (Circle2d.withRadius 2.5 vertex.position)
 
 
 view : Model -> Browser.Document Msg
@@ -240,10 +268,11 @@ view model =
                 , Svg.Attributes.fill "white"
                 , Svg.Attributes.stroke "black"
                 , Html.Attributes.style "border" "1px solid black"
-                , Mouse.onMove MouseMove
+
+                --, Mouse.onMove MouseMove
                 ]
                 [ Svg.g [] (List.map drawPolygon polygons)
-                , Svg.g [] (vertices |> List.map (.position >> Circle2d.withRadius 2.5 >> Svg.circle2d []))
+                , Svg.g [] (List.map drawVertex vertices)
                 , mousePointElement
                 , Svg.polygon2d [ Svg.Attributes.fill "transparent" ] overlayPolygon
                 ]
