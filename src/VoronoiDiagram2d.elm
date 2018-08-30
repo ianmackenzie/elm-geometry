@@ -282,8 +282,8 @@ addAllEdgeIntersections trimBox lineSegments accumulated =
     List.foldl (addEdgeIntersections trimBox) accumulated lineSegments
 
 
-addAxisIntersection : LineSegment2d -> Axis2d -> List Point2d -> List Point2d
-addAxisIntersection lineSegment axis accumulated =
+addHalfAxisIntersection : LineSegment2d -> Axis2d -> List Point2d -> List Point2d
+addHalfAxisIntersection lineSegment axis accumulated =
     case LineSegment2d.intersectionWithAxis axis lineSegment of
         Just point ->
             -- We only want points ahead of the axis' origin point, not behind
@@ -296,13 +296,32 @@ addAxisIntersection lineSegment axis accumulated =
             accumulated
 
 
-addAxisIntersections : TrimBox -> Axis2d -> List Point2d -> List Point2d
-addAxisIntersections trimBox axis accumulated =
+addFullAxisIntersection : LineSegment2d -> Axis2d -> List Point2d -> List Point2d
+addFullAxisIntersection lineSegment axis accumulated =
+    case LineSegment2d.intersectionWithAxis axis lineSegment of
+        Just point ->
+            point :: accumulated
+
+        Nothing ->
+            accumulated
+
+
+addHalfAxisIntersections : TrimBox -> Axis2d -> List Point2d -> List Point2d
+addHalfAxisIntersections trimBox axis accumulated =
     accumulated
-        |> addAxisIntersection trimBox.leftEdge axis
-        |> addAxisIntersection trimBox.rightEdge axis
-        |> addAxisIntersection trimBox.topEdge axis
-        |> addAxisIntersection trimBox.bottomEdge axis
+        |> addHalfAxisIntersection trimBox.leftEdge axis
+        |> addHalfAxisIntersection trimBox.rightEdge axis
+        |> addHalfAxisIntersection trimBox.topEdge axis
+        |> addHalfAxisIntersection trimBox.bottomEdge axis
+
+
+addFullAxisIntersections : TrimBox -> Axis2d -> List Point2d -> List Point2d
+addFullAxisIntersections trimBox axis accumulated =
+    accumulated
+        |> addFullAxisIntersection trimBox.leftEdge axis
+        |> addFullAxisIntersection trimBox.rightEdge axis
+        |> addFullAxisIntersection trimBox.topEdge axis
+        |> addFullAxisIntersection trimBox.bottomEdge axis
 
 
 leftOfSegment : LineSegment2d -> Point2d -> Bool
@@ -441,8 +460,8 @@ trimUShapedRegion trimBox vertex leftAxis rightAxis polyline =
         trimmedVertices =
             []
                 |> addContainedPoints trimBox polylineVertices
-                |> addAxisIntersections trimBox leftAxis
-                |> addAxisIntersections trimBox rightAxis
+                |> addHalfAxisIntersections trimBox leftAxis
+                |> addHalfAxisIntersections trimBox rightAxis
                 |> addAllEdgeIntersections trimBox polylineSegments
                 |> addPointsInsideInfiniteRegion
                     leftAxis
@@ -497,8 +516,8 @@ trimStripRegion trimBox vertex leftAxis rightAxis =
     let
         trimmedVertices =
             []
-                |> addAxisIntersections trimBox leftAxis
-                |> addAxisIntersections trimBox rightAxis
+                |> addFullAxisIntersections trimBox leftAxis
+                |> addFullAxisIntersections trimBox rightAxis
                 |> addPointBetweenAxes
                     leftAxis
                     rightAxis
@@ -532,7 +551,7 @@ trimHalfPlane trimBox vertex leftAxis =
     let
         trimmedVertices =
             []
-                |> addAxisIntersections trimBox leftAxis
+                |> addFullAxisIntersections trimBox leftAxis
                 |> addPointBesideAxis leftAxis trimBox.bottomLeftVertex
                 |> addPointBesideAxis leftAxis trimBox.bottomRightVertex
                 |> addPointBesideAxis leftAxis trimBox.topRightVertex
