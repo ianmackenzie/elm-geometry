@@ -216,6 +216,110 @@ collectRegions accumulatorsByIndex delaunayVertex accumulatedRegions =
             accumulatedRegions
 
 
+collectStrips : Direction2d -> Direction2d -> Maybe Axis2d -> DelaunayVertex vertex -> List (DelaunayVertex vertex) -> List (Region vertex) -> List (Region vertex)
+collectStrips direction axisDirection maybeLastAxis current following accumulated =
+    case following of
+        [] ->
+            case maybeLastAxis of
+                Just lastAxis ->
+                    HalfPlane current.vertex lastAxis :: accumulated
+
+                Nothing ->
+                    [ Unbounded current.vertex ]
+
+        next :: after ->
+            let
+                midpoint =
+                    Point2d.midpoint current.position next.position
+
+                newAxis =
+                    Axis2d.through midpoint axisDirection
+
+                newRegion =
+                    case maybeLastAxis of
+                        Just lastAxis ->
+                            Strip current.vertex lastAxis newAxis
+
+                        Nothing ->
+                            HalfPlane current.vertex (Axis2d.reverse newAxis)
+            in
+            collectStrips
+                direction
+                axisDirection
+                (Just newAxis)
+                next
+                after
+                (newRegion :: accumulated)
+
+
+collinearVertexRegions : List (DelaunayVertex vertex) -> List (Region vertex)
+collinearVertexRegions delaunayVertices =
+    case BoundingBox2d.containingPoints (List.map .position delaunayVertices) of
+        Just boundingBox ->
+            let
+                ( width, height ) =
+                    BoundingBox2d.dimensions boundingBox
+
+                sortedVertices =
+                    delaunayVertices
+                        |> List.sortBy
+                            (if width >= height then
+                                .position >> Point2d.xCoordinate
+                             else
+                                .position >> Point2d.yCoordinate
+                            )
+            in
+            case sortedVertices of
+                [ singleVertex ] ->
+                    [ Unbounded singleVertex.vertex ]
+
+                firstVertex :: remainingVertices ->
+                    let
+                        lastVertex =
+                            List.foldl always firstVertex remainingVertices
+                    in
+                    case Direction2d.from firstVertex.position lastVertex.position of
+                        Just direction ->
+                            let
+                                axisDirection =
+                                    Direction2d.rotateCounterclockwise direction
+                            in
+                            collectStrips
+                                direction
+                                axisDirection
+                                Nothing
+                                firstVertex
+                                remainingVertices
+                                []
+
+                        Nothing ->
+                            []
+
+                [] ->
+                    []
+
+        Nothing ->
+            []
+
+
+hasFiniteFace : List (DelaunayFace vertex) -> Bool
+hasFiniteFace faces =
+    case faces of
+        [] ->
+            False
+
+        first :: rest ->
+            case first of
+                ThreeVertexFace _ _ _ _ ->
+                    True
+
+                Types.TwoVertexFace _ _ _ _ ->
+                    hasFiniteFace rest
+
+                Types.OneVertexFace _ _ _ _ ->
+                    hasFiniteFace rest
+
+
 voronoiRegions : DelaunayTriangulation2d vertex -> List (Region vertex)
 voronoiRegions delaunayTriangulation =
     case delaunayTriangulation of
@@ -223,13 +327,16 @@ voronoiRegions delaunayTriangulation =
             []
 
         Types.DelaunayTriangulation2d triangulation ->
-            let
-                accumulatorsByIndex =
-                    List.foldl updateAccumulators Dict.empty triangulation.faces
-            in
-            List.foldl (collectRegions accumulatorsByIndex)
-                []
+            if hasFiniteFace triangulation.faces then
+                let
+                    accumulatorsByIndex =
+                        triangulation.faces
+                            |> List.foldl updateAccumulators Dict.empty
+                in
                 triangulation.delaunayVertices
+                    |> List.foldl (collectRegions accumulatorsByIndex) []
+            else
+                collinearVertexRegions triangulation.delaunayVertices
 
 
 type alias TrimBox =
