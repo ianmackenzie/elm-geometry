@@ -159,11 +159,11 @@ fillColor vertex =
     in
     String.concat
         [ "rgb("
-        , String.fromFloat (255 * r)
+        , String.fromInt (round (255 * r))
         , ","
-        , String.fromFloat (255 * g)
+        , String.fromInt (round (255 * g))
         , ","
-        , String.fromFloat (255 * b)
+        , String.fromInt (round (255 * b))
         , ")"
         ]
 
@@ -179,11 +179,11 @@ strokeColor vertex =
     in
     String.concat
         [ "rgb("
-        , String.fromFloat (255 * r * darkenScale)
+        , String.fromInt (round (255 * r * darkenScale))
         , ","
-        , String.fromFloat (255 * g * darkenScale)
+        , String.fromInt (round (255 * g * darkenScale))
         , ","
-        , String.fromFloat (255 * b * darkenScale)
+        , String.fromInt (round (255 * b * darkenScale))
         , ")"
         ]
 
@@ -268,8 +268,7 @@ view model =
                 , Svg.Attributes.fill "white"
                 , Svg.Attributes.stroke "black"
                 , Html.Attributes.style "border" "1px solid black"
-
-                --, Mouse.onMove MouseMove
+                , Mouse.onMove MouseMove
                 ]
                 [ Svg.g [] (List.map drawPolygon polygons)
                 , Svg.g [] (List.map drawVertex vertices)
