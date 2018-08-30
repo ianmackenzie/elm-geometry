@@ -111,9 +111,6 @@ updateAccumulators face accumulators =
 
         TwoVertexFace firstVertex secondVertex _ edgeDirection ->
             let
-                point =
-                    Point2d.midpoint firstVertex.position secondVertex.position
-
                 direction =
                     Direction2d.rotateCounterclockwise edgeDirection
             in
