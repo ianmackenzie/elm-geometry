@@ -15,6 +15,21 @@ module VoronoiDiagram2d
 
 @docs VoronoiDiagram2d, CoincidentVertices
 
+
+# Construction
+
+@docs empty, fromPoints, fromVerticesBy
+
+
+# Modification
+
+@docs insertPoint, insertVertexBy
+
+
+# Properties
+
+@docs vertices, polygons
+
 -}
 
 import Array exposing (Array)
