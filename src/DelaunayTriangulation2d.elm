@@ -15,6 +15,27 @@ module DelaunayTriangulation2d
         , vertices
         )
 
+{-|
+
+@docs DelaunayTriangulation2d, CoincidentVertices, Face
+
+
+# Construction
+
+@docs empty, fromPoints, fromVerticesBy
+
+
+# Modification
+
+@docs insertPoint, insertVertexBy
+
+
+# Properties
+
+@docs vertices, triangles, circumcircles, faces, toMesh
+
+-}
+
 import Array exposing (Array)
 import Axis2d exposing (Axis2d)
 import Circle2d exposing (Circle2d)
@@ -28,14 +49,26 @@ import Triangle2d exposing (Triangle2d)
 import TriangularMesh exposing (TriangularMesh)
 
 
+{-| A [Delaunay triangulation](https://en.wikipedia.org/wiki/Delaunay_triangulation)
+in 2D of a set of vertices.
+-}
 type alias DelaunayTriangulation2d vertex =
     Types.DelaunayTriangulation2d vertex
 
 
+{-| An error type indicating that the two given vertices have the same position.
+-}
 type CoincidentVertices vertex
     = CoincidentVertices vertex vertex
 
 
+{-| All the details about a particular face of a Delaunay triangulation:
+
+  - The three input vertices it is formed from
+  - The `Triangle2d` defining its shape
+  - The circumcircle of that triangle
+
+-}
 type alias Face vertex =
     { vertices : ( vertex, vertex, vertex )
     , triangle : Triangle2d
@@ -43,11 +76,21 @@ type alias Face vertex =
     }
 
 
+{-| An empty Delaunay triangulation with no vertices or faces.
+-}
 empty : DelaunayTriangulation2d vertex
 empty =
     Types.EmptyDelaunayTriangulation2d
 
 
+{-| Construct a Delaunay triangulation from an array of points. The points must
+all be distinct; if any two points are equal, you will get an `Err
+CoincidentVertices`.
+
+Note that if all points are collinear, then the resulting triangulation will
+be empty (have no faces).
+
+-}
 fromPoints : Array Point2d -> Result (CoincidentVertices Point2d) (DelaunayTriangulation2d Point2d)
 fromPoints points =
     fromVerticesBy identity points
@@ -139,6 +182,32 @@ createInitialFaces firstVertex =
     ]
 
 
+{-| Construct a Delaunay triangulation from an array of vertices of arbitrary
+type, by supplying a function that returns the position of each vertex as a
+`Point2d`. For example, if you had
+
+    types alias Vertex =
+        { position = Point2d
+        , color = String
+        }
+
+and
+
+    vertices : Array Vertex
+    vertices =
+        ...
+
+then you would use
+
+    DelaunayTriangulation2d.fromVerticesBy .position vertices
+
+The vertices must all be distinct; if any two have the same position, you will
+get an `Err CoincidentVertices`.
+
+Note that if all vertices are collinear, then the resulting triangulation will
+be empty (have no faces).
+
+-}
 fromVerticesBy : (vertex -> Point2d) -> Array vertex -> Result (CoincidentVertices vertex) (DelaunayTriangulation2d vertex)
 fromVerticesBy getPosition givenVertices =
     case collectDelaunayVertices getPosition givenVertices of
@@ -166,6 +235,9 @@ fromVerticesBy getPosition givenVertices =
             Err err
 
 
+{-| Add a new point into an existing Delaunay triangulation. It must not be
+equal to any existing point; if it is, you will get an `Err CoincidentVertices`.
+-}
 insertPoint : Point2d -> DelaunayTriangulation2d Point2d -> Result (CoincidentVertices Point2d) (DelaunayTriangulation2d Point2d)
 insertPoint point delaunayTriangulation =
     insertVertexBy identity point delaunayTriangulation
@@ -184,6 +256,11 @@ checkForCoincidentVertex vertex point delaunayVertices =
                 checkForCoincidentVertex vertex point remainingDelaunayVertices
 
 
+{-| Add a new vertex into an existing Delaunay triangulation, by supplying a
+function to get the position of the vertex. The vertex must not have the same
+position as any existing vertex; if it is, you will get an `Err
+CoincidentVertices`.
+-}
 insertVertexBy : (vertex -> Point2d) -> vertex -> DelaunayTriangulation2d vertex -> Result (CoincidentVertices vertex) (DelaunayTriangulation2d vertex)
 insertVertexBy getPosition vertex delaunayTriangulation =
     let
@@ -269,6 +346,8 @@ getFaceIndices firstVertex secondVertex thirdVertex circumcircle =
     ( firstVertex.index, secondVertex.index, thirdVertex.index )
 
 
+{-| Convert a Delaunay triangulation to a [`TriangularMesh`](https://package.elm-lang.org/packages/ianmackenzie/elm-triangular-mesh/latest/TriangularMesh#TriangularMesh).
+-}
 toMesh : DelaunayTriangulation2d vertex -> TriangularMesh vertex
 toMesh delaunayTriangulation =
     case delaunayTriangulation of
@@ -292,6 +371,18 @@ getTriangle firstVertex secondVertex thirdVertex circumcircle =
         )
 
 
+{-| Get all triangles in a given Delaunay triangulation;
+
+    DelaunayTriangulation2d.triangles triangulation
+
+is equivalent to
+
+    DelaunayTriangulation2d.faces triangulation
+        |> List.map .triangle
+
+but somewhat more efficient.
+
+-}
 triangles : DelaunayTriangulation2d vertex -> List Triangle2d
 triangles delaunayTriangulation =
     collectFaces getTriangle delaunayTriangulation
@@ -302,6 +393,18 @@ getCircumcircle firstVertex secondVertex thirdVertex circumcircle =
     circumcircle
 
 
+{-| Get all circumcircles in a given Delaunay triangulation;
+
+    DelaunayTriangulation2d.circumcircles triangulation
+
+is equivalent to
+
+    DelaunayTriangulation2d.faces triangulation
+        |> List.map .circumcircle
+
+but somewhat more efficient.
+
+-}
 circumcircles : DelaunayTriangulation2d vertex -> List Circle2d
 circumcircles delaunayTriangulation =
     collectFaces getCircumcircle delaunayTriangulation
@@ -320,11 +423,19 @@ getFace firstVertex secondVertex thirdVertex circumcircle =
     }
 
 
+{-| Get a list of all `Face`s in a given Delaunay triangulation.
+-}
 faces : DelaunayTriangulation2d vertex -> List (Face vertex)
 faces delaunayTriangulation =
     collectFaces getFace delaunayTriangulation
 
 
+{-| Get the vertices of a Delaunay triangulation. If the triangulation was
+constructed by calling `fromPoints` or `fromVerticesBy`, then the returned
+vertex array will simply be the array that was passed in. If any vertices were
+added using `insertPoint` or `insertVertexBy`, then they will be appended to
+the end of the array.
+-}
 vertices : DelaunayTriangulation2d vertex -> Array vertex
 vertices delaunayTriangulation =
     case delaunayTriangulation of
