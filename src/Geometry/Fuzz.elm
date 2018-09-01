@@ -10,43 +10,42 @@
 --------------------------------------------------------------------------------
 
 
-module Geometry.Fuzz
-    exposing
-        ( arc2d
-        , arc3d
-        , axis2d
-        , axis3d
-        , boundingBox2d
-        , boundingBox3d
-        , circle2d
-        , circle3d
-        , cubicSpline2d
-        , cubicSpline3d
-        , direction2d
-        , direction3d
-        , ellipse2d
-        , ellipticalArc2d
-        , frame2d
-        , frame3d
-        , lineSegment2d
-        , lineSegment3d
-        , parameterValue
-        , plane3d
-        , point2d
-        , point3d
-        , polygon2d
-        , polyline2d
-        , polyline3d
-        , quadraticSpline2d
-        , quadraticSpline3d
-        , scalar
-        , sketchPlane3d
-        , sphere3d
-        , triangle2d
-        , triangle3d
-        , vector2d
-        , vector3d
-        )
+module Geometry.Fuzz exposing
+    ( arc2d
+    , arc3d
+    , axis2d
+    , axis3d
+    , boundingBox2d
+    , boundingBox3d
+    , circle2d
+    , circle3d
+    , cubicSpline2d
+    , cubicSpline3d
+    , direction2d
+    , direction3d
+    , ellipse2d
+    , ellipticalArc2d
+    , frame2d
+    , frame3d
+    , lineSegment2d
+    , lineSegment3d
+    , parameterValue
+    , plane3d
+    , point2d
+    , point3d
+    , polygon2d
+    , polyline2d
+    , polyline3d
+    , quadraticSpline2d
+    , quadraticSpline3d
+    , scalar
+    , sketchPlane3d
+    , sphere3d
+    , triangle2d
+    , triangle3d
+    , vector2d
+    , vector3d
+    )
 
 import Arc2d exposing (Arc2d)
 import Arc3d exposing (Arc3d)
@@ -94,6 +93,11 @@ scalar =
 positiveScalar : Fuzzer Float
 positiveScalar =
     Fuzz.map abs scalar
+
+
+listWithoutDuplicates : Fuzzer a -> Fuzzer (List a)
+listWithoutDuplicates elementFuzzer =
+    Fuzz.map (deduplicateAndReverse << List.sort) (Fuzz.list elementFuzzer)
 
 
 parameterValue : Fuzzer ParameterValue
@@ -179,6 +183,7 @@ frame2d =
             in
             if rightHanded then
                 rightHandedFrame
+
             else
                 Frame2d.reverseY rightHandedFrame
     in
@@ -199,11 +204,13 @@ frame3d =
                 , yDirection =
                     if reverseY then
                         Direction3d.reverse yDirection
+
                     else
                         yDirection
                 , zDirection =
                     if reverseZ then
                         Direction3d.reverse zDirection
+
                     else
                         zDirection
                 }
@@ -409,3 +416,27 @@ ellipticalArc2d =
         (Fuzz.tuple ( point2d, direction2d ))
         (Fuzz.tuple ( positiveScalar, positiveScalar ))
         (Fuzz.tuple ( angle, angle ))
+
+
+deduplicateAndReverse : List a -> List a
+deduplicateAndReverse points =
+    case points of
+        first :: rest ->
+            deduplicateHelp first rest [ first ]
+
+        [] ->
+            []
+
+
+deduplicateHelp : a -> List a -> List a -> List a
+deduplicateHelp head rest accumulated =
+    case rest of
+        next :: remaining ->
+            if head == next then
+                deduplicateHelp head remaining accumulated
+
+            else
+                deduplicateHelp next remaining (next :: accumulated)
+
+        [] ->
+            accumulated
