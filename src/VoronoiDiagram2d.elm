@@ -11,6 +11,12 @@ module VoronoiDiagram2d
         , vertices
         )
 
+{-|
+
+@docs VoronoiDiagram2d, CoincidentVertices
+
+-}
+
 import Array exposing (Array)
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
@@ -33,6 +39,9 @@ type Region vertex
     | Unbounded vertex
 
 
+{-| A [Voronoi diagram](https://en.wikipedia.org/wiki/Voronoi_diagram) in 2D of
+a set of vertices.
+-}
 type VoronoiDiagram2d vertex
     = VoronoiDiagram2d
         { delaunayTriangulation : DelaunayTriangulation2d vertex
@@ -40,6 +49,8 @@ type VoronoiDiagram2d vertex
         }
 
 
+{-| An error type indicating that the two given vertices have the same position.
+-}
 type CoincidentVertices vertex
     = CoincidentVertices vertex vertex
 
@@ -695,6 +706,8 @@ trimRegion trimBox region =
             Just ( vertex, boundingBoxRectangle )
 
 
+{-| An empty Voronoi diagram with no vertices or faces.
+-}
 empty : VoronoiDiagram2d vertex
 empty =
     VoronoiDiagram2d
@@ -703,11 +716,37 @@ empty =
         }
 
 
+{-| Construct a Voronoi diagram from an array of points. The points must all be
+distinct; if any two points are equal, you will get an `Err CoincidentVertices`.
+-}
 fromPoints : Array Point2d -> Result (CoincidentVertices Point2d) (VoronoiDiagram2d Point2d)
 fromPoints points =
     fromVerticesBy identity points
 
 
+{-| Construct a Voronoi diagram from an array of vertices of arbitrary type, by
+supplying a function that returns the position of each vertex as a `Point2d`.
+For example, if you had
+
+    types alias Vertex =
+        { position = Point2d
+        , color = String
+        }
+
+and
+
+    vertices : Array Vertex
+    vertices =
+        ...
+
+then you would use
+
+    VoronoiDiagram2d.fromVerticesBy .position vertices
+
+The vertices must all be distinct; if any two have the same position, you will
+get an `Err CoincidentVertices`.
+
+-}
 fromVerticesBy : (vertex -> Point2d) -> Array vertex -> Result (CoincidentVertices vertex) (VoronoiDiagram2d vertex)
 fromVerticesBy getPosition givenVertices =
     case DelaunayTriangulation2d.fromVerticesBy getPosition givenVertices of
@@ -726,11 +765,18 @@ fromVerticesBy getPosition givenVertices =
             Err (CoincidentVertices firstVertex secondVertex)
 
 
+{-| Add a new point into an existing Voronoi diagram. It must not be equal to
+any existing point; if it is, you will get an `Err CoincidentVertices`.
+-}
 insertPoint : Point2d -> VoronoiDiagram2d Point2d -> Result (CoincidentVertices Point2d) (VoronoiDiagram2d Point2d)
 insertPoint point voronoiDiagram =
     insertVertexBy identity point voronoiDiagram
 
 
+{-| Add a new vertex into an existing Voronoi diagram, by supplying a function
+to get the position of the vertex. The vertex must not have the same position as
+any existing vertex; if it is, you will get an `Err CoincidentVertices`.
+-}
 insertVertexBy : (vertex -> Point2d) -> vertex -> VoronoiDiagram2d vertex -> Result (CoincidentVertices vertex) (VoronoiDiagram2d vertex)
 insertVertexBy getPosition vertex (VoronoiDiagram2d current) =
     case current.delaunayTriangulation |> DelaunayTriangulation2d.insertVertexBy getPosition vertex of
@@ -749,11 +795,29 @@ insertVertexBy getPosition vertex (VoronoiDiagram2d current) =
             Err (CoincidentVertices firstVertex secondVertex)
 
 
+{-| Get the vertices of a Voronoi diagram. If the diagram was constructed by
+calling `fromPoints` or `fromVerticesBy`, then the returned vertex array will
+simply be the array that was passed in. If any vertices were added using
+`insertPoint` or `insertVertexBy`, then they will be appended to the end of the
+array.
+-}
 vertices : VoronoiDiagram2d vertex -> Array vertex
 vertices (VoronoiDiagram2d voronoiDiagram) =
     DelaunayTriangulation2d.vertices voronoiDiagram.delaunayTriangulation
 
 
+{-| Convert a Voronoi diagram to a list of polygons, by clipping each (possibly
+infinite/unbounded) Voronoi region to the given bounding box. Each item in the
+returned list will be an input vertex with its corresponding (clipped) Voronoi
+region.
+
+If the bounding box contains all vertices, then there will be an entry in the
+list for every vertex. However, if some vertices fall outside the given
+bounding box, then it is possible that their Voronoi region is also entirely
+outside the bounding box, in which case they will have no entry in the
+returned list.
+
+-}
 polygons : BoundingBox2d -> VoronoiDiagram2d vertex -> List ( vertex, Polygon2d )
 polygons boundingBox (VoronoiDiagram2d voronoiDiagram) =
     let
