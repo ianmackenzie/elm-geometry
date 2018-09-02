@@ -36,10 +36,12 @@
         "QuadraticSpline3d",
         "SketchPlane3d",
         "Sphere3d",
+        "DelaunayTriangulation2d",
         "Triangle2d",
         "Triangle3d",
         "Vector2d",
-        "Vector3d"
+        "Vector3d",
+        "VoronoiDiagram2d"
     ],
     "elm-version": "0.19.0 <= v < 0.20.0",
     "dependencies": {
@@ -50,6 +52,7 @@
     },
     "test-dependencies": {
         "elm/random": "1.0.0 <= v < 2.0.0",
-        "elm-explorations/test": "1.1.0 <= v < 2.0.0"
+        "elm-explorations/test": "1.1.0 <= v < 2.0.0",
+        "elm-community/list-extra": "8.0.0 <= v < 9.0.0"
     }
 }
