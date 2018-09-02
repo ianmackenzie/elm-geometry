@@ -1,21 +1,36 @@
 module Tests.VoronoiDiagram2d exposing
     ( cellForEveryInputVertex
-    , failsOnCoincidentVertices
-    , pointInPolygonClosestToCorrespondingVertex
+    ,  failsOnCoincidentVertices
+       --, pointInPolygonClosestToCorrespondingVertex
+
     )
 
+import Array exposing (Array)
+import BoundingBox2d
 import DelaunayTriangulation2d
 import Direction3d
 import Expect
-import Fuzz
+import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import List.Extra
 import Plane3d
+import Point2d exposing (Point2d)
 import Point3d
+import Polygon2d exposing (Polygon2d)
+import Random
+import Shrink
 import SketchPlane3d
 import Test exposing (Test)
 import Vector3d
 import VoronoiDiagram2d
+
+
+uniquePoints : Fuzzer (Array Point2d)
+uniquePoints =
+    Fuzz.list Fuzz.point2d
+        |> Fuzz.map (List.Extra.uniqueBy Point2d.coordinates)
+        |> Fuzz.map Array.fromList
 
 
 cellForEveryInputVertex : Test
@@ -30,7 +45,7 @@ cellForEveryInputVertex =
                     Expect.pass
 
                 Ok diagram ->
-                    case BoundingBox2d.aggregate points of
+                    case BoundingBox2d.containingPoints (Array.toList points) of
                         Nothing ->
                             let
                                 boundingBox =
@@ -43,9 +58,9 @@ cellForEveryInputVertex =
                             diagram
                                 |> VoronoiDiagram2d.polygons boundingBox
                                 |> List.length
-                                |> Expect.equal (List.length points)
+                                |> Expect.equal (Array.length points)
     in
-    Test.fuzz3 (Fuzz.listWithoutDuplicates Fuzz.point2d) description expectation
+    Test.fuzz uniquePoints description expectation
 
 
 failsOnCoincidentVertices : Test
@@ -62,22 +77,76 @@ failsOnCoincidentVertices =
                 x :: xs ->
                     let
                         pointsWithDuplicate =
-                            x :: x :: xs
+                            Array.fromList (x :: x :: xs)
                     in
                     VoronoiDiagram2d.fromPoints pointsWithDuplicate
                         |> Expect.err
     in
     -- use normal `Fuzz.list`, more duplicates don't matter here
-    Test.fuzz3 (Fuzz.list Fuzz.point2d) description expectation
+    Test.fuzz (Fuzz.list Fuzz.point2d) description expectation
 
 
-pointInPolygonClosestToCorrespondingVertex : Test
-pointInPolygonClosestToCorrespondingVertex =
+pointInPolygon : Polygon2d -> Fuzzer Point2d
+pointInPolygon polygon =
     let
-        description =
-            "Every point inside a Voronoi region must be closer to the corresponding vertex than any other vertex"
+        vertices =
+            Polygon2d.vertices polygon
 
-        expectation points =
-            Expect.fail "TODO"
+        numVertices =
+            List.length vertices
     in
-    Test.fuzz3 (Fuzz.listWithoutDuplicates Fuzz.point2d) description expectation
+    case vertices of
+        [] ->
+            Fuzz.invalid "Can't generate a point inside an empty polygon"
+
+        first :: rest ->
+            let
+                -- Ensuring every vertex has a positive weight avoids a divide
+                -- by zero and ensures that the result is strictly inside the
+                -- polygon
+                weightsGenerator =
+                    Random.list numVertices (Random.float 1 100)
+            in
+            Fuzz.custom weightsGenerator Shrink.noShrink
+                |> Fuzz.map
+                    (\weights ->
+                        let
+                            totalWeight =
+                                List.sum weights
+
+                            weightedXCoordinates =
+                                List.map2
+                                    (\weight vertex ->
+                                        weight * Point2d.xCoordinate vertex
+                                    )
+                                    weights
+                                    vertices
+
+                            weightedYCoordinates =
+                                List.map2
+                                    (\weight vertex ->
+                                        weight * Point2d.yCoordinate vertex
+                                    )
+                                    weights
+                                    vertices
+
+                            x =
+                                List.sum weightedXCoordinates / totalWeight
+
+                            y =
+                                List.sum weightedYCoordinates / totalWeight
+                        in
+                        Point2d.fromCoordinates ( x, y )
+                    )
+
+
+
+--pointInPolygonClosestToCorrespondingVertex : Test
+--pointInPolygonClosestToCorrespondingVertex =
+--    let
+--        description =
+--            "Every point inside a Voronoi region must be closer to the corresponding vertex than any other vertex"
+--        expectation points =
+--            Expect.fail "TODO"
+--    in
+--    Test.fuzz uniquePoints description expectation

@@ -52,6 +52,7 @@
     },
     "test-dependencies": {
         "elm/random": "1.0.0 <= v < 2.0.0",
-        "elm-explorations/test": "1.1.0 <= v < 2.0.0"
+        "elm-explorations/test": "1.1.0 <= v < 2.0.0",
+        "elm-community/list-extra": "8.0.0 <= v < 9.0.0"
     }
 }

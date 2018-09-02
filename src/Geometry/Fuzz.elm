@@ -95,11 +95,6 @@ positiveScalar =
     Fuzz.map abs scalar
 
 
-listWithoutDuplicates : Fuzzer a -> Fuzzer (List a)
-listWithoutDuplicates elementFuzzer =
-    Fuzz.map (deduplicateAndReverse << List.sort) (Fuzz.list elementFuzzer)
-
-
 parameterValue : Fuzzer ParameterValue
 parameterValue =
     Fuzz.map ParameterValue.clamped (Fuzz.floatRange 0 1)
@@ -416,27 +411,3 @@ ellipticalArc2d =
         (Fuzz.tuple ( point2d, direction2d ))
         (Fuzz.tuple ( positiveScalar, positiveScalar ))
         (Fuzz.tuple ( angle, angle ))
-
-
-deduplicateAndReverse : List a -> List a
-deduplicateAndReverse points =
-    case points of
-        first :: rest ->
-            deduplicateHelp first rest [ first ]
-
-        [] ->
-            []
-
-
-deduplicateHelp : a -> List a -> List a -> List a
-deduplicateHelp head rest accumulated =
-    case rest of
-        next :: remaining ->
-            if head == next then
-                deduplicateHelp head remaining accumulated
-
-            else
-                deduplicateHelp next remaining (next :: accumulated)
-
-        [] ->
-            accumulated
