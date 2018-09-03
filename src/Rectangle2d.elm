@@ -656,6 +656,30 @@ leftEdge rectangle =
         (bottomLeftVertex rectangle)
 
 
+{-| Scale a rectangle about a given point by a given scale.
+
+    rectangle =
+        Rectangle2d.fromExtrema
+            { minX = 2
+            , maxX = 5
+            , minY = 1
+            , maxY = 3
+            }
+
+    rectangle
+        |> Rectangle2d.scaleAbout Point2d.origin 2
+    --> Rectangle2d.fromExtrema
+    -->     { minX = 4
+    -->     , maxX = 10
+    -->     , minY = 2
+    -->     , maxY = 6
+    -->     }
+
+Note that scaling by a negative value will flip the handedness of the
+rectangle's axes, and therefore the order/direction of results from
+`Rectangle2d.vertices` and `Rectangle2d.edges` will change.
+
+-}
 scaleAbout : Point2d -> Float -> Rectangle2d -> Rectangle2d
 scaleAbout point scale rectangle =
     let
@@ -701,6 +725,39 @@ scaleAbout point scale rectangle =
         }
 
 
+{-| Rotate a rectangle around a given point by a given angle (in radians).
+
+    rectangle =
+        Rectangle2d.fromExtrema
+            { minX = 0
+            , maxX = 1
+            , minY = 0
+            , maxY = 1
+            }
+
+    rotated =
+        rectangle
+            |> Rectangle2d.rotateAround Point2d.origin
+                (degrees 45)
+
+    Rectangle2d.centerPoint rotated
+    --> Point2d.fromCoordinates ( 0, 0.7071 )
+
+    Rectangle2d.xDirection rotated
+    --> Direction2d.fromAngle (degrees 45)
+
+    Rectangle2d.vertices rotated
+    --> { bottomLeft =
+    -->     Point2d.origin
+    --> , bottomRight =
+    -->     Point2d.fromCoordinates ( 0.7071, 0.7071 )
+    --> , topRight =
+    -->     Point2d.fromCoordinates ( 0, 1.4142 )
+    --> , topLeft =
+    -->     Point2d.fromCoordinates ( -0.7071, 0.7071 )
+    --> }
+
+-}
 rotateAround : Point2d -> Float -> Rectangle2d -> Rectangle2d
 rotateAround point angle =
     let
@@ -714,6 +771,28 @@ rotateAround point angle =
             }
 
 
+{-| Translate a rectangle by a given displacement.
+
+    rectangle =
+        Rectangle2d.fromExtrema
+            { minX = 2
+            , maxX = 5
+            , minY = 1
+            , maxY = 3
+            }
+
+    displacement =
+        Vector2d.fromComponents ( 2, -3 )
+
+    Rectangle2d.translateBy displacement rectangle
+    --> Rectangle2d.fromExtrema
+    -->     { minX = 4
+    -->     , maxX = 7
+    -->     , minY = -2
+    -->     , maxY = 0
+    -->     }
+
+-}
 translateBy : Vector2d -> Rectangle2d -> Rectangle2d
 translateBy displacement rectangle =
     Types.Rectangle2d
@@ -737,6 +816,29 @@ translateIn direction distance rectangle =
     translateBy (Vector2d.withLength distance direction) rectangle
 
 
+{-| Mirror a rectangle across a given axis.
+
+    rectangle =
+        Rectangle2d.fromExtrema
+            { minX = 2
+            , maxX = 5
+            , minY = 1
+            , maxY = 3
+            }
+
+    Rectangle2d.mirrorAcross Axis2d.x rectangle
+    --> Rectangle2d.fromExtrema
+    -->     { minX = 2
+    -->     , maxX = 5
+    -->     , minY = -3
+    -->     , maxY = -1
+    -->     }
+
+Note that this will flip the handedness of the rectangle's axes, and therefore
+the order/direction of results from `Rectangle2d.vertices` and
+`Rectangle2d.edges` will change.
+
+-}
 mirrorAcross : Axis2d -> Rectangle2d -> Rectangle2d
 mirrorAcross axis rectangle =
     Types.Rectangle2d
@@ -745,6 +847,30 @@ mirrorAcross axis rectangle =
         }
 
 
+{-| Take a rectangle considered to be defined in local coordinates relative to a
+given reference frame, and return that rectangle expressed in global
+coordinates.
+
+    rectangle =
+        Rectangle2d.fromExtrema
+            { minX = 2
+            , maxX = 5
+            , minY = 1
+            , maxY = 3
+            }
+
+    localFrame =
+        Frame2d.atCoordinates ( 1, 2 )
+
+    Rectangle2d.placeIn localFrame rectangle
+    --> Rectangle2d.fromExtrema
+    -->     { minX = 3
+    -->     , maxX = 6
+    -->     , minY = 3
+    -->     , maxY = 5
+    -->     }
+
+-}
 placeIn : Frame2d -> Rectangle2d -> Rectangle2d
 placeIn frame rectangle =
     Types.Rectangle2d
@@ -753,6 +879,29 @@ placeIn frame rectangle =
         }
 
 
+{-| Take a rectangle defined in global coordinates, and return it expressed
+in local coordinates relative to a given reference frame.
+
+    rectangle =
+        Rectangle2d.fromExtrema
+            { minX = 2
+            , maxX = 5
+            , minY = 1
+            , maxY = 3
+            }
+
+    localFrame =
+        Frame2d.atCoordinates ( 1, 2 )
+
+    Rectangle2d.relativeTo localFrame rectangle
+    --> Rectangle2d.fromExtrema
+    -->     { minX = 1
+    -->     , maxX = 4
+    -->     , minY = -1
+    -->     , maxY = 1
+    -->     }
+
+-}
 relativeTo : Frame2d -> Rectangle2d -> Rectangle2d
 relativeTo frame rectangle =
     Types.Rectangle2d
@@ -761,6 +910,33 @@ relativeTo frame rectangle =
         }
 
 
+{-| Get the minimal bounding box containing a given rectangle. This have
+exactly the same shape and size as the rectangle itself if the rectangle is
+axis-aligned, but will be larger than the rectangle if the rectangle is at an
+angle.
+
+    square =
+        Rectangle2d.fromExtrema
+            { minX = 0
+            , maxX = 1
+            , minY = 0
+            , maxY = 1
+            }
+
+    diamond =
+        square
+            |> Rectangle2d.rotateAround Point2d.origin
+                (degrees 45)
+
+    Rectangle2d.boundingBox diamond
+    --> BoundingBox2d.fromExtrema
+    -->     { minX = -0.7071
+    -->     , maxX = 0.7071
+    -->     , minY = 0
+    -->     , maxY = 1.4142
+    -->     }
+
+-}
 boundingBox : Rectangle2d -> BoundingBox2d
 boundingBox rectangle =
     let
