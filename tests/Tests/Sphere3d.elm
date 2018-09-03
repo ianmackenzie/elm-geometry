@@ -1,4 +1,20 @@
-module Tests.Sphere3d exposing (..)
+module Tests.Sphere3d exposing
+    ( FourPoints(..)
+    , boundingBoxContainsCenter
+    , mirrorAcross
+    , properties
+    , rotateAround
+    , scaleAbout
+    , sphereFromTuple
+    , tetrahedronVolume
+    , throughPointsFuzz
+    , throughPointsManual
+    , translateBy
+    , triangleArea
+    , unit
+    , validTetrahedron
+    , withRadius
+    )
 
 import Axis3d
 import BoundingBox3d
@@ -11,14 +27,12 @@ import Plane3d
 import Point3d exposing (Point3d)
 import Sphere3d exposing (Sphere3d)
 import Test exposing (Test)
-import Test.FuzzN as Test
 import Triangle3d
 import Vector3d
 
 
-{-
-   Helper methods
--}
+
+-- Helper methods
 
 
 sphereFromTuple : ( ( Float, Float, Float ), Float ) -> Sphere3d
@@ -27,9 +41,7 @@ sphereFromTuple ( centerPoint, radius ) =
 
 
 
-{-
-   Tests
--}
+-- Tests
 
 
 unit : Test
@@ -190,15 +202,21 @@ validTetrahedron p1 p2 p3 p4 =
         && isValid p4 p1 p2 p3
 
 
+type FourPoints
+    = FourPoints Point3d Point3d Point3d Point3d
+
+
 throughPointsFuzz : Test
 throughPointsFuzz =
-    Test.fuzz4
-        Fuzz.point3d
-        Fuzz.point3d
-        Fuzz.point3d
-        Fuzz.point3d
+    Test.fuzz
+        (Fuzz.map4 FourPoints
+            Fuzz.point3d
+            Fuzz.point3d
+            Fuzz.point3d
+            Fuzz.point3d
+        )
         "All given points lie on the sphere constructed using `throughPoints`"
-        (\p1 p2 p3 p4 ->
+        (\(FourPoints p1 p2 p3 p4) ->
             if validTetrahedron p1 p2 p3 p4 then
                 let
                     maybeSphere =
@@ -220,6 +238,7 @@ throughPointsFuzz =
 
                     Nothing ->
                         Expect.fail "throughPoints returned Nothing on valid input"
+
             else
                 Expect.pass
         )
@@ -406,6 +425,7 @@ rotateAround =
 
                         _ ->
                             Expect.fail "Failed to compute radial directions"
+
                 else
                     -- Don't bother checking with very small radii since
                     -- computing directions and angles is then prone to roundoff

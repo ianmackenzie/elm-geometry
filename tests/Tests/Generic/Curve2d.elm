@@ -8,7 +8,6 @@ import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Point2d exposing (Point2d)
 import Test exposing (Test)
-import Test.FuzzN as Test
 import Vector2d exposing (Vector2d)
 
 
@@ -29,13 +28,12 @@ transformations : Config curve -> Test
 transformations config =
     Test.describe "Transformations"
         [ Test.describe "scaleAbout"
-            [ Test.fuzz4
+            [ Test.fuzz3
                 config.fuzzer
-                Fuzz.point2d
-                Fuzz.scalar
+                (Fuzz.tuple ( Fuzz.point2d, Fuzz.scalar ))
                 Fuzz.parameterValue
                 "position"
-                (\curve basePoint scale t ->
+                (\curve ( basePoint, scale ) t ->
                     let
                         scaledCurve =
                             config.scaleAbout basePoint scale curve
@@ -51,13 +49,12 @@ transformations config =
                     in
                     pointOnScaledCurve |> Expect.point2d scaledPoint
                 )
-            , Test.fuzz4
+            , Test.fuzz3
                 config.fuzzer
-                Fuzz.point2d
-                Fuzz.scalar
+                (Fuzz.tuple ( Fuzz.point2d, Fuzz.scalar ))
                 Fuzz.parameterValue
                 "firstDerivative"
-                (\curve basePoint scale t ->
+                (\curve ( basePoint, scale ) t ->
                     let
                         scaledCurve =
                             config.scaleAbout basePoint scale curve
@@ -95,13 +92,12 @@ transformations config =
                 in
                 pointOnTranslatedCurve |> Expect.point2d translatedPoint
             )
-        , Test.fuzz4
+        , Test.fuzz3
             config.fuzzer
-            Fuzz.point2d
-            (Fuzz.floatRange (-2 * pi) (2 * pi))
+            (Fuzz.tuple ( Fuzz.point2d, Fuzz.floatRange (-2 * pi) (2 * pi) ))
             Fuzz.parameterValue
             "rotateAround"
-            (\curve centerPoint angle t ->
+            (\curve ( centerPoint, angle ) t ->
                 let
                     rotatedCurve =
                         config.rotateAround centerPoint angle curve

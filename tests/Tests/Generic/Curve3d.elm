@@ -9,7 +9,6 @@ import Geometry.Fuzz as Fuzz
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Test exposing (Test)
-import Test.FuzzN as Test
 import Vector3d exposing (Vector3d)
 
 
@@ -29,13 +28,12 @@ type alias Config curve =
 transformations : Config curve -> Test
 transformations config =
     Test.describe "Transformations"
-        [ Test.fuzz4
+        [ Test.fuzz3
             config.fuzzer
-            Fuzz.point3d
-            Fuzz.scalar
+            (Fuzz.tuple ( Fuzz.point3d, Fuzz.scalar ))
             Fuzz.parameterValue
             "scaleAbout"
-            (\curve basePoint scale t ->
+            (\curve ( basePoint, scale ) t ->
                 let
                     scaledCurve =
                         config.scaleAbout basePoint scale curve
@@ -72,13 +70,12 @@ transformations config =
                 in
                 pointOnTranslatedCurve |> Expect.point3d translatedPoint
             )
-        , Test.fuzz4
+        , Test.fuzz3
             config.fuzzer
-            Fuzz.axis3d
-            (Fuzz.floatRange (-2 * pi) (2 * pi))
+            (Fuzz.tuple ( Fuzz.axis3d, Fuzz.floatRange (-2 * pi) (2 * pi) ))
             Fuzz.parameterValue
             "rotateAround"
-            (\curve axis angle t ->
+            (\curve ( axis, angle ) t ->
                 let
                     rotatedCurve =
                         config.rotateAround axis angle curve

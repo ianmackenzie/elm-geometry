@@ -1,4 +1,4 @@
-module Tests.Arc2d exposing (..)
+module Tests.Arc2d exposing (evaluateOneIsEndPoint, evaluateZeroIsStartPoint, from, mirroredCenterPoint, reverseFlipsDirection, transformations, withRadius)
 
 import Arc.SweptAngle as SweptAngle exposing (SweptAngle)
 import Arc2d
@@ -9,7 +9,6 @@ import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Point2d exposing (Point2d)
 import Test exposing (Test)
-import Test.FuzzN as Test
 import Tests.Generic.Curve2d
 
 
@@ -80,13 +79,12 @@ withRadius =
                 , SweptAngle.largeNegative
                 ]
     in
-    Test.fuzz4
+    Test.fuzz3
         (Fuzz.map abs Fuzz.scalar)
         (Fuzz.oneOf sweptAngleTypes)
-        Fuzz.point2d
-        Fuzz.point2d
+        (Fuzz.tuple ( Fuzz.point2d, Fuzz.point2d ))
         "Arc2d.withRadius produces the expected end point"
-        (\radius sweptAngleType startPoint endPoint ->
+        (\radius sweptAngleType ( startPoint, endPoint ) ->
             case Arc2d.withRadius radius sweptAngleType startPoint endPoint of
                 Just arc ->
                     arc |> Arc2d.endPoint |> Expect.point2d endPoint
@@ -98,6 +96,7 @@ withRadius =
                     in
                     if distance == 0 then
                         Expect.pass
+
                     else
                         distance |> Expect.greaterThan (2 * radius)
         )
@@ -133,6 +132,7 @@ mirroredCenterPoint =
                 Arc2d.centerPoint mirroredArc
                     |> Expect.point2d
                         (Point2d.mirrorAcross axis (Arc2d.centerPoint arc))
+
             else
                 Expect.pass
         )
