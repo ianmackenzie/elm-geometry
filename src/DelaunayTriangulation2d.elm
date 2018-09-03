@@ -22,15 +22,24 @@ triangulations](https://en.wikipedia.org/wiki/Delaunay_triangulation). You can
   - Extract the resulting triangulation as a list of triangles or a
     [`TriangularMesh`](https://package.elm-lang.org/packages/ianmackenzie/elm-triangular-mesh/latest/TriangularMesh#TriangularMesh)
 
+The current implementation is somewhat inefficient, but there are plans to speed
+it up in the future (without requiring any changes to the API).
+
 @docs DelaunayTriangulation2d, CoincidentVertices, Face
 
 
 # Construction
 
+Constructing a Delaunay triangulation is currently an O(n^2) operation but
+should be O(n log n) in the future.
+
 @docs empty, fromPoints, fromVerticesBy
 
 
 # Modification
+
+Inserting a point into a Delaunay triangulation is currently an O(n) operation
+but should be O(log n) in the future.
 
 @docs insertPoint, insertVertexBy
 
@@ -353,6 +362,7 @@ getFaceIndices firstVertex secondVertex thirdVertex circumcircle =
 
 
 {-| Convert a Delaunay triangulation to a [`TriangularMesh`](https://package.elm-lang.org/packages/ianmackenzie/elm-triangular-mesh/latest/TriangularMesh#TriangularMesh).
+Complexity: O(n).
 -}
 toMesh : DelaunayTriangulation2d vertex -> TriangularMesh vertex
 toMesh delaunayTriangulation =
@@ -386,7 +396,7 @@ is equivalent to
     DelaunayTriangulation2d.faces triangulation
         |> List.map .triangle
 
-but somewhat more efficient.
+but somewhat more efficient. Complexity: O(n).
 
 -}
 triangles : DelaunayTriangulation2d vertex -> List Triangle2d
@@ -408,7 +418,7 @@ is equivalent to
     DelaunayTriangulation2d.faces triangulation
         |> List.map .circumcircle
 
-but somewhat more efficient.
+but somewhat more efficient. Complexity: O(n).
 
 -}
 circumcircles : DelaunayTriangulation2d vertex -> List Circle2d
@@ -429,7 +439,8 @@ getFace firstVertex secondVertex thirdVertex circumcircle =
     }
 
 
-{-| Get a list of all `Face`s in a given Delaunay triangulation.
+{-| Get a list of all `Face`s in a given Delaunay triangulation. Complexity:
+O(n).
 -}
 faces : DelaunayTriangulation2d vertex -> List (Face vertex)
 faces delaunayTriangulation =
@@ -440,7 +451,7 @@ faces delaunayTriangulation =
 constructed by calling `fromPoints` or `fromVerticesBy`, then the returned
 vertex array will simply be the array that was passed in. If any vertices were
 added using `insertPoint` or `insertVertexBy`, then they will be appended to
-the end of the array.
+the end of the array. This is a simple accessor, so complexity is O(1).
 -}
 vertices : DelaunayTriangulation2d vertex -> Array vertex
 vertices delaunayTriangulation =
