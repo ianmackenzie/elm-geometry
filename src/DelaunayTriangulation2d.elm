@@ -9,7 +9,8 @@
 
 module DelaunayTriangulation2d exposing
     ( DelaunayTriangulation2d, CoincidentVertices(..), Face
-    , empty, fromPoints, fromVerticesBy
+    , empty
+    , fromPoints, fromVerticesBy
     , insertPoint, insertVertexBy
     , vertices, triangles, circumcircles, faces, toMesh
     )
@@ -30,10 +31,12 @@ it up in the future (without requiring any changes to the API).
 
 # Construction
 
-Constructing a Delaunay triangulation is currently an O(n^2) operation but
-should be O(n log n) in the future.
+@docs empty
 
-@docs empty, fromPoints, fromVerticesBy
+Constructing a Delaunay triangulation from points/vertices is currently an
+O(n^2) operation but should be O(n log n) in the future.
+
+@docs fromPoints, fromVerticesBy
 
 
 # Modification
