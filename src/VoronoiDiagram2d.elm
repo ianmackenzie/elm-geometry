@@ -14,7 +14,30 @@ module VoronoiDiagram2d exposing
     , vertices, polygons
     )
 
-{-|
+{-| For any given set of distinct (non-equal) points in 2D, there is a finite
+region around each point such that anywhere in the region is closer to that
+point than to any other point. These are the called the Voronoi regions of each
+point, and the collection of the Voronoi regions for a set of points is called
+the [Voronoi diagram](https://en.wikipedia.org/wiki/Voronoi_diagram) of those
+points.
+
+Although some Voronoi regions will be infinite in size, if they are all clipped
+to a particular bounding box then they will all be finite, convex polygons. This
+module therefore provides functionality for
+
+  - Building Voronoi diagrams from sets of points or arbitrary vertices (so
+    you can associate colors, IDs or other data with points)
+  - Adding new points/vertices to an existing Voronoi diagram
+  - Clipping a Voronoi diagram to a particular bounding box to get a list of
+    polygons with their associated points/vertices
+
+The returned polygons can then be used in various interesting ways:
+
+  - Use to do interesting geographical analyses (for example, what are the areas
+    covered by different fire stations?)
+  - Use as an invisible hover target in SVG to highlight corresponding points:
+    highlighting a given point when the mouse is over its Voronoi polygon is one
+    way to highlight the point nearest the mouse
 
 @docs VoronoiDiagram2d, CoincidentVertices
 
@@ -57,8 +80,7 @@ type Region vertex
     | Unbounded vertex
 
 
-{-| A [Voronoi diagram](https://en.wikipedia.org/wiki/Voronoi_diagram) in 2D of
-a set of vertices.
+{-| A 2D Voronoi diagram of a set of vertices.
 -}
 type VoronoiDiagram2d vertex
     = VoronoiDiagram2d
