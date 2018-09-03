@@ -9,7 +9,8 @@
 
 module VoronoiDiagram2d exposing
     ( VoronoiDiagram2d, CoincidentVertices(..)
-    , empty, fromPoints, fromVerticesBy
+    , empty
+    , fromPoints, fromVerticesBy
     , insertPoint, insertVertexBy
     , vertices, polygons
     )
@@ -39,15 +40,26 @@ The returned polygons can then be used in various interesting ways:
     highlighting a given point when the mouse is over its Voronoi polygon is one
     way to highlight the point nearest the mouse
 
+The current implementation is somewhat inefficient, but there are plans to speed
+it up in the future (without requiring any changes to the API).
+
 @docs VoronoiDiagram2d, CoincidentVertices
 
 
 # Construction
 
-@docs empty, fromPoints, fromVerticesBy
+@docs empty
+
+Constructing a Voronoi diagram from points/vertices is currently an O(n^2)
+operation but should be O(n log n) in the future.
+
+@docs fromPoints, fromVerticesBy
 
 
 # Modification
+
+Inserting a point into a Voronoi diagram is currently an O(n) operation but
+should be O(log n) in the future.
 
 @docs insertPoint, insertVertexBy
 
@@ -851,7 +863,7 @@ insertVertexBy getPosition vertex (VoronoiDiagram2d current) =
 calling `fromPoints` or `fromVerticesBy`, then the returned vertex array will
 simply be the array that was passed in. If any vertices were added using
 `insertPoint` or `insertVertexBy`, then they will be appended to the end of the
-array.
+array. This is a simple accessor, so complexity is O(1).
 -}
 vertices : VoronoiDiagram2d vertex -> Array vertex
 vertices (VoronoiDiagram2d voronoiDiagram) =
@@ -868,6 +880,11 @@ list for every vertex. However, if some vertices fall outside the given
 bounding box, then it is possible that their Voronoi region is also entirely
 outside the bounding box, in which case they will have no entry in the
 returned list.
+
+Complexity should be O(n) in the vast majority of cases but may be O(n log n)
+in pathological cases (such as 1000 points on a circle surrounding a single
+center point, in which case the Voronoi region for the center point will be
+a polygon with 1000 edges).
 
 -}
 polygons : BoundingBox2d -> VoronoiDiagram2d vertex -> List ( vertex, Polygon2d )
