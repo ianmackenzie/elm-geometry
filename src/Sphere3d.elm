@@ -1,27 +1,12 @@
-module Sphere3d
-    exposing
-        ( Sphere3d
-        , boundingBox
-        , centerPoint
-        , circumference
-        , contains
-        , diameter
-        , mirrorAcross
-        , placeIn
-        , projectInto
-        , projectOnto
-        , radius
-        , relativeTo
-        , rotateAround
-        , scaleAbout
-        , surfaceArea
-        , throughPoints
-        , translateBy
-        , translateIn
-        , unit
-        , volume
-        , withRadius
-        )
+module Sphere3d exposing
+    ( Sphere3d
+    , unit
+    , withRadius, throughPoints
+    , centerPoint, radius, diameter, volume, surfaceArea, circumference, boundingBox
+    , contains
+    , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectInto
+    , relativeTo, placeIn
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Sphere3d/icon.svg" alt="Sphere3d" width="160">
 
@@ -77,6 +62,7 @@ import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import SketchPlane3d exposing (SketchPlane3d)
 import Vector3d exposing (Vector3d)
+
 
 
 {--Imports for verifying the examples:
@@ -185,6 +171,7 @@ throughPoints p1 p2 p3 p4 =
                     Just <|
                         withRadius (sqrt (r * r + d * d))
                             (Point3d.along normalAxis d)
+
                 else
                     Nothing
             )

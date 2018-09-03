@@ -1,26 +1,13 @@
-module Circle2d
-    exposing
-        ( Circle2d
-        , area
-        , boundingBox
-        , centerPoint
-        , circumference
-        , contains
-        , diameter
-        , mirrorAcross
-        , placeIn
-        , radius
-        , relativeTo
-        , rotateAround
-        , scaleAbout
-        , sweptAround
-        , throughPoints
-        , toArc
-        , translateBy
-        , translateIn
-        , unit
-        , withRadius
-        )
+module Circle2d exposing
+    ( Circle2d
+    , unit
+    , withRadius, throughPoints, sweptAround
+    , centerPoint, radius, diameter, area, circumference, boundingBox
+    , toArc
+    , contains
+    , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
+    , relativeTo, placeIn
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Circle2d/icon.svg" alt="Circle2d" width="160">
 

@@ -1,4 +1,14 @@
-module Tests.LineSegment2d exposing (..)
+module Tests.LineSegment2d exposing
+    ( intersectionFindsCoincidentEndpoints
+    , intersectionFindsCollinearCoincidentEndpoints
+    , intersectionIsSymmetric
+    , intersectionOfEqualLineSegmentsIsNothing
+    , intersectionOfEqualPointSegmentIsPoint
+    , intersectionOfReversedEqualLineSegmentsIsNothing
+    , intersectionWorksProperly
+    , reversingDoesNotAffectIntersection
+    , sharedEndpointOnThirdSegmentInducesAnIntersection
+    )
 
 import Axis2d
 import Expect
@@ -161,6 +171,7 @@ intersectionFindsCoincidentEndpoints =
             in
             if Vector2d.crossProduct firstVector secondVector /= 0 then
                 Expect.equal (Just sharedEnd) intersection
+
             else
                 Expect.pass
     in
@@ -253,6 +264,7 @@ intersectionOfEqualLineSegmentsIsNothing =
             in
             if start == end then
                 Expect.pass
+
             else
                 LineSegment2d.intersectionPoint lineSegment lineSegment
                     |> Expect.equal Nothing
@@ -271,6 +283,7 @@ intersectionOfReversedEqualLineSegmentsIsNothing =
             in
             if start == end then
                 Expect.pass
+
             else
                 LineSegment2d.reverse lineSegment
                     |> LineSegment2d.intersectionPoint lineSegment
@@ -312,6 +325,7 @@ sharedEndpointOnThirdSegmentInducesAnIntersection =
             in
             if v3Xv1 == 0 || v3Xv2 == 0 then
                 Expect.pass
+
             else if v3Xv1 * v3Xv2 > 0 then
                 -- point1 and point2 are on the same side of segment3
                 case intersections of
@@ -347,6 +361,7 @@ sharedEndpointOnThirdSegmentInducesAnIntersection =
                                 [ Tuple.first >> Expect.point2d sharedPoint
                                 , Tuple.second >> Expect.approximately 0
                                 ]
+
             else
                 -- point1 and point2 are on opposite sides of segment3
                 case intersections of

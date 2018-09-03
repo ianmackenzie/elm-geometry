@@ -1,12 +1,12 @@
-module Tesselation2d.Voronoi exposing (..)
+module Tesselation2d.Voronoi exposing (Accumulator(..), CircleCenter(..), centerPointsPerVertex, insertWith, lookupDirection, validatePointsAtInfinity)
 
-import Point2d exposing (Point2d)
-import Direction2d exposing (Direction2d)
-import Vector2d exposing (Vector2d)
-import LineSegment2d exposing (LineSegment2d)
 import Array exposing (Array)
 import Dict exposing (Dict)
+import Direction2d exposing (Direction2d)
+import LineSegment2d exposing (LineSegment2d)
+import Point2d exposing (Point2d)
 import Tesselation2d.Delaunay as Delaunay exposing (GeometryState, SuperTrianglePoints(..))
+import Vector2d exposing (Vector2d)
 
 
 {-| Validate points at infinity
@@ -23,6 +23,7 @@ These triangles are needed to create good voronoi regions at the outside of the 
 
 `centerPointsPerVertex` will annotate a circle's center point with whether its triangle shared a vertex with the supertriangle.
 Here we check that there are either 0 or 2 such center points (these are the only two numbers that make sense).
+
 -}
 validatePointsAtInfinity : Point2d -> List CircleCenter -> Accumulator -> Accumulator
 validatePointsAtInfinity datapoint remaining accumulator =
@@ -75,15 +76,16 @@ type CircleCenter
 
 {-| Find the direction of a point of the supertriangle.
 The triangle looks like this:
-    2
-    |\
-    0-1
+2
+|\\
+0-1
 
 So point 0 pulls to the bottom-left, 1 to the right and 2 to the top.
+
 -}
 lookupDirection : Int -> Direction2d
 lookupDirection n =
-    Maybe.withDefault (Direction2d.positiveX) <|
+    Maybe.withDefault Direction2d.positiveX <|
         case n of
             0 ->
                 Direction2d.from Point2d.origin (Point2d.fromCoordinates ( -1, -1 ))
@@ -105,6 +107,7 @@ It seems that only triangles with one shared point with the supertriangle are us
 But, this point at infinity needs to be changed to match the triangle, otherwise all triangles
 with a point at infinity would tend to the same 3 points. So we use the direction perpendicular to the
 edge between the other two vertices of the face.
+
 -}
 centerPointsPerVertex : GeometryState -> Dict Int (List CircleCenter)
 centerPointsPerVertex { faces, edges, points } =
@@ -112,6 +115,7 @@ centerPointsPerVertex { faces, edges, points } =
         folder face accum =
             if face.marked then
                 accum
+
             else
                 case face.superTrianglePoints of
                     One { shared, other1, other2 } ->
@@ -140,29 +144,30 @@ centerPointsPerVertex { faces, edges, points } =
                                                     middle =
                                                         LineSegment2d.interpolate (LineSegment2d.from start end) 0.5
                                                 in
-                                                    Just <|
-                                                        if Vector2d.dotProduct v1 v2 >= 0 then
-                                                            AtInfinity ( middle, rotatedClockwise )
-                                                        else
-                                                            AtInfinity ( middle, (Direction2d.rotateCounterclockwise edge) )
+                                                Just <|
+                                                    if Vector2d.dotProduct v1 v2 >= 0 then
+                                                        AtInfinity ( middle, rotatedClockwise )
+
+                                                    else
+                                                        AtInfinity ( middle, Direction2d.rotateCounterclockwise edge )
 
                                             Nothing ->
                                                 Nothing
                         in
-                            case Delaunay.getVertexIndices face edges of
-                                Nothing ->
-                                    accum
+                        case Delaunay.getVertexIndices face edges of
+                            Nothing ->
+                                accum
 
-                                Just ( p1, p2, p3 ) ->
-                                    case perpendicularDirection of
-                                        Nothing ->
-                                            accum
+                            Just ( p1, p2, p3 ) ->
+                                case perpendicularDirection of
+                                    Nothing ->
+                                        accum
 
-                                        Just newPoint ->
-                                            accum
-                                                |> insertWith p1 (::) [] newPoint
-                                                |> insertWith p2 (::) [] newPoint
-                                                |> insertWith p3 (::) [] newPoint
+                                    Just newPoint ->
+                                        accum
+                                            |> insertWith p1 (::) [] newPoint
+                                            |> insertWith p2 (::) [] newPoint
+                                            |> insertWith p3 (::) [] newPoint
 
                     Zero ->
                         case Delaunay.getVertexIndices face edges of
@@ -174,15 +179,15 @@ centerPointsPerVertex { faces, edges, points } =
                                     point =
                                         At face.center
                                 in
-                                    accum
-                                        |> insertWith p1 (::) [] point
-                                        |> insertWith p2 (::) [] point
-                                        |> insertWith p3 (::) [] point
+                                accum
+                                    |> insertWith p1 (::) [] point
+                                    |> insertWith p2 (::) [] point
+                                    |> insertWith p3 (::) [] point
 
                     _ ->
                         accum
     in
-        Array.foldl folder Dict.empty faces
+    Array.foldl folder Dict.empty faces
 
 
 insertWith : comparable -> (a -> b -> b) -> b -> a -> Dict comparable b -> Dict comparable b
@@ -196,4 +201,4 @@ insertWith key append default value dict =
                 Just current ->
                     Just (append value current)
     in
-        Dict.update key updater dict
+    Dict.update key updater dict

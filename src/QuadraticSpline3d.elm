@@ -1,47 +1,18 @@
-module QuadraticSpline3d
-    exposing
-        ( ArcLengthParameterized
-        , Nondegenerate
-        , QuadraticSpline3d
-        , arcLength
-        , arcLengthParameterization
-        , arcLengthParameterized
-        , bisect
-        , boundingBox
-        , controlPoint
-        , endDerivative
-        , endPoint
-        , firstDerivative
-        , firstDerivativesAt
-        , fromArcLengthParameterized
-        , fromNondegenerate
-        , mirrorAcross
-        , nondegenerate
-        , on
-        , placeIn
-        , pointAlong
-        , pointOn
-        , pointsAt
-        , projectInto
-        , projectOnto
-        , relativeTo
-        , reverse
-        , rotateAround
-        , sample
-        , sampleAlong
-        , samplesAt
-        , scaleAbout
-        , secondDerivative
-        , splitAt
-        , startDerivative
-        , startPoint
-        , tangentDirection
-        , tangentDirectionAlong
-        , tangentDirectionsAt
-        , translateBy
-        , translateIn
-        , with
-        )
+module QuadraticSpline3d exposing
+    ( QuadraticSpline3d
+    , with, on
+    , startPoint, endPoint, controlPoint, startDerivative, endDerivative, boundingBox
+    , pointOn, pointsAt
+    , Nondegenerate, nondegenerate, fromNondegenerate
+    , tangentDirection, tangentDirectionsAt, sample, samplesAt
+    , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
+    , relativeTo, placeIn
+    , projectInto
+    , bisect, splitAt
+    , ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentDirectionAlong, sampleAlong
+    , arcLengthParameterization, fromArcLengthParameterized
+    , firstDerivative, firstDerivativesAt, secondDerivative
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/QuadraticSpline3d/icon.svg" alt="QuadraticSpline3d" width="160">
 
@@ -564,6 +535,7 @@ tangentDirection nondegenerateSpline parameterValue =
                     -- (necessary for t = 0, arbitrary for all other points).
                     if parameterValue == ParameterValue.one then
                         Direction3d.reverse secondDerivativeDirection
+
                     else
                         secondDerivativeDirection
 

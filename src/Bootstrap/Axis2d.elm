@@ -1,8 +1,7 @@
-module Bootstrap.Axis2d
-    exposing
-        ( direction
-        , originPoint
-        )
+module Bootstrap.Axis2d exposing
+    ( direction
+    , originPoint
+    )
 
 import Geometry.Types exposing (..)
 

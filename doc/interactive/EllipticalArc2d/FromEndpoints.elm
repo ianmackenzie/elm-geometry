@@ -1,4 +1,4 @@
-module EllipticalArc2d.FromEndpoints exposing (..)
+module EllipticalArc2d.FromEndpoints exposing (main)
 
 import BoundingBox2d exposing (BoundingBox2d)
 import Char
@@ -186,6 +186,7 @@ update (InteractionMsg interactionMsg) model =
                         scale =
                             if ScrollAmount.isPositive scrollAmount then
                                 1 / 1.1
+
                             else
                                 1.1
                     in
@@ -400,12 +401,14 @@ view model =
                         xStroke =
                             if isActive XRadius model then
                                 blueStroke
+
                             else
                                 lightStroke
 
                         yStroke =
                             if isActive YRadius model then
                                 blueStroke
+
                             else
                                 lightStroke
 

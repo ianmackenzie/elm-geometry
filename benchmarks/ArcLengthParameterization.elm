@@ -1,4 +1,4 @@
-module ArcLengthParameterization exposing (..)
+module ArcLengthParameterization exposing (main)
 
 import Benchmark exposing (Benchmark)
 import Benchmark.Runner exposing (BenchmarkProgram)

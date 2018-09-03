@@ -10,29 +10,13 @@
 --------------------------------------------------------------------------------
 
 
-module Triangle3d
-    exposing
-        ( Triangle3d
-        , area
-        , boundingBox
-        , centroid
-        , circumcircle
-        , edges
-        , fromVertices
-        , mapVertices
-        , mirrorAcross
-        , normalDirection
-        , on
-        , placeIn
-        , projectInto
-        , projectOnto
-        , relativeTo
-        , rotateAround
-        , scaleAbout
-        , translateBy
-        , translateIn
-        , vertices
-        )
+module Triangle3d exposing
+    ( Triangle3d
+    , fromVertices, on
+    , vertices, edges, centroid, area, normalDirection, boundingBox, circumcircle
+    , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapVertices
+    , relativeTo, placeIn, projectInto
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Triangle3d/icon.svg" alt="Triangle3d" width="160">
 
@@ -134,6 +118,7 @@ on sketchPlane triangle2d =
 
 {-| Get the vertices of a triangle.
 
+
     ( p1, p2, p3 ) =
         Triangle3d.vertices exampleTriangle
 
@@ -150,6 +135,7 @@ vertices (Types.Triangle3d vertices_) =
 
 {-| Get the edges of a triangle: from the first vertex to the second, from the
 second to the third, and from the third back to the first.
+
 
     ( e1, e2, e3 ) =
         Triangle3d.edges exampleTriangle

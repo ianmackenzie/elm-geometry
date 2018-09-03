@@ -1,4 +1,11 @@
-module FillsAndStrokes exposing (..)
+module FillsAndStrokes exposing
+    ( blackStroke
+    , dashed
+    , greyFill
+    , greyStroke
+    , noFill
+    , whiteFill
+    )
 
 import Svg
 import Svg.Attributes as Attributes

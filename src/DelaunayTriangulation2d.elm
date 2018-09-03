@@ -1,19 +1,9 @@
-module DelaunayTriangulation2d
-    exposing
-        ( CoincidentVertices(..)
-        , DelaunayTriangulation2d
-        , Face
-        , circumcircles
-        , empty
-        , faces
-        , fromPoints
-        , fromVerticesBy
-        , insertPoint
-        , insertVertexBy
-        , toMesh
-        , triangles
-        , vertices
-        )
+module DelaunayTriangulation2d exposing
+    ( DelaunayTriangulation2d, CoincidentVertices(..), Face
+    , empty, fromPoints, fromVerticesBy
+    , insertPoint, insertVertexBy
+    , vertices, triangles, circumcircles, faces, toMesh
+    )
 
 {-|
 
@@ -140,6 +130,7 @@ checkDistinctHelp previous sortedDelaunayVertices =
         first :: rest ->
             if previous.position == first.position then
                 Err (CoincidentVertices previous.vertex first.vertex)
+
             else
                 checkDistinctHelp first rest
 
@@ -252,6 +243,7 @@ checkForCoincidentVertex vertex point delaunayVertices =
         firstDelaunayVertex :: remainingDelaunayVertices ->
             if point == firstDelaunayVertex.position then
                 Err (CoincidentVertices firstDelaunayVertex.vertex vertex)
+
             else
                 checkForCoincidentVertex vertex point remainingDelaunayVertices
 
@@ -464,6 +456,7 @@ edgeKey i j =
     in
     if x >= y then
         x * x + y
+
     else
         y * y + x
 
@@ -538,6 +531,7 @@ processFaces facesToProcess newVertex retainedFaces edgesByKey =
                             newVertex
                             retainedFaces
                             updatedEdges
+
                     else
                         processFaces remainingFaces
                             newVertex
@@ -589,6 +583,7 @@ processFaces facesToProcess newVertex retainedFaces edgesByKey =
                             newVertex
                             retainedFaces
                             updatedEdges
+
                     else
                         processFaces remainingFaces
                             newVertex
@@ -639,6 +634,7 @@ processFaces facesToProcess newVertex retainedFaces edgesByKey =
                             newVertex
                             retainedFaces
                             updatedEdges
+
                     else
                         processFaces remainingFaces
                             newVertex

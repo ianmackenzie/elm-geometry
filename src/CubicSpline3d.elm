@@ -1,53 +1,17 @@
-module CubicSpline3d
-    exposing
-        ( ArcLengthParameterized
-        , CubicSpline3d
-        , Nondegenerate
-        , arcLength
-        , arcLengthParameterization
-        , arcLengthParameterized
-        , bisect
-        , boundingBox
-        , endControlPoint
-        , endDerivative
-        , endPoint
-        , firstDerivative
-        , firstDerivativesAt
-        , fromArcLengthParameterized
-        , fromEndpoints
-        , fromNondegenerate
-        , fromQuadraticSpline
-        , maxSecondDerivativeMagnitude
-        , mirrorAcross
-        , nondegenerate
-        , on
-        , placeIn
-        , pointAlong
-        , pointOn
-        , pointsAt
-        , projectInto
-        , projectOnto
-        , relativeTo
-        , reverse
-        , rotateAround
-        , sample
-        , sampleAlong
-        , samplesAt
-        , scaleAbout
-        , secondDerivative
-        , secondDerivativesAt
-        , splitAt
-        , startControlPoint
-        , startDerivative
-        , startPoint
-        , tangentDirection
-        , tangentDirectionAlong
-        , tangentDirectionsAt
-        , thirdDerivative
-        , translateBy
-        , translateIn
-        , with
-        )
+module CubicSpline3d exposing
+    ( CubicSpline3d
+    , with, fromEndpoints, on, fromQuadraticSpline
+    , startPoint, endPoint, startControlPoint, endControlPoint, startDerivative, endDerivative, boundingBox
+    , pointOn, pointsAt
+    , Nondegenerate, nondegenerate, fromNondegenerate
+    , tangentDirection, tangentDirectionsAt, sample, samplesAt
+    , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
+    , relativeTo, placeIn, projectInto
+    , bisect, splitAt
+    , ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentDirectionAlong, sampleAlong
+    , arcLengthParameterization, fromArcLengthParameterized
+    , firstDerivative, firstDerivativesAt, secondDerivative, secondDerivativesAt, thirdDerivative, maxSecondDerivativeMagnitude
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/CubicSpline3d/icon.svg" alt="CubicSpline3d" width="160">
 
@@ -588,6 +552,7 @@ tangentDirection nondegenerateSpline parameterValue =
                     -- (necessary for t = 0, arbitrary for all other points).
                     if parameterValue == ParameterValue.one then
                         Direction3d.reverse secondDerivativeDirection
+
                     else
                         secondDerivativeDirection
 
@@ -614,6 +579,7 @@ tangentDirection nondegenerateSpline parameterValue =
                             -- as above in the NonZeroSecondDerivative case
                             if parameterValue == ParameterValue.one then
                                 Direction3d.reverse secondDerivativeDirection
+
                             else
                                 secondDerivativeDirection
 
@@ -1289,6 +1255,7 @@ firstDerivative spline parameterValue =
             , 3 * (wy1 + t * (wy2 - wy1))
             , 3 * (wz1 + t * (wz2 - wz1))
             )
+
     else
         let
             u =

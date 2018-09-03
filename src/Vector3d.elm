@@ -10,41 +10,17 @@
 --------------------------------------------------------------------------------
 
 
-module Vector3d
-    exposing
-        ( Vector3d
-        , componentIn
-        , components
-        , crossProduct
-        , difference
-        , direction
-        , dotProduct
-        , equalWithin
-        , from
-        , fromComponents
-        , interpolateFrom
-        , length
-        , lengthAndDirection
-        , mirrorAcross
-        , normalize
-        , on
-        , perpendicularTo
-        , placeIn
-        , projectInto
-        , projectOnto
-        , projectionIn
-        , relativeTo
-        , reverse
-        , rotateAround
-        , scaleBy
-        , squaredLength
-        , sum
-        , withLength
-        , xComponent
-        , yComponent
-        , zComponent
-        , zero
-        )
+module Vector3d exposing
+    ( Vector3d
+    , zero
+    , fromComponents, from, withLength, on, perpendicularTo, interpolateFrom
+    , components, xComponent, yComponent, zComponent, length, squaredLength, direction, lengthAndDirection
+    , equalWithin
+    , componentIn
+    , sum, difference, dotProduct, crossProduct
+    , reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
+    , relativeTo, placeIn, projectInto
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Vector3d/icon.svg" alt="Vector3d" width="160">
 
@@ -284,10 +260,13 @@ perpendicularTo vector =
     if absX <= absY then
         if absX <= absZ then
             fromComponents ( 0, -z, y )
+
         else
             fromComponents ( -y, x, 0 )
+
     else if absY <= absZ then
         fromComponents ( z, 0, -x )
+
     else
         fromComponents ( -y, x, 0 )
 
@@ -497,6 +476,7 @@ direction : Vector3d -> Maybe Direction3d
 direction vector =
     if vector == zero then
         Nothing
+
     else
         let
             normalizedVector =
@@ -531,6 +511,7 @@ lengthAndDirection vector =
     in
     if vectorLength == 0.0 then
         Nothing
+
     else
         let
             normalizedVector =
@@ -570,6 +551,7 @@ normalize : Vector3d -> Vector3d
 normalize vector =
     if vector == zero then
         zero
+
     else
         scaleBy (1 / length vector) vector
 

@@ -1,4 +1,10 @@
-module Tests.QuadraticSpline3d exposing (..)
+module Tests.QuadraticSpline3d exposing
+    ( analyticalLength
+    , arcLengthMatchesAnalytical
+    , curvedSpline
+    , pointAtArcLengthIsEnd
+    , pointAtZeroLengthIsStart
+    )
 
 import Expect exposing (FloatingPointTolerance(..))
 import Fuzz exposing (Fuzzer)

@@ -10,36 +10,15 @@
 --------------------------------------------------------------------------------
 
 
-module LineSegment2d
-    exposing
-        ( LineSegment2d
-        , along
-        , boundingBox
-        , direction
-        , endPoint
-        , endpoints
-        , from
-        , fromEndpoints
-        , interpolate
-        , intersectionPoint
-        , intersectionWithAxis
-        , length
-        , mapEndpoints
-        , midpoint
-        , mirrorAcross
-        , perpendicularDirection
-        , placeIn
-        , projectOnto
-        , relativeTo
-        , reverse
-        , rotateAround
-        , scaleAbout
-        , squaredLength
-        , startPoint
-        , translateBy
-        , translateIn
-        , vector
-        )
+module LineSegment2d exposing
+    ( LineSegment2d
+    , fromEndpoints, from, along
+    , startPoint, endPoint, endpoints, midpoint, length, squaredLength, direction, perpendicularDirection, vector, boundingBox
+    , interpolate
+    , intersectionPoint, intersectionWithAxis
+    , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapEndpoints
+    , relativeTo, placeIn
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/LineSegment2d/icon.svg" alt="LineSegment2d" width="160">
 
@@ -397,19 +376,25 @@ intersectionPoint lineSegment1 lineSegment2 =
             if p_ == q_ then
                 -- p |----- p_ | q_ -----| q
                 Just p_
+
             else if p == q then
                 -- q_ |----- q | p -----| p_
                 Just p
+
             else
                 Nothing
+
         else if p_ == q then
             -- p |----- p_ | q -----| q_
             Just p_
+
         else if p == q_ then
             -- q |----- q_ | p -----| p_
             Just p
+
         else
             Nothing
+
     else
         -- Segments are not parallel.
         -- We search for the intersection point of the two lines.
@@ -429,10 +414,12 @@ intersectionPoint lineSegment1 lineSegment2 =
                 intersection =
                     if min t (1 - t) <= min u (1 - u) then
                         interpolate lineSegment1 t
+
                     else
                         interpolate lineSegment2 u
             in
             Just intersection
+
         else
             Nothing
 
@@ -473,21 +460,26 @@ intersectionWithAxis axis lineSegment =
         -- The two points are on opposite sides of the axis, so there is a
         -- unique intersection point in between them
         Just (Point2d.interpolateFrom p1 p2 (d1 / (d1 - d2)))
+
     else if product > 0 then
         -- Both points are on the same side of the axis, so no intersection
         -- point exists
         Nothing
+
     else if d1 /= 0 then
         -- d2 must be zero since the product is zero, so only p2 is on the axis
         Just p2
+
     else if d2 /= 0 then
         -- d1 must be zero since the product is zero, so only p1 is on the axis
         Just p1
+
     else if p1 == p2 then
         -- Both d1 and d2 are zero, so both p1 and p2 are on the axis but also
         -- happen to be equal to each other, so the line segment is actually
         -- just a single point on the axis
         Just p1
+
     else
         -- Both endpoints lie on the axis and are not equal to each other - no
         -- unique intersection point

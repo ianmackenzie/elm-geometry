@@ -1,4 +1,11 @@
-module Tests.Vector2d exposing (..)
+module Tests.Vector2d exposing
+    ( dotProductWithSelfIsSquaredLength
+    , mirrorAcrossNegatesPerpendicularComponent
+    , mirrorAcrossPreservesParallelComponent
+    , perpendicularVectorIsPerpendicular
+    , rotateByPreservesLength
+    , rotateByRotatesByTheCorrectAngle
+    )
 
 import Axis2d
 import Direction2d

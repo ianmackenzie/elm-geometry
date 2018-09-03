@@ -10,37 +10,13 @@
 --------------------------------------------------------------------------------
 
 
-module BoundingBox3d
-    exposing
-        ( BoundingBox3d
-        , aggregate
-        , centroid
-        , containingPoints
-        , contains
-        , dimensions
-        , extrema
-        , from
-        , fromExtrema
-        , hull
-        , intersection
-        , intersects
-        , isContainedIn
-        , maxX
-        , maxY
-        , maxZ
-        , midX
-        , midY
-        , midZ
-        , minX
-        , minY
-        , minZ
-        , overlappingBy
-        , scaleAbout
-        , separatedBy
-        , singleton
-        , translateBy
-        , translateIn
-        )
+module BoundingBox3d exposing
+    ( BoundingBox3d
+    , fromExtrema, singleton, from, hull, intersection, aggregate, containingPoints
+    , extrema, minX, maxX, minY, maxY, minZ, maxZ, dimensions, midX, midY, midZ, centroid
+    , contains, isContainedIn, intersects, overlappingBy, separatedBy
+    , scaleAbout, translateBy, translateIn
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/BoundingBox3d/icon.svg" alt="BoundingBox3d" width="160">
 
@@ -120,6 +96,7 @@ fromExtrema extrema_ =
             && (extrema_.minZ <= extrema_.maxZ)
     then
         Types.BoundingBox3d extrema_
+
     else
         Types.BoundingBox3d
             { minX = min extrema_.minX extrema_.maxX
@@ -282,6 +259,7 @@ record.
     --> }
 
 Can be useful when combined with record destructuring, for example
+
 
     { minX, maxX, minY, maxY, minZ, maxZ } =
         BoundingBox3d.extrema exampleBox
@@ -529,6 +507,7 @@ overlapAmount firstBox secondBox =
     in
     if xOverlap >= 0 && yOverlap >= 0 && zOverlap >= 0 then
         Just (min xOverlap (min yOverlap zOverlap))
+
     else
         Nothing
 
@@ -560,6 +539,7 @@ squaredSeparationAmount firstBox secondBox =
                 max zSeparation 0
         in
         Just (dX * dX + dY * dY + dZ * dZ)
+
     else
         Nothing
 
@@ -640,9 +620,11 @@ overlappingBy order tolerance =
 
                         Nothing ->
                             True
+
             else if tolerance == 0 then
                 \firstBox secondBox ->
                     overlapAmount firstBox secondBox == Nothing
+
             else
                 alwaysFalse
 
@@ -655,6 +637,7 @@ overlappingBy order tolerance =
 
                         Nothing ->
                             False
+
             else
                 \firstBox secondBox ->
                     overlapAmount firstBox secondBox /= Nothing
@@ -667,6 +650,7 @@ overlappingBy order tolerance =
                 in
                 \firstBox secondBox ->
                     overlapAmount firstBox secondBox == expected
+
             else
                 alwaysFalse
 
@@ -740,9 +724,11 @@ separatedBy order tolerance =
 
                         Nothing ->
                             True
+
             else if tolerance == 0 then
                 \firstBox secondBox ->
                     squaredSeparationAmount firstBox secondBox == Nothing
+
             else
                 alwaysFalse
 
@@ -755,6 +741,7 @@ separatedBy order tolerance =
 
                         Nothing ->
                             False
+
             else
                 \firstBox secondBox ->
                     squaredSeparationAmount firstBox secondBox /= Nothing
@@ -767,6 +754,7 @@ separatedBy order tolerance =
                 in
                 \firstBox secondBox ->
                     squaredSeparationAmount firstBox secondBox == expected
+
             else
                 alwaysFalse
 
@@ -961,6 +949,7 @@ intersection firstBox secondBox =
                 , maxZ = min (maxZ firstBox) (maxZ secondBox)
                 }
             )
+
     else
         Nothing
 
@@ -996,6 +985,7 @@ scaleAbout point scale boundingBox =
             , minZ = z0 + scale * (minZ boundingBox - z0)
             , maxZ = z0 + scale * (maxZ boundingBox - z0)
             }
+
     else
         fromExtrema
             { minX = x0 + scale * (maxX boundingBox - x0)

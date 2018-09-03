@@ -1,12 +1,11 @@
-module Polygon2d.EdgeSet
-    exposing
-        ( Edge
-        , EdgeSet
-        , empty
-        , insert
-        , leftOf
-        , remove
-        )
+module Polygon2d.EdgeSet exposing
+    ( Edge
+    , EdgeSet
+    , empty
+    , insert
+    , leftOf
+    , remove
+    )
 
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
@@ -47,6 +46,7 @@ leftOf point (EdgeSet edges) =
                     dx =
                         if y1 == y2 then
                             x - max x1 x2
+
                         else
                             x - (x1 + ((y - y1) / (y2 - y1)) * (x2 - x1))
                 in
@@ -58,8 +58,10 @@ leftOf point (EdgeSet edges) =
                         Just ( currentDx, currentEdge ) ->
                             if dx <= currentDx then
                                 Just ( dx, edge )
+
                             else
                                 current
+
                 else
                     current
             )

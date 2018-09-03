@@ -10,37 +10,16 @@
 --------------------------------------------------------------------------------
 
 
-module Point2d
-    exposing
-        ( Point2d
-        , along
-        , centroid
-        , circumcenter
-        , coordinates
-        , distanceFrom
-        , equalWithin
-        , fromCoordinates
-        , fromCoordinatesIn
-        , fromPolarCoordinates
-        , fromPolarCoordinatesIn
-        , interpolateFrom
-        , midpoint
-        , mirrorAcross
-        , origin
-        , placeIn
-        , polarCoordinates
-        , projectOnto
-        , relativeTo
-        , rotateAround
-        , scaleAbout
-        , signedDistanceAlong
-        , signedDistanceFrom
-        , squaredDistanceFrom
-        , translateBy
-        , translateIn
-        , xCoordinate
-        , yCoordinate
-        )
+module Point2d exposing
+    ( Point2d
+    , origin
+    , fromCoordinates, fromCoordinatesIn, fromPolarCoordinates, fromPolarCoordinatesIn, midpoint, centroid, interpolateFrom, along, circumcenter
+    , coordinates, xCoordinate, yCoordinate, polarCoordinates
+    , equalWithin
+    , distanceFrom, squaredDistanceFrom, signedDistanceAlong, signedDistanceFrom
+    , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
+    , relativeTo, placeIn
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Point2d/icon.svg" alt="Point2d" width="160">
 
@@ -390,6 +369,7 @@ circumcenter p1 p2 p3 =
     in
     if sum == 0 then
         Nothing
+
     else
         let
             w1 =

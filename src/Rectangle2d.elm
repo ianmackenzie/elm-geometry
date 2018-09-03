@@ -10,40 +10,19 @@
 --------------------------------------------------------------------------------
 
 
-module Rectangle2d
-    exposing
-        ( Rectangle2d
-        , area
-        , axes
-        , bottomEdge
-        , bottomLeftVertex
-        , bottomRightVertex
-        , boundingBox
-        , centerPoint
-        , centeredOn
-        , contains
-        , dimensions
-        , edges
-        , from
-        , fromExtrema
-        , fromExtremaIn
-        , leftEdge
-        , mirrorAcross
-        , placeIn
-        , relativeTo
-        , rightEdge
-        , rotateAround
-        , scaleAbout
-        , toPolygon
-        , topEdge
-        , topLeftVertex
-        , topRightVertex
-        , translateBy
-        , translateIn
-        , vertices
-        , xAxis
-        , yAxis
-        )
+module Rectangle2d exposing
+    ( Rectangle2d
+    , from, centeredOn, fromExtremaIn
+    , dimensions, axes, xAxis, yAxis, centerPoint, area
+    , vertices, bottomLeftVertex, bottomRightVertex, topLeftVertex, topRightVertex
+    , edges, leftEdge, bottomEdge, rightEdge, topEdge
+    , boundingBox
+    , contains
+    , toPolygon
+    , scaleAbout, rotateAround, translateBy, mirrorAcross
+    , relativeTo, placeIn
+    , fromExtrema, translateIn
+    )
 
 {-| A `Rectangle2d` represents a rectangle in 2D space. This module contains
 rectangle-related functionality such as:
@@ -702,6 +681,7 @@ scaleAbout point scale rectangle =
                     , xDirection = currentXDirection
                     , yDirection = currentYDirection
                     }
+
             else
                 Frame2d.unsafe
                     { originPoint = newCenterPoint

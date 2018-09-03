@@ -1,4 +1,11 @@
-module Tests.Axis3d exposing (..)
+module Tests.Axis3d exposing
+    ( directionExample
+    , onExamples
+    , originPointExample
+    , xExample
+    , yExample
+    , zExample
+    )
 
 import Axis2d
 import Axis3d

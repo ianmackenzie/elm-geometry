@@ -10,24 +10,14 @@
 --------------------------------------------------------------------------------
 
 
-module Axis2d
-    exposing
-        ( Axis2d
-        , direction
-        , mirrorAcross
-        , moveTo
-        , originPoint
-        , placeIn
-        , relativeTo
-        , reverse
-        , rotateAround
-        , through
-        , translateBy
-        , translateIn
-        , withDirection
-        , x
-        , y
-        )
+module Axis2d exposing
+    ( Axis2d
+    , x, y
+    , through, withDirection
+    , originPoint, direction
+    , reverse, moveTo, rotateAround, translateBy, translateIn, mirrorAcross
+    , relativeTo, placeIn
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Axis2d/icon.svg" alt="Axis2d" width="160">
 

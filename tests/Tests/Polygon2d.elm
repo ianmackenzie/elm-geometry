@@ -1,4 +1,9 @@
-module Tests.Polygon2d exposing (..)
+module Tests.Polygon2d exposing
+    ( convexHullContainsAllPoints
+    , convexHullIsConvex
+    , triangulationHasCorrectArea
+    , triangulationHasCorrectNumberOfTriangles
+    )
 
 import Expect
 import Fuzz

@@ -1,11 +1,7 @@
-module Arc.SweptAngle
-    exposing
-        ( SweptAngle
-        , largeNegative
-        , largePositive
-        , smallNegative
-        , smallPositive
-        )
+module Arc.SweptAngle exposing
+    ( SweptAngle
+    , smallPositive, smallNegative, largePositive, largeNegative
+    )
 
 {-| When constructing circular or elliptical arcs, it is sometimes necessary to
 specify which of several possible arcs you want. For example, if you ask for a
@@ -19,7 +15,8 @@ are four possible solutions:
 
 The `SweptAngle` type is used in these cases to specify which arc you want.
 
-@docs SweptAngle, smallPositive, smallNegative, largePositive, largeNegative
+@docs SweptAngle
+@docs smallPositive, smallNegative, largePositive, largeNegative
 
 -}
 

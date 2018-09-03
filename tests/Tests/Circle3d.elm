@@ -1,4 +1,4 @@
-module Tests.Circle3d exposing (..)
+module Tests.Circle3d exposing (boundingBoxContainsCenter, throughPoints)
 
 import BoundingBox3d
 import Circle3d
@@ -43,6 +43,7 @@ throughPoints =
                     Nothing ->
                         if isValidInput then
                             Expect.fail "throughPoints returned Nothing on valid input"
+
                         else
                             Expect.pass
             )

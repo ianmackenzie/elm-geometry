@@ -1,4 +1,4 @@
-module EllipticalArc2d.With2 exposing (..)
+module EllipticalArc2d.With2 exposing (main)
 
 import BoundingBox2d exposing (BoundingBox2d)
 import Direction2d exposing (Direction2d)

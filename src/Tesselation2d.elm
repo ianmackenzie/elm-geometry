@@ -1,11 +1,11 @@
-module Tesselation2d exposing (voronoiDiagram, delaunayTriangulation, VoronoiRegion(..))
+module Tesselation2d exposing (VoronoiRegion(..), delaunayTriangulation, voronoiDiagram)
 
 import Array exposing (Array)
 import Dict
+import Direction2d exposing (Direction2d)
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
 import Polyline2d exposing (Polyline2d)
-import Direction2d exposing (Direction2d)
 import Tesselation2d.Delaunay as Delaunay
 import Tesselation2d.Voronoi as Voronoi exposing (Accumulator(..))
 import TriangularMesh exposing (TriangularMesh)
@@ -39,7 +39,7 @@ constructUnboundedRegion datapoint centerPoints atInfinity1 atInfinity2 =
             List.sortBy toAngle centerPoints
                 |> Polyline2d.fromVertices
     in
-        Just (Unbounded polyline atInfinity1 atInfinity2)
+    Just (Unbounded polyline atInfinity1 atInfinity2)
 
 
 voronoiDiagram : Array Point2d -> List { datapoint : Point2d, region : VoronoiRegion }
@@ -70,7 +70,7 @@ voronoiDiagramBy toPoint2d rawPoints =
                 Nothing ->
                     Nothing
     in
-        Delaunay.createGeometry (Array.map toPoint2d rawPoints)
-            |> Voronoi.centerPointsPerVertex
-            |> Dict.toList
-            |> List.filterMap helper
+    Delaunay.createGeometry (Array.map toPoint2d rawPoints)
+        |> Voronoi.centerPointsPerVertex
+        |> Dict.toList
+        |> List.filterMap helper

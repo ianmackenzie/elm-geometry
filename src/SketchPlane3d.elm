@@ -10,41 +10,15 @@
 --------------------------------------------------------------------------------
 
 
-module SketchPlane3d
-    exposing
-        ( SketchPlane3d
-        , fromPlane
-        , mirrorAcross
-        , moveTo
-        , normalAxis
-        , normalDirection
-        , offsetBy
-        , on
-        , originPoint
-        , placeIn
-        , relativeTo
-        , reverseX
-        , reverseY
-        , rotateAround
-        , rotateAroundOwn
-        , throughPoints
-        , toPlane
-        , translateAlongOwn
-        , translateBy
-        , translateIn
-        , unsafe
-        , withNormalDirection
-        , xAxis
-        , xDirection
-        , xy
-        , xz
-        , yAxis
-        , yDirection
-        , yx
-        , yz
-        , zx
-        , zy
-        )
+module SketchPlane3d exposing
+    ( SketchPlane3d
+    , xy, yx, yz, zy, zx, xz
+    , withNormalDirection, on, throughPoints, fromPlane, unsafe
+    , toPlane
+    , originPoint, xDirection, yDirection, normalDirection, xAxis, yAxis, normalAxis
+    , offsetBy, reverseX, reverseY, moveTo, rotateAround, rotateAroundOwn, translateBy, translateIn, translateAlongOwn, mirrorAcross
+    , relativeTo, placeIn
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/SketchPlane3d/icon.svg" alt="SketchPlane3d" width="160">
 
@@ -406,6 +380,7 @@ throughPoints firstPoint secondPoint thirdPoint =
                     chosenVector =
                         if firstSquaredLength <= secondSquaredLength then
                             firstCandidate
+
                         else
                             secondCandidate
 

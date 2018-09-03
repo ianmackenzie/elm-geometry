@@ -1,20 +1,19 @@
-module Float.Range
-    exposing
-        ( Range
-        , Resolution
-        , dropFirst
-        , dropLast
-        , empty
-        , forEach
-        , from
-        , map
-        , maxStepSize
-        , midpoints
-        , numSteps
-        , numValues
-        , singleton
-        , toList
-        )
+module Float.Range exposing
+    ( Range
+    , Resolution
+    , dropFirst
+    , dropLast
+    , empty
+    , forEach
+    , from
+    , map
+    , maxStepSize
+    , midpoints
+    , numSteps
+    , numValues
+    , singleton
+    , toList
+    )
 
 
 type Resolution
@@ -44,14 +43,17 @@ from start end resolution =
         NumSteps givenNumSteps ->
             if givenNumSteps > 0 then
                 Range start end givenNumSteps
+
             else if givenNumSteps == 0 && start == end then
                 Singleton start
+
             else
                 Empty
 
         MaxStepSize givenMaxStepSize ->
             if start == end && givenMaxStepSize >= 0 then
                 Singleton start
+
             else
                 let
                     width =
@@ -59,11 +61,13 @@ from start end resolution =
                 in
                 if givenMaxStepSize >= width then
                     Range start end 1
+
                 else if givenMaxStepSize > 0 then
                     -- Note that we must have width > givenMaxStepSize since the
                     -- initial givenMaxStepSize >= width check failed - therefore
                     -- the number of steps computed here will be > 1
                     Range start end (ceiling (width / givenMaxStepSize))
+
                 else
                     Empty
 
@@ -108,6 +112,7 @@ countdown : Int -> Float -> Float -> (Float -> a) -> List a -> List a
 countdown index start stepSize function accumulated =
     if index == 0 then
         function start :: accumulated
+
     else
         countdown
             (index - 1)
@@ -178,6 +183,7 @@ dropFirst range =
         Range start_ end_ numSteps_ ->
             if numSteps_ == 1 then
                 Singleton end_
+
             else
                 Range
                     (start_ + (end_ - start_) / toFloat numSteps_)
@@ -197,6 +203,7 @@ dropLast range =
         Range start_ end_ numSteps_ ->
             if numSteps_ == 1 then
                 Singleton start_
+
             else
                 Range
                     start_
@@ -216,6 +223,7 @@ midpoints range =
         Range start_ end_ numSteps_ ->
             if numSteps_ == 1 then
                 Singleton (start_ + (end_ - start_) / 2)
+
             else
                 let
                     stepSize =

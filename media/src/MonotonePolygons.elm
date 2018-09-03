@@ -1,4 +1,4 @@
-module MonotonePolygones exposing (..)
+module MonotonePolygones exposing (main)
 
 import Array.Hamt as Array
 import BoundingBox2d exposing (BoundingBox2d)

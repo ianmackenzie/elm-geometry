@@ -1,4 +1,9 @@
-module Tests.CubicSpline3d exposing (..)
+module Tests.CubicSpline3d exposing
+    ( arcLengthMatchesAnalytical
+    , fromEndpointsReproducesSpline
+    , pointAtArcLengthIsEnd
+    , pointAtZeroLengthIsStart
+    )
 
 import CubicSpline3d
 import Expect exposing (FloatingPointTolerance(..))

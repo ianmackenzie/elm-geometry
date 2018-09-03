@@ -1,4 +1,4 @@
-module PolygonTriangulation exposing (..)
+module PolygonTriangulation exposing (main)
 
 import BoundingBox2d exposing (BoundingBox2d)
 import Color

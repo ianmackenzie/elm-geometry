@@ -1,4 +1,10 @@
-module Tests.Arc3d exposing (..)
+module Tests.Arc3d exposing
+    ( evaluateOneIsEndPoint
+    , evaluateZeroIsStartPoint
+    , projectInto
+    , reverseFlipsDirection
+    , transformations
+    )
 
 import Arc3d
 import Curve.ParameterValue as ParameterValue

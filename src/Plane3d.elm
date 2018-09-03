@@ -10,28 +10,14 @@
 --------------------------------------------------------------------------------
 
 
-module Plane3d
-    exposing
-        ( Plane3d
-        , mirrorAcross
-        , moveTo
-        , normalAxis
-        , normalDirection
-        , offsetBy
-        , originPoint
-        , placeIn
-        , relativeTo
-        , reverseNormal
-        , rotateAround
-        , through
-        , throughPoints
-        , translateBy
-        , translateIn
-        , withNormalDirection
-        , xy
-        , yz
-        , zx
-        )
+module Plane3d exposing
+    ( Plane3d
+    , xy, yz, zx
+    , through, withNormalDirection, throughPoints
+    , originPoint, normalDirection, normalAxis
+    , offsetBy, reverseNormal, rotateAround, translateBy, translateIn, moveTo, mirrorAcross
+    , relativeTo, placeIn
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Plane3d/icon.svg" alt="Plane3d" width="160">
 

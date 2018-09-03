@@ -10,36 +10,14 @@
 --------------------------------------------------------------------------------
 
 
-module LineSegment3d
-    exposing
-        ( LineSegment3d
-        , along
-        , boundingBox
-        , direction
-        , endPoint
-        , endpoints
-        , from
-        , fromEndpoints
-        , interpolate
-        , length
-        , mapEndpoints
-        , midpoint
-        , mirrorAcross
-        , on
-        , perpendicularDirection
-        , placeIn
-        , projectInto
-        , projectOnto
-        , relativeTo
-        , reverse
-        , rotateAround
-        , scaleAbout
-        , squaredLength
-        , startPoint
-        , translateBy
-        , translateIn
-        , vector
-        )
+module LineSegment3d exposing
+    ( LineSegment3d
+    , fromEndpoints, from, along, on
+    , startPoint, endPoint, endpoints, midpoint, length, squaredLength, direction, perpendicularDirection, vector, boundingBox
+    , interpolate
+    , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapEndpoints
+    , relativeTo, placeIn, projectInto
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/LineSegment3d/icon.svg" alt="LineSegment3d" width="160">
 

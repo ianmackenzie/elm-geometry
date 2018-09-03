@@ -10,49 +10,17 @@
 --------------------------------------------------------------------------------
 
 
-module Frame3d
-    exposing
-        ( Frame3d
-        , atCoordinates
-        , atPoint
-        , isRightHanded
-        , mirrorAcross
-        , moveTo
-        , originPoint
-        , placeIn
-        , relativeTo
-        , reverseX
-        , reverseY
-        , reverseZ
-        , rotateAround
-        , rotateAroundOwn
-        , translateAlongOwn
-        , translateBy
-        , translateIn
-        , unsafe
-        , withXDirection
-        , withYDirection
-        , withZDirection
-        , xAxis
-        , xDirection
-        , xyPlane
-        , xySketchPlane
-        , xyz
-        , xzPlane
-        , xzSketchPlane
-        , yAxis
-        , yDirection
-        , yxPlane
-        , yxSketchPlane
-        , yzPlane
-        , yzSketchPlane
-        , zAxis
-        , zDirection
-        , zxPlane
-        , zxSketchPlane
-        , zyPlane
-        , zySketchPlane
-        )
+module Frame3d exposing
+    ( Frame3d
+    , xyz
+    , withXDirection, withYDirection, withZDirection, atPoint, atCoordinates, unsafe
+    , originPoint, xDirection, yDirection, zDirection, isRightHanded
+    , xAxis, yAxis, zAxis
+    , xyPlane, yxPlane, yzPlane, zyPlane, zxPlane, xzPlane
+    , xySketchPlane, yxSketchPlane, yzSketchPlane, zySketchPlane, zxSketchPlane, xzSketchPlane
+    , reverseX, reverseY, reverseZ, moveTo, rotateAround, rotateAroundOwn, translateBy, translateIn, translateAlongOwn, mirrorAcross
+    , relativeTo, placeIn
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Frame3d/icon.svg" alt="Frame3d" width="160">
 

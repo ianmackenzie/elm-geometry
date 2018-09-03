@@ -1,4 +1,7 @@
-module Bootstrap.Direction3d exposing (components, unsafe)
+module Bootstrap.Direction3d exposing
+    ( components
+    , unsafe
+    )
 
 import Geometry.Types exposing (..)
 

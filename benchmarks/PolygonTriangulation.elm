@@ -1,4 +1,4 @@
-module PolygonTriangulation exposing (..)
+module PolygonTriangulation exposing (main)
 
 import Benchmark exposing (Benchmark)
 import Benchmark.Runner exposing (BenchmarkProgram)

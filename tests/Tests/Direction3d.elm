@@ -1,4 +1,9 @@
-module Tests.Direction3d exposing (..)
+module Tests.Direction3d exposing
+    ( angleFromAndEqualWithinAreConsistent
+    , orthonormalizeFollowsOriginalVectors
+    , orthonormalizeProducesValidFrameBasis
+    , orthonormalizingCoplanarVectorsReturnsNothing
+    )
 
 import Direction3d
 import Expect
@@ -53,6 +58,7 @@ orthonormalizeProducesValidFrameBasis =
 
                     Nothing ->
                         Expect.fail "Could not orthonormalize valid set of vectors"
+
             else
                 Expect.pass
         )

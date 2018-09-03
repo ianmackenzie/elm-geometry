@@ -1,24 +1,10 @@
-module Ellipse2d
-    exposing
-        ( Ellipse2d
-        , area
-        , axes
-        , centerPoint
-        , mirrorAcross
-        , placeIn
-        , relativeTo
-        , rotateAround
-        , scaleAbout
-        , translateBy
-        , translateIn
-        , with
-        , xAxis
-        , xDirection
-        , xRadius
-        , yAxis
-        , yDirection
-        , yRadius
-        )
+module Ellipse2d exposing
+    ( Ellipse2d
+    , with
+    , centerPoint, xAxis, yAxis, xDirection, yDirection, axes, xRadius, yRadius, area
+    , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
+    , relativeTo, placeIn
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Ellipse2d/icon.svg" alt="Ellipse2d" width="160">
 
@@ -226,6 +212,7 @@ scaleAbout point scale ellipse =
                     , xDirection = xDirection ellipse
                     , yDirection = yDirection ellipse
                     }
+
             else
                 Frame2d.unsafe
                     { originPoint = newCenterPoint

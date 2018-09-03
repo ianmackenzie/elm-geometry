@@ -1,49 +1,17 @@
-module EllipticalArc2d
-    exposing
-        ( ArcLengthParameterized
-        , EllipticalArc2d
-        , Nondegenerate
-        , arcLength
-        , arcLengthParameterization
-        , arcLengthParameterized
-        , axes
-        , centerPoint
-        , endPoint
-        , firstDerivative
-        , firstDerivativesAt
-        , fromArcLengthParameterized
-        , fromEndpoints
-        , fromNondegenerate
-        , maxSecondDerivativeMagnitude
-        , mirrorAcross
-        , nondegenerate
-        , placeIn
-        , pointAlong
-        , pointOn
-        , pointsAt
-        , relativeTo
-        , reverse
-        , rotateAround
-        , sample
-        , sampleAlong
-        , samplesAt
-        , scaleAbout
-        , startAngle
-        , startPoint
-        , sweptAngle
-        , tangentDirection
-        , tangentDirectionAlong
-        , tangentDirectionsAt
-        , translateBy
-        , translateIn
-        , with
-        , xAxis
-        , xDirection
-        , xRadius
-        , yAxis
-        , yDirection
-        , yRadius
-        )
+module EllipticalArc2d exposing
+    ( EllipticalArc2d
+    , with, fromEndpoints
+    , startAngle, sweptAngle, startPoint, endPoint
+    , centerPoint, axes, xAxis, yAxis, xDirection, yDirection, xRadius, yRadius
+    , pointOn, pointsAt
+    , Nondegenerate, nondegenerate, fromNondegenerate
+    , tangentDirection, tangentDirectionsAt, sample, samplesAt
+    , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
+    , relativeTo, placeIn
+    , ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentDirectionAlong, sampleAlong
+    , arcLengthParameterization, fromArcLengthParameterized
+    , firstDerivative, firstDerivativesAt, maxSecondDerivativeMagnitude
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/EllipticalArc2d/icon.svg" alt="EllipticalArc2d" width="160">
 
@@ -74,7 +42,7 @@ treat them as actual angles and everything will behave as you expect.
 @docs startAngle, sweptAngle, startPoint, endPoint
 
 All remaining properties of elliptical arcs are actually just properties of the
-underlying ellipse; check out the [Ellipse2d](Ellipse2d) module for details.
+underlying ellipse; check out the <Ellipse2d> module for details.
 
 @docs centerPoint, axes, xAxis, yAxis, xDirection, yDirection, xRadius, yRadius
 
@@ -292,14 +260,18 @@ fromEndpoints arguments =
                     , startAngle =
                         if startAngle_ > pi then
                             startAngle_ - 2 * pi
+
                         else if startAngle_ < -pi then
                             startAngle_ + 2 * pi
+
                         else
                             startAngle_
                     , sweptAngle = sweptAngleInRadians
                     }
+
         else
             Nothing
+
     else
         Nothing
 
@@ -493,12 +465,16 @@ nondegenerate arc =
     in
     if sweptAngle arc == 0 then
         Err (startPoint arc)
+
     else if rx == 0 && ry == 0 then
         Err (startPoint arc)
+
     else if rx == 0 then
         Ok (Vertical arc)
+
     else if ry == 0 then
         Ok (Horizontal arc)
+
     else
         Ok (Curved arc)
 
@@ -579,12 +555,14 @@ tangentDirection nondegenerateArc parameterValue =
         Vertical verticalArc ->
             if cos angle >= 0 then
                 yDirection verticalArc
+
             else
                 Direction2d.reverse (yDirection verticalArc)
 
         Horizontal horizontalArc ->
             if sin angle >= 0 then
                 Direction2d.reverse (xDirection horizontalArc)
+
             else
                 xDirection horizontalArc
 
@@ -914,9 +892,11 @@ maxSecondDerivativeMagnitude arc =
     if (kx >= ky) && includeKx then
         -- kx is the global max and is included in the arc
         kx
+
     else if (ky >= kx) && includeKy then
         -- ky is the global max and is included in the arc
         ky
+
     else
         -- global max is not included in the arc, so max must be at an endpoint
         let

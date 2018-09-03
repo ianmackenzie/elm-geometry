@@ -1,4 +1,4 @@
-module Tests.Triangle2d exposing (..)
+module Tests.Triangle2d exposing (triangleContainsOwnCentroid)
 
 import Expect
 import Geometry.Fuzz as Fuzz

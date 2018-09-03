@@ -10,65 +10,64 @@
 --------------------------------------------------------------------------------
 
 
-module Geometry.Expect
-    exposing
-        ( Comparison
-        , angle
-        , angleWithin
-        , approximately
-        , arc2d
-        , arc3d
-        , axis2d
-        , axis3d
-        , boundingBox2d
-        , boundingBox2dWithin
-        , boundingBox3d
-        , boundingBox3dWithin
-        , circle2d
-        , circle3d
-        , cubicSpline2d
-        , cubicSpline3d
-        , direction2d
-        , direction2dWithin
-        , direction3d
-        , direction3dWithin
-        , expect
-        , frame2d
-        , frame3d
-        , just
-        , lineSegment2d
-        , lineSegment2dWithin
-        , lineSegment3d
-        , lineSegment3dWithin
-        , maybe
-        , plane3d
-        , point2d
-        , point2dWithin
-        , point3d
-        , point3dWithin
-        , polygon2d
-        , polygon2dWithin
-        , polyline2d
-        , polyline2dWithin
-        , polyline3d
-        , polyline3dWithin
-        , quadraticSpline2d
-        , quadraticSpline3d
-        , sketchPlane3d
-        , sphere3d
-        , triangle2d
-        , triangle2dWithin
-        , triangle3d
-        , triangle3dWithin
-        , validDirection2d
-        , validDirection3d
-        , validFrame2d
-        , validFrame3d
-        , vector2d
-        , vector2dWithin
-        , vector3d
-        , vector3dWithin
-        )
+module Geometry.Expect exposing
+    ( Comparison
+    , angle
+    , angleWithin
+    , approximately
+    , arc2d
+    , arc3d
+    , axis2d
+    , axis3d
+    , boundingBox2d
+    , boundingBox2dWithin
+    , boundingBox3d
+    , boundingBox3dWithin
+    , circle2d
+    , circle3d
+    , cubicSpline2d
+    , cubicSpline3d
+    , direction2d
+    , direction2dWithin
+    , direction3d
+    , direction3dWithin
+    , expect
+    , frame2d
+    , frame3d
+    , just
+    , lineSegment2d
+    , lineSegment2dWithin
+    , lineSegment3d
+    , lineSegment3dWithin
+    , maybe
+    , plane3d
+    , point2d
+    , point2dWithin
+    , point3d
+    , point3dWithin
+    , polygon2d
+    , polygon2dWithin
+    , polyline2d
+    , polyline2dWithin
+    , polyline3d
+    , polyline3dWithin
+    , quadraticSpline2d
+    , quadraticSpline3d
+    , sketchPlane3d
+    , sphere3d
+    , triangle2d
+    , triangle2dWithin
+    , triangle3d
+    , triangle3dWithin
+    , validDirection2d
+    , validDirection3d
+    , validFrame2d
+    , validFrame3d
+    , vector2d
+    , vector2dWithin
+    , vector3d
+    , vector3dWithin
+    )
 
 import Arc2d exposing (Arc2d)
 import Arc3d exposing (Arc3d)
@@ -111,6 +110,7 @@ expect : Comparison a -> (a -> a -> Expectation)
 expect comparison first second =
     if comparison first second then
         Expect.pass
+
     else
         let
             message =
@@ -233,6 +233,7 @@ validDirection2d direction =
     in
     if abs (length - 1) <= defaultTolerance then
         Expect.pass
+
     else
         Expect.fail
             ("Expected "
@@ -260,6 +261,7 @@ validDirection3d direction =
     in
     if abs (length - 1) <= defaultTolerance then
         Expect.pass
+
     else
         Expect.fail
             ("Expected "
@@ -351,6 +353,7 @@ validFrame2d =
             in
             if abs parallelComponent <= defaultTolerance then
                 Expect.pass
+
             else
                 Expect.fail
                     ("Expected perpendicular basis directions, got "
@@ -402,6 +405,7 @@ validFrame3d =
                     && (abs zxComponent <= defaultTolerance)
             then
                 Expect.pass
+
             else
                 Expect.fail
                     ("Expected perpendicular basis directions, got "

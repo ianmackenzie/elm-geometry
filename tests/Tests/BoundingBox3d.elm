@@ -1,4 +1,18 @@
-module Tests.BoundingBox3d exposing (..)
+module Tests.BoundingBox3d exposing
+    ( boxContainsOwnCentroid
+    , containingPointsConsistentWithFromCorners
+    , containingPointsIsOrderIndependent
+    , hullContainsInputs
+    , intersectionConsistentWithIntersects
+    , intersectionConsistentWithOverlappingBy
+    , intersectionIsValidOrNothing
+    , overlappingBoxesCannotBySeparated
+    , overlappingByDetectsIntersection
+    , separatedBoxesCannotBeMadeToOverlap
+    , separationIsCorrectForDiagonallyDisplacedBoxes
+    , separationIsCorrectForHorizontallyDisplacedBoxes
+    , separationIsCorrectForVerticallyDisplacedBoxes
+    )
 
 import BoundingBox3d
 import Expect
@@ -76,6 +90,7 @@ intersectionConsistentWithOverlappingBy =
                                 ++ " considered to strictly overlap, "
                                 ++ "but intersection length is 0"
                             )
+
                     else if width == 0 then
                         Expect.fail
                             (Debug.toString first
@@ -84,6 +99,7 @@ intersectionConsistentWithOverlappingBy =
                                 ++ " considered to strictly overlap, "
                                 ++ "but intersection width is 0"
                             )
+
                     else if height == 0 then
                         Expect.fail
                             (Debug.toString first
@@ -92,6 +108,7 @@ intersectionConsistentWithOverlappingBy =
                                 ++ " considered to strictly overlap, "
                                 ++ "but intersection height is 0"
                             )
+
                     else
                         Expect.pass
 
@@ -110,6 +127,7 @@ intersectionConsistentWithOverlappingBy =
                 ( False, Just ( length, width, height ) ) ->
                     if length == 0 || height == 0 || width == 0 then
                         Expect.pass
+
                     else
                         Expect.fail
                             (Debug.toString first
@@ -209,6 +227,7 @@ overlappingBoxesCannotBySeparated =
                 BoundingBox3d.translateBy displacement firstBox
                     |> BoundingBox3d.intersects secondBox
                     |> Expect.true "displaced box should still intersect the other box"
+
             else
                 Expect.pass
         )
@@ -230,6 +249,7 @@ separatedBoxesCannotBeMadeToOverlap =
                 BoundingBox3d.translateBy displacement firstBox
                     |> BoundingBox3d.intersects secondBox
                     |> Expect.false "displaced box should still not intersect the other box"
+
             else
                 Expect.pass
         )

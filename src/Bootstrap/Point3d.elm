@@ -1,4 +1,7 @@
-module Bootstrap.Point3d exposing (coordinates, fromCoordinates)
+module Bootstrap.Point3d exposing
+    ( coordinates
+    , fromCoordinates
+    )
 
 import Geometry.Types exposing (..)
 

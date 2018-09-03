@@ -1,38 +1,15 @@
-module Arc3d
-    exposing
-        ( Arc3d
-        , Nondegenerate
-        , axialDirection
-        , axis
-        , centerPoint
-        , endPoint
-        , firstDerivative
-        , firstDerivativesAt
-        , fromNondegenerate
-        , mirrorAcross
-        , nondegenerate
-        , on
-        , placeIn
-        , pointOn
-        , pointsAt
-        , projectInto
-        , radius
-        , relativeTo
-        , reverse
-        , rotateAround
-        , sample
-        , samplesAt
-        , scaleAbout
-        , startPoint
-        , sweptAngle
-        , sweptAround
-        , tangentDirection
-        , tangentDirectionsAt
-        , throughPoints
-        , toPolyline
-        , translateBy
-        , translateIn
-        )
+module Arc3d exposing
+    ( Arc3d
+    , on, sweptAround, throughPoints
+    , axialDirection, axis, centerPoint, radius, startPoint, endPoint, sweptAngle
+    , pointOn, pointsAt
+    , Nondegenerate, nondegenerate, fromNondegenerate
+    , tangentDirection, tangentDirectionsAt, sample, samplesAt
+    , toPolyline
+    , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
+    , relativeTo, placeIn
+    , firstDerivative, firstDerivativesAt
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Arc3d/icon.svg" alt="Arc3d" width="160">
 
@@ -357,6 +334,7 @@ pointOn (Types.Arc3d arc) parameterValue =
             , y0 + distance * y1
             , z0 + distance * z1
             )
+
     else
         let
             theta =
@@ -371,6 +349,7 @@ pointOn (Types.Arc3d arc) parameterValue =
             y =
                 if abs theta < pi / 2 then
                     x * tan (theta / 2)
+
                 else
                     arcRadius * (1 - cos theta)
         in
@@ -485,6 +464,7 @@ nondegenerate arc =
     in
     if properties.signedLength == 0 then
         Err (startPoint arc)
+
     else
         Ok (Nondegenerate arc)
 
@@ -638,10 +618,13 @@ numApproximationSegments : Float -> Arc3d -> Int
 numApproximationSegments maxError arc =
     if sweptAngle arc == 0 then
         1
+
     else if maxError <= 0 then
         0
+
     else if maxError >= 2 * radius arc then
         1
+
     else
         let
             maxSegmentAngle =
@@ -761,11 +744,13 @@ scaleAbout point scale (Types.Arc3d arc) =
         , xDirection =
             if scale >= 0 then
                 arc.xDirection
+
             else
                 Direction3d.reverse arc.xDirection
         , yDirection =
             if scale >= 0 then
                 arc.yDirection
+
             else
                 Direction3d.reverse arc.yDirection
         }
@@ -918,6 +903,7 @@ projectInto sketchPlane arc =
                 ( candidateXDirection2d
                 , candidateXDirection3d
                 )
+
             else
                 ( Direction2d.reverse candidateXDirection2d
                 , Direction3d.reverse candidateXDirection3d
@@ -954,12 +940,14 @@ projectInto sketchPlane arc =
             in
             if normalComponent >= 0 then
                 arcStartAngle
+
             else
                 -arcStartAngle
 
         ellipticalSweptAngle =
             if normalComponent >= 0 then
                 sweptAngle arc
+
             else
                 -(sweptAngle arc)
     in
@@ -1003,6 +991,7 @@ relativeTo frame (Types.Arc3d arc) =
             , xDirection = Direction3d.relativeTo frame arc.xDirection
             , yDirection = Direction3d.relativeTo frame arc.yDirection
             }
+
     else
         Types.Arc3d
             { startPoint = Point3d.relativeTo frame arc.startPoint
@@ -1041,6 +1030,7 @@ placeIn frame (Types.Arc3d arc) =
             , xDirection = Direction3d.placeIn frame arc.xDirection
             , yDirection = Direction3d.placeIn frame arc.yDirection
             }
+
     else
         Types.Arc3d
             { startPoint = Point3d.placeIn frame arc.startPoint

@@ -1,8 +1,7 @@
-module Bootstrap.Plane3d
-    exposing
-        ( normalDirection
-        , originPoint
-        )
+module Bootstrap.Plane3d exposing
+    ( normalDirection
+    , originPoint
+    )
 
 import Geometry.Types exposing (..)
 

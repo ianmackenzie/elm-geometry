@@ -10,40 +10,16 @@
 --------------------------------------------------------------------------------
 
 
-module Point3d
-    exposing
-        ( Point3d
-        , along
-        , centroid
-        , circumcenter
-        , coordinates
-        , distanceFrom
-        , distanceFromAxis
-        , equalWithin
-        , fromCoordinates
-        , fromCoordinatesIn
-        , interpolateFrom
-        , midpoint
-        , mirrorAcross
-        , on
-        , origin
-        , placeIn
-        , projectInto
-        , projectOnto
-        , projectOntoAxis
-        , relativeTo
-        , rotateAround
-        , scaleAbout
-        , signedDistanceAlong
-        , signedDistanceFrom
-        , squaredDistanceFrom
-        , squaredDistanceFromAxis
-        , translateBy
-        , translateIn
-        , xCoordinate
-        , yCoordinate
-        , zCoordinate
-        )
+module Point3d exposing
+    ( Point3d
+    , origin
+    , fromCoordinates, fromCoordinatesIn, midpoint, centroid, interpolateFrom, along, on, circumcenter
+    , coordinates, xCoordinate, yCoordinate, zCoordinate
+    , equalWithin
+    , distanceFrom, squaredDistanceFrom, signedDistanceAlong, distanceFromAxis, squaredDistanceFromAxis, signedDistanceFrom
+    , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectOntoAxis
+    , relativeTo, placeIn, projectInto
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Point3d/icon.svg" alt="Point3d" width="160">
 
@@ -405,6 +381,7 @@ circumcenter p1 p2 p3 =
     in
     if sum == 0 then
         Nothing
+
     else
         let
             w1 =

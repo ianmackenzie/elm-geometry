@@ -1,4 +1,4 @@
-port module Main exposing (..)
+port module Main exposing (main)
 
 import Json.Encode exposing (Value)
 import Regex exposing (Regex)

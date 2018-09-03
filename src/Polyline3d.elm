@@ -10,26 +10,13 @@
 --------------------------------------------------------------------------------
 
 
-module Polyline3d
-    exposing
-        ( Polyline3d
-        , boundingBox
-        , fromVertices
-        , length
-        , mapVertices
-        , mirrorAcross
-        , on
-        , placeIn
-        , projectInto
-        , projectOnto
-        , relativeTo
-        , rotateAround
-        , scaleAbout
-        , segments
-        , translateBy
-        , translateIn
-        , vertices
-        )
+module Polyline3d exposing
+    ( Polyline3d
+    , fromVertices, on
+    , vertices, segments, length, boundingBox
+    , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapVertices
+    , relativeTo, placeIn, projectInto
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Polyline3d/icon.svg" alt="Polyline3d" width="160">
 

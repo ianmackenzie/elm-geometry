@@ -1,10 +1,9 @@
-module Bootstrap.Direction2d
-    exposing
-        ( components
-        , perpendicularTo
-        , reverse
-        , unsafe
-        )
+module Bootstrap.Direction2d exposing
+    ( components
+    , perpendicularTo
+    , reverse
+    , unsafe
+    )
 
 import Geometry.Types exposing (..)
 

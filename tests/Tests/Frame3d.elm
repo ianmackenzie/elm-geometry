@@ -1,4 +1,4 @@
-module Tests.Frame3d exposing (..)
+module Tests.Frame3d exposing (frameDirectionsAreOrthonormal)
 
 import Direction3d
 import Frame3d
@@ -30,6 +30,7 @@ frameDirectionsAreOrthonormal =
                 expectedTripleProduct =
                     if Frame3d.isRightHanded frame then
                         1
+
                     else
                         -1
             in

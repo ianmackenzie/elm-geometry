@@ -62,6 +62,7 @@ equalWithinTolerance a b =
     in
     if removeAllNumbers strA == removeAllNumbers strB && sameNumbers then
         Expect.pass
+
     else
         -- this custom test fails, assume that a and b are really different (even by this test's rules)
         -- use Expect.equal to get a nicely formatted output

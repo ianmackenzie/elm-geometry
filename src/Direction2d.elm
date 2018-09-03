@@ -10,37 +10,18 @@
 --------------------------------------------------------------------------------
 
 
-module Direction2d
-    exposing
-        ( Direction2d
-        , angleFrom
-        , componentIn
-        , components
-        , equalWithin
-        , from
-        , fromAngle
-        , mirrorAcross
-        , negativeX
-        , negativeY
-        , orthogonalize
-        , orthonormalize
-        , perpendicularTo
-        , placeIn
-        , positiveX
-        , positiveY
-        , relativeTo
-        , reverse
-        , rotateBy
-        , rotateClockwise
-        , rotateCounterclockwise
-        , toAngle
-        , toVector
-        , unsafe
-        , x
-        , xComponent
-        , y
-        , yComponent
-        )
+module Direction2d exposing
+    ( Direction2d
+    , x, y, positiveX, negativeX, positiveY, negativeY
+    , from, perpendicularTo, orthonormalize, orthogonalize, unsafe
+    , fromAngle, toAngle
+    , components, xComponent, yComponent
+    , equalWithin
+    , componentIn, angleFrom
+    , toVector
+    , reverse, rotateClockwise, rotateCounterclockwise, rotateBy, mirrorAcross
+    , relativeTo, placeIn
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Direction2d/icon.svg" alt="Direction2d" width="160">
 
@@ -293,8 +274,10 @@ orthonormalize xVector xyVector =
                 in
                 if perpendicularComponent > 0.0 then
                     Just ( xDirection, yDirection )
+
                 else if perpendicularComponent < 0.0 then
                     Just ( xDirection, reverse yDirection )
+
                 else
                     Nothing
             )

@@ -1,4 +1,12 @@
-module Tests.Arc2d exposing (evaluateOneIsEndPoint, evaluateZeroIsStartPoint, from, mirroredCenterPoint, reverseFlipsDirection, transformations, withRadius)
+module Tests.Arc2d exposing
+    ( evaluateOneIsEndPoint
+    , evaluateZeroIsStartPoint
+    , from
+    , mirroredCenterPoint
+    , reverseFlipsDirection
+    , transformations
+    , withRadius
+    )
 
 import Arc.SweptAngle as SweptAngle exposing (SweptAngle)
 import Arc2d

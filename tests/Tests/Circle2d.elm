@@ -1,4 +1,4 @@
-module Tests.Circle2d exposing (..)
+module Tests.Circle2d exposing (boundingBoxContainsCenter)
 
 import BoundingBox2d
 import Circle2d

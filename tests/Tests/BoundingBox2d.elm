@@ -1,4 +1,18 @@
-module Tests.BoundingBox2d exposing (..)
+module Tests.BoundingBox2d exposing
+    ( boxContainsOwnCentroid
+    , containingPointsConsistentWithFromCorners
+    , containingPointsIsOrderIndependent
+    , hullContainsInputs
+    , intersectionConsistentWithIntersects
+    , intersectionConsistentWithOverlappingBy
+    , intersectionIsValidOrNothing
+    , overlappingBoxesCannotBySeparated
+    , overlappingByDetectsIntersection
+    , separatedBoxesCannotBeMadeToOverlap
+    , separationIsCorrectForDiagonallyDisplacedBoxes
+    , separationIsCorrectForHorizontallyDisplacedBoxes
+    , separationIsCorrectForVerticallyDisplacedBoxes
+    )
 
 import BoundingBox2d
 import Expect
@@ -76,6 +90,7 @@ intersectionConsistentWithOverlappingBy =
                                 ++ " considered to strictly overlap, "
                                 ++ "but intersection width is 0"
                             )
+
                     else if height == 0 then
                         Expect.fail
                             (Debug.toString first
@@ -84,6 +99,7 @@ intersectionConsistentWithOverlappingBy =
                                 ++ " considered to strictly overlap, "
                                 ++ "but intersection height is 0"
                             )
+
                     else
                         Expect.pass
 
@@ -102,6 +118,7 @@ intersectionConsistentWithOverlappingBy =
                 ( False, Just ( width, height ) ) ->
                     if height == 0 || width == 0 then
                         Expect.pass
+
                     else
                         Expect.fail
                             (Debug.toString first
@@ -201,6 +218,7 @@ overlappingBoxesCannotBySeparated =
                 BoundingBox2d.translateBy displacement firstBox
                     |> BoundingBox2d.intersects secondBox
                     |> Expect.true "displaced box should still intersect the other box"
+
             else
                 Expect.pass
         )
@@ -222,6 +240,7 @@ separatedBoxesCannotBeMadeToOverlap =
                 BoundingBox2d.translateBy displacement firstBox
                     |> BoundingBox2d.intersects secondBox
                     |> Expect.false "displaced box should still not intersect the other box"
+
             else
                 Expect.pass
         )

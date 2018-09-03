@@ -1,4 +1,4 @@
-module ReleaseNotes.DefaultParameterization exposing (..)
+module ReleaseNotes.DefaultParameterization exposing (main)
 
 import CubicSpline2d
 import Drawing2d

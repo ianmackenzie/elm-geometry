@@ -10,34 +10,13 @@
 --------------------------------------------------------------------------------
 
 
-module BoundingBox2d
-    exposing
-        ( BoundingBox2d
-        , aggregate
-        , centroid
-        , containingPoints
-        , contains
-        , dimensions
-        , extrema
-        , from
-        , fromExtrema
-        , hull
-        , intersection
-        , intersects
-        , isContainedIn
-        , maxX
-        , maxY
-        , midX
-        , midY
-        , minX
-        , minY
-        , overlappingBy
-        , scaleAbout
-        , separatedBy
-        , singleton
-        , translateBy
-        , translateIn
-        )
+module BoundingBox2d exposing
+    ( BoundingBox2d
+    , fromExtrema, singleton, from, hull, intersection, aggregate, containingPoints
+    , extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centroid
+    , contains, isContainedIn, intersects, overlappingBy, separatedBy
+    , scaleAbout, translateBy, translateIn
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/BoundingBox2d/icon.svg" alt="BoundingBox2d" width="160">
 
@@ -112,6 +91,7 @@ fromExtrema : { minX : Float, maxX : Float, minY : Float, maxY : Float } -> Boun
 fromExtrema extrema_ =
     if extrema_.minX <= extrema_.maxX && extrema_.minY <= extrema_.maxY then
         Types.BoundingBox2d extrema_
+
     else
         Types.BoundingBox2d
             { minX = min extrema_.minX extrema_.maxX
@@ -254,6 +234,7 @@ record.
 
 Can be useful when combined with record destructuring, for example
 
+
     { minX, maxX, minY, maxY } =
         BoundingBox2d.extrema exampleBox
 
@@ -314,6 +295,7 @@ maxY (Types.BoundingBox2d boundingBox) =
 
 
 {-| Get the X and Y dimensions (width and height) of a bounding box.
+
 
     ( width, height ) =
         BoundingBox2d.dimensions exampleBox
@@ -448,6 +430,7 @@ overlapAmount firstBox secondBox =
     in
     if xOverlap >= 0 && yOverlap >= 0 then
         Just (min xOverlap yOverlap)
+
     else
         Nothing
 
@@ -465,12 +448,16 @@ squaredSeparationAmount firstBox secondBox =
     in
     if xSeparation > 0 && ySeparation > 0 then
         Just (xSeparation * xSeparation + ySeparation * ySeparation)
+
     else if xSeparation > 0 then
         Just (xSeparation * xSeparation)
+
     else if ySeparation > 0 then
         Just (ySeparation * ySeparation)
+
     else if xSeparation == 0 || ySeparation == 0 then
         Just 0
+
     else
         Nothing
 
@@ -551,9 +538,11 @@ overlappingBy order tolerance =
 
                         Nothing ->
                             True
+
             else if tolerance == 0 then
                 \firstBox secondBox ->
                     overlapAmount firstBox secondBox == Nothing
+
             else
                 alwaysFalse
 
@@ -566,6 +555,7 @@ overlappingBy order tolerance =
 
                         Nothing ->
                             False
+
             else
                 \firstBox secondBox ->
                     overlapAmount firstBox secondBox /= Nothing
@@ -578,6 +568,7 @@ overlappingBy order tolerance =
                 in
                 \firstBox secondBox ->
                     overlapAmount firstBox secondBox == expected
+
             else
                 alwaysFalse
 
@@ -651,9 +642,11 @@ separatedBy order tolerance =
 
                         Nothing ->
                             True
+
             else if tolerance == 0 then
                 \firstBox secondBox ->
                     squaredSeparationAmount firstBox secondBox == Nothing
+
             else
                 alwaysFalse
 
@@ -666,6 +659,7 @@ separatedBy order tolerance =
 
                         Nothing ->
                             False
+
             else
                 \firstBox secondBox ->
                     squaredSeparationAmount firstBox secondBox /= Nothing
@@ -678,6 +672,7 @@ separatedBy order tolerance =
                 in
                 \firstBox secondBox ->
                     squaredSeparationAmount firstBox secondBox == expected
+
             else
                 alwaysFalse
 
@@ -841,6 +836,7 @@ intersection firstBox secondBox =
                 , maxY = min (maxY firstBox) (maxY secondBox)
                 }
             )
+
     else
         Nothing
 
@@ -872,6 +868,7 @@ scaleAbout point scale boundingBox =
             , minY = y0 + scale * (minY boundingBox - y0)
             , maxY = y0 + scale * (maxY boundingBox - y0)
             }
+
     else
         fromExtrema
             { minX = x0 + scale * (maxX boundingBox - x0)

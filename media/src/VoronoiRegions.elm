@@ -1,4 +1,4 @@
-module VoronoiRegions exposing (..)
+module VoronoiRegions exposing (main)
 
 import Array
 import Axis2d exposing (Axis2d)

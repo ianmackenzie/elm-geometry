@@ -10,28 +10,14 @@
 --------------------------------------------------------------------------------
 
 
-module Triangle2d
-    exposing
-        ( Triangle2d
-        , area
-        , boundingBox
-        , centroid
-        , circumcircle
-        , clockwiseArea
-        , contains
-        , counterclockwiseArea
-        , edges
-        , fromVertices
-        , mapVertices
-        , mirrorAcross
-        , placeIn
-        , relativeTo
-        , rotateAround
-        , scaleAbout
-        , translateBy
-        , translateIn
-        , vertices
-        )
+module Triangle2d exposing
+    ( Triangle2d
+    , fromVertices
+    , vertices, edges, centroid, area, counterclockwiseArea, clockwiseArea, boundingBox, circumcircle
+    , contains
+    , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, mapVertices
+    , relativeTo, placeIn
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Triangle2d/icon.svg" alt="Triangle2d" width="160">
 
@@ -106,6 +92,7 @@ fromVertices =
 
 {-| Get the vertices of a triangle.
 
+
     ( p1, p2, p3 ) =
         Triangle2d.vertices exampleTriangle
 
@@ -122,6 +109,7 @@ vertices (Types.Triangle2d vertices_) =
 
 {-| Get the edges of a triangle: from the first vertex to the second, from the
 second to the third, and from the third back to the first.
+
 
     ( e1, e2, e3 ) =
         Triangle2d.edges exampleTriangle

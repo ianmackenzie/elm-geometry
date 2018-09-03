@@ -1,4 +1,4 @@
-module DelaunayTriangulation exposing (..)
+module DelaunayTriangulation exposing (main)
 
 import Array
 import Axis2d

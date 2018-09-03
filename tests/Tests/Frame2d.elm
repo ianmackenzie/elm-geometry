@@ -1,4 +1,4 @@
-module Tests.Frame2d exposing (..)
+module Tests.Frame2d exposing (globalToGlobal, localToLocal)
 
 import Frame2d
 import Geometry.Expect as Expect

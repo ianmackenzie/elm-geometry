@@ -1,4 +1,11 @@
-module Tests.QuadraticSpline2d exposing (..)
+module Tests.QuadraticSpline2d exposing
+    ( analyticalLength
+    , curvedSpline
+    , degenerateSpline
+    , exampleSpline
+    , line
+    , parameterization
+    )
 
 import Curve.ArcLengthParameterization as ArcLengthParameterization
 import Curve.ParameterValue as ParameterValue
@@ -41,6 +48,7 @@ curvedSpline =
                 y1 =
                     if flipSide then
                         -offset
+
                     else
                         offset
 
@@ -204,6 +212,7 @@ parameterization =
                 in
                 if arcLength == 0 then
                     parameterValue |> Expect.equal (Just ParameterValue.zero)
+
                 else
                     parameterValue |> Expect.equal (Just ParameterValue.one)
         , Test.fuzz curvedSpline "arc length matches analytical formula" <|

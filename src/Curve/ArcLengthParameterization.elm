@@ -1,11 +1,8 @@
-module Curve.ArcLengthParameterization
-    exposing
-        ( ArcLengthParameterization
-        , arcLengthToParameterValue
-        , build
-        , parameterValueToArcLength
-        , totalArcLength
-        )
+module Curve.ArcLengthParameterization exposing
+    ( ArcLengthParameterization
+    , build
+    , totalArcLength, arcLengthToParameterValue, parameterValueToArcLength
+    )
 
 {-| _You will likely never need to use this module directly._ In the vast
 majority of cases the individual curve modules such as `QuadraticSpline2d`
@@ -88,6 +85,7 @@ build { maxError, derivativeMagnitude, maxSecondDerivativeMagnitude } =
         height =
             if maxError <= 0 then
                 0
+
             else
                 let
                     numSegments =
@@ -213,6 +211,7 @@ buildTree derivativeMagnitude lengthAtStart_ paramAtStart_ paramAtEnd height =
             , length7 = length7
             , length8 = length8
             }
+
     else
         let
             branchHeight =
@@ -255,8 +254,10 @@ arcLengthToParameterValue : Float -> ArcLengthParameterization -> Maybe Paramete
 arcLengthToParameterValue s (ArcLengthParameterization tree) =
     if s == 0 then
         Just ParameterValue.zero
+
     else if s > 0 && s <= lengthAtEnd tree then
         Just (ParameterValue.clamped (unsafeToParameterValue tree s))
+
     else
         Nothing
 
@@ -274,6 +275,7 @@ unsafeToParameterValue tree s =
                                 (s - length0) / (length1 - length0)
                         in
                         Float.interpolateFrom param0 param1 lengthFraction
+
                     else
                         -- 1 to 2
                         let
@@ -281,6 +283,7 @@ unsafeToParameterValue tree s =
                                 (s - length1) / (length2 - length1)
                         in
                         Float.interpolateFrom param1 param2 lengthFraction
+
                 else if s <= length3 then
                     -- 2 to 3
                     let
@@ -288,6 +291,7 @@ unsafeToParameterValue tree s =
                             (s - length2) / (length3 - length2)
                     in
                     Float.interpolateFrom param2 param3 lengthFraction
+
                 else
                     -- 3 to 4
                     let
@@ -295,6 +299,7 @@ unsafeToParameterValue tree s =
                             (s - length3) / (length4 - length3)
                     in
                     Float.interpolateFrom param3 param4 lengthFraction
+
             else if s <= length6 then
                 if s <= length5 then
                     -- 4 to 5
@@ -303,6 +308,7 @@ unsafeToParameterValue tree s =
                             (s - length4) / (length5 - length4)
                     in
                     Float.interpolateFrom param4 param5 lengthFraction
+
                 else
                     -- 5 to 6
                     let
@@ -310,6 +316,7 @@ unsafeToParameterValue tree s =
                             (s - length5) / (length6 - length5)
                     in
                     Float.interpolateFrom param5 param6 lengthFraction
+
             else if s <= length7 then
                 -- 6 to 7
                 let
@@ -317,6 +324,7 @@ unsafeToParameterValue tree s =
                         (s - length6) / (length7 - length6)
                 in
                 Float.interpolateFrom param6 param7 lengthFraction
+
             else
                 -- 7 to 8
                 let
@@ -328,6 +336,7 @@ unsafeToParameterValue tree s =
         Node { leftBranch, rightBranch } ->
             if s < lengthAtStart rightBranch then
                 unsafeToParameterValue leftBranch s
+
             else
                 unsafeToParameterValue rightBranch s
 
@@ -378,6 +387,7 @@ parameterValueToArcLength : ParameterValue -> ArcLengthParameterization -> Float
 parameterValueToArcLength parameterValue (ArcLengthParameterization tree) =
     if parameterValue == ParameterValue.zero then
         0
+
     else
         unsafeToArcLength tree (ParameterValue.value parameterValue)
 
@@ -395,6 +405,7 @@ unsafeToArcLength tree t =
                                 (t - param0) / (param1 - param0)
                         in
                         Float.interpolateFrom length0 length1 paramFraction
+
                     else
                         -- 1 to 2
                         let
@@ -402,6 +413,7 @@ unsafeToArcLength tree t =
                                 (t - param1) / (param2 - param1)
                         in
                         Float.interpolateFrom length1 length2 paramFraction
+
                 else if t <= param3 then
                     -- 2 to 3
                     let
@@ -409,6 +421,7 @@ unsafeToArcLength tree t =
                             (t - param2) / (param3 - param2)
                     in
                     Float.interpolateFrom length2 length3 paramFraction
+
                 else
                     -- 3 to 4
                     let
@@ -416,6 +429,7 @@ unsafeToArcLength tree t =
                             (t - param3) / (param4 - param3)
                     in
                     Float.interpolateFrom length3 length4 paramFraction
+
             else if t <= param6 then
                 if t <= param5 then
                     -- 4 to 5
@@ -424,6 +438,7 @@ unsafeToArcLength tree t =
                             (t - param4) / (param5 - param4)
                     in
                     Float.interpolateFrom length4 length5 paramFraction
+
                 else
                     -- 5 to 6
                     let
@@ -431,6 +446,7 @@ unsafeToArcLength tree t =
                             (t - param5) / (param6 - param5)
                     in
                     Float.interpolateFrom length5 length6 paramFraction
+
             else if t <= param7 then
                 -- 6 to 7
                 let
@@ -438,6 +454,7 @@ unsafeToArcLength tree t =
                         (t - param6) / (param7 - param6)
                 in
                 Float.interpolateFrom length6 length7 paramFraction
+
             else
                 -- 7 to 8
                 let
@@ -449,6 +466,7 @@ unsafeToArcLength tree t =
         Node { leftBranch, rightBranch } ->
             if t < paramAtStart rightBranch then
                 unsafeToArcLength leftBranch t
+
             else
                 unsafeToArcLength rightBranch t
 

@@ -1,15 +1,9 @@
-module VoronoiDiagram2d
-    exposing
-        ( CoincidentVertices(..)
-        , VoronoiDiagram2d
-        , empty
-        , fromPoints
-        , fromVerticesBy
-        , insertPoint
-        , insertVertexBy
-        , polygons
-        , vertices
-        )
+module VoronoiDiagram2d exposing
+    ( VoronoiDiagram2d, CoincidentVertices(..)
+    , empty, fromPoints, fromVerticesBy
+    , insertPoint, insertVertexBy
+    , vertices, polygons
+    )
 
 {-|
 
@@ -170,6 +164,7 @@ pseudoAngle startPoint endPoint =
     in
     if dy < 0 then
         p - 1
+
     else
         1 - p
 
@@ -291,6 +286,7 @@ collinearVertexRegions delaunayVertices =
                         |> List.sortBy
                             (if width >= height then
                                 .position >> Point2d.xCoordinate
+
                              else
                                 .position >> Point2d.yCoordinate
                             )
@@ -361,6 +357,7 @@ voronoiRegions delaunayTriangulation =
                 in
                 triangulation.delaunayVertices
                     |> List.foldl (collectRegions accumulatorsByIndex) []
+
             else
                 collinearVertexRegions triangulation.delaunayVertices
 
@@ -382,6 +379,7 @@ addContainedPoint : BoundingBox2d -> Point2d -> List Point2d -> List Point2d
 addContainedPoint boundingBox point accumulated =
     if BoundingBox2d.contains point boundingBox then
         point :: accumulated
+
     else
         accumulated
 
@@ -422,6 +420,7 @@ addHalfAxisIntersection lineSegment axis accumulated =
             -- We only want points ahead of the axis' origin point, not behind
             if Point2d.signedDistanceAlong axis point >= 0 then
                 point :: accumulated
+
             else
                 accumulated
 
@@ -481,6 +480,7 @@ leftOf lineSegments point =
         first :: rest ->
             if leftOfSegment first point then
                 leftOf rest point
+
             else
                 False
 
@@ -496,6 +496,7 @@ addPointInsideInfiniteRegion leftAxis rightAxis lineSegments point accumulated =
             && (Point2d.signedDistanceFrom rightAxis point >= 0)
     then
         point :: accumulated
+
     else
         accumulated
 
@@ -529,6 +530,7 @@ addPointInsideFiniteRegion : List LineSegment2d -> Point2d -> List Point2d -> Li
 addPointInsideFiniteRegion edges point accumulated =
     if leftOf edges point then
         point :: accumulated
+
     else
         accumulated
 
@@ -558,6 +560,7 @@ deduplicateHelp head rest accumulated =
         next :: remaining ->
             if head == next then
                 deduplicateHelp head remaining accumulated
+
             else
                 deduplicateHelp next remaining (next :: accumulated)
 
@@ -611,6 +614,7 @@ trimPolygonalRegion trimBox vertex polygon =
         Just polygonBoundingBox ->
             if polygonBoundingBox |> BoundingBox2d.isContainedIn trimBox.boundingBox then
                 Just ( vertex, polygon )
+
             else
                 let
                     polygonVertices =
@@ -640,6 +644,7 @@ addPointBetweenAxes leftAxis rightAxis point accumulated =
             && (Point2d.signedDistanceFrom rightAxis point >= 0)
     then
         point :: accumulated
+
     else
         accumulated
 
@@ -675,6 +680,7 @@ addPointBesideAxis : Axis2d -> Point2d -> List Point2d -> List Point2d
 addPointBesideAxis leftAxis point accumulated =
     if Point2d.signedDistanceFrom leftAxis point <= 0 then
         point :: accumulated
+
     else
         accumulated
 

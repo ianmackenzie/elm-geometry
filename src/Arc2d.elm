@@ -1,37 +1,15 @@
-module Arc2d
-    exposing
-        ( Arc2d
-        , Nondegenerate
-        , centerPoint
-        , endPoint
-        , firstDerivative
-        , firstDerivativesAt
-        , from
-        , fromNondegenerate
-        , mirrorAcross
-        , nondegenerate
-        , placeIn
-        , pointOn
-        , pointsAt
-        , radius
-        , relativeTo
-        , reverse
-        , rotateAround
-        , sample
-        , samplesAt
-        , scaleAbout
-        , startPoint
-        , sweptAngle
-        , sweptAround
-        , tangentDirection
-        , tangentDirectionsAt
-        , throughPoints
-        , toPolyline
-        , translateBy
-        , translateIn
-        , with
-        , withRadius
-        )
+module Arc2d exposing
+    ( Arc2d
+    , from, with, sweptAround, throughPoints, withRadius
+    , centerPoint, radius, startPoint, endPoint, sweptAngle
+    , pointOn, pointsAt
+    , Nondegenerate, nondegenerate, fromNondegenerate
+    , tangentDirection, tangentDirectionsAt, sample, samplesAt
+    , toPolyline
+    , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
+    , relativeTo, placeIn
+    , firstDerivative, firstDerivativesAt
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Arc2d/icon.svg" alt="Arc2d" width="160">
 
@@ -172,6 +150,7 @@ from startPoint_ endPoint_ sweptAngle_ =
                 , signedLength =
                     if sweptAngle_ == 0.0 then
                         distance
+
                     else
                         radius_ * sweptAngle_
                 }
@@ -342,10 +321,13 @@ throughPoints firstPoint secondPoint thirdPoint =
                             sweptAngle_ =
                                 if partial >= 0 && full >= partial then
                                     full
+
                                 else if partial <= 0 && full <= partial then
                                     full
+
                                 else if full >= 0 then
                                     full - 2 * pi
+
                                 else
                                     full + 2 * pi
                         in
@@ -494,6 +476,7 @@ withRadius radius_ sweptAngle_ startPoint_ endPoint_ =
                     in
                     startPoint_ |> sweptAround centerPoint_ sweptAngleInRadians
                 )
+
     else
         Nothing
 
@@ -605,6 +588,7 @@ pointOn (Types.Arc2d arc) parameterValue =
             ( x0 + distance * dx
             , y0 + distance * dy
             )
+
     else
         let
             theta =
@@ -619,6 +603,7 @@ pointOn (Types.Arc2d arc) parameterValue =
             y =
                 if abs theta < pi / 2 then
                     x * tan (theta / 2)
+
                 else
                     arcRadius * (1 - cos theta)
         in
@@ -713,6 +698,7 @@ nondegenerate arc =
     in
     if properties.signedLength == 0 then
         Err (startPoint arc)
+
     else
         Ok (Nondegenerate arc)
 
@@ -825,10 +811,13 @@ numApproximationSegments : Float -> Arc2d -> Int
 numApproximationSegments maxError arc =
     if sweptAngle arc == 0 then
         1
+
     else if maxError <= 0 then
         0
+
     else if maxError >= 2 * radius arc then
         1
+
     else
         let
             maxSegmentAngle =
@@ -904,6 +893,7 @@ scaleAbout point scale (Types.Arc2d arc) =
         , xDirection =
             if scale >= 0 then
                 arc.xDirection
+
             else
                 Direction2d.reverse arc.xDirection
         }
@@ -1022,6 +1012,7 @@ relativeTo frame (Types.Arc2d arc) =
             , signedLength = arc.signedLength
             , xDirection = Direction2d.relativeTo frame arc.xDirection
             }
+
     else
         Types.Arc2d
             { startPoint = Point2d.relativeTo frame arc.startPoint
@@ -1055,6 +1046,7 @@ placeIn frame (Types.Arc2d arc) =
             , signedLength = arc.signedLength
             , xDirection = Direction2d.placeIn frame arc.xDirection
             }
+
     else
         Types.Arc2d
             { startPoint = Point2d.placeIn frame arc.startPoint

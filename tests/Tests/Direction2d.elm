@@ -1,4 +1,9 @@
-module Tests.Direction2d exposing (..)
+module Tests.Direction2d exposing
+    ( angleFromAndEqualWithinAreConsistent
+    , angleFromAndRotateByAreConsistent
+    , orthonormalizeProducesValidFrameBasis
+    , orthonormalizingParallelVectorsReturnsNothing
+    )
 
 import Direction2d
 import Expect

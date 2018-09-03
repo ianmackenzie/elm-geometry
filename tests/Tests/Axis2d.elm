@@ -1,4 +1,16 @@
-module Tests.Axis2d exposing (..)
+module Tests.Axis2d exposing
+    ( directionExample
+    , mirrorAcrossExample
+    , moveToExample
+    , originPointExample
+    , placeInExample
+    , relativeToExample
+    , reverseExample
+    , rotateAroundExample
+    , translateByExample
+    , xExample
+    , yExample
+    )
 
 import Axis2d
 import Direction2d

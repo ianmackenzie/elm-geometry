@@ -10,42 +10,17 @@
 --------------------------------------------------------------------------------
 
 
-module Vector2d
-    exposing
-        ( Vector2d
-        , componentIn
-        , components
-        , crossProduct
-        , difference
-        , direction
-        , dotProduct
-        , equalWithin
-        , from
-        , fromComponents
-        , fromPolarComponents
-        , interpolateFrom
-        , length
-        , lengthAndDirection
-        , mirrorAcross
-        , normalize
-        , perpendicularTo
-        , placeIn
-        , polarComponents
-        , projectOnto
-        , projectionIn
-        , relativeTo
-        , reverse
-        , rotateBy
-        , rotateClockwise
-        , rotateCounterclockwise
-        , scaleBy
-        , squaredLength
-        , sum
-        , withLength
-        , xComponent
-        , yComponent
-        , zero
-        )
+module Vector2d exposing
+    ( Vector2d
+    , zero
+    , fromComponents, fromPolarComponents, from, withLength, perpendicularTo, interpolateFrom
+    , components, xComponent, yComponent, polarComponents, length, squaredLength, direction, lengthAndDirection
+    , equalWithin
+    , componentIn
+    , sum, difference, dotProduct, crossProduct
+    , reverse, normalize, scaleBy, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
+    , relativeTo, placeIn
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Vector2d/icon.svg" alt="Vector2d" width="160">
 
@@ -431,6 +406,7 @@ direction : Vector2d -> Maybe Direction2d
 direction vector =
     if vector == zero then
         Nothing
+
     else
         let
             normalizedVector =
@@ -463,6 +439,7 @@ lengthAndDirection vector =
     in
     if vectorLength == 0.0 then
         Nothing
+
     else
         let
             normalizedVector =
@@ -502,6 +479,7 @@ normalize : Vector2d -> Vector2d
 normalize vector =
     if vector == zero then
         zero
+
     else
         scaleBy (1 / length vector) vector
 

@@ -1,4 +1,4 @@
-module HermiteCubicSpline2d exposing (..)
+module HermiteCubicSpline2d exposing (main)
 
 import BoundingBox2d exposing (BoundingBox2d)
 import CubicSpline2d exposing (CubicSpline2d)

@@ -10,33 +10,14 @@
 --------------------------------------------------------------------------------
 
 
-module Frame2d
-    exposing
-        ( Frame2d
-        , atCoordinates
-        , atPoint
-        , isRightHanded
-        , mirrorAcross
-        , moveTo
-        , originPoint
-        , placeIn
-        , relativeTo
-        , reverseX
-        , reverseY
-        , rotateAround
-        , rotateBy
-        , translateAlongOwn
-        , translateBy
-        , translateIn
-        , unsafe
-        , withXDirection
-        , withYDirection
-        , xAxis
-        , xDirection
-        , xy
-        , yAxis
-        , yDirection
-        )
+module Frame2d exposing
+    ( Frame2d
+    , xy
+    , atPoint, atCoordinates, withXDirection, withYDirection, unsafe
+    , originPoint, xDirection, yDirection, isRightHanded, xAxis, yAxis
+    , reverseX, reverseY, moveTo, rotateBy, rotateAround, translateBy, translateIn, translateAlongOwn, mirrorAcross
+    , relativeTo, placeIn
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Frame2d/icon.svg" alt="Frame2d" width="160">
 

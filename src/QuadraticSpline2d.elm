@@ -1,44 +1,17 @@
-module QuadraticSpline2d
-    exposing
-        ( ArcLengthParameterized
-        , Nondegenerate
-        , QuadraticSpline2d
-        , arcLength
-        , arcLengthParameterization
-        , arcLengthParameterized
-        , bisect
-        , boundingBox
-        , controlPoint
-        , endDerivative
-        , endPoint
-        , firstDerivative
-        , firstDerivativesAt
-        , fromArcLengthParameterized
-        , fromNondegenerate
-        , mirrorAcross
-        , nondegenerate
-        , placeIn
-        , pointAlong
-        , pointOn
-        , pointsAt
-        , relativeTo
-        , reverse
-        , rotateAround
-        , sample
-        , sampleAlong
-        , samplesAt
-        , scaleAbout
-        , secondDerivative
-        , splitAt
-        , startDerivative
-        , startPoint
-        , tangentDirection
-        , tangentDirectionAlong
-        , tangentDirectionsAt
-        , translateBy
-        , translateIn
-        , with
-        )
+module QuadraticSpline2d exposing
+    ( QuadraticSpline2d
+    , with
+    , startPoint, endPoint, controlPoint, startDerivative, endDerivative, boundingBox
+    , pointOn, pointsAt
+    , Nondegenerate, nondegenerate, fromNondegenerate
+    , tangentDirection, tangentDirectionsAt, sample, samplesAt
+    , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
+    , relativeTo, placeIn
+    , bisect, splitAt
+    , ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentDirectionAlong, sampleAlong
+    , arcLengthParameterization, fromArcLengthParameterized
+    , firstDerivative, firstDerivativesAt, secondDerivative
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/QuadraticSpline2d/icon.svg" alt="QuadraticSpline2d" width="160">
 
@@ -496,6 +469,7 @@ tangentDirection nondegenerateSpline parameterValue =
                     -- (necessary for t = 0, arbitrary for all other points).
                     if parameterValue == ParameterValue.one then
                         Direction2d.reverse secondDerivativeDirection
+
                     else
                         secondDerivativeDirection
 

@@ -1,10 +1,9 @@
-module Bootstrap.SketchPlane3d
-    exposing
-        ( originPoint
-        , unsafe
-        , xDirection
-        , yDirection
-        )
+module Bootstrap.SketchPlane3d exposing
+    ( originPoint
+    , unsafe
+    , xDirection
+    , yDirection
+    )
 
 import Geometry.Types exposing (..)
 

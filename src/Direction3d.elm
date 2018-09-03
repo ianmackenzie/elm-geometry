@@ -10,44 +10,17 @@
 --------------------------------------------------------------------------------
 
 
-module Direction3d
-    exposing
-        ( Direction3d
-        , angleFrom
-        , azimuth
-        , componentIn
-        , components
-        , elevation
-        , equalWithin
-        , from
-        , fromAzimuthAndElevation
-        , mirrorAcross
-        , negativeX
-        , negativeY
-        , negativeZ
-        , on
-        , orthogonalize
-        , orthonormalize
-        , perpendicularBasis
-        , perpendicularTo
-        , placeIn
-        , positiveX
-        , positiveY
-        , positiveZ
-        , projectInto
-        , projectOnto
-        , relativeTo
-        , reverse
-        , rotateAround
-        , toVector
-        , unsafe
-        , x
-        , xComponent
-        , y
-        , yComponent
-        , z
-        , zComponent
-        )
+module Direction3d exposing
+    ( Direction3d
+    , x, y, z, positiveX, negativeX, positiveY, negativeY, positiveZ, negativeZ
+    , from, on, fromAzimuthAndElevation, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize, unsafe
+    , components, xComponent, yComponent, zComponent, azimuth, elevation
+    , equalWithin
+    , componentIn, angleFrom
+    , toVector
+    , reverse, rotateAround, mirrorAcross, projectOnto
+    , relativeTo, placeIn, projectInto
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Direction3d/icon.svg" alt="Direction3d" width="160">
 
@@ -469,8 +442,10 @@ orthonormalize xVector xyVector xyzVector =
                                 zVector =
                                     if dotProduct > 0 then
                                         rightHandedZVector
+
                                     else if dotProduct < 0 then
                                         Vector3d.reverse rightHandedZVector
+
                                     else
                                         Vector3d.zero
                             in

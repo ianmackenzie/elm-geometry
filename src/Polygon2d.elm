@@ -10,28 +10,14 @@
 --------------------------------------------------------------------------------
 
 
-module Polygon2d
-    exposing
-        ( Polygon2d
-        , area
-        , boundingBox
-        , convexHull
-        , edges
-        , innerLoops
-        , mirrorAcross
-        , outerLoop
-        , perimeter
-        , placeIn
-        , relativeTo
-        , rotateAround
-        , scaleAbout
-        , singleLoop
-        , translateBy
-        , translateIn
-        , triangulate
-        , vertices
-        , with
-        )
+module Polygon2d exposing
+    ( Polygon2d
+    , singleLoop, with, convexHull
+    , outerLoop, innerLoops, vertices, edges, perimeter, area, boundingBox
+    , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
+    , relativeTo, placeIn
+    , triangulate
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Polygon2d/icon.svg" alt="Polygon2d" width="160">
 
@@ -121,6 +107,7 @@ makeOuterLoop : List Point2d -> List Point2d
 makeOuterLoop vertices_ =
     if counterclockwiseArea vertices_ >= 0 then
         vertices_
+
     else
         List.reverse vertices_
 
@@ -129,6 +116,7 @@ makeInnerLoop : List Point2d -> List Point2d
 makeInnerLoop vertices_ =
     if counterclockwiseArea vertices_ <= 0 then
         vertices_
+
     else
         List.reverse vertices_
 
@@ -205,6 +193,7 @@ chainHelp acc list =
         ( r1 :: r2 :: rs, x :: xs ) ->
             if counterclockwiseAround r2 r1 x then
                 chainHelp (r2 :: rs) (x :: xs)
+
             else
                 chainHelp (x :: acc) xs
 
@@ -494,6 +483,7 @@ mapVertices function invert polygon =
             { outerLoop = List.reverse mappedOuterLoop
             , innerLoops = List.map List.reverse mappedInnerLoops
             }
+
     else
         Types.Polygon2d
             { outerLoop = mappedOuterLoop

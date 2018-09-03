@@ -1,4 +1,4 @@
-module ReleaseNotes.ArcLengthParameterization exposing (..)
+module ReleaseNotes.ArcLengthParameterization exposing (main)
 
 import CubicSpline2d
 import Drawing2d

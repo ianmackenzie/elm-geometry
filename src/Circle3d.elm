@@ -1,28 +1,10 @@
-module Circle3d
-    exposing
-        ( Circle3d
-        , area
-        , axialDirection
-        , axis
-        , boundingBox
-        , centerPoint
-        , circumference
-        , diameter
-        , mirrorAcross
-        , on
-        , placeIn
-        , plane
-        , projectInto
-        , radius
-        , relativeTo
-        , rotateAround
-        , scaleAbout
-        , sweptAround
-        , throughPoints
-        , translateBy
-        , translateIn
-        , withRadius
-        )
+module Circle3d exposing
+    ( Circle3d
+    , withRadius, sweptAround, on, throughPoints
+    , centerPoint, axialDirection, radius, diameter, axis, plane, area, circumference, boundingBox
+    , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
+    , relativeTo, placeIn
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Circle3d/icon.svg" alt="Circle3d" width="160">
 
@@ -291,6 +273,7 @@ scaleAbout point scale circle =
     withRadius (abs scale * radius circle)
         (if scale >= 0 then
             axialDirection circle
+
          else
             Direction3d.reverse (axialDirection circle)
         )

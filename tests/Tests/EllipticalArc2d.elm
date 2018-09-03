@@ -1,4 +1,8 @@
-module Tests.EllipticalArc2d exposing (..)
+module Tests.EllipticalArc2d exposing
+    ( fromEndpointsReplicatesArc
+    , reproducibleArc
+    , transformations
+    )
 
 import Arc.SweptAngle as SweptAngle
 import Arc2d exposing (Arc2d)
@@ -54,10 +58,13 @@ fromEndpointsReplicatesArc =
                 sweptAngle =
                     if arcSweptAngle >= pi then
                         SweptAngle.largePositive
+
                     else if arcSweptAngle >= 0 then
                         SweptAngle.smallPositive
+
                     else if arcSweptAngle >= -pi then
                         SweptAngle.smallNegative
+
                     else
                         SweptAngle.largeNegative
 

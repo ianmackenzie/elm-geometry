@@ -1,4 +1,4 @@
-module ConvexHull exposing (..)
+module ConvexHull exposing (main)
 
 import BoundingBox2d exposing (BoundingBox2d)
 import Drawing2d

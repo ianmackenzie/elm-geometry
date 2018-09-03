@@ -10,28 +10,14 @@
 --------------------------------------------------------------------------------
 
 
-module Axis3d
-    exposing
-        ( Axis3d
-        , direction
-        , mirrorAcross
-        , moveTo
-        , on
-        , originPoint
-        , placeIn
-        , projectInto
-        , projectOnto
-        , relativeTo
-        , reverse
-        , rotateAround
-        , through
-        , translateBy
-        , translateIn
-        , withDirection
-        , x
-        , y
-        , z
-        )
+module Axis3d exposing
+    ( Axis3d
+    , x, y, z
+    , through, withDirection, on
+    , originPoint, direction
+    , reverse, moveTo, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
+    , relativeTo, placeIn, projectInto
+    )
 
 {-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Axis3d/icon.svg" alt="Axis3d" width="160">
 

@@ -1,10 +1,9 @@
-module Bootstrap.Frame3d
-    exposing
-        ( originPoint
-        , xDirection
-        , yDirection
-        , zDirection
-        )
+module Bootstrap.Frame3d exposing
+    ( originPoint
+    , xDirection
+    , yDirection
+    , zDirection
+    )
 
 import Geometry.Types exposing (..)
 
