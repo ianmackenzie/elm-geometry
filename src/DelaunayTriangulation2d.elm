@@ -14,7 +14,13 @@ module DelaunayTriangulation2d exposing
     , vertices, triangles, circumcircles, faces, toMesh
     )
 
-{-|
+{-| This module provides functionality for working with [Delaunay
+triangulations](https://en.wikipedia.org/wiki/Delaunay_triangulation). You can
+
+  - Build a Delaunay triangulation from a set of points or arbitrary vertices
+  - Add a new vertex to an existing Delaunay triangulation
+  - Extract the resulting triangulation as a list of triangles or a
+    [`TriangularMesh`](https://package.elm-lang.org/packages/ianmackenzie/elm-triangular-mesh/latest/TriangularMesh#TriangularMesh)
 
 @docs DelaunayTriangulation2d, CoincidentVertices, Face
 
@@ -48,8 +54,7 @@ import Triangle2d exposing (Triangle2d)
 import TriangularMesh exposing (TriangularMesh)
 
 
-{-| A [Delaunay triangulation](https://en.wikipedia.org/wiki/Delaunay_triangulation)
-in 2D of a set of vertices.
+{-| A 2D Delaunay triangulation of a set of vertices.
 -}
 type alias DelaunayTriangulation2d vertex =
     Types.DelaunayTriangulation2d vertex
