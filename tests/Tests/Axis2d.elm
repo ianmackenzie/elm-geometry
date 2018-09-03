@@ -1,6 +1,3 @@
-Camera3d
-
-
 module Tests.Axis2d exposing
     ( directionExample
     , mirrorAcrossExample
