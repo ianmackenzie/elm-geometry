@@ -7,8 +7,8 @@ Pull request checklist:
   - Is "Allow edits from maintainers" enabled? (There should be a checkbox for
     this when you open the pull request.)
   - Is the code formatted using the same version of `elm-format` as the rest of
-    `opensolid/geometry`? (If running `elm-format` doesn't change any existing
-    code, then the answer is probably 'yes'.)
+    `elm-geometry`? (If running `elm-format` doesn't change any existing code,
+    then the answer is probably 'yes'.)
   - Is code (mostly) wrapped to 80 columns? (It's OK if type annotations and
     occasional things like string literals are longer.)
   - BONUS POINTS: Have you added tests for new functionality?
