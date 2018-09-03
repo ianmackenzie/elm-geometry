@@ -1,6 +1,3 @@
-Camera3d
-
-
 module Tests.Polygon2d exposing
     ( convexHullContainsAllPoints
     , convexHullIsConvex

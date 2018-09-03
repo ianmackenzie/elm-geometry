@@ -1,6 +1,3 @@
-Camera3d
-
-
 module Tests.QuadraticSpline2d exposing
     ( analyticalLength
     , curvedSpline

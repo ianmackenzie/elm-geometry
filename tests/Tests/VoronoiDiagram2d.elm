@@ -1,6 +1,3 @@
-Camera3d
-
-
 module Tests.VoronoiDiagram2d exposing
     ( cellForEveryInputVertex
     ,  failsOnCoincidentVertices

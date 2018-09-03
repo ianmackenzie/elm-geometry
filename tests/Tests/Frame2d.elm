@@ -1,6 +1,3 @@
-Camera3d
-
-
 module Tests.Frame2d exposing (globalToGlobal, localToLocal)
 
 import Frame2d

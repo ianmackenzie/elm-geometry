@@ -1,6 +1,3 @@
-Camera3d
-
-
 module Tests.BoundingBox3d exposing
     ( boxContainsOwnCentroid
     , containingPointsConsistentWithFromCorners

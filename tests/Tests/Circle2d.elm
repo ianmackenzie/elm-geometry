@@ -1,6 +1,3 @@
-Camera3d
-
-
 module Tests.Circle2d exposing (boundingBoxContainsCenter)
 
 import BoundingBox2d

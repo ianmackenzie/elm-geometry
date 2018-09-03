@@ -1,6 +1,3 @@
-Camera3d
-
-
 module Tests.Circle3d exposing (boundingBoxContainsCenter, throughPoints)
 
 import BoundingBox3d

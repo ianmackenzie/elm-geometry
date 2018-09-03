@@ -1,6 +1,3 @@
-Camera3d
-
-
 module Tests.EllipticalArc2d exposing
     ( fromEndpointsReplicatesArc
     , reproducibleArc

@@ -1,6 +1,3 @@
-Camera3d
-
-
 module Tests.Frame3d exposing (frameDirectionsAreOrthonormal)
 
 import Direction3d

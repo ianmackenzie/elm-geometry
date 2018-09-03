@@ -1,6 +1,3 @@
-Camera3d
-
-
 module Tests.Direction2d exposing
     ( angleFromAndEqualWithinAreConsistent
     , angleFromAndRotateByAreConsistent

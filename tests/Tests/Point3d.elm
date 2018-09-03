@@ -1,6 +1,3 @@
-Camera3d
-
-
 module Tests.Point3d exposing
     ( interpolationReturnsExactEndpoints
     , midpointIsEquidistant

@@ -1,6 +1,3 @@
-Camera3d
-
-
 module Tests.Vector2d exposing
     ( dotProductWithSelfIsSquaredLength
     , mirrorAcrossNegatesPerpendicularComponent

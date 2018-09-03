@@ -1,6 +1,3 @@
-Camera3d
-
-
 module Tests.Triangle2d exposing (triangleContainsOwnCentroid)
 
 import Expect

@@ -1,6 +1,3 @@
-Camera3d
-
-
 module Tests.LineSegment2d exposing
     ( intersectionFindsCoincidentEndpoints
     , intersectionFindsCollinearCoincidentEndpoints

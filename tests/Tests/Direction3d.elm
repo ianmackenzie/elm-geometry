@@ -1,6 +1,3 @@
-Camera3d
-
-
 module Tests.Direction3d exposing
     ( angleFromAndEqualWithinAreConsistent
     , orthonormalizeFollowsOriginalVectors

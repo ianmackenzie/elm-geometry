@@ -1,6 +1,3 @@
-Camera3d
-
-
 module Tests.CubicSpline3d exposing
     ( arcLengthMatchesAnalytical
     , fromEndpointsReproducesSpline

@@ -1,6 +1,3 @@
-Camera3d
-
-
 module Tests.DelaunayTriangulation2d exposing
     ( allDelaunayTrianglesHaveNonzeroArea
     ,  delaunayTriangleContainsOnlyItsVertices

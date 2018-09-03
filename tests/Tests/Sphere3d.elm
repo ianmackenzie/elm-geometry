@@ -1,6 +1,3 @@
-Camera3d
-
-
 module Tests.Sphere3d exposing
     ( FourPoints(..)
     , boundingBoxContainsCenter

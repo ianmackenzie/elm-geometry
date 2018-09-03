@@ -1,6 +1,3 @@
-Camera3d
-
-
 module Tests.Axis3d exposing
     ( directionExample
     , onExamples
