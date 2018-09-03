@@ -123,6 +123,7 @@ things with partial application:
     -- through the same origin point
     List.map (Axis3d.through point) directions
 
+
     -- A list of parallel axes (all having the same
     -- direction) through different points
     List.map (Axis3d.withDirection direction) points

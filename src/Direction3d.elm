@@ -200,12 +200,15 @@ negativeZ =
 one**:
 
     Direction3d.unsafe ( 1, 0, 0 )
+
     Direction3d.unsafe ( 0, -1, 0 )
+
     Direction3d.unsafe ( 0.6, 0, 0.8 )
 
 are all valid but
 
     Direction3d.unsafe ( 2, 0, 0 )
+
     Direction3d.unsafe ( 1, 1, 1 )
 
 are not. Instead of using `Direction3d.unsafe`, it may be easier to use

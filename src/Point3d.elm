@@ -515,7 +515,7 @@ distanceFrom firstPoint secondPoint =
 `squaredDistanceFrom` is slightly faster than `distanceFrom`, so for example
 
     Point3d.squaredDistanceFrom p1 p2
-        > tolerance * tolerance
+        > (tolerance * tolerance)
 
 is equivalent to but slightly more efficient than
 

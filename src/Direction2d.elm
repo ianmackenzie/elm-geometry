@@ -180,12 +180,15 @@ must ensure that the sum of the squares of the given components is exactly
 one**:
 
     Direction2d.unsafe ( 1, 0 )
+
     Direction2d.unsafe ( 0, -1 )
+
     Direction2d.unsafe ( 0.6, 0.8 )
 
 are all valid but
 
     Direction2d.unsafe ( 2, 0 )
+
     Direction2d.unsafe ( 1, 1 )
 
 are not. Instead of using `Direction2d.unsafe`, it may be easier to use
