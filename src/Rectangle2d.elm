@@ -9,16 +9,15 @@
 
 module Rectangle2d exposing
     ( Rectangle2d
-    , from, centeredOn, fromExtremaIn
+    , from, centeredOn, fromExtrema, fromExtremaIn
     , dimensions, axes, xAxis, yAxis, centerPoint, area
     , vertices, bottomLeftVertex, bottomRightVertex, topLeftVertex, topRightVertex
     , edges, leftEdge, bottomEdge, rightEdge, topEdge
     , boundingBox
     , contains
     , toPolygon
-    , scaleAbout, rotateAround, translateBy, mirrorAcross
+    , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , relativeTo, placeIn
-    , fromExtrema, translateIn
     )
 
 {-| A `Rectangle2d` represents a rectangle in 2D space. This module contains
@@ -37,7 +36,7 @@ they can have arbitrary orientation and so can be rotated, mirrored etc.
 
 # Construction
 
-@docs from, centeredOn, fromeExtrema, fromExtremaIn
+@docs from, centeredOn, fromExtrema, fromExtremaIn
 
 
 # Properties
@@ -60,7 +59,7 @@ they can have arbitrary orientation and so can be rotated, mirrored etc.
 
 # Transformation
 
-@docs scaleAbout, rotateAround, translateBy, mirrorAcross
+@docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
 
 
 # Coordinate conversions
