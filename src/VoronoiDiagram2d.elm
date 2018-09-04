@@ -8,7 +8,7 @@
 
 
 module VoronoiDiagram2d exposing
-    ( VoronoiDiagram2d, CoincidentVertices(..)
+    ( VoronoiDiagram2d, Error(..)
     , empty
     , fromPoints, fromVerticesBy
     , insertPoint, insertVertexBy
@@ -43,7 +43,7 @@ The returned polygons can then be used in various interesting ways:
 The current implementation is somewhat inefficient, but there are plans to speed
 it up in the future (without requiring any changes to the API).
 
-@docs VoronoiDiagram2d, CoincidentVertices
+@docs VoronoiDiagram2d, Error
 
 
 # Construction
@@ -103,7 +103,7 @@ type VoronoiDiagram2d vertex
 
 {-| An error type indicating that the two given vertices have the same position.
 -}
-type CoincidentVertices vertex
+type Error vertex
     = CoincidentVertices vertex vertex
 
 
@@ -783,7 +783,7 @@ empty =
 {-| Construct a Voronoi diagram from an array of points. The points must all be
 distinct; if any two points are equal, you will get an `Err CoincidentVertices`.
 -}
-fromPoints : Array Point2d -> Result (CoincidentVertices Point2d) (VoronoiDiagram2d Point2d)
+fromPoints : Array Point2d -> Result (Error Point2d) (VoronoiDiagram2d Point2d)
 fromPoints points =
     fromVerticesBy identity points
 
@@ -811,7 +811,7 @@ The vertices must all be distinct; if any two have the same position, you will
 get an `Err CoincidentVertices`.
 
 -}
-fromVerticesBy : (vertex -> Point2d) -> Array vertex -> Result (CoincidentVertices vertex) (VoronoiDiagram2d vertex)
+fromVerticesBy : (vertex -> Point2d) -> Array vertex -> Result (Error vertex) (VoronoiDiagram2d vertex)
 fromVerticesBy getPosition givenVertices =
     case DelaunayTriangulation2d.fromVerticesBy getPosition givenVertices of
         Ok delaunayTriangulation ->
@@ -832,7 +832,7 @@ fromVerticesBy getPosition givenVertices =
 {-| Add a new point into an existing Voronoi diagram. It must not be equal to
 any existing point; if it is, you will get an `Err CoincidentVertices`.
 -}
-insertPoint : Point2d -> VoronoiDiagram2d Point2d -> Result (CoincidentVertices Point2d) (VoronoiDiagram2d Point2d)
+insertPoint : Point2d -> VoronoiDiagram2d Point2d -> Result (Error Point2d) (VoronoiDiagram2d Point2d)
 insertPoint point voronoiDiagram =
     insertVertexBy identity point voronoiDiagram
 
@@ -841,7 +841,7 @@ insertPoint point voronoiDiagram =
 to get the position of the vertex. The vertex must not have the same position as
 any existing vertex; if it is, you will get an `Err CoincidentVertices`.
 -}
-insertVertexBy : (vertex -> Point2d) -> vertex -> VoronoiDiagram2d vertex -> Result (CoincidentVertices vertex) (VoronoiDiagram2d vertex)
+insertVertexBy : (vertex -> Point2d) -> vertex -> VoronoiDiagram2d vertex -> Result (Error vertex) (VoronoiDiagram2d vertex)
 insertVertexBy getPosition vertex (VoronoiDiagram2d current) =
     case current.delaunayTriangulation |> DelaunayTriangulation2d.insertVertexBy getPosition vertex of
         Ok updatedTriangulation ->

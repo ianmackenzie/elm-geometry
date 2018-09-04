@@ -8,7 +8,7 @@
 
 
 module DelaunayTriangulation2d exposing
-    ( DelaunayTriangulation2d, CoincidentVertices(..), Face
+    ( DelaunayTriangulation2d, Error(..), Face
     , empty
     , fromPoints, fromVerticesBy
     , insertPoint, insertVertexBy
@@ -26,7 +26,7 @@ triangulations](https://en.wikipedia.org/wiki/Delaunay_triangulation). You can
 The current implementation is somewhat inefficient, but there are plans to speed
 it up in the future (without requiring any changes to the API).
 
-@docs DelaunayTriangulation2d, CoincidentVertices, Face
+@docs DelaunayTriangulation2d, Error, Face
 
 
 # Construction
@@ -74,7 +74,7 @@ type alias DelaunayTriangulation2d vertex =
 
 {-| An error type indicating that the two given vertices have the same position.
 -}
-type CoincidentVertices vertex
+type Error vertex
     = CoincidentVertices vertex vertex
 
 
@@ -107,7 +107,7 @@ Note that if all points are collinear, then the resulting triangulation will
 be empty (have no faces).
 
 -}
-fromPoints : Array Point2d -> Result (CoincidentVertices Point2d) (DelaunayTriangulation2d Point2d)
+fromPoints : Array Point2d -> Result (Error Point2d) (DelaunayTriangulation2d Point2d)
 fromPoints points =
     fromVerticesBy identity points
 
@@ -137,7 +137,7 @@ delaunayVertexCoordinates delaunayVertex =
     Point2d.coordinates delaunayVertex.position
 
 
-checkDistinct : List (DelaunayVertex vertex) -> Result (CoincidentVertices vertex) ()
+checkDistinct : List (DelaunayVertex vertex) -> Result (Error vertex) ()
 checkDistinct sortedDelaunayVertices =
     case sortedDelaunayVertices of
         [] ->
@@ -147,7 +147,7 @@ checkDistinct sortedDelaunayVertices =
             checkDistinctHelp first rest
 
 
-checkDistinctHelp : DelaunayVertex vertex -> List (DelaunayVertex vertex) -> Result (CoincidentVertices vertex) ()
+checkDistinctHelp : DelaunayVertex vertex -> List (DelaunayVertex vertex) -> Result (Error vertex) ()
 checkDistinctHelp previous sortedDelaunayVertices =
     case sortedDelaunayVertices of
         [] ->
@@ -161,7 +161,7 @@ checkDistinctHelp previous sortedDelaunayVertices =
                 checkDistinctHelp first rest
 
 
-collectDelaunayVertices : (vertex -> Point2d) -> Array vertex -> Result (CoincidentVertices vertex) (List (DelaunayVertex vertex))
+collectDelaunayVertices : (vertex -> Point2d) -> Array vertex -> Result (Error vertex) (List (DelaunayVertex vertex))
 collectDelaunayVertices getPosition givenVertices =
     let
         allDelaunayVertices =
@@ -225,7 +225,7 @@ Note that if all vertices are collinear, then the resulting triangulation will
 be empty (have no faces).
 
 -}
-fromVerticesBy : (vertex -> Point2d) -> Array vertex -> Result (CoincidentVertices vertex) (DelaunayTriangulation2d vertex)
+fromVerticesBy : (vertex -> Point2d) -> Array vertex -> Result (Error vertex) (DelaunayTriangulation2d vertex)
 fromVerticesBy getPosition givenVertices =
     case collectDelaunayVertices getPosition givenVertices of
         Ok delaunayVertices ->
@@ -255,12 +255,12 @@ fromVerticesBy getPosition givenVertices =
 {-| Add a new point into an existing Delaunay triangulation. It must not be
 equal to any existing point; if it is, you will get an `Err CoincidentVertices`.
 -}
-insertPoint : Point2d -> DelaunayTriangulation2d Point2d -> Result (CoincidentVertices Point2d) (DelaunayTriangulation2d Point2d)
+insertPoint : Point2d -> DelaunayTriangulation2d Point2d -> Result (Error Point2d) (DelaunayTriangulation2d Point2d)
 insertPoint point delaunayTriangulation =
     insertVertexBy identity point delaunayTriangulation
 
 
-checkForCoincidentVertex : vertex -> Point2d -> List (DelaunayVertex vertex) -> Result (CoincidentVertices vertex) ()
+checkForCoincidentVertex : vertex -> Point2d -> List (DelaunayVertex vertex) -> Result (Error vertex) ()
 checkForCoincidentVertex vertex point delaunayVertices =
     case delaunayVertices of
         [] ->
@@ -279,7 +279,7 @@ function to get the position of the vertex. The vertex must not have the same
 position as any existing vertex; if it is, you will get an `Err
 CoincidentVertices`.
 -}
-insertVertexBy : (vertex -> Point2d) -> vertex -> DelaunayTriangulation2d vertex -> Result (CoincidentVertices vertex) (DelaunayTriangulation2d vertex)
+insertVertexBy : (vertex -> Point2d) -> vertex -> DelaunayTriangulation2d vertex -> Result (Error vertex) (DelaunayTriangulation2d vertex)
 insertVertexBy getPosition vertex delaunayTriangulation =
     let
         position =
