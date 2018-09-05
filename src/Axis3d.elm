@@ -16,10 +16,8 @@ module Axis3d exposing
     , relativeTo, placeIn, projectInto
     )
 
-{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Axis3d/icon.svg" alt="Axis3d" width="160">
-
-An `Axis3d` represents an infinitely long straight line in 3D and is defined by
-an origin point and direction. Axes have several uses, such as:
+{-| An `Axis3d` represents an infinitely long straight line in 3D and is defined
+by an origin point and direction. Axes have several uses, such as:
 
   - Rotating around the axis
   - Projecting onto the axis

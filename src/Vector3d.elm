@@ -19,9 +19,7 @@ module Vector3d exposing
     , relativeTo, placeIn, projectInto
     )
 
-{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Vector3d/icon.svg" alt="Vector3d" width="160">
-
-A `Vector3d` represents a quantity such as a displacement or velocity in 3D, and
+{-| A `Vector3d` represents a quantity such as a displacement or velocity in 3D, and
 is defined by its X, Y and Z components. This module contains a variety of
 vector-related functionality, such as
 

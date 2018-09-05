@@ -19,9 +19,7 @@ module Vector2d exposing
     , relativeTo, placeIn
     )
 
-{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Vector2d/icon.svg" alt="Vector2d" width="160">
-
-A `Vector2d` represents a quantity such as a displacement or velocity in 2D, and
+{-| A `Vector2d` represents a quantity such as a displacement or velocity in 2D, and
 is defined by its X and Y components. This module contains a variety of
 vector-related functionality, such as
 

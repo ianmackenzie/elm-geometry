@@ -22,9 +22,7 @@ module EllipticalArc2d exposing
     , firstDerivative, firstDerivativesAt, maxSecondDerivativeMagnitude
     )
 
-{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/EllipticalArc2d/icon.svg" alt="EllipticalArc2d" width="160">
-
-An `EllipticalArc2d` is a section of an `Ellipse2d` with a start and end point.
+{-| An `EllipticalArc2d` is a section of an `Ellipse2d` with a start and end point.
 This module includes functionality for
 
   - Constructing an elliptical arc from its center or end points

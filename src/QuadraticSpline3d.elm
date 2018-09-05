@@ -23,9 +23,7 @@ module QuadraticSpline3d exposing
     , firstDerivative, firstDerivativesAt, secondDerivative
     )
 
-{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/QuadraticSpline3d/icon.svg" alt="QuadraticSpline3d" width="160">
-
-A `QuadraticSpline3d` is a quadratic [Bézier curve](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)
+{-| A `QuadraticSpline3d` is a quadratic [Bézier curve](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)
 in 3D defined by a start point, control point and end point. This module
 contains functionality for
 

@@ -16,9 +16,7 @@ module Triangle2d exposing
     , relativeTo, placeIn
     )
 
-{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Triangle2d/icon.svg" alt="Triangle2d" width="160">
-
-A `Triangle2d` represents a triangle in 2D space, and is defined by its three
+{-| A `Triangle2d` represents a triangle in 2D space, and is defined by its three
 vertices. This module contains triangle-related functionality such as:
 
   - Finding the area and centroid of triangles

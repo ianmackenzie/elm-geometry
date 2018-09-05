@@ -20,12 +20,10 @@ module Direction2d exposing
     , relativeTo, placeIn
     )
 
-{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Direction2d/icon.svg" alt="Direction2d" width="160">
-
-A `Direction2d` represents a direction like 'up' or 'north' or 'forwards'. They
-are represented using X and Y components, and can be converted to vectors if
-necessary, but should be thought of as conceptually different. Directions have
-several uses, such as:
+{-| A `Direction2d` represents a direction like 'up' or 'north' or 'forwards'.
+They are represented using X and Y components, and can be converted to vectors
+if necessary, but should be thought of as conceptually different. Directions
+have several uses, such as:
 
   - Constructing a vector from a length and direction
   - Determining the component of a vector in a particular direction (for

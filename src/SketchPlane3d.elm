@@ -17,9 +17,7 @@ module SketchPlane3d exposing
     , relativeTo, placeIn
     )
 
-{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/SketchPlane3d/icon.svg" alt="SketchPlane3d" width="160">
-
-A `SketchPlane3d` represents a 2D planar coordinate system in 3D space, and is
+{-| A `SketchPlane3d` represents a 2D planar coordinate system in 3D space, and is
 defined by its origin point and X and Y directions (which are always
 perpendicular to each other). Sketch planes are the primary tool for converting
 back and forth between 2D and 3D coordinates:

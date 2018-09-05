@@ -18,9 +18,7 @@ module Circle2d exposing
     , relativeTo, placeIn
     )
 
-{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Circle2d/icon.svg" alt="Circle2d" width="160">
-
-A `Circle2d` is defined by its center point and radius. This module includes
+{-| A `Circle2d` is defined by its center point and radius. This module includes
 functionality for
 
   - Constructing circles through points or with a given center/radius

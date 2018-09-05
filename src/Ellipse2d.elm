@@ -15,9 +15,7 @@ module Ellipse2d exposing
     , relativeTo, placeIn
     )
 
-{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Ellipse2d/icon.svg" alt="Ellipse2d" width="160">
-
-An [ellipse](https://en.wikipedia.org/wiki/Ellipse) is defined by a center
+{-| An [ellipse](https://en.wikipedia.org/wiki/Ellipse) is defined by a center
 point, X and Y radius, and X and Y axes (which will always be perpendicular to
 each other). Ellipses are symmetric about their X and Y axes. This module
 includes functionality for

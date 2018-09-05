@@ -15,9 +15,7 @@ module Circle3d exposing
     , relativeTo, placeIn
     )
 
-{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Circle3d/icon.svg" alt="Circle3d" width="160">
-
-A `Circle3d` is defined by its center point, axial direction and radius. The
+{-| A `Circle3d` is defined by its center point, axial direction and radius. The
 axial direction is the direction of the axis through the center of the circle
 that all points on the circle are equidistant from, or equivalently the normal
 direction of the plane defined by the circle. This module contains functionality

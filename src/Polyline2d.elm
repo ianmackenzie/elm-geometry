@@ -15,9 +15,7 @@ module Polyline2d exposing
     , relativeTo, placeIn
     )
 
-{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Polyline2d/icon.svg" alt="Polyline2d" width="160">
-
-A `Polyline2d` represents a sequence of vertices in 2D connected by line
+{-| A `Polyline2d` represents a sequence of vertices in 2D connected by line
 segments. This module contains a variety of polyline-related functionality, such
 as
 

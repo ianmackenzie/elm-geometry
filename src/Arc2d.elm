@@ -20,9 +20,7 @@ module Arc2d exposing
     , firstDerivative, firstDerivativesAt
     )
 
-{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Arc2d/icon.svg" alt="Arc2d" width="160">
-
-An `Arc2d` is a section of a circle, defined by its center point, start
+{-| An `Arc2d` is a section of a circle, defined by its center point, start
 point and swept angle (the counterclockwise angle from the start point to the
 end point). This module includes functionality for
 

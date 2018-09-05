@@ -15,14 +15,12 @@ module BoundingBox2d exposing
     , scaleAbout, translateBy, translateIn
     )
 
-{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/BoundingBox2d/icon.svg" alt="BoundingBox2d" width="160">
-
-A `BoundingBox2d` is a rectangular box in 2D defined by its minimum and maximum
-X and Y values. It is possible to generate bounding boxes for most geometric
-objects; for example, [`Triangle2d.boundingBox`](Triangle2d#boundingBox) takes a
-`Triangle2d` and returns a `BoundingBox2d` that contains that triangle. There
-are several use cases where it is more efficient to deal with the bounding box
-of an object than the object itself, such as:
+{-| A `BoundingBox2d` is a rectangular box in 2D defined by its minimum and
+maximum X and Y values. It is possible to generate bounding boxes for most
+geometric objects; for example, [`Triangle2d.boundingBox`](Triangle2d#boundingBox)
+takes a `Triangle2d` and returns a `BoundingBox2d` that contains that triangle.
+There are several use cases where it is more efficient to deal with the bounding
+box of an object than the object itself, such as:
 
   - Intersection checking: If (for example) the bounding boxes of a line segment
     and a triangle do not overlap, then the line segment and triangle cannot

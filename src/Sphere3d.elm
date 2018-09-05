@@ -17,9 +17,7 @@ module Sphere3d exposing
     , relativeTo, placeIn
     )
 
-{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Sphere3d/icon.svg" alt="Sphere3d" width="160">
-
-A `Sphere3d` is defined by its center point and radius. This module contains
+{-| A `Sphere3d` is defined by its center point and radius. This module contains
 functionality for:
 
   - Constructing spheres through points

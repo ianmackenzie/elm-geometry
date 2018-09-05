@@ -16,9 +16,7 @@ module Frame2d exposing
     , relativeTo, placeIn
     )
 
-{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Frame2d/icon.svg" alt="Frame2d" width="160">
-
-A `Frame2d` has an origin point and a pair of X and Y directions (which are
+{-| A `Frame2d` has an origin point and a pair of X and Y directions (which are
 always perpendicular to each other). It can be thought of as:
 
   - A local coordinate system: Most geometric types have associated `relativeTo`

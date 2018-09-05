@@ -16,9 +16,7 @@ module Polygon2d exposing
     , triangulate
     )
 
-{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Polygon2d/icon.svg" alt="Polygon2d" width="160">
-
-A `Polygon2d` represents a closed polygon in 2D, optionally with holes. It is
+{-| A `Polygon2d` represents a closed polygon in 2D, optionally with holes. It is
 defined by an outer loop of vertices and a list of inner loops defining any
 holes. This module contains a variety of polygon-related functionality, such as
 

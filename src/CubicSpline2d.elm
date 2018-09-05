@@ -22,9 +22,7 @@ module CubicSpline2d exposing
     , firstDerivative, firstDerivativesAt, secondDerivative, secondDerivativesAt, thirdDerivative, maxSecondDerivativeMagnitude
     )
 
-{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/CubicSpline2d/icon.svg" alt="CubicSpline2d" width="160">
-
-A `CubicSpline2d` is a cubic [Bézier curve](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)
+{-| A `CubicSpline2d` is a cubic [Bézier curve](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)
 in 2D defined by a start point, end point and two control points. This module
 contains functionality for
 

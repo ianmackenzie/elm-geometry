@@ -17,9 +17,7 @@ module LineSegment2d exposing
     , relativeTo, placeIn
     )
 
-{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/LineSegment2d/icon.svg" alt="LineSegment2d" width="160">
-
-A `LineSegment2d` is a line between two points in 2D. This module contains
+{-| A `LineSegment2d` is a line between two points in 2D. This module contains
 functionality such as:
 
   - Interpolating within a line segment or measuring its length

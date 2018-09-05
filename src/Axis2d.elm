@@ -16,10 +16,8 @@ module Axis2d exposing
     , relativeTo, placeIn
     )
 
-{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Axis2d/icon.svg" alt="Axis2d" width="160">
-
-An `Axis2d` represents an infinitely long straight line in 2D and is defined by
-an origin point and direction. Axes have several uses, such as:
+{-| An `Axis2d` represents an infinitely long straight line in 2D and is defined
+by an origin point and direction. Axes have several uses, such as:
 
   - Mirroring across the axis
   - Projecting onto the axis

@@ -16,9 +16,7 @@ module Plane3d exposing
     , relativeTo, placeIn
     )
 
-{-| <img src="https://ianmackenzie.github.io/elm-geometry/1.0.0/Plane3d/icon.svg" alt="Plane3d" width="160">
-
-A `Plane3d` is an infinite flat plane in 3D. It is defined by an origin point
+{-| A `Plane3d` is an infinite flat plane in 3D. It is defined by an origin point
 and normal direction and is useful for several operations including:
 
   - Mirroring across the plane
