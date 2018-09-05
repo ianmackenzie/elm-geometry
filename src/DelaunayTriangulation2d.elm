@@ -16,7 +16,7 @@ module DelaunayTriangulation2d exposing
     )
 
 {-| This module provides functionality for working with [Delaunay
-triangulations](https://en.wikipedia.org/wiki/Delaunay_triangulation). You can
+triangulations](https://en.wikipedia.org/wiki/Delaunay_triangulation). You can:
 
   - Build a Delaunay triangulation from a set of points or arbitrary vertices
   - Add a new vertex to an existing Delaunay triangulation
@@ -31,10 +31,10 @@ it up in the future (without requiring any changes to the API).
 
 # Construction
 
-@docs empty
-
 Constructing a Delaunay triangulation from points/vertices is currently an
 O(n^2) operation but should be O(n log n) in the future.
+
+@docs empty
 
 @docs fromPoints, fromVerticesBy
 

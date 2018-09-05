@@ -24,7 +24,7 @@ points.
 
 Although some Voronoi regions will be infinite in size, if they are all clipped
 to a particular bounding box then they will all be finite, convex polygons. This
-module therefore provides functionality for
+module therefore provides functionality for:
 
   - Building Voronoi diagrams from sets of points or arbitrary vertices (so
     you can associate colors, IDs or other data with points)
@@ -48,10 +48,10 @@ it up in the future (without requiring any changes to the API).
 
 # Construction
 
-@docs empty
-
 Constructing a Voronoi diagram from points/vertices is currently an O(n^2)
 operation but should be O(n log n) in the future.
+
+@docs empty
 
 @docs fromPoints, fromVerticesBy
 
