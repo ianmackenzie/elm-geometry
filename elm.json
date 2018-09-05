@@ -34,6 +34,7 @@
         "Polyline3d",
         "QuadraticSpline2d",
         "QuadraticSpline3d",
+        "Rectangle2d",
         "SketchPlane3d",
         "Sphere3d",
         "DelaunayTriangulation2d",
