@@ -10,7 +10,7 @@
 module BoundingBox2d exposing
     ( BoundingBox2d
     , fromExtrema, singleton, from, hull, intersection, aggregate, containingPoints
-    , extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centroid
+    , extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint, centroid
     , contains, isContainedIn, intersects, overlappingBy, separatedBy
     , scaleAbout, translateBy, translateIn
     )
@@ -44,7 +44,7 @@ of an object than the object itself, such as:
 
 # Properties
 
-@docs extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centroid
+@docs extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint, centroid
 
 
 # Queries
@@ -333,13 +333,21 @@ midY (Types.BoundingBox2d boundingBox) =
 
 {-| Get the point at the center of a bounding box.
 
-    BoundingBox2d.centroid exampleBox
+    BoundingBox2d.centerPoint exampleBox
     --> Point2d.fromCoordinates ( 5.5, 4 )
 
 -}
+centerPoint : BoundingBox2d -> Point2d
+centerPoint boundingBox =
+    Point2d.fromCoordinates ( midX boundingBox, midY boundingBox )
+
+
+{-| **DEPRECATED**: Alias for `centerPoint`, will be removed in the next major
+release. Use `centerPoint` instead.
+-}
 centroid : BoundingBox2d -> Point2d
 centroid boundingBox =
-    Point2d.fromCoordinates ( midX boundingBox, midY boundingBox )
+    centerPoint boundingBox
 
 
 {-| Check if a bounding box contains a particular point.

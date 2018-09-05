@@ -10,7 +10,7 @@
 module BoundingBox3d exposing
     ( BoundingBox3d
     , fromExtrema, singleton, from, hull, intersection, aggregate, containingPoints
-    , extrema, minX, maxX, minY, maxY, minZ, maxZ, dimensions, midX, midY, midZ, centroid
+    , extrema, minX, maxX, minY, maxY, minZ, maxZ, dimensions, midX, midY, midZ, centerPoint, centroid
     , contains, isContainedIn, intersects, overlappingBy, separatedBy
     , scaleAbout, translateBy, translateIn
     )
@@ -43,7 +43,7 @@ of an object than the object itself, such as:
 
 # Properties
 
-@docs extrema, minX, maxX, minY, maxY, minZ, maxZ, dimensions, midX, midY, midZ, centroid
+@docs extrema, minX, maxX, minY, maxY, minZ, maxZ, dimensions, midX, midY, midZ, centerPoint, centroid
 
 
 # Queries
@@ -390,17 +390,25 @@ midZ (Types.BoundingBox3d boundingBox) =
 
 {-| Get the point at the center of a bounding box.
 
-    BoundingBox3d.centroid exampleBox
+    BoundingBox3d.centerPoint exampleBox
     --> Point3d.fromCoordinates ( 0, 3.5, 3.5 )
 
 -}
-centroid : BoundingBox3d -> Point3d
-centroid boundingBox =
+centerPoint : BoundingBox3d -> Point3d
+centerPoint boundingBox =
     Point3d.fromCoordinates
         ( midX boundingBox
         , midY boundingBox
         , midZ boundingBox
         )
+
+
+{-| **DEPRECATED**: Alias for `centerPoint`, will be removed in the next major
+release. Use `centerPoint` instead.
+-}
+centroid : BoundingBox3d -> Point3d
+centroid boundingBox =
+    centerPoint boundingBox
 
 
 {-| Check if a bounding box contains a particular point.
