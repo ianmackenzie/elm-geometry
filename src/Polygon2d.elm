@@ -16,8 +16,8 @@ module Polygon2d exposing
     , triangulate
     )
 
-{-| A `Polygon2d` represents a closed polygon in 2D, optionally with holes. It is
-defined by an outer loop of vertices and a list of inner loops defining any
+{-| A `Polygon2d` represents a closed polygon in 2D, optionally with holes. It
+is defined by an outer loop of vertices and a list of inner loops defining any
 holes. This module contains a variety of polygon-related functionality, such as
 
   - Computing the perimeter and area of polygons

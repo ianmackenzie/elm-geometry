@@ -16,8 +16,8 @@ module Plane3d exposing
     , relativeTo, placeIn
     )
 
-{-| A `Plane3d` is an infinite flat plane in 3D. It is defined by an origin point
-and normal direction and is useful for several operations including:
+{-| A `Plane3d` is an infinite flat plane in 3D. It is defined by an origin
+point and normal direction and is useful for several operations including:
 
   - Mirroring across the plane
   - Projecting onto the plane

@@ -15,8 +15,8 @@ module Triangle3d exposing
     , relativeTo, placeIn, projectInto
     )
 
-{-| A `Triangle3d` represents a triangle in 3D space, and is defined by its three
-vertices. This module contains triangle-related functionality such as:
+{-| A `Triangle3d` represents a triangle in 3D space, and is defined by its
+three vertices. This module contains triangle-related functionality such as:
 
   - Finding the area and centroid of triangles
   - Scaling, rotating, translating, mirroring and projecting triangles

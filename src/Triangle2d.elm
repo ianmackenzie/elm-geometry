@@ -16,8 +16,8 @@ module Triangle2d exposing
     , relativeTo, placeIn
     )
 
-{-| A `Triangle2d` represents a triangle in 2D space, and is defined by its three
-vertices. This module contains triangle-related functionality such as:
+{-| A `Triangle2d` represents a triangle in 2D space, and is defined by its
+three vertices. This module contains triangle-related functionality such as:
 
   - Finding the area and centroid of triangles
   - Scaling, rotating, translating and mirroring triangles

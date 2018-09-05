@@ -22,8 +22,8 @@ module EllipticalArc2d exposing
     , firstDerivative, firstDerivativesAt, maxSecondDerivativeMagnitude
     )
 
-{-| An `EllipticalArc2d` is a section of an `Ellipse2d` with a start and end point.
-This module includes functionality for
+{-| An `EllipticalArc2d` is a section of an `Ellipse2d` with a start and end
+point. This module includes functionality for
 
   - Constructing an elliptical arc from its center or end points
   - Scaling, rotating, translating and mirroring elliptical arcs

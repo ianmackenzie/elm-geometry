@@ -19,8 +19,8 @@ module Vector2d exposing
     , relativeTo, placeIn
     )
 
-{-| A `Vector2d` represents a quantity such as a displacement or velocity in 2D, and
-is defined by its X and Y components. This module contains a variety of
+{-| A `Vector2d` represents a quantity such as a displacement or velocity in 2D,
+and is defined by its X and Y components. This module contains a variety of
 vector-related functionality, such as
 
   - Adding or subtracting vectors

@@ -18,9 +18,9 @@ module Point3d exposing
     , relativeTo, placeIn, projectInto
     )
 
-{-| A `Point3d` represents a position in 3D space and is defined by its X, Y and Z
-coordinates. This module contains a variety of point-related functionality, such
-as
+{-| A `Point3d` represents a position in 3D space and is defined by its X, Y and
+Z coordinates. This module contains a variety of point-related functionality,
+such as
 
   - Measuring distance between points, or the distance of a point from an axis
     or a plane

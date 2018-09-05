@@ -19,8 +19,8 @@ module Frame3d exposing
     , relativeTo, placeIn
     )
 
-{-| A `Frame3d` has an origin point and a set of X, Y and Z directions (which are
-always perpendicular to each other). It can be thought of as:
+{-| A `Frame3d` has an origin point and a set of X, Y and Z directions (which
+are always perpendicular to each other). It can be thought of as:
 
   - A local coordinate system: Most geometric types have associated `relativeTo`
     and `placeIn` functions that convert values of that type from global

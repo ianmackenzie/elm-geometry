@@ -17,8 +17,8 @@ module SketchPlane3d exposing
     , relativeTo, placeIn
     )
 
-{-| A `SketchPlane3d` represents a 2D planar coordinate system in 3D space, and is
-defined by its origin point and X and Y directions (which are always
+{-| A `SketchPlane3d` represents a 2D planar coordinate system in 3D space, and
+is defined by its origin point and X and Y directions (which are always
 perpendicular to each other). Sketch planes are the primary tool for converting
 back and forth between 2D and 3D coordinates:
 
