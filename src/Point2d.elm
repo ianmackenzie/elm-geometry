@@ -647,6 +647,9 @@ rotateAround centerPoint angle =
     Point2d.translateBy displacement point
     --> Point2d.fromCoordinates ( 4, 6 )
 
+In more mathematical terms, this is 'point plus vector'. For 'point minus point'
+(giving the vector from one point to another), there is [`Vector2d.from`](Vector2d#from).
+
 -}
 translateBy : Vector2d -> Point2d -> Point2d
 translateBy vector point =
