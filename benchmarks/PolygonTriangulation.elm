@@ -30,7 +30,7 @@ generator =
                 }
 
         centerPoint =
-            BoundingBox2d.centroid boundingBox
+            BoundingBox2d.centerPoint boundingBox
 
         ( width, height ) =
             BoundingBox2d.dimensions boundingBox

@@ -51,7 +51,7 @@ polygonGenerator : Generator Polygon2d
 polygonGenerator =
     let
         centerPoint =
-            BoundingBox2d.centroid renderBounds
+            BoundingBox2d.centerPoint renderBounds
 
         ( width, height ) =
             BoundingBox2d.dimensions renderBounds
@@ -153,7 +153,7 @@ view model =
             BoundingBox2d.dimensions renderBounds
 
         rotatedPolygon =
-            Polygon2d.rotateAround (BoundingBox2d.centroid renderBounds)
+            Polygon2d.rotateAround (BoundingBox2d.centerPoint renderBounds)
                 (degrees model.angleInDegrees)
                 model.polygon
 

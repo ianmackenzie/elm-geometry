@@ -78,7 +78,7 @@ view model =
             BoundingBox2d.dimensions renderBounds
 
         rotatedPolygon =
-            Polygon2d.rotateAround (BoundingBox2d.centroid renderBounds)
+            Polygon2d.rotateAround (BoundingBox2d.centerPoint renderBounds)
                 (degrees model.angleInDegrees)
                 model.polygon
 

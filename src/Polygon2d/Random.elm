@@ -20,7 +20,7 @@ radialPolygonWithHole : BoundingBox2d -> Generator Polygon2d
 radialPolygonWithHole boundingBox =
     let
         centerPoint =
-            BoundingBox2d.centroid boundingBox
+            BoundingBox2d.centerPoint boundingBox
 
         ( width, height ) =
             BoundingBox2d.dimensions boundingBox
@@ -353,7 +353,8 @@ polygon2d boundingBox =
     Random.map2
         (\polygon angle ->
             polygon
-                |> Polygon2d.rotateAround (BoundingBox2d.centroid boundingBox)
+                |> Polygon2d.rotateAround
+                    (BoundingBox2d.centerPoint boundingBox)
                     angle
         )
         (Random.uniform

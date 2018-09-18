@@ -1,5 +1,5 @@
 module Tests.BoundingBox3d exposing
-    ( boxContainsOwnCentroid
+    ( boxContainsOwnCenterPoint
     , containingPointsConsistentWithFromCorners
     , containingPointsIsOrderIndependent
     , hullContainsInputs
@@ -179,17 +179,17 @@ intersectionIsValidOrNothing =
         )
 
 
-boxContainsOwnCentroid : Test
-boxContainsOwnCentroid =
+boxContainsOwnCenterPoint : Test
+boxContainsOwnCenterPoint =
     Test.fuzz Fuzz.boundingBox3d
-        "a bounding box contains its own centroid"
+        "a bounding box contains its own center point"
         (\box ->
             let
-                centroid =
-                    BoundingBox3d.centroid box
+                centerPoint =
+                    BoundingBox3d.centerPoint box
             in
-            Expect.true "bounding box does not contain its own centroid"
-                (BoundingBox3d.contains centroid box)
+            Expect.true "bounding box does not contain its own center point"
+                (BoundingBox3d.contains centerPoint box)
         )
 
 
