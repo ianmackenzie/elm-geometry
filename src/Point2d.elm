@@ -269,7 +269,7 @@ along axis distance =
 {-| Construct a point given its local coordinates within a particular frame.
 
     rotatedFrame =
-        Frame2d.xy |> Frame2d.rotateBy (degrees 45)
+        Frame2d.atOrigin |> Frame2d.rotateBy (degrees 45)
 
     Point2d.fromCoordinatesIn rotatedFrame ( 2, 0 )
     --> Point2d.fromCoordinates ( 1.4142, 1.4142 )

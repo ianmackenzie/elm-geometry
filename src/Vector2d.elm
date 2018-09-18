@@ -89,7 +89,7 @@ orientations of the relevant frames, not the positions of their origin points.
 For the examples, assume the following frame has been defined:
 
     rotatedFrame =
-        Frame2d.rotateBy (degrees 30) Frame2d.xy
+        Frame2d.atOrigin |> Frame2d.rotateBy (degrees 30)
 
 @docs relativeTo, placeIn
 
