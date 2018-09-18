@@ -97,7 +97,7 @@ given frame, but with varying normal directions. In each case the normal
 direction of the resulting plane is given by the cross product of the two
 indicated basis directions (assuming a right-handed frame); for example,
 
-    Frame3d.xyPlane Frame3d.xyz
+    Frame3d.xyPlane Frame3d.atOrigin
     --> Plane3d.through Point3d.origin
     -->     Direction3d.positiveZ
 
@@ -105,7 +105,7 @@ since the cross product of the X and Y basis directions of a frame is equal to
 its Z basis direction. And since reversing the order of arguments in a cross
 product reverses the sign of the result,
 
-    Frame3d.yxPlane Frame3d.xyz
+    Frame3d.yxPlane Frame3d.atOrigin
     --> Plane3d.through Point3d.origin
     -->     Direction3d.negativeZ
 
@@ -119,7 +119,7 @@ X and Y axes of the sketch plane will correspond to the two indicated axes. For
 example,
 
     yzSketchPlane =
-        Frame3d.yzSketchPlane Frame3d.xyz
+        Frame3d.yzSketchPlane Frame3d.atOrigin
 
     SketchPlane3d.originPoint yzSketchPlane
     --> Point3d.origin
@@ -162,24 +162,32 @@ type alias Frame3d =
     Types.Frame3d
 
 
-{-| The global XYZ frame.
+{-| The global XYZ frame, centered at the origin.
 
-    Frame3d.originPoint Frame3d.xyz
+    Frame3d.originPoint Frame3d.atOrigin
     --> Point3d.origin
 
-    Frame3d.xDirection Frame3d.xyz
+    Frame3d.xDirection Frame3d.atOrigin
     --> Direction3d.x
 
-    Frame3d.yDirection Frame3d.xyz
+    Frame3d.yDirection Frame3d.atOrigin
     --> Direction3d.y
 
-    Frame3d.zDirection Frame3d.xyz
+    Frame3d.zDirection Frame3d.atOrigin
     --> Direction3d.z
 
 -}
+atOrigin : Frame3d
+atOrigin =
+    atPoint Point3d.origin
+
+
+{-| DEPRECATED: Alias for `Frame3d.atOrigin`, kept for compatibility. Will be
+removed in the next major release.
+-}
 xyz : Frame3d
 xyz =
-    atPoint Point3d.origin
+    atOrigin
 
 
 {-| Construct a frame with the given origin point and X direction.
@@ -305,7 +313,7 @@ atCoordinates coordinates =
 
 {-| Get the origin point of a given frame.
 
-    Frame3d.originPoint Frame3d.xyz
+    Frame3d.originPoint Frame3d.atOrigin
     --> Point3d.origin
 
 -}
@@ -316,7 +324,7 @@ originPoint (Types.Frame3d properties) =
 
 {-| Get the X direction of a given frame.
 
-    Frame3d.xDirection Frame3d.xyz
+    Frame3d.xDirection Frame3d.atOrigin
     --> Direction3d.x
 
 -}
@@ -327,7 +335,7 @@ xDirection (Types.Frame3d properties) =
 
 {-| Get the Y direction of a given frame.
 
-    Frame3d.yDirection Frame3d.xyz
+    Frame3d.yDirection Frame3d.atOrigin
     --> Direction3d.y
 
 -}
@@ -338,7 +346,7 @@ yDirection (Types.Frame3d properties) =
 
 {-| Get the Z direction of a given frame.
 
-    Frame3d.zDirection Frame3d.xyz
+    Frame3d.zDirection Frame3d.atOrigin
     --> Direction3d.z
 
 -}
@@ -349,10 +357,11 @@ zDirection (Types.Frame3d properties) =
 
 {-| Check if a frame is [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness).
 
-    Frame3d.isRightHanded Frame3d.xyz
+    Frame3d.isRightHanded Frame3d.atOrigin
     --> True
 
-    Frame3d.isRightHanded (Frame3d.reverseZ Frame3d.xyz)
+    Frame3d.isRightHanded
+        (Frame3d.reverseZ Frame3d.atOrigin)
     --> False
 
 All predefined frames are right-handed, and most operations on frames preserve
@@ -378,7 +387,7 @@ isRightHanded frame =
 {-| Get the X axis of a given frame (the axis formed from the frame's origin
 point and X direction).
 
-    Frame3d.xAxis Frame3d.xyz
+    Frame3d.xAxis Frame3d.atOrigin
     --> Axis3d.x
 
 -}
@@ -390,7 +399,7 @@ xAxis (Types.Frame3d frame) =
 {-| Get the Y axis of a given frame (the axis formed from the frame's origin
 point and Y direction).
 
-    Frame3d.yAxis Frame3d.xyz
+    Frame3d.yAxis Frame3d.atOrigin
     --> Axis3d.y
 
 -}
@@ -402,7 +411,7 @@ yAxis (Types.Frame3d frame) =
 {-| Get the Z axis of a given frame (the axis formed from the frame's origin
 point and Z direction).
 
-    Frame3d.zAxis Frame3d.xyz
+    Frame3d.zAxis Frame3d.atOrigin
     --> Axis3d.z
 
 -}
@@ -521,7 +530,7 @@ xzSketchPlane frame =
 
 {-| Reverse the X direction of a frame.
 
-    Frame3d.xDirection (Frame3d.reverseX Frame3d.xyz)
+    Frame3d.xDirection (Frame3d.reverseX Frame3d.atOrigin)
     --> Direction3d.negativeX
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
@@ -540,7 +549,7 @@ reverseX frame =
 
 {-| Reverse the Y direction of a frame.
 
-    Frame3d.yDirection (Frame3d.reverseY Frame3d.xyz)
+    Frame3d.yDirection (Frame3d.reverseY Frame3d.atOrigin)
     --> Direction3d.negativeY
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
@@ -559,7 +568,7 @@ reverseY frame =
 
 {-| Reverse the Z direction of a frame.
 
-    Frame3d.zDirection (Frame3d.reverseZ Frame3d.xyz)
+    Frame3d.zDirection (Frame3d.reverseZ Frame3d.atOrigin)
     --> Direction3d.negativeZ
 
 Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
@@ -582,7 +591,7 @@ orientation.
     point =
         Point3d.fromCoordinates ( 2, 1, 3 )
 
-    Frame3d.moveTo point Frame3d.xyz
+    Frame3d.atOrigin |> Frame3d.moveTo point
     --> Frame3d.atPoint point
 
 -}

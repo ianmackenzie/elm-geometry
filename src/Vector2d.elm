@@ -89,7 +89,7 @@ orientations of the relevant frames, not the positions of their origin points.
 For the examples, assume the following frame has been defined:
 
     rotatedFrame =
-        Frame2d.rotateBy (degrees 30) Frame2d.xy
+        Frame2d.atOrigin |> Frame2d.rotateBy (degrees 30)
 
 @docs relativeTo, placeIn
 
@@ -608,6 +608,9 @@ crossProduct firstVector secondVector =
     Vector2d.reverse (Vector2d.fromComponents ( -1, 2 ))
     --> Vector2d.fromComponents ( 1, -2 )
 
+(This could have been called `negate`, but `reverse` is more consistent with
+the naming used in other modules.)
+
 -}
 reverse : Vector2d -> Vector2d
 reverse vector =
@@ -622,6 +625,10 @@ reverse vector =
 
     Vector2d.scaleBy 3 (Vector2d.fromComponents ( 1, 2 ))
     --> Vector2d.fromComponents ( 3, 6 )
+
+(This could have been called `multiply` or `times`, but `scaleBy` was chosen as
+a more geometrically meaningful name and to be consistent with the `scaleAbout`
+name used in other modules.)
 
 -}
 scaleBy : Float -> Vector2d -> Vector2d

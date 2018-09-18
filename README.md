@@ -148,7 +148,7 @@ Plane3d.offsetBy 3 Plane3d.xy
 
 ```elm
 rotatedFrame =
-    Frame2d.xy |> Frame2d.rotateBy (degrees 30)
+    Frame2d.atOrigin |> Frame2d.rotateBy (degrees 30)
 
 -- convert from global coordinates to local coordinates
 -- (relative to the given coordinate frame)

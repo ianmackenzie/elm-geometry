@@ -8,6 +8,11 @@ just as important as code issues!). If you're willing to help fix the
 bug/implement the feature, please mention that in the issue, but it's certainly
 not a requirement!
 
+Another great way to contribute is to look for [issues marked with *question*](https://github.com/ianmackenzie/elm-geometry/issues?q=is%3Aissue+is%3Aopen+label%3Aquestion),
+which are ones where I'm actively seeking feedback from the community on whether
+something should be done or what the right approach is. Feedback is welcome on
+any issue, though!
+
 In general, I try to follow [the Elm guidelines](https://twitter.com/czaplic/status/928359033844539393)
 and ask that you try to as well:
 

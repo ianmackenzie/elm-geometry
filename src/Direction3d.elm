@@ -79,7 +79,7 @@ one that is rotated 30 degrees counterclockwise around the Z axis from the
 global XYZ frame:
 
     rotatedFrame =
-        Frame3d.xyz
+        Frame3d.atOrigin
             |> Frame3d.rotateAround Axis3d.z (degrees 30)
 
 @docs relativeTo, placeIn, projectInto

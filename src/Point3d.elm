@@ -695,6 +695,9 @@ rotateAround ((Types.Axis3d axis) as axis_) angle point =
     Point3d.translateBy displacement point
     --> Point3d.fromCoordinates ( 4, 6, 8 )
 
+In more mathematical terms, this is 'point plus vector'. For 'point minus point'
+(giving the vector from one point to another), there is [`Vector3d.from`](Vector3d#from).
+
 -}
 translateBy : Vector3d -> Point3d -> Point3d
 translateBy vector point =

@@ -91,7 +91,7 @@ For the examples, assume the following frames have been defined:
             }
 
     rotatedFrame =
-        Frame2d.rotateBy (degrees 30) Frame2d.xy
+        Frame2d.atOrigin |> Frame2d.rotateBy (degrees 30)
 
 @docs relativeTo, placeIn
 

@@ -92,7 +92,7 @@ one that is rotated 30 degrees counterclockwise around the Z axis from the
 global XYZ frame:
 
     rotatedFrame =
-        Frame3d.rotateAround Axis3d.z (degrees 30) Frame3d.xyz
+        Frame3d.atOrigin |> Frame3d.rotateAround Axis3d.z (degrees 30)
 
 @docs relativeTo, placeIn, projectInto
 
@@ -656,6 +656,9 @@ crossProduct firstVector secondVector =
     Vector3d.reverse (Vector3d.fromComponents ( 1, -3, 2 ))
     --> Vector3d.fromComponents ( -1, 3, -2 )
 
+(This could have been called `negate`, but `reverse` is more consistent with
+the naming used in other modules.)
+
 -}
 reverse : Vector3d -> Vector3d
 reverse vector =
@@ -671,6 +674,10 @@ reverse vector =
     Vector3d.fromComponents ( 1, 2, 3 )
         |> Vector3d.scaleBy 3
     --> Vector3d.fromComponents ( 3, 6, 9 )
+
+(This could have been called `multiply` or `times`, but `scaleBy` was chosen as
+a more geometrically meaningful name and to be consistent with the `scaleAbout`
+name used in other modules.)
 
 -}
 scaleBy : Float -> Vector3d -> Vector3d

@@ -269,7 +269,7 @@ along axis distance =
 {-| Construct a point given its local coordinates within a particular frame.
 
     rotatedFrame =
-        Frame2d.xy |> Frame2d.rotateBy (degrees 45)
+        Frame2d.atOrigin |> Frame2d.rotateBy (degrees 45)
 
     Point2d.fromCoordinatesIn rotatedFrame ( 2, 0 )
     --> Point2d.fromCoordinates ( 1.4142, 1.4142 )
@@ -646,6 +646,9 @@ rotateAround centerPoint angle =
 
     Point2d.translateBy displacement point
     --> Point2d.fromCoordinates ( 4, 6 )
+
+In more mathematical terms, this is 'point plus vector'. For 'point minus point'
+(giving the vector from one point to another), there is [`Vector2d.from`](Vector2d#from).
 
 -}
 translateBy : Vector2d -> Point2d -> Point2d

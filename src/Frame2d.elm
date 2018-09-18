@@ -9,7 +9,7 @@
 
 module Frame2d exposing
     ( Frame2d
-    , xy
+    , atOrigin, xy
     , atPoint, atCoordinates, withXDirection, withYDirection, unsafe
     , originPoint, xDirection, yDirection, isRightHanded, xAxis, yAxis
     , reverseX, reverseY, moveTo, rotateBy, rotateAround, translateBy, translateIn, translateAlongOwn, mirrorAcross
@@ -35,7 +35,7 @@ always perpendicular to each other). It can be thought of as:
 
 # Constants
 
-@docs xy
+@docs atOrigin, xy
 
 
 # Constructors
@@ -71,21 +71,29 @@ type alias Frame2d =
     Types.Frame2d
 
 
-{-| The global XY frame.
+{-| The global XY frame, centered at the origin.
 
-    Frame2d.originPoint Frame2d.xy
+    Frame2d.originPoint Frame2d.atOrigin
     --> Point2d.origin
 
-    Frame2d.xDirection Frame2d.xy
+    Frame2d.xDirection Frame2d.atOrigin
     --> Direction2d.x
 
-    Frame2d.yDirection Frame2d.xy
+    Frame2d.yDirection Frame2d.atOrigin
     --> Direction2d.y
 
 -}
+atOrigin : Frame2d
+atOrigin =
+    atPoint Point2d.origin
+
+
+{-| DEPRECATED: Alias for `Frame2d.atOrigin`, kept for compatibility. Will be
+removed in the next major release.
+-}
 xy : Frame2d
 xy =
-    atPoint Point2d.origin
+    atOrigin
 
 
 {-| Construct a frame with the given X axis direction, having the given origin
@@ -199,7 +207,7 @@ atCoordinates coordinates =
 
 {-| Get the origin point of a given frame.
 
-    Frame2d.originPoint Frame2d.xy
+    Frame2d.originPoint Frame2d.atOrigin
     --> Point2d.origin
 
 -}
@@ -210,7 +218,7 @@ originPoint (Types.Frame2d frame) =
 
 {-| Get the X direction of a given frame.
 
-    Frame2d.xDirection Frame2d.xy
+    Frame2d.xDirection Frame2d.atOrigin
     --> Direction2d.x
 
 -}
@@ -221,7 +229,7 @@ xDirection (Types.Frame2d frame) =
 
 {-| Get the Y direction of a given frame.
 
-    Frame2d.yDirection Frame2d.xy
+    Frame2d.yDirection Frame2d.atOrigin
     --> Direction2d.y
 
 -}
@@ -232,10 +240,11 @@ yDirection (Types.Frame2d frame) =
 
 {-| Check if a frame is [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness).
 
-    Frame2d.isRightHanded Frame2d.xy
+    Frame2d.isRightHanded Frame2d.atOrigin
     --> True
 
-    Frame2d.isRightHanded (Frame2d.reverseX Frame2d.xy)
+    Frame2d.isRightHanded
+        (Frame2d.reverseX Frame2d.atOrigin)
     --> False
 
 All predefined frames are right-handed, and most operations on frames preserve
@@ -258,7 +267,7 @@ isRightHanded frame =
 {-| Get the X axis of a given frame (the axis formed from the frame's origin
 point and X direction).
 
-    Frame2d.xAxis Frame2d.xy
+    Frame2d.xAxis Frame2d.atOrigin
     --> Axis2d.x
 
 -}
@@ -270,7 +279,7 @@ xAxis (Types.Frame2d frame) =
 {-| Get the Y axis of a given frame (the axis formed from the frame's origin
 point and Y direction).
 
-    Frame2d.yAxis Frame2d.xy
+    Frame2d.yAxis Frame2d.atOrigin
     --> Axis2d.y
 
 -}
@@ -346,7 +355,7 @@ reverseY frame =
     point =
         Point2d.fromCoordinates ( 1, 1 )
 
-    Frame2d.xy |> Frame2d.moveTo point
+    Frame2d.atOrigin |> Frame2d.moveTo point
     --> Frame2d.atPoint point
 
 -}
@@ -364,7 +373,7 @@ origin point. The resulting frame will have the same origin point, and its X and
 Y directions will be rotated by the given angle.
 
     rotatedFrame =
-        Frame2d.rotateBy (degrees 30) Frame2d.xy
+        Frame2d.rotateBy (degrees 30) Frame2d.atOrigin
 
     Frame2d.xDirection rotatedFrame
     --> Direction2d.fromAngle (degrees 30)

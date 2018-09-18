@@ -35,6 +35,7 @@ module Geometry.Fuzz exposing
     , polyline3d
     , quadraticSpline2d
     , quadraticSpline3d
+    , rectangle2d
     , scalar
     , sketchPlane3d
     , sphere3d
@@ -73,6 +74,7 @@ import Polyline2d exposing (Polyline2d)
 import Polyline3d exposing (Polyline3d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
 import QuadraticSpline3d exposing (QuadraticSpline3d)
+import Rectangle2d exposing (Rectangle2d)
 import Shrink
 import SketchPlane3d exposing (SketchPlane3d)
 import Sphere3d exposing (Sphere3d)
@@ -408,3 +410,12 @@ ellipticalArc2d =
         (Fuzz.tuple ( point2d, direction2d ))
         (Fuzz.tuple ( positiveScalar, positiveScalar ))
         (Fuzz.tuple ( angle, angle ))
+
+
+rectangle2d : Fuzzer Rectangle2d
+rectangle2d =
+    let
+        rectangle frame width height =
+            Rectangle2d.centeredOn frame ( width, height )
+    in
+    Fuzz.map3 rectangle frame2d positiveScalar positiveScalar
