@@ -13,6 +13,7 @@ module VoronoiDiagram2d exposing
     , fromPoints, fromVerticesBy
     , insertPoint, insertVertexBy
     , vertices, polygons
+    , fromDelaunayTriangulation, toDelaunayTriangulation
     )
 
 {-| For any given set of distinct (non-equal) points in 2D, there is a finite
@@ -67,6 +68,15 @@ should be O(log n) in the future.
 # Properties
 
 @docs vertices, polygons
+
+
+# Conversion
+
+A Voronoi diagram of a set or vertices is [the dual](https://en.wikipedia.org/wiki/Delaunay_triangulation#Relationship_with_the_Voronoi_diagram)
+of the Delaunay triangulation of those vertices. As a result, it is possible to
+convert back and forth between the two.
+
+@docs fromDelaunayTriangulation, toDelaunayTriangulation
 
 -}
 
@@ -814,16 +824,8 @@ get an `Err CoincidentVertices`.
 fromVerticesBy : (vertex -> Point2d) -> Array vertex -> Result (Error vertex) (VoronoiDiagram2d vertex)
 fromVerticesBy getPosition givenVertices =
     case DelaunayTriangulation2d.fromVerticesBy getPosition givenVertices of
-        Ok delaunayTriangulation ->
-            let
-                regions =
-                    voronoiRegions delaunayTriangulation
-            in
-            Ok <|
-                VoronoiDiagram2d
-                    { delaunayTriangulation = delaunayTriangulation
-                    , regions = regions
-                    }
+        Ok triangulation ->
+            Ok (fromDelaunayTriangulation triangulation)
 
         Err (DelaunayTriangulation2d.CoincidentVertices firstVertex secondVertex) ->
             Err (CoincidentVertices firstVertex secondVertex)
@@ -845,15 +847,7 @@ insertVertexBy : (vertex -> Point2d) -> vertex -> VoronoiDiagram2d vertex -> Res
 insertVertexBy getPosition vertex (VoronoiDiagram2d current) =
     case current.delaunayTriangulation |> DelaunayTriangulation2d.insertVertexBy getPosition vertex of
         Ok updatedTriangulation ->
-            let
-                updatedRegions =
-                    voronoiRegions updatedTriangulation
-            in
-            Ok <|
-                VoronoiDiagram2d
-                    { delaunayTriangulation = updatedTriangulation
-                    , regions = updatedRegions
-                    }
+            Ok (fromDelaunayTriangulation updatedTriangulation)
 
         Err (DelaunayTriangulation2d.CoincidentVertices firstVertex secondVertex) ->
             Err (CoincidentVertices firstVertex secondVertex)
@@ -918,3 +912,23 @@ polygons boundingBox (VoronoiDiagram2d voronoiDiagram) =
             }
     in
     List.filterMap (trimRegion trimBox) voronoiDiagram.regions
+
+
+{-| Construct a Voronoi diagram from a Delaunay triangulation. Complexity should
+be O(n) in the vast majority of cases but may be O(n log n) in pathological
+cases.
+-}
+fromDelaunayTriangulation : DelaunayTriangulation2d vertex -> VoronoiDiagram2d vertex
+fromDelaunayTriangulation triangulation =
+    VoronoiDiagram2d
+        { regions = voronoiRegions triangulation
+        , delaunayTriangulation = triangulation
+        }
+
+
+{-| Convert a Voronoi diagram to a Delaunay triangulation. This is a simple
+accessor, so complexity is O(1).
+-}
+toDelaunayTriangulation : VoronoiDiagram2d vertex -> DelaunayTriangulation2d vertex
+toDelaunayTriangulation (VoronoiDiagram2d diagram) =
+    diagram.delaunayTriangulation
