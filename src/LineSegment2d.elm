@@ -198,6 +198,10 @@ than 0.0 or greater than 1.0 can be used to extrapolate.
     LineSegment2d.interpolate exampleLineSegment 1.5
     --> Point2d.fromCoordinates ( 4, 5 )
 
+If you just need to interpolate between two points, you don't have to construct
+a line segment first - you can use [`Point2d.interpolateFrom`](Point2d#interpolateFrom)
+directly.
+
 -}
 interpolate : LineSegment2d -> Float -> Point2d
 interpolate lineSegment =

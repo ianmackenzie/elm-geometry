@@ -221,6 +221,10 @@ than 0.0 or greater than 1.0 can be used to extrapolate.
     LineSegment3d.interpolate exampleLineSegment (-1 / 3)
     --> Point3d.fromCoordinates ( 0, 1, 2 )
 
+If you just need to interpolate between two points, you don't have to construct
+a line segment first - you can use [`Point3d.interpolateFrom`](Point3d#interpolateFrom)
+directly.
+
 -}
 interpolate : LineSegment3d -> Float -> Point3d
 interpolate lineSegment =
