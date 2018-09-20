@@ -105,7 +105,7 @@ verticesGenerator =
                 (Random.float (minX + 30) (maxX - 30))
                 (Random.float (minY + 30) (maxY - 30))
     in
-    Random.int 0 4
+    Random.int 32 256
         |> Random.andThen (\listSize -> Random.list listSize pointGenerator)
         |> Random.map assignColors
 
@@ -127,7 +127,7 @@ collinearVerticesGenerator =
 
 generateNewVertices : Cmd Msg
 generateNewVertices =
-    Random.generate NewRandomVertices collinearVerticesGenerator
+    Random.generate NewRandomVertices verticesGenerator
 
 
 init : ( Model, Cmd Msg )
@@ -267,6 +267,9 @@ view model =
                 , Point2d.fromCoordinates ( width, height )
                 , Point2d.fromCoordinates ( 0, height )
                 ]
+
+        isInBounds vertex =
+            BoundingBox2d.contains vertex.position trimBox
     in
     { title = "Voronoi Regions"
     , body =
@@ -280,7 +283,7 @@ view model =
                 , Mouse.onMove MouseMove
                 ]
                 [ Svg.g [] (List.map drawPolygon polygons)
-                , Svg.g [] (List.map drawVertex vertices)
+                , Svg.g [] (List.map drawVertex (List.filter isInBounds vertices))
                 , mousePointElement
                 , Svg.polygon2d [ Svg.Attributes.fill "transparent" ] overlayPolygon
                 ]
