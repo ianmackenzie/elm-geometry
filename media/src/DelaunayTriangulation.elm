@@ -14,7 +14,7 @@ import Axis2d
 import BoundingBox2d exposing (BoundingBox2d)
 import Browser
 import Circle2d
-import DelaunayTriangulation2d exposing (CoincidentVertices, DelaunayTriangulation2d)
+import DelaunayTriangulation2d exposing (DelaunayTriangulation2d, Error(..))
 import Geometry.Svg as Svg
 import Html exposing (Html)
 import Html.Attributes
@@ -32,7 +32,7 @@ import TriangularMesh exposing (TriangularMesh)
 
 
 type alias Model =
-    { baseTriangulation : Result (CoincidentVertices Point2d) (DelaunayTriangulation2d Point2d)
+    { baseTriangulation : Result (Error Point2d) (DelaunayTriangulation2d Point2d)
     , mousePosition : Maybe Point2d
     }
 

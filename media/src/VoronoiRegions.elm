@@ -29,7 +29,7 @@ import Svg exposing (Svg)
 import Svg.Attributes
 import Triangle2d exposing (Triangle2d)
 import TriangularMesh exposing (TriangularMesh)
-import VoronoiDiagram2d exposing (CoincidentVertices, VoronoiDiagram2d)
+import VoronoiDiagram2d exposing (Error(..), VoronoiDiagram2d)
 
 
 type alias Vertex =
@@ -39,7 +39,7 @@ type alias Vertex =
 
 
 type alias Model =
-    { baseDiagram : Result (CoincidentVertices Vertex) (VoronoiDiagram2d Vertex)
+    { baseDiagram : Result (Error Vertex) (VoronoiDiagram2d Vertex)
     , mousePosition : Maybe Point2d
     }
 
