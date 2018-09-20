@@ -9,7 +9,7 @@
 
 module Frame3d exposing
     ( Frame3d
-    , xyz
+    , atOrigin, xyz
     , withXDirection, withYDirection, withZDirection, atPoint, atCoordinates, unsafe
     , originPoint, xDirection, yDirection, zDirection, isRightHanded
     , xAxis, yAxis, zAxis
@@ -38,7 +38,7 @@ are always perpendicular to each other). It can be thought of as:
 
 # Constants
 
-@docs xyz
+@docs atOrigin, xyz
 
 
 # Constructors
