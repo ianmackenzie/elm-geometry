@@ -204,12 +204,12 @@ directly.
 
 -}
 interpolate : LineSegment2d -> Float -> Point2d
-interpolate lineSegment =
+interpolate lineSegment t =
     let
         ( start, end ) =
             endpoints lineSegment
     in
-    Point2d.interpolateFrom start end
+    Point2d.interpolateFrom start end t
 
 
 {-| Get the length of a line segment.

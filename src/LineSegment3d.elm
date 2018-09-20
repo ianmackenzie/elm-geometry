@@ -227,12 +227,12 @@ directly.
 
 -}
 interpolate : LineSegment3d -> Float -> Point3d
-interpolate lineSegment =
+interpolate lineSegment t =
     let
         ( start, end ) =
             endpoints lineSegment
     in
-    Point3d.interpolateFrom start end
+    Point3d.interpolateFrom start end t
 
 
 {-| Get the length of a line segment.
