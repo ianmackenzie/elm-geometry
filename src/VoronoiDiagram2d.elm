@@ -23,6 +23,8 @@ point, and the collection of the Voronoi regions for a set of points is called
 the [Voronoi diagram](https://en.wikipedia.org/wiki/Voronoi_diagram) of those
 points.
 
+![Voronoi diagram](https://ianmackenzie.github.io/elm-geometry/1.2.0/VoronoiDiagram2d/VoronoiDiagram.png)
+
 Although some Voronoi regions will be infinite in size, if they are all clipped
 to a particular bounding box then they will all be finite, convex polygons. This
 module therefore provides functionality for:

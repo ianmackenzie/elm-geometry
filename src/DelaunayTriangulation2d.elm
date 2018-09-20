@@ -16,7 +16,11 @@ module DelaunayTriangulation2d exposing
     )
 
 {-| This module provides functionality for working with [Delaunay
-triangulations](https://en.wikipedia.org/wiki/Delaunay_triangulation). You can:
+triangulations](https://en.wikipedia.org/wiki/Delaunay_triangulation).
+
+![Delaunay triangulation](https://ianmackenzie.github.io/elm-geometry/1.2.0/DelaunayTriangulation2d/DelaunayTriangulation.png)
+
+You can:
 
   - Build a Delaunay triangulation from a set of points or arbitrary vertices
   - Add a new vertex to an existing Delaunay triangulation
