@@ -561,7 +561,7 @@ amount, and ignores boxes that just barely touch each other) as
         BoundingBox3d.overlappingBy GT 0.001 box1 box2
 
 This can be read as "`box1` and `box2` are overlapping by greater than 0.001
-units". (The [`Order`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#Order)
+units". (The [`Order`](https://package.elm-lang.org/packages/elm/core/latest/Basics#Order)
 type and its three values `LT`, `GT` and `EQ` are defined in Elm's `Basics`
 module so are available by default in any Elm program.)
 
@@ -667,7 +667,7 @@ check to see if the objects had a gap of at least 1 cm between them:
         BoundingBox3d.separatedBy GT 0.01 box1 box2
 
 This can be read as "`box1` and `box2` are separated by greater than 0.01
-units". (The [`Order`](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#Order)
+units". (The [`Order`](https://package.elm-lang.org/packages/elm/core/latest/Basics#Order)
 type and its three values `LT`, `GT` and `EQ` are defined in Elm's `Basics`
 module so are available by default in any Elm program.)
 
