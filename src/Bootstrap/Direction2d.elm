@@ -18,29 +18,29 @@ import Geometry.Types exposing (..)
 import Quantity exposing (Quantity)
 
 
-unsafe : ( Quantity number units, Quantity number units ) -> Direction2d (Coordinates2d system number units)
+unsafe : ( Float, Float ) -> Direction2d (Coordinates2d system units)
 unsafe givenComponents =
-    Direction2d (Coordinates2d givenComponents)
+    Direction2d givenComponents
 
 
-components : Direction2d (Coordinates2d system number units) -> ( Quantity number units, Quantity number units )
-components (Direction2d (Coordinates2d components_)) =
-    components_
+components : Direction2d (Coordinates2d system units) -> ( Float, Float )
+components (Direction2d directionComponents) =
+    directionComponents
 
 
-reverse : Direction2d (Coordinates2d system number units) -> Direction2d (Coordinates2d system number units)
+reverse : Direction2d (Coordinates2d system units) -> Direction2d (Coordinates2d system units)
 reverse direction =
     let
         ( x, y ) =
             components direction
     in
-    unsafe ( Quantity.negate x, Quantity.negate y )
+    unsafe ( -x, -y )
 
 
-perpendicularTo : Direction2d (Coordinates2d system number units) -> Direction2d (Coordinates2d system number units)
+perpendicularTo : Direction2d (Coordinates2d system units) -> Direction2d (Coordinates2d system units)
 perpendicularTo direction =
     let
         ( x, y ) =
             components direction
     in
-    unsafe ( Quantity.negate y, x )
+    unsafe ( -y, x )
