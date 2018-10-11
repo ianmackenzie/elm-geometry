@@ -17,6 +17,8 @@ module Geometry.Types exposing
     , BoundingBox3d(..)
     , Circle2d(..)
     , Circle3d(..)
+    , Coordinates2d(..)
+    , Coordinates3d(..)
     , CubicSpline2d(..)
     , CubicSpline3d(..)
     , DelaunayFace(..)
@@ -52,162 +54,164 @@ module Geometry.Types exposing
 import Array exposing (Array)
 
 
-type Vector2d
-    = Vector2d ( Float, Float )
+type Coordinates2d system number units
+    = Coordinates2d ( Quantity number units, Quantity number units )
 
 
-type Vector3d
-    = Vector3d ( Float, Float, Float )
+type Coordinates3d system number units
+    = Coordinates3d ( Quantity number units, Quantity number units, Quantity number units )
 
 
-type Direction2d
-    = Direction2d ( Float, Float )
+type Vector2d coordinates
+    = Vector2d coordinates
 
 
-type Direction3d
-    = Direction3d ( Float, Float, Float )
+type Vector3d coordinates
+    = Vector3d coordinates
 
 
-type Point2d
-    = Point2d ( Float, Float )
+type Direction2d coordinates
+    = Direction2d coordinates
 
 
-type Point3d
-    = Point3d ( Float, Float, Float )
+type Direction3d coordinates
+    = Direction3d coordinates
 
 
-type Axis2d
-    = Axis2d { originPoint : Point2d, direction : Direction2d }
+type Point2d coordinates
+    = Point2d coordinates
 
 
-type Axis3d
-    = Axis3d { originPoint : Point3d, direction : Direction3d }
+type Point3d coordinates
+    = Point3d coordinates
 
 
-type Plane3d
-    = Plane3d { originPoint : Point3d, normalDirection : Direction3d }
+type Axis2d coordinates
+    = Axis2d { originPoint : Point2d coordinates, direction : Direction2d coordinates }
 
 
-type Frame2d
+type Axis3d coordinates
+    = Axis3d { originPoint : Point3d coordinates, direction : Direction3d coordinates }
+
+
+type Plane3d coordinates
+    = Plane3d { originPoint : Point3d coordinates, normalDirection : Direction3d coordinates }
+
+
+type Frame2d globalCoordinates localCoordinates
     = Frame2d
-        { originPoint : Point2d
-        , xDirection : Direction2d
-        , yDirection : Direction2d
+        { originPoint : Point2d globalCoordinates
+        , xDirection : Direction2d globalCoordinates
+        , yDirection : Direction2d globalCoordinates
         }
 
 
-type Frame3d
+type Frame3d globalCoordinates localCoordinates
     = Frame3d
-        { originPoint : Point3d
-        , xDirection : Direction3d
-        , yDirection : Direction3d
-        , zDirection : Direction3d
+        { originPoint : Point3d globalCoordinates
+        , xDirection : Direction3d globalCoordinates
+        , yDirection : Direction3d globalCoordinates
+        , zDirection : Direction3d globalCoordinates
         }
 
 
-type SketchPlane3d
+type SketchPlane3d globalCoordinates localCoordinates
     = SketchPlane3d
-        { originPoint : Point3d
-        , xDirection : Direction3d
-        , yDirection : Direction3d
+        { originPoint : Point3d globalCoordinates
+        , xDirection : Direction3d globalCoordinates
+        , yDirection : Direction3d globalCoordinates
         }
 
 
-type LineSegment2d
-    = LineSegment2d ( Point2d, Point2d )
+type LineSegment2d coordinates
+    = LineSegment2d ( Point2d coordinates, Point2d coordinates )
 
 
-type LineSegment3d
-    = LineSegment3d ( Point3d, Point3d )
+type LineSegment3d coordinates
+    = LineSegment3d ( Point3d coordinates, Point3d coordinates )
 
 
-type Triangle2d
-    = Triangle2d ( Point2d, Point2d, Point2d )
+type Triangle2d coordinates
+    = Triangle2d ( Point2d coordinates, Point2d coordinates, Point2d coordinates )
 
 
-type Triangle3d
-    = Triangle3d ( Point3d, Point3d, Point3d )
+type Triangle3d coordinates
+    = Triangle3d ( Point3d coordinates, Point3d coordinates, Point3d coordinates )
 
 
-type BoundingBox2d
-    = BoundingBox2d
-        { minX : Float
-        , maxX : Float
-        , minY : Float
-        , maxY : Float
-        }
+type BoundingBox2d coordinates
+    = BoundingBox2d (Point2d coordinates) (Point2d coordinates)
 
 
-type BoundingBox3d
-    = BoundingBox3d
-        { minX : Float
-        , maxX : Float
-        , minY : Float
-        , maxY : Float
-        , minZ : Float
-        , maxZ : Float
-        }
+type BoundingBox3d coordinates
+    = BoundingBox3d (Point3d coordinates) (Point3d coordinates)
 
 
-type Rectangle2d
+type RectangleCoordinates
+    = RectangleCoordinates
+
+
+type Rectangle2d coordinates
     = Rectangle2d
-        { axes : Frame2d
-        , dimensions : ( Float, Float )
+        { axes : Frame2d coordinates RectangleCoordinates
+        , dimensions : coordinates
         }
 
 
-type Rectangle3d
-    = Rectangle3d
-        { axes : SketchPlane3d
-        , dimensions : ( Float, Float )
-        }
+type BlockCoordinates
+    = BlockCoordinates
 
 
 type Block3d
     = Block3d
-        { axes : Frame3d
-        , dimensions : ( Float, Float, Float )
+        coordinates
+        { axes : Frame3d coordinates BlockCoordinates
+        , dimensions : coordinates
         }
 
 
-type Polyline2d
-    = Polyline2d (List Point2d)
+type Polyline2d coordinates
+    = Polyline2d (List (Point2d coordinates))
 
 
-type Polyline3d
-    = Polyline3d (List Point3d)
+type Polyline3d coordinates
+    = Polyline3d (List (Point3d coordinates))
 
 
-type Polygon2d
+type Polygon2d coordinates
     = Polygon2d
-        { outerLoop : List Point2d
-        , innerLoops : List (List Point2d)
+        { outerLoop : List (Point2d coordinates)
+        , innerLoops : List (List (Point2d coordinates))
         }
 
 
-type Circle2d
-    = Circle2d { centerPoint : Point2d, radius : Float }
+type Circle2d coordinates
+    = Circle2d { centerPoint : Point2d coordinates, radius : Float }
 
 
-type Circle3d
+type Circle3d coordinates
     = Circle3d
-        { centerPoint : Point3d
-        , axialDirection : Direction3d
+        { centerPoint : Point3d coordinates
+        , axialDirection : Direction3d coordinates
         , radius : Float
         }
 
 
-type Ellipse2d
+type EllipseCoordinates
+    = EllipseCoordinates
+
+
+type Ellipse2d coordinates
     = Ellipse2d
-        { axes : Frame2d
+        { axes : Frame2d coordinates EllipseCoordinates
         , xRadius : Float
         , yRadius : Float
         }
 
 
-type Sphere3d
+type Sphere3d coordinates
     = Sphere3d
-        { centerPoint : Point3d
+        { centerPoint : Point3d coordinates
         , radius : Float
         }
 
@@ -219,84 +223,84 @@ type SweptAngle
     | LargeNegative
 
 
-type Arc2d
+type Arc2d coordinates
     = Arc2d
-        { startPoint : Point2d
-        , xDirection : Direction2d
+        { startPoint : Point2d coordinates
+        , xDirection : Direction2d coordinates
         , signedLength : Float
         , sweptAngle : Float
         }
 
 
-type Arc3d
+type Arc3d coordinates
     = Arc3d
-        { startPoint : Point3d
-        , xDirection : Direction3d
-        , yDirection : Direction3d
+        { startPoint : Point3d coordinates
+        , xDirection : Direction3d coordinates
+        , yDirection : Direction3d coordinates
         , signedLength : Float
         , sweptAngle : Float
         }
 
 
-type QuadraticSpline2d
+type QuadraticSpline2d coordinates
     = QuadraticSpline2d
-        { startPoint : Point2d
-        , controlPoint : Point2d
-        , endPoint : Point2d
+        { startPoint : Point2d coordinates
+        , controlPoint : Point2d coordinates
+        , endPoint : Point2d coordinates
         }
 
 
-type QuadraticSpline3d
+type QuadraticSpline3d coordinates
     = QuadraticSpline3d
-        { startPoint : Point3d
-        , controlPoint : Point3d
-        , endPoint : Point3d
+        { startPoint : Point3d coordinates
+        , controlPoint : Point3d coordinates
+        , endPoint : Point3d coordinates
         }
 
 
-type CubicSpline2d
+type CubicSpline2d coordinates
     = CubicSpline2d
-        { startPoint : Point2d
-        , startControlPoint : Point2d
-        , endControlPoint : Point2d
-        , endPoint : Point2d
+        { startPoint : Point2d coordinates
+        , startControlPoint : Point2d coordinates
+        , endControlPoint : Point2d coordinates
+        , endPoint : Point2d coordinates
         }
 
 
-type CubicSpline3d
+type CubicSpline3d coordinates
     = CubicSpline3d
-        { startPoint : Point3d
-        , startControlPoint : Point3d
-        , endControlPoint : Point3d
-        , endPoint : Point3d
+        { startPoint : Point3d coordinates
+        , startControlPoint : Point3d coordinates
+        , endControlPoint : Point3d coordinates
+        , endPoint : Point3d coordinates
         }
 
 
-type EllipticalArc2d
+type EllipticalArc2d coordinates
     = EllipticalArc2d
-        { ellipse : Ellipse2d
+        { ellipse : Ellipse2d coordinates
         , startAngle : Float
         , sweptAngle : Float
         }
 
 
-type alias DelaunayVertex vertex =
+type alias DelaunayVertex vertex coordinates =
     { vertex : vertex
     , index : Int
-    , position : Point2d
+    , position : Point2d coordinates
     }
 
 
-type DelaunayFace vertex
-    = ThreeVertexFace (DelaunayVertex vertex) (DelaunayVertex vertex) (DelaunayVertex vertex) Circle2d
-    | TwoVertexFace (DelaunayVertex vertex) (DelaunayVertex vertex) Int Direction2d
-    | OneVertexFace (DelaunayVertex vertex) Int Int Direction2d
+type DelaunayFace vertex coordinates
+    = ThreeVertexFace (DelaunayVertex vertex coordinates) (DelaunayVertex vertex coordinates) (DelaunayVertex vertex coordinates) Circle2d
+    | TwoVertexFace (DelaunayVertex vertex coordinates) (DelaunayVertex vertex coordinates) Int Direction2d
+    | OneVertexFace (DelaunayVertex vertex coordinates) Int Int Direction2d
 
 
-type DelaunayTriangulation2d vertex
+type DelaunayTriangulation2d vertex coordinates
     = EmptyDelaunayTriangulation2d
     | DelaunayTriangulation2d
         { vertices : Array vertex
-        , delaunayVertices : List (DelaunayVertex vertex)
-        , faces : List (DelaunayFace vertex)
+        , delaunayVertices : List (DelaunayVertex vertex coordinates)
+        , faces : List (DelaunayFace vertex coordinates)
         }
