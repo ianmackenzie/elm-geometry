@@ -170,9 +170,8 @@ type BlockCoordinates
     = BlockCoordinates
 
 
-type Block3d
+type Block3d coordinates
     = Block3d
-        coordinates
         { axes : Frame3d coordinates BlockCoordinates
         , dimensions : coordinates
         }
