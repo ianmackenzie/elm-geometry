@@ -299,9 +299,9 @@ type alias DelaunayVertex vertex coordinates =
 
 
 type DelaunayFace vertex coordinates
-    = ThreeVertexFace (DelaunayVertex vertex coordinates) (DelaunayVertex vertex coordinates) (DelaunayVertex vertex coordinates) Circle2d
-    | TwoVertexFace (DelaunayVertex vertex coordinates) (DelaunayVertex vertex coordinates) Int Direction2d
-    | OneVertexFace (DelaunayVertex vertex coordinates) Int Int Direction2d
+    = ThreeVertexFace (DelaunayVertex vertex coordinates) (DelaunayVertex vertex coordinates) (DelaunayVertex vertex coordinates) (Circle2d coordinates)
+    | TwoVertexFace (DelaunayVertex vertex coordinates) (DelaunayVertex vertex coordinates) Int (Direction2d coordinates)
+    | OneVertexFace (DelaunayVertex vertex coordinates) Int Int (Direction2d coordinates)
 
 
 type DelaunayTriangulation2d vertex coordinates
