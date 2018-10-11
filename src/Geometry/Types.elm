@@ -52,6 +52,7 @@ module Geometry.Types exposing
     )
 
 import Array exposing (Array)
+import Quantity exposing (Quantity)
 
 
 type Coordinates2d system number units
