@@ -3,6 +3,10 @@ sudo: false
 language: node_js
 node_js: node
 
+branches:
+  except:
+  - coordinate-systems
+
 cache:
   directories:
     - .elm
