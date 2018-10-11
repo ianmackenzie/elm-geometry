@@ -1,7 +1,7 @@
 module Coordinates3d exposing (Coordinates3d)
 
-import Quantity exposing (Quantity)
+import Geometry.Types as Types
 
 
-type Coordinates3d system number units
-    = Coordinates3d ( Quantity number units, Quantity number units, Quantity number units )
+type alias Coordinates3d system units =
+    Types.Coordinates3d system units
