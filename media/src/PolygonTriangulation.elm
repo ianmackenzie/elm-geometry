@@ -91,8 +91,8 @@ view model =
 
         drawTriangle =
             Drawing2d.triangleWith
-                [ Attributes.fillColor (Color.rgba 127 127 127 0.25)
-                , Attributes.strokeColor (Color.rgb 127 127 127)
+                [ Attributes.fillColor (Color.rgba 0.5 0.5 0.5 0.25)
+                , Attributes.strokeColor (Color.rgb 0.5 0.5 0.5)
                 ]
 
         polygonElement =
