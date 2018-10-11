@@ -15,31 +15,32 @@ module Bootstrap.Direction2d exposing
     )
 
 import Geometry.Types exposing (..)
+import Quantity exposing (Quantity)
 
 
-unsafe : ( Float, Float ) -> Direction2d
-unsafe =
-    Direction2d
+unsafe : ( Quantity number units, Quantity number units ) -> Direction2d (Coordinates2d system number units)
+unsafe givenComponents =
+    Direction2d (Coordinates2d givenComponents)
 
 
-components : Direction2d -> ( Float, Float )
-components (Direction2d components_) =
+components : Direction2d (Coordinates2d system number units) -> ( Quantity number units, Quantity number units )
+components (Direction2d (Coordinates2d components_)) =
     components_
 
 
-reverse : Direction2d -> Direction2d
+reverse : Direction2d (Coordinates2d system number units) -> Direction2d (Coordinates2d system number units)
 reverse direction =
     let
         ( x, y ) =
             components direction
     in
-    unsafe ( -x, -y )
+    unsafe ( Quantity.negate x, Quantity.negate y )
 
 
-perpendicularTo : Direction2d -> Direction2d
+perpendicularTo : Direction2d (Coordinates2d system number units) -> Direction2d (Coordinates2d system number units)
 perpendicularTo direction =
     let
         ( x, y ) =
             components direction
     in
-    unsafe ( -y, x )
+    unsafe ( Quantity.negate y, x )

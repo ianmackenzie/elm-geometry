@@ -15,11 +15,11 @@ module Bootstrap.Axis2d exposing
 import Geometry.Types exposing (..)
 
 
-originPoint : Axis2d -> Point2d
+originPoint : Axis2d coordinates -> Point2d coordinates
 originPoint (Axis2d properties) =
     properties.originPoint
 
 
-direction : Axis2d -> Direction2d
+direction : Axis2d coordinates -> Direction2d coordinates
 direction (Axis2d properties) =
     properties.direction
