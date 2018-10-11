@@ -21,6 +21,7 @@ module Geometry.Types exposing
     , Coordinates3d(..)
     , CubicSpline2d(..)
     , CubicSpline3d(..)
+    , Defines(..)
     , DelaunayFace(..)
     , DelaunayTriangulation2d(..)
     , DelaunayVertex
@@ -99,28 +100,32 @@ type Plane3d coordinates
     = Plane3d { originPoint : Point3d coordinates, normalDirection : Direction3d coordinates }
 
 
-type Frame2d globalCoordinates localCoordinates
+type Defines coordinates
+    = Defines coordinates
+
+
+type Frame2d coordinates defines
     = Frame2d
-        { originPoint : Point2d globalCoordinates
-        , xDirection : Direction2d globalCoordinates
-        , yDirection : Direction2d globalCoordinates
+        { originPoint : Point2d coordinates
+        , xDirection : Direction2d coordinates
+        , yDirection : Direction2d coordinates
         }
 
 
-type Frame3d globalCoordinates localCoordinates
+type Frame3d coordinates defines
     = Frame3d
-        { originPoint : Point3d globalCoordinates
-        , xDirection : Direction3d globalCoordinates
-        , yDirection : Direction3d globalCoordinates
-        , zDirection : Direction3d globalCoordinates
+        { originPoint : Point3d coordinates
+        , xDirection : Direction3d coordinates
+        , yDirection : Direction3d coordinates
+        , zDirection : Direction3d coordinates
         }
 
 
-type SketchPlane3d globalCoordinates localCoordinates
+type SketchPlane3d coordinates defines
     = SketchPlane3d
-        { originPoint : Point3d globalCoordinates
-        , xDirection : Direction3d globalCoordinates
-        , yDirection : Direction3d globalCoordinates
+        { originPoint : Point3d coordinates
+        , xDirection : Direction3d coordinates
+        , yDirection : Direction3d coordinates
         }
 
 
@@ -154,14 +159,14 @@ type RectangleCoordinates
 
 type Rectangle2d coordinates
     = Rectangle2d
-        { axes : Frame2d coordinates RectangleCoordinates
+        { axes : Frame2d coordinates (Defines RectangleCoordinates)
         , dimensions : coordinates
         }
 
 
 type Rectangle3d coordinates
     = Rectangle3d
-        { axes : Frame3d coordinates RectangleCoordinates
+        { axes : Frame3d coordinates (Defines RectangleCoordinates)
         , dimensions : ( Float, Float, Float )
         }
 
@@ -172,7 +177,7 @@ type BlockCoordinates
 
 type Block3d coordinates
     = Block3d
-        { axes : Frame3d coordinates BlockCoordinates
+        { axes : Frame3d coordinates (Defines BlockCoordinates)
         , dimensions : coordinates
         }
 
@@ -210,7 +215,7 @@ type EllipseCoordinates
 
 type Ellipse2d coordinates
     = Ellipse2d
-        { axes : Frame2d coordinates EllipseCoordinates
+        { axes : Frame2d coordinates (Defines EllipseCoordinates)
         , xRadius : Float
         , yRadius : Float
         }
