@@ -55,12 +55,12 @@ import Array exposing (Array)
 import Quantity exposing (Quantity)
 
 
-type Coordinates2d system number units
-    = Coordinates2d ( Quantity number units, Quantity number units )
+type Coordinates2d system units
+    = Coordinates2d ( Quantity Float units, Quantity Float units )
 
 
-type Coordinates3d system number units
-    = Coordinates3d ( Quantity number units, Quantity number units, Quantity number units )
+type Coordinates3d system units
+    = Coordinates3d ( Quantity Float units, Quantity Float units, Quantity Float units )
 
 
 type Vector2d coordinates
