@@ -72,11 +72,11 @@ type Vector3d coordinates
 
 
 type Direction2d coordinates
-    = Direction2d coordinates
+    = Direction2d ( Float, Float )
 
 
 type Direction3d coordinates
-    = Direction3d coordinates
+    = Direction3d ( Float, Float, Float )
 
 
 type Point2d coordinates
