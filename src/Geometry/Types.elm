@@ -159,6 +159,13 @@ type Rectangle2d coordinates
         }
 
 
+type Rectangle3d coordinates
+    = Rectangle3d
+        { axes : Frame3d coordinates RectangleCoordinates
+        , dimensions : ( Float, Float, Float )
+        }
+
+
 type BlockCoordinates
     = BlockCoordinates
 
