@@ -18,17 +18,17 @@ import Geometry.Types exposing (..)
 import Quantity exposing (Quantity)
 
 
-unsafe : ( Float, Float ) -> Direction2d (Coordinates2d system units)
+unsafe : ( Float, Float ) -> Direction2d coordinates
 unsafe givenComponents =
     Direction2d givenComponents
 
 
-components : Direction2d (Coordinates2d system units) -> ( Float, Float )
+components : Direction2d coordinates -> ( Float, Float )
 components (Direction2d directionComponents) =
     directionComponents
 
 
-reverse : Direction2d (Coordinates2d system units) -> Direction2d (Coordinates2d system units)
+reverse : Direction2d coordinates -> Direction2d coordinates
 reverse direction =
     let
         ( x, y ) =
@@ -37,7 +37,7 @@ reverse direction =
     unsafe ( -x, -y )
 
 
-perpendicularTo : Direction2d (Coordinates2d system units) -> Direction2d (Coordinates2d system units)
+perpendicularTo : Direction2d coordinates -> Direction2d coordinates
 perpendicularTo direction =
     let
         ( x, y ) =
