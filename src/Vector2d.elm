@@ -140,10 +140,10 @@ counterclockwise from the positive X direction.
 
 -}
 fromPolarComponents : ( Quantity Float units, Angle ) -> Vector2d coordinates units
-fromPolarComponents ( r, theta ) =
+fromPolarComponents ( givenRadius, givenAngle ) =
     fromComponents
-        ( r |> Quantity.scaleBy (Angle.cos theta)
-        , r |> Quantity.scaleBy (Angle.sin theta)
+        ( givenRadius |> Quantity.scaleBy (Angle.cos givenAngle)
+        , givenRadius |> Quantity.scaleBy (Angle.sin givenAngle)
         )
 
 
@@ -213,8 +213,8 @@ length as the given vector. Alias for `Vector2d.rotateCounterclockwise`.
 
 -}
 perpendicularTo : Vector2d coordinates units -> Vector2d coordinates units
-perpendicularTo vector =
-    rotateCounterclockwise vector
+perpendicularTo givenVector =
+    rotateCounterclockwise givenVector
 
 
 {-| Construct a vector by interpolating from the first given vector to the
@@ -251,17 +251,17 @@ You can pass values less than zero or greater than one to extrapolate:
 
 -}
 interpolateFrom : Vector2d coordinates units -> Vector2d coordinates units -> Float -> Vector2d coordinates units
-interpolateFrom v1 v2 t =
+interpolateFrom firstVector secondVector givenParameter =
     let
         ( x1, y1 ) =
-            components v1
+            components firstVector
 
         ( x2, y2 ) =
-            components v2
+            components secondVector
     in
     fromComponents
-        ( Quantity.interpolateFrom x1 x2 t
-        , Quantity.interpolateFrom y1 y2 t
+        ( Quantity.interpolateFrom x1 x2 givenParameter
+        , Quantity.interpolateFrom y1 y2 givenParameter
         )
 
 
@@ -339,12 +339,12 @@ componentIn givenDirection givenVector =
 
 -}
 polarComponents : Vector2d coordinates units -> ( Quantity Float units, Angle )
-polarComponents vector =
+polarComponents givenVector =
     let
         ( x, y ) =
-            components vector
+            components givenVector
     in
-    ( length vector, Angle.atan2 y x )
+    ( length givenVector, Angle.atan2 y x )
 
 
 {-| Compare two vectors within a tolerance. Returns true if the difference
@@ -364,8 +364,8 @@ between the two given vectors has magnitude less than the given tolerance.
 
 -}
 equalWithin : Quantity Float units -> Vector2d coordinates units -> Vector2d coordinates units -> Bool
-equalWithin tolerance firstVector secondVector =
-    if tolerance |> Quantity.lessThan Quantity.zero then
+equalWithin givenTolerance firstVector secondVector =
+    if givenTolerance |> Quantity.lessThan Quantity.zero then
         False
 
     else
@@ -374,7 +374,7 @@ equalWithin tolerance firstVector secondVector =
                 secondVector |> minus firstVector
 
             squaredTolerance =
-                Quantity.squared tolerance
+                Quantity.squared givenTolerance
         in
         not (squaredLength difference |> Quantity.greaterThan squaredTolerance)
 
@@ -386,8 +386,8 @@ equalWithin tolerance firstVector secondVector =
 
 -}
 length : Vector2d coordinates units -> Quantity Float units
-length vector =
-    Quantity.sqrt (squaredLength vector)
+length givenVector =
+    Quantity.sqrt (squaredLength givenVector)
 
 
 {-| Get the squared length of a vector. `squaredLength` is slightly faster than
@@ -405,10 +405,10 @@ readable!
 
 -}
 squaredLength : Vector2d coordinates units -> Quantity Float (Squared units)
-squaredLength vector =
+squaredLength givenVector =
     let
         ( x, y ) =
-            components vector
+            components givenVector
     in
     Quantity.squared x |> Quantity.plus (Quantity.squared y)
 
@@ -667,10 +667,10 @@ the naming used in other modules.)
 
 -}
 reverse : Vector2d coordinates units -> Vector2d coordinates units
-reverse vector =
+reverse givenVector =
     let
         ( x, y ) =
-            components vector
+            components givenVector
     in
     fromComponents ( Quantity.negate x, Quantity.negate y )
 
@@ -686,14 +686,14 @@ name used in other modules.)
 
 -}
 scaleBy : Float -> Vector2d coordinates units -> Vector2d coordinates units
-scaleBy scale vector =
+scaleBy givenScale givenVector =
     let
         ( x, y ) =
-            components vector
+            components givenVector
     in
     fromComponents
-        ( Quantity.scaleBy scale x
-        , Quantity.scaleBy scale y
+        ( Quantity.scaleBy givenScale x
+        , Quantity.scaleBy givenScale y
         )
 
 
@@ -738,10 +738,10 @@ but is more efficient.
 
 -}
 rotateCounterclockwise : Vector2d coordinates units -> Vector2d coordinates units
-rotateCounterclockwise vector =
+rotateCounterclockwise givenVector =
     let
         ( x, y ) =
-            components vector
+            components givenVector
     in
     fromComponents ( Quantity.negate y, x )
 
@@ -758,10 +758,10 @@ but is more efficient.
 
 -}
 rotateClockwise : Vector2d coordinates units -> Vector2d coordinates units
-rotateClockwise vector =
+rotateClockwise givenVector =
     let
         ( x, y ) =
-            components vector
+            components givenVector
     in
     fromComponents ( y, Quantity.negate x )
 
