@@ -100,7 +100,7 @@ import Bootstrap.Axis2d as Axis2d
 import Bootstrap.Direction2d as Direction2d
 import Bootstrap.Frame2d as Frame2d
 import Bootstrap.Point2d as Point2d
-import Geometry.Types as Types exposing (Axis2d, Defines, Direction2d, Frame2d, Point2d)
+import Geometry.Types as Types exposing (Axis2d, Direction2d, Frame2d, Point2d)
 import Quantity exposing (Quantity, Squared, Unitless)
 import Quantity.Extra as Quantity
 
@@ -857,7 +857,7 @@ local coordinates relative to a given reference frame.
     --> Vector2d.fromComponents ( 1.732, -1 )
 
 -}
-relativeTo : Frame2d coordinates units (Defines localCoordinates) -> Vector2d coordinates units -> Vector2d localCoordinates units
+relativeTo : Frame2d coordinates units { defines : localCoordinates } -> Vector2d coordinates units -> Vector2d localCoordinates units
 relativeTo givenFrame givenVector =
     fromComponents
         ( componentIn (Frame2d.xDirection givenFrame) givenVector
@@ -873,7 +873,7 @@ frame, and return that vector expressed in global coordinates.
     --> Vector2d.fromComponents ( 1.732, 1 )
 
 -}
-placeIn : Frame2d coordinates units (Defines localCoordinates) -> Vector2d localCoordinates units -> Vector2d coordinates units
+placeIn : Frame2d coordinates units { defines : localCoordinates } -> Vector2d localCoordinates units -> Vector2d coordinates units
 placeIn givenFrame givenVector =
     let
         ( x1, y1 ) =

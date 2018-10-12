@@ -19,7 +19,6 @@ module Geometry.Types exposing
     , Circle3d(..)
     , CubicSpline2d(..)
     , CubicSpline3d(..)
-    , Defines(..)
     , DelaunayFace(..)
     , DelaunayTriangulation2d(..)
     , DelaunayVertex
@@ -90,10 +89,6 @@ type Plane3d coordinates units
     = Plane3d { originPoint : Point3d coordinates units, normalDirection : Direction3d coordinates }
 
 
-type Defines coordinates
-    = Defines coordinates
-
-
 type Frame2d coordinates units defines
     = Frame2d
         { originPoint : Point2d coordinates units
@@ -161,14 +156,14 @@ type RectangleCoordinates
 
 type Rectangle2d coordinates units
     = Rectangle2d
-        { axes : Frame2d coordinates units (Defines RectangleCoordinates)
+        { axes : Frame2d coordinates units { defines : RectangleCoordinates }
         , dimensions : ( Quantity Float units, Quantity Float units )
         }
 
 
 type Rectangle3d coordinates units
     = Rectangle3d
-        { axes : SketchPlane3d coordinates units (Defines RectangleCoordinates)
+        { axes : SketchPlane3d coordinates units { defines : RectangleCoordinates }
         , dimensions : ( Quantity Float units, Quantity Float units )
         }
 
@@ -179,7 +174,7 @@ type BlockCoordinates
 
 type Block3d coordinates units
     = Block3d
-        { axes : Frame3d coordinates units (Defines BlockCoordinates)
+        { axes : Frame3d coordinates units { defines : BlockCoordinates }
         , dimensions : ( Quantity Float units, Quantity Float units, Quantity Float units )
         }
 
@@ -220,7 +215,7 @@ type EllipseCoordinates
 
 type Ellipse2d coordinates units
     = Ellipse2d
-        { axes : Frame2d coordinates units (Defines EllipseCoordinates)
+        { axes : Frame2d coordinates units { defines : EllipseCoordinates }
         , xRadius : Quantity Float units
         , yRadius : Quantity Float units
         }
