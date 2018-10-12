@@ -187,8 +187,8 @@ withLength givenLength givenDirection =
             Direction2d.components givenDirection
     in
     fromComponents
-        ( givenLength |> Quantity.scaleBy dx
-        , givenLength |> Quantity.scaleBy dy
+        ( Quantity.scaleBy dx givenLength
+        , Quantity.scaleBy dy givenLength
         )
 
 
@@ -328,7 +328,7 @@ componentIn givenDirection givenVector =
         ( vx, vy ) =
             components givenVector
     in
-    (vx |> Quantity.scaleBy dx) |> Quantity.plus (vy |> Quantity.scaleBy dy)
+    Quantity.aXbY dx vx dy vy
 
 
 {-| Get the polar components (length, polar angle) of a vector.
@@ -508,17 +508,18 @@ like
 
 -}
 normalize : Vector2d coordinates units -> Vector2d coordinates Unitless
-normalize vector =
-    if vector == zero then
+normalize givenVector =
+    let
+        vectorLength =
+            length givenVector
+    in
+    if vectorLength == Quantity.zero then
         zero
 
     else
         let
             ( vx, vy ) =
-                components vector
-
-            vectorLength =
-                length vector
+                components givenVector
         in
         fromComponents
             ( Quantity.float (Quantity.ratio vx vectorLength)
@@ -691,8 +692,8 @@ scaleBy scale vector =
             components vector
     in
     fromComponents
-        ( x |> Quantity.scaleBy scale
-        , y |> Quantity.scaleBy scale
+        ( Quantity.scaleBy scale x
+        , Quantity.scaleBy scale y
         )
 
 
@@ -720,10 +721,8 @@ rotateBy givenAngle givenVector =
             components givenVector
     in
     fromComponents
-        ( (x |> Quantity.scaleBy cosine)
-            |> Quantity.minus (y |> Quantity.scaleBy sine)
-        , (y |> Quantity.scaleBy cosine)
-            |> Quantity.plus (x |> Quantity.scaleBy sine)
+        ( Quantity.aXbY cosine x -sine y
+        , Quantity.aXbY sine x cosine y
         )
 
 
@@ -804,10 +803,8 @@ mirrorAcross givenAxis givenVector =
             components givenVector
     in
     fromComponents
-        ( (vx |> Quantity.scaleBy yy)
-            |> Quantity.plus (vy |> Quantity.scaleBy xy)
-        , (vy |> Quantity.scaleBy xx)
-            |> Quantity.plus (vx |> Quantity.scaleBy xy)
+        ( Quantity.aXbY yy vx xy vy
+        , Quantity.aXbY xy vx xx vy
         )
 
 
@@ -886,8 +883,6 @@ placeIn givenFrame givenVector =
             components givenVector
     in
     fromComponents
-        ( (x |> Quantity.scaleBy x1)
-            |> Quantity.plus (y |> Quantity.scaleBy x2)
-        , (x |> Quantity.scaleBy y1)
-            |> Quantity.plus (y |> Quantity.scaleBy y2)
+        ( Quantity.aXbY x1 x x2 y
+        , Quantity.aXbY y1 x y2 y
         )
