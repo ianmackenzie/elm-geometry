@@ -12,7 +12,7 @@ module BoundingBox2d exposing
     , fromExtrema, singleton, from, hull, intersection, aggregate, containingPoints
     , extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint, centroid
     , contains, isContainedIn, intersects, overlappingBy, separatedBy
-    , scaleAbout, translateBy, translateIn
+    , scaleAbout, translateBy, translateIn, expandBy
     )
 
 {-| A `BoundingBox2d` is a rectangular box in 2D defined by its minimum and
@@ -52,7 +52,7 @@ box of an object than the object itself, such as:
 
 # Transformations
 
-@docs scaleAbout, translateBy, translateIn
+@docs scaleAbout, translateBy, translateIn, expandBy
 
 -}
 
@@ -922,3 +922,34 @@ is equivalent to
 translateIn : Direction2d -> Float -> BoundingBox2d -> BoundingBox2d
 translateIn direction distance boundingBox =
     translateBy (Vector2d.withLength distance direction) boundingBox
+
+
+{-| Expand the bounding box in all the directions by given distance;
+
+
+    expandBy_ : Float
+    expandBy_ =
+        3
+
+
+    --> BoundingBox2d.expandBy expandBy_ exampleBox
+    -->     { minX = 0
+    -->     , maxX = 11
+    -->     , minY = -1
+    -->     , maxY = 9
+    -->     }
+
+-}
+expandBy : Float -> BoundingBox2d -> Maybe BoundingBox2d
+expandBy by boundingBox_ =
+    let
+        centroidPt_ =
+            centroid boundingBox_
+    in
+    Just <|
+        fromExtrema
+            { minX = minX boundingBox_ - by
+            , minY = minY boundingBox_ - by
+            , maxX = maxX boundingBox_ + by
+            , maxY = maxY boundingBox_ + by
+            }
