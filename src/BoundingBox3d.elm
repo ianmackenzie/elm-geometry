@@ -1045,3 +1045,36 @@ is equivalent to
 translateIn : Direction3d -> Float -> BoundingBox3d -> BoundingBox3d
 translateIn direction distance boundingBox =
     translateBy (Vector3d.withLength distance direction) boundingBox
+
+
+{-| Expand the bounding box in all the directions by given distance;
+
+
+    expandBy_ : Float
+    expandBy_ =
+        3
+
+
+    --> BoundingBox3d.expandBy expandBy_ exampleBox
+    -->     { minX = 0
+    -->     , maxX = 11
+    -->     , minY = -1
+    -->     , maxY = 9
+    -->     }
+
+-}
+expandBy : Float -> BoundingBox3d -> Maybe BoundingBox3d
+expandBy by boundingBox_ =
+    let
+        centroidPt_ =
+            centroid boundingBox_
+    in
+    Just <|
+        fromExtrema
+            { minX = minX boundingBox_ - by
+            , minY = minY boundingBox_ - by
+            , minZ = minZ boundingBox_ - by
+            , maxX = maxX boundingBox_ + by
+            , maxY = maxY boundingBox_ + by
+            , maxZ = maxZ boundingBox_ + by
+            }
