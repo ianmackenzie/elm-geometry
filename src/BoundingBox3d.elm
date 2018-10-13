@@ -12,7 +12,7 @@ module BoundingBox3d exposing
     , fromExtrema, singleton, from, hull, intersection, aggregate, containingPoints
     , extrema, minX, maxX, minY, maxY, minZ, maxZ, dimensions, midX, midY, midZ, centerPoint, centroid
     , contains, isContainedIn, intersects, overlappingBy, separatedBy
-    , scaleAbout, translateBy, translateIn
+    , scaleAbout, translateBy, translateIn, expandBy
     )
 
 {-| A `BoundingBox3d` is a rectangular box in 3D defined by its minimum and
@@ -51,7 +51,7 @@ box of an object than the object itself, such as:
 
 # Transformations
 
-@docs scaleAbout, translateBy, translateIn
+@docs scaleAbout, translateBy, translateIn, expandBy
 
 -}
 
@@ -1049,32 +1049,53 @@ translateIn direction distance boundingBox =
 
 {-| Expand the bounding box in all the directions by given distance;
 
-
     expandBy_ : Float
     expandBy_ =
         3
 
 
-    --> BoundingBox3d.expandBy expandBy_ exampleBox
+    BoundingBox3d.expandBy expandBy_ exampleBox
+    --> BoundingBox3d.fromExtrema
     -->     { minX = 0
     -->     , maxX = 11
     -->     , minY = -1
     -->     , maxY = 9
     -->     }
+            { minX = -2, maxX = 2, minY = 2, maxY = 5, minZ = 3, maxZ = 4
+            }
+
+    Function returns Nothing In case of expandBy is more than or equal to half of diagonal length,
+    where it is assumed that it was shrunk up to the size of a point,
+    and the centroid of the BoundingBox can be used instead.
 
 -}
 expandBy : Float -> BoundingBox3d -> Maybe BoundingBox3d
 expandBy by boundingBox_ =
     let
-        centroidPt_ =
+        centroidPt =
             centroid boundingBox_
+
+        halfDiagonalLen =
+            Vector3d.length <|
+                Vector3d.from
+                    (Point3d.fromCoordinates ( minX boundingBox_, minY boundingBox_, minZ boundingBox_ ))
+                    centroidPt
+
+        resultingBox =
+            fromExtrema
+                { minX = minX boundingBox_ - by
+                , minY = minY boundingBox_ - by
+                , minZ = minZ boundingBox_ - by
+                , maxX = maxX boundingBox_ + by
+                , maxY = maxY boundingBox_ + by
+                , maxZ = maxZ boundingBox_ + by
+                }
     in
-    Just <|
-        fromExtrema
-            { minX = minX boundingBox_ - by
-            , minY = minY boundingBox_ - by
-            , minZ = minZ boundingBox_ - by
-            , maxX = maxX boundingBox_ + by
-            , maxY = maxY boundingBox_ + by
-            , maxZ = maxZ boundingBox_ + by
-            }
+    if by > 0 then
+        Just <| resultingBox
+
+    else if by < 0 && (-1 * by) < halfDiagonalLen then
+        Just <| resultingBox
+
+    else
+        Nothing
