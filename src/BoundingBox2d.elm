@@ -12,7 +12,7 @@ module BoundingBox2d exposing
     , fromExtrema, singleton, from, hull, intersection, aggregate, containingPoints
     , extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint, centroid
     , contains, isContainedIn, intersects, overlappingBy, separatedBy
-    , scaleAbout, translateBy, translateIn
+    , scaleAbout, translateBy, translateIn, expandBy
     )
 
 {-| A `BoundingBox2d` is a rectangular box in 2D defined by its minimum and
@@ -52,7 +52,7 @@ box of an object than the object itself, such as:
 
 # Transformations
 
-@docs scaleAbout, translateBy, translateIn
+@docs scaleAbout, translateBy, translateIn, expandBy
 
 -}
 
@@ -922,3 +922,52 @@ is equivalent to
 translateIn : Direction2d -> Float -> BoundingBox2d -> BoundingBox2d
 translateIn direction distance boundingBox =
     translateBy (Vector2d.withLength distance direction) boundingBox
+
+
+{-| Expand the bounding box in all the directions by given distance;
+
+    expandBy_ : Float
+    expandBy_ =
+        3
+
+
+    --> BoundingBox2d.expandBy expandBy_ exampleBox
+    -->     { minX = 0
+    -->     , maxX = 11
+    -->     , minY = -1
+    -->     , maxY = 9
+    -->     }
+
+    Function returns Nothing In case of expandBy is more than or equal to half of diagonal length,
+    where it is assumed that it was shrunk up to the size of a point,
+    and the centroid of the BoundingBox can be used instead.
+
+-}
+expandBy : Float -> BoundingBox2d -> Maybe BoundingBox2d
+expandBy by boundingBox_ =
+    let
+        centroidPt =
+            centroid boundingBox_
+
+        halfDiagonalLen =
+            Vector2d.length <|
+                Vector2d.from
+                    (Point2d.fromCoordinates ( minX boundingBox_, minY boundingBox_ ))
+                    centroidPt
+
+        resultingBox =
+            fromExtrema
+                { minX = minX boundingBox_ - by
+                , minY = minY boundingBox_ - by
+                , maxX = maxX boundingBox_ + by
+                , maxY = maxY boundingBox_ + by
+                }
+    in
+    if by > 0 then
+        Just <| resultingBox
+
+    else if by < 0 && (-1 * by) < halfDiagonalLen then
+        Just <| resultingBox
+
+    else
+        Nothing

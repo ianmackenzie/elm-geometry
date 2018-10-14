@@ -10,7 +10,7 @@
 module CubicSpline2d exposing
     ( CubicSpline2d
     , with, fromEndpoints, fromQuadraticSpline
-    , startPoint, endPoint, startControlPoint, endControlPoint, startDerivative, endDerivative, boundingBox
+    , startPoint, endPoint, startControlPoint, endControlPoint, midpoint, startDerivative, endDerivative, boundingBox
     , pointOn, pointsAt
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, tangentDirectionsAt, sample, samplesAt
@@ -42,7 +42,7 @@ contains functionality for
 
 # Properties
 
-@docs startPoint, endPoint, startControlPoint, endControlPoint, startDerivative, endDerivative, boundingBox
+@docs startPoint, endPoint, startControlPoint, endControlPoint, midpoint, startDerivative, endDerivative, boundingBox
 
 
 # Evaluation
@@ -98,6 +98,7 @@ import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
+import LineSegment2d exposing (fromEndpoints, midpoint)
 import Point2d exposing (Point2d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
 import Vector2d exposing (Vector2d)
@@ -969,6 +970,51 @@ arcLength : ArcLengthParameterized -> Float
 arcLength parameterizedSpline =
     arcLengthParameterization parameterizedSpline
         |> ArcLengthParameterization.totalArcLength
+
+
+{-| Get the midpoint of the spline.
+
+    CubicSpline2d.midpoint exampleSpline
+    --> Point2d.fromCoordinates ( 4, 2.5 )
+
+-}
+midpoint : ArcLengthParameterized -> Point2d
+midpoint parameterized =
+    let
+        curve : CubicSpline2d
+        curve =
+            fromArcLengthParameterized parameterized
+
+        -- Midpoint between start point and the start control point
+        spScpMid =
+            LineSegment2d.midpoint <|
+                LineSegment2d.fromEndpoints ( startPoint curve, startControlPoint curve )
+
+        -- Midpoint between start control point and the end control point
+        scpEcpMid =
+            LineSegment2d.midpoint <|
+                LineSegment2d.fromEndpoints ( startControlPoint curve, endControlPoint curve )
+
+        -- Midpoint between end control point and the end point
+        ecpEpMid =
+            LineSegment2d.midpoint <|
+                LineSegment2d.fromEndpoints ( endControlPoint curve, endPoint curve )
+
+        -- Midpoint between (mid of start point and start control point) and
+        --                  (mid of start control point and the end control point)
+        spEcpMid =
+            LineSegment2d.midpoint <|
+                LineSegment2d.fromEndpoints ( spScpMid, scpEcpMid )
+
+        -- Midpoint between (mid of start control point and the end control point) and
+        --                  (mid of end control point and the end point)
+        scpEpMid =
+            LineSegment2d.midpoint <|
+                LineSegment2d.fromEndpoints ( scpEcpMid, ecpEpMid )
+    in
+    -- Midpoint of the curve is the midpoint between spEcpMid and scpEpMid
+    LineSegment2d.midpoint <|
+        LineSegment2d.fromEndpoints ( spEcpMid, scpEpMid )
 
 
 {-| Try to get the point along a spline at a given arc length. For example, to
