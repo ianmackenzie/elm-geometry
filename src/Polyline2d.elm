@@ -13,6 +13,7 @@ module Polyline2d exposing
     , vertices, segments, length, boundingBox
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapVertices
     , relativeTo, placeIn
+    , centroid
     )
 
 {-| A `Polyline2d` represents a sequence of vertices in 2D connected by line
@@ -312,3 +313,54 @@ if the polyline has no vertices.
 boundingBox : Polyline2d -> Maybe BoundingBox2d
 boundingBox polyline =
     BoundingBox2d.containingPoints (vertices polyline)
+
+
+{-| Find the centroid of a list of points. Returns `Nothing` if the polyline
+has no vertices.
+
+    Polyline2d.centroid stepShape
+    --> Just (Point2d.fromCoordinates ( 1.0, 0.5 ))
+
+-}
+centroid : Polyline2d -> Maybe Point2d
+centroid polyline =
+    case ( vertices polyline, boundingBox polyline ) of
+        ( [], _ ) ->
+            Nothing
+
+        ( _, Nothing ) ->
+            Nothing
+
+        ( first :: _, Just box ) ->
+            let
+                polylineLength =
+                    length polyline
+            in
+            if polylineLength == 0 then
+                Just first
+
+            else
+                let
+                    roughCentroid =
+                        BoundingBox2d.centerPoint box
+
+                    helper =
+                        refineBySegment polylineLength roughCentroid
+                in
+                segments polyline
+                    |> List.foldl helper roughCentroid
+                    |> Just
+
+
+refineBySegment : Float -> Point2d -> LineSegment2d -> Point2d -> Point2d
+refineBySegment polylineLength roughCentroid segment currentCentroid =
+    let
+        segmentMidpoint =
+            LineSegment2d.midpoint segment
+
+        segmentLength =
+            LineSegment2d.length segment
+    in
+    Vector2d.from roughCentroid segmentMidpoint
+        |> Vector2d.scaleBy (segmentLength / polylineLength)
+        |> (\v -> Point2d.translateBy v currentCentroid)

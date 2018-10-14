@@ -18,6 +18,7 @@ module Geometry.Expect exposing
     , axis3d
     , boundingBox2d
     , boundingBox2dWithin
+    , boundingBox2dContains
     , boundingBox3d
     , boundingBox3dWithin
     , circle2d
@@ -577,6 +578,25 @@ boundingBox2d =
 boundingBox2dWithin : Float -> BoundingBox2d -> BoundingBox2d -> Expectation
 boundingBox2dWithin tolerance =
     boundingBox2dBy (Expect.within (Expect.Absolute tolerance))
+
+boundingBox2dContains : BoundingBox2d -> Point2d -> Expectation
+boundingBox2dContains box point =
+    let
+        extrema = BoundingBox2d.extrema box
+
+        tolerantBox = BoundingBox2d.fromExtrema 
+            { minX = extrema.minX - defaultTolerance
+            , minY = extrema.minY - defaultTolerance
+            , maxX = extrema.maxX + defaultTolerance
+            , maxY = extrema.maxY + defaultTolerance}
+    in
+        BoundingBox2d.contains point tolerantBox 
+            |> Expect.true 
+                ("Expected point " 
+                ++ Debug.toString point 
+                ++ " to be within bounding box " 
+                ++ Debug.toString box ++ ".")
+    
 
 
 boundingBox3dBy : (Float -> Float -> Expectation) -> BoundingBox3d -> BoundingBox3d -> Expectation
