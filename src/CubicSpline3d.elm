@@ -17,7 +17,7 @@ module CubicSpline3d exposing
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
     , relativeTo, placeIn, projectInto
     , bisect, splitAt
-    , ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentDirectionAlong, sampleAlong
+    , ArcLengthParameterized, arcLengthParameterized, arcLength, midpoint, pointAlong, tangentDirectionAlong, sampleAlong
     , arcLengthParameterization, fromArcLengthParameterized
     , firstDerivative, firstDerivativesAt, secondDerivative, secondDerivativesAt, thirdDerivative, maxSecondDerivativeMagnitude
     )
@@ -69,7 +69,7 @@ contains functionality for
 
 # Arc length parameterization
 
-@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentDirectionAlong, sampleAlong
+@docs ArcLengthParameterized, arcLengthParameterized, arcLength, midpoint, pointAlong, tangentDirectionAlong, sampleAlong
 
 
 ## Low level
@@ -99,6 +99,7 @@ import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Direction3d exposing (Direction3d)
 import Frame3d exposing (Frame3d)
 import Geometry.Types as Types
+import LineSegment3d exposing (fromEndpoints, midpoint)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import QuadraticSpline3d exposing (QuadraticSpline3d)
@@ -1068,6 +1069,51 @@ arcLength : ArcLengthParameterized -> Float
 arcLength parameterizedSpline =
     arcLengthParameterization parameterizedSpline
         |> ArcLengthParameterization.totalArcLength
+
+
+{-| Get the midpoint of the spline.
+
+    CubicSpline3d.midpoint exampleSpline
+    --> Point3d.fromCoordinates (2.75, 2, 1.25)
+
+-}
+midpoint : ArcLengthParameterized -> Point3d
+midpoint parameterized =
+    let
+        curve : CubicSpline3d
+        curve =
+            fromArcLengthParameterized parameterized
+
+        -- Midpoint between start point and the start control point
+        spScpMid =
+            LineSegment3d.midpoint <|
+                LineSegment3d.fromEndpoints ( startPoint curve, startControlPoint curve )
+
+        -- Midpoint between start control point and the end control point
+        scpEcpMid =
+            LineSegment3d.midpoint <|
+                LineSegment3d.fromEndpoints ( startControlPoint curve, endControlPoint curve )
+
+        -- Midpoint between end control point and the end point
+        ecpEpMid =
+            LineSegment3d.midpoint <|
+                LineSegment3d.fromEndpoints ( endControlPoint curve, endPoint curve )
+
+        -- Midpoint between (mid of start point and start control point) and
+        --                  (mid of start control point and the end control point)
+        spEcpMid =
+            LineSegment3d.midpoint <|
+                LineSegment3d.fromEndpoints ( spScpMid, scpEcpMid )
+
+        -- Midpoint between (mid of start control point and the end control point) and
+        --                  (mid of end control point and the end point)
+        scpEpMid =
+            LineSegment3d.midpoint <|
+                LineSegment3d.fromEndpoints ( scpEcpMid, ecpEpMid )
+    in
+    -- Midpoint of the curve is the midpoint between spEcpMid and scpEpMid
+    LineSegment3d.midpoint <|
+        LineSegment3d.fromEndpoints ( spEcpMid, scpEpMid )
 
 
 {-| Try to get the point along a spline at a given arc length. For example, to
