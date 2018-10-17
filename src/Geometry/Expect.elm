@@ -17,9 +17,10 @@ module Geometry.Expect exposing
     , axis2d
     , axis3d
     , boundingBox2d
-    , boundingBox2dWithin
     , boundingBox2dContains
+    , boundingBox2dWithin
     , boundingBox3d
+    , boundingBox3dContains
     , boundingBox3dWithin
     , circle2d
     , circle3d
@@ -579,24 +580,29 @@ boundingBox2dWithin : Float -> BoundingBox2d -> BoundingBox2d -> Expectation
 boundingBox2dWithin tolerance =
     boundingBox2dBy (Expect.within (Expect.Absolute tolerance))
 
+
 boundingBox2dContains : BoundingBox2d -> Point2d -> Expectation
 boundingBox2dContains box point =
     let
-        extrema = BoundingBox2d.extrema box
+        extrema =
+            BoundingBox2d.extrema box
 
-        tolerantBox = BoundingBox2d.fromExtrema 
-            { minX = extrema.minX - defaultTolerance
-            , minY = extrema.minY - defaultTolerance
-            , maxX = extrema.maxX + defaultTolerance
-            , maxY = extrema.maxY + defaultTolerance}
+        tolerantBox =
+            BoundingBox2d.fromExtrema
+                { minX = extrema.minX - defaultTolerance
+                , minY = extrema.minY - defaultTolerance
+                , maxX = extrema.maxX + defaultTolerance
+                , maxY = extrema.maxY + defaultTolerance
+                }
     in
-        BoundingBox2d.contains point tolerantBox 
-            |> Expect.true 
-                ("Expected point " 
-                ++ Debug.toString point 
-                ++ " to be within bounding box " 
-                ++ Debug.toString box ++ ".")
-    
+    BoundingBox2d.contains point tolerantBox
+        |> Expect.true
+            ("Expected point "
+                ++ Debug.toString point
+                ++ " to be within bounding box "
+                ++ Debug.toString box
+                ++ "."
+            )
 
 
 boundingBox3dBy : (Float -> Float -> Expectation) -> BoundingBox3d -> BoundingBox3d -> Expectation
@@ -619,6 +625,32 @@ boundingBox3d =
 boundingBox3dWithin : Float -> BoundingBox3d -> BoundingBox3d -> Expectation
 boundingBox3dWithin tolerance =
     boundingBox3dBy (Expect.within (Expect.Absolute tolerance))
+
+
+boundingBox3dContains : BoundingBox3d -> Point3d -> Expectation
+boundingBox3dContains box point =
+    let
+        extrema =
+            BoundingBox3d.extrema box
+
+        tolerantBox =
+            BoundingBox3d.fromExtrema
+                { minX = extrema.minX - defaultTolerance
+                , minY = extrema.minY - defaultTolerance
+                , minZ = extrema.minZ - defaultTolerance
+                , maxX = extrema.maxX + defaultTolerance
+                , maxY = extrema.maxY + defaultTolerance
+                , maxZ = extrema.maxZ + defaultTolerance
+                }
+    in
+    BoundingBox3d.contains point tolerantBox
+        |> Expect.true
+            ("Expected point "
+                ++ Debug.toString point
+                ++ " to be within bounding box "
+                ++ Debug.toString box
+                ++ "."
+            )
 
 
 polyline2dBy : (Point2d -> Point2d -> Expectation) -> Polyline2d -> Polyline2d -> Expectation

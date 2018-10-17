@@ -315,7 +315,7 @@ boundingBox polyline =
     BoundingBox2d.containingPoints (vertices polyline)
 
 
-{-| Find the centroid of a list of points. Returns `Nothing` if the polyline
+{-| Find the centroid of the polyline. Returns `Nothing` if the polyline
 has no vertices.
 
     Polyline2d.centroid stepShape
