@@ -926,12 +926,7 @@ translateIn direction distance boundingBox =
 
 {-| Expand the bounding box in all the directions by given distance;
 
-    expandBy_ : Float
-    expandBy_ =
-        3
-
-
-    --> BoundingBox2d.expandBy expandBy_ exampleBox
+    --> BoundingBox2d.expandBy 3 exampleBox
     -->     { minX = 0
     -->     , maxX = 11
     -->     , minY = -1
