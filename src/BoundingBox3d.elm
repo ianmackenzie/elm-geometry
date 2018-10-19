@@ -12,7 +12,7 @@ module BoundingBox3d exposing
     , fromExtrema, singleton, from, hull, intersection, aggregate, containingPoints
     , extrema, minX, maxX, minY, maxY, minZ, maxZ, dimensions, midX, midY, midZ, centerPoint, centroid
     , contains, isContainedIn, intersects, overlappingBy, separatedBy
-    , scaleAbout, translateBy, translateIn, expandBy
+    , scaleAbout, translateBy, translateIn, offsetBy, expandBy
     )
 
 {-| A `BoundingBox3d` is a rectangular box in 3D defined by its minimum and
@@ -51,7 +51,7 @@ box of an object than the object itself, such as:
 
 # Transformations
 
-@docs scaleAbout, translateBy, translateIn, expandBy
+@docs scaleAbout, translateBy, translateIn, offsetBy, expandBy
 
 -}
 
@@ -1047,39 +1047,46 @@ translateIn direction distance boundingBox =
     translateBy (Vector3d.withLength distance direction) boundingBox
 
 
-{-| Expand the bounding box in all the directions by given distance;
+{-| Expand or Shrink the bounding box in all the directions by given distance;
 
-    expandBy_ : Float
-    expandBy_ =
-        3
-
-
-    BoundingBox3d.expandBy expandBy_ exampleBox
+    BoundingBox3d.offsetBy 2 exampleBox
     --> BoundingBox3d.fromExtrema
-    -->     { minX = 0
-    -->     , maxX = 11
-    -->     , minY = -1
-    -->     , maxY = 9
+    -->     { minX = -4
+    -->     , maxX = 4
+    -->     , minY = 0
+    -->     , maxY = 7
+    -->     , minZ = 1
+    -->     , maxZ = 6
     -->     }
-            { minX = -2, maxX = 2, minY = 2, maxY = 5, minZ = 3, maxZ = 4
-            }
 
-    Function returns Nothing In case of expandBy is more than or equal to half of diagonal length,
-    where it is assumed that it was shrunk up to the size of a point,
-    and the centroid of the BoundingBox can be used instead.
+    Function returns Nothing In case of expandBy is more than or equal to
+    half of width or height (whichever is lesser),
+    where it is assumed that it was shrunk up to the size of a plane, point or line.
 
 -}
-expandBy : Float -> BoundingBox3d -> Maybe BoundingBox3d
-expandBy by boundingBox_ =
+offsetBy : Float -> BoundingBox3d -> Maybe BoundingBox3d
+offsetBy by boundingBox_ =
     let
-        centroidPt =
-            centroid boundingBox_
+        dimensions_ =
+            dimensions boundingBox_
 
-        halfDiagonalLen =
-            Vector3d.length <|
-                Vector3d.from
-                    (Point3d.fromCoordinates ( minX boundingBox_, minY boundingBox_, minZ boundingBox_ ))
-                    centroidPt
+        smallXYDimension =
+            case dimensions_ of
+                ( xd, yd, zd ) ->
+                    if xd <= yd then
+                        xd
+
+                    else
+                        yd
+
+        smallerDimension =
+            case dimensions_ of
+                ( xd, yd, zd ) ->
+                    if smallXYDimension <= zd then
+                        smallXYDimension
+
+                    else
+                        zd
 
         resultingBox =
             fromExtrema
@@ -1094,8 +1101,37 @@ expandBy by boundingBox_ =
     if by > 0 then
         Just <| resultingBox
 
-    else if by < 0 && (-1 * by) < halfDiagonalLen then
+    else if by < 0 && (-1 * by) < smallerDimension then
         Just <| resultingBox
 
     else
         Nothing
+
+
+{-| Expand the bounding box in all the directions by given distance;
+
+    BoundingBox3d.expandBy 2 exampleBox
+    --> BoundingBox3d.fromExtrema
+    -->     { minX = -5
+    -->     , maxX = 5
+    -->     , minY = -1
+    -->     , maxY = 8
+    -->     , minZ = 0
+    -->     , maxZ = 7
+    -->     }
+
+    Function does not update the boundingBox in case `by` parameter is negative.
+
+-}
+expandBy : Float -> BoundingBox3d -> BoundingBox3d
+expandBy by boundingBox_ =
+    if by > 0 then
+        case offsetBy by boundingBox_ of
+            Just box ->
+                box
+
+            Nothing ->
+                boundingBox_
+
+    else
+        boundingBox_
