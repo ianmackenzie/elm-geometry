@@ -12,7 +12,7 @@ module BoundingBox2d exposing
     , fromExtrema, singleton, from, hull, intersection, aggregate, containingPoints
     , extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint, centroid
     , contains, isContainedIn, intersects, overlappingBy, separatedBy
-    , scaleAbout, translateBy, translateIn, expandBy
+    , scaleAbout, translateBy, translateIn, expandBy, offsetBy
     )
 
 {-| A `BoundingBox2d` is a rectangular box in 2D defined by its minimum and
@@ -52,7 +52,7 @@ box of an object than the object itself, such as:
 
 # Transformations
 
-@docs scaleAbout, translateBy, translateIn, expandBy
+@docs scaleAbout, translateBy, translateIn, expandBy, offsetBy
 
 -}
 
@@ -924,31 +924,33 @@ translateIn direction distance boundingBox =
     translateBy (Vector2d.withLength distance direction) boundingBox
 
 
-{-| Expand the bounding box in all the directions by given distance;
+{-| Expand or Shrink the bounding box in all the directions by given distance;
 
-    --> BoundingBox2d.expandBy 3 exampleBox
-    -->     { minX = 0
-    -->     , maxX = 11
-    -->     , minY = -1
-    -->     , maxY = 9
+    BoundingBox2d.offsetBy -3 exampleBox
+    --> BoundingBox2d.fromExtrema
+    -->     { minX = 5
+    -->     , maxX = 6
+    -->     , minY = 3
+    -->     , maxY = 5
     -->     }
 
-    Function returns Nothing In case of expandBy is more than or equal to half of diagonal length,
-    where it is assumed that it was shrunk up to the size of a point,
-    and the centroid of the BoundingBox can be used instead.
+    Function returns Nothing In case of expandBy is more than or equal to
+    half of width or height (whichever is lesser),
+    where it is assumed that it was shrunk up to the size of a point or line.
 
 -}
-expandBy : Float -> BoundingBox2d -> Maybe BoundingBox2d
-expandBy by boundingBox_ =
+offsetBy : Float -> BoundingBox2d -> Maybe BoundingBox2d
+offsetBy by boundingBox_ =
     let
-        centroidPt =
-            centroid boundingBox_
+        dimensions_ =
+            dimensions boundingBox_
 
-        halfDiagonalLen =
-            Vector2d.length <|
-                Vector2d.from
-                    (Point2d.fromCoordinates ( minX boundingBox_, minY boundingBox_ ))
-                    centroidPt
+        smallerDimension =
+            if Tuple.first dimensions_ < Tuple.second dimensions_ then
+                Tuple.first dimensions_
+
+            else
+                Tuple.second dimensions_
 
         resultingBox =
             fromExtrema
@@ -961,8 +963,35 @@ expandBy by boundingBox_ =
     if by > 0 then
         Just <| resultingBox
 
-    else if by < 0 && (-1 * by) < halfDiagonalLen then
+    else if by < 0 && (-1 * by) < smallerDimension then
         Just <| resultingBox
 
     else
         Nothing
+
+
+{-| Expand the bounding box in all the directions by given distance;
+
+    BoundingBox2d.expandBy 3 exampleBox
+    --> BoundingBox2d.fromExtrema
+    -->     { minX = 0
+    -->     , maxX = 11
+    -->     , minY = -1
+    -->     , maxY = 9
+    -->     }
+
+    Function does not update the boundingBox in case `by` parameter is negative.
+
+-}
+expandBy : Float -> BoundingBox2d -> BoundingBox2d
+expandBy by boundingBox_ =
+    if by > 0 then
+        case offsetBy by boundingBox_ of
+            Just box ->
+                box
+
+            Nothing ->
+                boundingBox_
+
+    else
+        boundingBox_
