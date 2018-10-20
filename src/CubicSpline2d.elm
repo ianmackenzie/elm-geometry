@@ -974,47 +974,21 @@ arcLength parameterizedSpline =
 
 {-| Get the midpoint of the spline.
 
-    CubicSpline2d.midpoint exampleSpline
-    --> Point2d.fromCoordinates ( 4, 2.5 )
+    CubicSpline2d.midpoint parameterizedSpline
+    --> Point2d.fromCoordinates  (3.999999999999992, 2.5)
 
 -}
 midpoint : ArcLengthParameterized -> Point2d
 midpoint parameterized =
-    let
-        curve : CubicSpline2d
-        curve =
-            fromArcLengthParameterized parameterized
+    case pointAlong parameterized (arcLength parameterized / 2) of
+        Just point ->
+            point
 
-        -- Midpoint between start point and the start control point
-        spScpMid =
-            LineSegment2d.midpoint <|
-                LineSegment2d.fromEndpoints ( startPoint curve, startControlPoint curve )
-
-        -- Midpoint between start control point and the end control point
-        scpEcpMid =
-            LineSegment2d.midpoint <|
-                LineSegment2d.fromEndpoints ( startControlPoint curve, endControlPoint curve )
-
-        -- Midpoint between end control point and the end point
-        ecpEpMid =
-            LineSegment2d.midpoint <|
-                LineSegment2d.fromEndpoints ( endControlPoint curve, endPoint curve )
-
-        -- Midpoint between (mid of start point and start control point) and
-        --                  (mid of start control point and the end control point)
-        spEcpMid =
-            LineSegment2d.midpoint <|
-                LineSegment2d.fromEndpoints ( spScpMid, scpEcpMid )
-
-        -- Midpoint between (mid of start control point and the end control point) and
-        --                  (mid of end control point and the end point)
-        scpEpMid =
-            LineSegment2d.midpoint <|
-                LineSegment2d.fromEndpoints ( scpEcpMid, ecpEpMid )
-    in
-    -- Midpoint of the curve is the midpoint between spEcpMid and scpEpMid
-    LineSegment2d.midpoint <|
-        LineSegment2d.fromEndpoints ( spEcpMid, scpEpMid )
+        Nothing ->
+            -- Should never happen since half of total arc length will always
+            -- be a valid distance along the curve, but let's default to something
+            -- reasonable anyways
+            startPoint (fromArcLengthParameterized parameterized)
 
 
 {-| Try to get the point along a spline at a given arc length. For example, to
