@@ -975,7 +975,7 @@ arcLength parameterizedSpline =
 {-| Get the midpoint of the spline.
 
     CubicSpline2d.midpoint parameterizedSpline
-    --> Point2d.fromCoordinates  (3.999999999999992, 2.5)
+    --> Point2d.fromCoordinates (3.999999999999992, 2.5)
 
 -}
 midpoint : ArcLengthParameterized -> Point2d
