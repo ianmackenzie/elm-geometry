@@ -3,7 +3,7 @@ module Tests.Polyline2d exposing
     , centroidOfClosedSquare
     , centroidOfOpenSquare
     , centroidOfRightAngle
-    , centroidOfSingleSegmentIsSameAsCentroidOfEndpoints
+    , centroidOfSingleSegmentIsSameAsMidpoint
     , centroidOfStepShape
     , emptyPolylineHasNothingCentroid
     , zeroLengthPolylineHasItselfAsCentroid
@@ -34,37 +34,29 @@ emptyPolylineHasNothingCentroid =
 zeroLengthPolylineHasItselfAsCentroid : Test
 zeroLengthPolylineHasItselfAsCentroid =
     Test.fuzz2 Fuzz.point2d (Fuzz.intRange 1 20) "Centroid of zero length polyline is the same point" <|
-        \point ->
-            \reps ->
-                let
-                    singlePointLine =
-                        List.repeat reps point
-                            |> Polyline2d.fromVertices
-                in
-                Polyline2d.centroid singlePointLine
-                    |> Expect.equal (Just point)
+        \point reps ->
+            let
+                singlePointLine =
+                    List.repeat reps point
+                        |> Polyline2d.fromVertices
+            in
+            Polyline2d.centroid singlePointLine
+                |> Expect.equal (Just point)
 
 
-centroidOfSingleSegmentIsSameAsCentroidOfEndpoints : Test
-centroidOfSingleSegmentIsSameAsCentroidOfEndpoints =
+centroidOfSingleSegmentIsSameAsMidpoint : Test
+centroidOfSingleSegmentIsSameAsMidpoint =
     Test.fuzz2 Fuzz.point2d Fuzz.point2d "Centroid of single line segment is middle of endpoints" <|
-        \p1 ->
-            \p2 ->
-                let
-                    monoline =
-                        Polyline2d.fromVertices [ p1, p2 ]
+        \p1 p2 ->
+            let
+                monoline =
+                    Polyline2d.fromVertices [ p1, p2 ]
 
-                    ( x1, y1 ) =
-                        Point2d.coordinates p1
-
-                    ( x2, y2 ) =
-                        Point2d.coordinates p2
-
-                    expectedCentroid =
-                        Point2d.fromCoordinates ( (x1 + x2) / 2, (y1 + y2) / 2 )
-                in
-                Polyline2d.centroid monoline
-                    |> Expect.just Expect.point2d expectedCentroid
+                expectedCentroid =
+                    Point2d.midpoint p1 p2
+            in
+            Polyline2d.centroid monoline
+                |> Expect.just Expect.point2d expectedCentroid
 
 
 centroidOfRightAngle : Test
@@ -142,28 +134,26 @@ centroidIsWithinBoundingBox =
         (Fuzz.list Fuzz.point2d)
         "The centroid of a polyline is within the polyline's bounding box"
     <|
-        \first ->
-            \second ->
-                \rest ->
-                    let
-                        points =
-                            first :: second :: rest
+        \first second rest ->
+            let
+                points =
+                    first :: second :: rest
 
-                        polyline =
-                            Polyline2d.fromVertices points
+                polyline =
+                    Polyline2d.fromVertices points
 
-                        maybeBoundingBox =
-                            Polyline2d.boundingBox polyline
+                maybeBoundingBox =
+                    Polyline2d.boundingBox polyline
 
-                        maybeCentroid =
-                            Polyline2d.centroid polyline
-                    in
-                    case ( maybeBoundingBox, maybeCentroid ) of
-                        ( Just boundingBox, Just centroid ) ->
-                            Expect.boundingBox2dContains boundingBox centroid
+                maybeCentroid =
+                    Polyline2d.centroid polyline
+            in
+            case ( maybeBoundingBox, maybeCentroid ) of
+                ( Just boundingBox, Just centroid ) ->
+                    Expect.point2dContainedIn boundingBox centroid
 
-                        ( Nothing, _ ) ->
-                            Expect.fail "Error determining bounding box."
+                ( Nothing, _ ) ->
+                    Expect.fail "Error determining bounding box."
 
-                        ( _, Nothing ) ->
-                            Expect.fail "Error determining centroid."
+                ( _, Nothing ) ->
+                    Expect.fail "Error determining centroid."

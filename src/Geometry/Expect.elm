@@ -17,10 +17,8 @@ module Geometry.Expect exposing
     , axis2d
     , axis3d
     , boundingBox2d
-    , boundingBox2dContains
     , boundingBox2dWithin
     , boundingBox3d
-    , boundingBox3dContains
     , boundingBox3dWithin
     , circle2d
     , circle3d
@@ -41,8 +39,10 @@ module Geometry.Expect exposing
     , maybe
     , plane3d
     , point2d
+    , point2dContainedIn
     , point2dWithin
     , point3d
+    , point3dContainedIn
     , point3dWithin
     , polygon2d
     , polygon2dWithin
@@ -581,8 +581,8 @@ boundingBox2dWithin tolerance =
     boundingBox2dBy (Expect.within (Expect.Absolute tolerance))
 
 
-boundingBox2dContains : BoundingBox2d -> Point2d -> Expectation
-boundingBox2dContains box point =
+point2dContainedIn : BoundingBox2d -> Point2d -> Expectation
+point2dContainedIn box point =
     let
         extrema =
             BoundingBox2d.extrema box
@@ -627,8 +627,8 @@ boundingBox3dWithin tolerance =
     boundingBox3dBy (Expect.within (Expect.Absolute tolerance))
 
 
-boundingBox3dContains : BoundingBox3d -> Point3d -> Expectation
-boundingBox3dContains box point =
+point3dContainedIn : BoundingBox3d -> Point3d -> Expectation
+point3dContainedIn box point =
     let
         extrema =
             BoundingBox3d.extrema box
