@@ -17,7 +17,7 @@ module CubicSpline3d exposing
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
     , relativeTo, placeIn, projectInto
     , bisect, splitAt
-    , ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentDirectionAlong, sampleAlong
+    , ArcLengthParameterized, arcLengthParameterized, arcLength, midpoint, pointAlong, tangentDirectionAlong, sampleAlong
     , arcLengthParameterization, fromArcLengthParameterized
     , firstDerivative, firstDerivativesAt, secondDerivative, secondDerivativesAt, thirdDerivative, maxSecondDerivativeMagnitude
     )
@@ -69,7 +69,7 @@ contains functionality for
 
 # Arc length parameterization
 
-@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentDirectionAlong, sampleAlong
+@docs ArcLengthParameterized, arcLengthParameterized, arcLength, midpoint, pointAlong, tangentDirectionAlong, sampleAlong
 
 
 ## Low level
@@ -99,6 +99,7 @@ import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Direction3d exposing (Direction3d)
 import Frame3d exposing (Frame3d)
 import Geometry.Types as Types
+import LineSegment3d exposing (fromEndpoints, midpoint)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import QuadraticSpline3d exposing (QuadraticSpline3d)
@@ -1068,6 +1069,25 @@ arcLength : ArcLengthParameterized -> Float
 arcLength parameterizedSpline =
     arcLengthParameterization parameterizedSpline
         |> ArcLengthParameterization.totalArcLength
+
+
+{-| Get the midpoint of the spline.
+
+    CubicSpline3d.midpoint parameterizedSpline
+    --> Point3d.fromCoordinates (2.750000000000003,2.0000000000000067,1.2500000000000033)
+
+-}
+midpoint : ArcLengthParameterized -> Point3d
+midpoint parameterized =
+    case pointAlong parameterized (arcLength parameterized / 2) of
+        Just point ->
+            point
+
+        Nothing ->
+            -- Should never happen since half of total arc length will always
+            -- be a valid distance along the curve, but let's default to something
+            -- reasonable anyways
+            startPoint (fromArcLengthParameterized parameterized)
 
 
 {-| Try to get the point along a spline at a given arc length. For example, to
