@@ -22,7 +22,7 @@ import Test exposing (Test)
 emptyPolylineHasNothingCentroid : Test
 emptyPolylineHasNothingCentroid =
     Test.test "Centroid is Nothing if Polyline is empty" <|
-        \_ ->
+        \() ->
             let
                 emptyPolyline =
                     Polyline2d.fromVertices []

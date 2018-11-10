@@ -22,7 +22,7 @@ import Test exposing (Test)
 emptyPolylineHasNothingCentroid : Test
 emptyPolylineHasNothingCentroid =
     Test.test "Centroid is Nothing if Polyline is empty" <|
-        \_ ->
+        \() ->
             let
                 emptyPolyline =
                     Polyline3d.fromVertices []
@@ -47,7 +47,7 @@ zeroLengthPolylineHasItselfAsCentroid =
 centroidOfExamplePolyline : Test
 centroidOfExamplePolyline =
     Test.test "Example polyline from function docs" <|
-        \_ ->
+        \() ->
             let
                 examplePolyline =
                     Polyline3d.fromVertices
