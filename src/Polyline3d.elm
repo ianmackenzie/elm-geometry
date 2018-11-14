@@ -13,6 +13,7 @@ module Polyline3d exposing
     , vertices, segments, length, boundingBox
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapVertices
     , relativeTo, placeIn, projectInto
+    , centroid
     )
 
 {-| A `Polyline3d` represents a sequence of vertices in 3D connected by line
@@ -71,10 +72,10 @@ type alias Polyline3d =
 
     examplePolyline =
         Polyline3d.fromVertices
-            [ Point2d.fromCoordinates ( 0, 0, 0 )
-            , Point2d.fromCoordinates ( 1, 0, 0 )
-            , Point2d.fromCoordinates ( 1, 2, 0 )
-            , Point2d.fromCoordinates ( 1, 2, 3 )
+            [ Point3d.fromCoordinates ( 0, 0, 0 )
+            , Point3d.fromCoordinates ( 1, 0, 0 )
+            , Point3d.fromCoordinates ( 1, 2, 0 )
+            , Point3d.fromCoordinates ( 1, 2, 3 )
             ]
 
 -}
@@ -362,3 +363,55 @@ if the polyline has no vertices.
 boundingBox : Polyline3d -> Maybe BoundingBox3d
 boundingBox polyline =
     BoundingBox3d.containingPoints (vertices polyline)
+
+
+{-| Find the centroid of the polyline. Returns `Nothing` if the polyline
+has no vertices.
+
+    Polyline3d.centroid examplePolyline
+    --> Just
+    -->     (Point3d.fromCoordinates (a,b,c))
+
+-}
+centroid : Polyline3d -> Maybe Point3d
+centroid polyline =
+    case ( vertices polyline, boundingBox polyline ) of
+        ( [], _ ) ->
+            Nothing
+
+        ( _, Nothing ) ->
+            Nothing
+
+        ( first :: _, Just box ) ->
+            let
+                polylineLength =
+                    length polyline
+            in
+            if polylineLength == 0 then
+                Just first
+
+            else
+                let
+                    roughCentroid =
+                        BoundingBox3d.centerPoint box
+
+                    helper =
+                        refineBySegment polylineLength roughCentroid
+                in
+                segments polyline
+                    |> List.foldl helper roughCentroid
+                    |> Just
+
+
+refineBySegment : Float -> Point3d -> LineSegment3d -> Point3d -> Point3d
+refineBySegment polylineLength roughCentroid segment currentCentroid =
+    let
+        segmentMidpoint =
+            LineSegment3d.midpoint segment
+
+        segmentLength =
+            LineSegment3d.length segment
+    in
+    Vector3d.from roughCentroid segmentMidpoint
+        |> Vector3d.scaleBy (segmentLength / polylineLength)
+        |> (\v -> Point3d.translateBy v currentCentroid)

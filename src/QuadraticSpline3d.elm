@@ -18,7 +18,7 @@ module QuadraticSpline3d exposing
     , relativeTo, placeIn
     , projectInto
     , bisect, splitAt
-    , ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentDirectionAlong, sampleAlong
+    , ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, midpoint, tangentDirectionAlong, sampleAlong
     , arcLengthParameterization, fromArcLengthParameterized
     , firstDerivative, firstDerivativesAt, secondDerivative
     )
@@ -74,7 +74,7 @@ contains functionality for
 
 # Arc length parameterization
 
-@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentDirectionAlong, sampleAlong
+@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, midpoint, tangentDirectionAlong, sampleAlong
 
 
 ## Low level
@@ -1002,6 +1002,25 @@ pointAlong (ArcLengthParameterized parameterized) distance =
     parameterized.parameterization
         |> ArcLengthParameterization.arcLengthToParameterValue distance
         |> Maybe.map (pointOn parameterized.underlyingSpline)
+
+
+{-| Get the midpoint of the Spline.
+
+    QuadraticSpline3d.midpoint parameterizedSpline
+    --> Point3d.fromCoordinates (2.4999999999999982, 1.9999999999999982, 1.499999999999998)
+
+-}
+midpoint : ArcLengthParameterized -> Point3d
+midpoint parameterized =
+    case pointAlong parameterized (arcLength parameterized / 2) of
+        Just point ->
+            point
+
+        Nothing ->
+            -- Should never happen since half of total arc length will always
+            -- be a valid distance along the curve, but let's default to something
+            -- reasonable anyways
+            startPoint (fromArcLengthParameterized parameterized)
 
 
 {-| Try to get the tangent direction along a spline at a given arc length. To

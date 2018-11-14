@@ -7,4 +7,5 @@ Matthieu Pizenberg <matthieu.pizenberg@gmail.com> (intersections)
 Folkert de Vries <folkert@folkertdev.nl> (length parameterization, delaunay triangulation)
 Felix Scheinost <felix.scheinost@gmail.com> (Sphere3d)
 Jakub Hampl <honitom@seznam.cz> (convex hull)
-Lalit Umbarkar <lalit.umbarkar9@gmail.com>
+Dave Cameron <dave.bc@gmail.com> (centroids)
+Lalit Umbarkar <lalit.umbarkar9@gmail.com> (bounding box expand/offset)
