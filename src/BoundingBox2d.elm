@@ -924,19 +924,37 @@ translateIn direction distance boundingBox =
     translateBy (Vector2d.withLength distance direction) boundingBox
 
 
-{-| Expand or Shrink the bounding box in all the directions by given distance;
+{-| Expand or shrink the given bounding box in all the directions by the given
+distance. A positive offset will cause the bounding box to expand and a negative
+value will cause it to shrink.
+
+    BoundingBox2d.offsetBy 2 exampleBox
+    --> Just <|
+    -->     BoundingBox2d.fromExtrema
+    -->         { minX = 1
+    -->         , maxX = 10
+    -->         , minY = 0
+    -->         , maxY = 8
+    -->         }
+
+    BoundingBox2d.offsetBy -1 exampleBox
+    --> Just <|
+    -->     BoundingBox2d.fromExtrema
+    -->         { minX = 4
+    -->         , maxX = 7
+    -->         , minY = 3
+    -->         , maxY = 5
+    -->         }
+
+Returns `Nothing` if the offset is negative and large enough to cause the
+bounding box to vanish (that is, if the offset is larger than half the height or
+half the width of the bounding box, whichever is less):
 
     BoundingBox2d.offsetBy -3 exampleBox
-    --> BoundingBox2d.fromExtrema
-    -->     { minX = 5
-    -->     , maxX = 6
-    -->     , minY = 3
-    -->     , maxY = 5
-    -->     }
+    --> Nothing
 
-    Function returns Nothing In case of expandBy is more than or equal to
-    half of width or height (whichever is lesser),
-    where it is assumed that it was shrunk up to the size of a point or line.
+If you only want to expand a bounding box, you can use
+[`expandBy`](BoundingBox2d#expandBy) instead (which does not return a `Maybe`).
 
 -}
 offsetBy : Float -> BoundingBox2d -> Maybe BoundingBox2d
@@ -970,7 +988,7 @@ offsetBy by boundingBox_ =
         Nothing
 
 
-{-| Expand the bounding box in all the directions by given distance;
+{-| Expand the given bounding box in all directions by the given offset:
 
     BoundingBox2d.expandBy 3 exampleBox
     --> BoundingBox2d.fromExtrema
@@ -980,7 +998,10 @@ offsetBy by boundingBox_ =
     -->     , maxY = 9
     -->     }
 
-    Function does not update the boundingBox in case `by` parameter is negative.
+Negative offsets will be treated as positive (the absolute value will be used),
+so the resulting box will always be at least as large as the original. If you
+need to be able to contract a bounding box, use
+[`offsetBy`](BoundingBox2d#offsetBy) instead.
 
 -}
 expandBy : Float -> BoundingBox2d -> BoundingBox2d
