@@ -1006,13 +1006,17 @@ need to be able to contract a bounding box, use
 -}
 expandBy : Float -> BoundingBox2d -> BoundingBox2d
 expandBy by boundingBox_ =
-    if by > 0 then
-        case offsetBy by boundingBox_ of
-            Just box ->
-                box
+    let
+        absoluteBy =
+            if by > 0 then
+                by
 
-            Nothing ->
-                boundingBox_
+            else
+                by * -1
+    in
+    case offsetBy absoluteBy boundingBox_ of
+        Just box ->
+            box
 
-    else
-        boundingBox_
+        Nothing ->
+            boundingBox_
