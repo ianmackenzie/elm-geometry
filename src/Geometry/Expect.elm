@@ -58,6 +58,8 @@ module Geometry.Expect exposing
     , triangle2dWithin
     , triangle3d
     , triangle3dWithin
+    , validBoundingBox2d
+    , validBoundingBox3d
     , validDirection2d
     , validDirection3d
     , validFrame2d
@@ -834,3 +836,44 @@ cubicSpline3d first =
         , CubicSpline3d.endPoint
             >> point3d (CubicSpline3d.endPoint first)
         ]
+
+
+validBoundingBox2d : BoundingBox2d -> Expectation
+validBoundingBox2d boundingBox =
+    let
+        extrema =
+            BoundingBox2d.extrema boundingBox
+
+        { minX, maxX, minY, maxY } =
+            extrema
+    in
+    if not (minX <= maxX) then
+        Expect.fail ("Expected bounding box with extrema " ++ Debug.toString extrema ++ " to have minX <= maxX")
+
+    else if not (minY <= maxY) then
+        Expect.fail ("Expected bounding box with extrema " ++ Debug.toString extrema ++ " to have minY <= maxY")
+
+    else
+        Expect.pass
+
+
+validBoundingBox3d : BoundingBox3d -> Expectation
+validBoundingBox3d boundingBox =
+    let
+        extrema =
+            BoundingBox3d.extrema boundingBox
+
+        { minX, maxX, minY, maxY, minZ, maxZ } =
+            extrema
+    in
+    if not (minX <= maxX) then
+        Expect.fail ("Expected bounding box with extrema " ++ Debug.toString extrema ++ " to have minX <= maxX")
+
+    else if not (minY <= maxY) then
+        Expect.fail ("Expected bounding box with extrema " ++ Debug.toString extrema ++ " to have minY <= maxY")
+
+    else if not (minZ <= maxZ) then
+        Expect.fail ("Expected bounding box with extrema " ++ Debug.toString extrema ++ " to have minZ <= maxZ")
+
+    else
+        Expect.pass

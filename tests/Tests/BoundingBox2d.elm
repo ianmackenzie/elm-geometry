@@ -17,6 +17,7 @@ module Tests.BoundingBox2d exposing
 import BoundingBox2d
 import Expect
 import Fuzz
+import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Test exposing (Test)
 import Vector2d
@@ -161,12 +162,7 @@ intersectionIsValidOrNothing =
                     Expect.pass
 
                 Just result ->
-                    let
-                        { minX, maxX, minY, maxY } =
-                            BoundingBox2d.extrema result
-                    in
-                    Expect.true "expected extrema to be correctly ordered"
-                        ((minX <= maxX) && (minY <= maxY))
+                    Expect.validBoundingBox2d result
         )
 
 
