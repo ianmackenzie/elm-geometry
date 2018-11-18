@@ -970,7 +970,7 @@ If you only want to expand a bounding box, you can use
 
 -}
 offsetBy : Float -> BoundingBox2d -> Maybe BoundingBox2d
-offsetBy by boundingBox_ =
+offsetBy amount boundingBox_ =
     let
         ( width, height ) =
             dimensions boundingBox_
@@ -978,8 +978,8 @@ offsetBy by boundingBox_ =
         halfOfSmallerDimension =
             min width height / 2
     in
-    if (-1 * by) < halfOfSmallerDimension then
-        Just <| unsafeOffsetBy by boundingBox_
+    if amount > -halfOfSmallerDimension then
+        Just <| unsafeOffsetBy amount boundingBox_
 
     else
         Nothing
@@ -1002,13 +1002,5 @@ need to be able to contract a bounding box, use
 
 -}
 expandBy : Float -> BoundingBox2d -> BoundingBox2d
-expandBy by boundingBox_ =
-    let
-        absoluteBy =
-            if by > 0 then
-                by
-
-            else
-                by * -1
-    in
-    unsafeOffsetBy by boundingBox_
+expandBy amount boundingBox_ =
+    unsafeOffsetBy (abs amount) boundingBox_
