@@ -6,6 +6,9 @@ module Tests.BoundingBox2d exposing
     , intersectionConsistentWithIntersects
     , intersectionConsistentWithOverlappingBy
     , intersectionIsValidOrNothing
+    , offsetByHalfHeightIsValidOrNothing
+    , offsetByHalfWidthIsValidOrNothing
+    , offsetResultIsValidOrNothing
     , overlappingBoxesCannotBySeparated
     , overlappingByDetectsIntersection
     , separatedBoxesCannotBeMadeToOverlap
@@ -400,4 +403,55 @@ containingPointsIsOrderIndependent =
         (\points ->
             BoundingBox2d.containingPoints (List.reverse points)
                 |> Expect.equal (BoundingBox2d.containingPoints points)
+        )
+
+
+offsetResultIsValidOrNothing : Test
+offsetResultIsValidOrNothing =
+    Test.fuzz2 Fuzz.boundingBox2d
+        Fuzz.scalar
+        "offsetBy returns either Nothing or Just a valid box"
+        (\boundingBox offset ->
+            case BoundingBox2d.offsetBy offset boundingBox of
+                Nothing ->
+                    Expect.pass
+
+                Just result ->
+                    Expect.validBoundingBox2d result
+        )
+
+
+offsetByHalfWidthIsValidOrNothing : Test
+offsetByHalfWidthIsValidOrNothing =
+    Test.fuzz Fuzz.boundingBox2d
+        "offsetBy returns either Nothing or Just a valid box when offseting by -width / 2"
+        (\boundingBox ->
+            let
+                ( width, height ) =
+                    BoundingBox2d.dimensions boundingBox
+            in
+            case BoundingBox2d.offsetBy (-width / 2) boundingBox of
+                Nothing ->
+                    Expect.pass
+
+                Just result ->
+                    Expect.validBoundingBox2d result
+        )
+
+
+offsetByHalfHeightIsValidOrNothing : Test
+offsetByHalfHeightIsValidOrNothing =
+    Test.fuzz Fuzz.boundingBox2d
+        "offsetBy returns either Nothing or Just a valid box when offseting by -height / 2"
+        (\boundingBox ->
+            let
+                ( width, height ) =
+                    BoundingBox2d.dimensions boundingBox
+            in
+            case BoundingBox2d.offsetBy (-height / 2) boundingBox of
+                Nothing ->
+                    Expect.pass
+
+                Just result ->
+                    Expect.validBoundingBox2d result
         )

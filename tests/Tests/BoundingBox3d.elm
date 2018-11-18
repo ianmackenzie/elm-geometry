@@ -6,6 +6,10 @@ module Tests.BoundingBox3d exposing
     , intersectionConsistentWithIntersects
     , intersectionConsistentWithOverlappingBy
     , intersectionIsValidOrNothing
+    , offsetByHalfDepthIsValidOrNothing
+    , offsetByHalfHeightIsValidOrNothing
+    , offsetByHalfWidthIsValidOrNothing
+    , offsetResultIsValidOrNothing
     , overlappingBoxesCannotBySeparated
     , overlappingByDetectsIntersection
     , separatedBoxesCannotBeMadeToOverlap
@@ -421,4 +425,73 @@ containingPointsIsOrderIndependent =
         (\points ->
             BoundingBox3d.containingPoints (List.reverse points)
                 |> Expect.equal (BoundingBox3d.containingPoints points)
+        )
+
+
+offsetResultIsValidOrNothing : Test
+offsetResultIsValidOrNothing =
+    Test.fuzz2 Fuzz.boundingBox3d
+        Fuzz.scalar
+        "offsetBy returns either Nothing or Just a valid box"
+        (\boundingBox offset ->
+            case BoundingBox3d.offsetBy offset boundingBox of
+                Nothing ->
+                    Expect.pass
+
+                Just result ->
+                    Expect.validBoundingBox3d result
+        )
+
+
+offsetByHalfWidthIsValidOrNothing : Test
+offsetByHalfWidthIsValidOrNothing =
+    Test.fuzz Fuzz.boundingBox3d
+        "offsetBy returns either Nothing or Just a valid box when offseting by -width / 2"
+        (\boundingBox ->
+            let
+                ( width, height, depth ) =
+                    BoundingBox3d.dimensions boundingBox
+            in
+            case BoundingBox3d.offsetBy (-width / 2) boundingBox of
+                Nothing ->
+                    Expect.pass
+
+                Just result ->
+                    Expect.validBoundingBox3d result
+        )
+
+
+offsetByHalfHeightIsValidOrNothing : Test
+offsetByHalfHeightIsValidOrNothing =
+    Test.fuzz Fuzz.boundingBox3d
+        "offsetBy returns either Nothing or Just a valid box when offseting by -height / 2"
+        (\boundingBox ->
+            let
+                ( width, height, depth ) =
+                    BoundingBox3d.dimensions boundingBox
+            in
+            case BoundingBox3d.offsetBy (-height / 2) boundingBox of
+                Nothing ->
+                    Expect.pass
+
+                Just result ->
+                    Expect.validBoundingBox3d result
+        )
+
+
+offsetByHalfDepthIsValidOrNothing : Test
+offsetByHalfDepthIsValidOrNothing =
+    Test.fuzz Fuzz.boundingBox3d
+        "offsetBy returns either Nothing or Just a valid box when offseting by -depth / 2"
+        (\boundingBox ->
+            let
+                ( width, height, depth ) =
+                    BoundingBox3d.dimensions boundingBox
+            in
+            case BoundingBox3d.offsetBy (-depth / 2) boundingBox of
+                Nothing ->
+                    Expect.pass
+
+                Just result ->
+                    Expect.validBoundingBox3d result
         )
