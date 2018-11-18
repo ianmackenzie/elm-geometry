@@ -924,6 +924,18 @@ translateIn direction distance boundingBox =
     translateBy (Vector2d.withLength distance direction) boundingBox
 
 
+{-| Offsets boundingBox irrespective of the resulting bounding box is valid or not.
+-}
+unsafeOffsetBy : Float -> BoundingBox2d -> BoundingBox2d
+unsafeOffsetBy by boundingBox_ =
+    fromExtrema
+        { minX = minX boundingBox_ - by
+        , minY = minY boundingBox_ - by
+        , maxX = maxX boundingBox_ + by
+        , maxY = maxY boundingBox_ + by
+        }
+
+
 {-| Expand or shrink the given bounding box in all the directions by the given
 distance. A positive offset will cause the bounding box to expand and a negative
 value will cause it to shrink.
@@ -960,29 +972,14 @@ If you only want to expand a bounding box, you can use
 offsetBy : Float -> BoundingBox2d -> Maybe BoundingBox2d
 offsetBy by boundingBox_ =
     let
-        dimensions_ =
+        ( width, height ) =
             dimensions boundingBox_
 
-        smallerDimension =
-            if Tuple.first dimensions_ < Tuple.second dimensions_ then
-                Tuple.first dimensions_
-
-            else
-                Tuple.second dimensions_
-
-        resultingBox =
-            fromExtrema
-                { minX = minX boundingBox_ - by
-                , minY = minY boundingBox_ - by
-                , maxX = maxX boundingBox_ + by
-                , maxY = maxY boundingBox_ + by
-                }
+        halfOfSmallerDimension =
+            min width height / 2
     in
-    if by > 0 then
-        Just <| resultingBox
-
-    else if by < 0 && (-1 * by) < smallerDimension then
-        Just <| resultingBox
+    if (-1 * by) < halfOfSmallerDimension then
+        Just <| unsafeOffsetBy by boundingBox_
 
     else
         Nothing
@@ -1014,9 +1011,4 @@ expandBy by boundingBox_ =
             else
                 by * -1
     in
-    case offsetBy absoluteBy boundingBox_ of
-        Just box ->
-            box
-
-        Nothing ->
-            boundingBox_
+    unsafeOffsetBy by boundingBox_
