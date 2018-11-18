@@ -12,7 +12,7 @@ module BoundingBox3d exposing
     , fromExtrema, singleton, from, hull, intersection, aggregate, containingPoints
     , extrema, minX, maxX, minY, maxY, minZ, maxZ, dimensions, midX, midY, midZ, centerPoint, centroid
     , contains, isContainedIn, intersects, overlappingBy, separatedBy
-    , scaleAbout, translateBy, translateIn
+    , scaleAbout, translateBy, translateIn, offsetBy, expandBy
     )
 
 {-| A `BoundingBox3d` is a rectangular box in 3D defined by its minimum and
@@ -51,7 +51,7 @@ box of an object than the object itself, such as:
 
 # Transformations
 
-@docs scaleAbout, translateBy, translateIn
+@docs scaleAbout, translateBy, translateIn, offsetBy, expandBy
 
 -}
 
@@ -1045,3 +1045,93 @@ is equivalent to
 translateIn : Direction3d -> Float -> BoundingBox3d -> BoundingBox3d
 translateIn direction distance boundingBox =
     translateBy (Vector3d.withLength distance direction) boundingBox
+
+
+{-| Offsets boundingBox irrespective of the resulting bounding box is valid or not.
+-}
+unsafeOffsetBy : Float -> BoundingBox3d -> BoundingBox3d
+unsafeOffsetBy by boundingBox_ =
+    fromExtrema
+        { minX = minX boundingBox_ - by
+        , minY = minY boundingBox_ - by
+        , minZ = minZ boundingBox_ - by
+        , maxX = maxX boundingBox_ + by
+        , maxY = maxY boundingBox_ + by
+        , maxZ = maxZ boundingBox_ + by
+        }
+
+
+{-| Expand or shrink the given bounding box in all the directions by the given
+distance. A positive offset will cause the bounding box to expand and a negative
+value will cause it to shrink.
+
+    BoundingBox3d.offsetBy 2 exampleBox
+    --> Just <|
+    -->     BoundingBox3d.fromExtrema
+    -->         { minX = -4
+    -->         , maxX = 4
+    -->         , minY = 0
+    -->         , maxY = 7
+    -->         , minZ = 1
+    -->         , maxZ = 6
+    -->         }
+
+    BoundingBox3d.offsetBy -0.5 exampleBox
+    --> Just <|
+    -->     BoundingBox3d.fromExtrema
+    -->         { minX = -1.5
+    -->         , maxX = 1.5
+    -->         , minY = 2.5
+    -->         , maxY = 4.5
+    -->         , minZ = 3.5
+    -->         , maxZ = 3.5
+    -->         }
+
+Returns `Nothing` if the offset is negative and large enough to cause the
+bounding box to vanish (that is, if the offset is larger than half the height or
+half the width of the bounding box, whichever is less):
+
+    BoundingBox3d.offsetBy -1 exampleBox
+    --> Nothing
+
+If you only want to expand a bounding box, you can use
+[`expandBy`](BoundingBox3d#expandBy) instead (which does not return a `Maybe`).
+
+-}
+offsetBy : Float -> BoundingBox3d -> Maybe BoundingBox3d
+offsetBy amount boundingBox_ =
+    let
+        ( width, height, depth ) =
+            dimensions boundingBox_
+
+        halfOfSmallerDimension =
+            min depth <| min width height
+    in
+    if amount > -halfOfSmallerDimension then
+        Just <| unsafeOffsetBy amount boundingBox_
+
+    else
+        Nothing
+
+
+{-| Expand the given bounding box in all directions by the given offset:
+
+    BoundingBox3d.expandBy 3 exampleBox
+    --> BoundingBox3d.fromExtrema
+    -->     { minX = -5
+    -->     , maxX = 5
+    -->     , minY = -1
+    -->     , maxY = 8
+    -->     , minZ = 0
+    -->     , maxZ = 7
+    -->     }
+
+Negative offsets will be treated as positive (the absolute value will be used),
+so the resulting box will always be at least as large as the original. If you
+need to be able to contract a bounding box, use
+[`offsetBy`](BoundingBox3d#offsetBy) instead.
+
+-}
+expandBy : Float -> BoundingBox3d -> BoundingBox3d
+expandBy amount boundingBox_ =
+    unsafeOffsetBy (abs amount) boundingBox_

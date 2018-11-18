@@ -12,7 +12,7 @@ module BoundingBox2d exposing
     , fromExtrema, singleton, from, hull, intersection, aggregate, containingPoints
     , extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint, centroid
     , contains, isContainedIn, intersects, overlappingBy, separatedBy
-    , scaleAbout, translateBy, translateIn
+    , scaleAbout, translateBy, translateIn, expandBy, offsetBy
     )
 
 {-| A `BoundingBox2d` is a rectangular box in 2D defined by its minimum and
@@ -52,7 +52,7 @@ box of an object than the object itself, such as:
 
 # Transformations
 
-@docs scaleAbout, translateBy, translateIn
+@docs scaleAbout, translateBy, translateIn, expandBy, offsetBy
 
 -}
 
@@ -922,3 +922,85 @@ is equivalent to
 translateIn : Direction2d -> Float -> BoundingBox2d -> BoundingBox2d
 translateIn direction distance boundingBox =
     translateBy (Vector2d.withLength distance direction) boundingBox
+
+
+{-| Offsets boundingBox irrespective of the resulting bounding box is valid or not.
+-}
+unsafeOffsetBy : Float -> BoundingBox2d -> BoundingBox2d
+unsafeOffsetBy by boundingBox_ =
+    fromExtrema
+        { minX = minX boundingBox_ - by
+        , minY = minY boundingBox_ - by
+        , maxX = maxX boundingBox_ + by
+        , maxY = maxY boundingBox_ + by
+        }
+
+
+{-| Expand or shrink the given bounding box in all the directions by the given
+distance. A positive offset will cause the bounding box to expand and a negative
+value will cause it to shrink.
+
+    BoundingBox2d.offsetBy 2 exampleBox
+    --> Just <|
+    -->     BoundingBox2d.fromExtrema
+    -->         { minX = 1
+    -->         , maxX = 10
+    -->         , minY = 0
+    -->         , maxY = 8
+    -->         }
+
+    BoundingBox2d.offsetBy -1 exampleBox
+    --> Just <|
+    -->     BoundingBox2d.fromExtrema
+    -->         { minX = 4
+    -->         , maxX = 7
+    -->         , minY = 3
+    -->         , maxY = 5
+    -->         }
+
+Returns `Nothing` if the offset is negative and large enough to cause the
+bounding box to vanish (that is, if the offset is larger than half the height or
+half the width of the bounding box, whichever is less):
+
+    BoundingBox2d.offsetBy -3 exampleBox
+    --> Nothing
+
+If you only want to expand a bounding box, you can use
+[`expandBy`](BoundingBox2d#expandBy) instead (which does not return a `Maybe`).
+
+-}
+offsetBy : Float -> BoundingBox2d -> Maybe BoundingBox2d
+offsetBy amount boundingBox_ =
+    let
+        ( width, height ) =
+            dimensions boundingBox_
+
+        halfOfSmallerDimension =
+            min width height / 2
+    in
+    if amount > -halfOfSmallerDimension then
+        Just <| unsafeOffsetBy amount boundingBox_
+
+    else
+        Nothing
+
+
+{-| Expand the given bounding box in all directions by the given offset:
+
+    BoundingBox2d.expandBy 3 exampleBox
+    --> BoundingBox2d.fromExtrema
+    -->     { minX = 0
+    -->     , maxX = 11
+    -->     , minY = -1
+    -->     , maxY = 9
+    -->     }
+
+Negative offsets will be treated as positive (the absolute value will be used),
+so the resulting box will always be at least as large as the original. If you
+need to be able to contract a bounding box, use
+[`offsetBy`](BoundingBox2d#offsetBy) instead.
+
+-}
+expandBy : Float -> BoundingBox2d -> BoundingBox2d
+expandBy amount boundingBox_ =
+    unsafeOffsetBy (abs amount) boundingBox_
