@@ -9,8 +9,9 @@
 
 module Frame2d exposing
     ( Frame2d
-    , atOrigin, xy
+    , atOrigin
     , atPoint, atCoordinates, withXDirection, withYDirection, unsafe
+    , define
     , originPoint, xDirection, yDirection, isRightHanded, xAxis, yAxis
     , reverseX, reverseY, moveTo, rotateBy, rotateAround, translateBy, translateIn, translateAlongOwn, mirrorAcross
     , relativeTo, placeIn
@@ -35,12 +36,17 @@ always perpendicular to each other). It can be thought of as:
 
 # Constants
 
-@docs atOrigin, xy
+@docs atOrigin
 
 
 # Constructors
 
 @docs atPoint, atCoordinates, withXDirection, withYDirection, unsafe
+
+
+# Local coordinates
+
+@docs define
 
 
 # Properties
@@ -59,16 +65,18 @@ always perpendicular to each other). It can be thought of as:
 
 -}
 
+import Angle exposing (Angle)
 import Axis2d exposing (Axis2d)
 import Direction2d exposing (Direction2d)
 import Geometry.Types as Types
 import Point2d exposing (Point2d)
+import Quantity exposing (Quantity)
 import Vector2d exposing (Vector2d)
 
 
 {-| -}
-type alias Frame2d =
-    Types.Frame2d
+type alias Frame2d units coordinates defines =
+    Types.Frame2d units coordinates defines
 
 
 {-| The global XY frame, centered at the origin.
@@ -83,17 +91,13 @@ type alias Frame2d =
     --> Direction2d.y
 
 -}
-atOrigin : Frame2d
+atOrigin : Frame2d units coordinates { defines : coordinates }
 atOrigin =
-    atPoint Point2d.origin
-
-
-{-| DEPRECATED: Alias for `Frame2d.atOrigin`, kept for compatibility. Will be
-removed in the next major release.
--}
-xy : Frame2d
-xy =
-    atOrigin
+    Types.Frame2d
+        { originPoint = Point2d.origin
+        , xDirection = Direction2d.x
+        , yDirection = Direction2d.y
+        }
 
 
 {-| Construct a frame with the given X axis direction, having the given origin
@@ -109,12 +113,12 @@ direction 90 degrees counterclockwise:
     --> Direction2d.fromAngle (degrees 120)
 
 -}
-withXDirection : Direction2d -> Point2d -> Frame2d
-withXDirection xDirection_ originPoint_ =
+withXDirection : Direction2d coordinates -> Point2d units coordinates -> Frame2d units coordinates {}
+withXDirection givenDirection givenOrigin =
     unsafe
-        { originPoint = originPoint_
-        , xDirection = xDirection_
-        , yDirection = xDirection_ |> Direction2d.rotateCounterclockwise
+        { originPoint = givenOrigin
+        , xDirection = givenDirection
+        , yDirection = givenDirection |> Direction2d.rotateCounterclockwise
         }
 
 
@@ -131,13 +135,18 @@ direction 90 degrees clockwise:
     --> Direction2d.fromAngle (degrees -60)
 
 -}
-withYDirection : Direction2d -> Point2d -> Frame2d
-withYDirection yDirection_ originPoint_ =
+withYDirection : Direction2d coordinates -> Point2d units coordinates -> Frame2d units coordinates {}
+withYDirection givenDirection givenOrigin =
     unsafe
-        { originPoint = originPoint_
-        , xDirection = yDirection_ |> Direction2d.rotateClockwise
-        , yDirection = yDirection_
+        { originPoint = givenOrigin
+        , xDirection = givenDirection |> Direction2d.rotateClockwise
+        , yDirection = givenDirection
         }
+
+
+define : localCoordinates -> Frame2d units globalCoordinates {} -> Frame2d units globalCoordinates { defines : localCoordinates }
+define localCoordinates (Types.Frame2d properties) =
+    Types.Frame2d properties
 
 
 {-| Construct a frame directly from its origin point and X and Y directions:
@@ -158,9 +167,14 @@ perpendicular**. To construct pairs of perpendicular directions,
 [`Direction2d.orthogonalize`](Direction2d#orthogonalize) may be useful.
 
 -}
-unsafe : { originPoint : Point2d, xDirection : Direction2d, yDirection : Direction2d } -> Frame2d
-unsafe =
-    Types.Frame2d
+unsafe :
+    { originPoint : Point2d units coordinates
+    , xDirection : Direction2d coordinates
+    , yDirection : Direction2d coordinates
+    }
+    -> Frame2d units coordinates {}
+unsafe properties =
+    Types.Frame2d properties
 
 
 {-| Construct a frame aligned with the global XY frame but with the given origin
@@ -182,7 +196,7 @@ point.
     --> Direction2d.y
 
 -}
-atPoint : Point2d -> Frame2d
+atPoint : Point2d units coordinates -> Frame2d units coordinates {}
 atPoint point =
     unsafe
         { originPoint = point
@@ -200,7 +214,7 @@ is equivalent to
     Frame2d.atPoint (Point2d.fromCoordinates ( x, y ))
 
 -}
-atCoordinates : ( Float, Float ) -> Frame2d
+atCoordinates : ( Quantity Float units, Quantity Float units ) -> Frame2d units coordinates {}
 atCoordinates coordinates =
     atPoint (Point2d.fromCoordinates coordinates)
 
@@ -211,7 +225,7 @@ atCoordinates coordinates =
     --> Point2d.origin
 
 -}
-originPoint : Frame2d -> Point2d
+originPoint : Frame2d units coordinates defines -> Point2d units coordinates
 originPoint (Types.Frame2d frame) =
     frame.originPoint
 
@@ -222,7 +236,7 @@ originPoint (Types.Frame2d frame) =
     --> Direction2d.x
 
 -}
-xDirection : Frame2d -> Direction2d
+xDirection : Frame2d units coordinates defines -> Direction2d coordinates
 xDirection (Types.Frame2d frame) =
     frame.xDirection
 
@@ -233,7 +247,7 @@ xDirection (Types.Frame2d frame) =
     --> Direction2d.y
 
 -}
-yDirection : Frame2d -> Direction2d
+yDirection : Frame2d units coordinates defines -> Direction2d coordinates
 yDirection (Types.Frame2d frame) =
     frame.yDirection
 
@@ -252,7 +266,7 @@ handedness, so about the only ways to end up with a left-handed frame are by
 constructing one explicitly with `unsafe` or by mirroring a right-handed frame.
 
 -}
-isRightHanded : Frame2d -> Bool
+isRightHanded : Frame2d units coordinates defines -> Bool
 isRightHanded frame =
     let
         xVector =
@@ -261,7 +275,8 @@ isRightHanded frame =
         yVector =
             Direction2d.toVector (yDirection frame)
     in
-    Vector2d.crossProduct xVector yVector > 0
+    Vector2d.crossProduct xVector yVector
+        |> Quantity.greaterThan Quantity.zero
 
 
 {-| Get the X axis of a given frame (the axis formed from the frame's origin
@@ -271,7 +286,7 @@ point and X direction).
     --> Axis2d.x
 
 -}
-xAxis : Frame2d -> Axis2d
+xAxis : Frame2d units coordinates defines -> Axis2d units coordinates
 xAxis (Types.Frame2d frame) =
     Axis2d.through frame.originPoint frame.xDirection
 
@@ -283,7 +298,7 @@ point and Y direction).
     --> Axis2d.y
 
 -}
-yAxis : Frame2d -> Axis2d
+yAxis : Frame2d units coordinates defines -> Axis2d units coordinates
 yAxis (Types.Frame2d frame) =
     Axis2d.through frame.originPoint frame.yDirection
 
@@ -310,7 +325,7 @@ Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartes
 of the frame.
 
 -}
-reverseX : Frame2d -> Frame2d
+reverseX : Frame2d units coordinates defines -> Frame2d units coordinates {}
 reverseX frame =
     unsafe
         { originPoint = originPoint frame
@@ -341,7 +356,7 @@ Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartes
 of the frame.
 
 -}
-reverseY : Frame2d -> Frame2d
+reverseY : Frame2d units coordinates defines -> Frame2d units coordinates {}
 reverseY frame =
     unsafe
         { originPoint = originPoint frame
@@ -359,7 +374,7 @@ reverseY frame =
     --> Frame2d.atPoint point
 
 -}
-moveTo : Point2d -> Frame2d -> Frame2d
+moveTo : Point2d units coordinates -> Frame2d units coordinates defines -> Frame2d units coordinates {}
 moveTo newOrigin frame =
     unsafe
         { originPoint = newOrigin
@@ -382,7 +397,7 @@ Y directions will be rotated by the given angle.
     --> Direction2d.fromAngle (degrees 120)
 
 -}
-rotateBy : Float -> Frame2d -> Frame2d
+rotateBy : Angle -> Frame2d units coordinates defines -> Frame2d units coordinates {}
 rotateBy angle frame =
     let
         rotateDirection =
@@ -414,7 +429,7 @@ and its X and Y basis directions will be rotated by the given angle.
     --> Direction2d.fromAngle (degrees 135)
 
 -}
-rotateAround : Point2d -> Float -> Frame2d -> Frame2d
+rotateAround : Point2d units coordinates -> Angle -> Frame2d units coordinates defines -> Frame2d units coordinates {}
 rotateAround centerPoint angle =
     let
         rotatePoint =
@@ -443,7 +458,7 @@ rotateAround centerPoint angle =
     --> Frame2d.atPoint (Point2d.fromCoordinates ( 3, 4 ))
 
 -}
-translateBy : Vector2d -> Frame2d -> Frame2d
+translateBy : Vector2d units coordinates -> Frame2d units coordinates defines -> Frame2d units coordinates {}
 translateBy vector frame =
     unsafe
         { originPoint = Point2d.translateBy vector (originPoint frame)
@@ -462,7 +477,7 @@ is equivalent to
         (Vector2d.withLength distance direction)
 
 -}
-translateIn : Direction2d -> Float -> Frame2d -> Frame2d
+translateIn : Direction2d coordinates -> Quantity Float units -> Frame2d units coordinates defines -> Frame2d units coordinates {}
 translateIn direction distance frame =
     translateBy (Vector2d.withLength distance direction) frame
 
@@ -496,7 +511,7 @@ resulting in
     --> Direction2d.fromAngle (degrees 135)
 
 -}
-translateAlongOwn : (Frame2d -> Axis2d) -> Float -> Frame2d -> Frame2d
+translateAlongOwn : (Frame2d units coordinates defines -> Axis2d units coordinates) -> Quantity Float units -> Frame2d units coordinates defines -> Frame2d units coordinates {}
 translateAlongOwn axis distance frame =
     let
         displacement =
@@ -526,7 +541,7 @@ Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartes
 of the frame.
 
 -}
-mirrorAcross : Axis2d -> Frame2d -> Frame2d
+mirrorAcross : Axis2d units coordinates -> Frame2d units coordinates defines -> Frame2d units coordinates {}
 mirrorAcross axis =
     let
         mirrorPoint =
@@ -546,7 +561,7 @@ mirrorAcross axis =
 {-| Take two frames defined in global coordinates, and return the second one
 expressed in local coordinates relative to the first.
 -}
-relativeTo : Frame2d -> Frame2d -> Frame2d
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Frame2d units globalCoordinates defines -> Frame2d units localCoordinates defines
 relativeTo otherFrame =
     let
         relativePoint =
@@ -556,7 +571,7 @@ relativeTo otherFrame =
             Direction2d.relativeTo otherFrame
     in
     \frame ->
-        unsafe
+        Types.Frame2d
             { originPoint = relativePoint (originPoint frame)
             , xDirection = relativeDirection (xDirection frame)
             , yDirection = relativeDirection (yDirection frame)
@@ -567,7 +582,7 @@ relativeTo otherFrame =
 in local coordinates relative to the first frame, and return the second frame
 expressed in global coordinates.
 -}
-placeIn : Frame2d -> Frame2d -> Frame2d
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Frame2d units localCoordinates defines -> Frame2d units globalCoordinates defines
 placeIn otherFrame =
     let
         placePoint =
@@ -577,7 +592,7 @@ placeIn otherFrame =
             Direction2d.placeIn otherFrame
     in
     \frame ->
-        unsafe
+        Types.Frame2d
             { originPoint = placePoint (originPoint frame)
             , xDirection = placeDirection (xDirection frame)
             , yDirection = placeDirection (yDirection frame)
