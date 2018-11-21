@@ -52,15 +52,17 @@ by an origin point and direction. Axes have several uses, such as:
 
 -}
 
+import Angle exposing (Angle)
 import Direction2d exposing (Direction2d)
 import Geometry.Types as Types exposing (Frame2d)
 import Point2d exposing (Point2d)
+import Quantity exposing (Quantity)
 import Vector2d exposing (Vector2d)
 
 
 {-| -}
-type alias Axis2d =
-    Types.Axis2d
+type alias Axis2d units coordinates =
+    Types.Axis2d units coordinates
 
 
 {-| The global X axis.
@@ -69,7 +71,7 @@ type alias Axis2d =
     --> Axis2d.through Point2d.origin Direction2d.x
 
 -}
-x : Axis2d
+x : Axis2d units coordinates
 x =
     through Point2d.origin Direction2d.x
 
@@ -80,7 +82,7 @@ x =
     --> Axis2d.through Point2d.origin Direction2d.y
 
 -}
-y : Axis2d
+y : Axis2d units coordinates
 y =
     through Point2d.origin Direction2d.y
 
@@ -92,9 +94,9 @@ y =
             (Direction2d.fromAngle (degrees 30))
 
 -}
-through : Point2d -> Direction2d -> Axis2d
-through point direction_ =
-    Types.Axis2d { originPoint = point, direction = direction_ }
+through : Point2d units coordinates -> Direction2d coordinates -> Axis2d units coordinates
+through givenPoint givenDirection =
+    Types.Axis2d { originPoint = givenPoint, direction = givenDirection }
 
 
 {-| Construct an axis with the given direction, through the given origin point.
@@ -111,9 +113,9 @@ things with partial application:
     List.map (Axis2d.withDirection direction) points
 
 -}
-withDirection : Direction2d -> Point2d -> Axis2d
-withDirection direction_ originPoint_ =
-    Types.Axis2d { originPoint = originPoint_, direction = direction_ }
+withDirection : Direction2d coordinates -> Point2d units coordinates -> Axis2d units coordinates
+withDirection givenDirection givenPoint =
+    Types.Axis2d { originPoint = givenPoint, direction = givenDirection }
 
 
 {-| Get the origin point of an axis.
@@ -122,7 +124,7 @@ withDirection direction_ originPoint_ =
     --> Point2d.fromCoordinates ( 1, 3 )
 
 -}
-originPoint : Axis2d -> Point2d
+originPoint : Axis2d units coordinates -> Point2d units coordinates
 originPoint (Types.Axis2d axis) =
     axis.originPoint
 
@@ -133,7 +135,7 @@ originPoint (Types.Axis2d axis) =
     --> Direction2d.fromAngle (degrees 30)
 
 -}
-direction : Axis2d -> Direction2d
+direction : Axis2d units coordinates -> Direction2d coordinates
 direction (Types.Axis2d axis) =
     axis.direction
 
@@ -145,7 +147,7 @@ direction (Types.Axis2d axis) =
     -->     (Direction2d.fromAngle (degrees -150))
 
 -}
-reverse : Axis2d -> Axis2d
+reverse : Axis2d units coordinates -> Axis2d units coordinates
 reverse (Types.Axis2d axis) =
     through axis.originPoint (Direction2d.reverse axis.direction)
 
@@ -160,9 +162,9 @@ reverse (Types.Axis2d axis) =
     -->     (Direction2d.fromAngle (degrees 30))
 
 -}
-moveTo : Point2d -> Axis2d -> Axis2d
-moveTo newOrigin (Types.Axis2d axis) =
-    through newOrigin axis.direction
+moveTo : Point2d units coordinates -> Axis2d units coordinates -> Axis2d units coordinates
+moveTo newOrigin axis =
+    through newOrigin (direction axis)
 
 
 {-| Rotate an axis around a given center point by a given angle. Rotates the
@@ -175,7 +177,7 @@ direction by the given angle.
     -->     (Direction2d.fromAngle (degrees 120))
 
 -}
-rotateAround : Point2d -> Float -> Axis2d -> Axis2d
+rotateAround : Point2d units coordinates -> Angle -> Axis2d units coordinates -> Axis2d units coordinates
 rotateAround centerPoint angle =
     let
         rotatePoint =
@@ -199,7 +201,7 @@ the axis' origin point and leaves the direction unchanged.
     -->     (Direction2d.fromAngle (degrees 30))
 
 -}
-translateBy : Vector2d -> Axis2d -> Axis2d
+translateBy : Vector2d units coordinates -> Axis2d units coordinates -> Axis2d units coordinates
 translateBy vector (Types.Axis2d axis) =
     through (Point2d.translateBy vector axis.originPoint) axis.direction
 
@@ -214,7 +216,7 @@ is equivalent to
         (Vector2d.withLength distance direction)
 
 -}
-translateIn : Direction2d -> Float -> Axis2d -> Axis2d
+translateIn : Direction2d coordinates -> Quantity Float units -> Axis2d units coordinates -> Axis2d units coordinates
 translateIn translationDirection distance axis =
     translateBy (Vector2d.withLength distance translationDirection) axis
 
@@ -227,7 +229,7 @@ the axis to mirror is given second.
     -->     (Direction2d.fromAngle (degrees -30))
 
 -}
-mirrorAcross : Axis2d -> Axis2d -> Axis2d
+mirrorAcross : Axis2d units coordinates -> Axis2d units coordinates -> Axis2d units coordinates
 mirrorAcross otherAxis (Types.Axis2d axis) =
     through (Point2d.mirrorAcross otherAxis axis.originPoint)
         (Direction2d.mirrorAcross otherAxis axis.direction)
@@ -244,7 +246,7 @@ coordinates relative to a given reference frame.
     -->     (Direction2d.fromAngle (degrees 30))
 
 -}
-relativeTo : Frame2d -> Axis2d -> Axis2d
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Axis2d units globalCoordinates -> Axis2d units localCoordinates
 relativeTo frame (Types.Axis2d axis) =
     through (Point2d.relativeTo frame axis.originPoint)
         (Direction2d.relativeTo frame axis.direction)
@@ -261,7 +263,7 @@ frame, and return that axis expressed in global coordinates.
     -->     (Direction2d.fromAngle (degrees 30))
 
 -}
-placeIn : Frame2d -> Axis2d -> Axis2d
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Axis2d units localCoordinates -> Axis2d units globalCoordinates
 placeIn frame (Types.Axis2d axis) =
     through (Point2d.placeIn frame axis.originPoint)
         (Direction2d.placeIn frame axis.direction)
