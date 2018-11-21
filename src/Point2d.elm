@@ -70,22 +70,25 @@ like you can add two vectors.
 
 -}
 
+import Angle exposing (Angle)
 import Bootstrap.Axis2d as Axis2d
 import Bootstrap.Frame2d as Frame2d
 import Direction2d exposing (Direction2d)
 import Float.Extra as Float
 import Geometry.Types as Types exposing (Axis2d, Frame2d)
+import Quantity exposing (Quantity(..), Squared)
+import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
 
 
-addTo : Point2d -> Vector2d -> Point2d
+addTo : Point2d units coordinates -> Vector2d units coordinates -> Point2d units coordinates
 addTo point vector =
     translateBy vector point
 
 
 {-| -}
-type alias Point2d =
-    Types.Point2d
+type alias Point2d units coordinates =
+    Types.Point2d units coordinates
 
 
 {-| The point (0, 0).
@@ -94,9 +97,9 @@ type alias Point2d =
     --> Point2d.fromCoordinates ( 0, 0 )
 
 -}
-origin : Point2d
+origin : Point2d units coordinates
 origin =
-    fromCoordinates ( 0, 0 )
+    fromCoordinates ( Quantity.zero, Quantity.zero )
 
 
 {-| Construct a point from its X and Y coordinates.
@@ -105,9 +108,9 @@ origin =
         Point2d.fromCoordinates ( 2, 3 )
 
 -}
-fromCoordinates : ( Float, Float ) -> Point2d
-fromCoordinates =
-    Types.Point2d
+fromCoordinates : ( Quantity Float units, Quantity Float units ) -> Point2d units coordinates
+fromCoordinates givenCoordinates =
+    Types.Point2d givenCoordinates
 
 
 {-| Construct a point from a radius and angle. Radius is measured from the
@@ -117,9 +120,12 @@ origin and angle is measured counterclockwise from the positive X direction.
     --> Point2d.fromCoordinates ( -1.4142, 1.4142 )
 
 -}
-fromPolarCoordinates : ( Float, Float ) -> Point2d
-fromPolarCoordinates polarCoordinates_ =
-    fromCoordinates (fromPolar polarCoordinates_)
+fromPolarCoordinates : ( Quantity Float units, Angle ) -> Point2d units coordinates
+fromPolarCoordinates ( givenRadius, givenAngle ) =
+    fromCoordinates
+        ( givenRadius |> Quantity.scaleBy (Angle.cos givenAngle)
+        , givenRadius |> Quantity.scaleBy (Angle.sin givenAngle)
+        )
 
 
 {-| Construct a point halfway between two other points.
@@ -134,7 +140,7 @@ fromPolarCoordinates polarCoordinates_ =
     --> Point2d.fromCoordinates ( 2, 4 )
 
 -}
-midpoint : Point2d -> Point2d -> Point2d
+midpoint : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates
 midpoint firstPoint secondPoint =
     interpolateFrom firstPoint secondPoint 0.5
 
@@ -155,7 +161,7 @@ empty.
     --> Just (Point2d.fromCoordinates ( 0.6667, 0.3333 ))
 
 -}
-centroid : List Point2d -> Maybe Point2d
+centroid : List (Point2d units coordinates) -> Maybe (Point2d units coordinates)
 centroid points =
     case points of
         [] ->
@@ -166,10 +172,10 @@ centroid points =
                 ( x0, y0 ) =
                     coordinates first
             in
-            Just (centroidHelp x0 y0 1 0 0 rest)
+            Just (centroidHelp x0 y0 1 Quantity.zero Quantity.zero rest)
 
 
-centroidHelp : Float -> Float -> Float -> Float -> Float -> List Point2d -> Point2d
+centroidHelp : Quantity Float units -> Quantity Float units -> Float -> Quantity Float units -> Quantity Float units -> List (Point2d units coordinates) -> Point2d units coordinates
 centroidHelp x0 y0 count dx dy points =
     case points of
         point :: remaining ->
@@ -178,17 +184,21 @@ centroidHelp x0 y0 count dx dy points =
                     coordinates point
 
                 newDx =
-                    dx + (x - x0)
+                    dx |> Quantity.plus (x |> Quantity.minus x0)
 
                 newDy =
-                    dy + (y - y0)
+                    dy |> Quantity.plus (y |> Quantity.minus y0)
             in
             centroidHelp x0 y0 (count + 1) newDx newDy remaining
 
         [] ->
+            let
+                scale =
+                    1 / count
+            in
             fromCoordinates
-                ( x0 + dx / count
-                , y0 + dy / count
+                ( x0 |> Quantity.plus (dx |> Quantity.scaleBy scale)
+                , y0 |> Quantity.plus (dy |> Quantity.scaleBy scale)
                 )
 
 
@@ -225,7 +235,7 @@ You can pass values less than zero or greater than one to extrapolate:
     --> Point2d.fromCoordinates ( 10, 15 )
 
 -}
-interpolateFrom : Point2d -> Point2d -> Float -> Point2d
+interpolateFrom : Point2d units coordinates -> Point2d units coordinates -> Float -> Point2d units coordinates
 interpolateFrom p1 p2 t =
     let
         ( x1, y1 ) =
@@ -235,8 +245,8 @@ interpolateFrom p1 p2 t =
             coordinates p2
     in
     fromCoordinates
-        ( Float.interpolateFrom x1 x2 t
-        , Float.interpolateFrom y1 y2 t
+        ( Quantity.interpolateFrom x1 x2 t
+        , Quantity.interpolateFrom y1 y2 t
         )
 
 
@@ -260,7 +270,7 @@ the axis:
     --> Point2d.fromCoordinates ( 4, 1 )
 
 -}
-along : Axis2d -> Float -> Point2d
+along : Axis2d units coordinates -> Quantity Float units -> Point2d units coordinates
 along axis distance =
     Axis2d.originPoint axis
         |> translateBy (Vector2d.withLength distance (Axis2d.direction axis))
@@ -284,7 +294,7 @@ is equivalent to
         |> Point2d.placeIn frame
 
 -}
-fromCoordinatesIn : Frame2d -> ( Float, Float ) -> Point2d
+fromCoordinatesIn : Frame2d units coordinates { defines : localCoordinates } -> ( Quantity Float units, Quantity Float units ) -> Point2d units coordinates
 fromCoordinatesIn frame localCoordinates =
     placeIn frame (fromCoordinates localCoordinates)
 
@@ -300,9 +310,9 @@ frame.
     --> Point2d.fromCoordinates ( 3.4142, 2.4142 )
 
 -}
-fromPolarCoordinatesIn : Frame2d -> ( Float, Float ) -> Point2d
-fromPolarCoordinatesIn frame polarCoordinates_ =
-    placeIn frame (fromPolarCoordinates polarCoordinates_)
+fromPolarCoordinatesIn : Frame2d units coordinates { defines : localCoordinates } -> ( Quantity Float units, Angle ) -> Point2d units coordinates
+fromPolarCoordinatesIn frame givenPolarCoordinates =
+    placeIn frame (fromPolarCoordinates givenPolarCoordinates)
 
 
 {-| Attempt to find the circumcenter of three points; this is the center of the
@@ -338,16 +348,16 @@ collinear, returns `Nothing`.
     --> Nothing
 
 -}
-circumcenter : Point2d -> Point2d -> Point2d -> Maybe Point2d
+circumcenter : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Maybe (Point2d units coordinates)
 circumcenter p1 p2 p3 =
     let
-        a2 =
+        (Quantity a2) =
             squaredDistanceFrom p1 p2
 
-        b2 =
+        (Quantity b2) =
             squaredDistanceFrom p2 p3
 
-        c2 =
+        (Quantity c2) =
             squaredDistanceFrom p3 p1
 
         t1 =
@@ -376,19 +386,19 @@ circumcenter p1 p2 p3 =
             w3 =
                 t3 / sum
 
-            ( x1, y1 ) =
+            ( Quantity x1, Quantity y1 ) =
                 coordinates p1
 
-            ( x2, y2 ) =
+            ( Quantity x2, Quantity y2 ) =
                 coordinates p2
 
-            ( x3, y3 ) =
+            ( Quantity x3, Quantity y3 ) =
                 coordinates p3
         in
         Just <|
             fromCoordinates
-                ( w1 * x3 + w2 * x1 + w3 * x2
-                , w1 * y3 + w2 * y1 + w3 * y2
+                ( Quantity (w1 * x3 + w2 * x1 + w3 * x2)
+                , Quantity (w1 * y3 + w2 * y1 + w3 * y2)
                 )
 
 
@@ -398,9 +408,9 @@ circumcenter p1 p2 p3 =
         Point2d.coordinates point
 
 -}
-coordinates : Point2d -> ( Float, Float )
-coordinates (Types.Point2d coordinates_) =
-    coordinates_
+coordinates : Point2d units coordinates -> ( Quantity Float units, Quantity Float units )
+coordinates (Types.Point2d pointCoordinates) =
+    pointCoordinates
 
 
 {-| Get the X coordinate of a point.
@@ -409,7 +419,7 @@ coordinates (Types.Point2d coordinates_) =
     --> 2
 
 -}
-xCoordinate : Point2d -> Float
+xCoordinate : Point2d units coordinates -> Quantity Float units
 xCoordinate (Types.Point2d ( x, _ )) =
     x
 
@@ -420,7 +430,7 @@ xCoordinate (Types.Point2d ( x, _ )) =
     --> 3
 
 -}
-yCoordinate : Point2d -> Float
+yCoordinate : Point2d units coordinates -> Quantity Float units
 yCoordinate (Types.Point2d ( _, y )) =
     y
 
@@ -432,9 +442,13 @@ yCoordinate (Types.Point2d ( _, y )) =
     --> ( 1.4142, degrees 45 )
 
 -}
-polarCoordinates : Point2d -> ( Float, Float )
+polarCoordinates : Point2d units coordinates -> ( Quantity Float units, Angle )
 polarCoordinates point =
-    toPolar (coordinates point)
+    let
+        ( x, y ) =
+            coordinates point
+    in
+    ( distanceFrom origin point, Angle.atan2 y x )
 
 
 {-| Compare two points within a tolerance. Returns true if the distance
@@ -453,9 +467,10 @@ between the two given points is less than the given tolerance.
     --> False
 
 -}
-equalWithin : Float -> Point2d -> Point2d -> Bool
+equalWithin : Quantity Float units -> Point2d units coordinates -> Point2d units coordinates -> Bool
 equalWithin tolerance firstPoint secondPoint =
-    squaredDistanceFrom firstPoint secondPoint <= tolerance * tolerance
+    squaredDistanceFrom firstPoint secondPoint
+        |> Quantity.lessThan (Quantity.squared tolerance)
 
 
 {-| Find the distance from the first point to the second.
@@ -486,9 +501,9 @@ Partial application can be useful:
     --> ]
 
 -}
-distanceFrom : Point2d -> Point2d -> Float
+distanceFrom : Point2d units coordinates -> Point2d units coordinates -> Quantity Float units
 distanceFrom firstPoint secondPoint =
-    sqrt (squaredDistanceFrom firstPoint secondPoint)
+    Quantity.sqrt (squaredDistanceFrom firstPoint secondPoint)
 
 
 {-| Find the square of the distance from one point to another.
@@ -506,7 +521,7 @@ the speed difference will be negligible and using `distanceFrom` is much more
 readable!
 
 -}
-squaredDistanceFrom : Point2d -> Point2d -> Float
+squaredDistanceFrom : Point2d units coordinates -> Point2d units coordinates -> Quantity Float (Squared units)
 squaredDistanceFrom firstPoint secondPoint =
     Vector2d.squaredLength (Vector2d.from firstPoint secondPoint)
 
@@ -531,7 +546,7 @@ it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
     --> -1
 
 -}
-signedDistanceAlong : Axis2d -> Point2d -> Float
+signedDistanceAlong : Axis2d units coordinates -> Point2d units coordinates -> Quantity Float units
 signedDistanceAlong axis point =
     Vector2d.from (Axis2d.originPoint axis) point
         |> Vector2d.componentIn (Axis2d.direction axis)
@@ -573,16 +588,16 @@ function:
     --> 2
 
 -}
-signedDistanceFrom : Axis2d -> Point2d -> Float
+signedDistanceFrom : Axis2d units coordinates -> Point2d units coordinates -> Quantity Float units
 signedDistanceFrom axis point =
     let
-        directionVector =
-            Direction2d.toVector (Axis2d.direction axis)
+        perpendicularDirection =
+            Direction2d.rotateCounterclockwise (Axis2d.direction axis)
 
         displacementVector =
             Vector2d.from (Axis2d.originPoint axis) point
     in
-    Vector2d.crossProduct directionVector displacementVector
+    displacementVector |> Vector2d.componentIn perpendicularDirection
 
 
 {-| Perform a uniform scaling about the given center point. The center point is
@@ -607,7 +622,7 @@ you want it is confusing and error prone. Try a combination of mirror and/or
 rotation operations instead.
 
 -}
-scaleAbout : Point2d -> Float -> Point2d -> Point2d
+scaleAbout : Point2d units coordinates -> Float -> Point2d units coordinates -> Point2d units coordinates
 scaleAbout centerPoint scale point =
     Vector2d.from centerPoint point
         |> Vector2d.scaleBy scale
@@ -631,9 +646,11 @@ given last.
     --> Point2d.fromCoordinates ( 2.7071, 0.7071 )
 
 -}
-rotateAround : Point2d -> Float -> Point2d -> Point2d
-rotateAround centerPoint angle =
-    Vector2d.from centerPoint >> Vector2d.rotateBy angle >> addTo centerPoint
+rotateAround : Point2d units coordinates -> Angle -> Point2d units coordinates -> Point2d units coordinates
+rotateAround centerPoint angle point =
+    Vector2d.from centerPoint point
+        |> Vector2d.rotateBy angle
+        |> addTo centerPoint
 
 
 {-| Translate a point by a given displacement.
@@ -651,7 +668,7 @@ In more mathematical terms, this is 'point plus vector'. For 'point minus point'
 (giving the vector from one point to another), there is [`Vector2d.from`](Vector2d#from).
 
 -}
-translateBy : Vector2d -> Point2d -> Point2d
+translateBy : Vector2d units coordinates -> Point2d units coordinates -> Point2d units coordinates
 translateBy vector point =
     let
         ( vx, vy ) =
@@ -660,7 +677,7 @@ translateBy vector point =
         ( px, py ) =
             coordinates point
     in
-    fromCoordinates ( px + vx, py + vy )
+    fromCoordinates ( px |> Quantity.plus vx, py |> Quantity.plus vy )
 
 
 {-| Translate a point in a given direction by a given distance.
@@ -686,7 +703,7 @@ The distance can be negative:
     --> Point2d.fromCoordinates ( 1, 4 )
 
 -}
-translateIn : Direction2d -> Float -> Point2d -> Point2d
+translateIn : Direction2d coordinates -> Quantity Float units -> Point2d units coordinates -> Point2d units coordinates
 translateIn direction distance point =
     let
         ( dx, dy ) =
@@ -695,7 +712,10 @@ translateIn direction distance point =
         ( px, py ) =
             coordinates point
     in
-    fromCoordinates ( px + distance * dx, py + distance * dy )
+    fromCoordinates
+        ( px |> Quantity.plus (distance |> Quantity.scaleBy dx)
+        , py |> Quantity.plus (distance |> Quantity.scaleBy dy)
+        )
 
 
 {-| Mirror a point across an axis. The result will be the same distance from the
@@ -711,11 +731,15 @@ axis but on the opposite side.
     --> Point2d.fromCoordinates ( -2, 3 )
 
 -}
-mirrorAcross : Axis2d -> Point2d -> Point2d
-mirrorAcross axis =
-    Vector2d.from (Axis2d.originPoint axis)
-        >> Vector2d.mirrorAcross axis
-        >> addTo (Axis2d.originPoint axis)
+mirrorAcross : Axis2d units coordinates -> Point2d units coordinates -> Point2d units coordinates
+mirrorAcross axis point =
+    let
+        originPoint =
+            Axis2d.originPoint axis
+    in
+    Vector2d.from originPoint point
+        |> Vector2d.mirrorAcross axis
+        |> addTo originPoint
 
 
 {-| Project a point perpendicularly onto an axis.
@@ -739,11 +763,15 @@ The axis does not have to pass through the origin:
     --> Point2d.fromCoordinates ( 1, 3 )
 
 -}
-projectOnto : Axis2d -> Point2d -> Point2d
-projectOnto axis =
-    Vector2d.from (Axis2d.originPoint axis)
-        >> Vector2d.projectOnto axis
-        >> addTo (Axis2d.originPoint axis)
+projectOnto : Axis2d units coordinates -> Point2d units coordinates -> Point2d units coordinates
+projectOnto axis point =
+    let
+        originPoint =
+            Axis2d.originPoint axis
+    in
+    Vector2d.from originPoint point
+        |> Vector2d.projectOnto axis
+        |> addTo originPoint
 
 
 {-| Take a point defined in global coordinates, and return it expressed in local
@@ -761,7 +789,7 @@ coordinates relative to a given reference frame.
     --> Point2d.fromCoordinates ( 0, -1 )
 
 -}
-relativeTo : Frame2d -> Point2d -> Point2d
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Point2d units globalCoordinates -> Point2d units localCoordinates
 relativeTo frame point =
     Vector2d.from (Frame2d.originPoint frame) point
         |> Vector2d.relativeTo frame
@@ -784,7 +812,7 @@ frame, and return that point expressed in global coordinates.
     --> Point2d.fromCoordinates ( 1, 1 )
 
 -}
-placeIn : Frame2d -> Point2d -> Point2d
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Point2d units localCoordinates -> Point2d units globalCoordinates
 placeIn frame point =
     Vector2d.fromComponents (coordinates point)
         |> Vector2d.placeIn frame
