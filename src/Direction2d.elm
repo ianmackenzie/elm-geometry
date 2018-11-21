@@ -97,31 +97,37 @@ For the examples, assume the following frames have been defined:
 
 -}
 
+import Angle exposing (Angle)
 import Bootstrap.Direction2d as Bootstrap
 import Geometry.Types as Types exposing (Axis2d, Frame2d, Point2d)
+import Quantity exposing (Quantity, Unitless)
 import Vector2d exposing (Vector2d)
 
 
-toDirection : Vector2d -> Direction2d
+toDirection : Vector2d Unitless coordinates -> Direction2d coordinates
 toDirection vector =
-    unsafe (Vector2d.components vector)
+    let
+        ( vx, vy ) =
+            Vector2d.components vector
+    in
+    unsafe ( Quantity.toFloat vx, Quantity.toFloat vy )
 
 
 {-| -}
-type alias Direction2d =
-    Types.Direction2d
+type alias Direction2d coordinates =
+    Types.Direction2d coordinates
 
 
 {-| Synonym for `Direction2d.positiveX`.
 -}
-x : Direction2d
+x : Direction2d coordinates
 x =
     unsafe ( 1, 0 )
 
 
 {-| Synonym for `Direction2d.positiveY`.
 -}
-y : Direction2d
+y : Direction2d coordinates
 y =
     unsafe ( 0, 1 )
 
@@ -132,7 +138,7 @@ y =
     --> ( 1, 0 )
 
 -}
-positiveX : Direction2d
+positiveX : Direction2d coordinates
 positiveX =
     unsafe ( 1, 0 )
 
@@ -143,7 +149,7 @@ positiveX =
     --> ( -1, 0 )
 
 -}
-negativeX : Direction2d
+negativeX : Direction2d coordinates
 negativeX =
     unsafe ( -1, 0 )
 
@@ -154,7 +160,7 @@ negativeX =
     --> ( 0, 1 )
 
 -}
-positiveY : Direction2d
+positiveY : Direction2d coordinates
 positiveY =
     unsafe ( 0, 1 )
 
@@ -165,7 +171,7 @@ positiveY =
     --> ( 0, -1 )
 
 -}
-negativeY : Direction2d
+negativeY : Direction2d coordinates
 negativeY =
     unsafe ( 0, -1 )
 
@@ -191,9 +197,9 @@ constructors like `Direction2d.fromAngle` (which will always result in a valid
 direction) or start with existing directions and transform them as necessary.
 
 -}
-unsafe : ( Float, Float ) -> Direction2d
-unsafe =
-    Types.Direction2d
+unsafe : ( Float, Float ) -> Direction2d coordinates
+unsafe givenComponents =
+    Types.Direction2d givenComponents
 
 
 {-| Attempt to construct the direction from the first given point to the second.
@@ -212,7 +218,7 @@ If the two points are coincident, returns `Nothing`.
     --> Nothing
 
 -}
-from : Point2d -> Point2d -> Maybe Direction2d
+from : Point2d units coordinates -> Point2d units coordinates -> Maybe (Direction2d coordinates)
 from firstPoint secondPoint =
     Vector2d.direction (Vector2d.from firstPoint secondPoint)
 
@@ -228,7 +234,7 @@ given direction 90 degrees counterclockwise. Synonym for
     --> Direction2d.negativeX
 
 -}
-perpendicularTo : Direction2d -> Direction2d
+perpendicularTo : Direction2d coordinates -> Direction2d coordinates
 perpendicularTo =
     Bootstrap.perpendicularTo
 
@@ -258,7 +264,7 @@ returns `Nothing`.
     --> Nothing
 
 -}
-orthonormalize : Vector2d -> Vector2d -> Maybe ( Direction2d, Direction2d )
+orthonormalize : Vector2d units coordinates -> Vector2d units coordinates -> Maybe ( Direction2d coordinates, Direction2d coordinates )
 orthonormalize xVector xyVector =
     Vector2d.direction xVector
         |> Maybe.andThen
@@ -270,14 +276,15 @@ orthonormalize xVector xyVector =
                     perpendicularComponent =
                         Vector2d.componentIn yDirection xyVector
                 in
-                if perpendicularComponent > 0.0 then
-                    Just ( xDirection, yDirection )
+                case Quantity.compare perpendicularComponent Quantity.zero of
+                    GT ->
+                        Just ( xDirection, yDirection )
 
-                else if perpendicularComponent < 0.0 then
-                    Just ( xDirection, reverse yDirection )
+                    LT ->
+                        Just ( xDirection, reverse yDirection )
 
-                else
-                    Nothing
+                    EQ ->
+                        Nothing
             )
 
 
@@ -293,7 +300,7 @@ is equivalent to
         (Direction2d.toVector yDirection)
 
 -}
-orthogonalize : Direction2d -> Direction2d -> Maybe ( Direction2d, Direction2d )
+orthogonalize : Direction2d coordinates -> Direction2d coordinates -> Maybe ( Direction2d coordinates, Direction2d coordinates )
 orthogonalize xDirection yDirection =
     orthonormalize (toVector xDirection) (toVector yDirection)
 
@@ -311,9 +318,9 @@ the positive X direction.
     --> Direction2d.negativeY
 
 -}
-fromAngle : Float -> Direction2d
+fromAngle : Angle -> Direction2d coordinates
 fromAngle angle =
-    unsafe ( cos angle, sin angle )
+    unsafe ( Angle.cos angle, Angle.sin angle )
 
 
 {-| Convert a direction to a polar angle (the counterclockwise angle in radians
@@ -329,13 +336,14 @@ from the positive X direction). The result will be in the range -π to π.
     --> degrees -90
 
 -}
-toAngle : Direction2d -> Float
+toAngle : Direction2d coordinates -> Angle
 toAngle direction =
     let
-        ( xComponent_, yComponent_ ) =
+        ( directionXComponent, directionYComponent ) =
             components direction
     in
-    atan2 yComponent_ xComponent_
+    Angle.atan2 (Quantity.float directionYComponent)
+        (Quantity.float directionXComponent)
 
 
 {-| Find the counterclockwise angle in radians from the first direction to the
@@ -351,7 +359,7 @@ second. The result will be in the range -π to π.
     --> degrees -30
 
 -}
-angleFrom : Direction2d -> Direction2d -> Float
+angleFrom : Direction2d coordinates -> Direction2d coordinates -> Angle
 angleFrom firstDirection secondDirection =
     let
         firstVector =
@@ -360,7 +368,7 @@ angleFrom firstDirection secondDirection =
         secondVector =
             toVector secondDirection
     in
-    atan2 (Vector2d.crossProduct firstVector secondVector)
+    Angle.atan2 (Vector2d.crossProduct firstVector secondVector)
         (Vector2d.dotProduct firstVector secondVector)
 
 
@@ -371,9 +379,9 @@ as a unit vector, also know as its direction cosines).
         Direction2d.components direction
 
 -}
-components : Direction2d -> ( Float, Float )
-components =
-    Bootstrap.components
+components : Direction2d coordinates -> ( Float, Float )
+components direction =
+    Bootstrap.components direction
 
 
 {-| Get the X component of a direction.
@@ -385,9 +393,9 @@ components =
     --> 0
 
 -}
-xComponent : Direction2d -> Float
-xComponent (Types.Direction2d ( xComponent_, _ )) =
-    xComponent_
+xComponent : Direction2d coordinates -> Float
+xComponent (Types.Direction2d ( directionXComponent, _ )) =
+    directionXComponent
 
 
 {-| Get the Y component of a direction.
@@ -399,9 +407,9 @@ xComponent (Types.Direction2d ( xComponent_, _ )) =
     --> 1
 
 -}
-yComponent : Direction2d -> Float
-yComponent (Types.Direction2d ( _, yComponent_ )) =
-    yComponent_
+yComponent : Direction2d coordinates -> Float
+yComponent (Types.Direction2d ( _, directionYComponent )) =
+    directionYComponent
 
 
 {-| Find the component of one direction in another direction. This is equal to
@@ -430,9 +438,10 @@ is equivalent to
     Direction2d.componentIn Direction2d.x direction
 
 -}
-componentIn : Direction2d -> Direction2d -> Float
+componentIn : Direction2d coordinates -> Direction2d coordinates -> Float
 componentIn firstDirection secondDirection =
     Vector2d.componentIn firstDirection (toVector secondDirection)
+        |> Quantity.toFloat
 
 
 {-| Compare two directions within an angular tolerance. Returns true if the
@@ -456,9 +465,10 @@ given tolerance.
     --> False
 
 -}
-equalWithin : Float -> Direction2d -> Direction2d -> Bool
+equalWithin : Angle -> Direction2d coordinates -> Direction2d coordinates -> Bool
 equalWithin angle firstDirection secondDirection =
-    abs (angleFrom firstDirection secondDirection) <= angle
+    Quantity.abs (angleFrom firstDirection secondDirection)
+        |> Quantity.lessThan angle
 
 
 {-| Convert a direction to a unit vector.
@@ -467,9 +477,13 @@ equalWithin angle firstDirection secondDirection =
     --> Vector2d.fromComponents ( 1, 0 )
 
 -}
-toVector : Direction2d -> Vector2d
+toVector : Direction2d coordinates -> Vector2d Unitless coordinates
 toVector direction =
-    Vector2d.fromComponents (components direction)
+    let
+        ( dx, dy ) =
+            components direction
+    in
+    Vector2d.fromComponents ( Quantity.float dx, Quantity.float dy )
 
 
 {-| Reverse a direction.
@@ -478,9 +492,9 @@ toVector direction =
     --> Direction2d.negativeY
 
 -}
-reverse : Direction2d -> Direction2d
-reverse =
-    Bootstrap.reverse
+reverse : Direction2d coordinates -> Direction2d coordinates
+reverse direction =
+    Bootstrap.reverse direction
 
 
 {-| Rotate a direction by 90 degrees clockwise.
@@ -492,13 +506,13 @@ reverse =
     --> Direction2d.negativeY
 
 -}
-rotateClockwise : Direction2d -> Direction2d
+rotateClockwise : Direction2d coordinates -> Direction2d coordinates
 rotateClockwise direction =
     let
-        ( xComponent_, yComponent_ ) =
+        ( directionXComponent, directionYComponent ) =
             components direction
     in
-    unsafe ( yComponent_, -xComponent_ )
+    unsafe ( directionYComponent, -directionXComponent )
 
 
 {-| Rotate a direction by 90 degrees counterclockwise.
@@ -510,13 +524,13 @@ rotateClockwise direction =
     --> Direction2d.negativeX
 
 -}
-rotateCounterclockwise : Direction2d -> Direction2d
+rotateCounterclockwise : Direction2d coordinates -> Direction2d coordinates
 rotateCounterclockwise direction =
     let
-        ( xComponent_, yComponent_ ) =
+        ( directionXComponent, directionYComponent ) =
             components direction
     in
-    unsafe ( -yComponent_, xComponent_ )
+    unsafe ( -directionYComponent, directionXComponent )
 
 
 {-| Rotate a direction counterclockwise by a given angle (in radians).
@@ -528,7 +542,7 @@ rotateCounterclockwise direction =
     --> Direction2d.fromAngle (degrees 135)
 
 -}
-rotateBy : Float -> Direction2d -> Direction2d
+rotateBy : Angle -> Direction2d coordinates -> Direction2d coordinates
 rotateBy angle direction =
     toVector direction |> Vector2d.rotateBy angle |> toDirection
 
@@ -548,7 +562,7 @@ the axis affects the result, since directions are position-independent.
     --> Direction2d.x
 
 -}
-mirrorAcross : Axis2d -> Direction2d -> Direction2d
+mirrorAcross : Axis2d units coordinates -> Direction2d coordinates -> Direction2d coordinates
 mirrorAcross axis direction =
     toVector direction |> Vector2d.mirrorAcross axis |> toDirection
 
@@ -566,7 +580,7 @@ local coordinates relative to a given reference frame.
     --> Direction2d.fromAngle (degrees 60)
 
 -}
-relativeTo : Frame2d -> Direction2d -> Direction2d
+relativeTo : Frame2d units coordinates { defines : localCoordinates } -> Direction2d coordinates -> Direction2d localCoordinates
 relativeTo frame direction =
     toVector direction |> Vector2d.relativeTo frame |> toDirection
 
@@ -584,6 +598,6 @@ frame, and return that direction expressed in global coordinates.
     --> Direction2d.fromAngle (degrees 120)
 
 -}
-placeIn : Frame2d -> Direction2d -> Direction2d
+placeIn : Frame2d units coordinates { defines : localCoordinates } -> Direction2d localCoordinates -> Direction2d coordinates
 placeIn frame direction =
     toVector direction |> Vector2d.placeIn frame |> toDirection
