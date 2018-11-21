@@ -150,31 +150,23 @@ type BoundingBox3d units coordinates
         }
 
 
-type RectangleCoordinates
-    = RectangleCoordinates
-
-
 type Rectangle2d units coordinates
     = Rectangle2d
-        { axes : Frame2d units coordinates { defines : RectangleCoordinates }
+        { axes : Frame2d units coordinates {}
         , dimensions : ( Quantity Float units, Quantity Float units )
         }
 
 
 type Rectangle3d units coordinates
     = Rectangle3d
-        { axes : SketchPlane3d units coordinates { defines : RectangleCoordinates }
+        { axes : SketchPlane3d units coordinates {}
         , dimensions : ( Quantity Float units, Quantity Float units )
         }
 
 
-type BlockCoordinates
-    = BlockCoordinates
-
-
 type Block3d units coordinates
     = Block3d
-        { axes : Frame3d units coordinates { defines : BlockCoordinates }
+        { axes : Frame3d units coordinates {}
         , dimensions : ( Quantity Float units, Quantity Float units, Quantity Float units )
         }
 
@@ -209,13 +201,9 @@ type Circle3d units coordinates
         }
 
 
-type EllipseCoordinates
-    = EllipseCoordinates
-
-
 type Ellipse2d units coordinates
     = Ellipse2d
-        { axes : Frame2d units coordinates { defines : EllipseCoordinates }
+        { axes : Frame2d units coordinates {}
         , xRadius : Quantity Float units
         , yRadius : Quantity Float units
         }
