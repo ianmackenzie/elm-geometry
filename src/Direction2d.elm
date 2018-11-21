@@ -580,7 +580,7 @@ local coordinates relative to a given reference frame.
     --> Direction2d.fromAngle (degrees 60)
 
 -}
-relativeTo : Frame2d units coordinates { defines : localCoordinates } -> Direction2d coordinates -> Direction2d localCoordinates
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Direction2d globalCoordinates -> Direction2d localCoordinates
 relativeTo frame direction =
     toVector direction |> Vector2d.relativeTo frame |> toDirection
 
@@ -598,6 +598,6 @@ frame, and return that direction expressed in global coordinates.
     --> Direction2d.fromAngle (degrees 120)
 
 -}
-placeIn : Frame2d units coordinates { defines : localCoordinates } -> Direction2d localCoordinates -> Direction2d coordinates
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Direction2d localCoordinates -> Direction2d globalCoordinates
 placeIn frame direction =
     toVector direction |> Vector2d.placeIn frame |> toDirection
