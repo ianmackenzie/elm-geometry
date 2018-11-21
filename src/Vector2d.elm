@@ -784,7 +784,7 @@ The position of the axis doesn't matter, only its orientation:
     --> Vector2d.fromComponents ( 2, -3 )
 
 -}
-mirrorAcross : Axis2d units coordinates -> Vector2d units coordinates -> Vector2d units coordinates
+mirrorAcross : Axis2d axisUnits coordinates -> Vector2d units coordinates -> Vector2d units coordinates
 mirrorAcross givenAxis givenVector =
     let
         ( dx, dy ) =
@@ -854,7 +854,7 @@ local coordinates relative to a given reference frame.
     --> Vector2d.fromComponents ( 1.732, -1 )
 
 -}
-relativeTo : Frame2d units coordinates { defines : localCoordinates } -> Vector2d units coordinates -> Vector2d units localCoordinates
+relativeTo : Frame2d frameUnits coordinates { defines : localCoordinates } -> Vector2d units coordinates -> Vector2d units localCoordinates
 relativeTo givenFrame givenVector =
     fromComponents
         ( componentIn (Frame2d.xDirection givenFrame) givenVector
@@ -870,7 +870,7 @@ frame, and return that vector expressed in global coordinates.
     --> Vector2d.fromComponents ( 1.732, 1 )
 
 -}
-placeIn : Frame2d units coordinates { defines : localCoordinates } -> Vector2d units localCoordinates -> Vector2d units coordinates
+placeIn : Frame2d frameUnits coordinates { defines : localCoordinates } -> Vector2d units localCoordinates -> Vector2d units coordinates
 placeIn givenFrame givenVector =
     let
         ( x1, y1 ) =
