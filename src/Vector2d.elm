@@ -106,8 +106,8 @@ import Quantity.Extra as Quantity
 
 
 {-| -}
-type alias Vector2d coordinates units =
-    Types.Vector2d coordinates units
+type alias Vector2d units coordinates =
+    Types.Vector2d units coordinates
 
 
 {-| The zero vector.
@@ -116,7 +116,7 @@ type alias Vector2d coordinates units =
     --> Vector2d.fromComponents ( 0, 0 )
 
 -}
-zero : Vector2d coordinates units
+zero : Vector2d units coordinates
 zero =
     fromComponents ( Quantity.zero, Quantity.zero )
 
@@ -127,7 +127,7 @@ zero =
         Vector2d.fromComponents ( 2, 3 )
 
 -}
-fromComponents : ( Quantity Float units, Quantity Float units ) -> Vector2d coordinates units
+fromComponents : ( Quantity Float units, Quantity Float units ) -> Vector2d units coordinates
 fromComponents givenComponents =
     Types.Vector2d givenComponents
 
@@ -139,7 +139,7 @@ counterclockwise from the positive X direction.
     -->Vector2d.fromComponents ( -1.4142, 1.4142 )
 
 -}
-fromPolarComponents : ( Quantity Float units, Angle ) -> Vector2d coordinates units
+fromPolarComponents : ( Quantity Float units, Angle ) -> Vector2d units coordinates
 fromPolarComponents ( givenRadius, givenAngle ) =
     fromComponents
         ( givenRadius |> Quantity.scaleBy (Angle.cos givenAngle)
@@ -159,7 +159,7 @@ fromPolarComponents ( givenRadius, givenAngle ) =
     --> Vector2d.fromComponents ( 3, 4 )
 
 -}
-from : Point2d coordinates units -> Point2d coordinates units -> Vector2d coordinates units
+from : Point2d units coordinates -> Point2d units coordinates -> Vector2d units coordinates
 from firstPoint secondPoint =
     let
         ( x1, y1 ) =
@@ -180,7 +180,7 @@ from firstPoint secondPoint =
     --> Vector2d.fromComponents ( 0, 5 )
 
 -}
-withLength : Quantity Float units -> Direction2d coordinates -> Vector2d coordinates units
+withLength : Quantity Float units -> Direction2d coordinates -> Vector2d units coordinates
 withLength givenLength givenDirection =
     let
         ( dx, dy ) =
@@ -212,7 +212,7 @@ length as the given vector. Alias for `Vector2d.rotateCounterclockwise`.
     --> Vector2d.zero
 
 -}
-perpendicularTo : Vector2d coordinates units -> Vector2d coordinates units
+perpendicularTo : Vector2d units coordinates -> Vector2d units coordinates
 perpendicularTo givenVector =
     rotateCounterclockwise givenVector
 
@@ -250,7 +250,7 @@ You can pass values less than zero or greater than one to extrapolate:
     --> Vector2d.fromComponents ( 10, 15 )
 
 -}
-interpolateFrom : Vector2d coordinates units -> Vector2d coordinates units -> Float -> Vector2d coordinates units
+interpolateFrom : Vector2d units coordinates -> Vector2d units coordinates -> Float -> Vector2d units coordinates
 interpolateFrom firstVector secondVector givenParameter =
     let
         ( x1, y1 ) =
@@ -277,7 +277,7 @@ to extract both the X and Y components of a vector in one line of code:
         Vector2d.components vector
 
 -}
-components : Vector2d coordinates units -> ( Quantity Float units, Quantity Float units )
+components : Vector2d units coordinates -> ( Quantity Float units, Quantity Float units )
 components (Types.Vector2d vectorComponents) =
     vectorComponents
 
@@ -288,7 +288,7 @@ components (Types.Vector2d vectorComponents) =
     --> 2
 
 -}
-xComponent : Vector2d coordinates units -> Quantity Float units
+xComponent : Vector2d units coordinates -> Quantity Float units
 xComponent (Types.Vector2d ( x, _ )) =
     x
 
@@ -299,7 +299,7 @@ xComponent (Types.Vector2d ( x, _ )) =
     --> 3
 
 -}
-yComponent : Vector2d coordinates units -> Quantity Float units
+yComponent : Vector2d units coordinates -> Quantity Float units
 yComponent (Types.Vector2d ( _, y )) =
     y
 
@@ -319,7 +319,7 @@ is equivalent to
     Vector2d.componentIn Direction2d.x vector
 
 -}
-componentIn : Direction2d coordinates -> Vector2d coordinates units -> Quantity Float units
+componentIn : Direction2d coordinates -> Vector2d units coordinates -> Quantity Float units
 componentIn givenDirection givenVector =
     let
         ( dx, dy ) =
@@ -338,7 +338,7 @@ componentIn givenDirection givenVector =
     --> ( 1.4142, degrees 45 )
 
 -}
-polarComponents : Vector2d coordinates units -> ( Quantity Float units, Angle )
+polarComponents : Vector2d units coordinates -> ( Quantity Float units, Angle )
 polarComponents givenVector =
     let
         ( x, y ) =
@@ -363,7 +363,7 @@ between the two given vectors has magnitude less than the given tolerance.
     --> False
 
 -}
-equalWithin : Quantity Float units -> Vector2d coordinates units -> Vector2d coordinates units -> Bool
+equalWithin : Quantity Float units -> Vector2d units coordinates -> Vector2d units coordinates -> Bool
 equalWithin givenTolerance firstVector secondVector =
     if givenTolerance |> Quantity.lessThan Quantity.zero then
         False
@@ -385,7 +385,7 @@ equalWithin givenTolerance firstVector secondVector =
     --> 5
 
 -}
-length : Vector2d coordinates units -> Quantity Float units
+length : Vector2d units coordinates -> Quantity Float units
 length givenVector =
     Quantity.sqrt (squaredLength givenVector)
 
@@ -404,7 +404,7 @@ the speed difference will be negligible and using `length` is much more
 readable!
 
 -}
-squaredLength : Vector2d coordinates units -> Quantity Float (Squared units)
+squaredLength : Vector2d units coordinates -> Quantity Float (Squared units)
 squaredLength givenVector =
     let
         ( x, y ) =
@@ -423,7 +423,7 @@ return `Nothing`.
     --> Nothing
 
 -}
-direction : Vector2d coordinates units -> Maybe (Direction2d coordinates)
+direction : Vector2d units coordinates -> Maybe (Direction2d coordinates)
 direction givenVector =
     let
         vectorLength =
@@ -460,7 +460,7 @@ vector, returns `Nothing`.
     --> Nothing
 
 -}
-lengthAndDirection : Vector2d coordinates units -> Maybe ( Quantity Float units, Direction2d coordinates )
+lengthAndDirection : Vector2d units coordinates -> Maybe ( Quantity Float units, Direction2d coordinates )
 lengthAndDirection givenVector =
     let
         vectorLength =
@@ -507,7 +507,7 @@ like
 (which is functionally equivalent to `Vector2d.normalize vector`) is too high.
 
 -}
-normalize : Vector2d coordinates units -> Vector2d coordinates Unitless
+normalize : Vector2d units coordinates -> Vector2d Unitless coordinates
 normalize givenVector =
     let
         vectorLength =
@@ -539,7 +539,7 @@ normalize givenVector =
     --> Vector2d.fromComponents ( 4, 6 )
 
 -}
-plus : Vector2d coordinates units -> Vector2d coordinates units -> Vector2d coordinates units
+plus : Vector2d units coordinates -> Vector2d units coordinates -> Vector2d units coordinates
 plus secondVector firstVector =
     let
         ( x1, y1 ) =
@@ -566,7 +566,7 @@ plus secondVector firstVector =
     --> Vector2d.fromComponents ( 4, 3 )
 
 -}
-minus : Vector2d coordinates units -> Vector2d coordinates units -> Vector2d coordinates units
+minus : Vector2d units coordinates -> Vector2d units coordinates -> Vector2d units coordinates
 minus secondVector firstVector =
     let
         ( x1, y1 ) =
@@ -593,7 +593,7 @@ minus secondVector firstVector =
     --> 11
 
 -}
-dotProduct : Vector2d coordinates units -> Vector2d coordinates units -> Quantity Float (Squared units)
+dotProduct : Vector2d units coordinates -> Vector2d units coordinates -> Quantity Float (Squared units)
 dotProduct firstVector secondVector =
     let
         ( x1, y1 ) =
@@ -645,7 +645,7 @@ Some examples:
     --> 0
 
 -}
-crossProduct : Vector2d coordinates units -> Vector2d coordinates units -> Quantity Float (Squared units)
+crossProduct : Vector2d units coordinates -> Vector2d units coordinates -> Quantity Float (Squared units)
 crossProduct firstVector secondVector =
     let
         ( x1, y1 ) =
@@ -666,7 +666,7 @@ crossProduct firstVector secondVector =
 the naming used in other modules.)
 
 -}
-reverse : Vector2d coordinates units -> Vector2d coordinates units
+reverse : Vector2d units coordinates -> Vector2d units coordinates
 reverse givenVector =
     let
         ( x, y ) =
@@ -685,7 +685,7 @@ a more geometrically meaningful name and to be consistent with the `scaleAbout`
 name used in other modules.)
 
 -}
-scaleBy : Float -> Vector2d coordinates units -> Vector2d coordinates units
+scaleBy : Float -> Vector2d units coordinates -> Vector2d units coordinates
 scaleBy givenScale givenVector =
     let
         ( x, y ) =
@@ -708,7 +708,7 @@ scaleBy givenScale givenVector =
     --> Vector2d.fromComponents ( -1, 0 )
 
 -}
-rotateBy : Angle -> Vector2d coordinates units -> Vector2d coordinates units
+rotateBy : Angle -> Vector2d units coordinates -> Vector2d units coordinates
 rotateBy givenAngle givenVector =
     let
         cosine =
@@ -737,7 +737,7 @@ is equivalent to
 but is more efficient.
 
 -}
-rotateCounterclockwise : Vector2d coordinates units -> Vector2d coordinates units
+rotateCounterclockwise : Vector2d units coordinates -> Vector2d units coordinates
 rotateCounterclockwise givenVector =
     let
         ( x, y ) =
@@ -757,7 +757,7 @@ is equivalent to
 but is more efficient.
 
 -}
-rotateClockwise : Vector2d coordinates units -> Vector2d coordinates units
+rotateClockwise : Vector2d units coordinates -> Vector2d units coordinates
 rotateClockwise givenVector =
     let
         ( x, y ) =
@@ -784,7 +784,7 @@ The position of the axis doesn't matter, only its orientation:
     --> Vector2d.fromComponents ( 2, -3 )
 
 -}
-mirrorAcross : Axis2d coordinates units -> Vector2d coordinates units -> Vector2d coordinates units
+mirrorAcross : Axis2d units coordinates -> Vector2d units coordinates -> Vector2d units coordinates
 mirrorAcross givenAxis givenVector =
     let
         ( dx, dy ) =
@@ -823,7 +823,7 @@ portion.
     --> Vector2d.fromComponents ( 0, 3 )
 
 -}
-projectionIn : Direction2d coordinates -> Vector2d coordinates units -> Vector2d coordinates units
+projectionIn : Direction2d coordinates -> Vector2d units coordinates -> Vector2d units coordinates
 projectionIn givenDirection givenVector =
     givenDirection |> withLength (givenVector |> componentIn givenDirection)
 
@@ -841,7 +841,7 @@ projectionIn givenDirection givenVector =
 This is equivalent to finding the projection in the axis' direction.
 
 -}
-projectOnto : Axis2d coordinates units -> Vector2d coordinates units -> Vector2d coordinates units
+projectOnto : Axis2d units coordinates -> Vector2d units coordinates -> Vector2d units coordinates
 projectOnto givenAxis givenVector =
     projectionIn (Axis2d.direction givenAxis) givenVector
 
@@ -854,7 +854,7 @@ local coordinates relative to a given reference frame.
     --> Vector2d.fromComponents ( 1.732, -1 )
 
 -}
-relativeTo : Frame2d coordinates units { defines : localCoordinates } -> Vector2d coordinates units -> Vector2d localCoordinates units
+relativeTo : Frame2d units coordinates { defines : localCoordinates } -> Vector2d units coordinates -> Vector2d units localCoordinates
 relativeTo givenFrame givenVector =
     fromComponents
         ( componentIn (Frame2d.xDirection givenFrame) givenVector
@@ -870,7 +870,7 @@ frame, and return that vector expressed in global coordinates.
     --> Vector2d.fromComponents ( 1.732, 1 )
 
 -}
-placeIn : Frame2d coordinates units { defines : localCoordinates } -> Vector2d localCoordinates units -> Vector2d coordinates units
+placeIn : Frame2d units coordinates { defines : localCoordinates } -> Vector2d units localCoordinates -> Vector2d units coordinates
 placeIn givenFrame givenVector =
     let
         ( x1, y1 ) =

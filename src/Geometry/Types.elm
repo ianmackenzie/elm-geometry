@@ -53,11 +53,11 @@ import Array exposing (Array)
 import Quantity exposing (Quantity)
 
 
-type Vector2d coordinates units
+type Vector2d units coordinates
     = Vector2d ( Quantity Float units, Quantity Float units )
 
 
-type Vector3d coordinates units
+type Vector3d units coordinates
     = Vector3d ( Quantity Float units, Quantity Float units, Quantity Float units )
 
 
@@ -69,68 +69,68 @@ type Direction3d coordinates
     = Direction3d ( Float, Float, Float )
 
 
-type Point2d coordinates units
+type Point2d units coordinates
     = Point2d ( Quantity Float units, Quantity Float units )
 
 
-type Point3d coordinates units
+type Point3d units coordinates
     = Point3d ( Quantity Float units, Quantity Float units, Quantity Float units )
 
 
-type Axis2d coordinates units
-    = Axis2d { originPoint : Point2d coordinates units, direction : Direction2d coordinates }
+type Axis2d units coordinates
+    = Axis2d { originPoint : Point2d units coordinates, direction : Direction2d coordinates }
 
 
-type Axis3d coordinates units
-    = Axis3d { originPoint : Point3d coordinates units, direction : Direction3d coordinates }
+type Axis3d units coordinates
+    = Axis3d { originPoint : Point3d units coordinates, direction : Direction3d coordinates }
 
 
-type Plane3d coordinates units
-    = Plane3d { originPoint : Point3d coordinates units, normalDirection : Direction3d coordinates }
+type Plane3d units coordinates
+    = Plane3d { originPoint : Point3d units coordinates, normalDirection : Direction3d coordinates }
 
 
-type Frame2d coordinates units defines
+type Frame2d units coordinates defines
     = Frame2d
-        { originPoint : Point2d coordinates units
+        { originPoint : Point2d units coordinates
         , xDirection : Direction2d coordinates
         , yDirection : Direction2d coordinates
         }
 
 
-type Frame3d coordinates units defines
+type Frame3d units coordinates defines
     = Frame3d
-        { originPoint : Point3d coordinates units
+        { originPoint : Point3d units coordinates
         , xDirection : Direction3d coordinates
         , yDirection : Direction3d coordinates
         , zDirection : Direction3d coordinates
         }
 
 
-type SketchPlane3d coordinates units defines
+type SketchPlane3d units coordinates defines
     = SketchPlane3d
-        { originPoint : Point3d coordinates units
+        { originPoint : Point3d units coordinates
         , xDirection : Direction3d coordinates
         , yDirection : Direction3d coordinates
         }
 
 
-type LineSegment2d coordinates units
-    = LineSegment2d ( Point2d coordinates units, Point2d coordinates units )
+type LineSegment2d units coordinates
+    = LineSegment2d ( Point2d units coordinates, Point2d units coordinates )
 
 
-type LineSegment3d coordinates units
-    = LineSegment3d ( Point3d coordinates units, Point3d coordinates units )
+type LineSegment3d units coordinates
+    = LineSegment3d ( Point3d units coordinates, Point3d units coordinates )
 
 
-type Triangle2d coordinates units
-    = Triangle2d ( Point2d coordinates units, Point2d coordinates units, Point2d coordinates units )
+type Triangle2d units coordinates
+    = Triangle2d ( Point2d units coordinates, Point2d units coordinates, Point2d units coordinates )
 
 
-type Triangle3d coordinates units
-    = Triangle3d ( Point3d coordinates units, Point3d coordinates units, Point3d coordinates units )
+type Triangle3d units coordinates
+    = Triangle3d ( Point3d units coordinates, Point3d units coordinates, Point3d units coordinates )
 
 
-type BoundingBox2d coordinates units
+type BoundingBox2d units coordinates
     = BoundingBox2d
         { minX : Quantity Float units
         , maxX : Quantity Float units
@@ -139,7 +139,7 @@ type BoundingBox2d coordinates units
         }
 
 
-type BoundingBox3d coordinates units
+type BoundingBox3d units coordinates
     = BoundingBox3d
         { minX : Quantity Float units
         , maxX : Quantity Float units
@@ -154,16 +154,16 @@ type RectangleCoordinates
     = RectangleCoordinates
 
 
-type Rectangle2d coordinates units
+type Rectangle2d units coordinates
     = Rectangle2d
-        { axes : Frame2d coordinates units { defines : RectangleCoordinates }
+        { axes : Frame2d units coordinates { defines : RectangleCoordinates }
         , dimensions : ( Quantity Float units, Quantity Float units )
         }
 
 
-type Rectangle3d coordinates units
+type Rectangle3d units coordinates
     = Rectangle3d
-        { axes : SketchPlane3d coordinates units { defines : RectangleCoordinates }
+        { axes : SketchPlane3d units coordinates { defines : RectangleCoordinates }
         , dimensions : ( Quantity Float units, Quantity Float units )
         }
 
@@ -172,38 +172,38 @@ type BlockCoordinates
     = BlockCoordinates
 
 
-type Block3d coordinates units
+type Block3d units coordinates
     = Block3d
-        { axes : Frame3d coordinates units { defines : BlockCoordinates }
+        { axes : Frame3d units coordinates { defines : BlockCoordinates }
         , dimensions : ( Quantity Float units, Quantity Float units, Quantity Float units )
         }
 
 
-type Polyline2d coordinates units
-    = Polyline2d (List (Point2d coordinates units))
+type Polyline2d units coordinates
+    = Polyline2d (List (Point2d units coordinates))
 
 
-type Polyline3d coordinates units
-    = Polyline3d (List (Point3d coordinates units))
+type Polyline3d units coordinates
+    = Polyline3d (List (Point3d units coordinates))
 
 
-type Polygon2d coordinates units
+type Polygon2d units coordinates
     = Polygon2d
-        { outerLoop : List (Point2d coordinates units)
-        , innerLoops : List (List (Point2d coordinates units))
+        { outerLoop : List (Point2d units coordinates)
+        , innerLoops : List (List (Point2d units coordinates))
         }
 
 
-type Circle2d coordinates units
+type Circle2d units coordinates
     = Circle2d
-        { centerPoint : Point2d coordinates units
+        { centerPoint : Point2d units coordinates
         , radius : Quantity Float units
         }
 
 
-type Circle3d coordinates units
+type Circle3d units coordinates
     = Circle3d
-        { centerPoint : Point3d coordinates units
+        { centerPoint : Point3d units coordinates
         , axialDirection : Direction3d coordinates
         , radius : Quantity Float units
         }
@@ -213,17 +213,17 @@ type EllipseCoordinates
     = EllipseCoordinates
 
 
-type Ellipse2d coordinates units
+type Ellipse2d units coordinates
     = Ellipse2d
-        { axes : Frame2d coordinates units { defines : EllipseCoordinates }
+        { axes : Frame2d units coordinates { defines : EllipseCoordinates }
         , xRadius : Quantity Float units
         , yRadius : Quantity Float units
         }
 
 
-type Sphere3d coordinates units
+type Sphere3d units coordinates
     = Sphere3d
-        { centerPoint : Point3d coordinates units
+        { centerPoint : Point3d units coordinates
         , radius : Quantity Float units
         }
 
@@ -235,18 +235,18 @@ type SweptAngle
     | LargeNegative
 
 
-type Arc2d coordinates units
+type Arc2d units coordinates
     = Arc2d
-        { startPoint : Point2d coordinates units
+        { startPoint : Point2d units coordinates
         , xDirection : Direction2d coordinates
         , signedLength : Quantity Float units
         , sweptAngle : Quantity Float units
         }
 
 
-type Arc3d coordinates units
+type Arc3d units coordinates
     = Arc3d
-        { startPoint : Point3d coordinates units
+        { startPoint : Point3d units coordinates
         , xDirection : Direction3d coordinates
         , yDirection : Direction3d coordinates
         , signedLength : Quantity Float units
@@ -254,65 +254,65 @@ type Arc3d coordinates units
         }
 
 
-type QuadraticSpline2d coordinates units
+type QuadraticSpline2d units coordinates
     = QuadraticSpline2d
-        { startPoint : Point2d coordinates units
-        , controlPoint : Point2d coordinates units
-        , endPoint : Point2d coordinates units
+        { startPoint : Point2d units coordinates
+        , controlPoint : Point2d units coordinates
+        , endPoint : Point2d units coordinates
         }
 
 
-type QuadraticSpline3d coordinates units
+type QuadraticSpline3d units coordinates
     = QuadraticSpline3d
-        { startPoint : Point3d coordinates units
-        , controlPoint : Point3d coordinates units
-        , endPoint : Point3d coordinates units
+        { startPoint : Point3d units coordinates
+        , controlPoint : Point3d units coordinates
+        , endPoint : Point3d units coordinates
         }
 
 
-type CubicSpline2d coordinates units
+type CubicSpline2d units coordinates
     = CubicSpline2d
-        { startPoint : Point2d coordinates units
-        , startControlPoint : Point2d coordinates units
-        , endControlPoint : Point2d coordinates units
-        , endPoint : Point2d coordinates units
+        { startPoint : Point2d units coordinates
+        , startControlPoint : Point2d units coordinates
+        , endControlPoint : Point2d units coordinates
+        , endPoint : Point2d units coordinates
         }
 
 
-type CubicSpline3d coordinates units
+type CubicSpline3d units coordinates
     = CubicSpline3d
-        { startPoint : Point3d coordinates units
-        , startControlPoint : Point3d coordinates units
-        , endControlPoint : Point3d coordinates units
-        , endPoint : Point3d coordinates units
+        { startPoint : Point3d units coordinates
+        , startControlPoint : Point3d units coordinates
+        , endControlPoint : Point3d units coordinates
+        , endPoint : Point3d units coordinates
         }
 
 
-type EllipticalArc2d coordinates units
+type EllipticalArc2d units coordinates
     = EllipticalArc2d
-        { ellipse : Ellipse2d coordinates units
+        { ellipse : Ellipse2d units coordinates
         , startAngle : Quantity Float units
         , sweptAngle : Quantity Float units
         }
 
 
-type alias DelaunayVertex vertex coordinates units =
+type alias DelaunayVertex vertex units coordinates =
     { vertex : vertex
     , index : Int
-    , position : Point2d coordinates units
+    , position : Point2d units coordinates
     }
 
 
-type DelaunayFace vertex coordinates units
-    = ThreeVertexFace (DelaunayVertex vertex coordinates units) (DelaunayVertex vertex coordinates units) (DelaunayVertex vertex coordinates units) (Circle2d coordinates units)
-    | TwoVertexFace (DelaunayVertex vertex coordinates units) (DelaunayVertex vertex coordinates units) Int (Direction2d coordinates)
-    | OneVertexFace (DelaunayVertex vertex coordinates units) Int Int (Direction2d coordinates)
+type DelaunayFace vertex units coordinates
+    = ThreeVertexFace (DelaunayVertex vertex units coordinates) (DelaunayVertex vertex units coordinates) (DelaunayVertex vertex units coordinates) (Circle2d units coordinates)
+    | TwoVertexFace (DelaunayVertex vertex units coordinates) (DelaunayVertex vertex units coordinates) Int (Direction2d coordinates)
+    | OneVertexFace (DelaunayVertex vertex units coordinates) Int Int (Direction2d coordinates)
 
 
-type DelaunayTriangulation2d vertex coordinates units
+type DelaunayTriangulation2d vertex units coordinates
     = EmptyDelaunayTriangulation2d
     | DelaunayTriangulation2d
         { vertices : Array vertex
-        , delaunayVertices : List (DelaunayVertex vertex coordinates units)
-        , faces : List (DelaunayFace vertex coordinates units)
+        , delaunayVertices : List (DelaunayVertex vertex units coordinates)
+        , faces : List (DelaunayFace vertex units coordinates)
         }

@@ -16,11 +16,11 @@ import Geometry.Types exposing (..)
 import Quantity exposing (Quantity)
 
 
-fromCoordinates : ( Quantity Float units, Quantity Float units ) -> Point2d coordinates units
+fromCoordinates : ( Quantity Float units, Quantity Float units ) -> Point2d units coordinates
 fromCoordinates givenCoordinates =
     Point2d givenCoordinates
 
 
-coordinates : Point2d coordinates units -> ( Quantity Float units, Quantity Float units )
+coordinates : Point2d units coordinates -> ( Quantity Float units, Quantity Float units )
 coordinates (Point2d pointCoordinates) =
     pointCoordinates
