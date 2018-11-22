@@ -10,7 +10,7 @@
 module BoundingBox2d exposing
     ( BoundingBox2d
     , fromExtrema, singleton, from, hull, intersection, aggregate, containingPoints
-    , extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint, centroid
+    , extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint
     , contains, isContainedIn, intersects, overlappingBy, separatedBy
     , scaleAbout, translateBy, translateIn
     )
@@ -59,12 +59,14 @@ box of an object than the object itself, such as:
 import Direction2d exposing (Direction2d)
 import Geometry.Types as Types
 import Point2d exposing (Point2d)
+import Quantity exposing (Quantity, Squared)
+import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
 
 
 {-| -}
-type alias BoundingBox2d =
-    Types.BoundingBox2d
+type alias BoundingBox2d units coordinates =
+    Types.BoundingBox2d units coordinates
 
 
 {-| Construct a bounding box from its minimum and maximum X and Y values:
@@ -82,17 +84,20 @@ if <code>minX&nbsp;>&nbsp;maxX</code>), then they will be swapped so that the
 resulting bounding box is valid.
 
 -}
-fromExtrema : { minX : Float, maxX : Float, minY : Float, maxY : Float } -> BoundingBox2d
-fromExtrema extrema_ =
-    if extrema_.minX <= extrema_.maxX && extrema_.minY <= extrema_.maxY then
-        Types.BoundingBox2d extrema_
+fromExtrema : { minX : Quantity Float units, maxX : Quantity Float units, minY : Quantity Float units, maxY : Quantity Float units } -> BoundingBox2d units coordinates
+fromExtrema givenExtrema =
+    if
+        (givenExtrema.minX |> Quantity.lessThanOrEqualTo givenExtrema.maxX)
+            && (givenExtrema.minY |> Quantity.lessThanOrEqualTo givenExtrema.maxY)
+    then
+        Types.BoundingBox2d givenExtrema
 
     else
         Types.BoundingBox2d
-            { minX = min extrema_.minX extrema_.maxX
-            , maxX = max extrema_.minX extrema_.maxX
-            , minY = min extrema_.minY extrema_.maxY
-            , maxY = max extrema_.minY extrema_.maxY
+            { minX = Quantity.min givenExtrema.minX givenExtrema.maxX
+            , maxX = Quantity.max givenExtrema.minX givenExtrema.maxX
+            , minY = Quantity.min givenExtrema.minY givenExtrema.maxY
+            , maxY = Quantity.max givenExtrema.minY givenExtrema.maxY
             }
 
 
@@ -110,7 +115,7 @@ fromExtrema extrema_ =
     -->     }
 
 -}
-singleton : Point2d -> BoundingBox2d
+singleton : Point2d units coordinates -> BoundingBox2d units coordinates
 singleton point =
     let
         ( x, y ) =
@@ -138,7 +143,7 @@ diagonal of the bounding box.
     -->     }
 
 -}
-from : Point2d -> Point2d -> BoundingBox2d
+from : Point2d units coordinates -> Point2d units coordinates -> BoundingBox2d units coordinates
 from firstPoint secondPoint =
     let
         ( x1, y1 ) =
@@ -148,10 +153,10 @@ from firstPoint secondPoint =
             Point2d.coordinates secondPoint
     in
     fromExtrema
-        { minX = min x1 x2
-        , maxX = max x1 x2
-        , minY = min y1 y2
-        , maxY = max y1 y2
+        { minX = Quantity.min x1 x2
+        , maxX = Quantity.max x1 x2
+        , minY = Quantity.min y1 y2
+        , maxY = Quantity.max y1 y2
         }
 
 
@@ -182,7 +187,7 @@ If you have exactly two bounding boxes, you can use [`BoundingBox2d.hull`](#hull
 instead (which returns a `BoundingBox2d` instead of a `Maybe BoundingBox2d`).
 
 -}
-aggregate : List BoundingBox2d -> Maybe BoundingBox2d
+aggregate : List (BoundingBox2d units coordinates) -> Maybe (BoundingBox2d units coordinates)
 aggregate boundingBoxes =
     case boundingBoxes of
         first :: rest ->
@@ -212,7 +217,7 @@ list is empty, returns `Nothing`.
     --> Nothing
 
 -}
-containingPoints : List Point2d -> Maybe BoundingBox2d
+containingPoints : List (Point2d units coordinates) -> Maybe (BoundingBox2d units coordinates)
 containingPoints points =
     aggregate (List.map singleton points)
 
@@ -240,9 +245,9 @@ Can be useful when combined with record destructuring, for example
     --> maxY = 6
 
 -}
-extrema : BoundingBox2d -> { minX : Float, maxX : Float, minY : Float, maxY : Float }
-extrema (Types.BoundingBox2d extrema_) =
-    extrema_
+extrema : BoundingBox2d units coordinates -> { minX : Quantity Float units, maxX : Quantity Float units, minY : Quantity Float units, maxY : Quantity Float units }
+extrema (Types.BoundingBox2d boundingBoxExtrema) =
+    boundingBoxExtrema
 
 
 {-| Get the minimum X value of a bounding box.
@@ -251,7 +256,7 @@ extrema (Types.BoundingBox2d extrema_) =
     --> 3
 
 -}
-minX : BoundingBox2d -> Float
+minX : BoundingBox2d units coordinates -> Quantity Float units
 minX (Types.BoundingBox2d boundingBox) =
     boundingBox.minX
 
@@ -262,7 +267,7 @@ minX (Types.BoundingBox2d boundingBox) =
     --> 8
 
 -}
-maxX : BoundingBox2d -> Float
+maxX : BoundingBox2d units coordinates -> Quantity Float units
 maxX (Types.BoundingBox2d boundingBox) =
     boundingBox.maxX
 
@@ -273,7 +278,7 @@ maxX (Types.BoundingBox2d boundingBox) =
     --> 2
 
 -}
-minY : BoundingBox2d -> Float
+minY : BoundingBox2d units coordinates -> Quantity Float units
 minY (Types.BoundingBox2d boundingBox) =
     boundingBox.minY
 
@@ -284,7 +289,7 @@ minY (Types.BoundingBox2d boundingBox) =
     --> 6
 
 -}
-maxY : BoundingBox2d -> Float
+maxY : BoundingBox2d units coordinates -> Quantity Float units
 maxY (Types.BoundingBox2d boundingBox) =
     boundingBox.maxY
 
@@ -300,10 +305,10 @@ maxY (Types.BoundingBox2d boundingBox) =
     --> height = 4
 
 -}
-dimensions : BoundingBox2d -> ( Float, Float )
+dimensions : BoundingBox2d units coordinates -> ( Quantity Float units, Quantity Float units )
 dimensions boundingBox =
-    ( maxX boundingBox - minX boundingBox
-    , maxY boundingBox - minY boundingBox
+    ( maxX boundingBox |> Quantity.minus (minX boundingBox)
+    , maxY boundingBox |> Quantity.minus (minY boundingBox)
     )
 
 
@@ -313,9 +318,9 @@ dimensions boundingBox =
     --> 5.5
 
 -}
-midX : BoundingBox2d -> Float
+midX : BoundingBox2d units coordinates -> Quantity Float units
 midX (Types.BoundingBox2d boundingBox) =
-    boundingBox.minX + 0.5 * (boundingBox.maxX - boundingBox.minX)
+    Quantity.interpolateFrom boundingBox.minX boundingBox.maxX 0.5
 
 
 {-| Get the median Y value of a bounding box.
@@ -324,9 +329,9 @@ midX (Types.BoundingBox2d boundingBox) =
     --> 4
 
 -}
-midY : BoundingBox2d -> Float
+midY : BoundingBox2d units coordinates -> Quantity Float units
 midY (Types.BoundingBox2d boundingBox) =
-    boundingBox.minY + 0.5 * (boundingBox.maxY - boundingBox.minY)
+    Quantity.interpolateFrom boundingBox.minY boundingBox.maxY 0.5
 
 
 {-| Get the point at the center of a bounding box.
@@ -335,17 +340,9 @@ midY (Types.BoundingBox2d boundingBox) =
     --> Point2d.fromCoordinates ( 5.5, 4 )
 
 -}
-centerPoint : BoundingBox2d -> Point2d
+centerPoint : BoundingBox2d units coordinates -> Point2d units coordinates
 centerPoint boundingBox =
     Point2d.fromCoordinates ( midX boundingBox, midY boundingBox )
-
-
-{-| **DEPRECATED**: Alias for `centerPoint`, will be removed in the next major
-release. Use `centerPoint` instead.
--}
-centroid : BoundingBox2d -> Point2d
-centroid boundingBox =
-    centerPoint boundingBox
 
 
 {-| Check if a bounding box contains a particular point.
@@ -360,14 +357,16 @@ centroid boundingBox =
     --> False
 
 -}
-contains : Point2d -> BoundingBox2d -> Bool
+contains : Point2d units coordinates -> BoundingBox2d units coordinates -> Bool
 contains point boundingBox =
     let
         ( x, y ) =
             Point2d.coordinates point
     in
-    (minX boundingBox <= x && x <= maxX boundingBox)
-        && (minY boundingBox <= y && y <= maxY boundingBox)
+    (x |> Quantity.greaterThanOrEqualTo (minX boundingBox))
+        && (x |> Quantity.lessThanOrEqualTo (maxX boundingBox))
+        && (y |> Quantity.greaterThanOrEqualTo (minY boundingBox))
+        && (y |> Quantity.lessThanOrEqualTo (maxY boundingBox))
 
 
 {-| Test if two boxes touch or overlap at all (have any points in common);
@@ -412,60 +411,73 @@ but is more efficient.
     --> False
 
 -}
-intersects : BoundingBox2d -> BoundingBox2d -> Bool
+intersects : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Bool
 intersects other boundingBox =
-    (minX boundingBox <= maxX other)
-        && (maxX boundingBox >= minX other)
-        && (minY boundingBox <= maxY other)
-        && (maxY boundingBox >= minY other)
+    (minX boundingBox |> Quantity.lessThanOrEqualTo (maxX other))
+        && (maxX boundingBox |> Quantity.greaterThanOrEqualTo (minX other))
+        && (minY boundingBox |> Quantity.lessThanOrEqualTo (maxY other))
+        && (maxY boundingBox |> Quantity.greaterThanOrEqualTo (minY other))
 
 
-overlapAmount : BoundingBox2d -> BoundingBox2d -> Maybe Float
+overlapAmount : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Maybe (Quantity Float units)
 overlapAmount firstBox secondBox =
     let
         xOverlap =
-            min (maxX firstBox) (maxX secondBox)
-                - max (minX firstBox) (minX secondBox)
+            Quantity.min (maxX firstBox) (maxX secondBox)
+                |> Quantity.minus
+                    (Quantity.max (minX firstBox) (minX secondBox))
 
         yOverlap =
-            min (maxY firstBox) (maxY secondBox)
-                - max (minY firstBox) (minY secondBox)
+            Quantity.min (maxY firstBox) (maxY secondBox)
+                |> Quantity.minus
+                    (Quantity.max (minY firstBox) (minY secondBox))
     in
-    if xOverlap >= 0 && yOverlap >= 0 then
-        Just (min xOverlap yOverlap)
+    if
+        (xOverlap |> Quantity.greaterThanOrEqualTo Quantity.zero)
+            && (yOverlap |> Quantity.greaterThanOrEqualTo Quantity.zero)
+    then
+        Just (Quantity.min xOverlap yOverlap)
 
     else
         Nothing
 
 
-squaredSeparationAmount : BoundingBox2d -> BoundingBox2d -> Maybe Float
+squaredSeparationAmount : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Maybe (Quantity Float (Squared units))
 squaredSeparationAmount firstBox secondBox =
     let
         xSeparation =
-            max (minX firstBox) (minX secondBox)
-                - min (maxX firstBox) (maxX secondBox)
+            Quantity.max (minX firstBox) (minX secondBox)
+                |> Quantity.minus
+                    (Quantity.min (maxX firstBox) (maxX secondBox))
 
         ySeparation =
-            max (minY firstBox) (minY secondBox)
-                - min (maxY firstBox) (maxY secondBox)
+            Quantity.max (minY firstBox) (minY secondBox)
+                |> Quantity.minus
+                    (Quantity.min (maxY firstBox) (maxY secondBox))
     in
-    if xSeparation > 0 && ySeparation > 0 then
-        Just (xSeparation * xSeparation + ySeparation * ySeparation)
+    if
+        (xSeparation |> Quantity.greaterThan Quantity.zero)
+            && (ySeparation |> Quantity.greaterThan Quantity.zero)
+    then
+        Just
+            (Quantity.squared xSeparation
+                |> Quantity.plus (Quantity.squared ySeparation)
+            )
 
-    else if xSeparation > 0 then
-        Just (xSeparation * xSeparation)
+    else if xSeparation |> Quantity.greaterThan Quantity.zero then
+        Just (Quantity.squared xSeparation)
 
-    else if ySeparation > 0 then
-        Just (ySeparation * ySeparation)
+    else if ySeparation |> Quantity.greaterThan Quantity.zero then
+        Just (Quantity.squared ySeparation)
 
-    else if xSeparation == 0 || ySeparation == 0 then
-        Just 0
+    else if xSeparation == Quantity.zero || ySeparation == Quantity.zero then
+        Just Quantity.zero
 
     else
         Nothing
 
 
-alwaysFalse : BoundingBox2d -> BoundingBox2d -> Bool
+alwaysFalse : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Bool
 alwaysFalse firstBox secondBox =
     False
 
@@ -529,20 +541,20 @@ vulnerable to floating-point roundoff, but is defined as follows:
   - `overlappingBy EQ -1e-3` will always return false.
 
 -}
-overlappingBy : Order -> Float -> BoundingBox2d -> BoundingBox2d -> Bool
+overlappingBy : Order -> Quantity Float units -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Bool
 overlappingBy order tolerance =
     case order of
         LT ->
-            if tolerance > 0 then
+            if tolerance |> Quantity.greaterThan Quantity.zero then
                 \firstBox secondBox ->
                     case overlapAmount firstBox secondBox of
                         Just distance ->
-                            distance < tolerance
+                            distance |> Quantity.lessThan tolerance
 
                         Nothing ->
                             True
 
-            else if tolerance == 0 then
+            else if tolerance == Quantity.zero then
                 \firstBox secondBox ->
                     overlapAmount firstBox secondBox == Nothing
 
@@ -550,11 +562,11 @@ overlappingBy order tolerance =
                 alwaysFalse
 
         GT ->
-            if tolerance >= 0 then
+            if tolerance |> Quantity.greaterThanOrEqualTo Quantity.zero then
                 \firstBox secondBox ->
                     case overlapAmount firstBox secondBox of
                         Just distance ->
-                            distance > tolerance
+                            distance |> Quantity.greaterThan tolerance
 
                         Nothing ->
                             False
@@ -564,7 +576,7 @@ overlappingBy order tolerance =
                     overlapAmount firstBox secondBox /= Nothing
 
         EQ ->
-            if tolerance >= 0 then
+            if tolerance |> Quantity.greaterThanOrEqualTo Quantity.zero then
                 let
                     expected =
                         Just tolerance
@@ -633,20 +645,22 @@ weird and vulnerable to floating-point roundoff, but is defined as follows:
   - `separatedBy EQ -3` will always return false.
 
 -}
-separatedBy : Order -> Float -> BoundingBox2d -> BoundingBox2d -> Bool
+separatedBy : Order -> Quantity Float units -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Bool
 separatedBy order tolerance =
     case order of
         LT ->
-            if tolerance > 0 then
+            if tolerance |> Quantity.greaterThan Quantity.zero then
                 \firstBox secondBox ->
                     case squaredSeparationAmount firstBox secondBox of
                         Just squaredDistance ->
-                            squaredDistance < tolerance * tolerance
+                            squaredDistance
+                                |> Quantity.lessThan
+                                    (Quantity.squared tolerance)
 
                         Nothing ->
                             True
 
-            else if tolerance == 0 then
+            else if tolerance == Quantity.zero then
                 \firstBox secondBox ->
                     squaredSeparationAmount firstBox secondBox == Nothing
 
@@ -654,11 +668,13 @@ separatedBy order tolerance =
                 alwaysFalse
 
         GT ->
-            if tolerance >= 0 then
+            if tolerance |> Quantity.greaterThanOrEqualTo Quantity.zero then
                 \firstBox secondBox ->
                     case squaredSeparationAmount firstBox secondBox of
                         Just squaredDistance ->
-                            squaredDistance > tolerance * tolerance
+                            squaredDistance
+                                |> Quantity.greaterThan
+                                    (Quantity.squared tolerance)
 
                         Nothing ->
                             False
@@ -668,10 +684,10 @@ separatedBy order tolerance =
                     squaredSeparationAmount firstBox secondBox /= Nothing
 
         EQ ->
-            if tolerance >= 0 then
+            if tolerance |> Quantity.greaterThanOrEqualTo Quantity.zero then
                 let
                     expected =
-                        Just (tolerance * tolerance)
+                        Just (Quantity.squared tolerance)
                 in
                 \firstBox secondBox ->
                     squaredSeparationAmount firstBox secondBox == expected
@@ -714,10 +730,12 @@ separatedBy order tolerance =
     --> False
 
 -}
-isContainedIn : BoundingBox2d -> BoundingBox2d -> Bool
+isContainedIn : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Bool
 isContainedIn other boundingBox =
-    (minX other <= minX boundingBox && maxX boundingBox <= maxX other)
-        && (minY other <= minY boundingBox && maxY boundingBox <= maxY other)
+    (minX other |> Quantity.lessThanOrEqualTo (minX boundingBox))
+        && (maxX boundingBox |> Quantity.lessThanOrEqualTo (maxX other))
+        && (minY other |> Quantity.lessThanOrEqualTo (minY boundingBox))
+        && (maxY boundingBox |> Quantity.lessThanOrEqualTo (maxY other))
 
 
 {-| Build a bounding box that contains both given bounding boxes.
@@ -747,13 +765,13 @@ isContainedIn other boundingBox =
     -->     }
 
 -}
-hull : BoundingBox2d -> BoundingBox2d -> BoundingBox2d
+hull : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
 hull firstBox secondBox =
     fromExtrema
-        { minX = min (minX firstBox) (minX secondBox)
-        , maxX = max (maxX firstBox) (maxX secondBox)
-        , minY = min (minY firstBox) (minY secondBox)
-        , maxY = max (maxY firstBox) (maxY secondBox)
+        { minX = Quantity.min (minX firstBox) (minX secondBox)
+        , maxX = Quantity.max (maxX firstBox) (maxX secondBox)
+        , minY = Quantity.min (minY firstBox) (minY secondBox)
+        , maxY = Quantity.max (maxY firstBox) (maxY secondBox)
         }
 
 
@@ -828,15 +846,15 @@ least one of its dimensions will be zero):
     -->     )
 
 -}
-intersection : BoundingBox2d -> BoundingBox2d -> Maybe BoundingBox2d
+intersection : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Maybe (BoundingBox2d units coordinates)
 intersection firstBox secondBox =
     if intersects firstBox secondBox then
         Just
             (fromExtrema
-                { minX = max (minX firstBox) (minX secondBox)
-                , maxX = min (maxX firstBox) (maxX secondBox)
-                , minY = max (minY firstBox) (minY secondBox)
-                , maxY = min (maxY firstBox) (maxY secondBox)
+                { minX = Quantity.max (minX firstBox) (minX secondBox)
+                , maxX = Quantity.min (maxX firstBox) (maxX secondBox)
+                , minY = Quantity.max (minY firstBox) (minY secondBox)
+                , maxY = Quantity.min (maxY firstBox) (maxY secondBox)
                 }
             )
 
@@ -858,26 +876,38 @@ intersection firstBox secondBox =
     -->     }
 
 -}
-scaleAbout : Point2d -> Float -> BoundingBox2d -> BoundingBox2d
+scaleAbout : Point2d units coordinates -> Float -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
 scaleAbout point scale boundingBox =
     let
         ( x0, y0 ) =
             Point2d.coordinates point
+
+        scaledMinX =
+            Quantity.scaleAbout x0 scale (minX boundingBox)
+
+        scaledMaxX =
+            Quantity.scaleAbout x0 scale (maxX boundingBox)
+
+        scaledMinY =
+            Quantity.scaleAbout y0 scale (minY boundingBox)
+
+        scaledMaxY =
+            Quantity.scaleAbout y0 scale (maxY boundingBox)
     in
     if scale >= 0 then
         fromExtrema
-            { minX = x0 + scale * (minX boundingBox - x0)
-            , maxX = x0 + scale * (maxX boundingBox - x0)
-            , minY = y0 + scale * (minY boundingBox - y0)
-            , maxY = y0 + scale * (maxY boundingBox - y0)
+            { minX = scaledMinX
+            , maxX = scaledMaxX
+            , minY = scaledMinY
+            , maxY = scaledMaxY
             }
 
     else
         fromExtrema
-            { minX = x0 + scale * (maxX boundingBox - x0)
-            , maxX = x0 + scale * (minX boundingBox - x0)
-            , minY = y0 + scale * (maxY boundingBox - y0)
-            , maxY = y0 + scale * (minY boundingBox - y0)
+            { minX = scaledMaxX
+            , maxX = scaledMinX
+            , minY = scaledMaxY
+            , maxY = scaledMinY
             }
 
 
@@ -895,17 +925,17 @@ scaleAbout point scale boundingBox =
     -->     }
 
 -}
-translateBy : Vector2d -> BoundingBox2d -> BoundingBox2d
+translateBy : Vector2d units coordinates -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
 translateBy displacement boundingBox =
     let
         ( dx, dy ) =
             Vector2d.components displacement
     in
     fromExtrema
-        { minX = minX boundingBox + dx
-        , maxX = maxX boundingBox + dx
-        , minY = minY boundingBox + dy
-        , maxY = maxY boundingBox + dy
+        { minX = minX boundingBox |> Quantity.plus dx
+        , maxX = maxX boundingBox |> Quantity.plus dx
+        , minY = minY boundingBox |> Quantity.plus dy
+        , maxY = maxY boundingBox |> Quantity.plus dy
         }
 
 
@@ -919,6 +949,6 @@ is equivalent to
         (Vector2d.withLength distance direction)
 
 -}
-translateIn : Direction2d -> Float -> BoundingBox2d -> BoundingBox2d
+translateIn : Direction2d coordinates -> Quantity Float units -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
 translateIn direction distance boundingBox =
     translateBy (Vector2d.withLength distance direction) boundingBox
