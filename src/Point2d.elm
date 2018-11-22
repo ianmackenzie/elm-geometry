@@ -470,7 +470,7 @@ between the two given points is less than the given tolerance.
 equalWithin : Quantity Float units -> Point2d units coordinates -> Point2d units coordinates -> Bool
 equalWithin tolerance firstPoint secondPoint =
     squaredDistanceFrom firstPoint secondPoint
-        |> Quantity.lessThan (Quantity.squared tolerance)
+        |> Quantity.lessThanOrEqualTo (Quantity.squared tolerance)
 
 
 {-| Find the distance from the first point to the second.
@@ -624,9 +624,17 @@ rotation operations instead.
 -}
 scaleAbout : Point2d units coordinates -> Float -> Point2d units coordinates -> Point2d units coordinates
 scaleAbout centerPoint scale point =
-    Vector2d.from centerPoint point
-        |> Vector2d.scaleBy scale
-        |> addTo centerPoint
+    let
+        ( x0, y0 ) =
+            coordinates centerPoint
+
+        ( x, y ) =
+            coordinates point
+    in
+    fromCoordinates
+        ( Quantity.scaleAbout x0 scale x
+        , Quantity.scaleAbout y0 scale y
+        )
 
 
 {-| Rotate around a given center point counterclockwise by a given angle (in

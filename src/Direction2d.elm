@@ -101,6 +101,7 @@ import Angle exposing (Angle)
 import Bootstrap.Direction2d as Bootstrap
 import Geometry.Types as Types exposing (Axis2d, Frame2d, Point2d)
 import Quantity exposing (Quantity, Unitless)
+import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
 
 
@@ -468,7 +469,7 @@ given tolerance.
 equalWithin : Angle -> Direction2d coordinates -> Direction2d coordinates -> Bool
 equalWithin angle firstDirection secondDirection =
     Quantity.abs (angleFrom firstDirection secondDirection)
-        |> Quantity.lessThan angle
+        |> Quantity.lessThanOrEqualTo angle
 
 
 {-| Convert a direction to a unit vector.

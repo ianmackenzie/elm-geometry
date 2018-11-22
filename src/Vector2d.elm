@@ -372,11 +372,9 @@ equalWithin givenTolerance firstVector secondVector =
         let
             difference =
                 secondVector |> minus firstVector
-
-            squaredTolerance =
-                Quantity.squared givenTolerance
         in
-        not (squaredLength difference |> Quantity.greaterThan squaredTolerance)
+        squaredLength difference
+            |> Quantity.lessThanOrEqualTo (Quantity.squared givenTolerance)
 
 
 {-| Get the length (magnitude) of a vector.
