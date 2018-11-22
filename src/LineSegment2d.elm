@@ -62,18 +62,20 @@ points and forming a new line segment between the resulting points.
 
 -}
 
+import Angle exposing (Angle)
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import Point2d exposing (Point2d)
+import Quantity exposing (Quantity, Squared)
 import Vector2d exposing (Vector2d)
 
 
 {-| -}
-type alias LineSegment2d =
-    Types.LineSegment2d
+type alias LineSegment2d units coordinates =
+    Types.LineSegment2d units coordinates
 
 
 {-| Construct a line segment from its two endpoints:
@@ -85,7 +87,7 @@ type alias LineSegment2d =
             )
 
 -}
-fromEndpoints : ( Point2d, Point2d ) -> LineSegment2d
+fromEndpoints : ( Point2d units coordinates, Point2d units coordinates ) -> LineSegment2d units coordinates
 fromEndpoints =
     Types.LineSegment2d
 
@@ -99,7 +101,7 @@ is equivalent to
     LineSegment2d.fromEndpoints ( firstPoint, secondPoint )
 
 -}
-from : Point2d -> Point2d -> LineSegment2d
+from : Point2d units coordinates -> Point2d units coordinates -> LineSegment2d units coordinates
 from startPoint_ endPoint_ =
     fromEndpoints ( startPoint_, endPoint_ )
 
@@ -120,7 +122,7 @@ given distances from the axis' origin point.
     -->     )
 
 -}
-along : Axis2d -> Float -> Float -> LineSegment2d
+along : Axis2d units coordinates -> Quantity Float units -> Quantity Float units -> LineSegment2d units coordinates
 along axis start end =
     fromEndpoints ( Point2d.along axis start, Point2d.along axis end )
 
@@ -131,7 +133,7 @@ along axis start end =
     --> Point2d.fromCoordinates ( 1, 2 )
 
 -}
-startPoint : LineSegment2d -> Point2d
+startPoint : LineSegment2d units coordinates -> Point2d units coordinates
 startPoint (Types.LineSegment2d ( start, _ )) =
     start
 
@@ -142,7 +144,7 @@ startPoint (Types.LineSegment2d ( start, _ )) =
     --> Point2d.fromCoordinates ( 3, 4 )
 
 -}
-endPoint : LineSegment2d -> Point2d
+endPoint : LineSegment2d units coordinates -> Point2d units coordinates
 endPoint (Types.LineSegment2d ( _, end )) =
     end
 
@@ -153,7 +155,7 @@ endPoint (Types.LineSegment2d ( _, end )) =
         LineSegment2d.endpoints lineSegment
 
 -}
-endpoints : LineSegment2d -> ( Point2d, Point2d )
+endpoints : LineSegment2d units coordinates -> ( Point2d units coordinates, Point2d units coordinates )
 endpoints (Types.LineSegment2d endpoints_) =
     endpoints_
 
@@ -167,7 +169,7 @@ endpoints (Types.LineSegment2d endpoints_) =
     -->     )
 
 -}
-reverse : LineSegment2d -> LineSegment2d
+reverse : LineSegment2d units coordinates -> LineSegment2d units coordinates
 reverse lineSegment =
     let
         ( p1, p2 ) =
@@ -182,7 +184,7 @@ reverse lineSegment =
     --> Point2d.fromCoordinates ( 2, 3 )
 
 -}
-midpoint : LineSegment2d -> Point2d
+midpoint : LineSegment2d units coordinates -> Point2d units coordinates
 midpoint lineSegment =
     interpolate lineSegment 0.5
 
@@ -203,7 +205,7 @@ a line segment first - you can use [`Point2d.interpolateFrom`](Point2d#interpola
 directly.
 
 -}
-interpolate : LineSegment2d -> Float -> Point2d
+interpolate : LineSegment2d units coordinates -> Float -> Point2d units coordinates
 interpolate lineSegment t =
     let
         ( start, end ) =
@@ -218,7 +220,7 @@ interpolate lineSegment t =
     --> 2.8284
 
 -}
-length : LineSegment2d -> Float
+length : LineSegment2d units coordinates -> Quantity Float units
 length =
     vector >> Vector2d.length
 
@@ -230,7 +232,7 @@ length =
     --> 8
 
 -}
-squaredLength : LineSegment2d -> Float
+squaredLength : LineSegment2d units coordinates -> Quantity Float (Squared units)
 squaredLength =
     vector >> Vector2d.squaredLength
 
@@ -243,7 +245,7 @@ line segment has zero length (the start and end points are the same), returns
     --> Just (Direction2d.fromAngle (degrees 45))
 
 -}
-direction : LineSegment2d -> Maybe Direction2d
+direction : LineSegment2d units coordinates -> Maybe (Direction2d coordinates)
 direction =
     vector >> Vector2d.direction
 
@@ -255,7 +257,7 @@ the line segment has zero length, returns `Nothing`.
     --> Just (Direction2d.fromAngle (degrees 135))
 
 -}
-perpendicularDirection : LineSegment2d -> Maybe Direction2d
+perpendicularDirection : LineSegment2d units coordinates -> Maybe (Direction2d coordinates)
 perpendicularDirection =
     vector >> Vector2d.perpendicularTo >> Vector2d.direction
 
@@ -266,7 +268,7 @@ perpendicularDirection =
     --> Vector2d.fromComponents ( 2, 2 )
 
 -}
-vector : LineSegment2d -> Vector2d
+vector : LineSegment2d units coordinates -> Vector2d units coordinates
 vector lineSegment =
     let
         ( p1, p2 ) =
@@ -323,7 +325,7 @@ is guaranteed to be returned as the intersection point, but if two segments meet
 in a 'T' shape the intersection point may or may not be found.
 
 -}
-intersectionPoint : LineSegment2d -> LineSegment2d -> Maybe Point2d
+intersectionPoint : LineSegment2d units coordinates -> LineSegment2d units coordinates -> Maybe (Point2d units coordinates)
 intersectionPoint lineSegment1 lineSegment2 =
     -- The two line segments are:
     -- p |--- r ---| p_
@@ -363,15 +365,15 @@ intersectionPoint lineSegment1 lineSegment2 =
             Vector2d.crossProduct r pq_
 
         tDenominator =
-            pqXs - sXqp_
+            pqXs |> Quantity.minus sXqp_
 
         uDenominator =
-            pqXr + rXpq_
+            pqXr |> Quantity.plus rXpq_
     in
-    if tDenominator == 0 || uDenominator == 0 then
+    if tDenominator == Quantity.zero || uDenominator == Quantity.zero then
         -- Segments are parallel or collinear.
         -- In collinear case, we check if there is only one intersection point.
-        if Vector2d.dotProduct r s < 0 then
+        if Vector2d.dotProduct r s |> Quantity.lessThan Quantity.zero then
             if p_ == q_ then
                 -- p |----- p_ | q_ -----| q
                 Just p_
@@ -399,10 +401,10 @@ intersectionPoint lineSegment1 lineSegment2 =
         -- We search for the intersection point of the two lines.
         let
             t =
-                pqXs / tDenominator
+                Quantity.ratio pqXs tDenominator
 
             u =
-                pqXr / uDenominator
+                Quantity.ratio pqXr uDenominator
         in
         if (0 <= t && t <= 1) && (0 <= u && u <= 1) then
             -- Intersection is within both segments.
@@ -440,7 +442,7 @@ lies perfectly along it), returns `Nothing`.
     --> Nothing
 
 -}
-intersectionWithAxis : Axis2d -> LineSegment2d -> Maybe Point2d
+intersectionWithAxis : Axis2d units coordinates -> LineSegment2d units coordinates -> Maybe (Point2d units coordinates)
 intersectionWithAxis axis lineSegment =
     let
         ( p1, p2 ) =
@@ -453,23 +455,27 @@ intersectionWithAxis axis lineSegment =
             Point2d.signedDistanceFrom axis p2
 
         product =
-            d1 * d2
+            Quantity.product d1 d2
     in
-    if product < 0 then
+    if product |> Quantity.lessThan Quantity.zero then
         -- The two points are on opposite sides of the axis, so there is a
         -- unique intersection point in between them
-        Just (Point2d.interpolateFrom p1 p2 (d1 / (d1 - d2)))
+        let
+            t =
+                Quantity.ratio d1 (d1 |> Quantity.minus d2)
+        in
+        Just (Point2d.interpolateFrom p1 p2 t)
 
-    else if product > 0 then
+    else if product |> Quantity.greaterThan Quantity.zero then
         -- Both points are on the same side of the axis, so no intersection
         -- point exists
         Nothing
 
-    else if d1 /= 0 then
+    else if d1 /= Quantity.zero then
         -- d2 must be zero since the product is zero, so only p2 is on the axis
         Just p2
 
-    else if d2 /= 0 then
+    else if d2 /= Quantity.zero then
         -- d1 must be zero since the product is zero, so only p1 is on the axis
         Just p1
 
@@ -497,7 +503,7 @@ intersectionWithAxis axis lineSegment =
     -->     )
 
 -}
-scaleAbout : Point2d -> Float -> LineSegment2d -> LineSegment2d
+scaleAbout : Point2d units coordinates -> Float -> LineSegment2d units coordinates -> LineSegment2d units coordinates
 scaleAbout point scale =
     mapEndpoints (Point2d.scaleAbout point scale)
 
@@ -514,7 +520,7 @@ given angle (in radians).
     -->     )
 
 -}
-rotateAround : Point2d -> Float -> LineSegment2d -> LineSegment2d
+rotateAround : Point2d units coordinates -> Angle -> LineSegment2d units coordinates -> LineSegment2d units coordinates
 rotateAround centerPoint angle =
     mapEndpoints (Point2d.rotateAround centerPoint angle)
 
@@ -532,7 +538,7 @@ rotateAround centerPoint angle =
     -->     )
 
 -}
-translateBy : Vector2d -> LineSegment2d -> LineSegment2d
+translateBy : Vector2d units coordinates -> LineSegment2d units coordinates -> LineSegment2d units coordinates
 translateBy displacementVector =
     mapEndpoints (Point2d.translateBy displacementVector)
 
@@ -547,7 +553,7 @@ is equivalent to
         (Vector2d.withLength distance direction)
 
 -}
-translateIn : Direction2d -> Float -> LineSegment2d -> LineSegment2d
+translateIn : Direction2d coordinates -> Quantity Float units -> LineSegment2d units coordinates -> LineSegment2d units coordinates
 translateIn translationDirection distance lineSegment =
     translateBy (Vector2d.withLength distance translationDirection) lineSegment
 
@@ -567,7 +573,7 @@ original segment (since the normal direction is always considered to be 'to the
 left' of the line segment).
 
 -}
-mirrorAcross : Axis2d -> LineSegment2d -> LineSegment2d
+mirrorAcross : Axis2d units coordinates -> LineSegment2d units coordinates -> LineSegment2d units coordinates
 mirrorAcross axis =
     mapEndpoints (Point2d.mirrorAcross axis)
 
@@ -587,7 +593,7 @@ mirrorAcross axis =
     -->     )
 
 -}
-projectOnto : Axis2d -> LineSegment2d -> LineSegment2d
+projectOnto : Axis2d units coordinates -> LineSegment2d units coordinates -> LineSegment2d units coordinates
 projectOnto axis =
     mapEndpoints (Point2d.projectOnto axis)
 
@@ -603,7 +609,7 @@ is equivalent to
     LineSegment2d.mapEndpoints (Point2d.projectOnto axis)
 
 -}
-mapEndpoints : (Point2d -> Point2d) -> LineSegment2d -> LineSegment2d
+mapEndpoints : (Point2d unitsA coordinatesA -> Point2d unitsB coordinatesB) -> LineSegment2d unitsA coordinatesA -> LineSegment2d unitsB coordinatesB
 mapEndpoints function lineSegment =
     let
         ( p1, p2 ) =
@@ -625,7 +631,7 @@ in local coordinates relative to a given reference frame.
     -->     )
 
 -}
-relativeTo : Frame2d -> LineSegment2d -> LineSegment2d
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> LineSegment2d units globalCoordinates -> LineSegment2d units localCoordinates
 relativeTo frame =
     mapEndpoints (Point2d.relativeTo frame)
 
@@ -644,7 +650,7 @@ coordinates.
     -->     )
 
 -}
-placeIn : Frame2d -> LineSegment2d -> LineSegment2d
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> LineSegment2d units localCoordinates -> LineSegment2d units globalCoordinates
 placeIn frame =
     mapEndpoints (Point2d.placeIn frame)
 
@@ -660,7 +666,7 @@ placeIn frame =
     -->     }
 
 -}
-boundingBox : LineSegment2d -> BoundingBox2d
+boundingBox : LineSegment2d units coordinates -> BoundingBox2d units coordinates
 boundingBox lineSegment =
     let
         ( p1, p2 ) =
