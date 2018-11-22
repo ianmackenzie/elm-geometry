@@ -9,6 +9,9 @@ elm.js
 documentation.json
 docs.json
 
+# Idea directory created by Intellij Webstorm
+.idea/
+
 # elm-verify-examples generated tests
 tests/VerifyExamples
 

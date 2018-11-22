@@ -6,6 +6,9 @@ module Tests.BoundingBox2d exposing
     , intersectionConsistentWithIntersects
     , intersectionConsistentWithOverlappingBy
     , intersectionIsValidOrNothing
+    , offsetByHalfHeightIsValidOrNothing
+    , offsetByHalfWidthIsValidOrNothing
+    , offsetResultIsValidOrNothing
     , overlappingBoxesCannotBySeparated
     , overlappingByDetectsIntersection
     , separatedBoxesCannotBeMadeToOverlap
@@ -17,6 +20,7 @@ module Tests.BoundingBox2d exposing
 import BoundingBox2d
 import Expect
 import Fuzz
+import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Test exposing (Test)
 import Vector2d
@@ -161,12 +165,7 @@ intersectionIsValidOrNothing =
                     Expect.pass
 
                 Just result ->
-                    let
-                        { minX, maxX, minY, maxY } =
-                            BoundingBox2d.extrema result
-                    in
-                    Expect.true "expected extrema to be correctly ordered"
-                        ((minX <= maxX) && (minY <= maxY))
+                    Expect.validBoundingBox2d result
         )
 
 
@@ -404,4 +403,55 @@ containingPointsIsOrderIndependent =
         (\points ->
             BoundingBox2d.containingPoints (List.reverse points)
                 |> Expect.equal (BoundingBox2d.containingPoints points)
+        )
+
+
+offsetResultIsValidOrNothing : Test
+offsetResultIsValidOrNothing =
+    Test.fuzz2 Fuzz.boundingBox2d
+        Fuzz.scalar
+        "offsetBy returns either Nothing or Just a valid box"
+        (\boundingBox offset ->
+            case BoundingBox2d.offsetBy offset boundingBox of
+                Nothing ->
+                    Expect.pass
+
+                Just result ->
+                    Expect.validBoundingBox2d result
+        )
+
+
+offsetByHalfWidthIsValidOrNothing : Test
+offsetByHalfWidthIsValidOrNothing =
+    Test.fuzz Fuzz.boundingBox2d
+        "offsetBy returns either Nothing or Just a valid box when offseting by -width / 2"
+        (\boundingBox ->
+            let
+                ( width, height ) =
+                    BoundingBox2d.dimensions boundingBox
+            in
+            case BoundingBox2d.offsetBy (-width / 2) boundingBox of
+                Nothing ->
+                    Expect.pass
+
+                Just result ->
+                    Expect.validBoundingBox2d result
+        )
+
+
+offsetByHalfHeightIsValidOrNothing : Test
+offsetByHalfHeightIsValidOrNothing =
+    Test.fuzz Fuzz.boundingBox2d
+        "offsetBy returns either Nothing or Just a valid box when offseting by -height / 2"
+        (\boundingBox ->
+            let
+                ( width, height ) =
+                    BoundingBox2d.dimensions boundingBox
+            in
+            case BoundingBox2d.offsetBy (-height / 2) boundingBox of
+                Nothing ->
+                    Expect.pass
+
+                Just result ->
+                    Expect.validBoundingBox2d result
         )

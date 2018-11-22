@@ -39,8 +39,10 @@ module Geometry.Expect exposing
     , maybe
     , plane3d
     , point2d
+    , point2dContainedIn
     , point2dWithin
     , point3d
+    , point3dContainedIn
     , point3dWithin
     , polygon2d
     , polygon2dWithin
@@ -56,6 +58,8 @@ module Geometry.Expect exposing
     , triangle2dWithin
     , triangle3d
     , triangle3dWithin
+    , validBoundingBox2d
+    , validBoundingBox3d
     , validDirection2d
     , validDirection3d
     , validFrame2d
@@ -579,6 +583,30 @@ boundingBox2dWithin tolerance =
     boundingBox2dBy (Expect.within (Expect.Absolute tolerance))
 
 
+point2dContainedIn : BoundingBox2d -> Point2d -> Expectation
+point2dContainedIn box point =
+    let
+        extrema =
+            BoundingBox2d.extrema box
+
+        tolerantBox =
+            BoundingBox2d.fromExtrema
+                { minX = extrema.minX - defaultTolerance
+                , minY = extrema.minY - defaultTolerance
+                , maxX = extrema.maxX + defaultTolerance
+                , maxY = extrema.maxY + defaultTolerance
+                }
+    in
+    BoundingBox2d.contains point tolerantBox
+        |> Expect.true
+            ("Expected point "
+                ++ Debug.toString point
+                ++ " to be within bounding box "
+                ++ Debug.toString box
+                ++ "."
+            )
+
+
 boundingBox3dBy : (Float -> Float -> Expectation) -> BoundingBox3d -> BoundingBox3d -> Expectation
 boundingBox3dBy equalTo first =
     Expect.all
@@ -599,6 +627,32 @@ boundingBox3d =
 boundingBox3dWithin : Float -> BoundingBox3d -> BoundingBox3d -> Expectation
 boundingBox3dWithin tolerance =
     boundingBox3dBy (Expect.within (Expect.Absolute tolerance))
+
+
+point3dContainedIn : BoundingBox3d -> Point3d -> Expectation
+point3dContainedIn box point =
+    let
+        extrema =
+            BoundingBox3d.extrema box
+
+        tolerantBox =
+            BoundingBox3d.fromExtrema
+                { minX = extrema.minX - defaultTolerance
+                , minY = extrema.minY - defaultTolerance
+                , minZ = extrema.minZ - defaultTolerance
+                , maxX = extrema.maxX + defaultTolerance
+                , maxY = extrema.maxY + defaultTolerance
+                , maxZ = extrema.maxZ + defaultTolerance
+                }
+    in
+    BoundingBox3d.contains point tolerantBox
+        |> Expect.true
+            ("Expected point "
+                ++ Debug.toString point
+                ++ " to be within bounding box "
+                ++ Debug.toString box
+                ++ "."
+            )
 
 
 polyline2dBy : (Point2d -> Point2d -> Expectation) -> Polyline2d -> Polyline2d -> Expectation
@@ -782,3 +836,44 @@ cubicSpline3d first =
         , CubicSpline3d.endPoint
             >> point3d (CubicSpline3d.endPoint first)
         ]
+
+
+validBoundingBox2d : BoundingBox2d -> Expectation
+validBoundingBox2d boundingBox =
+    let
+        extrema =
+            BoundingBox2d.extrema boundingBox
+
+        { minX, maxX, minY, maxY } =
+            extrema
+    in
+    if not (minX <= maxX) then
+        Expect.fail ("Expected bounding box with extrema " ++ Debug.toString extrema ++ " to have minX <= maxX")
+
+    else if not (minY <= maxY) then
+        Expect.fail ("Expected bounding box with extrema " ++ Debug.toString extrema ++ " to have minY <= maxY")
+
+    else
+        Expect.pass
+
+
+validBoundingBox3d : BoundingBox3d -> Expectation
+validBoundingBox3d boundingBox =
+    let
+        extrema =
+            BoundingBox3d.extrema boundingBox
+
+        { minX, maxX, minY, maxY, minZ, maxZ } =
+            extrema
+    in
+    if not (minX <= maxX) then
+        Expect.fail ("Expected bounding box with extrema " ++ Debug.toString extrema ++ " to have minX <= maxX")
+
+    else if not (minY <= maxY) then
+        Expect.fail ("Expected bounding box with extrema " ++ Debug.toString extrema ++ " to have minY <= maxY")
+
+    else if not (minZ <= maxZ) then
+        Expect.fail ("Expected bounding box with extrema " ++ Debug.toString extrema ++ " to have minZ <= maxZ")
+
+    else
+        Expect.pass
