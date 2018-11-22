@@ -956,13 +956,13 @@ translateIn direction distance boundingBox =
 
 {-| Offsets boundingBox irrespective of the resulting bounding box is valid or not.
 -}
-unsafeOffsetBy : Float -> BoundingBox2d -> BoundingBox2d
-unsafeOffsetBy by boundingBox_ =
+unsafeOffsetBy : Quantity Float units -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
+unsafeOffsetBy amount boundingBox =
     fromExtrema
-        { minX = minX boundingBox_ - by
-        , minY = minY boundingBox_ - by
-        , maxX = maxX boundingBox_ + by
-        , maxY = maxY boundingBox_ + by
+        { minX = minX boundingBox |> Quantity.minus amount
+        , minY = minY boundingBox |> Quantity.minus amount
+        , maxY = maxY boundingBox |> Quantity.plus amount
+        , maxX = maxX boundingBox |> Quantity.plus amount
         }
 
 
@@ -999,17 +999,17 @@ If you only want to expand a bounding box, you can use
 [`expandBy`](BoundingBox2d#expandBy) instead (which does not return a `Maybe`).
 
 -}
-offsetBy : Float -> BoundingBox2d -> Maybe BoundingBox2d
-offsetBy amount boundingBox_ =
+offsetBy : Quantity Float units -> BoundingBox2d units coordinates -> Maybe (BoundingBox2d units coordinates)
+offsetBy amount boundingBox =
     let
         ( width, height ) =
-            dimensions boundingBox_
+            dimensions boundingBox
 
-        halfOfSmallerDimension =
-            min width height / 2
+        minValidOffset =
+            Quantity.scaleBy -0.5 (Quantity.min width height)
     in
-    if amount > -halfOfSmallerDimension then
-        Just <| unsafeOffsetBy amount boundingBox_
+    if amount |> Quantity.greaterThan minValidOffset then
+        Just <| unsafeOffsetBy amount boundingBox
 
     else
         Nothing
@@ -1031,6 +1031,6 @@ need to be able to contract a bounding box, use
 [`offsetBy`](BoundingBox2d#offsetBy) instead.
 
 -}
-expandBy : Float -> BoundingBox2d -> BoundingBox2d
-expandBy amount boundingBox_ =
-    unsafeOffsetBy (abs amount) boundingBox_
+expandBy : Quantity Float units -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
+expandBy amount boundingBox =
+    unsafeOffsetBy (Quantity.abs amount) boundingBox
