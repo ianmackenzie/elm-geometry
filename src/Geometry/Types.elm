@@ -49,6 +49,7 @@ module Geometry.Types exposing
     , Vector3d(..)
     )
 
+import Angle exposing (Angle)
 import Array exposing (Array)
 import Quantity exposing (Quantity)
 
@@ -228,7 +229,7 @@ type Arc2d units coordinates
         { startPoint : Point2d units coordinates
         , xDirection : Direction2d coordinates
         , signedLength : Quantity Float units
-        , sweptAngle : Quantity Float units
+        , sweptAngle : Angle
         }
 
 
@@ -238,7 +239,7 @@ type Arc3d units coordinates
         , xDirection : Direction3d coordinates
         , yDirection : Direction3d coordinates
         , signedLength : Quantity Float units
-        , sweptAngle : Quantity Float units
+        , sweptAngle : Angle
         }
 
 
@@ -279,8 +280,8 @@ type CubicSpline3d units coordinates
 type EllipticalArc2d units coordinates
     = EllipticalArc2d
         { ellipse : Ellipse2d units coordinates
-        , startAngle : Quantity Float units
-        , sweptAngle : Quantity Float units
+        , startAngle : Angle
+        , sweptAngle : Angle
         }
 
 
