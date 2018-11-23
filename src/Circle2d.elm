@@ -9,7 +9,6 @@
 
 module Circle2d exposing
     ( Circle2d
-    , unit
     , withRadius, throughPoints, sweptAround
     , centerPoint, radius, diameter, area, circumference, boundingBox
     , toArc
@@ -26,11 +25,6 @@ functionality for
   - Extracting properties of circles like area, center point and radius
 
 @docs Circle2d
-
-
-# Constants
-
-@docs unit
 
 
 # Constructors
@@ -64,18 +58,21 @@ functionality for
 
 -}
 
+import Angle exposing (Angle)
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types exposing (Arc2d)
 import Point2d exposing (Point2d)
+import Quantity exposing (Quantity, Squared)
+import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
 
 
 {-| -}
-type alias Circle2d =
-    Types.Circle2d
+type alias Circle2d units coordinates =
+    Types.Circle2d units coordinates
 
 
 {-| Construct a circle from its radius and center point:
@@ -87,20 +84,9 @@ type alias Circle2d =
 If you pass a negative radius, the absolute value will be used.
 
 -}
-withRadius : Float -> Point2d -> Circle2d
+withRadius : Quantity Float units -> Point2d units coordinates -> Circle2d units coordinates
 withRadius radius_ centerPoint_ =
-    Types.Circle2d { radius = abs radius_, centerPoint = centerPoint_ }
-
-
-{-| The unit circle, centered on the origin with a radius of 1.
-
-    Circle2d.unit
-    --> Circle2d.withRadius 1 Point2d.origin
-
--}
-unit : Circle2d
-unit =
-    withRadius 1 Point2d.origin
+    Types.Circle2d { radius = Quantity.abs radius_, centerPoint = centerPoint_ }
 
 
 {-| Attempt to construct a circle that passes through the three given points. If
@@ -137,7 +123,7 @@ the three given points are collinear, returns `Nothing`.
     --> Nothing
 
 -}
-throughPoints : Point2d -> Point2d -> Point2d -> Maybe Circle2d
+throughPoints : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Maybe (Circle2d units coordinates)
 throughPoints p1 p2 p3 =
     Point2d.circumcenter p1 p2 p3
         |> Maybe.map
@@ -153,7 +139,8 @@ throughPoints p1 p2 p3 =
                         Point2d.distanceFrom p0 p3
 
                     r =
-                        (r1 + r2 + r3) / 3
+                        Quantity.scaleBy (1 / 3)
+                            (r1 |> Quantity.plus r2 |> Quantity.plus r3)
                 in
                 withRadius r p0
             )
@@ -181,7 +168,7 @@ but passing through several other different points, you could use something like
                 (Circle2d.sweptAround Point2d.origin)
 
 -}
-sweptAround : Point2d -> Point2d -> Circle2d
+sweptAround : Point2d units coordinates -> Point2d units coordinates -> Circle2d units coordinates
 sweptAround centerPoint_ point =
     withRadius (Point2d.distanceFrom centerPoint_ point) centerPoint_
 
@@ -192,7 +179,7 @@ sweptAround centerPoint_ point =
     --> Point2d.fromCoordinates ( 1, 2 )
 
 -}
-centerPoint : Circle2d -> Point2d
+centerPoint : Circle2d units coordinates -> Point2d units coordinates
 centerPoint (Types.Circle2d properties) =
     properties.centerPoint
 
@@ -203,7 +190,7 @@ centerPoint (Types.Circle2d properties) =
     --> 3
 
 -}
-radius : Circle2d -> Float
+radius : Circle2d units coordinates -> Quantity Float units
 radius (Types.Circle2d properties) =
     properties.radius
 
@@ -214,9 +201,9 @@ radius (Types.Circle2d properties) =
     --> 6
 
 -}
-diameter : Circle2d -> Float
+diameter : Circle2d units coordinates -> Quantity Float units
 diameter circle =
-    2 * radius circle
+    Quantity.scaleBy 2 (radius circle)
 
 
 {-| Get the area of a circle.
@@ -225,13 +212,9 @@ diameter circle =
     --> 28.2743
 
 -}
-area : Circle2d -> Float
+area : Circle2d units coordinates -> Quantity Float (Squared units)
 area circle =
-    let
-        r =
-            radius circle
-    in
-    pi * r * r
+    Quantity.scaleBy pi (Quantity.squared (radius circle))
 
 
 {-| Get the circumference of a circle.
@@ -240,9 +223,9 @@ area circle =
     --> 18.8496
 
 -}
-circumference : Circle2d -> Float
+circumference : Circle2d units coordinates -> Quantity Float units
 circumference circle =
-    2 * pi * radius circle
+    Quantity.scaleBy (2 * pi) (radius circle)
 
 
 {-| Convert a circle to a 360 degree arc.
@@ -254,17 +237,18 @@ circumference circle =
     -->         (degrees 360)
 
 -}
-toArc : Circle2d -> Arc2d
+toArc : Circle2d units coordinates -> Arc2d units coordinates
 toArc (Types.Circle2d circle) =
     let
         ( x0, y0 ) =
             Point2d.coordinates circle.centerPoint
     in
     Types.Arc2d
-        { startPoint = Point2d.fromCoordinates ( x0 + circle.radius, y0 )
+        { startPoint =
+            Point2d.fromCoordinates ( x0 |> Quantity.plus circle.radius, y0 )
         , xDirection = Direction2d.y
-        , sweptAngle = 2 * pi
-        , signedLength = 2 * pi * circle.radius
+        , sweptAngle = Angle.radians (2 * pi)
+        , signedLength = Quantity.scaleBy (2 * pi) circle.radius
         }
 
 
@@ -279,13 +263,10 @@ toArc (Types.Circle2d circle) =
     --> False
 
 -}
-contains : Point2d -> Circle2d -> Bool
+contains : Point2d units coordinates -> Circle2d units coordinates -> Bool
 contains point circle =
-    let
-        r =
-            radius circle
-    in
-    Point2d.squaredDistanceFrom (centerPoint circle) point <= r * r
+    Point2d.squaredDistanceFrom (centerPoint circle) point
+        |> Quantity.lessThanOrEqualTo (Quantity.squared (radius circle))
 
 
 {-| Scale a circle about a given point by a given scale.
@@ -302,9 +283,9 @@ contains point circle =
     -->     (Point2d.fromCoordinates ( 1, 2 ))
 
 -}
-scaleAbout : Point2d -> Float -> Circle2d -> Circle2d
+scaleAbout : Point2d units coordinates -> Float -> Circle2d units coordinates -> Circle2d units coordinates
 scaleAbout point scale (Types.Circle2d circle) =
-    withRadius (abs scale * circle.radius)
+    withRadius (Quantity.scaleBy (abs scale) circle.radius)
         (Point2d.scaleAbout point scale circle.centerPoint)
 
 
@@ -317,7 +298,7 @@ scaleAbout point scale (Types.Circle2d circle) =
     -->     (Point2d.fromCoordinates ( -2, 1 ))
 
 -}
-rotateAround : Point2d -> Float -> Circle2d -> Circle2d
+rotateAround : Point2d units coordinates -> Angle -> Circle2d units coordinates -> Circle2d units coordinates
 rotateAround point angle =
     let
         rotatePoint =
@@ -336,7 +317,7 @@ rotateAround point angle =
     -->     (Point2d.fromCoordinates ( 3, 4 ))
 
 -}
-translateBy : Vector2d -> Circle2d -> Circle2d
+translateBy : Vector2d units coordinates -> Circle2d units coordinates -> Circle2d units coordinates
 translateBy displacement (Types.Circle2d circle) =
     withRadius circle.radius
         (Point2d.translateBy displacement circle.centerPoint)
@@ -352,7 +333,7 @@ is equivalent to
         (Vector2d.withLength distance direction)
 
 -}
-translateIn : Direction2d -> Float -> Circle2d -> Circle2d
+translateIn : Direction2d coordinates -> Quantity Float units -> Circle2d units coordinates -> Circle2d units coordinates
 translateIn direction distance circle =
     translateBy (Vector2d.withLength distance direction) circle
 
@@ -364,7 +345,7 @@ translateIn direction distance circle =
     -->     (Point2d.fromCoordinates ( 1, -2 ))
 
 -}
-mirrorAcross : Axis2d -> Circle2d -> Circle2d
+mirrorAcross : Axis2d units coordinates -> Circle2d units coordinates -> Circle2d units coordinates
 mirrorAcross axis (Types.Circle2d circle) =
     withRadius circle.radius (Point2d.mirrorAcross axis circle.centerPoint)
 
@@ -380,7 +361,7 @@ local coordinates relative to a given reference frame.
     -->     (Point2d.fromCoordinates ( -1, -1 ))
 
 -}
-relativeTo : Frame2d -> Circle2d -> Circle2d
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Circle2d units globalCoordinates -> Circle2d units localCoordinates
 relativeTo frame (Types.Circle2d circle) =
     withRadius circle.radius (Point2d.relativeTo frame circle.centerPoint)
 
@@ -396,7 +377,7 @@ given reference frame, and return that circle expressed in global coordinates.
     -->     (Point2d.fromCoordinates ( 3, 5 ))
 
 -}
-placeIn : Frame2d -> Circle2d -> Circle2d
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Circle2d units localCoordinates -> Circle2d units globalCoordinates
 placeIn frame (Types.Circle2d circle) =
     withRadius circle.radius (Point2d.placeIn frame circle.centerPoint)
 
@@ -412,7 +393,7 @@ placeIn frame (Types.Circle2d circle) =
     -->     }
 
 -}
-boundingBox : Circle2d -> BoundingBox2d
+boundingBox : Circle2d units coordinates -> BoundingBox2d units coordinates
 boundingBox circle =
     let
         ( x, y ) =
@@ -422,8 +403,8 @@ boundingBox circle =
             radius circle
     in
     BoundingBox2d.fromExtrema
-        { minX = x - r
-        , maxX = x + r
-        , minY = y - r
-        , maxY = y + r
+        { minX = x |> Quantity.minus r
+        , maxX = x |> Quantity.plus r
+        , minY = y |> Quantity.minus r
+        , maxY = y |> Quantity.plus r
         }
