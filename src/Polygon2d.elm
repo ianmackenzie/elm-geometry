@@ -56,6 +56,7 @@ Transforming a polygon is equivalent to transforming each of its vertices.
 
 -}
 
+import Angle exposing (Angle)
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Direction2d exposing (Direction2d)
@@ -64,27 +65,29 @@ import Geometry.Types as Types
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
 import Polygon2d.Monotone as Monotone
+import Quantity exposing (Quantity, Squared)
+import Quantity.Extra as Quantity
 import Triangle2d exposing (Triangle2d)
 import TriangularMesh exposing (TriangularMesh)
 import Vector2d exposing (Vector2d)
 
 
 {-| -}
-type alias Polygon2d =
-    Types.Polygon2d
+type alias Polygon2d units coordinates =
+    Types.Polygon2d units coordinates
 
 
-counterclockwiseArea : List Point2d -> Float
+counterclockwiseArea : List (Point2d units coordinates) -> Quantity Float (Squared units)
 counterclockwiseArea vertices_ =
     case vertices_ of
         [] ->
-            0
+            Quantity.zero
 
         [ single ] ->
-            0
+            Quantity.zero
 
         [ first, second ] ->
-            0
+            Quantity.zero
 
         first :: second :: rest ->
             let
@@ -95,21 +98,27 @@ counterclockwiseArea vertices_ =
                 segmentAreas =
                     List.map2 segmentArea (second :: rest) rest
             in
-            List.sum segmentAreas
+            Quantity.sum segmentAreas
 
 
-makeOuterLoop : List Point2d -> List Point2d
+makeOuterLoop : List (Point2d units coordinates) -> List (Point2d units coordinates)
 makeOuterLoop vertices_ =
-    if counterclockwiseArea vertices_ >= 0 then
+    if
+        counterclockwiseArea vertices_
+            |> Quantity.greaterThanOrEqualTo Quantity.zero
+    then
         vertices_
 
     else
         List.reverse vertices_
 
 
-makeInnerLoop : List Point2d -> List Point2d
+makeInnerLoop : List (Point2d units coordinates) -> List (Point2d units coordinates)
 makeInnerLoop vertices_ =
-    if counterclockwiseArea vertices_ <= 0 then
+    if
+        counterclockwiseArea vertices_
+            |> Quantity.lessThanOrEqualTo Quantity.zero
+    then
         vertices_
 
     else
@@ -132,7 +141,7 @@ ideally be provided in counterclockwise order; if they are provided in clockwise
 order they will be reversed.
 
 -}
-singleLoop : List Point2d -> Polygon2d
+singleLoop : List (Point2d units coordinates) -> Polygon2d units coordinates
 singleLoop vertices_ =
     Types.Polygon2d
         { outerLoop = makeOuterLoop vertices_
@@ -169,7 +178,7 @@ provided in counterclockwise order and vertices of the inner loops should
 ideally be provided in clockwise order.
 
 -}
-with : { outerLoop : List Point2d, innerLoops : List (List Point2d) } -> Polygon2d
+with : { outerLoop : List (Point2d units coordinates), innerLoops : List (List (Point2d units coordinates)) } -> Polygon2d units coordinates
 with arguments =
     Types.Polygon2d
         { outerLoop = makeOuterLoop arguments.outerLoop
@@ -177,12 +186,13 @@ with arguments =
         }
 
 
-counterclockwiseAround : Point2d -> Point2d -> Point2d -> Bool
+counterclockwiseAround : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Bool
 counterclockwiseAround origin a b =
-    Vector2d.crossProduct (Vector2d.from origin a) (Vector2d.from origin b) >= 0
+    Vector2d.crossProduct (Vector2d.from origin a) (Vector2d.from origin b)
+        |> Quantity.greaterThanOrEqualTo Quantity.zero
 
 
-chainHelp : List Point2d -> List Point2d -> List Point2d
+chainHelp : List (Point2d units coordinates) -> List (Point2d units coordinates) -> List (Point2d units coordinates)
 chainHelp acc list =
     case ( acc, list ) of
         ( r1 :: r2 :: rs, x :: xs ) ->
@@ -199,9 +209,25 @@ chainHelp acc list =
             List.drop 1 acc
 
 
-chain : List Point2d -> List Point2d
+chain : List (Point2d units coordinates) -> List (Point2d units coordinates)
 chain =
     chainHelp []
+
+
+compareCoordinates : Point2d units coordinates -> Point2d units coordinates -> Order
+compareCoordinates firstPoint secondPoint =
+    let
+        ( x1, y1 ) =
+            Point2d.coordinates firstPoint
+
+        ( x2, y2 ) =
+            Point2d.coordinates secondPoint
+    in
+    if x1 == x2 then
+        Quantity.compare y1 y2
+
+    else
+        Quantity.compare x1 x2
 
 
 {-| Build the [convex hull](https://en.wikipedia.org/wiki/Convex_hull) of a list
@@ -212,13 +238,13 @@ of points:
 This is an O(n log n) operation.
 
 -}
-convexHull : List Point2d -> Polygon2d
+convexHull : List (Point2d units coordinates) -> Polygon2d units coordinates
 convexHull points =
     -- See http://www.algorithmist.com/index.php/Monotone_Chain_Convex_Hull
     -- for a description of the algorithm.
     let
         sorted =
-            points |> List.sortBy Point2d.coordinates
+            points |> List.sortWith compareCoordinates
 
         lower =
             chain sorted
@@ -240,7 +266,7 @@ The vertices will be in counterclockwise order.
     --> ]
 
 -}
-outerLoop : Polygon2d -> List Point2d
+outerLoop : Polygon2d units coordinates -> List (Point2d units coordinates)
 outerLoop (Types.Polygon2d polygon) =
     polygon.outerLoop
 
@@ -257,7 +283,7 @@ Each list of vertices will be in clockwise order.
     --> ]
 
 -}
-innerLoops : Polygon2d -> List (List Point2d)
+innerLoops : Polygon2d units coordinates -> List (List (Point2d units coordinates))
 innerLoops (Types.Polygon2d polygon) =
     polygon.innerLoops
 
@@ -278,12 +304,12 @@ undefined.
     --> ]
 
 -}
-vertices : Polygon2d -> List Point2d
+vertices : Polygon2d units coordinates -> List (Point2d units coordinates)
 vertices polygon =
     List.concat (outerLoop polygon :: innerLoops polygon)
 
 
-loopEdges : List Point2d -> List LineSegment2d
+loopEdges : List (Point2d units coordinates) -> List (LineSegment2d units coordinates)
 loopEdges vertices_ =
     case vertices_ of
         [] ->
@@ -332,7 +358,7 @@ loopEdges vertices_ =
     --> ]
 
 -}
-edges : Polygon2d -> List LineSegment2d
+edges : Polygon2d units coordinates -> List (LineSegment2d units coordinates)
 edges polygon =
     let
         outerEdges =
@@ -351,9 +377,9 @@ includes the outer perimeter and the perimeter of any holes.
     --> 16
 
 -}
-perimeter : Polygon2d -> Float
+perimeter : Polygon2d units coordinates -> Quantity Float units
 perimeter =
-    edges >> List.map LineSegment2d.length >> List.sum
+    edges >> List.map LineSegment2d.length >> Quantity.sum
 
 
 {-| Get the area of a polygon. This value will never be negative.
@@ -362,10 +388,11 @@ perimeter =
     --> 8
 
 -}
-area : Polygon2d -> Float
+area : Polygon2d units coordinates -> Quantity Float (Squared units)
 area polygon =
     counterclockwiseArea (outerLoop polygon)
-        + List.sum (List.map counterclockwiseArea (innerLoops polygon))
+        |> Quantity.plus
+            (Quantity.sum (List.map counterclockwiseArea (innerLoops polygon)))
 
 
 {-| Scale a polygon about a given center point by a given scale.
@@ -386,7 +413,7 @@ reversed so that the resulting polygon still has its outer vertices in
 counterclockwise order and its inner vertices in clockwise order.
 
 -}
-scaleAbout : Point2d -> Float -> Polygon2d -> Polygon2d
+scaleAbout : Point2d units coordinates -> Float -> Polygon2d units coordinates -> Polygon2d units coordinates
 scaleAbout point scale =
     mapVertices (Point2d.scaleAbout point scale) (scale < 0)
 
@@ -405,7 +432,7 @@ angle (in radians).
     -->     ]
 
 -}
-rotateAround : Point2d -> Float -> Polygon2d -> Polygon2d
+rotateAround : Point2d units coordinates -> Angle -> Polygon2d units coordinates -> Polygon2d units coordinates
 rotateAround point angle =
     mapVertices (Point2d.rotateAround point angle) False
 
@@ -424,7 +451,7 @@ rotateAround point angle =
     -->     ]
 
 -}
-translateBy : Vector2d -> Polygon2d -> Polygon2d
+translateBy : Vector2d units coordinates -> Polygon2d units coordinates -> Polygon2d units coordinates
 translateBy vector =
     mapVertices (Point2d.translateBy vector) False
 
@@ -439,7 +466,7 @@ is equivalent to
         (Vector2d.withLength distance direction)
 
 -}
-translateIn : Direction2d -> Float -> Polygon2d -> Polygon2d
+translateIn : Direction2d coordinates -> Quantity Float units -> Polygon2d units coordinates -> Polygon2d units coordinates
 translateIn direction distance polygon =
     translateBy (Vector2d.withLength distance direction) polygon
 
@@ -459,12 +486,12 @@ polygon still has its outer vertices in counterclockwise order and its inner
 vertices in clockwise order.
 
 -}
-mirrorAcross : Axis2d -> Polygon2d -> Polygon2d
+mirrorAcross : Axis2d units coordinates -> Polygon2d units coordinates -> Polygon2d units coordinates
 mirrorAcross axis =
     mapVertices (Point2d.mirrorAcross axis) True
 
 
-mapVertices : (Point2d -> Point2d) -> Bool -> Polygon2d -> Polygon2d
+mapVertices : (Point2d unitsA coordinatesA -> Point2d unitsB coordinatesB) -> Bool -> Polygon2d unitsA coordinatesA -> Polygon2d unitsB coordinatesB
 mapVertices function invert polygon =
     let
         mappedOuterLoop =
@@ -505,7 +532,7 @@ reversed so that the resulting polygon still has its outer vertices in
 counterclockwise order and its inner vertices in clockwise order.
 
 -}
-relativeTo : Frame2d -> Polygon2d -> Polygon2d
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Polygon2d units globalCoordinates -> Polygon2d units localCoordinates
 relativeTo frame =
     mapVertices (Point2d.relativeTo frame) (not (Frame2d.isRightHanded frame))
 
@@ -530,7 +557,7 @@ reversed so that the resulting polygon still has its outer vertices in
 counterclockwise order and its inner vertices in clockwise order.
 
 -}
-placeIn : Frame2d -> Polygon2d -> Polygon2d
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Polygon2d units localCoordinates -> Polygon2d units globalCoordinates
 placeIn frame =
     mapVertices (Point2d.placeIn frame) (not (Frame2d.isRightHanded frame))
 
@@ -549,7 +576,7 @@ if the polygon has no vertices.
     -->     )
 
 -}
-boundingBox : Polygon2d -> Maybe BoundingBox2d
+boundingBox : Polygon2d units coordinates -> Maybe (BoundingBox2d units coordinates)
 boundingBox polygon =
     BoundingBox2d.containingPoints (outerLoop polygon)
 
@@ -567,6 +594,6 @@ can render using WebGL:
 ![Polygon with hole](https://ianmackenzie.github.io/elm-geometry/1.0.0/Polygon2d/triangulate2.svg)
 
 -}
-triangulate : Polygon2d -> TriangularMesh Point2d
+triangulate : Polygon2d units coordinates -> TriangularMesh (Point2d units coordinates)
 triangulate polygon =
     Monotone.triangulation polygon

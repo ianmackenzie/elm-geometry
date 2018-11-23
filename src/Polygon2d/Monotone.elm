@@ -11,7 +11,6 @@ module Polygon2d.Monotone exposing
     ( faces
     , init
     , monotonePolygons
-    , testPolygon
     , triangulation
     )
 
@@ -21,6 +20,8 @@ import Geometry.Types as Types exposing (Polygon2d(..))
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
 import Polygon2d.EdgeSet as EdgeSet exposing (EdgeSet)
+import Quantity exposing (Quantity, Squared, Unitless)
+import Quantity.Extra as Quantity
 import Set exposing (Set)
 import Triangle2d exposing (Triangle2d)
 import TriangularMesh exposing (TriangularMesh)
@@ -35,13 +36,13 @@ type Kind
     | Merge
 
 
-type alias Vertex =
-    { position : Point2d
+type alias Vertex units coordinates =
+    { position : Point2d units coordinates
     , kind : Kind
     }
 
 
-comparePoints : Point2d -> Point2d -> Order
+comparePoints : Point2d units coordinates -> Point2d units coordinates -> Order
 comparePoints p1 p2 =
     let
         ( x1, y1 ) =
@@ -50,17 +51,17 @@ comparePoints p1 p2 =
         ( x2, y2 ) =
             Point2d.coordinates p2
     in
-    if y1 < y2 then
+    if y1 |> Quantity.lessThan y2 then
         LT
 
-    else if y1 > y2 then
+    else if y1 |> Quantity.greaterThan y2 then
         GT
 
     else
-        compare x2 x1
+        Quantity.compare x2 x1
 
 
-leftTurn : Point2d -> Point2d -> Point2d -> Bool
+leftTurn : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Bool
 leftTurn p1 p2 p3 =
     let
         ( x1, y1 ) =
@@ -71,11 +72,24 @@ leftTurn p1 p2 p3 =
 
         ( x3, y3 ) =
             Point2d.coordinates p3
+
+        firstProduct =
+            Quantity.product
+                (x2 |> Quantity.minus x1)
+                (y3 |> Quantity.minus y2)
+
+        secondProduct =
+            Quantity.product
+                (y2 |> Quantity.minus y1)
+                (x3 |> Quantity.minus x2)
+
+        difference =
+            firstProduct |> Quantity.minus secondProduct
     in
-    (x2 - x1) * (y3 - y2) - (y2 - y1) * (x3 - x2) > 0
+    difference |> Quantity.greaterThan Quantity.zero
 
 
-kind : Point2d -> Point2d -> Point2d -> Kind
+kind : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Kind
 kind previous current next =
     let
         compareToPrevious =
@@ -105,7 +119,7 @@ kind previous current next =
         Left
 
 
-toVertices : List Point2d -> List Vertex
+toVertices : List (Point2d units coordinates) -> List (Vertex units coordinates)
 toVertices points =
     case points of
         [] ->
@@ -174,13 +188,13 @@ type alias Edge =
     }
 
 
-type alias Loops =
-    { vertices : List Vertex
+type alias Loops units coordinates =
+    { vertices : List (Vertex units coordinates)
     , edges : Array Edge
     }
 
 
-removeDuplicates : List Point2d -> List Point2d
+removeDuplicates : List (Point2d units coordinates) -> List (Point2d units coordinates)
 removeDuplicates points =
     case points of
         [] ->
@@ -208,7 +222,7 @@ removeDuplicates points =
                     [ firstPoint ]
 
 
-accumulateDistinctPoints : Point2d -> List Point2d -> List Point2d -> List Point2d
+accumulateDistinctPoints : Point2d units coordinates -> List (Point2d units coordinates) -> List (Point2d units coordinates) -> List (Point2d units coordinates)
 accumulateDistinctPoints previousPoint points accumulatedPoints =
     case points of
         [] ->
@@ -226,7 +240,7 @@ accumulateDistinctPoints previousPoint points accumulatedPoints =
             accumulateDistinctPoints point rest updatedPoints
 
 
-init : Polygon2d -> Loops
+init : Polygon2d units coordinates -> Loops units coordinates
 init (Polygon2d { outerLoop, innerLoops }) =
     let
         allLoops =
@@ -300,20 +314,20 @@ type alias HelperVertex =
     }
 
 
-type alias State =
-    { edgeSet : EdgeSet
+type alias State units coordinates =
+    { edgeSet : EdgeSet units coordinates
     , helpers : Dict Int HelperVertex -- helper vertex by edge index
-    , vertices : Array Vertex
+    , vertices : Array (Vertex units coordinates)
     , edges : Array Edge
     }
 
 
-getVertex : Int -> State -> Maybe Vertex
+getVertex : Int -> State units coordinates -> Maybe (Vertex units coordinates)
 getVertex index state =
     Array.get index state.vertices
 
 
-getEdge : Int -> State -> Maybe Edge
+getEdge : Int -> State units coordinates -> Maybe Edge
 getEdge index state =
     Array.get index state.edges
 
@@ -333,7 +347,7 @@ defaultTo defaultValue maybeValue =
             error defaultValue
 
 
-processLeftEdge : (EdgeSet.Edge -> EdgeSet -> EdgeSet) -> Int -> State -> State
+processLeftEdge : (EdgeSet.Edge units coordinates -> EdgeSet units coordinates -> EdgeSet units coordinates) -> Int -> State units coordinates -> State units coordinates
 processLeftEdge insertOrRemove edgeIndex state =
     getEdge edgeIndex state
         |> Maybe.andThen
@@ -359,17 +373,17 @@ processLeftEdge insertOrRemove edgeIndex state =
         |> defaultTo state
 
 
-insertLeftEdge : Int -> State -> State
+insertLeftEdge : Int -> State units coordinates -> State units coordinates
 insertLeftEdge =
     processLeftEdge EdgeSet.insert
 
 
-removeLeftEdge : Int -> State -> State
+removeLeftEdge : Int -> State units coordinates -> State units coordinates
 removeLeftEdge =
     processLeftEdge EdgeSet.remove
 
 
-setHelperOf : Int -> HelperVertex -> State -> State
+setHelperOf : Int -> HelperVertex -> State units coordinates -> State units coordinates
 setHelperOf edgeIndex helperVertex state =
     { state
         | helpers =
@@ -377,7 +391,7 @@ setHelperOf edgeIndex helperVertex state =
     }
 
 
-handleStartVertex : Int -> State -> State
+handleStartVertex : Int -> State units coordinates -> State units coordinates
 handleStartVertex index state =
     state
         |> insertLeftEdge index
@@ -404,7 +418,7 @@ setNextEdge index edge =
     { edge | nextEdgeIndex = index }
 
 
-addDiagonal : Int -> HelperVertex -> State -> ( State, Int )
+addDiagonal : Int -> HelperVertex -> State units coordinates -> ( State units coordinates, Int )
 addDiagonal vertexIndex helperVertex state =
     let
         n =
@@ -444,12 +458,12 @@ addDiagonal vertexIndex helperVertex state =
         |> defaultTo ( state, -1 )
 
 
-getHelperOf : Int -> State -> Maybe HelperVertex
+getHelperOf : Int -> State units coordinates -> Maybe HelperVertex
 getHelperOf edgeIndex state =
     Dict.get edgeIndex state.helpers
 
 
-handleEndVertex : Int -> State -> State
+handleEndVertex : Int -> State units coordinates -> State units coordinates
 handleEndVertex index state =
     getEdge index state
         |> Maybe.andThen
@@ -474,12 +488,12 @@ handleEndVertex index state =
         |> defaultTo state
 
 
-getLeftEdge : Point2d -> State -> Maybe Int
+getLeftEdge : Point2d units coordinates -> State units coordinates -> Maybe Int
 getLeftEdge point state =
     EdgeSet.leftOf point state.edgeSet
 
 
-handleSplitVertex : Int -> Point2d -> State -> State
+handleSplitVertex : Int -> Point2d units coordinates -> State units coordinates -> State units coordinates
 handleSplitVertex index point state =
     getLeftEdge point state
         |> Maybe.andThen
@@ -500,7 +514,7 @@ handleSplitVertex index point state =
         |> defaultTo state
 
 
-handleMergeVertex : Int -> Point2d -> State -> State
+handleMergeVertex : Int -> Point2d units coordinates -> State units coordinates -> State units coordinates
 handleMergeVertex index point state =
     getEdge index state
         |> Maybe.andThen
@@ -546,7 +560,7 @@ handleMergeVertex index point state =
         |> defaultTo state
 
 
-handleRightVertex : Int -> Point2d -> State -> State
+handleRightVertex : Int -> Point2d units coordinates -> State units coordinates -> State units coordinates
 handleRightVertex index point state =
     getLeftEdge point state
         |> Maybe.andThen
@@ -570,7 +584,7 @@ handleRightVertex index point state =
         |> defaultTo state
 
 
-handleLeftVertex : Int -> State -> State
+handleLeftVertex : Int -> State units coordinates -> State units coordinates
 handleLeftVertex index state =
     getEdge index state
         |> Maybe.andThen
@@ -597,14 +611,14 @@ handleLeftVertex index state =
         |> defaultTo state
 
 
-type alias MonotoneVertex =
+type alias MonotoneVertex units coordinates =
     { index : Int
-    , position : Point2d
+    , position : Point2d units coordinates
     , nextVertexIndex : Int
     }
 
 
-buildLoop : State -> Array Point2d -> Int -> Int -> ( Set Int, List MonotoneVertex ) -> ( Set Int, List MonotoneVertex )
+buildLoop : State units coordinates -> Array (Point2d units coordinates) -> Int -> Int -> ( Set Int, List (MonotoneVertex units coordinates) ) -> ( Set Int, List (MonotoneVertex units coordinates) )
 buildLoop state points startIndex currentIndex ( processedEdgeIndices, accumulated ) =
     case getEdge currentIndex state of
         Just currentEdge ->
@@ -646,7 +660,7 @@ buildLoop state points startIndex currentIndex ( processedEdgeIndices, accumulat
             error ( processedEdgeIndices, [] )
 
 
-collectMonotoneLoops : State -> ( Array Point2d, List (List MonotoneVertex) )
+collectMonotoneLoops : State units coordinates -> ( Array (Point2d units coordinates), List (List (MonotoneVertex units coordinates)) )
 collectMonotoneLoops state =
     let
         points =
@@ -676,24 +690,7 @@ collectMonotoneLoops state =
     ( points, loops )
 
 
-testPolygon : Polygon2d
-testPolygon =
-    let
-        loop =
-            List.map Point2d.fromCoordinates
-
-        outerLoop =
-            loop [ ( 0, 0 ), ( 5, 0 ), ( 5, 3 ), ( 0, 3 ) ]
-
-        innerLoops =
-            [ loop [ ( 1, 2 ), ( 2, 2 ), ( 2, 1 ), ( 1, 1 ) ]
-            , loop [ ( 3, 2 ), ( 4, 1.5 ), ( 3, 1 ) ]
-            ]
-    in
-    Polygon2d { outerLoop = outerLoop, innerLoops = innerLoops }
-
-
-monotonePolygons : Polygon2d -> ( Array Point2d, List (List MonotoneVertex) )
+monotonePolygons : Polygon2d units coordinates -> ( Array (Point2d units coordinates), List (List (MonotoneVertex units coordinates)) )
 monotonePolygons polygon =
     let
         { vertices, edges } =
@@ -743,15 +740,15 @@ monotonePolygons polygon =
     collectMonotoneLoops finalState
 
 
-type alias TriangulationState =
-    { chainStart : MonotoneVertex
-    , chainInterior : List MonotoneVertex
-    , chainEnd : MonotoneVertex
+type alias TriangulationState units coordinates =
+    { chainStart : MonotoneVertex units coordinates
+    , chainInterior : List (MonotoneVertex units coordinates)
+    , chainEnd : MonotoneVertex units coordinates
     , faces : List ( Int, Int, Int )
     }
 
 
-signedArea : MonotoneVertex -> MonotoneVertex -> MonotoneVertex -> Float
+signedArea : MonotoneVertex units coordinates -> MonotoneVertex units coordinates -> MonotoneVertex units coordinates -> Quantity Float (Squared units)
 signedArea first second third =
     Triangle2d.counterclockwiseArea <|
         Triangle2d.fromVertices
@@ -761,11 +758,14 @@ signedArea first second third =
             )
 
 
-addLeftChainVertex : MonotoneVertex -> TriangulationState -> TriangulationState
+addLeftChainVertex : MonotoneVertex units coordinates -> TriangulationState units coordinates -> TriangulationState units coordinates
 addLeftChainVertex vertex state =
     case state.chainInterior of
         [] ->
-            if signedArea state.chainStart state.chainEnd vertex > 0 then
+            if
+                signedArea state.chainStart state.chainEnd vertex
+                    |> Quantity.greaterThan Quantity.zero
+            then
                 let
                     newFace =
                         ( state.chainStart.index
@@ -787,7 +787,10 @@ addLeftChainVertex vertex state =
                 }
 
         firstInterior :: restInterior ->
-            if signedArea firstInterior state.chainEnd vertex > 0 then
+            if
+                signedArea firstInterior state.chainEnd vertex
+                    |> Quantity.greaterThan Quantity.zero
+            then
                 let
                     newFace =
                         ( firstInterior.index
@@ -810,11 +813,14 @@ addLeftChainVertex vertex state =
                 }
 
 
-addRightChainVertex : MonotoneVertex -> TriangulationState -> TriangulationState
+addRightChainVertex : MonotoneVertex units coordinates -> TriangulationState units coordinates -> TriangulationState units coordinates
 addRightChainVertex vertex state =
     case state.chainInterior of
         [] ->
-            if signedArea vertex state.chainEnd state.chainStart > 0 then
+            if
+                signedArea vertex state.chainEnd state.chainStart
+                    |> Quantity.greaterThan Quantity.zero
+            then
                 let
                     newFace =
                         ( vertex.index
@@ -836,7 +842,10 @@ addRightChainVertex vertex state =
                 }
 
         firstInterior :: restInterior ->
-            if signedArea vertex state.chainEnd firstInterior > 0 then
+            if
+                signedArea vertex state.chainEnd firstInterior
+                    |> Quantity.greaterThan Quantity.zero
+            then
                 let
                     newFace =
                         ( vertex.index
@@ -859,7 +868,7 @@ addRightChainVertex vertex state =
                 }
 
 
-startNewRightChain : MonotoneVertex -> TriangulationState -> TriangulationState
+startNewRightChain : MonotoneVertex units coordinates -> TriangulationState units coordinates -> TriangulationState units coordinates
 startNewRightChain vertex state =
     let
         collectFaces firstVertex otherVertices accumulated =
@@ -891,7 +900,7 @@ startNewRightChain vertex state =
     }
 
 
-startNewLeftChain : MonotoneVertex -> TriangulationState -> TriangulationState
+startNewLeftChain : MonotoneVertex units coordinates -> TriangulationState units coordinates -> TriangulationState units coordinates
 startNewLeftChain vertex state =
     let
         collectFaces firstVertex otherVertices accumulated =
@@ -923,7 +932,7 @@ startNewLeftChain vertex state =
     }
 
 
-faces : List MonotoneVertex -> List ( Int, Int, Int )
+faces : List (MonotoneVertex units coordinates) -> List ( Int, Int, Int )
 faces vertices =
     let
         sortedVertices =
@@ -974,7 +983,7 @@ faces vertices =
             List.foldl processVertex initialState rest |> .faces
 
 
-triangulation : Polygon2d -> TriangularMesh Point2d
+triangulation : Polygon2d units coordinates -> TriangularMesh (Point2d units coordinates)
 triangulation polygon =
     let
         ( points, loops ) =
