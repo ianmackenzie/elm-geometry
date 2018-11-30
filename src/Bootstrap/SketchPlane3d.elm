@@ -17,21 +17,21 @@ module Bootstrap.SketchPlane3d exposing
 import Geometry.Types exposing (..)
 
 
-unsafe : { originPoint : Point3d, xDirection : Direction3d, yDirection : Direction3d } -> SketchPlane3d
-unsafe =
-    SketchPlane3d
+unsafe : { originPoint : Point3d units coordinates, xDirection : Direction3d coordinates, yDirection : Direction3d coordinates } -> SketchPlane3d units coordinates {}
+unsafe properties =
+    SketchPlane3d properties
 
 
-originPoint : SketchPlane3d -> Point3d
+originPoint : SketchPlane3d units coordinates defines -> Point3d units coordinates
 originPoint (SketchPlane3d properties) =
     properties.originPoint
 
 
-xDirection : SketchPlane3d -> Direction3d
+xDirection : SketchPlane3d units coordinates defines -> Direction3d coordinates
 xDirection (SketchPlane3d properties) =
     properties.xDirection
 
 
-yDirection : SketchPlane3d -> Direction3d
+yDirection : SketchPlane3d units coordinates defines -> Direction3d coordinates
 yDirection (SketchPlane3d properties) =
     properties.yDirection

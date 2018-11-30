@@ -15,11 +15,11 @@ module Bootstrap.Direction3d exposing
 import Geometry.Types exposing (..)
 
 
-unsafe : ( Float, Float, Float ) -> Direction3d
-unsafe =
-    Direction3d
+unsafe : ( Float, Float, Float ) -> Direction3d coordinates
+unsafe givenComponents =
+    Direction3d givenComponents
 
 
-components : Direction3d -> ( Float, Float, Float )
-components (Direction3d components_) =
-    components_
+components : Direction3d coordinates -> ( Float, Float, Float )
+components (Direction3d givenComponents) =
+    givenComponents

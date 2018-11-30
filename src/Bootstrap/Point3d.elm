@@ -13,13 +13,14 @@ module Bootstrap.Point3d exposing
     )
 
 import Geometry.Types exposing (..)
+import Quantity exposing (Quantity)
 
 
-fromCoordinates : ( Float, Float, Float ) -> Point3d
-fromCoordinates =
-    Point3d
+fromCoordinates : ( Quantity Float units, Quantity Float units, Quantity Float units ) -> Point3d units coordinates
+fromCoordinates givenCoordinates =
+    Point3d givenCoordinates
 
 
-coordinates : Point3d -> ( Float, Float, Float )
-coordinates (Point3d coordinates_) =
-    coordinates_
+coordinates : Point3d units coordinates -> ( Quantity Float units, Quantity Float units, Quantity Float units )
+coordinates (Point3d pointCoordinates) =
+    pointCoordinates
