@@ -480,11 +480,7 @@ equalWithin angle firstDirection secondDirection =
 -}
 toVector : Direction2d coordinates -> Vector2d Unitless coordinates
 toVector direction =
-    let
-        ( dx, dy ) =
-            components direction
-    in
-    Vector2d.fromComponents ( Quantity.float dx, Quantity.float dy )
+    Vector2d.fromTuple (components direction)
 
 
 {-| Reverse a direction.
