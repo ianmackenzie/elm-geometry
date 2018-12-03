@@ -53,12 +53,12 @@ you will actually want their `Direction3d` versions [`Direction3d.x`](Direction3
 @docs fromComponents, from, withLength, on, perpendicularTo, interpolateFrom
 
 
-# Components
 # Conversion
 
 @docs fromTuple, toTuple, fromRecord, toRecord
 
 
+# Properties
 
 @docs components, xComponent, yComponent, zComponent, length, squaredLength, direction, lengthAndDirection
 
