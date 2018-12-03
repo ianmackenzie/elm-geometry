@@ -1,5 +1,6 @@
 module Quantity.Extra exposing
-    ( aXbY
+    ( Cubed
+    , aXbY
     , aXbYcZ
     , greaterThanOrEqualTo
     , interpolateFrom
@@ -9,6 +10,10 @@ module Quantity.Extra exposing
 
 import Float.Extra as Float
 import Quantity exposing (Quantity(..))
+
+
+type Cubed units
+    = Cubed units
 
 
 interpolateFrom : Quantity Float units -> Quantity Float units -> Float -> Quantity Float units
