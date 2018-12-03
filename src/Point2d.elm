@@ -11,6 +11,7 @@ module Point2d exposing
     ( Point2d
     , origin
     , fromCoordinates, fromCoordinatesIn, fromPolarCoordinates, fromPolarCoordinatesIn, midpoint, centroid, interpolateFrom, along, circumcenter
+    , fromTuple, toTuple, fromRecord, toRecord
     , coordinates, xCoordinate, yCoordinate, polarCoordinates
     , equalWithin
     , distanceFrom, squaredDistanceFrom, signedDistanceAlong, signedDistanceFrom
@@ -42,6 +43,11 @@ like you can add two vectors.
 # Constructors
 
 @docs fromCoordinates, fromCoordinatesIn, fromPolarCoordinates, fromPolarCoordinatesIn, midpoint, centroid, interpolateFrom, along, circumcenter
+
+
+# Conversion
+
+@docs fromTuple, toTuple, fromRecord, toRecord
 
 
 # Properties
@@ -76,7 +82,7 @@ import Bootstrap.Frame2d as Frame2d
 import Direction2d exposing (Direction2d)
 import Float.Extra as Float
 import Geometry.Types as Types exposing (Axis2d, Frame2d)
-import Quantity exposing (Quantity(..), Squared)
+import Quantity exposing (Quantity(..), Squared, Unitless)
 import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
 
@@ -400,6 +406,30 @@ circumcenter p1 p2 p3 =
                 ( Quantity (w1 * x3 + w2 * x1 + w3 * x2)
                 , Quantity (w1 * y3 + w2 * y1 + w3 * y2)
                 )
+
+
+fromTuple : ( Float, Float ) -> Point2d Unitless coordinates
+fromTuple ( x, y ) =
+    fromCoordinates ( Quantity.float x, Quantity.float y )
+
+
+toTuple : Point2d Unitless coordinates -> ( Float, Float )
+toTuple point =
+    ( Quantity.toFloat (xCoordinate point)
+    , Quantity.toFloat (yCoordinate point)
+    )
+
+
+fromRecord : { x : Float, y : Float } -> Point2d Unitless coordinates
+fromRecord { x, y } =
+    fromCoordinates ( Quantity.float x, Quantity.float y )
+
+
+toRecord : Point2d Unitless coordinates -> { x : Float, y : Float }
+toRecord point =
+    { x = Quantity.toFloat (xCoordinate point)
+    , y = Quantity.toFloat (yCoordinate point)
+    }
 
 
 {-| Get the coordinates of a point as a tuple.

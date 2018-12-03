@@ -11,6 +11,7 @@ module Vector2d exposing
     ( Vector2d
     , zero
     , fromComponents, fromPolarComponents, from, withLength, perpendicularTo, interpolateFrom
+    , fromTuple, toTuple, fromRecord, toRecord
     , components, xComponent, yComponent, polarComponents, length, squaredLength, direction, lengthAndDirection
     , equalWithin
     , componentIn
@@ -49,6 +50,11 @@ Although there are no predefined constants for the vectors with components
 # Constructors
 
 @docs fromComponents, fromPolarComponents, from, withLength, perpendicularTo, interpolateFrom
+
+
+# Conversion
+
+@docs fromTuple, toTuple, fromRecord, toRecord
 
 
 # Properties
@@ -263,6 +269,30 @@ interpolateFrom firstVector secondVector givenParameter =
         ( Quantity.interpolateFrom x1 x2 givenParameter
         , Quantity.interpolateFrom y1 y2 givenParameter
         )
+
+
+fromTuple : ( Float, Float ) -> Vector2d Unitless coordinates
+fromTuple ( x, y ) =
+    fromComponents ( Quantity.float x, Quantity.float y )
+
+
+toTuple : Vector2d Unitless coordinates -> ( Float, Float )
+toTuple vector =
+    ( Quantity.toFloat (xComponent vector)
+    , Quantity.toFloat (yComponent vector)
+    )
+
+
+fromRecord : { x : Float, y : Float } -> Vector2d Unitless coordinates
+fromRecord { x, y } =
+    fromComponents ( Quantity.float x, Quantity.float y )
+
+
+toRecord : Vector2d Unitless coordinates -> { x : Float, y : Float }
+toRecord vector =
+    { x = Quantity.toFloat (xComponent vector)
+    , y = Quantity.toFloat (yComponent vector)
+    }
 
 
 {-| Extract the components of a vector.

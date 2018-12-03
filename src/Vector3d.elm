@@ -11,6 +11,7 @@ module Vector3d exposing
     ( Vector3d
     , zero
     , fromComponents, from, withLength, on, perpendicularTo, interpolateFrom
+    , fromTuple, toTuple, fromRecord, toRecord
     , components, xComponent, yComponent, zComponent, length, squaredLength, direction, lengthAndDirection
     , equalWithin
     , componentIn
@@ -53,6 +54,11 @@ you will actually want their `Direction3d` versions [`Direction3d.x`](Direction3
 
 
 # Components
+# Conversion
+
+@docs fromTuple, toTuple, fromRecord, toRecord
+
+
 
 @docs components, xComponent, yComponent, zComponent, length, squaredLength, direction, lengthAndDirection
 
@@ -323,6 +329,40 @@ interpolateFrom firstVector secondVector givenParameter =
         , Quantity.interpolateFrom y1 y2 givenParameter
         , Quantity.interpolateFrom z1 z2 givenParameter
         )
+
+
+fromTuple : ( Float, Float, Float ) -> Vector3d Unitless coordinates
+fromTuple ( x, y, z ) =
+    fromComponents
+        ( Quantity.float x
+        , Quantity.float y
+        , Quantity.float z
+        )
+
+
+toTuple : Vector3d Unitless coordinates -> ( Float, Float, Float )
+toTuple vector =
+    ( Quantity.toFloat (xComponent vector)
+    , Quantity.toFloat (yComponent vector)
+    , Quantity.toFloat (zComponent vector)
+    )
+
+
+fromRecord : { x : Float, y : Float, z : Float } -> Vector3d Unitless coordinates
+fromRecord { x, y, z } =
+    fromComponents
+        ( Quantity.float x
+        , Quantity.float y
+        , Quantity.float z
+        )
+
+
+toRecord : Vector3d Unitless coordinates -> { x : Float, y : Float, z : Float }
+toRecord vector =
+    { x = Quantity.toFloat (xComponent vector)
+    , y = Quantity.toFloat (yComponent vector)
+    , z = Quantity.toFloat (zComponent vector)
+    }
 
 
 {-| Extract the components of a vector.
