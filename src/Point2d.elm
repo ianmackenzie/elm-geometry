@@ -300,7 +300,7 @@ is equivalent to
         |> Point2d.placeIn frame
 
 -}
-fromCoordinatesIn : Frame2d units coordinates { defines : localCoordinates } -> ( Quantity Float units, Quantity Float units ) -> Point2d units coordinates
+fromCoordinatesIn : Frame2d units globalCoordinates { defines : localCoordinates } -> ( Quantity Float units, Quantity Float units ) -> Point2d units globalCoordinates
 fromCoordinatesIn frame localCoordinates =
     placeIn frame (fromCoordinates localCoordinates)
 
@@ -316,9 +316,9 @@ frame.
     --> Point2d.fromCoordinates ( 3.4142, 2.4142 )
 
 -}
-fromPolarCoordinatesIn : Frame2d units coordinates { defines : localCoordinates } -> ( Quantity Float units, Angle ) -> Point2d units coordinates
-fromPolarCoordinatesIn frame givenPolarCoordinates =
-    placeIn frame (fromPolarCoordinates givenPolarCoordinates)
+fromPolarCoordinatesIn : Frame2d units globalCoordinates { defines : localCoordinates } -> ( Quantity Float units, Angle ) -> Point2d units globalCoordinates
+fromPolarCoordinatesIn frame localPolarCoordinates =
+    placeIn frame (fromPolarCoordinates localPolarCoordinates)
 
 
 {-| Attempt to find the circumcenter of three points; this is the center of the
