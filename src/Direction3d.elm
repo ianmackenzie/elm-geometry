@@ -86,40 +86,47 @@ global XYZ frame:
 
 -}
 
+import Angle exposing (Angle)
 import Bootstrap.SketchPlane3d as SketchPlane3d
 import Direction2d exposing (Direction2d)
 import Geometry.Types as Types exposing (Axis3d, Frame3d, Plane3d, Point3d, SketchPlane3d)
+import Quantity exposing (Unitless)
+import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
 import Vector3d exposing (Vector3d)
 
 
-toDirection : Vector3d -> Direction3d
+toDirection : Vector3d Unitless coordinates -> Direction3d coordinates
 toDirection vector =
-    unsafe (Vector3d.components vector)
+    let
+        ( vx, vy, vz ) =
+            Vector3d.components vector
+    in
+    unsafe ( Quantity.toFloat vx, Quantity.toFloat vy, Quantity.toFloat vz )
 
 
 {-| -}
-type alias Direction3d =
-    Types.Direction3d
+type alias Direction3d coordinates =
+    Types.Direction3d coordinates
 
 
 {-| Synonym for `Direction3d.positiveX`.
 -}
-x : Direction3d
+x : Direction3d coordinates
 x =
     unsafe ( 1, 0, 0 )
 
 
 {-| Synonym for `Direction3d.positiveY`.
 -}
-y : Direction3d
+y : Direction3d coordinates
 y =
     unsafe ( 0, 1, 0 )
 
 
 {-| Synonym for `Direction3d.positiveZ`.
 -}
-z : Direction3d
+z : Direction3d coordinates
 z =
     unsafe ( 0, 0, 1 )
 
@@ -130,7 +137,7 @@ z =
     --> ( 1, 0, 0 )
 
 -}
-positiveX : Direction3d
+positiveX : Direction3d coordinates
 positiveX =
     unsafe ( 1, 0, 0 )
 
@@ -141,7 +148,7 @@ positiveX =
     --> ( -1, 0, 0 )
 
 -}
-negativeX : Direction3d
+negativeX : Direction3d coordinates
 negativeX =
     unsafe ( -1, 0, 0 )
 
@@ -152,7 +159,7 @@ negativeX =
     --> ( 0, 1, 0 )
 
 -}
-positiveY : Direction3d
+positiveY : Direction3d coordinates
 positiveY =
     unsafe ( 0, 1, 0 )
 
@@ -163,7 +170,7 @@ positiveY =
     --> ( 0, -1, 0 )
 
 -}
-negativeY : Direction3d
+negativeY : Direction3d coordinates
 negativeY =
     unsafe ( 0, -1, 0 )
 
@@ -174,7 +181,7 @@ negativeY =
     --> ( 0, 0, 1 )
 
 -}
-positiveZ : Direction3d
+positiveZ : Direction3d coordinates
 positiveZ =
     unsafe ( 0, 0, 1 )
 
@@ -185,7 +192,7 @@ positiveZ =
     --> ( 0, 0, -1 )
 
 -}
-negativeZ : Direction3d
+negativeZ : Direction3d coordinates
 negativeZ =
     unsafe ( 0, 0, -1 )
 
@@ -212,9 +219,9 @@ constructors like `Direction3d.on` or `Direction3d.fromAzimuthAndElevation`
 directions and transform them as necessary.
 
 -}
-unsafe : ( Float, Float, Float ) -> Direction3d
-unsafe =
-    Types.Direction3d
+unsafe : ( Float, Float, Float ) -> Direction3d coordinates
+unsafe givenComponents =
+    Types.Direction3d givenComponents
 
 
 {-| Construct a 3D direction lying _on_ a sketch plane by providing a 2D
@@ -235,7 +242,7 @@ direction specified in XY coordinates _within_ the sketch plane.
     --> ( 0.5, 0, 0.866 )
 
 -}
-on : SketchPlane3d -> Direction2d -> Direction3d
+on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Direction2d coordinates2d -> Direction3d coordinates3d
 on sketchPlane direction2d =
     let
         ( dx, dy ) =
@@ -267,16 +274,16 @@ plane towards positive Z.
     --> ( 0.5, 0.5, 0.7071 )
 
 -}
-fromAzimuthAndElevation : Float -> Float -> Direction3d
-fromAzimuthAndElevation azimuth_ elevation_ =
+fromAzimuthAndElevation : Angle -> Angle -> Direction3d coordinates
+fromAzimuthAndElevation givenAzimuth givenElevation =
     let
         cosElevation =
-            cos elevation_
+            Angle.cos givenElevation
     in
     unsafe
-        ( cosElevation * cos azimuth_
-        , cosElevation * sin azimuth_
-        , sin elevation_
+        ( cosElevation * Angle.cos givenAzimuth
+        , cosElevation * Angle.sin givenAzimuth
+        , Angle.sin givenElevation
         )
 
 
@@ -304,7 +311,7 @@ If the two points are coincident, returns `Nothing`.
     --> Nothing
 
 -}
-from : Point3d -> Point3d -> Maybe Direction3d
+from : Point3d units coordinates -> Point3d units coordinates -> Maybe (Direction3d coordinates)
 from firstPoint secondPoint =
     Vector3d.direction (Vector3d.from firstPoint secondPoint)
 
@@ -330,7 +337,7 @@ perpendicular to the given direction.
     -->     (degrees -30)
 
 -}
-perpendicularTo : Direction3d -> Direction3d
+perpendicularTo : Direction3d coordinates -> Direction3d coordinates
 perpendicularTo direction =
     let
         perpendicularVector =
@@ -339,10 +346,14 @@ perpendicularTo direction =
         length =
             Vector3d.length perpendicularVector
 
-        normalizedVector =
-            Vector3d.scaleBy (1 / length) perpendicularVector
+        ( vx, vy, vz ) =
+            Vector3d.components perpendicularVector
     in
-    toDirection normalizedVector
+    unsafe
+        ( Quantity.ratio vx length
+        , Quantity.ratio vy length
+        , Quantity.ratio vz length
+        )
 
 
 {-| Construct a pair of directions that are perpendicular to each other and both
@@ -366,15 +377,24 @@ directions as the X and Y directions).
     --> )
 
 -}
-perpendicularBasis : Direction3d -> ( Direction3d, Direction3d )
+perpendicularBasis : Direction3d coordinates -> ( Direction3d coordinates, Direction3d coordinates )
 perpendicularBasis direction =
     let
+        ( x0, y0, z0 ) =
+            components direction
+
         xDirection =
             perpendicularTo direction
 
+        ( x1, y1, z1 ) =
+            components xDirection
+
         yDirection =
-            Vector3d.crossProduct (toVector direction) (toVector xDirection)
-                |> toDirection
+            unsafe
+                ( y0 * z1 - z0 * y1
+                , z0 * x1 - x0 * z1
+                , x0 * y1 - y0 * x1
+                )
     in
     ( xDirection, yDirection )
 
@@ -414,34 +434,35 @@ are coplanar, returns `Nothing`.
     --> Nothing
 
 -}
-orthonormalize : Vector3d -> Vector3d -> Vector3d -> Maybe ( Direction3d, Direction3d, Direction3d )
+orthonormalize : Vector3d units coordinates -> Vector3d units coordinates -> Vector3d units coordinates -> Maybe ( Direction3d coordinates, Direction3d coordinates, Direction3d coordinates )
 orthonormalize xVector xyVector xyzVector =
     Vector3d.direction xVector
         |> Maybe.andThen
             (\xDirection ->
                 let
                     yVector =
-                        Vector3d.crossProduct
-                            (Vector3d.crossProduct xVector xyVector)
-                            xVector
+                        xyVector
+                            |> Vector3d.minus
+                                (xyVector |> Vector3d.projectionIn xDirection)
                 in
                 Vector3d.direction yVector
                     |> Maybe.andThen
                         (\yDirection ->
                             let
                                 rightHandedZVector =
-                                    Vector3d.crossProduct xVector yVector
+                                    Vector3d.crossProduct xVector xyVector
 
-                                dotProduct =
-                                    Vector3d.dotProduct
+                                tripleProduct =
+                                    Vector3d.tripleProduct
+                                        xVector
+                                        xyVector
                                         xyzVector
-                                        rightHandedZVector
 
                                 zVector =
-                                    if dotProduct > 0 then
+                                    if tripleProduct |> Quantity.greaterThan Quantity.zero then
                                         rightHandedZVector
 
-                                    else if dotProduct < 0 then
+                                    else if tripleProduct |> Quantity.lessThan Quantity.zero then
                                         Vector3d.reverse rightHandedZVector
 
                                     else
@@ -475,7 +496,7 @@ is equivalent to
         (Direction3d.toVector zDirection)
 
 -}
-orthogonalize : Direction3d -> Direction3d -> Direction3d -> Maybe ( Direction3d, Direction3d, Direction3d )
+orthogonalize : Direction3d coordinates -> Direction3d coordinates -> Direction3d coordinates -> Maybe ( Direction3d coordinates, Direction3d coordinates, Direction3d coordinates )
 orthogonalize xDirection yDirection zDirection =
     orthonormalize
         (toVector xDirection)
@@ -490,9 +511,9 @@ as a unit vector, also know as its direction cosines).
         Direction3d.components direction
 
 -}
-components : Direction3d -> ( Float, Float, Float )
-components (Types.Direction3d components_) =
-    components_
+components : Direction3d coordinates -> ( Float, Float, Float )
+components (Types.Direction3d directionComponents) =
+    directionComponents
 
 
 {-| Get the X component of a direction.
@@ -504,7 +525,7 @@ components (Types.Direction3d components_) =
     --> 0
 
 -}
-xComponent : Direction3d -> Float
+xComponent : Direction3d coordinates -> Float
 xComponent (Types.Direction3d ( xComponent_, _, _ )) =
     xComponent_
 
@@ -518,7 +539,7 @@ xComponent (Types.Direction3d ( xComponent_, _, _ )) =
     --> 0
 
 -}
-yComponent : Direction3d -> Float
+yComponent : Direction3d coordinates -> Float
 yComponent (Types.Direction3d ( _, yComponent_, _ )) =
     yComponent_
 
@@ -532,7 +553,7 @@ yComponent (Types.Direction3d ( _, yComponent_, _ )) =
     --> 0
 
 -}
-zComponent : Direction3d -> Float
+zComponent : Direction3d coordinates -> Float
 zComponent (Types.Direction3d ( _, _, zComponent_ )) =
     zComponent_
 
@@ -571,9 +592,16 @@ is equivalent to
     Direction3d.componentIn Direction3d.z direction
 
 -}
-componentIn : Direction3d -> Direction3d -> Float
+componentIn : Direction3d coordinates -> Direction3d coordinates -> Float
 componentIn firstDirection secondDirection =
-    Vector3d.componentIn firstDirection (toVector secondDirection)
+    let
+        ( x1, y1, z1 ) =
+            components firstDirection
+
+        ( x2, y2, z2 ) =
+            components secondDirection
+    in
+    x1 * x2 + y1 * y2 + z1 * z2
 
 
 {-| Get the angle of a direction in the XY plane, measured from the X axis
@@ -598,9 +626,9 @@ Vertical directions are considered to have an azimuth of zero:
     --> 0
 
 -}
-azimuth : Direction3d -> Float
+azimuth : Direction3d coordinates -> Angle
 azimuth direction =
-    atan2 (yComponent direction) (xComponent direction)
+    Angle.radians (atan2 (yComponent direction) (xComponent direction))
 
 
 {-| Get the angle of a direction from the XY plane towards positive Z. The
@@ -619,9 +647,9 @@ result will be in the range -π/2 to π/2.
     --> degrees -90
 
 -}
-elevation : Direction3d -> Float
+elevation : Direction3d coordinates -> Angle
 elevation direction =
-    asin (zComponent direction)
+    Angle.asin (zComponent direction)
 
 
 {-| Compare two directions within an angular tolerance. Returns true if the
@@ -643,9 +671,10 @@ angle between the two given directions is less than the given tolerance.
     --> False
 
 -}
-equalWithin : Float -> Direction3d -> Direction3d -> Bool
+equalWithin : Angle -> Direction3d coordinates -> Direction3d coordinates -> Bool
 equalWithin angle firstDirection secondDirection =
-    angleFrom firstDirection secondDirection <= angle
+    angleFrom firstDirection secondDirection
+        |> Quantity.lessThanOrEqualTo angle
 
 
 {-| Convert a direction to a unit vector.
@@ -654,9 +683,9 @@ equalWithin angle firstDirection secondDirection =
     --> Vector3d.fromComponents ( 0, 1, 0 )
 
 -}
-toVector : Direction3d -> Vector3d
+toVector : Direction3d coordinates -> Vector3d Unitless coordinates
 toVector direction =
-    Vector3d.fromComponents (components direction)
+    Vector3d.fromTuple (components direction)
 
 
 {-| Find the angle from one direction to another. The result will be in the
@@ -674,7 +703,7 @@ range 0 to π.
     --> degrees 180
 
 -}
-angleFrom : Direction3d -> Direction3d -> Float
+angleFrom : Direction3d coordinates -> Direction3d coordinates -> Angle
 angleFrom firstDirection secondDirection =
     let
         ( x1, y1, z1 ) =
@@ -698,7 +727,7 @@ angleFrom firstDirection secondDirection =
         relativeY =
             sqrt (cx * cx + cy * cy + cz * cz)
     in
-    atan2 relativeY relativeX
+    Angle.radians (atan2 relativeY relativeX)
 
 
 {-| Reverse a direction.
@@ -707,7 +736,7 @@ angleFrom firstDirection secondDirection =
     --> Direction3d.negativeY
 
 -}
-reverse : Direction3d -> Direction3d
+reverse : Direction3d coordinates -> Direction3d coordinates
 reverse direction =
     let
         ( dx, dy, dz ) =
@@ -734,9 +763,92 @@ its origin point, since directions are position-independent:
     --> Direction3d.y
 
 -}
-rotateAround : Axis3d -> Float -> Direction3d -> Direction3d
-rotateAround axis angle direction =
-    toVector direction |> Vector3d.rotateAround axis angle |> toDirection
+rotateAround : Axis3d units coordinates -> Angle -> Direction3d coordinates -> Direction3d coordinates
+rotateAround (Types.Axis3d axis) angle direction =
+    let
+        ( x1, y1, z1 ) =
+            components direction
+
+        ( x0, y0, z0 ) =
+            components axis.direction
+
+        halfAngle =
+            Quantity.scaleBy 0.5 angle
+
+        sinHalfAngle =
+            Angle.sin halfAngle
+
+        qx =
+            x0 * sinHalfAngle
+
+        qy =
+            y0 * sinHalfAngle
+
+        qz =
+            z0 * sinHalfAngle
+
+        qw =
+            Angle.cos halfAngle
+
+        wx =
+            qw * qx
+
+        wy =
+            qw * qy
+
+        wz =
+            qw * qz
+
+        xx =
+            qx * qx
+
+        xy =
+            qx * qy
+
+        xz =
+            qx * qz
+
+        yy =
+            qy * qy
+
+        yz =
+            qy * qz
+
+        zz =
+            qz * qz
+
+        a00 =
+            1 - 2 * (yy + zz)
+
+        a10 =
+            2 * (xy + wz)
+
+        a20 =
+            2 * (xz - wy)
+
+        a01 =
+            2 * (xy - wz)
+
+        a11 =
+            1 - 2 * (xx + zz)
+
+        a21 =
+            2 * (yz + wx)
+
+        a02 =
+            2 * (xz + wy)
+
+        a12 =
+            2 * (yz - wx)
+
+        a22 =
+            1 - 2 * (xx + yy)
+    in
+    unsafe
+        ( a00 * x1 + a01 * y1 + a02 * z1
+        , a10 * x1 + a11 * y1 + a12 * z1
+        , a20 * x1 + a21 * y1 + a22 * z1
+        )
 
 
 {-| Mirror a direction across a plane.
@@ -768,9 +880,38 @@ position of its origin point, since directions are position-independent:
     -->     (degrees 60)
 
 -}
-mirrorAcross : Plane3d -> Direction3d -> Direction3d
-mirrorAcross plane direction =
-    toVector direction |> Vector3d.mirrorAcross plane |> toDirection
+mirrorAcross : Plane3d units coordinates -> Direction3d coordinates -> Direction3d coordinates
+mirrorAcross (Types.Plane3d plane) direction =
+    let
+        ( x0, y0, z0 ) =
+            components direction
+
+        ( nx, ny, nz ) =
+            components plane.normalDirection
+
+        a =
+            1 - 2 * nx * nx
+
+        b =
+            1 - 2 * ny * ny
+
+        c =
+            1 - 2 * nz * nz
+
+        d =
+            -2 * ny * nz
+
+        e =
+            -2 * nx * nz
+
+        f =
+            -2 * nx * ny
+    in
+    unsafe
+        ( a * x0 + f * y0 + e * z0
+        , f * x0 + b * y0 + d * z0
+        , e * x0 + d * y0 + c * z0
+        )
 
 
 {-| Find the [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
@@ -795,9 +936,20 @@ direction is exactly perpendicular to the given plane, returns `Nothing`.
     --> Nothing
 
 -}
-projectOnto : Plane3d -> Direction3d -> Maybe Direction3d
-projectOnto plane direction =
-    toVector direction |> Vector3d.projectOnto plane |> Vector3d.direction
+projectOnto : Plane3d units coordinates -> Direction3d coordinates -> Maybe (Direction3d coordinates)
+projectOnto (Types.Plane3d plane) direction =
+    let
+        directionVector =
+            toVector direction
+
+        projectedVector =
+            directionVector
+                |> Vector3d.minus
+                    (directionVector
+                        |> Vector3d.projectionIn plane.normalDirection
+                    )
+    in
+    Vector3d.direction projectedVector
 
 
 {-| Take a direction defined in global coordinates, and return it expressed in
@@ -817,9 +969,13 @@ local coordinates relative to a given reference frame.
     --> Direction3d.z
 
 -}
-relativeTo : Frame3d -> Direction3d -> Direction3d
-relativeTo frame direction =
-    toVector direction |> Vector3d.relativeTo frame |> toDirection
+relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Direction3d globalCoordinates -> Direction3d localCoordinates
+relativeTo (Types.Frame3d frame) direction =
+    unsafe
+        ( componentIn frame.xDirection direction
+        , componentIn frame.yDirection direction
+        , componentIn frame.zDirection direction
+        )
 
 
 {-| Take a direction defined in local coordinates relative to a given reference
@@ -839,9 +995,26 @@ frame, and return that direction expressed in global coordinates.
     --> Direction3d.z
 
 -}
-placeIn : Frame3d -> Direction3d -> Direction3d
-placeIn frame direction =
-    toVector direction |> Vector3d.placeIn frame |> toDirection
+placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Direction3d localCoordinates -> Direction3d globalCoordinates
+placeIn (Types.Frame3d frame) direction =
+    let
+        ( x1, y1, z1 ) =
+            components frame.xDirection
+
+        ( x2, y2, z2 ) =
+            components frame.yDirection
+
+        ( x3, y3, z3 ) =
+            components frame.zDirection
+
+        ( x0, y0, z0 ) =
+            components direction
+    in
+    unsafe
+        ( x1 * x0 + x2 * y0 + x3 * z0
+        , y1 * x0 + y2 * y0 + y3 * z0
+        , z1 * x0 + z2 * y0 + z3 * z0
+        )
 
 
 {-| Project a direction into a given sketch plane. Conceptually, this finds the
@@ -870,6 +1043,10 @@ plane; if it is perpendicular, `Nothing` is returned.
     --> Nothing
 
 -}
-projectInto : SketchPlane3d -> Direction3d -> Maybe Direction2d
-projectInto sketchPlane direction =
-    toVector direction |> Vector3d.projectInto sketchPlane |> Vector2d.direction
+projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Direction3d coordinates3d -> Maybe (Direction2d coordinates2d)
+projectInto (Types.SketchPlane3d sketchPlane) direction =
+    Vector2d.fromTuple
+        ( componentIn sketchPlane.xDirection direction
+        , componentIn sketchPlane.yDirection direction
+        )
+        |> Vector2d.direction
