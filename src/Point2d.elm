@@ -203,8 +203,8 @@ centroidHelp x0 y0 count dx dy points =
                     1 / count
             in
             fromCoordinates
-                ( x0 |> Quantity.plus (dx |> Quantity.scaleBy scale)
-                , y0 |> Quantity.plus (dy |> Quantity.scaleBy scale)
+                ( x0 |> Quantity.plus (Quantity.scaleBy scale dx)
+                , y0 |> Quantity.plus (Quantity.scaleBy scale dy)
                 )
 
 
@@ -751,8 +751,8 @@ translateIn direction distance point =
             coordinates point
     in
     fromCoordinates
-        ( px |> Quantity.plus (distance |> Quantity.scaleBy dx)
-        , py |> Quantity.plus (distance |> Quantity.scaleBy dy)
+        ( px |> Quantity.plus (Quantity.scaleBy dx distance)
+        , py |> Quantity.plus (Quantity.scaleBy dy distance)
         )
 
 
