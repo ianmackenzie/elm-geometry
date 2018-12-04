@@ -87,6 +87,9 @@ global XYZ frame:
 -}
 
 import Angle exposing (Angle)
+import Bootstrap.Axis3d as Axis3d
+import Bootstrap.Frame3d as Frame3d
+import Bootstrap.Plane3d as Plane3d
 import Bootstrap.SketchPlane3d as SketchPlane3d
 import Direction2d exposing (Direction2d)
 import Geometry.Types as Types exposing (Axis3d, Frame3d, Plane3d, Point3d, SketchPlane3d)
@@ -755,13 +758,13 @@ its origin point, since directions are position-independent:
 
 -}
 rotateAround : Axis3d units coordinates -> Angle -> Direction3d coordinates -> Direction3d coordinates
-rotateAround (Types.Axis3d axis) angle direction =
+rotateAround axis angle direction =
     let
         ( dx, dy, dz ) =
             components direction
 
         ( ax, ay, az ) =
-            components axis.direction
+            components (Axis3d.direction axis)
 
         halfAngle =
             Quantity.scaleBy 0.5 angle
@@ -872,13 +875,13 @@ position of its origin point, since directions are position-independent:
 
 -}
 mirrorAcross : Plane3d units coordinates -> Direction3d coordinates -> Direction3d coordinates
-mirrorAcross (Types.Plane3d plane) direction =
+mirrorAcross plane direction =
     let
         ( dx, dy, dz ) =
             components direction
 
         ( nx, ny, nz ) =
-            components plane.normalDirection
+            components (Plane3d.normalDirection plane)
 
         a =
             1 - 2 * nx * nx
@@ -928,7 +931,7 @@ direction is exactly perpendicular to the given plane, returns `Nothing`.
 
 -}
 projectOnto : Plane3d units coordinates -> Direction3d coordinates -> Maybe (Direction3d coordinates)
-projectOnto (Types.Plane3d plane) direction =
+projectOnto plane direction =
     let
         directionVector =
             toVector direction
@@ -937,7 +940,7 @@ projectOnto (Types.Plane3d plane) direction =
             directionVector
                 |> Vector3d.minus
                     (directionVector
-                        |> Vector3d.projectionIn plane.normalDirection
+                        |> Vector3d.projectionIn (Plane3d.normalDirection plane)
                     )
     in
     Vector3d.direction projectedVector
@@ -961,11 +964,11 @@ local coordinates relative to a given reference frame.
 
 -}
 relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Direction3d globalCoordinates -> Direction3d localCoordinates
-relativeTo (Types.Frame3d frame) direction =
+relativeTo frame direction =
     unsafe
-        ( componentIn frame.xDirection direction
-        , componentIn frame.yDirection direction
-        , componentIn frame.zDirection direction
+        ( componentIn (Frame3d.xDirection frame) direction
+        , componentIn (Frame3d.yDirection frame) direction
+        , componentIn (Frame3d.zDirection frame) direction
         )
 
 
@@ -987,16 +990,16 @@ frame, and return that direction expressed in global coordinates.
 
 -}
 placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Direction3d localCoordinates -> Direction3d globalCoordinates
-placeIn (Types.Frame3d frame) direction =
+placeIn frame direction =
     let
         ( x1, y1, z1 ) =
-            components frame.xDirection
+            components (Frame3d.xDirection frame)
 
         ( x2, y2, z2 ) =
-            components frame.yDirection
+            components (Frame3d.yDirection frame)
 
         ( x3, y3, z3 ) =
-            components frame.zDirection
+            components (Frame3d.zDirection frame)
 
         ( dx, dy, dz ) =
             components direction
@@ -1035,9 +1038,9 @@ plane; if it is perpendicular, `Nothing` is returned.
 
 -}
 projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Direction3d coordinates3d -> Maybe (Direction2d coordinates2d)
-projectInto (Types.SketchPlane3d sketchPlane) direction =
+projectInto sketchPlane direction =
     Vector2d.fromTuple
-        ( componentIn sketchPlane.xDirection direction
-        , componentIn sketchPlane.yDirection direction
+        ( componentIn (SketchPlane3d.xDirection sketchPlane) direction
+        , componentIn (SketchPlane3d.yDirection sketchPlane) direction
         )
         |> Vector2d.direction
