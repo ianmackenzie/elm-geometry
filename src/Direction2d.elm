@@ -333,11 +333,10 @@ from the positive X direction). The result will be in the range -π to π.
 toAngle : Direction2d coordinates -> Angle
 toAngle direction =
     let
-        ( directionXComponent, directionYComponent ) =
+        ( dx, dy ) =
             components direction
     in
-    Angle.atan2 (Quantity.float directionYComponent)
-        (Quantity.float directionXComponent)
+    Angle.atan2 (Quantity.float dy) (Quantity.float dx)
 
 
 {-| Find the counterclockwise angle in radians from the first direction to the
@@ -388,8 +387,8 @@ components direction =
 
 -}
 xComponent : Direction2d coordinates -> Float
-xComponent (Types.Direction2d ( directionXComponent, _ )) =
-    directionXComponent
+xComponent (Types.Direction2d ( dx, _ )) =
+    dx
 
 
 {-| Get the Y component of a direction.
@@ -402,8 +401,8 @@ xComponent (Types.Direction2d ( directionXComponent, _ )) =
 
 -}
 yComponent : Direction2d coordinates -> Float
-yComponent (Types.Direction2d ( _, directionYComponent )) =
-    directionYComponent
+yComponent (Types.Direction2d ( _, dy )) =
+    dy
 
 
 {-| Find the component of one direction in another direction. This is equal to
@@ -499,10 +498,10 @@ reverse direction =
 rotateClockwise : Direction2d coordinates -> Direction2d coordinates
 rotateClockwise direction =
     let
-        ( directionXComponent, directionYComponent ) =
+        ( dx, dy ) =
             components direction
     in
-    unsafe ( directionYComponent, -directionXComponent )
+    unsafe ( dy, -dx )
 
 
 {-| Rotate a direction by 90 degrees counterclockwise.
@@ -517,10 +516,10 @@ rotateClockwise direction =
 rotateCounterclockwise : Direction2d coordinates -> Direction2d coordinates
 rotateCounterclockwise direction =
     let
-        ( directionXComponent, directionYComponent ) =
+        ( dx, dy ) =
             components direction
     in
-    unsafe ( -directionYComponent, directionXComponent )
+    unsafe ( -dy, dx )
 
 
 {-| Rotate a direction counterclockwise by a given angle (in radians).
