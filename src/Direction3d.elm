@@ -757,10 +757,10 @@ its origin point, since directions are position-independent:
 rotateAround : Axis3d units coordinates -> Angle -> Direction3d coordinates -> Direction3d coordinates
 rotateAround (Types.Axis3d axis) angle direction =
     let
-        ( x1, y1, z1 ) =
+        ( dx, dy, dz ) =
             components direction
 
-        ( x0, y0, z0 ) =
+        ( ax, ay, az ) =
             components axis.direction
 
         halfAngle =
@@ -770,13 +770,13 @@ rotateAround (Types.Axis3d axis) angle direction =
             Angle.sin halfAngle
 
         qx =
-            x0 * sinHalfAngle
+            ax * sinHalfAngle
 
         qy =
-            y0 * sinHalfAngle
+            ay * sinHalfAngle
 
         qz =
-            z0 * sinHalfAngle
+            az * sinHalfAngle
 
         qw =
             Angle.cos halfAngle
@@ -836,9 +836,9 @@ rotateAround (Types.Axis3d axis) angle direction =
             1 - 2 * (xx + yy)
     in
     unsafe
-        ( a00 * x1 + a01 * y1 + a02 * z1
-        , a10 * x1 + a11 * y1 + a12 * z1
-        , a20 * x1 + a21 * y1 + a22 * z1
+        ( a00 * dx + a01 * dy + a02 * dz
+        , a10 * dx + a11 * dy + a12 * dz
+        , a20 * dx + a21 * dy + a22 * dz
         )
 
 
