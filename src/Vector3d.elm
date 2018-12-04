@@ -819,8 +819,8 @@ scaleBy scale vector =
 rotateAround : Axis3d units coordinates -> Angle -> Vector3d units coordinates -> Vector3d units coordinates
 rotateAround (Types.Axis3d axis) angle =
     let
-        ( dx, dy, dz ) =
             Direction3d.components axis.direction
+        ( ax, ay, az ) =
 
         halfAngle =
             Quantity.scaleBy 0.5 angle
@@ -829,13 +829,13 @@ rotateAround (Types.Axis3d axis) angle =
             Angle.sin halfAngle
 
         qx =
-            dx * sinHalfAngle
+            ax * sinHalfAngle
 
         qy =
-            dy * sinHalfAngle
+            ay * sinHalfAngle
 
         qz =
-            dz * sinHalfAngle
+            az * sinHalfAngle
 
         qw =
             Angle.cos halfAngle
