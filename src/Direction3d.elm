@@ -96,15 +96,6 @@ import Vector2d exposing (Vector2d)
 import Vector3d exposing (Vector3d)
 
 
-toDirection : Vector3d Unitless coordinates -> Direction3d coordinates
-toDirection vector =
-    let
-        ( vx, vy, vz ) =
-            Vector3d.components vector
-    in
-    unsafe ( Quantity.toFloat vx, Quantity.toFloat vy, Quantity.toFloat vz )
-
-
 {-| -}
 type alias Direction3d coordinates =
     Types.Direction3d coordinates
