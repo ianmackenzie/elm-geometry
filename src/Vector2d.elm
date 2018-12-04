@@ -739,18 +739,18 @@ scaleBy givenScale givenVector =
 rotateBy : Angle -> Vector2d units coordinates -> Vector2d units coordinates
 rotateBy givenAngle givenVector =
     let
-        cosine =
+        c =
             Angle.cos givenAngle
 
-        sine =
+        s =
             Angle.sin givenAngle
 
         ( x, y ) =
             components givenVector
     in
     fromComponents
-        ( Quantity.aXbY cosine x -sine y
-        , Quantity.aXbY sine x cosine y
+        ( Quantity.aXbY c x -s y
+        , Quantity.aXbY s x c y
         )
 
 
