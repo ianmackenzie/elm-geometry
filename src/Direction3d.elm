@@ -874,7 +874,7 @@ position of its origin point, since directions are position-independent:
 mirrorAcross : Plane3d units coordinates -> Direction3d coordinates -> Direction3d coordinates
 mirrorAcross (Types.Plane3d plane) direction =
     let
-        ( x0, y0, z0 ) =
+        ( dx, dy, dz ) =
             components direction
 
         ( nx, ny, nz ) =
@@ -899,9 +899,9 @@ mirrorAcross (Types.Plane3d plane) direction =
             -2 * nx * ny
     in
     unsafe
-        ( a * x0 + f * y0 + e * z0
-        , f * x0 + b * y0 + d * z0
-        , e * x0 + d * y0 + c * z0
+        ( a * dx + f * dy + e * dz
+        , f * dx + b * dy + d * dz
+        , e * dx + d * dy + c * dz
         )
 
 
@@ -998,13 +998,13 @@ placeIn (Types.Frame3d frame) direction =
         ( x3, y3, z3 ) =
             components frame.zDirection
 
-        ( x0, y0, z0 ) =
+        ( dx, dy, dz ) =
             components direction
     in
     unsafe
-        ( x1 * x0 + x2 * y0 + x3 * z0
-        , y1 * x0 + y2 * y0 + y3 * z0
-        , z1 * x0 + z2 * y0 + z3 * z0
+        ( x1 * dx + x2 * dy + x3 * dz
+        , y1 * dx + y2 * dy + y3 * dz
+        , z1 * dx + z2 * dy + z3 * dz
         )
 
 
