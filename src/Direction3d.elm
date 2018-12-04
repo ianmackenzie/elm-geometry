@@ -517,8 +517,8 @@ components (Types.Direction3d directionComponents) =
 
 -}
 xComponent : Direction3d coordinates -> Float
-xComponent (Types.Direction3d ( xComponent_, _, _ )) =
-    xComponent_
+xComponent (Types.Direction3d ( dx, _, _ )) =
+    dx
 
 
 {-| Get the Y component of a direction.
@@ -531,8 +531,8 @@ xComponent (Types.Direction3d ( xComponent_, _, _ )) =
 
 -}
 yComponent : Direction3d coordinates -> Float
-yComponent (Types.Direction3d ( _, yComponent_, _ )) =
-    yComponent_
+yComponent (Types.Direction3d ( _, dy, _ )) =
+    dy
 
 
 {-| Get the Z component of a direction.
@@ -545,8 +545,8 @@ yComponent (Types.Direction3d ( _, yComponent_, _ )) =
 
 -}
 zComponent : Direction3d coordinates -> Float
-zComponent (Types.Direction3d ( _, _, zComponent_ )) =
-    zComponent_
+zComponent (Types.Direction3d ( _, _, dz )) =
+    dz
 
 
 {-| Find the component of one direction in another direction. This is equal to
