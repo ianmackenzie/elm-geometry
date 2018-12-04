@@ -98,20 +98,13 @@ For the examples, assume the following frames have been defined:
 -}
 
 import Angle exposing (Angle)
+import Bootstrap.Axis2d as Axis2d
 import Bootstrap.Direction2d as Bootstrap
+import Bootstrap.Frame2d as Frame2d
 import Geometry.Types as Types exposing (Axis2d, Frame2d, Point2d)
 import Quantity exposing (Quantity, Unitless)
 import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
-
-
-toDirection : Vector2d Unitless coordinates -> Direction2d coordinates
-toDirection vector =
-    let
-        ( vx, vy ) =
-            Vector2d.components vector
-    in
-    unsafe ( Quantity.toFloat vx, Quantity.toFloat vy )
 
 
 {-| -}
@@ -540,8 +533,21 @@ rotateCounterclockwise direction =
 
 -}
 rotateBy : Angle -> Direction2d coordinates -> Direction2d coordinates
-rotateBy angle direction =
-    toVector direction |> Vector2d.rotateBy angle |> toDirection
+rotateBy givenAngle direction =
+    let
+        c =
+            Angle.cos givenAngle
+
+        s =
+            Angle.sin givenAngle
+
+        ( dx, dy ) =
+            components direction
+    in
+    unsafe
+        ( c * dx - s * dy
+        , s * dx + c * dy
+        )
 
 
 {-| Mirror a direction across a particular axis. Note that only the direction of
@@ -560,8 +566,27 @@ the axis affects the result, since directions are position-independent.
 
 -}
 mirrorAcross : Axis2d units coordinates -> Direction2d coordinates -> Direction2d coordinates
-mirrorAcross axis direction =
-    toVector direction |> Vector2d.mirrorAcross axis |> toDirection
+mirrorAcross givenAxis direction =
+    let
+        ( ax, ay ) =
+            components (Axis2d.direction givenAxis)
+
+        yy =
+            1 - 2 * ay * ay
+
+        xy =
+            2 * ax * ay
+
+        xx =
+            1 - 2 * ax * ax
+
+        ( dx, dy ) =
+            components direction
+    in
+    unsafe
+        ( yy * dx + xy * dy
+        , xy * dx + xx * dy
+        )
 
 
 {-| Take a direction defined in global coordinates, and return it expressed in
@@ -578,8 +603,11 @@ local coordinates relative to a given reference frame.
 
 -}
 relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Direction2d globalCoordinates -> Direction2d localCoordinates
-relativeTo frame direction =
-    toVector direction |> Vector2d.relativeTo frame |> toDirection
+relativeTo givenFrame direction =
+    unsafe
+        ( componentIn (Frame2d.xDirection givenFrame) direction
+        , componentIn (Frame2d.yDirection givenFrame) direction
+        )
 
 
 {-| Take a direction defined in local coordinates relative to a given reference
@@ -596,5 +624,18 @@ frame, and return that direction expressed in global coordinates.
 
 -}
 placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Direction2d localCoordinates -> Direction2d globalCoordinates
-placeIn frame direction =
-    toVector direction |> Vector2d.placeIn frame |> toDirection
+placeIn givenFrame direction =
+    let
+        ( x1, y1 ) =
+            components (Frame2d.xDirection givenFrame)
+
+        ( x2, y2 ) =
+            components (Frame2d.yDirection givenFrame)
+
+        ( dx, dy ) =
+            components direction
+    in
+    unsafe
+        ( x1 * dx + x2 * dy
+        , y1 * dx + y2 * dy
+        )
