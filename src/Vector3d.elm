@@ -105,6 +105,7 @@ global XYZ frame:
 -}
 
 import Angle exposing (Angle)
+import Bootstrap.Axis3d as Axis3d
 import Bootstrap.Direction3d as Direction3d
 import Bootstrap.Frame3d as Frame3d
 import Bootstrap.Plane3d as Plane3d
@@ -817,10 +818,10 @@ scaleBy scale vector =
 
 -}
 rotateAround : Axis3d units coordinates -> Angle -> Vector3d units coordinates -> Vector3d units coordinates
-rotateAround (Types.Axis3d axis) angle =
+rotateAround axis angle =
     let
-            Direction3d.components axis.direction
         ( ax, ay, az ) =
+            Direction3d.components (Axis3d.direction axis)
 
         halfAngle =
             Quantity.scaleBy 0.5 angle
