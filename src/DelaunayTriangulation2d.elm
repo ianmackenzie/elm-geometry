@@ -66,14 +66,16 @@ import Geometry.Types as Types exposing (DelaunayFace(..), DelaunayVertex)
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
 import Polyline2d exposing (Polyline2d)
+import Quantity exposing (Quantity)
+import Quantity.Extra as Quantity
 import Triangle2d exposing (Triangle2d)
 import TriangularMesh exposing (TriangularMesh)
 
 
 {-| A 2D Delaunay triangulation of a set of vertices.
 -}
-type alias DelaunayTriangulation2d vertex =
-    Types.DelaunayTriangulation2d vertex
+type alias DelaunayTriangulation2d vertex units coordinates =
+    Types.DelaunayTriangulation2d vertex units coordinates
 
 
 {-| An error type indicating that the two given vertices have the same position.
@@ -89,16 +91,16 @@ type Error vertex
   - The circumcircle of that triangle
 
 -}
-type alias Face vertex =
+type alias Face vertex units coordinates =
     { vertices : ( vertex, vertex, vertex )
-    , triangle : Triangle2d
-    , circumcircle : Circle2d
+    , triangle : Triangle2d units coordinates
+    , circumcircle : Circle2d units coordinates
     }
 
 
 {-| An empty Delaunay triangulation with no vertices or faces.
 -}
-empty : DelaunayTriangulation2d vertex
+empty : DelaunayTriangulation2d vertex units coordinates
 empty =
     Types.EmptyDelaunayTriangulation2d
 
@@ -111,12 +113,12 @@ Note that if all points are collinear, then the resulting triangulation will
 be empty (have no faces).
 
 -}
-fromPoints : Array Point2d -> Result (Error Point2d) (DelaunayTriangulation2d Point2d)
+fromPoints : Array (Point2d units coordinates) -> Result (Error (Point2d units coordinates)) (DelaunayTriangulation2d (Point2d units coordinates) units coordinates)
 fromPoints points =
     fromVerticesBy identity points
 
 
-prependDelaunayVertex : (vertex -> Point2d) -> vertex -> List (DelaunayVertex vertex) -> List (DelaunayVertex vertex)
+prependDelaunayVertex : (vertex -> Point2d units coordinates) -> vertex -> List (DelaunayVertex vertex units coordinates) -> List (DelaunayVertex vertex units coordinates)
 prependDelaunayVertex getPosition vertex accumulated =
     let
         index =
@@ -136,12 +138,14 @@ prependDelaunayVertex getPosition vertex accumulated =
     newDelaunayVertex :: accumulated
 
 
-delaunayVertexCoordinates : DelaunayVertex vertex -> ( Float, Float )
-delaunayVertexCoordinates delaunayVertex =
-    Point2d.coordinates delaunayVertex.position
+lexicographicComparison : DelaunayVertex vertex units coordinates -> DelaunayVertex vertex units coordinates -> Order
+lexicographicComparison firstDelaunayVertex secondDelaunayVertex =
+    Point2d.lexicographicComparison
+        firstDelaunayVertex.position
+        secondDelaunayVertex.position
 
 
-checkDistinct : List (DelaunayVertex vertex) -> Result (Error vertex) ()
+checkDistinct : List (DelaunayVertex vertex units coordinates) -> Result (Error vertex) ()
 checkDistinct sortedDelaunayVertices =
     case sortedDelaunayVertices of
         [] ->
@@ -151,7 +155,7 @@ checkDistinct sortedDelaunayVertices =
             checkDistinctHelp first rest
 
 
-checkDistinctHelp : DelaunayVertex vertex -> List (DelaunayVertex vertex) -> Result (Error vertex) ()
+checkDistinctHelp : DelaunayVertex vertex units coordinates -> List (DelaunayVertex vertex units coordinates) -> Result (Error vertex) ()
 checkDistinctHelp previous sortedDelaunayVertices =
     case sortedDelaunayVertices of
         [] ->
@@ -165,14 +169,14 @@ checkDistinctHelp previous sortedDelaunayVertices =
                 checkDistinctHelp first rest
 
 
-collectDelaunayVertices : (vertex -> Point2d) -> Array vertex -> Result (Error vertex) (List (DelaunayVertex vertex))
+collectDelaunayVertices : (vertex -> Point2d units coordinates) -> Array vertex -> Result (Error vertex) (List (DelaunayVertex vertex units coordinates))
 collectDelaunayVertices getPosition givenVertices =
     let
         allDelaunayVertices =
             Array.foldl (prependDelaunayVertex getPosition) [] givenVertices
 
         sortedDelaunayVertices =
-            allDelaunayVertices |> List.sortBy delaunayVertexCoordinates
+            allDelaunayVertices |> List.sortWith lexicographicComparison
     in
     case checkDistinct sortedDelaunayVertices of
         Ok () ->
@@ -182,7 +186,7 @@ collectDelaunayVertices getPosition givenVertices =
             Err coincidentVertices
 
 
-createInitialFaces : DelaunayVertex vertex -> List (DelaunayFace vertex)
+createInitialFaces : DelaunayVertex vertex units coordinates -> List (DelaunayFace vertex units coordinates)
 createInitialFaces firstVertex =
     let
         firstPoint =
@@ -229,7 +233,7 @@ Note that if all vertices are collinear, then the resulting triangulation will
 be empty (have no faces).
 
 -}
-fromVerticesBy : (vertex -> Point2d) -> Array vertex -> Result (Error vertex) (DelaunayTriangulation2d vertex)
+fromVerticesBy : (vertex -> Point2d units coordinates) -> Array vertex -> Result (Error vertex) (DelaunayTriangulation2d vertex units coordinates)
 fromVerticesBy getPosition givenVertices =
     case collectDelaunayVertices getPosition givenVertices of
         Ok delaunayVertices ->
@@ -259,12 +263,12 @@ fromVerticesBy getPosition givenVertices =
 {-| Add a new point into an existing Delaunay triangulation. It must not be
 equal to any existing point; if it is, you will get an `Err CoincidentVertices`.
 -}
-insertPoint : Point2d -> DelaunayTriangulation2d Point2d -> Result (Error Point2d) (DelaunayTriangulation2d Point2d)
+insertPoint : Point2d units coordinates -> DelaunayTriangulation2d (Point2d units coordinates) units coordinates -> Result (Error (Point2d units coordinates)) (DelaunayTriangulation2d (Point2d units coordinates) units coordinates)
 insertPoint point delaunayTriangulation =
     insertVertexBy identity point delaunayTriangulation
 
 
-checkForCoincidentVertex : vertex -> Point2d -> List (DelaunayVertex vertex) -> Result (Error vertex) ()
+checkForCoincidentVertex : vertex -> Point2d units coordinates -> List (DelaunayVertex vertex units coordinates) -> Result (Error vertex) ()
 checkForCoincidentVertex vertex point delaunayVertices =
     case delaunayVertices of
         [] ->
@@ -283,7 +287,7 @@ function to get the position of the vertex. The vertex must not have the same
 position as any existing vertex; if it is, you will get an `Err
 CoincidentVertices`.
 -}
-insertVertexBy : (vertex -> Point2d) -> vertex -> DelaunayTriangulation2d vertex -> Result (Error vertex) (DelaunayTriangulation2d vertex)
+insertVertexBy : (vertex -> Point2d units coordinates) -> vertex -> DelaunayTriangulation2d vertex units coordinates -> Result (Error vertex) (DelaunayTriangulation2d vertex units coordinates)
 insertVertexBy getPosition vertex delaunayTriangulation =
     let
         position =
@@ -327,7 +331,7 @@ insertVertexBy getPosition vertex delaunayTriangulation =
                     Err coincidentVertices
 
 
-collectHelp : (DelaunayVertex vertex -> DelaunayVertex vertex -> DelaunayVertex vertex -> Circle2d -> a) -> List (DelaunayFace vertex) -> List a -> List a
+collectHelp : (DelaunayVertex vertex units coordinates -> DelaunayVertex vertex units coordinates -> DelaunayVertex vertex units coordinates -> Circle2d units coordinates -> a) -> List (DelaunayFace vertex units coordinates) -> List a -> List a
 collectHelp function facesToProcess accumulated =
     case facesToProcess of
         firstFace :: remainingFaces ->
@@ -353,7 +357,7 @@ collectHelp function facesToProcess accumulated =
             accumulated
 
 
-collectFaces : (DelaunayVertex vertex -> DelaunayVertex vertex -> DelaunayVertex vertex -> Circle2d -> a) -> DelaunayTriangulation2d vertex -> List a
+collectFaces : (DelaunayVertex vertex units coordinates -> DelaunayVertex vertex units coordinates -> DelaunayVertex vertex units coordinates -> Circle2d units coordinates -> a) -> DelaunayTriangulation2d vertex units coordinates -> List a
 collectFaces function delaunayTriangulation =
     case delaunayTriangulation of
         Types.EmptyDelaunayTriangulation2d ->
@@ -363,7 +367,7 @@ collectFaces function delaunayTriangulation =
             collectHelp function triangulation.faces []
 
 
-getFaceIndices : DelaunayVertex vertex -> DelaunayVertex vertex -> DelaunayVertex vertex -> Circle2d -> ( Int, Int, Int )
+getFaceIndices : DelaunayVertex vertex units coordinates -> DelaunayVertex vertex units coordinates -> DelaunayVertex vertex units coordinates -> Circle2d units coordinates -> ( Int, Int, Int )
 getFaceIndices firstVertex secondVertex thirdVertex circumcircle =
     ( firstVertex.index, secondVertex.index, thirdVertex.index )
 
@@ -371,7 +375,7 @@ getFaceIndices firstVertex secondVertex thirdVertex circumcircle =
 {-| Convert a Delaunay triangulation to a [`TriangularMesh`](https://package.elm-lang.org/packages/ianmackenzie/elm-triangular-mesh/latest/TriangularMesh#TriangularMesh).
 Complexity: O(n).
 -}
-toMesh : DelaunayTriangulation2d vertex -> TriangularMesh vertex
+toMesh : DelaunayTriangulation2d vertex units coordinates -> TriangularMesh vertex
 toMesh delaunayTriangulation =
     case delaunayTriangulation of
         Types.EmptyDelaunayTriangulation2d ->
@@ -385,7 +389,7 @@ toMesh delaunayTriangulation =
             TriangularMesh.indexed triangulation.vertices faceIndices
 
 
-getTriangle : DelaunayVertex vertex -> DelaunayVertex vertex -> DelaunayVertex vertex -> Circle2d -> Triangle2d
+getTriangle : DelaunayVertex vertex units coordinates -> DelaunayVertex vertex units coordinates -> DelaunayVertex vertex units coordinates -> Circle2d units coordinates -> Triangle2d units coordinates
 getTriangle firstVertex secondVertex thirdVertex circumcircle =
     Triangle2d.fromVertices
         ( firstVertex.position
@@ -406,12 +410,12 @@ is equivalent to
 but somewhat more efficient. Complexity: O(n).
 
 -}
-triangles : DelaunayTriangulation2d vertex -> List Triangle2d
+triangles : DelaunayTriangulation2d vertex units coordinates -> List (Triangle2d units coordinates)
 triangles delaunayTriangulation =
     collectFaces getTriangle delaunayTriangulation
 
 
-getCircumcircle : DelaunayVertex vertex -> DelaunayVertex vertex -> DelaunayVertex vertex -> Circle2d -> Circle2d
+getCircumcircle : DelaunayVertex vertex units coordinates -> DelaunayVertex vertex units coordinates -> DelaunayVertex vertex units coordinates -> Circle2d units coordinates -> Circle2d units coordinates
 getCircumcircle firstVertex secondVertex thirdVertex circumcircle =
     circumcircle
 
@@ -428,12 +432,12 @@ is equivalent to
 but somewhat more efficient. Complexity: O(n).
 
 -}
-circumcircles : DelaunayTriangulation2d vertex -> List Circle2d
+circumcircles : DelaunayTriangulation2d vertex units coordinates -> List (Circle2d units coordinates)
 circumcircles delaunayTriangulation =
     collectFaces getCircumcircle delaunayTriangulation
 
 
-getFace : DelaunayVertex vertex -> DelaunayVertex vertex -> DelaunayVertex vertex -> Circle2d -> Face vertex
+getFace : DelaunayVertex vertex units coordinates -> DelaunayVertex vertex units coordinates -> DelaunayVertex vertex units coordinates -> Circle2d units coordinates -> Face vertex units coordinates
 getFace firstVertex secondVertex thirdVertex circumcircle =
     { vertices = ( firstVertex.vertex, secondVertex.vertex, thirdVertex.vertex )
     , triangle =
@@ -449,7 +453,7 @@ getFace firstVertex secondVertex thirdVertex circumcircle =
 {-| Get a list of all `Face`s in a given Delaunay triangulation. Complexity:
 O(n).
 -}
-faces : DelaunayTriangulation2d vertex -> List (Face vertex)
+faces : DelaunayTriangulation2d vertex units coordinates -> List (Face vertex units coordinates)
 faces delaunayTriangulation =
     collectFaces getFace delaunayTriangulation
 
@@ -460,7 +464,7 @@ vertex array will simply be the array that was passed in. If any vertices were
 added using `insertPoint` or `insertVertexBy`, then they will be appended to
 the end of the array. This is a simple accessor, so complexity is O(1).
 -}
-vertices : DelaunayTriangulation2d vertex -> Array vertex
+vertices : DelaunayTriangulation2d vertex units coordinates -> Array vertex
 vertices delaunayTriangulation =
     case delaunayTriangulation of
         Types.EmptyDelaunayTriangulation2d ->
@@ -470,11 +474,11 @@ vertices delaunayTriangulation =
             triangulation.vertices
 
 
-type Edge vertex
-    = InnerEdge (DelaunayVertex vertex) (DelaunayVertex vertex)
-    | InnerToOuterEdge (DelaunayVertex vertex) Int
-    | OuterToInnerEdge Int (DelaunayVertex vertex)
-    | OuterEdge Direction2d Int Int
+type Edge vertex units coordinates
+    = InnerEdge (DelaunayVertex vertex units coordinates) (DelaunayVertex vertex units coordinates)
+    | InnerToOuterEdge (DelaunayVertex vertex units coordinates) Int
+    | OuterToInnerEdge Int (DelaunayVertex vertex units coordinates)
+    | OuterEdge (Direction2d coordinates) Int Int
 
 
 edgeKey : Int -> Int -> Float
@@ -493,7 +497,7 @@ edgeKey i j =
         y * y + x
 
 
-signedDistance : Point2d -> Point2d -> Direction2d -> Float
+signedDistance : Point2d units coordinates -> Point2d units coordinates -> Direction2d coordinates -> Quantity Float units
 signedDistance point vertexPosition edgeDirection =
     let
         ( x, y ) =
@@ -505,10 +509,10 @@ signedDistance point vertexPosition edgeDirection =
         ( dx, dy ) =
             Direction2d.components edgeDirection
     in
-    (y - y0) * dx - (x - x0) * dy
+    Quantity.aXbY dx (y |> Quantity.minus y0) -dy (x |> Quantity.minus x0)
 
 
-addEdge : Edge vertex -> Maybe (Edge vertex) -> Maybe (Edge vertex)
+addEdge : Edge vertex units coordinates -> Maybe (Edge vertex units coordinates) -> Maybe (Edge vertex units coordinates)
 addEdge newEdge maybeEdge =
     case maybeEdge of
         Just edge ->
@@ -518,7 +522,7 @@ addEdge newEdge maybeEdge =
             Just newEdge
 
 
-processFaces : List (DelaunayFace vertex) -> DelaunayVertex vertex -> List (DelaunayFace vertex) -> Dict Float (Edge vertex) -> ( List (DelaunayFace vertex), Dict Float (Edge vertex) )
+processFaces : List (DelaunayFace vertex units coordinates) -> DelaunayVertex vertex units coordinates -> List (DelaunayFace vertex units coordinates) -> Dict Float (Edge vertex units coordinates) -> ( List (DelaunayFace vertex units coordinates), Dict Float (Edge vertex units coordinates) )
 processFaces facesToProcess newVertex retainedFaces edgesByKey =
     case facesToProcess of
         firstFace :: remainingFaces ->
@@ -577,7 +581,7 @@ processFaces facesToProcess newVertex retainedFaces edgesByKey =
                                 newVertex.position
                                 firstVertex.position
                                 edgeDirection
-                                > 0
+                                |> Quantity.greaterThan Quantity.zero
                     in
                     if insideInfiniteCircle then
                         let
@@ -629,7 +633,7 @@ processFaces facesToProcess newVertex retainedFaces edgesByKey =
                                 newVertex.position
                                 delaunayVertex.position
                                 edgeDirection
-                                < 0
+                                |> Quantity.lessThan Quantity.zero
                     in
                     if insideInfiniteCircle then
                         let
@@ -677,7 +681,7 @@ processFaces facesToProcess newVertex retainedFaces edgesByKey =
             ( retainedFaces, edgesByKey )
 
 
-addNewFace : DelaunayVertex vertex -> Float -> Edge vertex -> List (DelaunayFace vertex) -> List (DelaunayFace vertex)
+addNewFace : DelaunayVertex vertex units coordinates -> Float -> Edge vertex units coordinates -> List (DelaunayFace vertex units coordinates) -> List (DelaunayFace vertex units coordinates)
 addNewFace newVertex ignoredEdgeKey edge currentFaces =
     case edge of
         InnerEdge firstDelaunayVertex secondDelaunayVertex ->
@@ -746,7 +750,7 @@ addNewFace newVertex ignoredEdgeKey edge currentFaces =
             newFace :: currentFaces
 
 
-addVertex : DelaunayVertex vertex -> List (DelaunayFace vertex) -> List (DelaunayFace vertex)
+addVertex : DelaunayVertex vertex units coordinates -> List (DelaunayFace vertex units coordinates) -> List (DelaunayFace vertex units coordinates)
 addVertex vertex faces_ =
     let
         ( retainedFaces, starEdges ) =
