@@ -13,7 +13,7 @@ module Vector3d exposing
     , fromComponents, from, withLength, on, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
     , components, xComponent, yComponent, zComponent, length, squaredLength, direction, lengthAndDirection
-    , equalWithin
+    , equalWithin, lexicographicComparison
     , componentIn
     , plus, minus, dotProduct, crossProduct, tripleProduct
     , reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
@@ -65,7 +65,7 @@ you will actually want their `Direction3d` versions [`Direction3d.x`](Direction3
 
 # Comparison
 
-@docs equalWithin
+@docs equalWithin, lexicographicComparison
 
 
 # Measurement
@@ -476,6 +476,25 @@ equalWithin givenTolerance firstVector secondVector =
         in
         squaredLength difference
             |> Quantity.lessThanOrEqualTo (Quantity.squared givenTolerance)
+
+
+lexicographicComparison : Vector3d units coordinates -> Vector3d units coordinates -> Order
+lexicographicComparison firstVector secondVector =
+    let
+        ( x1, y1, z1 ) =
+            components firstVector
+
+        ( x2, y2, z2 ) =
+            components secondVector
+    in
+    if x1 /= x2 then
+        Quantity.compare x1 x2
+
+    else if y1 /= y2 then
+        Quantity.compare y1 y2
+
+    else
+        Quantity.compare z1 z2
 
 
 {-| Get the length (magnitude) of a vector.

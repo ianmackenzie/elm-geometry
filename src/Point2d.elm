@@ -13,7 +13,7 @@ module Point2d exposing
     , fromCoordinates, fromCoordinatesIn, fromPolarCoordinates, fromPolarCoordinatesIn, midpoint, centroid, interpolateFrom, along, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
     , coordinates, xCoordinate, yCoordinate, polarCoordinates
-    , equalWithin
+    , equalWithin, lexicographicComparison
     , distanceFrom, squaredDistanceFrom, signedDistanceAlong, signedDistanceFrom
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
     , relativeTo, placeIn
@@ -57,7 +57,7 @@ like you can add two vectors.
 
 # Comparison
 
-@docs equalWithin
+@docs equalWithin, lexicographicComparison
 
 
 # Measurement
@@ -501,6 +501,22 @@ equalWithin : Quantity Float units -> Point2d units coordinates -> Point2d units
 equalWithin tolerance firstPoint secondPoint =
     squaredDistanceFrom firstPoint secondPoint
         |> Quantity.lessThanOrEqualTo (Quantity.squared tolerance)
+
+
+lexicographicComparison : Point2d units coordinates -> Point2d units coordinates -> Order
+lexicographicComparison firstPoint secondPoint =
+    let
+        ( x1, y1 ) =
+            coordinates firstPoint
+
+        ( x2, y2 ) =
+            coordinates secondPoint
+    in
+    if x1 /= x2 then
+        Quantity.compare x1 x2
+
+    else
+        Quantity.compare y1 y2
 
 
 {-| Find the distance from the first point to the second.

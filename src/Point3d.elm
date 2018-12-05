@@ -13,7 +13,7 @@ module Point3d exposing
     , fromCoordinates, fromCoordinatesIn, midpoint, centroid, interpolateFrom, along, on, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
     , coordinates, xCoordinate, yCoordinate, zCoordinate
-    , equalWithin
+    , equalWithin, lexicographicComparison
     , distanceFrom, squaredDistanceFrom, signedDistanceAlong, distanceFromAxis, squaredDistanceFromAxis, signedDistanceFrom
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectOntoAxis
     , relativeTo, placeIn, projectInto
@@ -58,7 +58,7 @@ like you can add two vectors.
 
 # Comparison
 
-@docs equalWithin
+@docs equalWithin, lexicographicComparison
 
 
 # Measurement
@@ -519,6 +519,25 @@ equalWithin : Quantity Float units -> Point3d units coordinates -> Point3d units
 equalWithin tolerance firstPoint secondPoint =
     squaredDistanceFrom firstPoint secondPoint
         |> Quantity.lessThanOrEqualTo (Quantity.squared tolerance)
+
+
+lexicographicComparison : Point3d units coordinates -> Point3d units coordinates -> Order
+lexicographicComparison firstPoint secondPoint =
+    let
+        ( x1, y1, z1 ) =
+            coordinates firstPoint
+
+        ( x2, y2, z2 ) =
+            coordinates secondPoint
+    in
+    if x1 /= x2 then
+        Quantity.compare x1 x2
+
+    else if y1 /= y2 then
+        Quantity.compare y1 y2
+
+    else
+        Quantity.compare z1 z2
 
 
 {-| Find the distance from the first point to the second.

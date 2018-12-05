@@ -13,7 +13,7 @@ module Vector2d exposing
     , fromComponents, fromPolarComponents, from, withLength, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
     , components, xComponent, yComponent, polarComponents, length, squaredLength, direction, lengthAndDirection
-    , equalWithin
+    , equalWithin, lexicographicComparison
     , componentIn
     , plus, minus, dotProduct, crossProduct
     , reverse, normalize, scaleBy, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
@@ -64,7 +64,7 @@ Although there are no predefined constants for the vectors with components
 
 # Comparison
 
-@docs equalWithin
+@docs equalWithin, lexicographicComparison
 
 
 # Measurement
@@ -405,6 +405,22 @@ equalWithin givenTolerance firstVector secondVector =
         in
         squaredLength difference
             |> Quantity.lessThanOrEqualTo (Quantity.squared givenTolerance)
+
+
+lexicographicComparison : Vector2d units coordinates -> Vector2d units coordinates -> Order
+lexicographicComparison firstVector secondVector =
+    let
+        ( x1, y1 ) =
+            components firstVector
+
+        ( x2, y2 ) =
+            components secondVector
+    in
+    if x1 /= x2 then
+        Quantity.compare x1 x2
+
+    else
+        Quantity.compare y1 y2
 
 
 {-| Get the length (magnitude) of a vector.
