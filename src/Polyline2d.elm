@@ -50,6 +50,7 @@ Transforming a polyline is equivalent to transforming each of its vertices.
 
 -}
 
+import Angle exposing (Angle)
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Direction2d exposing (Direction2d)
@@ -57,12 +58,13 @@ import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
+import Quantity exposing (Quantity)
 import Vector2d exposing (Vector2d)
 
 
 {-| -}
-type alias Polyline2d =
-    Types.Polyline2d
+type alias Polyline2d units coordinates =
+    Types.Polyline2d units coordinates
 
 
 {-| Construct a polyline from a list of vertices:
@@ -76,9 +78,9 @@ type alias Polyline2d =
             ]
 
 -}
-fromVertices : List Point2d -> Polyline2d
-fromVertices =
-    Types.Polyline2d
+fromVertices : List (Point2d units coordinates) -> Polyline2d units coordinates
+fromVertices givenVertices =
+    Types.Polyline2d givenVertices
 
 
 {-| Get the vertices of a polyline.
@@ -91,9 +93,9 @@ fromVertices =
     --> ]
 
 -}
-vertices : Polyline2d -> List Point2d
-vertices (Types.Polyline2d vertices_) =
-    vertices_
+vertices : Polyline2d units coordinates -> List (Point2d units coordinates)
+vertices (Types.Polyline2d polylineVertices) =
+    polylineVertices
 
 
 {-| Get the individual segments of a polyline.
@@ -114,7 +116,7 @@ vertices (Types.Polyline2d vertices_) =
     --> ]
 
 -}
-segments : Polyline2d -> List LineSegment2d
+segments : Polyline2d units coordinates -> List (LineSegment2d units coordinates)
 segments polyline =
     case vertices polyline of
         [] ->
@@ -131,9 +133,9 @@ segments).
     --> 3
 
 -}
-length : Polyline2d -> Float
-length =
-    segments >> List.map LineSegment2d.length >> List.sum
+length : Polyline2d units coordinates -> Quantity Float units
+length polyline =
+    segments polyline |> List.map LineSegment2d.length |> Quantity.sum
 
 
 {-| Scale a polyline about a given center point by a given scale.
@@ -150,9 +152,9 @@ length =
     -->     ]
 
 -}
-scaleAbout : Point2d -> Float -> Polyline2d -> Polyline2d
-scaleAbout point scale =
-    mapVertices (Point2d.scaleAbout point scale)
+scaleAbout : Point2d units coordinates -> Float -> Polyline2d units coordinates -> Polyline2d units coordinates
+scaleAbout point scale polyline =
+    mapVertices (Point2d.scaleAbout point scale) polyline
 
 
 {-| Rotate a polyline around the given center point counterclockwise by the
@@ -169,9 +171,9 @@ given angle (in radians).
     -->     ]
 
 -}
-rotateAround : Point2d -> Float -> Polyline2d -> Polyline2d
-rotateAround point angle =
-    mapVertices (Point2d.rotateAround point angle)
+rotateAround : Point2d units coordinates -> Angle -> Polyline2d units coordinates -> Polyline2d units coordinates
+rotateAround point angle polyline =
+    mapVertices (Point2d.rotateAround point angle) polyline
 
 
 {-| Translate a polyline by the given displacement.
@@ -188,9 +190,9 @@ rotateAround point angle =
     -->     ]
 
 -}
-translateBy : Vector2d -> Polyline2d -> Polyline2d
-translateBy vector =
-    mapVertices (Point2d.translateBy vector)
+translateBy : Vector2d units coordinates -> Polyline2d units coordinates -> Polyline2d units coordinates
+translateBy vector polyline =
+    mapVertices (Point2d.translateBy vector) polyline
 
 
 {-| Translate a polyline in a given direction by a given distance;
@@ -203,7 +205,7 @@ is equivalent to
         (Vector2d.withLength distance direction)
 
 -}
-translateIn : Direction2d -> Float -> Polyline2d -> Polyline2d
+translateIn : Direction2d coordinates -> Quantity Float units -> Polyline2d units coordinates -> Polyline2d units coordinates
 translateIn direction distance polyline =
     translateBy (Vector2d.withLength distance direction) polyline
 
@@ -219,9 +221,9 @@ translateIn direction distance polyline =
     -->     ]
 
 -}
-mirrorAcross : Axis2d -> Polyline2d -> Polyline2d
-mirrorAcross axis =
-    mapVertices (Point2d.mirrorAcross axis)
+mirrorAcross : Axis2d units coordinates -> Polyline2d units coordinates -> Polyline2d units coordinates
+mirrorAcross axis polyline =
+    mapVertices (Point2d.mirrorAcross axis) polyline
 
 
 {-| Project (flatten) a polyline onto the given axis.
@@ -235,9 +237,9 @@ mirrorAcross axis =
     -->     ]
 
 -}
-projectOnto : Axis2d -> Polyline2d -> Polyline2d
-projectOnto axis =
-    mapVertices (Point2d.projectOnto axis)
+projectOnto : Axis2d units coordinates -> Polyline2d units coordinates -> Polyline2d units coordinates
+projectOnto axis polyline =
+    mapVertices (Point2d.projectOnto axis) polyline
 
 
 {-| Transform each vertex of a polyline by the given function. All other
@@ -250,9 +252,9 @@ is equivalent to
     Polyline2d.mapVertices (Point2d.mirrorAcross axis)
 
 -}
-mapVertices : (Point2d -> Point2d) -> Polyline2d -> Polyline2d
-mapVertices function =
-    vertices >> List.map function >> fromVertices
+mapVertices : (Point2d units1 coordinates1 -> Point2d units2 coordinates2) -> Polyline2d units1 coordinates1 -> Polyline2d units2 coordinates2
+mapVertices function polyline =
+    vertices polyline |> List.map function |> fromVertices
 
 
 {-| Take a polyline defined in global coordinates, and return it expressed
@@ -270,9 +272,9 @@ in local coordinates relative to a given reference frame.
     -->     ]
 
 -}
-relativeTo : Frame2d -> Polyline2d -> Polyline2d
-relativeTo frame =
-    mapVertices (Point2d.relativeTo frame)
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Polyline2d units globalCoordinates -> Polyline2d units localCoordinates
+relativeTo frame polyline =
+    mapVertices (Point2d.relativeTo frame) polyline
 
 
 {-| Take a polyline considered to be defined in local coordinates relative
@@ -291,9 +293,9 @@ coordinates.
     -->     ]
 
 -}
-placeIn : Frame2d -> Polyline2d -> Polyline2d
-placeIn frame =
-    mapVertices (Point2d.placeIn frame)
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Polyline2d units localCoordinates -> Polyline2d units globalCoordinates
+placeIn frame polyline =
+    mapVertices (Point2d.placeIn frame) polyline
 
 
 {-| Get the minimal bounding box containing a given polyline. Returns `Nothing`
@@ -310,7 +312,7 @@ if the polyline has no vertices.
     -->     )
 
 -}
-boundingBox : Polyline2d -> Maybe BoundingBox2d
+boundingBox : Polyline2d units coordinates -> Maybe (BoundingBox2d units coordinates)
 boundingBox polyline =
     BoundingBox2d.containingPoints (vertices polyline)
 
@@ -322,7 +324,7 @@ has no vertices.
     --> Just (Point2d.fromCoordinates ( 1.0, 0.5 ))
 
 -}
-centroid : Polyline2d -> Maybe Point2d
+centroid : Polyline2d units coordinates -> Maybe (Point2d units coordinates)
 centroid polyline =
     case ( vertices polyline, boundingBox polyline ) of
         ( [], _ ) ->
@@ -336,7 +338,7 @@ centroid polyline =
                 polylineLength =
                     length polyline
             in
-            if polylineLength == 0 then
+            if polylineLength == Quantity.zero then
                 Just first
 
             else
@@ -352,7 +354,7 @@ centroid polyline =
                     |> Just
 
 
-refineBySegment : Float -> Point2d -> LineSegment2d -> Point2d -> Point2d
+refineBySegment : Quantity Float units -> Point2d units coordinates -> LineSegment2d units coordinates -> Point2d units coordinates -> Point2d units coordinates
 refineBySegment polylineLength roughCentroid segment currentCentroid =
     let
         segmentMidpoint =
@@ -362,5 +364,5 @@ refineBySegment polylineLength roughCentroid segment currentCentroid =
             LineSegment2d.length segment
     in
     Vector2d.from roughCentroid segmentMidpoint
-        |> Vector2d.scaleBy (segmentLength / polylineLength)
+        |> Vector2d.scaleBy (Quantity.ratio segmentLength polylineLength)
         |> (\v -> Point2d.translateBy v currentCentroid)
