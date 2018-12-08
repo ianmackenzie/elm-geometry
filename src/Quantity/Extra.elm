@@ -6,6 +6,7 @@ module Quantity.Extra exposing
     , interpolateFrom
     , lessThanOrEqualTo
     , scaleAbout
+    , sortBy
     )
 
 import Float.Extra as Float
@@ -44,3 +45,12 @@ greaterThanOrEqualTo (Quantity y) (Quantity x) =
 scaleAbout : Quantity number units -> number -> Quantity number units -> Quantity number units
 scaleAbout (Quantity x0) scale (Quantity x) =
     Quantity (x0 + scale * (x - x0))
+
+
+sortBy : (a -> Quantity number units) -> List a -> List a
+sortBy toQuantity list =
+    let
+        comparator first second =
+            Quantity.compare (toQuantity first) (toQuantity second)
+    in
+    List.sortWith comparator list
