@@ -84,7 +84,13 @@ if <code>minX&nbsp;>&nbsp;maxX</code>), then they will be swapped so that the
 resulting bounding box is valid.
 
 -}
-fromExtrema : { minX : Quantity Float units, maxX : Quantity Float units, minY : Quantity Float units, maxY : Quantity Float units } -> BoundingBox2d units coordinates
+fromExtrema :
+    { minX : Quantity Float units
+    , maxX : Quantity Float units
+    , minY : Quantity Float units
+    , maxY : Quantity Float units
+    }
+    -> BoundingBox2d units coordinates
 fromExtrema givenExtrema =
     if
         (givenExtrema.minX |> Quantity.lessThanOrEqualTo givenExtrema.maxX)
@@ -245,7 +251,14 @@ Can be useful when combined with record destructuring, for example
     --> maxY = 6
 
 -}
-extrema : BoundingBox2d units coordinates -> { minX : Quantity Float units, maxX : Quantity Float units, minY : Quantity Float units, maxY : Quantity Float units }
+extrema :
+    BoundingBox2d units coordinates
+    ->
+        { minX : Quantity Float units
+        , maxX : Quantity Float units
+        , minY : Quantity Float units
+        , maxY : Quantity Float units
+        }
 extrema (Types.BoundingBox2d boundingBoxExtrema) =
     boundingBoxExtrema
 
