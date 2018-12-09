@@ -90,6 +90,7 @@ you are writing low-level geometric algorithms.
 
 -}
 
+import Angle exposing (Angle)
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Curve.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
@@ -98,12 +99,13 @@ import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import Point2d exposing (Point2d)
+import Quantity exposing (Quantity)
 import Vector2d exposing (Vector2d)
 
 
 {-| -}
-type alias QuadraticSpline2d =
-    Types.QuadraticSpline2d
+type alias QuadraticSpline2d units coordinates =
+    Types.QuadraticSpline2d units coordinates
 
 
 {-| Construct a spline from its start point, control point and end point:
@@ -119,7 +121,12 @@ type alias QuadraticSpline2d =
             }
 
 -}
-with : { startPoint : Point2d, controlPoint : Point2d, endPoint : Point2d } -> QuadraticSpline2d
+with :
+    { startPoint : Point2d units coordinates
+    , controlPoint : Point2d units coordinates
+    , endPoint : Point2d units coordinates
+    }
+    -> QuadraticSpline2d units coordinates
 with =
     Types.QuadraticSpline2d
 
@@ -130,7 +137,7 @@ with =
     --> Point2d.fromCoordinates ( 1, 1 )
 
 -}
-startPoint : QuadraticSpline2d -> Point2d
+startPoint : QuadraticSpline2d units coordinates -> Point2d units coordinates
 startPoint (Types.QuadraticSpline2d spline) =
     spline.startPoint
 
@@ -141,7 +148,7 @@ startPoint (Types.QuadraticSpline2d spline) =
     --> Point2d.fromCoordinates ( 5, 1 )
 
 -}
-endPoint : QuadraticSpline2d -> Point2d
+endPoint : QuadraticSpline2d units coordinates -> Point2d units coordinates
 endPoint (Types.QuadraticSpline2d spline) =
     spline.endPoint
 
@@ -152,7 +159,7 @@ endPoint (Types.QuadraticSpline2d spline) =
     --> Point2d.fromCoordinates ( 3, 4 )
 
 -}
-controlPoint : QuadraticSpline2d -> Point2d
+controlPoint : QuadraticSpline2d units coordinates -> Point2d units coordinates
 controlPoint (Types.QuadraticSpline2d spline) =
     spline.controlPoint
 
@@ -164,7 +171,7 @@ the spline's first control point to its second.
     --> Vector2d.fromComponents ( 4, 6 )
 
 -}
-startDerivative : QuadraticSpline2d -> Vector2d
+startDerivative : QuadraticSpline2d units coordinates -> Vector2d units coordinates
 startDerivative spline =
     Vector2d.from (startPoint spline) (controlPoint spline)
         |> Vector2d.scaleBy 2
@@ -177,7 +184,7 @@ the spline's second control point to its third.
     --> Vector2d.fromComponents ( 4, -6 )
 
 -}
-endDerivative : QuadraticSpline2d -> Vector2d
+endDerivative : QuadraticSpline2d units coordinates -> Vector2d units coordinates
 endDerivative spline =
     Vector2d.from (controlPoint spline) (endPoint spline)
         |> Vector2d.scaleBy 2
@@ -197,7 +204,7 @@ area than the spline itself).
     -->     }
 
 -}
-boundingBox : QuadraticSpline2d -> BoundingBox2d
+boundingBox : QuadraticSpline2d units coordinates -> BoundingBox2d units coordinates
 boundingBox spline =
     let
         ( x1, y1 ) =
@@ -210,10 +217,10 @@ boundingBox spline =
             Point2d.coordinates (endPoint spline)
     in
     BoundingBox2d.fromExtrema
-        { minX = min x1 (min x2 x3)
-        , maxX = max x1 (max x2 x3)
-        , minY = min y1 (min y2 y3)
-        , maxY = max y1 (max y2 y3)
+        { minX = Quantity.min x1 (Quantity.min x2 x3)
+        , maxX = Quantity.max x1 (Quantity.max x2 x3)
+        , minY = Quantity.min y1 (Quantity.min y2 y3)
+        , maxY = Quantity.max y1 (Quantity.max y2 y3)
         }
 
 
@@ -229,7 +236,7 @@ boundingBox spline =
     --> Point2d.fromCoordinates ( 5, 1 )
 
 -}
-pointOn : QuadraticSpline2d -> ParameterValue -> Point2d
+pointOn : QuadraticSpline2d units coordinates -> ParameterValue -> Point2d units coordinates
 pointOn spline parameterValue =
     let
         t =
@@ -264,7 +271,7 @@ pointOn spline parameterValue =
     --> ]
 
 -}
-pointsAt : List ParameterValue -> QuadraticSpline2d -> List Point2d
+pointsAt : List ParameterValue -> QuadraticSpline2d units coordinates -> List (Point2d units coordinates)
 pointsAt parameterValues spline =
     List.map (pointOn spline) parameterValues
 
@@ -286,7 +293,7 @@ pointsAt parameterValues spline =
 Note that the derivative interpolates linearly from end to end.
 
 -}
-firstDerivative : QuadraticSpline2d -> ParameterValue -> Vector2d
+firstDerivative : QuadraticSpline2d units coordinates -> ParameterValue -> Vector2d units coordinates
 firstDerivative spline parameterValue =
     let
         t =
@@ -321,12 +328,12 @@ firstDerivative spline parameterValue =
     --> ]
 
 -}
-firstDerivativesAt : List ParameterValue -> QuadraticSpline2d -> List Vector2d
+firstDerivativesAt : List ParameterValue -> QuadraticSpline2d units coordinates -> List (Vector2d units coordinates)
 firstDerivativesAt parameterValues spline =
     List.map (firstDerivative spline) parameterValues
 
 
-derivativeMagnitude : QuadraticSpline2d -> ParameterValue -> Float
+derivativeMagnitude : QuadraticSpline2d units coordinates -> ParameterValue -> Quantity Float units
 derivativeMagnitude spline =
     let
         ( x1, y1 ) =
@@ -339,22 +346,22 @@ derivativeMagnitude spline =
             Point2d.coordinates (endPoint spline)
 
         x12 =
-            x2 - x1
+            x2 |> Quantity.minus x1
 
         y12 =
-            y2 - y1
+            y2 |> Quantity.minus y1
 
         x23 =
-            x3 - x2
+            x3 |> Quantity.minus x2
 
         y23 =
-            y3 - y2
+            y3 |> Quantity.minus y2
 
         x123 =
-            x23 - x12
+            x23 |> Quantity.minus x12
 
         y123 =
-            y23 - y12
+            y23 |> Quantity.minus y12
     in
     \parameterValue ->
         let
@@ -362,12 +369,15 @@ derivativeMagnitude spline =
                 ParameterValue.value parameterValue
 
             x13 =
-                x12 + t * x123
+                x12 |> Quantity.plus (Quantity.scaleBy t x123)
 
             y13 =
-                y12 + t * y123
+                y12 |> Quantity.plus (Quantity.scaleBy t y123)
         in
-        2 * sqrt (x13 * x13 + y13 * y13)
+        Quantity.scaleBy 2
+            (Quantity.sqrt
+                (Quantity.squared x13 |> Quantity.plus (Quantity.squared y13))
+            )
 
 
 {-| If a curve has zero length (consists of just a single point), then we say
@@ -379,9 +389,9 @@ It is used as input to functions such as `QuadraticSpline2d.tangentDirection`
 and can be constructed using `QuadraticSpline2d.nondegenerate`.
 
 -}
-type Nondegenerate
-    = NonZeroSecondDerivative QuadraticSpline2d Direction2d
-    | NonZeroFirstDerivative QuadraticSpline2d Direction2d
+type Nondegenerate units coordinates
+    = NonZeroSecondDerivative (QuadraticSpline2d units coordinates) (Direction2d coordinates)
+    | NonZeroFirstDerivative (QuadraticSpline2d units coordinates) (Direction2d coordinates)
 
 
 {-| Attempt to construct a nondegenerate spline from a general
@@ -392,7 +402,7 @@ point), returns an `Err` with that point.
     --> Ok nondegenerateExampleSpline
 
 -}
-nondegenerate : QuadraticSpline2d -> Result Point2d Nondegenerate
+nondegenerate : QuadraticSpline2d units coordinates -> Result (Point2d units coordinates) (Nondegenerate units coordinates)
 nondegenerate spline =
     case Vector2d.direction (secondDerivative spline) of
         Just direction ->
@@ -420,7 +430,7 @@ nondegenerate spline =
     --> exampleSpline
 
 -}
-fromNondegenerate : Nondegenerate -> QuadraticSpline2d
+fromNondegenerate : Nondegenerate units coordinates -> QuadraticSpline2d units coordinates
 fromNondegenerate nondegenerateSpline =
     case nondegenerateSpline of
         NonZeroSecondDerivative spline _ ->
@@ -449,7 +459,7 @@ value:
     --> Direction2d.fromAngle (degrees -56.31)
 
 -}
-tangentDirection : Nondegenerate -> ParameterValue -> Direction2d
+tangentDirection : Nondegenerate units coordinates -> ParameterValue -> Direction2d coordinates
 tangentDirection nondegenerateSpline parameterValue =
     case nondegenerateSpline of
         NonZeroSecondDerivative spline secondDerivativeDirection ->
@@ -498,7 +508,7 @@ values:
     --> ]
 
 -}
-tangentDirectionsAt : List ParameterValue -> Nondegenerate -> List Direction2d
+tangentDirectionsAt : List ParameterValue -> Nondegenerate units coordinates -> List (Direction2d coordinates)
 tangentDirectionsAt parameterValues nondegenerateSpline =
     List.map (tangentDirection nondegenerateSpline) parameterValues
 
@@ -513,7 +523,7 @@ given parameter value:
     --> )
 
 -}
-sample : Nondegenerate -> ParameterValue -> ( Point2d, Direction2d )
+sample : Nondegenerate units coordinates -> ParameterValue -> ( Point2d units coordinates, Direction2d coordinates )
 sample nondegenerateSpline parameterValue =
     ( pointOn (fromNondegenerate nondegenerateSpline) parameterValue
     , tangentDirection nondegenerateSpline parameterValue
@@ -538,7 +548,7 @@ of parameter values:
     --> ]
 
 -}
-samplesAt : List ParameterValue -> Nondegenerate -> List ( Point2d, Direction2d )
+samplesAt : List ParameterValue -> Nondegenerate units coordinates -> List ( Point2d units coordinates, Direction2d coordinates )
 samplesAt parameterValues nondegenerateSpline =
     List.map (sample nondegenerateSpline) parameterValues
 
@@ -557,7 +567,7 @@ versa.
     -->     }
 
 -}
-reverse : QuadraticSpline2d -> QuadraticSpline2d
+reverse : QuadraticSpline2d units coordinates -> QuadraticSpline2d units coordinates
 reverse spline =
     with
         { startPoint = endPoint spline
@@ -580,9 +590,9 @@ reverse spline =
     -->     }
 
 -}
-scaleAbout : Point2d -> Float -> QuadraticSpline2d -> QuadraticSpline2d
-scaleAbout point scale =
-    mapControlPoints (Point2d.scaleAbout point scale)
+scaleAbout : Point2d units coordinates -> Float -> QuadraticSpline2d units coordinates -> QuadraticSpline2d units coordinates
+scaleAbout point scale spline =
+    mapControlPoints (Point2d.scaleAbout point scale) spline
 
 
 {-| Rotate a spline counterclockwise around a given center point by a given
@@ -601,9 +611,9 @@ angle (in radians).
     -->     }
 
 -}
-rotateAround : Point2d -> Float -> QuadraticSpline2d -> QuadraticSpline2d
-rotateAround point angle =
-    mapControlPoints (Point2d.rotateAround point angle)
+rotateAround : Point2d units coordinates -> Angle -> QuadraticSpline2d units coordinates -> QuadraticSpline2d units coordinates
+rotateAround point angle spline =
+    mapControlPoints (Point2d.rotateAround point angle) spline
 
 
 {-| Translate a spline by a given displacement.
@@ -623,9 +633,9 @@ rotateAround point angle =
     -->     )
 
 -}
-translateBy : Vector2d -> QuadraticSpline2d -> QuadraticSpline2d
-translateBy displacement =
-    mapControlPoints (Point2d.translateBy displacement)
+translateBy : Vector2d units coordinates -> QuadraticSpline2d units coordinates -> QuadraticSpline2d units coordinates
+translateBy displacement spline =
+    mapControlPoints (Point2d.translateBy displacement) spline
 
 
 {-| Translate a spline in a given direction by a given distance;
@@ -638,7 +648,7 @@ is equivalent to
         (Vector2d.withLength distance direction)
 
 -}
-translateIn : Direction2d -> Float -> QuadraticSpline2d -> QuadraticSpline2d
+translateIn : Direction2d coordinates -> Quantity Float units -> QuadraticSpline2d units coordinates -> QuadraticSpline2d units coordinates
 translateIn direction distance spline =
     translateBy (Vector2d.withLength distance direction) spline
 
@@ -656,9 +666,9 @@ translateIn direction distance spline =
     -->     }
 
 -}
-mirrorAcross : Axis2d -> QuadraticSpline2d -> QuadraticSpline2d
-mirrorAcross axis =
-    mapControlPoints (Point2d.mirrorAcross axis)
+mirrorAcross : Axis2d units coordinates -> QuadraticSpline2d units coordinates -> QuadraticSpline2d units coordinates
+mirrorAcross axis spline =
+    mapControlPoints (Point2d.mirrorAcross axis) spline
 
 
 {-| Take a spline defined in global coordinates, and return it expressed in
@@ -678,9 +688,9 @@ local coordinates relative to a given reference frame.
     -->     }
 
 -}
-relativeTo : Frame2d -> QuadraticSpline2d -> QuadraticSpline2d
-relativeTo frame =
-    mapControlPoints (Point2d.relativeTo frame)
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> QuadraticSpline2d units globalCoordinates -> QuadraticSpline2d units localCoordinates
+relativeTo frame spline =
+    mapControlPoints (Point2d.relativeTo frame) spline
 
 
 {-| Take a spline considered to be defined in local coordinates relative to a
@@ -700,12 +710,12 @@ given reference frame, and return that spline expressed in global coordinates.
     -->     }
 
 -}
-placeIn : Frame2d -> QuadraticSpline2d -> QuadraticSpline2d
-placeIn frame =
-    mapControlPoints (Point2d.placeIn frame)
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> QuadraticSpline2d units localCoordinates -> QuadraticSpline2d units globalCoordinates
+placeIn frame spline =
+    mapControlPoints (Point2d.placeIn frame) spline
 
 
-mapControlPoints : (Point2d -> Point2d) -> QuadraticSpline2d -> QuadraticSpline2d
+mapControlPoints : (Point2d units1 coordinates1 -> Point2d units2 coordinates2) -> QuadraticSpline2d units1 coordinates1 -> QuadraticSpline2d units2 coordinates2
 mapControlPoints function spline =
     with
         { startPoint = function (startPoint spline)
@@ -738,9 +748,9 @@ mapControlPoints function spline =
 Equivalent to `QuadraticSpline2d.splitAt ParameterValue.half`.
 
 -}
-bisect : QuadraticSpline2d -> ( QuadraticSpline2d, QuadraticSpline2d )
-bisect =
-    splitAt ParameterValue.half
+bisect : QuadraticSpline2d units coordinates -> ( QuadraticSpline2d units coordinates, QuadraticSpline2d units coordinates )
+bisect spline =
+    splitAt ParameterValue.half spline
 
 
 {-| Split a spline at a particular parameter value, resulting in two smaller
@@ -769,7 +779,7 @@ splines.
     --> )
 
 -}
-splitAt : ParameterValue -> QuadraticSpline2d -> ( QuadraticSpline2d, QuadraticSpline2d )
+splitAt : ParameterValue -> QuadraticSpline2d units coordinates -> ( QuadraticSpline2d units coordinates, QuadraticSpline2d units coordinates )
 splitAt parameterValue spline =
     let
         t =
@@ -800,11 +810,11 @@ splitAt parameterValue spline =
 
 {-| A spline that has been parameterized by arc length.
 -}
-type ArcLengthParameterized
+type ArcLengthParameterized units coordinates
     = ArcLengthParameterized
-        { underlyingSpline : QuadraticSpline2d
-        , parameterization : ArcLengthParameterization
-        , nondegenerateSpline : Maybe Nondegenerate
+        { underlyingSpline : QuadraticSpline2d units coordinates
+        , parameterization : ArcLengthParameterization units
+        , nondegenerateSpline : Maybe (Nondegenerate units coordinates)
         }
 
 
@@ -819,7 +829,7 @@ error.
                 { maxError = 1.0e-4 }
 
 -}
-arcLengthParameterized : { maxError : Float } -> QuadraticSpline2d -> ArcLengthParameterized
+arcLengthParameterized : { maxError : Quantity Float units } -> QuadraticSpline2d units coordinates -> ArcLengthParameterized units coordinates
 arcLengthParameterized { maxError } spline =
     let
         parameterization =
@@ -846,7 +856,7 @@ In this example, the result will be accurate to within `1.0e-4` since that was
 the tolerance used when constructing `parameterizedSpline`.
 
 -}
-arcLength : ArcLengthParameterized -> Float
+arcLength : ArcLengthParameterized units coordinates -> Quantity Float units
 arcLength parameterizedSpline =
     arcLengthParameterization parameterizedSpline
         |> ArcLengthParameterization.totalArcLength
@@ -868,7 +878,7 @@ If the given arc length is less than zero or greater than the arc length of the
 spline, returns `Nothing`.
 
 -}
-pointAlong : ArcLengthParameterized -> Float -> Maybe Point2d
+pointAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Maybe (Point2d units coordinates)
 pointAlong (ArcLengthParameterized parameterized) distance =
     parameterized.parameterization
         |> ArcLengthParameterization.arcLengthToParameterValue distance
@@ -881,9 +891,13 @@ pointAlong (ArcLengthParameterized parameterized) distance =
     --> Point2d.fromCoordinates (2.999999999999984, 2.5)
 
 -}
-midpoint : ArcLengthParameterized -> Point2d
+midpoint : ArcLengthParameterized units coordinates -> Point2d units coordinates
 midpoint parameterized =
-    case pointAlong parameterized (arcLength parameterized / 2) of
+    let
+        halfArcLength =
+            Quantity.scaleBy 0.5 (arcLength parameterized)
+    in
+    case pointAlong parameterized halfArcLength of
         Just point ->
             point
 
@@ -907,7 +921,7 @@ spline (or if the derivative of the spline happens to be exactly zero at the
 given arc length), returns `Nothing`.
 
 -}
-tangentDirectionAlong : ArcLengthParameterized -> Float -> Maybe Direction2d
+tangentDirectionAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Maybe (Direction2d coordinates)
 tangentDirectionAlong (ArcLengthParameterized parameterized) distance =
     case parameterized.nondegenerateSpline of
         Just nondegenerateSpline ->
@@ -934,7 +948,7 @@ If the given arc length is less than zero or greater than the arc length of the
 spline (or if the spline is degenerate), returns `Nothing`.
 
 -}
-sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point2d, Direction2d )
+sampleAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Maybe ( Point2d units coordinates, Direction2d coordinates )
 sampleAlong (ArcLengthParameterized parameterized) distance =
     case parameterized.nondegenerateSpline of
         Just nondegenerateSpline ->
@@ -947,7 +961,7 @@ sampleAlong (ArcLengthParameterized parameterized) distance =
 
 
 {-| -}
-arcLengthParameterization : ArcLengthParameterized -> ArcLengthParameterization
+arcLengthParameterization : ArcLengthParameterized units coordinates -> ArcLengthParameterization units
 arcLengthParameterization (ArcLengthParameterized parameterized) =
     parameterized.parameterization
 
@@ -955,7 +969,7 @@ arcLengthParameterization (ArcLengthParameterized parameterized) =
 {-| Get the original `QuadraticSpline2d` from which an `ArcLengthParameterized`
 value was constructed.
 -}
-fromArcLengthParameterized : ArcLengthParameterized -> QuadraticSpline2d
+fromArcLengthParameterized : ArcLengthParameterized units coordinates -> QuadraticSpline2d units coordinates
 fromArcLengthParameterized (ArcLengthParameterized parameterized) =
     parameterized.underlyingSpline
 
@@ -963,7 +977,7 @@ fromArcLengthParameterized (ArcLengthParameterized parameterized) =
 {-| Get the second derivative of a spline (for a quadratic spline, this is a
 constant).
 -}
-secondDerivative : QuadraticSpline2d -> Vector2d
+secondDerivative : QuadraticSpline2d units coordinates -> Vector2d units coordinates
 secondDerivative spline =
     let
         p1 =
@@ -981,4 +995,4 @@ secondDerivative spline =
         v2 =
             Vector2d.from p2 p3
     in
-    Vector2d.difference v2 v1 |> Vector2d.scaleBy 2
+    Vector2d.scaleBy 2 (v2 |> Vector2d.minus v1)
