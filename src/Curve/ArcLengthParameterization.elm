@@ -37,32 +37,34 @@ parameter values.
 
 import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Float.Extra as Float
+import Quantity exposing (Quantity)
+import Quantity.Extra as Quantity
 
 
 {-| Contains a mapping from curve parameter value to arc length, and vice versa.
 -}
-type ArcLengthParameterization
-    = ArcLengthParameterization SegmentTree
+type ArcLengthParameterization units
+    = ArcLengthParameterization (SegmentTree units)
 
 
-type SegmentTree
+type SegmentTree units
     = Node
-        { lengthAtStart : Float
-        , lengthAtEnd : Float
+        { lengthAtStart : Quantity Float units
+        , lengthAtEnd : Quantity Float units
         , paramAtStart : Float
-        , leftBranch : SegmentTree
-        , rightBranch : SegmentTree
+        , leftBranch : SegmentTree units
+        , rightBranch : SegmentTree units
         }
     | Leaf
-        { length0 : Float
-        , length1 : Float
-        , length2 : Float
-        , length3 : Float
-        , length4 : Float
-        , length5 : Float
-        , length6 : Float
-        , length7 : Float
-        , length8 : Float
+        { length0 : Quantity Float units
+        , length1 : Quantity Float units
+        , length2 : Quantity Float units
+        , length3 : Quantity Float units
+        , length4 : Quantity Float units
+        , length5 : Quantity Float units
+        , length6 : Quantity Float units
+        , length7 : Quantity Float units
+        , length8 : Quantity Float units
         , param0 : Float
         , param1 : Float
         , param2 : Float
@@ -88,27 +90,33 @@ segmentsPerLeaf =
   - A tolerance specifying the maximum error of the resulting parameterization
 
 -}
-build : { maxError : Float, derivativeMagnitude : ParameterValue -> Float, maxSecondDerivativeMagnitude : Float } -> ArcLengthParameterization
+build :
+    { maxError : Quantity Float units
+    , derivativeMagnitude : ParameterValue -> Quantity Float units
+    , maxSecondDerivativeMagnitude : Quantity Float units
+    }
+    -> ArcLengthParameterization units
 build { maxError, derivativeMagnitude, maxSecondDerivativeMagnitude } =
     let
         height =
-            if maxError <= 0 then
+            if maxError |> Quantity.lessThanOrEqualTo Quantity.zero then
                 0
 
             else
                 let
                     numSegments =
-                        maxSecondDerivativeMagnitude / (8 * maxError)
+                        Quantity.ratio maxSecondDerivativeMagnitude
+                            (Quantity.scaleBy 8 maxError)
 
                     numLeaves =
                         numSegments / toFloat segmentsPerLeaf
                 in
                 max 0 (ceiling (logBase 2 numLeaves))
     in
-    ArcLengthParameterization (buildTree derivativeMagnitude 0 0 1 height)
+    ArcLengthParameterization (buildTree derivativeMagnitude Quantity.zero 0 1 height)
 
 
-buildTree : (ParameterValue -> Float) -> Float -> Float -> Float -> Int -> SegmentTree
+buildTree : (ParameterValue -> Quantity Float units) -> Quantity Float units -> Float -> Float -> Int -> SegmentTree units
 buildTree derivativeMagnitude lengthAtStart_ paramAtStart_ paramAtEnd height =
     let
         paramDelta =
@@ -177,28 +185,44 @@ buildTree derivativeMagnitude lengthAtStart_ paramAtStart_ paramAtEnd height =
                 lengthAtStart_
 
             length1 =
-                length0 + paramStep * derivativeMagnitude0
+                length0
+                    |> Quantity.plus
+                        (Quantity.scaleBy paramStep derivativeMagnitude0)
 
             length2 =
-                length1 + paramStep * derivativeMagnitude1
+                length1
+                    |> Quantity.plus
+                        (Quantity.scaleBy paramStep derivativeMagnitude1)
 
             length3 =
-                length2 + paramStep * derivativeMagnitude2
+                length2
+                    |> Quantity.plus
+                        (Quantity.scaleBy paramStep derivativeMagnitude2)
 
             length4 =
-                length3 + paramStep * derivativeMagnitude3
+                length3
+                    |> Quantity.plus
+                        (Quantity.scaleBy paramStep derivativeMagnitude3)
 
             length5 =
-                length4 + paramStep * derivativeMagnitude4
+                length4
+                    |> Quantity.plus
+                        (Quantity.scaleBy paramStep derivativeMagnitude4)
 
             length6 =
-                length5 + paramStep * derivativeMagnitude5
+                length5
+                    |> Quantity.plus
+                        (Quantity.scaleBy paramStep derivativeMagnitude5)
 
             length7 =
-                length6 + paramStep * derivativeMagnitude6
+                length6
+                    |> Quantity.plus
+                        (Quantity.scaleBy paramStep derivativeMagnitude6)
 
             length8 =
-                length7 + paramStep * derivativeMagnitude7
+                length7
+                    |> Quantity.plus
+                        (Quantity.scaleBy paramStep derivativeMagnitude7)
         in
         Leaf
             { param0 = param0
@@ -259,29 +283,33 @@ buildTree derivativeMagnitude lengthAtStart_ paramAtStart_ paramAtEnd height =
 arc length is less than zero or greater than the total arc length of the curve
 (as reported by `totalArcLength`), returns `Nothing`.
 -}
-arcLengthToParameterValue : Float -> ArcLengthParameterization -> Maybe ParameterValue
+arcLengthToParameterValue : Quantity Float units -> ArcLengthParameterization units -> Maybe ParameterValue
 arcLengthToParameterValue s (ArcLengthParameterization tree) =
-    if s == 0 then
+    if s == Quantity.zero then
         Just ParameterValue.zero
 
-    else if s > 0 && s <= lengthAtEnd tree then
+    else if
+        (s |> Quantity.greaterThan Quantity.zero)
+            && (s |> Quantity.lessThanOrEqualTo (lengthAtEnd tree))
+    then
         Just (ParameterValue.clamped (unsafeToParameterValue tree s))
 
     else
         Nothing
 
 
-unsafeToParameterValue : SegmentTree -> Float -> Float
+unsafeToParameterValue : SegmentTree units -> Quantity Float units -> Float
 unsafeToParameterValue tree s =
     case tree of
         Leaf { length0, length1, length2, length3, length4, length5, length6, length7, length8, param0, param1, param2, param3, param4, param5, param6, param7, param8 } ->
-            if s <= length4 then
-                if s <= length2 then
-                    if s <= length1 then
+            if s |> Quantity.lessThanOrEqualTo length4 then
+                if s |> Quantity.lessThanOrEqualTo length2 then
+                    if s |> Quantity.lessThanOrEqualTo length1 then
                         -- 0 to 1
                         let
                             lengthFraction =
-                                (s - length0) / (length1 - length0)
+                                Quantity.ratio (s |> Quantity.minus length0)
+                                    (length1 |> Quantity.minus length0)
                         in
                         Float.interpolateFrom param0 param1 lengthFraction
 
@@ -289,15 +317,17 @@ unsafeToParameterValue tree s =
                         -- 1 to 2
                         let
                             lengthFraction =
-                                (s - length1) / (length2 - length1)
+                                Quantity.ratio (s |> Quantity.minus length1)
+                                    (length2 |> Quantity.minus length1)
                         in
                         Float.interpolateFrom param1 param2 lengthFraction
 
-                else if s <= length3 then
+                else if s |> Quantity.lessThanOrEqualTo length3 then
                     -- 2 to 3
                     let
                         lengthFraction =
-                            (s - length2) / (length3 - length2)
+                            Quantity.ratio (s |> Quantity.minus length2)
+                                (length3 |> Quantity.minus length2)
                     in
                     Float.interpolateFrom param2 param3 lengthFraction
 
@@ -305,16 +335,18 @@ unsafeToParameterValue tree s =
                     -- 3 to 4
                     let
                         lengthFraction =
-                            (s - length3) / (length4 - length3)
+                            Quantity.ratio (s |> Quantity.minus length3)
+                                (length4 |> Quantity.minus length3)
                     in
                     Float.interpolateFrom param3 param4 lengthFraction
 
-            else if s <= length6 then
-                if s <= length5 then
+            else if s |> Quantity.lessThanOrEqualTo length6 then
+                if s |> Quantity.lessThanOrEqualTo length5 then
                     -- 4 to 5
                     let
                         lengthFraction =
-                            (s - length4) / (length5 - length4)
+                            Quantity.ratio (s |> Quantity.minus length4)
+                                (length5 |> Quantity.minus length4)
                     in
                     Float.interpolateFrom param4 param5 lengthFraction
 
@@ -322,15 +354,17 @@ unsafeToParameterValue tree s =
                     -- 5 to 6
                     let
                         lengthFraction =
-                            (s - length5) / (length6 - length5)
+                            Quantity.ratio (s |> Quantity.minus length5)
+                                (length6 |> Quantity.minus length5)
                     in
                     Float.interpolateFrom param5 param6 lengthFraction
 
-            else if s <= length7 then
+            else if s |> Quantity.lessThanOrEqualTo length7 then
                 -- 6 to 7
                 let
                     lengthFraction =
-                        (s - length6) / (length7 - length6)
+                        Quantity.ratio (s |> Quantity.minus length6)
+                            (length7 |> Quantity.minus length6)
                 in
                 Float.interpolateFrom param6 param7 lengthFraction
 
@@ -338,19 +372,20 @@ unsafeToParameterValue tree s =
                 -- 7 to 8
                 let
                     lengthFraction =
-                        (s - length7) / (length8 - length7)
+                        Quantity.ratio (s |> Quantity.minus length7)
+                            (length8 |> Quantity.minus length7)
                 in
                 Float.interpolateFrom param7 param8 lengthFraction
 
         Node { leftBranch, rightBranch } ->
-            if s < lengthAtStart rightBranch then
+            if s |> Quantity.lessThan (lengthAtStart rightBranch) then
                 unsafeToParameterValue leftBranch s
 
             else
                 unsafeToParameterValue rightBranch s
 
 
-lengthAtStart : SegmentTree -> Float
+lengthAtStart : SegmentTree units -> Quantity Float units
 lengthAtStart tree =
     case tree of
         Node node ->
@@ -360,7 +395,7 @@ lengthAtStart tree =
             leaf.length0
 
 
-lengthAtEnd : SegmentTree -> Float
+lengthAtEnd : SegmentTree units -> Quantity Float units
 lengthAtEnd tree =
     case tree of
         Node node ->
@@ -385,23 +420,23 @@ is equivalent to
 but is more efficient.
 
 -}
-totalArcLength : ArcLengthParameterization -> Float
+totalArcLength : ArcLengthParameterization units -> Quantity Float units
 totalArcLength (ArcLengthParameterization tree) =
     lengthAtEnd tree
 
 
 {-| Convert a parameter value to the corresponding arc length.
 -}
-parameterValueToArcLength : ParameterValue -> ArcLengthParameterization -> Float
+parameterValueToArcLength : ParameterValue -> ArcLengthParameterization units -> Quantity Float units
 parameterValueToArcLength parameterValue (ArcLengthParameterization tree) =
     if parameterValue == ParameterValue.zero then
-        0
+        Quantity.zero
 
     else
         unsafeToArcLength tree (ParameterValue.value parameterValue)
 
 
-unsafeToArcLength : SegmentTree -> Float -> Float
+unsafeToArcLength : SegmentTree units -> Float -> Quantity Float units
 unsafeToArcLength tree t =
     case tree of
         Leaf { length0, length1, length2, length3, length4, length5, length6, length7, length8, param0, param1, param2, param3, param4, param5, param6, param7, param8 } ->
@@ -413,7 +448,7 @@ unsafeToArcLength tree t =
                             paramFraction =
                                 (t - param0) / (param1 - param0)
                         in
-                        Float.interpolateFrom length0 length1 paramFraction
+                        Quantity.interpolateFrom length0 length1 paramFraction
 
                     else
                         -- 1 to 2
@@ -421,7 +456,7 @@ unsafeToArcLength tree t =
                             paramFraction =
                                 (t - param1) / (param2 - param1)
                         in
-                        Float.interpolateFrom length1 length2 paramFraction
+                        Quantity.interpolateFrom length1 length2 paramFraction
 
                 else if t <= param3 then
                     -- 2 to 3
@@ -429,7 +464,7 @@ unsafeToArcLength tree t =
                         paramFraction =
                             (t - param2) / (param3 - param2)
                     in
-                    Float.interpolateFrom length2 length3 paramFraction
+                    Quantity.interpolateFrom length2 length3 paramFraction
 
                 else
                     -- 3 to 4
@@ -437,7 +472,7 @@ unsafeToArcLength tree t =
                         paramFraction =
                             (t - param3) / (param4 - param3)
                     in
-                    Float.interpolateFrom length3 length4 paramFraction
+                    Quantity.interpolateFrom length3 length4 paramFraction
 
             else if t <= param6 then
                 if t <= param5 then
@@ -446,7 +481,7 @@ unsafeToArcLength tree t =
                         paramFraction =
                             (t - param4) / (param5 - param4)
                     in
-                    Float.interpolateFrom length4 length5 paramFraction
+                    Quantity.interpolateFrom length4 length5 paramFraction
 
                 else
                     -- 5 to 6
@@ -454,7 +489,7 @@ unsafeToArcLength tree t =
                         paramFraction =
                             (t - param5) / (param6 - param5)
                     in
-                    Float.interpolateFrom length5 length6 paramFraction
+                    Quantity.interpolateFrom length5 length6 paramFraction
 
             else if t <= param7 then
                 -- 6 to 7
@@ -462,7 +497,7 @@ unsafeToArcLength tree t =
                     paramFraction =
                         (t - param6) / (param7 - param6)
                 in
-                Float.interpolateFrom length6 length7 paramFraction
+                Quantity.interpolateFrom length6 length7 paramFraction
 
             else
                 -- 7 to 8
@@ -470,7 +505,7 @@ unsafeToArcLength tree t =
                     paramFraction =
                         (t - param7) / (param8 - param7)
                 in
-                Float.interpolateFrom length7 length8 paramFraction
+                Quantity.interpolateFrom length7 length8 paramFraction
 
         Node { leftBranch, rightBranch } ->
             if t < paramAtStart rightBranch then
@@ -480,7 +515,7 @@ unsafeToArcLength tree t =
                 unsafeToArcLength rightBranch t
 
 
-paramAtStart : SegmentTree -> Float
+paramAtStart : SegmentTree units -> Float
 paramAtStart tree =
     case tree of
         Node node ->
