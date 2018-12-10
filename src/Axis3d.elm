@@ -52,16 +52,18 @@ by an origin point and direction. Axes have several uses, such as:
 
 -}
 
+import Angle exposing (Angle)
 import Axis2d exposing (Axis2d)
 import Direction3d exposing (Direction3d)
 import Geometry.Types as Types exposing (Frame3d, Plane3d, SketchPlane3d)
 import Point3d exposing (Point3d)
+import Quantity exposing (Quantity)
 import Vector3d exposing (Vector3d)
 
 
 {-| -}
-type alias Axis3d =
-    Types.Axis3d
+type alias Axis3d units coordinates =
+    Types.Axis3d units coordinates
 
 
 {-| The global X axis.
@@ -70,7 +72,7 @@ type alias Axis3d =
     --> Axis3d.through Point3d.origin Direction3d.x
 
 -}
-x : Axis3d
+x : Axis3d units coordinates
 x =
     through Point3d.origin Direction3d.x
 
@@ -81,7 +83,7 @@ x =
     --> Axis3d.through Point3d.origin Direction3d.y
 
 -}
-y : Axis3d
+y : Axis3d units coordinates
 y =
     through Point3d.origin Direction3d.y
 
@@ -92,7 +94,7 @@ y =
     --> Axis3d.through Point3d.origin Direction3d.z
 
 -}
-z : Axis3d
+z : Axis3d units coordinates
 z =
     through Point3d.origin Direction3d.z
 
@@ -105,9 +107,9 @@ z =
             Direction3d.y
 
 -}
-through : Point3d -> Direction3d -> Axis3d
-through point direction_ =
-    Types.Axis3d { originPoint = point, direction = direction_ }
+through : Point3d units coordinates -> Direction3d coordinates -> Axis3d units coordinates
+through givenPoint givenDirection =
+    Types.Axis3d { originPoint = givenPoint, direction = givenDirection }
 
 
 {-| Construct an axis with the given directoin, through the given point. Flipped
@@ -124,9 +126,9 @@ things with partial application:
     List.map (Axis3d.withDirection direction) points
 
 -}
-withDirection : Direction3d -> Point3d -> Axis3d
-withDirection direction_ originPoint_ =
-    Types.Axis3d { direction = direction_, originPoint = originPoint_ }
+withDirection : Direction3d coordinates -> Point3d units coordinates -> Axis3d units coordinates
+withDirection givenDirection givenPoint =
+    Types.Axis3d { direction = givenDirection, originPoint = givenPoint }
 
 
 {-| Construct a 3D axis lying _on_ a sketch plane by providing a 2D axis
@@ -153,7 +155,7 @@ specified in XY coordinates _within_ the sketch plane.
     -->     )
 
 -}
-on : SketchPlane3d -> Axis2d -> Axis3d
+on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Axis2d units coordinates2d -> Axis3d units coordinates3d
 on sketchPlane (Types.Axis2d axis2d) =
     through (Point3d.on sketchPlane axis2d.originPoint)
         (Direction3d.on sketchPlane axis2d.direction)
@@ -165,7 +167,7 @@ on sketchPlane (Types.Axis2d axis2d) =
     --> Point3d.fromCoordinates ( 1, 2, 3 )
 
 -}
-originPoint : Axis3d -> Point3d
+originPoint : Axis3d units coordinates -> Point3d units coordinates
 originPoint (Types.Axis3d axis) =
     axis.originPoint
 
@@ -176,7 +178,7 @@ originPoint (Types.Axis3d axis) =
     --> Direction3d.y
 
 -}
-direction : Axis3d -> Direction3d
+direction : Axis3d units coordinates -> Direction3d coordinates
 direction (Types.Axis3d axis) =
     axis.direction
 
@@ -188,7 +190,7 @@ direction (Types.Axis3d axis) =
     -->     (Point3d.fromCoordinates ( 1, 2, 3 ))
 
 -}
-reverse : Axis3d -> Axis3d
+reverse : Axis3d units coordinates -> Axis3d units coordinates
 reverse (Types.Axis3d axis) =
     through axis.originPoint (Direction3d.reverse axis.direction)
 
@@ -203,7 +205,7 @@ reverse (Types.Axis3d axis) =
     -->     (Point3d.fromCoordinates ( 3, 4, 5 ))
 
 -}
-moveTo : Point3d -> Axis3d -> Axis3d
+moveTo : Point3d units coordinates -> Axis3d units coordinates -> Axis3d units coordinates
 moveTo newOrigin (Types.Axis3d axis) =
     through newOrigin axis.direction
 
@@ -216,7 +218,7 @@ around is given first and the axis to rotate is given last.
     -->     (Point3d.fromCoordinates ( -2, 1, 3 ))
 
 -}
-rotateAround : Axis3d -> Float -> Axis3d -> Axis3d
+rotateAround : Axis3d units coordinates -> Angle -> Axis3d units coordinates -> Axis3d units coordinates
 rotateAround otherAxis angle =
     let
         rotatePoint =
@@ -240,7 +242,7 @@ the axis' origin point and leaves the direction unchanged.
     -->     (Point3d.fromCoordinates ( 4, 5, 6 ))
 
 -}
-translateBy : Vector3d -> Axis3d -> Axis3d
+translateBy : Vector3d units coordinates -> Axis3d units coordinates -> Axis3d units coordinates
 translateBy vector (Types.Axis3d axis) =
     through (Point3d.translateBy vector axis.originPoint) axis.direction
 
@@ -255,7 +257,7 @@ is equivalent to
         (Vector3d.withLength distance direction)
 
 -}
-translateIn : Direction3d -> Float -> Axis3d -> Axis3d
+translateIn : Direction3d coordinates -> Quantity Float units -> Axis3d units coordinates -> Axis3d units coordinates
 translateIn translationDirection distance axis =
     translateBy (Vector3d.withLength distance translationDirection) axis
 
@@ -267,7 +269,7 @@ translateIn translationDirection distance axis =
     -->     (Point3d.fromCoordinates ( 1, 2, -3 ))
 
 -}
-mirrorAcross : Plane3d -> Axis3d -> Axis3d
+mirrorAcross : Plane3d units coordinates -> Axis3d units coordinates -> Axis3d units coordinates
 mirrorAcross plane (Types.Axis3d axis) =
     through (Point3d.mirrorAcross plane axis.originPoint)
         (Direction3d.mirrorAcross plane axis.direction)
@@ -287,7 +289,7 @@ plane, returns `Nothing`.
     --> Nothing
 
 -}
-projectOnto : Plane3d -> Axis3d -> Maybe Axis3d
+projectOnto : Plane3d units coordinates -> Axis3d units coordinates -> Maybe (Axis3d units coordinates)
 projectOnto plane (Types.Axis3d axis) =
     let
         projectedOrigin =
@@ -309,7 +311,7 @@ coordinates relative to a given reference frame.
     -->     (Point3d.fromCoordinates ( -2, -1, 0 ))
 
 -}
-relativeTo : Frame3d -> Axis3d -> Axis3d
+relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Axis3d units globalCoordinates -> Axis3d units localCoordinates
 relativeTo frame (Types.Axis3d axis) =
     through (Point3d.relativeTo frame axis.originPoint)
         (Direction3d.relativeTo frame axis.direction)
@@ -327,7 +329,7 @@ frame, and return that axis expressed in global coordinates.
     -->     (Point3d.fromCoordinates ( 4, 5, 6 ))
 
 -}
-placeIn : Frame3d -> Axis3d -> Axis3d
+placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Axis3d units localCoordinates -> Axis3d units globalCoordinates
 placeIn frame (Types.Axis3d axis) =
     through (Point3d.placeIn frame axis.originPoint)
         (Direction3d.placeIn frame axis.direction)
@@ -359,7 +361,7 @@ plane; if it is perpendicular, `Nothing` is returned.
     --> Nothing
 
 -}
-projectInto : SketchPlane3d -> Axis3d -> Maybe Axis2d
+projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Axis3d units coordinates3d -> Maybe (Axis2d units coordinates2d)
 projectInto sketchPlane (Types.Axis3d axis) =
     let
         projectedOrigin =
