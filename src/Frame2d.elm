@@ -562,20 +562,12 @@ mirrorAcross axis =
 expressed in local coordinates relative to the first.
 -}
 relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Frame2d units globalCoordinates defines -> Frame2d units localCoordinates defines
-relativeTo otherFrame =
-    let
-        relativePoint =
-            Point2d.relativeTo otherFrame
-
-        relativeDirection =
-            Direction2d.relativeTo otherFrame
-    in
-    \frame ->
-        Types.Frame2d
-            { originPoint = relativePoint (originPoint frame)
-            , xDirection = relativeDirection (xDirection frame)
-            , yDirection = relativeDirection (yDirection frame)
-            }
+relativeTo otherFrame frame =
+    Types.Frame2d
+        { originPoint = Point2d.relativeTo otherFrame (originPoint frame)
+        , xDirection = Direction2d.relativeTo otherFrame (xDirection frame)
+        , yDirection = Direction2d.relativeTo otherFrame (yDirection frame)
+        }
 
 
 {-| Take one frame defined in global coordinates and a second frame defined
@@ -583,17 +575,9 @@ in local coordinates relative to the first frame, and return the second frame
 expressed in global coordinates.
 -}
 placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Frame2d units localCoordinates defines -> Frame2d units globalCoordinates defines
-placeIn otherFrame =
-    let
-        placePoint =
-            Point2d.placeIn otherFrame
-
-        placeDirection =
-            Direction2d.placeIn otherFrame
-    in
-    \frame ->
-        Types.Frame2d
-            { originPoint = placePoint (originPoint frame)
-            , xDirection = placeDirection (xDirection frame)
-            , yDirection = placeDirection (yDirection frame)
-            }
+placeIn otherFrame frame =
+    Types.Frame2d
+        { originPoint = Point2d.placeIn otherFrame (originPoint frame)
+        , xDirection = Direction2d.placeIn otherFrame (xDirection frame)
+        , yDirection = Direction2d.placeIn otherFrame (yDirection frame)
+        }
