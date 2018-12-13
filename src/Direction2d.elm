@@ -355,14 +355,13 @@ second. The result will be in the range -π to π.
 angleFrom : Direction2d coordinates -> Direction2d coordinates -> Angle
 angleFrom firstDirection secondDirection =
     let
-        firstVector =
-            toVector firstDirection
+        ( x1, y1 ) =
+            components firstDirection
 
-        secondVector =
-            toVector secondDirection
+        ( x2, y2 ) =
+            components secondDirection
     in
-    Angle.atan2 (Vector2d.crossProduct firstVector secondVector)
-        (Vector2d.dotProduct firstVector secondVector)
+    Angle.radians (atan2 (x1 * y2 - y1 * x2) (x1 * x2 + y1 * y2))
 
 
 {-| Get the components of a direction as a tuple (the components it would have
@@ -433,8 +432,14 @@ is equivalent to
 -}
 componentIn : Direction2d coordinates -> Direction2d coordinates -> Float
 componentIn firstDirection secondDirection =
-    Vector2d.componentIn firstDirection (toVector secondDirection)
-        |> Quantity.toFloat
+    let
+        ( x1, y1 ) =
+            components firstDirection
+
+        ( x2, y2 ) =
+            components secondDirection
+    in
+    x1 * x2 + y1 * y2
 
 
 {-| Compare two directions within an angular tolerance. Returns true if the
