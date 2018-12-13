@@ -6,6 +6,7 @@ module Quantity.Extra exposing
     , interpolateFrom
     , lOverTheta
     , lessThanOrEqualTo
+    , quotient
     , rCosTheta
     , rSinTheta
     , rTheta
@@ -15,7 +16,7 @@ module Quantity.Extra exposing
 
 import Angle exposing (Angle)
 import Float.Extra as Float
-import Quantity exposing (Quantity(..))
+import Quantity exposing (Quantity(..), Squared)
 
 
 type Cubed units
@@ -79,3 +80,8 @@ rCosTheta r theta =
 rSinTheta : Quantity Float units -> Angle -> Quantity Float units
 rSinTheta r theta =
     r |> Quantity.scaleBy (Angle.sin theta)
+
+
+quotient : Quantity Float (Squared units) -> Quantity Float units -> Quantity Float units
+quotient (Quantity x) (Quantity y) =
+    Quantity (x / y)
