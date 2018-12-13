@@ -269,14 +269,13 @@ constructing one explicitly with `unsafe` or by mirroring a right-handed frame.
 isRightHanded : Frame2d units coordinates defines -> Bool
 isRightHanded frame =
     let
-        xVector =
-            Direction2d.toVector (xDirection frame)
+        ( x1, y1 ) =
+            Direction2d.components (xDirection frame)
 
-        yVector =
-            Direction2d.toVector (yDirection frame)
+        ( x2, y2 ) =
+            Direction2d.components (yDirection frame)
     in
-    Vector2d.crossProduct xVector yVector
-        |> Quantity.greaterThan Quantity.zero
+    x1 * y2 - y1 * x2 > 0
 
 
 {-| Get the X axis of a given frame (the axis formed from the frame's origin

@@ -382,17 +382,16 @@ constructing one explicitly with `unsafe` or by mirroring a right-handed frame.
 isRightHanded : Frame3d units coordinates defines -> Bool
 isRightHanded frame =
     let
-        xVector =
-            Direction3d.toVector (xDirection frame)
+        ( a, b, c ) =
+            Direction3d.components (xDirection frame)
 
-        yVector =
-            Direction3d.toVector (yDirection frame)
+        ( d, e, f ) =
+            Direction3d.components (yDirection frame)
 
-        zVector =
-            Direction3d.toVector (zDirection frame)
+        ( g, h, i ) =
+            Direction3d.components (zDirection frame)
     in
-    Vector3d.tripleProduct xVector yVector zVector
-        |> Quantity.greaterThan Quantity.zero
+    a * e * i + b * f * g + c * d * h - c * e * g - b * d * i - a * f * h > 0
 
 
 {-| Get the X axis of a given frame (the axis formed from the frame's origin
