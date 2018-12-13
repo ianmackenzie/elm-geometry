@@ -9,7 +9,6 @@
 
 module Sphere3d exposing
     ( Sphere3d
-    , unit
     , withRadius, throughPoints
     , centerPoint, radius, diameter, volume, surfaceArea, circumference, boundingBox
     , contains
@@ -25,11 +24,6 @@ functionality for:
   - Extracting sphere properties like center point and volume
 
 @docs Sphere3d
-
-
-# Constants
-
-@docs unit
 
 
 # Constructors
@@ -58,6 +52,7 @@ functionality for:
 
 -}
 
+import Angle exposing (Angle)
 import Axis3d exposing (Axis3d)
 import BoundingBox3d exposing (BoundingBox3d)
 import Circle2d exposing (Circle2d)
@@ -67,6 +62,8 @@ import Frame3d exposing (Frame3d)
 import Geometry.Types as Types exposing (Sphere3d)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
+import Quantity exposing (Quantity, Squared)
+import Quantity.Extra as Quantity exposing (Cubed)
 import SketchPlane3d exposing (SketchPlane3d)
 import Vector3d exposing (Vector3d)
 
@@ -93,19 +90,8 @@ import Vector3d exposing (Vector3d)
 
 
 {-| -}
-type alias Sphere3d =
-    Types.Sphere3d
-
-
-{-| The unit sphere, centered on the origin with a radius of 1.
-
-    Sphere3d.unit
-    --> Sphere3d.withRadius 1 Point3d.origin
-
--}
-unit : Sphere3d
-unit =
-    withRadius 1 Point3d.origin
+type alias Sphere3d units coordinates =
+    Types.Sphere3d units coordinates
 
 
 {-| Construct a sphere from its radius and center point:
@@ -117,11 +103,11 @@ unit =
 If you pass a negative radius, the absolute value will be used.
 
 -}
-withRadius : Float -> Point3d -> Sphere3d
-withRadius radius_ centerPoint_ =
+withRadius : Quantity Float units -> Point3d units coordinates -> Sphere3d units coordinates
+withRadius givenRadius givenCenterPoint =
     Types.Sphere3d
-        { radius = abs radius_
-        , centerPoint = centerPoint_
+        { radius = Quantity.abs givenRadius
+        , centerPoint = givenCenterPoint
         }
 
 
@@ -146,7 +132,7 @@ Returns `Nothing` if four given points are coplanar.
     --> Nothing
 
 -}
-throughPoints : Point3d -> Point3d -> Point3d -> Point3d -> Maybe Sphere3d
+throughPoints : Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> Maybe (Sphere3d units coordinates)
 throughPoints p1 p2 p3 p4 =
     Circle3d.throughPoints p1 p2 p3
         |> Maybe.andThen
@@ -170,14 +156,25 @@ throughPoints p1 p2 p3 p4 =
                     y =
                         Point3d.signedDistanceAlong normalAxis p4
                 in
-                if y /= 0 then
+                if y /= Quantity.zero then
                     let
                         d =
-                            (r * r - x * x - y * y) / (-2 * y)
+                            Quantity.quotient
+                                (Quantity.squared r
+                                    |> Quantity.minus (Quantity.squared x)
+                                    |> Quantity.minus (Quantity.squared y)
+                                )
+                                (Quantity.scaleBy -2 y)
+
+                        computedRadius =
+                            Quantity.sqrt
+                                (Quantity.squared r
+                                    |> Quantity.plus
+                                        (Quantity.squared d)
+                                )
                     in
                     Just <|
-                        withRadius (sqrt (r * r + d * d))
-                            (Point3d.along normalAxis d)
+                        withRadius computedRadius (Point3d.along normalAxis d)
 
                 else
                     Nothing
@@ -190,7 +187,7 @@ throughPoints p1 p2 p3 p4 =
     --> Point3d.fromCoordinates ( 1, 2, 1 )
 
 -}
-centerPoint : Sphere3d -> Point3d
+centerPoint : Sphere3d units coordinates -> Point3d units coordinates
 centerPoint (Types.Sphere3d properties) =
     properties.centerPoint
 
@@ -201,7 +198,7 @@ centerPoint (Types.Sphere3d properties) =
     --> 3
 
 -}
-radius : Sphere3d -> Float
+radius : Sphere3d units coordinates -> Quantity Float units
 radius (Types.Sphere3d properties) =
     properties.radius
 
@@ -212,9 +209,9 @@ radius (Types.Sphere3d properties) =
     --> 6
 
 -}
-diameter : Sphere3d -> Float
+diameter : Sphere3d units coordinates -> Quantity Float units
 diameter sphere =
-    2 * radius sphere
+    Quantity.scaleBy 2 (radius sphere)
 
 
 {-| Get the circumference of a sphere (the circumference of a [great circle](https://en.wikipedia.org/wiki/Great_circle)
@@ -224,9 +221,9 @@ of the sphere).
     --> 18.8496
 
 -}
-circumference : Sphere3d -> Float
+circumference : Sphere3d units coordinates -> Quantity Float units
 circumference sphere =
-    2 * pi * radius sphere
+    Quantity.scaleBy (2 * pi) (radius sphere)
 
 
 {-| Get the surface area of a sphere.
@@ -235,13 +232,9 @@ circumference sphere =
     --> 113.0973
 
 -}
-surfaceArea : Sphere3d -> Float
+surfaceArea : Sphere3d units coordinates -> Quantity Float (Squared units)
 surfaceArea sphere =
-    let
-        r =
-            radius sphere
-    in
-    4 * pi * r * r
+    Quantity.scaleBy (4 * pi) (Quantity.squared (radius sphere))
 
 
 {-| Get the volume of a sphere.
@@ -250,13 +243,9 @@ surfaceArea sphere =
     --> 113.0973
 
 -}
-volume : Sphere3d -> Float
+volume : Sphere3d units coordinates -> Quantity Float (Cubed units)
 volume sphere =
-    let
-        r =
-            radius sphere
-    in
-    4 / 3 * pi * r * r * r
+    Quantity.scaleBy (4 / 3 * pi) (Quantity.cubed (radius sphere))
 
 
 {-| Scale a sphere around a given point by a given scale.
@@ -266,9 +255,9 @@ volume sphere =
     -->     (Point3d.fromCoordinates ( 3, 6, 3 ))
 
 -}
-scaleAbout : Point3d -> Float -> Sphere3d -> Sphere3d
+scaleAbout : Point3d units coordinates -> Float -> Sphere3d units coordinates -> Sphere3d units coordinates
 scaleAbout point scale sphere =
-    withRadius (abs scale * radius sphere)
+    withRadius (Quantity.scaleBy (abs scale) (radius sphere))
         (Point3d.scaleAbout point scale (centerPoint sphere))
 
 
@@ -280,15 +269,10 @@ scaleAbout point scale sphere =
     -->     (Point3d.fromCoordinates ( 1, 2, -1 ))
 
 -}
-rotateAround : Axis3d -> Float -> Sphere3d -> Sphere3d
-rotateAround axis angle =
-    let
-        rotatePoint =
-            Point3d.rotateAround axis angle
-    in
-    \sphere ->
-        withRadius (radius sphere)
-            (rotatePoint (centerPoint sphere))
+rotateAround : Axis3d units coordinates -> Angle -> Sphere3d units coordinates -> Sphere3d units coordinates
+rotateAround axis angle sphere =
+    withRadius (radius sphere)
+        (Point3d.rotateAround axis angle (centerPoint sphere))
 
 
 {-| Translate a sphere by a given displacement.
@@ -300,7 +284,7 @@ rotateAround axis angle =
     -->     (Point3d.fromCoordinates ( 3, 3, 4 ))
 
 -}
-translateBy : Vector3d -> Sphere3d -> Sphere3d
+translateBy : Vector3d units coordinates -> Sphere3d units coordinates -> Sphere3d units coordinates
 translateBy displacement sphere =
     withRadius (radius sphere)
         (Point3d.translateBy displacement (centerPoint sphere))
@@ -316,7 +300,7 @@ is equivalent to
         (Vector3d.withLength distance direction)
 
 -}
-translateIn : Direction3d -> Float -> Sphere3d -> Sphere3d
+translateIn : Direction3d coordinates -> Quantity Float units -> Sphere3d units coordinates -> Sphere3d units coordinates
 translateIn direction distance sphere =
     translateBy (Vector3d.withLength distance direction) sphere
 
@@ -328,7 +312,7 @@ translateIn direction distance sphere =
     -->     (Point3d.fromCoordinates ( 1, 2, -1 ))
 
 -}
-mirrorAcross : Plane3d -> Sphere3d -> Sphere3d
+mirrorAcross : Plane3d units coordinates -> Sphere3d units coordinates -> Sphere3d units coordinates
 mirrorAcross plane sphere =
     withRadius (radius sphere)
         (Point3d.mirrorAcross plane (centerPoint sphere))
@@ -346,7 +330,7 @@ local coordinates relative to a given reference frame.
     -->     (Point3d.fromCoordinates ( 0, 0, -2 ))
 
 -}
-relativeTo : Frame3d -> Sphere3d -> Sphere3d
+relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Sphere3d units globalCoordinates -> Sphere3d units localCoordinates
 relativeTo frame sphere =
     withRadius (radius sphere)
         (Point3d.relativeTo frame (centerPoint sphere))
@@ -364,7 +348,7 @@ given reference frame, and return that sphere expressed in global coordinates.
     -->     (Point3d.fromCoordinates ( 2, 4, 4 ))
 
 -}
-placeIn : Frame3d -> Sphere3d -> Sphere3d
+placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Sphere3d units localCoordinates -> Sphere3d units globalCoordinates
 placeIn frame sphere =
     withRadius (radius sphere)
         (Point3d.placeIn frame (centerPoint sphere))
@@ -383,7 +367,7 @@ placeIn frame sphere =
     -->     }
 
 -}
-boundingBox : Sphere3d -> BoundingBox3d
+boundingBox : Sphere3d units coordinates -> BoundingBox3d units coordinates
 boundingBox sphere =
     let
         r =
@@ -393,12 +377,12 @@ boundingBox sphere =
             Point3d.coordinates (centerPoint sphere)
     in
     BoundingBox3d.fromExtrema
-        { minX = cx - r
-        , maxX = cx + r
-        , minY = cy - r
-        , maxY = cy + r
-        , minZ = cz - r
-        , maxZ = cz + r
+        { minX = cx |> Quantity.minus r
+        , maxX = cx |> Quantity.plus r
+        , minY = cy |> Quantity.minus r
+        , maxY = cy |> Quantity.plus r
+        , minZ = cz |> Quantity.minus r
+        , maxZ = cz |> Quantity.plus r
         }
 
 
@@ -415,13 +399,10 @@ boundingBox sphere =
     --> False
 
 -}
-contains : Point3d -> Sphere3d -> Bool
+contains : Point3d units coordinates -> Sphere3d units coordinates -> Bool
 contains point sphere =
-    let
-        r =
-            radius sphere
-    in
-    Point3d.squaredDistanceFrom (centerPoint sphere) point <= r * r
+    Point3d.squaredDistanceFrom (centerPoint sphere) point
+        |> Quantity.lessThanOrEqualTo (Quantity.squared (radius sphere))
 
 
 {-| Find the [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
@@ -433,7 +414,7 @@ of a sphere onto a plane.
     -->     (Point3d.fromCoordinates ( 1, 2, 0 ))
 
 -}
-projectOnto : Plane3d -> Sphere3d -> Circle3d
+projectOnto : Plane3d units coordinates -> Sphere3d units coordinates -> Circle3d units coordinates
 projectOnto plane sphere =
     Circle3d.withRadius (radius sphere)
         (Plane3d.normalDirection plane)
@@ -448,7 +429,7 @@ of a sphere into a sketch plane.
     -->     (Point2d.fromCoordinates ( 1, 2 ))
 
 -}
-projectInto : SketchPlane3d -> Sphere3d -> Circle2d
+projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Sphere3d units coordinates3d -> Circle2d units coordinates2d
 projectInto sketchPlane sphere =
     Circle2d.withRadius (radius sphere)
         (Point3d.projectInto sketchPlane (centerPoint sphere))
