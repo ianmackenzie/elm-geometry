@@ -4,11 +4,16 @@ module Quantity.Extra exposing
     , aXbYcZ
     , greaterThanOrEqualTo
     , interpolateFrom
+    , lOverTheta
     , lessThanOrEqualTo
+    , rCosTheta
+    , rSinTheta
+    , rTheta
     , scaleAbout
     , sortBy
     )
 
+import Angle exposing (Angle)
 import Float.Extra as Float
 import Quantity exposing (Quantity(..))
 
@@ -54,3 +59,23 @@ sortBy toQuantity list =
             Quantity.compare (toQuantity first) (toQuantity second)
     in
     List.sortWith comparator list
+
+
+rTheta : Quantity Float units -> Angle -> Quantity Float units
+rTheta (Quantity r) (Quantity theta) =
+    Quantity (r * theta)
+
+
+lOverTheta : Quantity Float units -> Angle -> Quantity Float units
+lOverTheta (Quantity l) (Quantity theta) =
+    Quantity (l / theta)
+
+
+rCosTheta : Quantity Float units -> Angle -> Quantity Float units
+rCosTheta r theta =
+    r |> Quantity.scaleBy (Angle.cos theta)
+
+
+rSinTheta : Quantity Float units -> Angle -> Quantity Float units
+rSinTheta r theta =
+    r |> Quantity.scaleBy (Angle.sin theta)

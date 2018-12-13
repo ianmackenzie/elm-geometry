@@ -97,26 +97,6 @@ twoPi =
     Angle.radians (2 * pi)
 
 
-rTheta : Quantity Float units -> Angle -> Quantity Float units
-rTheta (Quantity r) (Quantity theta) =
-    Quantity (r * theta)
-
-
-lOverTheta : Quantity Float units -> Angle -> Quantity Float units
-lOverTheta (Quantity l) (Quantity theta) =
-    Quantity (l / theta)
-
-
-rCosTheta : Quantity Float units -> Angle -> Quantity Float units
-rCosTheta r theta =
-    r |> Quantity.scaleBy (Angle.cos theta)
-
-
-rSinTheta : Quantity Float units -> Angle -> Quantity Float units
-rSinTheta r theta =
-    r |> Quantity.scaleBy (Angle.sin theta)
-
-
 {-| Construct an arc with from the first given point to the second, with the
 given swept angle.
 
@@ -196,7 +176,7 @@ from givenStartPoint givenEndPoint givenSweptAngle =
                         distance
 
                     else
-                        rTheta computedRadius givenSweptAngle
+                        Quantity.rTheta computedRadius givenSweptAngle
                 }
 
         Nothing ->
@@ -245,14 +225,19 @@ with properties =
     Types.Arc2d
         { startPoint =
             Point2d.fromCoordinates
-                ( x0 |> Quantity.plus (rCosTheta givenRadius givenStartAngle)
-                , y0 |> Quantity.plus (rSinTheta givenRadius givenStartAngle)
+                ( x0
+                    |> Quantity.plus
+                        (Quantity.rCosTheta givenRadius givenStartAngle)
+                , y0
+                    |> Quantity.plus
+                        (Quantity.rSinTheta givenRadius givenStartAngle)
                 )
         , sweptAngle = givenSweptAngle
         , xDirection =
             Direction2d.fromAngle
                 (givenStartAngle |> Quantity.plus (Angle.degrees 90))
-        , signedLength = rTheta (Quantity.abs givenRadius) givenSweptAngle
+        , signedLength =
+            Quantity.rTheta (Quantity.abs givenRadius) givenSweptAngle
         }
 
 
@@ -298,7 +283,7 @@ sweptAround givenCenterPoint givenSweptAngle givenStartPoint =
                 { startPoint = givenStartPoint
                 , xDirection = yDirection |> Direction2d.rotateClockwise
                 , sweptAngle = givenSweptAngle
-                , signedLength = rTheta computedRadius givenSweptAngle
+                , signedLength = Quantity.rTheta computedRadius givenSweptAngle
                 }
 
         Nothing ->
@@ -585,7 +570,7 @@ centerPoint (Types.Arc2d arc) =
             Direction2d.components arc.xDirection
 
         r =
-            lOverTheta arc.signedLength arc.sweptAngle
+            Quantity.lOverTheta arc.signedLength arc.sweptAngle
     in
     Point2d.fromCoordinates
         ( x0 |> Quantity.minus (Quantity.scaleBy dy r)
@@ -601,7 +586,7 @@ centerPoint (Types.Arc2d arc) =
 -}
 radius : Arc2d units coordinates -> Quantity Float units
 radius (Types.Arc2d arc) =
-    lOverTheta arc.signedLength arc.sweptAngle
+    Quantity.lOverTheta arc.signedLength arc.sweptAngle
 
 
 {-| Get the start point of an arc.
@@ -686,10 +671,10 @@ pointOn (Types.Arc2d arc) parameterValue =
                 Quantity.scaleBy t arcSweptAngle
 
             arcRadius =
-                lOverTheta arcSignedLength arcSweptAngle
+                Quantity.lOverTheta arcSignedLength arcSweptAngle
 
             x =
-                rSinTheta arcRadius theta
+                Quantity.rSinTheta arcRadius theta
 
             y =
                 if
