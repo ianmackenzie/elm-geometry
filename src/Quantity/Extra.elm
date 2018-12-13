@@ -2,6 +2,7 @@ module Quantity.Extra exposing
     ( Cubed
     , aXbY
     , aXbYcZ
+    , cubed
     , greaterThanOrEqualTo
     , interpolateFrom
     , lOverTheta
@@ -85,3 +86,8 @@ rSinTheta r theta =
 quotient : Quantity Float (Squared units) -> Quantity Float units -> Quantity Float units
 quotient (Quantity x) (Quantity y) =
     Quantity (x / y)
+
+
+cubed : Quantity number units -> Quantity number (Cubed units)
+cubed (Quantity value) =
+    Quantity (value * value * value)
