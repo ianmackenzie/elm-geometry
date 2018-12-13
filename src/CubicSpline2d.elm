@@ -91,6 +91,7 @@ you are writing low-level geometric algorithms.
 
 -}
 
+import Angle exposing (Angle)
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Curve.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
@@ -101,6 +102,7 @@ import Geometry.Types as Types
 import LineSegment2d exposing (fromEndpoints, midpoint)
 import Point2d exposing (Point2d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
+import Quantity exposing (Quantity)
 import Vector2d exposing (Vector2d)
 
 
@@ -1288,10 +1290,10 @@ secondDerivative spline parameterValue =
             Vector2d.from p3 p4
 
         v1 =
-            Vector2d.difference u2 u1
+            u2 |> Vector2d.minus u1
 
         v2 =
-            Vector2d.difference u3 u2
+            u3 |> Vector2d.minus u2
     in
     Vector2d.scaleBy 6 (Vector2d.interpolateFrom v1 v2 t)
 
@@ -1345,12 +1347,12 @@ thirdDerivative spline =
             Vector2d.from p3 p4
 
         v1 =
-            Vector2d.difference u2 u1
+            u2 |> Vector2d.minus u1
 
         v2 =
-            Vector2d.difference u3 u2
+            u3 |> Vector2d.minus u2
     in
-    Vector2d.scaleBy 6 (Vector2d.difference v2 v1)
+    Vector2d.scaleBy 6 (v2 |> Vector2d.minus v1)
 
 
 {-| Find a conservative upper bound on the magnitude of the second derivative of
@@ -1387,12 +1389,12 @@ maxSecondDerivativeMagnitude spline =
             Vector2d.from p3 p4
 
         v1 =
-            Vector2d.difference u2 u1
+            u2 |> Vector2d.minus u1
 
         v2 =
-            Vector2d.difference u3 u2
+            u3 |> Vector2d.minus u2
     in
-    6 * max (Vector2d.length v1) (Vector2d.length v2)
+    Quantity.scaleBy 6 (Quantity.max (Vector2d.length v1) (Vector2d.length v2))
 
 
 derivativeMagnitude : CubicSpline2d units coordinates -> ParameterValue -> Quantity Float units
@@ -1470,10 +1472,14 @@ derivativeMagnitude spline =
                 y23 |> Quantity.plus (Quantity.scaleBy t y234)
 
             x14 =
-                x13 |> Quantity.plus (Quantity.scaleBy t (x24 - x13))
+                x13
+                    |> Quantity.plus
+                        (Quantity.scaleBy t (x24 |> Quantity.minus x13))
 
             y14 =
-                y13 |> Quantity.plus (Quantity.scaleBy t (y24 - y13))
+                y13
+                    |> Quantity.plus
+                        (Quantity.scaleBy t (y24 |> Quantity.minus y13))
         in
         Quantity.scaleBy 3
             (Quantity.sqrt
