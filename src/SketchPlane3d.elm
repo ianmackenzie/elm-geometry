@@ -119,6 +119,7 @@ import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Quantity exposing (Quantity(..))
 import Quantity.Extra as Quantity
+import Unsafe.Direction3d as Direction3d
 import Vector3d exposing (Vector3d)
 
 
@@ -471,14 +472,9 @@ product of the sketch plane's X and Y directions.
 -}
 normalDirection : SketchPlane3d units coordinates defines -> Direction3d coordinates
 normalDirection sketchPlane =
-    let
-        ( Quantity x, Quantity y, Quantity z ) =
-            Vector3d.components <|
-                Vector3d.crossProduct
-                    (Direction3d.toVector (xDirection sketchPlane))
-                    (Direction3d.toVector (yDirection sketchPlane))
-    in
-    Direction3d.unsafe ( x, y, z )
+    Direction3d.unsafeCrossProduct
+        (xDirection sketchPlane)
+        (yDirection sketchPlane)
 
 
 {-| Get the X axis of a sketch plane. A 2D X coordinate within the sketch plane
