@@ -50,6 +50,7 @@ Transforming a polyline is equivalent to transforming each of its vertices.
 
 -}
 
+import Angle exposing (Angle)
 import Axis3d exposing (Axis3d)
 import BoundingBox3d exposing (BoundingBox3d)
 import Direction3d exposing (Direction3d)
@@ -59,13 +60,15 @@ import LineSegment3d exposing (LineSegment3d)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Polyline2d exposing (Polyline2d)
+import Quantity exposing (Quantity)
+import Quantity.Extra as Quantity
 import SketchPlane3d exposing (SketchPlane3d)
 import Vector3d exposing (Vector3d)
 
 
 {-| -}
-type alias Polyline3d =
-    Types.Polyline3d
+type alias Polyline3d units coordinates =
+    Types.Polyline3d units coordinates
 
 
 {-| Construct a polyline from its vertices:
@@ -79,9 +82,9 @@ type alias Polyline3d =
             ]
 
 -}
-fromVertices : List Point3d -> Polyline3d
-fromVertices =
-    Types.Polyline3d
+fromVertices : List (Point3d units coordinates) -> Polyline3d units coordinates
+fromVertices givenVertices =
+    Types.Polyline3d givenVertices
 
 
 {-| Construct a 3D polyline lying _on_ a sketch plane by providing a 2D polyline
@@ -102,9 +105,11 @@ specified in XY coordinates _within_ the sketch plane.
     -->     ]
 
 -}
-on : SketchPlane3d -> Polyline2d -> Polyline3d
-on sketchPlane =
-    Polyline2d.vertices >> List.map (Point3d.on sketchPlane) >> fromVertices
+on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Polyline2d units coordinates2d -> Polyline3d units coordinates3d
+on sketchPlane polyline2d =
+    Polyline2d.vertices polyline2d
+        |> List.map (Point3d.on sketchPlane)
+        |> fromVertices
 
 
 {-| Get the vertices of a polyline.
@@ -117,9 +122,9 @@ on sketchPlane =
     --> ]
 
 -}
-vertices : Polyline3d -> List Point3d
-vertices (Types.Polyline3d vertices_) =
-    vertices_
+vertices : Polyline3d units coordinates -> List (Point3d units coordinates)
+vertices (Types.Polyline3d polylineVertices) =
+    polylineVertices
 
 
 {-| Get the individual segments of a polyline.
@@ -140,7 +145,7 @@ vertices (Types.Polyline3d vertices_) =
     --> ]
 
 -}
-segments : Polyline3d -> List LineSegment3d
+segments : Polyline3d units coordinates -> List (LineSegment3d units coordinates)
 segments polyline =
     case vertices polyline of
         [] ->
@@ -157,9 +162,9 @@ segments).
     --> 6
 
 -}
-length : Polyline3d -> Float
-length =
-    segments >> List.map LineSegment3d.length >> List.sum
+length : Polyline3d units coordinates -> Quantity Float units
+length polyline =
+    segments polyline |> List.map LineSegment3d.length |> Quantity.sum
 
 
 {-| Scale a polyline about the given center point by the given scale.
@@ -176,9 +181,9 @@ length =
     -->     ]
 
 -}
-scaleAbout : Point3d -> Float -> Polyline3d -> Polyline3d
-scaleAbout point scale =
-    mapVertices (Point3d.scaleAbout point scale)
+scaleAbout : Point3d units coordinates -> Float -> Polyline3d units coordinates -> Polyline3d units coordinates
+scaleAbout point scale polyline =
+    mapVertices (Point3d.scaleAbout point scale) polyline
 
 
 {-| Rotate a polyline around the given axis by the given angle (in radians).
@@ -193,9 +198,9 @@ scaleAbout point scale =
     -->     ]
 
 -}
-rotateAround : Axis3d -> Float -> Polyline3d -> Polyline3d
-rotateAround axis angle =
-    mapVertices (Point3d.rotateAround axis angle)
+rotateAround : Axis3d units coordinates -> Angle -> Polyline3d units coordinates -> Polyline3d units coordinates
+rotateAround axis angle polyline =
+    mapVertices (Point3d.rotateAround axis angle) polyline
 
 
 {-| Translate a polyline by the given displacement.
@@ -212,9 +217,9 @@ rotateAround axis angle =
     -->     ]
 
 -}
-translateBy : Vector3d -> Polyline3d -> Polyline3d
-translateBy vector =
-    mapVertices (Point3d.translateBy vector)
+translateBy : Vector3d units coordinates -> Polyline3d units coordinates -> Polyline3d units coordinates
+translateBy vector polyline =
+    mapVertices (Point3d.translateBy vector) polyline
 
 
 {-| Translate a polyline in a given direction by a given distance;
@@ -227,7 +232,7 @@ is equivalent to
         (Vector3d.withLength distance direction)
 
 -}
-translateIn : Direction3d -> Float -> Polyline3d -> Polyline3d
+translateIn : Direction3d coordinates -> Quantity Float units -> Polyline3d units coordinates -> Polyline3d units coordinates
 translateIn direction distance polyline =
     translateBy (Vector3d.withLength distance direction) polyline
 
@@ -243,9 +248,9 @@ translateIn direction distance polyline =
     -->     ]
 
 -}
-mirrorAcross : Plane3d -> Polyline3d -> Polyline3d
-mirrorAcross plane =
-    mapVertices (Point3d.mirrorAcross plane)
+mirrorAcross : Plane3d units coordinates -> Polyline3d units coordinates -> Polyline3d units coordinates
+mirrorAcross plane polyline =
+    mapVertices (Point3d.mirrorAcross plane) polyline
 
 
 {-| Find the [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
@@ -260,9 +265,9 @@ of a polyline onto a plane. This will flatten the polyline.
     -->     ]
 
 -}
-projectOnto : Plane3d -> Polyline3d -> Polyline3d
-projectOnto plane =
-    mapVertices (Point3d.projectOnto plane)
+projectOnto : Plane3d units coordinates -> Polyline3d units coordinates -> Polyline3d units coordinates
+projectOnto plane polyline =
+    mapVertices (Point3d.projectOnto plane) polyline
 
 
 {-| Transform each vertex of a polyline by the given function. All other
@@ -275,9 +280,9 @@ is equivalent to
     Polyline3d.mapVertices (Point3d.mirrorAcross plane)
 
 -}
-mapVertices : (Point3d -> Point3d) -> Polyline3d -> Polyline3d
-mapVertices function =
-    vertices >> List.map function >> fromVertices
+mapVertices : (Point3d units1 coordinates1 -> Point3d units2 coordinates2) -> Polyline3d units1 coordinates1 -> Polyline3d units2 coordinates2
+mapVertices function polyline =
+    vertices polyline |> List.map function |> fromVertices
 
 
 {-| Take a polyline defined in global coordinates, and return it expressed
@@ -296,9 +301,9 @@ in local coordinates relative to a given reference frame.
     -->     ]
 
 -}
-relativeTo : Frame3d -> Polyline3d -> Polyline3d
-relativeTo frame =
-    mapVertices (Point3d.relativeTo frame)
+relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Polyline3d units globalCoordinates -> Polyline3d units localCoordinates
+relativeTo frame polyline =
+    mapVertices (Point3d.relativeTo frame) polyline
 
 
 {-| Take a polyline considered to be defined in local coordinates relative
@@ -318,9 +323,9 @@ coordinates.
     -->     ]
 
 -}
-placeIn : Frame3d -> Polyline3d -> Polyline3d
-placeIn frame =
-    mapVertices (Point3d.placeIn frame)
+placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Polyline3d units localCoordinates -> Polyline3d units globalCoordinates
+placeIn frame polyline =
+    mapVertices (Point3d.placeIn frame) polyline
 
 
 {-| Project a polyline into a given sketch plane. Conceptually, this finds the
@@ -337,11 +342,11 @@ sketch coordinates.
     -->     ]
 
 -}
-projectInto : SketchPlane3d -> Polyline3d -> Polyline2d
-projectInto sketchPlane =
-    vertices
-        >> List.map (Point3d.projectInto sketchPlane)
-        >> Polyline2d.fromVertices
+projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Polyline3d units coordinates3d -> Polyline2d units coordinates2d
+projectInto sketchPlane polyline =
+    vertices polyline
+        |> List.map (Point3d.projectInto sketchPlane)
+        |> Polyline2d.fromVertices
 
 
 {-| Get the minimal bounding box containing a given polyline. Returns `Nothing`
@@ -360,7 +365,7 @@ if the polyline has no vertices.
     -->     )
 
 -}
-boundingBox : Polyline3d -> Maybe BoundingBox3d
+boundingBox : Polyline3d units coordinates -> Maybe (BoundingBox3d units coordinates)
 boundingBox polyline =
     BoundingBox3d.containingPoints (vertices polyline)
 
@@ -373,7 +378,7 @@ has no vertices.
     -->     (Point3d.fromCoordinates (a,b,c))
 
 -}
-centroid : Polyline3d -> Maybe Point3d
+centroid : Polyline3d units coordinates -> Maybe (Point3d units coordinates)
 centroid polyline =
     case ( vertices polyline, boundingBox polyline ) of
         ( [], _ ) ->
@@ -387,7 +392,7 @@ centroid polyline =
                 polylineLength =
                     length polyline
             in
-            if polylineLength == 0 then
+            if polylineLength == Quantity.zero then
                 Just first
 
             else
@@ -403,7 +408,7 @@ centroid polyline =
                     |> Just
 
 
-refineBySegment : Float -> Point3d -> LineSegment3d -> Point3d -> Point3d
+refineBySegment : Quantity Float units -> Point3d units coordinates -> LineSegment3d units coordinates -> Point3d units coordinates -> Point3d units coordinates
 refineBySegment polylineLength roughCentroid segment currentCentroid =
     let
         segmentMidpoint =
@@ -413,5 +418,5 @@ refineBySegment polylineLength roughCentroid segment currentCentroid =
             LineSegment3d.length segment
     in
     Vector3d.from roughCentroid segmentMidpoint
-        |> Vector3d.scaleBy (segmentLength / polylineLength)
+        |> Vector3d.scaleBy (Quantity.ratio segmentLength polylineLength)
         |> (\v -> Point3d.translateBy v currentCentroid)
