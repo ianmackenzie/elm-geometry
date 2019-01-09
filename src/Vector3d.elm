@@ -112,8 +112,8 @@ import Bootstrap.Plane3d as Plane3d
 import Bootstrap.Point3d as Point3d
 import Bootstrap.SketchPlane3d as SketchPlane3d
 import Geometry.Types as Types exposing (Axis3d, Direction3d, Frame3d, Plane3d, Point3d, SketchPlane3d)
-import Quantity exposing (Quantity(..), Squared, Unitless)
-import Quantity.Extra as Quantity exposing (Cubed)
+import Quantity exposing (Cubed, Quantity(..), Squared, Unitless)
+import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
 
 
@@ -185,9 +185,9 @@ withLength givenLength givenDirection =
             Direction3d.components givenDirection
     in
     fromComponents
-        ( Quantity.scaleBy dx givenLength
-        , Quantity.scaleBy dy givenLength
-        , Quantity.scaleBy dz givenLength
+        ( Quantity.multiplyBy dx givenLength
+        , Quantity.multiplyBy dy givenLength
+        , Quantity.multiplyBy dz givenLength
         )
 
 
@@ -734,9 +734,9 @@ dotProduct firstVector secondVector =
         ( x2, y2, z2 ) =
             components secondVector
     in
-    Quantity.product x1 x2
-        |> Quantity.plus (Quantity.product y1 y2)
-        |> Quantity.plus (Quantity.product z1 z2)
+    (x1 |> Quantity.times x2)
+        |> Quantity.plus (y1 |> Quantity.times y2)
+        |> Quantity.plus (z1 |> Quantity.times z2)
 
 
 {-| Find the cross product of two vectors.
@@ -761,9 +761,9 @@ crossProduct firstVector secondVector =
             components secondVector
     in
     fromComponents
-        ( Quantity.product y1 z2 |> Quantity.minus (Quantity.product z1 y2)
-        , Quantity.product z1 x2 |> Quantity.minus (Quantity.product x1 z2)
-        , Quantity.product x1 y2 |> Quantity.minus (Quantity.product y1 x2)
+        ( (y1 |> Quantity.times z2) |> Quantity.minus (z1 |> Quantity.times y2)
+        , (z1 |> Quantity.times x2) |> Quantity.minus (x1 |> Quantity.times z2)
+        , (x1 |> Quantity.times y2) |> Quantity.minus (y1 |> Quantity.times x2)
         )
 
 
@@ -818,9 +818,9 @@ scaleBy scale vector =
             components vector
     in
     fromComponents
-        ( Quantity.scaleBy scale x
-        , Quantity.scaleBy scale y
-        , Quantity.scaleBy scale z
+        ( Quantity.multiplyBy scale x
+        , Quantity.multiplyBy scale y
+        , Quantity.multiplyBy scale z
         )
 
 
@@ -843,7 +843,7 @@ rotateAround axis angle =
             Direction3d.components (Axis3d.direction axis)
 
         halfAngle =
-            Quantity.scaleBy 0.5 angle
+            Quantity.multiplyBy 0.5 angle
 
         sinHalfAngle =
             Angle.sin halfAngle

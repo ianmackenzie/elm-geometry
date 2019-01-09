@@ -1,32 +1,16 @@
 module Quantity.Extra exposing
-    ( Cubed
-    , aXbY
+    ( aXbY
     , aXbYcZ
-    , cubed
-    , greaterThanOrEqualTo
-    , interpolateFrom
     , lOverTheta
-    , lessThanOrEqualTo
-    , quotient
     , rCosTheta
     , rSinTheta
     , rTheta
     , scaleAbout
-    , sortBy
     )
 
 import Angle exposing (Angle)
 import Float.Extra as Float
-import Quantity exposing (Quantity(..), Squared)
-
-
-type Cubed units
-    = Cubed units
-
-
-interpolateFrom : Quantity Float units -> Quantity Float units -> Float -> Quantity Float units
-interpolateFrom (Quantity start) (Quantity end) parameter =
-    Quantity (Float.interpolateFrom start end parameter)
+import Quantity exposing (Quantity(..))
 
 
 aXbY : Float -> Quantity Float units -> Float -> Quantity Float units -> Quantity Float units
@@ -39,28 +23,9 @@ aXbYcZ a (Quantity x) b (Quantity y) c (Quantity z) =
     Quantity (a * x + b * y + c * z)
 
 
-lessThanOrEqualTo : Quantity number units -> Quantity number units -> Bool
-lessThanOrEqualTo (Quantity y) (Quantity x) =
-    x <= y
-
-
-greaterThanOrEqualTo : Quantity number units -> Quantity number units -> Bool
-greaterThanOrEqualTo (Quantity y) (Quantity x) =
-    x >= y
-
-
 scaleAbout : Quantity number units -> number -> Quantity number units -> Quantity number units
 scaleAbout (Quantity x0) scale (Quantity x) =
     Quantity (x0 + scale * (x - x0))
-
-
-sortBy : (a -> Quantity number units) -> List a -> List a
-sortBy toQuantity list =
-    let
-        comparator first second =
-            Quantity.compare (toQuantity first) (toQuantity second)
-    in
-    List.sortWith comparator list
 
 
 rTheta : Quantity Float units -> Angle -> Quantity Float units
@@ -75,19 +40,9 @@ lOverTheta (Quantity l) (Quantity theta) =
 
 rCosTheta : Quantity Float units -> Angle -> Quantity Float units
 rCosTheta r theta =
-    r |> Quantity.scaleBy (Angle.cos theta)
+    r |> Quantity.multiplyBy (Angle.cos theta)
 
 
 rSinTheta : Quantity Float units -> Angle -> Quantity Float units
 rSinTheta r theta =
-    r |> Quantity.scaleBy (Angle.sin theta)
-
-
-quotient : Quantity Float (Squared units) -> Quantity Float units -> Quantity Float units
-quotient (Quantity x) (Quantity y) =
-    Quantity (x / y)
-
-
-cubed : Quantity number units -> Quantity number (Cubed units)
-cubed (Quantity value) =
-    Quantity (value * value * value)
+    r |> Quantity.multiplyBy (Angle.sin theta)

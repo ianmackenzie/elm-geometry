@@ -165,7 +165,7 @@ throughPoints p1 p2 p3 =
                     Point3d.distanceFrom computedCenterPoint p3
 
                 computedRadius =
-                    Quantity.scaleBy (1 / 3)
+                    Quantity.multiplyBy (1 / 3)
                         (r1 |> Quantity.plus r2 |> Quantity.plus r3)
             in
             withRadius computedRadius
@@ -244,7 +244,7 @@ radius (Types.Circle3d properties) =
 -}
 diameter : Circle3d units coordinates -> Quantity Float units
 diameter circle =
-    Quantity.scaleBy 2 (radius circle)
+    Quantity.multiplyBy 2 (radius circle)
 
 
 {-| Get the area of a circle.
@@ -255,7 +255,7 @@ diameter circle =
 -}
 area : Circle3d units coordinates -> Quantity Float (Squared units)
 area circle =
-    Quantity.scaleBy pi (Quantity.squared (radius circle))
+    Quantity.multiplyBy pi (Quantity.squared (radius circle))
 
 
 {-| Get the circumference of a circle.
@@ -266,7 +266,7 @@ area circle =
 -}
 circumference : Circle3d units coordinates -> Quantity Float units
 circumference circle =
-    Quantity.scaleBy (2 * pi) (radius circle)
+    Quantity.multiplyBy (2 * pi) (radius circle)
 
 
 {-| Scale a circle around a given point by a given scale.
@@ -279,7 +279,7 @@ circumference circle =
 -}
 scaleAbout : Point3d units coordinates -> Float -> Circle3d units coordinates -> Circle3d units coordinates
 scaleAbout point scale circle =
-    withRadius (Quantity.scaleBy (abs scale) (radius circle))
+    withRadius (Quantity.multiplyBy (abs scale) (radius circle))
         (if scale >= 0 then
             axialDirection circle
 
@@ -398,7 +398,7 @@ projectInto sketchPlane circle =
                         |> abs
 
                 yRadius =
-                    Quantity.scaleBy yRatio xRadius
+                    Quantity.multiplyBy yRatio xRadius
 
                 axes =
                     Frame2d.withYDirection yDirection projectedCenter
@@ -489,13 +489,13 @@ boundingBox circle =
             radius circle
 
         dx =
-            r |> Quantity.scaleBy (sqrt (ny2 + nz2))
+            r |> Quantity.multiplyBy (sqrt (ny2 + nz2))
 
         dy =
-            r |> Quantity.scaleBy (sqrt (nx2 + nz2))
+            r |> Quantity.multiplyBy (sqrt (nx2 + nz2))
 
         dz =
-            r |> Quantity.scaleBy (sqrt (nx2 + ny2))
+            r |> Quantity.multiplyBy (sqrt (nx2 + ny2))
 
         ( cx, cy, cz ) =
             Point3d.coordinates (centerPoint circle)

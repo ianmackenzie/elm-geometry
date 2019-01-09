@@ -1019,7 +1019,7 @@ offsetBy amount boundingBox =
             dimensions boundingBox
 
         minValidOffset =
-            Quantity.scaleBy -0.5 (Quantity.min width height)
+            Quantity.multiplyBy -0.5 (Quantity.min width height)
     in
     if amount |> Quantity.greaterThan minValidOffset then
         Just <| unsafeOffsetBy amount boundingBox

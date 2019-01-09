@@ -338,18 +338,18 @@ pointOn (Types.Arc3d arc) parameterValue =
     if arcSweptAngle == Quantity.zero then
         let
             distance =
-                Quantity.scaleBy t arcSignedLength
+                Quantity.multiplyBy t arcSignedLength
         in
         Point3d.fromCoordinates
-            ( x0 |> Quantity.plus (Quantity.scaleBy x1 distance)
-            , y0 |> Quantity.plus (Quantity.scaleBy y1 distance)
-            , z0 |> Quantity.plus (Quantity.scaleBy z1 distance)
+            ( x0 |> Quantity.plus (Quantity.multiplyBy x1 distance)
+            , y0 |> Quantity.plus (Quantity.multiplyBy y1 distance)
+            , z0 |> Quantity.plus (Quantity.multiplyBy z1 distance)
             )
 
     else
         let
             theta =
-                Quantity.scaleBy t arcSweptAngle
+                Quantity.multiplyBy t arcSweptAngle
 
             arcRadius =
                 Quantity.lOverTheta arcSignedLength arcSweptAngle
@@ -364,11 +364,11 @@ pointOn (Types.Arc3d arc) parameterValue =
                             (Angle.radians (pi / 2))
                 then
                     x
-                        |> Quantity.scaleBy
-                            (Angle.tan (Quantity.scaleBy 0.5 theta))
+                        |> Quantity.multiplyBy
+                            (Angle.tan (Quantity.multiplyBy 0.5 theta))
 
                 else
-                    Quantity.scaleBy (1 - Angle.cos theta) arcRadius
+                    Quantity.multiplyBy (1 - Angle.cos theta) arcRadius
         in
         Point3d.fromCoordinates
             ( x0 |> Quantity.plus (Quantity.aXbY x1 x x2 y)
@@ -421,7 +421,7 @@ firstDerivative (Types.Arc3d arc) =
                 ParameterValue.value parameterValue
 
             angle =
-                Quantity.scaleBy t arcSweptAngle
+                Quantity.multiplyBy t arcSweptAngle
 
             cosAngle =
                 Angle.cos angle
@@ -431,11 +431,11 @@ firstDerivative (Types.Arc3d arc) =
         in
         Vector3d.fromComponents
             ( arcSignedLength
-                |> Quantity.scaleBy (cosAngle * x1 + sinAngle * x2)
+                |> Quantity.multiplyBy (cosAngle * x1 + sinAngle * x2)
             , arcSignedLength
-                |> Quantity.scaleBy (cosAngle * y1 + sinAngle * y2)
+                |> Quantity.multiplyBy (cosAngle * y1 + sinAngle * y2)
             , arcSignedLength
-                |> Quantity.scaleBy (cosAngle * z1 + sinAngle * z2)
+                |> Quantity.multiplyBy (cosAngle * z1 + sinAngle * z2)
             )
 
 
@@ -536,7 +536,7 @@ tangentDirection (Nondegenerate (Types.Arc3d arc)) parameterValue =
             ParameterValue.value parameterValue
 
         angle =
-            Quantity.scaleBy t arcSweptAngle
+            Quantity.multiplyBy t arcSweptAngle
 
         cosAngle =
             Angle.cos angle
@@ -645,14 +645,14 @@ numApproximationSegments maxError arc =
     else if
         maxError
             |> Quantity.greaterThanOrEqualTo
-                (Quantity.scaleBy 2 (radius arc))
+                (Quantity.multiplyBy 2 (radius arc))
     then
         1
 
     else
         let
             maxSegmentAngle =
-                Quantity.scaleBy 2
+                Quantity.multiplyBy 2
                     (Angle.acos (1 - Quantity.ratio maxError (radius arc)))
         in
         ceiling (Quantity.ratio (Quantity.abs (sweptAngle arc)) maxSegmentAngle)
@@ -765,7 +765,7 @@ scaleAbout point scale (Types.Arc3d arc) =
     Types.Arc3d
         { startPoint = Point3d.scaleAbout point scale arc.startPoint
         , sweptAngle = arc.sweptAngle
-        , signedLength = Quantity.scaleBy (abs scale) arc.signedLength
+        , signedLength = Quantity.multiplyBy (abs scale) arc.signedLength
         , xDirection =
             if scale >= 0 then
                 arc.xDirection
@@ -975,7 +975,7 @@ projectInto sketchPlane arc =
                     Frame2d.withXDirection xDirection2d
                         (centerPoint arc |> Point3d.projectInto sketchPlane)
                 , xRadius = arcRadius
-                , yRadius = Quantity.scaleBy yRatio arcRadius
+                , yRadius = Quantity.multiplyBy yRatio arcRadius
                 }
         , startAngle = ellipticalStartAngle
         , sweptAngle = ellipticalSweptAngle

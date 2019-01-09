@@ -153,17 +153,18 @@ from givenStartPoint givenEndPoint givenSweptAngle =
                     givenSweptAngle
                         |> Quantity.minus
                             (twoPi
-                                |> Quantity.scaleBy (toFloat (floor numTurns))
+                                |> Quantity.multiplyBy
+                                    (toFloat (floor numTurns))
                             )
 
                 halfAngle =
-                    Quantity.scaleBy 0.5 givenSweptAngle
+                    Quantity.multiplyBy 0.5 givenSweptAngle
 
                 scale =
                     1 / (2 * abs (Angle.sin halfAngle))
 
                 computedRadius =
-                    Quantity.scaleBy scale distance
+                    Quantity.multiplyBy scale distance
             in
             Types.Arc2d
                 { startPoint = givenStartPoint
@@ -488,7 +489,7 @@ withRadius givenRadius givenSweptAngle givenStartPoint givenEndPoint =
             Quantity.squared givenRadius
 
         squaredHalfLength =
-            Quantity.scaleBy 0.25 (LineSegment2d.squaredLength chord)
+            Quantity.multiplyBy 0.25 (LineSegment2d.squaredLength chord)
     in
     if squaredRadius |> Quantity.greaterThanOrEqualTo squaredHalfLength then
         LineSegment2d.perpendicularDirection chord
@@ -530,7 +531,7 @@ withRadius givenRadius givenSweptAngle givenStartPoint givenEndPoint =
                         shortAngle =
                             Quantity.ratio halfLength givenRadius
                                 |> Angle.asin
-                                |> Quantity.scaleBy 2
+                                |> Quantity.multiplyBy 2
 
                         sweptAngleInRadians =
                             case givenSweptAngle of
@@ -573,8 +574,8 @@ centerPoint (Types.Arc2d arc) =
             Quantity.lOverTheta arc.signedLength arc.sweptAngle
     in
     Point2d.fromCoordinates
-        ( x0 |> Quantity.minus (Quantity.scaleBy dy r)
-        , y0 |> Quantity.plus (Quantity.scaleBy dx r)
+        ( x0 |> Quantity.minus (Quantity.multiplyBy dy r)
+        , y0 |> Quantity.plus (Quantity.multiplyBy dx r)
         )
 
 
@@ -658,17 +659,17 @@ pointOn (Types.Arc2d arc) parameterValue =
     if arcSweptAngle == Quantity.zero then
         let
             distance =
-                Quantity.scaleBy t arcSignedLength
+                Quantity.multiplyBy t arcSignedLength
         in
         Point2d.fromCoordinates
-            ( x0 |> Quantity.plus (Quantity.scaleBy dx distance)
-            , y0 |> Quantity.plus (Quantity.scaleBy dy distance)
+            ( x0 |> Quantity.plus (Quantity.multiplyBy dx distance)
+            , y0 |> Quantity.plus (Quantity.multiplyBy dy distance)
             )
 
     else
         let
             theta =
-                Quantity.scaleBy t arcSweptAngle
+                Quantity.multiplyBy t arcSweptAngle
 
             arcRadius =
                 Quantity.lOverTheta arcSignedLength arcSweptAngle
@@ -683,11 +684,11 @@ pointOn (Types.Arc2d arc) parameterValue =
                             (Angle.radians (pi / 2))
                 then
                     x
-                        |> Quantity.scaleBy
-                            (Angle.tan (Quantity.scaleBy 0.5 theta))
+                        |> Quantity.multiplyBy
+                            (Angle.tan (Quantity.multiplyBy 0.5 theta))
 
                 else
-                    Quantity.scaleBy (1 - Angle.cos theta) arcRadius
+                    Quantity.multiplyBy (1 - Angle.cos theta) arcRadius
         in
         Point2d.fromCoordinates
             ( x0 |> Quantity.plus (Quantity.aXbY dx x -dy y)
@@ -732,7 +733,9 @@ firstDerivative (Types.Arc2d arc) =
             t =
                 ParameterValue.value parameterValue
         in
-        startDerivative |> Vector2d.rotateBy (Quantity.scaleBy t arc.sweptAngle)
+        startDerivative
+            |> Vector2d.rotateBy
+                (Quantity.multiplyBy t arc.sweptAngle)
 
 
 {-| Evaluate the first derivative of an arc at a given set of parameter values:
@@ -818,7 +821,9 @@ tangentDirection (Nondegenerate (Types.Arc2d arc)) parameterValue =
         t =
             ParameterValue.value parameterValue
     in
-    arc.xDirection |> Direction2d.rotateBy (Quantity.scaleBy t arc.sweptAngle)
+    arc.xDirection
+        |> Direction2d.rotateBy
+            (Quantity.multiplyBy t arc.sweptAngle)
 
 
 {-| Get tangent directions to a nondegenerate arc at a given set of parameter
@@ -900,14 +905,14 @@ numApproximationSegments maxError arc =
     else if
         maxError
             |> Quantity.greaterThanOrEqualTo
-                (Quantity.scaleBy 2 (radius arc))
+                (Quantity.multiplyBy 2 (radius arc))
     then
         1
 
     else
         let
             maxSegmentAngle =
-                Quantity.scaleBy 2
+                Quantity.multiplyBy 2
                     (Angle.acos (1 - Quantity.ratio maxError (radius arc)))
         in
         ceiling (Quantity.ratio (Quantity.abs (sweptAngle arc)) maxSegmentAngle)
@@ -976,7 +981,7 @@ scaleAbout point scale (Types.Arc2d arc) =
     Types.Arc2d
         { startPoint = Point2d.scaleAbout point scale arc.startPoint
         , sweptAngle = arc.sweptAngle
-        , signedLength = Quantity.scaleBy (abs scale) arc.signedLength
+        , signedLength = Quantity.multiplyBy (abs scale) arc.signedLength
         , xDirection =
             if scale >= 0 then
                 arc.xDirection

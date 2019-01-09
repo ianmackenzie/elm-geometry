@@ -213,7 +213,7 @@ area triangle =
         secondVector =
             Vector3d.from p1 p3
     in
-    Quantity.scaleBy 0.5
+    Quantity.multiplyBy 0.5
         (Vector3d.length (Vector3d.crossProduct firstVector secondVector))
 
 

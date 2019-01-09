@@ -106,7 +106,7 @@ build { maxError, derivativeMagnitude, maxSecondDerivativeMagnitude } =
                 let
                     numSegments =
                         Quantity.ratio maxSecondDerivativeMagnitude
-                            (Quantity.scaleBy 8 maxError)
+                            (Quantity.multiplyBy 8 maxError)
 
                     numLeaves =
                         numSegments / toFloat segmentsPerLeaf
@@ -187,42 +187,42 @@ buildTree derivativeMagnitude lengthAtStart_ paramAtStart_ paramAtEnd height =
             length1 =
                 length0
                     |> Quantity.plus
-                        (Quantity.scaleBy paramStep derivativeMagnitude0)
+                        (Quantity.multiplyBy paramStep derivativeMagnitude0)
 
             length2 =
                 length1
                     |> Quantity.plus
-                        (Quantity.scaleBy paramStep derivativeMagnitude1)
+                        (Quantity.multiplyBy paramStep derivativeMagnitude1)
 
             length3 =
                 length2
                     |> Quantity.plus
-                        (Quantity.scaleBy paramStep derivativeMagnitude2)
+                        (Quantity.multiplyBy paramStep derivativeMagnitude2)
 
             length4 =
                 length3
                     |> Quantity.plus
-                        (Quantity.scaleBy paramStep derivativeMagnitude3)
+                        (Quantity.multiplyBy paramStep derivativeMagnitude3)
 
             length5 =
                 length4
                     |> Quantity.plus
-                        (Quantity.scaleBy paramStep derivativeMagnitude4)
+                        (Quantity.multiplyBy paramStep derivativeMagnitude4)
 
             length6 =
                 length5
                     |> Quantity.plus
-                        (Quantity.scaleBy paramStep derivativeMagnitude5)
+                        (Quantity.multiplyBy paramStep derivativeMagnitude5)
 
             length7 =
                 length6
                     |> Quantity.plus
-                        (Quantity.scaleBy paramStep derivativeMagnitude6)
+                        (Quantity.multiplyBy paramStep derivativeMagnitude6)
 
             length8 =
                 length7
                     |> Quantity.plus
-                        (Quantity.scaleBy paramStep derivativeMagnitude7)
+                        (Quantity.multiplyBy paramStep derivativeMagnitude7)
         in
         Leaf
             { param0 = param0

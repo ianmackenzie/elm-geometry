@@ -139,7 +139,7 @@ throughPoints p1 p2 p3 =
                         Point2d.distanceFrom p0 p3
 
                     r =
-                        Quantity.scaleBy (1 / 3)
+                        Quantity.multiplyBy (1 / 3)
                             (r1 |> Quantity.plus r2 |> Quantity.plus r3)
                 in
                 withRadius r p0
@@ -203,7 +203,7 @@ radius (Types.Circle2d properties) =
 -}
 diameter : Circle2d units coordinates -> Quantity Float units
 diameter circle =
-    Quantity.scaleBy 2 (radius circle)
+    Quantity.multiplyBy 2 (radius circle)
 
 
 {-| Get the area of a circle.
@@ -214,7 +214,7 @@ diameter circle =
 -}
 area : Circle2d units coordinates -> Quantity Float (Squared units)
 area circle =
-    Quantity.scaleBy pi (Quantity.squared (radius circle))
+    Quantity.multiplyBy pi (Quantity.squared (radius circle))
 
 
 {-| Get the circumference of a circle.
@@ -225,7 +225,7 @@ area circle =
 -}
 circumference : Circle2d units coordinates -> Quantity Float units
 circumference circle =
-    Quantity.scaleBy (2 * pi) (radius circle)
+    Quantity.multiplyBy (2 * pi) (radius circle)
 
 
 {-| Convert a circle to a 360 degree arc.
@@ -248,7 +248,7 @@ toArc (Types.Circle2d circle) =
             Point2d.fromCoordinates ( x0 |> Quantity.plus circle.radius, y0 )
         , xDirection = Direction2d.y
         , sweptAngle = Angle.radians (2 * pi)
-        , signedLength = Quantity.scaleBy (2 * pi) circle.radius
+        , signedLength = Quantity.multiplyBy (2 * pi) circle.radius
         }
 
 
@@ -285,7 +285,7 @@ contains point circle =
 -}
 scaleAbout : Point2d units coordinates -> Float -> Circle2d units coordinates -> Circle2d units coordinates
 scaleAbout point scale (Types.Circle2d circle) =
-    withRadius (Quantity.scaleBy (abs scale) circle.radius)
+    withRadius (Quantity.multiplyBy (abs scale) circle.radius)
         (Point2d.scaleAbout point scale circle.centerPoint)
 
 

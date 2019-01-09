@@ -251,7 +251,7 @@ counterclockwiseArea triangle =
         secondVector =
             Vector2d.from p1 p3
     in
-    Quantity.scaleBy 0.5 (Vector2d.crossProduct firstVector secondVector)
+    Quantity.multiplyBy 0.5 (Vector2d.crossProduct firstVector secondVector)
 
 
 {-| Get the signed area of a triangle, returning a positive value if the

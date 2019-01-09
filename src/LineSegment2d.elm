@@ -455,7 +455,7 @@ intersectionWithAxis axis lineSegment =
             Point2d.signedDistanceFrom axis p2
 
         product =
-            Quantity.product d1 d2
+            d1 |> Quantity.times d2
     in
     if product |> Quantity.lessThan Quantity.zero then
         -- The two points are on opposite sides of the axis, so there is a

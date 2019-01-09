@@ -148,8 +148,8 @@ counterclockwise from the positive X direction.
 fromPolarComponents : ( Quantity Float units, Angle ) -> Vector2d units coordinates
 fromPolarComponents ( givenRadius, givenAngle ) =
     fromComponents
-        ( givenRadius |> Quantity.scaleBy (Angle.cos givenAngle)
-        , givenRadius |> Quantity.scaleBy (Angle.sin givenAngle)
+        ( givenRadius |> Quantity.multiplyBy (Angle.cos givenAngle)
+        , givenRadius |> Quantity.multiplyBy (Angle.sin givenAngle)
         )
 
 
@@ -193,8 +193,8 @@ withLength givenLength givenDirection =
             Direction2d.components givenDirection
     in
     fromComponents
-        ( Quantity.scaleBy dx givenLength
-        , Quantity.scaleBy dy givenLength
+        ( Quantity.multiplyBy dx givenLength
+        , Quantity.multiplyBy dy givenLength
         )
 
 
@@ -646,7 +646,7 @@ dotProduct firstVector secondVector =
         ( x2, y2 ) =
             components secondVector
     in
-    Quantity.product x1 x2 |> Quantity.plus (Quantity.product y1 y2)
+    (x1 |> Quantity.times x2) |> Quantity.plus (y1 |> Quantity.times y2)
 
 
 {-| Find the scalar 'cross product' of two vectors in 2D. This is defined as
@@ -698,7 +698,7 @@ crossProduct firstVector secondVector =
         ( x2, y2 ) =
             components secondVector
     in
-    Quantity.product x1 y2 |> Quantity.minus (Quantity.product y1 x2)
+    (x1 |> Quantity.times y2) |> Quantity.minus (y1 |> Quantity.times x2)
 
 
 {-| Reverse the direction of a vector, negating its components.
@@ -736,8 +736,8 @@ scaleBy givenScale givenVector =
             components givenVector
     in
     fromComponents
-        ( Quantity.scaleBy givenScale x
-        , Quantity.scaleBy givenScale y
+        ( Quantity.multiplyBy givenScale x
+        , Quantity.multiplyBy givenScale y
         )
 
 

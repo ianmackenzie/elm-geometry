@@ -129,8 +129,8 @@ origin and angle is measured counterclockwise from the positive X direction.
 fromPolarCoordinates : ( Quantity Float units, Angle ) -> Point2d units coordinates
 fromPolarCoordinates ( givenRadius, givenAngle ) =
     fromCoordinates
-        ( givenRadius |> Quantity.scaleBy (Angle.cos givenAngle)
-        , givenRadius |> Quantity.scaleBy (Angle.sin givenAngle)
+        ( givenRadius |> Quantity.multiplyBy (Angle.cos givenAngle)
+        , givenRadius |> Quantity.multiplyBy (Angle.sin givenAngle)
         )
 
 
@@ -203,8 +203,8 @@ centroidHelp x0 y0 count dx dy points =
                     1 / count
             in
             fromCoordinates
-                ( x0 |> Quantity.plus (Quantity.scaleBy scale dx)
-                , y0 |> Quantity.plus (Quantity.scaleBy scale dy)
+                ( x0 |> Quantity.plus (Quantity.multiplyBy scale dx)
+                , y0 |> Quantity.plus (Quantity.multiplyBy scale dy)
                 )
 
 
@@ -767,8 +767,8 @@ translateIn direction distance point =
             coordinates point
     in
     fromCoordinates
-        ( px |> Quantity.plus (Quantity.scaleBy dx distance)
-        , py |> Quantity.plus (Quantity.scaleBy dy distance)
+        ( px |> Quantity.plus (Quantity.multiplyBy dx distance)
+        , py |> Quantity.plus (Quantity.multiplyBy dy distance)
         )
 
 

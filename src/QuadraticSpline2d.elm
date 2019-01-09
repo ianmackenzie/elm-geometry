@@ -369,12 +369,12 @@ derivativeMagnitude spline =
                 ParameterValue.value parameterValue
 
             x13 =
-                x12 |> Quantity.plus (Quantity.scaleBy t x123)
+                x12 |> Quantity.plus (Quantity.multiplyBy t x123)
 
             y13 =
-                y12 |> Quantity.plus (Quantity.scaleBy t y123)
+                y12 |> Quantity.plus (Quantity.multiplyBy t y123)
         in
-        Quantity.scaleBy 2
+        Quantity.multiplyBy 2
             (Quantity.sqrt
                 (Quantity.squared x13 |> Quantity.plus (Quantity.squared y13))
             )
@@ -895,7 +895,7 @@ midpoint : ArcLengthParameterized units coordinates -> Point2d units coordinates
 midpoint parameterized =
     let
         halfArcLength =
-            Quantity.scaleBy 0.5 (arcLength parameterized)
+            Quantity.multiplyBy 0.5 (arcLength parameterized)
     in
     case pointAlong parameterized halfArcLength of
         Just point ->

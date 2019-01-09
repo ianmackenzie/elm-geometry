@@ -767,7 +767,7 @@ rotateAround axis angle direction =
             components (Axis3d.direction axis)
 
         halfAngle =
-            Quantity.scaleBy 0.5 angle
+            Quantity.multiplyBy 0.5 angle
 
         sinHalfAngle =
             Angle.sin halfAngle

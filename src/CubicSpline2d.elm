@@ -996,7 +996,7 @@ midpoint : ArcLengthParameterized units coordinates -> Point2d units coordinates
 midpoint parameterized =
     let
         halfArcLength =
-            Quantity.scaleBy 0.5 (arcLength parameterized)
+            Quantity.multiplyBy 0.5 (arcLength parameterized)
     in
     case pointAlong parameterized halfArcLength of
         Just point ->
@@ -1164,33 +1164,33 @@ firstDerivative spline parameterValue =
             wx1 =
                 vx1
                     |> Quantity.plus
-                        (Quantity.scaleBy t (vx2 |> Quantity.minus vx1))
+                        (Quantity.multiplyBy t (vx2 |> Quantity.minus vx1))
 
             wy1 =
                 vy1
                     |> Quantity.plus
-                        (Quantity.scaleBy t (vy2 |> Quantity.minus vy1))
+                        (Quantity.multiplyBy t (vy2 |> Quantity.minus vy1))
 
             wx2 =
                 vx2
                     |> Quantity.plus
-                        (Quantity.scaleBy t (vx3 |> Quantity.minus vx2))
+                        (Quantity.multiplyBy t (vx3 |> Quantity.minus vx2))
 
             wy2 =
                 vy2
                     |> Quantity.plus
-                        (Quantity.scaleBy t (vy3 |> Quantity.minus vy2))
+                        (Quantity.multiplyBy t (vy3 |> Quantity.minus vy2))
         in
         Vector2d.fromComponents
-            ( Quantity.scaleBy 3
+            ( Quantity.multiplyBy 3
                 (wx1
                     |> Quantity.plus
-                        (Quantity.scaleBy t (wx2 |> Quantity.minus wx1))
+                        (Quantity.multiplyBy t (wx2 |> Quantity.minus wx1))
                 )
-            , Quantity.scaleBy 3
+            , Quantity.multiplyBy 3
                 (wy1
                     |> Quantity.plus
-                        (Quantity.scaleBy t (wy2 |> Quantity.minus wy1))
+                        (Quantity.multiplyBy t (wy2 |> Quantity.minus wy1))
                 )
             )
 
@@ -1202,33 +1202,33 @@ firstDerivative spline parameterValue =
             wx1 =
                 vx2
                     |> Quantity.plus
-                        (Quantity.scaleBy u (vx1 |> Quantity.minus vx2))
+                        (Quantity.multiplyBy u (vx1 |> Quantity.minus vx2))
 
             wy1 =
                 vy2
                     |> Quantity.plus
-                        (Quantity.scaleBy u (vy1 |> Quantity.minus vy2))
+                        (Quantity.multiplyBy u (vy1 |> Quantity.minus vy2))
 
             wx2 =
                 vx3
                     |> Quantity.plus
-                        (Quantity.scaleBy u (vx2 |> Quantity.minus vx3))
+                        (Quantity.multiplyBy u (vx2 |> Quantity.minus vx3))
 
             wy2 =
                 vy3
                     |> Quantity.plus
-                        (Quantity.scaleBy u (vy2 |> Quantity.minus vy3))
+                        (Quantity.multiplyBy u (vy2 |> Quantity.minus vy3))
         in
         Vector2d.fromComponents
-            ( Quantity.scaleBy 3
+            ( Quantity.multiplyBy 3
                 (wx2
                     |> Quantity.plus
-                        (Quantity.scaleBy u (wx1 |> Quantity.minus wx2))
+                        (Quantity.multiplyBy u (wx1 |> Quantity.minus wx2))
                 )
-            , Quantity.scaleBy 3
+            , Quantity.multiplyBy 3
                 (wy2
                     |> Quantity.plus
-                        (Quantity.scaleBy u (wy1 |> Quantity.minus wy2))
+                        (Quantity.multiplyBy u (wy1 |> Quantity.minus wy2))
                 )
             )
 
@@ -1394,7 +1394,7 @@ maxSecondDerivativeMagnitude spline =
         v2 =
             u3 |> Vector2d.minus u2
     in
-    Quantity.scaleBy 6 (Quantity.max (Vector2d.length v1) (Vector2d.length v2))
+    Quantity.multiplyBy 6 (Quantity.max (Vector2d.length v1) (Vector2d.length v2))
 
 
 derivativeMagnitude : CubicSpline2d units coordinates -> ParameterValue -> Quantity Float units
@@ -1460,28 +1460,28 @@ derivativeMagnitude spline =
                 ParameterValue.value parameterValue
 
             x13 =
-                x12 |> Quantity.plus (Quantity.scaleBy t x123)
+                x12 |> Quantity.plus (Quantity.multiplyBy t x123)
 
             y13 =
-                y12 |> Quantity.plus (Quantity.scaleBy t y123)
+                y12 |> Quantity.plus (Quantity.multiplyBy t y123)
 
             x24 =
-                x23 |> Quantity.plus (Quantity.scaleBy t x234)
+                x23 |> Quantity.plus (Quantity.multiplyBy t x234)
 
             y24 =
-                y23 |> Quantity.plus (Quantity.scaleBy t y234)
+                y23 |> Quantity.plus (Quantity.multiplyBy t y234)
 
             x14 =
                 x13
                     |> Quantity.plus
-                        (Quantity.scaleBy t (x24 |> Quantity.minus x13))
+                        (Quantity.multiplyBy t (x24 |> Quantity.minus x13))
 
             y14 =
                 y13
                     |> Quantity.plus
-                        (Quantity.scaleBy t (y24 |> Quantity.minus y13))
+                        (Quantity.multiplyBy t (y24 |> Quantity.minus y13))
         in
-        Quantity.scaleBy 3
+        Quantity.multiplyBy 3
             (Quantity.sqrt
                 (Quantity.squared x14 |> Quantity.plus (Quantity.squared y14))
             )

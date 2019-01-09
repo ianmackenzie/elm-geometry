@@ -74,14 +74,14 @@ leftTurn p1 p2 p3 =
             Point2d.coordinates p3
 
         firstProduct =
-            Quantity.product
-                (x2 |> Quantity.minus x1)
-                (y3 |> Quantity.minus y2)
+            (x2 |> Quantity.minus x1)
+                |> Quantity.times
+                    (y3 |> Quantity.minus y2)
 
         secondProduct =
-            Quantity.product
-                (y2 |> Quantity.minus y1)
-                (x3 |> Quantity.minus x2)
+            (y2 |> Quantity.minus y1)
+                |> Quantity.times
+                    (x3 |> Quantity.minus x2)
 
         difference =
             firstProduct |> Quantity.minus secondProduct

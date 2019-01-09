@@ -198,7 +198,7 @@ yDirection ellipse =
 -}
 area : Ellipse2d units coordinates -> Quantity Float (Squared units)
 area ellipse =
-    Quantity.scaleBy pi (Quantity.product (xRadius ellipse) (yRadius ellipse))
+    Quantity.multiplyBy pi (xRadius ellipse |> Quantity.times (yRadius ellipse))
 
 
 {-| Scale an ellipse about a given point by a given scale.
@@ -238,8 +238,8 @@ scaleAbout point scale ellipse =
     in
     Types.Ellipse2d
         { axes = newAxes
-        , xRadius = Quantity.abs (Quantity.scaleBy scale (xRadius ellipse))
-        , yRadius = Quantity.abs (Quantity.scaleBy scale (yRadius ellipse))
+        , xRadius = Quantity.abs (Quantity.multiplyBy scale (xRadius ellipse))
+        , yRadius = Quantity.abs (Quantity.multiplyBy scale (yRadius ellipse))
         }
 
 

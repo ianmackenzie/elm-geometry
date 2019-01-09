@@ -62,8 +62,7 @@ import Frame3d exposing (Frame3d)
 import Geometry.Types as Types exposing (Sphere3d)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
-import Quantity exposing (Quantity, Squared)
-import Quantity.Extra as Quantity exposing (Cubed)
+import Quantity exposing (Cubed, Quantity, Squared)
 import SketchPlane3d exposing (SketchPlane3d)
 import Vector3d exposing (Vector3d)
 
@@ -159,12 +158,12 @@ throughPoints p1 p2 p3 p4 =
                 if y /= Quantity.zero then
                     let
                         d =
-                            Quantity.quotient
-                                (Quantity.squared r
-                                    |> Quantity.minus (Quantity.squared x)
-                                    |> Quantity.minus (Quantity.squared y)
-                                )
-                                (Quantity.scaleBy -2 y)
+                            (Quantity.squared r
+                                |> Quantity.minus (Quantity.squared x)
+                                |> Quantity.minus (Quantity.squared y)
+                            )
+                                |> Quantity.over
+                                    (Quantity.multiplyBy -2 y)
 
                         computedRadius =
                             Quantity.sqrt
@@ -211,7 +210,7 @@ radius (Types.Sphere3d properties) =
 -}
 diameter : Sphere3d units coordinates -> Quantity Float units
 diameter sphere =
-    Quantity.scaleBy 2 (radius sphere)
+    Quantity.multiplyBy 2 (radius sphere)
 
 
 {-| Get the circumference of a sphere (the circumference of a [great circle](https://en.wikipedia.org/wiki/Great_circle)
@@ -223,7 +222,7 @@ of the sphere).
 -}
 circumference : Sphere3d units coordinates -> Quantity Float units
 circumference sphere =
-    Quantity.scaleBy (2 * pi) (radius sphere)
+    Quantity.multiplyBy (2 * pi) (radius sphere)
 
 
 {-| Get the surface area of a sphere.
@@ -234,7 +233,7 @@ circumference sphere =
 -}
 surfaceArea : Sphere3d units coordinates -> Quantity Float (Squared units)
 surfaceArea sphere =
-    Quantity.scaleBy (4 * pi) (Quantity.squared (radius sphere))
+    Quantity.multiplyBy (4 * pi) (Quantity.squared (radius sphere))
 
 
 {-| Get the volume of a sphere.
@@ -245,7 +244,7 @@ surfaceArea sphere =
 -}
 volume : Sphere3d units coordinates -> Quantity Float (Cubed units)
 volume sphere =
-    Quantity.scaleBy (4 / 3 * pi) (Quantity.cubed (radius sphere))
+    Quantity.multiplyBy (4 / 3 * pi) (Quantity.cubed (radius sphere))
 
 
 {-| Scale a sphere around a given point by a given scale.
@@ -257,7 +256,7 @@ volume sphere =
 -}
 scaleAbout : Point3d units coordinates -> Float -> Sphere3d units coordinates -> Sphere3d units coordinates
 scaleAbout point scale sphere =
-    withRadius (Quantity.scaleBy (abs scale) (radius sphere))
+    withRadius (Quantity.multiplyBy (abs scale) (radius sphere))
         (Point3d.scaleAbout point scale (centerPoint sphere))
 
 

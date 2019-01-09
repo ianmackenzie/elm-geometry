@@ -1162,7 +1162,7 @@ offsetBy amount boundingBox =
             dimensions boundingBox
 
         minValidOffset =
-            Quantity.scaleBy -0.5
+            Quantity.multiplyBy -0.5
                 (Quantity.min depth (Quantity.min width height))
     in
     if amount |> Quantity.greaterThan minValidOffset then

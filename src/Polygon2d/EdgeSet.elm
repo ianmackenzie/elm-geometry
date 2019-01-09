@@ -69,7 +69,7 @@ leftOf point (EdgeSet edges) =
                                 |> Quantity.minus
                                     (x1
                                         |> Quantity.plus
-                                            (Quantity.scaleBy ratio
+                                            (Quantity.multiplyBy ratio
                                                 (x2 |> Quantity.minus x1)
                                             )
                                     )

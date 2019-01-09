@@ -43,8 +43,7 @@
         "elm/core": "1.0.0 <= v < 2.0.0",
         "ianmackenzie/elm-float-extra": "1.0.1 <= v < 2.0.0",
         "ianmackenzie/elm-interval": "1.0.1 <= v < 2.0.0",
-        "ianmackenzie/elm-triangular-mesh": "1.0.2 <= v < 2.0.0",
-        "ianmackenzie/elm-units": "1.0.0 <= v < 2.0.0"
+        "ianmackenzie/elm-triangular-mesh": "1.0.2 <= v < 2.0.0"
     },
     "test-dependencies": {
         "elm/random": "1.0.0 <= v < 2.0.0",
