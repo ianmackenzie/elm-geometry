@@ -1159,78 +1159,23 @@ firstDerivative spline parameterValue =
         vy3 =
             y4 |> Quantity.minus y3
     in
-    if t <= 0.5 then
-        let
-            wx1 =
-                vx1
-                    |> Quantity.plus
-                        (Quantity.multiplyBy t (vx2 |> Quantity.minus vx1))
+    let
+        wx1 =
+            Quantity.interpolateFrom vx1 vx2 t
 
-            wy1 =
-                vy1
-                    |> Quantity.plus
-                        (Quantity.multiplyBy t (vy2 |> Quantity.minus vy1))
+        wy1 =
+            Quantity.interpolateFrom vy1 vy2 t
 
-            wx2 =
-                vx2
-                    |> Quantity.plus
-                        (Quantity.multiplyBy t (vx3 |> Quantity.minus vx2))
+        wx2 =
+            Quantity.interpolateFrom vx2 vx3 t
 
-            wy2 =
-                vy2
-                    |> Quantity.plus
-                        (Quantity.multiplyBy t (vy3 |> Quantity.minus vy2))
-        in
-        Vector2d.fromComponents
-            ( Quantity.multiplyBy 3
-                (wx1
-                    |> Quantity.plus
-                        (Quantity.multiplyBy t (wx2 |> Quantity.minus wx1))
-                )
-            , Quantity.multiplyBy 3
-                (wy1
-                    |> Quantity.plus
-                        (Quantity.multiplyBy t (wy2 |> Quantity.minus wy1))
-                )
-            )
-
-    else
-        let
-            u =
-                1 - t
-
-            wx1 =
-                vx2
-                    |> Quantity.plus
-                        (Quantity.multiplyBy u (vx1 |> Quantity.minus vx2))
-
-            wy1 =
-                vy2
-                    |> Quantity.plus
-                        (Quantity.multiplyBy u (vy1 |> Quantity.minus vy2))
-
-            wx2 =
-                vx3
-                    |> Quantity.plus
-                        (Quantity.multiplyBy u (vx2 |> Quantity.minus vx3))
-
-            wy2 =
-                vy3
-                    |> Quantity.plus
-                        (Quantity.multiplyBy u (vy2 |> Quantity.minus vy3))
-        in
-        Vector2d.fromComponents
-            ( Quantity.multiplyBy 3
-                (wx2
-                    |> Quantity.plus
-                        (Quantity.multiplyBy u (wx1 |> Quantity.minus wx2))
-                )
-            , Quantity.multiplyBy 3
-                (wy2
-                    |> Quantity.plus
-                        (Quantity.multiplyBy u (wy1 |> Quantity.minus wy2))
-                )
-            )
+        wy2 =
+            Quantity.interpolateFrom vy2 vy3 t
+    in
+    Vector2d.fromComponents
+        ( Quantity.multiplyBy 3 (Quantity.interpolateFrom wx1 wx2 t)
+        , Quantity.multiplyBy 3 (Quantity.interpolateFrom wy1 wy2 t)
+        )
 
 
 {-| Evaluate the first derivative of a spline at a given set of parameter
@@ -1472,14 +1417,10 @@ derivativeMagnitude spline =
                 y23 |> Quantity.plus (Quantity.multiplyBy t y234)
 
             x14 =
-                x13
-                    |> Quantity.plus
-                        (Quantity.multiplyBy t (x24 |> Quantity.minus x13))
+                Quantity.interpolateFrom x13 x24 t
 
             y14 =
-                y13
-                    |> Quantity.plus
-                        (Quantity.multiplyBy t (y24 |> Quantity.minus y13))
+                Quantity.interpolateFrom y13 y24 t
         in
         Quantity.multiplyBy 3
             (Quantity.sqrt
