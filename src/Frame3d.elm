@@ -249,11 +249,14 @@ define localCoordinates (Types.Frame3d properties) =
             { originPoint =
                 Point3d.fromCoordinates ( 2, 1, 3 )
             , xDirection =
-                Direction3d.unsafe ( 0.8, 0.6, 0 )
+                Direction3d.unsafeFromComponents
+                    ( 0.8, 0.6, 0 )
             , yDirection =
-                Direction3d.unsafe ( -0.6, 0.8, 0 )
+                Direction3d.unsafeFromComponents
+                    ( -0.6, 0.8, 0 )
             , zDirection =
-                Direction3d.unsafe ( 0, 0, 1 )
+                Direction3d.unsafeFromComponents
+                    ( 0, 0, 1 )
             }
 
 In this case **you must be careful to ensure that the X, Y and Z directions are

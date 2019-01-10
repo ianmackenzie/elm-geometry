@@ -544,7 +544,7 @@ tangentDirection (Nondegenerate (Types.Arc3d arc)) parameterValue =
         sinAngle =
             Angle.sin angle
     in
-    Direction3d.unsafe
+    Direction3d.unsafeFromComponents
         ( cosAngle * x1 + sinAngle * x2
         , cosAngle * y1 + sinAngle * y2
         , cosAngle * z1 + sinAngle * z2
@@ -732,13 +732,13 @@ reverse ((Types.Arc3d arc) as arc_) =
         , sweptAngle = Quantity.negate arcSweptAngle
         , signedLength = Quantity.negate arc.signedLength
         , xDirection =
-            Direction3d.unsafe
+            Direction3d.unsafeFromComponents
                 ( x1 * cosAngle + x2 * sinAngle
                 , y1 * cosAngle + y2 * sinAngle
                 , z1 * cosAngle + z2 * sinAngle
                 )
         , yDirection =
-            Direction3d.unsafe
+            Direction3d.unsafeFromComponents
                 ( x2 * cosAngle - x1 * sinAngle
                 , y2 * cosAngle - y1 * sinAngle
                 , z2 * cosAngle - z1 * sinAngle

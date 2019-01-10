@@ -604,7 +604,7 @@ direction givenVector =
                 components givenVector
         in
         Just <|
-            Direction3d.unsafe
+            Direction3d.unsafeFromComponents
                 ( Quantity.ratio vx vectorLength
                 , Quantity.ratio vy vectorLength
                 , Quantity.ratio vz vectorLength
@@ -644,7 +644,7 @@ lengthAndDirection givenVector =
                 components givenVector
 
             vectorDirection =
-                Direction3d.unsafe
+                Direction3d.unsafeFromComponents
                     ( Quantity.ratio vx vectorLength
                     , Quantity.ratio vy vectorLength
                     , Quantity.ratio vz vectorLength

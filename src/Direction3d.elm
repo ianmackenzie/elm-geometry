@@ -10,7 +10,7 @@
 module Direction3d exposing
     ( Direction3d
     , x, y, z, positiveX, negativeX, positiveY, negativeY, positiveZ, negativeZ
-    , from, on, fromAzimuthAndElevation, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize, unsafe
+    , from, on, fromAzimuthAndElevation, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize, unsafeFromComponents
     , components, xComponent, yComponent, zComponent, azimuth, elevation
     , equalWithin
     , componentIn, angleFrom
@@ -41,7 +41,7 @@ Directions have several uses, such as:
 
 # Constructors
 
-@docs from, on, fromAzimuthAndElevation, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize, unsafe
+@docs from, on, fromAzimuthAndElevation, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize, unsafeFromComponents
 
 
 # Properties
@@ -108,21 +108,21 @@ type alias Direction3d coordinates =
 -}
 x : Direction3d coordinates
 x =
-    unsafe ( 1, 0, 0 )
+    unsafeFromComponents ( 1, 0, 0 )
 
 
 {-| Synonym for `Direction3d.positiveY`.
 -}
 y : Direction3d coordinates
 y =
-    unsafe ( 0, 1, 0 )
+    unsafeFromComponents ( 0, 1, 0 )
 
 
 {-| Synonym for `Direction3d.positiveZ`.
 -}
 z : Direction3d coordinates
 z =
-    unsafe ( 0, 0, 1 )
+    unsafeFromComponents ( 0, 0, 1 )
 
 
 {-| The positive X direction.
@@ -133,7 +133,7 @@ z =
 -}
 positiveX : Direction3d coordinates
 positiveX =
-    unsafe ( 1, 0, 0 )
+    unsafeFromComponents ( 1, 0, 0 )
 
 
 {-| The negative X direction.
@@ -144,7 +144,7 @@ positiveX =
 -}
 negativeX : Direction3d coordinates
 negativeX =
-    unsafe ( -1, 0, 0 )
+    unsafeFromComponents ( -1, 0, 0 )
 
 
 {-| The positive Y direction.
@@ -155,7 +155,7 @@ negativeX =
 -}
 positiveY : Direction3d coordinates
 positiveY =
-    unsafe ( 0, 1, 0 )
+    unsafeFromComponents ( 0, 1, 0 )
 
 
 {-| The negative Y direction.
@@ -166,7 +166,7 @@ positiveY =
 -}
 negativeY : Direction3d coordinates
 negativeY =
-    unsafe ( 0, -1, 0 )
+    unsafeFromComponents ( 0, -1, 0 )
 
 
 {-| The positive Z direction.
@@ -177,7 +177,7 @@ negativeY =
 -}
 positiveZ : Direction3d coordinates
 positiveZ =
-    unsafe ( 0, 0, 1 )
+    unsafeFromComponents ( 0, 0, 1 )
 
 
 {-| The negative Z direction.
@@ -188,33 +188,33 @@ positiveZ =
 -}
 negativeZ : Direction3d coordinates
 negativeZ =
-    unsafe ( 0, 0, -1 )
+    unsafeFromComponents ( 0, 0, -1 )
 
 
 {-| Construct a direction directly from its X, Y and Z components. Note that
 **you must ensure that the sum of the squares of the given components is exactly
 one**:
 
-    Direction3d.unsafe ( 1, 0, 0 )
+    Direction3d.unsafeFromComponents ( 1, 0, 0 )
 
-    Direction3d.unsafe ( 0, -1, 0 )
+    Direction3d.unsafeFromComponents ( 0, -1, 0 )
 
-    Direction3d.unsafe ( 0.6, 0, 0.8 )
+    Direction3d.unsafeFromComponents ( 0.6, 0, 0.8 )
 
 are all valid but
 
-    Direction3d.unsafe ( 2, 0, 0 )
+    Direction3d.unsafeFromComponents ( 2, 0, 0 )
 
-    Direction3d.unsafe ( 1, 1, 1 )
+    Direction3d.unsafeFromComponents ( 1, 1, 1 )
 
-are not. Instead of using `Direction3d.unsafe`, it may be easier to use
+are not. Instead of using `Direction3d.unsafeFromComponents`, it may be easier to use
 constructors like `Direction3d.on` or `Direction3d.fromAzimuthAndElevation`
 (which will always result in a valid direction), or start with existing
 directions and transform them as necessary.
 
 -}
-unsafe : ( Float, Float, Float ) -> Direction3d coordinates
-unsafe givenComponents =
+unsafeFromComponents : ( Float, Float, Float ) -> Direction3d coordinates
+unsafeFromComponents givenComponents =
     Types.Direction3d givenComponents
 
 
@@ -248,7 +248,7 @@ on sketchPlane direction2d =
         ( vx, vy, vz ) =
             components (SketchPlane3d.yDirection sketchPlane)
     in
-    unsafe
+    unsafeFromComponents
         ( dx * ux + dy * vx
         , dx * uy + dy * vy
         , dx * uz + dy * vz
@@ -274,7 +274,7 @@ fromAzimuthAndElevation givenAzimuth givenElevation =
         cosElevation =
             Angle.cos givenElevation
     in
-    unsafe
+    unsafeFromComponents
         ( cosElevation * Angle.cos givenAzimuth
         , cosElevation * Angle.sin givenAzimuth
         , Angle.sin givenElevation
@@ -343,7 +343,7 @@ perpendicularTo direction =
         ( vx, vy, vz ) =
             Vector3d.components perpendicularVector
     in
-    unsafe
+    unsafeFromComponents
         ( Quantity.ratio vx length
         , Quantity.ratio vy length
         , Quantity.ratio vz length
@@ -384,7 +384,7 @@ perpendicularBasis direction =
             components xDirection
 
         yDirection =
-            unsafe
+            unsafeFromComponents
                 ( y0 * z1 - z0 * y1
                 , z0 * x1 - x0 * z1
                 , x0 * y1 - y0 * x1
@@ -736,7 +736,7 @@ reverse direction =
         ( dx, dy, dz ) =
             components direction
     in
-    unsafe ( -dx, -dy, -dz )
+    unsafeFromComponents ( -dx, -dy, -dz )
 
 
 {-| Rotate a direction around an axis by a given angle.
@@ -838,7 +838,7 @@ rotateAround axis angle direction =
         a22 =
             1 - 2 * (xx + yy)
     in
-    unsafe
+    unsafeFromComponents
         ( a00 * dx + a01 * dy + a02 * dz
         , a10 * dx + a11 * dy + a12 * dz
         , a20 * dx + a21 * dy + a22 * dz
@@ -901,7 +901,7 @@ mirrorAcross plane direction =
         f =
             -2 * nx * ny
     in
-    unsafe
+    unsafeFromComponents
         ( a * dx + f * dy + e * dz
         , f * dx + b * dy + d * dz
         , e * dx + d * dy + c * dz
@@ -965,7 +965,7 @@ local coordinates relative to a given reference frame.
 -}
 relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Direction3d globalCoordinates -> Direction3d localCoordinates
 relativeTo frame direction =
-    unsafe
+    unsafeFromComponents
         ( componentIn (Frame3d.xDirection frame) direction
         , componentIn (Frame3d.yDirection frame) direction
         , componentIn (Frame3d.zDirection frame) direction
@@ -1004,7 +1004,7 @@ placeIn frame direction =
         ( dx, dy, dz ) =
             components direction
     in
-    unsafe
+    unsafeFromComponents
         ( x1 * dx + x2 * dy + x3 * dz
         , y1 * dx + y2 * dy + y3 * dz
         , z1 * dx + z2 * dy + z3 * dz
