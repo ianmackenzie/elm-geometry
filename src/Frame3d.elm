@@ -11,6 +11,7 @@ module Frame3d exposing
     ( Frame3d
     , atOrigin
     , withXDirection, withYDirection, withZDirection, atPoint, atCoordinates, unsafe
+    , define
     , originPoint, xDirection, yDirection, zDirection, isRightHanded
     , xAxis, yAxis, zAxis
     , xyPlane, yxPlane, yzPlane, zyPlane, zxPlane, xzPlane
@@ -78,6 +79,11 @@ directions will be mutually perpendicular, and will be oriented so that the
 resulting frame is [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness).
 
 @docs withXDirection, withYDirection, withZDirection, atPoint, atCoordinates, unsafe
+
+
+# Local coordinates
+
+@docs define
 
 
 # Properties
