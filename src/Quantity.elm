@@ -6,7 +6,7 @@ module Quantity exposing
     , negate, abs, plus, minus, multiplyBy, divideBy, squared, sqrt, cubed, cbrt
     , times, over, over_
     , per, at, at_, for, inverse
-    , ratio, clamp, interpolateFrom
+    , ratio, clamp, interpolateFrom, midpoint
     , round, floor, ceiling, truncate, toFloatQuantity
     , sum, minimum, maximum, sort, sortBy
     , Unitless, int, toInt, float, toFloat
@@ -52,7 +52,7 @@ and work with composite units in a fairly flexible way.
 
 ## Miscellaneous
 
-@docs ratio, clamp, interpolateFrom
+@docs ratio, clamp, interpolateFrom, midpoint
 
 
 # `Int`/`Float` conversion
@@ -660,6 +660,17 @@ interpolateFrom (Quantity start) (Quantity end) parameter =
 
     else
         Quantity (end + (1 - parameter) * (start - end))
+
+
+{-| Find the midpoint between two quantities.
+
+    Quantity.midpoint (Length.meters 5) (Length.meters 10)
+    --> Length.meters 7.5
+
+-}
+midpoint : Quantity Float units -> Quantity Float units -> Quantity Float units
+midpoint (Quantity x) (Quantity y) =
+    Quantity (x + 0.5 * (y - x))
 
 
 
