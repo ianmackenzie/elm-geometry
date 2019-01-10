@@ -248,9 +248,9 @@ define localCoordinates (Types.Frame3d properties) =
     Types.Frame3d properties
 
 
-copy : Frame2d units coordinates defines -> Frame2d units coordinates {}
-copy (Types.Frame2d properties) =
-    Types.Frame2d properties
+copy : Frame3d units coordinates defines -> Frame3d units coordinates {}
+copy (Types.Frame3d properties) =
+    Types.Frame3d properties
 
 
 {-| Construct a frame directly from its origin point and X, Y and Z directions:
