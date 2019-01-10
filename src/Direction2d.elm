@@ -12,9 +12,8 @@ module Direction2d exposing
     , x, y, positiveX, negativeX, positiveY, negativeY
     , from, perpendicularTo, orthonormalize, orthogonalize, unsafeFromComponents, unsafeFromComponentsIn
     , fromAngle, toAngle
-    , components, xComponent, yComponent
+    , components, componentsIn, xComponent, yComponent, componentIn, angleFrom
     , equalWithin
-    , componentIn, angleFrom
     , toVector
     , reverse, rotateClockwise, rotateCounterclockwise, rotateBy, mirrorAcross
     , relativeTo, placeIn
@@ -52,17 +51,12 @@ have several uses, such as:
 
 # Properties
 
-@docs components, xComponent, yComponent
+@docs components, componentsIn, xComponent, yComponent, componentIn, angleFrom
 
 
 # Comparison
 
 @docs equalWithin
-
-
-# Measurement
-
-@docs componentIn, angleFrom
 
 
 # Conversion
@@ -397,6 +391,28 @@ as a unit vector, also know as its direction cosines).
 components : Direction2d coordinates -> ( Float, Float )
 components direction =
     Bootstrap.components direction
+
+
+{-| Find the components of a direction in a given frame;
+
+    direction |> Direction2d.componentsIn frame
+
+is equivalent to
+
+    ( direction
+        |> Direction2d.componentIn
+            (Frame2d.xDirection frame)
+    , direction
+        |> Direction2d.componentIn
+            (Frame2d.yDirection frame)
+    )
+
+-}
+componentsIn : Frame2d units coordinates defines -> Direction2d coordinates -> ( Float, Float )
+componentsIn frame direction =
+    ( direction |> componentIn (Frame2d.xDirection frame)
+    , direction |> componentIn (Frame2d.yDirection frame)
+    )
 
 
 {-| Get the X component of a direction.

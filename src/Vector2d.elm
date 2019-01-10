@@ -12,9 +12,8 @@ module Vector2d exposing
     , zero
     , fromComponents, fromComponentsIn, fromPolarComponents, fromPolarComponentsIn, from, withLength, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
-    , components, xComponent, yComponent, polarComponents, length, squaredLength, direction, lengthAndDirection
+    , components, componentsIn, xComponent, yComponent, componentIn, polarComponents, length, squaredLength, direction, lengthAndDirection
     , equalWithin, lexicographicComparison
-    , componentIn
     , plus, minus, dotProduct, crossProduct
     , reverse, normalize, scaleBy, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
     , relativeTo, placeIn
@@ -59,17 +58,12 @@ Although there are no predefined constants for the vectors with components
 
 # Properties
 
-@docs components, xComponent, yComponent, polarComponents, length, squaredLength, direction, lengthAndDirection
+@docs components, componentsIn, xComponent, yComponent, componentIn, polarComponents, length, squaredLength, direction, lengthAndDirection
 
 
 # Comparison
 
 @docs equalWithin, lexicographicComparison
-
-
-# Measurement
-
-@docs componentIn
 
 
 # Arithmetic
@@ -373,6 +367,24 @@ to extract both the X and Y components of a vector in one line of code:
 components : Vector2d units coordinates -> ( Quantity Float units, Quantity Float units )
 components (Types.Vector2d vectorComponents) =
     vectorComponents
+
+
+{-| Find the components of a vector in a given frame;
+
+    Vector2d.componentsIn frame vector
+
+is equivalent to
+
+    ( Vector2d.componentIn (Frame2d.xDirection frame) vector
+    , Vector2d.componentIn (Frame2d.yDirection frame) vector
+    )
+
+-}
+componentsIn : Frame2d units coordinates defines -> Vector2d units coordinates -> ( Quantity Float units, Quantity Float units )
+componentsIn frame vector =
+    ( vector |> componentIn (Frame2d.xDirection frame)
+    , vector |> componentIn (Frame2d.yDirection frame)
+    )
 
 
 {-| Get the X component of a vector.

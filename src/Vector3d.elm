@@ -12,9 +12,8 @@ module Vector3d exposing
     , zero
     , fromComponents, fromComponentsIn, from, withLength, on, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
-    , components, xComponent, yComponent, zComponent, length, squaredLength, direction, lengthAndDirection
+    , components, componentsIn, xComponent, yComponent, componentIn, zComponent, length, squaredLength, direction, lengthAndDirection
     , equalWithin, lexicographicComparison
-    , componentIn
     , plus, minus, dotProduct, crossProduct, tripleProduct
     , reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
     , relativeTo, placeIn, projectInto
@@ -60,17 +59,12 @@ you will actually want their `Direction3d` versions [`Direction3d.x`](Direction3
 
 # Properties
 
-@docs components, xComponent, yComponent, zComponent, length, squaredLength, direction, lengthAndDirection
+@docs components, componentsIn, xComponent, yComponent, componentIn, zComponent, length, squaredLength, direction, lengthAndDirection
 
 
 # Comparison
 
 @docs equalWithin, lexicographicComparison
-
-
-# Measurement
-
-@docs componentIn
 
 
 # Arithmetic
@@ -423,6 +417,26 @@ to extract the X, Y and Z components of a vector in one line of code:
 components : Vector3d units coordinates -> ( Quantity Float units, Quantity Float units, Quantity Float units )
 components (Types.Vector3d vectorComponents) =
     vectorComponents
+
+
+{-| Find the components of a vector in a given frame;
+
+    Vector3d.componentsIn frame vector
+
+is equivalent to
+
+    ( Vector3d.componentIn (Frame3d.xDirection frame) vector
+    , Vector3d.componentIn (Frame3d.yDirection frame) vector
+    , Vector3d.componentIn (Frame3d.zDirection frame) vector
+    )
+
+-}
+componentsIn : Frame3d units coordinates defines -> Vector3d units coordinates -> ( Quantity Float units, Quantity Float units, Quantity Float units )
+componentsIn frame vector =
+    ( vector |> componentIn (Frame3d.xDirection frame)
+    , vector |> componentIn (Frame3d.yDirection frame)
+    , vector |> componentIn (Frame3d.zDirection frame)
+    )
 
 
 {-| Get the X component of a vector.

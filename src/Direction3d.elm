@@ -11,9 +11,8 @@ module Direction3d exposing
     ( Direction3d
     , x, y, z, positiveX, negativeX, positiveY, negativeY, positiveZ, negativeZ
     , from, on, fromAzimuthAndElevation, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize, unsafeFromComponents, unsafeFromComponentsIn
-    , components, xComponent, yComponent, zComponent, azimuth, elevation
+    , components, componentsIn, xComponent, yComponent, zComponent, componentIn, angleFrom, azimuth, elevation
     , equalWithin
-    , componentIn, angleFrom
     , toVector
     , reverse, rotateAround, mirrorAcross, projectOnto
     , relativeTo, placeIn, projectInto
@@ -46,7 +45,7 @@ Directions have several uses, such as:
 
 # Properties
 
-@docs components, xComponent, yComponent, zComponent, azimuth, elevation
+@docs components, componentsIn, xComponent, yComponent, zComponent, componentIn, angleFrom, azimuth, elevation
 
 
 # Comparison
@@ -534,6 +533,32 @@ as a unit vector, also know as its direction cosines).
 components : Direction3d coordinates -> ( Float, Float, Float )
 components (Types.Direction3d directionComponents) =
     directionComponents
+
+
+{-| Find the components of a direction in a given frame;
+
+    direction |> Direction3d.componentsIn frame
+
+is equivalent to
+
+    ( direction
+        |> Direction3d.componentIn
+            (Frame3d.xDirection frame)
+    , direction
+        |> Direction3d.componentIn
+            (Frame3d.yDirection frame)
+    , direction
+        |> Direction3d.componentIn
+            (Frame3d.zDirection frame)
+    )
+
+-}
+componentsIn : Frame3d units coordinates defines -> Direction3d coordinates -> ( Float, Float, Float )
+componentsIn frame direction =
+    ( direction |> componentIn (Frame3d.xDirection frame)
+    , direction |> componentIn (Frame3d.yDirection frame)
+    , direction |> componentIn (Frame3d.zDirection frame)
+    )
 
 
 {-| Get the X component of a direction.

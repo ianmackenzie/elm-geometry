@@ -12,7 +12,7 @@ module Point2d exposing
     , origin
     , fromCoordinates, fromCoordinatesIn, fromPolarCoordinates, fromPolarCoordinatesIn, midpoint, centroid, interpolateFrom, along, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
-    , coordinates, xCoordinate, yCoordinate, polarCoordinates
+    , coordinates, coordinatesIn, xCoordinate, yCoordinate, polarCoordinates
     , equalWithin, lexicographicComparison
     , distanceFrom, squaredDistanceFrom, signedDistanceAlong, signedDistanceFrom
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
@@ -52,7 +52,7 @@ like you can add two vectors.
 
 # Properties
 
-@docs coordinates, xCoordinate, yCoordinate, polarCoordinates
+@docs coordinates, coordinatesIn, xCoordinate, yCoordinate, polarCoordinates
 
 
 # Comparison
@@ -455,6 +455,50 @@ toRecord point =
 coordinates : Point2d units coordinates -> ( Quantity Float units, Quantity Float units )
 coordinates (Types.Point2d pointCoordinates) =
     pointCoordinates
+
+
+{-| Get the coordinates of a point within a given frame.
+
+    point =
+        Point2d.fromCoordinates
+            ( Length.centimeters 2
+            , Length.centimeters 0
+            )
+
+    rotatedFrame =
+        Frame2d.atOrigin
+            |> Frame2d.rotateBy (Angle.degrees 45)
+
+    point |> Point2d.coordinatesIn rotatedFrame
+    --> ( Length.centimeters 1.4142
+    --> , Length.centimeters -1.4142
+    --> )
+
+-}
+coordinatesIn : Frame2d units coordinates defines -> Point2d units coordinates -> ( Quantity Float units, Quantity Float units )
+coordinatesIn frame point =
+    let
+        ( x, y ) =
+            coordinates point
+
+        ( x0, y0 ) =
+            coordinates (Frame2d.originPoint frame)
+
+        dx =
+            x |> Quantity.minus x0
+
+        dy =
+            y |> Quantity.minus y0
+
+        ( x1, y1 ) =
+            Direction2d.components (Frame2d.xDirection frame)
+
+        ( x2, y2 ) =
+            Direction2d.components (Frame2d.yDirection frame)
+    in
+    ( Quantity.aXbY x1 dx y1 dy
+    , Quantity.aXbY x2 dx y2 dy
+    )
 
 
 {-| Get the X coordinate of a point.

@@ -12,7 +12,7 @@ module Point3d exposing
     , origin
     , fromCoordinates, fromCoordinatesIn, midpoint, centroid, interpolateFrom, along, on, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
-    , coordinates, xCoordinate, yCoordinate, zCoordinate
+    , coordinates, coordinatesIn, xCoordinate, yCoordinate, zCoordinate
     , equalWithin, lexicographicComparison
     , distanceFrom, squaredDistanceFrom, signedDistanceAlong, distanceFromAxis, squaredDistanceFromAxis, signedDistanceFrom
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectOntoAxis
@@ -53,7 +53,7 @@ like you can add two vectors.
 
 # Properties
 
-@docs coordinates, xCoordinate, yCoordinate, zCoordinate
+@docs coordinates, coordinatesIn, xCoordinate, yCoordinate, zCoordinate
 
 
 # Comparison
@@ -472,6 +472,62 @@ toRecord point =
 coordinates : Point3d units coordinates -> ( Quantity Float units, Quantity Float units, Quantity Float units )
 coordinates (Types.Point3d pointCoordinates) =
     pointCoordinates
+
+
+{-| Get the coordinates of a point within a given frame.
+
+    point =
+        Point3d.fromCoordinates
+            ( Length.meters 2
+            , Length.meters 3
+            , Length.meters 4
+            )
+
+    frame =
+        Frame3d.atCoordinates
+            ( Length.meters 1
+            , Length.meters 1
+            , Length.meters 1
+            )
+
+    point |> Point3d.coordinatesIn frame
+    --> ( Length.meters 1
+    --> , Length.meters 2
+    --> , Length.meters 3
+    --> )
+
+-}
+coordinatesIn : Frame3d units coordinates defines -> Point3d units coordinates -> ( Quantity Float units, Quantity Float units, Quantity Float units )
+coordinatesIn frame point =
+    let
+        ( x, y, z ) =
+            coordinates point
+
+        ( x0, y0, z0 ) =
+            coordinates (Frame3d.originPoint frame)
+
+        dx =
+            x |> Quantity.minus x0
+
+        dy =
+            y |> Quantity.minus y0
+
+        dz =
+            z |> Quantity.minus z0
+
+        ( x1, y1, z1 ) =
+            Direction3d.components (Frame3d.xDirection frame)
+
+        ( x2, y2, z2 ) =
+            Direction3d.components (Frame3d.yDirection frame)
+
+        ( x3, y3, z3 ) =
+            Direction3d.components (Frame3d.zDirection frame)
+    in
+    ( Quantity.aXbYcZ x1 dx y1 dy z1 dz
+    , Quantity.aXbYcZ x2 dx y2 dy z2 dz
+    , Quantity.aXbYcZ x3 dx y3 dy z3 dz
+    )
 
 
 {-| Get the X coordinate of a point.
