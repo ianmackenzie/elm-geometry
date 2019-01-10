@@ -10,7 +10,7 @@
 module Direction2d exposing
     ( Direction2d
     , x, y, positiveX, negativeX, positiveY, negativeY
-    , from, perpendicularTo, orthonormalize, orthogonalize, unsafeFromComponents
+    , from, perpendicularTo, orthonormalize, orthogonalize, unsafeFromComponents, unsafeFromComponentsIn
     , fromAngle, toAngle
     , components, xComponent, yComponent
     , equalWithin
@@ -42,7 +42,7 @@ have several uses, such as:
 
 # Constructors
 
-@docs from, perpendicularTo, orthonormalize, orthogonalize, unsafeFromComponents
+@docs from, perpendicularTo, orthonormalize, orthogonalize, unsafeFromComponents, unsafeFromComponentsIn
 
 
 # Conversions
@@ -195,6 +195,28 @@ necessary.
 unsafeFromComponents : ( Float, Float ) -> Direction2d coordinates
 unsafeFromComponents givenComponents =
     Types.Direction2d givenComponents
+
+
+{-| Construct a direction directly from its local X and Y components within a
+given frame. As with `unsafeFromComponents`, you must ensure that the sum of the
+squares of the given components is exactly one.
+-}
+unsafeFromComponentsIn : Frame2d units coordinates defines -> ( Float, Float ) -> Direction2d coordinates
+unsafeFromComponentsIn frame localComponents =
+    let
+        ( localX, localY ) =
+            localComponents
+
+        ( x1, y1 ) =
+            components (Frame2d.xDirection frame)
+
+        ( x2, y2 ) =
+            components (Frame2d.yDirection frame)
+    in
+    unsafeFromComponents
+        ( x1 * localX + x2 * localY
+        , y1 * localX + y2 * localY
+        )
 
 
 {-| Attempt to construct the direction from the first given point to the second.

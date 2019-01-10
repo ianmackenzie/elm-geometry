@@ -10,7 +10,7 @@
 module Direction3d exposing
     ( Direction3d
     , x, y, z, positiveX, negativeX, positiveY, negativeY, positiveZ, negativeZ
-    , from, on, fromAzimuthAndElevation, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize, unsafeFromComponents
+    , from, on, fromAzimuthAndElevation, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize, unsafeFromComponents, unsafeFromComponentsIn
     , components, xComponent, yComponent, zComponent, azimuth, elevation
     , equalWithin
     , componentIn, angleFrom
@@ -41,7 +41,7 @@ Directions have several uses, such as:
 
 # Constructors
 
-@docs from, on, fromAzimuthAndElevation, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize, unsafeFromComponents
+@docs from, on, fromAzimuthAndElevation, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize, unsafeFromComponents, unsafeFromComponentsIn
 
 
 # Properties
@@ -216,6 +216,32 @@ directions and transform them as necessary.
 unsafeFromComponents : ( Float, Float, Float ) -> Direction3d coordinates
 unsafeFromComponents givenComponents =
     Types.Direction3d givenComponents
+
+
+{-| Construct a direction directly from its local X, Y and Z components within a
+given frame. As with `unsafeFromComponents`, you must ensure that the sum of the squares of
+the given components is exactly one.
+-}
+unsafeFromComponentsIn : Frame3d units coordinates defines -> ( Float, Float, Float ) -> Direction3d coordinates
+unsafeFromComponentsIn frame localComponents =
+    let
+        ( localX, localY, localZ ) =
+            localComponents
+
+        ( x1, y1, z1 ) =
+            components (Frame3d.xDirection frame)
+
+        ( x2, y2, z2 ) =
+            components (Frame3d.yDirection frame)
+
+        ( x3, y3, z3 ) =
+            components (Frame3d.zDirection frame)
+    in
+    unsafeFromComponents
+        ( x1 * localX + x2 * localY + x3 * localZ
+        , y1 * localX + y2 * localY + y3 * localZ
+        , z1 * localX + z2 * localY + z3 * localZ
+        )
 
 
 {-| Construct a 3D direction lying _on_ a sketch plane by providing a 2D
