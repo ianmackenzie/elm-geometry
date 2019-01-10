@@ -148,8 +148,8 @@ counterclockwise from the positive X direction.
 fromPolarComponents : ( Quantity Float units, Angle ) -> Vector2d units coordinates
 fromPolarComponents ( givenRadius, givenAngle ) =
     fromComponents
-        ( givenRadius |> Quantity.multiplyBy (Angle.cos givenAngle)
-        , givenRadius |> Quantity.multiplyBy (Angle.sin givenAngle)
+        ( Quantity.rCosTheta givenRadius givenAngle
+        , Quantity.rSinTheta givenRadius givenAngle
         )
 
 
