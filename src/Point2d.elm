@@ -129,8 +129,8 @@ origin and angle is measured counterclockwise from the positive X direction.
 fromPolarCoordinates : ( Quantity Float units, Angle ) -> Point2d units coordinates
 fromPolarCoordinates ( givenRadius, givenAngle ) =
     fromCoordinates
-        ( givenRadius |> Quantity.multiplyBy (Angle.cos givenAngle)
-        , givenRadius |> Quantity.multiplyBy (Angle.sin givenAngle)
+        ( Quantity.rCosTheta givenRadius givenAngle
+        , Quantity.rSinTheta givenRadius givenAngle
         )
 
 
