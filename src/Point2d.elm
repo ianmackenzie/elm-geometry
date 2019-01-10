@@ -300,9 +300,25 @@ is equivalent to
         |> Point2d.placeIn frame
 
 -}
-fromCoordinatesIn : Frame2d units globalCoordinates { defines : localCoordinates } -> ( Quantity Float units, Quantity Float units ) -> Point2d units globalCoordinates
+fromCoordinatesIn : Frame2d units globalCoordinates defines -> ( Quantity Float units, Quantity Float units ) -> Point2d units globalCoordinates
 fromCoordinatesIn frame localCoordinates =
-    placeIn frame (fromCoordinates localCoordinates)
+    let
+        ( x, y ) =
+            localCoordinates
+
+        ( x0, y0 ) =
+            coordinates (Frame2d.originPoint frame)
+
+        ( x1, y1 ) =
+            Direction2d.components (Frame2d.xDirection frame)
+
+        ( x2, y2 ) =
+            Direction2d.components (Frame2d.yDirection frame)
+    in
+    fromCoordinates
+        ( x0 |> Quantity.plus (Quantity.aXbY x1 x x2 y)
+        , y0 |> Quantity.plus (Quantity.aXbY y1 x y2 y)
+        )
 
 
 {-| Construct a point given its local polar coordinates within a particular
@@ -316,9 +332,16 @@ frame.
     --> Point2d.fromCoordinates ( 3.4142, 2.4142 )
 
 -}
-fromPolarCoordinatesIn : Frame2d units globalCoordinates { defines : localCoordinates } -> ( Quantity Float units, Angle ) -> Point2d units globalCoordinates
+fromPolarCoordinatesIn : Frame2d units globalCoordinates defines -> ( Quantity Float units, Angle ) -> Point2d units globalCoordinates
 fromPolarCoordinatesIn frame localPolarCoordinates =
-    placeIn frame (fromPolarCoordinates localPolarCoordinates)
+    let
+        ( r, theta ) =
+            localPolarCoordinates
+    in
+    fromCoordinatesIn frame
+        ( Quantity.rCosTheta r theta
+        , Quantity.rSinTheta r theta
+        )
 
 
 {-| Attempt to find the circumcenter of three points; this is the center of the

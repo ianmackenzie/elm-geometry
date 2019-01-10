@@ -341,9 +341,29 @@ is equivalent to
         |> Point3d.placeIn frame
 
 -}
-fromCoordinatesIn : Frame3d units globalCoordinates { defines : localCoordinates } -> ( Quantity Float units, Quantity Float units, Quantity Float units ) -> Point3d units globalCoordinates
+fromCoordinatesIn : Frame3d units globalCoordinates defines -> ( Quantity Float units, Quantity Float units, Quantity Float units ) -> Point3d units globalCoordinates
 fromCoordinatesIn frame localCoordinates =
-    placeIn frame (fromCoordinates localCoordinates)
+    let
+        ( x, y, z ) =
+            localCoordinates
+
+        ( x0, y0, z0 ) =
+            coordinates (Frame3d.originPoint frame)
+
+        ( x1, y1, z1 ) =
+            Direction3d.components (Frame3d.xDirection frame)
+
+        ( x2, y2, z2 ) =
+            Direction3d.components (Frame3d.yDirection frame)
+
+        ( x3, y3, z3 ) =
+            Direction3d.components (Frame3d.zDirection frame)
+    in
+    fromCoordinates
+        ( x0 |> Quantity.plus (Quantity.aXbYcZ x1 x x2 y x3 z)
+        , y0 |> Quantity.plus (Quantity.aXbYcZ y1 x y2 y y3 z)
+        , z0 |> Quantity.plus (Quantity.aXbYcZ z1 x z2 y z3 z)
+        )
 
 
 {-| Attempt to find the circumcenter of three points; this is the center of the
