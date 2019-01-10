@@ -332,7 +332,7 @@ on sketchPlane point2d =
     --> Point3d.fromCoordinates ( 2, 3, 4 )
 
 -}
-fromCoordinatesIn : Frame3d units globalCoordinates defines -> ( Quantity Float units, Quantity Float units, Quantity Float units ) -> Point3d units globalCoordinates
+fromCoordinatesIn : Frame3d units coordinates defines -> ( Quantity Float units, Quantity Float units, Quantity Float units ) -> Point3d units coordinates
 fromCoordinatesIn frame localCoordinates =
     let
         ( x, y, z ) =

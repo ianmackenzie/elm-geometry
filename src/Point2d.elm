@@ -291,7 +291,7 @@ along axis distance =
     --> Point2d.fromCoordinates ( 1.4142, 1.4142 )
 
 -}
-fromCoordinatesIn : Frame2d units globalCoordinates defines -> ( Quantity Float units, Quantity Float units ) -> Point2d units globalCoordinates
+fromCoordinatesIn : Frame2d units coordinates defines -> ( Quantity Float units, Quantity Float units ) -> Point2d units coordinates
 fromCoordinatesIn frame localCoordinates =
     let
         ( x, y ) =
@@ -323,7 +323,7 @@ frame:
     --> Point2d.fromCoordinates ( 3.4142, 2.4142 )
 
 -}
-fromPolarCoordinatesIn : Frame2d units globalCoordinates defines -> ( Quantity Float units, Angle ) -> Point2d units globalCoordinates
+fromPolarCoordinatesIn : Frame2d units coordinates defines -> ( Quantity Float units, Angle ) -> Point2d units coordinates
 fromPolarCoordinatesIn frame localPolarCoordinates =
     let
         ( r, theta ) =
