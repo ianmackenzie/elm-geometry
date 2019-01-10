@@ -322,7 +322,7 @@ on sketchPlane point2d =
         )
 
 
-{-| Construct a point given its local coordinates within a particular frame.
+{-| Construct a point given its local coordinates within a particular frame:
 
     frame =
         Frame3d.atPoint
@@ -330,15 +330,6 @@ on sketchPlane point2d =
 
     Point3d.fromCoordinatesIn frame ( 1, 2, 3 )
     --> Point3d.fromCoordinates ( 2, 3, 4 )
-
-This is shorthand for using `Point3d.placeIn`;
-
-    Point3d.fromCoordinatesIn frame localCoordinates
-
-is equivalent to
-
-    Point3d.fromCoordinates localCoordinates
-        |> Point3d.placeIn frame
 
 -}
 fromCoordinatesIn : Frame3d units globalCoordinates defines -> ( Quantity Float units, Quantity Float units, Quantity Float units ) -> Point3d units globalCoordinates

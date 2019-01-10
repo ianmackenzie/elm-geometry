@@ -282,22 +282,13 @@ along axis distance =
         |> translateBy (Vector2d.withLength distance (Axis2d.direction axis))
 
 
-{-| Construct a point given its local coordinates within a particular frame.
+{-| Construct a point given its local coordinates within a particular frame:
 
     rotatedFrame =
         Frame2d.atOrigin |> Frame2d.rotateBy (degrees 45)
 
     Point2d.fromCoordinatesIn rotatedFrame ( 2, 0 )
     --> Point2d.fromCoordinates ( 1.4142, 1.4142 )
-
-This is shorthand for using `Point2d.placeIn`;
-
-    Point2d.fromCoordinatesIn frame localCoordinates
-
-is equivalent to
-
-    Point2d.fromCoordinates localCoordinates
-        |> Point2d.placeIn frame
 
 -}
 fromCoordinatesIn : Frame2d units globalCoordinates defines -> ( Quantity Float units, Quantity Float units ) -> Point2d units globalCoordinates
@@ -322,7 +313,7 @@ fromCoordinatesIn frame localCoordinates =
 
 
 {-| Construct a point given its local polar coordinates within a particular
-frame.
+frame:
 
     localFrame =
         Frame2d.atPoint (Point2d.fromCoordinates ( 2, 1 ))
