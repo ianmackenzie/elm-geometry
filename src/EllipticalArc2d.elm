@@ -95,6 +95,7 @@ you are writing low-level geometric algorithms.
 
 -}
 
+import Angle exposing (Angle, Radians)
 import Arc.SweptAngle as SweptAngle exposing (SweptAngle)
 import Axis2d exposing (Axis2d)
 import Curve.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
@@ -105,12 +106,15 @@ import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import Interval
 import Point2d exposing (Point2d)
+import Quantity exposing (Quantity(..), Squared)
+import Quantity.Extra as Quantity
+import Quantity.Interval
 import Vector2d exposing (Vector2d)
 
 
 {-| -}
-type alias EllipticalArc2d =
-    Types.EllipticalArc2d
+type alias EllipticalArc2d units coordinates =
+    Types.EllipticalArc2d units coordinates
 
 
 {-| Construct an elliptical arc from its center point, X direction, X and Y
@@ -145,7 +149,15 @@ To make an inclined 180 degree elliptical arc, you might use
 ![180 degree inclined elliptical arc](https://ianmackenzie.github.io/elm-geometry/1.0.0/EllipticalArc2d/with2.svg)
 
 -}
-with : { centerPoint : Point2d, xDirection : Direction2d, xRadius : Float, yRadius : Float, startAngle : Float, sweptAngle : Float } -> EllipticalArc2d
+with :
+    { centerPoint : Point2d units coordinates
+    , xDirection : Direction2d coordinates
+    , xRadius : Quantity Float units
+    , yRadius : Quantity Float units
+    , startAngle : Angle
+    , sweptAngle : Angle
+    }
+    -> EllipticalArc2d units coordinates
 with properties =
     Types.EllipticalArc2d
         { ellipse =
@@ -191,27 +203,36 @@ solution being found and not - for 180 degree arcs it is safer to use
 `EllipticalArc2d.with` instead.
 
 -}
-fromEndpoints : { startPoint : Point2d, endPoint : Point2d, xRadius : Float, yRadius : Float, xDirection : Direction2d, sweptAngle : SweptAngle } -> Maybe EllipticalArc2d
+fromEndpoints :
+    { startPoint : Point2d units coordinates
+    , endPoint : Point2d units coordinates
+    , xRadius : Quantity Float units
+    , yRadius : Quantity Float units
+    , xDirection : Direction2d coordinates
+    , sweptAngle : SweptAngle
+    }
+    -> Maybe (EllipticalArc2d units coordinates)
 fromEndpoints arguments =
-    if arguments.xRadius > 0 && arguments.yRadius > 0 then
+    if
+        (arguments.xRadius |> Quantity.greaterThan Quantity.zero)
+            && (arguments.yRadius |> Quantity.greaterThan Quantity.zero)
+    then
         let
             temporaryFrame =
                 Frame2d.withXDirection arguments.xDirection
                     (arguments.startPoint
                         |> Point2d.translateIn arguments.xDirection
-                            -arguments.xRadius
+                            (Quantity.negate arguments.xRadius)
                     )
 
             ( x2Ellipse, y2Ellipse ) =
-                arguments.endPoint
-                    |> Point2d.relativeTo temporaryFrame
-                    |> Point2d.coordinates
+                Point2d.coordinatesIn temporaryFrame arguments.endPoint
 
             x2 =
-                x2Ellipse / arguments.xRadius
+                Quantity.ratio x2Ellipse arguments.xRadius
 
             y2 =
-                y2Ellipse / arguments.yRadius
+                Quantity.ratio y2Ellipse arguments.yRadius
 
             cx2 =
                 x2 - 1
@@ -225,55 +246,82 @@ fromEndpoints arguments =
         if d > 0 && d < 1 then
             let
                 midAngle =
-                    atan2 -cy2 -cx2
+                    Angle.radians (atan2 -cy2 -cx2)
 
                 offsetAngle =
-                    acos d
+                    Angle.acos d
 
-                ( startAngle_, sweptAngleInRadians ) =
+                twiceOffsetAngle =
+                    Quantity.multiplyBy 2 offsetAngle
+
+                ( computedStartAngle, computedSweptAngle ) =
                     case arguments.sweptAngle of
                         Types.SmallPositive ->
-                            ( midAngle + offsetAngle
-                            , pi - 2 * offsetAngle
+                            ( midAngle |> Quantity.plus offsetAngle
+                            , Angle.radians pi
+                                |> Quantity.minus
+                                    twiceOffsetAngle
                             )
 
                         Types.SmallNegative ->
-                            ( midAngle - offsetAngle
-                            , -pi + 2 * offsetAngle
+                            ( midAngle |> Quantity.minus offsetAngle
+                            , Angle.radians -pi
+                                |> Quantity.plus
+                                    twiceOffsetAngle
                             )
 
                         Types.LargePositive ->
-                            ( midAngle - offsetAngle
-                            , pi + 2 * offsetAngle
+                            ( midAngle |> Quantity.minus offsetAngle
+                            , Angle.radians pi
+                                |> Quantity.plus
+                                    twiceOffsetAngle
                             )
 
                         Types.LargeNegative ->
-                            ( midAngle + offsetAngle
-                            , -pi - 2 * offsetAngle
+                            ( midAngle |> Quantity.plus offsetAngle
+                            , Angle.radians -pi
+                                |> Quantity.minus
+                                    twiceOffsetAngle
                             )
 
-                centerPoint_ =
+                computedCenterPoint =
                     Point2d.fromCoordinatesIn temporaryFrame
-                        ( arguments.xRadius * (1 - cos startAngle_)
-                        , -arguments.yRadius * sin startAngle_
+                        ( Quantity.multiplyBy (1 - Angle.cos computedStartAngle)
+                            arguments.xRadius
+                        , Quantity.multiplyBy -(Angle.sin computedStartAngle)
+                            arguments.yRadius
                         )
+
+                adjustedStartAngle =
+                    if
+                        computedStartAngle
+                            |> Quantity.greaterThan
+                                (Angle.radians pi)
+                    then
+                        computedStartAngle
+                            |> Quantity.minus
+                                (Angle.radians (2 * pi))
+
+                    else if
+                        computedStartAngle
+                            |> Quantity.lessThan
+                                (Angle.radians -pi)
+                    then
+                        computedStartAngle
+                            |> Quantity.plus
+                                (Angle.radians (2 * pi))
+
+                    else
+                        computedStartAngle
             in
             Just <|
                 with
-                    { centerPoint = centerPoint_
+                    { centerPoint = computedCenterPoint
                     , xDirection = arguments.xDirection
                     , xRadius = arguments.xRadius
                     , yRadius = arguments.yRadius
-                    , startAngle =
-                        if startAngle_ > pi then
-                            startAngle_ - 2 * pi
-
-                        else if startAngle_ < -pi then
-                            startAngle_ + 2 * pi
-
-                        else
-                            startAngle_
-                    , sweptAngle = sweptAngleInRadians
+                    , startAngle = adjustedStartAngle
+                    , sweptAngle = computedSweptAngle
                     }
 
         else
@@ -284,37 +332,37 @@ fromEndpoints arguments =
 
 
 {-| -}
-centerPoint : EllipticalArc2d -> Point2d
+centerPoint : EllipticalArc2d units coordinates -> Point2d units coordinates
 centerPoint (Types.EllipticalArc2d arc) =
     Ellipse2d.centerPoint arc.ellipse
 
 
 {-| -}
-axes : EllipticalArc2d -> Frame2d
+axes : EllipticalArc2d units coordinates -> Frame2d units coordinates {}
 axes (Types.EllipticalArc2d arc) =
     Ellipse2d.axes arc.ellipse
 
 
 {-| -}
-xAxis : EllipticalArc2d -> Axis2d
+xAxis : EllipticalArc2d units coordinates -> Axis2d units coordinates
 xAxis (Types.EllipticalArc2d arc) =
     Ellipse2d.xAxis arc.ellipse
 
 
 {-| -}
-yAxis : EllipticalArc2d -> Axis2d
+yAxis : EllipticalArc2d units coordinates -> Axis2d units coordinates
 yAxis (Types.EllipticalArc2d arc) =
     Ellipse2d.yAxis arc.ellipse
 
 
 {-| -}
-xRadius : EllipticalArc2d -> Float
+xRadius : EllipticalArc2d units coordinates -> Quantity Float units
 xRadius (Types.EllipticalArc2d arc) =
     Ellipse2d.xRadius arc.ellipse
 
 
 {-| -}
-yRadius : EllipticalArc2d -> Float
+yRadius : EllipticalArc2d units coordinates -> Quantity Float units
 yRadius (Types.EllipticalArc2d arc) =
     Ellipse2d.yRadius arc.ellipse
 
@@ -326,7 +374,7 @@ at the start point of the arc.
     --> 0
 
 -}
-startAngle : EllipticalArc2d -> Float
+startAngle : EllipticalArc2d units coordinates -> Angle
 startAngle (Types.EllipticalArc2d arc) =
     arc.startAngle
 
@@ -339,7 +387,7 @@ from the start point to the end point of the arc.
     --> degrees 90
 
 -}
-sweptAngle : EllipticalArc2d -> Float
+sweptAngle : EllipticalArc2d units coordinates -> Angle
 sweptAngle (Types.EllipticalArc2d arc) =
     arc.sweptAngle
 
@@ -356,18 +404,20 @@ sweptAngle (Types.EllipticalArc2d arc) =
     --> Point2d.fromCoordinates ( 0, 1 )
 
 -}
-pointOn : EllipticalArc2d -> ParameterValue -> Point2d
+pointOn : EllipticalArc2d units coordinates -> ParameterValue -> Point2d units coordinates
 pointOn arc parameterValue =
     let
         t =
             ParameterValue.value parameterValue
 
         theta =
-            startAngle arc + t * sweptAngle arc
+            startAngle arc
+                |> Quantity.plus
+                    (Quantity.multiplyBy t (sweptAngle arc))
     in
     Point2d.fromCoordinatesIn (axes arc)
-        ( xRadius arc * cos theta
-        , yRadius arc * sin theta
+        ( Quantity.rCosTheta (xRadius arc) theta
+        , Quantity.rSinTheta (yRadius arc) theta
         )
 
 
@@ -382,7 +432,7 @@ pointOn arc parameterValue =
     --> ]
 
 -}
-pointsAt : List ParameterValue -> EllipticalArc2d -> List Point2d
+pointsAt : List ParameterValue -> EllipticalArc2d units coordinates -> List (Point2d units coordinates)
 pointsAt parameterValues arc =
     List.map (pointOn arc) parameterValues
 
@@ -402,7 +452,7 @@ pointsAt parameterValues arc =
     --> Vector2d.fromComponents ( -3.1416, 0 )
 
 -}
-firstDerivative : EllipticalArc2d -> ParameterValue -> Vector2d
+firstDerivative : EllipticalArc2d units coordinates -> ParameterValue -> Vector2d units coordinates
 firstDerivative arc parameterValue =
     let
         t =
@@ -412,13 +462,14 @@ firstDerivative arc parameterValue =
             sweptAngle arc
 
         theta =
-            startAngle arc + t * deltaTheta
+            startAngle arc |> Quantity.plus (Quantity.multiplyBy t deltaTheta)
     in
-    Vector2d.placeIn (axes arc) <|
-        Vector2d.fromComponents
-            ( -(xRadius arc) * deltaTheta * sin theta
-            , yRadius arc * deltaTheta * cos theta
-            )
+    Vector2d.fromComponentsIn (axes arc)
+        ( Quantity.rTheta (xRadius arc) deltaTheta
+            |> Quantity.multiplyBy (-Angle.sin theta)
+        , Quantity.rTheta (yRadius arc) deltaTheta
+            |> Quantity.multiplyBy (Angle.cos theta)
+        )
 
 
 {-| Evaluate the first derivative of an elliptical arc at a given set of
@@ -433,7 +484,7 @@ parameter values:
     --> ]
 
 -}
-firstDerivativesAt : List ParameterValue -> EllipticalArc2d -> List Vector2d
+firstDerivativesAt : List ParameterValue -> EllipticalArc2d units coordinates -> List (Vector2d units coordinates)
 firstDerivativesAt parameterValues arc =
     List.map (firstDerivative arc) parameterValues
 
@@ -447,10 +498,10 @@ is used as input to functions such as `EllipticalArc2d.tangentDirection` and can
 be constructed using `EllipticalArc2d.nondegenerate`.
 
 -}
-type Nondegenerate
-    = Curved EllipticalArc2d
-    | Horizontal EllipticalArc2d
-    | Vertical EllipticalArc2d
+type Nondegenerate units coordinates
+    = Curved (EllipticalArc2d units coordinates)
+    | Horizontal (EllipticalArc2d units coordinates)
+    | Vertical (EllipticalArc2d units coordinates)
 
 
 {-| Attempt to construct a nondegenerate elliptical arc from a general
@@ -461,7 +512,7 @@ point), returns an `Err` with that point.
     --> Ok nondegenerateExampleArc
 
 -}
-nondegenerate : EllipticalArc2d -> Result Point2d Nondegenerate
+nondegenerate : EllipticalArc2d units coordinates -> Result (Point2d units coordinates) (Nondegenerate units coordinates)
 nondegenerate arc =
     let
         rx =
@@ -470,16 +521,16 @@ nondegenerate arc =
         ry =
             yRadius arc
     in
-    if sweptAngle arc == 0 then
+    if sweptAngle arc == Quantity.zero then
         Err (startPoint arc)
 
-    else if rx == 0 && ry == 0 then
+    else if rx == Quantity.zero && ry == Quantity.zero then
         Err (startPoint arc)
 
-    else if rx == 0 then
+    else if rx == Quantity.zero then
         Ok (Vertical arc)
 
-    else if ry == 0 then
+    else if ry == Quantity.zero then
         Ok (Horizontal arc)
 
     else
@@ -493,7 +544,7 @@ nondegenerate arc =
     --> exampleArc
 
 -}
-fromNondegenerate : Nondegenerate -> EllipticalArc2d
+fromNondegenerate : Nondegenerate units coordinates -> EllipticalArc2d units coordinates
 fromNondegenerate nondegenerateArc =
     case nondegenerateArc of
         Curved arc ->
@@ -522,7 +573,7 @@ parameter value:
     --> Direction2d.fromAngle (degrees 180)
 
 -}
-tangentDirection : Nondegenerate -> ParameterValue -> Direction2d
+tangentDirection : Nondegenerate units coordinates -> ParameterValue -> Direction2d coordinates
 tangentDirection nondegenerateArc parameterValue =
     let
         arc =
@@ -532,42 +583,53 @@ tangentDirection nondegenerateArc parameterValue =
             ParameterValue.value parameterValue
 
         angle =
-            startAngle arc + t * sweptAngle arc
+            startAngle arc
+                |> Quantity.plus
+                    (Quantity.multiplyBy t (sweptAngle arc))
     in
     case nondegenerateArc of
         Curved curvedArc ->
             let
                 sinAngle =
-                    sin angle
+                    Angle.sin angle
 
                 cosAngle =
-                    cos angle
+                    Angle.cos angle
 
                 vx =
-                    -(xRadius curvedArc) * sinAngle
+                    Quantity.multiplyBy -sinAngle (xRadius curvedArc)
 
                 vy =
-                    yRadius curvedArc * cosAngle
+                    Quantity.multiplyBy cosAngle (yRadius curvedArc)
+
+                -- Since xRadius and yRadius are both non-zero and at least one
+                -- of sinAngle or cosAngle must be non-zero, one of vx or vy
+                -- will always be non-zero and therefore this norm will be
+                -- non-zero
+                norm =
+                    Quantity.sqrt
+                        (Quantity.squared vx
+                            |> Quantity.plus
+                                (Quantity.squared vy)
+                        )
+
+                dx =
+                    Quantity.ratio vx norm
+
+                dy =
+                    Quantity.ratio vy norm
             in
-            -- Since xRadius_ and yRadius_ are both non-zero and at least one of
-            -- sinAngle or cosAngle must be non-zero, one of vx or vy will
-            -- always be non-zero and therefore normalizing the vector (vx, vy)
-            -- is safe
-            Vector2d.fromComponents ( vx, vy )
-                |> Vector2d.normalize
-                |> Vector2d.components
-                |> Direction2d.unsafe
-                |> Direction2d.placeIn (axes arc)
+            Direction2d.unsafeFromComponentsIn (axes arc) ( dx, dy )
 
         Vertical verticalArc ->
-            if cos angle >= 0 then
+            if Angle.cos angle >= 0 then
                 yDirection verticalArc
 
             else
                 Direction2d.reverse (yDirection verticalArc)
 
         Horizontal horizontalArc ->
-            if sin angle >= 0 then
+            if Angle.sin angle >= 0 then
                 Direction2d.reverse (xDirection horizontalArc)
 
             else
@@ -586,7 +648,7 @@ parameter values:
     --> ]
 
 -}
-tangentDirectionsAt : List ParameterValue -> Nondegenerate -> List Direction2d
+tangentDirectionsAt : List ParameterValue -> Nondegenerate units coordinates -> List (Direction2d coordinates)
 tangentDirectionsAt parameterValues nondegenerateArc =
     List.map (tangentDirection nondegenerateArc) parameterValues
 
@@ -613,7 +675,7 @@ at a given parameter value:
     --> )
 
 -}
-sample : Nondegenerate -> ParameterValue -> ( Point2d, Direction2d )
+sample : Nondegenerate units coordinates -> ParameterValue -> ( Point2d units coordinates, Direction2d coordinates )
 sample nondegenerateArc parameterValue =
     ( pointOn (fromNondegenerate nondegenerateArc) parameterValue
     , tangentDirection nondegenerateArc parameterValue
@@ -638,7 +700,7 @@ parameter values:
     --> ]
 
 -}
-samplesAt : List ParameterValue -> Nondegenerate -> List ( Point2d, Direction2d )
+samplesAt : List ParameterValue -> Nondegenerate units coordinates -> List ( Point2d units coordinates, Direction2d coordinates )
 samplesAt parameterValues nondegenerateArc =
     List.map (sample nondegenerateArc) parameterValues
 
@@ -649,7 +711,7 @@ samplesAt parameterValues nondegenerateArc =
     --> Point2d.fromCoordinates ( 2, 0 )
 
 -}
-startPoint : EllipticalArc2d -> Point2d
+startPoint : EllipticalArc2d units coordinates -> Point2d units coordinates
 startPoint arc =
     pointOn arc ParameterValue.zero
 
@@ -660,19 +722,19 @@ startPoint arc =
     --> Point2d.fromCoordinates ( 0, 1 )
 
 -}
-endPoint : EllipticalArc2d -> Point2d
+endPoint : EllipticalArc2d units coordinates -> Point2d units coordinates
 endPoint arc =
     pointOn arc ParameterValue.one
 
 
 {-| -}
-xDirection : EllipticalArc2d -> Direction2d
+xDirection : EllipticalArc2d units coordinates -> Direction2d coordinates
 xDirection arc =
     Frame2d.xDirection (axes arc)
 
 
 {-| -}
-yDirection : EllipticalArc2d -> Direction2d
+yDirection : EllipticalArc2d units coordinates -> Direction2d coordinates
 yDirection arc =
     Frame2d.yDirection (axes arc)
 
@@ -692,19 +754,23 @@ properties of the underlying ellipse.
     -->     }
 
 -}
-reverse : EllipticalArc2d -> EllipticalArc2d
+reverse : EllipticalArc2d units coordinates -> EllipticalArc2d units coordinates
 reverse (Types.EllipticalArc2d properties) =
     Types.EllipticalArc2d
         { properties
-            | startAngle = properties.startAngle + properties.sweptAngle
-            , sweptAngle = -properties.sweptAngle
+            | startAngle =
+                properties.startAngle |> Quantity.plus properties.sweptAngle
+            , sweptAngle = Quantity.negate properties.sweptAngle
         }
 
 
-transformBy : (Ellipse2d -> Ellipse2d) -> EllipticalArc2d -> EllipticalArc2d
+transformBy : (Ellipse2d units1 coordinates1 -> Ellipse2d units2 coordinates2) -> EllipticalArc2d units1 coordinates1 -> EllipticalArc2d units2 coordinates2
 transformBy ellipseTransformation (Types.EllipticalArc2d properties) =
     Types.EllipticalArc2d
-        { properties | ellipse = ellipseTransformation properties.ellipse }
+        { ellipse = ellipseTransformation properties.ellipse
+        , startAngle = properties.startAngle
+        , sweptAngle = properties.sweptAngle
+        }
 
 
 {-| Scale an elliptical arc about a given point by a given scale.
@@ -721,9 +787,9 @@ transformBy ellipseTransformation (Types.EllipticalArc2d properties) =
     -->     }
 
 -}
-scaleAbout : Point2d -> Float -> EllipticalArc2d -> EllipticalArc2d
-scaleAbout point scale =
-    transformBy (Ellipse2d.scaleAbout point scale)
+scaleAbout : Point2d units coordinates -> Float -> EllipticalArc2d units coordinates -> EllipticalArc2d units coordinates
+scaleAbout point scale arc =
+    transformBy (Ellipse2d.scaleAbout point scale) arc
 
 
 {-| Rotate an elliptical arc around a given point by a given angle (in radians).
@@ -741,9 +807,9 @@ scaleAbout point scale =
     -->     }
 
 -}
-rotateAround : Point2d -> Float -> EllipticalArc2d -> EllipticalArc2d
-rotateAround point angle =
-    transformBy (Ellipse2d.rotateAround point angle)
+rotateAround : Point2d units coordinates -> Angle -> EllipticalArc2d units coordinates -> EllipticalArc2d units coordinates
+rotateAround point angle arc =
+    transformBy (Ellipse2d.rotateAround point angle) arc
 
 
 {-| Translate an elliptical arc by a given displacement.
@@ -762,9 +828,9 @@ rotateAround point angle =
     -->     }
 
 -}
-translateBy : Vector2d -> EllipticalArc2d -> EllipticalArc2d
-translateBy displacement =
-    transformBy (Ellipse2d.translateBy displacement)
+translateBy : Vector2d units coordinates -> EllipticalArc2d units coordinates -> EllipticalArc2d units coordinates
+translateBy displacement arc =
+    transformBy (Ellipse2d.translateBy displacement) arc
 
 
 {-| Translate an elliptical arc in a given direction by a given distance;
@@ -777,7 +843,7 @@ is equivalent to
         (Vector2d.withLength distance direction)
 
 -}
-translateIn : Direction2d -> Float -> EllipticalArc2d -> EllipticalArc2d
+translateIn : Direction2d coordinates -> Quantity Float units -> EllipticalArc2d units coordinates -> EllipticalArc2d units coordinates
 translateIn direction distance arc =
     translateBy (Vector2d.withLength distance direction) arc
 
@@ -795,9 +861,9 @@ translateIn direction distance arc =
     --> Point2d.fromCoordinates ( 0, 1 )
 
 -}
-mirrorAcross : Axis2d -> EllipticalArc2d -> EllipticalArc2d
-mirrorAcross axis =
-    transformBy (Ellipse2d.mirrorAcross axis)
+mirrorAcross : Axis2d units coordinates -> EllipticalArc2d units coordinates -> EllipticalArc2d units coordinates
+mirrorAcross axis arc =
+    transformBy (Ellipse2d.mirrorAcross axis) arc
 
 
 {-| Take an elliptical arc defined in global coordinates, and return it expressed in
@@ -818,9 +884,9 @@ local coordinates relative to a given reference frame.
     -->     }
 
 -}
-relativeTo : Frame2d -> EllipticalArc2d -> EllipticalArc2d
-relativeTo frame =
-    transformBy (Ellipse2d.relativeTo frame)
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> EllipticalArc2d units globalCoordinates -> EllipticalArc2d units localCoordinates
+relativeTo frame arc =
+    transformBy (Ellipse2d.relativeTo frame) arc
 
 
 {-| Take an elliptical arc considered to be defined in local coordinates
@@ -842,9 +908,9 @@ coordinates.
     -->     }
 
 -}
-placeIn : Frame2d -> EllipticalArc2d -> EllipticalArc2d
-placeIn frame =
-    transformBy (Ellipse2d.placeIn frame)
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> EllipticalArc2d units localCoordinates -> EllipticalArc2d units globalCoordinates
+placeIn frame arc =
+    transformBy (Ellipse2d.placeIn frame) arc
 
 
 {-| Find a conservative upper bound on the magnitude of the second derivative of
@@ -856,7 +922,7 @@ kinds of linear approximations.
     --> 4.935
 
 -}
-maxSecondDerivativeMagnitude : EllipticalArc2d -> Float
+maxSecondDerivativeMagnitude : EllipticalArc2d units coordinates -> Quantity Float units
 maxSecondDerivativeMagnitude arc =
     let
         theta0 =
@@ -866,10 +932,10 @@ maxSecondDerivativeMagnitude arc =
             sweptAngle arc
 
         theta1 =
-            theta0 + dTheta
+            theta0 |> Quantity.plus dTheta
 
         dThetaSquared =
-            dTheta * dTheta
+            Quantity.squared dTheta
 
         rx =
             xRadius arc
@@ -878,16 +944,16 @@ maxSecondDerivativeMagnitude arc =
             yRadius arc
 
         kx =
-            dThetaSquared * rx
+            dThetaSquared |> Quantity.times rx
 
         ky =
-            dThetaSquared * ry
+            dThetaSquared |> Quantity.times ry
 
         thetaInterval =
-            Interval.from theta0 theta1
+            Quantity.Interval.from theta0 theta1
 
         sinThetaInterval =
-            Interval.sin thetaInterval
+            Quantity.Interval.sin thetaInterval
 
         includeKx =
             Interval.contains 0 sinThetaInterval
@@ -896,11 +962,11 @@ maxSecondDerivativeMagnitude arc =
             (Interval.maxValue sinThetaInterval == 1)
                 || (Interval.minValue sinThetaInterval == -1)
     in
-    if (kx >= ky) && includeKx then
+    if (kx |> Quantity.greaterThanOrEqualTo ky) && includeKx then
         -- kx is the global max and is included in the arc
         kx
 
-    else if (ky >= kx) && includeKy then
+    else if (ky |> Quantity.greaterThanOrEqualTo kx) && includeKy then
         -- ky is the global max and is included in the arc
         ky
 
@@ -908,35 +974,37 @@ maxSecondDerivativeMagnitude arc =
         -- global max is not included in the arc, so max must be at an endpoint
         let
             rxSquared =
-                rx * rx
+                Quantity.squared rx
 
             rySquared =
-                ry * ry
+                Quantity.squared ry
 
             cosTheta0 =
-                cos theta0
+                Angle.cos theta0
 
             sinTheta0 =
-                sin theta0
+                Angle.sin theta0
 
             cosTheta1 =
-                cos theta1
+                Angle.cos theta1
 
             sinTheta1 =
-                sin theta1
+                Angle.sin theta1
 
             d0 =
-                (rxSquared * cosTheta0 * cosTheta0)
-                    + (rySquared * sinTheta0 * sinTheta0)
+                (rxSquared |> Quantity.multiplyBy (cosTheta0 * cosTheta0))
+                    |> Quantity.plus
+                        (rySquared |> Quantity.multiplyBy (sinTheta0 * sinTheta0))
 
             d1 =
-                (rxSquared * cosTheta1 * cosTheta1)
-                    + (rySquared * sinTheta1 * sinTheta1)
+                (rxSquared |> Quantity.multiplyBy (cosTheta1 * cosTheta1))
+                    |> Quantity.plus
+                        (rySquared |> Quantity.multiplyBy (sinTheta1 * sinTheta1))
         in
-        dThetaSquared * sqrt (max d0 d1)
+        Quantity.sqrt (Quantity.max d0 d1) |> Quantity.multiplyBy dThetaSquared
 
 
-derivativeMagnitude : EllipticalArc2d -> ParameterValue -> Float
+derivativeMagnitude : EllipticalArc2d units coordinates -> ParameterValue -> Quantity Float units
 derivativeMagnitude arc =
     let
         rx =
@@ -952,7 +1020,7 @@ derivativeMagnitude arc =
             sweptAngle arc
 
         absDTheta =
-            abs dTheta
+            Quantity.abs dTheta
     in
     \parameterValue ->
         let
@@ -960,24 +1028,28 @@ derivativeMagnitude arc =
                 ParameterValue.value parameterValue
 
             theta =
-                theta0 + t * dTheta
+                theta0 |> Quantity.plus (dTheta |> Quantity.multiplyBy t)
 
             dx =
-                rx * sin theta
+                Quantity.rSinTheta rx theta
 
             dy =
-                ry * cos theta
+                Quantity.rCosTheta ry theta
+
+            r =
+                Quantity.sqrt
+                    (Quantity.squared dx |> Quantity.plus (Quantity.squared dy))
         in
-        absDTheta * sqrt (dx * dx + dy * dy)
+        Quantity.rTheta r absDTheta
 
 
 {-| An elliptical arc that has been parameterized by arc length.
 -}
-type ArcLengthParameterized
+type ArcLengthParameterized units coordinates
     = ArcLengthParameterized
-        { underlyingArc : EllipticalArc2d
-        , parameterization : ArcLengthParameterization
-        , nondegenerateArc : Maybe Nondegenerate
+        { underlyingArc : EllipticalArc2d units coordinates
+        , parameterization : ArcLengthParameterization units
+        , nondegenerateArc : Maybe (Nondegenerate units coordinates)
         }
 
 
@@ -992,7 +1064,7 @@ error.
                 { maxError = 1.0e-4 }
 
 -}
-arcLengthParameterized : { maxError : Float } -> EllipticalArc2d -> ArcLengthParameterized
+arcLengthParameterized : { maxError : Quantity Float units } -> EllipticalArc2d units coordinates -> ArcLengthParameterized units coordinates
 arcLengthParameterized { maxError } arc =
     let
         parameterization =
@@ -1021,7 +1093,7 @@ within the tolerance given when calling `arcLengthParameterized`.
     --> 2.4221
 
 -}
-arcLength : ArcLengthParameterized -> Float
+arcLength : ArcLengthParameterized units coordinates -> Quantity Float units
 arcLength parameterizedArc =
     arcLengthParameterization parameterizedArc
         |> ArcLengthParameterization.totalArcLength
@@ -1044,7 +1116,7 @@ If the given arc length is less than zero or greater than the arc length of the
 arc, returns `Nothing`.
 
 -}
-pointAlong : ArcLengthParameterized -> Float -> Maybe Point2d
+pointAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Maybe (Point2d units coordinates)
 pointAlong (ArcLengthParameterized parameterized) distance =
     parameterized.parameterization
         |> ArcLengthParameterization.arcLengthToParameterValue distance
@@ -1062,7 +1134,7 @@ If the given arc length is less than zero or greater than the arc length of the
 elliptical arc (or if the elliptical arc is degenerate), returns `Nothing`.
 
 -}
-tangentDirectionAlong : ArcLengthParameterized -> Float -> Maybe Direction2d
+tangentDirectionAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Maybe (Direction2d coordinates)
 tangentDirectionAlong (ArcLengthParameterized parameterized) distance =
     case parameterized.nondegenerateArc of
         Just nondegenerateArc ->
@@ -1089,7 +1161,7 @@ If the given arc length is less than zero or greater than the arc length of the
 spline (or if the spline is degenerate), returns `Nothing`.
 
 -}
-sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point2d, Direction2d )
+sampleAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Maybe ( Point2d units coordinates, Direction2d coordinates )
 sampleAlong (ArcLengthParameterized parameterized) distance =
     case parameterized.nondegenerateArc of
         Just nondegenerateArc ->
@@ -1102,12 +1174,12 @@ sampleAlong (ArcLengthParameterized parameterized) distance =
 
 
 {-| -}
-arcLengthParameterization : ArcLengthParameterized -> ArcLengthParameterization
+arcLengthParameterization : ArcLengthParameterized units coordinates -> ArcLengthParameterization units
 arcLengthParameterization (ArcLengthParameterized parameterized) =
     parameterized.parameterization
 
 
 {-| -}
-fromArcLengthParameterized : ArcLengthParameterized -> EllipticalArc2d
+fromArcLengthParameterized : ArcLengthParameterized units coordinates -> EllipticalArc2d units coordinates
 fromArcLengthParameterized (ArcLengthParameterized parameterized) =
     parameterized.underlyingArc
