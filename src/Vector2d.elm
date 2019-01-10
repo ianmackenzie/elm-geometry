@@ -10,7 +10,7 @@
 module Vector2d exposing
     ( Vector2d
     , zero
-    , fromComponents, fromPolarComponents, from, withLength, perpendicularTo, interpolateFrom
+    , fromComponents, fromComponentsIn, fromPolarComponents, fromPolarComponentsIn, from, withLength, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
     , components, xComponent, yComponent, polarComponents, length, squaredLength, direction, lengthAndDirection
     , equalWithin, lexicographicComparison
@@ -49,7 +49,7 @@ Although there are no predefined constants for the vectors with components
 
 # Constructors
 
-@docs fromComponents, fromPolarComponents, from, withLength, perpendicularTo, interpolateFrom
+@docs fromComponents, fromComponentsIn, fromPolarComponents, fromPolarComponentsIn, from, withLength, perpendicularTo, interpolateFrom
 
 
 # Conversion
@@ -138,6 +138,40 @@ fromComponents givenComponents =
     Types.Vector2d givenComponents
 
 
+{-| Construct a vector given its local components within a particular frame:
+
+    rotatedFrame =
+        Frame2d.atOrigin
+            |> Frame2d.rotateBy (Angle.degrees 45)
+
+    Vector2d.fromComponentsIn rotatedFrame
+        ( Length.meters 2
+        , Length.meters 0
+        )
+    --> Vector2d.fromComponents
+    -->     ( Length.meters 1.4142
+    -->     , Length.meters 1.4142
+    -->     )
+
+-}
+fromComponentsIn : Frame2d units coordinates defines -> ( Quantity Float units, Quantity Float units ) -> Vector2d units coordinates
+fromComponentsIn frame localComponents =
+    let
+        ( x, y ) =
+            localComponents
+
+        ( x1, y1 ) =
+            Direction2d.components (Frame2d.xDirection frame)
+
+        ( x2, y2 ) =
+            Direction2d.components (Frame2d.yDirection frame)
+    in
+    fromComponents
+        ( Quantity.aXbY x1 x x2 y
+        , Quantity.aXbY y1 x y2 y
+        )
+
+
 {-| Construct a vector from a length and angle. The angle is measured
 counterclockwise from the positive X direction.
 
@@ -150,6 +184,35 @@ fromPolarComponents ( givenRadius, givenAngle ) =
     fromComponents
         ( Quantity.rCosTheta givenRadius givenAngle
         , Quantity.rSinTheta givenRadius givenAngle
+        )
+
+
+{-| Construct a vector given its local polar components within a particular
+frame:
+
+    rotatedFrame =
+        Frame2d.atOrigin
+            |> Frame2d.rotateBy (Angle.degrees 45)
+
+    Vector2d.fromPolarComponentsIn rotatedFrame
+        ( Length.meters 1
+        , Angle.degrees 0
+        )
+    --> Vector2d.fromComponents
+    -->     ( Length.meters 0.7071
+    -->     , Length.meters 0.7071
+    -->     )
+
+-}
+fromPolarComponentsIn : Frame2d units components defines -> ( Quantity Float units, Angle ) -> Vector2d units components
+fromPolarComponentsIn frame localPolarComponents =
+    let
+        ( r, theta ) =
+            localPolarComponents
+    in
+    fromComponentsIn frame
+        ( Quantity.rCosTheta r theta
+        , Quantity.rSinTheta r theta
         )
 
 

@@ -10,7 +10,7 @@
 module Vector3d exposing
     ( Vector3d
     , zero
-    , fromComponents, from, withLength, on, perpendicularTo, interpolateFrom
+    , fromComponents, fromComponentsIn, from, withLength, on, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
     , components, xComponent, yComponent, zComponent, length, squaredLength, direction, lengthAndDirection
     , equalWithin, lexicographicComparison
@@ -50,7 +50,7 @@ you will actually want their `Direction3d` versions [`Direction3d.x`](Direction3
 
 # Constructors
 
-@docs fromComponents, from, withLength, on, perpendicularTo, interpolateFrom
+@docs fromComponents, fromComponentsIn, from, withLength, on, perpendicularTo, interpolateFrom
 
 
 # Conversion
@@ -142,6 +142,47 @@ zero =
 fromComponents : ( Quantity Float units, Quantity Float units, Quantity Float units ) -> Vector3d units coordinates
 fromComponents givenComponents =
     Types.Vector3d givenComponents
+
+
+{-| Construct a vector given its local components within a particular frame:
+
+    frame =
+        Frame3d.atOrigin
+            |> Frame3d.rotateAround Axis3d.z
+                (Angle.degrees 45)
+
+    Vector3d.fromComponentsIn frame
+        ( Speed.feetPerSecond 1
+        , Speed.feetPerSecond 0
+        , Speed.feetPerSecond 2
+        )
+    --> Vector3d.fromComponents
+    -->     ( Speed.feetPerSecond 0.7071
+    -->     , Speed.feetPerSecond 0.7071
+    -->     , Speed.feetPerSecond 2
+    -->     )
+
+-}
+fromComponentsIn : Frame3d units components defines -> ( Quantity Float units, Quantity Float units, Quantity Float units ) -> Vector3d units components
+fromComponentsIn frame localComponents =
+    let
+        ( x, y, z ) =
+            localComponents
+
+        ( x1, y1, z1 ) =
+            Direction3d.components (Frame3d.xDirection frame)
+
+        ( x2, y2, z2 ) =
+            Direction3d.components (Frame3d.yDirection frame)
+
+        ( x3, y3, z3 ) =
+            Direction3d.components (Frame3d.zDirection frame)
+    in
+    fromComponents
+        ( Quantity.aXbYcZ x1 x x2 y x3 z
+        , Quantity.aXbYcZ y1 x y2 y y3 z
+        , Quantity.aXbYcZ z1 x z2 y z3 z
+        )
 
 
 {-| Construct a vector from the first given point to the second.
