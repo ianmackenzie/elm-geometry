@@ -11,7 +11,7 @@ module Frame3d exposing
     ( Frame3d
     , atOrigin
     , withXDirection, withYDirection, withZDirection, atPoint, atCoordinates, unsafe
-    , define
+    , define, copy
     , originPoint, xDirection, yDirection, zDirection, isRightHanded
     , xAxis, yAxis, zAxis
     , xyPlane, yxPlane, yzPlane, zyPlane, zxPlane, xzPlane
@@ -83,7 +83,7 @@ resulting frame is [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordi
 
 # Local coordinates
 
-@docs define
+@docs define, copy
 
 
 # Properties
@@ -246,6 +246,11 @@ withZDirection givenZDirection givenOrigin =
 define : localCoordinates -> Frame3d units globalCoordinates {} -> Frame3d units globalCoordinates { defines : localCoordinates }
 define localCoordinates (Types.Frame3d properties) =
     Types.Frame3d properties
+
+
+copy : Frame2d units coordinates defines -> Frame2d units coordinates {}
+copy (Types.Frame2d properties) =
+    Types.Frame2d properties
 
 
 {-| Construct a frame directly from its origin point and X, Y and Z directions:

@@ -11,7 +11,7 @@ module Frame2d exposing
     ( Frame2d
     , atOrigin
     , atPoint, atCoordinates, withXDirection, withYDirection, unsafe
-    , define
+    , define, copy
     , originPoint, xDirection, yDirection, isRightHanded, xAxis, yAxis
     , reverseX, reverseY, moveTo, rotateBy, rotateAround, translateBy, translateIn, translateAlongOwn, mirrorAcross
     , relativeTo, placeIn
@@ -46,7 +46,7 @@ always perpendicular to each other). It can be thought of as:
 
 # Local coordinates
 
-@docs define
+@docs define, copy
 
 
 # Properties
@@ -146,6 +146,11 @@ withYDirection givenDirection givenOrigin =
 
 define : localCoordinates -> Frame2d units globalCoordinates {} -> Frame2d units globalCoordinates { defines : localCoordinates }
 define localCoordinates (Types.Frame2d properties) =
+    Types.Frame2d properties
+
+
+copy : Frame2d units coordinates defines -> Frame2d units coordinates {}
+copy (Types.Frame2d properties) =
     Types.Frame2d properties
 
 
