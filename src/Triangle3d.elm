@@ -120,7 +120,6 @@ on sketchPlane triangle2d =
     ( p1, p2, p3 ) =
         Triangle3d.vertices exampleTriangle
 
-
     --> p1 = Point3d.fromCoordinates ( 1, 0, 0 )
     --> p2 = Point3d.fromCoordinates ( 2, 0, 0 )
     --> p3 = Point3d.fromCoordinates ( 2, 1, 3 )
@@ -137,7 +136,6 @@ second to the third, and from the third back to the first.
 
     ( e1, e2, e3 ) =
         Triangle3d.edges exampleTriangle
-
 
     --> e1 =
     -->     LineSegment3d.fromEndpoints

@@ -94,7 +94,6 @@ fromVertices =
     ( p1, p2, p3 ) =
         Triangle2d.vertices exampleTriangle
 
-
     --> p1 = Point2d.fromCoordinates ( 1, 1 )
     --> p2 = Point2d.fromCoordinates ( 2, 1 )
     --> p3 = Point2d.fromCoordinates ( 1, 3 )
@@ -111,7 +110,6 @@ second to the third, and from the third back to the first.
 
     ( e1, e2, e3 ) =
         Triangle2d.edges exampleTriangle
-
 
     --> e1 =
     -->     LineSegment2d.fromEndpoints
