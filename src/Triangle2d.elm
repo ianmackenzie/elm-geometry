@@ -198,7 +198,7 @@ contains point triangle =
                 segmentVector =
                     Vector2d.from startVertex endVertex
             in
-            Vector2d.crossProduct segmentVector vectorToPoint
+            segmentVector |> Vector2d.cross vectorToPoint
 
         firstProduct =
             crossProduct p1 p2
@@ -251,7 +251,7 @@ counterclockwiseArea triangle =
         secondVector =
             Vector2d.from p1 p3
     in
-    Quantity.multiplyBy 0.5 (Vector2d.crossProduct firstVector secondVector)
+    Quantity.multiplyBy 0.5 (firstVector |> Vector2d.cross secondVector)
 
 
 {-| Get the signed area of a triangle, returning a positive value if the

@@ -14,7 +14,7 @@ module Vector3d exposing
     , fromTuple, toTuple, fromRecord, toRecord
     , components, componentsIn, xComponent, yComponent, componentIn, zComponent, length, squaredLength, direction, lengthAndDirection
     , equalWithin, lexicographicComparison
-    , plus, minus, dotProduct, crossProduct, tripleProduct
+    , plus, minus, dot, cross
     , reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
     , relativeTo, placeIn, projectInto
     )
@@ -69,7 +69,7 @@ you will actually want their `Direction3d` versions [`Direction3d.x`](Direction3
 
 # Arithmetic
 
-@docs plus, minus, dotProduct, crossProduct, tripleProduct
+@docs plus, minus, dot, cross
 
 
 # Transformations
@@ -106,7 +106,7 @@ import Bootstrap.Plane3d as Plane3d
 import Bootstrap.Point3d as Point3d
 import Bootstrap.SketchPlane3d as SketchPlane3d
 import Geometry.Types as Types exposing (Axis3d, Direction3d, Frame3d, Plane3d, Point3d, SketchPlane3d)
-import Quantity exposing (Cubed, Quantity(..), Squared, Unitless)
+import Quantity exposing (Cubed, Product, Quantity(..), Squared, Unitless)
 import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
 
@@ -771,17 +771,25 @@ minus secondVector firstVector =
 {-| Find the dot product of two vectors.
 
     firstVector =
-        Vector3d.fromComponents ( 1, 0, 2 )
+        Vector3d.fromComponents
+            ( Length.meters 1
+            , Length.meters 0
+            , Length.meters 2
+            )
 
     secondVector =
-        Vector3d.fromComponents ( 3, 4, 5 )
+        Vector3d.fromComponents
+            ( Length.meters 3
+            , Length.meters 4
+            , Length.meters 5
+            )
 
-    Vector3d.dotProduct firstVector secondVector
-    --> 13
+    firstVector |> Vector3d.dot secondVector
+    --> Area.squareMeters 13
 
 -}
-dotProduct : Vector3d units coordinates -> Vector3d units coordinates -> Quantity Float (Squared units)
-dotProduct firstVector secondVector =
+dot : Vector3d units2 coordinates -> Vector3d units1 coordinates -> Quantity Float (Product units1 units2)
+dot secondVector firstVector =
     let
         ( x1, y1, z1 ) =
             components firstVector
@@ -797,17 +805,41 @@ dotProduct firstVector secondVector =
 {-| Find the cross product of two vectors.
 
     firstVector =
-        Vector3d.fromComponents ( 2, 0, 0 )
+        Vector3d.fromComponents
+            ( Length.meters 2
+            , Length.meters 0
+            , Length.meters 0
+            )
 
     secondVector =
-        Vector3d.fromComponents ( 0, 3, 0 )
+        Vector3d.fromComponents
+            ( Length.meters 0
+            , Length.meters 3
+            , Length.meters 0
+            )
 
-    Vector3d.crossProduct firstVector secondVector
-    --> Vector3d.fromComponents ( 0, 0, 6 )
+    firstVector |> Vector3d.cross secondVector
+    --> Vector3d.fromComponents
+    -->     ( Quantity.zero
+    -->     , Quantity.zero
+    -->     , Area.squareMeters 6
+    -->     )
+
+Note the argument order - `v1 x v2` would be written as
+
+    v1 |> Vector3d.cross v2
+
+which is the same as
+
+    Vector3d.cross v2 v1
+
+but the _opposite_ of
+
+    Vector3d.cross v1 v2
 
 -}
-crossProduct : Vector3d units coordinates -> Vector3d units coordinates -> Vector3d (Squared units) coordinates
-crossProduct firstVector secondVector =
+cross : Vector3d units2 coordinates -> Vector3d units1 coordinates -> Vector3d (Product units1 units2) coordinates
+cross secondVector firstVector =
     let
         ( x1, y1, z1 ) =
             components firstVector

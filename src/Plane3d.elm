@@ -168,7 +168,7 @@ throughPoints firstPoint secondPoint thirdPoint =
             Vector3d.from secondPoint thirdPoint
 
         crossProduct =
-            Vector3d.crossProduct firstVector secondVector
+            firstVector |> Vector3d.cross secondVector
     in
     Vector3d.direction crossProduct |> Maybe.map (through firstPoint)
 

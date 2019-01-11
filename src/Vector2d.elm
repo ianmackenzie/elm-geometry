@@ -14,7 +14,7 @@ module Vector2d exposing
     , fromTuple, toTuple, fromRecord, toRecord
     , components, componentsIn, xComponent, yComponent, componentIn, polarComponents, length, squaredLength, direction, lengthAndDirection
     , equalWithin, lexicographicComparison
-    , plus, minus, dotProduct, crossProduct
+    , plus, minus, dot, cross
     , reverse, normalize, scaleBy, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
     , relativeTo, placeIn
     )
@@ -68,7 +68,7 @@ Although there are no predefined constants for the vectors with components
 
 # Arithmetic
 
-@docs plus, minus, dotProduct, crossProduct
+@docs plus, minus, dot, cross
 
 
 # Transformations
@@ -101,7 +101,7 @@ import Bootstrap.Direction2d as Direction2d
 import Bootstrap.Frame2d as Frame2d
 import Bootstrap.Point2d as Point2d
 import Geometry.Types as Types exposing (Axis2d, Direction2d, Frame2d, Point2d)
-import Quantity exposing (Quantity, Squared, Unitless)
+import Quantity exposing (Product, Quantity, Squared, Unitless)
 import Quantity.Extra as Quantity
 
 
@@ -703,17 +703,23 @@ minus secondVector firstVector =
 {-| Find the dot product of two vectors.
 
     firstVector =
-        Vector2d.fromComponents ( 1, 2 )
+        Vector2d.fromComponents
+            ( Length.meters 1
+            , Length.meters 2
+            )
 
     secondVector =
-        Vector2d.fromComponents ( 3, 4 )
+        Vector2d.fromComponents
+            ( Length.meters 3
+            , Length.meters 4
+            )
 
-    Vector2d.dotProduct firstVector secondVector
-    --> 11
+    firstVector |> Vector2d.dot secondVector
+    --> Area.squareMeters 11
 
 -}
-dotProduct : Vector2d units coordinates -> Vector2d units coordinates -> Quantity Float (Squared units)
-dotProduct firstVector secondVector =
+dot : Vector2d units2 coordinates -> Vector2d units1 coordinates -> Quantity Float (Product units1 units2)
+dot secondVector firstVector =
     let
         ( x1, y1 ) =
             components firstVector
@@ -724,19 +730,8 @@ dotProduct firstVector secondVector =
     (x1 |> Quantity.times x2) |> Quantity.plus (y1 |> Quantity.times y2)
 
 
-{-| Find the scalar 'cross product' of two vectors in 2D. This is defined as
-
-    crossProduct firstVector secondVector =
-        let
-            ( x1, y1 ) =
-                components firstVector
-
-            ( x2, y2 ) =
-                components secondVector
-        in
-        x1 * y2 - y1 * x2
-
-and is useful in many of the same ways as the 3D cross product:
+{-| Find the scalar 'cross product' of two vectors in 2D. This is useful in many
+of the same ways as the 3D cross product:
 
   - Its length is equal to the product of the lengths of the two given vectors
     and the sine of the angle between them, so it can be used as a metric to
@@ -746,26 +741,44 @@ and is useful in many of the same ways as the 3D cross product:
     negative indicates a clockwise rotation), similar to how the direction of
     the 3D cross product indicates the direction of rotation.
 
+Note the argument order - `v1 x v2` would be written as
+
+    v1 |> Vector2d.cross v2
+
+which is the same as
+
+    Vector2d.cross v2 v1
+
+but the _opposite_ of
+
+    Vector2d.cross v1 v2
+
 Some examples:
 
     firstVector =
-        Vector2d.fromComponents ( 2, 0 )
+        Vector2d.fromComponents
+            ( Length.feet 2
+            , Length.feet 0
+            )
 
     secondVector =
-        Vector2d.fromComponents ( 0, 3 )
+        Vector2d.fromComponents
+            ( Length.feet 0
+            , Length.feet 3
+            )
 
-    Vector2d.crossProduct firstVector secondVector
-    --> 6
+    firstVector |> Vector2d.cross secondVector
+    --> Area.squareFeet 6
 
-    Vector2d.crossProduct secondVector firstVector
-    --> -6
+    secondVector |> Vector2d.cross firstVector
+    --> Area.squareFeet -6
 
-    Vector2d.crossProduct firstVector firstVector
-    --> 0
+    firstVector |> Vector2d.cross firstVector
+    --> Area.squareFeet 0
 
 -}
-crossProduct : Vector2d units coordinates -> Vector2d units coordinates -> Quantity Float (Squared units)
-crossProduct firstVector secondVector =
+cross : Vector2d units2 coordinates -> Vector2d units1 coordinates -> Quantity Float (Product units1 units2)
+cross secondVector firstVector =
     let
         ( x1, y1 ) =
             components firstVector

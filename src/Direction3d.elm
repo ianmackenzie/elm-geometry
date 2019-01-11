@@ -469,13 +469,11 @@ orthonormalize xVector xyVector xyzVector =
                         (\yDirection ->
                             let
                                 rightHandedZVector =
-                                    Vector3d.crossProduct xVector xyVector
+                                    xVector |> Vector3d.cross xyVector
 
                                 tripleProduct =
-                                    Vector3d.tripleProduct
-                                        xVector
-                                        xyVector
-                                        xyzVector
+                                    rightHandedZVector
+                                        |> Vector3d.dot xyzVector
 
                                 zVector =
                                     if tripleProduct |> Quantity.greaterThan Quantity.zero then

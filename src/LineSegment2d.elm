@@ -353,16 +353,16 @@ intersectionPoint lineSegment1 lineSegment2 =
             Vector2d.from q p_
 
         pqXr =
-            Vector2d.crossProduct pq r
+            pq |> Vector2d.cross r
 
         pqXs =
-            Vector2d.crossProduct pq s
+            pq |> Vector2d.cross s
 
         sXqp_ =
-            Vector2d.crossProduct s qp_
+            s |> Vector2d.cross qp_
 
         rXpq_ =
-            Vector2d.crossProduct r pq_
+            r |> Vector2d.cross pq_
 
         tDenominator =
             pqXs |> Quantity.minus sXqp_
@@ -373,7 +373,7 @@ intersectionPoint lineSegment1 lineSegment2 =
     if tDenominator == Quantity.zero || uDenominator == Quantity.zero then
         -- Segments are parallel or collinear.
         -- In collinear case, we check if there is only one intersection point.
-        if Vector2d.dotProduct r s |> Quantity.lessThan Quantity.zero then
+        if r |> Vector2d.dot s |> Quantity.lessThan Quantity.zero then
             if p_ == q_ then
                 -- p |----- p_ | q_ -----| q
                 Just p_

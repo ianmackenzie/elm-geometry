@@ -188,8 +188,13 @@ with arguments =
 
 counterclockwiseAround : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Bool
 counterclockwiseAround origin a b =
-    Vector2d.crossProduct (Vector2d.from origin a) (Vector2d.from origin b)
-        |> Quantity.greaterThanOrEqualTo Quantity.zero
+    let
+        crossProduct =
+            Vector2d.from origin a
+                |> Vector2d.cross
+                    (Vector2d.from origin b)
+    in
+    crossProduct |> Quantity.greaterThanOrEqualTo Quantity.zero
 
 
 chainHelp : List (Point2d units coordinates) -> List (Point2d units coordinates) -> List (Point2d units coordinates)

@@ -214,7 +214,7 @@ area triangle =
             Vector3d.from p1 p3
     in
     Quantity.multiplyBy 0.5
-        (Vector3d.length (Vector3d.crossProduct firstVector secondVector))
+        (Vector3d.length (firstVector |> Vector3d.cross secondVector))
 
 
 {-| Attempt to find the normal direction to a triangle. The resulting direction
@@ -242,7 +242,7 @@ normalDirection triangle =
         v2 =
             Vector3d.from p2 p3
     in
-    Vector3d.direction (Vector3d.crossProduct v1 v2)
+    Vector3d.direction (v1 |> Vector3d.cross v2)
 
 
 {-| Scale a triangle about a given point by a given scale.
