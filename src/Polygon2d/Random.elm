@@ -9,14 +9,17 @@
 
 module Polygon2d.Random exposing (polygon2d)
 
+import Angle exposing (Angle)
 import BoundingBox2d exposing (BoundingBox2d)
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
+import Quantity exposing (Quantity)
+import Quantity.Extra as Quantity
 import Random exposing (Generator)
 import Vector2d exposing (Vector2d)
 
 
-radialPolygonWithHole : BoundingBox2d -> Generator Polygon2d
+radialPolygonWithHole : BoundingBox2d units coordinates -> Generator (Polygon2d units coordinates)
 radialPolygonWithHole boundingBox =
     let
         centerPoint =
@@ -26,19 +29,30 @@ radialPolygonWithHole boundingBox =
             BoundingBox2d.dimensions boundingBox
 
         minRadius =
-            0.05 * min width height
+            Quantity.multiplyBy 0.05 (Quantity.min width height)
 
         maxRadius =
-            0.5 * min width height - minRadius
+            Quantity.multiplyBy 0.5 (Quantity.min width height)
+                |> Quantity.minus minRadius
 
         midRadius =
-            (minRadius + maxRadius) / 2
+            Quantity.midpoint minRadius maxRadius
 
         innerRadiusGenerator =
-            Random.float minRadius (midRadius - 5)
+            Random.map
+                (Quantity.interpolateFrom
+                    minRadius
+                    (Quantity.multiplyBy 0.95 midRadius)
+                )
+                (Random.float 0 1)
 
         outerRadiusGenerator =
-            Random.float (midRadius + 5) maxRadius
+            Random.map
+                (Quantity.interpolateFrom
+                    (Quantity.multiplyBy 1.05 midRadius)
+                    maxRadius
+                )
+                (Random.float 0 1)
     in
     Random.int 3 32
         |> Random.andThen
@@ -49,10 +63,12 @@ radialPolygonWithHole boundingBox =
                         (List.indexedMap
                             (\index ( innerRadius, outerRadius ) ->
                                 let
+                                    angleFraction =
+                                        toFloat index / toFloat numPoints
+
                                     angle =
-                                        turns 1
-                                            * toFloat index
-                                            / toFloat numPoints
+                                        Quantity.multiplyBy angleFraction
+                                            (Angle.turns 1)
 
                                     innerRadialVector =
                                         Vector2d.fromPolarComponents
@@ -101,7 +117,7 @@ localCoordinates =
     Random.map2 Tuple.pair (Random.float 0.1 0.9) (Random.float 0.1 0.9)
 
 
-loopPoints : BoundingBox2d -> List ( Int, Int ) -> Generator (List Point2d)
+loopPoints : BoundingBox2d units coordinates -> List ( Int, Int ) -> Generator (List (Point2d units coordinates))
 loopPoints boundingBox gridCoordinates =
     let
         { minX, minY } =
@@ -111,16 +127,16 @@ loopPoints boundingBox gridCoordinates =
             BoundingBox2d.dimensions boundingBox
 
         xStart =
-            minX + width * 0.15
+            minX |> Quantity.plus (Quantity.multiplyBy 0.15 width)
 
         yStart =
-            minY + width * 0.15
+            minY |> Quantity.plus (Quantity.multiplyBy 0.15 width)
 
         xStep =
-            width * 0.7 / 8
+            width |> Quantity.multiplyBy (0.7 / 8)
 
         yStep =
-            height * 0.7 / 8
+            height |> Quantity.multiplyBy (0.7 / 8)
     in
     Random.list (List.length gridCoordinates) localCoordinates
         |> Random.map
@@ -128,8 +144,12 @@ loopPoints boundingBox gridCoordinates =
                 List.map2
                     (\( i, j ) ( u, v ) ->
                         Point2d.fromCoordinates
-                            ( xStart + toFloat i * xStep + u * xStep
-                            , yStart + toFloat j * yStep + v * yStep
+                            ( xStart
+                                |> Quantity.plus
+                                    (Quantity.multiplyBy (toFloat i + u) xStep)
+                            , yStart
+                                |> Quantity.plus
+                                    (Quantity.multiplyBy (toFloat j + v) yStep)
                             )
                     )
                     gridCoordinates
@@ -328,7 +348,7 @@ join generators =
             Random.map2 (::) first (join rest)
 
 
-gridPolygon : BoundingBox2d -> GridPolygon -> Generator Polygon2d
+gridPolygon : BoundingBox2d units coordinates -> GridPolygon -> Generator (Polygon2d units coordinates)
 gridPolygon boundingBox { outerLoop, innerLoops } =
     let
         outerLoopGenerator =
@@ -348,7 +368,7 @@ gridPolygon boundingBox { outerLoop, innerLoops } =
         (join innerLoopGenerators)
 
 
-polygon2d : BoundingBox2d -> Generator Polygon2d
+polygon2d : BoundingBox2d units coordinates -> Generator (Polygon2d units coordinates)
 polygon2d boundingBox =
     Random.map2
         (\polygon angle ->
@@ -367,4 +387,4 @@ polygon2d boundingBox =
             ]
             |> Random.andThen identity
         )
-        (Random.float -pi pi)
+        (Random.map Angle.radians (Random.float -pi pi))
