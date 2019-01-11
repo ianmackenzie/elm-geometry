@@ -466,7 +466,7 @@ firstDerivative arc parameterValue =
     in
     Vector2d.fromComponentsIn (axes arc)
         ( Quantity.rTheta (xRadius arc) deltaTheta
-            |> Quantity.multiplyBy (-Angle.sin theta)
+            |> Quantity.multiplyBy -(Angle.sin theta)
         , Quantity.rTheta (yRadius arc) deltaTheta
             |> Quantity.multiplyBy (Angle.cos theta)
         )
@@ -934,7 +934,7 @@ maxSecondDerivativeMagnitude arc =
         theta1 =
             theta0 |> Quantity.plus dTheta
 
-        dThetaSquared =
+        (Quantity dThetaSquared) =
             Quantity.squared dTheta
 
         rx =
@@ -944,10 +944,10 @@ maxSecondDerivativeMagnitude arc =
             yRadius arc
 
         kx =
-            dThetaSquared |> Quantity.times rx
+            Quantity.multiplyBy dThetaSquared rx
 
         ky =
-            dThetaSquared |> Quantity.times ry
+            Quantity.multiplyBy dThetaSquared ry
 
         thetaInterval =
             Quantity.Interval.from theta0 theta1
