@@ -17,7 +17,6 @@ import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Geometry.Test as Test exposing (..)
-import Length exposing (Length)
 import Point2d exposing (Point2d)
 import Quantity exposing (Quantity)
 import Test exposing (Test)
