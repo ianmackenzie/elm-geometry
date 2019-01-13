@@ -52,6 +52,10 @@ module Geometry.Expect exposing
     , polyline3dWithin
     , quadraticSpline2d
     , quadraticSpline3d
+    , quantityAtLeast
+    , quantityAtMost
+    , quantityGreaterThan
+    , quantityLessThan
     , sketchPlane3d
     , sphere3d
     , triangle2d
@@ -191,6 +195,26 @@ approximately (Quantity first) (Quantity second) =
     Expect.within (Expect.AbsoluteOrRelative defaultTolerance defaultTolerance)
         first
         second
+
+
+quantityGreaterThan : Quantity Float units -> Quantity Float units -> Expectation
+quantityGreaterThan (Quantity y) (Quantity x) =
+    x |> Expect.greaterThan y
+
+
+quantityLessThan : Quantity Float units -> Quantity Float units -> Expectation
+quantityLessThan (Quantity y) (Quantity x) =
+    x |> Expect.lessThan y
+
+
+quantityAtMost : Quantity Float units -> Quantity Float units -> Expectation
+quantityAtMost (Quantity y) (Quantity x) =
+    x |> Expect.atMost y
+
+
+quantityAtLeast : Quantity Float units -> Quantity Float units -> Expectation
+quantityAtLeast (Quantity y) (Quantity x) =
+    x |> Expect.atLeast y
 
 
 absoluteToleranceFor : Quantity Float units -> Quantity Float units
