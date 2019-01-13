@@ -1,48 +1,48 @@
-module Tests.Generic.Curve3d exposing (Config, transformations)
+module Tests.Generic.Curve3d exposing (Operations, transformations)
 
-import Axis3d exposing (Axis3d)
+import Angle exposing (Angle)
+import Axis3d
 import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
-import Frame3d exposing (Frame3d)
+import Frame3d
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
-import Plane3d exposing (Plane3d)
-import Point3d exposing (Point3d)
+import Geometry.Test exposing (..)
+import Plane3d
+import Point3d
 import Test exposing (Test)
-import Vector3d exposing (Vector3d)
+import Vector3d
 
 
-type alias Config curve =
+type alias Operations curve coordinates =
     { fuzzer : Fuzzer curve
-    , pointOn : curve -> ParameterValue -> Point3d
-    , firstDerivative : curve -> ParameterValue -> Vector3d
-    , scaleAbout : Point3d -> Float -> curve -> curve
-    , translateBy : Vector3d -> curve -> curve
-    , rotateAround : Axis3d -> Float -> curve -> curve
-    , mirrorAcross : Plane3d -> curve -> curve
-    , relativeTo : Frame3d -> curve -> curve
-    , placeIn : Frame3d -> curve -> curve
+    , pointOn : curve -> ParameterValue -> Point3d coordinates
+    , firstDerivative : curve -> ParameterValue -> Vector3d coordinates
+    , scaleAbout : Point3d coordinates -> Float -> curve -> curve
+    , translateBy : Vector3d coordinates -> curve -> curve
+    , rotateAround : Axis3d coordinates -> Angle -> curve -> curve
+    , mirrorAcross : Plane3d coordinates -> curve -> curve
     }
 
 
-transformations : Config curve -> Test
-transformations config =
+transformations : Operations globalCurve GlobalCoordinates -> Operations localCurve LocalCoordinates -> (Frame3d GlobalCoordinates -> localCurve -> globalCurve) -> (Frame3d GlobalCoordinates -> globalCurve -> localCurve) -> Test
+transformations global local placeIn relativeTo =
     Test.describe "Transformations"
         [ Test.fuzz3
-            config.fuzzer
-            (Fuzz.tuple ( Fuzz.point3d, Fuzz.scalar ))
+            global.fuzzer
+            (Fuzz.tuple ( Fuzz.point3d, Fuzz.scale ))
             Fuzz.parameterValue
             "scaleAbout"
             (\curve ( basePoint, scale ) t ->
                 let
                     scaledCurve =
-                        config.scaleAbout basePoint scale curve
+                        global.scaleAbout basePoint scale curve
 
                     originalPoint =
-                        config.pointOn curve t
+                        global.pointOn curve t
 
                     pointOnScaledCurve =
-                        config.pointOn scaledCurve t
+                        global.pointOn scaledCurve t
 
                     scaledPoint =
                         originalPoint |> Point3d.scaleAbout basePoint scale
@@ -50,20 +50,20 @@ transformations config =
                 pointOnScaledCurve |> Expect.point3d scaledPoint
             )
         , Test.fuzz3
-            config.fuzzer
+            global.fuzzer
             Fuzz.vector3d
             Fuzz.parameterValue
             "translateBy"
             (\curve displacement t ->
                 let
                     translatedCurve =
-                        config.translateBy displacement curve
+                        global.translateBy displacement curve
 
                     originalPoint =
-                        config.pointOn curve t
+                        global.pointOn curve t
 
                     pointOnTranslatedCurve =
-                        config.pointOn translatedCurve t
+                        global.pointOn translatedCurve t
 
                     translatedPoint =
                         originalPoint |> Point3d.translateBy displacement
@@ -71,20 +71,24 @@ transformations config =
                 pointOnTranslatedCurve |> Expect.point3d translatedPoint
             )
         , Test.fuzz3
-            config.fuzzer
-            (Fuzz.tuple ( Fuzz.axis3d, Fuzz.floatRange (-2 * pi) (2 * pi) ))
+            global.fuzzer
+            (Fuzz.tuple
+                ( Fuzz.axis3d
+                , Fuzz.map Angle.radians (Fuzz.floatRange (-2 * pi) (2 * pi))
+                )
+            )
             Fuzz.parameterValue
             "rotateAround"
             (\curve ( axis, angle ) t ->
                 let
                     rotatedCurve =
-                        config.rotateAround axis angle curve
+                        global.rotateAround axis angle curve
 
                     originalPoint =
-                        config.pointOn curve t
+                        global.pointOn curve t
 
                     pointOnRotatedCurve =
-                        config.pointOn rotatedCurve t
+                        global.pointOn rotatedCurve t
 
                     rotatedPoint =
                         originalPoint |> Point3d.rotateAround axis angle
@@ -92,20 +96,20 @@ transformations config =
                 pointOnRotatedCurve |> Expect.point3d rotatedPoint
             )
         , Test.fuzz3
-            config.fuzzer
+            global.fuzzer
             Fuzz.plane3d
             Fuzz.parameterValue
             "mirrorAcross"
             (\curve plane t ->
                 let
                     mirroredCurve =
-                        config.mirrorAcross plane curve
+                        global.mirrorAcross plane curve
 
                     originalPoint =
-                        config.pointOn curve t
+                        global.pointOn curve t
 
                     pointOnMirroredCurve =
-                        config.pointOn mirroredCurve t
+                        global.pointOn mirroredCurve t
 
                     mirroredPoint =
                         originalPoint |> Point3d.mirrorAcross plane
@@ -113,20 +117,20 @@ transformations config =
                 pointOnMirroredCurve |> Expect.point3d mirroredPoint
             )
         , Test.fuzz3
-            config.fuzzer
+            global.fuzzer
             Fuzz.frame3d
             Fuzz.parameterValue
             "relativeTo"
-            (\curve frame t ->
+            (\globalCurve frame t ->
                 let
                     localCurve =
-                        config.relativeTo frame curve
+                        relativeTo frame globalCurve
 
                     originalPoint =
-                        config.pointOn curve t
+                        global.pointOn globalCurve t
 
                     pointOnLocalCurve =
-                        config.pointOn localCurve t
+                        local.pointOn localCurve t
 
                     localPoint =
                         originalPoint |> Point3d.relativeTo frame
@@ -134,20 +138,20 @@ transformations config =
                 pointOnLocalCurve |> Expect.point3d localPoint
             )
         , Test.fuzz3
-            config.fuzzer
+            local.fuzzer
             Fuzz.frame3d
             Fuzz.parameterValue
             "placeIn"
-            (\curve frame t ->
+            (\localCurve frame t ->
                 let
                     globalCurve =
-                        config.placeIn frame curve
+                        placeIn frame localCurve
 
                     originalPoint =
-                        config.pointOn curve t
+                        local.pointOn localCurve t
 
                     pointOnGlobalCurve =
-                        config.pointOn globalCurve t
+                        global.pointOn globalCurve t
 
                     globalPoint =
                         originalPoint |> Point3d.placeIn frame
