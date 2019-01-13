@@ -82,7 +82,7 @@ import Geometry.Types as Types
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
 import Polyline2d exposing (Polyline2d)
-import Quantity exposing (Quantity(..))
+import Quantity exposing (Quantity)
 import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
 
