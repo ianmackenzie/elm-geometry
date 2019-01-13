@@ -106,7 +106,7 @@ import Bootstrap.Plane3d as Plane3d
 import Bootstrap.Point3d as Point3d
 import Bootstrap.SketchPlane3d as SketchPlane3d
 import Geometry.Types as Types exposing (Axis3d, Direction3d, Frame3d, Plane3d, Point3d, SketchPlane3d)
-import Quantity exposing (Cubed, Product, Quantity(..), Squared, Unitless)
+import Quantity exposing (Cubed, Product, Quantity, Squared, Unitless)
 import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
 
@@ -852,21 +852,6 @@ cross secondVector firstVector =
         , (z1 |> Quantity.times x2) |> Quantity.minus (x1 |> Quantity.times z2)
         , (x1 |> Quantity.times y2) |> Quantity.minus (y1 |> Quantity.times x2)
         )
-
-
-tripleProduct : Vector3d units coordinates -> Vector3d units coordinates -> Vector3d units coordinates -> Quantity Float (Cubed units)
-tripleProduct firstVector secondVector thirdVector =
-    let
-        ( Quantity a, Quantity b, Quantity c ) =
-            components firstVector
-
-        ( Quantity d, Quantity e, Quantity f ) =
-            components secondVector
-
-        ( Quantity g, Quantity h, Quantity i ) =
-            components thirdVector
-    in
-    Quantity (a * e * i + b * f * g + c * d * h - c * e * g - b * d * i - a * f * h)
 
 
 {-| Reverse the direction of a vector, negating its components.
