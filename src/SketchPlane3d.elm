@@ -117,7 +117,7 @@ import Frame2d exposing (Frame2d)
 import Geometry.Types as Types exposing (Frame3d)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
-import Quantity exposing (Quantity(..))
+import Quantity exposing (Quantity)
 import Quantity.Extra as Quantity
 import Unsafe.Direction3d as Direction3d
 import Vector3d exposing (Vector3d)
