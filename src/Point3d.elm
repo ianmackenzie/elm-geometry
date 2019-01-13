@@ -85,7 +85,7 @@ import Direction3d exposing (Direction3d)
 import Float.Extra as Float
 import Geometry.Types as Types exposing (Axis3d, Frame3d, Plane3d, SketchPlane3d)
 import Point2d exposing (Point2d)
-import Quantity exposing (Quantity(..), Squared, Unitless)
+import Quantity exposing (Quantity, Squared, Unitless)
 import Quantity.Extra as Quantity
 import Vector3d exposing (Vector3d)
 
@@ -377,55 +377,55 @@ collinear, returns `Nothing`.
 circumcenter : Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> Maybe (Point3d units coordinates)
 circumcenter p1 p2 p3 =
     let
-        (Quantity a2) =
+        a2 =
             squaredDistanceFrom p1 p2
 
-        (Quantity b2) =
+        b2 =
             squaredDistanceFrom p2 p3
 
-        (Quantity c2) =
+        c2 =
             squaredDistanceFrom p3 p1
 
         t1 =
-            a2 * (b2 + c2 - a2)
+            a2 |> Quantity.times (b2 |> Quantity.plus c2 |> Quantity.minus a2)
 
         t2 =
-            b2 * (c2 + a2 - b2)
+            b2 |> Quantity.times (c2 |> Quantity.plus a2 |> Quantity.minus b2)
 
         t3 =
-            c2 * (a2 + b2 - c2)
+            c2 |> Quantity.times (a2 |> Quantity.plus b2 |> Quantity.minus c2)
 
         sum =
-            t1 + t2 + t3
+            t1 |> Quantity.plus t2 |> Quantity.plus t3
     in
-    if sum == 0 then
+    if sum == Quantity.zero then
         Nothing
 
     else
         let
             w1 =
-                t1 / sum
+                Quantity.ratio t1 sum
 
             w2 =
-                t2 / sum
+                Quantity.ratio t2 sum
 
             w3 =
-                t3 / sum
+                Quantity.ratio t3 sum
 
-            ( Quantity x1, Quantity y1, Quantity z1 ) =
+            ( x1, y1, z1 ) =
                 coordinates p1
 
-            ( Quantity x2, Quantity y2, Quantity z2 ) =
+            ( x2, y2, z2 ) =
                 coordinates p2
 
-            ( Quantity x3, Quantity y3, Quantity z3 ) =
+            ( x3, y3, z3 ) =
                 coordinates p3
         in
         Just <|
             fromCoordinates
-                ( Quantity (w1 * x3 + w2 * x1 + w3 * x2)
-                , Quantity (w1 * y3 + w2 * y1 + w3 * y2)
-                , Quantity (w1 * z3 + w2 * z1 + w3 * z2)
+                ( Quantity.aXbYcZ w1 x3 w2 x1 w3 x2
+                , Quantity.aXbYcZ w1 y3 w2 y1 w3 y2
+                , Quantity.aXbYcZ w1 z3 w2 z1 w3 z2
                 )
 
 

@@ -94,7 +94,7 @@ import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
 import Polyline2d exposing (Polyline2d)
-import Quantity exposing (Quantity(..))
+import Quantity exposing (Quantity)
 import Quantity.Extra as Quantity
 
 
@@ -525,16 +525,24 @@ leftOfSegment lineSegment point =
         ( p1, p2 ) =
             LineSegment2d.endpoints lineSegment
 
-        ( Quantity x1, Quantity y1 ) =
+        ( x1, y1 ) =
             Point2d.coordinates p1
 
-        ( Quantity x2, Quantity y2 ) =
+        ( x2, y2 ) =
             Point2d.coordinates p2
 
-        ( Quantity x, Quantity y ) =
+        dx =
+            x2 |> Quantity.minus x1
+
+        dy =
+            y2 |> Quantity.minus y1
+
+        ( x, y ) =
             Point2d.coordinates point
     in
-    (x - x1) * (y1 - y2) + (y - y1) * (x2 - x1) >= 0
+    ((x |> Quantity.minus x1) |> Quantity.times dy)
+        |> Quantity.lessThanOrEqualTo
+            ((y |> Quantity.minus y1) |> Quantity.times dx)
 
 
 leftOf : List (LineSegment2d units coordinates) -> Point2d units coordinates -> Bool
