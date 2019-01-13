@@ -899,9 +899,11 @@ projectInto sketchPlane arc =
         arcAxialDirection =
             axialDirection arc
 
-        projectedRadialVector =
+        radialVector =
             Vector3d.from (centerPoint arc) (startPoint arc)
-                |> Vector3d.projectInto sketchPlane
+
+        projectedRadialVector =
+            radialVector |> Vector3d.projectInto sketchPlane
 
         candidateXDirection2d =
             case Direction3d.projectInto sketchPlane arcAxialDirection of
@@ -927,8 +929,11 @@ projectInto sketchPlane arc =
             else
                 Direction2d.reverse candidateXDirection2d
 
-        yDirection2d =
-            Direction2d.rotateCounterclockwise xDirection2d
+        xDirection3d =
+            Direction3d.on sketchPlane xDirection2d
+
+        xVector3d =
+            Direction3d.toVector xDirection3d
 
         arcRadius =
             radius arc
@@ -947,10 +952,12 @@ projectInto sketchPlane arc =
         ellipticalStartAngle =
             let
                 x =
-                    projectedRadialVector |> Vector2d.componentIn xDirection2d
+                    xVector3d |> Vector3d.dot radialVector
 
                 y =
-                    projectedRadialVector |> Vector2d.componentIn yDirection2d
+                    xVector3d
+                        |> Vector3d.cross radialVector
+                        |> Vector3d.componentIn arcAxialDirection
 
                 arcStartAngle =
                     Angle.atan2 y x
