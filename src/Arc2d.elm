@@ -171,7 +171,8 @@ from givenStartPoint givenEndPoint givenSweptAngle =
                 , sweptAngle = givenSweptAngle
                 , xDirection =
                     direction
-                        |> Direction2d.rotateBy (Quantity.negate halfAngle)
+                        |> Direction2d.rotateBy
+                            (Quantity.multiplyBy -0.5 angleModTwoPi)
                 , signedLength =
                     if givenSweptAngle == Quantity.zero then
                         distance
