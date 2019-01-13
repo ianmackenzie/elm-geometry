@@ -6,15 +6,17 @@ module Tests.Arc3d exposing
     , transformations
     )
 
+import Angle
 import Arc3d
 import Curve.ParameterValue as ParameterValue
 import EllipticalArc2d
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Geometry.Test as Test exposing (..)
 import Point3d
 import Test exposing (Test)
-import Tests.Generic.Curve3d
+import Tests.Generic.Curve3d as Curve3d
 
 
 evaluateZeroIsStartPoint : Test
@@ -74,16 +76,22 @@ projectInto =
         )
 
 
+curveOperations : Curve3d.Operations (Arc3d coordinates) coordinates
+curveOperations =
+    { fuzzer = Fuzz.arc3d
+    , pointOn = Arc3d.pointOn
+    , firstDerivative = Arc3d.firstDerivative
+    , scaleAbout = Arc3d.scaleAbout
+    , translateBy = Arc3d.translateBy
+    , rotateAround = Arc3d.rotateAround
+    , mirrorAcross = Arc3d.mirrorAcross
+    }
+
+
 transformations : Test
 transformations =
-    Tests.Generic.Curve3d.transformations
-        { fuzzer = Fuzz.arc3d
-        , pointOn = Arc3d.pointOn
-        , firstDerivative = Arc3d.firstDerivative
-        , scaleAbout = Arc3d.scaleAbout
-        , translateBy = Arc3d.translateBy
-        , rotateAround = Arc3d.rotateAround
-        , mirrorAcross = Arc3d.mirrorAcross
-        , relativeTo = Arc3d.relativeTo
-        , placeIn = Arc3d.placeIn
-        }
+    Curve3d.transformations
+        curveOperations
+        curveOperations
+        Arc3d.placeIn
+        Arc3d.relativeTo
