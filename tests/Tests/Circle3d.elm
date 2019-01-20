@@ -3,8 +3,10 @@ module Tests.Circle3d exposing (boundingBoxContainsCenter, throughPoints)
 import BoundingBox3d
 import Circle3d
 import Expect
+import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Point3d
+import Quantity
 import Test exposing (Test)
 import Triangle3d
 
@@ -27,14 +29,16 @@ throughPoints =
                                 Triangle3d.fromVertices ( p1, p2, p3 )
                                     |> Triangle3d.area
                         in
-                        triangleArea > 1.0e-6
+                        triangleArea
+                            |> Quantity.greaterThan
+                                (Quantity.squared (Quantity.float 1.0e-3))
 
                     maybeCircle =
                         Circle3d.throughPoints p1 p2 p3
 
                     liesOnCircle point circle =
                         Point3d.distanceFrom point (Circle3d.centerPoint circle)
-                            |> Expect.within (Expect.Absolute 1.0e-6) (Circle3d.radius circle)
+                            |> Expect.approximately (Circle3d.radius circle)
                 in
                 case maybeCircle of
                     Just circle ->
