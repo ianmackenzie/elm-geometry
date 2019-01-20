@@ -34,7 +34,7 @@ rotationPreservesDistance =
             in
             Expect.approximately initialDistance rotatedDistance
     in
-    Test.fuzz3 Fuzz.point2d Fuzz.point2d Fuzz.scalar description expectation
+    Test.fuzz3 Fuzz.point2d Fuzz.point2d Fuzz.angle description expectation
 
 
 projectionOntoAxisPreservesDistance : Test
@@ -92,7 +92,7 @@ translateByAndInAreConsistent =
     Test.fuzz3
         Fuzz.point2d
         Fuzz.direction2d
-        Fuzz.scalar
+        Fuzz.quantity
         "translateBy and translateIn are consistent"
         (\point direction distance ->
             let
