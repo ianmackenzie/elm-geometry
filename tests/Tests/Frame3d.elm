@@ -4,6 +4,7 @@ import Direction3d
 import Frame3d
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Quantity
 import Test exposing (Test)
 import Vector3d
 
@@ -24,15 +25,16 @@ frameDirectionsAreOrthonormal =
                     Direction3d.toVector (Frame3d.zDirection frame)
 
                 tripleProduct =
-                    Vector3d.crossProduct xDirectionVector yDirectionVector
-                        |> Vector3d.dotProduct zDirectionVector
+                    xDirectionVector
+                        |> Vector3d.cross yDirectionVector
+                        |> Vector3d.dot zDirectionVector
 
                 expectedTripleProduct =
                     if Frame3d.isRightHanded frame then
-                        1
+                        Quantity.cubed (Quantity.float 1)
 
                     else
-                        -1
+                        Quantity.cubed (Quantity.float -1)
             in
             Expect.approximately expectedTripleProduct tripleProduct
         )
