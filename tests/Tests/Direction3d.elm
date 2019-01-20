@@ -5,6 +5,7 @@ module Tests.Direction3d exposing
     , orthonormalizingCoplanarVectorsReturnsNothing
     )
 
+import Angle
 import Direction3d
 import Expect
 import Frame3d
@@ -12,6 +13,7 @@ import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Point3d
+import Quantity
 import Test exposing (Test)
 import Vector3d
 
@@ -25,9 +27,12 @@ angleFromAndEqualWithinAreConsistent =
             let
                 angle =
                     Direction3d.angleFrom firstDirection secondDirection
+
+                tolerance =
+                    angle |> Quantity.plus (Angle.radians 1.0e-12)
             in
             Expect.true "Two directions should be equal to within the angle between them"
-                (Direction3d.equalWithin (angle + 1.0e-12)
+                (Direction3d.equalWithin tolerance
                     firstDirection
                     secondDirection
                 )
@@ -41,10 +46,13 @@ orthonormalizeProducesValidFrameBasis =
         (\( v1, v2, v3 ) ->
             let
                 tripleProduct =
-                    Vector3d.crossProduct v1 v2
-                        |> Vector3d.dotProduct v3
+                    v1 |> Vector3d.cross v2 |> Vector3d.dot v3
             in
-            if abs tripleProduct > 1.0e-6 then
+            if
+                Quantity.abs tripleProduct
+                    |> Quantity.greaterThan
+                        (Quantity.cubed (Quantity.float 1.0e-2))
+            then
                 case Direction3d.orthonormalize v1 v2 v3 of
                     Just ( xDirection, yDirection, zDirection ) ->
                         Expect.validFrame3d
@@ -75,22 +83,22 @@ orthonormalizeFollowsOriginalVectors =
                         |> Expect.all
                             [ \( xDirection, _, _ ) ->
                                 Vector3d.componentIn xDirection v1
-                                    |> Expect.greaterThan 0
+                                    |> Expect.quantityGreaterThan Quantity.zero
                             , \( _, yDirection, _ ) ->
                                 Vector3d.componentIn yDirection v1
-                                    |> Expect.approximately 0
+                                    |> Expect.approximately Quantity.zero
                             , \( _, _, zDirection ) ->
                                 Vector3d.componentIn zDirection v1
-                                    |> Expect.approximately 0
+                                    |> Expect.approximately Quantity.zero
                             , \( _, yDirection, _ ) ->
                                 Vector3d.componentIn yDirection v2
-                                    |> Expect.greaterThan 0
+                                    |> Expect.quantityGreaterThan Quantity.zero
                             , \( _, _, zDirection ) ->
                                 Vector3d.componentIn zDirection v2
-                                    |> Expect.approximately 0
+                                    |> Expect.approximately Quantity.zero
                             , \( _, _, zDirection ) ->
                                 Vector3d.componentIn zDirection v3
-                                    |> Expect.greaterThan 0
+                                    |> Expect.quantityGreaterThan Quantity.zero
                             ]
 
                 Nothing ->
@@ -104,13 +112,13 @@ orthonormalizingCoplanarVectorsReturnsNothing =
         (\() ->
             let
                 v1 =
-                    Vector3d.fromComponents ( 1, 0, 0 )
+                    Vector3d.fromTuple ( 1, 0, 0 )
 
                 v2 =
-                    Vector3d.fromComponents ( 2, 3, 0 )
+                    Vector3d.fromTuple ( 2, 3, 0 )
 
                 v3 =
-                    Vector3d.fromComponents ( -1, 2, 0 )
+                    Vector3d.fromTuple ( -1, 2, 0 )
             in
             Expect.equal Nothing (Direction3d.orthonormalize v1 v2 v3)
         )
