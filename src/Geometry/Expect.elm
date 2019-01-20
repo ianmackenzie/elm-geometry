@@ -56,6 +56,7 @@ module Geometry.Expect exposing
     , quantityAtMost
     , quantityGreaterThan
     , quantityLessThan
+    , quantityWithin
     , sketchPlane3d
     , sphere3d
     , triangle2d
@@ -185,8 +186,8 @@ defaultTolerance =
     1.0e-12
 
 
-within : Quantity Float units -> Quantity Float units -> Quantity Float units -> Expectation
-within (Quantity tolerance) (Quantity first) (Quantity second) =
+quantityWithin : Quantity Float units -> Quantity Float units -> Quantity Float units -> Expectation
+quantityWithin (Quantity tolerance) (Quantity first) (Quantity second) =
     Expect.within (Expect.Absolute tolerance) first second
 
 
@@ -630,7 +631,7 @@ boundingBox2d =
 
 boundingBox2dWithin : Quantity Float units -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Expectation
 boundingBox2dWithin tolerance =
-    boundingBox2dBy (within tolerance)
+    boundingBox2dBy (quantityWithin tolerance)
 
 
 point2dContainedIn : BoundingBox2d units coordinates -> Point2d units coordinates -> Expectation
@@ -685,7 +686,7 @@ boundingBox3d =
 
 boundingBox3dWithin : Quantity Float units -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> Expectation
 boundingBox3dWithin tolerance =
-    boundingBox3dBy (within tolerance)
+    boundingBox3dBy (quantityWithin tolerance)
 
 
 point3dContainedIn : BoundingBox3d units coordinates -> Point3d units coordinates -> Expectation
