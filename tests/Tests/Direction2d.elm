@@ -5,6 +5,7 @@ module Tests.Direction2d exposing
     , orthonormalizingParallelVectorsReturnsNothing
     )
 
+import Angle
 import Direction2d
 import Expect
 import Frame2d
@@ -12,6 +13,7 @@ import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Point2d
+import Quantity
 import Test exposing (Test)
 import Vector2d
 
@@ -24,10 +26,14 @@ angleFromAndEqualWithinAreConsistent =
         (\firstDirection secondDirection ->
             let
                 angle =
-                    abs (Direction2d.angleFrom firstDirection secondDirection)
+                    Quantity.abs
+                        (Direction2d.angleFrom firstDirection secondDirection)
+
+                tolerance =
+                    angle |> Quantity.plus (Angle.radians 1.0e-12)
             in
             Expect.true "Two directions should be equal to within the angle between them"
-                (Direction2d.equalWithin (angle + 1.0e-12)
+                (Direction2d.equalWithin tolerance
                     firstDirection
                     secondDirection
                 )
@@ -68,9 +74,9 @@ orthonormalizeProducesValidFrameBasis =
                 Nothing ->
                     let
                         crossProduct =
-                            Vector2d.crossProduct xVector yVector
+                            xVector |> Vector2d.cross yVector
                     in
-                    Expect.approximately 0.0 crossProduct
+                    Expect.approximately Quantity.zero crossProduct
         )
 
 
@@ -80,10 +86,10 @@ orthonormalizingParallelVectorsReturnsNothing =
         (\() ->
             let
                 xVector =
-                    Vector2d.fromComponents ( 1, 2 )
+                    Vector2d.fromTuple ( 1, 2 )
 
                 yVector =
-                    Vector2d.fromComponents ( -3, -6 )
+                    Vector2d.fromTuple ( -3, -6 )
             in
             Expect.equal Nothing (Direction2d.orthonormalize xVector yVector)
         )
