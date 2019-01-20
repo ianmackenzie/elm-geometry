@@ -14,20 +14,22 @@ import Expect
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Geometry.Test exposing (..)
 import List.Extra
 import Plane3d
-import Point2d exposing (Point2d)
+import Point2d
 import Point3d
+import Quantity
 import SketchPlane3d
 import Test exposing (Test)
 import Triangle2d
 import Vector3d
 
 
-uniquePoints : Fuzzer (Array Point2d)
+uniquePoints : Fuzzer (Array (Point2d coordinates))
 uniquePoints =
     Fuzz.list Fuzz.point2d
-        |> Fuzz.map (List.Extra.uniqueBy Point2d.coordinates)
+        |> Fuzz.map (List.Extra.uniqueBy Point2d.toTuple)
         |> Fuzz.map Array.fromList
 
 
@@ -46,13 +48,17 @@ allDelaunayTrianglesHaveNonzeroArea =
                     let
                         triangles =
                             DelaunayTriangulation2d.triangles triangulation
+
+                        hasNonPositiveArea triangle =
+                            Triangle2d.area triangle
+                                |> Quantity.lessThanOrEqualTo Quantity.zero
                     in
-                    case List.filter (\triangle -> Triangle2d.area triangle <= 0) triangles of
+                    case List.filter hasNonPositiveArea triangles of
                         [] ->
                             Expect.pass
 
                         x :: xs ->
-                            Expect.fail ("DelaunayTriangulation2d produced a triangle with non-zero area: " ++ Debug.toString x)
+                            Expect.fail ("DelaunayTriangulation2d produced a triangle with negative or zero area: " ++ Debug.toString x)
     in
     Test.fuzz uniquePoints description expectation
 
