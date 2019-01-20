@@ -9,6 +9,7 @@ import CubicSpline2d
 import Expect exposing (FloatingPointTolerance(..))
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Quantity
 import Test exposing (Test)
 import Tests.QuadraticSpline2d
 
@@ -48,9 +49,10 @@ arcLengthMatchesAnalytical =
         (\quadraticSpline ->
             quadraticSpline
                 |> CubicSpline2d.fromQuadraticSpline
-                |> CubicSpline2d.arcLengthParameterized { maxError = 1.0e-3 }
+                |> CubicSpline2d.arcLengthParameterized
+                    { maxError = Quantity.float 1.0e-3 }
                 |> CubicSpline2d.arcLength
-                |> Expect.within (Absolute 1.0e-3)
+                |> Expect.quantityWithin (Quantity.float 1.0e-3)
                     (Tests.QuadraticSpline2d.analyticalLength quadraticSpline)
         )
 
@@ -64,9 +66,9 @@ pointAtZeroLengthIsStart =
                 parameterizedCurve =
                     spline
                         |> CubicSpline2d.arcLengthParameterized
-                            { maxError = 1.0e-3 }
+                            { maxError = Quantity.float 1.0e-3 }
             in
-            CubicSpline2d.pointAlong parameterizedCurve 0
+            CubicSpline2d.pointAlong parameterizedCurve Quantity.zero
                 |> Expect.equal (Just (CubicSpline2d.startPoint spline))
         )
 
@@ -80,7 +82,7 @@ pointAtArcLengthIsEnd =
                 parameterizedCurve =
                     spline
                         |> CubicSpline2d.arcLengthParameterized
-                            { maxError = 1.0e-3 }
+                            { maxError = Quantity.float 1.0e-3 }
 
                 arcLength =
                     CubicSpline2d.arcLength parameterizedCurve
