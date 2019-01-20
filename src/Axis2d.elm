@@ -107,7 +107,6 @@ things with partial application:
     -- through the same origin point
     List.map (Axis2d.through point) directions
 
-
     -- A list of parallel axes (all having the same
     -- direction) through different points
     List.map (Axis2d.withDirection direction) points

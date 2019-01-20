@@ -244,7 +244,6 @@ Can be useful when combined with record destructuring, for example
     { minX, maxX, minY, maxY } =
         BoundingBox2d.extrema exampleBox
 
-
     --> minX = 3
     --> maxX = 8
     --> minY = 2
@@ -312,7 +311,6 @@ maxY (Types.BoundingBox2d boundingBox) =
 
     ( width, height ) =
         BoundingBox2d.dimensions exampleBox
-
 
     --> width = 5
     --> height = 4
