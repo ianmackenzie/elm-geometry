@@ -195,7 +195,7 @@ unsafeFromComponents givenComponents =
 given frame. As with `unsafeFromComponents`, you must ensure that the sum of the
 squares of the given components is exactly one.
 -}
-unsafeFromComponentsIn : Frame2d units coordinates defines -> ( Float, Float ) -> Direction2d coordinates
+unsafeFromComponentsIn : Frame2d units globalCoordinates localCoordinates -> ( Float, Float ) -> Direction2d globalCoordinates
 unsafeFromComponentsIn frame localComponents =
     let
         ( localX, localY ) =
@@ -408,7 +408,7 @@ is equivalent to
     )
 
 -}
-componentsIn : Frame2d units coordinates defines -> Direction2d coordinates -> ( Float, Float )
+componentsIn : Frame2d units globalCoordinates localCoordinates -> Direction2d globalCoordinates -> ( Float, Float )
 componentsIn frame direction =
     ( direction |> componentIn (Frame2d.xDirection frame)
     , direction |> componentIn (Frame2d.yDirection frame)
@@ -645,7 +645,7 @@ local coordinates relative to a given reference frame.
     --> Direction2d.fromAngle (degrees 60)
 
 -}
-relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Direction2d globalCoordinates -> Direction2d localCoordinates
+relativeTo : Frame2d units globalCoordinates localCoordinates -> Direction2d globalCoordinates -> Direction2d localCoordinates
 relativeTo givenFrame direction =
     unsafeFromComponents
         ( componentIn (Frame2d.xDirection givenFrame) direction
@@ -666,7 +666,7 @@ frame, and return that direction expressed in global coordinates.
     --> Direction2d.fromAngle (degrees 120)
 
 -}
-placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Direction2d localCoordinates -> Direction2d globalCoordinates
+placeIn : Frame2d units globalCoordinates localCoordinates -> Direction2d localCoordinates -> Direction2d globalCoordinates
 placeIn givenFrame direction =
     let
         ( x1, y1 ) =

@@ -8,7 +8,7 @@
 
 
 module Ellipse2d exposing
-    ( Ellipse2d
+    ( Ellipse2d, EllipseCoordinates
     , with
     , centerPoint, xAxis, yAxis, xDirection, yDirection, axes, xRadius, yRadius, area
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
@@ -24,7 +24,7 @@ includes functionality for
   - Scaling, rotating and translating ellipses
   - Converting ellipses between different coordinate systems
 
-@docs Ellipse2d
+@docs Ellipse2d, EllipseCoordinates
 
 
 # Constructors
@@ -62,6 +62,12 @@ import Vector2d exposing (Vector2d)
 {-| -}
 type alias Ellipse2d units coordinates =
     Types.Ellipse2d units coordinates
+
+
+{-| The coordinate system associated with the central axes of an ellipse.
+-}
+type alias EllipseCoordinates =
+    Types.EllipseCoordinates
 
 
 {-| Construct an ellipse from its center point, X direction, and X and Y radii.
@@ -113,7 +119,7 @@ centerPoint ellipse =
     -->     (Point2d.fromCoordinates ( 10, 10 ))
 
 -}
-axes : Ellipse2d units coordinates -> Frame2d units coordinates {}
+axes : Ellipse2d units coordinates -> Frame2d units coordinates EllipseCoordinates
 axes (Types.Ellipse2d ellipse) =
     ellipse.axes
 
@@ -243,7 +249,7 @@ scaleAbout point scale ellipse =
         }
 
 
-transformBy : (Frame2d units coordinates1 {} -> Frame2d units coordinates2 {}) -> Ellipse2d units coordinates1 -> Ellipse2d units coordinates2
+transformBy : (Frame2d units coordinates1 EllipseCoordinates -> Frame2d units coordinates2 EllipseCoordinates) -> Ellipse2d units coordinates1 -> Ellipse2d units coordinates2
 transformBy axesTransformation (Types.Ellipse2d properties) =
     Types.Ellipse2d
         { axes = axesTransformation properties.axes
@@ -348,7 +354,7 @@ local coordinates relative to a given reference frame.
     -->     }
 
 -}
-relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Ellipse2d units globalCoordinates -> Ellipse2d units localCoordinates
+relativeTo : Frame2d units globalCoordinates localCoordinates -> Ellipse2d units globalCoordinates -> Ellipse2d units localCoordinates
 relativeTo frame ellipse =
     transformBy (Frame2d.relativeTo frame) ellipse
 
@@ -370,6 +376,6 @@ given reference frame, and return that circle expressed in global coordinates.
     -->     }
 
 -}
-placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Ellipse2d units localCoordinates -> Ellipse2d units globalCoordinates
+placeIn : Frame2d units globalCoordinates localCoordinates -> Ellipse2d units localCoordinates -> Ellipse2d units globalCoordinates
 placeIn frame ellipse =
     transformBy (Frame2d.placeIn frame) ellipse

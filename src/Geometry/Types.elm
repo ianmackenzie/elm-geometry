@@ -13,6 +13,7 @@ module Geometry.Types exposing
     , Axis2d(..)
     , Axis3d(..)
     , Block3d(..)
+    , BlockCoordinates(..)
     , BoundingBox2d(..)
     , BoundingBox3d(..)
     , Circle2d(..)
@@ -25,6 +26,7 @@ module Geometry.Types exposing
     , Direction2d(..)
     , Direction3d(..)
     , Ellipse2d(..)
+    , EllipseCoordinates(..)
     , EllipticalArc2d(..)
     , Frame2d(..)
     , Frame3d(..)
@@ -40,6 +42,7 @@ module Geometry.Types exposing
     , QuadraticSpline3d(..)
     , Rectangle2d(..)
     , Rectangle3d(..)
+    , RectangleCoordinates(..)
     , SketchPlane3d(..)
     , Sphere3d(..)
     , SweptAngle(..)
@@ -90,28 +93,28 @@ type Plane3d units coordinates
     = Plane3d { originPoint : Point3d units coordinates, normalDirection : Direction3d coordinates }
 
 
-type Frame2d units coordinates defines
+type Frame2d units coordinates1 coordinates2
     = Frame2d
-        { originPoint : Point2d units coordinates
-        , xDirection : Direction2d coordinates
-        , yDirection : Direction2d coordinates
+        { originPoint : Point2d units coordinates1
+        , xDirection : Direction2d coordinates1
+        , yDirection : Direction2d coordinates1
         }
 
 
-type Frame3d units coordinates defines
+type Frame3d units coordinates1 coordinates2
     = Frame3d
-        { originPoint : Point3d units coordinates
-        , xDirection : Direction3d coordinates
-        , yDirection : Direction3d coordinates
-        , zDirection : Direction3d coordinates
+        { originPoint : Point3d units coordinates1
+        , xDirection : Direction3d coordinates1
+        , yDirection : Direction3d coordinates1
+        , zDirection : Direction3d coordinates1
         }
 
 
-type SketchPlane3d units coordinates defines
+type SketchPlane3d units coordinates1 coordinates2
     = SketchPlane3d
-        { originPoint : Point3d units coordinates
-        , xDirection : Direction3d coordinates
-        , yDirection : Direction3d coordinates
+        { originPoint : Point3d units coordinates1
+        , xDirection : Direction3d coordinates1
+        , yDirection : Direction3d coordinates1
         }
 
 
@@ -151,23 +154,31 @@ type BoundingBox3d units coordinates
         }
 
 
+type RectangleCoordinates
+    = RectangleCoordinates
+
+
 type Rectangle2d units coordinates
     = Rectangle2d
-        { axes : Frame2d units coordinates {}
+        { axes : Frame2d units coordinates RectangleCoordinates
         , dimensions : ( Quantity Float units, Quantity Float units )
         }
 
 
 type Rectangle3d units coordinates
     = Rectangle3d
-        { axes : SketchPlane3d units coordinates {}
+        { axes : SketchPlane3d units coordinates RectangleCoordinates
         , dimensions : ( Quantity Float units, Quantity Float units )
         }
 
 
+type BlockCoordinates
+    = BlockCoordinates
+
+
 type Block3d units coordinates
     = Block3d
-        { axes : Frame3d units coordinates {}
+        { axes : Frame3d units coordinates BlockCoordinates
         , dimensions : ( Quantity Float units, Quantity Float units, Quantity Float units )
         }
 
@@ -202,9 +213,13 @@ type Circle3d units coordinates
         }
 
 
+type EllipseCoordinates
+    = EllipseCoordinates
+
+
 type Ellipse2d units coordinates
     = Ellipse2d
-        { axes : Frame2d units coordinates {}
+        { axes : Frame2d units coordinates EllipseCoordinates
         , xRadius : Quantity Float units
         , yRadius : Quantity Float units
         }

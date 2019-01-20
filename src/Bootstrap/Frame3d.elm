@@ -17,21 +17,21 @@ module Bootstrap.Frame3d exposing
 import Geometry.Types exposing (..)
 
 
-originPoint : Frame3d units coordinates defines -> Point3d units coordinates
+originPoint : Frame3d units coordinates1 coordinates2 -> Point3d units coordinates1
 originPoint (Frame3d properties) =
     properties.originPoint
 
 
-xDirection : Frame3d units coordinates defines -> Direction3d coordinates
+xDirection : Frame3d units coordinates1 coordinates2 -> Direction3d coordinates1
 xDirection (Frame3d properties) =
     properties.xDirection
 
 
-yDirection : Frame3d units coordinates defines -> Direction3d coordinates
+yDirection : Frame3d units coordinates1 coordinates2 -> Direction3d coordinates1
 yDirection (Frame3d properties) =
     properties.yDirection
 
 
-zDirection : Frame3d units coordinates defines -> Direction3d coordinates
+zDirection : Frame3d units coordinates1 coordinates2 -> Direction3d coordinates1
 zDirection (Frame3d properties) =
     properties.zDirection

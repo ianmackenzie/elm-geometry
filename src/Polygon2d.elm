@@ -537,7 +537,7 @@ reversed so that the resulting polygon still has its outer vertices in
 counterclockwise order and its inner vertices in clockwise order.
 
 -}
-relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Polygon2d units globalCoordinates -> Polygon2d units localCoordinates
+relativeTo : Frame2d units globalCoordinates localCoordinates -> Polygon2d units globalCoordinates -> Polygon2d units localCoordinates
 relativeTo frame =
     mapVertices (Point2d.relativeTo frame) (not (Frame2d.isRightHanded frame))
 
@@ -562,7 +562,7 @@ reversed so that the resulting polygon still has its outer vertices in
 counterclockwise order and its inner vertices in clockwise order.
 
 -}
-placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Polygon2d units localCoordinates -> Polygon2d units globalCoordinates
+placeIn : Frame2d units globalCoordinates localCoordinates -> Polygon2d units localCoordinates -> Polygon2d units globalCoordinates
 placeIn frame =
     mapVertices (Point2d.placeIn frame) (not (Frame2d.isRightHanded frame))
 

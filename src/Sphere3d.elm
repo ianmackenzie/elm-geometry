@@ -329,7 +329,7 @@ local coordinates relative to a given reference frame.
     -->     (Point3d.fromCoordinates ( 0, 0, -2 ))
 
 -}
-relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Sphere3d units globalCoordinates -> Sphere3d units localCoordinates
+relativeTo : Frame3d units globalCoordinates localCoordinates -> Sphere3d units globalCoordinates -> Sphere3d units localCoordinates
 relativeTo frame sphere =
     withRadius (radius sphere)
         (Point3d.relativeTo frame (centerPoint sphere))
@@ -347,7 +347,7 @@ given reference frame, and return that sphere expressed in global coordinates.
     -->     (Point3d.fromCoordinates ( 2, 4, 4 ))
 
 -}
-placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Sphere3d units localCoordinates -> Sphere3d units globalCoordinates
+placeIn : Frame3d units globalCoordinates localCoordinates -> Sphere3d units localCoordinates -> Sphere3d units globalCoordinates
 placeIn frame sphere =
     withRadius (radius sphere)
         (Point3d.placeIn frame (centerPoint sphere))
@@ -428,7 +428,7 @@ of a sphere into a sketch plane.
     -->     (Point2d.fromCoordinates ( 1, 2 ))
 
 -}
-projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Sphere3d units coordinates3d -> Circle2d units coordinates2d
+projectInto : SketchPlane3d units coordinates3d coordinates2d -> Sphere3d units coordinates3d -> Circle2d units coordinates2d
 projectInto sketchPlane sphere =
     Circle2d.withRadius (radius sphere)
         (Point3d.projectInto sketchPlane (centerPoint sphere))

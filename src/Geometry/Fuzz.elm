@@ -199,7 +199,6 @@ frame2d =
                 Frame2d.reverseY rightHandedFrame
     in
     Fuzz.map3 frame point2d direction2d Fuzz.bool
-        |> Fuzz.map (Frame2d.define LocalCoordinates)
 
 
 frame3d : Fuzzer (Frame3d coordinates)
@@ -228,7 +227,6 @@ frame3d =
                 }
     in
     Fuzz.map4 frame point3d direction3d Fuzz.bool Fuzz.bool
-        |> Fuzz.map (Frame3d.define LocalCoordinates)
 
 
 sketchPlane3d : Fuzzer (SketchPlane3d coordinates)
@@ -242,7 +240,6 @@ sketchPlane3d =
                 }
     in
     Fuzz.map2 sketchPlane point3d direction3d
-        |> Fuzz.map (SketchPlane3d.define SketchCoordinates)
 
 
 lineSegment2d : Fuzzer (LineSegment2d coordinates)

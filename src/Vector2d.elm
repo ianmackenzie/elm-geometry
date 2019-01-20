@@ -148,7 +148,7 @@ fromComponents givenComponents =
     -->     )
 
 -}
-fromComponentsIn : Frame2d units coordinates defines -> ( Quantity Float units, Quantity Float units ) -> Vector2d units coordinates
+fromComponentsIn : Frame2d units globalCoordinates localCoordinates -> ( Quantity Float units, Quantity Float units ) -> Vector2d units globalCoordinates
 fromComponentsIn frame localComponents =
     let
         ( x, y ) =
@@ -198,7 +198,7 @@ frame:
     -->     )
 
 -}
-fromPolarComponentsIn : Frame2d units components defines -> ( Quantity Float units, Angle ) -> Vector2d units components
+fromPolarComponentsIn : Frame2d units globalCoordinates localCoordinates -> ( Quantity Float units, Angle ) -> Vector2d units globalCoordinates
 fromPolarComponentsIn frame localPolarComponents =
     let
         ( r, theta ) =
@@ -380,7 +380,7 @@ is equivalent to
     )
 
 -}
-componentsIn : Frame2d units coordinates defines -> Vector2d units coordinates -> ( Quantity Float units, Quantity Float units )
+componentsIn : Frame2d units globalCoordinates localCoordinates -> Vector2d units globalCoordinates -> ( Quantity Float units, Quantity Float units )
 componentsIn frame vector =
     ( vector |> componentIn (Frame2d.xDirection frame)
     , vector |> componentIn (Frame2d.yDirection frame)
@@ -986,7 +986,7 @@ local coordinates relative to a given reference frame.
     --> Vector2d.fromComponents ( 1.732, -1 )
 
 -}
-relativeTo : Frame2d frameUnits globalCoordinates { defines : localCoordinates } -> Vector2d units globalCoordinates -> Vector2d units localCoordinates
+relativeTo : Frame2d frameUnits globalCoordinates localCoordinates -> Vector2d units globalCoordinates -> Vector2d units localCoordinates
 relativeTo givenFrame givenVector =
     fromComponents
         ( componentIn (Frame2d.xDirection givenFrame) givenVector
@@ -1002,7 +1002,7 @@ frame, and return that vector expressed in global coordinates.
     --> Vector2d.fromComponents ( 1.732, 1 )
 
 -}
-placeIn : Frame2d frameUnits globalCoordinates { defines : localCoordinates } -> Vector2d units localCoordinates -> Vector2d units globalCoordinates
+placeIn : Frame2d frameUnits globalCoordinates localCoordinates -> Vector2d units localCoordinates -> Vector2d units globalCoordinates
 placeIn givenFrame givenVector =
     let
         ( x1, y1 ) =

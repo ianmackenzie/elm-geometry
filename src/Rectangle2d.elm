@@ -8,7 +8,7 @@
 
 
 module Rectangle2d exposing
-    ( Rectangle2d
+    ( Rectangle2d, RectangleCoordinates
     , from, centeredOn, fromExtrema, fromExtremaIn
     , dimensions, axes, xAxis, yAxis, centerPoint, area
     , vertices, bottomLeftVertex, bottomRightVertex, topLeftVertex, topRightVertex
@@ -31,7 +31,7 @@ rectangle-related functionality such as:
 Unlike bounding boxes, rectangles are _not_ constrained to be axis-aligned -
 they can have arbitrary orientation and so can be rotated, mirrored etc.
 
-@docs Rectangle2d
+@docs Rectangle2d, RectangleCoordinates
 
 
 # Construction
@@ -86,6 +86,12 @@ type alias Rectangle2d units coordinates =
     Types.Rectangle2d units coordinates
 
 
+{-| The coordinate system associated with the central axes of a rectangle.
+-}
+type alias RectangleCoordinates =
+    Types.RectangleCoordinates
+
+
 {-| Construct a rectangle centered on the given axes (frame), with the given
 overall X/Y dimensions (width/height).
 
@@ -103,7 +109,7 @@ overall X/Y dimensions (width/height).
     --> }
 
 -}
-centeredOn : Frame2d units coordinates defines -> ( Quantity Float units, Quantity Float units ) -> Rectangle2d units coordinates
+centeredOn : Frame2d units globalCoordinates localCoordinates -> ( Quantity Float units, Quantity Float units ) -> Rectangle2d units globalCoordinates
 centeredOn givenAxes ( givenWidth, givenHeight ) =
     Types.Rectangle2d
         { axes = Frame2d.copy givenAxes
@@ -135,7 +141,7 @@ we had used a rotated frame, the result could not have been expressed using
 `Rectangle2d.fromExtrema` since it would no longer have been axis-aligned.
 
 -}
-fromExtremaIn : Frame2d units coordinates defines -> { minX : Quantity Float units, maxX : Quantity Float units, minY : Quantity Float units, maxY : Quantity Float units } -> Rectangle2d units coordinates
+fromExtremaIn : Frame2d units globalCoordinates localCoordinates -> { minX : Quantity Float units, maxX : Quantity Float units, minY : Quantity Float units, maxY : Quantity Float units } -> Rectangle2d units globalCoordinates
 fromExtremaIn localFrame { minX, maxX, minY, maxY } =
     let
         computedCenterPoint =
@@ -264,7 +270,7 @@ toPolygon rectangle =
 The origin point of the frame will be the center point of the rectangle.
 
 -}
-axes : Rectangle2d units coordinates -> Frame2d units coordinates {}
+axes : Rectangle2d units coordinates -> Frame2d units coordinates RectangleCoordinates
 axes (Types.Rectangle2d rectangle) =
     rectangle.axes
 
@@ -909,7 +915,7 @@ coordinates.
     -->     }
 
 -}
-placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Rectangle2d units localCoordinates -> Rectangle2d units globalCoordinates
+placeIn : Frame2d units globalCoordinates localCoordinates -> Rectangle2d units localCoordinates -> Rectangle2d units globalCoordinates
 placeIn frame rectangle =
     Types.Rectangle2d
         { axes = Frame2d.placeIn frame (axes rectangle)
@@ -940,7 +946,7 @@ in local coordinates relative to a given reference frame.
     -->     }
 
 -}
-relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Rectangle2d units globalCoordinates -> Rectangle2d units localCoordinates
+relativeTo : Frame2d units globalCoordinates localCoordinates -> Rectangle2d units globalCoordinates -> Rectangle2d units localCoordinates
 relativeTo frame rectangle =
     Types.Rectangle2d
         { axes = Frame2d.relativeTo frame (axes rectangle)

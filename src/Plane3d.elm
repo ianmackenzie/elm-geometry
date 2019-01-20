@@ -335,7 +335,7 @@ coordinates relative to a given reference frame.
     -->     (Point3d.fromCoordinates ( -1, -1, 1 ))
 
 -}
-relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Plane3d units globalCoordinates -> Plane3d units localCoordinates
+relativeTo : Frame3d units globalCoordinates localCoordinates -> Plane3d units globalCoordinates -> Plane3d units localCoordinates
 relativeTo frame (Types.Plane3d plane) =
     through (Point3d.relativeTo frame plane.originPoint)
         (Direction3d.relativeTo frame plane.normalDirection)
@@ -357,7 +357,7 @@ frame, and return that plane expressed in global coordinates.
     -->     (Point3d.fromCoordinates ( 2, 3, 4 ))
 
 -}
-placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Plane3d units localCoordinates -> Plane3d units globalCoordinates
+placeIn : Frame3d units globalCoordinates localCoordinates -> Plane3d units localCoordinates -> Plane3d units globalCoordinates
 placeIn frame (Types.Plane3d plane) =
     through (Point3d.placeIn frame plane.originPoint)
         (Direction3d.placeIn frame plane.normalDirection)

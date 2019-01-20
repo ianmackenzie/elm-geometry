@@ -221,7 +221,7 @@ unsafeFromComponents givenComponents =
 given frame. As with `unsafeFromComponents`, you must ensure that the sum of the squares of
 the given components is exactly one.
 -}
-unsafeFromComponentsIn : Frame3d units coordinates defines -> ( Float, Float, Float ) -> Direction3d coordinates
+unsafeFromComponentsIn : Frame3d units globalCoordinates localCoordinates -> ( Float, Float, Float ) -> Direction3d globalCoordinates
 unsafeFromComponentsIn frame localComponents =
     let
         ( localX, localY, localZ ) =
@@ -261,7 +261,7 @@ direction specified in XY coordinates _within_ the sketch plane.
     --> ( 0.5, 0, 0.866 )
 
 -}
-on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Direction2d coordinates2d -> Direction3d coordinates3d
+on : SketchPlane3d units coordinates3d coordinates2d -> Direction2d coordinates2d -> Direction3d coordinates3d
 on sketchPlane direction2d =
     let
         ( dx, dy ) =
@@ -551,7 +551,7 @@ is equivalent to
     )
 
 -}
-componentsIn : Frame3d units coordinates defines -> Direction3d coordinates -> ( Float, Float, Float )
+componentsIn : Frame3d units globalCoordinates localCoordinates -> Direction3d globalCoordinates -> ( Float, Float, Float )
 componentsIn frame direction =
     ( direction |> componentIn (Frame3d.xDirection frame)
     , direction |> componentIn (Frame3d.yDirection frame)
@@ -1012,7 +1012,7 @@ local coordinates relative to a given reference frame.
     --> Direction3d.z
 
 -}
-relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Direction3d globalCoordinates -> Direction3d localCoordinates
+relativeTo : Frame3d units globalCoordinates localCoordinates -> Direction3d globalCoordinates -> Direction3d localCoordinates
 relativeTo frame direction =
     unsafeFromComponents
         ( componentIn (Frame3d.xDirection frame) direction
@@ -1038,7 +1038,7 @@ frame, and return that direction expressed in global coordinates.
     --> Direction3d.z
 
 -}
-placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Direction3d localCoordinates -> Direction3d globalCoordinates
+placeIn : Frame3d units globalCoordinates localCoordinates -> Direction3d localCoordinates -> Direction3d globalCoordinates
 placeIn frame direction =
     let
         ( x1, y1, z1 ) =
@@ -1086,7 +1086,7 @@ plane; if it is perpendicular, `Nothing` is returned.
     --> Nothing
 
 -}
-projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Direction3d coordinates3d -> Maybe (Direction2d coordinates2d)
+projectInto : SketchPlane3d units coordinates3d coordinates2d -> Direction3d coordinates3d -> Maybe (Direction2d coordinates2d)
 projectInto sketchPlane direction =
     Vector2d.fromTuple
         ( componentIn (SketchPlane3d.xDirection sketchPlane) direction

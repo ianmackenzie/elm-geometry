@@ -16,16 +16,16 @@ module Bootstrap.Frame2d exposing
 import Geometry.Types exposing (..)
 
 
-originPoint : Frame2d units coordinates defines -> Point2d units coordinates
+originPoint : Frame2d units coordinates1 coordinates2 -> Point2d units coordinates1
 originPoint (Frame2d properties) =
     properties.originPoint
 
 
-xDirection : Frame2d units coordinates defines -> Direction2d coordinates
+xDirection : Frame2d units coordinates1 coordinates2 -> Direction2d coordinates1
 xDirection (Frame2d properties) =
     properties.xDirection
 
 
-yDirection : Frame2d units coordinates defines -> Direction2d coordinates
+yDirection : Frame2d units coordinates1 coordinates2 -> Direction2d coordinates1
 yDirection (Frame2d properties) =
     properties.yDirection

@@ -101,7 +101,7 @@ specified in XY coordinates _within_ the sketch plane.
     -->     )
 
 -}
-on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Triangle2d units coordinates2d -> Triangle3d units coordinates3d
+on : SketchPlane3d units coordinates3d coordinates2d -> Triangle2d units coordinates2d -> Triangle3d units coordinates3d
 on sketchPlane triangle2d =
     let
         ( p1, p2, p3 ) =
@@ -380,7 +380,7 @@ in local coordinates relative to a given reference frame.
     -->     )
 
 -}
-relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Triangle3d units globalCoordinates -> Triangle3d units localCoordinates
+relativeTo : Frame3d units globalCoordinates localCoordinates -> Triangle3d units globalCoordinates -> Triangle3d units localCoordinates
 relativeTo frame triangle =
     mapVertices (Point3d.relativeTo frame) triangle
 
@@ -400,7 +400,7 @@ given reference frame, and return that triangle expressed in global coordinates.
     -->     )
 
 -}
-placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Triangle3d units localCoordinates -> Triangle3d units globalCoordinates
+placeIn : Frame3d units globalCoordinates localCoordinates -> Triangle3d units localCoordinates -> Triangle3d units globalCoordinates
 placeIn frame triangle =
     mapVertices (Point3d.placeIn frame) triangle
 
@@ -425,7 +425,7 @@ sketch coordinates.
     -->     )
 
 -}
-projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Triangle3d units coordinates3d -> Triangle2d units coordinates2d
+projectInto : SketchPlane3d units coordinates3d coordinates2d -> Triangle3d units coordinates3d -> Triangle2d units coordinates2d
 projectInto sketchPlane triangle =
     let
         ( p1, p2, p3 ) =

@@ -157,7 +157,7 @@ fromComponents givenComponents =
     -->     )
 
 -}
-fromComponentsIn : Frame3d units components defines -> ( Quantity Float units, Quantity Float units, Quantity Float units ) -> Vector3d units components
+fromComponentsIn : Frame3d units globalCoordinates localCoordinates -> ( Quantity Float units, Quantity Float units, Quantity Float units ) -> Vector3d units globalCoordinates
 fromComponentsIn frame localComponents =
     let
         ( x, y, z ) =
@@ -253,7 +253,7 @@ A slightly more complex example:
     --> Vector3d.fromComponents ( 1, 0.7071, 0.7071 )
 
 -}
-on : SketchPlane3d units coordinates { defines : coordinates2d } -> Vector2d units coordinates2d -> Vector3d units coordinates
+on : SketchPlane3d units coordinates3d coordinates2d -> Vector2d units coordinates2d -> Vector3d units coordinates3d
 on sketchPlane vector2d =
     let
         ( ux, uy, uz ) =
@@ -431,7 +431,7 @@ is equivalent to
     )
 
 -}
-componentsIn : Frame3d units coordinates defines -> Vector3d units coordinates -> ( Quantity Float units, Quantity Float units, Quantity Float units )
+componentsIn : Frame3d units globalCoordinates localCoordinates -> Vector3d units globalCoordinates -> ( Quantity Float units, Quantity Float units, Quantity Float units )
 componentsIn frame vector =
     ( vector |> componentIn (Frame3d.xDirection frame)
     , vector |> componentIn (Frame3d.yDirection frame)
@@ -1099,7 +1099,7 @@ local coordinates relative to a given reference frame.
     --> Vector3d.fromComponents ( 1.732, -1, 3 )
 
 -}
-relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Vector3d units globalCoordinates -> Vector3d units localCoordinates
+relativeTo : Frame3d units globalCoordinates localCoordinates -> Vector3d units globalCoordinates -> Vector3d units localCoordinates
 relativeTo frame vector =
     fromComponents
         ( componentIn (Frame3d.xDirection frame) vector
@@ -1118,7 +1118,7 @@ frame, and return that vector expressed in global coordinates.
     --> Vector3d.fromComponents ( 1.732, 1, 3 )
 
 -}
-placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Vector3d units localCoordinates -> Vector3d units globalCoordinates
+placeIn : Frame3d units globalCoordinates localCoordinates -> Vector3d units localCoordinates -> Vector3d units globalCoordinates
 placeIn frame vector =
     let
         ( x1, y1, z1 ) =
@@ -1158,7 +1158,7 @@ sketch coordinates.
     --> Vector2d.fromComponents ( 3, 2 )
 
 -}
-projectInto : SketchPlane3d units coordinates { defines : coordinates2d } -> Vector3d units coordinates -> Vector2d units coordinates2d
+projectInto : SketchPlane3d units coordinates coordinates2d -> Vector3d units coordinates -> Vector2d units coordinates2d
 projectInto sketchPlane vector =
     Vector2d.fromComponents
         ( componentIn (SketchPlane3d.xDirection sketchPlane) vector

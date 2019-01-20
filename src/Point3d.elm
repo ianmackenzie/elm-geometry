@@ -300,7 +300,7 @@ The sketch plane can have any position and orientation:
     --> Point3d.fromCoordinates ( 12, 10.7071, 10.7071 )
 
 -}
-on : SketchPlane3d units coordinates { defines : coordinates2d } -> Point2d units coordinates2d -> Point3d units coordinates
+on : SketchPlane3d units coordinates3d coordinates2d -> Point2d units coordinates2d -> Point3d units coordinates3d
 on sketchPlane point2d =
     let
         ( x0, y0, z0 ) =
@@ -332,7 +332,7 @@ on sketchPlane point2d =
     --> Point3d.fromCoordinates ( 2, 3, 4 )
 
 -}
-fromCoordinatesIn : Frame3d units coordinates defines -> ( Quantity Float units, Quantity Float units, Quantity Float units ) -> Point3d units coordinates
+fromCoordinatesIn : Frame3d units globalCoordinates localCoordinates -> ( Quantity Float units, Quantity Float units, Quantity Float units ) -> Point3d units globalCoordinates
 fromCoordinatesIn frame localCoordinates =
     let
         ( x, y, z ) =
@@ -497,7 +497,7 @@ coordinates (Types.Point3d pointCoordinates) =
     --> )
 
 -}
-coordinatesIn : Frame3d units coordinates defines -> Point3d units coordinates -> ( Quantity Float units, Quantity Float units, Quantity Float units )
+coordinatesIn : Frame3d units globalCoordinates localCoordinates -> Point3d units globalCoordinates -> ( Quantity Float units, Quantity Float units, Quantity Float units )
 coordinatesIn frame point =
     let
         ( x, y, z ) =
@@ -1004,7 +1004,7 @@ coordinates relative to a given reference frame.
     --> Point3d.fromCoordinates ( 0, -1, -2 )
 
 -}
-relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Point3d units globalCoordinates -> Point3d units localCoordinates
+relativeTo : Frame3d units globalCoordinates localCoordinates -> Point3d units globalCoordinates -> Point3d units localCoordinates
 relativeTo frame point =
     Vector3d.from (Frame3d.originPoint frame) point
         |> Vector3d.relativeTo frame
@@ -1028,7 +1028,7 @@ frame, and return that point expressed in global coordinates.
     --> Point3d.fromCoordinates ( 1, 1, 1 )
 
 -}
-placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Point3d units localCoordinates -> Point3d units globalCoordinates
+placeIn : Frame3d units globalCoordinates localCoordinates -> Point3d units localCoordinates -> Point3d units globalCoordinates
 placeIn frame point =
     Vector3d.fromComponents (coordinates point)
         |> Vector3d.placeIn frame
@@ -1053,7 +1053,7 @@ coordinates.
     --> Point2d.fromCoordinates ( 3, 2 )
 
 -}
-projectInto : SketchPlane3d units coordinates { defines : coordinates2d } -> Point3d units coordinates -> Point2d units coordinates2d
+projectInto : SketchPlane3d units coordinates coordinates2d -> Point3d units coordinates -> Point2d units coordinates2d
 projectInto sketchPlane point =
     let
         ( x, y, z ) =

@@ -101,7 +101,7 @@ import Axis2d exposing (Axis2d)
 import Curve.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
 import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Direction2d exposing (Direction2d)
-import Ellipse2d exposing (Ellipse2d)
+import Ellipse2d exposing (Ellipse2d, EllipseCoordinates)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import Interval
@@ -338,7 +338,7 @@ centerPoint (Types.EllipticalArc2d arc) =
 
 
 {-| -}
-axes : EllipticalArc2d units coordinates -> Frame2d units coordinates {}
+axes : EllipticalArc2d units coordinates -> Frame2d units coordinates EllipseCoordinates
 axes (Types.EllipticalArc2d arc) =
     Ellipse2d.axes arc.ellipse
 
@@ -884,7 +884,7 @@ local coordinates relative to a given reference frame.
     -->     }
 
 -}
-relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> EllipticalArc2d units globalCoordinates -> EllipticalArc2d units localCoordinates
+relativeTo : Frame2d units globalCoordinates localCoordinates -> EllipticalArc2d units globalCoordinates -> EllipticalArc2d units localCoordinates
 relativeTo frame arc =
     transformBy (Ellipse2d.relativeTo frame) arc
 
@@ -908,7 +908,7 @@ coordinates.
     -->     }
 
 -}
-placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> EllipticalArc2d units localCoordinates -> EllipticalArc2d units globalCoordinates
+placeIn : Frame2d units globalCoordinates localCoordinates -> EllipticalArc2d units localCoordinates -> EllipticalArc2d units globalCoordinates
 placeIn frame arc =
     transformBy (Ellipse2d.placeIn frame) arc
 

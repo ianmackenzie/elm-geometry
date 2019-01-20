@@ -122,7 +122,7 @@ specified in XY coordinates _within_ the sketch plane.
     -->     (Point3d.fromCoordinates ( 0, 1, 2 ))
 
 -}
-on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Circle2d units coordinates2d -> Circle3d units coordinates3d
+on : SketchPlane3d units coordinates3d coordinates2d -> Circle2d units coordinates2d -> Circle3d units coordinates3d
 on sketchPlane circle =
     withRadius (Circle2d.radius circle)
         (SketchPlane3d.normalDirection sketchPlane)
@@ -374,7 +374,7 @@ mirrorAcross mirrorPlane circle =
     -->     }
 
 -}
-projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Circle3d units coordinates3d -> Types.Ellipse2d units coordinates2d
+projectInto : SketchPlane3d units coordinates3d coordinates2d -> Circle3d units coordinates3d -> Types.Ellipse2d units coordinates2d
 projectInto sketchPlane circle =
     let
         projectedAxialDirection =
@@ -430,7 +430,7 @@ local coordinates relative to a given reference frame.
     -->     (Point3d.fromCoordinates ( 1, -2, -2 ))
 
 -}
-relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Circle3d units globalCoordinates -> Circle3d units localCoordinates
+relativeTo : Frame3d units globalCoordinates localCoordinates -> Circle3d units globalCoordinates -> Circle3d units localCoordinates
 relativeTo frame circle =
     withRadius (radius circle)
         (Direction3d.relativeTo frame (axialDirection circle))
@@ -450,7 +450,7 @@ given reference frame, and return that circle expressed in global coordinates.
     -->     (Point3d.fromCoordinates ( 3, 2, 4 ))
 
 -}
-placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Circle3d units localCoordinates -> Circle3d units globalCoordinates
+placeIn : Frame3d units globalCoordinates localCoordinates -> Circle3d units localCoordinates -> Circle3d units globalCoordinates
 placeIn frame circle =
     withRadius (radius circle)
         (Direction3d.placeIn frame (axialDirection circle))

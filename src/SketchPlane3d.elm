@@ -10,8 +10,7 @@
 module SketchPlane3d exposing
     ( SketchPlane3d
     , xy, yx, yz, zy, zx, xz
-    , withNormalDirection, on, throughPoints, fromPlane, unsafe
-    , define
+    , withNormalDirection, on, throughPoints, fromPlane, copy, unsafe
     , toPlane
     , originPoint, xDirection, yDirection, normalDirection, xAxis, yAxis, normalAxis
     , offsetBy, reverseX, reverseY, moveTo, rotateAround, rotateAroundOwn, translateBy, translateIn, translateAlongOwn, mirrorAcross
@@ -81,7 +80,7 @@ point, and use the two indicated global axes as their X and Y axes. For example,
 Sketch planes can also be constructed from `Frame3d` values using
 `Frame3d.xySketchPlane` etc.
 
-@docs withNormalDirection, on, throughPoints, fromPlane, unsafe
+@docs withNormalDirection, on, throughPoints, fromPlane, copy, unsafe
 
 
 # Local coordinates
@@ -124,13 +123,13 @@ import Vector3d exposing (Vector3d)
 
 
 {-| -}
-type alias SketchPlane3d units coordinates defines =
-    Types.SketchPlane3d units coordinates defines
+type alias SketchPlane3d units coordinates1 coordinates2 =
+    Types.SketchPlane3d units coordinates1 coordinates2
 
 
 {-| A sketch plane formed from the global X and Y axes.
 -}
-xy : SketchPlane3d units coordinates {}
+xy : SketchPlane3d units coordinates1 coordinates2
 xy =
     unsafe
         { originPoint = Point3d.origin
@@ -141,7 +140,7 @@ xy =
 
 {-| A sketch plane formed from the global Y and X axes.
 -}
-yx : SketchPlane3d units coordinates {}
+yx : SketchPlane3d units coordinates1 coordinates2
 yx =
     unsafe
         { originPoint = Point3d.origin
@@ -152,7 +151,7 @@ yx =
 
 {-| A sketch plane formed from the global Y and Z axes.
 -}
-yz : SketchPlane3d units coordinates {}
+yz : SketchPlane3d units coordinates1 coordinates2
 yz =
     unsafe
         { originPoint = Point3d.origin
@@ -163,7 +162,7 @@ yz =
 
 {-| A sketch plane formed from the global Z and Y axes.
 -}
-zy : SketchPlane3d units coordinates {}
+zy : SketchPlane3d units coordinates1 coordinates2
 zy =
     unsafe
         { originPoint = Point3d.origin
@@ -174,7 +173,7 @@ zy =
 
 {-| A sketch plane formed from the global Z and X axes.
 -}
-zx : SketchPlane3d units coordinates {}
+zx : SketchPlane3d units coordinates1 coordinates2
 zx =
     unsafe
         { originPoint = Point3d.origin
@@ -185,7 +184,7 @@ zx =
 
 {-| A sketch plane formed from the global X and Z axes.
 -}
-xz : SketchPlane3d units coordinates {}
+xz : SketchPlane3d units coordinates1 coordinates2
 xz =
     unsafe
         { originPoint = Point3d.origin
@@ -224,7 +223,7 @@ directions are unimportant.
     --> Direction3d.y
 
 -}
-withNormalDirection : Direction3d coordinates -> Point3d units coordinates -> SketchPlane3d units coordinates {}
+withNormalDirection : Direction3d coordinates1 -> Point3d units coordinates1 -> SketchPlane3d units coordinates1 coordinates2
 withNormalDirection givenNormalDirection givenOrigin =
     let
         ( computedXDirection, computedYDirection ) =
@@ -264,9 +263,9 @@ plane, in 2D coordinates within the existing sketch plane. Whew!
 
 -}
 on :
-    SketchPlane3d units coordinates3d { defines : globalCoordinates2d }
-    -> Frame2d units globalCoordinates2d { defines : localCoordinates2d }
-    -> SketchPlane3d units coordinates3d { defines : localCoordinates2d }
+    SketchPlane3d units coordinates1 coordinates2
+    -> Frame2d units coordinates2 coordinates3
+    -> SketchPlane3d units coordinates1 coordinates3
 on sketchPlane frame =
     Types.SketchPlane3d
         { originPoint = Point3d.on sketchPlane (Frame2d.originPoint frame)
@@ -305,7 +304,7 @@ origin point and are coplanar):
     --> Direction3d.positiveX
 
 -}
-fromPlane : Plane3d units coordinates -> SketchPlane3d units coordinates {}
+fromPlane : Plane3d units coordinates1 -> SketchPlane3d units coordinates1 coordinates2
 fromPlane plane =
     withNormalDirection (Plane3d.normalDirection plane)
         (Plane3d.originPoint plane)
@@ -327,18 +326,13 @@ basis directions are perpendicular to each other**.
 
 -}
 unsafe :
-    { originPoint : Point3d units coordinates
-    , xDirection : Direction3d coordinates
-    , yDirection : Direction3d coordinates
+    { originPoint : Point3d units coordinates1
+    , xDirection : Direction3d coordinates1
+    , yDirection : Direction3d coordinates1
     }
-    -> SketchPlane3d units coordinates {}
+    -> SketchPlane3d units coordinates1 coordinates2
 unsafe =
     Types.SketchPlane3d
-
-
-define : coordinates2d -> SketchPlane3d units coordinates3d {} -> SketchPlane3d units coordinates3d { defines : coordinates2d }
-define coordinates2d (Types.SketchPlane3d sketchPlane) =
-    Types.SketchPlane3d sketchPlane
 
 
 {-| Attempt to construct a sketch plane that passes through the three given
@@ -377,7 +371,7 @@ If the three given points are collinear, returns `Nothing`.
     --> Nothing
 
 -}
-throughPoints : Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> Maybe (SketchPlane3d units coordinates {})
+throughPoints : Point3d units coordinates1 -> Point3d units coordinates1 -> Point3d units coordinates1 -> Maybe (SketchPlane3d units coordinates1 coordinates2)
 throughPoints firstPoint secondPoint thirdPoint =
     Direction3d.from firstPoint secondPoint
         |> Maybe.andThen
@@ -431,7 +425,7 @@ throughPoints firstPoint secondPoint thirdPoint =
     --> Point3d.origin
 
 -}
-originPoint : SketchPlane3d units coordinates defines -> Point3d units coordinates
+originPoint : SketchPlane3d units coordinates1 coordinates2 -> Point3d units coordinates1
 originPoint (Types.SketchPlane3d properties) =
     properties.originPoint
 
@@ -443,7 +437,7 @@ X axis).
     --> Direction3d.z
 
 -}
-xDirection : SketchPlane3d units coordinates defines -> Direction3d coordinates
+xDirection : SketchPlane3d units coordinates1 coordinates2 -> Direction3d coordinates1
 xDirection (Types.SketchPlane3d properties) =
     properties.xDirection
 
@@ -455,7 +449,7 @@ Y axis).
     --> Direction3d.x
 
 -}
-yDirection : SketchPlane3d units coordinates defines -> Direction3d coordinates
+yDirection : SketchPlane3d units coordinates1 coordinates2 -> Direction3d coordinates1
 yDirection (Types.SketchPlane3d properties) =
     properties.yDirection
 
@@ -470,7 +464,7 @@ product of the sketch plane's X and Y directions.
     --> Direction3d.negativeY
 
 -}
-normalDirection : SketchPlane3d units coordinates defines -> Direction3d coordinates
+normalDirection : SketchPlane3d units coordinates1 coordinates2 -> Direction3d coordinates1
 normalDirection sketchPlane =
     Direction3d.unsafeCrossProduct
         (xDirection sketchPlane)
@@ -484,7 +478,7 @@ corresponds to a distance along this axis in 3D.
     --> Axis3d.z
 
 -}
-xAxis : SketchPlane3d units coordinates defines -> Axis3d units coordinates
+xAxis : SketchPlane3d units coordinates1 coordinates2 -> Axis3d units coordinates1
 xAxis (Types.SketchPlane3d sketchPlane) =
     Axis3d.through sketchPlane.originPoint sketchPlane.xDirection
 
@@ -496,7 +490,7 @@ corresponds to a distance along this axis in 3D.
     --> Axis3d.x
 
 -}
-yAxis : SketchPlane3d units coordinates defines -> Axis3d units coordinates
+yAxis : SketchPlane3d units coordinates1 coordinates2 -> Axis3d units coordinates1
 yAxis (Types.SketchPlane3d sketchPlane) =
     Axis3d.through sketchPlane.originPoint sketchPlane.yDirection
 
@@ -511,7 +505,7 @@ plane's origin point and normal direction).
     --> Axis3d.reverse Axis3d.y
 
 -}
-normalAxis : SketchPlane3d units coordinates defines -> Axis3d units coordinates
+normalAxis : SketchPlane3d units coordinates1 coordinates2 -> Axis3d units coordinates1
 normalAxis sketchPlane =
     Axis3d.through (originPoint sketchPlane) (normalDirection sketchPlane)
 
@@ -526,9 +520,14 @@ normal direction.
     --> Plane3d.reverseNormal Plane3d.xy
 
 -}
-toPlane : SketchPlane3d units coordinates defines -> Plane3d units coordinates
+toPlane : SketchPlane3d units coordinates1 coordinates2 -> Plane3d units coordinates1
 toPlane sketchPlane =
     Plane3d.through (originPoint sketchPlane) (normalDirection sketchPlane)
+
+
+copy : SketchPlane3d units coordinates1 coordinates2 -> SketchPlane3d units coordinates1 coordinates3
+copy (Types.SketchPlane3d properties) =
+    Types.SketchPlane3d properties
 
 
 {-| Shift a sketch plane in its own normal direction by the given (signed)
@@ -543,7 +542,7 @@ distance.
     --> Point3d.fromCoordinates ( 0, 1, 0 )
 
 -}
-offsetBy : Quantity Float units -> SketchPlane3d units coordinates defines -> SketchPlane3d units coordinates {}
+offsetBy : Quantity Float units -> SketchPlane3d units coordinates1 coordinates2 -> SketchPlane3d units coordinates1 coordinates3
 offsetBy distance sketchPlane =
     let
         displacement =
@@ -568,7 +567,7 @@ origin point unchanged.
     --> Direction3d.z
 
 -}
-reverseX : SketchPlane3d units coordinates defines -> SketchPlane3d units coordinates {}
+reverseX : SketchPlane3d units coordinates1 coordinates2 -> SketchPlane3d units coordinates1 coordinates3
 reverseX sketchPlane =
     unsafe
         { originPoint = originPoint sketchPlane
@@ -593,7 +592,7 @@ origin point unchanged.
     --> Direction3d.negativeZ
 
 -}
-reverseY : SketchPlane3d units coordinates defines -> SketchPlane3d units coordinates {}
+reverseY : SketchPlane3d units coordinates1 coordinates2 -> SketchPlane3d units coordinates1 coordinates3
 reverseY sketchPlane =
     unsafe
         { originPoint = originPoint sketchPlane
@@ -621,7 +620,7 @@ its X and Y directions unchanged.
     --> Direction3d.z
 
 -}
-moveTo : Point3d units coordinates -> SketchPlane3d units coordinates defines -> SketchPlane3d units coordinates {}
+moveTo : Point3d units coordinates1 -> SketchPlane3d units coordinates1 coordinates2 -> SketchPlane3d units coordinates1 coordinates3
 moveTo newOrigin sketchPlane =
     unsafe
         { originPoint = newOrigin
@@ -639,7 +638,7 @@ the given axis.
     --> SketchPlane3d.xz
 
 -}
-rotateAround : Axis3d units coordinates -> Angle -> SketchPlane3d units coordinates defines -> SketchPlane3d units coordinates {}
+rotateAround : Axis3d units coordinates1 -> Angle -> SketchPlane3d units coordinates1 coordinates2 -> SketchPlane3d units coordinates1 coordinates3
 rotateAround axis angle sketchPlane =
     unsafe
         { originPoint =
@@ -685,7 +684,7 @@ passes through the sketch plane's origin point) instead of the global Y axis,
 the origin point itself was not affected by the rotation.
 
 -}
-rotateAroundOwn : (SketchPlane3d units coordinates defines -> Axis3d units coordinates) -> Angle -> SketchPlane3d units coordinates defines -> SketchPlane3d units coordinates {}
+rotateAroundOwn : (SketchPlane3d units coordinates1 coordinates2 -> Axis3d units coordinates1) -> Angle -> SketchPlane3d units coordinates1 coordinates2 -> SketchPlane3d units coordinates1 coordinates3
 rotateAroundOwn axis angle sketchPlane =
     rotateAround (axis sketchPlane) angle sketchPlane
 
@@ -709,7 +708,7 @@ rotateAroundOwn axis angle sketchPlane =
     --> Direction3d.y
 
 -}
-translateBy : Vector3d units coordinates -> SketchPlane3d units coordinates defines -> SketchPlane3d units coordinates {}
+translateBy : Vector3d units coordinates1 -> SketchPlane3d units coordinates1 coordinates2 -> SketchPlane3d units coordinates1 coordinates3
 translateBy vector sketchPlane =
     unsafe
         { originPoint = Point3d.translateBy vector (originPoint sketchPlane)
@@ -728,7 +727,7 @@ is equivalent to
         (Vector3d.withLength distance direction)
 
 -}
-translateIn : Direction3d coordinates -> Quantity Float units -> SketchPlane3d units coordinates defines -> SketchPlane3d units coordinates {}
+translateIn : Direction3d coordinates1 -> Quantity Float units -> SketchPlane3d units coordinates1 coordinates2 -> SketchPlane3d units coordinates1 coordinates3
 translateIn direction distance sketchPlane =
     translateBy (Vector3d.withLength distance direction) sketchPlane
 
@@ -767,7 +766,7 @@ resulting in
     -->     (degrees 45)
 
 -}
-translateAlongOwn : (SketchPlane3d units coordinates defines -> Axis3d units coordinates) -> Quantity Float units -> SketchPlane3d units coordinates defines -> SketchPlane3d units coordinates {}
+translateAlongOwn : (SketchPlane3d units coordinates1 coordinates2 -> Axis3d units coordinates1) -> Quantity Float units -> SketchPlane3d units coordinates1 coordinates2 -> SketchPlane3d units coordinates1 coordinates3
 translateAlongOwn axis distance frame =
     let
         displacement =
@@ -796,7 +795,7 @@ translateAlongOwn axis distance frame =
     --> Direction3d.negativeZ
 
 -}
-mirrorAcross : Plane3d units coordinates -> SketchPlane3d units coordinates defines -> SketchPlane3d units coordinates {}
+mirrorAcross : Plane3d units coordinates1 -> SketchPlane3d units coordinates1 coordinates2 -> SketchPlane3d units coordinates1 coordinates3
 mirrorAcross plane sketchPlane =
     unsafe
         { originPoint = Point3d.mirrorAcross plane (originPoint sketchPlane)
@@ -808,7 +807,7 @@ mirrorAcross plane sketchPlane =
 {-| Take a sketch plane defined in global coordinates, and return it expressed
 in local coordinates relative to a given reference frame.
 -}
-relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> SketchPlane3d units globalCoordinates defines -> SketchPlane3d units localCoordinates defines
+relativeTo : Frame3d units coordinates1 coordinates2 -> SketchPlane3d units coordinates1 coordinates3 -> SketchPlane3d units coordinates2 coordinates3
 relativeTo frame sketchPlane =
     Types.SketchPlane3d
         { originPoint = Point3d.relativeTo frame (originPoint sketchPlane)
@@ -820,7 +819,7 @@ relativeTo frame sketchPlane =
 {-| Take a sketch plane defined in local coordinates relative to a given
 reference frame, and return that sketch plane expressed in global coordinates.
 -}
-placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> SketchPlane3d units localCoordinates defines -> SketchPlane3d units globalCoordinates defines
+placeIn : Frame3d units coordinates1 coordinates2 -> SketchPlane3d units coordinates2 coordinates3 -> SketchPlane3d units coordinates1 coordinates3
 placeIn frame sketchPlane =
     Types.SketchPlane3d
         { originPoint = Point3d.placeIn frame (originPoint sketchPlane)

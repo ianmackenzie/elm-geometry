@@ -121,7 +121,7 @@ in XY coordinates _within_ the sketch plane.
     --> Point3d.fromCoordinates ( 1, 0, 3 )
 
 -}
-on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Arc2d units coordinates2d -> Arc3d units coordinates3d
+on : SketchPlane3d units coordinates3d coordinates2d -> Arc2d units coordinates2d -> Arc3d units coordinates3d
 on sketchPlane (Types.Arc2d arc2d) =
     Types.Arc3d
         { startPoint = Point3d.on sketchPlane arc2d.startPoint
@@ -226,7 +226,6 @@ points are collinear, returns `Nothing`.
 throughPoints : Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> Maybe (Arc3d units coordinates)
 throughPoints firstPoint secondPoint thirdPoint =
     SketchPlane3d.throughPoints firstPoint secondPoint thirdPoint
-        |> Maybe.map (SketchPlane3d.define TempCoordinates2d)
         |> Maybe.andThen
             (\sketchPlane ->
                 Arc2d.throughPoints
@@ -893,7 +892,7 @@ mirrorAcross plane (Types.Arc3d arc) =
     -->     }
 
 -}
-projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Arc3d units coordinates3d -> Types.EllipticalArc2d units coordinates2d
+projectInto : SketchPlane3d units coordinates3d coordinates2d -> Arc3d units coordinates3d -> Types.EllipticalArc2d units coordinates2d
 projectInto sketchPlane arc =
     let
         arcAxialDirection =
@@ -1005,7 +1004,7 @@ coordinates relative to a given reference frame.
     -->     (Point3d.fromCoordinates ( 0, -1, -3 ))
 
 -}
-relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Arc3d units globalCoordinates -> Arc3d units localCoordinates
+relativeTo : Frame3d units globalCoordinates localCoordinates -> Arc3d units globalCoordinates -> Arc3d units localCoordinates
 relativeTo frame (Types.Arc3d arc) =
     if Frame3d.isRightHanded frame then
         Types.Arc3d
@@ -1044,7 +1043,7 @@ given reference frame, and return that arc expressed in global coordinates.
     -->     (Point3d.fromCoordinates ( 2, 3, 3 ))
 
 -}
-placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Arc3d units localCoordinates -> Arc3d units globalCoordinates
+placeIn : Frame3d units globalCoordinates localCoordinates -> Arc3d units localCoordinates -> Arc3d units globalCoordinates
 placeIn frame (Types.Arc3d arc) =
     if Frame3d.isRightHanded frame then
         Types.Arc3d

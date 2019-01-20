@@ -291,7 +291,7 @@ along axis distance =
     --> Point2d.fromCoordinates ( 1.4142, 1.4142 )
 
 -}
-fromCoordinatesIn : Frame2d units coordinates defines -> ( Quantity Float units, Quantity Float units ) -> Point2d units coordinates
+fromCoordinatesIn : Frame2d units globalCoordinates localCoordinates -> ( Quantity Float units, Quantity Float units ) -> Point2d units globalCoordinates
 fromCoordinatesIn frame localCoordinates =
     let
         ( x, y ) =
@@ -323,7 +323,7 @@ frame:
     --> Point2d.fromCoordinates ( 3.4142, 2.4142 )
 
 -}
-fromPolarCoordinatesIn : Frame2d units coordinates defines -> ( Quantity Float units, Angle ) -> Point2d units coordinates
+fromPolarCoordinatesIn : Frame2d units globalCoordinates localCoordinates -> ( Quantity Float units, Angle ) -> Point2d units globalCoordinates
 fromPolarCoordinatesIn frame localPolarCoordinates =
     let
         ( r, theta ) =
@@ -475,7 +475,7 @@ coordinates (Types.Point2d pointCoordinates) =
     --> )
 
 -}
-coordinatesIn : Frame2d units coordinates defines -> Point2d units coordinates -> ( Quantity Float units, Quantity Float units )
+coordinatesIn : Frame2d units globalCoordinates localCoordinates -> Point2d units globalCoordinates -> ( Quantity Float units, Quantity Float units )
 coordinatesIn frame point =
     let
         ( x, y ) =
@@ -901,7 +901,7 @@ coordinates relative to a given reference frame.
     --> Point2d.fromCoordinates ( 0, -1 )
 
 -}
-relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Point2d units globalCoordinates -> Point2d units localCoordinates
+relativeTo : Frame2d units globalCoordinates localCoordinates -> Point2d units globalCoordinates -> Point2d units localCoordinates
 relativeTo frame point =
     Vector2d.from (Frame2d.originPoint frame) point
         |> Vector2d.relativeTo frame
@@ -924,7 +924,7 @@ frame, and return that point expressed in global coordinates.
     --> Point2d.fromCoordinates ( 1, 1 )
 
 -}
-placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Point2d units localCoordinates -> Point2d units globalCoordinates
+placeIn : Frame2d units globalCoordinates localCoordinates -> Point2d units localCoordinates -> Point2d units globalCoordinates
 placeIn frame point =
     Vector2d.fromComponents (coordinates point)
         |> Vector2d.placeIn frame
