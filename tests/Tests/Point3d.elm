@@ -16,6 +16,7 @@ import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Plane3d
 import Point3d
+import Quantity
 import SketchPlane3d
 import Test exposing (Test)
 import Vector3d
@@ -40,7 +41,7 @@ rotationAboutAxisPreservesDistanceAlong =
             in
             Expect.approximately distance rotatedDistance
     in
-    Test.fuzz3 Fuzz.point3d Fuzz.axis3d Fuzz.scalar description expectation
+    Test.fuzz3 Fuzz.point3d Fuzz.axis3d Fuzz.angle description expectation
 
 
 rotationAboutAxisPreservesDistanceFrom : Test
@@ -62,7 +63,7 @@ rotationAboutAxisPreservesDistanceFrom =
             in
             Expect.approximately distance rotatedDistance
     in
-    Test.fuzz3 Fuzz.point3d Fuzz.axis3d Fuzz.scalar description expectation
+    Test.fuzz3 Fuzz.point3d Fuzz.axis3d Fuzz.angle description expectation
 
 
 midpointIsEquidistant : Test
@@ -121,7 +122,7 @@ mirrorFlipsSignedDistance =
             in
             Point3d.mirrorAcross plane point
                 |> Point3d.signedDistanceFrom plane
-                |> Expect.approximately -signedDistance
+                |> Expect.approximately (Quantity.negate signedDistance)
         )
 
 
@@ -129,7 +130,7 @@ translationByPerpendicularDoesNotChangeSignedDistance : Test
 translationByPerpendicularDoesNotChangeSignedDistance =
     Test.fuzz3 Fuzz.point3d
         Fuzz.plane3d
-        Fuzz.scalar
+        Fuzz.quantity
         "Translating in a direction perpendicular to a plane's normal direction does not change signed distance from that plane"
         (\point plane distance ->
             let
@@ -154,7 +155,7 @@ translateByAndInAreConsistent =
     Test.fuzz3
         Fuzz.point3d
         Fuzz.direction3d
-        Fuzz.scalar
+        Fuzz.quantity
         "translateBy and translateIn are consistent"
         (\point direction distance ->
             let
