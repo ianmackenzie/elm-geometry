@@ -8,14 +8,17 @@ module Tests.QuadraticSpline3d exposing
 
 import Expect exposing (FloatingPointTolerance(..))
 import Fuzz exposing (Fuzzer)
+import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Geometry.Test exposing (..)
 import Point3d
-import QuadraticSpline3d exposing (QuadraticSpline3d)
+import QuadraticSpline3d
+import Quantity exposing (Quantity, Unitless)
 import Test exposing (Test)
 import Tests.QuadraticSpline2d
 
 
-analyticalLength : QuadraticSpline3d -> Float
+analyticalLength : QuadraticSpline3d coordinates -> Quantity Float Unitless
 analyticalLength spline =
     let
         p0 =
@@ -28,13 +31,13 @@ analyticalLength spline =
             QuadraticSpline3d.endPoint spline
 
         ( x0, y0, z0 ) =
-            Point3d.coordinates p0
+            Point3d.toTuple p0
 
         ( x1, y1, z1 ) =
-            Point3d.coordinates p1
+            Point3d.toTuple p1
 
         ( x2, y2, z2 ) =
-            Point3d.coordinates p2
+            Point3d.toTuple p2
 
         ax =
             x0 - 2 * x1 + x2
@@ -78,10 +81,10 @@ analyticalLength spline =
         ba =
             b / a_2
     in
-    (a_32 * s_abc + a_2 * b * (s_abc - c_2) + (4 * c * a - b * b) * logBase e ((2 * a_2 + ba + s_abc) / (ba + c_2))) / (4 * a_32)
+    Quantity.float ((a_32 * s_abc + a_2 * b * (s_abc - c_2) + (4 * c * a - b * b) * logBase e ((2 * a_2 + ba + s_abc) / (ba + c_2))) / (4 * a_32))
 
 
-curvedSpline : Fuzzer QuadraticSpline3d
+curvedSpline : Fuzzer (QuadraticSpline3d coordinates)
 curvedSpline =
     Fuzz.map2 QuadraticSpline3d.on
         Fuzz.sketchPlane3d
@@ -95,9 +98,10 @@ arcLengthMatchesAnalytical =
         (\spline ->
             spline
                 |> QuadraticSpline3d.arcLengthParameterized
-                    { maxError = 1.0e-3 }
+                    { maxError = Quantity.float 1.0e-3 }
                 |> QuadraticSpline3d.arcLength
-                |> Expect.within (Absolute 1.0e-3) (analyticalLength spline)
+                |> Expect.quantityWithin (Quantity.float 1.0e-3)
+                    (analyticalLength spline)
         )
 
 
@@ -110,9 +114,9 @@ pointAtZeroLengthIsStart =
                 parameterizedCurve =
                     spline
                         |> QuadraticSpline3d.arcLengthParameterized
-                            { maxError = 1.0e-3 }
+                            { maxError = Quantity.float 1.0e-3 }
             in
-            QuadraticSpline3d.pointAlong parameterizedCurve 0
+            QuadraticSpline3d.pointAlong parameterizedCurve Quantity.zero
                 |> Expect.equal (Just (QuadraticSpline3d.startPoint spline))
         )
 
@@ -126,7 +130,7 @@ pointAtArcLengthIsEnd =
                 parameterizedCurve =
                     spline
                         |> QuadraticSpline3d.arcLengthParameterized
-                            { maxError = 1.0e-3 }
+                            { maxError = Quantity.float 1.0e-3 }
 
                 arcLength =
                     QuadraticSpline3d.arcLength parameterizedCurve
