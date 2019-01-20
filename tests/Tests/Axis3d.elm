@@ -7,6 +7,7 @@ module Tests.Axis3d exposing
     , zExample
     )
 
+import Angle
 import Axis2d
 import Axis3d
 import Direction2d
@@ -62,8 +63,8 @@ onExamples =
     let
         axis2d =
             Axis2d.through
-                (Point2d.fromCoordinates ( 1, 3 ))
-                (Direction2d.fromAngle (degrees 30))
+                (Point2d.fromTuple ( 1, 3 ))
+                (Direction2d.fromAngle (Angle.degrees 30))
     in
     Test.describe "Axis3d.on examples"
         [ Test.test "First example" <|
@@ -71,10 +72,10 @@ onExamples =
                 Axis3d.on SketchPlane3d.xy axis2d
                     |> Expect.axis3d
                         (Axis3d.through
-                            (Point3d.fromCoordinates ( 1, 3, 0 ))
+                            (Point3d.fromTuple ( 1, 3, 0 ))
                             (Direction3d.fromAzimuthAndElevation
-                                (degrees 30)
-                                (degrees 0)
+                                (Angle.degrees 30)
+                                (Angle.degrees 0)
                             )
                         )
         , Test.test "Second example" <|
@@ -82,10 +83,10 @@ onExamples =
                 Axis3d.on SketchPlane3d.zx axis2d
                     |> Expect.axis3d
                         (Axis3d.through
-                            (Point3d.fromCoordinates ( 3, 0, 1 ))
+                            (Point3d.fromTuple ( 3, 0, 1 ))
                             (Direction3d.fromAzimuthAndElevation
-                                (degrees 0)
-                                (degrees 60)
+                                (Angle.degrees 0)
+                                (Angle.degrees 60)
                             )
                         )
         ]
