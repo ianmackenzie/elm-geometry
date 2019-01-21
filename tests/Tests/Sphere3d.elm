@@ -11,21 +11,23 @@ module Tests.Sphere3d exposing
     , throughPointsManual
     , translateBy
     , triangleArea
-    , unit
     , validTetrahedron
     , withRadius
     )
 
+import Angle
 import Axis3d
 import BoundingBox3d
 import Direction3d
-import Expect exposing (FloatingPointTolerance(..))
+import Expect
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Geometry.Test exposing (..)
 import Plane3d
-import Point3d exposing (Point3d)
-import Sphere3d exposing (Sphere3d)
+import Point3d
+import Quantity exposing (Cubed, Quantity, Squared, Unitless)
+import Sphere3d
 import Test exposing (Test)
 import Triangle3d
 import Vector3d
@@ -35,29 +37,13 @@ import Vector3d
 -- Helper methods
 
 
-sphereFromTuple : ( ( Float, Float, Float ), Float ) -> Sphere3d
+sphereFromTuple : ( ( Float, Float, Float ), Float ) -> Sphere3d coordinates
 sphereFromTuple ( centerPoint, radius ) =
-    Sphere3d.withRadius radius (Point3d.fromCoordinates centerPoint)
+    Sphere3d.withRadius (Quantity.float radius) (Point3d.fromTuple centerPoint)
 
 
 
 -- Tests
-
-
-unit : Test
-unit =
-    Test.describe "unit"
-        [ Test.test "The sphere returned by unit has radius 1" <|
-            \_ ->
-                Sphere3d.unit
-                    |> Sphere3d.radius
-                    |> Expect.approximately 1
-        , Test.test "The sphere returned by unit is centered on the origin" <|
-            \_ ->
-                Sphere3d.unit
-                    |> Sphere3d.centerPoint
-                    |> Expect.point3d Point3d.origin
-        ]
 
 
 withRadius : Test
@@ -65,16 +51,16 @@ withRadius =
     Test.describe "withRadius"
         [ Test.fuzz2
             Fuzz.point3d
-            Fuzz.scalar
+            Fuzz.quantity
             "A sphere's radius gets set correctly"
             (\centerPoint radius ->
                 Sphere3d.withRadius radius centerPoint
                     |> Sphere3d.radius
-                    |> Expect.approximately (abs radius)
+                    |> Expect.approximately (Quantity.abs radius)
             )
         , Test.fuzz2
             Fuzz.point3d
-            Fuzz.scalar
+            Fuzz.quantity
             "A sphere's center points gets set correctly"
             (\centerPoint radius ->
                 Sphere3d.withRadius radius centerPoint
@@ -103,10 +89,10 @@ throughPointsManual =
             ]
 
         inputPoints { c1, c2, c3, c4 } =
-            { p1 = Point3d.fromCoordinates c1
-            , p2 = Point3d.fromCoordinates c2
-            , p3 = Point3d.fromCoordinates c3
-            , p4 = Point3d.fromCoordinates c4
+            { p1 = Point3d.fromTuple c1
+            , p2 = Point3d.fromTuple c2
+            , p3 = Point3d.fromTuple c3
+            , p4 = Point3d.fromTuple c4
             }
 
         testTitle inputCoordinates expectedSphere =
@@ -130,12 +116,12 @@ throughPointsManual =
             testCases
 
 
-triangleArea : Point3d -> Point3d -> Point3d -> Float
+triangleArea : Point3d coordinates -> Point3d coordinates -> Point3d coordinates -> Quantity Float (Squared Unitless)
 triangleArea p1 p2 p3 =
     Triangle3d.fromVertices ( p1, p2, p3 ) |> Triangle3d.area
 
 
-tetrahedronVolume : Point3d -> Point3d -> Point3d -> Point3d -> Float
+tetrahedronVolume : Point3d coordinates -> Point3d coordinates -> Point3d coordinates -> Point3d coordinates -> Quantity Float (Cubed Unitless)
 tetrahedronVolume p1 p2 p3 p4 =
     let
         v2 =
@@ -147,10 +133,11 @@ tetrahedronVolume p1 p2 p3 p4 =
         v4 =
             Vector3d.from p1 p4
     in
-    abs (Vector3d.dotProduct v4 (Vector3d.crossProduct v2 v3)) / 6
+    Quantity.abs (v2 |> Vector3d.cross v3 |> Vector3d.dot v4)
+        |> Quantity.divideBy 6
 
 
-validTetrahedron : Point3d -> Point3d -> Point3d -> Point3d -> Bool
+validTetrahedron : Point3d coordinates -> Point3d coordinates -> Point3d coordinates -> Point3d coordinates -> Bool
 validTetrahedron p1 p2 p3 p4 =
     let
         volume =
@@ -170,13 +157,13 @@ validTetrahedron p1 p2 p3 p4 =
                             Point3d.distanceFrom p q
 
                         hIdeal =
-                            base * sqrt 3 / 2
+                            base |> Quantity.multiplyBy (sqrt 3 / 2)
 
                         hMeasured =
-                            2 * area / base
+                            Quantity.multiplyBy 2 (area |> Quantity.over base)
 
                         hRatio =
-                            hIdeal / hMeasured
+                            Quantity.ratio hIdeal hMeasured
                     in
                     (1 / limit) < hRatio && hRatio < limit
             in
@@ -185,13 +172,16 @@ validTetrahedron p1 p2 p3 p4 =
                 && isValidTriangle c a b
                 && (let
                         yIdeal =
-                            sqrt (8 * area / (3 * sqrt 3))
+                            Quantity.sqrt
+                                (Quantity.multiplyBy 8 area
+                                    |> Quantity.divideBy (3 * sqrt 3)
+                                )
 
                         yMeasured =
-                            3 * volume / area
+                            Quantity.multiplyBy 3 (volume |> Quantity.over area)
 
                         ratio =
-                            yIdeal / yMeasured
+                            Quantity.ratio yIdeal yMeasured
                     in
                     (1 / limit) < ratio && ratio < limit
                    )
@@ -202,8 +192,8 @@ validTetrahedron p1 p2 p3 p4 =
         && isValid p4 p1 p2 p3
 
 
-type FourPoints
-    = FourPoints Point3d Point3d Point3d Point3d
+type FourPoints coordinates
+    = FourPoints (Point3d coordinates) (Point3d coordinates) (Point3d coordinates) (Point3d coordinates)
 
 
 throughPointsFuzz : Test
@@ -255,10 +245,20 @@ properties =
             in
             sphere
                 |> Expect.all
-                    [ Sphere3d.diameter >> Expect.approximately (2 * r)
-                    , Sphere3d.circumference >> Expect.approximately (2 * pi * r)
-                    , Sphere3d.surfaceArea >> Expect.approximately (4 * pi * r * r)
-                    , Sphere3d.volume >> Expect.approximately (4 / 3 * pi * r * r * r)
+                    [ Sphere3d.diameter
+                        >> Expect.approximately
+                            (Quantity.multiplyBy 2 r)
+                    , Sphere3d.circumference
+                        >> Expect.approximately
+                            (Quantity.multiplyBy (2 * pi) r)
+                    , Sphere3d.surfaceArea
+                        >> Expect.approximately
+                            (Quantity.multiplyBy (4 * pi) (Quantity.squared r))
+                    , Sphere3d.volume
+                        >> Expect.approximately
+                            (Quantity.multiplyBy (4 / 3 * pi)
+                                (Quantity.cubed r)
+                            )
                     ]
         )
 
@@ -274,19 +274,19 @@ scaleAbout =
                         0.5
 
                     aboutPoint =
-                        Point3d.fromCoordinates ( 1, 0, 0 )
+                        Point3d.fromTuple ( 1, 0, 0 )
 
                     originalCenter =
-                        Point3d.fromCoordinates ( 1, 2, 0 )
+                        Point3d.fromTuple ( 1, 2, 0 )
 
                     scaledCenter =
-                        Point3d.fromCoordinates ( 1, 1, 0 )
+                        Point3d.fromTuple ( 1, 1, 0 )
 
                     originalRadius =
-                        2
+                        Quantity.float 2
 
                     scaledRadius =
-                        1
+                        Quantity.float 1
                 in
                 Sphere3d.withRadius originalRadius originalCenter
                     |> Sphere3d.scaleAbout aboutPoint scale
@@ -312,7 +312,7 @@ scaleAbout =
                     |> Expect.sphere3d sphere
             )
         , Test.fuzz3 Fuzz.point3d
-            Fuzz.scalar
+            Fuzz.scale
             Fuzz.sphere3d
             "scaling changes the radius and distance to the scaling point"
             (\point scale sphere ->
@@ -328,10 +328,16 @@ scaleAbout =
                     |> Sphere3d.scaleAbout point scale
                     |> Expect.all
                         [ Sphere3d.radius
-                            >> Expect.approximately (originalRadius * abs scale)
+                            >> Expect.approximately
+                                (originalRadius
+                                    |> Quantity.multiplyBy (abs scale)
+                                )
                         , Sphere3d.centerPoint
                             >> Point3d.distanceFrom point
-                            >> Expect.approximately (originalDistance * abs scale)
+                            >> Expect.approximately
+                                (originalDistance
+                                    |> Quantity.multiplyBy (abs scale)
+                                )
                         ]
             )
         ]
@@ -347,18 +353,17 @@ rotateAround =
                     axis =
                         Axis3d.z
 
-                    -- 90 degrees
                     angle =
-                        pi / 2
+                        Angle.degrees 90
 
                     originalCenter =
-                        Point3d.fromCoordinates ( 2, 0, 0 )
+                        Point3d.fromTuple ( 2, 0, 0 )
 
                     rotatedCenter =
-                        Point3d.fromCoordinates ( 0, 2, 0 )
+                        Point3d.fromTuple ( 0, 2, 0 )
 
                     radius =
-                        2
+                        Quantity.float 2
                 in
                 Sphere3d.withRadius radius originalCenter
                     |> Sphere3d.rotateAround axis angle
@@ -366,7 +371,7 @@ rotateAround =
                         (Sphere3d.withRadius radius rotatedCenter)
             )
         , Test.fuzz3 Fuzz.axis3d
-            Fuzz.scalar
+            Fuzz.angle
             Fuzz.sphere3d
             "roating a sphere doesn't change its radius and its distance from the rotation axis"
             (\axis angle sphere ->
@@ -387,7 +392,7 @@ rotateAround =
                         ]
             )
         , Test.fuzz3 Fuzz.axis3d
-            (Fuzz.floatRange 0 pi)
+            (Fuzz.map Angle.radians (Fuzz.floatRange 0 pi))
             Fuzz.sphere3d
             "rotates by the correct angle"
             (\axis angle sphere ->
@@ -396,7 +401,10 @@ rotateAround =
                         Point3d.distanceFromAxis axis
                             (Sphere3d.centerPoint sphere)
                 in
-                if centerDistanceFromAxis > 0.001 then
+                if
+                    centerDistanceFromAxis
+                        |> Quantity.greaterThan (Quantity.float 0.001)
+                then
                     let
                         orthogonalDirectionFromAxisTo point =
                             point
@@ -436,17 +444,17 @@ rotateAround =
             "rotating by 2 pi doesn't change the sphere"
             (\axis sphere ->
                 sphere
-                    |> Sphere3d.rotateAround axis (2 * pi)
+                    |> Sphere3d.rotateAround axis (Angle.radians (2 * pi))
                     |> Expect.sphere3d sphere
             )
         , Test.fuzz3 Fuzz.axis3d
-            Fuzz.scalar
+            Fuzz.angle
             Fuzz.sphere3d
             "rotating and unrotating doesn't change the sphere"
             (\axis angle sphere ->
                 sphere
                     |> Sphere3d.rotateAround axis angle
-                    |> Sphere3d.rotateAround axis -angle
+                    |> Sphere3d.rotateAround axis (Quantity.negate angle)
                     |> Expect.sphere3d sphere
             )
         ]
@@ -498,13 +506,13 @@ mirrorAcross =
                         Plane3d.xy
 
                     originalCenter =
-                        Point3d.fromCoordinates ( 2, 2, 1 )
+                        Point3d.fromTuple ( 2, 2, 1 )
 
                     mirroredCenter =
-                        Point3d.fromCoordinates ( 2, 2, -1 )
+                        Point3d.fromTuple ( 2, 2, -1 )
 
                     radius =
-                        0.5
+                        Quantity.float 0.5
                 in
                 Sphere3d.withRadius radius originalCenter
                     |> Sphere3d.mirrorAcross plane
@@ -531,9 +539,10 @@ mirrorAcross =
                     |> Sphere3d.centerPoint
                     |> Point3d.signedDistanceFrom plane
                     |> Expect.approximately
-                        -(Point3d.signedDistanceFrom plane
-                            (Sphere3d.centerPoint sphere)
-                         )
+                        (Quantity.negate <|
+                            Point3d.signedDistanceFrom plane <|
+                                Sphere3d.centerPoint sphere
+                        )
             )
         , Test.fuzz2
             Fuzz.plane3d
