@@ -51,14 +51,14 @@ centroidOfExamplePolyline =
             let
                 examplePolyline =
                     Polyline3d.fromVertices
-                        [ Point3d.fromCoordinates ( 0, 0, 0 )
-                        , Point3d.fromCoordinates ( 1, 0, 0 )
-                        , Point3d.fromCoordinates ( 1, 2, 0 )
-                        , Point3d.fromCoordinates ( 1, 2, 3 )
+                        [ Point3d.fromTuple ( 0, 0, 0 )
+                        , Point3d.fromTuple ( 1, 0, 0 )
+                        , Point3d.fromTuple ( 1, 2, 0 )
+                        , Point3d.fromTuple ( 1, 2, 3 )
                         ]
             in
             Polyline3d.centroid examplePolyline
-                |> Expect.equal (Just (Point3d.fromCoordinates ( 5 / 6, 3 / 2, 0 )))
+                |> Expect.equal (Just (Point3d.fromTuple ( 5 / 6, 3 / 2, 0 )))
 
 
 centroidOfSingleSegmentIsSameAsMidpoint : Test
@@ -83,13 +83,16 @@ centroidOfRightAngle =
             let
                 angle =
                     Polyline3d.fromVertices
-                        [ Point3d.fromCoordinates ( 0, 0, 0 )
-                        , Point3d.fromCoordinates ( armLength, 0, 0 )
-                        , Point3d.fromCoordinates ( armLength, 0, armLength )
+                        [ Point3d.fromTuple ( 0, 0, 0 )
+                        , Point3d.fromTuple ( armLength, 0, 0 )
+                        , Point3d.fromTuple ( armLength, 0, armLength )
                         ]
             in
             Polyline3d.centroid angle
-                |> Expect.just Expect.point3d (Point3d.fromCoordinates ( 0.75 * armLength, 0, 0.25 * armLength ))
+                |> Expect.just Expect.point3d
+                    (Point3d.fromTuple
+                        ( 0.75 * armLength, 0, 0.25 * armLength )
+                    )
 
 
 centroidOfStepShape : Test
@@ -99,14 +102,15 @@ centroidOfStepShape =
             let
                 angle =
                     Polyline3d.fromVertices
-                        [ Point3d.fromCoordinates ( 0, 0, 0 )
-                        , Point3d.fromCoordinates ( armLength, 0, 0 )
-                        , Point3d.fromCoordinates ( armLength, armLength, 0 )
-                        , Point3d.fromCoordinates ( 2 * armLength, armLength, 0 )
+                        [ Point3d.fromTuple ( 0, 0, 0 )
+                        , Point3d.fromTuple ( armLength, 0, 0 )
+                        , Point3d.fromTuple ( armLength, armLength, 0 )
+                        , Point3d.fromTuple ( 2 * armLength, armLength, 0 )
                         ]
             in
             Polyline3d.centroid angle
-                |> Expect.just Expect.point3d (Point3d.fromCoordinates ( armLength, armLength / 2, 0 ))
+                |> Expect.just Expect.point3d
+                    (Point3d.fromTuple ( armLength, armLength / 2, 0 ))
 
 
 centroidOfOpenSquare : Test
@@ -116,14 +120,17 @@ centroidOfOpenSquare =
             let
                 squareline =
                     Polyline3d.fromVertices
-                        [ Point3d.fromCoordinates ( 0, 0, 0 )
-                        , Point3d.fromCoordinates ( 0, sideLength, 0 )
-                        , Point3d.fromCoordinates ( sideLength, sideLength, 0 )
-                        , Point3d.fromCoordinates ( sideLength, 0, 0 )
+                        [ Point3d.fromTuple ( 0, 0, 0 )
+                        , Point3d.fromTuple ( 0, sideLength, 0 )
+                        , Point3d.fromTuple ( sideLength, sideLength, 0 )
+                        , Point3d.fromTuple ( sideLength, 0, 0 )
                         ]
             in
             Polyline3d.centroid squareline
-                |> Expect.just Expect.point3d (Point3d.fromCoordinates ( sideLength / 2, sideLength * 2 / 3, 0 ))
+                |> Expect.just Expect.point3d
+                    (Point3d.fromTuple
+                        ( sideLength / 2, sideLength * 2 / 3, 0 )
+                    )
 
 
 centroidOfClosedSquare : Test
@@ -133,15 +140,16 @@ centroidOfClosedSquare =
             let
                 squareline =
                     Polyline3d.fromVertices
-                        [ Point3d.fromCoordinates ( 0, 0, 0 )
-                        , Point3d.fromCoordinates ( 0, 0, sideLength )
-                        , Point3d.fromCoordinates ( sideLength, 0, sideLength )
-                        , Point3d.fromCoordinates ( sideLength, 0, 0 )
-                        , Point3d.fromCoordinates ( 0, 0, 0 )
+                        [ Point3d.fromTuple ( 0, 0, 0 )
+                        , Point3d.fromTuple ( 0, 0, sideLength )
+                        , Point3d.fromTuple ( sideLength, 0, sideLength )
+                        , Point3d.fromTuple ( sideLength, 0, 0 )
+                        , Point3d.fromTuple ( 0, 0, 0 )
                         ]
             in
             Polyline3d.centroid squareline
-                |> Expect.just Expect.point3d (Point3d.fromCoordinates ( sideLength / 2, 0, sideLength / 2 ))
+                |> Expect.just Expect.point3d
+                    (Point3d.fromTuple ( sideLength / 2, 0, sideLength / 2 ))
 
 
 centroidIsWithinBoundingBox : Test
