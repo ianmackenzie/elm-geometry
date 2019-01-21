@@ -11,6 +11,7 @@ import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import LineSegment2d
 import Polygon2d
+import Quantity
 import Test exposing (Test)
 import Triangle2d
 import TriangularMesh
@@ -39,12 +40,13 @@ convexHullIsConvex =
                 first :: rest ->
                     let
                         crossProducts =
-                            List.map2 Vector2d.crossProduct
+                            List.map2 (\v1 v2 -> v1 |> Vector2d.cross v2)
                                 (first :: rest)
                                 (rest ++ [ first ])
 
                         isNonNegative crossProduct =
-                            crossProduct >= 0
+                            crossProduct
+                                |> Quantity.greaterThanOrEqualTo Quantity.zero
                     in
                     Expect.true "Edges should always turn counterclockwise" <|
                         List.all isNonNegative crossProducts
@@ -71,7 +73,8 @@ convexHullContainsAllPoints =
                         triangle =
                             Triangle2d.fromVertices ( point, p1, p2 )
                     in
-                    Triangle2d.counterclockwiseArea triangle >= 0
+                    Triangle2d.counterclockwiseArea triangle
+                        |> Quantity.greaterThanOrEqualTo Quantity.zero
 
                 isContained point =
                     List.all (\edge -> isNonNegativeArea point edge) edges
@@ -96,7 +99,7 @@ triangulationHasCorrectArea =
                         |> List.map Triangle2d.fromVertices
 
                 triangleArea =
-                    List.sum (List.map Triangle2d.area triangles)
+                    Quantity.sum (List.map Triangle2d.area triangles)
             in
             triangleArea |> Expect.approximately polygonArea
         )
