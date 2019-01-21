@@ -66,13 +66,14 @@ centroidOfRightAngle =
             let
                 angle =
                     Polyline2d.fromVertices
-                        [ Point2d.fromCoordinates ( 0, 0 )
-                        , Point2d.fromCoordinates ( armLength, 0 )
-                        , Point2d.fromCoordinates ( armLength, armLength )
+                        [ Point2d.fromTuple ( 0, 0 )
+                        , Point2d.fromTuple ( armLength, 0 )
+                        , Point2d.fromTuple ( armLength, armLength )
                         ]
             in
             Polyline2d.centroid angle
-                |> Expect.just Expect.point2d (Point2d.fromCoordinates ( 0.75 * armLength, 0.25 * armLength ))
+                |> Expect.just Expect.point2d
+                    (Point2d.fromTuple ( 0.75 * armLength, 0.25 * armLength ))
 
 
 centroidOfStepShape : Test
@@ -82,14 +83,15 @@ centroidOfStepShape =
             let
                 angle =
                     Polyline2d.fromVertices
-                        [ Point2d.fromCoordinates ( 0, 0 )
-                        , Point2d.fromCoordinates ( armLength, 0 )
-                        , Point2d.fromCoordinates ( armLength, armLength )
-                        , Point2d.fromCoordinates ( 2 * armLength, armLength )
+                        [ Point2d.fromTuple ( 0, 0 )
+                        , Point2d.fromTuple ( armLength, 0 )
+                        , Point2d.fromTuple ( armLength, armLength )
+                        , Point2d.fromTuple ( 2 * armLength, armLength )
                         ]
             in
             Polyline2d.centroid angle
-                |> Expect.just Expect.point2d (Point2d.fromCoordinates ( armLength, armLength / 2 ))
+                |> Expect.just Expect.point2d
+                    (Point2d.fromTuple ( armLength, armLength / 2 ))
 
 
 centroidOfOpenSquare : Test
@@ -99,14 +101,15 @@ centroidOfOpenSquare =
             let
                 squareline =
                     Polyline2d.fromVertices
-                        [ Point2d.fromCoordinates ( 0, 0 )
-                        , Point2d.fromCoordinates ( 0, sideLength )
-                        , Point2d.fromCoordinates ( sideLength, sideLength )
-                        , Point2d.fromCoordinates ( sideLength, 0 )
+                        [ Point2d.fromTuple ( 0, 0 )
+                        , Point2d.fromTuple ( 0, sideLength )
+                        , Point2d.fromTuple ( sideLength, sideLength )
+                        , Point2d.fromTuple ( sideLength, 0 )
                         ]
             in
             Polyline2d.centroid squareline
-                |> Expect.just Expect.point2d (Point2d.fromCoordinates ( sideLength / 2, sideLength * 2 / 3 ))
+                |> Expect.just Expect.point2d
+                    (Point2d.fromTuple ( sideLength / 2, sideLength * 2 / 3 ))
 
 
 centroidOfClosedSquare : Test
@@ -116,15 +119,16 @@ centroidOfClosedSquare =
             let
                 squareline =
                     Polyline2d.fromVertices
-                        [ Point2d.fromCoordinates ( 0, 0 )
-                        , Point2d.fromCoordinates ( 0, sideLength )
-                        , Point2d.fromCoordinates ( sideLength, sideLength )
-                        , Point2d.fromCoordinates ( sideLength, 0 )
-                        , Point2d.fromCoordinates ( 0, 0 )
+                        [ Point2d.fromTuple ( 0, 0 )
+                        , Point2d.fromTuple ( 0, sideLength )
+                        , Point2d.fromTuple ( sideLength, sideLength )
+                        , Point2d.fromTuple ( sideLength, 0 )
+                        , Point2d.fromTuple ( 0, 0 )
                         ]
             in
             Polyline2d.centroid squareline
-                |> Expect.just Expect.point2d (Point2d.fromCoordinates ( sideLength / 2, sideLength / 2 ))
+                |> Expect.just Expect.point2d
+                    (Point2d.fromTuple ( sideLength / 2, sideLength / 2 ))
 
 
 centroidIsWithinBoundingBox : Test
