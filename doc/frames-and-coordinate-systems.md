@@ -1,8 +1,7 @@
 # Units and coordinate systems
 
-2D/3D geometry is often represented using [Cartesian coordinates][1]. For
-example, in previous versions of `elm-geometry`, we might have constructed a 2D
-point as
+2D/3D geometry is often represented using X/Y/Z coordinates. For example, in
+previous versions of `elm-geometry`, we might have constructed a 2D point as
 
 ```elm
 point =
@@ -69,5 +68,3 @@ place to document exactly how that coordinate system is defined.) This
 combination now gives us some nice type safety - the compiler will tell us if
 we try to mix two points that have different units or are defined in different
 coordinate systems.
-
-[1]: https://en.wikipedia.org/wiki/Cartesian_coordinate_system
