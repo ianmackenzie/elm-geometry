@@ -1,32 +1,73 @@
-# Frames and coordinate systems
+# Units and coordinate systems
 
-## Introduction
+2D/3D geometry is often represented using [Cartesian coordinates][1]. For
+example, in previous versions of `elm-geometry`, we might have constructed a 2D
+point as
 
-3D geometry is usually defined using [Cartesian coordinates][1], where points
-are described by their X, Y and Z coordinates. For example, a point with
-coordinates (2, 1, 3) means "start at the point (0, 0, 0), move 2 units in the X
-direction, 1 unit in the Y direction and then 3 units in the Z direction".
-However, to actually understand _where_ that point is, you have to know
+```elm
+point =
+    Point2d.fromCoordinates ( 200, 300 )
+```
 
-  - Where the point (0, 0, 0) is
-  - What the X, Y and Z directions are
-  - What units the coordinates are given in (meters? feet? pixels?)
+However, this leaves several things implicit. Is that 200 meters or 200 pixels?
+If it's pixels, and this is an on-screen point, is the X direction right or
+left? Is Y up or down? Is the point (0, 0) at the upper left corner of the
+screen, the lower left, the center, or somewhere else entirely?
 
-Additionally, as logic grows more complex, it is very common to use many
-_different_ coordinate systems and have to convert back and forth between
-geometry defined in different coordinate systems. For example, if you were
-creating a 3D space flight simulator, you might have:
+## Units
 
-  - A coordinate system centered on a particular solar system
-  - A coordinate system centered on a planet, that moves and rotates with the
-    planet
-  - A coordinate system centered on a space station, that moves and rotates with
-    the space station
-  - A coordinate system centered on the player's ship, that moves and rotates
-    with the ship
+To answer the first question, `elm-geometry` now uses the generic `Quantity`
+type from `elm-units` for all coordinate values instead of using plain `Float`
+or `Int` values. The above example might now be written as
 
-Some of these coordinate systems may be defined in terms of other ones; the
-planet coordinate system is likely defined relative to the solar system
-coordinate system, and the space station may be defined relative to the planet.
+```elm
+point =
+    Point2d.fromCoordinates
+        ( Length.meters 200
+        , Length.meters 300
+        )
+```
+
+or
+
+```elm
+point =
+    Point2d.fromCoordinates
+        ( Pixels.pixels 200
+        , Pixels.pixels 300
+        )
+```
+
+This makes it explicit what units the point is in (in a way that can be type
+checked by the Elm compiler!) but doesn't address the remaining questions.
+
+## Coordinate systems
+
+In addition to tracking what units are used, `elm-geometry` also lets you add
+(optional) type annotations to specify what _coordinate system_ a particular
+point is defined in. For example, we might declare a `TopLeftCoordinates` type
+and then add a type annotation to `point` asserting that it is defined in
+coordinates relative to the top-left corner of the screen:
+
+```elm
+{-| A coordinate system where (0, 0) is the top left corner of the screen,
+positive X is to the right and positive Y is down.
+-}
+type TopLeftCoordinates =
+    TopLeftCoordinates
+
+point : Point2d Pixels TopLeftCoordinates
+point =
+    Point2d.fromCoordinates
+        ( Pixels.pixels 200
+        , Pixels.pixels 300
+        )
+```
+
+(Note that the `TopLeftCoordinates` type we declared gives us a convenient
+place to document exactly how that coordinate system is defined.) This
+combination now gives us some nice type safety - the compiler will tell us if
+we try to mix two points that have different units or are defined in different
+coordinate systems.
 
 [1]: https://en.wikipedia.org/wiki/Cartesian_coordinate_system
