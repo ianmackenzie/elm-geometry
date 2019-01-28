@@ -237,6 +237,10 @@ withZDirection givenZDirection givenOrigin =
         }
 
 
+{-| Create a 'fresh copy' of a frame: one with the same origin point and X/Y/Z
+directions, but that can be used to define a different local coordinate system.
+Sometimes useful in generic/library code.
+-}
 copy : Frame3d units coordinates1 coordinates2 -> Frame3d units coordinates1 coordinates3
 copy (Types.Frame3d properties) =
     Types.Frame3d properties

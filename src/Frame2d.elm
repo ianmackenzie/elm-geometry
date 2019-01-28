@@ -138,6 +138,10 @@ withYDirection givenDirection givenOrigin =
         }
 
 
+{-| Create a 'fresh copy' of a frame: one with the same origin point and X/Y
+directions, but that can be used to define a different local coordinate system.
+Sometimes useful in generic/library code.
+-}
 copy : Frame2d units coordinates1 coordinates2 -> Frame2d units coordinates1 coordinates3
 copy (Types.Frame2d properties) =
     Types.Frame2d properties

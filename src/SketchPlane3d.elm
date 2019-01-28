@@ -520,6 +520,10 @@ toPlane sketchPlane =
     Plane3d.through (originPoint sketchPlane) (normalDirection sketchPlane)
 
 
+{-| Create a 'fresh copy' of a sketch plane: one with the same origin point and
+X/Y directions, but that can be used to define a different local coordinate
+system. Sometimes useful in generic/library code.
+-}
 copy : SketchPlane3d units coordinates1 coordinates2 -> SketchPlane3d units coordinates1 coordinates3
 copy (Types.SketchPlane3d properties) =
     Types.SketchPlane3d properties
