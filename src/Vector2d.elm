@@ -482,6 +482,9 @@ equalWithin givenTolerance firstVector secondVector =
             |> Quantity.lessThanOrEqualTo (Quantity.squared givenTolerance)
 
 
+{-| Compare two `Vector2d` values lexicographically: first by X component, then
+by Y. Can be used to provide a sort order for `Vector2d` values.
+-}
 lexicographicComparison : Vector2d units coordinates -> Vector2d units coordinates -> Order
 lexicographicComparison firstVector secondVector =
     let

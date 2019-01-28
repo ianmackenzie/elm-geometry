@@ -588,6 +588,9 @@ equalWithin tolerance firstPoint secondPoint =
         |> Quantity.lessThanOrEqualTo (Quantity.squared tolerance)
 
 
+{-| Compare two `Point3d` values lexicographically: first by X coordinate, then
+by Y, then by Z. Can be used to provide a sort order for `Point3d` values.
+-}
 lexicographicComparison : Point3d units coordinates -> Point3d units coordinates -> Order
 lexicographicComparison firstPoint secondPoint =
     let
