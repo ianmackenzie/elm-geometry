@@ -54,6 +54,11 @@ you will actually want their `Direction3d` versions [`Direction3d.x`](Direction3
 
 # Conversion
 
+These functions are useful for interoperability with other Elm code that uses
+plain `Float` tuples or records to represent vectors. The resulting `Vector3d`
+values will have [unitless](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Quantity#unitless-quantities)
+components.
+
 @docs fromTuple, toTuple, fromRecord, toRecord
 
 
@@ -367,6 +372,16 @@ interpolateFrom firstVector secondVector givenParameter =
         )
 
 
+{-| Construct a unitless `Vector3d` from a tuple of `Float` values.
+
+    Vector3d.fromTuple ( 2, 1, 3 )
+    --> Vector3d.fromComponents
+    -->     ( Quantity.float 2
+    -->     , Quantity.float 1
+    -->     , Quantity.float 3
+    -- >    )
+
+-}
 fromTuple : ( Float, Float, Float ) -> Vector3d Unitless coordinates
 fromTuple ( x, y, z ) =
     fromComponents
@@ -376,6 +391,19 @@ fromTuple ( x, y, z ) =
         )
 
 
+{-| Convert a unitless `Vector3d` to a tuple of `Float` values.
+
+    vector =
+        Vector3d.fromComponents
+            ( Quantity.float 2
+            , Quantity.float 1
+            , Quantity.float 3
+            )
+
+    Vector3d.toTuple vector
+    --> ( 2, 1, 3 )
+
+-}
 toTuple : Vector3d Unitless coordinates -> ( Float, Float, Float )
 toTuple vector =
     ( Quantity.toFloat (xComponent vector)
@@ -384,6 +412,16 @@ toTuple vector =
     )
 
 
+{-| Construct a unitless `Vector3d` from a record with `Float` fields.
+
+    Vector3d.fromRecord { x = 2, y = 1, z = 3 }
+    --> Vector3d.fromComponents
+    -->     ( Quantity.float 2
+    -->     , Quantity.float 1
+    -->     , Quantity.float 3
+    -- >    )
+
+-}
 fromRecord : { x : Float, y : Float, z : Float } -> Vector3d Unitless coordinates
 fromRecord { x, y, z } =
     fromComponents
@@ -393,6 +431,19 @@ fromRecord { x, y, z } =
         )
 
 
+{-| Convert a unitless `Vector3d` to a record with `Float` fields.
+
+    vector =
+        Vector3d.fromComponents
+            ( Quantity.float 2
+            , Quantity.float 1
+            , Quantity.float 3
+            )
+
+    Vector3d.toRecord vector
+    --> { x = 2, y = 1, z = 3 }
+
+-}
 toRecord : Vector3d Unitless coordinates -> { x : Float, y : Float, z : Float }
 toRecord vector =
     { x = Quantity.toFloat (xComponent vector)

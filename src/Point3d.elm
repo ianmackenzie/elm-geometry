@@ -48,6 +48,11 @@ like you can add two vectors.
 
 # Conversion
 
+These functions are useful for interoperability with other Elm code that uses
+plain `Float` tuples or records to represent points. The resulting `Point3d`
+values will have [unitless](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Quantity#unitless-quantities)
+coordinates.
+
 @docs fromTuple, toTuple, fromRecord, toRecord
 
 
@@ -429,6 +434,16 @@ circumcenter p1 p2 p3 =
                 )
 
 
+{-| Construct a unitless `Point3d` from a tuple of `Float` values.
+
+    Point3d.fromTuple ( 2, 1, 3 )
+    --> Point3d.fromCoordinates
+    -->     ( Quantity.float 2
+    -->     , Quantity.float 1
+    -->     , Quantity.float 3
+    -- >    )
+
+-}
 fromTuple : ( Float, Float, Float ) -> Point3d Unitless coordinates
 fromTuple ( x, y, z ) =
     fromCoordinates
@@ -438,6 +453,19 @@ fromTuple ( x, y, z ) =
         )
 
 
+{-| Convert a unitless `Point3d` to a tuple of `Float` values.
+
+    point =
+        Point3d.fromCoordinates
+            ( Quantity.float 2
+            , Quantity.float 1
+            , Quantity.float 3
+            )
+
+    Point3d.toTuple point
+    --> ( 2, 1, 3 )
+
+-}
 toTuple : Point3d Unitless coordinates -> ( Float, Float, Float )
 toTuple point =
     ( Quantity.toFloat (xCoordinate point)
@@ -446,6 +474,16 @@ toTuple point =
     )
 
 
+{-| Construct a unitless `Point3d` from a record with `Float` fields.
+
+    Point3d.fromRecord { x = 2, y = 1, z = 3 }
+    --> Point3d.fromCoordinates
+    -->     ( Quantity.float 2
+    -->     , Quantity.float 1
+    -->     , Quantity.float 3
+    -- >    )
+
+-}
 fromRecord : { x : Float, y : Float, z : Float } -> Point3d Unitless coordinates
 fromRecord { x, y, z } =
     fromCoordinates
@@ -455,6 +493,19 @@ fromRecord { x, y, z } =
         )
 
 
+{-| Convert a unitless `Point3d` to a record with `Float` fields.
+
+    point =
+        Point3d.fromComponents
+            ( Quantity.float 2
+            , Quantity.float 1
+            , Quantity.float 3
+            )
+
+    Point3d.toRecord point
+    --> { x = 2, y = 1, z = 3 }
+
+-}
 toRecord : Point3d Unitless coordinates -> { x : Float, y : Float, z : Float }
 toRecord point =
     { x = Quantity.toFloat (xCoordinate point)

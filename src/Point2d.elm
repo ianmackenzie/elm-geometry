@@ -47,6 +47,11 @@ like you can add two vectors.
 
 # Conversion
 
+These functions are useful for interoperability with other Elm code that uses
+plain `Float` tuples or records to represent points. The resulting `Point2d`
+values will have [unitless](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Quantity#unitless-quantities)
+coordinates.
+
 @docs fromTuple, toTuple, fromRecord, toRecord
 
 
@@ -422,11 +427,32 @@ circumcenter p1 p2 p3 =
                 )
 
 
+{-| Construct a unitless `Point2d` from a tuple of `Float` values.
+
+    Point2d.fromTuple ( 2, 3 )
+    --> Point2d.fromCoordinates
+    -->     ( Quantity.float 2
+    -->     , Quantity.float 3
+    -- >    )
+
+-}
 fromTuple : ( Float, Float ) -> Point2d Unitless coordinates
 fromTuple ( x, y ) =
     fromCoordinates ( Quantity.float x, Quantity.float y )
 
 
+{-| Convert a unitless `Point2d` to a tuple of `Float` values.
+
+    point =
+        Point2d.fromCoordinates
+            ( Quantity.float 2
+            , Quantity.float 3
+            )
+
+    Point2d.toTuple point
+    --> ( 2, 3 )
+
+-}
 toTuple : Point2d Unitless coordinates -> ( Float, Float )
 toTuple point =
     ( Quantity.toFloat (xCoordinate point)
@@ -434,11 +460,32 @@ toTuple point =
     )
 
 
+{-| Construct a unitless `Point2d` from a record with `Float` fields.
+
+    Point2d.fromRecord { x = 2, y = 3 }
+    --> Point2d.fromCoordinates
+    -->     ( Quantity.float 2
+    -->     , Quantity.float 3
+    -- >    )
+
+-}
 fromRecord : { x : Float, y : Float } -> Point2d Unitless coordinates
 fromRecord { x, y } =
     fromCoordinates ( Quantity.float x, Quantity.float y )
 
 
+{-| Convert a unitless `Point2d` to a record with `Float` fields.
+
+    point =
+        Point2d.fromCoordinates
+            ( Quantity.float 2
+            , Quantity.float 3
+            )
+
+    Point2d.toRecord point
+    --> { x = 2, y = 3 }
+
+-}
 toRecord : Point2d Unitless coordinates -> { x : Float, y : Float }
 toRecord point =
     { x = Quantity.toFloat (xCoordinate point)

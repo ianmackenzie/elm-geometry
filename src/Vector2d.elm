@@ -53,6 +53,11 @@ Although there are no predefined constants for the vectors with components
 
 # Conversion
 
+These functions are useful for interoperability with other Elm code that uses
+plain `Float` tuples or records to represent vectors. The resulting `Vector2d`
+values will have [unitless](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Quantity#unitless-quantities)
+components.
+
 @docs fromTuple, toTuple, fromRecord, toRecord
 
 
@@ -328,11 +333,32 @@ interpolateFrom firstVector secondVector givenParameter =
         )
 
 
+{-| Construct a unitless `Vector2d` from a tuple of `Float` values.
+
+    Vector2d.fromTuple ( 2, 3 )
+    --> Vector2d.fromComponents
+    -->     ( Quantity.float 2
+    -->     , Quantity.float 3
+    -- >    )
+
+-}
 fromTuple : ( Float, Float ) -> Vector2d Unitless coordinates
 fromTuple ( x, y ) =
     fromComponents ( Quantity.float x, Quantity.float y )
 
 
+{-| Convert a unitless `Vector2d` to a tuple of `Float` values.
+
+    vector =
+        Vector2d.fromComponents
+            ( Quantity.float 2
+            , Quantity.float 3
+            )
+
+    Vector2d.toTuple vector
+    --> ( 2, 3 )
+
+-}
 toTuple : Vector2d Unitless coordinates -> ( Float, Float )
 toTuple vector =
     ( Quantity.toFloat (xComponent vector)
@@ -340,11 +366,32 @@ toTuple vector =
     )
 
 
+{-| Construct a unitless `Vector2d` from a record with `Float` fields.
+
+    Vector2d.fromRecord { x = 2, y = 3 }
+    --> Vector2d.fromComponents
+    -->     ( Quantity.float 2
+    -->     , Quantity.float 3
+    -- >    )
+
+-}
 fromRecord : { x : Float, y : Float } -> Vector2d Unitless coordinates
 fromRecord { x, y } =
     fromComponents ( Quantity.float x, Quantity.float y )
 
 
+{-| Convert a unitless `Vector2d` to a record with `Float` fields.
+
+    vector =
+        Vector2d.fromComponents
+            ( Quantity.float 2
+            , Quantity.float 3
+            )
+
+    Vector2d.toRecord vector
+    --> { x = 2, y = 3 }
+
+-}
 toRecord : Vector2d Unitless coordinates -> { x : Float, y : Float }
 toRecord vector =
     { x = Quantity.toFloat (xComponent vector)
