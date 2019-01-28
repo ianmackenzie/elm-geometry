@@ -10,10 +10,9 @@
 module Polyline3d exposing
     ( Polyline3d
     , fromVertices, on
-    , vertices, segments, length, boundingBox
+    , vertices, segments, length, boundingBox, centroid
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapVertices
     , relativeTo, placeIn, projectInto
-    , centroid
     )
 
 {-| A `Polyline3d` represents a sequence of vertices in 3D connected by line
@@ -34,7 +33,7 @@ as
 
 # Properties
 
-@docs vertices, segments, length, boundingBox
+@docs vertices, segments, length, boundingBox, centroid
 
 
 # Transformations
