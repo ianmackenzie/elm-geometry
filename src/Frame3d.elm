@@ -38,7 +38,7 @@ are always perpendicular to each other). It can be thought of as:
 
 # Constants
 
-@docs atOrigin, xyz
+@docs atOrigin
 
 
 # Constructors

@@ -42,7 +42,7 @@ box of an object than the object itself, such as:
 
 # Properties
 
-@docs extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint, centroid
+@docs extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint
 
 
 # Queries

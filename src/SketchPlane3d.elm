@@ -83,11 +83,6 @@ Sketch planes can also be constructed from `Frame3d` values using
 @docs withNormalDirection, on, throughPoints, fromPlane, copy, unsafe
 
 
-# Local coordinates
-
-@docs define
-
-
 # Conversions
 
 @docs toPlane
