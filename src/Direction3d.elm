@@ -53,11 +53,6 @@ Directions have several uses, such as:
 @docs equalWithin
 
 
-# Measurement
-
-@docs componentIn, angleFrom
-
-
 # Conversion
 
 @docs toVector
