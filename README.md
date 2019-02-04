@@ -13,86 +13,90 @@ transforming and combining them in many different ways. You can:
   - Compose complex 2D/3D transformations
   - ...and much more!
 
-A wide variety of data types are supported:
+## Table of contents
 
-  - `Point2d`, `Point3d`, `Vector2d`, `Vector3d`, `Direction2d`, `Direction3d`
+  - [Overview](#overview)
+  - [Units and coordinate systems](#units-and-coordinate-systems)
+    - [Units](#units)
+    - [Coordinate systems](#coordinate-systems)
+    - [Conversions](#conversions)
+  - [Installation](#installation)
+  - [Documentation](#documentation)
+  - [Questions and feedback](#questions-and-feedback)
 
-    ![Point2d](https://opensolid.github.io/images/geometry/icons/point2d.svg)
-    ![Point3d](https://opensolid.github.io/images/geometry/icons/point3d.svg)
-    ![Vector2d](https://opensolid.github.io/images/geometry/icons/vector2d.svg)
-    ![Vector3d](https://opensolid.github.io/images/geometry/icons/vector3d.svg)
-    ![Direction2d](https://opensolid.github.io/images/geometry/icons/direction2d.svg)
-    ![Direction3d](https://opensolid.github.io/images/geometry/icons/direction3d.svg)
+## Overview
 
-  - `Axis2d`, `Axis3d`, `Plane3d`
+`elm-geometry` includes a wide variety of data types: points, vectors, directions...
 
-    ![Axis2d](https://opensolid.github.io/images/geometry/icons/axis2d.svg)
-    ![Axis3d](https://opensolid.github.io/images/geometry/icons/axis3d.svg)
-    ![Plane3d](https://opensolid.github.io/images/geometry/icons/plane3d.svg)
+![Point2d](https://opensolid.github.io/images/geometry/icons/point2d.svg)
+![Point3d](https://opensolid.github.io/images/geometry/icons/point3d.svg)
+![Vector2d](https://opensolid.github.io/images/geometry/icons/vector2d.svg)
+![Vector3d](https://opensolid.github.io/images/geometry/icons/vector3d.svg)
+![Direction2d](https://opensolid.github.io/images/geometry/icons/direction2d.svg)
+![Direction3d](https://opensolid.github.io/images/geometry/icons/direction3d.svg)
 
-  - `Frame2d`, `Frame3d`, `SketchPlane3d`
+...line segments, triangles, bounding boxes...
 
-    ![Frame2d](https://opensolid.github.io/images/geometry/icons/frame2d.svg)
-    ![Frame3d](https://opensolid.github.io/images/geometry/icons/frame3d.svg)
-    ![SketchPlane3d](https://opensolid.github.io/images/geometry/icons/sketchPlane3d.svg)
+![LineSegment2d](https://opensolid.github.io/images/geometry/icons/lineSegment2d.svg)
+![LineSegment3d](https://opensolid.github.io/images/geometry/icons/lineSegment3d.svg)
+![Triangle2d](https://opensolid.github.io/images/geometry/icons/triangle2d.svg)
+![Triangle3d](https://opensolid.github.io/images/geometry/icons/triangle3d.svg)
+![BoundingBox2d](https://opensolid.github.io/images/geometry/icons/boundingBox2d.svg)
+![BoundingBox3d](https://opensolid.github.io/images/geometry/icons/boundingBox3d.svg)
 
-  - `BoundingBox2d`, `BoundingBox3d`
 
-    ![BoundingBox2d](https://opensolid.github.io/images/geometry/icons/boundingBox2d.svg)
-    ![BoundingBox3d](https://opensolid.github.io/images/geometry/icons/boundingBox3d.svg)
+...polylines, polygons, quadratic and cubic splines...
 
-  - `LineSegment2d`, `LineSegment3d`, `Triangle2d`, `Triangle3d`
+![Polyline2d](https://opensolid.github.io/images/geometry/icons/polyline2d.svg)
+![Polyline3d](https://opensolid.github.io/images/geometry/icons/polyline3d.svg)
+![Polygon2d](https://opensolid.github.io/images/geometry/icons/polygon2d.svg)
+![QuadraticSpline2d](https://opensolid.github.io/images/geometry/icons/quadraticSpline2d.svg)
+![QuadraticSpline3d](https://opensolid.github.io/images/geometry/icons/quadraticSpline3d.svg)
+![CubicSpline2d](https://opensolid.github.io/images/geometry/icons/cubicSpline2d.svg)
+![CubicSpline3d](https://opensolid.github.io/images/geometry/icons/cubicSpline3d.svg)
 
-    ![LineSegment2d](https://opensolid.github.io/images/geometry/icons/lineSegment2d.svg)
-    ![LineSegment3d](https://opensolid.github.io/images/geometry/icons/lineSegment3d.svg)
-    ![Triangle2d](https://opensolid.github.io/images/geometry/icons/triangle2d.svg)
-    ![Triangle3d](https://opensolid.github.io/images/geometry/icons/triangle3d.svg)
+...circles, arcs, ellipses and elliptical arcs...
 
-  - `Polyline2d`, `Polyline3d`, `Polygon2d`
 
-    ![Polyline2d](https://opensolid.github.io/images/geometry/icons/polyline2d.svg)
-    ![Polyline3d](https://opensolid.github.io/images/geometry/icons/polyline3d.svg)
-    ![Polygon2d](https://opensolid.github.io/images/geometry/icons/polygon2d.svg)
+![Circle2d](https://opensolid.github.io/images/geometry/icons/circle2d.svg)
+![Circle3d](https://opensolid.github.io/images/geometry/icons/circle3d.svg)
+![Arc2d](https://opensolid.github.io/images/geometry/icons/arc2d.svg)
+![Arc3d](https://opensolid.github.io/images/geometry/icons/arc3d.svg)
+![Ellipse2d](https://opensolid.github.io/images/geometry/icons/ellipse2d.svg)
+![EllipticalArc2d](https://opensolid.github.io/images/geometry/icons/ellipticalArc2d.svg)
 
-  - `Circle2d`, `Circle3d`, `Arc2d`, `Arc3d`
+...plus axes, planes, and various forms of 2D/3D coordinate systems:
 
-    ![Circle2d](https://opensolid.github.io/images/geometry/icons/circle2d.svg)
-    ![Circle3d](https://opensolid.github.io/images/geometry/icons/circle3d.svg)
-    ![Arc2d](https://opensolid.github.io/images/geometry/icons/arc2d.svg)
-    ![Arc3d](https://opensolid.github.io/images/geometry/icons/arc3d.svg)
-
-  - `Ellipse2d`, `EllipticalArc2d`
-
-    ![Ellipse2d](https://opensolid.github.io/images/geometry/icons/ellipse2d.svg)
-    ![EllipticalArc2d](https://opensolid.github.io/images/geometry/icons/ellipticalArc2d.svg)
-
-  - `QuadraticSpline2d`, `QuadraticSpline3d`, `CubicSpline2d`, `CubicSpline3d`
-
-    ![QuadraticSpline2d](https://opensolid.github.io/images/geometry/icons/quadraticSpline2d.svg)
-    ![QuadraticSpline3d](https://opensolid.github.io/images/geometry/icons/quadraticSpline3d.svg)
-    ![CubicSpline2d](https://opensolid.github.io/images/geometry/icons/cubicSpline2d.svg)
-    ![CubicSpline3d](https://opensolid.github.io/images/geometry/icons/cubicSpline3d.svg)
+![Axis2d](https://opensolid.github.io/images/geometry/icons/axis2d.svg)
+![Axis3d](https://opensolid.github.io/images/geometry/icons/axis3d.svg)
+![Plane3d](https://opensolid.github.io/images/geometry/icons/plane3d.svg)
+![Frame2d](https://opensolid.github.io/images/geometry/icons/frame2d.svg)
+![Frame3d](https://opensolid.github.io/images/geometry/icons/frame3d.svg)
+![SketchPlane3d](https://opensolid.github.io/images/geometry/icons/sketchPlane3d.svg)
 
 A large range of geometric functionality is included, such as various forms of
 constructors...
 
 ```elm
-Point3d.fromCoordinates ( 1, 4, 5 )
+Point3d.fromCoordinates
+    ( Length.meters 1
+    , Length.meters 4
+    , Length.meters 5
+    )
 
-Direction2d.fromAngle (degrees 30)
+Direction2d.fromAngle (Angle.degrees 30)
 
 Point3d.midpoint p1 p2
 
-Vector2d.withLength 3 Direction2d.y
+Vector2d.withLength (Length.feet 3) Direction2d.y
 
 Triangle2d.fromVertices ( p1, p2, p3 )
 
--- fit a plane through three points
 Plane3d.throughPoints p1 p2 p3
 
 Axis3d.through Point3d.origin Direction3d.z
 
-Arc2d.from p1 p2 (degrees 90)
+Arc2d.from p1 p2 (Angle.degrees 90)
 
 QuadraticSpline3d.with
     { startPoint = p1
@@ -111,63 +115,132 @@ CubicSpline2d.fromEndpoints
 ...point/vector arithmetic...
 
 ```elm
-Vector3d.sum v1 v2
+v1 |> Vector3d.plus v2
 
 -- the vector from the point p1 to the point p2
 Vector2d.from p1 p2
 
-Vector3d.crossProduct v1 v2
+v1 |> Vector3d.cross v2
 
 Vector2d.length vector
 
--- distance of a point from the origin point (0, 0)
+-- distance of a point from the origin
 point |> Point2d.distanceFrom Point2d.origin
 ```
 
-...2D/3D transformations...
+...and 2D/3D transformations:
 
 ```elm
-Vector2d.rotateBy (degrees 45) vector
+vector |> Vector2d.rotateBy angle
 
-Point2d.rotateAround Point2d.origin (degrees 45) point
+point |> Point2d.rotateAround Point2d.origin angle
 
-Point3d.mirrorAcross Plane3d.xy point
+point |> Point3d.mirrorAcross Plane3d.xy
 
-Vector3d.projectionIn Direction3d.z vector
+vector |> Vector3d.projectionIn Direction3d.z
 
-Triangle3d.rotateAround Axis3d.x (degrees 45) triangle
+triangle |> Triangle3d.rotateAround Axis3d.x angle
 
 lineSegment
     |> LineSegment3d.mirrorAcross Plane3d.yz
     |> LineSegment3d.projectOnto Plane3d.xy
 
-Plane3d.offsetBy 3 Plane3d.xy
+Plane3d.xy |> Plane3d.offsetBy (Length.meters 3)
 ```
 
-...and conversions between coordinate systems:
+## Units and coordinate systems
+
+Most types in `elm-geometry` include two [phantom type parameters](https://blog.ilias.xyz/5-things-you-didnt-know-about-elm-7bdb67b1b3cd#1869)
+that allow compile-time tracking of both what units that geometry is in (usually
+either meters for real-world geometry, or pixels for on-screen geometry) and
+what coordinate system the geometry is defined in. For example, you might use a
 
 ```elm
-rotatedFrame =
-    Frame2d.atOrigin |> Frame2d.rotateBy (degrees 30)
-
--- convert from global coordinates to local coordinates
--- (relative to the given coordinate frame)
-Vector2d.relativeTo rotatedFrame vector
-
--- convert from local coordinates (relative to the given
--- coordinate frame) to global coordinates
-Point2d.placeIn rotatedFrame point
-
--- convert from global 3D coordinates to local 2D
--- coordinates in the given sketch plane
-point2d =
-    Point3d.projectInto SketchPlane3d.yz point3d
-
--- convert from local 2D coordinates in the given
--- sketch plane back to global 3D coordinates
-point3d =
-    Point3d.on SketchPlane3d.yz point2d
+Point2d Pixels YUpCoordinates
 ```
+
+to represent a point on the screen that is defined in Y-up coordinates (from
+the lower-left corner of an SVG drawing, for example) as opposed to Y-down
+coordinates from the top left corner of the screen.
+
+### Units
+
+`elm-geometry` uses the `Quantity` type from [`elm-units`](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest) to track/convert the units associated with
+numeric values such as point coordinates, vector components, lengths, distances
+and angles. Internally, `elm-units` converts everything to [SI](https://en.wikipedia.org/wiki/International_System_of_Units)
+units, so
+
+```elm
+Point2d.fromCoordinates
+    ( Length.inches 10
+    , Length.inches 20
+    )
+```
+
+and
+
+```elm
+Point2d.fromCoordinates
+    ( Length.centimeters 25.4
+    , Length.centimeters 50.8
+    )
+```
+
+are equivalent. Tracking units at compile time prevents mixing and matching
+different types of geometry; for example,
+
+```elm
+Point2d.fromCoordinates
+    ( Length.meters 3
+    , Length.meters 4
+    )
+```
+
+and
+
+```elm
+Point2d.fromCoordinates
+    ( Pixels.pixels 200
+    , Pixels.pixels 300
+    )
+```
+
+have completely different units, so the compiler can catch nonsensical
+operations like trying to find the distance from the first point to the second.
+
+### Coordinate systems
+
+2D/3D geometry is often represented using X/Y/Z coordinates. As a result, in
+addition to tracking which units are used, `elm-geometry` also lets you add type
+annotations to specify what _coordinate system_ particular geometry is defined
+in. For example, we might declare a `TopLeftCoordinates` type and then add a
+type annotation to a `point` asserting that it is defined in coordinates
+relative to the top-left corner of the screen:
+
+```elm
+{-| A coordinate system where (0, 0) is the top left corner
+of the screen, positive X is to the right, and positive Y
+is down.
+-}
+type TopLeftCoordinates =
+    TopLeftCoordinates
+
+point : Point2d Pixels TopLeftCoordinates
+point =
+    Point2d.fromCoordinates
+        ( Pixels.pixels 200
+        , Pixels.pixels 300
+        )
+```
+
+Note that the `TopLeftCoordinates` type we declared gives us a convenient place
+to document exactly how that coordinate system is defined. This combination now
+gives us some nice type safety - the compiler will tell us if we try to mix two
+points that have different units or are defined in different coordinate systems.
+
+### Conversions
+
+TODO
 
 ## Installation
 
@@ -182,27 +255,12 @@ in a command prompt inside your project directory.
 
 ## Documentation
 
-[Full API documentation](http://package.elm-lang.org/packages/ianmackenzie/elm-geometry/1.0.0)
+[Full API documentation](https://package.elm-lang.org/packages/ianmackenzie/elm-geometry/latest)
 is available for each module. Most modules are associated with a particular data
-type (for example, the [`Point3d`](http://package.elm-lang.org/packages/ianmackenzie/elm-geometry/1.0.0/Point3d)
+type (for example, the [`Point3d`](https://package.elm-lang.org/packages/ianmackenzie/elm-geometry/latest/Point3d)
 module contains functions for creating and manipulating `Point3d` values).
 
-## Usage details
-
-Following the [Elm package design guidelines](http://package.elm-lang.org/help/design-guidelines#module-names-should-not-reappear-in-function-names),
-most `elm-geometry` modules are designed to be imported exposing only the
-corresponding types, and using the module name as a prefix for everything else:
-
-```elm
-import Point3d exposing (Point3d)
-import Axis3d exposing (Axis3d)
-
-rotatedPoint : Point3d
-rotatedPoint =
-    Point3d.rotateAround Axis3d.x (degrees 30) originalPoint
-```
-
-## Questions? Comments?
+## Questions and feedback
 
 Please [open a new issue](https://github.com/ianmackenzie/elm-geometry/issues)
 if you run into a bug, if any documentation is missing/incorrect/confusing, or
@@ -218,8 +276,6 @@ You can also try:
     any particular questions right now, it would be great to know what you're
     hoping to do with the package!
   - Posting to the [Elm Discourse](https://discourse.elm-lang.org/) forums
-  - Or if you happen to be in the New York area, come on out to the
-    [Elm NYC meetup](https://www.meetup.com/Elm-NYC/) =)
 
 You can also find me on Twitter ([@ianemackenzie](https://twitter.com/ianemackenzie)),
 where I occasionally post `elm-geometry`-related stuff like demos or new
