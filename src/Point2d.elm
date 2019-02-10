@@ -55,6 +55,11 @@ coordinates.
 @docs fromTuple, toTuple, fromRecord, toRecord
 
 
+# Unit conversion
+
+@docs at, at_
+
+
 # Properties
 
 @docs coordinates, coordinatesIn, xCoordinate, yCoordinate, polarCoordinates
@@ -87,7 +92,7 @@ import Bootstrap.Frame2d as Frame2d
 import Direction2d exposing (Direction2d)
 import Float.Extra as Float
 import Geometry.Types as Types exposing (Axis2d, Frame2d)
-import Quantity exposing (Quantity, Squared, Unitless)
+import Quantity exposing (Quantity, Rate, Squared, Unitless)
 import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
 
@@ -491,6 +496,64 @@ toRecord point =
     { x = Quantity.toFloat (xCoordinate point)
     , y = Quantity.toFloat (yCoordinate point)
     }
+
+
+{-| Convert a point from one units type to another, by providing a conversion factor given as a
+rate of change of destination units with respect to source units.
+
+    worldPoint =
+        Point2d.fromCoordinates
+            ( Length.meters 2
+            , Length.meters 3
+            )
+
+    resolution : Quantity Float (Rate Pixels Meters)
+    resolution =
+        Pixels.pixels 100 |> Quantity.per (Length.meters 1)
+
+    worldPoint |> Point2d.at resolution
+    --> Point2d.fromCoordinates
+    -->     ( Pixels.pixels 200
+    -->     , Pixels.pixels 300
+    -->     )
+
+-}
+at : Quantity Float (Rate destinationUnits sourceUnits) -> Point2d sourceUnits coordinates -> Point2d destinationUnits coordinates
+at rate point =
+    let
+        ( x, y ) =
+            coordinates point
+    in
+    fromCoordinates ( Quantity.at rate x, Quantity.at rate y )
+
+
+{-| Convert a point from one units type to another, by providing an 'inverse' conversion factor
+given as a rate of change of source units with respect to destination units.
+
+    screenPoint =
+        Point2d.fromCoordinates
+            ( Pixels.pixels 200
+            , Pixels.pixels 300
+            )
+
+    resolution : Quantity Float (Rate Pixels Meters)
+    resolution =
+        Pixels.pixels 50 |> Quantity.per (Length.meters 1)
+
+    screenPoint |> Point2d.at_ resolution
+    --> Point2d.fromCoordinates
+    -->     ( Length.meters 4
+    -->     , Length.meters 6
+    -->     )
+
+-}
+at_ : Quantity Float (Rate sourceUnits destinationUnits) -> Point2d sourceUnits coordinates -> Point2d destinationUnits coordinates
+at_ rate point =
+    let
+        ( x, y ) =
+            coordinates point
+    in
+    fromCoordinates ( Quantity.at_ rate x, Quantity.at_ rate y )
 
 
 {-| Get the coordinates of a point as a tuple.
