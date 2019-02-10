@@ -46,7 +46,7 @@ like you can add two vectors.
 @docs fromCoordinates, fromCoordinatesIn, midpoint, centroid, interpolateFrom, along, on, circumcenter
 
 
-# Conversion
+# Interop
 
 These functions are useful for interoperability with other Elm code that uses
 plain `Float` tuples or records to represent points. The resulting `Point3d`

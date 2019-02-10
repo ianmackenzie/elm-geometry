@@ -52,7 +52,7 @@ you will actually want their `Direction3d` versions [`Direction3d.x`](Direction3
 @docs fromComponents, fromComponentsIn, from, withLength, on, perpendicularTo, interpolateFrom
 
 
-# Conversion
+# Interop
 
 These functions are useful for interoperability with other Elm code that uses
 plain `Float` tuples or records to represent vectors. The resulting `Vector3d`
