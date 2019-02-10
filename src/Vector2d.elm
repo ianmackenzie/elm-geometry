@@ -12,6 +12,8 @@ module Vector2d exposing
     , zero
     , fromComponents, fromComponentsIn, fromPolarComponents, fromPolarComponentsIn, from, withLength, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
+    , at, at_
+    , per, for
     , components, componentsIn, xComponent, yComponent, componentIn, polarComponents, length, squaredLength, direction, lengthAndDirection
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross
@@ -51,7 +53,7 @@ Although there are no predefined constants for the vectors with components
 @docs fromComponents, fromComponentsIn, fromPolarComponents, fromPolarComponentsIn, from, withLength, perpendicularTo, interpolateFrom
 
 
-# Conversion
+# Interop
 
 These functions are useful for interoperability with other Elm code that uses
 plain `Float` tuples or records to represent vectors. The resulting `Vector2d`
@@ -59,6 +61,16 @@ values will have [unitless](https://package.elm-lang.org/packages/ianmackenzie/e
 components.
 
 @docs fromTuple, toTuple, fromRecord, toRecord
+
+
+# Unit conversion
+
+@docs at, at_
+
+
+# Rates of change
+
+@docs per, for
 
 
 # Properties
@@ -106,7 +118,7 @@ import Bootstrap.Direction2d as Direction2d
 import Bootstrap.Frame2d as Frame2d
 import Bootstrap.Point2d as Point2d
 import Geometry.Types as Types exposing (Axis2d, Direction2d, Frame2d, Point2d)
-import Quantity exposing (Product, Quantity, Squared, Unitless)
+import Quantity exposing (Product, Quantity, Rate, Squared, Unitless)
 import Quantity.Extra as Quantity
 
 
@@ -397,6 +409,114 @@ toRecord vector =
     { x = Quantity.toFloat (xComponent vector)
     , y = Quantity.toFloat (yComponent vector)
     }
+
+
+{-| Convert a vector from one units type to another, by providing a conversion factor given as a
+rate of change of destination units with respect to source units.
+
+    worldVector =
+        Vector2d.fromComponents
+            ( Length.meters 2
+            , Length.meters 3
+            )
+
+    resolution : Quantity Float (Rate Pixels Meters)
+    resolution =
+        Pixels.pixels 100 |> Quantity.per (Length.meters 1)
+
+    worldVector |> Vector2d.at resolution
+    --> Vector2d.fromComponents
+    -->     ( Pixels.pixels 200
+    -->     , Pixels.pixels 300
+    -->     )
+
+-}
+at : Quantity Float (Rate destinationUnits sourceUnits) -> Vector2d sourceUnits coordinates -> Vector2d destinationUnits coordinates
+at rate vector =
+    let
+        ( x, y ) =
+            components vector
+    in
+    fromComponents ( Quantity.at rate x, Quantity.at rate y )
+
+
+{-| Convert a vector from one units type to another, by providing an 'inverse' conversion factor
+given as a rate of change of source units with respect to destination units.
+
+    screenVector =
+        Vector2d.fromComponents
+            ( Pixels.pixels 200
+            , Pixels.pixels 300
+            )
+
+    resolution : Quantity Float (Rate Pixels Meters)
+    resolution =
+        Pixels.pixels 50 |> Quantity.per (Length.meters 1)
+
+    screenVector |> Vector2d.at_ resolution
+    --> Vector2d.fromComponents
+    -->     ( Length.meters 4
+    -->     , Length.meters 6
+    -->     )
+
+-}
+at_ : Quantity Float (Rate sourceUnits destinationUnits) -> Vector2d sourceUnits coordinates -> Vector2d destinationUnits coordinates
+at_ rate vector =
+    let
+        ( x, y ) =
+            components vector
+    in
+    fromComponents ( Quantity.at_ rate x, Quantity.at_ rate y )
+
+
+{-| Construct a vector representing a rate of change such as a speed:
+
+    displacement =
+        Vector2d.fromComponents
+            ( Length.meters 6
+            , Length.meters 8
+            )
+
+    velocity =
+        displacement |> Vector2d.per (Duration.seconds 2)
+
+    -- Get the magnitude of the velocity (the speed)
+    Vector2d.length velocity
+    --> Speed.metersPerSecond 5
+
+-}
+per : Quantity Float independentUnits -> Vector2d dependentUnits coordinates -> Vector2d (Rate dependentUnits independentUnits) coordinates
+per independentQuantity vector =
+    let
+        ( x, y ) =
+            components vector
+    in
+    fromComponents ( Quantity.per independentQuantity x, Quantity.per independentQuantity y )
+
+
+{-| Multiply a rate of change vector by an independent quantity to get a total vector. For example,
+multiply a velocity by a duration to get a total displacement:
+
+    velocity =
+        Vector2d.fromComponents
+            ( Pixels.pixelsPerSecond 200
+            , Pixels.pixelsPerSecond 50
+            )
+
+    velocity |> Vector2d.for (Duration.seconds 0.1)
+    --> Vector2d.fromComponents
+    -->     ( Pixels.pixels 20
+    -->     , Pixels.pixels 5
+    -->     )
+
+-}
+for : Quantity Float independentUnits -> Vector2d (Rate dependentUnits independentUnits) coordinates -> Vector2d dependentUnits coordinates
+for independentQuantity vector =
+    let
+        ( x, y ) =
+            components vector
+    in
+    fromComponents ( Quantity.for independentQuantity x, Quantity.for independentQuantity y )
 
 
 {-| Extract the components of a vector.
