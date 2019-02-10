@@ -11,10 +11,9 @@ module Direction2d exposing
     ( Direction2d
     , x, y, positiveX, negativeX, positiveY, negativeY
     , from, perpendicularTo, orthonormalize, orthogonalize, unsafeFromComponents, unsafeFromComponentsIn
-    , fromAngle, toAngle
+    , fromAngle, toAngle, toVector
     , components, componentsIn, xComponent, yComponent, componentIn, angleFrom
     , equalWithin
-    , toVector
     , reverse, rotateClockwise, rotateCounterclockwise, rotateBy, mirrorAcross
     , relativeTo, placeIn
     )
@@ -46,7 +45,7 @@ have several uses, such as:
 
 # Conversions
 
-@docs fromAngle, toAngle
+@docs fromAngle, toAngle, toVector
 
 
 # Properties
@@ -57,11 +56,6 @@ have several uses, such as:
 # Comparison
 
 @docs equalWithin
-
-
-# Conversion
-
-@docs toVector
 
 
 # Transformations

@@ -11,9 +11,9 @@ module Direction3d exposing
     ( Direction3d
     , x, y, z, positiveX, negativeX, positiveY, negativeY, positiveZ, negativeZ
     , from, on, fromAzimuthAndElevation, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize, unsafeFromComponents, unsafeFromComponentsIn
+    , toVector
     , components, componentsIn, xComponent, yComponent, zComponent, componentIn, angleFrom, azimuth, elevation
     , equalWithin
-    , toVector
     , reverse, rotateAround, mirrorAcross, projectOnto
     , relativeTo, placeIn, projectInto
     )
@@ -43,6 +43,11 @@ Directions have several uses, such as:
 @docs from, on, fromAzimuthAndElevation, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize, unsafeFromComponents, unsafeFromComponentsIn
 
 
+# Conversion
+
+@docs toVector
+
+
 # Properties
 
 @docs components, componentsIn, xComponent, yComponent, zComponent, componentIn, angleFrom, azimuth, elevation
@@ -51,11 +56,6 @@ Directions have several uses, such as:
 # Comparison
 
 @docs equalWithin
-
-
-# Conversion
-
-@docs toVector
 
 
 # Transformations
