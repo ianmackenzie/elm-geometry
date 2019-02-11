@@ -5,24 +5,24 @@
 vectors, arcs, spline curves and coordinate frames, along with functions for
 transforming and combining them in many different ways. You can:
 
-  - Rotate points around axes in 3D
-  - Mirror triangles across 3D planes
-  - Project 3D geometry into 2D sketch planes
-  - Measure distances and angles between different objects
-  - Convert objects between different coordinate systems
-  - Compose complex 2D/3D transformations
-  - ...and much more!
+- Rotate points around axes in 3D
+- Mirror triangles across 3D planes
+- Project 3D geometry into 2D sketch planes
+- Measure distances and angles between different objects
+- Convert objects between different coordinate systems
+- Compose complex 2D/3D transformations
+- ...and much more!
 
 ## Table of contents
 
-  - [Overview](#overview)
-  - [Units and coordinate systems](#units-and-coordinate-systems)
-    - [Units](#units)
-    - [Coordinate systems](#coordinate-systems)
-    - [Conversions](#conversions)
-  - [Installation](#installation)
-  - [Documentation](#documentation)
-  - [Questions and feedback](#questions-and-feedback)
+- [Overview](#overview)
+- [Units and coordinate systems](#units-and-coordinate-systems)
+  - [Units](#units)
+  - [Coordinate systems](#coordinate-systems)
+  - [Conversions](#conversions)
+- [Installation](#installation)
+- [Documentation](#documentation)
+- [Questions and feedback](#questions-and-feedback)
 
 ## Overview
 
@@ -44,7 +44,6 @@ transforming and combining them in many different ways. You can:
 ![BoundingBox2d](https://opensolid.github.io/images/geometry/icons/boundingBox2d.svg)
 ![BoundingBox3d](https://opensolid.github.io/images/geometry/icons/boundingBox3d.svg)
 
-
 ...polylines, polygons, quadratic and cubic splines...
 
 ![Polyline2d](https://opensolid.github.io/images/geometry/icons/polyline2d.svg)
@@ -56,7 +55,6 @@ transforming and combining them in many different ways. You can:
 ![CubicSpline3d](https://opensolid.github.io/images/geometry/icons/cubicSpline3d.svg)
 
 ...circles, arcs, ellipses and elliptical arcs...
-
 
 ![Circle2d](https://opensolid.github.io/images/geometry/icons/circle2d.svg)
 ![Circle3d](https://opensolid.github.io/images/geometry/icons/circle3d.svg)
@@ -247,7 +245,7 @@ TODO
 Assuming you have [installed Elm](https://guide.elm-lang.org/install.html) and
 started a new project, you can install `elm-geometry` by running
 
-```
+```text
 elm install ianmackenzie/elm-geometry
 ```
 
@@ -272,10 +270,10 @@ the friendly [Elm Slack](http://elmlang.herokuapp.com/):
 
 You can also try:
 
-  - Sending me (**@ianmackenzie**) a message on Slack - even if you don't have
-    any particular questions right now, it would be great to know what you're
-    hoping to do with the package!
-  - Posting to the [Elm Discourse](https://discourse.elm-lang.org/) forums
+- Sending me (**@ianmackenzie**) a message on Slack - even if you don't have any
+  particular questions right now, it would be great to know what you're hoping
+  to do with the package!
+- Posting to the [Elm Discourse](https://discourse.elm-lang.org/) forums
 
 You can also find me on Twitter ([@ianemackenzie](https://twitter.com/ianemackenzie)),
 where I occasionally post `elm-geometry`-related stuff like demos or new
