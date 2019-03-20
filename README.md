@@ -1,4 +1,4 @@
-# elm-geometry [![Build Status](https://travis-ci.org/ianmackenzie/elm-geometry.svg?branch=master)](https://travis-ci.org/ianmackenzie/elm-geometry)
+# elm-geometry
 
 `elm-geometry` is an [Elm](http://elm-lang.org) package for working with 2D and
 3D geometry. It provides a wide variety of geometric data types such as points,
