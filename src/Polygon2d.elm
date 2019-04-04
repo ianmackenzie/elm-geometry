@@ -14,7 +14,7 @@ module Polygon2d exposing
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , relativeTo, placeIn
     , triangulate
-    , Containment(..), containsPoint
+    , contains
     )
 
 {-| A `Polygon2d` represents a closed polygon in 2D, optionally with holes. It
@@ -581,28 +581,24 @@ type Containment
     | Boundary
 
 
-{-| Computes whether a point is inside, outside or on the boundary of a polygon.
+{-| Computes whether a point is inside a polygon.
 
 This is a O(n) operation.
 
 -}
-containsPoint : Point2d -> Polygon2d -> Containment
-containsPoint point polygon =
-    -- Based on Hao, J.; Sun, J.; Chen, Y.; Cai, Q.; Tan, L. Optimal Reliable Point-in-Polygon Test and
-    -- Differential Coding Boolean Operations on Polygons. Symmetry 2018, 10, 477.
-    -- https://www.mdpi.com/2073-8994/10/10/477/pdf
+contains : Point2d -> Polygon2d -> Bool
+contains point polygon =
     containsPointHelp (edges polygon) (Point2d.coordinates point) 0
 
 
-containsPointHelp : List LineSegment2d -> ( Float, Float ) -> Int -> Containment
+containsPointHelp : List LineSegment2d -> ( Float, Float ) -> Int -> Bool
 containsPointHelp edgeList ( xp, yp ) k =
+    -- Based on Hao, J.; Sun, J.; Chen, Y.; Cai, Q.; Tan, L. Optimal Reliable Point-in-Polygon Test and
+    -- Differential Coding Boolean Operations on Polygons. Symmetry 2018, 10, 477.
+    -- https://www.mdpi.com/2073-8994/10/10/477/pdf
     case edgeList of
         [] ->
-            if modBy 2 k == 0 then
-                Outside
-
-            else
-                Inside
+            not (modBy 2 k == 0)
 
         edge :: rest ->
             let
@@ -644,7 +640,7 @@ containsPointHelp edgeList ( xp, yp ) k =
 
                     else if f == 0 then
                         -- case 16 or 21
-                        Boundary
+                        True
 
                     else
                         -- case 13 or 24
@@ -661,7 +657,7 @@ containsPointHelp edgeList ( xp, yp ) k =
 
                     else if f == 0 then
                         -- case 19 or 20
-                        Boundary
+                        True
 
                     else
                         -- case 12 or 25
@@ -674,7 +670,7 @@ containsPointHelp edgeList ( xp, yp ) k =
                     in
                     if f == 0 then
                         -- case 17
-                        Boundary
+                        True
 
                     else
                         -- case 7 or 14
@@ -687,7 +683,7 @@ containsPointHelp edgeList ( xp, yp ) k =
                     in
                     if f == 0 then
                         -- case 18
-                        Boundary
+                        True
 
                     else
                         -- case 8 or 15
@@ -696,11 +692,11 @@ containsPointHelp edgeList ( xp, yp ) k =
                 else if v1 == 0 && v2 == 0 then
                     if u2 <= 0 && u1 >= 0 then
                         -- case 1
-                        Boundary
+                        True
 
                     else if u1 <= 0 && u2 >= 0 then
                         -- case 2
-                        Boundary
+                        True
 
                     else
                         --  case 5, 6, 22, 23

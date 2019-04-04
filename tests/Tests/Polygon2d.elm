@@ -1,5 +1,5 @@
 module Tests.Polygon2d exposing
-    ( containsPointTest
+    ( containsTest
     , convexHullContainsAllPoints
     , convexHullIsConvex
     , triangulationHasCorrectArea
@@ -12,7 +12,7 @@ import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import LineSegment2d
 import Point2d
-import Polygon2d exposing (Containment(..), convexHull)
+import Polygon2d exposing (convexHull)
 import Test exposing (Test)
 import Triangle2d
 import TriangularMesh
@@ -110,39 +110,39 @@ withHole =
         }
 
 
-containsPointTest : Test
-containsPointTest =
-    Test.describe "containsPoint"
+containsTest : Test
+containsTest =
+    Test.describe "contains"
         [ Test.test "inside" <|
             \() ->
                 simplePolygon
-                    |> Polygon2d.containsPoint (Point2d.fromCoordinates ( 2, 1.5 ))
-                    |> Expect.equal Inside
+                    |> Polygon2d.contains (Point2d.fromCoordinates ( 2, 1.5 ))
+                    |> Expect.equal True
         , Test.test "boundary" <|
             \() ->
                 simplePolygon
-                    |> Polygon2d.containsPoint (Point2d.fromCoordinates ( 3, 1.5 ))
-                    |> Expect.equal Boundary
+                    |> Polygon2d.contains (Point2d.fromCoordinates ( 3, 1.5 ))
+                    |> Expect.equal True
         , Test.test "outside" <|
             \() ->
                 simplePolygon
-                    |> Polygon2d.containsPoint (Point2d.fromCoordinates ( 4, 1.5 ))
-                    |> Expect.equal Outside
+                    |> Polygon2d.contains (Point2d.fromCoordinates ( 4, 1.5 ))
+                    |> Expect.equal False
         , Test.test "inside with hole" <|
             \() ->
                 withHole
-                    |> Polygon2d.containsPoint (Point2d.fromCoordinates ( 2, 2.5 ))
-                    |> Expect.equal Inside
+                    |> Polygon2d.contains (Point2d.fromCoordinates ( 2, 2.5 ))
+                    |> Expect.equal True
         , Test.test "boundary of hole" <|
             \() ->
                 withHole
-                    |> Polygon2d.containsPoint (Point2d.fromCoordinates ( 2, 2 ))
-                    |> Expect.equal Boundary
+                    |> Polygon2d.contains (Point2d.fromCoordinates ( 2, 2 ))
+                    |> Expect.equal True
         , Test.test "outside (in the hole)" <|
             \() ->
                 withHole
-                    |> Polygon2d.containsPoint (Point2d.fromCoordinates ( 1.5, 1.5 ))
-                    |> Expect.equal Outside
+                    |> Polygon2d.contains (Point2d.fromCoordinates ( 1.5, 1.5 ))
+                    |> Expect.equal False
         ]
 
 
