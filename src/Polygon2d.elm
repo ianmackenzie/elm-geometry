@@ -573,14 +573,6 @@ triangulate polygon =
     Monotone.triangulation polygon
 
 
-{-| A point can be either inside the polygon, outside or on the boundary.
--}
-type Containment
-    = Inside
-    | Outside
-    | Boundary
-
-
 {-| Computes whether a point is inside a polygon.
 
 This is a O(n) operation.
