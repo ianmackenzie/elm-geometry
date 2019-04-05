@@ -12,7 +12,7 @@ import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import LineSegment2d
 import Point2d
-import Polygon2d exposing (convexHull)
+import Polygon2d
 import Test exposing (Test)
 import Triangle2d
 import TriangularMesh

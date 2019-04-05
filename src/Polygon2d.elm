@@ -580,11 +580,11 @@ This is a O(n) operation.
 -}
 contains : Point2d -> Polygon2d -> Bool
 contains point polygon =
-    containsPointHelp (edges polygon) (Point2d.coordinates point) 0
+    containsPointHelp (edges polygon) (Point2d.xCoordinate point) (Point2d.yCoordinate point) 0
 
 
-containsPointHelp : List LineSegment2d -> ( Float, Float ) -> Int -> Bool
-containsPointHelp edgeList ( xp, yp ) k =
+containsPointHelp : List LineSegment2d -> Float -> Float -> Int -> Bool
+containsPointHelp edgeList xp yp k =
     -- Based on Hao, J.; Sun, J.; Chen, Y.; Cai, Q.; Tan, L. Optimal Reliable Point-in-Polygon Test and
     -- Differential Coding Boolean Operations on Polygons. Symmetry 2018, 10, 477.
     -- https://www.mdpi.com/2073-8994/10/10/477/pdf
@@ -611,7 +611,7 @@ containsPointHelp edgeList ( xp, yp ) k =
             in
             if (v1 < 0 && v2 < 0) || (v1 > 0 && v2 > 0) then
                 -- case 11 or 26
-                containsPointHelp rest ( xp, yp ) k
+                containsPointHelp rest xp yp k
 
             else
                 let
@@ -628,7 +628,7 @@ containsPointHelp edgeList ( xp, yp ) k =
                     in
                     if f > 0 then
                         -- case 3 or 9
-                        containsPointHelp rest ( xp, yp ) (k + 1)
+                        containsPointHelp rest xp yp (k + 1)
 
                     else if f == 0 then
                         -- case 16 or 21
@@ -636,7 +636,7 @@ containsPointHelp edgeList ( xp, yp ) k =
 
                     else
                         -- case 13 or 24
-                        containsPointHelp rest ( xp, yp ) k
+                        containsPointHelp rest xp yp k
 
                 else if v1 > 0 && v2 <= 0 then
                     let
@@ -645,7 +645,7 @@ containsPointHelp edgeList ( xp, yp ) k =
                     in
                     if f < 0 then
                         -- case 4 or 10
-                        containsPointHelp rest ( xp, yp ) (k + 1)
+                        containsPointHelp rest xp yp (k + 1)
 
                     else if f == 0 then
                         -- case 19 or 20
@@ -653,7 +653,7 @@ containsPointHelp edgeList ( xp, yp ) k =
 
                     else
                         -- case 12 or 25
-                        containsPointHelp rest ( xp, yp ) k
+                        containsPointHelp rest xp yp k
 
                 else if v2 == 0 && v1 < 0 then
                     let
@@ -666,7 +666,7 @@ containsPointHelp edgeList ( xp, yp ) k =
 
                     else
                         -- case 7 or 14
-                        containsPointHelp rest ( xp, yp ) k
+                        containsPointHelp rest xp yp k
 
                 else if v1 == 0 && v2 < 0 then
                     let
@@ -679,7 +679,7 @@ containsPointHelp edgeList ( xp, yp ) k =
 
                     else
                         -- case 8 or 15
-                        containsPointHelp rest ( xp, yp ) k
+                        containsPointHelp rest xp yp k
 
                 else if v1 == 0 && v2 == 0 then
                     if u2 <= 0 && u1 >= 0 then
@@ -692,7 +692,7 @@ containsPointHelp edgeList ( xp, yp ) k =
 
                     else
                         --  case 5, 6, 22, 23
-                        containsPointHelp rest ( xp, yp ) k
+                        containsPointHelp rest xp yp k
 
                 else
-                    containsPointHelp rest ( xp, yp ) k
+                    containsPointHelp rest xp yp k
