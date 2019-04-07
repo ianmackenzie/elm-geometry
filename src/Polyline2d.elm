@@ -10,10 +10,9 @@
 module Polyline2d exposing
     ( Polyline2d
     , fromVertices
-    , vertices, segments, length, boundingBox
+    , vertices, segments, length, boundingBox, centroid
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapVertices
     , relativeTo, placeIn
-    , centroid
     )
 
 {-| A `Polyline2d` represents a sequence of vertices in 2D connected by line
@@ -34,7 +33,7 @@ as
 
 # Properties
 
-@docs vertices, segments, length, boundingBox
+@docs vertices, segments, length, boundingBox, centroid
 
 
 # Transformations
