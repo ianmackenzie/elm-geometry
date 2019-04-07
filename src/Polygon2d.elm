@@ -11,10 +11,10 @@ module Polygon2d exposing
     ( Polygon2d
     , singleLoop, with, convexHull
     , outerLoop, innerLoops, vertices, edges, perimeter, area, boundingBox
+    , contains
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , relativeTo, placeIn
     , triangulate
-    , contains
     )
 
 {-| A `Polygon2d` represents a closed polygon in 2D, optionally with holes. It
@@ -37,6 +37,11 @@ holes. This module contains a variety of polygon-related functionality, such as
 # Properties
 
 @docs outerLoop, innerLoops, vertices, edges, perimeter, area, boundingBox
+
+
+# Queries
+
+@docs contains
 
 
 # Transformations
