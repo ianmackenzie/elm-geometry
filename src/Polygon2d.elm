@@ -573,9 +573,9 @@ triangulate polygon =
     Monotone.triangulation polygon
 
 
-{-| Computes whether a point is inside a polygon.
+{-| Check if a polygon contains a given point.
 
-This is a O(n) operation.
+This is an O(n) operation.
 
 -}
 contains : Point2d -> Polygon2d -> Bool
