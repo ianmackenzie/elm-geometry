@@ -580,7 +580,7 @@ triangulate polygon =
 
 {-| Check if a polygon contains a given point.
 
-This is an O(n) operation.
+This is an O(n) operation. The polygon can have holes and does not need to be convex.
 
 -}
 contains : Point2d -> Polygon2d -> Bool
