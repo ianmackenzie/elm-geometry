@@ -12,6 +12,7 @@ module Point2d exposing
     , origin
     , fromCoordinates, fromCoordinatesIn, fromPolarCoordinates, fromPolarCoordinatesIn, midpoint, centroid, interpolateFrom, along, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
+    , at, at_
     , coordinates, coordinatesIn, xCoordinate, yCoordinate, polarCoordinates
     , equalWithin, lexicographicComparison
     , distanceFrom, squaredDistanceFrom, signedDistanceAlong, signedDistanceFrom
