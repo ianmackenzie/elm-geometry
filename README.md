@@ -148,7 +148,7 @@ Plane3d.xy |> Plane3d.offsetBy (Length.meters 3)
 
 ## Units and coordinate systems
 
-Most types in `elm-geometry` include two [phantom type parameters](https://blog.ilias.xyz/5-things-you-didnt-know-about-elm-7bdb67b1b3cd#1869)
+Most types in `elm-geometry` include two [phantom type parameters](https://blog.ilias.xyz/5-things-you-didnt-know-about-elm-7bdb67b1b3cd#ea40)
 that allow compile-time tracking of both what units that geometry is in (usually
 either meters for real-world geometry, or pixels for on-screen geometry) and
 what coordinate system the geometry is defined in. For example, you might use a
