@@ -51,7 +51,7 @@ box of an object than the object itself, such as:
 
 # Transformations
 
-@docs scaleAbout, translateBy, translateIn, offsetBy, expandBy
+@docs scaleAbout, translateBy, translateIn, expandBy, offsetBy
 
 -}
 
