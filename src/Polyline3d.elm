@@ -368,8 +368,7 @@ boundingBox polyline =
 has no vertices.
 
     Polyline3d.centroid examplePolyline
-    --> Just
-    -->     (Point3d.fromCoordinates (a,b,c))
+    --> Just (Point3d.fromCoordinates ( 0.9167, 1.333, 0.75 ))
 
 -}
 centroid : Polyline3d -> Maybe Point3d
