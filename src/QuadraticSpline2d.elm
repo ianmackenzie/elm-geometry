@@ -875,10 +875,13 @@ pointAlong (ArcLengthParameterized parameterized) distance =
         |> Maybe.map (pointOn parameterized.underlyingSpline)
 
 
-{-| Get the midpoint of the Spline.
+{-| Get the midpoint of a spline.
 
     QuadraticSpline2d.midpoint parameterizedSpline
-    --> Point2d.fromCoordinates (2.999999999999984, 2.5)
+    --> Point2d.fromCoordinates ( 3, 2.5 )
+
+Note that this is the point half way along the spline by arc length, which is
+not in general the same as evaluating at a parameter value of 0.5.
 
 -}
 midpoint : ArcLengthParameterized -> Point2d
