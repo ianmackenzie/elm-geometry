@@ -364,8 +364,8 @@ boundingBox polyline =
     BoundingBox3d.containingPoints (vertices polyline)
 
 
-{-| Find the centroid of the polyline. Returns `Nothing` if the polyline
-has no vertices.
+{-| Find the centroid (center of mass) of a polyline. Returns `Nothing` if the
+polyline has no vertices.
 
     Polyline3d.centroid examplePolyline
     --> Just (Point3d.fromCoordinates ( 0.9167, 1.333, 0.75 ))
