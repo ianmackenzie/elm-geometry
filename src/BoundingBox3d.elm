@@ -12,7 +12,7 @@ module BoundingBox3d exposing
     , fromExtrema, singleton, from, hull, intersection, aggregate, containingPoints
     , extrema, minX, maxX, minY, maxY, minZ, maxZ, dimensions, midX, midY, midZ, centerPoint, centroid
     , contains, isContainedIn, intersects, overlappingBy, separatedBy
-    , scaleAbout, translateBy, translateIn, offsetBy, expandBy
+    , scaleAbout, translateBy, translateIn, expandBy, offsetBy
     )
 
 {-| A `BoundingBox3d` is a rectangular box in 3D defined by its minimum and
