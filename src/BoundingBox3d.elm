@@ -259,7 +259,6 @@ Can be useful when combined with record destructuring, for example
     { minX, maxX, minY, maxY, minZ, maxZ } =
         BoundingBox3d.extrema exampleBox
 
-
     --> minX = -2
     --> maxX = 2
     --> minY = 2
