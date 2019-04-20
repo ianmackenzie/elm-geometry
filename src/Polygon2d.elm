@@ -11,6 +11,7 @@ module Polygon2d exposing
     ( Polygon2d
     , singleLoop, with, convexHull
     , outerLoop, innerLoops, vertices, edges, perimeter, area, boundingBox
+    , contains
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , relativeTo, placeIn
     , triangulate
@@ -36,6 +37,11 @@ holes. This module contains a variety of polygon-related functionality, such as
 # Properties
 
 @docs outerLoop, innerLoops, vertices, edges, perimeter, area, boundingBox
+
+
+# Queries
+
+@docs contains
 
 
 # Transformations
@@ -602,3 +608,128 @@ can render using WebGL:
 triangulate : Polygon2d units coordinates -> TriangularMesh (Point2d units coordinates)
 triangulate polygon =
     Monotone.triangulation polygon
+
+
+{-| Check if a polygon contains a given point.
+
+This is an O(n) operation. The polygon can have holes and does not need to be convex.
+
+-}
+contains : Point2d -> Polygon2d -> Bool
+contains point polygon =
+    containsPointHelp (edges polygon) (Point2d.xCoordinate point) (Point2d.yCoordinate point) 0
+
+
+containsPointHelp : List LineSegment2d -> Float -> Float -> Int -> Bool
+containsPointHelp edgeList xp yp k =
+    -- Based on Hao, J.; Sun, J.; Chen, Y.; Cai, Q.; Tan, L. Optimal Reliable Point-in-Polygon Test and
+    -- Differential Coding Boolean Operations on Polygons. Symmetry 2018, 10, 477.
+    -- https://www.mdpi.com/2073-8994/10/10/477/pdf
+    case edgeList of
+        [] ->
+            not (modBy 2 k == 0)
+
+        edge :: rest ->
+            let
+                ( p0, p1 ) =
+                    LineSegment2d.endpoints edge
+
+                ( xi, yi ) =
+                    Point2d.coordinates p0
+
+                ( xi1, yi1 ) =
+                    Point2d.coordinates p1
+
+                v1 =
+                    yi - yp
+
+                v2 =
+                    yi1 - yp
+            in
+            if (v1 < 0 && v2 < 0) || (v1 > 0 && v2 > 0) then
+                -- case 11 or 26
+                containsPointHelp rest xp yp k
+
+            else
+                let
+                    u1 =
+                        xi - xp
+
+                    u2 =
+                        xi1 - xp
+                in
+                if v2 > 0 && v1 <= 0 then
+                    let
+                        f =
+                            u1 * v2 - u2 * v1
+                    in
+                    if f > 0 then
+                        -- case 3 or 9
+                        containsPointHelp rest xp yp (k + 1)
+
+                    else if f == 0 then
+                        -- case 16 or 21
+                        True
+
+                    else
+                        -- case 13 or 24
+                        containsPointHelp rest xp yp k
+
+                else if v1 > 0 && v2 <= 0 then
+                    let
+                        f =
+                            u1 * v2 - u2 * v1
+                    in
+                    if f < 0 then
+                        -- case 4 or 10
+                        containsPointHelp rest xp yp (k + 1)
+
+                    else if f == 0 then
+                        -- case 19 or 20
+                        True
+
+                    else
+                        -- case 12 or 25
+                        containsPointHelp rest xp yp k
+
+                else if v2 == 0 && v1 < 0 then
+                    let
+                        f =
+                            u1 * v2 - u2 * v1
+                    in
+                    if f == 0 then
+                        -- case 17
+                        True
+
+                    else
+                        -- case 7 or 14
+                        containsPointHelp rest xp yp k
+
+                else if v1 == 0 && v2 < 0 then
+                    let
+                        f =
+                            u1 * v2 - u2 * v1
+                    in
+                    if f == 0 then
+                        -- case 18
+                        True
+
+                    else
+                        -- case 8 or 15
+                        containsPointHelp rest xp yp k
+
+                else if v1 == 0 && v2 == 0 then
+                    if u2 <= 0 && u1 >= 0 then
+                        -- case 1
+                        True
+
+                    else if u1 <= 0 && u2 >= 0 then
+                        -- case 2
+                        True
+
+                    else
+                        --  case 5, 6, 22, 23
+                        containsPointHelp rest xp yp k
+
+                else
+                    containsPointHelp rest xp yp k

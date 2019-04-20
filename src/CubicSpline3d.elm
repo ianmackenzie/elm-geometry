@@ -1085,10 +1085,13 @@ arcLength parameterizedSpline =
         |> ArcLengthParameterization.totalArcLength
 
 
-{-| Get the midpoint of the spline.
+{-| Get the midpoint of a spline.
 
     CubicSpline3d.midpoint parameterizedSpline
-    --> Point3d.fromCoordinates (2.750000000000003,2.0000000000000067,1.2500000000000033)
+    --> Point3d.fromCoordinates ( 2.75, 2, 1.25 )
+
+Note that this is the point half way along the spline by arc length, which is
+not in general the same as evaluating at a parameter value of 0.5.
 
 -}
 midpoint : ArcLengthParameterized units coordinates -> Point3d units coordinates
