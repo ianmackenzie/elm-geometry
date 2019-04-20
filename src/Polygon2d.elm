@@ -71,7 +71,7 @@ import Geometry.Types as Types
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
 import Polygon2d.Monotone as Monotone
-import Quantity exposing (Quantity, Squared)
+import Quantity exposing (Quantity(..), Squared)
 import Quantity.Extra as Quantity
 import Triangle2d exposing (Triangle2d)
 import TriangularMesh exposing (TriangularMesh)
@@ -615,12 +615,16 @@ triangulate polygon =
 This is an O(n) operation. The polygon can have holes and does not need to be convex.
 
 -}
-contains : Point2d -> Polygon2d -> Bool
+contains : Point2d units coordinates -> Polygon2d units coordinates -> Bool
 contains point polygon =
-    containsPointHelp (edges polygon) (Point2d.xCoordinate point) (Point2d.yCoordinate point) 0
+    let
+        ( Quantity x, Quantity y ) =
+            Point2d.coordinates point
+    in
+    containsPointHelp (edges polygon) x y 0
 
 
-containsPointHelp : List LineSegment2d -> Float -> Float -> Int -> Bool
+containsPointHelp : List (LineSegment2d units coordinates) -> Float -> Float -> Int -> Bool
 containsPointHelp edgeList xp yp k =
     -- Based on Hao, J.; Sun, J.; Chen, Y.; Cai, Q.; Tan, L. Optimal Reliable Point-in-Polygon Test and
     -- Differential Coding Boolean Operations on Polygons. Symmetry 2018, 10, 477.
@@ -634,10 +638,10 @@ containsPointHelp edgeList xp yp k =
                 ( p0, p1 ) =
                     LineSegment2d.endpoints edge
 
-                ( xi, yi ) =
+                ( Quantity xi, Quantity yi ) =
                     Point2d.coordinates p0
 
-                ( xi1, yi1 ) =
+                ( Quantity xi1, Quantity yi1 ) =
                     Point2d.coordinates p1
 
                 v1 =
