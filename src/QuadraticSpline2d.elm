@@ -836,8 +836,7 @@ arcLengthParameterized { maxError } spline =
             ArcLengthParameterization.build
                 { maxError = maxError
                 , derivativeMagnitude = derivativeMagnitude spline
-                , maxSecondDerivativeMagnitude =
-                    Vector2d.length (secondDerivative spline)
+                , maxSecondDerivativeMagnitude = Vector2d.length (secondDerivative spline)
                 }
     in
     ArcLengthParameterized
