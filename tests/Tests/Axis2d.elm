@@ -18,6 +18,7 @@ import Direction2d
 import Frame2d
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Length exposing (meters)
 import Point2d
 import Test exposing (Test)
 import Vector2d
@@ -69,15 +70,15 @@ moveToExample =
             let
                 axis =
                     Axis2d.withDirection Direction2d.y
-                        (Point2d.fromTuple ( 2, 3 ))
+                        (Point2d.fromTuple meters ( 2, 3 ))
 
                 newOrigin =
-                    Point2d.fromTuple ( 4, 5 )
+                    Point2d.fromTuple meters ( 4, 5 )
             in
             Axis2d.moveTo newOrigin axis
                 |> Expect.axis2d
                     (Axis2d.withDirection Direction2d.y
-                        (Point2d.fromTuple ( 4, 5 ))
+                        (Point2d.fromTuple meters ( 4, 5 ))
                     )
 
 
@@ -95,12 +96,12 @@ translateByExample =
         \() ->
             let
                 displacement =
-                    Vector2d.fromTuple ( 2, 3 )
+                    Vector2d.fromTuple meters ( 2, 3 )
             in
             Axis2d.translateBy displacement Axis2d.y
                 |> Expect.axis2d
                     (Axis2d.withDirection Direction2d.y
-                        (Point2d.fromTuple ( 2, 3 ))
+                        (Point2d.fromTuple meters ( 2, 3 ))
                     )
 
 
@@ -111,13 +112,13 @@ mirrorAcrossExample =
             let
                 axis =
                     Axis2d.through
-                        (Point2d.fromTuple ( 1, 2 ))
+                        (Point2d.fromTuple meters ( 1, 2 ))
                         (Direction2d.fromAngle (Angle.degrees 30))
             in
             Axis2d.mirrorAcross Axis2d.x axis
                 |> Expect.axis2d
                     (Axis2d.through
-                        (Point2d.fromTuple ( 1, -2 ))
+                        (Point2d.fromTuple meters ( 1, -2 ))
                         (Direction2d.fromAngle (Angle.degrees -30))
                     )
 
@@ -128,12 +129,12 @@ relativeToExample =
         \() ->
             let
                 originPoint =
-                    Point2d.fromTuple ( 2, 3 )
+                    Point2d.fromTuple meters ( 2, 3 )
             in
             Axis2d.relativeTo (Frame2d.atPoint originPoint) Axis2d.x
                 |> Expect.axis2d
                     (Axis2d.withDirection Direction2d.x
-                        (Point2d.fromTuple ( -2, -3 ))
+                        (Point2d.fromTuple meters ( -2, -3 ))
                     )
 
 
@@ -143,10 +144,10 @@ placeInExample =
         \() ->
             let
                 originPoint =
-                    Point2d.fromTuple ( 2, 3 )
+                    Point2d.fromTuple meters ( 2, 3 )
             in
             Axis2d.placeIn (Frame2d.atPoint originPoint) Axis2d.x
                 |> Expect.axis2d
                     (Axis2d.withDirection Direction2d.x
-                        (Point2d.fromTuple ( 2, 3 ))
+                        (Point2d.fromTuple meters ( 2, 3 ))
                     )

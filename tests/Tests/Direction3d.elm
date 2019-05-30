@@ -12,10 +12,12 @@ import Frame3d
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Length exposing (meters)
 import Point3d
 import Quantity
 import Test exposing (Test)
 import Vector3d
+import Volume exposing (cubicMeters)
 
 
 angleFromAndEqualWithinAreConsistent : Test
@@ -48,11 +50,7 @@ orthonormalizeProducesValidFrameBasis =
                 tripleProduct =
                     v1 |> Vector3d.cross v2 |> Vector3d.dot v3
             in
-            if
-                Quantity.abs tripleProduct
-                    |> Quantity.greaterThan
-                        (Quantity.cubed (Quantity.float 1.0e-2))
-            then
+            if Quantity.abs tripleProduct |> Quantity.greaterThan (cubicMeters 1.0e-6) then
                 case Direction3d.orthonormalize v1 v2 v3 of
                     Just ( xDirection, yDirection, zDirection ) ->
                         Expect.validFrame3d
@@ -112,13 +110,13 @@ orthonormalizingCoplanarVectorsReturnsNothing =
         (\() ->
             let
                 v1 =
-                    Vector3d.fromTuple ( 1, 0, 0 )
+                    Vector3d.fromTuple meters ( 1, 0, 0 )
 
                 v2 =
-                    Vector3d.fromTuple ( 2, 3, 0 )
+                    Vector3d.fromTuple meters ( 2, 3, 0 )
 
                 v3 =
-                    Vector3d.fromTuple ( -1, 2, 0 )
+                    Vector3d.fromTuple meters ( -1, 2, 0 )
             in
             Expect.equal Nothing (Direction3d.orthonormalize v1 v2 v3)
         )

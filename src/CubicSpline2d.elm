@@ -9,8 +9,8 @@
 
 module CubicSpline2d exposing
     ( CubicSpline2d
-    , with, fromEndpoints, fromQuadraticSpline
-    , startPoint, endPoint, startControlPoint, endControlPoint, startDerivative, endDerivative, boundingBox
+    , fromControlPoints, fromEndpoints, fromQuadraticSpline
+    , startPoint, endPoint, firstControlPoint, secondControlPoint, thirdControlPoint, fourthControlPoint, startDerivative, endDerivative, boundingBox
     , pointOn, pointsAt
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, tangentDirectionsAt, sample, samplesAt
@@ -23,7 +23,7 @@ module CubicSpline2d exposing
     )
 
 {-| A `CubicSpline2d` is a cubic [Bézier curve](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)
-in 2D defined by a start point, end point and two control points. This module
+in 2D defined by a start point, end point and two inner control points. This module
 contains functionality for
 
   - Constructing splines
@@ -37,12 +37,12 @@ contains functionality for
 
 # Constructors
 
-@docs with, fromEndpoints, fromQuadraticSpline
+@docs fromControlPoints, fromEndpoints, fromQuadraticSpline
 
 
 # Properties
 
-@docs startPoint, endPoint, startControlPoint, endControlPoint, startDerivative, endDerivative, boundingBox
+@docs startPoint, endPoint, firstControlPoint, secondControlPoint, thirdControlPoint, fourthControlPoint, startDerivative, endDerivative, boundingBox
 
 
 # Evaluation
@@ -111,30 +111,24 @@ type alias CubicSpline2d units coordinates =
     Types.CubicSpline2d units coordinates
 
 
-{-| Construct a spline from its endpoints and control points:
+{-| Construct a spline from its four control points:
 
     exampleSpline =
-        CubicSpline2d.with
-            { startPoint =
-                Point2d.fromCoordinates ( 1, 1 )
-            , startControlPoint =
-                Point2d.fromCoordinates ( 3, 4 )
-            , endControlPoint =
-                Point2d.fromCoordinates ( 5, 1 )
-            , endPoint =
-                Point2d.fromCoordinates ( 7, 4 )
-            }
+        CubicSpline2d.fromControlPoints
+            (Point2d.fromTuple meters ( 1, 1 ))
+            (Point2d.fromTuple meters ( 3, 4 ))
+            (Point2d.fromTuple meters ( 5, 1 ))
+            (Point2d.fromTuple meters ( 7, 4 ))
 
 -}
-with :
-    { startPoint : Point2d units coordinates
-    , startControlPoint : Point2d units coordinates
-    , endControlPoint : Point2d units coordinates
-    , endPoint : Point2d units coordinates
-    }
-    -> CubicSpline2d units coordinates
-with =
+fromControlPoints : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> CubicSpline2d units coordinates
+fromControlPoints p1 p2 p3 p4 =
     Types.CubicSpline2d
+        { firstControlPoint = p1
+        , secondControlPoint = p2
+        , thirdControlPoint = p3
+        , fourthControlPoint = p4
+        }
 
 
 {-| Construct a spline from a given start point with a given start derivative,
@@ -147,31 +141,13 @@ cases the length of each derivative vector should be roughly equal to the length
 of the resulting spline.
 
 -}
-fromEndpoints :
-    { startPoint : Point2d units coordinates
-    , startDerivative : Vector2d units coordinates
-    , endPoint : Point2d units coordinates
-    , endDerivative : Vector2d units coordinates
-    }
-    -> CubicSpline2d units coordinates
-fromEndpoints arguments =
-    let
-        startControlPoint_ =
-            arguments.startPoint
-                |> Point2d.translateBy
-                    (Vector2d.scaleBy (1 / 3) arguments.startDerivative)
-
-        endControlPoint_ =
-            arguments.endPoint
-                |> Point2d.translateBy
-                    (Vector2d.scaleBy (-1 / 3) arguments.endDerivative)
-    in
-    with
-        { startPoint = arguments.startPoint
-        , startControlPoint = startControlPoint_
-        , endControlPoint = endControlPoint_
-        , endPoint = arguments.endPoint
-        }
+fromEndpoints : Point2d units coordinates -> Vector2d units coordinates -> Point2d units coordinates -> Vector2d units coordinates -> CubicSpline2d units coordinates
+fromEndpoints givenStartPoint givenStartDerivative givenEndPoint givenEndDerivative =
+    fromControlPoints
+        givenStartPoint
+        (givenStartPoint |> Point2d.translateBy (Vector2d.scaleBy (1 / 3) givenStartDerivative))
+        (givenEndPoint |> Point2d.translateBy (Vector2d.scaleBy (-1 / 3) givenEndDerivative))
+        givenEndPoint
 
 
 {-| Convert a quadratic spline into the equivalent cubic spline (every quadratic
@@ -203,73 +179,74 @@ spline can be represented exactly as a cubic spline).
 fromQuadraticSpline : QuadraticSpline2d units coordinates -> CubicSpline2d units coordinates
 fromQuadraticSpline quadraticSpline =
     let
-        startPoint_ =
-            QuadraticSpline2d.startPoint quadraticSpline
+        quadraticFirstControlPoint =
+            QuadraticSpline2d.firstControlPoint quadraticSpline
 
-        controlPoint_ =
-            QuadraticSpline2d.controlPoint quadraticSpline
+        quadraticSecondControlPoint =
+            QuadraticSpline2d.secondControlPoint quadraticSpline
 
-        endPoint_ =
-            QuadraticSpline2d.endPoint quadraticSpline
+        quadraticThirdControlPoint =
+            QuadraticSpline2d.thirdControlPoint quadraticSpline
 
-        startControlPoint_ =
-            Point2d.interpolateFrom startPoint_ controlPoint_ (2 / 3)
+        cubicFirstControlPoint =
+            quadraticFirstControlPoint
 
-        endControlPoint_ =
-            Point2d.interpolateFrom endPoint_ controlPoint_ (2 / 3)
+        cubicSecondControlPoint =
+            Point2d.interpolateFrom quadraticFirstControlPoint quadraticSecondControlPoint (2 / 3)
+
+        cubicThirdControlPoint =
+            Point2d.interpolateFrom quadraticThirdControlPoint quadraticSecondControlPoint (2 / 3)
+
+        cubicFourthControlPoint =
+            quadraticThirdControlPoint
     in
-    with
-        { startPoint = startPoint_
-        , startControlPoint = startControlPoint_
-        , endControlPoint = endControlPoint_
-        , endPoint = endPoint_
-        }
+    fromControlPoints
+        cubicFirstControlPoint
+        cubicSecondControlPoint
+        cubicThirdControlPoint
+        cubicFourthControlPoint
 
 
-{-| Get the start point of a spline.
-
-    CubicSpline2d.startPoint exampleSpline
-    --> Point2d.fromCoordinates ( 1, 1 )
-
+{-| Get the start point of a spline. Equal to [`firstControlPoint`](#firstControlPoint).
 -}
 startPoint : CubicSpline2d units coordinates -> Point2d units coordinates
 startPoint (Types.CubicSpline2d spline) =
-    spline.startPoint
+    spline.firstControlPoint
 
 
-{-| Get the end point of a spline.
-
-    CubicSpline2d.endPoint exampleSpline
-    --> Point2d.fromCoordinates ( 7, 4 )
-
+{-| Get the end point of a spline. Equal to [`fourthControlPoint`](#fourthControlPoint).
 -}
 endPoint : CubicSpline2d units coordinates -> Point2d units coordinates
 endPoint (Types.CubicSpline2d spline) =
-    spline.endPoint
+    spline.fourthControlPoint
 
 
-{-| Get the start control point of a spline (the control point next to the
-start point).
-
-    CubicSpline2d.startControlPoint exampleSpline
-    --> Point2d.fromCoordinates ( 3, 4 )
-
+{-| Get the first control point of the spline. Equal to [`startPoint`](#startPoint).
 -}
-startControlPoint : CubicSpline2d units coordinates -> Point2d units coordinates
-startControlPoint (Types.CubicSpline2d spline) =
-    spline.startControlPoint
+firstControlPoint : CubicSpline2d units coordinates -> Point2d units coordinates
+firstControlPoint (Types.CubicSpline2d spline) =
+    spline.firstControlPoint
 
 
-{-| Get the end control point of a spline (the control point next to the
-end point).
-
-    CubicSpline2d.endControlPoint exampleSpline
-    --> Point2d.fromCoordinates ( 5, 1 )
-
+{-| Get the second control point of the spline.
 -}
-endControlPoint : CubicSpline2d units coordinates -> Point2d units coordinates
-endControlPoint (Types.CubicSpline2d spline) =
-    spline.endControlPoint
+secondControlPoint : CubicSpline2d units coordinates -> Point2d units coordinates
+secondControlPoint (Types.CubicSpline2d spline) =
+    spline.secondControlPoint
+
+
+{-| Get the third control point of the spline.
+-}
+thirdControlPoint : CubicSpline2d units coordinates -> Point2d units coordinates
+thirdControlPoint (Types.CubicSpline2d spline) =
+    spline.thirdControlPoint
+
+
+{-| Get the fourth and last control point of the spline. Equal to [`endPoint`](#endPoint).
+-}
+fourthControlPoint : CubicSpline2d units coordinates -> Point2d units coordinates
+fourthControlPoint (Types.CubicSpline2d spline) =
+    spline.fourthControlPoint
 
 
 {-| Get the start derivative of a spline. This is equal to three times the
@@ -281,7 +258,7 @@ vector from the spline's start point to its start control point.
 -}
 startDerivative : CubicSpline2d units coordinates -> Vector2d units coordinates
 startDerivative spline =
-    Vector2d.from (startPoint spline) (startControlPoint spline)
+    Vector2d.from (firstControlPoint spline) (secondControlPoint spline)
         |> Vector2d.scaleBy 3
 
 
@@ -294,7 +271,7 @@ from the spline's end control point to its end point.
 -}
 endDerivative : CubicSpline2d units coordinates -> Vector2d units coordinates
 endDerivative spline =
-    Vector2d.from (endControlPoint spline) (endPoint spline)
+    Vector2d.from (thirdControlPoint spline) (fourthControlPoint spline)
         |> Vector2d.scaleBy 3
 
 
@@ -316,16 +293,16 @@ boundingBox : CubicSpline2d units coordinates -> BoundingBox2d units coordinates
 boundingBox spline =
     let
         ( x1, y1 ) =
-            Point2d.coordinates (startPoint spline)
+            Point2d.coordinates (firstControlPoint spline)
 
         ( x2, y2 ) =
-            Point2d.coordinates (startControlPoint spline)
+            Point2d.coordinates (secondControlPoint spline)
 
         ( x3, y3 ) =
-            Point2d.coordinates (endControlPoint spline)
+            Point2d.coordinates (thirdControlPoint spline)
 
         ( x4, y4 ) =
-            Point2d.coordinates (endPoint spline)
+            Point2d.coordinates (fourthControlPoint spline)
     in
     BoundingBox2d.fromExtrema
         { minX = Quantity.min (Quantity.min x1 x2) (Quantity.min x3 x4)
@@ -354,16 +331,16 @@ pointOn spline parameterValue =
             ParameterValue.value parameterValue
 
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            startControlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endControlPoint spline
+            thirdControlPoint spline
 
         p4 =
-            endPoint spline
+            fourthControlPoint spline
 
         q1 =
             Point2d.interpolateFrom p1 p2 t
@@ -645,12 +622,11 @@ versa.
 -}
 reverse : CubicSpline2d units coordinates -> CubicSpline2d units coordinates
 reverse spline =
-    with
-        { startPoint = endPoint spline
-        , startControlPoint = endControlPoint spline
-        , endControlPoint = startControlPoint spline
-        , endPoint = startPoint spline
-        }
+    fromControlPoints
+        (fourthControlPoint spline)
+        (thirdControlPoint spline)
+        (secondControlPoint spline)
+        (firstControlPoint spline)
 
 
 {-| Scale a spline about the given center point by the given scale.
@@ -804,12 +780,11 @@ placeIn frame spline =
 
 mapControlPoints : (Point2d units1 coordinates1 -> Point2d units2 coordinates2) -> CubicSpline2d units1 coordinates1 -> CubicSpline2d units2 coordinates2
 mapControlPoints function spline =
-    with
-        { startPoint = function (startPoint spline)
-        , startControlPoint = function (startControlPoint spline)
-        , endControlPoint = function (endControlPoint spline)
-        , endPoint = function (endPoint spline)
-        }
+    fromControlPoints
+        (function (firstControlPoint spline))
+        (function (secondControlPoint spline))
+        (function (thirdControlPoint spline))
+        (function (fourthControlPoint spline))
 
 
 {-| Split a spline into two roughly equal halves.
@@ -882,16 +857,16 @@ splitAt parameterValue spline =
             ParameterValue.value parameterValue
 
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            startControlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endControlPoint spline
+            thirdControlPoint spline
 
         p4 =
-            endPoint spline
+            fourthControlPoint spline
 
         q1 =
             Point2d.interpolateFrom p1 p2 t
@@ -911,18 +886,8 @@ splitAt parameterValue spline =
         s =
             Point2d.interpolateFrom r1 r2 t
     in
-    ( with
-        { startPoint = p1
-        , startControlPoint = q1
-        , endControlPoint = r1
-        , endPoint = s
-        }
-    , with
-        { startPoint = s
-        , startControlPoint = r2
-        , endControlPoint = q3
-        , endPoint = p4
-        }
+    ( fromControlPoints p1 q1 r1 s
+    , fromControlPoints s r2 q3 p4
     )
 
 
@@ -1120,16 +1085,16 @@ firstDerivative spline parameterValue =
             ParameterValue.value parameterValue
 
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            startControlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endControlPoint spline
+            thirdControlPoint spline
 
         p4 =
-            endPoint spline
+            fourthControlPoint spline
 
         ( x1, y1 ) =
             Point2d.coordinates p1
@@ -1175,9 +1140,8 @@ firstDerivative spline parameterValue =
             Quantity.interpolateFrom vy2 vy3 t
     in
     Vector2d.fromComponents
-        ( Quantity.multiplyBy 3 (Quantity.interpolateFrom wx1 wx2 t)
-        , Quantity.multiplyBy 3 (Quantity.interpolateFrom wy1 wy2 t)
-        )
+        (Quantity.multiplyBy 3 (Quantity.interpolateFrom wx1 wx2 t))
+        (Quantity.multiplyBy 3 (Quantity.interpolateFrom wy1 wy2 t))
 
 
 {-| Evaluate the first derivative of a spline at a given set of parameter
@@ -1216,16 +1180,16 @@ secondDerivative spline parameterValue =
             ParameterValue.value parameterValue
 
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            startControlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endControlPoint spline
+            thirdControlPoint spline
 
         p4 =
-            endPoint spline
+            fourthControlPoint spline
 
         u1 =
             Vector2d.from p1 p2
@@ -1273,16 +1237,16 @@ thirdDerivative : CubicSpline2d units coordinates -> Vector2d units coordinates
 thirdDerivative spline =
     let
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            startControlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endControlPoint spline
+            thirdControlPoint spline
 
         p4 =
-            endPoint spline
+            fourthControlPoint spline
 
         u1 =
             Vector2d.from p1 p2
@@ -1315,16 +1279,16 @@ maxSecondDerivativeMagnitude : CubicSpline2d units coordinates -> Quantity Float
 maxSecondDerivativeMagnitude spline =
     let
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            startControlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endControlPoint spline
+            thirdControlPoint spline
 
         p4 =
-            endPoint spline
+            fourthControlPoint spline
 
         u1 =
             Vector2d.from p1 p2
@@ -1348,16 +1312,16 @@ derivativeMagnitude : CubicSpline2d units coordinates -> ParameterValue -> Quant
 derivativeMagnitude spline =
     let
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            startControlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endControlPoint spline
+            thirdControlPoint spline
 
         p4 =
-            endPoint spline
+            fourthControlPoint spline
 
         ( x1, y1 ) =
             Point2d.coordinates p1

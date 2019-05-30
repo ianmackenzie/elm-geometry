@@ -4,7 +4,7 @@ module Tests.EllipticalArc2d exposing
     , transformations
     )
 
-import Angle
+import Angle exposing (degrees, radians)
 import Arc.SweptAngle as SweptAngle
 import Arc2d
 import EllipticalArc2d
@@ -13,8 +13,9 @@ import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Geometry.Test as Test exposing (..)
+import Length exposing (meters)
 import Point2d
-import Quantity
+import Quantity exposing (zero)
 import Test exposing (Test)
 import Tests.Generic.Curve2d
 import Vector2d
@@ -34,8 +35,8 @@ reproducibleArc =
         )
         Fuzz.point2d
         Fuzz.direction2d
-        (Fuzz.map Quantity.float (Fuzz.floatRange 0.1 10))
-        (Fuzz.map Angle.degrees <|
+        (Fuzz.map meters (Fuzz.floatRange 0.1 10))
+        (Fuzz.map degrees <|
             Fuzz.oneOf
                 [ Fuzz.floatRange 1 179
                 , Fuzz.floatRange 181 359
@@ -60,25 +61,13 @@ fromEndpointsReplicatesArc =
                     Arc2d.sweptAngle arc
 
                 sweptAngle =
-                    if
-                        arcSweptAngle
-                            |> Quantity.greaterThanOrEqualTo
-                                (Angle.radians pi)
-                    then
+                    if arcSweptAngle |> Quantity.greaterThanOrEqualTo (radians pi) then
                         SweptAngle.largePositive
 
-                    else if
-                        arcSweptAngle
-                            |> Quantity.greaterThanOrEqualTo
-                                Quantity.zero
-                    then
+                    else if arcSweptAngle |> Quantity.greaterThanOrEqualTo zero then
                         SweptAngle.smallPositive
 
-                    else if
-                        arcSweptAngle
-                            |> Quantity.greaterThanOrEqualTo
-                                (Angle.radians -pi)
-                    then
+                    else if arcSweptAngle |> Quantity.greaterThanOrEqualTo (radians -pi) then
                         SweptAngle.smallNegative
 
                     else

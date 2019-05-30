@@ -9,7 +9,7 @@
 
 module Polygon2d exposing
     ( Polygon2d
-    , singleLoop, with, convexHull
+    , singleLoop, withHoles, convexHull
     , outerLoop, innerLoops, vertices, edges, perimeter, area, boundingBox
     , contains
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
@@ -31,7 +31,7 @@ holes. This module contains a variety of polygon-related functionality, such as
 
 # Constructors
 
-@docs singleLoop, with, convexHull
+@docs singleLoop, withHoles, convexHull
 
 
 # Properties
@@ -98,8 +98,7 @@ counterclockwiseArea vertices_ =
         first :: second :: rest ->
             let
                 segmentArea start end =
-                    Triangle2d.counterclockwiseArea
-                        (Triangle2d.fromVertices ( first, start, end ))
+                    Triangle2d.counterclockwiseArea (Triangle2d.fromVertices first start end)
 
                 segmentAreas =
                     List.map2 segmentArea (second :: rest) rest
@@ -148,11 +147,8 @@ order they will be reversed.
 
 -}
 singleLoop : List (Point2d units coordinates) -> Polygon2d units coordinates
-singleLoop vertices_ =
-    Types.Polygon2d
-        { outerLoop = makeOuterLoop vertices_
-        , innerLoops = []
-        }
+singleLoop givenOuterLoop =
+    withHoles [] givenOuterLoop
 
 
 {-| Construct a polygon with holes from one outer loop and a list of inner
@@ -173,10 +169,7 @@ loops. The loops must not touch or intersect each other.
         ]
 
     squareWithHole =
-        Polygon2d.with
-            { outerLoop = outerLoop
-            , innerLoops = [ innerLoop ]
-            }
+        Polygon2d.withHoles [ innerLoop ] outerLoop
 
 As with `Polygon2d.singleLoop`, the last vertex of each loop is considered to be
 connected back to the first. Vertices of the outer loop should ideally be
@@ -184,11 +177,11 @@ provided in counterclockwise order and vertices of the inner loops should
 ideally be provided in clockwise order.
 
 -}
-with : { outerLoop : List (Point2d units coordinates), innerLoops : List (List (Point2d units coordinates)) } -> Polygon2d units coordinates
-with arguments =
+withHoles : List (List (Point2d units coordinates)) -> List (Point2d units coordinates) -> Polygon2d units coordinates
+withHoles givenInnerLoops givenOuterLoop =
     Types.Polygon2d
-        { outerLoop = makeOuterLoop arguments.outerLoop
-        , innerLoops = List.map makeInnerLoop arguments.innerLoops
+        { outerLoop = makeOuterLoop givenOuterLoop
+        , innerLoops = List.map makeInnerLoop givenInnerLoops
         }
 
 

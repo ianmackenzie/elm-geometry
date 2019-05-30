@@ -10,7 +10,8 @@ import Expect
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
-import Quantity
+import Length exposing (meters)
+import Quantity exposing (zero)
 import Test exposing (Test)
 import Tests.QuadraticSpline3d
 import Vector3d
@@ -34,12 +35,7 @@ fromEndpointsReproducesSpline =
                 endDerivative =
                     CubicSpline3d.endDerivative spline
             in
-            CubicSpline3d.fromEndpoints
-                { startPoint = startPoint
-                , startDerivative = startDerivative
-                , endPoint = endPoint
-                , endDerivative = endDerivative
-                }
+            CubicSpline3d.fromEndpoints startPoint startDerivative endPoint endDerivative
                 |> Expect.cubicSpline3d spline
         )
 
@@ -51,10 +47,9 @@ arcLengthMatchesAnalytical =
         (\quadraticSpline ->
             quadraticSpline
                 |> CubicSpline3d.fromQuadraticSpline
-                |> CubicSpline3d.arcLengthParameterized
-                    { maxError = Quantity.float 1.0e-3 }
+                |> CubicSpline3d.arcLengthParameterized { maxError = meters 1.0e-3 }
                 |> CubicSpline3d.arcLength
-                |> Expect.quantityWithin (Quantity.float 1.0e-3)
+                |> Expect.quantityWithin (meters 1.0e-3)
                     (Tests.QuadraticSpline3d.analyticalLength quadraticSpline)
         )
 
@@ -66,9 +61,7 @@ pointAtZeroLengthIsStart =
         (\spline ->
             let
                 parameterizedCurve =
-                    spline
-                        |> CubicSpline3d.arcLengthParameterized
-                            { maxError = Quantity.float 1.0e-3 }
+                    spline |> CubicSpline3d.arcLengthParameterized { maxError = meters 1.0e-3 }
             in
             CubicSpline3d.pointAlong parameterizedCurve Quantity.zero
                 |> Expect.equal (Just (CubicSpline3d.startPoint spline))
@@ -82,9 +75,7 @@ pointAtArcLengthIsEnd =
         (\spline ->
             let
                 parameterizedCurve =
-                    spline
-                        |> CubicSpline3d.arcLengthParameterized
-                            { maxError = Quantity.float 1.0e-3 }
+                    spline |> CubicSpline3d.arcLengthParameterized { maxError = meters 1.0e-3 }
 
                 arcLength =
                     CubicSpline3d.arcLength parameterizedCurve

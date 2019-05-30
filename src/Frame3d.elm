@@ -323,9 +323,9 @@ is equivalent to
     Frame3d.atPoint (Point3d.fromCoordinates ( x, y, z ))
 
 -}
-atCoordinates : ( Quantity Float units, Quantity Float units, Quantity Float units ) -> Frame3d units coordinates1 coordinates2
-atCoordinates coordinates =
-    atPoint (Point3d.fromCoordinates coordinates)
+atCoordinates : Quantity Float units -> Quantity Float units -> Quantity Float units -> Frame3d units coordinates1 coordinates2
+atCoordinates x y z =
+    atPoint (Point3d.fromCoordinates x y z)
 
 
 {-| Get the origin point of a given frame.

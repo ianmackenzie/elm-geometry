@@ -861,52 +861,52 @@ arc3d first =
 quadraticSpline2d : QuadraticSpline2d units coordinates -> QuadraticSpline2d units coordinates -> Expectation
 quadraticSpline2d first =
     Expect.all
-        [ QuadraticSpline2d.startPoint
-            >> point2d (QuadraticSpline2d.startPoint first)
-        , QuadraticSpline2d.controlPoint
-            >> point2d (QuadraticSpline2d.controlPoint first)
-        , QuadraticSpline2d.endPoint
-            >> point2d (QuadraticSpline2d.endPoint first)
+        [ QuadraticSpline2d.firstControlPoint
+            >> point2d (QuadraticSpline2d.firstControlPoint first)
+        , QuadraticSpline2d.secondControlPoint
+            >> point2d (QuadraticSpline2d.secondControlPoint first)
+        , QuadraticSpline2d.thirdControlPoint
+            >> point2d (QuadraticSpline2d.thirdControlPoint first)
         ]
 
 
 quadraticSpline3d : QuadraticSpline3d units coordinates -> QuadraticSpline3d units coordinates -> Expectation
 quadraticSpline3d first =
     Expect.all
-        [ QuadraticSpline3d.startPoint
-            >> point3d (QuadraticSpline3d.startPoint first)
-        , QuadraticSpline3d.controlPoint
-            >> point3d (QuadraticSpline3d.controlPoint first)
-        , QuadraticSpline3d.endPoint
-            >> point3d (QuadraticSpline3d.endPoint first)
+        [ QuadraticSpline3d.firstControlPoint
+            >> point3d (QuadraticSpline3d.firstControlPoint first)
+        , QuadraticSpline3d.secondControlPoint
+            >> point3d (QuadraticSpline3d.secondControlPoint first)
+        , QuadraticSpline3d.thirdControlPoint
+            >> point3d (QuadraticSpline3d.thirdControlPoint first)
         ]
 
 
 cubicSpline2d : CubicSpline2d units coordinates -> CubicSpline2d units coordinates -> Expectation
 cubicSpline2d first =
     Expect.all
-        [ CubicSpline2d.startPoint
-            >> point2d (CubicSpline2d.startPoint first)
-        , CubicSpline2d.startControlPoint
-            >> point2d (CubicSpline2d.startControlPoint first)
-        , CubicSpline2d.endControlPoint
-            >> point2d (CubicSpline2d.endControlPoint first)
-        , CubicSpline2d.endPoint
-            >> point2d (CubicSpline2d.endPoint first)
+        [ CubicSpline2d.firstControlPoint
+            >> point2d (CubicSpline2d.firstControlPoint first)
+        , CubicSpline2d.secondControlPoint
+            >> point2d (CubicSpline2d.secondControlPoint first)
+        , CubicSpline2d.thirdControlPoint
+            >> point2d (CubicSpline2d.thirdControlPoint first)
+        , CubicSpline2d.fourthControlPoint
+            >> point2d (CubicSpline2d.fourthControlPoint first)
         ]
 
 
 cubicSpline3d : CubicSpline3d units coordinates -> CubicSpline3d units coordinates -> Expectation
 cubicSpline3d first =
     Expect.all
-        [ CubicSpline3d.startPoint
-            >> point3d (CubicSpline3d.startPoint first)
-        , CubicSpline3d.startControlPoint
-            >> point3d (CubicSpline3d.startControlPoint first)
-        , CubicSpline3d.endControlPoint
-            >> point3d (CubicSpline3d.endControlPoint first)
-        , CubicSpline3d.endPoint
-            >> point3d (CubicSpline3d.endPoint first)
+        [ CubicSpline3d.firstControlPoint
+            >> point3d (CubicSpline3d.firstControlPoint first)
+        , CubicSpline3d.secondControlPoint
+            >> point3d (CubicSpline3d.secondControlPoint first)
+        , CubicSpline3d.thirdControlPoint
+            >> point3d (CubicSpline3d.thirdControlPoint first)
+        , CubicSpline3d.fourthControlPoint
+            >> point3d (CubicSpline3d.fourthControlPoint first)
         ]
 
 

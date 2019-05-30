@@ -286,11 +286,8 @@ fromEndpoints arguments =
 
                 computedCenterPoint =
                     Point2d.fromCoordinatesIn temporaryFrame
-                        ( Quantity.multiplyBy (1 - Angle.cos computedStartAngle)
-                            arguments.xRadius
-                        , Quantity.multiplyBy -(Angle.sin computedStartAngle)
-                            arguments.yRadius
-                        )
+                        (Quantity.multiplyBy (1 - Angle.cos computedStartAngle) arguments.xRadius)
+                        (Quantity.multiplyBy -(Angle.sin computedStartAngle) arguments.yRadius)
 
                 adjustedStartAngle =
                     if
@@ -416,9 +413,8 @@ pointOn arc parameterValue =
                     (Quantity.multiplyBy t (sweptAngle arc))
     in
     Point2d.fromCoordinatesIn (axes arc)
-        ( Quantity.rCosTheta (xRadius arc) theta
-        , Quantity.rSinTheta (yRadius arc) theta
-        )
+        (Quantity.rCosTheta (xRadius arc) theta)
+        (Quantity.rSinTheta (yRadius arc) theta)
 
 
 {-| Get points along an elliptical arc at a given set of parameter values:
@@ -465,11 +461,8 @@ firstDerivative arc parameterValue =
             startAngle arc |> Quantity.plus (Quantity.multiplyBy t deltaTheta)
     in
     Vector2d.fromComponentsIn (axes arc)
-        ( Quantity.rTheta (xRadius arc) deltaTheta
-            |> Quantity.multiplyBy -(Angle.sin theta)
-        , Quantity.rTheta (yRadius arc) deltaTheta
-            |> Quantity.multiplyBy (Angle.cos theta)
-        )
+        (Quantity.rTheta (xRadius arc) deltaTheta |> Quantity.multiplyBy -(Angle.sin theta))
+        (Quantity.rTheta (yRadius arc) deltaTheta |> Quantity.multiplyBy (Angle.cos theta))
 
 
 {-| Evaluate the first derivative of an elliptical arc at a given set of
@@ -619,7 +612,7 @@ tangentDirection nondegenerateArc parameterValue =
                 dy =
                     Quantity.ratio vy norm
             in
-            Direction2d.unsafeFromComponentsIn (axes arc) ( dx, dy )
+            Direction2d.unsafeFromComponentsIn (axes arc) dx dy
 
         Vertical verticalArc ->
             if Angle.cos angle >= 0 then

@@ -340,10 +340,9 @@ pointOn (Types.Arc3d arc) parameterValue =
                 Quantity.multiplyBy t arcSignedLength
         in
         Point3d.fromCoordinates
-            ( x0 |> Quantity.plus (Quantity.multiplyBy x1 distance)
-            , y0 |> Quantity.plus (Quantity.multiplyBy y1 distance)
-            , z0 |> Quantity.plus (Quantity.multiplyBy z1 distance)
-            )
+            (x0 |> Quantity.plus (Quantity.multiplyBy x1 distance))
+            (y0 |> Quantity.plus (Quantity.multiplyBy y1 distance))
+            (z0 |> Quantity.plus (Quantity.multiplyBy z1 distance))
 
     else
         let
@@ -370,10 +369,9 @@ pointOn (Types.Arc3d arc) parameterValue =
                     Quantity.multiplyBy (1 - Angle.cos theta) arcRadius
         in
         Point3d.fromCoordinates
-            ( x0 |> Quantity.plus (Quantity.aXbY x1 x x2 y)
-            , y0 |> Quantity.plus (Quantity.aXbY y1 x y2 y)
-            , z0 |> Quantity.plus (Quantity.aXbY z1 x z2 y)
-            )
+            (x0 |> Quantity.plus (Quantity.aXbY x1 x x2 y))
+            (y0 |> Quantity.plus (Quantity.aXbY y1 x y2 y))
+            (z0 |> Quantity.plus (Quantity.aXbY z1 x z2 y))
 
 
 {-| Get points along an arc at a given set of parameter values.
@@ -429,13 +427,9 @@ firstDerivative (Types.Arc3d arc) =
                 Angle.sin angle
         in
         Vector3d.fromComponents
-            ( arcSignedLength
-                |> Quantity.multiplyBy (cosAngle * x1 + sinAngle * x2)
-            , arcSignedLength
-                |> Quantity.multiplyBy (cosAngle * y1 + sinAngle * y2)
-            , arcSignedLength
-                |> Quantity.multiplyBy (cosAngle * z1 + sinAngle * z2)
-            )
+            (arcSignedLength |> Quantity.multiplyBy (cosAngle * x1 + sinAngle * x2))
+            (arcSignedLength |> Quantity.multiplyBy (cosAngle * y1 + sinAngle * y2))
+            (arcSignedLength |> Quantity.multiplyBy (cosAngle * z1 + sinAngle * z2))
 
 
 {-| Evaluate the first derivative of an arc at a range of parameter values.
@@ -544,10 +538,9 @@ tangentDirection (Nondegenerate (Types.Arc3d arc)) parameterValue =
             Angle.sin angle
     in
     Direction3d.unsafeFromComponents
-        ( cosAngle * x1 + sinAngle * x2
-        , cosAngle * y1 + sinAngle * y2
-        , cosAngle * z1 + sinAngle * z2
-        )
+        (cosAngle * x1 + sinAngle * x2)
+        (cosAngle * y1 + sinAngle * y2)
+        (cosAngle * z1 + sinAngle * z2)
 
 
 {-| Get tangent directions to a nondegenerate arc at a given set of parameter
@@ -732,16 +725,14 @@ reverse ((Types.Arc3d arc) as arc_) =
         , signedLength = Quantity.negate arc.signedLength
         , xDirection =
             Direction3d.unsafeFromComponents
-                ( x1 * cosAngle + x2 * sinAngle
-                , y1 * cosAngle + y2 * sinAngle
-                , z1 * cosAngle + z2 * sinAngle
-                )
+                (x1 * cosAngle + x2 * sinAngle)
+                (y1 * cosAngle + y2 * sinAngle)
+                (z1 * cosAngle + z2 * sinAngle)
         , yDirection =
             Direction3d.unsafeFromComponents
-                ( x2 * cosAngle - x1 * sinAngle
-                , y2 * cosAngle - y1 * sinAngle
-                , z2 * cosAngle - z1 * sinAngle
-                )
+                (x2 * cosAngle - x1 * sinAngle)
+                (y2 * cosAngle - y1 * sinAngle)
+                (z2 * cosAngle - z1 * sinAngle)
         }
 
 

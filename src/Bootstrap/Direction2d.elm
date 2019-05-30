@@ -18,9 +18,9 @@ import Geometry.Types exposing (..)
 import Quantity exposing (Quantity)
 
 
-unsafeFromComponents : ( Float, Float ) -> Direction2d coordinates
-unsafeFromComponents givenComponents =
-    Direction2d givenComponents
+unsafeFromComponents : Float -> Float -> Direction2d coordinates
+unsafeFromComponents x y =
+    Direction2d ( x, y )
 
 
 components : Direction2d coordinates -> ( Float, Float )
@@ -34,7 +34,7 @@ reverse direction =
         ( x, y ) =
             components direction
     in
-    unsafeFromComponents ( -x, -y )
+    unsafeFromComponents -x -y
 
 
 perpendicularTo : Direction2d coordinates -> Direction2d coordinates
@@ -43,4 +43,4 @@ perpendicularTo direction =
         ( x, y ) =
             components direction
     in
-    unsafeFromComponents ( -y, x )
+    unsafeFromComponents -y x

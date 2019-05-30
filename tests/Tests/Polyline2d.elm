@@ -14,6 +14,7 @@ import Expect
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Length exposing (meters)
 import Point2d
 import Polyline2d
 import Test exposing (Test)
@@ -66,14 +67,14 @@ centroidOfRightAngle =
             let
                 angle =
                     Polyline2d.fromVertices
-                        [ Point2d.fromTuple ( 0, 0 )
-                        , Point2d.fromTuple ( armLength, 0 )
-                        , Point2d.fromTuple ( armLength, armLength )
+                        [ Point2d.fromTuple meters ( 0, 0 )
+                        , Point2d.fromTuple meters ( armLength, 0 )
+                        , Point2d.fromTuple meters ( armLength, armLength )
                         ]
             in
             Polyline2d.centroid angle
                 |> Expect.just Expect.point2d
-                    (Point2d.fromTuple ( 0.75 * armLength, 0.25 * armLength ))
+                    (Point2d.fromTuple meters ( 0.75 * armLength, 0.25 * armLength ))
 
 
 centroidOfStepShape : Test
@@ -83,15 +84,15 @@ centroidOfStepShape =
             let
                 angle =
                     Polyline2d.fromVertices
-                        [ Point2d.fromTuple ( 0, 0 )
-                        , Point2d.fromTuple ( armLength, 0 )
-                        , Point2d.fromTuple ( armLength, armLength )
-                        , Point2d.fromTuple ( 2 * armLength, armLength )
+                        [ Point2d.fromTuple meters ( 0, 0 )
+                        , Point2d.fromTuple meters ( armLength, 0 )
+                        , Point2d.fromTuple meters ( armLength, armLength )
+                        , Point2d.fromTuple meters ( 2 * armLength, armLength )
                         ]
             in
             Polyline2d.centroid angle
                 |> Expect.just Expect.point2d
-                    (Point2d.fromTuple ( armLength, armLength / 2 ))
+                    (Point2d.fromTuple meters ( armLength, armLength / 2 ))
 
 
 centroidOfOpenSquare : Test
@@ -101,15 +102,15 @@ centroidOfOpenSquare =
             let
                 squareline =
                     Polyline2d.fromVertices
-                        [ Point2d.fromTuple ( 0, 0 )
-                        , Point2d.fromTuple ( 0, sideLength )
-                        , Point2d.fromTuple ( sideLength, sideLength )
-                        , Point2d.fromTuple ( sideLength, 0 )
+                        [ Point2d.fromTuple meters ( 0, 0 )
+                        , Point2d.fromTuple meters ( 0, sideLength )
+                        , Point2d.fromTuple meters ( sideLength, sideLength )
+                        , Point2d.fromTuple meters ( sideLength, 0 )
                         ]
             in
             Polyline2d.centroid squareline
                 |> Expect.just Expect.point2d
-                    (Point2d.fromTuple ( sideLength / 2, sideLength * 2 / 3 ))
+                    (Point2d.fromTuple meters ( sideLength / 2, sideLength * 2 / 3 ))
 
 
 centroidOfClosedSquare : Test
@@ -119,16 +120,16 @@ centroidOfClosedSquare =
             let
                 squareline =
                     Polyline2d.fromVertices
-                        [ Point2d.fromTuple ( 0, 0 )
-                        , Point2d.fromTuple ( 0, sideLength )
-                        , Point2d.fromTuple ( sideLength, sideLength )
-                        , Point2d.fromTuple ( sideLength, 0 )
-                        , Point2d.fromTuple ( 0, 0 )
+                        [ Point2d.fromTuple meters ( 0, 0 )
+                        , Point2d.fromTuple meters ( 0, sideLength )
+                        , Point2d.fromTuple meters ( sideLength, sideLength )
+                        , Point2d.fromTuple meters ( sideLength, 0 )
+                        , Point2d.fromTuple meters ( 0, 0 )
                         ]
             in
             Polyline2d.centroid squareline
                 |> Expect.just Expect.point2d
-                    (Point2d.fromTuple ( sideLength / 2, sideLength / 2 ))
+                    (Point2d.fromTuple meters ( sideLength / 2, sideLength / 2 ))
 
 
 centroidIsWithinBoundingBox : Test

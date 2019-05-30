@@ -227,17 +227,12 @@ with properties =
     Types.Arc2d
         { startPoint =
             Point2d.fromCoordinates
-                ( x0
-                    |> Quantity.plus
-                        (Quantity.rCosTheta givenRadius givenStartAngle)
-                , y0
-                    |> Quantity.plus
-                        (Quantity.rSinTheta givenRadius givenStartAngle)
-                )
-        , sweptAngle = givenSweptAngle
+                (x0 |> Quantity.plus (Quantity.rCosTheta givenRadius givenStartAngle))
+                (y0 |> Quantity.plus (Quantity.rSinTheta givenRadius givenStartAngle))
+        , sweptAngle =
+            givenSweptAngle
         , xDirection =
-            Direction2d.fromAngle
-                (givenStartAngle |> Quantity.plus (Angle.degrees 90))
+            Direction2d.fromAngle (givenStartAngle |> Quantity.plus (Angle.degrees 90))
         , signedLength =
             Quantity.rTheta (Quantity.abs givenRadius) givenSweptAngle
         }
@@ -575,9 +570,8 @@ centerPoint (Types.Arc2d arc) =
             Quantity.lOverTheta arc.signedLength arc.sweptAngle
     in
     Point2d.fromCoordinates
-        ( x0 |> Quantity.minus (Quantity.multiplyBy dy r)
-        , y0 |> Quantity.plus (Quantity.multiplyBy dx r)
-        )
+        (x0 |> Quantity.minus (Quantity.multiplyBy dy r))
+        (y0 |> Quantity.plus (Quantity.multiplyBy dx r))
 
 
 {-| Get the radius of an arc.
@@ -663,9 +657,8 @@ pointOn (Types.Arc2d arc) parameterValue =
                 Quantity.multiplyBy t arcSignedLength
         in
         Point2d.fromCoordinates
-            ( x0 |> Quantity.plus (Quantity.multiplyBy dx distance)
-            , y0 |> Quantity.plus (Quantity.multiplyBy dy distance)
-            )
+            (x0 |> Quantity.plus (Quantity.multiplyBy dx distance))
+            (y0 |> Quantity.plus (Quantity.multiplyBy dy distance))
 
     else
         let
@@ -692,9 +685,8 @@ pointOn (Types.Arc2d arc) parameterValue =
                     Quantity.multiplyBy (1 - Angle.cos theta) arcRadius
         in
         Point2d.fromCoordinates
-            ( x0 |> Quantity.plus (Quantity.aXbY dx x -dy y)
-            , y0 |> Quantity.plus (Quantity.aXbY dy x dx y)
-            )
+            (x0 |> Quantity.plus (Quantity.aXbY dx x -dy y))
+            (y0 |> Quantity.plus (Quantity.aXbY dy x dx y))
 
 
 {-| Get points along an arc at a given set of parameter values:

@@ -104,14 +104,14 @@ type alias Direction2d coordinates =
 -}
 x : Direction2d coordinates
 x =
-    unsafeFromComponents ( 1, 0 )
+    unsafeFromComponents 1 0
 
 
 {-| Synonym for `Direction2d.positiveY`.
 -}
 y : Direction2d coordinates
 y =
-    unsafeFromComponents ( 0, 1 )
+    unsafeFromComponents 0 1
 
 
 {-| The positive X direction.
@@ -122,7 +122,7 @@ y =
 -}
 positiveX : Direction2d coordinates
 positiveX =
-    unsafeFromComponents ( 1, 0 )
+    unsafeFromComponents 1 0
 
 
 {-| The negative X direction.
@@ -133,7 +133,7 @@ positiveX =
 -}
 negativeX : Direction2d coordinates
 negativeX =
-    unsafeFromComponents ( -1, 0 )
+    unsafeFromComponents -1 0
 
 
 {-| The positive Y direction.
@@ -144,7 +144,7 @@ negativeX =
 -}
 positiveY : Direction2d coordinates
 positiveY =
-    unsafeFromComponents ( 0, 1 )
+    unsafeFromComponents 0 1
 
 
 {-| The negative Y direction.
@@ -155,7 +155,7 @@ positiveY =
 -}
 negativeY : Direction2d coordinates
 negativeY =
-    unsafeFromComponents ( 0, -1 )
+    unsafeFromComponents 0 -1
 
 
 {-| Construct a direction directly from its X and Y components. Note that **you
@@ -180,21 +180,18 @@ valid direction) or start with existing directions and transform them as
 necessary.
 
 -}
-unsafeFromComponents : ( Float, Float ) -> Direction2d coordinates
-unsafeFromComponents givenComponents =
-    Types.Direction2d givenComponents
+unsafeFromComponents : Float -> Float -> Direction2d coordinates
+unsafeFromComponents givenXComponent givenYComponent =
+    Types.Direction2d ( givenXComponent, givenYComponent )
 
 
 {-| Construct a direction directly from its local X and Y components within a
 given frame. As with `unsafeFromComponents`, you must ensure that the sum of the
 squares of the given components is exactly one.
 -}
-unsafeFromComponentsIn : Frame2d units globalCoordinates localCoordinates -> ( Float, Float ) -> Direction2d globalCoordinates
-unsafeFromComponentsIn frame localComponents =
+unsafeFromComponentsIn : Frame2d units globalCoordinates localCoordinates -> Float -> Float -> Direction2d globalCoordinates
+unsafeFromComponentsIn frame localX localY =
     let
-        ( localX, localY ) =
-            localComponents
-
         ( x1, y1 ) =
             components (Frame2d.xDirection frame)
 
@@ -202,9 +199,8 @@ unsafeFromComponentsIn frame localComponents =
             components (Frame2d.yDirection frame)
     in
     unsafeFromComponents
-        ( x1 * localX + x2 * localY
-        , y1 * localX + y2 * localY
-        )
+        (x1 * localX + x2 * localY)
+        (y1 * localX + y2 * localY)
 
 
 {-| Attempt to construct the direction from the first given point to the second.
@@ -325,7 +321,7 @@ the positive X direction.
 -}
 fromAngle : Angle -> Direction2d coordinates
 fromAngle angle =
-    unsafeFromComponents ( Angle.cos angle, Angle.sin angle )
+    unsafeFromComponents (Angle.cos angle) (Angle.sin angle)
 
 
 {-| Convert a direction to a polar angle (the counterclockwise angle in radians
@@ -510,7 +506,7 @@ equalWithin angle firstDirection secondDirection =
 -}
 toVector : Direction2d coordinates -> Vector2d Unitless coordinates
 toVector direction =
-    Vector2d.fromTuple (components direction)
+    Vector2d.fromTuple Quantity.float (components direction)
 
 
 {-| Reverse a direction.
@@ -539,7 +535,7 @@ rotateClockwise direction =
         ( dx, dy ) =
             components direction
     in
-    unsafeFromComponents ( dy, -dx )
+    unsafeFromComponents dy -dx
 
 
 {-| Rotate a direction by 90 degrees counterclockwise.
@@ -557,7 +553,7 @@ rotateCounterclockwise direction =
         ( dx, dy ) =
             components direction
     in
-    unsafeFromComponents ( -dy, dx )
+    unsafeFromComponents -dy dx
 
 
 {-| Rotate a direction counterclockwise by a given angle (in radians).
@@ -582,9 +578,8 @@ rotateBy givenAngle direction =
             components direction
     in
     unsafeFromComponents
-        ( c * dx - s * dy
-        , s * dx + c * dy
-        )
+        (c * dx - s * dy)
+        (s * dx + c * dy)
 
 
 {-| Mirror a direction across a particular axis. Note that only the direction of
@@ -621,9 +616,8 @@ mirrorAcross givenAxis direction =
             components direction
     in
     unsafeFromComponents
-        ( yy * dx + xy * dy
-        , xy * dx + xx * dy
-        )
+        (yy * dx + xy * dy)
+        (xy * dx + xx * dy)
 
 
 {-| Take a direction defined in global coordinates, and return it expressed in
@@ -642,9 +636,8 @@ local coordinates relative to a given reference frame.
 relativeTo : Frame2d units globalCoordinates localCoordinates -> Direction2d globalCoordinates -> Direction2d localCoordinates
 relativeTo givenFrame direction =
     unsafeFromComponents
-        ( componentIn (Frame2d.xDirection givenFrame) direction
-        , componentIn (Frame2d.yDirection givenFrame) direction
-        )
+        (componentIn (Frame2d.xDirection givenFrame) direction)
+        (componentIn (Frame2d.yDirection givenFrame) direction)
 
 
 {-| Take a direction defined in local coordinates relative to a given reference
@@ -673,6 +666,5 @@ placeIn givenFrame direction =
             components direction
     in
     unsafeFromComponents
-        ( x1 * dx + x2 * dy
-        , y1 * dx + y2 * dy
-        )
+        (x1 * dx + x2 * dy)
+        (y1 * dx + y2 * dy)

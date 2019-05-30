@@ -14,6 +14,7 @@ import Direction2d
 import Direction3d
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Length exposing (meters)
 import Point2d
 import Point3d
 import SketchPlane3d
@@ -63,7 +64,7 @@ onExamples =
     let
         axis2d =
             Axis2d.through
-                (Point2d.fromTuple ( 1, 3 ))
+                (Point2d.fromTuple meters ( 1, 3 ))
                 (Direction2d.fromAngle (Angle.degrees 30))
     in
     Test.describe "Axis3d.on examples"
@@ -72,7 +73,7 @@ onExamples =
                 Axis3d.on SketchPlane3d.xy axis2d
                     |> Expect.axis3d
                         (Axis3d.through
-                            (Point3d.fromTuple ( 1, 3, 0 ))
+                            (Point3d.fromTuple meters ( 1, 3, 0 ))
                             (Direction3d.fromAzimuthAndElevation
                                 (Angle.degrees 30)
                                 (Angle.degrees 0)
@@ -83,7 +84,7 @@ onExamples =
                 Axis3d.on SketchPlane3d.zx axis2d
                     |> Expect.axis3d
                         (Axis3d.through
-                            (Point3d.fromTuple ( 3, 0, 1 ))
+                            (Point3d.fromTuple meters ( 3, 0, 1 ))
                             (Direction3d.fromAzimuthAndElevation
                                 (Angle.degrees 0)
                                 (Angle.degrees 60)

@@ -25,6 +25,7 @@ module Geometry.Fuzz exposing
     , ellipticalArc2d
     , frame2d
     , frame3d
+    , length
     , lineSegment2d
     , lineSegment3d
     , parameterValue
@@ -34,10 +35,9 @@ module Geometry.Fuzz exposing
     , polygon2d
     , polyline2d
     , polyline3d
-    , positiveQuantity
+    , positiveLength
     , quadraticSpline2d
     , quadraticSpline3d
-    , quantity
     , rectangle2d
     , scale
     , sketchPlane3d
@@ -68,6 +68,7 @@ import Frame2d
 import Frame3d
 import Fuzz exposing (Fuzzer)
 import Geometry.Test exposing (..)
+import Length exposing (Length, meters)
 import LineSegment2d
 import LineSegment3d
 import Plane3d
@@ -79,7 +80,7 @@ import Polyline2d
 import Polyline3d
 import QuadraticSpline2d
 import QuadraticSpline3d
-import Quantity exposing (Quantity, Unitless)
+import Quantity exposing (Quantity)
 import Rectangle2d
 import Shrink
 import SketchPlane3d
@@ -90,9 +91,9 @@ import Vector2d
 import Vector3d
 
 
-quantity : Fuzzer (Quantity Float Unitless)
-quantity =
-    Fuzz.map Quantity.float (Fuzz.floatRange -10 10)
+length : Fuzzer Length
+length =
+    Fuzz.map Length.meters (Fuzz.floatRange -10 10)
 
 
 scale : Fuzzer Float
@@ -105,9 +106,9 @@ angle =
     Fuzz.map Angle.radians (Fuzz.floatRange (-2 * pi) (2 * pi))
 
 
-positiveQuantity : Fuzzer (Quantity Float Unitless)
-positiveQuantity =
-    Fuzz.map Quantity.abs quantity
+positiveLength : Fuzzer Length
+positiveLength =
+    Fuzz.map Quantity.abs length
 
 
 parameterValue : Fuzzer ParameterValue
@@ -117,18 +118,17 @@ parameterValue =
 
 vector2d : Fuzzer (Vector2d coordinates)
 vector2d =
-    Fuzz.map Vector2d.fromComponents (Fuzz.tuple ( quantity, quantity ))
+    Fuzz.map2 Vector2d.fromComponents length length
 
 
 vector3d : Fuzzer (Vector3d coordinates)
 vector3d =
-    Fuzz.map Vector3d.fromComponents (Fuzz.tuple3 ( quantity, quantity, quantity ))
+    Fuzz.map3 Vector3d.fromComponents length length length
 
 
 direction2d : Fuzzer (Direction2d coordinates)
 direction2d =
-    Fuzz.map Direction2d.fromAngle
-        (Fuzz.map Angle.radians (Fuzz.floatRange -pi pi))
+    Fuzz.map Direction2d.fromAngle angle
 
 
 direction3d : Fuzzer (Direction3d coordinates)
@@ -154,19 +154,19 @@ direction3d =
                 z =
                     Angle.cos phi
             in
-            Direction3d.unsafeFromComponents ( x, y, z )
+            Direction3d.unsafeFromComponents x y z
     in
     Fuzz.map2 toDirection phiFuzzer thetaFuzzer
 
 
 point2d : Fuzzer (Point2d coordinates)
 point2d =
-    Fuzz.map Point2d.fromCoordinates (Fuzz.tuple ( quantity, quantity ))
+    Fuzz.map2 Point2d.fromCoordinates length length
 
 
 point3d : Fuzzer (Point3d coordinates)
 point3d =
-    Fuzz.map Point3d.fromCoordinates (Fuzz.tuple3 ( quantity, quantity, quantity ))
+    Fuzz.map3 Point3d.fromCoordinates length length length
 
 
 axis2d : Fuzzer (Axis2d coordinates)
@@ -244,22 +244,22 @@ sketchPlane3d =
 
 lineSegment2d : Fuzzer (LineSegment2d coordinates)
 lineSegment2d =
-    Fuzz.map LineSegment2d.fromEndpoints (Fuzz.tuple ( point2d, point2d ))
+    Fuzz.map2 LineSegment2d.from point2d point2d
 
 
 lineSegment3d : Fuzzer (LineSegment3d coordinates)
 lineSegment3d =
-    Fuzz.map LineSegment3d.fromEndpoints (Fuzz.tuple ( point3d, point3d ))
+    Fuzz.map2 LineSegment3d.from point3d point3d
 
 
 triangle2d : Fuzzer (Triangle2d coordinates)
 triangle2d =
-    Fuzz.map Triangle2d.fromVertices (Fuzz.tuple3 ( point2d, point2d, point2d ))
+    Fuzz.map3 Triangle2d.fromVertices point2d point2d point2d
 
 
 triangle3d : Fuzzer (Triangle3d coordinates)
 triangle3d =
-    Fuzz.map Triangle3d.fromVertices (Fuzz.tuple3 ( point3d, point3d, point3d ))
+    Fuzz.map3 Triangle3d.fromVertices point3d point3d point3d
 
 
 boundingBox2d : Fuzzer (BoundingBox2d coordinates)
@@ -287,10 +287,10 @@ polygon2d =
     let
         boundingBox =
             BoundingBox2d.fromExtrema
-                { minX = Quantity.float -10
-                , maxX = Quantity.float 10
-                , minY = Quantity.float -10
-                , maxY = Quantity.float 10
+                { minX = meters -10
+                , maxX = meters 10
+                , minY = meters -10
+                , maxY = meters 10
                 }
     in
     Fuzz.custom (Random.polygon2d boundingBox) Shrink.noShrink
@@ -298,17 +298,17 @@ polygon2d =
 
 circle2d : Fuzzer (Circle2d coordinates)
 circle2d =
-    Fuzz.map2 Circle2d.withRadius positiveQuantity point2d
+    Fuzz.map2 Circle2d.withRadius positiveLength point2d
 
 
 circle3d : Fuzzer (Circle3d coordinates)
 circle3d =
-    Fuzz.map3 Circle3d.withRadius positiveQuantity direction3d point3d
+    Fuzz.map3 Circle3d.withRadius positiveLength direction3d point3d
 
 
 sphere3d : Fuzzer (Sphere3d coordinates)
 sphere3d =
-    Fuzz.map2 Sphere3d.withRadius positiveQuantity point3d
+    Fuzz.map2 Sphere3d.withRadius positiveLength point3d
 
 
 arc2d : Fuzzer (Arc2d coordinates)
@@ -332,66 +332,22 @@ arc3d =
 
 quadraticSpline2d : Fuzzer (QuadraticSpline2d coordinates)
 quadraticSpline2d =
-    Fuzz.map3
-        (\startPoint controlPoint endPoint ->
-            QuadraticSpline2d.with
-                { startPoint = startPoint
-                , controlPoint = controlPoint
-                , endPoint = endPoint
-                }
-        )
-        point2d
-        point2d
-        point2d
+    Fuzz.map3 QuadraticSpline2d.fromControlPoints point2d point2d point2d
 
 
 quadraticSpline3d : Fuzzer (QuadraticSpline3d coordinates)
 quadraticSpline3d =
-    Fuzz.map3
-        (\startPoint controlPoint endPoint ->
-            QuadraticSpline3d.with
-                { startPoint = startPoint
-                , controlPoint = controlPoint
-                , endPoint = endPoint
-                }
-        )
-        point3d
-        point3d
-        point3d
+    Fuzz.map3 QuadraticSpline3d.fromControlPoints point3d point3d point3d
 
 
 cubicSpline2d : Fuzzer (CubicSpline2d coordinates)
 cubicSpline2d =
-    Fuzz.map4
-        (\startPoint startControlPoint endControlPoint endPoint ->
-            CubicSpline2d.with
-                { startPoint = startPoint
-                , startControlPoint = startControlPoint
-                , endControlPoint = endControlPoint
-                , endPoint = endPoint
-                }
-        )
-        point2d
-        point2d
-        point2d
-        point2d
+    Fuzz.map4 CubicSpline2d.fromControlPoints point2d point2d point2d point2d
 
 
 cubicSpline3d : Fuzzer (CubicSpline3d coordinates)
 cubicSpline3d =
-    Fuzz.map4
-        (\startPoint startControlPoint endControlPoint endPoint ->
-            CubicSpline3d.with
-                { startPoint = startPoint
-                , startControlPoint = startControlPoint
-                , endControlPoint = endControlPoint
-                , endPoint = endPoint
-                }
-        )
-        point3d
-        point3d
-        point3d
-        point3d
+    Fuzz.map4 CubicSpline3d.fromControlPoints point3d point3d point3d point3d
 
 
 ellipse2d : Fuzzer (Ellipse2d coordinates)
@@ -405,7 +361,7 @@ ellipse2d =
                 , yRadius = yRadius
                 }
     in
-    Fuzz.map4 ellipse point2d direction2d positiveQuantity positiveQuantity
+    Fuzz.map4 ellipse point2d direction2d positiveLength positiveLength
 
 
 ellipticalArc2d : Fuzzer (EllipticalArc2d coordinates)
@@ -423,7 +379,7 @@ ellipticalArc2d =
     in
     Fuzz.map3 ellipticalArc
         (Fuzz.tuple ( point2d, direction2d ))
-        (Fuzz.tuple ( positiveQuantity, positiveQuantity ))
+        (Fuzz.tuple ( positiveLength, positiveLength ))
         (Fuzz.tuple ( angle, angle ))
 
 
@@ -433,4 +389,4 @@ rectangle2d =
         rectangle frame width height =
             Rectangle2d.centeredOn frame ( width, height )
     in
-    Fuzz.map3 rectangle frame2d positiveQuantity positiveQuantity
+    Fuzz.map3 rectangle frame2d positiveLength positiveLength

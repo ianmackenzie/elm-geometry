@@ -71,26 +71,16 @@ radialPolygonWithHole boundingBox =
                                             (Angle.turns 1)
 
                                     innerRadialVector =
-                                        Vector2d.fromPolarComponents
-                                            ( innerRadius
-                                            , angle
-                                            )
+                                        Vector2d.fromPolarComponents innerRadius angle
 
                                     outerRadialVector =
-                                        Vector2d.fromPolarComponents
-                                            ( outerRadius
-                                            , angle
-                                            )
+                                        Vector2d.fromPolarComponents outerRadius angle
 
                                     innerPoint =
-                                        centerPoint
-                                            |> Point2d.translateBy
-                                                innerRadialVector
+                                        centerPoint |> Point2d.translateBy innerRadialVector
 
                                     outerPoint =
-                                        centerPoint
-                                            |> Point2d.translateBy
-                                                outerRadialVector
+                                        centerPoint |> Point2d.translateBy outerRadialVector
                                 in
                                 ( innerPoint, outerPoint )
                             )
@@ -98,10 +88,7 @@ radialPolygonWithHole boundingBox =
                     |> Random.map List.unzip
                     |> Random.map
                         (\( innerLoop, outerLoop ) ->
-                            Polygon2d.with
-                                { outerLoop = outerLoop
-                                , innerLoops = [ List.reverse innerLoop ]
-                                }
+                            Polygon2d.withHoles [ List.reverse innerLoop ] outerLoop
                         )
             )
 
@@ -144,13 +131,8 @@ loopPoints boundingBox gridCoordinates =
                 List.map2
                     (\( i, j ) ( u, v ) ->
                         Point2d.fromCoordinates
-                            ( xStart
-                                |> Quantity.plus
-                                    (Quantity.multiplyBy (toFloat i + u) xStep)
-                            , yStart
-                                |> Quantity.plus
-                                    (Quantity.multiplyBy (toFloat j + v) yStep)
-                            )
+                            (xStart |> Quantity.plus (Quantity.multiplyBy (toFloat i + u) xStep))
+                            (yStart |> Quantity.plus (Quantity.multiplyBy (toFloat j + v) yStep))
                     )
                     gridCoordinates
                     localCoordinatesList
@@ -357,15 +339,9 @@ gridPolygon boundingBox { outerLoop, innerLoops } =
         innerLoopGenerators =
             List.map (loopPoints boundingBox) innerLoops
     in
-    Random.map2
-        (\outerLoopPoints innerLoopPoints ->
-            Polygon2d.with
-                { outerLoop = outerLoopPoints
-                , innerLoops = innerLoopPoints
-                }
-        )
-        outerLoopGenerator
+    Random.map2 Polygon2d.withHoles
         (join innerLoopGenerators)
+        outerLoopGenerator
 
 
 polygon2d : BoundingBox2d units coordinates -> Generator (Polygon2d units coordinates)

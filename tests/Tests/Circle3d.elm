@@ -1,5 +1,6 @@
 module Tests.Circle3d exposing (boundingBoxContainsCenter, throughPoints)
 
+import Area
 import BoundingBox3d
 import Circle3d
 import Expect
@@ -26,12 +27,9 @@ throughPoints =
                     isValidInput =
                         let
                             triangleArea =
-                                Triangle3d.fromVertices ( p1, p2, p3 )
-                                    |> Triangle3d.area
+                                Triangle3d.area (Triangle3d.fromVertices p1 p2 p3)
                         in
-                        triangleArea
-                            |> Quantity.greaterThan
-                                (Quantity.squared (Quantity.float 1.0e-3))
+                        triangleArea |> Quantity.greaterThan (Area.squareMeters 1.0e-6)
 
                     maybeCircle =
                         Circle3d.throughPoints p1 p2 p3

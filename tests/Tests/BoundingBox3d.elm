@@ -436,7 +436,7 @@ containingPointsIsOrderIndependent =
 offsetResultIsValidOrNothing : Test
 offsetResultIsValidOrNothing =
     Test.fuzz2 Fuzz.boundingBox3d
-        Fuzz.quantity
+        Fuzz.length
         "offsetBy returns either Nothing or Just a valid box"
         (\boundingBox offset ->
             case BoundingBox3d.offsetBy offset boundingBox of

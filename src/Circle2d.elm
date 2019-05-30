@@ -245,7 +245,7 @@ toArc (Types.Circle2d circle) =
     in
     Types.Arc2d
         { startPoint =
-            Point2d.fromCoordinates ( x0 |> Quantity.plus circle.radius, y0 )
+            Point2d.fromCoordinates (x0 |> Quantity.plus circle.radius) y0
         , xDirection = Direction2d.y
         , sweptAngle = Angle.radians (2 * pi)
         , signedLength = Quantity.multiplyBy (2 * pi) circle.radius

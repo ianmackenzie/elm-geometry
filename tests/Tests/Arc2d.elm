@@ -17,8 +17,9 @@ import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Geometry.Test as Test exposing (..)
+import Length exposing (meters)
 import Point2d exposing (Point2d)
-import Quantity exposing (Quantity)
+import Quantity exposing (Quantity, zero)
 import Test exposing (Test)
 import Tests.Generic.Curve2d as Curve2d
 
@@ -92,7 +93,7 @@ withRadius =
                 ]
     in
     Test.fuzz3
-        Fuzz.positiveQuantity
+        Fuzz.positiveLength
         (Fuzz.oneOf sweptAngleTypes)
         (Fuzz.tuple ( Fuzz.point2d, Fuzz.point2d ))
         "Arc2d.withRadius produces the expected end point"
@@ -106,13 +107,11 @@ withRadius =
                         distance =
                             Point2d.distanceFrom startPoint endPoint
                     in
-                    if distance == Quantity.zero then
+                    if distance == zero then
                         Expect.pass
 
                     else
-                        distance
-                            |> Expect.quantityGreaterThan
-                                (Quantity.multiplyBy 2 radius)
+                        distance |> Expect.quantityGreaterThan (Quantity.multiplyBy 2 radius)
         )
 
 
@@ -144,7 +143,7 @@ mirroredCenterPoint =
         Fuzz.axis2d
         "Center point of a mirrored finite-radius arc is the mirror of the original center point"
         (\arc axis ->
-            if Arc2d.radius arc |> Quantity.lessThan (Quantity.float 100) then
+            if Arc2d.radius arc |> Quantity.lessThan (meters 100) then
                 let
                     mirroredArc =
                         Arc2d.mirrorAcross axis arc

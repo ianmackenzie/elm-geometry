@@ -14,6 +14,7 @@ import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Geometry.Test exposing (..)
+import Length exposing (inMeters, meters)
 import List.Extra
 import Plane3d
 import Point2d
@@ -31,7 +32,7 @@ import VoronoiDiagram2d
 uniquePoints : Fuzzer (Array (Point2d coordinates))
 uniquePoints =
     Fuzz.list Fuzz.point2d
-        |> Fuzz.map (List.Extra.uniqueBy Point2d.toTuple)
+        |> Fuzz.map (List.Extra.uniqueBy (Point2d.toTuple inMeters))
         |> Fuzz.map Array.fromList
 
 
@@ -52,10 +53,10 @@ cellForEveryInputVertex =
                             let
                                 boundingBox =
                                     BoundingBox2d.fromExtrema
-                                        { minX = Quantity.float 0
-                                        , minY = Quantity.float 0
-                                        , maxX = Quantity.float 100
-                                        , maxY = Quantity.float 100
+                                        { minX = meters 0
+                                        , minY = meters 0
+                                        , maxX = meters 100
+                                        , maxY = meters 100
                                         }
                             in
                             VoronoiDiagram2d.polygons boundingBox diagram
@@ -147,7 +148,7 @@ pointInPolygon polygon =
                                 Quantity.sum weightedYCoordinates
                                     |> Quantity.divideBy totalWeight
                         in
-                        Point2d.fromCoordinates ( x, y )
+                        Point2d.fromCoordinates x y
                     )
 
 

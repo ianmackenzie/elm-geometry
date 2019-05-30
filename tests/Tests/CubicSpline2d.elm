@@ -9,7 +9,8 @@ import CubicSpline2d
 import Expect exposing (FloatingPointTolerance(..))
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
-import Quantity
+import Length exposing (Length, inMeters, meters)
+import Quantity exposing (zero)
 import Test exposing (Test)
 import Tests.QuadraticSpline2d
 
@@ -32,12 +33,7 @@ fromEndpointsReproducesSpline =
                 endDerivative =
                     CubicSpline2d.endDerivative spline
             in
-            CubicSpline2d.fromEndpoints
-                { startPoint = startPoint
-                , startDerivative = startDerivative
-                , endPoint = endPoint
-                , endDerivative = endDerivative
-                }
+            CubicSpline2d.fromEndpoints startPoint startDerivative endPoint endDerivative
                 |> Expect.cubicSpline2d spline
         )
 
@@ -49,10 +45,9 @@ arcLengthMatchesAnalytical =
         (\quadraticSpline ->
             quadraticSpline
                 |> CubicSpline2d.fromQuadraticSpline
-                |> CubicSpline2d.arcLengthParameterized
-                    { maxError = Quantity.float 1.0e-3 }
+                |> CubicSpline2d.arcLengthParameterized { maxError = meters 1.0e-3 }
                 |> CubicSpline2d.arcLength
-                |> Expect.quantityWithin (Quantity.float 1.0e-3)
+                |> Expect.quantityWithin (meters 1.0e-3)
                     (Tests.QuadraticSpline2d.analyticalLength quadraticSpline)
         )
 
@@ -64,11 +59,9 @@ pointAtZeroLengthIsStart =
         (\spline ->
             let
                 parameterizedCurve =
-                    spline
-                        |> CubicSpline2d.arcLengthParameterized
-                            { maxError = Quantity.float 1.0e-3 }
+                    spline |> CubicSpline2d.arcLengthParameterized { maxError = meters 1.0e-3 }
             in
-            CubicSpline2d.pointAlong parameterizedCurve Quantity.zero
+            CubicSpline2d.pointAlong parameterizedCurve (meters 0)
                 |> Expect.equal (Just (CubicSpline2d.startPoint spline))
         )
 
@@ -80,9 +73,7 @@ pointAtArcLengthIsEnd =
         (\spline ->
             let
                 parameterizedCurve =
-                    spline
-                        |> CubicSpline2d.arcLengthParameterized
-                            { maxError = Quantity.float 1.0e-3 }
+                    spline |> CubicSpline2d.arcLengthParameterized { maxError = meters 1.0e-3 }
 
                 arcLength =
                     CubicSpline2d.arcLength parameterizedCurve

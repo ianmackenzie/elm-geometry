@@ -83,9 +83,9 @@ type alias Triangle2d units coordinates =
             )
 
 -}
-fromVertices : ( Point2d units coordinates, Point2d units coordinates, Point2d units coordinates ) -> Triangle2d units coordinates
-fromVertices =
-    Types.Triangle2d
+fromVertices : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Triangle2d units coordinates
+fromVertices p1 p2 p3 =
+    Types.Triangle2d ( p1, p2, p3 )
 
 
 {-| Get the vertices of a triangle.
@@ -100,8 +100,8 @@ fromVertices =
 
 -}
 vertices : Triangle2d units coordinates -> ( Point2d units coordinates, Point2d units coordinates, Point2d units coordinates )
-vertices (Types.Triangle2d vertices_) =
-    vertices_
+vertices (Types.Triangle2d triangleVertices) =
+    triangleVertices
 
 
 {-| Get the edges of a triangle: from the first vertex to the second, from the
@@ -370,7 +370,7 @@ mapVertices function triangle =
         ( p1, p2, p3 ) =
             vertices triangle
     in
-    fromVertices ( function p1, function p2, function p3 )
+    fromVertices (function p1) (function p2) (function p3)
 
 
 {-| Take a triangle defined in global coordinates, and return it expressed

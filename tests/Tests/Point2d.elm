@@ -92,7 +92,7 @@ translateByAndInAreConsistent =
     Test.fuzz3
         Fuzz.point2d
         Fuzz.direction2d
-        Fuzz.quantity
+        Fuzz.length
         "translateBy and translateIn are consistent"
         (\point direction distance ->
             let

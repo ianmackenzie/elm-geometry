@@ -12,6 +12,7 @@ import Frame2d
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Length exposing (meters)
 import Point2d
 import Quantity
 import Test exposing (Test)
@@ -86,10 +87,10 @@ orthonormalizingParallelVectorsReturnsNothing =
         (\() ->
             let
                 xVector =
-                    Vector2d.fromTuple ( 1, 2 )
+                    Vector2d.fromTuple meters ( 1, 2 )
 
                 yVector =
-                    Vector2d.fromTuple ( -3, -6 )
+                    Vector2d.fromTuple meters ( -3, -6 )
             in
             Expect.equal Nothing (Direction2d.orthonormalize xVector yVector)
         )

@@ -80,9 +80,9 @@ type alias Triangle3d units coordinates =
             )
 
 -}
-fromVertices : ( Point3d units coordinates, Point3d units coordinates, Point3d units coordinates ) -> Triangle3d units coordinates
-fromVertices givenVertices =
-    Types.Triangle3d givenVertices
+fromVertices : Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> Triangle3d units coordinates
+fromVertices p1 p2 p3 =
+    Types.Triangle3d ( p1, p2, p3 )
 
 
 {-| Construct a 3D triangle lying _on_ a sketch plane by providing a 2D triangle
@@ -108,10 +108,9 @@ on sketchPlane triangle2d =
             Triangle2d.vertices triangle2d
     in
     fromVertices
-        ( Point3d.on sketchPlane p1
-        , Point3d.on sketchPlane p2
-        , Point3d.on sketchPlane p3
-        )
+        (Point3d.on sketchPlane p1)
+        (Point3d.on sketchPlane p2)
+        (Point3d.on sketchPlane p3)
 
 
 {-| Get the vertices of a triangle.
@@ -362,7 +361,7 @@ mapVertices function triangle =
         ( p1, p2, p3 ) =
             vertices triangle
     in
-    fromVertices ( function p1, function p2, function p3 )
+    fromVertices (function p1) (function p2) (function p3)
 
 
 {-| Take a triangle defined in global coordinates, and return it expressed
@@ -434,7 +433,7 @@ projectInto sketchPlane triangle =
         project =
             Point3d.projectInto sketchPlane
     in
-    Triangle2d.fromVertices ( project p1, project p2, project p3 )
+    Triangle2d.fromVertices (project p1) (project p2) (project p3)
 
 
 {-| Get the minimal bounding box containing a given triangle.

@@ -15,6 +15,7 @@ import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Geometry.Test exposing (..)
+import Length exposing (inMeters, meters)
 import List.Extra
 import Plane3d
 import Point2d
@@ -29,7 +30,7 @@ import Vector3d
 uniquePoints : Fuzzer (Array (Point2d coordinates))
 uniquePoints =
     Fuzz.list Fuzz.point2d
-        |> Fuzz.map (List.Extra.uniqueBy Point2d.toTuple)
+        |> Fuzz.map (List.Extra.uniqueBy (Point2d.toTuple inMeters))
         |> Fuzz.map Array.fromList
 
 

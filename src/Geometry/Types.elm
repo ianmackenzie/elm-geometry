@@ -260,35 +260,35 @@ type Arc3d units coordinates
 
 type QuadraticSpline2d units coordinates
     = QuadraticSpline2d
-        { startPoint : Point2d units coordinates
-        , controlPoint : Point2d units coordinates
-        , endPoint : Point2d units coordinates
+        { firstControlPoint : Point2d units coordinates
+        , secondControlPoint : Point2d units coordinates
+        , thirdControlPoint : Point2d units coordinates
         }
 
 
 type QuadraticSpline3d units coordinates
     = QuadraticSpline3d
-        { startPoint : Point3d units coordinates
-        , controlPoint : Point3d units coordinates
-        , endPoint : Point3d units coordinates
+        { firstControlPoint : Point3d units coordinates
+        , secondControlPoint : Point3d units coordinates
+        , thirdControlPoint : Point3d units coordinates
         }
 
 
 type CubicSpline2d units coordinates
     = CubicSpline2d
-        { startPoint : Point2d units coordinates
-        , startControlPoint : Point2d units coordinates
-        , endControlPoint : Point2d units coordinates
-        , endPoint : Point2d units coordinates
+        { firstControlPoint : Point2d units coordinates
+        , secondControlPoint : Point2d units coordinates
+        , thirdControlPoint : Point2d units coordinates
+        , fourthControlPoint : Point2d units coordinates
         }
 
 
 type CubicSpline3d units coordinates
     = CubicSpline3d
-        { startPoint : Point3d units coordinates
-        , startControlPoint : Point3d units coordinates
-        , endControlPoint : Point3d units coordinates
-        , endPoint : Point3d units coordinates
+        { firstControlPoint : Point3d units coordinates
+        , secondControlPoint : Point3d units coordinates
+        , thirdControlPoint : Point3d units coordinates
+        , fourthControlPoint : Point3d units coordinates
         }
 
 

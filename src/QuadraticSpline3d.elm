@@ -9,8 +9,8 @@
 
 module QuadraticSpline3d exposing
     ( QuadraticSpline3d
-    , with, on
-    , startPoint, endPoint, controlPoint, startDerivative, endDerivative, boundingBox
+    , fromControlPoints, on
+    , startPoint, endPoint, firstControlPoint, secondControlPoint, thirdControlPoint, startDerivative, endDerivative, boundingBox
     , pointOn, pointsAt
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, tangentDirectionsAt, sample, samplesAt
@@ -37,12 +37,12 @@ contains functionality for
 
 # Constructors
 
-@docs with, on
+@docs fromControlPoints, on
 
 
 # Properties
 
-@docs startPoint, endPoint, controlPoint, startDerivative, endDerivative, boundingBox
+@docs startPoint, endPoint, firstControlPoint, secondControlPoint, thirdControlPoint, startDerivative, endDerivative, boundingBox
 
 
 # Evaluation
@@ -117,22 +117,22 @@ type alias QuadraticSpline3d units coordinates =
     Types.QuadraticSpline3d units coordinates
 
 
-{-| Construct a spline from its start point, control point and end point:
+{-| Construct a spline from its start point, inner control point and end point:
 
     exampleSpline =
-        QuadraticSpline3d.with
-            { startPoint =
-                Point3d.fromCoordinates ( 1, 1, 1 )
-            , controlPoint =
-                Point3d.fromCoordinates ( 3, 2, 1 )
-            , endPoint =
-                Point3d.fromCoordinates ( 3, 3, 3 )
-            }
+        QuadraticSpline3d.fromControlPoints
+            (Point3d.fromTuple meters ( 1, 1, 1 ))
+            (Point3d.fromTuple meters ( 3, 2, 1 ))
+            (Point3d.fromTuple meters ( 3, 3, 3 ))
 
 -}
-with : { startPoint : Point3d units coordinates, controlPoint : Point3d units coordinates, endPoint : Point3d units coordinates } -> QuadraticSpline3d units coordinates
-with =
+fromControlPoints : Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> QuadraticSpline3d units coordinates
+fromControlPoints p1 p2 p3 =
     Types.QuadraticSpline3d
+        { firstControlPoint = p1
+        , secondControlPoint = p2
+        , thirdControlPoint = p3
+        }
 
 
 {-| Construct a 3D spline lying _on_ a sketch plane by providing a 2D spline
@@ -159,48 +159,45 @@ specified in XY coordinates _within_ the sketch plane.
 -}
 on : SketchPlane3d units coordinates3d coordinates2d -> QuadraticSpline2d units coordinates2d -> QuadraticSpline3d units coordinates3d
 on sketchPlane spline2d =
-    with
-        { startPoint =
-            Point3d.on sketchPlane (QuadraticSpline2d.startPoint spline2d)
-        , controlPoint =
-            Point3d.on sketchPlane (QuadraticSpline2d.controlPoint spline2d)
-        , endPoint =
-            Point3d.on sketchPlane (QuadraticSpline2d.endPoint spline2d)
-        }
+    fromControlPoints
+        (Point3d.on sketchPlane (QuadraticSpline2d.firstControlPoint spline2d))
+        (Point3d.on sketchPlane (QuadraticSpline2d.secondControlPoint spline2d))
+        (Point3d.on sketchPlane (QuadraticSpline2d.thirdControlPoint spline2d))
 
 
-{-| Get the start point of a spline.
-
-    QuadraticSpline3d.startPoint exampleSpline
-    --> Point3d.fromCoordinates ( 1, 1, 1 )
-
+{-| Get the start point of a spline. Equal to [`firstControlPoint`](#firstControlPoint).
 -}
 startPoint : QuadraticSpline3d units coordinates -> Point3d units coordinates
 startPoint (Types.QuadraticSpline3d spline) =
-    spline.startPoint
+    spline.firstControlPoint
 
 
-{-| Get the end point of a spline. This is equal to the spline's last control
-point.
-
-    QuadraticSpline3d.endPoint exampleSpline
-    --> Point3d.fromCoordinates ( 3, 3, 3 )
-
+{-| Get the end point of a spline. Equal to [`thirdControlPoint`](#firstControlPoint).
 -}
 endPoint : QuadraticSpline3d units coordinates -> Point3d units coordinates
 endPoint (Types.QuadraticSpline3d spline) =
-    spline.endPoint
+    spline.thirdControlPoint
 
 
-{-| Get the control point of a spline.
-
-    QuadraticSpline3d.controlPoint exampleSpline
-    --> Point3d.fromCoordinates ( 3, 2, 1 )
-
+{-| Get the first control point of a spline. Equal to [`startPoint`](#startPoint).
 -}
-controlPoint : QuadraticSpline3d units coordinates -> Point3d units coordinates
-controlPoint (Types.QuadraticSpline3d spline) =
-    spline.controlPoint
+firstControlPoint : QuadraticSpline3d units coordinates -> Point3d units coordinates
+firstControlPoint (Types.QuadraticSpline3d spline) =
+    spline.firstControlPoint
+
+
+{-| Get the second control point of a spline.
+-}
+secondControlPoint : QuadraticSpline3d units coordinates -> Point3d units coordinates
+secondControlPoint (Types.QuadraticSpline3d spline) =
+    spline.secondControlPoint
+
+
+{-| Get the third and last control point of a spline. Equal to [`endPoint`](#endPoint).
+-}
+thirdControlPoint : QuadraticSpline3d units coordinates -> Point3d units coordinates
+thirdControlPoint (Types.QuadraticSpline3d spline) =
+    spline.thirdControlPoint
 
 
 {-| Get the start derivative of a spline. This is equal to twice the vector from
@@ -212,7 +209,7 @@ the spline's first control point to its second.
 -}
 startDerivative : QuadraticSpline3d units coordinates -> Vector3d units coordinates
 startDerivative spline =
-    Vector3d.from (startPoint spline) (controlPoint spline)
+    Vector3d.from (firstControlPoint spline) (secondControlPoint spline)
         |> Vector3d.scaleBy 2
 
 
@@ -225,7 +222,7 @@ the spline's second control point to its third.
 -}
 endDerivative : QuadraticSpline3d units coordinates -> Vector3d units coordinates
 endDerivative spline =
-    Vector3d.from (controlPoint spline) (endPoint spline)
+    Vector3d.from (secondControlPoint spline) (thirdControlPoint spline)
         |> Vector3d.scaleBy 2
 
 
@@ -249,13 +246,13 @@ boundingBox : QuadraticSpline3d units coordinates -> BoundingBox3d units coordin
 boundingBox spline =
     let
         ( x1, y1, z1 ) =
-            Point3d.coordinates (startPoint spline)
+            Point3d.coordinates (firstControlPoint spline)
 
         ( x2, y2, z2 ) =
-            Point3d.coordinates (controlPoint spline)
+            Point3d.coordinates (secondControlPoint spline)
 
         ( x3, y3, z3 ) =
-            Point3d.coordinates (endPoint spline)
+            Point3d.coordinates (thirdControlPoint spline)
     in
     BoundingBox3d.fromExtrema
         { minX = Quantity.min x1 (Quantity.min x2 x3)
@@ -286,13 +283,13 @@ pointOn spline parameterValue =
             ParameterValue.value parameterValue
 
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            controlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endPoint spline
+            thirdControlPoint spline
 
         q1 =
             Point3d.interpolateFrom p1 p2 t
@@ -343,13 +340,13 @@ firstDerivative spline parameterValue =
             ParameterValue.value parameterValue
 
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            controlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endPoint spline
+            thirdControlPoint spline
 
         v1 =
             Vector3d.from p1 p2
@@ -380,13 +377,13 @@ derivativeMagnitude : QuadraticSpline3d units coordinates -> ParameterValue -> Q
 derivativeMagnitude spline =
     let
         ( x1, y1, z1 ) =
-            Point3d.coordinates (startPoint spline)
+            Point3d.coordinates (firstControlPoint spline)
 
         ( x2, y2, z2 ) =
-            Point3d.coordinates (controlPoint spline)
+            Point3d.coordinates (secondControlPoint spline)
 
         ( x3, y3, z3 ) =
-            Point3d.coordinates (endPoint spline)
+            Point3d.coordinates (thirdControlPoint spline)
 
         x12 =
             x2 |> Quantity.minus x1
@@ -646,11 +643,10 @@ versa.
 -}
 reverse : QuadraticSpline3d units coordinates -> QuadraticSpline3d units coordinates
 reverse spline =
-    with
-        { startPoint = endPoint spline
-        , controlPoint = controlPoint spline
-        , endPoint = startPoint spline
-        }
+    fromControlPoints
+        (thirdControlPoint spline)
+        (secondControlPoint spline)
+        (firstControlPoint spline)
 
 
 {-| Scale a spline about the given center point by the given scale.
@@ -832,20 +828,18 @@ sketch coordinates.
 -}
 projectInto : SketchPlane3d units coordinates3d coordinates2d -> QuadraticSpline3d units coordinates3d -> QuadraticSpline2d units coordinates2d
 projectInto sketchPlane spline =
-    QuadraticSpline2d.with
-        { startPoint = Point3d.projectInto sketchPlane (startPoint spline)
-        , controlPoint = Point3d.projectInto sketchPlane (controlPoint spline)
-        , endPoint = Point3d.projectInto sketchPlane (endPoint spline)
-        }
+    QuadraticSpline2d.fromControlPoints
+        (Point3d.projectInto sketchPlane (firstControlPoint spline))
+        (Point3d.projectInto sketchPlane (secondControlPoint spline))
+        (Point3d.projectInto sketchPlane (thirdControlPoint spline))
 
 
 mapControlPoints : (Point3d units1 coordinates1 -> Point3d units2 coordinates2) -> QuadraticSpline3d units1 coordinates1 -> QuadraticSpline3d units2 coordinates2
 mapControlPoints function spline =
-    with
-        { startPoint = function (startPoint spline)
-        , controlPoint = function (controlPoint spline)
-        , endPoint = function (endPoint spline)
-        }
+    fromControlPoints
+        (function (firstControlPoint spline))
+        (function (secondControlPoint spline))
+        (function (thirdControlPoint spline))
 
 
 {-| Split a spline into two roughly equal halves.
@@ -910,13 +904,13 @@ splitAt parameterValue spline =
             ParameterValue.value parameterValue
 
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            controlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endPoint spline
+            thirdControlPoint spline
 
         q1 =
             Point3d.interpolateFrom p1 p2 t
@@ -927,8 +921,8 @@ splitAt parameterValue spline =
         r =
             Point3d.interpolateFrom q1 q2 t
     in
-    ( with { startPoint = p1, controlPoint = q1, endPoint = r }
-    , with { startPoint = r, controlPoint = q2, endPoint = p3 }
+    ( fromControlPoints p1 q1 r
+    , fromControlPoints r q2 p3
     )
 
 
@@ -1114,13 +1108,13 @@ secondDerivative : QuadraticSpline3d units coordinates -> Vector3d units coordin
 secondDerivative spline =
     let
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            controlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endPoint spline
+            thirdControlPoint spline
 
         v1 =
             Vector3d.from p1 p2

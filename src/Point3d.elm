@@ -113,7 +113,7 @@ type alias Point3d units coordinates =
 -}
 origin : Point3d units coordinates
 origin =
-    fromCoordinates ( Quantity.zero, Quantity.zero, Quantity.zero )
+    fromCoordinates Quantity.zero Quantity.zero Quantity.zero
 
 
 {-| Construct a point from its X, Y and Z coordinates.
@@ -122,9 +122,9 @@ origin =
         Point3d.fromCoordinates ( 2, 1, 3 )
 
 -}
-fromCoordinates : ( Quantity Float units, Quantity Float units, Quantity Float units ) -> Point3d units coordinates
-fromCoordinates givenCoordinates =
-    Types.Point3d givenCoordinates
+fromCoordinates : Quantity Float units -> Quantity Float units -> Quantity Float units -> Point3d units coordinates
+fromCoordinates x y z =
+    Types.Point3d ( x, y, z )
 
 
 {-| Construct a point halfway between two other points.
@@ -199,10 +199,9 @@ centroidHelp x0 y0 z0 count dx dy dz points =
                     1 / count
             in
             fromCoordinates
-                ( x0 |> Quantity.plus (Quantity.multiplyBy scale dx)
-                , y0 |> Quantity.plus (Quantity.multiplyBy scale dy)
-                , z0 |> Quantity.plus (Quantity.multiplyBy scale dz)
-                )
+                (x0 |> Quantity.plus (Quantity.multiplyBy scale dx))
+                (y0 |> Quantity.plus (Quantity.multiplyBy scale dy))
+                (z0 |> Quantity.plus (Quantity.multiplyBy scale dz))
 
 
 {-| Construct a point by interpolating from the first given point to the second,
@@ -248,10 +247,9 @@ interpolateFrom p1 p2 t =
             coordinates p2
     in
     fromCoordinates
-        ( Quantity.interpolateFrom x1 x2 t
-        , Quantity.interpolateFrom y1 y2 t
-        , Quantity.interpolateFrom z1 z2 t
-        )
+        (Quantity.interpolateFrom x1 x2 t)
+        (Quantity.interpolateFrom y1 y2 t)
+        (Quantity.interpolateFrom z1 z2 t)
 
 
 {-| Construct a point along an axis at a particular distance from the axis'
@@ -321,10 +319,9 @@ on sketchPlane point2d =
             Point2d.coordinates point2d
     in
     fromCoordinates
-        ( x0 |> Quantity.plus (Quantity.aXbY ux x vx y)
-        , y0 |> Quantity.plus (Quantity.aXbY uy x vy y)
-        , z0 |> Quantity.plus (Quantity.aXbY uz x vz y)
-        )
+        (x0 |> Quantity.plus (Quantity.aXbY ux x vx y))
+        (y0 |> Quantity.plus (Quantity.aXbY uy x vy y))
+        (z0 |> Quantity.plus (Quantity.aXbY uz x vz y))
 
 
 {-| Construct a point given its local coordinates within a particular frame:
@@ -356,10 +353,9 @@ fromCoordinatesIn frame localCoordinates =
             Direction3d.components (Frame3d.zDirection frame)
     in
     fromCoordinates
-        ( x0 |> Quantity.plus (Quantity.aXbYcZ x1 x x2 y x3 z)
-        , y0 |> Quantity.plus (Quantity.aXbYcZ y1 x y2 y y3 z)
-        , z0 |> Quantity.plus (Quantity.aXbYcZ z1 x z2 y z3 z)
-        )
+        (x0 |> Quantity.plus (Quantity.aXbYcZ x1 x x2 y x3 z))
+        (y0 |> Quantity.plus (Quantity.aXbYcZ y1 x y2 y y3 z))
+        (z0 |> Quantity.plus (Quantity.aXbYcZ z1 x z2 y z3 z))
 
 
 {-| Attempt to find the circumcenter of three points; this is the center of the
@@ -428,89 +424,86 @@ circumcenter p1 p2 p3 =
         in
         Just <|
             fromCoordinates
-                ( Quantity.aXbYcZ w1 x3 w2 x1 w3 x2
-                , Quantity.aXbYcZ w1 y3 w2 y1 w3 y2
-                , Quantity.aXbYcZ w1 z3 w2 z1 w3 z2
-                )
+                (Quantity.aXbYcZ w1 x3 w2 x1 w3 x2)
+                (Quantity.aXbYcZ w1 y3 w2 y1 w3 y2)
+                (Quantity.aXbYcZ w1 z3 w2 z1 w3 z2)
 
 
-{-| Construct a unitless `Point3d` from a tuple of `Float` values.
+{-| Construct a `Point3d` from a tuple of `Float` values, by specifying what units those values are
+in.
 
-    Point3d.fromTuple ( 2, 1, 3 )
+    Point3d.fromTuple Length.meters ( 2, 3, 1 )
     --> Point3d.fromCoordinates
-    -->     ( Quantity.float 2
-    -->     , Quantity.float 1
-    -->     , Quantity.float 3
-    -- >    )
+    -->     (Length.meters 2)
+    -->     (Length.meters 3)
+    -->     (Length.meters 1)
 
 -}
-fromTuple : ( Float, Float, Float ) -> Point3d Unitless coordinates
-fromTuple ( x, y, z ) =
+fromTuple : (Float -> Quantity Float units) -> ( Float, Float, Float ) -> Point3d units coordinates
+fromTuple toQuantity ( x, y, z ) =
     fromCoordinates
-        ( Quantity.float x
-        , Quantity.float y
-        , Quantity.float z
-        )
+        (toQuantity x)
+        (toQuantity y)
+        (toQuantity z)
 
 
-{-| Convert a unitless `Point3d` to a tuple of `Float` values.
+{-| Convert a `Point3d` to a tuple of `Float` values, by specifying what units you want the result
+to be in.
 
     point =
         Point3d.fromCoordinates
-            ( Quantity.float 2
-            , Quantity.float 1
-            , Quantity.float 3
-            )
+            (Length.feet 2)
+            (Length.feet 3)
+            (Length.feet 1)
 
-    Point3d.toTuple point
-    --> ( 2, 1, 3 )
+    Point3d.toTuple Length.inInches point
+    --> ( 24, 36, 12 )
 
 -}
-toTuple : Point3d Unitless coordinates -> ( Float, Float, Float )
-toTuple point =
-    ( Quantity.toFloat (xCoordinate point)
-    , Quantity.toFloat (yCoordinate point)
-    , Quantity.toFloat (zCoordinate point)
+toTuple : (Quantity Float units -> Float) -> Point3d units coordinates -> ( Float, Float, Float )
+toTuple fromQuantity point =
+    ( fromQuantity (xCoordinate point)
+    , fromQuantity (yCoordinate point)
+    , fromQuantity (zCoordinate point)
     )
 
 
-{-| Construct a unitless `Point3d` from a record with `Float` fields.
+{-| Construct a `Point3d` from a record with `Float` fields, by specifying what units those fields
+are in.
 
-    Point3d.fromRecord { x = 2, y = 1, z = 3 }
+    Point3d.fromRecord Length.inches { x = 24, y = 36, z = 12 }
     --> Point3d.fromCoordinates
-    -->     ( Quantity.float 2
-    -->     , Quantity.float 1
-    -->     , Quantity.float 3
-    -- >    )
+    -->     (Length.feet 2)
+    -->     (Length.feet 3)
+    -->     (Length.feet 1)
 
 -}
-fromRecord : { x : Float, y : Float, z : Float } -> Point3d Unitless coordinates
-fromRecord { x, y, z } =
+fromRecord : (Float -> Quantity Float units) -> { x : Float, y : Float, z : Float } -> Point3d units coordinates
+fromRecord toQuantity { x, y, z } =
     fromCoordinates
-        ( Quantity.float x
-        , Quantity.float y
-        , Quantity.float z
-        )
+        (toQuantity x)
+        (toQuantity y)
+        (toQuantity z)
 
 
-{-| Convert a unitless `Point3d` to a record with `Float` fields.
+{-| Convert a `Point3d` to a record with `Float` fields, by specifying what units you want the
+result to be in.
 
     point =
-        Point3d.fromComponents
-            ( Quantity.float 2
-            , Quantity.float 1
-            , Quantity.float 3
-            )
+        Point3d.fromCoordinates
+            (Length.meters 2)
+            (Length.meters 3)
+            (Length.meters 1)
 
-    Point3d.toRecord point
-    --> { x = 2, y = 1, z = 3 }
+    Point3d.toRecord Length.inCentimeters point
+    --> { x = 200, y = 300, z = 100 }
 
 -}
-toRecord : Point3d Unitless coordinates -> { x : Float, y : Float, z : Float }
-toRecord point =
-    { x = Quantity.toFloat (xCoordinate point)
-    , y = Quantity.toFloat (yCoordinate point)
-    , z = Quantity.toFloat (zCoordinate point)
+toRecord : (Quantity Float units -> Float) -> Point3d units coordinates -> { x : Float, y : Float, z : Float }
+toRecord fromQuantity point =
+    { x = fromQuantity (xCoordinate point)
+    , y = fromQuantity (yCoordinate point)
+    , z = fromQuantity (zCoordinate point)
     }
 
 
@@ -913,10 +906,9 @@ translateBy vector point =
             coordinates point
     in
     fromCoordinates
-        ( px |> Quantity.plus vx
-        , py |> Quantity.plus vy
-        , pz |> Quantity.plus vz
-        )
+        (px |> Quantity.plus vx)
+        (py |> Quantity.plus vy)
+        (pz |> Quantity.plus vz)
 
 
 {-| Translate a point in a given direction by a given distance.
@@ -946,10 +938,9 @@ translateIn direction distance point =
             coordinates point
     in
     fromCoordinates
-        ( px |> Quantity.plus (Quantity.multiplyBy dx distance)
-        , py |> Quantity.plus (Quantity.multiplyBy dy distance)
-        , pz |> Quantity.plus (Quantity.multiplyBy dz distance)
-        )
+        (px |> Quantity.plus (Quantity.multiplyBy dx distance))
+        (py |> Quantity.plus (Quantity.multiplyBy dy distance))
+        (pz |> Quantity.plus (Quantity.multiplyBy dz distance))
 
 
 {-| Mirror a point across a plane. The result will be the same distance from the
@@ -1063,7 +1054,7 @@ relativeTo frame point =
     Vector3d.from (Frame3d.originPoint frame) point
         |> Vector3d.relativeTo frame
         |> Vector3d.components
-        |> fromCoordinates
+        |> Types.Point3d
 
 
 {-| Take a point defined in local coordinates relative to a given reference
@@ -1083,8 +1074,8 @@ frame, and return that point expressed in global coordinates.
 
 -}
 placeIn : Frame3d units globalCoordinates localCoordinates -> Point3d units localCoordinates -> Point3d units globalCoordinates
-placeIn frame point =
-    Vector3d.fromComponents (coordinates point)
+placeIn frame (Types.Point3d pointCoordinates) =
+    Types.Vector3d pointCoordinates
         |> Vector3d.placeIn frame
         |> addTo (Frame3d.originPoint frame)
 
@@ -1132,6 +1123,5 @@ projectInto sketchPlane point =
             z |> Quantity.minus z0
     in
     Point2d.fromCoordinates
-        ( Quantity.aXbYcZ ux dx uy dy uz dz
-        , Quantity.aXbYcZ vx dx vy dy vz dz
-        )
+        (Quantity.aXbYcZ ux dx uy dy uz dz)
+        (Quantity.aXbYcZ vx dx vy dy vz dz)

@@ -9,8 +9,8 @@
 
 module CubicSpline3d exposing
     ( CubicSpline3d
-    , with, fromEndpoints, on, fromQuadraticSpline
-    , startPoint, endPoint, startControlPoint, endControlPoint, startDerivative, endDerivative, boundingBox
+    , fromControlPoints, fromEndpoints, on, fromQuadraticSpline
+    , startPoint, endPoint, firstControlPoint, secondControlPoint, thirdControlPoint, fourthControlPoint, startDerivative, endDerivative, boundingBox
     , pointOn, pointsAt
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, tangentDirectionsAt, sample, samplesAt
@@ -37,12 +37,12 @@ contains functionality for
 
 # Constructors
 
-@docs with, fromEndpoints, on, fromQuadraticSpline
+@docs fromControlPoints, fromEndpoints, on, fromQuadraticSpline
 
 
 # Properties
 
-@docs startPoint, endPoint, startControlPoint, endControlPoint, startDerivative, endDerivative, boundingBox
+@docs startPoint, endPoint, firstControlPoint, secondControlPoint, thirdControlPoint, fourthControlPoint, startDerivative, endDerivative, boundingBox
 
 
 # Evaluation
@@ -117,27 +117,21 @@ type alias CubicSpline3d units coordinates =
 {-| Construct a spline from its four control points:
 
     exampleSpline =
-        CubicSpline3d.with
-            { startPoint =
-                Point3d.fromCoordinates ( 1, 1, 1 )
-            , startControlPoint =
-                Point3d.fromCoordinates ( 3, 1, 1 )
-            , endControlPoint =
-                Point3d.fromCoordinates ( 3, 3, 1 )
-            , endPoint =
-                Point3d.fromCoordinates ( 3, 3, 3 )
-            }
+        CubicSpline3d.fromControlPoints
+            (Point3d.fromTuple meters ( 1, 1, 1 ))
+            (Point3d.fromTuple meters ( 3, 1, 1 ))
+            (Point3d.fromTuple meters ( 3, 3, 1 ))
+            (Point3d.fromTuple meters ( 3, 3, 3 ))
 
 -}
-with :
-    { startPoint : Point3d units coordinates
-    , startControlPoint : Point3d units coordinates
-    , endControlPoint : Point3d units coordinates
-    , endPoint : Point3d units coordinates
-    }
-    -> CubicSpline3d units coordinates
-with =
+fromControlPoints : Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> CubicSpline3d units coordinates
+fromControlPoints p1 p2 p3 p4 =
     Types.CubicSpline3d
+        { firstControlPoint = p1
+        , secondControlPoint = p2
+        , thirdControlPoint = p3
+        , fourthControlPoint = p4
+        }
 
 
 {-| Construct a spline from a given start point with a given start derivative,
@@ -150,31 +144,13 @@ cases the length of each derivative vector should be roughly equal to the length
 of the resulting spline.
 
 -}
-fromEndpoints :
-    { startPoint : Point3d units coordinates
-    , startDerivative : Vector3d units coordinates
-    , endPoint : Point3d units coordinates
-    , endDerivative : Vector3d units coordinates
-    }
-    -> CubicSpline3d units coordinates
-fromEndpoints arguments =
-    let
-        startControlPoint_ =
-            arguments.startPoint
-                |> Point3d.translateBy
-                    (Vector3d.scaleBy (1 / 3) arguments.startDerivative)
-
-        endControlPoint_ =
-            arguments.endPoint
-                |> Point3d.translateBy
-                    (Vector3d.scaleBy (-1 / 3) arguments.endDerivative)
-    in
-    with
-        { startPoint = arguments.startPoint
-        , startControlPoint = startControlPoint_
-        , endControlPoint = endControlPoint_
-        , endPoint = arguments.endPoint
-        }
+fromEndpoints : Point3d units coordinates -> Vector3d units coordinates -> Point3d units coordinates -> Vector3d units coordinates -> CubicSpline3d units coordinates
+fromEndpoints givenStartPoint givenStartDerivative givenEndPoint givenEndDerivative =
+    fromControlPoints
+        givenStartPoint
+        (givenStartPoint |> Point3d.translateBy (Vector3d.scaleBy (1 / 3) givenStartDerivative))
+        (givenEndPoint |> Point3d.translateBy (Vector3d.scaleBy (-1 / 3) givenEndDerivative))
+        givenEndPoint
 
 
 {-| Construct a 3D spline lying _on_ a sketch plane by providing a 2D spline
@@ -205,16 +181,11 @@ specified in XY coordinates _within_ the sketch plane.
 -}
 on : SketchPlane3d units coordinates3d coordinates2d -> CubicSpline2d units coordinates2d -> CubicSpline3d units coordinates3d
 on sketchPlane spline2d =
-    with
-        { startPoint =
-            Point3d.on sketchPlane (CubicSpline2d.startPoint spline2d)
-        , startControlPoint =
-            Point3d.on sketchPlane (CubicSpline2d.startControlPoint spline2d)
-        , endControlPoint =
-            Point3d.on sketchPlane (CubicSpline2d.endControlPoint spline2d)
-        , endPoint =
-            Point3d.on sketchPlane (CubicSpline2d.endPoint spline2d)
-        }
+    fromControlPoints
+        (Point3d.on sketchPlane (CubicSpline2d.firstControlPoint spline2d))
+        (Point3d.on sketchPlane (CubicSpline2d.secondControlPoint spline2d))
+        (Point3d.on sketchPlane (CubicSpline2d.thirdControlPoint spline2d))
+        (Point3d.on sketchPlane (CubicSpline2d.fourthControlPoint spline2d))
 
 
 {-| Convert a quadratic spline into the equivalent cubic spline (every quadratic
@@ -246,65 +217,74 @@ spline can be represented exactly as a cubic spline).
 fromQuadraticSpline : QuadraticSpline3d units coordinates -> CubicSpline3d units coordinates
 fromQuadraticSpline quadraticSpline =
     let
-        startPoint_ =
-            QuadraticSpline3d.startPoint quadraticSpline
+        quadraticFirstControlPoint =
+            QuadraticSpline3d.firstControlPoint quadraticSpline
 
-        controlPoint_ =
-            QuadraticSpline3d.controlPoint quadraticSpline
+        quadraticSecondControlPoint =
+            QuadraticSpline3d.secondControlPoint quadraticSpline
 
-        endPoint_ =
-            QuadraticSpline3d.endPoint quadraticSpline
+        quadraticThirdControlPoint =
+            QuadraticSpline3d.thirdControlPoint quadraticSpline
 
-        startControlPoint_ =
-            Point3d.interpolateFrom startPoint_ controlPoint_ (2 / 3)
+        cubicFirstControlPoint =
+            quadraticFirstControlPoint
 
-        endControlPoint_ =
-            Point3d.interpolateFrom endPoint_ controlPoint_ (2 / 3)
+        cubicSecondControlPoint =
+            Point3d.interpolateFrom quadraticFirstControlPoint quadraticSecondControlPoint (2 / 3)
+
+        cubicThirdControlPoint =
+            Point3d.interpolateFrom quadraticThirdControlPoint quadraticSecondControlPoint (2 / 3)
+
+        cubicFourthControlPoint =
+            quadraticThirdControlPoint
     in
-    with
-        { startPoint = startPoint_
-        , startControlPoint = startControlPoint_
-        , endControlPoint = endControlPoint_
-        , endPoint = endPoint_
-        }
+    fromControlPoints
+        cubicFirstControlPoint
+        cubicSecondControlPoint
+        cubicThirdControlPoint
+        cubicFourthControlPoint
 
 
-{-| Get the start point of a spline.
-
-    CubicSpline3d.startPoint exampleSpline
-    --> Point3d.fromCoordinates ( 1, 1, 1 )
-
+{-| Get the start point of a spline. Equal to [`firstControlPoint`](#firstControlPoint).
 -}
 startPoint : CubicSpline3d units coordinates -> Point3d units coordinates
 startPoint (Types.CubicSpline3d spline) =
-    spline.startPoint
+    spline.firstControlPoint
 
 
-{-| Get the end point of a spline.
-
-    CubicSpline3d.endPoint exampleSpline
-    --> Point3d.fromCoordinates ( 3, 3, 3 )
-
+{-| Get the end point of a spline. Equal to [`fourthControlPoint`](#fourthControlPoint).
 -}
 endPoint : CubicSpline3d units coordinates -> Point3d units coordinates
 endPoint (Types.CubicSpline3d spline) =
-    spline.endPoint
+    spline.fourthControlPoint
 
 
-{-| Get the start control point of a spline (the control point next to the
-start point).
+{-| Get the first control point of the spline. Equal to [`startPoint`](#startPoint).
 -}
-startControlPoint : CubicSpline3d units coordinates -> Point3d units coordinates
-startControlPoint (Types.CubicSpline3d spline) =
-    spline.startControlPoint
+firstControlPoint : CubicSpline3d units coordinates -> Point3d units coordinates
+firstControlPoint (Types.CubicSpline3d spline) =
+    spline.firstControlPoint
 
 
-{-| Get the end control point of a spline (the control point next to the
-end point).
+{-| Get the second control point of the spline.
 -}
-endControlPoint : CubicSpline3d units coordinates -> Point3d units coordinates
-endControlPoint (Types.CubicSpline3d spline) =
-    spline.endControlPoint
+secondControlPoint : CubicSpline3d units coordinates -> Point3d units coordinates
+secondControlPoint (Types.CubicSpline3d spline) =
+    spline.secondControlPoint
+
+
+{-| Get the third control point of the spline.
+-}
+thirdControlPoint : CubicSpline3d units coordinates -> Point3d units coordinates
+thirdControlPoint (Types.CubicSpline3d spline) =
+    spline.thirdControlPoint
+
+
+{-| Get the fourth and last control point of the spline. Equal to [`endPoint`](#endPoint).
+-}
+fourthControlPoint : CubicSpline3d units coordinates -> Point3d units coordinates
+fourthControlPoint (Types.CubicSpline3d spline) =
+    spline.fourthControlPoint
 
 
 {-| Get the start derivative of a spline. This is equal to three times the
@@ -316,7 +296,7 @@ vector from the spline's start point to its start control point.
 -}
 startDerivative : CubicSpline3d units coordinates -> Vector3d units coordinates
 startDerivative spline =
-    Vector3d.from (startPoint spline) (startControlPoint spline)
+    Vector3d.from (firstControlPoint spline) (secondControlPoint spline)
         |> Vector3d.scaleBy 3
 
 
@@ -329,7 +309,7 @@ from the spline's end control point to its end point.
 -}
 endDerivative : CubicSpline3d units coordinates -> Vector3d units coordinates
 endDerivative spline =
-    Vector3d.from (endControlPoint spline) (endPoint spline)
+    Vector3d.from (thirdControlPoint spline) (fourthControlPoint spline)
         |> Vector3d.scaleBy 3
 
 
@@ -353,16 +333,16 @@ boundingBox : CubicSpline3d units coordinates -> BoundingBox3d units coordinates
 boundingBox spline =
     let
         ( x1, y1, z1 ) =
-            Point3d.coordinates (startPoint spline)
+            Point3d.coordinates (firstControlPoint spline)
 
         ( x2, y2, z2 ) =
-            Point3d.coordinates (startControlPoint spline)
+            Point3d.coordinates (secondControlPoint spline)
 
         ( x3, y3, z3 ) =
-            Point3d.coordinates (endControlPoint spline)
+            Point3d.coordinates (thirdControlPoint spline)
 
         ( x4, y4, z4 ) =
-            Point3d.coordinates (endPoint spline)
+            Point3d.coordinates (fourthControlPoint spline)
     in
     BoundingBox3d.fromExtrema
         { minX = Quantity.min (Quantity.min x1 x2) (Quantity.min x3 x4)
@@ -393,16 +373,16 @@ pointOn spline parameterValue =
             ParameterValue.value parameterValue
 
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            startControlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endControlPoint spline
+            thirdControlPoint spline
 
         p4 =
-            endPoint spline
+            fourthControlPoint spline
 
         q1 =
             Point3d.interpolateFrom p1 p2 t
@@ -692,12 +672,11 @@ versa.
 -}
 reverse : CubicSpline3d units coordinates -> CubicSpline3d units coordinates
 reverse spline =
-    with
-        { startPoint = endPoint spline
-        , startControlPoint = endControlPoint spline
-        , endControlPoint = startControlPoint spline
-        , endPoint = startPoint spline
-        }
+    fromControlPoints
+        (fourthControlPoint spline)
+        (thirdControlPoint spline)
+        (secondControlPoint spline)
+        (firstControlPoint spline)
 
 
 {-| Scale a spline about the given center point by the given scale.
@@ -892,26 +871,20 @@ sketch coordinates.
 -}
 projectInto : SketchPlane3d units coordinates3d coordinates2d -> CubicSpline3d units coordinates3d -> CubicSpline2d units coordinates2d
 projectInto sketchPlane spline =
-    CubicSpline2d.with
-        { startPoint =
-            Point3d.projectInto sketchPlane (startPoint spline)
-        , startControlPoint =
-            Point3d.projectInto sketchPlane (startControlPoint spline)
-        , endControlPoint =
-            Point3d.projectInto sketchPlane (endControlPoint spline)
-        , endPoint =
-            Point3d.projectInto sketchPlane (endPoint spline)
-        }
+    CubicSpline2d.fromControlPoints
+        (Point3d.projectInto sketchPlane (firstControlPoint spline))
+        (Point3d.projectInto sketchPlane (secondControlPoint spline))
+        (Point3d.projectInto sketchPlane (thirdControlPoint spline))
+        (Point3d.projectInto sketchPlane (fourthControlPoint spline))
 
 
 mapControlPoints : (Point3d units1 coordinates1 -> Point3d units2 coordinates2) -> CubicSpline3d units1 coordinates1 -> CubicSpline3d units2 coordinates2
 mapControlPoints function spline =
-    with
-        { startPoint = function (startPoint spline)
-        , startControlPoint = function (startControlPoint spline)
-        , endControlPoint = function (endControlPoint spline)
-        , endPoint = function (endPoint spline)
-        }
+    fromControlPoints
+        (function (firstControlPoint spline))
+        (function (secondControlPoint spline))
+        (function (thirdControlPoint spline))
+        (function (fourthControlPoint spline))
 
 
 {-| Split a spline into two roughly equal halves.
@@ -984,16 +957,16 @@ splitAt parameterValue spline =
             ParameterValue.value parameterValue
 
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            startControlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endControlPoint spline
+            thirdControlPoint spline
 
         p4 =
-            endPoint spline
+            fourthControlPoint spline
 
         q1 =
             Point3d.interpolateFrom p1 p2 t
@@ -1013,18 +986,8 @@ splitAt parameterValue spline =
         s =
             Point3d.interpolateFrom r1 r2 t
     in
-    ( with
-        { startPoint = p1
-        , startControlPoint = q1
-        , endControlPoint = r1
-        , endPoint = s
-        }
-    , with
-        { startPoint = s
-        , startControlPoint = r2
-        , endControlPoint = q3
-        , endPoint = p4
-        }
+    ( fromControlPoints p1 q1 r1 s
+    , fromControlPoints s r2 q3 p4
     )
 
 
@@ -1227,16 +1190,16 @@ firstDerivative spline parameterValue =
             ParameterValue.value parameterValue
 
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            startControlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endControlPoint spline
+            thirdControlPoint spline
 
         p4 =
-            endPoint spline
+            fourthControlPoint spline
 
         ( x1, y1, z1 ) =
             Point3d.coordinates p1
@@ -1297,10 +1260,9 @@ firstDerivative spline parameterValue =
             Quantity.interpolateFrom vz2 vz3 t
     in
     Vector3d.fromComponents
-        ( Quantity.multiplyBy 3 (Quantity.interpolateFrom wx1 wx2 t)
-        , Quantity.multiplyBy 3 (Quantity.interpolateFrom wy1 wy2 t)
-        , Quantity.multiplyBy 3 (Quantity.interpolateFrom wz1 wz2 t)
-        )
+        (Quantity.multiplyBy 3 (Quantity.interpolateFrom wx1 wx2 t))
+        (Quantity.multiplyBy 3 (Quantity.interpolateFrom wy1 wy2 t))
+        (Quantity.multiplyBy 3 (Quantity.interpolateFrom wz1 wz2 t))
 
 
 {-| Evaluate the first derivative of a spline at a range of parameter values.
@@ -1343,16 +1305,16 @@ secondDerivative spline parameterValue =
             ParameterValue.value parameterValue
 
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            startControlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endControlPoint spline
+            thirdControlPoint spline
 
         p4 =
-            endPoint spline
+            fourthControlPoint spline
 
         u1 =
             Vector3d.from p1 p2
@@ -1395,16 +1357,16 @@ thirdDerivative : CubicSpline3d units coordinates -> Vector3d units coordinates
 thirdDerivative spline =
     let
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            startControlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endControlPoint spline
+            thirdControlPoint spline
 
         p4 =
-            endPoint spline
+            fourthControlPoint spline
 
         u1 =
             Vector3d.from p1 p2
@@ -1432,16 +1394,16 @@ maxSecondDerivativeMagnitude : CubicSpline3d units coordinates -> Quantity Float
 maxSecondDerivativeMagnitude spline =
     let
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            startControlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endControlPoint spline
+            thirdControlPoint spline
 
         p4 =
-            endPoint spline
+            fourthControlPoint spline
 
         u1 =
             Vector3d.from p1 p2
@@ -1466,16 +1428,16 @@ derivativeMagnitude : CubicSpline3d units coordinates -> ParameterValue -> Quant
 derivativeMagnitude spline =
     let
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            startControlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endControlPoint spline
+            thirdControlPoint spline
 
         p4 =
-            endPoint spline
+            fourthControlPoint spline
 
         ( x1, y1, z1 ) =
             Point3d.coordinates p1

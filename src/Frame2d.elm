@@ -212,9 +212,9 @@ is equivalent to
     Frame2d.atPoint (Point2d.fromCoordinates ( x, y ))
 
 -}
-atCoordinates : ( Quantity Float units, Quantity Float units ) -> Frame2d units coordinates1 coordinates2
-atCoordinates coordinates =
-    atPoint (Point2d.fromCoordinates coordinates)
+atCoordinates : Quantity Float units -> Quantity Float units -> Frame2d units coordinates1 coordinates2
+atCoordinates x y =
+    atPoint (Point2d.fromCoordinates x y)
 
 
 {-| Get the origin point of a given frame.

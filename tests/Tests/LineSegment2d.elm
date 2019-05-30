@@ -15,6 +15,7 @@ import Expect
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Length exposing (meters)
 import LineSegment2d
 import Point2d
 import Quantity
@@ -41,11 +42,7 @@ intersectionWorksProperly =
                                     LineSegment2d.endpoints segment
 
                                 triangle =
-                                    Triangle2d.fromVertices
-                                        ( startPoint
-                                        , endPoint
-                                        , point
-                                        )
+                                    Triangle2d.fromVertices startPoint endPoint point
 
                                 area =
                                     Triangle2d.area triangle
@@ -116,7 +113,7 @@ intersectionWorksProperly =
                                                 endPoint
 
                                         tolerance =
-                                            Quantity.float 1.0e-12
+                                            meters 1.0e-12
 
                                         negativeTolerance =
                                             Quantity.negate tolerance

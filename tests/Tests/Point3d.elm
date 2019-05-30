@@ -130,7 +130,7 @@ translationByPerpendicularDoesNotChangeSignedDistance : Test
 translationByPerpendicularDoesNotChangeSignedDistance =
     Test.fuzz3 Fuzz.point3d
         Fuzz.plane3d
-        Fuzz.quantity
+        Fuzz.length
         "Translating in a direction perpendicular to a plane's normal direction does not change signed distance from that plane"
         (\point plane distance ->
             let
@@ -155,7 +155,7 @@ translateByAndInAreConsistent =
     Test.fuzz3
         Fuzz.point3d
         Fuzz.direction3d
-        Fuzz.quantity
+        Fuzz.length
         "translateBy and translateIn are consistent"
         (\point direction distance ->
             let

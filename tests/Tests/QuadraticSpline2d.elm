@@ -7,7 +7,7 @@ module Tests.QuadraticSpline2d exposing
     , parameterization
     )
 
-import Angle
+import Angle exposing (radians)
 import Curve.ArcLengthParameterization as ArcLengthParameterization
 import Curve.ParameterValue as ParameterValue
 import Expect
@@ -16,23 +16,16 @@ import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Geometry.Test exposing (..)
+import Length exposing (Length, inMeters, meters)
 import Point2d
 import QuadraticSpline2d
-import Quantity exposing (Quantity, Unitless)
+import Quantity exposing (Quantity, zero)
 import Test exposing (Test)
 
 
 degenerateSpline : Fuzzer (QuadraticSpline2d coordinates)
 degenerateSpline =
-    Fuzz.point2d
-        |> Fuzz.map
-            (\point ->
-                QuadraticSpline2d.with
-                    { startPoint = point
-                    , controlPoint = point
-                    , endPoint = point
-                    }
-            )
+    Fuzz.point2d |> Fuzz.map (\point -> QuadraticSpline2d.fromControlPoints point point point)
 
 
 curvedSpline : Fuzzer (QuadraticSpline2d coordinates)
@@ -57,48 +50,44 @@ curvedSpline =
                         offset
 
                 p0 =
-                    Point2d.fromCoordinates ( x0, Quantity.zero )
+                    Point2d.fromCoordinates x0 zero
 
                 p1 =
-                    Point2d.fromCoordinates ( x1, y1 )
+                    Point2d.fromCoordinates x1 y1
 
                 p2 =
-                    Point2d.fromCoordinates ( x2, Quantity.zero )
+                    Point2d.fromCoordinates x2 zero
             in
-            QuadraticSpline2d.with
-                { startPoint = p0
-                , controlPoint = p1
-                , endPoint = p2
-                }
+            QuadraticSpline2d.fromControlPoints p0 p1 p2
                 |> QuadraticSpline2d.rotateAround Point2d.origin angle
         )
-        (Fuzz.map Angle.radians (Fuzz.floatRange 0 (2 * pi)))
-        (Fuzz.map Quantity.float (Fuzz.floatRange 1 10))
+        (Fuzz.map radians (Fuzz.floatRange 0 (2 * pi)))
+        (Fuzz.map meters (Fuzz.floatRange 1 10))
         (Fuzz.floatRange 0 1)
-        (Fuzz.map Quantity.float (Fuzz.floatRange 1 5))
+        (Fuzz.map meters (Fuzz.floatRange 1 5))
         Fuzz.bool
 
 
-analyticalLength : QuadraticSpline2d coordinates -> Quantity Float Unitless
+analyticalLength : QuadraticSpline2d coordinates -> Length
 analyticalLength spline =
     let
         p0 =
-            QuadraticSpline2d.startPoint spline
+            QuadraticSpline2d.firstControlPoint spline
 
         p1 =
-            QuadraticSpline2d.controlPoint spline
+            QuadraticSpline2d.secondControlPoint spline
 
         p2 =
-            QuadraticSpline2d.endPoint spline
+            QuadraticSpline2d.thirdControlPoint spline
 
         ( x0, y0 ) =
-            Point2d.toTuple p0
+            Point2d.toTuple inMeters p0
 
         ( x1, y1 ) =
-            Point2d.toTuple p1
+            Point2d.toTuple inMeters p1
 
         ( x2, y2 ) =
-            Point2d.toTuple p2
+            Point2d.toTuple inMeters p2
 
         ax =
             x0 - 2 * x1 + x2
@@ -136,25 +125,23 @@ analyticalLength spline =
         ba =
             b / a_2
     in
-    Quantity.float ((a_32 * s_abc + a_2 * b * (s_abc - c_2) + (4 * c * a - b * b) * logBase e ((2 * a_2 + ba + s_abc) / (ba + c_2))) / (4 * a_32))
+    meters ((a_32 * s_abc + a_2 * b * (s_abc - c_2) + (4 * c * a - b * b) * logBase e ((2 * a_2 + ba + s_abc) / (ba + c_2))) / (4 * a_32))
 
 
 exampleSpline : QuadraticSpline2d coordinates
 exampleSpline =
-    QuadraticSpline2d.with
-        { startPoint = Point2d.fromTuple ( 1, 1 )
-        , controlPoint = Point2d.fromTuple ( 3, 4 )
-        , endPoint = Point2d.fromTuple ( 5, 1 )
-        }
+    QuadraticSpline2d.fromControlPoints
+        (Point2d.fromTuple meters ( 1, 1 ))
+        (Point2d.fromTuple meters ( 3, 4 ))
+        (Point2d.fromTuple meters ( 5, 1 ))
 
 
 line : QuadraticSpline2d coordinates
 line =
-    QuadraticSpline2d.with
-        { startPoint = Point2d.fromTuple ( 0, 1 )
-        , controlPoint = Point2d.fromTuple ( 2.5, 1 )
-        , endPoint = Point2d.fromTuple ( 5, 1 )
-        }
+    QuadraticSpline2d.fromControlPoints
+        (Point2d.fromTuple meters ( 0, 1 ))
+        (Point2d.fromTuple meters ( 2.5, 1 ))
+        (Point2d.fromTuple meters ( 5, 1 ))
 
 
 parameterization : Test
@@ -165,31 +152,28 @@ parameterization =
                 let
                     parameterizedCurve =
                         exampleSpline
-                            |> QuadraticSpline2d.arcLengthParameterized
-                                { maxError = Quantity.float 0.001 }
+                            |> QuadraticSpline2d.arcLengthParameterized { maxError = meters 0.001 }
                 in
-                QuadraticSpline2d.pointAlong parameterizedCurve Quantity.zero
-                    |> Expect.equal (Just (Point2d.fromTuple ( 1, 1 )))
+                QuadraticSpline2d.pointAlong parameterizedCurve zero
+                    |> Expect.equal (Just (Point2d.fromTuple meters ( 1, 1 )))
         , Test.fuzz Fuzz.quadraticSpline2d "at s = 0 the arcLengthParameterized curve gives the starting point" <|
             \spline ->
                 let
                     parameterizedCurve =
                         spline
-                            |> QuadraticSpline2d.arcLengthParameterized
-                                { maxError = Quantity.float 0.001 }
+                            |> QuadraticSpline2d.arcLengthParameterized { maxError = meters 0.001 }
 
                     startPoint =
                         QuadraticSpline2d.startPoint spline
                 in
-                QuadraticSpline2d.pointAlong parameterizedCurve Quantity.zero
+                QuadraticSpline2d.pointAlong parameterizedCurve zero
                     |> Expect.equal (Just startPoint)
         , Test.fuzz (Fuzz.oneOf [ Fuzz.quadraticSpline2d, degenerateSpline ]) "at s = (length spline) the arcLengthParameterized curve gives the end point" <|
             \spline ->
                 let
                     parameterizedCurve =
                         spline
-                            |> QuadraticSpline2d.arcLengthParameterized
-                                { maxError = Quantity.float 0.001 }
+                            |> QuadraticSpline2d.arcLengthParameterized { maxError = meters 0.001 }
 
                     endPoint =
                         QuadraticSpline2d.endPoint spline
@@ -202,8 +186,7 @@ parameterization =
                 let
                     parameterizedCurve =
                         spline
-                            |> QuadraticSpline2d.arcLengthParameterized
-                                { maxError = Quantity.float 0.001 }
+                            |> QuadraticSpline2d.arcLengthParameterized { maxError = meters 0.001 }
 
                     arcLength =
                         QuadraticSpline2d.arcLength parameterizedCurve
@@ -211,10 +194,9 @@ parameterization =
                     parameterValue =
                         parameterizedCurve
                             |> QuadraticSpline2d.arcLengthParameterization
-                            |> ArcLengthParameterization.arcLengthToParameterValue
-                                arcLength
+                            |> ArcLengthParameterization.arcLengthToParameterValue arcLength
                 in
-                if arcLength == Quantity.zero then
+                if arcLength == zero then
                     parameterValue |> Expect.equal (Just ParameterValue.zero)
 
                 else
@@ -225,12 +207,10 @@ parameterization =
             \spline ->
                 let
                     tolerance =
-                        Quantity.float 0.001
+                        meters 0.001
 
                     parameterizedCurve =
-                        spline
-                            |> QuadraticSpline2d.arcLengthParameterized
-                                { maxError = tolerance }
+                        spline |> QuadraticSpline2d.arcLengthParameterized { maxError = tolerance }
                 in
                 QuadraticSpline2d.arcLength parameterizedCurve
                     |> Expect.quantityWithin tolerance (analyticalLength spline)
@@ -238,63 +218,53 @@ parameterization =
             \_ ->
                 let
                     parameterizedCurve =
-                        line
-                            |> QuadraticSpline2d.arcLengthParameterized
-                                { maxError = Quantity.float 0.1 }
+                        line |> QuadraticSpline2d.arcLengthParameterized { maxError = meters 0.1 }
                 in
-                QuadraticSpline2d.pointAlong parameterizedCurve
-                    (Quantity.float 5)
-                    |> Expect.equal (Just (Point2d.fromTuple ( 5, 1 )))
+                QuadraticSpline2d.pointAlong parameterizedCurve (meters 5)
+                    |> Expect.equal (Just (Point2d.fromTuple meters ( 5, 1 )))
         , Test.test "at s = 2.5 the result is the midpoint of the line" <|
             \_ ->
                 let
                     parameterizedCurve =
-                        line
-                            |> QuadraticSpline2d.arcLengthParameterized
-                                { maxError = Quantity.float 0.1 }
+                        line |> QuadraticSpline2d.arcLengthParameterized { maxError = meters 0.1 }
                 in
-                QuadraticSpline2d.pointAlong parameterizedCurve
-                    (Quantity.float 2.5)
-                    |> Expect.equal (Just (Point2d.fromTuple ( 2.5, 1 )))
+                QuadraticSpline2d.pointAlong parameterizedCurve (meters 2.5)
+                    |> Expect.equal (Just (Point2d.fromTuple meters ( 2.5, 1 )))
         , Test.test "at s=2.5 is about right" <|
             \_ ->
                 let
                     parameterizedCurve =
                         exampleSpline
-                            |> QuadraticSpline2d.arcLengthParameterized
-                                { maxError = Quantity.float 0.001 }
+                            |> QuadraticSpline2d.arcLengthParameterized { maxError = meters 0.001 }
 
                     expected =
                         Just <|
-                            Point2d.fromTuple
+                            Point2d.fromTuple meters
                                 ( 2.9008070813684963
                                 , 2.4963102868350115
                                 )
                 in
-                QuadraticSpline2d.pointAlong parameterizedCurve
-                    (Quantity.float 2.5)
+                QuadraticSpline2d.pointAlong parameterizedCurve (meters 2.5)
                     |> Expect.equal expected
         , Test.test "length is as expected" <|
             \_ ->
                 let
                     parameterizedCurve =
                         line
-                            |> QuadraticSpline2d.arcLengthParameterized
-                                { maxError = Quantity.float 0.001 }
+                            |> QuadraticSpline2d.arcLengthParameterized { maxError = meters 0.001 }
                 in
                 QuadraticSpline2d.arcLength parameterizedCurve
-                    |> Expect.equal (Quantity.float 5)
+                    |> Expect.equal (meters 5)
         , Test.test "length parameterization at approximate length is Just" <|
             \_ ->
                 let
                     parameterizedCurve =
                         exampleSpline
-                            |> QuadraticSpline2d.arcLengthParameterized
-                                { maxError = Quantity.float 0.001 }
+                            |> QuadraticSpline2d.arcLengthParameterized { maxError = meters 0.001 }
 
                     arcLength =
                         QuadraticSpline2d.arcLength parameterizedCurve
                 in
                 QuadraticSpline2d.pointAlong parameterizedCurve arcLength
-                    |> Expect.equal (Just (Point2d.fromTuple ( 5, 1 )))
+                    |> Expect.equal (Just (Point2d.fromTuple meters ( 5, 1 )))
         ]
