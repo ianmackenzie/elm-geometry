@@ -334,12 +334,9 @@ on sketchPlane point2d =
     --> Point3d.fromCoordinates ( 2, 3, 4 )
 
 -}
-fromCoordinatesIn : Frame3d units globalCoordinates localCoordinates -> ( Quantity Float units, Quantity Float units, Quantity Float units ) -> Point3d units globalCoordinates
-fromCoordinatesIn frame localCoordinates =
+fromCoordinatesIn : Frame3d units globalCoordinates localCoordinates -> Quantity Float units -> Quantity Float units -> Quantity Float units -> Point3d units globalCoordinates
+fromCoordinatesIn frame x y z =
     let
-        ( x, y, z ) =
-            localCoordinates
-
         ( x0, y0, z0 ) =
             coordinates (Frame3d.originPoint frame)
 
