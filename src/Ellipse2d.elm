@@ -11,6 +11,7 @@ module Ellipse2d exposing
     ( Ellipse2d, EllipseCoordinates
     , with
     , centerPoint, xAxis, yAxis, xDirection, yDirection, axes, xRadius, yRadius, area
+    , toEllipticalArc
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , relativeTo, placeIn
     )
@@ -37,6 +38,11 @@ includes functionality for
 @docs centerPoint, xAxis, yAxis, xDirection, yDirection, axes, xRadius, yRadius, area
 
 
+# Conversion
+
+@docs toEllipticalArc
+
+
 # Transformations
 
 @docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
@@ -52,7 +58,7 @@ import Angle exposing (Angle)
 import Axis2d exposing (Axis2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
-import Geometry.Types as Types
+import Geometry.Types as Types exposing (EllipticalArc2d(..))
 import Point2d exposing (Point2d)
 import Quantity exposing (Quantity, Squared)
 import Quantity.Extra as Quantity
@@ -205,6 +211,17 @@ yDirection ellipse =
 area : Ellipse2d units coordinates -> Quantity Float (Squared units)
 area ellipse =
     Quantity.multiplyBy pi (xRadius ellipse |> Quantity.times (yRadius ellipse))
+
+
+{-| Convert an ellipse to a 360 degree elliptical arc.
+-}
+toEllipticalArc : Ellipse2d units coordinates -> EllipticalArc2d units coordinates
+toEllipticalArc ellipse =
+    EllipticalArc2d
+        { ellipse = ellipse
+        , startAngle = Quantity.zero
+        , sweptAngle = Angle.turns 1
+        }
 
 
 {-| Scale an ellipse about a given point by a given scale.
