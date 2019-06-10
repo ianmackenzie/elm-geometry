@@ -10,7 +10,7 @@
 module Vector3d exposing
     ( Vector3d
     , zero
-    , fromComponents, fromComponentsIn, from, withLength, on, perpendicularTo, interpolateFrom
+    , fromComponents, fromComponentsIn, from, withLength, on, fromComponentsOn, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
     , components, componentsIn, xComponent, yComponent, componentIn, zComponent, length, direction, lengthAndDirection
     , equalWithin, lexicographicComparison
@@ -49,7 +49,7 @@ you will actually want their `Direction3d` versions [`Direction3d.x`](Direction3
 
 # Constructors
 
-@docs fromComponents, fromComponentsIn, from, withLength, on, perpendicularTo, interpolateFrom
+@docs fromComponents, fromComponentsIn, from, withLength, on, fromComponentsOn, perpendicularTo, interpolateFrom
 
 
 # Interop
@@ -255,14 +255,40 @@ A slightly more complex example:
 on : SketchPlane3d units coordinates3d coordinates2d -> Vector2d units coordinates2d -> Vector3d units coordinates3d
 on sketchPlane vector2d =
     let
+        ( x, y ) =
+            Vector2d.components vector2d
+    in
+    fromComponentsOn sketchPlane x y
+
+
+{-| Construct a 3D vector lying on a sketch plane by providing its 2D components within the sketch
+plane:
+
+    Vector3d.fromComponentsOn SketchPlane3d.xy
+        (meters 2)
+        (meters 3)
+    --> Vector3d.fromComponents
+    -->     (meters 2)
+    -->     (meters 3)
+    -->     (meters 0)
+
+    Vector3d.fromComponentsOn SketchPlane3d.zx
+        (meters 2)
+        (meters 3)
+    --> Vector3d.fromComponents
+    -->     (meters 3)
+    -->     (meters 0)
+    -->     (meters 2)
+
+-}
+fromComponentsOn : SketchPlane3d units coordinates3d coordinates2d -> Quantity Float units -> Quantity Float units -> Vector3d units coordinates
+fromComponentsOn sketchPlane x y =
+    let
         ( ux, uy, uz ) =
             Direction3d.components (SketchPlane3d.xDirection sketchPlane)
 
         ( vx, vy, vz ) =
             Direction3d.components (SketchPlane3d.yDirection sketchPlane)
-
-        ( x, y ) =
-            Vector2d.components vector2d
     in
     fromComponents
         (Quantity.aXbY ux x vx y)

@@ -10,7 +10,7 @@
 module Point3d exposing
     ( Point3d
     , origin
-    , fromCoordinates, fromCoordinatesIn, midpoint, centroid, interpolateFrom, along, on, circumcenter
+    , fromCoordinates, fromCoordinatesIn, midpoint, centroid, interpolateFrom, along, on, fromCoordinatesOn, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
     , coordinates, coordinatesIn, xCoordinate, yCoordinate, zCoordinate
     , equalWithin, lexicographicComparison
@@ -43,7 +43,7 @@ like you can add two vectors.
 
 # Constructors
 
-@docs fromCoordinates, fromCoordinatesIn, midpoint, centroid, interpolateFrom, along, on, circumcenter
+@docs fromCoordinates, fromCoordinatesIn, midpoint, centroid, interpolateFrom, along, on, fromCoordinatesOn, circumcenter
 
 
 # Interop
@@ -306,6 +306,35 @@ The sketch plane can have any position and orientation:
 on : SketchPlane3d units coordinates3d coordinates2d -> Point2d units coordinates2d -> Point3d units coordinates3d
 on sketchPlane point2d =
     let
+        ( x, y ) =
+            Point2d.coordinates point2d
+    in
+    fromCoordinatesOn sketchPlane x y
+
+
+{-| Construct a 3D point lying on a sketch plane by providing its 2D coordinates within that sketch
+plane:
+
+    Point3d.fromCoordinatesOn SketchPlane3d.xy
+        (meters 2)
+        (meters 1)
+    --> Point3d.fromCoordinates
+    -->     (meters 2)
+    -->     (meters 1)
+    -->     (meters 0)
+
+    Point3d.fromCoordinatesOn SketchPlane3d.xz
+        (meters 2)
+        (meters 1)
+    --> Point3d.fromCoordinates
+    -->     (meters 2)
+    -->     (meters 0)
+    -->     (meters 1)
+
+-}
+fromCoordinatesOn : SketchPlane3d units coordinates3d coordinates2d -> Quantity Float units -> Quantity Float units -> Point3d units coordinates
+fromCoordinatesOn sketchPlane x y =
+    let
         ( x0, y0, z0 ) =
             coordinates (SketchPlane3d.originPoint sketchPlane)
 
@@ -314,9 +343,6 @@ on sketchPlane point2d =
 
         ( vx, vy, vz ) =
             Direction3d.components (SketchPlane3d.yDirection sketchPlane)
-
-        ( x, y ) =
-            Point2d.coordinates point2d
     in
     fromCoordinates
         (x0 |> Quantity.plus (Quantity.aXbY ux x vx y))
