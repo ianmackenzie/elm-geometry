@@ -265,8 +265,7 @@ toArc (Types.Circle2d circle) =
 -}
 contains : Point2d units coordinates -> Circle2d units coordinates -> Bool
 contains point circle =
-    Point2d.squaredDistanceFrom (centerPoint circle) point
-        |> Quantity.lessThanOrEqualTo (Quantity.squared (radius circle))
+    point |> Point2d.distanceFrom (centerPoint circle) |> Quantity.lessThanOrEqualTo (radius circle)
 
 
 {-| Scale a circle about a given point by a given scale.

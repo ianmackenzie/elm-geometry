@@ -400,8 +400,7 @@ boundingBox sphere =
 -}
 contains : Point3d units coordinates -> Sphere3d units coordinates -> Bool
 contains point sphere =
-    Point3d.squaredDistanceFrom (centerPoint sphere) point
-        |> Quantity.lessThanOrEqualTo (Quantity.squared (radius sphere))
+    point |> Point3d.distanceFrom (centerPoint sphere) |> Quantity.lessThanOrEqualTo (radius sphere)
 
 
 {-| Find the [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)

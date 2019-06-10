@@ -15,7 +15,7 @@ module Point2d exposing
     , at, at_
     , coordinates, coordinatesIn, xCoordinate, yCoordinate, polarCoordinates
     , equalWithin, lexicographicComparison
-    , distanceFrom, squaredDistanceFrom, signedDistanceAlong, signedDistanceFrom
+    , distanceFrom, signedDistanceAlong, signedDistanceFrom
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
     , relativeTo, placeIn
     )
@@ -371,13 +371,13 @@ circumcenter : Point2d units coordinates -> Point2d units coordinates -> Point2d
 circumcenter p1 p2 p3 =
     let
         a2 =
-            squaredDistanceFrom p1 p2
+            Quantity.squared (distanceFrom p1 p2)
 
         b2 =
-            squaredDistanceFrom p2 p3
+            Quantity.squared (distanceFrom p2 p3)
 
         c2 =
-            squaredDistanceFrom p3 p1
+            Quantity.squared (distanceFrom p3 p1)
 
         t1 =
             a2 |> Quantity.times (b2 |> Quantity.plus c2 |> Quantity.minus a2)
@@ -653,8 +653,7 @@ between the two given points is less than the given tolerance.
 -}
 equalWithin : Quantity Float units -> Point2d units coordinates -> Point2d units coordinates -> Bool
 equalWithin tolerance firstPoint secondPoint =
-    squaredDistanceFrom firstPoint secondPoint
-        |> Quantity.lessThanOrEqualTo (Quantity.squared tolerance)
+    distanceFrom firstPoint secondPoint |> Quantity.lessThanOrEqualTo tolerance
 
 
 {-| Compare two `Point2d` values lexicographically: first by X coordinate, then
@@ -706,27 +705,7 @@ Partial application can be useful:
 -}
 distanceFrom : Point2d units coordinates -> Point2d units coordinates -> Quantity Float units
 distanceFrom firstPoint secondPoint =
-    Quantity.sqrt (squaredDistanceFrom firstPoint secondPoint)
-
-
-{-| Find the square of the distance from one point to another.
-`squaredDistanceFrom` is slightly faster than `distanceFrom`, so for example
-
-    Point2d.squaredDistanceFrom p1 p2
-        > (tolerance * tolerance)
-
-is equivalent to but slightly more efficient than
-
-    Point2d.distanceFrom p1 p2 > tolerance
-
-since the latter requires a square root under the hood. In many cases, however,
-the speed difference will be negligible and using `distanceFrom` is much more
-readable!
-
--}
-squaredDistanceFrom : Point2d units coordinates -> Point2d units coordinates -> Quantity Float (Squared units)
-squaredDistanceFrom firstPoint secondPoint =
-    Vector2d.squaredLength (Vector2d.from firstPoint secondPoint)
+    Vector2d.length (Vector2d.from firstPoint secondPoint)
 
 
 {-| Determine how far along an axis a particular point lies. Conceptually, the

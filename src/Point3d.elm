@@ -14,7 +14,7 @@ module Point3d exposing
     , fromTuple, toTuple, fromRecord, toRecord
     , coordinates, coordinatesIn, xCoordinate, yCoordinate, zCoordinate
     , equalWithin, lexicographicComparison
-    , distanceFrom, squaredDistanceFrom, signedDistanceAlong, distanceFromAxis, squaredDistanceFromAxis, signedDistanceFrom
+    , distanceFrom, signedDistanceAlong, distanceFromAxis, signedDistanceFrom
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectOntoAxis
     , relativeTo, placeIn, projectInto
     )
@@ -376,13 +376,13 @@ circumcenter : Point3d units coordinates -> Point3d units coordinates -> Point3d
 circumcenter p1 p2 p3 =
     let
         a2 =
-            squaredDistanceFrom p1 p2
+            Quantity.squared (distanceFrom p1 p2)
 
         b2 =
-            squaredDistanceFrom p2 p3
+            Quantity.squared (distanceFrom p2 p3)
 
         c2 =
-            squaredDistanceFrom p3 p1
+            Quantity.squared (distanceFrom p3 p1)
 
         t1 =
             a2 |> Quantity.times (b2 |> Quantity.plus c2 |> Quantity.minus a2)
@@ -625,8 +625,7 @@ between the two given points is less than the given tolerance.
 -}
 equalWithin : Quantity Float units -> Point3d units coordinates -> Point3d units coordinates -> Bool
 equalWithin tolerance firstPoint secondPoint =
-    squaredDistanceFrom firstPoint secondPoint
-        |> Quantity.lessThanOrEqualTo (Quantity.squared tolerance)
+    distanceFrom firstPoint secondPoint |> Quantity.lessThanOrEqualTo tolerance
 
 
 {-| Compare two `Point3d` values lexicographically: first by X coordinate, then
@@ -681,27 +680,7 @@ Partial application can be useful:
 -}
 distanceFrom : Point3d units coordinates -> Point3d units coordinates -> Quantity Float units
 distanceFrom firstPoint secondPoint =
-    Quantity.sqrt (squaredDistanceFrom firstPoint secondPoint)
-
-
-{-| Find the square of the distance from one point to another.
-`squaredDistanceFrom` is slightly faster than `distanceFrom`, so for example
-
-    Point3d.squaredDistanceFrom p1 p2
-        > (tolerance * tolerance)
-
-is equivalent to but slightly more efficient than
-
-    Point3d.distanceFrom p1 p2 > tolerance
-
-since the latter requires a square root under the hood. In many cases, however,
-the speed difference will be negligible and using `distanceFrom` is much more
-readable!
-
--}
-squaredDistanceFrom : Point3d units coordinates -> Point3d units coordinates -> Quantity Float (Squared units)
-squaredDistanceFrom firstPoint secondPoint =
-    Vector3d.squaredLength (Vector3d.from firstPoint secondPoint)
+    Vector3d.length (Vector3d.from firstPoint secondPoint)
 
 
 {-| Determine how far along an axis a particular point lies. Conceptually, the
@@ -748,16 +727,7 @@ no such thing as the left or right side of an axis in 3D.
 
 -}
 distanceFromAxis : Axis3d units coordinates -> Point3d units coordinates -> Quantity Float units
-distanceFromAxis axis point =
-    Quantity.sqrt (squaredDistanceFromAxis axis point)
-
-
-{-| Find the square of the perpendicular distance of a point from an axis. As
-with `distanceFrom`/`squaredDistanceFrom` this is slightly more efficient than
-`distanceFromAxis` since it avoids a square root.
--}
-squaredDistanceFromAxis : Axis3d units coordinates -> Point3d units coordinates -> Quantity Float (Squared units)
-squaredDistanceFromAxis (Types.Axis3d axis) point =
+distanceFromAxis (Types.Axis3d axis) point =
     let
         displacement =
             Vector3d.from axis.originPoint point
@@ -767,7 +737,7 @@ squaredDistanceFromAxis (Types.Axis3d axis) point =
                 |> Vector3d.minus
                     (displacement |> Vector3d.projectionIn axis.direction)
     in
-    Vector3d.squaredLength perpendicularDisplacement
+    Vector3d.length perpendicularDisplacement
 
 
 {-| Find the perpendicular distance of a point from a plane. The result will be

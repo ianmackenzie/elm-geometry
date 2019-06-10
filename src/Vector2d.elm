@@ -14,7 +14,7 @@ module Vector2d exposing
     , fromTuple, toTuple, fromRecord, toRecord
     , at, at_
     , per, for
-    , components, componentsIn, xComponent, yComponent, componentIn, polarComponents, length, squaredLength, direction, lengthAndDirection
+    , components, componentsIn, xComponent, yComponent, componentIn, polarComponents, length, direction, lengthAndDirection
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross
     , reverse, normalize, scaleBy, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
@@ -75,7 +75,7 @@ components.
 
 # Properties
 
-@docs components, componentsIn, xComponent, yComponent, componentIn, polarComponents, length, squaredLength, direction, lengthAndDirection
+@docs components, componentsIn, xComponent, yComponent, componentIn, polarComponents, length, direction, lengthAndDirection
 
 
 # Comparison
@@ -624,16 +624,7 @@ between the two given vectors has magnitude less than the given tolerance.
 -}
 equalWithin : Quantity Float units -> Vector2d units coordinates -> Vector2d units coordinates -> Bool
 equalWithin givenTolerance firstVector secondVector =
-    if givenTolerance |> Quantity.lessThan Quantity.zero then
-        False
-
-    else
-        let
-            difference =
-                secondVector |> minus firstVector
-        in
-        squaredLength difference
-            |> Quantity.lessThanOrEqualTo (Quantity.squared givenTolerance)
+    length (secondVector |> minus firstVector) |> Quantity.lessThanOrEqualTo givenTolerance
 
 
 {-| Compare two `Vector2d` values lexicographically: first by X component, then
@@ -663,30 +654,28 @@ lexicographicComparison firstVector secondVector =
 -}
 length : Vector2d units coordinates -> Quantity Float units
 length givenVector =
-    Quantity.sqrt (squaredLength givenVector)
-
-
-{-| Get the squared length of a vector. `squaredLength` is slightly faster than
-`length`, so for example
-
-    Vector2d.squaredLength vector > tolerance * tolerance
-
-is equivalent to but slightly more efficient than
-
-    Vector2d.length vector > tolerance
-
-since the latter requires a square root under the hood. In many cases, however,
-the speed difference will be negligible and using `length` is much more
-readable!
-
--}
-squaredLength : Vector2d units coordinates -> Quantity Float (Squared units)
-squaredLength givenVector =
     let
-        ( x, y ) =
+        ( vx, vy ) =
             components givenVector
+
+        largestComponent =
+            Quantity.max (Quantity.abs vx) (Quantity.abs vy)
     in
-    Quantity.squared x |> Quantity.plus (Quantity.squared y)
+    if largestComponent == Quantity.zero then
+        Quantity.zero
+
+    else
+        let
+            scaledX =
+                Quantity.ratio vx largestComponent
+
+            scaledY =
+                Quantity.ratio vy largestComponent
+
+            scaledLength =
+                sqrt (scaledX * scaledX + scaledY * scaledY)
+        in
+        Quantity.multiplyBy scaledLength largestComponent
 
 
 {-| Attempt to find the direction of a vector. In the case of a zero vector,
@@ -702,21 +691,27 @@ return `Nothing`.
 direction : Vector2d units coordinates -> Maybe (Direction2d coordinates)
 direction givenVector =
     let
-        vectorLength =
-            length givenVector
+        ( vx, vy ) =
+            components givenVector
+
+        largestComponent =
+            Quantity.max (Quantity.abs vx) (Quantity.abs vy)
     in
-    if vectorLength == Quantity.zero then
+    if largestComponent == Quantity.zero then
         Nothing
 
     else
         let
-            ( vx, vy ) =
-                components givenVector
+            scaledX =
+                Quantity.ratio vx largestComponent
+
+            scaledY =
+                Quantity.ratio vy largestComponent
+
+            scaledLength =
+                sqrt (scaledX * scaledX + scaledY * scaledY)
         in
-        Just <|
-            Direction2d.unsafeFromComponents
-                (Quantity.ratio vx vectorLength)
-                (Quantity.ratio vy vectorLength)
+        Just (Direction2d.unsafeFromComponents (scaledX / scaledLength) (scaledY / scaledLength))
 
 
 {-| Attempt to find the length and direction of a vector. In the case of a zero
@@ -738,23 +733,33 @@ vector, returns `Nothing`.
 lengthAndDirection : Vector2d units coordinates -> Maybe ( Quantity Float units, Direction2d coordinates )
 lengthAndDirection givenVector =
     let
-        vectorLength =
-            length givenVector
+        ( vx, vy ) =
+            components givenVector
+
+        largestComponent =
+            Quantity.max (Quantity.abs vx) (Quantity.abs vy)
     in
-    if vectorLength == Quantity.zero then
+    if largestComponent == Quantity.zero then
         Nothing
 
     else
         let
-            ( vx, vy ) =
-                components givenVector
+            scaledX =
+                Quantity.ratio vx largestComponent
 
-            vectorDirection =
-                Direction2d.unsafeFromComponents
-                    (Quantity.ratio vx vectorLength)
-                    (Quantity.ratio vy vectorLength)
+            scaledY =
+                Quantity.ratio vy largestComponent
+
+            scaledLength =
+                sqrt (scaledX * scaledX + scaledY * scaledY)
+
+            computedLength =
+                Quantity.multiplyBy scaledLength largestComponent
+
+            computedDirection =
+                Direction2d.unsafeFromComponents (scaledX / scaledLength) (scaledY / scaledLength)
         in
-        Just ( vectorLength, vectorDirection )
+        Just ( computedLength, computedDirection )
 
 
 {-| Normalize a vector to have a length of one. Zero vectors are left as-is.
@@ -784,20 +789,29 @@ like
 normalize : Vector2d units coordinates -> Vector2d Unitless coordinates
 normalize givenVector =
     let
-        vectorLength =
-            length givenVector
+        ( vx, vy ) =
+            components givenVector
+
+        largestComponent =
+            Quantity.max (Quantity.abs vx) (Quantity.abs vy)
     in
-    if vectorLength == Quantity.zero then
+    if largestComponent == Quantity.zero then
         zero
 
     else
         let
-            ( vx, vy ) =
-                components givenVector
+            scaledX =
+                Quantity.ratio vx largestComponent
+
+            scaledY =
+                Quantity.ratio vy largestComponent
+
+            scaledLength =
+                sqrt (scaledX * scaledX + scaledY * scaledY)
         in
         fromComponents
-            (Quantity.float (Quantity.ratio vx vectorLength))
-            (Quantity.float (Quantity.ratio vy vectorLength))
+            (Quantity.float (scaledX / scaledLength))
+            (Quantity.float (scaledY / scaledLength))
 
 
 {-| Find the sum of two vectors.

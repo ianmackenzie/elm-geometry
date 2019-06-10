@@ -12,7 +12,7 @@ module Vector3d exposing
     , zero
     , fromComponents, fromComponentsIn, from, withLength, on, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
-    , components, componentsIn, xComponent, yComponent, componentIn, zComponent, length, squaredLength, direction, lengthAndDirection
+    , components, componentsIn, xComponent, yComponent, componentIn, zComponent, length, direction, lengthAndDirection
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross
     , reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
@@ -562,16 +562,7 @@ between the two given vectors has magnitude less than the given tolerance.
 -}
 equalWithin : Quantity Float units -> Vector3d units coordinates -> Vector3d units coordinates -> Bool
 equalWithin givenTolerance firstVector secondVector =
-    if givenTolerance |> Quantity.lessThan Quantity.zero then
-        False
-
-    else
-        let
-            difference =
-                secondVector |> minus firstVector
-        in
-        squaredLength difference
-            |> Quantity.lessThanOrEqualTo (Quantity.squared givenTolerance)
+    length (secondVector |> minus firstVector) |> Quantity.lessThanOrEqualTo givenTolerance
 
 
 {-| Compare two `Vector3d` values lexicographically: first by X component, then
@@ -604,32 +595,31 @@ lexicographicComparison firstVector secondVector =
 -}
 length : Vector3d units coordinates -> Quantity Float units
 length vector =
-    Quantity.sqrt (squaredLength vector)
-
-
-{-| Get the squared length of a vector. `squaredLength` is slightly faster than
-`length`, so for example
-
-    Vector3d.squaredLength vector > tolerance * tolerance
-
-is equivalent to but slightly more efficient than
-
-    Vector3d.length vector > tolerance
-
-since the latter requires a square root under the hood. In many cases, however,
-the speed difference will be negligible and using `length` is much more
-readable!
-
--}
-squaredLength : Vector3d units coordinates -> Quantity Float (Squared units)
-squaredLength vector =
     let
-        ( x, y, z ) =
+        ( vx, vy, vz ) =
             components vector
+
+        largestComponent =
+            Quantity.max (Quantity.abs vx) (Quantity.max (Quantity.abs vy) (Quantity.abs vz))
     in
-    Quantity.squared x
-        |> Quantity.plus (Quantity.squared y)
-        |> Quantity.plus (Quantity.squared z)
+    if largestComponent == Quantity.zero then
+        Quantity.zero
+
+    else
+        let
+            scaledX =
+                Quantity.ratio vx largestComponent
+
+            scaledY =
+                Quantity.ratio vy largestComponent
+
+            scaledZ =
+                Quantity.ratio vz largestComponent
+
+            scaledLength =
+                sqrt (scaledX * scaledX + scaledY * scaledY + scaledZ * scaledZ)
+        in
+        Quantity.multiplyBy scaledLength largestComponent
 
 
 {-| Attempt to find the direction of a vector. In the case of a zero vector,
@@ -650,22 +640,34 @@ returns `Nothing`.
 direction : Vector3d units coordinates -> Maybe (Direction3d coordinates)
 direction givenVector =
     let
-        vectorLength =
-            length givenVector
+        ( vx, vy, vz ) =
+            components givenVector
+
+        largestComponent =
+            Quantity.max (Quantity.abs vx) (Quantity.max (Quantity.abs vy) (Quantity.abs vz))
     in
-    if vectorLength == Quantity.zero then
+    if largestComponent == Quantity.zero then
         Nothing
 
     else
         let
-            ( vx, vy, vz ) =
-                components givenVector
+            scaledX =
+                Quantity.ratio vx largestComponent
+
+            scaledY =
+                Quantity.ratio vy largestComponent
+
+            scaledZ =
+                Quantity.ratio vz largestComponent
+
+            scaledLength =
+                sqrt (scaledX * scaledX + scaledY * scaledY + scaledZ * scaledZ)
         in
         Just <|
             Direction3d.unsafeFromComponents
-                (Quantity.ratio vx vectorLength)
-                (Quantity.ratio vy vectorLength)
-                (Quantity.ratio vz vectorLength)
+                (scaledX / scaledLength)
+                (scaledY / scaledLength)
+                (scaledZ / scaledLength)
 
 
 {-| Attempt to find the length and direction of a vector. In the case of a zero
@@ -689,24 +691,39 @@ vector, returns `Nothing`.
 lengthAndDirection : Vector3d units coordinates -> Maybe ( Quantity Float units, Direction3d coordinates )
 lengthAndDirection givenVector =
     let
-        vectorLength =
-            length givenVector
+        ( vx, vy, vz ) =
+            components givenVector
+
+        largestComponent =
+            Quantity.max (Quantity.abs vx) (Quantity.max (Quantity.abs vy) (Quantity.abs vz))
     in
-    if vectorLength == Quantity.zero then
+    if largestComponent == Quantity.zero then
         Nothing
 
     else
         let
-            ( vx, vy, vz ) =
-                components givenVector
+            scaledX =
+                Quantity.ratio vx largestComponent
 
-            vectorDirection =
+            scaledY =
+                Quantity.ratio vy largestComponent
+
+            scaledZ =
+                Quantity.ratio vz largestComponent
+
+            scaledLength =
+                sqrt (scaledX * scaledX + scaledY * scaledY + scaledZ * scaledZ)
+
+            computedLength =
+                Quantity.multiplyBy scaledLength largestComponent
+
+            computedDirection =
                 Direction3d.unsafeFromComponents
-                    (Quantity.ratio vx vectorLength)
-                    (Quantity.ratio vy vectorLength)
-                    (Quantity.ratio vz vectorLength)
+                    (scaledX / scaledLength)
+                    (scaledY / scaledLength)
+                    (scaledZ / scaledLength)
         in
-        Just ( vectorLength, vectorDirection )
+        Just ( computedLength, computedDirection )
 
 
 {-| Normalize a vector to have a length of one. Zero vectors are left as-is.
@@ -736,21 +753,33 @@ like
 normalize : Vector3d units coordinates -> Vector3d Unitless coordinates
 normalize givenVector =
     let
-        vectorLength =
-            length givenVector
+        ( vx, vy, vz ) =
+            components givenVector
+
+        largestComponent =
+            Quantity.max (Quantity.abs vx) (Quantity.max (Quantity.abs vy) (Quantity.abs vz))
     in
-    if vectorLength == Quantity.zero then
+    if largestComponent == Quantity.zero then
         zero
 
     else
         let
-            ( vx, vy, vz ) =
-                components givenVector
+            scaledX =
+                Quantity.ratio vx largestComponent
+
+            scaledY =
+                Quantity.ratio vy largestComponent
+
+            scaledZ =
+                Quantity.ratio vz largestComponent
+
+            scaledLength =
+                sqrt (scaledX * scaledX + scaledY * scaledY + scaledZ * scaledZ)
         in
         fromComponents
-            (Quantity.float (Quantity.ratio vx vectorLength))
-            (Quantity.float (Quantity.ratio vy vectorLength))
-            (Quantity.float (Quantity.ratio vz vectorLength))
+            (Quantity.float (scaledX / scaledLength))
+            (Quantity.float (scaledY / scaledLength))
+            (Quantity.float (scaledZ / scaledLength))
 
 
 {-| Find the sum of two vectors.

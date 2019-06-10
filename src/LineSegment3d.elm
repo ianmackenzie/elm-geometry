@@ -10,7 +10,7 @@
 module LineSegment3d exposing
     ( LineSegment3d
     , fromEndpoints, from, along, on
-    , startPoint, endPoint, endpoints, midpoint, length, squaredLength, direction, perpendicularDirection, vector, boundingBox
+    , startPoint, endPoint, endpoints, midpoint, length, direction, perpendicularDirection, vector, boundingBox
     , interpolate
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapEndpoints
     , relativeTo, placeIn, projectInto
@@ -249,18 +249,6 @@ interpolate lineSegment t =
 length : LineSegment3d units coordinates -> Quantity Float units
 length lineSegment =
     Vector3d.length (vector lineSegment)
-
-
-{-| Get the squared length of a line segment. Slightly more efficient than
-`length` since it avoids a square root.
-
-    LineSegment3d.squaredLength exampleLineSegment
-    --> 27
-
--}
-squaredLength : LineSegment3d units coordinates -> Quantity Float (Squared units)
-squaredLength lineSegment =
-    Vector3d.squaredLength (vector lineSegment)
 
 
 {-| Get the direction from a line segment's start point to its end point. If the

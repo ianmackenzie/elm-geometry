@@ -485,7 +485,9 @@ withRadius givenRadius givenSweptAngle givenStartPoint givenEndPoint =
             Quantity.squared givenRadius
 
         squaredHalfLength =
-            Quantity.multiplyBy 0.25 (LineSegment2d.squaredLength chord)
+            LineSegment2d.length chord
+                |> Quantity.multiplyBy 0.5
+                |> Quantity.squared
     in
     if squaredRadius |> Quantity.greaterThanOrEqualTo squaredHalfLength then
         LineSegment2d.perpendicularDirection chord

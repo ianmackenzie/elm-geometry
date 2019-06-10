@@ -34,7 +34,8 @@ dotProductWithSelfIsSquaredLength =
         "Dot product of a vector with itself is its squared length"
         (\vector ->
             (vector |> Vector2d.dot vector)
-                |> Expect.approximately (Vector2d.squaredLength vector)
+                |> Expect.approximately
+                    (Quantity.squared (Vector2d.length vector))
         )
 
 

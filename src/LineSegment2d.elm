@@ -10,7 +10,7 @@
 module LineSegment2d exposing
     ( LineSegment2d
     , fromEndpoints, from, along
-    , startPoint, endPoint, endpoints, midpoint, length, squaredLength, direction, perpendicularDirection, vector, boundingBox
+    , startPoint, endPoint, endpoints, midpoint, length, direction, perpendicularDirection, vector, boundingBox
     , interpolate
     , intersectionPoint, intersectionWithAxis
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapEndpoints
@@ -221,20 +221,8 @@ interpolate lineSegment t =
 
 -}
 length : LineSegment2d units coordinates -> Quantity Float units
-length =
-    vector >> Vector2d.length
-
-
-{-| Get the squared length of a line segment. Slightly more efficient than
-`length` since it avoids a square root.
-
-    LineSegment2d.squaredLength exampleLineSegment
-    --> 8
-
--}
-squaredLength : LineSegment2d units coordinates -> Quantity Float (Squared units)
-squaredLength =
-    vector >> Vector2d.squaredLength
+length givenSegment =
+    Vector2d.length (vector givenSegment)
 
 
 {-| Get the direction from a line segment's start point to its end point. If the

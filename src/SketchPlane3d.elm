@@ -378,17 +378,11 @@ throughPoints firstPoint secondPoint thirdPoint =
                     secondCandidate =
                         Vector3d.from secondPoint thirdPoint
 
-                    firstSquaredLength =
-                        Vector3d.squaredLength firstCandidate
-
-                    secondSquaredLength =
-                        Vector3d.squaredLength secondCandidate
-
                     chosenVector =
                         if
-                            firstSquaredLength
+                            Vector3d.length firstCandidate
                                 |> Quantity.lessThanOrEqualTo
-                                    secondSquaredLength
+                                    (Vector3d.length secondCandidate)
                         then
                             firstCandidate
 
