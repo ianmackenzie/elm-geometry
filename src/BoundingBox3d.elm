@@ -412,10 +412,7 @@ midZ (Types.BoundingBox3d boundingBox) =
 -}
 centerPoint : BoundingBox3d units coordinates -> Point3d units coordinates
 centerPoint boundingBox =
-    Point3d.fromCoordinates
-        (midX boundingBox)
-        (midY boundingBox)
-        (midZ boundingBox)
+    Point3d.xyz (midX boundingBox) (midY boundingBox) (midZ boundingBox)
 
 
 {-| Check if a bounding box contains a particular point.

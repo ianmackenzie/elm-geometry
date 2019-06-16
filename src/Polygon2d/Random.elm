@@ -124,19 +124,19 @@ loopPoints boundingBox gridCoordinates =
 
         yStep =
             height |> Quantity.multiplyBy (0.7 / 8)
+
+        gridPoint ( i, j ) ( u, v ) =
+            let
+                px =
+                    xStart |> Quantity.plus (xStep |> Quantity.multiplyBy (toFloat i + u))
+
+                py =
+                    yStart |> Quantity.plus (yStep |> Quantity.multiplyBy (toFloat j + v))
+            in
+            Point2d.xy px py
     in
     Random.list (List.length gridCoordinates) localCoordinates
-        |> Random.map
-            (\localCoordinatesList ->
-                List.map2
-                    (\( i, j ) ( u, v ) ->
-                        Point2d.fromCoordinates
-                            (xStart |> Quantity.plus (Quantity.multiplyBy (toFloat i + u) xStep))
-                            (yStart |> Quantity.plus (Quantity.multiplyBy (toFloat j + v) yStep))
-                    )
-                    gridCoordinates
-                    localCoordinatesList
-            )
+        |> Random.map (List.map2 gridPoint gridCoordinates)
 
 
 squareOuterLoop : List ( Int, Int )

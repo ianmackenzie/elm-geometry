@@ -145,9 +145,7 @@ fromExtremaIn : Frame2d units globalCoordinates localCoordinates -> { minX : Qua
 fromExtremaIn localFrame { minX, maxX, minY, maxY } =
     let
         computedCenterPoint =
-            Point2d.fromCoordinatesIn localFrame
-                (Quantity.midpoint minX maxX)
-                (Quantity.midpoint minY maxY)
+            Point2d.xyIn localFrame (Quantity.midpoint minX maxX) (Quantity.midpoint minY maxY)
 
         computedDimensions =
             ( Quantity.abs (maxX |> Quantity.minus minX)
@@ -226,9 +224,7 @@ fromExtrema : { minX : Quantity Float units, maxX : Quantity Float units, minY :
 fromExtrema { minX, maxX, minY, maxY } =
     let
         computedAxes =
-            Frame2d.atCoordinates
-                (Quantity.midpoint minX maxX)
-                (Quantity.midpoint minY maxY)
+            Frame2d.atXY (Quantity.midpoint minX maxX) (Quantity.midpoint minY maxY)
 
         computedDimensions =
             ( Quantity.abs (maxX |> Quantity.minus minX)
@@ -393,22 +389,10 @@ vertices rectangle =
         halfHeight =
             Quantity.multiplyBy 0.5 height
     in
-    { bottomLeft =
-        Point2d.fromCoordinatesIn localFrame
-            (Quantity.negate halfWidth)
-            (Quantity.negate halfHeight)
-    , bottomRight =
-        Point2d.fromCoordinatesIn localFrame
-            halfWidth
-            (Quantity.negate halfHeight)
-    , topRight =
-        Point2d.fromCoordinatesIn localFrame
-            halfWidth
-            halfHeight
-    , topLeft =
-        Point2d.fromCoordinatesIn localFrame
-            (Quantity.negate halfWidth)
-            halfHeight
+    { bottomLeft = Point2d.xyIn localFrame (Quantity.negate halfWidth) (Quantity.negate halfHeight)
+    , bottomRight = Point2d.xyIn localFrame halfWidth (Quantity.negate halfHeight)
+    , topRight = Point2d.xyIn localFrame halfWidth halfHeight
+    , topLeft = Point2d.xyIn localFrame (Quantity.negate halfWidth) halfHeight
     }
 
 
@@ -432,9 +416,7 @@ bottomLeftVertex rectangle =
         ( width, height ) =
             dimensions rectangle
     in
-    Point2d.fromCoordinatesIn localFrame
-        (Quantity.multiplyBy -0.5 width)
-        (Quantity.multiplyBy -0.5 height)
+    Point2d.xyIn localFrame (Quantity.multiplyBy -0.5 width) (Quantity.multiplyBy -0.5 height)
 
 
 {-| Get the bottom right vertex of a rectangle;
@@ -457,9 +439,7 @@ bottomRightVertex rectangle =
         ( width, height ) =
             dimensions rectangle
     in
-    Point2d.fromCoordinatesIn localFrame
-        (Quantity.multiplyBy 0.5 width)
-        (Quantity.multiplyBy -0.5 height)
+    Point2d.xyIn localFrame (Quantity.multiplyBy 0.5 width) (Quantity.multiplyBy -0.5 height)
 
 
 {-| Get the top right vertex of a rectangle;
@@ -482,9 +462,7 @@ topRightVertex rectangle =
         ( width, height ) =
             dimensions rectangle
     in
-    Point2d.fromCoordinatesIn localFrame
-        (Quantity.multiplyBy 0.5 width)
-        (Quantity.multiplyBy 0.5 height)
+    Point2d.xyIn localFrame (Quantity.multiplyBy 0.5 width) (Quantity.multiplyBy 0.5 height)
 
 
 {-| Get the top left vertex of a rectangle;
@@ -507,9 +485,7 @@ topLeftVertex rectangle =
         ( width, height ) =
             dimensions rectangle
     in
-    Point2d.fromCoordinatesIn localFrame
-        (Quantity.multiplyBy -0.5 width)
-        (Quantity.multiplyBy 0.5 height)
+    Point2d.xyIn localFrame (Quantity.multiplyBy -0.5 width) (Quantity.multiplyBy 0.5 height)
 
 
 {-| Check if a rectangle contains a given point:

@@ -240,12 +240,14 @@ circumference circle =
 toArc : Circle2d units coordinates -> Arc2d units coordinates
 toArc (Types.Circle2d circle) =
     let
-        ( x0, y0 ) =
-            Point2d.coordinates circle.centerPoint
+        startX =
+            Point2d.xCoordinate circle.centerPoint |> Quantity.plus circle.radius
+
+        startY =
+            Point2d.yCoordinate circle.centerPoint
     in
     Types.Arc2d
-        { startPoint =
-            Point2d.fromCoordinates (x0 |> Quantity.plus circle.radius) y0
+        { startPoint = Point2d.xy startX startY
         , xDirection = Direction2d.y
         , sweptAngle = Angle.radians (2 * pi)
         , signedLength = Quantity.multiplyBy (2 * pi) circle.radius

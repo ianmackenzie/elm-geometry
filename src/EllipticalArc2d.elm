@@ -285,7 +285,7 @@ fromEndpoints arguments =
                             )
 
                 computedCenterPoint =
-                    Point2d.fromCoordinatesIn temporaryFrame
+                    Point2d.xyIn temporaryFrame
                         (Quantity.multiplyBy (1 - Angle.cos computedStartAngle) arguments.xRadius)
                         (Quantity.multiplyBy -(Angle.sin computedStartAngle) arguments.yRadius)
 
@@ -411,10 +411,14 @@ pointOn arc parameterValue =
             startAngle arc
                 |> Quantity.plus
                     (Quantity.multiplyBy t (sweptAngle arc))
+
+        localX =
+            Quantity.rCosTheta (xRadius arc) theta
+
+        localY =
+            Quantity.rSinTheta (yRadius arc) theta
     in
-    Point2d.fromCoordinatesIn (axes arc)
-        (Quantity.rCosTheta (xRadius arc) theta)
-        (Quantity.rSinTheta (yRadius arc) theta)
+    Point2d.xyIn (axes arc) localX localY
 
 
 {-| Get points along an elliptical arc at a given set of parameter values:

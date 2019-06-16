@@ -338,11 +338,17 @@ pointOn (Types.Arc3d arc) parameterValue =
         let
             distance =
                 Quantity.multiplyBy t arcSignedLength
+
+            px =
+                x0 |> Quantity.plus (distance |> Quantity.multiplyBy x1)
+
+            py =
+                y0 |> Quantity.plus (distance |> Quantity.multiplyBy y1)
+
+            pz =
+                z0 |> Quantity.plus (distance |> Quantity.multiplyBy z1)
         in
-        Point3d.fromCoordinates
-            (x0 |> Quantity.plus (Quantity.multiplyBy x1 distance))
-            (y0 |> Quantity.plus (Quantity.multiplyBy y1 distance))
-            (z0 |> Quantity.plus (Quantity.multiplyBy z1 distance))
+        Point3d.xyz px py pz
 
     else
         let
@@ -367,11 +373,17 @@ pointOn (Types.Arc3d arc) parameterValue =
 
                 else
                     Quantity.multiplyBy (1 - Angle.cos theta) arcRadius
+
+            px =
+                x0 |> Quantity.plus (Quantity.aXbY x1 x x2 y)
+
+            py =
+                y0 |> Quantity.plus (Quantity.aXbY y1 x y2 y)
+
+            pz =
+                z0 |> Quantity.plus (Quantity.aXbY z1 x z2 y)
         in
-        Point3d.fromCoordinates
-            (x0 |> Quantity.plus (Quantity.aXbY x1 x x2 y))
-            (y0 |> Quantity.plus (Quantity.aXbY y1 x y2 y))
-            (z0 |> Quantity.plus (Quantity.aXbY z1 x z2 y))
+        Point3d.xyz px py pz
 
 
 {-| Get points along an arc at a given set of parameter values.

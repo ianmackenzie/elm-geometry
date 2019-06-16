@@ -10,7 +10,7 @@
 module Frame2d exposing
     ( Frame2d
     , atOrigin
-    , atPoint, atCoordinates, withXDirection, withYDirection, copy, unsafe
+    , atPoint, atXY, withXDirection, withYDirection, copy, unsafe
     , originPoint, xDirection, yDirection, isRightHanded, xAxis, yAxis
     , reverseX, reverseY, moveTo, rotateBy, rotateAround, translateBy, translateIn, translateAlongOwn, mirrorAcross
     , relativeTo, placeIn
@@ -40,7 +40,7 @@ always perpendicular to each other). It can be thought of as:
 
 # Constructors
 
-@docs atPoint, atCoordinates, withXDirection, withYDirection, copy, unsafe
+@docs atPoint, atXY, withXDirection, withYDirection, copy, unsafe
 
 
 # Properties
@@ -212,9 +212,9 @@ is equivalent to
     Frame2d.atPoint (Point2d.fromCoordinates ( x, y ))
 
 -}
-atCoordinates : Quantity Float units -> Quantity Float units -> Frame2d units coordinates1 coordinates2
-atCoordinates x y =
-    atPoint (Point2d.fromCoordinates x y)
+atXY : Quantity Float units -> Quantity Float units -> Frame2d units coordinates1 coordinates2
+atXY x y =
+    atPoint (Point2d.xy x y)
 
 
 {-| Get the origin point of a given frame.

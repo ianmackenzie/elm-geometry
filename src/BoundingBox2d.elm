@@ -353,7 +353,7 @@ midY (Types.BoundingBox2d boundingBox) =
 -}
 centerPoint : BoundingBox2d units coordinates -> Point2d units coordinates
 centerPoint boundingBox =
-    Point2d.fromCoordinates (midX boundingBox) (midY boundingBox)
+    Point2d.xy (midX boundingBox) (midY boundingBox)
 
 
 {-| Check if a bounding box contains a particular point.

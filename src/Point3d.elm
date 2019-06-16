@@ -10,7 +10,7 @@
 module Point3d exposing
     ( Point3d
     , origin
-    , fromCoordinates, fromCoordinatesIn, midpoint, centroid, interpolateFrom, along, on, fromCoordinatesOn, circumcenter
+    , xyz, xyzIn, midpoint, centroid, interpolateFrom, along, on, xyOn, rThetaOn, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
     , coordinates, coordinatesIn, xCoordinate, yCoordinate, zCoordinate
     , equalWithin, lexicographicComparison
@@ -43,7 +43,7 @@ like you can add two vectors.
 
 # Constructors
 
-@docs fromCoordinates, fromCoordinatesIn, midpoint, centroid, interpolateFrom, along, on, fromCoordinatesOn, circumcenter
+@docs xyz, xyzIn, midpoint, centroid, interpolateFrom, along, on, xyOn, rThetaOn, circumcenter
 
 
 # Interop
@@ -113,7 +113,7 @@ type alias Point3d units coordinates =
 -}
 origin : Point3d units coordinates
 origin =
-    fromCoordinates Quantity.zero Quantity.zero Quantity.zero
+    xyz Quantity.zero Quantity.zero Quantity.zero
 
 
 {-| Construct a point from its X, Y and Z coordinates.
@@ -122,8 +122,8 @@ origin =
         Point3d.fromCoordinates ( 2, 1, 3 )
 
 -}
-fromCoordinates : Quantity Float units -> Quantity Float units -> Quantity Float units -> Point3d units coordinates
-fromCoordinates x y z =
+xyz : Quantity Float units -> Quantity Float units -> Quantity Float units -> Point3d units coordinates
+xyz x y z =
     Types.Point3d ( x, y, z )
 
 
@@ -198,7 +198,7 @@ centroidHelp x0 y0 z0 count dx dy dz points =
                 scale =
                     1 / count
             in
-            fromCoordinates
+            xyz
                 (x0 |> Quantity.plus (Quantity.multiplyBy scale dx))
                 (y0 |> Quantity.plus (Quantity.multiplyBy scale dy))
                 (z0 |> Quantity.plus (Quantity.multiplyBy scale dz))
@@ -246,7 +246,7 @@ interpolateFrom p1 p2 t =
         ( x2, y2, z2 ) =
             coordinates p2
     in
-    fromCoordinates
+    xyz
         (Quantity.interpolateFrom x1 x2 t)
         (Quantity.interpolateFrom y1 y2 t)
         (Quantity.interpolateFrom z1 z2 t)
@@ -309,7 +309,7 @@ on sketchPlane point2d =
         ( x, y ) =
             Point2d.coordinates point2d
     in
-    fromCoordinatesOn sketchPlane x y
+    xyOn sketchPlane x y
 
 
 {-| Construct a 3D point lying on a sketch plane by providing its 2D coordinates within that sketch
@@ -332,8 +332,8 @@ plane:
     -->     (meters 1)
 
 -}
-fromCoordinatesOn : SketchPlane3d units coordinates3d coordinates2d -> Quantity Float units -> Quantity Float units -> Point3d units coordinates
-fromCoordinatesOn sketchPlane x y =
+xyOn : SketchPlane3d units coordinates3d coordinates2d -> Quantity Float units -> Quantity Float units -> Point3d units coordinates
+xyOn sketchPlane x y =
     let
         ( x0, y0, z0 ) =
             coordinates (SketchPlane3d.originPoint sketchPlane)
@@ -344,10 +344,17 @@ fromCoordinatesOn sketchPlane x y =
         ( vx, vy, vz ) =
             Direction3d.components (SketchPlane3d.yDirection sketchPlane)
     in
-    fromCoordinates
+    xyz
         (x0 |> Quantity.plus (Quantity.aXbY ux x vx y))
         (y0 |> Quantity.plus (Quantity.aXbY uy x vy y))
         (z0 |> Quantity.plus (Quantity.aXbY uz x vz y))
+
+
+{-| TODO
+-}
+rThetaOn : SketchPlane3d units coordinates3d coordinates2d -> Quantity Float units -> Angle -> Point3d units coordinates
+rThetaOn sketchPlane radius angle =
+    xyOn sketchPlane (Quantity.rCosTheta radius angle) (Quantity.rSinTheta radius angle)
 
 
 {-| Construct a point given its local coordinates within a particular frame:
@@ -360,8 +367,8 @@ fromCoordinatesOn sketchPlane x y =
     --> Point3d.fromCoordinates ( 2, 3, 4 )
 
 -}
-fromCoordinatesIn : Frame3d units globalCoordinates localCoordinates -> Quantity Float units -> Quantity Float units -> Quantity Float units -> Point3d units globalCoordinates
-fromCoordinatesIn frame x y z =
+xyzIn : Frame3d units globalCoordinates localCoordinates -> Quantity Float units -> Quantity Float units -> Quantity Float units -> Point3d units globalCoordinates
+xyzIn frame x y z =
     let
         ( x0, y0, z0 ) =
             coordinates (Frame3d.originPoint frame)
@@ -375,7 +382,7 @@ fromCoordinatesIn frame x y z =
         ( x3, y3, z3 ) =
             Direction3d.components (Frame3d.zDirection frame)
     in
-    fromCoordinates
+    xyz
         (x0 |> Quantity.plus (Quantity.aXbYcZ x1 x x2 y x3 z))
         (y0 |> Quantity.plus (Quantity.aXbYcZ y1 x y2 y y3 z))
         (z0 |> Quantity.plus (Quantity.aXbYcZ z1 x z2 y z3 z))
@@ -446,7 +453,7 @@ circumcenter p1 p2 p3 =
                 coordinates p3
         in
         Just <|
-            fromCoordinates
+            xyz
                 (Quantity.aXbYcZ w1 x3 w2 x1 w3 x2)
                 (Quantity.aXbYcZ w1 y3 w2 y1 w3 y2)
                 (Quantity.aXbYcZ w1 z3 w2 z1 w3 z2)
@@ -464,10 +471,7 @@ in.
 -}
 fromTuple : (Float -> Quantity Float units) -> ( Float, Float, Float ) -> Point3d units coordinates
 fromTuple toQuantity ( x, y, z ) =
-    fromCoordinates
-        (toQuantity x)
-        (toQuantity y)
-        (toQuantity z)
+    xyz (toQuantity x) (toQuantity y) (toQuantity z)
 
 
 {-| Convert a `Point3d` to a tuple of `Float` values, by specifying what units you want the result
@@ -503,10 +507,7 @@ are in.
 -}
 fromRecord : (Float -> Quantity Float units) -> { x : Float, y : Float, z : Float } -> Point3d units coordinates
 fromRecord toQuantity { x, y, z } =
-    fromCoordinates
-        (toQuantity x)
-        (toQuantity y)
-        (toQuantity z)
+    xyz (toQuantity x) (toQuantity y) (toQuantity z)
 
 
 {-| Convert a `Point3d` to a record with `Float` fields, by specifying what units you want the
@@ -898,10 +899,7 @@ translateBy vector point =
         ( px, py, pz ) =
             coordinates point
     in
-    fromCoordinates
-        (px |> Quantity.plus vx)
-        (py |> Quantity.plus vy)
-        (pz |> Quantity.plus vz)
+    xyz (px |> Quantity.plus vx) (py |> Quantity.plus vy) (pz |> Quantity.plus vz)
 
 
 {-| Translate a point in a given direction by a given distance.
@@ -930,7 +928,7 @@ translateIn direction distance point =
         ( px, py, pz ) =
             coordinates point
     in
-    fromCoordinates
+    xyz
         (px |> Quantity.plus (Quantity.multiplyBy dx distance))
         (py |> Quantity.plus (Quantity.multiplyBy dy distance))
         (pz |> Quantity.plus (Quantity.multiplyBy dz distance))
@@ -1106,15 +1104,19 @@ projectInto sketchPlane point =
         ( vx, vy, vz ) =
             Direction3d.components (SketchPlane3d.yDirection sketchPlane)
 
-        dx =
+        deltaX =
             x |> Quantity.minus x0
 
-        dy =
+        deltaY =
             y |> Quantity.minus y0
 
-        dz =
+        deltaZ =
             z |> Quantity.minus z0
+
+        sketchX =
+            Quantity.aXbYcZ ux deltaX uy deltaY uz deltaZ
+
+        sketchY =
+            Quantity.aXbYcZ vx deltaX vy deltaY vz deltaZ
     in
-    Point2d.fromCoordinates
-        (Quantity.aXbYcZ ux dx uy dy uz dz)
-        (Quantity.aXbYcZ vx dx vy dy vz dz)
+    Point2d.xy sketchX sketchY

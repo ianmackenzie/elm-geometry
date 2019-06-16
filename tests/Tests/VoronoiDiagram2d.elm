@@ -148,7 +148,7 @@ pointInPolygon polygon =
                                 Quantity.sum weightedYCoordinates
                                     |> Quantity.divideBy totalWeight
                         in
-                        Point2d.fromCoordinates x y
+                        Point2d.xy x y
                     )
 
 

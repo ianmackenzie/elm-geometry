@@ -50,13 +50,13 @@ curvedSpline =
                         offset
 
                 p0 =
-                    Point2d.fromCoordinates x0 zero
+                    Point2d.xy x0 zero
 
                 p1 =
-                    Point2d.fromCoordinates x1 y1
+                    Point2d.xy x1 y1
 
                 p2 =
-                    Point2d.fromCoordinates x2 zero
+                    Point2d.xy x2 zero
             in
             QuadraticSpline2d.fromControlPoints p0 p1 p2
                 |> QuadraticSpline2d.rotateAround Point2d.origin angle

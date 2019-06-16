@@ -10,7 +10,7 @@
 module Point2d exposing
     ( Point2d
     , origin
-    , fromCoordinates, fromCoordinatesIn, fromPolarCoordinates, fromPolarCoordinatesIn, midpoint, centroid, interpolateFrom, along, circumcenter
+    , xy, xyIn, rTheta, rThetaIn, midpoint, centroid, interpolateFrom, along, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
     , at, at_
     , coordinates, coordinatesIn, xCoordinate, yCoordinate, polarCoordinates
@@ -43,7 +43,7 @@ like you can add two vectors.
 
 # Constructors
 
-@docs fromCoordinates, fromCoordinatesIn, fromPolarCoordinates, fromPolarCoordinatesIn, midpoint, centroid, interpolateFrom, along, circumcenter
+@docs xy, xyIn, rTheta, rThetaIn, midpoint, centroid, interpolateFrom, along, circumcenter
 
 
 # Interop
@@ -116,7 +116,7 @@ type alias Point2d units coordinates =
 -}
 origin : Point2d units coordinates
 origin =
-    fromCoordinates Quantity.zero Quantity.zero
+    xy Quantity.zero Quantity.zero
 
 
 {-| Construct a point from its X and Y coordinates.
@@ -125,8 +125,8 @@ origin =
         Point2d.fromCoordinates ( 2, 3 )
 
 -}
-fromCoordinates : Quantity Float units -> Quantity Float units -> Point2d units coordinates
-fromCoordinates givenXCoordinate givenYCoordinate =
+xy : Quantity Float units -> Quantity Float units -> Point2d units coordinates
+xy givenXCoordinate givenYCoordinate =
     Types.Point2d ( givenXCoordinate, givenYCoordinate )
 
 
@@ -137,11 +137,9 @@ origin and angle is measured counterclockwise from the positive X direction.
     --> Point2d.fromCoordinates ( -1.4142, 1.4142 )
 
 -}
-fromPolarCoordinates : Quantity Float units -> Angle -> Point2d units coordinates
-fromPolarCoordinates givenRadius givenAngle =
-    fromCoordinates
-        (Quantity.rCosTheta givenRadius givenAngle)
-        (Quantity.rSinTheta givenRadius givenAngle)
+rTheta : Quantity Float units -> Angle -> Point2d units coordinates
+rTheta givenRadius givenAngle =
+    xy (Quantity.rCosTheta givenRadius givenAngle) (Quantity.rSinTheta givenRadius givenAngle)
 
 
 {-| Construct a point halfway between two other points.
@@ -212,7 +210,7 @@ centroidHelp x0 y0 count dx dy points =
                 scale =
                     1 / count
             in
-            fromCoordinates
+            xy
                 (x0 |> Quantity.plus (Quantity.multiplyBy scale dx))
                 (y0 |> Quantity.plus (Quantity.multiplyBy scale dy))
 
@@ -259,9 +257,7 @@ interpolateFrom p1 p2 t =
         ( x2, y2 ) =
             coordinates p2
     in
-    fromCoordinates
-        (Quantity.interpolateFrom x1 x2 t)
-        (Quantity.interpolateFrom y1 y2 t)
+    xy (Quantity.interpolateFrom x1 x2 t) (Quantity.interpolateFrom y1 y2 t)
 
 
 {-| Construct a point along an axis at a particular distance from the axis'
@@ -299,8 +295,8 @@ along axis distance =
     --> Point2d.fromCoordinates ( 1.4142, 1.4142 )
 
 -}
-fromCoordinatesIn : Frame2d units globalCoordinates localCoordinates -> Quantity Float units -> Quantity Float units -> Point2d units globalCoordinates
-fromCoordinatesIn frame x y =
+xyIn : Frame2d units globalCoordinates localCoordinates -> Quantity Float units -> Quantity Float units -> Point2d units globalCoordinates
+xyIn frame x y =
     let
         ( x0, y0 ) =
             coordinates (Frame2d.originPoint frame)
@@ -311,7 +307,7 @@ fromCoordinatesIn frame x y =
         ( x2, y2 ) =
             Direction2d.components (Frame2d.yDirection frame)
     in
-    fromCoordinates
+    xy
         (x0 |> Quantity.plus (Quantity.aXbY x1 x x2 y))
         (y0 |> Quantity.plus (Quantity.aXbY y1 x y2 y))
 
@@ -327,11 +323,9 @@ frame:
     --> Point2d.fromCoordinates ( 3.4142, 2.4142 )
 
 -}
-fromPolarCoordinatesIn : Frame2d units globalCoordinates localCoordinates -> Quantity Float units -> Angle -> Point2d units globalCoordinates
-fromPolarCoordinatesIn frame r theta =
-    fromCoordinatesIn frame
-        (Quantity.rCosTheta r theta)
-        (Quantity.rSinTheta r theta)
+rThetaIn : Frame2d units globalCoordinates localCoordinates -> Quantity Float units -> Angle -> Point2d units globalCoordinates
+rThetaIn frame r theta =
+    xyIn frame (Quantity.rCosTheta r theta) (Quantity.rSinTheta r theta)
 
 
 {-| Attempt to find the circumcenter of three points; this is the center of the
@@ -414,10 +408,7 @@ circumcenter p1 p2 p3 =
             ( x3, y3 ) =
                 coordinates p3
         in
-        Just <|
-            fromCoordinates
-                (Quantity.aXbYcZ w1 x3 w2 x1 w3 x2)
-                (Quantity.aXbYcZ w1 y3 w2 y1 w3 y2)
+        Just (xy (Quantity.aXbYcZ w1 x3 w2 x1 w3 x2) (Quantity.aXbYcZ w1 y3 w2 y1 w3 y2))
 
 
 {-| Construct a `Point2d` from a tuple of `Float` values, by specifying what units those values are
@@ -431,7 +422,7 @@ in.
 -}
 fromTuple : (Float -> Quantity Float units) -> ( Float, Float ) -> Point2d units coordinates
 fromTuple toQuantity ( x, y ) =
-    fromCoordinates (toQuantity x) (toQuantity y)
+    xy (toQuantity x) (toQuantity y)
 
 
 {-| Convert a `Point2d` to a tuple of `Float` values, by specifying what units you want the result
@@ -464,7 +455,7 @@ are in.
 -}
 fromRecord : (Float -> Quantity Float units) -> { x : Float, y : Float } -> Point2d units coordinates
 fromRecord toQuantity { x, y } =
-    fromCoordinates (toQuantity x) (toQuantity y)
+    xy (toQuantity x) (toQuantity y)
 
 
 {-| Convert a `Point2d` to a record with `Float` fields, by specifying what units you want the
@@ -510,7 +501,7 @@ at rate point =
         ( x, y ) =
             coordinates point
     in
-    fromCoordinates (Quantity.at rate x) (Quantity.at rate y)
+    xy (Quantity.at rate x) (Quantity.at rate y)
 
 
 {-| Convert a point from one units type to another, by providing an 'inverse' conversion factor
@@ -539,7 +530,7 @@ at_ rate point =
         ( x, y ) =
             coordinates point
     in
-    fromCoordinates (Quantity.at_ rate x) (Quantity.at_ rate y)
+    xy (Quantity.at_ rate x) (Quantity.at_ rate y)
 
 
 {-| Get the coordinates of a point as a tuple.
@@ -813,9 +804,7 @@ scaleAbout centerPoint scale point =
         ( x, y ) =
             coordinates point
     in
-    fromCoordinates
-        (Quantity.scaleAbout x0 scale x)
-        (Quantity.scaleAbout y0 scale y)
+    xy (Quantity.scaleAbout x0 scale x) (Quantity.scaleAbout y0 scale y)
 
 
 {-| Rotate around a given center point counterclockwise by a given angle (in
@@ -866,9 +855,7 @@ translateBy vector point =
         ( px, py ) =
             coordinates point
     in
-    fromCoordinates
-        (px |> Quantity.plus vx)
-        (py |> Quantity.plus vy)
+    xy (px |> Quantity.plus vx) (py |> Quantity.plus vy)
 
 
 {-| Translate a point in a given direction by a given distance.
@@ -903,7 +890,7 @@ translateIn direction distance point =
         ( px, py ) =
             coordinates point
     in
-    fromCoordinates
+    xy
         (px |> Quantity.plus (Quantity.multiplyBy dx distance))
         (py |> Quantity.plus (Quantity.multiplyBy dy distance))
 

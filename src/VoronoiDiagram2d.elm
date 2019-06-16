@@ -917,16 +917,16 @@ polygons boundingBox (VoronoiDiagram2d voronoiDiagram) =
             BoundingBox2d.extrema boundingBox
 
         topLeftVertex =
-            Point2d.fromCoordinates minX maxY
+            Point2d.xy minX maxY
 
         topRightVertex =
-            Point2d.fromCoordinates maxX maxY
+            Point2d.xy maxX maxY
 
         bottomLeftVertex =
-            Point2d.fromCoordinates minX minY
+            Point2d.xy minX minY
 
         bottomRightVertex =
-            Point2d.fromCoordinates maxX minY
+            Point2d.xy maxX minY
 
         trimBox =
             { boundingBox = boundingBox

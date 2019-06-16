@@ -161,12 +161,12 @@ direction3d =
 
 point2d : Fuzzer (Point2d coordinates)
 point2d =
-    Fuzz.map2 Point2d.fromCoordinates length length
+    Fuzz.map2 Point2d.xy length length
 
 
 point3d : Fuzzer (Point3d coordinates)
 point3d =
-    Fuzz.map3 Point3d.fromCoordinates length length length
+    Fuzz.map3 Point3d.xyz length length length
 
 
 axis2d : Fuzzer (Axis2d coordinates)
