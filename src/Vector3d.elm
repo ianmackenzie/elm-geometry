@@ -10,9 +10,9 @@
 module Vector3d exposing
     ( Vector3d
     , zero
-    , fromComponents, fromComponentsIn, from, withLength, on, fromComponentsOn, perpendicularTo, interpolateFrom
+    , xyz, xyzIn, from, withLength, on, xyOn, rThetaOn, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
-    , xComponent, yComponent, componentIn, zComponent, length, direction, lengthAndDirection
+    , xComponent, yComponent, zComponent, componentIn, length, direction, lengthAndDirection
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross
     , reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
@@ -49,7 +49,7 @@ you will actually want their `Direction3d` versions [`Direction3d.x`](Direction3
 
 # Constructors
 
-@docs fromComponents, fromComponentsIn, from, withLength, on, fromComponentsOn, perpendicularTo, interpolateFrom
+@docs xyz, xyzIn, from, withLength, on, xyOn, rThetaOn, perpendicularTo, interpolateFrom
 
 
 # Interop
@@ -64,7 +64,7 @@ components.
 
 # Properties
 
-@docs xComponent, yComponent, componentIn, zComponent, length, squaredLength, direction, lengthAndDirection
+@docs xComponent, yComponent, zComponent, componentIn, length, squaredLength, direction, lengthAndDirection
 
 
 # Comparison
@@ -129,7 +129,7 @@ type alias Vector3d units coordinates =
 -}
 zero : Vector3d units coordinates
 zero =
-    fromComponents Quantity.zero Quantity.zero Quantity.zero
+    xyz Quantity.zero Quantity.zero Quantity.zero
 
 
 {-| Construct a vector from its X, Y and Z components.
@@ -138,8 +138,8 @@ zero =
         Vector3d.fromComponents ( 2, 1, 3 )
 
 -}
-fromComponents : Quantity Float units -> Quantity Float units -> Quantity Float units -> Vector3d units coordinates
-fromComponents x y z =
+xyz : Quantity Float units -> Quantity Float units -> Quantity Float units -> Vector3d units coordinates
+xyz x y z =
     Types.Vector3d ( x, y, z )
 
 
@@ -162,8 +162,8 @@ fromComponents x y z =
     -->     )
 
 -}
-fromComponentsIn : Frame3d units globalCoordinates localCoordinates -> Quantity Float units -> Quantity Float units -> Quantity Float units -> Vector3d units globalCoordinates
-fromComponentsIn frame x y z =
+xyzIn : Frame3d units globalCoordinates localCoordinates -> Quantity Float units -> Quantity Float units -> Quantity Float units -> Vector3d units globalCoordinates
+xyzIn frame x y z =
     let
         x1 =
             Direction3d.xComponent (Frame3d.xDirection frame)
@@ -192,7 +192,7 @@ fromComponentsIn frame x y z =
         z3 =
             Direction3d.zComponent (Frame3d.zDirection frame)
     in
-    fromComponents
+    xyz
         (Quantity.aXbYcZ x1 x x2 y x3 z)
         (Quantity.aXbYcZ y1 x y2 y y3 z)
         (Quantity.aXbYcZ z1 x z2 y z3 z)
@@ -231,7 +231,7 @@ from firstPoint secondPoint =
         z2 =
             Point3d.zCoordinate secondPoint
     in
-    fromComponents
+    xyz
         (x2 |> Quantity.minus x1)
         (y2 |> Quantity.minus y1)
         (z2 |> Quantity.minus z1)
@@ -255,7 +255,7 @@ withLength givenLength givenDirection =
         dz =
             Direction3d.zComponent givenDirection
     in
-    fromComponents
+    xyz
         (Quantity.multiplyBy dx givenLength)
         (Quantity.multiplyBy dy givenLength)
         (Quantity.multiplyBy dz givenLength)
@@ -290,7 +290,7 @@ A slightly more complex example:
 -}
 on : SketchPlane3d units coordinates3d coordinates2d -> Vector2d units coordinates2d -> Vector3d units coordinates3d
 on sketchPlane vector2d =
-    fromComponentsOn sketchPlane (Vector2d.xComponent vector2d) (Vector2d.yComponent vector2d)
+    xyOn sketchPlane (Vector2d.xComponent vector2d) (Vector2d.yComponent vector2d)
 
 
 {-| Construct a 3D vector lying on a sketch plane by providing its 2D components within the sketch
@@ -313,8 +313,8 @@ plane:
     -->     (meters 2)
 
 -}
-fromComponentsOn : SketchPlane3d units coordinates3d coordinates2d -> Quantity Float units -> Quantity Float units -> Vector3d units coordinates
-fromComponentsOn sketchPlane x y =
+xyOn : SketchPlane3d units coordinates3d coordinates2d -> Quantity Float units -> Quantity Float units -> Vector3d units coordinates
+xyOn sketchPlane x y =
     let
         ux =
             Direction3d.xComponent (SketchPlane3d.xDirection sketchPlane)
@@ -334,10 +334,17 @@ fromComponentsOn sketchPlane x y =
         vz =
             Direction3d.zComponent (SketchPlane3d.yDirection sketchPlane)
     in
-    fromComponents
+    xyz
         (Quantity.aXbY ux x vx y)
         (Quantity.aXbY uy x vy y)
         (Quantity.aXbY uz x vz y)
+
+
+{-| TODO
+-}
+rThetaOn : SketchPlane3d units coordinates3d coordinates2d -> Quantity Float units -> Angle -> Vector3d units coordinates3d
+rThetaOn sketchPlane radius angle =
+    xyOn sketchPlane (Quantity.rCosTheta radius angle) (Quantity.rSinTheta radius angle)
 
 
 {-| Construct an arbitrary vector perpendicular to the given vector. The exact
@@ -374,16 +381,16 @@ perpendicularTo vector =
     in
     if absX |> Quantity.lessThanOrEqualTo absY then
         if absX |> Quantity.lessThanOrEqualTo absZ then
-            fromComponents Quantity.zero (Quantity.negate z) y
+            xyz Quantity.zero (Quantity.negate z) y
 
         else
-            fromComponents (Quantity.negate y) x Quantity.zero
+            xyz (Quantity.negate y) x Quantity.zero
 
     else if absY |> Quantity.lessThanOrEqualTo absZ then
-        fromComponents z Quantity.zero (Quantity.negate x)
+        xyz z Quantity.zero (Quantity.negate x)
 
     else
-        fromComponents (Quantity.negate y) x Quantity.zero
+        xyz (Quantity.negate y) x Quantity.zero
 
 
 {-| Construct a vector by interpolating from the first given vector to the
@@ -428,7 +435,7 @@ interpolateFrom firstVector secondVector givenParameter =
         ( x2, y2, z2 ) =
             components secondVector
     in
-    fromComponents
+    xyz
         (Quantity.interpolateFrom x1 x2 givenParameter)
         (Quantity.interpolateFrom y1 y2 givenParameter)
         (Quantity.interpolateFrom z1 z2 givenParameter)
@@ -446,10 +453,7 @@ in.
 -}
 fromTuple : (Float -> Quantity Float units) -> ( Float, Float, Float ) -> Vector3d units coordinates
 fromTuple toQuantity ( x, y, z ) =
-    fromComponents
-        (toQuantity x)
-        (toQuantity y)
-        (toQuantity z)
+    xyz (toQuantity x) (toQuantity y) (toQuantity z)
 
 
 {-| Convert a `Vector3d` to a tuple of `Float` values, by specifying what units you want the result
@@ -485,10 +489,7 @@ are in.
 -}
 fromRecord : (Float -> Quantity Float units) -> { x : Float, y : Float, z : Float } -> Vector3d units coordinates
 fromRecord toQuantity { x, y, z } =
-    fromComponents
-        (toQuantity x)
-        (toQuantity y)
-        (toQuantity z)
+    xyz (toQuantity x) (toQuantity y) (toQuantity z)
 
 
 {-| Convert a `Vector3d` to a record with `Float` fields, by specifying what units you want the
@@ -852,7 +853,7 @@ normalize givenVector =
             scaledLength =
                 sqrt (scaledX * scaledX + scaledY * scaledY + scaledZ * scaledZ)
         in
-        fromComponents
+        xyz
             (Quantity.float (scaledX / scaledLength))
             (Quantity.float (scaledY / scaledLength))
             (Quantity.float (scaledZ / scaledLength))
@@ -879,7 +880,7 @@ plus secondVector firstVector =
         ( x2, y2, z2 ) =
             components secondVector
     in
-    fromComponents
+    xyz
         (x1 |> Quantity.plus x2)
         (y1 |> Quantity.plus y2)
         (z1 |> Quantity.plus z2)
@@ -906,7 +907,7 @@ minus secondVector firstVector =
         ( x2, y2, z2 ) =
             components secondVector
     in
-    fromComponents
+    xyz
         (x1 |> Quantity.minus x2)
         (y1 |> Quantity.minus y2)
         (z1 |> Quantity.minus z2)
@@ -991,7 +992,7 @@ cross secondVector firstVector =
         ( x2, y2, z2 ) =
             components secondVector
     in
-    fromComponents
+    xyz
         ((y1 |> Quantity.times z2) |> Quantity.minus (z1 |> Quantity.times y2))
         ((z1 |> Quantity.times x2) |> Quantity.minus (x1 |> Quantity.times z2))
         ((x1 |> Quantity.times y2) |> Quantity.minus (y1 |> Quantity.times x2))
@@ -1012,7 +1013,7 @@ reverse vector =
         ( x, y, z ) =
             components vector
     in
-    fromComponents (Quantity.negate x) (Quantity.negate y) (Quantity.negate z)
+    xyz (Quantity.negate x) (Quantity.negate y) (Quantity.negate z)
 
 
 {-| Scale the length of a vector by a given scale.
@@ -1032,7 +1033,7 @@ scaleBy scale vector =
         ( x, y, z ) =
             components vector
     in
-    fromComponents
+    xyz
         (Quantity.multiplyBy scale x)
         (Quantity.multiplyBy scale y)
         (Quantity.multiplyBy scale z)
@@ -1139,7 +1140,7 @@ rotateAround axis angle =
             ( x, y, z ) =
                 components vector
         in
-        fromComponents
+        xyz
             (Quantity.aXbYcZ a00 x a01 y a02 z)
             (Quantity.aXbYcZ a10 x a11 y a12 z)
             (Quantity.aXbYcZ a20 x a21 y a22 z)
@@ -1192,7 +1193,7 @@ mirrorAcross plane =
             ( x, y, z ) =
                 components vector
         in
-        fromComponents
+        xyz
             (Quantity.aXbYcZ a x f y e z)
             (Quantity.aXbYcZ f x b y d z)
             (Quantity.aXbYcZ e x d y c z)
@@ -1253,7 +1254,7 @@ local coordinates relative to a given reference frame.
 -}
 relativeTo : Frame3d units globalCoordinates localCoordinates -> Vector3d units globalCoordinates -> Vector3d units localCoordinates
 relativeTo frame vector =
-    fromComponents
+    xyz
         (componentIn (Frame3d.xDirection frame) vector)
         (componentIn (Frame3d.yDirection frame) vector)
         (componentIn (Frame3d.zDirection frame) vector)
@@ -1302,7 +1303,7 @@ placeIn frame vector =
         ( x, y, z ) =
             components vector
     in
-    fromComponents
+    xyz
         (Quantity.aXbYcZ x1 x x2 y x3 z)
         (Quantity.aXbYcZ y1 x y2 y y3 z)
         (Quantity.aXbYcZ z1 x z2 y z3 z)

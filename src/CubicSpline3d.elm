@@ -1319,7 +1319,7 @@ firstDerivative spline parameterValue =
         wz2 =
             Quantity.interpolateFrom vz2 vz3 t
     in
-    Vector3d.fromComponents
+    Vector3d.xyz
         (Quantity.multiplyBy 3 (Quantity.interpolateFrom wx1 wx2 t))
         (Quantity.multiplyBy 3 (Quantity.interpolateFrom wy1 wy2 t))
         (Quantity.multiplyBy 3 (Quantity.interpolateFrom wz1 wz2 t))

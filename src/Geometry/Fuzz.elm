@@ -123,7 +123,7 @@ vector2d =
 
 vector3d : Fuzzer (Vector3d coordinates)
 vector3d =
-    Fuzz.map3 Vector3d.fromComponents length length length
+    Fuzz.map3 Vector3d.xyz length length length
 
 
 direction2d : Fuzzer (Direction2d coordinates)

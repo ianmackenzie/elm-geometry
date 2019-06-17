@@ -468,7 +468,7 @@ firstDerivative (Types.Arc3d arc) =
             sinAngle =
                 Angle.sin angle
         in
-        Vector3d.fromComponents
+        Vector3d.xyz
             (arcSignedLength |> Quantity.multiplyBy (cosAngle * x1 + sinAngle * x2))
             (arcSignedLength |> Quantity.multiplyBy (cosAngle * y1 + sinAngle * y2))
             (arcSignedLength |> Quantity.multiplyBy (cosAngle * z1 + sinAngle * z2))
