@@ -204,11 +204,17 @@ updateAccumulators face accumulators =
 pseudoAngle : Point2d units coordinates -> Point2d units coordinates -> Float
 pseudoAngle startPoint endPoint =
     let
-        ( x0, y0 ) =
-            Point2d.coordinates startPoint
+        x0 =
+            Point2d.xCoordinate startPoint
 
-        ( x1, y1 ) =
-            Point2d.coordinates endPoint
+        y0 =
+            Point2d.yCoordinate startPoint
+
+        x1 =
+            Point2d.xCoordinate endPoint
+
+        y1 =
+            Point2d.yCoordinate endPoint
 
         dx =
             x1 |> Quantity.minus x0
@@ -525,11 +531,17 @@ leftOfSegment lineSegment point =
         ( p1, p2 ) =
             LineSegment2d.endpoints lineSegment
 
-        ( x1, y1 ) =
-            Point2d.coordinates p1
+        x1 =
+            Point2d.xCoordinate p1
 
-        ( x2, y2 ) =
-            Point2d.coordinates p2
+        y1 =
+            Point2d.yCoordinate p1
+
+        x2 =
+            Point2d.xCoordinate p2
+
+        y2 =
+            Point2d.yCoordinate p2
 
         dx =
             x2 |> Quantity.minus x1
@@ -537,8 +549,11 @@ leftOfSegment lineSegment point =
         dy =
             y2 |> Quantity.minus y1
 
-        ( x, y ) =
-            Point2d.coordinates point
+        x =
+            Point2d.xCoordinate point
+
+        y =
+            Point2d.yCoordinate point
     in
     ((x |> Quantity.minus x1) |> Quantity.times dy)
         |> Quantity.lessThanOrEqualTo

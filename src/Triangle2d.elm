@@ -428,14 +428,23 @@ boundingBox triangle =
         ( p1, p2, p3 ) =
             vertices triangle
 
-        ( x1, y1 ) =
-            Point2d.coordinates p1
+        x1 =
+            Point2d.xCoordinate p1
 
-        ( x2, y2 ) =
-            Point2d.coordinates p2
+        y1 =
+            Point2d.yCoordinate p1
 
-        ( x3, y3 ) =
-            Point2d.coordinates p3
+        x2 =
+            Point2d.xCoordinate p2
+
+        y2 =
+            Point2d.yCoordinate p2
+
+        x3 =
+            Point2d.xCoordinate p3
+
+        y3 =
+            Point2d.yCoordinate p3
     in
     BoundingBox2d.fromExtrema
         { minX = Quantity.min x1 (Quantity.min x2 x3)

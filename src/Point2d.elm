@@ -13,7 +13,7 @@ module Point2d exposing
     , xy, xyIn, rTheta, rThetaIn, midpoint, centroid, interpolateFrom, along, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
     , at, at_
-    , coordinates, coordinatesIn, xCoordinate, yCoordinate, xCoordinateIn, yCoordinateIn, polarCoordinates
+    , xCoordinate, yCoordinate, xCoordinateIn, yCoordinateIn, polarCoordinates
     , equalWithin, lexicographicComparison
     , distanceFrom, signedDistanceAlong, signedDistanceFrom
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
@@ -63,7 +63,7 @@ coordinates.
 
 # Properties
 
-@docs coordinates, coordinatesIn, xCoordinate, yCoordinate, xCoordinateIn, yCoordinateIn, polarCoordinates
+@docs xCoordinate, yCoordinate, xCoordinateIn, yCoordinateIn, polarCoordinates
 
 
 # Comparison

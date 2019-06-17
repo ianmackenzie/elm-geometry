@@ -195,11 +195,23 @@ fromComponentsIn frame x y z =
 from : Point3d units coordinates -> Point3d units coordinates -> Vector3d units coordinates
 from firstPoint secondPoint =
     let
-        ( x1, y1, z1 ) =
-            Point3d.coordinates firstPoint
+        x1 =
+            Point3d.xCoordinate firstPoint
 
-        ( x2, y2, z2 ) =
-            Point3d.coordinates secondPoint
+        y1 =
+            Point3d.yCoordinate firstPoint
+
+        z1 =
+            Point3d.zCoordinate firstPoint
+
+        x2 =
+            Point3d.xCoordinate secondPoint
+
+        y2 =
+            Point3d.yCoordinate secondPoint
+
+        z2 =
+            Point3d.zCoordinate secondPoint
     in
     fromComponents
         (x2 |> Quantity.minus x1)

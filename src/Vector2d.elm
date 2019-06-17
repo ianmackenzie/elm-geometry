@@ -232,11 +232,17 @@ fromPolarComponentsIn frame r theta =
 from : Point2d units coordinates -> Point2d units coordinates -> Vector2d units coordinates
 from firstPoint secondPoint =
     let
-        ( x1, y1 ) =
-            Point2d.coordinates firstPoint
+        x1 =
+            Point2d.xCoordinate firstPoint
 
-        ( x2, y2 ) =
-            Point2d.coordinates secondPoint
+        y1 =
+            Point2d.yCoordinate firstPoint
+
+        x2 =
+            Point2d.xCoordinate secondPoint
+
+        y2 =
+            Point2d.yCoordinate secondPoint
     in
     fromComponents
         (x2 |> Quantity.minus x1)

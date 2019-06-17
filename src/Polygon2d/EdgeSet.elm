@@ -38,8 +38,11 @@ empty =
 leftOf : Point2d units coordinates -> EdgeSet units coordinates -> Maybe Int
 leftOf point (EdgeSet edges) =
     let
-        ( x, y ) =
-            Point2d.coordinates point
+        x =
+            Point2d.xCoordinate point
+
+        y =
+            Point2d.yCoordinate point
     in
     edges
         |> List.foldl
@@ -48,11 +51,17 @@ leftOf point (EdgeSet edges) =
                     ( p1, p2 ) =
                         LineSegment2d.endpoints (Tuple.second edge)
 
-                    ( x1, y1 ) =
-                        Point2d.coordinates p1
+                    x1 =
+                        Point2d.xCoordinate p1
 
-                    ( x2, y2 ) =
-                        Point2d.coordinates p2
+                    y1 =
+                        Point2d.yCoordinate p1
+
+                    x2 =
+                        Point2d.xCoordinate p2
+
+                    y2 =
+                        Point2d.yCoordinate p2
 
                     dx =
                         if y1 == y2 then

@@ -372,8 +372,17 @@ boundingBox sphere =
         r =
             radius sphere
 
-        ( cx, cy, cz ) =
-            Point3d.coordinates (centerPoint sphere)
+        p0 =
+            centerPoint sphere
+
+        cx =
+            Point3d.xCoordinate p0
+
+        cy =
+            Point3d.yCoordinate p0
+
+        cz =
+            Point3d.zCoordinate p0
     in
     BoundingBox3d.fromExtrema
         { minX = cx |> Quantity.minus r

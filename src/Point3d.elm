@@ -12,7 +12,7 @@ module Point3d exposing
     , origin
     , xyz, xyzIn, midpoint, centroid, interpolateFrom, along, on, xyOn, rThetaOn, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
-    , coordinates, coordinatesIn, xCoordinate, yCoordinate, zCoordinate
+    , xCoordinate, yCoordinate, zCoordinate, xCoordinateIn, yCoordinateIn, zCoordinateIn
     , equalWithin, lexicographicComparison
     , distanceFrom, signedDistanceAlong, distanceFromAxis, signedDistanceFrom
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectOntoAxis

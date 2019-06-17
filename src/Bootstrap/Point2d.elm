@@ -8,19 +8,25 @@
 
 
 module Bootstrap.Point2d exposing
-    ( coordinates
-    , fromCoordinates
+    ( xCoordinate
+    , xy
+    , yCoordinate
     )
 
 import Geometry.Types exposing (..)
 import Quantity exposing (Quantity)
 
 
-fromCoordinates : Quantity Float units -> Quantity Float units -> Point2d units coordinates
-fromCoordinates x y =
+xy : Quantity Float units -> Quantity Float units -> Point2d units coordinates
+xy x y =
     Point2d ( x, y )
 
 
-coordinates : Point2d units coordinates -> ( Quantity Float units, Quantity Float units )
-coordinates (Point2d pointCoordinates) =
-    pointCoordinates
+xCoordinate : Point2d units coordinates -> Quantity Float units
+xCoordinate (Point2d ( x, y )) =
+    x
+
+
+yCoordinate : Point2d units coordinates -> Quantity Float units
+yCoordinate (Point2d ( x, y )) =
+    y

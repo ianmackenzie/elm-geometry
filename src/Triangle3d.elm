@@ -455,14 +455,32 @@ boundingBox triangle =
         ( p1, p2, p3 ) =
             vertices triangle
 
-        ( x1, y1, z1 ) =
-            Point3d.coordinates p1
+        x1 =
+            Point3d.xCoordinate p1
 
-        ( x2, y2, z2 ) =
-            Point3d.coordinates p2
+        y1 =
+            Point3d.yCoordinate p1
 
-        ( x3, y3, z3 ) =
-            Point3d.coordinates p3
+        z1 =
+            Point3d.zCoordinate p1
+
+        x2 =
+            Point3d.xCoordinate p2
+
+        y2 =
+            Point3d.yCoordinate p2
+
+        z2 =
+            Point3d.zCoordinate p2
+
+        x3 =
+            Point3d.xCoordinate p3
+
+        y3 =
+            Point3d.yCoordinate p3
+
+        z3 =
+            Point3d.zCoordinate p3
     in
     BoundingBox3d.fromExtrema
         { minX = Quantity.min x1 (Quantity.min x2 x3)

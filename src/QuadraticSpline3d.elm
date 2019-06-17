@@ -245,14 +245,41 @@ volume than the spline itself).
 boundingBox : QuadraticSpline3d units coordinates -> BoundingBox3d units coordinates
 boundingBox spline =
     let
-        ( x1, y1, z1 ) =
-            Point3d.coordinates (firstControlPoint spline)
+        p1 =
+            firstControlPoint spline
 
-        ( x2, y2, z2 ) =
-            Point3d.coordinates (secondControlPoint spline)
+        p2 =
+            secondControlPoint spline
 
-        ( x3, y3, z3 ) =
-            Point3d.coordinates (thirdControlPoint spline)
+        p3 =
+            thirdControlPoint spline
+
+        x1 =
+            Point3d.xCoordinate p1
+
+        y1 =
+            Point3d.yCoordinate p1
+
+        z1 =
+            Point3d.zCoordinate p1
+
+        x2 =
+            Point3d.xCoordinate p2
+
+        y2 =
+            Point3d.yCoordinate p2
+
+        z2 =
+            Point3d.zCoordinate p2
+
+        x3 =
+            Point3d.xCoordinate p3
+
+        y3 =
+            Point3d.yCoordinate p3
+
+        z3 =
+            Point3d.zCoordinate p3
     in
     BoundingBox3d.fromExtrema
         { minX = Quantity.min x1 (Quantity.min x2 x3)
@@ -376,14 +403,41 @@ firstDerivativesAt parameterValues spline =
 derivativeMagnitude : QuadraticSpline3d units coordinates -> ParameterValue -> Quantity Float units
 derivativeMagnitude spline =
     let
-        ( x1, y1, z1 ) =
-            Point3d.coordinates (firstControlPoint spline)
+        p1 =
+            firstControlPoint spline
 
-        ( x2, y2, z2 ) =
-            Point3d.coordinates (secondControlPoint spline)
+        p2 =
+            secondControlPoint spline
 
-        ( x3, y3, z3 ) =
-            Point3d.coordinates (thirdControlPoint spline)
+        p3 =
+            thirdControlPoint spline
+
+        x1 =
+            Point3d.xCoordinate p1
+
+        y1 =
+            Point3d.yCoordinate p1
+
+        z1 =
+            Point3d.zCoordinate p1
+
+        x2 =
+            Point3d.xCoordinate p2
+
+        y2 =
+            Point3d.yCoordinate p2
+
+        z2 =
+            Point3d.zCoordinate p2
+
+        x3 =
+            Point3d.xCoordinate p3
+
+        y3 =
+            Point3d.yCoordinate p3
+
+        z3 =
+            Point3d.zCoordinate p3
 
         x12 =
             x2 |> Quantity.minus x1

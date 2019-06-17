@@ -183,11 +183,17 @@ from firstPoint secondPoint =
         computedAxes =
             Frame2d.atPoint (Point2d.midpoint firstPoint secondPoint)
 
-        ( x1, y1 ) =
-            Point2d.coordinates firstPoint
+        x1 =
+            Point2d.xCoordinate firstPoint
 
-        ( x2, y2 ) =
-            Point2d.coordinates secondPoint
+        y1 =
+            Point2d.yCoordinate firstPoint
+
+        x2 =
+            Point2d.xCoordinate secondPoint
+
+        y2 =
+            Point2d.yCoordinate secondPoint
 
         computedDimensions =
             ( Quantity.abs (x2 |> Quantity.minus x1)
@@ -526,8 +532,11 @@ contains point rectangle =
         rectangleFrame =
             axes rectangle
 
-        ( x, y ) =
-            Point2d.coordinatesIn rectangleFrame point
+        x =
+            Point2d.xCoordinateIn rectangleFrame point
+
+        y =
+            Point2d.yCoordinateIn rectangleFrame point
     in
     (Quantity.abs x |> Quantity.lessThanOrEqualTo halfWidth)
         && (Quantity.abs y |> Quantity.lessThanOrEqualTo halfHeight)
@@ -953,17 +962,29 @@ boundingBox rectangle =
         { bottomLeft, bottomRight, topRight, topLeft } =
             vertices rectangle
 
-        ( x1, y1 ) =
-            Point2d.coordinates bottomLeft
+        x1 =
+            Point2d.xCoordinate bottomLeft
 
-        ( x2, y2 ) =
-            Point2d.coordinates bottomRight
+        y1 =
+            Point2d.yCoordinate bottomLeft
 
-        ( x3, y3 ) =
-            Point2d.coordinates topRight
+        x2 =
+            Point2d.xCoordinate bottomRight
 
-        ( x4, y4 ) =
-            Point2d.coordinates topLeft
+        y2 =
+            Point2d.yCoordinate bottomRight
+
+        x3 =
+            Point2d.xCoordinate topRight
+
+        y3 =
+            Point2d.yCoordinate topRight
+
+        x4 =
+            Point2d.xCoordinate topLeft
+
+        y4 =
+            Point2d.yCoordinate topLeft
     in
     BoundingBox2d.fromExtrema
         { minX = Quantity.min (Quantity.min x1 x2) (Quantity.min x3 x4)

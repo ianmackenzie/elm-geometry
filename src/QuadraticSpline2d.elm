@@ -204,14 +204,32 @@ area than the spline itself).
 boundingBox : QuadraticSpline2d units coordinates -> BoundingBox2d units coordinates
 boundingBox spline =
     let
-        ( x1, y1 ) =
-            Point2d.coordinates (firstControlPoint spline)
+        p1 =
+            firstControlPoint spline
 
-        ( x2, y2 ) =
-            Point2d.coordinates (secondControlPoint spline)
+        p2 =
+            secondControlPoint spline
 
-        ( x3, y3 ) =
-            Point2d.coordinates (thirdControlPoint spline)
+        p3 =
+            thirdControlPoint spline
+
+        x1 =
+            Point2d.xCoordinate p1
+
+        y1 =
+            Point2d.yCoordinate p1
+
+        x2 =
+            Point2d.xCoordinate p2
+
+        y2 =
+            Point2d.yCoordinate p2
+
+        x3 =
+            Point2d.xCoordinate p3
+
+        y3 =
+            Point2d.yCoordinate p3
     in
     BoundingBox2d.fromExtrema
         { minX = Quantity.min x1 (Quantity.min x2 x3)
@@ -333,14 +351,32 @@ firstDerivativesAt parameterValues spline =
 derivativeMagnitude : QuadraticSpline2d units coordinates -> ParameterValue -> Quantity Float units
 derivativeMagnitude spline =
     let
-        ( x1, y1 ) =
-            Point2d.coordinates (firstControlPoint spline)
+        p1 =
+            firstControlPoint spline
 
-        ( x2, y2 ) =
-            Point2d.coordinates (secondControlPoint spline)
+        p2 =
+            secondControlPoint spline
 
-        ( x3, y3 ) =
-            Point2d.coordinates (thirdControlPoint spline)
+        p3 =
+            thirdControlPoint spline
+
+        x1 =
+            Point2d.xCoordinate p1
+
+        y1 =
+            Point2d.yCoordinate p1
+
+        x2 =
+            Point2d.xCoordinate p2
+
+        y2 =
+            Point2d.yCoordinate p2
+
+        x3 =
+            Point2d.xCoordinate p3
+
+        y3 =
+            Point2d.yCoordinate p3
 
         x12 =
             x2 |> Quantity.minus x1
