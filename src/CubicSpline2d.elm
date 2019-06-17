@@ -292,17 +292,41 @@ area than the spline itself).
 boundingBox : CubicSpline2d units coordinates -> BoundingBox2d units coordinates
 boundingBox spline =
     let
-        ( x1, y1 ) =
-            Point2d.coordinates (firstControlPoint spline)
+        p1 =
+            firstControlPoint spline
 
-        ( x2, y2 ) =
-            Point2d.coordinates (secondControlPoint spline)
+        p2 =
+            secondControlPoint spline
 
-        ( x3, y3 ) =
-            Point2d.coordinates (thirdControlPoint spline)
+        p3 =
+            thirdControlPoint spline
 
-        ( x4, y4 ) =
-            Point2d.coordinates (fourthControlPoint spline)
+        p4 =
+            fourthControlPoint spline
+
+        x1 =
+            Point2d.xCoordinate p1
+
+        y1 =
+            Point2d.yCoordinate p1
+
+        x2 =
+            Point2d.xCoordinate p2
+
+        y2 =
+            Point2d.yCoordinate p2
+
+        x3 =
+            Point2d.xCoordinate p3
+
+        y3 =
+            Point2d.yCoordinate p3
+
+        x4 =
+            Point2d.xCoordinate p4
+
+        y4 =
+            Point2d.yCoordinate p4
     in
     BoundingBox2d.fromExtrema
         { minX = Quantity.min (Quantity.min x1 x2) (Quantity.min x3 x4)
@@ -1096,17 +1120,29 @@ firstDerivative spline parameterValue =
         p4 =
             fourthControlPoint spline
 
-        ( x1, y1 ) =
-            Point2d.coordinates p1
+        x1 =
+            Point2d.xCoordinate p1
 
-        ( x2, y2 ) =
-            Point2d.coordinates p2
+        y1 =
+            Point2d.yCoordinate p1
 
-        ( x3, y3 ) =
-            Point2d.coordinates p3
+        x2 =
+            Point2d.xCoordinate p2
 
-        ( x4, y4 ) =
-            Point2d.coordinates p4
+        y2 =
+            Point2d.yCoordinate p2
+
+        x3 =
+            Point2d.xCoordinate p3
+
+        y3 =
+            Point2d.yCoordinate p3
+
+        x4 =
+            Point2d.xCoordinate p4
+
+        y4 =
+            Point2d.yCoordinate p4
 
         vx1 =
             x2 |> Quantity.minus x1
@@ -1323,17 +1359,29 @@ derivativeMagnitude spline =
         p4 =
             fourthControlPoint spline
 
-        ( x1, y1 ) =
-            Point2d.coordinates p1
+        x1 =
+            Point2d.xCoordinate p1
 
-        ( x2, y2 ) =
-            Point2d.coordinates p2
+        y1 =
+            Point2d.yCoordinate p1
 
-        ( x3, y3 ) =
-            Point2d.coordinates p3
+        x2 =
+            Point2d.xCoordinate p2
 
-        ( x4, y4 ) =
-            Point2d.coordinates p4
+        y2 =
+            Point2d.yCoordinate p2
+
+        x3 =
+            Point2d.xCoordinate p3
+
+        y3 =
+            Point2d.yCoordinate p3
+
+        x4 =
+            Point2d.xCoordinate p4
+
+        y4 =
+            Point2d.yCoordinate p4
 
         x12 =
             x2 |> Quantity.minus x1

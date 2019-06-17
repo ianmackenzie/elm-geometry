@@ -332,17 +332,53 @@ volume than the spline itself).
 boundingBox : CubicSpline3d units coordinates -> BoundingBox3d units coordinates
 boundingBox spline =
     let
-        ( x1, y1, z1 ) =
-            Point3d.coordinates (firstControlPoint spline)
+        p1 =
+            firstControlPoint spline
 
-        ( x2, y2, z2 ) =
-            Point3d.coordinates (secondControlPoint spline)
+        p2 =
+            secondControlPoint spline
 
-        ( x3, y3, z3 ) =
-            Point3d.coordinates (thirdControlPoint spline)
+        p3 =
+            thirdControlPoint spline
 
-        ( x4, y4, z4 ) =
-            Point3d.coordinates (fourthControlPoint spline)
+        p4 =
+            fourthControlPoint spline
+
+        x1 =
+            Point3d.xCoordinate p1
+
+        y1 =
+            Point3d.yCoordinate p1
+
+        z1 =
+            Point3d.zCoordinate p1
+
+        x2 =
+            Point3d.xCoordinate p2
+
+        y2 =
+            Point3d.yCoordinate p2
+
+        z2 =
+            Point3d.zCoordinate p2
+
+        x3 =
+            Point3d.xCoordinate p3
+
+        y3 =
+            Point3d.yCoordinate p3
+
+        z3 =
+            Point3d.zCoordinate p3
+
+        x4 =
+            Point3d.xCoordinate p4
+
+        y4 =
+            Point3d.yCoordinate p4
+
+        z4 =
+            Point3d.zCoordinate p4
     in
     BoundingBox3d.fromExtrema
         { minX = Quantity.min (Quantity.min x1 x2) (Quantity.min x3 x4)
@@ -1201,17 +1237,41 @@ firstDerivative spline parameterValue =
         p4 =
             fourthControlPoint spline
 
-        ( x1, y1, z1 ) =
-            Point3d.coordinates p1
+        x1 =
+            Point3d.xCoordinate p1
 
-        ( x2, y2, z2 ) =
-            Point3d.coordinates p2
+        y1 =
+            Point3d.yCoordinate p1
 
-        ( x3, y3, z3 ) =
-            Point3d.coordinates p3
+        z1 =
+            Point3d.zCoordinate p1
 
-        ( x4, y4, z4 ) =
-            Point3d.coordinates p4
+        x2 =
+            Point3d.xCoordinate p2
+
+        y2 =
+            Point3d.yCoordinate p2
+
+        z2 =
+            Point3d.zCoordinate p2
+
+        x3 =
+            Point3d.xCoordinate p3
+
+        y3 =
+            Point3d.yCoordinate p3
+
+        z3 =
+            Point3d.zCoordinate p3
+
+        x4 =
+            Point3d.xCoordinate p4
+
+        y4 =
+            Point3d.yCoordinate p4
+
+        z4 =
+            Point3d.zCoordinate p4
 
         vx1 =
             x2 |> Quantity.minus x1
@@ -1439,17 +1499,41 @@ derivativeMagnitude spline =
         p4 =
             fourthControlPoint spline
 
-        ( x1, y1, z1 ) =
-            Point3d.coordinates p1
+        x1 =
+            Point3d.xCoordinate p1
 
-        ( x2, y2, z2 ) =
-            Point3d.coordinates p2
+        y1 =
+            Point3d.yCoordinate p1
 
-        ( x3, y3, z3 ) =
-            Point3d.coordinates p3
+        z1 =
+            Point3d.zCoordinate p1
 
-        ( x4, y4, z4 ) =
-            Point3d.coordinates p4
+        x2 =
+            Point3d.xCoordinate p2
+
+        y2 =
+            Point3d.yCoordinate p2
+
+        z2 =
+            Point3d.zCoordinate p2
+
+        x3 =
+            Point3d.xCoordinate p3
+
+        y3 =
+            Point3d.yCoordinate p3
+
+        z3 =
+            Point3d.zCoordinate p3
+
+        x4 =
+            Point3d.xCoordinate p4
+
+        y4 =
+            Point3d.yCoordinate p4
+
+        z4 =
+            Point3d.zCoordinate p4
 
         x12 =
             x2 |> Quantity.minus x1

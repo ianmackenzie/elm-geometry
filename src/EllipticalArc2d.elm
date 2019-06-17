@@ -225,8 +225,11 @@ fromEndpoints arguments =
                             (Quantity.negate arguments.xRadius)
                     )
 
-            ( x2Ellipse, y2Ellipse ) =
-                Point2d.coordinatesIn temporaryFrame arguments.endPoint
+            x2Ellipse =
+                Point2d.xCoordinateIn temporaryFrame arguments.endPoint
+
+            y2Ellipse =
+                Point2d.yCoordinateIn temporaryFrame arguments.endPoint
 
             x2 =
                 Quantity.ratio x2Ellipse arguments.xRadius

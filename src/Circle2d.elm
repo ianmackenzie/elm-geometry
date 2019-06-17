@@ -396,16 +396,9 @@ placeIn frame (Types.Circle2d circle) =
 -}
 boundingBox : Circle2d units coordinates -> BoundingBox2d units coordinates
 boundingBox circle =
-    let
-        ( x, y ) =
-            Point2d.coordinates (centerPoint circle)
-
-        r =
-            radius circle
-    in
     BoundingBox2d.fromExtrema
-        { minX = x |> Quantity.minus r
-        , maxX = x |> Quantity.plus r
-        , minY = y |> Quantity.minus r
-        , maxY = y |> Quantity.plus r
+        { minX = Point2d.xCoordinate (centerPoint circle) |> Quantity.minus (radius circle)
+        , maxX = Point2d.xCoordinate (centerPoint circle) |> Quantity.plus (radius circle)
+        , minY = Point2d.yCoordinate (centerPoint circle) |> Quantity.minus (radius circle)
+        , maxY = Point2d.yCoordinate (centerPoint circle) |> Quantity.plus (radius circle)
         }

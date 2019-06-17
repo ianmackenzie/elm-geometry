@@ -220,18 +220,11 @@ chain =
 
 compareCoordinates : Point2d units coordinates -> Point2d units coordinates -> Order
 compareCoordinates firstPoint secondPoint =
-    let
-        ( x1, y1 ) =
-            Point2d.coordinates firstPoint
-
-        ( x2, y2 ) =
-            Point2d.coordinates secondPoint
-    in
-    if x1 == x2 then
-        Quantity.compare y1 y2
+    if Point2d.xCoordinate firstPoint == Point2d.xCoordinate secondPoint then
+        Quantity.compare (Point2d.yCoordinate firstPoint) (Point2d.yCoordinate secondPoint)
 
     else
-        Quantity.compare x1 x2
+        Quantity.compare (Point2d.xCoordinate firstPoint) (Point2d.xCoordinate secondPoint)
 
 
 {-| Build the [convex hull](https://en.wikipedia.org/wiki/Convex_hull) of a list
@@ -611,8 +604,11 @@ This is an O(n) operation. The polygon can have holes and does not need to be co
 contains : Point2d units coordinates -> Polygon2d units coordinates -> Bool
 contains point polygon =
     let
-        ( Quantity x, Quantity y ) =
-            Point2d.coordinates point
+        (Quantity x) =
+            Point2d.xCoordinate point
+
+        (Quantity y) =
+            Point2d.yCoordinate point
     in
     containsPointHelp (edges polygon) x y 0
 
@@ -631,11 +627,17 @@ containsPointHelp edgeList xp yp k =
                 ( p0, p1 ) =
                     LineSegment2d.endpoints edge
 
-                ( Quantity xi, Quantity yi ) =
-                    Point2d.coordinates p0
+                (Quantity xi) =
+                    Point2d.xCoordinate p0
 
-                ( Quantity xi1, Quantity yi1 ) =
-                    Point2d.coordinates p1
+                (Quantity yi) =
+                    Point2d.yCoordinate p0
+
+                (Quantity xi1) =
+                    Point2d.xCoordinate p1
+
+                (Quantity yi1) =
+                    Point2d.yCoordinate p1
 
                 v1 =
                     yi - yp

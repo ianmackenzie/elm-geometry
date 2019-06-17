@@ -212,8 +212,11 @@ angle:
 with : { centerPoint : Point2d units coordinates, radius : Quantity Float units, startAngle : Angle, sweptAngle : Angle } -> Arc2d units coordinates
 with properties =
     let
-        ( x0, y0 ) =
-            Point2d.coordinates properties.centerPoint
+        x0 =
+            Point2d.xCoordinate properties.centerPoint
+
+        y0 =
+            Point2d.yCoordinate properties.centerPoint
 
         givenRadius =
             properties.radius
@@ -562,11 +565,17 @@ withRadius givenRadius givenSweptAngle givenStartPoint givenEndPoint =
 centerPoint : Arc2d units coordinates -> Point2d units coordinates
 centerPoint (Types.Arc2d arc) =
     let
-        ( x0, y0 ) =
-            Point2d.coordinates arc.startPoint
+        x0 =
+            Point2d.xCoordinate arc.startPoint
 
-        ( dx, dy ) =
-            Direction2d.components arc.xDirection
+        y0 =
+            Point2d.yCoordinate arc.startPoint
+
+        dx =
+            Direction2d.xComponent arc.xDirection
+
+        dy =
+            Direction2d.yComponent arc.xDirection
 
         r =
             Quantity.lOverTheta arc.signedLength arc.sweptAngle
@@ -642,11 +651,17 @@ sweptAngle (Types.Arc2d properties) =
 pointOn : Arc2d units coordinates -> ParameterValue -> Point2d units coordinates
 pointOn (Types.Arc2d arc) parameterValue =
     let
-        ( x0, y0 ) =
-            Point2d.coordinates arc.startPoint
+        x0 =
+            Point2d.xCoordinate arc.startPoint
 
-        ( dx, dy ) =
-            Direction2d.components arc.xDirection
+        y0 =
+            Point2d.yCoordinate arc.startPoint
+
+        dx =
+            Direction2d.xComponent arc.xDirection
+
+        dy =
+            Direction2d.yComponent arc.xDirection
 
         arcSignedLength =
             arc.signedLength

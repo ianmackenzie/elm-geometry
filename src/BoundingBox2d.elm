@@ -123,11 +123,12 @@ fromExtrema givenExtrema =
 -}
 singleton : Point2d units coordinates -> BoundingBox2d units coordinates
 singleton point =
-    let
-        ( x, y ) =
-            Point2d.coordinates point
-    in
-    fromExtrema { minX = x, maxX = x, minY = y, maxY = y }
+    fromExtrema
+        { minX = Point2d.xCoordinate point
+        , maxX = Point2d.xCoordinate point
+        , minY = Point2d.yCoordinate point
+        , maxY = Point2d.yCoordinate point
+        }
 
 
 {-| Construct a bounding box with the two given points as two of its corners.
@@ -152,11 +153,17 @@ diagonal of the bounding box.
 from : Point2d units coordinates -> Point2d units coordinates -> BoundingBox2d units coordinates
 from firstPoint secondPoint =
     let
-        ( x1, y1 ) =
-            Point2d.coordinates firstPoint
+        x1 =
+            Point2d.xCoordinate firstPoint
 
-        ( x2, y2 ) =
-            Point2d.coordinates secondPoint
+        y1 =
+            Point2d.yCoordinate firstPoint
+
+        x2 =
+            Point2d.xCoordinate secondPoint
+
+        y2 =
+            Point2d.yCoordinate secondPoint
     in
     fromExtrema
         { minX = Quantity.min x1 x2
@@ -370,14 +377,10 @@ centerPoint boundingBox =
 -}
 contains : Point2d units coordinates -> BoundingBox2d units coordinates -> Bool
 contains point boundingBox =
-    let
-        ( x, y ) =
-            Point2d.coordinates point
-    in
-    (x |> Quantity.greaterThanOrEqualTo (minX boundingBox))
-        && (x |> Quantity.lessThanOrEqualTo (maxX boundingBox))
-        && (y |> Quantity.greaterThanOrEqualTo (minY boundingBox))
-        && (y |> Quantity.lessThanOrEqualTo (maxY boundingBox))
+    (Point2d.xCoordinate point |> Quantity.greaterThanOrEqualTo (minX boundingBox))
+        && (Point2d.xCoordinate point |> Quantity.lessThanOrEqualTo (maxX boundingBox))
+        && (Point2d.yCoordinate point |> Quantity.greaterThanOrEqualTo (minY boundingBox))
+        && (Point2d.yCoordinate point |> Quantity.lessThanOrEqualTo (maxY boundingBox))
 
 
 {-| Test if two boxes touch or overlap at all (have any points in common);
@@ -890,8 +893,11 @@ intersection firstBox secondBox =
 scaleAbout : Point2d units coordinates -> Float -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
 scaleAbout point scale boundingBox =
     let
-        ( x0, y0 ) =
-            Point2d.coordinates point
+        x0 =
+            Point2d.xCoordinate point
+
+        y0 =
+            Point2d.yCoordinate point
 
         scaledMinX =
             Quantity.scaleAbout x0 scale (minX boundingBox)

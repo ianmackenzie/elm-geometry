@@ -494,14 +494,23 @@ edgeKey i j =
 signedDistance : Point2d units coordinates -> Point2d units coordinates -> Direction2d coordinates -> Quantity Float units
 signedDistance point vertexPosition edgeDirection =
     let
-        ( x, y ) =
-            Point2d.coordinates point
+        x =
+            Point2d.xCoordinate point
 
-        ( x0, y0 ) =
-            Point2d.coordinates vertexPosition
+        y =
+            Point2d.yCoordinate point
 
-        ( dx, dy ) =
-            Direction2d.components edgeDirection
+        x0 =
+            Point2d.xCoordinate vertexPosition
+
+        y0 =
+            Point2d.yCoordinate vertexPosition
+
+        dx =
+            Direction2d.xComponent edgeDirection
+
+        dy =
+            Direction2d.yComponent edgeDirection
     in
     Quantity.aXbY dx (y |> Quantity.minus y0) -dy (x |> Quantity.minus x0)
 

@@ -473,8 +473,17 @@ placeIn frame circle =
 boundingBox : Circle3d units coordinates -> BoundingBox3d units coordinates
 boundingBox circle =
     let
-        ( nx, ny, nz ) =
-            Direction3d.components (axialDirection circle)
+        axisDirection =
+            axialDirection circle
+
+        nx =
+            Direction3d.xComponent axisDirection
+
+        ny =
+            Direction3d.yComponent axisDirection
+
+        nz =
+            Direction3d.zComponent axisDirection
 
         nx2 =
             nx * nx
@@ -497,14 +506,14 @@ boundingBox circle =
         dz =
             r |> Quantity.multiplyBy (sqrt (nx2 + ny2))
 
-        ( cx, cy, cz ) =
-            Point3d.coordinates (centerPoint circle)
+        p0 =
+            centerPoint circle
     in
     BoundingBox3d.fromExtrema
-        { minX = cx |> Quantity.minus dx
-        , maxX = cx |> Quantity.plus dx
-        , minY = cy |> Quantity.minus dy
-        , maxY = cy |> Quantity.plus dy
-        , minZ = cz |> Quantity.minus dz
-        , maxZ = cz |> Quantity.plus dz
+        { minX = Point3d.xCoordinate p0 |> Quantity.minus dx
+        , maxX = Point3d.xCoordinate p0 |> Quantity.plus dx
+        , minY = Point3d.yCoordinate p0 |> Quantity.minus dy
+        , maxY = Point3d.yCoordinate p0 |> Quantity.plus dy
+        , minZ = Point3d.zCoordinate p0 |> Quantity.minus dz
+        , maxZ = Point3d.zCoordinate p0 |> Quantity.plus dz
         }

@@ -131,17 +131,13 @@ fromExtrema givenExtrema =
 -}
 singleton : Point3d units coordinates -> BoundingBox3d units coordinates
 singleton point =
-    let
-        ( x, y, z ) =
-            Point3d.coordinates point
-    in
     fromExtrema
-        { minX = x
-        , maxX = x
-        , minY = y
-        , maxY = y
-        , minZ = z
-        , maxZ = z
+        { minX = Point3d.xCoordinate point
+        , maxX = Point3d.xCoordinate point
+        , minY = Point3d.yCoordinate point
+        , maxY = Point3d.yCoordinate point
+        , minZ = Point3d.zCoordinate point
+        , maxZ = Point3d.zCoordinate point
         }
 
 
@@ -168,20 +164,13 @@ diagonal of the bounding box.
 -}
 from : Point3d units coordinates -> Point3d units coordinates -> BoundingBox3d units coordinates
 from firstPoint secondPoint =
-    let
-        ( x1, y1, z1 ) =
-            Point3d.coordinates firstPoint
-
-        ( x2, y2, z2 ) =
-            Point3d.coordinates secondPoint
-    in
     fromExtrema
-        { minX = Quantity.min x1 x2
-        , maxX = Quantity.max x1 x2
-        , minY = Quantity.min y1 y2
-        , maxY = Quantity.max y1 y2
-        , minZ = Quantity.min z1 z2
-        , maxZ = Quantity.max z1 z2
+        { minX = Quantity.min (Point3d.xCoordinate firstPoint) (Point3d.xCoordinate secondPoint)
+        , maxX = Quantity.max (Point3d.xCoordinate firstPoint) (Point3d.xCoordinate secondPoint)
+        , minY = Quantity.min (Point3d.yCoordinate firstPoint) (Point3d.yCoordinate secondPoint)
+        , maxY = Quantity.max (Point3d.yCoordinate firstPoint) (Point3d.yCoordinate secondPoint)
+        , minZ = Quantity.min (Point3d.zCoordinate firstPoint) (Point3d.zCoordinate secondPoint)
+        , maxZ = Quantity.max (Point3d.zCoordinate firstPoint) (Point3d.zCoordinate secondPoint)
         }
 
 
@@ -432,16 +421,12 @@ centerPoint boundingBox =
 -}
 contains : Point3d units coordinates -> BoundingBox3d units coordinates -> Bool
 contains point boundingBox =
-    let
-        ( x, y, z ) =
-            Point3d.coordinates point
-    in
-    (x |> Quantity.greaterThanOrEqualTo (minX boundingBox))
-        && (x |> Quantity.lessThanOrEqualTo (maxX boundingBox))
-        && (y |> Quantity.greaterThanOrEqualTo (minY boundingBox))
-        && (y |> Quantity.lessThanOrEqualTo (maxY boundingBox))
-        && (z |> Quantity.greaterThanOrEqualTo (minZ boundingBox))
-        && (z |> Quantity.lessThanOrEqualTo (maxZ boundingBox))
+    (Point3d.xCoordinate point |> Quantity.greaterThanOrEqualTo (minX boundingBox))
+        && (Point3d.xCoordinate point |> Quantity.lessThanOrEqualTo (maxX boundingBox))
+        && (Point3d.yCoordinate point |> Quantity.greaterThanOrEqualTo (minY boundingBox))
+        && (Point3d.yCoordinate point |> Quantity.lessThanOrEqualTo (maxY boundingBox))
+        && (Point3d.zCoordinate point |> Quantity.greaterThanOrEqualTo (minZ boundingBox))
+        && (Point3d.zCoordinate point |> Quantity.lessThanOrEqualTo (maxZ boundingBox))
 
 
 {-| Test if two boxes touch or overlap at all (have any points in common);
@@ -1010,8 +995,14 @@ intersection firstBox secondBox =
 scaleAbout : Point3d units coordinates -> Float -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates
 scaleAbout point scale boundingBox =
     let
-        ( x0, y0, z0 ) =
-            Point3d.coordinates point
+        x0 =
+            Point3d.xCoordinate point
+
+        y0 =
+            Point3d.yCoordinate point
+
+        z0 =
+            Point3d.zCoordinate point
 
         scaledMinX =
             Quantity.scaleAbout x0 scale (minX boundingBox)

@@ -305,11 +305,7 @@ The sketch plane can have any position and orientation:
 -}
 on : SketchPlane3d units coordinates3d coordinates2d -> Point2d units coordinates2d -> Point3d units coordinates3d
 on sketchPlane point2d =
-    let
-        ( x, y ) =
-            Point2d.coordinates point2d
-    in
-    xyOn sketchPlane x y
+    xyOn sketchPlane (Point2d.xCoordinate point2d) (Point2d.yCoordinate point2d)
 
 
 {-| Construct a 3D point lying on a sketch plane by providing its 2D coordinates within that sketch

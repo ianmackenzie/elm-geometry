@@ -316,14 +316,32 @@ endPoint arc =
 pointOn : Arc3d units coordinates -> ParameterValue -> Point3d units coordinates
 pointOn (Types.Arc3d arc) parameterValue =
     let
-        ( x0, y0, z0 ) =
-            Point3d.coordinates arc.startPoint
+        x0 =
+            Point3d.xCoordinate arc.startPoint
 
-        ( x1, y1, z1 ) =
-            Direction3d.components arc.xDirection
+        y0 =
+            Point3d.yCoordinate arc.startPoint
 
-        ( x2, y2, z2 ) =
-            Direction3d.components arc.yDirection
+        z0 =
+            Point3d.zCoordinate arc.startPoint
+
+        x1 =
+            Direction3d.xComponent arc.xDirection
+
+        y1 =
+            Direction3d.yComponent arc.xDirection
+
+        z1 =
+            Direction3d.zComponent arc.xDirection
+
+        x2 =
+            Direction3d.xComponent arc.yDirection
+
+        y2 =
+            Direction3d.yComponent arc.yDirection
+
+        z2 =
+            Direction3d.zComponent arc.yDirection
 
         arcSignedLength =
             arc.signedLength
