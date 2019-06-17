@@ -430,11 +430,23 @@ pointsAt parameterValues arc =
 firstDerivative : Arc3d units coordinates -> ParameterValue -> Vector3d units coordinates
 firstDerivative (Types.Arc3d arc) =
     let
-        ( x1, y1, z1 ) =
-            Direction3d.components arc.xDirection
+        x1 =
+            Direction3d.xComponent arc.xDirection
 
-        ( x2, y2, z2 ) =
-            Direction3d.components arc.yDirection
+        y1 =
+            Direction3d.yComponent arc.xDirection
+
+        z1 =
+            Direction3d.zComponent arc.xDirection
+
+        x2 =
+            Direction3d.xComponent arc.yDirection
+
+        y2 =
+            Direction3d.yComponent arc.yDirection
+
+        z2 =
+            Direction3d.zComponent arc.yDirection
 
         arcSweptAngle =
             arc.sweptAngle
@@ -546,11 +558,23 @@ value:
 tangentDirection : Nondegenerate units coordinates -> ParameterValue -> Direction3d coordinates
 tangentDirection (Nondegenerate (Types.Arc3d arc)) parameterValue =
     let
-        ( x1, y1, z1 ) =
-            Direction3d.components arc.xDirection
+        x1 =
+            Direction3d.xComponent arc.xDirection
 
-        ( x2, y2, z2 ) =
-            Direction3d.components arc.yDirection
+        y1 =
+            Direction3d.yComponent arc.xDirection
+
+        z1 =
+            Direction3d.zComponent arc.xDirection
+
+        x2 =
+            Direction3d.xComponent arc.yDirection
+
+        y2 =
+            Direction3d.yComponent arc.yDirection
+
+        z2 =
+            Direction3d.zComponent arc.yDirection
 
         arcSweptAngle =
             arc.sweptAngle
@@ -734,11 +758,23 @@ but a swept angle with the opposite sign.
 reverse : Arc3d units coordinates -> Arc3d units coordinates
 reverse ((Types.Arc3d arc) as arc_) =
     let
-        ( x1, y1, z1 ) =
-            Direction3d.components arc.xDirection
+        x1 =
+            Direction3d.xComponent arc.xDirection
 
-        ( x2, y2, z2 ) =
-            Direction3d.components arc.yDirection
+        y1 =
+            Direction3d.yComponent arc.xDirection
+
+        z1 =
+            Direction3d.zComponent arc.xDirection
+
+        x2 =
+            Direction3d.xComponent arc.yDirection
+
+        y2 =
+            Direction3d.yComponent arc.yDirection
+
+        z2 =
+            Direction3d.zComponent arc.yDirection
 
         arcSweptAngle =
             arc.sweptAngle

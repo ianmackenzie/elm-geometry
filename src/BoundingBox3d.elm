@@ -1062,8 +1062,14 @@ scaleAbout point scale boundingBox =
 translateBy : Vector3d units coordinates -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates
 translateBy displacement boundingBox =
     let
-        ( dx, dy, dz ) =
-            Vector3d.components displacement
+        dx =
+            Vector3d.xComponent displacement
+
+        dy =
+            Vector3d.yComponent displacement
+
+        dz =
+            Vector3d.zComponent displacement
     in
     fromExtrema
         { minX = minX boundingBox |> Quantity.plus dx

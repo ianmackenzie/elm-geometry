@@ -945,8 +945,11 @@ scaleAbout point scale boundingBox =
 translateBy : Vector2d units coordinates -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
 translateBy displacement boundingBox =
     let
-        ( dx, dy ) =
-            Vector2d.components displacement
+        dx =
+            Vector2d.xComponent displacement
+
+        dy =
+            Vector2d.yComponent displacement
     in
     fromExtrema
         { minX = minX boundingBox |> Quantity.plus dx

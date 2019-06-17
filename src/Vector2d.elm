@@ -14,7 +14,7 @@ module Vector2d exposing
     , fromTuple, toTuple, fromRecord, toRecord
     , at, at_
     , per, for
-    , components, componentsIn, xComponent, yComponent, componentIn, polarComponents, length, direction, lengthAndDirection
+    , xComponent, yComponent, componentIn, polarComponents, length, direction, lengthAndDirection
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross
     , reverse, normalize, scaleBy, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
@@ -75,7 +75,7 @@ components.
 
 # Properties
 
-@docs components, componentsIn, xComponent, yComponent, componentIn, polarComponents, length, direction, lengthAndDirection
+@docs xComponent, yComponent, componentIn, polarComponents, length, direction, lengthAndDirection
 
 
 # Comparison
@@ -168,11 +168,17 @@ fromComponents x y =
 fromComponentsIn : Frame2d units globalCoordinates localCoordinates -> Quantity Float units -> Quantity Float units -> Vector2d units globalCoordinates
 fromComponentsIn frame x y =
     let
-        ( x1, y1 ) =
-            Direction2d.components (Frame2d.xDirection frame)
+        x1 =
+            Direction2d.xComponent (Frame2d.xDirection frame)
 
-        ( x2, y2 ) =
-            Direction2d.components (Frame2d.yDirection frame)
+        y1 =
+            Direction2d.yComponent (Frame2d.xDirection frame)
+
+        x2 =
+            Direction2d.xComponent (Frame2d.yDirection frame)
+
+        y2 =
+            Direction2d.yComponent (Frame2d.yDirection frame)
     in
     fromComponents
         (Quantity.aXbY x1 x x2 y)
@@ -258,8 +264,11 @@ from firstPoint secondPoint =
 withLength : Quantity Float units -> Direction2d coordinates -> Vector2d units coordinates
 withLength givenLength givenDirection =
     let
-        ( dx, dy ) =
-            Direction2d.components givenDirection
+        dx =
+            Direction2d.xComponent givenDirection
+
+        dy =
+            Direction2d.yComponent givenDirection
     in
     fromComponents
         (Quantity.multiplyBy dx givenLength)
@@ -587,8 +596,11 @@ is equivalent to
 componentIn : Direction2d coordinates -> Vector2d units coordinates -> Quantity Float units
 componentIn givenDirection givenVector =
     let
-        ( dx, dy ) =
-            Direction2d.components givenDirection
+        dx =
+            Direction2d.xComponent givenDirection
+
+        dy =
+            Direction2d.yComponent givenDirection
 
         ( vx, vy ) =
             components givenVector
@@ -1089,8 +1101,11 @@ The position of the axis doesn't matter, only its orientation:
 mirrorAcross : Axis2d axisUnits coordinates -> Vector2d units coordinates -> Vector2d units coordinates
 mirrorAcross givenAxis givenVector =
     let
-        ( dx, dy ) =
-            Direction2d.components (Axis2d.direction givenAxis)
+        dx =
+            Direction2d.xComponent (Axis2d.direction givenAxis)
+
+        dy =
+            Direction2d.yComponent (Axis2d.direction givenAxis)
 
         yy =
             1 - 2 * dy * dy
@@ -1173,11 +1188,17 @@ frame, and return that vector expressed in global coordinates.
 placeIn : Frame2d frameUnits globalCoordinates localCoordinates -> Vector2d units localCoordinates -> Vector2d units globalCoordinates
 placeIn givenFrame givenVector =
     let
-        ( x1, y1 ) =
-            Direction2d.components (Frame2d.xDirection givenFrame)
+        x1 =
+            Direction2d.xComponent (Frame2d.xDirection givenFrame)
 
-        ( x2, y2 ) =
-            Direction2d.components (Frame2d.yDirection givenFrame)
+        y1 =
+            Direction2d.yComponent (Frame2d.xDirection givenFrame)
+
+        x2 =
+            Direction2d.xComponent (Frame2d.yDirection givenFrame)
+
+        y2 =
+            Direction2d.yComponent (Frame2d.yDirection givenFrame)
 
         ( x, y ) =
             components givenVector

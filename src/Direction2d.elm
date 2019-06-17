@@ -12,7 +12,7 @@ module Direction2d exposing
     , x, y, positiveX, negativeX, positiveY, negativeY
     , from, perpendicularTo, orthonormalize, orthogonalize, unsafeFromComponents, unsafeFromComponentsIn
     , fromAngle, toAngle, toVector
-    , components, componentsIn, xComponent, yComponent, componentIn, angleFrom
+    , xComponent, yComponent, componentIn, angleFrom
     , equalWithin
     , reverse, rotateClockwise, rotateCounterclockwise, rotateBy, mirrorAcross
     , relativeTo, placeIn
@@ -50,7 +50,7 @@ have several uses, such as:
 
 # Properties
 
-@docs components, componentsIn, xComponent, yComponent, componentIn, angleFrom
+@docs xComponent, yComponent, componentIn, angleFrom
 
 
 # Comparison
@@ -192,11 +192,17 @@ squares of the given components is exactly one.
 unsafeFromComponentsIn : Frame2d units globalCoordinates localCoordinates -> Float -> Float -> Direction2d globalCoordinates
 unsafeFromComponentsIn frame localX localY =
     let
-        ( x1, y1 ) =
-            components (Frame2d.xDirection frame)
+        x1 =
+            xComponent (Frame2d.xDirection frame)
 
-        ( x2, y2 ) =
-            components (Frame2d.yDirection frame)
+        y1 =
+            yComponent (Frame2d.xDirection frame)
+
+        x2 =
+            xComponent (Frame2d.yDirection frame)
+
+        y2 =
+            yComponent (Frame2d.yDirection frame)
     in
     unsafeFromComponents
         (x1 * localX + x2 * localY)
@@ -339,11 +345,7 @@ from the positive X direction). The result will be in the range -π to π.
 -}
 toAngle : Direction2d coordinates -> Angle
 toAngle direction =
-    let
-        ( dx, dy ) =
-            components direction
-    in
-    Angle.atan2 (Quantity.float dy) (Quantity.float dx)
+    Angle.atan2 (Quantity.float (yComponent direction)) (Quantity.float (xComponent direction))
 
 
 {-| Find the counterclockwise angle in radians from the first direction to the
@@ -362,25 +364,19 @@ second. The result will be in the range -π to π.
 angleFrom : Direction2d coordinates -> Direction2d coordinates -> Angle
 angleFrom firstDirection secondDirection =
     let
-        ( x1, y1 ) =
-            components firstDirection
+        x1 =
+            xComponent firstDirection
 
-        ( x2, y2 ) =
-            components secondDirection
+        y1 =
+            yComponent firstDirection
+
+        x2 =
+            xComponent secondDirection
+
+        y2 =
+            yComponent secondDirection
     in
     Angle.radians (atan2 (x1 * y2 - y1 * x2) (x1 * x2 + y1 * y2))
-
-
-{-| Get the components of a direction as a tuple (the components it would have
-as a unit vector, also know as its direction cosines).
-
-    ( x, y ) =
-        Direction2d.components direction
-
--}
-components : Direction2d coordinates -> ( Float, Float )
-components direction =
-    Bootstrap.components direction
 
 
 {-| Find the components of a direction in a given frame;
@@ -462,11 +458,17 @@ is equivalent to
 componentIn : Direction2d coordinates -> Direction2d coordinates -> Float
 componentIn firstDirection secondDirection =
     let
-        ( x1, y1 ) =
-            components firstDirection
+        x1 =
+            xComponent firstDirection
 
-        ( x2, y2 ) =
-            components secondDirection
+        y1 =
+            yComponent firstDirection
+
+        x2 =
+            xComponent secondDirection
+
+        y2 =
+            yComponent secondDirection
     in
     x1 * x2 + y1 * y2
 
@@ -505,8 +507,8 @@ equalWithin angle firstDirection secondDirection =
 
 -}
 toVector : Direction2d coordinates -> Vector2d Unitless coordinates
-toVector direction =
-    Vector2d.fromTuple Quantity.float (components direction)
+toVector (Types.Direction2d ( dx, dy )) =
+    Types.Vector2d ( Quantity.float dx, Quantity.float dy )
 
 
 {-| Reverse a direction.
@@ -531,11 +533,7 @@ reverse direction =
 -}
 rotateClockwise : Direction2d coordinates -> Direction2d coordinates
 rotateClockwise direction =
-    let
-        ( dx, dy ) =
-            components direction
-    in
-    unsafeFromComponents dy -dx
+    unsafeFromComponents (yComponent direction) -(xComponent direction)
 
 
 {-| Rotate a direction by 90 degrees counterclockwise.
@@ -549,11 +547,7 @@ rotateClockwise direction =
 -}
 rotateCounterclockwise : Direction2d coordinates -> Direction2d coordinates
 rotateCounterclockwise direction =
-    let
-        ( dx, dy ) =
-            components direction
-    in
-    unsafeFromComponents -dy dx
+    unsafeFromComponents -(yComponent direction) (xComponent direction)
 
 
 {-| Rotate a direction counterclockwise by a given angle (in radians).
@@ -574,8 +568,11 @@ rotateBy givenAngle direction =
         s =
             Angle.sin givenAngle
 
-        ( dx, dy ) =
-            components direction
+        dx =
+            xComponent direction
+
+        dy =
+            yComponent direction
     in
     unsafeFromComponents
         (c * dx - s * dy)
@@ -600,8 +597,11 @@ the axis affects the result, since directions are position-independent.
 mirrorAcross : Axis2d units coordinates -> Direction2d coordinates -> Direction2d coordinates
 mirrorAcross givenAxis direction =
     let
-        ( ax, ay ) =
-            components (Axis2d.direction givenAxis)
+        ax =
+            xComponent (Axis2d.direction givenAxis)
+
+        ay =
+            yComponent (Axis2d.direction givenAxis)
 
         yy =
             1 - 2 * ay * ay
@@ -612,8 +612,11 @@ mirrorAcross givenAxis direction =
         xx =
             1 - 2 * ax * ax
 
-        ( dx, dy ) =
-            components direction
+        dx =
+            xComponent direction
+
+        dy =
+            yComponent direction
     in
     unsafeFromComponents
         (yy * dx + xy * dy)
@@ -656,14 +659,23 @@ frame, and return that direction expressed in global coordinates.
 placeIn : Frame2d units globalCoordinates localCoordinates -> Direction2d localCoordinates -> Direction2d globalCoordinates
 placeIn givenFrame direction =
     let
-        ( x1, y1 ) =
-            components (Frame2d.xDirection givenFrame)
+        x1 =
+            xComponent (Frame2d.xDirection givenFrame)
 
-        ( x2, y2 ) =
-            components (Frame2d.yDirection givenFrame)
+        y1 =
+            yComponent (Frame2d.xDirection givenFrame)
 
-        ( dx, dy ) =
-            components direction
+        x2 =
+            xComponent (Frame2d.yDirection givenFrame)
+
+        y2 =
+            yComponent (Frame2d.yDirection givenFrame)
+
+        dx =
+            xComponent direction
+
+        dy =
+            yComponent direction
     in
     unsafeFromComponents
         (x1 * dx + x2 * dy)

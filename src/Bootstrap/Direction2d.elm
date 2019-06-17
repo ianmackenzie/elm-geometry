@@ -8,10 +8,11 @@
 
 
 module Bootstrap.Direction2d exposing
-    ( components
-    , perpendicularTo
+    ( perpendicularTo
     , reverse
     , unsafeFromComponents
+    , xComponent
+    , yComponent
     )
 
 import Geometry.Types exposing (..)
@@ -23,24 +24,21 @@ unsafeFromComponents x y =
     Direction2d ( x, y )
 
 
-components : Direction2d coordinates -> ( Float, Float )
-components (Direction2d directionComponents) =
-    directionComponents
+xComponent : Direction2d coordinates -> Float
+xComponent (Direction2d ( x, y )) =
+    x
+
+
+yComponent : Direction2d coordinates -> Float
+yComponent (Direction2d ( x, y )) =
+    y
 
 
 reverse : Direction2d coordinates -> Direction2d coordinates
-reverse direction =
-    let
-        ( x, y ) =
-            components direction
-    in
-    unsafeFromComponents -x -y
+reverse (Direction2d ( x, y )) =
+    Direction2d ( -x, -y )
 
 
 perpendicularTo : Direction2d coordinates -> Direction2d coordinates
-perpendicularTo direction =
-    let
-        ( x, y ) =
-            components direction
-    in
-    unsafeFromComponents -y x
+perpendicularTo (Direction2d ( x, y )) =
+    Direction2d ( -y, x )

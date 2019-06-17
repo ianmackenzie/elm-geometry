@@ -274,8 +274,11 @@ vector3dWithin tolerance =
 validDirection2d : Direction2d coordinates -> Expectation
 validDirection2d direction =
     let
-        ( x, y ) =
-            Direction2d.components direction
+        x =
+            Direction2d.xComponent direction
+
+        y =
+            Direction2d.yComponent direction
 
         length =
             sqrt (x ^ 2 + y ^ 2)
@@ -305,8 +308,14 @@ direction2dWithin tolerance =
 validDirection3d : Direction3d coordinates -> Expectation
 validDirection3d direction =
     let
-        ( x, y, z ) =
-            Direction3d.components direction
+        x =
+            Direction3d.xComponent direction
+
+        y =
+            Direction3d.yComponent direction
+
+        z =
+            Direction3d.zComponent direction
 
         length =
             sqrt (x ^ 2 + y ^ 2 + z ^ 2)

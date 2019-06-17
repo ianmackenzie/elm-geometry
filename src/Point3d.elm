@@ -334,11 +334,23 @@ xyOn sketchPlane x y =
         ( x0, y0, z0 ) =
             coordinates (SketchPlane3d.originPoint sketchPlane)
 
-        ( ux, uy, uz ) =
-            Direction3d.components (SketchPlane3d.xDirection sketchPlane)
+        ux =
+            Direction3d.xComponent (SketchPlane3d.xDirection sketchPlane)
 
-        ( vx, vy, vz ) =
-            Direction3d.components (SketchPlane3d.yDirection sketchPlane)
+        uy =
+            Direction3d.yComponent (SketchPlane3d.xDirection sketchPlane)
+
+        uz =
+            Direction3d.zComponent (SketchPlane3d.xDirection sketchPlane)
+
+        vx =
+            Direction3d.xComponent (SketchPlane3d.yDirection sketchPlane)
+
+        vy =
+            Direction3d.yComponent (SketchPlane3d.yDirection sketchPlane)
+
+        vz =
+            Direction3d.zComponent (SketchPlane3d.yDirection sketchPlane)
     in
     xyz
         (x0 |> Quantity.plus (Quantity.aXbY ux x vx y))
@@ -369,14 +381,32 @@ xyzIn frame x y z =
         ( x0, y0, z0 ) =
             coordinates (Frame3d.originPoint frame)
 
-        ( x1, y1, z1 ) =
-            Direction3d.components (Frame3d.xDirection frame)
+        x1 =
+            Direction3d.xComponent (Frame3d.xDirection frame)
 
-        ( x2, y2, z2 ) =
-            Direction3d.components (Frame3d.yDirection frame)
+        y1 =
+            Direction3d.yComponent (Frame3d.xDirection frame)
 
-        ( x3, y3, z3 ) =
-            Direction3d.components (Frame3d.zDirection frame)
+        z1 =
+            Direction3d.zComponent (Frame3d.xDirection frame)
+
+        x2 =
+            Direction3d.xComponent (Frame3d.yDirection frame)
+
+        y2 =
+            Direction3d.yComponent (Frame3d.yDirection frame)
+
+        z2 =
+            Direction3d.zComponent (Frame3d.yDirection frame)
+
+        x3 =
+            Direction3d.xComponent (Frame3d.zDirection frame)
+
+        y3 =
+            Direction3d.yComponent (Frame3d.zDirection frame)
+
+        z3 =
+            Direction3d.zComponent (Frame3d.zDirection frame)
     in
     xyz
         (x0 |> Quantity.plus (Quantity.aXbYcZ x1 x x2 y x3 z))
@@ -579,14 +609,32 @@ coordinatesIn frame point =
         dz =
             z |> Quantity.minus z0
 
-        ( x1, y1, z1 ) =
-            Direction3d.components (Frame3d.xDirection frame)
+        x1 =
+            Direction3d.xComponent (Frame3d.xDirection frame)
 
-        ( x2, y2, z2 ) =
-            Direction3d.components (Frame3d.yDirection frame)
+        y1 =
+            Direction3d.yComponent (Frame3d.xDirection frame)
 
-        ( x3, y3, z3 ) =
-            Direction3d.components (Frame3d.zDirection frame)
+        z1 =
+            Direction3d.zComponent (Frame3d.xDirection frame)
+
+        x2 =
+            Direction3d.xComponent (Frame3d.yDirection frame)
+
+        y2 =
+            Direction3d.yComponent (Frame3d.yDirection frame)
+
+        z2 =
+            Direction3d.zComponent (Frame3d.yDirection frame)
+
+        x3 =
+            Direction3d.xComponent (Frame3d.zDirection frame)
+
+        y3 =
+            Direction3d.yComponent (Frame3d.zDirection frame)
+
+        z3 =
+            Direction3d.zComponent (Frame3d.zDirection frame)
     in
     ( Quantity.aXbYcZ x1 dx y1 dy z1 dz
     , Quantity.aXbYcZ x2 dx y2 dy z2 dz
@@ -898,8 +946,14 @@ signedDistanceFrom plane point =
         ( x0, y0, z0 ) =
             coordinates (Plane3d.originPoint plane)
 
-        ( nx, ny, nz ) =
-            Direction3d.components (Plane3d.normalDirection plane)
+        nx =
+            Direction3d.xComponent (Plane3d.normalDirection plane)
+
+        ny =
+            Direction3d.yComponent (Plane3d.normalDirection plane)
+
+        nz =
+            Direction3d.zComponent (Plane3d.normalDirection plane)
 
         dx =
             x |> Quantity.minus x0
@@ -985,8 +1039,14 @@ In more mathematical terms, this is 'point plus vector'. For 'point minus point'
 translateBy : Vector3d units coordinates -> Point3d units coordinates -> Point3d units coordinates
 translateBy vector point =
     let
-        ( vx, vy, vz ) =
-            Vector3d.components vector
+        vx =
+            Vector3d.xComponent vector
+
+        vy =
+            Vector3d.yComponent vector
+
+        vz =
+            Vector3d.zComponent vector
 
         ( px, py, pz ) =
             coordinates point
@@ -1014,8 +1074,14 @@ The distance can be negative:
 translateIn : Direction3d coordinates -> Quantity Float units -> Point3d units coordinates -> Point3d units coordinates
 translateIn direction distance point =
     let
-        ( dx, dy, dz ) =
-            Direction3d.components direction
+        dx =
+            Direction3d.xComponent direction
+
+        dy =
+            Direction3d.yComponent direction
+
+        dz =
+            Direction3d.zComponent direction
 
         ( px, py, pz ) =
             coordinates point
@@ -1134,10 +1200,7 @@ coordinates relative to a given reference frame.
 -}
 relativeTo : Frame3d units globalCoordinates localCoordinates -> Point3d units globalCoordinates -> Point3d units localCoordinates
 relativeTo frame point =
-    Vector3d.from (Frame3d.originPoint frame) point
-        |> Vector3d.relativeTo frame
-        |> Vector3d.components
-        |> Types.Point3d
+    xyz (xCoordinateIn frame point) (yCoordinateIn frame point) (zCoordinateIn frame point)
 
 
 {-| Take a point defined in local coordinates relative to a given reference
@@ -1190,11 +1253,23 @@ projectInto sketchPlane point =
         ( x0, y0, z0 ) =
             coordinates (SketchPlane3d.originPoint sketchPlane)
 
-        ( ux, uy, uz ) =
-            Direction3d.components (SketchPlane3d.xDirection sketchPlane)
+        ux =
+            Direction3d.xComponent (SketchPlane3d.xDirection sketchPlane)
 
-        ( vx, vy, vz ) =
-            Direction3d.components (SketchPlane3d.yDirection sketchPlane)
+        uy =
+            Direction3d.yComponent (SketchPlane3d.xDirection sketchPlane)
+
+        uz =
+            Direction3d.zComponent (SketchPlane3d.xDirection sketchPlane)
+
+        vx =
+            Direction3d.xComponent (SketchPlane3d.yDirection sketchPlane)
+
+        vy =
+            Direction3d.yComponent (SketchPlane3d.yDirection sketchPlane)
+
+        vz =
+            Direction3d.zComponent (SketchPlane3d.yDirection sketchPlane)
 
         deltaX =
             x |> Quantity.minus x0

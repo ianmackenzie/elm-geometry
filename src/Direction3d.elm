@@ -12,7 +12,7 @@ module Direction3d exposing
     , x, y, z, positiveX, negativeX, positiveY, negativeY, positiveZ, negativeZ
     , from, on, fromAzimuthAndElevation, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize, unsafeFromComponents, unsafeFromComponentsIn
     , toVector
-    , components, componentsIn, xComponent, yComponent, zComponent, componentIn, angleFrom, azimuth, elevation
+    , xComponent, yComponent, zComponent, componentIn, angleFrom, azimuth, elevation
     , equalWithin
     , reverse, rotateAround, mirrorAcross, projectOnto
     , relativeTo, placeIn, projectInto
@@ -50,7 +50,7 @@ Directions have several uses, such as:
 
 # Properties
 
-@docs components, componentsIn, xComponent, yComponent, zComponent, componentIn, angleFrom, azimuth, elevation
+@docs xComponent, yComponent, zComponent, componentIn, angleFrom, azimuth, elevation
 
 
 # Comparison
@@ -255,8 +255,11 @@ direction specified in XY coordinates _within_ the sketch plane.
 on : SketchPlane3d units coordinates3d coordinates2d -> Direction2d coordinates2d -> Direction3d coordinates3d
 on sketchPlane direction2d =
     let
-        ( dx, dy ) =
-            Direction2d.components direction2d
+        dx =
+            Direction2d.xComponent direction2d
+
+        dy =
+            Direction2d.yComponent direction2d
 
         ( ux, uy, uz ) =
             components (SketchPlane3d.xDirection sketchPlane)
@@ -354,8 +357,14 @@ perpendicularTo direction =
         length =
             Vector3d.length perpendicularVector
 
-        ( vx, vy, vz ) =
-            Vector3d.components perpendicularVector
+        vx =
+            Vector3d.xComponent perpendicularVector
+
+        vy =
+            Vector3d.yComponent perpendicularVector
+
+        vz =
+            Vector3d.zComponent perpendicularVector
     in
     unsafeFromComponents
         (Quantity.ratio vx length)

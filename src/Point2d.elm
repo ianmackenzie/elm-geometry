@@ -301,11 +301,17 @@ xyIn frame x y =
         ( x0, y0 ) =
             coordinates (Frame2d.originPoint frame)
 
-        ( x1, y1 ) =
-            Direction2d.components (Frame2d.xDirection frame)
+        x1 =
+            Direction2d.xComponent (Frame2d.xDirection frame)
 
-        ( x2, y2 ) =
-            Direction2d.components (Frame2d.yDirection frame)
+        y1 =
+            Direction2d.yComponent (Frame2d.xDirection frame)
+
+        x2 =
+            Direction2d.xComponent (Frame2d.yDirection frame)
+
+        y2 =
+            Direction2d.yComponent (Frame2d.yDirection frame)
     in
     xy
         (x0 |> Quantity.plus (Quantity.aXbY x1 x x2 y))
@@ -577,11 +583,17 @@ coordinatesIn frame point =
         dy =
             y |> Quantity.minus y0
 
-        ( x1, y1 ) =
-            Direction2d.components (Frame2d.xDirection frame)
+        x1 =
+            Direction2d.xComponent (Frame2d.xDirection frame)
 
-        ( x2, y2 ) =
-            Direction2d.components (Frame2d.yDirection frame)
+        y1 =
+            Direction2d.yComponent (Frame2d.xDirection frame)
+
+        x2 =
+            Direction2d.xComponent (Frame2d.yDirection frame)
+
+        y2 =
+            Direction2d.yComponent (Frame2d.yDirection frame)
     in
     ( Quantity.aXbY x1 dx y1 dy
     , Quantity.aXbY x2 dx y2 dy
@@ -901,8 +913,11 @@ In more mathematical terms, this is 'point plus vector'. For 'point minus point'
 translateBy : Vector2d units coordinates -> Point2d units coordinates -> Point2d units coordinates
 translateBy vector point =
     let
-        ( vx, vy ) =
-            Vector2d.components vector
+        vx =
+            Vector2d.xComponent vector
+
+        vy =
+            Vector2d.yComponent vector
 
         ( px, py ) =
             coordinates point
@@ -936,8 +951,11 @@ The distance can be negative:
 translateIn : Direction2d coordinates -> Quantity Float units -> Point2d units coordinates -> Point2d units coordinates
 translateIn direction distance point =
     let
-        ( dx, dy ) =
-            Direction2d.components direction
+        dx =
+            Direction2d.xComponent direction
+
+        dy =
+            Direction2d.yComponent direction
 
         ( px, py ) =
             coordinates point
@@ -1020,10 +1038,7 @@ coordinates relative to a given reference frame.
 -}
 relativeTo : Frame2d units globalCoordinates localCoordinates -> Point2d units globalCoordinates -> Point2d units localCoordinates
 relativeTo frame point =
-    Vector2d.from (Frame2d.originPoint frame) point
-        |> Vector2d.relativeTo frame
-        |> Vector2d.components
-        |> Types.Point2d
+    xy (xCoordinateIn frame point) (yCoordinateIn frame point)
 
 
 {-| Take a point defined in local coordinates relative to a given reference

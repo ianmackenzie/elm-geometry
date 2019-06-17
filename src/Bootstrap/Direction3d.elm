@@ -8,8 +8,10 @@
 
 
 module Bootstrap.Direction3d exposing
-    ( components
-    , unsafeFromComponents
+    ( unsafeFromComponents
+    , xComponent
+    , yComponent
+    , zComponent
     )
 
 import Geometry.Types exposing (..)
@@ -20,6 +22,16 @@ unsafeFromComponents x y z =
     Direction3d ( x, y, z )
 
 
-components : Direction3d coordinates -> ( Float, Float, Float )
-components (Direction3d givenComponents) =
-    givenComponents
+xComponent : Direction3d coordinates -> Float
+xComponent (Direction3d ( x, y, z )) =
+    x
+
+
+yComponent : Direction3d coordinates -> Float
+yComponent (Direction3d ( x, y, z )) =
+    y
+
+
+zComponent : Direction3d coordinates -> Float
+zComponent (Direction3d ( x, y, z )) =
+    z

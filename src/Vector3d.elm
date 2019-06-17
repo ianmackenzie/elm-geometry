@@ -12,7 +12,7 @@ module Vector3d exposing
     , zero
     , fromComponents, fromComponentsIn, from, withLength, on, fromComponentsOn, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
-    , components, componentsIn, xComponent, yComponent, componentIn, zComponent, length, direction, lengthAndDirection
+    , xComponent, yComponent, componentIn, zComponent, length, direction, lengthAndDirection
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross
     , reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
@@ -64,7 +64,7 @@ components.
 
 # Properties
 
-@docs components, componentsIn, xComponent, yComponent, componentIn, zComponent, length, squaredLength, direction, lengthAndDirection
+@docs xComponent, yComponent, componentIn, zComponent, length, squaredLength, direction, lengthAndDirection
 
 
 # Comparison
@@ -165,14 +165,32 @@ fromComponents x y z =
 fromComponentsIn : Frame3d units globalCoordinates localCoordinates -> Quantity Float units -> Quantity Float units -> Quantity Float units -> Vector3d units globalCoordinates
 fromComponentsIn frame x y z =
     let
-        ( x1, y1, z1 ) =
-            Direction3d.components (Frame3d.xDirection frame)
+        x1 =
+            Direction3d.xComponent (Frame3d.xDirection frame)
 
-        ( x2, y2, z2 ) =
-            Direction3d.components (Frame3d.yDirection frame)
+        y1 =
+            Direction3d.yComponent (Frame3d.xDirection frame)
 
-        ( x3, y3, z3 ) =
-            Direction3d.components (Frame3d.zDirection frame)
+        z1 =
+            Direction3d.zComponent (Frame3d.xDirection frame)
+
+        x2 =
+            Direction3d.xComponent (Frame3d.yDirection frame)
+
+        y2 =
+            Direction3d.yComponent (Frame3d.yDirection frame)
+
+        z2 =
+            Direction3d.zComponent (Frame3d.yDirection frame)
+
+        x3 =
+            Direction3d.xComponent (Frame3d.zDirection frame)
+
+        y3 =
+            Direction3d.yComponent (Frame3d.zDirection frame)
+
+        z3 =
+            Direction3d.zComponent (Frame3d.zDirection frame)
     in
     fromComponents
         (Quantity.aXbYcZ x1 x x2 y x3 z)
@@ -228,8 +246,14 @@ from firstPoint secondPoint =
 withLength : Quantity Float units -> Direction3d coordinates -> Vector3d units coordinates
 withLength givenLength givenDirection =
     let
-        ( dx, dy, dz ) =
-            Direction3d.components givenDirection
+        dx =
+            Direction3d.xComponent givenDirection
+
+        dy =
+            Direction3d.yComponent givenDirection
+
+        dz =
+            Direction3d.zComponent givenDirection
     in
     fromComponents
         (Quantity.multiplyBy dx givenLength)
@@ -266,11 +290,7 @@ A slightly more complex example:
 -}
 on : SketchPlane3d units coordinates3d coordinates2d -> Vector2d units coordinates2d -> Vector3d units coordinates3d
 on sketchPlane vector2d =
-    let
-        ( x, y ) =
-            Vector2d.components vector2d
-    in
-    fromComponentsOn sketchPlane x y
+    fromComponentsOn sketchPlane (Vector2d.xComponent vector2d) (Vector2d.yComponent vector2d)
 
 
 {-| Construct a 3D vector lying on a sketch plane by providing its 2D components within the sketch
@@ -296,11 +316,23 @@ plane:
 fromComponentsOn : SketchPlane3d units coordinates3d coordinates2d -> Quantity Float units -> Quantity Float units -> Vector3d units coordinates
 fromComponentsOn sketchPlane x y =
     let
-        ( ux, uy, uz ) =
-            Direction3d.components (SketchPlane3d.xDirection sketchPlane)
+        ux =
+            Direction3d.xComponent (SketchPlane3d.xDirection sketchPlane)
 
-        ( vx, vy, vz ) =
-            Direction3d.components (SketchPlane3d.yDirection sketchPlane)
+        uy =
+            Direction3d.yComponent (SketchPlane3d.xDirection sketchPlane)
+
+        uz =
+            Direction3d.zComponent (SketchPlane3d.xDirection sketchPlane)
+
+        vx =
+            Direction3d.xComponent (SketchPlane3d.yDirection sketchPlane)
+
+        vy =
+            Direction3d.yComponent (SketchPlane3d.yDirection sketchPlane)
+
+        vz =
+            Direction3d.zComponent (SketchPlane3d.yDirection sketchPlane)
     in
     fromComponents
         (Quantity.aXbY ux x vx y)
@@ -573,8 +605,14 @@ is equivalent to
 componentIn : Direction3d coordinates -> Vector3d units coordinates -> Quantity Float units
 componentIn givenDirection givenVector =
     let
-        ( dx, dy, dz ) =
-            Direction3d.components givenDirection
+        dx =
+            Direction3d.xComponent givenDirection
+
+        dy =
+            Direction3d.yComponent givenDirection
+
+        dz =
+            Direction3d.zComponent givenDirection
 
         ( vx, vy, vz ) =
             components givenVector
@@ -1015,8 +1053,14 @@ scaleBy scale vector =
 rotateAround : Axis3d units coordinates -> Angle -> Vector3d units coordinates -> Vector3d units coordinates
 rotateAround axis angle =
     let
-        ( ax, ay, az ) =
-            Direction3d.components (Axis3d.direction axis)
+        ax =
+            Direction3d.xComponent (Axis3d.direction axis)
+
+        ay =
+            Direction3d.yComponent (Axis3d.direction axis)
+
+        az =
+            Direction3d.zComponent (Axis3d.direction axis)
 
         halfAngle =
             Quantity.multiplyBy 0.5 angle
@@ -1116,8 +1160,14 @@ rotateAround axis angle =
 mirrorAcross : Plane3d units coordinates -> Vector3d units coordinates -> Vector3d units coordinates
 mirrorAcross plane =
     let
-        ( dx, dy, dz ) =
-            Direction3d.components (Plane3d.normalDirection plane)
+        dx =
+            Direction3d.xComponent (Plane3d.normalDirection plane)
+
+        dy =
+            Direction3d.yComponent (Plane3d.normalDirection plane)
+
+        dz =
+            Direction3d.zComponent (Plane3d.normalDirection plane)
 
         a =
             1 - 2 * dx * dx
@@ -1222,14 +1272,32 @@ frame, and return that vector expressed in global coordinates.
 placeIn : Frame3d units globalCoordinates localCoordinates -> Vector3d units localCoordinates -> Vector3d units globalCoordinates
 placeIn frame vector =
     let
-        ( x1, y1, z1 ) =
-            Direction3d.components (Frame3d.xDirection frame)
+        x1 =
+            Direction3d.xComponent (Frame3d.xDirection frame)
 
-        ( x2, y2, z2 ) =
-            Direction3d.components (Frame3d.yDirection frame)
+        y1 =
+            Direction3d.yComponent (Frame3d.xDirection frame)
 
-        ( x3, y3, z3 ) =
-            Direction3d.components (Frame3d.zDirection frame)
+        z1 =
+            Direction3d.zComponent (Frame3d.xDirection frame)
+
+        x2 =
+            Direction3d.xComponent (Frame3d.yDirection frame)
+
+        y2 =
+            Direction3d.yComponent (Frame3d.yDirection frame)
+
+        z2 =
+            Direction3d.zComponent (Frame3d.yDirection frame)
+
+        x3 =
+            Direction3d.xComponent (Frame3d.zDirection frame)
+
+        y3 =
+            Direction3d.yComponent (Frame3d.zDirection frame)
+
+        z3 =
+            Direction3d.zComponent (Frame3d.zDirection frame)
 
         ( x, y, z ) =
             components vector

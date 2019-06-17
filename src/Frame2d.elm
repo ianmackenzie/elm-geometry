@@ -265,13 +265,19 @@ constructing one explicitly with `unsafe` or by mirroring a right-handed frame.
 
 -}
 isRightHanded : Frame2d units coordinates1 coordinates2 -> Bool
-isRightHanded frame =
+isRightHanded (Types.Frame2d frame) =
     let
-        ( x1, y1 ) =
-            Direction2d.components (xDirection frame)
+        x1 =
+            Direction2d.xComponent frame.xDirection
 
-        ( x2, y2 ) =
-            Direction2d.components (yDirection frame)
+        y1 =
+            Direction2d.yComponent frame.xDirection
+
+        x2 =
+            Direction2d.xComponent frame.yDirection
+
+        y2 =
+            Direction2d.yComponent frame.yDirection
     in
     x1 * y2 - y1 * x2 > 0
 

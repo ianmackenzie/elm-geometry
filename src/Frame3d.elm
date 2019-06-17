@@ -387,16 +387,34 @@ constructing one explicitly with `unsafe` or by mirroring a right-handed frame.
 
 -}
 isRightHanded : Frame3d units coordinates1 coordinates2 -> Bool
-isRightHanded frame =
+isRightHanded (Types.Frame3d frame) =
     let
-        ( a, b, c ) =
-            Direction3d.components (xDirection frame)
+        a =
+            Direction3d.xComponent frame.xDirection
 
-        ( d, e, f ) =
-            Direction3d.components (yDirection frame)
+        b =
+            Direction3d.yComponent frame.xDirection
 
-        ( g, h, i ) =
-            Direction3d.components (zDirection frame)
+        c =
+            Direction3d.zComponent frame.xDirection
+
+        d =
+            Direction3d.xComponent frame.yDirection
+
+        e =
+            Direction3d.yComponent frame.yDirection
+
+        f =
+            Direction3d.zComponent frame.yDirection
+
+        g =
+            Direction3d.xComponent frame.zDirection
+
+        h =
+            Direction3d.yComponent frame.zDirection
+
+        i =
+            Direction3d.zComponent frame.zDirection
     in
     a * e * i + b * f * g + c * d * h - c * e * g - b * d * i - a * f * h > 0
 
