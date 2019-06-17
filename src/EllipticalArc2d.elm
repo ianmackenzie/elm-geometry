@@ -467,7 +467,7 @@ firstDerivative arc parameterValue =
         theta =
             startAngle arc |> Quantity.plus (Quantity.multiplyBy t deltaTheta)
     in
-    Vector2d.fromComponentsIn (axes arc)
+    Vector2d.xyIn (axes arc)
         (Quantity.rTheta (xRadius arc) deltaTheta |> Quantity.multiplyBy -(Angle.sin theta))
         (Quantity.rTheta (yRadius arc) deltaTheta |> Quantity.multiplyBy (Angle.cos theta))
 

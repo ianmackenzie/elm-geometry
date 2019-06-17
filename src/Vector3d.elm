@@ -1328,6 +1328,6 @@ sketch coordinates.
 -}
 projectInto : SketchPlane3d units coordinates coordinates2d -> Vector3d units coordinates -> Vector2d units coordinates2d
 projectInto sketchPlane vector =
-    Vector2d.fromComponents
+    Vector2d.xy
         (componentIn (SketchPlane3d.xDirection sketchPlane) vector)
         (componentIn (SketchPlane3d.yDirection sketchPlane) vector)

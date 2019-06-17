@@ -71,10 +71,10 @@ radialPolygonWithHole boundingBox =
                                             (Angle.turns 1)
 
                                     innerRadialVector =
-                                        Vector2d.fromPolarComponents innerRadius angle
+                                        Vector2d.rTheta innerRadius angle
 
                                     outerRadialVector =
-                                        Vector2d.fromPolarComponents outerRadius angle
+                                        Vector2d.rTheta outerRadius angle
 
                                     innerPoint =
                                         centerPoint |> Point2d.translateBy innerRadialVector

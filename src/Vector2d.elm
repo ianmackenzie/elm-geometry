@@ -10,7 +10,7 @@
 module Vector2d exposing
     ( Vector2d
     , zero
-    , fromComponents, fromComponentsIn, fromPolarComponents, fromPolarComponentsIn, from, withLength, perpendicularTo, interpolateFrom
+    , xy, xyIn, rTheta, rThetaIn, from, withLength, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
     , at, at_
     , per, for
@@ -50,7 +50,7 @@ Although there are no predefined constants for the vectors with components
 
 # Constructors
 
-@docs fromComponents, fromComponentsIn, fromPolarComponents, fromPolarComponentsIn, from, withLength, perpendicularTo, interpolateFrom
+@docs xy, xyIn, rTheta, rThetaIn, from, withLength, perpendicularTo, interpolateFrom
 
 
 # Interop
@@ -135,7 +135,7 @@ type alias Vector2d units coordinates =
 -}
 zero : Vector2d units coordinates
 zero =
-    fromComponents Quantity.zero Quantity.zero
+    xy Quantity.zero Quantity.zero
 
 
 {-| Construct a vector from its X and Y components.
@@ -144,8 +144,8 @@ zero =
         Vector2d.fromComponents ( 2, 3 )
 
 -}
-fromComponents : Quantity Float units -> Quantity Float units -> Vector2d units coordinates
-fromComponents x y =
+xy : Quantity Float units -> Quantity Float units -> Vector2d units coordinates
+xy x y =
     Types.Vector2d ( x, y )
 
 
@@ -165,8 +165,8 @@ fromComponents x y =
     -->     )
 
 -}
-fromComponentsIn : Frame2d units globalCoordinates localCoordinates -> Quantity Float units -> Quantity Float units -> Vector2d units globalCoordinates
-fromComponentsIn frame x y =
+xyIn : Frame2d units globalCoordinates localCoordinates -> Quantity Float units -> Quantity Float units -> Vector2d units globalCoordinates
+xyIn frame x y =
     let
         x1 =
             Direction2d.xComponent (Frame2d.xDirection frame)
@@ -180,9 +180,7 @@ fromComponentsIn frame x y =
         y2 =
             Direction2d.yComponent (Frame2d.yDirection frame)
     in
-    fromComponents
-        (Quantity.aXbY x1 x x2 y)
-        (Quantity.aXbY y1 x y2 y)
+    xy (Quantity.aXbY x1 x x2 y) (Quantity.aXbY y1 x y2 y)
 
 
 {-| Construct a vector from a length and angle. The angle is measured
@@ -192,11 +190,9 @@ counterclockwise from the positive X direction.
     -->Vector2d.fromComponents ( -1.4142, 1.4142 )
 
 -}
-fromPolarComponents : Quantity Float units -> Angle -> Vector2d units coordinates
-fromPolarComponents givenRadius givenAngle =
-    fromComponents
-        (Quantity.rCosTheta givenRadius givenAngle)
-        (Quantity.rSinTheta givenRadius givenAngle)
+rTheta : Quantity Float units -> Angle -> Vector2d units coordinates
+rTheta givenRadius givenAngle =
+    xy (Quantity.rCosTheta givenRadius givenAngle) (Quantity.rSinTheta givenRadius givenAngle)
 
 
 {-| Construct a vector given its local polar components within a particular
@@ -216,11 +212,9 @@ frame:
     -->     )
 
 -}
-fromPolarComponentsIn : Frame2d units globalCoordinates localCoordinates -> Quantity Float units -> Angle -> Vector2d units globalCoordinates
-fromPolarComponentsIn frame r theta =
-    fromComponentsIn frame
-        (Quantity.rCosTheta r theta)
-        (Quantity.rSinTheta r theta)
+rThetaIn : Frame2d units globalCoordinates localCoordinates -> Quantity Float units -> Angle -> Vector2d units globalCoordinates
+rThetaIn frame r theta =
+    xyIn frame (Quantity.rCosTheta r theta) (Quantity.rSinTheta r theta)
 
 
 {-| Construct a vector from the first given point to the second.
@@ -250,9 +244,7 @@ from firstPoint secondPoint =
         y2 =
             Point2d.yCoordinate secondPoint
     in
-    fromComponents
-        (x2 |> Quantity.minus x1)
-        (y2 |> Quantity.minus y1)
+    xy (x2 |> Quantity.minus x1) (y2 |> Quantity.minus y1)
 
 
 {-| Construct a vector with the given length in the given direction.
@@ -270,9 +262,7 @@ withLength givenLength givenDirection =
         dy =
             Direction2d.yComponent givenDirection
     in
-    fromComponents
-        (Quantity.multiplyBy dx givenLength)
-        (Quantity.multiplyBy dy givenLength)
+    xy (givenLength |> Quantity.multiplyBy dx) (givenLength |> Quantity.multiplyBy dy)
 
 
 {-| Construct a vector perpendicular to the given vector, by rotating the given
@@ -341,10 +331,14 @@ interpolateFrom firstVector secondVector givenParameter =
 
         ( x2, y2 ) =
             components secondVector
+
+        x =
+            Quantity.interpolateFrom x1 x2 givenParameter
+
+        y =
+            Quantity.interpolateFrom y1 y2 givenParameter
     in
-    fromComponents
-        (Quantity.interpolateFrom x1 x2 givenParameter)
-        (Quantity.interpolateFrom y1 y2 givenParameter)
+    xy x y
 
 
 {-| Construct a `Vector2d` from a tuple of `Float` values, by specifying what units those values are
@@ -358,7 +352,7 @@ in.
 -}
 fromTuple : (Float -> Quantity Float units) -> ( Float, Float ) -> Vector2d units coordinates
 fromTuple toQuantity ( x, y ) =
-    fromComponents (toQuantity x) (toQuantity y)
+    xy (toQuantity x) (toQuantity y)
 
 
 {-| Convert a `Vector2d` to a tuple of `Float` values, by specifying what units you want the result
@@ -391,7 +385,7 @@ are in.
 -}
 fromRecord : (Float -> Quantity Float units) -> { x : Float, y : Float } -> Vector2d units coordinates
 fromRecord toQuantity { x, y } =
-    fromComponents (toQuantity x) (toQuantity y)
+    xy (toQuantity x) (toQuantity y)
 
 
 {-| Convert a `Vector2d` to a record with `Float` fields, by specifying what units you want the
@@ -439,7 +433,7 @@ at rate vector =
         ( x, y ) =
             components vector
     in
-    fromComponents (Quantity.at rate x) (Quantity.at rate y)
+    xy (Quantity.at rate x) (Quantity.at rate y)
 
 
 {-| Convert a vector from one units type to another, by providing an 'inverse' conversion factor
@@ -468,7 +462,7 @@ at_ rate vector =
         ( x, y ) =
             components vector
     in
-    fromComponents (Quantity.at_ rate x) (Quantity.at_ rate y)
+    xy (Quantity.at_ rate x) (Quantity.at_ rate y)
 
 
 {-| Construct a vector representing a rate of change such as a speed:
@@ -493,7 +487,7 @@ per independentQuantity vector =
         ( x, y ) =
             components vector
     in
-    fromComponents (Quantity.per independentQuantity x) (Quantity.per independentQuantity y)
+    xy (Quantity.per independentQuantity x) (Quantity.per independentQuantity y)
 
 
 {-| Multiply a rate of change vector by an independent quantity to get a total vector. For example,
@@ -518,7 +512,7 @@ for independentQuantity vector =
         ( x, y ) =
             components vector
     in
-    fromComponents (Quantity.for independentQuantity x) (Quantity.for independentQuantity y)
+    xy (Quantity.for independentQuantity x) (Quantity.for independentQuantity y)
 
 
 {-| Extract the components of a vector.
@@ -827,7 +821,7 @@ normalize givenVector =
             scaledLength =
                 sqrt (scaledX * scaledX + scaledY * scaledY)
         in
-        fromComponents
+        xy
             (Quantity.float (scaledX / scaledLength))
             (Quantity.float (scaledY / scaledLength))
 
@@ -853,9 +847,7 @@ plus secondVector firstVector =
         ( x2, y2 ) =
             components secondVector
     in
-    fromComponents
-        (x1 |> Quantity.plus x2)
-        (y1 |> Quantity.plus y2)
+    xy (x1 |> Quantity.plus x2) (y1 |> Quantity.plus y2)
 
 
 {-| Find the difference between two vectors (the first vector minus the second).
@@ -879,9 +871,7 @@ minus secondVector firstVector =
         ( x2, y2 ) =
             components secondVector
     in
-    fromComponents
-        (x1 |> Quantity.minus x2)
-        (y1 |> Quantity.minus y2)
+    xy (x1 |> Quantity.minus x2) (y1 |> Quantity.minus y2)
 
 
 {-| Find the dot product of two vectors.
@@ -988,7 +978,7 @@ reverse givenVector =
         ( x, y ) =
             components givenVector
     in
-    fromComponents (Quantity.negate x) (Quantity.negate y)
+    xy (Quantity.negate x) (Quantity.negate y)
 
 
 {-| Scale the length of a vector by a given scale.
@@ -1007,9 +997,7 @@ scaleBy givenScale givenVector =
         ( x, y ) =
             components givenVector
     in
-    fromComponents
-        (Quantity.multiplyBy givenScale x)
-        (Quantity.multiplyBy givenScale y)
+    xy (Quantity.multiplyBy givenScale x) (Quantity.multiplyBy givenScale y)
 
 
 {-| Rotate a vector counterclockwise by a given angle (in radians).
@@ -1035,9 +1023,7 @@ rotateBy givenAngle givenVector =
         ( x, y ) =
             components givenVector
     in
-    fromComponents
-        (Quantity.aXbY c x -s y)
-        (Quantity.aXbY s x c y)
+    xy (Quantity.aXbY c x -s y) (Quantity.aXbY s x c y)
 
 
 {-| Rotate the given vector 90 degrees counterclockwise;
@@ -1057,7 +1043,7 @@ rotateCounterclockwise givenVector =
         ( x, y ) =
             components givenVector
     in
-    fromComponents (Quantity.negate y) x
+    xy (Quantity.negate y) x
 
 
 {-| Rotate the given vector 90 degrees clockwise;
@@ -1077,7 +1063,7 @@ rotateClockwise givenVector =
         ( x, y ) =
             components givenVector
     in
-    fromComponents y (Quantity.negate x)
+    xy y (Quantity.negate x)
 
 
 {-| Mirror a vector across a given axis.
@@ -1107,21 +1093,19 @@ mirrorAcross givenAxis givenVector =
         dy =
             Direction2d.yComponent (Axis2d.direction givenAxis)
 
-        yy =
+        yy_ =
             1 - 2 * dy * dy
 
-        xy =
+        xy_ =
             2 * dx * dy
 
-        xx =
+        xx_ =
             1 - 2 * dx * dx
 
         ( vx, vy ) =
             components givenVector
     in
-    fromComponents
-        (Quantity.aXbY yy vx xy vy)
-        (Quantity.aXbY xy vx xx vy)
+    xy (Quantity.aXbY yy_ vx xy_ vy) (Quantity.aXbY xy_ vx xx_ vy)
 
 
 {-| Find the projection of a vector in a particular direction. Conceptually,
@@ -1172,7 +1156,7 @@ local coordinates relative to a given reference frame.
 -}
 relativeTo : Frame2d frameUnits globalCoordinates localCoordinates -> Vector2d units globalCoordinates -> Vector2d units localCoordinates
 relativeTo givenFrame givenVector =
-    fromComponents
+    xy
         (componentIn (Frame2d.xDirection givenFrame) givenVector)
         (componentIn (Frame2d.yDirection givenFrame) givenVector)
 
@@ -1203,6 +1187,4 @@ placeIn givenFrame givenVector =
         ( x, y ) =
             components givenVector
     in
-    fromComponents
-        (Quantity.aXbY x1 x x2 y)
-        (Quantity.aXbY y1 x y2 y)
+    xy (Quantity.aXbY x1 x x2 y) (Quantity.aXbY y1 x y2 y)

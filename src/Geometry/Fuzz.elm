@@ -118,7 +118,7 @@ parameterValue =
 
 vector2d : Fuzzer (Vector2d coordinates)
 vector2d =
-    Fuzz.map2 Vector2d.fromComponents length length
+    Fuzz.map2 Vector2d.xy length length
 
 
 vector3d : Fuzzer (Vector3d coordinates)
