@@ -13,7 +13,7 @@ module Point2d exposing
     , xy, xyIn, rTheta, rThetaIn, midpoint, centroid, interpolateFrom, along, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
     , at, at_
-    , coordinates, coordinatesIn, xCoordinate, yCoordinate, polarCoordinates
+    , coordinates, coordinatesIn, xCoordinate, yCoordinate, xCoordinateIn, yCoordinateIn, polarCoordinates
     , equalWithin, lexicographicComparison
     , distanceFrom, signedDistanceAlong, signedDistanceFrom
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
@@ -63,7 +63,7 @@ coordinates.
 
 # Properties
 
-@docs coordinates, coordinatesIn, xCoordinate, yCoordinate, polarCoordinates
+@docs coordinates, coordinatesIn, xCoordinate, yCoordinate, xCoordinateIn, yCoordinateIn, polarCoordinates
 
 
 # Comparison
@@ -586,6 +586,58 @@ coordinatesIn frame point =
     ( Quantity.aXbY x1 dx y1 dy
     , Quantity.aXbY x2 dx y2 dy
     )
+
+
+{-| TODO
+-}
+xCoordinateIn : Frame2d units globalCoordinates localCoordinates -> Point2d units globalCoordinates -> Quantity Float units
+xCoordinateIn frame point =
+    let
+        originPoint =
+            Frame2d.originPoint frame
+
+        deltaX =
+            xCoordinate point |> Quantity.minus (xCoordinate originPoint)
+
+        deltaY =
+            yCoordinate point |> Quantity.minus (yCoordinate originPoint)
+
+        xDirection =
+            Frame2d.xDirection frame
+
+        dx =
+            Direction2d.xComponent xDirection
+
+        dy =
+            Direction2d.yComponent xDirection
+    in
+    Quantity.aXbY dx deltaX dy deltaY
+
+
+{-| TODO
+-}
+yCoordinateIn : Frame2d units globalCoordinates localCoordinates -> Point2d units globalCoordinates -> Quantity Float units
+yCoordinateIn frame point =
+    let
+        originPoint =
+            Frame2d.originPoint frame
+
+        deltaX =
+            xCoordinate point |> Quantity.minus (xCoordinate originPoint)
+
+        deltaY =
+            yCoordinate point |> Quantity.minus (yCoordinate originPoint)
+
+        yDirection =
+            Frame2d.yDirection frame
+
+        dx =
+            Direction2d.xComponent yDirection
+
+        dy =
+            Direction2d.yComponent yDirection
+    in
+    Quantity.aXbY dx deltaX dy deltaY
 
 
 {-| Get the X coordinate of a point.

@@ -58,7 +58,7 @@ coordinates.
 
 # Properties
 
-@docs coordinates, coordinatesIn, xCoordinate, yCoordinate, zCoordinate
+@docs coordinates, coordinatesIn, xCoordinate, yCoordinate, zCoordinate, xCoordinateIn, yCoordinateIn, zCoordinateIn
 
 
 # Comparison
@@ -596,6 +596,102 @@ coordinatesIn frame point =
     , Quantity.aXbYcZ x2 dx y2 dy z2 dz
     , Quantity.aXbYcZ x3 dx y3 dy z3 dz
     )
+
+
+{-| TODO
+-}
+xCoordinateIn : Frame3d units globalCoordinates localCoordinates -> Point3d units globalCoordinates -> Quantity Float units
+xCoordinateIn frame point =
+    let
+        originPoint =
+            Frame3d.originPoint frame
+
+        deltaX =
+            xCoordinate point |> Quantity.minus (xCoordinate originPoint)
+
+        deltaY =
+            yCoordinate point |> Quantity.minus (yCoordinate originPoint)
+
+        deltaZ =
+            zCoordinate point |> Quantity.minus (zCoordinate originPoint)
+
+        xDirection =
+            Frame3d.xDirection frame
+
+        dx =
+            Direction3d.xComponent xDirection
+
+        dy =
+            Direction3d.yComponent xDirection
+
+        dz =
+            Direction3d.zComponent xDirection
+    in
+    Quantity.aXbYcZ dx deltaX dy deltaY dz deltaZ
+
+
+{-| TODO
+-}
+yCoordinateIn : Frame3d units globalCoordinates localCoordinates -> Point3d units globalCoordinates -> Quantity Float units
+yCoordinateIn frame point =
+    let
+        originPoint =
+            Frame3d.originPoint frame
+
+        deltaX =
+            xCoordinate point |> Quantity.minus (xCoordinate originPoint)
+
+        deltaY =
+            yCoordinate point |> Quantity.minus (yCoordinate originPoint)
+
+        deltaZ =
+            zCoordinate point |> Quantity.minus (zCoordinate originPoint)
+
+        yDirection =
+            Frame3d.yDirection frame
+
+        dx =
+            Direction3d.xComponent yDirection
+
+        dy =
+            Direction3d.yComponent yDirection
+
+        dz =
+            Direction3d.zComponent yDirection
+    in
+    Quantity.aXbYcZ dx deltaX dy deltaY dz deltaZ
+
+
+{-| TODO
+-}
+zCoordinateIn : Frame3d units globalCoordinates localCoordinates -> Point3d units globalCoordinates -> Quantity Float units
+zCoordinateIn frame point =
+    let
+        originPoint =
+            Frame3d.originPoint frame
+
+        deltaX =
+            xCoordinate point |> Quantity.minus (xCoordinate originPoint)
+
+        deltaY =
+            yCoordinate point |> Quantity.minus (yCoordinate originPoint)
+
+        deltaZ =
+            zCoordinate point |> Quantity.minus (zCoordinate originPoint)
+
+        zDirection =
+            Frame3d.zDirection frame
+
+        dx =
+            Direction3d.xComponent zDirection
+
+        dy =
+            Direction3d.yComponent zDirection
+
+        dz =
+            Direction3d.zComponent zDirection
+    in
+    Quantity.aXbYcZ dx deltaX dy deltaY dz deltaZ
 
 
 {-| Get the X coordinate of a point.
