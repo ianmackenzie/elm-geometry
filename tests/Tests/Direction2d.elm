@@ -137,9 +137,7 @@ fromAngleIsConsistentWithAngleFrom : Test
 fromAngleIsConsistentWithAngleFrom =
     Test.fuzz Fuzz.direction2d
         "fromAngle is consistent with angleFrom"
-        (\direction ->
-            direction
-                |> Direction2d.angleFrom Direction2d.x
-                |> Direction2d.fromAngle
-                |> Expect.direction2d direction
+        (Expect.roundTrip Expect.direction2d
+            (Direction2d.angleFrom Direction2d.x >> Direction2d.fromAngle)
+        )
         )
