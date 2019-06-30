@@ -58,6 +58,7 @@ module Geometry.Expect exposing
     , quantityGreaterThan
     , quantityLessThan
     , quantityWithin
+    , roundTrip
     , sketchPlane3d
     , sphere3d
     , triangle2d
@@ -181,6 +182,11 @@ maybe expect_ expectedMaybe actualMaybe =
 
         ( Nothing, Nothing ) ->
             Expect.pass
+
+
+roundTrip : (a -> a -> Expectation) -> (a -> a) -> a -> Expectation
+roundTrip comparison function value =
+    comparison value (function value)
 
 
 defaultTolerance : Float
