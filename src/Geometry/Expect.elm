@@ -70,6 +70,7 @@ module Geometry.Expect exposing
     , validDirection3d
     , validFrame2d
     , validFrame3d
+    , validSketchPlane3d
     , vector2d
     , vector2dWithin
     , vector3d
@@ -506,6 +507,35 @@ sketchPlane3d first =
             >> direction3d (SketchPlane3d.xDirection first)
         , SketchPlane3d.yDirection
             >> direction3d (SketchPlane3d.yDirection first)
+        ]
+
+
+validSketchPlane3d : SketchPlane3d units coordinates3d coordinates2d -> Expectation
+validSketchPlane3d =
+    Expect.all
+        [ SketchPlane3d.xDirection >> validDirection3d
+        , SketchPlane3d.yDirection >> validDirection3d
+        , \sketchPlane ->
+            let
+                xDirection =
+                    SketchPlane3d.xDirection sketchPlane
+
+                yDirection =
+                    SketchPlane3d.yDirection sketchPlane
+
+                parallelComponent =
+                    Direction3d.componentIn xDirection yDirection
+            in
+            if abs parallelComponent <= defaultTolerance then
+                Expect.pass
+
+            else
+                Expect.fail
+                    ("Expected perpendicular basis directions, got "
+                        ++ Debug.toString xDirection
+                        ++ ", "
+                        ++ Debug.toString yDirection
+                    )
         ]
 
 
