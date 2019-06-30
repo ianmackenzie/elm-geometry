@@ -3,6 +3,9 @@ module Tests.Direction2d exposing
     , angleFromAndRotateByAreConsistent
     , orthonormalizeProducesValidFrameBasis
     , orthonormalizingParallelVectorsReturnsNothing
+    , perpendicularToIsConsistentWithRotateBy
+    , rotateClockwiseIsConsistentWithRotateBy
+    , rotateCounterclockwiseIsConsistentWithRotateBy
     )
 
 import Angle
@@ -93,4 +96,37 @@ orthonormalizingParallelVectorsReturnsNothing =
                     Vector2d.fromTuple meters ( -3, -6 )
             in
             Expect.equal Nothing (Direction2d.orthonormalize xVector yVector)
+        )
+
+
+perpendicularToIsConsistentWithRotateBy : Test
+perpendicularToIsConsistentWithRotateBy =
+    Test.fuzz Fuzz.direction2d
+        "perpendicularTo is consistent with rotateBy"
+        (\direction ->
+            Direction2d.perpendicularTo direction
+                |> Expect.direction2d
+                    (Direction2d.rotateBy (Angle.degrees 90) direction)
+        )
+
+
+rotateClockwiseIsConsistentWithRotateBy : Test
+rotateClockwiseIsConsistentWithRotateBy =
+    Test.fuzz Fuzz.direction2d
+        "rotateClockwise is consistent with rotateBy"
+        (\direction ->
+            Direction2d.rotateClockwise direction
+                |> Expect.direction2d
+                    (Direction2d.rotateBy (Angle.degrees -90) direction)
+        )
+
+
+rotateCounterclockwiseIsConsistentWithRotateBy : Test
+rotateCounterclockwiseIsConsistentWithRotateBy =
+    Test.fuzz Fuzz.direction2d
+        "rotateCounterclockwise is consistent with rotateBy"
+        (\direction ->
+            Direction2d.rotateCounterclockwise direction
+                |> Expect.direction2d
+                    (Direction2d.rotateBy (Angle.degrees 90) direction)
         )
