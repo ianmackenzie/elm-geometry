@@ -2,6 +2,7 @@ module Tests.Point3d exposing
     ( interpolationReturnsExactEndpoints
     , midpointIsEquidistant
     , mirrorFlipsSignedDistance
+    , projectIntoResultsInPerpendicularVector
     , projectIntoThenPlaceOntoIsProjectOnto
     , rotationAboutAxisPreservesDistanceAlong
     , rotationAboutAxisPreservesDistanceFrom
@@ -16,7 +17,7 @@ import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Plane3d
 import Point3d
-import Quantity
+import Quantity exposing (zero)
 import SketchPlane3d
 import Test exposing (Test)
 import Vector3d
@@ -165,4 +166,35 @@ translateByAndInAreConsistent =
             point
                 |> Point3d.translateIn direction distance
                 |> Expect.point3d (Point3d.translateBy displacement point)
+        )
+
+
+projectIntoResultsInPerpendicularVector : Test
+projectIntoResultsInPerpendicularVector =
+    Test.fuzz2
+        Fuzz.point3d
+        Fuzz.sketchPlane3d
+        "The vector from a point to that point projected into a sketch plane is perpendicular to both sketch plane basis directions"
+        (\point sketchPlane ->
+            let
+                point2d =
+                    Point3d.projectInto sketchPlane point
+
+                point3d =
+                    Point3d.on sketchPlane point2d
+
+                displacement =
+                    Vector3d.from point3d point
+
+                xDirection =
+                    SketchPlane3d.xDirection sketchPlane
+
+                yDirection =
+                    SketchPlane3d.yDirection sketchPlane
+            in
+            displacement
+                |> Expect.all
+                    [ Vector3d.componentIn xDirection >> Expect.approximately zero
+                    , Vector3d.componentIn yDirection >> Expect.approximately zero
+                    ]
         )
