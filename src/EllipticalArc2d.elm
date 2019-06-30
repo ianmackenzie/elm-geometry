@@ -109,6 +109,7 @@ import Point2d exposing (Point2d)
 import Quantity exposing (Quantity(..), Squared)
 import Quantity.Extra as Quantity
 import Quantity.Interval
+import Unsafe.Direction2d as Direction2d
 import Vector2d exposing (Vector2d)
 
 
@@ -619,7 +620,7 @@ tangentDirection nondegenerateArc parameterValue =
                 dy =
                     Quantity.ratio vy norm
             in
-            Direction2d.unsafeFromComponentsIn (axes arc) dx dy
+            Direction2d.unsafeXyIn (axes arc) dx dy
 
         Vertical verticalArc ->
             if Angle.cos angle >= 0 then

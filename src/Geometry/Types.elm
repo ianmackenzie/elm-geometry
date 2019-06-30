@@ -58,27 +58,27 @@ import Quantity exposing (Quantity)
 
 
 type Vector2d units coordinates
-    = Vector2d ( Quantity Float units, Quantity Float units )
+    = Vector2d { x : Float, y : Float }
 
 
 type Vector3d units coordinates
-    = Vector3d ( Quantity Float units, Quantity Float units, Quantity Float units )
+    = Vector3d { x : Float, y : Float, z : Float }
 
 
 type Direction2d coordinates
-    = Direction2d ( Float, Float )
+    = Direction2d { x : Float, y : Float }
 
 
 type Direction3d coordinates
-    = Direction3d ( Float, Float, Float )
+    = Direction3d { x : Float, y : Float, z : Float }
 
 
 type Point2d units coordinates
-    = Point2d ( Quantity Float units, Quantity Float units )
+    = Point2d { x : Float, y : Float }
 
 
 type Point3d units coordinates
-    = Point3d ( Quantity Float units, Quantity Float units, Quantity Float units )
+    = Point3d { x : Float, y : Float, z : Float }
 
 
 type Axis2d units coordinates

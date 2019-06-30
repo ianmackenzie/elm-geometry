@@ -12,7 +12,7 @@ module Vector3d exposing
     , zero
     , xyz, xyzIn, from, withLength, on, xyOn, rThetaOn, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
-    , xComponent, yComponent, zComponent, componentIn, length, direction, lengthAndDirection
+    , xComponent, yComponent, zComponent, componentIn, length, direction
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross
     , reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
@@ -64,7 +64,7 @@ components.
 
 # Properties
 
-@docs xComponent, yComponent, zComponent, componentIn, length, squaredLength, direction, lengthAndDirection
+@docs xComponent, yComponent, zComponent, componentIn, length, squaredLength, direction
 
 
 # Comparison
@@ -104,14 +104,9 @@ global XYZ frame:
 -}
 
 import Angle exposing (Angle)
-import Bootstrap.Axis3d as Axis3d
-import Bootstrap.Direction3d as Direction3d
-import Bootstrap.Frame3d as Frame3d
-import Bootstrap.Plane3d as Plane3d
-import Bootstrap.Point3d as Point3d
-import Bootstrap.SketchPlane3d as SketchPlane3d
+import Float.Extra as Float
 import Geometry.Types as Types exposing (Axis3d, Direction3d, Frame3d, Plane3d, Point3d, SketchPlane3d)
-import Quantity exposing (Cubed, Product, Quantity, Squared, Unitless)
+import Quantity exposing (Cubed, Product, Quantity(..), Squared, Unitless)
 import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
 
@@ -129,7 +124,11 @@ type alias Vector3d units coordinates =
 -}
 zero : Vector3d units coordinates
 zero =
-    xyz Quantity.zero Quantity.zero Quantity.zero
+    Types.Vector3d
+        { x = 0
+        , y = 0
+        , z = 0
+        }
 
 
 {-| Construct a vector from its X, Y and Z components.
@@ -139,8 +138,12 @@ zero =
 
 -}
 xyz : Quantity Float units -> Quantity Float units -> Quantity Float units -> Vector3d units coordinates
-xyz x y z =
-    Types.Vector3d ( x, y, z )
+xyz (Quantity x) (Quantity y) (Quantity z) =
+    Types.Vector3d
+        { x = x
+        , y = y
+        , z = z
+        }
 
 
 {-| Construct a vector given its local components within a particular frame:
@@ -163,39 +166,22 @@ xyz x y z =
 
 -}
 xyzIn : Frame3d units globalCoordinates localCoordinates -> Quantity Float units -> Quantity Float units -> Quantity Float units -> Vector3d units globalCoordinates
-xyzIn frame x y z =
+xyzIn (Types.Frame3d frame) (Quantity x) (Quantity y) (Quantity z) =
     let
-        x1 =
-            Direction3d.xComponent (Frame3d.xDirection frame)
+        (Types.Direction3d i) =
+            frame.xDirection
 
-        y1 =
-            Direction3d.yComponent (Frame3d.xDirection frame)
+        (Types.Direction3d j) =
+            frame.yDirection
 
-        z1 =
-            Direction3d.zComponent (Frame3d.xDirection frame)
-
-        x2 =
-            Direction3d.xComponent (Frame3d.yDirection frame)
-
-        y2 =
-            Direction3d.yComponent (Frame3d.yDirection frame)
-
-        z2 =
-            Direction3d.zComponent (Frame3d.yDirection frame)
-
-        x3 =
-            Direction3d.xComponent (Frame3d.zDirection frame)
-
-        y3 =
-            Direction3d.yComponent (Frame3d.zDirection frame)
-
-        z3 =
-            Direction3d.zComponent (Frame3d.zDirection frame)
+        (Types.Direction3d k) =
+            frame.zDirection
     in
-    xyz
-        (Quantity.aXbYcZ x1 x x2 y x3 z)
-        (Quantity.aXbYcZ y1 x y2 y y3 z)
-        (Quantity.aXbYcZ z1 x z2 y z3 z)
+    Types.Vector3d
+        { x = x * i.x + y * j.x + z * k.x
+        , y = x * i.y + y * j.y + z * k.y
+        , z = x * i.z + y * j.z + z * k.z
+        }
 
 
 {-| Construct a vector from the first given point to the second.
@@ -211,30 +197,12 @@ xyzIn frame x y z =
 
 -}
 from : Point3d units coordinates -> Point3d units coordinates -> Vector3d units coordinates
-from firstPoint secondPoint =
-    let
-        x1 =
-            Point3d.xCoordinate firstPoint
-
-        y1 =
-            Point3d.yCoordinate firstPoint
-
-        z1 =
-            Point3d.zCoordinate firstPoint
-
-        x2 =
-            Point3d.xCoordinate secondPoint
-
-        y2 =
-            Point3d.yCoordinate secondPoint
-
-        z2 =
-            Point3d.zCoordinate secondPoint
-    in
-    xyz
-        (x2 |> Quantity.minus x1)
-        (y2 |> Quantity.minus y1)
-        (z2 |> Quantity.minus z1)
+from (Types.Point3d p1) (Types.Point3d p2) =
+    Types.Vector3d
+        { x = p2.x - p1.x
+        , y = p2.y - p1.y
+        , z = p2.z - p1.z
+        }
 
 
 {-| Construct a vector with the given length in the given direction.
@@ -244,21 +212,12 @@ from firstPoint secondPoint =
 
 -}
 withLength : Quantity Float units -> Direction3d coordinates -> Vector3d units coordinates
-withLength givenLength givenDirection =
-    let
-        dx =
-            Direction3d.xComponent givenDirection
-
-        dy =
-            Direction3d.yComponent givenDirection
-
-        dz =
-            Direction3d.zComponent givenDirection
-    in
-    xyz
-        (Quantity.multiplyBy dx givenLength)
-        (Quantity.multiplyBy dy givenLength)
-        (Quantity.multiplyBy dz givenLength)
+withLength (Quantity a) (Types.Direction3d d) =
+    Types.Vector3d
+        { x = a * d.x
+        , y = a * d.y
+        , z = a * d.z
+        }
 
 
 {-| Construct a 3D vector lying _on_ a sketch plane by providing a 2D vector
@@ -289,8 +248,19 @@ A slightly more complex example:
 
 -}
 on : SketchPlane3d units coordinates3d coordinates2d -> Vector2d units coordinates2d -> Vector3d units coordinates3d
-on sketchPlane vector2d =
-    xyOn sketchPlane (Vector2d.xComponent vector2d) (Vector2d.yComponent vector2d)
+on (Types.SketchPlane3d sketchPlane) (Types.Vector2d v) =
+    let
+        (Types.Direction3d i) =
+            sketchPlane.xDirection
+
+        (Types.Direction3d j) =
+            sketchPlane.yDirection
+    in
+    Types.Vector3d
+        { x = v.x * i.x + v.y * j.x
+        , y = v.x * i.y + v.y * j.y
+        , z = v.x * i.z + v.y * j.z
+        }
 
 
 {-| Construct a 3D vector lying on a sketch plane by providing its 2D components within the sketch
@@ -314,37 +284,43 @@ plane:
 
 -}
 xyOn : SketchPlane3d units coordinates3d coordinates2d -> Quantity Float units -> Quantity Float units -> Vector3d units coordinates
-xyOn sketchPlane x y =
+xyOn (Types.SketchPlane3d sketchPlane) (Quantity x) (Quantity y) =
     let
-        ux =
-            Direction3d.xComponent (SketchPlane3d.xDirection sketchPlane)
+        (Types.Direction3d i) =
+            sketchPlane.xDirection
 
-        uy =
-            Direction3d.yComponent (SketchPlane3d.xDirection sketchPlane)
-
-        uz =
-            Direction3d.zComponent (SketchPlane3d.xDirection sketchPlane)
-
-        vx =
-            Direction3d.xComponent (SketchPlane3d.yDirection sketchPlane)
-
-        vy =
-            Direction3d.yComponent (SketchPlane3d.yDirection sketchPlane)
-
-        vz =
-            Direction3d.zComponent (SketchPlane3d.yDirection sketchPlane)
+        (Types.Direction3d j) =
+            sketchPlane.yDirection
     in
-    xyz
-        (Quantity.aXbY ux x vx y)
-        (Quantity.aXbY uy x vy y)
-        (Quantity.aXbY uz x vz y)
+    Types.Vector3d
+        { x = x * i.x + y * j.x
+        , y = x * i.y + y * j.y
+        , z = x * i.z + y * j.z
+        }
 
 
 {-| TODO
 -}
 rThetaOn : SketchPlane3d units coordinates3d coordinates2d -> Quantity Float units -> Angle -> Vector3d units coordinates3d
-rThetaOn sketchPlane radius angle =
-    xyOn sketchPlane (Quantity.rCosTheta radius angle) (Quantity.rSinTheta radius angle)
+rThetaOn (Types.SketchPlane3d sketchPlane) (Quantity r) (Quantity theta) =
+    let
+        (Types.Direction3d i) =
+            sketchPlane.xDirection
+
+        (Types.Direction3d j) =
+            sketchPlane.yDirection
+
+        x =
+            r * cos theta
+
+        y =
+            r * sin theta
+    in
+    Types.Vector3d
+        { x = x * i.x + y * j.x
+        , y = x * i.y + y * j.y
+        , z = x * i.z + y * j.z
+        }
 
 
 {-| Construct an arbitrary vector perpendicular to the given vector. The exact
@@ -365,32 +341,29 @@ given vector is itself zero).
 
 -}
 perpendicularTo : Vector3d units coordinates -> Vector3d units coordinates
-perpendicularTo vector =
+perpendicularTo (Types.Vector3d v) =
     let
-        ( x, y, z ) =
-            components vector
-
         absX =
-            Quantity.abs x
+            abs v.x
 
         absY =
-            Quantity.abs y
+            abs v.y
 
         absZ =
-            Quantity.abs z
+            abs v.z
     in
-    if absX |> Quantity.lessThanOrEqualTo absY then
-        if absX |> Quantity.lessThanOrEqualTo absZ then
-            xyz Quantity.zero (Quantity.negate z) y
+    if absX <= absY then
+        if absX <= absZ then
+            Types.Vector3d { x = 0, y = -v.z, z = v.y }
 
         else
-            xyz (Quantity.negate y) x Quantity.zero
+            Types.Vector3d { x = -v.y, y = v.x, z = 0 }
 
-    else if absY |> Quantity.lessThanOrEqualTo absZ then
-        xyz z Quantity.zero (Quantity.negate x)
+    else if absY <= absZ then
+        Types.Vector3d { x = v.z, y = 0, z = -v.x }
 
     else
-        xyz (Quantity.negate y) x Quantity.zero
+        Types.Vector3d { x = -v.y, z = v.x, y = 0 }
 
 
 {-| Construct a vector by interpolating from the first given vector to the
@@ -427,18 +400,20 @@ You can pass values less than zero or greater than one to extrapolate:
 
 -}
 interpolateFrom : Vector3d units coordinates -> Vector3d units coordinates -> Float -> Vector3d units coordinates
-interpolateFrom firstVector secondVector givenParameter =
-    let
-        ( x1, y1, z1 ) =
-            components firstVector
+interpolateFrom (Types.Vector3d v1) (Types.Vector3d v2) t =
+    if t <= 0.5 then
+        Types.Vector3d
+            { x = v1.x + t * (v2.x - v1.x)
+            , y = v1.y + t * (v2.y - v1.y)
+            , z = v1.z + t * (v2.z - v1.z)
+            }
 
-        ( x2, y2, z2 ) =
-            components secondVector
-    in
-    xyz
-        (Quantity.interpolateFrom x1 x2 givenParameter)
-        (Quantity.interpolateFrom y1 y2 givenParameter)
-        (Quantity.interpolateFrom z1 z2 givenParameter)
+    else
+        Types.Vector3d
+            { x = v2.x + (1 - t) * (v1.x - v2.x)
+            , y = v2.y + (1 - t) * (v1.y - v2.y)
+            , z = v2.z + (1 - t) * (v1.z - v2.z)
+            }
 
 
 {-| Construct a `Vector3d` from a tuple of `Float` values, by specifying what units those values are
@@ -513,44 +488,6 @@ toRecord fromQuantity vector =
     }
 
 
-{-| Extract the components of a vector.
-
-    Vector3d.fromComponents ( 2, 3, 4 )
-        |> Vector3d.components
-    --> ( 2, 3, 4 )
-
-This combined with Elm's built-in tuple destructuring provides a convenient way
-to extract the X, Y and Z components of a vector in one line of code:
-
-    ( x, y, z ) =
-        Vector3d.components vector
-
--}
-components : Vector3d units coordinates -> ( Quantity Float units, Quantity Float units, Quantity Float units )
-components (Types.Vector3d vectorComponents) =
-    vectorComponents
-
-
-{-| Find the components of a vector in a given frame;
-
-    Vector3d.componentsIn frame vector
-
-is equivalent to
-
-    ( Vector3d.componentIn (Frame3d.xDirection frame) vector
-    , Vector3d.componentIn (Frame3d.yDirection frame) vector
-    , Vector3d.componentIn (Frame3d.zDirection frame) vector
-    )
-
--}
-componentsIn : Frame3d units globalCoordinates localCoordinates -> Vector3d units globalCoordinates -> ( Quantity Float units, Quantity Float units, Quantity Float units )
-componentsIn frame vector =
-    ( vector |> componentIn (Frame3d.xDirection frame)
-    , vector |> componentIn (Frame3d.yDirection frame)
-    , vector |> componentIn (Frame3d.zDirection frame)
-    )
-
-
 {-| Get the X component of a vector.
 
     Vector3d.fromComponents ( 1, 2, 3 )
@@ -559,8 +496,8 @@ componentsIn frame vector =
 
 -}
 xComponent : Vector3d units coordinates -> Quantity Float units
-xComponent (Types.Vector3d ( x, _, _ )) =
-    x
+xComponent (Types.Vector3d v) =
+    Quantity v.x
 
 
 {-| Get the Y component of a vector.
@@ -571,8 +508,8 @@ xComponent (Types.Vector3d ( x, _, _ )) =
 
 -}
 yComponent : Vector3d units coordinates -> Quantity Float units
-yComponent (Types.Vector3d ( _, y, _ )) =
-    y
+yComponent (Types.Vector3d v) =
+    Quantity v.y
 
 
 {-| Get the Z component of a vector.
@@ -583,8 +520,8 @@ yComponent (Types.Vector3d ( _, y, _ )) =
 
 -}
 zComponent : Vector3d units coordinates -> Quantity Float units
-zComponent (Types.Vector3d ( _, _, z )) =
-    z
+zComponent (Types.Vector3d v) =
+    Quantity v.z
 
 
 {-| Find the component of a vector in an arbitrary direction, for example
@@ -604,21 +541,8 @@ is equivalent to
 
 -}
 componentIn : Direction3d coordinates -> Vector3d units coordinates -> Quantity Float units
-componentIn givenDirection givenVector =
-    let
-        dx =
-            Direction3d.xComponent givenDirection
-
-        dy =
-            Direction3d.yComponent givenDirection
-
-        dz =
-            Direction3d.zComponent givenDirection
-
-        ( vx, vy, vz ) =
-            components givenVector
-    in
-    Quantity.aXbYcZ dx vx dy vy dz vz
+componentIn (Types.Direction3d d) (Types.Vector3d v) =
+    Quantity (v.x * d.x + v.y * d.y + v.z * d.z)
 
 
 {-| Compare two vectors within a tolerance. Returns true if the difference
@@ -646,22 +570,15 @@ equalWithin givenTolerance firstVector secondVector =
 by Y, then by Z. Can be used to provide a sort order for `Vector3d` values.
 -}
 lexicographicComparison : Vector3d units coordinates -> Vector3d units coordinates -> Order
-lexicographicComparison firstVector secondVector =
-    let
-        ( x1, y1, z1 ) =
-            components firstVector
+lexicographicComparison (Types.Vector3d v1) (Types.Vector3d v2) =
+    if v1.x /= v2.x then
+        compare v1.x v2.x
 
-        ( x2, y2, z2 ) =
-            components secondVector
-    in
-    if x1 /= x2 then
-        Quantity.compare x1 x2
-
-    else if y1 /= y2 then
-        Quantity.compare y1 y2
+    else if v1.y /= v2.y then
+        compare v1.y v2.y
 
     else
-        Quantity.compare z1 z2
+        compare v1.z v2.z
 
 
 {-| Get the length (magnitude) of a vector.
@@ -671,32 +588,29 @@ lexicographicComparison firstVector secondVector =
 
 -}
 length : Vector3d units coordinates -> Quantity Float units
-length vector =
+length (Types.Vector3d v) =
     let
-        ( vx, vy, vz ) =
-            components vector
-
         largestComponent =
-            Quantity.max (Quantity.abs vx) (Quantity.max (Quantity.abs vy) (Quantity.abs vz))
+            max (abs v.x) (max (abs v.y) (abs v.z))
     in
-    if largestComponent == Quantity.zero then
+    if largestComponent == 0 then
         Quantity.zero
 
     else
         let
             scaledX =
-                Quantity.ratio vx largestComponent
+                v.x / largestComponent
 
             scaledY =
-                Quantity.ratio vy largestComponent
+                v.y / largestComponent
 
             scaledZ =
-                Quantity.ratio vz largestComponent
+                v.z / largestComponent
 
             scaledLength =
                 sqrt (scaledX * scaledX + scaledY * scaledY + scaledZ * scaledZ)
         in
-        Quantity.multiplyBy scaledLength largestComponent
+        Quantity (scaledLength * largestComponent)
 
 
 {-| Attempt to find the direction of a vector. In the case of a zero vector,
@@ -715,92 +629,34 @@ returns `Nothing`.
 
 -}
 direction : Vector3d units coordinates -> Maybe (Direction3d coordinates)
-direction givenVector =
+direction (Types.Vector3d v) =
     let
-        ( vx, vy, vz ) =
-            components givenVector
-
         largestComponent =
-            Quantity.max (Quantity.abs vx) (Quantity.max (Quantity.abs vy) (Quantity.abs vz))
+            max (abs v.x) (max (abs v.y) (abs v.z))
     in
-    if largestComponent == Quantity.zero then
+    if largestComponent == 0 then
         Nothing
 
     else
         let
             scaledX =
-                Quantity.ratio vx largestComponent
+                v.x / largestComponent
 
             scaledY =
-                Quantity.ratio vy largestComponent
+                v.y / largestComponent
 
             scaledZ =
-                Quantity.ratio vz largestComponent
+                v.z / largestComponent
 
             scaledLength =
                 sqrt (scaledX * scaledX + scaledY * scaledY + scaledZ * scaledZ)
         in
         Just <|
-            Direction3d.unsafeFromComponents
-                (scaledX / scaledLength)
-                (scaledY / scaledLength)
-                (scaledZ / scaledLength)
-
-
-{-| Attempt to find the length and direction of a vector. In the case of a zero
-vector, returns `Nothing`.
-
-    vector =
-        Vector3d.fromComponents ( 3, 0, 3 )
-
-    Vector3d.lengthAndDirection vector
-    --> Just
-    -->     ( 4.2426
-    -->     , Direction3d.fromAzimuthAndElevation
-    -->         (degrees 0)
-    -->         (degrees 45)
-    -->     )
-
-    Vector3d.lengthAndDirection Vector3d.zero
-    --> Nothing
-
--}
-lengthAndDirection : Vector3d units coordinates -> Maybe ( Quantity Float units, Direction3d coordinates )
-lengthAndDirection givenVector =
-    let
-        ( vx, vy, vz ) =
-            components givenVector
-
-        largestComponent =
-            Quantity.max (Quantity.abs vx) (Quantity.max (Quantity.abs vy) (Quantity.abs vz))
-    in
-    if largestComponent == Quantity.zero then
-        Nothing
-
-    else
-        let
-            scaledX =
-                Quantity.ratio vx largestComponent
-
-            scaledY =
-                Quantity.ratio vy largestComponent
-
-            scaledZ =
-                Quantity.ratio vz largestComponent
-
-            scaledLength =
-                sqrt (scaledX * scaledX + scaledY * scaledY + scaledZ * scaledZ)
-
-            computedLength =
-                Quantity.multiplyBy scaledLength largestComponent
-
-            computedDirection =
-                Direction3d.unsafeFromComponents
-                    (scaledX / scaledLength)
-                    (scaledY / scaledLength)
-                    (scaledZ / scaledLength)
-        in
-        Just ( computedLength, computedDirection )
+            Types.Direction3d
+                { x = scaledX / scaledLength
+                , y = scaledY / scaledLength
+                , z = scaledZ / scaledLength
+                }
 
 
 {-| Normalize a vector to have a length of one. Zero vectors are left as-is.
@@ -828,35 +684,33 @@ like
 
 -}
 normalize : Vector3d units coordinates -> Vector3d Unitless coordinates
-normalize givenVector =
+normalize (Types.Vector3d v) =
     let
-        ( vx, vy, vz ) =
-            components givenVector
-
         largestComponent =
-            Quantity.max (Quantity.abs vx) (Quantity.max (Quantity.abs vy) (Quantity.abs vz))
+            max (abs v.x) (max (abs v.y) (abs v.z))
     in
-    if largestComponent == Quantity.zero then
+    if largestComponent == 0 then
         zero
 
     else
         let
             scaledX =
-                Quantity.ratio vx largestComponent
+                v.x / largestComponent
 
             scaledY =
-                Quantity.ratio vy largestComponent
+                v.y / largestComponent
 
             scaledZ =
-                Quantity.ratio vz largestComponent
+                v.z / largestComponent
 
             scaledLength =
                 sqrt (scaledX * scaledX + scaledY * scaledY + scaledZ * scaledZ)
         in
-        xyz
-            (Quantity.float (scaledX / scaledLength))
-            (Quantity.float (scaledY / scaledLength))
-            (Quantity.float (scaledZ / scaledLength))
+        Types.Vector3d
+            { x = scaledX / scaledLength
+            , y = scaledY / scaledLength
+            , z = scaledZ / scaledLength
+            }
 
 
 {-| Find the sum of two vectors.
@@ -872,18 +726,12 @@ normalize givenVector =
 
 -}
 plus : Vector3d units coordinates -> Vector3d units coordinates -> Vector3d units coordinates
-plus secondVector firstVector =
-    let
-        ( x1, y1, z1 ) =
-            components firstVector
-
-        ( x2, y2, z2 ) =
-            components secondVector
-    in
-    xyz
-        (x1 |> Quantity.plus x2)
-        (y1 |> Quantity.plus y2)
-        (z1 |> Quantity.plus z2)
+plus (Types.Vector3d v2) (Types.Vector3d v1) =
+    Types.Vector3d
+        { x = v1.x + v2.x
+        , y = v1.y + v2.y
+        , z = v1.z + v2.z
+        }
 
 
 {-| Find the difference between two vectors (the first vector minus the second).
@@ -899,18 +747,12 @@ plus secondVector firstVector =
 
 -}
 minus : Vector3d units coordinates -> Vector3d units coordinates -> Vector3d units coordinates
-minus secondVector firstVector =
-    let
-        ( x1, y1, z1 ) =
-            components firstVector
-
-        ( x2, y2, z2 ) =
-            components secondVector
-    in
-    xyz
-        (x1 |> Quantity.minus x2)
-        (y1 |> Quantity.minus y2)
-        (z1 |> Quantity.minus z2)
+minus (Types.Vector3d v2) (Types.Vector3d v1) =
+    Types.Vector3d
+        { x = v1.x - v2.x
+        , y = v1.y - v2.y
+        , z = v1.z - v2.z
+        }
 
 
 {-| Find the dot product of two vectors.
@@ -934,17 +776,8 @@ minus secondVector firstVector =
 
 -}
 dot : Vector3d units2 coordinates -> Vector3d units1 coordinates -> Quantity Float (Product units1 units2)
-dot secondVector firstVector =
-    let
-        ( x1, y1, z1 ) =
-            components firstVector
-
-        ( x2, y2, z2 ) =
-            components secondVector
-    in
-    (x1 |> Quantity.times x2)
-        |> Quantity.plus (y1 |> Quantity.times y2)
-        |> Quantity.plus (z1 |> Quantity.times z2)
+dot (Types.Vector3d v2) (Types.Vector3d v1) =
+    Quantity (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z)
 
 
 {-| Find the cross product of two vectors.
@@ -984,18 +817,12 @@ but the _opposite_ of
 
 -}
 cross : Vector3d units2 coordinates -> Vector3d units1 coordinates -> Vector3d (Product units1 units2) coordinates
-cross secondVector firstVector =
-    let
-        ( x1, y1, z1 ) =
-            components firstVector
-
-        ( x2, y2, z2 ) =
-            components secondVector
-    in
-    xyz
-        ((y1 |> Quantity.times z2) |> Quantity.minus (z1 |> Quantity.times y2))
-        ((z1 |> Quantity.times x2) |> Quantity.minus (x1 |> Quantity.times z2))
-        ((x1 |> Quantity.times y2) |> Quantity.minus (y1 |> Quantity.times x2))
+cross (Types.Vector3d v2) (Types.Vector3d v1) =
+    Types.Vector3d
+        { x = v1.y * v2.z - v1.z * v2.y
+        , y = v1.z * v2.x - v1.x * v2.z
+        , z = v1.x * v2.y - v1.y * v2.x
+        }
 
 
 {-| Reverse the direction of a vector, negating its components.
@@ -1008,12 +835,12 @@ the naming used in other modules.)
 
 -}
 reverse : Vector3d units coordinates -> Vector3d units coordinates
-reverse vector =
-    let
-        ( x, y, z ) =
-            components vector
-    in
-    xyz (Quantity.negate x) (Quantity.negate y) (Quantity.negate z)
+reverse (Types.Vector3d v) =
+    Types.Vector3d
+        { x = -v.x
+        , y = -v.y
+        , z = -v.z
+        }
 
 
 {-| Scale the length of a vector by a given scale.
@@ -1028,15 +855,12 @@ name used in other modules.)
 
 -}
 scaleBy : Float -> Vector3d units coordinates -> Vector3d units coordinates
-scaleBy scale vector =
-    let
-        ( x, y, z ) =
-            components vector
-    in
-    xyz
-        (Quantity.multiplyBy scale x)
-        (Quantity.multiplyBy scale y)
-        (Quantity.multiplyBy scale z)
+scaleBy k (Types.Vector3d v) =
+    Types.Vector3d
+        { x = k * v.x
+        , y = k * v.y
+        , z = k * v.z
+        }
 
 
 {-| Rotate a vector around a given axis by a given angle (in radians).
@@ -1052,34 +876,28 @@ scaleBy scale vector =
 
 -}
 rotateAround : Axis3d units coordinates -> Angle -> Vector3d units coordinates -> Vector3d units coordinates
-rotateAround axis angle =
+rotateAround (Types.Axis3d axis) (Quantity angle) (Types.Vector3d v) =
     let
-        ax =
-            Direction3d.xComponent (Axis3d.direction axis)
-
-        ay =
-            Direction3d.yComponent (Axis3d.direction axis)
-
-        az =
-            Direction3d.zComponent (Axis3d.direction axis)
+        (Types.Direction3d d) =
+            axis.direction
 
         halfAngle =
-            Quantity.multiplyBy 0.5 angle
+            0.5 * angle
 
         sinHalfAngle =
-            Angle.sin halfAngle
+            sin halfAngle
 
         qx =
-            ax * sinHalfAngle
+            d.x * sinHalfAngle
 
         qy =
-            ay * sinHalfAngle
+            d.y * sinHalfAngle
 
         qz =
-            az * sinHalfAngle
+            d.z * sinHalfAngle
 
         qw =
-            Angle.cos halfAngle
+            cos halfAngle
 
         wx =
             qw * qx
@@ -1135,15 +953,11 @@ rotateAround axis angle =
         a22 =
             1 - 2 * (xx + yy)
     in
-    \vector ->
-        let
-            ( x, y, z ) =
-                components vector
-        in
-        xyz
-            (Quantity.aXbYcZ a00 x a01 y a02 z)
-            (Quantity.aXbYcZ a10 x a11 y a12 z)
-            (Quantity.aXbYcZ a20 x a21 y a22 z)
+    Types.Vector3d
+        { x = a00 * v.x + a01 * v.y + a02 * v.z
+        , y = a10 * v.x + a11 * v.y + a12 * v.z
+        , z = a20 * v.x + a21 * v.y + a22 * v.z
+        }
 
 
 {-| Mirror a vector across a plane.
@@ -1159,44 +973,34 @@ rotateAround axis angle =
 
 -}
 mirrorAcross : Plane3d units coordinates -> Vector3d units coordinates -> Vector3d units coordinates
-mirrorAcross plane =
+mirrorAcross (Types.Plane3d plane) (Types.Vector3d v) =
     let
-        dx =
-            Direction3d.xComponent (Plane3d.normalDirection plane)
+        (Types.Direction3d n) =
+            plane.normalDirection
 
-        dy =
-            Direction3d.yComponent (Plane3d.normalDirection plane)
+        a00 =
+            1 - 2 * n.x * n.x
 
-        dz =
-            Direction3d.zComponent (Plane3d.normalDirection plane)
+        a11 =
+            1 - 2 * n.y * n.y
 
-        a =
-            1 - 2 * dx * dx
+        a22 =
+            1 - 2 * n.z * n.z
 
-        b =
-            1 - 2 * dy * dy
+        a12 =
+            -2 * n.y * n.z
 
-        c =
-            1 - 2 * dz * dz
+        a02 =
+            -2 * n.x * n.z
 
-        d =
-            -2 * dy * dz
-
-        e =
-            -2 * dx * dz
-
-        f =
-            -2 * dx * dy
+        a01 =
+            -2 * n.x * n.y
     in
-    \vector ->
-        let
-            ( x, y, z ) =
-                components vector
-        in
-        xyz
-            (Quantity.aXbYcZ a x f y e z)
-            (Quantity.aXbYcZ f x b y d z)
-            (Quantity.aXbYcZ e x d y c z)
+    Types.Vector3d
+        { x = a00 * v.x + a01 * v.y + a02 * v.z
+        , y = a01 * v.x + a11 * v.y + a12 * v.z
+        , z = a02 * v.x + a12 * v.y + a22 * v.z
+        }
 
 
 {-| Find the projection of a vector in a particular direction. Conceptually,
@@ -1215,8 +1019,16 @@ portion.
 
 -}
 projectionIn : Direction3d coordinates -> Vector3d units coordinates -> Vector3d units coordinates
-projectionIn givenDirection givenVector =
-    givenDirection |> withLength (givenVector |> componentIn givenDirection)
+projectionIn (Types.Direction3d d) (Types.Vector3d v) =
+    let
+        projectedLength =
+            v.x * d.x + v.y * d.y + v.z * d.z
+    in
+    Types.Vector3d
+        { x = d.x * projectedLength
+        , y = d.y * projectedLength
+        , z = d.z * projectedLength
+        }
 
 
 {-| Project a vector [orthographically](https://en.wikipedia.org/wiki/Orthographic_projection)
@@ -1236,10 +1048,19 @@ returning the parallel (in-plane) portion.
 
 -}
 projectOnto : Plane3d units coordinates -> Vector3d units coordinates -> Vector3d units coordinates
-projectOnto givenPlane givenVector =
-    givenVector
-        |> minus
-            (projectionIn (Plane3d.normalDirection givenPlane) givenVector)
+projectOnto (Types.Plane3d plane) (Types.Vector3d v) =
+    let
+        (Types.Direction3d n) =
+            plane.normalDirection
+
+        normalProjection =
+            v.x * n.x + v.y * n.y + v.z * n.z
+    in
+    Types.Vector3d
+        { x = v.x - normalProjection * n.x
+        , y = v.y - normalProjection * n.y
+        , z = v.z - normalProjection * n.z
+        }
 
 
 {-| Take a vector defined in global coordinates, and return it expressed in
@@ -1253,11 +1074,22 @@ local coordinates relative to a given reference frame.
 
 -}
 relativeTo : Frame3d units globalCoordinates localCoordinates -> Vector3d units globalCoordinates -> Vector3d units localCoordinates
-relativeTo frame vector =
-    xyz
-        (componentIn (Frame3d.xDirection frame) vector)
-        (componentIn (Frame3d.yDirection frame) vector)
-        (componentIn (Frame3d.zDirection frame) vector)
+relativeTo (Types.Frame3d frame) (Types.Vector3d v) =
+    let
+        (Types.Direction3d i) =
+            frame.xDirection
+
+        (Types.Direction3d j) =
+            frame.yDirection
+
+        (Types.Direction3d k) =
+            frame.zDirection
+    in
+    Types.Vector3d
+        { x = v.x * i.x + v.y * i.y + v.z * i.z
+        , y = v.x * j.x + v.y * j.y + v.z * j.z
+        , z = v.x * k.x + v.y * k.y + v.z * k.z
+        }
 
 
 {-| Take a vector defined in local coordinates relative to a given reference
@@ -1271,42 +1103,22 @@ frame, and return that vector expressed in global coordinates.
 
 -}
 placeIn : Frame3d units globalCoordinates localCoordinates -> Vector3d units localCoordinates -> Vector3d units globalCoordinates
-placeIn frame vector =
+placeIn (Types.Frame3d frame) (Types.Vector3d v) =
     let
-        x1 =
-            Direction3d.xComponent (Frame3d.xDirection frame)
+        (Types.Direction3d i) =
+            frame.xDirection
 
-        y1 =
-            Direction3d.yComponent (Frame3d.xDirection frame)
+        (Types.Direction3d j) =
+            frame.yDirection
 
-        z1 =
-            Direction3d.zComponent (Frame3d.xDirection frame)
-
-        x2 =
-            Direction3d.xComponent (Frame3d.yDirection frame)
-
-        y2 =
-            Direction3d.yComponent (Frame3d.yDirection frame)
-
-        z2 =
-            Direction3d.zComponent (Frame3d.yDirection frame)
-
-        x3 =
-            Direction3d.xComponent (Frame3d.zDirection frame)
-
-        y3 =
-            Direction3d.yComponent (Frame3d.zDirection frame)
-
-        z3 =
-            Direction3d.zComponent (Frame3d.zDirection frame)
-
-        ( x, y, z ) =
-            components vector
+        (Types.Direction3d k) =
+            frame.zDirection
     in
-    xyz
-        (Quantity.aXbYcZ x1 x x2 y x3 z)
-        (Quantity.aXbYcZ y1 x y2 y y3 z)
-        (Quantity.aXbYcZ z1 x z2 y z3 z)
+    Types.Vector3d
+        { x = i.x * v.x + j.x * v.y + k.x * v.z
+        , y = i.y * v.x + j.y * v.y + k.y * v.z
+        , z = i.z * v.x + j.z * v.y + k.z * v.z
+        }
 
 
 {-| Project a vector into a given sketch plane. Conceptually, this finds the
@@ -1328,7 +1140,15 @@ sketch coordinates.
 
 -}
 projectInto : SketchPlane3d units coordinates coordinates2d -> Vector3d units coordinates -> Vector2d units coordinates2d
-projectInto sketchPlane vector =
-    Vector2d.xy
-        (componentIn (SketchPlane3d.xDirection sketchPlane) vector)
-        (componentIn (SketchPlane3d.yDirection sketchPlane) vector)
+projectInto (Types.SketchPlane3d sketchPlane) (Types.Vector3d v) =
+    let
+        (Types.Direction3d i) =
+            sketchPlane.xDirection
+
+        (Types.Direction3d j) =
+            sketchPlane.yDirection
+    in
+    Types.Vector2d
+        { x = v.x * i.x + v.y * i.y + v.z * i.z
+        , y = v.x * j.x + v.y * j.y + v.z * j.z
+        }

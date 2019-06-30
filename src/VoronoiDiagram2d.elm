@@ -660,9 +660,12 @@ deduplicateHelp head rest accumulated =
 
 constructPolygon : vertex -> List (Point2d units coordinates) -> Maybe ( vertex, Polygon2d units coordinates )
 constructPolygon vertex points =
-    case Point2d.centroid points of
-        Just centroid ->
+    case points of
+        first :: rest ->
             let
+                centroid =
+                    Point2d.centroid first rest
+
                 sortedPoints =
                     points
                         |> List.sortBy (pseudoAngle centroid >> negate)
@@ -670,7 +673,7 @@ constructPolygon vertex points =
             in
             Just ( vertex, Polygon2d.singleLoop sortedPoints )
 
-        Nothing ->
+        [] ->
             Nothing
 
 

@@ -178,18 +178,8 @@ centroid triangle =
     let
         ( p1, p2, p3 ) =
             vertices triangle
-
-        firstVector =
-            Vector3d.from p1 p2
-
-        secondVector =
-            Vector3d.from p1 p3
-
-        displacement =
-            Vector3d.scaleBy (1 / 3)
-                (firstVector |> Vector3d.plus secondVector)
     in
-    Point3d.translateBy displacement p1
+    Point3d.centroid3 p1 p2 p3
 
 
 {-| Get the area of a triangle. This value is always positive.

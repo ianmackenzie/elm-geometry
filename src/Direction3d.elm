@@ -10,9 +10,9 @@
 module Direction3d exposing
     ( Direction3d
     , x, y, z, positiveX, negativeX, positiveY, negativeY, positiveZ, negativeZ
-    , from, on, fromAzimuthAndElevation, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize, unsafeFromComponents, unsafeFromComponentsIn
-    , toVector
-    , xComponent, yComponent, zComponent, componentIn, angleFrom, azimuth, elevation
+    , from, on, fromAzimuthInAndElevationFrom, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize, unsafe
+    , toVector, toRecord
+    , xComponent, yComponent, zComponent, componentIn, angleFrom, azimuthIn, elevationFrom
     , equalWithin
     , reverse, rotateAround, mirrorAcross, projectOnto
     , relativeTo, placeIn, projectInto
@@ -40,17 +40,17 @@ Directions have several uses, such as:
 
 # Constructors
 
-@docs from, on, fromAzimuthAndElevation, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize, unsafeFromComponents, unsafeFromComponentsIn
+@docs from, on, fromAzimuthInAndElevationFrom, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize, unsafe
 
 
 # Conversion
 
-@docs toVector
+@docs toVector, toRecord
 
 
 # Properties
 
-@docs xComponent, yComponent, zComponent, componentIn, angleFrom, azimuth, elevation
+@docs xComponent, yComponent, zComponent, componentIn, angleFrom, azimuthIn, elevationFrom
 
 
 # Comparison
@@ -81,13 +81,9 @@ global XYZ frame:
 -}
 
 import Angle exposing (Angle)
-import Bootstrap.Axis3d as Axis3d
-import Bootstrap.Frame3d as Frame3d
-import Bootstrap.Plane3d as Plane3d
-import Bootstrap.SketchPlane3d as SketchPlane3d
 import Direction2d exposing (Direction2d)
 import Geometry.Types as Types exposing (Axis3d, Frame3d, Plane3d, Point3d, SketchPlane3d)
-import Quantity exposing (Unitless)
+import Quantity exposing (Quantity(..), Unitless)
 import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
 import Vector3d exposing (Vector3d)
@@ -102,21 +98,21 @@ type alias Direction3d coordinates =
 -}
 x : Direction3d coordinates
 x =
-    unsafeFromComponents 1 0 0
+    positiveX
 
 
 {-| Synonym for `Direction3d.positiveY`.
 -}
 y : Direction3d coordinates
 y =
-    unsafeFromComponents 0 1 0
+    positiveY
 
 
 {-| Synonym for `Direction3d.positiveZ`.
 -}
 z : Direction3d coordinates
 z =
-    unsafeFromComponents 0 0 1
+    positiveZ
 
 
 {-| The positive X direction.
@@ -127,7 +123,7 @@ z =
 -}
 positiveX : Direction3d coordinates
 positiveX =
-    unsafeFromComponents 1 0 0
+    unsafe { x = 1, y = 0, z = 0 }
 
 
 {-| The negative X direction.
@@ -138,7 +134,7 @@ positiveX =
 -}
 negativeX : Direction3d coordinates
 negativeX =
-    unsafeFromComponents -1 0 0
+    unsafe { x = -1, y = 0, z = 0 }
 
 
 {-| The positive Y direction.
@@ -149,7 +145,7 @@ negativeX =
 -}
 positiveY : Direction3d coordinates
 positiveY =
-    unsafeFromComponents 0 1 0
+    unsafe { x = 0, y = 1, z = 0 }
 
 
 {-| The negative Y direction.
@@ -160,7 +156,7 @@ positiveY =
 -}
 negativeY : Direction3d coordinates
 negativeY =
-    unsafeFromComponents 0 -1 0
+    unsafe { x = 0, y = -1, z = 0 }
 
 
 {-| The positive Z direction.
@@ -171,7 +167,7 @@ negativeY =
 -}
 positiveZ : Direction3d coordinates
 positiveZ =
-    unsafeFromComponents 0 0 1
+    unsafe { x = 0, y = 0, z = 1 }
 
 
 {-| The negative Z direction.
@@ -182,7 +178,7 @@ positiveZ =
 -}
 negativeZ : Direction3d coordinates
 negativeZ =
-    unsafeFromComponents 0 0 -1
+    unsafe { x = 0, y = 0, z = -1 }
 
 
 {-| Construct a direction directly from its X, Y and Z components. Note that
@@ -207,31 +203,9 @@ constructors like `Direction3d.on` or `Direction3d.fromAzimuthAndElevation`
 directions and transform them as necessary.
 
 -}
-unsafeFromComponents : Float -> Float -> Float -> Direction3d coordinates
-unsafeFromComponents givenXComponent givenYComponent givenZComponent =
-    Types.Direction3d ( givenXComponent, givenYComponent, givenZComponent )
-
-
-{-| Construct a direction directly from its local X, Y and Z components within a
-given frame. As with `unsafeFromComponents`, you must ensure that the sum of the squares of
-the given components is exactly one.
--}
-unsafeFromComponentsIn : Frame3d units globalCoordinates localCoordinates -> Float -> Float -> Float -> Direction3d globalCoordinates
-unsafeFromComponentsIn frame localX localY localZ =
-    let
-        ( x1, y1, z1 ) =
-            components (Frame3d.xDirection frame)
-
-        ( x2, y2, z2 ) =
-            components (Frame3d.yDirection frame)
-
-        ( x3, y3, z3 ) =
-            components (Frame3d.zDirection frame)
-    in
-    unsafeFromComponents
-        (x1 * localX + x2 * localY + x3 * localZ)
-        (y1 * localX + y2 * localY + y3 * localZ)
-        (z1 * localX + z2 * localY + z3 * localZ)
+unsafe : { x : Float, y : Float, z : Float } -> Direction3d coordinates
+unsafe components =
+    Types.Direction3d components
 
 
 {-| Construct a 3D direction lying _on_ a sketch plane by providing a 2D
@@ -253,24 +227,19 @@ direction specified in XY coordinates _within_ the sketch plane.
 
 -}
 on : SketchPlane3d units coordinates3d coordinates2d -> Direction2d coordinates2d -> Direction3d coordinates3d
-on sketchPlane direction2d =
+on (Types.SketchPlane3d sketchPlane) (Types.Direction2d d) =
     let
-        dx =
-            Direction2d.xComponent direction2d
+        (Types.Direction3d i) =
+            sketchPlane.xDirection
 
-        dy =
-            Direction2d.yComponent direction2d
-
-        ( ux, uy, uz ) =
-            components (SketchPlane3d.xDirection sketchPlane)
-
-        ( vx, vy, vz ) =
-            components (SketchPlane3d.yDirection sketchPlane)
+        (Types.Direction3d j) =
+            sketchPlane.yDirection
     in
-    unsafeFromComponents
-        (dx * ux + dy * vx)
-        (dx * uy + dy * vy)
-        (dx * uz + dy * vz)
+    Types.Direction3d
+        { x = d.x * i.x + d.y * j.x
+        , y = d.x * i.y + d.y * j.y
+        , z = d.x * i.z + d.y * j.z
+        }
 
 
 {-| Construct a direction using azimuthal and elevation angles relative to the
@@ -286,16 +255,41 @@ plane towards positive Z.
     --> ( 0.5, 0.5, 0.7071 )
 
 -}
-fromAzimuthAndElevation : Angle -> Angle -> Direction3d coordinates
-fromAzimuthAndElevation givenAzimuth givenElevation =
+fromAzimuthInAndElevationFrom : SketchPlane3d units coordinates3d coordinates2d -> Angle -> Angle -> Direction3d coordinates3d
+fromAzimuthInAndElevationFrom (Types.SketchPlane3d sketchPlane) (Quantity azimuth) (Quantity elevation) =
     let
+        (Types.Direction3d i) =
+            sketchPlane.xDirection
+
+        (Types.Direction3d j) =
+            sketchPlane.yDirection
+
+        kx =
+            i.y * j.z - i.z * j.y
+
+        ky =
+            i.z * j.x - i.x * j.z
+
+        kz =
+            i.x * j.y - i.y * j.x
+
         cosElevation =
-            Angle.cos givenElevation
+            cos elevation
+
+        sketchX =
+            cosElevation * cos azimuth
+
+        sketchY =
+            cosElevation * sin azimuth
+
+        sketchZ =
+            sin elevation
     in
-    unsafeFromComponents
-        (cosElevation * Angle.cos givenAzimuth)
-        (cosElevation * Angle.sin givenAzimuth)
-        (Angle.sin givenElevation)
+    Types.Direction3d
+        { x = sketchX * i.x + sketchY * j.x + sketchZ * kx
+        , y = sketchX * i.y + sketchY * j.y + sketchZ * ky
+        , z = sketchX * i.z + sketchY * j.z + sketchZ * kz
+        }
 
 
 {-| Attempt to construct the direction from the first given point to the second.
@@ -323,8 +317,43 @@ If the two points are coincident, returns `Nothing`.
 
 -}
 from : Point3d units coordinates -> Point3d units coordinates -> Maybe (Direction3d coordinates)
-from firstPoint secondPoint =
-    Vector3d.direction (Vector3d.from firstPoint secondPoint)
+from (Types.Point3d p1) (Types.Point3d p2) =
+    let
+        deltaX =
+            p2.x - p1.x
+
+        deltaY =
+            p2.y - p1.y
+
+        deltaZ =
+            p2.z - p1.z
+
+        largestComponent =
+            max (abs deltaX) (max (abs deltaY) (abs deltaZ))
+    in
+    if largestComponent == 0 then
+        Nothing
+
+    else
+        let
+            scaledX =
+                deltaX / largestComponent
+
+            scaledY =
+                deltaY / largestComponent
+
+            scaledZ =
+                deltaZ / largestComponent
+
+            scaledLength =
+                sqrt (scaledX * scaledX + scaledY * scaledY + scaledZ * scaledZ)
+        in
+        Just <|
+            Types.Direction3d
+                { x = scaledX / scaledLength
+                , y = scaledY / scaledLength
+                , z = scaledZ / scaledLength
+                }
 
 
 {-| Construct an arbitrary direction perpendicular to the given direction. The
@@ -349,27 +378,61 @@ perpendicular to the given direction.
 
 -}
 perpendicularTo : Direction3d coordinates -> Direction3d coordinates
-perpendicularTo direction =
+perpendicularTo (Types.Direction3d d) =
     let
-        perpendicularVector =
-            Vector3d.perpendicularTo (toVector direction)
+        absX =
+            abs d.x
 
-        length =
-            Vector3d.length perpendicularVector
+        absY =
+            abs d.y
 
-        vx =
-            Vector3d.xComponent perpendicularVector
-
-        vy =
-            Vector3d.yComponent perpendicularVector
-
-        vz =
-            Vector3d.zComponent perpendicularVector
+        absZ =
+            abs d.z
     in
-    unsafeFromComponents
-        (Quantity.ratio vx length)
-        (Quantity.ratio vy length)
-        (Quantity.ratio vz length)
+    if absX <= absY then
+        if absX <= absZ then
+            let
+                scale =
+                    sqrt (d.z * d.z + d.y * d.y)
+            in
+            Types.Direction3d
+                { x = 0
+                , y = -d.z / scale
+                , z = d.y / scale
+                }
+
+        else
+            let
+                scale =
+                    sqrt (d.y * d.y + d.x * d.x)
+            in
+            Types.Direction3d
+                { x = -d.y / scale
+                , y = d.x / scale
+                , z = 0
+                }
+
+    else if absY <= absZ then
+        let
+            scale =
+                sqrt (d.z * d.z + d.x * d.x)
+        in
+        Types.Direction3d
+            { x = d.z / scale
+            , y = 0
+            , z = -d.x / scale
+            }
+
+    else
+        let
+            scale =
+                sqrt (d.x * d.x + d.y * d.y)
+        in
+        Types.Direction3d
+            { x = -d.y / scale
+            , y = d.x / scale
+            , z = 0
+            }
 
 
 {-| Construct a pair of directions that are perpendicular to each other and both
@@ -396,20 +459,21 @@ directions as the X and Y directions).
 perpendicularBasis : Direction3d coordinates -> ( Direction3d coordinates, Direction3d coordinates )
 perpendicularBasis direction =
     let
-        ( x0, y0, z0 ) =
-            components direction
+        (Types.Direction3d d) =
+            direction
 
         xDirection =
             perpendicularTo direction
 
-        ( x1, y1, z1 ) =
-            components xDirection
+        (Types.Direction3d dX) =
+            xDirection
 
         yDirection =
-            unsafeFromComponents
-                (y0 * z1 - z0 * y1)
-                (z0 * x1 - x0 * z1)
-                (x0 * y1 - y0 * x1)
+            Types.Direction3d
+                { x = d.y * dX.z - d.z * dX.y
+                , y = d.z * dX.x - d.x * dX.z
+                , z = d.x * dX.y - d.y * dX.x
+                }
     in
     ( xDirection, yDirection )
 
@@ -517,44 +581,6 @@ orthogonalize xDirection yDirection zDirection =
         (toVector zDirection)
 
 
-{-| Get the components of a direction as a tuple (the components it would have
-as a unit vector, also know as its direction cosines).
-
-    ( x, y, z ) =
-        Direction3d.components direction
-
--}
-components : Direction3d coordinates -> ( Float, Float, Float )
-components (Types.Direction3d directionComponents) =
-    directionComponents
-
-
-{-| Find the components of a direction in a given frame;
-
-    direction |> Direction3d.componentsIn frame
-
-is equivalent to
-
-    ( direction
-        |> Direction3d.componentIn
-            (Frame3d.xDirection frame)
-    , direction
-        |> Direction3d.componentIn
-            (Frame3d.yDirection frame)
-    , direction
-        |> Direction3d.componentIn
-            (Frame3d.zDirection frame)
-    )
-
--}
-componentsIn : Frame3d units globalCoordinates localCoordinates -> Direction3d globalCoordinates -> ( Float, Float, Float )
-componentsIn frame direction =
-    ( direction |> componentIn (Frame3d.xDirection frame)
-    , direction |> componentIn (Frame3d.yDirection frame)
-    , direction |> componentIn (Frame3d.zDirection frame)
-    )
-
-
 {-| Get the X component of a direction.
 
     Direction3d.xComponent Direction3d.x
@@ -565,8 +591,8 @@ componentsIn frame direction =
 
 -}
 xComponent : Direction3d coordinates -> Float
-xComponent (Types.Direction3d ( dx, _, _ )) =
-    dx
+xComponent (Types.Direction3d d) =
+    d.x
 
 
 {-| Get the Y component of a direction.
@@ -579,8 +605,8 @@ xComponent (Types.Direction3d ( dx, _, _ )) =
 
 -}
 yComponent : Direction3d coordinates -> Float
-yComponent (Types.Direction3d ( _, dy, _ )) =
-    dy
+yComponent (Types.Direction3d d) =
+    d.y
 
 
 {-| Get the Z component of a direction.
@@ -593,8 +619,8 @@ yComponent (Types.Direction3d ( _, dy, _ )) =
 
 -}
 zComponent : Direction3d coordinates -> Float
-zComponent (Types.Direction3d ( _, _, dz )) =
-    dz
+zComponent (Types.Direction3d d) =
+    d.z
 
 
 {-| Find the component of one direction in another direction. This is equal to
@@ -632,18 +658,11 @@ is equivalent to
 
 -}
 componentIn : Direction3d coordinates -> Direction3d coordinates -> Float
-componentIn firstDirection secondDirection =
-    let
-        ( x1, y1, z1 ) =
-            components firstDirection
-
-        ( x2, y2, z2 ) =
-            components secondDirection
-    in
-    x1 * x2 + y1 * y2 + z1 * z2
+componentIn (Types.Direction3d d2) (Types.Direction3d d1) =
+    d1.x * d2.x + d1.y * d2.y + d1.z * d2.z
 
 
-{-| Get the angle of a direction in the XY plane, measured from the X axis
+{-| TODO Get the angle of a direction in the XY plane, measured from the X axis
 towards the Y axis (counterclockwise around the Z axis). The result will be in
 the range -π to π.
 
@@ -665,12 +684,25 @@ Vertical directions are considered to have an azimuth of zero:
     --> 0
 
 -}
-azimuth : Direction3d coordinates -> Angle
-azimuth direction =
-    Angle.radians (atan2 (yComponent direction) (xComponent direction))
+azimuthIn : SketchPlane3d units coordinates3d coordinates2d -> Direction3d coordinates3d -> Angle
+azimuthIn (Types.SketchPlane3d sketchPlane) (Types.Direction3d d) =
+    let
+        (Types.Direction3d i) =
+            sketchPlane.xDirection
+
+        (Types.Direction3d j) =
+            sketchPlane.yDirection
+
+        sketchX =
+            d.x * i.x + d.y * i.y + d.z * i.z
+
+        sketchY =
+            d.x * j.x + d.y * j.y + d.z * j.z
+    in
+    Quantity (atan2 sketchY sketchX)
 
 
-{-| Get the angle of a direction from the XY plane towards positive Z. The
+{-| TODO Get the angle of a direction from the XY plane towards positive Z. The
 result will be in the range -π/2 to π/2.
 
     Direction3d.elevation Direction3d.x
@@ -686,9 +718,34 @@ result will be in the range -π/2 to π/2.
     --> degrees -90
 
 -}
-elevation : Direction3d coordinates -> Angle
-elevation direction =
-    Angle.asin (zComponent direction)
+elevationFrom : SketchPlane3d units coordinates3d coordinates2d -> Direction3d coordinates3d -> Angle
+elevationFrom (Types.SketchPlane3d sketchPlane) (Types.Direction3d d) =
+    let
+        (Types.Direction3d i) =
+            sketchPlane.xDirection
+
+        (Types.Direction3d j) =
+            sketchPlane.yDirection
+
+        kx =
+            i.y * j.z - i.z * j.y
+
+        ky =
+            i.z * j.x - i.x * j.z
+
+        kz =
+            i.x * j.y - i.y * j.x
+
+        sketchX =
+            d.x * i.x + d.y * i.y + d.z * i.z
+
+        sketchY =
+            d.x * j.x + d.y * j.y + d.z * j.z
+
+        sketchZ =
+            d.x * kx + d.y * ky + d.z * kz
+    in
+    Quantity (atan2 sketchZ (sqrt (sketchX * sketchX + sketchY * sketchY)))
 
 
 {-| Compare two directions within an angular tolerance. Returns true if the
@@ -723,8 +780,15 @@ equalWithin angle firstDirection secondDirection =
 
 -}
 toVector : Direction3d coordinates -> Vector3d Unitless coordinates
-toVector direction =
-    Vector3d.fromTuple Quantity.float (components direction)
+toVector (Types.Direction3d components) =
+    Types.Vector3d components
+
+
+{-| TODO
+-}
+toRecord : Direction3d coordinates -> { x : Float, y : Float, z : Float }
+toRecord (Types.Direction3d coordinates) =
+    coordinates
 
 
 {-| Find the angle from one direction to another. The result will be in the
@@ -743,30 +807,24 @@ range 0 to π.
 
 -}
 angleFrom : Direction3d coordinates -> Direction3d coordinates -> Angle
-angleFrom firstDirection secondDirection =
+angleFrom (Types.Direction3d d1) (Types.Direction3d d2) =
     let
-        ( x1, y1, z1 ) =
-            components firstDirection
-
-        ( x2, y2, z2 ) =
-            components secondDirection
-
         relativeX =
-            x1 * x2 + y1 * y2 + z1 * z2
+            d1.x * d2.x + d1.y * d2.y + d1.z * d2.z
 
         cx =
-            y1 * z2 - z1 * y2
+            d1.y * d2.z - d1.z * d2.y
 
         cy =
-            z1 * x2 - x1 * z2
+            d1.z * d2.x - d1.x * d2.z
 
         cz =
-            x1 * y2 - y1 * x2
+            d1.x * d2.y - d1.y * d2.x
 
         relativeY =
             sqrt (cx * cx + cy * cy + cz * cz)
     in
-    Angle.radians (atan2 relativeY relativeX)
+    Quantity (atan2 relativeY relativeX)
 
 
 {-| Reverse a direction.
@@ -776,12 +834,12 @@ angleFrom firstDirection secondDirection =
 
 -}
 reverse : Direction3d coordinates -> Direction3d coordinates
-reverse direction =
-    let
-        ( dx, dy, dz ) =
-            components direction
-    in
-    unsafeFromComponents -dx -dy -dz
+reverse (Types.Direction3d d) =
+    Types.Direction3d
+        { x = -d.x
+        , y = -d.y
+        , z = -d.z
+        }
 
 
 {-| Rotate a direction around an axis by a given angle.
@@ -803,31 +861,28 @@ its origin point, since directions are position-independent:
 
 -}
 rotateAround : Axis3d units coordinates -> Angle -> Direction3d coordinates -> Direction3d coordinates
-rotateAround axis angle direction =
+rotateAround (Types.Axis3d axis) (Quantity angle) (Types.Direction3d d) =
     let
-        ( dx, dy, dz ) =
-            components direction
-
-        ( ax, ay, az ) =
-            components (Axis3d.direction axis)
+        (Types.Direction3d a) =
+            axis.direction
 
         halfAngle =
-            Quantity.multiplyBy 0.5 angle
+            0.5 * angle
 
         sinHalfAngle =
-            Angle.sin halfAngle
+            sin halfAngle
 
         qx =
-            ax * sinHalfAngle
+            a.x * sinHalfAngle
 
         qy =
-            ay * sinHalfAngle
+            a.y * sinHalfAngle
 
         qz =
-            az * sinHalfAngle
+            a.z * sinHalfAngle
 
         qw =
-            Angle.cos halfAngle
+            cos halfAngle
 
         wx =
             qw * qx
@@ -883,10 +938,11 @@ rotateAround axis angle direction =
         a22 =
             1 - 2 * (xx + yy)
     in
-    unsafeFromComponents
-        (a00 * dx + a01 * dy + a02 * dz)
-        (a10 * dx + a11 * dy + a12 * dz)
-        (a20 * dx + a21 * dy + a22 * dz)
+    Types.Direction3d
+        { x = a00 * d.x + a01 * d.y + a02 * d.z
+        , y = a10 * d.x + a11 * d.y + a12 * d.z
+        , z = a20 * d.x + a21 * d.y + a22 * d.z
+        }
 
 
 {-| Mirror a direction across a plane.
@@ -919,36 +975,34 @@ position of its origin point, since directions are position-independent:
 
 -}
 mirrorAcross : Plane3d units coordinates -> Direction3d coordinates -> Direction3d coordinates
-mirrorAcross plane direction =
+mirrorAcross (Types.Plane3d plane) (Types.Direction3d d) =
     let
-        ( dx, dy, dz ) =
-            components direction
+        (Types.Direction3d n) =
+            plane.normalDirection
 
-        ( nx, ny, nz ) =
-            components (Plane3d.normalDirection plane)
+        a11 =
+            1 - 2 * n.x * n.x
 
-        a =
-            1 - 2 * nx * nx
+        a22 =
+            1 - 2 * n.y * n.y
 
-        b =
-            1 - 2 * ny * ny
+        a33 =
+            1 - 2 * n.z * n.z
 
-        c =
-            1 - 2 * nz * nz
+        a23 =
+            -2 * n.y * n.z
 
-        d =
-            -2 * ny * nz
+        a13 =
+            -2 * n.x * n.z
 
-        e =
-            -2 * nx * nz
-
-        f =
-            -2 * nx * ny
+        a12 =
+            -2 * n.x * n.y
     in
-    unsafeFromComponents
-        (a * dx + f * dy + e * dz)
-        (f * dx + b * dy + d * dz)
-        (e * dx + d * dy + c * dz)
+    Types.Direction3d
+        { x = a11 * d.x + a12 * d.y + a13 * d.z
+        , y = a12 * d.x + a22 * d.y + a23 * d.z
+        , z = a13 * d.x + a23 * d.y + a33 * d.z
+        }
 
 
 {-| Find the [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
@@ -974,19 +1028,49 @@ direction is exactly perpendicular to the given plane, returns `Nothing`.
 
 -}
 projectOnto : Plane3d units coordinates -> Direction3d coordinates -> Maybe (Direction3d coordinates)
-projectOnto plane direction =
+projectOnto (Types.Plane3d plane) (Types.Direction3d d) =
     let
-        directionVector =
-            toVector direction
+        (Types.Direction3d n) =
+            plane.normalDirection
 
-        projectedVector =
-            directionVector
-                |> Vector3d.minus
-                    (directionVector
-                        |> Vector3d.projectionIn (Plane3d.normalDirection plane)
-                    )
+        normalProjection =
+            d.x * n.x + d.y * n.y + d.z * n.z
+
+        projectedX =
+            d.x - normalProjection * n.x
+
+        projectedY =
+            d.y - normalProjection * n.y
+
+        projectedZ =
+            d.z - normalProjection * n.z
+
+        largestComponent =
+            max (abs projectedX) (max (abs projectedY) (abs projectedZ))
     in
-    Vector3d.direction projectedVector
+    if largestComponent == 0 then
+        Nothing
+
+    else
+        let
+            scaledX =
+                projectedX / largestComponent
+
+            scaledY =
+                projectedY / largestComponent
+
+            scaledZ =
+                projectedZ / largestComponent
+
+            scaledLength =
+                sqrt (scaledX * scaledX + scaledY * scaledY + scaledZ * scaledZ)
+        in
+        Just <|
+            Types.Direction3d
+                { x = scaledX / scaledLength
+                , y = scaledY / scaledLength
+                , z = scaledZ / scaledLength
+                }
 
 
 {-| Take a direction defined in global coordinates, and return it expressed in
@@ -1007,11 +1091,22 @@ local coordinates relative to a given reference frame.
 
 -}
 relativeTo : Frame3d units globalCoordinates localCoordinates -> Direction3d globalCoordinates -> Direction3d localCoordinates
-relativeTo frame direction =
-    unsafeFromComponents
-        (componentIn (Frame3d.xDirection frame) direction)
-        (componentIn (Frame3d.yDirection frame) direction)
-        (componentIn (Frame3d.zDirection frame) direction)
+relativeTo (Types.Frame3d frame) (Types.Direction3d d) =
+    let
+        (Types.Direction3d i) =
+            frame.xDirection
+
+        (Types.Direction3d j) =
+            frame.yDirection
+
+        (Types.Direction3d k) =
+            frame.zDirection
+    in
+    Types.Direction3d
+        { x = d.x * i.x + d.y * i.y + d.z * i.z
+        , y = d.x * j.x + d.y * j.y + d.z * j.z
+        , z = d.x * k.x + d.y * k.y + d.z * k.z
+        }
 
 
 {-| Take a direction defined in local coordinates relative to a given reference
@@ -1032,24 +1127,22 @@ frame, and return that direction expressed in global coordinates.
 
 -}
 placeIn : Frame3d units globalCoordinates localCoordinates -> Direction3d localCoordinates -> Direction3d globalCoordinates
-placeIn frame direction =
+placeIn (Types.Frame3d frame) (Types.Direction3d d) =
     let
-        ( x1, y1, z1 ) =
-            components (Frame3d.xDirection frame)
+        (Types.Direction3d i) =
+            frame.xDirection
 
-        ( x2, y2, z2 ) =
-            components (Frame3d.yDirection frame)
+        (Types.Direction3d j) =
+            frame.yDirection
 
-        ( x3, y3, z3 ) =
-            components (Frame3d.zDirection frame)
-
-        ( dx, dy, dz ) =
-            components direction
+        (Types.Direction3d k) =
+            frame.zDirection
     in
-    unsafeFromComponents
-        (x1 * dx + x2 * dy + x3 * dz)
-        (y1 * dx + y2 * dy + y3 * dz)
-        (z1 * dx + z2 * dy + z3 * dz)
+    Types.Direction3d
+        { x = i.x * d.x + j.x * d.y + k.x * d.z
+        , y = i.y * d.x + j.y * d.y + k.y * d.z
+        , z = i.z * d.x + j.z * d.y + k.z * d.z
+        }
 
 
 {-| Project a direction into a given sketch plane. Conceptually, this finds the
@@ -1079,9 +1172,39 @@ plane; if it is perpendicular, `Nothing` is returned.
 
 -}
 projectInto : SketchPlane3d units coordinates3d coordinates2d -> Direction3d coordinates3d -> Maybe (Direction2d coordinates2d)
-projectInto sketchPlane direction =
-    Vector2d.direction <|
-        Vector2d.fromTuple Quantity.float
-            ( componentIn (SketchPlane3d.xDirection sketchPlane) direction
-            , componentIn (SketchPlane3d.yDirection sketchPlane) direction
-            )
+projectInto (Types.SketchPlane3d sketchPlane) (Types.Direction3d d) =
+    let
+        (Types.Direction3d i) =
+            sketchPlane.xDirection
+
+        (Types.Direction3d j) =
+            sketchPlane.yDirection
+
+        projectedX =
+            d.x * i.x + d.y * i.y + d.z * i.z
+
+        projectedY =
+            d.x * j.x + d.y * j.y + d.z * j.z
+
+        largestComponent =
+            max (abs projectedX) (abs projectedY)
+    in
+    if largestComponent == 0 then
+        Nothing
+
+    else
+        let
+            scaledX =
+                projectedX / largestComponent
+
+            scaledY =
+                projectedY / largestComponent
+
+            scaledLength =
+                sqrt (scaledX * scaledX + scaledY * scaledY)
+        in
+        Just <|
+            Types.Direction2d
+                { x = scaledX / scaledLength
+                , y = scaledY / scaledLength
+                }

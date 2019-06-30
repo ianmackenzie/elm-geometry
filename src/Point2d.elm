@@ -10,12 +10,13 @@
 module Point2d exposing
     ( Point2d
     , origin
-    , xy, xyIn, rTheta, rThetaIn, midpoint, centroid, interpolateFrom, along, circumcenter
+    , xy, xyIn, rTheta, rThetaIn, midpoint, interpolateFrom, along, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
     , at, at_
-    , xCoordinate, yCoordinate, xCoordinateIn, yCoordinateIn, polarCoordinates
+    , xCoordinate, yCoordinate, xCoordinateIn, yCoordinateIn
     , equalWithin, lexicographicComparison
     , distanceFrom, signedDistanceAlong, signedDistanceFrom
+    , centroid, centroidOf, centroid3, centroid4, centroidN
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
     , relativeTo, placeIn
     )
@@ -43,7 +44,7 @@ like you can add two vectors.
 
 # Constructors
 
-@docs xy, xyIn, rTheta, rThetaIn, midpoint, centroid, interpolateFrom, along, circumcenter
+@docs xy, xyIn, rTheta, rThetaIn, midpoint, interpolateFrom, along, circumcenter
 
 
 # Interop
@@ -76,6 +77,11 @@ coordinates.
 @docs distanceFrom, squaredDistanceFrom, signedDistanceAlong, signedDistanceFrom
 
 
+# Centroid calculation
+
+@docs centroid, centroidOf, centroid3, centroid4, centroidN
+
+
 # Transformations
 
 @docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
@@ -88,19 +94,12 @@ coordinates.
 -}
 
 import Angle exposing (Angle)
-import Bootstrap.Axis2d as Axis2d
-import Bootstrap.Frame2d as Frame2d
 import Direction2d exposing (Direction2d)
 import Float.Extra as Float
 import Geometry.Types as Types exposing (Axis2d, Frame2d)
-import Quantity exposing (Quantity, Rate, Squared, Unitless)
+import Quantity exposing (Quantity(..), Rate, Squared, Unitless)
 import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
-
-
-addTo : Point2d units coordinates -> Vector2d units coordinates -> Point2d units coordinates
-addTo point vector =
-    translateBy vector point
 
 
 {-| -}
@@ -116,7 +115,7 @@ type alias Point2d units coordinates =
 -}
 origin : Point2d units coordinates
 origin =
-    xy Quantity.zero Quantity.zero
+    Types.Point2d { x = 0, y = 0 }
 
 
 {-| Construct a point from its X and Y coordinates.
@@ -126,8 +125,8 @@ origin =
 
 -}
 xy : Quantity Float units -> Quantity Float units -> Point2d units coordinates
-xy givenXCoordinate givenYCoordinate =
-    Types.Point2d ( givenXCoordinate, givenYCoordinate )
+xy (Quantity x) (Quantity y) =
+    Types.Point2d { x = x, y = y }
 
 
 {-| Construct a point from a radius and angle. Radius is measured from the
@@ -138,8 +137,11 @@ origin and angle is measured counterclockwise from the positive X direction.
 
 -}
 rTheta : Quantity Float units -> Angle -> Point2d units coordinates
-rTheta givenRadius givenAngle =
-    xy (Quantity.rCosTheta givenRadius givenAngle) (Quantity.rSinTheta givenRadius givenAngle)
+rTheta (Quantity r) (Quantity theta) =
+    Types.Point2d
+        { x = r * cos theta
+        , y = r * sin theta
+        }
 
 
 {-| Construct a point halfway between two other points.
@@ -155,64 +157,104 @@ rTheta givenRadius givenAngle =
 
 -}
 midpoint : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates
-midpoint firstPoint secondPoint =
-    interpolateFrom firstPoint secondPoint 0.5
+midpoint (Types.Point2d p1) (Types.Point2d p2) =
+    Types.Point2d
+        { x = p1.x + 0.5 * (p2.x - p1.x)
+        , y = p1.y + 0.5 * (p2.y - p1.y)
+        }
 
 
-{-| Find the centroid of a list of points. Returns `Nothing` if the list is
-empty.
-
-    p0 =
-        Point2d.origin
-
-    p1 =
-        Point2d.fromCoordinates ( 1, 0 )
-
-    p2 =
-        Point2d.fromCoordinates ( 1, 1 )
-
-    Point2d.centroid [ p0, p1, p2 ]
-    --> Just (Point2d.fromCoordinates ( 0.6667, 0.3333 ))
-
+{-| TODO
 -}
-centroid : List (Point2d units coordinates) -> Maybe (Point2d units coordinates)
-centroid points =
-    case points of
-        [] ->
-            Nothing
-
-        first :: rest ->
-            let
-                ( x0, y0 ) =
-                    coordinates first
-            in
-            Just (centroidHelp x0 y0 1 Quantity.zero Quantity.zero rest)
+centroid : Point2d units coordinates -> List (Point2d units coordinates) -> Point2d units coordinates
+centroid (Types.Point2d p0) rest =
+    centroidHelp p0.x p0.y 1 0 0 rest
 
 
-centroidHelp : Quantity Float units -> Quantity Float units -> Float -> Quantity Float units -> Quantity Float units -> List (Point2d units coordinates) -> Point2d units coordinates
+centroidHelp : Float -> Float -> Float -> Float -> Float -> List (Point2d units coordinates) -> Point2d units coordinates
 centroidHelp x0 y0 count dx dy points =
     case points of
-        point :: remaining ->
-            let
-                ( x, y ) =
-                    coordinates point
-
-                newDx =
-                    dx |> Quantity.plus (x |> Quantity.minus x0)
-
-                newDy =
-                    dy |> Quantity.plus (y |> Quantity.minus y0)
-            in
-            centroidHelp x0 y0 (count + 1) newDx newDy remaining
+        (Types.Point2d p) :: remaining ->
+            centroidHelp
+                x0
+                y0
+                (count + 1)
+                (dx + (p.x - x0))
+                (dy + (p.y - y0))
+                remaining
 
         [] ->
+            Types.Point2d
+                { x = x0 + dx / count
+                , y = y0 + dy / count
+                }
+
+
+{-| TODO
+-}
+centroidOf : (a -> Point2d units coordinates) -> a -> List a -> Point2d units coordinates
+centroidOf toPoint first rest =
+    let
+        (Types.Point2d p0) =
+            toPoint first
+    in
+    centroidOfHelp toPoint p0.x p0.y 1 0 0 rest
+
+
+centroidOfHelp : (a -> Point2d units coordinates) -> Float -> Float -> Float -> Float -> Float -> List a -> Point2d units coordinates
+centroidOfHelp toPoint x0 y0 count dx dy values =
+    case values of
+        next :: remaining ->
             let
-                scale =
-                    1 / count
+                (Types.Point2d p) =
+                    toPoint next
             in
-            xy
-                (x0 |> Quantity.plus (Quantity.multiplyBy scale dx))
-                (y0 |> Quantity.plus (Quantity.multiplyBy scale dy))
+            centroidOfHelp
+                toPoint
+                x0
+                y0
+                (count + 1)
+                (dx + (p.x - x0))
+                (dy + (p.y - y0))
+                remaining
+
+        [] ->
+            Types.Point2d
+                { x = x0 + dx / count
+                , y = y0 + dy / count
+                }
+
+
+{-| TODO
+-}
+centroid3 : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates
+centroid3 (Types.Point2d p1) (Types.Point2d p2) (Types.Point2d p3) =
+    Types.Point2d
+        { x = p1.x + (p2.x - p1.x) / 3 + (p3.x - p1.x) / 3
+        , y = p1.y + (p2.y - p1.y) / 3 + (p3.y - p1.y) / 3
+        }
+
+
+{-| TODO
+-}
+centroid4 : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates
+centroid4 (Types.Point2d p1) (Types.Point2d p2) (Types.Point2d p3) (Types.Point2d p4) =
+    Types.Point2d
+        { x = p1.x + (p2.x - p1.x) / 4 + (p3.x - p1.x) / 4 + (p4.x - p1.x) / 4
+        , y = p1.y + (p2.y - p1.y) / 4 + (p3.y - p1.y) / 4 + (p4.y - p1.y) / 4
+        }
+
+
+{-| TODO
+-}
+centroidN : List (Point2d units coordinates) -> Maybe (Point2d units coordinates)
+centroidN points =
+    case points of
+        first :: rest ->
+            Just (centroid first rest)
+
+        [] ->
+            Nothing
 
 
 {-| Construct a point by interpolating from the first given point to the second,
@@ -249,15 +291,18 @@ You can pass values less than zero or greater than one to extrapolate:
 
 -}
 interpolateFrom : Point2d units coordinates -> Point2d units coordinates -> Float -> Point2d units coordinates
-interpolateFrom p1 p2 t =
-    let
-        ( x1, y1 ) =
-            coordinates p1
+interpolateFrom (Types.Point2d p1) (Types.Point2d p2) t =
+    if t <= 0.5 then
+        Types.Point2d
+            { x = p1.x + t * (p2.x - p1.x)
+            , y = p1.y + t * (p2.y - p1.y)
+            }
 
-        ( x2, y2 ) =
-            coordinates p2
-    in
-    xy (Quantity.interpolateFrom x1 x2 t) (Quantity.interpolateFrom y1 y2 t)
+    else
+        Types.Point2d
+            { x = p2.x + (1 - t) * (p1.x - p2.x)
+            , y = p2.y + (1 - t) * (p1.y - p2.y)
+            }
 
 
 {-| Construct a point along an axis at a particular distance from the axis'
@@ -281,9 +326,18 @@ the axis:
 
 -}
 along : Axis2d units coordinates -> Quantity Float units -> Point2d units coordinates
-along axis distance =
-    Axis2d.originPoint axis
-        |> translateBy (Vector2d.withLength distance (Axis2d.direction axis))
+along (Types.Axis2d axis) (Quantity distance) =
+    let
+        (Types.Point2d p0) =
+            axis.originPoint
+
+        (Types.Direction2d d) =
+            axis.direction
+    in
+    Types.Point2d
+        { x = p0.x + distance * d.x
+        , y = p0.y + distance * d.y
+        }
 
 
 {-| Construct a point given its local coordinates within a particular frame:
@@ -296,26 +350,21 @@ along axis distance =
 
 -}
 xyIn : Frame2d units globalCoordinates localCoordinates -> Quantity Float units -> Quantity Float units -> Point2d units globalCoordinates
-xyIn frame x y =
+xyIn (Types.Frame2d frame) (Quantity x) (Quantity y) =
     let
-        ( x0, y0 ) =
-            coordinates (Frame2d.originPoint frame)
+        (Types.Point2d p0) =
+            frame.originPoint
 
-        x1 =
-            Direction2d.xComponent (Frame2d.xDirection frame)
+        (Types.Direction2d i) =
+            frame.xDirection
 
-        y1 =
-            Direction2d.yComponent (Frame2d.xDirection frame)
-
-        x2 =
-            Direction2d.xComponent (Frame2d.yDirection frame)
-
-        y2 =
-            Direction2d.yComponent (Frame2d.yDirection frame)
+        (Types.Direction2d j) =
+            frame.yDirection
     in
-    xy
-        (x0 |> Quantity.plus (Quantity.aXbY x1 x x2 y))
-        (y0 |> Quantity.plus (Quantity.aXbY y1 x y2 y))
+    Types.Point2d
+        { x = p0.x + x * i.x + y * j.x
+        , y = p0.y + x * i.y + y * j.y
+        }
 
 
 {-| Construct a point given its local polar coordinates within a particular
@@ -330,8 +379,27 @@ frame:
 
 -}
 rThetaIn : Frame2d units globalCoordinates localCoordinates -> Quantity Float units -> Angle -> Point2d units globalCoordinates
-rThetaIn frame r theta =
-    xyIn frame (Quantity.rCosTheta r theta) (Quantity.rSinTheta r theta)
+rThetaIn (Types.Frame2d frame) (Quantity r) (Quantity theta) =
+    let
+        (Types.Point2d p0) =
+            frame.originPoint
+
+        (Types.Direction2d i) =
+            frame.xDirection
+
+        (Types.Direction2d j) =
+            frame.yDirection
+
+        x =
+            r * cos theta
+
+        y =
+            r * sin theta
+    in
+    Types.Point2d
+        { x = p0.x + x * i.x + y * j.x
+        , y = p0.y + x * i.y + y * j.y
+        }
 
 
 {-| Attempt to find the circumcenter of three points; this is the center of the
@@ -368,53 +436,66 @@ collinear, returns `Nothing`.
 
 -}
 circumcenter : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Maybe (Point2d units coordinates)
-circumcenter p1 p2 p3 =
+circumcenter (Types.Point2d p1) (Types.Point2d p2) (Types.Point2d p3) =
     let
+        ax =
+            p2.x - p1.x
+
+        ay =
+            p2.y - p1.y
+
+        bx =
+            p3.x - p2.x
+
+        by =
+            p3.y - p2.y
+
+        cx =
+            p1.x - p3.x
+
+        cy =
+            p1.y - p3.y
+
         a2 =
-            Quantity.squared (distanceFrom p1 p2)
+            ax * ax + ay * ay
 
         b2 =
-            Quantity.squared (distanceFrom p2 p3)
+            bx * bx + by * by
 
         c2 =
-            Quantity.squared (distanceFrom p3 p1)
+            cx * cx + cy * cy
 
         t1 =
-            a2 |> Quantity.times (b2 |> Quantity.plus c2 |> Quantity.minus a2)
+            a2 * (b2 + c2 - a2)
 
         t2 =
-            b2 |> Quantity.times (c2 |> Quantity.plus a2 |> Quantity.minus b2)
+            b2 * (c2 + a2 - b2)
 
         t3 =
-            c2 |> Quantity.times (a2 |> Quantity.plus b2 |> Quantity.minus c2)
+            c2 * (a2 + b2 - c2)
 
         sum =
-            t1 |> Quantity.plus t2 |> Quantity.plus t3
+            t1 + t2 + t3
     in
-    if sum == Quantity.zero then
+    if sum == 0 then
         Nothing
 
     else
         let
             w1 =
-                Quantity.ratio t1 sum
+                t1 / sum
 
             w2 =
-                Quantity.ratio t2 sum
+                t2 / sum
 
             w3 =
-                Quantity.ratio t3 sum
-
-            ( x1, y1 ) =
-                coordinates p1
-
-            ( x2, y2 ) =
-                coordinates p2
-
-            ( x3, y3 ) =
-                coordinates p3
+                t3 / sum
         in
-        Just (xy (Quantity.aXbYcZ w1 x3 w2 x1 w3 x2) (Quantity.aXbYcZ w1 y3 w2 y1 w3 y2))
+        Just <|
+            Types.Point2d
+                { x = w1 * p3.x + w2 * p1.x + w3 * p2.x
+                , y = w1 * p3.y + w2 * p1.y + w3 * p2.y
+                }
 
 
 {-| Construct a `Point2d` from a tuple of `Float` values, by specifying what units those values are
@@ -502,12 +583,11 @@ rate of change of destination units with respect to source units.
 
 -}
 at : Quantity Float (Rate destinationUnits sourceUnits) -> Point2d sourceUnits coordinates -> Point2d destinationUnits coordinates
-at rate point =
-    let
-        ( x, y ) =
-            coordinates point
-    in
-    xy (Quantity.at rate x) (Quantity.at rate y)
+at (Quantity rate) (Types.Point2d p) =
+    Types.Point2d
+        { x = rate * p.x
+        , y = rate * p.y
+        }
 
 
 {-| Convert a point from one units type to another, by providing an 'inverse' conversion factor
@@ -531,125 +611,39 @@ given as a rate of change of source units with respect to destination units.
 
 -}
 at_ : Quantity Float (Rate sourceUnits destinationUnits) -> Point2d sourceUnits coordinates -> Point2d destinationUnits coordinates
-at_ rate point =
-    let
-        ( x, y ) =
-            coordinates point
-    in
-    xy (Quantity.at_ rate x) (Quantity.at_ rate y)
-
-
-{-| Get the coordinates of a point as a tuple.
-
-    ( x, y ) =
-        Point2d.coordinates point
-
--}
-coordinates : Point2d units coordinates -> ( Quantity Float units, Quantity Float units )
-coordinates (Types.Point2d pointCoordinates) =
-    pointCoordinates
-
-
-{-| Get the coordinates of a point within a given frame.
-
-    point =
-        Point2d.fromCoordinates
-            ( Length.centimeters 2
-            , Length.centimeters 0
-            )
-
-    rotatedFrame =
-        Frame2d.atOrigin
-            |> Frame2d.rotateBy (Angle.degrees 45)
-
-    point |> Point2d.coordinatesIn rotatedFrame
-    --> ( Length.centimeters 1.4142
-    --> , Length.centimeters -1.4142
-    --> )
-
--}
-coordinatesIn : Frame2d units globalCoordinates localCoordinates -> Point2d units globalCoordinates -> ( Quantity Float units, Quantity Float units )
-coordinatesIn frame point =
-    let
-        ( x, y ) =
-            coordinates point
-
-        ( x0, y0 ) =
-            coordinates (Frame2d.originPoint frame)
-
-        dx =
-            x |> Quantity.minus x0
-
-        dy =
-            y |> Quantity.minus y0
-
-        x1 =
-            Direction2d.xComponent (Frame2d.xDirection frame)
-
-        y1 =
-            Direction2d.yComponent (Frame2d.xDirection frame)
-
-        x2 =
-            Direction2d.xComponent (Frame2d.yDirection frame)
-
-        y2 =
-            Direction2d.yComponent (Frame2d.yDirection frame)
-    in
-    ( Quantity.aXbY x1 dx y1 dy
-    , Quantity.aXbY x2 dx y2 dy
-    )
+at_ (Quantity rate) (Types.Point2d p) =
+    Types.Point2d
+        { x = p.x / rate
+        , y = p.y / rate
+        }
 
 
 {-| TODO
 -}
 xCoordinateIn : Frame2d units globalCoordinates localCoordinates -> Point2d units globalCoordinates -> Quantity Float units
-xCoordinateIn frame point =
+xCoordinateIn (Types.Frame2d frame) (Types.Point2d p) =
     let
-        originPoint =
-            Frame2d.originPoint frame
+        (Types.Point2d p0) =
+            frame.originPoint
 
-        deltaX =
-            xCoordinate point |> Quantity.minus (xCoordinate originPoint)
-
-        deltaY =
-            yCoordinate point |> Quantity.minus (yCoordinate originPoint)
-
-        xDirection =
-            Frame2d.xDirection frame
-
-        dx =
-            Direction2d.xComponent xDirection
-
-        dy =
-            Direction2d.yComponent xDirection
+        (Types.Direction2d d) =
+            frame.xDirection
     in
-    Quantity.aXbY dx deltaX dy deltaY
+    Quantity ((p.x - p0.x) * d.x + (p.y - p0.y) * d.y)
 
 
 {-| TODO
 -}
 yCoordinateIn : Frame2d units globalCoordinates localCoordinates -> Point2d units globalCoordinates -> Quantity Float units
-yCoordinateIn frame point =
+yCoordinateIn (Types.Frame2d frame) (Types.Point2d p) =
     let
-        originPoint =
-            Frame2d.originPoint frame
+        (Types.Point2d p0) =
+            frame.originPoint
 
-        deltaX =
-            xCoordinate point |> Quantity.minus (xCoordinate originPoint)
-
-        deltaY =
-            yCoordinate point |> Quantity.minus (yCoordinate originPoint)
-
-        yDirection =
-            Frame2d.yDirection frame
-
-        dx =
-            Direction2d.xComponent yDirection
-
-        dy =
-            Direction2d.yComponent yDirection
+        (Types.Direction2d d) =
+            frame.yDirection
     in
-    Quantity.aXbY dx deltaX dy deltaY
+    Quantity ((p.x - p0.x) * d.x + (p.y - p0.y) * d.y)
 
 
 {-| Get the X coordinate of a point.
@@ -659,8 +653,8 @@ yCoordinateIn frame point =
 
 -}
 xCoordinate : Point2d units coordinates -> Quantity Float units
-xCoordinate (Types.Point2d ( x, _ )) =
-    x
+xCoordinate (Types.Point2d p) =
+    Quantity p.x
 
 
 {-| Get the Y coordinate of a point.
@@ -670,24 +664,8 @@ xCoordinate (Types.Point2d ( x, _ )) =
 
 -}
 yCoordinate : Point2d units coordinates -> Quantity Float units
-yCoordinate (Types.Point2d ( _, y )) =
-    y
-
-
-{-| Get the polar coordinates (radius and polar angle) of a point.
-
-    Point2d.polarCoordinates
-        (Point2d.fromCoordinates ( 1, 1 ))
-    --> ( 1.4142, degrees 45 )
-
--}
-polarCoordinates : Point2d units coordinates -> ( Quantity Float units, Angle )
-polarCoordinates point =
-    let
-        ( x, y ) =
-            coordinates point
-    in
-    ( distanceFrom origin point, Angle.atan2 y x )
+yCoordinate (Types.Point2d p) =
+    Quantity p.y
 
 
 {-| Compare two points within a tolerance. Returns true if the distance
@@ -707,27 +685,34 @@ between the two given points is less than the given tolerance.
 
 -}
 equalWithin : Quantity Float units -> Point2d units coordinates -> Point2d units coordinates -> Bool
-equalWithin tolerance firstPoint secondPoint =
-    distanceFrom firstPoint secondPoint |> Quantity.lessThanOrEqualTo tolerance
+equalWithin (Quantity eps) (Types.Point2d p1) (Types.Point2d p2) =
+    if eps > 0 then
+        let
+            nx =
+                (p2.x - p1.x) / eps
+
+            ny =
+                (p2.y - p1.y) / eps
+        in
+        nx * nx + ny * ny <= 1
+
+    else if eps == 0 then
+        p1.x == p2.x && p1.y == p2.y
+
+    else
+        False
 
 
 {-| Compare two `Point2d` values lexicographically: first by X coordinate, then
 by Y. Can be used to provide a sort order for `Point2d` values.
 -}
 lexicographicComparison : Point2d units coordinates -> Point2d units coordinates -> Order
-lexicographicComparison firstPoint secondPoint =
-    let
-        ( x1, y1 ) =
-            coordinates firstPoint
-
-        ( x2, y2 ) =
-            coordinates secondPoint
-    in
-    if x1 /= x2 then
-        Quantity.compare x1 x2
+lexicographicComparison (Types.Point2d p1) (Types.Point2d p2) =
+    if p1.x /= p2.x then
+        compare p1.x p2.x
 
     else
-        Quantity.compare y1 y2
+        compare p1.y p2.y
 
 
 {-| Find the distance from the first point to the second.
@@ -759,8 +744,32 @@ Partial application can be useful:
 
 -}
 distanceFrom : Point2d units coordinates -> Point2d units coordinates -> Quantity Float units
-distanceFrom firstPoint secondPoint =
-    Vector2d.length (Vector2d.from firstPoint secondPoint)
+distanceFrom (Types.Point2d p1) (Types.Point2d p2) =
+    let
+        deltaX =
+            p2.x - p1.x
+
+        deltaY =
+            p2.y - p1.y
+
+        largestComponent =
+            max (abs deltaX) (abs deltaY)
+    in
+    if largestComponent == 0 then
+        Quantity.zero
+
+    else
+        let
+            scaledX =
+                deltaX / largestComponent
+
+            scaledY =
+                deltaY / largestComponent
+
+            scaledLength =
+                sqrt (scaledX * scaledX + scaledY * scaledY)
+        in
+        Quantity (scaledLength * largestComponent)
 
 
 {-| Determine how far along an axis a particular point lies. Conceptually, the
@@ -784,9 +793,15 @@ it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
 
 -}
 signedDistanceAlong : Axis2d units coordinates -> Point2d units coordinates -> Quantity Float units
-signedDistanceAlong axis point =
-    Vector2d.from (Axis2d.originPoint axis) point
-        |> Vector2d.componentIn (Axis2d.direction axis)
+signedDistanceAlong (Types.Axis2d axis) (Types.Point2d p) =
+    let
+        (Types.Point2d p0) =
+            axis.originPoint
+
+        (Types.Direction2d d) =
+            axis.direction
+    in
+    Quantity ((p.x - p0.x) * d.x + (p.y - p0.y) * d.y)
 
 
 {-| Find the perpendicular distance of a point from an axis. The result
@@ -826,15 +841,15 @@ function:
 
 -}
 signedDistanceFrom : Axis2d units coordinates -> Point2d units coordinates -> Quantity Float units
-signedDistanceFrom axis point =
+signedDistanceFrom (Types.Axis2d axis) (Types.Point2d p) =
     let
-        perpendicularDirection =
-            Direction2d.rotateCounterclockwise (Axis2d.direction axis)
+        (Types.Point2d p0) =
+            axis.originPoint
 
-        displacementVector =
-            Vector2d.from (Axis2d.originPoint axis) point
+        (Types.Direction2d d) =
+            axis.direction
     in
-    displacementVector |> Vector2d.componentIn perpendicularDirection
+    Quantity ((p.y - p0.y) * d.x - (p.x - p0.x) * d.y)
 
 
 {-| Perform a uniform scaling about the given center point. The center point is
@@ -860,15 +875,11 @@ rotation operations instead.
 
 -}
 scaleAbout : Point2d units coordinates -> Float -> Point2d units coordinates -> Point2d units coordinates
-scaleAbout centerPoint scale point =
-    let
-        ( x0, y0 ) =
-            coordinates centerPoint
-
-        ( x, y ) =
-            coordinates point
-    in
-    xy (Quantity.scaleAbout x0 scale x) (Quantity.scaleAbout y0 scale y)
+scaleAbout (Types.Point2d p0) k (Types.Point2d p) =
+    Types.Point2d
+        { x = p0.x + k * (p.x - p0.x)
+        , y = p0.y + k * (p.y - p0.y)
+        }
 
 
 {-| Rotate around a given center point counterclockwise by a given angle (in
@@ -889,10 +900,24 @@ given last.
 
 -}
 rotateAround : Point2d units coordinates -> Angle -> Point2d units coordinates -> Point2d units coordinates
-rotateAround centerPoint angle point =
-    Vector2d.from centerPoint point
-        |> Vector2d.rotateBy angle
-        |> addTo centerPoint
+rotateAround (Types.Point2d p0) (Quantity theta) (Types.Point2d p) =
+    let
+        c =
+            cos theta
+
+        s =
+            sin theta
+
+        deltaX =
+            p.x - p0.x
+
+        deltaY =
+            p.y - p0.y
+    in
+    Types.Point2d
+        { x = p0.x + c * deltaX - s * deltaY
+        , y = p0.y + s * deltaX + c * deltaY
+        }
 
 
 {-| Translate a point by a given displacement.
@@ -911,18 +936,11 @@ In more mathematical terms, this is 'point plus vector'. For 'point minus point'
 
 -}
 translateBy : Vector2d units coordinates -> Point2d units coordinates -> Point2d units coordinates
-translateBy vector point =
-    let
-        vx =
-            Vector2d.xComponent vector
-
-        vy =
-            Vector2d.yComponent vector
-
-        ( px, py ) =
-            coordinates point
-    in
-    xy (px |> Quantity.plus vx) (py |> Quantity.plus vy)
+translateBy (Types.Vector2d v) (Types.Point2d p) =
+    Types.Point2d
+        { x = p.x + v.x
+        , y = p.y + v.y
+        }
 
 
 {-| Translate a point in a given direction by a given distance.
@@ -949,20 +967,11 @@ The distance can be negative:
 
 -}
 translateIn : Direction2d coordinates -> Quantity Float units -> Point2d units coordinates -> Point2d units coordinates
-translateIn direction distance point =
-    let
-        dx =
-            Direction2d.xComponent direction
-
-        dy =
-            Direction2d.yComponent direction
-
-        ( px, py ) =
-            coordinates point
-    in
-    xy
-        (px |> Quantity.plus (Quantity.multiplyBy dx distance))
-        (py |> Quantity.plus (Quantity.multiplyBy dy distance))
+translateIn (Types.Direction2d d) (Quantity distance) (Types.Point2d p) =
+    Types.Point2d
+        { x = p.x + distance * d.x
+        , y = p.y + distance * d.y
+        }
 
 
 {-| Mirror a point across an axis. The result will be the same distance from the
@@ -979,14 +988,33 @@ axis but on the opposite side.
 
 -}
 mirrorAcross : Axis2d units coordinates -> Point2d units coordinates -> Point2d units coordinates
-mirrorAcross axis point =
+mirrorAcross (Types.Axis2d axis) (Types.Point2d p) =
     let
-        originPoint =
-            Axis2d.originPoint axis
+        (Types.Direction2d d) =
+            axis.direction
+
+        (Types.Point2d p0) =
+            axis.originPoint
+
+        a =
+            1 - 2 * d.y * d.y
+
+        b =
+            2 * d.x * d.y
+
+        c =
+            1 - 2 * d.x * d.x
+
+        deltaX =
+            p.x - p0.x
+
+        deltaY =
+            p.y - p0.y
     in
-    Vector2d.from originPoint point
-        |> Vector2d.mirrorAcross axis
-        |> addTo originPoint
+    Types.Point2d
+        { x = p0.x + a * deltaX + b * deltaY
+        , y = p0.y + b * deltaX + c * deltaY
+        }
 
 
 {-| Project a point perpendicularly onto an axis.
@@ -1011,14 +1039,21 @@ The axis does not have to pass through the origin:
 
 -}
 projectOnto : Axis2d units coordinates -> Point2d units coordinates -> Point2d units coordinates
-projectOnto axis point =
+projectOnto (Types.Axis2d axis) (Types.Point2d p) =
     let
-        originPoint =
-            Axis2d.originPoint axis
+        (Types.Point2d p0) =
+            axis.originPoint
+
+        (Types.Direction2d d) =
+            axis.direction
+
+        distance =
+            (p.x - p0.x) * d.x + (p.y - p0.y) * d.y
     in
-    Vector2d.from originPoint point
-        |> Vector2d.projectOnto axis
-        |> addTo originPoint
+    Types.Point2d
+        { x = p0.x + distance * d.x
+        , y = p0.y + distance * d.y
+        }
 
 
 {-| Take a point defined in global coordinates, and return it expressed in local
@@ -1037,8 +1072,27 @@ coordinates relative to a given reference frame.
 
 -}
 relativeTo : Frame2d units globalCoordinates localCoordinates -> Point2d units globalCoordinates -> Point2d units localCoordinates
-relativeTo frame point =
-    xy (xCoordinateIn frame point) (yCoordinateIn frame point)
+relativeTo (Types.Frame2d frame) (Types.Point2d p) =
+    let
+        (Types.Point2d p0) =
+            frame.originPoint
+
+        (Types.Direction2d i) =
+            frame.xDirection
+
+        (Types.Direction2d j) =
+            frame.yDirection
+
+        deltaX =
+            p.x - p0.x
+
+        deltaY =
+            p.y - p0.y
+    in
+    Types.Point2d
+        { x = deltaX * i.x + deltaY * i.y
+        , y = deltaX * j.x + deltaY * j.y
+        }
 
 
 {-| Take a point defined in local coordinates relative to a given reference
@@ -1057,7 +1111,18 @@ frame, and return that point expressed in global coordinates.
 
 -}
 placeIn : Frame2d units globalCoordinates localCoordinates -> Point2d units localCoordinates -> Point2d units globalCoordinates
-placeIn frame (Types.Point2d pointCoordinates) =
-    Types.Vector2d pointCoordinates
-        |> Vector2d.placeIn frame
-        |> addTo (Frame2d.originPoint frame)
+placeIn (Types.Frame2d frame) (Types.Point2d p) =
+    let
+        (Types.Point2d p0) =
+            frame.originPoint
+
+        (Types.Direction2d i) =
+            frame.xDirection
+
+        (Types.Direction2d j) =
+            frame.yDirection
+    in
+    Types.Point2d
+        { x = p0.x + p.x * i.x + p.y * j.x
+        , y = p0.y + p.x * i.y + p.y * j.y
+        }

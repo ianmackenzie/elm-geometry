@@ -13,9 +13,9 @@ import Geometry.Types exposing (..)
 
 
 unsafeCrossProduct : Direction3d coordinates -> Direction3d coordinates -> Direction3d coordinates
-unsafeCrossProduct (Direction3d ( x1, y1, z1 )) (Direction3d ( x2, y2, z2 )) =
+unsafeCrossProduct (Direction3d d1) (Direction3d d2) =
     Direction3d
-        ( y1 * z2 - z1 * y2
-        , z1 * x2 - x1 * z2
-        , x1 * y2 - y1 * x2
-        )
+        { x = d1.y * d2.z - d1.z * d2.y
+        , y = d1.z * d2.x - d1.x * d2.z
+        , z = d1.x * d2.y - d1.y * d2.x
+        }

@@ -74,7 +74,8 @@ onExamples =
                     |> Expect.axis3d
                         (Axis3d.through
                             (Point3d.fromTuple meters ( 1, 3, 0 ))
-                            (Direction3d.fromAzimuthAndElevation
+                            (Direction3d.fromAzimuthInAndElevationFrom
+                                SketchPlane3d.xy
                                 (Angle.degrees 30)
                                 (Angle.degrees 0)
                             )
@@ -85,7 +86,8 @@ onExamples =
                     |> Expect.axis3d
                         (Axis3d.through
                             (Point3d.fromTuple meters ( 3, 0, 1 ))
-                            (Direction3d.fromAzimuthAndElevation
+                            (Direction3d.fromAzimuthInAndElevationFrom
+                                SketchPlane3d.xy
                                 (Angle.degrees 0)
                                 (Angle.degrees 60)
                             )

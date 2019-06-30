@@ -153,18 +153,8 @@ centroid triangle =
     let
         ( p1, p2, p3 ) =
             vertices triangle
-
-        firstVector =
-            Vector2d.from p1 p2
-
-        secondVector =
-            Vector2d.from p1 p3
-
-        displacement =
-            Vector2d.scaleBy (1.0 / 3.0)
-                (firstVector |> Vector2d.plus secondVector)
     in
-    Point2d.translateBy displacement p1
+    Point2d.centroid3 p1 p2 p3
 
 
 {-| Check whether a given point is inside a given triangle.

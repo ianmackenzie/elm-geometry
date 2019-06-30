@@ -7,32 +7,21 @@
 --------------------------------------------------------------------------------
 
 
-module Bootstrap.Point3d exposing
-    ( xCoordinate
-    , xyz
-    , yCoordinate
-    , zCoordinate
-    )
+module Unsafe.Direction2d exposing (unsafeXyIn)
 
 import Geometry.Types exposing (..)
-import Quantity exposing (Quantity)
 
 
-xyz : Quantity Float units -> Quantity Float units -> Quantity Float units -> Point3d units coordinates
-xyz x y z =
-    Point3d ( x, y, z )
+unsafeXyIn : Frame2d units globalCoordinates localCoordinates -> Float -> Float -> Direction2d globalCoordinates
+unsafeXyIn (Frame2d frame) x y =
+    let
+        (Direction2d i) =
+            frame.xDirection
 
-
-xCoordinate : Point3d units coordinates -> Quantity Float units
-xCoordinate (Point3d ( x, y, z )) =
-    x
-
-
-yCoordinate : Point3d units coordinates -> Quantity Float units
-yCoordinate (Point3d ( x, y, z )) =
-    y
-
-
-zCoordinate : Point3d units coordinates -> Quantity Float units
-zCoordinate (Point3d ( x, y, z )) =
-    z
+        (Direction2d j) =
+            frame.yDirection
+    in
+    Direction2d
+        { x = x * i.x + y * j.x
+        , y = x * i.y + y * j.y
+        }

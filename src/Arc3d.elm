@@ -164,9 +164,12 @@ sweptAround givenAxis givenSweptAngle givenStartPoint =
         yVector =
             Vector3d.from givenStartPoint computedCenterPoint
     in
-    case Vector3d.lengthAndDirection yVector of
-        Just ( computedRadius, computedYDirection ) ->
+    case Vector3d.direction yVector of
+        Just computedYDirection ->
             let
+                computedRadius =
+                    Vector3d.length yVector
+
                 computedXDirection =
                     Direction3d.unsafeCrossProduct
                         computedYDirection
@@ -591,10 +594,11 @@ tangentDirection (Nondegenerate (Types.Arc3d arc)) parameterValue =
         sinAngle =
             Angle.sin angle
     in
-    Direction3d.unsafeFromComponents
-        (cosAngle * x1 + sinAngle * x2)
-        (cosAngle * y1 + sinAngle * y2)
-        (cosAngle * z1 + sinAngle * z2)
+    Direction3d.unsafe
+        { x = cosAngle * x1 + sinAngle * x2
+        , y = cosAngle * y1 + sinAngle * y2
+        , z = cosAngle * z1 + sinAngle * z2
+        }
 
 
 {-| Get tangent directions to a nondegenerate arc at a given set of parameter
@@ -790,15 +794,17 @@ reverse ((Types.Arc3d arc) as arc_) =
         , sweptAngle = Quantity.negate arcSweptAngle
         , signedLength = Quantity.negate arc.signedLength
         , xDirection =
-            Direction3d.unsafeFromComponents
-                (x1 * cosAngle + x2 * sinAngle)
-                (y1 * cosAngle + y2 * sinAngle)
-                (z1 * cosAngle + z2 * sinAngle)
+            Direction3d.unsafe
+                { x = x1 * cosAngle + x2 * sinAngle
+                , y = y1 * cosAngle + y2 * sinAngle
+                , z = z1 * cosAngle + z2 * sinAngle
+                }
         , yDirection =
-            Direction3d.unsafeFromComponents
-                (x2 * cosAngle - x1 * sinAngle)
-                (y2 * cosAngle - y1 * sinAngle)
-                (z2 * cosAngle - z1 * sinAngle)
+            Direction3d.unsafe
+                { x = x2 * cosAngle - x1 * sinAngle
+                , y = y2 * cosAngle - y1 * sinAngle
+                , z = z2 * cosAngle - z1 * sinAngle
+                }
         }
 
 

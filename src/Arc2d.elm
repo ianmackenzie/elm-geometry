@@ -143,9 +143,12 @@ from givenStartPoint givenEndPoint givenSweptAngle =
         displacement =
             Vector2d.from givenStartPoint givenEndPoint
     in
-    case Vector2d.lengthAndDirection displacement of
-        Just ( distance, direction ) ->
+    case Vector2d.direction displacement of
+        Just direction ->
             let
+                distance =
+                    Vector2d.length displacement
+
                 numTurns =
                     Quantity.ratio givenSweptAngle twoPi
 
@@ -277,8 +280,12 @@ sweptAround givenCenterPoint givenSweptAngle givenStartPoint =
         displacement =
             Vector2d.from givenStartPoint givenCenterPoint
     in
-    case Vector2d.lengthAndDirection displacement of
-        Just ( computedRadius, yDirection ) ->
+    case Vector2d.direction displacement of
+        Just yDirection ->
+            let
+                computedRadius =
+                    Vector2d.length displacement
+            in
             Types.Arc2d
                 { startPoint = givenStartPoint
                 , xDirection = yDirection |> Direction2d.rotateClockwise

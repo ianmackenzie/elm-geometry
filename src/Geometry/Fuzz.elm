@@ -144,17 +144,12 @@ direction3d =
             let
                 r =
                     Angle.sin phi
-
-                x =
-                    r * Angle.cos theta
-
-                y =
-                    r * Angle.sin theta
-
-                z =
-                    Angle.cos phi
             in
-            Direction3d.unsafeFromComponents x y z
+            Direction3d.unsafe
+                { x = r * Angle.cos theta
+                , y = r * Angle.sin theta
+                , z = Angle.cos phi
+                }
     in
     Fuzz.map2 toDirection phiFuzzer thetaFuzzer
 
