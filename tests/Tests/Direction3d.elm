@@ -5,6 +5,7 @@ module Tests.Direction3d exposing
     , orthonormalizingCoplanarVectorsReturnsNothing
     , perpendicularDirectionIsPerpendicular
     , perpendicularDirectionIsValid
+    , projectionIntoSketchPlaneWorksProperly
     )
 
 import Angle
@@ -16,7 +17,8 @@ import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Length exposing (meters)
 import Point3d
-import Quantity
+import Quantity exposing (Quantity(..))
+import SketchPlane3d
 import Test exposing (Test)
 import Vector3d
 import Volume exposing (cubicMeters)
@@ -142,4 +144,54 @@ perpendicularDirectionIsValid =
         (\direction ->
             Direction3d.perpendicularTo direction
                 |> Expect.validDirection3d
+        )
+
+
+projectionIntoSketchPlaneWorksProperly : Test
+projectionIntoSketchPlaneWorksProperly =
+    Test.fuzz2
+        Fuzz.direction3d
+        Fuzz.sketchPlane3d
+        "Projecting a direction into a sketch plane works properly"
+        (\direction sketchPlane ->
+            let
+                normalDirection =
+                    SketchPlane3d.normalDirection sketchPlane
+
+                normalComponent =
+                    Direction3d.componentIn normalDirection direction
+            in
+            case Direction3d.projectInto sketchPlane direction of
+                Just direction2d ->
+                    let
+                        direction3d =
+                            Direction3d.on sketchPlane direction2d
+                    in
+                    if abs normalComponent > 1.0e-6 then
+                        let
+                            crossProduct =
+                                Direction3d.toVector direction
+                                    |> Vector3d.cross
+                                        (Direction3d.toVector direction3d)
+
+                            (Quantity error) =
+                                crossProduct
+                                    |> Vector3d.componentIn normalDirection
+                        in
+                        error |> Expect.float 0
+
+                    else if abs normalComponent < 1.0e-13 then
+                        direction3d |> Expect.direction3d direction
+
+                    else
+                        Expect.pass
+
+                Nothing ->
+                    if normalComponent > 0 then
+                        direction |> Expect.direction3d normalDirection
+
+                    else
+                        direction
+                            |> Expect.direction3d
+                                (Direction3d.reverse normalDirection)
         )
