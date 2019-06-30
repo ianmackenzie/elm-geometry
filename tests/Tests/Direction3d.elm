@@ -3,6 +3,8 @@ module Tests.Direction3d exposing
     , orthonormalizeFollowsOriginalVectors
     , orthonormalizeProducesValidFrameBasis
     , orthonormalizingCoplanarVectorsReturnsNothing
+    , perpendicularDirectionIsPerpendicular
+    , perpendicularDirectionIsValid
     )
 
 import Angle
@@ -119,4 +121,25 @@ orthonormalizingCoplanarVectorsReturnsNothing =
                     Vector3d.fromTuple meters ( -1, 2, 0 )
             in
             Expect.equal Nothing (Direction3d.orthonormalize v1 v2 v3)
+        )
+
+
+perpendicularDirectionIsPerpendicular : Test
+perpendicularDirectionIsPerpendicular =
+    Test.fuzz Fuzz.direction3d
+        "perpendicularTo returns a perpendicular direction"
+        (\direction ->
+            Direction3d.perpendicularTo direction
+                |> Direction3d.componentIn direction
+                |> Expect.float 0
+        )
+
+
+perpendicularDirectionIsValid : Test
+perpendicularDirectionIsValid =
+    Test.fuzz Fuzz.direction3d
+        "perpendicularTo returns a valid direction"
+        (\direction ->
+            Direction3d.perpendicularTo direction
+                |> Expect.validDirection3d
         )
