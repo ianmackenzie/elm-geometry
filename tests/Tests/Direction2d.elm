@@ -1,6 +1,7 @@
 module Tests.Direction2d exposing
     ( angleFromAndEqualWithinAreConsistent
     , angleFromAndRotateByAreConsistent
+    , fromAngleIsConsistentWithAngleFrom
     , orthonormalizeProducesValidFrameBasis
     , orthonormalizingParallelVectorsReturnsNothing
     , perpendicularToIsConsistentWithRotateBy
@@ -129,4 +130,16 @@ rotateCounterclockwiseIsConsistentWithRotateBy =
             Direction2d.rotateCounterclockwise direction
                 |> Expect.direction2d
                     (Direction2d.rotateBy (Angle.degrees 90) direction)
+        )
+
+
+fromAngleIsConsistentWithAngleFrom : Test
+fromAngleIsConsistentWithAngleFrom =
+    Test.fuzz Fuzz.direction2d
+        "fromAngle is consistent with angleFrom"
+        (\direction ->
+            direction
+                |> Direction2d.angleFrom Direction2d.x
+                |> Direction2d.fromAngle
+                |> Expect.direction2d direction
         )
