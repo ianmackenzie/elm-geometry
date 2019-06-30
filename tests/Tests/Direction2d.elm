@@ -1,15 +1,22 @@
 module Tests.Direction2d exposing
     ( angleFromAndEqualWithinAreConsistent
     , angleFromAndRotateByAreConsistent
+    , equalWithin
     , fromAngleIsConsistentWithAngleFrom
+    , mirrorNegatesAngleFromAxis
+    , mirrorTwiceIsIdentity
     , orthonormalizeProducesValidFrameBasis
     , orthonormalizingParallelVectorsReturnsNothing
     , perpendicularToIsConsistentWithRotateBy
+    , relativeToAndPlaceInAreInverses
     , rotateClockwiseIsConsistentWithRotateBy
     , rotateCounterclockwiseIsConsistentWithRotateBy
+    , xComponentIsConsistentWithComponentIn
+    , yComponentIsConsistentWithComponentIn
     )
 
 import Angle
+import Axis2d
 import Direction2d
 import Expect
 import Frame2d
@@ -148,4 +155,127 @@ fromAngleIsConsistentWithToAngle =
         "fromAngle is consistent with toAngle"
         (Expect.roundTrip Expect.direction2d
             (Direction2d.toAngle >> Direction2d.fromAngle)
+        )
+
+
+xComponentIsConsistentWithComponentIn : Test
+xComponentIsConsistentWithComponentIn =
+    Test.fuzz Fuzz.direction2d
+        "xComponent is consistent with componentIn"
+        (\direction ->
+            Direction2d.xComponent direction
+                |> Expect.float
+                    (Direction2d.componentIn Direction2d.x direction)
+        )
+
+
+yComponentIsConsistentWithComponentIn : Test
+yComponentIsConsistentWithComponentIn =
+    Test.fuzz Fuzz.direction2d
+        "yComponent is consistent with componentIn"
+        (\direction ->
+            Direction2d.yComponent direction
+                |> Expect.float
+                    (Direction2d.componentIn Direction2d.y direction)
+        )
+
+
+equalWithin : Test
+equalWithin =
+    Test.describe "equalWithin"
+        [ Test.fuzz Fuzz.direction2d
+            "Rotation by 2 degrees"
+            (\direction ->
+                Direction2d.rotateBy (Angle.degrees 2) direction
+                    |> Expect.all
+                        [ Direction2d.equalWithin (Angle.degrees 3) direction
+                            >> Expect.equal True
+                        , Direction2d.equalWithin (Angle.degrees 1) direction
+                            >> Expect.equal False
+                        ]
+            )
+        , Test.fuzz Fuzz.direction2d
+            "Rotation by 90 degrees"
+            (\direction ->
+                Direction2d.rotateBy (Angle.degrees 90) direction
+                    |> Expect.all
+                        [ Direction2d.equalWithin (Angle.degrees 91) direction
+                            >> Expect.equal True
+                        , Direction2d.equalWithin (Angle.degrees 89) direction
+                            >> Expect.equal False
+                        ]
+            )
+        , Test.fuzz Fuzz.direction2d
+            "Rotation by 178 degrees"
+            (\direction ->
+                Direction2d.rotateBy (Angle.degrees 178) direction
+                    |> Expect.all
+                        [ Direction2d.equalWithin (Angle.degrees 179) direction
+                            >> Expect.equal True
+                        , Direction2d.equalWithin (Angle.degrees 177) direction
+                            >> Expect.equal False
+                        ]
+            )
+        , Test.fuzz2
+            Fuzz.direction2d
+            Fuzz.direction2d
+            "All directions are equal within 180 degrees"
+            (\firstDirection secondDirection ->
+                Direction2d.equalWithin (Angle.degrees 180.000001)
+                    firstDirection
+                    secondDirection
+                    |> Expect.equal True
+            )
+        ]
+
+
+mirrorTwiceIsIdentity : Test
+mirrorTwiceIsIdentity =
+    Test.fuzz2
+        Fuzz.direction2d
+        Fuzz.axis2d
+        "Mirroring twice returns the original direction"
+        (\direction axis ->
+            direction
+                |> Direction2d.mirrorAcross axis
+                |> Direction2d.mirrorAcross axis
+                |> Expect.direction2d direction
+        )
+
+
+mirrorNegatesAngleFromAxis : Test
+mirrorNegatesAngleFromAxis =
+    Test.fuzz2
+        Fuzz.direction2d
+        Fuzz.axis2d
+        "Mirroring negates angle from axis"
+        (\direction axis ->
+            let
+                axisDirection =
+                    Axis2d.direction axis
+
+                mirroredDirection =
+                    direction |> Direction2d.mirrorAcross axis
+
+                originalAngle =
+                    direction |> Direction2d.angleFrom axisDirection
+
+                mirroredAngle =
+                    mirroredDirection |> Direction2d.angleFrom axisDirection
+            in
+            mirroredAngle |> Expect.angle (Quantity.negate originalAngle)
+        )
+
+
+relativeToAndPlaceInAreInverses : Test
+relativeToAndPlaceInAreInverses =
+    Test.fuzz2
+        Fuzz.direction2d
+        Fuzz.frame2d
+        "relativeTo and placeIn are inverses"
+        (\direction frame ->
+            direction
+                |> Direction2d.relativeTo frame
+                |> Direction2d.placeIn frame
+                |> Expect.direction2d direction
         )
