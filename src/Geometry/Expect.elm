@@ -29,6 +29,7 @@ module Geometry.Expect exposing
     , direction3d
     , direction3dWithin
     , expect
+    , float
     , frame2d
     , frame3d
     , just
@@ -193,6 +194,13 @@ quantityWithin (Quantity tolerance) (Quantity first) (Quantity second) =
 
 approximately : Quantity Float units -> Quantity Float units -> Expectation
 approximately (Quantity first) (Quantity second) =
+    Expect.within (Expect.AbsoluteOrRelative defaultTolerance defaultTolerance)
+        first
+        second
+
+
+float : Float -> Float -> Expectation
+float first second =
     Expect.within (Expect.AbsoluteOrRelative defaultTolerance defaultTolerance)
         first
         second
