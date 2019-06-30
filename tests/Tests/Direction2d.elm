@@ -140,4 +140,12 @@ fromAngleIsConsistentWithAngleFrom =
         (Expect.roundTrip Expect.direction2d
             (Direction2d.angleFrom Direction2d.x >> Direction2d.fromAngle)
         )
+
+
+fromAngleIsConsistentWithToAngle : Test
+fromAngleIsConsistentWithToAngle =
+    Test.fuzz Fuzz.direction2d
+        "fromAngle is consistent with toAngle"
+        (Expect.roundTrip Expect.direction2d
+            (Direction2d.toAngle >> Direction2d.fromAngle)
         )
