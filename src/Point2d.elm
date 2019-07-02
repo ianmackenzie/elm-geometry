@@ -458,66 +458,79 @@ collinear, returns `Nothing`.
 
 -}
 circumcenter : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Maybe (Point2d units coordinates)
-circumcenter (Types.Point2d p1) (Types.Point2d p2) (Types.Point2d p3) =
+circumcenter p1 p2 p3 =
     let
-        ax =
-            p2.x - p1.x
+        (Quantity a) =
+            distanceFrom p1 p2
 
-        ay =
-            p2.y - p1.y
+        (Quantity b) =
+            distanceFrom p2 p3
 
-        bx =
-            p3.x - p2.x
-
-        by =
-            p3.y - p2.y
-
-        cx =
-            p1.x - p3.x
-
-        cy =
-            p1.y - p3.y
-
-        a2 =
-            ax * ax + ay * ay
-
-        b2 =
-            bx * bx + by * by
-
-        c2 =
-            cx * cx + cy * cy
-
-        t1 =
-            a2 * (b2 + c2 - a2)
-
-        t2 =
-            b2 * (c2 + a2 - b2)
-
-        t3 =
-            c2 * (a2 + b2 - c2)
-
-        sum =
-            t1 + t2 + t3
+        (Quantity c) =
+            distanceFrom p3 p1
     in
-    if sum == 0 then
+    if a >= b then
+        if a >= c then
+            circumenterHelp p1 p2 p3 a b c
+
+        else
+            circumenterHelp p3 p1 p2 c a b
+
+    else if b >= c then
+        circumenterHelp p2 p3 p1 b c a
+
+    else
+        circumenterHelp p3 p1 p2 c a b
+
+
+circumenterHelp : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Float -> Float -> Float -> Maybe (Point2d units coordinates)
+circumenterHelp (Types.Point2d p1) (Types.Point2d p2) (Types.Point2d p3) a b c =
+    let
+        bc =
+            b * c
+    in
+    if bc == 0 then
         Nothing
 
     else
         let
-            w1 =
-                t1 / sum
+            bx =
+                p3.x - p2.x
 
-            w2 =
-                t2 / sum
+            by =
+                p3.y - p2.y
 
-            w3 =
-                t3 / sum
+            cx =
+                p1.x - p3.x
+
+            cy =
+                p1.y - p3.y
+
+            sinA =
+                (bx * cy - by * cx) / bc
         in
-        Just <|
-            Types.Point2d
-                { x = w1 * p3.x + w2 * p1.x + w3 * p2.x
-                , y = w1 * p3.y + w2 * p1.y + w3 * p2.y
-                }
+        if sinA == 0 then
+            Nothing
+
+        else
+            let
+                ax =
+                    p2.x - p1.x
+
+                ay =
+                    p2.y - p1.y
+
+                cosA =
+                    (bx * cx + by * cy) / bc
+
+                scale =
+                    cosA / (2 * sinA)
+            in
+            Just <|
+                Types.Point2d
+                    { x = p1.x + 0.5 * ax + scale * ay
+                    , y = p1.y + 0.5 * ay - scale * ax
+                    }
 
 
 {-| Construct a `Point2d` from a tuple of `Float` values, by specifying what units those values are

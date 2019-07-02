@@ -1,5 +1,6 @@
 module Tests.Point2d exposing
-    ( interpolationReturnsExactEndpoints
+    ( circumcenterIsValidOrNothing
+    , interpolationReturnsExactEndpoints
     , midpointIsEquidistant
     , projectionOntoAxisPreservesDistance
     , rotationPreservesDistance
@@ -11,7 +12,9 @@ import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Point2d
+import Quantity exposing (zero)
 import Test exposing (Test)
+import Triangle2d
 import Vector2d
 
 
@@ -102,4 +105,30 @@ translateByAndInAreConsistent =
             point
                 |> Point2d.translateIn direction distance
                 |> Expect.point2d (Point2d.translateBy displacement point)
+        )
+
+
+circumcenterIsValidOrNothing : Test
+circumcenterIsValidOrNothing =
+    Test.fuzz3
+        Fuzz.point2d
+        Fuzz.point2d
+        Fuzz.point2d
+        "The circumcenter of three points is either Nothing or is equidistant from each point"
+        (\p1 p2 p3 ->
+            case Point2d.circumcenter p1 p2 p3 of
+                Nothing ->
+                    Triangle2d.area (Triangle2d.fromVertices p1 p2 p3)
+                        |> Expect.approximately zero
+
+                Just p0 ->
+                    let
+                        r1 =
+                            p0 |> Point2d.distanceFrom p1
+                    in
+                    p0
+                        |> Expect.all
+                            [ Point2d.distanceFrom p2 >> Expect.approximately r1
+                            , Point2d.distanceFrom p3 >> Expect.approximately r1
+                            ]
         )

@@ -1,5 +1,6 @@
 module Tests.Point3d exposing
-    ( interpolationReturnsExactEndpoints
+    ( circumcenterIsValidOrNothing
+    , interpolationReturnsExactEndpoints
     , midpointIsEquidistant
     , mirrorFlipsSignedDistance
     , projectIntoResultsInPerpendicularVector
@@ -20,6 +21,7 @@ import Point3d
 import Quantity exposing (zero)
 import SketchPlane3d
 import Test exposing (Test)
+import Triangle3d
 import Vector3d
 
 
@@ -197,4 +199,39 @@ projectIntoResultsInPerpendicularVector =
                     [ Vector3d.componentIn xDirection >> Expect.approximately zero
                     , Vector3d.componentIn yDirection >> Expect.approximately zero
                     ]
+        )
+
+
+circumcenterIsValidOrNothing : Test
+circumcenterIsValidOrNothing =
+    Test.fuzz3
+        Fuzz.point3d
+        Fuzz.point3d
+        Fuzz.point3d
+        "The circumcenter of three points is either Nothing or is equidistant from each point"
+        (\p1 p2 p3 ->
+            case Point3d.circumcenter p1 p2 p3 of
+                Nothing ->
+                    Triangle3d.area (Triangle3d.fromVertices p1 p2 p3)
+                        |> Expect.approximately zero
+
+                Just p0 ->
+                    case Plane3d.throughPoints p1 p2 p3 of
+                        Just plane ->
+                            let
+                                r1 =
+                                    p0 |> Point3d.distanceFrom p1
+                            in
+                            p0
+                                |> Expect.all
+                                    [ Point3d.distanceFrom p2
+                                        >> Expect.approximately r1
+                                    , Point3d.distanceFrom p3
+                                        >> Expect.approximately r1
+                                    , Point3d.signedDistanceFrom plane
+                                        >> Expect.approximately zero
+                                    ]
+
+                        Nothing ->
+                            Expect.fail "Three points have a circumcenter but no plane through them"
         )
