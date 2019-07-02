@@ -10,6 +10,7 @@
 module Point3d exposing
     ( Point3d
     , origin
+    , meters, pixels
     , xyz, xyzIn, midpoint, interpolateFrom, along, on, xyOn, rThetaOn, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
     , xCoordinate, yCoordinate, zCoordinate, xCoordinateIn, yCoordinateIn, zCoordinateIn
@@ -40,6 +41,11 @@ like you can add two vectors.
 # Constants
 
 @docs origin
+
+
+# Literals
+
+@docs meters, pixels
 
 
 # Constructors
@@ -92,6 +98,8 @@ import Angle exposing (Angle)
 import Direction3d exposing (Direction3d)
 import Float.Extra as Float
 import Geometry.Types as Types exposing (Axis3d, Frame3d, Plane3d, SketchPlane3d)
+import Length exposing (Meters)
+import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
 import Quantity exposing (Quantity(..), Squared, Unitless)
 import Quantity.Extra as Quantity
@@ -126,6 +134,28 @@ origin =
 -}
 xyz : Quantity Float units -> Quantity Float units -> Quantity Float units -> Point3d units coordinates
 xyz (Quantity x) (Quantity y) (Quantity z) =
+    Types.Point3d
+        { x = x
+        , y = y
+        , z = z
+        }
+
+
+{-| TODO
+-}
+meters : Float -> Float -> Float -> Point3d Meters coordinates
+meters x y z =
+    Types.Point3d
+        { x = x
+        , y = y
+        , z = z
+        }
+
+
+{-| TODO
+-}
+pixels : Float -> Float -> Float -> Point3d Pixels coordinates
+pixels x y z =
     Types.Point3d
         { x = x
         , y = y

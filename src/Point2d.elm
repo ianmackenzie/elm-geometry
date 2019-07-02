@@ -10,6 +10,7 @@
 module Point2d exposing
     ( Point2d
     , origin
+    , meters, pixels
     , xy, xyIn, rTheta, rThetaIn, midpoint, interpolateFrom, along, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
     , at, at_
@@ -40,6 +41,11 @@ like you can add two vectors.
 # Constants
 
 @docs origin
+
+
+# Literals
+
+@docs meters, pixels
 
 
 # Constructors
@@ -97,6 +103,8 @@ import Angle exposing (Angle)
 import Direction2d exposing (Direction2d)
 import Float.Extra as Float
 import Geometry.Types as Types exposing (Axis2d, Frame2d)
+import Length exposing (Meters)
+import Pixels exposing (Pixels)
 import Quantity exposing (Quantity(..), Rate, Squared, Unitless)
 import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
@@ -126,6 +134,20 @@ origin =
 -}
 xy : Quantity Float units -> Quantity Float units -> Point2d units coordinates
 xy (Quantity x) (Quantity y) =
+    Types.Point2d { x = x, y = y }
+
+
+{-| TODO
+-}
+meters : Float -> Float -> Point2d Meters coordinates
+meters x y =
+    Types.Point2d { x = x, y = y }
+
+
+{-| TODO
+-}
+pixels : Float -> Float -> Point2d Pixels coordinates
+pixels x y =
     Types.Point2d { x = x, y = y }
 
 
