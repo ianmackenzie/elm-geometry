@@ -17,6 +17,7 @@ module Vector3d exposing
     , plus, minus, dot, cross
     , reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
     , relativeTo, placeIn, projectInto
+    , unsafe, unwrap
     )
 
 {-| A `Vector3d` represents a quantity such as a displacement or velocity in 3D,
@@ -101,6 +102,11 @@ global XYZ frame:
 
 @docs relativeTo, placeIn, projectInto
 
+
+# Advanced
+
+@docs unsafe, unwrap
+
 -}
 
 import Angle exposing (Angle)
@@ -114,6 +120,20 @@ import Vector2d exposing (Vector2d)
 {-| -}
 type alias Vector3d units coordinates =
     Types.Vector3d units coordinates
+
+
+{-| TODO
+-}
+unsafe : { x : Float, y : Float, z : Float } -> Vector3d units coordinates
+unsafe components =
+    Types.Vector3d components
+
+
+{-| TODO
+-}
+unwrap : Vector3d units coordinates -> { x : Float, y : Float, z : Float }
+unwrap (Types.Vector3d components) =
+    components
 
 
 {-| The zero vector.

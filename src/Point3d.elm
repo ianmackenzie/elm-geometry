@@ -19,6 +19,7 @@ module Point3d exposing
     , centroid, centroidOf, centroid3, centroid4, centroidN
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectOntoAxis
     , relativeTo, placeIn, projectInto
+    , unsafe, unwrap
     )
 
 {-| A `Point3d` represents a position in 3D space and is defined by its X, Y and
@@ -92,6 +93,11 @@ coordinates.
 
 @docs relativeTo, placeIn, projectInto
 
+
+# Advanced
+
+@docs unsafe, unwrap
+
 -}
 
 import Angle exposing (Angle)
@@ -109,6 +115,20 @@ import Vector3d exposing (Vector3d)
 {-| -}
 type alias Point3d units coordinates =
     Types.Point3d units coordinates
+
+
+{-| TODO
+-}
+unsafe : { x : Float, y : Float, z : Float } -> Point3d units coordinates
+unsafe coordinates =
+    Types.Point3d coordinates
+
+
+{-| TODO
+-}
+unwrap : Point3d units coordinates -> { x : Float, y : Float, z : Float }
+unwrap (Types.Point3d coordinates) =
+    coordinates
 
 
 {-| The point (0, 0, 0).

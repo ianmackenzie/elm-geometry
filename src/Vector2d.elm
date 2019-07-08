@@ -19,6 +19,7 @@ module Vector2d exposing
     , plus, minus, dot, cross
     , reverse, normalize, scaleBy, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
     , relativeTo, placeIn
+    , unsafe, unwrap
     )
 
 {-| A `Vector2d` represents a quantity such as a displacement or velocity in 2D,
@@ -110,6 +111,11 @@ For the examples, assume the following frame has been defined:
 
 @docs relativeTo, placeIn
 
+
+# Advanced
+
+@docs unsafe, unwrap
+
 -}
 
 import Angle exposing (Angle)
@@ -122,6 +128,20 @@ import Quantity.Extra as Quantity
 {-| -}
 type alias Vector2d units coordinates =
     Types.Vector2d units coordinates
+
+
+{-| TODO
+-}
+unsafe : { x : Float, y : Float } -> Vector2d units coordinates
+unsafe components =
+    Types.Vector2d components
+
+
+{-| TODO
+-}
+unwrap : Vector2d units coordinates -> { x : Float, y : Float }
+unwrap (Types.Vector2d components) =
+    components
 
 
 {-| The zero vector.

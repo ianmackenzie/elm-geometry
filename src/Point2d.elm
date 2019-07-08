@@ -20,6 +20,7 @@ module Point2d exposing
     , centroid, centroidOf, centroid3, centroid4, centroidN
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
     , relativeTo, placeIn
+    , unsafe, unwrap
     )
 
 {-| A `Point2d` represents a position in 2D space and is defined by its X and Y
@@ -97,6 +98,11 @@ coordinates.
 
 @docs relativeTo, placeIn
 
+
+# Advanced
+
+@docs unsafe, unwrap
+
 -}
 
 import Angle exposing (Angle)
@@ -113,6 +119,20 @@ import Vector2d exposing (Vector2d)
 {-| -}
 type alias Point2d units coordinates =
     Types.Point2d units coordinates
+
+
+{-| TODO
+-}
+unsafe : { x : Float, y : Float } -> Point2d units coordinates
+unsafe coordinates =
+    Types.Point2d coordinates
+
+
+{-| TODO
+-}
+unwrap : Point2d units coordinates -> { x : Float, y : Float }
+unwrap (Types.Point2d coordinates) =
+    coordinates
 
 
 {-| The point (0, 0).
