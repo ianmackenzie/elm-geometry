@@ -93,28 +93,28 @@ type Plane3d units coordinates
     = Plane3d { originPoint : Point3d units coordinates, normalDirection : Direction3d coordinates }
 
 
-type Frame2d units coordinates1 coordinates2
+type Frame2d units coordinates defines
     = Frame2d
-        { originPoint : Point2d units coordinates1
-        , xDirection : Direction2d coordinates1
-        , yDirection : Direction2d coordinates1
+        { originPoint : Point2d units coordinates
+        , xDirection : Direction2d coordinates
+        , yDirection : Direction2d coordinates
         }
 
 
-type Frame3d units coordinates1 coordinates2
+type Frame3d units coordinates defines
     = Frame3d
-        { originPoint : Point3d units coordinates1
-        , xDirection : Direction3d coordinates1
-        , yDirection : Direction3d coordinates1
-        , zDirection : Direction3d coordinates1
+        { originPoint : Point3d units coordinates
+        , xDirection : Direction3d coordinates
+        , yDirection : Direction3d coordinates
+        , zDirection : Direction3d coordinates
         }
 
 
-type SketchPlane3d units coordinates1 coordinates2
+type SketchPlane3d units coordinates defines
     = SketchPlane3d
-        { originPoint : Point3d units coordinates1
-        , xDirection : Direction3d coordinates1
-        , yDirection : Direction3d coordinates1
+        { originPoint : Point3d units coordinates
+        , xDirection : Direction3d coordinates
+        , yDirection : Direction3d coordinates
         }
 
 
@@ -160,14 +160,14 @@ type RectangleCoordinates
 
 type Rectangle2d units coordinates
     = Rectangle2d
-        { axes : Frame2d units coordinates RectangleCoordinates
+        { axes : Frame2d units coordinates { defines : RectangleCoordinates }
         , dimensions : ( Quantity Float units, Quantity Float units )
         }
 
 
 type Rectangle3d units coordinates
     = Rectangle3d
-        { axes : SketchPlane3d units coordinates RectangleCoordinates
+        { axes : SketchPlane3d units coordinates { defines : RectangleCoordinates }
         , dimensions : ( Quantity Float units, Quantity Float units )
         }
 
@@ -178,7 +178,7 @@ type BlockCoordinates
 
 type Block3d units coordinates
     = Block3d
-        { axes : Frame3d units coordinates BlockCoordinates
+        { axes : Frame3d units coordinates { defines : BlockCoordinates }
         , dimensions : ( Quantity Float units, Quantity Float units, Quantity Float units )
         }
 
@@ -219,7 +219,7 @@ type EllipseCoordinates
 
 type Ellipse2d units coordinates
     = Ellipse2d
-        { axes : Frame2d units coordinates EllipseCoordinates
+        { axes : Frame2d units coordinates { defines : EllipseCoordinates }
         , xRadius : Quantity Float units
         , yRadius : Quantity Float units
         }

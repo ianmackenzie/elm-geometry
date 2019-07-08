@@ -371,7 +371,7 @@ along (Types.Axis2d axis) (Quantity distance) =
     --> Point2d.fromCoordinates ( 1.4142, 1.4142 )
 
 -}
-xyIn : Frame2d units globalCoordinates localCoordinates -> Quantity Float units -> Quantity Float units -> Point2d units globalCoordinates
+xyIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Quantity Float units -> Quantity Float units -> Point2d units globalCoordinates
 xyIn (Types.Frame2d frame) (Quantity x) (Quantity y) =
     let
         (Types.Point2d p0) =
@@ -400,7 +400,7 @@ frame:
     --> Point2d.fromCoordinates ( 3.4142, 2.4142 )
 
 -}
-rThetaIn : Frame2d units globalCoordinates localCoordinates -> Quantity Float units -> Angle -> Point2d units globalCoordinates
+rThetaIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Quantity Float units -> Angle -> Point2d units globalCoordinates
 rThetaIn (Types.Frame2d frame) (Quantity r) (Quantity theta) =
     let
         (Types.Point2d p0) =
@@ -655,7 +655,7 @@ at_ (Quantity rate) (Types.Point2d p) =
 
 {-| TODO
 -}
-xCoordinateIn : Frame2d units globalCoordinates localCoordinates -> Point2d units globalCoordinates -> Quantity Float units
+xCoordinateIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Point2d units globalCoordinates -> Quantity Float units
 xCoordinateIn (Types.Frame2d frame) (Types.Point2d p) =
     let
         (Types.Point2d p0) =
@@ -669,7 +669,7 @@ xCoordinateIn (Types.Frame2d frame) (Types.Point2d p) =
 
 {-| TODO
 -}
-yCoordinateIn : Frame2d units globalCoordinates localCoordinates -> Point2d units globalCoordinates -> Quantity Float units
+yCoordinateIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Point2d units globalCoordinates -> Quantity Float units
 yCoordinateIn (Types.Frame2d frame) (Types.Point2d p) =
     let
         (Types.Point2d p0) =
@@ -1106,7 +1106,10 @@ coordinates relative to a given reference frame.
     --> Point2d.fromCoordinates ( 0, -1 )
 
 -}
-relativeTo : Frame2d units globalCoordinates localCoordinates -> Point2d units globalCoordinates -> Point2d units localCoordinates
+relativeTo :
+    Frame2d units globalCoordinates { defines : localCoordinates }
+    -> Point2d units globalCoordinates
+    -> Point2d units localCoordinates
 relativeTo (Types.Frame2d frame) (Types.Point2d p) =
     let
         (Types.Point2d p0) =
@@ -1145,7 +1148,10 @@ frame, and return that point expressed in global coordinates.
     --> Point2d.fromCoordinates ( 1, 1 )
 
 -}
-placeIn : Frame2d units globalCoordinates localCoordinates -> Point2d units localCoordinates -> Point2d units globalCoordinates
+placeIn :
+    Frame2d units globalCoordinates { defines : localCoordinates }
+    -> Point2d units localCoordinates
+    -> Point2d units globalCoordinates
 placeIn (Types.Frame2d frame) (Types.Point2d p) =
     let
         (Types.Point2d p0) =

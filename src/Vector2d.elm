@@ -162,7 +162,7 @@ xy (Quantity x) (Quantity y) =
     -->     )
 
 -}
-xyIn : Frame2d units globalCoordinates localCoordinates -> Quantity Float units -> Quantity Float units -> Vector2d units globalCoordinates
+xyIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Quantity Float units -> Quantity Float units -> Vector2d units globalCoordinates
 xyIn (Types.Frame2d frame) (Quantity x) (Quantity y) =
     let
         (Types.Direction2d i) =
@@ -209,7 +209,7 @@ frame:
     -->     )
 
 -}
-rThetaIn : Frame2d units globalCoordinates localCoordinates -> Quantity Float units -> Angle -> Vector2d units globalCoordinates
+rThetaIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Quantity Float units -> Angle -> Vector2d units globalCoordinates
 rThetaIn (Types.Frame2d frame) (Quantity r) (Quantity theta) =
     let
         (Types.Direction2d i) =
@@ -1028,7 +1028,7 @@ local coordinates relative to a given reference frame.
     --> Vector2d.fromComponents ( 1.732, -1 )
 
 -}
-relativeTo : Frame2d frameUnits globalCoordinates localCoordinates -> Vector2d units globalCoordinates -> Vector2d units localCoordinates
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Vector2d units globalCoordinates -> Vector2d units localCoordinates
 relativeTo (Types.Frame2d frame) (Types.Vector2d v) =
     let
         (Types.Direction2d dx) =
@@ -1051,7 +1051,7 @@ frame, and return that vector expressed in global coordinates.
     --> Vector2d.fromComponents ( 1.732, 1 )
 
 -}
-placeIn : Frame2d frameUnits globalCoordinates localCoordinates -> Vector2d units localCoordinates -> Vector2d units globalCoordinates
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Vector2d units localCoordinates -> Vector2d units globalCoordinates
 placeIn (Types.Frame2d frame) (Types.Vector2d v) =
     let
         (Types.Direction2d dx) =

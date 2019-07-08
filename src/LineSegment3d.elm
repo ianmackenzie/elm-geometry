@@ -141,7 +141,7 @@ segment specified in XY coordinates _within_ the sketch plane.
     -->     )
 
 -}
-on : SketchPlane3d units coordinates3d coordinates2d -> LineSegment2d units coordinates2d -> LineSegment3d units coordinates3d
+on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> LineSegment2d units coordinates2d -> LineSegment3d units coordinates3d
 on sketchPlane lineSegment2d =
     let
         ( p1, p2 ) =
@@ -428,7 +428,7 @@ in local coordinates relative to a given reference frame.
     -->     )
 
 -}
-relativeTo : Frame3d units globalCoordinates localCoordinates -> LineSegment3d units globalCoordinates -> LineSegment3d units localCoordinates
+relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> LineSegment3d units globalCoordinates -> LineSegment3d units localCoordinates
 relativeTo frame lineSegment =
     mapEndpoints (Point3d.relativeTo frame) lineSegment
 
@@ -448,7 +448,7 @@ coordinates.
     -->     )
 
 -}
-placeIn : Frame3d units globalCoordinates localCoordinates -> LineSegment3d units localCoordinates -> LineSegment3d units globalCoordinates
+placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> LineSegment3d units localCoordinates -> LineSegment3d units globalCoordinates
 placeIn frame lineSegment =
     mapEndpoints (Point3d.placeIn frame) lineSegment
 
@@ -480,7 +480,7 @@ in 2D sketch coordinates.
     -->     )
 
 -}
-projectInto : SketchPlane3d units coordinates3d coordinates2d -> LineSegment3d units coordinates3d -> LineSegment2d units coordinates2d
+projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> LineSegment3d units coordinates3d -> LineSegment2d units coordinates2d
 projectInto sketchPlane lineSegment =
     let
         ( p1, p2 ) =

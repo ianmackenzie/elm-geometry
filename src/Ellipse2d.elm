@@ -125,7 +125,7 @@ centerPoint ellipse =
     -->     (Point2d.fromCoordinates ( 10, 10 ))
 
 -}
-axes : Ellipse2d units coordinates -> Frame2d units coordinates EllipseCoordinates
+axes : Ellipse2d units coordinates -> Frame2d units coordinates { defines : EllipseCoordinates }
 axes (Types.Ellipse2d ellipse) =
     ellipse.axes
 
@@ -266,7 +266,7 @@ scaleAbout point scale ellipse =
         }
 
 
-transformBy : (Frame2d units coordinates1 EllipseCoordinates -> Frame2d units coordinates2 EllipseCoordinates) -> Ellipse2d units coordinates1 -> Ellipse2d units coordinates2
+transformBy : (Frame2d units coordinates1 { defines : EllipseCoordinates } -> Frame2d units coordinates2 { defines : EllipseCoordinates }) -> Ellipse2d units coordinates1 -> Ellipse2d units coordinates2
 transformBy axesTransformation (Types.Ellipse2d properties) =
     Types.Ellipse2d
         { axes = axesTransformation properties.axes
@@ -371,7 +371,7 @@ local coordinates relative to a given reference frame.
     -->     }
 
 -}
-relativeTo : Frame2d units globalCoordinates localCoordinates -> Ellipse2d units globalCoordinates -> Ellipse2d units localCoordinates
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Ellipse2d units globalCoordinates -> Ellipse2d units localCoordinates
 relativeTo frame ellipse =
     transformBy (Frame2d.relativeTo frame) ellipse
 
@@ -393,6 +393,6 @@ given reference frame, and return that circle expressed in global coordinates.
     -->     }
 
 -}
-placeIn : Frame2d units globalCoordinates localCoordinates -> Ellipse2d units localCoordinates -> Ellipse2d units globalCoordinates
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Ellipse2d units localCoordinates -> Ellipse2d units globalCoordinates
 placeIn frame ellipse =
     transformBy (Frame2d.placeIn frame) ellipse

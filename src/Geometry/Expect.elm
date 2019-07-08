@@ -411,7 +411,7 @@ plane3d first =
         ]
 
 
-validFrame2d : Frame2d units coordinates1 coordinates2 -> Expectation
+validFrame2d : Frame2d units coordinates defines -> Expectation
 validFrame2d =
     Expect.all
         [ Frame2d.xDirection >> validDirection2d
@@ -440,7 +440,7 @@ validFrame2d =
         ]
 
 
-frame2d : Frame2d units coordinates1 coordinates2 -> Frame2d units coordinates1 coordinates2 -> Expectation
+frame2d : Frame2d units coordinates defines -> Frame2d units coordinates defines -> Expectation
 frame2d first =
     Expect.all
         [ Frame2d.originPoint >> point2d (Frame2d.originPoint first)
@@ -449,7 +449,7 @@ frame2d first =
         ]
 
 
-validFrame3d : Frame3d units coordinates1 coordinates2 -> Expectation
+validFrame3d : Frame3d units coordinates defines -> Expectation
 validFrame3d =
     Expect.all
         [ Frame3d.xDirection >> validDirection3d
@@ -494,7 +494,7 @@ validFrame3d =
         ]
 
 
-frame3d : Frame3d units coordinates1 coordinates2 -> Frame3d units coordinates1 coordinates2 -> Expectation
+frame3d : Frame3d units coordinates defines -> Frame3d units coordinates defines -> Expectation
 frame3d first =
     Expect.all
         [ Frame3d.originPoint >> point3d (Frame3d.originPoint first)
@@ -504,7 +504,7 @@ frame3d first =
         ]
 
 
-sketchPlane3d : SketchPlane3d units coordinates1 coordinates2 -> SketchPlane3d units coordinates1 coordinates2 -> Expectation
+sketchPlane3d : SketchPlane3d units coordinates defines -> SketchPlane3d units coordinates defines -> Expectation
 sketchPlane3d first =
     Expect.all
         [ SketchPlane3d.originPoint
@@ -516,7 +516,7 @@ sketchPlane3d first =
         ]
 
 
-validSketchPlane3d : SketchPlane3d units coordinates3d coordinates2d -> Expectation
+validSketchPlane3d : SketchPlane3d units coordinates defines -> Expectation
 validSketchPlane3d =
     Expect.all
         [ SketchPlane3d.xDirection >> validDirection3d

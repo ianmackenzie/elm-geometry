@@ -396,7 +396,7 @@ The sketch plane can have any position and orientation:
     --> Point3d.fromCoordinates ( 12, 10.7071, 10.7071 )
 
 -}
-on : SketchPlane3d units coordinates3d coordinates2d -> Point2d units coordinates2d -> Point3d units coordinates3d
+on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Point2d units coordinates2d -> Point3d units coordinates3d
 on (Types.SketchPlane3d sketchPlane) (Types.Point2d p) =
     let
         (Types.Point3d p0) =
@@ -435,7 +435,7 @@ plane:
     -->     (meters 1)
 
 -}
-xyOn : SketchPlane3d units coordinates3d coordinates2d -> Quantity Float units -> Quantity Float units -> Point3d units coordinates
+xyOn : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Quantity Float units -> Quantity Float units -> Point3d units coordinates
 xyOn (Types.SketchPlane3d sketchPlane) (Quantity x) (Quantity y) =
     let
         (Types.Point3d p0) =
@@ -456,7 +456,7 @@ xyOn (Types.SketchPlane3d sketchPlane) (Quantity x) (Quantity y) =
 
 {-| TODO
 -}
-rThetaOn : SketchPlane3d units coordinates3d coordinates2d -> Quantity Float units -> Angle -> Point3d units coordinates
+rThetaOn : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Quantity Float units -> Angle -> Point3d units coordinates
 rThetaOn (Types.SketchPlane3d sketchPlane) (Quantity r) (Quantity theta) =
     let
         (Types.Point3d p0) =
@@ -491,7 +491,7 @@ rThetaOn (Types.SketchPlane3d sketchPlane) (Quantity r) (Quantity theta) =
     --> Point3d.fromCoordinates ( 2, 3, 4 )
 
 -}
-xyzIn : Frame3d units globalCoordinates localCoordinates -> Quantity Float units -> Quantity Float units -> Quantity Float units -> Point3d units globalCoordinates
+xyzIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Quantity Float units -> Quantity Float units -> Quantity Float units -> Point3d units globalCoordinates
 xyzIn (Types.Frame3d frame) (Quantity x) (Quantity y) (Quantity z) =
     let
         (Types.Point3d p0) =
@@ -708,7 +708,7 @@ toRecord fromQuantity point =
 
 {-| TODO
 -}
-xCoordinateIn : Frame3d units globalCoordinates localCoordinates -> Point3d units globalCoordinates -> Quantity Float units
+xCoordinateIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Point3d units globalCoordinates -> Quantity Float units
 xCoordinateIn (Types.Frame3d frame) (Types.Point3d p) =
     let
         (Types.Point3d p0) =
@@ -722,7 +722,7 @@ xCoordinateIn (Types.Frame3d frame) (Types.Point3d p) =
 
 {-| TODO
 -}
-yCoordinateIn : Frame3d units globalCoordinates localCoordinates -> Point3d units globalCoordinates -> Quantity Float units
+yCoordinateIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Point3d units globalCoordinates -> Quantity Float units
 yCoordinateIn (Types.Frame3d frame) (Types.Point3d p) =
     let
         (Types.Point3d p0) =
@@ -736,7 +736,7 @@ yCoordinateIn (Types.Frame3d frame) (Types.Point3d p) =
 
 {-| TODO
 -}
-zCoordinateIn : Frame3d units globalCoordinates localCoordinates -> Point3d units globalCoordinates -> Quantity Float units
+zCoordinateIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Point3d units globalCoordinates -> Quantity Float units
 zCoordinateIn (Types.Frame3d frame) (Types.Point3d p) =
     let
         (Types.Point3d p0) =
@@ -1401,7 +1401,7 @@ coordinates relative to a given reference frame.
     --> Point3d.fromCoordinates ( 0, -1, -2 )
 
 -}
-relativeTo : Frame3d units globalCoordinates localCoordinates -> Point3d units globalCoordinates -> Point3d units localCoordinates
+relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Point3d units globalCoordinates -> Point3d units localCoordinates
 relativeTo (Types.Frame3d frame) (Types.Point3d p) =
     let
         (Types.Point3d p0) =
@@ -1448,7 +1448,7 @@ frame, and return that point expressed in global coordinates.
     --> Point3d.fromCoordinates ( 1, 1, 1 )
 
 -}
-placeIn : Frame3d units globalCoordinates localCoordinates -> Point3d units localCoordinates -> Point3d units globalCoordinates
+placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Point3d units localCoordinates -> Point3d units globalCoordinates
 placeIn (Types.Frame3d frame) (Types.Point3d p) =
     let
         (Types.Point3d p0) =
@@ -1488,7 +1488,7 @@ coordinates.
     --> Point2d.fromCoordinates ( 3, 2 )
 
 -}
-projectInto : SketchPlane3d units coordinates coordinates2d -> Point3d units coordinates -> Point2d units coordinates2d
+projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Point3d units coordinates3d -> Point2d units coordinates2d
 projectInto (Types.SketchPlane3d sketchPlane) (Types.Point3d p) =
     let
         (Types.Point3d p0) =

@@ -377,7 +377,7 @@ in local coordinates relative to a given reference frame.
     -->     )
 
 -}
-relativeTo : Frame2d units globalCoordinates localCoordinates -> Triangle2d units globalCoordinates -> Triangle2d units localCoordinates
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Triangle2d units globalCoordinates -> Triangle2d units localCoordinates
 relativeTo frame =
     mapVertices (Point2d.relativeTo frame)
 
@@ -396,7 +396,7 @@ given reference frame, and return that triangle expressed in global coordinates.
     -->     )
 
 -}
-placeIn : Frame2d units globalCoordinates localCoordinates -> Triangle2d units localCoordinates -> Triangle2d units globalCoordinates
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Triangle2d units localCoordinates -> Triangle2d units globalCoordinates
 placeIn frame =
     mapVertices (Point2d.placeIn frame)
 

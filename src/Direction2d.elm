@@ -582,7 +582,10 @@ local coordinates relative to a given reference frame.
     --> Direction2d.fromAngle (degrees 60)
 
 -}
-relativeTo : Frame2d units globalCoordinates localCoordinates -> Direction2d globalCoordinates -> Direction2d localCoordinates
+relativeTo :
+    Frame2d units globalCoordinates { defines : localCoordinates }
+    -> Direction2d globalCoordinates
+    -> Direction2d localCoordinates
 relativeTo (Types.Frame2d frame) (Types.Direction2d d) =
     let
         (Types.Direction2d dx) =
@@ -610,7 +613,10 @@ frame, and return that direction expressed in global coordinates.
     --> Direction2d.fromAngle (degrees 120)
 
 -}
-placeIn : Frame2d units globalCoordinates localCoordinates -> Direction2d localCoordinates -> Direction2d globalCoordinates
+placeIn :
+    Frame2d units globalCoordinates { defines : localCoordinates }
+    -> Direction2d localCoordinates
+    -> Direction2d globalCoordinates
 placeIn (Types.Frame2d frame) (Types.Direction2d d) =
     let
         (Types.Direction2d dx) =

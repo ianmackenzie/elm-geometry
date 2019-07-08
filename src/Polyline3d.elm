@@ -104,7 +104,7 @@ specified in XY coordinates _within_ the sketch plane.
     -->     ]
 
 -}
-on : SketchPlane3d units coordinates3d coordinates2d -> Polyline2d units coordinates2d -> Polyline3d units coordinates3d
+on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Polyline2d units coordinates2d -> Polyline3d units coordinates3d
 on sketchPlane polyline2d =
     Polyline2d.vertices polyline2d
         |> List.map (Point3d.on sketchPlane)
@@ -300,7 +300,7 @@ in local coordinates relative to a given reference frame.
     -->     ]
 
 -}
-relativeTo : Frame3d units globalCoordinates localCoordinates -> Polyline3d units globalCoordinates -> Polyline3d units localCoordinates
+relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Polyline3d units globalCoordinates -> Polyline3d units localCoordinates
 relativeTo frame polyline =
     mapVertices (Point3d.relativeTo frame) polyline
 
@@ -322,7 +322,7 @@ coordinates.
     -->     ]
 
 -}
-placeIn : Frame3d units globalCoordinates localCoordinates -> Polyline3d units localCoordinates -> Polyline3d units globalCoordinates
+placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Polyline3d units localCoordinates -> Polyline3d units globalCoordinates
 placeIn frame polyline =
     mapVertices (Point3d.placeIn frame) polyline
 
@@ -341,7 +341,7 @@ sketch coordinates.
     -->     ]
 
 -}
-projectInto : SketchPlane3d units coordinates3d coordinates2d -> Polyline3d units coordinates3d -> Polyline2d units coordinates2d
+projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Polyline3d units coordinates3d -> Polyline2d units coordinates2d
 projectInto sketchPlane polyline =
     vertices polyline
         |> List.map (Point3d.projectInto sketchPlane)

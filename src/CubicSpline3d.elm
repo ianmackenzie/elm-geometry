@@ -179,7 +179,7 @@ specified in XY coordinates _within_ the sketch plane.
     -->     }
 
 -}
-on : SketchPlane3d units coordinates3d coordinates2d -> CubicSpline2d units coordinates2d -> CubicSpline3d units coordinates3d
+on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> CubicSpline2d units coordinates2d -> CubicSpline3d units coordinates3d
 on sketchPlane spline2d =
     fromControlPoints
         (Point3d.on sketchPlane (CubicSpline2d.firstControlPoint spline2d))
@@ -856,7 +856,7 @@ local coordinates relative to a given reference frame.
     -->     }
 
 -}
-relativeTo : Frame3d units globalCoordinates localCoordinates -> CubicSpline3d units globalCoordinates -> CubicSpline3d units localCoordinates
+relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> CubicSpline3d units globalCoordinates -> CubicSpline3d units localCoordinates
 relativeTo frame spline =
     mapControlPoints (Point3d.relativeTo frame) spline
 
@@ -881,7 +881,7 @@ given reference frame, and return that spline expressed in global coordinates.
     -->     }
 
 -}
-placeIn : Frame3d units globalCoordinates localCoordinates -> CubicSpline3d units localCoordinates -> CubicSpline3d units globalCoordinates
+placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> CubicSpline3d units localCoordinates -> CubicSpline3d units globalCoordinates
 placeIn frame =
     mapControlPoints (Point3d.placeIn frame)
 
@@ -905,7 +905,7 @@ sketch coordinates.
     -->     }
 
 -}
-projectInto : SketchPlane3d units coordinates3d coordinates2d -> CubicSpline3d units coordinates3d -> CubicSpline2d units coordinates2d
+projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> CubicSpline3d units coordinates3d -> CubicSpline2d units coordinates2d
 projectInto sketchPlane spline =
     CubicSpline2d.fromControlPoints
         (Point3d.projectInto sketchPlane (firstControlPoint spline))

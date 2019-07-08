@@ -619,7 +619,7 @@ in local coordinates relative to a given reference frame.
     -->     )
 
 -}
-relativeTo : Frame2d units globalCoordinates localCoordinates -> LineSegment2d units globalCoordinates -> LineSegment2d units localCoordinates
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> LineSegment2d units globalCoordinates -> LineSegment2d units localCoordinates
 relativeTo frame =
     mapEndpoints (Point2d.relativeTo frame)
 
@@ -638,7 +638,7 @@ coordinates.
     -->     )
 
 -}
-placeIn : Frame2d units globalCoordinates localCoordinates -> LineSegment2d units localCoordinates -> LineSegment2d units globalCoordinates
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> LineSegment2d units localCoordinates -> LineSegment2d units globalCoordinates
 placeIn frame =
     mapEndpoints (Point2d.placeIn frame)
 

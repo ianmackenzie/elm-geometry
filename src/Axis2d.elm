@@ -245,7 +245,7 @@ coordinates relative to a given reference frame.
     -->     (Direction2d.fromAngle (degrees 30))
 
 -}
-relativeTo : Frame2d units globalCoordinates localCoordinates -> Axis2d units globalCoordinates -> Axis2d units localCoordinates
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Axis2d units globalCoordinates -> Axis2d units localCoordinates
 relativeTo frame (Types.Axis2d axis) =
     through (Point2d.relativeTo frame axis.originPoint)
         (Direction2d.relativeTo frame axis.direction)
@@ -262,7 +262,7 @@ frame, and return that axis expressed in global coordinates.
     -->     (Direction2d.fromAngle (degrees 30))
 
 -}
-placeIn : Frame2d units globalCoordinates localCoordinates -> Axis2d units localCoordinates -> Axis2d units globalCoordinates
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Axis2d units localCoordinates -> Axis2d units globalCoordinates
 placeIn frame (Types.Axis2d axis) =
     through (Point2d.placeIn frame axis.originPoint)
         (Direction2d.placeIn frame axis.direction)

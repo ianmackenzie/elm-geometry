@@ -271,7 +271,7 @@ in local coordinates relative to a given reference frame.
     -->     ]
 
 -}
-relativeTo : Frame2d units globalCoordinates localCoordinates -> Polyline2d units globalCoordinates -> Polyline2d units localCoordinates
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Polyline2d units globalCoordinates -> Polyline2d units localCoordinates
 relativeTo frame polyline =
     mapVertices (Point2d.relativeTo frame) polyline
 
@@ -292,7 +292,7 @@ coordinates.
     -->     ]
 
 -}
-placeIn : Frame2d units globalCoordinates localCoordinates -> Polyline2d units localCoordinates -> Polyline2d units globalCoordinates
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Polyline2d units localCoordinates -> Polyline2d units globalCoordinates
 placeIn frame polyline =
     mapVertices (Point2d.placeIn frame) polyline
 

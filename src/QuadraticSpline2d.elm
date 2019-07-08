@@ -720,7 +720,7 @@ local coordinates relative to a given reference frame.
     -->     }
 
 -}
-relativeTo : Frame2d units globalCoordinates localCoordinates -> QuadraticSpline2d units globalCoordinates -> QuadraticSpline2d units localCoordinates
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> QuadraticSpline2d units globalCoordinates -> QuadraticSpline2d units localCoordinates
 relativeTo frame spline =
     mapControlPoints (Point2d.relativeTo frame) spline
 
@@ -742,7 +742,7 @@ given reference frame, and return that spline expressed in global coordinates.
     -->     }
 
 -}
-placeIn : Frame2d units globalCoordinates localCoordinates -> QuadraticSpline2d units localCoordinates -> QuadraticSpline2d units globalCoordinates
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> QuadraticSpline2d units localCoordinates -> QuadraticSpline2d units globalCoordinates
 placeIn frame spline =
     mapControlPoints (Point2d.placeIn frame) spline
 

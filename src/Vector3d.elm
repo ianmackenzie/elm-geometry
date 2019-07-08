@@ -165,7 +165,7 @@ xyz (Quantity x) (Quantity y) (Quantity z) =
     -->     )
 
 -}
-xyzIn : Frame3d units globalCoordinates localCoordinates -> Quantity Float units -> Quantity Float units -> Quantity Float units -> Vector3d units globalCoordinates
+xyzIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Quantity Float units -> Quantity Float units -> Quantity Float units -> Vector3d units globalCoordinates
 xyzIn (Types.Frame3d frame) (Quantity x) (Quantity y) (Quantity z) =
     let
         (Types.Direction3d i) =
@@ -247,7 +247,7 @@ A slightly more complex example:
     --> Vector3d.fromComponents ( 1, 0.7071, 0.7071 )
 
 -}
-on : SketchPlane3d units coordinates3d coordinates2d -> Vector2d units coordinates2d -> Vector3d units coordinates3d
+on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Vector2d units coordinates2d -> Vector3d units coordinates3d
 on (Types.SketchPlane3d sketchPlane) (Types.Vector2d v) =
     let
         (Types.Direction3d i) =
@@ -283,7 +283,7 @@ plane:
     -->     (meters 2)
 
 -}
-xyOn : SketchPlane3d units coordinates3d coordinates2d -> Quantity Float units -> Quantity Float units -> Vector3d units coordinates
+xyOn : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Quantity Float units -> Quantity Float units -> Vector3d units coordinates3d
 xyOn (Types.SketchPlane3d sketchPlane) (Quantity x) (Quantity y) =
     let
         (Types.Direction3d i) =
@@ -301,7 +301,7 @@ xyOn (Types.SketchPlane3d sketchPlane) (Quantity x) (Quantity y) =
 
 {-| TODO
 -}
-rThetaOn : SketchPlane3d units coordinates3d coordinates2d -> Quantity Float units -> Angle -> Vector3d units coordinates3d
+rThetaOn : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Quantity Float units -> Angle -> Vector3d units coordinates3d
 rThetaOn (Types.SketchPlane3d sketchPlane) (Quantity r) (Quantity theta) =
     let
         (Types.Direction3d i) =
@@ -1073,7 +1073,7 @@ local coordinates relative to a given reference frame.
     --> Vector3d.fromComponents ( 1.732, -1, 3 )
 
 -}
-relativeTo : Frame3d units globalCoordinates localCoordinates -> Vector3d units globalCoordinates -> Vector3d units localCoordinates
+relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Vector3d units globalCoordinates -> Vector3d units localCoordinates
 relativeTo (Types.Frame3d frame) (Types.Vector3d v) =
     let
         (Types.Direction3d i) =
@@ -1102,7 +1102,7 @@ frame, and return that vector expressed in global coordinates.
     --> Vector3d.fromComponents ( 1.732, 1, 3 )
 
 -}
-placeIn : Frame3d units globalCoordinates localCoordinates -> Vector3d units localCoordinates -> Vector3d units globalCoordinates
+placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Vector3d units localCoordinates -> Vector3d units globalCoordinates
 placeIn (Types.Frame3d frame) (Types.Vector3d v) =
     let
         (Types.Direction3d i) =
@@ -1139,7 +1139,7 @@ sketch coordinates.
     --> Vector2d.fromComponents ( 3, 2 )
 
 -}
-projectInto : SketchPlane3d units coordinates coordinates2d -> Vector3d units coordinates -> Vector2d units coordinates2d
+projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Vector3d units coordinates3d -> Vector2d units coordinates2d
 projectInto (Types.SketchPlane3d sketchPlane) (Types.Vector3d v) =
     let
         (Types.Direction3d i) =

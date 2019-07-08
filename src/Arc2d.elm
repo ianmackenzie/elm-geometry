@@ -1109,7 +1109,7 @@ coordinates relative to a given reference frame.
     -->         (degrees 90)
 
 -}
-relativeTo : Frame2d units globalCoordinates localCoordinates -> Arc2d units globalCoordinates -> Arc2d units localCoordinates
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Arc2d units globalCoordinates -> Arc2d units localCoordinates
 relativeTo frame (Types.Arc2d arc) =
     if Frame2d.isRightHanded frame then
         Types.Arc2d
@@ -1143,7 +1143,7 @@ given reference frame, and return that arc expressed in global coordinates.
     -->         (degrees 90)
 
 -}
-placeIn : Frame2d units globalCoordinates localCoordinates -> Arc2d units localCoordinates -> Arc2d units globalCoordinates
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Arc2d units localCoordinates -> Arc2d units globalCoordinates
 placeIn frame (Types.Arc2d arc) =
     if Frame2d.isRightHanded frame then
         Types.Arc2d

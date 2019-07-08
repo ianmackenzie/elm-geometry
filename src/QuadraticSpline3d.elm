@@ -157,7 +157,7 @@ specified in XY coordinates _within_ the sketch plane.
     -->     }
 
 -}
-on : SketchPlane3d units coordinates3d coordinates2d -> QuadraticSpline2d units coordinates2d -> QuadraticSpline3d units coordinates3d
+on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> QuadraticSpline2d units coordinates2d -> QuadraticSpline3d units coordinates3d
 on sketchPlane spline2d =
     fromControlPoints
         (Point3d.on sketchPlane (QuadraticSpline2d.firstControlPoint spline2d))
@@ -835,7 +835,7 @@ local coordinates relative to a given reference frame.
     -->     }
 
 -}
-relativeTo : Frame3d units globalCoordinates localCoordinates -> QuadraticSpline3d units globalCoordinates -> QuadraticSpline3d units localCoordinates
+relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> QuadraticSpline3d units globalCoordinates -> QuadraticSpline3d units localCoordinates
 relativeTo frame spline =
     mapControlPoints (Point3d.relativeTo frame) spline
 
@@ -858,7 +858,7 @@ given reference frame, and return that spline expressed in global coordinates.
     -->     }
 
 -}
-placeIn : Frame3d units globalCoordinates localCoordinates -> QuadraticSpline3d units localCoordinates -> QuadraticSpline3d units globalCoordinates
+placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> QuadraticSpline3d units localCoordinates -> QuadraticSpline3d units globalCoordinates
 placeIn frame spline =
     mapControlPoints (Point3d.placeIn frame) spline
 
@@ -880,7 +880,7 @@ sketch coordinates.
     -->     }
 
 -}
-projectInto : SketchPlane3d units coordinates3d coordinates2d -> QuadraticSpline3d units coordinates3d -> QuadraticSpline2d units coordinates2d
+projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> QuadraticSpline3d units coordinates3d -> QuadraticSpline2d units coordinates2d
 projectInto sketchPlane spline =
     QuadraticSpline2d.fromControlPoints
         (Point3d.projectInto sketchPlane (firstControlPoint spline))

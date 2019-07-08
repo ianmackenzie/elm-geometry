@@ -86,15 +86,15 @@ type SketchCoordinates
 
 
 type alias Frame2d coordinates =
-    Frame2d.Frame2d Meters coordinates LocalCoordinates
+    Frame2d.Frame2d Meters coordinates { defines : LocalCoordinates }
 
 
 type alias Frame3d coordinates =
-    Frame3d.Frame3d Meters coordinates LocalCoordinates
+    Frame3d.Frame3d Meters coordinates { defines : LocalCoordinates }
 
 
 type alias SketchPlane3d coordinates =
-    SketchPlane3d.SketchPlane3d Meters coordinates SketchCoordinates
+    SketchPlane3d.SketchPlane3d Meters coordinates { defines : SketchCoordinates }
 
 
 type alias Arc2d coordinates =

@@ -12,7 +12,7 @@ module Unsafe.Direction2d exposing (unsafeXyIn)
 import Geometry.Types exposing (..)
 
 
-unsafeXyIn : Frame2d units globalCoordinates localCoordinates -> Float -> Float -> Direction2d globalCoordinates
+unsafeXyIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Float -> Float -> Direction2d globalCoordinates
 unsafeXyIn (Frame2d frame) x y =
     let
         (Direction2d i) =

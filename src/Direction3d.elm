@@ -226,7 +226,7 @@ direction specified in XY coordinates _within_ the sketch plane.
     --> ( 0.5, 0, 0.866 )
 
 -}
-on : SketchPlane3d units coordinates3d coordinates2d -> Direction2d coordinates2d -> Direction3d coordinates3d
+on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Direction2d coordinates2d -> Direction3d coordinates3d
 on (Types.SketchPlane3d sketchPlane) (Types.Direction2d d) =
     let
         (Types.Direction3d i) =
@@ -255,7 +255,7 @@ plane towards positive Z.
     --> ( 0.5, 0.5, 0.7071 )
 
 -}
-fromAzimuthInAndElevationFrom : SketchPlane3d units coordinates3d coordinates2d -> Angle -> Angle -> Direction3d coordinates3d
+fromAzimuthInAndElevationFrom : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Angle -> Angle -> Direction3d coordinates3d
 fromAzimuthInAndElevationFrom (Types.SketchPlane3d sketchPlane) (Quantity azimuth) (Quantity elevation) =
     let
         (Types.Direction3d i) =
@@ -684,7 +684,7 @@ Vertical directions are considered to have an azimuth of zero:
     --> 0
 
 -}
-azimuthIn : SketchPlane3d units coordinates3d coordinates2d -> Direction3d coordinates3d -> Angle
+azimuthIn : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Direction3d coordinates3d -> Angle
 azimuthIn (Types.SketchPlane3d sketchPlane) (Types.Direction3d d) =
     let
         (Types.Direction3d i) =
@@ -718,7 +718,7 @@ result will be in the range -π/2 to π/2.
     --> degrees -90
 
 -}
-elevationFrom : SketchPlane3d units coordinates3d coordinates2d -> Direction3d coordinates3d -> Angle
+elevationFrom : SketchPlane3d units coordinates3d defines -> Direction3d coordinates3d -> Angle
 elevationFrom (Types.SketchPlane3d sketchPlane) (Types.Direction3d d) =
     let
         (Types.Direction3d i) =
@@ -1090,7 +1090,7 @@ local coordinates relative to a given reference frame.
     --> Direction3d.z
 
 -}
-relativeTo : Frame3d units globalCoordinates localCoordinates -> Direction3d globalCoordinates -> Direction3d localCoordinates
+relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Direction3d globalCoordinates -> Direction3d localCoordinates
 relativeTo (Types.Frame3d frame) (Types.Direction3d d) =
     let
         (Types.Direction3d i) =
@@ -1126,7 +1126,7 @@ frame, and return that direction expressed in global coordinates.
     --> Direction3d.z
 
 -}
-placeIn : Frame3d units globalCoordinates localCoordinates -> Direction3d localCoordinates -> Direction3d globalCoordinates
+placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Direction3d localCoordinates -> Direction3d globalCoordinates
 placeIn (Types.Frame3d frame) (Types.Direction3d d) =
     let
         (Types.Direction3d i) =
@@ -1171,7 +1171,7 @@ plane; if it is perpendicular, `Nothing` is returned.
     --> Nothing
 
 -}
-projectInto : SketchPlane3d units coordinates3d coordinates2d -> Direction3d coordinates3d -> Maybe (Direction2d coordinates2d)
+projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Direction3d coordinates3d -> Maybe (Direction2d coordinates2d)
 projectInto (Types.SketchPlane3d sketchPlane) (Types.Direction3d d) =
     let
         (Types.Direction3d i) =

@@ -339,7 +339,7 @@ centerPoint (Types.EllipticalArc2d arc) =
 
 
 {-| -}
-axes : EllipticalArc2d units coordinates -> Frame2d units coordinates EllipseCoordinates
+axes : EllipticalArc2d units coordinates -> Frame2d units coordinates { defines : EllipseCoordinates }
 axes (Types.EllipticalArc2d arc) =
     Ellipse2d.axes arc.ellipse
 
@@ -885,7 +885,7 @@ local coordinates relative to a given reference frame.
     -->     }
 
 -}
-relativeTo : Frame2d units globalCoordinates localCoordinates -> EllipticalArc2d units globalCoordinates -> EllipticalArc2d units localCoordinates
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> EllipticalArc2d units globalCoordinates -> EllipticalArc2d units localCoordinates
 relativeTo frame arc =
     transformBy (Ellipse2d.relativeTo frame) arc
 
@@ -909,7 +909,7 @@ coordinates.
     -->     }
 
 -}
-placeIn : Frame2d units globalCoordinates localCoordinates -> EllipticalArc2d units localCoordinates -> EllipticalArc2d units globalCoordinates
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> EllipticalArc2d units localCoordinates -> EllipticalArc2d units globalCoordinates
 placeIn frame arc =
     transformBy (Ellipse2d.placeIn frame) arc
 

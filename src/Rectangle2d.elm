@@ -109,7 +109,7 @@ overall X/Y dimensions (width/height).
     --> }
 
 -}
-centeredOn : Frame2d units globalCoordinates localCoordinates -> ( Quantity Float units, Quantity Float units ) -> Rectangle2d units globalCoordinates
+centeredOn : Frame2d units globalCoordinates { defines : localCoordinates } -> ( Quantity Float units, Quantity Float units ) -> Rectangle2d units globalCoordinates
 centeredOn givenAxes ( givenWidth, givenHeight ) =
     Types.Rectangle2d
         { axes = Frame2d.copy givenAxes
@@ -141,7 +141,7 @@ we had used a rotated frame, the result could not have been expressed using
 `Rectangle2d.fromExtrema` since it would no longer have been axis-aligned.
 
 -}
-fromExtremaIn : Frame2d units globalCoordinates localCoordinates -> { minX : Quantity Float units, maxX : Quantity Float units, minY : Quantity Float units, maxY : Quantity Float units } -> Rectangle2d units globalCoordinates
+fromExtremaIn : Frame2d units globalCoordinates { defines : localCoordinates } -> { minX : Quantity Float units, maxX : Quantity Float units, minY : Quantity Float units, maxY : Quantity Float units } -> Rectangle2d units globalCoordinates
 fromExtremaIn localFrame { minX, maxX, minY, maxY } =
     let
         computedCenterPoint =
@@ -270,7 +270,7 @@ toPolygon rectangle =
 The origin point of the frame will be the center point of the rectangle.
 
 -}
-axes : Rectangle2d units coordinates -> Frame2d units coordinates RectangleCoordinates
+axes : Rectangle2d units coordinates -> Frame2d units coordinates { defines : RectangleCoordinates }
 axes (Types.Rectangle2d rectangle) =
     rectangle.axes
 
@@ -890,7 +890,7 @@ coordinates.
     -->     }
 
 -}
-placeIn : Frame2d units globalCoordinates localCoordinates -> Rectangle2d units localCoordinates -> Rectangle2d units globalCoordinates
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Rectangle2d units localCoordinates -> Rectangle2d units globalCoordinates
 placeIn frame rectangle =
     Types.Rectangle2d
         { axes = Frame2d.placeIn frame (axes rectangle)
@@ -921,7 +921,7 @@ in local coordinates relative to a given reference frame.
     -->     }
 
 -}
-relativeTo : Frame2d units globalCoordinates localCoordinates -> Rectangle2d units globalCoordinates -> Rectangle2d units localCoordinates
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Rectangle2d units globalCoordinates -> Rectangle2d units localCoordinates
 relativeTo frame rectangle =
     Types.Rectangle2d
         { axes = Frame2d.relativeTo frame (axes rectangle)

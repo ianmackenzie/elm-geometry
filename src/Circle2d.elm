@@ -362,7 +362,7 @@ local coordinates relative to a given reference frame.
     -->     (Point2d.fromCoordinates ( -1, -1 ))
 
 -}
-relativeTo : Frame2d units globalCoordinates localCoordinates -> Circle2d units globalCoordinates -> Circle2d units localCoordinates
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Circle2d units globalCoordinates -> Circle2d units localCoordinates
 relativeTo frame (Types.Circle2d circle) =
     withRadius circle.radius (Point2d.relativeTo frame circle.centerPoint)
 
@@ -378,7 +378,7 @@ given reference frame, and return that circle expressed in global coordinates.
     -->     (Point2d.fromCoordinates ( 3, 5 ))
 
 -}
-placeIn : Frame2d units globalCoordinates localCoordinates -> Circle2d units localCoordinates -> Circle2d units globalCoordinates
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Circle2d units localCoordinates -> Circle2d units globalCoordinates
 placeIn frame (Types.Circle2d circle) =
     withRadius circle.radius (Point2d.placeIn frame circle.centerPoint)
 
