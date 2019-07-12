@@ -5,6 +5,7 @@ module Tests.Point2d exposing
     , projectionOntoAxisPreservesDistance
     , rotationPreservesDistance
     , translateByAndInAreConsistent
+    , trickyCircumcenter
     )
 
 import Expect
@@ -132,3 +133,23 @@ circumcenterIsValidOrNothing =
                             , Point2d.distanceFrom p3 >> Expect.approximately r1
                             ]
         )
+
+
+trickyCircumcenter : Test
+trickyCircumcenter =
+    Test.test "Circumcenter works correctly on previous failure case" <|
+        \() ->
+            let
+                p1 =
+                    Point2d.meters -10 0
+
+                p2 =
+                    Point2d.meters -10 1.0e-6
+
+                p3 =
+                    Point2d.meters -9.858773586876941 4.859985890767644
+
+                p0 =
+                    Point2d.meters 73.69327796224587 5.0e-7
+            in
+            Point2d.circumcenter p1 p2 p3 |> Expect.just Expect.point2d p0
