@@ -310,7 +310,7 @@ coordinates relative to a given reference frame.
     -->     (Point3d.fromCoordinates ( -2, -1, 0 ))
 
 -}
-relativeTo : Frame3d units globalCoordinates {defines:localCoordinates} -> Axis3d units globalCoordinates -> Axis3d units localCoordinates
+relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Axis3d units globalCoordinates -> Axis3d units localCoordinates
 relativeTo frame (Types.Axis3d axis) =
     through (Point3d.relativeTo frame axis.originPoint)
         (Direction3d.relativeTo frame axis.direction)
@@ -328,7 +328,7 @@ frame, and return that axis expressed in global coordinates.
     -->     (Point3d.fromCoordinates ( 4, 5, 6 ))
 
 -}
-placeIn : Frame3d units globalCoordinates {defines:localCoordinates} -> Axis3d units localCoordinates -> Axis3d units globalCoordinates
+placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Axis3d units localCoordinates -> Axis3d units globalCoordinates
 placeIn frame (Types.Axis3d axis) =
     through (Point3d.placeIn frame axis.originPoint)
         (Direction3d.placeIn frame axis.direction)
