@@ -10,8 +10,10 @@
 module Vector2d exposing
     ( Vector2d
     , zero
+    , meters, pixels
     , xy, xyIn, rTheta, rThetaIn, from, withLength, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
+    , fromMeters, toMeters, fromPixels, toPixels
     , at, at_
     , per, for
     , xComponent, yComponent, componentIn, length, direction
@@ -49,6 +51,11 @@ Although there are no predefined constants for the vectors with components
 `Direction2d` versions [`Direction2d.x`](Direction2d#x) and [`Direction2d.y`](Direction2d#y).
 
 
+# Literals
+
+@docs meters, pixels
+
+
 # Constructors
 
 @docs xy, xyIn, rTheta, rThetaIn, from, withLength, perpendicularTo, interpolateFrom
@@ -62,6 +69,11 @@ values will have [unitless](https://package.elm-lang.org/packages/ianmackenzie/e
 components.
 
 @docs fromTuple, toTuple, fromRecord, toRecord
+
+
+## Zero-copy conversions
+
+@docs fromMeters, toMeters, fromPixels, toPixels
 
 
 # Unit conversion
@@ -121,6 +133,8 @@ For the examples, assume the following frame has been defined:
 import Angle exposing (Angle)
 import Float.Extra as Float
 import Geometry.Types as Types exposing (Axis2d, Direction2d, Frame2d, Point2d)
+import Length exposing (Meters)
+import Pixels exposing (Pixels)
 import Quantity exposing (Product, Quantity(..), Rate, Squared, Unitless)
 import Quantity.Extra as Quantity
 
@@ -153,6 +167,20 @@ unwrap (Types.Vector2d components) =
 zero : Vector2d units coordinates
 zero =
     Types.Vector2d { x = 0, y = 0 }
+
+
+{-| TODO
+-}
+meters : Float -> Float -> Vector2d Meters coordinates
+meters x y =
+    Types.Vector2d { x = x, y = y }
+
+
+{-| TODO
+-}
+pixels : Float -> Float -> Vector2d Pixels coordinates
+pixels x y =
+    Types.Vector2d { x = x, y = y }
 
 
 {-| Construct a vector from its X and Y components.
@@ -421,6 +449,34 @@ toRecord fromQuantity vector =
     { x = fromQuantity (xComponent vector)
     , y = fromQuantity (yComponent vector)
     }
+
+
+{-| TODO
+-}
+fromMeters : { x : Float, y : Float } -> Vector2d Meters coordinates
+fromMeters components =
+    Types.Vector2d components
+
+
+{-| TODO
+-}
+toMeters : Vector2d Meters coordinates -> { x : Float, y : Float }
+toMeters (Types.Vector2d components) =
+    components
+
+
+{-| TODO
+-}
+fromPixels : { x : Float, y : Float } -> Vector2d Pixels coordinates
+fromPixels components =
+    Types.Vector2d components
+
+
+{-| TODO
+-}
+toPixels : Vector2d Pixels coordinates -> { x : Float, y : Float }
+toPixels (Types.Vector2d components) =
+    components
 
 
 {-| Convert a vector from one units type to another, by providing a conversion factor given as a

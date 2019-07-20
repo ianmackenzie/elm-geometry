@@ -10,8 +10,10 @@
 module Vector3d exposing
     ( Vector3d
     , zero
+    , meters, pixels
     , xyz, xyzIn, from, withLength, on, xyOn, rThetaOn, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
+    , fromMeters, toMeters, fromPixels, toPixels
     , xComponent, yComponent, zComponent, componentIn, length, direction
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross
@@ -48,6 +50,11 @@ you will actually want their `Direction3d` versions [`Direction3d.x`](Direction3
 [`Direction3d.y`](Direction3d#y) and [`Direction3d.z`](Direction3d#z).
 
 
+# Literals
+
+@docs meters, pixels
+
+
 # Constructors
 
 @docs xyz, xyzIn, from, withLength, on, xyOn, rThetaOn, perpendicularTo, interpolateFrom
@@ -61,6 +68,11 @@ values will have [unitless](https://package.elm-lang.org/packages/ianmackenzie/e
 components.
 
 @docs fromTuple, toTuple, fromRecord, toRecord
+
+
+## Zero-copy conversions
+
+@docs fromMeters, toMeters, fromPixels, toPixels
 
 
 # Properties
@@ -112,6 +124,8 @@ global XYZ frame:
 import Angle exposing (Angle)
 import Float.Extra as Float
 import Geometry.Types as Types exposing (Axis3d, Direction3d, Frame3d, Plane3d, Point3d, SketchPlane3d)
+import Length exposing (Meters)
+import Pixels exposing (Pixels)
 import Quantity exposing (Cubed, Product, Quantity(..), Squared, Unitless)
 import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
@@ -149,6 +163,20 @@ zero =
         , y = 0
         , z = 0
         }
+
+
+{-| TODO
+-}
+meters : Float -> Float -> Float -> Vector3d Meters coordinates
+meters x y z =
+    Types.Vector3d { x = x, y = y, z = z }
+
+
+{-| TODO
+-}
+pixels : Float -> Float -> Float -> Vector3d Pixels coordinates
+pixels x y z =
+    Types.Vector3d { x = x, y = y, z = z }
 
 
 {-| Construct a vector from its X, Y and Z components.
@@ -506,6 +534,34 @@ toRecord fromQuantity vector =
     , y = fromQuantity (yComponent vector)
     , z = fromQuantity (zComponent vector)
     }
+
+
+{-| TODO
+-}
+fromMeters : { x : Float, y : Float, z : Float } -> Vector3d Meters coordinates
+fromMeters components =
+    Types.Vector3d components
+
+
+{-| TODO
+-}
+toMeters : Vector3d Meters coordinates -> { x : Float, y : Float, z : Float }
+toMeters (Types.Vector3d components) =
+    components
+
+
+{-| TODO
+-}
+fromPixels : { x : Float, y : Float, z : Float } -> Vector3d Pixels coordinates
+fromPixels components =
+    Types.Vector3d components
+
+
+{-| TODO
+-}
+toPixels : Vector3d Pixels coordinates -> { x : Float, y : Float, z : Float }
+toPixels (Types.Vector3d components) =
+    components
 
 
 {-| Get the X component of a vector.

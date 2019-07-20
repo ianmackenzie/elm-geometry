@@ -13,6 +13,7 @@ module Point2d exposing
     , meters, pixels
     , xy, xyIn, rTheta, rThetaIn, midpoint, interpolateFrom, along, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
+    , fromMeters, toMeters, fromPixels, toPixels
     , at, at_
     , xCoordinate, yCoordinate, xCoordinateIn, yCoordinateIn
     , equalWithin, lexicographicComparison
@@ -62,6 +63,11 @@ values will have [unitless](https://package.elm-lang.org/packages/ianmackenzie/e
 coordinates.
 
 @docs fromTuple, toTuple, fromRecord, toRecord
+
+
+## Zero-copy conversions
+
+@docs fromMeters, toMeters, fromPixels, toPixels
 
 
 # Unit conversion
@@ -617,6 +623,34 @@ toRecord fromQuantity point =
     { x = fromQuantity (xCoordinate point)
     , y = fromQuantity (yCoordinate point)
     }
+
+
+{-| TODO
+-}
+fromMeters : { x : Float, y : Float } -> Point2d Meters coordinates
+fromMeters coordinates =
+    Types.Point2d coordinates
+
+
+{-| TODO
+-}
+toMeters : Point2d Meters coordinates -> { x : Float, y : Float }
+toMeters (Types.Point2d coordinates) =
+    coordinates
+
+
+{-| TODO
+-}
+fromPixels : { x : Float, y : Float } -> Point2d Pixels coordinates
+fromPixels coordinates =
+    Types.Point2d coordinates
+
+
+{-| TODO
+-}
+toPixels : Point2d Pixels coordinates -> { x : Float, y : Float }
+toPixels (Types.Point2d coordinates) =
+    coordinates
 
 
 {-| Convert a point from one units type to another, by providing a conversion factor given as a

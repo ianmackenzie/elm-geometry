@@ -13,6 +13,7 @@ module Point3d exposing
     , meters, pixels
     , xyz, xyzIn, midpoint, interpolateFrom, along, on, xyOn, rThetaOn, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
+    , fromMeters, toMeters, fromPixels, toPixels
     , xCoordinate, yCoordinate, zCoordinate, xCoordinateIn, yCoordinateIn, zCoordinateIn
     , equalWithin, lexicographicComparison
     , distanceFrom, signedDistanceAlong, distanceFromAxis, signedDistanceFrom
@@ -62,6 +63,11 @@ values will have [unitless](https://package.elm-lang.org/packages/ianmackenzie/e
 coordinates.
 
 @docs fromTuple, toTuple, fromRecord, toRecord
+
+
+## Zero-copy conversions
+
+@docs fromMeters, toMeters, fromPixels, toPixels
 
 
 # Properties
@@ -724,6 +730,34 @@ toRecord fromQuantity point =
     , y = fromQuantity (yCoordinate point)
     , z = fromQuantity (zCoordinate point)
     }
+
+
+{-| TODO
+-}
+fromMeters : { x : Float, y : Float, z : Float } -> Point3d Meters coordinates
+fromMeters coordinates =
+    Types.Point3d coordinates
+
+
+{-| TODO
+-}
+toMeters : Point3d Meters coordinates -> { x : Float, y : Float, z : Float }
+toMeters (Types.Point3d coordinates) =
+    coordinates
+
+
+{-| TODO
+-}
+fromPixels : { x : Float, y : Float, z : Float } -> Point3d Pixels coordinates
+fromPixels coordinates =
+    Types.Point3d coordinates
+
+
+{-| TODO
+-}
+toPixels : Point3d Pixels coordinates -> { x : Float, y : Float, z : Float }
+toPixels (Types.Point3d coordinates) =
+    coordinates
 
 
 {-| TODO
