@@ -8,7 +8,6 @@ module Tests.Arc3d exposing
 
 import Angle
 import Arc3d
-import Curve.ParameterValue as ParameterValue
 import EllipticalArc2d
 import Fuzz
 import Geometry.Expect as Expect
@@ -23,20 +22,14 @@ evaluateZeroIsStartPoint : Test
 evaluateZeroIsStartPoint =
     Test.fuzz Fuzz.arc3d
         "Evaluating at t=0 returns start point"
-        (\arc ->
-            Arc3d.pointOn arc ParameterValue.zero
-                |> Expect.point3d (Arc3d.startPoint arc)
-        )
+        (\arc -> Arc3d.pointOn arc 0 |> Expect.point3d (Arc3d.startPoint arc))
 
 
 evaluateOneIsEndPoint : Test
 evaluateOneIsEndPoint =
     Test.fuzz Fuzz.arc3d
         "Evaluating at t=1 returns end point"
-        (\arc ->
-            Arc3d.pointOn arc ParameterValue.one
-                |> Expect.point3d (Arc3d.endPoint arc)
-        )
+        (\arc -> Arc3d.pointOn arc 1 |> Expect.point3d (Arc3d.endPoint arc))
 
 
 reverseFlipsDirection : Test
@@ -47,7 +40,7 @@ reverseFlipsDirection =
         (\arc parameterValue ->
             Arc3d.pointOn (Arc3d.reverse arc) parameterValue
                 |> Expect.point3d
-                    (Arc3d.pointOn arc (ParameterValue.oneMinus parameterValue))
+                    (Arc3d.pointOn arc (1 - parameterValue))
         )
 
 

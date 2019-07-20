@@ -11,13 +11,13 @@ module Arc3d exposing
     ( Arc3d
     , on, sweptAround, throughPoints
     , axialDirection, axis, centerPoint, radius, startPoint, endPoint, sweptAngle
-    , pointOn, pointsAt
+    , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
-    , tangentDirection, tangentDirectionsAt, sample, samplesAt
+    , tangentDirection, sample
     , toPolyline
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
     , relativeTo, placeIn
-    , firstDerivative, firstDerivativesAt
+    , firstDerivative
     )
 
 {-| An `Arc3d` is a section of a circle in 3D, defined by its central axis,
@@ -43,9 +43,9 @@ start point to the arc's end point). This module includes functionality for
 
 # Evaluation
 
-@docs pointOn, pointsAt
+@docs pointOn
 @docs Nondegenerate, nondegenerate, fromNondegenerate
-@docs tangentDirection, tangentDirectionsAt, sample, samplesAt
+@docs tangentDirection, sample
 
 
 # Linear approximation
@@ -68,19 +68,19 @@ start point to the arc's end point). This module includes functionality for
 You are unlikely to need to use these functions directly, but they are useful if
 you are writing low-level geometric algorithms.
 
-@docs firstDerivative, firstDerivativesAt
+@docs firstDerivative
 
 -}
 
 import Angle exposing (Angle)
 import Arc2d exposing (Arc2d)
 import Axis3d exposing (Axis3d)
-import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Direction2d exposing (Direction2d)
 import Direction3d exposing (Direction3d)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
 import Geometry.Types as Types
+import Parameter1d
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Polyline3d exposing (Polyline3d)
@@ -307,7 +307,7 @@ startPoint (Types.Arc3d arc) =
 -}
 endPoint : Arc3d units coordinates -> Point3d units coordinates
 endPoint arc =
-    pointOn arc ParameterValue.one
+    pointOn arc 1
 
 
 {-| Get the point along an arc at a given parameter value:
@@ -316,7 +316,7 @@ endPoint arc =
     --> Point3d.fromCoordinates ( 0, 1.4142, 0 )
 
 -}
-pointOn : Arc3d units coordinates -> ParameterValue -> Point3d units coordinates
+pointOn : Arc3d units coordinates -> Float -> Point3d units coordinates
 pointOn (Types.Arc3d arc) parameterValue =
     let
         x0 =
@@ -351,14 +351,11 @@ pointOn (Types.Arc3d arc) parameterValue =
 
         arcSweptAngle =
             arc.sweptAngle
-
-        t =
-            ParameterValue.value parameterValue
     in
     if arcSweptAngle == Quantity.zero then
         let
             distance =
-                Quantity.multiplyBy t arcSignedLength
+                Quantity.multiplyBy parameterValue arcSignedLength
 
             px =
                 x0 |> Quantity.plus (distance |> Quantity.multiplyBy x1)
@@ -374,7 +371,7 @@ pointOn (Types.Arc3d arc) parameterValue =
     else
         let
             theta =
-                Quantity.multiplyBy t arcSweptAngle
+                Quantity.multiplyBy parameterValue arcSweptAngle
 
             arcRadius =
                 Quantity.lOverTheta arcSignedLength arcSweptAngle
@@ -407,20 +404,6 @@ pointOn (Types.Arc3d arc) parameterValue =
         Point3d.xyz px py pz
 
 
-{-| Get points along an arc at a given set of parameter values.
-
-    exampleArc |> Arc3d.pointsAt (ParameterValue.steps 2)
-    --> [ Point3d ( 1, 1, 0 )
-    --> , Point3d ( 0, 1.4142, 0 )
-    --> , Point3d ( -1, 1, 0 )
-    --> ]
-
--}
-pointsAt : List ParameterValue -> Arc3d units coordinates -> List (Point3d units coordinates)
-pointsAt parameterValues arc =
-    List.map (pointOn arc) parameterValues
-
-
 {-| Get the first derivative of an arc at a given parameter value.
 
     Arc3d.firstDerivative exampleArc ParameterValue.zero
@@ -430,7 +413,7 @@ pointsAt parameterValues arc =
     --> Vector3d.fromComponents ( -1.5708, -1.5708, 0 )
 
 -}
-firstDerivative : Arc3d units coordinates -> ParameterValue -> Vector3d units coordinates
+firstDerivative : Arc3d units coordinates -> Float -> Vector3d units coordinates
 firstDerivative (Types.Arc3d arc) =
     let
         x1 =
@@ -459,11 +442,8 @@ firstDerivative (Types.Arc3d arc) =
     in
     \parameterValue ->
         let
-            t =
-                ParameterValue.value parameterValue
-
             angle =
-                Quantity.multiplyBy t arcSweptAngle
+                Quantity.multiplyBy parameterValue arcSweptAngle
 
             cosAngle =
                 Angle.cos angle
@@ -472,25 +452,15 @@ firstDerivative (Types.Arc3d arc) =
                 Angle.sin angle
         in
         Vector3d.xyz
-            (arcSignedLength |> Quantity.multiplyBy (cosAngle * x1 + sinAngle * x2))
-            (arcSignedLength |> Quantity.multiplyBy (cosAngle * y1 + sinAngle * y2))
-            (arcSignedLength |> Quantity.multiplyBy (cosAngle * z1 + sinAngle * z2))
-
-
-{-| Evaluate the first derivative of an arc at a range of parameter values.
-
-    exampleArc
-        |> Arc3d.firstDerivativesAt
-            (ParameterValue.steps 2)
-    --> [ Vector3d ( -1.5708, 1.5708, 0 )
-    --> , Vector3d ( -2.2214, 0, 0 )
-    --> , Vector3d ( -1.5708, -1.5708, 0 )
-    --> ]
-
--}
-firstDerivativesAt : List ParameterValue -> Arc3d units coordinates -> List (Vector3d units coordinates)
-firstDerivativesAt parameterValues arc =
-    List.map (firstDerivative arc) parameterValues
+            (arcSignedLength
+                |> Quantity.multiplyBy (cosAngle * x1 + sinAngle * x2)
+            )
+            (arcSignedLength
+                |> Quantity.multiplyBy (cosAngle * y1 + sinAngle * y2)
+            )
+            (arcSignedLength
+                |> Quantity.multiplyBy (cosAngle * z1 + sinAngle * z2)
+            )
 
 
 {-| If a curve has zero length (consists of just a single point), then we say
@@ -558,7 +528,7 @@ value:
     -->     (degrees 0)
 
 -}
-tangentDirection : Nondegenerate units coordinates -> ParameterValue -> Direction3d coordinates
+tangentDirection : Nondegenerate units coordinates -> Float -> Direction3d coordinates
 tangentDirection (Nondegenerate (Types.Arc3d arc)) parameterValue =
     let
         x1 =
@@ -582,11 +552,8 @@ tangentDirection (Nondegenerate (Types.Arc3d arc)) parameterValue =
         arcSweptAngle =
             arc.sweptAngle
 
-        t =
-            ParameterValue.value parameterValue
-
         angle =
-            Quantity.multiplyBy t arcSweptAngle
+            Quantity.multiplyBy parameterValue arcSweptAngle
 
         cosAngle =
             Angle.cos angle
@@ -599,27 +566,6 @@ tangentDirection (Nondegenerate (Types.Arc3d arc)) parameterValue =
         , y = cosAngle * y1 + sinAngle * y2
         , z = cosAngle * z1 + sinAngle * z2
         }
-
-
-{-| Get tangent directions to a nondegenerate arc at a given set of parameter
-values:
-
-    nondegenerateExampleArc
-        |> Arc3d.tangentDirectionsAt
-            (ParameterValue.steps 2)
-    --> [ Direction3d.fromAzimuthAndElevation
-    -->     (degrees 135)
-    -->     (degrees 0)
-    --> , Direction3d.negativeX
-    --> , Direction3d.fromAzimuthAndElevation
-    -->     (degrees 225)
-    -->     (degrees 0)
-    --> ]
-
--}
-tangentDirectionsAt : List ParameterValue -> Nondegenerate units coordinates -> List (Direction3d coordinates)
-tangentDirectionsAt parameterValues nondegenerateArc =
-    List.map (tangentDirection nondegenerateArc) parameterValues
 
 
 {-| Get both the point and tangent direction of a nondegenerate arc at a given
@@ -648,40 +594,11 @@ parameter value:
     --> )
 
 -}
-sample : Nondegenerate units coordinates -> ParameterValue -> ( Point3d units coordinates, Direction3d coordinates )
+sample : Nondegenerate units coordinates -> Float -> ( Point3d units coordinates, Direction3d coordinates )
 sample nondegenerateArc parameterValue =
     ( pointOn (fromNondegenerate nondegenerateArc) parameterValue
     , tangentDirection nondegenerateArc parameterValue
     )
-
-
-{-| Get points and tangent directions of a nondegenerate arc at a given set of
-parameter values:
-
-    nondegenerateExampleArc
-        |> Arc3d.samplesAt (ParameterValue.steps 2)
-    --> [ ( Point3d.fromCoordinates ( 1, 1, 0 )
-    -->   , Direction3d.fromAzimuthAndElevation
-    -->         (degrees 135)
-    -->         (degrees 0)
-    -->   )
-    --> , ( Point3d.fromCoordinates ( 0, 1.4142, 0 )
-    -->   , Direction3d.negativeX
-    -->   )
-    --> , ( Point3d.fromCoordinates ( -1, 1, 0 )
-    -->   , Direction3d.fromAzimuthAndElevation
-    -->         (degrees 225)
-    -->         (degrees 0)
-    -->   )
-    --> ]
-
-If the arc is degenerate (start point and end point are equal), returns an
-empty list.
-
--}
-samplesAt : List ParameterValue -> Nondegenerate units coordinates -> List ( Point3d units coordinates, Direction3d coordinates )
-samplesAt parameterValues nondegenerateArc =
-    List.map (sample nondegenerateArc) parameterValues
 
 
 numApproximationSegments : Quantity Float units -> Arc3d units coordinates -> Int
@@ -729,7 +646,7 @@ toPolyline { maxError } arc =
             numApproximationSegments maxError arc
 
         points =
-            arc |> pointsAt (ParameterValue.steps numSegments)
+            Parameter1d.steps numSegments (pointOn arc)
     in
     Polyline3d.fromVertices points
 

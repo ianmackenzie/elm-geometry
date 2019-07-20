@@ -11,15 +11,15 @@ module CubicSpline2d exposing
     ( CubicSpline2d
     , fromControlPoints, fromEndpoints, fromQuadraticSpline
     , startPoint, endPoint, firstControlPoint, secondControlPoint, thirdControlPoint, fourthControlPoint, startDerivative, endDerivative, boundingBox
-    , pointOn, pointsAt
+    , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
-    , tangentDirection, tangentDirectionsAt, sample, samplesAt
+    , tangentDirection, sample
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , relativeTo, placeIn
     , bisect, splitAt
     , ArcLengthParameterized, arcLengthParameterized, arcLength, midpoint, pointAlong, tangentDirectionAlong, sampleAlong
     , arcLengthParameterization, fromArcLengthParameterized
-    , firstDerivative, firstDerivativesAt, secondDerivative, secondDerivativesAt, thirdDerivative, maxSecondDerivativeMagnitude
+    , firstDerivative, secondDerivative, thirdDerivative, maxSecondDerivativeMagnitude
     )
 
 {-| A `CubicSpline2d` is a cubic [Bézier curve](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)
@@ -47,9 +47,9 @@ contains functionality for
 
 # Evaluation
 
-@docs pointOn, pointsAt
+@docs pointOn
 @docs Nondegenerate, nondegenerate, fromNondegenerate
-@docs tangentDirection, tangentDirectionsAt, sample, samplesAt
+@docs tangentDirection, sample
 
 
 # Transformations
@@ -87,15 +87,14 @@ these two values separately.
 You are unlikely to need to use these functions directly, but they are useful if
 you are writing low-level geometric algorithms.
 
-@docs firstDerivative, firstDerivativesAt, secondDerivative, secondDerivativesAt, thirdDerivative, maxSecondDerivativeMagnitude
+@docs firstDerivative, secondDerivative, thirdDerivative, maxSecondDerivativeMagnitude
 
 -}
 
 import Angle exposing (Angle)
+import ArcLengthParameterization exposing (ArcLengthParameterization)
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
-import Curve.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
-import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
@@ -348,12 +347,9 @@ boundingBox spline =
     --> Point2d.fromCoordinates ( 7, 4 )
 
 -}
-pointOn : CubicSpline2d units coordinates -> ParameterValue -> Point2d units coordinates
+pointOn : CubicSpline2d units coordinates -> Float -> Point2d units coordinates
 pointOn spline parameterValue =
     let
-        t =
-            ParameterValue.value parameterValue
-
         p1 =
             firstControlPoint spline
 
@@ -367,37 +363,21 @@ pointOn spline parameterValue =
             fourthControlPoint spline
 
         q1 =
-            Point2d.interpolateFrom p1 p2 t
+            Point2d.interpolateFrom p1 p2 parameterValue
 
         q2 =
-            Point2d.interpolateFrom p2 p3 t
+            Point2d.interpolateFrom p2 p3 parameterValue
 
         q3 =
-            Point2d.interpolateFrom p3 p4 t
+            Point2d.interpolateFrom p3 p4 parameterValue
 
         r1 =
-            Point2d.interpolateFrom q1 q2 t
+            Point2d.interpolateFrom q1 q2 parameterValue
 
         r2 =
-            Point2d.interpolateFrom q2 q3 t
+            Point2d.interpolateFrom q2 q3 parameterValue
     in
-    Point2d.interpolateFrom r1 r2 t
-
-
-{-| Get points along a spline at a given set of parameter values:
-
-    exampleSpline
-        |> CubicSpline2d.pointsAt
-            (ParameterValue.steps 2)
-    --> [ Point2d.fromCoordinates ( 1, 1 )
-    --> , Point2d.fromCoordinates ( 4, 2.5 )
-    --> , Point2d.fromCoordinates ( 7, 4 )
-    --> ]
-
--}
-pointsAt : List ParameterValue -> CubicSpline2d units coordinates -> List (Point2d units coordinates)
-pointsAt parameterValues spline =
-    List.map (pointOn spline) parameterValues
+    Point2d.interpolateFrom r1 r2 parameterValue
 
 
 {-| If a curve has zero length (consists of just a single point), then we say
@@ -436,7 +416,7 @@ nondegenerate spline =
                 -- Third derivative is zero, so second derivative is constant -
                 -- evaluate it at an arbitrary point to get its value
                 secondDerivativeVector =
-                    secondDerivative spline ParameterValue.zero
+                    secondDerivative spline 0
             in
             case Vector2d.direction secondDerivativeVector of
                 Just direction ->
@@ -450,7 +430,7 @@ nondegenerate spline =
                         -- derivative is constant - evaluate it at an arbitrary
                         -- point to get its value
                         firstDerivativeVector =
-                            firstDerivative spline ParameterValue.zero
+                            firstDerivative spline 0
                     in
                     case Vector2d.direction firstDerivativeVector of
                         Just direction ->
@@ -502,7 +482,7 @@ value:
     --> Direction2d.fromAngle (degrees 56.31)
 
 -}
-tangentDirection : Nondegenerate units coordinates -> ParameterValue -> Direction2d coordinates
+tangentDirection : Nondegenerate units coordinates -> Float -> Direction2d coordinates
 tangentDirection nondegenerateSpline parameterValue =
     case nondegenerateSpline of
         NonZeroFirstDerivative spline firstDerivativeDirection ->
@@ -532,7 +512,7 @@ tangentDirection nondegenerateSpline parameterValue =
                     -- (instead of one that is off the spline!), otherwise
                     -- choose the tangent direction just after the point
                     -- (necessary for t = 0, arbitrary for all other points).
-                    if parameterValue == ParameterValue.one then
+                    if parameterValue == 1 then
                         Direction2d.reverse secondDerivativeDirection
 
                     else
@@ -559,7 +539,7 @@ tangentDirection nondegenerateSpline parameterValue =
                             -- Zero first derivative and non-zero second
                             -- derivative mean we have reached a reversal point,
                             -- as above in the NonZeroSecondDerivative case
-                            if parameterValue == ParameterValue.one then
+                            if parameterValue == 1 then
                                 Direction2d.reverse secondDerivativeDirection
 
                             else
@@ -569,23 +549,6 @@ tangentDirection nondegenerateSpline parameterValue =
                             -- First and second derivatives are zero, so fall
                             -- back to the third derivative direction
                             thirdDerivativeDirection
-
-
-{-| Get tangent directions to a nondegenerate spline at a given set of parameter
-values:
-
-    nondegenerateExampleSpline
-        |> CubicSpline2d.tangentDirectionsAt
-            (ParameterValue.steps 2)
-    --> [ Direction2d.fromAngle (degrees 56.31)
-    --> , Direction2d.fromAngle (degrees 0)
-    --> , Direction2d.fromAngle (degrees 56.31)
-    --> ]
-
--}
-tangentDirectionsAt : List ParameterValue -> Nondegenerate units coordinates -> List (Direction2d coordinates)
-tangentDirectionsAt parameterValues nondegenerateSpline =
-    List.map (tangentDirection nondegenerateSpline) parameterValues
 
 
 {-| Get both the point and tangent direction of a nondegenerate spline at a
@@ -598,34 +561,11 @@ given parameter value:
     --> )
 
 -}
-sample : Nondegenerate units coordinates -> ParameterValue -> ( Point2d units coordinates, Direction2d coordinates )
+sample : Nondegenerate units coordinates -> Float -> ( Point2d units coordinates, Direction2d coordinates )
 sample nondegenerateSpline parameterValue =
     ( pointOn (fromNondegenerate nondegenerateSpline) parameterValue
     , tangentDirection nondegenerateSpline parameterValue
     )
-
-
-{-| Get points and tangent directions of a nondegenerate spline at a given set
-of parameter values:
-
-    nondegenerateExampleSpline
-        |> CubicSpline2d.samplesAt
-            (ParameterValue.steps 2)
-    --> [ ( Point2d.fromCoordinates ( 1, 1 )
-    -->   , Direction2d.fromAngle (degrees 56.31)
-    -->   )
-    --> , ( Point2d.fromCoordinates ( 4, 2.5 )
-    -->   , Direction2d.fromAngle (degrees 0)
-    -->   )
-    --> , ( Point2d.fromCoordinates ( 7, 4 )
-    -->   , Direction2d.fromAngle (degrees 56.31)
-    -->   )
-    --> ]
-
--}
-samplesAt : List ParameterValue -> Nondegenerate units coordinates -> List ( Point2d units coordinates, Direction2d coordinates )
-samplesAt parameterValues nondegenerateSpline =
-    List.map (sample nondegenerateSpline) parameterValues
 
 
 {-| Reverse a spline so that the start point becomes the end point, and vice
@@ -841,7 +781,7 @@ Equivalent to `CubicSpline2d.splitAt ParameterValue.half`.
 -}
 bisect : CubicSpline2d units coordinates -> ( CubicSpline2d units coordinates, CubicSpline2d units coordinates )
 bisect spline =
-    splitAt ParameterValue.half spline
+    splitAt 0.5 spline
 
 
 {-| Split a spline at a particular parameter value, resulting in two smaller
@@ -874,12 +814,9 @@ splines.
     --> )
 
 -}
-splitAt : ParameterValue -> CubicSpline2d units coordinates -> ( CubicSpline2d units coordinates, CubicSpline2d units coordinates )
+splitAt : Float -> CubicSpline2d units coordinates -> ( CubicSpline2d units coordinates, CubicSpline2d units coordinates )
 splitAt parameterValue spline =
     let
-        t =
-            ParameterValue.value parameterValue
-
         p1 =
             firstControlPoint spline
 
@@ -893,22 +830,22 @@ splitAt parameterValue spline =
             fourthControlPoint spline
 
         q1 =
-            Point2d.interpolateFrom p1 p2 t
+            Point2d.interpolateFrom p1 p2 parameterValue
 
         q2 =
-            Point2d.interpolateFrom p2 p3 t
+            Point2d.interpolateFrom p2 p3 parameterValue
 
         q3 =
-            Point2d.interpolateFrom p3 p4 t
+            Point2d.interpolateFrom p3 p4 parameterValue
 
         r1 =
-            Point2d.interpolateFrom q1 q2 t
+            Point2d.interpolateFrom q1 q2 parameterValue
 
         r2 =
-            Point2d.interpolateFrom q2 q3 t
+            Point2d.interpolateFrom q2 q3 parameterValue
 
         s =
-            Point2d.interpolateFrom r1 r2 t
+            Point2d.interpolateFrom r1 r2 parameterValue
     in
     ( fromControlPoints p1 q1 r1 s
     , fromControlPoints s r2 q3 p4
@@ -921,7 +858,7 @@ type ArcLengthParameterized units coordinates
     = ArcLengthParameterized
         { underlyingSpline : CubicSpline2d units coordinates
         , parameterization : ArcLengthParameterization units
-        , nondegenerateSpline : Maybe (Nondegenerate units coordinates)
+        , nondegenerateSpline : Nondegenerate units coordinates
         }
 
 
@@ -939,9 +876,12 @@ The accuracy of the parameterization affects the accuracy of results returned
 from functions such as `arcLength` and `pointAlong`.
 
 -}
-arcLengthParameterized : { maxError : Quantity Float units } -> CubicSpline2d units coordinates -> ArcLengthParameterized units coordinates
-arcLengthParameterized { maxError } spline =
+arcLengthParameterized : { maxError : Quantity Float units } -> Nondegenerate units coordinates -> ArcLengthParameterized units coordinates
+arcLengthParameterized { maxError } nondegenerateSpline =
     let
+        spline =
+            fromNondegenerate nondegenerateSpline
+
         parameterization =
             ArcLengthParameterization.build
                 { maxError = maxError
@@ -952,7 +892,7 @@ arcLengthParameterized { maxError } spline =
     ArcLengthParameterized
         { underlyingSpline = spline
         , parameterization = parameterization
-        , nondegenerateSpline = Result.toMaybe (nondegenerate spline)
+        , nondegenerateSpline = nondegenerateSpline
         }
 
 
@@ -989,15 +929,7 @@ midpoint parameterized =
         halfArcLength =
             Quantity.multiplyBy 0.5 (arcLength parameterized)
     in
-    case pointAlong parameterized halfArcLength of
-        Just point ->
-            point
-
-        Nothing ->
-            -- Should never happen since half of total arc length will always
-            -- be a valid distance along the curve, but let's default to something
-            -- reasonable anyways
-            startPoint (fromArcLengthParameterized parameterized)
+    pointAlong parameterized halfArcLength
 
 
 {-| Try to get the point along a spline at a given arc length. For example, to
@@ -1018,11 +950,11 @@ If the given arc length is less than zero or greater than the arc length of the
 spline, returns `Nothing`.
 
 -}
-pointAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Maybe (Point2d units coordinates)
+pointAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Point2d units coordinates
 pointAlong (ArcLengthParameterized parameterized) distance =
     parameterized.parameterization
         |> ArcLengthParameterization.arcLengthToParameterValue distance
-        |> Maybe.map (pointOn parameterized.underlyingSpline)
+        |> pointOn parameterized.underlyingSpline
 
 
 {-| Try to get the tangent direction along a spline at a given arc length. To
@@ -1036,16 +968,15 @@ If the given arc length is less than zero or greater than the arc length of the
 spline (or if the spline is degenerate), returns `Nothing`.
 
 -}
-tangentDirectionAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Maybe (Direction2d coordinates)
+tangentDirectionAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Direction2d coordinates
 tangentDirectionAlong (ArcLengthParameterized parameterized) distance =
-    case parameterized.nondegenerateSpline of
-        Just nondegenerateSpline ->
-            parameterized.parameterization
-                |> ArcLengthParameterization.arcLengthToParameterValue distance
-                |> Maybe.map (tangentDirection nondegenerateSpline)
-
-        Nothing ->
-            Nothing
+    let
+        parameterValue =
+            ArcLengthParameterization.arcLengthToParameterValue
+                distance
+                parameterized.parameterization
+    in
+    tangentDirection parameterized.nondegenerateSpline parameterValue
 
 
 {-| Try to get the point and tangent direction along a spline at a given arc
@@ -1063,16 +994,15 @@ If the given arc length is less than zero or greater than the arc length of the
 spline (or if the spline is degenerate), returns `Nothing`.
 
 -}
-sampleAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Maybe ( Point2d units coordinates, Direction2d coordinates )
+sampleAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> ( Point2d units coordinates, Direction2d coordinates )
 sampleAlong (ArcLengthParameterized parameterized) distance =
-    case parameterized.nondegenerateSpline of
-        Just nondegenerateSpline ->
-            parameterized.parameterization
-                |> ArcLengthParameterization.arcLengthToParameterValue distance
-                |> Maybe.map (sample nondegenerateSpline)
-
-        Nothing ->
-            Nothing
+    let
+        parameterValue =
+            ArcLengthParameterization.arcLengthToParameterValue
+                distance
+                parameterized.parameterization
+    in
+    sample parameterized.nondegenerateSpline parameterValue
 
 
 {-| -}
@@ -1102,12 +1032,9 @@ fromArcLengthParameterized (ArcLengthParameterized parameterized) =
     --> Vector2d.fromComponents ( 6, 9 )
 
 -}
-firstDerivative : CubicSpline2d units coordinates -> ParameterValue -> Vector2d units coordinates
+firstDerivative : CubicSpline2d units coordinates -> Float -> Vector2d units coordinates
 firstDerivative spline parameterValue =
     let
-        t =
-            ParameterValue.value parameterValue
-
         p1 =
             firstControlPoint spline
 
@@ -1161,40 +1088,26 @@ firstDerivative spline parameterValue =
 
         vy3 =
             y4 |> Quantity.minus y3
-    in
-    let
+
         wx1 =
-            Quantity.interpolateFrom vx1 vx2 t
+            Quantity.interpolateFrom vx1 vx2 parameterValue
 
         wy1 =
-            Quantity.interpolateFrom vy1 vy2 t
+            Quantity.interpolateFrom vy1 vy2 parameterValue
 
         wx2 =
-            Quantity.interpolateFrom vx2 vx3 t
+            Quantity.interpolateFrom vx2 vx3 parameterValue
 
         wy2 =
-            Quantity.interpolateFrom vy2 vy3 t
+            Quantity.interpolateFrom vy2 vy3 parameterValue
     in
     Vector2d.xy
-        (Quantity.multiplyBy 3 (Quantity.interpolateFrom wx1 wx2 t))
-        (Quantity.multiplyBy 3 (Quantity.interpolateFrom wy1 wy2 t))
-
-
-{-| Evaluate the first derivative of a spline at a given set of parameter
-values:
-
-    exampleSpline
-        |> CubicSpline2d.firstDerivativesAt
-            (ParameterValue.steps 2)
-    --> [ Vector2d.fromComponents ( 6, 9 )
-    --> , Vector2d.fromComponents ( 6, 0 )
-    --> , Vector2d.fromComponents ( 6, 9 )
-    --> ]
-
--}
-firstDerivativesAt : List ParameterValue -> CubicSpline2d units coordinates -> List (Vector2d units coordinates)
-firstDerivativesAt parameterValues spline =
-    List.map (firstDerivative spline) parameterValues
+        (Quantity.multiplyBy 3
+            (Quantity.interpolateFrom wx1 wx2 parameterValue)
+        )
+        (Quantity.multiplyBy 3
+            (Quantity.interpolateFrom wy1 wy2 parameterValue)
+        )
 
 
 {-| Evaluate the second derivative of a spline at a given parameter value:
@@ -1209,12 +1122,9 @@ firstDerivativesAt parameterValues spline =
     --> Just (Vector2d.fromComponents ( 0, 36 ))
 
 -}
-secondDerivative : CubicSpline2d units coordinates -> ParameterValue -> Vector2d units coordinates
+secondDerivative : CubicSpline2d units coordinates -> Float -> Vector2d units coordinates
 secondDerivative spline parameterValue =
     let
-        t =
-            ParameterValue.value parameterValue
-
         p1 =
             firstControlPoint spline
 
@@ -1242,24 +1152,7 @@ secondDerivative spline parameterValue =
         v2 =
             u3 |> Vector2d.minus u2
     in
-    Vector2d.scaleBy 6 (Vector2d.interpolateFrom v1 v2 t)
-
-
-{-| Evaluate the second derivative of a spline at a given set of parameter
-values:
-
-    exampleSpline
-        |> CubicSpline2d.secondDerivativesAt
-            (ParameterValue.steps 2)
-    --> [ Vector2d.fromComponents ( 0, -36 )
-    --> , Vector2d.fromComponents ( 0, 0 )
-    --> , Vector2d.fromComponents ( 0, 36 )
-    --> ]
-
--}
-secondDerivativesAt : List ParameterValue -> CubicSpline2d units coordinates -> List (Vector2d units coordinates)
-secondDerivativesAt parameterValues spline =
-    List.map (secondDerivative spline) parameterValues
+    Vector2d.scaleBy 6 (Vector2d.interpolateFrom v1 v2 parameterValue)
 
 
 {-| Get the third derivative of a spline (for a cubic spline, this is a
@@ -1344,7 +1237,7 @@ maxSecondDerivativeMagnitude spline =
     Quantity.multiplyBy 6 (Quantity.max (Vector2d.length v1) (Vector2d.length v2))
 
 
-derivativeMagnitude : CubicSpline2d units coordinates -> ParameterValue -> Quantity Float units
+derivativeMagnitude : CubicSpline2d units coordinates -> Float -> Quantity Float units
 derivativeMagnitude spline =
     let
         p1 =
@@ -1415,26 +1308,23 @@ derivativeMagnitude spline =
     in
     \parameterValue ->
         let
-            t =
-                ParameterValue.value parameterValue
-
             x13 =
-                x12 |> Quantity.plus (Quantity.multiplyBy t x123)
+                x12 |> Quantity.plus (Quantity.multiplyBy parameterValue x123)
 
             y13 =
-                y12 |> Quantity.plus (Quantity.multiplyBy t y123)
+                y12 |> Quantity.plus (Quantity.multiplyBy parameterValue y123)
 
             x24 =
-                x23 |> Quantity.plus (Quantity.multiplyBy t x234)
+                x23 |> Quantity.plus (Quantity.multiplyBy parameterValue x234)
 
             y24 =
-                y23 |> Quantity.plus (Quantity.multiplyBy t y234)
+                y23 |> Quantity.plus (Quantity.multiplyBy parameterValue y234)
 
             x14 =
-                Quantity.interpolateFrom x13 x24 t
+                Quantity.interpolateFrom x13 x24 parameterValue
 
             y14 =
-                Quantity.interpolateFrom y13 y24 t
+                Quantity.interpolateFrom y13 y24 parameterValue
         in
         Quantity.multiplyBy 3
             (Quantity.sqrt

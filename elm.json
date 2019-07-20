@@ -6,10 +6,9 @@
     "version": "1.3.0",
     "exposed-modules": [
         "Arc.SweptAngle",
-        "Curve.ArcLengthParameterization",
-        "Curve.ParameterValue",
         "Arc2d",
         "Arc3d",
+        "ArcLengthParameterization",
         "Axis2d",
         "Axis3d",
         "BoundingBox2d",
@@ -47,6 +46,7 @@
     "elm-version": "0.19.0 <= v < 0.20.0",
     "dependencies": {
         "elm/core": "1.0.0 <= v < 2.0.0",
+        "ianmackenzie/elm-1d-parameter": "1.0.1 <= v < 2.0.0",
         "ianmackenzie/elm-float-extra": "1.0.1 <= v < 2.0.0",
         "ianmackenzie/elm-interval": "2.0.0 <= v < 3.0.0",
         "ianmackenzie/elm-triangular-mesh": "1.0.2 <= v < 2.0.0",

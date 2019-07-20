@@ -59,7 +59,6 @@ import Circle2d
 import Circle3d
 import CubicSpline2d
 import CubicSpline3d
-import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Direction2d
 import Direction3d
 import Ellipse2d
@@ -111,9 +110,9 @@ positiveLength =
     Fuzz.map Quantity.abs length
 
 
-parameterValue : Fuzzer ParameterValue
+parameterValue : Fuzzer Float
 parameterValue =
-    Fuzz.map ParameterValue.clamped (Fuzz.floatRange 0 1)
+    Fuzz.floatRange 0 1
 
 
 vector2d : Fuzzer (Vector2d coordinates)

@@ -11,7 +11,6 @@ module Tests.Arc2d exposing
 import Angle exposing (Angle)
 import Arc.SweptAngle as SweptAngle exposing (SweptAngle)
 import Arc2d
-import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Expect
 import Fuzz
 import Geometry.Expect as Expect
@@ -28,20 +27,14 @@ evaluateZeroIsStartPoint : Test
 evaluateZeroIsStartPoint =
     Test.fuzz Fuzz.arc2d
         "Evaluating at t=0 returns start point"
-        (\arc ->
-            Arc2d.pointOn arc ParameterValue.zero
-                |> Expect.point2d (Arc2d.startPoint arc)
-        )
+        (\arc -> Arc2d.pointOn arc 0 |> Expect.point2d (Arc2d.startPoint arc))
 
 
 evaluateOneIsEndPoint : Test
 evaluateOneIsEndPoint =
     Test.fuzz Fuzz.arc2d
         "Evaluating at t=1 returns end point"
-        (\arc ->
-            Arc2d.pointOn arc ParameterValue.one
-                |> Expect.point2d (Arc2d.endPoint arc)
-        )
+        (\arc -> Arc2d.pointOn arc 1 |> Expect.point2d (Arc2d.endPoint arc))
 
 
 reverseFlipsDirection : Test
@@ -52,7 +45,7 @@ reverseFlipsDirection =
         (\arc parameterValue ->
             Arc2d.pointOn (Arc2d.reverse arc) parameterValue
                 |> Expect.point2d
-                    (Arc2d.pointOn arc (ParameterValue.oneMinus parameterValue))
+                    (Arc2d.pointOn arc (1 - parameterValue))
         )
 
 

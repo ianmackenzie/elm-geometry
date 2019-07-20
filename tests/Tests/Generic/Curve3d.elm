@@ -2,7 +2,6 @@ module Tests.Generic.Curve3d exposing (Operations, transformations)
 
 import Angle exposing (Angle)
 import Axis3d
-import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Frame3d
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
@@ -16,8 +15,8 @@ import Vector3d
 
 type alias Operations curve coordinates =
     { fuzzer : Fuzzer curve
-    , pointOn : curve -> ParameterValue -> Point3d coordinates
-    , firstDerivative : curve -> ParameterValue -> Vector3d coordinates
+    , pointOn : curve -> Float -> Point3d coordinates
+    , firstDerivative : curve -> Float -> Vector3d coordinates
     , scaleAbout : Point3d coordinates -> Float -> curve -> curve
     , translateBy : Vector3d coordinates -> curve -> curve
     , rotateAround : Axis3d coordinates -> Angle -> curve -> curve

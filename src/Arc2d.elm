@@ -11,13 +11,13 @@ module Arc2d exposing
     ( Arc2d
     , from, with, sweptAround, throughPoints, withRadius
     , centerPoint, radius, startPoint, endPoint, sweptAngle
-    , pointOn, pointsAt
+    , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
-    , tangentDirection, tangentDirectionsAt, sample, samplesAt
+    , tangentDirection, sample
     , toPolyline
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , relativeTo, placeIn
-    , firstDerivative, firstDerivativesAt
+    , firstDerivative
     )
 
 {-| An `Arc2d` is a section of a circle, defined by its center point, start
@@ -43,9 +43,9 @@ end point). This module includes functionality for
 
 # Evaluation
 
-@docs pointOn, pointsAt
+@docs pointOn
 @docs Nondegenerate, nondegenerate, fromNondegenerate
-@docs tangentDirection, tangentDirectionsAt, sample, samplesAt
+@docs tangentDirection, sample
 
 
 # Linear approximation
@@ -68,18 +68,18 @@ end point). This module includes functionality for
 You are unlikely to need to use these functions directly, but they are useful if
 you are writing low-level geometric algorithms.
 
-@docs firstDerivative, firstDerivativesAt
+@docs firstDerivative
 
 -}
 
 import Angle exposing (Angle)
 import Arc.SweptAngle as SweptAngle exposing (SweptAngle)
 import Axis2d exposing (Axis2d)
-import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import LineSegment2d exposing (LineSegment2d)
+import Parameter1d
 import Point2d exposing (Point2d)
 import Polyline2d exposing (Polyline2d)
 import Quantity exposing (Quantity)
@@ -626,7 +626,7 @@ startPoint (Types.Arc2d properties) =
 -}
 endPoint : Arc2d units coordinates -> Point2d units coordinates
 endPoint arc =
-    pointOn arc ParameterValue.one
+    pointOn arc 1.0
 
 
 {-| Get the swept angle of an arc in radians.
@@ -655,7 +655,7 @@ sweptAngle (Types.Arc2d properties) =
     --> Point2d.fromCoordinates ( 1, 3 )
 
 -}
-pointOn : Arc2d units coordinates -> ParameterValue -> Point2d units coordinates
+pointOn : Arc2d units coordinates -> Float -> Point2d units coordinates
 pointOn (Types.Arc2d arc) parameterValue =
     let
         x0 =
@@ -675,14 +675,11 @@ pointOn (Types.Arc2d arc) parameterValue =
 
         arcSweptAngle =
             arc.sweptAngle
-
-        t =
-            ParameterValue.value parameterValue
     in
     if arcSweptAngle == Quantity.zero then
         let
             distance =
-                Quantity.multiplyBy t arcSignedLength
+                Quantity.multiplyBy parameterValue arcSignedLength
 
             px =
                 x0 |> Quantity.plus (distance |> Quantity.multiplyBy dx)
@@ -695,7 +692,7 @@ pointOn (Types.Arc2d arc) parameterValue =
     else
         let
             theta =
-                Quantity.multiplyBy t arcSweptAngle
+                Quantity.multiplyBy parameterValue arcSweptAngle
 
             arcRadius =
                 Quantity.lOverTheta arcSignedLength arcSweptAngle
@@ -725,20 +722,6 @@ pointOn (Types.Arc2d arc) parameterValue =
         Point2d.xy px py
 
 
-{-| Get points along an arc at a given set of parameter values:
-
-    exampleArc |> Arc2d.pointsAt (ParameterValue.steps 2)
-    --> [ Point2d.fromCoordinates ( 3, 1 )
-    --> , Point2d.fromCoordinates ( 2.4142, 2.4142 )
-    --> , Point2d.fromCoordinates ( 1, 3 )
-    --> ]
-
--}
-pointsAt : List ParameterValue -> Arc2d units coordinates -> List (Point2d units coordinates)
-pointsAt parameterValues arc =
-    List.map (pointOn arc) parameterValues
-
-
 {-| Get the first derivative of an arc at a given parameter value:
 
     Arc2d.firstDerivative exampleArc ParameterValue.zero
@@ -751,36 +734,16 @@ pointsAt parameterValues arc =
     --> Vector2d.fromComponents ( -3.1416, 0 )
 
 -}
-firstDerivative : Arc2d units coordinates -> ParameterValue -> Vector2d units coordinates
+firstDerivative : Arc2d units coordinates -> Float -> Vector2d units coordinates
 firstDerivative (Types.Arc2d arc) =
     let
         startDerivative =
             Vector2d.withLength arc.signedLength arc.xDirection
     in
     \parameterValue ->
-        let
-            t =
-                ParameterValue.value parameterValue
-        in
         startDerivative
             |> Vector2d.rotateBy
-                (Quantity.multiplyBy t arc.sweptAngle)
-
-
-{-| Evaluate the first derivative of an arc at a given set of parameter values:
-
-    exampleArc
-        |> Arc2d.firstDerivativesAt
-            (ParameterValue.steps 2)
-    --> [ Vector2d.fromComponents ( 0, 3.1416 )
-    --> , Vector2d.fromComponents ( -2.2214, 2.2214 )
-    --> , Vector2d.fromComponents ( -3.1416, 0 )
-    --> ]
-
--}
-firstDerivativesAt : List ParameterValue -> Arc2d units coordinates -> List (Vector2d units coordinates)
-firstDerivativesAt parameterValues arc =
-    List.map (firstDerivative arc) parameterValues
+                (Quantity.multiplyBy parameterValue arc.sweptAngle)
 
 
 {-| If a curve has zero length (consists of just a single point), then we say
@@ -844,32 +807,11 @@ value:
     --> Direction2d.fromAngle (degrees 180)
 
 -}
-tangentDirection : Nondegenerate units coordinates -> ParameterValue -> Direction2d coordinates
+tangentDirection : Nondegenerate units coordinates -> Float -> Direction2d coordinates
 tangentDirection (Nondegenerate (Types.Arc2d arc)) parameterValue =
-    let
-        t =
-            ParameterValue.value parameterValue
-    in
     arc.xDirection
         |> Direction2d.rotateBy
-            (Quantity.multiplyBy t arc.sweptAngle)
-
-
-{-| Get tangent directions to a nondegenerate arc at a given set of parameter
-values:
-
-    nondegenerateExampleArc
-        |> Arc2d.tangentDirectionsAt
-            (ParameterValue.steps 2)
-    --> [ Direction2d.fromAngle (degrees 90)
-    --> , Direction2d.fromAngle (degrees 135)
-    --> , Direction2d.fromAngle (degrees 180)
-    --> ]
-
--}
-tangentDirectionsAt : List ParameterValue -> Nondegenerate units coordinates -> List (Direction2d coordinates)
-tangentDirectionsAt parameterValues nondegenerateArc =
-    List.map (tangentDirection nondegenerateArc) parameterValues
+            (Quantity.multiplyBy parameterValue arc.sweptAngle)
 
 
 {-| Get both the point and tangent direction of a nondegenerate arc at a given
@@ -894,33 +836,11 @@ parameter value:
     --> )
 
 -}
-sample : Nondegenerate units coordinates -> ParameterValue -> ( Point2d units coordinates, Direction2d coordinates )
+sample : Nondegenerate units coordinates -> Float -> ( Point2d units coordinates, Direction2d coordinates )
 sample nondegenerateArc parameterValue =
     ( pointOn (fromNondegenerate nondegenerateArc) parameterValue
     , tangentDirection nondegenerateArc parameterValue
     )
-
-
-{-| Get points and tangent directions of a nondegenerate arc at a given set of
-parameter values:
-
-    nondegenerateExampleArc
-        |> Arc2d.samplesAt (ParameterValue.steps 2)
-    --> [ ( Point2d.fromCoordinates ( 3, 1 )
-    -->   , Direction2d.fromAngle (degrees 90)
-    -->   )
-    --> , ( Point2d.fromCoordinates ( 2.4142, 2.4142 )
-    -->   , Direction2d.fromAngle (degrees 135)
-    -->   )
-    --> , ( Point2d.fromCoordinates ( 1, 3 )
-    -->   , Direction2d.fromAngle (degrees 180)
-    -->   )
-    --> ]
-
--}
-samplesAt : List ParameterValue -> Nondegenerate units coordinates -> List ( Point2d units coordinates, Direction2d coordinates )
-samplesAt parameterValues nondegenerateArc =
-    List.map (sample nondegenerateArc) parameterValues
 
 
 numApproximationSegments : Quantity Float units -> Arc2d units coordinates -> Int
@@ -968,7 +888,7 @@ toPolyline { maxError } arc =
             numApproximationSegments maxError arc
 
         points =
-            arc |> pointsAt (ParameterValue.steps numSegments)
+            Parameter1d.steps numSegments (pointOn arc)
     in
     Polyline2d.fromVertices points
 

@@ -7,7 +7,7 @@
 --------------------------------------------------------------------------------
 
 
-module Curve.ArcLengthParameterization exposing
+module ArcLengthParameterization exposing
     ( ArcLengthParameterization
     , build
     , totalArcLength, arcLengthToParameterValue, parameterValueToArcLength
@@ -35,9 +35,8 @@ parameter values.
 
 -}
 
-import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Float.Extra as Float
-import Quantity exposing (Quantity)
+import Quantity exposing (Quantity, zero)
 import Quantity.Extra as Quantity
 
 
@@ -92,14 +91,14 @@ segmentsPerLeaf =
 -}
 build :
     { maxError : Quantity Float units
-    , derivativeMagnitude : ParameterValue -> Quantity Float units
+    , derivativeMagnitude : Float -> Quantity Float units
     , maxSecondDerivativeMagnitude : Quantity Float units
     }
     -> ArcLengthParameterization units
 build { maxError, derivativeMagnitude, maxSecondDerivativeMagnitude } =
     let
         height =
-            if maxError |> Quantity.lessThanOrEqualTo Quantity.zero then
+            if maxError |> Quantity.lessThanOrEqualTo zero then
                 0
 
             else
@@ -113,10 +112,10 @@ build { maxError, derivativeMagnitude, maxSecondDerivativeMagnitude } =
                 in
                 max 0 (ceiling (logBase 2 numLeaves))
     in
-    ArcLengthParameterization (buildTree derivativeMagnitude Quantity.zero 0 1 height)
+    ArcLengthParameterization (buildTree derivativeMagnitude zero 0 1 height)
 
 
-buildTree : (ParameterValue -> Quantity Float units) -> Quantity Float units -> Float -> Float -> Int -> SegmentTree units
+buildTree : (Float -> Quantity Float units) -> Quantity Float units -> Float -> Float -> Int -> SegmentTree units
 buildTree derivativeMagnitude lengthAtStart_ paramAtStart_ paramAtEnd height =
     let
         paramDelta =
@@ -158,28 +157,28 @@ buildTree derivativeMagnitude lengthAtStart_ paramAtStart_ paramAtEnd height =
                 0.125 * paramDelta
 
             derivativeMagnitude0 =
-                derivativeMagnitude (ParameterValue.unsafe (param0 + offset))
+                derivativeMagnitude (param0 + offset)
 
             derivativeMagnitude1 =
-                derivativeMagnitude (ParameterValue.unsafe (param1 + offset))
+                derivativeMagnitude (param1 + offset)
 
             derivativeMagnitude2 =
-                derivativeMagnitude (ParameterValue.unsafe (param2 + offset))
+                derivativeMagnitude (param2 + offset)
 
             derivativeMagnitude3 =
-                derivativeMagnitude (ParameterValue.unsafe (param3 + offset))
+                derivativeMagnitude (param3 + offset)
 
             derivativeMagnitude4 =
-                derivativeMagnitude (ParameterValue.unsafe (param4 + offset))
+                derivativeMagnitude (param4 + offset)
 
             derivativeMagnitude5 =
-                derivativeMagnitude (ParameterValue.unsafe (param5 + offset))
+                derivativeMagnitude (param5 + offset)
 
             derivativeMagnitude6 =
-                derivativeMagnitude (ParameterValue.unsafe (param6 + offset))
+                derivativeMagnitude (param6 + offset)
 
             derivativeMagnitude7 =
-                derivativeMagnitude (ParameterValue.unsafe (param7 + offset))
+                derivativeMagnitude (param7 + offset)
 
             length0 =
                 lengthAtStart_
@@ -279,23 +278,12 @@ buildTree derivativeMagnitude lengthAtStart_ paramAtStart_ paramAtEnd height =
             }
 
 
-{-| Convert an arc length to the corresponding parameter value. If the given
-arc length is less than zero or greater than the total arc length of the curve
-(as reported by `totalArcLength`), returns `Nothing`.
+{-| Convert an arc length to the corresponding parameter value. The given arc
+length will be clamped to the range [0, length].
 -}
-arcLengthToParameterValue : Quantity Float units -> ArcLengthParameterization units -> Maybe ParameterValue
+arcLengthToParameterValue : Quantity Float units -> ArcLengthParameterization units -> Float
 arcLengthToParameterValue s (ArcLengthParameterization tree) =
-    if s == Quantity.zero then
-        Just ParameterValue.zero
-
-    else if
-        (s |> Quantity.greaterThan Quantity.zero)
-            && (s |> Quantity.lessThanOrEqualTo (lengthAtEnd tree))
-    then
-        Just (ParameterValue.clamped (unsafeToParameterValue tree s))
-
-    else
-        Nothing
+    unsafeToParameterValue tree (Quantity.clamp zero (lengthAtEnd tree) s)
 
 
 unsafeToParameterValue : SegmentTree units -> Quantity Float units -> Float
@@ -425,15 +413,12 @@ totalArcLength (ArcLengthParameterization tree) =
     lengthAtEnd tree
 
 
-{-| Convert a parameter value to the corresponding arc length.
+{-| Convert a parameter value to the corresponding arc length. The parameter
+value will be clamped to the range [0, 1].
 -}
-parameterValueToArcLength : ParameterValue -> ArcLengthParameterization units -> Quantity Float units
+parameterValueToArcLength : Float -> ArcLengthParameterization units -> Quantity Float units
 parameterValueToArcLength parameterValue (ArcLengthParameterization tree) =
-    if parameterValue == ParameterValue.zero then
-        Quantity.zero
-
-    else
-        unsafeToArcLength tree (ParameterValue.value parameterValue)
+    unsafeToArcLength tree (clamp 0 1 parameterValue)
 
 
 unsafeToArcLength : SegmentTree units -> Float -> Quantity Float units

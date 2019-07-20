@@ -47,9 +47,14 @@ arcLengthMatchesAnalytical =
         (\quadraticSpline ->
             quadraticSpline
                 |> CubicSpline3d.fromQuadraticSpline
-                |> CubicSpline3d.arcLengthParameterized { maxError = meters 1.0e-3 }
-                |> CubicSpline3d.arcLength
-                |> Expect.quantityWithin (meters 1.0e-3)
+                |> CubicSpline3d.nondegenerate
+                |> Result.map
+                    (CubicSpline3d.arcLengthParameterized
+                        { maxError = meters 0.001 }
+                        >> CubicSpline3d.arcLength
+                    )
+                |> Result.withDefault zero
+                |> Expect.quantityWithin (meters 0.001)
                     (Tests.QuadraticSpline3d.analyticalLength quadraticSpline)
         )
 
@@ -59,12 +64,19 @@ pointAtZeroLengthIsStart =
     Test.fuzz Fuzz.cubicSpline3d
         "point along spline at zero length is start point"
         (\spline ->
-            let
-                parameterizedCurve =
-                    spline |> CubicSpline3d.arcLengthParameterized { maxError = meters 1.0e-3 }
-            in
-            CubicSpline3d.pointAlong parameterizedCurve Quantity.zero
-                |> Expect.equal (Just (CubicSpline3d.startPoint spline))
+            case CubicSpline3d.nondegenerate spline of
+                Ok nondegenerateSpline ->
+                    let
+                        parameterizedSpline =
+                            nondegenerateSpline
+                                |> CubicSpline3d.arcLengthParameterized
+                                    { maxError = meters 1.0e-3 }
+                    in
+                    CubicSpline3d.pointAlong parameterizedSpline (meters 0)
+                        |> Expect.point3d (CubicSpline3d.startPoint spline)
+
+                Err _ ->
+                    Expect.pass
         )
 
 
@@ -73,13 +85,20 @@ pointAtArcLengthIsEnd =
     Test.fuzz Fuzz.cubicSpline3d
         "point along spline at arc length is end point"
         (\spline ->
-            let
-                parameterizedCurve =
-                    spline |> CubicSpline3d.arcLengthParameterized { maxError = meters 1.0e-3 }
+            case CubicSpline3d.nondegenerate spline of
+                Ok nondegenerateSpline ->
+                    let
+                        parameterizedSpline =
+                            nondegenerateSpline
+                                |> CubicSpline3d.arcLengthParameterized
+                                    { maxError = meters 1.0e-3 }
 
-                arcLength =
-                    CubicSpline3d.arcLength parameterizedCurve
-            in
-            CubicSpline3d.pointAlong parameterizedCurve arcLength
-                |> Expect.equal (Just (CubicSpline3d.endPoint spline))
+                        arcLength =
+                            CubicSpline3d.arcLength parameterizedSpline
+                    in
+                    CubicSpline3d.pointAlong parameterizedSpline arcLength
+                        |> Expect.point3d (CubicSpline3d.endPoint spline)
+
+                Err _ ->
+                    Expect.pass
         )

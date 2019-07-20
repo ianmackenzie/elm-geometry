@@ -98,10 +98,22 @@ arcLengthMatchesAnalytical =
     Test.fuzz curvedSpline
         "arc length matches analytical formula"
         (\spline ->
-            spline
-                |> QuadraticSpline3d.arcLengthParameterized { maxError = meters 1.0e-3 }
-                |> QuadraticSpline3d.arcLength
-                |> Expect.quantityWithin (meters 1.0e-3) (analyticalLength spline)
+            let
+                tolerance =
+                    meters 0.001
+
+                measuredArcLength =
+                    spline
+                        |> QuadraticSpline3d.nondegenerate
+                        |> Result.map
+                            (QuadraticSpline3d.arcLengthParameterized
+                                { maxError = tolerance }
+                                >> QuadraticSpline3d.arcLength
+                            )
+                        |> Result.withDefault zero
+            in
+            measuredArcLength
+                |> Expect.quantityWithin tolerance (analyticalLength spline)
         )
 
 
@@ -110,12 +122,19 @@ pointAtZeroLengthIsStart =
     Test.fuzz Fuzz.quadraticSpline3d
         "point along spline at zero length is start point"
         (\spline ->
-            let
-                parameterizedCurve =
-                    spline |> QuadraticSpline3d.arcLengthParameterized { maxError = meters 1.0e-3 }
-            in
-            QuadraticSpline3d.pointAlong parameterizedCurve (meters 0)
-                |> Expect.equal (Just (QuadraticSpline3d.startPoint spline))
+            case QuadraticSpline3d.nondegenerate spline of
+                Ok nondegenerateSpline ->
+                    let
+                        parameterizedSpline =
+                            nondegenerateSpline
+                                |> QuadraticSpline3d.arcLengthParameterized
+                                    { maxError = meters 1.0e-3 }
+                    in
+                    QuadraticSpline3d.pointAlong parameterizedSpline (meters 0)
+                        |> Expect.point3d (QuadraticSpline3d.startPoint spline)
+
+                Err _ ->
+                    Expect.pass
         )
 
 
@@ -124,13 +143,20 @@ pointAtArcLengthIsEnd =
     Test.fuzz Fuzz.quadraticSpline3d
         "point along spline at arc length is end point"
         (\spline ->
-            let
-                parameterizedCurve =
-                    spline |> QuadraticSpline3d.arcLengthParameterized { maxError = meters 1.0e-3 }
+            case QuadraticSpline3d.nondegenerate spline of
+                Ok nondegenerateSpline ->
+                    let
+                        parameterizedSpline =
+                            nondegenerateSpline
+                                |> QuadraticSpline3d.arcLengthParameterized
+                                    { maxError = meters 1.0e-3 }
 
-                arcLength =
-                    QuadraticSpline3d.arcLength parameterizedCurve
-            in
-            QuadraticSpline3d.pointAlong parameterizedCurve arcLength
-                |> Expect.equal (Just (QuadraticSpline3d.endPoint spline))
+                        arcLength =
+                            QuadraticSpline3d.arcLength parameterizedSpline
+                    in
+                    QuadraticSpline3d.pointAlong parameterizedSpline arcLength
+                        |> Expect.point3d (QuadraticSpline3d.endPoint spline)
+
+                Err _ ->
+                    Expect.pass
         )

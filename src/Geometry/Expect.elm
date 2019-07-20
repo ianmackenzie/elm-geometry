@@ -28,6 +28,7 @@ module Geometry.Expect exposing
     , direction2dWithin
     , direction3d
     , direction3dWithin
+    , exactly
     , expect
     , float
     , frame2d
@@ -204,6 +205,11 @@ approximately (Quantity first) (Quantity second) =
     Expect.within (Expect.AbsoluteOrRelative defaultTolerance defaultTolerance)
         first
         second
+
+
+exactly : Float -> Float -> Expectation
+exactly actual expected =
+    actual |> Expect.within (Expect.Absolute 0.0) expected
 
 
 float : Float -> Float -> Expectation
