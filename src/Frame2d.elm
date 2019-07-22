@@ -565,9 +565,9 @@ mirrorAcross axis =
 expressed in local coordinates relative to the first.
 -}
 relativeTo :
-    Frame2d units globalCoordinates { defines : localCoordinates1 }
-    -> Frame2d units globalCoordinates { defines : localCoordinates2 }
-    -> Frame2d units localCoordinates1 { defines : localCoordinates2 }
+    Frame2d units globalCoordinates { defines : localCoordinates }
+    -> Frame2d units globalCoordinates defines
+    -> Frame2d units localCoordinates defines
 relativeTo otherFrame frame =
     Types.Frame2d
         { originPoint = Point2d.relativeTo otherFrame (originPoint frame)
@@ -581,9 +581,9 @@ in local coordinates relative to the first frame, and return the second frame
 expressed in global coordinates.
 -}
 placeIn :
-    Frame2d units globalCoordinates { defines : localCoordinates1 }
-    -> Frame2d units localCoordinates1 { defines : localCoordinates2 }
-    -> Frame2d units globalCoordinates { defines : localCoordinates2 }
+    Frame2d units globalCoordinates { defines : localCoordinates }
+    -> Frame2d units localCoordinates defines
+    -> Frame2d units globalCoordinates defines
 placeIn otherFrame frame =
     Types.Frame2d
         { originPoint = Point2d.placeIn otherFrame (originPoint frame)

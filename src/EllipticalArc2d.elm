@@ -100,7 +100,7 @@ import Arc.SweptAngle as SweptAngle exposing (SweptAngle)
 import ArcLengthParameterization exposing (ArcLengthParameterization)
 import Axis2d exposing (Axis2d)
 import Direction2d exposing (Direction2d)
-import Ellipse2d exposing (Ellipse2d, EllipseCoordinates)
+import Ellipse2d exposing (Ellipse2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import Interval
@@ -338,7 +338,7 @@ centerPoint (Types.EllipticalArc2d arc) =
 
 
 {-| -}
-axes : EllipticalArc2d units coordinates -> Frame2d units coordinates { defines : EllipseCoordinates }
+axes : EllipticalArc2d units coordinates -> Frame2d units coordinates defines
 axes (Types.EllipticalArc2d arc) =
     Ellipse2d.axes arc.ellipse
 

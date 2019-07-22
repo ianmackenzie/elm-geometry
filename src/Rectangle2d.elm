@@ -8,7 +8,7 @@
 
 
 module Rectangle2d exposing
-    ( Rectangle2d, RectangleCoordinates
+    ( Rectangle2d
     , from, centeredOn, fromExtrema, fromExtremaIn
     , dimensions, axes, xAxis, yAxis, centerPoint, area
     , vertices, bottomLeftVertex, bottomRightVertex, topLeftVertex, topRightVertex
@@ -31,7 +31,7 @@ rectangle-related functionality such as:
 Unlike bounding boxes, rectangles are _not_ constrained to be axis-aligned -
 they can have arbitrary orientation and so can be rotated, mirrored etc.
 
-@docs Rectangle2d, RectangleCoordinates
+@docs Rectangle2d
 
 
 # Construction
@@ -84,12 +84,6 @@ import Vector2d exposing (Vector2d)
 {-| -}
 type alias Rectangle2d units coordinates =
     Types.Rectangle2d units coordinates
-
-
-{-| The coordinate system associated with the central axes of a rectangle.
--}
-type alias RectangleCoordinates =
-    Types.RectangleCoordinates
 
 
 {-| Construct a rectangle centered on the given axes (frame), with the given
@@ -270,9 +264,9 @@ toPolygon rectangle =
 The origin point of the frame will be the center point of the rectangle.
 
 -}
-axes : Rectangle2d units coordinates -> Frame2d units coordinates { defines : RectangleCoordinates }
+axes : Rectangle2d units coordinates -> Frame2d units coordinates defines
 axes (Types.Rectangle2d rectangle) =
-    rectangle.axes
+    Frame2d.copy rectangle.axes
 
 
 {-| Get the X axis of a rectangle;

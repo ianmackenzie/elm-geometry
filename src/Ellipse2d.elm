@@ -8,7 +8,7 @@
 
 
 module Ellipse2d exposing
-    ( Ellipse2d, EllipseCoordinates
+    ( Ellipse2d
     , with
     , centerPoint, xAxis, yAxis, xDirection, yDirection, axes, xRadius, yRadius, area
     , toEllipticalArc
@@ -25,7 +25,7 @@ includes functionality for
   - Scaling, rotating and translating ellipses
   - Converting ellipses between different coordinate systems
 
-@docs Ellipse2d, EllipseCoordinates
+@docs Ellipse2d
 
 
 # Constructors
@@ -68,12 +68,6 @@ import Vector2d exposing (Vector2d)
 {-| -}
 type alias Ellipse2d units coordinates =
     Types.Ellipse2d units coordinates
-
-
-{-| The coordinate system associated with the central axes of an ellipse.
--}
-type alias EllipseCoordinates =
-    Types.EllipseCoordinates
 
 
 {-| Construct an ellipse from its center point, X direction, and X and Y radii.
@@ -125,9 +119,9 @@ centerPoint ellipse =
     -->     (Point2d.fromCoordinates ( 10, 10 ))
 
 -}
-axes : Ellipse2d units coordinates -> Frame2d units coordinates { defines : EllipseCoordinates }
+axes : Ellipse2d units coordinates -> Frame2d units coordinates defines
 axes (Types.Ellipse2d ellipse) =
-    ellipse.axes
+    Frame2d.copy ellipse.axes
 
 
 {-| Get the X axis of an ellipse.
@@ -266,7 +260,7 @@ scaleAbout point scale ellipse =
         }
 
 
-transformBy : (Frame2d units coordinates1 { defines : EllipseCoordinates } -> Frame2d units coordinates2 { defines : EllipseCoordinates }) -> Ellipse2d units coordinates1 -> Ellipse2d units coordinates2
+transformBy : (Frame2d units coordinates1 {} -> Frame2d units coordinates2 {}) -> Ellipse2d units coordinates1 -> Ellipse2d units coordinates2
 transformBy axesTransformation (Types.Ellipse2d properties) =
     Types.Ellipse2d
         { axes = axesTransformation properties.axes

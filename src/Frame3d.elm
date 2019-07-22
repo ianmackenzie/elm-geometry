@@ -841,9 +841,9 @@ mirrorAcross plane frame =
 expressed in local coordinates relative to the first.
 -}
 relativeTo :
-    Frame3d units globalCoordinates { defines : localCoordinates1 }
-    -> Frame3d units globalCoordinates { defines : localCoordinates2 }
-    -> Frame3d units localCoordinates1 { defines : localCoordinates2 }
+    Frame3d units globalCoordinates { defines : localCoordinates }
+    -> Frame3d units globalCoordinates defines
+    -> Frame3d units localCoordinates defines
 relativeTo otherFrame frame =
     Types.Frame3d
         { originPoint = Point3d.relativeTo otherFrame (originPoint frame)
@@ -858,9 +858,9 @@ in local coordinates relative to the first frame, and return the second frame
 expressed in global coordinates.
 -}
 placeIn :
-    Frame3d units globalCoordinates { defines : localCoordinates1 }
-    -> Frame3d units localCoordinates1 { defines : localCoordinates2 }
-    -> Frame3d units globalCoordinates { defines : localCoordinates2 }
+    Frame3d units globalCoordinates { defines : localCoordinates }
+    -> Frame3d units localCoordinates defines
+    -> Frame3d units globalCoordinates defines
 placeIn otherFrame frame =
     Types.Frame3d
         { originPoint = Point3d.placeIn otherFrame (originPoint frame)

@@ -13,7 +13,6 @@ module Geometry.Types exposing
     , Axis2d(..)
     , Axis3d(..)
     , Block3d(..)
-    , BlockCoordinates(..)
     , BoundingBox2d(..)
     , BoundingBox3d(..)
     , Circle2d(..)
@@ -26,7 +25,6 @@ module Geometry.Types exposing
     , Direction2d(..)
     , Direction3d(..)
     , Ellipse2d(..)
-    , EllipseCoordinates(..)
     , EllipticalArc2d(..)
     , Frame2d(..)
     , Frame3d(..)
@@ -42,7 +40,6 @@ module Geometry.Types exposing
     , QuadraticSpline3d(..)
     , Rectangle2d(..)
     , Rectangle3d(..)
-    , RectangleCoordinates(..)
     , SketchPlane3d(..)
     , Sphere3d(..)
     , SweptAngle(..)
@@ -154,31 +151,23 @@ type BoundingBox3d units coordinates
         }
 
 
-type RectangleCoordinates
-    = RectangleCoordinates
-
-
 type Rectangle2d units coordinates
     = Rectangle2d
-        { axes : Frame2d units coordinates { defines : RectangleCoordinates }
+        { axes : Frame2d units coordinates {}
         , dimensions : ( Quantity Float units, Quantity Float units )
         }
 
 
 type Rectangle3d units coordinates
     = Rectangle3d
-        { axes : SketchPlane3d units coordinates { defines : RectangleCoordinates }
+        { axes : SketchPlane3d units coordinates {}
         , dimensions : ( Quantity Float units, Quantity Float units )
         }
 
 
-type BlockCoordinates
-    = BlockCoordinates
-
-
 type Block3d units coordinates
     = Block3d
-        { axes : Frame3d units coordinates { defines : BlockCoordinates }
+        { axes : Frame3d units coordinates {}
         , dimensions : ( Quantity Float units, Quantity Float units, Quantity Float units )
         }
 
@@ -213,13 +202,9 @@ type Circle3d units coordinates
         }
 
 
-type EllipseCoordinates
-    = EllipseCoordinates
-
-
 type Ellipse2d units coordinates
     = Ellipse2d
-        { axes : Frame2d units coordinates { defines : EllipseCoordinates }
+        { axes : Frame2d units coordinates {}
         , xRadius : Quantity Float units
         , yRadius : Quantity Float units
         }
