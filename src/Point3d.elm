@@ -1477,7 +1477,7 @@ relativeTo (Types.Frame3d frame) (Types.Point3d p) =
             p.y - p0.y
 
         deltaZ =
-            p.z - p0.x
+            p.z - p0.z
     in
     Types.Point3d
         { x = deltaX * i.x + deltaY * i.y + deltaZ * i.z

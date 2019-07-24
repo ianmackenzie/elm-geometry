@@ -3,8 +3,10 @@ module Tests.Point3d exposing
     , interpolationReturnsExactEndpoints
     , midpointIsEquidistant
     , mirrorFlipsSignedDistance
+    , placeInIsInverseOfRelativeTo
     , projectIntoResultsInPerpendicularVector
     , projectIntoThenPlaceOntoIsProjectOnto
+    , relativeToIsInverseOfPlaceIn
     , rotationAboutAxisPreservesDistanceAlong
     , rotationAboutAxisPreservesDistanceFrom
     , translateByAndInAreConsistent
@@ -234,4 +236,32 @@ circumcenterIsValidOrNothing =
 
                         Nothing ->
                             Expect.fail "Three points have a circumcenter but no plane through them"
+        )
+
+
+relativeToIsInverseOfPlaceIn : Test
+relativeToIsInverseOfPlaceIn =
+    Test.fuzz2
+        Fuzz.point3d
+        Fuzz.frame3d
+        "relativeTo is inverse of placeIn"
+        (\point frame ->
+            point
+                |> Point3d.placeIn frame
+                |> Point3d.relativeTo frame
+                |> Expect.point3d point
+        )
+
+
+placeInIsInverseOfRelativeTo : Test
+placeInIsInverseOfRelativeTo =
+    Test.fuzz2
+        Fuzz.point3d
+        Fuzz.frame3d
+        "placeIn is inverse of relativeTo"
+        (\point frame ->
+            point
+                |> Point3d.relativeTo frame
+                |> Point3d.placeIn frame
+                |> Expect.point3d point
         )
