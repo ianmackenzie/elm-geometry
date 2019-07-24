@@ -513,7 +513,7 @@ are coplanar, returns `Nothing`.
     --> Nothing
 
 -}
-orthonormalize : Vector3d units coordinates -> Vector3d units coordinates -> Vector3d units coordinates -> Maybe ( Direction3d coordinates, Direction3d coordinates, Direction3d coordinates )
+orthonormalize : Vector3d units1 coordinates -> Vector3d units2 coordinates -> Vector3d units3 coordinates -> Maybe ( Direction3d coordinates, Direction3d coordinates, Direction3d coordinates )
 orthonormalize xVector xyVector xyzVector =
     Vector3d.direction xVector
         |> Maybe.andThen
