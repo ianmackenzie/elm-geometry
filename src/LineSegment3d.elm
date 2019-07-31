@@ -12,6 +12,7 @@ module LineSegment3d exposing
     , fromEndpoints, from, along, on
     , startPoint, endPoint, endpoints, midpoint, length, direction, perpendicularDirection, vector, boundingBox
     , interpolate
+    , intersectionWithPlane
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapEndpoints
     , relativeTo, placeIn, projectInto
     )
@@ -40,6 +41,11 @@ functionality such as:
 # Interpolation
 
 @docs interpolate
+
+
+# Intersection
+
+@docs intersectionWithPlane
 
 
 # Transformations
@@ -238,6 +244,57 @@ interpolate lineSegment t =
             endpoints lineSegment
     in
     Point3d.interpolateFrom start end t
+
+
+{-| TODO
+-}
+intersectionWithPlane : Plane3d units coordinates -> LineSegment3d units coordinates -> Maybe (Point3d units coordinates)
+intersectionWithPlane plane lineSegment =
+    let
+        ( p1, p2 ) =
+            endpoints lineSegment
+
+        d1 =
+            Point3d.signedDistanceFrom plane p1
+
+        d2 =
+            Point3d.signedDistanceFrom plane p2
+
+        product =
+            d1 |> Quantity.times d2
+    in
+    if product |> Quantity.lessThan Quantity.zero then
+        -- The two points are on opposite sides of the plane, so there is a
+        -- unique intersection point in between them
+        let
+            t =
+                Quantity.ratio d1 (d1 |> Quantity.minus d2)
+        in
+        Just (Point3d.interpolateFrom p1 p2 t)
+
+    else if product |> Quantity.greaterThan Quantity.zero then
+        -- Both points are on the same side of the plane, so no intersection
+        -- point exists
+        Nothing
+
+    else if d1 /= Quantity.zero then
+        -- d2 must be zero since the product is zero, so only p2 is on the plane
+        Just p2
+
+    else if d2 /= Quantity.zero then
+        -- d1 must be zero since the product is zero, so only p1 is on the plane
+        Just p1
+
+    else if p1 == p2 then
+        -- Both d1 and d2 are zero, so both p1 and p2 are on the plane but also
+        -- happen to be equal to each other, so the line segment is actually
+        -- just a single point on the plane
+        Just p1
+
+    else
+        -- Both endpoints lie on the plane and are not equal to each other - no
+        -- unique intersection point
+        Nothing
 
 
 {-| Get the length of a line segment.
