@@ -10,12 +10,13 @@
 module Direction2d exposing
     ( Direction2d
     , x, y, positiveX, negativeX, positiveY, negativeY
-    , from, perpendicularTo, orthonormalize, orthogonalize, unsafe
-    , fromAngle, toAngle, toVector, toRecord
+    , from, perpendicularTo, orthonormalize, orthogonalize
+    , fromAngle, toAngle, toVector
     , xComponent, yComponent, componentIn, angleFrom
     , equalWithin
     , reverse, rotateClockwise, rotateCounterclockwise, rotateBy, mirrorAcross
     , relativeTo, placeIn
+    , unsafe, unwrap
     )
 
 {-| A `Direction2d` represents a direction like 'up' or 'north' or 'forwards'.
@@ -40,12 +41,12 @@ have several uses, such as:
 
 # Constructors
 
-@docs from, perpendicularTo, orthonormalize, orthogonalize, unsafe
+@docs from, perpendicularTo, orthonormalize, orthogonalize
 
 
 # Conversions
 
-@docs fromAngle, toAngle, toVector, toRecord
+@docs fromAngle, toAngle, toVector
 
 
 # Properties
@@ -82,6 +83,11 @@ For the examples, assume the following frames have been defined:
         Frame2d.atOrigin |> Frame2d.rotateBy (degrees 30)
 
 @docs relativeTo, placeIn
+
+
+# Advanced
+
+@docs unsafe, unwrap
 
 -}
 
@@ -183,8 +189,8 @@ unsafe components =
 
 {-| TODO
 -}
-toRecord : Direction2d coordinates -> { x : Float, y : Float }
-toRecord (Types.Direction2d components) =
+unwrap : Direction2d coordinates -> { x : Float, y : Float }
+unwrap (Types.Direction2d components) =
     components
 
 

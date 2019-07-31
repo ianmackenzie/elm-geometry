@@ -10,12 +10,13 @@
 module Direction3d exposing
     ( Direction3d
     , x, y, z, positiveX, negativeX, positiveY, negativeY, positiveZ, negativeZ
-    , from, on, fromAzimuthInAndElevationFrom, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize, unsafe
-    , toVector, toRecord
+    , from, on, fromAzimuthInAndElevationFrom, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize
+    , toVector
     , xComponent, yComponent, zComponent, componentIn, angleFrom, azimuthIn, elevationFrom
     , equalWithin
     , reverse, rotateAround, mirrorAcross, projectOnto
     , relativeTo, placeIn, projectInto
+    , unsafe, unwrap
     )
 
 {-| A `Direction3d` represents a direction like 'up' or 'north' or 'forwards'.
@@ -40,12 +41,12 @@ Directions have several uses, such as:
 
 # Constructors
 
-@docs from, on, fromAzimuthInAndElevationFrom, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize, unsafe
+@docs from, on, fromAzimuthInAndElevationFrom, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize
 
 
 # Conversion
 
-@docs toVector, toRecord
+@docs toVector
 
 
 # Properties
@@ -77,6 +78,11 @@ global XYZ frame:
             |> Frame3d.rotateAround Axis3d.z (degrees 30)
 
 @docs relativeTo, placeIn, projectInto
+
+
+# Advanced
+
+@docs unsafe, unwrap
 
 -}
 
@@ -786,8 +792,8 @@ toVector (Types.Direction3d components) =
 
 {-| TODO
 -}
-toRecord : Direction3d coordinates -> { x : Float, y : Float, z : Float }
-toRecord (Types.Direction3d coordinates) =
+unwrap : Direction3d coordinates -> { x : Float, y : Float, z : Float }
+unwrap (Types.Direction3d coordinates) =
     coordinates
 
 
