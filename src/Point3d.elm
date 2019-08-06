@@ -17,7 +17,7 @@ module Point3d exposing
     , xCoordinate, yCoordinate, zCoordinate, xCoordinateIn, yCoordinateIn, zCoordinateIn
     , equalWithin, lexicographicComparison
     , distanceFrom, signedDistanceAlong, distanceFromAxis, signedDistanceFrom
-    , centroid, centroidOf, centroid3, centroid4, centroidN
+    , centroid, centroidOf, centroid3, centroidN
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectOntoAxis
     , relativeTo, placeIn, projectInto
     , unsafe, unwrap
@@ -87,7 +87,7 @@ coordinates.
 
 # Centroid calculation
 
-@docs centroid, centroidOf, centroid3, centroid4, centroidN
+@docs centroid, centroidOf, centroid3, centroidN
 
 
 # Transformations
@@ -285,17 +285,6 @@ centroid3 (Types.Point3d p1) (Types.Point3d p2) (Types.Point3d p3) =
         { x = p1.x + (p2.x - p1.x) / 3 + (p3.x - p1.x) / 3
         , y = p1.y + (p2.y - p1.y) / 3 + (p3.y - p1.y) / 3
         , z = p1.z + (p2.z - p1.z) / 3 + (p3.z - p1.z) / 3
-        }
-
-
-{-| TODO
--}
-centroid4 : Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates
-centroid4 (Types.Point3d p1) (Types.Point3d p2) (Types.Point3d p3) (Types.Point3d p4) =
-    Types.Point3d
-        { x = p1.x + (p2.x - p1.x) / 4 + (p3.x - p1.x) / 4 + (p4.x - p1.x) / 4
-        , y = p1.y + (p2.y - p1.y) / 4 + (p3.y - p1.y) / 4 + (p4.y - p1.y) / 4
-        , z = p1.z + (p2.z - p1.z) / 4 + (p3.z - p1.z) / 4 + (p4.z - p1.z) / 4
         }
 
 

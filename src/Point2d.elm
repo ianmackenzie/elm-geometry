@@ -18,7 +18,7 @@ module Point2d exposing
     , xCoordinate, yCoordinate, xCoordinateIn, yCoordinateIn
     , equalWithin, lexicographicComparison
     , distanceFrom, signedDistanceAlong, signedDistanceFrom
-    , centroid, centroidOf, centroid3, centroid4, centroidN
+    , centroid, centroidOf, centroid3, centroidN
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
     , relativeTo, placeIn
     , unsafe, unwrap
@@ -280,16 +280,6 @@ centroid3 (Types.Point2d p1) (Types.Point2d p2) (Types.Point2d p3) =
     Types.Point2d
         { x = p1.x + (p2.x - p1.x) / 3 + (p3.x - p1.x) / 3
         , y = p1.y + (p2.y - p1.y) / 3 + (p3.y - p1.y) / 3
-        }
-
-
-{-| TODO
--}
-centroid4 : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates
-centroid4 (Types.Point2d p1) (Types.Point2d p2) (Types.Point2d p3) (Types.Point2d p4) =
-    Types.Point2d
-        { x = p1.x + (p2.x - p1.x) / 4 + (p3.x - p1.x) / 4 + (p4.x - p1.x) / 4
-        , y = p1.y + (p2.y - p1.y) / 4 + (p3.y - p1.y) / 4 + (p4.y - p1.y) / 4
         }
 
 
