@@ -94,22 +94,22 @@ fromExtrema :
     , maxZ : Quantity Float units
     }
     -> BoundingBox3d units coordinates
-fromExtrema givenExtrema =
+fromExtrema given =
     if
-        (givenExtrema.minX |> Quantity.lessThanOrEqualTo givenExtrema.maxX)
-            && (givenExtrema.minY |> Quantity.lessThanOrEqualTo givenExtrema.maxY)
-            && (givenExtrema.minZ |> Quantity.lessThanOrEqualTo givenExtrema.maxZ)
+        (given.minX |> Quantity.lessThanOrEqualTo given.maxX)
+            && (given.minY |> Quantity.lessThanOrEqualTo given.maxY)
+            && (given.minZ |> Quantity.lessThanOrEqualTo given.maxZ)
     then
-        Types.BoundingBox3d givenExtrema
+        Types.BoundingBox3d given
 
     else
         Types.BoundingBox3d
-            { minX = Quantity.min givenExtrema.minX givenExtrema.maxX
-            , maxX = Quantity.max givenExtrema.minX givenExtrema.maxX
-            , minY = Quantity.min givenExtrema.minY givenExtrema.maxY
-            , maxY = Quantity.max givenExtrema.minY givenExtrema.maxY
-            , minZ = Quantity.min givenExtrema.minZ givenExtrema.maxZ
-            , maxZ = Quantity.max givenExtrema.minZ givenExtrema.maxZ
+            { minX = Quantity.min given.minX given.maxX
+            , maxX = Quantity.max given.minX given.maxX
+            , minY = Quantity.min given.minY given.maxY
+            , maxY = Quantity.max given.minY given.maxY
+            , minZ = Quantity.min given.minZ given.maxZ
+            , maxZ = Quantity.max given.minZ given.maxZ
             }
 
 
