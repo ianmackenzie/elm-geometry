@@ -123,7 +123,7 @@ fromExtrema given =
 -}
 singleton : Point2d units coordinates -> BoundingBox2d units coordinates
 singleton point =
-    fromExtrema
+    Types.BoundingBox2d
         { minX = Point2d.xCoordinate point
         , maxX = Point2d.xCoordinate point
         , minY = Point2d.yCoordinate point
@@ -165,7 +165,7 @@ from firstPoint secondPoint =
         y2 =
             Point2d.yCoordinate secondPoint
     in
-    fromExtrema
+    Types.BoundingBox2d
         { minX = Quantity.min x1 x2
         , maxX = Quantity.max x1 x2
         , minY = Quantity.min y1 y2
@@ -864,7 +864,7 @@ intersection : BoundingBox2d units coordinates -> BoundingBox2d units coordinate
 intersection firstBox secondBox =
     if intersects firstBox secondBox then
         Just
-            (fromExtrema
+            (Types.BoundingBox2d
                 { minX = Quantity.max (minX firstBox) (minX secondBox)
                 , maxX = Quantity.min (maxX firstBox) (maxX secondBox)
                 , minY = Quantity.max (minY firstBox) (minY secondBox)
@@ -912,7 +912,7 @@ scaleAbout point scale boundingBox =
             Quantity.scaleAbout y0 scale (maxY boundingBox)
     in
     if scale >= 0 then
-        fromExtrema
+        Types.BoundingBox2d
             { minX = scaledMinX
             , maxX = scaledMaxX
             , minY = scaledMinY
@@ -920,7 +920,7 @@ scaleAbout point scale boundingBox =
             }
 
     else
-        fromExtrema
+        Types.BoundingBox2d
             { minX = scaledMaxX
             , maxX = scaledMinX
             , minY = scaledMaxY
@@ -951,7 +951,7 @@ translateBy displacement boundingBox =
         dy =
             Vector2d.yComponent displacement
     in
-    fromExtrema
+    Types.BoundingBox2d
         { minX = minX boundingBox |> Quantity.plus dx
         , maxX = maxX boundingBox |> Quantity.plus dx
         , minY = minY boundingBox |> Quantity.plus dy
@@ -978,7 +978,7 @@ translateIn direction distance boundingBox =
 -}
 unsafeOffsetBy : Quantity Float units -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
 unsafeOffsetBy amount boundingBox =
-    fromExtrema
+    Types.BoundingBox2d
         { minX = minX boundingBox |> Quantity.minus amount
         , minY = minY boundingBox |> Quantity.minus amount
         , maxY = maxY boundingBox |> Quantity.plus amount

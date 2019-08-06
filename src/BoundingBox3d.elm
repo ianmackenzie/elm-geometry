@@ -131,7 +131,7 @@ fromExtrema given =
 -}
 singleton : Point3d units coordinates -> BoundingBox3d units coordinates
 singleton point =
-    fromExtrema
+    Types.BoundingBox3d
         { minX = Point3d.xCoordinate point
         , maxX = Point3d.xCoordinate point
         , minY = Point3d.yCoordinate point
@@ -962,7 +962,7 @@ intersection : BoundingBox3d units coordinates -> BoundingBox3d units coordinate
 intersection firstBox secondBox =
     if intersects firstBox secondBox then
         Just
-            (fromExtrema
+            (Types.BoundingBox3d
                 { minX = Quantity.max (minX firstBox) (minX secondBox)
                 , maxX = Quantity.min (maxX firstBox) (maxX secondBox)
                 , minY = Quantity.max (minY firstBox) (minY secondBox)
@@ -1023,7 +1023,7 @@ scaleAbout point scale boundingBox =
             Quantity.scaleAbout z0 scale (maxZ boundingBox)
     in
     if scale >= 0 then
-        fromExtrema
+        Types.BoundingBox3d
             { minX = scaledMinX
             , maxX = scaledMaxX
             , minY = scaledMinY
@@ -1033,7 +1033,7 @@ scaleAbout point scale boundingBox =
             }
 
     else
-        fromExtrema
+        Types.BoundingBox3d
             { minX = scaledMaxX
             , maxX = scaledMinX
             , minY = scaledMaxY
@@ -1071,7 +1071,7 @@ translateBy displacement boundingBox =
         dz =
             Vector3d.zComponent displacement
     in
-    fromExtrema
+    Types.BoundingBox3d
         { minX = minX boundingBox |> Quantity.plus dx
         , maxX = maxX boundingBox |> Quantity.plus dx
         , minY = minY boundingBox |> Quantity.plus dy
@@ -1100,7 +1100,7 @@ translateIn direction distance boundingBox =
 -}
 unsafeOffsetBy : Quantity Float units -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates
 unsafeOffsetBy amount boundingBox =
-    fromExtrema
+    Types.BoundingBox3d
         { minX = minX boundingBox |> Quantity.minus amount
         , minY = minY boundingBox |> Quantity.minus amount
         , minZ = minZ boundingBox |> Quantity.minus amount
