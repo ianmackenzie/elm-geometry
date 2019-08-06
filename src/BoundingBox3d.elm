@@ -9,7 +9,9 @@
 
 module BoundingBox3d exposing
     ( BoundingBox3d
-    , fromExtrema, singleton, from, hull, intersection, aggregate, containingPoints
+    , fromExtrema, singleton
+    , hull, hullOf, hull2, hull3, hullN
+    , intersection, union, unionOf, union2, union3, unionN
     , extrema, minX, maxX, minY, maxY, minZ, maxZ, dimensions, midX, midY, midZ, centerPoint
     , contains, isContainedIn, intersects, overlappingBy, separatedBy
     , scaleAbout, translateBy, translateIn, expandBy, offsetBy
@@ -36,7 +38,17 @@ box of an object than the object itself, such as:
 
 # Constructors
 
-@docs fromExtrema, singleton, from, hull, intersection, aggregate, containingPoints
+@docs fromExtrema, singleton
+
+
+## Hull
+
+@docs hull, hullOf, hull2, hull3, hullN
+
+
+## Boolean operations
+
+@docs intersection, union, unionOf, union2, union3, unionN
 
 
 # Properties
@@ -58,7 +70,7 @@ box of an object than the object itself, such as:
 import Direction3d exposing (Direction3d)
 import Geometry.Types as Types
 import Point3d exposing (Point3d)
-import Quantity exposing (Quantity, Squared)
+import Quantity exposing (Quantity(..), Squared)
 import Quantity.Extra as Quantity
 import Vector3d exposing (Vector3d)
 
@@ -141,6 +153,85 @@ singleton point =
         }
 
 
+{-| TODO
+-}
+hull : Point3d units coordinates -> List (Point3d units coordinates) -> BoundingBox3d units coordinates
+hull first rest =
+    let
+        (Types.Point3d { x, y, z }) =
+            first
+    in
+    hullHelp x x y y z z rest
+
+
+hullHelp : Float -> Float -> Float -> Float -> Float -> Float -> List (Point3d units coordinates) -> BoundingBox3d units coordinates
+hullHelp currentMinX currentMaxX currentMinY currentMaxY currentMinZ currentMaxZ points =
+    case points of
+        next :: rest ->
+            let
+                (Types.Point3d { x, y, z }) =
+                    next
+            in
+            hullHelp
+                (min x currentMinX)
+                (max x currentMaxX)
+                (min y currentMinY)
+                (max y currentMaxY)
+                (min z currentMinZ)
+                (max z currentMaxZ)
+                rest
+
+        [] ->
+            Types.BoundingBox3d
+                { minX = Quantity currentMinX
+                , maxX = Quantity currentMaxX
+                , minY = Quantity currentMinY
+                , maxY = Quantity currentMaxY
+                , minZ = Quantity currentMinZ
+                , maxZ = Quantity currentMaxZ
+                }
+
+
+{-| TODO
+-}
+hullOf : (a -> Point3d units coordinates) -> a -> List a -> BoundingBox3d units coordinates
+hullOf getPoint first rest =
+    let
+        (Types.Point3d { x, y, z }) =
+            getPoint first
+    in
+    hullOfHelp x x y y z z getPoint rest
+
+
+hullOfHelp : Float -> Float -> Float -> Float -> Float -> Float -> (a -> Point3d units coordinates) -> List a -> BoundingBox3d units coordinates
+hullOfHelp currentMinX currentMaxX currentMinY currentMaxY currentMinZ currentMaxZ getPoint list =
+    case list of
+        next :: rest ->
+            let
+                (Types.Point3d { x, y, z }) =
+                    getPoint next
+            in
+            hullOfHelp
+                (min x currentMinX)
+                (max x currentMaxX)
+                (min y currentMinY)
+                (max y currentMaxY)
+                (min z currentMinZ)
+                (max z currentMaxZ)
+                getPoint
+                rest
+
+        [] ->
+            Types.BoundingBox3d
+                { minX = Quantity currentMinX
+                , maxX = Quantity currentMaxX
+                , minY = Quantity currentMinY
+                , maxY = Quantity currentMaxY
+                , minZ = Quantity currentMinZ
+                , maxZ = Quantity currentMaxZ
+                }
+
+
 {-| Construct a bounding box with the two given points as two of its corners.
 The points can be given in any order and don't have to represent the 'primary'
 diagonal of the bounding box.
@@ -162,15 +253,263 @@ diagonal of the bounding box.
     -->     }
 
 -}
-from : Point3d units coordinates -> Point3d units coordinates -> BoundingBox3d units coordinates
-from firstPoint secondPoint =
-    fromExtrema
-        { minX = Quantity.min (Point3d.xCoordinate firstPoint) (Point3d.xCoordinate secondPoint)
-        , maxX = Quantity.max (Point3d.xCoordinate firstPoint) (Point3d.xCoordinate secondPoint)
-        , minY = Quantity.min (Point3d.yCoordinate firstPoint) (Point3d.yCoordinate secondPoint)
-        , maxY = Quantity.max (Point3d.yCoordinate firstPoint) (Point3d.yCoordinate secondPoint)
-        , minZ = Quantity.min (Point3d.zCoordinate firstPoint) (Point3d.zCoordinate secondPoint)
-        , maxZ = Quantity.max (Point3d.zCoordinate firstPoint) (Point3d.zCoordinate secondPoint)
+hull2 : Point3d units coordinates -> Point3d units coordinates -> BoundingBox3d units coordinates
+hull2 firstPoint secondPoint =
+    let
+        x1 =
+            Point3d.xCoordinate firstPoint
+
+        y1 =
+            Point3d.yCoordinate firstPoint
+
+        z1 =
+            Point3d.zCoordinate firstPoint
+
+        x2 =
+            Point3d.xCoordinate secondPoint
+
+        y2 =
+            Point3d.yCoordinate secondPoint
+
+        z2 =
+            Point3d.zCoordinate secondPoint
+    in
+    Types.BoundingBox3d
+        { minX = Quantity.min x1 x2
+        , maxX = Quantity.max x1 x2
+        , minY = Quantity.min y1 y2
+        , maxY = Quantity.max y1 y2
+        , minZ = Quantity.min z1 z2
+        , maxZ = Quantity.max z1 z2
+        }
+
+
+{-| TODO
+-}
+hull3 : Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> BoundingBox3d units coordinates
+hull3 firstPoint secondPoint thirdPoint =
+    let
+        x1 =
+            Point3d.xCoordinate firstPoint
+
+        y1 =
+            Point3d.yCoordinate firstPoint
+
+        z1 =
+            Point3d.zCoordinate firstPoint
+
+        x2 =
+            Point3d.xCoordinate secondPoint
+
+        y2 =
+            Point3d.yCoordinate secondPoint
+
+        z2 =
+            Point3d.zCoordinate secondPoint
+
+        x3 =
+            Point3d.xCoordinate thirdPoint
+
+        y3 =
+            Point3d.yCoordinate thirdPoint
+
+        z3 =
+            Point3d.zCoordinate thirdPoint
+    in
+    Types.BoundingBox3d
+        { minX = Quantity.min x1 (Quantity.min x2 x3)
+        , maxX = Quantity.max x1 (Quantity.max x2 x3)
+        , minY = Quantity.min y1 (Quantity.min y2 y3)
+        , maxY = Quantity.max y1 (Quantity.max y2 y3)
+        , minZ = Quantity.min z1 (Quantity.min z2 z3)
+        , maxZ = Quantity.max z1 (Quantity.max z2 z3)
+        }
+
+
+{-| Construct a bounding box containing all points in the given list. If the
+list is empty, returns `Nothing`.
+
+    BoundingBox3d.containingPoints
+        [ Point3d.fromCoordinates ( 2, 1, 3 )
+        , Point3d.fromCoordinates ( -1, 5, -2 )
+        , Point3d.fromCoordinates ( 6, 4, 2 )
+        ]
+    --> Just <|
+    -->     BoundingBox3d.fromExtrema
+    -->         { minX = -1
+    -->         , maxX = 6
+    -->         , minY = 1
+    -->         , maxY = 5
+    -->         , minZ = -2
+    -->         , maxZ = 3
+    -->         }
+
+    BoundingBox3d.containingPoints []
+    --> Nothing
+
+-}
+hullN : List (Point3d units coordinates) -> Maybe (BoundingBox3d units coordinates)
+hullN points =
+    case points of
+        first :: rest ->
+            Just (hull first rest)
+
+        [] ->
+            Nothing
+
+
+{-| TODO
+-}
+union : BoundingBox3d units coordinates -> List (BoundingBox3d units coordinates) -> BoundingBox3d units coordinates
+union first rest =
+    let
+        b1 =
+            extrema first
+    in
+    unionHelp b1.minX b1.maxX b1.minY b1.maxY b1.minZ b1.maxZ rest
+
+
+unionHelp : Quantity Float units -> Quantity Float units -> Quantity Float units -> Quantity Float units -> Quantity Float units -> Quantity Float units -> List (BoundingBox3d units coordinates) -> BoundingBox3d units coordinates
+unionHelp currentMinX currentMaxX currentMinY currentMaxY currentMinZ currentMaxZ boxes =
+    case boxes of
+        next :: rest ->
+            let
+                b =
+                    extrema next
+            in
+            unionHelp
+                (Quantity.min b.minX currentMinX)
+                (Quantity.max b.maxX currentMaxX)
+                (Quantity.min b.minY currentMinY)
+                (Quantity.max b.maxY currentMaxY)
+                (Quantity.min b.minZ currentMinZ)
+                (Quantity.max b.maxZ currentMaxZ)
+                rest
+
+        [] ->
+            Types.BoundingBox3d
+                { minX = currentMinX
+                , maxX = currentMaxX
+                , minY = currentMinY
+                , maxY = currentMaxY
+                , minZ = currentMinZ
+                , maxZ = currentMaxZ
+                }
+
+
+{-| TODO
+-}
+unionOf : (a -> BoundingBox3d units coordinates) -> a -> List a -> BoundingBox3d units coordinates
+unionOf getBoundingBox first rest =
+    let
+        b1 =
+            extrema (getBoundingBox first)
+    in
+    unionOfHelp b1.minX b1.maxX b1.minY b1.maxY b1.minZ b1.maxZ getBoundingBox rest
+
+
+unionOfHelp : Quantity Float units -> Quantity Float units -> Quantity Float units -> Quantity Float units -> Quantity Float units -> Quantity Float units -> (a -> BoundingBox3d units coordiantes) -> List a -> BoundingBox3d units coordinates
+unionOfHelp currentMinX currentMaxX currentMinY currentMaxY currentMinZ currentMaxZ getBoundingBox items =
+    case items of
+        next :: rest ->
+            let
+                b =
+                    extrema (getBoundingBox next)
+            in
+            unionOfHelp
+                (Quantity.min b.minX currentMinX)
+                (Quantity.max b.maxX currentMaxX)
+                (Quantity.min b.minY currentMinY)
+                (Quantity.max b.maxY currentMaxY)
+                (Quantity.min b.minZ currentMinZ)
+                (Quantity.max b.maxZ currentMaxZ)
+                getBoundingBox
+                rest
+
+        [] ->
+            Types.BoundingBox3d
+                { minX = currentMinX
+                , maxX = currentMaxX
+                , minY = currentMinY
+                , maxY = currentMaxY
+                , minZ = currentMinZ
+                , maxZ = currentMaxZ
+                }
+
+
+{-| Build a bounding box that contains both given bounding boxes.
+
+    firstBox =
+        BoundingBox3d.fromExtrema
+            { minX = 1
+            , maxX = 4
+            , minY = 2
+            , maxY = 3
+            , minZ = 0
+            , maxZ = 5
+            }
+
+    secondBox =
+        BoundingBox3d.fromExtrema
+            { minX = -2
+            , maxX = 2
+            , minY = 4
+            , maxY = 5
+            , minZ = -1
+            , maxZ = 0
+            }
+
+    BoundingBox3d.hull firstBox secondBox
+    --> BoundingBox3d.fromExtrema
+    -->     { minX = -2
+    -->     , maxX = 4
+    -->     , minY = 2
+    -->     , maxY = 5
+    -->     , minZ = -1
+    -->     , maxZ = 5
+    -->     }
+
+-}
+union2 : BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates
+union2 firstBox secondBox =
+    let
+        b1 =
+            extrema firstBox
+
+        b2 =
+            extrema secondBox
+    in
+    Types.BoundingBox3d
+        { minX = Quantity.min b1.minX b2.minX
+        , maxX = Quantity.max b1.maxX b2.maxX
+        , minY = Quantity.min b1.minY b2.minY
+        , maxY = Quantity.max b1.maxY b2.maxY
+        , minZ = Quantity.min b1.minZ b2.minZ
+        , maxZ = Quantity.max b1.maxZ b2.maxZ
+        }
+
+
+{-| TODO
+-}
+union3 : BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates
+union3 firstBox secondBox thirdBox =
+    let
+        b1 =
+            extrema firstBox
+
+        b2 =
+            extrema secondBox
+
+        b3 =
+            extrema thirdBox
+    in
+    Types.BoundingBox3d
+        { minX = Quantity.min b1.minX (Quantity.min b2.minX b3.minX)
+        , maxX = Quantity.max b1.maxX (Quantity.max b2.maxX b3.maxX)
+        , minY = Quantity.min b1.minY (Quantity.min b2.minY b3.minY)
+        , maxY = Quantity.max b1.maxY (Quantity.max b2.maxY b3.maxY)
+        , minZ = Quantity.min b1.minZ (Quantity.min b2.minZ b3.minZ)
+        , maxZ = Quantity.max b1.maxZ (Quantity.max b2.maxZ b3.maxZ)
         }
 
 
@@ -203,41 +542,14 @@ If you have exactly two bounding boxes, you can use [`BoundingBox3d.hull`](#hull
 instead (which returns a `BoundingBox3d` instead of a `Maybe BoundingBox3d`).
 
 -}
-aggregate : List (BoundingBox3d units coordinates) -> Maybe (BoundingBox3d units coordinates)
-aggregate boundingBoxes =
-    case boundingBoxes of
+unionN : List (BoundingBox3d units coordinates) -> Maybe (BoundingBox3d units coordinates)
+unionN boxes =
+    case boxes of
         first :: rest ->
-            Just (List.foldl hull first rest)
+            Just (union first rest)
 
         [] ->
             Nothing
-
-
-{-| Construct a bounding box containing all points in the given list. If the
-list is empty, returns `Nothing`.
-
-    BoundingBox3d.containingPoints
-        [ Point3d.fromCoordinates ( 2, 1, 3 )
-        , Point3d.fromCoordinates ( -1, 5, -2 )
-        , Point3d.fromCoordinates ( 6, 4, 2 )
-        ]
-    --> Just <|
-    -->     BoundingBox3d.fromExtrema
-    -->         { minX = -1
-    -->         , maxX = 6
-    -->         , minY = 1
-    -->         , maxY = 5
-    -->         , minZ = -2
-    -->         , maxZ = 3
-    -->         }
-
-    BoundingBox3d.containingPoints []
-    --> Nothing
-
--}
-containingPoints : List (Point3d units coordinates) -> Maybe (BoundingBox3d units coordinates)
-containingPoints points =
-    aggregate (List.map singleton points)
 
 
 {-| Get the minimum and maximum X, Y and Z values of a bounding box in a single
@@ -826,51 +1138,6 @@ isContainedIn other boundingBox =
         && (maxY boundingBox |> Quantity.lessThanOrEqualTo (maxY other))
         && (minZ other |> Quantity.lessThanOrEqualTo (minZ boundingBox))
         && (maxZ boundingBox |> Quantity.lessThanOrEqualTo (maxZ other))
-
-
-{-| Build a bounding box that contains both given bounding boxes.
-
-    firstBox =
-        BoundingBox3d.fromExtrema
-            { minX = 1
-            , maxX = 4
-            , minY = 2
-            , maxY = 3
-            , minZ = 0
-            , maxZ = 5
-            }
-
-    secondBox =
-        BoundingBox3d.fromExtrema
-            { minX = -2
-            , maxX = 2
-            , minY = 4
-            , maxY = 5
-            , minZ = -1
-            , maxZ = 0
-            }
-
-    BoundingBox3d.hull firstBox secondBox
-    --> BoundingBox3d.fromExtrema
-    -->     { minX = -2
-    -->     , maxX = 4
-    -->     , minY = 2
-    -->     , maxY = 5
-    -->     , minZ = -1
-    -->     , maxZ = 5
-    -->     }
-
--}
-hull : BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates
-hull firstBox secondBox =
-    fromExtrema
-        { minX = Quantity.min (minX firstBox) (minX secondBox)
-        , maxX = Quantity.max (maxX firstBox) (maxX secondBox)
-        , minY = Quantity.min (minY firstBox) (minY secondBox)
-        , maxY = Quantity.max (maxY firstBox) (maxY secondBox)
-        , minZ = Quantity.min (minZ firstBox) (minZ secondBox)
-        , maxZ = Quantity.max (maxZ firstBox) (maxZ secondBox)
-        }
 
 
 {-| Attempt to build a bounding box that contains all points common to both

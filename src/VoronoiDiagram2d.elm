@@ -341,9 +341,12 @@ collectStrips direction axisDirection maybeLastAxis current following accumulate
 
 collinearVertexRegions : List (DelaunayVertex vertex units coordinates) -> List (Region vertex units coordinates)
 collinearVertexRegions delaunayVertices =
-    case BoundingBox2d.containingPoints (List.map .position delaunayVertices) of
-        Just boundingBox ->
+    case delaunayVertices of
+        first :: rest ->
             let
+                boundingBox =
+                    BoundingBox2d.hullOf .position first rest
+
                 ( width, height ) =
                     BoundingBox2d.dimensions boundingBox
 
@@ -386,7 +389,7 @@ collinearVertexRegions delaunayVertices =
                 [] ->
                     []
 
-        Nothing ->
+        [] ->
             []
 
 
