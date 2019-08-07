@@ -1,5 +1,7 @@
 module Tests.Point2d exposing
     ( circumcenterIsValidOrNothing
+    , hullNConsistentWithHull2
+    , hullNIsOrderIndependent
     , interpolationReturnsExactEndpoints
     , midpointIsEquidistant
     , projectionOntoAxisPreservesDistance
@@ -153,3 +155,26 @@ trickyCircumcenter =
                     Point2d.meters 73.69327796224587 5.0e-7
             in
             Point2d.circumcenter p1 p2 p3 |> Expect.just Expect.point2d p0
+
+
+hullNConsistentWithHull2 : Test
+hullNConsistentWithHull2 =
+    Test.fuzz2
+        Fuzz.point2d
+        Fuzz.point2d
+        "'hullN' is consistent with 'hull2'"
+        (\firstPoint secondPoint ->
+            Point2d.hullN [ firstPoint, secondPoint ]
+                |> Expect.equal
+                    (Just (Point2d.hull2 firstPoint secondPoint))
+        )
+
+
+hullNIsOrderIndependent : Test
+hullNIsOrderIndependent =
+    Test.fuzz (Fuzz.list Fuzz.point2d)
+        "'hullN' does not depend on input order"
+        (\points ->
+            Point2d.hullN (List.reverse points)
+                |> Expect.equal (Point2d.hullN points)
+        )

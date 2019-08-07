@@ -48,7 +48,7 @@ cellForEveryInputVertex =
                     Expect.pass
 
                 Ok diagram ->
-                    case BoundingBox2d.containingPoints (Array.toList points) of
+                    case Point2d.hullN (Array.toList points) of
                         Nothing ->
                             let
                                 boundingBox =

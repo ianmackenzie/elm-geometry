@@ -258,12 +258,12 @@ triangle3d =
 
 boundingBox2d : Fuzzer (BoundingBox2d coordinates)
 boundingBox2d =
-    Fuzz.map2 BoundingBox2d.from point2d point2d
+    Fuzz.map2 Point2d.hull2 point2d point2d
 
 
 boundingBox3d : Fuzzer (BoundingBox3d coordinates)
 boundingBox3d =
-    Fuzz.map2 BoundingBox3d.from point3d point3d
+    Fuzz.map2 Point3d.hull2 point3d point3d
 
 
 polyline2d : Fuzzer (Polyline2d coordinates)

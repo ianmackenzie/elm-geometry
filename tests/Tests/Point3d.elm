@@ -1,5 +1,7 @@
 module Tests.Point3d exposing
     ( circumcenterIsValidOrNothing
+    , hullNConsistentWithHull2
+    , hullNIsOrderIndependent
     , interpolationReturnsExactEndpoints
     , midpointIsEquidistant
     , mirrorFlipsSignedDistance
@@ -264,4 +266,27 @@ placeInIsInverseOfRelativeTo =
                 |> Point3d.relativeTo frame
                 |> Point3d.placeIn frame
                 |> Expect.point3d point
+        )
+
+
+hullNConsistentWithHull2 : Test
+hullNConsistentWithHull2 =
+    Test.fuzz2
+        Fuzz.point3d
+        Fuzz.point3d
+        "'hullN' is consistent with 'hull2'"
+        (\firstPoint secondPoint ->
+            Point3d.hullN [ firstPoint, secondPoint ]
+                |> Expect.equal
+                    (Just (Point3d.hull2 firstPoint secondPoint))
+        )
+
+
+hullNIsOrderIndependent : Test
+hullNIsOrderIndependent =
+    Test.fuzz (Fuzz.list Fuzz.point3d)
+        "'hullN' does not depend on input order"
+        (\points ->
+            Point3d.hullN (List.reverse points)
+                |> Expect.equal (Point3d.hullN points)
         )

@@ -1,7 +1,5 @@
 module Tests.BoundingBox3d exposing
     ( boxContainsOwnCenterPoint
-    , containingPointsConsistentWithFromCorners
-    , containingPointsIsOrderIndependent
     , hullContainsInputs
     , intersectionConsistentWithIntersects
     , intersectionConsistentWithOverlappingBy
@@ -159,7 +157,7 @@ hullContainsInputs =
         (\first second ->
             let
                 hull =
-                    BoundingBox3d.hull first second
+                    BoundingBox3d.hull2 first second
 
                 isContained =
                     BoundingBox3d.isContainedIn hull
@@ -407,29 +405,6 @@ separationIsCorrectForDiagonallyDisplacedBoxes =
                     , Expect.false "Expected separation to not be less than 0"
                         << BoundingBox3d.separatedBy LT (Quantity.float 0) secondBox
                     ]
-        )
-
-
-containingPointsConsistentWithFromCorners : Test
-containingPointsConsistentWithFromCorners =
-    Test.fuzz2
-        Fuzz.point3d
-        Fuzz.point3d
-        "'containingPoints' is consistent with 'from'"
-        (\firstPoint secondPoint ->
-            BoundingBox3d.containingPoints [ firstPoint, secondPoint ]
-                |> Expect.equal
-                    (Just (BoundingBox3d.from firstPoint secondPoint))
-        )
-
-
-containingPointsIsOrderIndependent : Test
-containingPointsIsOrderIndependent =
-    Test.fuzz (Fuzz.list Fuzz.point3d)
-        "'containingPoints' does not depend on input order"
-        (\points ->
-            BoundingBox3d.containingPoints (List.reverse points)
-                |> Expect.equal (BoundingBox3d.containingPoints points)
         )
 
 

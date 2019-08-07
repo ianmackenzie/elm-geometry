@@ -1,7 +1,5 @@
 module Tests.BoundingBox2d exposing
     ( boxContainsOwnCenterPoint
-    , containingPointsConsistentWithFromCorners
-    , containingPointsIsOrderIndependent
     , hullContainsInputs
     , intersectionConsistentWithIntersects
     , intersectionConsistentWithOverlappingBy
@@ -145,7 +143,7 @@ hullContainsInputs =
         (\first second ->
             let
                 hull =
-                    BoundingBox2d.hull first second
+                    BoundingBox2d.hull2 first second
 
                 isContained =
                     BoundingBox2d.isContainedIn hull
@@ -391,29 +389,6 @@ separationIsCorrectForDiagonallyDisplacedBoxes =
                     , Expect.false "Expected separation to not be less than 0"
                         << BoundingBox2d.separatedBy LT (Quantity.float 0) secondBox
                     ]
-        )
-
-
-containingPointsConsistentWithFromCorners : Test
-containingPointsConsistentWithFromCorners =
-    Test.fuzz2
-        Fuzz.point2d
-        Fuzz.point2d
-        "'containingPoints' is consistent with from"
-        (\firstPoint secondPoint ->
-            BoundingBox2d.containingPoints [ firstPoint, secondPoint ]
-                |> Expect.equal
-                    (Just (BoundingBox2d.from firstPoint secondPoint))
-        )
-
-
-containingPointsIsOrderIndependent : Test
-containingPointsIsOrderIndependent =
-    Test.fuzz (Fuzz.list Fuzz.point2d)
-        "'containingPoints' does not depend on input order"
-        (\points ->
-            BoundingBox2d.containingPoints (List.reverse points)
-                |> Expect.equal (BoundingBox2d.containingPoints points)
         )
 
 
