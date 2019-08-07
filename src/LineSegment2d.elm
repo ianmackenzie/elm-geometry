@@ -660,4 +660,4 @@ boundingBox lineSegment =
         ( p1, p2 ) =
             endpoints lineSegment
     in
-    BoundingBox2d.hull2 p1 p2
+    Point2d.hull2 p1 p2

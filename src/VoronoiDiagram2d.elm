@@ -345,7 +345,7 @@ collinearVertexRegions delaunayVertices =
         first :: rest ->
             let
                 boundingBox =
-                    BoundingBox2d.hullOf .position first rest
+                    Point2d.hullOf .position first rest
 
                 ( width, height ) =
                     BoundingBox2d.dimensions boundingBox
