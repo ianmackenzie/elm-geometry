@@ -18,9 +18,10 @@ module Point2d exposing
     , xCoordinate, yCoordinate, xCoordinateIn, yCoordinateIn
     , equalWithin, lexicographicComparison
     , distanceFrom, signedDistanceAlong, signedDistanceFrom
-    , centroid, centroidOf, centroid3, centroidN
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
     , relativeTo, placeIn
+    , centroid, centroidOf, centroid3, centroidN
+    , hull, hullOf, hull2, hull3, hullN
     , unsafe, unwrap
     )
 
@@ -90,11 +91,6 @@ coordinates.
 @docs distanceFrom, squaredDistanceFrom, signedDistanceAlong, signedDistanceFrom
 
 
-# Centroid calculation
-
-@docs centroid, centroidOf, centroid3, centroid4, centroidN
-
-
 # Transformations
 
 @docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
@@ -103,6 +99,16 @@ coordinates.
 # Coordinate conversions
 
 @docs relativeTo, placeIn
+
+
+# Centroid calculation
+
+@docs centroid, centroidOf, centroid3, centroidN
+
+
+# Bounds calculation
+
+@docs hull, hullOf, hull2, hull3, hullN
 
 
 # Advanced
@@ -114,7 +120,7 @@ coordinates.
 import Angle exposing (Angle)
 import Direction2d exposing (Direction2d)
 import Float.Extra as Float
-import Geometry.Types as Types exposing (Axis2d, Frame2d)
+import Geometry.Types as Types exposing (Axis2d, BoundingBox2d, Frame2d)
 import Length exposing (Meters)
 import Pixels exposing (Pixels)
 import Quantity exposing (Quantity(..), Rate, Squared, Unitless)
@@ -1211,3 +1217,173 @@ placeIn (Types.Frame2d frame) (Types.Point2d p) =
         { x = p0.x + p.x * i.x + p.y * j.x
         , y = p0.y + p.x * i.y + p.y * j.y
         }
+
+
+hull : Point2d units coordinates -> List (Point2d units coordinates) -> BoundingBox2d units coordinates
+hull first rest =
+    let
+        (Types.Point2d { x, y }) =
+            first
+    in
+    hullHelp x x y y rest
+
+
+hullHelp : Float -> Float -> Float -> Float -> List (Point2d units coordinates) -> BoundingBox2d units coordinates
+hullHelp currentMinX currentMaxX currentMinY currentMaxY points =
+    case points of
+        next :: rest ->
+            let
+                (Types.Point2d { x, y }) =
+                    next
+            in
+            hullHelp
+                (min x currentMinX)
+                (max x currentMaxX)
+                (min y currentMinY)
+                (max y currentMaxY)
+                rest
+
+        [] ->
+            Types.BoundingBox2d
+                { minX = Quantity currentMinX
+                , maxX = Quantity currentMaxX
+                , minY = Quantity currentMinY
+                , maxY = Quantity currentMaxY
+                }
+
+
+hullOf : (a -> Point2d units coordinates) -> a -> List a -> BoundingBox2d units coordinates
+hullOf getPoint first rest =
+    let
+        (Types.Point2d { x, y }) =
+            getPoint first
+    in
+    hullOfHelp x x y y getPoint rest
+
+
+hullOfHelp : Float -> Float -> Float -> Float -> (a -> Point2d units coordinates) -> List a -> BoundingBox2d units coordinates
+hullOfHelp currentMinX currentMaxX currentMinY currentMaxY getPoint list =
+    case list of
+        next :: rest ->
+            let
+                (Types.Point2d { x, y }) =
+                    getPoint next
+            in
+            hullOfHelp
+                (min x currentMinX)
+                (max x currentMaxX)
+                (min y currentMinY)
+                (max y currentMaxY)
+                getPoint
+                rest
+
+        [] ->
+            Types.BoundingBox2d
+                { minX = Quantity currentMinX
+                , maxX = Quantity currentMaxX
+                , minY = Quantity currentMinY
+                , maxY = Quantity currentMaxY
+                }
+
+
+{-| Construct a bounding box with the two given points as two of its corners.
+The points can be given in any order and don't have to represent the 'primary'
+diagonal of the bounding box.
+
+    firstPoint =
+        Point2d.fromCoordinates ( 2, 3 )
+
+    secondPoint =
+        Point2d.fromCoordinates ( -1, 5 )
+
+    BoundingBox2d.from firstPoint secondPoint
+    --> BoundingBox2d.fromExtrema
+    -->     { minX = -1
+    -->     , maxX = 2
+    -->     , minY = 3
+    -->     , maxY = 5
+    -->     }
+
+-}
+hull2 : Point2d units coordinates -> Point2d units coordinates -> BoundingBox2d units coordinates
+hull2 firstPoint secondPoint =
+    let
+        x1 =
+            xCoordinate firstPoint
+
+        y1 =
+            yCoordinate firstPoint
+
+        x2 =
+            xCoordinate secondPoint
+
+        y2 =
+            yCoordinate secondPoint
+    in
+    Types.BoundingBox2d
+        { minX = Quantity.min x1 x2
+        , maxX = Quantity.max x1 x2
+        , minY = Quantity.min y1 y2
+        , maxY = Quantity.max y1 y2
+        }
+
+
+{-| TODO
+-}
+hull3 : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> BoundingBox2d units coordinates
+hull3 firstPoint secondPoint thirdPoint =
+    let
+        x1 =
+            xCoordinate firstPoint
+
+        y1 =
+            yCoordinate firstPoint
+
+        x2 =
+            xCoordinate secondPoint
+
+        y2 =
+            yCoordinate secondPoint
+
+        x3 =
+            xCoordinate thirdPoint
+
+        y3 =
+            yCoordinate thirdPoint
+    in
+    Types.BoundingBox2d
+        { minX = Quantity.min x1 (Quantity.min x2 x3)
+        , maxX = Quantity.max x1 (Quantity.max x2 x3)
+        , minY = Quantity.min y1 (Quantity.min y2 y3)
+        , maxY = Quantity.max y1 (Quantity.max y2 y3)
+        }
+
+
+{-| Construct a bounding box containing all points in the given list. If the
+list is empty, returns `Nothing`.
+
+    BoundingBox2d.containingPoints
+        [ Point2d.fromCoordinates ( 2, 3 )
+        , Point2d.fromCoordinates ( -1, 5 )
+        , Point2d.fromCoordinates ( 6, 4 )
+        ]
+    --> Just <|
+    -->     BoundingBox2d.fromExtrema
+    -->         { minX = -1
+    -->         , maxX = 6
+    -->         , minY = 3
+    -->         , maxY = 5
+    -->         }
+
+    BoundingBox2d.containingPoints []
+    --> Nothing
+
+-}
+hullN : List (Point2d units coordinates) -> Maybe (BoundingBox2d units coordinates)
+hullN points =
+    case points of
+        first :: rest ->
+            Just (hull first rest)
+
+        [] ->
+            Nothing

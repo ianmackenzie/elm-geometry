@@ -9,9 +9,8 @@
 
 module BoundingBox2d exposing
     ( BoundingBox2d
-    , fromExtrema, singleton
+    , fromExtrema, singleton, intersection
     , hull, hullOf, hull2, hull3, hullN
-    , intersection, union, unionOf, union2, union3, unionN
     , extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint
     , contains, isContainedIn, intersects, overlappingBy, separatedBy
     , scaleAbout, translateBy, translateIn, expandBy, offsetBy
@@ -39,17 +38,12 @@ box of an object than the object itself, such as:
 
 # Constructors
 
-@docs fromExtrema, singleton
+@docs fromExtrema, singleton, intersection
 
 
 ## Hull
 
 @docs hull, hullOf, hull2, hull3, hullN
-
-
-## Boolean operations
-
-@docs intersection, union, unionOf, union2, union3, unionN
 
 
 # Properties
@@ -143,196 +137,26 @@ singleton point =
         }
 
 
-hull : Point2d units coordinates -> List (Point2d units coordinates) -> BoundingBox2d units coordinates
+{-| TODO
+-}
+hull : BoundingBox2d units coordinates -> List (BoundingBox2d units coordinates) -> BoundingBox2d units coordinates
 hull first rest =
-    let
-        (Types.Point2d { x, y }) =
-            first
-    in
-    hullHelp x x y y rest
-
-
-hullHelp : Float -> Float -> Float -> Float -> List (Point2d units coordinates) -> BoundingBox2d units coordinates
-hullHelp currentMinX currentMaxX currentMinY currentMaxY points =
-    case points of
-        next :: rest ->
-            let
-                (Types.Point2d { x, y }) =
-                    next
-            in
-            hullHelp
-                (min x currentMinX)
-                (max x currentMaxX)
-                (min y currentMinY)
-                (max y currentMaxY)
-                rest
-
-        [] ->
-            Types.BoundingBox2d
-                { minX = Quantity currentMinX
-                , maxX = Quantity currentMaxX
-                , minY = Quantity currentMinY
-                , maxY = Quantity currentMaxY
-                }
-
-
-hullOf : (a -> Point2d units coordinates) -> a -> List a -> BoundingBox2d units coordinates
-hullOf getPoint first rest =
-    let
-        (Types.Point2d { x, y }) =
-            getPoint first
-    in
-    hullOfHelp x x y y getPoint rest
-
-
-hullOfHelp : Float -> Float -> Float -> Float -> (a -> Point2d units coordinates) -> List a -> BoundingBox2d units coordinates
-hullOfHelp currentMinX currentMaxX currentMinY currentMaxY getPoint list =
-    case list of
-        next :: rest ->
-            let
-                (Types.Point2d { x, y }) =
-                    getPoint next
-            in
-            hullOfHelp
-                (min x currentMinX)
-                (max x currentMaxX)
-                (min y currentMinY)
-                (max y currentMaxY)
-                getPoint
-                rest
-
-        [] ->
-            Types.BoundingBox2d
-                { minX = Quantity currentMinX
-                , maxX = Quantity currentMaxX
-                , minY = Quantity currentMinY
-                , maxY = Quantity currentMaxY
-                }
-
-
-{-| Construct a bounding box with the two given points as two of its corners.
-The points can be given in any order and don't have to represent the 'primary'
-diagonal of the bounding box.
-
-    firstPoint =
-        Point2d.fromCoordinates ( 2, 3 )
-
-    secondPoint =
-        Point2d.fromCoordinates ( -1, 5 )
-
-    BoundingBox2d.from firstPoint secondPoint
-    --> BoundingBox2d.fromExtrema
-    -->     { minX = -1
-    -->     , maxX = 2
-    -->     , minY = 3
-    -->     , maxY = 5
-    -->     }
-
--}
-hull2 : Point2d units coordinates -> Point2d units coordinates -> BoundingBox2d units coordinates
-hull2 firstPoint secondPoint =
-    let
-        x1 =
-            Point2d.xCoordinate firstPoint
-
-        y1 =
-            Point2d.yCoordinate firstPoint
-
-        x2 =
-            Point2d.xCoordinate secondPoint
-
-        y2 =
-            Point2d.yCoordinate secondPoint
-    in
-    Types.BoundingBox2d
-        { minX = Quantity.min x1 x2
-        , maxX = Quantity.max x1 x2
-        , minY = Quantity.min y1 y2
-        , maxY = Quantity.max y1 y2
-        }
-
-
-{-| TODO
--}
-hull3 : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> BoundingBox2d units coordinates
-hull3 firstPoint secondPoint thirdPoint =
-    let
-        x1 =
-            Point2d.xCoordinate firstPoint
-
-        y1 =
-            Point2d.yCoordinate firstPoint
-
-        x2 =
-            Point2d.xCoordinate secondPoint
-
-        y2 =
-            Point2d.yCoordinate secondPoint
-
-        x3 =
-            Point2d.xCoordinate thirdPoint
-
-        y3 =
-            Point2d.yCoordinate thirdPoint
-    in
-    Types.BoundingBox2d
-        { minX = Quantity.min x1 (Quantity.min x2 x3)
-        , maxX = Quantity.max x1 (Quantity.max x2 x3)
-        , minY = Quantity.min y1 (Quantity.min y2 y3)
-        , maxY = Quantity.max y1 (Quantity.max y2 y3)
-        }
-
-
-{-| Construct a bounding box containing all points in the given list. If the
-list is empty, returns `Nothing`.
-
-    BoundingBox2d.containingPoints
-        [ Point2d.fromCoordinates ( 2, 3 )
-        , Point2d.fromCoordinates ( -1, 5 )
-        , Point2d.fromCoordinates ( 6, 4 )
-        ]
-    --> Just <|
-    -->     BoundingBox2d.fromExtrema
-    -->         { minX = -1
-    -->         , maxX = 6
-    -->         , minY = 3
-    -->         , maxY = 5
-    -->         }
-
-    BoundingBox2d.containingPoints []
-    --> Nothing
-
--}
-hullN : List (Point2d units coordinates) -> Maybe (BoundingBox2d units coordinates)
-hullN points =
-    case points of
-        first :: rest ->
-            Just (hull first rest)
-
-        [] ->
-            Nothing
-
-
-{-| TODO
--}
-union : BoundingBox2d units coordinates -> List (BoundingBox2d units coordinates) -> BoundingBox2d units coordinates
-union first rest =
     let
         b1 =
             extrema first
     in
-    unionHelp b1.minX b1.maxX b1.minY b1.maxY rest
+    hullHelp b1.minX b1.maxX b1.minY b1.maxY rest
 
 
-unionHelp : Quantity Float units -> Quantity Float units -> Quantity Float units -> Quantity Float units -> List (BoundingBox2d units coordinates) -> BoundingBox2d units coordinates
-unionHelp currentMinX currentMaxX currentMinY currentMaxY boxes =
+hullHelp : Quantity Float units -> Quantity Float units -> Quantity Float units -> Quantity Float units -> List (BoundingBox2d units coordinates) -> BoundingBox2d units coordinates
+hullHelp currentMinX currentMaxX currentMinY currentMaxY boxes =
     case boxes of
         next :: rest ->
             let
                 b =
                     extrema next
             in
-            unionHelp
+            hullHelp
                 (Quantity.min b.minX currentMinX)
                 (Quantity.max b.maxX currentMaxX)
                 (Quantity.min b.minY currentMinY)
@@ -350,24 +174,24 @@ unionHelp currentMinX currentMaxX currentMinY currentMaxY boxes =
 
 {-| TODO
 -}
-unionOf : (a -> BoundingBox2d units coordinates) -> a -> List a -> BoundingBox2d units coordinates
-unionOf getBoundingBox first rest =
+hullOf : (a -> BoundingBox2d units coordinates) -> a -> List a -> BoundingBox2d units coordinates
+hullOf getBoundingBox first rest =
     let
         b1 =
             extrema (getBoundingBox first)
     in
-    unionOfHelp b1.minX b1.maxX b1.minY b1.maxY getBoundingBox rest
+    hullOfHelp b1.minX b1.maxX b1.minY b1.maxY getBoundingBox rest
 
 
-unionOfHelp : Quantity Float units -> Quantity Float units -> Quantity Float units -> Quantity Float units -> (a -> BoundingBox2d units coordiantes) -> List a -> BoundingBox2d units coordinates
-unionOfHelp currentMinX currentMaxX currentMinY currentMaxY getBoundingBox items =
+hullOfHelp : Quantity Float units -> Quantity Float units -> Quantity Float units -> Quantity Float units -> (a -> BoundingBox2d units coordiantes) -> List a -> BoundingBox2d units coordinates
+hullOfHelp currentMinX currentMaxX currentMinY currentMaxY getBoundingBox items =
     case items of
         next :: rest ->
             let
                 b =
                     extrema (getBoundingBox next)
             in
-            unionOfHelp
+            hullOfHelp
                 (Quantity.min b.minX currentMinX)
                 (Quantity.max b.maxX currentMaxX)
                 (Quantity.min b.minY currentMinY)
@@ -411,8 +235,8 @@ unionOfHelp currentMinX currentMaxX currentMinY currentMaxY getBoundingBox items
     -->     }
 
 -}
-union2 : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
-union2 firstBox secondBox =
+hull2 : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
+hull2 firstBox secondBox =
     let
         b1 =
             extrema firstBox
@@ -430,8 +254,8 @@ union2 firstBox secondBox =
 
 {-| TODO
 -}
-union3 : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
-union3 firstBox secondBox thirdBox =
+hull3 : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
+hull3 firstBox secondBox thirdBox =
     let
         b1 =
             extrema firstBox
@@ -477,11 +301,11 @@ If you have exactly two bounding boxes, you can use [`BoundingBox2d.hull`](#hull
 instead (which returns a `BoundingBox2d` instead of a `Maybe BoundingBox2d`).
 
 -}
-unionN : List (BoundingBox2d units coordinates) -> Maybe (BoundingBox2d units coordinates)
-unionN boxes =
+hullN : List (BoundingBox2d units coordinates) -> Maybe (BoundingBox2d units coordinates)
+hullN boxes =
     case boxes of
         first :: rest ->
-            Just (union first rest)
+            Just (hull first rest)
 
         [] ->
             Nothing
