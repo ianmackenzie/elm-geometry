@@ -308,14 +308,11 @@ contains point circle =
 intersectsBoundingBox : BoundingBox2d -> Circle2d -> Bool
 intersectsBoundingBox box circle =
     let
-        boxMinX =
-            BoundingBox2d.minX box
+        ( boxMinX, boxMaxX ) =
+            ( BoundingBox2d.minX box, BoundingBox2d.maxX box )
 
-        boxMinY =
-            BoundingBox2d.minY box
-
-        ( boxWidth, boxHeight ) =
-            BoundingBox2d.dimensions box
+        ( boxMinY, boxMaxY ) =
+            ( BoundingBox2d.minY box, BoundingBox2d.maxY box )
 
         circleRadius =
             radius circle
@@ -324,10 +321,10 @@ intersectsBoundingBox box circle =
             Point2d.coordinates (centerPoint circle)
 
         deltaX =
-            max boxMinX (min circleX (boxMinX + boxWidth))
+            circleX - max boxMinX (min circleX boxMaxX)
 
         deltaY =
-            max boxMinY (min circleY (boxMinY + boxHeight))
+            circleY - max boxMinY (min circleY boxMaxY)
     in
     deltaX ^ 2 + deltaY ^ 2 <= circleRadius ^ 2
 
