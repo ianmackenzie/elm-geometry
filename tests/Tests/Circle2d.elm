@@ -1,4 +1,4 @@
-module Tests.Circle2d exposing (boundingBoxContainsCenter, intersectsRectangle)
+module Tests.Circle2d exposing (boundingBoxContainsCenter, intersectsBoundingBox)
 
 import BoundingBox2d
 import Circle2d
@@ -26,8 +26,8 @@ boundingBoxContainsCenter =
         )
 
 
-intersectsRectangle : Test
-intersectsRectangle =
+intersectsBoundingBox : Test
+intersectsBoundingBox =
     let
         someBox x1 x2 y1 y2 =
             BoundingBox2d.fromExtrema
