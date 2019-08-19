@@ -308,11 +308,17 @@ contains point circle =
 intersectsBoundingBox : BoundingBox2d -> Circle2d -> Bool
 intersectsBoundingBox box circle =
     let
-        ( boxMinX, boxMaxX ) =
-            ( BoundingBox2d.minX box, BoundingBox2d.maxX box )
+        boxMinX =
+            BoundingBox2d.minX box
 
-        ( boxMinY, boxMaxY ) =
-            ( BoundingBox2d.minY box, BoundingBox2d.maxY box )
+        boxMaxX =
+            BoundingBox2d.maxX box
+
+        boxMinY =
+            BoundingBox2d.minY box
+
+        boxMaxY =
+            BoundingBox2d.maxY box
 
         circleRadius =
             radius circle
