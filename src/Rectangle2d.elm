@@ -139,7 +139,9 @@ fromExtremaIn : Frame2d units globalCoordinates { defines : localCoordinates } -
 fromExtremaIn localFrame { minX, maxX, minY, maxY } =
     let
         computedCenterPoint =
-            Point2d.xyIn localFrame (Quantity.midpoint minX maxX) (Quantity.midpoint minY maxY)
+            Point2d.xyIn localFrame
+                (Quantity.midpoint minX maxX)
+                (Quantity.midpoint minY maxY)
 
         computedDimensions =
             ( Quantity.abs (maxX |> Quantity.minus minX)
