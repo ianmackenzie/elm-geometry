@@ -288,7 +288,9 @@ contains point circle =
     Point2d.squaredDistanceFrom (centerPoint circle) point <= r * r
 
 
-{-| Check if a circle intersects with a given bounding box.
+{-| Check if a circle intersects with a given bounding box. This function will
+return true if the circle intersects the edges of the bounding box _or_ is fully
+contained within the bounding box.
 
     boundingBox =
         BoundingBox2d.fromExtrema
