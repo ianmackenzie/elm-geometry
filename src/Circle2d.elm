@@ -13,7 +13,7 @@ module Circle2d exposing
     , withRadius, throughPoints, sweptAround
     , centerPoint, radius, diameter, area, circumference, boundingBox
     , toArc
-    , contains
+    , contains, intersectsBoundingBox
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , relativeTo, placeIn
     )
@@ -50,7 +50,7 @@ functionality for
 
 # Queries
 
-@docs contains
+@docs contains, intersectsBoundingBox
 
 
 # Transformations
@@ -286,6 +286,53 @@ contains point circle =
             radius circle
     in
     Point2d.squaredDistanceFrom (centerPoint circle) point <= r * r
+
+
+{-| Check if a circle intersects with a given bounding box.
+
+    boundingBox =
+        BoundingBox2d.fromExtrema
+            { minX = 2
+            , maxX = 3
+            , minY = 0
+            , maxY = 2
+            }
+
+    circle =
+        Circle2d.withRadius 3 Point2d.origin
+
+    Circle2d.intersectsBoundingBox boundingBox circle
+    --> True
+
+-}
+intersectsBoundingBox : BoundingBox2d -> Circle2d -> Bool
+intersectsBoundingBox box circle =
+    let
+        boxMinX =
+            BoundingBox2d.minX box
+
+        boxMaxX =
+            BoundingBox2d.maxX box
+
+        boxMinY =
+            BoundingBox2d.minY box
+
+        boxMaxY =
+            BoundingBox2d.maxY box
+
+        circleRadius =
+            radius circle
+
+        ( circleX, circleY ) =
+            Point2d.coordinates (centerPoint circle)
+
+        deltaX =
+            circleX - max boxMinX (min circleX boxMaxX)
+
+        deltaY =
+            circleY - max boxMinY (min circleY boxMaxY)
+    in
+    deltaX ^ 2 + deltaY ^ 2 <= circleRadius ^ 2
 
 
 {-| Scale a circle about a given point by a given scale.
