@@ -14,6 +14,7 @@ module Rectangle2d exposing
     , vertices, bottomLeftVertex, bottomRightVertex, topLeftVertex, topRightVertex
     , edges, leftEdge, bottomEdge, rightEdge, topEdge
     , boundingBox
+    , interpolate
     , contains
     , toPolygon
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
@@ -45,6 +46,11 @@ they can have arbitrary orientation and so can be rotated, mirrored etc.
 @docs vertices, bottomLeftVertex, bottomRightVertex, topLeftVertex, topRightVertex
 @docs edges, leftEdge, bottomEdge, rightEdge, topEdge
 @docs boundingBox
+
+
+# Interpolation
+
+@docs interpolate
 
 
 # Querying
@@ -988,3 +994,27 @@ boundingBox rectangle =
         , minY = Quantity.min (Quantity.min y1 y2) (Quantity.min y3 y4)
         , maxY = Quantity.max (Quantity.max y1 y2) (Quantity.max y3 y4)
         }
+
+
+{-| Interpolate within a rectangle based on coordinates which range from 0 to 1.
+For example, the four vertices of a given rectangle are
+
+    Rectangle2d.interpolate rectangle 0 0
+    Rectangle2d.interpolate rectangle 1 0
+    Rectangle2d.interpolate rectangle 1 1
+    Rectangle2d.interpolate rectangle 0 1
+
+and its center point is
+
+    Rectangle2d.interpolate rectangle 0.5 0.5
+
+-}
+interpolate : Rectangle2d units coordinates -> Float -> Float -> Point2d units coordinates
+interpolate rectangle u v =
+    let
+        ( width, height ) =
+            dimensions rectangle
+    in
+    Point2d.xyIn (axes rectangle)
+        (Quantity.multiplyBy (u - 0.5) width)
+        (Quantity.multiplyBy (v - 0.5) height)
