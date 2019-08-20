@@ -10,7 +10,7 @@
 module Frame2d exposing
     ( Frame2d
     , atOrigin
-    , atPoint, atXY, withXDirection, withYDirection, fromXAxis, fromYAxis, copy, unsafe
+    , atPoint, withAngle, withXDirection, withYDirection, fromXAxis, fromYAxis, copy, unsafe
     , originPoint, xDirection, yDirection, isRightHanded, xAxis, yAxis
     , reverseX, reverseY, moveTo, rotateBy, rotateAround, translateBy, translateIn, translateAlongOwn, mirrorAcross
     , relativeTo, placeIn
@@ -40,7 +40,7 @@ always perpendicular to each other). It can be thought of as:
 
 # Constructors
 
-@docs atPoint, atXY, withXDirection, withYDirection, fromXAxis, fromYAxis, copy, unsafe
+@docs atPoint, withAngle, withXDirection, withYDirection, fromXAxis, fromYAxis, copy, unsafe
 
 
 # Properties
@@ -233,18 +233,22 @@ atPoint point =
         }
 
 
-{-| Shorthand for `Frame2d.atPoint`;
+{-| Construct a frame with the given angle and origin point. The angle is
+the amount the returned frame will be rotated relative to the global XY frame,
+or equivalently the angle of the frame's X direction;
 
-    Frame2d.atCoordinates ( x, y )
+    Frame2d.withAngle angle point
 
 is equivalent to
 
-    Frame2d.atPoint (Point2d.fromCoordinates ( x, y ))
+    Frame2d.withXDirection
+        (Direction2d.fromAngle givenAngle)
+        point
 
 -}
-atXY : Quantity Float units -> Quantity Float units -> Frame2d units coordinates defines
-atXY x y =
-    atPoint (Point2d.xy x y)
+withAngle : Angle -> Point2d units coordinates -> Frame2d units coordinates defines
+withAngle givenAngle givenOrigin =
+    withXDirection (Direction2d.fromAngle givenAngle) givenOrigin
 
 
 {-| Get the origin point of a given frame.
