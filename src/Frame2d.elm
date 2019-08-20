@@ -10,7 +10,7 @@
 module Frame2d exposing
     ( Frame2d
     , atOrigin
-    , atPoint, atXY, withXDirection, withYDirection, copy, unsafe
+    , atPoint, atXY, withXDirection, withYDirection, fromXAxis, fromYAxis, copy, unsafe
     , originPoint, xDirection, yDirection, isRightHanded, xAxis, yAxis
     , reverseX, reverseY, moveTo, rotateBy, rotateAround, translateBy, translateIn, translateAlongOwn, mirrorAcross
     , relativeTo, placeIn
@@ -40,7 +40,7 @@ always perpendicular to each other). It can be thought of as:
 
 # Constructors
 
-@docs atPoint, atXY, withXDirection, withYDirection, copy, unsafe
+@docs atPoint, atXY, withXDirection, withYDirection, fromXAxis, fromYAxis, copy, unsafe
 
 
 # Properties
@@ -136,6 +136,36 @@ withYDirection givenDirection givenOrigin =
         , xDirection = givenDirection |> Direction2d.rotateClockwise
         , yDirection = givenDirection
         }
+
+
+{-| Construct a `Frame2d` given its X axis;
+
+    Frame2d.fromXAxis axis
+
+is equivalent to
+
+    Frame2d.withXDirection (Axis2d.direction axis)
+        (Axis2d.originPoint axis)
+
+-}
+fromXAxis : Axis2d units coordinates -> Frame2d units coordinates defines
+fromXAxis givenAxis =
+    withXDirection (Axis2d.direction givenAxis) (Axis2d.originPoint givenAxis)
+
+
+{-| Construct a `Frame2d` given its Y axis;
+
+    Frame2d.fromYAxis axis
+
+is equivalent to
+
+    Frame2d.withYDirection (Axis2d.direction axis)
+        (Axis2d.originPoint axis)
+
+-}
+fromYAxis : Axis2d units coordinates -> Frame2d units coordinates defines
+fromYAxis givenAxis =
+    withYDirection (Axis2d.direction givenAxis) (Axis2d.originPoint givenAxis)
 
 
 {-| Create a 'fresh copy' of a frame: one with the same origin point and X/Y
