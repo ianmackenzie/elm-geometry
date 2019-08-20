@@ -12,7 +12,7 @@ module Axis2d exposing
     , x, y
     , through, withDirection
     , originPoint, direction
-    , reverse, moveTo, rotateAround, translateBy, translateIn, mirrorAcross
+    , reverse, moveTo, rotateAround, rotateBy, translateBy, translateIn, mirrorAcross
     , relativeTo, placeIn
     )
 
@@ -43,7 +43,7 @@ by an origin point and direction. Axes have several uses, such as:
 
 # Transformations
 
-@docs reverse, moveTo, rotateAround, translateBy, translateIn, mirrorAcross
+@docs reverse, moveTo, rotateAround, rotateBy, translateBy, translateIn, mirrorAcross
 
 
 # Coordinate conversions
@@ -187,6 +187,13 @@ rotateAround centerPoint angle =
     in
     \(Types.Axis2d axis) ->
         through (rotatePoint axis.originPoint) (rotateDirection axis.direction)
+
+
+{-| Rotate an axis around its own origin point by the given angle.
+-}
+rotateBy : Angle -> Axis2d units coordinates -> Axis2d units coordinates
+rotateBy angle axis =
+    through (originPoint axis) (Direction2d.rotateBy angle (direction axis))
 
 
 {-| Translate an axis by a given displacement. Applies the given displacement to
