@@ -10,10 +10,10 @@
 module Point3d exposing
     ( Point3d
     , origin
-    , meters, pixels
+    , meters, pixels, unitless
     , xyz, xyzIn, midpoint, interpolateFrom, along, on, xyOn, rThetaOn, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
-    , fromMeters, toMeters, fromPixels, toPixels
+    , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
     , xCoordinate, yCoordinate, zCoordinate, xCoordinateIn, yCoordinateIn, zCoordinateIn
     , equalWithin, lexicographicComparison
     , distanceFrom, signedDistanceAlong, distanceFromAxis, signedDistanceFrom
@@ -48,7 +48,7 @@ like you can add two vectors.
 
 # Literals
 
-@docs meters, pixels
+@docs meters, pixels, unitless
 
 
 # Constructors
@@ -68,7 +68,7 @@ coordinates.
 
 ## Zero-copy conversions
 
-@docs fromMeters, toMeters, fromPixels, toPixels
+@docs fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
 
 
 # Properties
@@ -188,6 +188,17 @@ meters x y z =
 -}
 pixels : Float -> Float -> Float -> Point3d Pixels coordinates
 pixels x y z =
+    Types.Point3d
+        { x = x
+        , y = y
+        , z = z
+        }
+
+
+{-| TODO
+-}
+unitless : Float -> Float -> Float -> Point3d Unitless coordinates
+unitless x y z =
     Types.Point3d
         { x = x
         , y = y
@@ -752,6 +763,20 @@ fromPixels coordinates =
 -}
 toPixels : Point3d Pixels coordinates -> { x : Float, y : Float, z : Float }
 toPixels (Types.Point3d coordinates) =
+    coordinates
+
+
+{-| TODO
+-}
+fromUnitless : { x : Float, y : Float, z : Float } -> Point3d Unitless coordinates
+fromUnitless coordinates =
+    Types.Point3d coordinates
+
+
+{-| TODO
+-}
+toUnitless : Point3d Unitless coordinates -> { x : Float, y : Float, z : Float }
+toUnitless (Types.Point3d coordinates) =
     coordinates
 
 

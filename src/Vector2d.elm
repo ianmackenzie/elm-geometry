@@ -10,9 +10,9 @@
 module Vector2d exposing
     ( Vector2d
     , zero
-    , meters, pixels
+    , meters, pixels, unitless
     , xy, xyIn, rTheta, rThetaIn, from, withLength, perpendicularTo, interpolateFrom
-    , fromTuple, toTuple, fromRecord, toRecord
+    , fromTuple, toTuple, fromRecord, toRecord, fromUnitless, toUnitless
     , fromMeters, toMeters, fromPixels, toPixels
     , at, at_
     , per, for
@@ -53,7 +53,7 @@ Although there are no predefined constants for the vectors with components
 
 # Literals
 
-@docs meters, pixels
+@docs meters, pixels, unitless
 
 
 # Constructors
@@ -68,7 +68,7 @@ plain `Float` tuples or records to represent vectors. The resulting `Vector2d`
 values will have [unitless](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Quantity#unitless-quantities)
 components.
 
-@docs fromTuple, toTuple, fromRecord, toRecord
+@docs fromTuple, toTuple, fromRecord, toRecord, fromUnitless, toUnitless
 
 
 ## Zero-copy conversions
@@ -180,6 +180,13 @@ meters x y =
 -}
 pixels : Float -> Float -> Vector2d Pixels coordinates
 pixels x y =
+    Types.Vector2d { x = x, y = y }
+
+
+{-| TODO
+-}
+unitless : Float -> Float -> Vector2d Unitless coordinates
+unitless x y =
     Types.Vector2d { x = x, y = y }
 
 
@@ -477,6 +484,20 @@ fromPixels components =
 toPixels : Vector2d Pixels coordinates -> { x : Float, y : Float }
 toPixels (Types.Vector2d components) =
     components
+
+
+{-| TODO
+-}
+fromUnitless : { x : Float, y : Float } -> Vector2d Unitless coordinates
+fromUnitless coordinates =
+    Types.Vector2d coordinates
+
+
+{-| TODO
+-}
+toUnitless : Vector2d Unitless coordinates -> { x : Float, y : Float }
+toUnitless (Types.Vector2d coordinates) =
+    coordinates
 
 
 {-| Convert a vector from one units type to another, by providing a conversion factor given as a

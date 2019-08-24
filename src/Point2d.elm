@@ -10,10 +10,10 @@
 module Point2d exposing
     ( Point2d
     , origin
-    , meters, pixels
+    , meters, pixels, unitless
     , xy, xyIn, rTheta, rThetaIn, midpoint, interpolateFrom, along, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
-    , fromMeters, toMeters, fromPixels, toPixels
+    , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
     , at, at_
     , xCoordinate, yCoordinate, xCoordinateIn, yCoordinateIn
     , equalWithin, lexicographicComparison
@@ -48,7 +48,7 @@ like you can add two vectors.
 
 # Literals
 
-@docs meters, pixels
+@docs meters, pixels, unitless
 
 
 # Constructors
@@ -68,7 +68,7 @@ coordinates.
 
 ## Zero-copy conversions
 
-@docs fromMeters, toMeters, fromPixels, toPixels
+@docs fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
 
 
 # Unit conversion
@@ -180,6 +180,13 @@ meters x y =
 -}
 pixels : Float -> Float -> Point2d Pixels coordinates
 pixels x y =
+    Types.Point2d { x = x, y = y }
+
+
+{-| TODO
+-}
+unitless : Float -> Float -> Point2d Unitless coordinates
+unitless x y =
     Types.Point2d { x = x, y = y }
 
 
@@ -646,6 +653,20 @@ fromPixels coordinates =
 -}
 toPixels : Point2d Pixels coordinates -> { x : Float, y : Float }
 toPixels (Types.Point2d coordinates) =
+    coordinates
+
+
+{-| TODO
+-}
+fromUnitless : { x : Float, y : Float } -> Point2d Unitless coordinates
+fromUnitless coordinates =
+    Types.Point2d coordinates
+
+
+{-| TODO
+-}
+toUnitless : Point2d Unitless coordinates -> { x : Float, y : Float }
+toUnitless (Types.Point2d coordinates) =
     coordinates
 
 

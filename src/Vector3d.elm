@@ -10,10 +10,10 @@
 module Vector3d exposing
     ( Vector3d
     , zero
-    , meters, pixels
+    , meters, pixels, unitless
     , xyz, xyzIn, from, withLength, on, xyOn, rThetaOn, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
-    , fromMeters, toMeters, fromPixels, toPixels
+    , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
     , xComponent, yComponent, zComponent, componentIn, length, direction
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross
@@ -52,7 +52,7 @@ you will actually want their `Direction3d` versions [`Direction3d.x`](Direction3
 
 # Literals
 
-@docs meters, pixels
+@docs meters, pixels, unitless
 
 
 # Constructors
@@ -72,7 +72,7 @@ components.
 
 ## Zero-copy conversions
 
-@docs fromMeters, toMeters, fromPixels, toPixels
+@docs fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
 
 
 # Properties
@@ -176,6 +176,13 @@ meters x y z =
 -}
 pixels : Float -> Float -> Float -> Vector3d Pixels coordinates
 pixels x y z =
+    Types.Vector3d { x = x, y = y, z = z }
+
+
+{-| TODO
+-}
+unitless : Float -> Float -> Float -> Vector3d Unitless coordinates
+unitless x y z =
     Types.Vector3d { x = x, y = y, z = z }
 
 
@@ -561,6 +568,20 @@ fromPixels components =
 -}
 toPixels : Vector3d Pixels coordinates -> { x : Float, y : Float, z : Float }
 toPixels (Types.Vector3d components) =
+    components
+
+
+{-| TODO
+-}
+fromUnitless : { x : Float, y : Float, z : Float } -> Vector3d Unitless coordinates
+fromUnitless components =
+    Types.Vector3d components
+
+
+{-| TODO
+-}
+toUnitless : Vector3d Unitless coordinates -> { x : Float, y : Float, z : Float }
+toUnitless (Types.Vector3d components) =
     components
 
 
