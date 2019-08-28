@@ -562,7 +562,7 @@ scaleAbout point scale rectangle =
     --> Point2d.meters 0 0.7071
 
     Rectangle2d.xDirection rotated
-    --> Direction2d.fromAngle (Angle.degrees 45)
+    --> Direction2d.degrees 45
 
     Rectangle2d.vertices rotated
     --> { bottomLeft =

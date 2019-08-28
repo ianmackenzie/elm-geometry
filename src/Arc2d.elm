@@ -796,15 +796,15 @@ value:
 
     Arc2d.tangentDirection nondegenerateExampleArc
         ParameterValue.zero
-    --> Direction2d.fromAngle (Angle.degrees 90)
+    --> Direction2d.degrees 90
 
     Arc2d.tangentDirection nondegenerateExampleArc
         ParameterValue.half
-    --> Direction2d.fromAngle (Angle.degrees 135)
+    --> Direction2d.degrees 135
 
     Arc2d.tangentDirection nondegenerateExampleArc
         ParameterValue.one
-    --> Direction2d.fromAngle (Angle.degrees 180)
+    --> Direction2d.degrees 180
 
 -}
 tangentDirection : Nondegenerate units coordinates -> Float -> Direction2d coordinates
@@ -820,19 +820,19 @@ parameter value:
     Arc2d.sample nondegenerateExampleArc
         ParameterValue.zero
     --> ( Point2d.meters 3 1
-    --> , Direction2d.fromAngle (Angle.degrees 90)
+    --> , Direction2d.degrees 90
     --> )
 
     Arc2d.sample nondegenerateExampleArc
         ParameterValue.half
     --> ( Point2d.meters 2.4142 2.4142
-    --> , Direction2d.fromAngle (Angle.degrees 135)
+    --> , Direction2d.degrees 135
     --> )
 
     Arc2d.sample nondegenerateExampleArc
         ParameterValue.one
     --> ( Point2d.meters 1 3
-    --> , Direction2d.fromAngle (Angle.degrees 180)
+    --> , Direction2d.degrees 180
     --> )
 
 -}

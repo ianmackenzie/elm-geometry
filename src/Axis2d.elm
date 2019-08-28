@@ -91,7 +91,7 @@ y =
 
     exampleAxis =
         Axis2d.through (Point2d.meters 1 3)
-            (Direction2d.fromAngle (Angle.degrees 30))
+            (Direction2d.degrees 30)
 
 -}
 through : Point2d units coordinates -> Direction2d coordinates -> Axis2d units coordinates
@@ -131,7 +131,7 @@ originPoint (Types.Axis2d axis) =
 {-| Get the direction of an axis.
 
     Axis2d.direction exampleAxis
-    --> Direction2d.fromAngle (Angle.degrees 30)
+    --> Direction2d.degrees 30
 
 -}
 direction : Axis2d units coordinates -> Direction2d coordinates
@@ -143,7 +143,7 @@ direction (Types.Axis2d axis) =
 
     Axis2d.reverse exampleAxis
     --> Axis2d.through (Point2d.meters 1 3)
-    -->     (Direction2d.fromAngle (Angle.degrees -150))
+    -->     (Direction2d.degrees -150)
 
 -}
 reverse : Axis2d units coordinates -> Axis2d units coordinates
@@ -158,7 +158,7 @@ reverse (Types.Axis2d axis) =
 
     Axis2d.moveTo newOrigin exampleAxis
     --> Axis2d.through (Point2d.meters 4 5)
-    -->     (Direction2d.fromAngle (Angle.degrees 30))
+    -->     (Direction2d.degrees 30)
 
 -}
 moveTo : Point2d units coordinates -> Axis2d units coordinates -> Axis2d units coordinates
@@ -173,7 +173,7 @@ direction by the given angle.
     exampleAxis
         |> Axis2d.rotateAround Point2d.origin (Angle.degrees 90)
     --> Axis2d.through (Point2d.meters -3 1)
-    -->     (Direction2d.fromAngle (Angle.degrees 120))
+    -->     (Direction2d.degrees 120)
 
 -}
 rotateAround : Point2d units coordinates -> Angle -> Axis2d units coordinates -> Axis2d units coordinates
@@ -204,7 +204,7 @@ the axis' origin point and leaves the direction unchanged.
 
     Axis2d.translateBy displacement exampleAxis
     --> Axis2d.through (Point2d.meters 3 6)
-    -->     (Direction2d.fromAngle (Angle.degrees 30))
+    -->     (Direction2d.degrees 30)
 
 -}
 translateBy : Vector2d units coordinates -> Axis2d units coordinates -> Axis2d units coordinates
@@ -232,7 +232,7 @@ the axis to mirror is given second.
 
     Axis2d.mirrorAcross Axis2d.x exampleAxis
     --> Axis2d.through (Point2d.meters 1 -3)
-    -->     (Direction2d.fromAngle (Angle.degrees -30))
+    -->     (Direction2d.degrees -30)
 
 -}
 mirrorAcross : Axis2d units coordinates -> Axis2d units coordinates -> Axis2d units coordinates
@@ -249,7 +249,7 @@ coordinates relative to a given reference frame.
 
     Axis2d.relativeTo frame exampleAxis
     --> Axis2d.through (Point2d.meters -1 0)
-    -->     (Direction2d.fromAngle (Angle.degrees 30))
+    -->     (Direction2d.degrees 30)
 
 -}
 relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Axis2d units globalCoordinates -> Axis2d units localCoordinates
@@ -266,7 +266,7 @@ frame, and return that axis expressed in global coordinates.
 
     Axis2d.placeIn frame exampleAxis
     --> Axis2d.through (Point2d.meters 3 6)
-    -->     (Direction2d.fromAngle (Angle.degrees 30))
+    -->     (Direction2d.degrees 30)
 
 -}
 placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Axis2d units localCoordinates -> Axis2d units globalCoordinates

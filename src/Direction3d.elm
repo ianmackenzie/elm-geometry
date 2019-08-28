@@ -219,14 +219,14 @@ direction specified in XY coordinates _within_ the sketch plane.
 
     horizontalDirection =
         Direction3d.on SketchPlane3d.xy <|
-            Direction2d.fromAngle (Angle.degrees 45)
+            Direction2d.degrees 45
 
     Direction3d.components horizontalDirection
     --> ( 0.7071, 0.7071, 0 )
 
     thirtyDegreesFromZ =
         Direction3d.on SketchPlane3d.zx <|
-            Direction2d.fromAngle (Angle.degrees 30)
+            Direction2d.degrees 30
 
     Direction3d.components thirtyDegreesFromZ
     --> ( 0.5, 0, 0.866 )
@@ -1165,7 +1165,7 @@ plane; if it is perpendicular, `Nothing` is returned.
             (Angle.degrees 0)
 
     Direction3d.projectInto SketchPlane3d.xy direction
-    --> Just (Direction2d.fromAngle (Angle.degrees -60))
+    --> Just (Direction2d.degrees -60)
 
     Direction3d.projectInto SketchPlane3d.xz direction
     --> Just Direction2d.x

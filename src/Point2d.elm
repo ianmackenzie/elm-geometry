@@ -1085,7 +1085,7 @@ translateBy (Types.Vector2d v) (Types.Point2d p) =
     --> Point2d.meters 3 6
 
     angledDirection =
-        Direction2d.fromAngle (Angle.degrees 45)
+        Direction2d.degrees 45
 
     point |> Point2d.translateIn angledDirection 1
     --> Point2d.meters 3.7071 4.7071

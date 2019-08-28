@@ -750,7 +750,7 @@ length (Types.Vector2d v) =
 return `Nothing`.
 
     Vector2d.direction (Vector2d.fromComponents ( 3, 3 ))
-    --> Just (Direction2d.fromAngle (Angle.degrees 45))
+    --> Just (Direction2d.degrees 45)
 
     Vector2d.direction Vector2d.zero
     --> Nothing

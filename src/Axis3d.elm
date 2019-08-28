@@ -135,7 +135,7 @@ specified in XY coordinates _within_ the sketch plane.
 
     axis2d =
         Axis2d.through (Point2d.meters 1 3)
-            (Direction2d.fromAngle (Angle.degrees 30))
+            (Direction2d.degrees 30)
 
     Axis3d.on SketchPlane3d.xy axis2d
     --> Axis3d.through

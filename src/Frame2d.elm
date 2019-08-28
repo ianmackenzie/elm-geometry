@@ -100,11 +100,11 @@ direction 90 degrees counterclockwise:
 
     frame =
         Frame2d.withXDirection
-            (Direction2d.fromAngle (Angle.degrees 30))
+            (Direction2d.degrees 30)
             (Point2d.meters 2 3)
 
     Frame2d.yDirection frame
-    --> Direction2d.fromAngle (Angle.degrees 120)
+    --> Direction2d.degrees 120
 
 -}
 withXDirection : Direction2d coordinates -> Point2d units coordinates -> Frame2d units coordinates defines
@@ -122,11 +122,11 @@ direction 90 degrees clockwise:
 
     frame =
         Frame2d.withYDirection
-            (Direction2d.fromAngle (Angle.degrees 30))
+            (Direction2d.degrees 30)
             (Point2d.meters 2 3)
 
     Frame2d.yDirection frame
-    --> Direction2d.fromAngle (Angle.degrees -60)
+    --> Direction2d.degrees -60
 
 -}
 withYDirection : Direction2d coordinates -> Point2d units coordinates -> Frame2d units coordinates defines
@@ -184,9 +184,9 @@ copy (Types.Frame2d properties) =
             { originPoint =
                 Point2d.meters 2 3
             , xDirection =
-                Direction2d.fromAngle (Angle.degrees 45)
+                Direction2d.degrees 45
             , yDirection =
-                Direction2d.fromAngle (Angle.degrees 135)
+                Direction2d.degrees 135
             }
 
 In this case **you must be careful to ensure that the X and Y directions are
@@ -428,10 +428,10 @@ Y directions will be rotated by the given angle.
         Frame2d.rotateBy (Angle.degrees 30) Frame2d.atOrigin
 
     Frame2d.xDirection rotatedFrame
-    --> Direction2d.fromAngle (Angle.degrees 30)
+    --> Direction2d.degrees 30
 
     Frame2d.yDirection rotatedFrame
-    --> Direction2d.fromAngle (Angle.degrees 120)
+    --> Direction2d.degrees 120
 
 -}
 rotateBy : Angle -> Frame2d units coordinates defines1 -> Frame2d units coordinates defines2
@@ -460,10 +460,10 @@ and its X and Y basis directions will be rotated by the given angle.
     --> Point2d.meters 0 1.4142
 
     Frame2d.xDirection rotatedFrame
-    --> Direction2d.fromAngle (Angle.degrees 45)
+    --> Direction2d.degrees 45
 
     Frame2d.yDirection rotatedFrame
-    --> Direction2d.fromAngle (Angle.degrees 135)
+    --> Direction2d.degrees 135
 
 -}
 rotateAround : Point2d units coordinates -> Angle -> Frame2d units coordinates defines1 -> Frame2d units coordinates defines2
@@ -542,10 +542,10 @@ resulting in
     --> Point2d.meters 3.4142 1.4142
 
     Frame2d.xDirection frame
-    --> Direction2d.fromAngle (Angle.degrees 45)
+    --> Direction2d.degrees 45
 
     Frame2d.yDirection frame
-    --> Direction2d.fromAngle (Angle.degrees 135)
+    --> Direction2d.degrees 135
 
 -}
 translateAlongOwn : (Frame2d units coordinates defines1 -> Axis2d units coordinates) -> Quantity Float units -> Frame2d units coordinates defines1 -> Frame2d units coordinates defines2

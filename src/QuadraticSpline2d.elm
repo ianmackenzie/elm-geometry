@@ -437,7 +437,7 @@ value:
     QuadraticSpline2d.tangentDirection
         nondegenerateExampleSpline
         ParameterValue.zero
-    --> Direction2d.fromAngle (Angle.degrees 56.31)
+    --> Direction2d.degrees 56.31
 
     QuadraticSpline2d.tangentDirection
         nondegenerateExampleSpline
@@ -447,7 +447,7 @@ value:
     QuadraticSpline2d.tangentDirection
         nondegenerateExampleSpline
         ParameterValue.one
-    --> Direction2d.fromAngle (Angle.degrees -56.31)
+    --> Direction2d.degrees -56.31
 
 -}
 tangentDirection : Nondegenerate units coordinates -> Float -> Direction2d coordinates
@@ -857,7 +857,7 @@ get the tangent direction a quarter of the way along `exampleSpline`:
     QuadraticSpline2d.tangentDirectionAlong
         parameterizedSpline
         (arcLength / 4)
-    --> Just (Direction2d.fromAngle (Angle.degrees 41.145))
+    --> Just (Direction2d.degrees 41.145)
 
 If the given arc length is less than zero or greater than the arc length of the
 spline (or if the derivative of the spline happens to be exactly zero at the
@@ -883,7 +883,7 @@ length. To get the point and tangent direction a quarter of the way along
         (0.25 * arcLength)
     --> Just
     -->     ( Point2d.meters 1.8350 1.9911
-    -->     , Direction2d.fromAngle (Angle.degrees 41.145)
+    -->     , Direction2d.degrees 41.145
     -->     )
 
 If the given arc length is less than zero or greater than the arc length of the
