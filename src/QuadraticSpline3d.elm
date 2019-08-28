@@ -203,7 +203,7 @@ thirdControlPoint (Types.QuadraticSpline3d spline) =
 the spline's first control point to its second.
 
     QuadraticSpline3d.startDerivative exampleSpline
-    --> Vector3d.fromComponents ( 4, 2, 0 )
+    --> Vector3d.meters 4 2 0
 
 -}
 startDerivative : QuadraticSpline3d units coordinates -> Vector3d units coordinates
@@ -216,7 +216,7 @@ startDerivative spline =
 the spline's second control point to its third.
 
     QuadraticSpline3d.endDerivative exampleSpline
-    --> Vector3d.fromComponents ( 0, 2, 4 )
+    --> Vector3d.meters 0 2 4
 
 -}
 endDerivative : QuadraticSpline3d units coordinates -> Vector3d units coordinates
@@ -327,15 +327,15 @@ pointOn spline parameterValue =
 
     QuadraticSpline3d.derivative exampleSpline
         ParameterValue.zero
-    --> Vector3d.fromComponents ( 4, 2, 0 )
+    --> Vector3d.meters 4 2 0
 
     QuadraticSpline3d.derivative exampleSpline
         ParameterValue.half
-    --> Vector3d.fromComponents ( 2, 2, 2 )
+    --> Vector3d.meters 2 2 2
 
     QuadraticSpline3d.derivative exampleSpline
         ParameterValue.one
-    --> Vector3d.fromComponents ( 0, 2, 4 )
+    --> Vector3d.meters 0 2 4
 
 Note that the derivative interpolates linearly from end to end.
 
@@ -652,7 +652,7 @@ rotateAround axis angle spline =
 {-| Translate a spline by a given displacement.
 
     displacement =
-        Vector3d.fromComponents ( 2, 3, 1 )
+        Vector3d.meters 2 3 1
 
     exampleSpline
         |> QuadraticSpline3d.translateBy displacement

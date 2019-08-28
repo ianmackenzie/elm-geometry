@@ -407,10 +407,10 @@ pointOn (Types.Arc3d arc) parameterValue =
 {-| Get the first derivative of an arc at a given parameter value.
 
     Arc3d.firstDerivative exampleArc ParameterValue.zero
-    --> Vector3d.fromComponents ( -1.5708, 1.5708, 0 )
+    --> Vector3d.meters -1.5708 1.5708 0
 
     Arc3d.firstDerivative exampleArc ParameterValue.one
-    --> Vector3d.fromComponents ( -1.5708, -1.5708, 0 )
+    --> Vector3d.meters -1.5708 -1.5708 0
 
 -}
 firstDerivative : Arc3d units coordinates -> Float -> Vector3d units coordinates
@@ -784,7 +784,7 @@ rotateAround rotationAxis angle (Types.Arc3d arc) =
 {-| Translate an arc by a given displacement.
 
     displacement =
-        Vector3d.fromComponents ( 2, 1, 3 )
+        Vector3d.meters 2 1 3
 
     Arc3d.translateBy displacement exampleArc
     --> Arc3d.sweptAround

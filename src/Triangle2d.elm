@@ -294,7 +294,7 @@ rotateAround centerPoint angle =
 {-| Translate a triangle by a given displacement.
 
     displacement =
-        Vector2d.fromComponents ( 2, -3 )
+        Vector2d.meters 2 -3
 
     Triangle2d.translateBy displacement exampleTriangle
     --> Triangle2d.fromVertices

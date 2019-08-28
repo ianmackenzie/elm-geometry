@@ -425,15 +425,15 @@ pointOn arc parameterValue =
 
     EllipticalArc2d.firstDerivative exampleArc
         ParameterValue.zero
-    --> Vector2d.fromComponents ( 0, 1.5708 )
+    --> Vector2d.meters 0 1.5708
 
     EllipticalArc2d.firstDerivative exampleArc
         ParameterValue.half
-    --> Vector2d.fromComponents ( -2.2214, 1.1107 )
+    --> Vector2d.meters -2.2214 1.1107
 
     EllipticalArc2d.firstDerivative exampleArc
         ParameterValue.one
-    --> Vector2d.fromComponents ( -3.1416, 0 )
+    --> Vector2d.meters -3.1416 0
 
 -}
 firstDerivative : EllipticalArc2d units coordinates -> Float -> Vector2d units coordinates
@@ -740,7 +740,7 @@ rotateAround point angle arc =
 
     exampleArc
         |> EllipticalArc2d.translateBy
-            (Vector2d.fromComponents ( 2, 3 ))
+            (Vector2d.meters 2 3)
     --> EllipticalArc2d.with
     -->     { centerPoint =
     -->         Point2d.meters 2 3

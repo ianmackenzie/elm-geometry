@@ -153,7 +153,7 @@ unwrap (Types.Vector3d components) =
 {-| The zero vector.
 
     Vector3d.zero
-    --> Vector3d.fromComponents ( 0, 0, 0 )
+    --> Vector3d.meters 0 0 0
 
 -}
 zero : Vector3d units coordinates
@@ -213,7 +213,7 @@ unitless x y z =
 {-| Construct a vector from its X, Y and Z components.
 
     vector =
-        Vector3d.fromComponents ( 2, 1, 3 )
+        Vector3d.meters 2 1 3
 
 -}
 xyz : Quantity Float units -> Quantity Float units -> Quantity Float units -> Vector3d units coordinates
@@ -272,7 +272,7 @@ xyzIn (Types.Frame3d frame) (Quantity x) (Quantity y) (Quantity z) =
         Point3d.meters 4 5 6
 
     Vector3d.from startPoint endPoint
-    --> Vector3d.fromComponents ( 3, 4, 5 )
+    --> Vector3d.meters 3 4 5
 
 -}
 from : Point3d units coordinates -> Point3d units coordinates -> Vector3d units coordinates
@@ -287,7 +287,7 @@ from (Types.Point3d p1) (Types.Point3d p2) =
 {-| Construct a vector with the given length in the given direction.
 
     Vector3d.withLength 5 Direction3d.y
-    --> Vector3d.fromComponents ( 0, 5, 0 )
+    --> Vector3d.meters 0 5 0
 
 -}
 withLength : Quantity Float units -> Direction3d coordinates -> Vector3d units coordinates
@@ -303,16 +303,16 @@ withLength (Quantity a) (Types.Direction3d d) =
 specified in XY coordinates _within_ the sketch plane.
 
     vector2d =
-        Vector2d.fromComponents ( 2, 3 )
+        Vector2d.meters 2 3
 
     Vector3d.on SketchPlane3d.xy vector2d
-    --> Vector3d.fromComponents ( 2, 3, 0 )
+    --> Vector3d.meters 2 3 0
 
     Vector3d.on SketchPlane3d.yz vector2d
-    --> Vector3d.fromComponents ( 0, 2, 3 )
+    --> Vector3d.meters 0 2 3
 
     Vector3d.on SketchPlane3d.zx vector2d
-    --> Vector3d.fromComponents ( 3, 0, 2 )
+    --> Vector3d.meters 3 0 2
 
 A slightly more complex example:
 
@@ -322,8 +322,8 @@ A slightly more complex example:
                 (Angle.degrees 45)
 
     Vector3d.on tiltedSketchPlane <|
-        Vector2d.fromComponents ( 1, 1 )
-    --> Vector3d.fromComponents ( 1, 0.7071, 0.7071 )
+        Vector2d.meters 1 1
+    --> Vector3d.meters 1 0.7071 0.7071
 
 -}
 on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Vector2d units coordinates2d -> Vector3d units coordinates3d
@@ -408,12 +408,12 @@ guaranteed to be perpendicular to the given vector and non-zero (unless the
 given vector is itself zero).
 
     Vector3d.perpendicularTo
-        (Vector3d.fromComponents ( 3, 0, 0 ))
-    --> Vector3d.fromComponents ( 0, 0, -3 )
+        (Vector3d.meters 3 0 0)
+    --> Vector3d.meters 0 0 -3
 
     Vector3d.perpendicularTo
-        (Vector3d.fromComponents ( 1, 2, 3 ))
-    --> Vector3d.fromComponents ( 0, -3, 2 )
+        (Vector3d.meters 1 2 3)
+    --> Vector3d.meters 0 -3 2
 
     Vector3d.perpendicularTo Vector3d.zero
     --> Vector3d.zero
@@ -449,13 +449,13 @@ perpendicularTo (Types.Vector3d v) =
 second, based on a parameter that ranges from zero to one.
 
     startVector =
-        Vector3d.fromComponents ( 1, 2, 4 )
+        Vector3d.meters 1 2 4
 
     endVector =
-        Vector3d.fromComponents ( 1, 3, 8 )
+        Vector3d.meters 1 3 8
 
     Vector3d.interpolateFrom startVector endVector 0.25
-    --> Vector3d.fromComponents ( 1, 2.25, 5 )
+    --> Vector3d.meters 1 2.25 5
 
 Partial application may be useful:
 
@@ -464,18 +464,18 @@ Partial application may be useful:
         Vector3d.interpolateFrom startVector endVector
 
     List.map interpolatedVector [ 0, 0.5, 1 ]
-    --> [ Vector3d.fromComponents ( 1, 2, 4 )
-    --> , Vector3d.fromComponents ( 1, 2, 6 )
-    --> , Vector3d.fromComponents ( 1, 2, 8 )
+    --> [ Vector3d.meters 1 2 4
+    --> , Vector3d.meters 1 2 6
+    --> , Vector3d.meters 1 2 8
     --> ]
 
 You can pass values less than zero or greater than one to extrapolate:
 
     interpolatedVector -0.5
-    --> Vector3d.fromComponents ( 1, 2, 2 )
+    --> Vector3d.meters 1 2 2
 
     interpolatedVector 1.25
-    --> Vector3d.fromComponents ( 1, 2, 9 )
+    --> Vector3d.meters 1 2 9
 
 -}
 interpolateFrom : Vector3d units coordinates -> Vector3d units coordinates -> Float -> Vector3d units coordinates
@@ -611,7 +611,7 @@ toUnitless (Types.Vector3d components) =
 
 {-| Get the X component of a vector.
 
-    Vector3d.fromComponents ( 1, 2, 3 )
+    Vector3d.meters 1 2 3
         |> Vector3d.xComponent
     --> 1
 
@@ -623,7 +623,7 @@ xComponent (Types.Vector3d v) =
 
 {-| Get the Y component of a vector.
 
-    Vector3d.fromComponents ( 1, 2, 3 )
+    Vector3d.meters 1 2 3
         |> Vector3d.yComponent
     --> 2
 
@@ -635,7 +635,7 @@ yComponent (Types.Vector3d v) =
 
 {-| Get the Z component of a vector.
 
-    Vector3d.fromComponents ( 1, 2, 3 )
+    Vector3d.meters 1 2 3
         |> Vector3d.zComponent
     --> 3
 
@@ -670,10 +670,10 @@ componentIn (Types.Direction3d d) (Types.Vector3d v) =
 between the two given vectors has magnitude less than the given tolerance.
 
     firstVector =
-        Vector3d.fromComponents ( 2, 1, 3 )
+        Vector3d.meters 2 1 3
 
     secondVector =
-        Vector3d.fromComponents ( 2.0002, 0.9999, 3.0001 )
+        Vector3d.meters 2.0002 0.9999 3.0001
 
     Vector3d.equalWithin 1e-3 firstVector secondVector
     --> True
@@ -704,7 +704,7 @@ lexicographicComparison (Types.Vector3d v1) (Types.Vector3d v2) =
 
 {-| Get the length (magnitude) of a vector.
 
-    Vector3d.length (Vector3d.fromComponents ( 2, 1, 2 ))
+    Vector3d.length (Vector3d.meters 2 1 2)
     --> 3
 
 -}
@@ -737,7 +737,7 @@ length (Types.Vector3d v) =
 {-| Attempt to find the direction of a vector. In the case of a zero vector,
 returns `Nothing`.
 
-    Vector3d.fromComponents ( 3, 0, 3 )
+    Vector3d.meters 3 0 3
         |> Vector3d.direction
     --> Just
     -->     (Direction3d.fromAzimuthAndElevation
@@ -783,10 +783,10 @@ direction (Types.Vector3d v) =
 {-| Normalize a vector to have a length of one. Zero vectors are left as-is.
 
     vector =
-        Vector3d.fromComponents ( 3, 0, 4 )
+        Vector3d.meters 3 0 4
 
     Vector3d.normalize vector
-    --> Vector3d.fromComponents ( 0.6, 0, 0.8 )
+    --> Vector3d.meters 0.6 0 0.8
 
     Vector3d.normalize Vector3d.zero
     --> Vector3d.zero
@@ -837,13 +837,13 @@ normalize (Types.Vector3d v) =
 {-| Find the sum of two vectors.
 
     firstVector =
-        Vector3d.fromComponents ( 1, 2, 3 )
+        Vector3d.meters 1 2 3
 
     secondVector =
-        Vector3d.fromComponents ( 4, 5, 6 )
+        Vector3d.meters 4 5 6
 
     Vector3d.sum firstVector secondVector
-    --> Vector3d.fromComponents ( 5, 7, 9 )
+    --> Vector3d.meters 5 7 9
 
 -}
 plus : Vector3d units coordinates -> Vector3d units coordinates -> Vector3d units coordinates
@@ -858,13 +858,13 @@ plus (Types.Vector3d v2) (Types.Vector3d v1) =
 {-| Find the difference between two vectors (the first vector minus the second).
 
     firstVector =
-        Vector3d.fromComponents ( 5, 6, 7 )
+        Vector3d.meters 5 6 7
 
     secondVector =
-        Vector3d.fromComponents ( 1, 1, 1 )
+        Vector3d.meters 1 1 1
 
     Vector3d.difference firstVector secondVector
-    --> Vector3d.fromComponents ( 4, 5, 6 )
+    --> Vector3d.meters 4 5 6
 
 -}
 minus : Vector3d units coordinates -> Vector3d units coordinates -> Vector3d units coordinates
@@ -948,8 +948,8 @@ cross (Types.Vector3d v2) (Types.Vector3d v1) =
 
 {-| Reverse the direction of a vector, negating its components.
 
-    Vector3d.reverse (Vector3d.fromComponents ( 1, -3, 2 ))
-    --> Vector3d.fromComponents ( -1, 3, -2 )
+    Vector3d.reverse (Vector3d.meters 1 -3 2)
+    --> Vector3d.meters -1 3 -2
 
 (This could have been called `negate`, but `reverse` is more consistent with
 the naming used in other modules.)
@@ -966,9 +966,9 @@ reverse (Types.Vector3d v) =
 
 {-| Scale the length of a vector by a given scale.
 
-    Vector3d.fromComponents ( 1, 2, 3 )
+    Vector3d.meters 1 2 3
         |> Vector3d.scaleBy 3
-    --> Vector3d.fromComponents ( 3, 6, 9 )
+    --> Vector3d.meters 3 6 9
 
 (This could have been called `multiply` or `times`, but `scaleBy` was chosen as
 a more geometrically meaningful name and to be consistent with the `scaleAbout`
@@ -987,13 +987,13 @@ scaleBy k (Types.Vector3d v) =
 {-| Rotate a vector around a given axis by a given angle (in radians).
 
     vector =
-        Vector3d.fromComponents ( 2, 0, 1 )
+        Vector3d.meters 2 0 1
 
     Vector3d.rotateAround Axis3d.x (Angle.degrees 90) vector
-    --> Vector3d.fromComponents ( 2, -1, 0 )
+    --> Vector3d.meters 2 -1 0
 
     Vector3d.rotateAround Axis3d.z (Angle.degrees 45) vector
-    --> Vector3d.fromComponents ( 1.4142, 1.4142, 1 )
+    --> Vector3d.meters 1.4142 1.4142 1
 
 -}
 rotateAround : Axis3d units coordinates -> Angle -> Vector3d units coordinates -> Vector3d units coordinates
@@ -1084,13 +1084,13 @@ rotateAround (Types.Axis3d axis) (Quantity angle) (Types.Vector3d v) =
 {-| Mirror a vector across a plane.
 
     vector =
-        Vector3d.fromComponents ( 1, 2, 3 )
+        Vector3d.meters 1 2 3
 
     Vector3d.mirrorAcross Plane3d.xy vector
-    --> Vector3d.fromComponents ( 1, 2, -3 )
+    --> Vector3d.meters 1 2 -3
 
     Vector3d.mirrorAcross Plane3d.yz vector
-    --> Vector3d.fromComponents ( -1, 2, 3 )
+    --> Vector3d.meters -1 2 3
 
 -}
 mirrorAcross : Plane3d units coordinates -> Vector3d units coordinates -> Vector3d units coordinates
@@ -1130,13 +1130,13 @@ direction and a portion perpendicular to it, then returning the parallel
 portion.
 
     vector =
-        Vector3d.fromComponents ( 1, 2, 3 )
+        Vector3d.meters 1 2 3
 
     Vector3d.projectionIn Direction3d.x vector
-    --> Vector3d.fromComponents ( 1, 0, 0 )
+    --> Vector3d.meters 1 0 0
 
     Vector3d.projectionIn Direction3d.z vector
-    --> Vector3d.fromComponents ( 0, 0, 3 )
+    --> Vector3d.meters 0 0 3
 
 -}
 projectionIn : Direction3d coordinates -> Vector3d units coordinates -> Vector3d units coordinates
@@ -1159,13 +1159,13 @@ and a portion perpendicular to it (parallel to its normal direction), then
 returning the parallel (in-plane) portion.
 
     vector =
-        Vector3d.fromComponents ( 2, 1, 3 )
+        Vector3d.meters 2 1 3
 
     Vector3d.projectOnto Plane3d.xy vector
-    --> Vector3d.fromComponents ( 2, 1, 0 )
+    --> Vector3d.meters 2 1 0
 
     Vector3d.projectOnto Plane3d.xz vector
-    --> Vector3d.fromComponents ( 2, 0, 3 )
+    --> Vector3d.meters 2 0 3
 
 -}
 projectOnto : Plane3d units coordinates -> Vector3d units coordinates -> Vector3d units coordinates
@@ -1188,10 +1188,10 @@ projectOnto (Types.Plane3d plane) (Types.Vector3d v) =
 local coordinates relative to a given reference frame.
 
     vector =
-        Vector3d.fromComponents ( 2, 0, 3 )
+        Vector3d.meters 2 0 3
 
     Vector3d.relativeTo rotatedFrame vector
-    --> Vector3d.fromComponents ( 1.732, -1, 3 )
+    --> Vector3d.meters 1.732 -1 3
 
 -}
 relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Vector3d units globalCoordinates -> Vector3d units localCoordinates
@@ -1217,10 +1217,10 @@ relativeTo (Types.Frame3d frame) (Types.Vector3d v) =
 frame, and return that vector expressed in global coordinates.
 
     vector =
-        Vector3d.fromComponents ( 2, 0, 3 )
+        Vector3d.meters 2 0 3
 
     Vector3d.placeIn rotatedFrame vector
-    --> Vector3d.fromComponents ( 1.732, 1, 3 )
+    --> Vector3d.meters 1.732 1 3
 
 -}
 placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Vector3d units localCoordinates -> Vector3d units globalCoordinates
@@ -1248,16 +1248,16 @@ of the vector onto the plane and then expresses the projected vector in 2D
 sketch coordinates.
 
     vector =
-        Vector3d.fromComponents ( 2, 1, 3 )
+        Vector3d.meters 2 1 3
 
     Vector3d.projectInto SketchPlane3d.xy vector
-    --> Vector2d.fromComponents ( 2, 1 )
+    --> Vector2d.meters 2 1
 
     Vector3d.projectInto SketchPlane3d.yz vector
-    --> Vector2d.fromComponents ( 1, 3 )
+    --> Vector2d.meters 1 3
 
     Vector3d.projectInto SketchPlane3d.zx vector
-    --> Vector2d.fromComponents ( 3, 2 )
+    --> Vector2d.meters 3 2
 
 -}
 projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Vector3d units coordinates3d -> Vector2d units coordinates2d

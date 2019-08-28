@@ -178,7 +178,7 @@ rotateAround point angle polyline =
 {-| Translate a polyline by the given displacement.
 
     displacement =
-        Vector2d.fromComponents ( 2, 3 )
+        Vector2d.meters 2 3
 
     Polyline2d.translateBy displacement stepShape
     --> Polyline2d.fromVertices

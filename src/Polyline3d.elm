@@ -205,7 +205,7 @@ rotateAround axis angle polyline =
 {-| Translate a polyline by the given displacement.
 
     displacement =
-        Vector3d.fromComponents ( 1, 2, 3 )
+        Vector3d.meters 1 2 3
 
     Polyline3d.translateBy displacement examplePolyline
     --> Polyline3d.fromVertices

@@ -252,7 +252,7 @@ fourthControlPoint (Types.CubicSpline2d spline) =
 vector from the spline's start point to its start control point.
 
     CubicSpline2d.startDerivative exampleSpline
-    --> Vector2d.fromComponents ( 6, 9 )
+    --> Vector2d.meters 6 9
 
 -}
 startDerivative : CubicSpline2d units coordinates -> Vector2d units coordinates
@@ -265,7 +265,7 @@ startDerivative spline =
 from the spline's end control point to its end point.
 
     CubicSpline2d.endDerivative exampleSpline
-    --> Vector2d.fromComponents ( 6, 9 )
+    --> Vector2d.meters 6 9
 
 -}
 endDerivative : CubicSpline2d units coordinates -> Vector2d units coordinates
@@ -639,7 +639,7 @@ rotateAround point angle spline =
 {-| Translate a spline by a given displacement.
 
     displacement =
-        Vector2d.fromComponents ( 2, 3 )
+        Vector2d.meters 2 3
 
     CubicSpline2d.translateBy displacement exampleSpline
     --> CubicSpline2d.with
@@ -1021,15 +1021,15 @@ fromArcLengthParameterized (ArcLengthParameterized parameterized) =
 
     CubicSpline2d.firstDerivative exampleSpline
         ParameterValue.zero
-    --> Vector2d.fromComponents ( 6, 9 )
+    --> Vector2d.meters 6 9
 
     CubicSpline2d.firstDerivative exampleSpline
         ParameterValue.half
-    --> Vector2d.fromComponents ( 6, 0 )
+    --> Vector2d.meters 6 0
 
     CubicSpline2d.firstDerivative exampleSpline
         ParameterValue.one
-    --> Vector2d.fromComponents ( 6, 9 )
+    --> Vector2d.meters 6 9
 
 -}
 firstDerivative : CubicSpline2d units coordinates -> Float -> Vector2d units coordinates
@@ -1113,13 +1113,13 @@ firstDerivative spline parameterValue =
 {-| Evaluate the second derivative of a spline at a given parameter value:
 
     CubicSpline2d.secondDerivativeAt 0 exampleSpline
-    --> Just (Vector2d.fromComponents ( 0, -36 ))
+    --> Just (Vector2d.meters 0 -36)
 
     CubicSpline2d.secondDerivativeAt 0.5 exampleSpline
-    --> Just (Vector2d.fromComponents ( 0, 0 ))
+    --> Just (Vector2d.meters 0 0)
 
     CubicSpline2d.secondDerivativeAt 1 exampleSpline
-    --> Just (Vector2d.fromComponents ( 0, 36 ))
+    --> Just (Vector2d.meters 0 36)
 
 -}
 secondDerivative : CubicSpline2d units coordinates -> Float -> Vector2d units coordinates
@@ -1159,7 +1159,7 @@ secondDerivative spline parameterValue =
 constant):
 
     CubicSpline2d.thirdDerivative exampleSpline
-    --> Vector2d.fromComponents ( 0, 72 )
+    --> Vector2d.meters 0 72
 
 -}
 thirdDerivative : CubicSpline2d units coordinates -> Vector2d units coordinates

@@ -161,7 +161,7 @@ unwrap (Types.Vector2d components) =
 {-| The zero vector.
 
     Vector2d.zero
-    --> Vector2d.fromComponents ( 0, 0 )
+    --> Vector2d.meters 0 0
 
 -}
 zero : Vector2d units coordinates
@@ -217,7 +217,7 @@ unitless x y =
 {-| Construct a vector from its X and Y components.
 
     vector =
-        Vector2d.fromComponents ( 2, 3 )
+        Vector2d.meters 2 3
 
 -}
 xy : Quantity Float units -> Quantity Float units -> Vector2d units coordinates
@@ -260,7 +260,7 @@ xyIn (Types.Frame2d frame) (Quantity x) (Quantity y) =
 counterclockwise from the positive X direction.
 
     Vector2d.fromPolarComponents ( 2, degrees 135 )
-    -->Vector2d.fromComponents ( -1.4142, 1.4142 )
+    -->Vector2d.meters -1.4142 1.4142
 
 -}
 rTheta : Quantity Float units -> Angle -> Vector2d units coordinates
@@ -318,7 +318,7 @@ rThetaIn (Types.Frame2d frame) (Quantity r) (Quantity theta) =
         Point2d.meters 4 5
 
     Vector2d.from startPoint endPoint
-    --> Vector2d.fromComponents ( 3, 4 )
+    --> Vector2d.meters 3 4
 
 -}
 from : Point2d units coordinates -> Point2d units coordinates -> Vector2d units coordinates
@@ -332,7 +332,7 @@ from (Types.Point2d p1) (Types.Point2d p2) =
 {-| Construct a vector with the given length in the given direction.
 
     Vector2d.withLength 5 Direction2d.y
-    --> Vector2d.fromComponents ( 0, 5 )
+    --> Vector2d.meters 0 5
 
 -}
 withLength : Quantity Float units -> Direction2d coordinates -> Vector2d units coordinates
@@ -348,16 +348,16 @@ vector 90 degrees counterclockwise. The constructed vector will have the same
 length as the given vector. Alias for `Vector2d.rotateCounterclockwise`.
 
     Vector2d.perpendicularTo
-        (Vector2d.fromComponents ( 1, 0 ))
-    --> Vector2d.fromComponents ( 0, 1 )
+        (Vector2d.meters 1 0)
+    --> Vector2d.meters 0 1
 
     Vector2d.perpendicularTo
-        (Vector2d.fromComponents ( 0, 2 ))
-    --> Vector2d.fromComponents ( -2, 0 )
+        (Vector2d.meters 0 2)
+    --> Vector2d.meters -2 0
 
     Vector2d.perpendicularTo
-        (Vector2d.fromComponents ( 3, 1 ))
-    --> Vector2d.fromComponents ( -1, 3 )
+        (Vector2d.meters 3 1)
+    --> Vector2d.meters -1 3
 
     Vector2d.perpendicularTo Vector2d.zero
     --> Vector2d.zero
@@ -375,10 +375,10 @@ second, based on a parameter that ranges from zero to one.
         Vector2d.zero
 
     endVector =
-        Vector2d.fromComponents ( 8, 12 )
+        Vector2d.meters 8 12
 
     Vector2d.interpolateFrom startVector endVector 0.25
-    --> Vector2d.fromComponents ( 2, 3 )
+    --> Vector2d.meters 2 3
 
 Partial application may be useful:
 
@@ -387,18 +387,18 @@ Partial application may be useful:
         Vector2d.interpolateFrom startVector endVector
 
     List.map interpolatedVector [ 0, 0.5, 1 ]
-    --> [ Vector2d.fromComponents ( 0, 0 )
-    --> , Vector2d.fromComponents ( 4, 6 )
-    --> , Vector2d.fromComponents ( 8, 12 )
+    --> [ Vector2d.meters 0 0
+    --> , Vector2d.meters 4 6
+    --> , Vector2d.meters 8 12
     --> ]
 
 You can pass values less than zero or greater than one to extrapolate:
 
     interpolatedVector -0.5
-    --> Vector2d.fromComponents ( -4, -6 )
+    --> Vector2d.meters -4 -6
 
     interpolatedVector 1.25
-    --> Vector2d.fromComponents ( 10, 15 )
+    --> Vector2d.meters 10 15
 
 -}
 interpolateFrom : Vector2d units coordinates -> Vector2d units coordinates -> Float -> Vector2d units coordinates
@@ -630,7 +630,7 @@ for (Quantity a) (Types.Vector2d v) =
 
 {-| Get the X component of a vector.
 
-    Vector2d.xComponent (Vector2d.fromComponents ( 2, 3 ))
+    Vector2d.xComponent (Vector2d.meters 2 3)
     --> 2
 
 -}
@@ -641,7 +641,7 @@ xComponent (Types.Vector2d v) =
 
 {-| Get the Y component of a vector.
 
-    Vector2d.yComponent (Vector2d.fromComponents ( 2, 3 ))
+    Vector2d.yComponent (Vector2d.meters 2 3)
     --> 3
 
 -}
@@ -674,10 +674,10 @@ componentIn (Types.Direction2d d) (Types.Vector2d v) =
 between the two given vectors has magnitude less than the given tolerance.
 
     firstVector =
-        Vector2d.fromComponents ( 1, 2 )
+        Vector2d.meters 1 2
 
     secondVector =
-        Vector2d.fromComponents ( 0.9999, 2.0002 )
+        Vector2d.meters 0.9999 2.0002
 
     Vector2d.equalWithin 1e-3 firstVector secondVector
     --> True
@@ -719,7 +719,7 @@ lexicographicComparison (Types.Vector2d v1) (Types.Vector2d v2) =
 
 {-| Get the length (magnitude) of a vector.
 
-    Vector2d.length (Vector2d.fromComponents ( 3, 4 ))
+    Vector2d.length (Vector2d.meters 3 4)
     --> 5
 
 -}
@@ -749,7 +749,7 @@ length (Types.Vector2d v) =
 {-| Attempt to find the direction of a vector. In the case of a zero vector,
 return `Nothing`.
 
-    Vector2d.direction (Vector2d.fromComponents ( 3, 3 ))
+    Vector2d.direction (Vector2d.meters 3 3)
     --> Just (Direction2d.degrees 45)
 
     Vector2d.direction Vector2d.zero
@@ -786,10 +786,10 @@ direction (Types.Vector2d v) =
 {-| Normalize a vector to have a length of one. Zero vectors are left as-is.
 
     vector =
-        Vector2d.fromComponents ( 3, 4 )
+        Vector2d.meters 3 4
 
     Vector2d.normalize vector
-    --> Vector2d.fromComponents ( 0.6, 0.8 )
+    --> Vector2d.meters 0.6 0.8
 
     Vector2d.normalize Vector2d.zero
     --> Vector2d.zero
@@ -836,13 +836,13 @@ normalize (Types.Vector2d v) =
 {-| Find the sum of two vectors.
 
     firstVector =
-        Vector2d.fromComponents ( 1, 2 )
+        Vector2d.meters 1 2
 
     secondVector =
-        Vector2d.fromComponents ( 3, 4 )
+        Vector2d.meters 3 4
 
     Vector2d.sum firstVector secondVector
-    --> Vector2d.fromComponents ( 4, 6 )
+    --> Vector2d.meters 4 6
 
 -}
 plus : Vector2d units coordinates -> Vector2d units coordinates -> Vector2d units coordinates
@@ -856,13 +856,13 @@ plus (Types.Vector2d v2) (Types.Vector2d v1) =
 {-| Find the difference between two vectors (the first vector minus the second).
 
     firstVector =
-        Vector2d.fromComponents ( 5, 6 )
+        Vector2d.meters 5 6
 
     secondVector =
-        Vector2d.fromComponents ( 1, 3 )
+        Vector2d.meters 1 3
 
     Vector2d.difference firstVector secondVector
-    --> Vector2d.fromComponents ( 4, 3 )
+    --> Vector2d.meters 4 3
 
 -}
 minus : Vector2d units coordinates -> Vector2d units coordinates -> Vector2d units coordinates
@@ -950,8 +950,8 @@ cross (Types.Vector2d v2) (Types.Vector2d v1) =
 
 {-| Reverse the direction of a vector, negating its components.
 
-    Vector2d.reverse (Vector2d.fromComponents ( -1, 2 ))
-    --> Vector2d.fromComponents ( 1, -2 )
+    Vector2d.reverse (Vector2d.meters -1 2)
+    --> Vector2d.meters 1 -2
 
 (This could have been called `negate`, but `reverse` is more consistent with
 the naming used in other modules.)
@@ -967,8 +967,8 @@ reverse (Types.Vector2d v) =
 
 {-| Scale the length of a vector by a given scale.
 
-    Vector2d.scaleBy 3 (Vector2d.fromComponents ( 1, 2 ))
-    --> Vector2d.fromComponents ( 3, 6 )
+    Vector2d.scaleBy 3 (Vector2d.meters 1 2)
+    --> Vector2d.meters 3 6
 
 (This could have been called `multiply` or `times`, but `scaleBy` was chosen as
 a more geometrically meaningful name and to be consistent with the `scaleAbout`
@@ -985,13 +985,13 @@ scaleBy k (Types.Vector2d v) =
 
 {-| Rotate a vector counterclockwise by a given angle (in radians).
 
-    Vector2d.fromComponents ( 1, 1 )
+    Vector2d.meters 1 1
         |> Vector2d.rotateBy (Angle.degrees 45)
-    --> Vector2d.fromComponents ( 0, 1.4142 )
+    --> Vector2d.meters 0 1.4142
 
-    Vector2d.fromComponents ( 1, 0 )
+    Vector2d.meters 1 0
         |> Vector2d.rotateBy pi
-    --> Vector2d.fromComponents ( -1, 0 )
+    --> Vector2d.meters -1 0
 
 -}
 rotateBy : Angle -> Vector2d units coordinates -> Vector2d units coordinates
@@ -1050,10 +1050,10 @@ rotateClockwise (Types.Vector2d v) =
 {-| Mirror a vector across a given axis.
 
     vector =
-        Vector2d.fromComponents ( 2, 3 )
+        Vector2d.meters 2 3
 
     Vector2d.mirrorAcross Axis2d.y vector
-    --> Vector2d.fromComponents ( -2, 3 )
+    --> Vector2d.meters -2 3
 
 The position of the axis doesn't matter, only its orientation:
 
@@ -1062,7 +1062,7 @@ The position of the axis doesn't matter, only its orientation:
             (Point2d.meters 100 200)
 
     Vector2d.mirrorAcross horizontalAxis vector
-    --> Vector2d.fromComponents ( 2, -3 )
+    --> Vector2d.meters 2 -3
 
 -}
 mirrorAcross : Axis2d axisUnits coordinates -> Vector2d units coordinates -> Vector2d units coordinates
@@ -1092,13 +1092,13 @@ direction and a portion perpendicular to it, then returning the parallel
 portion.
 
     vector =
-        Vector2d.fromComponents ( 2, 3 )
+        Vector2d.meters 2 3
 
     Vector2d.projectionIn Direction2d.x vector
-    --> Vector2d.fromComponents ( 2, 0 )
+    --> Vector2d.meters 2 0
 
     Vector2d.projectionIn Direction2d.y vector
-    --> Vector2d.fromComponents ( 0, 3 )
+    --> Vector2d.meters 0 3
 
 -}
 projectionIn : Direction2d coordinates -> Vector2d units coordinates -> Vector2d units coordinates
@@ -1116,12 +1116,12 @@ projectionIn (Types.Direction2d d) (Types.Vector2d v) =
 {-| Project a vector onto an axis.
 
     Vector2d.projectOnto Axis2d.y
-        (Vector2d.fromComponents ( 3, 4 ))
-    --> Vector2d.fromComponents ( 0, 4 )
+        (Vector2d.meters 3 4)
+    --> Vector2d.meters 0 4
 
     Vector2d.projectOnto Axis2d.x
-        (Vector2d.fromComponents ( -1, 2 ))
-    --> Vector2d.fromComponents ( -1, 0 )
+        (Vector2d.meters -1 2)
+    --> Vector2d.meters -1 0
 
 This is equivalent to finding the projection in the axis' direction.
 
@@ -1144,9 +1144,9 @@ projectOnto (Types.Axis2d axis) (Types.Vector2d v) =
 {-| Take a vector defined in global coordinates, and return it expressed in
 local coordinates relative to a given reference frame.
 
-    Vector2d.fromComponents ( 2, 0 )
+    Vector2d.meters 2 0
         |> Vector2d.relativeTo rotatedFrame
-    --> Vector2d.fromComponents ( 1.732, -1 )
+    --> Vector2d.meters 1.732 -1
 
 -}
 relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Vector2d units globalCoordinates -> Vector2d units localCoordinates
@@ -1167,9 +1167,9 @@ relativeTo (Types.Frame2d frame) (Types.Vector2d v) =
 {-| Take a vector defined in local coordinates relative to a given reference
 frame, and return that vector expressed in global coordinates.
 
-    Vector2d.fromComponents ( 2, 0 )
+    Vector2d.meters 2 0
         |> Vector2d.placeIn rotatedFrame
-    --> Vector2d.fromComponents ( 1.732, 1 )
+    --> Vector2d.meters 1.732 1
 
 -}
 placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Vector2d units localCoordinates -> Vector2d units globalCoordinates

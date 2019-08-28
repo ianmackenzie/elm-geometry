@@ -290,7 +290,7 @@ fourthControlPoint (Types.CubicSpline3d spline) =
 vector from the spline's start point to its start control point.
 
     CubicSpline3d.startDerivative exampleSpline
-    --> Vector3d.fromComponents ( 6, 0, 0 )
+    --> Vector3d.meters 6 0 0
 
 -}
 startDerivative : CubicSpline3d units coordinates -> Vector3d units coordinates
@@ -303,7 +303,7 @@ startDerivative spline =
 from the spline's end control point to its end point.
 
     CubicSpline3d.endDerivative exampleSpline
-    --> Vector3d.fromComponents ( 0, 0, 6 )
+    --> Vector3d.meters 0 0 6
 
 -}
 endDerivative : CubicSpline3d units coordinates -> Vector3d units coordinates
@@ -696,7 +696,7 @@ rotateAround axis angle spline =
 {-| Translate a spline by a given displacement.
 
     displacement =
-        Vector3d.fromComponents ( 2, 3, 1 )
+        Vector3d.meters 2 3 1
 
     CubicSpline3d.translateBy displacement exampleSpline
     --> CubicSpline3d.with
@@ -1127,15 +1127,15 @@ fromArcLengthParameterized (ArcLengthParameterized parameterized) =
 
     CubicSpline3d.derivative exampleSpline
         ParameterValue.zero
-    --> Vector3d.fromComponents ( 6, 0, 0 )
+    --> Vector3d.meters 6 0 0
 
     CubicSpline3d.derivative exampleSpline
         ParameterValue.half
-    --> Vector3d.fromComponents ( 1.5, 3, 1.5 )
+    --> Vector3d.meters 1.5 3 1.5
 
     CubicSpline3d.derivative exampleSpline
         ParameterValue.one
-    --> Vector3d.fromComponents ( 0, 0, 6 )
+    --> Vector3d.meters 0 0 6
 
 -}
 firstDerivative : CubicSpline3d units coordinates -> Float -> Vector3d units coordinates
@@ -1252,15 +1252,15 @@ start of the spline and a value of 1 corresponds to the end.
 
     CubicSpline3d.secondDerivative exampleSpline
         ParameterValue.zero
-    --> Vector3d.fromComponents ( -12, 12, 0 )
+    --> Vector3d.meters -12 12 0
 
     CubicSpline3d.secondDerivative exampleSpline
         ParameterValue.half
-    --> Vector3d.fromComponents ( -6, 0, 6 )
+    --> Vector3d.meters -6 0 6
 
     CubicSpline3d.secondDerivative exampleSpline
         ParameterValue.one
-    --> Vector3d.fromComponents ( 0, -12, 12 )
+    --> Vector3d.meters 0 -12 12
 
 -}
 secondDerivative : CubicSpline3d units coordinates -> Float -> Vector3d units coordinates

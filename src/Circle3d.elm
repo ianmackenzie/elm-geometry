@@ -308,7 +308,7 @@ rotateAround givenAxis givenAngle circle =
 {-| Translate a circle by a given displacement.
 
     displacement =
-        Vector3d.fromComponents ( 2, 1, 3 )
+        Vector3d.meters 2 1 3
 
     Circle3d.translateBy displacement exampleCircle
     --> Circle3d.withRadius 3

@@ -286,16 +286,16 @@ If either of the given vectors are zero, or if the two vectors are parallel,
 returns `Nothing`.
 
     Direction2d.orthonormalize
-        (Vector2d.fromComponents ( 3, 3 ))
-        (Vector2d.fromComponents ( 0, -2 ))
+        (Vector2d.meters 3 3)
+        (Vector2d.meters 0 -2)
     --> Just
     -->     ( Direction2d.degrees 45
     -->     , Direction2d.degrees -45
     -->     )
 
     Direction2d.orthonormalize
-        (Vector2d.fromComponents ( 3, 3 ))
-        (Vector2d.fromComponents ( -2, -2 ))
+        (Vector2d.meters 3 3)
+        (Vector2d.meters -2 -2)
     --> Nothing
 
 -}
@@ -500,7 +500,7 @@ equalWithin (Quantity angle) (Types.Direction2d d1) (Types.Direction2d d2) =
 {-| Convert a direction to a unit vector.
 
     Direction2d.toVector Direction2d.x
-    --> Vector2d.fromComponents ( 1, 0 )
+    --> Vector2d.meters 1 0
 
 -}
 toVector : Direction2d coordinates -> Vector2d Unitless coordinates

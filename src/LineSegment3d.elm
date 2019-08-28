@@ -344,7 +344,7 @@ perpendicularDirection lineSegment =
 {-| Get the vector from a line segment's start point to its end point.
 
     LineSegment3d.vector exampleLineSegment
-    --> Vector3d.fromComponents ( 2, 2, 2 )
+    --> Vector3d.meters 2 2 2
 
 -}
 vector : LineSegment3d units coordinates -> Vector3d units coordinates
@@ -391,7 +391,7 @@ rotateAround axis angle lineSegment =
 {-| Translate a line segment by a given displacement.
 
     displacement =
-        Vector3d.fromComponents ( 1, 2, 3 )
+        Vector3d.meters 1 2 3
 
     exampleLineSegment
         |> LineSegment3d.translateBy displacement

@@ -293,7 +293,7 @@ rotateAround point angle ellipse =
 
     exampleEllipse
         |> Ellipse2d.translateBy
-            (Vector2d.fromComponents ( 5, 10 ))
+            (Vector2d.meters 5 10)
     --> Ellipse2d.with
     -->     { centerPoint =
     -->         Point2d.meters 15 20

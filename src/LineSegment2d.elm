@@ -253,7 +253,7 @@ perpendicularDirection =
 {-| Get the vector from a given line segment's start point to its end point.
 
     LineSegment2d.vector exampleLineSegment
-    --> Vector2d.fromComponents ( 2, 2 )
+    --> Vector2d.meters 2 2
 
 -}
 vector : LineSegment2d units coordinates -> Vector2d units coordinates
@@ -516,7 +516,7 @@ rotateAround centerPoint angle =
 {-| Translate a line segment by a given displacement.
 
     displacement =
-        Vector2d.fromComponents ( 1, 2 )
+        Vector2d.meters 1 2
 
     exampleLineSegment
         |> LineSegment2d.translateBy displacement

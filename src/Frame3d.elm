@@ -708,7 +708,7 @@ rotateAroundOwn axis angle frame =
             (Point3d.meters 2 1 3)
 
     displacement =
-        Vector3d.fromComponents ( 1, 1, 1 )
+        Vector3d.meters 1 1 1
 
     Frame3d.translateBy displacement frame
     --> Frame3d.atPoint

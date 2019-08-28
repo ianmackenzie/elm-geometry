@@ -489,7 +489,7 @@ rotateAround centerPoint angle =
         Frame2d.atPoint (Point2d.meters 2 3)
 
     displacement =
-        Vector2d.fromComponents ( 1, 1 )
+        Vector2d.meters 1 1
 
     Frame2d.translateBy displacement frame
     --> Frame2d.atPoint (Point2d.meters 3 4)

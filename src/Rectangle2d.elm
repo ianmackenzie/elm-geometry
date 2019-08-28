@@ -595,7 +595,7 @@ rotateAround point angle rectangle =
             }
 
     displacement =
-        Vector2d.fromComponents ( 2, -3 )
+        Vector2d.meters 2 -3
 
     Rectangle2d.translateBy displacement rectangle
     --> Rectangle2d.fromExtrema

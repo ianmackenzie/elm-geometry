@@ -234,7 +234,7 @@ rotateAround otherAxis angle =
 the axis' origin point and leaves the direction unchanged.
 
     displacement =
-        Vector3d.fromComponents ( 3, 3, 3 )
+        Vector3d.meters 3 3 3
 
     Axis3d.translateBy displacement exampleAxis
     --> Axis3d.withDirection Direction3d.y

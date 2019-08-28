@@ -1102,7 +1102,7 @@ scaleAbout point scale boundingBox =
 {-| Translate a bounding box by a given displacement.
 
     displacement =
-        Vector3d.fromComponents ( 2, -3, 1 )
+        Vector3d.meters 2 -3 1
 
     BoundingBox3d.translateBy displacement exampleBox
     --> BoundingBox3d.fromExtrema

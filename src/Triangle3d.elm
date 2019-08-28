@@ -266,7 +266,7 @@ rotateAround axis angle triangle =
 {-| Translate a triangle by a given displacement.
 
     displacement =
-        Vector3d.fromComponents ( 2, -1, 3 )
+        Vector3d.meters 2 -1 3
 
     Triangle3d.translateBy displacement exampleTriangle
     --> Triangle3d.fromVertices

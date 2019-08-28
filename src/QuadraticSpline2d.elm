@@ -164,7 +164,7 @@ thirdControlPoint (Types.QuadraticSpline2d spline) =
 the spline's first control point to its second.
 
     QuadraticSpline2d.startDerivative exampleSpline
-    --> Vector2d.fromComponents ( 4, 6 )
+    --> Vector2d.meters 4 6
 
 -}
 startDerivative : QuadraticSpline2d units coordinates -> Vector2d units coordinates
@@ -177,7 +177,7 @@ startDerivative spline =
 the spline's second control point to its third.
 
     QuadraticSpline2d.endDerivative exampleSpline
-    --> Vector2d.fromComponents ( 4, -6 )
+    --> Vector2d.meters 4 -6
 
 -}
 endDerivative : QuadraticSpline2d units coordinates -> Vector2d units coordinates
@@ -275,15 +275,15 @@ pointOn spline parameterValue =
 
     QuadraticSpline2d.derivative exampleSpline
         ParameterValue.zero
-    --> Vector2d.fromComponents ( 4, 6 )
+    --> Vector2d.meters 4 6
 
     QuadraticSpline2d.derivative exampleSpline
         ParameterValue.half
-    --> Vector2d.fromComponents ( 4, 0 )
+    --> Vector2d.meters 4 0
 
     QuadraticSpline2d.derivative exampleSpline
         ParameterValue.one
-    --> Vector2d.fromComponents ( 4, -6 )
+    --> Vector2d.meters 4 -6
 
 Note that the derivative interpolates linearly from end to end.
 
@@ -569,7 +569,7 @@ rotateAround point angle spline =
 {-| Translate a spline by a given displacement.
 
     displacement =
-        Vector2d.fromComponents ( 2, 3 )
+        Vector2d.meters 2 3
 
     exampleSpline
         |> QuadraticSpline2d.translateBy displacement

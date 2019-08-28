@@ -725,13 +725,13 @@ pointOn (Types.Arc2d arc) parameterValue =
 {-| Get the first derivative of an arc at a given parameter value:
 
     Arc2d.firstDerivative exampleArc ParameterValue.zero
-    --> Vector2d.fromComponents ( 0, 3.1416 )
+    --> Vector2d.meters 0 3.1416
 
     Arc2d.firstDerivative exampleArc ParameterValue.half
-    --> Vector2d.fromComponents ( -2.2214, 2.2214 )
+    --> Vector2d.meters -2.2214 2.2214
 
     Arc2d.firstDerivative exampleArc ParameterValue.one
-    --> Vector2d.fromComponents ( -3.1416, 0 )
+    --> Vector2d.meters -3.1416 0
 
 -}
 firstDerivative : Arc2d units coordinates -> Float -> Vector2d units coordinates
@@ -962,7 +962,7 @@ rotateAround point angle (Types.Arc2d arc) =
 {-| Translate an arc by a given displacement.
 
     displacement =
-        Vector2d.fromComponents ( 2, 3 )
+        Vector2d.meters 2 3
 
     Arc2d.translateBy displacement exampleArc
     --> Point2d.meters 5 4

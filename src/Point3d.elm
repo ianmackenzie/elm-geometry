@@ -1295,7 +1295,7 @@ rotateAround (Types.Axis3d axis) (Quantity angle) (Types.Point3d p) =
         Point3d.meters 3 4 5
 
     displacement =
-        Vector3d.fromComponents ( 1, 2, 3 )
+        Vector3d.meters 1 2 3
 
     Point3d.translateBy displacement point
     --> Point3d.meters 4 6 8

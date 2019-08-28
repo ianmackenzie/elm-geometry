@@ -278,7 +278,7 @@ rotateAround axis angle sphere =
 
     exampleSphere
         |> Sphere3d.translateBy
-            (Vector3d.fromComponents ( 2, 1, 3 ))
+            (Vector3d.meters 2 1 3)
     --> Sphere3d.withRadius 3
     -->     (Point3d.meters 3 3 4)
 

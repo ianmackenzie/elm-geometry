@@ -498,9 +498,9 @@ If any of the given vectors are zero, any two of them are parallel, or the three
 are coplanar, returns `Nothing`.
 
     Direction3d.orthonormalize
-        (Vector3d.fromComponents ( 3, 3, 0 ))
-        (Vector3d.fromComponents ( 0, 2, 0 ))
-        (Vector3d.fromComponents ( 1, 2, 3 ))
+        (Vector3d.meters 3 3 0)
+        (Vector3d.meters 0 2 0)
+        (Vector3d.meters 1 2 3)
     --> Just
     -->     ( Direction3d.fromAzimuthAndElevation
     -->         (Angle.degrees 45)
@@ -513,9 +513,9 @@ are coplanar, returns `Nothing`.
 
     -- Three vectors in the XY plane:
     Direction3d.orthonormalize
-        (Vector3d.fromComponents ( 2, 0, 0 ))
-        (Vector3d.fromComponents ( 3, 1, 0 ))
-        (Vector3d.fromComponents ( 4, 2, 0 ))
+        (Vector3d.meters 2 0 0)
+        (Vector3d.meters 3 1 0)
+        (Vector3d.meters 4 2 0)
     --> Nothing
 
 -}
@@ -782,7 +782,7 @@ equalWithin angle firstDirection secondDirection =
 {-| Convert a direction to a unit vector.
 
     Direction3d.toVector Direction3d.y
-    --> Vector3d.fromComponents ( 0, 1, 0 )
+    --> Vector3d.meters 0 1 0
 
 -}
 toVector : Direction3d coordinates -> Vector3d Unitless coordinates

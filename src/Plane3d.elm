@@ -258,7 +258,7 @@ the plane's origin point and leaves its normal direction unchanged.
             (Point3d.meters 1 1 1)
 
     displacement =
-        Vector3d.fromComponents ( 1, 2, 3 )
+        Vector3d.meters 1 2 3
 
     Plane3d.translateBy displacement plane
     --> Plane3d.withNormalDirection Direction3d.z

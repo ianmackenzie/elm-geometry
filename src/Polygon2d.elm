@@ -437,7 +437,7 @@ rotateAround point angle =
 {-| Translate a polygon by the given displacement.
 
     displacement =
-        Vector2d.fromComponents ( 2, 3 )
+        Vector2d.meters 2 3
 
     Polygon2d.translateBy displacement rectangle
     --> Polygon2d.singleLoop

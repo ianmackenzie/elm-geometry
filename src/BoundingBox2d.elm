@@ -970,7 +970,7 @@ scaleAbout point scale boundingBox =
 {-| Translate a bounding box by a given displacement.
 
     displacement =
-        Vector2d.fromComponents ( 2, -3 )
+        Vector2d.meters 2 -3
 
     BoundingBox2d.translateBy displacement exampleBox
     --> BoundingBox2d.fromExtrema

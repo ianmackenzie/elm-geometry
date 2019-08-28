@@ -200,7 +200,7 @@ rotateBy angle axis =
 the axis' origin point and leaves the direction unchanged.
 
     displacement =
-        Vector2d.fromComponents ( 2, 3 )
+        Vector2d.meters 2 3
 
     Axis2d.translateBy displacement exampleAxis
     --> Axis2d.through (Point2d.meters 3 6)

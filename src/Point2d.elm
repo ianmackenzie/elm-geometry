@@ -1056,7 +1056,7 @@ rotateAround (Types.Point2d p0) (Quantity theta) (Types.Point2d p) =
         Point2d.meters 3 4
 
     displacement =
-        Vector2d.fromComponents ( 1, 2 )
+        Vector2d.meters 1 2
 
     Point2d.translateBy displacement point
     --> Point2d.meters 4 6

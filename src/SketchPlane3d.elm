@@ -656,7 +656,7 @@ transformations. For example,
     sketchPlane =
         SketchPlane3d.xy
             |> SketchPlane3d.translateBy
-                (Vector3d.fromComponents ( 1, 0, 0 ))
+                (Vector3d.meters 1 0 0)
             |> SketchPlane3d.rotateAroundOwn
                 SketchPlane3d.yAxis
                 (Angle.degrees -45)
@@ -685,7 +685,7 @@ rotateAroundOwn axis angle sketchPlane =
 {-| Translate a sketch plane by a given displacement.
 
     displacement =
-        Vector3d.fromComponents ( 2, 1, 3 )
+        Vector3d.meters 2 1 3
 
     sketchPlane =
         SketchPlane3d.xy

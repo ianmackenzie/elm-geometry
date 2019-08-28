@@ -313,7 +313,7 @@ rotateAround point angle =
 
     exampleCircle
         |> Circle2d.translateBy
-            (Vector2d.fromComponents ( 2, 2 ))
+            (Vector2d.meters 2 2)
     --> Circle2d.withRadius 3
     -->     (Point2d.meters 3 4)
 
