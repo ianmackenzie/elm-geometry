@@ -340,8 +340,9 @@ orthogonalize xDirection yDirection =
     orthonormalize (toVector xDirection) (toVector yDirection)
 
 
-{-| Construct a direction from an angle in radians, given counterclockwise from
-the positive X direction.
+{-| Construct a direction from an
+[Angle](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Angle)
+given counterclockwise from the positive X direction.
 
     Direction2d.fromAngle 0
     --> Direction2d.x
@@ -361,8 +362,8 @@ fromAngle (Quantity angle) =
         }
 
 
-{-| Convert a direction to a polar angle (the counterclockwise angle in radians
-from the positive X direction). The result will be in the range -π to π.
+{-| Convert a direction to a polar angle (the counterclockwise angle from the
+positive X direction). The result will be in the range -180 to 180 degrees.
 
     Direction2d.toAngle Direction2d.x
     --> 0
@@ -379,8 +380,8 @@ toAngle (Types.Direction2d d) =
     Quantity (atan2 d.y d.x)
 
 
-{-| Find the counterclockwise angle in radians from the first direction to the
-second. The result will be in the range -π to π.
+{-| Find the counterclockwise angle from the first direction to the
+second. The result will be in the range -180 to 180 degrees.
 
     referenceDirection =
         Direction2d.fromAngle (Angle.degrees 30)
