@@ -10,7 +10,7 @@
 module Point2d exposing
     ( Point2d
     , origin
-    , meters, pixels, unitless
+    , millimeters, centimeters, meters, inches, feet, pixels, unitless
     , xy, xyIn, rTheta, rThetaIn, midpoint, interpolateFrom, along, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
     , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
@@ -48,7 +48,7 @@ like you can add two vectors.
 
 # Literals
 
-@docs meters, pixels, unitless
+@docs millimeters, centimeters, meters, inches, feet, pixels, unitless
 
 
 # Constructors
@@ -169,11 +169,35 @@ xy (Quantity x) (Quantity y) =
     Types.Point2d { x = x, y = y }
 
 
+{-| -}
+millimeters : Float -> Float -> Point2d Meters coordinates
+millimeters x y =
+    xy (Length.millimeters x) (Length.millimeters y)
+
+
+{-| -}
+centimeters : Float -> Float -> Point2d Meters coordinates
+centimeters x y =
+    xy (Length.centimeters x) (Length.centimeters y)
+
+
 {-| TODO
 -}
 meters : Float -> Float -> Point2d Meters coordinates
 meters x y =
     Types.Point2d { x = x, y = y }
+
+
+{-| -}
+inches : Float -> Float -> Point2d Meters coordinates
+inches x y =
+    xy (Length.inches x) (Length.inches y)
+
+
+{-| -}
+feet : Float -> Float -> Point2d Meters coordinates
+feet x y =
+    xy (Length.feet x) (Length.feet y)
 
 
 {-| TODO

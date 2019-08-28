@@ -10,7 +10,7 @@
 module Vector3d exposing
     ( Vector3d
     , zero
-    , meters, pixels, unitless
+    , millimeters, centimeters, meters, inches, feet, pixels, unitless
     , xyz, xyzIn, from, withLength, on, xyOn, rThetaOn, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
     , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
@@ -52,7 +52,7 @@ you will actually want their `Direction3d` versions [`Direction3d.x`](Direction3
 
 # Literals
 
-@docs meters, pixels, unitless
+@docs millimeters, centimeters, meters, inches, feet, pixels, unitless
 
 
 # Constructors
@@ -165,11 +165,35 @@ zero =
         }
 
 
+{-| -}
+millimeters : Float -> Float -> Float -> Vector3d Meters coordinates
+millimeters x y z =
+    xyz (Length.millimeters x) (Length.millimeters y) (Length.millimeters z)
+
+
+{-| -}
+centimeters : Float -> Float -> Float -> Vector3d Meters coordinates
+centimeters x y z =
+    xyz (Length.centimeters x) (Length.centimeters y) (Length.centimeters z)
+
+
 {-| TODO
 -}
 meters : Float -> Float -> Float -> Vector3d Meters coordinates
 meters x y z =
     Types.Vector3d { x = x, y = y, z = z }
+
+
+{-| -}
+inches : Float -> Float -> Float -> Vector3d Meters coordinates
+inches x y z =
+    xyz (Length.inches x) (Length.inches y) (Length.inches z)
+
+
+{-| -}
+feet : Float -> Float -> Float -> Vector3d Meters coordinates
+feet x y z =
+    xyz (Length.feet x) (Length.feet y) (Length.feet z)
 
 
 {-| TODO

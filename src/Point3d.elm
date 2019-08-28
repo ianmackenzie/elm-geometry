@@ -10,7 +10,7 @@
 module Point3d exposing
     ( Point3d
     , origin
-    , meters, pixels, unitless
+    , millimeters, centimeters, meters, inches, feet, pixels, unitless
     , xyz, xyzIn, midpoint, interpolateFrom, along, on, xyOn, rThetaOn, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
     , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
@@ -48,7 +48,7 @@ like you can add two vectors.
 
 # Literals
 
-@docs meters, pixels, unitless
+@docs millimeters, centimeters, meters, inches, feet, pixels, unitless
 
 
 # Constructors
@@ -173,6 +173,18 @@ xyz (Quantity x) (Quantity y) (Quantity z) =
         }
 
 
+{-| -}
+millimeters : Float -> Float -> Float -> Point3d Meters coordinates
+millimeters x y z =
+    xyz (Length.millimeters x) (Length.millimeters y) (Length.millimeters z)
+
+
+{-| -}
+centimeters : Float -> Float -> Float -> Point3d Meters coordinates
+centimeters x y z =
+    xyz (Length.centimeters x) (Length.centimeters y) (Length.centimeters z)
+
+
 {-| TODO
 -}
 meters : Float -> Float -> Float -> Point3d Meters coordinates
@@ -182,6 +194,18 @@ meters x y z =
         , y = y
         , z = z
         }
+
+
+{-| -}
+inches : Float -> Float -> Float -> Point3d Meters coordinates
+inches x y z =
+    xyz (Length.inches x) (Length.inches y) (Length.inches z)
+
+
+{-| -}
+feet : Float -> Float -> Float -> Point3d Meters coordinates
+feet x y z =
+    xyz (Length.feet x) (Length.feet y) (Length.feet z)
 
 
 {-| TODO

@@ -10,7 +10,7 @@
 module Vector2d exposing
     ( Vector2d
     , zero
-    , meters, pixels, unitless
+    , millimeters, centimeters, meters, inches, feet, pixels, unitless
     , xy, xyIn, rTheta, rThetaIn, from, withLength, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord, fromUnitless, toUnitless
     , fromMeters, toMeters, fromPixels, toPixels
@@ -53,7 +53,7 @@ Although there are no predefined constants for the vectors with components
 
 # Literals
 
-@docs meters, pixels, unitless
+@docs millimeters, centimeters, meters, inches, feet, pixels, unitless
 
 
 # Constructors
@@ -169,11 +169,35 @@ zero =
     Types.Vector2d { x = 0, y = 0 }
 
 
+{-| -}
+millimeters : Float -> Float -> Vector2d Meters coordinates
+millimeters x y =
+    xy (Length.millimeters x) (Length.millimeters y)
+
+
+{-| -}
+centimeters : Float -> Float -> Vector2d Meters coordinates
+centimeters x y =
+    xy (Length.centimeters x) (Length.centimeters y)
+
+
 {-| TODO
 -}
 meters : Float -> Float -> Vector2d Meters coordinates
 meters x y =
     Types.Vector2d { x = x, y = y }
+
+
+{-| -}
+inches : Float -> Float -> Vector2d Meters coordinates
+inches x y =
+    xy (Length.inches x) (Length.inches y)
+
+
+{-| -}
+feet : Float -> Float -> Vector2d Meters coordinates
+feet x y =
+    xy (Length.feet x) (Length.feet y)
 
 
 {-| TODO
