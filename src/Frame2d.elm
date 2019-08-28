@@ -101,7 +101,7 @@ direction 90 degrees counterclockwise:
     frame =
         Frame2d.withXDirection
             (Direction2d.fromAngle (degrees 30))
-            (Point2d.fromCoordinates ( 2, 3 ))
+            (Point2d.meters 2 3)
 
     Frame2d.yDirection frame
     --> Direction2d.fromAngle (degrees 120)
@@ -123,7 +123,7 @@ direction 90 degrees clockwise:
     frame =
         Frame2d.withYDirection
             (Direction2d.fromAngle (degrees 30))
-            (Point2d.fromCoordinates ( 2, 3 ))
+            (Point2d.meters 2 3)
 
     Frame2d.yDirection frame
     --> Direction2d.fromAngle (degrees -60)
@@ -182,7 +182,7 @@ copy (Types.Frame2d properties) =
     frame =
         Frame2d.unsafe
             { originPoint =
-                Point2d.fromCoordinates ( 2, 3 )
+                Point2d.meters 2 3
             , xDirection =
                 Direction2d.fromAngle (degrees 45)
             , yDirection =
@@ -209,7 +209,7 @@ unsafe properties =
 point.
 
     point =
-        Point2d.fromCoordinates ( 2, 3 )
+        Point2d.meters 2 3
 
     frame =
         Frame2d.atPoint point
@@ -344,7 +344,7 @@ yAxis (Types.Frame2d frame) =
 the same.
 
     point =
-        Point2d.fromCoordinates ( 2, 3 )
+        Point2d.meters 2 3
 
     frame =
         Frame2d.atPoint point |> Frame2d.reverseX
@@ -375,7 +375,7 @@ reverseX frame =
 the same.
 
     point =
-        Point2d.fromCoordinates ( 2, 3 )
+        Point2d.meters 2 3
 
     frame =
         Frame2d.atPoint point |> Frame2d.reverseY
@@ -405,7 +405,7 @@ reverseY frame =
 {-| Move a frame so that it has the given origin point.
 
     point =
-        Point2d.fromCoordinates ( 1, 1 )
+        Point2d.meters 1 1
 
     Frame2d.atOrigin |> Frame2d.moveTo point
     --> Frame2d.atPoint point
@@ -452,12 +452,12 @@ frame's origin point will be rotated around the given point by the given angle,
 and its X and Y basis directions will be rotated by the given angle.
 
     rotatedFrame =
-        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 1 ))
+        Frame2d.atPoint (Point2d.meters 1 1)
             |> Frame2d.rotateAround Point2d.origin
                 (degrees 45)
 
     Frame2d.originPoint rotatedFrame
-    --> Point2d.fromCoordinates ( 0, 1.4142 )
+    --> Point2d.meters 0 1.4142
 
     Frame2d.xDirection rotatedFrame
     --> Direction2d.fromAngle (degrees 45)
@@ -486,13 +486,13 @@ rotateAround centerPoint angle =
 {-| Translate a frame by a given displacement.
 
     frame =
-        Frame2d.atPoint (Point2d.fromCoordinates ( 2, 3 ))
+        Frame2d.atPoint (Point2d.meters 2 3)
 
     displacement =
         Vector2d.fromComponents ( 1, 1 )
 
     Frame2d.translateBy displacement frame
-    --> Frame2d.atPoint (Point2d.fromCoordinates ( 3, 4 ))
+    --> Frame2d.atPoint (Point2d.meters 3 4)
 
 -}
 translateBy : Vector2d units coordinates -> Frame2d units coordinates defines1 -> Frame2d units coordinates defines2
@@ -530,7 +530,7 @@ This function is convenient when constructing frames via a series of
 transformations. For example,
 
     frame =
-        Frame2d.atPoint (Point2d.fromCoordinates ( 2, 0 ))
+        Frame2d.atPoint (Point2d.meters 2 0)
             |> Frame2d.rotateBy (degrees 45)
             |> Frame2d.translateAlongOwn Frame2d.xAxis 2
 
@@ -539,7 +539,7 @@ point by 45 degrees, then translate it along its own X axis by 2 units",
 resulting in
 
     Frame2d.originPoint frame
-    --> Point2d.fromCoordinates ( 3.4142, 1.4142 )
+    --> Point2d.meters 3.4142 1.4142
 
     Frame2d.xDirection frame
     --> Direction2d.fromAngle (degrees 45)
@@ -560,13 +560,13 @@ translateAlongOwn axis distance frame =
 {-| Mirror a frame across an axis.
 
     frame =
-        Frame2d.atPoint (Point2d.fromCoordinates ( 2, 3 ))
+        Frame2d.atPoint (Point2d.meters 2 3)
 
     mirroredFrame =
         Frame2d.mirrorAcross Axis2d.x frame
 
     Frame2d.originPoint mirroredFrame
-    --> Point2d.fromCoordinates ( 2, -3 )
+    --> Point2d.meters 2 -3
 
     Frame2d.xDirection mirroredFrame
     --> Direction2d.x

@@ -77,9 +77,9 @@ type alias Triangle2d units coordinates =
 
     exampleTriangle =
         Triangle2d.fromVertices
-            ( Point2d.fromCoordinates ( 1, 1 )
-            , Point2d.fromCoordinates ( 2, 1 )
-            , Point2d.fromCoordinates ( 1, 3 )
+            ( Point2d.meters 1 1
+            , Point2d.meters 2 1
+            , Point2d.meters 1 3
             )
 
 -}
@@ -94,9 +94,9 @@ fromVertices p1 p2 p3 =
     ( p1, p2, p3 ) =
         Triangle2d.vertices exampleTriangle
 
-    --> p1 = Point2d.fromCoordinates ( 1, 1 )
-    --> p2 = Point2d.fromCoordinates ( 2, 1 )
-    --> p3 = Point2d.fromCoordinates ( 1, 3 )
+    --> p1 = Point2d.meters 1 1
+    --> p2 = Point2d.meters 2 1
+    --> p3 = Point2d.meters 1 3
 
 -}
 vertices : Triangle2d units coordinates -> ( Point2d units coordinates, Point2d units coordinates, Point2d units coordinates )
@@ -113,20 +113,20 @@ second to the third, and from the third back to the first.
 
     --> e1 =
     -->     LineSegment2d.fromEndpoints
-    -->         ( Point2d.fromCoordinates ( 1, 1 )
-    -->         , Point2d.fromCoordinates ( 2, 1 )
+    -->         ( Point2d.meters 1 1
+    -->         , Point2d.meters 2 1
     -->         )
     -->
     --> e2 =
     -->     LineSegment2d.fromEndpoints
-    -->         ( Point2d.fromCoordinates ( 2, 1 )
-    -->         , Point2d.fromCoordinates ( 1, 3 )
+    -->         ( Point2d.meters 2 1
+    -->         , Point2d.meters 1 3
     -->         )
     -->
     --> e3 =
     -->     LineSegment2d.fromEndpoints
-    -->         ( Point2d.fromCoordinates ( 1, 3 )
-    -->         , Point2d.fromCoordinates ( 1, 1 )
+    -->         ( Point2d.meters 1 3
+    -->         , Point2d.meters 1 1
     -->         )
 
 -}
@@ -145,7 +145,7 @@ edges triangle =
 {-| Get the centroid (center of mass) of a triangle.
 
     Triangle2d.centroid exampleTriangle
-    --> Point2d.fromCoordinates ( 1.3333, 1.6667 )
+    --> Point2d.meters 1.3333 1.6667
 
 -}
 centroid : Triangle2d units coordinates -> Point2d units coordinates
@@ -160,7 +160,7 @@ centroid triangle =
 {-| Check whether a given point is inside a given triangle.
 
     interiorPoint =
-        Point2d.fromCoordinates ( 1.5, 1.5 )
+        Point2d.meters 1.5 1.5
 
     Triangle2d.contains interiorPoint exampleTriangle
     --> True
@@ -258,9 +258,9 @@ clockwiseArea triangle =
 
     Triangle2d.scaleAbout Point2d.origin 2 exampleTriangle
     --> Triangle2d.fromVertices
-    -->     ( Point2d.fromCoordinates ( 2, 2 )
-    -->     , Point2d.fromCoordinates ( 4, 2 )
-    -->     , Point2d.fromCoordinates ( 2, 6 )
+    -->     ( Point2d.meters 2 2
+    -->     , Point2d.meters 4 2
+    -->     , Point2d.meters 2 6
     -->     )
 
 Note that scaling by a negative value will result in the 'winding direction' of
@@ -280,9 +280,9 @@ scaleAbout point scale =
         |> Triangle2d.rotateAround Point2d.origin
             (degrees 90)
     --> Triangle2d.fromVertices
-    -->     ( Point2d.fromCoordinates ( -1, 1 )
-    -->     , Point2d.fromCoordinates ( -1, 2 )
-    -->     , Point2d.fromCoordinates ( -3, 1 )
+    -->     ( Point2d.meters -1 1
+    -->     , Point2d.meters -1 2
+    -->     , Point2d.meters -3 1
     -->     )
 
 -}
@@ -298,9 +298,9 @@ rotateAround centerPoint angle =
 
     Triangle2d.translateBy displacement exampleTriangle
     --> Triangle2d.fromVertices
-    -->     ( Point2d.fromCoordinates ( 3, -2 )
-    -->     , Point2d.fromCoordinates ( 4, -2 )
-    -->     , Point2d.fromCoordinates ( 3, 0 )
+    -->     ( Point2d.meters 3 -2
+    -->     , Point2d.meters 4 -2
+    -->     , Point2d.meters 3 0
     -->     )
 
 -}
@@ -328,9 +328,9 @@ translateIn direction distance triangle =
 
     Triangle2d.mirrorAcross Axis2d.y exampleTriangle
     --> Triangle2d.fromVertices
-    -->     ( Point2d.fromCoordinates ( -1, 1 )
-    -->     , Point2d.fromCoordinates ( -2, 1 )
-    -->     , Point2d.fromCoordinates ( -1, 3 )
+    -->     ( Point2d.meters -1 1
+    -->     , Point2d.meters -2 1
+    -->     , Point2d.meters -1 3
     -->     )
 
 Note that mirroring a triangle will result in its 'winding direction' being
@@ -367,13 +367,13 @@ mapVertices function triangle =
 in local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.meters 1 2)
 
     Triangle2d.relativeTo localFrame exampleTriangle
     --> Triangle2d.fromVertices
-    -->     ( Point2d.fromCoordinates ( 0, -1 )
-    -->     , Point2d.fromCoordinates ( 1, -1 )
-    -->     , Point2d.fromCoordinates ( 0, 1 )
+    -->     ( Point2d.meters 0 -1
+    -->     , Point2d.meters 1 -1
+    -->     , Point2d.meters 0 1
     -->     )
 
 -}
@@ -386,13 +386,13 @@ relativeTo frame =
 given reference frame, and return that triangle expressed in global coordinates.
 
     localFrame =
-        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.meters 1 2)
 
     Triangle2d.placeIn localFrame exampleTriangle
     --> Triangle2d.fromVertices
-    -->     ( Point2d.fromCoordinates ( 2, 3 )
-    -->     , Point2d.fromCoordinates ( 3, 3 )
-    -->     , Point2d.fromCoordinates ( 2, 5 )
+    -->     ( Point2d.meters 2 3
+    -->     , Point2d.meters 3 3
+    -->     , Point2d.meters 2 5
     -->     )
 
 -}

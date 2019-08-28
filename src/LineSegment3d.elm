@@ -85,8 +85,8 @@ type alias LineSegment3d units coordinates =
 
     exampleLineSegment =
         LineSegment3d.fromEndpoints
-            ( Point3d.fromCoordinates ( 1, 2, 3 )
-            , Point3d.fromCoordinates ( 4, 5, 6 )
+            ( Point3d.meters 1 2 3
+            , Point3d.meters 4 5 6
             )
 
 -}
@@ -114,14 +114,14 @@ given distances from the axis' origin point.
 
     LineSegment3d.along Axis3d.x 3 5
     --> LineSegment3d.fromEndpoints
-    -->     ( Point3d.fromCoordinates ( 3, 0, 0 )
-    -->     , Point3d.fromCoordinates ( 5, 0, 0 )
+    -->     ( Point3d.meters 3 0 0
+    -->     , Point3d.meters 5 0 0
     -->     )
 
     LineSegment3d.along Axis3d.y 2 -4
     --> LineSegment3d.fromEndpoints
-    -->     ( Point3d.fromCoordinates ( 0, 2, 0 )
-    -->     , Point3d.fromCoordinates ( 0, -4, 0 )
+    -->     ( Point3d.meters 0 2 0
+    -->     , Point3d.meters 0 -4 0
     -->     )
 
 -}
@@ -138,12 +138,12 @@ segment specified in XY coordinates _within_ the sketch plane.
 
     LineSegment3d.on SketchPlane3d.yz <|
         LineSegment2d.fromEndpoints
-            ( Point2d.fromCoordinates ( 1, 2 )
-            , Point2d.fromCoordinates ( 3, 4 )
+            ( Point2d.meters 1 2
+            , Point2d.meters 3 4
             )
     --> LineSegment3d.fromEndpoints
-    -->     ( Point3d.fromCoordinates ( 0, 1, 2 )
-    -->     , Point3d.fromCoordinates ( 0, 3, 4 )
+    -->     ( Point3d.meters 0 1 2
+    -->     , Point3d.meters 0 3 4
     -->     )
 
 -}
@@ -162,7 +162,7 @@ on sketchPlane lineSegment2d =
 {-| Get the start point of a line segment.
 
     LineSegment3d.startPoint exampleLineSegment
-    --> Point3d.fromCoordinates ( 1, 2, 3 )
+    --> Point3d.meters 1 2 3
 
 -}
 startPoint : LineSegment3d units coordinates -> Point3d units coordinates
@@ -173,7 +173,7 @@ startPoint (Types.LineSegment3d ( start, _ )) =
 {-| Get the end point of a line segment.
 
     LineSegment3d.endPoint exampleLineSegment
-    --> Point3d.fromCoordinates ( 4, 5, 6 )
+    --> Point3d.meters 4 5 6
 
 -}
 endPoint : LineSegment3d units coordinates -> Point3d units coordinates
@@ -196,8 +196,8 @@ endpoints (Types.LineSegment3d lineSegmentEndpoints) =
 
     LineSegment3d.reverse exampleLineSegment
     --> LineSegment3d.fromEndpoints
-    -->     ( Point3d.fromCoordinates ( 4, 5, 6 )
-    -->     , Point3d.fromCoordinates ( 1, 2, 3 )
+    -->     ( Point3d.meters 4 5 6
+    -->     , Point3d.meters 1 2 3
     -->     )
 
 -}
@@ -213,7 +213,7 @@ reverse lineSegment =
 {-| Get the midpoint of a line segment.
 
     LineSegment3d.midpoint exampleLineSegment
-    --> Point3d.fromCoordinates ( 2.5, 3.5, 4.5 )
+    --> Point3d.meters 2.5 3.5 4.5
 
 -}
 midpoint : LineSegment3d units coordinates -> Point3d units coordinates
@@ -227,10 +227,10 @@ to its midpoint and a value of 1.0 corresponds to its end point. Values less
 than 0.0 or greater than 1.0 can be used to extrapolate.
 
     LineSegment3d.interpolate exampleLineSegment (1 / 3)
-    --> Point3d.fromCoordinates ( 2, 4, 5 )
+    --> Point3d.meters 2 4 5
 
     LineSegment3d.interpolate exampleLineSegment (-1 / 3)
-    --> Point3d.fromCoordinates ( 0, 1, 2 )
+    --> Point3d.meters 0 1 2
 
 If you just need to interpolate between two points, you don't have to construct
 a line segment first - you can use [`Point3d.interpolateFrom`](Point3d#interpolateFrom)
@@ -359,12 +359,12 @@ vector lineSegment =
 {-| Scale a line segment about the given center point by the given scale.
 
     point =
-        Point3d.fromCoordinates ( 1, 1, 1 )
+        Point3d.meters 1 1 1
 
     LineSegment3d.scaleAbout point 2 exampleLineSegment
     --> LineSegment3d.fromEndpoints
-    -->     ( Point3d.fromCoordinates ( 1, 3, 5 )
-    -->     , Point3d.fromCoordinates ( 7, 9, 11 )
+    -->     ( Point3d.meters 1 3 5
+    -->     , Point3d.meters 7 9 11
     -->     )
 
 -}
@@ -378,8 +378,8 @@ scaleAbout point scale lineSegment =
     exampleLineSegment
         |> LineSegment3d.rotateAround Axis3d.z (degrees 90)
     --> LineSegment3d.fromEndpoints
-    -->     ( Point3d.fromCoordinates ( -2, 1, 3 )
-    -->     , Point3d.fromCoordinates ( -5, 4, 6 )
+    -->     ( Point3d.meters -2 1 3
+    -->     , Point3d.meters -5 4 6
     -->     )
 
 -}
@@ -396,8 +396,8 @@ rotateAround axis angle lineSegment =
     exampleLineSegment
         |> LineSegment3d.translateBy displacement
     --> LineSegment3d.fromEndpoints
-    -->     ( Point3d.fromCoordinates ( 2, 4, 6 )
-    -->     , Point3d.fromCoordinates ( 5, 7, 9 )
+    -->     ( Point3d.meters 2 4 6
+    -->     , Point3d.meters 5 7 9
     -->     )
 
 -}
@@ -426,8 +426,8 @@ translateIn translationDirection distance lineSegment =
     exampleLineSegment
         |> LineSegment3d.mirrorAcross Plane3d.xy
     --> LineSegment3d.fromEndpoints
-    -->     ( Point3d.fromCoordinates ( 1, 2, -3 )
-    -->     , Point3d.fromCoordinates ( 4, 5, -6 )
+    -->     ( Point3d.meters 1 2 -3
+    -->     , Point3d.meters 4 5 -6
     -->     )
 
 -}
@@ -441,8 +441,8 @@ of a line segment onto a plane.
 
     LineSegment3d.projectOnto Plane3d.yz exampleLineSegment
     --> LineSegment3d.fromEndpoints
-    -->     ( Point3d.fromCoordinates ( 0, 2, 3 )
-    -->     , Point3d.fromCoordinates ( 0, 5, 6 )
+    -->     ( Point3d.meters 0 2 3
+    -->     , Point3d.meters 0 5 6
     -->     )
 
 -}
@@ -476,12 +476,12 @@ in local coordinates relative to a given reference frame.
 
     localFrame =
         Frame3d.atPoint
-            (Point3d.fromCoordinates ( 1, 2, 3 ))
+            (Point3d.meters 1 2 3)
 
     LineSegment3d.relativeTo localFrame exampleLineSegment
     --> LineSegment3d.fromEndpoints
-    -->     ( Point3d.fromCoordinates ( 0, 0, 0 )
-    -->     , Point3d.fromCoordinates ( 3, 3, 3 )
+    -->     ( Point3d.meters 0 0 0
+    -->     , Point3d.meters 3 3 3
     -->     )
 
 -}
@@ -496,12 +496,12 @@ coordinates.
 
     localFrame =
         Frame3d.atPoint
-            (Point3d.fromCoordinates ( 1, 2, 3 ))
+            (Point3d.meters 1 2 3)
 
     LineSegment3d.placeIn localFrame exampleLineSegment
     --> LineSegment3d.fromEndpoints
-    -->     ( Point3d.fromCoordinates ( 2, 4, 6 )
-    -->     , Point3d.fromCoordinates ( 5, 7, 9 )
+    -->     ( Point3d.meters 2 4 6
+    -->     , Point3d.meters 5 7 9
     -->     )
 
 -}
@@ -518,22 +518,22 @@ in 2D sketch coordinates.
     exampleLineSegment
         |> LineSegment3d.projectInto SketchPlane3d.xy
     --> LineSegment2d.fromEndpoints
-    -->     ( Point2d.fromCoordinates ( 1, 2 )
-    -->     , Point2d.fromCoordinates ( 4, 5 )
+    -->     ( Point2d.meters 1 2
+    -->     , Point2d.meters 4 5
     -->     )
 
     exampleLineSegment
         |> LineSegment3d.projectInto SketchPlane3d.yz
     --> LineSegment2d.fromEndpoints
-    -->     ( Point2d.fromCoordinates ( 2, 3 )
-    -->     , Point2d.fromCoordinates ( 5, 6 )
+    -->     ( Point2d.meters 2 3
+    -->     , Point2d.meters 5 6
     -->     )
 
     exampleLineSegment
         |> LineSegment3d.projectInto SketchPlane3d.zx
     --> LineSegment2d.fromEndpoints
-    -->     ( Point2d.fromCoordinates ( 3, 1 )
-    -->     , Point2d.fromCoordinates ( 6, 4 )
+    -->     ( Point2d.meters 3 1
+    -->     , Point2d.meters 6 4
     -->     )
 
 -}

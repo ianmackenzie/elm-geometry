@@ -405,10 +405,10 @@ vertices rectangle =
             }
 
     p1 =
-        Point2d.fromCoordinates ( 3, 2 )
+        Point2d.meters 3 2
 
     p2 =
-        Point2d.fromCoordinates ( 3, 4 )
+        Point2d.meters 3 4
 
     rectangle |> Rectangle2d.contains p1
     --> True
@@ -559,7 +559,7 @@ scaleAbout point scale rectangle =
                 (degrees 45)
 
     Rectangle2d.centerPoint rotated
-    --> Point2d.fromCoordinates ( 0, 0.7071 )
+    --> Point2d.meters 0 0.7071
 
     Rectangle2d.xDirection rotated
     --> Direction2d.fromAngle (degrees 45)
@@ -568,11 +568,11 @@ scaleAbout point scale rectangle =
     --> { bottomLeft =
     -->     Point2d.origin
     --> , bottomRight =
-    -->     Point2d.fromCoordinates ( 0.7071, 0.7071 )
+    -->     Point2d.meters 0.7071 0.7071
     --> , topRight =
-    -->     Point2d.fromCoordinates ( 0, 1.4142 )
+    -->     Point2d.meters 0 1.4142
     --> , topLeft =
-    -->     Point2d.fromCoordinates ( -0.7071, 0.7071 )
+    -->     Point2d.meters -0.7071 0.7071
     --> }
 
 -}

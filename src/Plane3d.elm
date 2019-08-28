@@ -121,7 +121,7 @@ Flipped version of `through`.
 
     plane =
         Plane3d.withNormalDirection Direction3d.y
-            (Point3d.fromCoordinates ( 2, 1, 3 ))
+            (Point3d.meters 2 1 3)
 
 -}
 withNormalDirection : Direction3d coordinates -> Point3d units coordinates -> Plane3d units coordinates
@@ -139,12 +139,12 @@ counterclockwise order around it according to the right-hand rule. If the three
 given points are collinear, returns `Nothing`.
 
     Plane3d.throughPoints
-        (Point3d.fromCoordinates ( 2, 0, 0 ))
-        (Point3d.fromCoordinates ( 3, 0, 0 ))
-        (Point3d.fromCoordinates ( 4, 1, 1 ))
+        (Point3d.meters 2 0 0)
+        (Point3d.meters 3 0 0)
+        (Point3d.meters 4 1 1)
     --> Just
     -->     (Plane3d.through
-    -->         (Point3d.fromCoordinates ( 2, 0, 0 ))
+    -->         (Point3d.meters 2 0 0)
     -->         (Direction3d.fromAzimuthAndElevation
     -->             (degrees -90)
     -->             (degrees 45)
@@ -152,9 +152,9 @@ given points are collinear, returns `Nothing`.
     -->     )
 
     Plane3d.throughPoints
-        (Point3d.fromCoordinates ( 2, 0, 0 ))
-        (Point3d.fromCoordinates ( 3, 0, 0 ))
-        (Point3d.fromCoordinates ( 4, 0, 0 ))
+        (Point3d.meters 2 0 0)
+        (Point3d.meters 3 0 0)
+        (Point3d.meters 4 0 0)
     --> Nothing
 
 -}
@@ -210,11 +210,11 @@ normalAxis (Types.Plane3d plane) =
 
     Plane3d.offsetBy 1.0 Plane3d.zx
     --> Plane3d.withNormalDirection Direction3d.y
-    -->     (Point3d.fromCoordinates ( 0, 1, 0 ))
+    -->     (Point3d.meters 0 1 0)
 
     Plane3d.offsetBy -2.0 Plane3d.xy
     --> Plane3d.withNormalDirection Direction3d.z
-    -->     (Point3d.fromCoordinates ( 0, 0, -2 ))
+    -->     (Point3d.meters 0 0 -2)
 
 -}
 offsetBy : Quantity Float units -> Plane3d units coordinates -> Plane3d units coordinates
@@ -255,14 +255,14 @@ the plane's origin point and leaves its normal direction unchanged.
 
     plane =
         Plane3d.withNormalDirection Direction3d.z
-            (Point3d.fromCoordinates ( 1, 1, 1 ))
+            (Point3d.meters 1 1 1)
 
     displacement =
         Vector3d.fromComponents ( 1, 2, 3 )
 
     Plane3d.translateBy displacement plane
     --> Plane3d.withNormalDirection Direction3d.z
-    -->     (Point3d.fromCoordinates ( 2, 3, 4 ))
+    -->     (Point3d.meters 2 3 4)
 
 -}
 translateBy : Vector3d units coordinates -> Plane3d units coordinates -> Plane3d units coordinates
@@ -290,7 +290,7 @@ translateIn direction distance plane =
 direction.
 
     newOrigin =
-        Point3d.fromCoordinates ( 1, 2, 3 )
+        Point3d.meters 1 2 3
 
     Plane3d.moveTo newOrigin Plane3d.xy
     --> Plane3d.through newOrigin Direction3d.z
@@ -306,11 +306,11 @@ and the plane to mirror is given second.
 
     plane =
         Plane3d.withNormalDirection Direction3d.z
-            (Point3d.fromCoordinates ( 1, 2, 3 ))
+            (Point3d.meters 1 2 3)
 
     Plane3d.mirrorAcross Plane3d.xy plane
     --> Plane3d.withNormalDirection Direction3d.negativeZ
-    -->     (Point3d.fromCoordinates ( 1, 2, -3 ))
+    -->     (Point3d.meters 1 2 -3)
 
 -}
 mirrorAcross : Plane3d units coordinates -> Plane3d units coordinates -> Plane3d units coordinates
@@ -324,15 +324,15 @@ coordinates relative to a given reference frame.
 
     referenceFrame =
         Frame3d.atPoint
-            (Point3d.fromCoordinates ( 1, 1, 1 ))
+            (Point3d.meters 1 1 1)
 
     plane =
         Plane3d.withNormalDirection Direction3d.z
-            (Point3d.fromCoordinates ( 0, 0, 2 ))
+            (Point3d.meters 0 0 2)
 
     Plane3d.relativeTo referenceFrame plane
     --> Plane3d.withNormalDirection Direction3d.z
-    -->     (Point3d.fromCoordinates ( -1, -1, 1 ))
+    -->     (Point3d.meters -1 -1 1)
 
 -}
 relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Plane3d units globalCoordinates -> Plane3d units localCoordinates
@@ -346,15 +346,15 @@ frame, and return that plane expressed in global coordinates.
 
     referenceFrame =
         Frame3d.atPoint
-            (Point3d.fromCoordinates ( 1, 1, 1 ))
+            (Point3d.meters 1 1 1)
 
     plane =
         Plane3d.withNormalDirection Direction3d.z
-            (Point3d.fromCoordinates ( 1, 2, 3 ))
+            (Point3d.meters 1 2 3)
 
     Plane3d.placeIn referenceFrame plane
     --> Plane3d.withNormalDirection Direction3d.z
-    -->     (Point3d.fromCoordinates ( 2, 3, 4 ))
+    -->     (Point3d.meters 2 3 4)
 
 -}
 placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Plane3d units localCoordinates -> Plane3d units globalCoordinates

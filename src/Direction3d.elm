@@ -302,7 +302,7 @@ fromAzimuthInAndElevationFrom (Types.SketchPlane3d sketchPlane) (Quantity azimut
 If the two points are coincident, returns `Nothing`.
 
     point =
-        Point3d.fromCoordinates ( 1, 0, 1 )
+        Point3d.meters 1 0 1
 
     Direction3d.from Point3d.origin point
     --> Just
@@ -859,7 +859,7 @@ its origin point, since directions are position-independent:
 
     offsetAxis =
         Axis3d.withDirection Direction3d.z
-            (Point3d.fromCoordinates ( 100, 200, 300 ))
+            (Point3d.meters 100 200 300)
 
     Direction3d.x
         |> Direction3d.rotateAround offsetAxis (degrees 90)

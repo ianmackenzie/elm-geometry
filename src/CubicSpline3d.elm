@@ -158,23 +158,23 @@ specified in XY coordinates _within_ the sketch plane.
     CubicSpline3d.on SketchPlane3d.xz <|
         CubicSpline2d.with
             { startPoint =
-                Point2d.fromCoordinates ( 1, 1 )
+                Point2d.meters 1 1
             , startControlPoint =
-                Point2d.fromCoordinates ( 3, 4 )
+                Point2d.meters 3 4
             , endControlPoint =
-                Point2d.fromCoordinates ( 5, 1 )
+                Point2d.meters 5 1
             , endPoint =
-                Point2d.fromCoordinates ( 7, 4 )
+                Point2d.meters 7 4
             }
     --> CubicSpline3d.with
     -->     { startPoint =
-    -->         Point3d.fromCoordinates ( 1, 0, 1 )
+    -->         Point3d.meters 1 0 1
     -->     , startControlPoint =
-    -->         Point3d.fromCoordinates ( 3, 0, 4 )
+    -->         Point3d.meters 3 0 4
     -->     , endControlPoint =
-    -->         Point3d.fromCoordinates ( 5, 0, 1 )
+    -->         Point3d.meters 5 0 1
     -->     , endPoint =
-    -->         Point3d.fromCoordinates ( 7, 0, 4 )
+    -->         Point3d.meters 7 0 4
     -->     }
 
 -}
@@ -195,21 +195,21 @@ spline can be represented exactly as a cubic spline).
             { startPoint =
                 Point3d.fromCoordinates ( 0, 0, 0  )
             , controlPoint =
-                Point3d.fromCoordinates ( 3, 0, 0 )
+                Point3d.meters 3 0 0
             , endPoint =
-                Point3d.fromCoordinates ( 3, 3, 0 )
+                Point3d.meters 3 3 0
             }
 
     CubicSpline3d.fromQuadraticSpline quadraticSpline
     --> CubicSpline3d.with
     -->     { startPoint =
-    -->         Point3d.fromCoordinates ( 0, 0, 0 )
+    -->         Point3d.meters 0 0 0
     -->     , startControlPoint =
-    -->         Point3d.fromCoordinates ( 2, 0, 0 )
+    -->         Point3d.meters 2 0 0
     -->     , endControlPoint =
-    -->         Point3d.fromCoordinates ( 3, 1, 0 )
+    -->         Point3d.meters 3 1 0
     -->     , endPoint =
-    -->         Point3d.fromCoordinates ( 3, 3, 0 )
+    -->         Point3d.meters 3 3 0
     -->     )
 
 -}
@@ -392,13 +392,13 @@ boundingBox spline =
 {-| Get a point at a given parameter value.
 
     CubicSpline3d.pointOn exampleSpline ParameterValue.zero
-    --> Point3d.fromCoordinates ( 1, 1, 1 )
+    --> Point3d.meters 1 1 1
 
     CubicSpline3d.pointOn exampleSpline ParameterValue.half
-    --> Point3d.fromCoordinates ( 2.75, 2, 1.25 )
+    --> Point3d.meters 2.75 2 1.25
 
     CubicSpline3d.pointOn exampleSpline ParameterValue.one
-    --> Point3d.fromCoordinates ( 3, 3, 3 )
+    --> Point3d.meters 3 3 3
 
 -}
 pointOn : CubicSpline3d units coordinates -> Float -> Point3d units coordinates
@@ -612,7 +612,7 @@ given parameter value:
 
     CubicSpline3d.sample nondegenerateExampleSpline
         ParameterValue.half
-    --> ( Point3d.fromCoordinates ( 2.75, 2, 1.25 )
+    --> ( Point3d.meters 2.75 2 1.25
     --> , Direction3d.fromAzimuthAndElevation
     -->     (degrees 63.43)
     -->     (degrees 24.09)
@@ -632,13 +632,13 @@ versa.
     CubicSpline3d.reverse exampleSpline
     --> CubicSpline3d.with
     -->     { startPoint =
-    -->         Point3d.fromCoordinates ( 3, 3, 3 )
+    -->         Point3d.meters 3 3 3
     -->     , startControlPoint =
-    -->         Point3d.fromCoordinates ( 3, 3, 1 )
+    -->         Point3d.meters 3 3 1
     -->     , endControlPoint =
-    -->         Point3d.fromCoordinates ( 3, 1, 1 )
+    -->         Point3d.meters 3 1 1
     -->     , endPoint =
-    -->         Point3d.fromCoordinates ( 1, 1, 1 )
+    -->         Point3d.meters 1 1 1
     -->     }
 
 -}
@@ -656,13 +656,13 @@ reverse spline =
     CubicSpline3d.scaleAbout Point3d.origin 2 exampleSpline
     --> CubicSpline3d.with
     -->     { startPoint =
-    -->         Point3d.fromCoordinates ( 2, 2, 2 )
+    -->         Point3d.meters 2 2 2
     -->     , startControlPoint =
-    -->         Point3d.fromCoordinates ( 6, 2, 2 )
+    -->         Point3d.meters 6 2 2
     -->     , endControlPoint =
-    -->         Point3d.fromCoordinates ( 6, 6, 2 )
+    -->         Point3d.meters 6 6 2
     -->     , endPoint =
-    -->         Point3d.fromCoordinates ( 6, 6, 6 )
+    -->         Point3d.meters 6 6 6
     -->     }
 
 -}
@@ -678,13 +678,13 @@ radians).
         |> CubicSpline3d.rotateAround Axis3d.z (degrees 90)
     --> CubicSpline3d.with
     -->     { startPoint =
-    -->         Point3d.fromCoordinates ( -1, 1, 1 )
+    -->         Point3d.meters -1 1 1
     -->     , startControlPoint =
-    -->         Point3d.fromCoordinates ( -1, 3, 1 )
+    -->         Point3d.meters -1 3 1
     -->     , endControlPoint =
-    -->         Point3d.fromCoordinates ( -3, 3, 1 )
+    -->         Point3d.meters -3 3 1
     -->     , endPoint =
-    -->         Point3d.fromCoordinates ( -3, 3, 3 )
+    -->         Point3d.meters -3 3 3
     -->     }
 
 -}
@@ -701,13 +701,13 @@ rotateAround axis angle spline =
     CubicSpline3d.translateBy displacement exampleSpline
     --> CubicSpline3d.with
     -->     { startPoint =
-    -->         Point3d.fromCoordinates ( 3, 4, 2 )
+    -->         Point3d.meters 3 4 2
     -->     , startControlPoint =
-    -->         Point3d.fromCoordinates ( 5, 4, 2 )
+    -->         Point3d.meters 5 4 2
     -->     , endControlPoint =
-    -->         Point3d.fromCoordinates ( 5, 6, 2 )
+    -->         Point3d.meters 5 6 2
     -->     , endPoint =
-    -->         Point3d.fromCoordinates ( 5, 6, 4 )
+    -->         Point3d.meters 5 6 4
     -->     }
 
 -}
@@ -736,13 +736,13 @@ translateIn direction distance spline =
     CubicSpline3d.mirrorAcross Plane3d.xy exampleSpline
     --> CubicSpline3d.with
     -->     { startPoint =
-    -->         Point3d.fromCoordinates ( 1, 1, -1 )
+    -->         Point3d.meters 1 1 -1
     -->     , startControlPoint =
-    -->         Point3d.fromCoordinates ( 3, 1, -1 )
+    -->         Point3d.meters 3 1 -1
     -->     , endControlPoint =
-    -->         Point3d.fromCoordinates ( 3, 3, -1 )
+    -->         Point3d.meters 3 3 -1
     -->     , endPoint =
-    -->         Point3d.fromCoordinates ( 3, 3, -3 )
+    -->         Point3d.meters 3 3 -3
     -->     }
 
 -}
@@ -757,13 +757,13 @@ of a spline onto a plane.
     CubicSpline3d.projectOnto Plane3d.xy exampleSpline
     --> CubicSpline3d.with
     -->     { startPoint =
-    -->         Point3d.fromCoordinates ( 1, 1, 0 )
+    -->         Point3d.meters 1 1 0
     -->     , startControlPoint =
-    -->         Point3d.fromCoordinates ( 3, 1, 0 )
+    -->         Point3d.meters 3 1 0
     -->     , endControlPoint =
-    -->         Point3d.fromCoordinates ( 3, 3, 0 )
+    -->         Point3d.meters 3 3 0
     -->     , endPoint =
-    -->         Point3d.fromCoordinates ( 3, 3, 0 )
+    -->         Point3d.meters 3 3 0
     -->     }
 
 -}
@@ -777,18 +777,18 @@ local coordinates relative to a given reference frame.
 
     localFrame =
         Frame3d.atPoint
-            (Point3d.fromCoordinates ( 1, 2, 3 ))
+            (Point3d.meters 1 2 3)
 
     CubicSpline3d.relativeTo localFrame exampleSpline
     --> CubicSpline3d.with
     -->     { startPoint =
-    -->         Point3d.fromCoordinates ( 0, -1, -2 )
+    -->         Point3d.meters 0 -1 -2
     -->     , startControlPoint =
-    -->         Point3d.fromCoordinates ( 2, -1, -2 )
+    -->         Point3d.meters 2 -1 -2
     -->     , endControlPoint =
-    -->         Point3d.fromCoordinates ( 2, 1, -2 )
+    -->         Point3d.meters 2 1 -2
     -->     , endPoint =
-    -->         Point3d.fromCoordinates ( 2, 1, 0 )
+    -->         Point3d.meters 2 1 0
     -->     }
 
 -}
@@ -802,18 +802,18 @@ given reference frame, and return that spline expressed in global coordinates.
 
     localFrame =
         Frame3d.atPoint
-            (Point3d.fromCoordinates ( 1, 2, 3 ))
+            (Point3d.meters 1 2 3)
 
     CubicSpline3d.placeIn localFrame exampleSpline
     --> CubicSpline3d.with
     -->     { startPoint =
-    -->         Point3d.fromCoordinates ( 2, 3, 4 )
+    -->         Point3d.meters 2 3 4
     -->     , startControlPoint =
-    -->         Point3d.fromCoordinates ( 4, 3, 4 )
+    -->         Point3d.meters 4 3 4
     -->     , endControlPoint =
-    -->         Point3d.fromCoordinates ( 4, 5, 4 )
+    -->         Point3d.meters 4 5 4
     -->     , endPoint =
-    -->         Point3d.fromCoordinates ( 4, 5, 6 )
+    -->         Point3d.meters 4 5 6
     -->     }
 
 -}
@@ -831,13 +831,13 @@ sketch coordinates.
         |> CubicSpline3d.projectInto SketchPlane3d.yz
     --> CubicSpline2d.with
     -->     { startPoint =
-    -->         Point2d.fromCoordinates ( 1, 1 )
+    -->         Point2d.meters 1 1
     -->     , startControlPoint =
-    -->         Point2d.fromCoordinates ( 1, 1 )
+    -->         Point2d.meters 1 1
     -->     , endControlPoint =
-    -->         Point2d.fromCoordinates ( 3, 1 )
+    -->         Point2d.meters 3 1
     -->     , endPoint =
-    -->         Point2d.fromCoordinates ( 3, 3 )
+    -->         Point2d.meters 3 3
     -->     }
 
 -}
@@ -864,23 +864,23 @@ mapControlPoints function spline =
     CubicSpline3d.bisect exampleSpline
     --> ( CubicSpline3d.with
     -->     { startPoint =
-    -->         Point3d.fromCoordinates ( 1, 1, 1 )
+    -->         Point3d.meters 1 1 1
     -->     , startControlPoint =
-    -->         Point3d.fromCoordinates ( 2, 1, 1 )
+    -->         Point3d.meters 2 1 1
     -->     , endControlPoint =
-    -->         Point3d.fromCoordinates ( 2.5, 1.5, 1 )
+    -->         Point3d.meters 2.5 1.5 1
     -->     , endPoint =
-    -->         Point3d.fromCoordinates ( 2.75, 2, 1.25 )
+    -->         Point3d.meters 2.75 2 1.25
     -->     }
     --> , CubicSpline3d.with
     -->     { startPoint =
-    -->         Point3d.fromCoordinates ( 2.75, 2, 1.25 )
+    -->         Point3d.meters 2.75 2 1.25
     -->     , startControlPoint =
-    -->         Point3d.fromCoordinates ( 3, 2.5, 1.5 )
+    -->         Point3d.meters 3 2.5 1.5
     -->     , endControlPoint =
-    -->         Point3d.fromCoordinates ( 3, 3, 2 )
+    -->         Point3d.meters 3 3 2
     -->     , endPoint =
-    -->         Point3d.fromCoordinates ( 3, 3, 3 )
+    -->         Point3d.meters 3 3 3
     -->     }
     --> )
 
@@ -901,23 +901,23 @@ splines.
     CubicSpline3d.splitAt parameterValue exampleSpline
     --> ( CubicSpline3d.with
     -->     { startPoint =
-    -->         Point3d.fromCoordinates ( 1, 1, 1 )
+    -->         Point3d.meters 1 1 1
     -->     , startControlPoint =
-    -->         Point3d.fromCoordinates ( 2.5, 1, 1 )
+    -->         Point3d.meters 2.5 1 1
     -->     , endControlPoint =
-    -->         Point3d.fromCoordinates ( 2.88, 2.13, 1 )
+    -->         Point3d.meters 2.88 2.13 1
     -->     , endPoint =
-    -->         Point3d.fromCoordinates ( 2.97, 2.69, 1.84 )
+    -->         Point3d.meters 2.97 2.69 1.84
     -->     }
     --> , CubicSpline3d.with
     -->     { startPoint =
-    -->         Point3d.fromCoordinates ( 2.97, 2.69, 1.84 )
+    -->         Point3d.meters 2.97 2.69 1.84
     -->     , startControlPoint =
-    -->         Point3d.fromCoordinates ( 3, 2.88, 2.13 )
+    -->         Point3d.meters 3 2.88 2.13
     -->     , endControlPoint =
-    -->         Point3d.fromCoordinates ( 3, 3, 2.5 )
+    -->         Point3d.meters 3 3 2.5
     -->     , endPoint =
-    -->         Point3d.fromCoordinates ( 3, 3, 3 )
+    -->         Point3d.meters 3 3 3
     -->     }
     --> )
 
@@ -1023,7 +1023,7 @@ arcLength parameterizedSpline =
 {-| Get the midpoint of a spline.
 
     CubicSpline3d.midpoint parameterizedSpline
-    --> Point3d.fromCoordinates ( 2.75, 2, 1.25 )
+    --> Point3d.meters 2.75 2 1.25
 
 Note that this is the point half way along the spline by arc length, which is
 not in general the same as evaluating at a parameter value of 0.5.
@@ -1051,7 +1051,7 @@ Note that this is not the same as evaulating at a parameter value of 1/4:
 
     CubicSpline3d.pointOn exampleSpline
         (ParameterValue.clamped 0.25)
-    --> Point3d.fromCoordinates ( 2.1563, 1.3125, 1.0313 )
+    --> Point3d.meters 2.1563 1.3125 1.0313
 
 If the given arc length is less than zero or greater than the arc length of the
 spline, returns `Nothing`.

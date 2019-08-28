@@ -198,7 +198,7 @@ unwrap (Types.Direction2d components) =
 If the two points are coincident, returns `Nothing`.
 
     point =
-        Point2d.fromCoordinates ( 1, 1 )
+        Point2d.meters 1 1
 
     Direction2d.from Point2d.origin point
     --> Just (Direction2d.fromAngle (degrees 45))
@@ -544,7 +544,7 @@ the axis affects the result, since directions are position-independent.
 
     slopedAxis =
         Axis2d.through
-            (Point2d.fromCoordinates ( 100, 200 ))
+            (Point2d.meters 100 200)
             (Direction2d.fromAngle (degrees 45))
 
     Direction2d.mirrorAcross slopedAxis Direction2d.x

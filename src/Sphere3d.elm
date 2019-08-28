@@ -97,7 +97,7 @@ type alias Sphere3d units coordinates =
 
     exampleSphere =
         Sphere3d.withRadius 3
-            (Point3d.fromCoordinates ( 1, 2, 1 ))
+            (Point3d.meters 1 2 1)
 
 If you pass a negative radius, the absolute value will be used.
 
@@ -114,20 +114,20 @@ withRadius givenRadius givenCenterPoint =
 Returns `Nothing` if four given points are coplanar.
 
     Sphere3d.throughPoints
-        (Point3d.fromCoordinates ( 1, 0, 0 ))
-        (Point3d.fromCoordinates ( -1, 0, 0 ))
-        (Point3d.fromCoordinates ( 0, 1, 0 ))
-        (Point3d.fromCoordinates ( 0, 0, 0.5 ))
+        (Point3d.meters 1 0 0)
+        (Point3d.meters -1 0 0)
+        (Point3d.meters 0 1 0)
+        (Point3d.meters 0 0 0.5)
     --> Just
     -->     (Sphere3d.withRadius 1.25
-    -->         (Point3d.fromCoordinates ( 0, 0, -0.75 ))
+    -->         (Point3d.meters 0 0 -0.75)
     -->     )
 
     Sphere3d.throughPoints
-        (Point3d.fromCoordinates ( 1, 0, 0 ))
-        (Point3d.fromCoordinates ( -1, 0, 0 ))
-        (Point3d.fromCoordinates ( 0, 1, 0 ))
-        (Point3d.fromCoordinates ( 0, -1, 0 ))
+        (Point3d.meters 1 0 0)
+        (Point3d.meters -1 0 0)
+        (Point3d.meters 0 1 0)
+        (Point3d.meters 0 -1 0)
     --> Nothing
 
 -}
@@ -183,7 +183,7 @@ throughPoints p1 p2 p3 p4 =
 {-| Get the center point of a sphere.
 
     Sphere3d.centerPoint exampleSphere
-    --> Point3d.fromCoordinates ( 1, 2, 1 )
+    --> Point3d.meters 1 2 1
 
 -}
 centerPoint : Sphere3d units coordinates -> Point3d units coordinates
@@ -251,7 +251,7 @@ volume sphere =
 
     Sphere3d.scaleAbout Point3d.origin 3 exampleSphere
     --> Sphere3d.withRadius 9
-    -->     (Point3d.fromCoordinates ( 3, 6, 3 ))
+    -->     (Point3d.meters 3 6 3)
 
 -}
 scaleAbout : Point3d units coordinates -> Float -> Sphere3d units coordinates -> Sphere3d units coordinates
@@ -265,7 +265,7 @@ scaleAbout point scale sphere =
     exampleSphere
         |> Sphere3d.rotateAround Axis3d.y (degrees 90)
     --> Sphere3d.withRadius 3
-    -->     (Point3d.fromCoordinates ( 1, 2, -1 ))
+    -->     (Point3d.meters 1 2 -1)
 
 -}
 rotateAround : Axis3d units coordinates -> Angle -> Sphere3d units coordinates -> Sphere3d units coordinates
@@ -280,7 +280,7 @@ rotateAround axis angle sphere =
         |> Sphere3d.translateBy
             (Vector3d.fromComponents ( 2, 1, 3 ))
     --> Sphere3d.withRadius 3
-    -->     (Point3d.fromCoordinates ( 3, 3, 4 ))
+    -->     (Point3d.meters 3 3 4)
 
 -}
 translateBy : Vector3d units coordinates -> Sphere3d units coordinates -> Sphere3d units coordinates
@@ -308,7 +308,7 @@ translateIn direction distance sphere =
 
     Sphere3d.mirrorAcross Plane3d.xy exampleSphere
     --> Sphere3d.withRadius 3
-    -->     (Point3d.fromCoordinates ( 1, 2, -1 ))
+    -->     (Point3d.meters 1 2 -1)
 
 -}
 mirrorAcross : Plane3d units coordinates -> Sphere3d units coordinates -> Sphere3d units coordinates
@@ -323,10 +323,10 @@ local coordinates relative to a given reference frame.
     exampleSphere
         |> Sphere3d.relativeTo
             (Frame3d.atPoint
-                (Point3d.fromCoordinates ( 1, 2, 3 ))
+                (Point3d.meters 1 2 3)
             )
     --> Sphere3d.withRadius 3
-    -->     (Point3d.fromCoordinates ( 0, 0, -2 ))
+    -->     (Point3d.meters 0 0 -2)
 
 -}
 relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Sphere3d units globalCoordinates -> Sphere3d units localCoordinates
@@ -341,10 +341,10 @@ given reference frame, and return that sphere expressed in global coordinates.
     exampleSphere
         |> Sphere3d.placeIn
             (Frame3d.atPoint
-                (Point3d.fromCoordinates ( 1, 2, 3 ))
+                (Point3d.meters 1 2 3)
             )
     --> Sphere3d.withRadius 3
-    -->     (Point3d.fromCoordinates ( 2, 4, 4 ))
+    -->     (Point3d.meters 2 4 4)
 
 -}
 placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Sphere3d units localCoordinates -> Sphere3d units globalCoordinates
@@ -397,12 +397,12 @@ boundingBox sphere =
 {-| Check if a sphere contains a given point.
 
     Sphere3d.contains
-        (Point3d.fromCoordinates ( 4, 2, 1 ))
+        (Point3d.meters 4 2 1)
         exampleSphere
     --> True
 
     Sphere3d.contains
-        (Point3d.fromCoordinates ( 4.00001, 2, 1 ))
+        (Point3d.meters 4.00001 2 1)
         exampleSphere
     --> False
 
@@ -418,7 +418,7 @@ of a sphere onto a plane.
     Sphere3d.projectOnto Plane3d.xy exampleSphere
     --> Circle3d.withRadius 3
     -->     Direction3d.z
-    -->     (Point3d.fromCoordinates ( 1, 2, 0 ))
+    -->     (Point3d.meters 1 2 0)
 
 -}
 projectOnto : Plane3d units coordinates -> Sphere3d units coordinates -> Circle3d units coordinates
@@ -433,7 +433,7 @@ of a sphere into a sketch plane.
 
     Sphere3d.projectInto SketchPlane3d.xy exampleSphere
     --> Circle2d.withRadius 3
-    -->     (Point2d.fromCoordinates ( 1, 2 ))
+    -->     (Point2d.meters 1 2)
 
 -}
 projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Sphere3d units coordinates3d -> Circle2d units coordinates2d

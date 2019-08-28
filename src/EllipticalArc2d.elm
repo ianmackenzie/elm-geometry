@@ -395,13 +395,13 @@ sweptAngle (Types.EllipticalArc2d arc) =
 {-| Get the point along an elliptical arc at a given parameter value:
 
     EllipticalArc2d.pointOn exampleArc ParameterValue.zero
-    --> Point2d.fromCoordinates ( 2, 0 )
+    --> Point2d.meters 2 0
 
     EllipticalArc2d.pointOn exampleArc ParameterValue.half
-    --> Point2d.fromCoordinates ( 1.4142, 0.7071 )
+    --> Point2d.meters 1.4142 0.7071
 
     EllipticalArc2d.pointOn exampleArc ParameterValue.one
-    --> Point2d.fromCoordinates ( 0, 1 )
+    --> Point2d.meters 0 1
 
 -}
 pointOn : EllipticalArc2d units coordinates -> Float -> Point2d units coordinates
@@ -605,19 +605,19 @@ at a given parameter value:
 
     EllipticalArc2d.sample nondegenerateExampleArc
         ParameterValue.zero
-    --> ( Point2d.fromCoordinates ( 2, 0 )
+    --> ( Point2d.meters 2 0
     --> , Direction2d.fromAngle (degrees 90)
     --> )
 
     EllipticalArc2d.sample nondegenerateExampleArc
         ParameterValue.half
-    --> ( Point2d.fromCoordinates ( 1.4142, 0.7071 )
+    --> ( Point2d.meters 1.4142 0.7071
     --> , Direction2d.fromAngle (degrees 153.4)
     --> )
 
     EllipticalArc2d.sample nondegenerateExampleArc
         ParameterValue.one
-    --> ( Point2d.fromCoordinates ( 0, 1 )
+    --> ( Point2d.meters 0 1
     --> , Direction2d.fromAngle (degrees 180)
     --> )
 
@@ -632,7 +632,7 @@ sample nondegenerateArc parameterValue =
 {-| Get the start point of an elliptical arc.
 
     EllipticalArc2d.startPoint exampleArc
-    --> Point2d.fromCoordinates ( 2, 0 )
+    --> Point2d.meters 2 0
 
 -}
 startPoint : EllipticalArc2d units coordinates -> Point2d units coordinates
@@ -643,7 +643,7 @@ startPoint arc =
 {-| Get the end point of an elliptical arc.
 
     EllipticalArc2d.endPoint exampleArc
-    --> Point2d.fromCoordinates ( 0, 1 )
+    --> Point2d.meters 0 1
 
 -}
 endPoint : EllipticalArc2d units coordinates -> Point2d units coordinates
@@ -743,7 +743,7 @@ rotateAround point angle arc =
             (Vector2d.fromComponents ( 2, 3 ))
     --> EllipticalArc2d.with
     -->     { centerPoint =
-    -->         Point2d.fromCoordinates ( 2, 3 )
+    -->         Point2d.meters 2 3
     -->     , xDirection = Direction2d.x
     -->     , xRadius = 2
     -->     , yRadius = 1
@@ -779,10 +779,10 @@ translateIn direction distance arc =
             |> EllipticalArc2d.mirrorAcross Axis2d.y
 
     EllipticalArc2d.startPoint mirroredArc
-    --> Point2d.fromCoordinates ( -2, 0 )
+    --> Point2d.meters -2 0
 
     EllipticalArc2d.endPoint mirroredArc
-    --> Point2d.fromCoordinates ( 0, 1 )
+    --> Point2d.meters 0 1
 
 -}
 mirrorAcross : Axis2d units coordinates -> EllipticalArc2d units coordinates -> EllipticalArc2d units coordinates
@@ -794,12 +794,12 @@ mirrorAcross axis arc =
 local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.meters 1 2)
 
     EllipticalArc2d.relativeTo localFrame exampleArc
     --> EllipticalArc2d.with
     -->     { centerPoint =
-    -->         Point2d.fromCoordinates ( -1, -2 )
+    -->         Point2d.meters -1 -2
     -->     , xDirection = Direction2d.x
     -->     , xRadius = 2
     -->     , yRadius = 1
@@ -818,12 +818,12 @@ relative to a given reference frame, and return that arc expressed in global
 coordinates.
 
     localFrame =
-        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.meters 1 2)
 
     EllipticalArc2d.relativeTo localFrame exampleArc
     --> EllipticalArc2d.with
     -->     { centerPoint =
-    -->         Point2d.fromCoordinates ( 1, 2 )
+    -->         Point2d.meters 1 2
     -->     , xDirection = Direction2d.x
     -->     , xRadius = 2
     -->     , yRadius = 1
@@ -1030,13 +1030,13 @@ example, to get the true midpoint of `exampleArc`:
 
     EllipticalArc2d.pointAlong parameterizedArc
         (arcLength / 2)
-    --> Just (Point2d.fromCoordinates ( 1.1889, 0.8041 ))
+    --> Just (Point2d.meters 1.1889 0.8041)
 
 Note that this is not the same as evaulating at a parameter value of 0.5:
 
     EllipticalArc2d.pointOn exampleArc
         ParameterValue.half
-    --> Point2d.fromCoordinates ( 1.4142, 0.7071 )
+    --> Point2d.meters 1.4142 0.7071
 
 If the given arc length is less than zero or greater than the arc length of the
 arc, returns `Nothing`.
@@ -1074,7 +1074,7 @@ given arc length. To get the point and tangent direction at the midpoint of
     EllipticalArc2d.sampleAlong parameterizedArc
         (arcLength / 2)
     --> Just
-    -->     ( Point2d.fromCoordinates ( 1.1889, 0.8041 )
+    -->     ( Point2d.meters 1.1889 0.8041
     -->     , Direction2d.fromAngle (degrees 159.7)
     -->     )
 

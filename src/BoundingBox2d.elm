@@ -116,7 +116,7 @@ fromExtrema given =
 {-| Construct a zero-width bounding box containing a single point.
 
     point =
-        Point2d.fromCoordinates ( 2, 3 )
+        Point2d.meters 2 3
 
     BoundingBox2d.singleton point
     --> BoundingBox2d.fromExtrema
@@ -279,7 +279,7 @@ the list is empty, returns `Nothing`.
 
     singletonBox =
         BoundingBox2d.singleton
-            (Point2d.fromCoordinates ( 1, 3 ))
+            (Point2d.meters 1 3)
 
     BoundingBox2d.aggregate [ exampleBox, singletonBox ]
     --> Just
@@ -431,7 +431,7 @@ midY (Types.BoundingBox2d boundingBox) =
 {-| Get the point at the center of a bounding box.
 
     BoundingBox2d.centerPoint exampleBox
-    --> Point2d.fromCoordinates ( 5.5, 4 )
+    --> Point2d.meters 5.5 4
 
 -}
 centerPoint : BoundingBox2d units coordinates -> Point2d units coordinates
@@ -442,7 +442,7 @@ centerPoint boundingBox =
 {-| Check if a bounding box contains a particular point.
 
     point =
-        Point2d.fromCoordinates ( 4, 3 )
+        Point2d.meters 4 3
 
     BoundingBox2d.contains point exampleBox
     --> True
@@ -918,7 +918,7 @@ intersection firstBox secondBox =
 {-| Scale a bounding box about a given point by a given scale.
 
     point =
-        Point2d.fromCoordinates ( 4, 4 )
+        Point2d.meters 4 4
 
     BoundingBox2d.scaleAbout point 2 exampleBox
     --> BoundingBox2d.fromExtrema

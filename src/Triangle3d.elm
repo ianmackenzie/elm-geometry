@@ -74,9 +74,9 @@ type alias Triangle3d units coordinates =
 
     exampleTriangle =
         Triangle3d.fromVertices
-            ( Point3d.fromCoordinates ( 1, 0, 0 )
-            , Point3d.fromCoordinates ( 2, 0, 0 )
-            , Point3d.fromCoordinates ( 2, 1, 3 )
+            ( Point3d.meters 1 0 0
+            , Point3d.meters 2 0 0
+            , Point3d.meters 2 1 3
             )
 
 -}
@@ -90,14 +90,14 @@ specified in XY coordinates _within_ the sketch plane.
 
     Triangle3d.on SketchPlane3d.xz <|
         Triangle2d.fromVertices
-            ( Point2d.fromCoordinates ( 1, 1 )
-            , Point2d.fromCoordinates ( 2, 1 )
-            , Point2d.fromCoordinates ( 1, 3 )
+            ( Point2d.meters 1 1
+            , Point2d.meters 2 1
+            , Point2d.meters 1 3
             )
     --> Triangle3d.fromVertices
-    -->     ( Point3d.fromCoordinates ( 1, 0, 1 )
-    -->     , Point3d.fromCoordinates ( 2, 0, 1 )
-    -->     , Point3d.fromCoordinates ( 1, 0, 3 )
+    -->     ( Point3d.meters 1 0 1
+    -->     , Point3d.meters 2 0 1
+    -->     , Point3d.meters 1 0 3
     -->     )
 
 -}
@@ -119,9 +119,9 @@ on sketchPlane triangle2d =
     ( p1, p2, p3 ) =
         Triangle3d.vertices exampleTriangle
 
-    --> p1 = Point3d.fromCoordinates ( 1, 0, 0 )
-    --> p2 = Point3d.fromCoordinates ( 2, 0, 0 )
-    --> p3 = Point3d.fromCoordinates ( 2, 1, 3 )
+    --> p1 = Point3d.meters 1 0 0
+    --> p2 = Point3d.meters 2 0 0
+    --> p3 = Point3d.meters 2 1 3
 
 -}
 vertices : Triangle3d units coordinates -> ( Point3d units coordinates, Point3d units coordinates, Point3d units coordinates )
@@ -138,20 +138,20 @@ second to the third, and from the third back to the first.
 
     --> e1 =
     -->     LineSegment3d.fromEndpoints
-    -->         ( Point3d.fromCoordinates ( 1, 0, 0 )
-    -->         , Point3d.fromCoordinates ( 2, 0, 0 )
+    -->         ( Point3d.meters 1 0 0
+    -->         , Point3d.meters 2 0 0
     -->         )
     -->
     --> e2 =
     -->     LineSegment3d.fromEndpoints
-    -->         ( Point3d.fromCoordinates ( 2, 0, 0 )
-    -->         , Point3d.fromCoordinates ( 2, 1, 3 )
+    -->         ( Point3d.meters 2 0 0
+    -->         , Point3d.meters 2 1 3
     -->         )
     -->
     --> e3 =
     -->     LineSegment3d.fromEndpoints
-    -->         ( Point3d.fromCoordinates ( 2, 1, 3 )
-    -->         , Point3d.fromCoordinates ( 1, 0, 0 )
+    -->         ( Point3d.meters 2 1 3
+    -->         , Point3d.meters 1 0 0
     -->         )
 
 -}
@@ -170,7 +170,7 @@ edges triangle =
 {-| Get the centroid (center of mass) of a triangle.
 
     Triangle3d.centroid exampleTriangle
-    --> Point3d.fromCoordinates ( 1.6667, 0.6667, 1 )
+    --> Point3d.meters 1.6667 0.6667 1
 
 -}
 centroid : Triangle3d units coordinates -> Point3d units coordinates
@@ -236,9 +236,9 @@ normalDirection triangle =
 
     Triangle3d.scaleAbout Point3d.origin 2 exampleTriangle
     --> Triangle3d.fromVertices
-    -->     ( Point3d.fromCoordinates ( 2, 0, 0 )
-    -->     , Point3d.fromCoordinates ( 4, 0, 0 )
-    -->     , Point3d.fromCoordinates ( 4, 2, 6 )
+    -->     ( Point3d.meters 2 0 0
+    -->     , Point3d.meters 4 0 0
+    -->     , Point3d.meters 4 2 6
     -->     )
 
 -}
@@ -252,9 +252,9 @@ scaleAbout centerPoint scale triangle =
     exampleTriangle
         |> Triangle3d.rotateAround Axis3d.z (degrees 90)
     --> Triangle3d.fromVertices
-    -->     ( Point3d.fromCoordinates ( 0, 1, 0 )
-    -->     , Point3d.fromCoordinates ( 0, 2, 0 )
-    -->     , Point3d.fromCoordinates ( -1, 2, 3 )
+    -->     ( Point3d.meters 0 1 0
+    -->     , Point3d.meters 0 2 0
+    -->     , Point3d.meters -1 2 3
     -->     )
 
 -}
@@ -270,9 +270,9 @@ rotateAround axis angle triangle =
 
     Triangle3d.translateBy displacement exampleTriangle
     --> Triangle3d.fromVertices
-    -->     ( Point3d.fromCoordinates ( 3, -1, 3 )
-    -->     , Point3d.fromCoordinates ( 4, -1, 3 )
-    -->     , Point3d.fromCoordinates ( 4, 0, 6 )
+    -->     ( Point3d.meters 3 -1 3
+    -->     , Point3d.meters 4 -1 3
+    -->     , Point3d.meters 4 0 6
     -->     )
 
 -}
@@ -300,9 +300,9 @@ translateIn direction distance triangle =
 
     Triangle3d.mirrorAcross Plane3d.yz exampleTriangle
     --> Triangle3d.fromVertices
-    -->     ( Point3d.fromCoordinates ( -1, 0, 0 )
-    -->     ( Point3d.fromCoordinates ( -2, 0, 0 )
-    -->     ( Point3d.fromCoordinates ( -2, 1, 3 )
+    -->     ( Point3d.meters -1 0 0
+    -->     ( Point3d.meters -2 0 0
+    -->     ( Point3d.meters -2 1 3
     -->     )
 
 -}
@@ -316,16 +316,16 @@ of a triangle onto a plane.
 
     Triangle3d.projectOnto Plane3d.xy exampleTriangle
     --> Triangle3d.fromVertices
-    -->     ( Point3d.fromCoordinates ( 1, 0, 0 )
-    -->     , Point3d.fromCoordinates ( 2, 0, 0 )
-    -->     , Point3d.fromCoordinates ( 2, 1, 0 )
+    -->     ( Point3d.meters 1 0 0
+    -->     , Point3d.meters 2 0 0
+    -->     , Point3d.meters 2 1 0
     -->     )
 
     Triangle3d.projectOnto Plane3d.xz exampleTriangle
     --> Triangle3d.fromVertices
-    -->     ( Point3d.fromCoordinates ( 1, 0, 0 )
-    -->     , Point3d.fromCoordinates ( 2, 0, 0 )
-    -->     , Point3d.fromCoordinates ( 2, 0, 3 )
+    -->     ( Point3d.meters 1 0 0
+    -->     , Point3d.meters 2 0 0
+    -->     , Point3d.meters 2 0 3
     -->     )
 
 -}
@@ -359,13 +359,13 @@ in local coordinates relative to a given reference frame.
 
     localFrame =
         Frame3d.atPoint
-            (Point3d.fromCoordinates ( 2, 1, 3 ))
+            (Point3d.meters 2 1 3)
 
     Triangle3d.relativeTo localFrame exampleTriangle
     --> Triangle3d.fromVertices
-    -->     ( Point3d.fromCoordinates ( -1, -1, -3 )
-    -->     , Point3d.fromCoordinates ( 0, -1, -3 )
-    -->     , Point3d.fromCoordinates ( 0, 0, 0 )
+    -->     ( Point3d.meters -1 -1 -3
+    -->     , Point3d.meters 0 -1 -3
+    -->     , Point3d.meters 0 0 0
     -->     )
 
 -}
@@ -379,13 +379,13 @@ given reference frame, and return that triangle expressed in global coordinates.
 
     localFrame =
         Frame3d.atPoint
-            (Point3d.fromCoordinates ( 2, 1, 3 ))
+            (Point3d.meters 2 1 3)
 
     Triangle3d.placeIn localFrame exampleTriangle
     --> Triangle3d.fromVertices
-    -->     ( Point3d.fromCoordinates ( 3, 1, 3 )
-    -->     , Point3d.fromCoordinates ( 4, 1, 3 )
-    -->     , Point3d.fromCoordinates ( 4, 2, 6 )
+    -->     ( Point3d.meters 3 1 3
+    -->     , Point3d.meters 4 1 3
+    -->     , Point3d.meters 4 2 6
     -->     )
 
 -}
@@ -401,16 +401,16 @@ sketch coordinates.
 
     Triangle3d.projectInto SketchPlane3d.xy exampleTriangle
     --> Triangle2d.fromVertices
-    -->     ( Point2d.fromCoordinates ( 1, 0 )
-    -->     , Point2d.fromCoordinates ( 2, 0 )
-    -->     , Point2d.fromCoordinates ( 2, 1 )
+    -->     ( Point2d.meters 1 0
+    -->     , Point2d.meters 2 0
+    -->     , Point2d.meters 2 1
     -->     )
 
     Triangle3d.projectInto SketchPlane3d.zx exampleTriangle
     --> Triangle2d.fromVertices
-    -->     ( Point2d.fromCoordinates ( 0, 1 )
-    -->     , Point2d.fromCoordinates ( 0, 2 )
-    -->     , Point2d.fromCoordinates ( 3, 2 )
+    -->     ( Point2d.meters 0 1
+    -->     , Point2d.meters 0 2
+    -->     , Point2d.meters 3 2
     -->     )
 
 -}

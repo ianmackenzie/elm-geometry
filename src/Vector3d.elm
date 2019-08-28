@@ -266,10 +266,10 @@ xyzIn (Types.Frame3d frame) (Quantity x) (Quantity y) (Quantity z) =
 {-| Construct a vector from the first given point to the second.
 
     startPoint =
-        Point3d.fromCoordinates ( 1, 1, 1 )
+        Point3d.meters 1 1 1
 
     endPoint =
-        Point3d.fromCoordinates ( 4, 5, 6 )
+        Point3d.meters 4 5 6
 
     Vector3d.from startPoint endPoint
     --> Vector3d.fromComponents ( 3, 4, 5 )

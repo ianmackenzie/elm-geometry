@@ -312,10 +312,10 @@ rThetaIn (Types.Frame2d frame) (Quantity r) (Quantity theta) =
 {-| Construct a vector from the first given point to the second.
 
     startPoint =
-        Point2d.fromCoordinates ( 1, 1 )
+        Point2d.meters 1 1
 
     endPoint =
-        Point2d.fromCoordinates ( 4, 5 )
+        Point2d.meters 4 5
 
     Vector2d.from startPoint endPoint
     --> Vector2d.fromComponents ( 3, 4 )
@@ -1059,7 +1059,7 @@ The position of the axis doesn't matter, only its orientation:
 
     horizontalAxis =
         Axis2d.withDirection Direction2d.x
-            (Point2d.fromCoordinates ( 100, 200 ))
+            (Point2d.meters 100 200)
 
     Vector2d.mirrorAcross horizontalAxis vector
     --> Vector2d.fromComponents ( 2, -3 )

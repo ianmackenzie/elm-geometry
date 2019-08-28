@@ -74,10 +74,10 @@ type alias Polyline3d units coordinates =
 
     examplePolyline =
         Polyline3d.fromVertices
-            [ Point3d.fromCoordinates ( 0, 0, 0 )
-            , Point3d.fromCoordinates ( 1, 0, 0 )
-            , Point3d.fromCoordinates ( 1, 2, 0 )
-            , Point3d.fromCoordinates ( 1, 2, 3 )
+            [ Point3d.meters 0 0 0
+            , Point3d.meters 1 0 0
+            , Point3d.meters 1 2 0
+            , Point3d.meters 1 2 3
             ]
 
 -}
@@ -91,16 +91,16 @@ specified in XY coordinates _within_ the sketch plane.
 
     Polyline3d.on SketchPlane3d.yz <|
         Polyline2d.fromVertices
-            [ Point2d.fromCoordinates ( 0, 0 )
-            , Point2d.fromCoordinates ( 1, 0 )
-            , Point2d.fromCoordinates ( 1, 1 )
-            , Point2d.fromCoordinates ( 2, 1 )
+            [ Point2d.meters 0 0
+            , Point2d.meters 1 0
+            , Point2d.meters 1 1
+            , Point2d.meters 2 1
             ]
     --> Polyline3d.fromVertices
-    -->     [ Point3d.fromCoordinates ( 0, 0, 0 )
-    -->     , Point3d.fromCoordinates ( 0, 1, 0 )
-    -->     , Point3d.fromCoordinates ( 0, 1, 1 )
-    -->     , Point3d.fromCoordinates ( 0, 2, 1 )
+    -->     [ Point3d.meters 0 0 0
+    -->     , Point3d.meters 0 1 0
+    -->     , Point3d.meters 0 1 1
+    -->     , Point3d.meters 0 2 1
     -->     ]
 
 -}
@@ -114,10 +114,10 @@ on sketchPlane polyline2d =
 {-| Get the vertices of a polyline.
 
     Polyline3d.vertices examplePolyline
-    --> [ Point3d.fromCoordinates ( 0, 0, 0 )
-    --> , Point3d.fromCoordinates ( 1, 0, 0 )
-    --> , Point3d.fromCoordinates ( 1, 2, 0 )
-    --> , Point3d.fromCoordinates ( 1, 2, 3 )
+    --> [ Point3d.meters 0 0 0
+    --> , Point3d.meters 1 0 0
+    --> , Point3d.meters 1 2 0
+    --> , Point3d.meters 1 2 3
     --> ]
 
 -}
@@ -130,16 +130,16 @@ vertices (Types.Polyline3d polylineVertices) =
 
     Polyline3d.segments examplePolyline
     --> [ LineSegment3d.fromEndpoints
-    -->     ( Point3d.fromCoordinates ( 0, 0, 0 )
-    -->     , Point3d.fromCoordinates ( 1, 0, 0 )
+    -->     ( Point3d.meters 0 0 0
+    -->     , Point3d.meters 1 0 0
     -->     )
     --> , LineSegment3d.fromEndpoints
-    -->     ( Point3d.fromCoordinates ( 1, 0, 0 )
-    -->     , Point3d.fromCoordinates ( 1, 2, 0 )
+    -->     ( Point3d.meters 1 0 0
+    -->     , Point3d.meters 1 2 0
     -->     )
     --> , LineSegment3d.fromEndpoints
-    -->     ( Point3d.fromCoordinates ( 1, 2, 0 )
-    -->     , Point3d.fromCoordinates ( 1, 2, 3 )
+    -->     ( Point3d.meters 1 2 0
+    -->     , Point3d.meters 1 2 3
     -->     )
     --> ]
 
@@ -169,14 +169,14 @@ length polyline =
 {-| Scale a polyline about the given center point by the given scale.
 
     point =
-        Point3d.fromCoordinates ( 1, 0, 0 )
+        Point3d.meters 1 0 0
 
     Polyline3d.scaleAbout point 2 examplePolyline
     --> Polyline3d.fromVertices
-    -->     [ Point3d.fromCoordinates ( -1, 0, 0 )
-    -->     , Point3d.fromCoordinates ( 1, 0, 0 )
-    -->     , Point3d.fromCoordinates ( 1, 4, 0 )
-    -->     , Point3d.fromCoordinates ( 1, 4, 6 )
+    -->     [ Point3d.meters -1 0 0
+    -->     , Point3d.meters 1 0 0
+    -->     , Point3d.meters 1 4 0
+    -->     , Point3d.meters 1 4 6
     -->     ]
 
 -}
@@ -190,10 +190,10 @@ scaleAbout point scale polyline =
     examplePolyline
         |> Polyline3d.rotateAround Axis3d.z (degrees 90)
     --> Polyline3d.fromVertices
-    -->     [ Point3d.fromCoordinates ( 0, 0, 0 )
-    -->     , Point3d.fromCoordinates ( 0, 1, 0 )
-    -->     , Point3d.fromCoordinates ( -2, 1, 0 )
-    -->     , Point3d.fromCoordinates ( -2, 1, 3 )
+    -->     [ Point3d.meters 0 0 0
+    -->     , Point3d.meters 0 1 0
+    -->     , Point3d.meters -2 1 0
+    -->     , Point3d.meters -2 1 3
     -->     ]
 
 -}
@@ -209,10 +209,10 @@ rotateAround axis angle polyline =
 
     Polyline3d.translateBy displacement examplePolyline
     --> Polyline3d.fromVertices
-    -->     [ Point3d.fromCoordinates ( 1, 2, 3 )
-    -->     , Point3d.fromCoordinates ( 2, 2, 3 )
-    -->     , Point3d.fromCoordinates ( 2, 4, 3 )
-    -->     , Point3d.fromCoordinates ( 2, 4, 6 )
+    -->     [ Point3d.meters 1 2 3
+    -->     , Point3d.meters 2 2 3
+    -->     , Point3d.meters 2 4 3
+    -->     , Point3d.meters 2 4 6
     -->     ]
 
 -}
@@ -240,10 +240,10 @@ translateIn direction distance polyline =
 
     Polyline3d.mirrorAcross Plane3d.xz examplePolyline
     --> Polyline3d.fromVertices
-    -->     [ Point3d.fromCoordinates ( 0, 0, 0 )
-    -->     , Point3d.fromCoordinates ( 1, 0, 0 )
-    -->     , Point3d.fromCoordinates ( 1, -2, 0 )
-    -->     , Point3d.fromCoordinates ( 1, -2, 3 )
+    -->     [ Point3d.meters 0 0 0
+    -->     , Point3d.meters 1 0 0
+    -->     , Point3d.meters 1 -2 0
+    -->     , Point3d.meters 1 -2 3
     -->     ]
 
 -}
@@ -257,10 +257,10 @@ of a polyline onto a plane. This will flatten the polyline.
 
     Polyline3d.projectOnto Plane3d.xz examplePolyline
     --> Polyline3d.fromVertices
-    -->     [ Point3d.fromCoordinates ( 0, 0, 0 )
-    -->     , Point3d.fromCoordinates ( 1, 0, 0 )
-    -->     , Point3d.fromCoordinates ( 1, 0, 0 )
-    -->     , Point3d.fromCoordinates ( 1, 0, 3 )
+    -->     [ Point3d.meters 0 0 0
+    -->     , Point3d.meters 1 0 0
+    -->     , Point3d.meters 1 0 0
+    -->     , Point3d.meters 1 0 3
     -->     ]
 
 -}
@@ -289,14 +289,14 @@ in local coordinates relative to a given reference frame.
 
     localFrame =
         Frame3d.atPoint
-            (Point3d.fromCoordinates ( 1, 2, 3 ))
+            (Point3d.meters 1 2 3)
 
     Polyline3d.relativeTo localFrame examplePolyline
     --> Polyline3d.fromVertices
-    -->     [ Point3d.fromCoordinates ( -1, -2, -3 )
-    -->     , Point3d.fromCoordinates ( 0, -2, -3 )
-    -->     , Point3d.fromCoordinates ( 0, 0, -3 )
-    -->     , Point3d.fromCoordinates ( 0, 0, 0 )
+    -->     [ Point3d.meters -1 -2 -3
+    -->     , Point3d.meters 0 -2 -3
+    -->     , Point3d.meters 0 0 -3
+    -->     , Point3d.meters 0 0 0
     -->     ]
 
 -}
@@ -311,14 +311,14 @@ coordinates.
 
     localFrame =
         Frame3d.atPoint
-            (Point3d.fromCoordinates ( 1, 2, 3 ))
+            (Point3d.meters 1 2 3)
 
     Polyline3d.placeIn localFrame examplePolyline
     --> Polyline3d.fromVertices
-    -->     [ Point3d.fromCoordinates ( 1, 2, 3 )
-    -->     , Point3d.fromCoordinates ( 2, 2, 3 )
-    -->     , Point3d.fromCoordinates ( 2, 4, 3 )
-    -->     , Point3d.fromCoordinates ( 2, 4, 6 )
+    -->     [ Point3d.meters 1 2 3
+    -->     , Point3d.meters 2 2 3
+    -->     , Point3d.meters 2 4 3
+    -->     , Point3d.meters 2 4 6
     -->     ]
 
 -}
@@ -334,10 +334,10 @@ sketch coordinates.
 
     Polyline3d.projectInto Plane3d.xy examplePolyline
     --> Polyline2d.fromVertices
-    -->     [ Point2d.fromCoordinates ( 0, 0 )
-    -->     , Point2d.fromCoordinates ( 1, 0 )
-    -->     , Point2d.fromCoordinates ( 1, 2 )
-    -->     , Point2d.fromCoordinates ( 1, 2 )
+    -->     [ Point2d.meters 0 0
+    -->     , Point2d.meters 1 0
+    -->     , Point2d.meters 1 2
+    -->     , Point2d.meters 1 2
     -->     ]
 
 -}
@@ -373,7 +373,7 @@ boundingBox polyline =
 polyline has no vertices.
 
     Polyline3d.centroid examplePolyline
-    --> Just (Point3d.fromCoordinates ( 0.9167, 1.333, 0.75 ))
+    --> Just (Point3d.meters 0.9167 1.333 0.75)
 
 -}
 centroid : Polyline3d units coordinates -> Maybe (Point3d units coordinates)

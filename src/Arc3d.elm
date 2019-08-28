@@ -102,23 +102,23 @@ in XY coordinates _within_ the sketch plane.
 
     arc =
         Arc3d.on SketchPlane3d.xz
-            (Point2d.fromCoordinates ( 3, 1 )
+            (Point2d.meters 3 1
                 |> Arc2d.sweptAround
-                    (Point2d.fromCoordinates ( 1, 1 )
+                    (Point2d.meters 1 1
                     (degrees 90)
             )
 
     Arc3d.centerPoint arc
-    --> Point3d.fromCoordinates ( 1, 0, 1 )
+    --> Point3d.meters 1 0 1
 
     Arc3d.radius arc
     --> 2
 
     Arc3d.startPoint arc
-    --> Point3d.fromCoordinates ( 3, 0, 1 )
+    --> Point3d.meters 3 0 1
 
     Arc3d.endPoint arc
-    --> Point3d.fromCoordinates ( 1, 0, 3 )
+    --> Point3d.meters 1 0 3
 
 -}
 on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Arc2d units coordinates2d -> Arc3d units coordinates3d
@@ -138,14 +138,14 @@ on sketchPlane (Types.Arc2d arc2d) =
 given angle:
 
     exampleArc =
-        Point3d.fromCoordinates ( 1, 1, 0 )
+        Point3d.meters 1 1 0
             |> Arc3d.sweptAround Axis3d.z (degrees 90)
 
     Arc3d.centerPoint exampleArc
     --> Point3d.origin
 
     Arc3d.endPoint exampleArc
-    --> Point3d.fromCoordinates ( -1, 1, 0 )
+    --> Point3d.meters -1 1 0
 
 Positive swept angles result in a counterclockwise (right-handed) rotation
 around the given axis and vice versa for negative swept angles. The center point
@@ -206,18 +206,18 @@ through the second given point and ends at the third given point. If the three
 points are collinear, returns `Nothing`.
 
     p1 =
-        Point3d.fromCoordinates ( 0, 0, 1 )
+        Point3d.meters 0 0 1
 
     p2 =
         Point3d.origin
 
     p3 =
-        Point3d.fromCoordinates ( 0, 1, 0 )
+        Point3d.meters 0 1 0
 
     Arc3d.throughPoints p1 p2 p3
     --> Just
     -->     (Arc3d.on SketchPlane3d.yz
-    -->         Point2d.fromCoordinates ( 0, 1 )
+    -->         Point2d.meters 0 1
     -->             |> Arc2d.sweptAround
     -->                 (Point2d.fromCoordinates
     -->                     ( 0.5, 0.5 )
@@ -291,7 +291,7 @@ radius (Types.Arc3d arc) =
 {-| Get the start point of an arc.
 
     Arc3d.startPoint exampleArc
-    --> Point3d.fromCoordinates ( 1, 1, 0 )
+    --> Point3d.meters 1 1 0
 
 -}
 startPoint : Arc3d units coordinates -> Point3d units coordinates
@@ -302,7 +302,7 @@ startPoint (Types.Arc3d arc) =
 {-| Get the end point of an arc.
 
     Arc3d.endPoint exampleArc
-    --> Point3d.fromCoordinates ( -1, 1, 0 )
+    --> Point3d.meters -1 1 0
 
 -}
 endPoint : Arc3d units coordinates -> Point3d units coordinates
@@ -313,7 +313,7 @@ endPoint arc =
 {-| Get the point along an arc at a given parameter value:
 
     Arc3d.pointOn exampleArc ParameterValue.half
-    --> Point3d.fromCoordinates ( 0, 1.4142, 0 )
+    --> Point3d.meters 0 1.4142 0
 
 -}
 pointOn : Arc3d units coordinates -> Float -> Point3d units coordinates
@@ -573,7 +573,7 @@ parameter value:
 
     Arc3d.sample nondegenerateExampleArc
         ParameterValue.zero
-    --> ( Point3d.fromCoordinates ( 1, 1, 0 )
+    --> ( Point3d.meters 1 1 0
     --> , Direction3d.fromAzimuthAndElevation
     -->     (degrees 135)
     -->     (degrees 0)
@@ -581,13 +581,13 @@ parameter value:
 
     Arc3d.sample nondegenerateExampleArc
         ParameterValue.half
-    --> ( Point3d.fromCoordinates ( 0, 1.4142, 0 )
+    --> ( Point3d.meters 0 1.4142 0
     --> , Direction3d.negativeX
     --> )
 
     Arc3d.sample nondegenerateExampleArc
         ParameterValue.one
-    --> ( Point3d.fromCoordinates ( -1, 1, 0 )
+    --> ( Point3d.meters -1 1 0
     --> , Direction3d.fromAzimuthAndElevation
     -->     (degrees 225)
     -->     (degrees 0)
@@ -629,10 +629,10 @@ numApproximationSegments maxError arc =
 
     exampleArc |> Arc3d.toPolyline { maxError = 0.1 }
     --> Polyline3d.fromVertices
-    -->     [ Point3d.fromCoordinates ( 1, 1, 0 )
-    -->     , Point3d.fromCoordinates ( 0.366, 1.366, 0 )
-    -->     , Point3d.fromCoordinates ( -0.366, 1.366, 0 )
-    -->     , Point3d.fromCoordinates ( -1, 1, 0 )
+    -->     [ Point3d.meters 1 1 0
+    -->     , Point3d.meters 0.366 1.366 0
+    -->     , Point3d.meters -0.366 1.366 0
+    -->     , Point3d.meters -1 1 0
     -->     ]
 
 In this example, every point on the returned polyline will be within 0.1 units
@@ -673,7 +673,7 @@ but a swept angle with the opposite sign.
     Arc3d.reverse exampleArc
     --> Arc3d.sweptAround Axis3d.z
     -->     (degrees -90)
-    -->     (Point3d.fromCoordinates ( -1, 1, 0 ))
+    -->     (Point3d.meters -1 1 0)
 
 -}
 reverse : Arc3d units coordinates -> Arc3d units coordinates
@@ -728,15 +728,15 @@ reverse ((Types.Arc3d arc) as arc_) =
 {-| Scale an arc about the given center point by the given scale.
 
     point =
-        Point3d.fromCoordinates ( 0, -1, 0 )
+        Point3d.meters 0 -1 0
 
     Arc3d.scaleAbout point 2 exampleArc
     --> Arc3d.sweptAround
     -->     (Axis3d.withDirection Direction3d.z
-    -->         (Point3d.fromCoordinates ( 0, 1, 0 ))
+    -->         (Point3d.meters 0 1 0)
     -->     )
     -->     (degrees 90)
-    -->     (Point3d.fromCoordinates ( 2, 3, 0 ))
+    -->     (Point3d.meters 2 3 0)
 
 -}
 scaleAbout : Point3d units coordinates -> Float -> Arc3d units coordinates -> Arc3d units coordinates
@@ -765,7 +765,7 @@ scaleAbout point scale (Types.Arc3d arc) =
     Arc3d.rotateAround Axis3d.x (degrees 90) exampleArc
     --> Arc3d.sweptAround (Axis3d.reverse Axis3d.y)
     -->     (degrees 90)
-    -->     (Point3d.fromCoordinates ( 1, 0, 1 ))
+    -->     (Point3d.meters 1 0 1)
 
 -}
 rotateAround : Axis3d units coordinates -> Angle -> Arc3d units coordinates -> Arc3d units coordinates
@@ -792,7 +792,7 @@ rotateAround rotationAxis angle (Types.Arc3d arc) =
     -->         (Point3d ( 2, 1, 3 ))
     -->     )
     -->     (degrees 90)
-    -->     (Point3d.fromCoordinates ( 3, 2, 3 ))
+    -->     (Point3d.meters 3 2 3)
 
 -}
 translateBy : Vector3d units coordinates -> Arc3d units coordinates -> Arc3d units coordinates
@@ -826,7 +826,7 @@ translateIn direction distance arc =
     Arc3d.mirrorAcross Plane3d.xy exampleArc
     --> Arc3d.sweptAround (Axis3d.reverse Axis3d.z)
     -->     (degrees -90)
-    -->     (Point3d.fromCoordinates ( 1, 1, 0 ))
+    -->     (Point3d.meters 1 1 0)
 
 Note that this flips the sign of the arc's swept angle.
 
@@ -848,7 +848,7 @@ mirrorAcross plane (Types.Arc3d arc) =
     axis : Axis3d
     axis =
         Axis3d.through
-            (Point3d.fromCoordinates ( 1, 2, 3 ))
+            (Point3d.meters 1 2 3)
             (Direction3d.fromAzimuthAndElevation
                 (degrees 0)
                 (degrees 45)
@@ -858,12 +858,12 @@ mirrorAcross plane (Types.Arc3d arc) =
     arc =
         Arc3d.sweptAround axis
             (degrees 45)
-            (Point3d.fromCoordinates ( 1, 4, 3 ))
+            (Point3d.meters 1 4 3)
 
     Arc3d.projectInto SketchPlane3d.xy arc
     --> EllipticalArc2d.with
     -->     { centerPoint =
-    -->         Point2d.fromCoordinates ( 1, 2 )
+    -->         Point2d.meters 1 2
     -->     , xDirection = Direction2d.y
     -->     , xRadius = 2
     -->     , yRadius = 1.4142
@@ -973,7 +973,7 @@ coordinates relative to a given reference frame.
 
     localFrame =
         Frame3d.atPoint
-            (Point3d.fromCoordinates ( 1, 2, 3 ))
+            (Point3d.meters 1 2 3)
 
     Arc3d.relativeTo localFrame exampleArc
     --> Arc3d.sweptAround
@@ -981,7 +981,7 @@ coordinates relative to a given reference frame.
     -->         (Point3d ( -1, -2, -3 ))
     -->     )
     -->     (degrees 90)
-    -->     (Point3d.fromCoordinates ( 0, -1, -3 ))
+    -->     (Point3d.meters 0 -1 -3)
 
 -}
 relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Arc3d units globalCoordinates -> Arc3d units localCoordinates
@@ -1012,15 +1012,15 @@ given reference frame, and return that arc expressed in global coordinates.
 
     localFrame =
         Frame3d.atPoint
-            (Point3d.fromCoordinates ( 1, 2, 3 ))
+            (Point3d.meters 1 2 3)
 
     Arc3d.placeIn localFrame exampleArc
     --> Arc3d.sweptAround
     -->     (Axis3d.withDirection Direction3d.z
-    -->         (Point3d.fromCoordinates ( 1, 2, 3 ))
+    -->         (Point3d.meters 1 2 3)
     -->     )
     -->     (degrees 90)
-    -->     (Point3d.fromCoordinates ( 2, 3, 3 ))
+    -->     (Point3d.meters 2 3 3)
 
 -}
 placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Arc3d units localCoordinates -> Arc3d units globalCoordinates

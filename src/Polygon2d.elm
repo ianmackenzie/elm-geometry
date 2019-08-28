@@ -134,10 +134,10 @@ makeInnerLoop vertices_ =
 
     rectangle =
         Polygon2d.singleLoop
-            [ Point2d.fromCoordinates ( 1, 1 )
-            , Point2d.fromCoordinates ( 3, 1 )
-            , Point2d.fromCoordinates ( 3, 2 )
-            , Point2d.fromCoordinates ( 1, 2 )
+            [ Point2d.meters 1 1
+            , Point2d.meters 3 1
+            , Point2d.meters 3 2
+            , Point2d.meters 1 2
             ]
 
 The last vertex is implicitly considered to be connected back to the first
@@ -155,17 +155,17 @@ singleLoop givenOuterLoop =
 loops. The loops must not touch or intersect each other.
 
     outerLoop =
-        [ Point2d.fromCoordinates ( 0, 0 )
-        , Point2d.fromCoordinates ( 3, 0 )
-        , Point2d.fromCoordinates ( 3, 3 )
-        , Point2d.fromCoordinates ( 0, 3 )
+        [ Point2d.meters 0 0
+        , Point2d.meters 3 0
+        , Point2d.meters 3 3
+        , Point2d.meters 0 3
         ]
 
     innerLoop =
-        [ Point2d.fromCoordinates ( 1, 1 )
-        , Point2d.fromCoordinates ( 1, 2 )
-        , Point2d.fromCoordinates ( 2, 2 )
-        , Point2d.fromCoordinates ( 2, 1 )
+        [ Point2d.meters 1 1
+        , Point2d.meters 1 2
+        , Point2d.meters 2 2
+        , Point2d.meters 2 1
         ]
 
     squareWithHole =
@@ -256,10 +256,10 @@ convexHull points =
 The vertices will be in counterclockwise order.
 
     Polygon2d.outerLoop squareWithHole
-    --> [ Point2d.fromCoordinates ( 0, 0 )
-    --> , Point2d.fromCoordinates ( 3, 0 )
-    --> , Point2d.fromCoordinates ( 3, 3 )
-    --> , Point2d.fromCoordinates ( 0, 3 )
+    --> [ Point2d.meters 0 0
+    --> , Point2d.meters 3 0
+    --> , Point2d.meters 3 3
+    --> , Point2d.meters 0 3
     --> ]
 
 -}
@@ -272,10 +272,10 @@ outerLoop (Types.Polygon2d polygon) =
 Each list of vertices will be in clockwise order.
 
     Polygon2d.innerLoops squareWithHole
-    --> [ [ Point2d.fromCoordinates ( 1, 1 )
-    -->   , Point2d.fromCoordinates ( 1, 2 )
-    -->   , Point2d.fromCoordinates ( 2, 2 )
-    -->   , Point2d.fromCoordinates ( 2, 1 )
+    --> [ [ Point2d.meters 1 1
+    -->   , Point2d.meters 1 2
+    -->   , Point2d.meters 2 2
+    -->   , Point2d.meters 2 1
     -->   ]
     --> ]
 
@@ -321,36 +321,36 @@ loopEdges vertices_ =
 
     Polygon2d.edges squareWithHole
     --> [ LineSegment2d.fromEndpoints
-    -->     ( Point2d.fromCoordinates ( 0, 0 )
-    -->     , Point2d.fromCoordinates ( 3, 0 )
+    -->     ( Point2d.meters 0 0
+    -->     , Point2d.meters 3 0
     -->     )
     --> , LineSegment2d.fromEndpoints
-    -->     ( Point2d.fromCoordinates ( 3, 0 )
-    -->     , Point2d.fromCoordinates ( 3, 3 )
+    -->     ( Point2d.meters 3 0
+    -->     , Point2d.meters 3 3
     -->     )
     --> , LineSegment2d.fromEndpoints
-    -->     ( Point2d.fromCoordinates ( 3, 3 )
-    -->     , Point2d.fromCoordinates ( 0, 3 )
+    -->     ( Point2d.meters 3 3
+    -->     , Point2d.meters 0 3
     -->     )
     --> , LineSegment2d.fromEndpoints
-    -->     ( Point2d.fromCoordinates ( 0, 3 )
-    -->     , Point2d.fromCoordinates ( 0, 0 )
+    -->     ( Point2d.meters 0 3
+    -->     , Point2d.meters 0 0
     -->     )
     --> , LineSegment2d.fromEndpoints
-    -->     ( Point2d.fromCoordinates ( 1, 1 )
-    -->     , Point2d.fromCoordinates ( 1, 2 )
+    -->     ( Point2d.meters 1 1
+    -->     , Point2d.meters 1 2
     -->     )
     --> , LineSegment2d.fromEndpoints
-    -->     ( Point2d.fromCoordinates ( 1, 2 )
-    -->     , Point2d.fromCoordinates ( 2, 2 )
+    -->     ( Point2d.meters 1 2
+    -->     , Point2d.meters 2 2
     -->     )
     --> , LineSegment2d.fromEndpoints
-    -->     ( Point2d.fromCoordinates ( 2, 2 )
-    -->     , Point2d.fromCoordinates ( 2, 1 )
+    -->     ( Point2d.meters 2 2
+    -->     , Point2d.meters 2 1
     -->     )
     --> , LineSegment2d.fromEndpoints
-    -->     ( Point2d.fromCoordinates ( 2, 1 )
-    -->     , Point2d.fromCoordinates ( 1, 1 )
+    -->     ( Point2d.meters 2 1
+    -->     , Point2d.meters 1 1
     -->     )
     --> ]
 
@@ -395,14 +395,14 @@ area polygon =
 {-| Scale a polygon about a given center point by a given scale.
 
     point =
-        Point2d.fromCoordinates ( 2, 1 )
+        Point2d.meters 2 1
 
     Polygon2d.scaleAbout point 2 rectangle
     --> Polygon2d.singleLoop
-    -->     [ Point2d.fromCoordinates ( 0, 1 )
-    -->     , Point2d.fromCoordinates ( 4, 1 )
-    -->     , Point2d.fromCoordinates ( 4, 3 )
-    -->     , Point2d.fromCoordinates ( 0, 3 )
+    -->     [ Point2d.meters 0 1
+    -->     , Point2d.meters 4 1
+    -->     , Point2d.meters 4 3
+    -->     , Point2d.meters 0 3
     -->     ]
 
 If the given scale is negative, the order of the polygon's vertices will be
@@ -422,10 +422,10 @@ angle (in radians).
         |> Polygon2d.rotateAround Point2d.origin
             (degrees 90)
     --> Polygon2d.singleLoop
-    -->     [ Point2d.fromCoordinates ( -1, 1 )
-    -->     , Point2d.fromCoordinates ( -1, 3 )
-    -->     , Point2d.fromCoordinates ( -2, 3 )
-    -->     , Point2d.fromCoordinates ( -2, 1 )
+    -->     [ Point2d.meters -1 1
+    -->     , Point2d.meters -1 3
+    -->     , Point2d.meters -2 3
+    -->     , Point2d.meters -2 1
     -->     ]
 
 -}
@@ -441,10 +441,10 @@ rotateAround point angle =
 
     Polygon2d.translateBy displacement rectangle
     --> Polygon2d.singleLoop
-    -->     [ Point2d.fromCoordinates ( 3, 4 )
-    -->     , Point2d.fromCoordinates ( 5, 4 )
-    -->     , Point2d.fromCoordinates ( 5, 5 )
-    -->     , Point2d.fromCoordinates ( 3, 5 )
+    -->     [ Point2d.meters 3 4
+    -->     , Point2d.meters 5 4
+    -->     , Point2d.meters 5 5
+    -->     , Point2d.meters 3 5
     -->     ]
 
 -}
@@ -472,10 +472,10 @@ translateIn direction distance polygon =
 
     Polygon2d.mirrorAcross Axis2d.x rectangle
     --> Polygon2d.singleLoop
-    -->     [ Point2d.fromCoordinates ( 1, -1 )
-    -->     , Point2d.fromCoordinates ( 3, -1 )
-    -->     , Point2d.fromCoordinates ( 3, -2 )
-    -->     , Point2d.fromCoordinates ( 1, -2 )
+    -->     [ Point2d.meters 1 -1
+    -->     , Point2d.meters 3 -1
+    -->     , Point2d.meters 3 -2
+    -->     , Point2d.meters 1 -2
     -->     ]
 
 The order of the polygon's vertices will be reversed so that the resulting
@@ -514,14 +514,14 @@ mapVertices function invert polygon =
 in local coordinates relative to a given reference frame.
 
     localFrame =
-        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.meters 1 2)
 
     Polygon2d.relativeTo localFrame rectangle
     --> Polygon2d.singleLoop
-    -->     [ Point2d.fromCoordinates ( 0, -1 )
-    -->     , Point2d.fromCoordinates ( 2, -1 )
-    -->     , Point2d.fromCoordinates ( 2, 0 )
-    -->     , Point2d.fromCoordinates ( 0, 0 )
+    -->     [ Point2d.meters 0 -1
+    -->     , Point2d.meters 2 -1
+    -->     , Point2d.meters 2 0
+    -->     , Point2d.meters 0 0
     -->     ]
 
 If the given frame is left-handed, the order of the polygon's vertices will be
@@ -539,14 +539,14 @@ to a given reference frame, and return that polygon expressed in global
 coordinates.
 
     localFrame =
-        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
+        Frame2d.atPoint (Point2d.meters 1 2)
 
     Polygon2d.placeIn localFrame rectangle
     --> Polygon2d.singleLoop
-    -->     [ Point2d.fromCoordinates ( 2, 3 )
-    -->     , Point2d.fromCoordinates ( 4, 3 )
-    -->     , Point2d.fromCoordinates ( 4, 4 )
-    -->     , Point2d.fromCoordinates ( 2, 4 )
+    -->     [ Point2d.meters 2 3
+    -->     , Point2d.meters 4 3
+    -->     , Point2d.meters 4 4
+    -->     , Point2d.meters 2 4
     -->     ]
 
 If the given frame is left-handed, the order of the polygon's vertices will be

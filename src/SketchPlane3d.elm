@@ -237,14 +237,14 @@ provided that specifies the origin point and X/Y directions of the new sketch
 plane, in 2D coordinates within the existing sketch plane. Whew!
 
     frame2d =
-        Frame2d.atPoint (Point2d.fromCoordinates ( 2, 3 ))
+        Frame2d.atPoint (Point2d.meters 2 3)
             |> Frame2d.rotateBy (degrees -30)
 
     sketchPlane =
         SketchPlane3d.on SketchPlane3d.yz frame2d
 
     SketchPlane3d.originPoint sketchPlane
-    --> Point3d.fromCoordinates ( 0, 2, 3 )
+    --> Point3d.meters 0 2 3
 
     SketchPlane3d.xDirection sketchPlane
     --> Direction3d.fromAzimuthAndElevation
@@ -311,7 +311,7 @@ directions:
     sketchPlane =
         SketchPlane3d.unsafe
             { originPoint =
-                Point3d.fromCoordinates ( 2, 1, 3 )
+                Point3d.meters 2 1 3
             , xDirection = Direction3d.positiveY
             , yDirection = Direction3d.negativeZ
             }
@@ -343,13 +343,13 @@ points. Returns a sketch plane where:
 If the three given points are collinear, returns `Nothing`.
 
     SketchPlane3d.throughPoints
-        (Point3d.fromCoordinates ( 2, 0, 0 ))
-        (Point3d.fromCoordinates ( 3, 0, 0 ))
-        (Point3d.fromCoordinates ( 4, 1, 1 ))
+        (Point3d.meters 2 0 0)
+        (Point3d.meters 3 0 0)
+        (Point3d.meters 4 1 1)
     --> Just sketchPlane
 
     SketchPlane3d.originPoint sketchPlane
-    --> Point3d.fromCoordinates ( 2, 0, 0 )
+    --> Point3d.meters 2 0 0
 
     SketchPlane3d.xDirection sketchPlane
     --> Direction3d.x
@@ -360,9 +360,9 @@ If the three given points are collinear, returns `Nothing`.
     -->     (degrees 45)
 
     SketchPlane3d.throughPoints
-        (Point3d.fromCoordinates ( 2, 0, 0 ))
-        (Point3d.fromCoordinates ( 3, 0, 0 ))
-        (Point3d.fromCoordinates ( 4, 0, 0 ))
+        (Point3d.meters 2 0 0)
+        (Point3d.meters 3 0 0)
+        (Point3d.meters 4 0 0)
     --> Nothing
 
 -}
@@ -528,11 +528,11 @@ distance.
 
     SketchPlane3d.offsetBy -2.0 SketchPlane3d.xy
         |> SketchPlane3d.originPoint
-    --> Point3d.fromCoordinates ( 0, 0, -2 )
+    --> Point3d.meters 0 0 -2
 
     SketchPlane3d.offsetBy 1.0 SketchPlane3d.zx
         |> SketchPlane3d.originPoint
-    --> Point3d.fromCoordinates ( 0, 1, 0 )
+    --> Point3d.meters 0 1 0
 
 -}
 offsetBy : Quantity Float units -> SketchPlane3d units coordinates defines1 -> SketchPlane3d units coordinates defines2
@@ -598,7 +598,7 @@ reverseY sketchPlane =
 its X and Y directions unchanged.
 
     newOrigin =
-        Point3d.fromCoordinates ( 2, 1, 3 )
+        Point3d.meters 2 1 3
 
     sketchPlane =
         SketchPlane3d.moveTo newOrigin SketchPlane3d.yz
@@ -662,7 +662,7 @@ transformations. For example,
                 (degrees -45)
 
     SketchPlane3d.originPoint sketchPlane
-    --> Point3d.fromCoordinates ( 1, 0, 0 )
+    --> Point3d.meters 1 0 0
 
     SketchPlane3d.xDirection sketchPlane
     --> Direction3d.fromAzimuthAndElevation
@@ -692,7 +692,7 @@ rotateAroundOwn axis angle sketchPlane =
             |> SketchPlane3d.translateBy displacement
 
     SketchPlane3d.originPoint sketchPlane
-    --> Point3d.fromCoordinates ( 2, 1, 3 )
+    --> Point3d.meters 2 1 3
 
     SketchPlane3d.xDirection sketchPlane
     --> Direction3d.x
@@ -748,7 +748,7 @@ means 'take the global XY sketch plane, rotate it around the global X axis by
 resulting in
 
     SketchPlane3d.originPoint sketchPlane
-    --> Point3d.fromCoordinates ( 0, 1.4142, 1.4142 )
+    --> Point3d.meters 0 1.4142 1.4142
 
     SketchPlane3d.xDirection sketchPlane
     --> Direction3d.x

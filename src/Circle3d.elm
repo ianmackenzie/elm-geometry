@@ -75,7 +75,7 @@ type alias Circle3d units coordinates =
     exampleCircle =
         Circle3d.withRadius 3
             Direction3d.z
-            (Point3d.fromCoordinates ( 2, 0, 1 ))
+            (Point3d.meters 2 0 1)
 
 If you pass a negative radius, the absolute value will be used.
 
@@ -92,10 +92,10 @@ withRadius givenRadius givenAxialDirection givenCenterPoint =
 {-| Construct a circle by sweeping the given point around the given axis.
 
     Circle3d.sweptAround Axis3d.z
-        (Point3d.fromCoordinates ( 3, 0, 2 ))
+        (Point3d.meters 3 0 2)
     --> Circle3d.withRadius 3
     -->     Direction3d.z
-    -->     (Point3d.fromCoordinates ( 0, 0, 2 ))
+    -->     (Point3d.meters 0 0 2)
 
 -}
 sweptAround : Axis3d units coordinates -> Point3d units coordinates -> Circle3d units coordinates
@@ -115,11 +115,11 @@ specified in XY coordinates _within_ the sketch plane.
 
     Circle3d.on SketchPlane3d.yz <|
         Circle2d.withRadius 3
-            (Point2d.fromCoordinates ( 1, 2 ))
+            (Point2d.meters 1 2)
 
     --> Circle3d.withRadius 3
     -->     Direction3d.x
-    -->     (Point3d.fromCoordinates ( 0, 1, 2 ))
+    -->     (Point3d.meters 0 1 2)
 
 -}
 on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Circle2d units coordinates2d -> Circle3d units coordinates3d
@@ -135,9 +135,9 @@ are in counterclockwise order around it, according to the right-hand rule. If
 the three given points are collinear, returns `Nothing`.
 
     Circle3d.throughPoints
-        (Point3d.fromCoordinates ( 1, 0, 0 ))
-        (Point3d.fromCoordinates ( 0, 1, 0 ))
-        (Point3d.fromCoordinates ( 0, 0, 1 ))
+        (Point3d.meters 1 0 0)
+        (Point3d.meters 0 1 0)
+        (Point3d.meters 0 0 1)
     --> Just
     -->     (Circle3d.withRadius 0.8165
     -->         (Direction3d.fromAzimuthAndElevation
@@ -179,7 +179,7 @@ throughPoints p1 p2 p3 =
 {-| Get the center point of a circle.
 
     Circle3d.centerPoint exampleCircle
-    --> Point3d.fromCoordinates ( 2, 0, 1 )
+    --> Point3d.meters 2 0 1
 
 -}
 centerPoint : Circle3d units coordinates -> Point3d units coordinates
@@ -203,7 +203,7 @@ The origin point of the returned axis will be the center point of the circle.
 
     Circle3d.axis exampleCircle
     --> Axis3d.withDirection Direction3d.z
-    -->     (Point3d.fromCoordinates ( 2, 0, 1 ))
+    -->     (Point3d.meters 2 0 1)
 
 -}
 axis : Circle3d units coordinates -> Axis3d units coordinates
@@ -217,7 +217,7 @@ axial direction of the circle.
 
     Circle3d.plane exampleCircle
     --> Plane3d.withNormalDirection Direction3d.z
-    -->     (Point3d.fromCoordinates ( 2, 0, 1 ))
+    -->     (Point3d.meters 2 0 1)
 
 -}
 plane : Circle3d units coordinates -> Plane3d units coordinates
@@ -274,7 +274,7 @@ circumference circle =
     Circle3d.scaleAbout Point3d.origin 3 exampleCircle
     --> Circle3d.withRadius 3
     -->     Direction3d.z
-    -->     (Point3d.fromCoordinates ( 6, 0, 3 ))
+    -->     (Point3d.meters 6 0 3)
 
 -}
 scaleAbout : Point3d units coordinates -> Float -> Circle3d units coordinates -> Circle3d units coordinates
@@ -295,7 +295,7 @@ scaleAbout point scale circle =
         |> Circle3d.rotateAround Axis3d.y (degrees 90)
     --> Circle3d.withRadius 3
     -->     Direction3d.x
-    -->     (Point3d.fromCoordinates ( 1, 0, -2 ))
+    -->     (Point3d.meters 1 0 -2)
 
 -}
 rotateAround : Axis3d units coordinates -> Angle -> Circle3d units coordinates -> Circle3d units coordinates
@@ -313,7 +313,7 @@ rotateAround givenAxis givenAngle circle =
     Circle3d.translateBy displacement exampleCircle
     --> Circle3d.withRadius 3
     -->     Direction3d.z
-    -->     (Point3d.fromCoordinates ( 4, 1, 4 ))
+    -->     (Point3d.meters 4 1 4)
 
 -}
 translateBy : Vector3d units coordinates -> Circle3d units coordinates -> Circle3d units coordinates
@@ -343,7 +343,7 @@ translateIn direction distance circle =
     Circle3d.mirrorAcross Plane3d.xy exampleCircle
     --> Circle3d.withRadius 3
     -->     Direction3d.negativeZ
-    -->     (Point3d.fromCoordinates ( 2, 0, -1 ))
+    -->     (Point3d.meters 2 0 -1)
 
 -}
 mirrorAcross : Plane3d units coordinates -> Circle3d units coordinates -> Circle3d units coordinates
@@ -362,12 +362,12 @@ mirrorAcross mirrorPlane circle =
                 (degrees 0)
                 (degrees 45)
             )
-            (Point3d.fromCoordinates ( 1, 2, 3 ))
+            (Point3d.meters 1 2 3)
 
     Circle3d.projectInto SketchPlane3d.xy inclinedCircle
     --> Ellipse2d.with
     -->     { centerPoint =
-    -->         Point2d.fromCoordinates ( 1, 2 )
+    -->         Point2d.meters 1 2
     -->     , xDirection = Direction2d.negativeY
     -->     , xRadius = 1
     -->     , yRadius = 0.7071
@@ -422,12 +422,12 @@ local coordinates relative to a given reference frame.
 
     localFrame =
         Frame3d.atPoint
-            (Point3d.fromCoordinates ( 1, 2, 3 ))
+            (Point3d.meters 1 2 3)
 
     Circle3d.relativeTo localFrame exampleCircle
     --> Circle3d.withRadius 3
     -->     Direction3d.z
-    -->     (Point3d.fromCoordinates ( 1, -2, -2 ))
+    -->     (Point3d.meters 1 -2 -2)
 
 -}
 relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Circle3d units globalCoordinates -> Circle3d units localCoordinates
@@ -442,12 +442,12 @@ given reference frame, and return that circle expressed in global coordinates.
 
     localFrame =
         Frame3d.atPoint
-            (Point3d.fromCoordinates ( 1, 2, 3 ))
+            (Point3d.meters 1 2 3)
 
     Circle3d.placeIn localFrame exampleCircle
     --> Circle3d.withRadius 3
     -->     Direction3d.z
-    -->     (Point3d.fromCoordinates ( 3, 2, 4 ))
+    -->     (Point3d.meters 3 2 4)
 
 -}
 placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Circle3d units localCoordinates -> Circle3d units globalCoordinates
