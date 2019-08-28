@@ -1,6 +1,5 @@
 module Tests.Rectangle2d exposing
     ( containmentIsConsistent
-    , edgesAreConsistent
     , verticesAreConsistent
     )
 
@@ -119,41 +118,8 @@ verticesAreConsistent =
                 )
     in
     Test.describe "Vertices are consistent through transformation"
-        [ testVertex "Bottom left" Rectangle2d.bottomLeftVertex
-        , testVertex "Bottom right" Rectangle2d.bottomRightVertex
-        , testVertex "Top left" Rectangle2d.topLeftVertex
-        , testVertex "Top right" Rectangle2d.topRightVertex
-        ]
-
-
-edgesAreConsistent : Test
-edgesAreConsistent =
-    let
-        testEdge description accessor =
-            Test.fuzz2
-                transformationFuzzer
-                Fuzz.rectangle2d
-                description
-                (\transformation rectangle ->
-                    let
-                        edge =
-                            accessor rectangle
-
-                        transformedRectangle =
-                            transformation.rectangle rectangle
-
-                        transformedEdge =
-                            transformation.lineSegment edge
-
-                        edgeOfTransformed =
-                            accessor transformedRectangle
-                    in
-                    edgeOfTransformed |> Expect.lineSegment2d transformedEdge
-                )
-    in
-    Test.describe "Edges are consistent through transformation"
-        [ testEdge "Bottom" Rectangle2d.bottomEdge
-        , testEdge "Top" Rectangle2d.topEdge
-        , testEdge "Left" Rectangle2d.leftEdge
-        , testEdge "Right" Rectangle2d.rightEdge
+        [ testVertex "Bottom left" (\rectangle -> Rectangle2d.interpolate rectangle 0 0)
+        , testVertex "Bottom right" (\rectangle -> Rectangle2d.interpolate rectangle 1 0)
+        , testVertex "Top left" (\rectangle -> Rectangle2d.interpolate rectangle 1 1)
+        , testVertex "Top right" (\rectangle -> Rectangle2d.interpolate rectangle 0 1)
         ]

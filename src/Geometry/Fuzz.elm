@@ -381,6 +381,6 @@ rectangle2d : Fuzzer (Rectangle2d coordinates)
 rectangle2d =
     let
         rectangle frame width height =
-            Rectangle2d.centeredOn frame ( width, height )
+            Rectangle2d.withAxes frame ( width, height )
     in
     Fuzz.map3 rectangle frame2d positiveLength positiveLength
