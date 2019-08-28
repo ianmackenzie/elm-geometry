@@ -810,8 +810,11 @@ boundingBox rectangle =
 For example, the four vertices of a given rectangle are
 
     Rectangle2d.interpolate rectangle 0 0
+
     Rectangle2d.interpolate rectangle 1 0
+
     Rectangle2d.interpolate rectangle 1 1
+
     Rectangle2d.interpolate rectangle 0 1
 
 and its center point is
