@@ -7,7 +7,7 @@
 --------------------------------------------------------------------------------
 
 
-module PolygonTriangulation exposing (main)
+module DelaunayTriangulation exposing (main)
 
 import Array exposing (Array)
 import Benchmark exposing (Benchmark)
