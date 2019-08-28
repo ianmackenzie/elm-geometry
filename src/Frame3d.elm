@@ -51,24 +51,24 @@ direction but the specific X/Y directions are unimportant:
 
     zDirection =
         Direction3d.fromAzimuthAndElevation
-            (degrees 0)
-            (degrees 60)
+            (Angle.degrees 0)
+            (Angle.degrees 60)
 
     frame =
         Frame3d.withZDirection zDirection Point3d.origin
 
     Frame3d.zDirection frame
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 0)
-    -->     (degrees 60)
+    -->     (Angle.degrees 0)
+    -->     (Angle.degrees 60)
 
     Frame3d.originPoint frame
     --> Point3d.origin
 
     Frame3d.xDirection frame
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 0)
-    -->     (degrees -30)
+    -->     (Angle.degrees 0)
+    -->     (Angle.degrees -30)
 
     Frame3d.yDirection frame
     --> Direction3d.y
@@ -634,7 +634,7 @@ origin point and basis directions will all be rotated around the given axis.
             (Point3d.meters 2 1 3)
 
     rotatedFrame =
-        Frame3d.rotateAround Axis3d.z (degrees 90) frame
+        Frame3d.rotateAround Axis3d.z (Angle.degrees 90) frame
 
     Frame3d.originPoint rotatedFrame
     --> Point3d.meters -1 2 3
@@ -673,7 +673,7 @@ for `rotateAround`:
     rotatedFrame =
         frame
             |> Frame3d.rotateAroundOwn Frame3d.zAxis
-                (degrees 90)
+                (Angle.degrees 90)
 
     Frame3d.originPoint rotatedFrame
     --> Point3d.meters 2 1 3
@@ -755,7 +755,7 @@ transformations. For example,
     frame =
         Frame3d.atPoint point
             |> Frame3d.rotateAroundOwn Frame3d.zAxis
-                (degrees 45)
+                (Angle.degrees 45)
             |> Frame3d.translateAlongOwn Frame3d.xAxis 2
 
 means "construct a frame at the point (2, 0, 0), rotate it around its own Z axis
@@ -767,13 +767,13 @@ by 2 units", resulting in
 
     Frame3d.xDirection frame
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 45)
-    -->     (degrees 0)
+    -->     (Angle.degrees 45)
+    -->     (Angle.degrees 0)
 
     Frame3d.yDirection frame
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 135)
-    -->     (degrees 0)
+    -->     (Angle.degrees 135)
+    -->     (Angle.degrees 0)
 
     Frame3d.zDirection frame
     --> Direction3d.z

@@ -135,22 +135,22 @@ specified in XY coordinates _within_ the sketch plane.
 
     axis2d =
         Axis2d.through (Point2d.meters 1 3)
-            (Direction2d.fromAngle (degrees 30))
+            (Direction2d.fromAngle (Angle.degrees 30))
 
     Axis3d.on SketchPlane3d.xy axis2d
     --> Axis3d.through
     -->     (Point3d.meters 1 3 0)
     -->     (Direction3d.fromAzimuthAndElevation
-    -->         (degrees 30)
-    -->         (degrees 0)
+    -->         (Angle.degrees 30)
+    -->         (Angle.degrees 0)
     -->     )
 
     Axis3d.on SketchPlane3d.zx axis2d
     --> Axis3d.through
     -->     (Point3d.meters 3 0 1)
     -->     (Direction3d.fromAzimuthAndElevation
-    -->         (degrees 0)
-    -->         (degrees 60)
+    -->         (Angle.degrees 0)
+    -->         (Angle.degrees 60)
     -->     )
 
 -}
@@ -212,7 +212,7 @@ moveTo newOrigin (Types.Axis3d axis) =
 {-| Rotate an axis around another axis by a given angle. The axis to rotate
 around is given first and the axis to rotate is given last.
 
-    Axis3d.rotateAround Axis3d.z (degrees 90) exampleAxis
+    Axis3d.rotateAround Axis3d.z (Angle.degrees 90) exampleAxis
     --> Axis3d.withDirection Direction3d.negativeX
     -->     (Point3d.meters -2 1 3)
 

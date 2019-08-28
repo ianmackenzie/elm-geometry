@@ -201,8 +201,8 @@ directions are unimportant.
     sketchPlane =
         SketchPlane3d.withNormalDirection
             (Direction3d.fromAzimuthAndElevation
-                (degrees 0)
-                (degrees 60)
+                (Angle.degrees 0)
+                (Angle.degrees 60)
             )
             Point3d.origin
 
@@ -211,8 +211,8 @@ directions are unimportant.
 
     SketchPlane3d.xDirection sketchPlane
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 0)
-    -->     (degrees -30)
+    -->     (Angle.degrees 0)
+    -->     (Angle.degrees -30)
 
     SketchPlane3d.yDirection sketchPlane
     --> Direction3d.y
@@ -238,7 +238,7 @@ plane, in 2D coordinates within the existing sketch plane. Whew!
 
     frame2d =
         Frame2d.atPoint (Point2d.meters 2 3)
-            |> Frame2d.rotateBy (degrees -30)
+            |> Frame2d.rotateBy (Angle.degrees -30)
 
     sketchPlane =
         SketchPlane3d.on SketchPlane3d.yz frame2d
@@ -248,13 +248,13 @@ plane, in 2D coordinates within the existing sketch plane. Whew!
 
     SketchPlane3d.xDirection sketchPlane
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 90)
-    -->     (degrees -30)
+    -->     (Angle.degrees 90)
+    -->     (Angle.degrees -30)
 
     SketchPlane3d.yDirection sketchPlane
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 90)
-    -->     (degrees 60)
+    -->     (Angle.degrees 90)
+    -->     (Angle.degrees 60)
 
 -}
 on :
@@ -356,8 +356,8 @@ If the three given points are collinear, returns `Nothing`.
 
     SketchPlane3d.yDirection sketchPlane
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 90)
-    -->     (degrees 45)
+    -->     (Angle.degrees 90)
+    -->     (Angle.degrees 45)
 
     SketchPlane3d.throughPoints
         (Point3d.meters 2 0 0)
@@ -627,7 +627,7 @@ sketch plane's origin point and X and Y directions will all be rotated around
 the given axis.
 
     SketchPlane3d.xy
-        |> SketchPlane3d.rotateAround Axis3d.x (degrees 90)
+        |> SketchPlane3d.rotateAround Axis3d.x (Angle.degrees 90)
     --> SketchPlane3d.xz
 
 -}
@@ -659,15 +659,15 @@ transformations. For example,
                 (Vector3d.fromComponents ( 1, 0, 0 ))
             |> SketchPlane3d.rotateAroundOwn
                 SketchPlane3d.yAxis
-                (degrees -45)
+                (Angle.degrees -45)
 
     SketchPlane3d.originPoint sketchPlane
     --> Point3d.meters 1 0 0
 
     SketchPlane3d.xDirection sketchPlane
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 0)
-    -->     (degrees 45)
+    -->     (Angle.degrees 0)
+    -->     (Angle.degrees 45)
 
     SketchPlane3d.yDirection sketchPlane
     --> Direction3d.y
@@ -738,7 +738,7 @@ transformations. For example,
         SketchPlane3d.xy
             |> SketchPlane3d.rotateAround
                 Axis3d.x
-                (degrees 45)
+                (Angle.degrees 45)
             |> SketchPlane3d.translateAlongOwn
                 SketchPlane3d.yAxis
                 2
@@ -755,8 +755,8 @@ resulting in
 
     SketchPlane3d.yDirection sketchPlane
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 90)
-    -->     (degrees 45)
+    -->     (Angle.degrees 90)
+    -->     (Angle.degrees 45)
 
 -}
 translateAlongOwn : (SketchPlane3d units coordinates defines1 -> Axis3d units coordinates) -> Quantity Float units -> SketchPlane3d units coordinates defines1 -> SketchPlane3d units coordinates defines2

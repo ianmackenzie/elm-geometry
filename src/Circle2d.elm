@@ -234,7 +234,7 @@ circumference circle =
     --> Point2d.meters 4 2
     -->     |> Arc2d.sweptAround
     -->         (Point2d.meters 1 2)
-    -->         (degrees 360)
+    -->         (Angle.degrees 360)
 
 -}
 toArc : Circle2d units coordinates -> Arc2d units coordinates
@@ -294,7 +294,7 @@ scaleAbout point scale (Types.Circle2d circle) =
 
     exampleCircle
         |> Circle2d.rotateAround Point2d.origin
-            (degrees 90)
+            (Angle.degrees 90)
     --> Circle2d.withRadius 3
     -->     (Point2d.meters -2 1)
 

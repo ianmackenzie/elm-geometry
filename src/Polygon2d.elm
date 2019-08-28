@@ -420,7 +420,7 @@ angle (in radians).
 
     rectangle
         |> Polygon2d.rotateAround Point2d.origin
-            (degrees 90)
+            (Angle.degrees 90)
     --> Polygon2d.singleLoop
     -->     [ Point2d.meters -1 1
     -->     , Point2d.meters -1 3

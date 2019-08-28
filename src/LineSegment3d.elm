@@ -315,8 +315,8 @@ line segment has zero length (the start and end points are the same), returns
     LineSegment3d.direction exampleLineSegment
     --> Just
     -->     (Direction3d.fromAzimuthAndElevation
-    -->         (degrees 45)
-    -->         (degrees 35.26)
+    -->         (Angle.degrees 45)
+    -->         (Angle.degrees 35.26)
     -->     )
 
 -}
@@ -331,8 +331,8 @@ segment has zero length, returns `Nothing`.
     LineSegment3d.perpendicularDirection exampleLineSegment
     --> Just
     -->     (Direction3d.fromAzimuthAndElevation
-    -->         (degrees -90)
-    -->         (degrees 45)
+    -->         (Angle.degrees -90)
+    -->         (Angle.degrees 45)
     -->     )
 
 -}
@@ -376,7 +376,7 @@ scaleAbout point scale lineSegment =
 {-| Rotate a line segment around a given axis by a given angle (in radians).
 
     exampleLineSegment
-        |> LineSegment3d.rotateAround Axis3d.z (degrees 90)
+        |> LineSegment3d.rotateAround Axis3d.z (Angle.degrees 90)
     --> LineSegment3d.fromEndpoints
     -->     ( Point3d.meters -2 1 3
     -->     , Point3d.meters -5 4 6

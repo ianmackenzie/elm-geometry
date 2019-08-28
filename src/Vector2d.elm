@@ -119,7 +119,7 @@ orientations of the relevant frames, not the positions of their origin points.
 For the examples, assume the following frame has been defined:
 
     rotatedFrame =
-        Frame2d.atOrigin |> Frame2d.rotateBy (degrees 30)
+        Frame2d.atOrigin |> Frame2d.rotateBy (Angle.degrees 30)
 
 @docs relativeTo, placeIn
 
@@ -750,7 +750,7 @@ length (Types.Vector2d v) =
 return `Nothing`.
 
     Vector2d.direction (Vector2d.fromComponents ( 3, 3 ))
-    --> Just (Direction2d.fromAngle (degrees 45))
+    --> Just (Direction2d.fromAngle (Angle.degrees 45))
 
     Vector2d.direction Vector2d.zero
     --> Nothing
@@ -986,7 +986,7 @@ scaleBy k (Types.Vector2d v) =
 {-| Rotate a vector counterclockwise by a given angle (in radians).
 
     Vector2d.fromComponents ( 1, 1 )
-        |> Vector2d.rotateBy (degrees 45)
+        |> Vector2d.rotateBy (Angle.degrees 45)
     --> Vector2d.fromComponents ( 0, 1.4142 )
 
     Vector2d.fromComponents ( 1, 0 )
@@ -1015,7 +1015,7 @@ rotateBy (Quantity theta) (Types.Vector2d v) =
 
 is equivalent to
 
-    Vector2d.rotateBy (degrees 90) vector
+    Vector2d.rotateBy (Angle.degrees 90) vector
 
 but is more efficient.
 
@@ -1034,7 +1034,7 @@ rotateCounterclockwise (Types.Vector2d v) =
 
 is equivalent to
 
-    Vector2d.rotateBy (degrees -90) vector
+    Vector2d.rotateBy (Angle.degrees -90) vector
 
 but is more efficient.
 

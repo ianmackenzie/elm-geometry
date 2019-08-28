@@ -78,7 +78,7 @@ If you pass a negative radius, the absolute value will be used.
             { centerPoint =
                 Point2d.meters 10 10
             , xDirection =
-                Direction2d.fromAngle (degrees 30)
+                Direction2d.fromAngle (Angle.degrees 30)
             , xRadius = 5
             , yRadius = 3
             }
@@ -115,7 +115,7 @@ centerPoint ellipse =
 
     Ellipse2d.axes exampleEllipse
     --> Frame2d.withXDirection
-    -->     (Direction2d.fromAngle (degrees 30))
+    -->     (Direction2d.fromAngle (Angle.degrees 30))
     -->     (Point2d.meters 10 10)
 
 -}
@@ -129,7 +129,7 @@ axes (Types.Ellipse2d ellipse) =
     Ellipse2d.xAxis exampleEllipse
     --> Axis2d.through
     -->     (Point2d.meters 10 10)
-    -->     (Direction2d.fromAngle (degrees 30))
+    -->     (Direction2d.fromAngle (Angle.degrees 30))
 
 -}
 xAxis : Ellipse2d units coordinates -> Axis2d units coordinates
@@ -142,7 +142,7 @@ xAxis ellipse =
     Ellipse2d.yAxis exampleEllipse
     --> Axis2d.through
     -->     (Point2d.meters 10 10)
-    -->     (Direction2d.fromAngle (degrees 120))
+    -->     (Direction2d.fromAngle (Angle.degrees 120))
 
 -}
 yAxis : Ellipse2d units coordinates -> Axis2d units coordinates
@@ -177,7 +177,7 @@ yRadius (Types.Ellipse2d ellipse) =
 {-| Get the direction of the ellipse's X axis.
 
     Ellipse2d.xDirection exampleEllipse
-    --> Direction2d.fromAngle (degrees 30)
+    --> Direction2d.fromAngle (Angle.degrees 30)
 
 -}
 xDirection : Ellipse2d units coordinates -> Direction2d coordinates
@@ -188,7 +188,7 @@ xDirection ellipse =
 {-| Get the direction of an ellipse's Y axis.
 
     Ellipse2d.yDirection exampleEllipse
-    --> Direction2d.fromAngle (degrees 120)
+    --> Direction2d.fromAngle (Angle.degrees 120)
 
 -}
 yDirection : Ellipse2d units coordinates -> Direction2d coordinates
@@ -226,7 +226,7 @@ toEllipticalArc ellipse =
     -->     { centerPoint =
     -->         Point2d.meters 30 30
     -->     , xDirection =
-    -->         Direction2d.fromAngle (degrees 30)
+    -->         Direction2d.fromAngle (Angle.degrees 30)
     -->     , xRadius = 15
     -->     , yRadius = 9
     -->     }
@@ -273,12 +273,12 @@ transformBy axesTransformation (Types.Ellipse2d properties) =
 
     exampleEllipse
         |> Ellipse2d.rotateAround Point2d.origin
-            (degrees 45)
+            (Angle.degrees 45)
     --> Ellipse2d.with
     -->     { centerPoint =
     -->         Point2d.meters 0 14.142
     -->     , xDirection =
-    -->         Direction2d.fromAngle (degrees 75)
+    -->         Direction2d.fromAngle (Angle.degrees 75)
     -->     , xRadius = 5
     -->     , yRadius = 3
     -->     }
@@ -298,7 +298,7 @@ rotateAround point angle ellipse =
     -->     { centerPoint =
     -->         Point2d.meters 15 20
     -->     , xDirection =
-    -->         Direction2d.fromAngle (degrees 30)
+    -->         Direction2d.fromAngle (Angle.degrees 30)
     -->     , xRadius = 5
     -->     , yRadius = 3
     -->     }
@@ -333,10 +333,10 @@ translateIn direction distance ellipse =
     --> Point2d.meters 10 -10
 
     Ellipse2d.xDirection mirroredEllipse
-    --> Direction2d.fromAngle (degrees -30)
+    --> Direction2d.fromAngle (Angle.degrees -30)
 
     Ellipse2d.yDirection mirroredEllipse
-    --> Direction2d.fromAngle (degrees -120)
+    --> Direction2d.fromAngle (Angle.degrees -120)
 
 Note that if the axes of the original ellipse form a [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 frame, then the axes of the mirrored ellipse will form a left-handed frame (and
@@ -359,7 +359,7 @@ local coordinates relative to a given reference frame.
     -->     { centerPoint =
     -->         Point2d.meters -5 5
     -->     , xDirection =
-    -->         Direction2d.fromAngle (degrees 30)
+    -->         Direction2d.fromAngle (Angle.degrees 30)
     -->     , xRadius = 5
     -->     , yRadius = 3
     -->     }
@@ -381,7 +381,7 @@ given reference frame, and return that circle expressed in global coordinates.
     -->     { centerPoint =
     -->         Point2d.meters 25 15
     -->     , xDirection =
-    -->         Direction2d.fromAngle (degrees 30)
+    -->         Direction2d.fromAngle (Angle.degrees 30)
     -->     , xRadius = 5
     -->     , yRadius = 3
     -->     }

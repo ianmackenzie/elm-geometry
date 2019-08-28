@@ -230,7 +230,7 @@ line segment has zero length (the start and end points are the same), returns
 `Nothing`.
 
     LineSegment2d.direction exampleLineSegment
-    --> Just (Direction2d.fromAngle (degrees 45))
+    --> Just (Direction2d.fromAngle (Angle.degrees 45))
 
 -}
 direction : LineSegment2d units coordinates -> Maybe (Direction2d coordinates)
@@ -242,7 +242,7 @@ direction =
 the line segment has zero length, returns `Nothing`.
 
     LineSegment2d.perpendicularDirection exampleLineSegment
-    --> Just (Direction2d.fromAngle (degrees 135))
+    --> Just (Direction2d.fromAngle (Angle.degrees 135))
 
 -}
 perpendicularDirection : LineSegment2d units coordinates -> Maybe (Direction2d coordinates)
@@ -501,7 +501,7 @@ given angle (in radians).
 
     exampleLineSegment
         |> LineSegment2d.rotateAround Point2d.origin
-            (degrees 90)
+            (Angle.degrees 90)
     --> LineSegment2d.fromEndpoints
     -->     ( Point2d.meters -2 1
     -->     , Point2d.meters -4 3

@@ -141,8 +141,8 @@ the three given points are collinear, returns `Nothing`.
     --> Just
     -->     (Circle3d.withRadius 0.8165
     -->         (Direction3d.fromAzimuthAndElevation
-    -->             (degrees 45)
-    -->             (degrees 35.26)
+    -->             (Angle.degrees 45)
+    -->             (Angle.degrees 35.26)
     -->         )
     -->         (Point3d.fromCoordinates
     -->             ( 0.333, 0.333, 0.333 )
@@ -292,7 +292,7 @@ scaleAbout point scale circle =
 {-| Rotate a circle around a given axis by a given angle (in radians).
 
     exampleCircle
-        |> Circle3d.rotateAround Axis3d.y (degrees 90)
+        |> Circle3d.rotateAround Axis3d.y (Angle.degrees 90)
     --> Circle3d.withRadius 3
     -->     Direction3d.x
     -->     (Point3d.meters 1 0 -2)
@@ -359,8 +359,8 @@ mirrorAcross mirrorPlane circle =
     inclinedCircle =
         Circle3d.withRadius 1
             (Direction3d.fromAzimuthAndElevation
-                (degrees 0)
-                (degrees 45)
+                (Angle.degrees 0)
+                (Angle.degrees 45)
             )
             (Point3d.meters 1 2 3)
 

@@ -263,7 +263,7 @@ scaleAbout point scale sphere =
 {-| Rotate a sphere around a given axis by a given angle (in radians).
 
     exampleSphere
-        |> Sphere3d.rotateAround Axis3d.y (degrees 90)
+        |> Sphere3d.rotateAround Axis3d.y (Angle.degrees 90)
     --> Sphere3d.withRadius 3
     -->     (Point3d.meters 1 2 -1)
 

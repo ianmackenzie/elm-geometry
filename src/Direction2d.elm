@@ -80,7 +80,7 @@ For the examples, assume the following frames have been defined:
             }
 
     rotatedFrame =
-        Frame2d.atOrigin |> Frame2d.rotateBy (degrees 30)
+        Frame2d.atOrigin |> Frame2d.rotateBy (Angle.degrees 30)
 
 @docs relativeTo, placeIn
 
@@ -201,10 +201,10 @@ If the two points are coincident, returns `Nothing`.
         Point2d.meters 1 1
 
     Direction2d.from Point2d.origin point
-    --> Just (Direction2d.fromAngle (degrees 45))
+    --> Just (Direction2d.fromAngle (Angle.degrees 45))
 
     Direction2d.from point Point2d.origin
-    --> Just (Direction2d.fromAngle (degrees -135))
+    --> Just (Direction2d.fromAngle (Angle.degrees -135))
 
     Direction2d.from point point
     --> Nothing
@@ -249,8 +249,8 @@ returns `Nothing`.
         (Vector2d.fromComponents ( 3, 3 ))
         (Vector2d.fromComponents ( 0, -2 ))
     --> Just
-    -->     ( Direction2d.fromAngle (degrees 45)
-    -->     , Direction2d.fromAngle (degrees -45)
+    -->     ( Direction2d.fromAngle (Angle.degrees 45)
+    -->     , Direction2d.fromAngle (Angle.degrees -45)
     -->     )
 
     Direction2d.orthonormalize
@@ -306,10 +306,10 @@ the positive X direction.
     Direction2d.fromAngle 0
     --> Direction2d.x
 
-    Direction2d.fromAngle (degrees 90)
+    Direction2d.fromAngle (Angle.degrees 90)
     --> Direction2d.y
 
-    Direction2d.fromAngle (degrees -90)
+    Direction2d.fromAngle (Angle.degrees -90)
     --> Direction2d.negativeY
 
 -}
@@ -343,7 +343,7 @@ toAngle (Types.Direction2d d) =
 second. The result will be in the range -π to π.
 
     referenceDirection =
-        Direction2d.fromAngle (degrees 30)
+        Direction2d.fromAngle (Angle.degrees 30)
 
     Direction2d.angleFrom referenceDirection Direction2d.y
     --> degrees 60
@@ -397,7 +397,7 @@ the cosine of the angle between the directions, or equivalently the dot product
 of the two directions converted to unit vectors.
 
     direction =
-        Direction2d.fromAngle (degrees 60)
+        Direction2d.fromAngle (Angle.degrees 60)
 
     Direction2d.componentIn Direction2d.x direction
     --> 0.5
@@ -428,17 +428,17 @@ absolute value of the angle between the two given directions is less than the
 given tolerance.
 
     firstDirection =
-        Direction2d.fromAngle (degrees 45)
+        Direction2d.fromAngle (Angle.degrees 45)
 
     secondDirection =
-        Direction2d.fromAngle (degrees 47)
+        Direction2d.fromAngle (Angle.degrees 47)
 
-    Direction2d.equalWithin (degrees 5)
+    Direction2d.equalWithin (Angle.degrees 5)
         firstDirection
         secondDirection
     --> True
 
-    Direction2d.equalWithin (degrees 1)
+    Direction2d.equalWithin (Angle.degrees 1)
         firstDirection
         secondDirection
     --> False
@@ -520,8 +520,8 @@ rotateCounterclockwise (Types.Direction2d d) =
     Direction2d.rotateBy pi Direction2d.x
     --> Direction2d.negativeX
 
-    Direction2d.rotateBy (degrees 45) Direction2d.y
-    --> Direction2d.fromAngle (degrees 135)
+    Direction2d.rotateBy (Angle.degrees 45) Direction2d.y
+    --> Direction2d.fromAngle (Angle.degrees 135)
 
 -}
 rotateBy : Angle -> Direction2d coordinates -> Direction2d coordinates
@@ -545,7 +545,7 @@ the axis affects the result, since directions are position-independent.
     slopedAxis =
         Axis2d.through
             (Point2d.meters 100 200)
-            (Direction2d.fromAngle (degrees 45))
+            (Direction2d.fromAngle (Angle.degrees 45))
 
     Direction2d.mirrorAcross slopedAxis Direction2d.x
     --> Direction2d.y
@@ -582,10 +582,10 @@ local coordinates relative to a given reference frame.
     --> Direction2d.negativeY
 
     Direction2d.relativeTo rotatedFrame Direction2d.x
-    --> Direction2d.fromAngle (degrees -30)
+    --> Direction2d.fromAngle (Angle.degrees -30)
 
     Direction2d.relativeTo rotatedFrame Direction2d.y
-    --> Direction2d.fromAngle (degrees 60)
+    --> Direction2d.fromAngle (Angle.degrees 60)
 
 -}
 relativeTo :
@@ -613,10 +613,10 @@ frame, and return that direction expressed in global coordinates.
     --> Direction2d.negativeY
 
     Direction2d.placeIn rotatedFrame Direction2d.x
-    --> Direction2d.fromAngle (degrees 30)
+    --> Direction2d.fromAngle (Angle.degrees 30)
 
     Direction2d.placeIn rotatedFrame Direction2d.y
-    --> Direction2d.fromAngle (degrees 120)
+    --> Direction2d.fromAngle (Angle.degrees 120)
 
 -}
 placeIn :

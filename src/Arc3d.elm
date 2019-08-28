@@ -105,7 +105,7 @@ in XY coordinates _within_ the sketch plane.
             (Point2d.meters 3 1
                 |> Arc2d.sweptAround
                     (Point2d.meters 1 1
-                    (degrees 90)
+                    (Angle.degrees 90)
             )
 
     Arc3d.centerPoint arc
@@ -139,7 +139,7 @@ given angle:
 
     exampleArc =
         Point3d.meters 1 1 0
-            |> Arc3d.sweptAround Axis3d.z (degrees 90)
+            |> Arc3d.sweptAround Axis3d.z (Angle.degrees 90)
 
     Arc3d.centerPoint exampleArc
     --> Point3d.origin
@@ -222,7 +222,7 @@ points are collinear, returns `Nothing`.
     -->                 (Point2d.fromCoordinates
     -->                     ( 0.5, 0.5 )
     -->                 )
-    -->                 (degrees 180)
+    -->                 (Angle.degrees 180)
     -->     )
 
 -}
@@ -514,8 +514,8 @@ value:
     Arc3d.tangentDirection nondegenerateExampleArc
         ParameterValue.zero
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 135)
-    -->     (degrees 0)
+    -->     (Angle.degrees 135)
+    -->     (Angle.degrees 0)
 
     Arc3d.tangentDirection nondegenerateExampleArc
         ParameterValue.half
@@ -524,8 +524,8 @@ value:
     Arc3d.tangentDirection nondegenerateExampleArc
         ParameterValue.zero
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 225)
-    -->     (degrees 0)
+    -->     (Angle.degrees 225)
+    -->     (Angle.degrees 0)
 
 -}
 tangentDirection : Nondegenerate units coordinates -> Float -> Direction3d coordinates
@@ -575,8 +575,8 @@ parameter value:
         ParameterValue.zero
     --> ( Point3d.meters 1 1 0
     --> , Direction3d.fromAzimuthAndElevation
-    -->     (degrees 135)
-    -->     (degrees 0)
+    -->     (Angle.degrees 135)
+    -->     (Angle.degrees 0)
     --> )
 
     Arc3d.sample nondegenerateExampleArc
@@ -589,8 +589,8 @@ parameter value:
         ParameterValue.one
     --> ( Point3d.meters -1 1 0
     --> , Direction3d.fromAzimuthAndElevation
-    -->     (degrees 225)
-    -->     (degrees 0)
+    -->     (Angle.degrees 225)
+    -->     (Angle.degrees 0)
     --> )
 
 -}
@@ -672,7 +672,7 @@ but a swept angle with the opposite sign.
 
     Arc3d.reverse exampleArc
     --> Arc3d.sweptAround Axis3d.z
-    -->     (degrees -90)
+    -->     (Angle.degrees -90)
     -->     (Point3d.meters -1 1 0)
 
 -}
@@ -735,7 +735,7 @@ reverse ((Types.Arc3d arc) as arc_) =
     -->     (Axis3d.withDirection Direction3d.z
     -->         (Point3d.meters 0 1 0)
     -->     )
-    -->     (degrees 90)
+    -->     (Angle.degrees 90)
     -->     (Point3d.meters 2 3 0)
 
 -}
@@ -762,9 +762,9 @@ scaleAbout point scale (Types.Arc3d arc) =
 
 {-| Rotate an arc around a given axis by a given angle (in radians).
 
-    Arc3d.rotateAround Axis3d.x (degrees 90) exampleArc
+    Arc3d.rotateAround Axis3d.x (Angle.degrees 90) exampleArc
     --> Arc3d.sweptAround (Axis3d.reverse Axis3d.y)
-    -->     (degrees 90)
+    -->     (Angle.degrees 90)
     -->     (Point3d.meters 1 0 1)
 
 -}
@@ -791,7 +791,7 @@ rotateAround rotationAxis angle (Types.Arc3d arc) =
     -->     (Axis3d.withDirection Direction3d.z
     -->         (Point3d ( 2, 1, 3 ))
     -->     )
-    -->     (degrees 90)
+    -->     (Angle.degrees 90)
     -->     (Point3d.meters 3 2 3)
 
 -}
@@ -825,7 +825,7 @@ translateIn direction distance arc =
 
     Arc3d.mirrorAcross Plane3d.xy exampleArc
     --> Arc3d.sweptAround (Axis3d.reverse Axis3d.z)
-    -->     (degrees -90)
+    -->     (Angle.degrees -90)
     -->     (Point3d.meters 1 1 0)
 
 Note that this flips the sign of the arc's swept angle.
@@ -850,14 +850,14 @@ mirrorAcross plane (Types.Arc3d arc) =
         Axis3d.through
             (Point3d.meters 1 2 3)
             (Direction3d.fromAzimuthAndElevation
-                (degrees 0)
-                (degrees 45)
+                (Angle.degrees 0)
+                (Angle.degrees 45)
             )
 
     arc : Arc3d
     arc =
         Arc3d.sweptAround axis
-            (degrees 45)
+            (Angle.degrees 45)
             (Point3d.meters 1 4 3)
 
     Arc3d.projectInto SketchPlane3d.xy arc
@@ -980,7 +980,7 @@ coordinates relative to a given reference frame.
     -->     (Axis3d.withDirection Direction3d.z
     -->         (Point3d ( -1, -2, -3 ))
     -->     )
-    -->     (degrees 90)
+    -->     (Angle.degrees 90)
     -->     (Point3d.meters 0 -1 -3)
 
 -}
@@ -1019,7 +1019,7 @@ given reference frame, and return that arc expressed in global coordinates.
     -->     (Axis3d.withDirection Direction3d.z
     -->         (Point3d.meters 1 2 3)
     -->     )
-    -->     (degrees 90)
+    -->     (Angle.degrees 90)
     -->     (Point3d.meters 2 3 3)
 
 -}

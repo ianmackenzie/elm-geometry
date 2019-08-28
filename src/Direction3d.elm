@@ -75,7 +75,7 @@ global XYZ frame:
 
     rotatedFrame =
         Frame3d.atOrigin
-            |> Frame3d.rotateAround Axis3d.z (degrees 30)
+            |> Frame3d.rotateAround Axis3d.z (Angle.degrees 30)
 
 @docs relativeTo, placeIn, projectInto
 
@@ -219,14 +219,14 @@ direction specified in XY coordinates _within_ the sketch plane.
 
     horizontalDirection =
         Direction3d.on SketchPlane3d.xy <|
-            Direction2d.fromAngle (degrees 45)
+            Direction2d.fromAngle (Angle.degrees 45)
 
     Direction3d.components horizontalDirection
     --> ( 0.7071, 0.7071, 0 )
 
     thirtyDegreesFromZ =
         Direction3d.on SketchPlane3d.zx <|
-            Direction2d.fromAngle (degrees 30)
+            Direction2d.fromAngle (Angle.degrees 30)
 
     Direction3d.components thirtyDegreesFromZ
     --> ( 0.5, 0, 0.866 )
@@ -255,8 +255,8 @@ plane towards positive Z.
 
     Direction3d.components
         (Direction3d.fromAzimuthAndElevation
-            (degrees 45)
-            (degrees 45)
+            (Angle.degrees 45)
+            (Angle.degrees 45)
         )
     --> ( 0.5, 0.5, 0.7071 )
 
@@ -307,15 +307,15 @@ If the two points are coincident, returns `Nothing`.
     Direction3d.from Point3d.origin point
     --> Just
     -->     (Direction3d.fromAzimuthAndElevation
-    -->         (degrees 0)
-    -->         (degrees 45)
+    -->         (Angle.degrees 0)
+    -->         (Angle.degrees 45)
     -->     )
 
     Direction3d.from point Point3d.origin
     --> Just
     -->     (Direction3d.fromAzimuthAndElevation
-    -->         (degrees 180)
-    -->         (degrees -45)
+    -->         (Angle.degrees 180)
+    -->         (Angle.degrees -45)
     -->     )
 
     Direction3d.from point point
@@ -374,13 +374,13 @@ perpendicular to the given direction.
 
     direction =
         Direction3d.fromAzimuthAndElevation
-            (degrees 0)
-            (degrees 60)
+            (Angle.degrees 0)
+            (Angle.degrees 60)
 
     Direction3d.perpendicularTo direction
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 0)
-    -->     (degrees -30)
+    -->     (Angle.degrees 0)
+    -->     (Angle.degrees -30)
 
 -}
 perpendicularTo : Direction3d coordinates -> Direction3d coordinates
@@ -503,11 +503,11 @@ are coplanar, returns `Nothing`.
         (Vector3d.fromComponents ( 1, 2, 3 ))
     --> Just
     -->     ( Direction3d.fromAzimuthAndElevation
-    -->         (degrees 45)
-    -->         (degrees 0)
+    -->         (Angle.degrees 45)
+    -->         (Angle.degrees 0)
     -->     , Direction3d.fromAzimuthAndElevation
-    -->         (degrees 135)
-    -->         (degrees 0)
+    -->         (Angle.degrees 135)
+    -->         (Angle.degrees 0)
     -->     , Direction3d.positiveZ
     -->     )
 
@@ -635,8 +635,8 @@ of the two directions converted to unit vectors.
 
     direction =
         Direction3d.fromAzimuthAndElevation
-            (degrees 0)
-            (degrees 60)
+            (Angle.degrees 0)
+            (Angle.degrees 60)
 
     Direction3d.componentIn Direction3d.x direction
     --> 0.5
@@ -760,14 +760,14 @@ angle between the two given directions is less than the given tolerance.
     rotatedDirection =
         Direction3d.x
             |> Direction3d.rotateAround Axis3d.z
-                (degrees 2)
+                (Angle.degrees 2)
 
-    Direction3d.equalWithin (degrees 5)
+    Direction3d.equalWithin (Angle.degrees 5)
         Direction3d.x
         rotatedDirection
     --> True
 
-    Direction3d.equalWithin (degrees 1)
+    Direction3d.equalWithin (Angle.degrees 1)
         Direction3d.x
         rotatedDirection
     --> False
@@ -851,7 +851,7 @@ reverse (Types.Direction3d d) =
 {-| Rotate a direction around an axis by a given angle.
 
     Direction3d.y
-        |> Direction3d.rotateAround Axis3d.x (degrees 90)
+        |> Direction3d.rotateAround Axis3d.x (Angle.degrees 90)
     --> Direction3d.z
 
 Note that only the direction of the axis affects the result, not the position of
@@ -862,7 +862,7 @@ its origin point, since directions are position-independent:
             (Point3d.meters 100 200 300)
 
     Direction3d.x
-        |> Direction3d.rotateAround offsetAxis (degrees 90)
+        |> Direction3d.rotateAround offsetAxis (Angle.degrees 90)
     --> Direction3d.y
 
 -}
@@ -955,29 +955,29 @@ rotateAround (Types.Axis3d axis) (Quantity angle) (Types.Direction3d d) =
 
     direction =
         Direction3d.fromAzimuthAndElevation
-            (degrees 30)
-            (degrees 60)
+            (Angle.degrees 30)
+            (Angle.degrees 60)
 
     Direction3d.mirrorAcross Plane3d.xy direction
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 30)
-    -->     (degrees -60)
+    -->     (Angle.degrees 30)
+    -->     (Angle.degrees -60)
 
 Note that only the normal direction of the plane affects the result, not the
 position of its origin point, since directions are position-independent:
 
     Direction3d.mirrorAcross Plane3d.yz direction
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 150)
-    -->     (degrees 60)
+    -->     (Angle.degrees 150)
+    -->     (Angle.degrees 60)
 
     offsetPlane =
         Plane3d.offsetBy 10 Plane3d.yz
 
     Direction3d.mirrorAcross offsetPlane direction
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 150)
-    -->     (degrees 60)
+    -->     (Angle.degrees 150)
+    -->     (Angle.degrees 60)
 
 -}
 mirrorAcross : Plane3d units coordinates -> Direction3d coordinates -> Direction3d coordinates
@@ -1017,8 +1017,8 @@ direction is exactly perpendicular to the given plane, returns `Nothing`.
 
     direction =
         Direction3d.fromAzimuthAndElevation
-            (degrees -60)
-            (degrees 0)
+            (Angle.degrees -60)
+            (Angle.degrees 0)
 
     Direction3d.projectOnto Plane3d.xy direction
     --> Just direction
@@ -1084,13 +1084,13 @@ local coordinates relative to a given reference frame.
 
     Direction3d.relativeTo rotatedFrame Direction3d.x
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees -30)
-    -->     (degrees 0)
+    -->     (Angle.degrees -30)
+    -->     (Angle.degrees 0)
 
     Direction3d.relativeTo rotatedFrame Direction3d.y
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 60)
-    -->     (degrees 0)
+    -->     (Angle.degrees 60)
+    -->     (Angle.degrees 0)
 
     Direction3d.relativeTo rotatedFrame Direction3d.z
     --> Direction3d.z
@@ -1120,13 +1120,13 @@ frame, and return that direction expressed in global coordinates.
 
     Direction3d.placeIn rotatedFrame Direction3d.x
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 30)
-    -->     (degrees 0)
+    -->     (Angle.degrees 30)
+    -->     (Angle.degrees 0)
 
     Direction3d.placeIn rotatedFrame Direction3d.y
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 120)
-    -->     (degrees 0)
+    -->     (Angle.degrees 120)
+    -->     (Angle.degrees 0)
 
     Direction3d.placeIn rotatedFrame Direction3d.z
     --> Direction3d.z
@@ -1161,11 +1161,11 @@ plane; if it is perpendicular, `Nothing` is returned.
 
     direction =
         Direction3d.fromAzimuthAndElevation
-            (degrees -60)
-            (degrees 0)
+            (Angle.degrees -60)
+            (Angle.degrees 0)
 
     Direction3d.projectInto SketchPlane3d.xy direction
-    --> Just (Direction2d.fromAngle (degrees -60))
+    --> Just (Direction2d.fromAngle (Angle.degrees -60))
 
     Direction3d.projectInto SketchPlane3d.xz direction
     --> Just Direction2d.x

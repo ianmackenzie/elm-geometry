@@ -212,8 +212,8 @@ three vertices are collinear), returns `Nothing`.
     Triangle3d.normalDirection exampleTriangle
     --> Just
     -->     (Direction3d.fromAzimuthAndElevation
-    -->         (degrees -90)
-    -->         (degrees 18.43)
+    -->         (Angle.degrees -90)
+    -->         (Angle.degrees 18.43)
     -->     )
 
 -}
@@ -250,7 +250,7 @@ scaleAbout centerPoint scale triangle =
 {-| Rotate a triangle around a given axis by a given angle (in radians).
 
     exampleTriangle
-        |> Triangle3d.rotateAround Axis3d.z (degrees 90)
+        |> Triangle3d.rotateAround Axis3d.z (Angle.degrees 90)
     --> Triangle3d.fromVertices
     -->     ( Point3d.meters 0 1 0
     -->     , Point3d.meters 0 2 0

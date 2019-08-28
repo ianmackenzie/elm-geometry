@@ -107,31 +107,31 @@ given swept angle.
         Point2d.meters 1 2
 
     arc1 =
-        Arc2d.from p1 p2 (degrees 90)
+        Arc2d.from p1 p2 (Angle.degrees 90)
 
     Arc2d.centerPoint arc1
     --> Point2d.meters 1 1
 
     arc2 =
-        Arc2d.from p1 p2 (degrees -90)
+        Arc2d.from p1 p2 (Angle.degrees -90)
 
     Arc2d.centerPoint arc2
     --> Point2d.meters 2 2
 
     arc3 =
-        Arc2d.from p1 p2 (degrees 180)
+        Arc2d.from p1 p2 (Angle.degrees 180)
 
     Arc2d.centerPoint arc3
     --> Point2d.meters 1.5 1.5
 
     arc4 =
-        Arc2d.from p1 p2 (degrees -180)
+        Arc2d.from p1 p2 (Angle.degrees -180)
 
     Arc2d.centerPoint arc4
     --> Point2d.meters 1.5 1.5
 
     arc5 =
-        Arc2d.from p1 p2 (degrees 45)
+        Arc2d.from p1 p2 (Angle.degrees 45)
 
     Arc2d.centerPoint arc5
     --> Point2d.meters 0.2929 0.2929
@@ -252,7 +252,7 @@ and the start point to be swept is given last.
         Point2d.meters 3 1
             |> Arc2d.sweptAround
                 (Point2d.meters 1 1)
-                (degrees 90)
+                (Angle.degrees 90)
 
     Arc2d.endPoint exampleArc
     --> Point2d.meters 1 3
@@ -313,7 +313,7 @@ through the second given point and ends at the third given point:
     -->     (Point2d.origin
     -->         |> Arc2d.sweptAround
     -->             (Point2d.meters 0.5 0.5)
-    -->             (degrees 270)
+    -->             (Angle.degrees 270)
     -->     )
 
     Arc2d.throughPoints
@@ -324,7 +324,7 @@ through the second given point and ends at the third given point:
     -->     (Point2d.meters 1 0
     -->         |> Arc2d.sweptAround
     -->             (Point2d.meters 0.5 0.5)
-    -->             (degrees -180)
+    -->             (Angle.degrees -180)
     -->     )
 
 If the three points are collinear, returns `Nothing`:
@@ -429,7 +429,7 @@ specify which arc to create. For example:
     --> Just
     -->     (Point2d.meters 1 0
     -->         |> Arc2d.sweptAround Point2d.origin
-    -->             (degrees 90)
+    -->             (Angle.degrees 90)
     -->     )
 
     Arc2d.withRadius 1 SweptAngle.smallNegative p1 p2
@@ -437,7 +437,7 @@ specify which arc to create. For example:
     -->     (Point2d.meters 1 0
     -->         |> Arc2d.sweptAround
     -->             (Point2d.meters 1 1)
-    -->             (degrees -90)
+    -->             (Angle.degrees -90)
     -->     )
 
     Arc2d.withRadius 1 SweptAngle.largePositive p1 p2
@@ -445,14 +445,14 @@ specify which arc to create. For example:
     -->     (Point2d.meters 1 0
     -->         |> Arc2d.sweptAround
     -->             (Point2d.meters 1 1)
-    -->             (degrees 270)
+    -->             (Angle.degrees 270)
     -->     )
 
     Arc2d.withRadius 1 SweptAngle.largeNegative p1 p2
     --> Just
     -->     (Point2d.meters 1 0
     -->         |> Arc2d.sweptAround Point2d.origin
-    -->             (degrees -270)
+    -->             (Angle.degrees -270)
     -->     )
 
     Arc2d.withRadius 2 SweptAngle.smallPositive p1 p2
@@ -462,7 +462,7 @@ specify which arc to create. For example:
     -->             (Point2d.fromCoordinates
     -->                 ( -0.8229, -0.8229 )
     -->             )
-    -->             (degrees 41.4096)
+    -->             (Angle.degrees 41.4096)
     -->     )
 
 If the start and end points are coincident or the distance between them is more
@@ -480,7 +480,7 @@ the given radius. In this case it is safer to use `Arc2d.from`, such as (for a
 counterclockwise arc):
 
     halfCircle =
-        Arc2d.from firstPoint secondPoint (degrees 180)
+        Arc2d.from firstPoint secondPoint (Angle.degrees 180)
 
 (Use `degrees -180` for a clockwise arc.)
 
@@ -796,15 +796,15 @@ value:
 
     Arc2d.tangentDirection nondegenerateExampleArc
         ParameterValue.zero
-    --> Direction2d.fromAngle (degrees 90)
+    --> Direction2d.fromAngle (Angle.degrees 90)
 
     Arc2d.tangentDirection nondegenerateExampleArc
         ParameterValue.half
-    --> Direction2d.fromAngle (degrees 135)
+    --> Direction2d.fromAngle (Angle.degrees 135)
 
     Arc2d.tangentDirection nondegenerateExampleArc
         ParameterValue.one
-    --> Direction2d.fromAngle (degrees 180)
+    --> Direction2d.fromAngle (Angle.degrees 180)
 
 -}
 tangentDirection : Nondegenerate units coordinates -> Float -> Direction2d coordinates
@@ -820,19 +820,19 @@ parameter value:
     Arc2d.sample nondegenerateExampleArc
         ParameterValue.zero
     --> ( Point2d.meters 3 1
-    --> , Direction2d.fromAngle (degrees 90)
+    --> , Direction2d.fromAngle (Angle.degrees 90)
     --> )
 
     Arc2d.sample nondegenerateExampleArc
         ParameterValue.half
     --> ( Point2d.meters 2.4142 2.4142
-    --> , Direction2d.fromAngle (degrees 135)
+    --> , Direction2d.fromAngle (Angle.degrees 135)
     --> )
 
     Arc2d.sample nondegenerateExampleArc
         ParameterValue.one
     --> ( Point2d.meters 1 3
-    --> , Direction2d.fromAngle (degrees 180)
+    --> , Direction2d.fromAngle (Angle.degrees 180)
     --> )
 
 -}
@@ -900,7 +900,7 @@ point and vice versa.
     --> Point2d.meters 1 3
     -->     |> Arc2d.sweptAround
     -->         (Point2d.meters 1 1)
-    -->         (degrees -90)
+    -->         (Angle.degrees -90)
 
 -}
 reverse : Arc2d units coordinates -> Arc2d units coordinates
@@ -922,7 +922,7 @@ reverse ((Types.Arc2d arc) as arc_) =
     --> Point2d.meters 6 1
     -->     |> Arc2d.sweptAround
     -->         (Point2d.meters 2 1)
-    -->         (degrees 90)
+    -->         (Angle.degrees 90)
 
 -}
 scaleAbout : Point2d units coordinates -> Float -> Arc2d units coordinates -> Arc2d units coordinates
@@ -942,11 +942,11 @@ scaleAbout point scale (Types.Arc2d arc) =
 
 {-| Rotate an arc around a given point by a given angle.
 
-    Arc2d.rotateAround Point2d.origin (degrees 90)
+    Arc2d.rotateAround Point2d.origin (Angle.degrees 90)
     --> Point2d.meters -1 3
     -->     |> Arc2d.sweptAround
     -->         (Point2d.meters -1 1)
-    -->         (degrees 90)
+    -->         (Angle.degrees 90)
 
 -}
 rotateAround : Point2d units coordinates -> Angle -> Arc2d units coordinates -> Arc2d units coordinates
@@ -968,7 +968,7 @@ rotateAround point angle (Types.Arc2d arc) =
     --> Point2d.meters 5 4
     -->     |> Arc2d.sweptAround
     -->         (Point2d.meters 3 4)
-    -->         (degrees 90)
+    -->         (Angle.degrees 90)
 
 -}
 translateBy : Vector2d units coordinates -> Arc2d units coordinates -> Arc2d units coordinates
@@ -1002,7 +1002,7 @@ translateIn direction distance arc =
     --> Point2d.meters -3 1
     -->     |> Arc2d.sweptAround
     -->         (Point2d.meters -1 1)
-    -->         (degrees -90)
+    -->         (Angle.degrees -90)
 
 -}
 mirrorAcross : Axis2d units coordinates -> Arc2d units coordinates -> Arc2d units coordinates
@@ -1026,7 +1026,7 @@ coordinates relative to a given reference frame.
     --> Point2d.meters 2 -1
     -->     |> Arc2d.sweptAround
     -->         (Point2d.meters 0 -1)
-    -->         (degrees 90)
+    -->         (Angle.degrees 90)
 
 -}
 relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Arc2d units globalCoordinates -> Arc2d units localCoordinates
@@ -1060,7 +1060,7 @@ given reference frame, and return that arc expressed in global coordinates.
     --> Point2d.meters 4 3
     -->     |> Arc2d.sweptAround
     -->         (Point2d.meters 2 3)
-    -->         (degrees 90)
+    -->         (Angle.degrees 90)
 
 -}
 placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Arc2d units localCoordinates -> Arc2d units globalCoordinates

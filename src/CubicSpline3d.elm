@@ -529,8 +529,8 @@ value:
         nondegenerateExampleSpline
         ParameterValue.half
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 63.43)
-    -->     (degrees 24.09)
+    -->     (Angle.degrees 63.43)
+    -->     (Angle.degrees 24.09)
 
     CubicSpline3d.tangentDirection
         nondegenerateExampleSpline
@@ -614,8 +614,8 @@ given parameter value:
         ParameterValue.half
     --> ( Point3d.meters 2.75 2 1.25
     --> , Direction3d.fromAzimuthAndElevation
-    -->     (degrees 63.43)
-    -->     (degrees 24.09)
+    -->     (Angle.degrees 63.43)
+    -->     (Angle.degrees 24.09)
     --> )
 
 -}
@@ -675,7 +675,7 @@ scaleAbout point scale spline =
 radians).
 
     exampleSpline
-        |> CubicSpline3d.rotateAround Axis3d.z (degrees 90)
+        |> CubicSpline3d.rotateAround Axis3d.z (Angle.degrees 90)
     --> CubicSpline3d.with
     -->     { startPoint =
     -->         Point3d.meters -1 1 1
@@ -1071,8 +1071,8 @@ get the tangent direction a quarter of the way along `exampleSpline`:
         (0.25 * arcLength)
     --> Just
     -->     (Direction3d.fromAzimuthAndElevation
-    -->         (degrees 29.1)
-    -->         (degrees 3.871)
+    -->         (Angle.degrees 29.1)
+    -->         (Angle.degrees 3.871)
     -->     )
 
 If the given arc length is less than zero or greater than the arc length of the
@@ -1096,8 +1096,8 @@ length. To get the point and tangent direction a quarter of the way along
     -->     ( Point3d.fromCoordinates
     -->         ( 2.0425, 1.2431, 1.0206 )
     -->     , Direction3d.fromAzimuthAndElevation
-    -->         (degrees 29.1)
-    -->         (degrees 3.871)
+    -->         (Angle.degrees 29.1)
+    -->         (Angle.degrees 3.871)
     -->     )
 
 If the given arc length is less than zero or greater than the arc length of the

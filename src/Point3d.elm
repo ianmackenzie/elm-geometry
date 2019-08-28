@@ -443,7 +443,7 @@ The sketch plane can have any position and orientation:
     tiltedSketchPlane =
         SketchPlane3d.xy
             |> SketchPlane3d.rotateAround Axis3d.x
-                (degrees 45)
+                (Angle.degrees 45)
             |> SketchPlane3d.moveTo
                 (Point3d.meters 10 10 10)
 

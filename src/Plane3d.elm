@@ -146,8 +146,8 @@ given points are collinear, returns `Nothing`.
     -->     (Plane3d.through
     -->         (Point3d.meters 2 0 0)
     -->         (Direction3d.fromAzimuthAndElevation
-    -->             (degrees -90)
-    -->             (degrees 45)
+    -->             (Angle.degrees -90)
+    -->             (Angle.degrees 45)
     -->         )
     -->     )
 
@@ -240,7 +240,7 @@ reverseNormal (Types.Plane3d plane) =
 
 {-| Rotate a plane around an axis by a given angle.
 
-    Plane3d.rotateAround Axis3d.y (degrees 90) Plane3d.xy
+    Plane3d.rotateAround Axis3d.y (Angle.degrees 90) Plane3d.xy
     --> Plane3d.yz
 
 -}

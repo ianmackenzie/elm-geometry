@@ -161,7 +161,7 @@ given angle (in radians).
 
     stepShape
         |> Polyline2d.rotateAround Point2d.origin
-            (degrees 90)
+            (Angle.degrees 90)
     --> Polyline2d.fromVertices
     -->     [ Point2d.meters 0 0
     -->     , Point2d.meters 0 1

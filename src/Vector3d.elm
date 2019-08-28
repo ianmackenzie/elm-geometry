@@ -110,7 +110,7 @@ one that is rotated 30 degrees counterclockwise around the Z axis from the
 global XYZ frame:
 
     rotatedFrame =
-        Frame3d.atOrigin |> Frame3d.rotateAround Axis3d.z (degrees 30)
+        Frame3d.atOrigin |> Frame3d.rotateAround Axis3d.z (Angle.degrees 30)
 
 @docs relativeTo, placeIn, projectInto
 
@@ -319,7 +319,7 @@ A slightly more complex example:
     tiltedSketchPlane =
         SketchPlane3d.xy
             |> SketchPlane3d.rotateAround Axis3d.x
-                (degrees 45)
+                (Angle.degrees 45)
 
     Vector3d.on tiltedSketchPlane <|
         Vector2d.fromComponents ( 1, 1 )
@@ -741,8 +741,8 @@ returns `Nothing`.
         |> Vector3d.direction
     --> Just
     -->     (Direction3d.fromAzimuthAndElevation
-    -->         (degrees 0)
-    -->         (degrees 45)
+    -->         (Angle.degrees 0)
+    -->         (Angle.degrees 45)
     -->     )
 
     Vector3d.direction Vector3d.zero
@@ -989,10 +989,10 @@ scaleBy k (Types.Vector3d v) =
     vector =
         Vector3d.fromComponents ( 2, 0, 1 )
 
-    Vector3d.rotateAround Axis3d.x (degrees 90) vector
+    Vector3d.rotateAround Axis3d.x (Angle.degrees 90) vector
     --> Vector3d.fromComponents ( 2, -1, 0 )
 
-    Vector3d.rotateAround Axis3d.z (degrees 45) vector
+    Vector3d.rotateAround Axis3d.z (Angle.degrees 45) vector
     --> Vector3d.fromComponents ( 1.4142, 1.4142, 1 )
 
 -}

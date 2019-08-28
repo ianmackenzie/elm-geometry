@@ -469,17 +469,17 @@ value:
     CubicSpline2d.tangentDirection
         nondegenerateExampleSpline
         ParameterValue.zero
-    --> Direction2d.fromAngle (degrees 56.31)
+    --> Direction2d.fromAngle (Angle.degrees 56.31)
 
     CubicSpline2d.tangentDirection
         nondegenerateExampleSpline
         ParameterValue.half
-    --> Direction2d.fromAngle (degrees 0)
+    --> Direction2d.fromAngle (Angle.degrees 0)
 
     CubicSpline2d.tangentDirection
         nondegenerateExampleSpline
         ParameterValue.one
-    --> Direction2d.fromAngle (degrees 56.31)
+    --> Direction2d.fromAngle (Angle.degrees 56.31)
 
 -}
 tangentDirection : Nondegenerate units coordinates -> Float -> Direction2d coordinates
@@ -557,7 +557,7 @@ given parameter value:
     CubicSpline2d.sample nondegenerateExampleSpline
         ParameterValue.half
     --> ( Point2d.meters 4 2.5
-    --> , Direction2d.fromAngle (degrees 0)
+    --> , Direction2d.fromAngle (Angle.degrees 0)
     --> )
 
 -}
@@ -618,7 +618,7 @@ angle (in radians).
 
     exampleSpline
         |> CubicSpline2d.rotateAround Point2d.origin
-            (degrees 90)
+            (Angle.degrees 90)
     --> CubicSpline2d.with
     -->     { startPoint =
     -->         Point2d.meters -1 1
@@ -962,7 +962,7 @@ get the tangent direction a quarter of the way along `exampleSpline`:
 
     CubicSpline2d.tangentDirectionAlong parameterizedSpline
         (0.25 * arcLength)
-    --> Just (Direction2d.fromAngle (degrees 26.5611))
+    --> Just (Direction2d.fromAngle (Angle.degrees 26.5611))
 
 If the given arc length is less than zero or greater than the arc length of the
 spline (or if the spline is degenerate), returns `Nothing`.
@@ -987,7 +987,7 @@ length. To get the point and tangent direction a quarter of the way along
         (0.25 * arcLength)
     --> Just
     -->     ( Point2d.meters 2.2681 2.2114
-    -->     , Direction2d.fromAngle (degrees 26.5611)
+    -->     , Direction2d.fromAngle (Angle.degrees 26.5611)
     -->     )
 
 If the given arc length is less than zero or greater than the arc length of the

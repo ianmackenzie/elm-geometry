@@ -139,7 +139,7 @@ To make an inclined 180 degree elliptical arc, you might use
 
     EllipticalArc2d.with
         { centerPoint = Point2d.origin
-        , xDirection = Direction2d.fromAngle (degrees 30)
+        , xDirection = Direction2d.fromAngle (Angle.degrees 30)
         , xRadius = 2
         , yRadius = 1
         , startAngle = degrees -90
@@ -529,15 +529,15 @@ parameter value:
 
     EllipticalArc2d.tangentDirection nondegenerateExampleArc
         ParameterValue.zero
-    --> Direction2d.fromAngle (degrees 90)
+    --> Direction2d.fromAngle (Angle.degrees 90)
 
     EllipticalArc2d.tangentDirection nondegenerateExampleArc
         ParameterValue.half
-    --> Direction2d.fromAngle (degrees 153.4)
+    --> Direction2d.fromAngle (Angle.degrees 153.4)
 
     EllipticalArc2d.tangentDirection nondegenerateExampleArc
         ParameterValue.one
-    --> Direction2d.fromAngle (degrees 180)
+    --> Direction2d.fromAngle (Angle.degrees 180)
 
 -}
 tangentDirection : Nondegenerate units coordinates -> Float -> Direction2d coordinates
@@ -606,19 +606,19 @@ at a given parameter value:
     EllipticalArc2d.sample nondegenerateExampleArc
         ParameterValue.zero
     --> ( Point2d.meters 2 0
-    --> , Direction2d.fromAngle (degrees 90)
+    --> , Direction2d.fromAngle (Angle.degrees 90)
     --> )
 
     EllipticalArc2d.sample nondegenerateExampleArc
         ParameterValue.half
     --> ( Point2d.meters 1.4142 0.7071
-    --> , Direction2d.fromAngle (degrees 153.4)
+    --> , Direction2d.fromAngle (Angle.degrees 153.4)
     --> )
 
     EllipticalArc2d.sample nondegenerateExampleArc
         ParameterValue.one
     --> ( Point2d.meters 0 1
-    --> , Direction2d.fromAngle (degrees 180)
+    --> , Direction2d.fromAngle (Angle.degrees 180)
     --> )
 
 -}
@@ -720,7 +720,7 @@ scaleAbout point scale arc =
 
     exampleArc
         |> EllipticalArc2d.rotateAround Point2d.origin
-            (degrees 180)
+            (Angle.degrees 180)
     --> EllipticalArc2d.with
     -->     { centerPoint = Point2d.origin
     -->     , xDirection = Direction2d.negativeX
@@ -1054,7 +1054,7 @@ length. To get the tangent direction at the midpoint of `exampleArc`:
 
     EllipticalArc2d.tangentDirectionAlong parameterizedArc
         (arcLength / 2)
-    --> Just (Direction2d.fromAngle (degrees 159.7))
+    --> Just (Direction2d.fromAngle (Angle.degrees 159.7))
 
 If the given arc length is less than zero or greater than the arc length of the
 elliptical arc (or if the elliptical arc is degenerate), returns `Nothing`.
@@ -1075,7 +1075,7 @@ given arc length. To get the point and tangent direction at the midpoint of
         (arcLength / 2)
     --> Just
     -->     ( Point2d.meters 1.1889 0.8041
-    -->     , Direction2d.fromAngle (degrees 159.7)
+    -->     , Direction2d.fromAngle (Angle.degrees 159.7)
     -->     )
 
 If the given arc length is less than zero or greater than the arc length of the

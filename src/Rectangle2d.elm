@@ -556,13 +556,13 @@ scaleAbout point scale rectangle =
     rotated =
         rectangle
             |> Rectangle2d.rotateAround Point2d.origin
-                (degrees 45)
+                (Angle.degrees 45)
 
     Rectangle2d.centerPoint rotated
     --> Point2d.meters 0 0.7071
 
     Rectangle2d.xDirection rotated
-    --> Direction2d.fromAngle (degrees 45)
+    --> Direction2d.fromAngle (Angle.degrees 45)
 
     Rectangle2d.vertices rotated
     --> { bottomLeft =
@@ -739,7 +739,7 @@ angle.
     diamond =
         square
             |> Rectangle2d.rotateAround Point2d.origin
-                (degrees 45)
+                (Angle.degrees 45)
 
     Rectangle2d.boundingBox diamond
     --> BoundingBox2d.fromExtrema

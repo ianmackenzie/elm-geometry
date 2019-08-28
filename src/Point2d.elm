@@ -418,7 +418,7 @@ along (Types.Axis2d axis) (Quantity distance) =
 {-| Construct a point given its local coordinates within a particular frame:
 
     rotatedFrame =
-        Frame2d.atOrigin |> Frame2d.rotateBy (degrees 45)
+        Frame2d.atOrigin |> Frame2d.rotateBy (Angle.degrees 45)
 
     Point2d.fromCoordinatesIn rotatedFrame ( 2, 0 )
     --> Point2d.meters 1.4142 1.4142
@@ -1085,7 +1085,7 @@ translateBy (Types.Vector2d v) (Types.Point2d p) =
     --> Point2d.meters 3 6
 
     angledDirection =
-        Direction2d.fromAngle (degrees 45)
+        Direction2d.fromAngle (Angle.degrees 45)
 
     point |> Point2d.translateIn angledDirection 1
     --> Point2d.meters 3.7071 4.7071

@@ -278,7 +278,7 @@ scaleAbout point scale =
 
     exampleTriangle
         |> Triangle2d.rotateAround Point2d.origin
-            (degrees 90)
+            (Angle.degrees 90)
     --> Triangle2d.fromVertices
     -->     ( Point2d.meters -1 1
     -->     , Point2d.meters -1 2

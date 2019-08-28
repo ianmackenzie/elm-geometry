@@ -513,22 +513,22 @@ value:
         nondegenerateExampleSpline
         ParameterValue.zero
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 26.57)
-    -->     (degrees 0)
+    -->     (Angle.degrees 26.57)
+    -->     (Angle.degrees 0)
 
     QuadraticSpline3d.tangentDirection
         nondegenerateExampleSpline
         ParameterValue.half
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 45)
-    -->     (degrees 35.26)
+    -->     (Angle.degrees 45)
+    -->     (Angle.degrees 35.26)
 
     QuadraticSpline3d.tangentDirection
         nondegenerateExampleSpline
         ParameterValue.one
     --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 90)
-    -->     (degrees 63.43)
+    -->     (Angle.degrees 90)
+    -->     (Angle.degrees 63.43)
 
 -}
 tangentDirection : Nondegenerate units coordinates -> Float -> Direction3d coordinates
@@ -575,8 +575,8 @@ given parameter value:
         ParameterValue.half
     --> ( Point3d.meters 2.5 2 1.5
     --> , Direction3d.fromAzimuthAndElevation
-    -->     (degrees 45)
-    -->     (degrees 35.26)
+    -->     (Angle.degrees 45)
+    -->     (Angle.degrees 35.26)
     --> )
 
 -}
@@ -633,7 +633,7 @@ radians).
 
     exampleSpline
         |> QuadraticSpline3d.rotateAround Axis3d.z
-            (degrees 90)
+            (Angle.degrees 90)
     --> QuadraticSpline3d.with
     -->     { startPoint =
     -->         Point3d.meters -1 1 1
@@ -990,8 +990,8 @@ get the tangent direction a quarter of the way along `exampleSpline`:
         (arcLength / 4)
     --> Just <|
     -->     Direction3d.fromAzimuthAndElevation
-    -->         (degrees 33.09)
-    -->         (degrees 14.26)
+    -->         (Angle.degrees 33.09)
+    -->         (Angle.degrees 14.26)
 
 If the given arc length is less than zero or greater than the arc length of the
 spline (or if the spline is degenerate), returns `Nothing`.
@@ -1014,8 +1014,8 @@ length. To get the point and tangent direction a quarter of the way along
     -->     ( Point3d.fromCoordinates
     -->         ( 1.8227, 1.4655, 1.1083 )
     -->     , Direction3d.fromAzimuthAndElevation
-    -->         (degrees 33.09)
-    -->         (degrees 14.26)
+    -->         (Angle.degrees 33.09)
+    -->         (Angle.degrees 14.26)
     -->     )
 
 If the given arc length is less than zero or greater than the arc length of the
