@@ -366,13 +366,13 @@ fromAngle (Quantity angle) =
 positive X direction). The result will be in the range -180 to 180 degrees.
 
     Direction2d.toAngle Direction2d.x
-    --> 0
+    --> Angle.degrees 0
 
     Direction2d.toAngle Direction2d.y
-    --> degrees 90
+    --> Angle.degrees 90
 
     Direction2d.toAngle Direction2d.negativeY
-    --> degrees -90
+    --> Angle.degrees -90
 
 -}
 toAngle : Direction2d coordinates -> Angle
@@ -387,10 +387,10 @@ second. The result will be in the range -180 to 180 degrees.
         Direction2d.fromAngle (Angle.degrees 30)
 
     Direction2d.angleFrom referenceDirection Direction2d.y
-    --> degrees 60
+    --> Angle.degrees 60
 
     Direction2d.angleFrom referenceDirection Direction2d.x
-    --> degrees -30
+    --> Angle.degrees -30
 
 -}
 angleFrom : Direction2d coordinates -> Direction2d coordinates -> Angle
