@@ -10,6 +10,7 @@
 module Direction2d exposing
     ( Direction2d
     , x, y, positiveX, negativeX, positiveY, negativeY
+    , degrees, radians
     , from, perpendicularTo, orthonormalize, orthogonalize
     , fromAngle, toAngle, toVector
     , xComponent, yComponent, componentIn, angleFrom
@@ -37,6 +38,11 @@ have several uses, such as:
 # Constants
 
 @docs x, y, positiveX, negativeX, positiveY, negativeY
+
+
+# Literals
+
+@docs degrees, radians
 
 
 # Constructors
@@ -159,6 +165,40 @@ positiveY =
 negativeY : Direction2d coordinates
 negativeY =
     Types.Direction2d { x = 0, y = -1 }
+
+
+{-| Construct a direction from a number of degrees, given counterclockwise from
+the positive X axis:
+
+    Direction2d.degrees 0
+    --> Direction2d.positiveX
+
+    Direction2d.degrees 90
+    --> Direction2d.positiveY
+
+This is a convenient shorthand for using `Direction2d.fromAngle` and
+`Angle.degrees` if you want to construct a direction at a fixed angle in
+degrees.
+
+-}
+degrees : Float -> Direction2d coordinates
+degrees numDegrees =
+    fromAngle (Angle.degrees numDegrees)
+
+
+{-| Construct a direction from a number of radians, given counterclockwise from
+the positive X axis:
+
+    Direction2d.radians pi
+    --> Direction2d.negativeX
+
+    Direction2d.radians (-pi / 2)
+    --> Direction2d.negativeY
+
+-}
+radians : Float -> Direction2d coordinates
+radians numRadians =
+    fromAngle (Angle.radians numRadians)
 
 
 {-| Construct a direction directly from its X and Y components. Note that **you
