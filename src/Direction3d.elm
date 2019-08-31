@@ -10,7 +10,10 @@
 module Direction3d exposing
     ( Direction3d
     , x, y, z, positiveX, negativeX, positiveY, negativeY, positiveZ, negativeZ
-    , from, on, fromAzimuthInAndElevationFrom, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize
+    , from
+    , xy, yx, yz, zy, zx, xz, on
+    , xyZ, yzX, zxY, fromAzimuthInAndElevationFrom
+    , perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize
     , toVector
     , xComponent, yComponent, zComponent, componentIn, angleFrom, azimuthIn, elevationFrom
     , equalWithin
@@ -41,7 +44,22 @@ Directions have several uses, such as:
 
 # Constructors
 
-@docs from, on, fromAzimuthInAndElevationFrom, perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize
+@docs from
+
+
+## In a plane
+
+@docs xy, yx, yz, zy, zx, xz, on
+
+
+## From azimuth and elevation
+
+@docs xyZ, yzX, zxY, fromAzimuthInAndElevationFrom
+
+
+## Perpendicular directions
+
+@docs perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize
 
 
 # Conversion
@@ -214,22 +232,107 @@ unsafe components =
     Types.Direction3d components
 
 
+{-| Construct a direction in the XY plane given an angle measured from
+positive X towards positive Y:
+
+    Direction3d.xy (Angle.degrees 0)
+    --> Direction3d.positiveX
+
+    Direction3d.xy (Angle.degrees 90)
+    --> Direction3d.positiveY
+
+    Direction3d.xy (Angle.degrees 180)
+    --> Direction3d.negativeX
+
+-}
+xy : Angle -> Direction3d coordinates
+xy (Quantity theta) =
+    Types.Direction3d
+        { x = cos theta
+        , y = sin theta
+        , z = 0
+        }
+
+
+{-| Construct a direction in the XY plane given an angle measured from
+positive Y towards positive X:
+
+    Direction3d.yx (Angle.degrees 0)
+    --> Direction3d.positiveY
+
+    Direction3d.yx (Angle.degrees 90)
+    --> Direction3d.positiveX
+
+    Direction3d.yx (Angle.degrees -90)
+    --> Direction3d.negativeX
+
+-}
+yx : Angle -> Direction3d coordinates
+yx (Quantity theta) =
+    Types.Direction3d
+        { x = sin theta
+        , y = cos theta
+        , z = 0
+        }
+
+
+{-| Construct a direction in the YZ plane given an angle measured from
+positive Y towards positive Z.
+-}
+yz : Angle -> Direction3d coordinates
+yz (Quantity theta) =
+    Types.Direction3d
+        { x = 0
+        , y = cos theta
+        , z = sin theta
+        }
+
+
+{-| Construct a direction in the YZ plane given an angle measured from
+positive Z towards positive Y.
+-}
+zy : Angle -> Direction3d coordinates
+zy (Quantity theta) =
+    Types.Direction3d
+        { x = 0
+        , y = sin theta
+        , z = cos theta
+        }
+
+
+{-| Construct a direction in the XZ plane given an angle measured from
+positive Z towards positive X.
+-}
+zx : Angle -> Direction3d coordinates
+zx (Quantity theta) =
+    Types.Direction3d
+        { x = sin theta
+        , y = 0
+        , z = cos theta
+        }
+
+
+{-| Construct a direction in the XZ plane given an angle measured from
+positive X towards positive Z.
+-}
+xz : Angle -> Direction3d coordinates
+xz (Quantity theta) =
+    Types.Direction3d
+        { x = cos theta
+        , y = 0
+        , z = sin theta
+        }
+
+
 {-| Construct a 3D direction lying _on_ a sketch plane by providing a 2D
-direction specified in XY coordinates _within_ the sketch plane.
+direction specified in XY coordinates _within_ the sketch plane. This is a
+generalized version of `Direction3d.xy`, `Direction3d.yz` etc.; for example,
 
-    horizontalDirection =
-        Direction3d.on SketchPlane3d.xy <|
-            Direction2d.degrees 45
+    Direction3d.xy (Angle.degrees 45)
 
-    Direction3d.components horizontalDirection
-    --> ( 0.7071, 0.7071, 0 )
+is equivalent to
 
-    thirtyDegreesFromZ =
-        Direction3d.on SketchPlane3d.zx <|
-            Direction2d.degrees 30
-
-    Direction3d.components thirtyDegreesFromZ
-    --> ( 0.5, 0, 0.866 )
+    Direction3d.on SketchPlane3d.xy (Direction2d.degrees 45)
 
 -}
 on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Direction2d coordinates2d -> Direction3d coordinates3d
@@ -248,20 +351,98 @@ on (Types.SketchPlane3d sketchPlane) (Types.Direction2d d) =
         }
 
 
-{-| Construct a direction using azimuthal and elevation angles relative to the
-global XYZ frame. The azimuth defines the direction's polar angle on the global
-XY plane (from X towards Y) and the elevation defines its angle out of the XY
-plane towards positive Z.
+{-| Construct a direction given:
 
-    Direction3d.components
-        (Direction3d.fromAzimuthAndElevation
-            (Angle.degrees 45)
-            (Angle.degrees 45)
-        )
-    --> ( 0.5, 0.5, 0.7071 )
+  - Its azimuth angle _in_ the XY plane, from positive X towards positive Y
+  - Its elevation angle _from_ the XY plane towards positive Z
+
+See
+[here](http://www.ece.northwestern.edu/local-apps/matlabhelp/techdoc/visualize/chview3.html)
+for an illustration of these two angles (except that this function measures
+azimuth from positive X towards positive Y, not negative Y towards positive
+X). Note that `Direction3d.xyZ` is a generalized version of `Direction3d.xy`;
+
+    Direction3d.xy angle
+
+is equivalent to
+
+    Direction3d.xyZ angle zero
 
 -}
-fromAzimuthInAndElevationFrom : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Angle -> Angle -> Direction3d coordinates3d
+xyZ : Angle -> Angle -> Direction3d coordinates
+xyZ (Quantity theta) (Quantity phi) =
+    let
+        cosPhi =
+            cos phi
+    in
+    Types.Direction3d
+        { x = cosPhi * cos theta
+        , y = cosPhi * sin theta
+        , z = sin phi
+        }
+
+
+{-| Construct a direction given:
+
+  - Its azimuth angle in the YZ plane, from positive Y towards positive Z
+  - Its elevation angle from the YZ plane towards positive X
+
+This is generally not as useful as `Direction3d.xyZ` or `Direction3d.zxY`.
+
+-}
+yzX : Angle -> Angle -> Direction3d coordinates
+yzX (Quantity theta) (Quantity phi) =
+    let
+        cosPhi =
+            cos phi
+    in
+    Types.Direction3d
+        { x = sin phi
+        , y = cosPhi * cos theta
+        , z = cosPhi * sin theta
+        }
+
+
+{-| Construct a direction given:
+
+  - Its azimuth angle in the ZX plane, from positive Z towards positive X
+  - Its elevation angle from the ZX plane towards positive Y
+
+This may be useful if you like to use positive Y as your global up vector.
+
+-}
+zxY : Angle -> Angle -> Direction3d coordinates
+zxY (Quantity theta) (Quantity phi) =
+    let
+        cosPhi =
+            cos phi
+    in
+    Types.Direction3d
+        { x = cosPhi * sin theta
+        , y = sin phi
+        , z = cosPhi * cos theta
+        }
+
+
+{-| Construct a direction given:
+
+  - Its azimuth angle within a given sketch plane, from that sketch plane's
+    positive X direction towards its positive Y diretion
+  - Its elevation angle out of that sketch plane, in the sketch plane's norma
+    direction (the cross product of its X and Y directions)
+
+This is a generalized version of `Direction3d.xyZ`, `Direction3d.yzX` and
+`Direction3d.zxY`; for example,
+
+    Direction3d.xyZ
+
+is equivalent to
+
+    Direction3d.fromAzimuthInAndElevationFrom
+        SketchPlane3d.xy
+
+-}
+fromAzimuthInAndElevationFrom : SketchPlane3d units coordinates3d defines -> Angle -> Angle -> Direction3d coordinates3d
 fromAzimuthInAndElevationFrom (Types.SketchPlane3d sketchPlane) (Quantity azimuth) (Quantity elevation) =
     let
         (Types.Direction3d i) =
@@ -890,59 +1071,59 @@ rotateAround (Types.Axis3d axis) (Quantity angle) (Types.Direction3d d) =
         qw =
             cos halfAngle
 
-        wx =
+        qwx =
             qw * qx
 
-        wy =
+        qwy =
             qw * qy
 
-        wz =
+        qwz =
             qw * qz
 
-        xx =
+        qxx =
             qx * qx
 
-        xy =
+        qxy =
             qx * qy
 
-        xz =
+        qxz =
             qx * qz
 
-        yy =
+        qyy =
             qy * qy
 
-        yz =
+        qyz =
             qy * qz
 
-        zz =
+        qzz =
             qz * qz
 
         a00 =
-            1 - 2 * (yy + zz)
+            1 - 2 * (qyy + qzz)
 
         a10 =
-            2 * (xy + wz)
+            2 * (qxy + qwz)
 
         a20 =
-            2 * (xz - wy)
+            2 * (qxz - qwy)
 
         a01 =
-            2 * (xy - wz)
+            2 * (qxy - qwz)
 
         a11 =
-            1 - 2 * (xx + zz)
+            1 - 2 * (qxx + qzz)
 
         a21 =
-            2 * (yz + wx)
+            2 * (qyz + qwx)
 
         a02 =
-            2 * (xz + wy)
+            2 * (qxz + qwy)
 
         a12 =
-            2 * (yz - wx)
+            2 * (qyz - qwx)
 
         a22 =
-            1 - 2 * (xx + yy)
+            1 - 2 * (qxx + qyy)
     in
     Types.Direction3d
         { x = a00 * d.x + a01 * d.y + a02 * d.z
