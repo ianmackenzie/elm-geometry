@@ -102,9 +102,7 @@ z =
 {-| Construct an axis through the given point, with the given direction.
 
     exampleAxis =
-        Axis3d.through
-            (Point3d.meters 1 2 3)
-            Direction3d.y
+        Axis3d.through (Point3d.meters 1 2 3) Direction3d.y
 
 -}
 through : Point3d units coordinates -> Direction3d coordinates -> Axis3d units coordinates
@@ -138,20 +136,12 @@ specified in XY coordinates _within_ the sketch plane.
             (Direction2d.degrees 30)
 
     Axis3d.on SketchPlane3d.xy axis2d
-    --> Axis3d.through
-    -->     (Point3d.meters 1 3 0)
-    -->     (Direction3d.fromAzimuthAndElevation
-    -->         (Angle.degrees 30)
-    -->         (Angle.degrees 0)
-    -->     )
+    --> Axis3d.through (Point3d.meters 1 3 0)
+    -->     (Direction3d.xy (Angle.degrees 30))
 
     Axis3d.on SketchPlane3d.zx axis2d
-    --> Axis3d.through
-    -->     (Point3d.meters 3 0 1)
-    -->     (Direction3d.fromAzimuthAndElevation
-    -->         (Angle.degrees 0)
-    -->         (Angle.degrees 60)
-    -->     )
+    --> Axis3d.through (Point3d.meters 3 0 1)
+    -->     (Direction3d.zx (Angle.degees 30))
 
 -}
 on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Axis2d units coordinates2d -> Axis3d units coordinates3d
@@ -212,7 +202,9 @@ moveTo newOrigin (Types.Axis3d axis) =
 {-| Rotate an axis around another axis by a given angle. The axis to rotate
 around is given first and the axis to rotate is given last.
 
-    Axis3d.rotateAround Axis3d.z (Angle.degrees 90) exampleAxis
+    exampleAxis
+        |> Axis3d.rotateAround Axis3d.z
+            (Angle.degrees 90)
     --> Axis3d.withDirection Direction3d.negativeX
     -->     (Point3d.meters -2 1 3)
 
@@ -246,15 +238,7 @@ translateBy vector (Types.Axis3d axis) =
     through (Point3d.translateBy vector axis.originPoint) axis.direction
 
 
-{-| Translate an axis in a given direction by a given distance;
-
-    Axis3d.translateIn direction distance
-
-is equivalent to
-
-    Axis3d.translateBy
-        (Vector3d.withLength distance direction)
-
+{-| Translate an axis in a given direction by a given distance.
 -}
 translateIn : Direction3d coordinates -> Quantity Float units -> Axis3d units coordinates -> Axis3d units coordinates
 translateIn translationDirection distance axis =
@@ -279,10 +263,9 @@ of an axis onto a plane. If the given axis is exactly perpendicular to the given
 plane, returns `Nothing`.
 
     Axis3d.projectOnto Plane3d.xy exampleAxis
-    --> Just
-    -->     (Axis3d.withDirection Direction3d.y
+    --> Just <|
+    -->     Axis3d.withDirection Direction3d.y
     -->         (Point3d.meters 1 2 0)
-    -->     )
 
     Axis3d.projectOnto Plane3d.xy Axis3d.z
     --> Nothing
@@ -302,8 +285,7 @@ projectOnto plane (Types.Axis3d axis) =
 coordinates relative to a given reference frame.
 
     localFrame =
-        Frame3d.atPoint
-            (Point3d.meters 3 3 3)
+        Frame3d.atPoint (Point3d.meters 3 3 3)
 
     Axis3d.relativeTo localFrame exampleAxis
     --> Axis3d.withDirection Direction3d.y
@@ -320,8 +302,7 @@ relativeTo frame (Types.Axis3d axis) =
 frame, and return that axis expressed in global coordinates.
 
     localFrame =
-        Frame3d.atPoint
-            (Point3d.meters 3 3 3)
+        Frame3d.atPoint (Point3d.meters 3 3 3)
 
     Axis3d.placeIn localFrame exampleAxis
     --> Axis3d.withDirection Direction3d.y
@@ -343,18 +324,16 @@ This is only possible if the axis is not perpendicular to the sketch
 plane; if it is perpendicular, `Nothing` is returned.
 
     Axis3d.projectInto SketchPlane3d.xy exampleAxis
-    --> Just
-    -->     (Axis2d.withDirection Direction2d.y
+    --> Just <|
+    -->     Axis2d.withDirection Direction2d.y
     -->         (Point2d.meters 1 2)
-    -->     )
 
     -- The global Y direction is the X direction of the
     -- YZ plane:
     Axis3d.projectInto SketchPlane3d.yz exampleAxis
-    --> Just
-    -->     (Axis2d.withDirection Direction2d.x
+    --> Just <|
+    -->     Axis2d.withDirection Direction2d.x
     -->         (Point2d.meters 2 3)
-    -->     )
 
     Axis3d.projectInto SketchPlane3d.xz exampleAxis
     --> Nothing
