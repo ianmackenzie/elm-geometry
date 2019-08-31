@@ -212,15 +212,7 @@ translateBy vector (Types.Axis2d axis) =
     through (Point2d.translateBy vector axis.originPoint) axis.direction
 
 
-{-| Translate an axis in a given direction by a given distance;
-
-    Axis2d.translateIn direction distance
-
-is equivalent to
-
-    Axis2d.translateBy
-        (Vector2d.withLength distance direction)
-
+{-| Translate an axis in a given direction by a given distance.
 -}
 translateIn : Direction2d coordinates -> Quantity Float units -> Axis2d units coordinates -> Axis2d units coordinates
 translateIn translationDirection distance axis =
