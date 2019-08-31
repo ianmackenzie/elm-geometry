@@ -924,15 +924,6 @@ reverse ((Types.Arc2d arc) as arc_) =
 
 
 {-| Scale an arc about a given point by a given scale.
-
-    point =
-        Point2d.meters 0 1
-
-    Arc2d.scaleAbout point 2 exampleArc
-    --> Point2d.meters 6 1
-    -->     |> Arc2d.sweptAround (Point2d.meters 2 1)
-    -->         (Angle.degrees 90)
-
 -}
 scaleAbout : Point2d units coordinates -> Float -> Arc2d units coordinates -> Arc2d units coordinates
 scaleAbout point scale (Types.Arc2d arc) =
@@ -950,12 +941,6 @@ scaleAbout point scale (Types.Arc2d arc) =
 
 
 {-| Rotate an arc around a given point by a given angle.
-
-    Arc2d.rotateAround Point2d.origin (Angle.degrees 90)
-    --> Point2d.meters -1 3
-    -->     |> Arc2d.sweptAround (Point2d.meters -1 1)
-    -->         (Angle.degrees 90)
-
 -}
 rotateAround : Point2d units coordinates -> Angle -> Arc2d units coordinates -> Arc2d units coordinates
 rotateAround point angle (Types.Arc2d arc) =
@@ -968,15 +953,6 @@ rotateAround point angle (Types.Arc2d arc) =
 
 
 {-| Translate an arc by a given displacement.
-
-    displacement =
-        Vector2d.meters 2 3
-
-    Arc2d.translateBy displacement exampleArc
-    --> Point2d.meters 5 4
-    -->     |> Arc2d.sweptAround (Point2d.meters 3 4)
-    -->         (Angle.degrees 90)
-
 -}
 translateBy : Vector2d units coordinates -> Arc2d units coordinates -> Arc2d units coordinates
 translateBy displacement (Types.Arc2d arc) =
@@ -988,15 +964,7 @@ translateBy displacement (Types.Arc2d arc) =
         }
 
 
-{-| Translate an arc in a given direction by a given distance;
-
-    Arc2d.translateIn direction distance
-
-is equivalent to
-
-    Arc2d.translateBy
-        (Vector2d.withLength distance direction)
-
+{-| Translate an arc in a given direction by a given distance.
 -}
 translateIn : Direction2d coordinates -> Quantity Float units -> Arc2d units coordinates -> Arc2d units coordinates
 translateIn direction distance arc =
@@ -1004,12 +972,6 @@ translateIn direction distance arc =
 
 
 {-| Mirror an arc across a given axis.
-
-    Arc2d.mirrorAcross Axis2d.y exampleArc
-    --> Point2d.meters -3 1
-    -->     |> Arc2d.sweptAround (Point2d.meters -1 1)
-    -->         (Angle.degrees -90)
-
 -}
 mirrorAcross : Axis2d units coordinates -> Arc2d units coordinates -> Arc2d units coordinates
 mirrorAcross axis (Types.Arc2d arc) =
@@ -1024,15 +986,6 @@ mirrorAcross axis (Types.Arc2d arc) =
 
 {-| Take an arc defined in global coordinates, and return it expressed in local
 coordinates relative to a given reference frame.
-
-    localFrame =
-        Frame2d.atPoint (Point2d.meters 1 2)
-
-    Arc2d.relativeTo localFrame exampleArc
-    --> Point2d.meters 2 -1
-    -->     |> Arc2d.sweptAround (Point2d.meters 0 -1)
-    -->         (Angle.degrees 90)
-
 -}
 relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Arc2d units globalCoordinates -> Arc2d units localCoordinates
 relativeTo frame (Types.Arc2d arc) =
@@ -1057,15 +1010,6 @@ relativeTo frame (Types.Arc2d arc) =
 
 {-| Take an arc considered to be defined in local coordinates relative to a
 given reference frame, and return that arc expressed in global coordinates.
-
-    localFrame =
-        Frame2d.atPoint (Point2d.meters 1 2)
-
-    Arc2d.placeIn localFrame exampleArc
-    --> Point2d.meters 4 3
-    -->     |> Arc2d.sweptAround (Point2d.meters 2 3)
-    -->         (Angle.degrees 90)
-
 -}
 placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Arc2d units localCoordinates -> Arc2d units globalCoordinates
 placeIn frame (Types.Arc2d arc) =
