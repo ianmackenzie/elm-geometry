@@ -188,38 +188,27 @@ xz =
         }
 
 
-{-| Construct a sketch plane with the given normal direction, having the given
-origin point. The X and Y basis directions of the sketch plane will:
-
-  - be perpendicular to each other,
-  - both be perpendicular to the given normal direction, and
-  - have a cross product equal to the given normal direction.
-
-This is useful when constructing 'scratch' sketch planes where the specific X/Y
-directions are unimportant.
+{-| Construct a sketch plane having the given origin point and normal direction.
+Perpendicular X and Y directions will be chosen arbitrarily; this is useful when
+constructing 'scratch' sketch planes where the specific X/Y directions are
+unimportant.
 
     sketchPlane =
-        SketchPlane3d.withNormalDirection
-            (Direction3d.fromAzimuthAndElevation
-                (Angle.degrees 0)
-                (Angle.degrees 60)
-            )
-            Point3d.origin
+        SketchPlane3d.through Point3d.origin
+            (Direction3d.xz (Angle.degrees 60))
 
     SketchPlane3d.originPoint sketchPlane
     --> Point3d.origin
 
     SketchPlane3d.xDirection sketchPlane
-    --> Direction3d.fromAzimuthAndElevation
-    -->     (Angle.degrees 0)
-    -->     (Angle.degrees -30)
+    --> Direction3d.xz (Angle.degrees -30)
 
     SketchPlane3d.yDirection sketchPlane
     --> Direction3d.y
 
 -}
-withNormalDirection : Direction3d coordinates -> Point3d units coordinates -> SketchPlane3d units coordinates defines
-withNormalDirection givenNormalDirection givenOrigin =
+through : Point3d units coordinates -> Direction3d coordinates -> SketchPlane3d units coordinates defines
+through givenOrigin givenNormalDirection =
     let
         ( computedXDirection, computedYDirection ) =
             Direction3d.perpendicularBasis givenNormalDirection
@@ -229,6 +218,14 @@ withNormalDirection givenNormalDirection givenOrigin =
         , xDirection = computedXDirection
         , yDirection = computedYDirection
         }
+
+
+{-| Construct a sketch plane with the given normal direction, through the given
+point. Flipped version of `through`.
+-}
+withNormalDirection : Direction3d coordinates -> Point3d units coordinates -> SketchPlane3d units coordinates defines
+withNormalDirection givenNormalDirection givenOrigin =
+    through givenOrigin givenNormalDirection
 
 
 {-| Construct one sketch plane lying on another sketch plane, but with a
