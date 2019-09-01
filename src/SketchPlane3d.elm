@@ -10,8 +10,8 @@
 module SketchPlane3d exposing
     ( SketchPlane3d
     , xy, yx, yz, zy, zx, xz
-    , toPlane
     , through, withNormalDirection, on, throughPoints, fromPlane, copy, unsafe
+    , toPlane, toFrame
     , originPoint, xDirection, yDirection, normalDirection, xAxis, yAxis, normalAxis
     , offsetBy, reverseX, reverseY, moveTo, rotateAround, rotateAroundOwn, translateBy, translateIn, translateAlongOwn, mirrorAcross
     , relativeTo, placeIn
@@ -85,7 +85,7 @@ Sketch planes can also be constructed from `Frame3d` values using
 
 # Conversions
 
-@docs toPlane
+@docs toPlane, toFrame
 
 
 # Properties
@@ -509,6 +509,21 @@ normal direction.
 toPlane : SketchPlane3d units coordinates defines -> Plane3d units coordinates
 toPlane sketchPlane =
     Plane3d.through (originPoint sketchPlane) (normalDirection sketchPlane)
+
+
+{-| Convert a `SketchPlane3d` to a `Frame3d` with the same origin point and X
+and Y directions. The Z direction of the returned frame will be equal to the
+normal direction of the given sketch plane. This means that the given sketch
+plane will be the XY sketch plane of the returned frame.
+-}
+toFrame : SketchPlane3d units coordinates defines2d -> Frame3d units coordinates defines3d
+toFrame sketchPlane =
+    Types.Frame3d
+        { originPoint = originPoint sketchPlane
+        , xDirection = xDirection sketchPlane
+        , yDirection = yDirection sketchPlane
+        , zDirection = normalDirection sketchPlane
+        }
 
 
 {-| Create a 'fresh copy' of a sketch plane: one with the same origin point and

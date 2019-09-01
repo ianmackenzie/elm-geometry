@@ -11,6 +11,7 @@ module Frame3d exposing
     ( Frame3d
     , atOrigin
     , withXDirection, withYDirection, withZDirection, atPoint, copy, unsafe
+    , fromXAxis, fromYAxis, fromZAxis
     , originPoint, xDirection, yDirection, zDirection, isRightHanded
     , xAxis, yAxis, zAxis
     , xyPlane, yxPlane, yzPlane, zyPlane, zxPlane, xzPlane
@@ -78,6 +79,11 @@ directions will be mutually perpendicular, and will be oriented so that the
 resulting frame is [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness).
 
 @docs withXDirection, withYDirection, withZDirection, atPoint, copy, unsafe
+
+
+## From axes
+
+@docs fromXAxis, fromYAxis, fromZAxis
 
 
 # Properties
@@ -311,6 +317,66 @@ atPoint point =
         , xDirection = Direction3d.x
         , yDirection = Direction3d.y
         , zDirection = Direction3d.z
+        }
+
+
+{-| Construct a `Frame3d` with the given X axis. Perpendicular Y and Z
+directions will be chosen arbitrarily.
+-}
+fromXAxis : Axis3d units coordinates -> Frame3d units coordinates defines
+fromXAxis givenXAxis =
+    let
+        givenXDirection =
+            Axis3d.direction givenXAxis
+
+        ( computedYDirection, computedZDirection ) =
+            Direction3d.perpendicularBasis givenXDirection
+    in
+    unsafe
+        { originPoint = Axis3d.originPoint givenXAxis
+        , xDirection = givenXDirection
+        , yDirection = computedYDirection
+        , zDirection = computedZDirection
+        }
+
+
+{-| Construct a `Frame3d` with the given Y axis. Perpendicular X and Z
+directions will be chosen arbitrarily.
+-}
+fromYAxis : Axis3d units coordinates -> Frame3d units coordinates defines
+fromYAxis givenYAxis =
+    let
+        givenYDirection =
+            Axis3d.direction givenYAxis
+
+        ( computedZDirection, computedXDirection ) =
+            Direction3d.perpendicularBasis givenYDirection
+    in
+    unsafe
+        { originPoint = Axis3d.originPoint givenYAxis
+        , xDirection = computedXDirection
+        , yDirection = givenYDirection
+        , zDirection = computedZDirection
+        }
+
+
+{-| Construct a `Frame3d` with the given Z axis. Perpendicular X and Y
+directions will be chosen arbitrarily.
+-}
+fromZAxis : Axis3d units coordinates -> Frame3d units coordinates defines
+fromZAxis givenZAxis =
+    let
+        givenZDirection =
+            Axis3d.direction givenZAxis
+
+        ( computedXDirection, computedYDirection ) =
+            Direction3d.perpendicularBasis givenZDirection
+    in
+    unsafe
+        { originPoint = Axis3d.originPoint givenZAxis
+        , xDirection = computedXDirection
+        , yDirection = computedYDirection
+        , zDirection = givenZDirection
         }
 
 
