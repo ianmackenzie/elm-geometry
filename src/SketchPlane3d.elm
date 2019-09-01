@@ -10,8 +10,8 @@
 module SketchPlane3d exposing
     ( SketchPlane3d
     , xy, yx, yz, zy, zx, xz
-    , withNormalDirection, on, throughPoints, fromPlane, copy, unsafe
     , toPlane
+    , through, withNormalDirection, on, throughPoints, fromPlane, copy, unsafe
     , originPoint, xDirection, yDirection, normalDirection, xAxis, yAxis, normalAxis
     , offsetBy, reverseX, reverseY, moveTo, rotateAround, rotateAroundOwn, translateBy, translateIn, translateAlongOwn, mirrorAcross
     , relativeTo, placeIn
@@ -80,7 +80,7 @@ point, and use the two indicated global axes as their X and Y axes. For example,
 Sketch planes can also be constructed from `Frame3d` values using
 `Frame3d.xySketchPlane` etc.
 
-@docs withNormalDirection, on, throughPoints, fromPlane, copy, unsafe
+@docs through, withNormalDirection, on, throughPoints, fromPlane, copy, unsafe
 
 
 # Conversions
