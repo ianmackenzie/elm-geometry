@@ -246,7 +246,9 @@ interpolate lineSegment t =
     Point3d.interpolateFrom start end t
 
 
-{-| TODO
+{-| Try to find the unique intersection point of a line segment with a plane. If
+the line segment does not intersect the plane, or if it is coplanar with it
+(lying perfectly in the plane), returns `Nothing`.
 -}
 intersectionWithPlane : Plane3d units coordinates -> LineSegment3d units coordinates -> Maybe (Point3d units coordinates)
 intersectionWithPlane plane lineSegment =
