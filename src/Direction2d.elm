@@ -227,7 +227,7 @@ unsafe components =
     Types.Direction2d components
 
 
-{-| TODO
+{-| Extract the X and Y components of a direction as a record.
 -}
 unwrap : Direction2d coordinates -> { x : Float, y : Float }
 unwrap (Types.Direction2d components) =

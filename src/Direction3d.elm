@@ -971,7 +971,7 @@ toVector (Types.Direction3d components) =
     Types.Vector3d components
 
 
-{-| TODO
+{-| Extract the X, Y and Z components of a direction as a record.
 -}
 unwrap : Direction3d coordinates -> { x : Float, y : Float, z : Float }
 unwrap (Types.Direction3d coordinates) =
