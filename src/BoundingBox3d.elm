@@ -588,49 +588,6 @@ intersects other boundingBox =
         && (maxZ boundingBox |> Quantity.greaterThanOrEqualTo (minZ other))
 
 
-squaredSeparationAmount : BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> Maybe (Quantity Float (Squared units))
-squaredSeparationAmount firstBox secondBox =
-    let
-        xSeparation =
-            Quantity.max (minX firstBox) (minX secondBox)
-                |> Quantity.minus
-                    (Quantity.min (maxX firstBox) (maxX secondBox))
-
-        ySeparation =
-            Quantity.max (minY firstBox) (minY secondBox)
-                |> Quantity.minus
-                    (Quantity.min (maxY firstBox) (maxY secondBox))
-
-        zSeparation =
-            Quantity.max (minZ firstBox) (minZ secondBox)
-                |> Quantity.minus
-                    (Quantity.min (maxZ firstBox) (maxZ secondBox))
-    in
-    if
-        (xSeparation |> Quantity.greaterThanOrEqualTo Quantity.zero)
-            || (ySeparation |> Quantity.greaterThanOrEqualTo Quantity.zero)
-            || (zSeparation |> Quantity.greaterThanOrEqualTo Quantity.zero)
-    then
-        let
-            dX =
-                Quantity.max xSeparation Quantity.zero
-
-            dY =
-                Quantity.max ySeparation Quantity.zero
-
-            dZ =
-                Quantity.max zSeparation Quantity.zero
-        in
-        Just
-            (Quantity.squared dX
-                |> Quantity.plus (Quantity.squared dY)
-                |> Quantity.plus (Quantity.squared dZ)
-            )
-
-    else
-        Nothing
-
-
 {-| Check two boxes overlap by at least the given amount. For example, you could
 implement a tolerant collision check (one that only returns true if the boxes
 overlap by at least a millimeter, and ignores boxes that just barely touch each
