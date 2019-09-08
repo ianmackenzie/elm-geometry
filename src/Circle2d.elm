@@ -78,7 +78,7 @@ type alias Circle2d units coordinates =
 {-| Construct a circle from its radius and center point:
 
     exampleCircle =
-        Circle2d.withRadius 3
+        Circle2d.withRadius (Length.meters 3)
             (Point2d.meters 1 2)
 
 If you pass a negative radius, the absolute value will be used.
@@ -97,7 +97,7 @@ the three given points are collinear, returns `Nothing`.
         (Point2d.meters 1 0)
         (Point2d.meters 0 1)
     --> Just
-    -->     (Circle2d.withRadius 0.7071
+    -->     (Circle2d.withRadius (Length.meters 0.7071)
     -->         (Point2d.meters 0.5 0.5)
     -->     )
 
@@ -106,7 +106,7 @@ the three given points are collinear, returns `Nothing`.
         (Point2d.meters 2 1)
         (Point2d.meters 4 0)
     --> Just
-    -->     (Circle2d.withRadius 2.5
+    -->     (Circle2d.withRadius (Length.meters 2.5)
     -->         (Point2d.meters 2 -1.5)
     -->     )
 
@@ -152,7 +152,8 @@ second.
 
     Circle2d.sweptAround Point2d.origin
         (Point2d.meters 2 0)
-    --> Circle2d.withRadius 2 Point2d.origin
+    --> Circle2d.withRadius (Length.meters 2)
+    -->     Point2d.origin
 
 The above example could be rewritten as
 
@@ -187,7 +188,7 @@ centerPoint (Types.Circle2d properties) =
 {-| Get the radius of a circle.
 
     Circle2d.radius exampleCircle
-    --> 3
+    --> Length.meters 3
 
 -}
 radius : Circle2d units coordinates -> Quantity Float units
@@ -198,7 +199,7 @@ radius (Types.Circle2d properties) =
 {-| Get the diameter of a circle.
 
     Circle2d.diameter exampleCircle
-    --> 6
+    --> Length.meters 6
 
 -}
 diameter : Circle2d units coordinates -> Quantity Float units
@@ -209,7 +210,7 @@ diameter circle =
 {-| Get the area of a circle.
 
     Circle2d.area exampleCircle
-    --> 28.2743
+    --> Area.squareMeters 28.2743
 
 -}
 area : Circle2d units coordinates -> Quantity Float (Squared units)
@@ -220,7 +221,7 @@ area circle =
 {-| Get the circumference of a circle.
 
     Circle2d.circumference exampleCircle
-    --> 18.8496
+    --> Length.meters 18.8496
 
 -}
 circumference : Circle2d units coordinates -> Quantity Float units
@@ -271,18 +272,6 @@ contains point circle =
 
 
 {-| Scale a circle about a given point by a given scale.
-
-    Circle2d.scaleAbout Point2d.origin 2 exampleCircle
-    --> Circle2d.withRadius 6
-    -->     (Point2d.meters 2 4)
-
-    exampleCircle
-        |> Circle2d.scaleAbout
-            (Point2d.meters 1 2)
-            0.5
-    --> Circle2d.withRadius 1.5
-    -->     (Point2d.meters 1 2)
-
 -}
 scaleAbout : Point2d units coordinates -> Float -> Circle2d units coordinates -> Circle2d units coordinates
 scaleAbout point scale (Types.Circle2d circle) =
@@ -290,14 +279,7 @@ scaleAbout point scale (Types.Circle2d circle) =
         (Point2d.scaleAbout point scale circle.centerPoint)
 
 
-{-| Rotate a circle around a given point by a given angle (in radians).
-
-    exampleCircle
-        |> Circle2d.rotateAround Point2d.origin
-            (Angle.degrees 90)
-    --> Circle2d.withRadius 3
-    -->     (Point2d.meters -2 1)
-
+{-| Rotate a circle around a given point by a given angle.
 -}
 rotateAround : Point2d units coordinates -> Angle -> Circle2d units coordinates -> Circle2d units coordinates
 rotateAround point angle =
@@ -310,13 +292,6 @@ rotateAround point angle =
 
 
 {-| Translate a circle by a given displacement.
-
-    exampleCircle
-        |> Circle2d.translateBy
-            (Vector2d.meters 2 2)
-    --> Circle2d.withRadius 3
-    -->     (Point2d.meters 3 4)
-
 -}
 translateBy : Vector2d units coordinates -> Circle2d units coordinates -> Circle2d units coordinates
 translateBy displacement (Types.Circle2d circle) =
@@ -324,15 +299,7 @@ translateBy displacement (Types.Circle2d circle) =
         (Point2d.translateBy displacement circle.centerPoint)
 
 
-{-| Translate a circle in a given direction by a given distance;
-
-    Circle2d.translateIn direction distance
-
-is equivalent to
-
-    Circle2d.translateBy
-        (Vector2d.withLength distance direction)
-
+{-| Translate a circle in a given direction by a given distance.
 -}
 translateIn : Direction2d coordinates -> Quantity Float units -> Circle2d units coordinates -> Circle2d units coordinates
 translateIn direction distance circle =
@@ -340,11 +307,6 @@ translateIn direction distance circle =
 
 
 {-| Mirror a circle across a given axis.
-
-    Circle2d.mirrorAcross Axis2d.x exampleCircle
-    --> Circle2d.withRadius 3
-    -->     (Point2d.meters 1 -2)
-
 -}
 mirrorAcross : Axis2d units coordinates -> Circle2d units coordinates -> Circle2d units coordinates
 mirrorAcross axis (Types.Circle2d circle) =
@@ -353,14 +315,6 @@ mirrorAcross axis (Types.Circle2d circle) =
 
 {-| Take a circle defined in global coordinates, and return it expressed in
 local coordinates relative to a given reference frame.
-
-    localFrame =
-        Frame2d.atPoint (Point2d.meters 2 3)
-
-    Circle2d.relativeTo localFrame exampleCircle
-    --> Circle2d.withRadius 3
-    -->     (Point2d.meters -1 -1)
-
 -}
 relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Circle2d units globalCoordinates -> Circle2d units localCoordinates
 relativeTo frame (Types.Circle2d circle) =
@@ -369,14 +323,6 @@ relativeTo frame (Types.Circle2d circle) =
 
 {-| Take a circle considered to be defined in local coordinates relative to a
 given reference frame, and return that circle expressed in global coordinates.
-
-    localFrame =
-        Frame2d.atPoint (Point2d.meters 2 3)
-
-    Circle2d.placeIn localFrame exampleCircle
-    --> Circle2d.withRadius 3
-    -->     (Point2d.meters 3 5)
-
 -}
 placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Circle2d units localCoordinates -> Circle2d units globalCoordinates
 placeIn frame (Types.Circle2d circle) =
