@@ -79,7 +79,7 @@ coordinates.
 
 # Properties
 
-@docs xCoordinate, yCoordinate, xCoordinateIn, yCoordinateIn, polarCoordinates
+@docs xCoordinate, yCoordinate, xCoordinateIn, yCoordinateIn
 
 
 # Comparison
@@ -89,7 +89,7 @@ coordinates.
 
 # Measurement
 
-@docs distanceFrom, squaredDistanceFrom, signedDistanceAlong, signedDistanceFrom
+@docs distanceFrom, signedDistanceAlong, signedDistanceFrom
 
 
 # Transformations

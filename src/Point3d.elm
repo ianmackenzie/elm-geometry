@@ -73,7 +73,7 @@ coordinates.
 
 # Properties
 
-@docs coordinates, coordinatesIn, xCoordinate, yCoordinate, zCoordinate, xCoordinateIn, yCoordinateIn, zCoordinateIn
+@docs xCoordinate, yCoordinate, zCoordinate, xCoordinateIn, yCoordinateIn, zCoordinateIn
 
 
 # Comparison
@@ -83,7 +83,7 @@ coordinates.
 
 # Measurement
 
-@docs distanceFrom, squaredDistanceFrom, signedDistanceAlong, distanceFromAxis, squaredDistanceFromAxis, signedDistanceFrom
+@docs distanceFrom, signedDistanceAlong, distanceFromAxis, signedDistanceFrom
 
 
 # Transformations

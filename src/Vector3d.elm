@@ -77,7 +77,7 @@ components.
 
 # Properties
 
-@docs xComponent, yComponent, zComponent, componentIn, length, squaredLength, direction
+@docs xComponent, yComponent, zComponent, componentIn, length, direction
 
 
 # Comparison

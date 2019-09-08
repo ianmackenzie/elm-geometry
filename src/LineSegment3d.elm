@@ -35,7 +35,7 @@ functionality such as:
 
 # Properties
 
-@docs startPoint, endPoint, endpoints, midpoint, length, squaredLength, direction, perpendicularDirection, vector, boundingBox
+@docs startPoint, endPoint, endpoints, midpoint, length, direction, perpendicularDirection, vector, boundingBox
 
 
 # Interpolation
