@@ -60,7 +60,8 @@ like you can add two vectors.
 
 These functions are useful for interoperability with other Elm code that uses
 plain `Float` tuples or records to represent points. The resulting `Point2d`
-values will have [unitless](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Quantity#unitless-quantities)
+values will have
+[unitless](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Quantity#unitless-quantities)
 coordinates.
 
 @docs fromTuple, toTuple, fromRecord, toRecord
