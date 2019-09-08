@@ -117,10 +117,10 @@ type alias CubicSpline3d units coordinates =
 
     exampleSpline =
         CubicSpline3d.fromControlPoints
-            (Point3d.fromTuple meters ( 1, 1, 1 ))
-            (Point3d.fromTuple meters ( 3, 1, 1 ))
-            (Point3d.fromTuple meters ( 3, 3, 1 ))
-            (Point3d.fromTuple meters ( 3, 3, 3 ))
+            (Point3d.meters 1 1 1)
+            (Point3d.meters 3 1 1)
+            (Point3d.meters 3 3 1)
+            (Point3d.meters 3 3 3)
 
 -}
 fromControlPoints : Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> CubicSpline3d units coordinates
@@ -138,9 +138,8 @@ to a given end point with a given end derivative, like so:
 
 ![Cubic spline from endpoints](https://ianmackenzie.github.io/elm-geometry/1.0.0/CubicSpline2d/fromEndpoints.svg)
 
-The spline is based on a parameter that ranges from 0 to 1; as a result, in most
-cases the length of each derivative vector should be roughly equal to the length
-of the resulting spline.
+For good results, in most cases the length of each derivative vector should be
+roughly equal to the length of the resulting spline.
 
 -}
 fromEndpoints : Point3d units coordinates -> Vector3d units coordinates -> Point3d units coordinates -> Vector3d units coordinates -> CubicSpline3d units coordinates
@@ -156,26 +155,16 @@ fromEndpoints givenStartPoint givenStartDerivative givenEndPoint givenEndDerivat
 specified in XY coordinates _within_ the sketch plane.
 
     CubicSpline3d.on SketchPlane3d.xz <|
-        CubicSpline2d.with
-            { startPoint =
-                Point2d.meters 1 1
-            , startControlPoint =
-                Point2d.meters 3 4
-            , endControlPoint =
-                Point2d.meters 5 1
-            , endPoint =
-                Point2d.meters 7 4
-            }
-    --> CubicSpline3d.with
-    -->     { startPoint =
-    -->         Point3d.meters 1 0 1
-    -->     , startControlPoint =
-    -->         Point3d.meters 3 0 4
-    -->     , endControlPoint =
-    -->         Point3d.meters 5 0 1
-    -->     , endPoint =
-    -->         Point3d.meters 7 0 4
-    -->     }
+        CubicSpline2d.fromControlPoints
+            (Point2d.meters 1 1)
+            (Point2d.meters 3 4)
+            (Point2d.meters 5 1)
+            (Point2d.meters 7 4)
+    --> CubicSpline3d.fromControlPoints
+    -->     (Point3d.meters 1 0 1)
+    -->     (Point3d.meters 3 0 4)
+    -->     (Point3d.meters 5 0 1)
+    -->     (Point3d.meters 7 0 4)
 
 -}
 on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> CubicSpline2d units coordinates2d -> CubicSpline3d units coordinates3d
@@ -191,26 +180,17 @@ on sketchPlane spline2d =
 spline can be represented exactly as a cubic spline).
 
     quadraticSpline =
-        QuadraticSpline3d.with
-            { startPoint =
-                Point3d.fromCoordinates ( 0, 0, 0  )
-            , controlPoint =
-                Point3d.meters 3 0 0
-            , endPoint =
-                Point3d.meters 3 3 0
-            }
+        QuadraticSpline3d.fromControlPoints
+            Point3d.origin
+            (Point3d.meters 3 0 0)
+            (Point3d.meters 3 3 0)
 
     CubicSpline3d.fromQuadraticSpline quadraticSpline
-    --> CubicSpline3d.with
-    -->     { startPoint =
-    -->         Point3d.meters 0 0 0
-    -->     , startControlPoint =
-    -->         Point3d.meters 2 0 0
-    -->     , endControlPoint =
-    -->         Point3d.meters 3 1 0
-    -->     , endPoint =
-    -->         Point3d.meters 3 3 0
-    -->     )
+    --> CubicSpline3d.fromControlPoints
+    -->     Point3d.origin
+    -->     (Point3d.meters 2 0 0)
+    -->     (Point3d.meters 3 1 0)
+    -->     (Point3d.meters 3 3 0)
 
 -}
 fromQuadraticSpline : QuadraticSpline3d units coordinates -> CubicSpline3d units coordinates
@@ -244,42 +224,46 @@ fromQuadraticSpline quadraticSpline =
         cubicFourthControlPoint
 
 
-{-| Get the start point of a spline. Equal to [`firstControlPoint`](#firstControlPoint).
+{-| Get the start point of a spline. Equal to
+[`firstControlPoint`](#firstControlPoint).
 -}
 startPoint : CubicSpline3d units coordinates -> Point3d units coordinates
 startPoint (Types.CubicSpline3d spline) =
     spline.firstControlPoint
 
 
-{-| Get the end point of a spline. Equal to [`fourthControlPoint`](#fourthControlPoint).
+{-| Get the end point of a spline. Equal to
+[`fourthControlPoint`](#fourthControlPoint).
 -}
 endPoint : CubicSpline3d units coordinates -> Point3d units coordinates
 endPoint (Types.CubicSpline3d spline) =
     spline.fourthControlPoint
 
 
-{-| Get the first control point of the spline. Equal to [`startPoint`](#startPoint).
+{-| Get the first control point of a spline. Equal to
+[`startPoint`](#startPoint).
 -}
 firstControlPoint : CubicSpline3d units coordinates -> Point3d units coordinates
 firstControlPoint (Types.CubicSpline3d spline) =
     spline.firstControlPoint
 
 
-{-| Get the second control point of the spline.
+{-| Get the second control point of a spline.
 -}
 secondControlPoint : CubicSpline3d units coordinates -> Point3d units coordinates
 secondControlPoint (Types.CubicSpline3d spline) =
     spline.secondControlPoint
 
 
-{-| Get the third control point of the spline.
+{-| Get the third control point of a spline.
 -}
 thirdControlPoint : CubicSpline3d units coordinates -> Point3d units coordinates
 thirdControlPoint (Types.CubicSpline3d spline) =
     spline.thirdControlPoint
 
 
-{-| Get the fourth and last control point of the spline. Equal to [`endPoint`](#endPoint).
+{-| Get the fourth and last control point of a spline.
+Equal to [`endPoint`](#endPoint).
 -}
 fourthControlPoint : CubicSpline3d units coordinates -> Point3d units coordinates
 fourthControlPoint (Types.CubicSpline3d spline) =
@@ -316,17 +300,6 @@ endDerivative spline =
 result will be the _smallest_ possible bounding box, since for efficiency the
 bounding box is computed from the spline's control points (which cover a larger
 volume than the spline itself).
-
-    CubicSpline3d.boundingBox exampleSpline
-    --> BoundingBox3d.fromExtrema
-    -->     { minX = Length.meters 1
-    -->     , maxX = Length.meters 3
-    -->     , minY = Length.meters 1
-    -->     , maxY = Length.meters 3
-    -->     , minZ = Length.meters 1
-    -->     , maxZ = Length.meters 3
-    -->     }
-
 -}
 boundingBox : CubicSpline3d units coordinates -> BoundingBox3d units coordinates
 boundingBox spline =
@@ -389,17 +362,7 @@ boundingBox spline =
         }
 
 
-{-| Get a point at a given parameter value.
-
-    CubicSpline3d.pointOn exampleSpline ParameterValue.zero
-    --> Point3d.meters 1 1 1
-
-    CubicSpline3d.pointOn exampleSpline ParameterValue.half
-    --> Point3d.meters 2.75 2 1.25
-
-    CubicSpline3d.pointOn exampleSpline ParameterValue.one
-    --> Point3d.meters 3 3 3
-
+{-| Get a point on a spline at a given parameter value.
 -}
 pointOn : CubicSpline3d units coordinates -> Float -> Point3d units coordinates
 pointOn spline parameterValue =
@@ -434,14 +397,7 @@ pointOn spline parameterValue =
     Point3d.interpolateFrom r1 r2 parameterValue
 
 
-{-| If a curve has zero length (consists of just a single point), then we say
-that it is 'degenerate'. Some operations such as computing tangent directions
-are not defined on degenerate curves.
-
-A `Nondegenerate` value represents a spline that is definitely not degenerate.
-It is used as input to functions such as `CubicSpline3d.tangentDirection` and
-can be constructed using `CubicSpline3d.nondegenerate`.
-
+{-| Represents a nondegenerate spline (one that has finite, non-zero length).
 -}
 type Nondegenerate units coordinates
     = NonZeroThirdDerivative (CubicSpline3d units coordinates) (Direction3d coordinates)
@@ -452,10 +408,6 @@ type Nondegenerate units coordinates
 {-| Attempt to construct a nondegenerate spline from a general `CubicSpline3d`.
 If the spline is in fact degenerate (consists of a single point), returns an
 `Err` with that point.
-
-    CubicSpline3d.nondegenerate exampleSpline
-    --> Ok nondegenerateExampleSpline
-
 -}
 nondegenerate : CubicSpline3d units coordinates -> Result (Point3d units coordinates) (Nondegenerate units coordinates)
 nondegenerate spline =
@@ -498,11 +450,6 @@ nondegenerate spline =
 
 
 {-| Convert a nondegenerate spline back to a general `CubicSpline3d`.
-
-    CubicSpline3d.fromNondegenerate
-        nondegenerateExampleSpline
-    --> exampleSpline
-
 -}
 fromNondegenerate : Nondegenerate units coordinates -> CubicSpline3d units coordinates
 fromNondegenerate nondegenerateSpline =
@@ -518,25 +465,7 @@ fromNondegenerate nondegenerateSpline =
 
 
 {-| Get the tangent direction to a nondegenerate spline at a given parameter
-value:
-
-    CubicSpline3d.tangentDirection
-        nondegenerateExampleSpline
-        ParameterValue.zero
-    --> Direction3d.x
-
-    CubicSpline3d.tangentDirection
-        nondegenerateExampleSpline
-        ParameterValue.half
-    --> Direction3d.fromAzimuthAndElevation
-    -->     (Angle.degrees 63.43)
-    -->     (Angle.degrees 24.09)
-
-    CubicSpline3d.tangentDirection
-        nondegenerateExampleSpline
-        ParameterValue.one
-    --> Direction3d.z
-
+value.
 -}
 tangentDirection : Nondegenerate units coordinates -> Float -> Direction3d coordinates
 tangentDirection nondegenerateSpline parameterValue =
@@ -608,16 +537,7 @@ tangentDirection nondegenerateSpline parameterValue =
 
 
 {-| Get both the point and tangent direction of a nondegenerate spline at a
-given parameter value:
-
-    CubicSpline3d.sample nondegenerateExampleSpline
-        ParameterValue.half
-    --> ( Point3d.meters 2.75 2 1.25
-    --> , Direction3d.fromAzimuthAndElevation
-    -->     (Angle.degrees 63.43)
-    -->     (Angle.degrees 24.09)
-    --> )
-
+given parameter value.
 -}
 sample : Nondegenerate units coordinates -> Float -> ( Point3d units coordinates, Direction3d coordinates )
 sample nondegenerateSpline parameterValue =
@@ -628,19 +548,6 @@ sample nondegenerateSpline parameterValue =
 
 {-| Reverse a spline so that the start point becomes the end point, and vice
 versa.
-
-    CubicSpline3d.reverse exampleSpline
-    --> CubicSpline3d.with
-    -->     { startPoint =
-    -->         Point3d.meters 3 3 3
-    -->     , startControlPoint =
-    -->         Point3d.meters 3 3 1
-    -->     , endControlPoint =
-    -->         Point3d.meters 3 1 1
-    -->     , endPoint =
-    -->         Point3d.meters 1 1 1
-    -->     }
-
 -}
 reverse : CubicSpline3d units coordinates -> CubicSpline3d units coordinates
 reverse spline =
@@ -652,41 +559,13 @@ reverse spline =
 
 
 {-| Scale a spline about the given center point by the given scale.
-
-    CubicSpline3d.scaleAbout Point3d.origin 2 exampleSpline
-    --> CubicSpline3d.with
-    -->     { startPoint =
-    -->         Point3d.meters 2 2 2
-    -->     , startControlPoint =
-    -->         Point3d.meters 6 2 2
-    -->     , endControlPoint =
-    -->         Point3d.meters 6 6 2
-    -->     , endPoint =
-    -->         Point3d.meters 6 6 6
-    -->     }
-
 -}
 scaleAbout : Point3d units coordinates -> Float -> CubicSpline3d units coordinates -> CubicSpline3d units coordinates
 scaleAbout point scale spline =
     mapControlPoints (Point3d.scaleAbout point scale) spline
 
 
-{-| Rotate a spline counterclockwise around a given axis by a given angle (in
-radians).
-
-    exampleSpline
-        |> CubicSpline3d.rotateAround Axis3d.z (Angle.degrees 90)
-    --> CubicSpline3d.with
-    -->     { startPoint =
-    -->         Point3d.meters -1 1 1
-    -->     , startControlPoint =
-    -->         Point3d.meters -1 3 1
-    -->     , endControlPoint =
-    -->         Point3d.meters -3 3 1
-    -->     , endPoint =
-    -->         Point3d.meters -3 3 3
-    -->     }
-
+{-| Rotate a spline counterclockwise around a given axis by a given angle.
 -}
 rotateAround : Axis3d units coordinates -> Angle -> CubicSpline3d units coordinates -> CubicSpline3d units coordinates
 rotateAround axis angle spline =
@@ -694,37 +573,13 @@ rotateAround axis angle spline =
 
 
 {-| Translate a spline by a given displacement.
-
-    displacement =
-        Vector3d.meters 2 3 1
-
-    CubicSpline3d.translateBy displacement exampleSpline
-    --> CubicSpline3d.with
-    -->     { startPoint =
-    -->         Point3d.meters 3 4 2
-    -->     , startControlPoint =
-    -->         Point3d.meters 5 4 2
-    -->     , endControlPoint =
-    -->         Point3d.meters 5 6 2
-    -->     , endPoint =
-    -->         Point3d.meters 5 6 4
-    -->     }
-
 -}
 translateBy : Vector3d units coordinates -> CubicSpline3d units coordinates -> CubicSpline3d units coordinates
 translateBy displacement spline =
     mapControlPoints (Point3d.translateBy displacement) spline
 
 
-{-| Translate a spline in a given direction by a given distance;
-
-    CubicSpline3d.translateIn direction distance
-
-is equivalent to
-
-    CubicSpline3d.translateBy
-        (Vector3d.withLength distance direction)
-
+{-| Translate a spline in a given direction by a given distance.
 -}
 translateIn : Direction3d coordinates -> Quantity Float units -> CubicSpline3d units coordinates -> CubicSpline3d units coordinates
 translateIn direction distance spline =
@@ -732,40 +587,13 @@ translateIn direction distance spline =
 
 
 {-| Mirror a spline across a plane.
-
-    CubicSpline3d.mirrorAcross Plane3d.xy exampleSpline
-    --> CubicSpline3d.with
-    -->     { startPoint =
-    -->         Point3d.meters 1 1 -1
-    -->     , startControlPoint =
-    -->         Point3d.meters 3 1 -1
-    -->     , endControlPoint =
-    -->         Point3d.meters 3 3 -1
-    -->     , endPoint =
-    -->         Point3d.meters 3 3 -3
-    -->     }
-
 -}
 mirrorAcross : Plane3d units coordinates -> CubicSpline3d units coordinates -> CubicSpline3d units coordinates
 mirrorAcross plane spline =
     mapControlPoints (Point3d.mirrorAcross plane) spline
 
 
-{-| Find the [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
-of a spline onto a plane.
-
-    CubicSpline3d.projectOnto Plane3d.xy exampleSpline
-    --> CubicSpline3d.with
-    -->     { startPoint =
-    -->         Point3d.meters 1 1 0
-    -->     , startControlPoint =
-    -->         Point3d.meters 3 1 0
-    -->     , endControlPoint =
-    -->         Point3d.meters 3 3 0
-    -->     , endPoint =
-    -->         Point3d.meters 3 3 0
-    -->     }
-
+{-| Find the orthographic projection of a spline onto a plane.
 -}
 projectOnto : Plane3d units coordinates -> CubicSpline3d units coordinates -> CubicSpline3d units coordinates
 projectOnto plane spline =
@@ -774,23 +602,6 @@ projectOnto plane spline =
 
 {-| Take a spline defined in global coordinates, and return it expressed in
 local coordinates relative to a given reference frame.
-
-    localFrame =
-        Frame3d.atPoint
-            (Point3d.meters 1 2 3)
-
-    CubicSpline3d.relativeTo localFrame exampleSpline
-    --> CubicSpline3d.with
-    -->     { startPoint =
-    -->         Point3d.meters 0 -1 -2
-    -->     , startControlPoint =
-    -->         Point3d.meters 2 -1 -2
-    -->     , endControlPoint =
-    -->         Point3d.meters 2 1 -2
-    -->     , endPoint =
-    -->         Point3d.meters 2 1 0
-    -->     }
-
 -}
 relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> CubicSpline3d units globalCoordinates -> CubicSpline3d units localCoordinates
 relativeTo frame spline =
@@ -799,47 +610,13 @@ relativeTo frame spline =
 
 {-| Take a spline considered to be defined in local coordinates relative to a
 given reference frame, and return that spline expressed in global coordinates.
-
-    localFrame =
-        Frame3d.atPoint
-            (Point3d.meters 1 2 3)
-
-    CubicSpline3d.placeIn localFrame exampleSpline
-    --> CubicSpline3d.with
-    -->     { startPoint =
-    -->         Point3d.meters 2 3 4
-    -->     , startControlPoint =
-    -->         Point3d.meters 4 3 4
-    -->     , endControlPoint =
-    -->         Point3d.meters 4 5 4
-    -->     , endPoint =
-    -->         Point3d.meters 4 5 6
-    -->     }
-
 -}
 placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> CubicSpline3d units localCoordinates -> CubicSpline3d units globalCoordinates
 placeIn frame =
     mapControlPoints (Point3d.placeIn frame)
 
 
-{-| Project a spline into a given sketch plane. Conceptually, this finds the
-[orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
-of the spline onto the plane and then expresses the projected spline in 2D
-sketch coordinates.
-
-    exampleSpline
-        |> CubicSpline3d.projectInto SketchPlane3d.yz
-    --> CubicSpline2d.with
-    -->     { startPoint =
-    -->         Point2d.meters 1 1
-    -->     , startControlPoint =
-    -->         Point2d.meters 1 1
-    -->     , endControlPoint =
-    -->         Point2d.meters 3 1
-    -->     , endPoint =
-    -->         Point2d.meters 3 3
-    -->     }
-
+{-| Project a spline into a given sketch plane.
 -}
 projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> CubicSpline3d units coordinates3d -> CubicSpline2d units coordinates2d
 projectInto sketchPlane spline =
@@ -859,33 +636,8 @@ mapControlPoints function spline =
         (function (fourthControlPoint spline))
 
 
-{-| Split a spline into two roughly equal halves.
-
-    CubicSpline3d.bisect exampleSpline
-    --> ( CubicSpline3d.with
-    -->     { startPoint =
-    -->         Point3d.meters 1 1 1
-    -->     , startControlPoint =
-    -->         Point3d.meters 2 1 1
-    -->     , endControlPoint =
-    -->         Point3d.meters 2.5 1.5 1
-    -->     , endPoint =
-    -->         Point3d.meters 2.75 2 1.25
-    -->     }
-    --> , CubicSpline3d.with
-    -->     { startPoint =
-    -->         Point3d.meters 2.75 2 1.25
-    -->     , startControlPoint =
-    -->         Point3d.meters 3 2.5 1.5
-    -->     , endControlPoint =
-    -->         Point3d.meters 3 3 2
-    -->     , endPoint =
-    -->         Point3d.meters 3 3 3
-    -->     }
-    --> )
-
-Equivalent to `CubicSpline3d.splitAt ParameterValue.half`.
-
+{-| Split a spline into two roughly equal halves. Equivalent to
+`CubicSpline3d.splitAt 0.5`.
 -}
 bisect : CubicSpline3d units coordinates -> ( CubicSpline3d units coordinates, CubicSpline3d units coordinates )
 bisect spline =
@@ -894,33 +646,6 @@ bisect spline =
 
 {-| Split a spline at a particular parameter value, resulting in two smaller
 splines.
-
-    parameterValue =
-        ParameterValue.clamped 0.75
-
-    CubicSpline3d.splitAt parameterValue exampleSpline
-    --> ( CubicSpline3d.with
-    -->     { startPoint =
-    -->         Point3d.meters 1 1 1
-    -->     , startControlPoint =
-    -->         Point3d.meters 2.5 1 1
-    -->     , endControlPoint =
-    -->         Point3d.meters 2.88 2.13 1
-    -->     , endPoint =
-    -->         Point3d.meters 2.97 2.69 1.84
-    -->     }
-    --> , CubicSpline3d.with
-    -->     { startPoint =
-    -->         Point3d.meters 2.97 2.69 1.84
-    -->     , startControlPoint =
-    -->         Point3d.meters 3 2.88 2.13
-    -->     , endControlPoint =
-    -->         Point3d.meters 3 3 2.5
-    -->     , endPoint =
-    -->         Point3d.meters 3 3 3
-    -->     }
-    --> )
-
 -}
 splitAt : Float -> CubicSpline3d units coordinates -> ( CubicSpline3d units coordinates, CubicSpline3d units coordinates )
 splitAt parameterValue spline =
@@ -971,15 +696,7 @@ type ArcLengthParameterized units coordinates
 
 
 {-| Build an arc length parameterization of the given spline, with a given
-accuracy. Generally speaking, all operations on the resulting
-`ArcLengthParameterized` value will be accurate to within the specified maximum
-error.
-
-    parameterizedSpline =
-        exampleSpline
-            |> CubicSpline3d.arcLengthParameterized
-                { maxError = 1.0e-4 }
-
+accuracy.
 -}
 arcLengthParameterized : { maxError : Quantity Float units } -> Nondegenerate units coordinates -> ArcLengthParameterized units coordinates
 arcLengthParameterized { maxError } nondegenerateSpline =
@@ -1002,17 +719,8 @@ arcLengthParameterized { maxError } nondegenerateSpline =
         }
 
 
-{-| Find the total arc length of a spline:
-
-    arcLength =
-        CubicSpline3d.arcLength parameterizedSpline
-
-    arcLength
-    --> 4.3303
-
-In this example, the result will be accurate to within `1.0e-4` since that was
-the tolerance used when constructing `parameterizedSpline`.
-
+{-| Find the total arc length of a spline, to within the accuracy specified
+when constructing the given arc length parameterization.
 -}
 arcLength : ArcLengthParameterized units coordinates -> Quantity Float units
 arcLength parameterizedSpline =
@@ -1020,14 +728,9 @@ arcLength parameterizedSpline =
         |> ArcLengthParameterization.totalArcLength
 
 
-{-| Get the midpoint of a spline.
-
-    CubicSpline3d.midpoint parameterizedSpline
-    --> Point3d.meters 2.75 2 1.25
-
-Note that this is the point half way along the spline by arc length, which is
-not in general the same as evaluating at a parameter value of 0.5.
-
+{-| Get the midpoint of a spline. Note that this is the point half way along the
+spline by arc length, which is not in general the same as evaluating at a
+parameter value of 0.5.
 -}
 midpoint : ArcLengthParameterized units coordinates -> Point3d units coordinates
 midpoint parameterized =
@@ -1038,24 +741,7 @@ midpoint parameterized =
     pointAlong parameterized halfArcLength
 
 
-{-| Try to get the point along a spline at a given arc length. For example, to
-get the point a quarter of the way along `exampleSpline`:
-
-    CubicSpline3d.pointAlong parameterizedSpline
-        (arcLength / 4)
-    --> Just <|
-    -->     Point3d.fromCoordinates
-    -->         ( 2.0425, 1.2431, 1.0206 )
-
-Note that this is not the same as evaulating at a parameter value of 1/4:
-
-    CubicSpline3d.pointOn exampleSpline
-        (ParameterValue.clamped 0.25)
-    --> Point3d.meters 2.1563 1.3125 1.0313
-
-If the given arc length is less than zero or greater than the arc length of the
-spline, returns `Nothing`.
-
+{-| Get the point along a spline at a given arc length.
 -}
 pointAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Point3d units coordinates
 pointAlong (ArcLengthParameterized parameterized) distance =
@@ -1064,20 +750,7 @@ pointAlong (ArcLengthParameterized parameterized) distance =
         |> pointOn parameterized.underlyingSpline
 
 
-{-| Try to get the tangent direction along a spline at a given arc length. To
-get the tangent direction a quarter of the way along `exampleSpline`:
-
-    CubicSpline3d.tangentDirectionAlong parameterizedSpline
-        (0.25 * arcLength)
-    --> Just
-    -->     (Direction3d.fromAzimuthAndElevation
-    -->         (Angle.degrees 29.1)
-    -->         (Angle.degrees 3.871)
-    -->     )
-
-If the given arc length is less than zero or greater than the arc length of the
-spline (or if the spline is degenerate), returns `Nothing`.
-
+{-| Get the tangent direction along a spline at a given arc length.
 -}
 tangentDirectionAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Direction3d coordinates
 tangentDirectionAlong (ArcLengthParameterized parameterized) distance =
@@ -1086,23 +759,8 @@ tangentDirectionAlong (ArcLengthParameterized parameterized) distance =
         |> tangentDirection parameterized.nondegenerateSpline
 
 
-{-| Try to get the point and tangent direction along a spline at a given arc
-length. To get the point and tangent direction a quarter of the way along
-`exampleSpline`:
-
-    CubicSpline3d.sampleAlong parameterizedSpline
-        (0.25 * arcLength)
-    --> Just
-    -->     ( Point3d.fromCoordinates
-    -->         ( 2.0425, 1.2431, 1.0206 )
-    -->     , Direction3d.fromAzimuthAndElevation
-    -->         (Angle.degrees 29.1)
-    -->         (Angle.degrees 3.871)
-    -->     )
-
-If the given arc length is less than zero or greater than the arc length of the
-spline (or if the spline is degenerate), returns `Nothing`.
-
+{-| Get the point and tangent direction along a spline at a given arc
+length.
 -}
 sampleAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> ( Point3d units coordinates, Direction3d coordinates )
 sampleAlong (ArcLengthParameterized parameterized) distance =
@@ -1124,19 +782,6 @@ fromArcLengthParameterized (ArcLengthParameterized parameterized) =
 
 
 {-| Get the first derivative of a spline at a given parameter value.
-
-    CubicSpline3d.derivative exampleSpline
-        ParameterValue.zero
-    --> Vector3d.meters 6 0 0
-
-    CubicSpline3d.derivative exampleSpline
-        ParameterValue.half
-    --> Vector3d.meters 1.5 3 1.5
-
-    CubicSpline3d.derivative exampleSpline
-        ParameterValue.one
-    --> Vector3d.meters 0 0 6
-
 -}
 firstDerivative : CubicSpline3d units coordinates -> Float -> Vector3d units coordinates
 firstDerivative spline parameterValue =
@@ -1246,22 +891,7 @@ firstDerivative spline parameterValue =
         )
 
 
-{-| Get the second derivative value at a point along a spline, based on a
-parameter that ranges from 0 to 1. A parameter value of 0 corresponds to the
-start of the spline and a value of 1 corresponds to the end.
-
-    CubicSpline3d.secondDerivative exampleSpline
-        ParameterValue.zero
-    --> Vector3d.meters -12 12 0
-
-    CubicSpline3d.secondDerivative exampleSpline
-        ParameterValue.half
-    --> Vector3d.meters -6 0 6
-
-    CubicSpline3d.secondDerivative exampleSpline
-        ParameterValue.one
-    --> Vector3d.meters 0 -12 12
-
+{-| Get the second derivative value at a point along a spline.
 -}
 secondDerivative : CubicSpline3d units coordinates -> Float -> Vector3d units coordinates
 secondDerivative spline parameterValue =
