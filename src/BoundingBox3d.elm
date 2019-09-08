@@ -87,7 +87,7 @@ type alias BoundingBox3d units coordinates =
             }
 
 If the minimum and maximum values are provided in the wrong order (for example
-if <code>minX&nbsp;>&nbsp;maxX</code>), then they will be swapped so that the
+if `minX` is greater than `maxX`, then they will be swapped so that the
 resulting bounding box is valid.
 
 -}
@@ -147,7 +147,8 @@ singleton point =
         }
 
 
-{-| TODO
+{-| Find the bounding box containing one or more input boxes. If you need to
+handle the case of zero input boxes, see `hullN`.
 -}
 hull : BoundingBox3d units coordinates -> List (BoundingBox3d units coordinates) -> BoundingBox3d units coordinates
 hull first rest =
@@ -186,7 +187,17 @@ hullHelp currentMinX currentMaxX currentMinY currentMaxY currentMinZ currentMaxZ
                 }
 
 
-{-| TODO
+{-| Like `hull`, but lets you work on any kind of item as long as a bounding
+box can be extracted from it. For example, to get the bounding box around four
+triangles:
+
+    BoundingBox3d.hullOf Triangle3d.boundingBox
+        firstTriangle
+        [ secondTriangle
+        , thirdTriangle
+        , fourthTriangle
+        ]
+
 -}
 hullOf : (a -> BoundingBox3d units coordinates) -> a -> List a -> BoundingBox3d units coordinates
 hullOf getBoundingBox first rest =
@@ -248,7 +259,7 @@ hullOfHelp currentMinX currentMaxX currentMinY currentMaxY currentMinZ currentMa
             , maxZ = Length.meters 0
             }
 
-    BoundingBox3d.hull firstBox secondBox
+    BoundingBox3d.hull2 firstBox secondBox
     --> BoundingBox3d.fromExtrema
     -->     { minX = Length.meters -2
     -->     , maxX = Length.meters 4
@@ -278,7 +289,7 @@ hull2 firstBox secondBox =
         }
 
 
-{-| TODO
+{-| Build a bounding box that contains all three of the given bounding boxes.
 -}
 hull3 : BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates
 hull3 firstBox secondBox thirdBox =
@@ -306,13 +317,12 @@ hull3 firstBox secondBox thirdBox =
 the list is empty, returns `Nothing`.
 
     singletonBox =
-        BoundingBox3d.singleton
-            (Point3d.meters 2 1 0)
+        BoundingBox3d.singleton (Point3d.meters 2 1 0)
 
-    BoundingBox3d.aggregate [ exampleBox, singletonBox ]
+    BoundingBox3d.hullN [ exampleBox, singletonBox ]
     --> Just
     -->     (BoundingBox3d.fromExtrema
-    -->         { minX = Length.meters -2,
+    -->         { minX = Length.meters -2
     -->         , maxX = Length.meters 2
     -->         , minY = Length.meters 1
     -->         , maxY = Length.meters 5
@@ -321,14 +331,13 @@ the list is empty, returns `Nothing`.
     -->         }
     -->     )
 
-    BoundingBox3d.aggregate [ exampleBox ]
+    BoundingBox3d.hullN [ exampleBox ]
     --> Just exampleBox
 
-    BoundingBox3d.aggregate []
+    BoundingBox3d.hullN []
     --> Nothing
 
-If you have exactly two bounding boxes, you can use [`BoundingBox3d.hull`](#hull)
-instead (which returns a `BoundingBox3d` instead of a `Maybe BoundingBox3d`).
+If you know you have at least one bounding box, you can use `hull` instead.
 
 -}
 hullN : List (BoundingBox3d units coordinates) -> Maybe (BoundingBox3d units coordinates)
@@ -384,7 +393,7 @@ extrema (Types.BoundingBox3d boundingBoxExtrema) =
 {-| Get the minimum X value of a bounding box.
 
     BoundingBox3d.minX exampleBox
-    --> -2
+    --> Length.meters -2
 
 -}
 minX : BoundingBox3d units coordinates -> Quantity Float units
@@ -395,7 +404,7 @@ minX (Types.BoundingBox3d boundingBox) =
 {-| Get the maximum X value of a bounding box.
 
     BoundingBox3d.maxX exampleBox
-    --> 2
+    --> Length.meters 2
 
 -}
 maxX : BoundingBox3d units coordinates -> Quantity Float units
@@ -406,7 +415,7 @@ maxX (Types.BoundingBox3d boundingBox) =
 {-| Get the minimum Y value of a bounding box.
 
     BoundingBox3d.minY exampleBox
-    --> 2
+    --> Length.meters 2
 
 -}
 minY : BoundingBox3d units coordinates -> Quantity Float units
@@ -417,7 +426,7 @@ minY (Types.BoundingBox3d boundingBox) =
 {-| Get the maximum Y value of a bounding box.
 
     BoundingBox3d.maxY exampleBox
-    --> 5
+    --> Length.meters 5
 
 -}
 maxY : BoundingBox3d units coordinates -> Quantity Float units
@@ -428,7 +437,7 @@ maxY (Types.BoundingBox3d boundingBox) =
 {-| Get the minimum Z value of a bounding box.
 
     BoundingBox3d.minZ exampleBox
-    --> 3
+    --> Length.meters 3
 
 -}
 minZ : BoundingBox3d units coordinates -> Quantity Float units
@@ -439,7 +448,7 @@ minZ (Types.BoundingBox3d boundingBox) =
 {-| Get the maximum Z value of a bounding box.
 
     BoundingBox3d.maxZ exampleBox
-    --> 4
+    --> Length.meters 4
 
 -}
 maxZ : BoundingBox3d units coordinates -> Quantity Float units
@@ -450,7 +459,10 @@ maxZ (Types.BoundingBox3d boundingBox) =
 {-| Get the X, Y and Z dimensions (widths) of a bounding box.
 
     BoundingBox3d.dimensions exampleBox
-    --> ( 4, 3, 1 )
+    --> ( Length.meters 4
+    --> , Length.meters 3
+    --> , Length.meters 1
+    --> )
 
 -}
 dimensions : BoundingBox3d units coordinates -> ( Quantity Float units, Quantity Float units, Quantity Float units )
@@ -464,7 +476,7 @@ dimensions boundingBox =
 {-| Get the median X value of a bounding box.
 
     BoundingBox3d.midX exampleBox
-    --> 0
+    --> Length.meters 0
 
 -}
 midX : BoundingBox3d units coordinates -> Quantity Float units
@@ -475,7 +487,7 @@ midX (Types.BoundingBox3d boundingBox) =
 {-| Get the median Y value of a bounding box.
 
     BoundingBox3d.midY exampleBox
-    --> 3.5
+    --> Length.meters 3.5
 
 -}
 midY : BoundingBox3d units coordinates -> Quantity Float units
@@ -486,7 +498,7 @@ midY (Types.BoundingBox3d boundingBox) =
 {-| Get the median Z value of a bounding box.
 
     BoundingBox3d.midZ exampleBox
-    --> 3.5
+    --> Length.meters 3.5
 
 -}
 midZ : BoundingBox3d units coordinates -> Quantity Float units
@@ -976,7 +988,8 @@ translateIn direction distance boundingBox =
     translateBy (Vector3d.withLength distance direction) boundingBox
 
 
-{-| Offsets boundingBox irrespective of the resulting bounding box is valid or not.
+{-| Offsets boundingBox irrespective of the resulting bounding box is valid or
+not.
 -}
 unsafeOffsetBy : Quantity Float units -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates
 unsafeOffsetBy amount boundingBox =
@@ -994,7 +1007,7 @@ unsafeOffsetBy amount boundingBox =
 distance. A positive offset will cause the bounding box to expand and a negative
 value will cause it to shrink.
 
-    BoundingBox3d.offsetBy 2 exampleBox
+    BoundingBox3d.offsetBy (Length.meters 2) exampleBox
     --> Just <|
     -->     BoundingBox3d.fromExtrema
     -->         { minX = Length.meters -4
@@ -1005,7 +1018,7 @@ value will cause it to shrink.
     -->         , maxZ = Length.meters 6
     -->         }
 
-    BoundingBox3d.offsetBy -0.5 exampleBox
+    BoundingBox3d.offsetBy (Length.meters -0.5) exampleBox
     --> Just <|
     -->     BoundingBox3d.fromExtrema
     -->         { minX = Length.meters -1.5
@@ -1020,7 +1033,7 @@ Returns `Nothing` if the offset is negative and large enough to cause the
 bounding box to vanish (that is, if the offset is larger than half the height or
 half the width of the bounding box, whichever is less):
 
-    BoundingBox3d.offsetBy -1 exampleBox
+    BoundingBox3d.offsetBy (Length.meters -1) exampleBox
     --> Nothing
 
 If you only want to expand a bounding box, you can use
@@ -1046,7 +1059,7 @@ offsetBy amount boundingBox =
 
 {-| Expand the given bounding box in all directions by the given offset:
 
-    BoundingBox3d.expandBy 3 exampleBox
+    BoundingBox3d.expandBy (Length.meters 3) exampleBox
     --> BoundingBox3d.fromExtrema
     -->     { minX = Length.meters -5
     -->     , maxX = Length.meters 5
