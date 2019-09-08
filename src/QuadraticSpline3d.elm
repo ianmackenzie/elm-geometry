@@ -325,16 +325,13 @@ pointOn spline parameterValue =
 
 {-| Get the first derivative of a spline at a given parameter value:
 
-    QuadraticSpline3d.derivative exampleSpline
-        ParameterValue.zero
+    QuadraticSpline3d.derivative exampleSpline 0
     --> Vector3d.meters 4 2 0
 
-    QuadraticSpline3d.derivative exampleSpline
-        ParameterValue.half
+    QuadraticSpline3d.derivative exampleSpline 0.5
     --> Vector3d.meters 2 2 2
 
-    QuadraticSpline3d.derivative exampleSpline
-        ParameterValue.one
+    QuadraticSpline3d.derivative exampleSpline 1
     --> Vector3d.meters 0 2 4
 
 Note that the derivative interpolates linearly from end to end.
@@ -511,21 +508,21 @@ value:
 
     QuadraticSpline3d.tangentDirection
         nondegenerateExampleSpline
-        ParameterValue.zero
+        0
     --> Direction3d.fromAzimuthAndElevation
     -->     (Angle.degrees 26.57)
     -->     (Angle.degrees 0)
 
     QuadraticSpline3d.tangentDirection
         nondegenerateExampleSpline
-        ParameterValue.half
+        0.5
     --> Direction3d.fromAzimuthAndElevation
     -->     (Angle.degrees 45)
     -->     (Angle.degrees 35.26)
 
     QuadraticSpline3d.tangentDirection
         nondegenerateExampleSpline
-        ParameterValue.one
+        1
     --> Direction3d.fromAzimuthAndElevation
     -->     (Angle.degrees 90)
     -->     (Angle.degrees 63.43)
@@ -571,8 +568,7 @@ tangentDirection nondegenerateSpline parameterValue =
 {-| Get both the point and tangent direction of a nondegenerate spline at a
 given parameter value:
 
-    QuadraticSpline3d.sample nondegenerateExampleSpline
-        ParameterValue.half
+    QuadraticSpline3d.sample nondegenerateExampleSpline 0.5
     --> ( Point3d.meters 2.5 2 1.5
     --> , Direction3d.fromAzimuthAndElevation
     -->     (Angle.degrees 45)
@@ -823,7 +819,7 @@ mapControlPoints function spline =
     -->     }
     --> )
 
-Equivalent to `QuadraticSpline3d.splitAt ParameterValue.half`.
+Equivalent to `QuadraticSpline3d.splitAt 0.5`.
 
 -}
 bisect : QuadraticSpline3d units coordinates -> ( QuadraticSpline3d units coordinates, QuadraticSpline3d units coordinates )

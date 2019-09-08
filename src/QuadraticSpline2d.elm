@@ -273,16 +273,13 @@ pointOn spline parameterValue =
 
 {-| Get the first derivative of a spline at a given parameter value.
 
-    QuadraticSpline2d.derivative exampleSpline
-        ParameterValue.zero
+    QuadraticSpline2d.derivative exampleSpline 0
     --> Vector2d.meters 4 6
 
-    QuadraticSpline2d.derivative exampleSpline
-        ParameterValue.half
+    QuadraticSpline2d.derivative exampleSpline 0.5
     --> Vector2d.meters 4 0
 
-    QuadraticSpline2d.derivative exampleSpline
-        ParameterValue.one
+    QuadraticSpline2d.derivative exampleSpline 1
     --> Vector2d.meters 4 -6
 
 Note that the derivative interpolates linearly from end to end.
@@ -436,17 +433,17 @@ value:
 
     QuadraticSpline2d.tangentDirection
         nondegenerateExampleSpline
-        ParameterValue.zero
+        0
     --> Direction2d.degrees 56.31
 
     QuadraticSpline2d.tangentDirection
         nondegenerateExampleSpline
-        ParameterValue.half
+        0.5
     --> Direction2d.x
 
     QuadraticSpline2d.tangentDirection
         nondegenerateExampleSpline
-        ParameterValue.one
+        1
     --> Direction2d.degrees -56.31
 
 -}
@@ -490,8 +487,7 @@ tangentDirection nondegenerateSpline parameterValue =
 {-| Get both the point and tangent direction of a nondegenerate spline at a
 given parameter value:
 
-    QuadraticSpline2d.sample nondegenerateExampleSpline
-        ParameterValue.half
+    QuadraticSpline2d.sample nondegenerateExampleSpline 0.5
     --> ( Point2d.meters 3 2.5
     --> , Direction2d.x
     --> )
@@ -694,7 +690,7 @@ mapControlPoints function spline =
     -->     }
     --> )
 
-Equivalent to `QuadraticSpline2d.splitAt ParameterValue.half`.
+Equivalent to `QuadraticSpline2d.splitAt 0.5`.
 
 -}
 bisect : QuadraticSpline2d units coordinates -> ( QuadraticSpline2d units coordinates, QuadraticSpline2d units coordinates )

@@ -394,13 +394,13 @@ sweptAngle (Types.EllipticalArc2d arc) =
 
 {-| Get the point along an elliptical arc at a given parameter value:
 
-    EllipticalArc2d.pointOn exampleArc ParameterValue.zero
+    EllipticalArc2d.pointOn exampleArc 0
     --> Point2d.meters 2 0
 
-    EllipticalArc2d.pointOn exampleArc ParameterValue.half
+    EllipticalArc2d.pointOn exampleArc 0.5
     --> Point2d.meters 1.4142 0.7071
 
-    EllipticalArc2d.pointOn exampleArc ParameterValue.one
+    EllipticalArc2d.pointOn exampleArc 1
     --> Point2d.meters 0 1
 
 -}
@@ -423,16 +423,13 @@ pointOn arc parameterValue =
 
 {-| Get the first derivative of an elliptical arc at a given parameter value:
 
-    EllipticalArc2d.firstDerivative exampleArc
-        ParameterValue.zero
+    EllipticalArc2d.firstDerivative exampleArc 0
     --> Vector2d.meters 0 1.5708
 
-    EllipticalArc2d.firstDerivative exampleArc
-        ParameterValue.half
+    EllipticalArc2d.firstDerivative exampleArc 0.5
     --> Vector2d.meters -2.2214 1.1107
 
-    EllipticalArc2d.firstDerivative exampleArc
-        ParameterValue.one
+    EllipticalArc2d.firstDerivative exampleArc 1
     --> Vector2d.meters -3.1416 0
 
 -}
@@ -527,16 +524,19 @@ fromNondegenerate nondegenerateArc =
 {-| Get the tangent direction to a nondegenerate elliptical arc at a given
 parameter value:
 
-    EllipticalArc2d.tangentDirection nondegenerateExampleArc
-        ParameterValue.zero
+    EllipticalArc2d.tangentDirection
+        nondegenerateExampleArc
+        0
     --> Direction2d.degrees 90
 
-    EllipticalArc2d.tangentDirection nondegenerateExampleArc
-        ParameterValue.half
+    EllipticalArc2d.tangentDirection
+        nondegenerateExampleArc
+        0.5
     --> Direction2d.degrees 153.4
 
-    EllipticalArc2d.tangentDirection nondegenerateExampleArc
-        ParameterValue.one
+    EllipticalArc2d.tangentDirection
+        nondegenerateExampleArc
+        1
     --> Direction2d.degrees 180
 
 -}
@@ -603,20 +603,17 @@ tangentDirection nondegenerateArc parameterValue =
 {-| Get both the point and tangent direction of a nondegenerate elliptical arc
 at a given parameter value:
 
-    EllipticalArc2d.sample nondegenerateExampleArc
-        ParameterValue.zero
+    EllipticalArc2d.sample nondegenerateExampleArc 0
     --> ( Point2d.meters 2 0
     --> , Direction2d.degrees 90
     --> )
 
-    EllipticalArc2d.sample nondegenerateExampleArc
-        ParameterValue.half
+    EllipticalArc2d.sample nondegenerateExampleArc 0.5
     --> ( Point2d.meters 1.4142 0.7071
     --> , Direction2d.degrees 153.4
     --> )
 
-    EllipticalArc2d.sample nondegenerateExampleArc
-        ParameterValue.one
+    EllipticalArc2d.sample nondegenerateExampleArc 1
     --> ( Point2d.meters 0 1
     --> , Direction2d.degrees 180
     --> )
@@ -1034,8 +1031,7 @@ example, to get the true midpoint of `exampleArc`:
 
 Note that this is not the same as evaulating at a parameter value of 0.5:
 
-    EllipticalArc2d.pointOn exampleArc
-        ParameterValue.half
+    EllipticalArc2d.pointOn exampleArc 0.5
     --> Point2d.meters 1.4142 0.7071
 
 If the given arc length is less than zero or greater than the arc length of the
