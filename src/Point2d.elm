@@ -1265,6 +1265,9 @@ placeIn (Types.Frame2d frame) (Types.Point2d p) =
         }
 
 
+{-| Find the bounding box containing one or more input points. If you need to
+handle the case of zero input points, see `hullN`.
+-}
 hull : Point2d units coordinates -> List (Point2d units coordinates) -> BoundingBox2d units coordinates
 hull first rest =
     let
@@ -1298,6 +1301,18 @@ hullHelp currentMinX currentMaxX currentMinY currentMaxY points =
                 }
 
 
+{-| Like `hull`, but lets you work on any kind of item as long as a point can be
+extracted from it. For example, to get the bounding box around the centroids of
+four triangles:
+
+    Point2d.hullOf Triangle2d.centroid
+        firstTriangle
+        [ secondTriangle
+        , thirdTriangle
+        , fourthTriangle
+        ]
+
+-}
 hullOf : (a -> Point2d units coordinates) -> a -> List a -> BoundingBox2d units coordinates
 hullOf getPoint first rest =
     let
@@ -1342,7 +1357,7 @@ diagonal of the bounding box.
     secondPoint =
         Point2d.meters -1 5
 
-    BoundingBox2d.from firstPoint secondPoint
+    Point2d.hull2 firstPoint secondPoint
     --> BoundingBox2d.fromExtrema
     -->     { minX = Length.meters -1
     -->     , maxX = Length.meters 2
@@ -1374,7 +1389,7 @@ hull2 firstPoint secondPoint =
         }
 
 
-{-| TODO
+{-| Build a bounding box that contains all three of the given points.
 -}
 hull3 : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> BoundingBox2d units coordinates
 hull3 firstPoint secondPoint thirdPoint =
@@ -1423,6 +1438,8 @@ list is empty, returns `Nothing`.
 
     BoundingBox2d.containingPoints []
     --> Nothing
+
+If you know you have at least one point, you can use `hull` instead.
 
 -}
 hullN : List (Point2d units coordinates) -> Maybe (BoundingBox2d units coordinates)
