@@ -289,8 +289,7 @@ hull3 firstBox secondBox thirdBox =
 the list is empty, returns `Nothing`.
 
     singletonBox =
-        BoundingBox2d.singleton
-            (Point2d.meters 1 3)
+        BoundingBox2d.singleton (Point2d.meters 1 3)
 
     BoundingBox2d.hullN [ exampleBox, singletonBox ]
     --> Just
