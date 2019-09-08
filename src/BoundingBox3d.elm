@@ -12,7 +12,7 @@ module BoundingBox3d exposing
     , fromExtrema, singleton, intersection
     , hull, hullOf, hull2, hull3, hullN
     , extrema, minX, maxX, minY, maxY, minZ, maxZ, dimensions, midX, midY, midZ, centerPoint
-    , contains, isContainedIn, intersects, overlappingBy, separatedBy
+    , contains, isContainedIn, intersects, overlappingByAtLeast, separatedByAtLeast
     , scaleAbout, translateBy, translateIn, expandBy, offsetBy
     )
 
@@ -52,7 +52,7 @@ box of an object than the object itself, such as:
 
 # Queries
 
-@docs contains, isContainedIn, intersects, overlappingBy, separatedBy
+@docs contains, isContainedIn, intersects, overlappingByAtLeast, separatedByAtLeast
 
 
 # Transformations
@@ -588,35 +588,6 @@ intersects other boundingBox =
         && (maxZ boundingBox |> Quantity.greaterThanOrEqualTo (minZ other))
 
 
-overlapAmount : BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> Maybe (Quantity Float units)
-overlapAmount firstBox secondBox =
-    let
-        xOverlap =
-            Quantity.min (maxX firstBox) (maxX secondBox)
-                |> Quantity.minus
-                    (Quantity.max (minX firstBox) (minX secondBox))
-
-        yOverlap =
-            Quantity.min (maxY firstBox) (maxY secondBox)
-                |> Quantity.minus
-                    (Quantity.max (minY firstBox) (minY secondBox))
-
-        zOverlap =
-            Quantity.min (maxZ firstBox) (maxZ secondBox)
-                |> Quantity.minus
-                    (Quantity.max (minZ firstBox) (minZ secondBox))
-    in
-    if
-        (xOverlap |> Quantity.greaterThanOrEqualTo Quantity.zero)
-            && (yOverlap |> Quantity.greaterThanOrEqualTo Quantity.zero)
-            && (zOverlap |> Quantity.greaterThanOrEqualTo Quantity.zero)
-    then
-        Just (Quantity.min xOverlap (Quantity.min yOverlap zOverlap))
-
-    else
-        Nothing
-
-
 squaredSeparationAmount : BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> Maybe (Quantity Float (Squared units))
 squaredSeparationAmount firstBox secondBox =
     let
@@ -660,223 +631,119 @@ squaredSeparationAmount firstBox secondBox =
         Nothing
 
 
-alwaysFalse : BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> Bool
-alwaysFalse firstBox secondBox =
-    False
+{-| Check two boxes overlap by at least the given amount. For example, you could
+implement a tolerant collision check (one that only returns true if the boxes
+overlap by at least a millimeter, and ignores boxes that just barely touch each
+other) as
 
-
-{-| Check if one box overlaps another by less than, greater than or equal to a
-given amount. For example, you could implement a tolerant collision check (one
-that only returns true if the boxes overlap by at least some small finite
-amount, and ignores boxes that just barely touch each other) as
-
-    boxesCollide box1 box2 =
-        BoundingBox3d.overlappingBy GT 0.001 box1 box2
-
-This can be read as "`box1` and `box2` are overlapping by greater than 0.001
-units". (The [`Order`](https://package.elm-lang.org/packages/elm/core/latest/Basics#Order)
-type and its three values `LT`, `GT` and `EQ` are defined in Elm's `Basics`
-module so are available by default in any Elm program.)
+    boxesCollide firstBox secondBox =
+        BoundingBox3d.overlappingByAtLeast
+            (Length.millimeters 1)
+            firstBox
+            secondBox
 
 Overlap is defined as the _minimum_ distance one box would have to move so that
-it did not touch the other, and is always positive for any two overlapping
-boxes.
+it did not touch the other. Boxes that just touch are considered to have an
+overlap of zero, so
 
-Boxes that just touch are considered to have an overlap of zero, which is
-distinct from 'no overlap'. Boxes that do not touch or overlap at all are
-considered to have an overlap which is less than zero but not comparable to any
-negative number.
+    BoundingBox3d.overlappingByAtLeast Quantity.zero
+        firstBox
+        secondBox
 
-
-### Less than
-
-  - `overlappingBy LT 1e-3` will return true if the two boxes overlap by less
-    than 0.001 units or if they do not overlap at all (false if they overlap by
-    more than 0.001 units).
-  - `overlappingBy LT 0` will return true only if the two boxes don't touch or
-    overlap at all.
-  - `overlappingBy LT -1e-3` will always return false! If you care about _how
-    much_ two boxes are separated by, use `separatedBy` instead.
-
-
-### Greater than
-
-  - `overlappingBy GT 1e-3` will return true if the two boxes overlap by at
-    least 0.001 units (false if they overlap by less than that or do not overlap
-    at all).
-  - `overlappingBy GT 0` will return true if the two boxes overlap by any
-    non-zero amount (false if they just touch or do not overlap at all).
-  - `overlappingBy GT -1e-3` doesn't make a lot of sense but will return true if
-    the boxes touch or overlap at all (false if they don't overlap, regardless
-    of how close they are to overlapping). In this case, though, it would make
-    more sense to just user `intersects` instead.
-
-
-### Equal to
-
-Checking whether two boxes overlap by exactly a given amount is pretty weird and
-vulnerable to floating-point roundoff, but is defined as follows:
-
-  - `overlappingBy EQ 1e-3` will return true if the two boxes overlap by exactly
-    0.001 units.
-  - `overlappingBy EQ 0` will return true if and only if the boxes just touch
-    each other.
-  - `overlappingBy EQ -1e-3` will always return false.
+will return true even if the two boxes just touch each other.
 
 -}
-overlappingBy : Order -> Quantity Float units -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> Bool
-overlappingBy order tolerance =
-    case order of
-        LT ->
-            if tolerance |> Quantity.greaterThan Quantity.zero then
-                \firstBox secondBox ->
-                    case overlapAmount firstBox secondBox of
-                        Just distance ->
-                            distance |> Quantity.lessThan tolerance
+overlappingByAtLeast : Quantity Float units -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> Bool
+overlappingByAtLeast tolerance firstBox secondBox =
+    let
+        xOverlap =
+            Quantity.min (maxX firstBox) (maxX secondBox)
+                |> Quantity.minus
+                    (Quantity.max (minX firstBox) (minX secondBox))
 
-                        Nothing ->
-                            True
+        yOverlap =
+            Quantity.min (maxY firstBox) (maxY secondBox)
+                |> Quantity.minus
+                    (Quantity.max (minY firstBox) (minY secondBox))
 
-            else if tolerance == Quantity.zero then
-                \firstBox secondBox ->
-                    overlapAmount firstBox secondBox == Nothing
+        zOverlap =
+            Quantity.min (maxZ firstBox) (maxZ secondBox)
+                |> Quantity.minus
+                    (Quantity.max (minZ firstBox) (minZ secondBox))
 
-            else
-                alwaysFalse
-
-        GT ->
-            if tolerance |> Quantity.greaterThanOrEqualTo Quantity.zero then
-                \firstBox secondBox ->
-                    case overlapAmount firstBox secondBox of
-                        Just distance ->
-                            distance |> Quantity.greaterThan tolerance
-
-                        Nothing ->
-                            False
-
-            else
-                \firstBox secondBox ->
-                    overlapAmount firstBox secondBox /= Nothing
-
-        EQ ->
-            if tolerance |> Quantity.greaterThanOrEqualTo Quantity.zero then
-                let
-                    expected =
-                        Just tolerance
-                in
-                \firstBox secondBox ->
-                    overlapAmount firstBox secondBox == expected
-
-            else
-                alwaysFalse
+        clampedTolerance =
+            Quantity.max tolerance Quantity.zero
+    in
+    (xOverlap |> Quantity.greaterThanOrEqualTo clampedTolerance)
+        && (yOverlap |> Quantity.greaterThanOrEqualTo clampedTolerance)
+        && (zOverlap |> Quantity.greaterThanOrEqualTo clampedTolerance)
 
 
-{-| Check if one box is separated from another by less than, greater than or
-equal to a given amount. For example, to perform clash detection between some
-objects, you could use `separatedBy` on those objects' bounding boxes as a quick
-check to see if the objects had a gap of at least 1 cm between them:
+{-| Check if two boxes are separated by at least the given amount. For example,
+to perform clash detection between some objects, you could use `separatedBy` on
+those objects' bounding boxes as a quick check to see if the objects had a gap
+of at least 1 cm between them:
 
-    safelySeparated box1 box2 =
-        BoundingBox3d.separatedBy GT 0.01 box1 box2
+    safelySeparated firstBox secondBox =
+        BoundingBox3d.separatedByAtLeast
+            (Length.centimeters 1)
+            firstBox
+            secondBox
 
-This can be read as "`box1` and `box2` are separated by greater than 0.01
-units". (The [`Order`](https://package.elm-lang.org/packages/elm/core/latest/Basics#Order)
-type and its three values `LT`, `GT` and `EQ` are defined in Elm's `Basics`
-module so are available by default in any Elm program.)
+Separation is defined as the _minimum_ distance one box would have to move so
+that it touched the other. (Note that this may be a _diagonal_ distance between
+corners.) Boxes that just touch are considered to have a separation of zero, so
 
-Separation is defined as the _minimum_ distance one box would have to move
-so that it touched the other, and is always positive for any two boxes that do
-not touch.
+    BoundingBox3d.separatedByAtLeast Quantity.zero
+        firstBox
+        secondBox
 
-Boxes that just touch are considered to have a separation of zero, which is
-distinct from 'no separation'. 'No separation' (overlap) is considered to be
-less than zero but not comparable to any negative number.
-
-
-### Less than
-
-  - `separatedBy LT 1e-3` will return true if the two boxes are separated by
-    less than 0.001 units or if they touch or overlap (false if they are
-    separated by at least 0.001 units).
-  - `separatedBy LT 0` will return true only if the boxes overlap by some
-    non-zero amount.
-  - `separatedBy LT -1e-3` will always return false! If you care about _how
-    much_ two boxes overlap by, use `overlappingBy` instead.
-
-
-### Greater than
-
-  - `separatedBy GT 1e-3` will return true if the two boxes are separated by at
-    least 0.001 units (false if they are separated by less than that or if they
-    touch or overlap).
-  - `separatedBy GT 0` will return true if the two boxes are separated by any
-    non-zero amount (false if they touch or overlap).
-  - `separatedBy GT -1e-3` doesn't make a lot of sense but will return true if
-    the boxes just touch or are separated by any amount (false if they overlap
-    by any non-zero amount).
-
-
-### Equal to
-
-Checking whether two boxes are separated by exactly a given amount is pretty
-weird and vulnerable to floating-point roundoff, but is defined as follows:
-
-  - `separatedBy EQ 1e-3` will return true if the two boxes are separated by
-    exactly 0.001 units.
-  - `separatedBy EQ 0` will return true if and only if the boxes just touch each
-    other.
-  - `separatedBy EQ -3` will always return false.
+will return true even if the two boxes just touch each other.
 
 -}
-separatedBy : Order -> Quantity Float units -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> Bool
-separatedBy order tolerance =
-    case order of
-        LT ->
-            if tolerance |> Quantity.greaterThan Quantity.zero then
-                \firstBox secondBox ->
-                    case squaredSeparationAmount firstBox secondBox of
-                        Just squaredDistance ->
-                            squaredDistance
-                                |> Quantity.lessThan
-                                    (Quantity.squared tolerance)
+separatedByAtLeast : Quantity Float units -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> Bool
+separatedByAtLeast tolerance firstBox secondBox =
+    let
+        clampedTolerance =
+            Quantity.max tolerance Quantity.zero
 
-                        Nothing ->
-                            True
+        xSeparation =
+            Quantity.max (minX firstBox) (minX secondBox)
+                |> Quantity.minus
+                    (Quantity.min (maxX firstBox) (maxX secondBox))
 
-            else if tolerance == Quantity.zero then
-                \firstBox secondBox ->
-                    squaredSeparationAmount firstBox secondBox == Nothing
+        ySeparation =
+            Quantity.max (minY firstBox) (minY secondBox)
+                |> Quantity.minus
+                    (Quantity.min (maxY firstBox) (maxY secondBox))
 
-            else
-                alwaysFalse
+        zSeparation =
+            Quantity.max (minZ firstBox) (minZ secondBox)
+                |> Quantity.minus
+                    (Quantity.min (maxZ firstBox) (maxZ secondBox))
+    in
+    if
+        (xSeparation |> Quantity.greaterThanOrEqualTo Quantity.zero)
+            || (ySeparation |> Quantity.greaterThanOrEqualTo Quantity.zero)
+            || (zSeparation |> Quantity.greaterThanOrEqualTo Quantity.zero)
+    then
+        let
+            dX =
+                Quantity.max xSeparation Quantity.zero
 
-        GT ->
-            if tolerance |> Quantity.greaterThanOrEqualTo Quantity.zero then
-                \firstBox secondBox ->
-                    case squaredSeparationAmount firstBox secondBox of
-                        Just squaredDistance ->
-                            squaredDistance
-                                |> Quantity.greaterThan
-                                    (Quantity.squared tolerance)
+            dY =
+                Quantity.max ySeparation Quantity.zero
 
-                        Nothing ->
-                            False
+            dZ =
+                Quantity.max zSeparation Quantity.zero
+        in
+        Quantity.squared dX
+            |> Quantity.plus (Quantity.squared dY)
+            |> Quantity.plus (Quantity.squared dZ)
+            |> Quantity.greaterThanOrEqualTo (Quantity.squared clampedTolerance)
 
-            else
-                \firstBox secondBox ->
-                    squaredSeparationAmount firstBox secondBox /= Nothing
-
-        EQ ->
-            if tolerance |> Quantity.greaterThanOrEqualTo Quantity.zero then
-                let
-                    expected =
-                        Just (Quantity.squared tolerance)
-                in
-                \firstBox secondBox ->
-                    squaredSeparationAmount firstBox secondBox == expected
-
-            else
-                alwaysFalse
+    else
+        False
 
 
 {-| Test if the second given bounding box is fully contained within the first
