@@ -570,8 +570,7 @@ given parameter value:
 
     QuadraticSpline3d.sample nondegenerateExampleSpline 0.5
     --> ( Point3d.meters 2.5 2 1.5
-    --> , Direction3d.fromAzimuthAndElevation
-    -->     (Angle.degrees 45)
+    --> , Direction3d.xyZ (Angle.degrees 45)
     -->     (Angle.degrees 35.26)
     --> )
 
