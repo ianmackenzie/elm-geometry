@@ -237,7 +237,7 @@ hullOfHelp currentMinX currentMaxX currentMinY currentMaxY getBoundingBox items 
             , maxY = Length.meters 5
             }
 
-    BoundingBox2d.hull firstBox secondBox
+    BoundingBox2d.hull2 firstBox secondBox
     --> BoundingBox2d.fromExtrema
     -->     { minX = Length.meters -2
     -->     , maxX = Length.meters 4
@@ -292,7 +292,7 @@ the list is empty, returns `Nothing`.
         BoundingBox2d.singleton
             (Point2d.meters 1 3)
 
-    BoundingBox2d.aggregate [ exampleBox, singletonBox ]
+    BoundingBox2d.hullN [ exampleBox, singletonBox ]
     --> Just
     -->     (BoundingBox2d.fromExtrema
     -->         { minX = Length.meters 1,
@@ -302,10 +302,10 @@ the list is empty, returns `Nothing`.
     -->         }
     -->     )
 
-    BoundingBox2d.aggregate [ exampleBox ]
+    BoundingBox2d.hullN [ exampleBox ]
     --> Just exampleBox
 
-    BoundingBox2d.aggregate []
+    BoundingBox2d.hullN []
     --> Nothing
 
 If you know you have at least one bounding box, you can use `hull` instead.
