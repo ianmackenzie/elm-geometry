@@ -114,6 +114,10 @@ coordinates.
 
 # Advanced
 
+These functions are unsafe because they require you to track units manually. In
+general you should prefer other functions instead, but these functions may be
+useful when writing generic/library code.
+
 @docs unsafe, unwrap
 
 -}
@@ -134,14 +138,20 @@ type alias Point2d units coordinates =
     Types.Point2d units coordinates
 
 
-{-| TODO
+{-| Construct a point from its raw X and Y coordinates as `Float` values. The
+values must be in whatever units the resulting point is considered to use
+(generally meters or pixels). You should generally use something safer such as
+`Point2d.meters`, `Point2d.fromPixels`, `Point2d.toRecord`, `Point2d.xy` etc.
 -}
 unsafe : { x : Float, y : Float } -> Point2d units coordinates
 unsafe coordinates =
     Types.Point2d coordinates
 
 
-{-| TODO
+{-| Extract a point's raw X and Y coordinates as `Float` values. These values
+will be in whatever units the point has (generally meters or pixels). You should
+generally use something safer such as `Point2d.toMeters`, `Point2d.toRecord`
+`Point2d.xCoordinate` etc.
 -}
 unwrap : Point2d units coordinates -> { x : Float, y : Float }
 unwrap (Types.Point2d coordinates) =
