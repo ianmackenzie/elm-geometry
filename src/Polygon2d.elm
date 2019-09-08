@@ -565,10 +565,10 @@ if the polygon has no vertices.
     Polygon2d.boundingBox rectangle
     --> Just
     -->     (BoundingBox2d.fromExtrema
-    -->         { minX = 1
-    -->         , maxX = 3
-    -->         , minY = 1
-    -->         , maxY = 2
+    -->         { minX = Length.meters 1
+    -->         , maxX = Length.meters 3
+    -->         , minY = Length.meters 1
+    -->         , maxY = Length.meters 2
     -->         }
     -->     )
 

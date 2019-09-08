@@ -357,12 +357,12 @@ placeIn frame sphere =
 
     Sphere3d.boundingBox exampleSphere
     --> BoundingBox3d.fromExtrema
-    -->     { minX = -2
-    -->     , maxX = 4
-    -->     , minY = -1
-    -->     , maxY = 5
-    -->     , minZ = -2
-    -->     , maxZ = 4
+    -->     { minX = Length.meters -2
+    -->     , maxX = Length.meters 4
+    -->     , minY = Length.meters -1
+    -->     , maxY = Length.meters 5
+    -->     , minZ = Length.meters -2
+    -->     , maxZ = Length.meters 4
     -->     }
 
 -}

@@ -281,10 +281,10 @@ area than the spline itself).
 
     CubicSpline2d.boundingBox exampleSpline
     --> BoundingBox2d.fromExtrema
-    -->     { minX = 1
-    -->     , maxX = 7
-    -->     , minY = 1
-    -->     , maxY = 4
+    -->     { minX = Length.meters 1
+    -->     , maxX = Length.meters 7
+    -->     , minY = Length.meters 1
+    -->     , maxY = Length.meters 4
     -->     }
 
 -}

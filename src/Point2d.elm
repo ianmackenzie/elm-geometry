@@ -1343,10 +1343,10 @@ diagonal of the bounding box.
 
     BoundingBox2d.from firstPoint secondPoint
     --> BoundingBox2d.fromExtrema
-    -->     { minX = -1
-    -->     , maxX = 2
-    -->     , minY = 3
-    -->     , maxY = 5
+    -->     { minX = Length.meters -1
+    -->     , maxX = Length.meters 2
+    -->     , minY = Length.meters 3
+    -->     , maxY = Length.meters 5
     -->     }
 
 -}
@@ -1414,10 +1414,10 @@ list is empty, returns `Nothing`.
         ]
     --> Just <|
     -->     BoundingBox2d.fromExtrema
-    -->         { minX = -1
-    -->         , maxX = 6
-    -->         , minY = 3
-    -->         , maxY = 5
+    -->         { minX = Length.meters -1
+    -->         , maxX = Length.meters 6
+    -->         , minY = Length.meters 3
+    -->         , maxY = Length.meters 5
     -->         }
 
     BoundingBox2d.containingPoints []

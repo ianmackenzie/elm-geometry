@@ -647,10 +647,10 @@ placeIn frame =
 
     LineSegment2d.boundingBox exampleLineSegment
     --> BoundingBox2d.fromExtrema
-    -->     { minX = 1
-    -->     , maxX = 3
-    -->     , minY = 2
-    -->     , maxY = 4
+    -->     { minX = Length.meters 1
+    -->     , maxX = Length.meters 3
+    -->     , minY = Length.meters 2
+    -->     , maxY = Length.meters 4
     -->     }
 
 -}

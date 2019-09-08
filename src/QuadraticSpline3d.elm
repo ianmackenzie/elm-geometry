@@ -232,12 +232,12 @@ volume than the spline itself).
 
     QuadraticSpline3d.boundingBox exampleSpline
     --> BoundingBox3d.fromExtrema
-    -->     { minX = 1
-    -->     , maxX = 3
-    -->     , minY = 1
-    -->     , maxY = 3
-    -->     , minZ = 1
-    -->     , maxZ = 3
+    -->     { minX = Length.meters 1
+    -->     , maxX = Length.meters 3
+    -->     , minY = Length.meters 1
+    -->     , maxY = Length.meters 3
+    -->     , minZ = Length.meters 1
+    -->     , maxZ = Length.meters 3
     -->     }
 
 -}

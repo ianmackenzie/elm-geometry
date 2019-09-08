@@ -461,12 +461,12 @@ placeIn frame circle =
 
     Circle3d.boundingBox exampleCircle
     --> BoundingBox3d.fromExtrema
-    -->     { minX = -1
-    -->     , maxX = 5
-    -->     , minY = -3
-    -->     , maxY = 3
-    -->     , minZ = 1
-    -->     , maxZ = 1
+    -->     { minX = Length.meters -1
+    -->     , maxX = Length.meters 5
+    -->     , minY = Length.meters -3
+    -->     , maxY = Length.meters 3
+    -->     , minZ = Length.meters 1
+    -->     , maxZ = Length.meters 1
     -->     }
 
 -}

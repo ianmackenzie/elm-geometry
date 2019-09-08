@@ -405,10 +405,10 @@ placeIn frame =
 
     Triangle2d.boundingBox exampleTriangle
     --> BoundingBox2d.fromExtrema
-    -->     { minX = 1
-    -->     , maxX = 2
-    -->     , minY = 1
-    -->     , maxY = 3
+    -->     { minX = Length.meters 1
+    -->     , maxX = Length.meters 2
+    -->     , minY = Length.meters 1
+    -->     , maxY = Length.meters 3
     -->     }
 
 -}

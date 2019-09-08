@@ -387,10 +387,10 @@ placeIn frame (Types.Circle2d circle) =
 
     Circle2d.boundingBox exampleCircle
     --> BoundingBox2d.fromExtrema
-    -->     { minX = -2
-    -->     , maxX = 4
-    -->     , minY = -1
-    -->     , maxY = 5
+    -->     { minX = Length.meters -2
+    -->     , maxX = Length.meters 4
+    -->     , minY = Length.meters -1
+    -->     , maxY = Length.meters 5
     -->     }
 
 -}

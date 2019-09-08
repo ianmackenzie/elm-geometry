@@ -274,10 +274,10 @@ toPolygon rectangle =
 
     rectangle =
         Rectangle2d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 3
+            { minX = Length.meters 2
+            , maxX = Length.meters 5
+            , minY = Length.meters 1
+            , maxY = Length.meters 3
             }
 
     Rectangle2d.axes rectangle
@@ -330,10 +330,10 @@ centerPoint rectangle =
 
     rectangle =
         Rectangle2d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 3
+            { minX = Length.meters 2
+            , maxX = Length.meters 5
+            , minY = Length.meters 1
+            , maxY = Length.meters 3
             }
 
     Rectangle2d.dimensions rectangle
@@ -349,10 +349,10 @@ dimensions (Types.Rectangle2d rectangle) =
 
     rectangle =
         Rectangle2d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 3
+            { minX = Length.meters 2
+            , maxX = Length.meters 5
+            , minY = Length.meters 1
+            , maxY = Length.meters 3
             }
 
     Rectangle2d.area rectangle
@@ -398,10 +398,10 @@ vertices rectangle =
 
     rectangle =
         Rectangle2d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 3
+            { minX = Length.meters 2
+            , maxX = Length.meters 5
+            , minY = Length.meters 1
+            , maxY = Length.meters 3
             }
 
     p1 =
@@ -478,19 +478,19 @@ edges rectangle =
 
     rectangle =
         Rectangle2d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 3
+            { minX = Length.meters 2
+            , maxX = Length.meters 5
+            , minY = Length.meters 1
+            , maxY = Length.meters 3
             }
 
     rectangle
         |> Rectangle2d.scaleAbout Point2d.origin 2
     --> Rectangle2d.fromExtrema
-    -->     { minX = 4
-    -->     , maxX = 10
-    -->     , minY = 2
-    -->     , maxY = 6
+    -->     { minX = Length.meters 4
+    -->     , maxX = Length.meters 10
+    -->     , minY = Length.meters 2
+    -->     , maxY = Length.meters 6
     -->     }
 
 Note that scaling by a negative value will flip the handedness of the
@@ -547,10 +547,10 @@ scaleAbout point scale rectangle =
 
     rectangle =
         Rectangle2d.fromExtrema
-            { minX = 0
-            , maxX = 1
-            , minY = 0
-            , maxY = 1
+            { minX = Length.meters 0
+            , maxX = Length.meters 1
+            , minY = Length.meters 0
+            , maxY = Length.meters 1
             }
 
     rotated =
@@ -588,10 +588,10 @@ rotateAround point angle rectangle =
 
     rectangle =
         Rectangle2d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 3
+            { minX = Length.meters 2
+            , maxX = Length.meters 5
+            , minY = Length.meters 1
+            , maxY = Length.meters 3
             }
 
     displacement =
@@ -599,10 +599,10 @@ rotateAround point angle rectangle =
 
     Rectangle2d.translateBy displacement rectangle
     --> Rectangle2d.fromExtrema
-    -->     { minX = 4
-    -->     , maxX = 7
-    -->     , minY = -2
-    -->     , maxY = 0
+    -->     { minX = Length.meters 4
+    -->     , maxX = Length.meters 7
+    -->     , minY = Length.meters -2
+    -->     , maxY = Length.meters 0
     -->     }
 
 -}
@@ -633,18 +633,18 @@ translateIn direction distance rectangle =
 
     rectangle =
         Rectangle2d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 3
+            { minX = Length.meters 2
+            , maxX = Length.meters 5
+            , minY = Length.meters 1
+            , maxY = Length.meters 3
             }
 
     Rectangle2d.mirrorAcross Axis2d.x rectangle
     --> Rectangle2d.fromExtrema
-    -->     { minX = 2
-    -->     , maxX = 5
-    -->     , minY = -3
-    -->     , maxY = -1
+    -->     { minX = Length.meters 2
+    -->     , maxX = Length.meters 5
+    -->     , minY = Length.meters -3
+    -->     , maxY = Length.meters -1
     -->     }
 
 Note that this will flip the handedness of the rectangle's axes, and therefore
@@ -666,10 +666,10 @@ coordinates.
 
     rectangle =
         Rectangle2d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 3
+            { minX = Length.meters 2
+            , maxX = Length.meters 5
+            , minY = Length.meters 1
+            , maxY = Length.meters 3
             }
 
     localFrame =
@@ -677,10 +677,10 @@ coordinates.
 
     Rectangle2d.placeIn localFrame rectangle
     --> Rectangle2d.fromExtrema
-    -->     { minX = 3
-    -->     , maxX = 6
-    -->     , minY = 3
-    -->     , maxY = 5
+    -->     { minX = Length.meters 3
+    -->     , maxX = Length.meters 6
+    -->     , minY = Length.meters 3
+    -->     , maxY = Length.meters 5
     -->     }
 
 -}
@@ -697,10 +697,10 @@ in local coordinates relative to a given reference frame.
 
     rectangle =
         Rectangle2d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 3
+            { minX = Length.meters 2
+            , maxX = Length.meters 5
+            , minY = Length.meters 1
+            , maxY = Length.meters 3
             }
 
     localFrame =
@@ -708,10 +708,10 @@ in local coordinates relative to a given reference frame.
 
     Rectangle2d.relativeTo localFrame rectangle
     --> Rectangle2d.fromExtrema
-    -->     { minX = 1
-    -->     , maxX = 4
-    -->     , minY = -1
-    -->     , maxY = 1
+    -->     { minX = Length.meters 1
+    -->     , maxX = Length.meters 4
+    -->     , minY = Length.meters -1
+    -->     , maxY = Length.meters 1
     -->     }
 
 -}
@@ -730,10 +730,10 @@ angle.
 
     square =
         Rectangle2d.fromExtrema
-            { minX = 0
-            , maxX = 1
-            , minY = 0
-            , maxY = 1
+            { minX = Length.meters 0
+            , maxX = Length.meters 1
+            , minY = Length.meters 0
+            , maxY = Length.meters 1
             }
 
     diamond =
@@ -743,10 +743,10 @@ angle.
 
     Rectangle2d.boundingBox diamond
     --> BoundingBox2d.fromExtrema
-    -->     { minX = -0.7071
-    -->     , maxX = 0.7071
-    -->     , minY = 0
-    -->     , maxY = 1.4142
+    -->     { minX = Length.meters -0.7071
+    -->     , maxX = Length.meters 0.7071
+    -->     , minY = Length.meters 0
+    -->     , maxY = Length.meters 1.4142
     -->     }
 
 -}

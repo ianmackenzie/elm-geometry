@@ -354,12 +354,12 @@ if the polyline has no vertices.
     Polyline3d.boundingBox examplePolyline
     --> Just
     -->     (BoundingBox3d.fromExtrema
-    -->         { minX = 0
-    -->         , maxX = 1
-    -->         , minY = 0
-    -->         , maxY = 2
-    -->         , minZ = 0
-    -->         , maxZ = 3
+    -->         { minX = Length.meters 0
+    -->         , maxX = Length.meters 1
+    -->         , minY = Length.meters 0
+    -->         , maxY = Length.meters 2
+    -->         , minZ = Length.meters 0
+    -->         , maxZ = Length.meters 3
     -->         }
     -->     )
 

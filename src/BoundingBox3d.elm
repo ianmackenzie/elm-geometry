@@ -78,12 +78,12 @@ type alias BoundingBox3d units coordinates =
 
     exampleBox =
         BoundingBox3d.fromExtrema
-            { minX = -2
-            , maxX = 2
-            , minY = 2
-            , maxY = 5
-            , minZ = 3
-            , maxZ = 4
+            { minX = Length.meters -2
+            , maxX = Length.meters 2
+            , minY = Length.meters 2
+            , maxY = Length.meters 5
+            , minZ = Length.meters 3
+            , maxZ = Length.meters 4
             }
 
 If the minimum and maximum values are provided in the wrong order (for example
@@ -126,12 +126,12 @@ fromExtrema given =
 
     BoundingBox3d.singleton point
     --> BoundingBox3d.fromExtrema
-    -->     { minX = 2
-    -->     , maxX = 2
-    -->     , minY = 1
-    -->     , maxY = 1
-    -->     , minZ = 3
-    -->     , maxZ = 3
+    -->     { minX = Length.meters 2
+    -->     , maxX = Length.meters 2
+    -->     , minY = Length.meters 1
+    -->     , maxY = Length.meters 1
+    -->     , minZ = Length.meters 3
+    -->     , maxZ = Length.meters 3
     -->     }
 
 -}
@@ -230,32 +230,32 @@ hullOfHelp currentMinX currentMaxX currentMinY currentMaxY currentMinZ currentMa
 
     firstBox =
         BoundingBox3d.fromExtrema
-            { minX = 1
-            , maxX = 4
-            , minY = 2
-            , maxY = 3
-            , minZ = 0
-            , maxZ = 5
+            { minX = Length.meters 1
+            , maxX = Length.meters 4
+            , minY = Length.meters 2
+            , maxY = Length.meters 3
+            , minZ = Length.meters 0
+            , maxZ = Length.meters 5
             }
 
     secondBox =
         BoundingBox3d.fromExtrema
-            { minX = -2
-            , maxX = 2
-            , minY = 4
-            , maxY = 5
-            , minZ = -1
-            , maxZ = 0
+            { minX = Length.meters -2
+            , maxX = Length.meters 2
+            , minY = Length.meters 4
+            , maxY = Length.meters 5
+            , minZ = Length.meters -1
+            , maxZ = Length.meters 0
             }
 
     BoundingBox3d.hull firstBox secondBox
     --> BoundingBox3d.fromExtrema
-    -->     { minX = -2
-    -->     , maxX = 4
-    -->     , minY = 2
-    -->     , maxY = 5
-    -->     , minZ = -1
-    -->     , maxZ = 5
+    -->     { minX = Length.meters -2
+    -->     , maxX = Length.meters 4
+    -->     , minY = Length.meters 2
+    -->     , maxY = Length.meters 5
+    -->     , minZ = Length.meters -1
+    -->     , maxZ = Length.meters 5
     -->     }
 
 -}
@@ -312,12 +312,12 @@ the list is empty, returns `Nothing`.
     BoundingBox3d.aggregate [ exampleBox, singletonBox ]
     --> Just
     -->     (BoundingBox3d.fromExtrema
-    -->         { minX = -2,
-    -->         , maxX = 2
-    -->         , minY = 1
-    -->         , maxY = 5
-    -->         , minZ = 0
-    -->         , maxZ = 4
+    -->         { minX = Length.meters -2,
+    -->         , maxX = Length.meters 2
+    -->         , minY = Length.meters 1
+    -->         , maxY = Length.meters 5
+    -->         , minZ = Length.meters 0
+    -->         , maxZ = Length.meters 4
     -->         }
     -->     )
 
@@ -345,12 +345,12 @@ hullN boxes =
 record.
 
     BoundingBox3d.extrema exampleBox
-    --> { minX = -2
-    --> , maxX = 2
-    --> , minY = 2
-    --> , maxY = 5
-    --> , minZ = 3
-    --> , maxZ = 4
+    --> { minX = Length.meters -2
+    --> , maxX = Length.meters 2
+    --> , minY = Length.meters 2
+    --> , maxY = Length.meters 5
+    --> , minZ = Length.meters 3
+    --> , maxZ = Length.meters 4
     --> }
 
 Can be useful when combined with record destructuring, for example
@@ -359,12 +359,12 @@ Can be useful when combined with record destructuring, for example
     { minX, maxX, minY, maxY, minZ, maxZ } =
         BoundingBox3d.extrema exampleBox
 
-    --> minX = -2
-    --> maxX = 2
-    --> minY = 2
-    --> maxY = 5
-    --> minZ = 3
-    --> maxZ = 4
+    --> minX = Length.meters -2
+    --> maxX = Length.meters 2
+    --> minY = Length.meters 2
+    --> maxY = Length.meters 5
+    --> minZ = Length.meters 3
+    --> maxZ = Length.meters 4
 
 -}
 extrema :
@@ -543,32 +543,32 @@ but is more efficient.
 
     firstBox =
         BoundingBox3d.fromExtrema
-            { minX = 0
-            , maxX = 3
-            , minY = 0
-            , maxY = 2
-            , minZ = 0
-            , maxZ = 1
+            { minX = Length.meters 0
+            , maxX = Length.meters 3
+            , minY = Length.meters 0
+            , maxY = Length.meters 2
+            , minZ = Length.meters 0
+            , maxZ = Length.meters 1
             }
 
     secondBox =
         BoundingBox3d.fromExtrema
-            { minX = 0
-            , maxX = 3
-            , minY = 1
-            , maxY = 4
-            , minZ = -1
-            , maxZ = 2
+            { minX = Length.meters 0
+            , maxX = Length.meters 3
+            , minY = Length.meters 1
+            , maxY = Length.meters 4
+            , minZ = Length.meters -1
+            , maxZ = Length.meters 2
             }
 
     thirdBox =
         BoundingBox3d.fromExtrema
-            { minX = 0
-            , maxX = 3
-            , minY = 4
-            , maxY = 5
-            , minZ = -1
-            , maxZ = 2
+            { minX = Length.meters 0
+            , maxX = Length.meters 3
+            , minY = Length.meters 4
+            , maxY = Length.meters 5
+            , minZ = Length.meters -1
+            , maxZ = Length.meters 2
             }
 
     BoundingBox3d.intersects firstBox secondBox
@@ -884,32 +884,32 @@ separatedBy order tolerance =
 
     outerBox =
         BoundingBox3d.fromExtrema
-            { minX = 0
-            , maxX = 10
-            , minY = 0
-            , maxY = 10
-            , minZ = 0
-            , maxZ = 10
+            { minX = Length.meters 0
+            , maxX = Length.meters 10
+            , minY = Length.meters 0
+            , maxY = Length.meters 10
+            , minZ = Length.meters 0
+            , maxZ = Length.meters 10
             }
 
     innerBox =
         BoundingBox3d.fromExtrema
-            { minX = 1
-            , maxX = 5
-            , minY = 3
-            , maxY = 9
-            , minZ = 7
-            , maxZ = 8
+            { minX = Length.meters 1
+            , maxX = Length.meters 5
+            , minY = Length.meters 3
+            , maxY = Length.meters 9
+            , minZ = Length.meters 7
+            , maxZ = Length.meters 8
             }
 
     overlappingBox =
         BoundingBox3d.fromExtrema
-            { minX = 1
-            , maxX = 5
-            , minY = 3
-            , maxY = 12
-            , minZ = 7
-            , maxZ = 8
+            { minX = Length.meters 1
+            , maxX = Length.meters 5
+            , minY = Length.meters 3
+            , maxY = Length.meters 12
+            , minZ = Length.meters 7
+            , maxZ = Length.meters 8
             }
 
     BoundingBox3d.isContainedIn outerBox innerBox
@@ -934,43 +934,43 @@ given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
 
     firstBox =
         BoundingBox3d.fromExtrema
-            { minX = 1
-            , maxX = 4
-            , minY = 2
-            , maxY = 3
-            , minZ = 5
-            , maxZ = 8
+            { minX = Length.meters 1
+            , maxX = Length.meters 4
+            , minY = Length.meters 2
+            , maxY = Length.meters 3
+            , minZ = Length.meters 5
+            , maxZ = Length.meters 8
             }
 
     secondBox =
         BoundingBox3d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 4
-            , minZ = 6
-            , maxZ = 7
+            { minX = Length.meters 2
+            , maxX = Length.meters 5
+            , minY = Length.meters 1
+            , maxY = Length.meters 4
+            , minZ = Length.meters 6
+            , maxZ = Length.meters 7
             }
 
     thirdBox =
         BoundingBox3d.fromExtrema
-            { minX = 1
-            , maxX = 4
-            , minY = 4
-            , maxY = 5
-            , minZ = 5
-            , maxZ = 8
+            { minX = Length.meters 1
+            , maxX = Length.meters 4
+            , minY = Length.meters 4
+            , maxY = Length.meters 5
+            , minZ = Length.meters 5
+            , maxZ = Length.meters 8
             }
 
     BoundingBox3d.intersection firstBox secondBox
     --> Just
     -->     (BoundingBox3d.fromExtrema
-    -->         { minX = 2
-    -->         , maxX = 4
-    -->         , minY = 2
-    -->         , maxY = 3
-    -->         , minZ = 6
-    -->         , maxZ = 7
+    -->         { minX = Length.meters 2
+    -->         , maxX = Length.meters 4
+    -->         , minY = Length.meters 2
+    -->         , maxY = Length.meters 3
+    -->         , minZ = Length.meters 6
+    -->         , maxZ = Length.meters 7
     -->         }
     -->     )
 
@@ -983,33 +983,33 @@ least one of its dimensions will be zero):
 
     firstBox =
         BoundingBox3d.fromExtrema
-            { minX = 0
-            , maxX = 1
-            , minY = 0
-            , maxY = 2
-            , minZ = 0
-            , maxZ = 3
+            { minX = Length.meters 0
+            , maxX = Length.meters 1
+            , minY = Length.meters 0
+            , maxY = Length.meters 2
+            , minZ = Length.meters 0
+            , maxZ = Length.meters 3
             }
 
     secondBox =
         BoundingBox3d.fromExtrema
-            { minX = 1
-            , maxX = 2
-            , minY = 1
-            , maxY = 3
-            , minZ = 1
-            , maxZ = 4
+            { minX = Length.meters 1
+            , maxX = Length.meters 2
+            , minY = Length.meters 1
+            , maxY = Length.meters 3
+            , minZ = Length.meters 1
+            , maxZ = Length.meters 4
             }
 
     BoundingBox3d.intersection firstBox secondBox
     --> Just
     -->     (BoundingBox3d.fromExtrema
-    -->         { minX = 1
-    -->         , maxX = 1
-    -->         , minY = 1
-    -->         , maxY = 2
-    -->         , minZ = 1
-    -->         , maxZ = 3
+    -->         { minX = Length.meters 1
+    -->         , maxX = Length.meters 1
+    -->         , minY = Length.meters 1
+    -->         , maxY = Length.meters 2
+    -->         , minZ = Length.meters 1
+    -->         , maxZ = Length.meters 3
     -->         }
     -->     )
 
@@ -1039,12 +1039,12 @@ intersection firstBox secondBox =
 
     BoundingBox3d.scaleAbout point 2 exampleBox
     --> BoundingBox3d.fromExtrema
-    -->     { minX = -6
-    -->     , maxX = 2
-    -->     , minY = 2
-    -->     , maxY = 8
-    -->     , minZ = 4
-    -->     , maxZ = 6
+    -->     { minX = Length.meters -6
+    -->     , maxX = Length.meters 2
+    -->     , minY = Length.meters 2
+    -->     , maxY = Length.meters 8
+    -->     , minZ = Length.meters 4
+    -->     , maxZ = Length.meters 6
     -->     }
 
 -}
@@ -1106,12 +1106,12 @@ scaleAbout point scale boundingBox =
 
     BoundingBox3d.translateBy displacement exampleBox
     --> BoundingBox3d.fromExtrema
-    -->     { minX = 0
-    -->     , maxX = 4
-    -->     , minY = -1
-    -->     , maxY = 2
-    -->     , minZ = 4
-    -->     , maxZ = 5
+    -->     { minX = Length.meters 0
+    -->     , maxX = Length.meters 4
+    -->     , minY = Length.meters -1
+    -->     , maxY = Length.meters 2
+    -->     , minZ = Length.meters 4
+    -->     , maxZ = Length.meters 5
     -->     }
 
 -}
@@ -1173,23 +1173,23 @@ value will cause it to shrink.
     BoundingBox3d.offsetBy 2 exampleBox
     --> Just <|
     -->     BoundingBox3d.fromExtrema
-    -->         { minX = -4
-    -->         , maxX = 4
-    -->         , minY = 0
-    -->         , maxY = 7
-    -->         , minZ = 1
-    -->         , maxZ = 6
+    -->         { minX = Length.meters -4
+    -->         , maxX = Length.meters 4
+    -->         , minY = Length.meters 0
+    -->         , maxY = Length.meters 7
+    -->         , minZ = Length.meters 1
+    -->         , maxZ = Length.meters 6
     -->         }
 
     BoundingBox3d.offsetBy -0.5 exampleBox
     --> Just <|
     -->     BoundingBox3d.fromExtrema
-    -->         { minX = -1.5
-    -->         , maxX = 1.5
-    -->         , minY = 2.5
-    -->         , maxY = 4.5
-    -->         , minZ = 3.5
-    -->         , maxZ = 3.5
+    -->         { minX = Length.meters -1.5
+    -->         , maxX = Length.meters 1.5
+    -->         , minY = Length.meters 2.5
+    -->         , maxY = Length.meters 4.5
+    -->         , minZ = Length.meters 3.5
+    -->         , maxZ = Length.meters 3.5
     -->         }
 
 Returns `Nothing` if the offset is negative and large enough to cause the
@@ -1224,12 +1224,12 @@ offsetBy amount boundingBox =
 
     BoundingBox3d.expandBy 3 exampleBox
     --> BoundingBox3d.fromExtrema
-    -->     { minX = -5
-    -->     , maxX = 5
-    -->     , minY = -1
-    -->     , maxY = 8
-    -->     , minZ = 0
-    -->     , maxZ = 7
+    -->     { minX = Length.meters -5
+    -->     , maxX = Length.meters 5
+    -->     , minY = Length.meters -1
+    -->     , maxY = Length.meters 8
+    -->     , minZ = Length.meters 0
+    -->     , maxZ = Length.meters 7
     -->     }
 
 Negative offsets will be treated as positive (the absolute value will be used),

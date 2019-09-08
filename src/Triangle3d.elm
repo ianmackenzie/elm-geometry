@@ -430,12 +430,12 @@ projectInto sketchPlane triangle =
 
     Triangle3d.boundingBox exampleTriangle
     --> BoundingBox3d.fromExtrema
-    -->     { minX = 1
-    -->     , maxX = 2
-    -->     , minY = 0
-    -->     , maxY = 1
-    -->     , minZ = 0
-    -->     , maxZ = 3
+    -->     { minX = Length.meters 1
+    -->     , maxX = Length.meters 2
+    -->     , minY = Length.meters 0
+    -->     , maxY = Length.meters 1
+    -->     , minZ = Length.meters 0
+    -->     , maxZ = Length.meters 3
     -->     }
 
 -}

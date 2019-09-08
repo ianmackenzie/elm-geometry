@@ -303,10 +303,10 @@ if the polyline has no vertices.
     Polyline2d.boundingBox stepShape
     --> Just
     -->     (BoundingBox2d.fromExtrema
-    -->         { minX = 0
-    -->         , maxX = 2
-    -->         , minY = 0
-    -->         , maxY = 1
+    -->         { minX = Length.meters 0
+    -->         , maxX = Length.meters 2
+    -->         , minY = Length.meters 0
+    -->         , maxY = Length.meters 1
     -->         }
     -->     )
 

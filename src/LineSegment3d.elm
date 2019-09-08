@@ -553,12 +553,12 @@ projectInto sketchPlane lineSegment =
 
     LineSegment3d.boundingBox exampleLineSegment
     --> BoundingBox3d.fromExtrema
-    -->     { minX = 1
-    -->     , maxX = 4
-    -->     , minY = 2
-    -->     , maxY = 5
-    -->     , minZ = 3
-    -->     , maxZ = 6
+    -->     { minX = Length.meters 1
+    -->     , maxX = Length.meters 4
+    -->     , minY = Length.meters 2
+    -->     , maxY = Length.meters 5
+    -->     , minZ = Length.meters 3
+    -->     , maxZ = Length.meters 6
     -->     }
 
 -}

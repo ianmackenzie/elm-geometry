@@ -1704,12 +1704,12 @@ diagonal of the bounding box.
 
     BoundingBox3d.from firstPoint secondPoint
     --> BoundingBox3d.fromExtrema
-    -->     { minX = -1
-    -->     , maxX = 2
-    -->     , minY = 1
-    -->     , maxY = 5
-    -->     , minZ = -2
-    -->     , maxZ = 3
+    -->     { minX = Length.meters -1
+    -->     , maxX = Length.meters 2
+    -->     , minY = Length.meters 1
+    -->     , maxY = Length.meters 5
+    -->     , minZ = Length.meters -2
+    -->     , maxZ = Length.meters 3
     -->     }
 
 -}
@@ -1796,12 +1796,12 @@ list is empty, returns `Nothing`.
         ]
     --> Just <|
     -->     BoundingBox3d.fromExtrema
-    -->         { minX = -1
-    -->         , maxX = 6
-    -->         , minY = 1
-    -->         , maxY = 5
-    -->         , minZ = -2
-    -->         , maxZ = 3
+    -->         { minX = Length.meters -1
+    -->         , maxX = Length.meters 6
+    -->         , minY = Length.meters 1
+    -->         , maxY = Length.meters 5
+    -->         , minZ = Length.meters -2
+    -->         , maxZ = Length.meters 3
     -->         }
 
     BoundingBox3d.containingPoints []
