@@ -849,26 +849,31 @@ componentIn (Types.Direction3d d2) (Types.Direction3d d1) =
     d1.x * d2.x + d1.y * d2.y + d1.z * d2.z
 
 
-{-| TODO Get the angle of a direction in the XY plane, measured from the X axis
-towards the Y axis (counterclockwise around the Z axis). The result will be in
-the range -π to π.
+{-| Get the azimuth of a direction in a given sketch plane (the angle of that
+direction projected into the sketch plane), measured from its X axis towards its
+Y axis (counterclockwise around the sketch plane's normal axis). The result will
+be in the range -180 degrees to 180 degrees.
 
-    Direction3d.azimuth Direction3d.x
-    --> 0
+    Direction3d.x
+        |> Direction3d.azimuthIn SketchPlane3d.xy
+    --> Angle.degrees 0
 
-    Direction3d.azimuth Direction3d.y
-    --> degrees 90
+    Direction3d.y
+        |> Direction3d.azimuthIn SketchPlane3d.xy
+    --> Angle.degrees 90
 
-    Direction3d.azimuth Direction3d.negativeY
-    --> degrees -90
+    Direction3d.negativeY
+        |> Direction3d.azimuthIn SketchPlane3d.xy
+    --> Angle.degrees -90
 
-    Direction3d.azimuth Direction3d.negativeX
-    --> degrees 180
+    Direction3d.negativeX
+        |> Direction3d.azimuthIn SketchPlane3d.xy
+    --> Angle.degrees 180
 
 Vertical directions are considered to have an azimuth of zero:
 
-    Direction3d.azimuth Direction3d.z
-    --> 0
+    Direction3d.z |> Direction3d.azimuthIn SketchPlane3d.xy
+    --> Angle.degrees 0
 
 -}
 azimuthIn : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Direction3d coordinates3d -> Angle
@@ -889,20 +894,27 @@ azimuthIn (Types.SketchPlane3d sketchPlane) (Types.Direction3d d) =
     Quantity (atan2 sketchY sketchX)
 
 
-{-| TODO Get the angle of a direction from the XY plane towards positive Z. The
-result will be in the range -π/2 to π/2.
+{-| Get the elevation angle of a direction from a given sketch plane (the angle
+between the direction and the sketch plane, in the direction of the sketch
+plane's normal). Directions in (coplanar with) the sketch plane have an
+elevation angle of zero. The result will be in the range -90 degrees to 90
+degrees.
 
-    Direction3d.elevation Direction3d.x
-    --> 0
+    Direction3d.x
+        |> Direction3d.elevationFrom SketchPlane3d.xy
+    --> Angle.degrees 0
 
-    Direction3d.elevation Direction3d.negativeY
-    --> 0
+    Direction3d.y
+        |> Direction3d.elevationFrom SketchPlane3d.xy
+    --> Angle.degrees 0
 
-    Direction3d.elevation Direction3d.z
-    --> degrees 90
+    Direction3d.z
+        |> Direction3d.elevationFrom SketchPlane3d.xy
+    --> Angle.degrees 90
 
-    Direction3d.elevation Direction3d.negativeZ
-    --> degrees -90
+    Direction3d.negativeZ
+        |> Direction3d.elevationFrom SketchPlane3d.xy
+    --> Angle.degrees -90
 
 -}
 elevationFrom : SketchPlane3d units coordinates3d defines -> Direction3d coordinates3d -> Angle
