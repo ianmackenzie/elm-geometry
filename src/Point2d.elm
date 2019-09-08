@@ -218,7 +218,7 @@ unitless x y =
 {-| Construct a point from a radius and angle. Radius is measured from the
 origin and angle is measured counterclockwise from the positive X direction.
 
-    Point2d.fromPolarCoordinates ( 2, degrees 135 )
+    Point2d.rTheta (Length.meters 2) (Angle.degrees 135)
     --> Point2d.meters -1.4142 1.4142
 
 -}
