@@ -79,11 +79,7 @@ points.
 For the examples, assume the following frames have been defined:
 
     upsideDownFrame =
-        Frame2d
-            { originPoint = Point2d.origin
-            , xDirection = Direction2d.positiveX
-            , yDirection = Direction2d.negativeY
-            }
+        Frame2d.atOrigin |> Frame2d.reverseY
 
     rotatedFrame =
         Frame2d.atOrigin |> Frame2d.rotateBy (Angle.degrees 30)
