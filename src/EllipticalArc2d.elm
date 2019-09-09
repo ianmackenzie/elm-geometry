@@ -127,10 +127,10 @@ For example, to construct a simple 90 degree elliptical arc, you might use
         EllipticalArc2d.with
             { centerPoint = Point2d.origin
             , xDirection = Direction2d.x
-            , xRadius = 2
-            , yRadius = 1
-            , startAngle = 0
-            , sweptAngle = degrees 90
+            , xRadius = Length.meters 2
+            , yRadius = Length.meters 1
+            , startAngle = Angle.degrees 0
+            , sweptAngle = Angle.degrees 90
             }
 
 ![90 degree elliptical arc](https://ianmackenzie.github.io/elm-geometry/1.0.0/EllipticalArc2d/with1.svg)
@@ -140,10 +140,10 @@ To make an inclined 180 degree elliptical arc, you might use
     EllipticalArc2d.with
         { centerPoint = Point2d.origin
         , xDirection = Direction2d.degrees 30
-        , xRadius = 2
-        , yRadius = 1
-        , startAngle = degrees -90
-        , sweptAngle = degrees 180
+        , xRadius = Length.meters 2
+        , yRadius = Length.meters 1
+        , startAngle = Angle.degrees -90
+        , sweptAngle = Angle.degrees 180
         }
 
 ![180 degree inclined elliptical arc](https://ianmackenzie.github.io/elm-geometry/1.0.0/EllipticalArc2d/with2.svg)
@@ -178,15 +178,6 @@ solutions, so you also need to specify which of the four solutions you want -
 whether the swept angle of the arc should be less than or greater than 180
 degrees, and whether the swept angle should be positive (counterclockwise) or
 negative (clockwise).
-
-The example below is interactive; try dragging either endpoint or the tip of the
-X direction (or the center point to move the whole arc), clicking on the X or Y
-radial lines and then scrolling to changet that radius, or clicking/tapping on
-the various dashed arcs to switch what kind of swept angle to use.
-
-<iframe src="https://ianmackenzie.github.io/elm-geometry/1.0.0/EllipticalArc2d/fromEndpoints.html" style="width: 500px; height: 400px" scrolling=no frameborder=0>
-`https://ianmackenzie.github.io/elm-geometry/1.0.0/EllipticalArc2d/fromEndpoints.html`
-</iframe>
 
 This function will return `Nothing` if no solution can found. Typically this
 means that the two endpoints are too far apart, but could also mean that one of
@@ -371,7 +362,7 @@ yRadius (Types.EllipticalArc2d arc) =
 at the start point of the arc.
 
     EllipticalArc2d.startAngle exampleArc
-    --> 0
+    --> Angle.degrees 0
 
 -}
 startAngle : EllipticalArc2d units coordinates -> Angle
@@ -384,7 +375,7 @@ startAngle (Types.EllipticalArc2d arc) =
 from the start point to the end point of the arc.
 
     EllipticalArc2d.sweptAngle exampleArc
-    --> degrees 90
+    --> Angle.degrees 90
 
 -}
 sweptAngle : EllipticalArc2d units coordinates -> Angle
@@ -392,17 +383,7 @@ sweptAngle (Types.EllipticalArc2d arc) =
     arc.sweptAngle
 
 
-{-| Get the point along an elliptical arc at a given parameter value:
-
-    EllipticalArc2d.pointOn exampleArc 0
-    --> Point2d.meters 2 0
-
-    EllipticalArc2d.pointOn exampleArc 0.5
-    --> Point2d.meters 1.4142 0.7071
-
-    EllipticalArc2d.pointOn exampleArc 1
-    --> Point2d.meters 0 1
-
+{-| Get the point along an elliptical arc at a given parameter value.
 -}
 pointOn : EllipticalArc2d units coordinates -> Float -> Point2d units coordinates
 pointOn arc parameterValue =
@@ -421,17 +402,7 @@ pointOn arc parameterValue =
     Point2d.xyIn (axes arc) localX localY
 
 
-{-| Get the first derivative of an elliptical arc at a given parameter value:
-
-    EllipticalArc2d.firstDerivative exampleArc 0
-    --> Vector2d.meters 0 1.5708
-
-    EllipticalArc2d.firstDerivative exampleArc 0.5
-    --> Vector2d.meters -2.2214 1.1107
-
-    EllipticalArc2d.firstDerivative exampleArc 1
-    --> Vector2d.meters -3.1416 0
-
+{-| Get the first derivative of an elliptical arc at a given parameter value.
 -}
 firstDerivative : EllipticalArc2d units coordinates -> Float -> Vector2d units coordinates
 firstDerivative arc parameterValue =
@@ -471,10 +442,6 @@ type Nondegenerate units coordinates
 {-| Attempt to construct a nondegenerate elliptical arc from a general
 `EllipticalArc2d`. If the arc is in fact degenerate (consists of a single
 point), returns an `Err` with that point.
-
-    EllipticalArc2d.nondegenerate exampleArc
-    --> Ok nondegenerateExampleArc
-
 -}
 nondegenerate : EllipticalArc2d units coordinates -> Result (Point2d units coordinates) (Nondegenerate units coordinates)
 nondegenerate arc =
@@ -502,11 +469,6 @@ nondegenerate arc =
 
 
 {-| Convert a nondegenerate elliptical arc back to a general `EllipticalArc2d`.
-
-    EllipticalArc2d.fromNondegenerate
-        nondegenerateExampleArc
-    --> exampleArc
-
 -}
 fromNondegenerate : Nondegenerate units coordinates -> EllipticalArc2d units coordinates
 fromNondegenerate nondegenerateArc =
@@ -522,23 +484,7 @@ fromNondegenerate nondegenerateArc =
 
 
 {-| Get the tangent direction to a nondegenerate elliptical arc at a given
-parameter value:
-
-    EllipticalArc2d.tangentDirection
-        nondegenerateExampleArc
-        0
-    --> Direction2d.degrees 90
-
-    EllipticalArc2d.tangentDirection
-        nondegenerateExampleArc
-        0.5
-    --> Direction2d.degrees 153.4
-
-    EllipticalArc2d.tangentDirection
-        nondegenerateExampleArc
-        1
-    --> Direction2d.degrees 180
-
+parameter value.
 -}
 tangentDirection : Nondegenerate units coordinates -> Float -> Direction2d coordinates
 tangentDirection nondegenerateArc parameterValue =
@@ -601,23 +547,7 @@ tangentDirection nondegenerateArc parameterValue =
 
 
 {-| Get both the point and tangent direction of a nondegenerate elliptical arc
-at a given parameter value:
-
-    EllipticalArc2d.sample nondegenerateExampleArc 0
-    --> ( Point2d.meters 2 0
-    --> , Direction2d.degrees 90
-    --> )
-
-    EllipticalArc2d.sample nondegenerateExampleArc 0.5
-    --> ( Point2d.meters 1.4142 0.7071
-    --> , Direction2d.degrees 153.4
-    --> )
-
-    EllipticalArc2d.sample nondegenerateExampleArc 1
-    --> ( Point2d.meters 0 1
-    --> , Direction2d.degrees 180
-    --> )
-
+at a given parameter value.
 -}
 sample : Nondegenerate units coordinates -> Float -> ( Point2d units coordinates, Direction2d coordinates )
 sample nondegenerateArc parameterValue =
@@ -627,10 +557,6 @@ sample nondegenerateArc parameterValue =
 
 
 {-| Get the start point of an elliptical arc.
-
-    EllipticalArc2d.startPoint exampleArc
-    --> Point2d.meters 2 0
-
 -}
 startPoint : EllipticalArc2d units coordinates -> Point2d units coordinates
 startPoint arc =
@@ -638,10 +564,6 @@ startPoint arc =
 
 
 {-| Get the end point of an elliptical arc.
-
-    EllipticalArc2d.endPoint exampleArc
-    --> Point2d.meters 0 1
-
 -}
 endPoint : EllipticalArc2d units coordinates -> Point2d units coordinates
 endPoint arc =
@@ -663,17 +585,6 @@ yDirection arc =
 {-| Reverse the direction of an elliptical arc, so that the start point becomes
 the end point and vice versa. Does not change the shape of the arc or any
 properties of the underlying ellipse.
-
-    EllipticalArc2d.reverse exampleArc
-    --> EllipticalArc2d.with
-    -->     { centerPoint = Point2d.origin
-    -->     , xDirection = Direction2d.x
-    -->     , xRadius = 2
-    -->     , yRadius = 1
-    -->     , startAngle = degrees 90
-    -->     , sweptAngle = degrees -90
-    -->     }
-
 -}
 reverse : EllipticalArc2d units coordinates -> EllipticalArc2d units coordinates
 reverse (Types.EllipticalArc2d properties) =
@@ -695,38 +606,13 @@ transformBy ellipseTransformation (Types.EllipticalArc2d properties) =
 
 
 {-| Scale an elliptical arc about a given point by a given scale.
-
-    exampleArc
-        |> EllipticalArc2d.scaleAbout Point2d.origin 3
-    --> EllipticalArc2d.with
-    -->     { centerPoint = Point2d.origin
-    -->     , xDirection = Direction2d.x
-    -->     , xRadius = 6
-    -->     , yRadius = 3
-    -->     , startAngle = 0
-    -->     , sweptAngle = degrees 90
-    -->     }
-
 -}
 scaleAbout : Point2d units coordinates -> Float -> EllipticalArc2d units coordinates -> EllipticalArc2d units coordinates
 scaleAbout point scale arc =
     transformBy (Ellipse2d.scaleAbout point scale) arc
 
 
-{-| Rotate an elliptical arc around a given point by a given angle (in radians).
-
-    exampleArc
-        |> EllipticalArc2d.rotateAround Point2d.origin
-            (Angle.degrees 180)
-    --> EllipticalArc2d.with
-    -->     { centerPoint = Point2d.origin
-    -->     , xDirection = Direction2d.negativeX
-    -->     , xRadius = 2
-    -->     , yRadius = 1
-    -->     , startAngle = 0
-    -->     , sweptAngle = degrees 90
-    -->     }
-
+{-| Rotate an elliptical arc around a given point by a given angle.
 -}
 rotateAround : Point2d units coordinates -> Angle -> EllipticalArc2d units coordinates -> EllipticalArc2d units coordinates
 rotateAround point angle arc =
@@ -734,35 +620,13 @@ rotateAround point angle arc =
 
 
 {-| Translate an elliptical arc by a given displacement.
-
-    exampleArc
-        |> EllipticalArc2d.translateBy
-            (Vector2d.meters 2 3)
-    --> EllipticalArc2d.with
-    -->     { centerPoint =
-    -->         Point2d.meters 2 3
-    -->     , xDirection = Direction2d.x
-    -->     , xRadius = 2
-    -->     , yRadius = 1
-    -->     , startAngle = 0
-    -->     , sweptAngle = degrees 90
-    -->     }
-
 -}
 translateBy : Vector2d units coordinates -> EllipticalArc2d units coordinates -> EllipticalArc2d units coordinates
 translateBy displacement arc =
     transformBy (Ellipse2d.translateBy displacement) arc
 
 
-{-| Translate an elliptical arc in a given direction by a given distance;
-
-    EllipticalArc2d.translateIn direction distance
-
-is equivalent to
-
-    EllipticalArc2d.translateBy
-        (Vector2d.withLength distance direction)
-
+{-| Translate an elliptical arc in a given direction by a given distance.
 -}
 translateIn : Direction2d coordinates -> Quantity Float units -> EllipticalArc2d units coordinates -> EllipticalArc2d units coordinates
 translateIn direction distance arc =
@@ -770,17 +634,6 @@ translateIn direction distance arc =
 
 
 {-| Mirror an elliptical arc across a given axis.
-
-    mirroredArc =
-        exampleArc
-            |> EllipticalArc2d.mirrorAcross Axis2d.y
-
-    EllipticalArc2d.startPoint mirroredArc
-    --> Point2d.meters -2 0
-
-    EllipticalArc2d.endPoint mirroredArc
-    --> Point2d.meters 0 1
-
 -}
 mirrorAcross : Axis2d units coordinates -> EllipticalArc2d units coordinates -> EllipticalArc2d units coordinates
 mirrorAcross axis arc =
@@ -789,21 +642,6 @@ mirrorAcross axis arc =
 
 {-| Take an elliptical arc defined in global coordinates, and return it expressed in
 local coordinates relative to a given reference frame.
-
-    localFrame =
-        Frame2d.atPoint (Point2d.meters 1 2)
-
-    EllipticalArc2d.relativeTo localFrame exampleArc
-    --> EllipticalArc2d.with
-    -->     { centerPoint =
-    -->         Point2d.meters -1 -2
-    -->     , xDirection = Direction2d.x
-    -->     , xRadius = 2
-    -->     , yRadius = 1
-    -->     , startAngle = 0
-    -->     , sweptAngle = degrees 90
-    -->     }
-
 -}
 relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> EllipticalArc2d units globalCoordinates -> EllipticalArc2d units localCoordinates
 relativeTo frame arc =
@@ -813,21 +651,6 @@ relativeTo frame arc =
 {-| Take an elliptical arc considered to be defined in local coordinates
 relative to a given reference frame, and return that arc expressed in global
 coordinates.
-
-    localFrame =
-        Frame2d.atPoint (Point2d.meters 1 2)
-
-    EllipticalArc2d.relativeTo localFrame exampleArc
-    --> EllipticalArc2d.with
-    -->     { centerPoint =
-    -->         Point2d.meters 1 2
-    -->     , xDirection = Direction2d.x
-    -->     , xRadius = 2
-    -->     , yRadius = 1
-    -->     , startAngle = 0
-    -->     , sweptAngle = degrees 90
-    -->     }
-
 -}
 placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> EllipticalArc2d units localCoordinates -> EllipticalArc2d units globalCoordinates
 placeIn frame arc =
@@ -837,11 +660,6 @@ placeIn frame arc =
 {-| Find a conservative upper bound on the magnitude of the second derivative of
 an elliptical arc. This can be useful when determining error bounds for various
 kinds of linear approximations.
-
-    exampleArc
-        |> EllipticalArc2d.maxSecondDerivativeMagnitude
-    --> 4.935
-
 -}
 maxSecondDerivativeMagnitude : EllipticalArc2d units coordinates -> Quantity Float units
 maxSecondDerivativeMagnitude arc =
@@ -974,15 +792,7 @@ type ArcLengthParameterized units coordinates
 
 
 {-| Build an arc length parameterization of the given elliptical arc, with a
-given accuracy. Generally speaking, all operations on the resulting
-`ArcLengthParameterized` value will be accurate to within the specified maximum
-error.
-
-    parameterizedArc =
-        exampleArc
-            |> EllipticalArc2d.arcLengthParameterized
-                { maxError = 1.0e-4 }
-
+given accuracy.
 -}
 arcLengthParameterized : { maxError : Quantity Float units } -> Nondegenerate units coordinates -> ArcLengthParameterized units coordinates
 arcLengthParameterized { maxError } nondegenerateArc =
@@ -1005,16 +815,8 @@ arcLengthParameterized { maxError } nondegenerateArc =
         }
 
 
-{-| Find the total arc length of an elliptical arc. This will be accurate to
-within the tolerance given when calling `arcLengthParameterized`.
-
-    arcLength : Float
-    arcLength =
-        EllipticalArc2d.arcLength parameterizedArc
-
-    arcLength
-    --> 2.4221
-
+{-| Find the total arc length of an elliptical arc, to within the tolerance
+given when calling `arcLengthParameterized`.
 -}
 arcLength : ArcLengthParameterized units coordinates -> Quantity Float units
 arcLength parameterizedArc =
@@ -1022,21 +824,7 @@ arcLength parameterizedArc =
         |> ArcLengthParameterization.totalArcLength
 
 
-{-| Try to get the point along an elliptical arc at a given arc length. For
-example, to get the true midpoint of `exampleArc`:
-
-    EllipticalArc2d.pointAlong parameterizedArc
-        (arcLength / 2)
-    --> Just (Point2d.meters 1.1889 0.8041)
-
-Note that this is not the same as evaulating at a parameter value of 0.5:
-
-    EllipticalArc2d.pointOn exampleArc 0.5
-    --> Point2d.meters 1.4142 0.7071
-
-If the given arc length is less than zero or greater than the arc length of the
-arc, returns `Nothing`.
-
+{-| Get the point along an elliptical arc at a given arc length.
 -}
 pointAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Point2d units coordinates
 pointAlong (ArcLengthParameterized parameterized) distance =
@@ -1045,16 +833,7 @@ pointAlong (ArcLengthParameterized parameterized) distance =
         |> pointOn parameterized.underlyingArc
 
 
-{-| Try to get the tangent direction along an elliptical arc at a given arc
-length. To get the tangent direction at the midpoint of `exampleArc`:
-
-    EllipticalArc2d.tangentDirectionAlong parameterizedArc
-        (arcLength / 2)
-    --> Just (Direction2d.degrees 159.7)
-
-If the given arc length is less than zero or greater than the arc length of the
-elliptical arc (or if the elliptical arc is degenerate), returns `Nothing`.
-
+{-| Get the tangent direction along an elliptical arc at a given arc length.
 -}
 tangentDirectionAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Direction2d coordinates
 tangentDirectionAlong (ArcLengthParameterized parameterized) distance =
@@ -1063,20 +842,8 @@ tangentDirectionAlong (ArcLengthParameterized parameterized) distance =
         |> tangentDirection parameterized.nondegenerateArc
 
 
-{-| Try to get the point and tangent direction along an elliptical arc at a
-given arc length. To get the point and tangent direction at the midpoint of
-`exampleArc`:
-
-    EllipticalArc2d.sampleAlong parameterizedArc
-        (arcLength / 2)
-    --> Just
-    -->     ( Point2d.meters 1.1889 0.8041
-    -->     , Direction2d.degrees 159.7
-    -->     )
-
-If the given arc length is less than zero or greater than the arc length of the
-spline (or if the spline is degenerate), returns `Nothing`.
-
+{-| Get the point and tangent direction along an elliptical arc at a given arc
+length.
 -}
 sampleAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> ( Point2d units coordinates, Direction2d coordinates )
 sampleAlong (ArcLengthParameterized parameterized) distance =
