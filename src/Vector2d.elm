@@ -10,10 +10,11 @@
 module Vector2d exposing
     ( Vector2d
     , zero
-    , millimeters, centimeters, meters, inches, feet, pixels, unitless
+    , unitless
+    , meters, pixels, millimeters, centimeters, inches, feet
     , xy, xyIn, rTheta, rThetaIn, from, withLength, perpendicularTo, interpolateFrom
-    , fromTuple, toTuple, fromRecord, toRecord, fromUnitless, toUnitless
-    , fromMeters, toMeters, fromPixels, toPixels
+    , fromTuple, toTuple, fromRecord, toRecord
+    , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
     , at, at_
     , per, for
     , xComponent, yComponent, componentIn, length, direction
@@ -47,13 +48,19 @@ and `Direction2d` than `Vector2d`, and much code can avoid working directly with
 @docs zero
 
 Although there are no predefined constants for the vectors with components
-(1,&nbsp;0) and (0,&nbsp;1), in most cases you will actually want their
-`Direction2d` versions [`Direction2d.x`](Direction2d#x) and [`Direction2d.y`](Direction2d#y).
+(1,0) and (0,1), in most cases you will actually want their `Direction2d`
+versions [`Direction2d.x`](Direction2d#x) and [`Direction2d.y`](Direction2d#y).
 
 
 # Literals
 
-@docs millimeters, centimeters, meters, inches, feet, pixels, unitless
+@docs unitless
+
+The remaining functions all construct a `Vector2d` from X and Y components given
+in specific units. Functions like `Vector2d.xy` are more useful in generic code,
+but these functions are useful for quickly creating hardcoded constant values.
+
+@docs meters, pixels, millimeters, centimeters, inches, feet
 
 
 # Constructors
@@ -68,12 +75,16 @@ plain `Float` tuples or records to represent vectors. The resulting `Vector2d`
 values will have [unitless](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Quantity#unitless-quantities)
 components.
 
-@docs fromTuple, toTuple, fromRecord, toRecord, fromUnitless, toUnitless
+@docs fromTuple, toTuple, fromRecord, toRecord
 
 
 ## Zero-copy conversions
 
-@docs fromMeters, toMeters, fromPixels, toPixels
+These functions allow zero-overhead conversion of vectors to and from records
+with `x` and `y` `Float` fields, useful for efficient interop with other code
+that represents vectors as plain records.
+
+@docs fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
 
 
 # Unit conversion
@@ -126,6 +137,10 @@ For the examples, assume the following frame has been defined:
 
 # Advanced
 
+These functions are unsafe because they require you to track units manually. In
+general you should prefer other functions instead, but these functions may be
+useful when writing generic/library code.
+
 @docs unsafe, unwrap
 
 -}
@@ -144,14 +159,21 @@ type alias Vector2d units coordinates =
     Types.Vector2d units coordinates
 
 
-{-| TODO
+{-| Construct a vector from its raw X and Y components as `Float` values. The
+values must be in whatever units the resulting point is considered to use
+(usually meters or pixels). You should generally use something safer such as
+[`meters`](#meters), [`fromPixels`](#fromPixels), [`xy`](#xy),
+[`fromRecord`](#fromRecord) etc.
 -}
 unsafe : { x : Float, y : Float } -> Vector2d units coordinates
 unsafe components =
     Types.Vector2d components
 
 
-{-| TODO
+{-| Extract a vector's raw X and Y components as `Float` values. These values
+will be in whatever units the vector has (usually meters or pixels). You should
+generally use something safer such as [`toMeters`](#toMeters),
+[`toRecord`](#toRecord), [`xComponent`](#xComponent) etc.
 -}
 unwrap : Vector2d units coordinates -> { x : Float, y : Float }
 unwrap (Types.Vector2d components) =
@@ -181,8 +203,7 @@ centimeters x y =
     xy (Length.centimeters x) (Length.centimeters y)
 
 
-{-| TODO
--}
+{-| -}
 meters : Float -> Float -> Vector2d Meters coordinates
 meters x y =
     Types.Vector2d { x = x, y = y }
@@ -200,14 +221,14 @@ feet x y =
     xy (Length.feet x) (Length.feet y)
 
 
-{-| TODO
--}
+{-| -}
 pixels : Float -> Float -> Vector2d Pixels coordinates
 pixels x y =
     Types.Vector2d { x = x, y = y }
 
 
-{-| TODO
+{-| Construct a unitless `Vector2d` value from its X and Y components. See also
+[`fromUnitless`](#fromUnitless).
 -}
 unitless : Float -> Float -> Vector2d Unitless coordinates
 unitless x y =
@@ -482,43 +503,37 @@ toRecord fromQuantity vector =
     }
 
 
-{-| TODO
--}
+{-| -}
 fromMeters : { x : Float, y : Float } -> Vector2d Meters coordinates
 fromMeters components =
     Types.Vector2d components
 
 
-{-| TODO
--}
+{-| -}
 toMeters : Vector2d Meters coordinates -> { x : Float, y : Float }
 toMeters (Types.Vector2d components) =
     components
 
 
-{-| TODO
--}
+{-| -}
 fromPixels : { x : Float, y : Float } -> Vector2d Pixels coordinates
 fromPixels components =
     Types.Vector2d components
 
 
-{-| TODO
--}
+{-| -}
 toPixels : Vector2d Pixels coordinates -> { x : Float, y : Float }
 toPixels (Types.Vector2d components) =
     components
 
 
-{-| TODO
--}
+{-| -}
 fromUnitless : { x : Float, y : Float } -> Vector2d Unitless coordinates
 fromUnitless coordinates =
     Types.Vector2d coordinates
 
 
-{-| TODO
--}
+{-| -}
 toUnitless : Vector2d Unitless coordinates -> { x : Float, y : Float }
 toUnitless (Types.Vector2d coordinates) =
     coordinates

@@ -10,7 +10,8 @@
 module Point2d exposing
     ( Point2d
     , origin
-    , millimeters, centimeters, meters, inches, feet, pixels, unitless
+    , unitless
+    , meters, pixels, millimeters, centimeters, inches, feet
     , xy, xyIn, rTheta, rThetaIn, midpoint, interpolateFrom, along, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
     , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
@@ -48,7 +49,13 @@ like you can add two vectors.
 
 # Literals
 
-@docs millimeters, centimeters, meters, inches, feet, pixels, unitless
+@docs unitless
+
+The remaining functions all construct a `Point2d` from X and Y coordinates given
+in specific units. Functions like `Point2d.xy` are more useful in generic code,
+but these functions are useful for quickly creating hardcoded constant values.
+
+@docs meters, pixels, millimeters, centimeters, inches, feet
 
 
 # Constructors
@@ -60,14 +67,17 @@ like you can add two vectors.
 
 These functions are useful for interoperability with other Elm code that uses
 plain `Float` tuples or records to represent points. The resulting `Point2d`
-values will have
-[unitless](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Quantity#unitless-quantities)
+values will have [unitless](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Quantity#unitless-quantities)
 coordinates.
 
 @docs fromTuple, toTuple, fromRecord, toRecord
 
 
 ## Zero-copy conversions
+
+These functions allow zero-overhead conversion of points to and from records
+with `x` and `y` `Float` fields, useful for efficient interop with other code
+that represents points as plain records.
 
 @docs fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
 
@@ -140,8 +150,9 @@ type alias Point2d units coordinates =
 
 {-| Construct a point from its raw X and Y coordinates as `Float` values. The
 values must be in whatever units the resulting point is considered to use
-(generally meters or pixels). You should generally use something safer such as
-`Point2d.meters`, `Point2d.fromPixels`, `Point2d.toRecord`, `Point2d.xy` etc.
+(usually meters or pixels). You should generally use something safer such as
+[`meters`](#meters), [`fromPixels`](#fromPixels), [`xy`](#xy),
+[`fromRecord`](#fromRecord) etc.
 -}
 unsafe : { x : Float, y : Float } -> Point2d units coordinates
 unsafe coordinates =
@@ -149,9 +160,9 @@ unsafe coordinates =
 
 
 {-| Extract a point's raw X and Y coordinates as `Float` values. These values
-will be in whatever units the point has (generally meters or pixels). You should
-generally use something safer such as `Point2d.toMeters`, `Point2d.toRecord`
-`Point2d.xCoordinate` etc.
+will be in whatever units the point has (usually meters or pixels). You should
+generally use something safer such as [`toMeters`](#toMeters),
+[`toRecord`](#toRecord), [`xCoordinate`](#xCoordinate) etc.
 -}
 unwrap : Point2d units coordinates -> { x : Float, y : Float }
 unwrap (Types.Point2d coordinates) =
@@ -192,8 +203,7 @@ centimeters x y =
     xy (Length.centimeters x) (Length.centimeters y)
 
 
-{-| TODO
--}
+{-| -}
 meters : Float -> Float -> Point2d Meters coordinates
 meters x y =
     Types.Point2d { x = x, y = y }
@@ -211,14 +221,14 @@ feet x y =
     xy (Length.feet x) (Length.feet y)
 
 
-{-| TODO
--}
+{-| -}
 pixels : Float -> Float -> Point2d Pixels coordinates
 pixels x y =
     Types.Point2d { x = x, y = y }
 
 
-{-| TODO
+{-| Construct a unitless `Point2d` value from its X and Y coordinates. See also
+[`fromUnitless`](#fromUnitless).
 -}
 unitless : Float -> Float -> Point2d Unitless coordinates
 unitless x y =
@@ -260,7 +270,24 @@ midpoint (Types.Point2d p1) (Types.Point2d p2) =
         }
 
 
-{-| TODO
+{-| Find the centroid (average) of one or more points, by passing the first
+point and then all remaining points. This allows this function to return a
+`Point2d` instead of a `Maybe Point2d`. You would generally use `centroid` with
+a `case` expression:
+
+    case points of
+        [] ->
+            -- some default behavior
+
+        first :: rest ->
+            let
+                centroid =
+                    Point2d.centroid first rest
+            in
+            ...
+
+Alternatively, you can use [`centroidN`](#centroidN) instead.
+
 -}
 centroid : Point2d units coordinates -> List (Point2d units coordinates) -> Point2d units coordinates
 centroid (Types.Point2d p0) rest =
@@ -286,7 +313,23 @@ centroidHelp x0 y0 count dx dy points =
                 }
 
 
-{-| TODO
+{-| Like `centroid`, but lets you work with any kind of data as long as a point
+can be extracted/constructed from it. For example, to get the centroid of a
+bunch of vertices:
+
+    type alias Vertex =
+        { position : Point2d Meters World
+        , color : Color
+        , id : Int
+        }
+
+    vertexCentroid =
+        Point2d.centroidOf .position
+            firstVertex
+            [ secondVertex
+            , thirdVertex
+            ]
+
 -}
 centroidOf : (a -> Point2d units coordinates) -> a -> List a -> Point2d units coordinates
 centroidOf toPoint first rest =
@@ -321,7 +364,16 @@ centroidOfHelp toPoint x0 y0 count dx dy values =
                 }
 
 
-{-| TODO
+{-| Find the centroid of three points;
+
+    Point2d.centroid3d p1 p2 p3
+
+is equivalent to
+
+    Point2d.centroid p1 [ p2, p3 ]
+
+but is more efficient.
+
 -}
 centroid3 : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates
 centroid3 (Types.Point2d p1) (Types.Point2d p2) (Types.Point2d p3) =
@@ -331,7 +383,9 @@ centroid3 (Types.Point2d p1) (Types.Point2d p2) (Types.Point2d p3) =
         }
 
 
-{-| TODO
+{-| Find the centroid of a list of points. If the list is empty, returns
+`Nothing`. If you know you have at least one point, you can use
+[`centroid`](#centroid) instead to avoid the `Maybe`.
 -}
 centroidN : List (Point2d units coordinates) -> Maybe (Point2d units coordinates)
 centroidN points =
@@ -663,43 +717,37 @@ toRecord fromQuantity point =
     }
 
 
-{-| TODO
--}
+{-| -}
 fromMeters : { x : Float, y : Float } -> Point2d Meters coordinates
 fromMeters coordinates =
     Types.Point2d coordinates
 
 
-{-| TODO
--}
+{-| -}
 toMeters : Point2d Meters coordinates -> { x : Float, y : Float }
 toMeters (Types.Point2d coordinates) =
     coordinates
 
 
-{-| TODO
--}
+{-| -}
 fromPixels : { x : Float, y : Float } -> Point2d Pixels coordinates
 fromPixels coordinates =
     Types.Point2d coordinates
 
 
-{-| TODO
--}
+{-| -}
 toPixels : Point2d Pixels coordinates -> { x : Float, y : Float }
 toPixels (Types.Point2d coordinates) =
     coordinates
 
 
-{-| TODO
--}
+{-| -}
 fromUnitless : { x : Float, y : Float } -> Point2d Unitless coordinates
 fromUnitless coordinates =
     Types.Point2d coordinates
 
 
-{-| TODO
--}
+{-| -}
 toUnitless : Point2d Unitless coordinates -> { x : Float, y : Float }
 toUnitless (Types.Point2d coordinates) =
     coordinates
@@ -759,7 +807,8 @@ at_ (Quantity rate) (Types.Point2d p) =
         }
 
 
-{-| TODO
+{-| Find the X coordinate of a point relative to a given frame; this is the X
+coordinate the point would have as viewed by an observer in that frame.
 -}
 xCoordinateIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Point2d units globalCoordinates -> Quantity Float units
 xCoordinateIn (Types.Frame2d frame) (Types.Point2d p) =
@@ -773,7 +822,8 @@ xCoordinateIn (Types.Frame2d frame) (Types.Point2d p) =
     Quantity ((p.x - p0.x) * d.x + (p.y - p0.y) * d.y)
 
 
-{-| TODO
+{-| Find the Y coordinate of a point relative to a given frame; this is the Y
+coordinate the point would have as viewed by an observer in that frame.
 -}
 yCoordinateIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Point2d units globalCoordinates -> Quantity Float units
 yCoordinateIn (Types.Frame2d frame) (Types.Point2d p) =
@@ -1275,8 +1325,22 @@ placeIn (Types.Frame2d frame) (Types.Point2d p) =
         }
 
 
-{-| Find the bounding box containing one or more input points. If you need to
-handle the case of zero input points, see `hullN`.
+{-| Find the bounding box containing one or more input points. You would
+generally use this with a `case` expression:
+
+    case points of
+        [] ->
+            -- some default behavior
+
+        first :: rest ->
+            let
+                boundingBox =
+                    Point2d.hull first rest
+            in
+            ...
+
+If you need to handle the case of zero input points, see [`hullN`](#hullN).
+
 -}
 hull : Point2d units coordinates -> List (Point2d units coordinates) -> BoundingBox2d units coordinates
 hull first rest =
@@ -1449,7 +1513,7 @@ list is empty, returns `Nothing`.
     BoundingBox2d.containingPoints []
     --> Nothing
 
-If you know you have at least one point, you can use `hull` instead.
+If you know you have at least one point, you can use [`hull`](#hull) instead.
 
 -}
 hullN : List (Point2d units coordinates) -> Maybe (BoundingBox2d units coordinates)

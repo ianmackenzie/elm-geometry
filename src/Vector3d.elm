@@ -10,7 +10,8 @@
 module Vector3d exposing
     ( Vector3d
     , zero
-    , millimeters, centimeters, meters, inches, feet, pixels, unitless
+    , unitless
+    , millimeters, centimeters, meters, inches, feet, pixels
     , xyz, xyzIn, from, withLength, on, xyOn, rThetaOn, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
     , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
@@ -45,14 +46,21 @@ and `Direction3d` than `Vector3d`, and much code can avoid working directly with
 @docs zero
 
 Although there are no predefined constants for the vectors with components
-(1,&nbsp;0,&nbsp;0), (0,&nbsp;1,&nbsp;0) and (0,&nbsp;0,&nbsp;1), in most cases
-you will actually want their `Direction3d` versions [`Direction3d.x`](Direction3d#x),
+(1,0,0), (0,1,0) and (0,0,1), in most cases you will actually want their
+`Direction3d` versions [`Direction3d.x`](Direction3d#x),
 [`Direction3d.y`](Direction3d#y) and [`Direction3d.z`](Direction3d#z).
 
 
 # Literals
 
-@docs millimeters, centimeters, meters, inches, feet, pixels, unitless
+@docs unitless
+
+The remaining functions all construct a `Vector3d` from X, Y and Z components
+given in specific units. Functions like `Vector3d.xyz` are more useful in
+generic code, but these functions are useful for quickly creating hardcoded
+constant values.
+
+@docs millimeters, centimeters, meters, inches, feet, pixels
 
 
 # Constructors
@@ -71,6 +79,10 @@ components.
 
 
 ## Zero-copy conversions
+
+These functions allow zero-overhead conversion of vectors to and from records
+with `x`, `y` and `z` `Float` fields, useful for efficient interop with other
+code that represents vectors as plain records.
 
 @docs fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
 
@@ -117,6 +129,10 @@ global XYZ frame:
 
 # Advanced
 
+These functions are unsafe because they require you to track units manually. In
+general you should prefer other functions instead, but these functions may be
+useful when writing generic/library code.
+
 @docs unsafe, unwrap
 
 -}
@@ -136,14 +152,21 @@ type alias Vector3d units coordinates =
     Types.Vector3d units coordinates
 
 
-{-| TODO
+{-| Construct a vector from its raw X, Y and Z components as `Float` values. The
+values must be in whatever units the resulting vector is considered to use
+(usually meters or pixels). You should generally use something safer such as
+[`meters`](#meters), [`fromPixels`](#fromPixels), [`xyz`](#xyz),
+[`fromRecord`](#fromRecord) etc.
 -}
 unsafe : { x : Float, y : Float, z : Float } -> Vector3d units coordinates
 unsafe components =
     Types.Vector3d components
 
 
-{-| TODO
+{-| Extract a vector's raw X, Y and Z coordinates as `Float` values. These
+values will be in whatever units the vector has (usually meters or pixels). You
+should generally use something safer such as [`toMeters`](#toMeters),
+[`toRecord`](#toRecord), [`xComponent`](#xComponent) etc.
 -}
 unwrap : Vector3d units coordinates -> { x : Float, y : Float, z : Float }
 unwrap (Types.Vector3d components) =
@@ -177,8 +200,7 @@ centimeters x y z =
     xyz (Length.centimeters x) (Length.centimeters y) (Length.centimeters z)
 
 
-{-| TODO
--}
+{-| -}
 meters : Float -> Float -> Float -> Vector3d Meters coordinates
 meters x y z =
     Types.Vector3d { x = x, y = y, z = z }
@@ -196,14 +218,14 @@ feet x y z =
     xyz (Length.feet x) (Length.feet y) (Length.feet z)
 
 
-{-| TODO
--}
+{-| -}
 pixels : Float -> Float -> Float -> Vector3d Pixels coordinates
 pixels x y z =
     Types.Vector3d { x = x, y = y, z = z }
 
 
-{-| TODO
+{-| Construct a unitless `Vector3d` value from its X, Y and Z components. See
+also [`fromUnitless`](#fromUnitless).
 -}
 unitless : Float -> Float -> Float -> Vector3d Unitless coordinates
 unitless x y z =
@@ -342,24 +364,18 @@ on (Types.SketchPlane3d sketchPlane) (Types.Vector2d v) =
         }
 
 
-{-| Construct a 3D vector lying on a sketch plane by providing its 2D components within the sketch
-plane:
+{-| Construct a 3D vector lying on a sketch plane by providing its 2D components
+within the sketch plane:
 
-    Vector3d.fromComponentsOn SketchPlane3d.xy
+    Vector3d.xyOn SketchPlane3d.xy
+        (Length.meters 2)
+        (Length.meters 3)
+    --> Vector3d.meters 2 3 0
+
+    Vector3d.xyOn SketchPlane3d.zx
         (meters 2)
         (meters 3)
-    --> Vector3d.fromComponents
-    -->     (meters 2)
-    -->     (meters 3)
-    -->     (meters 0)
-
-    Vector3d.fromComponentsOn SketchPlane3d.zx
-        (meters 2)
-        (meters 3)
-    --> Vector3d.fromComponents
-    -->     (meters 3)
-    -->     (meters 0)
-    -->     (meters 2)
+    --> Vector3d.meters 3 0 2
 
 -}
 xyOn : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Quantity Float units -> Quantity Float units -> Vector3d units coordinates3d
@@ -378,7 +394,19 @@ xyOn (Types.SketchPlane3d sketchPlane) (Quantity x) (Quantity y) =
         }
 
 
-{-| TODO
+{-| Construct a 3D vector lying on a sketch plane by providing its 2D polar
+components within the sketch plane:
+
+    Vector3d.rThetaOn SketchPlane3d.xy
+        (Length.meters 2)
+        (Angle.degrees 45)
+    --> Vector3d.meters 1.4142 1.4142 0
+
+    Vector3d.rThetaOn SketchPlane3d.yz
+        (Length.meters 2)
+        (Angle.degrees 30)
+    --> Vector3d.meters 0 1.732 1
+
 -}
 rThetaOn : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Quantity Float units -> Angle -> Vector3d units coordinates3d
 rThetaOn (Types.SketchPlane3d sketchPlane) (Quantity r) (Quantity theta) =
@@ -567,43 +595,37 @@ toRecord fromQuantity vector =
     }
 
 
-{-| TODO
--}
+{-| -}
 fromMeters : { x : Float, y : Float, z : Float } -> Vector3d Meters coordinates
 fromMeters components =
     Types.Vector3d components
 
 
-{-| TODO
--}
+{-| -}
 toMeters : Vector3d Meters coordinates -> { x : Float, y : Float, z : Float }
 toMeters (Types.Vector3d components) =
     components
 
 
-{-| TODO
--}
+{-| -}
 fromPixels : { x : Float, y : Float, z : Float } -> Vector3d Pixels coordinates
 fromPixels components =
     Types.Vector3d components
 
 
-{-| TODO
--}
+{-| -}
 toPixels : Vector3d Pixels coordinates -> { x : Float, y : Float, z : Float }
 toPixels (Types.Vector3d components) =
     components
 
 
-{-| TODO
--}
+{-| -}
 fromUnitless : { x : Float, y : Float, z : Float } -> Vector3d Unitless coordinates
 fromUnitless components =
     Types.Vector3d components
 
 
-{-| TODO
--}
+{-| -}
 toUnitless : Vector3d Unitless coordinates -> { x : Float, y : Float, z : Float }
 toUnitless (Types.Vector3d components) =
     components

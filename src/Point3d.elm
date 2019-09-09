@@ -10,7 +10,8 @@
 module Point3d exposing
     ( Point3d
     , origin
-    , millimeters, centimeters, meters, inches, feet, pixels, unitless
+    , unitless
+    , meters, pixels, millimeters, centimeters, inches, feet
     , xyz, xyzIn, midpoint, interpolateFrom, along, on, xyOn, rThetaOn, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
     , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
@@ -48,7 +49,14 @@ like you can add two vectors.
 
 # Literals
 
-@docs millimeters, centimeters, meters, inches, feet, pixels, unitless
+@docs unitless
+
+The remaining functions all construct a `Point3d` from X, Y and Z coordinates
+given in specific units. Functions like `Point3d.xyz` are more useful in generic
+code, but these functions are useful for quickly creating hardcoded constant
+values.
+
+@docs meters, pixels, millimeters, centimeters, inches, feet
 
 
 # Constructors
@@ -67,6 +75,10 @@ coordinates.
 
 
 ## Zero-copy conversions
+
+These functions allow zero-overhead conversion of points to and from records
+with `x`, `y` and `z` `Float` fields, useful for efficient interop with other
+code that represents points as plain records.
 
 @docs fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
 
@@ -108,6 +120,10 @@ coordinates.
 
 # Advanced
 
+These functions are unsafe because they require you to track units manually. In
+general you should prefer other functions instead, but these functions may be
+useful when writing generic/library code.
+
 @docs unsafe, unwrap
 
 -}
@@ -129,14 +145,21 @@ type alias Point3d units coordinates =
     Types.Point3d units coordinates
 
 
-{-| TODO
+{-| Construct a point from its raw X, Y and Z coordinates as `Float` values. The
+values must be in whatever units the resulting point is considered to use
+(usually meters or pixels). You should generally use something safer such as
+[`meters`](#meters), [`fromPixels`](#fromPixels), [`xyz`](#xyz),
+[`fromRecord`](#fromRecord) etc.
 -}
 unsafe : { x : Float, y : Float, z : Float } -> Point3d units coordinates
 unsafe coordinates =
     Types.Point3d coordinates
 
 
-{-| TODO
+{-| Extract a point's raw X, Y and Z coordinates as `Float` values. These values
+will be in whatever units the point has (usually meters or pixels). You should
+generally use something safer such as [`toMeters`](#toMeters),
+[`toRecord`](#toRecord), [`xCoordinate`](#xCoordinate) etc.
 -}
 unwrap : Point3d units coordinates -> { x : Float, y : Float, z : Float }
 unwrap (Types.Point3d coordinates) =
@@ -146,7 +169,10 @@ unwrap (Types.Point3d coordinates) =
 {-| The point (0, 0, 0).
 
     Point3d.origin
-    --> Point3d.meters 0 0 0
+    --> Point3d.xyz
+    -->     Quantity.zero
+    -->     Quantity.zero
+    -->     Quantity.zero
 
 -}
 origin : Point3d units coordinates
@@ -161,7 +187,10 @@ origin =
 {-| Construct a point from its X, Y and Z coordinates.
 
     point =
-        Point3d.meters 2 1 3
+        Point3d.xyz
+            (Length.meters 2)
+            (Length.meters 1)
+            (Length.meters 3)
 
 -}
 xyz : Quantity Float units -> Quantity Float units -> Quantity Float units -> Point3d units coordinates
@@ -185,8 +214,7 @@ centimeters x y z =
     xyz (Length.centimeters x) (Length.centimeters y) (Length.centimeters z)
 
 
-{-| TODO
--}
+{-| -}
 meters : Float -> Float -> Float -> Point3d Meters coordinates
 meters x y z =
     Types.Point3d
@@ -208,8 +236,7 @@ feet x y z =
     xyz (Length.feet x) (Length.feet y) (Length.feet z)
 
 
-{-| TODO
--}
+{-| -}
 pixels : Float -> Float -> Float -> Point3d Pixels coordinates
 pixels x y z =
     Types.Point3d
@@ -219,7 +246,8 @@ pixels x y z =
         }
 
 
-{-| TODO
+{-| Construct a unitless `Point3d` value from its X, Y and Z coordinates. See
+also [`fromUnitless`](#fromUnitless).
 -}
 unitless : Float -> Float -> Float -> Point3d Unitless coordinates
 unitless x y z =
@@ -251,7 +279,24 @@ midpoint (Types.Point3d p1) (Types.Point3d p2) =
         }
 
 
-{-| TODO
+{-| Find the centroid (average) of one or more points, by passing the first
+point and then all remaining points. This allows this function to return a
+`Point3d` instead of a `Maybe Point3d`. You would generally use `centroid` with
+a `case` expression:
+
+    case points of
+        [] ->
+            -- some default behavior
+
+        first :: rest ->
+            let
+                centroid =
+                    Point3d.centroid first rest
+            in
+            ...
+
+Alternatively, you can use [`centroidN`](#centroidN) instead.
+
 -}
 centroid : Point3d units coordinates -> List (Point3d units coordinates) -> Point3d units coordinates
 centroid (Types.Point3d p0) rest =
@@ -280,7 +325,23 @@ centroidHelp x0 y0 z0 count dx dy dz points =
                 }
 
 
-{-| TODO
+{-| Like `centroid`, but lets you work with any kind of data as long as a point
+can be extracted/constructed from it. For example, to get the centroid of a
+bunch of vertices:
+
+    type alias Vertex =
+        { position : Point3d Meters World
+        , color : Color
+        , id : Int
+        }
+
+    vertexCentroid =
+        Point3d.centroidOf .position
+            firstVertex
+            [ secondVertex
+            , thirdVertex
+            ]
+
 -}
 centroidOf : (a -> Point3d units coordinates) -> a -> List a -> Point3d units coordinates
 centroidOf toPoint first rest =
@@ -318,7 +379,16 @@ centroidOfHelp toPoint x0 y0 z0 count dx dy dz values =
                 }
 
 
-{-| TODO
+{-| Find the centroid of three points;
+
+    Point3d.centroid3 p1 p2 p3
+
+is equivalent to
+
+    Point3d.centroid p1 [ p2, p3 ]
+
+but is more efficient.
+
 -}
 centroid3 : Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates
 centroid3 (Types.Point3d p1) (Types.Point3d p2) (Types.Point3d p3) =
@@ -329,7 +399,9 @@ centroid3 (Types.Point3d p1) (Types.Point3d p2) (Types.Point3d p3) =
         }
 
 
-{-| TODO
+{-| Find the centroid of a list of points. If the list is empty, returns
+`Nothing`. If you know you have at least one point, you can use
+[`centroid`](#centroid) instead to avoid the `Maybe`.
 -}
 centroidN : List (Point3d units coordinates) -> Maybe (Point3d units coordinates)
 centroidN points =
@@ -471,24 +543,18 @@ on (Types.SketchPlane3d sketchPlane) (Types.Point2d p) =
         }
 
 
-{-| Construct a 3D point lying on a sketch plane by providing its 2D coordinates within that sketch
-plane:
+{-| Construct a 3D point lying on a sketch plane by providing its 2D coordinates
+within that sketch plane:
 
-    Point3d.fromCoordinatesOn SketchPlane3d.xy
-        (meters 2)
-        (meters 1)
-    --> Point3d.fromCoordinates
-    -->     (meters 2)
-    -->     (meters 1)
-    -->     (meters 0)
+    Point3d.xyOn SketchPlane3d.xy
+        (Length.meters 2)
+        (Length.meters 1)
+    --> Point3d.meters 2 1 0
 
-    Point3d.fromCoordinatesOn SketchPlane3d.xz
-        (meters 2)
-        (meters 1)
-    --> Point3d.fromCoordinates
-    -->     (meters 2)
-    -->     (meters 0)
-    -->     (meters 1)
+    Point3d.xyOn SketchPlane3d.xz
+        (Length.meters 2)
+        (Length.meters 1)
+    --> Point3d.meters 2 0 1
 
 -}
 xyOn : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Quantity Float units -> Quantity Float units -> Point3d units coordinates
@@ -510,7 +576,19 @@ xyOn (Types.SketchPlane3d sketchPlane) (Quantity x) (Quantity y) =
         }
 
 
-{-| TODO
+{-| Construct a 3D point lying on a sketch plane by providing its 2D polar
+coordinates within that sketch plane:
+
+    Point3d.rThetaOn SketchPlane3d.xy
+        (Length.meters 2)
+        (Angle.degrees 45)
+    --> Point3d.meters 1.4142 1.4142 0
+
+    Point3d.rThetaOn SketchPlane3d.yz
+        (Length.meters 2)
+        (Angle.degrees 30)
+    --> Point3d.meters 0 1.732 1
+
 -}
 rThetaOn : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Quantity Float units -> Angle -> Point3d units coordinates
 rThetaOn (Types.SketchPlane3d sketchPlane) (Quantity r) (Quantity theta) =
@@ -762,49 +840,44 @@ toRecord fromQuantity point =
     }
 
 
-{-| TODO
--}
+{-| -}
 fromMeters : { x : Float, y : Float, z : Float } -> Point3d Meters coordinates
 fromMeters coordinates =
     Types.Point3d coordinates
 
 
-{-| TODO
--}
+{-| -}
 toMeters : Point3d Meters coordinates -> { x : Float, y : Float, z : Float }
 toMeters (Types.Point3d coordinates) =
     coordinates
 
 
-{-| TODO
--}
+{-| -}
 fromPixels : { x : Float, y : Float, z : Float } -> Point3d Pixels coordinates
 fromPixels coordinates =
     Types.Point3d coordinates
 
 
-{-| TODO
--}
+{-| -}
 toPixels : Point3d Pixels coordinates -> { x : Float, y : Float, z : Float }
 toPixels (Types.Point3d coordinates) =
     coordinates
 
 
-{-| TODO
--}
+{-| -}
 fromUnitless : { x : Float, y : Float, z : Float } -> Point3d Unitless coordinates
 fromUnitless coordinates =
     Types.Point3d coordinates
 
 
-{-| TODO
--}
+{-| -}
 toUnitless : Point3d Unitless coordinates -> { x : Float, y : Float, z : Float }
 toUnitless (Types.Point3d coordinates) =
     coordinates
 
 
-{-| TODO
+{-| Find the X coordinate of a point relative to a given frame; this is the X
+coordinate the point would have as viewed by an observer in that frame.
 -}
 xCoordinateIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Point3d units globalCoordinates -> Quantity Float units
 xCoordinateIn (Types.Frame3d frame) (Types.Point3d p) =
@@ -818,7 +891,8 @@ xCoordinateIn (Types.Frame3d frame) (Types.Point3d p) =
     Quantity ((p.x - p0.x) * d.x + (p.y - p0.y) * d.y + (p.z - p0.z) * d.z)
 
 
-{-| TODO
+{-| Find the Y coordinate of a point relative to a given frame; this is the Y
+coordinate the point would have as viewed by an observer in that frame.
 -}
 yCoordinateIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Point3d units globalCoordinates -> Quantity Float units
 yCoordinateIn (Types.Frame3d frame) (Types.Point3d p) =
@@ -832,7 +906,8 @@ yCoordinateIn (Types.Frame3d frame) (Types.Point3d p) =
     Quantity ((p.x - p0.x) * d.x + (p.y - p0.y) * d.y + (p.z - p0.z) * d.z)
 
 
-{-| TODO
+{-| Find the Z coordinate of a point relative to a given frame; this is the Z
+coordinate the point would have as viewed by an observer in that frame.
 -}
 zCoordinateIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Point3d units globalCoordinates -> Quantity Float units
 zCoordinateIn (Types.Frame3d frame) (Types.Point3d p) =
@@ -1613,7 +1688,22 @@ projectInto (Types.SketchPlane3d sketchPlane) (Types.Point3d p) =
         }
 
 
-{-| TODO
+{-| Find the bounding box containing one or more input points. You would
+generally use this with a `case` expression:
+
+    case points of
+        [] ->
+            -- some default behavior
+
+        first :: rest ->
+            let
+                boundingBox =
+                    Point3d.hull first rest
+            in
+            ...
+
+If you need to handle the case of zero input points, see [`hullN`](#hullN).
+
 -}
 hull : Point3d units coordinates -> List (Point3d units coordinates) -> BoundingBox3d units coordinates
 hull first rest =
@@ -1652,7 +1742,17 @@ hullHelp currentMinX currentMaxX currentMinY currentMaxY currentMinZ currentMaxZ
                 }
 
 
-{-| TODO
+{-| Like `hull`, but lets you work on any kind of item as long as a point can be
+extracted from it. For example, to get the bounding box around the centroids of
+four triangles:
+
+    Point3d.hullOf Triangle3d.centroid
+        firstTriangle
+        [ secondTriangle
+        , thirdTriangle
+        , fourthTriangle
+        ]
+
 -}
 hullOf : (a -> Point3d units coordinates) -> a -> List a -> BoundingBox3d units coordinates
 hullOf getPoint first rest =
@@ -1702,7 +1802,7 @@ diagonal of the bounding box.
     secondPoint =
         Point3d.meters -1 5 -2
 
-    BoundingBox3d.from firstPoint secondPoint
+    Point3d.hull2 firstPoint secondPoint
     --> BoundingBox3d.fromExtrema
     -->     { minX = Length.meters -1
     -->     , maxX = Length.meters 2
@@ -1744,7 +1844,7 @@ hull2 firstPoint secondPoint =
         }
 
 
-{-| TODO
+{-| Build a bounding box that contains all three of the given points.
 -}
 hull3 : Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> BoundingBox3d units coordinates
 hull3 firstPoint secondPoint thirdPoint =
@@ -1789,7 +1889,7 @@ hull3 firstPoint secondPoint thirdPoint =
 {-| Construct a bounding box containing all points in the given list. If the
 list is empty, returns `Nothing`.
 
-    BoundingBox3d.containingPoints
+    Point3d.hullN
         [ Point3d.meters 2 1 3
         , Point3d.meters -1 5 -2
         , Point3d.meters 6 4 2
@@ -1806,6 +1906,8 @@ list is empty, returns `Nothing`.
 
     BoundingBox3d.containingPoints []
     --> Nothing
+
+If you know you have at least one point, you can use [`hull`](#hull) instead.
 
 -}
 hullN : List (Point3d units coordinates) -> Maybe (BoundingBox3d units coordinates)
