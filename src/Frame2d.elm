@@ -99,8 +99,7 @@ point. The Y axis direction will be constructed by rotating the given X
 direction 90 degrees counterclockwise:
 
     frame =
-        Frame2d.withXDirection
-            (Direction2d.degrees 30)
+        Frame2d.withXDirection (Direction2d.degrees 30)
             (Point2d.meters 2 3)
 
     Frame2d.yDirection frame
@@ -117,15 +116,14 @@ withXDirection givenDirection givenOrigin =
 
 
 {-| Construct a frame with the given Y axis direction, having the given origin
-point. The X axis direction will be constructed by rotating the given X
+point. The X axis direction will be constructed by rotating the given Y
 direction 90 degrees clockwise:
 
     frame =
-        Frame2d.withYDirection
-            (Direction2d.degrees 30)
+        Frame2d.withYDirection (Direction2d.degrees 30)
             (Point2d.meters 2 3)
 
-    Frame2d.yDirection frame
+    Frame2d.xDirection frame
     --> Direction2d.degrees -60
 
 -}
@@ -170,7 +168,8 @@ fromYAxis givenAxis =
 
 {-| Create a 'fresh copy' of a frame: one with the same origin point and X/Y
 directions, but that can be used to define a different local coordinate system.
-Sometimes useful in generic/library code.
+Sometimes useful in generic/library code. Despite the name, this is efficient:
+it doesn't actually copy anything.
 -}
 copy : Frame2d units coordinates defines1 -> Frame2d units coordinates defines2
 copy (Types.Frame2d properties) =
@@ -181,12 +180,9 @@ copy (Types.Frame2d properties) =
 
     frame =
         Frame2d.unsafe
-            { originPoint =
-                Point2d.meters 2 3
-            , xDirection =
-                Direction2d.degrees 45
-            , yDirection =
-                Direction2d.degrees 135
+            { originPoint = Point2d.meters 2 3
+            , xDirection = Direction2d.degrees 45
+            , yDirection = Direction2d.degrees 135
             }
 
 In this case **you must be careful to ensure that the X and Y directions are
@@ -208,14 +204,11 @@ unsafe properties =
 {-| Construct a frame aligned with the global XY frame but with the given origin
 point.
 
-    point =
-        Point2d.meters 2 3
-
     frame =
-        Frame2d.atPoint point
+        Frame2d.atPoint (Point2d.meters 2 3)
 
     Frame2d.originPoint frame
-    --> point
+    --> Point2d.meters 2 3
 
     Frame2d.xDirection frame
     --> Direction2d.x
@@ -374,14 +367,12 @@ reverseX frame =
 {-| Reverse the Y direction of a frame, leaving its X direction and origin point
 the same.
 
-    point =
-        Point2d.meters 2 3
-
     frame =
-        Frame2d.atPoint point |> Frame2d.reverseY
+        Frame2d.atPoint (Point2d.meters 2 3)
+            |> Frame2d.reverseY
 
     Frame2d.originPoint frame
-    --> point
+    --> Point2d.meters 2 3
 
     Frame2d.xDirection frame
     --> Direction2d.x
@@ -425,7 +416,8 @@ origin point. The resulting frame will have the same origin point, and its X and
 Y directions will be rotated by the given angle.
 
     rotatedFrame =
-        Frame2d.rotateBy (Angle.degrees 30) Frame2d.atOrigin
+        Frame2d.atOrigin
+            |> Frame2d.rotateBy (Angle.degrees 30)
 
     Frame2d.xDirection rotatedFrame
     --> Direction2d.degrees 30
@@ -532,10 +524,11 @@ transformations. For example,
     frame =
         Frame2d.atPoint (Point2d.meters 2 0)
             |> Frame2d.rotateBy (Angle.degrees 45)
-            |> Frame2d.translateAlongOwn Frame2d.xAxis 2
+            |> Frame2d.translateAlongOwn Frame2d.xAxis
+                (Length.meters 2)
 
 means "construct a frame at the point (2, 0), rotate it around its own origin
-point by 45 degrees, then translate it along its own X axis by 2 units",
+point by 45 degrees, then translate it along its own X axis by 2 meters",
 resulting in
 
     Frame2d.originPoint frame
