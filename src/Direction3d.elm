@@ -141,8 +141,8 @@ z =
 
 {-| The positive X direction.
 
-    Direction3d.components Direction3d.positiveX
-    --> ( 1, 0, 0 )
+    Direction3d.unwrap Direction3d.positiveX
+    --> { x = 1, y = 0, z = 0 }
 
 -}
 positiveX : Direction3d coordinates
@@ -152,8 +152,8 @@ positiveX =
 
 {-| The negative X direction.
 
-    Direction3d.components Direction3d.negativeX
-    --> ( -1, 0, 0 )
+    Direction3d.unwrap Direction3d.negativeX
+    --> { x = -1, y = 0, z = 0 }
 
 -}
 negativeX : Direction3d coordinates
@@ -163,8 +163,8 @@ negativeX =
 
 {-| The positive Y direction.
 
-    Direction3d.components Direction3d.positiveY
-    --> ( 0, 1, 0 )
+    Direction3d.unwrap Direction3d.positiveY
+    --> { x = 0, y = 1, z = 0 }
 
 -}
 positiveY : Direction3d coordinates
@@ -174,8 +174,8 @@ positiveY =
 
 {-| The negative Y direction.
 
-    Direction3d.components Direction3d.negativeY
-    --> ( 0, -1, 0 )
+    Direction3d.unwrap Direction3d.negativeY
+    --> { x = 0, y = -1, z = 0 }
 
 -}
 negativeY : Direction3d coordinates
@@ -185,8 +185,8 @@ negativeY =
 
 {-| The positive Z direction.
 
-    Direction3d.components Direction3d.positiveZ
-    --> ( 0, 0, 1 )
+    Direction3d.unwrap Direction3d.positiveZ
+    --> { x = 0, y = 0, z = 1 }
 
 -}
 positiveZ : Direction3d coordinates
@@ -196,8 +196,8 @@ positiveZ =
 
 {-| The negative Z direction.
 
-    Direction3d.components Direction3d.negativeZ
-    --> ( 0, 0, -1 )
+    Direction3d.unwrap Direction3d.negativeZ
+    --> { x = 0, y = 0, z = -1 }
 
 -}
 negativeZ : Direction3d coordinates
@@ -209,22 +209,22 @@ negativeZ =
 **you must ensure that the sum of the squares of the given components is exactly
 one**:
 
-    Direction3d.unsafeFromComponents ( 1, 0, 0 )
+    Direction3d.unsafe { x = 1, y = 0, z = 0 }
 
-    Direction3d.unsafeFromComponents ( 0, -1, 0 )
+    Direction3d.unsafe { x = 0, y = -1, z = 0 }
 
-    Direction3d.unsafeFromComponents ( 0.6, 0, 0.8 )
+    Direction3d.unsafe { x = 0.6, y = 0, z = 0.8 }
 
 are all valid but
 
-    Direction3d.unsafeFromComponents ( 2, 0, 0 )
+    Direction3d.unsafe { x = 2, y = 0, z = 0 }
 
-    Direction3d.unsafeFromComponents ( 1, 1, 1 )
+    Direction3d.unsafe { x = 1, y = 1, z = 1 }
 
-are not. Instead of using `Direction3d.unsafeFromComponents`, it may be easier to use
-constructors like `Direction3d.on` or `Direction3d.fromAzimuthAndElevation`
-(which will always result in a valid direction), or start with existing
-directions and transform them as necessary.
+are not. Instead of using `Direction3d.unsafe`, it may be easier to use
+constructors like `Direction3d.on` or `Direction3d.xyZ` (which will always
+result in a valid direction), or start with existing directions and transform
+them as necessary.
 
 -}
 unsafe : { x : Float, y : Float, z : Float } -> Direction3d coordinates
@@ -366,7 +366,7 @@ X). Note that `Direction3d.xyZ` is a generalized version of `Direction3d.xy`;
 
 is equivalent to
 
-    Direction3d.xyZ angle zero
+    Direction3d.xyZ angle (Angle.degrees 0)
 
 -}
 xyZ : Angle -> Angle -> Direction3d coordinates
@@ -434,12 +434,14 @@ zxY (Quantity theta) (Quantity phi) =
 This is a generalized version of `Direction3d.xyZ`, `Direction3d.yzX` and
 `Direction3d.zxY`; for example,
 
-    Direction3d.xyZ
+    Direction3d.xyZ azimuth elevation
 
 is equivalent to
 
     Direction3d.fromAzimuthInAndElevationFrom
         SketchPlane3d.xy
+        azimuth
+        elevation
 
 -}
 fromAzimuthInAndElevationFrom : SketchPlane3d units coordinates3d defines -> Angle -> Angle -> Direction3d coordinates3d
@@ -487,14 +489,14 @@ If the two points are coincident, returns `Nothing`.
 
     Direction3d.from Point3d.origin point
     --> Just
-    -->     (Direction3d.fromAzimuthAndElevation
+    -->     (Direction3d.xyZ
     -->         (Angle.degrees 0)
     -->         (Angle.degrees 45)
     -->     )
 
     Direction3d.from point Point3d.origin
     --> Just
-    -->     (Direction3d.fromAzimuthAndElevation
+    -->     (Direction3d.xyZ
     -->         (Angle.degrees 180)
     -->         (Angle.degrees -45)
     -->     )
@@ -554,13 +556,11 @@ perpendicular to the given direction.
     --> Direction3d.positiveZ
 
     direction =
-        Direction3d.fromAzimuthAndElevation
-            (Angle.degrees 0)
+        Direction3d.xyZ (Angle.degrees 0)
             (Angle.degrees 60)
 
     Direction3d.perpendicularTo direction
-    --> Direction3d.fromAzimuthAndElevation
-    -->     (Angle.degrees 0)
+    --> Direction3d.xyZ (Angle.degrees 0)
     -->     (Angle.degrees -30)
 
 -}
@@ -683,11 +683,9 @@ are coplanar, returns `Nothing`.
         (Vector3d.meters 0 2 0)
         (Vector3d.meters 1 2 3)
     --> Just
-    -->     ( Direction3d.fromAzimuthAndElevation
-    -->         (Angle.degrees 45)
+    -->     ( Direction3d.xyZ (Angle.degrees 45)
     -->         (Angle.degrees 0)
-    -->     , Direction3d.fromAzimuthAndElevation
-    -->         (Angle.degrees 135)
+    -->     , Direction3d.xyZ (Angle.degrees 135)
     -->         (Angle.degrees 0)
     -->     , Direction3d.positiveZ
     -->     )
@@ -815,8 +813,7 @@ the cosine of the angle between the directions, or equivalently the dot product
 of the two directions converted to unit vectors.
 
     direction =
-        Direction3d.fromAzimuthAndElevation
-            (Angle.degrees 0)
+        Direction3d.xyZ (Angle.degrees 0)
             (Angle.degrees 60)
 
     Direction3d.componentIn Direction3d.x direction
@@ -972,10 +969,10 @@ equalWithin angle firstDirection secondDirection =
         |> Quantity.lessThanOrEqualTo angle
 
 
-{-| Convert a direction to a unit vector.
+{-| Convert a direction to a unitless vector of length 1.
 
     Direction3d.toVector Direction3d.y
-    --> Vector3d.meters 0 1 0
+    --> Vector3d.unitless 0 1 0
 
 -}
 toVector : Direction3d coordinates -> Vector3d Unitless coordinates
@@ -991,18 +988,18 @@ unwrap (Types.Direction3d coordinates) =
 
 
 {-| Find the angle from one direction to another. The result will be in the
-range 0 to π.
+range 0 to 180 degrees
 
     Direction3d.angleFrom Direction3d.x Direction3d.x
-    --> degrees 0
+    --> Angle.degrees 0
 
     Direction3d.angleFrom Direction3d.x Direction3d.z
-    --> degrees 90
+    --> Angle.degrees 90
 
     Direction3d.angleFrom
         Direction3d.y
         Direction3d.negativeY
-    --> degrees 180
+    --> Angle.degrees 180
 
 -}
 angleFrom : Direction3d coordinates -> Direction3d coordinates -> Angle
@@ -1044,7 +1041,8 @@ reverse (Types.Direction3d d) =
 {-| Rotate a direction around an axis by a given angle.
 
     Direction3d.y
-        |> Direction3d.rotateAround Axis3d.x (Angle.degrees 90)
+        |> Direction3d.rotateAround Axis3d.x
+            (Angle.degrees 90)
     --> Direction3d.z
 
 Note that only the direction of the axis affects the result, not the position of
@@ -1055,7 +1053,8 @@ its origin point, since directions are position-independent:
             (Point3d.meters 100 200 300)
 
     Direction3d.x
-        |> Direction3d.rotateAround offsetAxis (Angle.degrees 90)
+        |> Direction3d.rotateAround offsetAxis
+            (Angle.degrees 90)
     --> Direction3d.y
 
 -}
@@ -1147,29 +1146,25 @@ rotateAround (Types.Axis3d axis) (Quantity angle) (Types.Direction3d d) =
 {-| Mirror a direction across a plane.
 
     direction =
-        Direction3d.fromAzimuthAndElevation
-            (Angle.degrees 30)
+        Direction3d.xyZ (Angle.degrees 30)
             (Angle.degrees 60)
 
     Direction3d.mirrorAcross Plane3d.xy direction
-    --> Direction3d.fromAzimuthAndElevation
-    -->     (Angle.degrees 30)
+    --> Direction3d.xyZ (Angle.degrees 30)
     -->     (Angle.degrees -60)
 
 Note that only the normal direction of the plane affects the result, not the
 position of its origin point, since directions are position-independent:
 
     Direction3d.mirrorAcross Plane3d.yz direction
-    --> Direction3d.fromAzimuthAndElevation
-    -->     (Angle.degrees 150)
+    --> Direction3d.xyZ (Angle.degrees 150)
     -->     (Angle.degrees 60)
 
     offsetPlane =
         Plane3d.offsetBy 10 Plane3d.yz
 
     Direction3d.mirrorAcross offsetPlane direction
-    --> Direction3d.fromAzimuthAndElevation
-    -->     (Angle.degrees 150)
+    --> Direction3d.xyZ (Angle.degrees 150)
     -->     (Angle.degrees 60)
 
 -}
@@ -1209,8 +1204,7 @@ of a direction onto a plane (renormalized to have unit length). If the given
 direction is exactly perpendicular to the given plane, returns `Nothing`.
 
     direction =
-        Direction3d.fromAzimuthAndElevation
-            (Angle.degrees -60)
+        Direction3d.xyZ (Angle.degrees -60)
             (Angle.degrees 0)
 
     Direction3d.projectOnto Plane3d.xy direction
@@ -1276,13 +1270,11 @@ projectOnto (Types.Plane3d plane) (Types.Direction3d d) =
 local coordinates relative to a given reference frame.
 
     Direction3d.relativeTo rotatedFrame Direction3d.x
-    --> Direction3d.fromAzimuthAndElevation
-    -->     (Angle.degrees -30)
+    --> Direction3d.xyZ (Angle.degrees -30)
     -->     (Angle.degrees 0)
 
     Direction3d.relativeTo rotatedFrame Direction3d.y
-    --> Direction3d.fromAzimuthAndElevation
-    -->     (Angle.degrees 60)
+    --> Direction3d.xyZ (Angle.degrees 60)
     -->     (Angle.degrees 0)
 
     Direction3d.relativeTo rotatedFrame Direction3d.z
@@ -1312,13 +1304,11 @@ relativeTo (Types.Frame3d frame) (Types.Direction3d d) =
 frame, and return that direction expressed in global coordinates.
 
     Direction3d.placeIn rotatedFrame Direction3d.x
-    --> Direction3d.fromAzimuthAndElevation
-    -->     (Angle.degrees 30)
+    --> Direction3d.xyZ (Angle.degrees 30)
     -->     (Angle.degrees 0)
 
     Direction3d.placeIn rotatedFrame Direction3d.y
-    --> Direction3d.fromAzimuthAndElevation
-    -->     (Angle.degrees 120)
+    --> Direction3d.xyZ (Angle.degrees 120)
     -->     (Angle.degrees 0)
 
     Direction3d.placeIn rotatedFrame Direction3d.z
@@ -1353,8 +1343,7 @@ This is only possible if the direction is not perpendicular to the sketch
 plane; if it is perpendicular, `Nothing` is returned.
 
     direction =
-        Direction3d.fromAzimuthAndElevation
-            (Angle.degrees -60)
+        Direction3d.xyZ (Angle.degrees -60)
             (Angle.degrees 0)
 
     Direction3d.projectInto SketchPlane3d.xy direction
