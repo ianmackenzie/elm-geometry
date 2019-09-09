@@ -75,12 +75,10 @@ If you pass a negative radius, the absolute value will be used.
 
     exampleEllipse =
         Ellipse2d.with
-            { centerPoint =
-                Point2d.meters 10 10
-            , xDirection =
-                Direction2d.degrees 30
-            , xRadius = 5
-            , yRadius = 3
+            { centerPoint = Point2d.meters 10 10
+            , xDirection = Direction2d.degrees 30
+            , xRadius = Length.meters 5
+            , yRadius = Length.meters 3
             }
 
 -}
@@ -114,8 +112,7 @@ centerPoint ellipse =
 {-| Get the X and Y axes of an ellipse as a `Frame2d`.
 
     Ellipse2d.axes exampleEllipse
-    --> Frame2d.withXDirection
-    -->     (Direction2d.degrees 30)
+    --> Frame2d.withXDirection (Direction2d.degrees 30)
     -->     (Point2d.meters 10 10)
 
 -}
@@ -127,8 +124,7 @@ axes (Types.Ellipse2d ellipse) =
 {-| Get the X axis of an ellipse.
 
     Ellipse2d.xAxis exampleEllipse
-    --> Axis2d.through
-    -->     (Point2d.meters 10 10)
+    --> Axis2d.through (Point2d.meters 10 10)
     -->     (Direction2d.degrees 30)
 
 -}
@@ -140,8 +136,7 @@ xAxis ellipse =
 {-| Get the Y axis of an ellipse.
 
     Ellipse2d.yAxis exampleEllipse
-    --> Axis2d.through
-    -->     (Point2d.meters 10 10)
+    --> Axis2d.through (Point2d.meters 10 10)
     -->     (Direction2d.degrees 120)
 
 -}
@@ -154,7 +149,7 @@ yAxis ellipse =
 minimum or maximum radius.
 
     Ellipse2d.xRadius exampleEllipse
-    --> 5
+    --> Length.meters 5
 
 -}
 xRadius : Ellipse2d units coordinates -> Quantity Float units
@@ -166,7 +161,7 @@ xRadius (Types.Ellipse2d ellipse) =
 minimum or maximum radius.
 
     Ellipse2d.yRadius exampleEllipse
-    --> 3
+    --> Length.meters 3
 
 -}
 yRadius : Ellipse2d units coordinates -> Quantity Float units
@@ -199,7 +194,7 @@ yDirection ellipse =
 {-| Get the area of an ellipse.
 
     Ellipse2d.area exampleEllipse
-    --> 47.1239
+    --> Area.squareMeters 47.1239
 
 -}
 area : Ellipse2d units coordinates -> Quantity Float (Squared units)
@@ -219,18 +214,6 @@ toEllipticalArc ellipse =
 
 
 {-| Scale an ellipse about a given point by a given scale.
-
-    exampleEllipse
-        |> Ellipse2d.scaleAbout Point2d.origin 3
-    --> Ellipse2d.with
-    -->     { centerPoint =
-    -->         Point2d.meters 30 30
-    -->     , xDirection =
-    -->         Direction2d.degrees 30
-    -->     , xRadius = 15
-    -->     , yRadius = 9
-    -->     }
-
 -}
 scaleAbout : Point2d units coordinates -> Float -> Ellipse2d units coordinates -> Ellipse2d units coordinates
 scaleAbout point scale ellipse =
@@ -269,20 +252,7 @@ transformBy axesTransformation (Types.Ellipse2d properties) =
         }
 
 
-{-| Rotate an ellipse around a given point by a given angle (in radians).
-
-    exampleEllipse
-        |> Ellipse2d.rotateAround Point2d.origin
-            (Angle.degrees 45)
-    --> Ellipse2d.with
-    -->     { centerPoint =
-    -->         Point2d.meters 0 14.142
-    -->     , xDirection =
-    -->         Direction2d.degrees 75
-    -->     , xRadius = 5
-    -->     , yRadius = 3
-    -->     }
-
+{-| Rotate an ellipse around a given point by a given angle.
 -}
 rotateAround : Point2d units coordinates -> Angle -> Ellipse2d units coordinates -> Ellipse2d units coordinates
 rotateAround point angle ellipse =
@@ -290,58 +260,23 @@ rotateAround point angle ellipse =
 
 
 {-| Translate an ellipse by a given displacement.
-
-    exampleEllipse
-        |> Ellipse2d.translateBy
-            (Vector2d.meters 5 10)
-    --> Ellipse2d.with
-    -->     { centerPoint =
-    -->         Point2d.meters 15 20
-    -->     , xDirection =
-    -->         Direction2d.degrees 30
-    -->     , xRadius = 5
-    -->     , yRadius = 3
-    -->     }
-
 -}
 translateBy : Vector2d units coordinates -> Ellipse2d units coordinates -> Ellipse2d units coordinates
 translateBy displacement ellipse =
     transformBy (Frame2d.translateBy displacement) ellipse
 
 
-{-| Translate an ellipse in a given direction by a given distance;
-
-    Ellipse2d.translateIn direction distance
-
-is equivalent to
-
-    Ellipse2d.translateBy
-        (Vector2d.withLength distance direction)
-
+{-| Translate an ellipse in a given direction by a given distance.
 -}
 translateIn : Direction2d coordinates -> Quantity Float units -> Ellipse2d units coordinates -> Ellipse2d units coordinates
 translateIn direction distance ellipse =
     translateBy (Vector2d.withLength distance direction) ellipse
 
 
-{-| Mirror an ellipse across a given axis.
-
-    mirroredEllipse =
-        Ellipse2d.mirrorAcross Axis2d.x exampleEllipse
-
-    Ellipse2d.centerPoint mirroredEllipse
-    --> Point2d.meters 10 -10
-
-    Ellipse2d.xDirection mirroredEllipse
-    --> Direction2d.degrees -30
-
-    Ellipse2d.yDirection mirroredEllipse
-    --> Direction2d.degrees -120
-
-Note that if the axes of the original ellipse form a [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
+{-| Mirror an ellipse across a given axis. Note that if the axes of the original
+ellipse form a [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 frame, then the axes of the mirrored ellipse will form a left-handed frame (and
 vice versa).
-
 -}
 mirrorAcross : Axis2d units coordinates -> Ellipse2d units coordinates -> Ellipse2d units coordinates
 mirrorAcross axis ellipse =
@@ -350,20 +285,6 @@ mirrorAcross axis ellipse =
 
 {-| Take an ellipse defined in global coordinates, and return it expressed in
 local coordinates relative to a given reference frame.
-
-    localFrame =
-        Frame2d.atPoint (Point2d.fromCoordinates (15, 5))
-
-    Ellipse2d.relativeTo localFrame exampleEllipse
-    --> Ellipse2d.with
-    -->     { centerPoint =
-    -->         Point2d.meters -5 5
-    -->     , xDirection =
-    -->         Direction2d.degrees 30
-    -->     , xRadius = 5
-    -->     , yRadius = 3
-    -->     }
-
 -}
 relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Ellipse2d units globalCoordinates -> Ellipse2d units localCoordinates
 relativeTo frame ellipse =
@@ -372,20 +293,6 @@ relativeTo frame ellipse =
 
 {-| Take an ellipse considered to be defined in local coordinates relative to a
 given reference frame, and return that circle expressed in global coordinates.
-
-    localFrame =
-        Frame2d.atPoint (Point2d.fromCoordinates (15, 5))
-
-    Ellipse2d.placeIn localFrame exampleEllipse
-    --> Ellipse2d.with
-    -->     { centerPoint =
-    -->         Point2d.meters 25 15
-    -->     , xDirection =
-    -->         Direction2d.degrees 30
-    -->     , xRadius = 5
-    -->     , yRadius = 3
-    -->     }
-
 -}
 placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Ellipse2d units localCoordinates -> Ellipse2d units globalCoordinates
 placeIn frame ellipse =
