@@ -212,7 +212,7 @@ type, by supplying a function that returns the position of each vertex as a
 `Point2d`. For example, if you had
 
     types alias Vertex =
-        { position = Point2d
+        { position = Point2d Meters WorldCoordinates
         , color = String
         }
 
@@ -224,7 +224,8 @@ and
 
 then you would use
 
-    DelaunayTriangulation2d.fromVerticesBy .position vertices
+    DelaunayTriangulation2d.fromVerticesBy .position
+        vertices
 
 The vertices must all be distinct; if any two have the same position, you will
 get an `Err CoincidentVertices`.
