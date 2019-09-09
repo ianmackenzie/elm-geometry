@@ -125,8 +125,8 @@ y =
 
 {-| The positive X direction.
 
-    Direction2d.components Direction2d.positiveX
-    --> ( 1, 0 )
+    Direction2d.unwrap Direction2d.positiveX
+    --> { x = 1, y = 0 }
 
 -}
 positiveX : Direction2d coordinates
@@ -136,8 +136,8 @@ positiveX =
 
 {-| The negative X direction.
 
-    Direction2d.components Direction2d.negativeX
-    --> ( -1, 0 )
+    Direction2d.unwrap Direction2d.negativeX
+    --> { x = -1, y = 0 }
 
 -}
 negativeX : Direction2d coordinates
@@ -147,8 +147,8 @@ negativeX =
 
 {-| The positive Y direction.
 
-    Direction2d.components Direction2d.positiveY
-    --> ( 0, 1 )
+    Direction2d.unwrap Direction2d.positiveY
+    --> { x = 0, y = 1 }
 
 -}
 positiveY : Direction2d coordinates
@@ -158,8 +158,8 @@ positiveY =
 
 {-| The negative Y direction.
 
-    Direction2d.components Direction2d.negativeY
-    --> ( 0, -1 )
+    Direction2d.unwrap Direction2d.negativeY
+    --> { x = 0, y = -1 }
 
 -}
 negativeY : Direction2d coordinates
@@ -218,8 +218,9 @@ are all valid but
     Direction2d.unsafe { x = 1, y = 1 }
 
 are not. Instead of using `Direction2d.unsafe`, it may be easier to use
-constructors like `Direction2d.fromAngle` (which will always result in a valid
-direction) or start with existing directions and transform them as necessary.
+constructors like [`degrees`](#degrees) or [`fromAngle`](#fromAngle) (which will
+always result in a valid direction) or start with existing directions and
+transform them as necessary.
 
 -}
 unsafe : { x : Float, y : Float } -> Direction2d coordinates
@@ -340,17 +341,16 @@ orthogonalize xDirection yDirection =
     orthonormalize (toVector xDirection) (toVector yDirection)
 
 
-{-| Construct a direction from an
-[Angle](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Angle)
+{-| Construct a direction from an [Angle](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Angle)
 given counterclockwise from the positive X direction.
 
-    Direction2d.degrees 0
+    Direction2d.fromAngle (Angle.degrees 0)
     --> Direction2d.x
 
-    Direction2d.degrees 90
+    Direction2d.fromAngle (Angle.degrees 90)
     --> Direction2d.y
 
-    Direction2d.degrees -90
+    Direction2d.fromAngle (Angle.degrees -90)
     --> Direction2d.negativeY
 
 -}
@@ -497,10 +497,10 @@ equalWithin (Quantity angle) (Types.Direction2d d1) (Types.Direction2d d2) =
     abs (atan2 relativeY relativeX) <= angle
 
 
-{-| Convert a direction to a unit vector.
+{-| Convert a direction to a unitless vector of length 1.
 
     Direction2d.toVector Direction2d.x
-    --> Vector2d.meters 1 0
+    --> Vector2d.unitless 1 0
 
 -}
 toVector : Direction2d coordinates -> Vector2d Unitless coordinates
@@ -558,7 +558,7 @@ rotateCounterclockwise (Types.Direction2d d) =
 
 {-| Rotate a direction counterclockwise by a given angle (in radians).
 
-    Direction2d.rotateBy pi Direction2d.x
+    Direction2d.rotateBy (Angle.degrees 180) Direction2d.x
     --> Direction2d.negativeX
 
     Direction2d.rotateBy (Angle.degrees 45) Direction2d.y
