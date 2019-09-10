@@ -67,9 +67,7 @@ values.
 # Interop
 
 These functions are useful for interoperability with other Elm code that uses
-plain `Float` tuples or records to represent points. The resulting `Point3d`
-values will have [unitless](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Quantity#unitless-quantities)
-coordinates.
+plain `Float` tuples or records to represent points.
 
 @docs fromTuple, toTuple, fromRecord, toRecord
 

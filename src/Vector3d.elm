@@ -71,9 +71,7 @@ constant values.
 # Interop
 
 These functions are useful for interoperability with other Elm code that uses
-plain `Float` tuples or records to represent vectors. The resulting `Vector3d`
-values will have [unitless](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Quantity#unitless-quantities)
-components.
+plain `Float` tuples or records to represent vectors.
 
 @docs fromTuple, toTuple, fromRecord, toRecord
 
