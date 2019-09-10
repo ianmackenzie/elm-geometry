@@ -903,7 +903,7 @@ Partial application can be useful:
         ]
 
     points
-        |> List.sortBy
+        |> Quantity.sortBy
             (Point2d.distanceFrom Point2d.origin)
     --> [ Point2d.meters -1 2
     --> , Point2d.meters 3 4
