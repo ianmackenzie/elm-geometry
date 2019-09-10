@@ -94,7 +94,7 @@ yz =
 direction.
 
     Plane3d.zx
-    --> through Point3d.origin Direction3d.y
+    --> Plane3d.through Point3d.origin Direction3d.y
 
 -}
 zx : Plane3d units coordinates
@@ -142,14 +142,9 @@ given points are collinear, returns `Nothing`.
         (Point3d.meters 2 0 0)
         (Point3d.meters 3 0 0)
         (Point3d.meters 4 1 1)
-    --> Just
-    -->     (Plane3d.through
-    -->         (Point3d.meters 2 0 0)
-    -->         (Direction3d.fromAzimuthAndElevation
-    -->             (Angle.degrees -90)
-    -->             (Angle.degrees 45)
-    -->         )
-    -->     )
+    --> Just <|
+    -->     Plane3d.through (Point3d.meters 2 0 0)
+    -->         (Direction3d.yz (Angle.degrees 135))
 
     Plane3d.throughPoints
         (Point3d.meters 2 0 0)
@@ -208,11 +203,11 @@ normalAxis (Types.Plane3d plane) =
 
 {-| Shift a plane in its own normal direction by the given (signed) distance.
 
-    Plane3d.offsetBy 1.0 Plane3d.zx
+    Plane3d.offsetBy (Length.meters 1) Plane3d.zx
     --> Plane3d.withNormalDirection Direction3d.y
     -->     (Point3d.meters 0 1 0)
 
-    Plane3d.offsetBy -2.0 Plane3d.xy
+    Plane3d.offsetBy (Length.meters -2) Plane3d.xy
     --> Plane3d.withNormalDirection Direction3d.z
     -->     (Point3d.meters 0 0 -2)
 
@@ -323,8 +318,7 @@ mirrorAcross otherPlane (Types.Plane3d plane) =
 coordinates relative to a given reference frame.
 
     referenceFrame =
-        Frame3d.atPoint
-            (Point3d.meters 1 1 1)
+        Frame3d.atPoint (Point3d.meters 1 1 1)
 
     plane =
         Plane3d.withNormalDirection Direction3d.z
@@ -345,8 +339,7 @@ relativeTo frame (Types.Plane3d plane) =
 frame, and return that plane expressed in global coordinates.
 
     referenceFrame =
-        Frame3d.atPoint
-            (Point3d.meters 1 1 1)
+        Frame3d.atPoint (Point3d.meters 1 1 1)
 
     plane =
         Plane3d.withNormalDirection Direction3d.z
