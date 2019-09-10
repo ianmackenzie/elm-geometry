@@ -1249,7 +1249,7 @@ scaleAbout (Types.Point3d p0) k (Types.Point3d p) =
         }
 
 
-{-| Rotate a point around an axis by a given angle (in radians).
+{-| Rotate a point around an axis by a given angle.
 
     axis =
         Axis3d.x

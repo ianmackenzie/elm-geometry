@@ -552,7 +552,7 @@ rotateCounterclockwise (Types.Direction2d d) =
         }
 
 
-{-| Rotate a direction counterclockwise by a given angle (in radians).
+{-| Rotate a direction counterclockwise by a given angle.
 
     Direction2d.rotateBy (Angle.degrees 180) Direction2d.x
     --> Direction2d.negativeX

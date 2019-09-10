@@ -157,7 +157,7 @@ scaleAbout point scale polyline =
 
 
 {-| Rotate a polyline around the given center point counterclockwise by the
-given angle (in radians).
+given angle.
 
     stepShape
         |> Polyline2d.rotateAround Point2d.origin

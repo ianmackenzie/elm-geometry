@@ -1073,9 +1073,8 @@ scaleAbout (Types.Point2d p0) k (Types.Point2d p) =
         }
 
 
-{-| Rotate around a given center point counterclockwise by a given angle (in
-radians). The point to rotate around is given first and the point to rotate is
-given last.
+{-| Rotate around a given center point counterclockwise by a given angle. The
+point to rotate around is given first and the point to rotate is given last.
 
     centerPoint =
         Point2d.meters 2 0

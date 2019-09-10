@@ -497,7 +497,7 @@ scaleAbout point scale =
 
 
 {-| Rotate a line segment counterclockwise around a given center point by a
-given angle (in radians).
+given angle.
 
     exampleLineSegment
         |> LineSegment2d.rotateAround Point2d.origin

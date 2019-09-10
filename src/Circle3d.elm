@@ -289,7 +289,7 @@ scaleAbout point scale circle =
         (Point3d.scaleAbout point scale (centerPoint circle))
 
 
-{-| Rotate a circle around a given axis by a given angle (in radians).
+{-| Rotate a circle around a given axis by a given angle.
 
     exampleCircle
         |> Circle3d.rotateAround Axis3d.y (Angle.degrees 90)

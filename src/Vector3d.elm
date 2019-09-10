@@ -1006,7 +1006,7 @@ scaleBy k (Types.Vector3d v) =
         }
 
 
-{-| Rotate a vector around a given axis by a given angle (in radians).
+{-| Rotate a vector around a given axis by a given angle.
 
     vector =
         Vector3d.meters 2 0 1

@@ -542,7 +542,7 @@ scaleAbout point scale spline =
 
 
 {-| Rotate a spline counterclockwise around a given center point by a given
-angle (in radians).
+angle.
 
     examplePolyline
         |> QuadraticSpline2d.rotateAround Point2d.origin

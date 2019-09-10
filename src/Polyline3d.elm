@@ -185,7 +185,7 @@ scaleAbout point scale polyline =
     mapVertices (Point3d.scaleAbout point scale) polyline
 
 
-{-| Rotate a polyline around the given axis by the given angle (in radians).
+{-| Rotate a polyline around the given axis by the given angle.
 
     examplePolyline
         |> Polyline3d.rotateAround Axis3d.z (Angle.degrees 90)

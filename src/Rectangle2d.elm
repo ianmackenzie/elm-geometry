@@ -543,7 +543,7 @@ scaleAbout point scale rectangle =
         }
 
 
-{-| Rotate a rectangle around a given point by a given angle (in radians).
+{-| Rotate a rectangle around a given point by a given angle.
 
     rectangle =
         Rectangle2d.fromExtrema

@@ -274,7 +274,7 @@ scaleAbout point scale =
     mapVertices (Point2d.scaleAbout point scale)
 
 
-{-| Rotate a triangle around a given point by a given angle (in radians).
+{-| Rotate a triangle around a given point by a given angle.
 
     exampleTriangle
         |> Triangle2d.rotateAround Point2d.origin

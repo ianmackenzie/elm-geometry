@@ -623,8 +623,7 @@ scaleAbout point scale spline =
     mapControlPoints (Point3d.scaleAbout point scale) spline
 
 
-{-| Rotate a spline counterclockwise around a given axis by a given angle (in
-radians).
+{-| Rotate a spline counterclockwise around a given axis by a given angle.
 
     exampleSpline
         |> QuadraticSpline3d.rotateAround Axis3d.z

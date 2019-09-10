@@ -375,7 +375,7 @@ scaleAbout point scale lineSegment =
     mapEndpoints (Point3d.scaleAbout point scale) lineSegment
 
 
-{-| Rotate a line segment around a given axis by a given angle (in radians).
+{-| Rotate a line segment around a given axis by a given angle.
 
     exampleLineSegment
         |> LineSegment3d.rotateAround Axis3d.z (Angle.degrees 90)

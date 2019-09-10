@@ -732,7 +732,7 @@ scaleAbout point scale (Types.Arc3d arc) =
         }
 
 
-{-| Rotate an arc around a given axis by a given angle (in radians).
+{-| Rotate an arc around a given axis by a given angle.
 -}
 rotateAround : Axis3d units coordinates -> Angle -> Arc3d units coordinates -> Arc3d units coordinates
 rotateAround rotationAxis angle (Types.Arc3d arc) =

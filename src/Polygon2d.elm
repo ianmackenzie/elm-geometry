@@ -416,7 +416,7 @@ scaleAbout point scale =
 
 
 {-| Rotate a polygon around the given center point counterclockwise by the given
-angle (in radians).
+angle.
 
     rectangle
         |> Polygon2d.rotateAround Point2d.origin

@@ -998,7 +998,7 @@ scaleBy k (Types.Vector2d v) =
         }
 
 
-{-| Rotate a vector counterclockwise by a given angle (in radians).
+{-| Rotate a vector counterclockwise by a given angle.
 
     Vector2d.meters 1 1
         |> Vector2d.rotateBy (Angle.degrees 45)

@@ -634,7 +634,7 @@ moveTo newOrigin sketchPlane =
         }
 
 
-{-| Rotate a sketch plane around an axis by a given angle (in radians). The
+{-| Rotate a sketch plane around an axis by a given angle. The
 sketch plane's origin point and X and Y directions will all be rotated around
 the given axis.
 
@@ -655,8 +655,7 @@ rotateAround axis angle sketchPlane =
         }
 
 
-{-| Rotate a sketch plane around one of its own axes by a given angle (in
-radians).
+{-| Rotate a sketch plane around one of its own axes by a given angle.
 
 The first argument is a function that returns the axis to rotate around, given
 the current sketch plane. The majority of the time this will be either
