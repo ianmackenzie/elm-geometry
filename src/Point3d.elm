@@ -164,14 +164,7 @@ unwrap (Types.Point3d coordinates) =
     coordinates
 
 
-{-| The point (0, 0, 0).
-
-    Point3d.origin
-    --> Point3d.xyz
-    -->     Quantity.zero
-    -->     Quantity.zero
-    -->     Quantity.zero
-
+{-| The point with coordinates (0, 0, 0).
 -}
 origin : Point3d units coordinates
 origin =
@@ -464,7 +457,7 @@ interpolateFrom (Types.Point3d p1) (Types.Point3d p2) t =
 {-| Construct a point along an axis at a particular distance from the axis'
 origin point.
 
-    Point3d.along Axis3d.z 2
+    Point3d.along Axis3d.z (Length.meters 2)
     --> Point3d.meters 0 0 2
 
 Positive and negative distances are interpreted relative to the direction of the
@@ -474,10 +467,10 @@ axis:
         Axis3d.withDirection Direction3d.negativeX
             (Point3d.meters 1 1 1)
 
-    Point3d.along horizontalAxis 3
+    Point3d.along horizontalAxis (Length.meters 3)
     --> Point3d.meters -2 1 1
 
-    Point3d.along horizontalAxis -3
+    Point3d.along horizontalAxis (Length.meters -3)
     --> Point3d.meters 4 1 1
 
 -}
@@ -500,12 +493,10 @@ along (Types.Axis3d axis) (Quantity distance) =
 {-| Construct a 3D point lying _on_ a sketch plane by providing a 2D point
 specified in XY coordinates _within_ the sketch plane.
 
-    Point3d.on SketchPlane3d.xy <|
-        Point2d.meters 2 1
+    Point3d.on SketchPlane3d.xy (Point2d.meters 2 1)
     --> Point3d.meters 2 1 0
 
-    Point3d.on SketchPlane3d.xz <|
-        Point2d.meters 2 1
+    Point3d.on SketchPlane3d.xz (Point2d.meters 2 1)
     --> Point3d.meters 2 0 1
 
 The sketch plane can have any position and orientation:
@@ -517,8 +508,7 @@ The sketch plane can have any position and orientation:
             |> SketchPlane3d.moveTo
                 (Point3d.meters 10 10 10)
 
-    Point3d.on tiltedSketchPlane <|
-        Point2d.meters 2 1
+    Point3d.on tiltedSketchPlane (Point2d.meters 2 1)
     --> Point3d.meters 12 10.7071 10.7071
 
 -}
@@ -616,10 +606,12 @@ rThetaOn (Types.SketchPlane3d sketchPlane) (Quantity r) (Quantity theta) =
 {-| Construct a point given its local coordinates within a particular frame:
 
     frame =
-        Frame3d.atPoint
-            (Point3d.meters 1 1 1)
+        Frame3d.atPoint (Point3d.meters 1 1 1)
 
-    Point3d.fromCoordinatesIn frame ( 1, 2, 3 )
+    Point3d.xyzIn frame
+        (Length.meters 1)
+        (Length.meters 2)
+        (Length.meters 3)
     --> Point3d.meters 2 3 4
 
 -}
@@ -653,7 +645,7 @@ collinear, returns `Nothing`.
         (Point3d.meters 1 0 0)
         (Point3d.meters 0 1 0)
         (Point3d.meters 0 0 1)
-    --> Just (Point3d.fromCoordinates (0.33, 0.33, 0.33))
+    --> Just (Point3d.meters 0.33 0.33 0.33)
 
     Point3d.circumcenter
         Point3d.origin
@@ -770,10 +762,7 @@ circumenterHelp (Types.Point3d p1) (Types.Point3d p2) (Types.Point3d p3) a b c =
 in.
 
     Point3d.fromTuple Length.meters ( 2, 3, 1 )
-    --> Point3d.fromCoordinates
-    -->     (Length.meters 2)
-    -->     (Length.meters 3)
-    -->     (Length.meters 1)
+    --> Point3d.meters 2 3 1
 
 -}
 fromTuple : (Float -> Quantity Float units) -> ( Float, Float, Float ) -> Point3d units coordinates
@@ -785,10 +774,7 @@ fromTuple toQuantity ( x, y, z ) =
 to be in.
 
     point =
-        Point3d.fromCoordinates
-            (Length.feet 2)
-            (Length.feet 3)
-            (Length.feet 1)
+        Point3d.feet 2 3 1
 
     Point3d.toTuple Length.inInches point
     --> ( 24, 36, 12 )
@@ -802,14 +788,11 @@ toTuple fromQuantity point =
     )
 
 
-{-| Construct a `Point3d` from a record with `Float` fields, by specifying what units those fields
-are in.
+{-| Construct a `Point3d` from a record with `Float` fields, by specifying what
+units those fields are in.
 
     Point3d.fromRecord Length.inches { x = 24, y = 36, z = 12 }
-    --> Point3d.fromCoordinates
-    -->     (Length.feet 2)
-    -->     (Length.feet 3)
-    -->     (Length.feet 1)
+    --> Point3d.feet 2 3 1
 
 -}
 fromRecord : (Float -> Quantity Float units) -> { x : Float, y : Float, z : Float } -> Point3d units coordinates
@@ -821,10 +804,7 @@ fromRecord toQuantity { x, y, z } =
 result to be in.
 
     point =
-        Point3d.fromCoordinates
-            (Length.meters 2)
-            (Length.meters 3)
-            (Length.meters 1)
+        Point3d.meters 2 3 1
 
     Point3d.toRecord Length.inCentimeters point
     --> { x = 200, y = 300, z = 100 }
@@ -923,7 +903,7 @@ zCoordinateIn (Types.Frame3d frame) (Types.Point3d p) =
 
     Point3d.meters 2 1 3
         |> Point3d.xCoordinate
-    --> 2
+    --> Length.meters 2
 
 -}
 xCoordinate : Point3d units coordinates -> Quantity Float units
@@ -935,7 +915,7 @@ xCoordinate (Types.Point3d p) =
 
     Point3d.meters 2 1 3
         |> Point3d.yCoordinate
-    --> 1
+    --> Length.meters 1
 
 -}
 yCoordinate : Point3d units coordinates -> Quantity Float units
@@ -947,7 +927,7 @@ yCoordinate (Types.Point3d p) =
 
     Point3d.meters 2 1 3
         |> Point3d.zCoordinate
-    --> 3
+    --> Length.meters 3
 
 -}
 zCoordinate : Point3d units coordinates -> Quantity Float units
@@ -964,10 +944,10 @@ between the two given points is less than the given tolerance.
     secondPoint =
         Point3d.meters 2.0002 0.9999 3.0001
 
-    Point3d.equalWithin 1e-3 firstPoint secondPoint
+    Point3d.equalWithin (Length.millimeters 1) firstPoint secondPoint
     --> True
 
-    Point3d.equalWithin 1e-6 firstPoint secondPoint
+    Point3d.equalWithin (Length.microns 1) firstPoint secondPoint
     --> False
 
 -}
@@ -1017,7 +997,7 @@ lexicographicComparison (Types.Point3d p1) (Types.Point3d p2) =
         Point3d.meters 2 3 4
 
     Point3d.distanceFrom p1 p2
-    --> 3
+    --> Length.meters 3
 
 Partial application can be useful:
 
@@ -1028,7 +1008,7 @@ Partial application can be useful:
         ]
 
     points
-        |> List.sortBy
+        |> Quantity.sortBy
             (Point3d.distanceFrom Point3d.origin)
     --> [ Point3d.meters -1 2 -3
     --> , Point3d.meters 3 4 5
@@ -1085,10 +1065,10 @@ it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
         Point3d.meters 3 3 3
 
     Point3d.signedDistanceAlong axis point
-    --> 2
+    --> Length.meters 2
 
     Point3d.signedDistanceAlong axis Point3d.origin
-    --> -1
+    --> Length.meters -1
 
 -}
 signedDistanceAlong : Axis3d units coordinates -> Point3d units coordinates -> Quantity Float units
@@ -1109,13 +1089,13 @@ signedDistanceAlong (Types.Axis3d axis) (Types.Point3d p) =
         Point3d.meters -3 4 0
 
     Point3d.distanceFromAxis Axis3d.x point
-    --> 4
+    --> Length.meters 4
 
     Point3d.distanceFromAxis Axis3d.y point
-    --> 3
+    --> Length.meters 3
 
     Point3d.distanceFromAxis Axis3d.z point
-    --> 5
+    --> Length.meters 5
 
 Note that unlike in 2D, the result is always positive (unsigned) since there is
 no such thing as the left or right side of an axis in 3D.
@@ -1186,10 +1166,10 @@ positive if the point is 'above' the plane and negative if it is 'below', with
         Point3d.meters 3 3 3
 
     Point3d.signedDistanceFrom plane point
-    --> 1
+    --> Length.meters 1
 
     Point3d.signedDistanceFrom plane Point3d.origin
-    --> -2
+    --> Length.meters -2
 
 This means that flipping a plane (reversing its normal direction) will also flip
 the sign of the result of this function:
@@ -1198,10 +1178,10 @@ the sign of the result of this function:
         Plane3d.reverseNormal plane
 
     Point3d.signedDistanceFrom flippedPlane point
-    --> -1
+    --> Length.meters -1
 
     Point3d.signedDistanceFrom flippedPlane Point3d.origin
-    --> 2
+    --> Length.meters 2
 
 -}
 signedDistanceFrom : Plane3d units coordinates -> Point3d units coordinates -> Quantity Float units
@@ -1253,7 +1233,7 @@ scaleAbout (Types.Point3d p0) k (Types.Point3d p) =
         Axis3d.x
 
     angle =
-        degrees 45
+        Angle.degrees 45
 
     point =
         Point3d.meters 3 1 0
@@ -1391,15 +1371,21 @@ translateBy (Types.Vector3d v) (Types.Point3d p) =
     point =
         Point3d.meters 3 4 5
 
-    point |> Point3d.translateIn Direction3d.x 2
+    point
+        |> Point3d.translateIn Direction3d.x
+            (Length.meters 2)
     --> Point3d.meters 5 4 5
 
-    point |> Point3d.translateIn Direction3d.y 2
+    point
+        |> Point3d.translateIn Direction3d.y
+            (Length.meters 2)
     --> Point3d.meters 3 6 5
 
 The distance can be negative:
 
-    Point3d.translateIn Direction3d.x -2
+    point
+        |> Point3d.translateIn Direction3d.x
+            (Length.meters -2)
     --> Point3d.meters 1 4 5
 
 -}
@@ -1560,15 +1546,12 @@ projectOntoAxis (Types.Axis3d axis) (Types.Point3d p) =
 coordinates relative to a given reference frame.
 
     localFrame =
-        Frame3d.atPoint
-            (Point3d.meters 1 2 3)
+        Frame3d.atPoint (Point3d.meters 1 2 3)
 
-    Point3d.relativeTo localFrame
-        (Point3d.meters 4 5 6)
+    Point3d.relativeTo localFrame (Point3d.meters 4 5 6)
     --> Point3d.meters 3 3 3
 
-    Point3d.relativeTo localFrame
-        (Point3d.meters 1 1 1)
+    Point3d.relativeTo localFrame (Point3d.meters 1 1 1)
     --> Point3d.meters 0 -1 -2
 
 -}
@@ -1607,15 +1590,12 @@ relativeTo (Types.Frame3d frame) (Types.Point3d p) =
 frame, and return that point expressed in global coordinates.
 
     localFrame =
-        Frame3d.atPoint
-            (Point3d.meters 1 2 3)
+        Frame3d.atPoint (Point3d.meters 1 2 3)
 
-    Point3d.placeIn localFrame
-        (Point3d.meters 3 3 3)
+    Point3d.placeIn localFrame (Point3d.meters 3 3 3)
     --> Point3d.meters 4 5 6
 
-    Point3d.placeIn localFrame
-        (Point3d.meters 0 -1 -2)
+    Point3d.placeIn localFrame (Point3d.meters 0 -1 -2)
     --> Point3d.meters 1 1 1
 
 -}
