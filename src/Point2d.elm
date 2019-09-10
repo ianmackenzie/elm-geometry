@@ -169,11 +169,7 @@ unwrap (Types.Point2d coordinates) =
     coordinates
 
 
-{-| The point (0, 0).
-
-    Point2d.origin
-    --> Point2d.meters 0 0
-
+{-| The point with coordinates (0, 0).
 -}
 origin : Point2d units coordinates
 origin =
@@ -183,7 +179,7 @@ origin =
 {-| Construct a point from its X and Y coordinates.
 
     point =
-        Point2d.meters 2 3
+        Point2d.xy (Length.meters 2) (Length.meters 3)
 
 -}
 xy : Quantity Float units -> Quantity Float units -> Point2d units coordinates
@@ -448,7 +444,7 @@ interpolateFrom (Types.Point2d p1) (Types.Point2d p2) t =
 {-| Construct a point along an axis at a particular distance from the axis'
 origin point.
 
-    Point2d.along Axis2d.y 3
+    Point2d.along Axis2d.y (Length.meters 3)
     --> Point2d.meters 0 3
 
 Positive and negative distances will be interpreted relative to the direction of
@@ -458,10 +454,10 @@ the axis:
         Axis2d.withDirection Direction2d.negativeX
             (Point2d.meters 1 1)
 
-    Point2d.along horizontalAxis 3
+    Point2d.along horizontalAxis (Length.meters 3)
     --> Point2d.meters -2 1
 
-    Point2d.along horizontalAxis -3
+    Point2d.along horizontalAxis (Length.meters -3)
     --> Point2d.meters 4 1
 
 -}
@@ -485,7 +481,9 @@ along (Types.Axis2d axis) (Quantity distance) =
     rotatedFrame =
         Frame2d.atOrigin |> Frame2d.rotateBy (Angle.degrees 45)
 
-    Point2d.fromCoordinatesIn rotatedFrame ( 2, 0 )
+    Point2d.xyIn rotatedFrame
+        (Length.meters 2)
+        (Length.meters 0)
     --> Point2d.meters 1.4142 1.4142
 
 -}
@@ -513,8 +511,9 @@ frame:
     localFrame =
         Frame2d.atPoint (Point2d.meters 2 1)
 
-    Point2d.fromPolarCoordinatesIn localFrame
-        ( 2, degrees 45 )
+    Point2d.rThetaIn localFrame
+        (Length.meters 2)
+        (Angle.degrees 45)
     --> Point2d.meters 3.4142 2.4142
 
 -}
@@ -547,31 +546,29 @@ circle that passes through all three points. If the three given points are
 collinear, returns `Nothing`.
 
     Point2d.circumcenter
-        ( Point2d.origin
-        , Point2d.meters 1 0
-        , Point2d.meters 0 1
-        )
+        Point2d.origin
+        (Point2d.meters 1 0)
+        (Point2d.meters 0 1)
     --> Just (Point2d.meters 0.5 0.5)
 
     Point2d.circumcenter
-        ( Point2d.origin
-        , Point2d.meters 2 1
-        , Point2d.meters 4 0
-        )
+        Point2d.origin
+        (Point2d.meters 2 1)
+        (Point2d.meters 4 0)
     --> Just (Point2d.meters 2 -1.5)
 
+    -- Ambiguous
     Point2d.circumCenter
-        ( Point2d.origin
-        , Point2d.meters 2 0
-        , Point2d.meters 4 0
-        )
+        Point2d.origin
+        Point2d.origin
+        (Point2d.meters 1 0)
     --> Nothing
 
+    -- Impossible
     Point2d.circumCenter
-        ( Point2d.origin
-        , Point2d.origin
-        , Point2d.meters 1 0
-        )
+        Point2d.origin
+        (Point2d.meters 2 0)
+        (Point2d.meters 4 0)
     --> Nothing
 
 -}
@@ -651,13 +648,11 @@ circumenterHelp (Types.Point2d p1) (Types.Point2d p2) (Types.Point2d p3) a b c =
                     }
 
 
-{-| Construct a `Point2d` from a tuple of `Float` values, by specifying what units those values are
-in.
+{-| Construct a `Point2d` from a tuple of `Float` values, by specifying what
+units those values are in.
 
     Point2d.fromTuple Length.meters ( 2, 3 )
-    --> Point2d.fromCoordinates
-    -->     (Length.meters 2)
-    -->     (Length.meters 3)
+    --> Point2d.meters 2 3
 
 -}
 fromTuple : (Float -> Quantity Float units) -> ( Float, Float ) -> Point2d units coordinates
@@ -669,9 +664,7 @@ fromTuple toQuantity ( x, y ) =
 to be in.
 
     point =
-        Point2d.fromCoordinates
-            (Length.feet 2)
-            (Length.feet 3)
+        Point2d.feet 2 3
 
     Point2d.toTuple Length.inInches point
     --> ( 24, 36 )
@@ -688,9 +681,7 @@ toTuple fromQuantity point =
 are in.
 
     Point2d.fromRecord Length.inches { x = 24, y = 36 }
-    --> Point2d.fromCoordinates
-    -->     (Length.feet 2)
-    -->     (Length.feet 3)
+    --> Point2d.inches 24 36
 
 -}
 fromRecord : (Float -> Quantity Float units) -> { x : Float, y : Float } -> Point2d units coordinates
@@ -702,9 +693,7 @@ fromRecord toQuantity { x, y } =
 result to be in.
 
     point =
-        Point2d.fromCoordinates
-            (Length.meters 2)
-            (Length.meters 3)
+        Point2d.meters 2 3
 
     Point2d.toRecord Length.inCentimeters point
     --> { x = 200, y = 300 }
@@ -757,18 +746,14 @@ toUnitless (Types.Point2d coordinates) =
 rate of change of destination units with respect to source units.
 
     worldPoint =
-        Point2d.fromCoordinates
-            (Length.meters 2)
-            (Length.meters 3)
+        Point2d.meters 2 3
 
     resolution : Quantity Float (Rate Pixels Meters)
     resolution =
         Pixels.pixels 100 |> Quantity.per (Length.meters 1)
 
     worldPoint |> Point2d.at resolution
-    --> Point2d.fromCoordinates
-    -->     (Pixels.pixels 200)
-    -->     (Pixels.pixels 300)
+    --> Point2d.pixels 200 300
 
 -}
 at : Quantity Float (Rate destinationUnits sourceUnits) -> Point2d sourceUnits coordinates -> Point2d destinationUnits coordinates
@@ -783,20 +768,14 @@ at (Quantity rate) (Types.Point2d p) =
 given as a rate of change of source units with respect to destination units.
 
     screenPoint =
-        Point2d.fromCoordinates
-            ( Pixels.pixels 200
-            , Pixels.pixels 300
-            )
+        Point2d.pixels 200 300
 
     resolution : Quantity Float (Rate Pixels Meters)
     resolution =
         Pixels.pixels 50 |> Quantity.per (Length.meters 1)
 
     screenPoint |> Point2d.at_ resolution
-    --> Point2d.fromCoordinates
-    -->     ( Length.meters 4
-    -->     , Length.meters 6
-    -->     )
+    --> Point2d.meters 4 6
 
 -}
 at_ : Quantity Float (Rate sourceUnits destinationUnits) -> Point2d sourceUnits coordinates -> Point2d destinationUnits coordinates
@@ -840,7 +819,7 @@ yCoordinateIn (Types.Frame2d frame) (Types.Point2d p) =
 {-| Get the X coordinate of a point.
 
     Point2d.xCoordinate (Point2d.meters 2 3)
-    --> 2
+    --> Length.meters 2
 
 -}
 xCoordinate : Point2d units coordinates -> Quantity Float units
@@ -851,7 +830,7 @@ xCoordinate (Types.Point2d p) =
 {-| Get the Y coordinate of a point.
 
     Point2d.yCoordinate (Point2d.meters 2 3)
-    --> 3
+    --> Length.meters 3
 
 -}
 yCoordinate : Point2d units coordinates -> Quantity Float units
@@ -868,10 +847,10 @@ between the two given points is less than the given tolerance.
     secondPoint =
         Point2d.meters 0.9999 2.0002
 
-    Point2d.equalWithin 1e-3 firstPoint secondPoint
+    Point2d.equalWithin (Length.millimeters 1) firstPoint secondPoint
     --> True
 
-    Point2d.equalWithin 1e-6 firstPoint secondPoint
+    Point2d.equalWithin (Length.microns 1) firstPoint secondPoint
     --> False
 
 -}
@@ -915,7 +894,7 @@ lexicographicComparison (Types.Point2d p1) (Types.Point2d p2) =
         Point2d.meters 5 7
 
     Point2d.distanceFrom p1 p2
-    --> 5
+    --> Length.meters 5
 
 Partial application can be useful:
 
@@ -977,10 +956,10 @@ it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
         Point2d.meters 3 3
 
     Point2d.signedDistanceAlong axis point
-    --> 2
+    --> Length.meters 2
 
     Point2d.signedDistanceAlong axis Point2d.origin
-    --> -1
+    --> Length.meters -1
 
 -}
 signedDistanceAlong : Axis2d units coordinates -> Point2d units coordinates -> Quantity Float units
@@ -1011,11 +990,11 @@ to the right, with the forwards direction defined by the direction of the axis.
     -- Since the axis is in the positive X direction,
     -- points above the axis are to the left (positive)
     Point2d.signedDistanceFrom axis point
-    -->  1
+    -->  Length.meters 1
 
     -- and points below are to the right (negative)
     Point2d.signedDistanceFrom axis Point2d.origin
-    --> -2
+    --> Length.meters -2
 
 This means that reversing an axis will also flip the sign of the result of this
 function:
@@ -1025,10 +1004,10 @@ function:
         Axis2d.reverse axis
 
     Point2d.signedDistanceFrom reversedAxis point
-    --> -1
+    --> Length.meters -1
 
     Point2d.signedDistanceFrom reversedAxis Point2d.origin
-    --> 2
+    --> Length.meters 2
 
 -}
 signedDistanceFrom : Axis2d units coordinates -> Point2d units coordinates -> Quantity Float units
@@ -1080,7 +1059,7 @@ point to rotate around is given first and the point to rotate is given last.
         Point2d.meters 2 0
 
     angle =
-        degrees 45
+        Angle.degrees 45
 
     point =
         Point2d.meters 3 0
@@ -1138,21 +1117,29 @@ translateBy (Types.Vector2d v) (Types.Point2d p) =
     point =
         Point2d.meters 3 4
 
-    point |> Point2d.translateIn Direction2d.x 2
+    point
+        |> Point2d.translateIn Direction2d.x
+            (Length.meters 2)
     --> Point2d.meters 5 4
 
-    point |> Point2d.translateIn Direction2d.y 2
+    point
+        |> Point2d.translateIn Direction2d.y
+            (Length.meters 2)
     --> Point2d.meters 3 6
 
     angledDirection =
         Direction2d.degrees 45
 
-    point |> Point2d.translateIn angledDirection 1
+    point
+        |> Point2d.translateIn angledDirection
+            (Length.meters 1)
     --> Point2d.meters 3.7071 4.7071
 
 The distance can be negative:
 
-    Point2d.translateIn Direction2d.x -2
+    point
+        |> Point2d.translateIn Direction2d.x
+            (Length.meters -2)
     --> Point2d.meters 1 4
 
 -}
@@ -1252,12 +1239,10 @@ coordinates relative to a given reference frame.
     localFrame =
         Frame2d.atPoint (Point2d.meters 1 2)
 
-    Point2d.relativeTo localFrame
-        (Point2d.meters 4 5)
+    Point2d.relativeTo localFrame (Point2d.meters 4 5)
     --> Point2d.meters 3 3
 
-    Point2d.relativeTo localFrame
-        (Point2d.meters 1 1)
+    Point2d.relativeTo localFrame (Point2d.meters 1 1)
     --> Point2d.meters 0 -1
 
 -}
@@ -1294,12 +1279,10 @@ frame, and return that point expressed in global coordinates.
     localFrame =
         Frame2d.atPoint (Point2d.meters 1 2)
 
-    Point2d.placeIn localFrame
-        (Point2d.meters 3 3)
+    Point2d.placeIn localFrame (Point2d.meters 3 3)
     --> Point2d.meters 4 5
 
-    Point2d.placeIn localFrame
-        (Point2d.meters 0 1)
+    Point2d.placeIn localFrame (Point2d.meters 0 1)
     --> Point2d.meters 1 1
 
 -}
