@@ -109,13 +109,17 @@ from startPoint_ endPoint_ =
 {-| Construct a line segment lying on the given axis, with its endpoints at the
 given distances from the axis' origin point.
 
-    LineSegment2d.along Axis2d.x 3 5
+    LineSegment2d.along Axis2d.x
+        (Length.meters 3)
+        (Length.meters 5)
     --> LineSegment2d.fromEndpoints
     -->     ( Point2d.meters 3 0
     -->     , Point2d.meters 5 0
     -->     )
 
-    LineSegment2d.along Axis2d.y 2 -4
+    LineSegment2d.along Axis2d.y
+        (Length.meters 2)
+        (Length.meters -4)
     --> LineSegment2d.fromEndpoints
     -->     ( Point2d.meters 0 2
     -->     , Point2d.meters 0 -4
@@ -217,7 +221,7 @@ interpolate lineSegment t =
 {-| Get the length of a line segment.
 
     LineSegment2d.length exampleLineSegment
-    --> 2.8284
+    --> Length.meters 2.8284
 
 -}
 length : LineSegment2d units coordinates -> Quantity Float units
@@ -234,8 +238,8 @@ line segment has zero length (the start and end points are the same), returns
 
 -}
 direction : LineSegment2d units coordinates -> Maybe (Direction2d coordinates)
-direction =
-    vector >> Vector2d.direction
+direction givenSegment =
+    Vector2d.direction (vector givenSegment)
 
 
 {-| Get the direction perpendicular to a line segment, pointing to the left. If
@@ -246,8 +250,8 @@ the line segment has zero length, returns `Nothing`.
 
 -}
 perpendicularDirection : LineSegment2d units coordinates -> Maybe (Direction2d coordinates)
-perpendicularDirection =
-    vector >> Vector2d.perpendicularTo >> Vector2d.direction
+perpendicularDirection givenSegment =
+    Vector2d.direction (Vector2d.perpendicularTo (vector givenSegment))
 
 
 {-| Get the vector from a given line segment's start point to its end point.
@@ -480,16 +484,6 @@ intersectionWithAxis axis lineSegment =
 
 
 {-| Scale a line segment about the given center point by the given scale.
-
-    point =
-        Point2d.meters 1 1
-
-    LineSegment2d.scaleAbout point 2 exampleLineSegment
-    --> LineSegment2d.fromEndpoints
-    -->     ( Point2d.meters 1 3
-    -->     , Point2d.meters 5 7
-    -->     )
-
 -}
 scaleAbout : Point2d units coordinates -> Float -> LineSegment2d units coordinates -> LineSegment2d units coordinates
 scaleAbout point scale =
@@ -498,15 +492,6 @@ scaleAbout point scale =
 
 {-| Rotate a line segment counterclockwise around a given center point by a
 given angle.
-
-    exampleLineSegment
-        |> LineSegment2d.rotateAround Point2d.origin
-            (Angle.degrees 90)
-    --> LineSegment2d.fromEndpoints
-    -->     ( Point2d.meters -2 1
-    -->     , Point2d.meters -4 3
-    -->     )
-
 -}
 rotateAround : Point2d units coordinates -> Angle -> LineSegment2d units coordinates -> LineSegment2d units coordinates
 rotateAround centerPoint angle =
@@ -514,52 +499,24 @@ rotateAround centerPoint angle =
 
 
 {-| Translate a line segment by a given displacement.
-
-    displacement =
-        Vector2d.meters 1 2
-
-    exampleLineSegment
-        |> LineSegment2d.translateBy displacement
-    --> LineSegment2d.fromEndpoints
-    -->     ( Point2d.meters 2 4
-    -->     , Point2d.meters 4 6
-    -->     )
-
 -}
 translateBy : Vector2d units coordinates -> LineSegment2d units coordinates -> LineSegment2d units coordinates
 translateBy displacementVector =
     mapEndpoints (Point2d.translateBy displacementVector)
 
 
-{-| Translate a line segment in a given direction by a given distance;
-
-    LineSegment2d.translateIn direction distance
-
-is equivalent to
-
-    LineSegment2d.translateBy
-        (Vector2d.withLength distance direction)
-
+{-| Translate a line segment in a given direction by a given distance.
 -}
 translateIn : Direction2d coordinates -> Quantity Float units -> LineSegment2d units coordinates -> LineSegment2d units coordinates
 translateIn translationDirection distance lineSegment =
     translateBy (Vector2d.withLength distance translationDirection) lineSegment
 
 
-{-| Mirror a line segment across an axis.
-
-    LineSegment2d.mirrorAcross Axis2d.y exampleLineSegment
-    --> LineSegment2d.fromEndpoints
-    -->     ( Point2d.meters -1 2
-    -->     , Point2d.meters -3 4
-    -->     )
-
-Note that the endpoints of a mirrored segment are equal to the mirrored
-endpoints of the original segment, but as a result the normal direction of a
-mirrored segment is the _opposite_ of the mirrored normal direction of the
-original segment (since the normal direction is always considered to be 'to the
-left' of the line segment).
-
+{-| Mirror a line segment across an axis. Note that the endpoints of a mirrored
+segment are equal to the mirrored endpoints of the original segment, but as a
+result the normal direction of a mirrored segment is the _opposite_ of the
+mirrored normal direction of the original segment (since the normal direction is
+always considered to be 'to the left' of the line segment).
 -}
 mirrorAcross : Axis2d units coordinates -> LineSegment2d units coordinates -> LineSegment2d units coordinates
 mirrorAcross axis =
@@ -567,19 +524,6 @@ mirrorAcross axis =
 
 
 {-| Project a line segment onto an axis.
-
-    LineSegment2d.projectOnto Axis2d.x exampleLineSegment
-    --> LineSegment2d.fromEndpoints
-    -->     ( Point2d.meters 1 0
-    -->     , Point2d.meters 3 0
-    -->     )
-
-    LineSegment2d.projectOnto Axis2d.y exampleLineSegment
-    --> LineSegment2d.fromEndpoints
-    -->     ( Point2d.meters 0 2
-    -->     , Point2d.meters 0 4
-    -->     )
-
 -}
 projectOnto : Axis2d units coordinates -> LineSegment2d units coordinates -> LineSegment2d units coordinates
 projectOnto axis =
@@ -608,16 +552,6 @@ mapEndpoints function lineSegment =
 
 {-| Take a line segment defined in global coordinates, and return it expressed
 in local coordinates relative to a given reference frame.
-
-    localFrame =
-        Frame2d.atPoint (Point2d.meters 1 2)
-
-    LineSegment2d.relativeTo localFrame exampleLineSegment
-    --> LineSegment2d.fromEndpoints
-    -->     ( Point2d.meters 0 0
-    -->     , Point2d.meters 2 2
-    -->     )
-
 -}
 relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> LineSegment2d units globalCoordinates -> LineSegment2d units localCoordinates
 relativeTo frame =
@@ -627,16 +561,6 @@ relativeTo frame =
 {-| Take a line segment considered to be defined in local coordinates relative
 to a given reference frame, and return that line segment expressed in global
 coordinates.
-
-    localFrame =
-        Frame2d.atPoint (Point2d.meters 1 2)
-
-    LineSegment2d.placeIn localFrame exampleLineSegment
-    --> LineSegment2d.fromEndpoints
-    -->     ( Point2d.meters 2 4
-    -->     , Point2d.meters 4 6
-    -->     )
-
 -}
 placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> LineSegment2d units localCoordinates -> LineSegment2d units globalCoordinates
 placeIn frame =
