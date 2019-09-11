@@ -16,6 +16,7 @@ module Vector3d exposing
     , fromTuple, toTuple, fromRecord, toRecord
     , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
     , at, at_
+    , per, for
     , xComponent, yComponent, zComponent, componentIn, length, direction
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross
@@ -89,6 +90,11 @@ code that represents vectors as plain records.
 # Unit conversion
 
 @docs at, at_
+
+
+# Rates of change
+
+@docs per, for
 
 
 # Properties
@@ -661,6 +667,49 @@ at_ (Quantity rate) (Types.Vector3d v) =
         { x = v.x / rate
         , y = v.y / rate
         , z = v.z / rate
+        }
+
+
+{-| Construct a vector representing a rate of change such as a speed:
+
+    displacement =
+        Vector3d.meters 6 8 4
+
+    displacement |> Vector3d.per (Duration.seconds 2)
+    --> Vector3d.xyz
+    -->     (Speed.metersPerSecond 3)
+    -->     (Speed.metersPerSecond 4)
+    -->     (Speed.metersPerSecond 2)
+
+-}
+per : Quantity Float independentUnits -> Vector3d dependentUnits coordinates -> Vector3d (Rate dependentUnits independentUnits) coordinates
+per (Quantity a) (Types.Vector3d v) =
+    Types.Vector3d
+        { x = v.x / a
+        , y = v.y / a
+        , z = v.z / a
+        }
+
+
+{-| Multiply a rate of change vector by an independent quantity to get a total vector. For example,
+multiply a velocity by a duration to get a total displacement:
+
+    velocity =
+        Vector3d.xy
+            (Pixels.pixelsPerSecond 200)
+            (Pixels.pixelsPerSecond 50)
+            (Pixels.pixelsPerSecond 100)
+
+    velocity |> Vector3d.for (Duration.seconds 0.1)
+    --> Vector3d.pixels 20 5 10
+
+-}
+for : Quantity Float independentUnits -> Vector3d (Rate dependentUnits independentUnits) coordinates -> Vector3d dependentUnits coordinates
+for (Quantity a) (Types.Vector3d v) =
+    Types.Vector3d
+        { x = v.x * a
+        , y = v.y * a
+        , z = v.z * a
         }
 
 
