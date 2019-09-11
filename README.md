@@ -1,5 +1,12 @@
 # elm-geometry
 
+_Note: elm-geometry 2.0 is very new and the docs are still being updated. Please
+be patient and please reach out to **@ianmackenzie** on the [Elm
+Slack](http://elmlang.herokuapp.com/) if anything is not clear or if you find
+any errors! You may also want to check out the docs for [the previous version of
+elm-geometry](https://package.elm-lang.org/packages/ianmackenzie/elm-geometry/1.2.1/)
+in the meantime._
+
 `elm-geometry` is an [Elm](http://elm-lang.org) package for working with 2D and
 3D geometry. It provides a wide variety of geometric data types such as points,
 vectors, arcs, spline curves and coordinate frames, along with functions for
@@ -76,19 +83,24 @@ A large range of geometric functionality is included, such as various forms of
 constructors...
 
 ```elm
-Point3d.fromCoordinates
-    ( Length.meters 1
-    , Length.meters 4
-    , Length.meters 5
-    )
+Point3d.xyz
+    (Length.meters 1)
+    (Length.meters 4)
+    (Length.meters 5)
+-- OR --
+Point3d.meters 1 4 5
 
 Direction2d.fromAngle (Angle.degrees 30)
+-- OR --
+Direction2d.degrees 30
 
 Point3d.midpoint p1 p2
 
 Vector2d.withLength (Length.feet 3) Direction2d.y
 
 Triangle2d.fromVertices ( p1, p2, p3 )
+-- OR --
+Triangle2d.from p1 p2 p3
 
 Plane3d.throughPoints p1 p2 p3
 
@@ -96,18 +108,13 @@ Axis3d.through Point3d.origin Direction3d.z
 
 Arc2d.from p1 p2 (Angle.degrees 90)
 
-QuadraticSpline3d.with
-    { startPoint = p1
-    , controlPoint = p2
-    , endPoint = p3
-    }
+QuadraticSpline3d.fromControlPoints p1 p2 p3
 
 CubicSpline2d.fromEndpoints
-    { startPoint = p1
-    , startDerivative = v1
-    , endPoint = p2
-    , endDerivative = v2
-    }
+    startPoint
+    startDerivative
+    endPoint
+    endDerivative
 ```
 
 ...point/vector arithmetic...
@@ -169,38 +176,26 @@ and angles. Internally, `elm-units` converts everything to [SI](https://en.wikip
 units, so
 
 ```elm
-Point2d.fromCoordinates
-    ( Length.inches 10
-    , Length.inches 20
-    )
+Point2d.inches 10 20
 ```
 
 and
 
 ```elm
-Point2d.fromCoordinates
-    ( Length.centimeters 25.4
-    , Length.centimeters 50.8
-    )
+Point2d.centimeters 25.4 50.8
 ```
 
 are equivalent. Tracking units at compile time prevents mixing and matching
 different types of geometry; for example,
 
 ```elm
-Point2d.fromCoordinates
-    ( Length.meters 3
-    , Length.meters 4
-    )
+Point2d.xy (Length.meters 3) (Length.meters 4)
 ```
 
 and
 
 ```elm
-Point2d.fromCoordinates
-    ( Pixels.pixels 200
-    , Pixels.pixels 300
-    )
+Point2d.xy (Pixels.pixels 200) (Pixels.pixels 300)
 ```
 
 have completely different units, so the compiler can catch nonsensical
@@ -225,20 +220,13 @@ type TopLeftCoordinates =
 
 point : Point2d Pixels TopLeftCoordinates
 point =
-    Point2d.fromCoordinates
-        ( Pixels.pixels 200
-        , Pixels.pixels 300
-        )
+    Point2d.pixels 200 300
 ```
 
 Note that the `TopLeftCoordinates` type we declared gives us a convenient place
 to document exactly how that coordinate system is defined. This combination now
 gives us some nice type safety - the compiler will tell us if we try to mix two
 points that have different units or are defined in different coordinate systems.
-
-### Conversions
-
-TODO
 
 ## Installation
 
