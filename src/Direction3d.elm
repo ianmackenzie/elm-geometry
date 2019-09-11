@@ -488,18 +488,10 @@ If the two points are coincident, returns `Nothing`.
         Point3d.meters 1 0 1
 
     Direction3d.from Point3d.origin point
-    --> Just
-    -->     (Direction3d.xyZ
-    -->         (Angle.degrees 0)
-    -->         (Angle.degrees 45)
-    -->     )
+    --> Just (Direction3d.xz (Angle.degrees 45))
 
     Direction3d.from point Point3d.origin
-    --> Just
-    -->     (Direction3d.xyZ
-    -->         (Angle.degrees 180)
-    -->         (Angle.degrees -45)
-    -->     )
+    --> Just (Direction3d.xz (Angle.degrees -135))
 
     Direction3d.from point point
     --> Nothing
@@ -556,12 +548,10 @@ perpendicular to the given direction.
     --> Direction3d.positiveZ
 
     direction =
-        Direction3d.xyZ (Angle.degrees 0)
-            (Angle.degrees 60)
+        Direction3d.xz (Angle.degrees 60)
 
     Direction3d.perpendicularTo direction
-    --> Direction3d.xyZ (Angle.degrees 0)
-    -->     (Angle.degrees -30)
+    --> Direction3d.xz (Angle.degrees -30)
 
 -}
 perpendicularTo : Direction3d coordinates -> Direction3d coordinates
@@ -683,11 +673,9 @@ are coplanar, returns `Nothing`.
         (Vector3d.meters 0 2 0)
         (Vector3d.meters 1 2 3)
     --> Just
-    -->     ( Direction3d.xyZ (Angle.degrees 45)
-    -->         (Angle.degrees 0)
-    -->     , Direction3d.xyZ (Angle.degrees 135)
-    -->         (Angle.degrees 0)
-    -->     , Direction3d.positiveZ
+    -->     ( Direction3d.xy (Angle.degrees 45)
+    -->     , Direction3d.xy (Angle.degrees 135)
+    -->     , Direction3d.z
     -->     )
 
     -- Three vectors in the XY plane:
@@ -813,8 +801,7 @@ the cosine of the angle between the directions, or equivalently the dot product
 of the two directions converted to unit vectors.
 
     direction =
-        Direction3d.xyZ (Angle.degrees 0)
-            (Angle.degrees 60)
+        Direction3d.xz (Angle.degrees 60)
 
     Direction3d.componentIn Direction3d.x direction
     --> 0.5
@@ -1270,12 +1257,10 @@ projectOnto (Types.Plane3d plane) (Types.Direction3d d) =
 local coordinates relative to a given reference frame.
 
     Direction3d.relativeTo rotatedFrame Direction3d.x
-    --> Direction3d.xyZ (Angle.degrees -30)
-    -->     (Angle.degrees 0)
+    --> Direction3d.xy (Angle.degrees -30)
 
     Direction3d.relativeTo rotatedFrame Direction3d.y
-    --> Direction3d.xyZ (Angle.degrees 60)
-    -->     (Angle.degrees 0)
+    --> Direction3d.xy (Angle.degrees 60)
 
     Direction3d.relativeTo rotatedFrame Direction3d.z
     --> Direction3d.z
@@ -1304,12 +1289,10 @@ relativeTo (Types.Frame3d frame) (Types.Direction3d d) =
 frame, and return that direction expressed in global coordinates.
 
     Direction3d.placeIn rotatedFrame Direction3d.x
-    --> Direction3d.xyZ (Angle.degrees 30)
-    -->     (Angle.degrees 0)
+    --> Direction3d.xy (Angle.degrees 30)
 
     Direction3d.placeIn rotatedFrame Direction3d.y
-    --> Direction3d.xyZ (Angle.degrees 120)
-    -->     (Angle.degrees 0)
+    --> Direction3d.xy (Angle.degrees 120)
 
     Direction3d.placeIn rotatedFrame Direction3d.z
     --> Direction3d.z
@@ -1343,8 +1326,7 @@ This is only possible if the direction is not perpendicular to the sketch
 plane; if it is perpendicular, `Nothing` is returned.
 
     direction =
-        Direction3d.xyZ (Angle.degrees -60)
-            (Angle.degrees 0)
+        Direction3d.xy (Angle.degrees -60)
 
     Direction3d.projectInto SketchPlane3d.xy direction
     --> Just (Direction2d.degrees -60)
