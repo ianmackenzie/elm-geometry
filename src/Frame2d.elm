@@ -11,8 +11,8 @@ module Frame2d exposing
     ( Frame2d
     , atOrigin
     , atPoint, withAngle, withXDirection, withYDirection, fromXAxis, fromYAxis, copy, unsafe
-    , at, at_
     , originPoint, xDirection, yDirection, isRightHanded, xAxis, yAxis
+    , at, at_
     , reverseX, reverseY, moveTo, rotateBy, rotateAround, translateBy, translateIn, translateAlongOwn, mirrorAcross
     , relativeTo, placeIn
     )
@@ -44,14 +44,14 @@ always perpendicular to each other). It can be thought of as:
 @docs atPoint, withAngle, withXDirection, withYDirection, fromXAxis, fromYAxis, copy, unsafe
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Properties
 
 @docs originPoint, xDirection, yDirection, isRightHanded, xAxis, yAxis
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations

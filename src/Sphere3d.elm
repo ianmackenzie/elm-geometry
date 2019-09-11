@@ -10,9 +10,9 @@
 module Sphere3d exposing
     ( Sphere3d
     , withRadius, throughPoints
-    , at, at_
     , centerPoint, radius, diameter, volume, surfaceArea, circumference, boundingBox
     , contains
+    , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectInto
     , relativeTo, placeIn
     )
@@ -32,11 +32,6 @@ functionality for:
 @docs withRadius, throughPoints
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Properties
 
 @docs centerPoint, radius, diameter, volume, surfaceArea, circumference, boundingBox
@@ -45,6 +40,11 @@ functionality for:
 # Queries
 
 @docs contains
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations

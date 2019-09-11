@@ -12,11 +12,11 @@ module Frame3d exposing
     , atOrigin
     , withXDirection, withYDirection, withZDirection, atPoint, copy, unsafe
     , fromXAxis, fromYAxis, fromZAxis
-    , at, at_
     , originPoint, xDirection, yDirection, zDirection, isRightHanded
     , xAxis, yAxis, zAxis
     , xyPlane, yxPlane, yzPlane, zyPlane, zxPlane, xzPlane
     , xySketchPlane, yxSketchPlane, yzSketchPlane, zySketchPlane, zxSketchPlane, xzSketchPlane
+    , at, at_
     , reverseX, reverseY, reverseZ, moveTo, rotateAround, rotateAroundOwn, translateBy, translateIn, translateAlongOwn, mirrorAcross
     , relativeTo, placeIn
     )
@@ -81,11 +81,6 @@ resulting frame is [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordi
 @docs fromXAxis, fromYAxis, fromZAxis
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Properties
 
 @docs originPoint, xDirection, yDirection, zDirection, isRightHanded
@@ -141,6 +136,11 @@ sketch plane corresponds to a global Y coordinate, and a local Y coordinate
 corresponds to a global Z coordinate!
 
 @docs xySketchPlane, yxSketchPlane, yzSketchPlane, zySketchPlane, zxSketchPlane, xzSketchPlane
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations

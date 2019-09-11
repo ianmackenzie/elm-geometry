@@ -10,12 +10,12 @@
 module EllipticalArc2d exposing
     ( EllipticalArc2d
     , with, fromEndpoints
-    , at, at_
     , startAngle, sweptAngle, startPoint, endPoint
     , centerPoint, axes, xAxis, yAxis, xDirection, yDirection, xRadius, yRadius
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
+    , at, at_
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , relativeTo, placeIn
     , ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentDirectionAlong, sampleAlong
@@ -45,11 +45,6 @@ treat them as actual angles and everything will behave as you expect.
 @docs with, fromEndpoints
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Properties
 
 @docs startAngle, sweptAngle, startPoint, endPoint
@@ -65,6 +60,11 @@ underlying ellipse; check out the <Ellipse2d> module for details.
 @docs pointOn
 @docs Nondegenerate, nondegenerate, fromNondegenerate
 @docs tangentDirection, sample
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations

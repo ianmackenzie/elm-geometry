@@ -10,9 +10,9 @@
 module Polygon2d exposing
     ( Polygon2d
     , singleLoop, withHoles, convexHull
-    , at, at_
     , outerLoop, innerLoops, vertices, edges, perimeter, area, boundingBox
     , contains
+    , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , relativeTo, placeIn
     , triangulate
@@ -35,11 +35,6 @@ holes. This module contains a variety of polygon-related functionality, such as
 @docs singleLoop, withHoles, convexHull
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Properties
 
 @docs outerLoop, innerLoops, vertices, edges, perimeter, area, boundingBox
@@ -48,6 +43,11 @@ holes. This module contains a variety of polygon-related functionality, such as
 # Queries
 
 @docs contains
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations

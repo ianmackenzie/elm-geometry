@@ -10,10 +10,10 @@
 module LineSegment3d exposing
     ( LineSegment3d
     , fromEndpoints, from, along, on
-    , at, at_
     , startPoint, endPoint, endpoints, midpoint, length, direction, perpendicularDirection, vector, boundingBox
     , interpolate
     , intersectionWithPlane
+    , at, at_
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapEndpoints
     , relativeTo, placeIn, projectInto
     )
@@ -34,11 +34,6 @@ functionality such as:
 @docs fromEndpoints, from, along, on
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Properties
 
 @docs startPoint, endPoint, endpoints, midpoint, length, direction, perpendicularDirection, vector, boundingBox
@@ -52,6 +47,11 @@ functionality such as:
 # Intersection
 
 @docs intersectionWithPlane
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations

@@ -10,10 +10,10 @@
 module LineSegment2d exposing
     ( LineSegment2d
     , fromEndpoints, from, along
-    , at, at_
     , startPoint, endPoint, endpoints, midpoint, length, direction, perpendicularDirection, vector, boundingBox
     , interpolate
     , intersectionPoint, intersectionWithAxis
+    , at, at_
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapEndpoints
     , relativeTo, placeIn
     )
@@ -34,11 +34,6 @@ functionality such as:
 @docs fromEndpoints, from, along
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Properties
 
 @docs startPoint, endPoint, endpoints, midpoint, length, direction, perpendicularDirection, vector, boundingBox
@@ -52,6 +47,11 @@ functionality such as:
 # Intersection
 
 @docs intersectionPoint, intersectionWithAxis
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations

@@ -15,11 +15,11 @@ module Vector2d exposing
     , xy, xyIn, rTheta, rThetaIn, from, withLength, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
     , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
-    , at, at_
     , per, for
     , xComponent, yComponent, componentIn, length, direction
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross
+    , at, at_
     , reverse, normalize, scaleBy, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
     , relativeTo, placeIn
     , unsafe, unwrap
@@ -85,11 +85,6 @@ that represents vectors as plain records.
 @docs fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
 
 
-# Unit conversion
-
-@docs at, at_
-
-
 # Rates of change
 
 @docs per, for
@@ -108,6 +103,11 @@ that represents vectors as plain records.
 # Arithmetic
 
 @docs plus, minus, dot, cross
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations

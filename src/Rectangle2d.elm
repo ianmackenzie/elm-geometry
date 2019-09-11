@@ -10,11 +10,11 @@
 module Rectangle2d exposing
     ( Rectangle2d
     , with, from, withDimensions, withAxes, withXAxis, withYAxis
-    , at, at_
     , dimensions, axes, xAxis, yAxis, centerPoint, area, vertices, edges, boundingBox
     , interpolate
     , contains
     , toPolygon
+    , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , relativeTo, placeIn
     )
@@ -38,11 +38,6 @@ they can have arbitrary orientation and so can be rotated, mirrored etc.
 @docs with, from, withDimensions, withAxes, withXAxis, withYAxis
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Properties
 
 @docs dimensions, axes, xAxis, yAxis, centerPoint, area, vertices, edges, boundingBox
@@ -61,6 +56,11 @@ they can have arbitrary orientation and so can be rotated, mirrored etc.
 # Conversion
 
 @docs toPolygon
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformation

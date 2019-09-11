@@ -10,11 +10,11 @@
 module CubicSpline3d exposing
     ( CubicSpline3d
     , fromControlPoints, fromEndpoints, on, fromQuadraticSpline
-    , at, at_
     , startPoint, endPoint, firstControlPoint, secondControlPoint, thirdControlPoint, fourthControlPoint, startDerivative, endDerivative, boundingBox
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
+    , at, at_
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
     , relativeTo, placeIn, projectInto
     , bisect, splitAt
@@ -41,11 +41,6 @@ contains functionality for
 @docs fromControlPoints, fromEndpoints, on, fromQuadraticSpline
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Properties
 
 @docs startPoint, endPoint, firstControlPoint, secondControlPoint, thirdControlPoint, fourthControlPoint, startDerivative, endDerivative, boundingBox
@@ -56,6 +51,11 @@ contains functionality for
 @docs pointOn
 @docs Nondegenerate, nondegenerate, fromNondegenerate
 @docs tangentDirection, sample
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations

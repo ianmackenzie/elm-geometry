@@ -10,12 +10,12 @@
 module Arc2d exposing
     ( Arc2d
     , from, with, sweptAround, throughPoints, withRadius
-    , at, at_
     , centerPoint, radius, startPoint, endPoint, sweptAngle
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
     , toPolyline
+    , at, at_
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , relativeTo, placeIn
     , firstDerivative
@@ -37,11 +37,6 @@ end point). This module includes functionality for
 @docs from, with, sweptAround, throughPoints, withRadius
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Properties
 
 @docs centerPoint, radius, startPoint, endPoint, sweptAngle
@@ -57,6 +52,11 @@ end point). This module includes functionality for
 # Linear approximation
 
 @docs toPolyline
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations

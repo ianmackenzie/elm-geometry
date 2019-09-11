@@ -10,8 +10,8 @@
 module Polyline3d exposing
     ( Polyline3d
     , fromVertices, on
-    , at, at_
     , vertices, segments, length, boundingBox, centroid
+    , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapVertices
     , relativeTo, placeIn, projectInto
     )
@@ -32,14 +32,14 @@ as
 @docs fromVertices, on
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Properties
 
 @docs vertices, segments, length, boundingBox, centroid
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations

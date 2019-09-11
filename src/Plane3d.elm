@@ -11,8 +11,8 @@ module Plane3d exposing
     ( Plane3d
     , xy, yz, zx
     , through, withNormalDirection, throughPoints
-    , at, at_
     , originPoint, normalDirection, normalAxis
+    , at, at_
     , offsetBy, reverseNormal, rotateAround, translateBy, translateIn, moveTo, mirrorAcross
     , relativeTo, placeIn
     )
@@ -37,14 +37,14 @@ point and normal direction and is useful for several operations including:
 @docs through, withNormalDirection, throughPoints
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Properties
 
 @docs originPoint, normalDirection, normalAxis
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations

@@ -10,11 +10,11 @@
 module QuadraticSpline2d exposing
     ( QuadraticSpline2d
     , fromControlPoints
-    , at, at_
     , startPoint, endPoint, firstControlPoint, secondControlPoint, thirdControlPoint, startDerivative, endDerivative, boundingBox
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
+    , at, at_
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , relativeTo, placeIn
     , bisect, splitAt
@@ -40,11 +40,6 @@ contains functionality for
 @docs fromControlPoints
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Properties
 
 @docs startPoint, endPoint, firstControlPoint, secondControlPoint, thirdControlPoint, startDerivative, endDerivative, boundingBox
@@ -55,6 +50,11 @@ contains functionality for
 @docs pointOn
 @docs Nondegenerate, nondegenerate, fromNondegenerate
 @docs tangentDirection, sample
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations

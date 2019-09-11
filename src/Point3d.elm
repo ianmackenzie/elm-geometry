@@ -15,10 +15,10 @@ module Point3d exposing
     , xyz, xyzIn, midpoint, interpolateFrom, along, on, xyOn, rThetaOn, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
     , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
-    , at, at_
     , xCoordinate, yCoordinate, zCoordinate, xCoordinateIn, yCoordinateIn, zCoordinateIn
     , equalWithin, lexicographicComparison
     , distanceFrom, signedDistanceAlong, distanceFromAxis, signedDistanceFrom
+    , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectOntoAxis
     , relativeTo, placeIn, projectInto
     , centroid, centroidOf, centroid3, centroidN
@@ -82,11 +82,6 @@ code that represents points as plain records.
 @docs fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
 
 
-# Unit conversion
-
-@docs at, at_
-
-
 # Properties
 
 @docs xCoordinate, yCoordinate, zCoordinate, xCoordinateIn, yCoordinateIn, zCoordinateIn
@@ -100,6 +95,11 @@ code that represents points as plain records.
 # Measurement
 
 @docs distanceFrom, signedDistanceAlong, distanceFromAxis, signedDistanceFrom
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations

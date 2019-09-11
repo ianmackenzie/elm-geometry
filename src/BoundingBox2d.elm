@@ -11,9 +11,9 @@ module BoundingBox2d exposing
     ( BoundingBox2d
     , fromExtrema, singleton, intersection
     , hull, hullOf, hull2, hull3, hullN
-    , at, at_
     , extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint
     , contains, isContainedIn, intersects, overlappingByAtLeast, separatedByAtLeast
+    , at, at_
     , scaleAbout, translateBy, translateIn, expandBy, offsetBy
     )
 
@@ -47,11 +47,6 @@ box of an object than the object itself, such as:
 @docs hull, hullOf, hull2, hull3, hullN
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Properties
 
 @docs extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint
@@ -60,6 +55,11 @@ box of an object than the object itself, such as:
 # Queries
 
 @docs contains, isContainedIn, intersects, overlappingByAtLeast, separatedByAtLeast
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations

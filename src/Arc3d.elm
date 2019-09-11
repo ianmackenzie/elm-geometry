@@ -10,12 +10,12 @@
 module Arc3d exposing
     ( Arc3d
     , on, sweptAround, throughPoints
-    , at, at_
     , axialDirection, axis, centerPoint, radius, startPoint, endPoint, sweptAngle
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
     , toPolyline
+    , at, at_
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
     , relativeTo, placeIn
     , firstDerivative
@@ -37,11 +37,6 @@ start point to the arc's end point). This module includes functionality for
 @docs on, sweptAround, throughPoints
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Properties
 
 @docs axialDirection, axis, centerPoint, radius, startPoint, endPoint, sweptAngle
@@ -57,6 +52,11 @@ start point to the arc's end point). This module includes functionality for
 # Linear approximation
 
 @docs toPolyline
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations

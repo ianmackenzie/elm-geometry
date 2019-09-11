@@ -10,8 +10,8 @@
 module Polyline2d exposing
     ( Polyline2d
     , fromVertices
-    , at, at_
     , vertices, segments, length, boundingBox, centroid
+    , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapVertices
     , relativeTo, placeIn
     )
@@ -32,14 +32,14 @@ as
 @docs fromVertices
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Properties
 
 @docs vertices, segments, length, boundingBox, centroid
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations

@@ -15,10 +15,10 @@ module Point2d exposing
     , xy, xyIn, rTheta, rThetaIn, midpoint, interpolateFrom, along, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
     , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
-    , at, at_
     , xCoordinate, yCoordinate, xCoordinateIn, yCoordinateIn
     , equalWithin, lexicographicComparison
     , distanceFrom, signedDistanceAlong, signedDistanceFrom
+    , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
     , relativeTo, placeIn
     , centroid, centroidOf, centroid3, centroidN
@@ -80,11 +80,6 @@ that represents points as plain records.
 @docs fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
 
 
-# Unit conversion
-
-@docs at, at_
-
-
 # Properties
 
 @docs xCoordinate, yCoordinate, xCoordinateIn, yCoordinateIn
@@ -98,6 +93,11 @@ that represents points as plain records.
 # Measurement
 
 @docs distanceFrom, signedDistanceAlong, signedDistanceFrom
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations

@@ -15,11 +15,11 @@ module Vector3d exposing
     , xyz, xyzIn, from, withLength, on, xyOn, rThetaOn, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
     , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
-    , at, at_
     , per, for
     , xComponent, yComponent, zComponent, componentIn, length, direction
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross
+    , at, at_
     , reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
     , relativeTo, placeIn, projectInto
     , unsafe, unwrap
@@ -87,11 +87,6 @@ code that represents vectors as plain records.
 @docs fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
 
 
-# Unit conversion
-
-@docs at, at_
-
-
 # Rates of change
 
 @docs per, for
@@ -110,6 +105,11 @@ code that represents vectors as plain records.
 # Arithmetic
 
 @docs plus, minus, dot, cross
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations

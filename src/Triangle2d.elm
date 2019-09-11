@@ -10,9 +10,9 @@
 module Triangle2d exposing
     ( Triangle2d
     , fromVertices, from
-    , at, at_
     , vertices, edges, centroid, area, counterclockwiseArea, clockwiseArea, boundingBox, circumcircle
     , contains
+    , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, mapVertices
     , relativeTo, placeIn
     )
@@ -32,11 +32,6 @@ three vertices. This module contains triangle-related functionality such as:
 @docs fromVertices, from
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Properties
 
 @docs vertices, edges, centroid, area, counterclockwiseArea, clockwiseArea, boundingBox, circumcircle
@@ -45,6 +40,11 @@ three vertices. This module contains triangle-related functionality such as:
 # Queries
 
 @docs contains
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations

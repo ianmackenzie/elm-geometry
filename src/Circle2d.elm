@@ -10,10 +10,10 @@
 module Circle2d exposing
     ( Circle2d
     , withRadius, throughPoints, sweptAround
-    , at, at_
     , centerPoint, radius, diameter, area, circumference, boundingBox
     , toArc
     , contains
+    , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , relativeTo, placeIn
     )
@@ -33,11 +33,6 @@ functionality for
 @docs withRadius, throughPoints, sweptAround
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Properties
 
 @docs centerPoint, radius, diameter, area, circumference, boundingBox
@@ -51,6 +46,11 @@ functionality for
 # Queries
 
 @docs contains
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations
