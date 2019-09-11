@@ -401,8 +401,7 @@ parameterization;
 
 is equivalent to
 
-    ArcLengthParameterization.parameterValueToArcLength
-        ParameterValue.one
+    ArcLengthParameterization.parameterValueToArcLength 1
         parameterization
 
 but is more efficient.
