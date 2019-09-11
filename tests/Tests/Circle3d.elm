@@ -27,7 +27,7 @@ throughPoints =
                     isValidInput =
                         let
                             triangleArea =
-                                Triangle3d.area (Triangle3d.fromVertices p1 p2 p3)
+                                Triangle3d.area (Triangle3d.from p1 p2 p3)
                         in
                         triangleArea |> Quantity.greaterThan (Area.squareMeters 1.0e-6)
 

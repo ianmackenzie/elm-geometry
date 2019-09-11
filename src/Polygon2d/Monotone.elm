@@ -766,7 +766,7 @@ type alias TriangulationState units coordinates =
 signedArea : MonotoneVertex units coordinates -> MonotoneVertex units coordinates -> MonotoneVertex units coordinates -> Quantity Float (Squared units)
 signedArea first second third =
     Triangle2d.counterclockwiseArea <|
-        Triangle2d.fromVertices first.position second.position third.position
+        Triangle2d.from first.position second.position third.position
 
 
 addLeftChainVertex : MonotoneVertex units coordinates -> TriangulationState units coordinates -> TriangulationState units coordinates

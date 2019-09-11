@@ -42,7 +42,7 @@ intersectionWorksProperly =
                                     LineSegment2d.endpoints segment
 
                                 triangle =
-                                    Triangle2d.fromVertices startPoint endPoint point
+                                    Triangle2d.from startPoint endPoint point
 
                                 area =
                                     Triangle2d.area triangle

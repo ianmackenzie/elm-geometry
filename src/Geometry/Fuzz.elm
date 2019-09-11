@@ -248,12 +248,12 @@ lineSegment3d =
 
 triangle2d : Fuzzer (Triangle2d coordinates)
 triangle2d =
-    Fuzz.map3 Triangle2d.fromVertices point2d point2d point2d
+    Fuzz.map3 Triangle2d.from point2d point2d point2d
 
 
 triangle3d : Fuzzer (Triangle3d coordinates)
 triangle3d =
-    Fuzz.map3 Triangle3d.fromVertices point3d point3d point3d
+    Fuzz.map3 Triangle3d.from point3d point3d point3d
 
 
 boundingBox2d : Fuzzer (BoundingBox2d coordinates)

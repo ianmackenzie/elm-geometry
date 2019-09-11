@@ -70,7 +70,7 @@ convexHullContainsAllPoints =
                             LineSegment2d.endpoints edge
 
                         triangle =
-                            Triangle2d.fromVertices point p1 p2
+                            Triangle2d.from point p1 p2
                     in
                     Triangle2d.counterclockwiseArea triangle
                         |> Quantity.greaterThanOrEqualTo zero
@@ -155,7 +155,7 @@ triangulationHasCorrectArea =
                 triangles =
                     Polygon2d.triangulate polygon
                         |> TriangularMesh.faceVertices
-                        |> List.map (\( p1, p2, p3 ) -> Triangle2d.fromVertices p1 p2 p3)
+                        |> List.map Triangle2d.fromVertices
 
                 triangleArea =
                     Quantity.sum (List.map Triangle2d.area triangles)

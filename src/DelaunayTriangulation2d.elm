@@ -392,7 +392,7 @@ toMesh delaunayTriangulation =
 
 getTriangle : DelaunayVertex vertex units coordinates -> DelaunayVertex vertex units coordinates -> DelaunayVertex vertex units coordinates -> Circle2d units coordinates -> Triangle2d units coordinates
 getTriangle firstVertex secondVertex thirdVertex circumcircle =
-    Triangle2d.fromVertices firstVertex.position secondVertex.position thirdVertex.position
+    Triangle2d.from firstVertex.position secondVertex.position thirdVertex.position
 
 
 {-| Get all triangles in a given Delaunay triangulation;
@@ -439,7 +439,10 @@ getFace firstVertex secondVertex thirdVertex circumcircle =
     { vertices =
         ( firstVertex.vertex, secondVertex.vertex, thirdVertex.vertex )
     , triangle =
-        Triangle2d.fromVertices firstVertex.position secondVertex.position thirdVertex.position
+        Triangle2d.from
+            firstVertex.position
+            secondVertex.position
+            thirdVertex.position
     , circumcircle =
         circumcircle
     }

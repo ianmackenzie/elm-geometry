@@ -121,7 +121,7 @@ circumcenterIsValidOrNothing =
         (\p1 p2 p3 ->
             case Point2d.circumcenter p1 p2 p3 of
                 Nothing ->
-                    Triangle2d.area (Triangle2d.fromVertices p1 p2 p3)
+                    Triangle2d.area (Triangle2d.from p1 p2 p3)
                         |> Expect.approximately zero
 
                 Just p0 ->

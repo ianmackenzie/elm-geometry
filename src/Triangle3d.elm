@@ -9,7 +9,7 @@
 
 module Triangle3d exposing
     ( Triangle3d
-    , fromVertices, on
+    , fromVertices, from, on
     , vertices, edges, centroid, area, normalDirection, boundingBox, circumcircle
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapVertices
     , relativeTo, placeIn, projectInto
@@ -27,7 +27,7 @@ three vertices. This module contains triangle-related functionality such as:
 
 # Constructors
 
-@docs fromVertices, on
+@docs fromVertices, from, on
 
 
 # Properties
@@ -80,8 +80,24 @@ type alias Triangle3d units coordinates =
             )
 
 -}
-fromVertices : Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> Triangle3d units coordinates
-fromVertices p1 p2 p3 =
+fromVertices : ( Point3d units coordinates, Point3d units coordinates, Point3d units coordinates ) -> Triangle3d units coordinates
+fromVertices givenVertices =
+    Types.Triangle3d givenVertices
+
+
+{-| Construct a triangle from the first point, to the second, to the third:
+
+    exampleTriangle =
+        Triangle3d.from
+            (Point3d.meters 1 0 0)
+            (Point3d.meters 2 0 0)
+            (Point3d.meters 2 1 3)
+
+Useful with `map3` functions such as `Json.Decode.map3`.
+
+-}
+from : Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> Triangle3d units coordinates
+from p1 p2 p3 =
     Types.Triangle3d ( p1, p2, p3 )
 
 
@@ -89,16 +105,14 @@ fromVertices p1 p2 p3 =
 specified in XY coordinates _within_ the sketch plane.
 
     Triangle3d.on SketchPlane3d.xz <|
-        Triangle2d.fromVertices
-            ( Point2d.meters 1 1
-            , Point2d.meters 2 1
-            , Point2d.meters 1 3
-            )
-    --> Triangle3d.fromVertices
-    -->     ( Point3d.meters 1 0 1
-    -->     , Point3d.meters 2 0 1
-    -->     , Point3d.meters 1 0 3
-    -->     )
+        Triangle2d.from
+            (Point2d.meters 1 1)
+            (Point2d.meters 2 1)
+            (Point2d.meters 1 3)
+    --> Triangle3d.from
+    -->     (Point3d.meters 1 0 1)
+    -->     (Point3d.meters 2 0 1)
+    -->     (Point3d.meters 1 0 3)
 
 -}
 on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Triangle2d units coordinates2d -> Triangle3d units coordinates3d
@@ -107,7 +121,7 @@ on sketchPlane triangle2d =
         ( p1, p2, p3 ) =
             Triangle2d.vertices triangle2d
     in
-    fromVertices
+    from
         (Point3d.on sketchPlane p1)
         (Point3d.on sketchPlane p2)
         (Point3d.on sketchPlane p3)
@@ -137,22 +151,19 @@ second to the third, and from the third back to the first.
         Triangle3d.edges exampleTriangle
 
     --> e1 =
-    -->     LineSegment3d.fromEndpoints
-    -->         ( Point3d.meters 1 0 0
-    -->         , Point3d.meters 2 0 0
-    -->         )
+    -->     LineSegment3d.from
+    -->         (Point3d.meters 1 0 0)
+    -->         (Point3d.meters 2 0 0)
     -->
     --> e2 =
-    -->     LineSegment3d.fromEndpoints
-    -->         ( Point3d.meters 2 0 0
-    -->         , Point3d.meters 2 1 3
-    -->         )
+    -->     LineSegment3d.from
+    -->         (Point3d.meters 2 0 0)
+    -->         (Point3d.meters 2 1 3)
     -->
     --> e3 =
-    -->     LineSegment3d.fromEndpoints
-    -->         ( Point3d.meters 2 1 3
-    -->         , Point3d.meters 1 0 0
-    -->         )
+    -->     LineSegment3d.from
+    -->         (Point3d.meters 2 1 3)
+    -->         (Point3d.meters 1 0 0)
 
 -}
 edges : Triangle3d units coordinates -> ( LineSegment3d units coordinates, LineSegment3d units coordinates, LineSegment3d units coordinates )
@@ -185,7 +196,7 @@ centroid triangle =
 {-| Get the area of a triangle. This value is always positive.
 
     Triangle3d.area exampleTriangle
-    --> 1.5811
+    --> Area.squareMeters 1.5811
 
 -}
 area : Triangle3d units coordinates -> Quantity Float (Squared units)
@@ -210,11 +221,7 @@ around it according to the right-hand rule. If the triangle is degenerate (its
 three vertices are collinear), returns `Nothing`.
 
     Triangle3d.normalDirection exampleTriangle
-    --> Just
-    -->     (Direction3d.fromAzimuthAndElevation
-    -->         (Angle.degrees -90)
-    -->         (Angle.degrees 18.43)
-    -->     )
+    --> Just (Direction3d.yz (Angle.degrees 161.57))
 
 -}
 normalDirection : Triangle3d units coordinates -> Maybe (Direction3d coordinates)
@@ -233,14 +240,6 @@ normalDirection triangle =
 
 
 {-| Scale a triangle about a given point by a given scale.
-
-    Triangle3d.scaleAbout Point3d.origin 2 exampleTriangle
-    --> Triangle3d.fromVertices
-    -->     ( Point3d.meters 2 0 0
-    -->     , Point3d.meters 4 0 0
-    -->     , Point3d.meters 4 2 6
-    -->     )
-
 -}
 scaleAbout : Point3d units coordinates -> Float -> Triangle3d units coordinates -> Triangle3d units coordinates
 scaleAbout centerPoint scale triangle =
@@ -248,15 +247,6 @@ scaleAbout centerPoint scale triangle =
 
 
 {-| Rotate a triangle around a given axis by a given angle.
-
-    exampleTriangle
-        |> Triangle3d.rotateAround Axis3d.z (Angle.degrees 90)
-    --> Triangle3d.fromVertices
-    -->     ( Point3d.meters 0 1 0
-    -->     , Point3d.meters 0 2 0
-    -->     , Point3d.meters -1 2 3
-    -->     )
-
 -}
 rotateAround : Axis3d units coordinates -> Angle -> Triangle3d units coordinates -> Triangle3d units coordinates
 rotateAround axis angle triangle =
@@ -264,32 +254,13 @@ rotateAround axis angle triangle =
 
 
 {-| Translate a triangle by a given displacement.
-
-    displacement =
-        Vector3d.meters 2 -1 3
-
-    Triangle3d.translateBy displacement exampleTriangle
-    --> Triangle3d.fromVertices
-    -->     ( Point3d.meters 3 -1 3
-    -->     , Point3d.meters 4 -1 3
-    -->     , Point3d.meters 4 0 6
-    -->     )
-
 -}
 translateBy : Vector3d units coordinates -> Triangle3d units coordinates -> Triangle3d units coordinates
 translateBy vector triangle =
     mapVertices (Point3d.translateBy vector) triangle
 
 
-{-| Translate a triangle in a given direction by a given distance;
-
-    Triangle3d.translateIn direction distance
-
-is equivalent to
-
-    Triangle3d.translateBy
-        (Vector3d.withLength distance direction)
-
+{-| Translate a triangle in a given direction by a given distance.
 -}
 translateIn : Direction3d coordinates -> Quantity Float units -> Triangle3d units coordinates -> Triangle3d units coordinates
 translateIn direction distance triangle =
@@ -297,14 +268,6 @@ translateIn direction distance triangle =
 
 
 {-| Mirror a triangle across a given plane.
-
-    Triangle3d.mirrorAcross Plane3d.yz exampleTriangle
-    --> Triangle3d.fromVertices
-    -->     ( Point3d.meters -1 0 0
-    -->     ( Point3d.meters -2 0 0
-    -->     ( Point3d.meters -2 1 3
-    -->     )
-
 -}
 mirrorAcross : Plane3d units coordinates -> Triangle3d units coordinates -> Triangle3d units coordinates
 mirrorAcross plane triangle =
@@ -313,21 +276,6 @@ mirrorAcross plane triangle =
 
 {-| Find the [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
 of a triangle onto a plane.
-
-    Triangle3d.projectOnto Plane3d.xy exampleTriangle
-    --> Triangle3d.fromVertices
-    -->     ( Point3d.meters 1 0 0
-    -->     , Point3d.meters 2 0 0
-    -->     , Point3d.meters 2 1 0
-    -->     )
-
-    Triangle3d.projectOnto Plane3d.xz exampleTriangle
-    --> Triangle3d.fromVertices
-    -->     ( Point3d.meters 1 0 0
-    -->     , Point3d.meters 2 0 0
-    -->     , Point3d.meters 2 0 3
-    -->     )
-
 -}
 projectOnto : Plane3d units coordinates -> Triangle3d units coordinates -> Triangle3d units coordinates
 projectOnto plane triangle =
@@ -346,28 +294,12 @@ is equivalent to
 
 -}
 mapVertices : (Point3d units1 coordinates1 -> Point3d units2 coordinates2) -> Triangle3d units1 coordinates1 -> Triangle3d units2 coordinates2
-mapVertices function triangle =
-    let
-        ( p1, p2, p3 ) =
-            vertices triangle
-    in
-    fromVertices (function p1) (function p2) (function p3)
+mapVertices function (Types.Triangle3d ( p1, p2, p3 )) =
+    Types.Triangle3d ( function p1, function p2, function p3 )
 
 
 {-| Take a triangle defined in global coordinates, and return it expressed
 in local coordinates relative to a given reference frame.
-
-    localFrame =
-        Frame3d.atPoint
-            (Point3d.meters 2 1 3)
-
-    Triangle3d.relativeTo localFrame exampleTriangle
-    --> Triangle3d.fromVertices
-    -->     ( Point3d.meters -1 -1 -3
-    -->     , Point3d.meters 0 -1 -3
-    -->     , Point3d.meters 0 0 0
-    -->     )
-
 -}
 relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Triangle3d units globalCoordinates -> Triangle3d units localCoordinates
 relativeTo frame triangle =
@@ -376,18 +308,6 @@ relativeTo frame triangle =
 
 {-| Take a triangle considered to be defined in local coordinates relative to a
 given reference frame, and return that triangle expressed in global coordinates.
-
-    localFrame =
-        Frame3d.atPoint
-            (Point3d.meters 2 1 3)
-
-    Triangle3d.placeIn localFrame exampleTriangle
-    --> Triangle3d.fromVertices
-    -->     ( Point3d.meters 3 1 3
-    -->     , Point3d.meters 4 1 3
-    -->     , Point3d.meters 4 2 6
-    -->     )
-
 -}
 placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Triangle3d units localCoordinates -> Triangle3d units globalCoordinates
 placeIn frame triangle =
@@ -398,21 +318,6 @@ placeIn frame triangle =
 [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
 of the triangle onto the plane and then expresses the projected triangle in 2D
 sketch coordinates.
-
-    Triangle3d.projectInto SketchPlane3d.xy exampleTriangle
-    --> Triangle2d.fromVertices
-    -->     ( Point2d.meters 1 0
-    -->     , Point2d.meters 2 0
-    -->     , Point2d.meters 2 1
-    -->     )
-
-    Triangle3d.projectInto SketchPlane3d.zx exampleTriangle
-    --> Triangle2d.fromVertices
-    -->     ( Point2d.meters 0 1
-    -->     , Point2d.meters 0 2
-    -->     , Point2d.meters 3 2
-    -->     )
-
 -}
 projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Triangle3d units coordinates3d -> Triangle2d units coordinates2d
 projectInto sketchPlane triangle =
@@ -423,7 +328,7 @@ projectInto sketchPlane triangle =
         project =
             Point3d.projectInto sketchPlane
     in
-    Triangle2d.fromVertices (project p1) (project p2) (project p3)
+    Triangle2d.from (project p1) (project p2) (project p3)
 
 
 {-| Get the minimal bounding box containing a given triangle.
@@ -489,9 +394,10 @@ each of the triangle's vertices;
 
 is equivalent to
 
-    ( p1, p2, p3 ) =
-        Triangle3d.vertices triangle
-
+    let
+        ( p1, p2, p3 ) =
+            Triangle3d.vertices triangle
+    in
     Circle3d.throughPoints p1 p2 p3
 
 If the triangle is degenerate (its three vertices are collinear), returns

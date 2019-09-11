@@ -181,10 +181,7 @@ view model =
                     faceIndices
                         |> List.filterMap
                             (\( i, j, k ) ->
-                                Maybe.map3
-                                    (\p1 p2 p3 ->
-                                        Triangle2d.fromVertices ( p1, p2, p3 )
-                                    )
+                                Maybe.map3 Triangle2d.from
                                     (Array.get i points)
                                     (Array.get j points)
                                     (Array.get k points)

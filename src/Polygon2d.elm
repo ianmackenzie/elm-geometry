@@ -98,7 +98,8 @@ counterclockwiseArea vertices_ =
         first :: second :: rest ->
             let
                 segmentArea start end =
-                    Triangle2d.counterclockwiseArea (Triangle2d.fromVertices first start end)
+                    Triangle2d.counterclockwiseArea
+                        (Triangle2d.from first start end)
 
                 segmentAreas =
                     List.map2 segmentArea (second :: rest) rest

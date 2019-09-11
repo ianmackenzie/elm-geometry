@@ -121,7 +121,7 @@ throughPointsManual =
 
 triangleArea : Point3d coordinates -> Point3d coordinates -> Point3d coordinates -> Area
 triangleArea p1 p2 p3 =
-    Triangle3d.area (Triangle3d.fromVertices p1 p2 p3)
+    Triangle3d.area (Triangle3d.from p1 p2 p3)
 
 
 tetrahedronVolume : Point3d coordinates -> Point3d coordinates -> Point3d coordinates -> Point3d coordinates -> Volume
