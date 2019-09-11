@@ -1,6 +1,5 @@
 module Quantity.Extra exposing
     ( aXbY
-    , aXbYcZ
     , lOverTheta
     , rCosTheta
     , rSinTheta
@@ -16,11 +15,6 @@ import Quantity exposing (Quantity(..))
 aXbY : Float -> Quantity Float units -> Float -> Quantity Float units -> Quantity Float units
 aXbY a (Quantity x) b (Quantity y) =
     Quantity (a * x + b * y)
-
-
-aXbYcZ : Float -> Quantity Float units -> Float -> Quantity Float units -> Float -> Quantity Float units -> Quantity Float units
-aXbYcZ a (Quantity x) b (Quantity y) c (Quantity z) =
-    Quantity (a * x + b * y + c * z)
 
 
 scaleAbout : Quantity number units -> number -> Quantity number units -> Quantity number units
