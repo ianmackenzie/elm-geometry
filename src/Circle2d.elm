@@ -12,7 +12,7 @@ module Circle2d exposing
     , withRadius, throughPoints, sweptAround
     , centerPoint, radius, diameter, area, circumference, boundingBox
     , toArc
-    , contains
+    , contains, intersectsBoundingBox
     , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , relativeTo, placeIn
@@ -45,7 +45,7 @@ functionality for
 
 # Queries
 
-@docs contains
+@docs contains, intersectsBoundingBox
 
 
 # Unit conversions
@@ -297,6 +297,68 @@ toArc (Types.Circle2d circle) =
 contains : Point2d units coordinates -> Circle2d units coordinates -> Bool
 contains point circle =
     point |> Point2d.distanceFrom (centerPoint circle) |> Quantity.lessThanOrEqualTo (radius circle)
+
+
+{-| Check if a circle intersects with a given bounding box. This function will
+return true if the circle intersects the edges of the bounding box _or_ is fully
+contained within the bounding box.
+
+    boundingBox =
+        BoundingBox2d.fromExtrema
+            { minX = Length.meters 2
+            , maxX = Length.meters 3
+            , minY = Length.meters 0
+            , maxY = Length.meters 2
+            }
+
+    circle =
+        Circle2d.withRadius (Length.meters 3)
+            Point2d.origin
+
+    Circle2d.intersectsBoundingBox boundingBox circle
+    --> True
+
+-}
+intersectsBoundingBox : BoundingBox2d units coordinates -> Circle2d units coordinates -> Bool
+intersectsBoundingBox box circle =
+    let
+        boxMinX =
+            BoundingBox2d.minX box
+
+        boxMaxX =
+            BoundingBox2d.maxX box
+
+        boxMinY =
+            BoundingBox2d.minY box
+
+        boxMaxY =
+            BoundingBox2d.maxY box
+
+        circleRadius =
+            radius circle
+
+        circleCenter =
+            centerPoint circle
+
+        circleX =
+            Point2d.xCoordinate circleCenter
+
+        circleY =
+            Point2d.yCoordinate circleCenter
+
+        deltaX =
+            circleX
+                |> Quantity.minus
+                    (Quantity.max boxMinX (Quantity.min circleX boxMaxX))
+
+        deltaY =
+            circleY
+                |> Quantity.minus
+                    (Quantity.max boxMinY (Quantity.min circleY boxMaxY))
+    in
+    Quantity.squared deltaX
+        |> Quantity.plus (Quantity.squared deltaY)
+        |> Quantity.lessThanOrEqualTo (Quantity.squared circleRadius)
 
 
 {-| Scale a circle about a given point by a given scale.

@@ -252,14 +252,12 @@ boundingBox polyline =
     Point2d.hullN (vertices polyline)
 
 
-{-| Find the centroid (center of mass) of a polyline. Returns `Nothing` if the
-polyline has no vertices.
+{-| Find the centroid (center of mass) of a polyline. This is the
+length-weighted average of the edges of the polyline, _not_ the centroid of its
+vertices. Returns `Nothing` if the polyline is empty (has no vertices).
 
     Polyline2d.centroid stepShape
     --> Just (Point2d.meters 1.0 0.5)
-
-Note that this function takes edge lengths into account; it is _not_ the same
-as finding the centroid of the polyline's vertices.
 
 -}
 centroid : Polyline2d units coordinates -> Maybe (Point2d units coordinates)
