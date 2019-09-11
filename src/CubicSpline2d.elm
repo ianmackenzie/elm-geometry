@@ -10,7 +10,7 @@
 module CubicSpline2d exposing
     ( CubicSpline2d
     , fromControlPoints, fromEndpoints, fromQuadraticSpline
-    , startPoint, endPoint, firstControlPoint, secondControlPoint, thirdControlPoint, fourthControlPoint, startDerivative, endDerivative, boundingBox
+    , startPoint, firstControlPoint, secondControlPoint, thirdControlPoint, fourthControlPoint, endPoint, startDerivative, endDerivative, boundingBox
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
@@ -44,7 +44,7 @@ contains functionality for
 
 # Properties
 
-@docs startPoint, endPoint, firstControlPoint, secondControlPoint, thirdControlPoint, fourthControlPoint, startDerivative, endDerivative, boundingBox
+@docs startPoint, firstControlPoint, secondControlPoint, thirdControlPoint, fourthControlPoint, endPoint, startDerivative, endDerivative, boundingBox
 
 
 # Evaluation

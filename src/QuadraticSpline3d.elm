@@ -10,7 +10,7 @@
 module QuadraticSpline3d exposing
     ( QuadraticSpline3d
     , fromControlPoints, on
-    , startPoint, endPoint, firstControlPoint, secondControlPoint, thirdControlPoint, startDerivative, endDerivative, boundingBox
+    , startPoint, firstControlPoint, secondControlPoint, thirdControlPoint, endPoint, startDerivative, endDerivative, boundingBox
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
@@ -44,7 +44,7 @@ contains functionality for
 
 # Properties
 
-@docs startPoint, endPoint, firstControlPoint, secondControlPoint, thirdControlPoint, startDerivative, endDerivative, boundingBox
+@docs startPoint, firstControlPoint, secondControlPoint, thirdControlPoint, endPoint, startDerivative, endDerivative, boundingBox
 
 
 # Evaluation
