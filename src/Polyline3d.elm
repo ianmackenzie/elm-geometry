@@ -298,6 +298,9 @@ polyline has no vertices.
     Polyline3d.centroid examplePolyline
     --> Just (Point3d.meters 0.9167 1.333 0.75)
 
+Note that this function takes edge lengths into account; it is _not_ the same
+as finding the centroid of the polyline's vertices.
+
 -}
 centroid : Polyline3d units coordinates -> Maybe (Point3d units coordinates)
 centroid polyline =

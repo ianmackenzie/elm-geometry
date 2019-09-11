@@ -258,6 +258,9 @@ polyline has no vertices.
     Polyline2d.centroid stepShape
     --> Just (Point2d.meters 1.0 0.5)
 
+Note that this function takes edge lengths into account; it is _not_ the same
+as finding the centroid of the polyline's vertices.
+
 -}
 centroid : Polyline2d units coordinates -> Maybe (Point2d units coordinates)
 centroid polyline =
