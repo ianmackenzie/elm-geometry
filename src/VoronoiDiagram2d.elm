@@ -853,7 +853,7 @@ supplying a function that returns the position of each vertex as a `Point2d`.
 For example, if you had
 
     types alias Vertex =
-        { position = Point2d
+        { position = Point2d Meters WorldCoordinates
         , color = String
         }
 
