@@ -1482,7 +1482,7 @@ hull3 firstPoint secondPoint thirdPoint =
 {-| Construct a bounding box containing all _N_ points in the given list. If the
 list is empty, returns `Nothing`.
 
-    BoundingBox2d.containingPoints
+    Point2d.hullN
         [ Point2d.meters 2 3
         , Point2d.meters -1 5
         , Point2d.meters 6 4
@@ -1495,7 +1495,7 @@ list is empty, returns `Nothing`.
     -->         , maxY = Length.meters 5
     -->         }
 
-    BoundingBox2d.containingPoints []
+    Point2d.hullN []
     --> Nothing
 
 If you know you have at least one point, you can use [`hull`](#hull) instead.

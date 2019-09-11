@@ -1934,7 +1934,7 @@ list is empty, returns `Nothing`.
     -->         , maxZ = Length.meters 3
     -->         }
 
-    BoundingBox3d.containingPoints []
+    Point3d.hullN []
     --> Nothing
 
 If you know you have at least one point, you can use [`hull`](#hull) instead.
