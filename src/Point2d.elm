@@ -266,8 +266,8 @@ midpoint (Types.Point2d p1) (Types.Point2d p2) =
 
 {-| Find the centroid (average) of one or more points, by passing the first
 point and then all remaining points. This allows this function to return a
-`Point2d` instead of a `Maybe Point2d`. You would generally use `centroid` with
-a `case` expression:
+`Point2d` instead of a `Maybe Point2d`. You would generally use `centroid`
+within a `case` expression:
 
     case points of
         [] ->
@@ -377,7 +377,7 @@ centroid3 (Types.Point2d p1) (Types.Point2d p2) (Types.Point2d p3) =
         }
 
 
-{-| Find the centroid of a list of points. If the list is empty, returns
+{-| Find the centroid of a list of _N_ points. If the list is empty, returns
 `Nothing`. If you know you have at least one point, you can use
 [`centroid`](#centroid) instead to avoid the `Maybe`.
 -}
@@ -1479,7 +1479,7 @@ hull3 firstPoint secondPoint thirdPoint =
         }
 
 
-{-| Construct a bounding box containing all points in the given list. If the
+{-| Construct a bounding box containing all _N_ points in the given list. If the
 list is empty, returns `Nothing`.
 
     BoundingBox2d.containingPoints
