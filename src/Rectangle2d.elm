@@ -98,10 +98,10 @@ are determined by the order of the given values:
 Therefore, something like
 
     Rectangle2d.with
-        { x1 = pixels 0
-        , y1 = pixels 300
-        , x2 = pixels 500
-        , y2 = pixels 0
+        { x1 = Pixels.pixels 0
+        , y1 = Pixels.pixels 300
+        , x2 = Pixels.pixels 500
+        , y2 = Pixels.pixels 0
         }
 
 would have its X direction equal to `Direction2d.positiveX` and its Y direction
@@ -154,7 +154,8 @@ angle, centered on the given point. For an axis-aligned rectangle you can pass
 the second argument:
 
     rectangle =
-        Rectangle2d.withDimensions ( pixels 200, pixels 100 )
+        Rectangle2d.withDimensions
+            ( Pixels.pixels 200, Pixels.pixels 100 )
             (Angle.degrees 0)
             (Point2d.pixels 400 300)
 
@@ -169,7 +170,8 @@ Passing a non-zero angle lets you control the orientation of a rectangle; to
 make a diamond shape you might do something like
 
     diamond =
-        Rectangle2d.withDimensions ( meters 2, meters 2 )
+        Rectangle2d.withDimensions
+            ( Length.meters 2, Length.meters 2 )
             (Angle.degrees 45)
             Point2d.origin
 
@@ -281,7 +283,7 @@ toPolygon rectangle =
             }
 
     Rectangle2d.axes rectangle
-    --> Frame2d.atCoordinates ( 3.5, 2 )
+    --> Frame2d.atPoint (Point2d.meters 3.5 2)
 
 The origin point of the frame will be the center point of the rectangle.
 
@@ -337,7 +339,7 @@ centerPoint rectangle =
             }
 
     Rectangle2d.dimensions rectangle
-    --> ( 3, 2 )
+    --> ( Length.meters 3, Length.meters 2 )
 
 -}
 dimensions : Rectangle2d units coordinates -> ( Quantity Float units, Quantity Float units )
@@ -356,7 +358,7 @@ dimensions (Types.Rectangle2d rectangle) =
             }
 
     Rectangle2d.area rectangle
-    --> 6
+    --> Area.squareMeters 6
 
 -}
 area : Rectangle2d units coordinates -> Quantity Float (Squared units)
@@ -474,29 +476,10 @@ edges rectangle =
     ]
 
 
-{-| Scale a rectangle about a given point by a given scale.
-
-    rectangle =
-        Rectangle2d.fromExtrema
-            { minX = Length.meters 2
-            , maxX = Length.meters 5
-            , minY = Length.meters 1
-            , maxY = Length.meters 3
-            }
-
-    rectangle
-        |> Rectangle2d.scaleAbout Point2d.origin 2
-    --> Rectangle2d.fromExtrema
-    -->     { minX = Length.meters 4
-    -->     , maxX = Length.meters 10
-    -->     , minY = Length.meters 2
-    -->     , maxY = Length.meters 6
-    -->     }
-
-Note that scaling by a negative value will flip the handedness of the
-rectangle's axes, and therefore the order/direction of results from
-`Rectangle2d.vertices` and `Rectangle2d.edges` will change.
-
+{-| Scale a rectangle about a given point by a given scale. Note that scaling by
+a negative value will flip the handedness of the rectangle's axes, and therefore
+the order/direction of results from `Rectangle2d.vertices` and
+`Rectangle2d.edges` will change.
 -}
 scaleAbout : Point2d units coordinates -> Float -> Rectangle2d units coordinates -> Rectangle2d units coordinates
 scaleAbout point scale rectangle =
@@ -544,37 +527,6 @@ scaleAbout point scale rectangle =
 
 
 {-| Rotate a rectangle around a given point by a given angle.
-
-    rectangle =
-        Rectangle2d.fromExtrema
-            { minX = Length.meters 0
-            , maxX = Length.meters 1
-            , minY = Length.meters 0
-            , maxY = Length.meters 1
-            }
-
-    rotated =
-        rectangle
-            |> Rectangle2d.rotateAround Point2d.origin
-                (Angle.degrees 45)
-
-    Rectangle2d.centerPoint rotated
-    --> Point2d.meters 0 0.7071
-
-    Rectangle2d.xDirection rotated
-    --> Direction2d.degrees 45
-
-    Rectangle2d.vertices rotated
-    --> { bottomLeft =
-    -->     Point2d.origin
-    --> , bottomRight =
-    -->     Point2d.meters 0.7071 0.7071
-    --> , topRight =
-    -->     Point2d.meters 0 1.4142
-    --> , topLeft =
-    -->     Point2d.meters -0.7071 0.7071
-    --> }
-
 -}
 rotateAround : Point2d units coordinates -> Angle -> Rectangle2d units coordinates -> Rectangle2d units coordinates
 rotateAround point angle rectangle =
@@ -585,26 +537,6 @@ rotateAround point angle rectangle =
 
 
 {-| Translate a rectangle by a given displacement.
-
-    rectangle =
-        Rectangle2d.fromExtrema
-            { minX = Length.meters 2
-            , maxX = Length.meters 5
-            , minY = Length.meters 1
-            , maxY = Length.meters 3
-            }
-
-    displacement =
-        Vector2d.meters 2 -3
-
-    Rectangle2d.translateBy displacement rectangle
-    --> Rectangle2d.fromExtrema
-    -->     { minX = Length.meters 4
-    -->     , maxX = Length.meters 7
-    -->     , minY = Length.meters -2
-    -->     , maxY = Length.meters 0
-    -->     }
-
 -}
 translateBy : Vector2d units coordinates -> Rectangle2d units coordinates -> Rectangle2d units coordinates
 translateBy displacement rectangle =
@@ -614,43 +546,16 @@ translateBy displacement rectangle =
         }
 
 
-{-| Translate a rectangle in a given direction by a given distance;
-
-    Rectangle2d.translateIn direction distance
-
-is equivalent to
-
-    Rectangle2d.translateBy
-        (Vector2d.withLength distance direction)
-
+{-| Translate a rectangle in a given direction by a given distance.
 -}
 translateIn : Direction2d coordinates -> Quantity Float units -> Rectangle2d units coordinates -> Rectangle2d units coordinates
 translateIn direction distance rectangle =
     translateBy (Vector2d.withLength distance direction) rectangle
 
 
-{-| Mirror a rectangle across a given axis.
-
-    rectangle =
-        Rectangle2d.fromExtrema
-            { minX = Length.meters 2
-            , maxX = Length.meters 5
-            , minY = Length.meters 1
-            , maxY = Length.meters 3
-            }
-
-    Rectangle2d.mirrorAcross Axis2d.x rectangle
-    --> Rectangle2d.fromExtrema
-    -->     { minX = Length.meters 2
-    -->     , maxX = Length.meters 5
-    -->     , minY = Length.meters -3
-    -->     , maxY = Length.meters -1
-    -->     }
-
-Note that this will flip the handedness of the rectangle's axes, and therefore
-the order/direction of results from `Rectangle2d.vertices` and
-`Rectangle2d.edges` will change.
-
+{-| Mirror a rectangle across a given axis. Note that this will flip the
+handedness of the rectangle's axes, and therefore the order/direction of results
+from `Rectangle2d.vertices` and `Rectangle2d.edges` will change.
 -}
 mirrorAcross : Axis2d units coordinates -> Rectangle2d units coordinates -> Rectangle2d units coordinates
 mirrorAcross axis rectangle =
@@ -663,26 +568,6 @@ mirrorAcross axis rectangle =
 {-| Take a rectangle considered to be defined in local coordinates relative to a
 given reference frame, and return that rectangle expressed in global
 coordinates.
-
-    rectangle =
-        Rectangle2d.fromExtrema
-            { minX = Length.meters 2
-            , maxX = Length.meters 5
-            , minY = Length.meters 1
-            , maxY = Length.meters 3
-            }
-
-    localFrame =
-        Frame2d.atCoordinates ( 1, 2 )
-
-    Rectangle2d.placeIn localFrame rectangle
-    --> Rectangle2d.fromExtrema
-    -->     { minX = Length.meters 3
-    -->     , maxX = Length.meters 6
-    -->     , minY = Length.meters 3
-    -->     , maxY = Length.meters 5
-    -->     }
-
 -}
 placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Rectangle2d units localCoordinates -> Rectangle2d units globalCoordinates
 placeIn frame rectangle =
@@ -694,26 +579,6 @@ placeIn frame rectangle =
 
 {-| Take a rectangle defined in global coordinates, and return it expressed
 in local coordinates relative to a given reference frame.
-
-    rectangle =
-        Rectangle2d.fromExtrema
-            { minX = Length.meters 2
-            , maxX = Length.meters 5
-            , minY = Length.meters 1
-            , maxY = Length.meters 3
-            }
-
-    localFrame =
-        Frame2d.atCoordinates ( 1, 2 )
-
-    Rectangle2d.relativeTo localFrame rectangle
-    --> Rectangle2d.fromExtrema
-    -->     { minX = Length.meters 1
-    -->     , maxX = Length.meters 4
-    -->     , minY = Length.meters -1
-    -->     , maxY = Length.meters 1
-    -->     }
-
 -}
 relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Rectangle2d units globalCoordinates -> Rectangle2d units localCoordinates
 relativeTo frame rectangle =
