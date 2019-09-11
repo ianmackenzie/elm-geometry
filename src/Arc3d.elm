@@ -740,7 +740,8 @@ translateIn direction distance arc =
     translateBy (Vector3d.withLength distance direction) arc
 
 
-{-| Mirror an arc across a given plane. Note that this flips the sign of the arc's swept angle.
+{-| Mirror an arc across a given plane. This flips the sign of the arc's swept
+angle.
 -}
 mirrorAcross : Plane3d units coordinates -> Arc3d units coordinates -> Arc3d units coordinates
 mirrorAcross plane (Types.Arc3d arc) =
@@ -754,7 +755,8 @@ mirrorAcross plane (Types.Arc3d arc) =
         }
 
 
-{-| Project an arc into a sketch plane.
+{-| Project an arc into a sketch plane. Note that the result is an elliptical
+arc, not a circular one!
 
     axis : Axis3d Meters coordinates
     axis =

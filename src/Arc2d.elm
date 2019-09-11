@@ -934,7 +934,8 @@ translateIn direction distance arc =
     translateBy (Vector2d.withLength distance direction) arc
 
 
-{-| Mirror an arc across a given axis.
+{-| Mirror an arc across a given axis. This negates the sign of the arc's
+swept angle.
 -}
 mirrorAcross : Axis2d units coordinates -> Arc2d units coordinates -> Arc2d units coordinates
 mirrorAcross axis (Types.Arc2d arc) =
