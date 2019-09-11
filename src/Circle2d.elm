@@ -105,19 +105,17 @@ the three given points are collinear, returns `Nothing`.
         Point2d.origin
         (Point2d.meters 1 0)
         (Point2d.meters 0 1)
-    --> Just
-    -->     (Circle2d.withRadius (Length.meters 0.7071)
+    --> Just <|
+    -->     Circle2d.withRadius (Length.meters 0.7071)
     -->         (Point2d.meters 0.5 0.5)
-    -->     )
 
     Circle2d.throughPoints
         Point2d.origin
         (Point2d.meters 2 1)
         (Point2d.meters 4 0)
-    --> Just
-    -->     (Circle2d.withRadius (Length.meters 2.5)
+    --> Just <|
+    -->     Circle2d.withRadius (Length.meters 2.5)
     -->         (Point2d.meters 2 -1.5)
-    -->     )
 
     Circle2d.throughPoints
         Point2d.origin
