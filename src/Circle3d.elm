@@ -82,7 +82,7 @@ type alias Circle3d units coordinates =
 {-| Construct a circle from its radius, axial direction and center point:
 
     exampleCircle =
-        Circle3d.withRadius 3
+        Circle3d.withRadius (Length.meters 3)
             Direction3d.z
             (Point3d.meters 2 0 1)
 
@@ -102,7 +102,7 @@ withRadius givenRadius givenAxialDirection givenCenterPoint =
 
     Circle3d.sweptAround Axis3d.z
         (Point3d.meters 3 0 2)
-    --> Circle3d.withRadius 3
+    --> Circle3d.withRadius (Length.meters 3)
     -->     Direction3d.z
     -->     (Point3d.meters 0 0 2)
 
@@ -123,10 +123,10 @@ sweptAround givenAxis givenPoint =
 specified in XY coordinates _within_ the sketch plane.
 
     Circle3d.on SketchPlane3d.yz <|
-        Circle2d.withRadius 3
+        Circle2d.withRadius (Length.meters 3)
             (Point2d.meters 1 2)
 
-    --> Circle3d.withRadius 3
+    --> Circle3d.withRadius (Length.meters 3)
     -->     Direction3d.x
     -->     (Point3d.meters 0 1 2)
 
@@ -147,16 +147,13 @@ the three given points are collinear, returns `Nothing`.
         (Point3d.meters 1 0 0)
         (Point3d.meters 0 1 0)
         (Point3d.meters 0 0 1)
-    --> Just
-    -->     (Circle3d.withRadius 0.8165
-    -->         (Direction3d.fromAzimuthAndElevation
+    --> Just <|
+    -->     Circle3d.withRadius (Length.meters 0.8165)
+    -->         (Direction3d.xyZ
     -->             (Angle.degrees 45)
     -->             (Angle.degrees 35.26)
     -->         )
-    -->         (Point3d.fromCoordinates
-    -->             ( 0.333, 0.333, 0.333 )
-    -->         )
-    -->     )
+    -->         (Point3d.meters 0.333 0.333 0.333)
 
 -}
 throughPoints : Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> Maybe (Circle3d units coordinates)
@@ -259,7 +256,7 @@ plane circle =
 {-| Get the radius of a circle.
 
     Circle3d.radius exampleCircle
-    --> 3
+    --> Length.meters 3
 
 -}
 radius : Circle3d units coordinates -> Quantity Float units
@@ -270,7 +267,7 @@ radius (Types.Circle3d properties) =
 {-| Get the diameter of a circle.
 
     Circl3d.diameter exampleCircle
-    --> 6
+    --> Length.meters 6
 
 -}
 diameter : Circle3d units coordinates -> Quantity Float units
@@ -281,7 +278,7 @@ diameter circle =
 {-| Get the area of a circle.
 
     Circle3d.area exampleCircle
-    --> 28.2743
+    --> Area.squareMeters 28.2743
 
 -}
 area : Circle3d units coordinates -> Quantity Float (Squared units)
@@ -292,7 +289,7 @@ area circle =
 {-| Get the circumference of a circle.
 
     Circle3d.circumference exampleCircle
-    --> 18.8496
+    --> Length.meters 18.8496
 
 -}
 circumference : Circle3d units coordinates -> Quantity Float units
@@ -352,11 +349,8 @@ mirrorAcross mirrorPlane circle =
 
     inclinedCircle : Circle3d
     inclinedCircle =
-        Circle3d.withRadius 1
-            (Direction3d.fromAzimuthAndElevation
-                (Angle.degrees 0)
-                (Angle.degrees 45)
-            )
+        Circle3d.withRadius (Length.meters 1)
+            (Direction3d.xz (Angle.degrees 45))
             (Point3d.meters 1 2 3)
 
     Circle3d.projectInto SketchPlane3d.xy inclinedCircle
