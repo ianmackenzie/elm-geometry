@@ -12,6 +12,7 @@ module SketchPlane3d exposing
     , xy, yx, yz, zy, zx, xz
     , through, withNormalDirection, on, throughPoints, fromPlane, copy, unsafe
     , toPlane, toFrame
+    , at, at_
     , originPoint, xDirection, yDirection, normalDirection, xAxis, yAxis, normalAxis
     , offsetBy, reverseX, reverseY, moveTo, rotateAround, rotateAroundOwn, translateBy, translateIn, translateAlongOwn, mirrorAcross
     , relativeTo, placeIn
@@ -88,6 +89,11 @@ Sketch planes can also be constructed from `Frame3d` values using
 @docs toPlane, toFrame
 
 
+# Unit conversions
+
+@docs at, at_
+
+
 # Properties
 
 @docs originPoint, xDirection, yDirection, normalDirection, xAxis, yAxis, normalAxis
@@ -111,7 +117,7 @@ import Frame2d exposing (Frame2d)
 import Geometry.Types as Types exposing (Frame3d)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
-import Quantity exposing (Quantity)
+import Quantity exposing (Quantity, Rate)
 import Quantity.Extra as Quantity
 import Unsafe.Direction3d as Direction3d
 import Vector3d exposing (Vector3d)
@@ -396,6 +402,28 @@ throughPoints firstPoint secondPoint thirdPoint =
                                 }
                         )
             )
+
+
+{-| Convert a sketch plane from one units type to another, by providing a
+conversion factor given as a rate of change of destination units with respect to
+source units.
+-}
+at : Quantity Float (Rate units2 units1) -> SketchPlane3d units1 coordinates defines -> SketchPlane3d units2 coordinates defines
+at rate (Types.SketchPlane3d sketchPlane) =
+    Types.SketchPlane3d
+        { originPoint = Point3d.at rate sketchPlane.originPoint
+        , xDirection = sketchPlane.xDirection
+        , yDirection = sketchPlane.yDirection
+        }
+
+
+{-| Convert a sketch plane from one units type to another, by providing an
+'inverse' conversion factor given as a rate of change of source units with
+respect to destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> SketchPlane3d units1 coordinates defines -> SketchPlane3d units2 coordinates defines
+at_ rate sketchPlane =
+    at (Quantity.inverse rate) sketchPlane
 
 
 {-| Get the origin point of a sketch plane.

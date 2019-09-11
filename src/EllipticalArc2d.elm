@@ -10,6 +10,7 @@
 module EllipticalArc2d exposing
     ( EllipticalArc2d
     , with, fromEndpoints
+    , at, at_
     , startAngle, sweptAngle, startPoint, endPoint
     , centerPoint, axes, xAxis, yAxis, xDirection, yDirection, xRadius, yRadius
     , pointOn
@@ -42,6 +43,11 @@ treat them as actual angles and everything will behave as you expect.
 # Constructors
 
 @docs with, fromEndpoints
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Properties
@@ -105,7 +111,7 @@ import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import Interval
 import Point2d exposing (Point2d)
-import Quantity exposing (Quantity(..), Squared)
+import Quantity exposing (Quantity(..), Rate, Squared)
 import Quantity.Extra as Quantity
 import Quantity.Interval
 import Unsafe.Direction2d as Direction2d
@@ -320,6 +326,28 @@ fromEndpoints arguments =
 
     else
         Nothing
+
+
+{-| Convert an elliptical arc from one units type to another, by providing a
+conversion factor given as a rate of change of destination units with respect to
+source units.
+-}
+at : Quantity Float (Rate units2 units1) -> EllipticalArc2d units1 coordinates -> EllipticalArc2d units2 coordinates
+at rate (Types.EllipticalArc2d arc) =
+    Types.EllipticalArc2d
+        { ellipse = Ellipse2d.at rate arc.ellipse
+        , startAngle = arc.startAngle
+        , sweptAngle = arc.sweptAngle
+        }
+
+
+{-| Convert an elliptical arc from one units type to another, by providing an
+'inverse' conversion factor given as a rate of change of source units with
+respect to destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> EllipticalArc2d units1 coordinates -> EllipticalArc2d units2 coordinates
+at_ rate arc =
+    at (Quantity.inverse rate) arc
 
 
 {-| -}

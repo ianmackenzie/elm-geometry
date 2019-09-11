@@ -11,6 +11,7 @@ module Plane3d exposing
     ( Plane3d
     , xy, yz, zx
     , through, withNormalDirection, throughPoints
+    , at, at_
     , originPoint, normalDirection, normalAxis
     , offsetBy, reverseNormal, rotateAround, translateBy, translateIn, moveTo, mirrorAcross
     , relativeTo, placeIn
@@ -36,6 +37,11 @@ point and normal direction and is useful for several operations including:
 @docs through, withNormalDirection, throughPoints
 
 
+# Unit conversions
+
+@docs at, at_
+
+
 # Properties
 
 @docs originPoint, normalDirection, normalAxis
@@ -57,7 +63,7 @@ import Axis3d exposing (Axis3d)
 import Direction3d exposing (Direction3d)
 import Geometry.Types as Types exposing (Frame3d)
 import Point3d exposing (Point3d)
-import Quantity exposing (Quantity)
+import Quantity exposing (Quantity, Rate)
 import Vector3d exposing (Vector3d)
 
 
@@ -166,6 +172,27 @@ throughPoints firstPoint secondPoint thirdPoint =
             firstVector |> Vector3d.cross secondVector
     in
     Vector3d.direction crossProduct |> Maybe.map (through firstPoint)
+
+
+{-| Convert a plane from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> Plane3d units1 coordinates -> Plane3d units2 coordinates
+at rate (Types.Plane3d plane) =
+    Types.Plane3d
+        { originPoint = Point3d.at rate plane.originPoint
+        , normalDirection = plane.normalDirection
+        }
+
+
+{-| Convert a plane from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> Plane3d units1 coordinates -> Plane3d units2 coordinates
+at_ rate plane =
+    at (Quantity.inverse rate) plane
 
 
 {-| Get the origin point of a plane.

@@ -11,6 +11,7 @@ module BoundingBox2d exposing
     ( BoundingBox2d
     , fromExtrema, singleton, intersection
     , hull, hullOf, hull2, hull3, hullN
+    , at, at_
     , extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint
     , contains, isContainedIn, intersects, overlappingByAtLeast, separatedByAtLeast
     , scaleAbout, translateBy, translateIn, expandBy, offsetBy
@@ -46,6 +47,11 @@ box of an object than the object itself, such as:
 @docs hull, hullOf, hull2, hull3, hullN
 
 
+# Unit conversions
+
+@docs at, at_
+
+
 # Properties
 
 @docs extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint
@@ -65,7 +71,7 @@ box of an object than the object itself, such as:
 import Direction2d exposing (Direction2d)
 import Geometry.Types as Types
 import Point2d exposing (Point2d)
-import Quantity exposing (Quantity(..), Squared)
+import Quantity exposing (Quantity(..), Rate)
 import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
 
@@ -318,6 +324,29 @@ hullN boxes =
 
         [] ->
             Nothing
+
+
+{-| Convert a bounding box from one units type to another, by providing a
+conversion factor given as a rate of change of destination units with respect to
+source units.
+-}
+at : Quantity Float (Rate units2 units1) -> BoundingBox2d units1 coordinates -> BoundingBox2d units2 coordinates
+at rate (Types.BoundingBox2d boundingBox) =
+    Types.BoundingBox2d
+        { minX = Quantity.at rate boundingBox.minX
+        , maxX = Quantity.at rate boundingBox.maxX
+        , minY = Quantity.at rate boundingBox.minY
+        , maxY = Quantity.at rate boundingBox.maxY
+        }
+
+
+{-| Convert a bounding box from one units type to another, by providing an
+'inverse' conversion factor given as a rate of change of source units with
+respect to destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> BoundingBox2d units1 coordinates -> BoundingBox2d units2 coordinates
+at_ rate boundingBox =
+    at (Quantity.inverse rate) boundingBox
 
 
 {-| Get the minimum and maximum X and Y values of a bounding box in a single

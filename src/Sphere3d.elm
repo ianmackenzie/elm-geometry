@@ -10,6 +10,7 @@
 module Sphere3d exposing
     ( Sphere3d
     , withRadius, throughPoints
+    , at, at_
     , centerPoint, radius, diameter, volume, surfaceArea, circumference, boundingBox
     , contains
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectInto
@@ -29,6 +30,11 @@ functionality for:
 # Constructors
 
 @docs withRadius, throughPoints
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Properties
@@ -62,7 +68,7 @@ import Frame3d exposing (Frame3d)
 import Geometry.Types as Types exposing (Sphere3d)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
-import Quantity exposing (Cubed, Quantity, Squared)
+import Quantity exposing (Cubed, Quantity, Rate, Squared)
 import SketchPlane3d exposing (SketchPlane3d)
 import Vector3d exposing (Vector3d)
 
@@ -178,6 +184,27 @@ throughPoints p1 p2 p3 p4 =
                 else
                     Nothing
             )
+
+
+{-| Convert a sphere from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> Sphere3d units1 coordinates -> Sphere3d units2 coordinates
+at rate (Types.Sphere3d sphere) =
+    Types.Sphere3d
+        { centerPoint = Point3d.at rate sphere.centerPoint
+        , radius = Quantity.at rate sphere.radius
+        }
+
+
+{-| Convert a sphere from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> Sphere3d units1 coordinates -> Sphere3d units2 coordinates
+at_ rate sphere =
+    at (Quantity.inverse rate) sphere
 
 
 {-| Get the center point of a sphere.

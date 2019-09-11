@@ -11,6 +11,7 @@ module Axis3d exposing
     ( Axis3d
     , x, y, z
     , through, withDirection, on
+    , at, at_
     , originPoint, direction
     , reverse, moveTo, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
     , relativeTo, placeIn, projectInto
@@ -36,6 +37,11 @@ by an origin point and direction. Axes have several uses, such as:
 @docs through, withDirection, on
 
 
+# Unit conversions
+
+@docs at, at_
+
+
 # Properties
 
 @docs originPoint, direction
@@ -57,7 +63,7 @@ import Axis2d exposing (Axis2d)
 import Direction3d exposing (Direction3d)
 import Geometry.Types as Types exposing (Frame3d, Plane3d, SketchPlane3d)
 import Point3d exposing (Point3d)
-import Quantity exposing (Quantity)
+import Quantity exposing (Quantity, Rate)
 import Vector3d exposing (Vector3d)
 
 
@@ -148,6 +154,27 @@ on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Axis2d uni
 on sketchPlane (Types.Axis2d axis2d) =
     through (Point3d.on sketchPlane axis2d.originPoint)
         (Direction3d.on sketchPlane axis2d.direction)
+
+
+{-| Convert an axis from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> Axis3d units1 coordinates -> Axis3d units2 coordinates
+at rate (Types.Axis3d axis) =
+    Types.Axis3d
+        { originPoint = Point3d.at rate axis.originPoint
+        , direction = axis.direction
+        }
+
+
+{-| Convert an axis from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> Axis3d units1 coordinates -> Axis3d units2 coordinates
+at_ rate axis =
+    at (Quantity.inverse rate) axis
 
 
 {-| Get the origin point of an axis.

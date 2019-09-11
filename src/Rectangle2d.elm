@@ -10,6 +10,7 @@
 module Rectangle2d exposing
     ( Rectangle2d
     , with, from, withDimensions, withAxes, withXAxis, withYAxis
+    , at, at_
     , dimensions, axes, xAxis, yAxis, centerPoint, area, vertices, edges, boundingBox
     , interpolate
     , contains
@@ -35,6 +36,11 @@ they can have arbitrary orientation and so can be rotated, mirrored etc.
 # Construction
 
 @docs with, from, withDimensions, withAxes, withXAxis, withYAxis
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Properties
@@ -77,7 +83,7 @@ import Geometry.Types as Types
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
-import Quantity exposing (Quantity(..), Squared)
+import Quantity exposing (Quantity(..), Rate, Squared)
 import Vector2d exposing (Vector2d)
 
 
@@ -263,6 +269,31 @@ axisAligned x1 y1 x2 y2 =
         { axes = computedAxes
         , dimensions = computedDimensions
         }
+
+
+{-| Convert a rectangle from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> Rectangle2d units1 coordinates -> Rectangle2d units2 coordinates
+at rate (Types.Rectangle2d rectangle) =
+    let
+        ( width, height ) =
+            rectangle.dimensions
+    in
+    Types.Rectangle2d
+        { axes = Frame2d.at rate rectangle.axes
+        , dimensions = ( Quantity.at rate width, Quantity.at rate height )
+        }
+
+
+{-| Convert a rectangle from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> Rectangle2d units1 coordinates -> Rectangle2d units2 coordinates
+at_ rate rectangle =
+    at (Quantity.inverse rate) rectangle
 
 
 {-| Convert a rectangle to a [`Polygon2d`](Polygon2d#Polygon2d).

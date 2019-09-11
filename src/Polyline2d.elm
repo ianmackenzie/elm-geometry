@@ -10,6 +10,7 @@
 module Polyline2d exposing
     ( Polyline2d
     , fromVertices
+    , at, at_
     , vertices, segments, length, boundingBox, centroid
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapVertices
     , relativeTo, placeIn
@@ -29,6 +30,11 @@ as
 # Constructors
 
 @docs fromVertices
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Properties
@@ -57,7 +63,7 @@ import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
-import Quantity exposing (Quantity)
+import Quantity exposing (Quantity, Rate)
 import Vector2d exposing (Vector2d)
 
 
@@ -80,6 +86,24 @@ type alias Polyline2d units coordinates =
 fromVertices : List (Point2d units coordinates) -> Polyline2d units coordinates
 fromVertices givenVertices =
     Types.Polyline2d givenVertices
+
+
+{-| Convert a polyline from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> Polyline2d units1 coordinates -> Polyline2d units2 coordinates
+at rate (Types.Polyline2d polylineVertices) =
+    Types.Polyline2d (List.map (Point2d.at rate) polylineVertices)
+
+
+{-| Convert a polyline from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> Polyline2d units1 coordinates -> Polyline2d units2 coordinates
+at_ rate polyline =
+    at (Quantity.inverse rate) polyline
 
 
 {-| Get the vertices of a polyline.

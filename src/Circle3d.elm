@@ -10,6 +10,7 @@
 module Circle3d exposing
     ( Circle3d
     , withRadius, sweptAround, on, throughPoints
+    , at, at_
     , centerPoint, axialDirection, radius, diameter, axis, plane, area, circumference, boundingBox
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
     , relativeTo, placeIn
@@ -31,6 +32,11 @@ for:
 # Constructors
 
 @docs withRadius, sweptAround, on, throughPoints
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Properties
@@ -59,7 +65,7 @@ import Frame3d exposing (Frame3d)
 import Geometry.Types as Types exposing (Ellipse2d)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
-import Quantity exposing (Quantity, Squared)
+import Quantity exposing (Quantity, Rate, Squared)
 import SketchPlane3d exposing (SketchPlane3d)
 import Vector2d exposing (Vector2d)
 import Vector3d exposing (Vector3d)
@@ -174,6 +180,28 @@ throughPoints p1 p2 p3 =
         )
         (Point3d.circumcenter p1 p2 p3)
         (Plane3d.throughPoints p1 p2 p3)
+
+
+{-| Convert a circle from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> Circle3d units1 coordinates -> Circle3d units2 coordinates
+at rate (Types.Circle3d circle) =
+    Types.Circle3d
+        { centerPoint = Point3d.at rate circle.centerPoint
+        , axialDirection = circle.axialDirection
+        , radius = Quantity.at rate circle.radius
+        }
+
+
+{-| Convert a circle from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> Circle3d units1 coordinates -> Circle3d units2 coordinates
+at_ rate circle =
+    at (Quantity.inverse rate) circle
 
 
 {-| Get the center point of a circle.

@@ -12,6 +12,7 @@ module Frame3d exposing
     , atOrigin
     , withXDirection, withYDirection, withZDirection, atPoint, copy, unsafe
     , fromXAxis, fromYAxis, fromZAxis
+    , at, at_
     , originPoint, xDirection, yDirection, zDirection, isRightHanded
     , xAxis, yAxis, zAxis
     , xyPlane, yxPlane, yzPlane, zyPlane, zxPlane, xzPlane
@@ -78,6 +79,11 @@ resulting frame is [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordi
 ## From axes
 
 @docs fromXAxis, fromYAxis, fromZAxis
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Properties
@@ -154,7 +160,7 @@ import Direction3d exposing (Direction3d)
 import Geometry.Types as Types
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
-import Quantity exposing (Quantity)
+import Quantity exposing (Quantity, Rate)
 import SketchPlane3d exposing (SketchPlane3d)
 import Vector3d exposing (Vector3d)
 
@@ -372,6 +378,29 @@ fromZAxis givenZAxis =
         , yDirection = computedYDirection
         , zDirection = givenZDirection
         }
+
+
+{-| Convert a frame from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> Frame3d units1 coordinates defines -> Frame3d units2 coordinates defines
+at rate (Types.Frame3d frame) =
+    Types.Frame3d
+        { originPoint = Point3d.at rate frame.originPoint
+        , xDirection = frame.xDirection
+        , yDirection = frame.yDirection
+        , zDirection = frame.zDirection
+        }
+
+
+{-| Convert a frame from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> Frame3d units1 coordinates defines -> Frame3d units2 coordinates defines
+at_ rate frame =
+    at (Quantity.inverse rate) frame
 
 
 {-| Get the origin point of a given frame.

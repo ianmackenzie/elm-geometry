@@ -10,6 +10,7 @@
 module Polyline3d exposing
     ( Polyline3d
     , fromVertices, on
+    , at, at_
     , vertices, segments, length, boundingBox, centroid
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapVertices
     , relativeTo, placeIn, projectInto
@@ -29,6 +30,11 @@ as
 # Constructors
 
 @docs fromVertices, on
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Properties
@@ -59,7 +65,7 @@ import LineSegment3d exposing (LineSegment3d)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Polyline2d exposing (Polyline2d)
-import Quantity exposing (Quantity)
+import Quantity exposing (Quantity, Rate)
 import Quantity.Extra as Quantity
 import SketchPlane3d exposing (SketchPlane3d)
 import Vector3d exposing (Vector3d)
@@ -109,6 +115,24 @@ on sketchPlane polyline2d =
     Polyline2d.vertices polyline2d
         |> List.map (Point3d.on sketchPlane)
         |> fromVertices
+
+
+{-| Convert a polyline from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> Polyline3d units1 coordinates -> Polyline3d units2 coordinates
+at rate (Types.Polyline3d polylineVertices) =
+    Types.Polyline3d (List.map (Point3d.at rate) polylineVertices)
+
+
+{-| Convert a polyline from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> Polyline3d units1 coordinates -> Polyline3d units2 coordinates
+at_ rate polyline =
+    at (Quantity.inverse rate) polyline
 
 
 {-| Get the vertices of a polyline.

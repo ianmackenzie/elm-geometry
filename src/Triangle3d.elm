@@ -10,6 +10,7 @@
 module Triangle3d exposing
     ( Triangle3d
     , fromVertices, from, on
+    , at, at_
     , vertices, edges, centroid, area, normalDirection, boundingBox, circumcircle
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapVertices
     , relativeTo, placeIn, projectInto
@@ -28,6 +29,11 @@ three vertices. This module contains triangle-related functionality such as:
 # Constructors
 
 @docs fromVertices, from, on
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Properties
@@ -58,7 +64,7 @@ import Geometry.Types as Types
 import LineSegment3d exposing (LineSegment3d)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
-import Quantity exposing (Quantity, Squared)
+import Quantity exposing (Quantity, Rate, Squared)
 import Quantity.Extra as Quantity
 import SketchPlane3d exposing (SketchPlane3d)
 import Triangle2d exposing (Triangle2d)
@@ -125,6 +131,28 @@ on sketchPlane triangle2d =
         (Point3d.on sketchPlane p1)
         (Point3d.on sketchPlane p2)
         (Point3d.on sketchPlane p3)
+
+
+{-| Convert a triangle from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> Triangle3d units1 coordinates -> Triangle3d units2 coordinates
+at rate (Types.Triangle3d ( p1, p2, p3 )) =
+    Types.Triangle3d
+        ( Point3d.at rate p1
+        , Point3d.at rate p2
+        , Point3d.at rate p3
+        )
+
+
+{-| Convert a triangle from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> Triangle3d units1 coordinates -> Triangle3d units2 coordinates
+at_ rate triangle =
+    at (Quantity.inverse rate) triangle
 
 
 {-| Get the vertices of a triangle.

@@ -10,6 +10,7 @@
 module Triangle2d exposing
     ( Triangle2d
     , fromVertices, from
+    , at, at_
     , vertices, edges, centroid, area, counterclockwiseArea, clockwiseArea, boundingBox, circumcircle
     , contains
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, mapVertices
@@ -29,6 +30,11 @@ three vertices. This module contains triangle-related functionality such as:
 # Constructors
 
 @docs fromVertices, from
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Properties
@@ -63,7 +69,7 @@ import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
-import Quantity exposing (Quantity, Squared)
+import Quantity exposing (Quantity, Rate, Squared)
 import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
 
@@ -102,6 +108,28 @@ Useful with `map3` functions such as `Json.Decode.map3`.
 from : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Triangle2d units coordinates
 from p1 p2 p3 =
     Types.Triangle2d ( p1, p2, p3 )
+
+
+{-| Convert a triangle from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> Triangle2d units1 coordinates -> Triangle2d units2 coordinates
+at rate (Types.Triangle2d ( p1, p2, p3 )) =
+    Types.Triangle2d
+        ( Point2d.at rate p1
+        , Point2d.at rate p2
+        , Point2d.at rate p3
+        )
+
+
+{-| Convert a triangle from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> Triangle2d units1 coordinates -> Triangle2d units2 coordinates
+at_ rate triangle =
+    at (Quantity.inverse rate) triangle
 
 
 {-| Get the vertices of a triangle.

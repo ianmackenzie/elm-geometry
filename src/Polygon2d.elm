@@ -10,6 +10,7 @@
 module Polygon2d exposing
     ( Polygon2d
     , singleLoop, withHoles, convexHull
+    , at, at_
     , outerLoop, innerLoops, vertices, edges, perimeter, area, boundingBox
     , contains
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
@@ -32,6 +33,11 @@ holes. This module contains a variety of polygon-related functionality, such as
 # Constructors
 
 @docs singleLoop, withHoles, convexHull
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Properties
@@ -71,7 +77,7 @@ import Geometry.Types as Types
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
 import Polygon2d.Monotone as Monotone
-import Quantity exposing (Quantity(..), Squared)
+import Quantity exposing (Quantity(..), Rate, Squared)
 import Quantity.Extra as Quantity
 import Triangle2d exposing (Triangle2d)
 import TriangularMesh exposing (TriangularMesh)
@@ -251,6 +257,31 @@ convexHull points =
             chain (List.reverse sorted)
     in
     singleLoop (lower ++ upper)
+
+
+{-| Convert a polygon from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> Polygon2d units1 coordinates -> Polygon2d units2 coordinates
+at rate (Types.Polygon2d polygon) =
+    let
+        convertPoint =
+            Point2d.at rate
+    in
+    Types.Polygon2d
+        { outerLoop = List.map convertPoint polygon.outerLoop
+        , innerLoops = List.map (List.map convertPoint) polygon.innerLoops
+        }
+
+
+{-| Convert a polygon from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> Polygon2d units1 coordinates -> Polygon2d units2 coordinates
+at_ rate polygon =
+    at (Quantity.inverse rate) polygon
 
 
 {-| Get the list of vertices definining the outer loop (border) of a polygon.

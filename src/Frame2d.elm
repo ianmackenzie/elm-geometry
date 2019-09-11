@@ -11,6 +11,7 @@ module Frame2d exposing
     ( Frame2d
     , atOrigin
     , atPoint, withAngle, withXDirection, withYDirection, fromXAxis, fromYAxis, copy, unsafe
+    , at, at_
     , originPoint, xDirection, yDirection, isRightHanded, xAxis, yAxis
     , reverseX, reverseY, moveTo, rotateBy, rotateAround, translateBy, translateIn, translateAlongOwn, mirrorAcross
     , relativeTo, placeIn
@@ -43,6 +44,11 @@ always perpendicular to each other). It can be thought of as:
 @docs atPoint, withAngle, withXDirection, withYDirection, fromXAxis, fromYAxis, copy, unsafe
 
 
+# Unit conversions
+
+@docs at, at_
+
+
 # Properties
 
 @docs originPoint, xDirection, yDirection, isRightHanded, xAxis, yAxis
@@ -64,7 +70,7 @@ import Axis2d exposing (Axis2d)
 import Direction2d exposing (Direction2d)
 import Geometry.Types as Types
 import Point2d exposing (Point2d)
-import Quantity exposing (Quantity)
+import Quantity exposing (Quantity, Rate)
 import Vector2d exposing (Vector2d)
 
 
@@ -242,6 +248,28 @@ is equivalent to
 withAngle : Angle -> Point2d units coordinates -> Frame2d units coordinates defines
 withAngle givenAngle givenOrigin =
     withXDirection (Direction2d.fromAngle givenAngle) givenOrigin
+
+
+{-| Convert a frame from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> Frame2d units1 coordinates defines -> Frame2d units2 coordinates defines
+at rate (Types.Frame2d frame) =
+    Types.Frame2d
+        { originPoint = Point2d.at rate frame.originPoint
+        , xDirection = frame.xDirection
+        , yDirection = frame.yDirection
+        }
+
+
+{-| Convert a frame from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> Frame2d units1 coordinates defines -> Frame2d units2 coordinates defines
+at_ rate frame =
+    at (Quantity.inverse rate) frame
 
 
 {-| Get the origin point of a given frame.

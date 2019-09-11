@@ -10,6 +10,7 @@
 module QuadraticSpline2d exposing
     ( QuadraticSpline2d
     , fromControlPoints
+    , at, at_
     , startPoint, endPoint, firstControlPoint, secondControlPoint, thirdControlPoint, startDerivative, endDerivative, boundingBox
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
@@ -37,6 +38,11 @@ contains functionality for
 # Constructors
 
 @docs fromControlPoints
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Properties
@@ -98,7 +104,7 @@ import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import Point2d exposing (Point2d)
-import Quantity exposing (Quantity)
+import Quantity exposing (Quantity, Rate)
 import Vector2d exposing (Vector2d)
 
 
@@ -123,6 +129,28 @@ fromControlPoints p1 p2 p3 =
         , secondControlPoint = p2
         , thirdControlPoint = p3
         }
+
+
+{-| Convert a spline from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> QuadraticSpline2d units1 coordinates -> QuadraticSpline2d units2 coordinates
+at rate (Types.QuadraticSpline2d spline) =
+    Types.QuadraticSpline2d
+        { firstControlPoint = Point2d.at rate spline.firstControlPoint
+        , secondControlPoint = Point2d.at rate spline.secondControlPoint
+        , thirdControlPoint = Point2d.at rate spline.thirdControlPoint
+        }
+
+
+{-| Convert a spline from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> QuadraticSpline2d units1 coordinates -> QuadraticSpline2d units2 coordinates
+at_ rate spline =
+    at (Quantity.inverse rate) spline
 
 
 {-| Get the start point of a spline. Equal to [`firstControlPoint`](#firstControlPoint).

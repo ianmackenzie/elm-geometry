@@ -10,6 +10,7 @@
 module CubicSpline3d exposing
     ( CubicSpline3d
     , fromControlPoints, fromEndpoints, on, fromQuadraticSpline
+    , at, at_
     , startPoint, endPoint, firstControlPoint, secondControlPoint, thirdControlPoint, fourthControlPoint, startDerivative, endDerivative, boundingBox
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
@@ -38,6 +39,11 @@ contains functionality for
 # Constructors
 
 @docs fromControlPoints, fromEndpoints, on, fromQuadraticSpline
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Properties
@@ -103,7 +109,7 @@ import LineSegment3d exposing (fromEndpoints, midpoint)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import QuadraticSpline3d exposing (QuadraticSpline3d)
-import Quantity exposing (Quantity)
+import Quantity exposing (Quantity, Rate)
 import SketchPlane3d exposing (SketchPlane3d)
 import Vector3d exposing (Vector3d)
 
@@ -222,6 +228,29 @@ fromQuadraticSpline quadraticSpline =
         cubicSecondControlPoint
         cubicThirdControlPoint
         cubicFourthControlPoint
+
+
+{-| Convert a spline from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> CubicSpline3d units1 coordinates -> CubicSpline3d units2 coordinates
+at rate (Types.CubicSpline3d spline) =
+    Types.CubicSpline3d
+        { firstControlPoint = Point3d.at rate spline.firstControlPoint
+        , secondControlPoint = Point3d.at rate spline.secondControlPoint
+        , thirdControlPoint = Point3d.at rate spline.thirdControlPoint
+        , fourthControlPoint = Point3d.at rate spline.fourthControlPoint
+        }
+
+
+{-| Convert a spline from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> CubicSpline3d units1 coordinates -> CubicSpline3d units2 coordinates
+at_ rate spline =
+    at (Quantity.inverse rate) spline
 
 
 {-| Get the start point of a spline. Equal to

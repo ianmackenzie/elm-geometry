@@ -11,6 +11,7 @@ module Axis2d exposing
     ( Axis2d
     , x, y
     , through, withDirection
+    , at, at_
     , originPoint, direction
     , reverse, moveTo, rotateAround, rotateBy, translateBy, translateIn, mirrorAcross
     , relativeTo, placeIn
@@ -36,6 +37,11 @@ by an origin point and direction. Axes have several uses, such as:
 @docs through, withDirection
 
 
+# Unit conversions
+
+@docs at, at_
+
+
 # Properties
 
 @docs originPoint, direction
@@ -56,7 +62,7 @@ import Angle exposing (Angle)
 import Direction2d exposing (Direction2d)
 import Geometry.Types as Types exposing (Frame2d)
 import Point2d exposing (Point2d)
-import Quantity exposing (Quantity)
+import Quantity exposing (Quantity, Rate)
 import Vector2d exposing (Vector2d)
 
 
@@ -115,6 +121,27 @@ things with partial application:
 withDirection : Direction2d coordinates -> Point2d units coordinates -> Axis2d units coordinates
 withDirection givenDirection givenPoint =
     Types.Axis2d { originPoint = givenPoint, direction = givenDirection }
+
+
+{-| Convert an axis from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> Axis2d units1 coordinates -> Axis2d units2 coordinates
+at rate (Types.Axis2d axis) =
+    Types.Axis2d
+        { originPoint = Point2d.at rate axis.originPoint
+        , direction = axis.direction
+        }
+
+
+{-| Convert an axis from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> Axis2d units1 coordinates -> Axis2d units2 coordinates
+at_ rate axis =
+    at (Quantity.inverse rate) axis
 
 
 {-| Get the origin point of an axis.

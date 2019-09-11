@@ -11,6 +11,7 @@ module BoundingBox3d exposing
     ( BoundingBox3d
     , fromExtrema, singleton, intersection
     , hull, hullOf, hull2, hull3, hullN
+    , at, at_
     , extrema, minX, maxX, minY, maxY, minZ, maxZ, dimensions, midX, midY, midZ, centerPoint
     , contains, isContainedIn, intersects, overlappingByAtLeast, separatedByAtLeast
     , scaleAbout, translateBy, translateIn, expandBy, offsetBy
@@ -45,6 +46,11 @@ box of an object than the object itself, such as:
 @docs hull, hullOf, hull2, hull3, hullN
 
 
+# Unit conversions
+
+@docs at, at_
+
+
 # Properties
 
 @docs extrema, minX, maxX, minY, maxY, minZ, maxZ, dimensions, midX, midY, midZ, centerPoint
@@ -64,7 +70,7 @@ box of an object than the object itself, such as:
 import Direction3d exposing (Direction3d)
 import Geometry.Types as Types
 import Point3d exposing (Point3d)
-import Quantity exposing (Quantity(..), Squared)
+import Quantity exposing (Quantity(..), Rate)
 import Quantity.Extra as Quantity
 import Vector3d exposing (Vector3d)
 
@@ -348,6 +354,31 @@ hullN boxes =
 
         [] ->
             Nothing
+
+
+{-| Convert a bounding box from one units type to another, by providing a
+conversion factor given as a rate of change of destination units with respect to
+source units.
+-}
+at : Quantity Float (Rate units2 units1) -> BoundingBox3d units1 coordinates -> BoundingBox3d units2 coordinates
+at rate (Types.BoundingBox3d boundingBox) =
+    Types.BoundingBox3d
+        { minX = Quantity.at rate boundingBox.minX
+        , maxX = Quantity.at rate boundingBox.maxX
+        , minY = Quantity.at rate boundingBox.minY
+        , maxY = Quantity.at rate boundingBox.maxY
+        , minZ = Quantity.at rate boundingBox.minZ
+        , maxZ = Quantity.at rate boundingBox.maxZ
+        }
+
+
+{-| Convert a bounding box from one units type to another, by providing an
+'inverse' conversion factor given as a rate of change of source units with
+respect to destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> BoundingBox3d units1 coordinates -> BoundingBox3d units2 coordinates
+at_ rate boundingBox =
+    at (Quantity.inverse rate) boundingBox
 
 
 {-| Get the minimum and maximum X, Y and Z values of a bounding box in a single

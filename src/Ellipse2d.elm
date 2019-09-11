@@ -10,6 +10,7 @@
 module Ellipse2d exposing
     ( Ellipse2d
     , with
+    , at, at_
     , centerPoint, xAxis, yAxis, xDirection, yDirection, axes, xRadius, yRadius, area
     , toEllipticalArc
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
@@ -31,6 +32,11 @@ includes functionality for
 # Constructors
 
 @docs with
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Properties
@@ -60,7 +66,7 @@ import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types exposing (EllipticalArc2d(..))
 import Point2d exposing (Point2d)
-import Quantity exposing (Quantity, Squared)
+import Quantity exposing (Quantity, Rate, Squared)
 import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
 
@@ -96,6 +102,28 @@ with properties =
         , xRadius = Quantity.abs properties.xRadius
         , yRadius = Quantity.abs properties.yRadius
         }
+
+
+{-| Convert an ellipse from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> Ellipse2d units1 coordinates -> Ellipse2d units2 coordinates
+at rate (Types.Ellipse2d ellipse) =
+    Types.Ellipse2d
+        { axes = Frame2d.at rate ellipse.axes
+        , xRadius = Quantity.at rate ellipse.xRadius
+        , yRadius = Quantity.at rate ellipse.yRadius
+        }
+
+
+{-| Convert an ellipse from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> Ellipse2d units1 coordinates -> Ellipse2d units2 coordinates
+at_ rate ellipse =
+    at (Quantity.inverse rate) ellipse
 
 
 {-| Get the center point of an ellipse.

@@ -10,6 +10,7 @@
 module QuadraticSpline3d exposing
     ( QuadraticSpline3d
     , fromControlPoints, on
+    , at, at_
     , startPoint, endPoint, firstControlPoint, secondControlPoint, thirdControlPoint, startDerivative, endDerivative, boundingBox
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
@@ -38,6 +39,11 @@ contains functionality for
 # Constructors
 
 @docs fromControlPoints, on
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Properties
@@ -106,7 +112,7 @@ import Geometry.Types as Types
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
-import Quantity exposing (Quantity)
+import Quantity exposing (Quantity, Rate)
 import SketchPlane3d exposing (SketchPlane3d)
 import Vector3d exposing (Vector3d)
 
@@ -154,6 +160,28 @@ on sketchPlane spline2d =
         (Point3d.on sketchPlane (QuadraticSpline2d.firstControlPoint spline2d))
         (Point3d.on sketchPlane (QuadraticSpline2d.secondControlPoint spline2d))
         (Point3d.on sketchPlane (QuadraticSpline2d.thirdControlPoint spline2d))
+
+
+{-| Convert a spline from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> QuadraticSpline3d units1 coordinates -> QuadraticSpline3d units2 coordinates
+at rate (Types.QuadraticSpline3d spline) =
+    Types.QuadraticSpline3d
+        { firstControlPoint = Point3d.at rate spline.firstControlPoint
+        , secondControlPoint = Point3d.at rate spline.secondControlPoint
+        , thirdControlPoint = Point3d.at rate spline.thirdControlPoint
+        }
+
+
+{-| Convert a spline from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> QuadraticSpline3d units1 coordinates -> QuadraticSpline3d units2 coordinates
+at_ rate spline =
+    at (Quantity.inverse rate) spline
 
 
 {-| Get the start point of a spline. Equal to [`firstControlPoint`](#firstControlPoint).

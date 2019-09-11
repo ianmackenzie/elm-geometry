@@ -10,6 +10,7 @@
 module Arc3d exposing
     ( Arc3d
     , on, sweptAround, throughPoints
+    , at, at_
     , axialDirection, axis, centerPoint, radius, startPoint, endPoint, sweptAngle
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
@@ -34,6 +35,11 @@ start point to the arc's end point). This module includes functionality for
 # Constructors
 
 @docs on, sweptAround, throughPoints
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Properties
@@ -84,7 +90,7 @@ import Parameter1d
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Polyline3d exposing (Polyline3d)
-import Quantity exposing (Quantity)
+import Quantity exposing (Quantity, Rate)
 import Quantity.Extra as Quantity
 import SketchPlane3d exposing (SketchPlane3d)
 import Unsafe.Direction3d as Direction3d
@@ -234,6 +240,30 @@ throughPoints firstPoint secondPoint thirdPoint =
                     (Point3d.projectInto sketchPlane thirdPoint)
                     |> Maybe.map (on sketchPlane)
             )
+
+
+{-| Convert an arc from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> Arc3d units1 coordinates -> Arc3d units2 coordinates
+at rate (Types.Arc3d arc) =
+    Types.Arc3d
+        { startPoint = Point3d.at rate arc.startPoint
+        , xDirection = arc.xDirection
+        , yDirection = arc.yDirection
+        , signedLength = Quantity.at rate arc.signedLength
+        , sweptAngle = arc.sweptAngle
+        }
+
+
+{-| Convert an arc from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> Arc3d units1 coordinates -> Arc3d units2 coordinates
+at_ rate arc =
+    at (Quantity.inverse rate) arc
 
 
 {-| Get the axial direction of an arc.

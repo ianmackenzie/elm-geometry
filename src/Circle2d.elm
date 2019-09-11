@@ -10,6 +10,7 @@
 module Circle2d exposing
     ( Circle2d
     , withRadius, throughPoints, sweptAround
+    , at, at_
     , centerPoint, radius, diameter, area, circumference, boundingBox
     , toArc
     , contains
@@ -30,6 +31,11 @@ functionality for
 # Constructors
 
 @docs withRadius, throughPoints, sweptAround
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Properties
@@ -65,7 +71,7 @@ import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types exposing (Arc2d)
 import Point2d exposing (Point2d)
-import Quantity exposing (Quantity, Squared)
+import Quantity exposing (Quantity, Rate, Squared)
 import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
 
@@ -172,6 +178,27 @@ but passing through several other different points, you could use something like
 sweptAround : Point2d units coordinates -> Point2d units coordinates -> Circle2d units coordinates
 sweptAround centerPoint_ point =
     withRadius (Point2d.distanceFrom centerPoint_ point) centerPoint_
+
+
+{-| Convert a circle from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> Circle2d units1 coordinates -> Circle2d units2 coordinates
+at rate (Types.Circle2d circle) =
+    Types.Circle2d
+        { centerPoint = Point2d.at rate circle.centerPoint
+        , radius = Quantity.at rate circle.radius
+        }
+
+
+{-| Convert a circle from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> Circle2d units1 coordinates -> Circle2d units2 coordinates
+at_ rate circle =
+    at (Quantity.inverse rate) circle
 
 
 {-| Get the center point of a circle.

@@ -10,6 +10,7 @@
 module LineSegment3d exposing
     ( LineSegment3d
     , fromEndpoints, from, along, on
+    , at, at_
     , startPoint, endPoint, endpoints, midpoint, length, direction, perpendicularDirection, vector, boundingBox
     , interpolate
     , intersectionWithPlane
@@ -31,6 +32,11 @@ functionality such as:
 # Constructors
 
 @docs fromEndpoints, from, along, on
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Properties
@@ -71,7 +77,7 @@ import Geometry.Types as Types
 import LineSegment2d exposing (LineSegment2d)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
-import Quantity exposing (Quantity, Squared)
+import Quantity exposing (Quantity, Rate, Squared)
 import SketchPlane3d exposing (SketchPlane3d)
 import Vector3d exposing (Vector3d)
 
@@ -161,6 +167,24 @@ on sketchPlane lineSegment2d =
         ( Point3d.on sketchPlane p1
         , Point3d.on sketchPlane p2
         )
+
+
+{-| Convert a line segment from one units type to another, by providing a
+conversion factor given as a rate of change of destination units with respect to
+source units.
+-}
+at : Quantity Float (Rate units2 units1) -> LineSegment3d units1 coordinates -> LineSegment3d units2 coordinates
+at rate (Types.LineSegment3d ( p1, p2 )) =
+    Types.LineSegment3d ( Point3d.at rate p1, Point3d.at rate p2 )
+
+
+{-| Convert a line segment from one units type to another, by providing an
+'inverse' conversion factor given as a rate of change of source units with
+respect to destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> LineSegment3d units1 coordinates -> LineSegment3d units2 coordinates
+at_ rate lineSegment =
+    at (Quantity.inverse rate) lineSegment
 
 
 {-| Get the start point of a line segment.

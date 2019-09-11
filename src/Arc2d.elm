@@ -10,6 +10,7 @@
 module Arc2d exposing
     ( Arc2d
     , from, with, sweptAround, throughPoints, withRadius
+    , at, at_
     , centerPoint, radius, startPoint, endPoint, sweptAngle
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
@@ -34,6 +35,11 @@ end point). This module includes functionality for
 # Constructors
 
 @docs from, with, sweptAround, throughPoints, withRadius
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Properties
@@ -82,7 +88,7 @@ import LineSegment2d exposing (LineSegment2d)
 import Parameter1d
 import Point2d exposing (Point2d)
 import Polyline2d exposing (Polyline2d)
-import Quantity exposing (Quantity)
+import Quantity exposing (Quantity, Rate)
 import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
 
@@ -576,6 +582,29 @@ withRadius givenRadius givenSweptAngle givenStartPoint givenEndPoint =
 
     else
         Nothing
+
+
+{-| Convert an arc from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> Arc2d units1 coordinates -> Arc2d units2 coordinates
+at rate (Types.Arc2d arc) =
+    Types.Arc2d
+        { startPoint = Point2d.at rate arc.startPoint
+        , xDirection = arc.xDirection
+        , signedLength = Quantity.at rate arc.signedLength
+        , sweptAngle = arc.sweptAngle
+        }
+
+
+{-| Convert an arc from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> Arc2d units1 coordinates -> Arc2d units2 coordinates
+at_ rate arc =
+    at (Quantity.inverse rate) arc
 
 
 {-| Get the center point of an arc.

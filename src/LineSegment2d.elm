@@ -10,6 +10,7 @@
 module LineSegment2d exposing
     ( LineSegment2d
     , fromEndpoints, from, along
+    , at, at_
     , startPoint, endPoint, endpoints, midpoint, length, direction, perpendicularDirection, vector, boundingBox
     , interpolate
     , intersectionPoint, intersectionWithAxis
@@ -31,6 +32,11 @@ functionality such as:
 # Constructors
 
 @docs fromEndpoints, from, along
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Properties
@@ -69,7 +75,7 @@ import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import Point2d exposing (Point2d)
-import Quantity exposing (Quantity, Squared)
+import Quantity exposing (Quantity, Rate, Squared)
 import Vector2d exposing (Vector2d)
 
 
@@ -129,6 +135,24 @@ given distances from the axis' origin point.
 along : Axis2d units coordinates -> Quantity Float units -> Quantity Float units -> LineSegment2d units coordinates
 along axis start end =
     fromEndpoints ( Point2d.along axis start, Point2d.along axis end )
+
+
+{-| Convert a line segment from one units type to another, by providing a
+conversion factor given as a rate of change of destination units with respect to
+source units.
+-}
+at : Quantity Float (Rate units2 units1) -> LineSegment2d units1 coordinates -> LineSegment2d units2 coordinates
+at rate (Types.LineSegment2d ( p1, p2 )) =
+    Types.LineSegment2d ( Point2d.at rate p1, Point2d.at rate p2 )
+
+
+{-| Convert a line segment from one units type to another, by providing an
+'inverse' conversion factor given as a rate of change of source units with
+respect to destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> LineSegment2d units1 coordinates -> LineSegment2d units2 coordinates
+at_ rate lineSegment =
+    at (Quantity.inverse rate) lineSegment
 
 
 {-| Get the start point of a line segment.
