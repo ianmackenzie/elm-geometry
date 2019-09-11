@@ -160,18 +160,6 @@ length polyline =
 
 
 {-| Scale a polyline about a given center point by a given scale.
-
-    point =
-        Point2d.meters 1 0
-
-    Polyline2d.scaleAbout point 2 stepShape
-    --> Polyline2d.fromVertices
-    -->     [ Point2d.meters -1 0
-    -->     , Point2d.meters 1 0
-    -->     , Point2d.meters 1 2
-    -->     , Point2d.meters 3 2
-    -->     ]
-
 -}
 scaleAbout : Point2d units coordinates -> Float -> Polyline2d units coordinates -> Polyline2d units coordinates
 scaleAbout point scale polyline =
