@@ -477,7 +477,8 @@ along (Types.Axis2d axis) (Quantity distance) =
 {-| Construct a point given its local coordinates within a particular frame:
 
     rotatedFrame =
-        Frame2d.atOrigin |> Frame2d.rotateBy (Angle.degrees 45)
+        Frame2d.atOrigin
+            |> Frame2d.rotateBy (Angle.degrees 45)
 
     Point2d.xyIn rotatedFrame
         (Length.meters 2)
@@ -845,10 +846,14 @@ between the two given points is less than the given tolerance.
     secondPoint =
         Point2d.meters 0.9999 2.0002
 
-    Point2d.equalWithin (Length.millimeters 1) firstPoint secondPoint
+    Point2d.equalWithin (Length.millimeters 1)
+        firstPoint
+        secondPoint
     --> True
 
-    Point2d.equalWithin (Length.microns 1) firstPoint secondPoint
+    Point2d.equalWithin (Length.microns 1)
+        firstPoint
+        secondPoint
     --> False
 
 -}
