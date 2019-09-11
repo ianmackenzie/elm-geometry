@@ -69,6 +69,9 @@ underlying ellipse; check out the <Ellipse2d> module for details.
 
 # Transformations
 
+These transformations generally behave just like [the ones in the `Point2d`
+module](Point2d#transformations).
+
 @docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
 
 
