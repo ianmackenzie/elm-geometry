@@ -345,7 +345,8 @@ mirrorAcross mirrorPlane circle =
         (Point3d.mirrorAcross mirrorPlane (centerPoint circle))
 
 
-{-| Project a circle into a sketch plane.
+{-| Project a circle into a sketch plane. Note that the result is an ellipse,
+not a circle!
 
     inclinedCircle : Circle3d
     inclinedCircle =
