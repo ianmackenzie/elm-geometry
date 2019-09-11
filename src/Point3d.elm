@@ -1719,7 +1719,7 @@ projectInto (Types.SketchPlane3d sketchPlane) (Types.Point3d p) =
 
 
 {-| Find the bounding box containing one or more input points. You would
-generally use this with a `case` expression:
+generally use this within a `case` expression:
 
     case points of
         [] ->

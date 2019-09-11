@@ -1306,7 +1306,7 @@ placeIn (Types.Frame2d frame) (Types.Point2d p) =
 
 
 {-| Find the bounding box containing one or more input points. You would
-generally use this with a `case` expression:
+generally use this within a `case` expression:
 
     case points of
         [] ->
