@@ -244,14 +244,10 @@ plane, in 2D coordinates within the existing sketch plane. Whew!
     --> Point3d.meters 0 2 3
 
     SketchPlane3d.xDirection sketchPlane
-    --> Direction3d.fromAzimuthAndElevation
-    -->     (Angle.degrees 90)
-    -->     (Angle.degrees -30)
+    --> Direction3d.yz (Angle.degrees -30)
 
     SketchPlane3d.yDirection sketchPlane
-    --> Direction3d.fromAzimuthAndElevation
-    -->     (Angle.degrees 90)
-    -->     (Angle.degrees 60)
+    --> Direction3d.yz (Angle.degrees 60)
 
 -}
 on :
@@ -307,8 +303,7 @@ directions:
 
     sketchPlane =
         SketchPlane3d.unsafe
-            { originPoint =
-                Point3d.meters 2 1 3
+            { originPoint = Point3d.meters 2 1 3
             , xDirection = Direction3d.positiveY
             , yDirection = Direction3d.negativeZ
             }
@@ -352,9 +347,7 @@ If the three given points are collinear, returns `Nothing`.
     --> Direction3d.x
 
     SketchPlane3d.yDirection sketchPlane
-    --> Direction3d.fromAzimuthAndElevation
-    -->     (Angle.degrees 90)
-    -->     (Angle.degrees 45)
+    --> Direction3d.yz (Angle.degrees 45)
 
     SketchPlane3d.throughPoints
         (Point3d.meters 2 0 0)
@@ -528,7 +521,8 @@ toFrame sketchPlane =
 
 {-| Create a 'fresh copy' of a sketch plane: one with the same origin point and
 X/Y directions, but that can be used to define a different local coordinate
-system. Sometimes useful in generic/library code.
+system. Sometimes useful in generic/library code. Despite the name, this
+function is efficient: it does not actually copy anything.
 -}
 copy : SketchPlane3d units coordinates defines1 -> SketchPlane3d units coordinates defines2
 copy (Types.SketchPlane3d properties) =
@@ -538,11 +532,13 @@ copy (Types.SketchPlane3d properties) =
 {-| Shift a sketch plane in its own normal direction by the given (signed)
 distance.
 
-    SketchPlane3d.offsetBy -2.0 SketchPlane3d.xy
+    SketchPlane3d.xy
+        |> SketchPlane3d.offsetBy (Length.meters -2.0)
         |> SketchPlane3d.originPoint
     --> Point3d.meters 0 0 -2
 
-    SketchPlane3d.offsetBy 1.0 SketchPlane3d.zx
+    SketchPlane3d.zx
+        |> SketchPlane3d.offsetBy (Length.meters 1.0)
         |> SketchPlane3d.originPoint
     --> Point3d.meters 0 1 0
 
@@ -639,7 +635,8 @@ sketch plane's origin point and X and Y directions will all be rotated around
 the given axis.
 
     SketchPlane3d.xy
-        |> SketchPlane3d.rotateAround Axis3d.x (Angle.degrees 90)
+        |> SketchPlane3d.rotateAround Axis3d.x
+            (Angle.degrees 90)
     --> SketchPlane3d.xz
 
 -}
@@ -676,9 +673,7 @@ transformations. For example,
     --> Point3d.meters 1 0 0
 
     SketchPlane3d.xDirection sketchPlane
-    --> Direction3d.fromAzimuthAndElevation
-    -->     (Angle.degrees 0)
-    -->     (Angle.degrees 45)
+    --> Direction3d.xz (Angle.degrees 45)
 
     SketchPlane3d.yDirection sketchPlane
     --> Direction3d.y
@@ -752,10 +747,10 @@ transformations. For example,
                 (Angle.degrees 45)
             |> SketchPlane3d.translateAlongOwn
                 SketchPlane3d.yAxis
-                2
+                (Length.meters 2)
 
 means 'take the global XY sketch plane, rotate it around the global X axis by
-45 degrees, then translate the result 2 units along its own (rotated) Y axis',
+45 degrees, then translate the result 2 meters along its own (rotated) Y axis',
 resulting in
 
     SketchPlane3d.originPoint sketchPlane
@@ -765,9 +760,7 @@ resulting in
     --> Direction3d.x
 
     SketchPlane3d.yDirection sketchPlane
-    --> Direction3d.fromAzimuthAndElevation
-    -->     (Angle.degrees 90)
-    -->     (Angle.degrees 45)
+    --> Direction3d.yz (Angle.degrees 45)
 
 -}
 translateAlongOwn : (SketchPlane3d units coordinates defines1 -> Axis3d units coordinates) -> Quantity Float units -> SketchPlane3d units coordinates defines1 -> SketchPlane3d units coordinates defines2
@@ -783,14 +776,13 @@ translateAlongOwn axis distance sketchPlane =
 
     sketchPlane =
         SketchPlane3d.yz
-            |> SketchPlane3d.moveTo
-                (Point2d.fromCoordinates ( 2, 1, 3 ))
+            |> SketchPlane3d.moveTo (Point3d.meters 2 1 3)
 
     mirroredSketchPlane =
         SketchPlane3d.mirrorAcross Plane3d.xy sketchPlane
 
     SketchPlane3d.originPoint sketchPlane
-    --> Point2d.fromCoordinates ( 2, 1, -3 )
+    --> Point3d.meters 2 1 -3
 
     SketchPlane3d.xDirection sketchPlane
     --> Direction3d.y
