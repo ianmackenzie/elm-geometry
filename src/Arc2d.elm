@@ -501,7 +501,8 @@ the given radius. In this case it is safer to use `Arc2d.from`, such as (for a
 counterclockwise arc):
 
     halfCircle =
-        Arc2d.from firstPoint secondPoint (Angle.degrees 180)
+        Arc2d.from firstPoint secondPoint <|
+            (Angle.degrees 180)
 
 (Use `Angle.degrees -180` for a clockwise arc.)
 
