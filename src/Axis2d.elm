@@ -198,7 +198,8 @@ axis' origin point around the given point by the given angle and the axis'
 direction by the given angle.
 
     exampleAxis
-        |> Axis2d.rotateAround Point2d.origin (Angle.degrees 90)
+        |> Axis2d.rotateAround Point2d.origin
+            (Angle.degrees 90)
     --> Axis2d.through (Point2d.meters -3 1)
     -->     (Direction2d.degrees 120)
 
