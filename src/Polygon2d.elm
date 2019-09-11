@@ -290,14 +290,14 @@ loop of the polygon and all inner loops. The order of the returned vertices is
 undefined.
 
     Polygon2d.vertices squareWithHole
-    --> [ Point2d ( 0, 0 )
-    --> , Point2d ( 3, 0 )
-    --> , Point2d ( 3, 3 )
-    --> , Point2d ( 0, 3 )
-    --> , Point2d ( 1, 1 )
-    --> , Point2d ( 1, 2 )
-    --> , Point2d ( 2, 2 )
-    --> , Point2d ( 2, 1 )
+    --> [ Point2d.meters 0 0
+    --> , Point2d.meters 3 0
+    --> , Point2d.meters 3 3
+    --> , Point2d.meters 0 3
+    --> , Point2d.meters 1 1
+    --> , Point2d.meters 1 2
+    --> , Point2d.meters 2 2
+    --> , Point2d.meters 2 1
     --> ]
 
 -}
@@ -320,38 +320,30 @@ loopEdges vertices_ =
 (hole) edges.
 
     Polygon2d.edges squareWithHole
-    --> [ LineSegment2d.fromEndpoints
-    -->     ( Point2d.meters 0 0
-    -->     , Point2d.meters 3 0
-    -->     )
-    --> , LineSegment2d.fromEndpoints
-    -->     ( Point2d.meters 3 0
-    -->     , Point2d.meters 3 3
-    -->     )
-    --> , LineSegment2d.fromEndpoints
-    -->     ( Point2d.meters 3 3
-    -->     , Point2d.meters 0 3
-    -->     )
-    --> , LineSegment2d.fromEndpoints
-    -->     ( Point2d.meters 0 3
-    -->     , Point2d.meters 0 0
-    -->     )
-    --> , LineSegment2d.fromEndpoints
-    -->     ( Point2d.meters 1 1
-    -->     , Point2d.meters 1 2
-    -->     )
-    --> , LineSegment2d.fromEndpoints
-    -->     ( Point2d.meters 1 2
-    -->     , Point2d.meters 2 2
-    -->     )
-    --> , LineSegment2d.fromEndpoints
-    -->     ( Point2d.meters 2 2
-    -->     , Point2d.meters 2 1
-    -->     )
-    --> , LineSegment2d.fromEndpoints
-    -->     ( Point2d.meters 2 1
-    -->     , Point2d.meters 1 1
-    -->     )
+    --> [ LineSegment2d.from
+    -->     (Point2d.meters 0 0)
+    -->     (Point2d.meters 3 0)
+    --> , LineSegment2d.from
+    -->     (Point2d.meters 3 0)
+    -->     (Point2d.meters 3 3)
+    --> , LineSegment2d.from
+    -->     (Point2d.meters 3 3)
+    -->     (Point2d.meters 0 3)
+    --> , LineSegment2d.from
+    -->     (Point2d.meters 0 3)
+    -->     (Point2d.meters 0 0)
+    --> , LineSegment2d.from
+    -->     (Point2d.meters 1 1)
+    -->     (Point2d.meters 1 2)
+    --> , LineSegment2d.from
+    -->     (Point2d.meters 1 2)
+    -->     (Point2d.meters 2 2)
+    --> , LineSegment2d.from
+    -->     (Point2d.meters 2 2)
+    -->     (Point2d.meters 2 1)
+    --> , LineSegment2d.from
+    -->     (Point2d.meters 2 1)
+    -->     (Point2d.meters 1 1)
     --> ]
 
 -}
@@ -371,7 +363,7 @@ edges polygon =
 includes the outer perimeter and the perimeter of any holes.
 
     Polygon2d.perimeter squareWithHole
-    --> 16
+    --> Length.meters 16
 
 -}
 perimeter : Polygon2d units coordinates -> Quantity Float units
@@ -382,7 +374,7 @@ perimeter =
 {-| Get the area of a polygon. This value will never be negative.
 
     Polygon2d.area squareWithHole
-    --> 8
+    --> Area.squareMeters 8
 
 -}
 area : Polygon2d units coordinates -> Quantity Float (Squared units)
@@ -392,23 +384,10 @@ area polygon =
             (Quantity.sum (List.map counterclockwiseArea (innerLoops polygon)))
 
 
-{-| Scale a polygon about a given center point by a given scale.
-
-    point =
-        Point2d.meters 2 1
-
-    Polygon2d.scaleAbout point 2 rectangle
-    --> Polygon2d.singleLoop
-    -->     [ Point2d.meters 0 1
-    -->     , Point2d.meters 4 1
-    -->     , Point2d.meters 4 3
-    -->     , Point2d.meters 0 3
-    -->     ]
-
-If the given scale is negative, the order of the polygon's vertices will be
-reversed so that the resulting polygon still has its outer vertices in
-counterclockwise order and its inner vertices in clockwise order.
-
+{-| Scale a polygon about a given center point by a given scale. If the given
+scale is negative, the order of the polygon's vertices will be reversed so that
+the resulting polygon still has its outer vertices in counterclockwise order and
+its inner vertices in clockwise order.
 -}
 scaleAbout : Point2d units coordinates -> Float -> Polygon2d units coordinates -> Polygon2d units coordinates
 scaleAbout point scale =
@@ -417,17 +396,6 @@ scaleAbout point scale =
 
 {-| Rotate a polygon around the given center point counterclockwise by the given
 angle.
-
-    rectangle
-        |> Polygon2d.rotateAround Point2d.origin
-            (Angle.degrees 90)
-    --> Polygon2d.singleLoop
-    -->     [ Point2d.meters -1 1
-    -->     , Point2d.meters -1 3
-    -->     , Point2d.meters -2 3
-    -->     , Point2d.meters -2 1
-    -->     ]
-
 -}
 rotateAround : Point2d units coordinates -> Angle -> Polygon2d units coordinates -> Polygon2d units coordinates
 rotateAround point angle =
@@ -435,53 +403,22 @@ rotateAround point angle =
 
 
 {-| Translate a polygon by the given displacement.
-
-    displacement =
-        Vector2d.meters 2 3
-
-    Polygon2d.translateBy displacement rectangle
-    --> Polygon2d.singleLoop
-    -->     [ Point2d.meters 3 4
-    -->     , Point2d.meters 5 4
-    -->     , Point2d.meters 5 5
-    -->     , Point2d.meters 3 5
-    -->     ]
-
 -}
 translateBy : Vector2d units coordinates -> Polygon2d units coordinates -> Polygon2d units coordinates
 translateBy vector =
     mapVertices (Point2d.translateBy vector) False
 
 
-{-| Translate a polygon in a given direction by a given distance;
-
-    Polygon2d.translateIn direction distance
-
-is equivalent to
-
-    Polygon2d.translateBy
-        (Vector2d.withLength distance direction)
-
+{-| Translate a polygon in a given direction by a given distance.
 -}
 translateIn : Direction2d coordinates -> Quantity Float units -> Polygon2d units coordinates -> Polygon2d units coordinates
 translateIn direction distance polygon =
     translateBy (Vector2d.withLength distance direction) polygon
 
 
-{-| Mirror a polygon across the given axis.
-
-    Polygon2d.mirrorAcross Axis2d.x rectangle
-    --> Polygon2d.singleLoop
-    -->     [ Point2d.meters 1 -1
-    -->     , Point2d.meters 3 -1
-    -->     , Point2d.meters 3 -2
-    -->     , Point2d.meters 1 -2
-    -->     ]
-
-The order of the polygon's vertices will be reversed so that the resulting
-polygon still has its outer vertices in counterclockwise order and its inner
-vertices in clockwise order.
-
+{-| Mirror a polygon across the given axis. The order of the polygon's vertices
+will be reversed so that the resulting polygon still has its outer vertices in
+counterclockwise order and its inner vertices in clockwise order.
 -}
 mirrorAcross : Axis2d units coordinates -> Polygon2d units coordinates -> Polygon2d units coordinates
 mirrorAcross axis =
@@ -510,49 +447,22 @@ mapVertices function invert polygon =
             }
 
 
-{-| Take a polygon defined in global coordinates, and return it expressed
-in local coordinates relative to a given reference frame.
-
-    localFrame =
-        Frame2d.atPoint (Point2d.meters 1 2)
-
-    Polygon2d.relativeTo localFrame rectangle
-    --> Polygon2d.singleLoop
-    -->     [ Point2d.meters 0 -1
-    -->     , Point2d.meters 2 -1
-    -->     , Point2d.meters 2 0
-    -->     , Point2d.meters 0 0
-    -->     ]
-
-If the given frame is left-handed, the order of the polygon's vertices will be
-reversed so that the resulting polygon still has its outer vertices in
-counterclockwise order and its inner vertices in clockwise order.
-
+{-| Take a polygon defined in global coordinates, and return it expressed in
+local coordinates relative to a given reference frame. If the given frame is
+left-handed, the order of the polygon's vertices will be reversed so that the
+resulting polygon still has its outer vertices in counterclockwise order and its
+inner vertices in clockwise order.
 -}
 relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Polygon2d units globalCoordinates -> Polygon2d units localCoordinates
 relativeTo frame =
     mapVertices (Point2d.relativeTo frame) (not (Frame2d.isRightHanded frame))
 
 
-{-| Take a polygon considered to be defined in local coordinates relative
-to a given reference frame, and return that polygon expressed in global
-coordinates.
-
-    localFrame =
-        Frame2d.atPoint (Point2d.meters 1 2)
-
-    Polygon2d.placeIn localFrame rectangle
-    --> Polygon2d.singleLoop
-    -->     [ Point2d.meters 2 3
-    -->     , Point2d.meters 4 3
-    -->     , Point2d.meters 4 4
-    -->     , Point2d.meters 2 4
-    -->     ]
-
+{-| Take a polygon considered to be defined in local coordinates relative to a
+given reference frame, and return that polygon expressed in global coordinates.
 If the given frame is left-handed, the order of the polygon's vertices will be
 reversed so that the resulting polygon still has its outer vertices in
 counterclockwise order and its inner vertices in clockwise order.
-
 -}
 placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Polygon2d units localCoordinates -> Polygon2d units globalCoordinates
 placeIn frame =
@@ -563,14 +473,13 @@ placeIn frame =
 if the polygon has no vertices.
 
     Polygon2d.boundingBox rectangle
-    --> Just
-    -->     (BoundingBox2d.fromExtrema
+    --> Just <|
+    -->     BoundingBox2d.fromExtrema
     -->         { minX = Length.meters 1
     -->         , maxX = Length.meters 3
     -->         , minY = Length.meters 1
     -->         , maxY = Length.meters 2
     -->         }
-    -->     )
 
 -}
 boundingBox : Polygon2d units coordinates -> Maybe (BoundingBox2d units coordinates)
