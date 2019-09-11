@@ -171,11 +171,7 @@ unwrap (Types.Vector3d components) =
     components
 
 
-{-| The zero vector.
-
-    Vector3d.zero
-    --> Vector3d.meters 0 0 0
-
+{-| The vector with components (0,0,0).
 -}
 zero : Vector3d units coordinates
 zero =
@@ -233,7 +229,10 @@ unitless x y z =
 {-| Construct a vector from its X, Y and Z components.
 
     vector =
-        Vector3d.meters 2 1 3
+        Vector3d.xyz
+            (Length.meters 2)
+            (Length.meters 1)
+            (Length.meters 3)
 
 -}
 xyz : Quantity Float units -> Quantity Float units -> Quantity Float units -> Vector3d units coordinates
@@ -252,16 +251,14 @@ xyz (Quantity x) (Quantity y) (Quantity z) =
             |> Frame3d.rotateAround Axis3d.z
                 (Angle.degrees 45)
 
-    Vector3d.fromComponentsIn frame
-        ( Speed.feetPerSecond 1
-        , Speed.feetPerSecond 0
-        , Speed.feetPerSecond 2
-        )
-    --> Vector3d.fromComponents
-    -->     ( Speed.feetPerSecond 0.7071
-    -->     , Speed.feetPerSecond 0.7071
-    -->     , Speed.feetPerSecond 2
-    -->     )
+    Vector3d.xyzIn frame
+        (Speed.feetPerSecond 1)
+        (Speed.feetPerSecond 0)
+        (Speed.feetPerSecond 2)
+    --> Vector3d.xyz
+    -->     (Speed.feetPerSecond 0.7071)
+    -->     (Speed.feetPerSecond 0.7071)
+    -->     (Speed.feetPerSecond 2)
 
 -}
 xyzIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Quantity Float units -> Quantity Float units -> Quantity Float units -> Vector3d units globalCoordinates
@@ -306,7 +303,7 @@ from (Types.Point3d p1) (Types.Point3d p2) =
 
 {-| Construct a vector with the given length in the given direction.
 
-    Vector3d.withLength 5 Direction3d.y
+    Vector3d.withLength (Length.meters 5) Direction3d.y
     --> Vector3d.meters 0 5 0
 
 -}
@@ -371,8 +368,8 @@ within the sketch plane:
     --> Vector3d.meters 2 3 0
 
     Vector3d.xyOn SketchPlane3d.zx
-        (meters 2)
-        (meters 3)
+        (Length.meters 2)
+        (Length.meters 3)
     --> Vector3d.meters 3 0 2
 
 -}
@@ -433,12 +430,10 @@ length and direction of the resulting vector are not specified, but it is
 guaranteed to be perpendicular to the given vector and non-zero (unless the
 given vector is itself zero).
 
-    Vector3d.perpendicularTo
-        (Vector3d.meters 3 0 0)
+    Vector3d.perpendicularTo (Vector3d.meters 3 0 0)
     --> Vector3d.meters 0 0 -3
 
-    Vector3d.perpendicularTo
-        (Vector3d.meters 1 2 3)
+    Vector3d.perpendicularTo (Vector3d.meters 1 2 3)
     --> Vector3d.meters 0 -3 2
 
     Vector3d.perpendicularTo Vector3d.zero
@@ -525,10 +520,7 @@ interpolateFrom (Types.Vector3d v1) (Types.Vector3d v2) t =
 in.
 
     Vector3d.fromTuple Length.meters ( 2, 3, 1 )
-    --> Vector3d.fromComponents
-    -->     (Length.meters 2)
-    -->     (Length.meters 3)
-    -->     (Length.meters 1)
+    --> Vector3d.meters 2 3 1
 
 -}
 fromTuple : (Float -> Quantity Float units) -> ( Float, Float, Float ) -> Vector3d units coordinates
@@ -540,10 +532,7 @@ fromTuple toQuantity ( x, y, z ) =
 to be in.
 
     vector =
-        Vector3d.fromComponents
-            (Length.feet 2)
-            (Length.feet 3)
-            (Length.feet 1)
+        Vector3d.feet 2 3 1
 
     Vector3d.toTuple Length.inInches vector
     --> ( 24, 36, 12 )
@@ -557,14 +546,11 @@ toTuple fromQuantity vector =
     )
 
 
-{-| Construct a `Vector3d` from a record with `Float` fields, by specifying what units those fields
-are in.
+{-| Construct a `Vector3d` from a record with `Float` fields, by specifying what
+units those fields are in.
 
     Vector3d.fromRecord Length.inches { x = 24, y = 36, z = 12 }
-    --> Vector3d.fromComponents
-    -->     (Length.feet 2)
-    -->     (Length.feet 3)
-    -->     (Length.feet 1)
+    --> Vector3d.feet 2 3 1
 
 -}
 fromRecord : (Float -> Quantity Float units) -> { x : Float, y : Float, z : Float } -> Vector3d units coordinates
@@ -576,10 +562,7 @@ fromRecord toQuantity { x, y, z } =
 result to be in.
 
     vector =
-        Vector3d.fromComponents
-            (Length.meters 2)
-            (Length.meters 3)
-            (Length.meters 1)
+        Vector3d.meters 2 3 1
 
     Vector3d.toRecord Length.inCentimeters vector
     --> { x = 200, y = 300, z = 100 }
@@ -631,9 +614,8 @@ toUnitless (Types.Vector3d components) =
 
 {-| Get the X component of a vector.
 
-    Vector3d.meters 1 2 3
-        |> Vector3d.xComponent
-    --> 1
+    Vector3d.xComponent (Vector3d.meters 1 2 3)
+    --> Length.meters 1
 
 -}
 xComponent : Vector3d units coordinates -> Quantity Float units
@@ -643,9 +625,8 @@ xComponent (Types.Vector3d v) =
 
 {-| Get the Y component of a vector.
 
-    Vector3d.meters 1 2 3
-        |> Vector3d.yComponent
-    --> 2
+    Vector3d.yComponent (Vector3d.meters 1 2 3)
+    --> Length.meters 2
 
 -}
 yComponent : Vector3d units coordinates -> Quantity Float units
@@ -655,9 +636,8 @@ yComponent (Types.Vector3d v) =
 
 {-| Get the Z component of a vector.
 
-    Vector3d.meters 1 2 3
-        |> Vector3d.zComponent
-    --> 3
+    Vector3d.zComponent (Vector3d.meters 1 2 3)
+    --> Length.meters 3
 
 -}
 zComponent : Vector3d units coordinates -> Quantity Float units
@@ -695,10 +675,14 @@ between the two given vectors has magnitude less than the given tolerance.
     secondVector =
         Vector3d.meters 2.0002 0.9999 3.0001
 
-    Vector3d.equalWithin 1e-3 firstVector secondVector
+    Vector3d.equalWithin (Length.millimeters 1)
+        firstVector
+        secondVector
     --> True
 
-    Vector3d.equalWithin 1e-6 firstVector secondVector
+    Vector3d.equalWithin (Length.microns 1)
+        firstVector
+        secondVector
     --> False
 
 -}
@@ -725,7 +709,7 @@ lexicographicComparison (Types.Vector3d v1) (Types.Vector3d v2) =
 {-| Get the length (magnitude) of a vector.
 
     Vector3d.length (Vector3d.meters 2 1 2)
-    --> 3
+    --> Length.meters 3
 
 -}
 length : Vector3d units coordinates -> Quantity Float units
@@ -757,13 +741,8 @@ length (Types.Vector3d v) =
 {-| Attempt to find the direction of a vector. In the case of a zero vector,
 returns `Nothing`.
 
-    Vector3d.meters 3 0 3
-        |> Vector3d.direction
-    --> Just
-    -->     (Direction3d.fromAzimuthAndElevation
-    -->         (Angle.degrees 0)
-    -->         (Angle.degrees 45)
-    -->     )
+    Vector3d.direction (Vector3d.meters 3 0 3)
+    --> Just (Direction3d.xz (Angle.degrees 45))
 
     Vector3d.direction Vector3d.zero
     --> Nothing
@@ -875,7 +854,7 @@ plus (Types.Vector3d v2) (Types.Vector3d v1) =
         }
 
 
-{-| Find the difference between two vectors (the first vector minus the second).
+{-| Find the difference between two vectors (the second vector minus the first).
 
     firstVector =
         Vector3d.meters 5 6 7
@@ -883,8 +862,20 @@ plus (Types.Vector3d v2) (Types.Vector3d v1) =
     secondVector =
         Vector3d.meters 1 1 1
 
-    Vector3d.difference firstVector secondVector
+    firstVector |> Vector3d.minus secondVector
     --> Vector3d.meters 4 5 6
+
+Note the argument order - `v1 - v2` would be written as
+
+    v1 |> Vector3d.minus v2
+
+which is the same as
+
+    Vector3d.minus v2 v1
+
+but the _opposite_ of
+
+    Vector3d.minus v1 v2
 
 -}
 minus : Vector3d units coordinates -> Vector3d units coordinates -> Vector3d units coordinates
@@ -899,18 +890,10 @@ minus (Types.Vector3d v2) (Types.Vector3d v1) =
 {-| Find the dot product of two vectors.
 
     firstVector =
-        Vector3d.fromComponents
-            ( Length.meters 1
-            , Length.meters 0
-            , Length.meters 2
-            )
+        Vector3d.meters 1 0 2
 
     secondVector =
-        Vector3d.fromComponents
-            ( Length.meters 3
-            , Length.meters 4
-            , Length.meters 5
-            )
+        Vector3d.meters 3 4 5
 
     firstVector |> Vector3d.dot secondVector
     --> Area.squareMeters 13
@@ -924,25 +907,16 @@ dot (Types.Vector3d v2) (Types.Vector3d v1) =
 {-| Find the cross product of two vectors.
 
     firstVector =
-        Vector3d.fromComponents
-            ( Length.meters 2
-            , Length.meters 0
-            , Length.meters 0
-            )
+        Vector3d.meters 2 0 0
 
     secondVector =
-        Vector3d.fromComponents
-            ( Length.meters 0
-            , Length.meters 3
-            , Length.meters 0
-            )
+        Vector3d.meters 0 3 0
 
     firstVector |> Vector3d.cross secondVector
-    --> Vector3d.fromComponents
-    -->     ( Quantity.zero
-    -->     , Quantity.zero
-    -->     , Area.squareMeters 6
-    -->     )
+    --> Vector3d.xyz
+    -->     Quantity.zero
+    -->     Quantity.zero
+    -->     (Area.squareMeters 6)
 
 Note the argument order - `v1 x v2` would be written as
 
@@ -986,8 +960,7 @@ reverse (Types.Vector3d v) =
 
 {-| Scale the length of a vector by a given scale.
 
-    Vector3d.meters 1 2 3
-        |> Vector3d.scaleBy 3
+    Vector3d.scaleBy 3 (Vector3d.meters 1 2 3)
     --> Vector3d.meters 3 6 9
 
 (This could have been called `multiply` or `times`, but `scaleBy` was chosen as
@@ -1009,10 +982,14 @@ scaleBy k (Types.Vector3d v) =
     vector =
         Vector3d.meters 2 0 1
 
-    Vector3d.rotateAround Axis3d.x (Angle.degrees 90) vector
+    vector
+        |> Vector3d.rotateAround Axis3d.x
+            (Angle.degrees 90)
     --> Vector3d.meters 2 -1 0
 
-    Vector3d.rotateAround Axis3d.z (Angle.degrees 45) vector
+    vector
+        |> Vector3d.rotateAround Axis3d.z
+            (Angle.degrees 45)
     --> Vector3d.meters 1.4142 1.4142 1
 
 -}

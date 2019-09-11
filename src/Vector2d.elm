@@ -128,7 +128,8 @@ orientations of the relevant frames, not the positions of their origin points.
 For the examples, assume the following frame has been defined:
 
     rotatedFrame =
-        Frame2d.atOrigin |> Frame2d.rotateBy (Angle.degrees 30)
+        Frame2d.atOrigin
+            |> Frame2d.rotateBy (Angle.degrees 30)
 
 @docs relativeTo, placeIn
 
@@ -178,11 +179,7 @@ unwrap (Types.Vector2d components) =
     components
 
 
-{-| The zero vector.
-
-    Vector2d.zero
-    --> Vector2d.meters 0 0
-
+{-| The vector with components (0,0).
 -}
 zero : Vector2d units coordinates
 zero =
@@ -236,7 +233,7 @@ unitless x y =
 {-| Construct a vector from its X and Y components.
 
     vector =
-        Vector2d.meters 2 3
+        Vector2d.xy (Length.meters 2) (Length.meters 3)
 
 -}
 xy : Quantity Float units -> Quantity Float units -> Vector2d units coordinates
@@ -250,14 +247,12 @@ xy (Quantity x) (Quantity y) =
         Frame2d.atOrigin
             |> Frame2d.rotateBy (Angle.degrees 45)
 
-    Vector2d.fromComponentsIn rotatedFrame
-        ( Length.meters 2
-        , Length.meters 0
-        )
-    --> Vector2d.fromComponents
-    -->     ( Length.meters 1.4142
-    -->     , Length.meters 1.4142
-    -->     )
+    Vector2d.xyIn rotatedFrame
+        (Length.meters 2)
+        (Length.meters 0)
+    --> Vector2d.xy
+    -->     (Length.meters 1.4142)
+    -->     (Length.meters 1.4142)
 
 -}
 xyIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Quantity Float units -> Quantity Float units -> Vector2d units globalCoordinates
@@ -278,7 +273,7 @@ xyIn (Types.Frame2d frame) (Quantity x) (Quantity y) =
 {-| Construct a vector from a length and angle. The angle is measured
 counterclockwise from the positive X direction.
 
-    Vector2d.fromPolarComponents ( 2, degrees 135 )
+    Vector2d.rTheta (Length.meters 2) (Angle.degrees 135)
     -->Vector2d.meters -1.4142 1.4142
 
 -}
@@ -297,14 +292,10 @@ frame:
         Frame2d.atOrigin
             |> Frame2d.rotateBy (Angle.degrees 45)
 
-    Vector2d.fromPolarComponentsIn rotatedFrame
-        ( Length.meters 1
-        , Angle.degrees 0
-        )
-    --> Vector2d.fromComponents
-    -->     ( Length.meters 0.7071
-    -->     , Length.meters 0.7071
-    -->     )
+    Vector2d.rThetaIn rotatedFrame
+        (Length.meters 1)
+        (Angle.degrees 0)
+    --> Vector2d.meters 0.7071 0.7071
 
 -}
 rThetaIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Quantity Float units -> Angle -> Vector2d units globalCoordinates
@@ -350,7 +341,7 @@ from (Types.Point2d p1) (Types.Point2d p2) =
 
 {-| Construct a vector with the given length in the given direction.
 
-    Vector2d.withLength 5 Direction2d.y
+    Vector2d.withLength (Length.meters 5) Direction2d.y
     --> Vector2d.meters 0 5
 
 -}
@@ -366,16 +357,13 @@ withLength (Quantity a) (Types.Direction2d d) =
 vector 90 degrees counterclockwise. The constructed vector will have the same
 length as the given vector. Alias for `Vector2d.rotateCounterclockwise`.
 
-    Vector2d.perpendicularTo
-        (Vector2d.meters 1 0)
+    Vector2d.perpendicularTo (Vector2d.meters 1 0)
     --> Vector2d.meters 0 1
 
-    Vector2d.perpendicularTo
-        (Vector2d.meters 0 2)
+    Vector2d.perpendicularTo (Vector2d.meters 0 2)
     --> Vector2d.meters -2 0
 
-    Vector2d.perpendicularTo
-        (Vector2d.meters 3 1)
+    Vector2d.perpendicularTo (Vector2d.meters 3 1)
     --> Vector2d.meters -1 3
 
     Vector2d.perpendicularTo Vector2d.zero
@@ -439,9 +427,7 @@ interpolateFrom (Types.Vector2d v1) (Types.Vector2d v2) t =
 in.
 
     Vector2d.fromTuple Length.meters ( 2, 3 )
-    --> Vector2d.fromComponents
-    -->     (Length.meters 2)
-    -->     (Length.meters 3)
+    --> Vector2d.meters 2 3
 
 -}
 fromTuple : (Float -> Quantity Float units) -> ( Float, Float ) -> Vector2d units coordinates
@@ -453,9 +439,7 @@ fromTuple toQuantity ( x, y ) =
 to be in.
 
     vector =
-        Vector2d.fromComponents
-            (Length.feet 2)
-            (Length.feet 3)
+        Vector2d.feet 2 3
 
     Vector2d.toTuple Length.inInches vector
     --> ( 24, 36 )
@@ -472,9 +456,7 @@ toTuple fromQuantity vector =
 are in.
 
     Vector2d.fromRecord Length.inches { x = 24, y = 36 }
-    --> Vector2d.fromComponents
-    -->     (Length.feet 2)
-    -->     (Length.feet 3)
+    --> Vector2d.feet 2 3
 
 -}
 fromRecord : (Float -> Quantity Float units) -> { x : Float, y : Float } -> Vector2d units coordinates
@@ -486,9 +468,7 @@ fromRecord toQuantity { x, y } =
 result to be in.
 
     vector =
-        Vector2d.fromComponents
-            (Length.meters 2)
-            (Length.meters 3)
+        Vector2d.meters 2 3
 
     Vector2d.toRecord Length.inCentimeters vector
     --> { x = 200, y = 300 }
@@ -541,20 +521,14 @@ toUnitless (Types.Vector2d coordinates) =
 rate of change of destination units with respect to source units.
 
     worldVector =
-        Vector2d.fromComponents
-            ( Length.meters 2
-            , Length.meters 3
-            )
+        Vector2d.meters 2 3
 
     resolution : Quantity Float (Rate Pixels Meters)
     resolution =
         Pixels.pixels 100 |> Quantity.per (Length.meters 1)
 
     worldVector |> Vector2d.at resolution
-    --> Vector2d.fromComponents
-    -->     ( Pixels.pixels 200
-    -->     , Pixels.pixels 300
-    -->     )
+    --> Vector2d.pixels 200 300
 
 -}
 at : Quantity Float (Rate destinationUnits sourceUnits) -> Vector2d sourceUnits coordinates -> Vector2d destinationUnits coordinates
@@ -569,20 +543,14 @@ at (Quantity rate) (Types.Vector2d v) =
 given as a rate of change of source units with respect to destination units.
 
     screenVector =
-        Vector2d.fromComponents
-            ( Pixels.pixels 200
-            , Pixels.pixels 300
-            )
+        Vector2d.pixels 200 300
 
     resolution : Quantity Float (Rate Pixels Meters)
     resolution =
         Pixels.pixels 50 |> Quantity.per (Length.meters 1)
 
     screenVector |> Vector2d.at_ resolution
-    --> Vector2d.fromComponents
-    -->     ( Length.meters 4
-    -->     , Length.meters 6
-    -->     )
+    --> Vector2d.meters 4 6
 
 -}
 at_ : Quantity Float (Rate sourceUnits destinationUnits) -> Vector2d sourceUnits coordinates -> Vector2d destinationUnits coordinates
@@ -596,10 +564,7 @@ at_ (Quantity rate) (Types.Vector2d v) =
 {-| Construct a vector representing a rate of change such as a speed:
 
     displacement =
-        Vector2d.fromComponents
-            ( Length.meters 6
-            , Length.meters 8
-            )
+        Vector2d.meters 6 8
 
     velocity =
         displacement |> Vector2d.per (Duration.seconds 2)
@@ -621,16 +586,12 @@ per (Quantity a) (Types.Vector2d v) =
 multiply a velocity by a duration to get a total displacement:
 
     velocity =
-        Vector2d.fromComponents
-            ( Pixels.pixelsPerSecond 200
-            , Pixels.pixelsPerSecond 50
-            )
+        Vector2d.xy
+            (Pixels.pixelsPerSecond 200)
+            (Pixels.pixelsPerSecond 50)
 
     velocity |> Vector2d.for (Duration.seconds 0.1)
-    --> Vector2d.fromComponents
-    -->     ( Pixels.pixels 20
-    -->     , Pixels.pixels 5
-    -->     )
+    --> Vector2d.pixels 20 5
 
 -}
 for : Quantity Float independentUnits -> Vector2d (Rate dependentUnits independentUnits) coordinates -> Vector2d dependentUnits coordinates
@@ -644,7 +605,7 @@ for (Quantity a) (Types.Vector2d v) =
 {-| Get the X component of a vector.
 
     Vector2d.xComponent (Vector2d.meters 2 3)
-    --> 2
+    --> Length.meters 2
 
 -}
 xComponent : Vector2d units coordinates -> Quantity Float units
@@ -655,7 +616,7 @@ xComponent (Types.Vector2d v) =
 {-| Get the Y component of a vector.
 
     Vector2d.yComponent (Vector2d.meters 2 3)
-    --> 3
+    --> Length.meters 3
 
 -}
 yComponent : Vector2d units coordinates -> Quantity Float units
@@ -692,10 +653,14 @@ between the two given vectors has magnitude less than the given tolerance.
     secondVector =
         Vector2d.meters 0.9999 2.0002
 
-    Vector2d.equalWithin 1e-3 firstVector secondVector
+    Vector2d.equalWithin (Length.millimeters 1)
+        firstVector
+        secondVector
     --> True
 
-    Vector2d.equalWithin 1e-6 firstVector secondVector
+    Vector2d.equalWithin (Length.microns 1)
+        firstVector
+        secondVector
     --> False
 
 -}
@@ -733,7 +698,7 @@ lexicographicComparison (Types.Vector2d v1) (Types.Vector2d v2) =
 {-| Get the length (magnitude) of a vector.
 
     Vector2d.length (Vector2d.meters 3 4)
-    --> 5
+    --> Length.meters 5
 
 -}
 length : Vector2d units coordinates -> Quantity Float units
@@ -854,7 +819,7 @@ normalize (Types.Vector2d v) =
     secondVector =
         Vector2d.meters 3 4
 
-    Vector2d.sum firstVector secondVector
+    firstVector |> Vector2d.plus secondVector
     --> Vector2d.meters 4 6
 
 -}
@@ -866,7 +831,7 @@ plus (Types.Vector2d v2) (Types.Vector2d v1) =
         }
 
 
-{-| Find the difference between two vectors (the first vector minus the second).
+{-| Find the difference between two vectors (the second vector minus the first).
 
     firstVector =
         Vector2d.meters 5 6
@@ -874,8 +839,20 @@ plus (Types.Vector2d v2) (Types.Vector2d v1) =
     secondVector =
         Vector2d.meters 1 3
 
-    Vector2d.difference firstVector secondVector
+    firstVector |> Vector2d.minus secondVector
     --> Vector2d.meters 4 3
+
+Note the argument order - `v1 - v2` would be written as
+
+    v1 |> Vector2d.minus v2
+
+which is the same as
+
+    Vector2d.minus v2 v1
+
+but the _opposite_ of
+
+    Vector2d.minus v1 v2
 
 -}
 minus : Vector2d units coordinates -> Vector2d units coordinates -> Vector2d units coordinates
@@ -889,16 +866,10 @@ minus (Types.Vector2d v2) (Types.Vector2d v1) =
 {-| Find the dot product of two vectors.
 
     firstVector =
-        Vector2d.fromComponents
-            ( Length.meters 1
-            , Length.meters 2
-            )
+        Vector2d.meters 1 2
 
     secondVector =
-        Vector2d.fromComponents
-            ( Length.meters 3
-            , Length.meters 4
-            )
+        Vector2d.meters 3 4
 
     firstVector |> Vector2d.dot secondVector
     --> Area.squareMeters 11
@@ -935,16 +906,10 @@ but the _opposite_ of
 Some examples:
 
     firstVector =
-        Vector2d.fromComponents
-            ( Length.feet 2
-            , Length.feet 0
-            )
+        Vector2d.feet 2 0
 
     secondVector =
-        Vector2d.fromComponents
-            ( Length.feet 0
-            , Length.feet 3
-            )
+        Vector2d.feet 0 3
 
     firstVector |> Vector2d.cross secondVector
     --> Area.squareFeet 6
@@ -1003,7 +968,7 @@ scaleBy k (Types.Vector2d v) =
     --> Vector2d.meters 0 1.4142
 
     Vector2d.meters 1 0
-        |> Vector2d.rotateBy pi
+        |> Vector2d.rotateBy (Angle.radians pi)
     --> Vector2d.meters -1 0
 
 -}
@@ -1128,12 +1093,10 @@ projectionIn (Types.Direction2d d) (Types.Vector2d v) =
 
 {-| Project a vector onto an axis.
 
-    Vector2d.projectOnto Axis2d.y
-        (Vector2d.meters 3 4)
+    Vector2d.projectOnto Axis2d.y (Vector2d.meters 3 4)
     --> Vector2d.meters 0 4
 
-    Vector2d.projectOnto Axis2d.x
-        (Vector2d.meters -1 2)
+    Vector2d.projectOnto Axis2d.x (Vector2d.meters -1 2)
     --> Vector2d.meters -1 0
 
 This is equivalent to finding the projection in the axis' direction.
