@@ -688,17 +688,7 @@ sweptAngle (Types.Arc2d properties) =
     properties.sweptAngle
 
 
-{-| Get the point along an arc at a given parameter value:
-
-    Arc2d.pointOn exampleArc 0
-    --> Point2d.meters 3 1
-
-    Arc2d.pointOn exampleArc 0.5
-    --> Point2d.meters 2.4142 2.4142
-
-    Arc2d.pointOn exampleArc 1
-    --> Point2d.meters 1 3
-
+{-| Get the point along an arc at a given parameter value.
 -}
 pointOn : Arc2d units coordinates -> Float -> Point2d units coordinates
 pointOn (Types.Arc2d arc) parameterValue =
@@ -767,17 +757,7 @@ pointOn (Types.Arc2d arc) parameterValue =
         Point2d.xy px py
 
 
-{-| Get the first derivative of an arc at a given parameter value:
-
-    Arc2d.firstDerivative exampleArc 0
-    --> Vector2d.meters 0 3.1416
-
-    Arc2d.firstDerivative exampleArc 0.5
-    --> Vector2d.meters -2.2214 2.2214
-
-    Arc2d.firstDerivative exampleArc 1
-    --> Vector2d.meters -3.1416 0
-
+{-| Get the first derivative of an arc at a given parameter value.
 -}
 firstDerivative : Arc2d units coordinates -> Float -> Vector2d units coordinates
 firstDerivative (Types.Arc2d arc) =
@@ -791,14 +771,7 @@ firstDerivative (Types.Arc2d arc) =
                 (Quantity.multiplyBy parameterValue arc.sweptAngle)
 
 
-{-| If a curve has zero length (consists of just a single point), then we say
-that it is 'degenerate'. Some operations such as computing tangent directions
-are not defined on degenerate curves.
-
-A `Nondegenerate` value represents an arc that is definitely not degenerate. It
-is used as input to functions such as `Arc2d.tangentDirection` and can be
-constructed using `Arc2d.nondegenerate`.
-
+{-| Represents a nondegenerate spline (one that has finite, non-zero length).
 -}
 type Nondegenerate units coordinates
     = Nondegenerate (Arc2d units coordinates)
@@ -807,10 +780,6 @@ type Nondegenerate units coordinates
 {-| Attempt to construct a nondegenerate arc from a general `Arc2d`. If the arc
 is in fact degenerate (consists of a single point), returns an `Err` with that
 point.
-
-    Arc2d.nondegenerate exampleArc
-    --> Ok nondegenerateExampleArc
-
 -}
 nondegenerate : Arc2d units coordinates -> Result (Point2d units coordinates) (Nondegenerate units coordinates)
 nondegenerate arc =
@@ -826,10 +795,6 @@ nondegenerate arc =
 
 
 {-| Convert a nondegenerate arc back to a general `Arc2d`.
-
-    Arc2d.fromNondegenerate nondegenerateExampleArc
-    --> exampleArc
-
 -}
 fromNondegenerate : Nondegenerate units coordinates -> Arc2d units coordinates
 fromNondegenerate (Nondegenerate arc) =
@@ -837,17 +802,7 @@ fromNondegenerate (Nondegenerate arc) =
 
 
 {-| Get the tangent direction to a nondegenerate arc at a given parameter
-value:
-
-    Arc2d.tangentDirection nondegenerateExampleArc 0
-    --> Direction2d.degrees 90
-
-    Arc2d.tangentDirection nondegenerateExampleArc 0.5
-    --> Direction2d.degrees 135
-
-    Arc2d.tangentDirection nondegenerateExampleArc 1
-    --> Direction2d.degrees 180
-
+value.
 -}
 tangentDirection : Nondegenerate units coordinates -> Float -> Direction2d coordinates
 tangentDirection (Nondegenerate (Types.Arc2d arc)) parameterValue =
@@ -857,23 +812,7 @@ tangentDirection (Nondegenerate (Types.Arc2d arc)) parameterValue =
 
 
 {-| Get both the point and tangent direction of a nondegenerate arc at a given
-parameter value:
-
-    Arc2d.sample nondegenerateExampleArc 0
-    --> ( Point2d.meters 3 1
-    --> , Direction2d.degrees 90
-    --> )
-
-    Arc2d.sample nondegenerateExampleArc 0.5
-    --> ( Point2d.meters 2.4142 2.4142
-    --> , Direction2d.degrees 135
-    --> )
-
-    Arc2d.sample nondegenerateExampleArc 1
-    --> ( Point2d.meters 1 3
-    --> , Direction2d.degrees 180
-    --> )
-
+parameter value.
 -}
 sample : Nondegenerate units coordinates -> Float -> ( Point2d units coordinates, Direction2d coordinates )
 sample nondegenerateArc parameterValue =
@@ -936,12 +875,6 @@ toPolyline { maxError } arc =
 
 {-| Reverse the direction of an arc, so that the start point becomes the end
 point and vice versa.
-
-    Arc2d.reverse exampleArc
-    --> Point2d.meters 1 3
-    -->     |> Arc2d.sweptAround (Point2d.meters 1 1)
-    -->         (Angle.degrees -90)
-
 -}
 reverse : Arc2d units coordinates -> Arc2d units coordinates
 reverse ((Types.Arc2d arc) as arc_) =

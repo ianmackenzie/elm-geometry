@@ -298,12 +298,6 @@ circumference circle =
 
 
 {-| Scale a circle around a given point by a given scale.
-
-    Circle3d.scaleAbout Point3d.origin 3 exampleCircle
-    --> Circle3d.withRadius 3
-    -->     Direction3d.z
-    -->     (Point3d.meters 6 0 3)
-
 -}
 scaleAbout : Point3d units coordinates -> Float -> Circle3d units coordinates -> Circle3d units coordinates
 scaleAbout point scale circle =
@@ -318,13 +312,6 @@ scaleAbout point scale circle =
 
 
 {-| Rotate a circle around a given axis by a given angle.
-
-    exampleCircle
-        |> Circle3d.rotateAround Axis3d.y (Angle.degrees 90)
-    --> Circle3d.withRadius 3
-    -->     Direction3d.x
-    -->     (Point3d.meters 1 0 -2)
-
 -}
 rotateAround : Axis3d units coordinates -> Angle -> Circle3d units coordinates -> Circle3d units coordinates
 rotateAround givenAxis givenAngle circle =
@@ -334,15 +321,6 @@ rotateAround givenAxis givenAngle circle =
 
 
 {-| Translate a circle by a given displacement.
-
-    displacement =
-        Vector3d.meters 2 1 3
-
-    Circle3d.translateBy displacement exampleCircle
-    --> Circle3d.withRadius 3
-    -->     Direction3d.z
-    -->     (Point3d.meters 4 1 4)
-
 -}
 translateBy : Vector3d units coordinates -> Circle3d units coordinates -> Circle3d units coordinates
 translateBy displacement circle =
@@ -351,15 +329,7 @@ translateBy displacement circle =
         (Point3d.translateBy displacement (centerPoint circle))
 
 
-{-| Translate a circle in a given direction by a given distance;
-
-    Circle3d.translateIn direction distance
-
-is equivalent to
-
-    Circle3d.translateBy
-        (Vector3d.withLength distance direction)
-
+{-| Translate a circle in a given direction by a given distance.
 -}
 translateIn : Direction3d coordinates -> Quantity Float units -> Circle3d units coordinates -> Circle3d units coordinates
 translateIn direction distance circle =
@@ -367,12 +337,6 @@ translateIn direction distance circle =
 
 
 {-| Mirror a circle across a given plane.
-
-    Circle3d.mirrorAcross Plane3d.xy exampleCircle
-    --> Circle3d.withRadius 3
-    -->     Direction3d.negativeZ
-    -->     (Point3d.meters 2 0 -1)
-
 -}
 mirrorAcross : Plane3d units coordinates -> Circle3d units coordinates -> Circle3d units coordinates
 mirrorAcross mirrorPlane circle =

@@ -337,11 +337,7 @@ endPoint arc =
     pointOn arc 1
 
 
-{-| Get the point along an arc at a given parameter value:
-
-    Arc3d.pointOn exampleArc 0.5
-    --> Point3d.meters 0 1.4142 0
-
+{-| Get the point along an arc at a given parameter value.
 -}
 pointOn : Arc3d units coordinates -> Float -> Point3d units coordinates
 pointOn (Types.Arc3d arc) parameterValue =
@@ -432,13 +428,6 @@ pointOn (Types.Arc3d arc) parameterValue =
 
 
 {-| Get the first derivative of an arc at a given parameter value.
-
-    Arc3d.firstDerivative exampleArc 0
-    --> Vector3d.meters -1.5708 1.5708 0
-
-    Arc3d.firstDerivative exampleArc 1
-    --> Vector3d.meters -1.5708 -1.5708 0
-
 -}
 firstDerivative : Arc3d units coordinates -> Float -> Vector3d units coordinates
 firstDerivative (Types.Arc3d arc) =
@@ -490,14 +479,7 @@ firstDerivative (Types.Arc3d arc) =
             )
 
 
-{-| If a curve has zero length (consists of just a single point), then we say
-that it is 'degenerate'. Some operations such as computing tangent directions
-are not defined on degenerate curves.
-
-A `Nondegenerate` value represents an arc that is definitely not degenerate. It
-is used as input to functions such as `Arc3d.tangentDirection` and can be
-constructed using `Arc3d.nondegenerate`.
-
+{-| Represents a nondegenerate spline (one that has finite, non-zero length).
 -}
 type Nondegenerate units coordinates
     = Nondegenerate (Arc3d units coordinates)
@@ -506,10 +488,6 @@ type Nondegenerate units coordinates
 {-| Attempt to construct a nondegenerate arc from a general `Arc3d`. If the arc
 is in fact degenerate (consists of a single point), returns an `Err` with that
 point.
-
-    Arc3d.nondegenerate exampleArc
-    --> Ok nondegenerateExampleArc
-
 -}
 nondegenerate : Arc3d units coordinates -> Result (Point3d units coordinates) (Nondegenerate units coordinates)
 nondegenerate arc =
@@ -532,19 +510,7 @@ fromNondegenerate (Nondegenerate arc) =
 
 
 {-| Get the tangent direction to a nondegenerate arc at a given parameter
-value:
-
-    Arc3d.tangentDirection nondegenerateExampleArc 0
-    --> Direction3d.on SketchPlane3d.xy
-    -->     (Direction2d.degrees 135)
-
-    Arc3d.tangentDirection nondegenerateExampleArc 0.5
-    --> Direction3d.negativeX
-
-    Arc3d.tangentDirection nondegenerateExampleArc 0
-    --> Direction3d.on SketchPlane3d.xy
-    -->     (Direction2d.degrees 225)
-
+value.
 -}
 tangentDirection : Nondegenerate units coordinates -> Float -> Direction3d coordinates
 tangentDirection (Nondegenerate (Types.Arc3d arc)) parameterValue =
@@ -587,25 +553,7 @@ tangentDirection (Nondegenerate (Types.Arc3d arc)) parameterValue =
 
 
 {-| Get both the point and tangent direction of a nondegenerate arc at a given
-parameter value:
-
-    Arc3d.sample nondegenerateExampleArc 0
-    --> ( Point3d.meters 1 1 0
-    --> , Direction3d.on SketchPlane3d.xy
-    -->     (Direction2d.degrees 135)
-    --> )
-
-    Arc3d.sample nondegenerateExampleArc 0.5
-    --> ( Point3d.meters 0 1.4142 0
-    --> , Direction3d.negativeX
-    --> )
-
-    Arc3d.sample nondegenerateExampleArc 1
-    --> ( Point3d.meters -1 1 0
-    --> , Direction3d.on SketchPlane3d.xy
-    -->     (Direction2d.degrees 225)
-    --> )
-
+parameter value.
 -}
 sample : Nondegenerate units coordinates -> Float -> ( Point3d units coordinates, Direction3d coordinates )
 sample nondegenerateArc parameterValue =
@@ -684,11 +632,6 @@ sweptAngle (Types.Arc3d properties) =
 {-| Reverse the direction of an arc, so that the start point becomes the end
 point and vice versa. The resulting arc will have the same axis as the original
 but a swept angle with the opposite sign.
-
-    Arc3d.reverse exampleArc
-    --> Arc3d.sweptAround Axis3d.z (Angle.degrees -90)
-    -->     (Point3d.meters -1 1 0)
-
 -}
 reverse : Arc3d units coordinates -> Arc3d units coordinates
 reverse ((Types.Arc3d arc) as arc_) =

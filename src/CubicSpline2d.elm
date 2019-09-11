@@ -359,17 +359,7 @@ boundingBox spline =
         }
 
 
-{-| Get the point along a spline at a given parameter value:
-
-    CubicSpline2d.pointOn exampleSpline 0
-    --> Point2d.meters 1 1
-
-    CubicSpline2d.pointOn exampleSpline 0.5
-    --> Point2d.meters 4 2.5
-
-    CubicSpline2d.pointOn exampleSpline 1
-    --> Point2d.meters 7 4
-
+{-| Get the point along a spline at a given parameter value.
 -}
 pointOn : CubicSpline2d units coordinates -> Float -> Point2d units coordinates
 pointOn spline parameterValue =
@@ -404,14 +394,7 @@ pointOn spline parameterValue =
     Point2d.interpolateFrom r1 r2 parameterValue
 
 
-{-| If a curve has zero length (consists of just a single point), then we say
-that it is 'degenerate'. Some operations such as computing tangent directions
-are not defined on degenerate curves.
-
-A `Nondegenerate` value represents a spline that is definitely not degenerate.
-It is used as input to functions such as `CubicSpline2d.tangentDirection` and
-can be constructed using `CubicSpline2d.nondegenerate`.
-
+{-| Represents a nondegenerate spline (one that has finite, non-zero length).
 -}
 type Nondegenerate units coordinates
     = NonZeroThirdDerivative (CubicSpline2d units coordinates) (Direction2d coordinates)

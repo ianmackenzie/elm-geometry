@@ -452,14 +452,7 @@ firstDerivative arc parameterValue =
         )
 
 
-{-| If a curve has zero length (consists of just a single point), then we say
-that it is 'degenerate'. Some operations such as computing tangent directions
-are not defined on degenerate curves.
-
-A `Nondegenerate` value represents an arc that is definitely not degenerate. It
-is used as input to functions such as `EllipticalArc2d.tangentDirection` and can
-be constructed using `EllipticalArc2d.nondegenerate`.
-
+{-| Represents a nondegenerate spline (one that has finite, non-zero length).
 -}
 type Nondegenerate units coordinates
     = Curved (EllipticalArc2d units coordinates)
