@@ -44,7 +44,8 @@ as
 
 # Transformations
 
-Transforming a polyline is equivalent to transforming each of its vertices.
+These transformations generally behave just like [the ones in the `Point3d`
+module](Point3d#transformations).
 
 @docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapVertices
 

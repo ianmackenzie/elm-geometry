@@ -65,6 +65,9 @@ they can have arbitrary orientation and so can be rotated, mirrored etc.
 
 # Transformation
 
+These transformations generally behave just like [the ones in the `Point2d`
+module](Point2d#transformations).
+
 @docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
 
 

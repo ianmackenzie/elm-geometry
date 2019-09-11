@@ -46,6 +46,9 @@ for:
 
 # Transformations
 
+These transformations generally behave just like [the ones in the `Point3d`
+module](Point3d#transformations).
+
 @docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
 
 

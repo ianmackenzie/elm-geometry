@@ -56,8 +56,8 @@ functionality such as:
 
 # Transformations
 
-Transforming a line segment is equivalent to transforming its start and end
-points and forming a new line segment between the resulting points.
+These transformations generally behave just like [the ones in the `Point3d`
+module](Point3d#transformations).
 
 @docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapEndpoints
 

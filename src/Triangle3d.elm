@@ -43,7 +43,8 @@ three vertices. This module contains triangle-related functionality such as:
 
 # Transformations
 
-Transforming a triangle is equivalent to transforming its vertices.
+These transformations generally behave just like [the ones in the `Point3d`
+module](Point3d#transformations).
 
 @docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapVertices
 

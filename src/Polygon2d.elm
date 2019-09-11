@@ -52,7 +52,8 @@ holes. This module contains a variety of polygon-related functionality, such as
 
 # Transformations
 
-Transforming a polygon is equivalent to transforming each of its vertices.
+These transformations generally behave just like [the ones in the `Point2d`
+module](Point2d#transformations).
 
 @docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
 

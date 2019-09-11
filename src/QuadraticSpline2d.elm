@@ -59,6 +59,9 @@ contains functionality for
 
 # Transformations
 
+These transformations generally behave just like [the ones in the `Point2d`
+module](Point2d#transformations).
+
 @docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
 
 
