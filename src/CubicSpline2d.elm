@@ -129,10 +129,10 @@ type alias CubicSpline2d units coordinates =
 
     exampleSpline =
         CubicSpline2d.fromControlPoints
-            (Point2d.fromTuple meters ( 1, 1 ))
-            (Point2d.fromTuple meters ( 3, 4 ))
-            (Point2d.fromTuple meters ( 5, 1 ))
-            (Point2d.fromTuple meters ( 7, 4 ))
+            (Point2d.meters 1 1)
+            (Point2d.meters 3 4)
+            (Point2d.meters 5 1)
+            (Point2d.meters 7 4)
 
 -}
 fromControlPoints : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> CubicSpline2d units coordinates
