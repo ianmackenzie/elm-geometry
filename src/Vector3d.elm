@@ -15,6 +15,7 @@ module Vector3d exposing
     , xyz, xyzIn, from, withLength, on, xyOn, rThetaOn, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
     , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
+    , at, at_
     , xComponent, yComponent, zComponent, componentIn, length, direction
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross
@@ -85,6 +86,11 @@ code that represents vectors as plain records.
 @docs fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
 
 
+# Unit conversion
+
+@docs at, at_
+
+
 # Properties
 
 @docs xComponent, yComponent, zComponent, componentIn, length, direction
@@ -140,7 +146,7 @@ import Float.Extra as Float
 import Geometry.Types as Types exposing (Axis3d, Direction3d, Frame3d, Plane3d, Point3d, SketchPlane3d)
 import Length exposing (Meters)
 import Pixels exposing (Pixels)
-import Quantity exposing (Cubed, Product, Quantity(..), Squared, Unitless)
+import Quantity exposing (Cubed, Product, Quantity(..), Rate, Squared, Unitless)
 import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
 
@@ -610,6 +616,52 @@ fromUnitless components =
 toUnitless : Vector3d Unitless coordinates -> { x : Float, y : Float, z : Float }
 toUnitless (Types.Vector3d components) =
     components
+
+
+{-| Convert a vector from one units type to another, by providing a conversion factor given as a
+rate of change of destination units with respect to source units.
+
+    worldVector =
+        Vector3d.meters 2 3 1
+
+    resolution : Quantity Float (Rate Pixels Meters)
+    resolution =
+        Pixels.pixels 100 |> Quantity.per (Length.meters 1)
+
+    worldVector |> Vector3d.at resolution
+    --> Vector3d.pixels 200 300 100
+
+-}
+at : Quantity Float (Rate destinationUnits sourceUnits) -> Vector3d sourceUnits coordinates -> Vector3d destinationUnits coordinates
+at (Quantity rate) (Types.Vector3d v) =
+    Types.Vector3d
+        { x = rate * v.x
+        , y = rate * v.y
+        , z = rate * v.z
+        }
+
+
+{-| Convert a vector from one units type to another, by providing an 'inverse' conversion factor
+given as a rate of change of source units with respect to destination units.
+
+    screenVector =
+        Vector3d.pixels 200 300 100
+
+    resolution : Quantity Float (Rate Pixels Meters)
+    resolution =
+        Pixels.pixels 50 |> Quantity.per (Length.meters 1)
+
+    screenVector |> Vector3d.at_ resolution
+    --> Vector3d.meters 4 6 2
+
+-}
+at_ : Quantity Float (Rate sourceUnits destinationUnits) -> Vector3d sourceUnits coordinates -> Vector3d destinationUnits coordinates
+at_ (Quantity rate) (Types.Vector3d v) =
+    Types.Vector3d
+        { x = v.x / rate
+        , y = v.y / rate
+        , z = v.z / rate
+        }
 
 
 {-| Get the X component of a vector.

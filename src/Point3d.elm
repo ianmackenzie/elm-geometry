@@ -15,6 +15,7 @@ module Point3d exposing
     , xyz, xyzIn, midpoint, interpolateFrom, along, on, xyOn, rThetaOn, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
     , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
+    , at, at_
     , xCoordinate, yCoordinate, zCoordinate, xCoordinateIn, yCoordinateIn, zCoordinateIn
     , equalWithin, lexicographicComparison
     , distanceFrom, signedDistanceAlong, distanceFromAxis, signedDistanceFrom
@@ -81,6 +82,11 @@ code that represents points as plain records.
 @docs fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
 
 
+# Unit conversion
+
+@docs at, at_
+
+
 # Properties
 
 @docs xCoordinate, yCoordinate, zCoordinate, xCoordinateIn, yCoordinateIn, zCoordinateIn
@@ -133,7 +139,7 @@ import Geometry.Types as Types exposing (Axis3d, BoundingBox3d, Frame3d, Plane3d
 import Length exposing (Meters)
 import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
-import Quantity exposing (Quantity(..), Squared, Unitless)
+import Quantity exposing (Quantity(..), Rate, Squared, Unitless)
 import Quantity.Extra as Quantity
 import Vector3d exposing (Vector3d)
 
@@ -852,6 +858,52 @@ fromUnitless coordinates =
 toUnitless : Point3d Unitless coordinates -> { x : Float, y : Float, z : Float }
 toUnitless (Types.Point3d coordinates) =
     coordinates
+
+
+{-| Convert a point from one units type to another, by providing a conversion factor given as a
+rate of change of destination units with respect to source units.
+
+    worldPoint =
+        Point3d.meters 2 3 1
+
+    resolution : Quantity Float (Rate Pixels Meters)
+    resolution =
+        Pixels.pixels 100 |> Quantity.per (Length.meters 1)
+
+    worldPoint |> Point3d.at resolution
+    --> Point3d.pixels 200 300 100
+
+-}
+at : Quantity Float (Rate destinationUnits sourceUnits) -> Point3d sourceUnits coordinates -> Point3d destinationUnits coordinates
+at (Quantity rate) (Types.Point3d p) =
+    Types.Point3d
+        { x = rate * p.x
+        , y = rate * p.y
+        , z = rate * p.z
+        }
+
+
+{-| Convert a point from one units type to another, by providing an 'inverse' conversion factor
+given as a rate of change of source units with respect to destination units.
+
+    screenPoint =
+        Point3d.pixels 200 300 100
+
+    resolution : Quantity Float (Rate Pixels Meters)
+    resolution =
+        Pixels.pixels 50 |> Quantity.per (Length.meters 1)
+
+    screenPoint |> Point3d.at_ resolution
+    --> Point3d.meters 4 6 2
+
+-}
+at_ : Quantity Float (Rate sourceUnits destinationUnits) -> Point3d sourceUnits coordinates -> Point3d destinationUnits coordinates
+at_ (Quantity rate) (Types.Point3d p) =
+    Types.Point3d
+        { x = p.x / rate
+        , y = p.y / rate
+        , z = p.z / rate
+        }
 
 
 {-| Find the X coordinate of a point relative to a given frame; this is the X
