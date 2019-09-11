@@ -797,7 +797,8 @@ toTuple fromQuantity point =
 {-| Construct a `Point3d` from a record with `Float` fields, by specifying what
 units those fields are in.
 
-    Point3d.fromRecord Length.inches { x = 24, y = 36, z = 12 }
+    Point3d.fromRecord Length.inches
+        { x = 24, y = 36, z = 12 }
     --> Point3d.feet 2 3 1
 
 -}
@@ -996,10 +997,14 @@ between the two given points is less than the given tolerance.
     secondPoint =
         Point3d.meters 2.0002 0.9999 3.0001
 
-    Point3d.equalWithin (Length.millimeters 1) firstPoint secondPoint
+    Point3d.equalWithin (Length.millimeters 1)
+        firstPoint
+        secondPoint
     --> True
 
-    Point3d.equalWithin (Length.microns 1) firstPoint secondPoint
+    Point3d.equalWithin (Length.microns 1)
+        firstPoint
+        secondPoint
     --> False
 
 -}
