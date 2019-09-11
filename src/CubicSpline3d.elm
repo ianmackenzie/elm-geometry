@@ -18,7 +18,8 @@ module CubicSpline3d exposing
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
     , relativeTo, placeIn, projectInto
     , bisect, splitAt
-    , ArcLengthParameterized, arcLengthParameterized, arcLength, midpoint, pointAlong, tangentDirectionAlong, sampleAlong
+    , ArcLengthParameterized, arcLengthParameterized, arcLength, midpoint
+    , pointAlong, tangentDirectionAlong, sampleAlong
     , arcLengthParameterization, fromArcLengthParameterized
     , firstDerivative, secondDerivative, thirdDerivative, maxSecondDerivativeMagnitude
     )
@@ -78,7 +79,12 @@ module](Point3d#transformations).
 
 # Arc length parameterization
 
-@docs ArcLengthParameterized, arcLengthParameterized, arcLength, midpoint, pointAlong, tangentDirectionAlong, sampleAlong
+@docs ArcLengthParameterized, arcLengthParameterized, arcLength, midpoint
+
+For the following evaluation functions, the given arc length will be clamped to
+the arc length of the spline, so the result will always be on the spline.
+
+@docs pointAlong, tangentDirectionAlong, sampleAlong
 
 
 ## Low level

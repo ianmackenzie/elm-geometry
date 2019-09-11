@@ -19,7 +19,8 @@ module QuadraticSpline3d exposing
     , relativeTo, placeIn
     , projectInto
     , bisect, splitAt
-    , ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, midpoint, tangentDirectionAlong, sampleAlong
+    , ArcLengthParameterized, arcLengthParameterized, arcLength
+    , pointAlong, midpoint, tangentDirectionAlong, sampleAlong
     , arcLengthParameterization, fromArcLengthParameterized
     , firstDerivative, secondDerivative
     )
@@ -83,7 +84,12 @@ module](Point3d#transformations).
 
 # Arc length parameterization
 
-@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, midpoint, tangentDirectionAlong, sampleAlong
+@docs ArcLengthParameterized, arcLengthParameterized, arcLength
+
+For the following evaluation functions, the given arc length will be clamped to
+the arc length of the spline, so the result will always be on the spline.
+
+@docs pointAlong, midpoint, tangentDirectionAlong, sampleAlong
 
 
 ## Low level

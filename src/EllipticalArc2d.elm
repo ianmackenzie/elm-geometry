@@ -18,7 +18,8 @@ module EllipticalArc2d exposing
     , at, at_
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , relativeTo, placeIn
-    , ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentDirectionAlong, sampleAlong
+    , ArcLengthParameterized, arcLengthParameterized, arcLength
+    , pointAlong, tangentDirectionAlong, sampleAlong
     , arcLengthParameterization, fromArcLengthParameterized
     , firstDerivative, maxSecondDerivativeMagnitude
     )
@@ -82,7 +83,12 @@ module](Point2d#transformations).
 
 # Arc length parameterization
 
-@docs ArcLengthParameterized, arcLengthParameterized, arcLength, pointAlong, tangentDirectionAlong, sampleAlong
+@docs ArcLengthParameterized, arcLengthParameterized, arcLength
+
+For the following evaluation functions, the given arc length will be clamped to
+the arc length of the spline, so the result will always be on the spline.
+
+@docs pointAlong, tangentDirectionAlong, sampleAlong
 
 
 ## Low level
