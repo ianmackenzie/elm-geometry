@@ -408,10 +408,6 @@ type Nondegenerate units coordinates
 {-| Attempt to construct a nondegenerate spline from a general `CubicSpline2d`.
 If the spline is in fact degenerate (consists of a single point), returns an
 `Err` with that point.
-
-    CubicSpline2d.nondegenerate exampleSpline
-    --> Ok nondegenerateExampleSpline
-
 -}
 nondegenerate : CubicSpline2d units coordinates -> Result (Point2d units coordinates) (Nondegenerate units coordinates)
 nondegenerate spline =
@@ -454,11 +450,6 @@ nondegenerate spline =
 
 
 {-| Convert a nondegenerate spline back to a general `CubicSpline2d`.
-
-    CubicSpline2d.fromNondegenerate
-        nondegenerateExampleSpline
-    --> exampleSpline
-
 -}
 fromNondegenerate : Nondegenerate units coordinates -> CubicSpline2d units coordinates
 fromNondegenerate nondegenerateSpline =
@@ -474,23 +465,7 @@ fromNondegenerate nondegenerateSpline =
 
 
 {-| Get the tangent direction to a nondegenerate spline at a given parameter
-value:
-
-    CubicSpline2d.tangentDirection
-        nondegenerateExampleSpline
-        0
-    --> Direction2d.degrees 56.31
-
-    CubicSpline2d.tangentDirection
-        nondegenerateExampleSpline
-        0.5
-    --> Direction2d.degrees 0
-
-    CubicSpline2d.tangentDirection
-        nondegenerateExampleSpline
-        1
-    --> Direction2d.degrees 56.31
-
+value.
 -}
 tangentDirection : Nondegenerate units coordinates -> Float -> Direction2d coordinates
 tangentDirection nondegenerateSpline parameterValue =
@@ -562,13 +537,7 @@ tangentDirection nondegenerateSpline parameterValue =
 
 
 {-| Get both the point and tangent direction of a nondegenerate spline at a
-given parameter value:
-
-    CubicSpline2d.sample nondegenerateExampleSpline 0.5
-    --> ( Point2d.meters 4 2.5
-    --> , Direction2d.degrees 0
-    --> )
-
+given parameter value.
 -}
 sample : Nondegenerate units coordinates -> Float -> ( Point2d units coordinates, Direction2d coordinates )
 sample nondegenerateSpline parameterValue =
@@ -579,14 +548,6 @@ sample nondegenerateSpline parameterValue =
 
 {-| Reverse a spline so that the start point becomes the end point, and vice
 versa.
-
-    CubicSpline2d.reverse exampleSpline
-    --> CubicSpline2d.fromControlPoints
-    -->     (Point2d.meters 7 4)
-    -->     (Point2d.meters 5 1)
-    -->     (Point2d.meters 3 4)
-    -->     (Point2d.meters 1 1)
-
 -}
 reverse : CubicSpline2d units coordinates -> CubicSpline2d units coordinates
 reverse spline =
@@ -658,23 +619,8 @@ mapControlPoints function spline =
         (function (fourthControlPoint spline))
 
 
-{-| Split a spline into two roughly equal halves.
-
-    CubicSpline2d.bisect exampleSpline
-    --> ( CubicSpline2d.fromControlPoints
-    -->     (Point2d.meters 1 1)
-    -->     (Point2d.meters 2 2.5)
-    -->     (Point2d.meters 3 2.5)
-    -->     (Point2d.meters 4 2.5)
-    --> , CubicSpline2d.fromControlPoints
-    -->     (Point2d.meters 4 2.5)
-    -->     (Point2d.meters 5 2.5)
-    -->     (Point2d.meters 6 2.5)
-    -->     (Point2d.meters 7 4)
-    --> )
-
-Equivalent to `CubicSpline2d.splitAt 0.5`.
-
+{-| Split a spline into two roughly equal halves. Equivalent to
+`CubicSpline2d.splitAt 0.5`.
 -}
 bisect : CubicSpline2d units coordinates -> ( CubicSpline2d units coordinates, CubicSpline2d units coordinates )
 bisect spline =
@@ -683,23 +629,6 @@ bisect spline =
 
 {-| Split a spline at a particular parameter value, resulting in two smaller
 splines.
-
-    parameterValue =
-        ParameterValue.clamped 0.75
-
-    CubicSpline2d.splitAt 0.75 exampleSpline
-    --> ( CubicSpline2d.fromControlPoints
-    -->     (Point2d.meters 1 1)
-    -->     (Point2d.meters 2.5 3.25)
-    -->     (Point2d.meters 4 2.125)
-    -->     (Point2d.meters 5.5 2.6875)
-    --> , CubicSpline2d.fromControlPoints
-    -->     (Point2d.meters 5.5 2.6875)
-    -->     (Point2d.meters 6 2.875)
-    -->     (Point2d.meters 6.5 3.25)
-    -->     (Point2d.meters 7 4)
-    --> )
-
 -}
 splitAt : Float -> CubicSpline2d units coordinates -> ( CubicSpline2d units coordinates, CubicSpline2d units coordinates )
 splitAt parameterValue spline =
@@ -750,18 +679,7 @@ type ArcLengthParameterized units coordinates
 
 
 {-| Build an arc length parameterization of the given spline, with a given
-accuracy. Generally speaking, all operations on the resulting
-`ArcLengthParameterized` value will be accurate to within the specified maximum
-error.
-
-    parameterizedSpline =
-        exampleSpline
-            |> CubicSpline2d.arcLengthParameterized
-                { maxError = Length.meters 1.0e-4 }
-
-The accuracy of the parameterization affects the accuracy of results returned
-from functions such as `arcLength` and `pointAlong`.
-
+accuracy.
 -}
 arcLengthParameterized : { maxError : Quantity Float units } -> Nondegenerate units coordinates -> ArcLengthParameterized units coordinates
 arcLengthParameterized { maxError } nondegenerateSpline =
@@ -783,17 +701,8 @@ arcLengthParameterized { maxError } nondegenerateSpline =
         }
 
 
-{-| Find the total arc length of a spline:
-
-    arcLength =
-        CubicSpline2d.arcLength parameterizedSpline
-
-    arcLength
-    --> Length.meters 7.0952
-
-In this example, the result will be accurate to within `1.0e-4` since that was
-the tolerance used when constructing `parameterizedSpline`.
-
+{-| Find the total arc length of a spline, to within the accuracy given when
+calling [`arcLengthParameterized`](#arcLengthParameterized).
 -}
 arcLength : ArcLengthParameterized units coordinates -> Quantity Float units
 arcLength parameterizedSpline =
@@ -801,14 +710,9 @@ arcLength parameterizedSpline =
         |> ArcLengthParameterization.totalArcLength
 
 
-{-| Get the midpoint of a spline.
-
-    CubicSpline2d.midpoint parameterizedSpline
-    --> Point2d.meters 4 2.5
-
-Note that this is the point half way along the spline by arc length, which is
-not in general the same as evaluating at a parameter value of 0.5.
-
+{-| Get the midpoint of a spline. Note that this is the point half way along the
+spline by arc length, which is not in general the same as evaluating at a
+parameter value of 0.5.
 -}
 midpoint : ArcLengthParameterized units coordinates -> Point2d units coordinates
 midpoint parameterized =
@@ -819,21 +723,7 @@ midpoint parameterized =
     pointAlong parameterized halfArcLength
 
 
-{-| Get the point along a spline at a given arc length. For example, to get the
-point a quarter of the way along `exampleSpline`, using `arcLength` as computed
-above:
-
-    CubicSpline2d.pointAlong parameterizedSpline
-        (Quantity.multiplyBy 0.25 arcLength)
-    --> Point2d.meters 2.2681 2.2114
-
-Note that this is not the same as evaulating at a parameter value of 0.25:
-
-    CubicSpline2d.pointOn exampleSpline 0.25
-    --> Point2d.meters 2.5 2.3125
-
-The given arc length will be clamped to the range [0, total arc length].
-
+{-| Get the point along a spline at a given arc length.
 -}
 pointAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Point2d units coordinates
 pointAlong (ArcLengthParameterized parameterized) distance =
@@ -842,15 +732,7 @@ pointAlong (ArcLengthParameterized parameterized) distance =
         |> pointOn parameterized.underlyingSpline
 
 
-{-| Get the tangent direction along a spline at a given arc length. To get the
-tangent direction a quarter of the way along `exampleSpline`:
-
-    CubicSpline2d.tangentDirectionAlong parameterizedSpline
-        (Quantity.multiplyBy 0.25 arcLength)
-    --> Direction2d.degrees 26.5611
-
-The given arc length will be clamped to the range [0, total arc length].
-
+{-| Get the tangent direction along a spline at a given arc length.
 -}
 tangentDirectionAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Direction2d coordinates
 tangentDirectionAlong (ArcLengthParameterized parameterized) distance =
@@ -863,17 +745,7 @@ tangentDirectionAlong (ArcLengthParameterized parameterized) distance =
     tangentDirection parameterized.nondegenerateSpline parameterValue
 
 
-{-| Get the point and tangent direction along a spline at a given arc length. To
-get the point and tangent direction a quarter of the way along `exampleSpline`:
-
-    CubicSpline2d.sampleAlong parameterizedSpline
-        (Quantity.multiplyBy 0.25 arcLength)\
-    --> ( Point2d.meters 2.2681 2.2114
-    --> , Direction2d.degrees 26.5611
-    --> )
-
-The given arc length will be clamped to the range [0, total arc length].
-
+{-| Get the point and tangent direction along a spline at a given arc length.
 -}
 sampleAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> ( Point2d units coordinates, Direction2d coordinates )
 sampleAlong (ArcLengthParameterized parameterized) distance =
@@ -898,17 +770,7 @@ fromArcLengthParameterized (ArcLengthParameterized parameterized) =
     parameterized.underlyingSpline
 
 
-{-| Get the first derivative of a spline at a given parameter value:
-
-    CubicSpline2d.firstDerivative exampleSpline 0
-    --> Vector2d.meters 6 9
-
-    CubicSpline2d.firstDerivative exampleSpline 0.5
-    --> Vector2d.meters 6 0
-
-    CubicSpline2d.firstDerivative exampleSpline 1
-    --> Vector2d.meters 6 9
-
+{-| Get the first derivative of a spline at a given parameter value.
 -}
 firstDerivative : CubicSpline2d units coordinates -> Float -> Vector2d units coordinates
 firstDerivative spline parameterValue =
@@ -988,17 +850,7 @@ firstDerivative spline parameterValue =
         )
 
 
-{-| Evaluate the second derivative of a spline at a given parameter value:
-
-    CubicSpline2d.secondDerivativeAt 0 exampleSpline
-    --> Vector2d.meters 0 -36
-
-    CubicSpline2d.secondDerivativeAt 0.5 exampleSpline
-    --> Vector2d.meters 0 0
-
-    CubicSpline2d.secondDerivativeAt 1 exampleSpline
-    --> Vector2d.meters 0 36
-
+{-| Evaluate the second derivative of a spline at a given parameter value.
 -}
 secondDerivative : CubicSpline2d units coordinates -> Float -> Vector2d units coordinates
 secondDerivative spline parameterValue =
@@ -1034,11 +886,7 @@ secondDerivative spline parameterValue =
 
 
 {-| Get the third derivative of a spline (for a cubic spline, this is a
-constant):
-
-    CubicSpline2d.thirdDerivative exampleSpline
-    --> Vector2d.meters 0 72
-
+constant).
 -}
 thirdDerivative : CubicSpline2d units coordinates -> Vector2d units coordinates
 thirdDerivative spline =
@@ -1076,11 +924,6 @@ thirdDerivative spline =
 {-| Find a conservative upper bound on the magnitude of the second derivative of
 a spline. This can be useful when determining error bounds for various kinds of
 linear approximations.
-
-    exampleSpline
-        |> CubicSpline2d.maxSecondDerivativeMagnitude
-    --> Length.meters 36
-
 -}
 maxSecondDerivativeMagnitude : CubicSpline2d units coordinates -> Quantity Float units
 maxSecondDerivativeMagnitude spline =

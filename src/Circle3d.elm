@@ -409,16 +409,6 @@ projectInto sketchPlane circle =
 
 {-| Take a circle defined in global coordinates, and return it expressed in
 local coordinates relative to a given reference frame.
-
-    localFrame =
-        Frame3d.atPoint
-            (Point3d.meters 1 2 3)
-
-    Circle3d.relativeTo localFrame exampleCircle
-    --> Circle3d.withRadius 3
-    -->     Direction3d.z
-    -->     (Point3d.meters 1 -2 -2)
-
 -}
 relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Circle3d units globalCoordinates -> Circle3d units localCoordinates
 relativeTo frame circle =
@@ -429,16 +419,6 @@ relativeTo frame circle =
 
 {-| Take a circle considered to be defined in local coordinates relative to a
 given reference frame, and return that circle expressed in global coordinates.
-
-    localFrame =
-        Frame3d.atPoint
-            (Point3d.meters 1 2 3)
-
-    Circle3d.placeIn localFrame exampleCircle
-    --> Circle3d.withRadius 3
-    -->     Direction3d.z
-    -->     (Point3d.meters 3 2 4)
-
 -}
 placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Circle3d units localCoordinates -> Circle3d units globalCoordinates
 placeIn frame circle =
