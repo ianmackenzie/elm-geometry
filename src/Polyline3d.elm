@@ -129,18 +129,15 @@ vertices (Types.Polyline3d polylineVertices) =
 {-| Get the individual segments of a polyline.
 
     Polyline3d.segments examplePolyline
-    --> [ LineSegment3d.fromEndpoints
-    -->     ( Point3d.meters 0 0 0
-    -->     , Point3d.meters 1 0 0
-    -->     )
-    --> , LineSegment3d.fromEndpoints
-    -->     ( Point3d.meters 1 0 0
-    -->     , Point3d.meters 1 2 0
-    -->     )
-    --> , LineSegment3d.fromEndpoints
-    -->     ( Point3d.meters 1 2 0
-    -->     , Point3d.meters 1 2 3
-    -->     )
+    --> [ LineSegment3d.from
+    -->     (Point3d.meters 0 0 0)
+    -->     (Point3d.meters 1 0 0)
+    --> , LineSegment3d.from
+    -->     (Point3d.meters 1 0 0)
+    -->     (Point3d.meters 1 2 0)
+    --> , LineSegment3d.from
+    -->     (Point3d.meters 1 2 0)
+    -->     (Point3d.meters 1 2 3)
     --> ]
 
 -}
@@ -158,7 +155,7 @@ segments polyline =
 segments).
 
     Polyline3d.length examplePolyline
-    --> 6
+    --> Length.meters 6
 
 -}
 length : Polyline3d units coordinates -> Quantity Float units
@@ -167,18 +164,6 @@ length polyline =
 
 
 {-| Scale a polyline about the given center point by the given scale.
-
-    point =
-        Point3d.meters 1 0 0
-
-    Polyline3d.scaleAbout point 2 examplePolyline
-    --> Polyline3d.fromVertices
-    -->     [ Point3d.meters -1 0 0
-    -->     , Point3d.meters 1 0 0
-    -->     , Point3d.meters 1 4 0
-    -->     , Point3d.meters 1 4 6
-    -->     ]
-
 -}
 scaleAbout : Point3d units coordinates -> Float -> Polyline3d units coordinates -> Polyline3d units coordinates
 scaleAbout point scale polyline =
@@ -186,16 +171,6 @@ scaleAbout point scale polyline =
 
 
 {-| Rotate a polyline around the given axis by the given angle.
-
-    examplePolyline
-        |> Polyline3d.rotateAround Axis3d.z (Angle.degrees 90)
-    --> Polyline3d.fromVertices
-    -->     [ Point3d.meters 0 0 0
-    -->     , Point3d.meters 0 1 0
-    -->     , Point3d.meters -2 1 0
-    -->     , Point3d.meters -2 1 3
-    -->     ]
-
 -}
 rotateAround : Axis3d units coordinates -> Angle -> Polyline3d units coordinates -> Polyline3d units coordinates
 rotateAround axis angle polyline =
@@ -203,33 +178,13 @@ rotateAround axis angle polyline =
 
 
 {-| Translate a polyline by the given displacement.
-
-    displacement =
-        Vector3d.meters 1 2 3
-
-    Polyline3d.translateBy displacement examplePolyline
-    --> Polyline3d.fromVertices
-    -->     [ Point3d.meters 1 2 3
-    -->     , Point3d.meters 2 2 3
-    -->     , Point3d.meters 2 4 3
-    -->     , Point3d.meters 2 4 6
-    -->     ]
-
 -}
 translateBy : Vector3d units coordinates -> Polyline3d units coordinates -> Polyline3d units coordinates
 translateBy vector polyline =
     mapVertices (Point3d.translateBy vector) polyline
 
 
-{-| Translate a polyline in a given direction by a given distance;
-
-    Polyline3d.translateIn direction distance
-
-is equivalent to
-
-    Polyline3d.translateBy
-        (Vector3d.withLength distance direction)
-
+{-| Translate a polyline in a given direction by a given distance.
 -}
 translateIn : Direction3d coordinates -> Quantity Float units -> Polyline3d units coordinates -> Polyline3d units coordinates
 translateIn direction distance polyline =
@@ -237,15 +192,6 @@ translateIn direction distance polyline =
 
 
 {-| Mirror a polyline across the given plane.
-
-    Polyline3d.mirrorAcross Plane3d.xz examplePolyline
-    --> Polyline3d.fromVertices
-    -->     [ Point3d.meters 0 0 0
-    -->     , Point3d.meters 1 0 0
-    -->     , Point3d.meters 1 -2 0
-    -->     , Point3d.meters 1 -2 3
-    -->     ]
-
 -}
 mirrorAcross : Plane3d units coordinates -> Polyline3d units coordinates -> Polyline3d units coordinates
 mirrorAcross plane polyline =
@@ -254,15 +200,6 @@ mirrorAcross plane polyline =
 
 {-| Find the [orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
 of a polyline onto a plane. This will flatten the polyline.
-
-    Polyline3d.projectOnto Plane3d.xz examplePolyline
-    --> Polyline3d.fromVertices
-    -->     [ Point3d.meters 0 0 0
-    -->     , Point3d.meters 1 0 0
-    -->     , Point3d.meters 1 0 0
-    -->     , Point3d.meters 1 0 3
-    -->     ]
-
 -}
 projectOnto : Plane3d units coordinates -> Polyline3d units coordinates -> Polyline3d units coordinates
 projectOnto plane polyline =
@@ -286,19 +223,6 @@ mapVertices function polyline =
 
 {-| Take a polyline defined in global coordinates, and return it expressed
 in local coordinates relative to a given reference frame.
-
-    localFrame =
-        Frame3d.atPoint
-            (Point3d.meters 1 2 3)
-
-    Polyline3d.relativeTo localFrame examplePolyline
-    --> Polyline3d.fromVertices
-    -->     [ Point3d.meters -1 -2 -3
-    -->     , Point3d.meters 0 -2 -3
-    -->     , Point3d.meters 0 0 -3
-    -->     , Point3d.meters 0 0 0
-    -->     ]
-
 -}
 relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Polyline3d units globalCoordinates -> Polyline3d units localCoordinates
 relativeTo frame polyline =
@@ -308,38 +232,13 @@ relativeTo frame polyline =
 {-| Take a polyline considered to be defined in local coordinates relative
 to a given reference frame, and return that polyline expressed in global
 coordinates.
-
-    localFrame =
-        Frame3d.atPoint
-            (Point3d.meters 1 2 3)
-
-    Polyline3d.placeIn localFrame examplePolyline
-    --> Polyline3d.fromVertices
-    -->     [ Point3d.meters 1 2 3
-    -->     , Point3d.meters 2 2 3
-    -->     , Point3d.meters 2 4 3
-    -->     , Point3d.meters 2 4 6
-    -->     ]
-
 -}
 placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Polyline3d units localCoordinates -> Polyline3d units globalCoordinates
 placeIn frame polyline =
     mapVertices (Point3d.placeIn frame) polyline
 
 
-{-| Project a polyline into a given sketch plane. Conceptually, this finds the
-[orthographic projection](https://en.wikipedia.org/wiki/Orthographic_projection)
-of the polyline onto the plane and then expresses the projected polyline in 2D
-sketch coordinates.
-
-    Polyline3d.projectInto Plane3d.xy examplePolyline
-    --> Polyline2d.fromVertices
-    -->     [ Point2d.meters 0 0
-    -->     , Point2d.meters 1 0
-    -->     , Point2d.meters 1 2
-    -->     , Point2d.meters 1 2
-    -->     ]
-
+{-| Project a polyline into a given sketch plane.
 -}
 projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Polyline3d units coordinates3d -> Polyline2d units coordinates2d
 projectInto sketchPlane polyline =
@@ -352,8 +251,8 @@ projectInto sketchPlane polyline =
 if the polyline has no vertices.
 
     Polyline3d.boundingBox examplePolyline
-    --> Just
-    -->     (BoundingBox3d.fromExtrema
+    --> Just <|
+    -->     BoundingBox3d.fromExtrema
     -->         { minX = Length.meters 0
     -->         , maxX = Length.meters 1
     -->         , minY = Length.meters 0
@@ -361,7 +260,6 @@ if the polyline has no vertices.
     -->         , minZ = Length.meters 0
     -->         , maxZ = Length.meters 3
     -->         }
-    -->     )
 
 -}
 boundingBox : Polyline3d units coordinates -> Maybe (BoundingBox3d units coordinates)

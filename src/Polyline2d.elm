@@ -100,18 +100,15 @@ vertices (Types.Polyline2d polylineVertices) =
 {-| Get the individual segments of a polyline.
 
     Polyline2d.segments stepShape
-    --> [ LineSegment2d.fromEndpoints
-    -->     ( Point2d.meters 0 0
-    -->     , Point2d.meters 1 0
-    -->     )
-    --> , LineSegment2d.fromEndpoints
-    -->     ( Point2d.meters 1 0
-    -->     , Point2d.meters 1 1
-    -->     )
-    --> , LineSegment2d.fromEndpoints
-    -->     ( Point2d.meters 1 1
-    -->     , Point2d.meters 2 1
-    -->     )
+    --> [ LineSegment2d.from
+    -->     (Point2d.meters 0 0)
+    -->     (Point2d.meters 1 0)
+    --> , LineSegment2d.from
+    -->     (Point2d.meters 1 0)
+    -->     (Point2d.meters 1 1)
+    --> , LineSegment2d.from
+    -->     (Point2d.meters 1 1)
+    -->     (Point2d.meters 2 1)
     --> ]
 
 -}
@@ -129,7 +126,7 @@ segments polyline =
 segments).
 
     Polyline2d.length stepShape
-    --> 3
+    --> Length.meters 3
 
 -}
 length : Polyline2d units coordinates -> Quantity Float units
@@ -158,17 +155,6 @@ scaleAbout point scale polyline =
 
 {-| Rotate a polyline around the given center point counterclockwise by the
 given angle.
-
-    stepShape
-        |> Polyline2d.rotateAround Point2d.origin
-            (Angle.degrees 90)
-    --> Polyline2d.fromVertices
-    -->     [ Point2d.meters 0 0
-    -->     , Point2d.meters 0 1
-    -->     , Point2d.meters -1 1
-    -->     , Point2d.meters -1 2
-    -->     ]
-
 -}
 rotateAround : Point2d units coordinates -> Angle -> Polyline2d units coordinates -> Polyline2d units coordinates
 rotateAround point angle polyline =
@@ -176,33 +162,13 @@ rotateAround point angle polyline =
 
 
 {-| Translate a polyline by the given displacement.
-
-    displacement =
-        Vector2d.meters 2 3
-
-    Polyline2d.translateBy displacement stepShape
-    --> Polyline2d.fromVertices
-    -->     [ Point2d.meters 2 3
-    -->     , Point2d.meters 3 3
-    -->     , Point2d.meters 3 4
-    -->     , Point2d.meters 4 4
-    -->     ]
-
 -}
 translateBy : Vector2d units coordinates -> Polyline2d units coordinates -> Polyline2d units coordinates
 translateBy vector polyline =
     mapVertices (Point2d.translateBy vector) polyline
 
 
-{-| Translate a polyline in a given direction by a given distance;
-
-    Polyline2d.translateIn direction distance
-
-is equivalent to
-
-    Polyline2d.translateBy
-        (Vector2d.withLength distance direction)
-
+{-| Translate a polyline in a given direction by a given distance.
 -}
 translateIn : Direction2d coordinates -> Quantity Float units -> Polyline2d units coordinates -> Polyline2d units coordinates
 translateIn direction distance polyline =
@@ -210,15 +176,6 @@ translateIn direction distance polyline =
 
 
 {-| Mirror a polyline across the given axis.
-
-    Polyline2d.mirrorAcross Axis2d.x stepShape
-    --> Polyline2d.fromVertices
-    -->     [ Point2d.meters 0 0
-    -->     , Point2d.meters 1 0
-    -->     , Point2d.meters 1 -1
-    -->     , Point2d.meters 2 -1
-    -->     ]
-
 -}
 mirrorAcross : Axis2d units coordinates -> Polyline2d units coordinates -> Polyline2d units coordinates
 mirrorAcross axis polyline =
@@ -226,15 +183,6 @@ mirrorAcross axis polyline =
 
 
 {-| Project (flatten) a polyline onto the given axis.
-
-    Polyline2d.projectOnto Axis2d.x stepShape
-    --> Polyline2d.fromVertices
-    -->     [ Point2d.meters 0 0
-    -->     , Point2d.meters 1 0
-    -->     , Point2d.meters 1 0
-    -->     , Point2d.meters 2 0
-    -->     ]
-
 -}
 projectOnto : Axis2d units coordinates -> Polyline2d units coordinates -> Polyline2d units coordinates
 projectOnto axis polyline =
@@ -258,18 +206,6 @@ mapVertices function polyline =
 
 {-| Take a polyline defined in global coordinates, and return it expressed
 in local coordinates relative to a given reference frame.
-
-    localFrame =
-        Frame2d.atPoint (Point2d.meters 1 2)
-
-    Polyline2d.relativeTo localFrame stepShape
-    --> Polyline2d.fromVertices
-    -->     [ Point2d.meters -1 -2
-    -->     , Point2d.meters 0 -2
-    -->     , Point2d.meters 0 -1
-    -->     , Point2d.meters 1 -1
-    -->     ]
-
 -}
 relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Polyline2d units globalCoordinates -> Polyline2d units localCoordinates
 relativeTo frame polyline =
@@ -279,18 +215,6 @@ relativeTo frame polyline =
 {-| Take a polyline considered to be defined in local coordinates relative
 to a given reference frame, and return that polyline expressed in global
 coordinates.
-
-    localFrame =
-        Frame2d.atPoint (Point2d.meters 1 2)
-
-    Polyline2d.placeIn localFrame stepShape
-    --> Polyline2d.fromVertices
-    -->     [ Point2d.meters 1 2
-    -->     , Point2d.meters 2 2
-    -->     , Point2d.meters 2 3
-    -->     , Point2d.meters 3 3
-    -->     ]
-
 -}
 placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Polyline2d units localCoordinates -> Polyline2d units globalCoordinates
 placeIn frame polyline =
@@ -301,14 +225,13 @@ placeIn frame polyline =
 if the polyline has no vertices.
 
     Polyline2d.boundingBox stepShape
-    --> Just
-    -->     (BoundingBox2d.fromExtrema
+    --> Just <|
+    -->     BoundingBox2d.fromExtrema
     -->         { minX = Length.meters 0
     -->         , maxX = Length.meters 2
     -->         , minY = Length.meters 0
     -->         , maxY = Length.meters 1
     -->         }
-    -->     )
 
 -}
 boundingBox : Polyline2d units coordinates -> Maybe (BoundingBox2d units coordinates)
