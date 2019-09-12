@@ -123,7 +123,24 @@ import Unsafe.Direction3d as Direction3d
 import Vector3d exposing (Vector3d)
 
 
-{-| -}
+{-| The type parameters of a `SketchPlane3d` indicate what units and coordinate
+systems it's defined in, and what local 2D coordinate system (if any) it itself
+defines. A concrete `SketchPlane3d` type might look like
+
+    SketchPlane3d Meters World { defines : Sketch }
+
+which can be read as "a `SketchPlane3d` defined in meters in world coordinates,
+which itself defines a local 2D sketch coordinate system". For sketch planes
+that don't define a local 2D coordinate system, you could use
+
+    SketchPlane3d Meters World {}
+
+Many functions in this module don't care about the third type argument (whether
+it's a record with a `defines` field like in the first example, an empty record
+like in the second example, or even something else entirely) but functions like
+`projectInto` and `on` expect the `{ defines : localCoordinates }` pattern.
+
+-}
 type alias SketchPlane3d units coordinates defines =
     Types.SketchPlane3d units coordinates defines
 

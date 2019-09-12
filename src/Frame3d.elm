@@ -165,7 +165,24 @@ import SketchPlane3d exposing (SketchPlane3d)
 import Vector3d exposing (Vector3d)
 
 
-{-| -}
+{-| The type parameters of a `Frame3d` indicate what units and coordinate
+systems it's defined in, and what coordinate system (if any) it itself defines.
+A concrete `Frame3d` type might look like
+
+    Frame3d Meters World { defines : Local }
+
+which can be read as "a `Frame3d` defined in meters in world coordinates, which
+itself defines local coordinates". For frames that don't define a local
+coordinate system, you could use
+
+    Frame3d Meters World {}
+
+Many functions in this module don't care about the third type argument (whether
+it's a record with a `defines` field like in the first example, an empty record
+like in the second example, or even something else entirely) but functions like
+`placeIn` and `relativeTo` expect the `{ defines : localCoordinates }` pattern.
+
+-}
 type alias Frame3d units coordinates defines =
     Types.Frame3d units coordinates defines
 
