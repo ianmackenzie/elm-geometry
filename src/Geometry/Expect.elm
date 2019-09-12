@@ -28,7 +28,9 @@ module Geometry.Expect exposing
     , direction2dWithin
     , direction3d
     , direction3dWithin
+    , exactly
     , expect
+    , float
     , frame2d
     , frame3d
     , just
@@ -52,6 +54,12 @@ module Geometry.Expect exposing
     , polyline3dWithin
     , quadraticSpline2d
     , quadraticSpline3d
+    , quantityAtLeast
+    , quantityAtMost
+    , quantityGreaterThan
+    , quantityLessThan
+    , quantityWithin
+    , roundTrip
     , sketchPlane3d
     , sphere3d
     , triangle2d
@@ -64,12 +72,14 @@ module Geometry.Expect exposing
     , validDirection3d
     , validFrame2d
     , validFrame3d
+    , validSketchPlane3d
     , vector2d
     , vector2dWithin
     , vector3d
     , vector3dWithin
     )
 
+import Angle exposing (Angle)
 import Arc2d exposing (Arc2d)
 import Arc3d exposing (Arc3d)
 import Axis2d exposing (Axis2d)
@@ -85,6 +95,7 @@ import Direction3d exposing (Direction3d)
 import Expect exposing (Expectation)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
+import Length exposing (Length)
 import LineSegment2d exposing (LineSegment2d)
 import LineSegment3d exposing (LineSegment3d)
 import Plane3d exposing (Plane3d)
@@ -95,6 +106,7 @@ import Polyline2d exposing (Polyline2d)
 import Polyline3d exposing (Polyline3d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
 import QuadraticSpline3d exposing (QuadraticSpline3d)
+import Quantity exposing (Quantity(..))
 import SketchPlane3d exposing (SketchPlane3d)
 import Sphere3d exposing (Sphere3d)
 import Triangle2d exposing (Triangle2d)
@@ -173,64 +185,124 @@ maybe expect_ expectedMaybe actualMaybe =
             Expect.pass
 
 
+roundTrip : (a -> a -> Expectation) -> (a -> a) -> a -> Expectation
+roundTrip comparison function value =
+    comparison value (function value)
+
+
 defaultTolerance : Float
 defaultTolerance =
     1.0e-12
 
 
-approximately : Float -> Float -> Expectation
-approximately =
+quantityWithin : Quantity Float units -> Quantity Float units -> Quantity Float units -> Expectation
+quantityWithin (Quantity tolerance) (Quantity first) (Quantity second) =
+    Expect.within (Expect.Absolute tolerance) first second
+
+
+approximately : Quantity Float units -> Quantity Float units -> Expectation
+approximately (Quantity first) (Quantity second) =
     Expect.within (Expect.AbsoluteOrRelative defaultTolerance defaultTolerance)
+        first
+        second
 
 
-absoluteToleranceFor : Float -> Float
+exactly : Float -> Float -> Expectation
+exactly actual expected =
+    actual |> Expect.within (Expect.Absolute 0.0) expected
+
+
+float : Float -> Float -> Expectation
+float first second =
+    Expect.within (Expect.AbsoluteOrRelative defaultTolerance defaultTolerance)
+        first
+        second
+
+
+quantityGreaterThan : Quantity Float units -> Quantity Float units -> Expectation
+quantityGreaterThan (Quantity y) (Quantity x) =
+    x |> Expect.greaterThan y
+
+
+quantityLessThan : Quantity Float units -> Quantity Float units -> Expectation
+quantityLessThan (Quantity y) (Quantity x) =
+    x |> Expect.lessThan y
+
+
+quantityAtMost : Quantity Float units -> Quantity Float units -> Expectation
+quantityAtMost (Quantity y) (Quantity x) =
+    x |> Expect.atMost y
+
+
+quantityAtLeast : Quantity Float units -> Quantity Float units -> Expectation
+quantityAtLeast (Quantity y) (Quantity x) =
+    x |> Expect.atLeast y
+
+
+absoluteToleranceFor : Quantity Float units -> Quantity Float units
 absoluteToleranceFor magnitude =
-    max defaultTolerance (defaultTolerance * abs magnitude)
+    Quantity.max (Quantity defaultTolerance)
+        (Quantity.abs magnitude |> Quantity.multiplyBy defaultTolerance)
 
 
-angle : Float -> Float -> Expectation
+angle : Angle -> Angle -> Expectation
 angle first second =
-    angleWithin (absoluteToleranceFor (abs first)) first second
+    angleWithin (Angle.radians defaultTolerance) first second
 
 
-angleWithin : Float -> Float -> Float -> Expectation
+angleWithin : Angle -> Angle -> Angle -> Expectation
 angleWithin tolerance =
     let
         comparison firstAngle secondAngle =
             let
                 difference =
-                    secondAngle - firstAngle
+                    secondAngle |> Quantity.minus firstAngle
+
+                sine =
+                    Angle.sin difference
+
+                cosine =
+                    Angle.cos difference
+
+                delta =
+                    Angle.radians (atan2 sine cosine)
             in
-            abs (atan2 (sin difference) (cos difference)) <= tolerance
+            Quantity.abs delta |> Quantity.lessThanOrEqualTo tolerance
     in
     expect comparison
 
 
-vector2d : Vector2d -> Vector2d -> Expectation
+vector2d : Vector2d units coordinates -> Vector2d units coordinates -> Expectation
 vector2d first second =
     vector2dWithin (absoluteToleranceFor (Vector2d.length first)) first second
 
 
-vector2dWithin : Float -> Vector2d -> Vector2d -> Expectation
+vector2dWithin : Quantity Float units -> Vector2d units coordinates -> Vector2d units coordinates -> Expectation
 vector2dWithin tolerance =
     expect (Vector2d.equalWithin tolerance)
 
 
-vector3d : Vector3d -> Vector3d -> Expectation
+vector3d : Vector3d units coordinates -> Vector3d units coordinates -> Expectation
 vector3d first second =
     vector3dWithin (absoluteToleranceFor (Vector3d.length first)) first second
 
 
-vector3dWithin : Float -> Vector3d -> Vector3d -> Expectation
+vector3dWithin : Quantity Float units -> Vector3d units coordinates -> Vector3d units coordinates -> Expectation
 vector3dWithin tolerance =
     expect (Vector3d.equalWithin tolerance)
 
 
-validDirection2d : Direction2d -> Expectation
+validDirection2d : Direction2d coordinates -> Expectation
 validDirection2d direction =
     let
+        x =
+            Direction2d.xComponent direction
+
+        y =
+            Direction2d.yComponent direction
+
         length =
-            Vector2d.length (Direction2d.toVector direction)
+            sqrt (x ^ 2 + y ^ 2)
     in
     if abs (length - 1) <= defaultTolerance then
         Expect.pass
@@ -244,21 +316,30 @@ validDirection2d direction =
             )
 
 
-direction2d : Direction2d -> Direction2d -> Expectation
+direction2d : Direction2d coordinates -> Direction2d coordinates -> Expectation
 direction2d =
-    direction2dWithin defaultTolerance
+    direction2dWithin (Angle.radians defaultTolerance)
 
 
-direction2dWithin : Float -> Direction2d -> Direction2d -> Expectation
+direction2dWithin : Angle -> Direction2d coordinates -> Direction2d coordinates -> Expectation
 direction2dWithin tolerance =
     expect (Direction2d.equalWithin tolerance)
 
 
-validDirection3d : Direction3d -> Expectation
+validDirection3d : Direction3d coordinates -> Expectation
 validDirection3d direction =
     let
+        x =
+            Direction3d.xComponent direction
+
+        y =
+            Direction3d.yComponent direction
+
+        z =
+            Direction3d.zComponent direction
+
         length =
-            Vector3d.length (Direction3d.toVector direction)
+            sqrt (x ^ 2 + y ^ 2 + z ^ 2)
     in
     if abs (length - 1) <= defaultTolerance then
         Expect.pass
@@ -272,47 +353,47 @@ validDirection3d direction =
             )
 
 
-direction3d : Direction3d -> Direction3d -> Expectation
+direction3d : Direction3d coordinates -> Direction3d coordinates -> Expectation
 direction3d =
-    direction3dWithin defaultTolerance
+    direction3dWithin (Angle.radians defaultTolerance)
 
 
-direction3dWithin : Float -> Direction3d -> Direction3d -> Expectation
+direction3dWithin : Angle -> Direction3d coordinates -> Direction3d coordinates -> Expectation
 direction3dWithin tolerance =
     expect (Direction3d.equalWithin tolerance)
 
 
-point2dTolerance : Point2d -> Float
+point2dTolerance : Point2d units coordinates -> Quantity Float units
 point2dTolerance point =
     absoluteToleranceFor (Point2d.distanceFrom Point2d.origin point)
 
 
-point2d : Point2d -> Point2d -> Expectation
+point2d : Point2d units coordinates -> Point2d units coordinates -> Expectation
 point2d first second =
     point2dWithin (point2dTolerance first) first second
 
 
-point2dWithin : Float -> Point2d -> Point2d -> Expectation
+point2dWithin : Quantity Float units -> Point2d units coordinates -> Point2d units coordinates -> Expectation
 point2dWithin tolerance =
     expect (Point2d.equalWithin tolerance)
 
 
-point3dTolerance : Point3d -> Float
+point3dTolerance : Point3d units coordinates -> Quantity Float units
 point3dTolerance point =
     absoluteToleranceFor (Point3d.distanceFrom Point3d.origin point)
 
 
-point3d : Point3d -> Point3d -> Expectation
+point3d : Point3d units coordinates -> Point3d units coordinates -> Expectation
 point3d first second =
     point3dWithin (point3dTolerance first) first second
 
 
-point3dWithin : Float -> Point3d -> Point3d -> Expectation
+point3dWithin : Quantity Float units -> Point3d units coordinates -> Point3d units coordinates -> Expectation
 point3dWithin tolerance =
     expect (Point3d.equalWithin tolerance)
 
 
-axis2d : Axis2d -> Axis2d -> Expectation
+axis2d : Axis2d units coordinates -> Axis2d units coordinates -> Expectation
 axis2d first =
     Expect.all
         [ Axis2d.originPoint >> point2d (Axis2d.originPoint first)
@@ -320,7 +401,7 @@ axis2d first =
         ]
 
 
-axis3d : Axis3d -> Axis3d -> Expectation
+axis3d : Axis3d units coordinates -> Axis3d units coordinates -> Expectation
 axis3d first =
     Expect.all
         [ Axis3d.originPoint >> point3d (Axis3d.originPoint first)
@@ -328,7 +409,7 @@ axis3d first =
         ]
 
 
-plane3d : Plane3d -> Plane3d -> Expectation
+plane3d : Plane3d units coordinates -> Plane3d units coordinates -> Expectation
 plane3d first =
     Expect.all
         [ Plane3d.originPoint >> point3d (Plane3d.originPoint first)
@@ -336,7 +417,7 @@ plane3d first =
         ]
 
 
-validFrame2d : Frame2d -> Expectation
+validFrame2d : Frame2d units coordinates defines -> Expectation
 validFrame2d =
     Expect.all
         [ Frame2d.xDirection >> validDirection2d
@@ -365,7 +446,7 @@ validFrame2d =
         ]
 
 
-frame2d : Frame2d -> Frame2d -> Expectation
+frame2d : Frame2d units coordinates defines -> Frame2d units coordinates defines -> Expectation
 frame2d first =
     Expect.all
         [ Frame2d.originPoint >> point2d (Frame2d.originPoint first)
@@ -374,7 +455,7 @@ frame2d first =
         ]
 
 
-validFrame3d : Frame3d -> Expectation
+validFrame3d : Frame3d units coordinates defines -> Expectation
 validFrame3d =
     Expect.all
         [ Frame3d.xDirection >> validDirection3d
@@ -419,7 +500,7 @@ validFrame3d =
         ]
 
 
-frame3d : Frame3d -> Frame3d -> Expectation
+frame3d : Frame3d units coordinates defines -> Frame3d units coordinates defines -> Expectation
 frame3d first =
     Expect.all
         [ Frame3d.originPoint >> point3d (Frame3d.originPoint first)
@@ -429,7 +510,7 @@ frame3d first =
         ]
 
 
-sketchPlane3d : SketchPlane3d -> SketchPlane3d -> Expectation
+sketchPlane3d : SketchPlane3d units coordinates defines -> SketchPlane3d units coordinates defines -> Expectation
 sketchPlane3d first =
     Expect.all
         [ SketchPlane3d.originPoint
@@ -441,7 +522,36 @@ sketchPlane3d first =
         ]
 
 
-lineSegment2d : LineSegment2d -> LineSegment2d -> Expectation
+validSketchPlane3d : SketchPlane3d units coordinates defines -> Expectation
+validSketchPlane3d =
+    Expect.all
+        [ SketchPlane3d.xDirection >> validDirection3d
+        , SketchPlane3d.yDirection >> validDirection3d
+        , \sketchPlane ->
+            let
+                xDirection =
+                    SketchPlane3d.xDirection sketchPlane
+
+                yDirection =
+                    SketchPlane3d.yDirection sketchPlane
+
+                parallelComponent =
+                    Direction3d.componentIn xDirection yDirection
+            in
+            if abs parallelComponent <= defaultTolerance then
+                Expect.pass
+
+            else
+                Expect.fail
+                    ("Expected perpendicular basis directions, got "
+                        ++ Debug.toString xDirection
+                        ++ ", "
+                        ++ Debug.toString yDirection
+                    )
+        ]
+
+
+lineSegment2d : LineSegment2d units coordinates -> LineSegment2d units coordinates -> Expectation
 lineSegment2d first =
     Expect.all
         [ LineSegment2d.startPoint
@@ -451,7 +561,7 @@ lineSegment2d first =
         ]
 
 
-lineSegment2dWithin : Float -> LineSegment2d -> LineSegment2d -> Expectation
+lineSegment2dWithin : Quantity Float units -> LineSegment2d units coordinates -> LineSegment2d units coordinates -> Expectation
 lineSegment2dWithin tolerance first =
     Expect.all
         [ LineSegment2d.startPoint
@@ -461,7 +571,7 @@ lineSegment2dWithin tolerance first =
         ]
 
 
-lineSegment3d : LineSegment3d -> LineSegment3d -> Expectation
+lineSegment3d : LineSegment3d units coordinates -> LineSegment3d units coordinates -> Expectation
 lineSegment3d first =
     Expect.all
         [ LineSegment3d.startPoint
@@ -471,7 +581,7 @@ lineSegment3d first =
         ]
 
 
-lineSegment3dWithin : Float -> LineSegment3d -> LineSegment3d -> Expectation
+lineSegment3dWithin : Quantity Float units -> LineSegment3d units coordinates -> LineSegment3d units coordinates -> Expectation
 lineSegment3dWithin tolerance first =
     Expect.all
         [ LineSegment3d.startPoint
@@ -481,7 +591,7 @@ lineSegment3dWithin tolerance first =
         ]
 
 
-triangle2dBy : (Point2d -> Point2d -> Expectation) -> Triangle2d -> Triangle2d -> Expectation
+triangle2dBy : (Point2d units coordinates -> Point2d units coordinates -> Expectation) -> Triangle2d units coordinates -> Triangle2d units coordinates -> Expectation
 triangle2dBy equalTo first =
     let
         vertex1 triangle =
@@ -512,17 +622,17 @@ triangle2dBy equalTo first =
         ]
 
 
-triangle2d : Triangle2d -> Triangle2d -> Expectation
+triangle2d : Triangle2d units coordinates -> Triangle2d units coordinates -> Expectation
 triangle2d =
     triangle2dBy point2d
 
 
-triangle2dWithin : Float -> Triangle2d -> Triangle2d -> Expectation
+triangle2dWithin : Quantity Float units -> Triangle2d units coordinates -> Triangle2d units coordinates -> Expectation
 triangle2dWithin tolerance =
     triangle2dBy (point2dWithin tolerance)
 
 
-triangle3dBy : (Point3d -> Point3d -> Expectation) -> Triangle3d -> Triangle3d -> Expectation
+triangle3dBy : (Point3d units coordinates -> Point3d units coordinates -> Expectation) -> Triangle3d units coordinates -> Triangle3d units coordinates -> Expectation
 triangle3dBy equalTo first =
     let
         vertex1 triangle =
@@ -553,17 +663,17 @@ triangle3dBy equalTo first =
         ]
 
 
-triangle3d : Triangle3d -> Triangle3d -> Expectation
+triangle3d : Triangle3d units coordinates -> Triangle3d units coordinates -> Expectation
 triangle3d =
     triangle3dBy point3d
 
 
-triangle3dWithin : Float -> Triangle3d -> Triangle3d -> Expectation
+triangle3dWithin : Quantity Float units -> Triangle3d units coordinates -> Triangle3d units coordinates -> Expectation
 triangle3dWithin tolerance =
     triangle3dBy (point3dWithin tolerance)
 
 
-boundingBox2dBy : (Float -> Float -> Expectation) -> BoundingBox2d -> BoundingBox2d -> Expectation
+boundingBox2dBy : (Quantity Float units -> Quantity Float units -> Expectation) -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Expectation
 boundingBox2dBy equalTo first =
     Expect.all
         [ BoundingBox2d.minX >> equalTo (BoundingBox2d.minX first)
@@ -573,28 +683,37 @@ boundingBox2dBy equalTo first =
         ]
 
 
-boundingBox2d : BoundingBox2d -> BoundingBox2d -> Expectation
+boundingBox2d : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Expectation
 boundingBox2d =
     boundingBox2dBy approximately
 
 
-boundingBox2dWithin : Float -> BoundingBox2d -> BoundingBox2d -> Expectation
+boundingBox2dWithin : Quantity Float units -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Expectation
 boundingBox2dWithin tolerance =
-    boundingBox2dBy (Expect.within (Expect.Absolute tolerance))
+    boundingBox2dBy (quantityWithin tolerance)
 
 
-point2dContainedIn : BoundingBox2d -> Point2d -> Expectation
+point2dContainedIn : BoundingBox2d units coordinates -> Point2d units coordinates -> Expectation
 point2dContainedIn box point =
     let
         extrema =
             BoundingBox2d.extrema box
 
+        ( width, height ) =
+            BoundingBox2d.dimensions box
+
+        xOffset =
+            absoluteToleranceFor width
+
+        yOffset =
+            absoluteToleranceFor height
+
         tolerantBox =
             BoundingBox2d.fromExtrema
-                { minX = extrema.minX - defaultTolerance
-                , minY = extrema.minY - defaultTolerance
-                , maxX = extrema.maxX + defaultTolerance
-                , maxY = extrema.maxY + defaultTolerance
+                { minX = extrema.minX |> Quantity.minus xOffset
+                , minY = extrema.minY |> Quantity.minus yOffset
+                , maxX = extrema.maxX |> Quantity.plus xOffset
+                , maxY = extrema.maxY |> Quantity.plus yOffset
                 }
     in
     BoundingBox2d.contains point tolerantBox
@@ -607,7 +726,7 @@ point2dContainedIn box point =
             )
 
 
-boundingBox3dBy : (Float -> Float -> Expectation) -> BoundingBox3d -> BoundingBox3d -> Expectation
+boundingBox3dBy : (Quantity Float units -> Quantity Float units -> Expectation) -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> Expectation
 boundingBox3dBy equalTo first =
     Expect.all
         [ BoundingBox3d.minX >> equalTo (BoundingBox3d.minX first)
@@ -619,30 +738,42 @@ boundingBox3dBy equalTo first =
         ]
 
 
-boundingBox3d : BoundingBox3d -> BoundingBox3d -> Expectation
+boundingBox3d : BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> Expectation
 boundingBox3d =
     boundingBox3dBy approximately
 
 
-boundingBox3dWithin : Float -> BoundingBox3d -> BoundingBox3d -> Expectation
+boundingBox3dWithin : Quantity Float units -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> Expectation
 boundingBox3dWithin tolerance =
-    boundingBox3dBy (Expect.within (Expect.Absolute tolerance))
+    boundingBox3dBy (quantityWithin tolerance)
 
 
-point3dContainedIn : BoundingBox3d -> Point3d -> Expectation
+point3dContainedIn : BoundingBox3d units coordinates -> Point3d units coordinates -> Expectation
 point3dContainedIn box point =
     let
         extrema =
             BoundingBox3d.extrema box
 
+        ( width, height, depth ) =
+            BoundingBox3d.dimensions box
+
+        xOffset =
+            absoluteToleranceFor width
+
+        yOffset =
+            absoluteToleranceFor height
+
+        zOffset =
+            absoluteToleranceFor depth
+
         tolerantBox =
             BoundingBox3d.fromExtrema
-                { minX = extrema.minX - defaultTolerance
-                , minY = extrema.minY - defaultTolerance
-                , minZ = extrema.minZ - defaultTolerance
-                , maxX = extrema.maxX + defaultTolerance
-                , maxY = extrema.maxY + defaultTolerance
-                , maxZ = extrema.maxZ + defaultTolerance
+                { minX = extrema.minX |> Quantity.minus xOffset
+                , minY = extrema.minY |> Quantity.minus yOffset
+                , minZ = extrema.minZ |> Quantity.minus zOffset
+                , maxX = extrema.maxX |> Quantity.plus xOffset
+                , maxY = extrema.maxY |> Quantity.plus yOffset
+                , maxZ = extrema.maxZ |> Quantity.plus zOffset
                 }
     in
     BoundingBox3d.contains point tolerantBox
@@ -655,7 +786,7 @@ point3dContainedIn box point =
             )
 
 
-polyline2dBy : (Point2d -> Point2d -> Expectation) -> Polyline2d -> Polyline2d -> Expectation
+polyline2dBy : (Point2d units coordinates -> Point2d units coordinates -> Expectation) -> Polyline2d units coordinates -> Polyline2d units coordinates -> Expectation
 polyline2dBy equalTo first =
     Expect.all
         [ Polyline2d.vertices
@@ -674,17 +805,17 @@ polyline2dBy equalTo first =
         ]
 
 
-polyline2d : Polyline2d -> Polyline2d -> Expectation
+polyline2d : Polyline2d units coordinates -> Polyline2d units coordinates -> Expectation
 polyline2d =
     polyline2dBy point2d
 
 
-polyline2dWithin : Float -> Polyline2d -> Polyline2d -> Expectation
+polyline2dWithin : Quantity Float units -> Polyline2d units coordinates -> Polyline2d units coordinates -> Expectation
 polyline2dWithin tolerance =
     polyline2dBy (point2dWithin tolerance)
 
 
-polyline3dBy : (Point3d -> Point3d -> Expectation) -> Polyline3d -> Polyline3d -> Expectation
+polyline3dBy : (Point3d units coordinates -> Point3d units coordinates -> Expectation) -> Polyline3d units coordinates -> Polyline3d units coordinates -> Expectation
 polyline3dBy equalPoints first =
     Expect.all
         [ Polyline3d.vertices
@@ -703,17 +834,17 @@ polyline3dBy equalPoints first =
         ]
 
 
-polyline3d : Polyline3d -> Polyline3d -> Expectation
+polyline3d : Polyline3d units coordinates -> Polyline3d units coordinates -> Expectation
 polyline3d =
     polyline3dBy point3d
 
 
-polyline3dWithin : Float -> Polyline3d -> Polyline3d -> Expectation
+polyline3dWithin : Quantity Float units -> Polyline3d units coordinates -> Polyline3d units coordinates -> Expectation
 polyline3dWithin tolerance =
     polyline3dBy (point3dWithin tolerance)
 
 
-polygon2dBy : (Point2d -> Point2d -> Expectation) -> Polygon2d -> Polygon2d -> Expectation
+polygon2dBy : (Point2d units coordinates -> Point2d units coordinates -> Expectation) -> Polygon2d units coordinates -> Polygon2d units coordinates -> Expectation
 polygon2dBy equalPoints first =
     Expect.all
         [ Polygon2d.vertices
@@ -732,17 +863,17 @@ polygon2dBy equalPoints first =
         ]
 
 
-polygon2d : Polygon2d -> Polygon2d -> Expectation
+polygon2d : Polygon2d units coordinates -> Polygon2d units coordinates -> Expectation
 polygon2d =
     polygon2dBy point2d
 
 
-polygon2dWithin : Float -> Polygon2d -> Polygon2d -> Expectation
+polygon2dWithin : Quantity Float units -> Polygon2d units coordinates -> Polygon2d units coordinates -> Expectation
 polygon2dWithin tolerance =
     polygon2dBy (point2dWithin tolerance)
 
 
-circle2d : Circle2d -> Circle2d -> Expectation
+circle2d : Circle2d units coordinates -> Circle2d units coordinates -> Expectation
 circle2d first =
     Expect.all
         [ Circle2d.centerPoint >> point2d (Circle2d.centerPoint first)
@@ -750,7 +881,7 @@ circle2d first =
         ]
 
 
-circle3d : Circle3d -> Circle3d -> Expectation
+circle3d : Circle3d units coordinates -> Circle3d units coordinates -> Expectation
 circle3d first =
     Expect.all
         [ Circle3d.centerPoint >> point3d (Circle3d.centerPoint first)
@@ -759,7 +890,7 @@ circle3d first =
         ]
 
 
-sphere3d : Sphere3d -> Sphere3d -> Expectation
+sphere3d : Sphere3d units coordinates -> Sphere3d units coordinates -> Expectation
 sphere3d first =
     Expect.all
         [ Sphere3d.centerPoint >> point3d (Sphere3d.centerPoint first)
@@ -767,7 +898,7 @@ sphere3d first =
         ]
 
 
-arc2d : Arc2d -> Arc2d -> Expectation
+arc2d : Arc2d units coordinates -> Arc2d units coordinates -> Expectation
 arc2d first =
     Expect.all
         [ Arc2d.startPoint >> point2d (Arc2d.startPoint first)
@@ -776,7 +907,7 @@ arc2d first =
         ]
 
 
-arc3d : Arc3d -> Arc3d -> Expectation
+arc3d : Arc3d units coordinates -> Arc3d units coordinates -> Expectation
 arc3d first =
     Expect.all
         [ Arc3d.startPoint >> point3d (Arc3d.startPoint first)
@@ -786,59 +917,59 @@ arc3d first =
         ]
 
 
-quadraticSpline2d : QuadraticSpline2d -> QuadraticSpline2d -> Expectation
+quadraticSpline2d : QuadraticSpline2d units coordinates -> QuadraticSpline2d units coordinates -> Expectation
 quadraticSpline2d first =
     Expect.all
-        [ QuadraticSpline2d.startPoint
-            >> point2d (QuadraticSpline2d.startPoint first)
-        , QuadraticSpline2d.controlPoint
-            >> point2d (QuadraticSpline2d.controlPoint first)
-        , QuadraticSpline2d.endPoint
-            >> point2d (QuadraticSpline2d.endPoint first)
+        [ QuadraticSpline2d.firstControlPoint
+            >> point2d (QuadraticSpline2d.firstControlPoint first)
+        , QuadraticSpline2d.secondControlPoint
+            >> point2d (QuadraticSpline2d.secondControlPoint first)
+        , QuadraticSpline2d.thirdControlPoint
+            >> point2d (QuadraticSpline2d.thirdControlPoint first)
         ]
 
 
-quadraticSpline3d : QuadraticSpline3d -> QuadraticSpline3d -> Expectation
+quadraticSpline3d : QuadraticSpline3d units coordinates -> QuadraticSpline3d units coordinates -> Expectation
 quadraticSpline3d first =
     Expect.all
-        [ QuadraticSpline3d.startPoint
-            >> point3d (QuadraticSpline3d.startPoint first)
-        , QuadraticSpline3d.controlPoint
-            >> point3d (QuadraticSpline3d.controlPoint first)
-        , QuadraticSpline3d.endPoint
-            >> point3d (QuadraticSpline3d.endPoint first)
+        [ QuadraticSpline3d.firstControlPoint
+            >> point3d (QuadraticSpline3d.firstControlPoint first)
+        , QuadraticSpline3d.secondControlPoint
+            >> point3d (QuadraticSpline3d.secondControlPoint first)
+        , QuadraticSpline3d.thirdControlPoint
+            >> point3d (QuadraticSpline3d.thirdControlPoint first)
         ]
 
 
-cubicSpline2d : CubicSpline2d -> CubicSpline2d -> Expectation
+cubicSpline2d : CubicSpline2d units coordinates -> CubicSpline2d units coordinates -> Expectation
 cubicSpline2d first =
     Expect.all
-        [ CubicSpline2d.startPoint
-            >> point2d (CubicSpline2d.startPoint first)
-        , CubicSpline2d.startControlPoint
-            >> point2d (CubicSpline2d.startControlPoint first)
-        , CubicSpline2d.endControlPoint
-            >> point2d (CubicSpline2d.endControlPoint first)
-        , CubicSpline2d.endPoint
-            >> point2d (CubicSpline2d.endPoint first)
+        [ CubicSpline2d.firstControlPoint
+            >> point2d (CubicSpline2d.firstControlPoint first)
+        , CubicSpline2d.secondControlPoint
+            >> point2d (CubicSpline2d.secondControlPoint first)
+        , CubicSpline2d.thirdControlPoint
+            >> point2d (CubicSpline2d.thirdControlPoint first)
+        , CubicSpline2d.fourthControlPoint
+            >> point2d (CubicSpline2d.fourthControlPoint first)
         ]
 
 
-cubicSpline3d : CubicSpline3d -> CubicSpline3d -> Expectation
+cubicSpline3d : CubicSpline3d units coordinates -> CubicSpline3d units coordinates -> Expectation
 cubicSpline3d first =
     Expect.all
-        [ CubicSpline3d.startPoint
-            >> point3d (CubicSpline3d.startPoint first)
-        , CubicSpline3d.startControlPoint
-            >> point3d (CubicSpline3d.startControlPoint first)
-        , CubicSpline3d.endControlPoint
-            >> point3d (CubicSpline3d.endControlPoint first)
-        , CubicSpline3d.endPoint
-            >> point3d (CubicSpline3d.endPoint first)
+        [ CubicSpline3d.firstControlPoint
+            >> point3d (CubicSpline3d.firstControlPoint first)
+        , CubicSpline3d.secondControlPoint
+            >> point3d (CubicSpline3d.secondControlPoint first)
+        , CubicSpline3d.thirdControlPoint
+            >> point3d (CubicSpline3d.thirdControlPoint first)
+        , CubicSpline3d.fourthControlPoint
+            >> point3d (CubicSpline3d.fourthControlPoint first)
         ]
 
 
-validBoundingBox2d : BoundingBox2d -> Expectation
+validBoundingBox2d : BoundingBox2d units coordinates -> Expectation
 validBoundingBox2d boundingBox =
     let
         extrema =
@@ -847,17 +978,17 @@ validBoundingBox2d boundingBox =
         { minX, maxX, minY, maxY } =
             extrema
     in
-    if not (minX <= maxX) then
+    if not (minX |> Quantity.lessThanOrEqualTo maxX) then
         Expect.fail ("Expected bounding box with extrema " ++ Debug.toString extrema ++ " to have minX <= maxX")
 
-    else if not (minY <= maxY) then
+    else if not (minY |> Quantity.lessThanOrEqualTo maxY) then
         Expect.fail ("Expected bounding box with extrema " ++ Debug.toString extrema ++ " to have minY <= maxY")
 
     else
         Expect.pass
 
 
-validBoundingBox3d : BoundingBox3d -> Expectation
+validBoundingBox3d : BoundingBox3d units coordinates -> Expectation
 validBoundingBox3d boundingBox =
     let
         extrema =
@@ -866,13 +997,13 @@ validBoundingBox3d boundingBox =
         { minX, maxX, minY, maxY, minZ, maxZ } =
             extrema
     in
-    if not (minX <= maxX) then
+    if not (minX |> Quantity.lessThanOrEqualTo maxX) then
         Expect.fail ("Expected bounding box with extrema " ++ Debug.toString extrema ++ " to have minX <= maxX")
 
-    else if not (minY <= maxY) then
+    else if not (minY |> Quantity.lessThanOrEqualTo maxY) then
         Expect.fail ("Expected bounding box with extrema " ++ Debug.toString extrema ++ " to have minY <= maxY")
 
-    else if not (minZ <= maxZ) then
+    else if not (minZ |> Quantity.lessThanOrEqualTo maxZ) then
         Expect.fail ("Expected bounding box with extrema " ++ Debug.toString extrema ++ " to have minZ <= maxZ")
 
     else

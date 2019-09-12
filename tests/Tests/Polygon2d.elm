@@ -10,9 +10,11 @@ import Expect
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Length exposing (meters)
 import LineSegment2d
 import Point2d
 import Polygon2d
+import Quantity exposing (zero)
 import Test exposing (Test)
 import Triangle2d
 import TriangularMesh
@@ -41,15 +43,12 @@ convexHullIsConvex =
                 first :: rest ->
                     let
                         crossProducts =
-                            List.map2 Vector2d.crossProduct
+                            List.map2 (\v1 v2 -> v1 |> Vector2d.cross v2)
                                 (first :: rest)
                                 (rest ++ [ first ])
-
-                        isNonNegative crossProduct =
-                            crossProduct >= 0
                     in
                     Expect.true "Edges should always turn counterclockwise" <|
-                        List.all isNonNegative crossProducts
+                        List.all (Quantity.greaterThanOrEqualTo zero) crossProducts
         )
 
 
@@ -71,9 +70,10 @@ convexHullContainsAllPoints =
                             LineSegment2d.endpoints edge
 
                         triangle =
-                            Triangle2d.fromVertices ( point, p1, p2 )
+                            Triangle2d.from point p1 p2
                     in
-                    Triangle2d.counterclockwiseArea triangle >= 0
+                    Triangle2d.counterclockwiseArea triangle
+                        |> Quantity.greaterThanOrEqualTo zero
 
                 isContained point =
                     List.all (\edge -> isNonNegativeArea point edge) edges
@@ -85,29 +85,26 @@ convexHullContainsAllPoints =
 
 simplePolygon =
     Polygon2d.singleLoop
-        [ Point2d.fromCoordinates ( 1, 1 )
-        , Point2d.fromCoordinates ( 3, 1 )
-        , Point2d.fromCoordinates ( 3, 2 )
-        , Point2d.fromCoordinates ( 1, 2 )
+        [ Point2d.fromTuple meters ( 1, 1 )
+        , Point2d.fromTuple meters ( 3, 1 )
+        , Point2d.fromTuple meters ( 3, 2 )
+        , Point2d.fromTuple meters ( 1, 2 )
         ]
 
 
 withHole =
-    Polygon2d.with
-        { outerLoop =
-            [ Point2d.fromCoordinates ( 0, 0 )
-            , Point2d.fromCoordinates ( 3, 0 )
-            , Point2d.fromCoordinates ( 3, 3 )
-            , Point2d.fromCoordinates ( 0, 3 )
-            ]
-        , innerLoops =
-            [ [ Point2d.fromCoordinates ( 1, 1 )
-              , Point2d.fromCoordinates ( 1, 2 )
-              , Point2d.fromCoordinates ( 2, 2 )
-              , Point2d.fromCoordinates ( 2, 1 )
-              ]
-            ]
-        }
+    Polygon2d.withHoles
+        [ [ Point2d.fromTuple meters ( 1, 1 )
+          , Point2d.fromTuple meters ( 1, 2 )
+          , Point2d.fromTuple meters ( 2, 2 )
+          , Point2d.fromTuple meters ( 2, 1 )
+          ]
+        ]
+        [ Point2d.fromTuple meters ( 0, 0 )
+        , Point2d.fromTuple meters ( 3, 0 )
+        , Point2d.fromTuple meters ( 3, 3 )
+        , Point2d.fromTuple meters ( 0, 3 )
+        ]
 
 
 containsTest : Test
@@ -116,32 +113,32 @@ containsTest =
         [ Test.test "inside" <|
             \() ->
                 simplePolygon
-                    |> Polygon2d.contains (Point2d.fromCoordinates ( 2, 1.5 ))
+                    |> Polygon2d.contains (Point2d.fromTuple meters ( 2, 1.5 ))
                     |> Expect.equal True
         , Test.test "boundary" <|
             \() ->
                 simplePolygon
-                    |> Polygon2d.contains (Point2d.fromCoordinates ( 3, 1.5 ))
+                    |> Polygon2d.contains (Point2d.fromTuple meters ( 3, 1.5 ))
                     |> Expect.equal True
         , Test.test "outside" <|
             \() ->
                 simplePolygon
-                    |> Polygon2d.contains (Point2d.fromCoordinates ( 4, 1.5 ))
+                    |> Polygon2d.contains (Point2d.fromTuple meters ( 4, 1.5 ))
                     |> Expect.equal False
         , Test.test "inside with hole" <|
             \() ->
                 withHole
-                    |> Polygon2d.contains (Point2d.fromCoordinates ( 2, 2.5 ))
+                    |> Polygon2d.contains (Point2d.fromTuple meters ( 2, 2.5 ))
                     |> Expect.equal True
         , Test.test "boundary of hole" <|
             \() ->
                 withHole
-                    |> Polygon2d.contains (Point2d.fromCoordinates ( 2, 2 ))
+                    |> Polygon2d.contains (Point2d.fromTuple meters ( 2, 2 ))
                     |> Expect.equal True
         , Test.test "outside (in the hole)" <|
             \() ->
                 withHole
-                    |> Polygon2d.contains (Point2d.fromCoordinates ( 1.5, 1.5 ))
+                    |> Polygon2d.contains (Point2d.fromTuple meters ( 1.5, 1.5 ))
                     |> Expect.equal False
         ]
 
@@ -161,7 +158,7 @@ triangulationHasCorrectArea =
                         |> List.map Triangle2d.fromVertices
 
                 triangleArea =
-                    List.sum (List.map Triangle2d.area triangles)
+                    Quantity.sum (List.map Triangle2d.area triangles)
             in
             triangleArea |> Expect.approximately polygonArea
         )

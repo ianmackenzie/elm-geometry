@@ -15,8 +15,10 @@ import Expect
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Length exposing (meters)
 import LineSegment2d
 import Point2d
+import Quantity
 import Test exposing (Test)
 import Triangle2d
 import Vector2d
@@ -40,16 +42,12 @@ intersectionWorksProperly =
                                     LineSegment2d.endpoints segment
 
                                 triangle =
-                                    Triangle2d.fromVertices
-                                        ( startPoint
-                                        , endPoint
-                                        , point
-                                        )
+                                    Triangle2d.from startPoint endPoint point
 
                                 area =
                                     Triangle2d.area triangle
                             in
-                            Expect.approximately 0 area
+                            Expect.approximately Quantity.zero area
 
                         -- Check that point is actually between the two
                         -- endpoints (almost enough of a check by itself, but
@@ -68,7 +66,7 @@ intersectionWorksProperly =
                             in
                             Expect.approximately
                                 (LineSegment2d.length segment)
-                                (firstDistance + secondDistance)
+                                (firstDistance |> Quantity.plus secondDistance)
 
                         isOn segment =
                             Expect.all
@@ -115,15 +113,30 @@ intersectionWorksProperly =
                                                 endPoint
 
                                         tolerance =
-                                            1.0e-12
+                                            meters 1.0e-12
+
+                                        negativeTolerance =
+                                            Quantity.negate tolerance
 
                                         bothNonNegative =
-                                            (startDistance > -tolerance)
-                                                && (endDistance > -tolerance)
+                                            (startDistance
+                                                |> Quantity.greaterThan
+                                                    negativeTolerance
+                                            )
+                                                && (endDistance
+                                                        |> Quantity.greaterThan
+                                                            negativeTolerance
+                                                   )
 
                                         bothNonPositive =
-                                            (startDistance < tolerance)
-                                                && (endDistance < tolerance)
+                                            (startDistance
+                                                |> Quantity.lessThan
+                                                    tolerance
+                                            )
+                                                && (endDistance
+                                                        |> Quantity.lessThan
+                                                            tolerance
+                                                   )
                                     in
                                     bothNonNegative || bothNonPositive
 
@@ -169,7 +182,10 @@ intersectionFindsCoincidentEndpoints =
                 intersection =
                     LineSegment2d.intersectionPoint firstSegment secondSegment
             in
-            if Vector2d.crossProduct firstVector secondVector /= 0 then
+            if
+                (firstVector |> Vector2d.cross secondVector)
+                    /= Quantity.zero
+            then
                 Expect.equal (Just sharedEnd) intersection
 
             else
@@ -319,14 +335,17 @@ sharedEndpointOnThirdSegmentInducesAnIntersection =
                     )
 
                 ( v3Xv1, v3Xv2 ) =
-                    ( Vector2d.crossProduct v3 v1
-                    , Vector2d.crossProduct v3 v2
+                    ( v3 |> Vector2d.cross v1
+                    , v3 |> Vector2d.cross v2
                     )
             in
-            if v3Xv1 == 0 || v3Xv2 == 0 then
+            if v3Xv1 == Quantity.zero || v3Xv2 == Quantity.zero then
                 Expect.pass
 
-            else if v3Xv1 * v3Xv2 > 0 then
+            else if
+                (v3Xv1 |> Quantity.times v3Xv2)
+                    |> Quantity.greaterThan Quantity.zero
+            then
                 -- point1 and point2 are on the same side of segment3
                 case intersections of
                     ( Nothing, Nothing ) ->
@@ -348,7 +367,8 @@ sharedEndpointOnThirdSegmentInducesAnIntersection =
                         ( p1, v3Xv2 )
                             |> Expect.all
                                 [ Tuple.first >> Expect.point2d sharedPoint
-                                , Tuple.second >> Expect.approximately 0
+                                , Tuple.second
+                                    >> Expect.approximately Quantity.zero
                                 ]
 
                     ( Nothing, Just p2 ) ->
@@ -359,7 +379,8 @@ sharedEndpointOnThirdSegmentInducesAnIntersection =
                         ( p2, v3Xv1 )
                             |> Expect.all
                                 [ Tuple.first >> Expect.point2d sharedPoint
-                                , Tuple.second >> Expect.approximately 0
+                                , Tuple.second
+                                    >> Expect.approximately Quantity.zero
                                 ]
 
             else

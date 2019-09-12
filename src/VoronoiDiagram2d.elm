@@ -94,22 +94,24 @@ import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
 import Polyline2d exposing (Polyline2d)
+import Quantity exposing (Quantity)
+import Quantity.Extra as Quantity
 
 
-type Region vertex
-    = Polygonal vertex Polygon2d
-    | UShaped vertex Axis2d Axis2d Polyline2d
-    | Strip vertex Axis2d Axis2d
-    | HalfPlane vertex Axis2d
+type Region vertex units coordinates
+    = Polygonal vertex (Polygon2d units coordinates)
+    | UShaped vertex (Axis2d units coordinates) (Axis2d units coordinates) (Polyline2d units coordinates)
+    | Strip vertex (Axis2d units coordinates) (Axis2d units coordinates)
+    | HalfPlane vertex (Axis2d units coordinates)
     | Unbounded vertex
 
 
 {-| A 2D Voronoi diagram of a set of vertices.
 -}
-type VoronoiDiagram2d vertex
+type VoronoiDiagram2d vertex units coordinates
     = VoronoiDiagram2d
-        { delaunayTriangulation : DelaunayTriangulation2d vertex
-        , regions : List (Region vertex)
+        { delaunayTriangulation : DelaunayTriangulation2d vertex units coordinates
+        , regions : List (Region vertex units coordinates)
         }
 
 
@@ -119,14 +121,14 @@ type Error vertex
     = CoincidentVertices vertex vertex
 
 
-type alias Accumulator =
-    { points : List Point2d
-    , startDirection : Maybe Direction2d
-    , endDirection : Maybe Direction2d
+type alias Accumulator units coordinates =
+    { points : List (Point2d units coordinates)
+    , startDirection : Maybe (Direction2d coordinates)
+    , endDirection : Maybe (Direction2d coordinates)
     }
 
 
-addInterior : Point2d -> Maybe Accumulator -> Maybe Accumulator
+addInterior : Point2d units coordinates -> Maybe (Accumulator units coordinates) -> Maybe (Accumulator units coordinates)
 addInterior point entry =
     case entry of
         Just accumulator ->
@@ -143,7 +145,7 @@ addInterior point entry =
                 }
 
 
-addStartDirection : Direction2d -> Maybe Accumulator -> Maybe Accumulator
+addStartDirection : Direction2d coordinates -> Maybe (Accumulator units coordinates) -> Maybe (Accumulator units coordinates)
 addStartDirection direction entry =
     case entry of
         Just accumulator ->
@@ -157,7 +159,7 @@ addStartDirection direction entry =
                 }
 
 
-addEndDirection : Direction2d -> Maybe Accumulator -> Maybe Accumulator
+addEndDirection : Direction2d coordinates -> Maybe (Accumulator units coordinates) -> Maybe (Accumulator units coordinates)
 addEndDirection direction entry =
     case entry of
         Just accumulator ->
@@ -171,7 +173,7 @@ addEndDirection direction entry =
                 }
 
 
-updateAccumulators : DelaunayFace vertex -> Dict Int Accumulator -> Dict Int Accumulator
+updateAccumulators : DelaunayFace vertex units coordinates -> Dict Int (Accumulator units coordinates) -> Dict Int (Accumulator units coordinates)
 updateAccumulators face accumulators =
     case face of
         ThreeVertexFace firstVertex secondVertex thirdVertex circumcircle ->
@@ -199,32 +201,41 @@ updateAccumulators face accumulators =
             accumulators
 
 
-pseudoAngle : Point2d -> Point2d -> Float
+pseudoAngle : Point2d units coordinates -> Point2d units coordinates -> Float
 pseudoAngle startPoint endPoint =
     let
-        ( x0, y0 ) =
-            Point2d.coordinates startPoint
+        x0 =
+            Point2d.xCoordinate startPoint
 
-        ( x1, y1 ) =
-            Point2d.coordinates endPoint
+        y0 =
+            Point2d.yCoordinate startPoint
+
+        x1 =
+            Point2d.xCoordinate endPoint
+
+        y1 =
+            Point2d.yCoordinate endPoint
 
         dx =
-            x1 - x0
+            x1 |> Quantity.minus x0
 
         dy =
-            y1 - y0
+            y1 |> Quantity.minus y0
+
+        absoluteSum =
+            Quantity.abs dx |> Quantity.plus (Quantity.abs dy)
 
         p =
-            dx / (abs dx + abs dy)
+            Quantity.ratio dx absoluteSum
     in
-    if dy < 0 then
+    if dy |> Quantity.lessThan Quantity.zero then
         p - 1
 
     else
         1 - p
 
 
-collectRegions : Dict Int Accumulator -> DelaunayVertex vertex -> List (Region vertex) -> List (Region vertex)
+collectRegions : Dict Int (Accumulator units coordinates) -> DelaunayVertex vertex units coordinates -> List (Region vertex units coordinates) -> List (Region vertex units coordinates)
 collectRegions accumulatorsByIndex delaunayVertex accumulatedRegions =
     case Dict.get delaunayVertex.index accumulatorsByIndex of
         Just { points, startDirection, endDirection } ->
@@ -254,7 +265,7 @@ collectRegions accumulatorsByIndex delaunayVertex accumulatedRegions =
 
                         sortedPoints =
                             points
-                                |> List.sortBy
+                                |> Quantity.sortBy
                                     (Point2d.signedDistanceAlong sortAxis)
                     in
                     case sortedPoints of
@@ -292,7 +303,7 @@ collectRegions accumulatorsByIndex delaunayVertex accumulatedRegions =
             accumulatedRegions
 
 
-collectStrips : Direction2d -> Direction2d -> Maybe Axis2d -> DelaunayVertex vertex -> List (DelaunayVertex vertex) -> List (Region vertex) -> List (Region vertex)
+collectStrips : Direction2d coordinates -> Direction2d coordinates -> Maybe (Axis2d units coordinates) -> DelaunayVertex vertex units coordinates -> List (DelaunayVertex vertex units coordinates) -> List (Region vertex units coordinates) -> List (Region vertex units coordinates)
 collectStrips direction axisDirection maybeLastAxis current following accumulated =
     case following of
         [] ->
@@ -328,23 +339,26 @@ collectStrips direction axisDirection maybeLastAxis current following accumulate
                 (newRegion :: accumulated)
 
 
-collinearVertexRegions : List (DelaunayVertex vertex) -> List (Region vertex)
+collinearVertexRegions : List (DelaunayVertex vertex units coordinates) -> List (Region vertex units coordinates)
 collinearVertexRegions delaunayVertices =
-    case BoundingBox2d.containingPoints (List.map .position delaunayVertices) of
-        Just boundingBox ->
+    case delaunayVertices of
+        first :: rest ->
             let
+                boundingBox =
+                    Point2d.hullOf .position first rest
+
                 ( width, height ) =
                     BoundingBox2d.dimensions boundingBox
 
-                sortedVertices =
-                    delaunayVertices
-                        |> List.sortBy
-                            (if width >= height then
-                                .position >> Point2d.xCoordinate
+                sortCoordinate =
+                    if width |> Quantity.greaterThanOrEqualTo height then
+                        \vertex -> Point2d.xCoordinate vertex.position
 
-                             else
-                                .position >> Point2d.yCoordinate
-                            )
+                    else
+                        \vertex -> Point2d.yCoordinate vertex.position
+
+                sortedVertices =
+                    delaunayVertices |> Quantity.sortBy sortCoordinate
             in
             case sortedVertices of
                 [ singleVertex ] ->
@@ -375,11 +389,11 @@ collinearVertexRegions delaunayVertices =
                 [] ->
                     []
 
-        Nothing ->
+        [] ->
             []
 
 
-hasFiniteFace : List (DelaunayFace vertex) -> Bool
+hasFiniteFace : List (DelaunayFace vertex units coordinates) -> Bool
 hasFiniteFace faces =
     case faces of
         [] ->
@@ -397,7 +411,7 @@ hasFiniteFace faces =
                     hasFiniteFace rest
 
 
-voronoiRegions : DelaunayTriangulation2d vertex -> List (Region vertex)
+voronoiRegions : DelaunayTriangulation2d vertex units coordinates -> List (Region vertex units coordinates)
 voronoiRegions delaunayTriangulation =
     case delaunayTriangulation of
         Types.EmptyDelaunayTriangulation2d ->
@@ -417,20 +431,20 @@ voronoiRegions delaunayTriangulation =
                 collinearVertexRegions triangulation.delaunayVertices
 
 
-type alias TrimBox =
-    { boundingBox : BoundingBox2d
-    , leftEdge : LineSegment2d
-    , rightEdge : LineSegment2d
-    , topEdge : LineSegment2d
-    , bottomEdge : LineSegment2d
-    , topLeftVertex : Point2d
-    , topRightVertex : Point2d
-    , bottomLeftVertex : Point2d
-    , bottomRightVertex : Point2d
+type alias TrimBox units coordinates =
+    { boundingBox : BoundingBox2d units coordinates
+    , leftEdge : LineSegment2d units coordinates
+    , rightEdge : LineSegment2d units coordinates
+    , topEdge : LineSegment2d units coordinates
+    , bottomEdge : LineSegment2d units coordinates
+    , topLeftVertex : Point2d units coordinates
+    , topRightVertex : Point2d units coordinates
+    , bottomLeftVertex : Point2d units coordinates
+    , bottomRightVertex : Point2d units coordinates
     }
 
 
-addContainedPoint : BoundingBox2d -> Point2d -> List Point2d -> List Point2d
+addContainedPoint : BoundingBox2d units coordinates -> Point2d units coordinates -> List (Point2d units coordinates) -> List (Point2d units coordinates)
 addContainedPoint boundingBox point accumulated =
     if BoundingBox2d.contains point boundingBox then
         point :: accumulated
@@ -439,12 +453,12 @@ addContainedPoint boundingBox point accumulated =
         accumulated
 
 
-addContainedPoints : TrimBox -> List Point2d -> List Point2d -> List Point2d
+addContainedPoints : TrimBox units coordinates -> List (Point2d units coordinates) -> List (Point2d units coordinates) -> List (Point2d units coordinates)
 addContainedPoints trimBox points accumulated =
     List.foldl (addContainedPoint trimBox.boundingBox) accumulated points
 
 
-addEdgeIntersection : LineSegment2d -> LineSegment2d -> List Point2d -> List Point2d
+addEdgeIntersection : LineSegment2d units coordinates -> LineSegment2d units coordinates -> List (Point2d units coordinates) -> List (Point2d units coordinates)
 addEdgeIntersection firstLineSegment secondLineSegment accumulated =
     case LineSegment2d.intersectionPoint firstLineSegment secondLineSegment of
         Just point ->
@@ -454,7 +468,7 @@ addEdgeIntersection firstLineSegment secondLineSegment accumulated =
             accumulated
 
 
-addEdgeIntersections : TrimBox -> LineSegment2d -> List Point2d -> List Point2d
+addEdgeIntersections : TrimBox units coordinates -> LineSegment2d units coordinates -> List (Point2d units coordinates) -> List (Point2d units coordinates)
 addEdgeIntersections trimBox lineSegment accumulated =
     accumulated
         |> addEdgeIntersection trimBox.leftEdge lineSegment
@@ -463,17 +477,20 @@ addEdgeIntersections trimBox lineSegment accumulated =
         |> addEdgeIntersection trimBox.bottomEdge lineSegment
 
 
-addAllEdgeIntersections : TrimBox -> List LineSegment2d -> List Point2d -> List Point2d
+addAllEdgeIntersections : TrimBox units coordinates -> List (LineSegment2d units coordinates) -> List (Point2d units coordinates) -> List (Point2d units coordinates)
 addAllEdgeIntersections trimBox lineSegments accumulated =
     List.foldl (addEdgeIntersections trimBox) accumulated lineSegments
 
 
-addHalfAxisIntersection : LineSegment2d -> Axis2d -> List Point2d -> List Point2d
+addHalfAxisIntersection : LineSegment2d units coordinates -> Axis2d units coordinates -> List (Point2d units coordinates) -> List (Point2d units coordinates)
 addHalfAxisIntersection lineSegment axis accumulated =
     case LineSegment2d.intersectionWithAxis axis lineSegment of
         Just point ->
             -- We only want points ahead of the axis' origin point, not behind
-            if Point2d.signedDistanceAlong axis point >= 0 then
+            if
+                Point2d.signedDistanceAlong axis point
+                    |> Quantity.greaterThanOrEqualTo Quantity.zero
+            then
                 point :: accumulated
 
             else
@@ -483,7 +500,7 @@ addHalfAxisIntersection lineSegment axis accumulated =
             accumulated
 
 
-addFullAxisIntersection : LineSegment2d -> Axis2d -> List Point2d -> List Point2d
+addFullAxisIntersection : LineSegment2d units coordinates -> Axis2d units coordinates -> List (Point2d units coordinates) -> List (Point2d units coordinates)
 addFullAxisIntersection lineSegment axis accumulated =
     case LineSegment2d.intersectionWithAxis axis lineSegment of
         Just point ->
@@ -493,7 +510,7 @@ addFullAxisIntersection lineSegment axis accumulated =
             accumulated
 
 
-addHalfAxisIntersections : TrimBox -> Axis2d -> List Point2d -> List Point2d
+addHalfAxisIntersections : TrimBox units coordinates -> Axis2d units coordinates -> List (Point2d units coordinates) -> List (Point2d units coordinates)
 addHalfAxisIntersections trimBox axis accumulated =
     accumulated
         |> addHalfAxisIntersection trimBox.leftEdge axis
@@ -502,7 +519,7 @@ addHalfAxisIntersections trimBox axis accumulated =
         |> addHalfAxisIntersection trimBox.bottomEdge axis
 
 
-addFullAxisIntersections : TrimBox -> Axis2d -> List Point2d -> List Point2d
+addFullAxisIntersections : TrimBox units coordinates -> Axis2d units coordinates -> List (Point2d units coordinates) -> List (Point2d units coordinates)
 addFullAxisIntersections trimBox axis accumulated =
     accumulated
         |> addFullAxisIntersection trimBox.leftEdge axis
@@ -511,25 +528,42 @@ addFullAxisIntersections trimBox axis accumulated =
         |> addFullAxisIntersection trimBox.bottomEdge axis
 
 
-leftOfSegment : LineSegment2d -> Point2d -> Bool
+leftOfSegment : LineSegment2d units coordinates -> Point2d units coordinates -> Bool
 leftOfSegment lineSegment point =
     let
         ( p1, p2 ) =
             LineSegment2d.endpoints lineSegment
 
-        ( x1, y1 ) =
-            Point2d.coordinates p1
+        x1 =
+            Point2d.xCoordinate p1
 
-        ( x2, y2 ) =
-            Point2d.coordinates p2
+        y1 =
+            Point2d.yCoordinate p1
 
-        ( x, y ) =
-            Point2d.coordinates point
+        x2 =
+            Point2d.xCoordinate p2
+
+        y2 =
+            Point2d.yCoordinate p2
+
+        dx =
+            x2 |> Quantity.minus x1
+
+        dy =
+            y2 |> Quantity.minus y1
+
+        x =
+            Point2d.xCoordinate point
+
+        y =
+            Point2d.yCoordinate point
     in
-    (x - x1) * (y1 - y2) + (y - y1) * (x2 - x1) >= 0
+    ((x |> Quantity.minus x1) |> Quantity.times dy)
+        |> Quantity.lessThanOrEqualTo
+            ((y |> Quantity.minus y1) |> Quantity.times dx)
 
 
-leftOf : List LineSegment2d -> Point2d -> Bool
+leftOf : List (LineSegment2d units coordinates) -> Point2d units coordinates -> Bool
 leftOf lineSegments point =
     case lineSegments of
         first :: rest ->
@@ -543,12 +577,16 @@ leftOf lineSegments point =
             True
 
 
-addPointInsideInfiniteRegion : Axis2d -> Axis2d -> List LineSegment2d -> Point2d -> List Point2d -> List Point2d
+addPointInsideInfiniteRegion : Axis2d units coordinates -> Axis2d units coordinates -> List (LineSegment2d units coordinates) -> Point2d units coordinates -> List (Point2d units coordinates) -> List (Point2d units coordinates)
 addPointInsideInfiniteRegion leftAxis rightAxis lineSegments point accumulated =
     if
         leftOf lineSegments point
-            && (Point2d.signedDistanceFrom leftAxis point <= 0)
-            && (Point2d.signedDistanceFrom rightAxis point >= 0)
+            && (Point2d.signedDistanceFrom leftAxis point
+                    |> Quantity.lessThanOrEqualTo Quantity.zero
+               )
+            && (Point2d.signedDistanceFrom rightAxis point
+                    |> Quantity.greaterThanOrEqualTo Quantity.zero
+               )
     then
         point :: accumulated
 
@@ -556,7 +594,7 @@ addPointInsideInfiniteRegion leftAxis rightAxis lineSegments point accumulated =
         accumulated
 
 
-addPointsInsideInfiniteRegion : Axis2d -> Axis2d -> List LineSegment2d -> TrimBox -> List Point2d -> List Point2d
+addPointsInsideInfiniteRegion : Axis2d units coordinates -> Axis2d units coordinates -> List (LineSegment2d units coordinates) -> TrimBox units coordinates -> List (Point2d units coordinates) -> List (Point2d units coordinates)
 addPointsInsideInfiniteRegion leftAxis rightAxis lineSegments trimBox accumulated =
     accumulated
         |> addPointInsideInfiniteRegion
@@ -581,7 +619,7 @@ addPointsInsideInfiniteRegion leftAxis rightAxis lineSegments trimBox accumulate
             trimBox.bottomRightVertex
 
 
-addPointInsideFiniteRegion : List LineSegment2d -> Point2d -> List Point2d -> List Point2d
+addPointInsideFiniteRegion : List (LineSegment2d units coordinates) -> Point2d units coordinates -> List (Point2d units coordinates) -> List (Point2d units coordinates)
 addPointInsideFiniteRegion edges point accumulated =
     if leftOf edges point then
         point :: accumulated
@@ -590,7 +628,7 @@ addPointInsideFiniteRegion edges point accumulated =
         accumulated
 
 
-addPointsInsideFiniteRegion : List LineSegment2d -> TrimBox -> List Point2d -> List Point2d
+addPointsInsideFiniteRegion : List (LineSegment2d units coordinates) -> TrimBox units coordinates -> List (Point2d units coordinates) -> List (Point2d units coordinates)
 addPointsInsideFiniteRegion edges trimBox accumulated =
     accumulated
         |> addPointInsideFiniteRegion edges trimBox.topLeftVertex
@@ -599,7 +637,7 @@ addPointsInsideFiniteRegion edges trimBox accumulated =
         |> addPointInsideFiniteRegion edges trimBox.bottomRightVertex
 
 
-deduplicateAndReverse : List Point2d -> List Point2d
+deduplicateAndReverse : List (Point2d units coordinates) -> List (Point2d units coordinates)
 deduplicateAndReverse points =
     case points of
         first :: rest ->
@@ -609,7 +647,7 @@ deduplicateAndReverse points =
             []
 
 
-deduplicateHelp : Point2d -> List Point2d -> List Point2d -> List Point2d
+deduplicateHelp : Point2d units coordinates -> List (Point2d units coordinates) -> List (Point2d units coordinates) -> List (Point2d units coordinates)
 deduplicateHelp head rest accumulated =
     case rest of
         next :: remaining ->
@@ -623,11 +661,14 @@ deduplicateHelp head rest accumulated =
             accumulated
 
 
-constructPolygon : vertex -> List Point2d -> Maybe ( vertex, Polygon2d )
+constructPolygon : vertex -> List (Point2d units coordinates) -> Maybe ( vertex, Polygon2d units coordinates )
 constructPolygon vertex points =
-    case Point2d.centroid points of
-        Just centroid ->
+    case points of
+        first :: rest ->
             let
+                centroid =
+                    Point2d.centroid first rest
+
                 sortedPoints =
                     points
                         |> List.sortBy (pseudoAngle centroid >> negate)
@@ -635,11 +676,11 @@ constructPolygon vertex points =
             in
             Just ( vertex, Polygon2d.singleLoop sortedPoints )
 
-        Nothing ->
+        [] ->
             Nothing
 
 
-trimUShapedRegion : TrimBox -> vertex -> Axis2d -> Axis2d -> Polyline2d -> Maybe ( vertex, Polygon2d )
+trimUShapedRegion : TrimBox units coordinates -> vertex -> Axis2d units coordinates -> Axis2d units coordinates -> Polyline2d units coordinates -> Maybe ( vertex, Polygon2d units coordinates )
 trimUShapedRegion trimBox vertex leftAxis rightAxis polyline =
     let
         polylineVertices =
@@ -663,7 +704,7 @@ trimUShapedRegion trimBox vertex leftAxis rightAxis polyline =
     constructPolygon vertex trimmedVertices
 
 
-trimPolygonalRegion : TrimBox -> vertex -> Polygon2d -> Maybe ( vertex, Polygon2d )
+trimPolygonalRegion : TrimBox units coordinates -> vertex -> Polygon2d units coordinates -> Maybe ( vertex, Polygon2d units coordinates )
 trimPolygonalRegion trimBox vertex polygon =
     case Polygon2d.boundingBox polygon of
         Just polygonBoundingBox ->
@@ -692,11 +733,15 @@ trimPolygonalRegion trimBox vertex polygon =
             Nothing
 
 
-addPointBetweenAxes : Axis2d -> Axis2d -> Point2d -> List Point2d -> List Point2d
+addPointBetweenAxes : Axis2d units coordinates -> Axis2d units coordinates -> Point2d units coordinates -> List (Point2d units coordinates) -> List (Point2d units coordinates)
 addPointBetweenAxes leftAxis rightAxis point accumulated =
     if
-        (Point2d.signedDistanceFrom leftAxis point <= 0)
-            && (Point2d.signedDistanceFrom rightAxis point >= 0)
+        (Point2d.signedDistanceFrom leftAxis point
+            |> Quantity.lessThanOrEqualTo Quantity.zero
+        )
+            && (Point2d.signedDistanceFrom rightAxis point
+                    |> Quantity.greaterThanOrEqualTo Quantity.zero
+               )
     then
         point :: accumulated
 
@@ -704,7 +749,7 @@ addPointBetweenAxes leftAxis rightAxis point accumulated =
         accumulated
 
 
-trimStripRegion : TrimBox -> vertex -> Axis2d -> Axis2d -> Maybe ( vertex, Polygon2d )
+trimStripRegion : TrimBox units coordinates -> vertex -> Axis2d units coordinates -> Axis2d units coordinates -> Maybe ( vertex, Polygon2d units coordinates )
 trimStripRegion trimBox vertex leftAxis rightAxis =
     let
         trimmedVertices =
@@ -731,16 +776,19 @@ trimStripRegion trimBox vertex leftAxis rightAxis =
     constructPolygon vertex trimmedVertices
 
 
-addPointBesideAxis : Axis2d -> Point2d -> List Point2d -> List Point2d
+addPointBesideAxis : Axis2d units coordinates -> Point2d units coordinates -> List (Point2d units coordinates) -> List (Point2d units coordinates)
 addPointBesideAxis leftAxis point accumulated =
-    if Point2d.signedDistanceFrom leftAxis point <= 0 then
+    if
+        Point2d.signedDistanceFrom leftAxis point
+            |> Quantity.lessThanOrEqualTo Quantity.zero
+    then
         point :: accumulated
 
     else
         accumulated
 
 
-trimHalfPlane : TrimBox -> vertex -> Axis2d -> Maybe ( vertex, Polygon2d )
+trimHalfPlane : TrimBox units coordinates -> vertex -> Axis2d units coordinates -> Maybe ( vertex, Polygon2d units coordinates )
 trimHalfPlane trimBox vertex leftAxis =
     let
         trimmedVertices =
@@ -754,7 +802,7 @@ trimHalfPlane trimBox vertex leftAxis =
     constructPolygon vertex trimmedVertices
 
 
-trimRegion : TrimBox -> Region vertex -> Maybe ( vertex, Polygon2d )
+trimRegion : TrimBox units coordinates -> Region vertex units coordinates -> Maybe ( vertex, Polygon2d units coordinates )
 trimRegion trimBox region =
     case region of
         Polygonal vertex polygon ->
@@ -784,7 +832,7 @@ trimRegion trimBox region =
 
 {-| An empty Voronoi diagram with no vertices or faces.
 -}
-empty : VoronoiDiagram2d vertex
+empty : VoronoiDiagram2d vertex units coordinates
 empty =
     VoronoiDiagram2d
         { delaunayTriangulation = DelaunayTriangulation2d.empty
@@ -795,7 +843,7 @@ empty =
 {-| Construct a Voronoi diagram from an array of points. The points must all be
 distinct; if any two points are equal, you will get an `Err CoincidentVertices`.
 -}
-fromPoints : Array Point2d -> Result (Error Point2d) (VoronoiDiagram2d Point2d)
+fromPoints : Array (Point2d units coordinates) -> Result (Error (Point2d units coordinates)) (VoronoiDiagram2d (Point2d units coordinates) units coordinates)
 fromPoints points =
     fromVerticesBy identity points
 
@@ -805,7 +853,7 @@ supplying a function that returns the position of each vertex as a `Point2d`.
 For example, if you had
 
     types alias Vertex =
-        { position = Point2d
+        { position = Point2d Meters WorldCoordinates
         , color = String
         }
 
@@ -823,7 +871,7 @@ The vertices must all be distinct; if any two have the same position, you will
 get an `Err CoincidentVertices`.
 
 -}
-fromVerticesBy : (vertex -> Point2d) -> Array vertex -> Result (Error vertex) (VoronoiDiagram2d vertex)
+fromVerticesBy : (vertex -> Point2d units coordinates) -> Array vertex -> Result (Error vertex) (VoronoiDiagram2d vertex units coordinates)
 fromVerticesBy getPosition givenVertices =
     case DelaunayTriangulation2d.fromVerticesBy getPosition givenVertices of
         Ok triangulation ->
@@ -836,7 +884,7 @@ fromVerticesBy getPosition givenVertices =
 {-| Add a new point into an existing Voronoi diagram. It must not be equal to
 any existing point; if it is, you will get an `Err CoincidentVertices`.
 -}
-insertPoint : Point2d -> VoronoiDiagram2d Point2d -> Result (Error Point2d) (VoronoiDiagram2d Point2d)
+insertPoint : Point2d units coordinates -> VoronoiDiagram2d (Point2d units coordinates) units coordinates -> Result (Error (Point2d units coordinates)) (VoronoiDiagram2d (Point2d units coordinates) units coordinates)
 insertPoint point voronoiDiagram =
     insertVertexBy identity point voronoiDiagram
 
@@ -845,7 +893,7 @@ insertPoint point voronoiDiagram =
 to get the position of the vertex. The vertex must not have the same position as
 any existing vertex; if it is, you will get an `Err CoincidentVertices`.
 -}
-insertVertexBy : (vertex -> Point2d) -> vertex -> VoronoiDiagram2d vertex -> Result (Error vertex) (VoronoiDiagram2d vertex)
+insertVertexBy : (vertex -> Point2d units coordinates) -> vertex -> VoronoiDiagram2d vertex units coordinates -> Result (Error vertex) (VoronoiDiagram2d vertex units coordinates)
 insertVertexBy getPosition vertex (VoronoiDiagram2d current) =
     case current.delaunayTriangulation |> DelaunayTriangulation2d.insertVertexBy getPosition vertex of
         Ok updatedTriangulation ->
@@ -861,7 +909,7 @@ simply be the array that was passed in. If any vertices were added using
 `insertPoint` or `insertVertexBy`, then they will be appended to the end of the
 array. This is a simple accessor, so complexity is O(1).
 -}
-vertices : VoronoiDiagram2d vertex -> Array vertex
+vertices : VoronoiDiagram2d vertex units coordinates -> Array vertex
 vertices (VoronoiDiagram2d voronoiDiagram) =
     DelaunayTriangulation2d.vertices voronoiDiagram.delaunayTriangulation
 
@@ -883,23 +931,23 @@ center point, in which case the Voronoi region for the center point will be
 a polygon with 1000 edges).
 
 -}
-polygons : BoundingBox2d -> VoronoiDiagram2d vertex -> List ( vertex, Polygon2d )
+polygons : BoundingBox2d units coordinates -> VoronoiDiagram2d vertex units coordinates -> List ( vertex, Polygon2d units coordinates )
 polygons boundingBox (VoronoiDiagram2d voronoiDiagram) =
     let
         { minX, minY, maxX, maxY } =
             BoundingBox2d.extrema boundingBox
 
         topLeftVertex =
-            Point2d.fromCoordinates ( minX, maxY )
+            Point2d.xy minX maxY
 
         topRightVertex =
-            Point2d.fromCoordinates ( maxX, maxY )
+            Point2d.xy maxX maxY
 
         bottomLeftVertex =
-            Point2d.fromCoordinates ( minX, minY )
+            Point2d.xy minX minY
 
         bottomRightVertex =
-            Point2d.fromCoordinates ( maxX, minY )
+            Point2d.xy maxX minY
 
         trimBox =
             { boundingBox = boundingBox
@@ -920,7 +968,7 @@ polygons boundingBox (VoronoiDiagram2d voronoiDiagram) =
 be O(n) in the vast majority of cases but may be O(n log n) in pathological
 cases.
 -}
-fromDelaunayTriangulation : DelaunayTriangulation2d vertex -> VoronoiDiagram2d vertex
+fromDelaunayTriangulation : DelaunayTriangulation2d vertex units coordinates -> VoronoiDiagram2d vertex units coordinates
 fromDelaunayTriangulation triangulation =
     VoronoiDiagram2d
         { regions = voronoiRegions triangulation
@@ -931,6 +979,6 @@ fromDelaunayTriangulation triangulation =
 {-| Convert a Voronoi diagram to a Delaunay triangulation. This is a simple
 accessor, so complexity is O(1).
 -}
-toDelaunayTriangulation : VoronoiDiagram2d vertex -> DelaunayTriangulation2d vertex
+toDelaunayTriangulation : VoronoiDiagram2d vertex units coordinates -> DelaunayTriangulation2d vertex units coordinates
 toDelaunayTriangulation (VoronoiDiagram2d diagram) =
     diagram.delaunayTriangulation

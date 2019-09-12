@@ -2,6 +2,7 @@ module Tests.Triangle2d exposing (triangleContainsOwnCentroid)
 
 import Expect
 import Geometry.Fuzz as Fuzz
+import Quantity
 import Test exposing (Test)
 import Triangle2d
 
@@ -19,5 +20,5 @@ triangleContainsOwnCentroid =
                     Triangle2d.area triangle
             in
             Expect.true "non-zero area triangle did not contain its own centroid"
-                (area == 0.0 || Triangle2d.contains centroid triangle)
+                (area == Quantity.zero || Triangle2d.contains centroid triangle)
         )

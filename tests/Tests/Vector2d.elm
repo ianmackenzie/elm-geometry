@@ -11,6 +11,7 @@ import Axis2d
 import Direction2d
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Quantity
 import Test exposing (Test)
 import Vector2d
 
@@ -22,8 +23,8 @@ perpendicularVectorIsPerpendicular =
         (\vector ->
             vector
                 |> Vector2d.perpendicularTo
-                |> Vector2d.dotProduct vector
-                |> Expect.approximately 0
+                |> Vector2d.dot vector
+                |> Expect.approximately Quantity.zero
         )
 
 
@@ -32,15 +33,16 @@ dotProductWithSelfIsSquaredLength =
     Test.fuzz Fuzz.vector2d
         "Dot product of a vector with itself is its squared length"
         (\vector ->
-            Vector2d.dotProduct vector vector
-                |> Expect.approximately (Vector2d.squaredLength vector)
+            (vector |> Vector2d.dot vector)
+                |> Expect.approximately
+                    (Quantity.squared (Vector2d.length vector))
         )
 
 
 rotateByPreservesLength : Test
 rotateByPreservesLength =
     Test.fuzz2 Fuzz.vector2d
-        Fuzz.scalar
+        Fuzz.angle
         "Rotating a vector preserves its length"
         (\vector angle ->
             Vector2d.rotateBy angle vector
@@ -52,7 +54,7 @@ rotateByPreservesLength =
 rotateByRotatesByTheCorrectAngle : Test
 rotateByRotatesByTheCorrectAngle =
     Test.fuzz2 Fuzz.vector2d
-        Fuzz.scalar
+        Fuzz.angle
         "Rotating a vector rotates by the correct angle"
         (\vector angle ->
             let
@@ -64,7 +66,7 @@ rotateByRotatesByTheCorrectAngle =
 
                 measuredAngle =
                     Maybe.map2 Direction2d.angleFrom direction rotatedDirection
-                        |> Maybe.withDefault 0
+                        |> Maybe.withDefault Quantity.zero
             in
             Expect.angle angle measuredAngle
         )
@@ -103,5 +105,6 @@ mirrorAcrossNegatesPerpendicularComponent =
             vector
                 |> Vector2d.mirrorAcross axis
                 |> perpendicularComponent
-                |> Expect.approximately -(perpendicularComponent vector)
+                |> Expect.approximately
+                    (Quantity.negate (perpendicularComponent vector))
         )

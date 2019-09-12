@@ -4,20 +4,24 @@ module Tests.EllipticalArc2d exposing
     , transformations
     )
 
+import Angle exposing (degrees, radians)
 import Arc.SweptAngle as SweptAngle
-import Arc2d exposing (Arc2d)
-import EllipticalArc2d exposing (EllipticalArc2d)
+import Arc2d
+import EllipticalArc2d
 import Expect
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Geometry.Test as Test exposing (..)
+import Length exposing (meters)
 import Point2d
+import Quantity exposing (zero)
 import Test exposing (Test)
 import Tests.Generic.Curve2d
 import Vector2d
 
 
-reproducibleArc : Fuzzer Arc2d
+reproducibleArc : Fuzzer (Arc2d coordinates)
 reproducibleArc =
     Fuzz.map4
         (\centerPoint startDirection radius sweptAngle ->
@@ -31,13 +35,14 @@ reproducibleArc =
         )
         Fuzz.point2d
         Fuzz.direction2d
-        (Fuzz.floatRange 0.1 10)
-        (Fuzz.oneOf
-            [ Fuzz.floatRange (degrees 1) (degrees 179)
-            , Fuzz.floatRange (degrees 181) (degrees 359)
-            , Fuzz.floatRange (degrees -179) (degrees -1)
-            , Fuzz.floatRange (degrees -359) (degrees -181)
-            ]
+        (Fuzz.map meters (Fuzz.floatRange 0.1 10))
+        (Fuzz.map degrees <|
+            Fuzz.oneOf
+                [ Fuzz.floatRange 1 179
+                , Fuzz.floatRange 181 359
+                , Fuzz.floatRange -179 -1
+                , Fuzz.floatRange -359 -181
+                ]
         )
 
 
@@ -56,13 +61,13 @@ fromEndpointsReplicatesArc =
                     Arc2d.sweptAngle arc
 
                 sweptAngle =
-                    if arcSweptAngle >= pi then
+                    if arcSweptAngle |> Quantity.greaterThanOrEqualTo (radians pi) then
                         SweptAngle.largePositive
 
-                    else if arcSweptAngle >= 0 then
+                    else if arcSweptAngle |> Quantity.greaterThanOrEqualTo zero then
                         SweptAngle.smallPositive
 
-                    else if arcSweptAngle >= -pi then
+                    else if arcSweptAngle |> Quantity.greaterThanOrEqualTo (radians -pi) then
                         SweptAngle.smallNegative
 
                     else
@@ -90,14 +95,19 @@ fromEndpointsReplicatesArc =
 
 transformations : Test
 transformations =
+    let
+        curveOperations =
+            { fuzzer = Fuzz.ellipticalArc2d
+            , pointOn = EllipticalArc2d.pointOn
+            , firstDerivative = EllipticalArc2d.firstDerivative
+            , scaleAbout = EllipticalArc2d.scaleAbout
+            , translateBy = EllipticalArc2d.translateBy
+            , rotateAround = EllipticalArc2d.rotateAround
+            , mirrorAcross = EllipticalArc2d.mirrorAcross
+            }
+    in
     Tests.Generic.Curve2d.transformations
-        { fuzzer = Fuzz.ellipticalArc2d
-        , pointOn = EllipticalArc2d.pointOn
-        , firstDerivative = EllipticalArc2d.firstDerivative
-        , scaleAbout = EllipticalArc2d.scaleAbout
-        , translateBy = EllipticalArc2d.translateBy
-        , rotateAround = EllipticalArc2d.rotateAround
-        , mirrorAcross = EllipticalArc2d.mirrorAcross
-        , relativeTo = EllipticalArc2d.relativeTo
-        , placeIn = EllipticalArc2d.placeIn
-        }
+        curveOperations
+        curveOperations
+        EllipticalArc2d.placeIn
+        EllipticalArc2d.relativeTo

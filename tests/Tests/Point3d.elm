@@ -1,8 +1,14 @@
 module Tests.Point3d exposing
-    ( interpolationReturnsExactEndpoints
+    ( circumcenterIsValidOrNothing
+    , hullNConsistentWithHull2
+    , hullNIsOrderIndependent
+    , interpolationReturnsExactEndpoints
     , midpointIsEquidistant
     , mirrorFlipsSignedDistance
+    , placeInIsInverseOfRelativeTo
+    , projectIntoResultsInPerpendicularVector
     , projectIntoThenPlaceOntoIsProjectOnto
+    , relativeToIsInverseOfPlaceIn
     , rotationAboutAxisPreservesDistanceAlong
     , rotationAboutAxisPreservesDistanceFrom
     , translateByAndInAreConsistent
@@ -16,8 +22,10 @@ import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Plane3d
 import Point3d
+import Quantity exposing (zero)
 import SketchPlane3d
 import Test exposing (Test)
+import Triangle3d
 import Vector3d
 
 
@@ -40,7 +48,7 @@ rotationAboutAxisPreservesDistanceAlong =
             in
             Expect.approximately distance rotatedDistance
     in
-    Test.fuzz3 Fuzz.point3d Fuzz.axis3d Fuzz.scalar description expectation
+    Test.fuzz3 Fuzz.point3d Fuzz.axis3d Fuzz.angle description expectation
 
 
 rotationAboutAxisPreservesDistanceFrom : Test
@@ -62,7 +70,7 @@ rotationAboutAxisPreservesDistanceFrom =
             in
             Expect.approximately distance rotatedDistance
     in
-    Test.fuzz3 Fuzz.point3d Fuzz.axis3d Fuzz.scalar description expectation
+    Test.fuzz3 Fuzz.point3d Fuzz.axis3d Fuzz.angle description expectation
 
 
 midpointIsEquidistant : Test
@@ -121,7 +129,7 @@ mirrorFlipsSignedDistance =
             in
             Point3d.mirrorAcross plane point
                 |> Point3d.signedDistanceFrom plane
-                |> Expect.approximately -signedDistance
+                |> Expect.approximately (Quantity.negate signedDistance)
         )
 
 
@@ -129,7 +137,7 @@ translationByPerpendicularDoesNotChangeSignedDistance : Test
 translationByPerpendicularDoesNotChangeSignedDistance =
     Test.fuzz3 Fuzz.point3d
         Fuzz.plane3d
-        Fuzz.scalar
+        Fuzz.length
         "Translating in a direction perpendicular to a plane's normal direction does not change signed distance from that plane"
         (\point plane distance ->
             let
@@ -154,7 +162,7 @@ translateByAndInAreConsistent =
     Test.fuzz3
         Fuzz.point3d
         Fuzz.direction3d
-        Fuzz.scalar
+        Fuzz.length
         "translateBy and translateIn are consistent"
         (\point direction distance ->
             let
@@ -164,4 +172,121 @@ translateByAndInAreConsistent =
             point
                 |> Point3d.translateIn direction distance
                 |> Expect.point3d (Point3d.translateBy displacement point)
+        )
+
+
+projectIntoResultsInPerpendicularVector : Test
+projectIntoResultsInPerpendicularVector =
+    Test.fuzz2
+        Fuzz.point3d
+        Fuzz.sketchPlane3d
+        "The vector from a point to that point projected into a sketch plane is perpendicular to both sketch plane basis directions"
+        (\point sketchPlane ->
+            let
+                point2d =
+                    Point3d.projectInto sketchPlane point
+
+                point3d =
+                    Point3d.on sketchPlane point2d
+
+                displacement =
+                    Vector3d.from point3d point
+
+                xDirection =
+                    SketchPlane3d.xDirection sketchPlane
+
+                yDirection =
+                    SketchPlane3d.yDirection sketchPlane
+            in
+            displacement
+                |> Expect.all
+                    [ Vector3d.componentIn xDirection >> Expect.approximately zero
+                    , Vector3d.componentIn yDirection >> Expect.approximately zero
+                    ]
+        )
+
+
+circumcenterIsValidOrNothing : Test
+circumcenterIsValidOrNothing =
+    Test.fuzz3
+        Fuzz.point3d
+        Fuzz.point3d
+        Fuzz.point3d
+        "The circumcenter of three points is either Nothing or is equidistant from each point"
+        (\p1 p2 p3 ->
+            case Point3d.circumcenter p1 p2 p3 of
+                Nothing ->
+                    Triangle3d.area (Triangle3d.from p1 p2 p3)
+                        |> Expect.approximately zero
+
+                Just p0 ->
+                    case Plane3d.throughPoints p1 p2 p3 of
+                        Just plane ->
+                            let
+                                r1 =
+                                    p0 |> Point3d.distanceFrom p1
+                            in
+                            p0
+                                |> Expect.all
+                                    [ Point3d.distanceFrom p2
+                                        >> Expect.approximately r1
+                                    , Point3d.distanceFrom p3
+                                        >> Expect.approximately r1
+                                    , Point3d.signedDistanceFrom plane
+                                        >> Expect.approximately zero
+                                    ]
+
+                        Nothing ->
+                            Expect.fail "Three points have a circumcenter but no plane through them"
+        )
+
+
+relativeToIsInverseOfPlaceIn : Test
+relativeToIsInverseOfPlaceIn =
+    Test.fuzz2
+        Fuzz.point3d
+        Fuzz.frame3d
+        "relativeTo is inverse of placeIn"
+        (\point frame ->
+            point
+                |> Point3d.placeIn frame
+                |> Point3d.relativeTo frame
+                |> Expect.point3d point
+        )
+
+
+placeInIsInverseOfRelativeTo : Test
+placeInIsInverseOfRelativeTo =
+    Test.fuzz2
+        Fuzz.point3d
+        Fuzz.frame3d
+        "placeIn is inverse of relativeTo"
+        (\point frame ->
+            point
+                |> Point3d.relativeTo frame
+                |> Point3d.placeIn frame
+                |> Expect.point3d point
+        )
+
+
+hullNConsistentWithHull2 : Test
+hullNConsistentWithHull2 =
+    Test.fuzz2
+        Fuzz.point3d
+        Fuzz.point3d
+        "'hullN' is consistent with 'hull2'"
+        (\firstPoint secondPoint ->
+            Point3d.hullN [ firstPoint, secondPoint ]
+                |> Expect.equal
+                    (Just (Point3d.hull2 firstPoint secondPoint))
+        )
+
+
+hullNIsOrderIndependent : Test
+hullNIsOrderIndependent =
+    Test.fuzz (Fuzz.list Fuzz.point3d)
+        "'hullN' does not depend on input order"
+        (\points ->
+            Point3d.hullN (List.reverse points)
+                |> Expect.equal (Point3d.hullN points)
         )

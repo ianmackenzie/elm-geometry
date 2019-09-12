@@ -8,6 +8,7 @@
         "Arc.SweptAngle",
         "Arc2d",
         "Arc3d",
+        "ArcLengthParameterization",
         "Axis2d",
         "Axis3d",
         "BoundingBox2d",
@@ -16,8 +17,6 @@
         "Circle3d",
         "CubicSpline2d",
         "CubicSpline3d",
-        "Curve.ArcLengthParameterization",
-        "Curve.ParameterValue",
         "DelaunayTriangulation2d",
         "Direction2d",
         "Direction3d",
@@ -47,9 +46,12 @@
     "elm-version": "0.19.0 <= v < 0.20.0",
     "dependencies": {
         "elm/core": "1.0.0 <= v < 2.0.0",
-        "ianmackenzie/elm-float-extra": "1.0.1 <= v < 2.0.0",
-        "ianmackenzie/elm-interval": "1.0.1 <= v < 2.0.0",
-        "ianmackenzie/elm-triangular-mesh": "1.0.2 <= v < 2.0.0"
+        "ianmackenzie/elm-1d-parameter": "1.0.1 <= v < 2.0.0",
+        "ianmackenzie/elm-float-extra": "1.1.0 <= v < 2.0.0",
+        "ianmackenzie/elm-interval": "2.0.0 <= v < 3.0.0",
+        "ianmackenzie/elm-triangular-mesh": "1.0.2 <= v < 2.0.0",
+        "ianmackenzie/elm-units": "2.2.0 <= v < 3.0.0",
+        "ianmackenzie/elm-units-interval": "1.0.0 <= v < 2.0.0"
     },
     "test-dependencies": {
         "elm/random": "1.0.0 <= v < 2.0.0",

@@ -7,19 +7,15 @@
 --------------------------------------------------------------------------------
 
 
-module Bootstrap.Plane3d exposing
-    ( normalDirection
-    , originPoint
-    )
+module Unsafe.Direction3d exposing (unsafeCrossProduct)
 
 import Geometry.Types exposing (..)
 
 
-originPoint : Plane3d -> Point3d
-originPoint (Plane3d properties) =
-    properties.originPoint
-
-
-normalDirection : Plane3d -> Direction3d
-normalDirection (Plane3d properties) =
-    properties.normalDirection
+unsafeCrossProduct : Direction3d coordinates -> Direction3d coordinates -> Direction3d coordinates
+unsafeCrossProduct (Direction3d d1) (Direction3d d2) =
+    Direction3d
+        { x = d1.y * d2.z - d1.z * d2.y
+        , y = d1.z * d2.x - d1.x * d2.z
+        , z = d1.x * d2.y - d1.y * d2.x
+        }

@@ -1,7 +1,5 @@
 module Tests.BoundingBox3d exposing
     ( boxContainsOwnCenterPoint
-    , containingPointsConsistentWithFromCorners
-    , containingPointsIsOrderIndependent
     , hullContainsInputs
     , intersectionConsistentWithIntersects
     , intersectionConsistentWithOverlappingBy
@@ -23,6 +21,7 @@ import Expect
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Quantity
 import Test exposing (Test)
 import Vector3d
 
@@ -73,76 +72,20 @@ intersectionConsistentWithOverlappingBy =
     Test.fuzz2
         Fuzz.boundingBox3d
         Fuzz.boundingBox3d
-        "'intersection' is consistent with 'overlappingBy'"
+        "'intersection' is consistent with 'overlappingByAtLeast'"
         (\first second ->
             let
                 overlapping =
-                    BoundingBox3d.overlappingBy GT 0 first second
+                    BoundingBox3d.overlappingByAtLeast Quantity.zero
+                        first
+                        second
 
                 intersection =
                     BoundingBox3d.intersection first second
-
-                intersectionDimensions =
-                    Maybe.map BoundingBox3d.dimensions intersection
             in
-            case ( overlapping, intersectionDimensions ) of
-                ( True, Just ( length, width, height ) ) ->
-                    if length == 0 then
-                        Expect.fail
-                            (Debug.toString first
-                                ++ " and "
-                                ++ Debug.toString second
-                                ++ " considered to strictly overlap, "
-                                ++ "but intersection length is 0"
-                            )
-
-                    else if width == 0 then
-                        Expect.fail
-                            (Debug.toString first
-                                ++ " and "
-                                ++ Debug.toString second
-                                ++ " considered to strictly overlap, "
-                                ++ "but intersection width is 0"
-                            )
-
-                    else if height == 0 then
-                        Expect.fail
-                            (Debug.toString first
-                                ++ " and "
-                                ++ Debug.toString second
-                                ++ " considered to strictly overlap, "
-                                ++ "but intersection height is 0"
-                            )
-
-                    else
-                        Expect.pass
-
-                ( False, Nothing ) ->
-                    Expect.pass
-
-                ( True, Nothing ) ->
-                    Expect.fail
-                        (Debug.toString first
-                            ++ " and "
-                            ++ Debug.toString second
-                            ++ " considered to strictly overlap, "
-                            ++ "but intersection is Nothing"
-                        )
-
-                ( False, Just ( length, width, height ) ) ->
-                    if length == 0 || height == 0 || width == 0 then
-                        Expect.pass
-
-                    else
-                        Expect.fail
-                            (Debug.toString first
-                                ++ " and "
-                                ++ Debug.toString second
-                                ++ " not considered to strictly overlap, "
-                                ++ "but have valid intersection "
-                                ++ "with non-zero dimensions "
-                                ++ Debug.toString intersectionDimensions
-                            )
+            overlapping
+                |> Expect.equal
+                    (intersection /= Nothing)
         )
 
 
@@ -154,7 +97,7 @@ hullContainsInputs =
         (\first second ->
             let
                 hull =
-                    BoundingBox3d.hull first second
+                    BoundingBox3d.hull2 first second
 
                 isContained =
                     BoundingBox3d.isContainedIn hull
@@ -198,16 +141,22 @@ overlappingByDetectsIntersection =
     Test.fuzz2
         Fuzz.boundingBox3d
         Fuzz.boundingBox3d
-        "overlappingBy LT 0 detects non-intersecting boxes"
+        "overlappingByAtLeast detects non-intersecting boxes"
         (\firstBox secondBox ->
             case BoundingBox3d.intersection firstBox secondBox of
                 Just intersectionBox ->
-                    Expect.false "intersecting boxes should overlap by at least 0"
-                        (BoundingBox3d.overlappingBy LT 0 firstBox secondBox)
+                    Expect.true "intersecting boxes should overlap by at least 0"
+                        (BoundingBox3d.overlappingByAtLeast Quantity.zero
+                            firstBox
+                            secondBox
+                        )
 
                 Nothing ->
-                    Expect.true "non-intersecting boxes should overlap by less than 0"
-                        (BoundingBox3d.overlappingBy LT 0 firstBox secondBox)
+                    Expect.false "non-intersecting boxes should overlap by less than 0"
+                        (BoundingBox3d.overlappingByAtLeast Quantity.zero
+                            firstBox
+                            secondBox
+                        )
         )
 
 
@@ -223,7 +172,11 @@ overlappingBoxesCannotBySeparated =
                 tolerance =
                     Vector3d.length displacement
             in
-            if BoundingBox3d.overlappingBy GT tolerance firstBox secondBox then
+            if
+                BoundingBox3d.overlappingByAtLeast tolerance
+                    firstBox
+                    secondBox
+            then
                 BoundingBox3d.translateBy displacement firstBox
                     |> BoundingBox3d.intersects secondBox
                     |> Expect.true "displaced box should still intersect the other box"
@@ -245,7 +198,11 @@ separatedBoxesCannotBeMadeToOverlap =
                 tolerance =
                     Vector3d.length displacement
             in
-            if BoundingBox3d.separatedBy GT tolerance firstBox secondBox then
+            if
+                BoundingBox3d.separatedByAtLeast tolerance
+                    firstBox
+                    secondBox
+            then
                 BoundingBox3d.translateBy displacement firstBox
                     |> BoundingBox3d.intersects secondBox
                     |> Expect.false "displaced box should still not intersect the other box"
@@ -263,44 +220,41 @@ separationIsCorrectForHorizontallyDisplacedBoxes =
             let
                 firstBox =
                     BoundingBox3d.fromExtrema
-                        { minX = 0
-                        , minY = 0
-                        , minZ = 0
-                        , maxX = 1
-                        , maxY = 1
-                        , maxZ = 1
+                        { minX = Quantity.float 0
+                        , minY = Quantity.float 0
+                        , minZ = Quantity.float 0
+                        , maxX = Quantity.float 1
+                        , maxY = Quantity.float 1
+                        , maxZ = Quantity.float 1
                         }
 
                 secondBox =
                     BoundingBox3d.fromExtrema
-                        { minX = 2
-                        , minY = 0
-                        , minZ = 0
-                        , maxX = 3
-                        , maxY = 1
-                        , maxZ = 1
+                        { minX = Quantity.float 2
+                        , minY = Quantity.float 0
+                        , minZ = Quantity.float 0
+                        , maxX = Quantity.float 3
+                        , maxY = Quantity.float 1
+                        , maxZ = Quantity.float 1
                         }
             in
             firstBox
                 |> Expect.all
-                    [ Expect.true "Expected separation to be equal to 1"
-                        << BoundingBox3d.separatedBy EQ 1 secondBox
-                    , Expect.true "Expected separation to be greater than 0.5"
-                        << BoundingBox3d.separatedBy GT 0.5 secondBox
+                    [ Expect.true "Expected separation to be greater than 0.5"
+                        << BoundingBox3d.separatedByAtLeast (Quantity.float 0.5)
+                            secondBox
                     , Expect.true "Expected separation to be greater than 0"
-                        << BoundingBox3d.separatedBy GT 0 secondBox
+                        << BoundingBox3d.separatedByAtLeast (Quantity.float 0)
+                            secondBox
                     , Expect.true "Expected separation to be greater than -1"
-                        << BoundingBox3d.separatedBy GT -1 secondBox
-                    , Expect.true "Expected separation to be less than 2"
-                        << BoundingBox3d.separatedBy LT 2 secondBox
-                    , Expect.false "Expected separation to not be equal to 2"
-                        << BoundingBox3d.separatedBy EQ 2 secondBox
-                    , Expect.false "Expected separation to not be greater than 1"
-                        << BoundingBox3d.separatedBy GT 1 secondBox
-                    , Expect.false "Expected separation to not be less than 1"
-                        << BoundingBox3d.separatedBy LT 1 secondBox
-                    , Expect.false "Expected separation to not be less than 0"
-                        << BoundingBox3d.separatedBy LT 0 secondBox
+                        << BoundingBox3d.separatedByAtLeast (Quantity.float -1)
+                            secondBox
+                    , Expect.true "Expected separation to be greater than 0.99"
+                        << BoundingBox3d.separatedByAtLeast (Quantity.float 0.99)
+                            secondBox
+                    , Expect.false "Expected separation to not be greater than 1.01"
+                        << BoundingBox3d.separatedByAtLeast (Quantity.float 1.01)
+                            secondBox
                     ]
         )
 
@@ -313,44 +267,39 @@ separationIsCorrectForVerticallyDisplacedBoxes =
             let
                 firstBox =
                     BoundingBox3d.fromExtrema
-                        { minX = 0
-                        , minY = 0
-                        , minZ = 0
-                        , maxX = 1
-                        , maxY = 1
-                        , maxZ = 1
+                        { minX = Quantity.float 0
+                        , minY = Quantity.float 0
+                        , minZ = Quantity.float 0
+                        , maxX = Quantity.float 1
+                        , maxY = Quantity.float 1
+                        , maxZ = Quantity.float 1
                         }
 
                 secondBox =
                     BoundingBox3d.fromExtrema
-                        { minX = 0
-                        , minY = 0
-                        , minZ = 2
-                        , maxX = 1
-                        , maxY = 1
-                        , maxZ = 3
+                        { minX = Quantity.float 0
+                        , minY = Quantity.float 0
+                        , minZ = Quantity.float 2
+                        , maxX = Quantity.float 1
+                        , maxY = Quantity.float 1
+                        , maxZ = Quantity.float 3
                         }
             in
             firstBox
                 |> Expect.all
-                    [ Expect.true "Expected separation to be equal to 1"
-                        << BoundingBox3d.separatedBy EQ 1 secondBox
-                    , Expect.true "Expected separation to be greater than 0.5"
-                        << BoundingBox3d.separatedBy GT 0.5 secondBox
+                    [ Expect.true "Expected separation to be greater than 0.5"
+                        << BoundingBox3d.separatedByAtLeast (Quantity.float 0.5)
+                            secondBox
                     , Expect.true "Expected separation to be greater than 0"
-                        << BoundingBox3d.separatedBy GT 0 secondBox
+                        << BoundingBox3d.separatedByAtLeast (Quantity.float 0)
+                            secondBox
                     , Expect.true "Expected separation to be greater than -1"
-                        << BoundingBox3d.separatedBy GT -1 secondBox
-                    , Expect.true "Expected separation to be less than 2"
-                        << BoundingBox3d.separatedBy LT 2 secondBox
-                    , Expect.false "Expected separation to not be equal to 2"
-                        << BoundingBox3d.separatedBy EQ 2 secondBox
-                    , Expect.false "Expected separation to not be greater than 1"
-                        << BoundingBox3d.separatedBy GT 1 secondBox
-                    , Expect.false "Expected separation to not be less than 1"
-                        << BoundingBox3d.separatedBy LT 1 secondBox
-                    , Expect.false "Expected separation to not be less than 0"
-                        << BoundingBox3d.separatedBy LT 0 secondBox
+                        << BoundingBox3d.separatedByAtLeast (Quantity.float -1)
+                            secondBox
+                    , Expect.true "Expected separation to be greater than 0.99"
+                        << BoundingBox3d.separatedByAtLeast (Quantity.float 0.99) secondBox
+                    , Expect.false "Expected separation to not be greater than 1.01"
+                        << BoundingBox3d.separatedByAtLeast (Quantity.float 1.01) secondBox
                     ]
         )
 
@@ -363,75 +312,49 @@ separationIsCorrectForDiagonallyDisplacedBoxes =
             let
                 firstBox =
                     BoundingBox3d.fromExtrema
-                        { minX = 0
-                        , minY = 0
-                        , minZ = 0
-                        , maxX = 1
-                        , maxY = 1
-                        , maxZ = 1
+                        { minX = Quantity.float 0
+                        , minY = Quantity.float 0
+                        , minZ = Quantity.float 0
+                        , maxX = Quantity.float 1
+                        , maxY = Quantity.float 1
+                        , maxZ = Quantity.float 1
                         }
 
                 secondBox =
                     BoundingBox3d.fromExtrema
-                        { minX = 2
-                        , minY = 3
-                        , minZ = 3
-                        , maxX = 4
-                        , maxY = 5
-                        , maxZ = 6
+                        { minX = Quantity.float 2
+                        , minY = Quantity.float 3
+                        , minZ = Quantity.float 3
+                        , maxX = Quantity.float 4
+                        , maxY = Quantity.float 5
+                        , maxZ = Quantity.float 6
                         }
             in
             firstBox
                 |> Expect.all
-                    [ Expect.true "Expected separation to be equal to 3"
-                        << BoundingBox3d.separatedBy EQ 3 secondBox
-                    , Expect.true "Expected separation to be greater than 2"
-                        << BoundingBox3d.separatedBy GT 2 secondBox
+                    [ Expect.true "Expected separation to be greater than 2"
+                        << BoundingBox3d.separatedByAtLeast (Quantity.float 2)
+                            secondBox
                     , Expect.true "Expected separation to be greater than 0"
-                        << BoundingBox3d.separatedBy GT 0 secondBox
+                        << BoundingBox3d.separatedByAtLeast (Quantity.float 0)
+                            secondBox
                     , Expect.true "Expected separation to be greater than -1"
-                        << BoundingBox3d.separatedBy GT -1 secondBox
-                    , Expect.true "Expected separation to be less than 4"
-                        << BoundingBox3d.separatedBy LT 4 secondBox
-                    , Expect.false "Expected separation to not be equal to 4"
-                        << BoundingBox3d.separatedBy EQ 4 secondBox
-                    , Expect.false "Expected separation to not be greater than 3"
-                        << BoundingBox3d.separatedBy GT 3 secondBox
-                    , Expect.false "Expected separation to not be less than 3"
-                        << BoundingBox3d.separatedBy LT 3 secondBox
-                    , Expect.false "Expected separation to not be less than 0"
-                        << BoundingBox3d.separatedBy LT 0 secondBox
+                        << BoundingBox3d.separatedByAtLeast (Quantity.float -1)
+                            secondBox
+                    , Expect.true "Expected separation to be greater than 2.99"
+                        << BoundingBox3d.separatedByAtLeast (Quantity.float 2.99)
+                            secondBox
+                    , Expect.false "Expected separation to not be greater than 3.01"
+                        << BoundingBox3d.separatedByAtLeast (Quantity.float 3.01)
+                            secondBox
                     ]
-        )
-
-
-containingPointsConsistentWithFromCorners : Test
-containingPointsConsistentWithFromCorners =
-    Test.fuzz2
-        Fuzz.point3d
-        Fuzz.point3d
-        "'containingPoints' is consistent with 'from'"
-        (\firstPoint secondPoint ->
-            BoundingBox3d.containingPoints [ firstPoint, secondPoint ]
-                |> Expect.equal
-                    (Just (BoundingBox3d.from firstPoint secondPoint))
-        )
-
-
-containingPointsIsOrderIndependent : Test
-containingPointsIsOrderIndependent =
-    Test.fuzz (Fuzz.list Fuzz.point3d)
-        "'containingPoints' does not depend on input order"
-        (\points ->
-            BoundingBox3d.containingPoints (List.reverse points)
-                |> Expect.equal (BoundingBox3d.containingPoints points)
         )
 
 
 offsetResultIsValidOrNothing : Test
 offsetResultIsValidOrNothing =
     Test.fuzz2 Fuzz.boundingBox3d
-        Fuzz.scalar
+        Fuzz.length
         "offsetBy returns either Nothing or Just a valid box"
         (\boundingBox offset ->
             case BoundingBox3d.offsetBy offset boundingBox of
@@ -451,8 +374,11 @@ offsetByHalfWidthIsValidOrNothing =
             let
                 ( width, height, depth ) =
                     BoundingBox3d.dimensions boundingBox
+
+                negativeHalfWidth =
+                    Quantity.multiplyBy -0.5 width
             in
-            case BoundingBox3d.offsetBy (-width / 2) boundingBox of
+            case BoundingBox3d.offsetBy negativeHalfWidth boundingBox of
                 Nothing ->
                     Expect.pass
 
@@ -469,8 +395,11 @@ offsetByHalfHeightIsValidOrNothing =
             let
                 ( width, height, depth ) =
                     BoundingBox3d.dimensions boundingBox
+
+                negativeHalfHeight =
+                    Quantity.multiplyBy -0.5 height
             in
-            case BoundingBox3d.offsetBy (-height / 2) boundingBox of
+            case BoundingBox3d.offsetBy negativeHalfHeight boundingBox of
                 Nothing ->
                     Expect.pass
 
@@ -487,8 +416,11 @@ offsetByHalfDepthIsValidOrNothing =
             let
                 ( width, height, depth ) =
                     BoundingBox3d.dimensions boundingBox
+
+                negativeHalfDepth =
+                    Quantity.multiplyBy -0.5 depth
             in
-            case BoundingBox3d.offsetBy (-depth / 2) boundingBox of
+            case BoundingBox3d.offsetBy negativeHalfDepth boundingBox of
                 Nothing ->
                     Expect.pass
 

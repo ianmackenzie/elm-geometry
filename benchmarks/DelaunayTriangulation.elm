@@ -7,7 +7,7 @@
 --------------------------------------------------------------------------------
 
 
-module PolygonTriangulation exposing (main)
+module DelaunayTriangulation exposing (main)
 
 import Array exposing (Array)
 import Benchmark exposing (Benchmark)
@@ -16,17 +16,17 @@ import Browser
 import DelaunayTriangulation2d
 import Html exposing (Html)
 import Point2d exposing (Point2d)
+import Quantity exposing (Unitless)
 import Random
 import Task exposing (Task)
 import Time
 
 
-testPoints : Array Point2d
+testPoints : Array (Point2d Unitless coordinates)
 testPoints =
     let
         pointGenerator =
-            Random.map2
-                (\x y -> Point2d.fromCoordinates ( x, y ))
+            Random.map2 Point2d.unitless
                 (Random.float 0 100)
                 (Random.float 0 100)
 

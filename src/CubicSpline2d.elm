@@ -9,21 +9,23 @@
 
 module CubicSpline2d exposing
     ( CubicSpline2d
-    , with, fromEndpoints, fromQuadraticSpline
-    , startPoint, endPoint, startControlPoint, endControlPoint, startDerivative, endDerivative, boundingBox
-    , pointOn, pointsAt
+    , fromControlPoints, fromEndpoints, fromQuadraticSpline
+    , startPoint, firstControlPoint, secondControlPoint, thirdControlPoint, fourthControlPoint, endPoint, startDerivative, endDerivative, boundingBox
+    , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
-    , tangentDirection, tangentDirectionsAt, sample, samplesAt
+    , tangentDirection, sample
+    , at, at_
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , relativeTo, placeIn
     , bisect, splitAt
-    , ArcLengthParameterized, arcLengthParameterized, arcLength, midpoint, pointAlong, tangentDirectionAlong, sampleAlong
+    , ArcLengthParameterized, arcLengthParameterized, arcLength, midpoint
+    , pointAlong, tangentDirectionAlong, sampleAlong
     , arcLengthParameterization, fromArcLengthParameterized
-    , firstDerivative, firstDerivativesAt, secondDerivative, secondDerivativesAt, thirdDerivative, maxSecondDerivativeMagnitude
+    , firstDerivative, secondDerivative, thirdDerivative, maxSecondDerivativeMagnitude
     )
 
 {-| A `CubicSpline2d` is a cubic [Bézier curve](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)
-in 2D defined by a start point, end point and two control points. This module
+in 2D defined by a start point, end point and two inner control points. This module
 contains functionality for
 
   - Constructing splines
@@ -37,22 +39,30 @@ contains functionality for
 
 # Constructors
 
-@docs with, fromEndpoints, fromQuadraticSpline
+@docs fromControlPoints, fromEndpoints, fromQuadraticSpline
 
 
 # Properties
 
-@docs startPoint, endPoint, startControlPoint, endControlPoint, startDerivative, endDerivative, boundingBox
+@docs startPoint, firstControlPoint, secondControlPoint, thirdControlPoint, fourthControlPoint, endPoint, startDerivative, endDerivative, boundingBox
 
 
 # Evaluation
 
-@docs pointOn, pointsAt
+@docs pointOn
 @docs Nondegenerate, nondegenerate, fromNondegenerate
-@docs tangentDirection, tangentDirectionsAt, sample, samplesAt
+@docs tangentDirection, sample
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Transformations
+
+These transformations generally behave just like [the ones in the `Point2d`
+module](Point2d#transformations).
 
 @docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
 
@@ -69,7 +79,12 @@ contains functionality for
 
 # Arc length parameterization
 
-@docs ArcLengthParameterized, arcLengthParameterized, arcLength, midpoint, pointAlong, tangentDirectionAlong, sampleAlong
+@docs ArcLengthParameterized, arcLengthParameterized, arcLength, midpoint
+
+For the following evaluation functions, the given arc length will be clamped to
+the arc length of the spline, so the result will always be on the spline.
+
+@docs pointAlong, tangentDirectionAlong, sampleAlong
 
 
 ## Low level
@@ -87,46 +102,47 @@ these two values separately.
 You are unlikely to need to use these functions directly, but they are useful if
 you are writing low-level geometric algorithms.
 
-@docs firstDerivative, firstDerivativesAt, secondDerivative, secondDerivativesAt, thirdDerivative, maxSecondDerivativeMagnitude
+@docs firstDerivative, secondDerivative, thirdDerivative, maxSecondDerivativeMagnitude
 
 -}
 
+import Angle exposing (Angle)
+import ArcLengthParameterization exposing (ArcLengthParameterization)
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
-import Curve.ArcLengthParameterization as ArcLengthParameterization exposing (ArcLengthParameterization)
-import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import LineSegment2d exposing (fromEndpoints, midpoint)
 import Point2d exposing (Point2d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
+import Quantity exposing (Quantity, Rate)
 import Vector2d exposing (Vector2d)
 
 
 {-| -}
-type alias CubicSpline2d =
-    Types.CubicSpline2d
+type alias CubicSpline2d units coordinates =
+    Types.CubicSpline2d units coordinates
 
 
-{-| Construct a spline from its endpoints and control points:
+{-| Construct a spline from its four control points:
 
     exampleSpline =
-        CubicSpline2d.with
-            { startPoint =
-                Point2d.fromCoordinates ( 1, 1 )
-            , startControlPoint =
-                Point2d.fromCoordinates ( 3, 4 )
-            , endControlPoint =
-                Point2d.fromCoordinates ( 5, 1 )
-            , endPoint =
-                Point2d.fromCoordinates ( 7, 4 )
-            }
+        CubicSpline2d.fromControlPoints
+            (Point2d.meters 1 1)
+            (Point2d.meters 3 4)
+            (Point2d.meters 5 1)
+            (Point2d.meters 7 4)
 
 -}
-with : { startPoint : Point2d, startControlPoint : Point2d, endControlPoint : Point2d, endPoint : Point2d } -> CubicSpline2d
-with =
+fromControlPoints : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> CubicSpline2d units coordinates
+fromControlPoints p1 p2 p3 p4 =
     Types.CubicSpline2d
+        { firstControlPoint = p1
+        , secondControlPoint = p2
+        , thirdControlPoint = p3
+        , fourthControlPoint = p4
+        }
 
 
 {-| Construct a spline from a given start point with a given start derivative,
@@ -139,135 +155,142 @@ cases the length of each derivative vector should be roughly equal to the length
 of the resulting spline.
 
 -}
-fromEndpoints : { startPoint : Point2d, startDerivative : Vector2d, endPoint : Point2d, endDerivative : Vector2d } -> CubicSpline2d
-fromEndpoints arguments =
-    let
-        startControlPoint_ =
-            arguments.startPoint
-                |> Point2d.translateBy
-                    (Vector2d.scaleBy (1 / 3) arguments.startDerivative)
-
-        endControlPoint_ =
-            arguments.endPoint
-                |> Point2d.translateBy
-                    (Vector2d.scaleBy (-1 / 3) arguments.endDerivative)
-    in
-    with
-        { startPoint = arguments.startPoint
-        , startControlPoint = startControlPoint_
-        , endControlPoint = endControlPoint_
-        , endPoint = arguments.endPoint
-        }
+fromEndpoints : Point2d units coordinates -> Vector2d units coordinates -> Point2d units coordinates -> Vector2d units coordinates -> CubicSpline2d units coordinates
+fromEndpoints givenStartPoint givenStartDerivative givenEndPoint givenEndDerivative =
+    fromControlPoints
+        givenStartPoint
+        (givenStartPoint |> Point2d.translateBy (Vector2d.scaleBy (1 / 3) givenStartDerivative))
+        (givenEndPoint |> Point2d.translateBy (Vector2d.scaleBy (-1 / 3) givenEndDerivative))
+        givenEndPoint
 
 
 {-| Convert a quadratic spline into the equivalent cubic spline (every quadratic
 spline can be represented exactly as a cubic spline).
 
     quadraticSpline =
-        QuadraticSpline2d.with
-            { startPoint =
-                Point2d.fromCoordinates ( 0, 0  )
-            , controlPoint =
-                Point2d.fromCoordinates ( 3, 0 )
-            , endPoint =
-                Point2d.fromCoordinates ( 3, 3 )
-            }
+        QuadraticSpline2d.fromControlPoints
+            Point2d.origin
+            (Point2d.meters 3 0)
+            (Point2d.meters 3 3)
 
     CubicSpline2d.fromQuadraticSpline quadraticSpline
-    --> CubicSpline2d.with
-    -->     { startPoint =
-    -->         Point2d.fromCoordinates ( 0, 0 )
-    -->     , startControlPoint =
-    -->         Point2d.fromCoordinates ( 2, 0 )
-    -->     , endControlPoint =
-    -->         Point2d.fromCoordinates ( 3, 1 )
-    -->     , endPoint =
-    -->         Point2d.fromCoordinates ( 3, 3 )
-    -->     }
+    --> CubicSpline2d.fromControlPoints
+    -->     Point2d.origin
+    -->     (Point2d.meters 2 0)
+    -->     (Point2d.meters 3 1)
+    -->     (Point2d.meters 3 3)
 
 -}
-fromQuadraticSpline : QuadraticSpline2d -> CubicSpline2d
+fromQuadraticSpline : QuadraticSpline2d units coordinates -> CubicSpline2d units coordinates
 fromQuadraticSpline quadraticSpline =
     let
-        startPoint_ =
-            QuadraticSpline2d.startPoint quadraticSpline
+        quadraticFirstControlPoint =
+            QuadraticSpline2d.firstControlPoint quadraticSpline
 
-        controlPoint_ =
-            QuadraticSpline2d.controlPoint quadraticSpline
+        quadraticSecondControlPoint =
+            QuadraticSpline2d.secondControlPoint quadraticSpline
 
-        endPoint_ =
-            QuadraticSpline2d.endPoint quadraticSpline
+        quadraticThirdControlPoint =
+            QuadraticSpline2d.thirdControlPoint quadraticSpline
 
-        startControlPoint_ =
-            Point2d.interpolateFrom startPoint_ controlPoint_ (2 / 3)
+        cubicFirstControlPoint =
+            quadraticFirstControlPoint
 
-        endControlPoint_ =
-            Point2d.interpolateFrom endPoint_ controlPoint_ (2 / 3)
+        cubicSecondControlPoint =
+            Point2d.interpolateFrom quadraticFirstControlPoint quadraticSecondControlPoint (2 / 3)
+
+        cubicThirdControlPoint =
+            Point2d.interpolateFrom quadraticThirdControlPoint quadraticSecondControlPoint (2 / 3)
+
+        cubicFourthControlPoint =
+            quadraticThirdControlPoint
     in
-    with
-        { startPoint = startPoint_
-        , startControlPoint = startControlPoint_
-        , endControlPoint = endControlPoint_
-        , endPoint = endPoint_
+    fromControlPoints
+        cubicFirstControlPoint
+        cubicSecondControlPoint
+        cubicThirdControlPoint
+        cubicFourthControlPoint
+
+
+{-| Convert a spline from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> CubicSpline2d units1 coordinates -> CubicSpline2d units2 coordinates
+at rate (Types.CubicSpline2d spline) =
+    Types.CubicSpline2d
+        { firstControlPoint = Point2d.at rate spline.firstControlPoint
+        , secondControlPoint = Point2d.at rate spline.secondControlPoint
+        , thirdControlPoint = Point2d.at rate spline.thirdControlPoint
+        , fourthControlPoint = Point2d.at rate spline.fourthControlPoint
         }
 
 
-{-| Get the start point of a spline.
-
-    CubicSpline2d.startPoint exampleSpline
-    --> Point2d.fromCoordinates ( 1, 1 )
-
+{-| Convert a spline from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
 -}
-startPoint : CubicSpline2d -> Point2d
+at_ : Quantity Float (Rate units1 units2) -> CubicSpline2d units1 coordinates -> CubicSpline2d units2 coordinates
+at_ rate spline =
+    at (Quantity.inverse rate) spline
+
+
+{-| Get the start point of a spline. Equal to
+[`firstControlPoint`](#firstControlPoint).
+-}
+startPoint : CubicSpline2d units coordinates -> Point2d units coordinates
 startPoint (Types.CubicSpline2d spline) =
-    spline.startPoint
+    spline.firstControlPoint
 
 
-{-| Get the end point of a spline.
-
-    CubicSpline2d.endPoint exampleSpline
-    --> Point2d.fromCoordinates ( 7, 4 )
-
+{-| Get the end point of a spline. Equal to
+[`fourthControlPoint`](#fourthControlPoint).
 -}
-endPoint : CubicSpline2d -> Point2d
+endPoint : CubicSpline2d units coordinates -> Point2d units coordinates
 endPoint (Types.CubicSpline2d spline) =
-    spline.endPoint
+    spline.fourthControlPoint
 
 
-{-| Get the start control point of a spline (the control point next to the
-start point).
-
-    CubicSpline2d.startControlPoint exampleSpline
-    --> Point2d.fromCoordinates ( 3, 4 )
-
+{-| Get the first control point of the spline. Equal to
+[`startPoint`](#startPoint).
 -}
-startControlPoint : CubicSpline2d -> Point2d
-startControlPoint (Types.CubicSpline2d spline) =
-    spline.startControlPoint
+firstControlPoint : CubicSpline2d units coordinates -> Point2d units coordinates
+firstControlPoint (Types.CubicSpline2d spline) =
+    spline.firstControlPoint
 
 
-{-| Get the end control point of a spline (the control point next to the
-end point).
-
-    CubicSpline2d.endControlPoint exampleSpline
-    --> Point2d.fromCoordinates ( 5, 1 )
-
+{-| Get the second control point of the spline.
 -}
-endControlPoint : CubicSpline2d -> Point2d
-endControlPoint (Types.CubicSpline2d spline) =
-    spline.endControlPoint
+secondControlPoint : CubicSpline2d units coordinates -> Point2d units coordinates
+secondControlPoint (Types.CubicSpline2d spline) =
+    spline.secondControlPoint
+
+
+{-| Get the third control point of the spline.
+-}
+thirdControlPoint : CubicSpline2d units coordinates -> Point2d units coordinates
+thirdControlPoint (Types.CubicSpline2d spline) =
+    spline.thirdControlPoint
+
+
+{-| Get the fourth and last control point of the spline.
+Equal to [`endPoint`](#endPoint).
+-}
+fourthControlPoint : CubicSpline2d units coordinates -> Point2d units coordinates
+fourthControlPoint (Types.CubicSpline2d spline) =
+    spline.fourthControlPoint
 
 
 {-| Get the start derivative of a spline. This is equal to three times the
 vector from the spline's start point to its start control point.
 
     CubicSpline2d.startDerivative exampleSpline
-    --> Vector2d.fromComponents ( 6, 9 )
+    --> Vector2d.meters 6 9
 
 -}
-startDerivative : CubicSpline2d -> Vector2d
+startDerivative : CubicSpline2d units coordinates -> Vector2d units coordinates
 startDerivative spline =
-    Vector2d.from (startPoint spline) (startControlPoint spline)
+    Vector2d.from (firstControlPoint spline) (secondControlPoint spline)
         |> Vector2d.scaleBy 3
 
 
@@ -275,12 +298,12 @@ startDerivative spline =
 from the spline's end control point to its end point.
 
     CubicSpline2d.endDerivative exampleSpline
-    --> Vector2d.fromComponents ( 6, 9 )
+    --> Vector2d.meters 6 9
 
 -}
-endDerivative : CubicSpline2d -> Vector2d
+endDerivative : CubicSpline2d units coordinates -> Vector2d units coordinates
 endDerivative spline =
-    Vector2d.from (endControlPoint spline) (endPoint spline)
+    Vector2d.from (thirdControlPoint spline) (fourthControlPoint spline)
         |> Vector2d.scaleBy 3
 
 
@@ -291,124 +314,108 @@ area than the spline itself).
 
     CubicSpline2d.boundingBox exampleSpline
     --> BoundingBox2d.fromExtrema
-    -->     { minX = 1
-    -->     , maxX = 7
-    -->     , minY = 1
-    -->     , maxY = 4
+    -->     { minX = Length.meters 1
+    -->     , maxX = Length.meters 7
+    -->     , minY = Length.meters 1
+    -->     , maxY = Length.meters 4
     -->     }
 
 -}
-boundingBox : CubicSpline2d -> BoundingBox2d
+boundingBox : CubicSpline2d units coordinates -> BoundingBox2d units coordinates
 boundingBox spline =
     let
-        ( x1, y1 ) =
-            Point2d.coordinates (startPoint spline)
+        p1 =
+            firstControlPoint spline
 
-        ( x2, y2 ) =
-            Point2d.coordinates (startControlPoint spline)
+        p2 =
+            secondControlPoint spline
 
-        ( x3, y3 ) =
-            Point2d.coordinates (endControlPoint spline)
+        p3 =
+            thirdControlPoint spline
 
-        ( x4, y4 ) =
-            Point2d.coordinates (endPoint spline)
+        p4 =
+            fourthControlPoint spline
+
+        x1 =
+            Point2d.xCoordinate p1
+
+        y1 =
+            Point2d.yCoordinate p1
+
+        x2 =
+            Point2d.xCoordinate p2
+
+        y2 =
+            Point2d.yCoordinate p2
+
+        x3 =
+            Point2d.xCoordinate p3
+
+        y3 =
+            Point2d.yCoordinate p3
+
+        x4 =
+            Point2d.xCoordinate p4
+
+        y4 =
+            Point2d.yCoordinate p4
     in
     BoundingBox2d.fromExtrema
-        { minX = min (min x1 x2) (min x3 x4)
-        , maxX = max (max x1 x2) (max x3 x4)
-        , minY = min (min y1 y2) (min y3 y4)
-        , maxY = max (max y1 y2) (max y3 y4)
+        { minX = Quantity.min (Quantity.min x1 x2) (Quantity.min x3 x4)
+        , maxX = Quantity.max (Quantity.max x1 x2) (Quantity.max x3 x4)
+        , minY = Quantity.min (Quantity.min y1 y2) (Quantity.min y3 y4)
+        , maxY = Quantity.max (Quantity.max y1 y2) (Quantity.max y3 y4)
         }
 
 
-{-| Get the point along a spline at a given parameter value:
-
-    CubicSpline2d.pointOn exampleSpline ParameterValue.zero
-    --> Point2d.fromCoordinates ( 1, 1 )
-
-    CubicSpline2d.pointOn exampleSpline ParameterValue.half
-    --> Point2d.fromCoordinates ( 4, 2.5 )
-
-    CubicSpline2d.pointOn exampleSpline ParameterValue.one
-    --> Point2d.fromCoordinates ( 7, 4 )
-
+{-| Get the point along a spline at a given parameter value.
 -}
-pointOn : CubicSpline2d -> ParameterValue -> Point2d
+pointOn : CubicSpline2d units coordinates -> Float -> Point2d units coordinates
 pointOn spline parameterValue =
     let
-        t =
-            ParameterValue.value parameterValue
-
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            startControlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endControlPoint spline
+            thirdControlPoint spline
 
         p4 =
-            endPoint spline
+            fourthControlPoint spline
 
         q1 =
-            Point2d.interpolateFrom p1 p2 t
+            Point2d.interpolateFrom p1 p2 parameterValue
 
         q2 =
-            Point2d.interpolateFrom p2 p3 t
+            Point2d.interpolateFrom p2 p3 parameterValue
 
         q3 =
-            Point2d.interpolateFrom p3 p4 t
+            Point2d.interpolateFrom p3 p4 parameterValue
 
         r1 =
-            Point2d.interpolateFrom q1 q2 t
+            Point2d.interpolateFrom q1 q2 parameterValue
 
         r2 =
-            Point2d.interpolateFrom q2 q3 t
+            Point2d.interpolateFrom q2 q3 parameterValue
     in
-    Point2d.interpolateFrom r1 r2 t
+    Point2d.interpolateFrom r1 r2 parameterValue
 
 
-{-| Get points along a spline at a given set of parameter values:
-
-    exampleSpline
-        |> CubicSpline2d.pointsAt
-            (ParameterValue.steps 2)
-    --> [ Point2d.fromCoordinates ( 1, 1 )
-    --> , Point2d.fromCoordinates ( 4, 2.5 )
-    --> , Point2d.fromCoordinates ( 7, 4 )
-    --> ]
-
+{-| Represents a nondegenerate spline (one that has finite, non-zero length).
 -}
-pointsAt : List ParameterValue -> CubicSpline2d -> List Point2d
-pointsAt parameterValues spline =
-    List.map (pointOn spline) parameterValues
-
-
-{-| If a curve has zero length (consists of just a single point), then we say
-that it is 'degenerate'. Some operations such as computing tangent directions
-are not defined on degenerate curves.
-
-A `Nondegenerate` value represents a spline that is definitely not degenerate.
-It is used as input to functions such as `CubicSpline2d.tangentDirection` and
-can be constructed using `CubicSpline2d.nondegenerate`.
-
--}
-type Nondegenerate
-    = NonZeroThirdDerivative CubicSpline2d Direction2d
-    | NonZeroSecondDerivative CubicSpline2d Direction2d
-    | NonZeroFirstDerivative CubicSpline2d Direction2d
+type Nondegenerate units coordinates
+    = NonZeroThirdDerivative (CubicSpline2d units coordinates) (Direction2d coordinates)
+    | NonZeroSecondDerivative (CubicSpline2d units coordinates) (Direction2d coordinates)
+    | NonZeroFirstDerivative (CubicSpline2d units coordinates) (Direction2d coordinates)
 
 
 {-| Attempt to construct a nondegenerate spline from a general `CubicSpline2d`.
 If the spline is in fact degenerate (consists of a single point), returns an
 `Err` with that point.
-
-    CubicSpline2d.nondegenerate exampleSpline
-    --> Ok nondegenerateExampleSpline
-
 -}
-nondegenerate : CubicSpline2d -> Result Point2d Nondegenerate
+nondegenerate : CubicSpline2d units coordinates -> Result (Point2d units coordinates) (Nondegenerate units coordinates)
 nondegenerate spline =
     case Vector2d.direction (thirdDerivative spline) of
         Just direction ->
@@ -421,7 +428,7 @@ nondegenerate spline =
                 -- Third derivative is zero, so second derivative is constant -
                 -- evaluate it at an arbitrary point to get its value
                 secondDerivativeVector =
-                    secondDerivative spline ParameterValue.zero
+                    secondDerivative spline 0
             in
             case Vector2d.direction secondDerivativeVector of
                 Just direction ->
@@ -435,7 +442,7 @@ nondegenerate spline =
                         -- derivative is constant - evaluate it at an arbitrary
                         -- point to get its value
                         firstDerivativeVector =
-                            firstDerivative spline ParameterValue.zero
+                            firstDerivative spline 0
                     in
                     case Vector2d.direction firstDerivativeVector of
                         Just direction ->
@@ -449,13 +456,8 @@ nondegenerate spline =
 
 
 {-| Convert a nondegenerate spline back to a general `CubicSpline2d`.
-
-    CubicSpline2d.fromNondegenerate
-        nondegenerateExampleSpline
-    --> exampleSpline
-
 -}
-fromNondegenerate : Nondegenerate -> CubicSpline2d
+fromNondegenerate : Nondegenerate units coordinates -> CubicSpline2d units coordinates
 fromNondegenerate nondegenerateSpline =
     case nondegenerateSpline of
         NonZeroThirdDerivative spline _ ->
@@ -469,25 +471,9 @@ fromNondegenerate nondegenerateSpline =
 
 
 {-| Get the tangent direction to a nondegenerate spline at a given parameter
-value:
-
-    CubicSpline2d.tangentDirection
-        nondegenerateExampleSpline
-        ParameterValue.zero
-    --> Direction2d.fromAngle (degrees 56.31)
-
-    CubicSpline2d.tangentDirection
-        nondegenerateExampleSpline
-        ParameterValue.half
-    --> Direction2d.fromAngle (degrees 0)
-
-    CubicSpline2d.tangentDirection
-        nondegenerateExampleSpline
-        ParameterValue.one
-    --> Direction2d.fromAngle (degrees 56.31)
-
+value.
 -}
-tangentDirection : Nondegenerate -> ParameterValue -> Direction2d
+tangentDirection : Nondegenerate units coordinates -> Float -> Direction2d coordinates
 tangentDirection nondegenerateSpline parameterValue =
     case nondegenerateSpline of
         NonZeroFirstDerivative spline firstDerivativeDirection ->
@@ -517,7 +503,7 @@ tangentDirection nondegenerateSpline parameterValue =
                     -- (instead of one that is off the spline!), otherwise
                     -- choose the tangent direction just after the point
                     -- (necessary for t = 0, arbitrary for all other points).
-                    if parameterValue == ParameterValue.one then
+                    if parameterValue == 1 then
                         Direction2d.reverse secondDerivativeDirection
 
                     else
@@ -544,7 +530,7 @@ tangentDirection nondegenerateSpline parameterValue =
                             -- Zero first derivative and non-zero second
                             -- derivative mean we have reached a reversal point,
                             -- as above in the NonZeroSecondDerivative case
-                            if parameterValue == ParameterValue.one then
+                            if parameterValue == 1 then
                                 Direction2d.reverse secondDerivativeDirection
 
                             else
@@ -556,682 +542,336 @@ tangentDirection nondegenerateSpline parameterValue =
                             thirdDerivativeDirection
 
 
-{-| Get tangent directions to a nondegenerate spline at a given set of parameter
-values:
-
-    nondegenerateExampleSpline
-        |> CubicSpline2d.tangentDirectionsAt
-            (ParameterValue.steps 2)
-    --> [ Direction2d.fromAngle (degrees 56.31)
-    --> , Direction2d.fromAngle (degrees 0)
-    --> , Direction2d.fromAngle (degrees 56.31)
-    --> ]
-
--}
-tangentDirectionsAt : List ParameterValue -> Nondegenerate -> List Direction2d
-tangentDirectionsAt parameterValues nondegenerateSpline =
-    List.map (tangentDirection nondegenerateSpline) parameterValues
-
-
 {-| Get both the point and tangent direction of a nondegenerate spline at a
-given parameter value:
-
-    CubicSpline2d.sample nondegenerateExampleSpline
-        ParameterValue.half
-    --> ( Point2d.fromCoordinates ( 4, 2.5 )
-    --> , Direction2d.fromAngle (degrees 0)
-    --> )
-
+given parameter value.
 -}
-sample : Nondegenerate -> ParameterValue -> ( Point2d, Direction2d )
+sample : Nondegenerate units coordinates -> Float -> ( Point2d units coordinates, Direction2d coordinates )
 sample nondegenerateSpline parameterValue =
     ( pointOn (fromNondegenerate nondegenerateSpline) parameterValue
     , tangentDirection nondegenerateSpline parameterValue
     )
 
 
-{-| Get points and tangent directions of a nondegenerate spline at a given set
-of parameter values:
-
-    nondegenerateExampleSpline
-        |> CubicSpline2d.samplesAt
-            (ParameterValue.steps 2)
-    --> [ ( Point2d.fromCoordinates ( 1, 1 )
-    -->   , Direction2d.fromAngle (degrees 56.31)
-    -->   )
-    --> , ( Point2d.fromCoordinates ( 4, 2.5 )
-    -->   , Direction2d.fromAngle (degrees 0)
-    -->   )
-    --> , ( Point2d.fromCoordinates ( 7, 4 )
-    -->   , Direction2d.fromAngle (degrees 56.31)
-    -->   )
-    --> ]
-
--}
-samplesAt : List ParameterValue -> Nondegenerate -> List ( Point2d, Direction2d )
-samplesAt parameterValues nondegenerateSpline =
-    List.map (sample nondegenerateSpline) parameterValues
-
-
 {-| Reverse a spline so that the start point becomes the end point, and vice
 versa.
-
-    CubicSpline2d.reverse exampleSpline
-    --> CubicSpline2d.with
-    -->     { startPoint =
-    -->         Point2d.fromCoordinates ( 7, 4 )
-    -->     , startControlPoint =
-    -->         Point2d.fromCoordinates ( 5, 1 )
-    -->     , endControlPoint =
-    -->         Point2d.fromCoordinates ( 3, 4 )
-    -->     , endPoint =
-    -->         Point2d.fromCoordinates ( 1, 1 )
-    -->     }
-
 -}
-reverse : CubicSpline2d -> CubicSpline2d
+reverse : CubicSpline2d units coordinates -> CubicSpline2d units coordinates
 reverse spline =
-    with
-        { startPoint = endPoint spline
-        , startControlPoint = endControlPoint spline
-        , endControlPoint = startControlPoint spline
-        , endPoint = startPoint spline
-        }
+    fromControlPoints
+        (fourthControlPoint spline)
+        (thirdControlPoint spline)
+        (secondControlPoint spline)
+        (firstControlPoint spline)
 
 
 {-| Scale a spline about the given center point by the given scale.
-
-    CubicSpline2d.scaleAbout Point2d.origin 2 exampleSpline
-    --> CubicSpline2d.with
-    -->     { startPoint =
-    -->         Point2d.fromCoordinates ( 2, 2 )
-    -->     , startControlPoint =
-    -->         Point2d.fromCoordinates ( 6, 8 )
-    -->     , endControlPoint =
-    -->         Point2d.fromCoordinates ( 10, 2 )
-    -->     , endPoint =
-    -->         Point2d.fromCoordinates ( 14, 8 )
-    -->     }
-
 -}
-scaleAbout : Point2d -> Float -> CubicSpline2d -> CubicSpline2d
-scaleAbout point scale =
-    mapControlPoints (Point2d.scaleAbout point scale)
+scaleAbout : Point2d units coordinates -> Float -> CubicSpline2d units coordinates -> CubicSpline2d units coordinates
+scaleAbout point scale spline =
+    mapControlPoints (Point2d.scaleAbout point scale) spline
 
 
 {-| Rotate a spline counterclockwise around a given center point by a given
-angle (in radians).
-
-    exampleSpline
-        |> CubicSpline2d.rotateAround Point2d.origin
-            (degrees 90)
-    --> CubicSpline2d.with
-    -->     { startPoint =
-    -->         Point2d.fromCoordinates ( -1, 1 )
-    -->     , startControlPoint =
-    -->         Point2d.fromCoordinates ( -4, 3 )
-    -->     , endControlPoint =
-    -->         Point2d.fromCoordinates ( -1, 5 )
-    -->     , endPoint =
-    -->         Point2d.fromCoordinates ( -4, 7 )
-    -->     }
-
+angle.
 -}
-rotateAround : Point2d -> Float -> CubicSpline2d -> CubicSpline2d
-rotateAround point angle =
-    mapControlPoints (Point2d.rotateAround point angle)
+rotateAround : Point2d units coordinates -> Angle -> CubicSpline2d units coordinates -> CubicSpline2d units coordinates
+rotateAround point angle spline =
+    mapControlPoints (Point2d.rotateAround point angle) spline
 
 
 {-| Translate a spline by a given displacement.
-
-    displacement =
-        Vector2d.fromComponents ( 2, 3 )
-
-    CubicSpline2d.translateBy displacement exampleSpline
-    --> CubicSpline2d.with
-    -->     { startPoint =
-    -->         Point2d.fromCoordinates ( 3, 4 )
-    -->     , startControlPoint =
-    -->         Point2d.fromCoordinates ( 5, 7 )
-    -->     , endControlPoint =
-    -->         Point2d.fromCoordinates ( 7, 4 )
-    -->     , endPoint =
-    -->         Point2d.fromCoordinates ( 9, 7 )
-    -->     }
-
 -}
-translateBy : Vector2d -> CubicSpline2d -> CubicSpline2d
-translateBy displacement =
-    mapControlPoints (Point2d.translateBy displacement)
+translateBy : Vector2d units coordinates -> CubicSpline2d units coordinates -> CubicSpline2d units coordinates
+translateBy displacement spline =
+    mapControlPoints (Point2d.translateBy displacement) spline
 
 
-{-| Translate a spline in a given direction by a given distance;
-
-    CubicSpline2d.translateIn direction distance
-
-is equivalent to
-
-    CubicSpline2d.translateBy
-        (Vector2d.withLength distance direction)
-
+{-| Translate a spline in a given direction by a given distance.
 -}
-translateIn : Direction2d -> Float -> CubicSpline2d -> CubicSpline2d
+translateIn : Direction2d coordinates -> Quantity Float units -> CubicSpline2d units coordinates -> CubicSpline2d units coordinates
 translateIn direction distance spline =
     translateBy (Vector2d.withLength distance direction) spline
 
 
 {-| Mirror a spline across an axis.
-
-    CubicSpline2d.mirrorAcross Axis2d.x exampleSpline
-    --> CubicSpline2d.with
-    -->     { startPoint =
-    -->         Point2d.fromCoordinates ( 1, -1 )
-    -->     , startControlPoint =
-    -->         Point2d.fromCoordinates ( 3, -4 )
-    -->     , endControlPoint =
-    -->         Point2d.fromCoordinates ( 5, -1 )
-    -->     , endPoint =
-    -->         Point2d.fromCoordinates ( 7, -4 )
-    -->     }
-
 -}
-mirrorAcross : Axis2d -> CubicSpline2d -> CubicSpline2d
-mirrorAcross axis =
-    mapControlPoints (Point2d.mirrorAcross axis)
+mirrorAcross : Axis2d units coordinates -> CubicSpline2d units coordinates -> CubicSpline2d units coordinates
+mirrorAcross axis spline =
+    mapControlPoints (Point2d.mirrorAcross axis) spline
 
 
 {-| Take a spline defined in global coordinates, and return it expressed in
 local coordinates relative to a given reference frame.
-
-    localFrame =
-        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
-
-    CubicSpline2d.relativeTo localFrame exampleSpline
-    --> CubicSpline2d.with
-    -->     { startPoint =
-    -->         Point2d.fromCoordinates ( 0, -1 )
-    -->     , startControlPoint =
-    -->         Point2d.fromCoordinates ( 2, 2 )
-    -->     , endControlPoint =
-    -->         Point2d.fromCoordinates ( 4, -1 )
-    -->     , endPoint =
-    -->         Point2d.fromCoordinates ( 6, 2 )
-    -->     }
-
 -}
-relativeTo : Frame2d -> CubicSpline2d -> CubicSpline2d
-relativeTo frame =
-    mapControlPoints (Point2d.relativeTo frame)
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> CubicSpline2d units globalCoordinates -> CubicSpline2d units localCoordinates
+relativeTo frame spline =
+    mapControlPoints (Point2d.relativeTo frame) spline
 
 
 {-| Take a spline considered to be defined in local coordinates relative to a
 given reference frame, and return that spline expressed in global coordinates.
-
-    localFrame =
-        Frame2d.atPoint (Point2d.fromCoordinates ( 1, 2 ))
-
-    CubicSpline2d.placeIn localFrame exampleSpline
-    --> CubicSpline2d.with
-    -->     { startPoint =
-    -->         Point2d.fromCoordinates ( 2, 3 )
-    -->     , startControlPoint =
-    -->         Point2d.fromCoordinates ( 4, 6 )
-    -->     , endControlPoint =
-    -->         Point2d.fromCoordinates ( 6, 3 )
-    -->     , endPoint =
-    -->         Point2d.fromCoordinates ( 8, 6 )
-    -->     }
-
 -}
-placeIn : Frame2d -> CubicSpline2d -> CubicSpline2d
-placeIn frame =
-    mapControlPoints (Point2d.placeIn frame)
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> CubicSpline2d units localCoordinates -> CubicSpline2d units globalCoordinates
+placeIn frame spline =
+    mapControlPoints (Point2d.placeIn frame) spline
 
 
-mapControlPoints : (Point2d -> Point2d) -> CubicSpline2d -> CubicSpline2d
+mapControlPoints : (Point2d units1 coordinates1 -> Point2d units2 coordinates2) -> CubicSpline2d units1 coordinates1 -> CubicSpline2d units2 coordinates2
 mapControlPoints function spline =
-    with
-        { startPoint = function (startPoint spline)
-        , startControlPoint = function (startControlPoint spline)
-        , endControlPoint = function (endControlPoint spline)
-        , endPoint = function (endPoint spline)
-        }
+    fromControlPoints
+        (function (firstControlPoint spline))
+        (function (secondControlPoint spline))
+        (function (thirdControlPoint spline))
+        (function (fourthControlPoint spline))
 
 
-{-| Split a spline into two roughly equal halves.
-
-    CubicSpline2d.bisect exampleSpline
-    --> ( CubicSpline2d.with
-    -->     { startPoint =
-    -->         Point2d.fromCoordinates ( 1, 1 )
-    -->     , startControlPoint =
-    -->         Point2d.fromCoordinates ( 2, 2.5 )
-    -->     , endControlPoint =
-    -->         Point2d.fromCoordinates ( 3, 2.5 )
-    -->     , endPoint =
-    -->         Point2d.fromCoordinates ( 4, 2.5 )
-    -->     }
-    --> , CubicSpline2d.with
-    -->     { startPoint =
-    -->         Point2d.fromCoordinates ( 4, 2.5 )
-    -->     , startControlPoint =
-    -->         Point2d.fromCoordinates ( 5, 2.5 )
-    -->     , endControlPoint =
-    -->         Point2d.fromCoordinates ( 6, 2.5 )
-    -->     , endPoint =
-    -->         Point2d.fromCoordinates ( 7, 4 )
-    -->     }
-    --> )
-
-Equivalent to `CubicSpline2d.splitAt ParameterValue.half`.
-
+{-| Split a spline into two roughly equal halves. Equivalent to
+`CubicSpline2d.splitAt 0.5`.
 -}
-bisect : CubicSpline2d -> ( CubicSpline2d, CubicSpline2d )
-bisect =
-    splitAt ParameterValue.half
+bisect : CubicSpline2d units coordinates -> ( CubicSpline2d units coordinates, CubicSpline2d units coordinates )
+bisect spline =
+    splitAt 0.5 spline
 
 
 {-| Split a spline at a particular parameter value, resulting in two smaller
 splines.
-
-    parameterValue =
-        ParameterValue.clamped 0.75
-
-    CubicSpline2d.splitAt parameterValue exampleSpline
-    --> ( CubicSpline2d.with
-    -->     { startPoint =
-    -->         Point2d.fromCoordinates ( 1, 1 )
-    -->     , startControlPoint =
-    -->         Point2d.fromCoordinates ( 2.5, 3.25 )
-    -->     , endControlPoint =
-    -->         Point2d.fromCoordinates ( 4, 2.125 )
-    -->     , endPoint =
-    -->         Point2d.fromCoordinates ( 5.5, 2.6875 )
-    -->     }
-    --> , CubicSpline2d.with
-    -->     { startPoint =
-    -->         Point2d.fromCoordinates ( 5.5, 2.6875 )
-    -->     , startControlPoint =
-    -->         Point2d.fromCoordinates ( 6, 2.875 )
-    -->     , endControlPoint =
-    -->         Point2d.fromCoordinates ( 6.5, 3.25 )
-    -->     , endPoint =
-    -->         Point2d.fromCoordinates ( 7, 4 )
-    -->     }
-    --> )
-
 -}
-splitAt : ParameterValue -> CubicSpline2d -> ( CubicSpline2d, CubicSpline2d )
+splitAt : Float -> CubicSpline2d units coordinates -> ( CubicSpline2d units coordinates, CubicSpline2d units coordinates )
 splitAt parameterValue spline =
     let
-        t =
-            ParameterValue.value parameterValue
-
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            startControlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endControlPoint spline
+            thirdControlPoint spline
 
         p4 =
-            endPoint spline
+            fourthControlPoint spline
 
         q1 =
-            Point2d.interpolateFrom p1 p2 t
+            Point2d.interpolateFrom p1 p2 parameterValue
 
         q2 =
-            Point2d.interpolateFrom p2 p3 t
+            Point2d.interpolateFrom p2 p3 parameterValue
 
         q3 =
-            Point2d.interpolateFrom p3 p4 t
+            Point2d.interpolateFrom p3 p4 parameterValue
 
         r1 =
-            Point2d.interpolateFrom q1 q2 t
+            Point2d.interpolateFrom q1 q2 parameterValue
 
         r2 =
-            Point2d.interpolateFrom q2 q3 t
+            Point2d.interpolateFrom q2 q3 parameterValue
 
         s =
-            Point2d.interpolateFrom r1 r2 t
+            Point2d.interpolateFrom r1 r2 parameterValue
     in
-    ( with
-        { startPoint = p1
-        , startControlPoint = q1
-        , endControlPoint = r1
-        , endPoint = s
-        }
-    , with
-        { startPoint = s
-        , startControlPoint = r2
-        , endControlPoint = q3
-        , endPoint = p4
-        }
+    ( fromControlPoints p1 q1 r1 s
+    , fromControlPoints s r2 q3 p4
     )
 
 
 {-| A spline that has been parameterized by arc length.
 -}
-type ArcLengthParameterized
+type ArcLengthParameterized units coordinates
     = ArcLengthParameterized
-        { underlyingSpline : CubicSpline2d
-        , parameterization : ArcLengthParameterization
-        , nondegenerateSpline : Maybe Nondegenerate
+        { underlyingSpline : CubicSpline2d units coordinates
+        , parameterization : ArcLengthParameterization units
+        , nondegenerateSpline : Nondegenerate units coordinates
         }
 
 
 {-| Build an arc length parameterization of the given spline, with a given
-accuracy. Generally speaking, all operations on the resulting
-`ArcLengthParameterized` value will be accurate to within the specified maximum
-error.
-
-    parameterizedSpline =
-        exampleSpline
-            |> CubicSpline2d.arcLengthParameterized
-                { maxError = 1.0e-4 }
-
-The accuracy of the parameterization affects the accuracy of results returned
-from functions such as `arcLength` and `pointAlong`.
-
+accuracy.
 -}
-arcLengthParameterized : { maxError : Float } -> CubicSpline2d -> ArcLengthParameterized
-arcLengthParameterized { maxError } spline =
+arcLengthParameterized : { maxError : Quantity Float units } -> Nondegenerate units coordinates -> ArcLengthParameterized units coordinates
+arcLengthParameterized { maxError } nondegenerateSpline =
     let
+        spline =
+            fromNondegenerate nondegenerateSpline
+
         parameterization =
             ArcLengthParameterization.build
                 { maxError = maxError
                 , derivativeMagnitude = derivativeMagnitude spline
-                , maxSecondDerivativeMagnitude =
-                    maxSecondDerivativeMagnitude spline
+                , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude spline
                 }
     in
     ArcLengthParameterized
         { underlyingSpline = spline
         , parameterization = parameterization
-        , nondegenerateSpline = Result.toMaybe (nondegenerate spline)
+        , nondegenerateSpline = nondegenerateSpline
         }
 
 
-{-| Find the total arc length of a spline:
-
-    arcLength =
-        CubicSpline2d.arcLength parameterizedSpline
-
-    arcLength
-    --> 7.0952
-
-In this example, the result will be accurate to within `1.0e-4` since that was
-the tolerance used when constructing `parameterizedSpline`.
-
+{-| Find the total arc length of a spline, to within the accuracy given when
+calling [`arcLengthParameterized`](#arcLengthParameterized).
 -}
-arcLength : ArcLengthParameterized -> Float
+arcLength : ArcLengthParameterized units coordinates -> Quantity Float units
 arcLength parameterizedSpline =
     arcLengthParameterization parameterizedSpline
         |> ArcLengthParameterization.totalArcLength
 
 
-{-| Get the midpoint of a spline.
-
-    CubicSpline2d.midpoint parameterizedSpline
-    --> Point2d.fromCoordinates ( 4, 2.5 )
-
-Note that this is the point half way along the spline by arc length, which is
-not in general the same as evaluating at a parameter value of 0.5.
-
+{-| Get the midpoint of a spline. Note that this is the point half way along the
+spline by arc length, which is not in general the same as evaluating at a
+parameter value of 0.5.
 -}
-midpoint : ArcLengthParameterized -> Point2d
+midpoint : ArcLengthParameterized units coordinates -> Point2d units coordinates
 midpoint parameterized =
-    case pointAlong parameterized (arcLength parameterized / 2) of
-        Just point ->
-            point
-
-        Nothing ->
-            -- Should never happen since half of total arc length will always
-            -- be a valid distance along the curve, but let's default to something
-            -- reasonable anyways
-            startPoint (fromArcLengthParameterized parameterized)
+    let
+        halfArcLength =
+            Quantity.multiplyBy 0.5 (arcLength parameterized)
+    in
+    pointAlong parameterized halfArcLength
 
 
-{-| Try to get the point along a spline at a given arc length. For example, to
-get the point a quarter of the way along `exampleSpline`, using `arcLength` as
-computed above:
-
-    CubicSpline2d.pointAlong parameterizedSpline
-        (0.25 * arcLength)
-    --> Just (Point2d.fromCoordinates ( 2.2681, 2.2114 ))
-
-Note that this is not the same as evaulating at a parameter value of 0.25:
-
-    CubicSpline2d.pointOn exampleSpline
-        (ParameterValue.clamped 0.25)
-    --> Point2d.fromCoordinates ( 2.5, 2.3125 )
-
-If the given arc length is less than zero or greater than the arc length of the
-spline, returns `Nothing`.
-
+{-| Get the point along a spline at a given arc length.
 -}
-pointAlong : ArcLengthParameterized -> Float -> Maybe Point2d
+pointAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Point2d units coordinates
 pointAlong (ArcLengthParameterized parameterized) distance =
     parameterized.parameterization
         |> ArcLengthParameterization.arcLengthToParameterValue distance
-        |> Maybe.map (pointOn parameterized.underlyingSpline)
+        |> pointOn parameterized.underlyingSpline
 
 
-{-| Try to get the tangent direction along a spline at a given arc length. To
-get the tangent direction a quarter of the way along `exampleSpline`:
-
-    CubicSpline2d.tangentDirectionAlong parameterizedSpline
-        (0.25 * arcLength)
-    --> Just (Direction2d.fromAngle (degrees 26.5611))
-
-If the given arc length is less than zero or greater than the arc length of the
-spline (or if the spline is degenerate), returns `Nothing`.
-
+{-| Get the tangent direction along a spline at a given arc length.
 -}
-tangentDirectionAlong : ArcLengthParameterized -> Float -> Maybe Direction2d
+tangentDirectionAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Direction2d coordinates
 tangentDirectionAlong (ArcLengthParameterized parameterized) distance =
-    case parameterized.nondegenerateSpline of
-        Just nondegenerateSpline ->
-            parameterized.parameterization
-                |> ArcLengthParameterization.arcLengthToParameterValue distance
-                |> Maybe.map (tangentDirection nondegenerateSpline)
+    let
+        parameterValue =
+            ArcLengthParameterization.arcLengthToParameterValue
+                distance
+                parameterized.parameterization
+    in
+    tangentDirection parameterized.nondegenerateSpline parameterValue
 
-        Nothing ->
-            Nothing
 
-
-{-| Try to get the point and tangent direction along a spline at a given arc
-length. To get the point and tangent direction a quarter of the way along
-`exampleSpline`:
-
-    CubicSpline2d.sampleAlong parameterizedSpline
-        (0.25 * arcLength)
-    --> Just
-    -->     ( Point2d.fromCoordinates ( 2.2681, 2.2114 )
-    -->     , Direction2d.fromAngle (degrees 26.5611)
-    -->     )
-
-If the given arc length is less than zero or greater than the arc length of the
-spline (or if the spline is degenerate), returns `Nothing`.
-
+{-| Get the point and tangent direction along a spline at a given arc length.
 -}
-sampleAlong : ArcLengthParameterized -> Float -> Maybe ( Point2d, Direction2d )
+sampleAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> ( Point2d units coordinates, Direction2d coordinates )
 sampleAlong (ArcLengthParameterized parameterized) distance =
-    case parameterized.nondegenerateSpline of
-        Just nondegenerateSpline ->
-            parameterized.parameterization
-                |> ArcLengthParameterization.arcLengthToParameterValue distance
-                |> Maybe.map (sample nondegenerateSpline)
-
-        Nothing ->
-            Nothing
+    let
+        parameterValue =
+            ArcLengthParameterization.arcLengthToParameterValue
+                distance
+                parameterized.parameterization
+    in
+    sample parameterized.nondegenerateSpline parameterValue
 
 
 {-| -}
-arcLengthParameterization : ArcLengthParameterized -> ArcLengthParameterization
+arcLengthParameterization : ArcLengthParameterized units coordinates -> ArcLengthParameterization units
 arcLengthParameterization (ArcLengthParameterized parameterized) =
     parameterized.parameterization
 
 
 {-| -}
-fromArcLengthParameterized : ArcLengthParameterized -> CubicSpline2d
+fromArcLengthParameterized : ArcLengthParameterized units coordinates -> CubicSpline2d units coordinates
 fromArcLengthParameterized (ArcLengthParameterized parameterized) =
     parameterized.underlyingSpline
 
 
-{-| Get the first derivative of a spline at a given parameter value:
-
-    CubicSpline2d.firstDerivative exampleSpline
-        ParameterValue.zero
-    --> Vector2d.fromComponents ( 6, 9 )
-
-    CubicSpline2d.firstDerivative exampleSpline
-        ParameterValue.half
-    --> Vector2d.fromComponents ( 6, 0 )
-
-    CubicSpline2d.firstDerivative exampleSpline
-        ParameterValue.one
-    --> Vector2d.fromComponents ( 6, 9 )
-
+{-| Get the first derivative of a spline at a given parameter value.
 -}
-firstDerivative : CubicSpline2d -> ParameterValue -> Vector2d
+firstDerivative : CubicSpline2d units coordinates -> Float -> Vector2d units coordinates
 firstDerivative spline parameterValue =
     let
-        t =
-            ParameterValue.value parameterValue
-
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            startControlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endControlPoint spline
+            thirdControlPoint spline
 
         p4 =
-            endPoint spline
+            fourthControlPoint spline
 
-        ( x1, y1 ) =
-            Point2d.coordinates p1
+        x1 =
+            Point2d.xCoordinate p1
 
-        ( x2, y2 ) =
-            Point2d.coordinates p2
+        y1 =
+            Point2d.yCoordinate p1
 
-        ( x3, y3 ) =
-            Point2d.coordinates p3
+        x2 =
+            Point2d.xCoordinate p2
 
-        ( x4, y4 ) =
-            Point2d.coordinates p4
+        y2 =
+            Point2d.yCoordinate p2
+
+        x3 =
+            Point2d.xCoordinate p3
+
+        y3 =
+            Point2d.yCoordinate p3
+
+        x4 =
+            Point2d.xCoordinate p4
+
+        y4 =
+            Point2d.yCoordinate p4
 
         vx1 =
-            x2 - x1
+            x2 |> Quantity.minus x1
 
         vy1 =
-            y2 - y1
+            y2 |> Quantity.minus y1
 
         vx2 =
-            x3 - x2
+            x3 |> Quantity.minus x2
 
         vy2 =
-            y3 - y2
+            y3 |> Quantity.minus y2
 
         vx3 =
-            x4 - x3
+            x4 |> Quantity.minus x3
 
         vy3 =
-            y4 - y3
+            y4 |> Quantity.minus y3
+
+        wx1 =
+            Quantity.interpolateFrom vx1 vx2 parameterValue
+
+        wy1 =
+            Quantity.interpolateFrom vy1 vy2 parameterValue
+
+        wx2 =
+            Quantity.interpolateFrom vx2 vx3 parameterValue
+
+        wy2 =
+            Quantity.interpolateFrom vy2 vy3 parameterValue
     in
-    if t <= 0.5 then
-        let
-            wx1 =
-                vx1 + t * (vx2 - vx1)
-
-            wy1 =
-                vy1 + t * (vy2 - vy1)
-
-            wx2 =
-                vx2 + t * (vx3 - vx2)
-
-            wy2 =
-                vy2 + t * (vy3 - vy2)
-        in
-        Vector2d.fromComponents
-            ( 3 * (wx1 + t * (wx2 - wx1))
-            , 3 * (wy1 + t * (wy2 - wy1))
-            )
-
-    else
-        let
-            u =
-                1 - t
-
-            wx1 =
-                vx2 + u * (vx1 - vx2)
-
-            wy1 =
-                vy2 + u * (vy1 - vy2)
-
-            wx2 =
-                vx3 + u * (vx2 - vx3)
-
-            wy2 =
-                vy3 + u * (vy2 - vy3)
-        in
-        Vector2d.fromComponents
-            ( 3 * (wx2 + u * (wx1 - wx2))
-            , 3 * (wy2 + u * (wy1 - wy2))
-            )
+    Vector2d.xy
+        (Quantity.multiplyBy 3
+            (Quantity.interpolateFrom wx1 wx2 parameterValue)
+        )
+        (Quantity.multiplyBy 3
+            (Quantity.interpolateFrom wy1 wy2 parameterValue)
+        )
 
 
-{-| Evaluate the first derivative of a spline at a given set of parameter
-values:
-
-    exampleSpline
-        |> CubicSpline2d.firstDerivativesAt
-            (ParameterValue.steps 2)
-    --> [ Vector2d.fromComponents ( 6, 9 )
-    --> , Vector2d.fromComponents ( 6, 0 )
-    --> , Vector2d.fromComponents ( 6, 9 )
-    --> ]
-
+{-| Evaluate the second derivative of a spline at a given parameter value.
 -}
-firstDerivativesAt : List ParameterValue -> CubicSpline2d -> List Vector2d
-firstDerivativesAt parameterValues spline =
-    List.map (firstDerivative spline) parameterValues
-
-
-{-| Evaluate the second derivative of a spline at a given parameter value:
-
-    CubicSpline2d.secondDerivativeAt 0 exampleSpline
-    --> Just (Vector2d.fromComponents ( 0, -36 ))
-
-    CubicSpline2d.secondDerivativeAt 0.5 exampleSpline
-    --> Just (Vector2d.fromComponents ( 0, 0 ))
-
-    CubicSpline2d.secondDerivativeAt 1 exampleSpline
-    --> Just (Vector2d.fromComponents ( 0, 36 ))
-
--}
-secondDerivative : CubicSpline2d -> ParameterValue -> Vector2d
+secondDerivative : CubicSpline2d units coordinates -> Float -> Vector2d units coordinates
 secondDerivative spline parameterValue =
     let
-        t =
-            ParameterValue.value parameterValue
-
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            startControlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endControlPoint spline
+            thirdControlPoint spline
 
         p4 =
-            endPoint spline
+            fourthControlPoint spline
 
         u1 =
             Vector2d.from p1 p2
@@ -1243,52 +883,31 @@ secondDerivative spline parameterValue =
             Vector2d.from p3 p4
 
         v1 =
-            Vector2d.difference u2 u1
+            u2 |> Vector2d.minus u1
 
         v2 =
-            Vector2d.difference u3 u2
+            u3 |> Vector2d.minus u2
     in
-    Vector2d.scaleBy 6 (Vector2d.interpolateFrom v1 v2 t)
-
-
-{-| Evaluate the second derivative of a spline at a given set of parameter
-values:
-
-    exampleSpline
-        |> CubicSpline2d.secondDerivativesAt
-            (ParameterValue.steps 2)
-    --> [ Vector2d.fromComponents ( 0, -36 )
-    --> , Vector2d.fromComponents ( 0, 0 )
-    --> , Vector2d.fromComponents ( 0, 36 )
-    --> ]
-
--}
-secondDerivativesAt : List ParameterValue -> CubicSpline2d -> List Vector2d
-secondDerivativesAt parameterValues spline =
-    List.map (secondDerivative spline) parameterValues
+    Vector2d.scaleBy 6 (Vector2d.interpolateFrom v1 v2 parameterValue)
 
 
 {-| Get the third derivative of a spline (for a cubic spline, this is a
-constant):
-
-    CubicSpline2d.thirdDerivative exampleSpline
-    --> Vector2d.fromComponents ( 0, 72 )
-
+constant).
 -}
-thirdDerivative : CubicSpline2d -> Vector2d
+thirdDerivative : CubicSpline2d units coordinates -> Vector2d units coordinates
 thirdDerivative spline =
     let
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            startControlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endControlPoint spline
+            thirdControlPoint spline
 
         p4 =
-            endPoint spline
+            fourthControlPoint spline
 
         u1 =
             Vector2d.from p1 p2
@@ -1300,37 +919,32 @@ thirdDerivative spline =
             Vector2d.from p3 p4
 
         v1 =
-            Vector2d.difference u2 u1
+            u2 |> Vector2d.minus u1
 
         v2 =
-            Vector2d.difference u3 u2
+            u3 |> Vector2d.minus u2
     in
-    Vector2d.scaleBy 6 (Vector2d.difference v2 v1)
+    Vector2d.scaleBy 6 (v2 |> Vector2d.minus v1)
 
 
 {-| Find a conservative upper bound on the magnitude of the second derivative of
 a spline. This can be useful when determining error bounds for various kinds of
 linear approximations.
-
-    exampleSpline
-        |> CubicSpline2d.maxSecondDerivativeMagnitude
-    --> 36
-
 -}
-maxSecondDerivativeMagnitude : CubicSpline2d -> Float
+maxSecondDerivativeMagnitude : CubicSpline2d units coordinates -> Quantity Float units
 maxSecondDerivativeMagnitude spline =
     let
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            startControlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endControlPoint spline
+            thirdControlPoint spline
 
         p4 =
-            endPoint spline
+            fourthControlPoint spline
 
         u1 =
             Vector2d.from p1 p2
@@ -1342,92 +956,104 @@ maxSecondDerivativeMagnitude spline =
             Vector2d.from p3 p4
 
         v1 =
-            Vector2d.difference u2 u1
+            u2 |> Vector2d.minus u1
 
         v2 =
-            Vector2d.difference u3 u2
+            u3 |> Vector2d.minus u2
     in
-    6 * max (Vector2d.length v1) (Vector2d.length v2)
+    Quantity.multiplyBy 6 (Quantity.max (Vector2d.length v1) (Vector2d.length v2))
 
 
-derivativeMagnitude : CubicSpline2d -> ParameterValue -> Float
+derivativeMagnitude : CubicSpline2d units coordinates -> Float -> Quantity Float units
 derivativeMagnitude spline =
     let
         p1 =
-            startPoint spline
+            firstControlPoint spline
 
         p2 =
-            startControlPoint spline
+            secondControlPoint spline
 
         p3 =
-            endControlPoint spline
+            thirdControlPoint spline
 
         p4 =
-            endPoint spline
+            fourthControlPoint spline
 
-        ( x1, y1 ) =
-            Point2d.coordinates p1
+        x1 =
+            Point2d.xCoordinate p1
 
-        ( x2, y2 ) =
-            Point2d.coordinates p2
+        y1 =
+            Point2d.yCoordinate p1
 
-        ( x3, y3 ) =
-            Point2d.coordinates p3
+        x2 =
+            Point2d.xCoordinate p2
 
-        ( x4, y4 ) =
-            Point2d.coordinates p4
+        y2 =
+            Point2d.yCoordinate p2
+
+        x3 =
+            Point2d.xCoordinate p3
+
+        y3 =
+            Point2d.yCoordinate p3
+
+        x4 =
+            Point2d.xCoordinate p4
+
+        y4 =
+            Point2d.yCoordinate p4
 
         x12 =
-            x2 - x1
+            x2 |> Quantity.minus x1
 
         y12 =
-            y2 - y1
+            y2 |> Quantity.minus y1
 
         x23 =
-            x3 - x2
+            x3 |> Quantity.minus x2
 
         y23 =
-            y3 - y2
+            y3 |> Quantity.minus y2
 
         x34 =
-            x4 - x3
+            x4 |> Quantity.minus x3
 
         y34 =
-            y4 - y3
+            y4 |> Quantity.minus y3
 
         x123 =
-            x23 - x12
+            x23 |> Quantity.minus x12
 
         y123 =
-            y23 - y12
+            y23 |> Quantity.minus y12
 
         x234 =
-            x34 - x23
+            x34 |> Quantity.minus x23
 
         y234 =
-            y34 - y23
+            y34 |> Quantity.minus y23
     in
     \parameterValue ->
         let
-            t =
-                ParameterValue.value parameterValue
-
             x13 =
-                x12 + t * x123
+                x12 |> Quantity.plus (Quantity.multiplyBy parameterValue x123)
 
             y13 =
-                y12 + t * y123
+                y12 |> Quantity.plus (Quantity.multiplyBy parameterValue y123)
 
             x24 =
-                x23 + t * x234
+                x23 |> Quantity.plus (Quantity.multiplyBy parameterValue x234)
 
             y24 =
-                y23 + t * y234
+                y23 |> Quantity.plus (Quantity.multiplyBy parameterValue y234)
 
             x14 =
-                x13 + t * (x24 - x13)
+                Quantity.interpolateFrom x13 x24 parameterValue
 
             y14 =
-                y13 + t * (y24 - y13)
+                Quantity.interpolateFrom y13 y24 parameterValue
         in
-        3 * sqrt (x14 * x14 + y14 * y14)
+        Quantity.multiplyBy 3
+            (Quantity.sqrt
+                (Quantity.squared x14 |> Quantity.plus (Quantity.squared y14))
+            )

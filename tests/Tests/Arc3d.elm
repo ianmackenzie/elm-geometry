@@ -6,35 +6,30 @@ module Tests.Arc3d exposing
     , transformations
     )
 
+import Angle
 import Arc3d
-import Curve.ParameterValue as ParameterValue
 import EllipticalArc2d
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Geometry.Test as Test exposing (..)
 import Point3d
 import Test exposing (Test)
-import Tests.Generic.Curve3d
+import Tests.Generic.Curve3d as Curve3d
 
 
 evaluateZeroIsStartPoint : Test
 evaluateZeroIsStartPoint =
     Test.fuzz Fuzz.arc3d
         "Evaluating at t=0 returns start point"
-        (\arc ->
-            Arc3d.pointOn arc ParameterValue.zero
-                |> Expect.point3d (Arc3d.startPoint arc)
-        )
+        (\arc -> Arc3d.pointOn arc 0 |> Expect.point3d (Arc3d.startPoint arc))
 
 
 evaluateOneIsEndPoint : Test
 evaluateOneIsEndPoint =
     Test.fuzz Fuzz.arc3d
         "Evaluating at t=1 returns end point"
-        (\arc ->
-            Arc3d.pointOn arc ParameterValue.one
-                |> Expect.point3d (Arc3d.endPoint arc)
-        )
+        (\arc -> Arc3d.pointOn arc 1 |> Expect.point3d (Arc3d.endPoint arc))
 
 
 reverseFlipsDirection : Test
@@ -45,7 +40,7 @@ reverseFlipsDirection =
         (\arc parameterValue ->
             Arc3d.pointOn (Arc3d.reverse arc) parameterValue
                 |> Expect.point3d
-                    (Arc3d.pointOn arc (ParameterValue.oneMinus parameterValue))
+                    (Arc3d.pointOn arc (1 - parameterValue))
         )
 
 
@@ -74,16 +69,22 @@ projectInto =
         )
 
 
+curveOperations : Curve3d.Operations (Arc3d coordinates) coordinates
+curveOperations =
+    { fuzzer = Fuzz.arc3d
+    , pointOn = Arc3d.pointOn
+    , firstDerivative = Arc3d.firstDerivative
+    , scaleAbout = Arc3d.scaleAbout
+    , translateBy = Arc3d.translateBy
+    , rotateAround = Arc3d.rotateAround
+    , mirrorAcross = Arc3d.mirrorAcross
+    }
+
+
 transformations : Test
 transformations =
-    Tests.Generic.Curve3d.transformations
-        { fuzzer = Fuzz.arc3d
-        , pointOn = Arc3d.pointOn
-        , firstDerivative = Arc3d.firstDerivative
-        , scaleAbout = Arc3d.scaleAbout
-        , translateBy = Arc3d.translateBy
-        , rotateAround = Arc3d.rotateAround
-        , mirrorAcross = Arc3d.mirrorAcross
-        , relativeTo = Arc3d.relativeTo
-        , placeIn = Arc3d.placeIn
-        }
+    Curve3d.transformations
+        curveOperations
+        curveOperations
+        Arc3d.placeIn
+        Arc3d.relativeTo

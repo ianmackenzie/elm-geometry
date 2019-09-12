@@ -1,9 +1,13 @@
 module Tests.Point2d exposing
-    ( interpolationReturnsExactEndpoints
+    ( circumcenterIsValidOrNothing
+    , hullNConsistentWithHull2
+    , hullNIsOrderIndependent
+    , interpolationReturnsExactEndpoints
     , midpointIsEquidistant
     , projectionOntoAxisPreservesDistance
     , rotationPreservesDistance
     , translateByAndInAreConsistent
+    , trickyCircumcenter
     )
 
 import Expect
@@ -11,7 +15,9 @@ import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Point2d
+import Quantity exposing (zero)
 import Test exposing (Test)
+import Triangle2d
 import Vector2d
 
 
@@ -34,7 +40,7 @@ rotationPreservesDistance =
             in
             Expect.approximately initialDistance rotatedDistance
     in
-    Test.fuzz3 Fuzz.point2d Fuzz.point2d Fuzz.scalar description expectation
+    Test.fuzz3 Fuzz.point2d Fuzz.point2d Fuzz.angle description expectation
 
 
 projectionOntoAxisPreservesDistance : Test
@@ -92,7 +98,7 @@ translateByAndInAreConsistent =
     Test.fuzz3
         Fuzz.point2d
         Fuzz.direction2d
-        Fuzz.scalar
+        Fuzz.length
         "translateBy and translateIn are consistent"
         (\point direction distance ->
             let
@@ -102,4 +108,73 @@ translateByAndInAreConsistent =
             point
                 |> Point2d.translateIn direction distance
                 |> Expect.point2d (Point2d.translateBy displacement point)
+        )
+
+
+circumcenterIsValidOrNothing : Test
+circumcenterIsValidOrNothing =
+    Test.fuzz3
+        Fuzz.point2d
+        Fuzz.point2d
+        Fuzz.point2d
+        "The circumcenter of three points is either Nothing or is equidistant from each point"
+        (\p1 p2 p3 ->
+            case Point2d.circumcenter p1 p2 p3 of
+                Nothing ->
+                    Triangle2d.area (Triangle2d.from p1 p2 p3)
+                        |> Expect.approximately zero
+
+                Just p0 ->
+                    let
+                        r1 =
+                            p0 |> Point2d.distanceFrom p1
+                    in
+                    p0
+                        |> Expect.all
+                            [ Point2d.distanceFrom p2 >> Expect.approximately r1
+                            , Point2d.distanceFrom p3 >> Expect.approximately r1
+                            ]
+        )
+
+
+trickyCircumcenter : Test
+trickyCircumcenter =
+    Test.test "Circumcenter works correctly on previous failure case" <|
+        \() ->
+            let
+                p1 =
+                    Point2d.meters -10 0
+
+                p2 =
+                    Point2d.meters -10 1.0e-6
+
+                p3 =
+                    Point2d.meters -9.858773586876941 4.859985890767644
+
+                p0 =
+                    Point2d.meters 73.69327796224587 5.0e-7
+            in
+            Point2d.circumcenter p1 p2 p3 |> Expect.just Expect.point2d p0
+
+
+hullNConsistentWithHull2 : Test
+hullNConsistentWithHull2 =
+    Test.fuzz2
+        Fuzz.point2d
+        Fuzz.point2d
+        "'hullN' is consistent with 'hull2'"
+        (\firstPoint secondPoint ->
+            Point2d.hullN [ firstPoint, secondPoint ]
+                |> Expect.equal
+                    (Just (Point2d.hull2 firstPoint secondPoint))
+        )
+
+
+hullNIsOrderIndependent : Test
+hullNIsOrderIndependent =
+    Test.fuzz (Fuzz.list Fuzz.point2d)
+        "'hullN' does not depend on input order"
+        (\points ->
+            Point2d.hullN (List.reverse points)
+                |> Expect.equal (Point2d.hullN points)
         )

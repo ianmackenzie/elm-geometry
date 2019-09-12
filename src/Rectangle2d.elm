@@ -9,13 +9,12 @@
 
 module Rectangle2d exposing
     ( Rectangle2d
-    , from, centeredOn, fromExtrema, fromExtremaIn
-    , dimensions, axes, xAxis, yAxis, centerPoint, area
-    , vertices, bottomLeftVertex, bottomRightVertex, topLeftVertex, topRightVertex
-    , edges, leftEdge, bottomEdge, rightEdge, topEdge
-    , boundingBox
+    , with, from, withDimensions, withAxes, withXAxis, withYAxis
+    , dimensions, axes, xAxis, yAxis, centerPoint, area, vertices, edges, boundingBox
+    , interpolate
     , contains
     , toPolygon
+    , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , relativeTo, placeIn
     )
@@ -36,15 +35,17 @@ they can have arbitrary orientation and so can be rotated, mirrored etc.
 
 # Construction
 
-@docs from, centeredOn, fromExtrema, fromExtremaIn
+@docs with, from, withDimensions, withAxes, withXAxis, withYAxis
 
 
 # Properties
 
-@docs dimensions, axes, xAxis, yAxis, centerPoint, area
-@docs vertices, bottomLeftVertex, bottomRightVertex, topLeftVertex, topRightVertex
-@docs edges, leftEdge, bottomEdge, rightEdge, topEdge
-@docs boundingBox
+@docs dimensions, axes, xAxis, yAxis, centerPoint, area, vertices, edges, boundingBox
+
+
+# Interpolation
+
+@docs interpolate
 
 
 # Querying
@@ -57,7 +58,15 @@ they can have arbitrary orientation and so can be rotated, mirrored etc.
 @docs toPolygon
 
 
+# Unit conversions
+
+@docs at, at_
+
+
 # Transformation
+
+These transformations generally behave just like [the ones in the `Point2d`
+module](Point2d#transformations).
 
 @docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
 
@@ -68,6 +77,7 @@ they can have arbitrary orientation and so can be rotated, mirrored etc.
 
 -}
 
+import Angle exposing (Angle)
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Direction2d exposing (Direction2d)
@@ -76,198 +86,245 @@ import Geometry.Types as Types
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
+import Quantity exposing (Quantity(..), Rate, Squared)
 import Vector2d exposing (Vector2d)
 
 
 {-| -}
-type alias Rectangle2d =
-    Types.Rectangle2d
+type alias Rectangle2d units coordinates =
+    Types.Rectangle2d units coordinates
 
 
-{-| Construct a rectangle centered on the given axes (frame), with the given
-overall X/Y dimensions (width/height).
+{-| Construct an axis-aligned rectangle given the X and Y coordinates of two
+diagonally opposite vertices. The X and Y directions of the resulting rectangle
+are determined by the order of the given values:
 
-    frame =
-        Frame2d.atCoordinates ( 3, 2 )
+  - If `x1 <= x2`, then the rectangle's X direction will be
+    `Direction2d.positiveX`, otherwise it will be `Direction2d.negativeX`
+  - If `y1 <= y2`, then the rectangle's Y direction will be
+    `Direction2d.positiveY`, otherwise it will be `Direction2d.negativeY`
 
-    rectangle =
-        Rectangle2d.centeredOn frame ( 4, 3 )
+Therefore, something like
 
-    Rectangle2d.vertices rectangle
-    --> { bottomLeft = Point2d.fromCoordinates ( 1, 0.5 )
-    --> , bottomRight = Point2d.fromCoordinates ( 5, 0.5 )
-    --> , topLeft = Point2d.fromCoordinates ( 1, 3.5 )
-    --> , topRight = Point2d.fromCoordinates ( 5, 3.5 )
-    --> }
+    Rectangle2d.with
+        { x1 = Pixels.pixels 0
+        , y1 = Pixels.pixels 300
+        , x2 = Pixels.pixels 500
+        , y2 = Pixels.pixels 0
+        }
+
+would have its X direction equal to `Direction2d.positiveX` and its Y direction
+equal to `Direction2d.negativeY`.
 
 -}
-centeredOn : Frame2d -> ( Float, Float ) -> Rectangle2d
-centeredOn givenAxes ( givenWidth, givenHeight ) =
-    Types.Rectangle2d
-        { axes = givenAxes
-        , dimensions = ( abs givenWidth, abs givenHeight )
-        }
+with : { x1 : Quantity Float units, y1 : Quantity Float units, x2 : Quantity Float units, y2 : Quantity Float units } -> Rectangle2d units coordinates
+with { x1, y1, x2, y2 } =
+    axisAligned x1 y1 x2 y2
 
 
-{-| Construct a rectangle by supplying its maximum and minimum X and Y values
-within a particular frame:
-
-    frame =
-        Frame2d.atCoordinates ( 5, 4 )
-
-    Rectangle2d.fromExtremaIn frame
-        { minX = -1
-        , minY = -1
-        , maxX = 3
-        , maxY = 2
-        }
-    --> Rectangle2d.fromExtrema
-    -->     { minX = 4
-    -->     , minY = 3
-    -->     , maxX = 8
-    -->     , maxY = 6
-    -->     }
-
-Note that for simplicity we used a non-rotated frame in the above example - if
-we had used a rotated frame, the result could not have been expressed using
-`Rectangle2d.fromExtrema` since it would no longer have been axis-aligned.
-
--}
-fromExtremaIn : Frame2d -> { minX : Float, maxX : Float, minY : Float, maxY : Float } -> Rectangle2d
-fromExtremaIn localFrame { minX, maxX, minY, maxY } =
-    let
-        dx =
-            maxX - minX
-
-        dy =
-            maxY - minY
-
-        midX =
-            minX + 0.5 * dx
-
-        midY =
-            minY + 0.5 * dy
-
-        computedCenterPoint =
-            Point2d.fromCoordinatesIn localFrame ( midX, midY )
-    in
-    Types.Rectangle2d
-        { axes = Frame2d.moveTo computedCenterPoint localFrame
-        , dimensions = ( abs dx, abs dy )
-        }
-
-
-{-| Construct an axis-aligned rectangle stretching from one point to another.
-The order of the points does not matter, and they can represent either the
-lower left and upper right vertices or the upper left and lower right.
-
-    p1 =
-        Point2d.fromCoordinates ( 5, 2 )
-
-    p2 =
-        Point2d.fromCoordinates ( 1, 4 )
+{-| Construct an axis-aligned rectangle stretching from one point to another;
 
     Rectangle2d.from p1 p2
-    --> Rectangle2d.fromExtrema
-    -->     { minX = 1
-    -->     , maxX = 5
-    -->     , minY = 2
-    -->     , maxY = 4
-    -->     }
 
--}
-from : Point2d -> Point2d -> Rectangle2d
-from firstPoint secondPoint =
-    let
-        computedCenterPoint =
-            Point2d.midpoint firstPoint secondPoint
+is equivalent to
 
-        ( x1, y1 ) =
-            Point2d.coordinates firstPoint
-
-        ( x2, y2 ) =
-            Point2d.coordinates secondPoint
-    in
-    Types.Rectangle2d
-        { axes = Frame2d.atPoint computedCenterPoint
-        , dimensions = ( abs (x2 - x1), abs (y2 - y1) )
+    Rectangle2d.with
+        { x1 = Point2d.xCoordinate p1
+        , y1 = Point2d.yCoordinate p1
+        , x2 = Point2d.xCoordinate p2
+        , y2 = Point2d.yCoordinate p2
         }
 
+and so the same logic about the resulting rectangle's X and Y directions
+applies (see above for details). Therefore, assuming a Y-up coordinate system,
+something like
 
-{-| Construct an axis-aligned rectangle by specifying its minimum and maximum
-X and Y coordinates. If the min and max are given in the wrong order, they will
-be swapped.
+    Rectangle2d.from lowerLeftPoint upperRightPoint
+
+would have positive X and Y directions, while
+
+    Rectangle2d.from upperLeftPoint lowerRightPoint
+
+would have a positive X direction but a negative Y direction.
+
+-}
+from : Point2d units coordinates -> Point2d units coordinates -> Rectangle2d units coordinates
+from p1 p2 =
+    axisAligned
+        (Point2d.xCoordinate p1)
+        (Point2d.yCoordinate p1)
+        (Point2d.xCoordinate p2)
+        (Point2d.yCoordinate p2)
+
+
+{-| Construct a rectangle with the given overall dimensions (width/height) and
+angle, centered on the given point. For an axis-aligned rectangle you can pass
+`Angle.degrees 0` (or equivalently `Angle.radians 0` or even `Quantity.zero`) as
+the second argument:
 
     rectangle =
-        Rectangle2d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 3
-            }
+        Rectangle2d.withDimensions
+            ( Pixels.pixels 200, Pixels.pixels 100 )
+            (Angle.degrees 0)
+            (Point2d.pixels 400 300)
 
     Rectangle2d.vertices rectangle
-    --> { bottomLeft = Point2d.fromCoordinates ( 2, 1 )
-    --> , bottomRight = Point2d.fromCoordinates ( 5, 1 )
-    --> , topLeft = Point2d.fromCoordinates ( 2, 3 )
-    --> , topRight = Point2d.fromCoordinates ( 5, 3 )
-    --> }
+    --> [ Point2d.pixels 300 250
+    --> , Point2d.pixels 500 250
+    --> , Point2d.pixels 500 350
+    --> , Point2d.pixels 300 350
+    --> ]
+
+Passing a non-zero angle lets you control the orientation of a rectangle; to
+make a diamond shape you might do something like
+
+    diamond =
+        Rectangle2d.withDimensions
+            ( Length.meters 2, Length.meters 2 )
+            (Angle.degrees 45)
+            Point2d.origin
+
+    Rectangle2d.vertices diamond
+    --> [ Point2d.meters 0 -1.4142
+    --> , Point2d.meters 1.4142 0
+    --> , Point2d.meters 0 1.4142
+    --> , Point2d.meters -1.4142 0
+    --> ]
 
 -}
-fromExtrema : { minX : Float, maxX : Float, minY : Float, maxY : Float } -> Rectangle2d
-fromExtrema { minX, maxX, minY, maxY } =
+withDimensions : ( Quantity Float units, Quantity Float units ) -> Angle -> Point2d units coordinates -> Rectangle2d units coordinates
+withDimensions ( givenWidth, givenHeight ) givenAngle givenCenter =
+    Types.Rectangle2d
+        { axes = Frame2d.withAngle givenAngle givenCenter
+        , dimensions = ( Quantity.abs givenWidth, Quantity.abs givenHeight )
+        }
+
+
+{-| Construct a frame centered on the given axes, with the given overall
+dimensions;
+
+    Rectangle2d.withDimensions dimensions angle centerPoint
+
+is equivalent to
+
+    Rectangle2d.withAxes
+        (Frame2d.withAngle angle centerPoint)
+        dimensions
+
+-}
+withAxes : Frame2d units coordinates defines -> ( Quantity Float units, Quantity Float units ) -> Rectangle2d units coordinates
+withAxes givenAxes ( givenWidth, givenHeight ) =
+    Types.Rectangle2d
+        { axes = Frame2d.copy givenAxes
+        , dimensions = ( Quantity.abs givenWidth, Quantity.abs givenHeight )
+        }
+
+
+{-| Construct a rectangle with the given X axis and overall dimensions. The
+rectangle will be centered on the axis' origin point.
+-}
+withXAxis : Axis2d units coordinates -> ( Quantity Float units, Quantity Float units ) -> Rectangle2d units coordinates
+withXAxis givenAxis givenDimensions =
+    withAxes (Frame2d.fromXAxis givenAxis) givenDimensions
+
+
+{-| Construct a rectangle with the given Y axis and overall dimensions. The
+rectangle will be centered on the axis' origin point.
+-}
+withYAxis : Axis2d units coordinates -> ( Quantity Float units, Quantity Float units ) -> Rectangle2d units coordinates
+withYAxis givenAxis givenDimensions =
+    withAxes (Frame2d.fromYAxis givenAxis) givenDimensions
+
+
+axisAligned : Quantity Float units -> Quantity Float units -> Quantity Float units -> Quantity Float units -> Rectangle2d units coordinates
+axisAligned x1 y1 x2 y2 =
     let
-        dx =
-            maxX - minX
-
-        dy =
-            maxY - minY
-
-        midX =
-            minX + 0.5 * dx
-
-        midY =
-            minY + 0.5 * dy
-
         computedCenterPoint =
-            Point2d.fromCoordinates ( midX, midY )
+            Point2d.xy (Quantity.midpoint x1 x2) (Quantity.midpoint y1 y2)
+
+        computedXDirection =
+            if x2 |> Quantity.greaterThanOrEqualTo x1 then
+                Direction2d.positiveX
+
+            else
+                Direction2d.negativeX
+
+        computedYDirection =
+            if y2 |> Quantity.greaterThanOrEqualTo y1 then
+                Direction2d.positiveY
+
+            else
+                Direction2d.negativeY
+
+        computedAxes =
+            Frame2d.unsafe
+                { originPoint = computedCenterPoint
+                , xDirection = computedXDirection
+                , yDirection = computedYDirection
+                }
+
+        computedDimensions =
+            ( Quantity.abs (x2 |> Quantity.minus x1)
+            , Quantity.abs (y2 |> Quantity.minus y1)
+            )
     in
     Types.Rectangle2d
-        { axes = Frame2d.atPoint computedCenterPoint
-        , dimensions = ( abs dx, abs dy )
+        { axes = computedAxes
+        , dimensions = computedDimensions
         }
+
+
+{-| Convert a rectangle from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> Rectangle2d units1 coordinates -> Rectangle2d units2 coordinates
+at rate (Types.Rectangle2d rectangle) =
+    let
+        ( width, height ) =
+            rectangle.dimensions
+    in
+    Types.Rectangle2d
+        { axes = Frame2d.at rate rectangle.axes
+        , dimensions = ( Quantity.at rate width, Quantity.at rate height )
+        }
+
+
+{-| Convert a rectangle from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> Rectangle2d units1 coordinates -> Rectangle2d units2 coordinates
+at_ rate rectangle =
+    at (Quantity.inverse rate) rectangle
 
 
 {-| Convert a rectangle to a [`Polygon2d`](Polygon2d#Polygon2d).
 -}
-toPolygon : Rectangle2d -> Polygon2d
+toPolygon : Rectangle2d units coordinates -> Polygon2d units coordinates
 toPolygon rectangle =
-    let
-        { bottomLeft, bottomRight, topRight, topLeft } =
-            vertices rectangle
-    in
-    Polygon2d.singleLoop [ bottomLeft, bottomRight, topRight, topLeft ]
+    Polygon2d.singleLoop (vertices rectangle)
 
 
 {-| Get the central axes of a rectangle as a `Frame2d`:
 
     rectangle =
         Rectangle2d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 3
+            { minX = Length.meters 2
+            , maxX = Length.meters 5
+            , minY = Length.meters 1
+            , maxY = Length.meters 3
             }
 
     Rectangle2d.axes rectangle
-    --> Frame2d.atCoordinates ( 3.5, 2 )
+    --> Frame2d.atPoint (Point2d.meters 3.5 2)
 
 The origin point of the frame will be the center point of the rectangle.
 
 -}
-axes : Rectangle2d -> Frame2d
+axes : Rectangle2d units coordinates -> Frame2d units coordinates defines
 axes (Types.Rectangle2d rectangle) =
-    rectangle.axes
+    Frame2d.copy rectangle.axes
 
 
 {-| Get the X axis of a rectangle;
@@ -279,7 +336,7 @@ is equivalent to
     Frame2d.xAxis (Rectangle2d.axes rectangle)
 
 -}
-xAxis : Rectangle2d -> Axis2d
+xAxis : Rectangle2d units coordinates -> Axis2d units coordinates
 xAxis rectangle =
     Frame2d.xAxis (axes rectangle)
 
@@ -293,14 +350,14 @@ is equivalent to
     Frame2d.yAxis (Rectangle2d.axes rectangle)
 
 -}
-yAxis : Rectangle2d -> Axis2d
+yAxis : Rectangle2d units coordinates -> Axis2d units coordinates
 yAxis rectangle =
     Frame2d.yAxis (axes rectangle)
 
 
 {-| Get the center point of a rectangle.
 -}
-centerPoint : Rectangle2d -> Point2d
+centerPoint : Rectangle2d units coordinates -> Point2d units coordinates
 centerPoint rectangle =
     Frame2d.originPoint (axes rectangle)
 
@@ -309,17 +366,17 @@ centerPoint rectangle =
 
     rectangle =
         Rectangle2d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 3
+            { minX = Length.meters 2
+            , maxX = Length.meters 5
+            , minY = Length.meters 1
+            , maxY = Length.meters 3
             }
 
     Rectangle2d.dimensions rectangle
-    --> ( 3, 2 )
+    --> ( Length.meters 3, Length.meters 2 )
 
 -}
-dimensions : Rectangle2d -> ( Float, Float )
+dimensions : Rectangle2d units coordinates -> ( Quantity Float units, Quantity Float units )
 dimensions (Types.Rectangle2d rectangle) =
     rectangle.dimensions
 
@@ -328,47 +385,30 @@ dimensions (Types.Rectangle2d rectangle) =
 
     rectangle =
         Rectangle2d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 3
+            { minX = Length.meters 2
+            , maxX = Length.meters 5
+            , minY = Length.meters 1
+            , maxY = Length.meters 3
             }
 
     Rectangle2d.area rectangle
-    --> 6
+    --> Area.squareMeters 6
 
 -}
-area : Rectangle2d -> Float
+area : Rectangle2d units coordinates -> Quantity Float (Squared units)
 area rectangle =
     let
         ( width, height ) =
             dimensions rectangle
     in
-    width * height
+    width |> Quantity.times height
 
 
-{-| Get the vertices of a rectangle as a record. Note that 'bottom', 'top',
-'left' and 'right' are with respect to the rectangle's axes, so the may not
-correspond to global up/down or left/right if the rectangle has been rotated or
-mirrored.
-
-    rectangle =
-        Rectangle2d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 3
-            }
-
-    Rectangle2d.vertices rectangle
-    --> { bottomLeft = Point2d.fromCoordinates ( 2, 1 )
-    --> , bottomRight = Point2d.fromCoordinates ( 5, 1 )
-    --> , topLeft = Point2d.fromCoordinates ( 2, 3 )
-    --> , topRight = Point2d.fromCoordinates ( 5, 3 )
-    --> }
-
+{-| Get the vertices of a rectangle as a list. The vertices will be returned
+in counterclockwise order if the rectangle's axes are right-handed, and
+clockwise order if the axes are left-handed.
 -}
-vertices : Rectangle2d -> { bottomLeft : Point2d, bottomRight : Point2d, topRight : Point2d, topLeft : Point2d }
+vertices : Rectangle2d units coordinates -> List (Point2d units coordinates)
 vertices rectangle =
     let
         localFrame =
@@ -377,130 +417,34 @@ vertices rectangle =
         ( width, height ) =
             dimensions rectangle
 
-        halfWidth =
-            width / 2
+        x =
+            Quantity.half width
 
-        halfHeight =
-            height / 2
+        y =
+            Quantity.half height
     in
-    { bottomLeft =
-        Point2d.fromCoordinatesIn localFrame ( -halfWidth, -halfHeight )
-    , bottomRight =
-        Point2d.fromCoordinatesIn localFrame ( halfWidth, -halfHeight )
-    , topRight =
-        Point2d.fromCoordinatesIn localFrame ( halfWidth, halfHeight )
-    , topLeft =
-        Point2d.fromCoordinatesIn localFrame ( -halfWidth, halfHeight )
-    }
-
-
-{-| Get the bottom left vertex of a rectangle;
-
-    Rectangle2d.bottomLeftVertex rectangle
-
-is equivalent to
-
-    (Rectangle2d.vertices rectangle).bottomLeft
-
-but is more efficient.
-
--}
-bottomLeftVertex : Rectangle2d -> Point2d
-bottomLeftVertex rectangle =
-    let
-        localFrame =
-            axes rectangle
-
-        ( width, height ) =
-            dimensions rectangle
-    in
-    Point2d.fromCoordinatesIn localFrame ( -width / 2, -height / 2 )
-
-
-{-| Get the bottom right vertex of a rectangle;
-
-    Rectangle2d.bottomRightVertex rectangle
-
-is equivalent to
-
-    (Rectangle2d.vertices rectangle).bottomRight
-
-but is more efficient.
-
--}
-bottomRightVertex : Rectangle2d -> Point2d
-bottomRightVertex rectangle =
-    let
-        localFrame =
-            axes rectangle
-
-        ( width, height ) =
-            dimensions rectangle
-    in
-    Point2d.fromCoordinatesIn localFrame ( width / 2, -height / 2 )
-
-
-{-| Get the top right vertex of a rectangle;
-
-    Rectangle2d.topRightVertex rectangle
-
-is equivalent to
-
-    (Rectangle2d.vertices rectangle).topRight
-
-but is more efficient.
-
--}
-topRightVertex : Rectangle2d -> Point2d
-topRightVertex rectangle =
-    let
-        localFrame =
-            axes rectangle
-
-        ( width, height ) =
-            dimensions rectangle
-    in
-    Point2d.fromCoordinatesIn localFrame ( width / 2, height / 2 )
-
-
-{-| Get the top left vertex of a rectangle;
-
-    Rectangle2d.topLeftVertex rectangle
-
-is equivalent to
-
-    (Rectangle2d.vertices rectangle).topLeft
-
-but is more efficient.
-
--}
-topLeftVertex : Rectangle2d -> Point2d
-topLeftVertex rectangle =
-    let
-        localFrame =
-            axes rectangle
-
-        ( width, height ) =
-            dimensions rectangle
-    in
-    Point2d.fromCoordinatesIn localFrame ( -width / 2, height / 2 )
+    [ Point2d.xyIn localFrame (Quantity.negate x) (Quantity.negate y)
+    , Point2d.xyIn localFrame x (Quantity.negate y)
+    , Point2d.xyIn localFrame x y
+    , Point2d.xyIn localFrame (Quantity.negate x) y
+    ]
 
 
 {-| Check if a rectangle contains a given point:
 
     rectangle =
         Rectangle2d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 3
+            { minX = Length.meters 2
+            , maxX = Length.meters 5
+            , minY = Length.meters 1
+            , maxY = Length.meters 3
             }
 
     p1 =
-        Point2d.fromCoordinates ( 3, 2 )
+        Point2d.meters 3 2
 
     p2 =
-        Point2d.fromCoordinates ( 3, 4 )
+        Point2d.meters 3 4
 
     rectangle |> Rectangle2d.contains p1
     --> True
@@ -509,8 +453,31 @@ topLeftVertex rectangle =
     --> False
 
 -}
-contains : Point2d -> Rectangle2d -> Bool
+contains : Point2d units coordinates -> Rectangle2d units coordinates -> Bool
 contains point rectangle =
+    let
+        ( width, height ) =
+            dimensions rectangle
+
+        localFrame =
+            axes rectangle
+
+        x =
+            Point2d.xCoordinateIn localFrame point
+
+        y =
+            Point2d.yCoordinateIn localFrame point
+    in
+    (Quantity.abs x |> Quantity.lessThanOrEqualTo (Quantity.half width))
+        && (Quantity.abs y |> Quantity.lessThanOrEqualTo (Quantity.half height))
+
+
+{-| Get the edges of a rectangle as a list. The edges will be returned
+in counterclockwise order if the rectangle's axes are right-handed, and
+clockwise order if the axes are left-handed.
+-}
+edges : Rectangle2d units coordinates -> List (LineSegment2d units coordinates)
+edges rectangle =
     let
         localFrame =
             axes rectangle
@@ -518,168 +485,37 @@ contains point rectangle =
         ( width, height ) =
             dimensions rectangle
 
-        ( x, y ) =
-            Point2d.coordinates (Point2d.relativeTo localFrame point)
+        x =
+            Quantity.half width
+
+        y =
+            Quantity.half height
+
+        p1 =
+            Point2d.xyIn localFrame (Quantity.negate x) (Quantity.negate y)
+
+        p2 =
+            Point2d.xyIn localFrame x (Quantity.negate y)
+
+        p3 =
+            Point2d.xyIn localFrame x y
+
+        p4 =
+            Point2d.xyIn localFrame (Quantity.negate x) y
     in
-    abs x <= width / 2 && abs y <= height / 2
+    [ LineSegment2d.from p1 p2
+    , LineSegment2d.from p2 p3
+    , LineSegment2d.from p3 p4
+    , LineSegment2d.from p4 p1
+    ]
 
 
-{-| Get the edges of a rectangle as a record. Note that 'bottom', 'top',
-'left' and 'right' are with respect to the rectangle's axes, so the may not
-correspond to global up/down or left/right if the rectangle has been rotated or
-mirrored. The orientation of each edge is chosen so that it will be in a
-counterclockwise direction (unless the rectangle has been mirrored):
-
-  - The `bottom` edge is from the bottom left to bottom right vertex
-  - The `right` edge is from the bottom right to top right vertex
-  - The `top` edge is from the top right to top left vertex
-  - The `left` edge is from the top left to bottom left vertex
-
-(Note that this ordering will lead to each edge being in a clockwise direction
-if the rectangle _has_ been mirrored.)
-
-    rectangle =
-        Rectangle2d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 3
-            }
-
-    Rectangle2d.edges rectangle
-    --> { bottom =
-    -->     LineSegment2d.fromEndpoints
-    -->         ( Point2d.fromCoordinates ( 2, 1 )
-    -->         , Point2d.fromCoordinates ( 5, 1 )
-    -->         )
-    --> , right =
-    -->     LineSegment2d.fromEndpoints
-    -->         ( Point2d.fromCoordinates ( 5, 1 )
-    -->         , Point2d.fromCoordinates ( 5, 3 )
-    -->         )
-    --> , top =
-    -->     LineSegment2d.fromEndpoints
-    -->         ( Point2d.fromCoordinates ( 5, 3 )
-    -->         , Point2d.fromCoordinates ( 2, 3 )
-    -->         )
-    --> , left =
-    -->     LineSegment2d.fromEndpoints
-    -->         ( Point2d.fromCoordinates ( 2, 3 )
-    -->         , Point2d.fromCoordinates ( 2, 1 )
-    -->         )
-    --> }
-
+{-| Scale a rectangle about a given point by a given scale. Note that scaling by
+a negative value will flip the handedness of the rectangle's axes, and therefore
+the order/direction of results from `Rectangle2d.vertices` and
+`Rectangle2d.edges` will change.
 -}
-edges : Rectangle2d -> { bottom : LineSegment2d, right : LineSegment2d, top : LineSegment2d, left : LineSegment2d }
-edges rectangle =
-    let
-        { bottomLeft, bottomRight, topRight, topLeft } =
-            vertices rectangle
-    in
-    { bottom = LineSegment2d.from bottomLeft bottomRight
-    , right = LineSegment2d.from bottomRight topRight
-    , top = LineSegment2d.from topRight topLeft
-    , left = LineSegment2d.from topLeft bottomLeft
-    }
-
-
-{-| Get the bottom edge of a rectangle;
-
-    Rectangle2d.bottomEdge rectangle
-
-is equivalent to
-
-    (Rectangle2d.edges rectangle).bottom
-
-but is more efficient.
-
--}
-bottomEdge : Rectangle2d -> LineSegment2d
-bottomEdge rectangle =
-    LineSegment2d.from
-        (bottomLeftVertex rectangle)
-        (bottomRightVertex rectangle)
-
-
-{-| Get the right edge of a rectangle;
-
-    Rectangle2d.rightEdge rectangle
-
-is equivalent to
-
-    (Rectangle2d.edges rectangle).right
-
-but is more efficient.
-
--}
-rightEdge : Rectangle2d -> LineSegment2d
-rightEdge rectangle =
-    LineSegment2d.from
-        (bottomRightVertex rectangle)
-        (topRightVertex rectangle)
-
-
-{-| Get the top edge of a rectangle;
-
-    Rectangle2d.topEdge rectangle
-
-is equivalent to
-
-    (Rectangle2d.edges rectangle).top
-
-but is more efficient.
-
--}
-topEdge : Rectangle2d -> LineSegment2d
-topEdge rectangle =
-    LineSegment2d.from
-        (topRightVertex rectangle)
-        (topLeftVertex rectangle)
-
-
-{-| Get the left edge of a rectangle;
-
-    Rectangle2d.leftEdge rectangle
-
-is equivalent to
-
-    (Rectangle2d.edges rectangle).left
-
-but is more efficient.
-
--}
-leftEdge : Rectangle2d -> LineSegment2d
-leftEdge rectangle =
-    LineSegment2d.from
-        (topLeftVertex rectangle)
-        (bottomLeftVertex rectangle)
-
-
-{-| Scale a rectangle about a given point by a given scale.
-
-    rectangle =
-        Rectangle2d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 3
-            }
-
-    rectangle
-        |> Rectangle2d.scaleAbout Point2d.origin 2
-    --> Rectangle2d.fromExtrema
-    -->     { minX = 4
-    -->     , maxX = 10
-    -->     , minY = 2
-    -->     , maxY = 6
-    -->     }
-
-Note that scaling by a negative value will flip the handedness of the
-rectangle's axes, and therefore the order/direction of results from
-`Rectangle2d.vertices` and `Rectangle2d.edges` will change.
-
--}
-scaleAbout : Point2d -> Float -> Rectangle2d -> Rectangle2d
+scaleAbout : Point2d units coordinates -> Float -> Rectangle2d units coordinates -> Rectangle2d units coordinates
 scaleAbout point scale rectangle =
     let
         currentFrame =
@@ -713,10 +549,10 @@ scaleAbout point scale rectangle =
             dimensions rectangle
 
         newWidth =
-            abs (scale * currentWidth)
+            Quantity.abs (Quantity.multiplyBy scale currentWidth)
 
         newHeight =
-            abs (scale * currentHeight)
+            Quantity.abs (Quantity.multiplyBy scale currentHeight)
     in
     Types.Rectangle2d
         { axes = newAxes
@@ -724,75 +560,19 @@ scaleAbout point scale rectangle =
         }
 
 
-{-| Rotate a rectangle around a given point by a given angle (in radians).
-
-    rectangle =
-        Rectangle2d.fromExtrema
-            { minX = 0
-            , maxX = 1
-            , minY = 0
-            , maxY = 1
-            }
-
-    rotated =
-        rectangle
-            |> Rectangle2d.rotateAround Point2d.origin
-                (degrees 45)
-
-    Rectangle2d.centerPoint rotated
-    --> Point2d.fromCoordinates ( 0, 0.7071 )
-
-    Rectangle2d.xDirection rotated
-    --> Direction2d.fromAngle (degrees 45)
-
-    Rectangle2d.vertices rotated
-    --> { bottomLeft =
-    -->     Point2d.origin
-    --> , bottomRight =
-    -->     Point2d.fromCoordinates ( 0.7071, 0.7071 )
-    --> , topRight =
-    -->     Point2d.fromCoordinates ( 0, 1.4142 )
-    --> , topLeft =
-    -->     Point2d.fromCoordinates ( -0.7071, 0.7071 )
-    --> }
-
+{-| Rotate a rectangle around a given point by a given angle.
 -}
-rotateAround : Point2d -> Float -> Rectangle2d -> Rectangle2d
-rotateAround point angle =
-    let
-        rotateFrame =
-            Frame2d.rotateAround point angle
-    in
-    \rectangle ->
-        Types.Rectangle2d
-            { axes = rotateFrame (axes rectangle)
-            , dimensions = dimensions rectangle
-            }
+rotateAround : Point2d units coordinates -> Angle -> Rectangle2d units coordinates -> Rectangle2d units coordinates
+rotateAround point angle rectangle =
+    Types.Rectangle2d
+        { axes = Frame2d.rotateAround point angle (axes rectangle)
+        , dimensions = dimensions rectangle
+        }
 
 
 {-| Translate a rectangle by a given displacement.
-
-    rectangle =
-        Rectangle2d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 3
-            }
-
-    displacement =
-        Vector2d.fromComponents ( 2, -3 )
-
-    Rectangle2d.translateBy displacement rectangle
-    --> Rectangle2d.fromExtrema
-    -->     { minX = 4
-    -->     , maxX = 7
-    -->     , minY = -2
-    -->     , maxY = 0
-    -->     }
-
 -}
-translateBy : Vector2d -> Rectangle2d -> Rectangle2d
+translateBy : Vector2d units coordinates -> Rectangle2d units coordinates -> Rectangle2d units coordinates
 translateBy displacement rectangle =
     Types.Rectangle2d
         { axes = Frame2d.translateBy displacement (axes rectangle)
@@ -800,45 +580,18 @@ translateBy displacement rectangle =
         }
 
 
-{-| Translate a rectangle in a given direction by a given distance;
-
-    Rectangle2d.translateIn direction distance
-
-is equivalent to
-
-    Rectangle2d.translateBy
-        (Vector2d.withLength distance direction)
-
+{-| Translate a rectangle in a given direction by a given distance.
 -}
-translateIn : Direction2d -> Float -> Rectangle2d -> Rectangle2d
+translateIn : Direction2d coordinates -> Quantity Float units -> Rectangle2d units coordinates -> Rectangle2d units coordinates
 translateIn direction distance rectangle =
     translateBy (Vector2d.withLength distance direction) rectangle
 
 
-{-| Mirror a rectangle across a given axis.
-
-    rectangle =
-        Rectangle2d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 3
-            }
-
-    Rectangle2d.mirrorAcross Axis2d.x rectangle
-    --> Rectangle2d.fromExtrema
-    -->     { minX = 2
-    -->     , maxX = 5
-    -->     , minY = -3
-    -->     , maxY = -1
-    -->     }
-
-Note that this will flip the handedness of the rectangle's axes, and therefore
-the order/direction of results from `Rectangle2d.vertices` and
-`Rectangle2d.edges` will change.
-
+{-| Mirror a rectangle across a given axis. Note that this will flip the
+handedness of the rectangle's axes, and therefore the order/direction of results
+from `Rectangle2d.vertices` and `Rectangle2d.edges` will change.
 -}
-mirrorAcross : Axis2d -> Rectangle2d -> Rectangle2d
+mirrorAcross : Axis2d units coordinates -> Rectangle2d units coordinates -> Rectangle2d units coordinates
 mirrorAcross axis rectangle =
     Types.Rectangle2d
         { axes = Frame2d.mirrorAcross axis (axes rectangle)
@@ -849,28 +602,8 @@ mirrorAcross axis rectangle =
 {-| Take a rectangle considered to be defined in local coordinates relative to a
 given reference frame, and return that rectangle expressed in global
 coordinates.
-
-    rectangle =
-        Rectangle2d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 3
-            }
-
-    localFrame =
-        Frame2d.atCoordinates ( 1, 2 )
-
-    Rectangle2d.placeIn localFrame rectangle
-    --> Rectangle2d.fromExtrema
-    -->     { minX = 3
-    -->     , maxX = 6
-    -->     , minY = 3
-    -->     , maxY = 5
-    -->     }
-
 -}
-placeIn : Frame2d -> Rectangle2d -> Rectangle2d
+placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Rectangle2d units localCoordinates -> Rectangle2d units globalCoordinates
 placeIn frame rectangle =
     Types.Rectangle2d
         { axes = Frame2d.placeIn frame (axes rectangle)
@@ -880,28 +613,8 @@ placeIn frame rectangle =
 
 {-| Take a rectangle defined in global coordinates, and return it expressed
 in local coordinates relative to a given reference frame.
-
-    rectangle =
-        Rectangle2d.fromExtrema
-            { minX = 2
-            , maxX = 5
-            , minY = 1
-            , maxY = 3
-            }
-
-    localFrame =
-        Frame2d.atCoordinates ( 1, 2 )
-
-    Rectangle2d.relativeTo localFrame rectangle
-    --> Rectangle2d.fromExtrema
-    -->     { minX = 1
-    -->     , maxX = 4
-    -->     , minY = -1
-    -->     , maxY = 1
-    -->     }
-
 -}
-relativeTo : Frame2d -> Rectangle2d -> Rectangle2d
+relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Rectangle2d units globalCoordinates -> Rectangle2d units localCoordinates
 relativeTo frame rectangle =
     Types.Rectangle2d
         { axes = Frame2d.relativeTo frame (axes rectangle)
@@ -916,47 +629,102 @@ angle.
 
     square =
         Rectangle2d.fromExtrema
-            { minX = 0
-            , maxX = 1
-            , minY = 0
-            , maxY = 1
+            { minX = Length.meters 0
+            , maxX = Length.meters 1
+            , minY = Length.meters 0
+            , maxY = Length.meters 1
             }
 
     diamond =
         square
             |> Rectangle2d.rotateAround Point2d.origin
-                (degrees 45)
+                (Angle.degrees 45)
 
     Rectangle2d.boundingBox diamond
     --> BoundingBox2d.fromExtrema
-    -->     { minX = -0.7071
-    -->     , maxX = 0.7071
-    -->     , minY = 0
-    -->     , maxY = 1.4142
+    -->     { minX = Length.meters -0.7071
+    -->     , maxX = Length.meters 0.7071
+    -->     , minY = Length.meters 0
+    -->     , maxY = Length.meters 1.4142
     -->     }
 
 -}
-boundingBox : Rectangle2d -> BoundingBox2d
+boundingBox : Rectangle2d units coordinates -> BoundingBox2d units coordinates
 boundingBox rectangle =
     let
-        { bottomLeft, bottomRight, topRight, topLeft } =
-            vertices rectangle
+        frame =
+            axes rectangle
 
-        ( x1, y1 ) =
-            Point2d.coordinates bottomLeft
+        p0 =
+            Point2d.unwrap (Frame2d.originPoint frame)
 
-        ( x2, y2 ) =
-            Point2d.coordinates bottomRight
+        i =
+            Direction2d.unwrap (Frame2d.xDirection frame)
 
-        ( x3, y3 ) =
-            Point2d.coordinates topRight
+        ix =
+            abs i.x
 
-        ( x4, y4 ) =
-            Point2d.coordinates topLeft
+        iy =
+            abs i.y
+
+        j =
+            Direction2d.unwrap (Frame2d.yDirection frame)
+
+        jx =
+            abs j.x
+
+        jy =
+            abs j.y
+
+        ( Quantity width, Quantity height ) =
+            dimensions rectangle
+
+        halfWidth =
+            width / 2
+
+        halfHeight =
+            height / 2
+
+        minX =
+            p0.x - ix * halfWidth - jx * halfHeight
+
+        maxX =
+            p0.x + ix * halfWidth + jx * halfHeight
+
+        minY =
+            p0.y - iy * halfWidth - jy * halfHeight
+
+        maxY =
+            p0.y + iy * halfWidth + jy * halfHeight
     in
-    BoundingBox2d.fromExtrema
-        { minX = min (min x1 x2) (min x3 x4)
-        , maxX = max (max x1 x2) (max x3 x4)
-        , minY = min (min y1 y2) (min y3 y4)
-        , maxY = max (max y1 y2) (max y3 y4)
+    Types.BoundingBox2d
+        { minX = Quantity minX
+        , maxX = Quantity maxX
+        , minY = Quantity minY
+        , maxY = Quantity maxY
         }
+
+
+{-| Interpolate within a rectangle based on coordinates which range from 0 to 1.
+For example, the four vertices of a given rectangle are
+
+    [ Rectangle2d.interpolate rectangle 0 0
+    , Rectangle2d.interpolate rectangle 1 0
+    , Rectangle2d.interpolate rectangle 1 1
+    , Rectangle2d.interpolate rectangle 0 1
+    ]
+
+and its center point is
+
+    Rectangle2d.interpolate rectangle 0.5 0.5
+
+-}
+interpolate : Rectangle2d units coordinates -> Float -> Float -> Point2d units coordinates
+interpolate rectangle u v =
+    let
+        ( width, height ) =
+            dimensions rectangle
+    in
+    Point2d.xyIn (axes rectangle)
+        (Quantity.multiplyBy (u - 0.5) width)
+        (Quantity.multiplyBy (v - 0.5) height)

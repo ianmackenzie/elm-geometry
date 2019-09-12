@@ -11,13 +11,14 @@ module Arc3d exposing
     ( Arc3d
     , on, sweptAround, throughPoints
     , axialDirection, axis, centerPoint, radius, startPoint, endPoint, sweptAngle
-    , pointOn, pointsAt
+    , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
-    , tangentDirection, tangentDirectionsAt, sample, samplesAt
+    , tangentDirection, sample
     , toPolyline
+    , at, at_
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
     , relativeTo, placeIn
-    , firstDerivative, firstDerivativesAt
+    , firstDerivative
     )
 
 {-| An `Arc3d` is a section of a circle in 3D, defined by its central axis,
@@ -43,9 +44,9 @@ start point to the arc's end point). This module includes functionality for
 
 # Evaluation
 
-@docs pointOn, pointsAt
+@docs pointOn
 @docs Nondegenerate, nondegenerate, fromNondegenerate
-@docs tangentDirection, tangentDirectionsAt, sample, samplesAt
+@docs tangentDirection, sample
 
 
 # Linear approximation
@@ -53,7 +54,15 @@ start point to the arc's end point). This module includes functionality for
 @docs toPolyline
 
 
+# Unit conversions
+
+@docs at, at_
+
+
 # Transformations
+
+These transformations generally behave just like [the ones in the `Point3d`
+module](Point3d#transformations).
 
 @docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
 
@@ -68,28 +77,33 @@ start point to the arc's end point). This module includes functionality for
 You are unlikely to need to use these functions directly, but they are useful if
 you are writing low-level geometric algorithms.
 
-@docs firstDerivative, firstDerivativesAt
+@docs firstDerivative
 
 -}
 
+import Angle exposing (Angle)
 import Arc2d exposing (Arc2d)
 import Axis3d exposing (Axis3d)
-import Curve.ParameterValue as ParameterValue exposing (ParameterValue)
 import Direction2d exposing (Direction2d)
 import Direction3d exposing (Direction3d)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
 import Geometry.Types as Types
+import Parameter1d
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Polyline3d exposing (Polyline3d)
+import Quantity exposing (Quantity, Rate)
+import Quantity.Extra as Quantity
 import SketchPlane3d exposing (SketchPlane3d)
+import Unsafe.Direction3d as Direction3d
+import Vector2d exposing (Vector2d)
 import Vector3d exposing (Vector3d)
 
 
 {-| -}
-type alias Arc3d =
-    Types.Arc3d
+type alias Arc3d units coordinates =
+    Types.Arc3d units coordinates
 
 
 {-| Construct a 3D arc lying _on_ a sketch plane by providing a 2D arc specified
@@ -97,26 +111,25 @@ in XY coordinates _within_ the sketch plane.
 
     arc =
         Arc3d.on SketchPlane3d.xz
-            (Point2d.fromCoordinates ( 3, 1 )
-                |> Arc2d.sweptAround
-                    (Point2d.fromCoordinates ( 1, 1 )
-                    (degrees 90)
+            (Point2d.meters 3 1
+                |> Arc2d.sweptAround (Point2d.meters 1 1)
+                    (Angle.degrees 90)
             )
 
     Arc3d.centerPoint arc
-    --> Point3d.fromCoordinates ( 1, 0, 1 )
+    --> Point3d.meters 1 0 1
 
     Arc3d.radius arc
-    --> 2
+    --> Length.meters 2
 
     Arc3d.startPoint arc
-    --> Point3d.fromCoordinates ( 3, 0, 1 )
+    --> Point3d.meters 3 0 1
 
     Arc3d.endPoint arc
-    --> Point3d.fromCoordinates ( 1, 0, 3 )
+    --> Point3d.meters 1 0 3
 
 -}
-on : SketchPlane3d -> Arc2d -> Arc3d
+on : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Arc2d units coordinates2d -> Arc3d units coordinates3d
 on sketchPlane (Types.Arc2d arc2d) =
     Types.Arc3d
         { startPoint = Point3d.on sketchPlane arc2d.startPoint
@@ -133,60 +146,67 @@ on sketchPlane (Types.Arc2d arc2d) =
 given angle:
 
     exampleArc =
-        Point3d.fromCoordinates ( 1, 1, 0 )
-            |> Arc3d.sweptAround Axis3d.z (degrees 90)
+        Point3d.meters 1 1 0
+            |> Arc3d.sweptAround Axis3d.z (Angle.degrees 90)
 
     Arc3d.centerPoint exampleArc
     --> Point3d.origin
 
     Arc3d.endPoint exampleArc
-    --> Point3d.fromCoordinates ( -1, 1, 0 )
+    --> Point3d.meters -1 1 0
 
 Positive swept angles result in a counterclockwise (right-handed) rotation
 around the given axis and vice versa for negative swept angles. The center point
 of the returned arc will lie on the given axis.
 
 -}
-sweptAround : Axis3d -> Float -> Point3d -> Arc3d
-sweptAround axis_ sweptAngle_ startPoint_ =
+sweptAround : Axis3d units coordinates -> Angle -> Point3d units coordinates -> Arc3d units coordinates
+sweptAround givenAxis givenSweptAngle givenStartPoint =
     let
-        centerPoint_ =
-            startPoint_ |> Point3d.projectOntoAxis axis_
+        computedCenterPoint =
+            givenStartPoint |> Point3d.projectOntoAxis givenAxis
 
         axisDirection =
-            Axis3d.direction axis_
-    in
-    case Vector3d.lengthAndDirection (Vector3d.from startPoint_ centerPoint_) of
-        Just ( radius_, yDirection ) ->
-            let
-                xDirectionVector =
-                    Vector3d.crossProduct
-                        (Direction3d.toVector yDirection)
-                        (Direction3d.toVector axisDirection)
+            Axis3d.direction givenAxis
 
-                xDirection =
-                    Direction3d.unsafe (Vector3d.components xDirectionVector)
+        yVector =
+            Vector3d.from givenStartPoint computedCenterPoint
+    in
+    case Vector3d.direction yVector of
+        Just computedYDirection ->
+            let
+                computedRadius =
+                    Vector3d.length yVector
+
+                computedXDirection =
+                    Direction3d.unsafeCrossProduct
+                        computedYDirection
+                        axisDirection
             in
             Types.Arc3d
-                { startPoint = startPoint_
-                , sweptAngle = sweptAngle_
-                , signedLength = radius_ * sweptAngle_
-                , xDirection = xDirection
-                , yDirection = yDirection
+                { startPoint = givenStartPoint
+                , sweptAngle = givenSweptAngle
+                , signedLength = Quantity.rTheta computedRadius givenSweptAngle
+                , xDirection = computedXDirection
+                , yDirection = computedYDirection
                 }
 
         Nothing ->
             let
-                ( xDirection, yDirection ) =
+                ( computedXDirection, computedYDirection ) =
                     Direction3d.perpendicularBasis axisDirection
             in
             Types.Arc3d
-                { startPoint = startPoint_
-                , sweptAngle = sweptAngle_
-                , signedLength = 0
-                , xDirection = xDirection
-                , yDirection = yDirection
+                { startPoint = givenStartPoint
+                , sweptAngle = givenSweptAngle
+                , signedLength = Quantity.zero
+                , xDirection = computedXDirection
+                , yDirection = computedYDirection
                 }
+
+
+type TempCoordinates2d
+    = TempCoordinates2d
 
 
 {-| Attempt to construct an arc that starts at the first given point, passes
@@ -194,27 +214,25 @@ through the second given point and ends at the third given point. If the three
 points are collinear, returns `Nothing`.
 
     p1 =
-        Point3d.fromCoordinates ( 0, 0, 1 )
+        Point3d.meters 0 0 1
 
     p2 =
         Point3d.origin
 
     p3 =
-        Point3d.fromCoordinates ( 0, 1, 0 )
+        Point3d.meters 0 1 0
 
     Arc3d.throughPoints p1 p2 p3
     --> Just
     -->     (Arc3d.on SketchPlane3d.yz
-    -->         Point2d.fromCoordinates ( 0, 1 )
+    -->         Point2d.meters 0 1
     -->             |> Arc2d.sweptAround
-    -->                 (Point2d.fromCoordinates
-    -->                     ( 0.5, 0.5 )
-    -->                 )
-    -->                 (degrees 180)
+    -->                 (Point2d.meters 0.5 0.5)
+    -->                 (Angle.degrees 180)
     -->     )
 
 -}
-throughPoints : Point3d -> Point3d -> Point3d -> Maybe Arc3d
+throughPoints : Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> Maybe (Arc3d units coordinates)
 throughPoints firstPoint secondPoint thirdPoint =
     SketchPlane3d.throughPoints firstPoint secondPoint thirdPoint
         |> Maybe.andThen
@@ -227,21 +245,39 @@ throughPoints firstPoint secondPoint thirdPoint =
             )
 
 
+{-| Convert an arc from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> Arc3d units1 coordinates -> Arc3d units2 coordinates
+at rate (Types.Arc3d arc) =
+    Types.Arc3d
+        { startPoint = Point3d.at rate arc.startPoint
+        , xDirection = arc.xDirection
+        , yDirection = arc.yDirection
+        , signedLength = Quantity.at rate arc.signedLength
+        , sweptAngle = arc.sweptAngle
+        }
+
+
+{-| Convert an arc from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> Arc3d units1 coordinates -> Arc3d units2 coordinates
+at_ rate arc =
+    at (Quantity.inverse rate) arc
+
+
 {-| Get the axial direction of an arc.
 
     Arc3d.axialDirection exampleArc
     --> Direction3d.z
 
 -}
-axialDirection : Arc3d -> Direction3d
+axialDirection : Arc3d units coordinates -> Direction3d coordinates
 axialDirection (Types.Arc3d arc) =
-    let
-        axialDirectionVector =
-            Vector3d.crossProduct
-                (Direction3d.toVector arc.xDirection)
-                (Direction3d.toVector arc.yDirection)
-    in
-    Direction3d.unsafe (Vector3d.components axialDirectionVector)
+    Direction3d.unsafeCrossProduct arc.xDirection arc.yDirection
 
 
 {-| Get the central axis of an arc. The origin point of the axis will be equal
@@ -251,7 +287,7 @@ to the center point of the arc.
     --> Axis3d.z
 
 -}
-axis : Arc3d -> Axis3d
+axis : Arc3d units coordinates -> Axis3d units coordinates
 axis arc =
     Axis3d.through (centerPoint arc) (axialDirection arc)
 
@@ -262,33 +298,33 @@ axis arc =
     --> Point3d.origin
 
 -}
-centerPoint : Arc3d -> Point3d
+centerPoint : Arc3d units coordinates -> Point3d units coordinates
 centerPoint (Types.Arc3d arc) =
     let
-        radius_ =
-            arc.signedLength / arc.sweptAngle
+        computedRadius =
+            Quantity.lOverTheta arc.signedLength arc.sweptAngle
     in
-    arc.startPoint |> Point3d.translateIn arc.yDirection radius_
+    arc.startPoint |> Point3d.translateIn arc.yDirection computedRadius
 
 
 {-| Get the radius of an arc.
 
     Arc3d.radius exampleArc
-    --> 1.4142
+    --> Length.meters 1.4142
 
 -}
-radius : Arc3d -> Float
+radius : Arc3d units coordinates -> Quantity Float units
 radius (Types.Arc3d arc) =
-    arc.signedLength / arc.sweptAngle
+    Quantity.lOverTheta arc.signedLength arc.sweptAngle
 
 
 {-| Get the start point of an arc.
 
     Arc3d.startPoint exampleArc
-    --> Point3d.fromCoordinates ( 1, 1, 0 )
+    --> Point3d.meters 1 1 0
 
 -}
-startPoint : Arc3d -> Point3d
+startPoint : Arc3d units coordinates -> Point3d units coordinates
 startPoint (Types.Arc3d arc) =
     arc.startPoint
 
@@ -296,108 +332,126 @@ startPoint (Types.Arc3d arc) =
 {-| Get the end point of an arc.
 
     Arc3d.endPoint exampleArc
-    --> Point3d.fromCoordinates ( -1, 1, 0 )
+    --> Point3d.meters -1 1 0
 
 -}
-endPoint : Arc3d -> Point3d
+endPoint : Arc3d units coordinates -> Point3d units coordinates
 endPoint arc =
-    pointOn arc ParameterValue.one
+    pointOn arc 1
 
 
-{-| Get the point along an arc at a given parameter value:
-
-    Arc3d.pointOn exampleArc ParameterValue.half
-    --> Point3d.fromCoordinates ( 0, 1.4142, 0 )
-
+{-| Get the point along an arc at a given parameter value.
 -}
-pointOn : Arc3d -> ParameterValue -> Point3d
+pointOn : Arc3d units coordinates -> Float -> Point3d units coordinates
 pointOn (Types.Arc3d arc) parameterValue =
     let
-        ( x0, y0, z0 ) =
-            Point3d.coordinates arc.startPoint
+        x0 =
+            Point3d.xCoordinate arc.startPoint
 
-        ( x1, y1, z1 ) =
-            Direction3d.components arc.xDirection
+        y0 =
+            Point3d.yCoordinate arc.startPoint
 
-        ( x2, y2, z2 ) =
-            Direction3d.components arc.yDirection
+        z0 =
+            Point3d.zCoordinate arc.startPoint
+
+        x1 =
+            Direction3d.xComponent arc.xDirection
+
+        y1 =
+            Direction3d.yComponent arc.xDirection
+
+        z1 =
+            Direction3d.zComponent arc.xDirection
+
+        x2 =
+            Direction3d.xComponent arc.yDirection
+
+        y2 =
+            Direction3d.yComponent arc.yDirection
+
+        z2 =
+            Direction3d.zComponent arc.yDirection
 
         arcSignedLength =
             arc.signedLength
 
         arcSweptAngle =
             arc.sweptAngle
-
-        t =
-            ParameterValue.value parameterValue
     in
-    if arcSweptAngle == 0.0 then
+    if arcSweptAngle == Quantity.zero then
         let
             distance =
-                t * arcSignedLength
+                Quantity.multiplyBy parameterValue arcSignedLength
+
+            px =
+                x0 |> Quantity.plus (distance |> Quantity.multiplyBy x1)
+
+            py =
+                y0 |> Quantity.plus (distance |> Quantity.multiplyBy y1)
+
+            pz =
+                z0 |> Quantity.plus (distance |> Quantity.multiplyBy z1)
         in
-        Point3d.fromCoordinates
-            ( x0 + distance * x1
-            , y0 + distance * y1
-            , z0 + distance * z1
-            )
+        Point3d.xyz px py pz
 
     else
         let
             theta =
-                t * arcSweptAngle
+                Quantity.multiplyBy parameterValue arcSweptAngle
 
             arcRadius =
-                arcSignedLength / arcSweptAngle
+                Quantity.lOverTheta arcSignedLength arcSweptAngle
 
             x =
-                arcRadius * sin theta
+                Quantity.rSinTheta arcRadius theta
 
             y =
-                if abs theta < pi / 2 then
-                    x * tan (theta / 2)
+                if
+                    Quantity.abs theta
+                        |> Quantity.lessThan
+                            (Angle.radians (pi / 2))
+                then
+                    x
+                        |> Quantity.multiplyBy
+                            (Angle.tan (Quantity.multiplyBy 0.5 theta))
 
                 else
-                    arcRadius * (1 - cos theta)
+                    Quantity.multiplyBy (1 - Angle.cos theta) arcRadius
+
+            px =
+                x0 |> Quantity.plus (Quantity.aXbY x1 x x2 y)
+
+            py =
+                y0 |> Quantity.plus (Quantity.aXbY y1 x y2 y)
+
+            pz =
+                z0 |> Quantity.plus (Quantity.aXbY z1 x z2 y)
         in
-        Point3d.fromCoordinates
-            ( x0 + x * x1 + y * x2
-            , y0 + x * y1 + y * y2
-            , z0 + x * z1 + y * z2
-            )
-
-
-{-| Get points along an arc at a given set of parameter values.
-
-    exampleArc |> Arc3d.pointsAt (ParameterValue.steps 2)
-    --> [ Point3d ( 1, 1, 0 )
-    --> , Point3d ( 0, 1.4142, 0 )
-    --> , Point3d ( -1, 1, 0 )
-    --> ]
-
--}
-pointsAt : List ParameterValue -> Arc3d -> List Point3d
-pointsAt parameterValues arc =
-    List.map (pointOn arc) parameterValues
+        Point3d.xyz px py pz
 
 
 {-| Get the first derivative of an arc at a given parameter value.
-
-    Arc3d.firstDerivative exampleArc ParameterValue.zero
-    --> Vector3d.fromComponents ( -1.5708, 1.5708, 0 )
-
-    Arc3d.firstDerivative exampleArc ParameterValue.one
-    --> Vector3d.fromComponents ( -1.5708, -1.5708, 0 )
-
 -}
-firstDerivative : Arc3d -> ParameterValue -> Vector3d
+firstDerivative : Arc3d units coordinates -> Float -> Vector3d units coordinates
 firstDerivative (Types.Arc3d arc) =
     let
-        ( x1, y1, z1 ) =
-            Direction3d.components arc.xDirection
+        x1 =
+            Direction3d.xComponent arc.xDirection
 
-        ( x2, y2, z2 ) =
-            Direction3d.components arc.yDirection
+        y1 =
+            Direction3d.yComponent arc.xDirection
+
+        z1 =
+            Direction3d.zComponent arc.xDirection
+
+        x2 =
+            Direction3d.xComponent arc.yDirection
+
+        y2 =
+            Direction3d.yComponent arc.yDirection
+
+        z2 =
+            Direction3d.zComponent arc.yDirection
 
         arcSweptAngle =
             arc.sweptAngle
@@ -407,69 +461,44 @@ firstDerivative (Types.Arc3d arc) =
     in
     \parameterValue ->
         let
-            t =
-                ParameterValue.value parameterValue
-
             angle =
-                t * arcSweptAngle
+                Quantity.multiplyBy parameterValue arcSweptAngle
 
             cosAngle =
-                cos angle
+                Angle.cos angle
 
             sinAngle =
-                sin angle
+                Angle.sin angle
         in
-        Vector3d.fromComponents
-            ( arcSignedLength * (cosAngle * x1 + sinAngle * x2)
-            , arcSignedLength * (cosAngle * y1 + sinAngle * y2)
-            , arcSignedLength * (cosAngle * z1 + sinAngle * z2)
+        Vector3d.xyz
+            (arcSignedLength
+                |> Quantity.multiplyBy (cosAngle * x1 + sinAngle * x2)
+            )
+            (arcSignedLength
+                |> Quantity.multiplyBy (cosAngle * y1 + sinAngle * y2)
+            )
+            (arcSignedLength
+                |> Quantity.multiplyBy (cosAngle * z1 + sinAngle * z2)
             )
 
 
-{-| Evaluate the first derivative of an arc at a range of parameter values.
-
-    exampleArc
-        |> Arc3d.firstDerivativesAt
-            (ParameterValue.steps 2)
-    --> [ Vector3d ( -1.5708, 1.5708, 0 )
-    --> , Vector3d ( -2.2214, 0, 0 )
-    --> , Vector3d ( -1.5708, -1.5708, 0 )
-    --> ]
-
+{-| Represents a nondegenerate spline (one that has finite, non-zero length).
 -}
-firstDerivativesAt : List ParameterValue -> Arc3d -> List Vector3d
-firstDerivativesAt parameterValues arc =
-    List.map (firstDerivative arc) parameterValues
-
-
-{-| If a curve has zero length (consists of just a single point), then we say
-that it is 'degenerate'. Some operations such as computing tangent directions
-are not defined on degenerate curves.
-
-A `Nondegenerate` value represents an arc that is definitely not degenerate. It
-is used as input to functions such as `Arc3d.tangentDirection` and can be
-constructed using `Arc3d.nondegenerate`.
-
--}
-type Nondegenerate
-    = Nondegenerate Arc3d
+type Nondegenerate units coordinates
+    = Nondegenerate (Arc3d units coordinates)
 
 
 {-| Attempt to construct a nondegenerate arc from a general `Arc3d`. If the arc
 is in fact degenerate (consists of a single point), returns an `Err` with that
 point.
-
-    Arc3d.nondegenerate exampleArc
-    --> Ok nondegenerateExampleArc
-
 -}
-nondegenerate : Arc3d -> Result Point3d Nondegenerate
+nondegenerate : Arc3d units coordinates -> Result (Point3d units coordinates) (Nondegenerate units coordinates)
 nondegenerate arc =
     let
         (Types.Arc3d properties) =
             arc
     in
-    if properties.signedLength == 0 then
+    if properties.signedLength == Quantity.zero then
         Err (startPoint arc)
 
     else
@@ -477,206 +506,128 @@ nondegenerate arc =
 
 
 {-| Convert a nondegenerate arc back to a general `Arc3d`.
-
-    Arc3d.fromNondegenerate nondegenerateExampleArc
-    --> exampleArc
-
 -}
-fromNondegenerate : Nondegenerate -> Arc3d
+fromNondegenerate : Nondegenerate units coordinates -> Arc3d units coordinates
 fromNondegenerate (Nondegenerate arc) =
     arc
 
 
 {-| Get the tangent direction to a nondegenerate arc at a given parameter
-value:
-
-    Arc3d.tangentDirection nondegenerateExampleArc
-        ParameterValue.zero
-    --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 135)
-    -->     (degrees 0)
-
-    Arc3d.tangentDirection nondegenerateExampleArc
-        ParameterValue.half
-    --> Direction3d.negativeX
-
-    Arc3d.tangentDirection nondegenerateExampleArc
-        ParameterValue.zero
-    --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 225)
-    -->     (degrees 0)
-
+value.
 -}
-tangentDirection : Nondegenerate -> ParameterValue -> Direction3d
+tangentDirection : Nondegenerate units coordinates -> Float -> Direction3d coordinates
 tangentDirection (Nondegenerate (Types.Arc3d arc)) parameterValue =
     let
-        ( x1, y1, z1 ) =
-            Direction3d.components arc.xDirection
+        x1 =
+            Direction3d.xComponent arc.xDirection
 
-        ( x2, y2, z2 ) =
-            Direction3d.components arc.yDirection
+        y1 =
+            Direction3d.yComponent arc.xDirection
+
+        z1 =
+            Direction3d.zComponent arc.xDirection
+
+        x2 =
+            Direction3d.xComponent arc.yDirection
+
+        y2 =
+            Direction3d.yComponent arc.yDirection
+
+        z2 =
+            Direction3d.zComponent arc.yDirection
 
         arcSweptAngle =
             arc.sweptAngle
 
-        t =
-            ParameterValue.value parameterValue
-
         angle =
-            t * arcSweptAngle
+            Quantity.multiplyBy parameterValue arcSweptAngle
 
         cosAngle =
-            cos angle
+            Angle.cos angle
 
         sinAngle =
-            sin angle
+            Angle.sin angle
     in
     Direction3d.unsafe
-        ( cosAngle * x1 + sinAngle * x2
-        , cosAngle * y1 + sinAngle * y2
-        , cosAngle * z1 + sinAngle * z2
-        )
-
-
-{-| Get tangent directions to a nondegenerate arc at a given set of parameter
-values:
-
-    nondegenerateExampleArc
-        |> Arc3d.tangentDirectionsAt
-            (ParameterValue.steps 2)
-    --> [ Direction3d.fromAzimuthAndElevation
-    -->     (degrees 135)
-    -->     (degrees 0)
-    --> , Direction3d.negativeX
-    --> , Direction3d.fromAzimuthAndElevation
-    -->     (degrees 225)
-    -->     (degrees 0)
-    --> ]
-
--}
-tangentDirectionsAt : List ParameterValue -> Nondegenerate -> List Direction3d
-tangentDirectionsAt parameterValues nondegenerateArc =
-    List.map (tangentDirection nondegenerateArc) parameterValues
+        { x = cosAngle * x1 + sinAngle * x2
+        , y = cosAngle * y1 + sinAngle * y2
+        , z = cosAngle * z1 + sinAngle * z2
+        }
 
 
 {-| Get both the point and tangent direction of a nondegenerate arc at a given
-parameter value:
-
-    Arc3d.sample nondegenerateExampleArc
-        ParameterValue.zero
-    --> ( Point3d.fromCoordinates ( 1, 1, 0 )
-    --> , Direction3d.fromAzimuthAndElevation
-    -->     (degrees 135)
-    -->     (degrees 0)
-    --> )
-
-    Arc3d.sample nondegenerateExampleArc
-        ParameterValue.half
-    --> ( Point3d.fromCoordinates ( 0, 1.4142, 0 )
-    --> , Direction3d.negativeX
-    --> )
-
-    Arc3d.sample nondegenerateExampleArc
-        ParameterValue.one
-    --> ( Point3d.fromCoordinates ( -1, 1, 0 )
-    --> , Direction3d.fromAzimuthAndElevation
-    -->     (degrees 225)
-    -->     (degrees 0)
-    --> )
-
+parameter value.
 -}
-sample : Nondegenerate -> ParameterValue -> ( Point3d, Direction3d )
+sample : Nondegenerate units coordinates -> Float -> ( Point3d units coordinates, Direction3d coordinates )
 sample nondegenerateArc parameterValue =
     ( pointOn (fromNondegenerate nondegenerateArc) parameterValue
     , tangentDirection nondegenerateArc parameterValue
     )
 
 
-{-| Get points and tangent directions of a nondegenerate arc at a given set of
-parameter values:
-
-    nondegenerateExampleArc
-        |> Arc3d.samplesAt (ParameterValue.steps 2)
-    --> [ ( Point3d.fromCoordinates ( 1, 1, 0 )
-    -->   , Direction3d.fromAzimuthAndElevation
-    -->         (degrees 135)
-    -->         (degrees 0)
-    -->   )
-    --> , ( Point3d.fromCoordinates ( 0, 1.4142, 0 )
-    -->   , Direction3d.negativeX
-    -->   )
-    --> , ( Point3d.fromCoordinates ( -1, 1, 0 )
-    -->   , Direction3d.fromAzimuthAndElevation
-    -->         (degrees 225)
-    -->         (degrees 0)
-    -->   )
-    --> ]
-
-If the arc is degenerate (start point and end point are equal), returns an
-empty list.
-
--}
-samplesAt : List ParameterValue -> Nondegenerate -> List ( Point3d, Direction3d )
-samplesAt parameterValues nondegenerateArc =
-    List.map (sample nondegenerateArc) parameterValues
-
-
-numApproximationSegments : Float -> Arc3d -> Int
+numApproximationSegments : Quantity Float units -> Arc3d units coordinates -> Int
 numApproximationSegments maxError arc =
-    if sweptAngle arc == 0 then
+    if sweptAngle arc == Quantity.zero then
         1
 
-    else if maxError <= 0 then
+    else if maxError |> Quantity.lessThanOrEqualTo Quantity.zero then
         0
 
-    else if maxError >= 2 * radius arc then
+    else if
+        maxError
+            |> Quantity.greaterThanOrEqualTo
+                (Quantity.multiplyBy 2 (radius arc))
+    then
         1
 
     else
         let
             maxSegmentAngle =
-                2 * acos (1 - maxError / radius arc)
+                Quantity.multiplyBy 2
+                    (Angle.acos (1 - Quantity.ratio maxError (radius arc)))
         in
-        ceiling (abs (sweptAngle arc) / maxSegmentAngle)
+        ceiling (Quantity.ratio (Quantity.abs (sweptAngle arc)) maxSegmentAngle)
 
 
 {-| Approximate an arc as a polyline, within a given tolerance:
 
-    exampleArc |> Arc3d.toPolyline { maxError = 0.1 }
+    exampleArc
+        |> Arc3d.toPolyline
+            { maxError = Length.meters 0.1 }
     --> Polyline3d.fromVertices
-    -->     [ Point3d.fromCoordinates ( 1, 1, 0 )
-    -->     , Point3d.fromCoordinates ( 0.366, 1.366, 0 )
-    -->     , Point3d.fromCoordinates ( -0.366, 1.366, 0 )
-    -->     , Point3d.fromCoordinates ( -1, 1, 0 )
+    -->     [ Point3d.meters 1 1 0
+    -->     , Point3d.meters 0.366 1.366 0
+    -->     , Point3d.meters -0.366 1.366 0
+    -->     , Point3d.meters -1 1 0
     -->     ]
 
-In this example, every point on the returned polyline will be within 0.1 units
+In this example, every point on the returned polyline will be within 0.1 meters
 of the original arc.
 
 -}
-toPolyline : { maxError : Float } -> Arc3d -> Polyline3d
+toPolyline : { maxError : Quantity Float units } -> Arc3d units coordinates -> Polyline3d units coordinates
 toPolyline { maxError } arc =
     let
         numSegments =
             numApproximationSegments maxError arc
 
         points =
-            arc |> pointsAt (ParameterValue.steps numSegments)
+            Parameter1d.steps numSegments (pointOn arc)
     in
     Polyline3d.fromVertices points
 
 
-{-| Get the swept angle of an arc in radians.
+{-| Get the swept angle of an arc.
 
     Arc3d.sweptAngle exampleArc
-    --> 1.5708
+    --> Angle.degrees 90
 
 A positive swept angle means that the arc is formed by rotating the given start
 point counterclockwise around the central axis, and vice versa for a negative
 angle.
 
 -}
-sweptAngle : Arc3d -> Float
+sweptAngle : Arc3d units coordinates -> Angle
 sweptAngle (Types.Arc3d properties) =
     properties.sweptAngle
 
@@ -684,70 +635,64 @@ sweptAngle (Types.Arc3d properties) =
 {-| Reverse the direction of an arc, so that the start point becomes the end
 point and vice versa. The resulting arc will have the same axis as the original
 but a swept angle with the opposite sign.
-
-    Arc3d.reverse exampleArc
-    --> Arc3d.sweptAround Axis3d.z
-    -->     (degrees -90)
-    -->     (Point3d.fromCoordinates ( -1, 1, 0 ))
-
 -}
-reverse : Arc3d -> Arc3d
+reverse : Arc3d units coordinates -> Arc3d units coordinates
 reverse ((Types.Arc3d arc) as arc_) =
     let
-        ( x1, y1, z1 ) =
-            Direction3d.components arc.xDirection
+        x1 =
+            Direction3d.xComponent arc.xDirection
 
-        ( x2, y2, z2 ) =
-            Direction3d.components arc.yDirection
+        y1 =
+            Direction3d.yComponent arc.xDirection
+
+        z1 =
+            Direction3d.zComponent arc.xDirection
+
+        x2 =
+            Direction3d.xComponent arc.yDirection
+
+        y2 =
+            Direction3d.yComponent arc.yDirection
+
+        z2 =
+            Direction3d.zComponent arc.yDirection
 
         arcSweptAngle =
             arc.sweptAngle
 
         cosAngle =
-            cos arcSweptAngle
+            Angle.cos arcSweptAngle
 
         sinAngle =
-            sin arcSweptAngle
+            Angle.sin arcSweptAngle
     in
     Types.Arc3d
         { startPoint = endPoint arc_
-        , sweptAngle = -arcSweptAngle
-        , signedLength = -arc.signedLength
+        , sweptAngle = Quantity.negate arcSweptAngle
+        , signedLength = Quantity.negate arc.signedLength
         , xDirection =
             Direction3d.unsafe
-                ( x1 * cosAngle + x2 * sinAngle
-                , y1 * cosAngle + y2 * sinAngle
-                , z1 * cosAngle + z2 * sinAngle
-                )
+                { x = x1 * cosAngle + x2 * sinAngle
+                , y = y1 * cosAngle + y2 * sinAngle
+                , z = z1 * cosAngle + z2 * sinAngle
+                }
         , yDirection =
             Direction3d.unsafe
-                ( x2 * cosAngle - x1 * sinAngle
-                , y2 * cosAngle - y1 * sinAngle
-                , z2 * cosAngle - z1 * sinAngle
-                )
+                { x = x2 * cosAngle - x1 * sinAngle
+                , y = y2 * cosAngle - y1 * sinAngle
+                , z = z2 * cosAngle - z1 * sinAngle
+                }
         }
 
 
 {-| Scale an arc about the given center point by the given scale.
-
-    point =
-        Point3d.fromCoordinates ( 0, -1, 0 )
-
-    Arc3d.scaleAbout point 2 exampleArc
-    --> Arc3d.sweptAround
-    -->     (Axis3d.withDirection Direction3d.z
-    -->         (Point3d.fromCoordinates ( 0, 1, 0 ))
-    -->     )
-    -->     (degrees 90)
-    -->     (Point3d.fromCoordinates ( 2, 3, 0 ))
-
 -}
-scaleAbout : Point3d -> Float -> Arc3d -> Arc3d
+scaleAbout : Point3d units coordinates -> Float -> Arc3d units coordinates -> Arc3d units coordinates
 scaleAbout point scale (Types.Arc3d arc) =
     Types.Arc3d
         { startPoint = Point3d.scaleAbout point scale arc.startPoint
         , sweptAngle = arc.sweptAngle
-        , signedLength = abs scale * arc.signedLength
+        , signedLength = Quantity.multiplyBy (abs scale) arc.signedLength
         , xDirection =
             if scale >= 0 then
                 arc.xDirection
@@ -763,48 +708,24 @@ scaleAbout point scale (Types.Arc3d arc) =
         }
 
 
-{-| Rotate an arc around a given axis by a given angle (in radians).
-
-    Arc3d.rotateAround Axis3d.x (degrees 90) exampleArc
-    --> Arc3d.sweptAround (Axis3d.reverse Axis3d.y)
-    -->     (degrees 90)
-    -->     (Point3d.fromCoordinates ( 1, 0, 1 ))
-
+{-| Rotate an arc around a given axis by a given angle.
 -}
-rotateAround : Axis3d -> Float -> Arc3d -> Arc3d
-rotateAround rotationAxis angle =
-    let
-        rotatePoint =
-            Point3d.rotateAround rotationAxis angle
-
-        rotateDirection =
-            Direction3d.rotateAround rotationAxis angle
-    in
-    \(Types.Arc3d arc) ->
-        Types.Arc3d
-            { startPoint = rotatePoint arc.startPoint
-            , sweptAngle = arc.sweptAngle
-            , signedLength = arc.signedLength
-            , xDirection = rotateDirection arc.xDirection
-            , yDirection = rotateDirection arc.yDirection
-            }
+rotateAround : Axis3d units coordinates -> Angle -> Arc3d units coordinates -> Arc3d units coordinates
+rotateAround rotationAxis angle (Types.Arc3d arc) =
+    Types.Arc3d
+        { startPoint = Point3d.rotateAround rotationAxis angle arc.startPoint
+        , sweptAngle = arc.sweptAngle
+        , signedLength = arc.signedLength
+        , xDirection =
+            Direction3d.rotateAround rotationAxis angle arc.xDirection
+        , yDirection =
+            Direction3d.rotateAround rotationAxis angle arc.yDirection
+        }
 
 
 {-| Translate an arc by a given displacement.
-
-    displacement =
-        Vector3d.fromComponents ( 2, 1, 3 )
-
-    Arc3d.translateBy displacement exampleArc
-    --> Arc3d.sweptAround
-    -->     (Axis3d.withDirection Direction3d.z
-    -->         (Point3d ( 2, 1, 3 ))
-    -->     )
-    -->     (degrees 90)
-    -->     (Point3d.fromCoordinates ( 3, 2, 3 ))
-
 -}
-translateBy : Vector3d -> Arc3d -> Arc3d
+translateBy : Vector3d units coordinates -> Arc3d units coordinates -> Arc3d units coordinates
 translateBy displacement (Types.Arc3d arc) =
     Types.Arc3d
         { startPoint = Point3d.translateBy displacement arc.startPoint
@@ -815,148 +736,134 @@ translateBy displacement (Types.Arc3d arc) =
         }
 
 
-{-| Translate an arc in a given direction by a given distance;
-
-    Arc3d.translateIn direction distance
-
-is equivalent to
-
-    Arc3d.translateBy
-        (Vector3d.withLength distance direction)
-
+{-| Translate an arc in a given direction by a given distance.
 -}
-translateIn : Direction3d -> Float -> Arc3d -> Arc3d
+translateIn : Direction3d coordinates -> Quantity Float units -> Arc3d units coordinates -> Arc3d units coordinates
 translateIn direction distance arc =
     translateBy (Vector3d.withLength distance direction) arc
 
 
-{-| Mirror an arc across a given plane.
-
-    Arc3d.mirrorAcross Plane3d.xy exampleArc
-    --> Arc3d.sweptAround (Axis3d.reverse Axis3d.z)
-    -->     (degrees -90)
-    -->     (Point3d.fromCoordinates ( 1, 1, 0 ))
-
-Note that this flips the sign of the arc's swept angle.
-
+{-| Mirror an arc across a given plane. This flips the sign of the arc's swept
+angle.
 -}
-mirrorAcross : Plane3d -> Arc3d -> Arc3d
-mirrorAcross plane =
-    let
-        mirrorPoint =
-            Point3d.mirrorAcross plane
-
-        mirrorDirection =
-            Direction3d.mirrorAcross plane
-    in
-    \(Types.Arc3d arc) ->
-        Types.Arc3d
-            { startPoint = mirrorPoint arc.startPoint
-            , sweptAngle = -arc.sweptAngle
-            , signedLength = -arc.signedLength
-            , xDirection = Direction3d.reverse (mirrorDirection arc.xDirection)
-            , yDirection = mirrorDirection arc.yDirection
-            }
+mirrorAcross : Plane3d units coordinates -> Arc3d units coordinates -> Arc3d units coordinates
+mirrorAcross plane (Types.Arc3d arc) =
+    Types.Arc3d
+        { startPoint = Point3d.mirrorAcross plane arc.startPoint
+        , sweptAngle = Quantity.negate arc.sweptAngle
+        , signedLength = Quantity.negate arc.signedLength
+        , xDirection =
+            Direction3d.reverse (Direction3d.mirrorAcross plane arc.xDirection)
+        , yDirection = Direction3d.mirrorAcross plane arc.yDirection
+        }
 
 
-{-| Project an arc into a sketch plane.
+{-| Project an arc into a sketch plane. Note that the result is an elliptical
+arc, not a circular one!
 
-    axis : Axis3d
+    axis : Axis3d Meters coordinates
     axis =
-        Axis3d.through
-            (Point3d.fromCoordinates ( 1, 2, 3 ))
-            (Direction3d.fromAzimuthAndElevation
-                (degrees 0)
-                (degrees 45)
-            )
+        Axis3d.through (Point3d.meters 1 2 3)
+            (Direction3d.xz (Angle.degrees 45))
 
-    arc : Arc3d
+    arc : Arc3d Meters coordinates
     arc =
         Arc3d.sweptAround axis
-            (degrees 45)
-            (Point3d.fromCoordinates ( 1, 4, 3 ))
+            (Angle.degrees 45)
+            (Point3d.meters 1 4 3)
 
     Arc3d.projectInto SketchPlane3d.xy arc
     --> EllipticalArc2d.with
-    -->     { centerPoint =
-    -->         Point2d.fromCoordinates ( 1, 2 )
+    -->     { centerPoint = Point2d.meters 1 2
     -->     , xDirection = Direction2d.y
-    -->     , xRadius = 2
-    -->     , yRadius = 1.4142
-    -->     , startAngle = degrees 0
-    -->     , sweptAngle = degrees 45
+    -->     , xRadius = Length.meters 2
+    -->     , yRadius = Length.meters 1.4142
+    -->     , startAngle = Angle.degrees 0
+    -->     , sweptAngle = Angle.degrees 45
     -->     }
 
 -}
-projectInto : SketchPlane3d -> Arc3d -> Types.EllipticalArc2d
+projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Arc3d units coordinates3d -> Types.EllipticalArc2d units coordinates2d
 projectInto sketchPlane arc =
     let
-        candidateXDirection2d =
-            case Direction3d.projectInto sketchPlane (axialDirection arc) of
-                Just yDirection2d ->
-                    yDirection2d |> Direction2d.rotateClockwise
-
-                Nothing ->
-                    Direction2d.x
-
-        candidateXDirection3d =
-            Direction3d.on sketchPlane candidateXDirection2d
+        arcAxialDirection =
+            axialDirection arc
 
         radialVector =
             Vector3d.from (centerPoint arc) (startPoint arc)
 
-        ( xDirection2d, xDirection3d ) =
-            if Vector3d.componentIn candidateXDirection3d radialVector >= 0 then
-                ( candidateXDirection2d
-                , candidateXDirection3d
-                )
+        projectedRadialVector =
+            radialVector |> Vector3d.projectInto sketchPlane
+
+        candidateXDirection2d =
+            case Direction3d.projectInto sketchPlane arcAxialDirection of
+                Just tempYDirection2d ->
+                    tempYDirection2d |> Direction2d.rotateClockwise
+
+                Nothing ->
+                    case Vector2d.direction projectedRadialVector of
+                        Just projectedRadialDirection ->
+                            projectedRadialDirection
+
+                        Nothing ->
+                            Direction2d.x
+
+        xDirection2d =
+            if
+                projectedRadialVector
+                    |> Vector2d.componentIn candidateXDirection2d
+                    |> Quantity.greaterThanOrEqualTo Quantity.zero
+            then
+                candidateXDirection2d
 
             else
-                ( Direction2d.reverse candidateXDirection2d
-                , Direction3d.reverse candidateXDirection3d
-                )
+                Direction2d.reverse candidateXDirection2d
+
+        xDirection3d =
+            Direction3d.on sketchPlane xDirection2d
+
+        xVector3d =
+            Direction3d.toVector xDirection3d
 
         arcRadius =
             radius arc
 
         normalComponent =
-            axialDirection arc
+            arcAxialDirection
                 |> Direction3d.componentIn
                     (SketchPlane3d.normalDirection sketchPlane)
+
+        arcPlaneSameOrientation =
+            normalComponent >= 0
 
         yRatio =
             abs normalComponent
 
         ellipticalStartAngle =
             let
-                xVector =
-                    Direction3d.toVector xDirection3d
-
-                crossProduct =
-                    Vector3d.crossProduct xVector radialVector
+                x =
+                    xVector3d |> Vector3d.dot radialVector
 
                 y =
-                    crossProduct
-                        |> Vector3d.componentIn (axialDirection arc)
-
-                x =
-                    Vector3d.dotProduct radialVector xVector
+                    xVector3d
+                        |> Vector3d.cross radialVector
+                        |> Vector3d.componentIn arcAxialDirection
 
                 arcStartAngle =
-                    atan2 y x
+                    Angle.atan2 y x
             in
-            if normalComponent >= 0 then
+            if arcPlaneSameOrientation then
                 arcStartAngle
 
             else
-                -arcStartAngle
+                Quantity.negate arcStartAngle
 
         ellipticalSweptAngle =
-            if normalComponent >= 0 then
+            if arcPlaneSameOrientation then
                 sweptAngle arc
 
             else
-                -(sweptAngle arc)
+                Quantity.negate (sweptAngle arc)
     in
     Types.EllipticalArc2d
         { ellipse =
@@ -965,7 +872,7 @@ projectInto sketchPlane arc =
                     Frame2d.withXDirection xDirection2d
                         (centerPoint arc |> Point3d.projectInto sketchPlane)
                 , xRadius = arcRadius
-                , yRadius = arcRadius * yRatio
+                , yRadius = Quantity.multiplyBy yRatio arcRadius
                 }
         , startAngle = ellipticalStartAngle
         , sweptAngle = ellipticalSweptAngle
@@ -974,21 +881,8 @@ projectInto sketchPlane arc =
 
 {-| Take an arc defined in global coordinates, and return it expressed in local
 coordinates relative to a given reference frame.
-
-    localFrame =
-        Frame3d.atPoint
-            (Point3d.fromCoordinates ( 1, 2, 3 ))
-
-    Arc3d.relativeTo localFrame exampleArc
-    --> Arc3d.sweptAround
-    -->     (Axis3d.withDirection Direction3d.z
-    -->         (Point3d ( -1, -2, -3 ))
-    -->     )
-    -->     (degrees 90)
-    -->     (Point3d.fromCoordinates ( 0, -1, -3 ))
-
 -}
-relativeTo : Frame3d -> Arc3d -> Arc3d
+relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Arc3d units globalCoordinates -> Arc3d units localCoordinates
 relativeTo frame (Types.Arc3d arc) =
     if Frame3d.isRightHanded frame then
         Types.Arc3d
@@ -1002,8 +896,8 @@ relativeTo frame (Types.Arc3d arc) =
     else
         Types.Arc3d
             { startPoint = Point3d.relativeTo frame arc.startPoint
-            , sweptAngle = -arc.sweptAngle
-            , signedLength = -arc.signedLength
+            , sweptAngle = Quantity.negate arc.sweptAngle
+            , signedLength = Quantity.negate arc.signedLength
             , xDirection =
                 Direction3d.relativeTo frame arc.xDirection
                     |> Direction3d.reverse
@@ -1013,21 +907,8 @@ relativeTo frame (Types.Arc3d arc) =
 
 {-| Take an arc considered to be defined in local coordinates relative to a
 given reference frame, and return that arc expressed in global coordinates.
-
-    localFrame =
-        Frame3d.atPoint
-            (Point3d.fromCoordinates ( 1, 2, 3 ))
-
-    Arc3d.placeIn localFrame exampleArc
-    --> Arc3d.sweptAround
-    -->     (Axis3d.withDirection Direction3d.z
-    -->         (Point3d.fromCoordinates ( 1, 2, 3 ))
-    -->     )
-    -->     (degrees 90)
-    -->     (Point3d.fromCoordinates ( 2, 3, 3 ))
-
 -}
-placeIn : Frame3d -> Arc3d -> Arc3d
+placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Arc3d units localCoordinates -> Arc3d units globalCoordinates
 placeIn frame (Types.Arc3d arc) =
     if Frame3d.isRightHanded frame then
         Types.Arc3d
@@ -1041,8 +922,8 @@ placeIn frame (Types.Arc3d arc) =
     else
         Types.Arc3d
             { startPoint = Point3d.placeIn frame arc.startPoint
-            , sweptAngle = -arc.sweptAngle
-            , signedLength = -arc.signedLength
+            , sweptAngle = Quantity.negate arc.sweptAngle
+            , signedLength = Quantity.negate arc.signedLength
             , xDirection =
                 Direction3d.placeIn frame arc.xDirection
                     |> Direction3d.reverse

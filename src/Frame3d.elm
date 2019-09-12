@@ -9,12 +9,14 @@
 
 module Frame3d exposing
     ( Frame3d
-    , atOrigin, xyz
-    , withXDirection, withYDirection, withZDirection, atPoint, atCoordinates, unsafe
+    , atOrigin
+    , withXDirection, withYDirection, withZDirection, atPoint, copy, unsafe
+    , fromXAxis, fromYAxis, fromZAxis
     , originPoint, xDirection, yDirection, zDirection, isRightHanded
     , xAxis, yAxis, zAxis
     , xyPlane, yxPlane, yzPlane, zyPlane, zxPlane, xzPlane
     , xySketchPlane, yxSketchPlane, yzSketchPlane, zySketchPlane, zxSketchPlane, xzSketchPlane
+    , at, at_
     , reverseX, reverseY, reverseZ, moveTo, rotateAround, rotateAroundOwn, translateBy, translateIn, translateAlongOwn, mirrorAcross
     , relativeTo, placeIn
     )
@@ -38,7 +40,7 @@ are always perpendicular to each other). It can be thought of as:
 
 # Constants
 
-@docs atOrigin, xyz
+@docs atOrigin
 
 
 # Constructors
@@ -50,25 +52,19 @@ when constructing 'scratch' frames where (for example) you want a particular Z
 direction but the specific X/Y directions are unimportant:
 
     zDirection =
-        Direction3d.fromAzimuthAndElevation
-            (degrees 0)
-            (degrees 60)
+        Direction3d.xz (Angle.degrees 60)
 
     frame =
         Frame3d.withZDirection zDirection Point3d.origin
 
     Frame3d.zDirection frame
-    --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 0)
-    -->     (degrees 60)
+    --> Direction3d.xz (Angle.degrees 60)
 
     Frame3d.originPoint frame
     --> Point3d.origin
 
     Frame3d.xDirection frame
-    --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 0)
-    -->     (degrees -30)
+    --> Direction3d.xz (Angle.degrees -30)
 
     Frame3d.yDirection frame
     --> Direction3d.y
@@ -77,7 +73,12 @@ No guarantees are given about the other two directions other than that the three
 directions will be mutually perpendicular, and will be oriented so that the
 resulting frame is [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness).
 
-@docs withXDirection, withYDirection, withZDirection, atPoint, atCoordinates, unsafe
+@docs withXDirection, withYDirection, withZDirection, atPoint, copy, unsafe
+
+
+## From axes
+
+@docs fromXAxis, fromYAxis, fromZAxis
 
 
 # Properties
@@ -137,6 +138,11 @@ corresponds to a global Z coordinate!
 @docs xySketchPlane, yxSketchPlane, yzSketchPlane, zySketchPlane, zxSketchPlane, xzSketchPlane
 
 
+# Unit conversions
+
+@docs at, at_
+
+
 # Transformations
 
 @docs reverseX, reverseY, reverseZ, moveTo, rotateAround, rotateAroundOwn, translateBy, translateIn, translateAlongOwn, mirrorAcross
@@ -148,18 +154,39 @@ corresponds to a global Z coordinate!
 
 -}
 
+import Angle exposing (Angle)
 import Axis3d exposing (Axis3d)
 import Direction3d exposing (Direction3d)
 import Geometry.Types as Types
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
+import Quantity exposing (Quantity, Rate)
 import SketchPlane3d exposing (SketchPlane3d)
 import Vector3d exposing (Vector3d)
 
 
-{-| -}
-type alias Frame3d =
-    Types.Frame3d
+{-| The type parameters of a `Frame3d` indicate what units and coordinate
+systems it's defined in, and what coordinate system (if any) it itself defines.
+A concrete `Frame3d` type might look like
+
+    type alias MyFrame =
+        Frame3d Meters World { defines : Local }
+
+which can be read as "a `Frame3d` defined in meters in world coordinates, which
+itself defines local coordinates". For frames that don't define a local
+coordinate system, you could use
+
+    type alias MyFrame =
+        Frame3d Meters World {}
+
+Many functions in this module don't care about the third type argument (whether
+it's a record with a `defines` field like in the first example, an empty record
+like in the second example, or even something else entirely) but functions like
+`placeIn` and `relativeTo` expect the `{ defines : localCoordinates }` pattern.
+
+-}
+type alias Frame3d units coordinates defines =
+    Types.Frame3d units coordinates defines
 
 
 {-| The global XYZ frame, centered at the origin.
@@ -177,79 +204,88 @@ type alias Frame3d =
     --> Direction3d.z
 
 -}
-atOrigin : Frame3d
+atOrigin : Frame3d units coordinates { defines : coordinates }
 atOrigin =
-    atPoint Point3d.origin
-
-
-{-| DEPRECATED: Alias for `Frame3d.atOrigin`, kept for compatibility. Will be
-removed in the next major release.
--}
-xyz : Frame3d
-xyz =
-    atOrigin
+    Types.Frame3d
+        { originPoint = Point3d.origin
+        , xDirection = Direction3d.x
+        , yDirection = Direction3d.y
+        , zDirection = Direction3d.z
+        }
 
 
 {-| Construct a frame with the given origin point and X direction.
 -}
-withXDirection : Direction3d -> Point3d -> Frame3d
-withXDirection xDirection_ originPoint_ =
+withXDirection : Direction3d coordinates -> Point3d units coordinates -> Frame3d units coordinates defines
+withXDirection givenXDirection givenOrigin =
     let
-        ( yDirection_, zDirection_ ) =
-            Direction3d.perpendicularBasis xDirection_
+        ( computedYDirection, computedZDirection ) =
+            Direction3d.perpendicularBasis givenXDirection
     in
     unsafe
-        { originPoint = originPoint_
-        , xDirection = xDirection_
-        , yDirection = yDirection_
-        , zDirection = zDirection_
+        { originPoint = givenOrigin
+        , xDirection = givenXDirection
+        , yDirection = computedYDirection
+        , zDirection = computedZDirection
         }
 
 
 {-| Construct a frame with the given origin point and Y direction.
 -}
-withYDirection : Direction3d -> Point3d -> Frame3d
-withYDirection yDirection_ originPoint_ =
+withYDirection : Direction3d coordinates -> Point3d units coordinates -> Frame3d units coordinates defines
+withYDirection givenYDirection givenOrigin =
     let
-        ( zDirection_, xDirection_ ) =
-            Direction3d.perpendicularBasis yDirection_
+        ( computedZDirection, computedXDirection ) =
+            Direction3d.perpendicularBasis givenYDirection
     in
     unsafe
-        { originPoint = originPoint_
-        , xDirection = xDirection_
-        , yDirection = yDirection_
-        , zDirection = zDirection_
+        { originPoint = givenOrigin
+        , xDirection = computedXDirection
+        , yDirection = givenYDirection
+        , zDirection = computedZDirection
         }
 
 
 {-| Construct a frame with the given origin point and Z direction.
 -}
-withZDirection : Direction3d -> Point3d -> Frame3d
-withZDirection zDirection_ originPoint_ =
+withZDirection : Direction3d coordinates -> Point3d units coordinates -> Frame3d units coordinates defines
+withZDirection givenZDirection givenOrigin =
     let
-        ( xDirection_, yDirection_ ) =
-            Direction3d.perpendicularBasis zDirection_
+        ( computedXDirection, computedYDirection ) =
+            Direction3d.perpendicularBasis givenZDirection
     in
     unsafe
-        { originPoint = originPoint_
-        , xDirection = xDirection_
-        , yDirection = yDirection_
-        , zDirection = zDirection_
+        { originPoint = givenOrigin
+        , xDirection = computedXDirection
+        , yDirection = computedYDirection
+        , zDirection = givenZDirection
         }
+
+
+{-| Create a 'fresh copy' of a frame: one with the same origin point and X/Y/Z
+directions, but that can be used to define a different local coordinate system.
+Sometimes useful in generic/library code. Despite the name, this is efficient:
+it doesn't actually copy anything.
+-}
+copy : Frame3d units coordinates defines1 -> Frame3d units coordinates defines2
+copy (Types.Frame3d properties) =
+    Types.Frame3d properties
 
 
 {-| Construct a frame directly from its origin point and X, Y and Z directions:
 
     frame =
         Frame3d.unsafe
-            { originPoint =
-                Point3d.fromCoordinates ( 2, 1, 3 )
+            { originPoint = Point3d.meters 2 1 3
             , xDirection =
-                Direction3d.unsafe ( 0.8, 0.6, 0 )
+                Direction3d.unsafe
+                    { x = 0.8, y = 0.6, z = 0 }
             , yDirection =
-                Direction3d.unsafe ( -0.6, 0.8, 0 )
+                Direction3d.unsafe
+                    { x = -0.6, y = 0.8, z = 0 }
             , zDirection =
-                Direction3d.unsafe ( 0, 0, 1 )
+                Direction3d.unsafe
+                    { x = 0, y = 0, z = 1 }
             }
 
 In this case **you must be careful to ensure that the X, Y and Z directions are
@@ -262,9 +298,15 @@ coordinate system.) To construct sets of mutually perpendicular directions,
 useful.
 
 -}
-unsafe : { originPoint : Point3d, xDirection : Direction3d, yDirection : Direction3d, zDirection : Direction3d } -> Frame3d
-unsafe =
-    Types.Frame3d
+unsafe :
+    { originPoint : Point3d units coordinates
+    , xDirection : Direction3d coordinates
+    , yDirection : Direction3d coordinates
+    , zDirection : Direction3d coordinates
+    }
+    -> Frame3d units coordinates defines
+unsafe properties =
+    Types.Frame3d properties
 
 
 {-| Construct a frame aligned with the global XYZ frame but with the given
@@ -272,10 +314,10 @@ origin point.
 
     frame =
         Frame3d.atPoint
-            (Point3d.fromCoordinates ( 2, 1, 3 ))
+            (Point3d.meters 2 1 3)
 
     Frame3d.originPoint frame
-    --> Point3d.fromCoordinates ( 2, 1, 3 )
+    --> Point3d.meters 2 1 3
 
     Frame3d.xDirection frame
     --> Direction3d.x
@@ -287,7 +329,7 @@ origin point.
     --> Direction3d.z
 
 -}
-atPoint : Point3d -> Frame3d
+atPoint : Point3d units coordinates -> Frame3d units coordinates defines
 atPoint point =
     unsafe
         { originPoint = point
@@ -297,18 +339,87 @@ atPoint point =
         }
 
 
-{-| Shorthand for `Frame3d.atPoint`;
-
-    Frame3d.atCoordinates ( x, y, z )
-
-is equivalent to
-
-    Frame3d.atPoint (Point3d.fromCoordinates ( x, y, z ))
-
+{-| Construct a `Frame3d` with the given X axis. Perpendicular Y and Z
+directions will be chosen arbitrarily.
 -}
-atCoordinates : ( Float, Float, Float ) -> Frame3d
-atCoordinates coordinates =
-    atPoint (Point3d.fromCoordinates coordinates)
+fromXAxis : Axis3d units coordinates -> Frame3d units coordinates defines
+fromXAxis givenXAxis =
+    let
+        givenXDirection =
+            Axis3d.direction givenXAxis
+
+        ( computedYDirection, computedZDirection ) =
+            Direction3d.perpendicularBasis givenXDirection
+    in
+    unsafe
+        { originPoint = Axis3d.originPoint givenXAxis
+        , xDirection = givenXDirection
+        , yDirection = computedYDirection
+        , zDirection = computedZDirection
+        }
+
+
+{-| Construct a `Frame3d` with the given Y axis. Perpendicular X and Z
+directions will be chosen arbitrarily.
+-}
+fromYAxis : Axis3d units coordinates -> Frame3d units coordinates defines
+fromYAxis givenYAxis =
+    let
+        givenYDirection =
+            Axis3d.direction givenYAxis
+
+        ( computedZDirection, computedXDirection ) =
+            Direction3d.perpendicularBasis givenYDirection
+    in
+    unsafe
+        { originPoint = Axis3d.originPoint givenYAxis
+        , xDirection = computedXDirection
+        , yDirection = givenYDirection
+        , zDirection = computedZDirection
+        }
+
+
+{-| Construct a `Frame3d` with the given Z axis. Perpendicular X and Y
+directions will be chosen arbitrarily.
+-}
+fromZAxis : Axis3d units coordinates -> Frame3d units coordinates defines
+fromZAxis givenZAxis =
+    let
+        givenZDirection =
+            Axis3d.direction givenZAxis
+
+        ( computedXDirection, computedYDirection ) =
+            Direction3d.perpendicularBasis givenZDirection
+    in
+    unsafe
+        { originPoint = Axis3d.originPoint givenZAxis
+        , xDirection = computedXDirection
+        , yDirection = computedYDirection
+        , zDirection = givenZDirection
+        }
+
+
+{-| Convert a frame from one units type to another, by providing a conversion
+factor given as a rate of change of destination units with respect to source
+units.
+-}
+at : Quantity Float (Rate units2 units1) -> Frame3d units1 coordinates defines -> Frame3d units2 coordinates defines
+at rate (Types.Frame3d frame) =
+    Types.Frame3d
+        { originPoint = Point3d.at rate frame.originPoint
+        , xDirection = frame.xDirection
+        , yDirection = frame.yDirection
+        , zDirection = frame.zDirection
+        }
+
+
+{-| Convert a frame from one units type to another, by providing an 'inverse'
+conversion factor given as a rate of change of source units with respect to
+destination units.
+-}
+at_ : Quantity Float (Rate units1 units2) -> Frame3d units1 coordinates defines -> Frame3d units2 coordinates defines
+at_ rate frame =
+    at (Quantity.inverse rate) frame
 
 
 {-| Get the origin point of a given frame.
@@ -317,7 +428,7 @@ atCoordinates coordinates =
     --> Point3d.origin
 
 -}
-originPoint : Frame3d -> Point3d
+originPoint : Frame3d units coordinates defines -> Point3d units coordinates
 originPoint (Types.Frame3d properties) =
     properties.originPoint
 
@@ -328,7 +439,7 @@ originPoint (Types.Frame3d properties) =
     --> Direction3d.x
 
 -}
-xDirection : Frame3d -> Direction3d
+xDirection : Frame3d units coordinates defines -> Direction3d coordinates
 xDirection (Types.Frame3d properties) =
     properties.xDirection
 
@@ -339,7 +450,7 @@ xDirection (Types.Frame3d properties) =
     --> Direction3d.y
 
 -}
-yDirection : Frame3d -> Direction3d
+yDirection : Frame3d units coordinates defines -> Direction3d coordinates
 yDirection (Types.Frame3d properties) =
     properties.yDirection
 
@@ -350,7 +461,7 @@ yDirection (Types.Frame3d properties) =
     --> Direction3d.z
 
 -}
-zDirection : Frame3d -> Direction3d
+zDirection : Frame3d units coordinates defines -> Direction3d coordinates
 zDirection (Types.Frame3d properties) =
     properties.zDirection
 
@@ -369,19 +480,37 @@ handedness, so about the only ways to end up with a left-handed frame are by
 constructing one explicitly with `unsafe` or by mirroring a right-handed frame.
 
 -}
-isRightHanded : Frame3d -> Bool
-isRightHanded frame =
+isRightHanded : Frame3d units coordinates defines -> Bool
+isRightHanded (Types.Frame3d frame) =
     let
-        xVector =
-            Direction3d.toVector (xDirection frame)
+        a =
+            Direction3d.xComponent frame.xDirection
 
-        yVector =
-            Direction3d.toVector (yDirection frame)
+        b =
+            Direction3d.yComponent frame.xDirection
 
-        zVector =
-            Direction3d.toVector (zDirection frame)
+        c =
+            Direction3d.zComponent frame.xDirection
+
+        d =
+            Direction3d.xComponent frame.yDirection
+
+        e =
+            Direction3d.yComponent frame.yDirection
+
+        f =
+            Direction3d.zComponent frame.yDirection
+
+        g =
+            Direction3d.xComponent frame.zDirection
+
+        h =
+            Direction3d.yComponent frame.zDirection
+
+        i =
+            Direction3d.zComponent frame.zDirection
     in
-    Vector3d.dotProduct zVector (Vector3d.crossProduct xVector yVector) > 0
+    a * e * i + b * f * g + c * d * h - c * e * g - b * d * i - a * f * h > 0
 
 
 {-| Get the X axis of a given frame (the axis formed from the frame's origin
@@ -391,7 +520,7 @@ point and X direction).
     --> Axis3d.x
 
 -}
-xAxis : Frame3d -> Axis3d
+xAxis : Frame3d units coordinates defines -> Axis3d units coordinates
 xAxis (Types.Frame3d frame) =
     Axis3d.through frame.originPoint frame.xDirection
 
@@ -403,7 +532,7 @@ point and Y direction).
     --> Axis3d.y
 
 -}
-yAxis : Frame3d -> Axis3d
+yAxis : Frame3d units coordinates defines -> Axis3d units coordinates
 yAxis (Types.Frame3d frame) =
     Axis3d.through frame.originPoint frame.yDirection
 
@@ -415,56 +544,56 @@ point and Z direction).
     --> Axis3d.z
 
 -}
-zAxis : Frame3d -> Axis3d
+zAxis : Frame3d units coordinates defines -> Axis3d units coordinates
 zAxis (Types.Frame3d frame) =
     Axis3d.through frame.originPoint frame.zDirection
 
 
 {-| Get a plane with normal direction equal to the frame's positive Z direction.
 -}
-xyPlane : Frame3d -> Plane3d
+xyPlane : Frame3d units coordinates defines -> Plane3d units coordinates
 xyPlane (Types.Frame3d frame) =
     Plane3d.through frame.originPoint frame.zDirection
 
 
 {-| Get a plane with normal direction equal to the frame's negative Z direction.
 -}
-yxPlane : Frame3d -> Plane3d
+yxPlane : Frame3d units coordinates defines -> Plane3d units coordinates
 yxPlane (Types.Frame3d frame) =
     Plane3d.through frame.originPoint (Direction3d.reverse frame.zDirection)
 
 
 {-| Get a plane with normal direction equal to the frame's positive X direction.
 -}
-yzPlane : Frame3d -> Plane3d
+yzPlane : Frame3d units coordinates defines -> Plane3d units coordinates
 yzPlane (Types.Frame3d frame) =
     Plane3d.through frame.originPoint frame.xDirection
 
 
 {-| Get a plane with normal direction equal to the frame's negative X direction.
 -}
-zyPlane : Frame3d -> Plane3d
+zyPlane : Frame3d units coordinates defines -> Plane3d units coordinates
 zyPlane (Types.Frame3d frame) =
     Plane3d.through frame.originPoint (Direction3d.reverse frame.xDirection)
 
 
 {-| Get a plane with normal direction equal to the frame's positive Y direction.
 -}
-zxPlane : Frame3d -> Plane3d
+zxPlane : Frame3d units coordinates defines -> Plane3d units coordinates
 zxPlane (Types.Frame3d frame) =
     Plane3d.through frame.originPoint frame.yDirection
 
 
 {-| Get a plane with normal direction equal to the frame's negative Y direction.
 -}
-xzPlane : Frame3d -> Plane3d
+xzPlane : Frame3d units coordinates defines -> Plane3d units coordinates
 xzPlane (Types.Frame3d frame) =
     Plane3d.through frame.originPoint (Direction3d.reverse frame.yDirection)
 
 
 {-| Form a sketch plane from the given frame's X and Y axes.
 -}
-xySketchPlane : Frame3d -> SketchPlane3d
+xySketchPlane : Frame3d units coordinates defines3d -> SketchPlane3d units coordinates defines2d
 xySketchPlane frame =
     SketchPlane3d.unsafe
         { originPoint = originPoint frame
@@ -475,7 +604,7 @@ xySketchPlane frame =
 
 {-| Form a sketch plane from the given frame's Y and X axes.
 -}
-yxSketchPlane : Frame3d -> SketchPlane3d
+yxSketchPlane : Frame3d units coordinates defines3d -> SketchPlane3d units coordinates defines2d
 yxSketchPlane frame =
     SketchPlane3d.unsafe
         { originPoint = originPoint frame
@@ -486,7 +615,7 @@ yxSketchPlane frame =
 
 {-| Form a sketch plane from the given frame's Y and Z axes.
 -}
-yzSketchPlane : Frame3d -> SketchPlane3d
+yzSketchPlane : Frame3d units coordinates defines3d -> SketchPlane3d units coordinates defines2d
 yzSketchPlane frame =
     SketchPlane3d.unsafe
         { originPoint = originPoint frame
@@ -497,7 +626,7 @@ yzSketchPlane frame =
 
 {-| Form a sketch plane from the given frame's Z and Y axes.
 -}
-zySketchPlane : Frame3d -> SketchPlane3d
+zySketchPlane : Frame3d units coordinates defines3d -> SketchPlane3d units coordinates defines2d
 zySketchPlane frame =
     SketchPlane3d.unsafe
         { originPoint = originPoint frame
@@ -508,7 +637,7 @@ zySketchPlane frame =
 
 {-| Form a sketch plane from the given frame's Z and X axes.
 -}
-zxSketchPlane : Frame3d -> SketchPlane3d
+zxSketchPlane : Frame3d units coordinates defines3d -> SketchPlane3d units coordinates defines2d
 zxSketchPlane frame =
     SketchPlane3d.unsafe
         { originPoint = originPoint frame
@@ -519,7 +648,7 @@ zxSketchPlane frame =
 
 {-| Form a sketch plane from the given frame's X and Z axes.
 -}
-xzSketchPlane : Frame3d -> SketchPlane3d
+xzSketchPlane : Frame3d units coordinates defines3d -> SketchPlane3d units coordinates defines2d
 xzSketchPlane frame =
     SketchPlane3d.unsafe
         { originPoint = originPoint frame
@@ -537,7 +666,7 @@ Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartes
 of the frame.
 
 -}
-reverseX : Frame3d -> Frame3d
+reverseX : Frame3d units coordinates defines1 -> Frame3d units coordinates defines2
 reverseX frame =
     unsafe
         { originPoint = originPoint frame
@@ -556,7 +685,7 @@ Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartes
 of the frame.
 
 -}
-reverseY : Frame3d -> Frame3d
+reverseY : Frame3d units coordinates defines1 -> Frame3d units coordinates defines2
 reverseY frame =
     unsafe
         { originPoint = originPoint frame
@@ -575,7 +704,7 @@ Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartes
 of the frame.
 
 -}
-reverseZ : Frame3d -> Frame3d
+reverseZ : Frame3d units coordinates defines1 -> Frame3d units coordinates defines2
 reverseZ frame =
     unsafe
         { originPoint = originPoint frame
@@ -589,13 +718,13 @@ reverseZ frame =
 orientation.
 
     point =
-        Point3d.fromCoordinates ( 2, 1, 3 )
+        Point3d.meters 2 1 3
 
     Frame3d.atOrigin |> Frame3d.moveTo point
     --> Frame3d.atPoint point
 
 -}
-moveTo : Point3d -> Frame3d -> Frame3d
+moveTo : Point3d units coordinates -> Frame3d units coordinates defines1 -> Frame3d units coordinates defines2
 moveTo newOrigin frame =
     unsafe
         { originPoint = newOrigin
@@ -605,18 +734,19 @@ moveTo newOrigin frame =
         }
 
 
-{-| Rotate a frame around an axis by a given angle (in radians). The frame's
-origin point and basis directions will all be rotated around the given axis.
+{-| Rotate a frame around an axis by a given angle. The frame's origin point and
+basis directions will all be rotated around the given axis.
 
     frame =
-        Frame3d.atPoint
-            (Point3d.fromCoordinates ( 2, 1, 3 ))
+        Frame3d.atPoint (Point3d.meters 2 1 3)
 
     rotatedFrame =
-        Frame3d.rotateAround Axis3d.z (degrees 90) frame
+        frame
+            |> Frame3d.rotateAround Axis3d.z
+                (Angle.degrees 90)
 
     Frame3d.originPoint rotatedFrame
-    --> Point3d.fromCoordinates ( -1, 2, 3 )
+    --> Point3d.meters -1 2 3
 
     Frame3d.xDirection rotatedFrame
     --> Direction3d.y
@@ -628,25 +758,17 @@ origin point and basis directions will all be rotated around the given axis.
     --> Direction3d.z
 
 -}
-rotateAround : Axis3d -> Float -> Frame3d -> Frame3d
-rotateAround axis angle =
-    let
-        rotatePoint =
-            Point3d.rotateAround axis angle
-
-        rotateDirection =
-            Direction3d.rotateAround axis angle
-    in
-    \frame ->
-        unsafe
-            { originPoint = rotatePoint (originPoint frame)
-            , xDirection = rotateDirection (xDirection frame)
-            , yDirection = rotateDirection (yDirection frame)
-            , zDirection = rotateDirection (zDirection frame)
-            }
+rotateAround : Axis3d units coordinates -> Angle -> Frame3d units coordinates defines1 -> Frame3d units coordinates defines2
+rotateAround axis angle frame =
+    unsafe
+        { originPoint = Point3d.rotateAround axis angle (originPoint frame)
+        , xDirection = Direction3d.rotateAround axis angle (xDirection frame)
+        , yDirection = Direction3d.rotateAround axis angle (yDirection frame)
+        , zDirection = Direction3d.rotateAround axis angle (zDirection frame)
+        }
 
 
-{-| Rotate a frame around one of its own axes by a given angle (in radians).
+{-| Rotate a frame around one of its own axes by a given angle.
 
 The first argument is a function that returns the axis to rotate around, given
 the current frame. The majority of the time this will be either `Frame3d.xAxis`,
@@ -654,16 +776,15 @@ the current frame. The majority of the time this will be either `Frame3d.xAxis`,
 for `rotateAround`:
 
     frame =
-        Frame3d.atPoint
-            (Point3d.fromCoordinates ( 2, 1, 3 ))
+        Frame3d.atPoint (Point3d.meters 2 1 3)
 
     rotatedFrame =
         frame
             |> Frame3d.rotateAroundOwn Frame3d.zAxis
-                (degrees 90)
+                (Angle.degrees 90)
 
     Frame3d.originPoint rotatedFrame
-    --> Point3d.fromCoordinates ( 2, 1, 3 )
+    --> Point3d.meters 2 1 3
 
     Frame3d.xDirection rotatedFrame
     --> Direction3d.y
@@ -683,7 +804,7 @@ examples involving rotated frames a rotation around (for example) the frame's
 own Z axis may be completely different from a rotation around the global Z axis.
 
 -}
-rotateAroundOwn : (Frame3d -> Axis3d) -> Float -> Frame3d -> Frame3d
+rotateAroundOwn : (Frame3d units coordinates defines1 -> Axis3d units coordinates) -> Angle -> Frame3d units coordinates defines1 -> Frame3d units coordinates defines2
 rotateAroundOwn axis angle frame =
     rotateAround (axis frame) angle frame
 
@@ -691,18 +812,16 @@ rotateAroundOwn axis angle frame =
 {-| Translate a frame by a given displacement.
 
     frame =
-        Frame3d.atPoint
-            (Point3d.fromCoordinates ( 2, 1, 3 ))
+        Frame3d.atPoint (Point3d.meters 2 1 3)
 
     displacement =
-        Vector3d.fromComponents ( 1, 1, 1 )
+        Vector3d.meters 1 1 1
 
     Frame3d.translateBy displacement frame
-    --> Frame3d.atPoint
-    -->     (Point3d.fromCoordinates ( 3, 2, 4 ))
+    --> Frame3d.atPoint (Point3d.meters 3 2 4)
 
 -}
-translateBy : Vector3d -> Frame3d -> Frame3d
+translateBy : Vector3d units coordinates -> Frame3d units coordinates defines1 -> Frame3d units coordinates defines2
 translateBy vector frame =
     unsafe
         { originPoint = Point3d.translateBy vector (originPoint frame)
@@ -722,7 +841,7 @@ is equivalent to
         (Vector3d.withLength distance direction)
 
 -}
-translateIn : Direction3d -> Float -> Frame3d -> Frame3d
+translateIn : Direction3d coordinates -> Quantity Float units -> Frame3d units coordinates defines1 -> Frame3d units coordinates defines2
 translateIn direction distance frame =
     translateBy (Vector3d.withLength distance direction) frame
 
@@ -737,36 +856,33 @@ This function is convenient when constructing frames via a series of
 transformations. For example,
 
     point =
-        Point3d.fromCoordinates ( 2, 0, 0 )
+        Point3d.meters 2 0 0
 
     frame =
         Frame3d.atPoint point
             |> Frame3d.rotateAroundOwn Frame3d.zAxis
-                (degrees 45)
-            |> Frame3d.translateAlongOwn Frame3d.xAxis 2
+                (Angle.degrees 45)
+            |> Frame3d.translateAlongOwn Frame3d.xAxis
+                (Length.meters 2)
 
 means "construct a frame at the point (2, 0, 0), rotate it around its own Z axis
 counterclockwise by 45 degrees, then translate it along its own (rotated) X axis
-by 2 units", resulting in
+by 2 meters", resulting in
 
     Frame3d.originPoint frame
-    --> Point3d.fromCoordinates ( 3.4142, 1.4142, 0 )
+    --> Point3d.meters 3.4142 1.4142 0
 
     Frame3d.xDirection frame
-    --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 45)
-    -->     (degrees 0)
+    --> Direction3d.xy (Angle.degrees 45)
 
     Frame3d.yDirection frame
-    --> Direction3d.fromAzimuthAndElevation
-    -->     (degrees 135)
-    -->     (degrees 0)
+    --> Direction3d.xy (Angle.degrees 135)
 
     Frame3d.zDirection frame
     --> Direction3d.z
 
 -}
-translateAlongOwn : (Frame3d -> Axis3d) -> Float -> Frame3d -> Frame3d
+translateAlongOwn : (Frame3d units coordinates defines1 -> Axis3d units coordinates) -> Quantity Float units -> Frame3d units coordinates defines1 -> Frame3d units coordinates defines2
 translateAlongOwn axis distance frame =
     let
         displacement =
@@ -778,14 +894,13 @@ translateAlongOwn axis distance frame =
 {-| Mirror a frame across a plane.
 
     frame =
-        Frame3d.atPoint
-            (Point3d.fromCoordinates ( 2, 1, 3 ))
+        Frame3d.atPoint (Point3d.meters 2 1 3)
 
     mirroredFrame =
         Frame3d.mirrorAcross Plane3d.xy frame
 
     Frame3d.originPoint mirroredFrame
-    --> Point3d.fromCoordinates ( 2, 1, -3 )
+    --> Point3d.meters 2 1 -3
 
     Frame3d.xDirection mirroredFrame
     --> Direction3d.x
@@ -800,62 +915,44 @@ Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartes
 of the frame.
 
 -}
-mirrorAcross : Plane3d -> Frame3d -> Frame3d
-mirrorAcross plane =
-    let
-        mirrorPoint =
-            Point3d.mirrorAcross plane
-
-        mirrorDirection =
-            Direction3d.mirrorAcross plane
-    in
-    \frame ->
-        unsafe
-            { originPoint = mirrorPoint (originPoint frame)
-            , xDirection = mirrorDirection (xDirection frame)
-            , yDirection = mirrorDirection (yDirection frame)
-            , zDirection = mirrorDirection (zDirection frame)
-            }
+mirrorAcross : Plane3d units coordinates -> Frame3d units coordinates defines1 -> Frame3d units coordinates defines2
+mirrorAcross plane frame =
+    unsafe
+        { originPoint = Point3d.mirrorAcross plane (originPoint frame)
+        , xDirection = Direction3d.mirrorAcross plane (xDirection frame)
+        , yDirection = Direction3d.mirrorAcross plane (yDirection frame)
+        , zDirection = Direction3d.mirrorAcross plane (zDirection frame)
+        }
 
 
 {-| Take two frames defined in global coordinates, and return the second one
 expressed in local coordinates relative to the first.
 -}
-relativeTo : Frame3d -> Frame3d -> Frame3d
-relativeTo otherFrame =
-    let
-        relativePoint =
-            Point3d.relativeTo otherFrame
-
-        relativeDirection =
-            Direction3d.relativeTo otherFrame
-    in
-    \frame ->
-        unsafe
-            { originPoint = relativePoint (originPoint frame)
-            , xDirection = relativeDirection (xDirection frame)
-            , yDirection = relativeDirection (yDirection frame)
-            , zDirection = relativeDirection (zDirection frame)
-            }
+relativeTo :
+    Frame3d units globalCoordinates { defines : localCoordinates }
+    -> Frame3d units globalCoordinates defines
+    -> Frame3d units localCoordinates defines
+relativeTo otherFrame frame =
+    Types.Frame3d
+        { originPoint = Point3d.relativeTo otherFrame (originPoint frame)
+        , xDirection = Direction3d.relativeTo otherFrame (xDirection frame)
+        , yDirection = Direction3d.relativeTo otherFrame (yDirection frame)
+        , zDirection = Direction3d.relativeTo otherFrame (zDirection frame)
+        }
 
 
 {-| Take one frame defined in global coordinates and a second frame defined
 in local coordinates relative to the first frame, and return the second frame
 expressed in global coordinates.
 -}
-placeIn : Frame3d -> Frame3d -> Frame3d
-placeIn otherFrame =
-    let
-        placePoint =
-            Point3d.placeIn otherFrame
-
-        placeDirection =
-            Direction3d.placeIn otherFrame
-    in
-    \frame ->
-        unsafe
-            { originPoint = placePoint (originPoint frame)
-            , xDirection = placeDirection (xDirection frame)
-            , yDirection = placeDirection (yDirection frame)
-            , zDirection = placeDirection (zDirection frame)
-            }
+placeIn :
+    Frame3d units globalCoordinates { defines : localCoordinates }
+    -> Frame3d units localCoordinates defines
+    -> Frame3d units globalCoordinates defines
+placeIn otherFrame frame =
+    Types.Frame3d
+        { originPoint = Point3d.placeIn otherFrame (originPoint frame)
+        , xDirection = Direction3d.placeIn otherFrame (xDirection frame)
+        , yDirection = Direction3d.placeIn otherFrame (yDirection frame)
+        , zDirection = Direction3d.placeIn otherFrame (zDirection frame)
+        }

@@ -4,6 +4,7 @@ import BoundingBox2d
 import Circle2d
 import Expect
 import Geometry.Fuzz as Fuzz
+import Length
 import Point2d
 import Test exposing (Test, test)
 
@@ -31,14 +32,14 @@ intersectsBoundingBox =
     let
         someBox x1 x2 y1 y2 =
             BoundingBox2d.fromExtrema
-                { minX = x1
-                , maxX = x2
-                , minY = y1
-                , maxY = y2
+                { minX = Length.meters x1
+                , maxX = Length.meters x2
+                , minY = Length.meters y1
+                , maxY = Length.meters y2
                 }
 
         someCircle r center =
-            Circle2d.withRadius r center
+            Circle2d.withRadius (Length.meters r) center
 
         noIntersectionFound =
             "Expected an intersection to be found"
@@ -65,7 +66,7 @@ intersectsBoundingBox =
                         someBox 20 22 30 40
 
                     circle =
-                        Point2d.fromCoordinates ( -20, -20 )
+                        Point2d.meters -20 -20
                             |> someCircle 5
                 in
                 Circle2d.intersectsBoundingBox box circle

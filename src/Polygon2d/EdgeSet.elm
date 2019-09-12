@@ -18,26 +18,31 @@ module Polygon2d.EdgeSet exposing
 
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
+import Quantity exposing (Quantity)
+import Quantity.Extra as Quantity
 
 
-type alias Edge =
-    ( Int, LineSegment2d )
+type alias Edge units coordinates =
+    ( Int, LineSegment2d units coordinates )
 
 
-type EdgeSet
-    = EdgeSet (List Edge)
+type EdgeSet units coordinates
+    = EdgeSet (List (Edge units coordinates))
 
 
-empty : EdgeSet
+empty : EdgeSet units coordinates
 empty =
     EdgeSet []
 
 
-leftOf : Point2d -> EdgeSet -> Maybe Int
+leftOf : Point2d units coordinates -> EdgeSet units coordinates -> Maybe Int
 leftOf point (EdgeSet edges) =
     let
-        ( x, y ) =
-            Point2d.coordinates point
+        x =
+            Point2d.xCoordinate point
+
+        y =
+            Point2d.yCoordinate point
     in
     edges
         |> List.foldl
@@ -46,26 +51,45 @@ leftOf point (EdgeSet edges) =
                     ( p1, p2 ) =
                         LineSegment2d.endpoints (Tuple.second edge)
 
-                    ( x1, y1 ) =
-                        Point2d.coordinates p1
+                    x1 =
+                        Point2d.xCoordinate p1
 
-                    ( x2, y2 ) =
-                        Point2d.coordinates p2
+                    y1 =
+                        Point2d.yCoordinate p1
+
+                    x2 =
+                        Point2d.xCoordinate p2
+
+                    y2 =
+                        Point2d.yCoordinate p2
 
                     dx =
                         if y1 == y2 then
-                            x - max x1 x2
+                            x |> Quantity.minus (Quantity.max x1 x2)
 
                         else
-                            x - (x1 + ((y - y1) / (y2 - y1)) * (x2 - x1))
+                            let
+                                ratio =
+                                    Quantity.ratio
+                                        (y |> Quantity.minus y1)
+                                        (y2 |> Quantity.minus y1)
+                            in
+                            x
+                                |> Quantity.minus
+                                    (x1
+                                        |> Quantity.plus
+                                            (Quantity.multiplyBy ratio
+                                                (x2 |> Quantity.minus x1)
+                                            )
+                                    )
                 in
-                if dx >= 0 then
+                if dx |> Quantity.greaterThanOrEqualTo Quantity.zero then
                     case current of
                         Nothing ->
                             Just ( dx, edge )
 
                         Just ( currentDx, currentEdge ) ->
-                            if dx <= currentDx then
+                            if dx |> Quantity.lessThanOrEqualTo currentDx then
                                 Just ( dx, edge )
 
                             else
@@ -78,11 +102,11 @@ leftOf point (EdgeSet edges) =
         |> Maybe.map (\( dx, ( index, segment ) ) -> index)
 
 
-insert : Edge -> EdgeSet -> EdgeSet
+insert : Edge units coordinates -> EdgeSet units coordinates -> EdgeSet units coordinates
 insert edge (EdgeSet edges) =
     EdgeSet (edge :: edges)
 
 
-remove : Edge -> EdgeSet -> EdgeSet
+remove : Edge units coordinates -> EdgeSet units coordinates -> EdgeSet units coordinates
 remove edge (EdgeSet edges) =
     EdgeSet (List.filter ((/=) edge) edges)

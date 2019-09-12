@@ -13,11 +13,14 @@ import Expect
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Geometry.Test exposing (..)
+import Length exposing (inMeters, meters)
 import List.Extra
 import Plane3d
-import Point2d exposing (Point2d)
+import Point2d
 import Point3d
-import Polygon2d exposing (Polygon2d)
+import Polygon2d
+import Quantity
 import Random
 import Shrink
 import SketchPlane3d
@@ -26,10 +29,10 @@ import Vector3d
 import VoronoiDiagram2d
 
 
-uniquePoints : Fuzzer (Array Point2d)
+uniquePoints : Fuzzer (Array (Point2d coordinates))
 uniquePoints =
     Fuzz.list Fuzz.point2d
-        |> Fuzz.map (List.Extra.uniqueBy Point2d.coordinates)
+        |> Fuzz.map (List.Extra.uniqueBy (Point2d.toTuple inMeters))
         |> Fuzz.map Array.fromList
 
 
@@ -45,11 +48,16 @@ cellForEveryInputVertex =
                     Expect.pass
 
                 Ok diagram ->
-                    case BoundingBox2d.containingPoints (Array.toList points) of
+                    case Point2d.hullN (Array.toList points) of
                         Nothing ->
                             let
                                 boundingBox =
-                                    BoundingBox2d.fromExtrema { minX = 0, minY = 0, maxX = 100, maxY = 100 }
+                                    BoundingBox2d.fromExtrema
+                                        { minX = meters 0
+                                        , minY = meters 0
+                                        , maxX = meters 100
+                                        , maxY = meters 100
+                                        }
                             in
                             VoronoiDiagram2d.polygons boundingBox diagram
                                 |> Expect.equal []
@@ -86,7 +94,7 @@ failsOnCoincidentVertices =
     Test.fuzz (Fuzz.list Fuzz.point2d) description expectation
 
 
-pointInPolygon : Polygon2d -> Fuzzer Point2d
+pointInPolygon : Polygon2d coordinates -> Fuzzer (Point2d coordinates)
 pointInPolygon polygon =
     let
         vertices =
@@ -117,7 +125,8 @@ pointInPolygon polygon =
                             weightedXCoordinates =
                                 List.map2
                                     (\weight vertex ->
-                                        weight * Point2d.xCoordinate vertex
+                                        Quantity.multiplyBy weight
+                                            (Point2d.xCoordinate vertex)
                                     )
                                     weights
                                     vertices
@@ -125,18 +134,21 @@ pointInPolygon polygon =
                             weightedYCoordinates =
                                 List.map2
                                     (\weight vertex ->
-                                        weight * Point2d.yCoordinate vertex
+                                        Quantity.multiplyBy weight
+                                            (Point2d.yCoordinate vertex)
                                     )
                                     weights
                                     vertices
 
                             x =
-                                List.sum weightedXCoordinates / totalWeight
+                                Quantity.sum weightedXCoordinates
+                                    |> Quantity.divideBy totalWeight
 
                             y =
-                                List.sum weightedYCoordinates / totalWeight
+                                Quantity.sum weightedYCoordinates
+                                    |> Quantity.divideBy totalWeight
                         in
-                        Point2d.fromCoordinates ( x, y )
+                        Point2d.xy x y
                     )
 
 

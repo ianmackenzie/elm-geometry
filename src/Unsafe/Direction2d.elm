@@ -7,19 +7,21 @@
 --------------------------------------------------------------------------------
 
 
-module Bootstrap.Axis2d exposing
-    ( direction
-    , originPoint
-    )
+module Unsafe.Direction2d exposing (unsafeXyIn)
 
 import Geometry.Types exposing (..)
 
 
-originPoint : Axis2d -> Point2d
-originPoint (Axis2d properties) =
-    properties.originPoint
+unsafeXyIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Float -> Float -> Direction2d globalCoordinates
+unsafeXyIn (Frame2d frame) x y =
+    let
+        (Direction2d i) =
+            frame.xDirection
 
-
-direction : Axis2d -> Direction2d
-direction (Axis2d properties) =
-    properties.direction
+        (Direction2d j) =
+            frame.yDirection
+    in
+    Direction2d
+        { x = x * i.x + y * j.x
+        , y = x * i.y + y * j.y
+        }
