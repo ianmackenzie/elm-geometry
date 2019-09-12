@@ -819,16 +819,6 @@ given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
             , maxZ = Length.meters 7
             }
 
-    thirdBox =
-        BoundingBox3d.fromExtrema
-            { minX = Length.meters 1
-            , maxX = Length.meters 4
-            , minY = Length.meters 4
-            , maxY = Length.meters 5
-            , minZ = Length.meters 5
-            , maxZ = Length.meters 8
-            }
-
     BoundingBox3d.intersection firstBox secondBox
     --> Just
     -->     (BoundingBox3d.fromExtrema
@@ -840,9 +830,6 @@ given bounding boxes. If the given boxes do not overlap, returns `Nothing`.
     -->         , maxZ = Length.meters 7
     -->         }
     -->     )
-
-    BoundingBox3d.intersection firstBox thirdBox
-    --> Nothing
 
 If two boxes just touch along an edge or at a corner, they are still considered
 to have an intersection, even though that intersection will have zero area (at

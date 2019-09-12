@@ -133,18 +133,6 @@ given swept angle.
     Arc2d.centerPoint arc3
     --> Point2d.meters 1.5 1.5
 
-    arc4 =
-        Arc2d.from p1 p2 (Angle.degrees -180)
-
-    Arc2d.centerPoint arc4
-    --> Point2d.meters 1.5 1.5
-
-    arc5 =
-        Arc2d.from p1 p2 (Angle.degrees 45)
-
-    Arc2d.centerPoint arc5
-    --> Point2d.meters 0.2929 0.2929
-
 -}
 from : Point2d units coordinates -> Point2d units coordinates -> Angle -> Arc2d units coordinates
 from givenStartPoint givenEndPoint givenSweptAngle =
@@ -264,18 +252,6 @@ and the start point to be swept is given last.
 
     Arc2d.endPoint exampleArc
     --> Point2d.meters 1 3
-
-Note that the 'actual' form of this function is
-
-    arc =
-        Arc2d.sweptAround centerPoint sweptAngle startPoint
-
-but it is generally written using the pipe operator `|>` (as in the first
-example) to improve readability:
-
-    arc =
-        startPoint
-            |> Arc2d.sweptAround centerPoint sweptAngle
 
 A positive swept angle means that the arc is formed by rotating the start point
 counterclockwise around the center point. A negative swept angle results in
@@ -463,27 +439,6 @@ specify which arc to create. For example:
     -->         |> Arc2d.sweptAround
     -->             (Point2d.meters 1 1)
     -->             (Angle.degrees 270)
-    -->     )
-
-    Arc2d.withRadius (Length.meters 1)
-        SweptAngle.largeNegative
-        p1
-        p2
-    --> Just
-    -->     (Point2d.meters 1 0
-    -->         |> Arc2d.sweptAround Point2d.origin
-    -->             (Angle.degrees -270)
-    -->     )
-
-    Arc2d.withRadius (Length.meters 2)
-        SweptAngle.smallPositive
-        p1
-        p2
-    --> Just
-    -->     (Point2d.meters 1 0
-    -->         |> Arc2d.sweptAround
-    -->             (Point2d.meters -0.8229 -0.8229)
-    -->             (Angle.degrees 41.4096)
     -->     )
 
 If the start and end points are coincident or the distance between them is more

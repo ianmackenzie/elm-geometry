@@ -709,14 +709,6 @@ given bounding boxes. If the given boxes do not intersect, returns `Nothing`.
             , maxY = Length.meters 4
             }
 
-    thirdBox =
-        BoundingBox2d.fromExtrema
-            { minX = Length.meters 1
-            , maxX = Length.meters 4
-            , minY = Length.meters 4
-            , maxY = Length.meters 5
-            }
-
     BoundingBox2d.intersection firstBox secondBox
     --> Just
     -->     (BoundingBox2d.fromExtrema
@@ -726,9 +718,6 @@ given bounding boxes. If the given boxes do not intersect, returns `Nothing`.
     -->         , maxY = Length.meters 3
     -->         }
     -->     )
-
-    BoundingBox2d.intersection firstBox thirdBox
-    --> Nothing
 
 If two boxes just touch along an edge or at a corner, they are still considered
 to have an intersection, even though that intersection will have zero area (at

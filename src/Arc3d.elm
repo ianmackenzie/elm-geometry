@@ -760,28 +760,6 @@ mirrorAcross plane (Types.Arc3d arc) =
 
 {-| Project an arc into a sketch plane. Note that the result is an elliptical
 arc, not a circular one!
-
-    axis : Axis3d Meters coordinates
-    axis =
-        Axis3d.through (Point3d.meters 1 2 3)
-            (Direction3d.xz (Angle.degrees 45))
-
-    arc : Arc3d Meters coordinates
-    arc =
-        Arc3d.sweptAround axis
-            (Angle.degrees 45)
-            (Point3d.meters 1 4 3)
-
-    Arc3d.projectInto SketchPlane3d.xy arc
-    --> EllipticalArc2d.with
-    -->     { centerPoint = Point2d.meters 1 2
-    -->     , xDirection = Direction2d.y
-    -->     , xRadius = Length.meters 2
-    -->     , yRadius = Length.meters 1.4142
-    -->     , startAngle = Angle.degrees 0
-    -->     , sweptAngle = Angle.degrees 45
-    -->     }
-
 -}
 projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Arc3d units coordinates3d -> Types.EllipticalArc2d units coordinates2d
 projectInto sketchPlane arc =
