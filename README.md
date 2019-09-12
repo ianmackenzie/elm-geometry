@@ -1,7 +1,9 @@
 # elm-geometry
 
-_Note: elm-geometry 2.0 is very new and the docs are still being updated. Please
-be patient and please reach out to **@ianmackenzie** on the [Elm
+_Release notes for 2.0 are
+[here](https://github.com/ianmackenzie/elm-geometry/releases/tag/2.0.0). Note:
+elm-geometry 2.0 is very new and the docs are still being updated. Please be
+patient and please reach out to **@ianmackenzie** on the [Elm
 Slack](http://elmlang.herokuapp.com/) if anything is not clear or if you find
 any errors! You may also want to check out the docs for [the previous version of
 elm-geometry](https://package.elm-lang.org/packages/ianmackenzie/elm-geometry/1.2.1/)
