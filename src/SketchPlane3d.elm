@@ -127,13 +127,15 @@ import Vector3d exposing (Vector3d)
 systems it's defined in, and what local 2D coordinate system (if any) it itself
 defines. A concrete `SketchPlane3d` type might look like
 
-    SketchPlane3d Meters World { defines : Sketch }
+    type alias MySketchPlane =
+        SketchPlane3d Meters World { defines : Sketch }
 
 which can be read as "a `SketchPlane3d` defined in meters in world coordinates,
 which itself defines a local 2D sketch coordinate system". For sketch planes
 that don't define a local 2D coordinate system, you could use
 
-    SketchPlane3d Meters World {}
+    type alias MySketchPlane =
+        SketchPlane3d Meters World {}
 
 Many functions in this module don't care about the third type argument (whether
 it's a record with a `defines` field like in the first example, an empty record

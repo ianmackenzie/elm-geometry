@@ -505,7 +505,7 @@ counterclockwise arc):
 
     halfCircle =
         Arc2d.from firstPoint secondPoint <|
-            (Angle.degrees 180)
+            Angle.degrees 180
 
 (Use `Angle.degrees -180` for a clockwise arc.)
 

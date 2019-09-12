@@ -78,13 +78,15 @@ import Vector2d exposing (Vector2d)
 systems it's defined in, and what coordinate system (if any) it itself defines.
 A concrete `Frame2d` type might look like
 
-    Frame2d Meters World { defines : Local }
+    type alias MyFrame =
+        Frame2d Meters World { defines : Local }
 
 which can be read as "a `Frame2d` defined in meters in world coordinates, which
 itself defines local coordinates". For frames that don't define a local
 coordinate system, you could use
 
-    Frame2d Meters World {}
+    type alias MyFrame =
+        Frame2d Meters World {}
 
 Many functions in this module don't care about the third type argument (whether
 it's a record with a `defines` field like in the first example, an empty record
