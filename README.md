@@ -86,11 +86,11 @@ constructors...
 
 ```elm
 Point3d.xyz
-    (Length.meters 1)
+    (Length.meters 2)
     (Length.meters 4)
     (Length.meters 5)
 -- OR --
-Point3d.meters 1 4 5
+Point3d.meters 2 4 5
 
 Direction2d.fromAngle (Angle.degrees 30)
 -- OR --
