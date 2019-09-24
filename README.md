@@ -254,9 +254,9 @@ module contains functions for creating and manipulating `Point3d` values).
 I would like for the projects I work on to be as helpful as possible in
 addressing the climate crisis. If
 
-- you are working on a project that helps address the climate crisis (either as
-  an individual, as part of an non-profit organization or even as part of a
-  for-profit company), and
+- you are working on clean energy, public transit, reforestation, sustainable
+  agriculture or something similar (either as an individual, as part of an
+  non-profit organization or even as part of a for-profit company), and
 - there is a new feature you would find useful (or a bug you need fixed) for
   that work in any of my open-source projects, then
 
