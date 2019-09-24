@@ -31,6 +31,7 @@ transforming and combining them in many different ways. You can:
   - [Conversions](#conversions)
 - [Installation](#installation)
 - [Documentation](#documentation)
+- [Climate action](#climate-action)
 - [Questions and feedback](#questions-and-feedback)
 
 ## Overview
@@ -247,6 +248,21 @@ in a command prompt inside your project directory.
 is available for each module. Most modules are associated with a particular data
 type (for example, the [`Point3d`](https://package.elm-lang.org/packages/ianmackenzie/elm-geometry/latest/Point3d)
 module contains functions for creating and manipulating `Point3d` values).
+
+## Climate action
+
+I would like for the projects I work on to be as helpful as possible in
+addressing the climate crisis. If
+
+- you are working on a project that helps address the climate crisis (either as
+  an individual, as part of an non-profit organization or even as part of a
+  for-profit company), and
+- there is a new feature you would find useful (or a bug you need fixed) for
+  that work in any of my open-source projects, then
+
+please [open a new issue](https://github.com/ianmackenzie/elm-geometry/issues),
+describe briefly what you're working on and I will treat that issue as high
+priority.
 
 ## Questions and feedback
 
