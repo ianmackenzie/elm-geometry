@@ -424,8 +424,7 @@ which arc to create. For example:
         p2
     --> Just
     -->     (Point2d.meters 1 0
-    -->         |> Arc2d.sweptAround
-    -->             (Point2d.meters 1 1)
+    -->         |> Arc2d.sweptAround (Point2d.meters 1 1)
     -->             (Angle.degrees -90)
     -->     )
 
@@ -435,8 +434,7 @@ which arc to create. For example:
         p2
     --> Just
     -->     (Point2d.meters 1 0
-    -->         |> Arc2d.sweptAround
-    -->             (Point2d.meters 1 1)
+    -->         |> Arc2d.sweptAround (Point2d.meters 1 1)
     -->             (Angle.degrees 270)
     -->     )
 
