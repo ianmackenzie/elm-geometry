@@ -41,6 +41,7 @@ import Quantity.Extra as Quantity
 
 
 {-| Contains a mapping from curve parameter value to arc length, and vice versa.
+Parameter values are assumed to range from 0 to 1.
 -}
 type ArcLengthParameterization units
     = ArcLengthParameterization (SegmentTree units)
@@ -90,9 +91,9 @@ segmentsPerLeaf =
 
 -}
 build :
-    { maxError : Quantity Float units
-    , derivativeMagnitude : Float -> Quantity Float units
+    { derivativeMagnitude : Float -> Quantity Float units
     , maxSecondDerivativeMagnitude : Quantity Float units
+    , maxError : Quantity Float units
     }
     -> ArcLengthParameterization units
 build { maxError, derivativeMagnitude, maxSecondDerivativeMagnitude } =
@@ -404,7 +405,8 @@ is equivalent to
     ArcLengthParameterization.parameterValueToArcLength 1
         parameterization
 
-but is more efficient.
+but is more efficient. The arc length will be accurate to within the maximum
+error specified when building the parameterization.
 
 -}
 totalArcLength : ArcLengthParameterization units -> Quantity Float units
