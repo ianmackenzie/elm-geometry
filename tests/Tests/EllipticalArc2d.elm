@@ -4,7 +4,7 @@ module Tests.EllipticalArc2d exposing
     , transformations
     )
 
-import Angle exposing (degrees, radians)
+import Angle
 import Arc.SweptAngle as SweptAngle
 import Arc2d
 import EllipticalArc2d
@@ -36,7 +36,7 @@ reproducibleArc =
         Fuzz.point2d
         Fuzz.direction2d
         (Fuzz.map meters (Fuzz.floatRange 0.1 10))
-        (Fuzz.map degrees <|
+        (Fuzz.map Angle.degrees <|
             Fuzz.oneOf
                 [ Fuzz.floatRange 1 179
                 , Fuzz.floatRange 181 359
@@ -61,13 +61,13 @@ fromEndpointsReplicatesArc =
                     Arc2d.sweptAngle arc
 
                 sweptAngle =
-                    if arcSweptAngle |> Quantity.greaterThanOrEqualTo (radians pi) then
+                    if arcSweptAngle |> Quantity.greaterThanOrEqualTo (Angle.radians pi) then
                         SweptAngle.largePositive
 
                     else if arcSweptAngle |> Quantity.greaterThanOrEqualTo zero then
                         SweptAngle.smallPositive
 
-                    else if arcSweptAngle |> Quantity.greaterThanOrEqualTo (radians -pi) then
+                    else if arcSweptAngle |> Quantity.greaterThanOrEqualTo (Angle.radians -pi) then
                         SweptAngle.smallNegative
 
                     else

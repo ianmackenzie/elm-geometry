@@ -15,7 +15,7 @@ module Tests.Sphere3d exposing
     , withRadius
     )
 
-import Angle exposing (degrees, radians)
+import Angle
 import Area exposing (Area)
 import Axis3d
 import BoundingBox3d
@@ -350,7 +350,7 @@ rotateAround =
                         Axis3d.z
 
                     angle =
-                        degrees 90
+                        Angle.degrees 90
 
                     originalCenter =
                         Point3d.fromTuple meters ( 2, 0, 0 )
@@ -387,7 +387,7 @@ rotateAround =
                         ]
             )
         , Test.fuzz3 Fuzz.axis3d
-            (Fuzz.map radians (Fuzz.floatRange 0 pi))
+            (Fuzz.map Angle.radians (Fuzz.floatRange 0 pi))
             Fuzz.sphere3d
             "rotates by the correct angle"
             (\axis angle sphere ->
@@ -439,7 +439,7 @@ rotateAround =
             "rotating by 2 pi doesn't change the sphere"
             (\axis sphere ->
                 sphere
-                    |> Sphere3d.rotateAround axis (radians (2 * pi))
+                    |> Sphere3d.rotateAround axis (Angle.radians (2 * pi))
                     |> Expect.sphere3d sphere
             )
         , Test.fuzz3 Fuzz.axis3d

@@ -7,7 +7,7 @@ module Tests.QuadraticSpline2d exposing
     , parameterization
     )
 
-import Angle exposing (radians)
+import Angle
 import ArcLengthParameterization
 import Expect
 import Float.Extra as Float
@@ -63,7 +63,7 @@ curvedSpline =
             QuadraticSpline2d.fromControlPoints p0 p1 p2
                 |> QuadraticSpline2d.rotateAround Point2d.origin angle
         )
-        (Fuzz.map radians (Fuzz.floatRange 0 (2 * pi)))
+        (Fuzz.map Angle.radians (Fuzz.floatRange 0 (2 * pi)))
         (Fuzz.map meters (Fuzz.floatRange 1 10))
         (Fuzz.floatRange 0 1)
         (Fuzz.map meters (Fuzz.floatRange 1 5))
