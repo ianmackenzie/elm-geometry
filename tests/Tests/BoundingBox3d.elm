@@ -1,6 +1,7 @@
 module Tests.BoundingBox3d exposing
     ( boxContainsOwnCenterPoint
-    , hullContainsInputs
+    , hullNConsistentWithHull2
+    , hullNIsOrderIndependent
     , intersectionConsistentWithIntersects
     , intersectionConsistentWithOverlappingBy
     , intersectionIsValidOrNothing
@@ -14,6 +15,7 @@ module Tests.BoundingBox3d exposing
     , separationIsCorrectForDiagonallyDisplacedBoxes
     , separationIsCorrectForHorizontallyDisplacedBoxes
     , separationIsCorrectForVerticallyDisplacedBoxes
+    , unionContainsInputs
     )
 
 import BoundingBox3d
@@ -89,20 +91,20 @@ intersectionConsistentWithOverlappingBy =
         )
 
 
-hullContainsInputs : Test
-hullContainsInputs =
+unionContainsInputs : Test
+unionContainsInputs =
     Test.fuzz2 Fuzz.boundingBox3d
         Fuzz.boundingBox3d
-        "hull of two boxes contains both input boxes"
+        "union of two boxes contains both input boxes"
         (\first second ->
             let
-                hull =
-                    BoundingBox3d.hull2 first second
+                union =
+                    BoundingBox3d.union first second
 
                 isContained =
-                    BoundingBox3d.isContainedIn hull
+                    BoundingBox3d.isContainedIn union
             in
-            Expect.true "Bounding box hull does not contain both inputs"
+            Expect.true "Bounding box union does not contain both inputs"
                 (isContained first && isContained second)
         )
 
@@ -426,4 +428,27 @@ offsetByHalfDepthIsValidOrNothing =
 
                 Just result ->
                     Expect.validBoundingBox3d result
+        )
+
+
+hullNConsistentWithHull2 : Test
+hullNConsistentWithHull2 =
+    Test.fuzz2
+        Fuzz.point3d
+        Fuzz.point3d
+        "'hullN' is consistent with 'from'"
+        (\firstPoint secondPoint ->
+            BoundingBox3d.hullN [ firstPoint, secondPoint ]
+                |> Expect.equal
+                    (Just (BoundingBox3d.from firstPoint secondPoint))
+        )
+
+
+hullNIsOrderIndependent : Test
+hullNIsOrderIndependent =
+    Test.fuzz (Fuzz.list Fuzz.point3d)
+        "'hullN' does not depend on input order"
+        (\points ->
+            BoundingBox3d.hullN (List.reverse points)
+                |> Expect.equal (BoundingBox3d.hullN points)
         )

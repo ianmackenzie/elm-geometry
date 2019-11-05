@@ -289,7 +289,7 @@ if the polyline has no vertices.
 -}
 boundingBox : Polyline3d units coordinates -> Maybe (BoundingBox3d units coordinates)
 boundingBox polyline =
-    Point3d.hullN (vertices polyline)
+    BoundingBox3d.hullN (vertices polyline)
 
 
 {-| Find the centroid (center of mass) of a polyline. This is the

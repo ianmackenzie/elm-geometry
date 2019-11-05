@@ -9,8 +9,9 @@
 
 module BoundingBox2d exposing
     ( BoundingBox2d
-    , fromExtrema, singleton, intersection
-    , hull, hullOf, hull2, hull3, hullN
+    , from, fromExtrema, singleton, intersection, union
+    , hull, hull3, hullN, hullOf, hullOfN
+    , aggregate, aggregate3, aggregateN, aggregateOf, aggregateOfN
     , extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint
     , contains, isContainedIn, intersects, overlappingByAtLeast, separatedByAtLeast
     , at, at_
@@ -39,12 +40,22 @@ box of an object than the object itself, such as:
 
 # Constructors
 
-@docs fromExtrema, singleton, intersection
+@docs from, fromExtrema, singleton, intersection, union
 
 
 ## Hull
 
-@docs hull, hullOf, hull2, hull3, hullN
+Functions for building bounding boxes containing several points.
+
+@docs hull, hull3, hullN, hullOf, hullOfN
+
+
+## Aggregation
+
+Functions for combining several bounding boxes into one bounding box that
+contains all of the input boxes.
+
+@docs aggregate, aggregate3, aggregateN, aggregateOf, aggregateOfN
 
 
 # Properties
@@ -79,6 +90,48 @@ import Vector2d exposing (Vector2d)
 {-| -}
 type alias BoundingBox2d units coordinates =
     Types.BoundingBox2d units coordinates
+
+
+{-| Construct a bounding box with the two given points as two of its corners.
+The points can be given in any order and don't have to represent the 'primary'
+diagonal of the bounding box.
+
+    firstPoint =
+        Point2d.meters 2 3
+
+    secondPoint =
+        Point2d.meters -1 5
+
+    BoundingBox2d.from firstPoint secondPoint
+    --> BoundingBox2d.fromExtrema
+    -->     { minX = Length.meters -1
+    -->     , maxX = Length.meters 2
+    -->     , minY = Length.meters 3
+    -->     , maxY = Length.meters 5
+    -->     }
+
+-}
+from : Point2d units coordinates -> Point2d units coordinates -> BoundingBox2d units coordinates
+from firstPoint secondPoint =
+    let
+        x1 =
+            Point2d.xCoordinate firstPoint
+
+        y1 =
+            Point2d.yCoordinate firstPoint
+
+        x2 =
+            Point2d.xCoordinate secondPoint
+
+        y2 =
+            Point2d.yCoordinate secondPoint
+    in
+    Types.BoundingBox2d
+        { minX = Quantity.min x1 x2
+        , maxX = Quantity.max x1 x2
+        , minY = Quantity.min y1 y2
+        , maxY = Quantity.max y1 y2
+        }
 
 
 {-| Construct a bounding box from its minimum and maximum X and Y values:
@@ -143,27 +196,207 @@ singleton point =
         }
 
 
-{-| Find the bounding box containing one or more input boxes. If you need to
-handle the case of zero input boxes, see `hullN`.
+{-| Find the bounding box containing one or more input points. You would
+generally use this within a `case` expression:
+
+    case points of
+        [] ->
+            -- some default behavior
+
+        first :: rest ->
+            let
+                boundingBox =
+                    BoundingBox2d.hull first rest
+            in
+            ...
+
+If you need to handle the case of zero input points, see [`hullN`](#hullN).
+
 -}
-hull : BoundingBox2d units coordinates -> List (BoundingBox2d units coordinates) -> BoundingBox2d units coordinates
+hull : Point2d units coordinates -> List (Point2d units coordinates) -> BoundingBox2d units coordinates
 hull first rest =
+    let
+        (Types.Point2d { x, y }) =
+            first
+    in
+    hullHelp x x y y rest
+
+
+hullHelp : Float -> Float -> Float -> Float -> List (Point2d units coordinates) -> BoundingBox2d units coordinates
+hullHelp currentMinX currentMaxX currentMinY currentMaxY points =
+    case points of
+        next :: rest ->
+            let
+                (Types.Point2d { x, y }) =
+                    next
+            in
+            hullHelp
+                (min x currentMinX)
+                (max x currentMaxX)
+                (min y currentMinY)
+                (max y currentMaxY)
+                rest
+
+        [] ->
+            Types.BoundingBox2d
+                { minX = Quantity currentMinX
+                , maxX = Quantity currentMaxX
+                , minY = Quantity currentMinY
+                , maxY = Quantity currentMaxY
+                }
+
+
+{-| Like `hull`, but lets you work on any kind of item as long as a point can be
+extracted from it. For example, to get the bounding box around the centroids of
+four triangles:
+
+    BoundingBox2d.hullOf Triangle2d.centroid
+        firstTriangle
+        [ secondTriangle
+        , thirdTriangle
+        , fourthTriangle
+        ]
+
+-}
+hullOf : (a -> Point2d units coordinates) -> a -> List a -> BoundingBox2d units coordinates
+hullOf getPoint first rest =
+    let
+        (Types.Point2d { x, y }) =
+            getPoint first
+    in
+    hullOfHelp x x y y getPoint rest
+
+
+hullOfHelp : Float -> Float -> Float -> Float -> (a -> Point2d units coordinates) -> List a -> BoundingBox2d units coordinates
+hullOfHelp currentMinX currentMaxX currentMinY currentMaxY getPoint list =
+    case list of
+        next :: rest ->
+            let
+                (Types.Point2d { x, y }) =
+                    getPoint next
+            in
+            hullOfHelp
+                (min x currentMinX)
+                (max x currentMaxX)
+                (min y currentMinY)
+                (max y currentMaxY)
+                getPoint
+                rest
+
+        [] ->
+            Types.BoundingBox2d
+                { minX = Quantity currentMinX
+                , maxX = Quantity currentMaxX
+                , minY = Quantity currentMinY
+                , maxY = Quantity currentMaxY
+                }
+
+
+{-| Build a bounding box that contains all three of the given points;
+
+    BoundingBox2d.hull3 p1 p2 p3
+
+is equivalent to
+
+    BoundingBox2d.hull p1 [ p2, p3 ]
+
+but is more efficient.
+
+-}
+hull3 : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> BoundingBox2d units coordinates
+hull3 firstPoint secondPoint thirdPoint =
+    let
+        x1 =
+            Point2d.xCoordinate firstPoint
+
+        y1 =
+            Point2d.yCoordinate firstPoint
+
+        x2 =
+            Point2d.xCoordinate secondPoint
+
+        y2 =
+            Point2d.yCoordinate secondPoint
+
+        x3 =
+            Point2d.xCoordinate thirdPoint
+
+        y3 =
+            Point2d.yCoordinate thirdPoint
+    in
+    Types.BoundingBox2d
+        { minX = Quantity.min x1 (Quantity.min x2 x3)
+        , maxX = Quantity.max x1 (Quantity.max x2 x3)
+        , minY = Quantity.min y1 (Quantity.min y2 y3)
+        , maxY = Quantity.max y1 (Quantity.max y2 y3)
+        }
+
+
+{-| Construct a bounding box containing all _N_ points in the given list. If the
+list is empty, returns `Nothing`.
+
+    BoundingBox2d.hullN
+        [ Point2d.meters 2 3
+        , Point2d.meters -1 5
+        , Point2d.meters 6 4
+        ]
+    --> Just <|
+    -->     BoundingBox2d.fromExtrema
+    -->         { minX = Length.meters -1
+    -->         , maxX = Length.meters 6
+    -->         , minY = Length.meters 3
+    -->         , maxY = Length.meters 5
+    -->         }
+
+    BoundingBox2d.hullN []
+    --> Nothing
+
+If you know you have at least one point, you can use [`hull`](#hull) instead.
+
+-}
+hullN : List (Point2d units coordinates) -> Maybe (BoundingBox2d units coordinates)
+hullN points =
+    case points of
+        first :: rest ->
+            Just (hull first rest)
+
+        [] ->
+            Nothing
+
+
+{-| Combination of `hullOf` and `hullN`.
+-}
+hullOfN : (a -> Point2d units coordinates) -> List a -> Maybe (BoundingBox2d units coordinates)
+hullOfN getBoundingBox items =
+    case items of
+        first :: rest ->
+            Just (hullOf getBoundingBox first rest)
+
+        [] ->
+            Nothing
+
+
+{-| Find the bounding box containing one or more input boxes. If you need to
+handle the case of zero input boxes, see `aggregateN`.
+-}
+aggregate : BoundingBox2d units coordinates -> List (BoundingBox2d units coordinates) -> BoundingBox2d units coordinates
+aggregate first rest =
     let
         b1 =
             extrema first
     in
-    hullHelp b1.minX b1.maxX b1.minY b1.maxY rest
+    aggregateHelp b1.minX b1.maxX b1.minY b1.maxY rest
 
 
-hullHelp : Quantity Float units -> Quantity Float units -> Quantity Float units -> Quantity Float units -> List (BoundingBox2d units coordinates) -> BoundingBox2d units coordinates
-hullHelp currentMinX currentMaxX currentMinY currentMaxY boxes =
+aggregateHelp : Quantity Float units -> Quantity Float units -> Quantity Float units -> Quantity Float units -> List (BoundingBox2d units coordinates) -> BoundingBox2d units coordinates
+aggregateHelp currentMinX currentMaxX currentMinY currentMaxY boxes =
     case boxes of
         next :: rest ->
             let
                 b =
                     extrema next
             in
-            hullHelp
+            aggregateHelp
                 (Quantity.min b.minX currentMinX)
                 (Quantity.max b.maxX currentMaxX)
                 (Quantity.min b.minY currentMinY)
@@ -179,11 +412,11 @@ hullHelp currentMinX currentMaxX currentMinY currentMaxY boxes =
                 }
 
 
-{-| Like `hull`, but lets you work on any kind of item as long as a bounding
+{-| Like `aggregate`, but lets you work on any kind of item as long as a bounding
 box can be extracted from it. For example, to get the bounding box around four
 triangles:
 
-    BoundingBox2d.hullOf Triangle2d.boundingBox
+    BoundingBox2d.aggregateOf Triangle2d.boundingBox
         firstTriangle
         [ secondTriangle
         , thirdTriangle
@@ -191,24 +424,24 @@ triangles:
         ]
 
 -}
-hullOf : (a -> BoundingBox2d units coordinates) -> a -> List a -> BoundingBox2d units coordinates
-hullOf getBoundingBox first rest =
+aggregateOf : (a -> BoundingBox2d units coordinates) -> a -> List a -> BoundingBox2d units coordinates
+aggregateOf getBoundingBox first rest =
     let
         b1 =
             extrema (getBoundingBox first)
     in
-    hullOfHelp b1.minX b1.maxX b1.minY b1.maxY getBoundingBox rest
+    aggregateOfHelp b1.minX b1.maxX b1.minY b1.maxY getBoundingBox rest
 
 
-hullOfHelp : Quantity Float units -> Quantity Float units -> Quantity Float units -> Quantity Float units -> (a -> BoundingBox2d units coordiantes) -> List a -> BoundingBox2d units coordinates
-hullOfHelp currentMinX currentMaxX currentMinY currentMaxY getBoundingBox items =
+aggregateOfHelp : Quantity Float units -> Quantity Float units -> Quantity Float units -> Quantity Float units -> (a -> BoundingBox2d units coordiantes) -> List a -> BoundingBox2d units coordinates
+aggregateOfHelp currentMinX currentMaxX currentMinY currentMaxY getBoundingBox items =
     case items of
         next :: rest ->
             let
                 b =
                     extrema (getBoundingBox next)
             in
-            hullOfHelp
+            aggregateOfHelp
                 (Quantity.min b.minX currentMinX)
                 (Quantity.max b.maxX currentMaxX)
                 (Quantity.min b.minY currentMinY)
@@ -243,7 +476,7 @@ hullOfHelp currentMinX currentMaxX currentMinY currentMaxY getBoundingBox items 
             , maxY = Length.meters 5
             }
 
-    BoundingBox2d.hull2 firstBox secondBox
+    BoundingBox2d.union firstBox secondBox
     --> BoundingBox2d.fromExtrema
     -->     { minX = Length.meters -2
     -->     , maxX = Length.meters 4
@@ -251,9 +484,12 @@ hullOfHelp currentMinX currentMaxX currentMinY currentMaxY getBoundingBox items 
     -->     , maxY = Length.meters 5
     -->     }
 
+(Note that this is not strictly speaking a 'union' in the precise mathematical
+sense.)
+
 -}
-hull2 : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
-hull2 firstBox secondBox =
+union : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
+union firstBox secondBox =
     let
         b1 =
             extrema firstBox
@@ -269,10 +505,19 @@ hull2 firstBox secondBox =
         }
 
 
-{-| Build a bounding box that contains all three of the given bounding boxes.
+{-| Build a bounding box that contains all three of the given bounding boxes;
+
+    BoundingBox2d.aggregate3 b1 b2 b3
+
+is equivalent to
+
+    BoundingBox2d.aggregate b1 [ b2, b3 ]
+
+but is more efficient.
+
 -}
-hull3 : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
-hull3 firstBox secondBox thirdBox =
+aggregate3 : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
+aggregate3 firstBox secondBox thirdBox =
     let
         b1 =
             extrema firstBox
@@ -297,7 +542,7 @@ the list is empty, returns `Nothing`.
     singletonBox =
         BoundingBox2d.singleton (Point2d.meters 1 3)
 
-    BoundingBox2d.hullN [ exampleBox, singletonBox ]
+    BoundingBox2d.aggregateN [ exampleBox, singletonBox ]
     --> Just
     -->     (BoundingBox2d.fromExtrema
     -->         { minX = Length.meters 1,
@@ -307,20 +552,32 @@ the list is empty, returns `Nothing`.
     -->         }
     -->     )
 
-    BoundingBox2d.hullN [ exampleBox ]
+    BoundingBox2d.aggregateN [ exampleBox ]
     --> Just exampleBox
 
-    BoundingBox2d.hullN []
+    BoundingBox2d.aggregateN []
     --> Nothing
 
-If you know you have at least one bounding box, you can use `hull` instead.
+If you know you have at least one bounding box, you can use `aggregate` instead.
 
 -}
-hullN : List (BoundingBox2d units coordinates) -> Maybe (BoundingBox2d units coordinates)
-hullN boxes =
+aggregateN : List (BoundingBox2d units coordinates) -> Maybe (BoundingBox2d units coordinates)
+aggregateN boxes =
     case boxes of
         first :: rest ->
-            Just (hull first rest)
+            Just (aggregate first rest)
+
+        [] ->
+            Nothing
+
+
+{-| Combination of `aggregateOf` and `aggregateN`.
+-}
+aggregateOfN : (a -> BoundingBox2d units coordinates) -> List a -> Maybe (BoundingBox2d units coordinates)
+aggregateOfN getBoundingBox items =
+    case items of
+        first :: rest ->
+            Just (aggregateOf getBoundingBox first rest)
 
         [] ->
             Nothing

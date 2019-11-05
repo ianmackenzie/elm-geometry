@@ -517,7 +517,7 @@ if the polygon has no vertices.
 -}
 boundingBox : Polygon2d units coordinates -> Maybe (BoundingBox2d units coordinates)
 boundingBox polygon =
-    Point2d.hullN (outerLoop polygon)
+    BoundingBox2d.hullN (outerLoop polygon)
 
 
 {-| Triangulate a polygon. This uses the `TriangularMesh` data types from
