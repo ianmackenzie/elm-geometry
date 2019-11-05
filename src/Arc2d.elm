@@ -501,14 +501,9 @@ withRadius givenRadius givenSweptAngle givenStartPoint givenEndPoint =
                                 Types.LargePositive ->
                                     Quantity.negate offsetMagnitude
 
-                        offset =
-                            Vector2d.withLength offsetDistance offsetDirection
-
-                        midpoint =
-                            LineSegment2d.midpoint chord
-
                         computedCenterPoint =
-                            Point2d.translateBy offset midpoint
+                            LineSegment2d.midpoint chord
+                                |> Point2d.translateIn offsetDirection offsetDistance
 
                         halfLength =
                             Quantity.sqrt squaredHalfLength

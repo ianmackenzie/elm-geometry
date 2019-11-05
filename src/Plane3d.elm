@@ -241,11 +241,7 @@ normalAxis (Types.Plane3d plane) =
 -}
 offsetBy : Quantity Float units -> Plane3d units coordinates -> Plane3d units coordinates
 offsetBy distance plane =
-    let
-        displacement =
-            Vector3d.withLength distance (normalDirection plane)
-    in
-    translateBy displacement plane
+    plane |> translateIn (normalDirection plane) distance
 
 
 {-| Reverse a plane's normal direction while leaving its origin point unchanged.

@@ -590,11 +590,7 @@ resulting in
 -}
 translateAlongOwn : (Frame2d units coordinates defines1 -> Axis2d units coordinates) -> Quantity Float units -> Frame2d units coordinates defines1 -> Frame2d units coordinates defines2
 translateAlongOwn axis distance frame =
-    let
-        displacement =
-            Vector2d.withLength distance (Axis2d.direction (axis frame))
-    in
-    translateBy displacement frame
+    frame |> translateIn (Axis2d.direction (axis frame)) distance
 
 
 {-| Mirror a frame across an axis.

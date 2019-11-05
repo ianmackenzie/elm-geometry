@@ -592,11 +592,7 @@ distance.
 -}
 offsetBy : Quantity Float units -> SketchPlane3d units coordinates defines1 -> SketchPlane3d units coordinates defines2
 offsetBy distance sketchPlane =
-    let
-        displacement =
-            Vector3d.withLength distance (normalDirection sketchPlane)
-    in
-    translateBy displacement sketchPlane
+    sketchPlane |> translateIn (normalDirection sketchPlane) distance
 
 
 {-| Reverse the X direction of a sketch plane, leaving its Y direction and
@@ -812,11 +808,7 @@ resulting in
 -}
 translateAlongOwn : (SketchPlane3d units coordinates defines1 -> Axis3d units coordinates) -> Quantity Float units -> SketchPlane3d units coordinates defines1 -> SketchPlane3d units coordinates defines2
 translateAlongOwn axis distance sketchPlane =
-    let
-        displacement =
-            Vector3d.withLength distance (Axis3d.direction (axis sketchPlane))
-    in
-    translateBy displacement sketchPlane
+    sketchPlane |> translateIn (Axis3d.direction (axis sketchPlane)) distance
 
 
 {-| Mirror a sketch plane across a plane.

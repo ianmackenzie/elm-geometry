@@ -27,9 +27,7 @@ reproducibleArc =
         (\centerPoint startDirection radius sweptAngle ->
             let
                 startPoint =
-                    centerPoint
-                        |> Point2d.translateBy
-                            (Vector2d.withLength radius startDirection)
+                    centerPoint |> Point2d.translateIn startDirection radius
             in
             startPoint |> Arc2d.sweptAround centerPoint sweptAngle
         )
