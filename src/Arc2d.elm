@@ -82,7 +82,6 @@ you are writing low-level geometric algorithms.
 -}
 
 import Angle exposing (Angle)
-import Arc.SweptAngle as SweptAngle exposing (SweptAngle)
 import Axis2d exposing (Axis2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
@@ -93,6 +92,7 @@ import Point2d exposing (Point2d)
 import Polyline2d exposing (Polyline2d)
 import Quantity exposing (Quantity, Rate)
 import Quantity.Extra as Quantity
+import SweptAngle exposing (SweptAngle)
 import Vector2d exposing (Vector2d)
 
 
@@ -400,8 +400,8 @@ throughPoints firstPoint secondPoint thirdPoint =
 {-| Attempt to construct an arc with the given radius between the given start
 and end points. Note that this is only possible if the given radius is large
 enough! For any given valid radius, start point and end point, there are four
-possible results, so the [`SweptAngle`](Arc-SweptAngle) argument is used to
-specify which arc to create. For example:
+possible results, so the [`SweptAngle`](SweptAngle) argument is used to specify
+which arc to create. For example:
 
     p1 =
         Point2d.meters 1 0

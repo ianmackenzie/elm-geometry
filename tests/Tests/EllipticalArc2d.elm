@@ -5,7 +5,6 @@ module Tests.EllipticalArc2d exposing
     )
 
 import Angle
-import Arc.SweptAngle as SweptAngle
 import Arc2d
 import EllipticalArc2d
 import Expect
@@ -16,6 +15,7 @@ import Geometry.Test as Test exposing (..)
 import Length exposing (meters)
 import Point2d
 import Quantity exposing (zero)
+import SweptAngle
 import Test exposing (Test)
 import Tests.Generic.Curve2d
 import Vector2d

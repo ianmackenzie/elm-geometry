@@ -111,7 +111,6 @@ you are writing low-level geometric algorithms.
 -}
 
 import Angle exposing (Angle, Radians)
-import Arc.SweptAngle as SweptAngle exposing (SweptAngle)
 import ArcLengthParameterization exposing (ArcLengthParameterization)
 import Axis2d exposing (Axis2d)
 import Direction2d exposing (Direction2d)
@@ -123,6 +122,7 @@ import Point2d exposing (Point2d)
 import Quantity exposing (Quantity(..), Rate, Squared)
 import Quantity.Extra as Quantity
 import Quantity.Interval
+import SweptAngle exposing (SweptAngle)
 import Unsafe.Direction2d as Direction2d
 import Vector2d exposing (Vector2d)
 

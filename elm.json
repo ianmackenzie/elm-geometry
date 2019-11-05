@@ -5,7 +5,6 @@
     "license": "MPL-2.0",
     "version": "2.0.0",
     "exposed-modules": [
-        "Arc.SweptAngle",
         "Arc2d",
         "Arc3d",
         "ArcLengthParameterization",
@@ -37,6 +36,7 @@
         "Rectangle2d",
         "SketchPlane3d",
         "Sphere3d",
+        "SweptAngle",
         "Triangle2d",
         "Triangle3d",
         "Vector2d",

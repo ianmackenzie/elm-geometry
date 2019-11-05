@@ -9,7 +9,6 @@ module Tests.Arc2d exposing
     )
 
 import Angle exposing (Angle)
-import Arc.SweptAngle as SweptAngle exposing (SweptAngle)
 import Arc2d
 import Expect
 import Fuzz
@@ -19,6 +18,7 @@ import Geometry.Test as Test exposing (..)
 import Length exposing (meters)
 import Point2d exposing (Point2d)
 import Quantity exposing (Quantity, zero)
+import SweptAngle exposing (SweptAngle)
 import Test exposing (Test)
 import Tests.Generic.Curve2d as Curve2d
 

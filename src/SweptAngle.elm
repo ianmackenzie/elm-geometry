@@ -7,7 +7,7 @@
 --------------------------------------------------------------------------------
 
 
-module Arc.SweptAngle exposing
+module SweptAngle exposing
     ( SweptAngle
     , smallPositive, smallNegative, largePositive, largeNegative
     )
