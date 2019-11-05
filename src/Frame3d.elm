@@ -204,7 +204,7 @@ type alias Frame3d units coordinates defines =
     --> Direction3d.z
 
 -}
-atOrigin : Frame3d units coordinates { defines : coordinates }
+atOrigin : Frame3d units coordinates defines
 atOrigin =
     Types.Frame3d
         { originPoint = Point3d.origin

@@ -110,7 +110,7 @@ type alias Frame2d units coordinates defines =
     --> Direction2d.y
 
 -}
-atOrigin : Frame2d units coordinates { defines : coordinates }
+atOrigin : Frame2d units coordinates defines
 atOrigin =
     Types.Frame2d
         { originPoint = Point2d.origin
