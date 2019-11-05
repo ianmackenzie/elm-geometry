@@ -246,8 +246,7 @@ and the start point to be swept is given last.
 
     exampleArc =
         Point2d.meters 3 1
-            |> Arc2d.sweptAround
-                (Point2d.meters 1 1)
+            |> Arc2d.sweptAround (Point2d.meters 1 1)
                 (Angle.degrees 90)
 
     Arc2d.endPoint exampleArc

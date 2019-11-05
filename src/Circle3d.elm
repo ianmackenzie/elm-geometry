@@ -100,8 +100,7 @@ withRadius givenRadius givenAxialDirection givenCenterPoint =
 
 {-| Construct a circle by sweeping the given point around the given axis.
 
-    Circle3d.sweptAround Axis3d.z
-        (Point3d.meters 3 0 2)
+    Circle3d.sweptAround Axis3d.z (Point3d.meters 3 0 2)
     --> Circle3d.withRadius (Length.meters 3)
     -->     Direction3d.z
     -->     (Point3d.meters 0 0 2)

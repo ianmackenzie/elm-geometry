@@ -147,7 +147,8 @@ given angle:
 
     exampleArc =
         Point3d.meters 1 1 0
-            |> Arc3d.sweptAround Axis3d.z (Angle.degrees 90)
+            |> Arc3d.sweptAround Axis3d.z
+                (Angle.degrees 90)
 
     Arc3d.centerPoint exampleArc
     --> Point3d.origin
