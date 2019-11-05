@@ -223,13 +223,11 @@ points are collinear, returns `Nothing`.
         Point3d.meters 0 1 0
 
     Arc3d.throughPoints p1 p2 p3
-    --> Just
-    -->     (Arc3d.on SketchPlane3d.yz
-    -->         Point2d.meters 0 1
-    -->             |> Arc2d.sweptAround
-    -->                 (Point2d.meters 0.5 0.5)
-    -->                 (Angle.degrees 180)
-    -->     )
+    --> Just <|
+    -->     Arc3d.on SketchPlane3d.yz <|
+    -->         Arc2d.sweptAround (Point2d.meters 0.5 0.5)
+    -->             (Angle.degrees 180)
+    -->             (Point2d.meters 0 1)
 
 -}
 throughPoints : Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> Maybe (Arc3d units coordinates)
