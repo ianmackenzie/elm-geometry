@@ -338,7 +338,9 @@ refineBySegment polylineLength roughCentroid segment currentCentroid =
 
         segmentLength =
             LineSegment3d.length segment
+
+        offset =
+            Vector3d.from roughCentroid segmentMidpoint
+                |> Vector3d.scaleBy (Quantity.ratio segmentLength polylineLength)
     in
-    Vector3d.from roughCentroid segmentMidpoint
-        |> Vector3d.scaleBy (Quantity.ratio segmentLength polylineLength)
-        |> (\v -> Point3d.translateBy v currentCentroid)
+    currentCentroid |> Point3d.translateBy offset
