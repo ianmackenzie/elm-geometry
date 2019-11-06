@@ -270,9 +270,9 @@ hullHelp currentMinX currentMaxX currentMinY currentMaxY currentMinZ currentMaxZ
                 }
 
 
-{-| Like `hull`, but lets you work on any kind of item as long as a point can be
-extracted from it. For example, to get the bounding box around the centroids of
-four triangles:
+{-| Like [`hull`](#hull), but lets you work on any kind of item as long as a
+point can be extracted from it. For example, to get the bounding box around the
+centroids of four triangles:
 
     BoundingBox3d.hullOf Triangle3d.centroid
         firstTriangle
@@ -405,7 +405,7 @@ hullN points =
             Nothing
 
 
-{-| Combination of `hullOf` and `hullN`.
+{-| Combination of [`hullOf`](#hullOf) and [`hullN`](#hullN).
 -}
 hullOfN : (a -> Point3d units coordinates) -> List a -> Maybe (BoundingBox3d units coordinates)
 hullOfN getBoundingBox items =
@@ -417,8 +417,9 @@ hullOfN getBoundingBox items =
             Nothing
 
 
-{-| Find the bounding box containing one or more input boxes. If you need to
-handle the case of zero input boxes, see `aggregateN`.
+{-| Find the bounding box containing one or more input boxes; works much
+like [`hull`](#hull). If you need to handle the case of zero input boxes, see
+[`aggregateN`](#aggregateN).
 -}
 aggregate : BoundingBox3d units coordinates -> List (BoundingBox3d units coordinates) -> BoundingBox3d units coordinates
 aggregate first rest =
@@ -457,9 +458,9 @@ aggregateHelp currentMinX currentMaxX currentMinY currentMaxY currentMinZ curren
                 }
 
 
-{-| Like `aggregate`, but lets you work on any kind of item as long as a bounding
-box can be extracted from it. For example, to get the bounding box around four
-triangles:
+{-| Like [`aggregate`](#aggregate), but lets you work on any kind of item as
+long as a bounding box can be extracted from it. For example, to get the
+bounding box around four triangles:
 
     BoundingBox3d.aggregateOf Triangle3d.boundingBox
         firstTriangle
@@ -616,7 +617,8 @@ the list is empty, returns `Nothing`.
     BoundingBox3d.aggregateN []
     --> Nothing
 
-If you know you have at least one bounding box, you can use `aggregate` instead.
+If you know you have at least one bounding box, you can use
+[`aggregate`](#aggregate) instead.
 
 -}
 aggregateN : List (BoundingBox3d units coordinates) -> Maybe (BoundingBox3d units coordinates)
@@ -629,7 +631,8 @@ aggregateN boxes =
             Nothing
 
 
-{-| Combination of `aggregateOf` and `aggregateN`.
+{-| Combination of [`aggregateOf`](#aggregateOf) and
+[`aggregateN`](#aggregateN).
 -}
 aggregateOfN : (a -> BoundingBox3d units coordinates) -> List a -> Maybe (BoundingBox3d units coordinates)
 aggregateOfN getBoundingBox items =
