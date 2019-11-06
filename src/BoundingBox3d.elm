@@ -540,6 +540,9 @@ aggregateOfHelp currentMinX currentMaxX currentMinY currentMaxY currentMinZ curr
     -->     , maxZ = Length.meters 5
     -->     }
 
+(Note that this is not strictly speaking a 'union' in the precise mathematical
+sense.)
+
 -}
 union : BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates
 union firstBox secondBox =
