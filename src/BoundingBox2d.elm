@@ -9,7 +9,7 @@
 
 module BoundingBox2d exposing
     ( BoundingBox2d
-    , from, fromExtrema, singleton, intersection, union
+    , from, fromExtrema, singleton, union, intersection
     , hull, hull3, hullN, hullOf, hullOfN
     , aggregate, aggregate3, aggregateN, aggregateOf, aggregateOfN
     , extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint
@@ -40,7 +40,7 @@ box of an object than the object itself, such as:
 
 # Constructors
 
-@docs from, fromExtrema, singleton, intersection, union
+@docs from, fromExtrema, singleton, union, intersection
 
 
 ## Hull
