@@ -1,5 +1,6 @@
 module Tests.Axis3d exposing
     ( directionExample
+    , intersectionWithPlane
     , onExamples
     , originPointExample
     , xExample
@@ -12,11 +13,14 @@ import Axis2d
 import Axis3d
 import Direction2d
 import Direction3d
+import Expect
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Length exposing (meters)
+import Plane3d
 import Point2d
 import Point3d
+import Quantity
 import SketchPlane3d
 import Test exposing (Test)
 
@@ -93,3 +97,25 @@ onExamples =
                             )
                         )
         ]
+
+
+intersectionWithPlane : Test
+intersectionWithPlane =
+    Test.fuzz2
+        Fuzz.axis3d
+        Fuzz.plane3d
+        "intersectionWithPlane works properly"
+        (\axis plane ->
+            case Axis3d.intersectionWithPlane plane axis of
+                Just point ->
+                    point
+                        |> Expect.all
+                            [ Point3d.signedDistanceFrom plane >> Expect.approximately Quantity.zero
+                            , Point3d.distanceFromAxis axis >> Expect.approximately Quantity.zero
+                            ]
+
+                Nothing ->
+                    Axis3d.direction axis
+                        |> Direction3d.componentIn (Plane3d.normalDirection plane)
+                        |> Expect.float 0
+        )

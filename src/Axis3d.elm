@@ -12,6 +12,7 @@ module Axis3d exposing
     , x, y, z
     , through, withDirection, on
     , originPoint, direction
+    , intersectionWithPlane
     , reverse, moveTo, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
     , at, at_
     , relativeTo, placeIn, projectInto
@@ -40,6 +41,11 @@ by an origin point and direction. Axes have several uses, such as:
 # Properties
 
 @docs originPoint, direction
+
+
+# Intersection
+
+@docs intersectionWithPlane
 
 
 # Transformations
@@ -197,6 +203,39 @@ originPoint (Types.Axis3d axis) =
 direction : Axis3d units coordinates -> Direction3d coordinates
 direction (Types.Axis3d axis) =
     axis.direction
+
+
+{-| Try to find the unique intersection point of an axis with a plane. If
+the axis does not intersect the plane, or if it is coplanar with it (lying
+perfectly in the plane), returns `Nothing`.
+-}
+intersectionWithPlane : Plane3d units coordinates -> Axis3d units coordinates -> Maybe (Point3d units coordinates)
+intersectionWithPlane plane axis =
+    let
+        axisDirection =
+            direction axis
+
+        (Types.Plane3d { normalDirection }) =
+            plane
+
+        normalComponent =
+            axisDirection |> Direction3d.componentIn normalDirection
+    in
+    if normalComponent == 0 then
+        Nothing
+
+    else
+        let
+            axisOrigin =
+                originPoint axis
+
+            normalDistance =
+                Point3d.signedDistanceFrom plane axisOrigin
+
+            axialDistance =
+                normalDistance |> Quantity.multiplyBy (-1 / normalComponent)
+        in
+        Just (axisOrigin |> Point3d.translateIn axisDirection axialDistance)
 
 
 {-| Reverse the direction of an axis while keeping the same origin point.
