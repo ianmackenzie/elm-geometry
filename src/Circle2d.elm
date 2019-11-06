@@ -261,8 +261,7 @@ circumference circle =
 
     Circle2d.toArc exampleCircle
     --> Point2d.meters 4 2
-    -->     |> Arc2d.sweptAround
-    -->         (Point2d.meters 1 2)
+    -->     |> Arc2d.sweptAround (Point2d.meters 1 2)
     -->         (Angle.degrees 360)
 
 -}
