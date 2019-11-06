@@ -12,8 +12,8 @@ module Polygon2d exposing
     , singleLoop, withHoles, convexHull
     , outerLoop, innerLoops, vertices, edges, perimeter, area, boundingBox
     , contains
-    , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
+    , at, at_
     , relativeTo, placeIn
     , triangulate
     )
@@ -45,17 +45,17 @@ holes. This module contains a variety of polygon-related functionality, such as
 @docs contains
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 These transformations generally behave just like [the ones in the `Point2d`
 module](Point2d#transformations).
 
 @docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Coordinate conversions

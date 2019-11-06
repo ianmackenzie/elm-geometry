@@ -14,8 +14,8 @@ module BoundingBox2d exposing
     , aggregate, aggregate3, aggregateN, aggregateOf, aggregateOfN
     , extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint
     , contains, isContainedIn, intersects, overlappingByAtLeast, separatedByAtLeast
-    , at, at_
     , scaleAbout, translateBy, translateIn, expandBy, offsetBy
+    , at, at_
     )
 
 {-| A `BoundingBox2d` is a rectangular box in 2D defined by its minimum and
@@ -68,14 +68,14 @@ contains all of the input boxes.
 @docs contains, isContainedIn, intersects, overlappingByAtLeast, separatedByAtLeast
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 @docs scaleAbout, translateBy, translateIn, expandBy, offsetBy
+
+
+# Unit conversions
+
+@docs at, at_
 
 -}
 
@@ -246,9 +246,9 @@ hullHelp currentMinX currentMaxX currentMinY currentMaxY points =
                 }
 
 
-{-| Like `hull`, but lets you work on any kind of item as long as a point can be
-extracted from it. For example, to get the bounding box around the centroids of
-four triangles:
+{-| Like [`hull`](#hull), but lets you work on any kind of item as long as a
+point can be extracted from it. For example, to get the bounding box around the
+centroids of four triangles:
 
     BoundingBox2d.hullOf Triangle2d.centroid
         firstTriangle

@@ -19,8 +19,8 @@ module Vector3d exposing
     , xComponent, yComponent, zComponent, componentIn, length, direction
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross
-    , at, at_
     , reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
+    , at, at_
     , relativeTo, placeIn, projectInto
     , unsafe, unwrap
     )
@@ -107,11 +107,6 @@ code that represents vectors as plain records.
 @docs plus, minus, dot, cross
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 Note that for all transformations, only the orientation of the given axis or
@@ -120,6 +115,11 @@ a vector as placing its tail on the relevant axis or plane and then transforming
 its tip.
 
 @docs reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Coordinate conversions

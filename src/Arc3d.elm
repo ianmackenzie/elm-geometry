@@ -15,8 +15,8 @@ module Arc3d exposing
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
     , toPolyline
-    , at, at_
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
+    , at, at_
     , relativeTo, placeIn
     , firstDerivative
     )
@@ -54,17 +54,17 @@ start point to the arc's end point). This module includes functionality for
 @docs toPolyline
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 These transformations generally behave just like [the ones in the `Point3d`
 module](Point3d#transformations).
 
 @docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Coordinate conversions

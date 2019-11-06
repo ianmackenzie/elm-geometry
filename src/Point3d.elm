@@ -18,8 +18,8 @@ module Point3d exposing
     , xCoordinate, yCoordinate, zCoordinate, xCoordinateIn, yCoordinateIn, zCoordinateIn
     , equalWithin, lexicographicComparison
     , distanceFrom, signedDistanceAlong, distanceFromAxis, signedDistanceFrom
-    , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectOntoAxis
+    , at, at_
     , relativeTo, placeIn, projectInto
     , centroid, centroidOf, centroid3, centroidN
     , unsafe, unwrap
@@ -96,14 +96,14 @@ code that represents points as plain records.
 @docs distanceFrom, signedDistanceAlong, distanceFromAxis, signedDistanceFrom
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 @docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectOntoAxis
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Coordinate conversions

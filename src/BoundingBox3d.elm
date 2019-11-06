@@ -14,8 +14,8 @@ module BoundingBox3d exposing
     , aggregate, aggregate3, aggregateN, aggregateOf, aggregateOfN
     , extrema, minX, maxX, minY, maxY, minZ, maxZ, dimensions, midX, midY, midZ, centerPoint
     , contains, isContainedIn, intersects, overlappingByAtLeast, separatedByAtLeast
-    , at, at_
     , scaleAbout, translateBy, translateIn, expandBy, offsetBy
+    , at, at_
     )
 
 {-| A `BoundingBox3d` is a rectangular box in 3D defined by its minimum and
@@ -67,14 +67,14 @@ contains all of the input boxes.
 @docs contains, isContainedIn, intersects, overlappingByAtLeast, separatedByAtLeast
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 @docs scaleAbout, translateBy, translateIn, expandBy, offsetBy
+
+
+# Unit conversions
+
+@docs at, at_
 
 -}
 

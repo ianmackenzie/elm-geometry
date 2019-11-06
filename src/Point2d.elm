@@ -18,8 +18,8 @@ module Point2d exposing
     , xCoordinate, yCoordinate, xCoordinateIn, yCoordinateIn
     , equalWithin, lexicographicComparison
     , distanceFrom, signedDistanceAlong, signedDistanceFrom
-    , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
+    , at, at_
     , relativeTo, placeIn
     , centroid, centroidOf, centroid3, centroidN
     , unsafe, unwrap
@@ -94,14 +94,14 @@ that represents points as plain records.
 @docs distanceFrom, signedDistanceAlong, signedDistanceFrom
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 @docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Coordinate conversions

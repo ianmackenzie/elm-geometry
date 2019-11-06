@@ -12,8 +12,8 @@ module Sphere3d exposing
     , withRadius, throughPoints
     , centerPoint, radius, diameter, volume, surfaceArea, circumference, boundingBox
     , contains
-    , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectInto
+    , at, at_
     , relativeTo, placeIn
     )
 
@@ -42,17 +42,17 @@ functionality for:
 @docs contains
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 These transformations generally behave just like [the ones in the `Point3d`
 module](Point3d#transformations).
 
 @docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectInto
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Coordinate conversions

@@ -11,8 +11,8 @@ module Circle3d exposing
     ( Circle3d
     , withRadius, sweptAround, on, throughPoints
     , centerPoint, axialDirection, radius, diameter, axis, plane, area, circumference, boundingBox
-    , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
+    , at, at_
     , relativeTo, placeIn
     )
 
@@ -39,17 +39,17 @@ for:
 @docs centerPoint, axialDirection, radius, diameter, axis, plane, area, circumference, boundingBox
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 These transformations generally behave just like [the ones in the `Point3d`
 module](Point3d#transformations).
 
 @docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Coordinate conversions

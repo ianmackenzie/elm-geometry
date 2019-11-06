@@ -15,8 +15,8 @@ module Arc2d exposing
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
     , toPolyline
-    , at, at_
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
+    , at, at_
     , relativeTo, placeIn
     , firstDerivative
     )
@@ -54,17 +54,17 @@ end point). This module includes functionality for
 @docs toPolyline
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 These transformations generally behave just like [the ones in the `Point2d`
 module](Point2d#transformations).
 
 @docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Coordinate conversions

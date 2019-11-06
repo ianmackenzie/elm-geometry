@@ -14,8 +14,8 @@ module CubicSpline3d exposing
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
-    , at, at_
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
+    , at, at_
     , relativeTo, placeIn, projectInto
     , bisect, splitAt
     , ArcLengthParameterized, arcLengthParameterized, arcLength, midpoint
@@ -54,17 +54,17 @@ contains functionality for
 @docs tangentDirection, sample
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 These transformations generally behave just like [the ones in the `Point3d`
 module](Point3d#transformations).
 
 @docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Coordinate conversions

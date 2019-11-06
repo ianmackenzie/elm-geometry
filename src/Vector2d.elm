@@ -19,8 +19,8 @@ module Vector2d exposing
     , xComponent, yComponent, componentIn, length, direction
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross
-    , at, at_
     , reverse, normalize, scaleBy, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
+    , at, at_
     , relativeTo, placeIn
     , unsafe, unwrap
     )
@@ -105,11 +105,6 @@ that represents vectors as plain records.
 @docs plus, minus, dot, cross
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 Note that for `mirrorAcross` and `projectOnto`, only the direction of the axis
@@ -118,6 +113,11 @@ mirroring/projecting a vector across/onto an axis as moving the vector so its
 tail is on the axis, then mirroring/projecting its tip across/onto the axis.
 
 @docs reverse, normalize, scaleBy, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Coordinate conversions

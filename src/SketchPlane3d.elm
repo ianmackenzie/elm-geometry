@@ -13,8 +13,8 @@ module SketchPlane3d exposing
     , through, withNormalDirection, on, throughPoints, fromPlane, copy, unsafe
     , toPlane, toFrame
     , originPoint, xDirection, yDirection, normalDirection, xAxis, yAxis, normalAxis
-    , at, at_
     , offsetBy, reverseX, reverseY, moveTo, rotateAround, rotateAroundOwn, translateBy, translateIn, translateAlongOwn, mirrorAcross
+    , at, at_
     , relativeTo, placeIn
     )
 
@@ -94,14 +94,14 @@ Sketch planes can also be constructed from `Frame3d` values using
 @docs originPoint, xDirection, yDirection, normalDirection, xAxis, yAxis, normalAxis
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 @docs offsetBy, reverseX, reverseY, moveTo, rotateAround, rotateAroundOwn, translateBy, translateIn, translateAlongOwn, mirrorAcross
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Coordinate conversions

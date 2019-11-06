@@ -13,8 +13,8 @@ module Circle2d exposing
     , centerPoint, radius, diameter, area, circumference, boundingBox
     , toArc
     , contains, intersectsBoundingBox
-    , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
+    , at, at_
     , relativeTo, placeIn
     )
 
@@ -48,17 +48,17 @@ functionality for
 @docs contains, intersectsBoundingBox
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 These transformations generally behave just like [the ones in the `Point2d`
 module](Point2d#transformations).
 
 @docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Coordinate conversions

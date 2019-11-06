@@ -12,8 +12,8 @@ module Axis3d exposing
     , x, y, z
     , through, withDirection, on
     , originPoint, direction
-    , at, at_
     , reverse, moveTo, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
+    , at, at_
     , relativeTo, placeIn, projectInto
     )
 
@@ -42,14 +42,14 @@ by an origin point and direction. Axes have several uses, such as:
 @docs originPoint, direction
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 @docs reverse, moveTo, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Coordinate conversions

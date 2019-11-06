@@ -15,8 +15,8 @@ module EllipticalArc2d exposing
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
-    , at, at_
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
+    , at, at_
     , relativeTo, placeIn
     , ArcLengthParameterized, arcLengthParameterized, arcLength
     , pointAlong, tangentDirectionAlong, sampleAlong
@@ -63,17 +63,17 @@ underlying ellipse; check out the <Ellipse2d> module for details.
 @docs tangentDirection, sample
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 These transformations generally behave just like [the ones in the `Point2d`
 module](Point2d#transformations).
 
 @docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Coordinate conversions

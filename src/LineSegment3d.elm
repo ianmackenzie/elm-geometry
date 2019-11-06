@@ -13,8 +13,8 @@ module LineSegment3d exposing
     , startPoint, endPoint, endpoints, midpoint, length, direction, perpendicularDirection, vector, boundingBox
     , interpolate
     , intersectionWithPlane
-    , at, at_
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapEndpoints
+    , at, at_
     , relativeTo, placeIn, projectInto
     )
 
@@ -49,17 +49,17 @@ functionality such as:
 @docs intersectionWithPlane
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 These transformations generally behave just like [the ones in the `Point3d`
 module](Point3d#transformations).
 
 @docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapEndpoints
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Coordinate conversions

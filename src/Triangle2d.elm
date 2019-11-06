@@ -12,8 +12,8 @@ module Triangle2d exposing
     , fromVertices, from
     , vertices, edges, centroid, area, counterclockwiseArea, clockwiseArea, boundingBox, circumcircle
     , contains
-    , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, mapVertices
+    , at, at_
     , relativeTo, placeIn
     )
 
@@ -42,17 +42,17 @@ three vertices. This module contains triangle-related functionality such as:
 @docs contains
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 These transformations generally behave just like [the ones in the `Point2d`
 module](Point2d#transformations).
 
 @docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, mapVertices
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Coordinate conversions

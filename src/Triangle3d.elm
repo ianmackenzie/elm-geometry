@@ -11,8 +11,8 @@ module Triangle3d exposing
     ( Triangle3d
     , fromVertices, from, on
     , vertices, edges, centroid, area, normalDirection, boundingBox, circumcircle
-    , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapVertices
+    , at, at_
     , relativeTo, placeIn, projectInto
     )
 
@@ -36,17 +36,17 @@ three vertices. This module contains triangle-related functionality such as:
 @docs vertices, edges, centroid, area, normalDirection, boundingBox, circumcircle
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 These transformations generally behave just like [the ones in the `Point3d`
 module](Point3d#transformations).
 
 @docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapVertices
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Coordinate conversions

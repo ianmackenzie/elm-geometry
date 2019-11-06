@@ -12,8 +12,8 @@ module Ellipse2d exposing
     , with
     , centerPoint, xAxis, yAxis, xDirection, yDirection, axes, xRadius, yRadius, area
     , toEllipticalArc
-    , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
+    , at, at_
     , relativeTo, placeIn
     )
 
@@ -44,17 +44,17 @@ includes functionality for
 @docs toEllipticalArc
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 These transformations generally behave just like [the ones in the `Point2d`
 module](Point2d#transformations).
 
 @docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Coordinate conversions

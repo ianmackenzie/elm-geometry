@@ -14,8 +14,8 @@ module Rectangle2d exposing
     , interpolate
     , contains
     , toPolygon
-    , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
+    , at, at_
     , relativeTo, placeIn
     )
 
@@ -58,17 +58,17 @@ they can have arbitrary orientation and so can be rotated, mirrored etc.
 @docs toPolygon
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformation
 
 These transformations generally behave just like [the ones in the `Point2d`
 module](Point2d#transformations).
 
 @docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Coordinate conversions

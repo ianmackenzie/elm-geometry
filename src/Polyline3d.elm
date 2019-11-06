@@ -11,8 +11,8 @@ module Polyline3d exposing
     ( Polyline3d
     , fromVertices, on
     , vertices, segments, length, boundingBox, centroid
-    , at, at_
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapVertices
+    , at, at_
     , relativeTo, placeIn, projectInto
     )
 
@@ -37,17 +37,17 @@ as
 @docs vertices, segments, length, boundingBox, centroid
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 These transformations generally behave just like [the ones in the `Point3d`
 module](Point3d#transformations).
 
 @docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapVertices
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Coordinate conversions

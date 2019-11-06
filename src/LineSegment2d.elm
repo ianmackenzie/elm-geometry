@@ -13,8 +13,8 @@ module LineSegment2d exposing
     , startPoint, endPoint, endpoints, midpoint, length, direction, perpendicularDirection, vector, boundingBox
     , interpolate
     , intersectionPoint, intersectionWithAxis
-    , at, at_
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapEndpoints
+    , at, at_
     , relativeTo, placeIn
     )
 
@@ -49,17 +49,17 @@ functionality such as:
 @docs intersectionPoint, intersectionWithAxis
 
 
-# Unit conversions
-
-@docs at, at_
-
-
 # Transformations
 
 These transformations generally behave just like [the ones in the `Point2d`
 module](Point2d#transformations).
 
 @docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapEndpoints
+
+
+# Unit conversions
+
+@docs at, at_
 
 
 # Coordinate conversions
