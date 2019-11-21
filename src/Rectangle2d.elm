@@ -286,7 +286,10 @@ at rate (Types.Rectangle2d rectangle) =
     in
     Types.Rectangle2d
         { axes = Frame2d.at rate rectangle.axes
-        , dimensions = ( Quantity.at rate width, Quantity.at rate height )
+        , dimensions =
+            ( Quantity.abs (Quantity.at rate width)
+            , Quantity.abs (Quantity.at rate height)
+            )
         }
 
 

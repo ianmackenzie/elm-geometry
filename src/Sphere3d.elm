@@ -197,7 +197,7 @@ at : Quantity Float (Rate units2 units1) -> Sphere3d units1 coordinates -> Spher
 at rate (Types.Sphere3d sphere) =
     Types.Sphere3d
         { centerPoint = Point3d.at rate sphere.centerPoint
-        , radius = Quantity.at rate sphere.radius
+        , radius = Quantity.abs (Quantity.at rate sphere.radius)
         }
 
 

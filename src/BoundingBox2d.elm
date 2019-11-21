@@ -592,7 +592,7 @@ source units.
 -}
 at : Quantity Float (Rate units2 units1) -> BoundingBox2d units1 coordinates -> BoundingBox2d units2 coordinates
 at rate (Types.BoundingBox2d boundingBox) =
-    Types.BoundingBox2d
+    fromExtrema
         { minX = Quantity.at rate boundingBox.minX
         , maxX = Quantity.at rate boundingBox.maxX
         , minY = Quantity.at rate boundingBox.minY

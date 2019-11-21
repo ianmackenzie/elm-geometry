@@ -189,7 +189,7 @@ at : Quantity Float (Rate units2 units1) -> Circle2d units1 coordinates -> Circl
 at rate (Types.Circle2d circle) =
     Types.Circle2d
         { centerPoint = Point2d.at rate circle.centerPoint
-        , radius = Quantity.at rate circle.radius
+        , radius = Quantity.abs (Quantity.at rate circle.radius)
         }
 
 

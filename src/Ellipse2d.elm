@@ -115,8 +115,8 @@ at : Quantity Float (Rate units2 units1) -> Ellipse2d units1 coordinates -> Elli
 at rate (Types.Ellipse2d ellipse) =
     Types.Ellipse2d
         { axes = Frame2d.at rate ellipse.axes
-        , xRadius = Quantity.at rate ellipse.xRadius
-        , yRadius = Quantity.at rate ellipse.yRadius
+        , xRadius = Quantity.abs (Quantity.at rate ellipse.xRadius)
+        , yRadius = Quantity.abs (Quantity.at rate ellipse.yRadius)
         }
 
 

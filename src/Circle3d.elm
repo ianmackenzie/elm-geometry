@@ -190,7 +190,7 @@ at rate (Types.Circle3d circle) =
     Types.Circle3d
         { centerPoint = Point3d.at rate circle.centerPoint
         , axialDirection = circle.axialDirection
-        , radius = Quantity.at rate circle.radius
+        , radius = Quantity.abs (Quantity.at rate circle.radius)
         }
 
 
