@@ -9,7 +9,7 @@
 
 module LineSegment3d exposing
     ( LineSegment3d
-    , fromEndpoints, from, along, on
+    , fromEndpoints, from, fromPointAndVector, along, on
     , startPoint, endPoint, endpoints, midpoint, length, direction, perpendicularDirection, vector, boundingBox
     , interpolate
     , intersectionWithPlane
@@ -31,7 +31,7 @@ functionality such as:
 
 # Constructors
 
-@docs fromEndpoints, from, along, on
+@docs fromEndpoints, from, fromPointAndVector, along, on
 
 
 # Properties
@@ -141,6 +141,24 @@ along axis startDistance endDistance =
         ( Point3d.along axis startDistance
         , Point3d.along axis endDistance
         )
+
+
+{-| Construct a line segment given its start point and the vector from its
+start point to its end point;
+
+    LineSegment3d.fromPointAndVector point vector
+
+is equivalent to
+
+    LineSegment3d.fromEndpoints
+        ( point
+        , point |> Point3d.translateBy vector
+        )
+
+-}
+fromPointAndVector : Point3d units coordinates -> Vector3d units coordinates -> LineSegment3d units coordinates
+fromPointAndVector givenPoint givenVector =
+    fromEndpoints ( givenPoint, givenPoint |> Point3d.translateBy givenVector )
 
 
 {-| Construct a 3D line segment lying _on_ a sketch plane by providing a 2D line

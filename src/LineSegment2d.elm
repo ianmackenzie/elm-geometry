@@ -9,7 +9,7 @@
 
 module LineSegment2d exposing
     ( LineSegment2d
-    , fromEndpoints, from, along
+    , fromEndpoints, from, fromPointAndVector, along
     , startPoint, endPoint, endpoints, midpoint, length, direction, perpendicularDirection, vector, boundingBox
     , interpolate
     , intersectionPoint, intersectionWithAxis
@@ -31,7 +31,7 @@ functionality such as:
 
 # Constructors
 
-@docs fromEndpoints, from, along
+@docs fromEndpoints, from, fromPointAndVector, along
 
 
 # Properties
@@ -135,6 +135,24 @@ given distances from the axis' origin point.
 along : Axis2d units coordinates -> Quantity Float units -> Quantity Float units -> LineSegment2d units coordinates
 along axis start end =
     fromEndpoints ( Point2d.along axis start, Point2d.along axis end )
+
+
+{-| Construct a line segment given its start point and the vector from its
+start point to its end point;
+
+    LineSegment2d.fromPointAndVector point vector
+
+is equivalent to
+
+    LineSegment2d.fromEndpoints
+        ( point
+        , point |> Point2d.translateBy vector
+        )
+
+-}
+fromPointAndVector : Point2d units coordinates -> Vector2d units coordinates -> LineSegment2d units coordinates
+fromPointAndVector givenPoint givenVector =
+    fromEndpoints ( givenPoint, givenPoint |> Point2d.translateBy givenVector )
 
 
 {-| Convert a line segment from one units type to another, by providing a
