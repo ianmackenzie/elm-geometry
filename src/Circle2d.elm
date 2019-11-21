@@ -9,7 +9,7 @@
 
 module Circle2d exposing
     ( Circle2d
-    , withRadius, throughPoints, sweptAround
+    , atPoint, withRadius, atOrigin, throughPoints, sweptAround
     , centerPoint, radius, diameter, area, circumference, boundingBox
     , toArc
     , contains, intersectsBoundingBox
@@ -30,7 +30,7 @@ functionality for
 
 # Constructors
 
-@docs withRadius, throughPoints, sweptAround
+@docs atPoint, withRadius, atOrigin, throughPoints, sweptAround
 
 
 # Properties
@@ -87,35 +87,59 @@ type alias Circle2d units coordinates =
 {-| Construct a circle from its radius and center point:
 
     exampleCircle =
-        Circle2d.withRadius (Length.meters 3)
-            (Point2d.meters 1 2)
+        Circle2d.atPoint (Point2d.meters 1 2)
+            (Length.meters 3)
 
 If you pass a negative radius, the absolute value will be used.
 
 -}
+atPoint : Point2d units coordinates -> Quantity Float units -> Circle2d units coordinates
+atPoint givenCenterPoint givenRadius =
+    withRadius givenRadius givenCenterPoint
+
+
+{-| Construct a circle from its radius and center point. Flipped version of
+`atPoint` that may be more useful in some situations like constructing a bunch
+of circles of the same radius at different points:
+
+    circles =
+        List.map (Circle2d.withRadius radius) listOfPoints
+
+-}
 withRadius : Quantity Float units -> Point2d units coordinates -> Circle2d units coordinates
-withRadius radius_ centerPoint_ =
-    Types.Circle2d { radius = Quantity.abs radius_, centerPoint = centerPoint_ }
+withRadius givenRadius givenCenterPoint =
+    Types.Circle2d
+        { radius = Quantity.abs givenRadius
+        , centerPoint = givenCenterPoint
+        }
 
 
-{-| Attempt to construct a circle that passes through the three given points. If
-the three given points are collinear, returns `Nothing`.
+{-| Construct a circle at the origin with the given radius.
+-}
+atOrigin : Quantity Float units -> Circle2d units coordinates
+atOrigin givenRadius =
+    atPoint Point2d.origin givenRadius
+
+
+{-| Attempt to construct a circle that passes through the three given points:
 
     Circle2d.throughPoints
         Point2d.origin
         (Point2d.meters 1 0)
         (Point2d.meters 0 1)
     --> Just <|
-    -->     Circle2d.withRadius (Length.meters 0.7071)
-    -->         (Point2d.meters 0.5 0.5)
+    -->     Circle2d.atPoint (Point2d.meters 0.5 0.5)
+    -->         (Length.meters 0.7071)
 
     Circle2d.throughPoints
         Point2d.origin
         (Point2d.meters 2 1)
         (Point2d.meters 4 0)
     --> Just <|
-    -->     Circle2d.withRadius (Length.meters 2.5)
-    -->         (Point2d.meters 2 -1.5)
+    -->     Circle2d.atPoint (Point2d.meters 2 -1.5)
+    -->         (Length.meters 2.5)
+
+If the three given points are collinear, returns `Nothing`:
 
     Circle2d.throughPoints
         Point2d.origin
@@ -159,8 +183,7 @@ second.
 
     Circle2d.sweptAround Point2d.origin
         (Point2d.meters 2 0)
-    --> Circle2d.withRadius (Length.meters 2)
-    -->     Point2d.origin
+    --> Circle2d.atOrigin (Length.meters 2)
 
 The above example could be rewritten as
 
@@ -311,8 +334,7 @@ contained within the bounding box.
             }
 
     circle =
-        Circle2d.withRadius (Length.meters 3)
-            Point2d.origin
+        Circle2d.atOrigin (Length.meters 3)
 
     Circle2d.intersectsBoundingBox boundingBox circle
     --> True

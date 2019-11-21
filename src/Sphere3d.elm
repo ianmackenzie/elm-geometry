@@ -9,7 +9,7 @@
 
 module Sphere3d exposing
     ( Sphere3d
-    , withRadius, throughPoints
+    , atPoint, withRadius, atOrigin, throughPoints
     , centerPoint, radius, diameter, volume, surfaceArea, circumference, boundingBox
     , contains
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectInto
@@ -29,7 +29,7 @@ functionality for:
 
 # Constructors
 
-@docs withRadius, throughPoints
+@docs atPoint, withRadius, atOrigin, throughPoints
 
 
 # Properties
@@ -102,13 +102,26 @@ type alias Sphere3d units coordinates =
     Types.Sphere3d units coordinates
 
 
-{-| Construct a sphere from its radius and center point:
+{-| Construct a sphere from its center point and radius:
 
     exampleSphere =
-        Sphere3d.withRadius (Length.meters 3)
-            (Point3d.meters 1 2 1)
+        Sphere3d.atPoint (Point3d.meters 1 2 1)
+            (Length.meters 3)
 
 If you pass a negative radius, the absolute value will be used.
+
+-}
+atPoint : Point3d units coordinates -> Quantity Float units -> Sphere3d units coordinates
+atPoint givenCenterPoint givenRadius =
+    withRadius givenRadius givenCenterPoint
+
+
+{-| Construct a sphere from its radius and center point. Flipped version of
+`atPoint` that may be more useful in some situations like constructing a bunch
+of spheres of the same radius at different points:
+
+    spheres =
+        List.map (Sphere3d.withRadius radius) listOfPoints
 
 -}
 withRadius : Quantity Float units -> Point3d units coordinates -> Sphere3d units coordinates
@@ -117,6 +130,13 @@ withRadius givenRadius givenCenterPoint =
         { radius = Quantity.abs givenRadius
         , centerPoint = givenCenterPoint
         }
+
+
+{-| Construct a sphere at the origin with the given radius.
+-}
+atOrigin : Quantity Float units -> Sphere3d units coordinates
+atOrigin givenRadius =
+    atPoint Point3d.origin givenRadius
 
 
 {-| Attempt to construct a sphere that passes through the four given points.
