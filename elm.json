@@ -10,6 +10,7 @@
         "ArcLengthParameterization",
         "Axis2d",
         "Axis3d",
+        "Block3d",
         "BoundingBox2d",
         "BoundingBox3d",
         "Circle2d",

@@ -13,6 +13,7 @@ module Geometry.Fuzz exposing
     , arc3d
     , axis2d
     , axis3d
+    , block3d
     , boundingBox2d
     , boundingBox3d
     , circle2d
@@ -53,6 +54,7 @@ import Arc2d
 import Arc3d
 import Axis2d
 import Axis3d
+import Block3d
 import BoundingBox2d
 import BoundingBox3d
 import Circle2d
@@ -384,3 +386,12 @@ rectangle2d =
             Rectangle2d.centeredOn axes ( width, height )
     in
     Fuzz.map3 rectangle frame2d positiveLength positiveLength
+
+
+block3d : Fuzzer (Block3d coordinates)
+block3d =
+    let
+        block axes xDim yDim zDim =
+            Block3d.centeredOn axes ( xDim, yDim, zDim )
+    in
+    Fuzz.map4 block frame3d positiveLength positiveLength positiveLength

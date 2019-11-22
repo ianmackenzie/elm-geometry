@@ -3,6 +3,7 @@ module Geometry.Test exposing
     , Arc3d
     , Axis2d
     , Axis3d
+    , Block3d
     , BoundingBox2d
     , BoundingBox3d
     , Circle2d
@@ -41,6 +42,7 @@ import Arc2d
 import Arc3d
 import Axis2d
 import Axis3d
+import Block3d
 import BoundingBox2d
 import BoundingBox3d
 import Circle2d
@@ -195,6 +197,10 @@ type alias QuadraticSpline3d coordinates =
 
 type alias Rectangle2d coordinates =
     Rectangle2d.Rectangle2d Meters coordinates
+
+
+type alias Block3d coordinates =
+    Block3d.Block3d Meters coordinates
 
 
 type alias Sphere3d coordinates =
