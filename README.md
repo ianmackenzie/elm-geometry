@@ -1,13 +1,7 @@
 # elm-geometry
 
-_Release notes for 2.0 are
-[here](https://github.com/ianmackenzie/elm-geometry/releases/tag/2.0.0). Note:
-elm-geometry 2.0 is very new and the docs are still being updated. Please be
-patient and please reach out to **@ianmackenzie** on the [Elm
-Slack](http://elmlang.herokuapp.com/) if anything is not clear or if you find
-any errors! You may also want to check out the docs for [the previous version of
-elm-geometry](https://package.elm-lang.org/packages/ianmackenzie/elm-geometry/1.2.1/)
-in the meantime._
+_Release notes for all versions of `elm-geometry` are available
+[here](https://github.com/ianmackenzie/elm-geometry/releases)._
 
 `elm-geometry` is an [Elm](http://elm-lang.org) package for working with 2D and
 3D geometry. It provides a wide variety of geometric data types such as points,
