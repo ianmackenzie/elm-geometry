@@ -312,11 +312,11 @@ toPolygon rectangle =
 {-| Get the central axes of a rectangle as a `Frame2d`:
 
     rectangle =
-        Rectangle2d.fromExtrema
-            { minX = Length.meters 2
-            , maxX = Length.meters 5
-            , minY = Length.meters 1
-            , maxY = Length.meters 3
+        Rectangle2d.with
+            { x1 = Length.meters 2
+            , x2 = Length.meters 5
+            , y1 = Length.meters 1
+            , y2 = Length.meters 3
             }
 
     Rectangle2d.axes rectangle
@@ -368,11 +368,11 @@ centerPoint rectangle =
 {-| Get the overall dimensions (width and height) of a rectangle:
 
     rectangle =
-        Rectangle2d.fromExtrema
-            { minX = Length.meters 2
-            , maxX = Length.meters 5
-            , minY = Length.meters 1
-            , maxY = Length.meters 3
+        Rectangle2d.with
+            { x1 = Length.meters 2
+            , x2 = Length.meters 5
+            , y1 = Length.meters 1
+            , y2 = Length.meters 3
             }
 
     Rectangle2d.dimensions rectangle
@@ -387,11 +387,11 @@ dimensions (Types.Rectangle2d rectangle) =
 {-| Get the area of a rectangle:
 
     rectangle =
-        Rectangle2d.fromExtrema
-            { minX = Length.meters 2
-            , maxX = Length.meters 5
-            , minY = Length.meters 1
-            , maxY = Length.meters 3
+        Rectangle2d.with
+            { x1 = Length.meters 2
+            , x2 = Length.meters 5
+            , y1 = Length.meters 1
+            , y2 = Length.meters 3
             }
 
     Rectangle2d.area rectangle
@@ -436,11 +436,11 @@ vertices rectangle =
 {-| Check if a rectangle contains a given point:
 
     rectangle =
-        Rectangle2d.fromExtrema
-            { minX = Length.meters 2
-            , maxX = Length.meters 5
-            , minY = Length.meters 1
-            , maxY = Length.meters 3
+        Rectangle2d.with
+            { x1 = Length.meters 2
+            , x2 = Length.meters 5
+            , y1 = Length.meters 1
+            , y2 = Length.meters 3
             }
 
     p1 =
@@ -631,11 +631,11 @@ axis-aligned, but will be larger than the rectangle if the rectangle is at an
 angle.
 
     square =
-        Rectangle2d.fromExtrema
-            { minX = Length.meters 0
-            , maxX = Length.meters 1
-            , minY = Length.meters 0
-            , maxY = Length.meters 1
+        Rectangle2d.with
+            { x1 = Length.meters 0
+            , x2 = Length.meters 1
+            , y1 = Length.meters 0
+            , y2 = Length.meters 1
             }
 
     diamond =
