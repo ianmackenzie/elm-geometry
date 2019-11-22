@@ -9,7 +9,7 @@
 
 module Rectangle2d exposing
     ( Rectangle2d
-    , with, from, withDimensions, withAxes, withXAxis, withYAxis
+    , with, from, withDimensions, centeredOn, withXAxis, withYAxis
     , dimensions, axes, xAxis, yAxis, centerPoint, area, vertices, edges, boundingBox
     , interpolate
     , contains
@@ -35,7 +35,7 @@ they can have arbitrary orientation and so can be rotated, mirrored etc.
 
 # Construction
 
-@docs with, from, withDimensions, withAxes, withXAxis, withYAxis
+@docs with, from, withDimensions, centeredOn, withXAxis, withYAxis
 
 
 # Properties
@@ -205,15 +205,15 @@ dimensions;
 
     Rectangle2d.withDimensions dimensions angle centerPoint
 
-is equivalent to
+could be written as
 
-    Rectangle2d.withAxes
+    Rectangle2d.centeredOn
         (Frame2d.withAngle angle centerPoint)
         dimensions
 
 -}
-withAxes : Frame2d units coordinates defines -> ( Quantity Float units, Quantity Float units ) -> Rectangle2d units coordinates
-withAxes givenAxes ( givenWidth, givenHeight ) =
+centeredOn : Frame2d units coordinates defines -> ( Quantity Float units, Quantity Float units ) -> Rectangle2d units coordinates
+centeredOn givenAxes ( givenWidth, givenHeight ) =
     Types.Rectangle2d
         { axes = Frame2d.copy givenAxes
         , dimensions = ( Quantity.abs givenWidth, Quantity.abs givenHeight )
@@ -225,7 +225,7 @@ rectangle will be centered on the axis' origin point.
 -}
 withXAxis : Axis2d units coordinates -> ( Quantity Float units, Quantity Float units ) -> Rectangle2d units coordinates
 withXAxis givenAxis givenDimensions =
-    withAxes (Frame2d.fromXAxis givenAxis) givenDimensions
+    centeredOn (Frame2d.fromXAxis givenAxis) givenDimensions
 
 
 {-| Construct a rectangle with the given Y axis and overall dimensions. The
@@ -233,7 +233,7 @@ rectangle will be centered on the axis' origin point.
 -}
 withYAxis : Axis2d units coordinates -> ( Quantity Float units, Quantity Float units ) -> Rectangle2d units coordinates
 withYAxis givenAxis givenDimensions =
-    withAxes (Frame2d.fromYAxis givenAxis) givenDimensions
+    centeredOn (Frame2d.fromYAxis givenAxis) givenDimensions
 
 
 axisAligned : Quantity Float units -> Quantity Float units -> Quantity Float units -> Quantity Float units -> Rectangle2d units coordinates

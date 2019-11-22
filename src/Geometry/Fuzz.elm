@@ -380,7 +380,7 @@ ellipticalArc2d =
 rectangle2d : Fuzzer (Rectangle2d coordinates)
 rectangle2d =
     let
-        rectangle frame width height =
-            Rectangle2d.withAxes frame ( width, height )
+        rectangle axes width height =
+            Rectangle2d.centeredOn axes ( width, height )
     in
     Fuzz.map3 rectangle frame2d positiveLength positiveLength
