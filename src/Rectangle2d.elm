@@ -625,7 +625,7 @@ relativeTo frame rectangle =
         }
 
 
-{-| Get the minimal bounding box containing a given rectangle. This have
+{-| Get the minimal bounding box containing a given rectangle. This will have
 exactly the same shape and size as the rectangle itself if the rectangle is
 axis-aligned, but will be larger than the rectangle if the rectangle is at an
 angle.
