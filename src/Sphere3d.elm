@@ -231,10 +231,6 @@ at_ rate sphere =
 
 
 {-| Get the center point of a sphere.
-
-    Sphere3d.centerPoint exampleSphere
-    --> Point3d.meters 1 2 1
-
 -}
 centerPoint : Sphere3d units coordinates -> Point3d units coordinates
 centerPoint (Types.Sphere3d properties) =
@@ -242,21 +238,13 @@ centerPoint (Types.Sphere3d properties) =
 
 
 {-| Get the radius of a sphere.
-
-    Sphere3d.radius exampleSphere
-    --> Length.meters 3
-
 -}
 radius : Sphere3d units coordinates -> Quantity Float units
 radius (Types.Sphere3d properties) =
     properties.radius
 
 
-{-| Get the diameter of a sphere.
-
-    Sphere3d.diameter exampleSphere
-    --> Length.meters 6
-
+{-| Get the diameter of a sphere (twice the radius).
 -}
 diameter : Sphere3d units coordinates -> Quantity Float units
 diameter sphere =
@@ -265,10 +253,6 @@ diameter sphere =
 
 {-| Get the circumference of a sphere (the circumference of a [great circle](https://en.wikipedia.org/wiki/Great_circle)
 of the sphere).
-
-    Sphere3d.circumference exampleSphere
-    --> Length.meters 18.8496
-
 -}
 circumference : Sphere3d units coordinates -> Quantity Float units
 circumference sphere =
@@ -276,10 +260,6 @@ circumference sphere =
 
 
 {-| Get the surface area of a sphere.
-
-    Sphere3d.surfaceArea exampleSphere
-    --> Area.squareMeters 113.0973
-
 -}
 surfaceArea : Sphere3d units coordinates -> Quantity Float (Squared units)
 surfaceArea sphere =
@@ -287,10 +267,6 @@ surfaceArea sphere =
 
 
 {-| Get the volume of a sphere.
-
-    Sphere3d.volume exampleSphere
-    --> Volume.cubicMeters 113.0973
-
 -}
 volume : Sphere3d units coordinates -> Quantity Float (Cubed units)
 volume sphere =
@@ -357,14 +333,9 @@ placeIn frame sphere =
 {-| Get the minimal bounding box containing a given sphere.
 
     Sphere3d.boundingBox exampleSphere
-    --> BoundingBox3d.fromExtrema
-    -->     { minX = Length.meters -2
-    -->     , maxX = Length.meters 4
-    -->     , minY = Length.meters -1
-    -->     , maxY = Length.meters 5
-    -->     , minZ = Length.meters -2
-    -->     , maxZ = Length.meters 4
-    -->     }
+    --> BoundingBox3d.from
+    -->     (Point3d.meters -2 -1 -2)
+    -->     (Point3d.meters 4 5 4)
 
 -}
 boundingBox : Sphere3d units coordinates -> BoundingBox3d units coordinates
@@ -396,15 +367,6 @@ boundingBox sphere =
 
 
 {-| Check if a sphere contains a given point.
-
-    exampleSphere
-        |> Sphere3d.contains (Point3d.meters 4 2 1)
-    --> True
-
-    exampleSphere
-        |> Sphere3d.contains (Point3d.meters 4.00001 2 1)
-    --> False
-
 -}
 contains : Point3d units coordinates -> Sphere3d units coordinates -> Bool
 contains point sphere =

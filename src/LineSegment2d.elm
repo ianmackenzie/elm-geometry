@@ -123,14 +123,6 @@ given distances from the axis' origin point.
     -->     , Point2d.meters 5 0
     -->     )
 
-    LineSegment2d.along Axis2d.y
-        (Length.meters 2)
-        (Length.meters -4)
-    --> LineSegment2d.fromEndpoints
-    -->     ( Point2d.meters 0 2
-    -->     , Point2d.meters 0 -4
-    -->     )
-
 -}
 along : Axis2d units coordinates -> Quantity Float units -> Quantity Float units -> LineSegment2d units coordinates
 along axis start end =
@@ -174,10 +166,6 @@ at_ rate lineSegment =
 
 
 {-| Get the start point of a line segment.
-
-    LineSegment2d.startPoint exampleLineSegment
-    --> Point2d.meters 1 2
-
 -}
 startPoint : LineSegment2d units coordinates -> Point2d units coordinates
 startPoint (Types.LineSegment2d ( start, _ )) =
@@ -185,10 +173,6 @@ startPoint (Types.LineSegment2d ( start, _ )) =
 
 
 {-| Get the end point of a line segment.
-
-    LineSegment2d.endPoint exampleLineSegment
-    --> Point2d.meters 3 4
-
 -}
 endPoint : LineSegment2d units coordinates -> Point2d units coordinates
 endPoint (Types.LineSegment2d ( _, end )) =
@@ -207,13 +191,6 @@ endpoints (Types.LineSegment2d endpoints_) =
 
 
 {-| Reverse a line segment, swapping its start and end points.
-
-    LineSegment2d.reverse exampleLineSegment
-    --> LineSegment2d.fromEndpoints
-    -->     ( Point2d.meters 3 4
-    -->     , Point2d.meters 1 2
-    -->     )
-
 -}
 reverse : LineSegment2d units coordinates -> LineSegment2d units coordinates
 reverse lineSegment =
@@ -612,12 +589,9 @@ placeIn frame =
 {-| Get the minimal bounding box containing a given line segment.
 
     LineSegment2d.boundingBox exampleLineSegment
-    --> BoundingBox2d.fromExtrema
-    -->     { minX = Length.meters 1
-    -->     , maxX = Length.meters 3
-    -->     , minY = Length.meters 2
-    -->     , maxY = Length.meters 4
-    -->     }
+    --> BoundingBox2d.from
+    -->     (Point2d.meters 1 2)
+    -->     (Point2d.meters 3 4)
 
 -}
 boundingBox : LineSegment2d units coordinates -> BoundingBox2d units coordinates

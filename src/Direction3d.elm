@@ -140,10 +140,6 @@ z =
 
 
 {-| The positive X direction.
-
-    Direction3d.unwrap Direction3d.positiveX
-    --> { x = 1, y = 0, z = 0 }
-
 -}
 positiveX : Direction3d coordinates
 positiveX =
@@ -151,10 +147,6 @@ positiveX =
 
 
 {-| The negative X direction.
-
-    Direction3d.unwrap Direction3d.negativeX
-    --> { x = -1, y = 0, z = 0 }
-
 -}
 negativeX : Direction3d coordinates
 negativeX =
@@ -162,10 +154,6 @@ negativeX =
 
 
 {-| The positive Y direction.
-
-    Direction3d.unwrap Direction3d.positiveY
-    --> { x = 0, y = 1, z = 0 }
-
 -}
 positiveY : Direction3d coordinates
 positiveY =
@@ -173,10 +161,6 @@ positiveY =
 
 
 {-| The negative Y direction.
-
-    Direction3d.unwrap Direction3d.negativeY
-    --> { x = 0, y = -1, z = 0 }
-
 -}
 negativeY : Direction3d coordinates
 negativeY =
@@ -184,10 +168,6 @@ negativeY =
 
 
 {-| The positive Z direction.
-
-    Direction3d.unwrap Direction3d.positiveZ
-    --> { x = 0, y = 0, z = 1 }
-
 -}
 positiveZ : Direction3d coordinates
 positiveZ =
@@ -195,10 +175,6 @@ positiveZ =
 
 
 {-| The negative Z direction.
-
-    Direction3d.unwrap Direction3d.negativeZ
-    --> { x = 0, y = 0, z = -1 }
-
 -}
 negativeZ : Direction3d coordinates
 negativeZ =
@@ -1011,10 +987,6 @@ angleFrom (Types.Direction3d d1) (Types.Direction3d d2) =
 
 
 {-| Reverse a direction.
-
-    Direction3d.reverse Direction3d.y
-    --> Direction3d.negativeY
-
 -}
 reverse : Direction3d coordinates -> Direction3d coordinates
 reverse (Types.Direction3d d) =

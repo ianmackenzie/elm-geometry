@@ -169,14 +169,14 @@ import Vector3d exposing (Vector3d)
 systems it's defined in, and what coordinate system (if any) it itself defines.
 A concrete `Frame3d` type might look like
 
-    type alias MyFrame =
+    type alias Frame =
         Frame3d Meters World { defines : Local }
 
 which can be read as "a `Frame3d` defined in meters in world coordinates, which
 itself defines local coordinates". For frames that don't define a local
 coordinate system, you could use
 
-    type alias MyFrame =
+    type alias Frame =
         Frame3d Meters World {}
 
 Many functions in this module don't care about the third type argument (whether
@@ -265,7 +265,7 @@ withZDirection givenZDirection givenOrigin =
 {-| Create a 'fresh copy' of a frame: one with the same origin point and X/Y/Z
 directions, but that can be used to define a different local coordinate system.
 Sometimes useful in generic/library code. Despite the name, this is efficient:
-it doesn't actually copy anything.
+it really just returns the value you passed in, but with a different type.
 -}
 copy : Frame3d units coordinates defines1 -> Frame3d units coordinates defines2
 copy (Types.Frame3d properties) =
@@ -423,10 +423,6 @@ at_ rate frame =
 
 
 {-| Get the origin point of a given frame.
-
-    Frame3d.originPoint Frame3d.atOrigin
-    --> Point3d.origin
-
 -}
 originPoint : Frame3d units coordinates defines -> Point3d units coordinates
 originPoint (Types.Frame3d properties) =
@@ -434,10 +430,6 @@ originPoint (Types.Frame3d properties) =
 
 
 {-| Get the X direction of a given frame.
-
-    Frame3d.xDirection Frame3d.atOrigin
-    --> Direction3d.x
-
 -}
 xDirection : Frame3d units coordinates defines -> Direction3d coordinates
 xDirection (Types.Frame3d properties) =
@@ -445,10 +437,6 @@ xDirection (Types.Frame3d properties) =
 
 
 {-| Get the Y direction of a given frame.
-
-    Frame3d.yDirection Frame3d.atOrigin
-    --> Direction3d.y
-
 -}
 yDirection : Frame3d units coordinates defines -> Direction3d coordinates
 yDirection (Types.Frame3d properties) =
@@ -456,10 +444,6 @@ yDirection (Types.Frame3d properties) =
 
 
 {-| Get the Z direction of a given frame.
-
-    Frame3d.zDirection Frame3d.atOrigin
-    --> Direction3d.z
-
 -}
 zDirection : Frame3d units coordinates defines -> Direction3d coordinates
 zDirection (Types.Frame3d properties) =
@@ -515,10 +499,6 @@ isRightHanded (Types.Frame3d frame) =
 
 {-| Get the X axis of a given frame (the axis formed from the frame's origin
 point and X direction).
-
-    Frame3d.xAxis Frame3d.atOrigin
-    --> Axis3d.x
-
 -}
 xAxis : Frame3d units coordinates defines -> Axis3d units coordinates
 xAxis (Types.Frame3d frame) =
@@ -527,10 +507,6 @@ xAxis (Types.Frame3d frame) =
 
 {-| Get the Y axis of a given frame (the axis formed from the frame's origin
 point and Y direction).
-
-    Frame3d.yAxis Frame3d.atOrigin
-    --> Axis3d.y
-
 -}
 yAxis : Frame3d units coordinates defines -> Axis3d units coordinates
 yAxis (Types.Frame3d frame) =
@@ -539,10 +515,6 @@ yAxis (Types.Frame3d frame) =
 
 {-| Get the Z axis of a given frame (the axis formed from the frame's origin
 point and Z direction).
-
-    Frame3d.zAxis Frame3d.atOrigin
-    --> Axis3d.z
-
 -}
 zAxis : Frame3d units coordinates defines -> Axis3d units coordinates
 zAxis (Types.Frame3d frame) =
@@ -657,14 +629,9 @@ xzSketchPlane frame =
         }
 
 
-{-| Reverse the X direction of a frame.
-
-    Frame3d.xDirection (Frame3d.reverseX Frame3d.atOrigin)
-    --> Direction3d.negativeX
-
-Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
+{-| Reverse the X direction of a frame. Note that this will switch the
+[handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 of the frame.
-
 -}
 reverseX : Frame3d units coordinates defines1 -> Frame3d units coordinates defines2
 reverseX frame =
@@ -676,14 +643,9 @@ reverseX frame =
         }
 
 
-{-| Reverse the Y direction of a frame.
-
-    Frame3d.yDirection (Frame3d.reverseY Frame3d.atOrigin)
-    --> Direction3d.negativeY
-
-Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
+{-| Reverse the Y direction of a frame. Note that this will switch the
+[handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 of the frame.
-
 -}
 reverseY : Frame3d units coordinates defines1 -> Frame3d units coordinates defines2
 reverseY frame =
@@ -695,14 +657,9 @@ reverseY frame =
         }
 
 
-{-| Reverse the Z direction of a frame.
-
-    Frame3d.zDirection (Frame3d.reverseZ Frame3d.atOrigin)
-    --> Direction3d.negativeZ
-
-Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
+{-| Reverse the Z direction of a frame. Note that this will switch the
+[handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 of the frame.
-
 -}
 reverseZ : Frame3d units coordinates defines1 -> Frame3d units coordinates defines2
 reverseZ frame =
@@ -831,15 +788,7 @@ translateBy vector frame =
         }
 
 
-{-| Translate a frame in a given direction by a given distance;
-
-    Frame3d.translateIn direction distance
-
-is equivalent to
-
-    Frame3d.translateBy
-        (Vector3d.withLength distance direction)
-
+{-| Translate a frame in a given direction by a given distance.
 -}
 translateIn : Direction3d coordinates -> Quantity Float units -> Frame3d units coordinates defines1 -> Frame3d units coordinates defines2
 translateIn direction distance frame =

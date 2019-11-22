@@ -299,29 +299,12 @@ through the second given point and ends at the third given point:
     -->             (Angle.degrees 270)
     -->     )
 
-    Arc2d.throughPoints
-        (Point2d.meters 1 0)
-        Point2d.origin
-        (Point2d.meters 0 1)
-    --> Just
-    -->     (Point2d.meters 1 0
-    -->         |> Arc2d.sweptAround
-    -->             (Point2d.meters 0.5 0.5)
-    -->             (Angle.degrees -180)
-    -->     )
-
 If the three points are collinear, returns `Nothing`:
 
     Arc2d.throughPoints
         Point2d.origin
         (Point2d.meters 1 0)
         (Point2d.meters 2 0)
-    --> Nothing
-
-    Arc2d.throughPoints
-        Point2d.origin
-        Point2d.origin
-        (Point2d.meters 1 0)
     --> Nothing
 
 -}
@@ -416,26 +399,6 @@ which arc to create. For example:
     -->     (Point2d.meters 1 0
     -->         |> Arc2d.sweptAround Point2d.origin
     -->             (Angle.degrees 90)
-    -->     )
-
-    Arc2d.withRadius (Length.meters 1)
-        SweptAngle.smallNegative
-        p1
-        p2
-    --> Just
-    -->     (Point2d.meters 1 0
-    -->         |> Arc2d.sweptAround (Point2d.meters 1 1)
-    -->             (Angle.degrees -90)
-    -->     )
-
-    Arc2d.withRadius (Length.meters 1)
-        SweptAngle.largePositive
-        p1
-        p2
-    --> Just
-    -->     (Point2d.meters 1 0
-    -->         |> Arc2d.sweptAround (Point2d.meters 1 1)
-    -->             (Angle.degrees 270)
     -->     )
 
 If the start and end points are coincident or the distance between them is more
@@ -559,10 +522,6 @@ at_ rate arc =
 
 
 {-| Get the center point of an arc.
-
-    Arc2d.centerPoint exampleArc
-    --> Point2d.meters 1 1
-
 -}
 centerPoint : Arc2d units coordinates -> Point2d units coordinates
 centerPoint (Types.Arc2d arc) =
@@ -592,10 +551,6 @@ centerPoint (Types.Arc2d arc) =
 
 
 {-| Get the radius of an arc.
-
-    Arc2d.radius exampleArc
-    --> Length.meters 2
-
 -}
 radius : Arc2d units coordinates -> Quantity Float units
 radius (Types.Arc2d arc) =
@@ -603,10 +558,6 @@ radius (Types.Arc2d arc) =
 
 
 {-| Get the start point of an arc.
-
-    Arc2d.startPoint exampleArc
-    --> Point2d.meters 3 1
-
 -}
 startPoint : Arc2d units coordinates -> Point2d units coordinates
 startPoint (Types.Arc2d properties) =
@@ -614,24 +565,14 @@ startPoint (Types.Arc2d properties) =
 
 
 {-| Get the end point of an arc.
-
-    Arc2d.endPoint exampleArc
-    --> Point2d.meters 1 3
-
 -}
 endPoint : Arc2d units coordinates -> Point2d units coordinates
 endPoint arc =
     pointOn arc 1.0
 
 
-{-| Get the swept angle of an arc.
-
-    Arc2d.sweptAngle exampleArc
-    --> Angle.degrees 90
-
-The result will be positive for a counterclockwise arc and negative for a
-clockwise one.
-
+{-| Get the swept angle of an arc. The result will be positive for a
+counterclockwise arc and negative for a clockwise one.
 -}
 sweptAngle : Arc2d units coordinates -> Angle
 sweptAngle (Types.Arc2d properties) =

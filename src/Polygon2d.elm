@@ -321,18 +321,6 @@ innerLoops (Types.Polygon2d polygon) =
 {-| Get all vertices of a polygon; this will include vertices from the outer
 loop of the polygon and all inner loops. The order of the returned vertices is
 undefined.
-
-    Polygon2d.vertices squareWithHole
-    --> [ Point2d.meters 0 0
-    --> , Point2d.meters 3 0
-    --> , Point2d.meters 3 3
-    --> , Point2d.meters 0 3
-    --> , Point2d.meters 1 1
-    --> , Point2d.meters 1 2
-    --> , Point2d.meters 2 2
-    --> , Point2d.meters 2 1
-    --> ]
-
 -}
 vertices : Polygon2d units coordinates -> List (Point2d units coordinates)
 vertices polygon =
@@ -351,34 +339,6 @@ loopEdges vertices_ =
 
 {-| Get all edges of a polygon. This will include both outer edges and inner
 (hole) edges.
-
-    Polygon2d.edges squareWithHole
-    --> [ LineSegment2d.from
-    -->     (Point2d.meters 0 0)
-    -->     (Point2d.meters 3 0)
-    --> , LineSegment2d.from
-    -->     (Point2d.meters 3 0)
-    -->     (Point2d.meters 3 3)
-    --> , LineSegment2d.from
-    -->     (Point2d.meters 3 3)
-    -->     (Point2d.meters 0 3)
-    --> , LineSegment2d.from
-    -->     (Point2d.meters 0 3)
-    -->     (Point2d.meters 0 0)
-    --> , LineSegment2d.from
-    -->     (Point2d.meters 1 1)
-    -->     (Point2d.meters 1 2)
-    --> , LineSegment2d.from
-    -->     (Point2d.meters 1 2)
-    -->     (Point2d.meters 2 2)
-    --> , LineSegment2d.from
-    -->     (Point2d.meters 2 2)
-    -->     (Point2d.meters 2 1)
-    --> , LineSegment2d.from
-    -->     (Point2d.meters 2 1)
-    -->     (Point2d.meters 1 1)
-    --> ]
-
 -}
 edges : Polygon2d units coordinates -> List (LineSegment2d units coordinates)
 edges polygon =
@@ -507,12 +467,9 @@ if the polygon has no vertices.
 
     Polygon2d.boundingBox rectangle
     --> Just <|
-    -->     BoundingBox2d.fromExtrema
-    -->         { minX = Length.meters 1
-    -->         , maxX = Length.meters 3
-    -->         , minY = Length.meters 1
-    -->         , maxY = Length.meters 2
-    -->         }
+    -->     BoundingBox2d.from
+    -->         (Point2d.meters 1 1)
+    -->         (Point2d.meters 3 2)
 
 -}
 boundingBox : Polygon2d units coordinates -> Maybe (BoundingBox2d units coordinates)

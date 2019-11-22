@@ -196,10 +196,6 @@ at_ rate plane =
 
 
 {-| Get the origin point of a plane.
-
-    Plane3d.originPoint Plane3d.xy
-    --> Point3d.origin
-
 -}
 originPoint : Plane3d units coordinates -> Point3d units coordinates
 originPoint (Types.Plane3d plane) =
@@ -207,10 +203,6 @@ originPoint (Types.Plane3d plane) =
 
 
 {-| Get the normal direction of a plane.
-
-    Plane3d.normalDirection Plane3d.xy
-    --> Direction3d.z
-
 -}
 normalDirection : Plane3d units coordinates -> Direction3d coordinates
 normalDirection (Types.Plane3d plane) =
@@ -244,12 +236,8 @@ offsetBy distance plane =
     plane |> translateIn (normalDirection plane) distance
 
 
-{-| Reverse a plane's normal direction while leaving its origin point unchanged.
-
-    Plane3d.reverseNormal Plane3d.xy
-    --> Plane3d.through Point3d.origin
-    -->     Direction3d.negativeZ
-
+{-| Reverse a plane's normal direction while leaving its origin point unchanged
+(flip the plane).
 -}
 reverseNormal : Plane3d units coordinates -> Plane3d units coordinates
 reverseNormal (Types.Plane3d plane) =
@@ -258,7 +246,8 @@ reverseNormal (Types.Plane3d plane) =
 
 {-| Rotate a plane around an axis by a given angle.
 
-    Plane3d.rotateAround Axis3d.y (Angle.degrees 90) Plane3d.xy
+    Plane3d.xy
+        |> Plane3d.rotateAround Axis3d.y (Angle.degrees 90)
     --> Plane3d.yz
 
 -}
@@ -270,18 +259,6 @@ rotateAround axis angle (Types.Plane3d plane) =
 
 {-| Translate a plane by a given displacement. Applies the given displacement to
 the plane's origin point and leaves its normal direction unchanged.
-
-    plane =
-        Plane3d.withNormalDirection Direction3d.z
-            (Point3d.meters 1 1 1)
-
-    displacement =
-        Vector3d.meters 1 2 3
-
-    Plane3d.translateBy displacement plane
-    --> Plane3d.withNormalDirection Direction3d.z
-    -->     (Point3d.meters 2 3 4)
-
 -}
 translateBy : Vector3d units coordinates -> Plane3d units coordinates -> Plane3d units coordinates
 translateBy vector (Types.Plane3d plane) =
@@ -289,15 +266,7 @@ translateBy vector (Types.Plane3d plane) =
         (Point3d.translateBy vector plane.originPoint)
 
 
-{-| Translate a plane in a given direction by a given distance;
-
-    Plane3d.translateIn direction distance
-
-is equivalent to
-
-    Plane3d.translateBy
-        (Vector3d.withLength distance direction)
-
+{-| Translate a plane in a given direction by a given distance.
 -}
 translateIn : Direction3d coordinates -> Quantity Float units -> Plane3d units coordinates -> Plane3d units coordinates
 translateIn direction distance plane =
@@ -306,13 +275,6 @@ translateIn direction distance plane =
 
 {-| Move a plane so that it has the given origin point but unchanged normal
 direction.
-
-    newOrigin =
-        Point3d.meters 1 2 3
-
-    Plane3d.moveTo newOrigin Plane3d.xy
-    --> Plane3d.through newOrigin Direction3d.z
-
 -}
 moveTo : Point3d units coordinates -> Plane3d units coordinates -> Plane3d units coordinates
 moveTo newOrigin (Types.Plane3d plane) =
@@ -339,18 +301,6 @@ mirrorAcross otherPlane (Types.Plane3d plane) =
 
 {-| Take a plane defined in global coordinates, and return it expressed in local
 coordinates relative to a given reference frame.
-
-    referenceFrame =
-        Frame3d.atPoint (Point3d.meters 1 1 1)
-
-    plane =
-        Plane3d.withNormalDirection Direction3d.z
-            (Point3d.meters 0 0 2)
-
-    Plane3d.relativeTo referenceFrame plane
-    --> Plane3d.withNormalDirection Direction3d.z
-    -->     (Point3d.meters -1 -1 1)
-
 -}
 relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Plane3d units globalCoordinates -> Plane3d units localCoordinates
 relativeTo frame (Types.Plane3d plane) =
@@ -360,18 +310,6 @@ relativeTo frame (Types.Plane3d plane) =
 
 {-| Take a plane defined in local coordinates relative to a given reference
 frame, and return that plane expressed in global coordinates.
-
-    referenceFrame =
-        Frame3d.atPoint (Point3d.meters 1 1 1)
-
-    plane =
-        Plane3d.withNormalDirection Direction3d.z
-            (Point3d.meters 1 2 3)
-
-    Plane3d.placeIn referenceFrame plane
-    --> Plane3d.withNormalDirection Direction3d.z
-    -->     (Point3d.meters 2 3 4)
-
 -}
 placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Plane3d units localCoordinates -> Plane3d units globalCoordinates
 placeIn frame (Types.Plane3d plane) =

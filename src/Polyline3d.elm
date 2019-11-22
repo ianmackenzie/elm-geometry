@@ -137,14 +137,6 @@ at_ rate polyline =
 
 
 {-| Get the vertices of a polyline.
-
-    Polyline3d.vertices examplePolyline
-    --> [ Point3d.meters 0 0 0
-    --> , Point3d.meters 1 0 0
-    --> , Point3d.meters 1 2 0
-    --> , Point3d.meters 1 2 3
-    --> ]
-
 -}
 vertices : Polyline3d units coordinates -> List (Point3d units coordinates)
 vertices (Types.Polyline3d polylineVertices) =
@@ -277,14 +269,9 @@ if the polyline has no vertices.
 
     Polyline3d.boundingBox examplePolyline
     --> Just <|
-    -->     BoundingBox3d.fromExtrema
-    -->         { minX = Length.meters 0
-    -->         , maxX = Length.meters 1
-    -->         , minY = Length.meters 0
-    -->         , maxY = Length.meters 2
-    -->         , minZ = Length.meters 0
-    -->         , maxZ = Length.meters 3
-    -->         }
+    -->     BoundingBox3d.from
+    -->         (Point3d.meters 0 0 0)
+    -->         (Point3d.meters 1 2 3)
 
 -}
 boundingBox : Polyline3d units coordinates -> Maybe (BoundingBox3d units coordinates)

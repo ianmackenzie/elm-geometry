@@ -126,14 +126,6 @@ given distances from the axis' origin point.
     -->     , Point3d.meters 5 0 0
     -->     )
 
-    LineSegment3d.along Axis3d.y
-        (Length.meters 2)
-        (Length.meters -4)
-    --> LineSegment3d.fromEndpoints
-    -->     ( Point3d.meters 0 2 0
-    -->     , Point3d.meters 0 -4 0
-    -->     )
-
 -}
 along : Axis3d units coordinates -> Quantity Float units -> Quantity Float units -> LineSegment3d units coordinates
 along axis startDistance endDistance =
@@ -206,10 +198,6 @@ at_ rate lineSegment =
 
 
 {-| Get the start point of a line segment.
-
-    LineSegment3d.startPoint exampleLineSegment
-    --> Point3d.meters 1 2 3
-
 -}
 startPoint : LineSegment3d units coordinates -> Point3d units coordinates
 startPoint (Types.LineSegment3d ( start, _ )) =
@@ -217,10 +205,6 @@ startPoint (Types.LineSegment3d ( start, _ )) =
 
 
 {-| Get the end point of a line segment.
-
-    LineSegment3d.endPoint exampleLineSegment
-    --> Point3d.meters 4 5 6
-
 -}
 endPoint : LineSegment3d units coordinates -> Point3d units coordinates
 endPoint (Types.LineSegment3d ( _, end )) =
@@ -239,13 +223,6 @@ endpoints (Types.LineSegment3d lineSegmentEndpoints) =
 
 
 {-| Reverse a line segment, swapping its start and end points.
-
-    LineSegment3d.reverse exampleLineSegment
-    --> LineSegment3d.fromEndpoints
-    -->     ( Point3d.meters 4 5 6
-    -->     , Point3d.meters 1 2 3
-    -->     )
-
 -}
 reverse : LineSegment3d units coordinates -> LineSegment3d units coordinates
 reverse lineSegment =
@@ -495,14 +472,9 @@ projectInto sketchPlane lineSegment =
 {-| Get the minimal bounding box containing a line segment.
 
     LineSegment3d.boundingBox exampleLineSegment
-    --> BoundingBox3d.fromExtrema
-    -->     { minX = Length.meters 1
-    -->     , maxX = Length.meters 4
-    -->     , minY = Length.meters 2
-    -->     , maxY = Length.meters 5
-    -->     , minZ = Length.meters 3
-    -->     , maxZ = Length.meters 6
-    -->     }
+    --> BoundingBox3d.from
+    -->     (Point3d.meters 1 2 3)
+    -->     (Point3d.meters 4 5 6)
 
 -}
 boundingBox : LineSegment3d units coordinates -> BoundingBox3d units coordinates

@@ -13,7 +13,8 @@ module BoundingBox2d exposing
     , union, intersection
     , hull, hull3, hullN, hullOf, hullOfN
     , aggregate, aggregate3, aggregateN, aggregateOf, aggregateOfN
-    , extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint
+    , extrema
+    , minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint
     , contains, isContainedIn, intersects, overlappingByAtLeast, separatedByAtLeast
     , scaleAbout, translateBy, translateIn, expandBy, offsetBy
     , at, at_
@@ -66,7 +67,11 @@ contains all of the input boxes.
 
 # Properties
 
-@docs extrema, minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint
+@docs extrema
+
+You can also get these values separately:
+
+@docs minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint
 
 
 # Queries
@@ -102,13 +107,9 @@ type alias BoundingBox2d units coordinates =
 The points can be given in any order and don't have to represent the 'primary'
 diagonal of the bounding box.
 
-    firstPoint =
-        Point2d.meters 2 3
-
-    secondPoint =
-        Point2d.meters -1 5
-
-    BoundingBox2d.from firstPoint secondPoint
+    BoundingBox2d.from
+        (Point2d.meters 2 3)
+        (Point2d.meters -1 5)
     --> BoundingBox2d.fromExtrema
     -->     { minX = Length.meters -1
     -->     , maxX = Length.meters 2
@@ -179,18 +180,6 @@ fromExtrema given =
 
 
 {-| Construct a zero-width bounding box containing a single point.
-
-    point =
-        Point2d.meters 2 3
-
-    BoundingBox2d.singleton point
-    --> BoundingBox2d.fromExtrema
-    -->     { minX = Length.meters 2
-    -->     , maxX = Length.meters 2
-    -->     , minY = Length.meters 3
-    -->     , maxY = Length.meters 3
-    -->     }
-
 -}
 singleton : Point2d units coordinates -> BoundingBox2d units coordinates
 singleton point =
@@ -339,26 +328,8 @@ hull3 firstPoint secondPoint thirdPoint =
 
 
 {-| Construct a bounding box containing all _N_ points in the given list. If the
-list is empty, returns `Nothing`.
-
-    BoundingBox2d.hullN
-        [ Point2d.meters 2 3
-        , Point2d.meters -1 5
-        , Point2d.meters 6 4
-        ]
-    --> Just <|
-    -->     BoundingBox2d.fromExtrema
-    -->         { minX = Length.meters -1
-    -->         , maxX = Length.meters 6
-    -->         , minY = Length.meters 3
-    -->         , maxY = Length.meters 5
-    -->         }
-
-    BoundingBox2d.hullN []
-    --> Nothing
-
-If you know you have at least one point, you can use [`hull`](#hull) instead.
-
+list is empty, returns `Nothing`. If you know you have at least one point, you
+can use [`hull`](#hull) instead.
 -}
 hullN : List (Point2d units coordinates) -> Maybe (BoundingBox2d units coordinates)
 hullN points =
@@ -468,28 +439,19 @@ aggregateOfHelp currentMinX currentMaxX currentMinY currentMaxY getBoundingBox i
 {-| Build a bounding box that contains both given bounding boxes.
 
     firstBox =
-        BoundingBox2d.fromExtrema
-            { minX = Length.meters 1
-            , maxX = Length.meters 4
-            , minY = Length.meters 2
-            , maxY = Length.meters 3
-            }
+        BoundingBox2d.from
+            (Point2d.meters 1 2)
+            (Point2d.meters 4 3)
 
     secondBox =
-        BoundingBox2d.fromExtrema
-            { minX = Length.meters -2
-            , maxX = Length.meters 2
-            , minY = Length.meters 4
-            , maxY = Length.meters 5
-            }
+        BoundingBox2d.from
+            (Point2d.meters -2 4)
+            (Point2d.meters 2 5)
 
     BoundingBox2d.union firstBox secondBox
-    --> BoundingBox2d.fromExtrema
-    -->     { minX = Length.meters -2
-    -->     , maxX = Length.meters 4
-    -->     , minY = Length.meters 2
-    -->     , maxY = Length.meters 5
-    -->     }
+    --> BoundingBox2d.from
+    -->     (Point2d.meters -2 2)
+    -->     (Point2d.meters 4 5)
 
 (Note that this is not strictly speaking a 'union' in the precise mathematical
 sense.)
@@ -544,30 +506,8 @@ aggregate3 firstBox secondBox thirdBox =
 
 
 {-| Construct a bounding box containing all bounding boxes in the given list. If
-the list is empty, returns `Nothing`.
-
-    singletonBox =
-        BoundingBox2d.singleton (Point2d.meters 1 3)
-
-    BoundingBox2d.aggregateN [ exampleBox, singletonBox ]
-    --> Just
-    -->     (BoundingBox2d.fromExtrema
-    -->         { minX = Length.meters 1,
-    -->         , maxX = Length.meters 8
-    -->         , minY = Length.meters 2
-    -->         , maxY = Length.meters 6
-    -->         }
-    -->     )
-
-    BoundingBox2d.aggregateN [ exampleBox ]
-    --> Just exampleBox
-
-    BoundingBox2d.aggregateN []
-    --> Nothing
-
-If you know you have at least one bounding box, you can use
-[`aggregate`](#aggregate) instead.
-
+the list is empty, returns `Nothing`. If you know you have at least one bounding
+box, you can use [`aggregate`](#aggregate) instead.
 -}
 aggregateN : List (BoundingBox2d units coordinates) -> Maybe (BoundingBox2d units coordinates)
 aggregateN boxes =
@@ -625,16 +565,10 @@ record.
     --> , maxY = Length.meters 6
     --> }
 
-Can be useful when combined with record destructuring, for example
-
+Can be useful when combined with record destructuring, e.g.
 
     { minX, maxX, minY, maxY } =
         BoundingBox2d.extrema exampleBox
-
-    --> minX = Length.meters 3
-    --> maxX = Length.meters 8
-    --> minY = Length.meters 2
-    --> maxY = Length.meters 6
 
 -}
 extrema :
@@ -649,45 +583,25 @@ extrema (Types.BoundingBox2d boundingBoxExtrema) =
     boundingBoxExtrema
 
 
-{-| Get the minimum X value of a bounding box.
-
-    BoundingBox2d.minX exampleBox
-    --> Length.meters 3
-
--}
+{-| -}
 minX : BoundingBox2d units coordinates -> Quantity Float units
 minX (Types.BoundingBox2d boundingBox) =
     boundingBox.minX
 
 
-{-| Get the maximum X value of a bounding box.
-
-    BoundingBox2d.maxX exampleBox
-    --> Length.meters 8
-
--}
+{-| -}
 maxX : BoundingBox2d units coordinates -> Quantity Float units
 maxX (Types.BoundingBox2d boundingBox) =
     boundingBox.maxX
 
 
-{-| Get the minimum Y value of a bounding box.
-
-    BoundingBox2d.minY exampleBox
-    --> Length.meters 2
-
--}
+{-| -}
 minY : BoundingBox2d units coordinates -> Quantity Float units
 minY (Types.BoundingBox2d boundingBox) =
     boundingBox.minY
 
 
-{-| Get the maximum Y value of a bounding box.
-
-    BoundingBox2d.maxY exampleBox
-    --> Length.meters 6
-
--}
+{-| -}
 maxY : BoundingBox2d units coordinates -> Quantity Float units
 maxY (Types.BoundingBox2d boundingBox) =
     boundingBox.maxY
@@ -695,12 +609,8 @@ maxY (Types.BoundingBox2d boundingBox) =
 
 {-| Get the X and Y dimensions (width and height) of a bounding box.
 
-
     ( width, height ) =
         BoundingBox2d.dimensions exampleBox
-
-    --> width = Length.meters 5
-    --> height = Length.meters 4
 
 -}
 dimensions : BoundingBox2d units coordinates -> ( Quantity Float units, Quantity Float units )
@@ -710,22 +620,14 @@ dimensions boundingBox =
     )
 
 
-{-| Get the median X value of a bounding box.
-
-    BoundingBox2d.midX exampleBox
-    --> Length.meters 5.5
-
+{-| Get the median (central) X value of a bounding box.
 -}
 midX : BoundingBox2d units coordinates -> Quantity Float units
 midX (Types.BoundingBox2d boundingBox) =
     Quantity.interpolateFrom boundingBox.minX boundingBox.maxX 0.5
 
 
-{-| Get the median Y value of a bounding box.
-
-    BoundingBox2d.midY exampleBox
-    --> Length.meters 4
-
+{-| Get the median (central) Y value of a bounding box.
 -}
 midY : BoundingBox2d units coordinates -> Quantity Float units
 midY (Types.BoundingBox2d boundingBox) =
@@ -733,10 +635,6 @@ midY (Types.BoundingBox2d boundingBox) =
 
 
 {-| Get the point at the center of a bounding box.
-
-    BoundingBox2d.centerPoint exampleBox
-    --> Point2d.meters 5.5 4
-
 -}
 centerPoint : BoundingBox2d units coordinates -> Point2d units coordinates
 centerPoint boundingBox =
@@ -744,16 +642,6 @@ centerPoint boundingBox =
 
 
 {-| Check if a bounding box contains a particular point.
-
-    point =
-        Point2d.meters 4 3
-
-    BoundingBox2d.contains point exampleBox
-    --> True
-
-    BoundingBox2d.contains Point2d.origin exampleBox
-    --> False
-
 -}
 contains : Point2d units coordinates -> BoundingBox2d units coordinates -> Bool
 contains point boundingBox =
@@ -773,36 +661,6 @@ is equivalent to
         /= Nothing
 
 but is more efficient.
-
-    firstBox =
-        BoundingBox2d.fromExtrema
-            { minX = Length.meters 0
-            , maxX = Length.meters 3
-            , minY = Length.meters 0
-            , maxY = Length.meters 2
-            }
-
-    secondBox =
-        BoundingBox2d.fromExtrema
-            { minX = Length.meters 0
-            , maxX = Length.meters 3
-            , minY = Length.meters 1
-            , maxY = Length.meters 4
-            }
-
-    thirdBox =
-        BoundingBox2d.fromExtrema
-            { minX = Length.meters 0
-            , maxX = Length.meters 3
-            , minY = Length.meters 4
-            , maxY = Length.meters 5
-            }
-
-    BoundingBox2d.intersects firstBox secondBox
-    --> True
-
-    BoundingBox2d.intersects firstBox thirdBox
-    --> False
 
 -}
 intersects : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Bool
@@ -918,33 +776,24 @@ separatedByAtLeast tolerance firstBox secondBox =
 (is a subset of it).
 
     outerBox =
-        BoundingBox2d.fromExtrema
-            { minX = Length.meters 0
-            , maxX = Length.meters 10
-            , minY = Length.meters 0
-            , maxY = Length.meters 10
-            }
+        BoundingBox2d.from
+            (Point2d.meters 0 0)
+            (Point2d.meters 10 10)
 
     innerBox =
-        BoundingBox2d.fromExtrema
-            { minX = Length.meters 1
-            , maxX = Length.meters 5
-            , minY = Length.meters 3
-            , maxY = Length.meters 9
-            }
+        BoundingBox2d.from
+            (Point2d.meters 1 3)
+            (Point2d.meters 5 9)
 
     overlappingBox =
-        BoundingBox2d.fromExtrema
-            { minX = Length.meters 1
-            , maxX = Length.meters 5
-            , minY = Length.meters 3
-            , maxY = Length.meters 12
-            }
+        BoundingBox2d.from
+            (Point2d.meters 1 3)
+            (Point2d.meters 5 12)
 
-    BoundingBox2d.isContainedIn outerBox innerBox
+    innerBox |> BoundingBox2d.isContainedIn outerBox
     --> True
 
-    BoundingBox2d.isContainedIn outerBox overlappingBox
+    overlappingBox |> BoundingBox2d.isContainedIn outerBox
     --> False
 
 -}
@@ -960,60 +809,40 @@ isContainedIn other boundingBox =
 given bounding boxes. If the given boxes do not intersect, returns `Nothing`.
 
     firstBox =
-        BoundingBox2d.fromExtrema
-            { minX = Length.meters 1
-            , maxX = Length.meters 4
-            , minY = Length.meters 2
-            , maxY = Length.meters 3
-            }
+        BoundingBox2d.from
+            (Point2d.meters 1 2)
+            (Point2d.meters 4 3)
 
     secondBox =
-        BoundingBox2d.fromExtrema
-            { minX = Length.meters 2
-            , maxX = Length.meters 5
-            , minY = Length.meters 1
-            , maxY = Length.meters 4
-            }
+        BoundingBox2d.from
+            (Point2d.meters 2 1)
+            (Point2d.meters 5 4)
 
     BoundingBox2d.intersection firstBox secondBox
-    --> Just
-    -->     (BoundingBox2d.fromExtrema
-    -->         { minX = Length.meters 2
-    -->         , maxX = Length.meters 4
-    -->         , minY = Length.meters 2
-    -->         , maxY = Length.meters 3
-    -->         }
-    -->     )
+    --> Just <|
+    -->     BoundingBox2d.from
+    -->         (Point2d.meters 2 2)
+    -->         (Point2d.meters 4 3)
 
 If two boxes just touch along an edge or at a corner, they are still considered
 to have an intersection, even though that intersection will have zero area (at
 least one of its dimensions will be zero):
 
     firstBox =
-        BoundingBox2d.fromExtrema
-            { minX = Length.meters 0
-            , maxX = Length.meters 1
-            , minY = Length.meters 0
-            , maxY = Length.meters 2
-            }
+        BoundingBox2d.from
+            (Point2d.meters 0 0)
+            (Point2d.meters 1 2)
 
     secondBox =
-        BoundingBox2d.fromExtrema
-            { minX = Length.meters 1
-            , maxX = Length.meters 2
-            , minY = Length.meters 1
-            , maxY = Length.meters 3
-            }
+        BoundingBox2d.from
+            (Point2d.meters 1 1)
+            (Point2d.meters 2 3)
 
     BoundingBox2d.intersection firstBox secondBox
-    --> Just
-    -->     (BoundingBox2d.fromExtrema
-    -->         { minX = Length.meters 1
-    -->         , maxX = Length.meters 1
-    -->         , minY = Length.meters 1
-    -->         , maxY = Length.meters 2
-    -->         }
-    -->     )
+    --> Just <|
+    -->     BoundingBox2d.from
+    -->         (Point2d.meters 1 1)
+    -->         (Point2d.meters 1 2)
 
 -}
 intersection : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Maybe (BoundingBox2d units coordinates)
@@ -1033,18 +862,6 @@ intersection firstBox secondBox =
 
 
 {-| Scale a bounding box about a given point by a given scale.
-
-    point =
-        Point2d.meters 4 4
-
-    BoundingBox2d.scaleAbout point 2 exampleBox
-    --> BoundingBox2d.fromExtrema
-    -->     { minX = Length.meters 2
-    -->     , maxX = Length.meters 12
-    -->     , minY = Length.meters 0
-    -->     , maxY = Length.meters 8
-    -->     }
-
 -}
 scaleAbout : Point2d units coordinates -> Float -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
 scaleAbout point scale boundingBox =
@@ -1085,18 +902,6 @@ scaleAbout point scale boundingBox =
 
 
 {-| Translate a bounding box by a given displacement.
-
-    displacement =
-        Vector2d.meters 2 -3
-
-    BoundingBox2d.translateBy displacement exampleBox
-    --> BoundingBox2d.fromExtrema
-    -->     { minX = Length.meters 5
-    -->     , maxX = Length.meters 10
-    -->     , minY = Length.meters -1
-    -->     , maxY = Length.meters 3
-    -->     }
-
 -}
 translateBy : Vector2d units coordinates -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
 translateBy displacement boundingBox =
@@ -1115,15 +920,7 @@ translateBy displacement boundingBox =
         }
 
 
-{-| Translate a bounding box in a given direction by a given distance;
-
-    BoundingBox2d.translateIn direction distance
-
-is equivalent to
-
-    BoundingBox2d.translateBy
-        (Vector2d.withLength distance direction)
-
+{-| Translate a bounding box in a given direction by a given distance.
 -}
 translateIn : Direction2d coordinates -> Quantity Float units -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
 translateIn direction distance boundingBox =
@@ -1146,15 +943,6 @@ unsafeOffsetBy amount boundingBox =
 {-| Expand or shrink the given bounding box in all the directions by the given
 distance. A positive offset will cause the bounding box to expand and a negative
 value will cause it to shrink.
-
-    BoundingBox2d.offsetBy (Length.meters 2) exampleBox
-    --> Just <|
-    -->     BoundingBox2d.fromExtrema
-    -->         { minX = Length.meters 1
-    -->         , maxX = Length.meters 10
-    -->         , minY = Length.meters 0
-    -->         , maxY = Length.meters 8
-    -->         }
 
     BoundingBox2d.offsetBy (Length.meters -1) exampleBox
     --> Just <|

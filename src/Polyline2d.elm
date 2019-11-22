@@ -108,14 +108,6 @@ at_ rate polyline =
 
 
 {-| Get the vertices of a polyline.
-
-    Polyline2d.vertices stepShape
-    --> [ Point2d.meters 0 0
-    --> , Point2d.meters 1 0
-    --> , Point2d.meters 1 1
-    --> , Point2d.meters 2 1
-    --> ]
-
 -}
 vertices : Polyline2d units coordinates -> List (Point2d units coordinates)
 vertices (Types.Polyline2d polylineVertices) =
@@ -239,12 +231,9 @@ if the polyline has no vertices.
 
     Polyline2d.boundingBox stepShape
     --> Just <|
-    -->     BoundingBox2d.fromExtrema
-    -->         { minX = Length.meters 0
-    -->         , maxX = Length.meters 2
-    -->         , minY = Length.meters 0
-    -->         , maxY = Length.meters 1
-    -->         }
+    -->     BoundingBox2d.from
+    -->         (Point2d.meters 0 0)
+    -->         (Point2d.meters 2 1)
 
 -}
 boundingBox : Polyline2d units coordinates -> Maybe (BoundingBox2d units coordinates)

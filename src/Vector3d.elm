@@ -11,7 +11,7 @@ module Vector3d exposing
     ( Vector3d
     , zero
     , unitless
-    , millimeters, centimeters, meters, inches, feet, pixels
+    , meters, pixels, millimeters, centimeters, inches, feet
     , xyz, xyzIn, from, withLength, on, xyOn, rThetaOn, perpendicularTo, interpolateFrom
     , fromTuple, toTuple, fromRecord, toRecord
     , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
@@ -60,9 +60,12 @@ Although there are no predefined constants for the vectors with components
 The remaining functions all construct a `Vector3d` from X, Y and Z components
 given in specific units. Functions like `Vector3d.xyz` are more useful in
 generic code, but these functions are useful for quickly creating hardcoded
-constant values.
+constant values, e.g.
 
-@docs millimeters, centimeters, meters, inches, feet, pixels
+    vector =
+        Vector3d.meters 2 3 1
+
+@docs meters, pixels, millimeters, centimeters, inches, feet
 
 
 # Constructors
@@ -966,7 +969,7 @@ plus (Types.Vector3d v2) (Types.Vector3d v1) =
     firstVector |> Vector3d.minus secondVector
     --> Vector3d.meters 4 5 6
 
-Note the argument order - `v1 - v2` would be written as
+Note the argument order: `v1 - v2` would be written as
 
     v1 |> Vector3d.minus v2
 
@@ -1019,7 +1022,7 @@ dot (Types.Vector3d v2) (Types.Vector3d v1) =
     -->     Quantity.zero
     -->     (Area.squareMeters 6)
 
-Note the argument order - `v1 x v2` would be written as
+Note the argument order: `v1 x v2` would be written as
 
     v1 |> Vector3d.cross v2
 

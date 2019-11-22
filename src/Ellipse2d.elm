@@ -10,7 +10,7 @@
 module Ellipse2d exposing
     ( Ellipse2d
     , with
-    , centerPoint, xAxis, yAxis, xDirection, yDirection, axes, xRadius, yRadius, area
+    , centerPoint, axes, xAxis, yAxis, xDirection, yDirection, xRadius, yRadius, area
     , toEllipticalArc
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , at, at_
@@ -36,7 +36,7 @@ includes functionality for
 
 # Properties
 
-@docs centerPoint, xAxis, yAxis, xDirection, yDirection, axes, xRadius, yRadius, area
+@docs centerPoint, axes, xAxis, yAxis, xDirection, yDirection, xRadius, yRadius, area
 
 
 # Conversion
@@ -130,10 +130,6 @@ at_ rate ellipse =
 
 
 {-| Get the center point of an ellipse.
-
-    Ellipse2d.centerPoint exampleEllipse
-    --> Point2d.meters 10 10
-
 -}
 centerPoint : Ellipse2d units coordinates -> Point2d units coordinates
 centerPoint ellipse =
@@ -153,11 +149,6 @@ axes (Types.Ellipse2d ellipse) =
 
 
 {-| Get the X axis of an ellipse.
-
-    Ellipse2d.xAxis exampleEllipse
-    --> Axis2d.through (Point2d.meters 10 10)
-    -->     (Direction2d.degrees 30)
-
 -}
 xAxis : Ellipse2d units coordinates -> Axis2d units coordinates
 xAxis ellipse =
@@ -165,11 +156,6 @@ xAxis ellipse =
 
 
 {-| Get the Y axis of an ellipse.
-
-    Ellipse2d.yAxis exampleEllipse
-    --> Axis2d.through (Point2d.meters 10 10)
-    -->     (Direction2d.degrees 120)
-
 -}
 yAxis : Ellipse2d units coordinates -> Axis2d units coordinates
 yAxis ellipse =
@@ -201,10 +187,6 @@ yRadius (Types.Ellipse2d ellipse) =
 
 
 {-| Get the direction of the ellipse's X axis.
-
-    Ellipse2d.xDirection exampleEllipse
-    --> Direction2d.degrees 30
-
 -}
 xDirection : Ellipse2d units coordinates -> Direction2d coordinates
 xDirection ellipse =
@@ -212,10 +194,6 @@ xDirection ellipse =
 
 
 {-| Get the direction of an ellipse's Y axis.
-
-    Ellipse2d.yDirection exampleEllipse
-    --> Direction2d.degrees 120
-
 -}
 yDirection : Ellipse2d units coordinates -> Direction2d coordinates
 yDirection ellipse =

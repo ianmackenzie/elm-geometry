@@ -78,14 +78,14 @@ import Vector2d exposing (Vector2d)
 systems it's defined in, and what coordinate system (if any) it itself defines.
 A concrete `Frame2d` type might look like
 
-    type alias MyFrame =
+    type alias Frame =
         Frame2d Meters World { defines : Local }
 
 which can be read as "a `Frame2d` defined in meters in world coordinates, which
 itself defines local coordinates". For frames that don't define a local
 coordinate system, you could use
 
-    type alias MyFrame =
+    type alias Frame =
         Frame2d Meters World {}
 
 Many functions in this module don't care about the third type argument (whether
@@ -194,7 +194,7 @@ fromYAxis givenAxis =
 {-| Create a 'fresh copy' of a frame: one with the same origin point and X/Y
 directions, but that can be used to define a different local coordinate system.
 Sometimes useful in generic/library code. Despite the name, this is efficient:
-it doesn't actually copy anything.
+it really just returns the value you passed in, but with a different type.
 -}
 copy : Frame2d units coordinates defines1 -> Frame2d units coordinates defines2
 copy (Types.Frame2d properties) =
@@ -292,10 +292,6 @@ at_ rate frame =
 
 
 {-| Get the origin point of a given frame.
-
-    Frame2d.originPoint Frame2d.atOrigin
-    --> Point2d.origin
-
 -}
 originPoint : Frame2d units coordinates defines -> Point2d units coordinates
 originPoint (Types.Frame2d frame) =
@@ -303,10 +299,6 @@ originPoint (Types.Frame2d frame) =
 
 
 {-| Get the X direction of a given frame.
-
-    Frame2d.xDirection Frame2d.atOrigin
-    --> Direction2d.x
-
 -}
 xDirection : Frame2d units coordinates defines -> Direction2d coordinates
 xDirection (Types.Frame2d frame) =
@@ -314,10 +306,6 @@ xDirection (Types.Frame2d frame) =
 
 
 {-| Get the Y direction of a given frame.
-
-    Frame2d.yDirection Frame2d.atOrigin
-    --> Direction2d.y
-
 -}
 yDirection : Frame2d units coordinates defines -> Direction2d coordinates
 yDirection (Types.Frame2d frame) =
@@ -358,10 +346,6 @@ isRightHanded (Types.Frame2d frame) =
 
 {-| Get the X axis of a given frame (the axis formed from the frame's origin
 point and X direction).
-
-    Frame2d.xAxis Frame2d.atOrigin
-    --> Axis2d.x
-
 -}
 xAxis : Frame2d units coordinates defines -> Axis2d units coordinates
 xAxis (Types.Frame2d frame) =
@@ -370,10 +354,6 @@ xAxis (Types.Frame2d frame) =
 
 {-| Get the Y axis of a given frame (the axis formed from the frame's origin
 point and Y direction).
-
-    Frame2d.yAxis Frame2d.atOrigin
-    --> Axis2d.y
-
 -}
 yAxis : Frame2d units coordinates defines -> Axis2d units coordinates
 yAxis (Types.Frame2d frame) =
@@ -381,26 +361,9 @@ yAxis (Types.Frame2d frame) =
 
 
 {-| Reverse the X direction of a frame, leaving its Y direction and origin point
-the same.
-
-    point =
-        Point2d.meters 2 3
-
-    frame =
-        Frame2d.atPoint point |> Frame2d.reverseX
-
-    Frame2d.originPoint frame
-    --> point
-
-    Frame2d.xDirection frame
-    --> Direction2d.negativeX
-
-    Frame2d.yDirection frame
-    --> Direction2d.y
-
-Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
+the same. Note that this will switch the
+[handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 of the frame.
-
 -}
 reverseX : Frame2d units coordinates defines1 -> Frame2d units coordinates defines2
 reverseX frame =
@@ -412,24 +375,9 @@ reverseX frame =
 
 
 {-| Reverse the Y direction of a frame, leaving its X direction and origin point
-the same.
-
-    frame =
-        Frame2d.atPoint (Point2d.meters 2 3)
-            |> Frame2d.reverseY
-
-    Frame2d.originPoint frame
-    --> Point2d.meters 2 3
-
-    Frame2d.xDirection frame
-    --> Direction2d.x
-
-    Frame2d.yDirection frame
-    --> Direction2d.negativeY
-
-Note that this will switch the [handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
+the same. Note that this will switch the
+[handedness](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
 of the frame.
-
 -}
 reverseY : Frame2d units coordinates defines1 -> Frame2d units coordinates defines2
 reverseY frame =
@@ -543,15 +491,7 @@ translateBy vector frame =
         }
 
 
-{-| Translate a frame in a given direction by a given distance;
-
-    Frame2d.translateIn direction distance
-
-is equivalent to
-
-    Frame2d.translateBy
-        (Vector2d.withLength distance direction)
-
+{-| Translate a frame in a given direction by a given distance.
 -}
 translateIn : Direction2d coordinates -> Quantity Float units -> Frame2d units coordinates defines1 -> Frame2d units coordinates defines2
 translateIn direction distance frame =

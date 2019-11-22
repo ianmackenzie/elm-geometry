@@ -184,10 +184,6 @@ at_ rate axis =
 
 
 {-| Get the origin point of an axis.
-
-    Axis3d.originPoint exampleAxis
-    --> Point3d.meters 1 2 3
-
 -}
 originPoint : Axis3d units coordinates -> Point3d units coordinates
 originPoint (Types.Axis3d axis) =
@@ -195,10 +191,6 @@ originPoint (Types.Axis3d axis) =
 
 
 {-| Get the direction of an axis.
-
-    Axis3d.direction exampleAxis
-    --> Direction3d.y
-
 -}
 direction : Axis3d units coordinates -> Direction3d coordinates
 direction (Types.Axis3d axis) =
@@ -239,11 +231,6 @@ intersectionWithPlane plane axis =
 
 
 {-| Reverse the direction of an axis while keeping the same origin point.
-
-    Axis3d.reverse exampleAxis
-    --> Axis3d.withDirection Direction3d.negativeY
-    -->     (Point3d.meters 1 2 3)
-
 -}
 reverse : Axis3d units coordinates -> Axis3d units coordinates
 reverse (Types.Axis3d axis) =
@@ -251,14 +238,6 @@ reverse (Types.Axis3d axis) =
 
 
 {-| Move an axis so that it has the given origin point but unchanged direction.
-
-    newOrigin =
-        Point3d.meters 3 4 5
-
-    Axis3d.moveTo newOrigin exampleAxis
-    --> Axis3d.withDirection Direction3d.y
-    -->     (Point3d.meters 3 4 5)
-
 -}
 moveTo : Point3d units coordinates -> Axis3d units coordinates -> Axis3d units coordinates
 moveTo newOrigin (Types.Axis3d axis) =
@@ -290,14 +269,6 @@ rotateAround otherAxis angle =
 
 {-| Translate an axis by a given displacement. Applies the given displacement to
 the axis' origin point and leaves the direction unchanged.
-
-    displacement =
-        Vector3d.meters 3 3 3
-
-    Axis3d.translateBy displacement exampleAxis
-    --> Axis3d.withDirection Direction3d.y
-    -->     (Point3d.meters 4 5 6)
-
 -}
 translateBy : Vector3d units coordinates -> Axis3d units coordinates -> Axis3d units coordinates
 translateBy vector (Types.Axis3d axis) =
@@ -349,14 +320,6 @@ projectOnto plane (Types.Axis3d axis) =
 
 {-| Take an axis defined in global coordinates, and return it expressed in local
 coordinates relative to a given reference frame.
-
-    localFrame =
-        Frame3d.atPoint (Point3d.meters 3 3 3)
-
-    Axis3d.relativeTo localFrame exampleAxis
-    --> Axis3d.withDirection Direction3d.y
-    -->     (Point3d.meters -2 -1 0)
-
 -}
 relativeTo : Frame3d units globalCoordinates { defines : localCoordinates } -> Axis3d units globalCoordinates -> Axis3d units localCoordinates
 relativeTo frame (Types.Axis3d axis) =
@@ -366,14 +329,6 @@ relativeTo frame (Types.Axis3d axis) =
 
 {-| Take an axis defined in local coordinates relative to a given reference
 frame, and return that axis expressed in global coordinates.
-
-    localFrame =
-        Frame3d.atPoint (Point3d.meters 3 3 3)
-
-    Axis3d.placeIn localFrame exampleAxis
-    --> Axis3d.withDirection Direction3d.y
-    -->     (Point3d.meters 4 5 6)
-
 -}
 placeIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Axis3d units localCoordinates -> Axis3d units globalCoordinates
 placeIn frame (Types.Axis3d axis) =

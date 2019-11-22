@@ -330,28 +330,14 @@ axes (Types.Rectangle2d rectangle) =
     Frame2d.copy rectangle.axes
 
 
-{-| Get the X axis of a rectangle;
-
-    Rectangle2d.xAxis rectangle
-
-is equivalent to
-
-    Frame2d.xAxis (Rectangle2d.axes rectangle)
-
+{-| Get the X axis of a rectangle.
 -}
 xAxis : Rectangle2d units coordinates -> Axis2d units coordinates
 xAxis rectangle =
     Frame2d.xAxis (axes rectangle)
 
 
-{-| Get the Y axis of a rectangle;
-
-    Rectangle2d.yAxis rectangle
-
-is equivalent to
-
-    Frame2d.yAxis (Rectangle2d.axes rectangle)
-
+{-| Get the Y axis of a rectangle.
 -}
 yAxis : Rectangle2d units coordinates -> Axis2d units coordinates
 yAxis rectangle =
@@ -384,19 +370,7 @@ dimensions (Types.Rectangle2d rectangle) =
     rectangle.dimensions
 
 
-{-| Get the area of a rectangle:
-
-    rectangle =
-        Rectangle2d.with
-            { x1 = Length.meters 2
-            , x2 = Length.meters 5
-            , y1 = Length.meters 1
-            , y2 = Length.meters 3
-            }
-
-    Rectangle2d.area rectangle
-    --> Area.squareMeters 6
-
+{-| Get the area of a rectangle.
 -}
 area : Rectangle2d units coordinates -> Quantity Float (Squared units)
 area rectangle =
@@ -433,28 +407,7 @@ vertices rectangle =
     ]
 
 
-{-| Check if a rectangle contains a given point:
-
-    rectangle =
-        Rectangle2d.with
-            { x1 = Length.meters 2
-            , x2 = Length.meters 5
-            , y1 = Length.meters 1
-            , y2 = Length.meters 3
-            }
-
-    p1 =
-        Point2d.meters 3 2
-
-    p2 =
-        Point2d.meters 3 4
-
-    rectangle |> Rectangle2d.contains p1
-    --> True
-
-    rectangle |> Rectangle2d.contains p2
-    --> False
-
+{-| Check if a rectangle contains a given point.
 -}
 contains : Point2d units coordinates -> Rectangle2d units coordinates -> Bool
 contains point rectangle =
@@ -644,12 +597,9 @@ angle.
                 (Angle.degrees 45)
 
     Rectangle2d.boundingBox diamond
-    --> BoundingBox2d.fromExtrema
-    -->     { minX = Length.meters -0.7071
-    -->     , maxX = Length.meters 0.7071
-    -->     , minY = Length.meters 0
-    -->     , maxY = Length.meters 1.4142
-    -->     }
+    --> BoundingBox2d.from
+    -->     (Point2d.meters -0.7071 0)
+    -->     (Point2d.meters 0.7071 1.4142)
 
 -}
 boundingBox : Rectangle2d units coordinates -> BoundingBox2d units coordinates

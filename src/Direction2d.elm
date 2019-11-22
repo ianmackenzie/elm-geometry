@@ -120,10 +120,6 @@ y =
 
 
 {-| The positive X direction.
-
-    Direction2d.unwrap Direction2d.positiveX
-    --> { x = 1, y = 0 }
-
 -}
 positiveX : Direction2d coordinates
 positiveX =
@@ -131,10 +127,6 @@ positiveX =
 
 
 {-| The negative X direction.
-
-    Direction2d.unwrap Direction2d.negativeX
-    --> { x = -1, y = 0 }
-
 -}
 negativeX : Direction2d coordinates
 negativeX =
@@ -142,10 +134,6 @@ negativeX =
 
 
 {-| The positive Y direction.
-
-    Direction2d.unwrap Direction2d.positiveY
-    --> { x = 0, y = 1 }
-
 -}
 positiveY : Direction2d coordinates
 positiveY =
@@ -153,10 +141,6 @@ positiveY =
 
 
 {-| The negative Y direction.
-
-    Direction2d.unwrap Direction2d.negativeY
-    --> { x = 0, y = -1 }
-
 -}
 negativeY : Direction2d coordinates
 negativeY =
@@ -340,14 +324,8 @@ orthogonalize xDirection yDirection =
 {-| Construct a direction from an [Angle](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Angle)
 given counterclockwise from the positive X direction.
 
-    Direction2d.fromAngle (Angle.degrees 0)
-    --> Direction2d.x
-
     Direction2d.fromAngle (Angle.degrees 90)
     --> Direction2d.y
-
-    Direction2d.fromAngle (Angle.degrees -90)
-    --> Direction2d.negativeY
 
 -}
 fromAngle : Angle -> Direction2d coordinates
@@ -360,12 +338,6 @@ fromAngle (Quantity angle) =
 
 {-| Convert a direction to a polar angle (the counterclockwise angle from the
 positive X direction). The result will be in the range -180 to 180 degrees.
-
-    Direction2d.toAngle Direction2d.x
-    --> Angle.degrees 0
-
-    Direction2d.toAngle Direction2d.y
-    --> Angle.degrees 90
 
     Direction2d.toAngle Direction2d.negativeY
     --> Angle.degrees -90
@@ -505,10 +477,6 @@ toVector (Types.Direction2d components) =
 
 
 {-| Reverse a direction.
-
-    Direction2d.reverse Direction2d.y
-    --> Direction2d.negativeY
-
 -}
 reverse : Direction2d coordinates -> Direction2d coordinates
 reverse (Types.Direction2d d) =
@@ -519,9 +487,6 @@ reverse (Types.Direction2d d) =
 
 
 {-| Rotate a direction by 90 degrees clockwise.
-
-    Direction2d.rotateClockwise Direction2d.y
-    --> Direction2d.x
 
     Direction2d.rotateClockwise Direction2d.x
     --> Direction2d.negativeY
@@ -540,9 +505,6 @@ rotateClockwise (Types.Direction2d d) =
     Direction2d.rotateClockwise Direction2d.x
     --> Direction2d.y
 
-    Direction2d.rotateClockwise Direction2d.y
-    --> Direction2d.negativeX
-
 -}
 rotateCounterclockwise : Direction2d coordinates -> Direction2d coordinates
 rotateCounterclockwise (Types.Direction2d d) =
@@ -556,9 +518,6 @@ rotateCounterclockwise (Types.Direction2d d) =
 
     Direction2d.rotateBy (Angle.degrees 180) Direction2d.x
     --> Direction2d.negativeX
-
-    Direction2d.rotateBy (Angle.degrees 45) Direction2d.y
-    --> Direction2d.degrees 135
 
 -}
 rotateBy : Angle -> Direction2d coordinates -> Direction2d coordinates

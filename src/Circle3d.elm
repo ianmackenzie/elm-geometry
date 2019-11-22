@@ -124,7 +124,6 @@ specified in XY coordinates _within_ the sketch plane.
     Circle3d.on SketchPlane3d.yz <|
         Circle2d.withRadius (Length.meters 3)
             (Point2d.meters 1 2)
-
     --> Circle3d.withRadius (Length.meters 3)
     -->     Direction3d.x
     -->     (Point3d.meters 0 1 2)
@@ -204,10 +203,6 @@ at_ rate circle =
 
 
 {-| Get the center point of a circle.
-
-    Circle3d.centerPoint exampleCircle
-    --> Point3d.meters 2 0 1
-
 -}
 centerPoint : Circle3d units coordinates -> Point3d units coordinates
 centerPoint (Types.Circle3d circle) =
@@ -215,10 +210,6 @@ centerPoint (Types.Circle3d circle) =
 
 
 {-| Get the axial direction of a circle.
-
-    Circle3d.axialDirection exampleCircle
-    --> Direction3d.z
-
 -}
 axialDirection : Circle3d units coordinates -> Direction3d coordinates
 axialDirection (Types.Circle3d circle) =
@@ -227,11 +218,6 @@ axialDirection (Types.Circle3d circle) =
 
 {-| Get the central axis of a circle, perpendicular to its [`plane`](#plane).
 The origin point of the returned axis will be the center point of the circle.
-
-    Circle3d.axis exampleCircle
-    --> Axis3d.withDirection Direction3d.z
-    -->     (Point3d.meters 2 0 1)
-
 -}
 axis : Circle3d units coordinates -> Axis3d units coordinates
 axis (Types.Circle3d circle) =
@@ -241,11 +227,6 @@ axis (Types.Circle3d circle) =
 {-| Get the plane that a circle lies in. The origin point of the returned plane
 will be the center point of the circle, and its normal direction will be the
 axial direction of the circle.
-
-    Circle3d.plane exampleCircle
-    --> Plane3d.withNormalDirection Direction3d.z
-    -->     (Point3d.meters 2 0 1)
-
 -}
 plane : Circle3d units coordinates -> Plane3d units coordinates
 plane circle =
@@ -253,21 +234,13 @@ plane circle =
 
 
 {-| Get the radius of a circle.
-
-    Circle3d.radius exampleCircle
-    --> Length.meters 3
-
 -}
 radius : Circle3d units coordinates -> Quantity Float units
 radius (Types.Circle3d properties) =
     properties.radius
 
 
-{-| Get the diameter of a circle.
-
-    Circl3d.diameter exampleCircle
-    --> Length.meters 6
-
+{-| Get the diameter of a circle (twice its radius).
 -}
 diameter : Circle3d units coordinates -> Quantity Float units
 diameter circle =
@@ -275,21 +248,13 @@ diameter circle =
 
 
 {-| Get the area of a circle.
-
-    Circle3d.area exampleCircle
-    --> Area.squareMeters 28.2743
-
 -}
 area : Circle3d units coordinates -> Quantity Float (Squared units)
 area circle =
     Quantity.multiplyBy pi (Quantity.squared (radius circle))
 
 
-{-| Get the circumference of a circle.
-
-    Circle3d.circumference exampleCircle
-    --> Length.meters 18.8496
-
+{-| Get the circumference (perimeter) of a circle.
 -}
 circumference : Circle3d units coordinates -> Quantity Float units
 circumference circle =
@@ -344,8 +309,8 @@ mirrorAcross mirrorPlane circle =
         (Point3d.mirrorAcross mirrorPlane (centerPoint circle))
 
 
-{-| Project a circle into a sketch plane. Note that the result is an ellipse,
-not a circle!
+{-| Project a circle into a sketch plane. Note that the result is in general an
+ellipse, not a circle!
 
     inclinedCircle : Circle3d
     inclinedCircle =
@@ -355,11 +320,10 @@ not a circle!
 
     Circle3d.projectInto SketchPlane3d.xy inclinedCircle
     --> Ellipse2d.with
-    -->     { centerPoint =
-    -->         Point2d.meters 1 2
+    -->     { centerPoint = Point2d.meters 1 2
     -->     , xDirection = Direction2d.negativeY
-    -->     , xRadius = 1
-    -->     , yRadius = 0.7071
+    -->     , xRadius = Length.meters 1
+    -->     , yRadius = Length.meters 0.7071
     -->     }
 
 -}
@@ -429,14 +393,9 @@ placeIn frame circle =
 {-| Get the minimal bounding box containing a given circle.
 
     Circle3d.boundingBox exampleCircle
-    --> BoundingBox3d.fromExtrema
-    -->     { minX = Length.meters -1
-    -->     , maxX = Length.meters 5
-    -->     , minY = Length.meters -3
-    -->     , maxY = Length.meters 3
-    -->     , minZ = Length.meters 1
-    -->     , maxZ = Length.meters 1
-    -->     }
+    --> BoundingBox3d.from
+    -->     (Point3d.meters -1 -3 1)
+    -->     (Point3d.meters 5 3 1)
 
 -}
 boundingBox : Circle3d units coordinates -> BoundingBox3d units coordinates

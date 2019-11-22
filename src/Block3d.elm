@@ -267,65 +267,29 @@ at_ rate block =
     at (Quantity.inverse rate) block
 
 
-{-| Get the central axes of a block as a `Frame3d`:
-
-    block =
-        Block3d.with
-            { x1 = Length.meters 2
-            , x2 = Length.meters 5
-            , y1 = Length.meters 1
-            , y2 = Length.meters 3
-            , z1 = Length.meters 0
-            , z2 = Length.meters 1
-            }
-
-    Block3d.axes block
-    --> Frame3d.atPoint (Point3d.meters 3.5 2 0.5)
-
-The origin point of the frame will be the center point of the block.
-
+{-| Get the central axes of a block as a `Frame3d`.The origin point of the frame
+will be the center point of the block.
 -}
 axes : Block3d units coordinates -> Frame3d units coordinates defines
 axes (Types.Block3d block) =
     Frame3d.copy block.axes
 
 
-{-| Get the X axis of a block;
-
-    Block3d.xAxis block
-
-is equivalent to
-
-    Frame3d.xAxis (Block3d.axes block)
-
+{-| Get the X axis of a block.
 -}
 xAxis : Block3d units coordinates -> Axis3d units coordinates
 xAxis block =
     Frame3d.xAxis (axes block)
 
 
-{-| Get the Y axis of a block;
-
-    Block3d.yAxis block
-
-is equivalent to
-
-    Frame3d.yAxis (Block3d.axes block)
-
+{-| Get the Y axis of a block.
 -}
 yAxis : Block3d units coordinates -> Axis3d units coordinates
 yAxis block =
     Frame3d.yAxis (axes block)
 
 
-{-| Get the Z axis of a block;
-
-    Block3d.zAxis block
-
-is equivalent to
-
-    Frame3d.zAxis (Block3d.axes block)
-
+{-| Get the Z axis of a block.
 -}
 zAxis : Block3d units coordinates -> Axis3d units coordinates
 zAxis block =
@@ -339,45 +303,14 @@ centerPoint block =
     Frame3d.originPoint (axes block)
 
 
-{-| Get the overall dimensions of a block:
-
-    block =
-        Block3d.with
-            { x1 = Length.meters 2
-            , x2 = Length.meters 5
-            , y1 = Length.meters 1
-            , y2 = Length.meters 3
-            , z1 = Length.meters 0
-            , z2 = Length.meters 5
-            }
-
-    Block3d.dimensions block
-    --> ( Length.meters 3
-    --> , Length.meters 2
-    --> , Length.meters 5
-    --> )
-
+{-| Get the overall dimensions (e.g. length, width, height) of a block.
 -}
 dimensions : Block3d units coordinates -> ( Quantity Float units, Quantity Float units, Quantity Float units )
 dimensions (Types.Block3d block) =
     block.dimensions
 
 
-{-| Get the volume of a block:
-
-    block =
-        Block3d.with
-            { x1 = Length.meters 2
-            , x2 = Length.meters 5
-            , y1 = Length.meters 1
-            , y2 = Length.meters 3
-            , z1 = Length.meters 0
-            , z2 = Length.meters 1
-            }
-
-    Block3d.volume block
-    --> Volume.cubicMeters 6
-
+{-| Get the volume of a block.
 -}
 volume : Block3d units coordinates -> Quantity Float (Cubed units)
 volume block =
@@ -432,25 +365,14 @@ vertices block =
 {-| Check if a block contains a given point:
 
     block =
-        Block3d.with
-            { x1 = Length.meters 2
-            , x2 = Length.meters 5
-            , y1 = Length.meters 1
-            , y2 = Length.meters 3
-            , z1 = Length.meters 0
-            , z2 = Length.meters 4
-            }
+        Block3d.from
+            (Point3d.meters 2 1 0)
+            (Point3d.meters 5 3 4)
 
-    p1 =
-        Point3d.meters 3 2 3
-
-    p2 =
-        Point3d.meters 3 4 1
-
-    block |> Block3d.contains p1
+    block |> Block3d.contains (Point3d.meters 3 2 3)
     --> True
 
-    block |> Block3d.contains p2
+    block |> Block3d.contains (Point3d.meters 3 4 1)
     --> False
 
 -}
@@ -671,14 +593,9 @@ axis-aligned, but will be larger than the block if the block is at an
 angle.
 
     cube =
-        Block3d.with
-            { x1 = Length.meters 0
-            , x2 = Length.meters 1
-            , y1 = Length.meters 0
-            , y2 = Length.meters 1
-            , z1 = Length.meters 0
-            , z2 = Length.meters 1
-            }
+        Block3d.from
+            (Point3d.meters 0 0 0)
+            (Point3d.meters 1 1 1)
 
     rotatedCube =
         cube

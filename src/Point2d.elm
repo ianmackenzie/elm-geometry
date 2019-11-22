@@ -52,7 +52,11 @@ like you can add two vectors.
 
 The remaining functions all construct a `Point2d` from X and Y coordinates given
 in specific units. Functions like `Point2d.xy` are more useful in generic code,
-but these functions are useful for quickly creating hardcoded constant values.
+but these functions are useful for quickly creating hardcoded constant values,
+e.g.
+
+    point =
+        Point2d.meters 2 3
 
 @docs meters, pixels, millimeters, centimeters, inches, feet
 
@@ -240,13 +244,9 @@ rTheta (Quantity r) (Quantity theta) =
 
 {-| Construct a point halfway between two other points.
 
-    p1 =
-        Point2d.meters 1 1
-
-    p2 =
-        Point2d.meters 3 7
-
-    Point2d.midpoint p1 p2
+    Point2d.midpoint
+        (Point2d.meters 1 1)
+        (Point2d.meters 3 7)
     --> Point2d.meters 2 4
 
 -}
@@ -543,12 +543,6 @@ collinear, returns `Nothing`.
         (Point2d.meters 1 0)
         (Point2d.meters 0 1)
     --> Just (Point2d.meters 0.5 0.5)
-
-    Point2d.circumcenter
-        Point2d.origin
-        (Point2d.meters 2 1)
-        (Point2d.meters 4 0)
-    --> Just (Point2d.meters 2 -1.5)
 
     -- Ambiguous
     Point2d.circumCenter
@@ -884,13 +878,9 @@ lexicographicComparison (Types.Point2d p1) (Types.Point2d p2) =
 
 {-| Find the distance from the first point to the second.
 
-    p1 =
-        Point2d.meters 2 3
-
-    p2 =
-        Point2d.meters 5 7
-
-    Point2d.distanceFrom p1 p2
+    Point2d.distanceFrom
+        (Point2d.meters 2 3)
+        (Point2d.meters 5 7)
     --> Length.meters 5
 
 Partial application can be useful:

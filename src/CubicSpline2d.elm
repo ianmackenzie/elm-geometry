@@ -313,12 +313,9 @@ bounding box is computed from the spline's control points (which cover a larger
 area than the spline itself).
 
     CubicSpline2d.boundingBox exampleSpline
-    --> BoundingBox2d.fromExtrema
-    -->     { minX = Length.meters 1
-    -->     , maxX = Length.meters 7
-    -->     , minY = Length.meters 1
-    -->     , maxY = Length.meters 4
-    -->     }
+    --> BoundingBox2d.from
+    -->     (Point2d.meters 1 1)
+    -->     (Point2d.meters 7 4)
 
 -}
 boundingBox : CubicSpline2d units coordinates -> BoundingBox2d units coordinates

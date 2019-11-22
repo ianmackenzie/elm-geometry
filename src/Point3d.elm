@@ -54,7 +54,10 @@ like you can add two vectors.
 The remaining functions all construct a `Point3d` from X, Y and Z coordinates
 given in specific units. Functions like `Point3d.xyz` are more useful in generic
 code, but these functions are useful for quickly creating hardcoded constant
-values.
+values, e.g.
+
+    point =
+        Point3d.meters 2 3 1
 
 @docs meters, pixels, millimeters, centimeters, inches, feet
 
@@ -251,13 +254,9 @@ unitless x y z =
 
 {-| Construct a point halfway between two other points.
 
-    p1 =
-        Point3d.meters 1 1 1
-
-    p2 =
-        Point3d.meters 3 7 9
-
-    Point3d.midpoint p1 p2
+    Point3d.midpoint
+        (Point3d.meters 1 1 1)
+        (Point3d.meters 3 7 9)
     --> Point3d.meters 2 4 5
 
 -}
@@ -948,8 +947,7 @@ zCoordinateIn (Types.Frame3d frame) (Types.Point3d p) =
 
 {-| Get the X coordinate of a point.
 
-    Point3d.meters 2 1 3
-        |> Point3d.xCoordinate
+    Point3d.xCoordinate (Point3d.meters 2 1 3)
     --> Length.meters 2
 
 -}
@@ -960,8 +958,7 @@ xCoordinate (Types.Point3d p) =
 
 {-| Get the Y coordinate of a point.
 
-    Point3d.meters 2 1 3
-        |> Point3d.yCoordinate
+    Point3d.yCoordinate (Point3d.meters 2 1 3)
     --> Length.meters 1
 
 -}
@@ -972,8 +969,7 @@ yCoordinate (Types.Point3d p) =
 
 {-| Get the Z coordinate of a point.
 
-    Point3d.meters 2 1 3
-        |> Point3d.zCoordinate
+    Point3d.zCoordinate (Point3d.meters 2 1 3)
     --> Length.meters 3
 
 -}
@@ -1041,13 +1037,9 @@ lexicographicComparison (Types.Point3d p1) (Types.Point3d p2) =
 
 {-| Find the distance from the first point to the second.
 
-    p1 =
-        Point3d.meters 1 1 2
-
-    p2 =
-        Point3d.meters 2 3 4
-
-    Point3d.distanceFrom p1 p2
+    Point3d.distanceFrom
+        (Point3d.meters 1 1 2)
+        (Point3d.meters 2 3 4)
     --> Length.meters 3
 
 Partial application can be useful:
@@ -1112,10 +1104,7 @@ it is behind, with 'ahead' and 'behind' defined by the direction of the axis.
         Axis3d.withDirection Direction3d.x
             (Point3d.meters 1 0 0)
 
-    point =
-        Point3d.meters 3 3 3
-
-    Point3d.signedDistanceAlong axis point
+    Point3d.signedDistanceAlong axis (Point3d.meters 3 3 3)
     --> Length.meters 2
 
     Point3d.signedDistanceAlong axis Point3d.origin
@@ -1213,10 +1202,7 @@ positive if the point is 'above' the plane and negative if it is 'below', with
         Plane3d.withNormalDirection Direction3d.y
             (Point3d.meters 1 2 3)
 
-    point =
-        Point3d.meters 3 3 3
-
-    Point3d.signedDistanceFrom plane point
+    Point3d.signedDistanceFrom plane (Point3d.meters 3 3 3)
     --> Length.meters 1
 
     Point3d.signedDistanceFrom plane Point3d.origin

@@ -58,7 +58,11 @@ versions [`Direction2d.x`](Direction2d#x) and [`Direction2d.y`](Direction2d#y).
 
 The remaining functions all construct a `Vector2d` from X and Y components given
 in specific units. Functions like `Vector2d.xy` are more useful in generic code,
-but these functions are useful for quickly creating hardcoded constant values.
+but these functions are useful for quickly creating hardcoded constant values,
+e.g.
+
+    vector =
+        Vector2d.meters 2 3
 
 @docs meters, pixels, millimeters, centimeters, inches, feet
 
@@ -842,7 +846,7 @@ plus (Types.Vector2d v2) (Types.Vector2d v1) =
     firstVector |> Vector2d.minus secondVector
     --> Vector2d.meters 4 3
 
-Note the argument order - `v1 - v2` would be written as
+Note the argument order: `v1 - v2` would be written as
 
     v1 |> Vector2d.minus v2
 
@@ -891,7 +895,7 @@ of the same ways as the 3D cross product:
     negative indicates a clockwise rotation), similar to how the direction of
     the 3D cross product indicates the direction of rotation.
 
-Note the argument order - `v1 x v2` would be written as
+Note the argument order: `v1 x v2` would be written as
 
     v1 |> Vector2d.cross v2
 

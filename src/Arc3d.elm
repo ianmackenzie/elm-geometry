@@ -116,12 +116,6 @@ in XY coordinates _within_ the sketch plane.
                     (Angle.degrees 90)
             )
 
-    Arc3d.centerPoint arc
-    --> Point3d.meters 1 0 1
-
-    Arc3d.radius arc
-    --> Length.meters 2
-
     Arc3d.startPoint arc
     --> Point3d.meters 3 0 1
 
@@ -149,9 +143,6 @@ given angle:
         Point3d.meters 1 1 0
             |> Arc3d.sweptAround Axis3d.z
                 (Angle.degrees 90)
-
-    Arc3d.centerPoint exampleArc
-    --> Point3d.origin
 
     Arc3d.endPoint exampleArc
     --> Point3d.meters -1 1 0
@@ -214,21 +205,17 @@ type TempCoordinates2d
 through the second given point and ends at the third given point. If the three
 points are collinear, returns `Nothing`.
 
-    p1 =
-        Point3d.meters 0 0 1
-
-    p2 =
+    Arc3d.throughPoints
+        (Point3d.meters 0 0 1)
         Point3d.origin
-
-    p3 =
-        Point3d.meters 0 1 0
-
-    Arc3d.throughPoints p1 p2 p3
+        (Point3d.meters 0 1 0)
     --> Just <|
-    -->     Arc3d.on SketchPlane3d.yz <|
-    -->         Arc2d.sweptAround (Point2d.meters 0.5 0.5)
-    -->             (Angle.degrees 180)
-    -->             (Point2d.meters 0 1)
+    -->     Arc3d.on SketchPlane3d.yz
+    -->         (Point2d.meters 0 1
+    -->             |> Arc2d.sweptAround
+    -->                 (Point2d.meters 0.5 0.5)
+    -->                 (Angle.degrees 180)
+    -->         )
 
 -}
 throughPoints : Point3d units coordinates -> Point3d units coordinates -> Point3d units coordinates -> Maybe (Arc3d units coordinates)
@@ -281,10 +268,6 @@ axialDirection (Types.Arc3d arc) =
 
 {-| Get the central axis of an arc. The origin point of the axis will be equal
 to the center point of the arc.
-
-    Arc3d.axis exampleArc
-    --> Axis3d.z
-
 -}
 axis : Arc3d units coordinates -> Axis3d units coordinates
 axis arc =
@@ -292,10 +275,6 @@ axis arc =
 
 
 {-| Get the center point of an arc.
-
-    Arc3d.centerPoint exampleArc
-    --> Point3d.origin
-
 -}
 centerPoint : Arc3d units coordinates -> Point3d units coordinates
 centerPoint (Types.Arc3d arc) =
@@ -307,10 +286,6 @@ centerPoint (Types.Arc3d arc) =
 
 
 {-| Get the radius of an arc.
-
-    Arc3d.radius exampleArc
-    --> Length.meters 1.4142
-
 -}
 radius : Arc3d units coordinates -> Quantity Float units
 radius (Types.Arc3d arc) =
@@ -318,10 +293,6 @@ radius (Types.Arc3d arc) =
 
 
 {-| Get the start point of an arc.
-
-    Arc3d.startPoint exampleArc
-    --> Point3d.meters 1 1 0
-
 -}
 startPoint : Arc3d units coordinates -> Point3d units coordinates
 startPoint (Types.Arc3d arc) =
@@ -329,10 +300,6 @@ startPoint (Types.Arc3d arc) =
 
 
 {-| Get the end point of an arc.
-
-    Arc3d.endPoint exampleArc
-    --> Point3d.meters -1 1 0
-
 -}
 endPoint : Arc3d units coordinates -> Point3d units coordinates
 endPoint arc =
@@ -616,15 +583,9 @@ toPolyline { maxError } arc =
     Polyline3d.fromVertices points
 
 
-{-| Get the swept angle of an arc.
-
-    Arc3d.sweptAngle exampleArc
-    --> Angle.degrees 90
-
-A positive swept angle means that the arc is formed by rotating the given start
-point counterclockwise around the central axis, and vice versa for a negative
-angle.
-
+{-| Get the swept angle of an arc. A positive swept angle means that the arc is
+formed by rotating the given start point counterclockwise around the central
+axis, and vice versa for a negative angle.
 -}
 sweptAngle : Arc3d units coordinates -> Angle
 sweptAngle (Types.Arc3d properties) =

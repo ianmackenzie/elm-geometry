@@ -135,13 +135,8 @@ at_ rate triangle =
 
 {-| Get the vertices of a triangle.
 
-
     ( p1, p2, p3 ) =
         Triangle2d.vertices exampleTriangle
-
-    --> p1 = Point2d.meters 1 1
-    --> p2 = Point2d.meters 2 1
-    --> p3 = Point2d.meters 1 3
 
 -}
 vertices : Triangle2d units coordinates -> ( Point2d units coordinates, Point2d units coordinates, Point2d units coordinates )
@@ -199,20 +194,8 @@ centroid triangle =
     Point2d.centroid3 p1 p2 p3
 
 
-{-| Check whether a given point is inside a given triangle.
-
-    interiorPoint =
-        Point2d.meters 1.5 1.5
-
-    Triangle2d.contains interiorPoint exampleTriangle
-    --> True
-
-    Triangle2d.contains Point2d.origin exampleTriangle
-    --> False
-
-It does not matter whether the triangle's vertices are in clockwise or
-counterclockwise order.
-
+{-| Check whether a given point is inside a given triangle. It does not matter
+whether the triangle's vertices are in clockwise or counterclockwise order.
 -}
 contains : Point2d units coordinates -> Triangle2d units coordinates -> Bool
 contains point triangle =
@@ -251,10 +234,6 @@ contains point triangle =
 
 {-| Get the area of a triangle. The result will always be positive regardless of
 whether the triangle's vertices are in clockwise or counterclockwise order.
-
-    Triangle2d.area exampleTriangle
-    --> Area.squareMeters 1.0
-
 -}
 area : Triangle2d units coordinates -> Quantity Float (Squared units)
 area =
@@ -372,12 +351,9 @@ placeIn frame triangle =
 {-| Get the minimal bounding box containing a given triangle.
 
     Triangle2d.boundingBox exampleTriangle
-    --> BoundingBox2d.fromExtrema
-    -->     { minX = Length.meters 1
-    -->     , maxX = Length.meters 2
-    -->     , minY = Length.meters 1
-    -->     , maxY = Length.meters 3
-    -->     }
+    --> BoundingBox2d.from
+    -->     (Point2d.meters 1 1)
+    -->     (Point2d.meters 2 3)
 
 -}
 boundingBox : Triangle2d units coordinates -> BoundingBox2d units coordinates

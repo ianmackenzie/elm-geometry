@@ -260,14 +260,9 @@ bounding box is computed from the spline's control points (which cover a larger
 volume than the spline itself).
 
     QuadraticSpline3d.boundingBox exampleSpline
-    --> BoundingBox3d.fromExtrema
-    -->     { minX = Length.meters 1
-    -->     , maxX = Length.meters 3
-    -->     , minY = Length.meters 1
-    -->     , maxY = Length.meters 3
-    -->     , minZ = Length.meters 1
-    -->     , maxZ = Length.meters 3
-    -->     }
+    --> BoundingBox3d.from
+    -->     (Point3d.meters 1 1 1)
+    -->     (Point3d.meters 3 3 3)
 
 -}
 boundingBox : QuadraticSpline3d units coordinates -> BoundingBox3d units coordinates

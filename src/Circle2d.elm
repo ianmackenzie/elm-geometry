@@ -131,26 +131,12 @@ atOrigin givenRadius =
     -->     Circle2d.atPoint (Point2d.meters 0.5 0.5)
     -->         (Length.meters 0.7071)
 
-    Circle2d.throughPoints
-        Point2d.origin
-        (Point2d.meters 2 1)
-        (Point2d.meters 4 0)
-    --> Just <|
-    -->     Circle2d.atPoint (Point2d.meters 2 -1.5)
-    -->         (Length.meters 2.5)
-
 If the three given points are collinear, returns `Nothing`:
 
     Circle2d.throughPoints
         Point2d.origin
         (Point2d.meters 2 0)
         (Point2d.meters 4 0)
-    --> Nothing
-
-    Circle2d.throughPoints
-        Point2d.origin
-        Point2d.origin
-        (Point2d.meters 1 0)
     --> Nothing
 
 -}
@@ -190,13 +176,12 @@ The above example could be rewritten as
     Point2d.meters 2 0
         |> Circle2d.sweptAround Point2d.origin
 
-and if you wanted to create many concentric circles all centered on the origin
-but passing through several other different points, you could use something like
+and if you wanted to create many concentric circles all centered on a specific
+point but passing through several other different points, you could use
+something like
 
     concentricCircles =
-        points
-            |> List.map
-                (Circle2d.sweptAround Point2d.origin)
+        List.map (Circle2d.sweptAround centerPoint) points
 
 -}
 sweptAround : Point2d units coordinates -> Point2d units coordinates -> Circle2d units coordinates
@@ -226,10 +211,6 @@ at_ rate circle =
 
 
 {-| Get the center point of a circle.
-
-    Circle2d.centerPoint exampleCircle
-    --> Point2d.meters 1 2
-
 -}
 centerPoint : Circle2d units coordinates -> Point2d units coordinates
 centerPoint (Types.Circle2d properties) =
@@ -237,21 +218,13 @@ centerPoint (Types.Circle2d properties) =
 
 
 {-| Get the radius of a circle.
-
-    Circle2d.radius exampleCircle
-    --> Length.meters 3
-
 -}
 radius : Circle2d units coordinates -> Quantity Float units
 radius (Types.Circle2d properties) =
     properties.radius
 
 
-{-| Get the diameter of a circle.
-
-    Circle2d.diameter exampleCircle
-    --> Length.meters 6
-
+{-| Get the diameter of a circle (twice the radius).
 -}
 diameter : Circle2d units coordinates -> Quantity Float units
 diameter circle =
@@ -259,21 +232,13 @@ diameter circle =
 
 
 {-| Get the area of a circle.
-
-    Circle2d.area exampleCircle
-    --> Area.squareMeters 28.2743
-
 -}
 area : Circle2d units coordinates -> Quantity Float (Squared units)
 area circle =
     Quantity.multiplyBy pi (Quantity.squared (radius circle))
 
 
-{-| Get the circumference of a circle.
-
-    Circle2d.circumference exampleCircle
-    --> Length.meters 18.8496
-
+{-| Get the circumference (perimeter) of a circle.
 -}
 circumference : Circle2d units coordinates -> Quantity Float units
 circumference circle =
@@ -281,12 +246,6 @@ circumference circle =
 
 
 {-| Convert a circle to a 360 degree arc.
-
-    Circle2d.toArc exampleCircle
-    --> Point2d.meters 4 2
-    -->     |> Arc2d.sweptAround (Point2d.meters 1 2)
-    -->         (Angle.degrees 360)
-
 -}
 toArc : Circle2d units coordinates -> Arc2d units coordinates
 toArc (Types.Circle2d circle) =
@@ -306,15 +265,6 @@ toArc (Types.Circle2d circle) =
 
 
 {-| Check if a circle contains a given point.
-
-    Circle2d.contains Point2d.origin exampleCircle
-    --> True
-
-    exampleCircle
-        |> Circle2d.contains
-            (Point2d.meters 10 10)
-    --> False
-
 -}
 contains : Point2d units coordinates -> Circle2d units coordinates -> Bool
 contains point circle =
@@ -326,12 +276,9 @@ return true if the circle intersects the edges of the bounding box _or_ is fully
 contained within the bounding box.
 
     boundingBox =
-        BoundingBox2d.fromExtrema
-            { minX = Length.meters 2
-            , maxX = Length.meters 3
-            , minY = Length.meters 0
-            , maxY = Length.meters 2
-            }
+        BoundingBox2d.from
+            (Point2d.meters 2 0)
+            (Point2d.meters 3 2)
 
     circle =
         Circle2d.atOrigin (Length.meters 3)
@@ -443,12 +390,9 @@ placeIn frame (Types.Circle2d circle) =
 {-| Get the minimal bounding box containing a given circle.
 
     Circle2d.boundingBox exampleCircle
-    --> BoundingBox2d.fromExtrema
-    -->     { minX = Length.meters -2
-    -->     , maxX = Length.meters 4
-    -->     , minY = Length.meters -1
-    -->     , maxY = Length.meters 5
-    -->     }
+    --> BoundingBox2d.from
+    -->     (Point2d.meters -2 -1)
+    -->     (Point2d.meters 4 5)
 
 -}
 boundingBox : Circle2d units coordinates -> BoundingBox2d units coordinates

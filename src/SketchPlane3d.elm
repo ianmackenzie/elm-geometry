@@ -127,14 +127,14 @@ import Vector3d exposing (Vector3d)
 systems it's defined in, and what local 2D coordinate system (if any) it itself
 defines. A concrete `SketchPlane3d` type might look like
 
-    type alias MySketchPlane =
+    type alias SketchPlane =
         SketchPlane3d Meters World { defines : Sketch }
 
 which can be read as "a `SketchPlane3d` defined in meters in world coordinates,
 which itself defines a local 2D sketch coordinate system". For sketch planes
 that don't define a local 2D coordinate system, you could use
 
-    type alias MySketchPlane =
+    type alias SketchPlane =
         SketchPlane3d Meters World {}
 
 Many functions in this module don't care about the third type argument (whether
@@ -446,10 +446,6 @@ at_ rate sketchPlane =
 
 
 {-| Get the origin point of a sketch plane.
-
-    SketchPlane3d.originPoint SketchPlane3d.xy
-    --> Point3d.origin
-
 -}
 originPoint : SketchPlane3d units coordinates defines -> Point3d units coordinates
 originPoint (Types.SketchPlane3d properties) =
@@ -458,10 +454,6 @@ originPoint (Types.SketchPlane3d properties) =
 
 {-| Get the X direction of a sketch plane (the direction of the sketch plane's
 X axis).
-
-    SketchPlane3d.xDirection SketchPlane3d.zx
-    --> Direction3d.z
-
 -}
 xDirection : SketchPlane3d units coordinates defines -> Direction3d coordinates
 xDirection (Types.SketchPlane3d properties) =
@@ -470,10 +462,6 @@ xDirection (Types.SketchPlane3d properties) =
 
 {-| Get the Y direction of a sketch plane (the direction of the sketch plane's
 Y axis).
-
-    SketchPlane3d.yDirection SketchPlane3d.zx
-    --> Direction3d.x
-
 -}
 yDirection : SketchPlane3d units coordinates defines -> Direction3d coordinates
 yDirection (Types.SketchPlane3d properties) =
@@ -568,8 +556,9 @@ toFrame sketchPlane =
 
 {-| Create a 'fresh copy' of a sketch plane: one with the same origin point and
 X/Y directions, but that can be used to define a different local coordinate
-system. Sometimes useful in generic/library code. Despite the name, this
-function is efficient: it does not actually copy anything.
+system. Sometimes useful in generic/library code. Despite the name, this is
+efficient: it really just returns the value you passed in, but with a different
+type.
 -}
 copy : SketchPlane3d units coordinates defines1 -> SketchPlane3d units coordinates defines2
 copy (Types.SketchPlane3d properties) =
@@ -597,19 +586,6 @@ offsetBy distance sketchPlane =
 
 {-| Reverse the X direction of a sketch plane, leaving its Y direction and
 origin point unchanged.
-
-    sketchPlane =
-        SketchPlane3d.reverseX SketchPlane3d.yz
-
-    SketchPlane3d.originPoint sketchPlane
-    --> Point3d.origin
-
-    SketchPlane3d.xDirection sketchPlane
-    --> Direction3d.negativeY
-
-    SketchPlane3d.yDirection sketchPlane
-    --> Direction3d.z
-
 -}
 reverseX : SketchPlane3d units coordinates defines1 -> SketchPlane3d units coordinates defines2
 reverseX sketchPlane =
@@ -622,19 +598,6 @@ reverseX sketchPlane =
 
 {-| Reverse the Y direction of a sketch plane, leaving its X direction and
 origin point unchanged.
-
-    sketchPlane =
-        SketchPlane3d.reverseY SketchPlane3d.yz
-
-    SketchPlane3d.originPoint sketchPlane
-    --> Point3d.origin
-
-    SketchPlane3d.xDirection sketchPlane
-    --> Direction3d.y
-
-    SketchPlane3d.yDirection sketchPlane
-    --> Direction3d.negativeZ
-
 -}
 reverseY : SketchPlane3d units coordinates defines1 -> SketchPlane3d units coordinates defines2
 reverseY sketchPlane =
@@ -647,22 +610,6 @@ reverseY sketchPlane =
 
 {-| Set the origin point of the given sketch plane to the given point, leaving
 its X and Y directions unchanged.
-
-    newOrigin =
-        Point3d.meters 2 1 3
-
-    sketchPlane =
-        SketchPlane3d.moveTo newOrigin SketchPlane3d.yz
-
-    SketchPlane3d.originPoint sketchPlane
-    --> newOrigin
-
-    SketchPlane3d.xDirection sketchPlane
-    --> Direction3d.y
-
-    SketchPlane3d.yDirection sketchPlane
-    --> Direction3d.z
-
 -}
 moveTo : Point3d units coordinates -> SketchPlane3d units coordinates defines1 -> SketchPlane3d units coordinates defines2
 moveTo newOrigin sketchPlane =
@@ -759,15 +706,7 @@ translateBy vector sketchPlane =
         }
 
 
-{-| Translate a sketch plane in a given direction by a given distance;
-
-    SketchPlane3d.translateIn direction distance
-
-is equivalent to
-
-    SketchPlane3d.translateBy
-        (Vector3d.withLength distance direction)
-
+{-| Translate a sketch plane in a given direction by a given distance.
 -}
 translateIn : Direction3d coordinates -> Quantity Float units -> SketchPlane3d units coordinates defines1 -> SketchPlane3d units coordinates defines2
 translateIn direction distance sketchPlane =

@@ -50,8 +50,8 @@ treat them as actual angles and everything will behave as you expect.
 
 @docs startAngle, sweptAngle, startPoint, endPoint
 
-All remaining properties of elliptical arcs are actually just properties of the
-underlying ellipse; check out the <Ellipse2d> module for details.
+All remaining properties of elliptical arcs are actually just [properties of the
+underlying ellipse](Ellipse2d#properties).
 
 @docs centerPoint, axes, xAxis, yAxis, xDirection, yDirection, xRadius, yRadius
 

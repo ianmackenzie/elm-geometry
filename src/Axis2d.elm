@@ -167,11 +167,6 @@ direction (Types.Axis2d axis) =
 
 
 {-| Reverse the direction of an axis while keeping the same origin point.
-
-    Axis2d.reverse exampleAxis
-    --> Axis2d.through (Point2d.meters 1 3)
-    -->     (Direction2d.degrees -150)
-
 -}
 reverse : Axis2d units coordinates -> Axis2d units coordinates
 reverse (Types.Axis2d axis) =
@@ -179,14 +174,6 @@ reverse (Types.Axis2d axis) =
 
 
 {-| Move an axis so that it has the given origin point but unchanged direction.
-
-    newOrigin =
-        Point2d.meters 4 5
-
-    Axis2d.moveTo newOrigin exampleAxis
-    --> Axis2d.through (Point2d.meters 4 5)
-    -->     (Direction2d.degrees 30)
-
 -}
 moveTo : Point2d units coordinates -> Axis2d units coordinates -> Axis2d units coordinates
 moveTo newOrigin axis =
@@ -196,13 +183,6 @@ moveTo newOrigin axis =
 {-| Rotate an axis around a given center point by a given angle. Rotates the
 axis' origin point around the given point by the given angle and the axis'
 direction by the given angle.
-
-    exampleAxis
-        |> Axis2d.rotateAround Point2d.origin
-            (Angle.degrees 90)
-    --> Axis2d.through (Point2d.meters -3 1)
-    -->     (Direction2d.degrees 120)
-
 -}
 rotateAround : Point2d units coordinates -> Angle -> Axis2d units coordinates -> Axis2d units coordinates
 rotateAround centerPoint angle =
@@ -226,14 +206,6 @@ rotateBy angle axis =
 
 {-| Translate an axis by a given displacement. Applies the given displacement to
 the axis' origin point and leaves the direction unchanged.
-
-    displacement =
-        Vector2d.meters 2 3
-
-    Axis2d.translateBy displacement exampleAxis
-    --> Axis2d.through (Point2d.meters 3 6)
-    -->     (Direction2d.degrees 30)
-
 -}
 translateBy : Vector2d units coordinates -> Axis2d units coordinates -> Axis2d units coordinates
 translateBy vector (Types.Axis2d axis) =
@@ -263,14 +235,6 @@ mirrorAcross otherAxis (Types.Axis2d axis) =
 
 {-| Take an axis defined in global coordinates, and return it expressed in local
 coordinates relative to a given reference frame.
-
-    frame =
-        Frame2d.atPoint (Point2d.meters 2 3)
-
-    Axis2d.relativeTo frame exampleAxis
-    --> Axis2d.through (Point2d.meters -1 0)
-    -->     (Direction2d.degrees 30)
-
 -}
 relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Axis2d units globalCoordinates -> Axis2d units localCoordinates
 relativeTo frame (Types.Axis2d axis) =
@@ -280,14 +244,6 @@ relativeTo frame (Types.Axis2d axis) =
 
 {-| Take an axis defined in local coordinates relative to a given reference
 frame, and return that axis expressed in global coordinates.
-
-    frame =
-        Frame2d.atPoint (Point2d.meters 2 3)
-
-    Axis2d.placeIn frame exampleAxis
-    --> Axis2d.through (Point2d.meters 3 6)
-    -->     (Direction2d.degrees 30)
-
 -}
 placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Axis2d units localCoordinates -> Axis2d units globalCoordinates
 placeIn frame (Types.Axis2d axis) =

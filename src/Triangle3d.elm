@@ -158,13 +158,8 @@ at_ rate triangle =
 
 {-| Get the vertices of a triangle.
 
-
     ( p1, p2, p3 ) =
         Triangle3d.vertices exampleTriangle
-
-    --> p1 = Point3d.meters 1 0 0
-    --> p2 = Point3d.meters 2 0 0
-    --> p3 = Point3d.meters 2 1 3
 
 -}
 vertices : Triangle3d units coordinates -> ( Point3d units coordinates, Point3d units coordinates, Point3d units coordinates )
@@ -223,10 +218,6 @@ centroid triangle =
 
 
 {-| Get the area of a triangle. This value is always positive.
-
-    Triangle3d.area exampleTriangle
-    --> Area.squareMeters 1.5811
-
 -}
 area : Triangle3d units coordinates -> Quantity Float (Squared units)
 area triangle =
@@ -363,14 +354,9 @@ projectInto sketchPlane triangle =
 {-| Get the minimal bounding box containing a given triangle.
 
     Triangle3d.boundingBox exampleTriangle
-    --> BoundingBox3d.fromExtrema
-    -->     { minX = Length.meters 1
-    -->     , maxX = Length.meters 2
-    -->     , minY = Length.meters 0
-    -->     , maxY = Length.meters 1
-    -->     , minZ = Length.meters 0
-    -->     , maxZ = Length.meters 3
-    -->     }
+    --> BoundingBox3d.from
+    -->     (Point3d.meters 1 0 0)
+    -->     (Point3d.meters 2 1 3)
 
 -}
 boundingBox : Triangle3d units coordinates -> BoundingBox3d units coordinates
