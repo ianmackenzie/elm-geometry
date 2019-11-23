@@ -326,6 +326,12 @@ ellipse, not a circle!
     -->     , yRadius = Length.meters 0.7071
     -->     }
 
+The X radius of the returned ellipse will always be greater than or equal to the
+Y radius (the X axis will be the major axis and the Y axis will be the minor
+axis). Note that if the 3D circle is perfectly parallel to the sketch plane,
+then the resulting ellipse will be circular (its X and Y radii will be equal)
+and its X and Y axis directions will be chosen arbitrarily.
+
 -}
 projectInto : SketchPlane3d units coordinates3d { defines : coordinates2d } -> Circle3d units coordinates3d -> Ellipse2d units coordinates2d
 projectInto sketchPlane circle =
