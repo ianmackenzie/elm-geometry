@@ -39,6 +39,7 @@ module Geometry.Fuzz exposing
     , positiveLength
     , quadraticSpline2d
     , quadraticSpline3d
+    , quantityRange
     , rectangle2d
     , scale
     , sketchPlane3d
@@ -115,6 +116,11 @@ positiveLength =
 parameterValue : Fuzzer Float
 parameterValue =
     Fuzz.floatRange 0 1
+
+
+quantityRange : Quantity Float units -> Quantity Float units -> Fuzzer (Quantity Float units)
+quantityRange start end =
+    Fuzz.map (Quantity.interpolateFrom start end) parameterValue
 
 
 vector2d : Fuzzer (Vector2d coordinates)
