@@ -17,6 +17,7 @@
         "Circle3d",
         "CubicSpline2d",
         "CubicSpline3d",
+        "Cylinder3d",
         "DelaunayTriangulation2d",
         "Direction2d",
         "Direction3d",

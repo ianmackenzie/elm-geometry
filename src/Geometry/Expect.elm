@@ -24,6 +24,7 @@ module Geometry.Expect exposing
     , circle3d
     , cubicSpline2d
     , cubicSpline3d
+    , cylinder3d
     , direction2d
     , direction2dWithin
     , direction3d
@@ -90,6 +91,7 @@ import Circle2d exposing (Circle2d)
 import Circle3d exposing (Circle3d)
 import CubicSpline2d exposing (CubicSpline2d)
 import CubicSpline3d exposing (CubicSpline3d)
+import Cylinder3d exposing (Cylinder3d)
 import Direction2d exposing (Direction2d)
 import Direction3d exposing (Direction3d)
 import Expect exposing (Expectation)
@@ -895,6 +897,15 @@ sphere3d first =
     Expect.all
         [ Sphere3d.centerPoint >> point3d (Sphere3d.centerPoint first)
         , Sphere3d.radius >> approximately (Sphere3d.radius first)
+        ]
+
+
+cylinder3d : Cylinder3d units coordinates -> Cylinder3d units coordinates -> Expectation
+cylinder3d first =
+    Expect.all
+        [ Cylinder3d.axis >> axis3d (Cylinder3d.axis first)
+        , Cylinder3d.radius >> approximately (Cylinder3d.radius first)
+        , Cylinder3d.length >> approximately (Cylinder3d.length first)
         ]
 
 

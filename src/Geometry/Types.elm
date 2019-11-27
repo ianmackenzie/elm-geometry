@@ -19,6 +19,7 @@ module Geometry.Types exposing
     , Circle3d(..)
     , CubicSpline2d(..)
     , CubicSpline3d(..)
+    , Cylinder3d(..)
     , DelaunayFace(..)
     , DelaunayTriangulation2d(..)
     , DelaunayVertex
@@ -214,6 +215,14 @@ type Sphere3d units coordinates
     = Sphere3d
         { centerPoint : Point3d units coordinates
         , radius : Quantity Float units
+        }
+
+
+type Cylinder3d units coordinates
+    = Cylinder3d
+        { axis : Axis3d units coordinates
+        , radius : Quantity Float units
+        , length : Quantity Float units
         }
 
 

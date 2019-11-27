@@ -10,6 +10,7 @@ module Geometry.Test exposing
     , Circle3d
     , CubicSpline2d
     , CubicSpline3d
+    , Cylinder3d
     , Direction2d
     , Direction3d
     , Ellipse2d
@@ -49,6 +50,7 @@ import Circle2d
 import Circle3d
 import CubicSpline2d
 import CubicSpline3d
+import Cylinder3d
 import Direction2d
 import Direction3d
 import Ellipse2d
@@ -205,6 +207,10 @@ type alias Block3d coordinates =
 
 type alias Sphere3d coordinates =
     Sphere3d.Sphere3d Meters coordinates
+
+
+type alias Cylinder3d coordinates =
+    Cylinder3d.Cylinder3d Meters coordinates
 
 
 type alias Triangle2d coordinates =

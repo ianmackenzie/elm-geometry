@@ -20,6 +20,7 @@ module Geometry.Fuzz exposing
     , circle3d
     , cubicSpline2d
     , cubicSpline3d
+    , cylinder3d
     , direction2d
     , direction3d
     , ellipse2d
@@ -62,6 +63,7 @@ import Circle2d
 import Circle3d
 import CubicSpline2d
 import CubicSpline3d
+import Cylinder3d
 import Direction2d
 import Direction3d
 import Ellipse2d
@@ -401,3 +403,15 @@ block3d =
             Block3d.centeredOn axes ( xDim, yDim, zDim )
     in
     Fuzz.map4 block frame3d positiveLength positiveLength positiveLength
+
+
+cylinder3d : Fuzzer (Cylinder3d coordinates)
+cylinder3d =
+    let
+        cylinder centerPoint direction cylinderLength cylinderRadius =
+            Cylinder3d.centeredOn centerPoint direction <|
+                { length = cylinderLength
+                , radius = cylinderRadius
+                }
+    in
+    Fuzz.map4 cylinder point3d direction3d positiveLength positiveLength
