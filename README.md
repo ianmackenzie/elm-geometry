@@ -280,14 +280,15 @@ main =
 
 which should end up displaying "Distance: 283 cm".
 
-Note that it was necessary to also import the `Length` module from [`elm-units`](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/),
+Note that it was necessary to also import the [`Length`](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Length)
+module from [`elm-units`](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/),
 since the [`Point2d.distanceFrom`](https://package.elm-lang.org/packages/ianmackenzie/elm-geometry/latest/Point2d#distanceFrom)
-function returns a `Quantity Float units`, not a plain `Float`. In general, in
-addition to `elm-geometry` modules, you'll likely need to import either the
-`Length` or `Pixels` modules from `elm-units` (depending on whether you're
-working in real-world or on-screen units) to work with any individual values
-returned by `elm-geometry` functions (distances, areas, point coordinates,
-vector components, etc.).
+function returns a [`Quantity Float units`](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Quantity#Quantity),
+not a plain `Float`. In general, in addition to `elm-geometry` modules, you'll
+likely need to import either the `Length` or [`Pixels`](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Pixels)
+modules from `elm-units` (depending on whether you're working in real-world or
+on-screen units) to work with any individual values returned by `elm-geometry`
+functions (distances, areas, point coordinates, vector components, etc.).
 
 ## Documentation
 
