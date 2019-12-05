@@ -24,7 +24,9 @@ transforming and combining them in many different ways. You can:
   - [Coordinate systems](#coordinate-systems)
   - [Conversions](#conversions)
 - [Installation](#installation)
+- [Using the package](#using-the-package)
 - [Documentation](#documentation)
+- [Related packages](#related-packages)
 - [Climate action](#climate-action)
 - [Questions and feedback](#questions-and-feedback)
 
@@ -236,12 +238,84 @@ elm install ianmackenzie/elm-geometry
 
 in a command prompt inside your project directory.
 
+## Using the package
+
+By itself, `elm-geometry` only performs abstract geometric operations like
+measurements (distances, areas), checks (containment, intersection) and
+transformations (scaling, rotation, translation, mirroring). See the [related
+packages](#related-packages) section below for links to some packages that build
+on top of `elm-geometry` to perform 2D drawing, 3D rendering, physics simulation
+etc.
+
+In general when using `elm-geometry`, you'll need to import a module for every
+different data type that you want to work with; there is no "main" module. For
+example, to calculate the distance between two 2D points, you would import the
+`Point2d` module and write something like:
+
+```elm
+module Main exposing (main)
+
+import Html exposing (Html)
+import Length
+import Point2d
+
+main : Html msg
+main =
+    let
+        firstPoint =
+            Point2d.meters 1 2
+
+        secondPoint =
+            Point2d.meters 3 4
+
+        distanceInCentimeters =
+            Point2d.distanceFrom firstPoint secondPoint
+                |> Length.inCentimeters
+    in
+    Html.text <|
+        "Distance: "
+            ++ String.fromInt (round distanceInCentimeters)
+            ++ " cm"
+```
+
+which should end up displaying "Distance: 283 cm".
+
+Note that it was necessary to also import the `Length` module from [`elm-units`](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/),
+since the [`Point2d.distanceFrom`](https://package.elm-lang.org/packages/ianmackenzie/elm-geometry/latest/Point2d#distanceFrom)
+function returns a `Quantity Float units`, not a plain `Float`. In general, in
+addition to `elm-geometry` modules, you'll likely need to import either the
+`Length` or `Pixels` modules from `elm-units` (depending on whether you're
+working in real-world or on-screen units) to work with any individual values
+returned by `elm-geometry` functions (distances, areas, point coordinates,
+vector components, etc.).
+
 ## Documentation
 
 [Full API documentation](https://package.elm-lang.org/packages/ianmackenzie/elm-geometry/latest)
 is available for each module. Most modules are associated with a particular data
 type (for example, the [`Point3d`](https://package.elm-lang.org/packages/ianmackenzie/elm-geometry/latest/Point3d)
 module contains functions for creating and manipulating `Point3d` values).
+
+## Related packages
+
+There are several other Elm packages related to `elm-geometry`:
+
+- For drawing in 2D, check out [`elm-geometry-svg`](https://package.elm-lang.org/packages/ianmackenzie/elm-geometry-svg/latest/)
+- For 3D rendering using WebGL, check out [`elm-geometry-linear-algebra-interop`](https://package.elm-lang.org/packages/ianmackenzie/elm-geometry-linear-algebra-interop/latest/)
+  and [`elm-3d-camera`](https://package.elm-lang.org/packages/ianmackenzie/elm-3d-camera/latest/),
+  or the upcoming [`elm-3d-scene`](https://github.com/ianmackenzie/elm-3d-scene)
+- For physics-based simulations/games, [`elm-physics`](https://package.elm-lang.org/packages/w0rm/elm-physics/latest/)
+  is based on `elm-geometry` and provides a 3D physics engine including
+  collisions, gravity, and constraints (joints)
+- The [`elm-1d-parameter`](https://package.elm-lang.org/packages/ianmackenzie/elm-1d-parameter/latest/)
+  package is both used internally by `elm-geometry`, and is useful to combine
+  with functions like [`Point2d.interpolateFrom`](https://package.elm-lang.org/packages/ianmackenzie/elm-geometry/latest/Point2d#interpolateFrom)
+  to generate evenly-spaced values
+- Functions like [`Polygon2d.triangulate`](https://package.elm-lang.org/packages/ianmackenzie/elm-geometry/latest/Polygon2d#triangulate)
+  return their results as a `TriangularMesh` value from [`elm-triangular-mesh`](https://package.elm-lang.org/packages/ianmackenzie/elm-triangular-mesh/latest/)
+
+I'm hopeful that in the future there will be packages that build on
+`elm-geometry` to do non-graphical things like 3D printing or CNC machining!
 
 ## Climate action
 
