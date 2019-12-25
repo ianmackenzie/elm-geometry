@@ -1,5 +1,6 @@
 module Tests.Point3d exposing
     ( circumcenterIsValidOrNothing
+    , distanceFromIsCommutative
     , interpolationReturnsExactEndpoints
     , midpointIsEquidistant
     , mirrorFlipsSignedDistance
@@ -9,6 +10,7 @@ module Tests.Point3d exposing
     , relativeToIsInverseOfPlaceIn
     , rotationAboutAxisPreservesDistanceAlong
     , rotationAboutAxisPreservesDistanceFrom
+    , samePointsSameCentroid
     , translateByAndInAreConsistent
     , translationByPerpendicularDoesNotChangeSignedDistance
     )
@@ -264,4 +266,29 @@ placeInIsInverseOfRelativeTo =
                 |> Point3d.relativeTo frame
                 |> Point3d.placeIn frame
                 |> Expect.point3d point
+        )
+
+
+distanceFromIsCommutative : Test
+distanceFromIsCommutative =
+    Test.fuzz2
+        Fuzz.point3d
+        Fuzz.point3d
+        "distance from here to there is the same as there to here"
+        (\here there ->
+            Point3d.distanceFrom here there
+                |> Expect.equal (Point3d.distanceFrom there here)
+        )
+
+
+samePointsSameCentroid : Test
+samePointsSameCentroid =
+    Test.fuzz3
+        Fuzz.point3d
+        Fuzz.point3d
+        Fuzz.point3d
+        "3 Point3ds should produce same centroid calling centroid or centroid3"
+        (\p1 p2 p3 ->
+            Point3d.centroid p1 [ p2, p3 ]
+                |> Expect.point3d (Point3d.centroid3 p1 p2 p3)
         )

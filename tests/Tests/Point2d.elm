@@ -1,5 +1,7 @@
 module Tests.Point2d exposing
     ( circumcenterIsValidOrNothing
+    , consistentRecordInterop
+    , consistentTupleInterop
     , interpolationReturnsExactEndpoints
     , midpointIsEquidistant
     , projectionOntoAxisPreservesDistance
@@ -12,6 +14,7 @@ import Expect
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Length
 import Point2d
 import Quantity exposing (zero)
 import Test exposing (Test)
@@ -153,3 +156,27 @@ trickyCircumcenter =
                     Point2d.meters 73.69327796224587 5.0e-7
             in
             Point2d.circumcenter p1 p2 p3 |> Expect.just Expect.point2d p0
+
+
+consistentTupleInterop : Test
+consistentTupleInterop =
+    Test.fuzz
+        Fuzz.point2d
+        "toTuple and then fromTuple return the same point"
+    <|
+        \point ->
+            Point2d.toTuple Length.inMeters point
+                |> Point2d.fromTuple Length.meters
+                |> Expect.equal point
+
+
+consistentRecordInterop : Test
+consistentRecordInterop =
+    Test.fuzz
+        Fuzz.point2d
+        "toRecord and then fromRecord return the same point"
+    <|
+        \point ->
+            Point2d.toRecord Length.inInches point
+                |> Point2d.fromRecord Length.inches
+                |> Expect.point2d point
