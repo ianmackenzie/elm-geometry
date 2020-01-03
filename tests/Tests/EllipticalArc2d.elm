@@ -1,6 +1,7 @@
 module Tests.EllipticalArc2d exposing
     ( fromEndpointsReplicatesArc
     , reproducibleArc
+    , reverseKeepsMidpoint
     , transformations
     )
 
@@ -14,7 +15,7 @@ import Geometry.Fuzz as Fuzz
 import Geometry.Test as Test exposing (..)
 import Length exposing (meters)
 import Point2d
-import Quantity exposing (zero)
+import Quantity exposing (Quantity(..), zero)
 import SweptAngle
 import Test exposing (Test)
 import Tests.Generic.Curve2d
@@ -88,6 +89,37 @@ fromEndpointsReplicatesArc =
                 Just ellipticalArc ->
                     EllipticalArc2d.centerPoint ellipticalArc
                         |> Expect.point2d (Arc2d.centerPoint arc)
+        )
+
+
+reverseKeepsMidpoint : Test
+reverseKeepsMidpoint =
+    Test.fuzz Fuzz.ellipticalArc2d
+        "Reversing an elliptical arc keeps the midpoint"
+        (\arc ->
+            case
+                ( EllipticalArc2d.nondegenerate arc
+                , EllipticalArc2d.nondegenerate (EllipticalArc2d.reverse arc)
+                )
+            of
+                ( Ok nondegenerateArc, Ok nondegenerateReversedArc ) ->
+                    let
+                        parametrizedArc =
+                            nondegenerateArc
+                                |> EllipticalArc2d.arcLengthParameterized
+                                    { maxError = meters 1.0e-3 }
+
+                        parametrizedReversedArc =
+                            nondegenerateReversedArc
+                                |> EllipticalArc2d.arcLengthParameterized
+                                    { maxError = meters 1.0e-3 }
+                    in
+                    EllipticalArc2d.midpoint parametrizedArc
+                        |> Expect.point2dWithin (Quantity 1.0e-9)
+                            (EllipticalArc2d.midpoint parametrizedReversedArc)
+
+                _ ->
+                    Expect.pass
         )
 
 

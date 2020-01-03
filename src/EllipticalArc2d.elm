@@ -19,7 +19,7 @@ module EllipticalArc2d exposing
     , at, at_
     , relativeTo, placeIn
     , ArcLengthParameterized, arcLengthParameterized, arcLength
-    , pointAlong, tangentDirectionAlong, sampleAlong
+    , pointAlong, midpoint, tangentDirectionAlong, sampleAlong
     , arcLengthParameterization, fromArcLengthParameterized
     , firstDerivative, maxSecondDerivativeMagnitude
     )
@@ -88,7 +88,7 @@ module](Point2d#transformations).
 For the following evaluation functions, the given arc length will be clamped to
 the arc length of the spline, so the result will always be on the spline.
 
-@docs pointAlong, tangentDirectionAlong, sampleAlong
+@docs pointAlong, midpoint, tangentDirectionAlong, sampleAlong
 
 
 ## Low level
@@ -861,6 +861,19 @@ pointAlong (ArcLengthParameterized parameterized) distance =
     parameterized.parameterization
         |> ArcLengthParameterization.arcLengthToParameterValue distance
         |> pointOn parameterized.underlyingArc
+
+
+{-| Get the midpoint of an elliptical arc. Note that this is the point half way along the
+elliptical arc by arc length, which is not in general the same as evaluating at a
+parameter value of 0.5.
+-}
+midpoint : ArcLengthParameterized units coordinates -> Point2d units coordinates
+midpoint parameterized =
+    let
+        halfArcLength =
+            Quantity.multiplyBy 0.5 (arcLength parameterized)
+    in
+    pointAlong parameterized halfArcLength
 
 
 {-| Get the tangent direction along an elliptical arc at a given arc length.

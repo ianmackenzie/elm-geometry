@@ -1,9 +1,11 @@
 module Tests.Arc2d exposing
-    ( evaluateOneIsEndPoint
+    ( evaluateHalfIsMidpoint
+    , evaluateOneIsEndPoint
     , evaluateZeroIsStartPoint
     , from
     , mirroredCenterPoint
     , reverseFlipsDirection
+    , reverseKeepsMidpoint
     , transformations
     , withRadius
     )
@@ -35,6 +37,23 @@ evaluateOneIsEndPoint =
     Test.fuzz Fuzz.arc2d
         "Evaluating at t=1 returns end point"
         (\arc -> Arc2d.pointOn arc 1 |> Expect.point2d (Arc2d.endPoint arc))
+
+
+evaluateHalfIsMidpoint : Test
+evaluateHalfIsMidpoint =
+    Test.fuzz Fuzz.arc2d
+        "Evaluating at t=0.5 returns midpoint"
+        (\arc -> Arc2d.pointOn arc 0.5 |> Expect.point2d (Arc2d.midpoint arc))
+
+
+reverseKeepsMidpoint : Test
+reverseKeepsMidpoint =
+    Test.fuzz Fuzz.arc2d
+        "Reversing an arc keeps the midpoint"
+        (\arc ->
+            Arc2d.midpoint (Arc2d.reverse arc)
+                |> Expect.point2d (Arc2d.midpoint arc)
+        )
 
 
 reverseFlipsDirection : Test
