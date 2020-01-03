@@ -2,6 +2,7 @@ module Tests.Polygon2d exposing
     ( containsTest
     , convexHullContainsAllPoints
     , convexHullIsConvex
+    , intersectionTest
     , triangulationHasCorrectArea
     , triangulationHasCorrectNumberOfTriangles
     )
@@ -19,6 +20,28 @@ import Test exposing (Test)
 import Triangle2d
 import TriangularMesh
 import Vector2d
+
+
+intersectionTest : Test
+intersectionTest =
+    Test.test "intersection" <|
+        \() ->
+            let
+                polyA =
+                    Polygon2d.with { outerLoop = [ Point2d.fromCoordinates ( 0, 60 ), Point2d.fromCoordinates ( 30, 30 ), Point2d.fromCoordinates ( 0, 30 ) ], innerLoops = [] }
+
+                polyB =
+                    Polygon2d.with { outerLoop = [ Point2d.fromCoordinates ( 0, 0 ), Point2d.fromCoordinates ( 60, 90 ), Point2d.fromCoordinates ( 60, 30 ) ], innerLoops = [] }
+
+                resA =
+                    Polygon2d.with
+                        { outerLoop = [ Point2d.fromCoordinates ( 30, 30 ), Point2d.fromCoordinates ( 24, 36 ), Point2d.fromCoordinates ( 20, 30 ) ]
+                        , innerLoops = []
+                        }
+            in
+            Polygon2d.intersection polyB polyA
+                |> Maybe.withDefault (Polygon2d.singleLoop [])
+                |> Expect.polygon2d resA
 
 
 convexHullIsConvex : Test

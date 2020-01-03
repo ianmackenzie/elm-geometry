@@ -12,6 +12,7 @@ module Polygon2d exposing
     , singleLoop, withHoles, convexHull
     , outerLoop, innerLoops, vertices, edges, perimeter, area, boundingBox
     , contains
+    , intersection
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , at, at_
     , relativeTo, placeIn
@@ -45,6 +46,11 @@ holes. This module contains a variety of polygon-related functionality, such as
 @docs contains
 
 
+# Boolean Operations
+
+@docs intersection
+
+
 # Transformations
 
 These transformations generally behave just like [the ones in the `Point2d`
@@ -72,6 +78,7 @@ module](Point2d#transformations).
 import Angle exposing (Angle)
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
+import Dict exposing (Dict)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
@@ -631,3 +638,271 @@ containsPointHelp edgeList xp yp k =
 
                 else
                     containsPointHelp rest xp yp k
+
+
+
+-- Polygon Boolean Operations
+
+
+{-| Computes the intersection between two polygons.
+-}
+intersection : Polygon2d -> Polygon2d -> Maybe Polygon2d
+intersection polyA polyB =
+    let
+        ( polyAS, polyBS ) =
+            subdivide ( polyA, polyB )
+
+        edgeDictA =
+            edges polyAS
+                |> List.foldr (addIfInside polyB) Dict.empty
+
+        edgeDict =
+            edges polyBS
+                |> List.foldr (addIfInside polyA) edgeDictA
+
+        startPoint =
+            edgeDict |> Dict.toList |> List.head
+
+        buildChain beginCoords end soFar =
+            case Dict.get (toKey end) edgeDict of
+                Just point ->
+                    if toKey point == beginCoords then
+                        Just (singleLoop (List.reverse (point :: soFar)))
+
+                    else
+                        buildChain beginCoords point (point :: soFar)
+
+                Nothing ->
+                    Nothing
+    in
+    case startPoint of
+        Nothing ->
+            Nothing
+
+        Just ( startCoords, end ) ->
+            buildChain startCoords end [ end ]
+
+
+{-| This function inserts vertices into polygons into points where the edges intersect/touch the other polygon.
+
+let's start with a super inneficient algorithm - this is O(n\*m)
+but this can be later optimized with a circular plane sweep algorithm
+
+-}
+subdivide : ( Polygon2d, Polygon2d ) -> ( Polygon2d, Polygon2d )
+subdivide ( polyA, polyB ) =
+    let
+        edgesA =
+            edges polyA
+
+        edgesB =
+            edges polyB
+    in
+    ( with
+        { outerLoop = subdivideLoop edgesB (outerLoop polyA)
+        , innerLoops = List.map (subdivideLoop edgesB) (innerLoops polyA)
+        }
+    , with
+        { outerLoop = subdivideLoop edgesA (outerLoop polyB)
+        , innerLoops = List.map (subdivideLoop edgesA) (innerLoops polyB)
+        }
+    )
+
+
+subdivideLoop : List LineSegment2d -> List Point2d -> List Point2d
+subdivideLoop otherEdges loop =
+    listShift loop
+        |> List.map2 (buildPoints otherEdges) loop
+        |> List.concat
+        |> removeAdjacentDuplicates []
+
+
+buildPoints : List LineSegment2d -> Point2d -> Point2d -> List Point2d
+buildPoints otherEdges start end =
+    let
+        segment =
+            LineSegment2d.from start end
+    in
+    start
+        :: List.concatMap
+            (lineIntersection segment)
+            otherEdges
+        |> List.sortBy (Point2d.distanceFrom start)
+
+
+lineIntersection : LineSegment2d -> LineSegment2d -> List Point2d
+lineIntersection lineSegment1 lineSegment2 =
+    -- this is basically the same as LineSegment2d.intersectionPoint, but we want to treat co-linear differently
+    -- The two line segments are:
+    -- p |--- r ---| p_
+    -- q |--- s ---| q_
+    let
+        ( p, p_ ) =
+            LineSegment2d.endpoints lineSegment1
+
+        ( q, q_ ) =
+            LineSegment2d.endpoints lineSegment2
+
+        r =
+            LineSegment2d.vector lineSegment1
+
+        s =
+            LineSegment2d.vector lineSegment2
+
+        pq =
+            Vector2d.from p q
+
+        pq_ =
+            Vector2d.from p q_
+
+        qp_ =
+            Vector2d.from q p_
+
+        pqXr =
+            Vector2d.crossProduct pq r
+
+        pqXs =
+            Vector2d.crossProduct pq s
+
+        sXqp_ =
+            Vector2d.crossProduct s qp_
+
+        rXpq_ =
+            Vector2d.crossProduct r pq_
+
+        tDenominator =
+            pqXs - sXqp_
+
+        uDenominator =
+            pqXr + rXpq_
+    in
+    if tDenominator == 0 || uDenominator == 0 then
+        if Vector2d.dotProduct r s < 0 then
+            if p_ == q_ then
+                -- p |----- p_ | q_ -----| q
+                []
+
+            else if p == q then
+                -- q_ |----- q | p -----| p_
+                []
+
+            else if Triangle2d.area (Triangle2d.fromVertices ( p, p_, q )) < 0.00001 then
+                [ p, p_ ]
+                    |> List.filter (\point -> abs (Point2d.distanceFrom point q + Point2d.distanceFrom point q_ - Point2d.distanceFrom q q_) < 0.00001)
+
+            else
+                []
+
+        else if p_ == q then
+            -- p |----- p_ | q -----| q_
+            []
+
+        else if p == q_ then
+            -- q |----- q_ | p -----| p_
+            []
+
+        else if Triangle2d.area (Triangle2d.fromVertices ( p, p_, q )) < 0.00001 then
+            [ p, p_ ]
+                |> List.filter (\point -> abs (Point2d.distanceFrom point q + Point2d.distanceFrom point q_ - Point2d.distanceFrom q q_) < 0.00001)
+
+        else
+            []
+
+    else
+        -- Segments are not parallel.
+        -- We search for the intersection point of the two lines.
+        let
+            t =
+                pqXs / tDenominator
+
+            u =
+                pqXr / uDenominator
+        in
+        if (0 <= t && t <= 1) && (0 <= u && u <= 1) then
+            -- Intersection is within both segments.
+            let
+                -- Ensure interpolation happens from the closest
+                -- endpoint (this should be more numerically stable, and
+                -- also mostly ensures that intersection is symmetric)
+                intersection_ =
+                    if min t (1 - t) <= min u (1 - u) then
+                        LineSegment2d.interpolate lineSegment1 t
+
+                    else
+                        LineSegment2d.interpolate lineSegment2 u
+            in
+            [ intersection_ ]
+
+        else
+            []
+
+
+listShift : List a -> List a
+listShift aList =
+    case aList of
+        [] ->
+            []
+
+        x :: xs ->
+            xs ++ [ x ]
+
+
+removeAdjacentDuplicates : List Point2d -> List Point2d -> List Point2d
+removeAdjacentDuplicates accu list =
+    case list of
+        [] ->
+            List.reverse accu
+
+        [ x ] ->
+            case List.reverse accu of
+                [] ->
+                    [ x ]
+
+                head :: rest ->
+                    if x == head then
+                        head :: rest
+
+                    else
+                        head :: rest ++ [ x ]
+
+        x :: y :: rest ->
+            if x == y then
+                removeAdjacentDuplicates accu (y :: rest)
+
+            else
+                removeAdjacentDuplicates (x :: accu) (y :: rest)
+
+
+{-| This seems to be needed to prevent some odd rounding errors :(
+-}
+toKey : Point2d -> ( Int, Int )
+toKey p =
+    Tuple.mapBoth (\a -> round (a * 100000000)) (\a -> round (a * 100000000)) <| Point2d.coordinates p
+
+
+addIfInside : Polygon2d -> LineSegment2d -> Dict ( Int, Int ) Point2d -> Dict ( Int, Int ) Point2d
+addIfInside poly edge dict =
+    let
+        ( start, end ) =
+            LineSegment2d.endpoints edge
+
+        midpoint =
+            LineSegment2d.midpoint edge
+    in
+    if contains midpoint poly then
+        if start == end then
+            Debug.todo "endpoints equal"
+            -- this should never happen in reasonable polygons, sigh
+
+        else if toKey start == toKey end then
+            let
+                _ =
+                    ( start, end )
+            in
+            dict
+
+        else
+            Dict.insert (toKey start) end dict
+
+    else
+        dict
