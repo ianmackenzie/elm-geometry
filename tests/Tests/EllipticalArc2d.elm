@@ -15,7 +15,7 @@ import Geometry.Fuzz as Fuzz
 import Geometry.Test as Test exposing (..)
 import Length exposing (meters)
 import Point2d
-import Quantity exposing (Quantity(..), zero)
+import Quantity exposing (zero)
 import SweptAngle
 import Test exposing (Test)
 import Tests.Generic.Curve2d
@@ -115,7 +115,7 @@ reverseKeepsMidpoint =
                                     { maxError = meters 1.0e-3 }
                     in
                     EllipticalArc2d.midpoint parametrizedArc
-                        |> Expect.point2dWithin (Quantity 1.0e-3)
+                        |> Expect.point2dWithin (meters 1.0e-3)
                             (EllipticalArc2d.midpoint parametrizedReversedArc)
 
                 _ ->
