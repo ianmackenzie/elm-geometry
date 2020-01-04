@@ -115,7 +115,7 @@ reverseKeepsMidpoint =
                                     { maxError = meters 1.0e-3 }
                     in
                     EllipticalArc2d.midpoint parametrizedArc
-                        |> Expect.point2dWithin (Quantity 1.0e-9)
+                        |> Expect.point2dWithin (Quantity 1.0e-3)
                             (EllipticalArc2d.midpoint parametrizedReversedArc)
 
                 _ ->
