@@ -10,7 +10,7 @@
 module Arc3d exposing
     ( Arc3d
     , on, sweptAround, throughPoints
-    , axialDirection, axis, centerPoint, radius, startPoint, endPoint, sweptAngle
+    , axialDirection, axis, centerPoint, radius, startPoint, midpoint, endPoint, sweptAngle
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
@@ -39,7 +39,7 @@ start point to the arc's end point). This module includes functionality for
 
 # Properties
 
-@docs axialDirection, axis, centerPoint, radius, startPoint, endPoint, sweptAngle
+@docs axialDirection, axis, centerPoint, radius, startPoint, midpoint, endPoint, sweptAngle
 
 
 # Evaluation
@@ -297,6 +297,13 @@ radius (Types.Arc3d arc) =
 startPoint : Arc3d units coordinates -> Point3d units coordinates
 startPoint (Types.Arc3d arc) =
     arc.startPoint
+
+
+{-| Get the midpoint of an arc.
+-}
+midpoint : Arc3d units coordinates -> Point3d units coordinates
+midpoint arc =
+    pointOn arc 0.5
 
 
 {-| Get the end point of an arc.
