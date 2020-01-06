@@ -7,6 +7,7 @@ module Tests.Axis2d exposing
     , relativeToExample
     , reverseExample
     , rotateAroundExample
+    , throughPoints
     , translateByExample
     , xExample
     , yExample
@@ -15,6 +16,7 @@ module Tests.Axis2d exposing
 import Angle
 import Axis2d
 import Direction2d
+import Expect
 import Frame2d
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
@@ -151,3 +153,26 @@ placeInExample =
                     (Axis2d.withDirection Direction2d.x
                         (Point2d.fromTuple meters ( 2, 3 ))
                     )
+
+
+throughPoints : Test
+throughPoints =
+    Test.fuzz2
+        Fuzz.point2d
+        Fuzz.point2d
+        "throughPoints"
+        (\firstPoint secondPoint ->
+            case Axis2d.through firstPoint secondPoint of
+                Just axis ->
+                    Expect.all
+                        [ \axis ->
+                            Axis2d.originPoint axis |> Expect.point2d firstPoint
+                        , \axis ->
+                            Point2d.signedDistanceFrom axis secondPoint
+                                |> Expect.approximately Quantity.zero
+                        ]
+                        axis
+
+                Nothing ->
+                    firstPoint |> Expect.point2d secondPoint
+        )

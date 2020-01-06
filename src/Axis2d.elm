@@ -10,7 +10,7 @@
 module Axis2d exposing
     ( Axis2d
     , x, y
-    , through, withDirection
+    , through, withDirection, throughPoints
     , originPoint, direction
     , reverse, moveTo, rotateAround, rotateBy, translateBy, translateIn, mirrorAcross
     , at, at_
@@ -34,7 +34,7 @@ by an origin point and direction. Axes have several uses, such as:
 
 # Constructors
 
-@docs through, withDirection
+@docs through, withDirection, throughPoints
 
 
 # Properties
@@ -121,6 +121,26 @@ things with partial application:
 withDirection : Direction2d coordinates -> Point2d units coordinates -> Axis2d units coordinates
 withDirection givenDirection givenPoint =
     Types.Axis2d { originPoint = givenPoint, direction = givenDirection }
+
+
+{-| Attempt to construct an axis through the two given points;
+
+    Axis2d.throughPoints p1 p2
+
+is equivalent to
+
+    Maybe.map (Axis2d.through firstPoint)
+        (Direction2d.from firstPoint secondPoint)
+
+-}
+throughPoints : Point2d units coordinates -> Point2d units coordinates -> Maybe (Axis2d units coordinates)
+throughPoints firstPoint secondPoint =
+    case Direction2d.from firstPoint secondPoint of
+        Just axisDirection ->
+            Just (through firstPoint axisDirection)
+
+        Nothing ->
+            Nothing
 
 
 {-| Convert an axis from one units type to another, by providing a conversion

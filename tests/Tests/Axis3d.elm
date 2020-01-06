@@ -3,6 +3,7 @@ module Tests.Axis3d exposing
     , intersectionWithPlane
     , onExamples
     , originPointExample
+    , throughPoints
     , xExample
     , yExample
     , zExample
@@ -118,4 +119,27 @@ intersectionWithPlane =
                     Axis3d.direction axis
                         |> Direction3d.componentIn (Plane3d.normalDirection plane)
                         |> Expect.float 0
+        )
+
+
+throughPoints : Test
+throughPoints =
+    Test.fuzz2
+        Fuzz.point3d
+        Fuzz.point3d
+        "throughPoints"
+        (\firstPoint secondPoint ->
+            case Axis3d.through firstPoint secondPoint of
+                Just axis ->
+                    Expect.all
+                        [ \axis ->
+                            Axis3d.originPoint axis |> Expect.point3d firstPoint
+                        , \axis ->
+                            Point3d.distanceFrom axis secondPoint
+                                |> Expect.approximately Quantity.zero
+                        ]
+                        axis
+
+                Nothing ->
+                    firstPoint |> Expect.point3d secondPoint
         )

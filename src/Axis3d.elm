@@ -10,7 +10,7 @@
 module Axis3d exposing
     ( Axis3d
     , x, y, z
-    , through, withDirection, on
+    , through, withDirection, throughPoints, on
     , originPoint, direction
     , intersectionWithPlane
     , reverse, moveTo, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
@@ -35,7 +35,7 @@ by an origin point and direction. Axes have several uses, such as:
 
 # Constructors
 
-@docs through, withDirection, on
+@docs through, withDirection, throughPoints, on
 
 
 # Properties
@@ -138,6 +138,26 @@ things with partial application:
 withDirection : Direction3d coordinates -> Point3d units coordinates -> Axis3d units coordinates
 withDirection givenDirection givenPoint =
     Types.Axis3d { direction = givenDirection, originPoint = givenPoint }
+
+
+{-| Attempt to construct an axis through the two given points;
+
+    Axis3d.throughPoints p1 p2
+
+is equivalent to
+
+    Maybe.map (Axis3d.through firstPoint)
+        (Direction3d.from firstPoint secondPoint)
+
+-}
+throughPoints : Point3d units coordinates -> Point3d units coordinates -> Maybe (Axis3d units coordinates)
+throughPoints firstPoint secondPoint =
+    case Direction3d.from firstPoint secondPoint of
+        Just axisDirection ->
+            Just (through firstPoint axisDirection)
+
+        Nothing ->
+            Nothing
 
 
 {-| Construct a 3D axis lying _on_ a sketch plane by providing a 2D axis
