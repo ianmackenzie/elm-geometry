@@ -108,9 +108,10 @@ intersectionWithPlane =
         "intersectionWithPlane works properly"
         (\axis plane ->
             if
-                Axis3d.direction axis
-                    |> Direction3d.componentIn (Plane3d.normalDirection plane)
-                    |> abs
+                abs
+                    (Axis3d.direction axis
+                        |> Direction3d.componentIn (Plane3d.normalDirection plane)
+                    )
                     > 1.0e-3
             then
                 case Axis3d.intersectionWithPlane plane axis of
