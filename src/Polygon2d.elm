@@ -10,7 +10,7 @@
 module Polygon2d exposing
     ( Polygon2d
     , singleLoop, withHoles, convexHull
-    , outerLoop, innerLoops, vertices, edges, perimeter, area, boundingBox
+    , outerLoop, innerLoops, vertices, edges, perimeter, area, centroid, boundingBox
     , contains
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , at, at_
@@ -37,7 +37,7 @@ holes. This module contains a variety of polygon-related functionality, such as
 
 # Properties
 
-@docs outerLoop, innerLoops, vertices, edges, perimeter, area, boundingBox
+@docs outerLoop, innerLoops, vertices, edges, perimeter, area, centroid, boundingBox
 
 
 # Queries
@@ -375,6 +375,133 @@ area polygon =
     counterclockwiseArea (outerLoop polygon)
         |> Quantity.plus
             (Quantity.sum (List.map counterclockwiseArea (innerLoops polygon)))
+
+
+{-| Get the centroid of a polygon. Returns `Nothing`
+if the polygon has no vertices or empty area.
+-}
+centroid : Polygon2d units coordinates -> Maybe (Point2d units coordinates)
+centroid polygon =
+    case outerLoop polygon of
+        first :: second :: remaningPoints ->
+            centroidHelp
+                first
+                (outerLoop polygon)
+                (innerLoops polygon)
+                0
+                0
+                0
+
+        _ ->
+            Nothing
+
+
+centroidHelp :
+    Point2d units coordinates
+    -> List (Point2d units coordinates)
+    -> List (List (Point2d units coordinates))
+    -> Float
+    -> Float
+    -> Float
+    -> Maybe (Point2d units coordinates)
+centroidHelp firstPoint currentLoop remainingLoops xSum ySum areaSum =
+    case currentLoop of
+        [] ->
+            case remainingLoops of
+                -- enqueue a new loop
+                (first :: second :: remainingPoints) :: newRemainingLoops ->
+                    centroidHelp
+                        first
+                        (first :: second :: remainingPoints)
+                        newRemainingLoops
+                        xSum
+                        ySum
+                        areaSum
+
+                _ ->
+                    if areaSum > 0 then
+                        Just
+                            (Point2d.unsafe
+                                { x = xSum / (areaSum * 3)
+                                , y = ySum / (areaSum * 3)
+                                }
+                            )
+
+                    else
+                        Nothing
+
+        point1 :: currentLoopRest ->
+            case currentLoopRest of
+                point2 :: _ ->
+                    let
+                        p1 =
+                            Point2d.unwrap point1
+
+                        p2 =
+                            Point2d.unwrap point2
+
+                        a =
+                            p1.x * p2.y - p2.x * p1.y
+
+                        newXSum =
+                            xSum + (p1.x + p2.x) * a
+
+                        newYSum =
+                            ySum + (p1.y + p2.y) * a
+
+                        newAreaSum =
+                            areaSum + a
+                    in
+                    centroidHelp
+                        firstPoint
+                        currentLoopRest
+                        remainingLoops
+                        newXSum
+                        newYSum
+                        newAreaSum
+
+                [] ->
+                    let
+                        p1 =
+                            Point2d.unwrap point1
+
+                        p2 =
+                            Point2d.unwrap firstPoint
+
+                        a =
+                            p1.x * p2.y - p2.x * p1.y
+
+                        newXSum =
+                            xSum + (p1.x + p2.x) * a
+
+                        newYSum =
+                            ySum + (p1.y + p2.y) * a
+
+                        newAreaSum =
+                            areaSum + a
+                    in
+                    case remainingLoops of
+                        -- enqueue a new loop
+                        (first :: second :: remainingPoints) :: newRemainingLoops ->
+                            centroidHelp
+                                first
+                                (first :: second :: remainingPoints)
+                                newRemainingLoops
+                                newXSum
+                                newYSum
+                                newAreaSum
+
+                        _ ->
+                            if newAreaSum > 0 then
+                                Just
+                                    (Point2d.unsafe
+                                        { x = newXSum / (newAreaSum * 3)
+                                        , y = newYSum / (newAreaSum * 3)
+                                        }
+                                    )
+
+                            else
+                                Nothing
 
 
 {-| Scale a polygon about a given center point by a given scale. If the given
