@@ -135,7 +135,7 @@ throughPoints =
                         [ \() ->
                             Axis3d.originPoint axis |> Expect.point3d firstPoint
                         , \() ->
-                            Point3d.distanceFrom axis secondPoint
+                            Point3d.distanceFromAxis axis secondPoint
                                 |> Expect.approximately Quantity.zero
                         ]
                         ()
