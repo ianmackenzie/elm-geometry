@@ -22,6 +22,7 @@ import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Length exposing (meters)
 import Point2d
+import Quantity
 import Test exposing (Test)
 import Vector2d
 
