@@ -10,7 +10,7 @@
 module Arc2d exposing
     ( Arc2d
     , from, with, sweptAround, throughPoints, withRadius
-    , centerPoint, radius, startPoint, endPoint, sweptAngle
+    , centerPoint, radius, startPoint, midpoint, endPoint, sweptAngle
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
@@ -39,7 +39,7 @@ end point). This module includes functionality for
 
 # Properties
 
-@docs centerPoint, radius, startPoint, endPoint, sweptAngle
+@docs centerPoint, radius, startPoint, midpoint, endPoint, sweptAngle
 
 
 # Evaluation
@@ -562,6 +562,13 @@ radius (Types.Arc2d arc) =
 startPoint : Arc2d units coordinates -> Point2d units coordinates
 startPoint (Types.Arc2d properties) =
     properties.startPoint
+
+
+{-| Get the midpoint of an arc.
+-}
+midpoint : Arc2d units coordinates -> Point2d units coordinates
+midpoint arc =
+    pointOn arc 0.5
 
 
 {-| Get the end point of an arc.

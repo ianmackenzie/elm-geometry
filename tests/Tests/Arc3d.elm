@@ -1,8 +1,10 @@
 module Tests.Arc3d exposing
-    ( evaluateOneIsEndPoint
+    ( evaluateHalfIsMidpoint
+    , evaluateOneIsEndPoint
     , evaluateZeroIsStartPoint
     , projectInto
     , reverseFlipsDirection
+    , reverseKeepsMidpoint
     , transformations
     )
 
@@ -30,6 +32,23 @@ evaluateOneIsEndPoint =
     Test.fuzz Fuzz.arc3d
         "Evaluating at t=1 returns end point"
         (\arc -> Arc3d.pointOn arc 1 |> Expect.point3d (Arc3d.endPoint arc))
+
+
+evaluateHalfIsMidpoint : Test
+evaluateHalfIsMidpoint =
+    Test.fuzz Fuzz.arc3d
+        "Evaluating at t=0.5 returns midpoint"
+        (\arc -> Arc3d.pointOn arc 0.5 |> Expect.point3d (Arc3d.midpoint arc))
+
+
+reverseKeepsMidpoint : Test
+reverseKeepsMidpoint =
+    Test.fuzz Fuzz.arc3d
+        "Reversing an arc keeps the midpoint"
+        (\arc ->
+            Arc3d.midpoint (Arc3d.reverse arc)
+                |> Expect.point3d (Arc3d.midpoint arc)
+        )
 
 
 reverseFlipsDirection : Test
