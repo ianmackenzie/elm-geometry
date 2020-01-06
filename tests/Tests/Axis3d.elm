@@ -107,18 +107,25 @@ intersectionWithPlane =
         Fuzz.plane3d
         "intersectionWithPlane works properly"
         (\axis plane ->
-            case Axis3d.intersectionWithPlane plane axis of
-                Just point ->
-                    point
-                        |> Expect.all
-                            [ Point3d.signedDistanceFrom plane >> Expect.approximately Quantity.zero
-                            , Point3d.distanceFromAxis axis >> Expect.approximately Quantity.zero
-                            ]
+            if
+                Axis3d.direction axis
+                    |> Direction3d.componentIn (Plane3d.normalDirection plane)
+                    |> abs
+                    > 1.0e-3
+            then
+                case Axis3d.intersectionWithPlane plane axis of
+                    Just point ->
+                        point
+                            |> Expect.all
+                                [ Point3d.signedDistanceFrom plane >> Expect.approximately Quantity.zero
+                                , Point3d.distanceFromAxis axis >> Expect.approximately Quantity.zero
+                                ]
 
-                Nothing ->
-                    Axis3d.direction axis
-                        |> Direction3d.componentIn (Plane3d.normalDirection plane)
-                        |> Expect.float 0
+                    Nothing ->
+                        Expect.fail "Expected axis/plane intersection"
+
+            else
+                Expect.pass
         )
 
 
