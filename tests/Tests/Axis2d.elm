@@ -165,13 +165,13 @@ throughPoints =
             case Axis2d.through firstPoint secondPoint of
                 Just axis ->
                     Expect.all
-                        [ \axis ->
+                        [ \() ->
                             Axis2d.originPoint axis |> Expect.point2d firstPoint
-                        , \axis ->
+                        , \() ->
                             Point2d.signedDistanceFrom axis secondPoint
                                 |> Expect.approximately Quantity.zero
                         ]
-                        axis
+                        ()
 
                 Nothing ->
                     firstPoint |> Expect.point2d secondPoint
