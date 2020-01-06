@@ -163,7 +163,7 @@ throughPoints =
         Fuzz.point2d
         "throughPoints"
         (\firstPoint secondPoint ->
-            case Axis2d.through firstPoint secondPoint of
+            case Axis2d.throughPoints firstPoint secondPoint of
                 Just axis ->
                     Expect.all
                         [ \() ->
