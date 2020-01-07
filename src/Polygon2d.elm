@@ -384,7 +384,13 @@ centroid : Polygon2d units coordinates -> Maybe (Point2d units coordinates)
 centroid polygon =
     case outerLoop polygon of
         first :: _ :: _ ->
+            let
+                offset =
+                    Point2d.unwrap first
+            in
             centroidHelp
+                offset.x
+                offset.y
                 first
                 (outerLoop polygon)
                 (innerLoops polygon)
@@ -397,14 +403,16 @@ centroid polygon =
 
 
 centroidHelp :
-    Point2d units coordinates
+    Float
+    -> Float
+    -> Point2d units coordinates
     -> List (Point2d units coordinates)
     -> List (List (Point2d units coordinates))
     -> Float
     -> Float
     -> Float
     -> Maybe (Point2d units coordinates)
-centroidHelp firstPoint currentLoop remainingLoops xSum ySum areaSum =
+centroidHelp x0 y0 firstPoint currentLoop remainingLoops xSum ySum areaSum =
     case currentLoop of
         [] ->
             case remainingLoops of
@@ -413,6 +421,8 @@ centroidHelp firstPoint currentLoop remainingLoops xSum ySum areaSum =
                         first :: _ :: _ ->
                             -- enqueue a new loop
                             centroidHelp
+                                x0
+                                y0
                                 first
                                 loop
                                 newRemainingLoops
@@ -423,6 +433,8 @@ centroidHelp firstPoint currentLoop remainingLoops xSum ySum areaSum =
                         _ ->
                             -- skip a loop with < 2 points
                             centroidHelp
+                                x0
+                                y0
                                 firstPoint
                                 []
                                 newRemainingLoops
@@ -434,8 +446,8 @@ centroidHelp firstPoint currentLoop remainingLoops xSum ySum areaSum =
                     if areaSum > 0 then
                         Just
                             (Point2d.unsafe
-                                { x = xSum / (areaSum * 3)
-                                , y = ySum / (areaSum * 3)
+                                { x = xSum / (areaSum * 3) + x0
+                                , y = ySum / (areaSum * 3) + y0
                                 }
                             )
 
@@ -452,19 +464,33 @@ centroidHelp firstPoint currentLoop remainingLoops xSum ySum areaSum =
                         p2 =
                             Point2d.unwrap point2
 
+                        p1x =
+                            p1.x - x0
+
+                        p1y =
+                            p1.y - y0
+
+                        p2x =
+                            p2.x - x0
+
+                        p2y =
+                            p2.y - y0
+
                         a =
-                            p1.x * p2.y - p2.x * p1.y
+                            p1x * p2y - p2x * p1y
 
                         newXSum =
-                            xSum + (p1.x + p2.x) * a
+                            xSum + (p1x + p2x) * a
 
                         newYSum =
-                            ySum + (p1.y + p2.y) * a
+                            ySum + (p1y + p2y) * a
 
                         newAreaSum =
                             areaSum + a
                     in
                     centroidHelp
+                        x0
+                        y0
                         firstPoint
                         currentLoopRest
                         remainingLoops
@@ -480,14 +506,26 @@ centroidHelp firstPoint currentLoop remainingLoops xSum ySum areaSum =
                         p2 =
                             Point2d.unwrap firstPoint
 
+                        p1x =
+                            p1.x - x0
+
+                        p1y =
+                            p1.y - y0
+
+                        p2x =
+                            p2.x - x0
+
+                        p2y =
+                            p2.y - y0
+
                         a =
-                            p1.x * p2.y - p2.x * p1.y
+                            p1x * p2y - p2x * p1y
 
                         newXSum =
-                            xSum + (p1.x + p2.x) * a
+                            xSum + (p1x + p2x) * a
 
                         newYSum =
-                            ySum + (p1.y + p2.y) * a
+                            ySum + (p1y + p2y) * a
 
                         newAreaSum =
                             areaSum + a
@@ -498,6 +536,8 @@ centroidHelp firstPoint currentLoop remainingLoops xSum ySum areaSum =
                                 first :: _ :: _ ->
                                     -- enqueue a new loop
                                     centroidHelp
+                                        x0
+                                        y0
                                         first
                                         loop
                                         newRemainingLoops
@@ -508,6 +548,8 @@ centroidHelp firstPoint currentLoop remainingLoops xSum ySum areaSum =
                                 _ ->
                                     -- skip a loop with < 2 points
                                     centroidHelp
+                                        x0
+                                        y0
                                         firstPoint
                                         []
                                         newRemainingLoops
@@ -519,8 +561,8 @@ centroidHelp firstPoint currentLoop remainingLoops xSum ySum areaSum =
                             if newAreaSum > 0 then
                                 Just
                                     (Point2d.unsafe
-                                        { x = newXSum / (newAreaSum * 3)
-                                        , y = newYSum / (newAreaSum * 3)
+                                        { x = newXSum / (newAreaSum * 3) + x0
+                                        , y = newYSum / (newAreaSum * 3) + y0
                                         }
                                     )
 
