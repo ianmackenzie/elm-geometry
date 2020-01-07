@@ -15,7 +15,7 @@ module Point3d exposing
     , xyz, xyzIn, midpoint, interpolateFrom, along, on, xyOn, rThetaOn, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
     , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
-    , xCoordinate, yCoordinate, zCoordinate, xCoordinateIn, yCoordinateIn, zCoordinateIn
+    , coordinates, xCoordinate, yCoordinate, zCoordinate, coordinatesIn, xCoordinateIn, yCoordinateIn, zCoordinateIn
     , equalWithin, lexicographicComparison
     , distanceFrom, signedDistanceAlong, distanceFromAxis, signedDistanceFrom
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectOntoAxis
@@ -86,7 +86,7 @@ code that represents points as plain records.
 
 # Properties
 
-@docs xCoordinate, yCoordinate, zCoordinate, xCoordinateIn, yCoordinateIn, zCoordinateIn
+@docs coordinates, xCoordinate, yCoordinate, zCoordinate, coordinatesIn, xCoordinateIn, yCoordinateIn, zCoordinateIn
 
 
 # Comparison
@@ -153,8 +153,8 @@ values must be in whatever units the resulting point is considered to use
 [`fromRecord`](#fromRecord) etc.
 -}
 unsafe : { x : Float, y : Float, z : Float } -> Point3d units coordinates
-unsafe coordinates =
-    Types.Point3d coordinates
+unsafe givenCoordinates =
+    Types.Point3d givenCoordinates
 
 
 {-| Extract a point's raw X, Y and Z coordinates as `Float` values. These values
@@ -163,8 +163,8 @@ generally use something safer such as [`toMeters`](#toMeters),
 [`toRecord`](#toRecord), [`xCoordinate`](#xCoordinate) etc.
 -}
 unwrap : Point3d units coordinates -> { x : Float, y : Float, z : Float }
-unwrap (Types.Point3d coordinates) =
-    coordinates
+unwrap (Types.Point3d pointCoordinates) =
+    pointCoordinates
 
 
 {-| The point with coordinates (0, 0, 0).
@@ -820,38 +820,38 @@ toRecord fromQuantity point =
 
 {-| -}
 fromMeters : { x : Float, y : Float, z : Float } -> Point3d Meters coordinates
-fromMeters coordinates =
-    Types.Point3d coordinates
+fromMeters givenCoordinates =
+    Types.Point3d givenCoordinates
 
 
 {-| -}
 toMeters : Point3d Meters coordinates -> { x : Float, y : Float, z : Float }
-toMeters (Types.Point3d coordinates) =
-    coordinates
+toMeters (Types.Point3d pointCoordinates) =
+    pointCoordinates
 
 
 {-| -}
 fromPixels : { x : Float, y : Float, z : Float } -> Point3d Pixels coordinates
-fromPixels coordinates =
-    Types.Point3d coordinates
+fromPixels givenCoordinates =
+    Types.Point3d givenCoordinates
 
 
 {-| -}
 toPixels : Point3d Pixels coordinates -> { x : Float, y : Float, z : Float }
-toPixels (Types.Point3d coordinates) =
-    coordinates
+toPixels (Types.Point3d pointCoordinates) =
+    pointCoordinates
 
 
 {-| -}
 fromUnitless : { x : Float, y : Float, z : Float } -> Point3d Unitless coordinates
-fromUnitless coordinates =
-    Types.Point3d coordinates
+fromUnitless givenCoordinates =
+    Types.Point3d givenCoordinates
 
 
 {-| -}
 toUnitless : Point3d Unitless coordinates -> { x : Float, y : Float, z : Float }
-toUnitless (Types.Point3d coordinates) =
-    coordinates
+toUnitless (Types.Point3d pointCoordinates) =
+    pointCoordinates
 
 
 {-| Convert a point from one units type to another, by providing a conversion factor given as a
@@ -900,8 +900,7 @@ at_ (Quantity rate) (Types.Point3d p) =
         }
 
 
-{-| Find the X coordinate of a point relative to a given frame; this is the X
-coordinate the point would have as viewed by an observer in that frame.
+{-| Find the X coordinate of a point relative to a given frame.
 -}
 xCoordinateIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Point3d units globalCoordinates -> Quantity Float units
 xCoordinateIn (Types.Frame3d frame) (Types.Point3d p) =
@@ -915,8 +914,7 @@ xCoordinateIn (Types.Frame3d frame) (Types.Point3d p) =
     Quantity ((p.x - p0.x) * d.x + (p.y - p0.y) * d.y + (p.z - p0.z) * d.z)
 
 
-{-| Find the Y coordinate of a point relative to a given frame; this is the Y
-coordinate the point would have as viewed by an observer in that frame.
+{-| Find the Y coordinate of a point relative to a given frame.
 -}
 yCoordinateIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Point3d units globalCoordinates -> Quantity Float units
 yCoordinateIn (Types.Frame3d frame) (Types.Point3d p) =
@@ -930,8 +928,7 @@ yCoordinateIn (Types.Frame3d frame) (Types.Point3d p) =
     Quantity ((p.x - p0.x) * d.x + (p.y - p0.y) * d.y + (p.z - p0.z) * d.z)
 
 
-{-| Find the Z coordinate of a point relative to a given frame; this is the Z
-coordinate the point would have as viewed by an observer in that frame.
+{-| Find the Z coordinate of a point relative to a given frame.
 -}
 zCoordinateIn : Frame3d units globalCoordinates { defines : localCoordinates } -> Point3d units globalCoordinates -> Quantity Float units
 zCoordinateIn (Types.Frame3d frame) (Types.Point3d p) =
@@ -943,6 +940,59 @@ zCoordinateIn (Types.Frame3d frame) (Types.Point3d p) =
             frame.zDirection
     in
     Quantity ((p.x - p0.x) * d.x + (p.y - p0.y) * d.y + (p.z - p0.z) * d.z)
+
+
+{-| Get the X, Y and Z coordinates of a point as a tuple.
+
+    Point3d.coordinates (Point3d.meters 2 3 1)
+    --> ( Length.meters 2
+    --> , Length.meters 3
+    --> , Length.meters 1
+    --> )
+
+-}
+coordinates :
+    Point3d units coordinates
+    -> ( Quantity Float units, Quantity Float units, Quantity Float units )
+coordinates (Types.Point3d p) =
+    ( Quantity p.x, Quantity p.y, Quantity p.z )
+
+
+{-| Get the X, Y and Z coordinates of a point relative to a given frame, as a
+tuple; these are the coordinate the point would have as viewed by an observer in
+that frame.
+-}
+coordinatesIn :
+    Frame3d units globalCoordinates { defines : localCoordinates }
+    -> Point3d units globalCoordinates
+    -> ( Quantity Float units, Quantity Float units, Quantity Float units )
+coordinatesIn (Types.Frame3d frame) (Types.Point3d p) =
+    let
+        (Types.Point3d p0) =
+            frame.originPoint
+
+        (Types.Direction3d dx) =
+            frame.xDirection
+
+        (Types.Direction3d dy) =
+            frame.yDirection
+
+        (Types.Direction3d dz) =
+            frame.zDirection
+
+        deltaX =
+            p.x - p0.x
+
+        deltaY =
+            p.y - p0.y
+
+        deltaZ =
+            p.z - p0.z
+    in
+    ( Quantity (deltaX * dx.x + deltaY * dx.y + deltaZ * dx.z)
+    , Quantity (deltaX * dy.x + deltaY * dy.y + deltaZ * dy.z)
+    , Quantity (deltaX * dz.x + deltaY * dz.y + deltaZ * dz.z)
+    )
 
 
 {-| Get the X coordinate of a point.

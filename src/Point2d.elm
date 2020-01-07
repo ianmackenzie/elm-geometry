@@ -15,7 +15,7 @@ module Point2d exposing
     , xy, xyIn, rTheta, rThetaIn, midpoint, interpolateFrom, along, circumcenter
     , fromTuple, toTuple, fromRecord, toRecord
     , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
-    , xCoordinate, yCoordinate, xCoordinateIn, yCoordinateIn
+    , coordinates, xCoordinate, yCoordinate, coordinatesIn, xCoordinateIn, yCoordinateIn
     , equalWithin, lexicographicComparison
     , distanceFrom, signedDistanceAlong, signedDistanceFrom
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
@@ -85,7 +85,7 @@ that represents points as plain records.
 
 # Properties
 
-@docs xCoordinate, yCoordinate, xCoordinateIn, yCoordinateIn
+@docs coordinates, xCoordinate, yCoordinate, coordinatesIn, xCoordinateIn, yCoordinateIn
 
 
 # Comparison
@@ -151,8 +151,8 @@ values must be in whatever units the resulting point is considered to use
 [`fromRecord`](#fromRecord) etc.
 -}
 unsafe : { x : Float, y : Float } -> Point2d units coordinates
-unsafe coordinates =
-    Types.Point2d coordinates
+unsafe givenCoordinates =
+    Types.Point2d givenCoordinates
 
 
 {-| Extract a point's raw X and Y coordinates as `Float` values. These values
@@ -161,8 +161,8 @@ generally use something safer such as [`toMeters`](#toMeters),
 [`toRecord`](#toRecord), [`xCoordinate`](#xCoordinate) etc.
 -}
 unwrap : Point2d units coordinates -> { x : Float, y : Float }
-unwrap (Types.Point2d coordinates) =
-    coordinates
+unwrap (Types.Point2d pointCoordinates) =
+    pointCoordinates
 
 
 {-| The point with coordinates (0, 0).
@@ -695,38 +695,38 @@ toRecord fromQuantity point =
 
 {-| -}
 fromMeters : { x : Float, y : Float } -> Point2d Meters coordinates
-fromMeters coordinates =
-    Types.Point2d coordinates
+fromMeters givenCoordinates =
+    Types.Point2d givenCoordinates
 
 
 {-| -}
 toMeters : Point2d Meters coordinates -> { x : Float, y : Float }
-toMeters (Types.Point2d coordinates) =
-    coordinates
+toMeters (Types.Point2d pointCoordinates) =
+    pointCoordinates
 
 
 {-| -}
 fromPixels : { x : Float, y : Float } -> Point2d Pixels coordinates
-fromPixels coordinates =
-    Types.Point2d coordinates
+fromPixels givenCoordinates =
+    Types.Point2d givenCoordinates
 
 
 {-| -}
 toPixels : Point2d Pixels coordinates -> { x : Float, y : Float }
-toPixels (Types.Point2d coordinates) =
-    coordinates
+toPixels (Types.Point2d pointCoordinates) =
+    pointCoordinates
 
 
 {-| -}
 fromUnitless : { x : Float, y : Float } -> Point2d Unitless coordinates
-fromUnitless coordinates =
-    Types.Point2d coordinates
+fromUnitless givenCoordinates =
+    Types.Point2d givenCoordinates
 
 
 {-| -}
 toUnitless : Point2d Unitless coordinates -> { x : Float, y : Float }
-toUnitless (Types.Point2d coordinates) =
-    coordinates
+toUnitless (Types.Point2d pointCoordinates) =
+    pointCoordinates
 
 
 {-| Convert a point from one units type to another, by providing a conversion factor given as a
@@ -773,8 +773,7 @@ at_ (Quantity rate) (Types.Point2d p) =
         }
 
 
-{-| Find the X coordinate of a point relative to a given frame; this is the X
-coordinate the point would have as viewed by an observer in that frame.
+{-| Find the X coordinate of a point relative to a given frame.
 -}
 xCoordinateIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Point2d units globalCoordinates -> Quantity Float units
 xCoordinateIn (Types.Frame2d frame) (Types.Point2d p) =
@@ -788,8 +787,7 @@ xCoordinateIn (Types.Frame2d frame) (Types.Point2d p) =
     Quantity ((p.x - p0.x) * d.x + (p.y - p0.y) * d.y)
 
 
-{-| Find the Y coordinate of a point relative to a given frame; this is the Y
-coordinate the point would have as viewed by an observer in that frame.
+{-| Find the Y coordinate of a point relative to a given frame.
 -}
 yCoordinateIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Point2d units globalCoordinates -> Quantity Float units
 yCoordinateIn (Types.Frame2d frame) (Types.Point2d p) =
@@ -801,6 +799,49 @@ yCoordinateIn (Types.Frame2d frame) (Types.Point2d p) =
             frame.yDirection
     in
     Quantity ((p.x - p0.x) * d.x + (p.y - p0.y) * d.y)
+
+
+{-| Get the X and Y coordinates of a point as a tuple.
+
+    Point2d.coordinates (Point2d.meters 2 3)
+    --> ( Length.meters 2, Length.meters 3 )
+
+-}
+coordinates :
+    Point2d units coordinates
+    -> ( Quantity Float units, Quantity Float units )
+coordinates (Types.Point2d p) =
+    ( Quantity p.x, Quantity p.y )
+
+
+{-| Get the X and Y coordinates of a point relative to a given frame, as a
+tuple; these are the coordinate the point would have as viewed by an observer in
+that frame.
+-}
+coordinatesIn :
+    Frame2d units globalCoordinates { defines : localCoordinates }
+    -> Point2d units globalCoordinates
+    -> ( Quantity Float units, Quantity Float units )
+coordinatesIn (Types.Frame2d frame) (Types.Point2d p) =
+    let
+        (Types.Point2d p0) =
+            frame.originPoint
+
+        (Types.Direction2d dx) =
+            frame.xDirection
+
+        (Types.Direction2d dy) =
+            frame.yDirection
+
+        deltaX =
+            p.x - p0.x
+
+        deltaY =
+            p.y - p0.y
+    in
+    ( Quantity (deltaX * dx.x + deltaY * dx.y)
+    , Quantity (deltaX * dy.x + deltaY * dy.y)
+    )
 
 
 {-| Get the X coordinate of a point.
