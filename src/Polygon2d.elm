@@ -383,7 +383,7 @@ if the polygon has no vertices or empty area.
 centroid : Polygon2d units coordinates -> Maybe (Point2d units coordinates)
 centroid polygon =
     case outerLoop polygon of
-        first :: second :: remaningPoints ->
+        first :: _ :: _ ->
             centroidHelp
                 first
                 (outerLoop polygon)
@@ -408,17 +408,29 @@ centroidHelp firstPoint currentLoop remainingLoops xSum ySum areaSum =
     case currentLoop of
         [] ->
             case remainingLoops of
-                -- enqueue a new loop
-                (first :: second :: remainingPoints) :: newRemainingLoops ->
-                    centroidHelp
-                        first
-                        (first :: second :: remainingPoints)
-                        newRemainingLoops
-                        xSum
-                        ySum
-                        areaSum
+                loop :: newRemainingLoops ->
+                    case loop of
+                        first :: _ :: _ ->
+                            -- enqueue a new loop
+                            centroidHelp
+                                first
+                                loop
+                                newRemainingLoops
+                                xSum
+                                ySum
+                                areaSum
 
-                _ ->
+                        _ ->
+                            -- skip a loop with < 2 points
+                            centroidHelp
+                                firstPoint
+                                []
+                                newRemainingLoops
+                                xSum
+                                ySum
+                                areaSum
+
+                [] ->
                     if areaSum > 0 then
                         Just
                             (Point2d.unsafe
@@ -481,17 +493,29 @@ centroidHelp firstPoint currentLoop remainingLoops xSum ySum areaSum =
                             areaSum + a
                     in
                     case remainingLoops of
-                        -- enqueue a new loop
-                        (first :: second :: remainingPoints) :: newRemainingLoops ->
-                            centroidHelp
-                                first
-                                (first :: second :: remainingPoints)
-                                newRemainingLoops
-                                newXSum
-                                newYSum
-                                newAreaSum
+                        loop :: newRemainingLoops ->
+                            case loop of
+                                first :: _ :: _ ->
+                                    -- enqueue a new loop
+                                    centroidHelp
+                                        first
+                                        loop
+                                        newRemainingLoops
+                                        newXSum
+                                        newYSum
+                                        newAreaSum
 
-                        _ ->
+                                _ ->
+                                    -- skip a loop with < 2 points
+                                    centroidHelp
+                                        firstPoint
+                                        []
+                                        newRemainingLoops
+                                        newXSum
+                                        newYSum
+                                        newAreaSum
+
+                        [] ->
                             if newAreaSum > 0 then
                                 Just
                                     (Point2d.unsafe
