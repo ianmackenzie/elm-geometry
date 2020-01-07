@@ -6,8 +6,10 @@ module Tests.Polygon2d exposing
     , rotatingAroundCentroidKeepsCentroid
     , triangulationHasCorrectArea
     , triangulationHasCorrectNumberOfTriangles
+    , triangulationHasCorrectWeightedCentroid
     )
 
+import Area
 import Expect
 import Fuzz
 import Geometry.Expect as Expect
@@ -191,6 +193,40 @@ triangulationHasCorrectNumberOfTriangles =
                 |> TriangularMesh.faceVertices
                 |> List.length
                 |> Expect.equal expectedNumberOfTriangles
+        )
+
+
+triangulationHasCorrectWeightedCentroid : Test
+triangulationHasCorrectWeightedCentroid =
+    Test.fuzz Fuzz.polygon2d
+        "The centroid of the polygon before triangulation is the same as weighted centroid of all the resulting triangles"
+        (\polygon ->
+            let
+                triangles =
+                    Polygon2d.triangulate polygon
+                        |> TriangularMesh.faceVertices
+                        |> List.map Triangle2d.fromVertices
+
+                centroidsAsVectors =
+                    triangles
+                        |> List.map (Triangle2d.centroid >> Vector2d.from Point2d.origin)
+
+                areasInSquareMeters =
+                    triangles
+                        |> List.map (Triangle2d.area >> Area.inSquareMeters)
+
+                weightedCentroid =
+                    List.map2 Vector2d.scaleBy areasInSquareMeters centroidsAsVectors
+                        |> List.foldl Vector2d.plus Vector2d.zero
+                        |> Vector2d.scaleBy (1 / List.sum areasInSquareMeters)
+                        |> (\vector -> Point2d.translateBy vector Point2d.origin)
+            in
+            case Polygon2d.centroid polygon of
+                Just centroid ->
+                    Expect.point2d weightedCentroid centroid
+
+                Nothing ->
+                    Expect.fail "Original polygon needs centroid"
         )
 
 
