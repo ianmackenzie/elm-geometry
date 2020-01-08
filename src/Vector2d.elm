@@ -18,12 +18,11 @@ module Vector2d exposing
     , per, for
     , components, xComponent, yComponent, componentIn, length, direction
     , equalWithin, lexicographicComparison
-    , plus, minus, dot, cross
+    , plus, minus, dot, cross, sum, twice, half
     , reverse, normalize, scaleBy, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
     , at, at_
     , relativeTo, placeIn
     , unsafe, unwrap
-    , sum
     )
 
 {-| A `Vector2d` represents a quantity such as a displacement or velocity in 2D,
@@ -107,7 +106,7 @@ that represents vectors as plain records.
 
 # Arithmetic
 
-@docs plus, minus, dot, cross, sum
+@docs plus, minus, dot, cross, sum, twice, half
 
 
 # Transformations
@@ -959,6 +958,20 @@ sumHelp sumX sumY vectors =
 
         [] ->
             Types.Vector2d { x = sumX, y = sumY }
+
+
+{-| Shorthand for `Vector2d.scaleBy 2`.
+-}
+twice : Vector2d units coordinates -> Vector2d units coordinates
+twice vector =
+    scaleBy 2 vector
+
+
+{-| Shorthand for `Vector2d.scaleBy 0.5`.
+-}
+half : Vector2d units coordinates -> Vector2d units coordinates
+half vector =
+    scaleBy 0.5 vector
 
 
 {-| Reverse the direction of a vector, negating its components.
