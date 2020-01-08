@@ -206,8 +206,8 @@ the spline's first control point to its second.
 -}
 startDerivative : QuadraticSpline2d units coordinates -> Vector2d units coordinates
 startDerivative spline =
-    Vector2d.from (firstControlPoint spline) (secondControlPoint spline)
-        |> Vector2d.scaleBy 2
+    Vector2d.twice <|
+        Vector2d.from (firstControlPoint spline) (secondControlPoint spline)
 
 
 {-| Get the end derivative of a spline. This is equal to twice the vector from
@@ -219,8 +219,8 @@ the spline's second control point to its third.
 -}
 endDerivative : QuadraticSpline2d units coordinates -> Vector2d units coordinates
 endDerivative spline =
-    Vector2d.from (secondControlPoint spline) (thirdControlPoint spline)
-        |> Vector2d.scaleBy 2
+    Vector2d.twice <|
+        Vector2d.from (secondControlPoint spline) (thirdControlPoint spline)
 
 
 {-| Compute a bounding box for a given spline. It is not guaranteed that the
@@ -316,7 +316,7 @@ firstDerivative spline parameterValue =
         v2 =
             Vector2d.from p2 p3
     in
-    Vector2d.interpolateFrom v1 v2 parameterValue |> Vector2d.scaleBy 2
+    Vector2d.twice (Vector2d.interpolateFrom v1 v2 parameterValue)
 
 
 derivativeMagnitude : QuadraticSpline2d units coordinates -> Float -> Quantity Float units
@@ -708,4 +708,4 @@ secondDerivative spline =
         v2 =
             Vector2d.from p2 p3
     in
-    Vector2d.scaleBy 2 (v2 |> Vector2d.minus v1)
+    Vector2d.twice (v2 |> Vector2d.minus v1)
