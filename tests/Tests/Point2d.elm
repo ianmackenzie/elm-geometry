@@ -2,6 +2,8 @@ module Tests.Point2d exposing
     ( circumcenterIsValidOrNothing
     , consistentRecordInterop
     , consistentTupleInterop
+    , coordinates
+    , coordinatesIn
     , interpolationReturnsExactEndpoints
     , midpointIsEquidistant
     , projectionOntoAxisPreservesDistance
@@ -180,3 +182,29 @@ consistentRecordInterop =
             Point2d.toRecord Length.inInches point
                 |> Point2d.fromRecord Length.inches
                 |> Expect.point2d point
+
+
+coordinates : Test
+coordinates =
+    Test.fuzz Fuzz.point2d "coordinates and xCoordinate/yCoordinate are consistent" <|
+        \point ->
+            Expect.all
+                [ Tuple.first >> Expect.approximately (Point2d.xCoordinate point)
+                , Tuple.second >> Expect.approximately (Point2d.yCoordinate point)
+                ]
+                (Point2d.coordinates point)
+
+
+coordinatesIn : Test
+coordinatesIn =
+    Test.fuzz2
+        Fuzz.point2d
+        Fuzz.frame2d
+        "coordinatesIn and xCoordinateIn/yCoordinateIn are consistent"
+        (\point frame ->
+            Expect.all
+                [ Tuple.first >> Expect.approximately (Point2d.xCoordinateIn frame point)
+                , Tuple.second >> Expect.approximately (Point2d.yCoordinate frame point)
+                ]
+                (Point2d.coordinatesIn frame point)
+        )

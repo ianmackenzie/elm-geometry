@@ -1,5 +1,7 @@
 module Tests.Point3d exposing
     ( circumcenterIsValidOrNothing
+    , coordinates
+    , coordinatesIn
     , distanceFromIsCommutative
     , interpolationReturnsExactEndpoints
     , midpointIsEquidistant
@@ -291,4 +293,47 @@ samePointsSameCentroid =
         (\p1 p2 p3 ->
             Point3d.centroid p1 [ p2, p3 ]
                 |> Expect.point3d (Point3d.centroid3 p1 p2 p3)
+        )
+
+
+first : ( a, a, a ) -> a
+first ( x, _, _ ) =
+    x
+
+
+second : ( a, a, a ) -> a
+second ( _, y, _ ) =
+    y
+
+
+third : ( a, a, a ) -> a
+third ( _, _, z ) =
+    z
+
+
+coordinates : Test
+coordinates =
+    Test.fuzz Fuzz.point3d "coordinates and xCoordinate etc. are consistent" <|
+        \point ->
+            Expect.all
+                [ first >> Expect.approximately (Point3d.xCoordinate point)
+                , second >> Expect.approximately (Point3d.yCoordinate point)
+                , third >> Expect.approximately (Point3d.zCoordinate point)
+                ]
+                (Point3d.coordinates point)
+
+
+coordinatesIn : Test
+coordinatesIn =
+    Test.fuzz2
+        Fuzz.point3d
+        Fuzz.frame3d
+        "coordinatesIn and xCoordinateIn etc. are consistent"
+        (\point frame ->
+            Expect.all
+                [ first >> Expect.approximately (Point3d.xCoordinateIn frame point)
+                , second >> Expect.approximately (Point3d.yCoordinate frame point)
+                , third >> Expect.approximately (Point3d.zCoordinate frame point)
+                ]
+                (Point3d.coordinatesIn frame point)
         )
