@@ -12,6 +12,7 @@ module Tests.Vector2d exposing
 import Axis2d
 import Direction2d
 import Expect
+import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Quantity
