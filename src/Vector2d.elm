@@ -23,6 +23,7 @@ module Vector2d exposing
     , at, at_
     , relativeTo, placeIn
     , unsafe, unwrap
+    , sum
     )
 
 {-| A `Vector2d` represents a quantity such as a displacement or velocity in 2D,
@@ -106,7 +107,7 @@ that represents vectors as plain records.
 
 # Arithmetic
 
-@docs plus, minus, dot, cross
+@docs plus, minus, dot, cross, sum
 
 
 # Transformations
@@ -941,6 +942,23 @@ Some examples:
 cross : Vector2d units2 coordinates -> Vector2d units1 coordinates -> Quantity Float (Product units1 units2)
 cross (Types.Vector2d v2) (Types.Vector2d v1) =
     Quantity (v1.x * v2.y - v1.y * v2.x)
+
+
+{-| Find the sum of a list of vectors.
+-}
+sum : List (Vector2d units coordinates) -> Vector2d units coordinates
+sum vectors =
+    sumHelp 0 0 vectors
+
+
+sumHelp : Float -> Float -> List (Vector2d units coordinates) -> Vector2d units coordinates
+sumHelp sumX sumY vectors =
+    case vectors of
+        (Types.Vector2d { x, y }) :: rest ->
+            sumHelp (sumX + x) (sumY + y) rest
+
+        [] ->
+            Types.Vector2d { x = sumX, y = sumY }
 
 
 {-| Reverse the direction of a vector, negating its components.

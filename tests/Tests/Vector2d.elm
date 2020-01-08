@@ -6,6 +6,7 @@ module Tests.Vector2d exposing
     , perpendicularVectorIsPerpendicular
     , rotateByPreservesLength
     , rotateByRotatesByTheCorrectAngle
+    , sum
     )
 
 import Axis2d
@@ -121,3 +122,12 @@ components =
                 , Tuple.second >> Expect.approximately (Vector2d.yComponent vector)
                 ]
                 (Vector2d.components vector)
+
+
+sum : Test
+sum =
+    Test.fuzz (Fuzz.list Fuzz.vector2d) "sum is consistent with plus" <|
+        \vectors ->
+            Vector2d.sum vectors
+                |> Expect.vector2d
+                    (List.foldl Vector2d.plus Vector2d.zero vectors)

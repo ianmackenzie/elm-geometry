@@ -18,7 +18,7 @@ module Vector3d exposing
     , per, for
     , components, xComponent, yComponent, zComponent, componentIn, length, direction
     , equalWithin, lexicographicComparison
-    , plus, minus, dot, cross
+    , plus, minus, dot, cross, sum
     , reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
     , at, at_
     , relativeTo, placeIn, projectInto
@@ -107,7 +107,7 @@ code that represents vectors as plain records.
 
 # Arithmetic
 
-@docs plus, minus, dot, cross
+@docs plus, minus, dot, cross, sum
 
 
 # Transformations
@@ -1059,6 +1059,21 @@ cross (Types.Vector3d v2) (Types.Vector3d v1) =
         , z = v1.x * v2.y - v1.y * v2.x
         }
 
+{-| Find the sum of a list of vectors.
+-}
+sum : List (Vector3d units coordinates) -> Vector3d units coordinates
+sum vectors =
+    sumHelp 0 0 0 vectors
+
+
+sumHelp : Float -> Float -> Float -> List (Vector3d units coordinates) -> Vector3d units coordinates
+sumHelp sumX sumY sumZ vectors =
+    case vectors of
+        (Types.Vector3d { x, y, z }) :: rest ->
+            sumHelp (sumX + x) (sumY + y) (sumZ + z) rest
+
+        [] ->
+            Types.Vector3d { x = sumX, y = sumY, z = sumZ }
 
 {-| Reverse the direction of a vector, negating its components.
 
