@@ -332,8 +332,8 @@ coordinatesIn =
         (\point frame ->
             Expect.all
                 [ first >> Expect.approximately (Point3d.xCoordinateIn frame point)
-                , second >> Expect.approximately (Point3d.yCoordinate frame point)
-                , third >> Expect.approximately (Point3d.zCoordinate frame point)
+                , second >> Expect.approximately (Point3d.yCoordinateIn frame point)
+                , third >> Expect.approximately (Point3d.zCoordinateIn frame point)
                 ]
                 (Point3d.coordinatesIn frame point)
         )

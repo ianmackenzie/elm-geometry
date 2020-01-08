@@ -204,7 +204,7 @@ coordinatesIn =
         (\point frame ->
             Expect.all
                 [ Tuple.first >> Expect.approximately (Point2d.xCoordinateIn frame point)
-                , Tuple.second >> Expect.approximately (Point2d.yCoordinate frame point)
+                , Tuple.second >> Expect.approximately (Point2d.yCoordinateIn frame point)
                 ]
                 (Point2d.coordinatesIn frame point)
         )
