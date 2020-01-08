@@ -287,7 +287,7 @@ components =
     Test.fuzz Fuzz.direction2d "components and xComponent/yComponent are consistent" <|
         \direction ->
             Expect.all
-                [ Tuple.first >> Expect.approximately (Direction2d.xComponent direction)
-                , Tuple.second >> Expect.approximately (Direction2d.yComponent direction)
+                [ Tuple.first >> Expect.float (Direction2d.xComponent direction)
+                , Tuple.second >> Expect.float (Direction2d.yComponent direction)
                 ]
                 (Direction2d.components direction)

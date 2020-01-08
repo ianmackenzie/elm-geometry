@@ -218,8 +218,8 @@ components =
     Test.fuzz Fuzz.direction3d "components and xComponent etc. are consistent" <|
         \direction ->
             Expect.all
-                [ first >> Expect.approximately (Direction3d.xComponent direction)
-                , second >> Expect.approximately (Direction3d.yComponent direction)
-                , third >> Expect.approximately (Direction3d.zComponent direction)
+                [ first >> Expect.float (Direction3d.xComponent direction)
+                , second >> Expect.float (Direction3d.yComponent direction)
+                , third >> Expect.float (Direction3d.zComponent direction)
                 ]
                 (Direction3d.components direction)
