@@ -16,7 +16,7 @@ module Vector2d exposing
     , fromTuple, toTuple, fromRecord, toRecord
     , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
     , per, for
-    , xComponent, yComponent, componentIn, length, direction
+    , components, xComponent, yComponent, componentIn, length, direction
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross
     , reverse, normalize, scaleBy, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
@@ -96,7 +96,7 @@ that represents vectors as plain records.
 
 # Properties
 
-@docs xComponent, yComponent, componentIn, length, direction
+@docs components, xComponent, yComponent, componentIn, length, direction
 
 
 # Comparison
@@ -169,8 +169,8 @@ values must be in whatever units the resulting point is considered to use
 [`fromRecord`](#fromRecord) etc.
 -}
 unsafe : { x : Float, y : Float } -> Vector2d units coordinates
-unsafe components =
-    Types.Vector2d components
+unsafe givenComponents =
+    Types.Vector2d givenComponents
 
 
 {-| Extract a vector's raw X and Y components as `Float` values. These values
@@ -179,8 +179,8 @@ generally use something safer such as [`toMeters`](#toMeters),
 [`toRecord`](#toRecord), [`xComponent`](#xComponent) etc.
 -}
 unwrap : Vector2d units coordinates -> { x : Float, y : Float }
-unwrap (Types.Vector2d components) =
-    components
+unwrap (Types.Vector2d vectorComponents) =
+    vectorComponents
 
 
 {-| The vector with components (0,0).
@@ -487,26 +487,26 @@ toRecord fromQuantity vector =
 
 {-| -}
 fromMeters : { x : Float, y : Float } -> Vector2d Meters coordinates
-fromMeters components =
-    Types.Vector2d components
+fromMeters givenComponents =
+    Types.Vector2d givenComponents
 
 
 {-| -}
 toMeters : Vector2d Meters coordinates -> { x : Float, y : Float }
-toMeters (Types.Vector2d components) =
-    components
+toMeters (Types.Vector2d vectorComponents) =
+    vectorComponents
 
 
 {-| -}
 fromPixels : { x : Float, y : Float } -> Vector2d Pixels coordinates
-fromPixels components =
-    Types.Vector2d components
+fromPixels givenComponents =
+    Types.Vector2d givenComponents
 
 
 {-| -}
 toPixels : Vector2d Pixels coordinates -> { x : Float, y : Float }
-toPixels (Types.Vector2d components) =
-    components
+toPixels (Types.Vector2d vectorComponents) =
+    vectorComponents
 
 
 {-| -}
@@ -604,6 +604,19 @@ for (Quantity a) (Types.Vector2d v) =
         { x = v.x * a
         , y = v.y * a
         }
+
+
+{-| Get the X and Y components of a vector as a tuple.
+
+    Vector2d.components (Vector2d.meters 2 3)
+    --> ( Length.meters 2, Length.meters 3 )
+
+-}
+components :
+    Vector2d units coordinates
+    -> ( Quantity Float units, Quantity Float units )
+components (Types.Vector2d v) =
+    ( Quantity v.x, Quantity v.y )
 
 
 {-| Get the X component of a vector.

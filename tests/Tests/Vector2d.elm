@@ -1,5 +1,6 @@
 module Tests.Vector2d exposing
-    ( dotProductWithSelfIsSquaredLength
+    ( components
+    , dotProductWithSelfIsSquaredLength
     , mirrorAcrossNegatesPerpendicularComponent
     , mirrorAcrossPreservesParallelComponent
     , perpendicularVectorIsPerpendicular
@@ -108,3 +109,14 @@ mirrorAcrossNegatesPerpendicularComponent =
                 |> Expect.approximately
                     (Quantity.negate (perpendicularComponent vector))
         )
+
+
+components : Test
+components =
+    Test.fuzz Fuzz.vector2d "components and xComponent/yComponent are consistent" <|
+        \vector ->
+            Expect.all
+                [ Tuple.first >> Expect.approximately (Vector2d.xComponent vector)
+                , Tuple.second >> Expect.approximately (Vector2d.yComponent vector)
+                ]
+                (Vector2d.components vector)

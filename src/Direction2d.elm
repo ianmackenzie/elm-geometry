@@ -13,7 +13,7 @@ module Direction2d exposing
     , degrees, radians
     , from, perpendicularTo, orthonormalize, orthogonalize
     , fromAngle, toAngle, toVector
-    , xComponent, yComponent, componentIn, angleFrom
+    , components, xComponent, yComponent, componentIn, angleFrom
     , equalWithin
     , reverse, rotateClockwise, rotateCounterclockwise, rotateBy, mirrorAcross
     , relativeTo, placeIn
@@ -57,7 +57,7 @@ have several uses, such as:
 
 # Properties
 
-@docs xComponent, yComponent, componentIn, angleFrom
+@docs components, xComponent, yComponent, componentIn, angleFrom
 
 
 # Comparison
@@ -204,15 +204,15 @@ transform them as necessary.
 
 -}
 unsafe : { x : Float, y : Float } -> Direction2d coordinates
-unsafe components =
-    Types.Direction2d components
+unsafe givenComponents =
+    Types.Direction2d givenComponents
 
 
 {-| Extract the X and Y components of a direction as a record.
 -}
 unwrap : Direction2d coordinates -> { x : Float, y : Float }
-unwrap (Types.Direction2d components) =
-    components
+unwrap (Types.Direction2d directionComponents) =
+    directionComponents
 
 
 {-| Attempt to construct the direction from the first given point to the second.
@@ -373,6 +373,17 @@ angleFrom (Types.Direction2d d1) (Types.Direction2d d2) =
     Quantity (atan2 relativeY relativeX)
 
 
+{-| Get the X and Y components of a direction as a tuple.
+
+    Direction2d.components (Direction2d.degrees 135)
+    --> ( -0.7071, 0.7071 )
+
+-}
+components : Direction2d coordinates -> ( Float, Float )
+components (Types.Direction2d d) =
+    ( d.x, d.y )
+
+
 {-| Get the X component of a direction.
 
     Direction2d.xComponent Direction2d.x
@@ -472,8 +483,8 @@ equalWithin (Quantity angle) (Types.Direction2d d1) (Types.Direction2d d2) =
 
 -}
 toVector : Direction2d coordinates -> Vector2d Unitless coordinates
-toVector (Types.Direction2d components) =
-    Types.Vector2d components
+toVector (Types.Direction2d directionComponents) =
+    Types.Vector2d directionComponents
 
 
 {-| Reverse a direction.

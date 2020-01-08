@@ -1,6 +1,7 @@
 module Tests.Direction2d exposing
     ( angleFromAndEqualWithinAreConsistent
     , angleFromAndRotateByAreConsistent
+    , components
     , equalWithin
     , fromAngleIsConsistentWithAngleFrom
     , mirrorNegatesAngleFromAxis
@@ -279,3 +280,14 @@ relativeToAndPlaceInAreInverses =
                 |> Direction2d.placeIn frame
                 |> Expect.direction2d direction
         )
+
+
+components : Test
+components =
+    Test.fuzz Fuzz.direction2d "components and xComponent/yComponent are consistent" <|
+        \direction ->
+            Expect.all
+                [ Tuple.first >> Expect.approximately (Direction2d.xComponent direction)
+                , Tuple.second >> Expect.approximately (Direction2d.yComponent direction)
+                ]
+                (Direction2d.components direction)

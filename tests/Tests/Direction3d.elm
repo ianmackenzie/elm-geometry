@@ -1,5 +1,6 @@
 module Tests.Direction3d exposing
     ( angleFromAndEqualWithinAreConsistent
+    , components
     , orthonormalizeFollowsOriginalVectors
     , orthonormalizeProducesValidFrameBasis
     , orthonormalizingCoplanarVectorsReturnsNothing
@@ -195,3 +196,30 @@ projectionIntoSketchPlaneWorksProperly =
                             |> Expect.direction3d
                                 (Direction3d.reverse normalDirection)
         )
+
+
+first : ( a, a, a ) -> a
+first ( x, _, _ ) =
+    x
+
+
+second : ( a, a, a ) -> a
+second ( _, y, _ ) =
+    y
+
+
+third : ( a, a, a ) -> a
+third ( _, _, z ) =
+    z
+
+
+components : Test
+components =
+    Test.fuzz Fuzz.direction3d "components and xComponent etc. are consistent" <|
+        \direction ->
+            Expect.all
+                [ first >> Expect.approximately (Direction3d.xComponent direction)
+                , second >> Expect.approximately (Direction3d.yComponent direction)
+                , third >> Expect.approximately (Direction3d.zComponent direction)
+                ]
+                (Direction3d.components direction)

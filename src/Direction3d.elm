@@ -15,7 +15,7 @@ module Direction3d exposing
     , xyZ, yzX, zxY, fromAzimuthInAndElevationFrom
     , perpendicularTo, perpendicularBasis, orthonormalize, orthogonalize
     , toVector
-    , xComponent, yComponent, zComponent, componentIn, angleFrom, azimuthIn, elevationFrom
+    , components, xComponent, yComponent, zComponent, componentIn, angleFrom, azimuthIn, elevationFrom
     , equalWithin
     , reverse, rotateAround, mirrorAcross, projectOnto
     , relativeTo, placeIn, projectInto
@@ -69,7 +69,7 @@ Directions have several uses, such as:
 
 # Properties
 
-@docs xComponent, yComponent, zComponent, componentIn, angleFrom, azimuthIn, elevationFrom
+@docs components, xComponent, yComponent, zComponent, componentIn, angleFrom, azimuthIn, elevationFrom
 
 
 # Comparison
@@ -204,8 +204,8 @@ them as necessary.
 
 -}
 unsafe : { x : Float, y : Float, z : Float } -> Direction3d coordinates
-unsafe components =
-    Types.Direction3d components
+unsafe givenComponents =
+    Types.Direction3d givenComponents
 
 
 {-| Construct a direction in the XY plane given an angle measured from
@@ -730,6 +730,18 @@ orthogonalize xDirection yDirection zDirection =
         (toVector zDirection)
 
 
+{-| Get the X, Y and Z components of a direction as a tuple.
+
+    Direction3d.components <|
+        Direction3d.yz (Angle.degrees 135)
+    --> ( 0, -0.7071, 0.7071 )
+
+-}
+components : Direction3d coordinates -> ( Float, Float, Float )
+components (Types.Direction3d d) =
+    ( d.x, d.y, d.z )
+
+
 {-| Get the X component of a direction.
 
     Direction3d.xComponent Direction3d.x
@@ -939,8 +951,8 @@ equalWithin angle firstDirection secondDirection =
 
 -}
 toVector : Direction3d coordinates -> Vector3d Unitless coordinates
-toVector (Types.Direction3d components) =
-    Types.Vector3d components
+toVector (Types.Direction3d directionComponents) =
+    Types.Vector3d directionComponents
 
 
 {-| Extract the X, Y and Z components of a direction as a record.

@@ -16,7 +16,7 @@ module Vector3d exposing
     , fromTuple, toTuple, fromRecord, toRecord
     , fromMeters, toMeters, fromPixels, toPixels, fromUnitless, toUnitless
     , per, for
-    , xComponent, yComponent, zComponent, componentIn, length, direction
+    , components, xComponent, yComponent, zComponent, componentIn, length, direction
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross
     , reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
@@ -97,7 +97,7 @@ code that represents vectors as plain records.
 
 # Properties
 
-@docs xComponent, yComponent, zComponent, componentIn, length, direction
+@docs components, xComponent, yComponent, zComponent, componentIn, length, direction
 
 
 # Comparison
@@ -172,8 +172,8 @@ values must be in whatever units the resulting vector is considered to use
 [`fromRecord`](#fromRecord) etc.
 -}
 unsafe : { x : Float, y : Float, z : Float } -> Vector3d units coordinates
-unsafe components =
-    Types.Vector3d components
+unsafe givenComponents =
+    Types.Vector3d givenComponents
 
 
 {-| Extract a vector's raw X, Y and Z coordinates as `Float` values. These
@@ -182,8 +182,8 @@ should generally use something safer such as [`toMeters`](#toMeters),
 [`toRecord`](#toRecord), [`xComponent`](#xComponent) etc.
 -}
 unwrap : Vector3d units coordinates -> { x : Float, y : Float, z : Float }
-unwrap (Types.Vector3d components) =
-    components
+unwrap (Types.Vector3d givenComponents) =
+    givenComponents
 
 
 {-| The vector with components (0,0,0).
@@ -593,38 +593,38 @@ toRecord fromQuantity vector =
 
 {-| -}
 fromMeters : { x : Float, y : Float, z : Float } -> Vector3d Meters coordinates
-fromMeters components =
-    Types.Vector3d components
+fromMeters givenComponents =
+    Types.Vector3d givenComponents
 
 
 {-| -}
 toMeters : Vector3d Meters coordinates -> { x : Float, y : Float, z : Float }
-toMeters (Types.Vector3d components) =
-    components
+toMeters (Types.Vector3d vectorComponents) =
+    vectorComponents
 
 
 {-| -}
 fromPixels : { x : Float, y : Float, z : Float } -> Vector3d Pixels coordinates
-fromPixels components =
-    Types.Vector3d components
+fromPixels givenComponents =
+    Types.Vector3d givenComponents
 
 
 {-| -}
 toPixels : Vector3d Pixels coordinates -> { x : Float, y : Float, z : Float }
-toPixels (Types.Vector3d components) =
-    components
+toPixels (Types.Vector3d vectorComponents) =
+    vectorComponents
 
 
 {-| -}
 fromUnitless : { x : Float, y : Float, z : Float } -> Vector3d Unitless coordinates
-fromUnitless components =
-    Types.Vector3d components
+fromUnitless givenComponents =
+    Types.Vector3d givenComponents
 
 
 {-| -}
 toUnitless : Vector3d Unitless coordinates -> { x : Float, y : Float, z : Float }
-toUnitless (Types.Vector3d components) =
-    components
+toUnitless (Types.Vector3d vectorComponents) =
+    vectorComponents
 
 
 {-| Convert a vector from one units type to another, by providing a conversion factor given as a
@@ -714,6 +714,22 @@ for (Quantity a) (Types.Vector3d v) =
         , y = v.y * a
         , z = v.z * a
         }
+
+
+{-| Get the X, Y and Z components of a vector as a tuple.
+
+    Vector3d.components (Vector3d.meters 2 3 1)
+    --> ( Length.meters 2
+    --> , Length.meters 3
+    --> , Length.meters 1
+    --> )
+
+-}
+components :
+    Vector3d units coordinates
+    -> ( Quantity Float units, Quantity Float units, Quantity Float units )
+components (Types.Vector3d v) =
+    ( Quantity v.x, Quantity v.y, Quantity v.z )
 
 
 {-| Get the X component of a vector.
