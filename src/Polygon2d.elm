@@ -377,8 +377,8 @@ area polygon =
             (Quantity.sum (List.map counterclockwiseArea (innerLoops polygon)))
 
 
-{-| Get the centroid of a polygon. Returns `Nothing`
-if the polygon has no vertices or empty area.
+{-| Get the centroid of a polygon. Returns `Nothing` if the polygon has no
+vertices or zero area.
 -}
 centroid : Polygon2d units coordinates -> Maybe (Point2d units coordinates)
 centroid polygon =
