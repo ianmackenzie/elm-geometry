@@ -815,8 +815,8 @@ coordinates (Types.Point2d p) =
 
 
 {-| Get the X and Y coordinates of a point relative to a given frame, as a
-tuple; these are the coordinate the point would have as viewed by an observer in
-that frame.
+tuple; these are the coordinates the point would have as viewed by an observer
+in that frame.
 -}
 coordinatesIn :
     Frame2d units globalCoordinates { defines : localCoordinates }

@@ -959,8 +959,8 @@ coordinates (Types.Point3d p) =
 
 
 {-| Get the X, Y and Z coordinates of a point relative to a given frame, as a
-tuple; these are the coordinate the point would have as viewed by an observer in
-that frame.
+tuple; these are the coordinates the point would have as viewed by an observer
+in that frame.
 -}
 coordinatesIn :
     Frame3d units globalCoordinates { defines : localCoordinates }
