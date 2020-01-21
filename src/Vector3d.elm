@@ -19,7 +19,7 @@ module Vector3d exposing
     , components, xComponent, yComponent, zComponent, componentIn, length, direction
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross, sum, twice, half
-    , times, over, over_
+    , times, over
     , reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
     , at, at_
     , relativeTo, placeIn, projectInto
@@ -113,10 +113,7 @@ code that represents vectors as plain records.
 
 ## Vector/scalar products
 
-These functions are all vector version of [the corresponding functions in the
-`Quantity` module](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Quantity#working-with-products).
-
-@docs times, over, over_
+@docs times, over
 
 
 # Transformations
@@ -1100,12 +1097,16 @@ half vector =
     scaleBy 0.5 vector
 
 
-{-| Multiply a vector with units `units1` by a scalar with units `units2`,
+{-| Multiply a scalar with units `units1` by a vector with units `units2`,
 resulting in a vector with units `Product units1 units2`.
+
+    forceVector =
+        accelerationVector |> Vector2d.times mass
+
 -}
 times :
-    Quantity Float units2
-    -> Vector3d units1 coordinates
+    Quantity Float units1
+    -> Vector3d units2 coordinates
     -> Vector3d (Product units1 units2) coordinates
 times (Quantity a) (Types.Vector3d v) =
     Types.Vector3d
@@ -1117,27 +1118,16 @@ times (Quantity a) (Types.Vector3d v) =
 
 {-| Divide a vector with units `Product units1 units2` by a scalar with units
 `units1`, resulting in a vector with units `units2`.
+
+    accelerationVector =
+        forceVector |> Vector2d.over mass
+
 -}
 over :
     Quantity Float units1
     -> Vector3d (Product units1 units2) coordinates
     -> Vector3d units2 coordinates
 over (Quantity a) (Types.Vector3d v) =
-    Types.Vector3d
-        { x = v.x / a
-        , y = v.y / a
-        , z = v.z / a
-        }
-
-
-{-| Divide a vector with units `Product units1 units2` by a scalar with units
-`units2`, resulting in a vector with units `units1`.
--}
-over_ :
-    Quantity Float units2
-    -> Vector3d (Product units1 units2) coordinates
-    -> Vector3d units1 coordinates
-over_ (Quantity a) (Types.Vector3d v) =
     Types.Vector3d
         { x = v.x / a
         , y = v.y / a
