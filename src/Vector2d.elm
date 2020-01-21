@@ -113,7 +113,7 @@ that represents vectors as plain records.
 ## Vector/scalar products
 
 These functions are all vector version of [the corresponding functions in the
-`Quanitty` module](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Quantity#working-with-products).
+`Quantity` module](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Quantity#working-with-products).
 
 @docs times, over, over_
 
