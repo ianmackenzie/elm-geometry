@@ -732,8 +732,8 @@ orthogonalize xDirection yDirection zDirection =
 
 {-| Get the X, Y and Z components of a direction as a tuple.
 
-    Direction3d.components <|
-        Direction3d.yz (Angle.degrees 135)
+    Direction3d.yz (Angle.degrees 135)
+        |> Direction3d.components
     --> ( 0, -0.7071, 0.7071 )
 
 -}
