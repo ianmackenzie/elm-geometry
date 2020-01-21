@@ -1103,6 +1103,9 @@ resulting in a vector with units `Product units1 units2`.
     forceVector =
         accelerationVector |> Vector2d.times mass
 
+If you just want to scale a vector by a certain amount, you can use
+[`scaleBy`](#scaleBy) instead.
+
 -}
 times :
     Quantity Float units1
