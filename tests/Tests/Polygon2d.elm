@@ -207,19 +207,19 @@ triangulationHasCorrectWeightedCentroid =
                         |> TriangularMesh.faceVertices
                         |> List.map Triangle2d.fromVertices
 
-                centroidsAsVectors =
+                centroidVectors =
                     triangles
                         |> List.map (Triangle2d.centroid >> Vector2d.from Point2d.origin)
 
-                areasInSquareMeters =
-                    triangles
-                        |> List.map (Triangle2d.area >> Area.inSquareMeters)
+                areas =
+                    List.map Triangle2d.area triangles
+
+                weightedCentroidVector =
+                    Vector2d.sum (List.map2 Vector2d.product areas centroidVectors)
+                        |> Vector2d.over (Quantity.sum areas)
 
                 weightedCentroid =
-                    List.map2 Vector2d.scaleBy areasInSquareMeters centroidsAsVectors
-                        |> List.foldl Vector2d.plus Vector2d.zero
-                        |> Vector2d.scaleBy (1 / List.sum areasInSquareMeters)
-                        |> (\vector -> Point2d.translateBy vector Point2d.origin)
+                    Point2d.origin |> Point2d.translateBy weightedCentroidVector
             in
             case Polygon2d.centroid polygon of
                 Just centroid ->
