@@ -988,18 +988,9 @@ product (Quantity a) (Types.Vector2d v) =
 
 
 {-| Multiply a vector by a scalar, resulting in a vector with units `Product
-vectorUnits scalarUnits`;
-
-    vector |> Vector2d.times scalar
-
-and
-
-    Vector2d.product scalar vector
-
-are mathematically the same, but to the compiler `Product a b` and `Product b a`
-are different unit types. So sometimes you will have to swap from `product` to
-`times` or vice versa to make the types work out.
-
+vectorUnits scalarUnits`. (To the compiler `Product a b` and `Product b a`
+are different unit types, so sometimes you will have to swap from `product` to
+`times` or vice versa to make the types work out.)
 -}
 times :
     Quantity Float scalarUnits
