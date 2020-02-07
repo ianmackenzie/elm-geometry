@@ -926,22 +926,8 @@ but the _opposite_ of
 
     Vector2d.cross v1 v2
 
-Some examples:
-
-    firstVector =
-        Vector2d.feet 2 0
-
-    secondVector =
-        Vector2d.feet 0 3
-
-    firstVector |> Vector2d.cross secondVector
-    --> Area.squareFeet 6
-
-    secondVector |> Vector2d.cross firstVector
-    --> Area.squareFeet -6
-
-    firstVector |> Vector2d.cross firstVector
-    --> Area.squareFeet 0
+Note that the cross product of two vectors with length units will be a vector
+with area units!
 
 -}
 cross : Vector2d units2 coordinates -> Vector2d units1 coordinates -> Quantity Float (Product units1 units2)

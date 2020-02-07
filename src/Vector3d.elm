@@ -1056,6 +1056,9 @@ but the _opposite_ of
 
     Vector3d.cross v1 v2
 
+Note that the cross product of two vectors with length units will be a vector
+with area units!
+
 -}
 cross : Vector3d units2 coordinates -> Vector3d units1 coordinates -> Vector3d (Product units1 units2) coordinates
 cross (Types.Vector3d v2) (Types.Vector3d v1) =
