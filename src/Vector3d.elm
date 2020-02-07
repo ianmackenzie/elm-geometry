@@ -967,7 +967,7 @@ normalize (Types.Vector3d v) =
     secondVector =
         Vector3d.meters 4 5 6
 
-    Vector3d.sum firstVector secondVector
+    firstVector |> Vector3d.plus secondVector
     --> Vector3d.meters 5 7 9
 
 -}
