@@ -19,7 +19,7 @@ module Vector3d exposing
     , components, xComponent, yComponent, zComponent, componentIn, length, direction
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross, sum, twice, half
-    , times, times_, over, over_
+    , product, times, over, over_
     , reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
     , at, at_
     , relativeTo, placeIn, projectInto
@@ -113,7 +113,7 @@ code that represents vectors as plain records.
 
 ## Vector/scalar products
 
-@docs times, times_, over, over_
+@docs product, times, over, over_
 
 
 # Transformations
@@ -1097,21 +1097,21 @@ half vector =
     scaleBy 0.5 vector
 
 
-{-| Multiply a vector with units `units1` by a scalar with units `units2`,
-resulting in a vector with units `Product units1 units2`. This function is
-provided for consistency with `elm-units`, but for vectors you will often
-want to use `times_` instead (particularly for the case of multiplying a mass
-by an acceleration to get a force).
+{-| Multiply a scalar and a vector, resulting in a vector with units `Product
+scalarUnits vectorUnits`:
+
+    forceVector =
+        Vector3d.product mass accelerationVector
 
 If you just want to scale a vector by a certain amount, you can use
 [`scaleBy`](#scaleBy) instead.
 
 -}
-times :
-    Quantity Float units2
-    -> Vector3d units1 coordinates
-    -> Vector3d (Product units1 units2) coordinates
-times (Quantity a) (Types.Vector3d v) =
+product :
+    Quantity Float scalarUnits
+    -> Vector3d vectorUnits coordinates
+    -> Vector3d (Product scalarUnits vectorUnits) coordinates
+product (Quantity a) (Types.Vector3d v) =
     Types.Vector3d
         { x = a * v.x
         , y = a * v.y
@@ -1119,23 +1119,25 @@ times (Quantity a) (Types.Vector3d v) =
         }
 
 
-{-| Multiply a scalar with units `units1` by a vector with units `units2`,
-resulting in a vector with units `Product units1 units2`.
+{-| Multiply a vector by a scalar, resulting in a vector with units `Product
+vectorUnits scalarUnits`;
 
-    forceVector =
-        accelerationVector |> Vector3d.times mass
+    vector |> Vector3d.times scalar
 
-Conceptually this is `k * v` instead of `v * k`; mathematically those are the
-same, but to the compiler `Product units1 units2` and `Product units2 units1`
-are different types so sometimes you have to use the 'right' version of
-`times`/`times_` to make types work out.
+and
+
+    Vector3d.product scalar vector
+
+are mathematically the same, but to the compiler `Product a b` and `Product b a`
+are different unit types. So sometimes you will have to swap from `product` to
+`times` or vice versa to make the types work out.
 
 -}
-times_ :
-    Quantity Float units1
-    -> Vector3d units2 coordinates
-    -> Vector3d (Product units1 units2) coordinates
-times_ (Quantity a) (Types.Vector3d v) =
+times :
+    Quantity Float scalarUnits
+    -> Vector3d vectorUnits coordinates
+    -> Vector3d (Product vectorUnits scalarUnits) coordinates
+times (Quantity a) (Types.Vector3d v) =
     Types.Vector3d
         { x = a * v.x
         , y = a * v.y
