@@ -19,7 +19,7 @@ module Vector2d exposing
     , components, xComponent, yComponent, componentIn, length, direction
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross, sum, twice, half
-    , times, over
+    , times, times_, over, over_
     , reverse, normalize, scaleBy, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
     , at, at_
     , relativeTo, placeIn
@@ -112,7 +112,7 @@ that represents vectors as plain records.
 
 ## Vector/scalar products
 
-@docs times, over
+@docs times, times_, over, over_
 
 
 # Transformations
@@ -980,21 +980,44 @@ half vector =
     scaleBy 0.5 vector
 
 
-{-| Multiply a scalar with units `units1` by a vector with units `units2`,
-resulting in a vector with units `Product units1 units2`.
-
-    forceVector =
-        accelerationVector |> Vector2d.times mass
+{-| Multiply a vector with units `units1` by a scalar with units `units2`,
+resulting in a vector with units `Product units1 units2`. This function is
+provided for consistency with `elm-units`, but for vectors you will often
+want to use `times_` instead (particularly for the case of multiplying a mass
+by an acceleration to get a force).
 
 If you just want to scale a vector by a certain amount, you can use
 [`scaleBy`](#scaleBy) instead.
 
 -}
 times :
+    Quantity Float units2
+    -> Vector2d units1 coordinates
+    -> Vector2d (Product units1 units2) coordinates
+times (Quantity a) (Types.Vector2d v) =
+    Types.Vector2d
+        { x = a * v.x
+        , y = a * v.y
+        }
+
+
+{-| Multiply a scalar with units `units1` by a vector with units `units2`,
+resulting in a vector with units `Product units1 units2`.
+
+    forceVector =
+        accelerationVector |> Vector2d.times mass
+
+Conceptually this is `k * v` instead of `v * k`; mathematically those are the
+same, but to the compiler `Product units1 units2` and `Product units2 units1`
+are different types so sometimes you have to use the 'right' version of
+`times`/`times_` to make types work out.
+
+-}
+times_ :
     Quantity Float units1
     -> Vector2d units2 coordinates
     -> Vector2d (Product units1 units2) coordinates
-times (Quantity a) (Types.Vector2d v) =
+times_ (Quantity a) (Types.Vector2d v) =
     Types.Vector2d
         { x = a * v.x
         , y = a * v.y
@@ -1013,6 +1036,21 @@ over :
     -> Vector2d (Product units1 units2) coordinates
     -> Vector2d units2 coordinates
 over (Quantity a) (Types.Vector2d v) =
+    Types.Vector2d
+        { x = v.x / a
+        , y = v.y / a
+        }
+
+
+{-| Divide a vector with units `Product units1 units2` by a scalar with units
+`units2`, resulting in a vector with units `units1`. Provided for consistency
+with `elm-units` but shouldn't be necessary in most cases.
+-}
+over_ :
+    Quantity Float units2
+    -> Vector2d (Product units1 units2) coordinates
+    -> Vector2d units1 coordinates
+over_ (Quantity a) (Types.Vector2d v) =
     Types.Vector2d
         { x = v.x / a
         , y = v.y / a
