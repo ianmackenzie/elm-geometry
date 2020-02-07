@@ -1032,7 +1032,7 @@ over (Quantity a) (Types.Vector2d v) =
 
 {-| Divide a vector with units `Product units1 units2` by a scalar with units
 `units2`, resulting in a vector with units `units1`. Provided for consistency
-with `elm-units` but shouldn't be necessary in most cases.
+with `elm-units` but shouldn't be needed in most cases.
 -}
 over_ :
     Quantity Float units2
