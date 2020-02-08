@@ -6,14 +6,13 @@ module Tests.EllipticalArc2d exposing
     )
 
 import Angle
-import Arc2d
+import Arc2d exposing (Arc2d)
 import EllipticalArc2d
 import Expect
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
-import Geometry.Test as Test exposing (..)
-import Length exposing (meters)
+import Length exposing (Meters, meters)
 import Point2d
 import Quantity exposing (zero)
 import SweptAngle
@@ -22,7 +21,7 @@ import Tests.Generic.Curve2d
 import Vector2d
 
 
-reproducibleArc : Fuzzer (Arc2d coordinates)
+reproducibleArc : Fuzzer (Arc2d Meters coordinates)
 reproducibleArc =
     Fuzz.map4
         (\centerPoint startDirection radius sweptAngle ->

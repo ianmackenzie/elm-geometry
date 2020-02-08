@@ -4,28 +4,28 @@ module Tests.Rectangle2d exposing
     )
 
 import Angle exposing (Angle)
-import Axis2d
+import Axis2d exposing (Axis2d)
 import Expect
 import Frame2d
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
-import Geometry.Test exposing (..)
-import LineSegment2d
-import Point2d
-import Rectangle2d
+import Length exposing (Meters)
+import LineSegment2d exposing (LineSegment2d)
+import Point2d exposing (Point2d)
+import Rectangle2d exposing (Rectangle2d)
 import Test exposing (Test)
-import Vector2d
+import Vector2d exposing (Vector2d)
 
 
 type alias Transformation coordinates =
-    { rectangle : Rectangle2d coordinates -> Rectangle2d coordinates
-    , point : Point2d coordinates -> Point2d coordinates
-    , lineSegment : LineSegment2d coordinates -> LineSegment2d coordinates
+    { rectangle : Rectangle2d Meters coordinates -> Rectangle2d Meters coordinates
+    , point : Point2d Meters coordinates -> Point2d Meters coordinates
+    , lineSegment : LineSegment2d Meters coordinates -> LineSegment2d Meters coordinates
     }
 
 
-rotation : Point2d coordinates -> Angle -> Transformation coordinates
+rotation : Point2d Meters coordinates -> Angle -> Transformation coordinates
 rotation centerPoint angle =
     { rectangle = Rectangle2d.rotateAround centerPoint angle
     , point = Point2d.rotateAround centerPoint angle
@@ -33,7 +33,7 @@ rotation centerPoint angle =
     }
 
 
-translation : Vector2d coordinates -> Transformation coordinates
+translation : Vector2d Meters coordinates -> Transformation coordinates
 translation displacement =
     { rectangle = Rectangle2d.translateBy displacement
     , point = Point2d.translateBy displacement
@@ -41,7 +41,7 @@ translation displacement =
     }
 
 
-scaling : Point2d coordinates -> Float -> Transformation coordinates
+scaling : Point2d Meters coordinates -> Float -> Transformation coordinates
 scaling centerPoint scale =
     { rectangle = Rectangle2d.scaleAbout centerPoint scale
     , point = Point2d.scaleAbout centerPoint scale
@@ -49,7 +49,7 @@ scaling centerPoint scale =
     }
 
 
-mirroring : Axis2d coordinates -> Transformation coordinates
+mirroring : Axis2d Meters coordinates -> Transformation coordinates
 mirroring axis =
     { rectangle = Rectangle2d.mirrorAcross axis
     , point = Point2d.mirrorAcross axis

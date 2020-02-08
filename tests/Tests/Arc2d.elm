@@ -11,13 +11,12 @@ module Tests.Arc2d exposing
     )
 
 import Angle exposing (Angle)
-import Arc2d
+import Arc2d exposing (Arc2d)
 import Expect
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
-import Geometry.Test as Test exposing (..)
-import Length exposing (meters)
+import Length exposing (Meters, meters)
 import Point2d exposing (Point2d)
 import Quantity exposing (Quantity, zero)
 import SweptAngle exposing (SweptAngle)
@@ -127,7 +126,7 @@ withRadius =
         )
 
 
-curveOperations : Curve2d.Operations (Arc2d coordinates) coordinates
+curveOperations : Curve2d.Operations (Arc2d Meters coordinates) coordinates
 curveOperations =
     { fuzzer = Fuzz.arc2d
     , pointOn = Arc2d.pointOn

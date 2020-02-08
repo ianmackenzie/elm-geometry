@@ -1,30 +1,35 @@
 module Tests.Generic.Curve3d exposing (Operations, transformations)
 
 import Angle exposing (Angle)
-import Axis3d
-import Frame3d
+import Axis3d exposing (Axis3d)
+import Frame3d exposing (Frame3d)
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
-import Geometry.Test exposing (..)
-import Plane3d
-import Point3d
+import Geometry.Fuzz as Fuzz exposing (GlobalCoordinates, LocalCoordinates)
+import Length exposing (Meters)
+import Plane3d exposing (Plane3d)
+import Point3d exposing (Point3d)
 import Test exposing (Test)
-import Vector3d
+import Vector3d exposing (Vector3d)
 
 
 type alias Operations curve coordinates =
     { fuzzer : Fuzzer curve
-    , pointOn : curve -> Float -> Point3d coordinates
-    , firstDerivative : curve -> Float -> Vector3d coordinates
-    , scaleAbout : Point3d coordinates -> Float -> curve -> curve
-    , translateBy : Vector3d coordinates -> curve -> curve
-    , rotateAround : Axis3d coordinates -> Angle -> curve -> curve
-    , mirrorAcross : Plane3d coordinates -> curve -> curve
+    , pointOn : curve -> Float -> Point3d Meters coordinates
+    , firstDerivative : curve -> Float -> Vector3d Meters coordinates
+    , scaleAbout : Point3d Meters coordinates -> Float -> curve -> curve
+    , translateBy : Vector3d Meters coordinates -> curve -> curve
+    , rotateAround : Axis3d Meters coordinates -> Angle -> curve -> curve
+    , mirrorAcross : Plane3d Meters coordinates -> curve -> curve
     }
 
 
-transformations : Operations globalCurve GlobalCoordinates -> Operations localCurve LocalCoordinates -> (Frame3d GlobalCoordinates -> localCurve -> globalCurve) -> (Frame3d GlobalCoordinates -> globalCurve -> localCurve) -> Test
+transformations :
+    Operations globalCurve GlobalCoordinates
+    -> Operations localCurve LocalCoordinates
+    -> (Frame3d Meters GlobalCoordinates { defines : LocalCoordinates } -> localCurve -> globalCurve)
+    -> (Frame3d Meters GlobalCoordinates { defines : LocalCoordinates } -> globalCurve -> localCurve)
+    -> Test
 transformations global local placeIn relativeTo =
     Test.describe "Transformations"
         [ Test.fuzz3

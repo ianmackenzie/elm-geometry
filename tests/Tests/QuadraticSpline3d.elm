@@ -11,16 +11,15 @@ import Expect exposing (FloatingPointTolerance(..))
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
-import Geometry.Test exposing (..)
-import Length exposing (Length, inMeters, meters)
+import Length exposing (Length, Meters, inMeters, meters)
 import Point3d
-import QuadraticSpline3d
+import QuadraticSpline3d exposing (QuadraticSpline3d)
 import Quantity exposing (zero)
 import Test exposing (Test)
 import Tests.QuadraticSpline2d
 
 
-analyticalLength : QuadraticSpline3d coordinates -> Length
+analyticalLength : QuadraticSpline3d Meters coordinates -> Length
 analyticalLength spline =
     let
         p0 =
@@ -86,7 +85,7 @@ analyticalLength spline =
     meters ((a_32 * s_abc + a_2 * b * (s_abc - c_2) + (4 * c * a - b * b) * logBase e ((2 * a_2 + ba + s_abc) / (ba + c_2))) / (4 * a_32))
 
 
-curvedSpline : Fuzzer (QuadraticSpline3d coordinates)
+curvedSpline : Fuzzer (QuadraticSpline3d Meters coordinates)
 curvedSpline =
     Fuzz.map2 QuadraticSpline3d.on
         Fuzz.sketchPlane3d

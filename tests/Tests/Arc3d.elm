@@ -9,12 +9,12 @@ module Tests.Arc3d exposing
     )
 
 import Angle
-import Arc3d
+import Arc3d exposing (Arc3d)
 import EllipticalArc2d
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
-import Geometry.Test as Test exposing (..)
+import Length exposing (Meters)
 import Point3d
 import Test exposing (Test)
 import Tests.Generic.Curve3d as Curve3d
@@ -88,7 +88,7 @@ projectInto =
         )
 
 
-curveOperations : Curve3d.Operations (Arc3d coordinates) coordinates
+curveOperations : Curve3d.Operations (Arc3d Meters coordinates) coordinates
 curveOperations =
     { fuzzer = Fuzz.arc3d
     , pointOn = Arc3d.pointOn

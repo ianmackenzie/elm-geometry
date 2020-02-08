@@ -8,7 +8,10 @@
 
 
 module Geometry.Fuzz exposing
-    ( angle
+    ( GlobalCoordinates
+    , LocalCoordinates
+    , SketchCoordinates
+    , angle
     , arc2d
     , arc3d
     , axis2d
@@ -52,47 +55,58 @@ module Geometry.Fuzz exposing
     )
 
 import Angle exposing (Angle)
-import Arc2d
-import Arc3d
-import Axis2d
-import Axis3d
-import Block3d
-import BoundingBox2d
-import BoundingBox3d
-import Circle2d
-import Circle3d
-import CubicSpline2d
-import CubicSpline3d
-import Cylinder3d
-import Direction2d
-import Direction3d
-import Ellipse2d
-import EllipticalArc2d
-import Frame2d
-import Frame3d
+import Arc2d exposing (Arc2d)
+import Arc3d exposing (Arc3d)
+import Axis2d exposing (Axis2d)
+import Axis3d exposing (Axis3d)
+import Block3d exposing (Block3d)
+import BoundingBox2d exposing (BoundingBox2d)
+import BoundingBox3d exposing (BoundingBox3d)
+import Circle2d exposing (Circle2d)
+import Circle3d exposing (Circle3d)
+import CubicSpline2d exposing (CubicSpline2d)
+import CubicSpline3d exposing (CubicSpline3d)
+import Cylinder3d exposing (Cylinder3d)
+import Direction2d exposing (Direction2d)
+import Direction3d exposing (Direction3d)
+import Ellipse2d exposing (Ellipse2d)
+import EllipticalArc2d exposing (EllipticalArc2d)
+import Frame2d exposing (Frame2d)
+import Frame3d exposing (Frame3d)
 import Fuzz exposing (Fuzzer)
-import Geometry.Test exposing (..)
-import Length exposing (Length, meters)
-import LineSegment2d
-import LineSegment3d
-import Plane3d
-import Point2d
-import Point3d
-import Polygon2d
+import Length exposing (Length, Meters, meters)
+import LineSegment2d exposing (LineSegment2d)
+import LineSegment3d exposing (LineSegment3d)
+import Plane3d exposing (Plane3d)
+import Point2d exposing (Point2d)
+import Point3d exposing (Point3d)
+import Polygon2d exposing (Polygon2d)
 import Polygon2d.Random as Random
-import Polyline2d
-import Polyline3d
-import QuadraticSpline2d
-import QuadraticSpline3d
+import Polyline2d exposing (Polyline2d)
+import Polyline3d exposing (Polyline3d)
+import QuadraticSpline2d exposing (QuadraticSpline2d)
+import QuadraticSpline3d exposing (QuadraticSpline3d)
 import Quantity exposing (Quantity)
-import Rectangle2d
+import Rectangle2d exposing (Rectangle2d)
 import Shrink
-import SketchPlane3d
-import Sphere3d
-import Triangle2d
-import Triangle3d
-import Vector2d
-import Vector3d
+import SketchPlane3d exposing (SketchPlane3d)
+import Sphere3d exposing (Sphere3d)
+import Triangle2d exposing (Triangle2d)
+import Triangle3d exposing (Triangle3d)
+import Vector2d exposing (Vector2d)
+import Vector3d exposing (Vector3d)
+
+
+type GlobalCoordinates
+    = GlobalCoordinates
+
+
+type LocalCoordinates
+    = LocalCoordinates
+
+
+type SketchCoordinates
+    = SketchCoordinates
 
 
 length : Fuzzer Length
@@ -125,12 +139,12 @@ quantityRange start end =
     Fuzz.map (Quantity.interpolateFrom start end) parameterValue
 
 
-vector2d : Fuzzer (Vector2d coordinates)
+vector2d : Fuzzer (Vector2d Meters coordinates)
 vector2d =
     Fuzz.map2 Vector2d.xy length length
 
 
-vector3d : Fuzzer (Vector3d coordinates)
+vector3d : Fuzzer (Vector3d Meters coordinates)
 vector3d =
     Fuzz.map3 Vector3d.xyz length length length
 
@@ -163,32 +177,32 @@ direction3d =
     Fuzz.map2 toDirection phiFuzzer thetaFuzzer
 
 
-point2d : Fuzzer (Point2d coordinates)
+point2d : Fuzzer (Point2d Meters coordinates)
 point2d =
     Fuzz.map2 Point2d.xy length length
 
 
-point3d : Fuzzer (Point3d coordinates)
+point3d : Fuzzer (Point3d Meters coordinates)
 point3d =
     Fuzz.map3 Point3d.xyz length length length
 
 
-axis2d : Fuzzer (Axis2d coordinates)
+axis2d : Fuzzer (Axis2d Meters coordinates)
 axis2d =
     Fuzz.map2 Axis2d.through point2d direction2d
 
 
-axis3d : Fuzzer (Axis3d coordinates)
+axis3d : Fuzzer (Axis3d Meters coordinates)
 axis3d =
     Fuzz.map2 Axis3d.through point3d direction3d
 
 
-plane3d : Fuzzer (Plane3d coordinates)
+plane3d : Fuzzer (Plane3d Meters coordinates)
 plane3d =
     Fuzz.map2 Plane3d.through point3d direction3d
 
 
-frame2d : Fuzzer (Frame2d coordinates)
+frame2d : Fuzzer (Frame2d Meters coordinates { defines : LocalCoordinates })
 frame2d =
     let
         frame originPoint xDirection rightHanded =
@@ -205,7 +219,7 @@ frame2d =
     Fuzz.map3 frame point2d direction2d Fuzz.bool
 
 
-frame3d : Fuzzer (Frame3d coordinates)
+frame3d : Fuzzer (Frame3d Meters coordinates { defines : LocalCoordinates })
 frame3d =
     let
         frame originPoint xDirection reverseY reverseZ =
@@ -233,7 +247,7 @@ frame3d =
     Fuzz.map4 frame point3d direction3d Fuzz.bool Fuzz.bool
 
 
-sketchPlane3d : Fuzzer (SketchPlane3d coordinates)
+sketchPlane3d : Fuzzer (SketchPlane3d Meters coordinates { defines : SketchCoordinates })
 sketchPlane3d =
     let
         sketchPlane originPoint xDirection =
@@ -246,47 +260,47 @@ sketchPlane3d =
     Fuzz.map2 sketchPlane point3d direction3d
 
 
-lineSegment2d : Fuzzer (LineSegment2d coordinates)
+lineSegment2d : Fuzzer (LineSegment2d Meters coordinates)
 lineSegment2d =
     Fuzz.map2 LineSegment2d.from point2d point2d
 
 
-lineSegment3d : Fuzzer (LineSegment3d coordinates)
+lineSegment3d : Fuzzer (LineSegment3d Meters coordinates)
 lineSegment3d =
     Fuzz.map2 LineSegment3d.from point3d point3d
 
 
-triangle2d : Fuzzer (Triangle2d coordinates)
+triangle2d : Fuzzer (Triangle2d Meters coordinates)
 triangle2d =
     Fuzz.map3 Triangle2d.from point2d point2d point2d
 
 
-triangle3d : Fuzzer (Triangle3d coordinates)
+triangle3d : Fuzzer (Triangle3d Meters coordinates)
 triangle3d =
     Fuzz.map3 Triangle3d.from point3d point3d point3d
 
 
-boundingBox2d : Fuzzer (BoundingBox2d coordinates)
+boundingBox2d : Fuzzer (BoundingBox2d Meters coordinates)
 boundingBox2d =
     Fuzz.map2 BoundingBox2d.from point2d point2d
 
 
-boundingBox3d : Fuzzer (BoundingBox3d coordinates)
+boundingBox3d : Fuzzer (BoundingBox3d Meters coordinates)
 boundingBox3d =
     Fuzz.map2 BoundingBox3d.from point3d point3d
 
 
-polyline2d : Fuzzer (Polyline2d coordinates)
+polyline2d : Fuzzer (Polyline2d Meters coordinates)
 polyline2d =
     Fuzz.map Polyline2d.fromVertices (Fuzz.list point2d)
 
 
-polyline3d : Fuzzer (Polyline3d coordinates)
+polyline3d : Fuzzer (Polyline3d Meters coordinates)
 polyline3d =
     Fuzz.map Polyline3d.fromVertices (Fuzz.list point3d)
 
 
-polygon2d : Fuzzer (Polygon2d coordinates)
+polygon2d : Fuzzer (Polygon2d Meters coordinates)
 polygon2d =
     let
         boundingBox =
@@ -300,22 +314,22 @@ polygon2d =
     Fuzz.custom (Random.polygon2d boundingBox) Shrink.noShrink
 
 
-circle2d : Fuzzer (Circle2d coordinates)
+circle2d : Fuzzer (Circle2d Meters coordinates)
 circle2d =
     Fuzz.map2 Circle2d.withRadius positiveLength point2d
 
 
-circle3d : Fuzzer (Circle3d coordinates)
+circle3d : Fuzzer (Circle3d Meters coordinates)
 circle3d =
     Fuzz.map3 Circle3d.withRadius positiveLength direction3d point3d
 
 
-sphere3d : Fuzzer (Sphere3d coordinates)
+sphere3d : Fuzzer (Sphere3d Meters coordinates)
 sphere3d =
     Fuzz.map2 Sphere3d.withRadius positiveLength point3d
 
 
-arc2d : Fuzzer (Arc2d coordinates)
+arc2d : Fuzzer (Arc2d Meters coordinates)
 arc2d =
     Fuzz.map3 Arc2d.from
         point2d
@@ -329,32 +343,32 @@ arc2d =
         )
 
 
-arc3d : Fuzzer (Arc3d coordinates)
+arc3d : Fuzzer (Arc3d Meters coordinates)
 arc3d =
     Fuzz.map2 Arc3d.on sketchPlane3d arc2d
 
 
-quadraticSpline2d : Fuzzer (QuadraticSpline2d coordinates)
+quadraticSpline2d : Fuzzer (QuadraticSpline2d Meters coordinates)
 quadraticSpline2d =
     Fuzz.map3 QuadraticSpline2d.fromControlPoints point2d point2d point2d
 
 
-quadraticSpline3d : Fuzzer (QuadraticSpline3d coordinates)
+quadraticSpline3d : Fuzzer (QuadraticSpline3d Meters coordinates)
 quadraticSpline3d =
     Fuzz.map3 QuadraticSpline3d.fromControlPoints point3d point3d point3d
 
 
-cubicSpline2d : Fuzzer (CubicSpline2d coordinates)
+cubicSpline2d : Fuzzer (CubicSpline2d Meters coordinates)
 cubicSpline2d =
     Fuzz.map4 CubicSpline2d.fromControlPoints point2d point2d point2d point2d
 
 
-cubicSpline3d : Fuzzer (CubicSpline3d coordinates)
+cubicSpline3d : Fuzzer (CubicSpline3d Meters coordinates)
 cubicSpline3d =
     Fuzz.map4 CubicSpline3d.fromControlPoints point3d point3d point3d point3d
 
 
-ellipse2d : Fuzzer (Ellipse2d coordinates)
+ellipse2d : Fuzzer (Ellipse2d Meters coordinates)
 ellipse2d =
     let
         ellipse centerPoint xDirection xRadius yRadius =
@@ -368,7 +382,7 @@ ellipse2d =
     Fuzz.map4 ellipse point2d direction2d positiveLength positiveLength
 
 
-ellipticalArc2d : Fuzzer (EllipticalArc2d coordinates)
+ellipticalArc2d : Fuzzer (EllipticalArc2d Meters coordinates)
 ellipticalArc2d =
     let
         ellipticalArc ( centerPoint, xDirection ) ( xRadius, yRadius ) ( startAngle, sweptAngle ) =
@@ -387,7 +401,7 @@ ellipticalArc2d =
         (Fuzz.tuple ( angle, angle ))
 
 
-rectangle2d : Fuzzer (Rectangle2d coordinates)
+rectangle2d : Fuzzer (Rectangle2d Meters coordinates)
 rectangle2d =
     let
         rectangle axes width height =
@@ -396,7 +410,7 @@ rectangle2d =
     Fuzz.map3 rectangle frame2d positiveLength positiveLength
 
 
-block3d : Fuzzer (Block3d coordinates)
+block3d : Fuzzer (Block3d Meters coordinates)
 block3d =
     let
         block axes xDim yDim zDim =
@@ -405,7 +419,7 @@ block3d =
     Fuzz.map4 block frame3d positiveLength positiveLength positiveLength
 
 
-cylinder3d : Fuzzer (Cylinder3d coordinates)
+cylinder3d : Fuzzer (Cylinder3d Meters coordinates)
 cylinder3d =
     let
         cylinder centerPoint direction cylinderLength cylinderRadius =

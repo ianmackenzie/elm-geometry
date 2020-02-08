@@ -1,28 +1,30 @@
 module Tests.Cylinder3d exposing (suite)
 
 import Angle exposing (Angle)
-import Circle3d
-import Cylinder3d
+import Axis3d exposing (Axis3d)
+import Circle3d exposing (Circle3d)
+import Cylinder3d exposing (Cylinder3d)
 import Expect
-import Frame3d
+import Frame3d exposing (Frame3d)
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
-import Geometry.Test exposing (Axis3d, Circle3d, Cylinder3d, Frame3d, Plane3d, Point3d, Vector3d)
-import Point3d
+import Length exposing (Meters)
+import Plane3d exposing (Plane3d)
+import Point3d exposing (Point3d)
 import Quantity exposing (Quantity)
 import Test exposing (Test)
-import Vector3d
+import Vector3d exposing (Vector3d)
 
 
 type alias Transformation coordinates =
-    { cylinder : Cylinder3d coordinates -> Cylinder3d coordinates
-    , point : Point3d coordinates -> Point3d coordinates
-    , circle : Circle3d coordinates -> Circle3d coordinates
+    { cylinder : Cylinder3d Meters coordinates -> Cylinder3d Meters coordinates
+    , point : Point3d Meters coordinates -> Point3d Meters coordinates
+    , circle : Circle3d Meters coordinates -> Circle3d Meters coordinates
     }
 
 
-rotation : Axis3d coordinates -> Angle -> Transformation coordinates
+rotation : Axis3d Meters coordinates -> Angle -> Transformation coordinates
 rotation axis angle =
     { cylinder = Cylinder3d.rotateAround axis angle
     , point = Point3d.rotateAround axis angle
@@ -30,7 +32,7 @@ rotation axis angle =
     }
 
 
-translation : Vector3d coordinates -> Transformation coordinates
+translation : Vector3d Meters coordinates -> Transformation coordinates
 translation displacement =
     { cylinder = Cylinder3d.translateBy displacement
     , point = Point3d.translateBy displacement
@@ -38,7 +40,7 @@ translation displacement =
     }
 
 
-scaling : Point3d coordinates -> Float -> Transformation coordinates
+scaling : Point3d Meters coordinates -> Float -> Transformation coordinates
 scaling centerPoint scale =
     { cylinder = Cylinder3d.scaleAbout centerPoint scale
     , point = Point3d.scaleAbout centerPoint scale
@@ -46,7 +48,7 @@ scaling centerPoint scale =
     }
 
 
-mirroring : Plane3d coordinates -> Transformation coordinates
+mirroring : Plane3d Meters coordinates -> Transformation coordinates
 mirroring plane =
     { cylinder = Cylinder3d.mirrorAcross plane
     , point = Point3d.mirrorAcross plane
@@ -64,7 +66,7 @@ transformationFuzzer =
         ]
 
 
-cylinderAndPoint : Fuzzer ( Cylinder3d coordinates, Point3d coordinates )
+cylinderAndPoint : Fuzzer ( Cylinder3d Meters coordinates, Point3d Meters coordinates )
 cylinderAndPoint =
     Fuzz.map4
         (\cylinder u v theta ->

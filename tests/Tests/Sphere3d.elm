@@ -24,12 +24,11 @@ import Expect
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
-import Geometry.Test exposing (..)
-import Length exposing (meters)
+import Length exposing (Meters, meters)
 import Plane3d
-import Point3d
+import Point3d exposing (Point3d)
 import Quantity exposing (Cubed, Quantity, Squared, Unitless)
-import Sphere3d
+import Sphere3d exposing (Sphere3d)
 import Test exposing (Test)
 import Triangle3d
 import Vector3d
@@ -40,7 +39,7 @@ import Volume exposing (Volume)
 -- Helper methods
 
 
-sphereFromTuple : ( ( Float, Float, Float ), Float ) -> Sphere3d coordinates
+sphereFromTuple : ( ( Float, Float, Float ), Float ) -> Sphere3d Meters coordinates
 sphereFromTuple ( centerPoint, radius ) =
     Sphere3d.withRadius (meters radius) (Point3d.fromTuple meters centerPoint)
 
@@ -119,12 +118,12 @@ throughPointsManual =
             testCases
 
 
-triangleArea : Point3d coordinates -> Point3d coordinates -> Point3d coordinates -> Area
+triangleArea : Point3d Meters coordinates -> Point3d Meters coordinates -> Point3d Meters coordinates -> Area
 triangleArea p1 p2 p3 =
     Triangle3d.area (Triangle3d.from p1 p2 p3)
 
 
-tetrahedronVolume : Point3d coordinates -> Point3d coordinates -> Point3d coordinates -> Point3d coordinates -> Volume
+tetrahedronVolume : Point3d Meters coordinates -> Point3d Meters coordinates -> Point3d Meters coordinates -> Point3d Meters coordinates -> Volume
 tetrahedronVolume p1 p2 p3 p4 =
     let
         v2 =
@@ -140,7 +139,7 @@ tetrahedronVolume p1 p2 p3 p4 =
         |> Quantity.divideBy 6
 
 
-validTetrahedron : Point3d coordinates -> Point3d coordinates -> Point3d coordinates -> Point3d coordinates -> Bool
+validTetrahedron : Point3d Meters coordinates -> Point3d Meters coordinates -> Point3d Meters coordinates -> Point3d Meters coordinates -> Bool
 validTetrahedron p1 p2 p3 p4 =
     let
         volume =
@@ -196,7 +195,7 @@ validTetrahedron p1 p2 p3 p4 =
 
 
 type FourPoints coordinates
-    = FourPoints (Point3d coordinates) (Point3d coordinates) (Point3d coordinates) (Point3d coordinates)
+    = FourPoints (Point3d Meters coordinates) (Point3d Meters coordinates) (Point3d Meters coordinates) (Point3d Meters coordinates)
 
 
 throughPointsFuzz : Test

@@ -4,28 +4,29 @@ module Tests.Block3d exposing
     )
 
 import Angle exposing (Angle)
-import Axis3d
-import Block3d
+import Axis3d exposing (Axis3d)
+import Block3d exposing (Block3d)
 import Expect
 import Frame3d
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
-import Geometry.Test exposing (..)
-import LineSegment3d
-import Point3d
+import Length exposing (Meters)
+import LineSegment3d exposing (LineSegment3d)
+import Plane3d exposing (Plane3d)
+import Point3d exposing (Point3d)
 import Test exposing (Test)
-import Vector3d
+import Vector3d exposing (Vector3d)
 
 
 type alias Transformation coordinates =
-    { block : Block3d coordinates -> Block3d coordinates
-    , point : Point3d coordinates -> Point3d coordinates
-    , lineSegment : LineSegment3d coordinates -> LineSegment3d coordinates
+    { block : Block3d Meters coordinates -> Block3d Meters coordinates
+    , point : Point3d Meters coordinates -> Point3d Meters coordinates
+    , lineSegment : LineSegment3d Meters coordinates -> LineSegment3d Meters coordinates
     }
 
 
-rotation : Axis3d coordinates -> Angle -> Transformation coordinates
+rotation : Axis3d Meters coordinates -> Angle -> Transformation coordinates
 rotation axis angle =
     { block = Block3d.rotateAround axis angle
     , point = Point3d.rotateAround axis angle
@@ -33,7 +34,7 @@ rotation axis angle =
     }
 
 
-translation : Vector3d coordinates -> Transformation coordinates
+translation : Vector3d Meters coordinates -> Transformation coordinates
 translation displacement =
     { block = Block3d.translateBy displacement
     , point = Point3d.translateBy displacement
@@ -41,7 +42,7 @@ translation displacement =
     }
 
 
-scaling : Point3d coordinates -> Float -> Transformation coordinates
+scaling : Point3d Meters coordinates -> Float -> Transformation coordinates
 scaling centerPoint scale =
     { block = Block3d.scaleAbout centerPoint scale
     , point = Point3d.scaleAbout centerPoint scale
@@ -49,7 +50,7 @@ scaling centerPoint scale =
     }
 
 
-mirroring : Plane3d coordinates -> Transformation coordinates
+mirroring : Plane3d Meters coordinates -> Transformation coordinates
 mirroring plane =
     { block = Block3d.mirrorAcross plane
     , point = Point3d.mirrorAcross plane

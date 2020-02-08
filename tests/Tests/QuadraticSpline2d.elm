@@ -14,23 +14,22 @@ import Float.Extra as Float
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
-import Geometry.Test exposing (..)
-import Length exposing (Length, inMeters, meters)
+import Length exposing (Length, Meters, inMeters, meters)
 import Point2d
-import QuadraticSpline2d
+import QuadraticSpline2d exposing (QuadraticSpline2d)
 import Quantity exposing (Quantity, zero)
 import Test exposing (Test)
 import Tests.Literals exposing (ok)
 
 
-degenerateSpline : Fuzzer (QuadraticSpline2d coordinates)
+degenerateSpline : Fuzzer (QuadraticSpline2d Meters coordinates)
 degenerateSpline =
     Fuzz.point2d
         |> Fuzz.map
             (\point -> QuadraticSpline2d.fromControlPoints point point point)
 
 
-curvedSpline : Fuzzer (QuadraticSpline2d coordinates)
+curvedSpline : Fuzzer (QuadraticSpline2d Meters coordinates)
 curvedSpline =
     Fuzz.map5
         (\angle length interpolationParameter offset flipSide ->
@@ -70,7 +69,7 @@ curvedSpline =
         Fuzz.bool
 
 
-analyticalLength : QuadraticSpline2d coordinates -> Length
+analyticalLength : QuadraticSpline2d Meters coordinates -> Length
 analyticalLength spline =
     let
         p0 =
@@ -130,7 +129,7 @@ analyticalLength spline =
     meters ((a_32 * s_abc + a_2 * b * (s_abc - c_2) + (4 * c * a - b * b) * logBase e ((2 * a_2 + ba + s_abc) / (ba + c_2))) / (4 * a_32))
 
 
-exampleSpline : QuadraticSpline2d coordinates
+exampleSpline : QuadraticSpline2d Meters coordinates
 exampleSpline =
     QuadraticSpline2d.fromControlPoints
         (Point2d.fromTuple meters ( 1, 1 ))
@@ -143,7 +142,7 @@ parameterizedExample =
         (ok (QuadraticSpline2d.nondegenerate exampleSpline))
 
 
-line : QuadraticSpline2d coordinates
+line : QuadraticSpline2d Meters coordinates
 line =
     QuadraticSpline2d.fromControlPoints
         (Point2d.fromTuple meters ( 0, 1 ))

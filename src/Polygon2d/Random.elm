@@ -14,7 +14,6 @@ import BoundingBox2d exposing (BoundingBox2d)
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
 import Quantity exposing (Quantity)
-import Quantity.Extra as Quantity
 import Random exposing (Generator)
 import Vector2d exposing (Vector2d)
 

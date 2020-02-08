@@ -1,29 +1,34 @@
 module Tests.Generic.Curve2d exposing (Operations, transformations)
 
 import Angle exposing (Angle)
-import Axis2d
-import Frame2d
+import Axis2d exposing (Axis2d)
+import Frame2d exposing (Frame2d)
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
-import Geometry.Test exposing (..)
-import Point2d
+import Geometry.Fuzz as Fuzz exposing (GlobalCoordinates, LocalCoordinates)
+import Length exposing (Meters)
+import Point2d exposing (Point2d)
 import Test exposing (Test)
-import Vector2d
+import Vector2d exposing (Vector2d)
 
 
 type alias Operations curve coordinates =
     { fuzzer : Fuzzer curve
-    , pointOn : curve -> Float -> Point2d coordinates
-    , firstDerivative : curve -> Float -> Vector2d coordinates
-    , scaleAbout : Point2d coordinates -> Float -> curve -> curve
-    , translateBy : Vector2d coordinates -> curve -> curve
-    , rotateAround : Point2d coordinates -> Angle -> curve -> curve
-    , mirrorAcross : Axis2d coordinates -> curve -> curve
+    , pointOn : curve -> Float -> Point2d Meters coordinates
+    , firstDerivative : curve -> Float -> Vector2d Meters coordinates
+    , scaleAbout : Point2d Meters coordinates -> Float -> curve -> curve
+    , translateBy : Vector2d Meters coordinates -> curve -> curve
+    , rotateAround : Point2d Meters coordinates -> Angle -> curve -> curve
+    , mirrorAcross : Axis2d Meters coordinates -> curve -> curve
     }
 
 
-transformations : Operations globalCurve GlobalCoordinates -> Operations localCurve LocalCoordinates -> (Frame2d GlobalCoordinates -> localCurve -> globalCurve) -> (Frame2d GlobalCoordinates -> globalCurve -> localCurve) -> Test
+transformations :
+    Operations globalCurve GlobalCoordinates
+    -> Operations localCurve LocalCoordinates
+    -> (Frame2d Meters GlobalCoordinates { defines : LocalCoordinates } -> localCurve -> globalCurve)
+    -> (Frame2d Meters GlobalCoordinates { defines : LocalCoordinates } -> globalCurve -> localCurve)
+    -> Test
 transformations global local placeIn relativeTo =
     Test.describe "Transformations"
         [ Test.describe "scaleAbout"

@@ -13,13 +13,12 @@ import Expect
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
-import Geometry.Test exposing (..)
-import Length exposing (inMeters, meters)
+import Length exposing (Meters, inMeters, meters)
 import List.Extra
 import Plane3d
-import Point2d
+import Point2d exposing (Point2d)
 import Point3d
-import Polygon2d
+import Polygon2d exposing (Polygon2d)
 import Quantity
 import Random
 import Shrink
@@ -29,7 +28,7 @@ import Vector3d
 import VoronoiDiagram2d
 
 
-uniquePoints : Fuzzer (Array (Point2d coordinates))
+uniquePoints : Fuzzer (Array (Point2d Meters coordinates))
 uniquePoints =
     Fuzz.list Fuzz.point2d
         |> Fuzz.map (List.Extra.uniqueBy (Point2d.toTuple inMeters))
@@ -94,7 +93,7 @@ failsOnCoincidentVertices =
     Test.fuzz (Fuzz.list Fuzz.point2d) description expectation
 
 
-pointInPolygon : Polygon2d coordinates -> Fuzzer (Point2d coordinates)
+pointInPolygon : Polygon2d Meters coordinates -> Fuzzer (Point2d Meters coordinates)
 pointInPolygon polygon =
     let
         vertices =
