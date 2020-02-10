@@ -170,7 +170,7 @@ throughPoints =
                             Axis2d.originPoint axis |> Expect.point2d firstPoint
                         , \() ->
                             Point2d.signedDistanceFrom axis secondPoint
-                                |> Expect.approximately Quantity.zero
+                                |> Expect.quantity Quantity.zero
                         ]
                         ()
 

@@ -165,7 +165,7 @@ triangulationHasCorrectArea =
                 triangleArea =
                     Quantity.sum (List.map Triangle2d.area triangles)
             in
-            triangleArea |> Expect.approximately polygonArea
+            triangleArea |> Expect.quantity polygonArea
         )
 
 

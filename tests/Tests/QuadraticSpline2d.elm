@@ -264,7 +264,7 @@ parameterization =
         , Test.test "length is as expected" <|
             \_ ->
                 QuadraticSpline2d.arcLength parameterizedLine
-                    |> Expect.approximately (meters 5)
+                    |> Expect.quantity (meters 5)
         , Test.test "length parameterization at approximate length is Just" <|
             \_ ->
                 let

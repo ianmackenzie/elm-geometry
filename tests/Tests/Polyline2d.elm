@@ -57,7 +57,7 @@ centroidOfSingleSegmentIsSameAsMidpoint =
                     Point2d.midpoint p1 p2
             in
             Polyline2d.centroid monoline
-                |> Expect.just Expect.point2d expectedCentroid
+                |> Expect.just (Expect.point2d expectedCentroid)
 
 
 centroidOfRightAngle : Test
@@ -71,10 +71,12 @@ centroidOfRightAngle =
                         , Point2d.fromTuple meters ( armLength, 0 )
                         , Point2d.fromTuple meters ( armLength, armLength )
                         ]
+
+                expectedCentroid =
+                    Point2d.meters (0.75 * armLength) (0.25 * armLength)
             in
             Polyline2d.centroid angle
-                |> Expect.just Expect.point2d
-                    (Point2d.fromTuple meters ( 0.75 * armLength, 0.25 * armLength ))
+                |> Expect.just (Expect.point2d expectedCentroid)
 
 
 centroidOfStepShape : Test
@@ -89,10 +91,12 @@ centroidOfStepShape =
                         , Point2d.fromTuple meters ( armLength, armLength )
                         , Point2d.fromTuple meters ( 2 * armLength, armLength )
                         ]
+
+                expectedCentroid =
+                    Point2d.meters armLength (armLength / 2)
             in
             Polyline2d.centroid angle
-                |> Expect.just Expect.point2d
-                    (Point2d.fromTuple meters ( armLength, armLength / 2 ))
+                |> Expect.just (Expect.point2d expectedCentroid)
 
 
 centroidOfOpenSquare : Test
@@ -107,10 +111,12 @@ centroidOfOpenSquare =
                         , Point2d.fromTuple meters ( sideLength, sideLength )
                         , Point2d.fromTuple meters ( sideLength, 0 )
                         ]
+
+                expectedCentroid =
+                    Point2d.meters (sideLength / 2) (sideLength * 2 / 3)
             in
             Polyline2d.centroid squareline
-                |> Expect.just Expect.point2d
-                    (Point2d.fromTuple meters ( sideLength / 2, sideLength * 2 / 3 ))
+                |> Expect.just (Expect.point2d expectedCentroid)
 
 
 centroidOfClosedSquare : Test
@@ -126,10 +132,12 @@ centroidOfClosedSquare =
                         , Point2d.fromTuple meters ( sideLength, 0 )
                         , Point2d.fromTuple meters ( 0, 0 )
                         ]
+
+                expectedCentroid =
+                    Point2d.meters (sideLength / 2) (sideLength / 2)
             in
             Polyline2d.centroid squareline
-                |> Expect.just Expect.point2d
-                    (Point2d.fromTuple meters ( sideLength / 2, sideLength / 2 ))
+                |> Expect.just (Expect.point2d expectedCentroid)
 
 
 centroidIsWithinBoundingBox : Test

@@ -41,7 +41,7 @@ rotationPreservesDistance =
                 rotatedDistance =
                     Point2d.distanceFrom centerPoint rotatedPoint
             in
-            Expect.approximately initialDistance rotatedDistance
+            Expect.quantity initialDistance rotatedDistance
     in
     Test.fuzz3 Fuzz.point2d Fuzz.point2d Fuzz.angle description expectation
 
@@ -63,7 +63,7 @@ projectionOntoAxisPreservesDistance =
                 projectedDistance =
                     Point2d.signedDistanceAlong axis projectedPoint
             in
-            Expect.approximately projectedDistance distance
+            Expect.quantity projectedDistance distance
     in
     Test.fuzz2 Fuzz.point2d Fuzz.axis2d description expectation
 
@@ -79,7 +79,7 @@ midpointIsEquidistant =
                 midpoint =
                     Point2d.midpoint p1 p2
             in
-            Expect.approximately
+            Expect.quantity
                 (Point2d.distanceFrom p1 midpoint)
                 (Point2d.distanceFrom p2 midpoint)
         )
@@ -125,7 +125,7 @@ circumcenterIsValidOrNothing =
             case Point2d.circumcenter p1 p2 p3 of
                 Nothing ->
                     Triangle2d.area (Triangle2d.from p1 p2 p3)
-                        |> Expect.approximately zero
+                        |> Expect.quantity zero
 
                 Just p0 ->
                     let
@@ -134,8 +134,8 @@ circumcenterIsValidOrNothing =
                     in
                     p0
                         |> Expect.all
-                            [ Point2d.distanceFrom p2 >> Expect.approximately r1
-                            , Point2d.distanceFrom p3 >> Expect.approximately r1
+                            [ Point2d.distanceFrom p2 >> Expect.quantity r1
+                            , Point2d.distanceFrom p3 >> Expect.quantity r1
                             ]
         )
 
@@ -157,7 +157,7 @@ trickyCircumcenter =
                 p0 =
                     Point2d.meters 73.69327796224587 5.0e-7
             in
-            Point2d.circumcenter p1 p2 p3 |> Expect.just Expect.point2d p0
+            Point2d.circumcenter p1 p2 p3 |> Expect.just (Expect.point2d p0)
 
 
 consistentTupleInterop : Test
@@ -189,8 +189,8 @@ coordinates =
     Test.fuzz Fuzz.point2d "coordinates and xCoordinate/yCoordinate are consistent" <|
         \point ->
             Expect.all
-                [ Tuple.first >> Expect.approximately (Point2d.xCoordinate point)
-                , Tuple.second >> Expect.approximately (Point2d.yCoordinate point)
+                [ Tuple.first >> Expect.quantity (Point2d.xCoordinate point)
+                , Tuple.second >> Expect.quantity (Point2d.yCoordinate point)
                 ]
                 (Point2d.coordinates point)
 
@@ -203,8 +203,8 @@ coordinatesIn =
         "coordinatesIn and xCoordinateIn/yCoordinateIn are consistent"
         (\point frame ->
             Expect.all
-                [ Tuple.first >> Expect.approximately (Point2d.xCoordinateIn frame point)
-                , Tuple.second >> Expect.approximately (Point2d.yCoordinateIn frame point)
+                [ Tuple.first >> Expect.quantity (Point2d.xCoordinateIn frame point)
+                , Tuple.second >> Expect.quantity (Point2d.yCoordinateIn frame point)
                 ]
                 (Point2d.coordinatesIn frame point)
         )

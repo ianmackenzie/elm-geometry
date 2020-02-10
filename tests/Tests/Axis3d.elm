@@ -118,8 +118,8 @@ intersectionWithPlane =
                     Just point ->
                         point
                             |> Expect.all
-                                [ Point3d.signedDistanceFrom plane >> Expect.approximately Quantity.zero
-                                , Point3d.distanceFromAxis axis >> Expect.approximately Quantity.zero
+                                [ Point3d.signedDistanceFrom plane >> Expect.quantity Quantity.zero
+                                , Point3d.distanceFromAxis axis >> Expect.quantity Quantity.zero
                                 ]
 
                     Nothing ->
@@ -144,7 +144,7 @@ throughPoints =
                             Axis3d.originPoint axis |> Expect.point3d firstPoint
                         , \() ->
                             Point3d.distanceFromAxis axis secondPoint
-                                |> Expect.approximately Quantity.zero
+                                |> Expect.quantity Quantity.zero
                         ]
                         ()
 

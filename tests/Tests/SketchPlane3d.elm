@@ -23,17 +23,10 @@ normalDirectionIsValid =
     Test.fuzz Fuzz.sketchPlane3d
         "Sketch plane normal direction is valid and is perpendicular to both basis directions"
         (\sketchPlane ->
-            let
-                xDirection =
-                    SketchPlane3d.xDirection sketchPlane
-
-                yDirection =
-                    SketchPlane3d.yDirection sketchPlane
-            in
             SketchPlane3d.normalDirection sketchPlane
                 |> Expect.all
                     [ Expect.validDirection3d
-                    , Direction3d.componentIn xDirection >> Expect.float 0
-                    , Direction3d.componentIn yDirection >> Expect.float 0
+                    , Expect.direction3dPerpendicularTo (SketchPlane3d.xDirection sketchPlane)
+                    , Expect.direction3dPerpendicularTo (SketchPlane3d.yDirection sketchPlane)
                     ]
         )

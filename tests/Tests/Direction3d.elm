@@ -89,16 +89,16 @@ orthonormalizeFollowsOriginalVectors =
                                     |> Expect.quantityGreaterThan Quantity.zero
                             , \( _, yDirection, _ ) ->
                                 Vector3d.componentIn yDirection v1
-                                    |> Expect.approximately Quantity.zero
+                                    |> Expect.quantity Quantity.zero
                             , \( _, _, zDirection ) ->
                                 Vector3d.componentIn zDirection v1
-                                    |> Expect.approximately Quantity.zero
+                                    |> Expect.quantity Quantity.zero
                             , \( _, yDirection, _ ) ->
                                 Vector3d.componentIn yDirection v2
                                     |> Expect.quantityGreaterThan Quantity.zero
                             , \( _, _, zDirection ) ->
                                 Vector3d.componentIn zDirection v2
-                                    |> Expect.approximately Quantity.zero
+                                    |> Expect.quantity Quantity.zero
                             , \( _, _, zDirection ) ->
                                 Vector3d.componentIn zDirection v3
                                     |> Expect.quantityGreaterThan Quantity.zero
@@ -133,8 +133,7 @@ perpendicularDirectionIsPerpendicular =
         "perpendicularTo returns a perpendicular direction"
         (\direction ->
             Direction3d.perpendicularTo direction
-                |> Direction3d.componentIn direction
-                |> Expect.float 0
+                |> Expect.direction3dPerpendicularTo direction
         )
 
 
@@ -174,12 +173,10 @@ projectionIntoSketchPlaneWorksProperly =
                                 Direction3d.toVector direction
                                     |> Vector3d.cross
                                         (Direction3d.toVector direction3d)
-
-                            (Quantity error) =
-                                crossProduct
-                                    |> Vector3d.componentIn normalDirection
                         in
-                        error |> Expect.float 0
+                        crossProduct
+                            |> Vector3d.componentIn normalDirection
+                            |> Expect.quantity Quantity.zero
 
                     else if abs normalComponent < 1.0e-13 then
                         direction3d |> Expect.direction3d direction
@@ -218,8 +215,8 @@ components =
     Test.fuzz Fuzz.direction3d "components and xComponent etc. are consistent" <|
         \direction ->
             Expect.all
-                [ first >> Expect.float (Direction3d.xComponent direction)
-                , second >> Expect.float (Direction3d.yComponent direction)
-                , third >> Expect.float (Direction3d.zComponent direction)
+                [ first >> Expect.exactly (Direction3d.xComponent direction)
+                , second >> Expect.exactly (Direction3d.yComponent direction)
+                , third >> Expect.exactly (Direction3d.zComponent direction)
                 ]
                 (Direction3d.components direction)

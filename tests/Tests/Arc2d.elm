@@ -87,7 +87,7 @@ from =
             Arc2d.from startPoint endPoint sweptAngle
                 |> Expect.all
                     [ Arc2d.endPoint >> Expect.point2d endPoint
-                    , Arc2d.sweptAngle >> Expect.approximately sweptAngle
+                    , Arc2d.sweptAngle >> Expect.quantity sweptAngle
                     ]
         )
 

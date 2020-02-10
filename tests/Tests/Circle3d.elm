@@ -36,7 +36,7 @@ throughPoints =
 
                     liesOnCircle point circle =
                         Point3d.distanceFrom point (Circle3d.centerPoint circle)
-                            |> Expect.approximately (Circle3d.radius circle)
+                            |> Expect.quantity (Circle3d.radius circle)
                 in
                 case maybeCircle of
                     Just circle ->

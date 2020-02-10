@@ -48,7 +48,7 @@ rotationAboutAxisPreservesDistanceAlong =
                 rotatedDistance =
                     Point3d.signedDistanceAlong axis rotatedPoint
             in
-            Expect.approximately distance rotatedDistance
+            Expect.quantity distance rotatedDistance
     in
     Test.fuzz3 Fuzz.point3d Fuzz.axis3d Fuzz.angle description expectation
 
@@ -70,7 +70,7 @@ rotationAboutAxisPreservesDistanceFrom =
                 rotatedDistance =
                     Point3d.distanceFromAxis axis rotatedPoint
             in
-            Expect.approximately distance rotatedDistance
+            Expect.quantity distance rotatedDistance
     in
     Test.fuzz3 Fuzz.point3d Fuzz.axis3d Fuzz.angle description expectation
 
@@ -86,7 +86,7 @@ midpointIsEquidistant =
                 midpoint =
                     Point3d.midpoint p1 p2
             in
-            Expect.approximately
+            Expect.quantity
                 (Point3d.distanceFrom p1 midpoint)
                 (Point3d.distanceFrom p2 midpoint)
         )
@@ -131,7 +131,7 @@ mirrorFlipsSignedDistance =
             in
             Point3d.mirrorAcross plane point
                 |> Point3d.signedDistanceFrom plane
-                |> Expect.approximately (Quantity.negate signedDistance)
+                |> Expect.quantity (Quantity.negate signedDistance)
         )
 
 
@@ -155,7 +155,7 @@ translationByPerpendicularDoesNotChangeSignedDistance =
             point
                 |> Point3d.translateIn perpendicularDirection distance
                 |> Point3d.signedDistanceFrom plane
-                |> Expect.approximately originalSignedDistance
+                |> Expect.quantity originalSignedDistance
         )
 
 
@@ -202,8 +202,8 @@ projectIntoResultsInPerpendicularVector =
             in
             displacement
                 |> Expect.all
-                    [ Vector3d.componentIn xDirection >> Expect.approximately zero
-                    , Vector3d.componentIn yDirection >> Expect.approximately zero
+                    [ Vector3d.componentIn xDirection >> Expect.quantity zero
+                    , Vector3d.componentIn yDirection >> Expect.quantity zero
                     ]
         )
 
@@ -219,7 +219,7 @@ circumcenterIsValidOrNothing =
             case Point3d.circumcenter p1 p2 p3 of
                 Nothing ->
                     Triangle3d.area (Triangle3d.from p1 p2 p3)
-                        |> Expect.approximately zero
+                        |> Expect.quantity zero
 
                 Just p0 ->
                     case Plane3d.throughPoints p1 p2 p3 of
@@ -231,11 +231,11 @@ circumcenterIsValidOrNothing =
                             p0
                                 |> Expect.all
                                     [ Point3d.distanceFrom p2
-                                        >> Expect.approximately r1
+                                        >> Expect.quantity r1
                                     , Point3d.distanceFrom p3
-                                        >> Expect.approximately r1
+                                        >> Expect.quantity r1
                                     , Point3d.signedDistanceFrom plane
-                                        >> Expect.approximately zero
+                                        >> Expect.quantity zero
                                     ]
 
                         Nothing ->
@@ -316,9 +316,9 @@ coordinates =
     Test.fuzz Fuzz.point3d "coordinates and xCoordinate etc. are consistent" <|
         \point ->
             Expect.all
-                [ first >> Expect.approximately (Point3d.xCoordinate point)
-                , second >> Expect.approximately (Point3d.yCoordinate point)
-                , third >> Expect.approximately (Point3d.zCoordinate point)
+                [ first >> Expect.quantity (Point3d.xCoordinate point)
+                , second >> Expect.quantity (Point3d.yCoordinate point)
+                , third >> Expect.quantity (Point3d.zCoordinate point)
                 ]
                 (Point3d.coordinates point)
 
@@ -331,9 +331,9 @@ coordinatesIn =
         "coordinatesIn and xCoordinateIn etc. are consistent"
         (\point frame ->
             Expect.all
-                [ first >> Expect.approximately (Point3d.xCoordinateIn frame point)
-                , second >> Expect.approximately (Point3d.yCoordinateIn frame point)
-                , third >> Expect.approximately (Point3d.zCoordinateIn frame point)
+                [ first >> Expect.quantity (Point3d.xCoordinateIn frame point)
+                , second >> Expect.quantity (Point3d.yCoordinateIn frame point)
+                , third >> Expect.quantity (Point3d.zCoordinateIn frame point)
                 ]
                 (Point3d.coordinatesIn frame point)
         )

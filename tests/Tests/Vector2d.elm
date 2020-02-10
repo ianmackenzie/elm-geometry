@@ -28,7 +28,7 @@ perpendicularVectorIsPerpendicular =
             vector
                 |> Vector2d.perpendicularTo
                 |> Vector2d.dot vector
-                |> Expect.approximately Quantity.zero
+                |> Expect.quantity Quantity.zero
         )
 
 
@@ -38,7 +38,7 @@ dotProductWithSelfIsSquaredLength =
         "Dot product of a vector with itself is its squared length"
         (\vector ->
             (vector |> Vector2d.dot vector)
-                |> Expect.approximately
+                |> Expect.quantity
                     (Quantity.squared (Vector2d.length vector))
         )
 
@@ -51,7 +51,7 @@ rotateByPreservesLength =
         (\vector angle ->
             Vector2d.rotateBy angle vector
                 |> Vector2d.length
-                |> Expect.approximately (Vector2d.length vector)
+                |> Expect.quantity (Vector2d.length vector)
         )
 
 
@@ -89,7 +89,7 @@ mirrorAcrossPreservesParallelComponent =
             vector
                 |> Vector2d.mirrorAcross axis
                 |> parallelComponent
-                |> Expect.approximately (parallelComponent vector)
+                |> Expect.quantity (parallelComponent vector)
         )
 
 
@@ -109,7 +109,7 @@ mirrorAcrossNegatesPerpendicularComponent =
             vector
                 |> Vector2d.mirrorAcross axis
                 |> perpendicularComponent
-                |> Expect.approximately
+                |> Expect.quantity
                     (Quantity.negate (perpendicularComponent vector))
         )
 
@@ -119,8 +119,8 @@ components =
     Test.fuzz Fuzz.vector2d "components and xComponent/yComponent are consistent" <|
         \vector ->
             Expect.all
-                [ Tuple.first >> Expect.approximately (Vector2d.xComponent vector)
-                , Tuple.second >> Expect.approximately (Vector2d.yComponent vector)
+                [ Tuple.first >> Expect.quantity (Vector2d.xComponent vector)
+                , Tuple.second >> Expect.quantity (Vector2d.yComponent vector)
                 ]
                 (Vector2d.components vector)
 

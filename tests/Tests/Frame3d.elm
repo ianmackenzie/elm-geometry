@@ -36,5 +36,5 @@ frameDirectionsAreOrthonormal =
                     else
                         Quantity.cubed (Quantity.float -1)
             in
-            Expect.approximately expectedTripleProduct tripleProduct
+            Expect.quantity expectedTripleProduct tripleProduct
         )

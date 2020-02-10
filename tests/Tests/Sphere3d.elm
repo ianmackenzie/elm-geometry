@@ -58,7 +58,7 @@ withRadius =
             (\centerPoint radius ->
                 Sphere3d.withRadius radius centerPoint
                     |> Sphere3d.radius
-                    |> Expect.approximately (Quantity.abs radius)
+                    |> Expect.quantity (Quantity.abs radius)
             )
         , Test.fuzz2
             Fuzz.point3d
@@ -216,7 +216,7 @@ throughPointsFuzz =
 
                     hasPointOnSurface point sphere =
                         Point3d.distanceFrom point (Sphere3d.centerPoint sphere)
-                            |> Expect.approximately (Sphere3d.radius sphere)
+                            |> Expect.quantity (Sphere3d.radius sphere)
                 in
                 case maybeSphere of
                     Just sphere ->
@@ -248,16 +248,16 @@ properties =
             sphere
                 |> Expect.all
                     [ Sphere3d.diameter
-                        >> Expect.approximately
+                        >> Expect.quantity
                             (Quantity.multiplyBy 2 r)
                     , Sphere3d.circumference
-                        >> Expect.approximately
+                        >> Expect.quantity
                             (Quantity.multiplyBy (2 * pi) r)
                     , Sphere3d.surfaceArea
-                        >> Expect.approximately
+                        >> Expect.quantity
                             (Quantity.multiplyBy (4 * pi) (Quantity.squared r))
                     , Sphere3d.volume
-                        >> Expect.approximately
+                        >> Expect.quantity
                             (Quantity.multiplyBy (4 / 3 * pi) (Quantity.cubed r))
                     ]
         )
@@ -327,11 +327,11 @@ scaleAbout =
                     |> Sphere3d.scaleAbout point scale
                     |> Expect.all
                         [ Sphere3d.radius
-                            >> Expect.approximately
+                            >> Expect.quantity
                                 (originalRadius |> Quantity.multiplyBy (abs scale))
                         , Sphere3d.centerPoint
                             >> Point3d.distanceFrom point
-                            >> Expect.approximately
+                            >> Expect.quantity
                                 (originalDistance |> Quantity.multiplyBy (abs scale))
                         ]
             )
@@ -379,10 +379,10 @@ rotateAround =
                     |> Sphere3d.rotateAround axis angle
                     |> Expect.all
                         [ Sphere3d.radius
-                            >> Expect.approximately (Sphere3d.radius sphere)
+                            >> Expect.quantity (Sphere3d.radius sphere)
                         , Sphere3d.centerPoint
                             >> Point3d.distanceFromAxis axis
-                            >> Expect.approximately originalDistance
+                            >> Expect.quantity originalDistance
                         ]
             )
         , Test.fuzz3 Fuzz.axis3d
@@ -423,7 +423,7 @@ rotateAround =
                                         rotatedDirection
                             in
                             angleBetweenDirections
-                                |> Expect.approximately angle
+                                |> Expect.quantity angle
 
                         _ ->
                             Expect.fail "Failed to compute radial directions"
@@ -465,7 +465,7 @@ translateBy =
                 sphere
                     |> Sphere3d.translateBy vector
                     |> Sphere3d.radius
-                    |> Expect.approximately (Sphere3d.radius sphere)
+                    |> Expect.quantity (Sphere3d.radius sphere)
             )
         , Test.fuzz2
             Fuzz.vector3d
@@ -521,7 +521,7 @@ mirrorAcross =
                 sphere
                     |> Sphere3d.mirrorAcross plane
                     |> Sphere3d.radius
-                    |> Expect.approximately (Sphere3d.radius sphere)
+                    |> Expect.quantity (Sphere3d.radius sphere)
             )
         , Test.fuzz2
             Fuzz.plane3d
@@ -532,7 +532,7 @@ mirrorAcross =
                     |> Sphere3d.mirrorAcross plane
                     |> Sphere3d.centerPoint
                     |> Point3d.signedDistanceFrom plane
-                    |> Expect.approximately
+                    |> Expect.quantity
                         (Quantity.negate <|
                             Point3d.signedDistanceFrom plane <|
                                 Sphere3d.centerPoint sphere

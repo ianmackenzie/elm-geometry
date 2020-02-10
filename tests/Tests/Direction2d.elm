@@ -89,7 +89,7 @@ orthonormalizeProducesValidFrameBasis =
                         crossProduct =
                             xVector |> Vector2d.cross yVector
                     in
-                    Expect.approximately Quantity.zero crossProduct
+                    Expect.quantity Quantity.zero crossProduct
         )
 
 
@@ -145,8 +145,10 @@ fromAngleIsConsistentWithAngleFrom : Test
 fromAngleIsConsistentWithAngleFrom =
     Test.fuzz Fuzz.direction2d
         "fromAngle is consistent with angleFrom"
-        (Expect.roundTrip Expect.direction2d
-            (Direction2d.angleFrom Direction2d.x >> Direction2d.fromAngle)
+        (\direction ->
+            Direction2d.angleFrom Direction2d.x direction
+                |> Direction2d.fromAngle
+                |> Expect.direction2d direction
         )
 
 
@@ -154,8 +156,10 @@ fromAngleIsConsistentWithToAngle : Test
 fromAngleIsConsistentWithToAngle =
     Test.fuzz Fuzz.direction2d
         "fromAngle is consistent with toAngle"
-        (Expect.roundTrip Expect.direction2d
-            (Direction2d.toAngle >> Direction2d.fromAngle)
+        (\direction ->
+            Direction2d.toAngle direction
+                |> Direction2d.fromAngle
+                |> Expect.direction2d direction
         )
 
 
@@ -165,7 +169,7 @@ xComponentIsConsistentWithComponentIn =
         "xComponent is consistent with componentIn"
         (\direction ->
             Direction2d.xComponent direction
-                |> Expect.float
+                |> Expect.exactly
                     (Direction2d.componentIn Direction2d.x direction)
         )
 
@@ -176,7 +180,7 @@ yComponentIsConsistentWithComponentIn =
         "yComponent is consistent with componentIn"
         (\direction ->
             Direction2d.yComponent direction
-                |> Expect.float
+                |> Expect.exactly
                     (Direction2d.componentIn Direction2d.y direction)
         )
 
@@ -287,7 +291,7 @@ components =
     Test.fuzz Fuzz.direction2d "components and xComponent/yComponent are consistent" <|
         \direction ->
             Expect.all
-                [ Tuple.first >> Expect.float (Direction2d.xComponent direction)
-                , Tuple.second >> Expect.float (Direction2d.yComponent direction)
+                [ Tuple.first >> Expect.exactly (Direction2d.xComponent direction)
+                , Tuple.second >> Expect.exactly (Direction2d.yComponent direction)
                 ]
                 (Direction2d.components direction)

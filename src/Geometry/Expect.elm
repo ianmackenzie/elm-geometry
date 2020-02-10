@@ -8,77 +8,45 @@
 
 
 module Geometry.Expect exposing
-    ( Comparison
-    , angle
-    , angleWithin
-    , approximately
-    , arc2d
-    , arc3d
-    , axis2d
-    , axis3d
-    , boundingBox2d
-    , boundingBox2dWithin
-    , boundingBox3d
-    , boundingBox3dWithin
-    , circle2d
-    , circle3d
-    , cubicSpline2d
-    , cubicSpline3d
-    , cylinder3d
-    , direction2d
-    , direction2dWithin
-    , direction3d
-    , direction3dWithin
-    , exactly
-    , expect
-    , float
-    , frame2d
-    , frame3d
+    ( exactly
+    , quantity, quantityWithin, quantityAtLeast, quantityAtMost, quantityGreaterThan, quantityLessThan, angle, angleWithin
+    , point2d, point2dWithin, point2dContainedIn, point3d, point3dWithin, point3dContainedIn
+    , vector2d, vector2dWithin, vector3d, vector3dWithin
+    , direction2d, direction2dWithin, direction3d, direction3dWithin
+    , boundingBox2d, boundingBox2dWithin, boundingBox3d, boundingBox3dWithin
+    , lineSegment2d, lineSegment2dWithin, lineSegment3d, lineSegment3dWithin, triangle2d, triangle2dWithin, triangle3d, triangle3dWithin, polyline2d, polyline2dWithin, polyline3d, polyline3dWithin, polygon2d, polygon2dWithin
+    , arc2d, arc3d, circle2d, circle3d, cubicSpline2d, cubicSpline3d, cylinder3d, quadraticSpline2d, quadraticSpline3d, sphere3d
+    , axis2d, axis3d, frame2d, frame3d, plane3d, sketchPlane3d
     , just
-    , lineSegment2d
-    , lineSegment2dWithin
-    , lineSegment3d
-    , lineSegment3dWithin
-    , maybe
-    , plane3d
-    , point2d
-    , point2dContainedIn
-    , point2dWithin
-    , point3d
-    , point3dContainedIn
-    , point3dWithin
-    , polygon2d
-    , polygon2dWithin
-    , polyline2d
-    , polyline2dWithin
-    , polyline3d
-    , polyline3dWithin
-    , quadraticSpline2d
-    , quadraticSpline3d
-    , quantityAtLeast
-    , quantityAtMost
-    , quantityGreaterThan
-    , quantityLessThan
-    , quantityWithin
-    , roundTrip
-    , sketchPlane3d
-    , sphere3d
-    , triangle2d
-    , triangle2dWithin
-    , triangle3d
-    , triangle3dWithin
-    , validBoundingBox2d
-    , validBoundingBox3d
-    , validDirection2d
-    , validDirection3d
-    , validFrame2d
-    , validFrame3d
-    , validSketchPlane3d
-    , vector2d
-    , vector2dWithin
-    , vector3d
-    , vector3dWithin
+    , validDirection2d, validDirection3d, validBoundingBox2d, validBoundingBox3d, validFrame2d, validFrame3d, validSketchPlane3d
+    , direction2dPerpendicularTo, direction3dPerpendicularTo
     )
+
+{-|
+
+@docs exactly
+
+@docs quantity, quantityWithin, quantityAtLeast, quantityAtMost, quantityGreaterThan, quantityLessThan, angle, angleWithin
+
+@docs point2d, point2dWithin, point2dContainedIn, point3d, point3dWithin, point3dContainedIn
+
+@docs vector2d, vector2dWithin, vector3d, vector3dWithin
+
+@docs direction2d, direction2dWithin, direction3d, direction3dWithin
+
+@docs boundingBox2d, boundingBox2dWithin, boundingBox3d, boundingBox3dWithin
+
+@docs lineSegment2d, lineSegment2dWithin, lineSegment3d, lineSegment3dWithin, triangle2d, triangle2dWithin, triangle3d, triangle3dWithin, polyline2d, polyline2dWithin, polyline3d, polyline3dWithin, polygon2d, polygon2dWithin
+
+@docs arc2d, arc3d, circle2d, circle3d, cubicSpline2d, cubicSpline3d, cylinder3d, quadraticSpline2d, quadraticSpline3d, sphere3d
+
+@docs axis2d, axis3d, frame2d, frame3d, plane3d, sketchPlane3d
+
+@docs just
+
+@docs validDirection2d, validDirection3d, validBoundingBox2d, validBoundingBox3d, validFrame2d, validFrame3d, validSketchPlane3d
+
+-}
 
 import Angle exposing (Angle)
 import Arc2d exposing (Arc2d)
@@ -161,35 +129,14 @@ listOf comparison firstList secondList =
                 && listOf comparison firstTail secondTail
 
 
-just : (expected -> actual -> Expectation) -> expected -> Maybe actual -> Expectation
-just expect_ expectedValue actualMaybe =
+just : (actual -> Expectation) -> Maybe actual -> Expectation
+just expectation actualMaybe =
     case actualMaybe of
         Just actualValue ->
-            actualValue |> expect_ expectedValue
+            expectation actualValue
 
         Nothing ->
             Expect.fail "Expected a Just but got Nothing"
-
-
-maybe : (expected -> actual -> Expectation) -> Maybe expected -> Maybe actual -> Expectation
-maybe expect_ expectedMaybe actualMaybe =
-    case ( expectedMaybe, actualMaybe ) of
-        ( Just expectedValue, Just actualValue ) ->
-            actualValue |> expect_ expectedValue
-
-        ( Just _, Nothing ) ->
-            Expect.fail "Expected a Just but got Nothing"
-
-        ( Nothing, Just _ ) ->
-            Expect.fail "Expected Nothing but got a Just"
-
-        ( Nothing, Nothing ) ->
-            Expect.pass
-
-
-roundTrip : (a -> a -> Expectation) -> (a -> a) -> a -> Expectation
-roundTrip comparison function value =
-    comparison value (function value)
 
 
 defaultTolerance : Float
@@ -202,8 +149,8 @@ quantityWithin (Quantity tolerance) (Quantity first) (Quantity second) =
     Expect.within (Expect.Absolute tolerance) first second
 
 
-approximately : Quantity Float units -> Quantity Float units -> Expectation
-approximately (Quantity first) (Quantity second) =
+quantity : Quantity Float units -> Quantity Float units -> Expectation
+quantity (Quantity first) (Quantity second) =
     Expect.within (Expect.AbsoluteOrRelative defaultTolerance defaultTolerance)
         first
         second
@@ -328,6 +275,11 @@ direction2dWithin tolerance =
     expect (Direction2d.equalWithin tolerance)
 
 
+direction2dPerpendicularTo : Direction2d coordinates -> Direction2d coordinates -> Expectation
+direction2dPerpendicularTo firstDirection secondDirection =
+    secondDirection |> Direction2d.componentIn firstDirection |> float 0
+
+
 validDirection3d : Direction3d coordinates -> Expectation
 validDirection3d direction =
     let
@@ -363,6 +315,11 @@ direction3d =
 direction3dWithin : Angle -> Direction3d coordinates -> Direction3d coordinates -> Expectation
 direction3dWithin tolerance =
     expect (Direction3d.equalWithin tolerance)
+
+
+direction3dPerpendicularTo : Direction3d coordinates -> Direction3d coordinates -> Expectation
+direction3dPerpendicularTo firstDirection secondDirection =
+    secondDirection |> Direction3d.componentIn firstDirection |> float 0
 
 
 point2dTolerance : Point2d units coordinates -> Quantity Float units
@@ -687,7 +644,7 @@ boundingBox2dBy equalTo first =
 
 boundingBox2d : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Expectation
 boundingBox2d =
-    boundingBox2dBy approximately
+    boundingBox2dBy quantity
 
 
 boundingBox2dWithin : Quantity Float units -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Expectation
@@ -742,7 +699,7 @@ boundingBox3dBy equalTo first =
 
 boundingBox3d : BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> Expectation
 boundingBox3d =
-    boundingBox3dBy approximately
+    boundingBox3dBy quantity
 
 
 boundingBox3dWithin : Quantity Float units -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> Expectation
@@ -879,7 +836,7 @@ circle2d : Circle2d units coordinates -> Circle2d units coordinates -> Expectati
 circle2d first =
     Expect.all
         [ Circle2d.centerPoint >> point2d (Circle2d.centerPoint first)
-        , Circle2d.radius >> approximately (Circle2d.radius first)
+        , Circle2d.radius >> quantity (Circle2d.radius first)
         ]
 
 
@@ -888,7 +845,7 @@ circle3d first =
     Expect.all
         [ Circle3d.centerPoint >> point3d (Circle3d.centerPoint first)
         , Circle3d.axialDirection >> direction3d (Circle3d.axialDirection first)
-        , Circle3d.radius >> approximately (Circle3d.radius first)
+        , Circle3d.radius >> quantity (Circle3d.radius first)
         ]
 
 
@@ -896,7 +853,7 @@ sphere3d : Sphere3d units coordinates -> Sphere3d units coordinates -> Expectati
 sphere3d first =
     Expect.all
         [ Sphere3d.centerPoint >> point3d (Sphere3d.centerPoint first)
-        , Sphere3d.radius >> approximately (Sphere3d.radius first)
+        , Sphere3d.radius >> quantity (Sphere3d.radius first)
         ]
 
 
@@ -904,8 +861,8 @@ cylinder3d : Cylinder3d units coordinates -> Cylinder3d units coordinates -> Exp
 cylinder3d first =
     Expect.all
         [ Cylinder3d.axis >> axis3d (Cylinder3d.axis first)
-        , Cylinder3d.radius >> approximately (Cylinder3d.radius first)
-        , Cylinder3d.length >> approximately (Cylinder3d.length first)
+        , Cylinder3d.radius >> quantity (Cylinder3d.radius first)
+        , Cylinder3d.length >> quantity (Cylinder3d.length first)
         ]
 
 
@@ -914,7 +871,7 @@ arc2d first =
     Expect.all
         [ Arc2d.startPoint >> point2d (Arc2d.startPoint first)
         , Arc2d.endPoint >> point2d (Arc2d.endPoint first)
-        , Arc2d.sweptAngle >> approximately (Arc2d.sweptAngle first)
+        , Arc2d.sweptAngle >> quantity (Arc2d.sweptAngle first)
         ]
 
 
@@ -923,7 +880,7 @@ arc3d first =
     Expect.all
         [ Arc3d.startPoint >> point3d (Arc3d.startPoint first)
         , Arc3d.endPoint >> point3d (Arc3d.endPoint first)
-        , Arc3d.sweptAngle >> approximately (Arc3d.sweptAngle first)
+        , Arc3d.sweptAngle >> quantity (Arc3d.sweptAngle first)
         , Arc3d.axialDirection >> direction3d (Arc3d.axialDirection first)
         ]
 

@@ -74,7 +74,7 @@ centroidOfSingleSegmentIsSameAsMidpoint =
                     Point3d.midpoint p1 p2
             in
             Polyline3d.centroid monoline
-                |> Expect.just Expect.point3d expectedCentroid
+                |> Expect.just (Expect.point3d expectedCentroid)
 
 
 centroidOfRightAngle : Test
@@ -88,10 +88,12 @@ centroidOfRightAngle =
                         , Point3d.fromTuple meters ( armLength, 0, 0 )
                         , Point3d.fromTuple meters ( armLength, 0, armLength )
                         ]
+
+                expectedCentroid =
+                    Point3d.meters (0.75 * armLength) 0 (0.25 * armLength)
             in
             Polyline3d.centroid angle
-                |> Expect.just Expect.point3d
-                    (Point3d.fromTuple meters ( 0.75 * armLength, 0, 0.25 * armLength ))
+                |> Expect.just (Expect.point3d expectedCentroid)
 
 
 centroidOfStepShape : Test
@@ -106,10 +108,12 @@ centroidOfStepShape =
                         , Point3d.fromTuple meters ( armLength, armLength, 0 )
                         , Point3d.fromTuple meters ( 2 * armLength, armLength, 0 )
                         ]
+
+                expectedCentroid =
+                    Point3d.meters armLength (armLength / 2) 0
             in
             Polyline3d.centroid angle
-                |> Expect.just Expect.point3d
-                    (Point3d.fromTuple meters ( armLength, armLength / 2, 0 ))
+                |> Expect.just (Expect.point3d expectedCentroid)
 
 
 centroidOfOpenSquare : Test
@@ -124,10 +128,12 @@ centroidOfOpenSquare =
                         , Point3d.fromTuple meters ( sideLength, sideLength, 0 )
                         , Point3d.fromTuple meters ( sideLength, 0, 0 )
                         ]
+
+                expectedCentroid =
+                    Point3d.meters (sideLength / 2) (sideLength * 2 / 3) 0
             in
             Polyline3d.centroid squareline
-                |> Expect.just Expect.point3d
-                    (Point3d.fromTuple meters ( sideLength / 2, sideLength * 2 / 3, 0 ))
+                |> Expect.just (Expect.point3d expectedCentroid)
 
 
 centroidOfClosedSquare : Test
@@ -143,10 +149,12 @@ centroidOfClosedSquare =
                         , Point3d.fromTuple meters ( sideLength, 0, 0 )
                         , Point3d.fromTuple meters ( 0, 0, 0 )
                         ]
+
+                expectedCentroid =
+                    Point3d.meters (sideLength / 2) 0 (sideLength / 2)
             in
             Polyline3d.centroid squareline
-                |> Expect.just Expect.point3d
-                    (Point3d.fromTuple meters ( sideLength / 2, 0, sideLength / 2 ))
+                |> Expect.just (Expect.point3d expectedCentroid)
 
 
 centroidIsWithinBoundingBox : Test

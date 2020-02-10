@@ -47,7 +47,7 @@ intersectionWorksProperly =
                                 area =
                                     Triangle2d.area triangle
                             in
-                            Expect.approximately Quantity.zero area
+                            Expect.quantity Quantity.zero area
 
                         -- Check that point is actually between the two
                         -- endpoints (almost enough of a check by itself, but
@@ -64,7 +64,7 @@ intersectionWorksProperly =
                                 secondDistance =
                                     Point2d.distanceFrom point endPoint
                             in
-                            Expect.approximately
+                            Expect.quantity
                                 (LineSegment2d.length segment)
                                 (firstDistance |> Quantity.plus secondDistance)
 
@@ -368,7 +368,7 @@ sharedEndpointOnThirdSegmentInducesAnIntersection =
                             |> Expect.all
                                 [ Tuple.first >> Expect.point2d sharedPoint
                                 , Tuple.second
-                                    >> Expect.approximately Quantity.zero
+                                    >> Expect.quantity Quantity.zero
                                 ]
 
                     ( Nothing, Just p2 ) ->
@@ -380,7 +380,7 @@ sharedEndpointOnThirdSegmentInducesAnIntersection =
                             |> Expect.all
                                 [ Tuple.first >> Expect.point2d sharedPoint
                                 , Tuple.second
-                                    >> Expect.approximately Quantity.zero
+                                    >> Expect.quantity Quantity.zero
                                 ]
 
             else
