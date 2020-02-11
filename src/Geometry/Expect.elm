@@ -8,41 +8,102 @@
 
 
 module Geometry.Expect exposing
-    ( exactly
-    , quantity, quantityWithin, quantityAtLeast, quantityAtMost, quantityGreaterThan, quantityLessThan, angle, angleWithin
+    ( exactly, just
+    , quantity, quantityWithin, angle, angleWithin
+    , quantityAtLeast, quantityAtMost, quantityGreaterThan, quantityLessThan
     , point2d, point2dWithin, point2dContainedIn, point3d, point3dWithin, point3dContainedIn
     , vector2d, vector2dWithin, vector3d, vector3dWithin
-    , direction2d, direction2dWithin, direction3d, direction3dWithin
+    , direction2d, direction2dWithin, direction2dPerpendicularTo, direction3d, direction3dWithin, direction3dPerpendicularTo
     , boundingBox2d, boundingBox2dWithin, boundingBox3d, boundingBox3dWithin
     , lineSegment2d, lineSegment2dWithin, lineSegment3d, lineSegment3dWithin, triangle2d, triangle2dWithin, triangle3d, triangle3dWithin, polyline2d, polyline2dWithin, polyline3d, polyline3dWithin, polygon2d, polygon2dWithin
     , arc2d, arc3d, circle2d, circle3d, cubicSpline2d, cubicSpline3d, cylinder3d, quadraticSpline2d, quadraticSpline3d, sphere3d
     , axis2d, axis3d, frame2d, frame3d, plane3d, sketchPlane3d
-    , just
     , validDirection2d, validDirection3d, validBoundingBox2d, validBoundingBox3d, validFrame2d, validFrame3d, validSketchPlane3d
-    , direction2dPerpendicularTo, direction3dPerpendicularTo
     )
 
-{-|
+{-| This module contains functions that construct [`Expectation`](https://package.elm-lang.org/packages/elm-explorations/test/latest/Expect)s
+for `elm-geometry` types. In general, all expectations use an
+absolute-or-relative tolerance of 1e-12; for example,
 
-@docs exactly
+    actualPoint |> Expect.point2d expectedPoint
 
-@docs quantity, quantityWithin, quantityAtLeast, quantityAtMost, quantityGreaterThan, quantityLessThan, angle, angleWithin
+will pass if the distance from `actualPoint` to `expectedPoint` is less than
+1e-12 meters _or_ if it is less than 1e-12 times the distance of `actualPoint`
+from the origin (so that a larger absolute tolerance is used for points far from
+the origin).
+
+This module has been designed so that in most cases you can use
+
+    import Geometry.Expect as Expect
+
+to 'merge' it with the `Expect` module from `elm-explorations/test`, without
+running into any naming conflicts; examples in this module assume the module has
+been imported this way.
+
+
+# Generic helpers
+
+@docs exactly, just
+
+
+# `Quantity` equality
+
+@docs quantity, quantityWithin, angle, angleWithin
+
+
+# `Quantity` comparison
+
+These functions all behave just like [the corresponding ones in
+`elm-explorations/test`](https://package.elm-lang.org/packages/elm-explorations/test/latest/Expect#numeric-comparisons).
+Unlike most other functions in this module, they do _not_ implicitly include a
+tolerance.
+
+@docs quantityAtLeast, quantityAtMost, quantityGreaterThan, quantityLessThan
+
+
+# Points
 
 @docs point2d, point2dWithin, point2dContainedIn, point3d, point3dWithin, point3dContainedIn
 
+
+# Vectors
+
 @docs vector2d, vector2dWithin, vector3d, vector3dWithin
 
-@docs direction2d, direction2dWithin, direction3d, direction3dWithin
+
+# Directions
+
+@docs direction2d, direction2dWithin, direction2dPerpendicularTo, direction3d, direction3dWithin, direction3dPerpendicularTo
+
+
+# Bounding boxes
 
 @docs boundingBox2d, boundingBox2dWithin, boundingBox3d, boundingBox3dWithin
 
+
+# Simple geometry
+
 @docs lineSegment2d, lineSegment2dWithin, lineSegment3d, lineSegment3dWithin, triangle2d, triangle2dWithin, triangle3d, triangle3dWithin, polyline2d, polyline2dWithin, polyline3d, polyline3dWithin, polygon2d, polygon2dWithin
+
+
+# Complex geometry
 
 @docs arc2d, arc3d, circle2d, circle3d, cubicSpline2d, cubicSpline3d, cylinder3d, quadraticSpline2d, quadraticSpline3d, sphere3d
 
+
+# Datums
+
 @docs axis2d, axis3d, frame2d, frame3d, plane3d, sketchPlane3d
 
-@docs just
+
+# Advanced
+
+These functions check for things like "directions have length 1", "bounding box
+min and max values are in the correct order", and "frame basis directions are
+mutually perpendicular". Since these properties are generally guaranteed by
+`elm-geometry`, it should only be necessary to use these expectation functions
+if you have some low-level code that calls functions such as
+`Direction2d.unsafe` or `Frame3d.unsafe`.
 
 @docs validDirection2d, validDirection3d, validBoundingBox2d, validBoundingBox3d, validFrame2d, validFrame3d, validSketchPlane3d
 
@@ -129,6 +190,23 @@ listOf comparison firstList secondList =
                 && listOf comparison firstTail secondTail
 
 
+{-| Check if a `Maybe` value is of the form `Just x` and `x` satisfies the given
+expectation function. For example, since `Vector2d.direction` returns a `Maybe
+Direction2d`, you might test it like
+
+    Vector2d.meters 2 2
+        |> Vector2d.direction
+        |> Expect.just
+            (Expect.direction2d (Direction2d.degrees 45))
+
+Note that if you want to verify that a function returns `Nothing`, you can
+simply use [`Expect.equal`](https://package.elm-lang.org/packages/elm-explorations/test/latest/Expect#equal):
+
+    Vector2d.meters 0 0
+        |> Vector2d.direction
+        |> Expect.equal Nothing
+
+-}
 just : (actual -> Expectation) -> Maybe actual -> Expectation
 just expectation actualMaybe =
     case actualMaybe of
@@ -144,11 +222,32 @@ defaultTolerance =
     1.0e-12
 
 
+{-| Check that some `Quantity` value is equal to another within a specified
+absolute tolerance:
+
+    actualValue
+        |> Expect.quantityWithin givenTolerance
+            expectedValue
+
+    -- Passes:
+    Length.meters 1.05
+        |> Expect.quantityWithin (Length.centimeters 10)
+            (Length.meters 1)
+
+    -- Fails:
+    Length.meters 1.05
+        |> Expect.quantityWithin (Length.centimeters 1)
+            (Length.meters 1)
+
+-}
 quantityWithin : Quantity Float units -> Quantity Float units -> Quantity Float units -> Expectation
 quantityWithin (Quantity tolerance) (Quantity first) (Quantity second) =
     Expect.within (Expect.Absolute tolerance) first second
 
 
+{-| Check that one [`Quantity`](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Quantity)
+value is approximately equal to another.
+-}
 quantity : Quantity Float units -> Quantity Float units -> Expectation
 quantity (Quantity first) (Quantity second) =
     Expect.within (Expect.AbsoluteOrRelative defaultTolerance defaultTolerance)
@@ -156,11 +255,19 @@ quantity (Quantity first) (Quantity second) =
         second
 
 
+{-| Check if one `Float` value is _exactly_ equal to another.
+
+Note that this is usually only desirable in low-level numeric code and most
+tests should use [`Expect.float`](#float).
+
+-}
 exactly : Float -> Float -> Expectation
 exactly actual expected =
     actual |> Expect.within (Expect.Absolute 0.0) expected
 
 
+{-| Check that one `Float` value is approximately equal to another.
+-}
 float : Float -> Float -> Expectation
 float first second =
     Expect.within (Expect.AbsoluteOrRelative defaultTolerance defaultTolerance)
@@ -168,21 +275,25 @@ float first second =
         second
 
 
+{-| -}
 quantityGreaterThan : Quantity Float units -> Quantity Float units -> Expectation
 quantityGreaterThan (Quantity y) (Quantity x) =
     x |> Expect.greaterThan y
 
 
+{-| -}
 quantityLessThan : Quantity Float units -> Quantity Float units -> Expectation
 quantityLessThan (Quantity y) (Quantity x) =
     x |> Expect.lessThan y
 
 
+{-| -}
 quantityAtMost : Quantity Float units -> Quantity Float units -> Expectation
 quantityAtMost (Quantity y) (Quantity x) =
     x |> Expect.atMost y
 
 
+{-| -}
 quantityAtLeast : Quantity Float units -> Quantity Float units -> Expectation
 quantityAtLeast (Quantity y) (Quantity x) =
     x |> Expect.atLeast y
@@ -194,11 +305,30 @@ absoluteToleranceFor magnitude =
         (Quantity.abs magnitude |> Quantity.multiplyBy defaultTolerance)
 
 
+{-| Check that one `Angle` is approximately equal to another.
+
+Note that this will consider angles in the geometric sense, not the numerical
+sense; 0 degrees, 360 degrees, 720 degrees and -360 degrees are all considered
+to be equal. However, since `Angle` values are also `Quantity` values, you can
+use `Expect.quantity` if you _do_ want a pure numerical comparison.
+
+-}
 angle : Angle -> Angle -> Expectation
 angle first second =
     angleWithin (Angle.radians defaultTolerance) first second
 
 
+{-| Check if two angles are equal within a given tolerance. Note that as with
+`angle`, this will properly handle angles that 'wrap around':
+
+    -- Passes because geometrically speaking, there's only
+    -- a 4 degree difference between 358 degrees and 2
+    -- degrees:
+    Angle.degrees 358
+        |> Expect.angleWithin (Angle.degrees 5)
+            (Angle.degrees 2)
+
+-}
 angleWithin : Angle -> Angle -> Angle -> Expectation
 angleWithin tolerance =
     let
@@ -221,26 +351,37 @@ angleWithin tolerance =
     expect comparison
 
 
+{-| Check that two `Vector2d` values are approximately equal.
+-}
 vector2d : Vector2d units coordinates -> Vector2d units coordinates -> Expectation
 vector2d first second =
     vector2dWithin (absoluteToleranceFor (Vector2d.length first)) first second
 
 
+{-| Check that two `Vector2d` values are equal to within the given tolerance
+(the difference between the two vectors has magnitude less than that tolerance).
+-}
 vector2dWithin : Quantity Float units -> Vector2d units coordinates -> Vector2d units coordinates -> Expectation
 vector2dWithin tolerance =
     expect (Vector2d.equalWithin tolerance)
 
 
+{-| Check that two `Vector3d` values are approximately equal.
+-}
 vector3d : Vector3d units coordinates -> Vector3d units coordinates -> Expectation
 vector3d first second =
     vector3dWithin (absoluteToleranceFor (Vector3d.length first)) first second
 
 
+{-| Check that two `Vector3d` values are equal to within the given tolerance
+(the difference between the two vectors has magnitude less than that tolerance).
+-}
 vector3dWithin : Quantity Float units -> Vector3d units coordinates -> Vector3d units coordinates -> Expectation
 vector3dWithin tolerance =
     expect (Vector3d.equalWithin tolerance)
 
 
+{-| -}
 validDirection2d : Direction2d coordinates -> Expectation
 validDirection2d direction =
     let
@@ -265,21 +406,29 @@ validDirection2d direction =
             )
 
 
+{-| Check that two `Direction2d` values are approximately equal.
+-}
 direction2d : Direction2d coordinates -> Direction2d coordinates -> Expectation
 direction2d =
     direction2dWithin (Angle.radians defaultTolerance)
 
 
+{-| Check that two `Direction2d` values are equal to within the given angular
+tolerance.
+-}
 direction2dWithin : Angle -> Direction2d coordinates -> Direction2d coordinates -> Expectation
 direction2dWithin tolerance =
     expect (Direction2d.equalWithin tolerance)
 
 
+{-| Check that one `Direction2d` is approximately perpendicular to another.
+-}
 direction2dPerpendicularTo : Direction2d coordinates -> Direction2d coordinates -> Expectation
 direction2dPerpendicularTo firstDirection secondDirection =
     secondDirection |> Direction2d.componentIn firstDirection |> float 0
 
 
+{-| -}
 validDirection3d : Direction3d coordinates -> Expectation
 validDirection3d direction =
     let
@@ -307,16 +456,23 @@ validDirection3d direction =
             )
 
 
+{-| Check that two `Direction3d` values are approximately equal.
+-}
 direction3d : Direction3d coordinates -> Direction3d coordinates -> Expectation
 direction3d =
     direction3dWithin (Angle.radians defaultTolerance)
 
 
+{-| Check that two `Direction3d` values are equal to within the given angular
+tolerance.
+-}
 direction3dWithin : Angle -> Direction3d coordinates -> Direction3d coordinates -> Expectation
 direction3dWithin tolerance =
     expect (Direction3d.equalWithin tolerance)
 
 
+{-| Check that one `Direction3d` is approximately perpendicular to another.
+-}
 direction3dPerpendicularTo : Direction3d coordinates -> Direction3d coordinates -> Expectation
 direction3dPerpendicularTo firstDirection secondDirection =
     secondDirection |> Direction3d.componentIn firstDirection |> float 0
@@ -327,11 +483,16 @@ point2dTolerance point =
     absoluteToleranceFor (Point2d.distanceFrom Point2d.origin point)
 
 
+{-| Check that two `Point2d` values are approximately equal.
+-}
 point2d : Point2d units coordinates -> Point2d units coordinates -> Expectation
 point2d first second =
     point2dWithin (point2dTolerance first) first second
 
 
+{-| Check that two `Point2d` values are equal to within the given tolerance
+(the distance between the two points is less than that tolerance).
+-}
 point2dWithin : Quantity Float units -> Point2d units coordinates -> Point2d units coordinates -> Expectation
 point2dWithin tolerance =
     expect (Point2d.equalWithin tolerance)
@@ -342,16 +503,24 @@ point3dTolerance point =
     absoluteToleranceFor (Point3d.distanceFrom Point3d.origin point)
 
 
+{-| Check that two `Point3d` values are approximately equal.
+-}
 point3d : Point3d units coordinates -> Point3d units coordinates -> Expectation
 point3d first second =
     point3dWithin (point3dTolerance first) first second
 
 
+{-| Check that two `Point3d` values are equal to within the given tolerance
+(the distance between the two points is less than that tolerance).
+-}
 point3dWithin : Quantity Float units -> Point3d units coordinates -> Point3d units coordinates -> Expectation
 point3dWithin tolerance =
     expect (Point3d.equalWithin tolerance)
 
 
+{-| Check that two `Axis2d` values are approximately equal (have the same
+origin point and direction).
+-}
 axis2d : Axis2d units coordinates -> Axis2d units coordinates -> Expectation
 axis2d first =
     Expect.all
@@ -360,6 +529,9 @@ axis2d first =
         ]
 
 
+{-| Check that two `Axis3d` values are approximately equal (have the same
+origin point and direction).
+-}
 axis3d : Axis3d units coordinates -> Axis3d units coordinates -> Expectation
 axis3d first =
     Expect.all
@@ -368,6 +540,9 @@ axis3d first =
         ]
 
 
+{-| Check that two `Plane3d` values are approximately equal (have the same
+origin point and normal direction).
+-}
 plane3d : Plane3d units coordinates -> Plane3d units coordinates -> Expectation
 plane3d first =
     Expect.all
@@ -376,6 +551,7 @@ plane3d first =
         ]
 
 
+{-| -}
 validFrame2d : Frame2d units coordinates defines -> Expectation
 validFrame2d =
     Expect.all
@@ -405,6 +581,9 @@ validFrame2d =
         ]
 
 
+{-| Check that two `Frame2d` values are approximately equal (have the same
+origin point and X/Y directions).
+-}
 frame2d : Frame2d units coordinates defines -> Frame2d units coordinates defines -> Expectation
 frame2d first =
     Expect.all
@@ -414,6 +593,7 @@ frame2d first =
         ]
 
 
+{-| -}
 validFrame3d : Frame3d units coordinates defines -> Expectation
 validFrame3d =
     Expect.all
@@ -459,6 +639,9 @@ validFrame3d =
         ]
 
 
+{-| Check that two `Frame3d` values are approximately equal (have the same
+origin point and X/Y/Z directions).
+-}
 frame3d : Frame3d units coordinates defines -> Frame3d units coordinates defines -> Expectation
 frame3d first =
     Expect.all
@@ -469,6 +652,9 @@ frame3d first =
         ]
 
 
+{-| Check that two `SketchPlane3d` values are approximately equal (have the same
+origin point and X/Y directions).
+-}
 sketchPlane3d : SketchPlane3d units coordinates defines -> SketchPlane3d units coordinates defines -> Expectation
 sketchPlane3d first =
     Expect.all
@@ -481,6 +667,7 @@ sketchPlane3d first =
         ]
 
 
+{-| -}
 validSketchPlane3d : SketchPlane3d units coordinates defines -> Expectation
 validSketchPlane3d =
     Expect.all
@@ -510,6 +697,9 @@ validSketchPlane3d =
         ]
 
 
+{-| Check that two `LineSegment2d` values are approximately equal (have the same
+endpoints).
+-}
 lineSegment2d : LineSegment2d units coordinates -> LineSegment2d units coordinates -> Expectation
 lineSegment2d first =
     Expect.all
@@ -520,6 +710,10 @@ lineSegment2d first =
         ]
 
 
+{-| Check that two `LineSegment2d` values are equal within the given tolerance
+(the endpoints of one are equal to the endpoints of the other, within the given
+tolerance).
+-}
 lineSegment2dWithin : Quantity Float units -> LineSegment2d units coordinates -> LineSegment2d units coordinates -> Expectation
 lineSegment2dWithin tolerance first =
     Expect.all
@@ -530,6 +724,9 @@ lineSegment2dWithin tolerance first =
         ]
 
 
+{-| Check that two `LineSegment3d` values are approximately equal (have the same
+endpoints).
+-}
 lineSegment3d : LineSegment3d units coordinates -> LineSegment3d units coordinates -> Expectation
 lineSegment3d first =
     Expect.all
@@ -540,6 +737,10 @@ lineSegment3d first =
         ]
 
 
+{-| Check that two `LineSegment3d` values are equal within the given tolerance
+(the endpoints of one are equal to the endpoints of the other, within the given
+tolerance).
+-}
 lineSegment3dWithin : Quantity Float units -> LineSegment3d units coordinates -> LineSegment3d units coordinates -> Expectation
 lineSegment3dWithin tolerance first =
     Expect.all
@@ -581,11 +782,18 @@ triangle2dBy equalTo first =
         ]
 
 
+{-| Check that two `Triangle2d` values are approximately equal (have the same
+vertices).
+-}
 triangle2d : Triangle2d units coordinates -> Triangle2d units coordinates -> Expectation
 triangle2d =
     triangle2dBy point2d
 
 
+{-| Check that two `Triangle2d` values are equal within the given tolerance
+(each vertex of the first triangle is equal to the corresponding vertex of the
+second triangle, within the given tolerance).
+-}
 triangle2dWithin : Quantity Float units -> Triangle2d units coordinates -> Triangle2d units coordinates -> Expectation
 triangle2dWithin tolerance =
     triangle2dBy (point2dWithin tolerance)
@@ -622,11 +830,18 @@ triangle3dBy equalTo first =
         ]
 
 
+{-| Check that two `Triangle3d` values are approximately equal (have the same
+vertices).
+-}
 triangle3d : Triangle3d units coordinates -> Triangle3d units coordinates -> Expectation
 triangle3d =
     triangle3dBy point3d
 
 
+{-| Check that two `Triangle3d` values are equal within the given tolerance
+(each vertex of the first triangle is equal to the corresponding vertex of the
+second triangle, within the given tolerance).
+-}
 triangle3dWithin : Quantity Float units -> Triangle3d units coordinates -> Triangle3d units coordinates -> Expectation
 triangle3dWithin tolerance =
     triangle3dBy (point3dWithin tolerance)
@@ -642,16 +857,26 @@ boundingBox2dBy equalTo first =
         ]
 
 
+{-| Check that two `BoundingBox2d` values are approximately equal (have the same
+min/max values).
+-}
 boundingBox2d : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Expectation
 boundingBox2d =
     boundingBox2dBy quantity
 
 
+{-| Check that two `BoundingBox2d` values are equal within the given tolerance
+(every min/max value of the first box is equal, to within the given tolerance,
+of the corresponding min/max value of the second box).
+-}
 boundingBox2dWithin : Quantity Float units -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Expectation
 boundingBox2dWithin tolerance =
     boundingBox2dBy (quantityWithin tolerance)
 
 
+{-| Check that a `Point2d` is approximately contained in a given
+`BoundingBox2d`.
+-}
 point2dContainedIn : BoundingBox2d units coordinates -> Point2d units coordinates -> Expectation
 point2dContainedIn box point =
     let
@@ -697,16 +922,26 @@ boundingBox3dBy equalTo first =
         ]
 
 
+{-| Check that two `BoundingBox3d` values are approximately equal (have the same
+min/max values).
+-}
 boundingBox3d : BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> Expectation
 boundingBox3d =
     boundingBox3dBy quantity
 
 
+{-| Check that two `BoundingBox3d` values are equal within the given tolerance
+(every min/max value of the first box is equal, to within the given tolerance,
+of the corresponding min/max value of the second box).
+-}
 boundingBox3dWithin : Quantity Float units -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates -> Expectation
 boundingBox3dWithin tolerance =
     boundingBox3dBy (quantityWithin tolerance)
 
 
+{-| Check that a `Point3d` is approximately contained in a given
+`BoundingBox3d`.
+-}
 point3dContainedIn : BoundingBox3d units coordinates -> Point3d units coordinates -> Expectation
 point3dContainedIn box point =
     let
@@ -764,11 +999,19 @@ polyline2dBy equalTo first =
         ]
 
 
+{-| Check that two `Polyline2d` values are approximately equal (have the same
+vertices).
+-}
 polyline2d : Polyline2d units coordinates -> Polyline2d units coordinates -> Expectation
 polyline2d =
     polyline2dBy point2d
 
 
+{-| Check that two `Polyline2d` values are equal within the given tolerance
+(have the same number of vertices, and each vertex of the first polyline is
+equal to the corresponding vertex of the second polyline within the given
+tolerance).
+-}
 polyline2dWithin : Quantity Float units -> Polyline2d units coordinates -> Polyline2d units coordinates -> Expectation
 polyline2dWithin tolerance =
     polyline2dBy (point2dWithin tolerance)
@@ -793,11 +1036,19 @@ polyline3dBy equalPoints first =
         ]
 
 
+{-| Check that two `Polyline3d` values are approximately equal (have the same
+vertices).
+-}
 polyline3d : Polyline3d units coordinates -> Polyline3d units coordinates -> Expectation
 polyline3d =
     polyline3dBy point3d
 
 
+{-| Check that two `Polyline3d` values are equal within the given tolerance
+(have the same number of vertices, and each vertex of the first polyline is
+equal to the corresponding vertex of the second polyline within the given
+tolerance).
+-}
 polyline3dWithin : Quantity Float units -> Polyline3d units coordinates -> Polyline3d units coordinates -> Expectation
 polyline3dWithin tolerance =
     polyline3dBy (point3dWithin tolerance)
@@ -822,16 +1073,26 @@ polygon2dBy equalPoints first =
         ]
 
 
+{-| Check that two `Polygon2d` values are approximately equal (have the same
+vertices).
+-}
 polygon2d : Polygon2d units coordinates -> Polygon2d units coordinates -> Expectation
 polygon2d =
     polygon2dBy point2d
 
 
+{-| Check that two `Polygon2d` values are equal within the given tolerance (have
+the same number of vertices, and each vertex of the first polygon is equal to
+the corresponding vertex of the second polygon within the given tolerance).
+-}
 polygon2dWithin : Quantity Float units -> Polygon2d units coordinates -> Polygon2d units coordinates -> Expectation
 polygon2dWithin tolerance =
     polygon2dBy (point2dWithin tolerance)
 
 
+{-| Check that two `Circle2d` values are approximately equal (have the same
+center point and radius).
+-}
 circle2d : Circle2d units coordinates -> Circle2d units coordinates -> Expectation
 circle2d first =
     Expect.all
@@ -840,6 +1101,9 @@ circle2d first =
         ]
 
 
+{-| Check that two `Circle3d` values are approximately equal (have the same
+center point, axial direction and radius).
+-}
 circle3d : Circle3d units coordinates -> Circle3d units coordinates -> Expectation
 circle3d first =
     Expect.all
@@ -849,6 +1113,9 @@ circle3d first =
         ]
 
 
+{-| Check that two `Sphere3d` values are approximately equal (have the same
+center point and radius).
+-}
 sphere3d : Sphere3d units coordinates -> Sphere3d units coordinates -> Expectation
 sphere3d first =
     Expect.all
@@ -857,6 +1124,9 @@ sphere3d first =
         ]
 
 
+{-| Check that two `Cylinder3d` values are approximately equal (have the same
+center point, axial direction, radius and length).
+-}
 cylinder3d : Cylinder3d units coordinates -> Cylinder3d units coordinates -> Expectation
 cylinder3d first =
     Expect.all
@@ -866,6 +1136,9 @@ cylinder3d first =
         ]
 
 
+{-| Check that two `Arc2d` values are approximately equal (have the same
+start point, end point and swept angle).
+-}
 arc2d : Arc2d units coordinates -> Arc2d units coordinates -> Expectation
 arc2d first =
     Expect.all
@@ -875,6 +1148,9 @@ arc2d first =
         ]
 
 
+{-| Check that two `Arc3d` values are approximately equal (have the same
+start point, end point, swept angle and axial direction).
+-}
 arc3d : Arc3d units coordinates -> Arc3d units coordinates -> Expectation
 arc3d first =
     Expect.all
@@ -885,6 +1161,9 @@ arc3d first =
         ]
 
 
+{-| Check that two `QuadraticSpline2d` values are approximately equal (have the
+same control points).
+-}
 quadraticSpline2d : QuadraticSpline2d units coordinates -> QuadraticSpline2d units coordinates -> Expectation
 quadraticSpline2d first =
     Expect.all
@@ -897,6 +1176,9 @@ quadraticSpline2d first =
         ]
 
 
+{-| Check that two `QuadraticSpline3d` values are approximately equal (have the
+same control points).
+-}
 quadraticSpline3d : QuadraticSpline3d units coordinates -> QuadraticSpline3d units coordinates -> Expectation
 quadraticSpline3d first =
     Expect.all
@@ -909,6 +1191,9 @@ quadraticSpline3d first =
         ]
 
 
+{-| Check that two `CubicSpline2d` values are approximately equal (have the
+same control points).
+-}
 cubicSpline2d : CubicSpline2d units coordinates -> CubicSpline2d units coordinates -> Expectation
 cubicSpline2d first =
     Expect.all
@@ -923,6 +1208,9 @@ cubicSpline2d first =
         ]
 
 
+{-| Check that two `CubicSpline3d` values are approximately equal (have the
+same control points).
+-}
 cubicSpline3d : CubicSpline3d units coordinates -> CubicSpline3d units coordinates -> Expectation
 cubicSpline3d first =
     Expect.all
@@ -937,6 +1225,7 @@ cubicSpline3d first =
         ]
 
 
+{-| -}
 validBoundingBox2d : BoundingBox2d units coordinates -> Expectation
 validBoundingBox2d boundingBox =
     let
@@ -956,6 +1245,7 @@ validBoundingBox2d boundingBox =
         Expect.pass
 
 
+{-| -}
 validBoundingBox3d : BoundingBox3d units coordinates -> Expectation
 validBoundingBox3d boundingBox =
     let

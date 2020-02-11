@@ -1,16 +1,24 @@
-module Tests.Generic.Curve3d exposing (Operations, transformations)
+module Tests.Generic.Curve3d exposing (GlobalCoordinates, LocalCoordinates, Operations, transformations)
 
 import Angle exposing (Angle)
 import Axis3d exposing (Axis3d)
 import Frame3d exposing (Frame3d)
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz exposing (GlobalCoordinates, LocalCoordinates)
+import Geometry.Fuzz as Fuzz
 import Length exposing (Meters)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Test exposing (Test)
 import Vector3d exposing (Vector3d)
+
+
+type GlobalCoordinates
+    = GlobalCoordinates
+
+
+type LocalCoordinates
+    = LocalCoordinates
 
 
 type alias Operations curve coordinates =
