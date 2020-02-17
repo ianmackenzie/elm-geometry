@@ -36,6 +36,7 @@
         "QuadraticSpline2d",
         "QuadraticSpline3d",
         "Rectangle2d",
+        "Rectangle3d",
         "SketchPlane3d",
         "Sphere3d",
         "SweptAngle",
