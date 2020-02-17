@@ -1,6 +1,6 @@
 module Rectangle3d exposing
     ( Rectangle3d
-    , centeredOn, on
+    , on, centeredOn
     , dimensions, axes, xAxis, yAxis, centerPoint, area, vertices, edges, boundingBox
     , interpolate
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
@@ -8,11 +8,19 @@ module Rectangle3d exposing
     , relativeTo, placeIn
     )
 
-{-|
+{-| The `Rectangle3d` type is an extension of `Rectangle2d` that exists in 3D.
+In most cases it will be most convenient to create a `Rectangle3d` by creating
+a `Rectangle2d` on a particular `SketchPlane3d`, using [`Rectangle3d.on`](#on).
+This module then contains functionality for:
+
+  - Finding the edges and vertices of rectangles
+  - Interpolating points within rectangles
+  - Scaling, rotating, translating, mirroring and projecting rectangles
+  - Converting rectangles between different coordinate systems
 
 @docs Rectangle3d
 
-@docs centeredOn, on
+@docs on, centeredOn
 
 @docs dimensions, axes, xAxis, yAxis, centerPoint, area, vertices, edges, boundingBox
 
@@ -47,7 +55,22 @@ type alias Rectangle3d units coordinates =
 
 
 {-| Construct a 3D rectangle lying _on_ a sketch plane by providing a 2D
-rectangle specified in XY coordinates _within_ the sketch plane.
+rectangle specified in XY coordinates _within_ the sketch plane. For example,
+to create a 3D rectangle lying on the YZ plane:
+
+    rectangle =
+        Rectangle3d.on SketchPlane3d.yz <|
+            Rectangle2d.from
+                (Point2d.meters 1 2)
+                (Point2d.meters 3 4)
+
+    Rectangle3d.vertices rectangle
+    --> [ Point3d.meters 0 1 2
+    --> , Point3d.meters 0 3 2
+    --> , Point3d.meters 0 3 4
+    --> , Point3d.meters 0 1 4
+    --> ]
+
 -}
 on :
     SketchPlane3d units coordinates3d { defines : coordinates2d }
