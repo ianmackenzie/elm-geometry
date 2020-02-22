@@ -250,7 +250,10 @@ intersectionWithPlane plane axis =
         Just (axisOrigin |> Point3d.translateIn axisDirection axialDistance)
 
 
-{-| Intersection of sphere and axis. May be two points (these could be the same for a tangent) or nothing
+{-| Attempt to find the intersection of an axis with a sphere. The endpoints of
+the returned line segment will be in order of signed distance along the axis
+(the end point of the line segment will be further along the axis than the start
+point). Returns `Nothing` if there is no intersection.
 -}
 intersectionWithSphere : Sphere3d units coordinates -> Axis3d units coordinates -> Maybe (LineSegment3d units coordinates)
 intersectionWithSphere (Types.Sphere3d { centerPoint, radius }) axis =
