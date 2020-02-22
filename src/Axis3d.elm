@@ -12,7 +12,7 @@ module Axis3d exposing
     , x, y, z
     , through, withDirection, throughPoints, on
     , originPoint, direction
-    , intersectionWithPlane
+    , intersectionWithPlane, intersectionWithSphere
     , reverse, moveTo, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
     , at, at_
     , relativeTo, placeIn, projectInto
@@ -45,7 +45,7 @@ by an origin point and direction. Axes have several uses, such as:
 
 # Intersection
 
-@docs intersectionWithPlane
+@docs intersectionWithPlane, intersectionWithSphere
 
 
 # Transformations
@@ -67,9 +67,9 @@ by an origin point and direction. Axes have several uses, such as:
 import Angle exposing (Angle)
 import Axis2d exposing (Axis2d)
 import Direction3d exposing (Direction3d)
-import Geometry.Types as Types exposing (Frame3d, Plane3d, SketchPlane3d)
+import Geometry.Types as Types exposing (Axis3d(..), Frame3d, LineSegment3d(..), Plane3d, Point3d(..), SketchPlane3d, Sphere3d(..), Vector3d(..))
 import Point3d exposing (Point3d)
-import Quantity exposing (Quantity, Rate)
+import Quantity exposing (Quantity(..), Rate)
 import Vector3d exposing (Vector3d)
 
 
@@ -248,6 +248,48 @@ intersectionWithPlane plane axis =
                 normalDistance |> Quantity.multiplyBy (-1 / normalComponent)
         in
         Just (axisOrigin |> Point3d.translateIn axisDirection axialDistance)
+
+
+{-| Intersection of sphere and axis. May be two points (these could be the same for a tangent) or nothing
+-}
+intersectionWithSphere : Sphere3d units coordinates -> Axis3d units coordinates -> Maybe (LineSegment3d units coordinates)
+intersectionWithSphere (Sphere3d { centerPoint, radius }) (Axis3d axis) =
+    let
+        circleCenterToOrigin =
+            Vector3d.from centerPoint axis.originPoint
+
+        (Vector3d cto) =
+            circleCenterToOrigin
+
+        ctoLengthSquared =
+            cto.x ^ 2 + cto.y ^ 2 + cto.z ^ 2
+
+        (Quantity dotProduct) =
+            Vector3d.dot (Vector3d (Direction3d.unwrap axis.direction)) circleCenterToOrigin
+
+        (Quantity r) =
+            radius
+
+        inRoot =
+            dotProduct ^ 2 - ctoLengthSquared + r ^ 2
+    in
+    if inRoot < 0 then
+        Nothing
+
+    else
+        let
+            d1 =
+                -dotProduct - sqrt inRoot
+
+            d2 =
+                -dotProduct + sqrt inRoot
+        in
+        Just
+            (LineSegment3d
+                ( Point3d.translateIn axis.direction (Quantity d1) axis.originPoint
+                , Point3d.translateIn axis.direction (Quantity d2) axis.originPoint
+                )
+            )
 
 
 {-| Reverse the direction of an axis while keeping the same origin point.

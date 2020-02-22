@@ -1,6 +1,7 @@
 module Tests.Axis3d exposing
     ( directionExample
     , intersectionWithPlane
+    , intersectionWithSphere
     , onExamples
     , originPointExample
     , throughPoints
@@ -18,11 +19,13 @@ import Expect
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Length exposing (meters)
+import LineSegment3d
 import Plane3d
 import Point2d
 import Point3d
 import Quantity
 import SketchPlane3d
+import Sphere3d
 import Test exposing (Test)
 
 
@@ -128,6 +131,52 @@ intersectionWithPlane =
             else
                 Expect.pass
         )
+
+
+intersectionWithSphere : Test
+intersectionWithSphere =
+    Test.describe "intersectionWithSphere"
+        [ Test.test "no intersection points" <|
+            \_ ->
+                let
+                    sphere =
+                        Sphere3d.withRadius (meters 1) (Point3d.meters 0 0 0)
+
+                    axis =
+                        Axis3d.through (Point3d.meters 6 0 0) Direction3d.y
+                in
+                Expect.equal (Axis3d.intersectionWithSphere sphere axis) Nothing
+        , Test.test "two intersection points" <|
+            \_ ->
+                let
+                    sphere =
+                        Sphere3d.withRadius (meters 1) (Point3d.meters 0 0 0)
+
+                    axis =
+                        Axis3d.through (Point3d.meters 0 0 0) Direction3d.y
+                in
+                Expect.equal (Axis3d.intersectionWithSphere sphere axis)
+                    (Just
+                        (LineSegment3d.fromEndpoints
+                            ( Point3d.meters 0 -1 0, Point3d.meters 0 1 0 )
+                        )
+                    )
+        , Test.test "the same intersection points" <|
+            \_ ->
+                let
+                    sphere =
+                        Sphere3d.withRadius (meters 1) (Point3d.meters 0 0 0)
+
+                    axis =
+                        Axis3d.through (Point3d.meters 1 0 0) Direction3d.y
+                in
+                Expect.equal (Axis3d.intersectionWithSphere sphere axis)
+                    (Just
+                        (LineSegment3d.fromEndpoints
+                            ( Point3d.meters 1 0 0, Point3d.meters 1 0 0 )
+                        )
+                    )
+        ]
 
 
 throughPoints : Test
