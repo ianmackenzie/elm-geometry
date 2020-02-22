@@ -67,7 +67,7 @@ by an origin point and direction. Axes have several uses, such as:
 import Angle exposing (Angle)
 import Axis2d exposing (Axis2d)
 import Direction3d exposing (Direction3d)
-import Geometry.Types as Types exposing (Axis3d(..), Frame3d, LineSegment3d(..), Plane3d, Point3d(..), SketchPlane3d, Sphere3d(..), Vector3d(..))
+import Geometry.Types as Types exposing (Frame3d, LineSegment3d, Plane3d, SketchPlane3d, Sphere3d)
 import Point3d exposing (Point3d)
 import Quantity exposing (Quantity(..), Rate)
 import Vector3d exposing (Vector3d)
@@ -253,19 +253,25 @@ intersectionWithPlane plane axis =
 {-| Intersection of sphere and axis. May be two points (these could be the same for a tangent) or nothing
 -}
 intersectionWithSphere : Sphere3d units coordinates -> Axis3d units coordinates -> Maybe (LineSegment3d units coordinates)
-intersectionWithSphere (Sphere3d { centerPoint, radius }) (Axis3d axis) =
+intersectionWithSphere (Types.Sphere3d { centerPoint, radius }) axis =
     let
-        circleCenterToOrigin =
-            Vector3d.from centerPoint axis.originPoint
+        axisOrigin =
+            originPoint axis
 
-        (Vector3d cto) =
+        axisDirection =
+            direction axis
+
+        circleCenterToOrigin =
+            Vector3d.from centerPoint axisOrigin
+
+        (Types.Vector3d cto) =
             circleCenterToOrigin
 
         ctoLengthSquared =
             cto.x ^ 2 + cto.y ^ 2 + cto.z ^ 2
 
         (Quantity dotProduct) =
-            Vector3d.dot (Vector3d (Direction3d.unwrap axis.direction)) circleCenterToOrigin
+            Vector3d.componentIn axisDirection circleCenterToOrigin
 
         (Quantity r) =
             radius
@@ -285,9 +291,9 @@ intersectionWithSphere (Sphere3d { centerPoint, radius }) (Axis3d axis) =
                 -dotProduct + sqrt inRoot
         in
         Just
-            (LineSegment3d
-                ( Point3d.translateIn axis.direction (Quantity d1) axis.originPoint
-                , Point3d.translateIn axis.direction (Quantity d2) axis.originPoint
+            (Types.LineSegment3d
+                ( Point3d.along axis (Quantity d1)
+                , Point3d.along axis (Quantity d2)
                 )
             )
 
