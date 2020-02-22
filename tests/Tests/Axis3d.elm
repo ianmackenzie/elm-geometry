@@ -176,6 +176,43 @@ intersectionWithSphere =
                             ( Point3d.meters 1 0 0, Point3d.meters 1 0 0 )
                         )
                     )
+        , Test.fuzz2
+            Fuzz.axis3d
+            Fuzz.sphere3d
+            "intersection points should be on the sphere and the axis"
+            (\axis sphere ->
+                case Axis3d.intersectionWithSphere sphere axis of
+                    Just lineSegment ->
+                        let
+                            -- An intersection point should be on the sphere
+                            -- (have a distance from the sphere center point
+                            -- equal to the sphere radius), and on the axis
+                            -- (have a zero distance from the axis)
+                            validIntersectionPoint point =
+                                Expect.all
+                                    [ Point3d.distanceFrom (Sphere3d.centerPoint sphere)
+                                        >> Expect.quantity (Sphere3d.radius sphere)
+                                    , Point3d.distanceFromAxis axis
+                                        >> Expect.quantity Quantity.zero
+                                    ]
+                                    point
+                        in
+                        -- Both intersection points should be valid
+                        Expect.all
+                            [ LineSegment3d.startPoint >> validIntersectionPoint
+                            , LineSegment3d.endPoint >> validIntersectionPoint
+                            ]
+                            lineSegment
+
+                    Nothing ->
+                        -- If the axis does not intersect the sphere, then the
+                        -- distance from the sphere center point to the axis
+                        -- should be greater than the radius of the sphere (if
+                        -- it was less, then there should be an intersection!)
+                        Sphere3d.centerPoint sphere
+                            |> Point3d.distanceFromAxis axis
+                            |> Expect.quantityGreaterThan (Sphere3d.radius sphere)
+            )
         ]
 
 
