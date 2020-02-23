@@ -12,7 +12,7 @@ module Axis3d exposing
     , x, y, z
     , through, withDirection, throughPoints, on
     , originPoint, direction
-    , intersectionWithPlane
+    , intersectionWithPlane, intersectionWithSphere
     , reverse, moveTo, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
     , at, at_
     , relativeTo, placeIn, projectInto
@@ -45,7 +45,7 @@ by an origin point and direction. Axes have several uses, such as:
 
 # Intersection
 
-@docs intersectionWithPlane
+@docs intersectionWithPlane, intersectionWithSphere
 
 
 # Transformations
@@ -67,9 +67,9 @@ by an origin point and direction. Axes have several uses, such as:
 import Angle exposing (Angle)
 import Axis2d exposing (Axis2d)
 import Direction3d exposing (Direction3d)
-import Geometry.Types as Types exposing (Frame3d, Plane3d, SketchPlane3d)
+import Geometry.Types as Types exposing (Frame3d, LineSegment3d, Plane3d, SketchPlane3d, Sphere3d)
 import Point3d exposing (Point3d)
-import Quantity exposing (Quantity, Rate)
+import Quantity exposing (Quantity(..), Rate)
 import Vector3d exposing (Vector3d)
 
 
@@ -248,6 +248,57 @@ intersectionWithPlane plane axis =
                 normalDistance |> Quantity.multiplyBy (-1 / normalComponent)
         in
         Just (axisOrigin |> Point3d.translateIn axisDirection axialDistance)
+
+
+{-| Attempt to find the intersection of an axis with a sphere. The endpoints of
+the returned line segment will be in order of signed distance along the axis
+(the end point of the line segment will be further along the axis than the start
+point). Returns `Nothing` if there is no intersection.
+-}
+intersectionWithSphere : Sphere3d units coordinates -> Axis3d units coordinates -> Maybe (LineSegment3d units coordinates)
+intersectionWithSphere (Types.Sphere3d { centerPoint, radius }) axis =
+    let
+        axisOrigin =
+            originPoint axis
+
+        axisDirection =
+            direction axis
+
+        circleCenterToOrigin =
+            Vector3d.from centerPoint axisOrigin
+
+        (Types.Vector3d cto) =
+            circleCenterToOrigin
+
+        ctoLengthSquared =
+            cto.x ^ 2 + cto.y ^ 2 + cto.z ^ 2
+
+        (Quantity dotProduct) =
+            Vector3d.componentIn axisDirection circleCenterToOrigin
+
+        (Quantity r) =
+            radius
+
+        inRoot =
+            dotProduct ^ 2 - ctoLengthSquared + r ^ 2
+    in
+    if inRoot < 0 then
+        Nothing
+
+    else
+        let
+            d1 =
+                -dotProduct - sqrt inRoot
+
+            d2 =
+                -dotProduct + sqrt inRoot
+        in
+        Just
+            (Types.LineSegment3d
+                ( Point3d.along axis (Quantity d1)
+                , Point3d.along axis (Quantity d2)
+                )
+            )
 
 
 {-| Reverse the direction of an axis while keeping the same origin point.
