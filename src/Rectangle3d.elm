@@ -20,15 +20,36 @@ This module then contains functionality for:
 
 @docs Rectangle3d
 
+
+# Construction
+
 @docs on, centeredOn
+
+
+# Properties
 
 @docs dimensions, axes, xAxis, yAxis, centerPoint, area, vertices, edges, boundingBox
 
+
+# Interpolation
+
 @docs interpolate
+
+
+# Transformation
+
+These transformations generally behave just like [the ones in the `Point3d`
+module](Point3d#transformations).
 
 @docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
 
+
+# Unit conversions
+
 @docs at, at_
+
+
+# Coordinate conversions
 
 @docs relativeTo, placeIn
 
