@@ -9,7 +9,7 @@
 
 module BoundingBox2d exposing
     ( BoundingBox2d
-    , from, fromExtrema, singleton
+    , from, fromExtrema, withDimensions, singleton
     , union, intersection
     , hull, hull3, hullN, hullOf, hullOfN
     , aggregate, aggregate3, aggregateN, aggregateOf, aggregateOfN
@@ -42,7 +42,7 @@ box of an object than the object itself, such as:
 
 # Constructors
 
-@docs from, fromExtrema, singleton
+@docs from, fromExtrema, withDimensions, singleton
 
 
 ## Booleans
@@ -177,6 +177,32 @@ fromExtrema given =
             , minY = Quantity.min given.minY given.maxY
             , maxY = Quantity.max given.minY given.maxY
             }
+
+
+{-| Construct a bounding box given its overall dimensions (width and height)
+and center point.
+-}
+withDimensions :
+    ( Quantity Float units, Quantity Float units )
+    -> Point2d units coordinates
+    -> BoundingBox2d units coordinates
+withDimensions ( givenWidth, givenHeight ) givenCenterPoint =
+    let
+        ( x0, y0 ) =
+            Point2d.coordinates givenCenterPoint
+
+        halfWidth =
+            Quantity.half (Quantity.abs givenWidth)
+
+        halfHeight =
+            Quantity.half (Quantity.abs givenHeight)
+    in
+    Types.BoundingBox2d
+        { minX = x0 |> Quantity.minus halfWidth
+        , maxX = x0 |> Quantity.plus halfWidth
+        , minY = y0 |> Quantity.minus halfHeight
+        , maxY = y0 |> Quantity.plus halfHeight
+        }
 
 
 {-| Construct a zero-width bounding box containing a single point.

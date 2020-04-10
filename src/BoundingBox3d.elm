@@ -9,7 +9,7 @@
 
 module BoundingBox3d exposing
     ( BoundingBox3d
-    , from, fromExtrema, singleton
+    , from, fromExtrema, withDimensions, singleton
     , union, intersection
     , hull, hull3, hullN, hullOf, hullOfN
     , aggregate, aggregate3, aggregateN, aggregateOf, aggregateOfN
@@ -41,7 +41,7 @@ box of an object than the object itself, such as:
 
 # Constructors
 
-@docs from, fromExtrema, singleton
+@docs from, fromExtrema, withDimensions, singleton
 
 
 ## Booleans
@@ -193,6 +193,37 @@ fromExtrema given =
             , minZ = Quantity.min given.minZ given.maxZ
             , maxZ = Quantity.max given.minZ given.maxZ
             }
+
+
+{-| Construct a bounding box given its overall dimensions (length, width,
+height) and center point.
+-}
+withDimensions :
+    ( Quantity Float units, Quantity Float units, Quantity Float units )
+    -> Point3d units coordinates
+    -> BoundingBox3d units coordinates
+withDimensions ( givenLength, givenWidth, givenHeight ) givenCenterPoint =
+    let
+        ( x0, y0, z0 ) =
+            Point3d.coordinates givenCenterPoint
+
+        halfLength =
+            Quantity.half (Quantity.abs givenLength)
+
+        halfWidth =
+            Quantity.half (Quantity.abs givenWidth)
+
+        halfHeight =
+            Quantity.half (Quantity.abs givenHeight)
+    in
+    Types.BoundingBox3d
+        { minX = x0 |> Quantity.minus halfLength
+        , maxX = x0 |> Quantity.plus halfLength
+        , minY = y0 |> Quantity.minus halfWidth
+        , maxY = y0 |> Quantity.plus halfWidth
+        , minZ = z0 |> Quantity.minus halfHeight
+        , maxZ = z0 |> Quantity.plus halfHeight
+        }
 
 
 {-| Construct a zero-width bounding box containing a single point.
