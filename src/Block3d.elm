@@ -9,7 +9,7 @@
 
 module Block3d exposing
     ( Block3d
-    , with, from, centeredOn
+    , with, from, centeredOn, fromBoundingBox
     , dimensions, axes, xAxis, yAxis, zAxis, centerPoint, volume, vertices, edges, boundingBox
     , interpolate
     , contains
@@ -34,7 +34,7 @@ they can have arbitrary orientation and so can be rotated, mirrored etc.
 
 # Construction
 
-@docs with, from, centeredOn
+@docs with, from, centeredOn, fromBoundingBox
 
 
 # Properties
@@ -179,6 +179,17 @@ centeredOn givenAxes ( xDimension, yDimension, zDimension ) =
         { axes = Frame3d.copy givenAxes
         , dimensions = ( Quantity.abs xDimension, Quantity.abs yDimension, Quantity.abs zDimension )
         }
+
+
+{-| Convert a `BoundingBox3d` to the equivalent axis-aligned `Block3d`.
+-}
+fromBoundingBox : BoundingBox3d units coordinates -> Block3d units coordinates
+fromBoundingBox givenBox =
+    let
+        { minX, maxX, minY, maxY, minZ, maxZ } =
+            BoundingBox3d.extrema givenBox
+    in
+    axisAligned minX minY minZ maxX maxY maxZ
 
 
 axisAligned :
