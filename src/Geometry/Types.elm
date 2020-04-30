@@ -17,6 +17,7 @@ module Geometry.Types exposing
     , BoundingBox3d(..)
     , Circle2d(..)
     , Circle3d(..)
+    , Cone3d(..)
     , CubicSpline2d(..)
     , CubicSpline3d(..)
     , Cylinder3d(..)
@@ -220,6 +221,14 @@ type Sphere3d units coordinates
 
 type Cylinder3d units coordinates
     = Cylinder3d
+        { axis : Axis3d units coordinates
+        , radius : Quantity Float units
+        , length : Quantity Float units
+        }
+
+
+type Cone3d units coordinates
+    = Cone3d
         { axis : Axis3d units coordinates
         , radius : Quantity Float units
         , length : Quantity Float units
