@@ -200,14 +200,14 @@ that forms the base of the cone.
 -}
 basePoint : Cone3d units coordinates -> Point3d units coordinates
 basePoint cone =
-    Point3d.along (axis cone) (Quantity.multiplyBy -0.5 (length cone))
+    Axis3d.originPoint (axis cone)
 
 
 {-| Get the tip point of a cone.
 -}
 tipPoint : Cone3d units coordinates -> Point3d units coordinates
 tipPoint cone =
-    Point3d.along (axis cone) (Quantity.multiplyBy 0.5 (length cone))
+    Point3d.along (axis cone) (length cone)
 
 
 {-| Get the circle at the base of a cone. The axial direction of this
