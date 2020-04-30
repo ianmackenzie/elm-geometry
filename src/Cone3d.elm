@@ -2,7 +2,7 @@ module Cone3d exposing
     ( Cone3d
     , along, startingAt, from
     , axis, axialDirection, radius, diameter, length, basePoint
-    , tipPoint, base, volume, boundingBox
+    , tipPoint, base, basePlane, volume, boundingBox
     , contains
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , at, at_
@@ -28,7 +28,7 @@ length. This module contains functionality for:
 # Properties
 
 @docs axis, axialDirection, radius, diameter, length, basePoint
-@docs tipPoint, base, volume, boundingBox
+@docs tipPoint, base, basePlane, volume, boundingBox
 
 
 # Queries
@@ -219,6 +219,14 @@ base cone =
     Circle3d.withRadius (radius cone)
         (Direction3d.reverse (axialDirection cone))
         (basePoint cone)
+
+
+{-| Get the plane at the base of a cone. The normal direction of this
+plane will be the same as the axial direction of the cone itself.
+-}
+basePlane : Cone3d units coordinates -> Plane3d units coordinates
+basePlane cone =
+    Plane3d.through (basePoint cone) (axialDirection cone)
 
 
 {-| Get the volume of a cone.
