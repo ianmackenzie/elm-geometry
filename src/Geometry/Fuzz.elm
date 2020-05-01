@@ -13,7 +13,7 @@ module Geometry.Fuzz exposing
     , point2d, point3d, vector2d, vector3d, direction2d, direction3d, boundingBox2d, boundingBox3d
     , axis2d, axis3d, frame2d, frame3d, plane3d, sketchPlane3d
     , lineSegment2d, lineSegment3d, triangle2d, triangle3d, rectangle2d, block3d, polyline2d, polyline3d, polygon2d
-    , arc2d, arc3d, circle2d, circle3d, cubicSpline2d, cubicSpline3d, cylinder3d, ellipse2d, ellipticalArc2d, quadraticSpline2d, quadraticSpline3d, sphere3d
+    , arc2d, arc3d, circle2d, circle3d, cubicSpline2d, cubicSpline3d, cylinder3d, cone3d, ellipse2d, ellipticalArc2d, quadraticSpline2d, quadraticSpline3d, sphere3d
     )
 
 {-| A collection of [`Fuzzer`](https://package.elm-lang.org/packages/elm-explorations/test/latest/Fuzz)s
@@ -61,7 +61,7 @@ running into any naming conflicts.
 
 # Complex geometry
 
-@docs arc2d, arc3d, circle2d, circle3d, cubicSpline2d, cubicSpline3d, cylinder3d, ellipse2d, ellipticalArc2d, quadraticSpline2d, quadraticSpline3d, sphere3d
+@docs arc2d, arc3d, circle2d, circle3d, cubicSpline2d, cubicSpline3d, cylinder3d, cone3d, ellipse2d, ellipticalArc2d, quadraticSpline2d, quadraticSpline3d, sphere3d
 
 -}
 
@@ -75,6 +75,7 @@ import BoundingBox2d exposing (BoundingBox2d)
 import BoundingBox3d exposing (BoundingBox3d)
 import Circle2d exposing (Circle2d)
 import Circle3d exposing (Circle3d)
+import Cone3d exposing (Cone3d)
 import CubicSpline2d exposing (CubicSpline2d)
 import CubicSpline3d exposing (CubicSpline3d)
 import Cylinder3d exposing (Cylinder3d)
@@ -522,3 +523,17 @@ cylinder3d =
                 }
     in
     Fuzz.map4 cylinder point3d direction3d positiveLength positiveLength
+
+
+{-| Generate a random `Cone3d`.
+-}
+cone3d : Fuzzer (Cone3d Meters coordinates)
+cone3d =
+    let
+        cone basePoint direction coneLength coneRadius =
+            Cone3d.startingAt basePoint direction <|
+                { length = coneLength
+                , radius = coneRadius
+                }
+    in
+    Fuzz.map4 cone point3d direction3d positiveLength positiveLength
