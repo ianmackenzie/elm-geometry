@@ -16,7 +16,7 @@ module Geometry.Expect exposing
     , direction2d, direction2dWithin, direction2dPerpendicularTo, direction3d, direction3dWithin, direction3dPerpendicularTo
     , boundingBox2d, boundingBox2dWithin, boundingBox3d, boundingBox3dWithin
     , lineSegment2d, lineSegment2dWithin, lineSegment3d, lineSegment3dWithin, triangle2d, triangle2dWithin, triangle3d, triangle3dWithin, polyline2d, polyline2dWithin, polyline3d, polyline3dWithin, polygon2d, polygon2dWithin
-    , arc2d, arc3d, circle2d, circle3d, cubicSpline2d, cubicSpline3d, cylinder3d, quadraticSpline2d, quadraticSpline3d, sphere3d
+    , arc2d, arc3d, circle2d, circle3d, cubicSpline2d, cubicSpline3d, cylinder3d, cone3d, quadraticSpline2d, quadraticSpline3d, sphere3d
     , axis2d, axis3d, frame2d, frame3d, plane3d, sketchPlane3d
     , validDirection2d, validDirection3d, validBoundingBox2d, validBoundingBox3d, validFrame2d, validFrame3d, validSketchPlane3d
     )
@@ -88,7 +88,7 @@ tolerance.
 
 # Complex geometry
 
-@docs arc2d, arc3d, circle2d, circle3d, cubicSpline2d, cubicSpline3d, cylinder3d, quadraticSpline2d, quadraticSpline3d, sphere3d
+@docs arc2d, arc3d, circle2d, circle3d, cubicSpline2d, cubicSpline3d, cylinder3d, cone3d, quadraticSpline2d, quadraticSpline3d, sphere3d
 
 
 # Datums
@@ -118,6 +118,7 @@ import BoundingBox2d exposing (BoundingBox2d)
 import BoundingBox3d exposing (BoundingBox3d)
 import Circle2d exposing (Circle2d)
 import Circle3d exposing (Circle3d)
+import Cone3d exposing (Cone3d)
 import CubicSpline2d exposing (CubicSpline2d)
 import CubicSpline3d exposing (CubicSpline3d)
 import Cylinder3d exposing (Cylinder3d)
@@ -1133,6 +1134,18 @@ cylinder3d first =
         [ Cylinder3d.axis >> axis3d (Cylinder3d.axis first)
         , Cylinder3d.radius >> quantity (Cylinder3d.radius first)
         , Cylinder3d.length >> quantity (Cylinder3d.length first)
+        ]
+
+
+{-| Check that two `Cone3d` values are approximately equal (have the same
+center point, axial direction, radius and length).
+-}
+cone3d : Cone3d units coordinates -> Cone3d units coordinates -> Expectation
+cone3d first =
+    Expect.all
+        [ Cone3d.axis >> axis3d (Cone3d.axis first)
+        , Cone3d.radius >> quantity (Cone3d.radius first)
+        , Cone3d.length >> quantity (Cone3d.length first)
         ]
 
 
