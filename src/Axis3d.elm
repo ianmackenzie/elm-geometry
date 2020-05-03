@@ -12,7 +12,7 @@ module Axis3d exposing
     , x, y, z
     , through, withDirection, throughPoints, on
     , originPoint, direction
-    , intersectionWithPlane, intersectionWithSphere
+    , intersectionWithPlane
     , reverse, moveTo, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
     , at, at_
     , relativeTo, placeIn, projectInto
@@ -45,7 +45,7 @@ by an origin point and direction. Axes have several uses, such as:
 
 # Intersection
 
-@docs intersectionWithPlane, intersectionWithSphere
+@docs intersectionWithPlane
 
 
 # Transformations
