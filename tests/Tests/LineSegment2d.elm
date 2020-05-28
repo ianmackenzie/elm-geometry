@@ -8,6 +8,8 @@ module Tests.LineSegment2d exposing
     , intersectionWorksProperly
     , reversingDoesNotAffectIntersection
     , sharedEndpointOnThirdSegmentInducesAnIntersection
+    , signedDistanceAlongContainsDistanceForAnyPoint
+    , signedDistanceFromContainsDistanceForAnyPoint
     )
 
 import Axis2d
@@ -19,6 +21,7 @@ import Length exposing (meters)
 import LineSegment2d
 import Point2d
 import Quantity
+import Quantity.Interval as Interval
 import Test exposing (Test)
 import Triangle2d
 import Vector2d
@@ -461,4 +464,40 @@ reversingDoesNotAffectIntersection =
 
                 _ ->
                     Expect.equal normalIntersection reversedIntersection
+        )
+
+
+signedDistanceFromContainsDistanceForAnyPoint : Test
+signedDistanceFromContainsDistanceForAnyPoint =
+    Test.fuzz3
+        Fuzz.lineSegment2d
+        (Fuzz.floatRange 0 1)
+        Fuzz.axis2d
+        "signedDistanceFrom contains distance for any point on the line segment"
+        (\lineSegment t axis ->
+            let
+                point =
+                    LineSegment2d.interpolate lineSegment t
+            in
+            LineSegment2d.signedDistanceFrom axis lineSegment
+                |> Interval.contains (Point2d.signedDistanceFrom axis point)
+                |> Expect.true "Interval should contain distance for any point on the line segment"
+        )
+
+
+signedDistanceAlongContainsDistanceForAnyPoint : Test
+signedDistanceAlongContainsDistanceForAnyPoint =
+    Test.fuzz3
+        Fuzz.lineSegment2d
+        (Fuzz.floatRange 0 1)
+        Fuzz.axis2d
+        "signedDistanceAlong contains distance for any point on the line segment"
+        (\lineSegment t axis ->
+            let
+                point =
+                    LineSegment2d.interpolate lineSegment t
+            in
+            LineSegment2d.signedDistanceAlong axis lineSegment
+                |> Interval.contains (Point2d.signedDistanceAlong axis point)
+                |> Expect.true "Interval should contain distance for any point on the line segment"
         )

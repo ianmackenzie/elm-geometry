@@ -13,6 +13,7 @@ module LineSegment2d exposing
     , startPoint, endPoint, endpoints, midpoint, length, direction, perpendicularDirection, vector, boundingBox
     , interpolate
     , intersectionPoint, intersectionWithAxis
+    , signedDistanceAlong, signedDistanceFrom
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapEndpoints
     , at, at_
     , relativeTo, placeIn
@@ -49,6 +50,11 @@ functionality such as:
 @docs intersectionPoint, intersectionWithAxis
 
 
+# Measurement
+
+@docs signedDistanceAlong, signedDistanceFrom
+
+
 # Transformations
 
 These transformations generally behave just like [the ones in the `Point2d`
@@ -76,6 +82,7 @@ import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import Point2d exposing (Point2d)
 import Quantity exposing (Quantity, Rate, Squared)
+import Quantity.Interval as Interval exposing (Interval)
 import Vector2d exposing (Vector2d)
 
 
@@ -500,6 +507,35 @@ intersectionWithAxis axis lineSegment =
         -- Both endpoints lie on the axis and are not equal to each other - no
         -- unique intersection point
         Nothing
+
+
+{-| Measure the distance of a line segment along an axis. This is the range of distances
+along the axis resulting from projecting the line segment perpendicularly onto the axis.
+
+Note that reversing the line segment will _not_ affect the result.
+
+-}
+signedDistanceAlong : Axis2d units coordinates -> LineSegment2d units coordinates -> Interval Float units
+signedDistanceAlong axis (Types.LineSegment2d ( p1, p2 )) =
+    Interval.from
+        (Point2d.signedDistanceAlong axis p1)
+        (Point2d.signedDistanceAlong axis p2)
+
+
+{-| Measure the distance of a line segment from an axis. If the returned interval:
+
+    - is entirely positive, then the line segment is to the left of the axis
+    - is entirely negative, then the line segment is to the right of the axis
+    - contains zero, then the line segment crosses the axis
+
+Note that reversing the line segment will _not_ affect the result.
+
+-}
+signedDistanceFrom : Axis2d units coordinates -> LineSegment2d units coordinates -> Interval Float units
+signedDistanceFrom axis (Types.LineSegment2d ( p1, p2 )) =
+    Interval.from
+        (Point2d.signedDistanceFrom axis p1)
+        (Point2d.signedDistanceFrom axis p2)
 
 
 {-| Scale a line segment about the given center point by the given scale.

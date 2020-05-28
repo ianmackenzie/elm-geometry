@@ -13,6 +13,7 @@ module LineSegment3d exposing
     , startPoint, endPoint, endpoints, midpoint, length, direction, perpendicularDirection, vector, boundingBox
     , interpolate
     , intersectionWithPlane
+    , signedDistanceAlong, signedDistanceFrom
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, mapEndpoints
     , at, at_
     , relativeTo, placeIn, projectInto
@@ -49,6 +50,11 @@ functionality such as:
 @docs intersectionWithPlane
 
 
+# Measurement
+
+@docs signedDistanceAlong, signedDistanceFrom
+
+
 # Transformations
 
 These transformations generally behave just like [the ones in the `Point3d`
@@ -78,6 +84,7 @@ import LineSegment2d exposing (LineSegment2d)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Quantity exposing (Quantity, Rate, Squared)
+import Quantity.Interval as Interval exposing (Interval)
 import SketchPlane3d exposing (SketchPlane3d)
 import Vector3d exposing (Vector3d)
 
@@ -320,6 +327,35 @@ intersectionWithPlane plane lineSegment =
         -- Both endpoints lie on the plane and are not equal to each other - no
         -- unique intersection point
         Nothing
+
+
+{-| Measure the distance of a line segment along an axis. This is the range of distances
+along the axis resulting from projecting the line segment perpendicularly onto the axis.
+
+Note that reversing the line segment will _not_ affect the result.
+
+-}
+signedDistanceAlong : Axis3d units coordinates -> LineSegment3d units coordinates -> Interval Float units
+signedDistanceAlong axis (Types.LineSegment3d ( p1, p2 )) =
+    Interval.from
+        (Point3d.signedDistanceAlong axis p1)
+        (Point3d.signedDistanceAlong axis p2)
+
+
+{-| Measure the distance of a line segment from a plane. If the returned interval:
+
+  - is entirely positive, then the line segment is above the plane
+  - is entirely negative, then the line segment is below the plane
+  - contains zero, then the line segment crosses the plane
+
+Note that reversing the line segment will _not_ affect the result.
+
+-}
+signedDistanceFrom : Plane3d units coordinates -> LineSegment3d units coordinates -> Interval Float units
+signedDistanceFrom plane (Types.LineSegment3d ( p1, p2 )) =
+    Interval.from
+        (Point3d.signedDistanceFrom plane p1)
+        (Point3d.signedDistanceFrom plane p2)
 
 
 {-| Get the length of a line segment.
