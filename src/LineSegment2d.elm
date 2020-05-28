@@ -524,9 +524,9 @@ signedDistanceAlong axis (Types.LineSegment2d ( p1, p2 )) =
 
 {-| Measure the distance of a line segment from an axis. If the returned interval:
 
-    - is entirely positive, then the line segment is to the left of the axis
-    - is entirely negative, then the line segment is to the right of the axis
-    - contains zero, then the line segment crosses the axis
+  - is entirely positive, then the line segment is to the left of the axis
+  - is entirely negative, then the line segment is to the right of the axis
+  - contains zero, then the line segment crosses the axis
 
 Note that reversing the line segment will _not_ affect the result.
 
