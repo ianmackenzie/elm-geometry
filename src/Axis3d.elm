@@ -12,7 +12,7 @@ module Axis3d exposing
     , x, y, z
     , through, withDirection, throughPoints, on
     , originPoint, direction
-    , intersectionWithPlane
+    , intersectionWithPlane, intersectionWithSphere
     , reverse, moveTo, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
     , at, at_
     , relativeTo, placeIn, projectInto
@@ -45,7 +45,7 @@ by an origin point and direction. Axes have several uses, such as:
 
 # Intersection
 
-@docs intersectionWithPlane
+@docs intersectionWithPlane, intersectionWithSphere
 
 
 # Transformations
@@ -250,12 +250,11 @@ intersectionWithPlane plane axis =
         Just (axisOrigin |> Point3d.translateIn axisDirection axialDistance)
 
 
-{-| Attempt to find the intersection of an axis with a sphere. The endpoints of
-the returned line segment will be in order of signed distance along the axis
-(the end point of the line segment will be further along the axis than the start
-point). Returns `Nothing` if there is no intersection.
+{-| Attempt to find the intersection of an axis with a sphere. The two points
+will be in order of signed distance along the axis. Returns `Nothing` if there
+is no intersection.
 -}
-intersectionWithSphere : Sphere3d units coordinates -> Axis3d units coordinates -> Maybe (LineSegment3d units coordinates)
+intersectionWithSphere : Sphere3d units coordinates -> Axis3d units coordinates -> Maybe ( Point3d units coordinates, Point3d units coordinates )
 intersectionWithSphere (Types.Sphere3d { centerPoint, radius }) axis =
     let
         axisOrigin =
@@ -294,10 +293,8 @@ intersectionWithSphere (Types.Sphere3d { centerPoint, radius }) axis =
                 -dotProduct + sqrt inRoot
         in
         Just
-            (Types.LineSegment3d
-                ( Point3d.along axis (Quantity d1)
-                , Point3d.along axis (Quantity d2)
-                )
+            ( Point3d.along axis (Quantity d1)
+            , Point3d.along axis (Quantity d2)
             )
 
 
