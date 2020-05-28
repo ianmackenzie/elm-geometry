@@ -116,7 +116,7 @@ import Geometry.Types as Types
 import LineSegment2d exposing (fromEndpoints, midpoint)
 import Point2d exposing (Point2d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
-import Quantity exposing (Quantity, Rate)
+import Quantity exposing (Quantity(..), Rate)
 import Vector2d exposing (Vector2d)
 
 
@@ -962,95 +962,92 @@ maxSecondDerivativeMagnitude spline =
 
 
 derivativeMagnitude : CubicSpline2d units coordinates -> Float -> Quantity Float units
-derivativeMagnitude spline =
+derivativeMagnitude (Types.CubicSpline2d spline) =
     let
-        p1 =
-            firstControlPoint spline
+        (Types.Point2d p1) =
+            spline.firstControlPoint
 
-        p2 =
-            secondControlPoint spline
+        (Types.Point2d p2) =
+            spline.secondControlPoint
 
-        p3 =
-            thirdControlPoint spline
+        (Types.Point2d p3) =
+            spline.thirdControlPoint
 
-        p4 =
-            fourthControlPoint spline
+        (Types.Point2d p4) =
+            spline.fourthControlPoint
 
         x1 =
-            Point2d.xCoordinate p1
+            p1.x
 
         y1 =
-            Point2d.yCoordinate p1
+            p1.y
 
         x2 =
-            Point2d.xCoordinate p2
+            p2.x
 
         y2 =
-            Point2d.yCoordinate p2
+            p2.y
 
         x3 =
-            Point2d.xCoordinate p3
+            p3.x
 
         y3 =
-            Point2d.yCoordinate p3
+            p3.y
 
         x4 =
-            Point2d.xCoordinate p4
+            p4.x
 
         y4 =
-            Point2d.yCoordinate p4
+            p4.y
 
         x12 =
-            x2 |> Quantity.minus x1
+            x2 - x1
 
         y12 =
-            y2 |> Quantity.minus y1
+            y2 - y1
 
         x23 =
-            x3 |> Quantity.minus x2
+            x3 - x2
 
         y23 =
-            y3 |> Quantity.minus y2
+            y3 - y2
 
         x34 =
-            x4 |> Quantity.minus x3
+            x4 - x3
 
         y34 =
-            y4 |> Quantity.minus y3
+            y4 - y3
 
         x123 =
-            x23 |> Quantity.minus x12
+            x23 - x12
 
         y123 =
-            y23 |> Quantity.minus y12
+            y23 - y12
 
         x234 =
-            x34 |> Quantity.minus x23
+            x34 - x23
 
         y234 =
-            y34 |> Quantity.minus y23
+            y34 - y23
     in
     \parameterValue ->
         let
             x13 =
-                x12 |> Quantity.plus (Quantity.multiplyBy parameterValue x123)
+                x12 + parameterValue * x123
 
             y13 =
-                y12 |> Quantity.plus (Quantity.multiplyBy parameterValue y123)
+                y12 + parameterValue * y123
 
             x24 =
-                x23 |> Quantity.plus (Quantity.multiplyBy parameterValue x234)
+                x23 + parameterValue * x234
 
             y24 =
-                y23 |> Quantity.plus (Quantity.multiplyBy parameterValue y234)
+                y23 + parameterValue * y234
 
             x14 =
-                Quantity.interpolateFrom x13 x24 parameterValue
+                x13 + parameterValue * (x24 - x13)
 
             y14 =
-                Quantity.interpolateFrom y13 y24 parameterValue
+                y13 + parameterValue * (y24 - y13)
         in
-        Quantity.multiplyBy 3
-            (Quantity.sqrt
-                (Quantity.squared x14 |> Quantity.plus (Quantity.squared y14))
-            )
+        Quantity (3 * sqrt (x14 * x14 + y14 * y14))
