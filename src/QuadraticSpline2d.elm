@@ -113,7 +113,7 @@ import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import Point2d exposing (Point2d)
-import Quantity exposing (Quantity, Rate)
+import Quantity exposing (Quantity(..), Rate)
 import Vector2d exposing (Vector2d)
 
 
@@ -320,65 +320,62 @@ firstDerivative spline parameterValue =
 
 
 derivativeMagnitude : QuadraticSpline2d units coordinates -> Float -> Quantity Float units
-derivativeMagnitude spline =
+derivativeMagnitude (Types.QuadraticSpline2d spline) =
     let
-        p1 =
-            firstControlPoint spline
+        (Types.Point2d p1) =
+            spline.firstControlPoint
 
-        p2 =
-            secondControlPoint spline
+        (Types.Point2d p2) =
+            spline.secondControlPoint
 
-        p3 =
-            thirdControlPoint spline
+        (Types.Point2d p3) =
+            spline.thirdControlPoint
 
         x1 =
-            Point2d.xCoordinate p1
+            p1.x
 
         y1 =
-            Point2d.yCoordinate p1
+            p1.y
 
         x2 =
-            Point2d.xCoordinate p2
+            p2.x
 
         y2 =
-            Point2d.yCoordinate p2
+            p2.y
 
         x3 =
-            Point2d.xCoordinate p3
+            p3.x
 
         y3 =
-            Point2d.yCoordinate p3
+            p3.y
 
         x12 =
-            x2 |> Quantity.minus x1
+            x2 - x1
 
         y12 =
-            y2 |> Quantity.minus y1
+            y2 - y1
 
         x23 =
-            x3 |> Quantity.minus x2
+            x3 - x2
 
         y23 =
-            y3 |> Quantity.minus y2
+            y3 - y2
 
         x123 =
-            x23 |> Quantity.minus x12
+            x23 - x12
 
         y123 =
-            y23 |> Quantity.minus y12
+            y23 - y12
     in
     \parameterValue ->
         let
             x13 =
-                x12 |> Quantity.plus (Quantity.multiplyBy parameterValue x123)
+                x12 + parameterValue * x123
 
             y13 =
-                y12 |> Quantity.plus (Quantity.multiplyBy parameterValue y123)
+                y12 + parameterValue * y123
         in
-        Quantity.multiplyBy 2
-            (Quantity.sqrt
-                (Quantity.squared x13 |> Quantity.plus (Quantity.squared y13))
-            )
+        Quantity (2 * sqrt (x13 * x13 + y13 * y13))
 
 
 {-| Represents a nondegenerate spline (one that has finite, non-zero length).

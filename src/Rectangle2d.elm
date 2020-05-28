@@ -9,7 +9,7 @@
 
 module Rectangle2d exposing
     ( Rectangle2d
-    , with, from, withDimensions, centeredOn, withXAxis, withYAxis
+    , with, from, withDimensions, centeredOn, withXAxis, withYAxis, fromBoundingBox
     , dimensions, axes, xAxis, yAxis, centerPoint, area, vertices, edges, boundingBox
     , interpolate
     , contains
@@ -35,7 +35,7 @@ they can have arbitrary orientation and so can be rotated, mirrored etc.
 
 # Construction
 
-@docs with, from, withDimensions, centeredOn, withXAxis, withYAxis
+@docs with, from, withDimensions, centeredOn, withXAxis, withYAxis, fromBoundingBox
 
 
 # Properties
@@ -234,6 +234,17 @@ rectangle will be centered on the axis' origin point.
 withYAxis : Axis2d units coordinates -> ( Quantity Float units, Quantity Float units ) -> Rectangle2d units coordinates
 withYAxis givenAxis givenDimensions =
     centeredOn (Frame2d.fromYAxis givenAxis) givenDimensions
+
+
+{-| Convert a `BoundingBox2d` to the equivalent axis-aligned `Rectangle2d`.
+-}
+fromBoundingBox : BoundingBox2d units coordinates -> Rectangle2d units coordinates
+fromBoundingBox givenBox =
+    let
+        { minX, maxX, minY, maxY } =
+            BoundingBox2d.extrema givenBox
+    in
+    axisAligned minX minY maxX maxY
 
 
 axisAligned : Quantity Float units -> Quantity Float units -> Quantity Float units -> Quantity Float units -> Rectangle2d units coordinates

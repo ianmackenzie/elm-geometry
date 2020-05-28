@@ -156,11 +156,7 @@ intersectionWithSphere =
                         Axis3d.through (Point3d.meters 0 0 0) Direction3d.y
                 in
                 Expect.equal (Axis3d.intersectionWithSphere sphere axis)
-                    (Just
-                        (LineSegment3d.fromEndpoints
-                            ( Point3d.meters 0 -1 0, Point3d.meters 0 1 0 )
-                        )
-                    )
+                    (Just ( Point3d.meters 0 -1 0, Point3d.meters 0 1 0 ))
         , Test.test "the same intersection points" <|
             \_ ->
                 let
@@ -171,18 +167,14 @@ intersectionWithSphere =
                         Axis3d.through (Point3d.meters 1 0 0) Direction3d.y
                 in
                 Expect.equal (Axis3d.intersectionWithSphere sphere axis)
-                    (Just
-                        (LineSegment3d.fromEndpoints
-                            ( Point3d.meters 1 0 0, Point3d.meters 1 0 0 )
-                        )
-                    )
+                    (Just ( Point3d.meters 1 0 0, Point3d.meters 1 0 0 ))
         , Test.fuzz2
             Fuzz.axis3d
             Fuzz.sphere3d
             "intersection points should be on the sphere and the axis"
             (\axis sphere ->
                 case Axis3d.intersectionWithSphere sphere axis of
-                    Just lineSegment ->
+                    Just pointPair ->
                         let
                             -- An intersection point should be on the sphere
                             -- (have a distance from the sphere center point
@@ -199,10 +191,10 @@ intersectionWithSphere =
                         in
                         -- Both intersection points should be valid
                         Expect.all
-                            [ LineSegment3d.startPoint >> validIntersectionPoint
-                            , LineSegment3d.endPoint >> validIntersectionPoint
+                            [ Tuple.first >> validIntersectionPoint
+                            , Tuple.second >> validIntersectionPoint
                             ]
-                            lineSegment
+                            pointPair
 
                     Nothing ->
                         -- If the axis does not intersect the sphere, then the

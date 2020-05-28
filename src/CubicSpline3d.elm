@@ -118,7 +118,7 @@ import LineSegment3d exposing (fromEndpoints, midpoint)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import QuadraticSpline3d exposing (QuadraticSpline3d)
-import Quantity exposing (Quantity, Rate)
+import Quantity exposing (Quantity(..), Rate)
 import SketchPlane3d exposing (SketchPlane3d)
 import Vector3d exposing (Vector3d)
 
@@ -1039,133 +1039,128 @@ maxSecondDerivativeMagnitude spline =
 
 
 derivativeMagnitude : CubicSpline3d units coordinates -> Float -> Quantity Float units
-derivativeMagnitude spline =
+derivativeMagnitude (Types.CubicSpline3d spline) =
     let
-        p1 =
-            firstControlPoint spline
+        (Types.Point3d p1) =
+            spline.firstControlPoint
 
-        p2 =
-            secondControlPoint spline
+        (Types.Point3d p2) =
+            spline.secondControlPoint
 
-        p3 =
-            thirdControlPoint spline
+        (Types.Point3d p3) =
+            spline.thirdControlPoint
 
-        p4 =
-            fourthControlPoint spline
+        (Types.Point3d p4) =
+            spline.fourthControlPoint
 
         x1 =
-            Point3d.xCoordinate p1
+            p1.x
 
         y1 =
-            Point3d.yCoordinate p1
+            p1.y
 
         z1 =
-            Point3d.zCoordinate p1
+            p1.z
 
         x2 =
-            Point3d.xCoordinate p2
+            p2.x
 
         y2 =
-            Point3d.yCoordinate p2
+            p2.y
 
         z2 =
-            Point3d.zCoordinate p2
+            p2.z
 
         x3 =
-            Point3d.xCoordinate p3
+            p3.x
 
         y3 =
-            Point3d.yCoordinate p3
+            p3.y
 
         z3 =
-            Point3d.zCoordinate p3
+            p3.z
 
         x4 =
-            Point3d.xCoordinate p4
+            p4.x
 
         y4 =
-            Point3d.yCoordinate p4
+            p4.y
 
         z4 =
-            Point3d.zCoordinate p4
+            p4.z
 
         x12 =
-            x2 |> Quantity.minus x1
+            x2 - x1
 
         y12 =
-            y2 |> Quantity.minus y1
+            y2 - y1
 
         z12 =
-            z2 |> Quantity.minus z1
+            z2 - z1
 
         x23 =
-            x3 |> Quantity.minus x2
+            x3 - x2
 
         y23 =
-            y3 |> Quantity.minus y2
+            y3 - y2
 
         z23 =
-            z3 |> Quantity.minus z2
+            z3 - z2
 
         x34 =
-            x4 |> Quantity.minus x3
+            x4 - x3
 
         y34 =
-            y4 |> Quantity.minus y3
+            y4 - y3
 
         z34 =
-            z4 |> Quantity.minus z3
+            z4 - z3
 
         x123 =
-            x23 |> Quantity.minus x12
+            x23 - x12
 
         y123 =
-            y23 |> Quantity.minus y12
+            y23 - y12
 
         z123 =
-            z23 |> Quantity.minus z12
+            z23 - z12
 
         x234 =
-            x34 |> Quantity.minus x23
+            x34 - x23
 
         y234 =
-            y34 |> Quantity.minus y23
+            y34 - y23
 
         z234 =
-            z34 |> Quantity.minus z23
+            z34 - z23
     in
     \parameterValue ->
         let
             x13 =
-                x12 |> Quantity.plus (Quantity.multiplyBy parameterValue x123)
+                x12 + parameterValue * x123
 
             y13 =
-                y12 |> Quantity.plus (Quantity.multiplyBy parameterValue y123)
+                y12 + parameterValue * y123
 
             z13 =
-                z12 |> Quantity.plus (Quantity.multiplyBy parameterValue z123)
+                z12 + parameterValue * z123
 
             x24 =
-                x23 |> Quantity.plus (Quantity.multiplyBy parameterValue x234)
+                x23 + parameterValue * x234
 
             y24 =
-                y23 |> Quantity.plus (Quantity.multiplyBy parameterValue y234)
+                y23 + parameterValue * y234
 
             z24 =
-                z23 |> Quantity.plus (Quantity.multiplyBy parameterValue z234)
+                z23 + parameterValue * z234
 
             x14 =
-                Quantity.interpolateFrom x13 x24 parameterValue
+                x13 + parameterValue * (x24 - x13)
 
             y14 =
-                Quantity.interpolateFrom y13 y24 parameterValue
+                y13 + parameterValue * (y24 - y13)
 
             z14 =
-                Quantity.interpolateFrom z13 z24 parameterValue
+                z13 + parameterValue * (z24 - z13)
         in
-        Quantity.multiplyBy 3 <|
-            Quantity.sqrt
-                (Quantity.squared x14
-                    |> Quantity.plus (Quantity.squared y14)
-                    |> Quantity.plus (Quantity.squared z14)
-                )
+        Quantity (3 * sqrt (x14 * x14 + y14 * y14 + z14 * z14))

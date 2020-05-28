@@ -3,7 +3,7 @@
     "name": "ianmackenzie/elm-geometry",
     "summary": "2D/3D geometric data types and operations",
     "license": "MPL-2.0",
-    "version": "3.3.0",
+    "version": "3.6.0",
     "exposed-modules": [
         "Arc2d",
         "Arc3d",
@@ -15,6 +15,7 @@
         "BoundingBox3d",
         "Circle2d",
         "Circle3d",
+        "Cone3d",
         "CubicSpline2d",
         "CubicSpline3d",
         "Cylinder3d",

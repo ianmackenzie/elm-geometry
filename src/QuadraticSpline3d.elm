@@ -121,7 +121,7 @@ import Geometry.Types as Types
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
-import Quantity exposing (Quantity, Rate)
+import Quantity exposing (Quantity(..), Rate)
 import SketchPlane3d exposing (SketchPlane3d)
 import Vector3d exposing (Vector3d)
 
@@ -362,88 +362,83 @@ firstDerivative spline parameterValue =
 
 
 derivativeMagnitude : QuadraticSpline3d units coordinates -> Float -> Quantity Float units
-derivativeMagnitude spline =
+derivativeMagnitude (Types.QuadraticSpline3d spline) =
     let
-        p1 =
-            firstControlPoint spline
+        (Types.Point3d p1) =
+            spline.firstControlPoint
 
-        p2 =
-            secondControlPoint spline
+        (Types.Point3d p2) =
+            spline.secondControlPoint
 
-        p3 =
-            thirdControlPoint spline
+        (Types.Point3d p3) =
+            spline.thirdControlPoint
 
         x1 =
-            Point3d.xCoordinate p1
+            p1.x
 
         y1 =
-            Point3d.yCoordinate p1
+            p1.y
 
         z1 =
-            Point3d.zCoordinate p1
+            p1.z
 
         x2 =
-            Point3d.xCoordinate p2
+            p2.x
 
         y2 =
-            Point3d.yCoordinate p2
+            p2.y
 
         z2 =
-            Point3d.zCoordinate p2
+            p2.z
 
         x3 =
-            Point3d.xCoordinate p3
+            p3.x
 
         y3 =
-            Point3d.yCoordinate p3
+            p3.y
 
         z3 =
-            Point3d.zCoordinate p3
+            p3.z
 
         x12 =
-            x2 |> Quantity.minus x1
+            x2 - x1
 
         y12 =
-            y2 |> Quantity.minus y1
+            y2 - y1
 
         z12 =
-            z2 |> Quantity.minus z1
+            z2 - z1
 
         x23 =
-            x3 |> Quantity.minus x2
+            x3 - x2
 
         y23 =
-            y3 |> Quantity.minus y2
+            y3 - y2
 
         z23 =
-            z3 |> Quantity.minus z2
+            z3 - z2
 
         x123 =
-            x23 |> Quantity.minus x12
+            x23 - x12
 
         y123 =
-            y23 |> Quantity.minus y12
+            y23 - y12
 
         z123 =
-            z23 |> Quantity.minus z12
+            z23 - z12
     in
     \parameterValue ->
         let
             x13 =
-                x12 |> Quantity.plus (Quantity.multiplyBy parameterValue x123)
+                x12 + parameterValue * x123
 
             y13 =
-                y12 |> Quantity.plus (Quantity.multiplyBy parameterValue y123)
+                y12 + parameterValue * y123
 
             z13 =
-                z12 |> Quantity.plus (Quantity.multiplyBy parameterValue z123)
+                z12 + parameterValue * z123
         in
-        Quantity.multiplyBy 2 <|
-            Quantity.sqrt
-                (Quantity.squared x13
-                    |> Quantity.plus (Quantity.squared y13)
-                    |> Quantity.plus (Quantity.squared z13)
-                )
+        Quantity (2 * sqrt (x13 * x13 + y13 * y13 + z13 * z13))
 
 
 {-| Represents a nondegenerate spline (one that has finite, non-zero length).
