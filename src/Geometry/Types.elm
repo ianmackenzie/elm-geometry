@@ -170,6 +170,14 @@ type Ellipse2d units coordinates
         }
 
 
+type Ellipse3d units coordinates
+    = Ellipse3d
+        { axes : SketchPlane3d units coordinates {}
+        , xRadius : Quantity Float units
+        , yRadius : Quantity Float units
+        }
+
+
 type Sphere3d units coordinates
     = Sphere3d
         { centerPoint : Point3d units coordinates
@@ -256,6 +264,14 @@ type CubicSpline3d units coordinates
 type EllipticalArc2d units coordinates
     = EllipticalArc2d
         { ellipse : Ellipse2d units coordinates
+        , startAngle : Angle
+        , sweptAngle : Angle
+        }
+
+
+type EllipticalArc3d units coordinates
+    = EllipticalArc3d
+        { ellipse : Ellipse3d units coordinates
         , startAngle : Angle
         , sweptAngle : Angle
         }
