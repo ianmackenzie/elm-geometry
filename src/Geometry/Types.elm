@@ -297,3 +297,50 @@ type DelaunayTriangulation2d vertex units coordinates
         , delaunayVertices : List (DelaunayVertex vertex units coordinates)
         , faces : List (DelaunayFace vertex units coordinates)
         }
+
+
+type Curve2d units coordinates
+    = LineSegmentCurve2d (LineSegment2d units coordinates)
+    | ArcCurve2d (Arc2d units coordinates)
+    | QuadraticSplineCurve2d (QuadraticSpline2d units coordinates)
+    | CubicSplineCurve2d (CubicSpline2d units coordinates)
+
+
+type Curve3d units coordinates
+    = LineSegmentCurve3d (LineSegment3d units coordinates)
+    | ArcCurve3d (Arc3d units coordinates)
+    | QuadraticSplineCurve3d (QuadraticSpline3d units coordinates)
+    | CubicSplineCurve3d (CubicSpline3d units coordinates)
+
+
+type SurfaceHandedness
+    = RighHandedSurface
+    | LeftHandedSurface
+
+
+type SketchCoordinates
+    = SketchCoordinates
+
+
+type Surface3d units coordinates
+    = TriangularSurface SurfaceHandedness (Triangle3d units coordinates)
+    | RectangularSurface SurfaceHandedness (Rectangle3d units coordinates)
+    | CircularSurface (Circle3d units coordinates)
+    | ExtrusionSurface SurfaceHandedness (Curve3d units coordinates) (Vector3d units coordinates)
+    | RevolutionSurface SurfaceHandedness (Curve3d units coordinates) (Frame3d units coordinates Never) Angle
+    | PlanarSurface SurfaceHandedness (Region2d units SketchCoordinates) (SketchPlane3d units coordinates { defines : SketchCoordinates })
+
+
+type Region2d units coordinates
+    = TriangularRegion (Triangle2d units coordinates)
+    | RectangularRegion (Rectangle2d units coordinates)
+    | CircularRegion (Circle2d units coordinates)
+    | BoundedRegion (List (Curve2d units coordinates)) (List (List (Curve2d units coordinates)))
+
+
+type Body3d units coordinates
+    = RectangularBody (Block3d units coordinates)
+    | SphericalBody (Sphere3d units coordinates)
+    | CylindricalBody (Cylinder3d units coordinates)
+    | ConicalBody (Cone3d units coordinates)
+    | BoundedBody (List (Surface3d units coordinates))
