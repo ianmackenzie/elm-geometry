@@ -15,7 +15,7 @@ module EllipticalArc3d exposing
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
-    , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
+    , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
     , at, at_
     , relativeTo, placeIn
     , ArcLengthParameterized, arcLengthParameterized, arcLength
@@ -63,7 +63,7 @@ underlying ellipse](Ellipse3d#properties).
 These transformations generally behave just like [the ones in the `Point3d`
 module](Point3d#transformations).
 
-@docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
+@docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
 
 
 # Unit conversions
@@ -109,8 +109,10 @@ import Angle exposing (Angle, Radians)
 import ArcLengthParameterization exposing (ArcLengthParameterization)
 import Axis3d exposing (Axis3d)
 import Direction3d exposing (Direction3d)
+import Ellipse2d exposing (Ellipse2d)
 import Ellipse3d exposing (Ellipse3d)
 import EllipticalArc2d exposing (EllipticalArc2d)
+import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
 import Geometry.Types as Types
 import Interval
@@ -122,6 +124,7 @@ import Quantity.Interval
 import SketchPlane3d exposing (SketchPlane3d)
 import SweptAngle exposing (SweptAngle)
 import Unsafe.Direction3d as Direction3d
+import Vector2d exposing (Vector2d)
 import Vector3d exposing (Vector3d)
 
 
@@ -495,6 +498,92 @@ mirrorAcross :
     -> EllipticalArc3d units coordinates
 mirrorAcross plane arc =
     transformBy (Ellipse3d.mirrorAcross plane) arc
+
+
+{-| Project a 3D elliptical arc into a sketch plane.
+-}
+projectInto :
+    SketchPlane3d units coordinates { defines : coordinates2d }
+    -> EllipticalArc3d units coordinates
+    -> EllipticalArc2d units coordinates2d
+projectInto sketchPlane arc =
+    let
+        centerPoint2d =
+            Point3d.projectInto sketchPlane (centerPoint arc)
+
+        xVector3d =
+            Vector3d.withLength (xRadius arc) (xDirection arc)
+
+        yVector3d =
+            Vector3d.withLength (yRadius arc) (yDirection arc)
+
+        xVector2d =
+            Vector3d.projectInto sketchPlane xVector3d
+
+        yVector2d =
+            Vector3d.projectInto sketchPlane yVector3d
+
+        -- From https://scicomp.stackexchange.com/questions/8899/robust-algorithm-for-2-times-2-svd
+        ( m00, m10 ) =
+            Vector2d.components xVector2d
+
+        ( m01, m11 ) =
+            Vector2d.components yVector2d
+
+        e =
+            Quantity.half (m00 |> Quantity.plus m11)
+
+        f =
+            Quantity.half (m00 |> Quantity.minus m11)
+
+        g =
+            Quantity.half (m10 |> Quantity.plus m01)
+
+        h =
+            Quantity.half (m10 |> Quantity.minus m01)
+
+        q =
+            Quantity.sqrt (Quantity.squared e |> Quantity.plus (Quantity.squared h))
+
+        r =
+            Quantity.sqrt (Quantity.squared f |> Quantity.plus (Quantity.squared g))
+
+        sx =
+            q |> Quantity.plus r
+
+        sy =
+            q |> Quantity.minus r
+
+        a1 =
+            Angle.atan2 g f
+
+        a2 =
+            Angle.atan2 h e
+
+        theta =
+            Quantity.half (a2 |> Quantity.minus a1)
+
+        phi =
+            Quantity.half (a2 |> Quantity.plus a1)
+
+        axes2d =
+            if sy |> Quantity.greaterThan Quantity.zero then
+                Frame2d.withAngle phi centerPoint2d
+
+            else
+                Frame2d.withAngle phi centerPoint2d
+                    |> Frame2d.reverseY
+    in
+    Types.EllipticalArc2d
+        { ellipse =
+            Types.Ellipse2d
+                { axes = axes2d
+                , xRadius = sx
+                , yRadius = Quantity.abs sy
+                }
+        , startAngle = startAngle arc |> Quantity.plus theta
+        , sweptAngle = sweptAngle arc
+        }
 
 
 {-| Take an elliptical arc defined in global coordinates, and return it expressed in
