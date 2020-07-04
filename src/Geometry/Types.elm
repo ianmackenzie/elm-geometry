@@ -302,6 +302,7 @@ type DelaunayTriangulation2d vertex units coordinates
 type Curve2d units coordinates
     = LineSegmentCurve2d (LineSegment2d units coordinates)
     | ArcCurve2d (Arc2d units coordinates)
+    | EllipticalArcCurve2d (EllipticalArc2d units coordinates)
     | QuadraticSplineCurve2d (QuadraticSpline2d units coordinates)
     | CubicSplineCurve2d (CubicSpline2d units coordinates)
 
@@ -309,6 +310,7 @@ type Curve2d units coordinates
 type Curve3d units coordinates
     = LineSegmentCurve3d (LineSegment3d units coordinates)
     | ArcCurve3d (Arc3d units coordinates)
+    | EllipticalArcCurve3d (EllipticalArc3d units coordinates)
     | QuadraticSplineCurve3d (QuadraticSpline3d units coordinates)
     | CubicSplineCurve3d (CubicSpline3d units coordinates)
 

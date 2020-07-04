@@ -1,6 +1,6 @@
 module Curve3d exposing
     ( Curve3d
-    , lineSegment, arc, quadraticSpline, cubicSpline
+    , lineSegment, arc, ellipticalArc, quadraticSpline, cubicSpline
     , startPoint, endPoint
     , reverse, translateBy, scaleAbout, rotateAround, mirrorAcross
     , placeIn, relativeTo
@@ -10,7 +10,7 @@ module Curve3d exposing
 
 @docs Curve3d
 
-@docs lineSegment, arc, quadraticSpline, cubicSpline, on
+@docs lineSegment, arc, ellipticalArc, quadraticSpline, cubicSpline, on
 
 @docs startPoint, endPoint
 
@@ -27,6 +27,7 @@ import CubicSpline3d exposing (CubicSpline3d)
 import Curve
 import Curve2d exposing (Curve2d)
 import Direction3d exposing (Direction3d)
+import EllipticalArc3d exposing (EllipticalArc3d)
 import Frame3d exposing (Frame3d)
 import Geometry.Types as Types
 import LineSegment3d exposing (LineSegment3d)
@@ -54,6 +55,11 @@ arc givenArc =
     Types.ArcCurve3d givenArc
 
 
+ellipticalArc : EllipticalArc3d units coordinates -> Curve3d units coordinates
+ellipticalArc givenEllipticalArc =
+    Types.EllipticalArcCurve3d givenEllipticalArc
+
+
 quadraticSpline : QuadraticSpline3d units coordinates -> Curve3d units coordinates
 quadraticSpline givenQuadraticSpline =
     Types.QuadraticSplineCurve3d givenQuadraticSpline
@@ -76,6 +82,9 @@ on sketchPlane curve2d =
         Types.ArcCurve2d arc2d ->
             Types.ArcCurve3d (Arc3d.on sketchPlane arc2d)
 
+        Types.EllipticalArcCurve2d ellipticalArc2d ->
+            Types.EllipticalArcCurve3d (EllipticalArc3d.on sketchPlane ellipticalArc2d)
+
         Types.QuadraticSplineCurve2d quadraticSpline2d ->
             Types.QuadraticSplineCurve3d (QuadraticSpline3d.on sketchPlane quadraticSpline2d)
 
@@ -91,6 +100,9 @@ startPoint givenCurve =
 
         Types.ArcCurve3d givenArc ->
             Arc3d.startPoint givenArc
+
+        Types.EllipticalArcCurve3d givenEllipticalArc ->
+            EllipticalArc3d.startPoint givenEllipticalArc
 
         Types.QuadraticSplineCurve3d givenQuadraticSpline ->
             QuadraticSpline3d.startPoint givenQuadraticSpline
@@ -108,6 +120,9 @@ endPoint givenCurve =
         Types.ArcCurve3d givenArc ->
             Arc3d.endPoint givenArc
 
+        Types.EllipticalArcCurve3d givenEllipticalArc ->
+            EllipticalArc3d.endPoint givenEllipticalArc
+
         Types.QuadraticSplineCurve3d givenQuadraticSpline ->
             QuadraticSpline3d.endPoint givenQuadraticSpline
 
@@ -115,38 +130,45 @@ endPoint givenCurve =
             CubicSpline3d.endPoint givenCubicSpline
 
 
+genericPolyline :
+    { maxError : Quantity Float units }
+    -> Quantity Float units
+    -> (Float -> Point3d units coordinates)
+    -> Polyline3d units coordinates
+genericPolyline tolerance maxSecondDerivativeMagnitude evaluationFunction =
+    let
+        n =
+            Curve.numSegments tolerance maxSecondDerivativeMagnitude
+    in
+    Polyline3d.fromVertices (Parameter1d.steps n evaluationFunction)
+
+
 toPolyline : { maxError : Quantity Float units } -> Curve3d units coordinates -> Polyline3d units coordinates
 toPolyline tolerance givenCurve =
     case givenCurve of
         Types.LineSegmentCurve3d givenLineSegment ->
-            let
-                ( p1, p2 ) =
-                    LineSegment3d.endpoints givenLineSegment
-            in
-            Polyline3d.fromVertices [ p1, p2 ]
+            Polyline3d.fromVertices
+                [ LineSegment3d.startPoint givenLineSegment
+                , LineSegment3d.endPoint givenLineSegment
+                ]
 
         Types.ArcCurve3d givenArc ->
             Arc3d.toPolyline tolerance givenArc
 
+        Types.EllipticalArcCurve3d givenEllipticalArc ->
+            genericPolyline tolerance
+                (EllipticalArc3d.maxSecondDerivativeMagnitude givenEllipticalArc)
+                (EllipticalArc3d.pointOn givenEllipticalArc)
+
         Types.QuadraticSplineCurve3d givenQuadraticSpline ->
-            let
-                secondDerivativeMagnitude =
-                    Vector3d.length (QuadraticSpline3d.secondDerivative givenQuadraticSpline)
-            in
-            Polyline3d.fromVertices <|
-                Parameter1d.steps
-                    (Curve.numSegments tolerance secondDerivativeMagnitude)
-                    (QuadraticSpline3d.pointOn givenQuadraticSpline)
+            genericPolyline tolerance
+                (Vector3d.length (QuadraticSpline3d.secondDerivative givenQuadraticSpline))
+                (QuadraticSpline3d.pointOn givenQuadraticSpline)
 
         Types.CubicSplineCurve3d givenCubicSpline ->
-            let
-                maxSecondDerivativeMagnitude =
-                    CubicSpline3d.maxSecondDerivativeMagnitude givenCubicSpline
-            in
-            Polyline3d.fromVertices <|
-                Parameter1d.steps
-                    (Curve.numSegments tolerance maxSecondDerivativeMagnitude)
-                    (CubicSpline3d.pointOn givenCubicSpline)
+            genericPolyline tolerance
+                (CubicSpline3d.maxSecondDerivativeMagnitude givenCubicSpline)
+                (CubicSpline3d.pointOn givenCubicSpline)
 
 
 reverse : Curve3d units coordinates -> Curve3d units coordinates
@@ -157,6 +179,9 @@ reverse givenCurve =
 
         Types.ArcCurve3d givenArc ->
             Types.ArcCurve3d (Arc3d.reverse givenArc)
+
+        Types.EllipticalArcCurve3d givenEllipticalArc ->
+            Types.EllipticalArcCurve3d (EllipticalArc3d.reverse givenEllipticalArc)
 
         Types.QuadraticSplineCurve3d givenQuadraticSpline ->
             Types.QuadraticSplineCurve3d (QuadraticSpline3d.reverse givenQuadraticSpline)
@@ -177,6 +202,9 @@ placeIn frame givenCurve =
         Types.ArcCurve3d givenArc ->
             Types.ArcCurve3d (Arc3d.placeIn frame givenArc)
 
+        Types.EllipticalArcCurve3d givenEllipticalArc ->
+            Types.EllipticalArcCurve3d (EllipticalArc3d.placeIn frame givenEllipticalArc)
+
         Types.QuadraticSplineCurve3d givenQuadraticSpline ->
             Types.QuadraticSplineCurve3d (QuadraticSpline3d.placeIn frame givenQuadraticSpline)
 
@@ -196,6 +224,9 @@ relativeTo frame givenCurve =
         Types.ArcCurve3d givenArc ->
             Types.ArcCurve3d (Arc3d.relativeTo frame givenArc)
 
+        Types.EllipticalArcCurve3d givenEllipticalArc ->
+            Types.EllipticalArcCurve3d (EllipticalArc3d.relativeTo frame givenEllipticalArc)
+
         Types.QuadraticSplineCurve3d givenQuadraticSpline ->
             Types.QuadraticSplineCurve3d (QuadraticSpline3d.relativeTo frame givenQuadraticSpline)
 
@@ -211,6 +242,9 @@ translateBy displacement givenCurve =
 
         Types.ArcCurve3d givenArc ->
             Types.ArcCurve3d (Arc3d.translateBy displacement givenArc)
+
+        Types.EllipticalArcCurve3d givenEllipticalArc ->
+            Types.EllipticalArcCurve3d (EllipticalArc3d.translateBy displacement givenEllipticalArc)
 
         Types.QuadraticSplineCurve3d givenQuadraticSpline ->
             Types.QuadraticSplineCurve3d (QuadraticSpline3d.translateBy displacement givenQuadraticSpline)
@@ -233,6 +267,10 @@ scaleAbout point scale givenCurve =
         Types.ArcCurve3d givenArc ->
             Types.ArcCurve3d <|
                 Arc3d.scaleAbout point scale givenArc
+
+        Types.EllipticalArcCurve3d givenEllipticalArc ->
+            Types.EllipticalArcCurve3d <|
+                EllipticalArc3d.scaleAbout point scale givenEllipticalArc
 
         Types.QuadraticSplineCurve3d givenQuadraticSpline ->
             Types.QuadraticSplineCurve3d <|
@@ -258,6 +296,10 @@ rotateAround axis angle givenCurve =
             Types.ArcCurve3d <|
                 Arc3d.rotateAround axis angle givenArc
 
+        Types.EllipticalArcCurve3d givenEllipticalArc ->
+            Types.EllipticalArcCurve3d <|
+                EllipticalArc3d.rotateAround axis angle givenEllipticalArc
+
         Types.QuadraticSplineCurve3d givenQuadraticSpline ->
             Types.QuadraticSplineCurve3d <|
                 QuadraticSpline3d.rotateAround axis angle givenQuadraticSpline
@@ -275,6 +317,9 @@ mirrorAcross plane givenCurve =
 
         Types.ArcCurve3d givenArc ->
             Types.ArcCurve3d (Arc3d.mirrorAcross plane givenArc)
+
+        Types.EllipticalArcCurve3d givenEllipticalArc ->
+            Types.EllipticalArcCurve3d (EllipticalArc3d.mirrorAcross plane givenEllipticalArc)
 
         Types.QuadraticSplineCurve3d givenQuadraticSpline ->
             Types.QuadraticSplineCurve3d (QuadraticSpline3d.mirrorAcross plane givenQuadraticSpline)

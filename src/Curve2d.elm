@@ -1,6 +1,6 @@
 module Curve2d exposing
     ( Curve2d
-    , lineSegment, arc, quadraticSpline, cubicSpline
+    , lineSegment, arc, ellipticalArc, quadraticSpline, cubicSpline
     , startPoint, endPoint
     , toPolyline
     , reverse, translateBy, scaleAbout, rotateAround, mirrorAcross
@@ -11,7 +11,7 @@ module Curve2d exposing
 
 @docs Curve2d
 
-@docs lineSegment, arc, quadraticSpline, cubicSpline
+@docs lineSegment, arc, ellipticalArc, quadraticSpline, cubicSpline
 
 @docs startPoint, endPoint
 
@@ -30,8 +30,9 @@ import CubicSpline2d exposing (CubicSpline2d)
 import CubicSpline3d exposing (maxSecondDerivativeMagnitude)
 import Curve
 import Direction2d exposing (Direction2d)
+import EllipticalArc2d exposing (EllipticalArc2d)
 import Frame2d exposing (Frame2d)
-import Geometry.Types as Types
+import Geometry.Types as Types exposing (LineSegment2d)
 import LineSegment2d exposing (LineSegment2d)
 import Parameter1d
 import Point2d exposing (Point2d)
@@ -55,6 +56,11 @@ arc givenArc =
     Types.ArcCurve2d givenArc
 
 
+ellipticalArc : EllipticalArc2d units coordinates -> Curve2d units coordinates
+ellipticalArc givenEllipticalArc =
+    Types.EllipticalArcCurve2d givenEllipticalArc
+
+
 quadraticSpline : QuadraticSpline2d units coordinates -> Curve2d units coordinates
 quadraticSpline givenQuadraticSpline =
     Types.QuadraticSplineCurve2d givenQuadraticSpline
@@ -74,6 +80,9 @@ startPoint givenCurve =
         Types.ArcCurve2d givenArc ->
             Arc2d.startPoint givenArc
 
+        Types.EllipticalArcCurve2d givenEllipticalArc ->
+            EllipticalArc2d.startPoint givenEllipticalArc
+
         Types.QuadraticSplineCurve2d givenQuadraticSpline ->
             QuadraticSpline2d.startPoint givenQuadraticSpline
 
@@ -90,6 +99,9 @@ endPoint givenCurve =
         Types.ArcCurve2d givenArc ->
             Arc2d.endPoint givenArc
 
+        Types.EllipticalArcCurve2d givenEllipticalArc ->
+            EllipticalArc2d.endPoint givenEllipticalArc
+
         Types.QuadraticSplineCurve2d givenQuadraticSpline ->
             QuadraticSpline2d.endPoint givenQuadraticSpline
 
@@ -97,38 +109,45 @@ endPoint givenCurve =
             CubicSpline2d.endPoint givenCubicSpline
 
 
+genericPolyline :
+    { maxError : Quantity Float units }
+    -> Quantity Float units
+    -> (Float -> Point2d units coordinates)
+    -> Polyline2d units coordinates
+genericPolyline tolerance maxSecondDerivativeMagnitude evaluationFunction =
+    let
+        n =
+            Curve.numSegments tolerance maxSecondDerivativeMagnitude
+    in
+    Polyline2d.fromVertices (Parameter1d.steps n evaluationFunction)
+
+
 toPolyline : { maxError : Quantity Float units } -> Curve2d units coordinates -> Polyline2d units coordinates
 toPolyline tolerance givenCurve =
     case givenCurve of
         Types.LineSegmentCurve2d givenLineSegment ->
-            let
-                ( p1, p2 ) =
-                    LineSegment2d.endpoints givenLineSegment
-            in
-            Polyline2d.fromVertices [ p1, p2 ]
+            Polyline2d.fromVertices
+                [ LineSegment2d.startPoint givenLineSegment
+                , LineSegment2d.endPoint givenLineSegment
+                ]
 
         Types.ArcCurve2d givenArc ->
             Arc2d.toPolyline tolerance givenArc
 
+        Types.EllipticalArcCurve2d givenEllipticalArc ->
+            genericPolyline tolerance
+                (EllipticalArc2d.maxSecondDerivativeMagnitude givenEllipticalArc)
+                (EllipticalArc2d.pointOn givenEllipticalArc)
+
         Types.QuadraticSplineCurve2d givenQuadraticSpline ->
-            let
-                secondDerivativeMagnitude =
-                    Vector2d.length (QuadraticSpline2d.secondDerivative givenQuadraticSpline)
-            in
-            Polyline2d.fromVertices <|
-                Parameter1d.steps
-                    (Curve.numSegments tolerance secondDerivativeMagnitude)
-                    (QuadraticSpline2d.pointOn givenQuadraticSpline)
+            genericPolyline tolerance
+                (Vector2d.length (QuadraticSpline2d.secondDerivative givenQuadraticSpline))
+                (QuadraticSpline2d.pointOn givenQuadraticSpline)
 
         Types.CubicSplineCurve2d givenCubicSpline ->
-            let
-                maxSecondDerivativeMagnitude =
-                    CubicSpline2d.maxSecondDerivativeMagnitude givenCubicSpline
-            in
-            Polyline2d.fromVertices <|
-                Parameter1d.steps
-                    (Curve.numSegments tolerance maxSecondDerivativeMagnitude)
-                    (CubicSpline2d.pointOn givenCubicSpline)
+            genericPolyline tolerance
+                (CubicSpline2d.maxSecondDerivativeMagnitude givenCubicSpline)
+                (CubicSpline2d.pointOn givenCubicSpline)
 
 
 reverse : Curve2d units coordinates -> Curve2d units coordinates
@@ -139,6 +158,9 @@ reverse givenCurve =
 
         Types.ArcCurve2d givenArc ->
             Types.ArcCurve2d (Arc2d.reverse givenArc)
+
+        Types.EllipticalArcCurve2d givenEllipticalArc ->
+            Types.EllipticalArcCurve2d (EllipticalArc2d.reverse givenEllipticalArc)
 
         Types.QuadraticSplineCurve2d givenQuadraticSpline ->
             Types.QuadraticSplineCurve2d (QuadraticSpline2d.reverse givenQuadraticSpline)
@@ -159,6 +181,9 @@ placeIn frame givenCurve =
         Types.ArcCurve2d givenArc ->
             Types.ArcCurve2d (Arc2d.placeIn frame givenArc)
 
+        Types.EllipticalArcCurve2d givenEllipticalArc ->
+            Types.EllipticalArcCurve2d (EllipticalArc2d.placeIn frame givenEllipticalArc)
+
         Types.QuadraticSplineCurve2d givenQuadraticSpline ->
             Types.QuadraticSplineCurve2d (QuadraticSpline2d.placeIn frame givenQuadraticSpline)
 
@@ -178,6 +203,9 @@ relativeTo frame givenCurve =
         Types.ArcCurve2d givenArc ->
             Types.ArcCurve2d (Arc2d.relativeTo frame givenArc)
 
+        Types.EllipticalArcCurve2d givenEllipticalArc ->
+            Types.EllipticalArcCurve2d (EllipticalArc2d.relativeTo frame givenEllipticalArc)
+
         Types.QuadraticSplineCurve2d givenQuadraticSpline ->
             Types.QuadraticSplineCurve2d (QuadraticSpline2d.relativeTo frame givenQuadraticSpline)
 
@@ -193,6 +221,9 @@ translateBy displacement givenCurve =
 
         Types.ArcCurve2d givenArc ->
             Types.ArcCurve2d (Arc2d.translateBy displacement givenArc)
+
+        Types.EllipticalArcCurve2d givenEllipticalArc ->
+            Types.EllipticalArcCurve2d (EllipticalArc2d.translateBy displacement givenEllipticalArc)
 
         Types.QuadraticSplineCurve2d givenQuadraticSpline ->
             Types.QuadraticSplineCurve2d (QuadraticSpline2d.translateBy displacement givenQuadraticSpline)
@@ -215,6 +246,10 @@ scaleAbout point scale givenCurve =
         Types.ArcCurve2d givenArc ->
             Types.ArcCurve2d <|
                 Arc2d.scaleAbout point scale givenArc
+
+        Types.EllipticalArcCurve2d givenEllipticalArc ->
+            Types.EllipticalArcCurve2d <|
+                EllipticalArc2d.scaleAbout point scale givenEllipticalArc
 
         Types.QuadraticSplineCurve2d givenQuadraticSpline ->
             Types.QuadraticSplineCurve2d <|
@@ -240,6 +275,10 @@ rotateAround point angle givenCurve =
             Types.ArcCurve2d <|
                 Arc2d.rotateAround point angle givenArc
 
+        Types.EllipticalArcCurve2d givenEllipticalArc ->
+            Types.EllipticalArcCurve2d <|
+                EllipticalArc2d.rotateAround point angle givenEllipticalArc
+
         Types.QuadraticSplineCurve2d givenQuadraticSpline ->
             Types.QuadraticSplineCurve2d <|
                 QuadraticSpline2d.rotateAround point angle givenQuadraticSpline
@@ -257,6 +296,9 @@ mirrorAcross axis givenCurve =
 
         Types.ArcCurve2d givenArc ->
             Types.ArcCurve2d (Arc2d.mirrorAcross axis givenArc)
+
+        Types.EllipticalArcCurve2d givenEllipticalArc ->
+            Types.EllipticalArcCurve2d (EllipticalArc2d.mirrorAcross axis givenEllipticalArc)
 
         Types.QuadraticSplineCurve2d givenQuadraticSpline ->
             Types.QuadraticSplineCurve2d (QuadraticSpline2d.mirrorAcross axis givenQuadraticSpline)
