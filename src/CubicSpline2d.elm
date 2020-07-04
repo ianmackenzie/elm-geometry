@@ -14,6 +14,7 @@ module CubicSpline2d exposing
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
+    , segments, approximate
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , at, at_
     , relativeTo, placeIn
@@ -52,6 +53,11 @@ contains functionality for
 @docs pointOn
 @docs Nondegenerate, nondegenerate, fromNondegenerate
 @docs tangentDirection, sample
+
+
+# Linear approximation
+
+@docs segments, approximate
 
 
 # Transformations
@@ -110,11 +116,14 @@ import Angle exposing (Angle)
 import ArcLengthParameterization exposing (ArcLengthParameterization)
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
+import Curve
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import LineSegment2d exposing (fromEndpoints, midpoint)
+import Parameter1d
 import Point2d exposing (Point2d)
+import Polyline2d exposing (Polyline2d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
 import Quantity exposing (Quantity(..), Rate)
 import Vector2d exposing (Vector2d)
@@ -547,6 +556,29 @@ sample nondegenerateSpline parameterValue =
     ( pointOn (fromNondegenerate nondegenerateSpline) parameterValue
     , tangentDirection nondegenerateSpline parameterValue
     )
+
+
+{-| Approximate a cubic spline by a given number of line segments. Note that the
+number of points in the polyline will be one more than the number of segments.
+-}
+segments : Int -> CubicSpline2d units coordinates -> Polyline2d units coordinates
+segments numSegments spline =
+    Polyline2d.fromVertices (Parameter1d.steps numSegments (pointOn spline))
+
+
+{-| Approximate a cubic spline as a polyline, within a given tolerance. Every
+point on the returned polyline will be within the given tolerance of the spline.
+-}
+approximate : Quantity Float units -> CubicSpline2d units coordinates -> Polyline2d units coordinates
+approximate maxError spline =
+    let
+        numSegments =
+            Curve.numApproximationSegments
+                { maxError = maxError
+                , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude spline
+                }
+    in
+    segments numSegments spline
 
 
 {-| Reverse a spline so that the start point becomes the end point, and vice

@@ -2,6 +2,7 @@ module Curve3d exposing
     ( Curve3d
     , lineSegment, arc, ellipticalArc, quadraticSpline, cubicSpline
     , startPoint, endPoint
+    , segments, approximate
     , reverse, translateBy, scaleAbout, rotateAround, mirrorAcross, projectOnto, projectInto
     , placeIn, relativeTo
     )
@@ -13,6 +14,8 @@ module Curve3d exposing
 @docs lineSegment, arc, ellipticalArc, quadraticSpline, cubicSpline, on
 
 @docs startPoint, endPoint
+
+@docs segments, approximate
 
 @docs reverse, translateBy, scaleAbout, rotateAround, mirrorAcross, projectOnto, projectInto
 
@@ -130,21 +133,28 @@ endPoint givenCurve =
             CubicSpline3d.endPoint givenCubicSpline
 
 
-genericPolyline :
-    { maxError : Quantity Float units }
-    -> Quantity Float units
-    -> (Float -> Point3d units coordinates)
-    -> Polyline3d units coordinates
-genericPolyline tolerance maxSecondDerivativeMagnitude evaluationFunction =
-    let
-        n =
-            Curve.numSegments tolerance maxSecondDerivativeMagnitude
-    in
-    Polyline3d.fromVertices (Parameter1d.steps n evaluationFunction)
+segments : Int -> Curve3d units coordinates -> Polyline3d units coordinates
+segments numSegments givenCurve =
+    case givenCurve of
+        Types.LineSegmentCurve3d givenLineSegment ->
+            Polyline3d.fromVertices <|
+                Parameter1d.steps numSegments (LineSegment3d.interpolate givenLineSegment)
+
+        Types.ArcCurve3d givenArc ->
+            Arc3d.segments numSegments givenArc
+
+        Types.EllipticalArcCurve3d givenEllipticalArc ->
+            EllipticalArc3d.segments numSegments givenEllipticalArc
+
+        Types.QuadraticSplineCurve3d givenQuadraticSpline ->
+            QuadraticSpline3d.segments numSegments givenQuadraticSpline
+
+        Types.CubicSplineCurve3d givenCubicSpline ->
+            CubicSpline3d.segments numSegments givenCubicSpline
 
 
-toPolyline : { maxError : Quantity Float units } -> Curve3d units coordinates -> Polyline3d units coordinates
-toPolyline tolerance givenCurve =
+approximate : Quantity Float units -> Curve3d units coordinates -> Polyline3d units coordinates
+approximate maxError givenCurve =
     case givenCurve of
         Types.LineSegmentCurve3d givenLineSegment ->
             Polyline3d.fromVertices
@@ -153,22 +163,16 @@ toPolyline tolerance givenCurve =
                 ]
 
         Types.ArcCurve3d givenArc ->
-            Arc3d.toPolyline tolerance givenArc
+            Arc3d.approximate maxError givenArc
 
         Types.EllipticalArcCurve3d givenEllipticalArc ->
-            genericPolyline tolerance
-                (EllipticalArc3d.maxSecondDerivativeMagnitude givenEllipticalArc)
-                (EllipticalArc3d.pointOn givenEllipticalArc)
+            EllipticalArc3d.approximate maxError givenEllipticalArc
 
         Types.QuadraticSplineCurve3d givenQuadraticSpline ->
-            genericPolyline tolerance
-                (Vector3d.length (QuadraticSpline3d.secondDerivative givenQuadraticSpline))
-                (QuadraticSpline3d.pointOn givenQuadraticSpline)
+            QuadraticSpline3d.approximate maxError givenQuadraticSpline
 
         Types.CubicSplineCurve3d givenCubicSpline ->
-            genericPolyline tolerance
-                (CubicSpline3d.maxSecondDerivativeMagnitude givenCubicSpline)
-                (CubicSpline3d.pointOn givenCubicSpline)
+            CubicSpline3d.approximate maxError givenCubicSpline
 
 
 reverse : Curve3d units coordinates -> Curve3d units coordinates

@@ -2,7 +2,7 @@ module Curve2d exposing
     ( Curve2d
     , lineSegment, arc, ellipticalArc, quadraticSpline, cubicSpline
     , startPoint, endPoint
-    , toPolyline
+    , segments, approximate
     , reverse, translateBy, scaleAbout, rotateAround, mirrorAcross
     , placeIn, relativeTo
     )
@@ -15,7 +15,7 @@ module Curve2d exposing
 
 @docs startPoint, endPoint
 
-@docs toPolyline
+@docs segments, approximate
 
 @docs reverse, translateBy, scaleAbout, rotateAround, mirrorAcross
 
@@ -109,21 +109,28 @@ endPoint givenCurve =
             CubicSpline2d.endPoint givenCubicSpline
 
 
-genericPolyline :
-    { maxError : Quantity Float units }
-    -> Quantity Float units
-    -> (Float -> Point2d units coordinates)
-    -> Polyline2d units coordinates
-genericPolyline tolerance maxSecondDerivativeMagnitude evaluationFunction =
-    let
-        n =
-            Curve.numSegments tolerance maxSecondDerivativeMagnitude
-    in
-    Polyline2d.fromVertices (Parameter1d.steps n evaluationFunction)
+segments : Int -> Curve2d units coordinates -> Polyline2d units coordinates
+segments numSegments givenCurve =
+    case givenCurve of
+        Types.LineSegmentCurve2d givenLineSegment ->
+            Polyline2d.fromVertices <|
+                Parameter1d.steps numSegments (LineSegment2d.interpolate givenLineSegment)
+
+        Types.ArcCurve2d givenArc ->
+            Arc2d.segments numSegments givenArc
+
+        Types.EllipticalArcCurve2d givenEllipticalArc ->
+            EllipticalArc2d.segments numSegments givenEllipticalArc
+
+        Types.QuadraticSplineCurve2d givenQuadraticSpline ->
+            QuadraticSpline2d.segments numSegments givenQuadraticSpline
+
+        Types.CubicSplineCurve2d givenCubicSpline ->
+            CubicSpline2d.segments numSegments givenCubicSpline
 
 
-toPolyline : { maxError : Quantity Float units } -> Curve2d units coordinates -> Polyline2d units coordinates
-toPolyline tolerance givenCurve =
+approximate : Quantity Float units -> Curve2d units coordinates -> Polyline2d units coordinates
+approximate maxError givenCurve =
     case givenCurve of
         Types.LineSegmentCurve2d givenLineSegment ->
             Polyline2d.fromVertices
@@ -132,22 +139,16 @@ toPolyline tolerance givenCurve =
                 ]
 
         Types.ArcCurve2d givenArc ->
-            Arc2d.toPolyline tolerance givenArc
+            Arc2d.approximate maxError givenArc
 
         Types.EllipticalArcCurve2d givenEllipticalArc ->
-            genericPolyline tolerance
-                (EllipticalArc2d.maxSecondDerivativeMagnitude givenEllipticalArc)
-                (EllipticalArc2d.pointOn givenEllipticalArc)
+            EllipticalArc2d.approximate maxError givenEllipticalArc
 
         Types.QuadraticSplineCurve2d givenQuadraticSpline ->
-            genericPolyline tolerance
-                (Vector2d.length (QuadraticSpline2d.secondDerivative givenQuadraticSpline))
-                (QuadraticSpline2d.pointOn givenQuadraticSpline)
+            QuadraticSpline2d.approximate maxError givenQuadraticSpline
 
         Types.CubicSplineCurve2d givenCubicSpline ->
-            genericPolyline tolerance
-                (CubicSpline2d.maxSecondDerivativeMagnitude givenCubicSpline)
-                (CubicSpline2d.pointOn givenCubicSpline)
+            CubicSpline2d.approximate maxError givenCubicSpline
 
 
 reverse : Curve2d units coordinates -> Curve2d units coordinates

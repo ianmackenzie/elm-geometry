@@ -15,6 +15,7 @@ module EllipticalArc3d exposing
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
+    , segments, approximate
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectInto
     , at, at_
     , relativeTo, placeIn
@@ -56,6 +57,11 @@ underlying ellipse](Ellipse3d#properties).
 @docs pointOn
 @docs Nondegenerate, nondegenerate, fromNondegenerate
 @docs tangentDirection, sample
+
+
+# Linear approximation
+
+@docs segments, approximate
 
 
 # Transformations
@@ -108,6 +114,7 @@ you are writing low-level geometric algorithms.
 import Angle exposing (Angle, Radians)
 import ArcLengthParameterization exposing (ArcLengthParameterization)
 import Axis3d exposing (Axis3d)
+import Curve
 import Direction3d exposing (Direction3d)
 import Ellipse2d exposing (Ellipse2d)
 import Ellipse3d exposing (Ellipse3d)
@@ -116,8 +123,10 @@ import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
 import Geometry.Types as Types
 import Interval
+import Parameter1d
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
+import Polyline3d exposing (Polyline3d)
 import Quantity exposing (Quantity(..), Rate, Squared)
 import Quantity.Extra as Quantity
 import Quantity.Interval
@@ -393,6 +402,34 @@ sample nondegenerateArc parameterValue =
     ( pointOn (fromNondegenerate nondegenerateArc) parameterValue
     , tangentDirection nondegenerateArc parameterValue
     )
+
+
+{-| Approximate an elliptical arc by a given number of line segments. Note that
+the number of points in the polyline will be one more than the number of
+segments.
+-}
+segments : Int -> EllipticalArc3d units coordinates -> Polyline3d units coordinates
+segments numSegments arc =
+    Polyline3d.fromVertices (Parameter1d.steps numSegments (pointOn arc))
+
+
+{-| Approximate an elliptical arc as a polyline, within a given tolerance. Every
+point on the returned polyline will be within the given tolerance of the
+elliptical arc.
+-}
+approximate :
+    Quantity Float units
+    -> EllipticalArc3d units coordinates
+    -> Polyline3d units coordinates
+approximate maxError arc =
+    let
+        numSegments =
+            Curve.numApproximationSegments
+                { maxError = maxError
+                , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude arc
+                }
+    in
+    segments numSegments arc
 
 
 {-| Get the start point of an elliptical arc.

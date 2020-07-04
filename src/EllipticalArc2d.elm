@@ -15,6 +15,7 @@ module EllipticalArc2d exposing
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
+    , segments, approximate
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , at, at_
     , relativeTo, placeIn
@@ -61,6 +62,11 @@ underlying ellipse](Ellipse2d#properties).
 @docs pointOn
 @docs Nondegenerate, nondegenerate, fromNondegenerate
 @docs tangentDirection, sample
+
+
+# Linear approximation
+
+@docs segments, approximate
 
 
 # Transformations
@@ -113,12 +119,15 @@ you are writing low-level geometric algorithms.
 import Angle exposing (Angle, Radians)
 import ArcLengthParameterization exposing (ArcLengthParameterization)
 import Axis2d exposing (Axis2d)
+import Curve
 import Direction2d exposing (Direction2d)
 import Ellipse2d exposing (Ellipse2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import Interval
+import Parameter1d
 import Point2d exposing (Point2d)
+import Polyline2d exposing (Polyline2d)
 import Quantity exposing (Quantity(..), Rate, Squared)
 import Quantity.Extra as Quantity
 import Quantity.Interval
@@ -584,6 +593,31 @@ sample nondegenerateArc parameterValue =
     ( pointOn (fromNondegenerate nondegenerateArc) parameterValue
     , tangentDirection nondegenerateArc parameterValue
     )
+
+
+{-| Approximate an elliptical arc by a given number of line segments. Note that
+the number of points in the polyline will be one more than the number of
+segments.
+-}
+segments : Int -> EllipticalArc2d units coordinates -> Polyline2d units coordinates
+segments numSegments arc =
+    Polyline2d.fromVertices (Parameter1d.steps numSegments (pointOn arc))
+
+
+{-| Approximate an elliptical arc as a polyline, within a given tolerance. Every
+point on the returned polyline will be within the given tolerance of the
+elliptical arc.
+-}
+approximate : Quantity Float units -> EllipticalArc2d units coordinates -> Polyline2d units coordinates
+approximate maxError arc =
+    let
+        numSegments =
+            Curve.numApproximationSegments
+                { maxError = maxError
+                , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude arc
+                }
+    in
+    segments numSegments arc
 
 
 {-| Get the start point of an elliptical arc.

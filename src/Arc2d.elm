@@ -14,7 +14,7 @@ module Arc2d exposing
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
-    , toPolyline
+    , segments, approximate, toPolyline
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , at, at_
     , relativeTo, placeIn
@@ -51,7 +51,7 @@ end point). This module includes functionality for
 
 # Linear approximation
 
-@docs toPolyline
+@docs segments, approximate, toPolyline
 
 
 # Transformations
@@ -83,6 +83,7 @@ you are writing low-level geometric algorithms.
 
 import Angle exposing (Angle)
 import Axis2d exposing (Axis2d)
+import Curve
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
@@ -719,35 +720,27 @@ sample nondegenerateArc parameterValue =
     )
 
 
-numApproximationSegments : Quantity Float units -> Arc2d units coordinates -> Int
-numApproximationSegments maxError arc =
-    if sweptAngle arc == Quantity.zero then
-        1
+{-| Approximate an arc by a given number of line segments:
 
-    else if maxError |> Quantity.lessThanOrEqualTo Quantity.zero then
-        0
+    Arc2d.segments 2 exampleArc
+    --> Polyline2d.fromVertices
+    -->     [ Point2d.meters 3 1
+    -->     , Point2d.meters 2.4142 2.4142
+    -->     , Point2d.meters 1 3
+    -->     ]
 
-    else if
-        maxError
-            |> Quantity.greaterThanOrEqualTo
-                (Quantity.multiplyBy 2 (radius arc))
-    then
-        1
+Note that the number of points in the polyline is one more than the number of
+segments.
 
-    else
-        let
-            maxSegmentAngle =
-                Quantity.multiplyBy 2
-                    (Angle.acos (1 - Quantity.ratio maxError (radius arc)))
-        in
-        ceiling (Quantity.ratio (Quantity.abs (sweptAngle arc)) maxSegmentAngle)
+-}
+segments : Int -> Arc2d units coordinates -> Polyline2d units coordinates
+segments numSegments arc =
+    Polyline2d.fromVertices (Parameter1d.steps numSegments (pointOn arc))
 
 
 {-| Approximate an arc as a polyline, within a given tolerance:
 
-    exampleArc
-        |> Arc2d.toPolyline
-            { maxError = Length.meters 0.1 }
+    Arc2d.approximate (Length.meters 0.1) exampleArc
     --> Polyline2d.fromVertices
     -->     [ Point2d.meters 3 1
     -->     , Point2d.meters 2.732 2
@@ -759,16 +752,25 @@ In this example, every point on the returned polyline will be within 0.1 meters
 of the original arc.
 
 -}
-toPolyline : { maxError : Quantity Float units } -> Arc2d units coordinates -> Polyline2d units coordinates
-toPolyline { maxError } arc =
+approximate : Quantity Float units -> Arc2d units coordinates -> Polyline2d units coordinates
+approximate maxError arc =
     let
         numSegments =
-            numApproximationSegments maxError arc
-
-        points =
-            Parameter1d.steps numSegments (pointOn arc)
+            Curve.arcApproximationSegments
+                { maxError = maxError
+                , radius = radius arc
+                , sweptAngle = sweptAngle arc
+                }
     in
-    Polyline2d.fromVertices points
+    segments numSegments arc
+
+
+{-| DEPRECATED - use [`segments`](#segments) or [`approximate`](#approximate)
+instead.
+-}
+toPolyline : { maxError : Quantity Float units } -> Arc2d units coordinates -> Polyline2d units coordinates
+toPolyline { maxError } arc =
+    approximate maxError arc
 
 
 {-| Reverse the direction of an arc, so that the start point becomes the end

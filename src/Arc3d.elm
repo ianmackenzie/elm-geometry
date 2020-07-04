@@ -14,7 +14,7 @@ module Arc3d exposing
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
-    , toPolyline
+    , segments, approximate, toPolyline
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectInto
     , at, at_
     , relativeTo, placeIn
@@ -51,7 +51,7 @@ start point to the arc's end point). This module includes functionality for
 
 # Linear approximation
 
-@docs toPolyline
+@docs segments, approximate, toPolyline
 
 
 # Transformations
@@ -84,6 +84,7 @@ you are writing low-level geometric algorithms.
 import Angle exposing (Angle)
 import Arc2d exposing (Arc2d)
 import Axis3d exposing (Axis3d)
+import Curve
 import Direction2d exposing (Direction2d)
 import Direction3d exposing (Direction3d)
 import EllipticalArc2d exposing (EllipticalArc2d)
@@ -540,35 +541,24 @@ sample nondegenerateArc parameterValue =
     )
 
 
-numApproximationSegments : Quantity Float units -> Arc3d units coordinates -> Int
-numApproximationSegments maxError arc =
-    if sweptAngle arc == Quantity.zero then
-        1
+{-| Approximate an arc by a given number of line segments:
 
-    else if maxError |> Quantity.lessThanOrEqualTo Quantity.zero then
-        0
+    Arc3d.segments 3 exampleArc
+    --> Polyline3d.fromVertices
+    -->     [ Point3d.meters 1 1 0
+    -->     , Point3d.meters 1 1.4142 0
+    -->     , Point3d.meters -1 1 0
+    -->     ]
 
-    else if
-        maxError
-            |> Quantity.greaterThanOrEqualTo
-                (Quantity.multiplyBy 2 (radius arc))
-    then
-        1
-
-    else
-        let
-            maxSegmentAngle =
-                Quantity.multiplyBy 2
-                    (Angle.acos (1 - Quantity.ratio maxError (radius arc)))
-        in
-        ceiling (Quantity.ratio (Quantity.abs (sweptAngle arc)) maxSegmentAngle)
+-}
+segments : Int -> Arc3d units coordinates -> Polyline3d units coordinates
+segments numSegments arc =
+    Polyline3d.fromVertices (Parameter1d.steps numSegments (pointOn arc))
 
 
 {-| Approximate an arc as a polyline, within a given tolerance:
 
-    exampleArc
-        |> Arc3d.toPolyline
-            { maxError = Length.meters 0.1 }
+    Arc3d.approximate (Length.meters 0.1) exampleArc
     --> Polyline3d.fromVertices
     -->     [ Point3d.meters 1 1 0
     -->     , Point3d.meters 0.366 1.366 0
@@ -580,16 +570,25 @@ In this example, every point on the returned polyline will be within 0.1 meters
 of the original arc.
 
 -}
-toPolyline : { maxError : Quantity Float units } -> Arc3d units coordinates -> Polyline3d units coordinates
-toPolyline { maxError } arc =
+approximate : Quantity Float units -> Arc3d units coordinates -> Polyline3d units coordinates
+approximate maxError arc =
     let
         numSegments =
-            numApproximationSegments maxError arc
-
-        points =
-            Parameter1d.steps numSegments (pointOn arc)
+            Curve.arcApproximationSegments
+                { maxError = maxError
+                , radius = radius arc
+                , sweptAngle = sweptAngle arc
+                }
     in
-    Polyline3d.fromVertices points
+    segments numSegments arc
+
+
+{-| DEPRECATED - use [`segments`](#segments) or [`approximate`](#approximate)
+instead.
+-}
+toPolyline : { maxError : Quantity Float units } -> Arc3d units coordinates -> Polyline3d units coordinates
+toPolyline { maxError } arc =
+    approximate maxError arc
 
 
 {-| Get the swept angle of an arc. A positive swept angle means that the arc is
