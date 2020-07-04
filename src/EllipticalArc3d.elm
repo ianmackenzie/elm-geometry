@@ -500,6 +500,8 @@ mirrorAcross plane arc =
     transformBy (Ellipse3d.mirrorAcross plane) arc
 
 
+{-| Project an elliptical arc onto a plane.
+-}
 projectOnto :
     Plane3d units coordinates
     -> EllipticalArc3d units coordinates
