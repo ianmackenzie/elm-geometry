@@ -2,7 +2,7 @@ module Curve3d exposing
     ( Curve3d
     , lineSegment, arc, ellipticalArc, quadraticSpline, cubicSpline
     , startPoint, endPoint
-    , reverse, translateBy, scaleAbout, rotateAround, mirrorAcross
+    , reverse, translateBy, scaleAbout, rotateAround, mirrorAcross, projectOnto, projectInto
     , placeIn, relativeTo
     )
 
@@ -14,7 +14,7 @@ module Curve3d exposing
 
 @docs startPoint, endPoint
 
-@docs reverse, translateBy, scaleAbout, rotateAround, mirrorAcross
+@docs reverse, translateBy, scaleAbout, rotateAround, mirrorAcross, projectOnto, projectInto
 
 @docs placeIn, relativeTo
 
@@ -326,3 +326,41 @@ mirrorAcross plane givenCurve =
 
         Types.CubicSplineCurve3d givenCubicSpline ->
             Types.CubicSplineCurve3d (CubicSpline3d.mirrorAcross plane givenCubicSpline)
+
+
+projectOnto : Plane3d units coordinates -> Curve3d units coordinates -> Curve3d units coordinates
+projectOnto plane givenCurve =
+    case givenCurve of
+        Types.LineSegmentCurve3d givenLineSegment ->
+            Types.LineSegmentCurve3d (LineSegment3d.projectOnto plane givenLineSegment)
+
+        Types.ArcCurve3d givenArc ->
+            Types.EllipticalArcCurve3d (Arc3d.projectOnto plane givenArc)
+
+        Types.EllipticalArcCurve3d givenEllipticalArc ->
+            Types.EllipticalArcCurve3d (EllipticalArc3d.projectOnto plane givenEllipticalArc)
+
+        Types.QuadraticSplineCurve3d givenQuadraticSpline ->
+            Types.QuadraticSplineCurve3d (QuadraticSpline3d.projectOnto plane givenQuadraticSpline)
+
+        Types.CubicSplineCurve3d givenCubicSpline ->
+            Types.CubicSplineCurve3d (CubicSpline3d.projectOnto plane givenCubicSpline)
+
+
+projectInto : SketchPlane3d units coordinates { defines : coordinates2d } -> Curve3d units coordinates -> Curve2d units coordinates2d
+projectInto sketchPlane givenCurve =
+    case givenCurve of
+        Types.LineSegmentCurve3d givenLineSegment ->
+            Types.LineSegmentCurve2d (LineSegment3d.projectInto sketchPlane givenLineSegment)
+
+        Types.ArcCurve3d givenArc ->
+            Types.EllipticalArcCurve2d (Arc3d.projectInto sketchPlane givenArc)
+
+        Types.EllipticalArcCurve3d givenEllipticalArc ->
+            Types.EllipticalArcCurve2d (EllipticalArc3d.projectInto sketchPlane givenEllipticalArc)
+
+        Types.QuadraticSplineCurve3d givenQuadraticSpline ->
+            Types.QuadraticSplineCurve2d (QuadraticSpline3d.projectInto sketchPlane givenQuadraticSpline)
+
+        Types.CubicSplineCurve3d givenCubicSpline ->
+            Types.CubicSplineCurve2d (CubicSpline3d.projectInto sketchPlane givenCubicSpline)
