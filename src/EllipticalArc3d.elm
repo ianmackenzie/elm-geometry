@@ -15,7 +15,7 @@ module EllipticalArc3d exposing
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
-    , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
+    , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectInto
     , at, at_
     , relativeTo, placeIn
     , ArcLengthParameterized, arcLengthParameterized, arcLength
@@ -63,7 +63,7 @@ underlying ellipse](Ellipse3d#properties).
 These transformations generally behave just like [the ones in the `Point3d`
 module](Point3d#transformations).
 
-@docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
+@docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectInto
 
 
 # Unit conversions
@@ -498,6 +498,18 @@ mirrorAcross :
     -> EllipticalArc3d units coordinates
 mirrorAcross plane arc =
     transformBy (Ellipse3d.mirrorAcross plane) arc
+
+
+projectOnto :
+    Plane3d units coordinates
+    -> EllipticalArc3d units coordinates
+    -> EllipticalArc3d units coordinates
+projectOnto plane arc =
+    let
+        sketchPlane =
+            SketchPlane3d.fromPlane plane
+    in
+    arc |> projectInto sketchPlane |> on sketchPlane
 
 
 {-| Project a 3D elliptical arc into a sketch plane.

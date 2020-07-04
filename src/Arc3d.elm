@@ -15,7 +15,7 @@ module Arc3d exposing
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
     , toPolyline
-    , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
+    , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectInto
     , at, at_
     , relativeTo, placeIn
     , firstDerivative
@@ -59,7 +59,7 @@ start point to the arc's end point). This module includes functionality for
 These transformations generally behave just like [the ones in the `Point3d`
 module](Point3d#transformations).
 
-@docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
+@docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectInto
 
 
 # Unit conversions
@@ -87,6 +87,7 @@ import Axis3d exposing (Axis3d)
 import Direction2d exposing (Direction2d)
 import Direction3d exposing (Direction3d)
 import EllipticalArc2d exposing (EllipticalArc2d)
+import EllipticalArc3d exposing (EllipticalArc3d)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
 import Geometry.Types as Types
@@ -724,6 +725,18 @@ mirrorAcross plane (Types.Arc3d arc) =
             Direction3d.reverse (Direction3d.mirrorAcross plane arc.xDirection)
         , yDirection = Direction3d.mirrorAcross plane arc.yDirection
         }
+
+
+{-| Project an arc onto a plane. Note that the result is an elliptical arc, not
+a circular one!
+-}
+projectOnto : Plane3d units coordinates -> Arc3d units coordinates -> EllipticalArc3d units coordinates
+projectOnto plane arc =
+    let
+        sketchPlane =
+            SketchPlane3d.fromPlane plane
+    in
+    arc |> projectInto sketchPlane |> EllipticalArc3d.on sketchPlane
 
 
 {-| Project an arc into a sketch plane. Note that the result is an elliptical
