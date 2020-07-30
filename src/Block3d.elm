@@ -155,7 +155,7 @@ from p1 p2 =
 dimensions (length/width/height):
 
     block =
-        Block3d.centeredOn Frame3d.origin
+        Block3d.centeredOn Frame3d.atOrigin
             ( meters 20, meters 10, meters 30 )
 
     Block3d.vertices block
