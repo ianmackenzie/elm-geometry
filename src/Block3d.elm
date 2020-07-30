@@ -278,8 +278,8 @@ at_ rate block =
     at (Quantity.inverse rate) block
 
 
-{-| Get the central axes of a block as a `Frame3d`.The origin point of the frame
-will be the center point of the block.
+{-| Get the central axes of a block as a `Frame3d`. The origin point of the
+frame will be the center point of the block.
 -}
 axes : Block3d units coordinates -> Frame3d units coordinates defines
 axes (Types.Block3d block) =
