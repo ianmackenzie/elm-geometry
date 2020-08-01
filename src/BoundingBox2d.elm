@@ -217,8 +217,11 @@ singleton point =
         }
 
 
-{-| Find the bounding box containing one or more input points. You would
-generally use this within a `case` expression:
+{-| Find the bounding box containing one or more input points:
+
+    BoundingBox2d.hull p1 [ p2, p3, p4 ]
+
+Often ends up being used within a `case` expression:
 
     case points of
         [] ->
@@ -229,9 +232,9 @@ generally use this within a `case` expression:
                 boundingBox =
                     BoundingBox2d.hull first rest
             in
-            ...
+            -- normal behavior using 'boundingBox'
 
-If you need to handle the case of zero input points, see [`hullN`](#hullN).
+See also [`hullN`](#hullN).
 
 -}
 hull : Point2d units coordinates -> List (Point2d units coordinates) -> BoundingBox2d units coordinates
@@ -268,14 +271,21 @@ hullHelp currentMinX currentMaxX currentMinY currentMaxY points =
 
 
 {-| Like [`hull`](#hull), but lets you work on any kind of item as long as a
-point can be extracted from it. For example, to get the bounding box around the
-centroids of four triangles:
+point can be extracted from it. For example, if you had
 
-    BoundingBox2d.hullOf Triangle2d.centroid
-        firstTriangle
-        [ secondTriangle
-        , thirdTriangle
-        , fourthTriangle
+    type alias Vertex =
+        { id : Int
+        , position : Point2d Meters WorldCoordinates
+        , color : Color
+        }
+
+then you could get the bounding box around several vertices using
+
+    BoundingBox2d.hullOf .position
+        firstVertex
+        [ secondVertex
+        , thirdVertex
+        , fourthVertex
         ]
 
 -}
@@ -380,8 +390,7 @@ hullOfN getBoundingBox items =
 
 
 {-| Find the bounding box containing one or more input boxes; works much like
-[`hull`](#hull). If you need to handle the case of zero input boxes, see
-[`aggregateN`](#aggregateN).
+[`hull`](#hull). See also [`aggregateN`](#aggregateN).
 -}
 aggregate : BoundingBox2d units coordinates -> List (BoundingBox2d units coordinates) -> BoundingBox2d units coordinates
 aggregate first rest =
@@ -545,8 +554,7 @@ aggregateN boxes =
             Nothing
 
 
-{-| Combination of [`aggregateOf`](#aggregateOf) and
-[`aggregateN`](#aggregateN).
+{-| Combination of [`aggregateOf`](#aggregateOf) and [`aggregateN`](#aggregateN).
 -}
 aggregateOfN : (a -> BoundingBox2d units coordinates) -> List a -> Maybe (BoundingBox2d units coordinates)
 aggregateOfN getBoundingBox items =
