@@ -117,6 +117,7 @@ you are writing low-level geometric algorithms.
 -}
 
 import Angle exposing (Angle, Radians)
+import Angle.Interval
 import ArcLengthParameterization exposing (ArcLengthParameterization)
 import Axis2d exposing (Axis2d)
 import Curve
@@ -124,13 +125,12 @@ import Direction2d exposing (Direction2d)
 import Ellipse2d exposing (Ellipse2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
-import Interval
 import Parameter1d
 import Point2d exposing (Point2d)
 import Polyline2d exposing (Polyline2d)
 import Quantity exposing (Quantity(..), Rate, Squared)
 import Quantity.Extra as Quantity
-import Quantity.Interval
+import Quantity.Interval as Interval
 import SweptAngle exposing (SweptAngle)
 import Unsafe.Direction2d as Direction2d
 import Vector2d exposing (Vector2d)
@@ -753,17 +753,17 @@ maxSecondDerivativeMagnitude arc =
             Quantity.multiplyBy dThetaSquared ry
 
         thetaInterval =
-            Quantity.Interval.from theta0 theta1
+            Interval.from theta0 theta1
 
         sinThetaInterval =
-            Quantity.Interval.sin thetaInterval
+            Angle.Interval.sin thetaInterval
 
         includeKx =
-            Interval.contains 0 sinThetaInterval
+            Interval.contains Quantity.zero sinThetaInterval
 
         includeKy =
-            (Interval.maxValue sinThetaInterval == 1)
-                || (Interval.minValue sinThetaInterval == -1)
+            (Interval.maxValue sinThetaInterval == Quantity.float 1)
+                || (Interval.minValue sinThetaInterval == Quantity.float -1)
     in
     if (kx |> Quantity.greaterThanOrEqualTo ky) && includeKx then
         -- kx is the global max and is included in the arc
