@@ -9,12 +9,13 @@
 
 module BoundingBox3d exposing
     ( BoundingBox3d
-    , from, fromExtrema, withDimensions, singleton
+    , from, fromExtrema, withDimensions, singleton, xyz, fromIntervals
     , union, intersection
     , hull, hull3, hullN, hullOf, hullOfN
     , aggregate, aggregate3, aggregateN, aggregateOf, aggregateOfN
     , extrema
     , minX, maxX, minY, maxY, minZ, maxZ, dimensions, midX, midY, midZ, centerPoint
+    , xInterval, yInterval, zInterval, intervals
     , contains, isContainedIn, intersects, overlappingByAtLeast, separatedByAtLeast
     , scaleAbout, translateBy, translateIn, expandBy, offsetBy
     , at, at_
@@ -41,7 +42,7 @@ box of an object than the object itself, such as:
 
 # Constructors
 
-@docs from, fromExtrema, withDimensions, singleton
+@docs from, fromExtrema, withDimensions, singleton, xyz, fromIntervals
 
 
 ## Booleans
@@ -72,6 +73,10 @@ You can also get these values separately:
 
 @docs minX, maxX, minY, maxY, minZ, maxZ, dimensions, midX, midY, midZ, centerPoint
 
+You can also get the X, Y and Z ranges of a bounding box as [intervals](https://package.elm-lang.org/packages/ianmackenzie/elm-units-interval/latest/):
+
+@docs xInterval, yInterval, zInterval, intervals
+
 
 # Queries
 
@@ -94,6 +99,7 @@ import Geometry.Types as Types
 import Point3d exposing (Point3d)
 import Quantity exposing (Quantity(..), Rate)
 import Quantity.Extra as Quantity
+import Quantity.Interval as Interval exposing (Interval)
 import Vector3d exposing (Vector3d)
 
 
@@ -238,6 +244,33 @@ singleton point =
         , minZ = Point3d.zCoordinate point
         , maxZ = Point3d.zCoordinate point
         }
+
+
+{-| Construct a bounding box from separate X, Y and Z [intervals](https://package.elm-lang.org/packages/ianmackenzie/elm-units-interval/latest/).
+-}
+xyz :
+    Interval Float units
+    -> Interval Float units
+    -> Interval Float units
+    -> BoundingBox3d units coordinates
+xyz givenXInterval givenYInterval givenZInterval =
+    Types.BoundingBox3d
+        { minX = Interval.minValue givenXInterval
+        , maxX = Interval.maxValue givenXInterval
+        , minY = Interval.minValue givenYInterval
+        , maxY = Interval.maxValue givenYInterval
+        , minZ = Interval.minValue givenZInterval
+        , maxZ = Interval.maxValue givenZInterval
+        }
+
+
+{-| Construct a bounding box from a tuple of X, Y and Z intervals.
+-}
+fromIntervals :
+    ( Interval Float units, Interval Float units, Interval Float units )
+    -> BoundingBox3d units coordinates
+fromIntervals ( givenXInterval, givenYInterval, givenZInterval ) =
+    xyz givenXInterval givenYInterval givenZInterval
 
 
 {-| Find the bounding box containing one or more input points. You would
@@ -752,6 +785,36 @@ midZ (Types.BoundingBox3d boundingBox) =
 centerPoint : BoundingBox3d units coordinates -> Point3d units coordinates
 centerPoint boundingBox =
     Point3d.xyz (midX boundingBox) (midY boundingBox) (midZ boundingBox)
+
+
+{-| Get the range of X values contained by a bounding box.
+-}
+xInterval : BoundingBox3d units coordinates -> Interval Float units
+xInterval boundingBox =
+    Interval.from (minX boundingBox) (maxX boundingBox)
+
+
+{-| Get the range of Y values contained by a bounding box.
+-}
+yInterval : BoundingBox3d units coordinates -> Interval Float units
+yInterval boundingBox =
+    Interval.from (minY boundingBox) (maxY boundingBox)
+
+
+{-| Get the range of Y values contained by a bounding box.
+-}
+zInterval : BoundingBox3d units coordinates -> Interval Float units
+zInterval boundingBox =
+    Interval.from (minZ boundingBox) (maxZ boundingBox)
+
+
+{-| Convert a bounding box to a pair of X and Y intervals.
+-}
+intervals :
+    BoundingBox3d units coordinates
+    -> ( Interval Float units, Interval Float units, Interval Float units )
+intervals boundingBox =
+    ( xInterval boundingBox, yInterval boundingBox, zInterval boundingBox )
 
 
 {-| Check if a bounding box contains a particular point.

@@ -9,12 +9,13 @@
 
 module BoundingBox2d exposing
     ( BoundingBox2d
-    , from, fromExtrema, withDimensions, singleton
+    , from, fromExtrema, withDimensions, singleton, xy, fromIntervals
     , union, intersection
     , hull, hull3, hullN, hullOf, hullOfN
     , aggregate, aggregate3, aggregateN, aggregateOf, aggregateOfN
     , extrema
     , minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint
+    , xInterval, yInterval, intervals
     , contains, isContainedIn, intersects, overlappingByAtLeast, separatedByAtLeast
     , scaleAbout, translateBy, translateIn, expandBy, offsetBy
     , at, at_
@@ -42,7 +43,7 @@ box of an object than the object itself, such as:
 
 # Constructors
 
-@docs from, fromExtrema, withDimensions, singleton
+@docs from, fromExtrema, withDimensions, singleton, xy, fromIntervals
 
 
 ## Booleans
@@ -73,6 +74,10 @@ You can also get these values separately:
 
 @docs minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint
 
+You can also get the X and Y ranges of a bounding box as [intervals](https://package.elm-lang.org/packages/ianmackenzie/elm-units-interval/latest/):
+
+@docs xInterval, yInterval, intervals
+
 
 # Queries
 
@@ -95,6 +100,7 @@ import Geometry.Types as Types
 import Point2d exposing (Point2d)
 import Quantity exposing (Quantity(..), Rate)
 import Quantity.Extra as Quantity
+import Quantity.Interval as Interval exposing (Interval)
 import Vector2d exposing (Vector2d)
 
 
@@ -215,6 +221,25 @@ singleton point =
         , minY = Point2d.yCoordinate point
         , maxY = Point2d.yCoordinate point
         }
+
+
+{-| Construct a bounding box from separate X and Y [intervals](https://package.elm-lang.org/packages/ianmackenzie/elm-units-interval/latest/).
+-}
+xy : Interval Float units -> Interval Float units -> BoundingBox2d units coordinates
+xy givenXInterval givenYInterval =
+    Types.BoundingBox2d
+        { minX = Interval.minValue givenXInterval
+        , maxX = Interval.maxValue givenXInterval
+        , minY = Interval.minValue givenYInterval
+        , maxY = Interval.maxValue givenYInterval
+        }
+
+
+{-| Construct a bounding box from a pair of X and Y intervals.
+-}
+fromIntervals : ( Interval Float units, Interval Float units ) -> BoundingBox2d units coordinates
+fromIntervals ( givenXInterval, givenYInterval ) =
+    xy givenXInterval givenYInterval
 
 
 {-| Find the bounding box containing one or more input points:
@@ -673,6 +698,27 @@ midY (Types.BoundingBox2d boundingBox) =
 centerPoint : BoundingBox2d units coordinates -> Point2d units coordinates
 centerPoint boundingBox =
     Point2d.xy (midX boundingBox) (midY boundingBox)
+
+
+{-| Get the range of X values contained by a bounding box.
+-}
+xInterval : BoundingBox2d units coordinates -> Interval Float units
+xInterval boundingBox =
+    Interval.from (minX boundingBox) (maxX boundingBox)
+
+
+{-| Get the range of Y values contained by a bounding box.
+-}
+yInterval : BoundingBox2d units coordinates -> Interval Float units
+yInterval boundingBox =
+    Interval.from (minY boundingBox) (maxY boundingBox)
+
+
+{-| Convert a bounding box to a pair of X and Y intervals.
+-}
+intervals : BoundingBox2d units coordinates -> ( Interval Float units, Interval Float units )
+intervals boundingBox =
+    ( xInterval boundingBox, yInterval boundingBox )
 
 
 {-| Check if a bounding box contains a particular point.
