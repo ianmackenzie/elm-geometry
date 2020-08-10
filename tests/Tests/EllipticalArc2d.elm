@@ -1,5 +1,6 @@
 module Tests.EllipticalArc2d exposing
-    ( fromEndpointsReplicatesArc
+    ( boundingBox
+    , fromEndpointsReplicatesArc
     , reproducibleArc
     , reverseKeepsMidpoint
     , transformations
@@ -140,3 +141,15 @@ transformations =
         curveOperations
         EllipticalArc2d.placeIn
         EllipticalArc2d.relativeTo
+
+
+boundingBox : Test
+boundingBox =
+    Test.fuzz2
+        Fuzz.ellipticalArc2d
+        (Fuzz.floatRange 0 1)
+        "Every point on an arc is within its bounding box"
+        (\arc parameterValue ->
+            EllipticalArc2d.pointOn arc parameterValue
+                |> Expect.point2dContainedIn (EllipticalArc2d.boundingBox arc)
+        )

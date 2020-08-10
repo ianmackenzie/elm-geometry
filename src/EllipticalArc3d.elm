@@ -10,7 +10,7 @@
 module EllipticalArc3d exposing
     ( EllipticalArc3d
     , on
-    , startAngle, sweptAngle, startPoint, endPoint
+    , startAngle, sweptAngle, startPoint, endPoint, boundingBox
     , centerPoint, axes, xAxis, yAxis, xDirection, yDirection, xRadius, yRadius
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
@@ -44,7 +44,7 @@ includes functionality for
 
 # Properties
 
-@docs startAngle, sweptAngle, startPoint, endPoint
+@docs startAngle, sweptAngle, startPoint, endPoint, boundingBox
 
 All remaining properties of elliptical arcs are actually just [properties of the
 underlying ellipse](Ellipse3d#properties).
@@ -115,6 +115,7 @@ import Angle exposing (Angle, Radians)
 import Angle.Interval
 import ArcLengthParameterization exposing (ArcLengthParameterization)
 import Axis3d exposing (Axis3d)
+import BoundingBox3d exposing (BoundingBox3d)
 import Curve
 import Direction3d exposing (Direction3d)
 import Ellipse2d exposing (Ellipse2d)
@@ -444,6 +445,63 @@ startPoint arc =
 endPoint : EllipticalArc3d units coordinates -> Point3d units coordinates
 endPoint arc =
     pointOn arc 1
+
+
+boundingBox : EllipticalArc3d units coordinates -> BoundingBox3d units coordinatets
+boundingBox arc =
+    let
+        (Types.Point3d p) =
+            centerPoint arc
+
+        (Types.Direction3d u) =
+            xDirection arc
+
+        (Types.Direction3d v) =
+            yDirection arc
+
+        (Quantity rX) =
+            xRadius arc
+
+        (Quantity rY) =
+            yRadius arc
+
+        theta0 =
+            startAngle arc
+
+        theta1 =
+            theta0 |> Quantity.plus (sweptAngle arc)
+
+        theta =
+            Interval.from theta0 theta1
+
+        ( Quantity sinMin, Quantity sinMax ) =
+            Interval.endpoints (Angle.Interval.sin theta)
+
+        ( Quantity cosMin, Quantity cosMax ) =
+            Interval.endpoints (Angle.Interval.cos theta)
+
+        localX =
+            Interval.from (Quantity (rX * cosMin)) (Quantity (rX * cosMax))
+
+        localY =
+            Interval.from (Quantity (rY * sinMin)) (Quantity (rY * sinMax))
+
+        xInterval =
+            (localX |> Interval.multiplyBy u.x)
+                |> Interval.plus (localY |> Interval.multiplyBy v.x)
+                |> Interval.add (Quantity p.x)
+
+        yInterval =
+            (localX |> Interval.multiplyBy u.y)
+                |> Interval.plus (localY |> Interval.multiplyBy v.y)
+                |> Interval.add (Quantity p.y)
+
+        zInterval =
+            (localX |> Interval.multiplyBy u.z)
+                |> Interval.plus (localY |> Interval.multiplyBy v.z)
+                |> Interval.add (Quantity p.z)
+    in
+    BoundingBox3d.xyz xInterval yInterval zInterval
 
 
 {-| -}

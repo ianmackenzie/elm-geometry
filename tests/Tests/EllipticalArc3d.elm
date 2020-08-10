@@ -1,5 +1,6 @@
 module Tests.EllipticalArc3d exposing
-    ( evaluateOneIsEndPoint
+    ( boundingBox
+    , evaluateOneIsEndPoint
     , evaluateZeroIsStartPoint
     , projectInto
     , transformations
@@ -75,3 +76,15 @@ transformations =
         curveOperations
         EllipticalArc3d.placeIn
         EllipticalArc3d.relativeTo
+
+
+boundingBox : Test
+boundingBox =
+    Test.fuzz2
+        Fuzz.ellipticalArc3d
+        (Fuzz.floatRange 0 1)
+        "Every point on an arc is within its bounding box"
+        (\arc parameterValue ->
+            EllipticalArc3d.pointOn arc parameterValue
+                |> Expect.point3dContainedIn (EllipticalArc3d.boundingBox arc)
+        )
