@@ -96,7 +96,7 @@ import Parameter1d
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Polyline3d exposing (Polyline3d)
-import Quantity exposing (Quantity, Rate)
+import Quantity exposing (Quantity(..), Rate)
 import Quantity.Extra as Quantity
 import SketchPlane3d exposing (SketchPlane3d)
 import Unsafe.Direction3d as Direction3d
@@ -319,91 +319,57 @@ endPoint arc =
 {-| Get the point along an arc at a given parameter value.
 -}
 pointOn : Arc3d units coordinates -> Float -> Point3d units coordinates
-pointOn (Types.Arc3d arc) parameterValue =
+pointOn (Types.Arc3d arc) t =
     let
-        x0 =
-            Point3d.xCoordinate arc.startPoint
+        (Types.Point3d p) =
+            arc.startPoint
 
-        y0 =
-            Point3d.yCoordinate arc.startPoint
+        (Types.Direction3d u) =
+            arc.xDirection
 
-        z0 =
-            Point3d.zCoordinate arc.startPoint
+        (Types.Direction3d v) =
+            arc.yDirection
 
-        x1 =
-            Direction3d.xComponent arc.xDirection
-
-        y1 =
-            Direction3d.yComponent arc.xDirection
-
-        z1 =
-            Direction3d.zComponent arc.xDirection
-
-        x2 =
-            Direction3d.xComponent arc.yDirection
-
-        y2 =
-            Direction3d.yComponent arc.yDirection
-
-        z2 =
-            Direction3d.zComponent arc.yDirection
-
-        arcSignedLength =
+        (Quantity sMax) =
             arc.signedLength
 
-        arcSweptAngle =
+        (Quantity thetaMax) =
             arc.sweptAngle
     in
-    if arcSweptAngle == Quantity.zero then
+    if thetaMax == 0 then
         let
-            distance =
-                Quantity.multiplyBy parameterValue arcSignedLength
-
-            px =
-                x0 |> Quantity.plus (distance |> Quantity.multiplyBy x1)
-
-            py =
-                y0 |> Quantity.plus (distance |> Quantity.multiplyBy y1)
-
-            pz =
-                z0 |> Quantity.plus (distance |> Quantity.multiplyBy z1)
+            s =
+                t * sMax
         in
-        Point3d.xyz px py pz
+        Types.Point3d
+            { x = p.x + s * u.x
+            , y = p.y + s * u.y
+            , z = p.z + s * u.z
+            }
 
     else
         let
             theta =
-                Quantity.multiplyBy parameterValue arcSweptAngle
+                t * thetaMax
 
-            arcRadius =
-                Quantity.lOverTheta arcSignedLength arcSweptAngle
+            r =
+                sMax / thetaMax
 
             x =
-                Quantity.rSinTheta arcRadius theta
+                r * sin theta
 
             y =
-                if
-                    Quantity.abs theta
-                        |> Quantity.lessThan
-                            (Angle.radians (pi / 2))
-                then
-                    x
-                        |> Quantity.multiplyBy
-                            (Angle.tan (Quantity.multiplyBy 0.5 theta))
+                if abs theta < pi / 2 then
+                    x * tan (0.5 * theta)
 
                 else
-                    Quantity.multiplyBy (1 - Angle.cos theta) arcRadius
-
-            px =
-                x0 |> Quantity.plus (Quantity.aXbY x1 x x2 y)
-
-            py =
-                y0 |> Quantity.plus (Quantity.aXbY y1 x y2 y)
-
-            pz =
-                z0 |> Quantity.plus (Quantity.aXbY z1 x z2 y)
+                    r * (1 - cos theta)
         in
-        Point3d.xyz px py pz
+        Types.Point3d
+            { x = p.x + x * u.x + y * v.x
+            , y = p.y + x * u.y + y * v.y
+            , z = p.z + x * u.z + y * v.z
+            }
 
 
 {-| Get the first derivative of an arc at a given parameter value.
