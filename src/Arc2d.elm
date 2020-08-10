@@ -10,7 +10,7 @@
 module Arc2d exposing
     ( Arc2d
     , from, with, sweptAround, throughPoints, withRadius
-    , centerPoint, radius, startPoint, midpoint, endPoint, sweptAngle
+    , centerPoint, radius, startPoint, midpoint, endPoint, sweptAngle, boundingBox
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
@@ -39,7 +39,7 @@ end point). This module includes functionality for
 
 # Properties
 
-@docs centerPoint, radius, startPoint, midpoint, endPoint, sweptAngle
+@docs centerPoint, radius, startPoint, midpoint, endPoint, sweptAngle, boundingBox
 
 
 # Evaluation
@@ -82,7 +82,9 @@ you are writing low-level geometric algorithms.
 -}
 
 import Angle exposing (Angle)
+import Angle.Interval
 import Axis2d exposing (Axis2d)
+import BoundingBox2d exposing (BoundingBox2d)
 import Curve
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
@@ -91,8 +93,9 @@ import LineSegment2d exposing (LineSegment2d)
 import Parameter1d
 import Point2d exposing (Point2d)
 import Polyline2d exposing (Polyline2d)
-import Quantity exposing (Quantity, Rate)
+import Quantity exposing (Quantity(..), Rate)
 import Quantity.Extra as Quantity
+import Quantity.Interval as Interval
 import SweptAngle exposing (SweptAngle)
 import Vector2d exposing (Vector2d)
 
@@ -585,6 +588,72 @@ counterclockwise arc and negative for a clockwise one.
 sweptAngle : Arc2d units coordinates -> Angle
 sweptAngle (Types.Arc2d properties) =
     properties.sweptAngle
+
+
+{-| Get a bounding box for a given arc.
+-}
+boundingBox : Arc2d units coordinates -> BoundingBox2d units coordinates
+boundingBox givenArc =
+    let
+        (Types.Arc2d { xDirection }) =
+            givenArc
+
+        theta =
+            sweptAngle givenArc
+    in
+    if Quantity.abs theta |> Quantity.lessThan (Angle.degrees 5) then
+        let
+            p1 =
+                startPoint givenArc
+
+            p2 =
+                endPoint givenArc
+
+            offset =
+                Quantity.half (Point2d.distanceFrom p1 p2)
+                    |> Quantity.divideBy (Angle.cos (Quantity.half theta))
+
+            offsetPoint =
+                p1 |> Point2d.translateIn xDirection offset
+        in
+        BoundingBox2d.hull3 p1 p2 offsetPoint
+
+    else
+        let
+            startAngle =
+                Direction2d.toAngle xDirection
+                    |> Quantity.minus (Angle.degrees 90)
+
+            endAngle =
+                startAngle |> Quantity.plus theta
+
+            angleInterval =
+                Interval.from startAngle endAngle
+
+            cosTheta =
+                Angle.Interval.cos angleInterval
+
+            sinTheta =
+                Angle.Interval.sin angleInterval
+
+            ( Quantity cosMin, Quantity cosMax ) =
+                Interval.endpoints cosTheta
+
+            ( Quantity sinMin, Quantity sinMax ) =
+                Interval.endpoints sinTheta
+
+            ( x0, y0 ) =
+                Point2d.coordinates (centerPoint givenArc)
+
+            r =
+                radius givenArc
+        in
+        BoundingBox2d.fromExtrema
+            { minX = x0 |> Quantity.plus (r |> Quantity.multiplyBy cosMin)
+            , maxX = x0 |> Quantity.plus (r |> Quantity.multiplyBy cosMax)
+            , minY = y0 |> Quantity.plus (r |> Quantity.multiplyBy sinMin)
+            , maxY = y0 |> Quantity.plus (r |> Quantity.multiplyBy sinMax)
+            }
 
 
 {-| Get the point along an arc at a given parameter value.

@@ -10,7 +10,7 @@
 module Arc3d exposing
     ( Arc3d
     , on, sweptAround, throughPoints
-    , axialDirection, axis, centerPoint, radius, startPoint, midpoint, endPoint, sweptAngle
+    , axialDirection, axis, centerPoint, radius, startPoint, midpoint, endPoint, sweptAngle, boundingBox
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
@@ -39,7 +39,7 @@ start point to the arc's end point). This module includes functionality for
 
 # Properties
 
-@docs axialDirection, axis, centerPoint, radius, startPoint, midpoint, endPoint, sweptAngle
+@docs axialDirection, axis, centerPoint, radius, startPoint, midpoint, endPoint, sweptAngle, boundingBox
 
 
 # Evaluation
@@ -82,8 +82,10 @@ you are writing low-level geometric algorithms.
 -}
 
 import Angle exposing (Angle)
+import Angle.Interval
 import Arc2d exposing (Arc2d)
 import Axis3d exposing (Axis3d)
+import BoundingBox3d exposing (BoundingBox3d)
 import Curve
 import Direction2d exposing (Direction2d)
 import Direction3d exposing (Direction3d)
@@ -98,6 +100,7 @@ import Point3d exposing (Point3d)
 import Polyline3d exposing (Polyline3d)
 import Quantity exposing (Quantity(..), Rate)
 import Quantity.Extra as Quantity
+import Quantity.Interval as Interval
 import SketchPlane3d exposing (SketchPlane3d)
 import Unsafe.Direction3d as Direction3d
 import Vector2d exposing (Vector2d)
@@ -564,6 +567,69 @@ axis, and vice versa for a negative angle.
 sweptAngle : Arc3d units coordinates -> Angle
 sweptAngle (Types.Arc3d properties) =
     properties.sweptAngle
+
+
+boundingBox : Arc3d units coordinates -> BoundingBox3d units coordinates
+boundingBox ((Types.Arc3d arc) as arc_) =
+    let
+        (Quantity thetaMax) =
+            arc.sweptAngle
+    in
+    if thetaMax == 0 then
+        BoundingBox3d.from arc.startPoint (endPoint arc_)
+
+    else
+        let
+            (Types.Point3d p) =
+                arc.startPoint
+
+            (Types.Direction3d u) =
+                arc.xDirection
+
+            (Types.Direction3d v) =
+                arc.yDirection
+
+            (Quantity sMax) =
+                arc.signedLength
+
+            r =
+                sMax / thetaMax
+
+            theta =
+                Interval.from Quantity.zero arc.sweptAngle
+
+            ( Quantity sinMin, Quantity sinMax ) =
+                Interval.endpoints (Angle.Interval.sin theta)
+
+            ( Quantity cosMin, Quantity cosMax ) =
+                Interval.endpoints (Angle.Interval.cos theta)
+
+            x =
+                Interval.from
+                    (Quantity (r * sinMin))
+                    (Quantity (r * sinMax))
+
+            y =
+                Interval.from
+                    (Quantity (r * (1 - cosMax)))
+                    (Quantity (r * (1 - cosMin)))
+
+            xInterval =
+                (x |> Interval.multiplyBy u.x)
+                    |> Interval.plus (y |> Interval.multiplyBy v.x)
+                    |> Interval.add (Quantity p.x)
+
+            yInterval =
+                (x |> Interval.multiplyBy u.y)
+                    |> Interval.plus (y |> Interval.multiplyBy v.y)
+                    |> Interval.add (Quantity p.y)
+
+            zInterval =
+                (x |> Interval.multiplyBy u.z)
+                    |> Interval.plus (y |> Interval.multiplyBy v.z)
+                    |> Interval.add (Quantity p.z)
+        in
+        BoundingBox3d.xyz xInterval yInterval zInterval
 
 
 {-| Reverse the direction of an arc, so that the start point becomes the end

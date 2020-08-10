@@ -1,5 +1,6 @@
 module Tests.Arc3d exposing
-    ( evaluateHalfIsMidpoint
+    ( boundingBox
+    , evaluateHalfIsMidpoint
     , evaluateOneIsEndPoint
     , evaluateZeroIsStartPoint
     , projectInto
@@ -107,3 +108,15 @@ transformations =
         curveOperations
         Arc3d.placeIn
         Arc3d.relativeTo
+
+
+boundingBox : Test
+boundingBox =
+    Test.fuzz2
+        Fuzz.arc3d
+        (Fuzz.floatRange 0 1)
+        "Every point on an arc is within its bounding box"
+        (\arc parameterValue ->
+            Arc3d.pointOn arc parameterValue
+                |> Expect.point3dContainedIn (Arc3d.boundingBox arc)
+        )

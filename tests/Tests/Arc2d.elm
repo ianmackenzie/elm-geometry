@@ -1,5 +1,6 @@
 module Tests.Arc2d exposing
-    ( evaluateHalfIsMidpoint
+    ( boundingBox
+    , evaluateHalfIsMidpoint
     , evaluateOneIsEndPoint
     , evaluateZeroIsStartPoint
     , from
@@ -165,4 +166,16 @@ mirroredCenterPoint =
 
             else
                 Expect.pass
+        )
+
+
+boundingBox : Test
+boundingBox =
+    Test.fuzz2
+        Fuzz.arc2d
+        (Fuzz.floatRange 0 1)
+        "Every point on an arc is within its bounding box"
+        (\arc parameterValue ->
+            Arc2d.pointOn arc parameterValue
+                |> Expect.point2dContainedIn (Arc2d.boundingBox arc)
         )
