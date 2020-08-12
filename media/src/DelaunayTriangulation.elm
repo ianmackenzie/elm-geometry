@@ -21,9 +21,11 @@ import Html.Attributes
 import Html.Events
 import Html.Events.Extra.Mouse as Mouse
 import LineSegment2d
+import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
 import Polyline2d exposing (Polyline2d)
+import Quantity.Interval as Interval
 import Random exposing (Generator)
 import Svg exposing (Svg)
 import Svg.Attributes
@@ -31,15 +33,23 @@ import Triangle2d exposing (Triangle2d)
 import TriangularMesh exposing (TriangularMesh)
 
 
+type ScreenCoordinates
+    = ScreenCoordinates
+
+
+type alias Point =
+    Point2d Pixels ScreenCoordinates
+
+
 type alias Model =
-    { baseTriangulation : Result (Error Point2d) (DelaunayTriangulation2d Point2d)
-    , mousePosition : Maybe Point2d
+    { baseTriangulation : Result (Error Point) (DelaunayTriangulation2d Point Pixels ScreenCoordinates)
+    , mousePosition : Maybe Point
     }
 
 
 type Msg
     = Click
-    | NewRandomPoints (List Point2d)
+    | NewRandomPoints (List Point)
     | MouseMove Mouse.Event
 
 
@@ -48,26 +58,24 @@ svgDimensions =
     ( 700, 700 )
 
 
-renderBounds : BoundingBox2d
+renderBounds : BoundingBox2d Pixels ScreenCoordinates
 renderBounds =
-    BoundingBox2d.fromExtrema
-        { minX = 0
-        , maxX = 700
-        , minY = 0
-        , maxY = 700
-        }
+    BoundingBox2d.from Point2d.origin (Point2d.pixels 700 700)
 
 
-pointsGenerator : Generator (List Point2d)
+pointsGenerator : Generator (List (Point2d Pixels ScreenCoordinates))
 pointsGenerator =
     let
-        { minX, maxX, minY, maxY } =
-            BoundingBox2d.extrema renderBounds
+        ( xInterval, yInterval ) =
+            BoundingBox2d.intervals renderBounds
+
+        parameterGenerator =
+            Random.float 0.05 0.95
 
         pointGenerator =
-            Random.map2 (\x y -> Point2d.fromCoordinates ( x, y ))
-                (Random.float (minX + 30) (maxX - 30))
-                (Random.float (minY + 30) (maxY - 30))
+            Random.map2 Point2d.xy
+                (Random.map (Interval.interpolate xInterval) parameterGenerator)
+                (Random.map (Interval.interpolate yInterval) parameterGenerator)
     in
     Random.int 50 500
         |> Random.andThen
@@ -104,7 +112,7 @@ update message model =
         MouseMove event ->
             let
                 point =
-                    Point2d.fromCoordinates event.offsetPos
+                    Point2d.fromTuple Pixels.float event.offsetPos
             in
             ( { model | mousePosition = Just point }, Cmd.none )
 
@@ -135,7 +143,7 @@ view model =
         mousePointElement =
             case model.mousePosition of
                 Just point ->
-                    Svg.circle2d [ Svg.Attributes.fill "blue" ] (Circle2d.withRadius 2.5 point)
+                    Svg.circle2d [ Svg.Attributes.fill "blue" ] (Circle2d.withRadius (Pixels.float 2.5) point)
 
                 Nothing ->
                     Svg.text ""
@@ -145,10 +153,10 @@ view model =
 
         overlayPolygon =
             Polygon2d.singleLoop
-                [ Point2d.fromCoordinates ( 0, 0 )
-                , Point2d.fromCoordinates ( width, 0 )
-                , Point2d.fromCoordinates ( width, height )
-                , Point2d.fromCoordinates ( 0, height )
+                [ Point2d.pixels 0 0
+                , Point2d.pixels width 0
+                , Point2d.pixels width height
+                , Point2d.pixels 0 height
                 ]
     in
     { title = "Delaunay Triangulation"
@@ -163,7 +171,7 @@ view model =
                 , Mouse.onMove MouseMove
                 ]
                 [ Svg.g [] (triangles |> List.map (Svg.triangle2d []))
-                , Svg.g [] (points |> List.map (Circle2d.withRadius 2.5 >> Svg.circle2d []))
+                , Svg.g [] (points |> List.map (Circle2d.withRadius (Pixels.float 2.5) >> Svg.circle2d []))
                 , mousePointElement
                 , Svg.polygon2d [ Svg.Attributes.fill "transparent" ] overlayPolygon
                 ]

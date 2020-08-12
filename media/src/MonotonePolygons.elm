@@ -7,47 +7,51 @@
 --------------------------------------------------------------------------------
 
 
-module MonotonePolygones exposing (main)
+module MonotonePolygons exposing (main)
 
-import Array.Hamt as Array
+import Angle exposing (Angle)
+import Array
 import BoundingBox2d exposing (BoundingBox2d)
+import Browser
+import Color
+import Drawing2d
 import Html exposing (Html)
 import Html.Attributes
 import Html.Events
-import Kintail.InputWidget as InputWidget
+import InputWidget as InputWidget
+import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
 import Polygon2d.Monotone as Monotone
+import Quantity
 import Random exposing (Generator)
-import Svg
-import Svg.Attributes
+import Rectangle2d
 import Triangle2d exposing (Triangle2d)
 import Vector2d exposing (Vector2d)
 
 
+type ScreenCoordinates
+    = ScreenCoordinates
+
+
 type alias Model =
-    { polygon : Polygon2d
-    , angleInDegrees : Float
+    { polygon : Polygon2d Pixels ScreenCoordinates
+    , angle : Angle
     }
 
 
 type Msg
     = Click
-    | NewPolygon Polygon2d
-    | SetAngleInDegrees Float
+    | NewPolygon (Polygon2d Pixels ScreenCoordinates)
+    | SetAngle Angle
 
 
-renderBounds : BoundingBox2d
+renderBounds : BoundingBox2d Pixels ScreenCoordinates
 renderBounds =
-    BoundingBox2d.fromExtrema
-        { minX = 0
-        , maxX = 800
-        , minY = 0
-        , maxY = 600
-        }
+    BoundingBox2d.from Point2d.origin (Point2d.pixels 800 800)
 
 
-polygonGenerator : Generator Polygon2d
+polygonGenerator : Generator (Polygon2d Pixels ScreenCoordinates)
 polygonGenerator =
     let
         centerPoint =
@@ -57,19 +61,22 @@ polygonGenerator =
             BoundingBox2d.dimensions renderBounds
 
         minRadius =
-            10
+            Pixels.float 10
 
         maxRadius =
-            0.5 * min width height - 10
+            Quantity.half (Quantity.min width height) |> Quantity.minus (Pixels.float 10)
 
         midRadius =
-            (minRadius + maxRadius) / 2
+            Quantity.midpoint minRadius maxRadius
+
+        parameterGenerator =
+            Random.float 0 1
 
         innerRadiusGenerator =
-            Random.float minRadius (midRadius - 5)
+            Random.map (Quantity.interpolateFrom minRadius (midRadius |> Quantity.minus (Pixels.float 5))) parameterGenerator
 
         outerRadiusGenerator =
-            Random.float (midRadius + 5) maxRadius
+            Random.map (Quantity.interpolateFrom (midRadius |> Quantity.plus (Pixels.float 5)) maxRadius) parameterGenerator
     in
     Random.int 3 32
         |> Random.andThen
@@ -81,21 +88,14 @@ polygonGenerator =
                             (\index ( innerRadius, outerRadius ) ->
                                 let
                                     angle =
-                                        turns 1
-                                            * toFloat index
-                                            / toFloat numPoints
+                                        Angle.turns 1
+                                            |> Quantity.multiplyBy (toFloat index / toFloat numPoints)
 
                                     innerRadialVector =
-                                        Vector2d.fromPolarComponents
-                                            ( innerRadius
-                                            , angle
-                                            )
+                                        Vector2d.rTheta innerRadius angle
 
                                     outerRadialVector =
-                                        Vector2d.fromPolarComponents
-                                            ( outerRadius
-                                            , angle
-                                            )
+                                        Vector2d.rTheta outerRadius angle
 
                                     innerPoint =
                                         centerPoint
@@ -113,10 +113,7 @@ polygonGenerator =
                     |> Random.map List.unzip
                     |> Random.map
                         (\( innerLoop, outerLoop ) ->
-                            Polygon2d.with
-                                { outerLoop = outerLoop
-                                , innerLoops = [ List.reverse innerLoop ]
-                                }
+                            Polygon2d.withHoles [ List.reverse innerLoop ] outerLoop
                         )
             )
 
@@ -126,9 +123,9 @@ generateNewPolygon =
     Random.generate NewPolygon polygonGenerator
 
 
-init : ( Model, Cmd Msg )
-init =
-    ( { polygon = Polygon2d.singleLoop [], angleInDegrees = 0 }
+init : () -> ( Model, Cmd Msg )
+init () =
+    ( { polygon = Polygon2d.singleLoop [], angle = Angle.degrees 0 }
     , generateNewPolygon
     )
 
@@ -142,8 +139,8 @@ update message model =
         NewPolygon polygon ->
             ( { model | polygon = polygon }, Cmd.none )
 
-        SetAngleInDegrees angleInDegrees ->
-            ( { model | angleInDegrees = angleInDegrees }, Cmd.none )
+        SetAngle angle ->
+            ( { model | angle = angle }, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -154,7 +151,7 @@ view model =
 
         rotatedPolygon =
             Polygon2d.rotateAround (BoundingBox2d.centerPoint renderBounds)
-                (degrees model.angleInDegrees)
+                model.angle
                 model.polygon
 
         ( points, loops ) =
@@ -165,14 +162,14 @@ view model =
 
         drawLoop loopIndex vertices =
             let
-                hueString =
-                    toString (360 * toFloat loopIndex / toFloat numLoops)
+                hue =
+                    toFloat loopIndex / toFloat numLoops
 
                 fillColor =
-                    "hsla(" ++ hueString ++ ",50%, 50%, 0.5)"
+                    Color.hsla hue 0.5 0.5 0.5
 
                 strokeColor =
-                    "hsla(" ++ hueString ++ ",50%, 40%, 0.5)"
+                    Color.hsla hue 0.5 0.4 0.5
 
                 faceIndices =
                     Monotone.faces vertices
@@ -189,36 +186,41 @@ view model =
             in
             triangles
                 |> List.map
-                    (Svg.triangle2d
-                        [ Svg.Attributes.fill fillColor
-                        , Svg.Attributes.stroke strokeColor
+                    (Drawing2d.triangle
+                        [ Drawing2d.fillColor fillColor
+                        , Drawing2d.strokeColor strokeColor
                         ]
                     )
-                |> Svg.g []
+                |> Drawing2d.group []
     in
     Html.div []
         [ Html.div [ Html.Events.onClick Click ]
-            [ Svg.render2d renderBounds <|
-                Svg.g []
-                    [ Svg.g [] (List.indexedMap drawLoop loops)
-                    , Svg.polygon2d
-                        [ Svg.Attributes.fill "none"
-                        , Svg.Attributes.stroke "black"
+            [ Drawing2d.toHtml
+                { viewBox = Rectangle2d.fromBoundingBox renderBounds
+                , size = Drawing2d.fixed
+                }
+                []
+                [ Drawing2d.group []
+                    [ Drawing2d.group [] (List.indexedMap drawLoop loops)
+                    , Drawing2d.polygon
+                        [ Drawing2d.noFill
+                        , Drawing2d.blackStroke
                         ]
                         rotatedPolygon
                     ]
+                ]
             ]
         , InputWidget.slider
-            [ Html.Attributes.style [ ( "width", toString width ++ "px" ) ] ]
+            [ Html.Attributes.style "width" (String.fromFloat (Pixels.toFloat width) ++ "px") ]
             { min = -180, max = 180, step = 1 }
-            model.angleInDegrees
-            |> Html.map SetAngleInDegrees
+            (Angle.inDegrees model.angle)
+            |> Html.map (Angle.degrees >> SetAngle)
         ]
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    Html.program
+    Browser.element
         { init = init
         , update = update
         , view = view
