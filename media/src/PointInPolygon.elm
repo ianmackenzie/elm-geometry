@@ -9,73 +9,64 @@
 
 module PointInPolygon exposing (main)
 
-import BoundingBox2d exposing (BoundingBox2d)
+import Angle exposing (Angle)
 import Browser
 import Circle2d
+import Color
+import Drawing2d
 import Element exposing (Element)
 import Element.Background as Background
 import Element.Events
 import Element.Input as Input
-import Geometry.Svg as Svg
 import Html exposing (Html)
 import Html.Attributes
 import Html.Events
+import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
 import Polygon2d.Random as Random
 import Random exposing (Generator)
-import Svg
-import Svg.Attributes
+import Rectangle2d exposing (Rectangle2d)
+
+
+type ScreenCoordinates
+    = ScreenCoordinates
 
 
 type alias Model =
-    { polygon : Polygon2d
-    , points : List Point2d
-    , angleInDegrees : Float
+    { polygon : Polygon2d Pixels ScreenCoordinates
+    , points : List (Point2d Pixels ScreenCoordinates)
+    , angle : Angle
     }
 
 
 type Msg
     = Click
-    | NewPolygon Polygon2d
-    | SetAngleInDegrees Float
+    | NewPolygon (Polygon2d Pixels ScreenCoordinates)
+    | SetAngle Angle
 
 
-renderBounds : BoundingBox2d
+renderBounds : Rectangle2d Pixels ScreenCoordinates
 renderBounds =
-    BoundingBox2d.fromExtrema
-        { minX = 0
-        , maxX = 600
-        , minY = 0
-        , maxY = 600
-        }
+    Rectangle2d.from Point2d.origin (Point2d.pixels 600 600)
 
 
 generateNewPolygon : Cmd Msg
 generateNewPolygon =
-    Random.generate NewPolygon (Random.polygon2d renderBounds)
+    Random.generate NewPolygon (Random.polygon2d (Rectangle2d.boundingBox renderBounds))
 
 
-pointGenerator : Generator Point2d
+pointGenerator : Generator (Point2d Pixels ScreenCoordinates)
 pointGenerator =
-    let
-        { minX, maxX, minY, maxY } =
-            BoundingBox2d.extrema renderBounds
-
-        xCoordinate =
-            Random.float minX maxX
-
-        yCoordinate =
-            Random.float minY maxY
-    in
-    Random.map2 Tuple.pair xCoordinate yCoordinate
-        |> Random.map Point2d.fromCoordinates
+    Random.map2 (Rectangle2d.interpolate renderBounds)
+        (Random.float 0 1)
+        (Random.float 0 1)
 
 
 init : () -> ( Model, Cmd Msg )
 init () =
     ( { polygon = Polygon2d.singleLoop []
-      , angleInDegrees = 0
+      , angle = Angle.degrees 0
       , points = Tuple.first (Random.step (Random.list 500 pointGenerator) (Random.initialSeed 1234))
       }
     , generateNewPolygon
@@ -91,60 +82,61 @@ update message model =
         NewPolygon polygon ->
             ( { model | polygon = polygon }, Cmd.none )
 
-        SetAngleInDegrees angleInDegrees ->
-            ( { model | angleInDegrees = angleInDegrees }, Cmd.none )
+        SetAngle angle ->
+            ( { model | angle = angle }, Cmd.none )
 
 
 view : Model -> Html Msg
 view model =
     let
         ( width, height ) =
-            BoundingBox2d.dimensions renderBounds
+            Rectangle2d.dimensions renderBounds
 
         rotatedPolygon =
-            Polygon2d.rotateAround (BoundingBox2d.centerPoint renderBounds)
-                (degrees model.angleInDegrees)
+            Polygon2d.rotateAround (Rectangle2d.centerPoint renderBounds)
+                model.angle
                 model.polygon
 
         polygonElement =
-            Svg.polygon2d
-                [ Svg.Attributes.fill "none", Svg.Attributes.stroke "black" ]
+            Drawing2d.polygon
+                [ Drawing2d.noFill, Drawing2d.blackStroke ]
                 rotatedPolygon
 
         drawPoint point =
             let
                 color =
                     if Polygon2d.contains point rotatedPolygon then
-                        "black"
+                        Color.black
 
                     else
-                        "lightgrey"
+                        Color.lightGrey
             in
-            Svg.circle2d [ Svg.Attributes.stroke "none", Svg.Attributes.fill color ]
-                (Circle2d.withRadius 2 point)
+            Drawing2d.circle [ Drawing2d.noBorder, Drawing2d.fillColor color ]
+                (Circle2d.withRadius (Pixels.float 2) point)
     in
     Element.layout [] <|
         Element.column []
             [ Element.el [ Element.Events.onClick Click ] <|
                 Element.html <|
-                    Svg.svg
-                        [ Svg.Attributes.width (String.fromFloat width)
-                        , Svg.Attributes.height (String.fromFloat height)
-                        ]
-                        [ polygonElement
-                        , Svg.g [] (List.map drawPoint model.points)
+                    Drawing2d.toHtml
+                        { size = Drawing2d.fixed
+                        , viewBox = renderBounds
+                        }
+                        []
+                        [ Drawing2d.group [] (List.map drawPoint model.points)
+                        , polygonElement
                         ]
             , Input.slider
-                [ Element.width (Element.px (round width))
+                [ Element.width (Element.px (round (Pixels.toFloat width)))
                 , Element.height (Element.px 8)
                 , Background.color (Element.rgb 0.75 0.75 0.75)
                 ]
-                { onChange = SetAngleInDegrees
+                { onChange = Angle.degrees >> SetAngle
                 , min = -180
                 , max = 180
                 , step = Just 1
                 , label = Input.labelHidden "Angle"
-                , value = model.angleInDegrees
+                , value = Angle.inDegrees model.angle
                 , thumb = Input.defaultThumb
                 }
             ]

@@ -14,17 +14,22 @@ import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Browser
 import Circle2d
+import Color exposing (Color)
 import Colorbrewer.Qualitative
+import Drawing2d
+import Frame2d
 import Geometry.Svg as Svg
 import Html exposing (Html)
 import Html.Attributes
 import Html.Events
 import Html.Events.Extra.Mouse as Mouse
 import LineSegment2d
+import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
 import Polyline2d exposing (Polyline2d)
 import Random exposing (Generator)
+import Rectangle2d exposing (Rectangle2d)
 import Svg exposing (Svg)
 import Svg.Attributes
 import Triangle2d exposing (Triangle2d)
@@ -32,15 +37,23 @@ import TriangularMesh exposing (TriangularMesh)
 import VoronoiDiagram2d exposing (Error(..), VoronoiDiagram2d)
 
 
+type ScreenCoordinates
+    = ScreenCoordinates
+
+
+type alias Point =
+    Point2d Pixels ScreenCoordinates
+
+
 type alias Vertex =
-    { position : Point2d
-    , color : ( Float, Float, Float )
+    { position : Point
+    , color : Color
     }
 
 
 type alias Model =
-    { baseDiagram : Result (Error Vertex) (VoronoiDiagram2d Vertex)
-    , mousePosition : Maybe Point2d
+    { baseDiagram : Result (Error Vertex) (VoronoiDiagram2d Vertex Pixels ScreenCoordinates)
+    , mousePosition : Maybe Point
     }
 
 
@@ -50,27 +63,23 @@ type Msg
     | MouseMove Mouse.Event
 
 
-svgDimensions : ( Float, Float )
-svgDimensions =
+drawingDimensions : ( Float, Float )
+drawingDimensions =
     ( 700, 700 )
 
 
-renderBounds : BoundingBox2d
+renderBounds : Rectangle2d Pixels ScreenCoordinates
 renderBounds =
-    BoundingBox2d.fromExtrema
-        { minX = 0
-        , maxX = 700
-        , minY = 0
-        , maxY = 700
-        }
+    Rectangle2d.from Point2d.origin
+        (Point2d.fromTuple Pixels.float drawingDimensions)
 
 
-assignColors : List Point2d -> List Vertex
+assignColors : List Point -> List Vertex
 assignColors points =
     assignColorsHelp points [] []
 
 
-assignColorsHelp : List Point2d -> List ( Float, Float, Float ) -> List Vertex -> List Vertex
+assignColorsHelp : List Point -> List Color -> List Vertex -> List Vertex
 assignColorsHelp points colors accumulated =
     case points of
         [] ->
@@ -97,13 +106,10 @@ assignColorsHelp points colors accumulated =
 verticesGenerator : Generator (List Vertex)
 verticesGenerator =
     let
-        { minX, maxX, minY, maxY } =
-            BoundingBox2d.extrema renderBounds
-
         pointGenerator =
-            Random.map2 (\x y -> Point2d.fromCoordinates ( x, y ))
-                (Random.float (minX + 30) (maxX - 30))
-                (Random.float (minY + 30) (maxY - 30))
+            Random.map2 (Rectangle2d.interpolate renderBounds)
+                (Random.float 0.05 0.95)
+                (Random.float 0.05 0.95)
     in
     Random.int 32 256
         |> Random.andThen (\listSize -> Random.list listSize pointGenerator)
@@ -113,12 +119,9 @@ verticesGenerator =
 collinearVerticesGenerator : Generator (List Vertex)
 collinearVerticesGenerator =
     let
-        { minX, maxX, minY, maxY } =
-            BoundingBox2d.extrema renderBounds
-
         pointGenerator =
-            Random.map (\x -> Point2d.fromCoordinates ( x, x ))
-                (Random.float (minX + 30) (maxX - 30))
+            Random.map (\t -> Rectangle2d.interpolate renderBounds t t)
+                (Random.float 0.05 0.95)
     in
     Random.int 1 5
         |> Random.andThen (\listSize -> Random.list listSize pointGenerator)
@@ -130,8 +133,8 @@ generateNewVertices =
     Random.generate NewRandomVertices verticesGenerator
 
 
-init : ( Model, Cmd Msg )
-init =
+init : () -> ( Model, Cmd Msg )
+init () =
     ( { baseDiagram = Ok VoronoiDiagram2d.empty
       , mousePosition = Nothing
       }
@@ -154,65 +157,50 @@ update message model =
 
         MouseMove event ->
             let
+                topLeftFrame =
+                    Frame2d.atPoint (Rectangle2d.interpolate renderBounds 0 1)
+                        |> Frame2d.reverseY
+
                 point =
-                    Point2d.fromCoordinates event.offsetPos
+                    Point2d.fromTuple Pixels.float event.clientPos
+                        |> Point2d.relativeTo topLeftFrame
             in
             ( { model | mousePosition = Just point }, Cmd.none )
 
 
-fillColor : Vertex -> String
-fillColor vertex =
+darken : Color -> Color
+darken color =
     let
-        ( r, g, b ) =
-            vertex.color
-    in
-    String.concat
-        [ "rgb("
-        , String.fromInt (round (255 * r))
-        , ","
-        , String.fromInt (round (255 * g))
-        , ","
-        , String.fromInt (round (255 * b))
-        , ")"
-        ]
+        { red, green, blue, alpha } =
+            Color.toRgba color
 
-
-strokeColor : Vertex -> String
-strokeColor vertex =
-    let
-        ( r, g, b ) =
-            vertex.color
-
-        darkenScale =
+        scale =
             0.8
     in
-    String.concat
-        [ "rgb("
-        , String.fromInt (round (255 * r * darkenScale))
-        , ","
-        , String.fromInt (round (255 * g * darkenScale))
-        , ","
-        , String.fromInt (round (255 * b * darkenScale))
-        , ")"
-        ]
+    Color.fromRgba
+        { red = scale * red
+        , green = scale * green
+        , blue = scale * blue
+        , alpha = alpha
+        }
 
 
-drawPolygon : ( Vertex, Polygon2d ) -> Svg msg
+drawPolygon : ( Vertex, Polygon2d Pixels ScreenCoordinates ) -> Drawing2d.Element Pixels ScreenCoordinates event
 drawPolygon ( vertex, polygon ) =
-    Svg.polygon2d
-        [ Svg.Attributes.stroke (strokeColor vertex)
-        , Svg.Attributes.fill (fillColor vertex)
+    Drawing2d.polygon
+        [ Drawing2d.strokeColor (darken vertex.color)
+        , Drawing2d.fillColor vertex.color
         ]
         polygon
 
 
-drawVertex : Vertex -> Svg msg
+drawVertex : Vertex -> Drawing2d.Element Pixels ScreenCoordinates event
 drawVertex vertex =
-    Svg.circle2d [ Svg.Attributes.fill (strokeColor vertex) ]
-        (Circle2d.withRadius 2.5 vertex.position)
+    Drawing2d.circle [ Drawing2d.fillColor (darken vertex.color) ]
+        (Circle2d.withRadius (Pixels.float 2.5) vertex.position)
 
 
-view : Model -> Browser.Document Msg
+view : Model -> Html Msg
 view model =
     let
         voronoiDiagram =
@@ -221,7 +209,7 @@ view model =
                     let
                         vertex =
                             { position = point
-                            , color = ( 1, 1, 1 )
+                            , color = Color.white
                             }
                     in
                     model.baseDiagram
@@ -238,10 +226,10 @@ view model =
 
         trimBox =
             BoundingBox2d.fromExtrema
-                { minX = 150
-                , maxX = 550
-                , minY = 150
-                , maxY = 550
+                { minX = Pixels.float 150
+                , maxX = Pixels.float 550
+                , minY = Pixels.float 150
+                , maxY = Pixels.float 550
                 }
 
         polygons =
@@ -252,50 +240,46 @@ view model =
         mousePointElement =
             case model.mousePosition of
                 Just point ->
-                    Svg.circle2d [ Svg.Attributes.fill "blue" ] (Circle2d.withRadius 2.5 point)
+                    Drawing2d.circle [ Drawing2d.fillColor Color.blue ] (Circle2d.withRadius (Pixels.float 2.5) point)
 
                 Nothing ->
-                    Svg.text ""
+                    Drawing2d.empty
 
         ( width, height ) =
-            svgDimensions
+            drawingDimensions
 
         overlayPolygon =
             Polygon2d.singleLoop
-                [ Point2d.fromCoordinates ( 0, 0 )
-                , Point2d.fromCoordinates ( width, 0 )
-                , Point2d.fromCoordinates ( width, height )
-                , Point2d.fromCoordinates ( 0, height )
+                [ Point2d.pixels 0 0
+                , Point2d.pixels width 0
+                , Point2d.pixels width height
+                , Point2d.pixels 0 height
                 ]
 
         isInBounds vertex =
             BoundingBox2d.contains vertex.position trimBox
     in
-    { title = "Voronoi Regions"
-    , body =
-        [ Html.div [ Html.Events.onClick Click ]
-            [ Svg.svg
-                [ Svg.Attributes.width (String.fromFloat width)
-                , Svg.Attributes.height (String.fromFloat height)
-                , Svg.Attributes.fill "white"
-                , Svg.Attributes.stroke "black"
-                , Html.Attributes.style "border" "1px solid black"
-                , Mouse.onMove MouseMove
-                ]
-                [ Svg.g [] (List.map drawPolygon polygons)
-                , Svg.g [] (List.map drawVertex (List.filter isInBounds vertices))
-                , mousePointElement
-                , Svg.polygon2d [ Svg.Attributes.fill "transparent" ] overlayPolygon
-                ]
+    Html.div
+        [ Html.Events.onClick Click
+        , Mouse.onMove MouseMove
+        ]
+        [ Drawing2d.toHtml
+            { size = Drawing2d.fixed
+            , viewBox = renderBounds
+            }
+            []
+            [ Drawing2d.group [] (List.map drawPolygon polygons)
+            , Drawing2d.group [] (List.map drawVertex (List.filter isInBounds vertices))
+            , mousePointElement
+            , Drawing2d.polygon [ Drawing2d.noFill ] overlayPolygon
             ]
         ]
-    }
 
 
 main : Program () Model Msg
 main =
-    Browser.document
-        { init = always init
+    Browser.element
+        { init = init
         , update = update
         , view = view
         , subscriptions = always Sub.none
