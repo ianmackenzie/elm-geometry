@@ -635,6 +635,8 @@ endPoint arc =
     pointOn arc 1
 
 
+{-| Get the bounding box of an elliptical arc.
+-}
 boundingBox : EllipticalArc2d units coordinates -> BoundingBox2d units coordinates
 boundingBox arc =
     let
