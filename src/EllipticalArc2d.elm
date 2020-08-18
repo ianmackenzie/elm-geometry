@@ -640,53 +640,108 @@ endPoint arc =
 boundingBox : EllipticalArc2d units coordinates -> BoundingBox2d units coordinates
 boundingBox arc =
     let
-        (Types.Point2d p) =
-            centerPoint arc
-
-        (Types.Direction2d u) =
-            xDirection arc
-
-        (Types.Direction2d v) =
-            yDirection arc
-
-        (Quantity rX) =
-            xRadius arc
-
-        (Quantity rY) =
-            yRadius arc
-
-        theta0 =
-            startAngle arc
-
-        theta1 =
-            theta0 |> Quantity.plus (sweptAngle arc)
-
-        theta =
-            Interval.from theta0 theta1
-
-        ( Quantity sinMin, Quantity sinMax ) =
-            Interval.endpoints (Angle.Interval.sin theta)
-
-        ( Quantity cosMin, Quantity cosMax ) =
-            Interval.endpoints (Angle.Interval.cos theta)
-
-        localX =
-            Interval.from (Quantity (rX * cosMin)) (Quantity (rX * cosMax))
-
-        localY =
-            Interval.from (Quantity (rY * sinMin)) (Quantity (rY * sinMax))
-
-        xInterval =
-            (localX |> Interval.multiplyBy u.x)
-                |> Interval.plus (localY |> Interval.multiplyBy v.x)
-                |> Interval.add (Quantity p.x)
-
-        yInterval =
-            (localX |> Interval.multiplyBy u.y)
-                |> Interval.plus (localY |> Interval.multiplyBy v.y)
-                |> Interval.add (Quantity p.y)
+        (Quantity dTheta) =
+            sweptAngle arc
     in
-    BoundingBox2d.xy xInterval yInterval
+    if dTheta == 0 then
+        BoundingBox2d.from (startPoint arc) (endPoint arc)
+
+    else
+        let
+            (Types.Point2d p1) =
+                startPoint arc
+
+            (Types.Point2d p2) =
+                endPoint arc
+
+            (Types.Direction2d i) =
+                xDirection arc
+
+            (Types.Direction2d j) =
+                yDirection arc
+
+            (Quantity rX) =
+                xRadius arc
+
+            (Quantity rY) =
+                yRadius arc
+
+            (Quantity thetaStart) =
+                startAngle arc
+
+            thetaEnd =
+                thetaStart + dTheta
+
+            thetaMin =
+                min thetaStart thetaEnd
+
+            thetaMax =
+                max thetaStart thetaEnd
+
+            thetaX0 =
+                atan2 (rY * j.x) (rX * i.x)
+
+            thetaX1 =
+                thetaX0 + pi * toFloat (ceiling ((thetaMin - thetaX0) / pi))
+
+            thetaX2 =
+                thetaX1 + pi
+
+            tX1 =
+                (thetaX1 - thetaStart) / dTheta
+
+            tX2 =
+                (thetaX2 - thetaStart) / dTheta
+
+            pX1 =
+                if 0 < tX1 && tX1 < 1 then
+                    Point2d.unwrap (pointOn arc tX1)
+
+                else
+                    p1
+
+            pX2 =
+                if 0 < tX2 && tX2 < 1 then
+                    Point2d.unwrap (pointOn arc tX2)
+
+                else
+                    p1
+
+            thetaY0 =
+                atan2 (rY * j.y) (rX * i.y)
+
+            thetaY1 =
+                thetaY0 + pi * toFloat (ceiling ((thetaMin - thetaY0) / pi))
+
+            thetaY2 =
+                thetaY1 + pi
+
+            tY1 =
+                (thetaY1 - thetaStart) / dTheta
+
+            tY2 =
+                (thetaY2 - thetaStart) / dTheta
+
+            pY1 =
+                if 0 < tY1 && tY1 < 1 then
+                    Point2d.unwrap (pointOn arc tY1)
+
+                else
+                    p1
+
+            pY2 =
+                if 0 < tY2 && tY2 < 1 then
+                    Point2d.unwrap (pointOn arc tY2)
+
+                else
+                    p1
+        in
+        Types.BoundingBox2d
+            { minX = Quantity (min (min p1.x p2.x) (min pX1.x pX2.x))
+            , maxX = Quantity (max (max p1.x p2.x) (max pX1.x pX2.x))
+            , minY = Quantity (min (min p1.y p2.y) (min pY1.y pY2.y))
+            , maxY = Quantity (max (max p1.y p2.y) (max pY1.y pY2.y))
+            }
 
 
 {-| -}
