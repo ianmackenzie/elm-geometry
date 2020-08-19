@@ -3,6 +3,7 @@ module Tests.EllipticalArc2d exposing
     , fromEndpointsReplicatesArc
     , reproducibleArc
     , reverseKeepsMidpoint
+    , signedDistanceAlong
     , transformations
     )
 
@@ -152,4 +153,24 @@ boundingBox =
         (\arc parameterValue ->
             EllipticalArc2d.pointOn arc parameterValue
                 |> Expect.point2dContainedIn (EllipticalArc2d.boundingBox arc)
+        )
+
+
+signedDistanceAlong : Test
+signedDistanceAlong =
+    Test.fuzz3
+        Fuzz.ellipticalArc2d
+        Fuzz.axis2d
+        (Fuzz.floatRange 0 1)
+        "signedDistanceAlong"
+        (\arc axis parameterValue ->
+            let
+                distanceInterval =
+                    EllipticalArc2d.signedDistanceAlong axis arc
+
+                projectedDistance =
+                    Point2d.signedDistanceAlong axis
+                        (EllipticalArc2d.pointOn arc parameterValue)
+            in
+            projectedDistance |> Expect.quantityContainedIn distanceInterval
         )

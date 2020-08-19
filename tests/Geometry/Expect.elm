@@ -1,7 +1,7 @@
 module Geometry.Expect exposing
     ( exactly, just
     , quantity, quantityWithin, angle, angleWithin
-    , quantityAtLeast, quantityAtMost, quantityGreaterThan, quantityLessThan
+    , quantityAtLeast, quantityAtMost, quantityGreaterThan, quantityLessThan, quantityContainedIn
     , point2d, point2dWithin, point2dContainedIn, point3d, point3dWithin, point3dContainedIn
     , vector2d, vector2dWithin, vector3d, vector3dWithin
     , direction2d, direction2dWithin, direction2dPerpendicularTo, direction3d, direction3dWithin, direction3dPerpendicularTo
@@ -49,7 +49,7 @@ These functions all behave just like [the corresponding ones in
 Unlike most other functions in this module, they do _not_ implicitly include a
 tolerance.
 
-@docs quantityAtLeast, quantityAtMost, quantityGreaterThan, quantityLessThan
+@docs quantityAtLeast, quantityAtMost, quantityGreaterThan, quantityLessThan, quantityContainedIn
 
 
 # Points
@@ -130,6 +130,7 @@ import Polyline3d exposing (Polyline3d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
 import QuadraticSpline3d exposing (QuadraticSpline3d)
 import Quantity exposing (Quantity(..))
+import Quantity.Interval as Interval exposing (Interval)
 import SketchPlane3d exposing (SketchPlane3d)
 import Sphere3d exposing (Sphere3d)
 import Triangle2d exposing (Triangle2d)
@@ -289,6 +290,24 @@ quantityAtMost (Quantity y) (Quantity x) =
 quantityAtLeast : Quantity Float units -> Quantity Float units -> Expectation
 quantityAtLeast (Quantity y) (Quantity x) =
     x |> Expect.atLeast y
+
+
+quantityContainedIn : Interval Float units -> Quantity Float units -> Expectation
+quantityContainedIn interval value =
+    let
+        tolerantInterval =
+            Interval.from
+                (Interval.minValue interval |> Quantity.minus (Quantity defaultTolerance))
+                (Interval.maxValue interval |> Quantity.plus (Quantity defaultTolerance))
+    in
+    Interval.contains value tolerantInterval
+        |> Expect.true
+            ("Expected quantity "
+                ++ Debug.toString value
+                ++ " to be within interval "
+                ++ Debug.toString interval
+                ++ "."
+            )
 
 
 absoluteToleranceFor : Quantity Float units -> Quantity Float units

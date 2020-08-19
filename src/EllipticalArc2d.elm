@@ -10,8 +10,9 @@
 module EllipticalArc2d exposing
     ( EllipticalArc2d
     , with, fromEndpoints
-    , startAngle, sweptAngle, startPoint, endPoint, boundingBox
+    , startAngle, sweptAngle, startPoint, endPoint
     , centerPoint, axes, xAxis, yAxis, xDirection, yDirection, xRadius, yRadius
+    , boundingBox, signedDistanceAlong
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
@@ -49,12 +50,17 @@ treat them as actual angles and everything will behave as you expect.
 
 # Properties
 
-@docs startAngle, sweptAngle, startPoint, endPoint, boundingBox
+@docs startAngle, sweptAngle, startPoint, endPoint
 
 All remaining properties of elliptical arcs are actually just [properties of the
 underlying ellipse](Ellipse2d#properties).
 
 @docs centerPoint, axes, xAxis, yAxis, xDirection, yDirection, xRadius, yRadius
+
+
+# Bounds
+
+@docs boundingBox, signedDistanceAlong
 
 
 # Evaluation
@@ -131,7 +137,7 @@ import Point2d exposing (Point2d)
 import Polyline2d exposing (Polyline2d)
 import Quantity exposing (Quantity(..), Rate, Squared)
 import Quantity.Extra as Quantity
-import Quantity.Interval as Interval
+import Quantity.Interval as Interval exposing (Interval)
 import SweptAngle exposing (SweptAngle)
 import Unsafe.Direction2d as Direction2d
 import Vector2d exposing (Vector2d)
@@ -633,6 +639,102 @@ startPoint arc =
 endPoint : EllipticalArc2d units coordinates -> Point2d units coordinates
 endPoint arc =
     pointOn arc 1
+
+
+signedDistanceAlong : Axis2d units coordinates -> EllipticalArc2d units coordinates -> Interval Float units
+signedDistanceAlong axis arc =
+    let
+        (Quantity dTheta) =
+            sweptAngle arc
+
+        p1 =
+            startPoint arc
+
+        p2 =
+            endPoint arc
+
+        (Quantity d1) =
+            Point2d.signedDistanceAlong axis p1
+
+        (Quantity d2) =
+            Point2d.signedDistanceAlong axis p2
+    in
+    if dTheta == 0 then
+        Interval.from (Quantity d1) (Quantity d2)
+
+    else
+        let
+            (Types.Direction2d u) =
+                Axis2d.direction axis
+
+            (Types.Direction2d i) =
+                xDirection arc
+
+            (Types.Direction2d j) =
+                yDirection arc
+
+            (Quantity rX) =
+                xRadius arc
+
+            (Quantity rY) =
+                yRadius arc
+
+            (Quantity thetaStart) =
+                startAngle arc
+
+            thetaEnd =
+                thetaStart + dTheta
+
+            thetaMin =
+                min thetaStart thetaEnd
+
+            thetaMax =
+                max thetaStart thetaEnd
+
+            iDotU =
+                i.x * u.x + i.y * u.y
+
+            jDotU =
+                j.x * u.x + j.y * u.y
+
+            theta0 =
+                atan2 (rY * jDotU) (rX * iDotU)
+
+            thetaA =
+                theta0 + pi * toFloat (ceiling ((thetaMin - theta0) / pi))
+
+            thetaB =
+                thetaA + pi
+
+            tA =
+                (thetaA - thetaStart) / dTheta
+
+            tB =
+                (thetaB - thetaStart) / dTheta
+
+            pA =
+                if 0 < tA && tA < 1 then
+                    pointOn arc tA
+
+                else
+                    p1
+
+            pB =
+                if 0 < tB && tB < 1 then
+                    pointOn arc tB
+
+                else
+                    p1
+
+            (Quantity dA) =
+                Point2d.signedDistanceAlong axis pA
+
+            (Quantity dB) =
+                Point2d.signedDistanceAlong axis pB
+        in
+        Interval.from
+            (Quantity (min (min d1 d2) (min dA dB)))
+            (Quantity (max (max d1 d2) (max dA dB)))
 
 
 {-| Get the bounding box of an elliptical arc.
