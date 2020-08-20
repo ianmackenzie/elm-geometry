@@ -21,11 +21,14 @@ module Curve2d exposing
 
 @docs placeIn, relativeTo
 
+@docs boundingBox
+
 -}
 
 import Angle exposing (Angle)
 import Arc2d exposing (Arc2d)
 import Axis2d exposing (Axis2d)
+import BoundingBox2d exposing (BoundingBox2d)
 import CubicSpline2d exposing (CubicSpline2d)
 import CubicSpline3d exposing (maxSecondDerivativeMagnitude)
 import Curve
@@ -306,3 +309,22 @@ mirrorAcross axis givenCurve =
 
         Types.CubicSplineCurve2d givenCubicSpline ->
             Types.CubicSplineCurve2d (CubicSpline2d.mirrorAcross axis givenCubicSpline)
+
+
+boundingBox : Curve2d units coordinates -> BoundingBox2d units coordinates
+boundingBox givenCurve =
+    case givenCurve of
+        Types.LineSegmentCurve2d givenLineSegment ->
+            LineSegment2d.boundingBox givenLineSegment
+
+        Types.ArcCurve2d givenArc ->
+            Arc2d.boundingBox givenArc
+
+        Types.EllipticalArcCurve2d givenEllipticalArc ->
+            EllipticalArc2d.boundingBox givenEllipticalArc
+
+        Types.QuadraticSplineCurve2d givenQuadraticSpline ->
+            QuadraticSpline2d.boundingBox givenQuadraticSpline
+
+        Types.CubicSplineCurve2d givenCubicSpline ->
+            CubicSpline2d.boundingBox givenCubicSpline
