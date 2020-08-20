@@ -712,25 +712,19 @@ signedDistanceAlong axis arc =
             tB =
                 (thetaB - thetaStart) / dTheta
 
-            pA =
-                if 0 < tA && tA < 1 then
-                    pointOn arc tA
-
-                else
-                    p1
-
-            pB =
-                if 0 < tB && tB < 1 then
-                    pointOn arc tB
-
-                else
-                    p1
-
             (Quantity dA) =
-                Point2d.signedDistanceAlong axis pA
+                if 0 < tA && tA < 1 then
+                    Point2d.signedDistanceAlong axis (pointOn arc tA)
+
+                else
+                    Quantity d1
 
             (Quantity dB) =
-                Point2d.signedDistanceAlong axis pB
+                if 0 < tB && tB < 1 then
+                    Point2d.signedDistanceAlong axis (pointOn arc tB)
+
+                else
+                    Quantity d1
         in
         Interval.from
             (Quantity (min (min d1 d2) (min dA dB)))
