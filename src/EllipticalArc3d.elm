@@ -543,6 +543,8 @@ signedDistanceAlong axis arc =
             (Quantity (max (max d1 d2) (max dA dB)))
 
 
+{-| Get the bounding box of an elliptical arc.
+-}
 boundingBox : EllipticalArc3d units coordinates -> BoundingBox3d units coordinatets
 boundingBox arc =
     BoundingBox3d.xyz
