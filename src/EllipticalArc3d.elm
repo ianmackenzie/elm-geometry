@@ -545,59 +545,10 @@ signedDistanceAlong axis arc =
 
 boundingBox : EllipticalArc3d units coordinates -> BoundingBox3d units coordinatets
 boundingBox arc =
-    let
-        (Types.Point3d p) =
-            centerPoint arc
-
-        (Types.Direction3d u) =
-            xDirection arc
-
-        (Types.Direction3d v) =
-            yDirection arc
-
-        (Quantity rX) =
-            xRadius arc
-
-        (Quantity rY) =
-            yRadius arc
-
-        theta0 =
-            startAngle arc
-
-        theta1 =
-            theta0 |> Quantity.plus (sweptAngle arc)
-
-        theta =
-            Interval.from theta0 theta1
-
-        ( Quantity sinMin, Quantity sinMax ) =
-            Interval.endpoints (Angle.Interval.sin theta)
-
-        ( Quantity cosMin, Quantity cosMax ) =
-            Interval.endpoints (Angle.Interval.cos theta)
-
-        localX =
-            Interval.from (Quantity (rX * cosMin)) (Quantity (rX * cosMax))
-
-        localY =
-            Interval.from (Quantity (rY * sinMin)) (Quantity (rY * sinMax))
-
-        xInterval =
-            (localX |> Interval.multiplyBy u.x)
-                |> Interval.plus (localY |> Interval.multiplyBy v.x)
-                |> Interval.add (Quantity p.x)
-
-        yInterval =
-            (localX |> Interval.multiplyBy u.y)
-                |> Interval.plus (localY |> Interval.multiplyBy v.y)
-                |> Interval.add (Quantity p.y)
-
-        zInterval =
-            (localX |> Interval.multiplyBy u.z)
-                |> Interval.plus (localY |> Interval.multiplyBy v.z)
-                |> Interval.add (Quantity p.z)
-    in
-    BoundingBox3d.xyz xInterval yInterval zInterval
+    BoundingBox3d.xyz
+        (signedDistanceAlong Axis3d.x arc)
+        (signedDistanceAlong Axis3d.y arc)
+        (signedDistanceAlong Axis3d.z arc)
 
 
 {-| -}
