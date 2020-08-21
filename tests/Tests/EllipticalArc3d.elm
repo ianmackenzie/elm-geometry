@@ -3,6 +3,7 @@ module Tests.EllipticalArc3d exposing
     , evaluateOneIsEndPoint
     , evaluateZeroIsStartPoint
     , projectInto
+    , signedDistanceAlong
     , transformations
     )
 
@@ -87,4 +88,24 @@ boundingBox =
         (\arc parameterValue ->
             EllipticalArc3d.pointOn arc parameterValue
                 |> Expect.point3dContainedIn (EllipticalArc3d.boundingBox arc)
+        )
+
+
+signedDistanceAlong : Test
+signedDistanceAlong =
+    Test.fuzz3
+        Fuzz.ellipticalArc3d
+        Fuzz.axis3d
+        (Fuzz.floatRange 0 1)
+        "signedDistanceAlong"
+        (\arc axis parameterValue ->
+            let
+                distanceInterval =
+                    EllipticalArc3d.signedDistanceAlong axis arc
+
+                projectedDistance =
+                    Point3d.signedDistanceAlong axis
+                        (EllipticalArc3d.pointOn arc parameterValue)
+            in
+            projectedDistance |> Expect.quantityContainedIn distanceInterval
         )
