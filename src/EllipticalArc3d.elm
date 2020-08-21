@@ -10,8 +10,9 @@
 module EllipticalArc3d exposing
     ( EllipticalArc3d
     , on
-    , startAngle, sweptAngle, startPoint, endPoint, boundingBox
+    , startAngle, sweptAngle, startPoint, endPoint
     , centerPoint, axes, xAxis, yAxis, xDirection, yDirection, xRadius, yRadius
+    , boundingBox, signedDistanceAlong
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
     , tangentDirection, sample
@@ -44,12 +45,17 @@ includes functionality for
 
 # Properties
 
-@docs startAngle, sweptAngle, startPoint, endPoint, boundingBox
+@docs startAngle, sweptAngle, startPoint, endPoint
 
 All remaining properties of elliptical arcs are actually just [properties of the
 underlying ellipse](Ellipse3d#properties).
 
 @docs centerPoint, axes, xAxis, yAxis, xDirection, yDirection, xRadius, yRadius
+
+
+# Bounds
+
+@docs boundingBox, signedDistanceAlong
 
 
 # Evaluation
@@ -130,7 +136,7 @@ import Point3d exposing (Point3d)
 import Polyline3d exposing (Polyline3d)
 import Quantity exposing (Quantity(..), Rate, Squared)
 import Quantity.Extra as Quantity
-import Quantity.Interval as Interval
+import Quantity.Interval as Interval exposing (Interval)
 import SketchPlane3d exposing (SketchPlane3d)
 import SweptAngle exposing (SweptAngle)
 import Unsafe.Direction3d as Direction3d
@@ -445,6 +451,96 @@ startPoint arc =
 endPoint : EllipticalArc3d units coordinates -> Point3d units coordinates
 endPoint arc =
     pointOn arc 1
+
+
+signedDistanceAlong : Axis3d units coordinates -> EllipticalArc3d units coordinates -> Interval Float units
+signedDistanceAlong axis arc =
+    let
+        (Quantity dTheta) =
+            sweptAngle arc
+
+        p1 =
+            startPoint arc
+
+        p2 =
+            endPoint arc
+
+        (Quantity d1) =
+            Point3d.signedDistanceAlong axis p1
+
+        (Quantity d2) =
+            Point3d.signedDistanceAlong axis p2
+    in
+    if dTheta == 0 then
+        Interval.from (Quantity d1) (Quantity d2)
+
+    else
+        let
+            (Types.Direction3d u) =
+                Axis3d.direction axis
+
+            (Types.Direction3d i) =
+                xDirection arc
+
+            (Types.Direction3d j) =
+                yDirection arc
+
+            (Quantity rX) =
+                xRadius arc
+
+            (Quantity rY) =
+                yRadius arc
+
+            (Quantity thetaStart) =
+                startAngle arc
+
+            thetaEnd =
+                thetaStart + dTheta
+
+            thetaMin =
+                min thetaStart thetaEnd
+
+            thetaMax =
+                max thetaStart thetaEnd
+
+            iDotU =
+                i.x * u.x + i.y * u.y + i.z * u.z
+
+            jDotU =
+                j.x * u.x + j.y * u.y + j.z * u.z
+
+            theta0 =
+                atan2 (rY * jDotU) (rX * iDotU)
+
+            thetaA =
+                theta0 + pi * toFloat (ceiling ((thetaMin - theta0) / pi))
+
+            thetaB =
+                thetaA + pi
+
+            tA =
+                (thetaA - thetaStart) / dTheta
+
+            tB =
+                (thetaB - thetaStart) / dTheta
+
+            (Quantity dA) =
+                if 0 < tA && tA < 1 then
+                    Point3d.signedDistanceAlong axis (pointOn arc tA)
+
+                else
+                    Quantity d1
+
+            (Quantity dB) =
+                if 0 < tB && tB < 1 then
+                    Point3d.signedDistanceAlong axis (pointOn arc tB)
+
+                else
+                    Quantity d1
+        in
+        Interval.from
+            (Quantity (min (min d1 d2) (min dA dB)))
+            (Quantity (max (max d1 d2) (max dA dB)))
 
 
 boundingBox : EllipticalArc3d units coordinates -> BoundingBox3d units coordinatets
