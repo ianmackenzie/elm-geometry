@@ -19,6 +19,7 @@ module Direction3d exposing
     , equalWithin
     , reverse, rotateAround, mirrorAcross, projectOnto
     , relativeTo, placeIn, projectInto
+    , random
     , unsafe, unwrap
     )
 
@@ -98,6 +99,11 @@ global XYZ frame:
 @docs relativeTo, placeIn, projectInto
 
 
+# Random generation
+
+@docs random
+
+
 # Advanced
 
 @docs unsafe, unwrap
@@ -109,6 +115,7 @@ import Direction2d exposing (Direction2d)
 import Geometry.Types as Types exposing (Axis3d, Frame3d, Plane3d, Point3d, SketchPlane3d)
 import Quantity exposing (Quantity(..), Unitless)
 import Quantity.Extra as Quantity
+import Random exposing (Generator)
 import Vector2d exposing (Vector2d)
 import Vector3d exposing (Vector3d)
 
@@ -1362,3 +1369,13 @@ projectInto (Types.SketchPlane3d sketchPlane) (Types.Direction3d d) =
                 { x = scaledX / scaledLength
                 , y = scaledY / scaledLength
                 }
+
+
+{-| A [random generator](https://package.elm-lang.org/packages/elm/random/latest/Random)
+for 3D directions.
+-}
+random : Generator (Direction3d coordinates)
+random =
+    Random.map2 xyZ
+        (Random.map Angle.radians (Random.float -pi pi))
+        (Random.map Angle.asin (Random.float -1 1))

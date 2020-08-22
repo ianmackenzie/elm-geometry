@@ -17,6 +17,7 @@ module Direction2d exposing
     , equalWithin
     , reverse, rotateClockwise, rotateCounterclockwise, rotateBy, mirrorAcross
     , relativeTo, placeIn
+    , random
     , unsafe, unwrap
     )
 
@@ -87,6 +88,11 @@ For the examples, assume the following frames have been defined:
 @docs relativeTo, placeIn
 
 
+# Random generation
+
+@docs random
+
+
 # Advanced
 
 @docs unsafe, unwrap
@@ -97,6 +103,7 @@ import Angle exposing (Angle)
 import Geometry.Types as Types exposing (Axis2d, Frame2d, Point2d)
 import Quantity exposing (Quantity(..), Unitless)
 import Quantity.Extra as Quantity
+import Random exposing (Generator)
 import Vector2d exposing (Vector2d)
 
 
@@ -642,3 +649,11 @@ placeIn (Types.Frame2d frame) (Types.Direction2d d) =
         { x = d.x * dx.x + d.y * dy.x
         , y = d.x * dx.y + d.y * dy.y
         }
+
+
+{-| A [random generator](https://package.elm-lang.org/packages/elm/random/latest/Random)
+for 2D directions.
+-}
+random : Generator (Direction2d coordinates)
+random =
+    Random.map (Angle.radians >> fromAngle) (Random.float -pi pi)
