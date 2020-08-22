@@ -334,7 +334,8 @@ type Surface3d units coordinates
 
 
 type Region2d units coordinates
-    = TriangularRegion (Triangle2d units coordinates)
+    = EmptyRegion
+    | TriangularRegion (Triangle2d units coordinates)
     | RectangularRegion (Rectangle2d units coordinates)
     | CircularRegion (Circle2d units coordinates)
     | EllipticalRegion (Ellipse2d units coordinates)
@@ -343,7 +344,8 @@ type Region2d units coordinates
 
 
 type Body3d units coordinates
-    = RectangularBody (Block3d units coordinates)
+    = EmptyBody
+    | RectangularBody (Block3d units coordinates)
     | SphericalBody (Sphere3d units coordinates)
     | CylindricalBody (Cylinder3d units coordinates)
     | ConicalBody (Cone3d units coordinates)
