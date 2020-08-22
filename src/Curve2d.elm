@@ -5,6 +5,7 @@ module Curve2d exposing
     , segments, approximate
     , reverse, translateBy, scaleAbout, rotateAround, mirrorAcross
     , placeIn, relativeTo
+    , boundingBox
     )
 
 {-|
