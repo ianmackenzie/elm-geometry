@@ -569,6 +569,8 @@ sweptAngle (Types.Arc3d properties) =
     properties.sweptAngle
 
 
+{-| Get a bounding box for a given arc.
+-}
 boundingBox : Arc3d units coordinates -> BoundingBox3d units coordinates
 boundingBox ((Types.Arc3d arc) as arc_) =
     let

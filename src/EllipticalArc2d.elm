@@ -641,6 +641,9 @@ endPoint arc =
     pointOn arc 1
 
 
+{-| Project an elliptical arc onto an axis, returning the range of projected
+distances along that axis.
+-}
 signedDistanceAlong : Axis2d units coordinates -> EllipticalArc2d units coordinates -> Interval Float units
 signedDistanceAlong axis arc =
     let
