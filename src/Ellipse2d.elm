@@ -12,6 +12,7 @@ module Ellipse2d exposing
     , with
     , centerPoint, axes, xAxis, yAxis, xDirection, yDirection, xRadius, yRadius, area
     , toEllipticalArc
+    , boundingBox, signedDistanceAlong
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , at, at_
     , relativeTo, placeIn
@@ -44,6 +45,11 @@ includes functionality for
 @docs toEllipticalArc
 
 
+# Bounds
+
+@docs boundingBox, signedDistanceAlong
+
+
 # Transformations
 
 These transformations generally behave just like [the ones in the `Point2d`
@@ -65,12 +71,14 @@ module](Point2d#transformations).
 
 import Angle exposing (Angle)
 import Axis2d exposing (Axis2d)
+import BoundingBox2d exposing (BoundingBox2d)
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types exposing (EllipticalArc2d(..))
 import Point2d exposing (Point2d)
 import Quantity exposing (Quantity, Rate, Squared)
 import Quantity.Extra as Quantity
+import Quantity.Interval as Interval exposing (Interval)
 import Vector2d exposing (Vector2d)
 
 
@@ -220,6 +228,47 @@ toEllipticalArc ellipse =
         , startAngle = Quantity.zero
         , sweptAngle = Angle.turns 1
         }
+
+
+{-| Get the minimal bounding box containing a given ellipse.
+-}
+boundingBox : Ellipse2d units coordinates -> BoundingBox2d units coordinates
+boundingBox ellipse =
+    BoundingBox2d.xy
+        (signedDistanceAlong Axis2d.x ellipse)
+        (signedDistanceAlong Axis2d.y ellipse)
+
+
+{-| Project an ellipse onto an axis, returning the range of projected distances
+along that axis.
+-}
+signedDistanceAlong : Axis2d units coordinates -> Ellipse2d units coordinates -> Interval Float units
+signedDistanceAlong axis ellipse =
+    let
+        centralDistance =
+            Point2d.signedDistanceAlong axis (centerPoint ellipse)
+
+        axisDirection =
+            Axis2d.direction axis
+
+        a =
+            xRadius ellipse
+                |> Quantity.multiplyBy
+                    (Direction2d.componentIn axisDirection (xDirection ellipse))
+
+        b =
+            yRadius ellipse
+                |> Quantity.multiplyBy
+                    (Direction2d.componentIn axisDirection (yDirection ellipse))
+
+        delta =
+            Quantity.squared a
+                |> Quantity.plus (Quantity.squared b)
+                |> Quantity.sqrt
+    in
+    Interval.from
+        (centralDistance |> Quantity.minus delta)
+        (centralDistance |> Quantity.plus delta)
 
 
 {-| Scale an ellipse about a given point by a given scale.
