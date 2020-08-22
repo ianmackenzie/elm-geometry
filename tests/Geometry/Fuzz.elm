@@ -280,14 +280,11 @@ frame3d =
 sketchPlane3d : Fuzzer (SketchPlane3d Meters coordinates { defines : sketchCoordinates })
 sketchPlane3d =
     let
-        sketchPlane originPoint xDirection =
-            SketchPlane3d.unsafe
-                { originPoint = originPoint
-                , xDirection = xDirection
-                , yDirection = Direction3d.perpendicularTo xDirection
-                }
+        sketchPlane plane rotationAngle =
+            SketchPlane3d.fromPlane plane
+                |> SketchPlane3d.rotateAroundOwn SketchPlane3d.normalAxis rotationAngle
     in
-    Fuzz.map2 sketchPlane point3d direction3d
+    Fuzz.map2 sketchPlane plane3d angle
 
 
 {-| Generate a random `LineSegment2d`.
