@@ -338,6 +338,7 @@ type Region2d units coordinates
     | RectangularRegion (Rectangle2d units coordinates)
     | CircularRegion (Circle2d units coordinates)
     | EllipticalRegion (Ellipse2d units coordinates)
+    | PolygonalRegion (Polygon2d units coordinates)
     | BoundedRegion (List (Curve2d units coordinates)) (List (List (Curve2d units coordinates)))
 
 

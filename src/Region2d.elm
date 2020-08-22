@@ -1,6 +1,6 @@
 module Region2d exposing
     ( Region2d
-    , triangle, rectangle, circle, ellipse, bounded
+    , triangle, rectangle, circle, ellipse, polygon, bounded
     , approximate
     , translateBy, scaleAbout, rotateAround, mirrorAcross
     , relativeTo, placeIn
@@ -11,7 +11,7 @@ module Region2d exposing
 
 @docs Region2d
 
-@docs triangle, rectangle, circle, ellipse, bounded
+@docs triangle, rectangle, circle, ellipse, polygon, bounded
 
 @docs approximate
 
@@ -27,6 +27,7 @@ import Ellipse2d exposing (Ellipse2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import Point2d exposing (Point2d)
+import Polygon2d exposing (Polygon2d)
 import Quantity exposing (Quantity)
 import Rectangle2d exposing (Rectangle2d)
 import Triangle2d exposing (Triangle2d)
@@ -55,6 +56,11 @@ circle givenCircle =
 ellipse : Ellipse2d units coordinates -> Region2d units coordinates
 ellipse givenEllipse =
     Types.EllipticalRegion givenEllipse
+
+
+polygon : Polygon2d units coordinates -> Region2d units coordinates
+polygon givenPolygon =
+    Types.PolygonalRegion givenPolygon
 
 
 bounded :
