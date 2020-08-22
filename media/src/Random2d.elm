@@ -1,29 +1,20 @@
 module Random2d exposing
-    ( lineSegment, triangle, rectangle, polyline
-    , quadraticSpline, cubicSpline, circularArc, ellipticalArc, circle, ellipse
-    , axis, rightHandedFrame, leftHandedFrame, arbitraryFrame
+    ( arbitraryFrame
+    , axis
     , boundingBox
+    , circle
+    , circularArc
+    , cubicSpline
+    , ellipse
+    , ellipticalArc
+    , leftHandedFrame
+    , lineSegment
+    , polyline
+    , quadraticSpline
+    , rectangle
+    , rightHandedFrame
+    , triangle
     )
-
-{-| [Random generators](https://package.elm-lang.org/packages/elm/random/latest/)
-for 2D geometry values.
-
-Note that in general the _entire_ generated object will be within the given
-bounding box; for example the [`circle`](#circle) generator will generate
-circles where the entire circle is in the bounding box, not just the center
-point. The only real exceptions are [`axis`](#axis), which is infinitely long,
-and [`frame`](#frame) which doesn't really have a defined extent. (Although in
-both cases the origin point _will_ be within the given bounding box.)
-
-@docs lineSegment, triangle, rectangle, polyline
-
-@docs quadraticSpline, cubicSpline, circularArc, ellipticalArc, circle, ellipse
-
-@docs axis, rightHandedFrame, leftHandedFrame, arbitraryFrame
-
-@docs boundingBox
-
--}
 
 import Angle exposing (Angle)
 import Arc2d exposing (Arc2d)
@@ -46,41 +37,27 @@ import Rectangle2d exposing (Rectangle2d)
 import Triangle2d exposing (Triangle2d)
 
 
-{-| Generate random axes. The origin point of the axis will be within the given
-bounding box.
--}
 axis : BoundingBox2d units coordinates -> Generator (Axis2d units coordinates)
 axis bounds =
     Random.map2 Axis2d.withDirection Direction2d.random (BoundingBox2d.randomPoint bounds)
 
 
-{-| Generate [right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
-frames with their origin points within the given boundingbox.
--}
 rightHandedFrame : BoundingBox2d units coordinates -> Generator (Frame2d units coordinates defines)
 rightHandedFrame bounds =
     Random.map2 Frame2d.withXDirection Direction2d.random (BoundingBox2d.randomPoint bounds)
 
 
-{-| Generate [left-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness)
-frames with their origin points within the given boundingbox.
--}
 leftHandedFrame : BoundingBox2d units coordinates -> Generator (Frame2d units coordinates defines)
 leftHandedFrame bounds =
     Random.map Frame2d.reverseY (rightHandedFrame bounds)
 
 
-{-| Generate random left- or right-handed frames with their origin points within
-the given bounding box.
--}
 arbitraryFrame : BoundingBox2d units coordinates -> Generator (Frame2d units coordinates defines)
 arbitraryFrame bounds =
     Random.uniform (rightHandedFrame bounds) [ leftHandedFrame bounds ]
         |> Random.andThen identity
 
 
-{-| Generate random bounding boxes within a larger given bounding box.
--}
 boundingBox : BoundingBox2d units coordinates -> Generator (BoundingBox2d units coordinates)
 boundingBox bounds =
     let
@@ -90,8 +67,6 @@ boundingBox bounds =
     Random.map2 BoundingBox2d.from randomPoint randomPoint
 
 
-{-| Generate line segments within a given bounding box.
--}
 lineSegment : BoundingBox2d units coordinates -> Generator (LineSegment2d units coordinates)
 lineSegment bounds =
     let
@@ -101,8 +76,6 @@ lineSegment bounds =
     Random.map2 LineSegment2d.from randomPoint randomPoint
 
 
-{-| Generate triangles within a given bounding box.
--}
 triangle : BoundingBox2d units coordinates -> Generator (Triangle2d units coordinates)
 triangle bounds =
     let
@@ -112,8 +85,6 @@ triangle bounds =
     Random.map3 Triangle2d.from randomPoint randomPoint randomPoint
 
 
-{-| Generate polylines within a given bounding box.
--}
 polyline : BoundingBox2d units coordinates -> Generator (Polyline2d units coordinates)
 polyline bounds =
     Random.int 2 12
@@ -124,8 +95,6 @@ polyline bounds =
             )
 
 
-{-| Generate circles within a given bounding box.
--}
 circle : BoundingBox2d units coordinates -> Generator (Circle2d units coordinates)
 circle bounds =
     BoundingBox2d.randomPoint bounds
@@ -156,14 +125,6 @@ circle bounds =
             )
 
 
-{-| Generate circular arcs within a given bounding box.
-
-It's possible to construct straight `Arc2d` values (ones with zero
-curvature/infinite radius) using `Arc2d.from`, but this function will only ever
-generate arcs with finite radius where the arc and its center point are all
-within the given bounding box.
-
--}
 circularArc : BoundingBox2d units coordinates -> Generator (Arc2d units coordinates)
 circularArc bounds =
     let
@@ -184,8 +145,6 @@ circularArc bounds =
         largeAngle
 
 
-{-| Generate quadratic splines within a given bounding box.
--}
 quadraticSpline : BoundingBox2d units coordinates -> Generator (QuadraticSpline2d units coordinates)
 quadraticSpline bounds =
     let
@@ -195,8 +154,6 @@ quadraticSpline bounds =
     Random.map3 QuadraticSpline2d.fromControlPoints randomPoint randomPoint randomPoint
 
 
-{-| Generate cubic splines within a given bounding box.
--}
 cubicSpline : BoundingBox2d units coordinates -> Generator (CubicSpline2d units coordinates)
 cubicSpline bounds =
     let
@@ -206,8 +163,6 @@ cubicSpline bounds =
     Random.map4 CubicSpline2d.fromControlPoints randomPoint randomPoint randomPoint randomPoint
 
 
-{-| Generate rectangles within a given bounding box.
--}
 rectangle : BoundingBox2d units coordinates -> Generator (Rectangle2d units coordinates)
 rectangle bounds =
     Random.map3
@@ -232,8 +187,6 @@ rectangle bounds =
         (Random.map Angle.degrees (Random.float 0 90))
 
 
-{-| Generate ellipses a given bounding box.
--}
 ellipse : BoundingBox2d units coordinates -> Generator (Ellipse2d units coordinates)
 ellipse bounds =
     Random.map3
@@ -265,8 +218,6 @@ ellipse bounds =
         (Random.map Angle.degrees (Random.float 0 90))
 
 
-{-| Generate elliptical arcs within a given bounding box.
--}
 ellipticalArc : BoundingBox2d units coordinates -> Generator (EllipticalArc2d units coordinates)
 ellipticalArc bounds =
     let
