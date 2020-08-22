@@ -17,6 +17,7 @@ module Rectangle2d exposing
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , at, at_
     , relativeTo, placeIn
+    , randomPoint
     )
 
 {-| A `Rectangle2d` represents a rectangle in 2D space. This module contains
@@ -75,6 +76,11 @@ module](Point2d#transformations).
 
 @docs relativeTo, placeIn
 
+
+# Random point generation
+
+@docs randomPoint
+
 -}
 
 import Angle exposing (Angle)
@@ -87,6 +93,7 @@ import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
 import Quantity exposing (Quantity(..), Rate, Squared)
+import Random exposing (Generator)
 import Vector2d exposing (Vector2d)
 
 
@@ -692,3 +699,11 @@ interpolate rectangle u v =
     Point2d.xyIn (axes rectangle)
         (Quantity.multiplyBy (u - 0.5) width)
         (Quantity.multiplyBy (v - 0.5) height)
+
+
+{-| Create a [random generator](https://package.elm-lang.org/packages/elm/random/latest/Random)
+for points within a given rectangle.
+-}
+randomPoint : Rectangle2d units coordinates -> Generator (Point2d units coordinates)
+randomPoint rectangle =
+    Random.map2 (interpolate rectangle) (Random.float 0 1) (Random.float 0 1)

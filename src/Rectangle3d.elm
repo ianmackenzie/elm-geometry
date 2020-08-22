@@ -6,6 +6,7 @@ module Rectangle3d exposing
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , at, at_
     , relativeTo, placeIn
+    , randomPoint
     )
 
 {-| The `Rectangle3d` type is an extension of `Rectangle2d` that exists in 3D.
@@ -53,6 +54,11 @@ module](Point3d#transformations).
 
 @docs relativeTo, placeIn
 
+
+# Random point generation
+
+@docs randomPoint
+
 -}
 
 import Angle exposing (Angle)
@@ -65,6 +71,7 @@ import LineSegment3d exposing (LineSegment3d)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Quantity exposing (Quantity(..), Rate, Squared)
+import Random exposing (Generator)
 import Rectangle2d exposing (Rectangle2d)
 import SketchPlane3d exposing (SketchPlane3d)
 import Vector3d exposing (Vector3d)
@@ -485,3 +492,11 @@ interpolate rectangle u v =
     Point3d.xyOn (axes rectangle)
         (Quantity.multiplyBy (u - 0.5) width)
         (Quantity.multiplyBy (v - 0.5) height)
+
+
+{-| Create a [random generator](https://package.elm-lang.org/packages/elm/random/latest/Random)
+for points within a given rectangle.
+-}
+randomPoint : Rectangle3d units coordinates -> Generator (Point3d units coordinates)
+randomPoint rectangle =
+    Random.map2 (interpolate rectangle) (Random.float 0 1) (Random.float 0 1)
