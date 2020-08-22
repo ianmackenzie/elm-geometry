@@ -19,6 +19,7 @@ module BoundingBox3d exposing
     , contains, isContainedIn, intersects, overlappingByAtLeast, separatedByAtLeast
     , scaleAbout, translateBy, translateIn, expandBy, offsetBy
     , at, at_
+    , randomPoint
     )
 
 {-| A `BoundingBox3d` is a rectangular box in 3D defined by its minimum and
@@ -92,6 +93,11 @@ You can also get the X, Y and Z ranges of a bounding box as [intervals](https://
 
 @docs at, at_
 
+
+# Random point generation
+
+@docs randomPoint
+
 -}
 
 import Direction3d exposing (Direction3d)
@@ -100,6 +106,7 @@ import Point3d exposing (Point3d)
 import Quantity exposing (Quantity(..), Rate)
 import Quantity.Extra as Quantity
 import Quantity.Interval as Interval exposing (Interval)
+import Random exposing (Generator)
 import Vector3d exposing (Vector3d)
 
 
@@ -1222,3 +1229,18 @@ need to be able to contract a bounding box, use
 expandBy : Quantity Float units -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates
 expandBy amount boundingBox =
     unsafeOffsetBy (Quantity.abs amount) boundingBox
+
+
+{-| Create a [random generator](https://package.elm-lang.org/packages/elm/random/latest/Random)
+for points within a given bounding box.
+-}
+randomPoint : BoundingBox3d units coordinates -> Generator (Point3d units coordinates)
+randomPoint boundingBox =
+    let
+        ( x, y, z ) =
+            intervals boundingBox
+    in
+    Random.map3 Point3d.xyz
+        (Interval.randomValue x)
+        (Interval.randomValue y)
+        (Interval.randomValue z)

@@ -19,6 +19,7 @@ module BoundingBox2d exposing
     , contains, isContainedIn, intersects, overlappingByAtLeast, separatedByAtLeast
     , scaleAbout, translateBy, translateIn, expandBy, offsetBy
     , at, at_
+    , randomPoint
     )
 
 {-| A `BoundingBox2d` is a rectangular box in 2D defined by its minimum and
@@ -93,6 +94,11 @@ You can also get the X and Y ranges of a bounding box as [intervals](https://pac
 
 @docs at, at_
 
+
+# Random point generation
+
+@docs randomPoint
+
 -}
 
 import Direction2d exposing (Direction2d)
@@ -101,6 +107,7 @@ import Point2d exposing (Point2d)
 import Quantity exposing (Quantity(..), Rate)
 import Quantity.Extra as Quantity
 import Quantity.Interval as Interval exposing (Interval)
+import Random exposing (Generator)
 import Vector2d exposing (Vector2d)
 
 
@@ -1079,3 +1086,15 @@ need to be able to contract a bounding box, use
 expandBy : Quantity Float units -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
 expandBy amount boundingBox =
     unsafeOffsetBy (Quantity.abs amount) boundingBox
+
+
+{-| Create a [random generator](https://package.elm-lang.org/packages/elm/random/latest/Random)
+for points within a given bounding box.
+-}
+randomPoint : BoundingBox2d units coordinates -> Generator (Point2d units coordinates)
+randomPoint boundingBox =
+    let
+        ( x, y ) =
+            intervals boundingBox
+    in
+    Random.map2 Point2d.xy (Interval.randomValue x) (Interval.randomValue y)
