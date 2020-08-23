@@ -25,15 +25,18 @@ module Region2d exposing
 -}
 
 import Angle exposing (Angle)
+import Arc2d
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Circle2d exposing (Circle2d)
 import Curve2d exposing (Curve2d)
 import Ellipse2d exposing (Ellipse2d)
+import EllipticalArc2d exposing (EllipticalArc2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
+import Polyline2d exposing (Polyline2d)
 import Quantity exposing (Quantity, Rate)
 import Rectangle2d exposing (Rectangle2d)
 import Triangle2d exposing (Triangle2d)
@@ -85,17 +88,109 @@ bounded { outerLoop, innerLoops } =
 
 approximate : Quantity Float units -> Region2d units coordinates -> Polygon2d units coordinates
 approximate maxError region =
-    Debug.todo "TODO"
+    case region of
+        Types.EmptyRegion ->
+            Polygon2d.singleLoop []
+
+        Types.TriangularRegion givenTriangle ->
+            let
+                ( p1, p2, p3 ) =
+                    Triangle2d.vertices givenTriangle
+            in
+            Polygon2d.singleLoop [ p1, p2, p3 ]
+
+        Types.RectangularRegion givenRectangle ->
+            Polygon2d.singleLoop (Rectangle2d.vertices givenRectangle)
+
+        Types.CircularRegion givenCircle ->
+            Circle2d.toArc givenCircle
+                |> Arc2d.approximate maxError
+                |> Polyline2d.vertices
+                |> List.drop 1
+                |> Polygon2d.singleLoop
+
+        Types.EllipticalRegion givenEllipse ->
+            Ellipse2d.toEllipticalArc givenEllipse
+                |> EllipticalArc2d.approximate maxError
+                |> Polyline2d.vertices
+                |> List.drop 1
+                |> Polygon2d.singleLoop
+
+        Types.PolygonalRegion givenPolygon ->
+            givenPolygon
+
+        Types.BoundedRegion outerLoop innerLoops ->
+            Polygon2d.withHoles
+                (List.map (approximateLoop maxError) innerLoops)
+                (approximateLoop maxError outerLoop)
 
 
-reverseMap : (Curve2d units coordinates -> Curve2d units coordinates) -> List (Curve2d units coordinates) -> List (Curve2d units coordinates) -> List (Curve2d units coordinates)
-reverseMap curveFunction list accumulated =
-    case list of
-        first :: rest ->
-            reverseMap curveFunction rest (Curve2d.reverse (curveFunction first) :: accumulated)
+approximateLoop :
+    Quantity Float units
+    -> List (Curve2d units coordinates)
+    -> List (Point2d units coordinates)
+approximateLoop maxError loop =
+    mergeSegments (List.map (Curve2d.approximate maxError >> Polyline2d.vertices) loop)
+
+
+mergeSegments : List (List (Point2d units coordinates)) -> List (Point2d units coordinates)
+mergeSegments segments =
+    case segments of
+        [] ->
+            []
+
+        [] :: remainingSegments ->
+            mergeSegments remainingSegments
+
+        (startPoint :: firstSegmentRemainingPoints) :: remainingSegments ->
+            mergeSegmentsHelp startPoint startPoint firstSegmentRemainingPoints remainingSegments [ startPoint ]
+
+
+mergeSegmentsHelp :
+    Point2d units coordinates
+    -> Point2d units coordinates
+    -> List (Point2d units coordinates)
+    -> List (List (Point2d units coordinates))
+    -> List (Point2d units coordinates)
+    -> List (Point2d units coordinates)
+mergeSegmentsHelp startPoint previousPoint remainingSegmentPoints remainingSegments accumulated =
+    case remainingSegmentPoints of
+        nextPoint :: followingPoints ->
+            let
+                updatedPoints =
+                    if nextPoint == previousPoint then
+                        accumulated
+
+                    else
+                        nextPoint :: accumulated
+            in
+            mergeSegmentsHelp
+                startPoint
+                nextPoint
+                followingPoints
+                remainingSegments
+                updatedPoints
 
         [] ->
-            accumulated
+            case remainingSegments of
+                nextSegment :: followingSegments ->
+                    mergeSegmentsHelp
+                        startPoint
+                        previousPoint
+                        nextSegment
+                        followingSegments
+                        accumulated
+
+                [] ->
+                    let
+                        finalPoints =
+                            if previousPoint == startPoint then
+                                List.drop 1 accumulated
+
+                            else
+                                accumulated
+                    in
+                    List.reverse finalPoints
 
 
 translateBy : Vector2d units coordinates -> Region2d units coordinates -> Region2d units coordinates
