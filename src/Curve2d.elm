@@ -32,7 +32,7 @@ import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Circle2d exposing (Circle2d)
 import CubicSpline2d exposing (CubicSpline2d)
-import CubicSpline3d exposing (maxSecondDerivativeMagnitude)
+import CubicSpline3d exposing (CubicSpline3d)
 import Curve
 import Direction2d exposing (Direction2d)
 import Ellipse2d exposing (Ellipse2d)
