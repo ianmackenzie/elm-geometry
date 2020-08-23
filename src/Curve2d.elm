@@ -5,6 +5,7 @@ module Curve2d exposing
     , segments, approximate
     , reverse, translateBy, scaleAbout, rotateAround, mirrorAcross
     , placeIn, relativeTo
+    , at, at_
     , boundingBox
     )
 
@@ -21,6 +22,8 @@ module Curve2d exposing
 @docs reverse, translateBy, scaleAbout, rotateAround, mirrorAcross
 
 @docs placeIn, relativeTo
+
+@docs at, at_
 
 @docs boundingBox
 
@@ -44,7 +47,7 @@ import Parameter1d
 import Point2d exposing (Point2d)
 import Polyline2d exposing (Polyline2d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
-import Quantity exposing (Quantity)
+import Quantity exposing (Quantity, Rate)
 import Vector2d exposing (Vector2d)
 
 
@@ -228,6 +231,36 @@ relativeTo frame givenCurve =
 
         Types.CubicSplineCurve2d givenCubicSpline ->
             Types.CubicSplineCurve2d (CubicSpline2d.relativeTo frame givenCubicSpline)
+
+
+at :
+    Quantity Float (Rate units2 units1)
+    -> Curve2d units1 coordinates
+    -> Curve2d units2 coordinates
+at rate givenCurve =
+    case givenCurve of
+        Types.LineSegmentCurve2d givenLineSegment ->
+            Types.LineSegmentCurve2d (LineSegment2d.at rate givenLineSegment)
+
+        Types.ArcCurve2d givenArc ->
+            Types.ArcCurve2d (Arc2d.at rate givenArc)
+
+        Types.EllipticalArcCurve2d givenEllipticalArc ->
+            Types.EllipticalArcCurve2d (EllipticalArc2d.at rate givenEllipticalArc)
+
+        Types.QuadraticSplineCurve2d givenQuadraticSpline ->
+            Types.QuadraticSplineCurve2d (QuadraticSpline2d.at rate givenQuadraticSpline)
+
+        Types.CubicSplineCurve2d givenCubicSpline ->
+            Types.CubicSplineCurve2d (CubicSpline2d.at rate givenCubicSpline)
+
+
+at_ :
+    Quantity Float (Rate units2 units1)
+    -> Curve2d units2 coordinates
+    -> Curve2d units1 coordinates
+at_ rate givenCurve =
+    at (Quantity.inverse rate) givenCurve
 
 
 translateBy : Vector2d units coordinates -> Curve2d units coordinates -> Curve2d units coordinates
