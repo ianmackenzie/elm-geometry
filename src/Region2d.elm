@@ -4,6 +4,7 @@ module Region2d exposing
     , approximate
     , translateBy, scaleAbout, rotateAround, mirrorAcross
     , relativeTo, placeIn
+    , at, at_
     , boundingBox
     )
 
@@ -19,6 +20,8 @@ module Region2d exposing
 
 @docs relativeTo, placeIn
 
+@docs at, at_
+
 -}
 
 import Angle exposing (Angle)
@@ -31,7 +34,7 @@ import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
-import Quantity exposing (Quantity)
+import Quantity exposing (Quantity, Rate)
 import Rectangle2d exposing (Rectangle2d)
 import Triangle2d exposing (Triangle2d)
 import Vector2d exposing (Vector2d)
@@ -285,6 +288,43 @@ placeIn frame region =
                     List.map globalizeCurve
             in
             Types.BoundedRegion (globalizeLoop outerLoop) (List.map globalizeLoop innerLoops)
+
+
+at : Quantity Float (Rate units2 units1) -> Region2d units1 coordinates -> Region2d units2 coordinates
+at rate region =
+    case region of
+        Types.EmptyRegion ->
+            Types.EmptyRegion
+
+        Types.TriangularRegion givenTriangle ->
+            Types.TriangularRegion (Triangle2d.at rate givenTriangle)
+
+        Types.RectangularRegion givenRectangle ->
+            Types.RectangularRegion (Rectangle2d.at rate givenRectangle)
+
+        Types.CircularRegion givenCircle ->
+            Types.CircularRegion (Circle2d.at rate givenCircle)
+
+        Types.EllipticalRegion givenEllipse ->
+            Types.EllipticalRegion (Ellipse2d.at rate givenEllipse)
+
+        Types.PolygonalRegion givenPolygon ->
+            Types.PolygonalRegion (Polygon2d.at rate givenPolygon)
+
+        Types.BoundedRegion outerLoop innerLoops ->
+            let
+                convertCurveUnits =
+                    Curve2d.at rate
+
+                convertLoopUnits =
+                    List.map convertCurveUnits
+            in
+            Types.BoundedRegion (convertLoopUnits outerLoop) (List.map convertLoopUnits innerLoops)
+
+
+at_ : Quantity Float (Rate units2 units1) -> Region2d units2 coordinates -> Region2d units1 coordinates
+at_ rate region =
+    at (Quantity.inverse rate) region
 
 
 boundingBox : Region2d units coordinates -> Maybe (BoundingBox2d units coordinates)
