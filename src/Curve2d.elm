@@ -1,6 +1,6 @@
 module Curve2d exposing
     ( Curve2d
-    , lineSegment, arc, ellipticalArc, quadraticSpline, cubicSpline
+    , lineSegment, arc, circle, ellipticalArc, ellipse, quadraticSpline, cubicSpline
     , startPoint, endPoint
     , segments, approximate
     , reverse, translateBy, scaleAbout, rotateAround, mirrorAcross
@@ -12,7 +12,7 @@ module Curve2d exposing
 
 @docs Curve2d
 
-@docs lineSegment, arc, ellipticalArc, quadraticSpline, cubicSpline
+@docs lineSegment, arc, circle, ellipticalArc, ellipse, quadraticSpline, cubicSpline
 
 @docs startPoint, endPoint
 
@@ -30,10 +30,12 @@ import Angle exposing (Angle)
 import Arc2d exposing (Arc2d)
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
+import Circle2d exposing (Circle2d)
 import CubicSpline2d exposing (CubicSpline2d)
 import CubicSpline3d exposing (maxSecondDerivativeMagnitude)
 import Curve
 import Direction2d exposing (Direction2d)
+import Ellipse2d exposing (Ellipse2d)
 import EllipticalArc2d exposing (EllipticalArc2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types exposing (LineSegment2d)
@@ -60,9 +62,19 @@ arc givenArc =
     Types.ArcCurve2d givenArc
 
 
+circle : Circle2d units coordinates -> Curve2d units coordinates
+circle givenCircle =
+    arc (Circle2d.toArc givenCircle)
+
+
 ellipticalArc : EllipticalArc2d units coordinates -> Curve2d units coordinates
 ellipticalArc givenEllipticalArc =
     Types.EllipticalArcCurve2d givenEllipticalArc
+
+
+ellipse : Ellipse2d units coordinates -> Curve2d units coordinates
+ellipse givenEllipes =
+    ellipticalArc (Ellipse2d.toEllipticalArc givenEllipes)
 
 
 quadraticSpline : QuadraticSpline2d units coordinates -> Curve2d units coordinates
