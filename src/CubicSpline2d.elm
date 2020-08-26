@@ -22,7 +22,7 @@ module CubicSpline2d exposing
     , ArcLengthParameterized, arcLengthParameterized, arcLength, midpoint
     , pointAlong, tangentDirectionAlong, sampleAlong
     , arcLengthParameterization, fromArcLengthParameterized
-    , firstDerivative, secondDerivative, thirdDerivative, maxSecondDerivativeMagnitude
+    , firstDerivative, secondDerivative, thirdDerivative, maxSecondDerivativeMagnitude, numApproximationSegments
     )
 
 {-| A `CubicSpline2d` is a cubic [Bézier curve](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)
@@ -103,12 +103,12 @@ these two values separately.
 @docs arcLengthParameterization, fromArcLengthParameterized
 
 
-# Differentiation
+# Advanced
 
 You are unlikely to need to use these functions directly, but they are useful if
 you are writing low-level geometric algorithms.
 
-@docs firstDerivative, secondDerivative, thirdDerivative, maxSecondDerivativeMagnitude
+@docs firstDerivative, secondDerivative, thirdDerivative, maxSecondDerivativeMagnitude, numApproximationSegments
 
 -}
 
@@ -571,14 +571,7 @@ point on the returned polyline will be within the given tolerance of the spline.
 -}
 approximate : Quantity Float units -> CubicSpline2d units coordinates -> Polyline2d units coordinates
 approximate maxError spline =
-    let
-        numSegments =
-            Curve.numApproximationSegments
-                { maxError = maxError
-                , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude spline
-                }
-    in
-    segments numSegments spline
+    segments (numApproximationSegments maxError spline) spline
 
 
 {-| Reverse a spline so that the start point becomes the end point, and vice
@@ -1083,3 +1076,14 @@ derivativeMagnitude (Types.CubicSpline2d spline) =
                 y13 + parameterValue * (y24 - y13)
         in
         Quantity (3 * sqrt (x14 * x14 + y14 * y14))
+
+
+{-| Determine the number of linear segments needed to approximate a cubic
+spline to within a given tolerance.
+-}
+numApproximationSegments : Quantity Float units -> CubicSpline2d units coordinats -> Int
+numApproximationSegments maxError spline =
+    Curve.numApproximationSegments
+        { maxError = maxError
+        , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude spline
+        }

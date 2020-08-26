@@ -18,7 +18,7 @@ module Arc3d exposing
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectInto
     , at, at_
     , relativeTo, placeIn
-    , firstDerivative
+    , firstDerivative, numApproximationSegments
     )
 
 {-| An `Arc3d` is a section of a circle in 3D, defined by its central axis,
@@ -72,12 +72,12 @@ module](Point3d#transformations).
 @docs relativeTo, placeIn
 
 
-# Differentiation
+# Advanced
 
 You are unlikely to need to use these functions directly, but they are useful if
 you are writing low-level geometric algorithms.
 
-@docs firstDerivative
+@docs firstDerivative, numApproximationSegments
 
 -}
 
@@ -541,15 +541,7 @@ of the original arc.
 -}
 approximate : Quantity Float units -> Arc3d units coordinates -> Polyline3d units coordinates
 approximate maxError arc =
-    let
-        numSegments =
-            Curve.arcApproximationSegments
-                { maxError = maxError
-                , radius = radius arc
-                , sweptAngle = sweptAngle arc
-                }
-    in
-    segments numSegments arc
+    segments (numApproximationSegments maxError arc) arc
 
 
 {-| DEPRECATED - use [`segments`](#segments) or [`approximate`](#approximate)
@@ -921,3 +913,15 @@ placeIn frame (Types.Arc3d arc) =
                     |> Direction3d.reverse
             , yDirection = Direction3d.placeIn frame arc.yDirection
             }
+
+
+{-| Determine the number of linear segments needed to approximate an arc to
+within a given tolerance.
+-}
+numApproximationSegments : Quantity Float units -> Arc3d units coordinats -> Int
+numApproximationSegments maxError arc =
+    Curve.arcApproximationSegments
+        { maxError = maxError
+        , radius = radius arc
+        , sweptAngle = sweptAngle arc
+        }

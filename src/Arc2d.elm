@@ -18,7 +18,7 @@ module Arc2d exposing
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , at, at_
     , relativeTo, placeIn
-    , firstDerivative
+    , firstDerivative, numApproximationSegments
     )
 
 {-| An `Arc2d` is a section of a circle, defined by its center point, start
@@ -72,12 +72,12 @@ module](Point2d#transformations).
 @docs relativeTo, placeIn
 
 
-# Differentiation
+# Advanced
 
 You are unlikely to need to use these functions directly, but they are useful if
 you are writing low-level geometric algorithms.
 
-@docs firstDerivative
+@docs firstDerivative, numApproximationSegments
 
 -}
 
@@ -823,15 +823,7 @@ of the original arc.
 -}
 approximate : Quantity Float units -> Arc2d units coordinates -> Polyline2d units coordinates
 approximate maxError arc =
-    let
-        numSegments =
-            Curve.arcApproximationSegments
-                { maxError = maxError
-                , radius = radius arc
-                , sweptAngle = sweptAngle arc
-                }
-    in
-    segments numSegments arc
+    segments (numApproximationSegments maxError arc) arc
 
 
 {-| DEPRECATED - use [`segments`](#segments) or [`approximate`](#approximate)
@@ -962,3 +954,15 @@ placeIn frame (Types.Arc2d arc) =
             , xDirection =
                 Direction2d.reverse (Direction2d.placeIn frame arc.xDirection)
             }
+
+
+{-| Determine the number of linear segments needed to approximate an arc to
+within a given tolerance.
+-}
+numApproximationSegments : Quantity Float units -> Arc2d units coordinats -> Int
+numApproximationSegments maxError arc =
+    Curve.arcApproximationSegments
+        { maxError = maxError
+        , radius = radius arc
+        , sweptAngle = sweptAngle arc
+        }

@@ -7,6 +7,7 @@ module Curve2d exposing
     , placeIn, relativeTo
     , at, at_
     , boundingBox
+    , numApproximationSegments
     )
 
 {-|
@@ -26,6 +27,8 @@ module Curve2d exposing
 @docs at, at_
 
 @docs boundingBox
+
+@docs numApproximationSegments
 
 -}
 
@@ -374,3 +377,22 @@ boundingBox givenCurve =
 
         Types.CubicSplineCurve2d givenCubicSpline ->
             CubicSpline2d.boundingBox givenCubicSpline
+
+
+numApproximationSegments : Quantity Float units -> Curve2d units coordinates -> Int
+numApproximationSegments maxError givenCurve =
+    case givenCurve of
+        Types.LineSegmentCurve2d _ ->
+            1
+
+        Types.ArcCurve2d givenArc ->
+            Arc2d.numApproximationSegments maxError givenArc
+
+        Types.EllipticalArcCurve2d givenEllipticalArc ->
+            EllipticalArc2d.numApproximationSegments maxError givenEllipticalArc
+
+        Types.QuadraticSplineCurve2d givenQuadraticSpline ->
+            QuadraticSpline2d.numApproximationSegments maxError givenQuadraticSpline
+
+        Types.CubicSplineCurve2d givenCubicSpline ->
+            CubicSpline2d.numApproximationSegments maxError givenCubicSpline

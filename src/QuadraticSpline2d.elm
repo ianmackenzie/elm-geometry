@@ -22,7 +22,7 @@ module QuadraticSpline2d exposing
     , ArcLengthParameterized, arcLengthParameterized, arcLength
     , pointAlong, midpoint, tangentDirectionAlong, sampleAlong
     , arcLengthParameterization, fromArcLengthParameterized
-    , firstDerivative, secondDerivative
+    , firstDerivative, secondDerivative, numApproximationSegments
     )
 
 {-| A `QuadraticSpline2d` is a quadratic [Bézier curve](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)
@@ -102,12 +102,12 @@ extract these two values separately.
 @docs arcLengthParameterization, fromArcLengthParameterized
 
 
-# Differentiation
+# Advanced
 
 You are unlikely to need to use these functions directly, but they are useful if
 you are writing low-level geometric algorithms.
 
-@docs firstDerivative, secondDerivative
+@docs firstDerivative, secondDerivative, numApproximationSegments
 
 -}
 
@@ -496,14 +496,7 @@ spline.
 -}
 approximate : Quantity Float units -> QuadraticSpline2d units coordinates -> Polyline2d units coordinates
 approximate maxError spline =
-    let
-        numSegments =
-            Curve.numApproximationSegments
-                { maxError = maxError
-                , maxSecondDerivativeMagnitude = Vector2d.length (secondDerivative spline)
-                }
-    in
-    segments numSegments spline
+    segments (numApproximationSegments maxError spline) spline
 
 
 {-| Reverse a spline so that the start point becomes the end point, and vice
@@ -740,3 +733,14 @@ secondDerivative spline =
             Vector2d.from p2 p3
     in
     Vector2d.twice (v2 |> Vector2d.minus v1)
+
+
+{-| Determine the number of linear segments needed to approximate a quadratic
+spline to within a given tolerance.
+-}
+numApproximationSegments : Quantity Float units -> QuadraticSpline2d units coordinats -> Int
+numApproximationSegments maxError spline =
+    Curve.numApproximationSegments
+        { maxError = maxError
+        , maxSecondDerivativeMagnitude = Vector2d.length (secondDerivative spline)
+        }

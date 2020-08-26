@@ -23,7 +23,7 @@ module EllipticalArc3d exposing
     , ArcLengthParameterized, arcLengthParameterized, arcLength
     , pointAlong, midpoint, tangentDirectionAlong, sampleAlong
     , arcLengthParameterization, fromArcLengthParameterized
-    , firstDerivative, maxSecondDerivativeMagnitude
+    , firstDerivative, maxSecondDerivativeMagnitude, numApproximationSegments
     )
 
 {-| An `EllipticalArc3d` is a section of an `Ellipse3d` with a start and end
@@ -108,12 +108,12 @@ these two values separately.
 @docs arcLengthParameterization, fromArcLengthParameterized
 
 
-# Differentiation
+# Advanced
 
 You are unlikely to need to use these functions directly, but they are useful if
 you are writing low-level geometric algorithms.
 
-@docs firstDerivative, maxSecondDerivativeMagnitude
+@docs firstDerivative, maxSecondDerivativeMagnitude, numApproximationSegments
 
 -}
 
@@ -429,14 +429,7 @@ approximate :
     -> EllipticalArc3d units coordinates
     -> Polyline3d units coordinates
 approximate maxError arc =
-    let
-        numSegments =
-            Curve.numApproximationSegments
-                { maxError = maxError
-                , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude arc
-                }
-    in
-    segments numSegments arc
+    segments (numApproximationSegments maxError arc) arc
 
 
 {-| Get the start point of an elliptical arc.
@@ -1004,3 +997,14 @@ fromArcLengthParameterized :
     -> EllipticalArc3d units coordinates
 fromArcLengthParameterized (ArcLengthParameterized parameterized) =
     parameterized.underlyingArc
+
+
+{-| Determine the number of linear segments needed to approximate an elliptical
+arc to within a given tolerance.
+-}
+numApproximationSegments : Quantity Float units -> EllipticalArc3d units coordinats -> Int
+numApproximationSegments maxError arc =
+    Curve.numApproximationSegments
+        { maxError = maxError
+        , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude arc
+        }
