@@ -9,9 +9,10 @@
 
 module Geometry.Types exposing (..)
 
-import Angle exposing (Angle)
+import Angle exposing (Angle, Radians)
 import Array exposing (Array)
 import Quantity exposing (Quantity)
+import Quantity.Interval exposing (Interval)
 
 
 type Vector2d units coordinates
@@ -349,4 +350,6 @@ type Body3d units coordinates
     | SphericalBody (Sphere3d units coordinates)
     | CylindricalBody (Cylinder3d units coordinates)
     | ConicalBody (Cone3d units coordinates)
+    | ExtrusionBody (SketchPlane3d units coordinates { defines : SketchCoordinates }) (Region2d units SketchCoordinates) (Interval Float units)
+    | RevolutionBody (SketchPlane3d units coordinates { defines : SketchCoordinates }) (Region2d units SketchCoordinates) (Axis2d units SketchCoordinates) (Interval Float Radians)
     | BoundedBody (List (Surface3d units coordinates))
