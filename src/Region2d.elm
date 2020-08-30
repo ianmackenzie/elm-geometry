@@ -34,6 +34,7 @@ import Ellipse2d exposing (Ellipse2d)
 import EllipticalArc2d exposing (EllipticalArc2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
+import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
 import Polyline2d exposing (Polyline2d)
@@ -130,67 +131,123 @@ approximateLoop :
     -> List (Curve2d units coordinates)
     -> List (Point2d units coordinates)
 approximateLoop maxError loop =
-    mergeSegments (List.map (Curve2d.approximate maxError >> Polyline2d.vertices) loop)
-
-
-mergeSegments : List (List (Point2d units coordinates)) -> List (Point2d units coordinates)
-mergeSegments segments =
-    case segments of
+    case loop of
         [] ->
             []
 
-        [] :: remainingSegments ->
-            mergeSegments remainingSegments
-
-        (startPoint :: firstSegmentRemainingPoints) :: remainingSegments ->
-            mergeSegmentsHelp startPoint startPoint firstSegmentRemainingPoints remainingSegments [ startPoint ]
-
-
-mergeSegmentsHelp :
-    Point2d units coordinates
-    -> Point2d units coordinates
-    -> List (Point2d units coordinates)
-    -> List (List (Point2d units coordinates))
-    -> List (Point2d units coordinates)
-    -> List (Point2d units coordinates)
-mergeSegmentsHelp startPoint previousPoint remainingSegmentPoints remainingSegments accumulated =
-    case remainingSegmentPoints of
-        nextPoint :: followingPoints ->
+        [ curve ] ->
             let
-                updatedPoints =
-                    if nextPoint == previousPoint then
+                startPoint =
+                    Curve2d.startPoint curve
+
+                endPoint =
+                    Curve2d.endPoint curve
+
+                vertices =
+                    Polyline2d.vertices (Curve2d.approximate maxError curve)
+            in
+            if Point2d.equalWithin maxError endPoint startPoint then
+                -- Curve forms a closed loop, drop first point since it is
+                -- (approximately) equal to the last point
+                List.drop 1 vertices
+
+            else
+                -- Curve does not form a closed loop, leave both first and last
+                -- points (will be implicitly joined when turned into a polygon)
+                vertices
+
+        first :: second :: rest ->
+            let
+                firstStart =
+                    Curve2d.startPoint first
+
+                firstEnd =
+                    Curve2d.endPoint first
+
+                secondStart =
+                    Curve2d.startPoint second
+
+                secondEnd =
+                    Curve2d.endPoint second
+            in
+            if
+                Point2d.equalWithin maxError firstEnd secondStart
+                    || Point2d.equalWithin maxError firstEnd secondEnd
+            then
+                -- First segment is oriented correctly (end point touches
+                -- second segment)
+                mergeSegments maxError firstStart firstEnd (second :: rest) [ first ]
+
+            else if
+                Point2d.equalWithin maxError firstStart secondStart
+                    || Point2d.equalWithin maxError firstStart secondEnd
+            then
+                -- First segment needs to be reversed (*start* point touches
+                -- second segment)
+                mergeSegments maxError firstEnd firstStart (second :: rest) <|
+                    [ Curve2d.reverse first ]
+
+            else
+                -- First two segments are separated, assume they are correctly
+                -- oriented
+                mergeSegments maxError firstStart firstEnd (second :: rest) [ first ]
+
+
+mergeSegments :
+    Quantity Float units
+    -> Point2d units coordinates
+    -> Point2d units coordinates
+    -> List (Curve2d units coordinates)
+    -> List (Curve2d units coordinates)
+    -> List (Point2d units coordinates)
+mergeSegments maxError startPoint previousEnd remainingSegments accumulated =
+    case remainingSegments of
+        next :: following ->
+            let
+                nextStart =
+                    Curve2d.startPoint next
+
+                nextEnd =
+                    Curve2d.endPoint next
+            in
+            if Point2d.equalWithin maxError nextStart previousEnd then
+                -- Next segment is oriented correctly
+                mergeSegments maxError startPoint nextEnd following (next :: accumulated)
+
+            else if Point2d.equalWithin maxError nextEnd previousEnd then
+                -- Next segment needs to be reversed
+                mergeSegments maxError startPoint nextStart following <|
+                    (Curve2d.reverse next :: accumulated)
+
+            else
+                -- Segments have a gap between them, assume next segment is
+                -- correctly oriented and add a connecting line between them
+                let
+                    joiningLine =
+                        Curve2d.lineSegment (LineSegment2d.from previousEnd nextStart)
+                in
+                mergeSegments maxError startPoint nextEnd following <|
+                    (next :: joiningLine :: accumulated)
+
+        [] ->
+            let
+                -- Add a final line segment joining end of last curve back to
+                -- start of first curve, if necessary
+                finalCurves =
+                    if Point2d.equalWithin maxError previousEnd startPoint then
                         accumulated
 
                     else
-                        nextPoint :: accumulated
+                        Curve2d.lineSegment (LineSegment2d.from previousEnd startPoint)
+                            :: accumulated
             in
-            mergeSegmentsHelp
-                startPoint
-                nextPoint
-                followingPoints
-                remainingSegments
-                updatedPoints
-
-        [] ->
-            case remainingSegments of
-                nextSegment :: followingSegments ->
-                    mergeSegmentsHelp
-                        startPoint
-                        previousPoint
-                        nextSegment
-                        followingSegments
-                        accumulated
-
-                [] ->
-                    let
-                        finalPoints =
-                            if previousPoint == startPoint then
-                                List.drop 1 accumulated
-
-                            else
-                                accumulated
-                    in
-                    List.reverse finalPoints
+            -- Join polyline approximations of all curves, dropping the first
+            -- vertex of each polyline since we've ensured that the end of each
+            -- curve is equal to the start of the next (at least within the
+            -- given tolerance)
+            List.reverse finalCurves
+                |> List.map (Curve2d.approximate maxError >> Polyline2d.vertices >> List.drop 1)
+                |> List.concat
 
 
 translateBy : Vector2d units coordinates -> Region2d units coordinates -> Region2d units coordinates
