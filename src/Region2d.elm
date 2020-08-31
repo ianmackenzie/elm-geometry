@@ -22,6 +22,8 @@ module Region2d exposing
 
 @docs at, at_
 
+@docs boundingBox
+
 -}
 
 import Angle exposing (Angle)
