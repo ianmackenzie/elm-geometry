@@ -41,19 +41,16 @@ region =
         p5 =
             Point2d.centimeters 0 4
     in
-    Region2d.bounded
-        { outerLoop =
-            [ Curve2d.lineSegment (LineSegment2d.from p1 p2)
-            , Curve2d.lineSegment (LineSegment2d.from p2 p3)
-            , Curve2d.arc (Arc2d.from p3 p4 (Angle.degrees 90))
-            , Curve2d.lineSegment (LineSegment2d.from p4 p5)
-            , Curve2d.lineSegment (LineSegment2d.from p5 p1)
-            ]
-        , innerLoops =
-            [ [ Curve2d.circle (Circle2d.withRadius (Length.centimeters 1) (Point2d.centimeters 2 2)) ]
-            , [ Curve2d.circle (Circle2d.withRadius (Length.centimeters 1) (Point2d.centimeters 5 2)) ]
-            ]
-        }
+    Region2d.withHoles
+        [ [ Curve2d.circle (Circle2d.withRadius (Length.centimeters 1) (Point2d.centimeters 2 2)) ]
+        , [ Curve2d.circle (Circle2d.withRadius (Length.centimeters 1) (Point2d.centimeters 5 2)) ]
+        ]
+        [ Curve2d.lineSegment (LineSegment2d.from p1 p2)
+        , Curve2d.lineSegment (LineSegment2d.from p2 p3)
+        , Curve2d.arc (Arc2d.from p3 p4 (Angle.degrees 90))
+        , Curve2d.lineSegment (LineSegment2d.from p4 p5)
+        , Curve2d.lineSegment (LineSegment2d.from p5 p1)
+        ]
 
 
 main : Html msg

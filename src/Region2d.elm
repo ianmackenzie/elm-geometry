@@ -1,6 +1,6 @@
 module Region2d exposing
     ( Region2d
-    , triangle, rectangle, circle, ellipse, polygon, bounded
+    , triangle, rectangle, circle, ellipse, polygon, bounded, withHoles
     , approximate
     , translateBy, scaleAbout, rotateAround, mirrorAcross
     , relativeTo, placeIn
@@ -12,7 +12,7 @@ module Region2d exposing
 
 @docs Region2d
 
-@docs triangle, rectangle, circle, ellipse, polygon, bounded
+@docs triangle, rectangle, circle, ellipse, polygon, bounded, withHoles
 
 @docs approximate
 
@@ -78,12 +78,16 @@ polygon givenPolygon =
     Types.PolygonalRegion givenPolygon
 
 
-bounded :
-    { outerLoop : List (Curve2d units coordinates)
-    , innerLoops : List (List (Curve2d units coordinates))
-    }
+bounded : List (Curve2d units coordinates) -> Region2d units coordinates
+bounded loop =
+    withHoles [] loop
+
+
+withHoles :
+    List (List (Curve2d units coordinates))
+    -> List (Curve2d units coordinates)
     -> Region2d units coordinates
-bounded { outerLoop, innerLoops } =
+withHoles innerLoops outerLoop =
     Types.BoundedRegion outerLoop innerLoops
 
 
