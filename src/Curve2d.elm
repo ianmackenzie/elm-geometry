@@ -2,7 +2,7 @@ module Curve2d exposing
     ( Curve2d
     , lineSegment, arc, circle, ellipticalArc, ellipse, quadraticSpline, cubicSpline
     , startPoint, endPoint
-    , segments, approximate
+    , segments, approximate, samples
     , join
     , reverse, translateBy, scaleAbout, rotateAround, mirrorAcross
     , placeIn, relativeTo
@@ -19,7 +19,7 @@ module Curve2d exposing
 
 @docs startPoint, endPoint
 
-@docs segments, approximate
+@docs segments, approximate, samples
 @docs join
 
 @docs reverse, translateBy, scaleAbout, rotateAround, mirrorAcross
@@ -173,6 +173,59 @@ approximate maxError givenCurve =
 
         Types.CubicSplineCurve2d givenCubicSpline ->
             CubicSpline2d.approximate maxError givenCubicSpline
+
+
+samples : Quantity Float units -> Curve2d units coordinates -> List ( Point2d units coordinates, Direction2d coordinates )
+samples maxError givenCurve =
+    let
+        numSegments =
+            numApproximationSegments maxError givenCurve
+    in
+    case givenCurve of
+        Types.LineSegmentCurve2d givenLineSegment ->
+            case LineSegment2d.direction givenLineSegment of
+                Just direction ->
+                    [ ( LineSegment2d.startPoint givenLineSegment, direction )
+                    , ( LineSegment2d.endPoint givenLineSegment, direction )
+                    ]
+
+                Nothing ->
+                    []
+
+        Types.ArcCurve2d givenArc ->
+            case Arc2d.nondegenerate givenArc of
+                Ok nondegenerateArc ->
+                    Parameter1d.steps numSegments (Arc2d.sample nondegenerateArc)
+
+                Err _ ->
+                    []
+
+        Types.EllipticalArcCurve2d givenEllipticalArc ->
+            case EllipticalArc2d.nondegenerate givenEllipticalArc of
+                Ok nondegenerateEllipticalArc ->
+                    Parameter1d.steps numSegments
+                        (EllipticalArc2d.sample nondegenerateEllipticalArc)
+
+                Err _ ->
+                    []
+
+        Types.QuadraticSplineCurve2d givenSpline ->
+            case QuadraticSpline2d.nondegenerate givenSpline of
+                Ok nondegenerateSpline ->
+                    Parameter1d.steps numSegments
+                        (QuadraticSpline2d.sample nondegenerateSpline)
+
+                Err _ ->
+                    []
+
+        Types.CubicSplineCurve2d givenSpline ->
+            case CubicSpline2d.nondegenerate givenSpline of
+                Ok nondegenerateSpline ->
+                    Parameter1d.steps numSegments
+                        (CubicSpline2d.sample nondegenerateSpline)
+
+                Err _ ->
+                    []
 
 
 reverse : Curve2d units coordinates -> Curve2d units coordinates
