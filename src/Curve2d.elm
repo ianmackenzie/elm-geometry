@@ -3,6 +3,7 @@ module Curve2d exposing
     , lineSegment, arc, circle, ellipticalArc, ellipse, quadraticSpline, cubicSpline
     , startPoint, endPoint
     , segments, approximate
+    , join
     , reverse, translateBy, scaleAbout, rotateAround, mirrorAcross
     , placeIn, relativeTo
     , at, at_
@@ -19,6 +20,7 @@ module Curve2d exposing
 @docs startPoint, endPoint
 
 @docs segments, approximate
+@docs join
 
 @docs reverse, translateBy, scaleAbout, rotateAround, mirrorAcross
 
@@ -396,3 +398,115 @@ numApproximationSegments maxError givenCurve =
 
         Types.CubicSplineCurve2d givenCubicSpline ->
             CubicSpline2d.numApproximationSegments maxError givenCubicSpline
+
+
+join : Bool -> Quantity Float units -> List (Curve2d units coordinates) -> List (Curve2d units coordinates)
+join close resolution givenCurves =
+    case givenCurves of
+        [] ->
+            []
+
+        [ givenCurve ] ->
+            if close then
+                -- Join end point back to start point if necessary
+                let
+                    p1 =
+                        startPoint givenCurve
+
+                    p2 =
+                        endPoint givenCurve
+                in
+                if Point2d.equalWithin resolution p1 p2 then
+                    -- Curve already loops back on itself, nothing to do
+                    [ givenCurve ]
+
+                else
+                    -- Add a line from the end point back to the start point
+                    [ givenCurve, lineSegment (LineSegment2d.from p2 p1) ]
+
+            else
+                [ givenCurve ]
+
+        first :: second :: rest ->
+            let
+                firstStart =
+                    startPoint first
+
+                firstEnd =
+                    endPoint first
+
+                secondStart =
+                    startPoint second
+
+                secondEnd =
+                    endPoint second
+            in
+            if
+                Point2d.equalWithin resolution firstEnd secondStart
+                    || Point2d.equalWithin resolution firstEnd secondEnd
+            then
+                -- First segment is oriented correctly (end point touches
+                -- second segment)
+                merge close resolution firstStart firstEnd (second :: rest) [ first ]
+
+            else if
+                Point2d.equalWithin resolution firstStart secondStart
+                    || Point2d.equalWithin resolution firstStart secondEnd
+            then
+                -- First segment needs to be reversed (*start* point touches
+                -- second segment)
+                merge close resolution firstEnd firstStart (second :: rest) [ reverse first ]
+
+            else
+                -- First two segments are separated, assume they are correctly
+                -- oriented
+                merge close resolution firstStart firstEnd (second :: rest) [ first ]
+
+
+merge :
+    Bool
+    -> Quantity Float units
+    -> Point2d units coordinates
+    -> Point2d units coordinates
+    -> List (Curve2d units coordinates)
+    -> List (Curve2d units coordinates)
+    -> List (Curve2d units coordinates)
+merge close maxError firstStart previousEnd remainingSegments accumulated =
+    case remainingSegments of
+        next :: following ->
+            let
+                nextStart =
+                    startPoint next
+
+                nextEnd =
+                    endPoint next
+            in
+            if Point2d.equalWithin maxError previousEnd nextStart then
+                -- Next segment is oriented correctly
+                merge close maxError firstStart nextEnd following (next :: accumulated)
+
+            else if Point2d.equalWithin maxError previousEnd nextEnd then
+                -- Next segment needs to be reversed
+                merge close maxError firstStart nextStart following (reverse next :: accumulated)
+
+            else
+                -- Segments have a gap between them, assume next segment is
+                -- correctly oriented and add a connecting line between them
+                let
+                    connector =
+                        lineSegment (LineSegment2d.from previousEnd nextStart)
+                in
+                merge close maxError firstStart nextEnd following (next :: connector :: accumulated)
+
+        [] ->
+            let
+                -- Add a final line segment joining end of last curve back to
+                -- start of first curve, if necessary
+                finalCurves =
+                    if close && not (Point2d.equalWithin maxError previousEnd firstStart) then
+                        lineSegment (LineSegment2d.from previousEnd firstStart) :: accumulated
+
+                    else
+                        accumulated
+            in
+            List.reverse finalCurves
