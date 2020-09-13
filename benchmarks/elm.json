@@ -8,15 +8,15 @@
     "dependencies": {
         "direct": {
             "elm/browser": "1.0.2",
-            "elm/core": "1.0.4",
+            "elm/core": "1.0.5",
             "elm/html": "1.0.0",
             "elm/random": "1.0.0",
             "elm-explorations/benchmark": "1.0.1",
             "ianmackenzie/elm-float-extra": "1.1.0",
             "ianmackenzie/elm-interval": "2.0.0",
             "ianmackenzie/elm-triangular-mesh": "1.0.4",
-            "ianmackenzie/elm-units": "2.2.0",
-            "ianmackenzie/elm-units-interval": "1.0.0"
+            "ianmackenzie/elm-units": "2.6.0",
+            "ianmackenzie/elm-units-interval": "2.1.0"
         },
         "indirect": {
             "BrianHicks/elm-trend": "2.1.3",
