@@ -11,7 +11,7 @@ module Circle3d exposing
     ( Circle3d
     , withRadius, sweptAround, on, throughPoints
     , centerPoint, axialDirection, radius, diameter, axis, plane, area, circumference, boundingBox
-    , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
+    , flip, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
     , at, at_
     , relativeTo, placeIn
     )
@@ -44,7 +44,7 @@ for:
 These transformations generally behave just like [the ones in the `Point3d`
 module](Point3d#transformations).
 
-@docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
+@docs flip, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
 
 
 # Unit conversions
@@ -259,6 +259,15 @@ area circle =
 circumference : Circle3d units coordinates -> Quantity Float units
 circumference circle =
     Quantity.multiplyBy (2 * pi) (radius circle)
+
+
+{-| Flip the axial direction of a circle.
+-}
+flip : Circle3d units coordinates -> Circle3d units coordinates
+flip circle =
+    withRadius (radius circle)
+        (Direction3d.reverse (axialDirection circle))
+        (centerPoint circle)
 
 
 {-| Scale a circle around a given point by a given scale.
