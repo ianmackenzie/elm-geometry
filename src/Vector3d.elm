@@ -20,7 +20,7 @@ module Vector3d exposing
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross, sum, twice, half
     , product, times, over, over_
-    , reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
+    , reverse, normalize, scaleBy, scaleTo, rotateAround, mirrorAcross, projectionIn, projectOnto
     , at, at_
     , relativeTo, placeIn, projectInto
     , unsafe, unwrap
@@ -1209,6 +1209,25 @@ scaleBy k (Types.Vector3d v) =
         , y = k * v.y
         , z = k * v.z
         }
+
+
+{-| Scale a vector to a given length.
+
+    Vector3d.scaleTo (Length.meters 16) (Vector3d.meters 4 8 6)
+    --> Vector3d { x = 5.9422508216656595, y = 11.884501643331319, z = 8.91337623249849 }
+
+Scaling a zero vector will always result in a zero vector.
+
+-}
+scaleTo : Quantity Float units2 -> Vector3d units1 coordinates -> Vector3d units2 coordinates
+scaleTo givenLength givenVector =
+    case direction givenVector of
+        Just vectorDirection ->
+            withLength givenLength vectorDirection
+
+        Nothing ->
+            zero
+
 
 
 {-| Rotate a vector around a given axis by a given angle.
