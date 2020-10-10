@@ -23,6 +23,10 @@ module Vector3d exposing
     , reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
     , at, at_
     , relativeTo, placeIn, projectInto
+    , metersPerSecond, feetPerSecond, kilometersPerHour, milesPerHour
+    , metersPerSecondSquared, feetPerSecondSquared, gees
+    , newtons, kilonewtons, meganewtons, pounds, kips
+    , pascals, kilopascals, megapascals, poundsPerSquareInch, atmospheres
     , unsafe, unwrap
     )
 
@@ -146,6 +150,29 @@ global XYZ frame:
 @docs relativeTo, placeIn, projectInto
 
 
+# Physics
+
+
+## Speed
+
+@docs metersPerSecond, feetPerSecond, kilometersPerHour, milesPerHour
+
+
+## Acceleration
+
+@docs metersPerSecondSquared, feetPerSecondSquared, gees
+
+
+## Force
+
+@docs newtons, kilonewtons, meganewtons, pounds, kips
+
+
+## Pressure
+
+@docs pascals, kilopascals, megapascals, poundsPerSquareInch, atmospheres
+
+
 # Advanced
 
 These functions are unsafe because they require you to track units manually. In
@@ -156,13 +183,17 @@ useful when writing generic/library code.
 
 -}
 
+import Acceleration exposing (MetersPerSecondSquared)
 import Angle exposing (Angle)
 import Float.Extra as Float
+import Force exposing (Newtons)
 import Geometry.Types as Types exposing (Axis3d, Direction3d, Frame3d, Plane3d, Point3d, SketchPlane3d)
 import Length exposing (Meters)
 import Pixels exposing (Pixels)
+import Pressure exposing (Pascals)
 import Quantity exposing (Cubed, Product, Quantity(..), Rate, Squared, Unitless)
 import Quantity.Extra as Quantity
+import Speed exposing (MetersPerSecond)
 import Vector2d exposing (Vector2d)
 
 
@@ -1504,3 +1535,105 @@ projectInto (Types.SketchPlane3d sketchPlane) (Types.Vector3d v) =
         { x = v.x * i.x + v.y * i.y + v.z * i.z
         , y = v.x * j.x + v.y * j.y + v.z * j.z
         }
+
+
+{-| -}
+metersPerSecond : Float -> Direction3d coordinates -> Vector3d MetersPerSecond coordinates
+metersPerSecond speed dir =
+    withLength (Speed.metersPerSecond speed) dir
+
+
+{-| -}
+feetPerSecond : Float -> Direction3d coordinates -> Vector3d MetersPerSecond coordinates
+feetPerSecond speed dir =
+    withLength (Speed.feetPerSecond speed) dir
+
+
+{-| -}
+kilometersPerHour : Float -> Direction3d coordinates -> Vector3d MetersPerSecond coordinates
+kilometersPerHour speed dir =
+    withLength (Speed.kilometersPerHour speed) dir
+
+
+{-| -}
+milesPerHour : Float -> Direction3d coordinates -> Vector3d MetersPerSecond coordinates
+milesPerHour speed dir =
+    withLength (Speed.milesPerHour speed) dir
+
+
+{-| -}
+metersPerSecondSquared : Float -> Direction3d coordinates -> Vector3d MetersPerSecondSquared coordinates
+metersPerSecondSquared acceleration dir =
+    withLength (Acceleration.metersPerSecondSquared acceleration) dir
+
+
+{-| -}
+feetPerSecondSquared : Float -> Direction3d coordinates -> Vector3d MetersPerSecondSquared coordinates
+feetPerSecondSquared acceleration dir =
+    withLength (Acceleration.feetPerSecondSquared acceleration) dir
+
+
+{-| -}
+gees : Float -> Direction3d coordinates -> Vector3d MetersPerSecondSquared coordinates
+gees acceleration dir =
+    withLength (Acceleration.gees acceleration) dir
+
+
+{-| -}
+newtons : Float -> Direction3d coordinates -> Vector3d Newtons coordinates
+newtons force dir =
+    withLength (Force.newtons force) dir
+
+
+{-| -}
+kilonewtons : Float -> Direction3d coordinates -> Vector3d Newtons coordinates
+kilonewtons force dir =
+    withLength (Force.kilonewtons force) dir
+
+
+{-| -}
+meganewtons : Float -> Direction3d coordinates -> Vector3d Newtons coordinates
+meganewtons force dir =
+    withLength (Force.meganewtons force) dir
+
+
+{-| -}
+pounds : Float -> Direction3d coordinates -> Vector3d Newtons coordinates
+pounds force dir =
+    withLength (Force.pounds force) dir
+
+
+{-| -}
+kips : Float -> Direction3d coordinates -> Vector3d Newtons coordinates
+kips force dir =
+    withLength (Force.kips force) dir
+
+
+{-| -}
+pascals : Float -> Direction3d coordinates -> Vector3d Pascals coordinates
+pascals pressure dir =
+    withLength (Pressure.pascals pressure) dir
+
+
+{-| -}
+kilopascals : Float -> Direction3d coordinates -> Vector3d Pascals coordinates
+kilopascals pressure dir =
+    withLength (Pressure.kilopascals pressure) dir
+
+
+{-| -}
+megapascals : Float -> Direction3d coordinates -> Vector3d Pascals coordinates
+megapascals pressure dir =
+    withLength (Pressure.megapascals pressure) dir
+
+
+{-| -}
+poundsPerSquareInch : Float -> Direction3d coordinates -> Vector3d Pascals coordinates
+poundsPerSquareInch pressure dir =
+    withLength (Pressure.poundsPerSquareInch pressure) dir
+
+
+{-| -}
+atmospheres : Float -> Direction3d coordinates -> Vector3d Pascals coordinates
+atmospheres pressure dir =
+    withLength (Pressure.atmospheres pressure) dir
