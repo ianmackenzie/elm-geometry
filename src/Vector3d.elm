@@ -930,33 +930,8 @@ like
 
 -}
 normalize : Vector3d units coordinates -> Vector3d Unitless coordinates
-normalize (Types.Vector3d v) =
-    let
-        largestComponent =
-            max (abs v.x) (max (abs v.y) (abs v.z))
-    in
-    if largestComponent == 0 then
-        zero
-
-    else
-        let
-            scaledX =
-                v.x / largestComponent
-
-            scaledY =
-                v.y / largestComponent
-
-            scaledZ =
-                v.z / largestComponent
-
-            scaledLength =
-                sqrt (scaledX * scaledX + scaledY * scaledY + scaledZ * scaledZ)
-        in
-        Types.Vector3d
-            { x = scaledX / scaledLength
-            , y = scaledY / scaledLength
-            , z = scaledZ / scaledLength
-            }
+normalize =
+    scaleTo (Quantity.float 1)
 
 
 {-| Find the sum of two vectors.
