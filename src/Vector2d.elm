@@ -23,6 +23,7 @@ module Vector2d exposing
     , reverse, normalize, scaleBy, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
     , at, at_
     , relativeTo, placeIn
+    , metersPerSecond, feetPerSecond, kilometersPerHour, milesPerHour
     , unsafe, unwrap
     )
 
@@ -144,6 +145,14 @@ For the examples, assume the following frame has been defined:
 @docs relativeTo, placeIn
 
 
+# Physics
+
+
+## Speed
+
+@docs metersPerSecond, feetPerSecond, kilometersPerHour, milesPerHour
+
+
 # Advanced
 
 These functions are unsafe because they require you to track units manually. In
@@ -161,6 +170,7 @@ import Length exposing (Meters)
 import Pixels exposing (Pixels)
 import Quantity exposing (Product, Quantity(..), Rate, Squared, Unitless)
 import Quantity.Extra as Quantity
+import Speed exposing (MetersPerSecond)
 
 
 {-| -}
@@ -1271,3 +1281,27 @@ placeIn (Types.Frame2d frame) (Types.Vector2d v) =
         { x = v.x * dx.x + v.y * dy.x
         , y = v.x * dx.y + v.y * dy.y
         }
+
+
+{-| -}
+metersPerSecond : Float -> Direction2d coordinates -> Vector2d MetersPerSecond coordinates
+metersPerSecond speed dir =
+    withLength (Speed.metersPerSecond speed) dir
+
+
+{-| -}
+feetPerSecond : Float -> Direction2d coordinates -> Vector2d MetersPerSecond coordinates
+feetPerSecond speed dir =
+    withLength (Speed.feetPerSecond speed) dir
+
+
+{-| -}
+kilometersPerHour : Float -> Direction2d coordinates -> Vector2d MetersPerSecond coordinates
+kilometersPerHour speed dir =
+    withLength (Speed.kilometersPerHour speed) dir
+
+
+{-| -}
+milesPerHour : Float -> Direction2d coordinates -> Vector2d MetersPerSecond coordinates
+milesPerHour speed dir =
+    withLength (Speed.milesPerHour speed) dir
