@@ -26,6 +26,7 @@ module Vector2d exposing
     , metersPerSecond, feetPerSecond, kilometersPerHour, milesPerHour
     , metersPerSecondSquared, feetPerSecondSquared, gees
     , newtons, kilonewtons, meganewtons, pounds, kips
+    , pascals, kilopascals, megapascals, poundsPerSquareInch, atmospheres
     , unsafe, unwrap
     )
 
@@ -165,6 +166,11 @@ For the examples, assume the following frame has been defined:
 @docs newtons, kilonewtons, meganewtons, pounds, kips
 
 
+## Pressure
+
+@ docs pascals, kilopascals, megapascals, poundsPerSquareInch, atmospheres
+
+
 # Advanced
 
 These functions are unsafe because they require you to track units manually. In
@@ -182,6 +188,7 @@ import Force exposing (Newtons)
 import Geometry.Types as Types exposing (Axis2d, Direction2d, Frame2d, Point2d)
 import Length exposing (Meters)
 import Pixels exposing (Pixels)
+import Pressure exposing (Pascals)
 import Quantity exposing (Product, Quantity(..), Rate, Squared, Unitless)
 import Quantity.Extra as Quantity
 import Speed exposing (MetersPerSecond)
@@ -1367,3 +1374,33 @@ pounds force dir =
 kips : Float -> Direction2d coordinates -> Vector2d Newtons coordinates
 kips force dir =
     withLength (Force.kips force) dir
+
+
+{-| -}
+pascals : Float -> Direction2d coordinates -> Vector2d Pascals coordinates
+pascals pressure dir =
+    withLength (Pressure.pascals pressure) dir
+
+
+{-| -}
+kilopascals : Float -> Direction2d coordinates -> Vector2d Pascals coordinates
+kilopascals pressure dir =
+    withLength (Pressure.kilopascals pressure) dir
+
+
+{-| -}
+megapascals : Float -> Direction2d coordinates -> Vector2d Pascals coordinates
+megapascals pressure dir =
+    withLength (Pressure.megapascals pressure) dir
+
+
+{-| -}
+poundsPerSquareInch : Float -> Direction2d coordinates -> Vector2d Pascals coordinates
+poundsPerSquareInch pressure dir =
+    withLength (Pressure.poundsPerSquareInch pressure) dir
+
+
+{-| -}
+atmospheres : Float -> Direction2d coordinates -> Vector2d Pascals coordinates
+atmospheres pressure dir =
+    withLength (Pressure.atmospheres pressure) dir
