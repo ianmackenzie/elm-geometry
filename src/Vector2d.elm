@@ -24,6 +24,7 @@ module Vector2d exposing
     , at, at_
     , relativeTo, placeIn
     , metersPerSecond, feetPerSecond, kilometersPerHour, milesPerHour
+    , metersPerSecondSquared, feetPerSecondSquared, gees
     , unsafe, unwrap
     )
 
@@ -153,6 +154,11 @@ For the examples, assume the following frame has been defined:
 @docs metersPerSecond, feetPerSecond, kilometersPerHour, milesPerHour
 
 
+## Acceleration
+
+@docs metersPerSecondSquared, feetPerSecondSquared, gees
+
+
 # Advanced
 
 These functions are unsafe because they require you to track units manually. In
@@ -163,6 +169,7 @@ useful when writing generic/library code.
 
 -}
 
+import Acceleration exposing (MetersPerSecondSquared)
 import Angle exposing (Angle)
 import Float.Extra as Float
 import Geometry.Types as Types exposing (Axis2d, Direction2d, Frame2d, Point2d)
@@ -1305,3 +1312,21 @@ kilometersPerHour speed dir =
 milesPerHour : Float -> Direction2d coordinates -> Vector2d MetersPerSecond coordinates
 milesPerHour speed dir =
     withLength (Speed.milesPerHour speed) dir
+
+
+{-| -}
+metersPerSecondSquared : Float -> Direction2d coordinates -> Vector2d MetersPerSecondSquared coordinates
+metersPerSecondSquared acceleration dir =
+    withLength (Acceleration.metersPerSecondSquared acceleration) dir
+
+
+{-| -}
+feetPerSecondSquared : Float -> Direction2d coordinates -> Vector2d MetersPerSecondSquared coordinates
+feetPerSecondSquared acceleration dir =
+    withLength (Acceleration.feetPerSecondSquared acceleration) dir
+
+
+{-| -}
+gees : Float -> Direction2d coordinates -> Vector2d MetersPerSecondSquared coordinates
+gees acceleration dir =
+    withLength (Acceleration.gees acceleration) dir
