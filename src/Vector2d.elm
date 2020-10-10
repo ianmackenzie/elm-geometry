@@ -20,7 +20,7 @@ module Vector2d exposing
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross, sum, twice, half
     , product, times, over, over_
-    , reverse, normalize, scaleBy, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
+    , reverse, normalize, scaleBy, scaleTo, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
     , at, at_
     , relativeTo, placeIn
     , unsafe, unwrap
@@ -122,7 +122,7 @@ affects the result, since vectors are position-independent. Think of
 mirroring/projecting a vector across/onto an axis as moving the vector so its
 tail is on the axis, then mirroring/projecting its tip across/onto the axis.
 
-@docs reverse, normalize, scaleBy, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
+@docs reverse, normalize, scaleBy, scaleTo, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
 
 
 # Unit conversions
@@ -1069,6 +1069,24 @@ scaleBy k (Types.Vector2d v) =
         { x = k * v.x
         , y = k * v.y
         }
+
+
+{-| Scale a vector to a given length.
+
+    Vector2d.scaleTo (Length.meters 29) (Vector2d.meters 3 4)
+    --> Vector2d.meters 20 21
+
+Scaling a zero vector will always result in a zero vector.
+
+-}
+scaleTo : Quantity Float units2 -> Vector2d units1 coordinates -> Vector2d units2 coordinates
+scaleTo givenLength givenVector =
+    case direction givenVector of
+        Just vectorDirection ->
+            withLength givenLength vectorDirection
+
+        Nothing ->
+            zero
 
 
 {-| Rotate a vector counterclockwise by a given angle.
