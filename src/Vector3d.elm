@@ -123,7 +123,7 @@ plane is relevant, since vectors are position-independent. Think of transforming
 a vector as placing its tail on the relevant axis or plane and then transforming
 its tip.
 
-@docs reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
+@docs reverse, normalize, scaleBy, scaleTo, rotateAround, mirrorAcross, projectionIn, projectOnto
 
 
 # Unit conversions
@@ -1202,7 +1202,6 @@ scaleTo givenLength givenVector =
 
         Nothing ->
             zero
-
 
 
 {-| Rotate a vector around a given axis by a given angle.
