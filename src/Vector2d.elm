@@ -25,6 +25,7 @@ module Vector2d exposing
     , relativeTo, placeIn
     , metersPerSecond, feetPerSecond, kilometersPerHour, milesPerHour
     , metersPerSecondSquared, feetPerSecondSquared, gees
+    , newtons, kilonewtons, meganewtons, pounds, kips
     , unsafe, unwrap
     )
 
@@ -159,6 +160,11 @@ For the examples, assume the following frame has been defined:
 @docs metersPerSecondSquared, feetPerSecondSquared, gees
 
 
+## Force
+
+@docs newtons, kilonewtons, meganewtons, pounds, kips
+
+
 # Advanced
 
 These functions are unsafe because they require you to track units manually. In
@@ -172,6 +178,7 @@ useful when writing generic/library code.
 import Acceleration exposing (MetersPerSecondSquared)
 import Angle exposing (Angle)
 import Float.Extra as Float
+import Force exposing (Newtons)
 import Geometry.Types as Types exposing (Axis2d, Direction2d, Frame2d, Point2d)
 import Length exposing (Meters)
 import Pixels exposing (Pixels)
@@ -1330,3 +1337,33 @@ feetPerSecondSquared acceleration dir =
 gees : Float -> Direction2d coordinates -> Vector2d MetersPerSecondSquared coordinates
 gees acceleration dir =
     withLength (Acceleration.gees acceleration) dir
+
+
+{-| -}
+newtons : Float -> Direction2d coordinates -> Vector2d Newtons coordinates
+newtons force dir =
+    withLength (Force.newtons force) dir
+
+
+{-| -}
+kilonewtons : Float -> Direction2d coordinates -> Vector2d Newtons coordinates
+kilonewtons force dir =
+    withLength (Force.kilonewtons force) dir
+
+
+{-| -}
+meganewtons : Float -> Direction2d coordinates -> Vector2d Newtons coordinates
+meganewtons force dir =
+    withLength (Force.meganewtons force) dir
+
+
+{-| -}
+pounds : Float -> Direction2d coordinates -> Vector2d Newtons coordinates
+pounds force dir =
+    withLength (Force.pounds force) dir
+
+
+{-| -}
+kips : Float -> Direction2d coordinates -> Vector2d Newtons coordinates
+kips force dir =
+    withLength (Force.kips force) dir
