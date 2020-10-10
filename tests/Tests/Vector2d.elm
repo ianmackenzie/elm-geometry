@@ -6,6 +6,7 @@ module Tests.Vector2d exposing
     , perpendicularVectorIsPerpendicular
     , rotateByPreservesLength
     , rotateByRotatesByTheCorrectAngle
+    , scaleTo
     , sum
     )
 
@@ -132,3 +133,12 @@ sum =
             Vector2d.sum vectors
                 |> Expect.vector2d
                     (List.foldl Vector2d.plus Vector2d.zero vectors)
+
+
+scaleTo : Test
+scaleTo =
+    Test.fuzz (Fuzz.tuple ( Fuzz.length, Fuzz.vector2d )) "scaleTo has a consistent length" <|
+        \( scale, vector ) ->
+            Vector2d.scaleTo scale vector
+                |> Vector2d.length
+                |> Expect.quantity (Quantity.abs scale)
