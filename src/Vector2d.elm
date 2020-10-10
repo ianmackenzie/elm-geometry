@@ -809,29 +809,8 @@ like
 
 -}
 normalize : Vector2d units coordinates -> Vector2d Unitless coordinates
-normalize (Types.Vector2d v) =
-    let
-        largestComponent =
-            max (abs v.x) (abs v.y)
-    in
-    if largestComponent == 0 then
-        zero
-
-    else
-        let
-            scaledX =
-                v.x / largestComponent
-
-            scaledY =
-                v.y / largestComponent
-
-            scaledLength =
-                sqrt (scaledX * scaledX + scaledY * scaledY)
-        in
-        Types.Vector2d
-            { x = scaledX / scaledLength
-            , y = scaledY / scaledLength
-            }
+normalize =
+    scaleTo (Quantity.float 1)
 
 
 {-| Find the sum of two vectors.
