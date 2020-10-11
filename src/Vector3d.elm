@@ -71,6 +71,9 @@ constant values, e.g.
 
 @docs meters, pixels, millimeters, centimeters, inches, feet
 
+There are some [additional constructors](#physics) below for vectors with
+physics-related units (speed, acceleration and force).
+
 
 # Constructors
 
@@ -150,6 +153,16 @@ global XYZ frame:
 
 
 # Physics
+
+These constructors let you conveniently create vectors with physics-related
+units such as speed, acceleration and force. For example, a speed of 5 feet per
+second in the positive Y direction could be written as
+
+    Vector3d.feetPerSecond 0 5 0
+
+and a force of 10 newtons in the negative X direction could be written as
+
+    Vector3d.newtons -10 0 0
 
 
 ## Speed

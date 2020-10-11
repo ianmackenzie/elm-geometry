@@ -70,6 +70,9 @@ e.g.
 
 @docs meters, pixels, millimeters, centimeters, inches, feet
 
+There are some [additional constructors](#physics) below for vectors with
+physics-related units (speed, acceleration and force).
+
 
 # Constructors
 
@@ -148,6 +151,16 @@ For the examples, assume the following frame has been defined:
 
 
 # Physics
+
+These constructors let you conveniently create vectors with physics-related
+units such as speed, acceleration and force. For example, a speed of 5 feet per
+second in the positive Y direction could be written as
+
+    Vector2d.feetPerSecond 0 5
+
+and a force of 10 newtons in the negative X direction could be written as
+
+    Vector2d.newtons -10 0
 
 
 ## Speed
@@ -1315,7 +1328,7 @@ feetPerSecond x y =
 
 {-| -}
 kilometersPerHour : Float -> Float -> Vector2d MetersPerSecond coordinates
-kilometersPerHour  x y =
+kilometersPerHour x y =
     xy
         (Speed.kilometersPerHour x)
         (Speed.kilometersPerHour y)
@@ -1323,7 +1336,7 @@ kilometersPerHour  x y =
 
 {-| -}
 milesPerHour : Float -> Float -> Vector2d MetersPerSecond coordinates
-milesPerHour  x y =
+milesPerHour x y =
     xy
         (Speed.milesPerHour x)
         (Speed.milesPerHour y)
