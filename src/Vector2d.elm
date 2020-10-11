@@ -1052,8 +1052,8 @@ scaleBy k (Types.Vector2d v) =
 
 {-| Scale a vector to a given length.
 
-    Vector2d.scaleTo (Length.meters 29) (Vector2d.meters 3 4)
-    --> Vector2d.meters 20 21
+    Vector2d.scaleTo (Length.meters 25) (Vector2d.meters 3 4)
+    --> Vector2d.meters 15 20
 
 Scaling a zero vector will always result in a zero vector.
 
@@ -1061,20 +1061,26 @@ Scaling a zero vector will always result in a zero vector.
 scaleTo : Quantity Float units2 -> Vector2d units1 coordinates -> Vector2d units2 coordinates
 scaleTo (Quantity q) (Types.Vector2d v) =
     let
-        len =
-            sqrt (v.x * v.x + v.y * v.y)
+        largestComponent =
+            max (abs v.x) (abs v.y)
     in
-    if len == 0 then
+    if largestComponent == 0 then
         zero
 
     else
         let
-            scaleFactor =
-                q / len
+            scaledX =
+                v.x / largestComponent
+
+            scaledY =
+                v.y / largestComponent
+
+            scaledLength =
+                sqrt (scaledX * scaledX + scaledY * scaledY)
         in
         Types.Vector2d
-            { x = scaleFactor * v.x
-            , y = scaleFactor * v.y
+            { x = q * scaledX / scaledLength
+            , y = q * scaledY / scaledLength
             }
 
 

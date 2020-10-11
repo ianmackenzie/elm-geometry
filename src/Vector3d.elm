@@ -1188,8 +1188,8 @@ scaleBy k (Types.Vector3d v) =
 
 {-| Scale a vector to a given length.
 
-    Vector3d.scaleTo (Length.meters 16) (Vector3d.meters 4 8 6)
-    --> Vector3d { x = 5.9422508216656595, y = 11.884501643331319, z = 8.91337623249849 }
+    Vector3d.scaleTo (Length.meters 25) (Vector3d.meters 0 3 4)
+    --> Vector3d.meters 0 15 20
 
 Scaling a zero vector will always result in a zero vector.
 
@@ -1197,21 +1197,30 @@ Scaling a zero vector will always result in a zero vector.
 scaleTo : Quantity Float units2 -> Vector3d units1 coordinates -> Vector3d units2 coordinates
 scaleTo (Quantity q) (Types.Vector3d v) =
     let
-        len =
-            sqrt (v.x * v.x + v.y * v.y + v.z * v.z)
+        largestComponent =
+            max (abs v.x) (max (abs v.y) (abs v.z))
     in
-    if len == 0 then
+    if largestComponent == 0 then
         zero
 
     else
         let
-            scaleFactor =
-                q / len
+            scaledX =
+                v.x / largestComponent
+
+            scaledY =
+                v.y / largestComponent
+
+            scaledZ =
+                v.z / largestComponent
+
+            scaledLength =
+                sqrt (scaledX * scaledX + scaledY * scaledY + scaledZ * scaledZ)
         in
         Types.Vector3d
-            { x = scaleFactor * v.x
-            , y = scaleFactor * v.y
-            , z = scaleFactor * v.z
+            { x = q * scaledX / scaledLength
+            , y = q * scaledY / scaledLength
+            , z = q * scaledZ / scaledLength
             }
 
 
