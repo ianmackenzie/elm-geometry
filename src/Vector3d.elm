@@ -1195,14 +1195,24 @@ Scaling a zero vector will always result in a zero vector.
 
 -}
 scaleTo : Quantity Float units2 -> Vector3d units1 coordinates -> Vector3d units2 coordinates
-scaleTo givenLength givenVector =
-    case direction givenVector of
-        Just vectorDirection ->
-            withLength givenLength vectorDirection
+scaleTo (Quantity q) (Types.Vector3d v) =
+    let
+        len =
+            sqrt (v.x * v.x + v.y * v.y + v.z * v.z)
+    in
+    if len == 0 then
+        zero
 
-        Nothing ->
-            zero
-
+    else
+        let
+            scaleFactor =
+                q / len
+        in
+        Types.Vector3d
+            { x = scaleFactor * v.x
+            , y = scaleFactor * v.y
+            , z = scaleFactor * v.z
+            }
 
 {-| Rotate a vector around a given axis by a given angle.
 
