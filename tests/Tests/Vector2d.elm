@@ -143,12 +143,22 @@ vectorScaling =
                 Expect.equal Vector2d.zero (Vector2d.scaleTo len Vector2d.zero)
         , Test.fuzz (Fuzz.tuple ( Fuzz.length, Fuzz.vector2d )) "scaleTo has a consistent length" <|
             \( scale, vector ) ->
-                Vector2d.scaleTo scale vector
-                    |> Vector2d.length
-                    |> Expect.quantity (Quantity.abs scale)
+                if vector == Vector2d.zero then
+                    Vector2d.scaleTo scale vector
+                        |> Expect.equal Vector2d.zero
+
+                else
+                    Vector2d.scaleTo scale vector
+                        |> Vector2d.length
+                        |> Expect.quantity (Quantity.abs scale)
         , Test.fuzz Fuzz.vector2d "normalize has a consistent length" <|
             \vector ->
-                Vector2d.normalize vector
-                    |> Vector2d.length
-                    |> Expect.quantity (Quantity.float 1)
+                if vector == Vector2d.zero then
+                    Vector2d.normalize vector
+                        |> Expect.equal Vector2d.zero
+
+                else
+                    Vector2d.normalize vector
+                        |> Vector2d.length
+                        |> Expect.quantity (Quantity.float 1)
         ]
