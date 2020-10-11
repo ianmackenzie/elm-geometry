@@ -1214,6 +1214,7 @@ scaleTo (Quantity q) (Types.Vector3d v) =
             , z = scaleFactor * v.z
             }
 
+
 {-| Rotate a vector around a given axis by a given angle.
 
     vector =

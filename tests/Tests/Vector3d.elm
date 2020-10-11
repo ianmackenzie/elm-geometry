@@ -22,8 +22,8 @@ vectorScaling : Test
 vectorScaling =
     Test.describe "scaling 3d vectors"
         [ Test.fuzz Fuzz.length "scaling a zero vector results in a zero vector" <|
-              \len ->
-                  Expect.equal Vector3d.zero (Vector3d.scaleTo len Vector3d.zero)
+            \len ->
+                Expect.equal Vector3d.zero (Vector3d.scaleTo len Vector3d.zero)
         , Test.fuzz (Fuzz.tuple ( Fuzz.length, Fuzz.vector3d )) "scaleTo has a consistent length" <|
             \( scale, vector ) ->
                 Vector3d.scaleTo scale vector

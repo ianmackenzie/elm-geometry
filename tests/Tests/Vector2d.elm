@@ -6,8 +6,8 @@ module Tests.Vector2d exposing
     , perpendicularVectorIsPerpendicular
     , rotateByPreservesLength
     , rotateByRotatesByTheCorrectAngle
-    , vectorScaling
     , sum
+    , vectorScaling
     )
 
 import Axis2d
@@ -139,8 +139,8 @@ vectorScaling : Test
 vectorScaling =
     Test.describe "scaling vectors"
         [ Test.fuzz Fuzz.length "scaling a zero vector results in a zero vector" <|
-              \len ->
-                  Expect.equal Vector2d.zero (Vector2d.scaleTo len Vector2d.zero)
+            \len ->
+                Expect.equal Vector2d.zero (Vector2d.scaleTo len Vector2d.zero)
         , Test.fuzz (Fuzz.tuple ( Fuzz.length, Fuzz.vector2d )) "scaleTo has a consistent length" <|
             \( scale, vector ) ->
                 Vector2d.scaleTo scale vector
