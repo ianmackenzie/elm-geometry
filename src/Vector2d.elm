@@ -26,7 +26,6 @@ module Vector2d exposing
     , metersPerSecond, feetPerSecond, kilometersPerHour, milesPerHour
     , metersPerSecondSquared, feetPerSecondSquared, gees
     , newtons, kilonewtons, meganewtons, pounds, kips
-    , pascals, kilopascals, megapascals, poundsPerSquareInch, atmospheres
     , unsafe, unwrap
     )
 
@@ -166,11 +165,6 @@ For the examples, assume the following frame has been defined:
 @docs newtons, kilonewtons, meganewtons, pounds, kips
 
 
-## Pressure
-
-@ docs pascals, kilopascals, megapascals, poundsPerSquareInch, atmospheres
-
-
 # Advanced
 
 These functions are unsafe because they require you to track units manually. In
@@ -188,7 +182,6 @@ import Force exposing (Newtons)
 import Geometry.Types as Types exposing (Axis2d, Direction2d, Frame2d, Point2d)
 import Length exposing (Meters)
 import Pixels exposing (Pixels)
-import Pressure exposing (Pascals)
 import Quantity exposing (Product, Quantity(..), Rate, Squared, Unitless)
 import Quantity.Extra as Quantity
 import Speed exposing (MetersPerSecond)
@@ -1305,102 +1298,96 @@ placeIn (Types.Frame2d frame) (Types.Vector2d v) =
 
 
 {-| -}
-metersPerSecond : Float -> Direction2d coordinates -> Vector2d MetersPerSecond coordinates
-metersPerSecond speed dir =
-    withLength (Speed.metersPerSecond speed) dir
+metersPerSecond : Float -> Float -> Vector2d MetersPerSecond coordinates
+metersPerSecond x y =
+    xy
+        (Speed.metersPerSecond x)
+        (Speed.metersPerSecond y)
 
 
 {-| -}
-feetPerSecond : Float -> Direction2d coordinates -> Vector2d MetersPerSecond coordinates
-feetPerSecond speed dir =
-    withLength (Speed.feetPerSecond speed) dir
+feetPerSecond : Float -> Float -> Vector2d MetersPerSecond coordinates
+feetPerSecond x y =
+    xy
+        (Speed.feetPerSecond x)
+        (Speed.feetPerSecond y)
 
 
 {-| -}
-kilometersPerHour : Float -> Direction2d coordinates -> Vector2d MetersPerSecond coordinates
-kilometersPerHour speed dir =
-    withLength (Speed.kilometersPerHour speed) dir
+kilometersPerHour : Float -> Float -> Vector2d MetersPerSecond coordinates
+kilometersPerHour  x y =
+    xy
+        (Speed.kilometersPerHour x)
+        (Speed.kilometersPerHour y)
 
 
 {-| -}
-milesPerHour : Float -> Direction2d coordinates -> Vector2d MetersPerSecond coordinates
-milesPerHour speed dir =
-    withLength (Speed.milesPerHour speed) dir
+milesPerHour : Float -> Float -> Vector2d MetersPerSecond coordinates
+milesPerHour  x y =
+    xy
+        (Speed.milesPerHour x)
+        (Speed.milesPerHour y)
 
 
 {-| -}
-metersPerSecondSquared : Float -> Direction2d coordinates -> Vector2d MetersPerSecondSquared coordinates
-metersPerSecondSquared acceleration dir =
-    withLength (Acceleration.metersPerSecondSquared acceleration) dir
+metersPerSecondSquared : Float -> Float -> Vector2d MetersPerSecondSquared coordinates
+metersPerSecondSquared x y =
+    xy
+        (Acceleration.metersPerSecondSquared x)
+        (Acceleration.metersPerSecondSquared y)
 
 
 {-| -}
-feetPerSecondSquared : Float -> Direction2d coordinates -> Vector2d MetersPerSecondSquared coordinates
-feetPerSecondSquared acceleration dir =
-    withLength (Acceleration.feetPerSecondSquared acceleration) dir
+feetPerSecondSquared : Float -> Float -> Vector2d MetersPerSecondSquared coordinates
+feetPerSecondSquared x y =
+    xy
+        (Acceleration.feetPerSecondSquared x)
+        (Acceleration.feetPerSecondSquared y)
 
 
 {-| -}
-gees : Float -> Direction2d coordinates -> Vector2d MetersPerSecondSquared coordinates
-gees acceleration dir =
-    withLength (Acceleration.gees acceleration) dir
+gees : Float -> Float -> Vector2d MetersPerSecondSquared coordinates
+gees x y =
+    xy
+        (Acceleration.gees x)
+        (Acceleration.gees y)
 
 
 {-| -}
-newtons : Float -> Direction2d coordinates -> Vector2d Newtons coordinates
-newtons force dir =
-    withLength (Force.newtons force) dir
+newtons : Float -> Float -> Vector2d Newtons coordinates
+newtons x y =
+    xy
+        (Force.newtons x)
+        (Force.newtons y)
 
 
 {-| -}
-kilonewtons : Float -> Direction2d coordinates -> Vector2d Newtons coordinates
-kilonewtons force dir =
-    withLength (Force.kilonewtons force) dir
+kilonewtons : Float -> Float -> Vector2d Newtons coordinates
+kilonewtons x y =
+    xy
+        (Force.kilonewtons x)
+        (Force.kilonewtons y)
 
 
 {-| -}
-meganewtons : Float -> Direction2d coordinates -> Vector2d Newtons coordinates
-meganewtons force dir =
-    withLength (Force.meganewtons force) dir
+meganewtons : Float -> Float -> Vector2d Newtons coordinates
+meganewtons x y =
+    xy
+        (Force.meganewtons x)
+        (Force.meganewtons y)
 
 
 {-| -}
-pounds : Float -> Direction2d coordinates -> Vector2d Newtons coordinates
-pounds force dir =
-    withLength (Force.pounds force) dir
+pounds : Float -> Float -> Vector2d Newtons coordinates
+pounds x y =
+    xy
+        (Force.pounds x)
+        (Force.pounds y)
 
 
 {-| -}
-kips : Float -> Direction2d coordinates -> Vector2d Newtons coordinates
-kips force dir =
-    withLength (Force.kips force) dir
-
-
-{-| -}
-pascals : Float -> Direction2d coordinates -> Vector2d Pascals coordinates
-pascals pressure dir =
-    withLength (Pressure.pascals pressure) dir
-
-
-{-| -}
-kilopascals : Float -> Direction2d coordinates -> Vector2d Pascals coordinates
-kilopascals pressure dir =
-    withLength (Pressure.kilopascals pressure) dir
-
-
-{-| -}
-megapascals : Float -> Direction2d coordinates -> Vector2d Pascals coordinates
-megapascals pressure dir =
-    withLength (Pressure.megapascals pressure) dir
-
-
-{-| -}
-poundsPerSquareInch : Float -> Direction2d coordinates -> Vector2d Pascals coordinates
-poundsPerSquareInch pressure dir =
-    withLength (Pressure.poundsPerSquareInch pressure) dir
-
-
-{-| -}
-atmospheres : Float -> Direction2d coordinates -> Vector2d Pascals coordinates
-atmospheres pressure dir =
-    withLength (Pressure.atmospheres pressure) dir
+kips : Float -> Float -> Vector2d Newtons coordinates
+kips x y =
+    xy
+        (Force.kips x)
+        (Force.kips y)
