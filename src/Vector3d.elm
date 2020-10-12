@@ -23,6 +23,9 @@ module Vector3d exposing
     , reverse, normalize, scaleBy, scaleTo, rotateAround, mirrorAcross, projectionIn, projectOnto
     , at, at_
     , relativeTo, placeIn, projectInto
+    , metersPerSecond, feetPerSecond, kilometersPerHour, milesPerHour
+    , metersPerSecondSquared, feetPerSecondSquared, gees
+    , newtons, kilonewtons, meganewtons, pounds, kips
     , unsafe, unwrap
     )
 
@@ -67,6 +70,9 @@ constant values, e.g.
         Vector3d.meters 2 3 1
 
 @docs meters, pixels, millimeters, centimeters, inches, feet
+
+There are some [additional constructors](#physics) below for vectors with
+physics-related units (speed, acceleration and force).
 
 
 # Constructors
@@ -146,6 +152,34 @@ global XYZ frame:
 @docs relativeTo, placeIn, projectInto
 
 
+# Physics
+
+These constructors let you conveniently create vectors with physics-related
+units such as speed, acceleration and force. For example, a speed of 5 feet per
+second in the positive Y direction could be written as
+
+    Vector3d.feetPerSecond 0 5 0
+
+and a force of 10 newtons in the negative X direction could be written as
+
+    Vector3d.newtons -10 0 0
+
+
+## Speed
+
+@docs metersPerSecond, feetPerSecond, kilometersPerHour, milesPerHour
+
+
+## Acceleration
+
+@docs metersPerSecondSquared, feetPerSecondSquared, gees
+
+
+## Force
+
+@docs newtons, kilonewtons, meganewtons, pounds, kips
+
+
 # Advanced
 
 These functions are unsafe because they require you to track units manually. In
@@ -156,13 +190,16 @@ useful when writing generic/library code.
 
 -}
 
+import Acceleration exposing (MetersPerSecondSquared)
 import Angle exposing (Angle)
 import Float.Extra as Float
+import Force exposing (Newtons)
 import Geometry.Types as Types exposing (Axis3d, Direction3d, Frame3d, Plane3d, Point3d, SketchPlane3d)
 import Length exposing (Meters)
 import Pixels exposing (Pixels)
 import Quantity exposing (Cubed, Product, Quantity(..), Rate, Squared, Unitless)
 import Quantity.Extra as Quantity
+import Speed exposing (MetersPerSecond)
 import Vector2d exposing (Vector2d)
 
 
@@ -1517,3 +1554,111 @@ projectInto (Types.SketchPlane3d sketchPlane) (Types.Vector3d v) =
         { x = v.x * i.x + v.y * i.y + v.z * i.z
         , y = v.x * j.x + v.y * j.y + v.z * j.z
         }
+
+
+{-| -}
+metersPerSecond : Float -> Float -> Float -> Vector3d MetersPerSecond coordinates
+metersPerSecond x y z =
+    xyz
+        (Speed.metersPerSecond x)
+        (Speed.metersPerSecond y)
+        (Speed.metersPerSecond z)
+
+
+{-| -}
+feetPerSecond : Float -> Float -> Float -> Vector3d MetersPerSecond coordinates
+feetPerSecond x y z =
+    xyz
+        (Speed.feetPerSecond x)
+        (Speed.feetPerSecond y)
+        (Speed.feetPerSecond z)
+
+
+{-| -}
+kilometersPerHour : Float -> Float -> Float -> Vector3d MetersPerSecond coordinates
+kilometersPerHour x y z =
+    xyz
+        (Speed.kilometersPerHour x)
+        (Speed.kilometersPerHour y)
+        (Speed.kilometersPerHour z)
+
+
+{-| -}
+milesPerHour : Float -> Float -> Float -> Vector3d MetersPerSecond coordinates
+milesPerHour x y z =
+    xyz
+        (Speed.milesPerHour x)
+        (Speed.milesPerHour y)
+        (Speed.milesPerHour z)
+
+
+{-| -}
+metersPerSecondSquared : Float -> Float -> Float -> Vector3d MetersPerSecondSquared coordinates
+metersPerSecondSquared x y z =
+    xyz
+        (Acceleration.metersPerSecondSquared x)
+        (Acceleration.metersPerSecondSquared y)
+        (Acceleration.metersPerSecondSquared z)
+
+
+{-| -}
+feetPerSecondSquared : Float -> Float -> Float -> Vector3d MetersPerSecondSquared coordinates
+feetPerSecondSquared x y z =
+    xyz
+        (Acceleration.feetPerSecondSquared x)
+        (Acceleration.feetPerSecondSquared y)
+        (Acceleration.feetPerSecondSquared z)
+
+
+{-| -}
+gees : Float -> Float -> Float -> Vector3d MetersPerSecondSquared coordinates
+gees x y z =
+    xyz
+        (Acceleration.gees x)
+        (Acceleration.gees y)
+        (Acceleration.gees z)
+
+
+{-| -}
+newtons : Float -> Float -> Float -> Vector3d Newtons coordinates
+newtons x y z =
+    xyz
+        (Force.newtons x)
+        (Force.newtons y)
+        (Force.newtons z)
+
+
+{-| -}
+kilonewtons : Float -> Float -> Float -> Vector3d Newtons coordinates
+kilonewtons x y z =
+    xyz
+        (Force.kilonewtons x)
+        (Force.kilonewtons y)
+        (Force.kilonewtons z)
+
+
+{-| -}
+meganewtons : Float -> Float -> Float -> Vector3d Newtons coordinates
+meganewtons x y z =
+    xyz
+        (Force.meganewtons x)
+        (Force.meganewtons y)
+        (Force.meganewtons z)
+
+
+{-| -}
+pounds : Float -> Float -> Float -> Vector3d Newtons coordinates
+pounds x y z =
+    xyz
+        (Force.pounds x)
+        (Force.pounds y)
+        (Force.pounds z)
+
+
+{-| -}
+kips : Float -> Float -> Float -> Vector3d Newtons coordinates
+kips x y z =
+    xyz
+        (Force.kips x)
+        (Force.kips y)
+        (Force.kips z)

@@ -23,6 +23,9 @@ module Vector2d exposing
     , reverse, normalize, scaleBy, scaleTo, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
     , at, at_
     , relativeTo, placeIn
+    , metersPerSecond, feetPerSecond, kilometersPerHour, milesPerHour
+    , metersPerSecondSquared, feetPerSecondSquared, gees
+    , newtons, kilonewtons, meganewtons, pounds, kips
     , unsafe, unwrap
     )
 
@@ -66,6 +69,9 @@ e.g.
         Vector2d.meters 2 3
 
 @docs meters, pixels, millimeters, centimeters, inches, feet
+
+There are some [additional constructors](#physics) below for vectors with
+physics-related units (speed, acceleration and force).
 
 
 # Constructors
@@ -144,6 +150,34 @@ For the examples, assume the following frame has been defined:
 @docs relativeTo, placeIn
 
 
+# Physics
+
+These constructors let you conveniently create vectors with physics-related
+units such as speed, acceleration and force. For example, a speed of 5 feet per
+second in the positive Y direction could be written as
+
+    Vector2d.feetPerSecond 0 5
+
+and a force of 10 newtons in the negative X direction could be written as
+
+    Vector2d.newtons -10 0
+
+
+## Speed
+
+@docs metersPerSecond, feetPerSecond, kilometersPerHour, milesPerHour
+
+
+## Acceleration
+
+@docs metersPerSecondSquared, feetPerSecondSquared, gees
+
+
+## Force
+
+@docs newtons, kilonewtons, meganewtons, pounds, kips
+
+
 # Advanced
 
 These functions are unsafe because they require you to track units manually. In
@@ -154,13 +188,16 @@ useful when writing generic/library code.
 
 -}
 
+import Acceleration exposing (MetersPerSecondSquared)
 import Angle exposing (Angle)
 import Float.Extra as Float
+import Force exposing (Newtons)
 import Geometry.Types as Types exposing (Axis2d, Direction2d, Frame2d, Point2d)
 import Length exposing (Meters)
 import Pixels exposing (Pixels)
 import Quantity exposing (Product, Quantity(..), Rate, Squared, Unitless)
 import Quantity.Extra as Quantity
+import Speed exposing (MetersPerSecond)
 
 
 {-| -}
@@ -1284,3 +1321,99 @@ placeIn (Types.Frame2d frame) (Types.Vector2d v) =
         { x = v.x * dx.x + v.y * dy.x
         , y = v.x * dx.y + v.y * dy.y
         }
+
+
+{-| -}
+metersPerSecond : Float -> Float -> Vector2d MetersPerSecond coordinates
+metersPerSecond x y =
+    xy
+        (Speed.metersPerSecond x)
+        (Speed.metersPerSecond y)
+
+
+{-| -}
+feetPerSecond : Float -> Float -> Vector2d MetersPerSecond coordinates
+feetPerSecond x y =
+    xy
+        (Speed.feetPerSecond x)
+        (Speed.feetPerSecond y)
+
+
+{-| -}
+kilometersPerHour : Float -> Float -> Vector2d MetersPerSecond coordinates
+kilometersPerHour x y =
+    xy
+        (Speed.kilometersPerHour x)
+        (Speed.kilometersPerHour y)
+
+
+{-| -}
+milesPerHour : Float -> Float -> Vector2d MetersPerSecond coordinates
+milesPerHour x y =
+    xy
+        (Speed.milesPerHour x)
+        (Speed.milesPerHour y)
+
+
+{-| -}
+metersPerSecondSquared : Float -> Float -> Vector2d MetersPerSecondSquared coordinates
+metersPerSecondSquared x y =
+    xy
+        (Acceleration.metersPerSecondSquared x)
+        (Acceleration.metersPerSecondSquared y)
+
+
+{-| -}
+feetPerSecondSquared : Float -> Float -> Vector2d MetersPerSecondSquared coordinates
+feetPerSecondSquared x y =
+    xy
+        (Acceleration.feetPerSecondSquared x)
+        (Acceleration.feetPerSecondSquared y)
+
+
+{-| -}
+gees : Float -> Float -> Vector2d MetersPerSecondSquared coordinates
+gees x y =
+    xy
+        (Acceleration.gees x)
+        (Acceleration.gees y)
+
+
+{-| -}
+newtons : Float -> Float -> Vector2d Newtons coordinates
+newtons x y =
+    xy
+        (Force.newtons x)
+        (Force.newtons y)
+
+
+{-| -}
+kilonewtons : Float -> Float -> Vector2d Newtons coordinates
+kilonewtons x y =
+    xy
+        (Force.kilonewtons x)
+        (Force.kilonewtons y)
+
+
+{-| -}
+meganewtons : Float -> Float -> Vector2d Newtons coordinates
+meganewtons x y =
+    xy
+        (Force.meganewtons x)
+        (Force.meganewtons y)
+
+
+{-| -}
+pounds : Float -> Float -> Vector2d Newtons coordinates
+pounds x y =
+    xy
+        (Force.pounds x)
+        (Force.pounds y)
+
+
+{-| -}
+kips : Float -> Float -> Vector2d Newtons coordinates
+kips x y =
+    xy
+        (Force.kips x)
+        (Force.kips y)
