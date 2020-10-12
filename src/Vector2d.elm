@@ -20,7 +20,7 @@ module Vector2d exposing
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross, sum, twice, half
     , product, times, over, over_
-    , reverse, normalize, scaleBy, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
+    , reverse, normalize, scaleBy, scaleTo, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
     , at, at_
     , relativeTo, placeIn
     , unsafe, unwrap
@@ -122,7 +122,7 @@ affects the result, since vectors are position-independent. Think of
 mirroring/projecting a vector across/onto an axis as moving the vector so its
 tail is on the axis, then mirroring/projecting its tip across/onto the axis.
 
-@docs reverse, normalize, scaleBy, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
+@docs reverse, normalize, scaleBy, scaleTo, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
 
 
 # Unit conversions
@@ -809,29 +809,8 @@ like
 
 -}
 normalize : Vector2d units coordinates -> Vector2d Unitless coordinates
-normalize (Types.Vector2d v) =
-    let
-        largestComponent =
-            max (abs v.x) (abs v.y)
-    in
-    if largestComponent == 0 then
-        zero
-
-    else
-        let
-            scaledX =
-                v.x / largestComponent
-
-            scaledY =
-                v.y / largestComponent
-
-            scaledLength =
-                sqrt (scaledX * scaledX + scaledY * scaledY)
-        in
-        Types.Vector2d
-            { x = scaledX / scaledLength
-            , y = scaledY / scaledLength
-            }
+normalize =
+    scaleTo (Quantity.float 1)
 
 
 {-| Find the sum of two vectors.
@@ -1069,6 +1048,40 @@ scaleBy k (Types.Vector2d v) =
         { x = k * v.x
         , y = k * v.y
         }
+
+
+{-| Scale a vector to a given length.
+
+    Vector2d.scaleTo (Length.meters 25) (Vector2d.meters 3 4)
+    --> Vector2d.meters 15 20
+
+Scaling a zero vector will always result in a zero vector.
+
+-}
+scaleTo : Quantity Float units2 -> Vector2d units1 coordinates -> Vector2d units2 coordinates
+scaleTo (Quantity q) (Types.Vector2d v) =
+    let
+        largestComponent =
+            max (abs v.x) (abs v.y)
+    in
+    if largestComponent == 0 then
+        zero
+
+    else
+        let
+            scaledX =
+                v.x / largestComponent
+
+            scaledY =
+                v.y / largestComponent
+
+            scaledLength =
+                sqrt (scaledX * scaledX + scaledY * scaledY)
+        in
+        Types.Vector2d
+            { x = q * scaledX / scaledLength
+            , y = q * scaledY / scaledLength
+            }
 
 
 {-| Rotate a vector counterclockwise by a given angle.

@@ -20,7 +20,7 @@ module Vector3d exposing
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross, sum, twice, half
     , product, times, over, over_
-    , reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
+    , reverse, normalize, scaleBy, scaleTo, rotateAround, mirrorAcross, projectionIn, projectOnto
     , at, at_
     , relativeTo, placeIn, projectInto
     , unsafe, unwrap
@@ -123,7 +123,7 @@ plane is relevant, since vectors are position-independent. Think of transforming
 a vector as placing its tail on the relevant axis or plane and then transforming
 its tip.
 
-@docs reverse, normalize, scaleBy, rotateAround, mirrorAcross, projectionIn, projectOnto
+@docs reverse, normalize, scaleBy, scaleTo, rotateAround, mirrorAcross, projectionIn, projectOnto
 
 
 # Unit conversions
@@ -930,33 +930,8 @@ like
 
 -}
 normalize : Vector3d units coordinates -> Vector3d Unitless coordinates
-normalize (Types.Vector3d v) =
-    let
-        largestComponent =
-            max (abs v.x) (max (abs v.y) (abs v.z))
-    in
-    if largestComponent == 0 then
-        zero
-
-    else
-        let
-            scaledX =
-                v.x / largestComponent
-
-            scaledY =
-                v.y / largestComponent
-
-            scaledZ =
-                v.z / largestComponent
-
-            scaledLength =
-                sqrt (scaledX * scaledX + scaledY * scaledY + scaledZ * scaledZ)
-        in
-        Types.Vector3d
-            { x = scaledX / scaledLength
-            , y = scaledY / scaledLength
-            , z = scaledZ / scaledLength
-            }
+normalize =
+    scaleTo (Quantity.float 1)
 
 
 {-| Find the sum of two vectors.
@@ -1209,6 +1184,44 @@ scaleBy k (Types.Vector3d v) =
         , y = k * v.y
         , z = k * v.z
         }
+
+
+{-| Scale a vector to a given length.
+
+    Vector3d.scaleTo (Length.meters 25) (Vector3d.meters 0 3 4)
+    --> Vector3d.meters 0 15 20
+
+Scaling a zero vector will always result in a zero vector.
+
+-}
+scaleTo : Quantity Float units2 -> Vector3d units1 coordinates -> Vector3d units2 coordinates
+scaleTo (Quantity q) (Types.Vector3d v) =
+    let
+        largestComponent =
+            max (abs v.x) (max (abs v.y) (abs v.z))
+    in
+    if largestComponent == 0 then
+        zero
+
+    else
+        let
+            scaledX =
+                v.x / largestComponent
+
+            scaledY =
+                v.y / largestComponent
+
+            scaledZ =
+                v.z / largestComponent
+
+            scaledLength =
+                sqrt (scaledX * scaledX + scaledY * scaledY + scaledZ * scaledZ)
+        in
+        Types.Vector3d
+            { x = q * scaledX / scaledLength
+            , y = q * scaledY / scaledLength
+            , z = q * scaledZ / scaledLength
+            }
 
 
 {-| Rotate a vector around a given axis by a given angle.

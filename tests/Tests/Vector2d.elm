@@ -7,6 +7,7 @@ module Tests.Vector2d exposing
     , rotateByPreservesLength
     , rotateByRotatesByTheCorrectAngle
     , sum
+    , vectorScaling
     )
 
 import Axis2d
@@ -132,3 +133,32 @@ sum =
             Vector2d.sum vectors
                 |> Expect.vector2d
                     (List.foldl Vector2d.plus Vector2d.zero vectors)
+
+
+vectorScaling : Test
+vectorScaling =
+    Test.describe "scaling vectors"
+        [ Test.fuzz Fuzz.length "scaling a zero vector results in a zero vector" <|
+            \len ->
+                Expect.equal Vector2d.zero (Vector2d.scaleTo len Vector2d.zero)
+        , Test.fuzz (Fuzz.tuple ( Fuzz.length, Fuzz.vector2d )) "scaleTo has a consistent length" <|
+            \( scale, vector ) ->
+                if vector == Vector2d.zero then
+                    Vector2d.scaleTo scale vector
+                        |> Expect.equal Vector2d.zero
+
+                else
+                    Vector2d.scaleTo scale vector
+                        |> Vector2d.length
+                        |> Expect.quantity (Quantity.abs scale)
+        , Test.fuzz Fuzz.vector2d "normalize has a consistent length" <|
+            \vector ->
+                if vector == Vector2d.zero then
+                    Vector2d.normalize vector
+                        |> Expect.equal Vector2d.zero
+
+                else
+                    Vector2d.normalize vector
+                        |> Vector2d.length
+                        |> Expect.quantity (Quantity.float 1)
+        ]
