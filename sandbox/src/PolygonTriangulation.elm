@@ -23,6 +23,7 @@ import Pixels exposing (Pixels)
 import Point2d
 import Polygon2d exposing (Polygon2d)
 import Polygon2d.Random as Random
+import Quantity exposing (Quantity)
 import Random exposing (Generator)
 import Rectangle2d
 import Triangle2d exposing (Triangle2d)
@@ -47,7 +48,7 @@ type Msg
 
 renderBounds : BoundingBox2d Pixels ScreenCoordinates
 renderBounds =
-    BoundingBox2d.from Point2d.origin (Point2d.pixels 300 300)
+    BoundingBox2d.from Point2d.origin (Point2d.pixels 500 500)
 
 
 generateNewPolygon : Cmd Msg
@@ -55,10 +56,20 @@ generateNewPolygon =
     Random.generate NewPolygon (Random.polygon2d renderBounds)
 
 
+square : Polygon2d Pixels ScreenCoordinates
+square =
+    Polygon2d.singleLoop
+        [ Point2d.pixels 100 100
+        , Point2d.pixels 400 100
+        , Point2d.pixels 400 400
+        , Point2d.pixels 100 400
+        ]
+
+
 init : () -> ( Model, Cmd Msg )
 init () =
-    ( { polygon = Polygon2d.singleLoop [], angle = Angle.degrees 0 }
-    , generateNewPolygon
+    ( { polygon = square, angle = Angle.degrees 0 }
+    , Cmd.none
     )
 
 
@@ -86,8 +97,18 @@ view model =
                 model.angle
                 model.polygon
 
+        triangulationRule =
+            Polygon2d.edgeSubdivisions
+                (\p1 p2 ->
+                    let
+                        deltaY =
+                            Quantity.abs (Point2d.yCoordinate p2 |> Quantity.minus (Point2d.yCoordinate p1))
+                    in
+                    ceiling (Quantity.ratio deltaY (Pixels.float 20))
+                )
+
         mesh =
-            Polygon2d.triangulate rotatedPolygon
+            Polygon2d.triangulateWith triangulationRule rotatedPolygon
 
         triangles =
             TriangularMesh.faceVertices mesh

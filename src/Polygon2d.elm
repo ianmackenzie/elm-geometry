@@ -15,7 +15,7 @@ module Polygon2d exposing
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , at, at_
     , relativeTo, placeIn
-    , triangulate
+    , triangulate, triangulateWith, TriangulationRule, maxEdgeLength, edgeSubdivisions
     )
 
 {-| A `Polygon2d` represents a closed polygon in 2D, optionally with holes. It
@@ -65,7 +65,7 @@ module](Point2d#transformations).
 
 # Triangulation
 
-@docs triangulate
+@docs triangulate, triangulateWith, TriangulationRule, maxEdgeLength, edgeSubdivisions
 
 -}
 
@@ -78,6 +78,7 @@ import Geometry.Types as Types
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
 import Polygon2d.Monotone as Monotone
+import Polygon2d.Refinement as Refinement
 import Quantity exposing (Quantity(..), Rate, Squared)
 import Quantity.Extra as Quantity
 import Triangle2d exposing (Triangle2d)
@@ -686,6 +687,57 @@ can render using WebGL:
 triangulate : Polygon2d units coordinates -> TriangularMesh (Point2d units coordinates)
 triangulate polygon =
     Monotone.triangulation polygon
+
+
+{-| Triangulate a polygon with additional control over the size of the triangles
+in the end result. For example, to triangulate a given polygon while making sure
+that every resulting triangle edge was no more than 10 centimeters long, you
+could use:
+
+    Polygon2d.triangulateWith
+        (Polygon2d.maxEdgeLength (Length.centimeters 10))
+        polygon
+
+Note that this means that existing polygon edges may be split into smaller ones.
+
+-}
+triangulateWith : TriangulationRule units coordinates -> Polygon2d units coordinates -> TriangularMesh (Point2d units coordinates)
+triangulateWith triangulationRule polygon =
+    let
+        (TriangulationRule subdivisionFunction) =
+            triangulationRule
+    in
+    Monotone.triangulation polygon
+        |> Refinement.refine subdivisionFunction
+
+
+{-| A `TriangulationRule` controls the polygon triangulation process and
+determines how large the faces/edges are in the resulting triangular mesh.
+-}
+type TriangulationRule units coordinates
+    = TriangulationRule (Point2d units coordinates -> Point2d units coordinates -> Int)
+
+
+{-| Ensure that no edge in a triangulation is longer than the given length.
+-}
+maxEdgeLength : Quantity Float units -> TriangulationRule units coordinates
+maxEdgeLength givenLength =
+    TriangulationRule <|
+        if givenLength |> Quantity.lessThanOrEqualTo Quantity.zero then
+            \_ _ -> 0
+
+        else
+            \startPoint endPoint ->
+                ceiling (Quantity.ratio (Point2d.distanceFrom startPoint endPoint) givenLength)
+
+
+{-| Provide a callback function that takes as input two points and returns how
+many subdivisions (how many individual edges) should be used along a line
+between those two points.
+-}
+edgeSubdivisions : (Point2d units coordinates -> Point2d units coordinates -> Int) -> TriangulationRule units coordinates
+edgeSubdivisions subdivisionFunction =
+    TriangulationRule subdivisionFunction
 
 
 {-| Check if a polygon contains a given point.
