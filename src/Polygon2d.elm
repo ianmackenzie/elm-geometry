@@ -737,7 +737,7 @@ maxEdgeLength givenLength =
 {-| Provide a callback function that takes as input two points and returns the
 minimum number of subdivisions (how many individual edges) should be used along
 a line between those two points. For example, `maxEdgeLength` is implemented
-roughly as
+roughly as:
 
     maxEdgeLength maxLength =
         Polygon2d.edgeSubdivisions <|
