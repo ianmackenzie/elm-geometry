@@ -698,7 +698,10 @@ could use:
         (Polygon2d.maxEdgeLength (Length.centimeters 10))
         polygon
 
-Note that this means that existing polygon edges may be split into smaller ones.
+Note that this means that existing polygon edges may be split into smaller ones,
+and new vertices will likely end up being added inside the polygon. Also note
+that the resulting triangles may still be very thin; no particular attempt is
+made to avoid large or small angles in triangles.
 
 -}
 triangulateWith : TriangulationRule units coordinates -> Polygon2d units coordinates -> TriangularMesh (Point2d units coordinates)
@@ -731,9 +734,22 @@ maxEdgeLength givenLength =
                 ceiling (Quantity.ratio (Point2d.distanceFrom startPoint endPoint) givenLength)
 
 
-{-| Provide a callback function that takes as input two points and returns how
-many subdivisions (how many individual edges) should be used along a line
-between those two points.
+{-| Provide a callback function that takes as input two points and returns the
+minimum number of subdivisions (how many individual edges) should be used along
+a line between those two points. For example, `maxEdgeLength` is implemented
+roughly as
+
+    maxEdgeLength maxLength =
+        Polygon2d.edgeSubdivisions <|
+            \p1 p2 ->
+                ceiling <|
+                    Quantity.ratio
+                        (Point2d.distanceFrom p1 p2)
+                        maxLength
+
+The actual number of subdivisions used may be higher; as of this writing the
+current implementation will round the returned value up to a power of two.
+
 -}
 edgeSubdivisions : (Point2d units coordinates -> Point2d units coordinates -> Int) -> TriangulationRule units coordinates
 edgeSubdivisions subdivisionFunction =
