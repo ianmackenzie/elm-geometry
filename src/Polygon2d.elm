@@ -731,7 +731,11 @@ maxEdgeLength givenLength =
 
         else
             \startPoint endPoint ->
-                ceiling (Quantity.ratio (Point2d.distanceFrom startPoint endPoint) givenLength)
+                let
+                    distance =
+                        Point2d.distanceFrom startPoint endPoint
+                in
+                ceiling (Quantity.ratio distance givenLength)
 
 
 {-| Provide a callback function that takes as input two points and returns the
@@ -739,13 +743,14 @@ minimum number of subdivisions (how many individual edges) should be used along
 a line between those two points. For example, `maxEdgeLength` is implemented
 roughly as:
 
-    maxEdgeLength maxLength =
+    maxEdgeLength length =
         Polygon2d.edgeSubdivisions <|
-            \p1 p2 ->
-                ceiling <|
-                    Quantity.ratio
-                        (Point2d.distanceFrom p1 p2)
-                        maxLength
+            \start end ->
+                let
+                    distance =
+                        Point2d.distanceFrom start end
+                in
+                ceiling (Quantity.ratio distance length)
 
 The actual number of subdivisions used may be higher; as of this writing the
 current implementation will round the returned value up to a power of two.
