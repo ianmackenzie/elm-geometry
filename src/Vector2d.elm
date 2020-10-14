@@ -68,6 +68,14 @@ e.g.
     vector =
         Vector2d.meters 2 3
 
+These functions may also be useful when decoding vectors from JSON - for example
+if you had some JSON where a vector was encoded as an object with `x` and `y`
+fields measured in meters then you could write a decoder like
+
+    Decode.map2 Vector2d.meters
+        (Decode.field "x" Decode.float)
+        (Decode.field "y" Decode.float)
+
 @docs meters, pixels, millimeters, centimeters, inches, feet
 
 There are some [additional constructors](#physics) below for vectors with

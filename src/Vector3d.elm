@@ -69,6 +69,15 @@ constant values, e.g.
     vector =
         Vector3d.meters 2 3 1
 
+These functions may also be useful when decoding vectors from JSON - for example
+if you had some JSON where a vector was encoded as an object with `x`, `y` and
+`z` fields measured in meters then you could write a decoder like
+
+    Decode.map3 Vector3d.meters
+        (Decode.field "x" Decode.float)
+        (Decode.field "y" Decode.float)
+        (Decode.field "z" Decode.float)
+
 @docs meters, pixels, millimeters, centimeters, inches, feet
 
 There are some [additional constructors](#physics) below for vectors with

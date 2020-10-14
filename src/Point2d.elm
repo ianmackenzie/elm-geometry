@@ -58,6 +58,14 @@ e.g.
     point =
         Point2d.meters 2 3
 
+These functions may also be useful when decoding points from JSON - for example
+if you had some JSON where a point was encoded as an object with `x` and `y`
+fields measured in meters then you could write a decoder like
+
+    Decode.map2 Point2d.meters
+        (Decode.field "x" Decode.float)
+        (Decode.field "y" Decode.float)
+
 @docs meters, pixels, millimeters, centimeters, inches, feet
 
 
