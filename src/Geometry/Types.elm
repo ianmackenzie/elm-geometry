@@ -179,6 +179,15 @@ type Ellipse3d units coordinates
         }
 
 
+type Ellipsoid3d units coordinates
+    = Ellipsoid3d
+        { axes : Frame3d units coordinates {}
+        , xRadius : Quantity Float units
+        , yRadius : Quantity Float units
+        , zRadius : Quantity Float units
+        }
+
+
 type Sphere3d units coordinates
     = Sphere3d
         { centerPoint : Point3d units coordinates
