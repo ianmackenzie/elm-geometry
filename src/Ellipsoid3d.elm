@@ -25,91 +25,45 @@ module Ellipsoid3d exposing
 
 # Properties
 
-@docs centerPoint, axes, xAxis, yAxis, zAxis, xDirection, yDirection, zDirection, xRadius, yRadius, zRadius
-
-TODO:
-volume : Ellipsoid3d units coordinates -> Quantity Float (Cubed units)
-surfaceArea : Ellipsoid3d units coordinates -> Quantity Float (Squared units)
-boundingBox : Ellipsoid3d units coordinates -> BoundingBox3d units coordinates
+@docs centerPoint, axes, xAxis, yAxis, zAxis, xDirection, yDirection, zDirection, xRadius, yRadius, zRadius, volume, surfaceArea, boundingBox
 
 
 # Queries
 
-TODO:
-contains : Point3d units coordinates -> Sphere3d units coordinates -> Bool
+@docs contains
 
 
 # Measurement
 
-TODO:
-signedDistanceAlong : Axis3d units coordinates -> Ellipsoid3d units coordinates -> Interval Float units
+@docs signedDistanceAlong
 
 
 # Transformations
 
-TODO:
-scaleAbout :
-    Point3d units coordinates
-    -> Float
-    -> Ellipsoid3d units coordinates
-    -> Ellipsoid3d units coordinates
+@docs scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
 
-rotateAround :
-    Axis3d units coordinates
-    -> Angle
-    -> Ellipsoid3d units coordinates
-    -> Ellipsoid3d units coordinates
-
-translateBy :
-    Vector3d units coordinates
-    -> Ellipsoid3d units coordinates
-    -> Ellipsoid3d units coordinates
-
-translateIn :
-    Direction3d coordinates
-    -> Quantity Float units
-    -> Ellipsoid3d units coordinates
-    -> Ellipsoid3d units coordinates
-
-mirrorAcross :
-    Plane3d units coordinates
-    -> Ellipsoid3d units coordinates
-    -> Ellipsoid3d units coordinates
 
 # Unit conversions
 
-TODO:
-at :
-    Quantity Float (Rate units2 units1)
-    -> Ellipsoid3d units1 coordinates
-    -> Ellipsoid3d units2 coordinates
+@docs at, at_
 
-at_ :
-    Quantity Float (Rate units1 units2)
-    -> Ellipsoid3d units1 coordinates
-    -> Ellipsoid3d units2 coordinates
 
 # Coordinate conversions
 
-TODO:
-relativeTo :
-    Frame3d units globalCoordinates { defines : localCoordinates }
-    -> Ellipsoid3d units globalCoordinates
-    -> Ellipsoid3d units localCoordinates
-
-placeIn :
-    Frame3d units globalCoordinates { defines : localCoordinates }
-    -> Ellipsoid3d units localCoordinates
-    -> Ellipsoid3d units globalCoordinates
+@docs relativeTo, placeIn
 
 -}
 
+import Angle exposing (Angle)
 import Axis3d exposing (Axis3d)
+import BoundingBox3d exposing (BoundingBox3d)
 import Direction3d exposing (Direction3d)
 import Frame3d exposing (Frame3d)
 import Geometry.Types as Types exposing (Ellipsoid3d)
+import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
-import Quantity exposing (Quantity)
+import Quantity exposing (Cubed, Quantity, Rate, Squared)
+import Vector3d exposing (Vector3d)
 
 
 {-| -}
@@ -145,13 +99,15 @@ with properties =
         }
 
 
-{-| -}
+{-| Get the geometric center of an ellipsoid.
+-}
 centerPoint : Ellipsoid3d units coordinates -> Point3d units coordinates
 centerPoint ellipsoid =
     Frame3d.originPoint (axes ellipsoid)
 
 
-{-| -}
+{-| Get the X, Y and Z axes of an ellipsoid as a `Frame3d`.
+-}
 axes : Ellipsoid3d units coordinates -> Frame3d units coordinates defines
 axes (Types.Ellipsoid3d ellipsoid) =
     Frame3d.copy ellipsoid.axes
@@ -230,3 +186,118 @@ yDirection ellipsoid =
 zDirection : Ellipsoid3d units coordinates -> Direction3d coordinates
 zDirection ellipsoid =
     Frame3d.zDirection (axes ellipsoid)
+
+
+{-| Get the volume of an ellipsoid.
+-}
+volume : Ellipsoid3d units coordinates -> Quantity Float (Cubed units)
+volume ellipsoid =
+    let
+        axesProduct =
+            xRadius ellipsoid
+                |> Quantity.times (yRadius ellipsoid)
+                |> Quantity.times (zRadius ellipsoid)
+    in
+    Quantity.multiplyBy (4 / 3 * pi) axesProduct
+
+
+{-| -}
+surfaceArea : Ellipsoid3d units coordinates -> Quantity Float (Squared units)
+surfaceArea _ =
+    Debug.todo "surfaceArea"
+
+
+{-| -}
+boundingBox : Ellipsoid3d units coordinates -> BoundingBox3d units coordinates
+boundingBox _ =
+    Debug.todo "boundingBox"
+
+
+{-| -}
+contains : Point3d units coordinates -> Ellipsoid3d units coordinates -> Bool
+contains _ =
+    Debug.todo "boundingBox"
+
+
+{-| -}
+scaleAbout :
+    Point3d units coordinates
+    -> Float
+    -> Ellipsoid3d units coordinates
+    -> Ellipsoid3d units coordinates
+scaleAbout _ _ _ =
+    Debug.todo "scaleAbout"
+
+
+{-| -}
+rotateAround :
+    Axis3d units coordinates
+    -> Angle
+    -> Ellipsoid3d units coordinates
+    -> Ellipsoid3d units coordinates
+rotateAround _ _ _ =
+    Debug.todo "rotateAround"
+
+
+{-| -}
+translateBy :
+    Vector3d units coordinates
+    -> Ellipsoid3d units coordinates
+    -> Ellipsoid3d units coordinates
+translateBy _ _ =
+    Debug.todo "translateBy"
+
+
+{-| -}
+translateIn :
+    Direction3d coordinates
+    -> Quantity Float units
+    -> Ellipsoid3d units coordinates
+    -> Ellipsoid3d units coordinates
+translateIn _ _ _ =
+    Debug.todo "translateIn"
+
+
+{-| -}
+mirrorAcross :
+    Plane3d units coordinates
+    -> Ellipsoid3d units coordinates
+    -> Ellipsoid3d units coordinates
+mirrorAcross _ _ =
+    Debug.todo "mirrorAcross"
+
+
+{-| -}
+at :
+    Quantity Float (Rate units2 units1)
+    -> Ellipsoid3d units1 coordinates
+    -> Ellipsoid3d units2 coordinates
+at _ _ =
+    Debug.todo "at"
+
+
+{-| -}
+at_ :
+    Quantity Float (Rate units1 units2)
+    -> Ellipsoid3d units1 coordinates
+    -> Ellipsoid3d units2 coordinates
+at_ _ _ =
+    Debug.todo "at_"
+
+
+{-| -}
+relativeTo :
+    Frame3d units globalCoordinates { defines : localCoordinates }
+    -> Ellipsoid3d units globalCoordinates
+    -> Ellipsoid3d units localCoordinates
+relativeTo _ _ =
+    Debug.todo "relativeTo"
+
+
+{-| -}
+placeIn :
+    Frame3d units globalCoordinates { defines : localCoordinates }
+    -> Ellipsoid3d units localCoordinates
+    -> Ellipsoid3d units globalCoordinates
+placeIn _ _ =
+    Debug.todo "placeIn"
