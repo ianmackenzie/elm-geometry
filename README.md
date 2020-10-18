@@ -302,8 +302,8 @@ module contains functions for creating and manipulating `Point3d` values).
 There are several other Elm packages related to `elm-geometry`:
 
 - For drawing in 2D, check out [`elm-geometry-svg`](https://package.elm-lang.org/packages/ianmackenzie/elm-geometry-svg/latest/)
-- For 3D rendering using WebGL, check out [`elm-3d-scene`](https://package.elm-lang.org/packages/ianmackenzie/elm-3d-scene/latest/)
-  or [`elm-geometry-linear-algebra-interop`](https://package.elm-lang.org/packages/ianmackenzie/elm-geometry-linear-algebra-interop/latest/)
+- For 3D graphics, check out [`elm-3d-scene`](https://package.elm-lang.org/packages/ianmackenzie/elm-3d-scene/latest/)
+  for a high-level approach or [`elm-geometry-linear-algebra-interop`](https://package.elm-lang.org/packages/ianmackenzie/elm-geometry-linear-algebra-interop/latest/)
   and [`elm-3d-camera`](https://package.elm-lang.org/packages/ianmackenzie/elm-3d-camera/latest/)
   for working with WebGL directly
 - For physics-based simulations/games, [`elm-physics`](https://package.elm-lang.org/packages/w0rm/elm-physics/latest/)
