@@ -10,7 +10,12 @@
 module Ellipsoid3d exposing
     ( Ellipsoid3d
     , with
-    , centerPoint, axes, xAxis, yAxis, zAxis, xDirection, yDirection, zDirection, xRadius, yRadius, zRadius
+    , centerPoint, axes, xAxis, yAxis, zAxis, xDirection, yDirection, zDirection, xRadius, yRadius, zRadius, volume, boundingBox
+    , contains
+    , signedDistanceAlong
+    , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
+    , at, at_
+    , relativeTo, placeIn
     )
 
 {-| Docs here
@@ -25,7 +30,7 @@ module Ellipsoid3d exposing
 
 # Properties
 
-@docs centerPoint, axes, xAxis, yAxis, zAxis, xDirection, yDirection, zDirection, xRadius, yRadius, zRadius, volume, surfaceArea, boundingBox
+@docs centerPoint, axes, xAxis, yAxis, zAxis, xDirection, yDirection, zDirection, xRadius, yRadius, zRadius, volume, boundingBox
 
 
 # Queries
@@ -201,13 +206,14 @@ volume ellipsoid =
     Quantity.multiplyBy (4 / 3 * pi) axesProduct
 
 
-{-| -}
-surfaceArea : Ellipsoid3d units coordinates -> Quantity Float (Squared units)
-surfaceArea _ =
-    Debug.todo "surfaceArea"
+{-| Get the minimal bounding box containing a given ellipsoid.
 
+    Ellipsoid3d.boundingBox exampleSphere
+    --> BoundingBox3d.from
+    -->     (Point3d.meters -3 -2 -1)
+    -->     (Point3d.meters 7 4 7)
 
-{-| -}
+-}
 boundingBox : Ellipsoid3d units coordinates -> BoundingBox3d units coordinates
 boundingBox _ =
     Debug.todo "boundingBox"
@@ -217,6 +223,12 @@ boundingBox _ =
 contains : Point3d units coordinates -> Ellipsoid3d units coordinates -> Bool
 contains _ =
     Debug.todo "boundingBox"
+
+
+{-| -}
+signedDistanceAlong : Axis3d units coordinates -> Ellipsoid3d units coordinates -> Interval Float units
+signedDistanceAlong _ _ =
+    Debug.todo "signedDistanceAlong"
 
 
 {-| -}
