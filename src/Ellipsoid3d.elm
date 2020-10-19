@@ -279,22 +279,33 @@ mirrorAcross _ _ =
     Debug.todo "mirrorAcross"
 
 
-{-| -}
+{-| Convert an ellipsoid from one units type to another, by providing a
+conversion factor given as a rate of change of destination units with respect
+to source units.
+-}
 at :
     Quantity Float (Rate units2 units1)
     -> Ellipsoid3d units1 coordinates
     -> Ellipsoid3d units2 coordinates
-at _ _ =
-    Debug.todo "at"
+at rate (Types.Ellipsoid3d ellipsoid) =
+    Types.Ellipsoid3d
+        { axes = Frame3d.at rate ellipsoid.axes
+        , xRadius = Quantity.abs (Quantity.at rate ellipsoid.xRadius)
+        , yRadius = Quantity.abs (Quantity.at rate ellipsoid.yRadius)
+        , zRadius = Quantity.abs (Quantity.at rate ellipsoid.zRadius)
+        }
 
 
-{-| -}
+{-| Convert an ellipsoid from one units type to another, by providing an
+'inverse' conversion factor given as a rate of change of source units with
+respect to destination units.
+-}
 at_ :
     Quantity Float (Rate units1 units2)
     -> Ellipsoid3d units1 coordinates
     -> Ellipsoid3d units2 coordinates
-at_ _ _ =
-    Debug.todo "at_"
+at_ rate ellipsoid =
+    at (Quantity.inverse rate) ellipsoid
 
 
 {-| -}
