@@ -89,7 +89,7 @@ radii. If you pass a negative radius, the absolute value will be used.
 
 -}
 with :
-    { axes : Frame3d units coordinates defines
+    { axes : Frame3d units coordinates {}
     , xRadius : Quantity Float units
     , yRadius : Quantity Float units
     , zRadius : Quantity Float units
@@ -226,7 +226,7 @@ contains _ =
 
 
 {-| -}
-signedDistanceAlong : Axis3d units coordinates -> Ellipsoid3d units coordinates -> Interval Float units
+signedDistanceAlong : Axis3d units coordinates -> Ellipsoid3d units coordinates -> Quantity Float units
 signedDistanceAlong _ _ =
     Debug.todo "signedDistanceAlong"
 
