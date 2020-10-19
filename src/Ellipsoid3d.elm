@@ -353,19 +353,23 @@ at_ rate ellipsoid =
     at (Quantity.inverse rate) ellipsoid
 
 
-{-| -}
+{-| Take an ellipsoid defined in global coordinates, and return it expressed in
+local coordinates relative to a given reference frame.
+-}
 relativeTo :
     Frame3d units globalCoordinates { defines : localCoordinates }
     -> Ellipsoid3d units globalCoordinates
     -> Ellipsoid3d units localCoordinates
-relativeTo _ _ =
-    Debug.todo "relativeTo"
+relativeTo frame ellipsoid =
+    transformBy (Frame3d.relativeTo frame) ellipsoid
 
 
-{-| -}
+{-| Take an ellipsoid considered to be defined in local coordinates relative to a
+given reference frame, and return that ellipsoid expressed in global coordinates.
+-}
 placeIn :
     Frame3d units globalCoordinates { defines : localCoordinates }
     -> Ellipsoid3d units localCoordinates
     -> Ellipsoid3d units globalCoordinates
-placeIn _ _ =
-    Debug.todo "placeIn"
+placeIn frame ellipsoid =
+    transformBy (Frame3d.placeIn frame) ellipsoid
