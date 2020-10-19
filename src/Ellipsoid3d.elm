@@ -231,52 +231,97 @@ signedDistanceAlong _ _ =
     Debug.todo "signedDistanceAlong"
 
 
-{-| -}
+{-| Scale an ellipsoid about a given point by a given scale.
+-}
 scaleAbout :
     Point3d units coordinates
     -> Float
     -> Ellipsoid3d units coordinates
     -> Ellipsoid3d units coordinates
-scaleAbout _ _ _ =
-    Debug.todo "scaleAbout"
+scaleAbout point scale ellipsoid =
+    let
+        newCenterPoint =
+            Point3d.scaleAbout point scale (centerPoint ellipsoid)
+
+        newAxes =
+            if scale >= 0 then
+                Frame3d.unsafe
+                    { originPoint = newCenterPoint
+                    , xDirection = xDirection ellipsoid
+                    , yDirection = yDirection ellipsoid
+                    , zDirection = yDirection ellipsoid
+                    }
+
+            else
+                Frame3d.unsafe
+                    { originPoint = newCenterPoint
+                    , xDirection = Direction3d.reverse (xDirection ellipsoid)
+                    , yDirection = Direction3d.reverse (yDirection ellipsoid)
+                    , zDirection = Direction3d.reverse (yDirection ellipsoid)
+                    }
+    in
+    Types.Ellipsoid3d
+        { axes = newAxes
+        , xRadius = Quantity.abs (Quantity.multiplyBy scale (xRadius ellipsoid))
+        , yRadius = Quantity.abs (Quantity.multiplyBy scale (yRadius ellipsoid))
+        , zRadius = Quantity.abs (Quantity.multiplyBy scale (zRadius ellipsoid))
+        }
 
 
-{-| -}
+transformBy :
+    (Frame3d units coordinates1 {} -> Frame3d units coordinates2 {})
+    -> Ellipsoid3d units coordinates1
+    -> Ellipsoid3d units coordinates2
+transformBy axesTransformation (Types.Ellipsoid3d properties) =
+    Types.Ellipsoid3d
+        { axes = axesTransformation properties.axes
+        , xRadius = properties.xRadius
+        , yRadius = properties.yRadius
+        , zRadius = properties.zRadius
+        }
+
+
+{-| Rotate an ellipsoid around a given axis by a given angle.
+-}
 rotateAround :
     Axis3d units coordinates
     -> Angle
     -> Ellipsoid3d units coordinates
     -> Ellipsoid3d units coordinates
-rotateAround _ _ _ =
-    Debug.todo "rotateAround"
+rotateAround axis angle ellipsoid =
+    transformBy (Frame3d.rotateAround axis angle) ellipsoid
 
 
-{-| -}
+{-| Translate an ellipsoid by a given displacement.
+-}
 translateBy :
     Vector3d units coordinates
     -> Ellipsoid3d units coordinates
     -> Ellipsoid3d units coordinates
-translateBy _ _ =
-    Debug.todo "translateBy"
+translateBy displacement ellipsoid =
+    transformBy (Frame3d.translateBy displacement) ellipsoid
 
 
-{-| -}
+{-| Translate an ellipsoid in a given direction by a given distance.
+-}
 translateIn :
     Direction3d coordinates
     -> Quantity Float units
     -> Ellipsoid3d units coordinates
     -> Ellipsoid3d units coordinates
-translateIn _ _ _ =
-    Debug.todo "translateIn"
+translateIn direction distance ellipsoid =
+    translateBy (Vector3d.withLength distance direction) ellipsoid
 
 
-{-| -}
+{-| Mirror an ellipsoid across a given plane. Note that this will flip the
+handedness of the ellipsoid's axes.
+-}
 mirrorAcross :
     Plane3d units coordinates
     -> Ellipsoid3d units coordinates
     -> Ellipsoid3d units coordinates
-mirrorAcross _ _ =
-    Debug.todo "mirrorAcross"
+mirrorAcross plane ellipsoid =
+    transformBy (Frame3d.mirrorAcross plane) ellipsoid
 
 
 {-| Convert an ellipsoid from one units type to another, by providing a
