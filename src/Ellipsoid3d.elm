@@ -68,6 +68,7 @@ import Geometry.Types as Types exposing (Ellipsoid3d)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Quantity exposing (Cubed, Quantity, Rate, Squared)
+import Quantity.Interval as Interval exposing (Interval)
 import Vector3d exposing (Vector3d)
 
 
@@ -215,20 +216,81 @@ volume ellipsoid =
 
 -}
 boundingBox : Ellipsoid3d units coordinates -> BoundingBox3d units coordinates
-boundingBox _ =
-    Debug.todo "boundingBox"
+boundingBox ellipsoid =
+    BoundingBox3d.xyz
+        (signedDistanceAlong Axis3d.x ellipsoid)
+        (signedDistanceAlong Axis3d.y ellipsoid)
+        (signedDistanceAlong Axis3d.z ellipsoid)
 
 
-{-| -}
+{-| Check if an ellipsoid contains a given point.
+-}
 contains : Point3d units coordinates -> Ellipsoid3d units coordinates -> Bool
-contains _ =
-    Debug.todo "boundingBox"
+contains point ellipsoid =
+    let
+        localFrame =
+            axes ellipsoid
+
+        x =
+            Point3d.xCoordinateIn localFrame point
+
+        y =
+            Point3d.yCoordinateIn localFrame point
+
+        z =
+            Point3d.zCoordinateIn localFrame point
+
+        c1 =
+            Quantity.squared x
+                |> Quantity.ratio (Quantity.squared (xRadius ellipsoid))
+
+        c2 =
+            Quantity.squared y
+                |> Quantity.ratio (Quantity.squared (yRadius ellipsoid))
+
+        c3 =
+            Quantity.squared z
+                |> Quantity.ratio (Quantity.squared (zRadius ellipsoid))
+    in
+    c1 + c2 + c3 <= 1
 
 
-{-| -}
-signedDistanceAlong : Axis3d units coordinates -> Ellipsoid3d units coordinates -> Quantity Float units
-signedDistanceAlong _ _ =
-    Debug.todo "signedDistanceAlong"
+{-| Project an ellipsoid onto an axis, returning the range of projected distances
+along that axis.
+-}
+signedDistanceAlong : Axis3d units coordinates -> Ellipsoid3d units coordinates -> Interval Float units
+signedDistanceAlong axis ellipsoid =
+    let
+        centralDistance =
+            Point3d.signedDistanceAlong axis (centerPoint ellipsoid)
+
+        axisDirection =
+            Axis3d.direction axis
+
+        a =
+            xRadius ellipsoid
+                |> Quantity.multiplyBy
+                    (Direction3d.componentIn axisDirection (xDirection ellipsoid))
+
+        b =
+            yRadius ellipsoid
+                |> Quantity.multiplyBy
+                    (Direction3d.componentIn axisDirection (yDirection ellipsoid))
+
+        c =
+            zRadius ellipsoid
+                |> Quantity.multiplyBy
+                    (Direction3d.componentIn axisDirection (zDirection ellipsoid))
+
+        delta =
+            Quantity.squared a
+                |> Quantity.plus (Quantity.squared b)
+                |> Quantity.plus (Quantity.squared c)
+                |> Quantity.sqrt
+    in
+    Interval.from
+        (centralDistance |> Quantity.minus delta)
+        (centralDistance |> Quantity.plus delta)
 
 
 {-| Scale an ellipsoid about a given point by a given scale.
