@@ -15,7 +15,7 @@ module Polygon2d exposing
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , at, at_
     , relativeTo, placeIn
-    , triangulate, triangulateWith, TriangulationRule, maxEdgeLength, edgeSubdivisions
+    , triangulate, triangulateWith, TriangulationRule, maxEdgeLength, maxTriangleDimensions
     )
 
 {-| A `Polygon2d` represents a closed polygon in 2D, optionally with holes. It
@@ -65,7 +65,7 @@ module](Point2d#transformations).
 
 # Triangulation
 
-@docs triangulate, triangulateWith, TriangulationRule, maxEdgeLength, edgeSubdivisions
+@docs triangulate, triangulateWith, TriangulationRule, maxEdgeLength, maxTriangleDimensions
 
 -}
 
@@ -721,7 +721,7 @@ type TriangulationRule units coordinates
     = TriangulationRule (Point2d units coordinates -> Point2d units coordinates -> Int)
 
 
-{-| Ensure that no edge in a triangulation is longer than the given length.
+{-| Ensure that every edge in a triangulation has at most the given length.
 -}
 maxEdgeLength : Quantity Float units -> TriangulationRule units coordinates
 maxEdgeLength givenLength =
@@ -738,27 +738,31 @@ maxEdgeLength givenLength =
                 ceiling (Quantity.ratio distance givenLength)
 
 
-{-| Provide a callback function that takes as input two points and returns the
-minimum number of subdivisions (how many individual edges) should be used along
-a line between those two points. For example, `maxEdgeLength` is implemented
-roughly as:
-
-    maxEdgeLength length =
-        Polygon2d.edgeSubdivisions <|
-            \start end ->
-                let
-                    distance =
-                        Point2d.distanceFrom start end
-                in
-                ceiling (Quantity.ratio distance length)
-
-The actual number of subdivisions used may be higher; as of this writing the
-current implementation will round the returned value up to a power of two.
-
+{-| Ensure that every triangle in a triangulation has at most the given width
+and the given height.
 -}
-edgeSubdivisions : (Point2d units coordinates -> Point2d units coordinates -> Int) -> TriangulationRule units coordinates
-edgeSubdivisions subdivisionFunction =
-    TriangulationRule subdivisionFunction
+maxTriangleDimensions : Quantity Float units -> Quantity Float units -> TriangulationRule units coordinates
+maxTriangleDimensions width height =
+    TriangulationRule <|
+        if
+            (width |> Quantity.lessThanOrEqualTo Quantity.zero)
+                || (height |> Quantity.lessThanOrEqualTo Quantity.zero)
+        then
+            \_ _ -> 0
+
+        else
+            let
+                (Quantity w) =
+                    width
+
+                (Quantity h) =
+                    height
+            in
+            \(Types.Point2d p1) (Types.Point2d p2) ->
+                ceiling <|
+                    max
+                        (abs (p2.x - p1.x) / w)
+                        (abs (p2.y - p1.y) / h)
 
 
 {-| Check if a polygon contains a given point.
