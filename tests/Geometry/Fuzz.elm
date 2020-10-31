@@ -4,7 +4,7 @@ module Geometry.Fuzz exposing
     , point2d, point3d, vector2d, vector3d, direction2d, direction3d, boundingBox2d, boundingBox3d
     , axis2d, axis3d, frame2d, frame3d, plane3d, sketchPlane3d
     , lineSegment2d, lineSegment3d, triangle2d, triangle3d, rectangle2d, block3d, polyline2d, polyline3d, polygon2d
-    , arc2d, arc3d, circle2d, circle3d, cubicSpline2d, cubicSpline3d, cylinder3d, cone3d, ellipse2d, ellipticalArc2d, ellipticalArc3d, quadraticSpline2d, quadraticSpline3d, sphere3d
+    , arc2d, arc3d, circle2d, circle3d, cubicSpline2d, cubicSpline3d, cylinder3d, cone3d, ellipse2d, ellipticalArc2d, ellipticalArc3d, ellipsoid3d, quadraticSpline2d, quadraticSpline3d, sphere3d
     )
 
 {-| A collection of [`Fuzzer`](https://package.elm-lang.org/packages/elm-explorations/test/latest/Fuzz)s
@@ -52,7 +52,7 @@ running into any naming conflicts.
 
 # Complex geometry
 
-@docs arc2d, arc3d, circle2d, circle3d, cubicSpline2d, cubicSpline3d, cylinder3d, cone3d, ellipse2d, ellipticalArc2d, ellipticalArc3d, quadraticSpline2d, quadraticSpline3d, sphere3d
+@docs arc2d, arc3d, circle2d, circle3d, cubicSpline2d, cubicSpline3d, cylinder3d, cone3d, ellipse2d, ellipticalArc2d, ellipticalArc3d, ellipsoid3d, quadraticSpline2d, quadraticSpline3d, sphere3d
 
 -}
 
@@ -73,6 +73,7 @@ import Cylinder3d exposing (Cylinder3d)
 import Direction2d exposing (Direction2d)
 import Direction3d exposing (Direction3d)
 import Ellipse2d exposing (Ellipse2d)
+import Ellipsoid3d exposing (Ellipsoid3d)
 import EllipticalArc2d exposing (EllipticalArc2d)
 import EllipticalArc3d exposing (EllipticalArc3d)
 import Frame2d exposing (Frame2d)
@@ -274,6 +275,36 @@ frame3d =
     in
     Fuzz.map4 frame point3d direction3d Fuzz.bool Fuzz.bool
 
+
+{-| Generate a random `Frame3d`. Note that the generated frame may be [either
+left-handed or right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness).
+-}
+globalFrame3d : Fuzzer (Frame3d Meters coordinates {})
+globalFrame3d =
+    let
+        frame originPoint xDirection reverseY reverseZ =
+            let
+                ( yDirection, zDirection ) =
+                    Direction3d.perpendicularBasis xDirection
+            in
+            Frame3d.unsafe
+                { originPoint = originPoint
+                , xDirection = xDirection
+                , yDirection =
+                    if reverseY then
+                        Direction3d.reverse yDirection
+
+                    else
+                        yDirection
+                , zDirection =
+                    if reverseZ then
+                        Direction3d.reverse zDirection
+
+                    else
+                        zDirection
+                }
+    in
+    Fuzz.map4 frame point3d direction3d Fuzz.bool Fuzz.bool
 
 {-| Generate a random `SketchPlane3d`.
 -}
@@ -483,6 +514,24 @@ ellipticalArc2d =
 ellipticalArc3d : Fuzzer (EllipticalArc3d Meters coordinates)
 ellipticalArc3d =
     Fuzz.map2 EllipticalArc3d.on sketchPlane3d ellipticalArc2d
+
+
+{-| Generate a random `Ellipsoid3d`.
+-}
+ellipsoid3d : Fuzzer (Ellipsoid3d Meters coordinates)
+ellipsoid3d =
+    let
+        ellipsoid axes ( xRadius, yRadius, zRadius ) =
+            Ellipsoid3d.with
+                { axes = axes
+                , xRadius = xRadius
+                , yRadius = yRadius
+                , zRadius = zRadius
+                }
+    in
+    Fuzz.map2 ellipsoid
+        globalFrame3d
+        (Fuzz.tuple3 ( positiveLength, positiveLength, positiveLength ))
 
 
 {-| Generate a random `Rectangle2d`.
