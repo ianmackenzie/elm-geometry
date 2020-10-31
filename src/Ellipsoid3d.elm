@@ -18,7 +18,14 @@ module Ellipsoid3d exposing
     , relativeTo, placeIn
     )
 
-{-| Docs here
+{-| An [ellipsoid](https://en.wikipedia.org/wiki/Ellipsoid) is defined by a
+center point, X, Y and Z radii, and a `Frame3d` representing the local
+coordinate system.
+This module includes functionality for
+
+  - Constructing ellipsoids
+  - Scaling, rotating and translating ellipsoids
+  - Converting ellipsoids between different coordinate systems
 
 @docs Ellipsoid3d
 
