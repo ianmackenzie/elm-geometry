@@ -97,7 +97,7 @@ radii. If you pass a negative radius, the absolute value will be used.
 
 -}
 with :
-    { axes : Frame3d units coordinates {}
+    { axes : Frame3d units coordinates defines
     , xRadius : Quantity Float units
     , yRadius : Quantity Float units
     , zRadius : Quantity Float units
@@ -105,7 +105,7 @@ with :
     -> Ellipsoid3d units coordinates
 with properties =
     Types.Ellipsoid3d
-        { axes = properties.axes
+        { axes = Frame3d.copy properties.axes
         , xRadius = Quantity.abs properties.xRadius
         , yRadius = Quantity.abs properties.yRadius
         , zRadius = Quantity.abs properties.zRadius

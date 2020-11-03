@@ -276,36 +276,6 @@ frame3d =
     Fuzz.map4 frame point3d direction3d Fuzz.bool Fuzz.bool
 
 
-{-| Generate a random `Frame3d`. Note that the generated frame may be [either
-left-handed or right-handed](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness).
--}
-globalFrame3d : Fuzzer (Frame3d Meters coordinates {})
-globalFrame3d =
-    let
-        frame originPoint xDirection reverseY reverseZ =
-            let
-                ( yDirection, zDirection ) =
-                    Direction3d.perpendicularBasis xDirection
-            in
-            Frame3d.unsafe
-                { originPoint = originPoint
-                , xDirection = xDirection
-                , yDirection =
-                    if reverseY then
-                        Direction3d.reverse yDirection
-
-                    else
-                        yDirection
-                , zDirection =
-                    if reverseZ then
-                        Direction3d.reverse zDirection
-
-                    else
-                        zDirection
-                }
-    in
-    Fuzz.map4 frame point3d direction3d Fuzz.bool Fuzz.bool
-
 {-| Generate a random `SketchPlane3d`.
 -}
 sketchPlane3d : Fuzzer (SketchPlane3d Meters coordinates { defines : sketchCoordinates })
@@ -530,7 +500,7 @@ ellipsoid3d =
                 }
     in
     Fuzz.map2 ellipsoid
-        globalFrame3d
+        frame3d
         (Fuzz.tuple3 ( positiveLength, positiveLength, positiveLength ))
 
 
