@@ -20,6 +20,7 @@ module Curve2d exposing
 @docs startPoint, endPoint
 
 @docs segments, approximate, samples
+
 @docs join
 
 @docs reverse, translateBy, scaleAbout, rotateAround, mirrorAcross
