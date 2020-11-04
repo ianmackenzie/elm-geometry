@@ -1,5 +1,6 @@
 module Tests.CubicSpline2d exposing
     ( arcLengthMatchesAnalytical
+    , bSplineReproducesSpline
     , fromEndpointsReproducesSpline
     , pointAtArcLengthIsEnd
     , pointAtZeroLengthIsStart
@@ -99,4 +100,35 @@ pointAtArcLengthIsEnd =
 
                 Err _ ->
                     Expect.pass
+        )
+
+
+bSplineReproducesSpline : Test
+bSplineReproducesSpline =
+    Test.fuzz Fuzz.cubicSpline2d
+        "Can reconstruct a cubic spline with a B-spline with repeated knots"
+        (\spline ->
+            let
+                p1 =
+                    CubicSpline2d.firstControlPoint spline
+
+                p2 =
+                    CubicSpline2d.secondControlPoint spline
+
+                p3 =
+                    CubicSpline2d.thirdControlPoint spline
+
+                p4 =
+                    CubicSpline2d.fourthControlPoint spline
+
+                bSplineSegments =
+                    CubicSpline2d.bSplineSegments [ 0, 0, 0, 1, 1, 1 ]
+                        [ p1, p2, p3, p4 ]
+            in
+            case bSplineSegments of
+                [ singleSegment ] ->
+                    singleSegment |> Expect.cubicSpline2d spline
+
+                _ ->
+                    Expect.fail "Expected a single B-spline segment"
         )

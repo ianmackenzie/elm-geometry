@@ -1,6 +1,7 @@
 module Tests.QuadraticSpline3d exposing
     ( analyticalLength
     , arcLengthMatchesAnalytical
+    , bSplineReproducesSpline
     , curvedSpline
     , pointAtArcLengthIsEnd
     , pointAtZeroLengthIsStart
@@ -13,6 +14,7 @@ import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Length exposing (Length, Meters, inMeters, meters)
 import Point3d
+import QuadraticSpline2d exposing (QuadraticSpline2d)
 import QuadraticSpline3d exposing (QuadraticSpline3d)
 import Quantity exposing (zero)
 import Test exposing (Test)
@@ -158,4 +160,32 @@ pointAtArcLengthIsEnd =
 
                 Err _ ->
                     Expect.pass
+        )
+
+
+bSplineReproducesSpline : Test
+bSplineReproducesSpline =
+    Test.fuzz Fuzz.quadraticSpline3d
+        "Can reconstruct a quadratic spline with a B-spline with repeated knots"
+        (\spline ->
+            let
+                p1 =
+                    QuadraticSpline3d.firstControlPoint spline
+
+                p2 =
+                    QuadraticSpline3d.secondControlPoint spline
+
+                p3 =
+                    QuadraticSpline3d.thirdControlPoint spline
+
+                bSplineSegments =
+                    QuadraticSpline3d.bSplineSegments [ 0, 0, 1, 1 ]
+                        [ p1, p2, p3 ]
+            in
+            case bSplineSegments of
+                [ singleSegment ] ->
+                    singleSegment |> Expect.quadraticSpline3d spline
+
+                _ ->
+                    Expect.fail "Expected a single B-spline segment"
         )

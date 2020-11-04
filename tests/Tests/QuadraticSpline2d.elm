@@ -1,5 +1,6 @@
 module Tests.QuadraticSpline2d exposing
     ( analyticalLength
+    , bSplineReproducesSpline
     , curvedSpline
     , degenerateSpline
     , exampleSpline
@@ -274,3 +275,31 @@ parameterization =
                 QuadraticSpline2d.pointAlong parameterizedExample arcLength
                     |> Expect.point2d (Point2d.meters 5 1)
         ]
+
+
+bSplineReproducesSpline : Test
+bSplineReproducesSpline =
+    Test.fuzz Fuzz.quadraticSpline2d
+        "Can reconstruct a quadratic spline with a B-spline with repeated knots"
+        (\spline ->
+            let
+                p1 =
+                    QuadraticSpline2d.firstControlPoint spline
+
+                p2 =
+                    QuadraticSpline2d.secondControlPoint spline
+
+                p3 =
+                    QuadraticSpline2d.thirdControlPoint spline
+
+                bSplineSegments =
+                    QuadraticSpline2d.bSplineSegments [ 0, 0, 1, 1 ]
+                        [ p1, p2, p3 ]
+            in
+            case bSplineSegments of
+                [ singleSegment ] ->
+                    singleSegment |> Expect.quadraticSpline2d spline
+
+                _ ->
+                    Expect.fail "Expected a single B-spline segment"
+        )

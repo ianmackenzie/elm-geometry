@@ -9,7 +9,7 @@
 
 module CubicSpline2d exposing
     ( CubicSpline2d
-    , fromControlPoints, fromEndpoints, fromQuadraticSpline
+    , fromControlPoints, fromEndpoints, fromQuadraticSpline, bSplineSegments
     , startPoint, firstControlPoint, secondControlPoint, thirdControlPoint, fourthControlPoint, endPoint, startDerivative, endDerivative, boundingBox
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
@@ -40,7 +40,7 @@ contains functionality for
 
 # Constructors
 
-@docs fromControlPoints, fromEndpoints, fromQuadraticSpline
+@docs fromControlPoints, fromEndpoints, fromQuadraticSpline, bSplineSegments
 
 
 # Properties
@@ -219,6 +219,73 @@ fromQuadraticSpline quadraticSpline =
         cubicSecondControlPoint
         cubicThirdControlPoint
         cubicFourthControlPoint
+
+
+{-| Construct a [B-spline](https://mathworld.wolfram.com/B-Spline.html) from a
+list of knot values and a list of control points, and return the individual
+segments of that B-spline as a list.
+
+The number of control points should be two less than the number of knots; any
+extra knots or control pointss will be dropped. Knot values should be given in
+ascending order but will be sorted if necessary.
+
+-}
+bSplineSegments : List Float -> List (Point2d units coordinates) -> List (CubicSpline2d units coordinates)
+bSplineSegments givenKnots givenControlPoints =
+    case ( List.sort givenKnots, givenControlPoints ) of
+        ( u0 :: u1 :: u2 :: u3 :: u4 :: u5s, b012 :: b123 :: b234 :: b345s ) ->
+            bSplineHelp u0 u1 u2 u3 u4 u5s b012 b123 b234 b345s []
+
+        _ ->
+            []
+
+
+bSplineHelp :
+    Float
+    -> Float
+    -> Float
+    -> Float
+    -> Float
+    -> List Float
+    -> Point2d units coordinates
+    -> Point2d units coordinates
+    -> Point2d units coordinates
+    -> List (Point2d units coordinates)
+    -> List (CubicSpline2d units coordinates)
+    -> List (CubicSpline2d units coordinates)
+bSplineHelp u0 u1 u2 u3 u4 u5s b012 b123 b234 b345s accumulated =
+    case ( u5s, b345s ) of
+        ( u5 :: u6s, b345 :: b456s ) ->
+            if u2 == u3 then
+                bSplineHelp u1 u2 u3 u4 u5 u6s b123 b234 b345 b456s accumulated
+
+            else
+                let
+                    b122 =
+                        Point2d.interpolateFrom b012 b123 ((u2 - u0) / (u3 - u0))
+
+                    b223 =
+                        Point2d.interpolateFrom b123 b234 ((u2 - u1) / (u4 - u1))
+
+                    b233 =
+                        Point2d.interpolateFrom b123 b234 ((u3 - u1) / (u4 - u1))
+
+                    b334 =
+                        Point2d.interpolateFrom b234 b345 ((u3 - u2) / (u5 - u2))
+
+                    b222 =
+                        Point2d.interpolateFrom b122 b223 ((u2 - u1) / (u3 - u1))
+
+                    b333 =
+                        Point2d.interpolateFrom b233 b334 ((u3 - u2) / (u4 - u2))
+
+                    segment =
+                        fromControlPoints b222 b223 b233 b333
+                in
+                bSplineHelp u1 u2 u3 u4 u5 u6s b123 b234 b345 b456s (segment :: accumulated)
+
+        _ ->
+            List.reverse accumulated
 
 
 {-| Convert a spline from one units type to another, by providing a conversion
