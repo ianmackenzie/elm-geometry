@@ -5,6 +5,7 @@ module Curve3d exposing
     , segments, approximate
     , reverse, translateBy, scaleAbout, rotateAround, mirrorAcross, projectOnto, projectInto
     , placeIn, relativeTo
+    , at, at_
     )
 
 {-|
@@ -21,6 +22,7 @@ module Curve3d exposing
 
 @docs placeIn, relativeTo
 
+@docs at, at_
 -}
 
 import Angle exposing (Angle)
@@ -41,7 +43,7 @@ import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Polyline3d exposing (Polyline3d)
 import QuadraticSpline3d exposing (QuadraticSpline3d)
-import Quantity exposing (Quantity)
+import Quantity exposing (Quantity, Rate)
 import SketchPlane3d exposing (SketchPlane3d)
 import Vector3d exposing (Vector3d)
 
@@ -248,6 +250,36 @@ relativeTo frame givenCurve =
 
         Types.CubicSplineCurve3d givenCubicSpline ->
             Types.CubicSplineCurve3d (CubicSpline3d.relativeTo frame givenCubicSpline)
+
+
+at :
+    Quantity Float (Rate units2 units1)
+    -> Curve3d units1 coordinates
+    -> Curve3d units2 coordinates
+at rate givenCurve =
+    case givenCurve of
+        Types.LineSegmentCurve3d givenLineSegment ->
+            Types.LineSegmentCurve3d (LineSegment3d.at rate givenLineSegment)
+
+        Types.ArcCurve3d givenArc ->
+            Types.ArcCurve3d (Arc3d.at rate givenArc)
+
+        Types.EllipticalArcCurve3d givenEllipticalArc ->
+            Types.EllipticalArcCurve3d (EllipticalArc3d.at rate givenEllipticalArc)
+
+        Types.QuadraticSplineCurve3d givenQuadraticSpline ->
+            Types.QuadraticSplineCurve3d (QuadraticSpline3d.at rate givenQuadraticSpline)
+
+        Types.CubicSplineCurve3d givenCubicSpline ->
+            Types.CubicSplineCurve3d (CubicSpline3d.at rate givenCubicSpline)
+
+
+at_ :
+    Quantity Float (Rate units2 units1)
+    -> Curve3d units2 coordinates
+    -> Curve3d units1 coordinates
+at_ rate givenCurve =
+    at (Quantity.inverse rate) givenCurve
 
 
 translateBy : Vector3d units coordinates -> Curve3d units coordinates -> Curve3d units coordinates
