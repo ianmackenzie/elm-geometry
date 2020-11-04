@@ -82,8 +82,8 @@ ellipticalArc givenEllipticalArc =
 
 
 ellipse : Ellipse2d units coordinates -> Curve2d units coordinates
-ellipse givenEllipes =
-    ellipticalArc (Ellipse2d.toEllipticalArc givenEllipes)
+ellipse givenEllipse =
+    ellipticalArc (Ellipse2d.toEllipticalArc givenEllipse)
 
 
 quadraticSpline : QuadraticSpline2d units coordinates -> Curve2d units coordinates
