@@ -11,6 +11,7 @@ module Circle3d exposing
     ( Circle3d
     , withRadius, sweptAround, on, throughPoints
     , centerPoint, axialDirection, radius, diameter, axis, plane, area, circumference, boundingBox
+    , toArc
     , flip, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectInto
     , at, at_
     , relativeTo, placeIn
@@ -39,6 +40,11 @@ for:
 @docs centerPoint, axialDirection, radius, diameter, axis, plane, area, circumference, boundingBox
 
 
+# Conversion
+
+@docs toArc
+
+
 # Transformations
 
 These transformations generally behave just like [the ones in the `Point3d`
@@ -59,6 +65,7 @@ module](Point3d#transformations).
 -}
 
 import Angle exposing (Angle)
+import Arc3d exposing (Arc3d)
 import Axis3d exposing (Axis3d)
 import BoundingBox3d exposing (BoundingBox3d)
 import Circle2d exposing (Circle2d)
@@ -460,3 +467,22 @@ boundingBox circle =
         , minZ = Point3d.zCoordinate p0 |> Quantity.minus dz
         , maxZ = Point3d.zCoordinate p0 |> Quantity.plus dz
         }
+
+
+{-| Convert a circle to a 360 degree arc. The start point of the arc is
+unspecified.
+-}
+toArc : Circle3d units coordinates -> Arc3d units coordinates
+toArc circle =
+    let
+        -- Find an arbitrary radial direction perpendicular to the circle axis
+        radialDirection =
+            Direction3d.perpendicularTo (axialDirection circle)
+
+        -- Move the center point outwards by the circle radius to get a point on
+        -- the circle
+        startPoint =
+            centerPoint circle
+                |> Point3d.translateIn radialDirection (radius circle)
+    in
+    Arc3d.sweptAround (axis circle) (Angle.turns 1) startPoint
