@@ -6,6 +6,7 @@ module Curve3d exposing
     , reverse, translateBy, scaleAbout, rotateAround, mirrorAcross, projectOnto, projectInto
     , placeIn, relativeTo
     , at, at_
+    , boundingBox
     )
 
 {-|
@@ -23,11 +24,14 @@ module Curve3d exposing
 @docs placeIn, relativeTo
 
 @docs at, at_
+
+@docs boundingBox
 -}
 
 import Angle exposing (Angle)
 import Arc3d exposing (Arc3d)
 import Axis3d exposing (Axis3d)
+import BoundingBox3d exposing (BoundingBox3d)
 import Circle3d exposing (Circle3d)
 import CubicSpline3d exposing (CubicSpline3d)
 import Curve
@@ -412,3 +416,22 @@ projectInto sketchPlane givenCurve =
 
         Types.CubicSplineCurve3d givenCubicSpline ->
             Types.CubicSplineCurve2d (CubicSpline3d.projectInto sketchPlane givenCubicSpline)
+
+
+boundingBox : Curve3d units coordinates -> BoundingBox3d units coordinates
+boundingBox givenCurve =
+    case givenCurve of
+        Types.LineSegmentCurve3d givenLineSegment ->
+            LineSegment3d.boundingBox givenLineSegment
+
+        Types.ArcCurve3d givenArc ->
+            Arc3d.boundingBox givenArc
+
+        Types.EllipticalArcCurve3d givenEllipticalArc ->
+            EllipticalArc3d.boundingBox givenEllipticalArc
+
+        Types.QuadraticSplineCurve3d givenQuadraticSpline ->
+            QuadraticSpline3d.boundingBox givenQuadraticSpline
+
+        Types.CubicSplineCurve3d givenCubicSpline ->
+            CubicSpline3d.boundingBox givenCubicSpline
