@@ -248,16 +248,16 @@ contains point ellipsoid =
             Point3d.zCoordinateIn localFrame point
 
         c1 =
-            Quantity.squared x
-                |> Quantity.ratio (Quantity.squared (xRadius ellipsoid))
+            Quantity.squared (xRadius ellipsoid)
+                |> Quantity.ratio (Quantity.squared x)
 
         c2 =
-            Quantity.squared y
-                |> Quantity.ratio (Quantity.squared (yRadius ellipsoid))
+            Quantity.squared (yRadius ellipsoid)
+                |> Quantity.ratio (Quantity.squared y)
 
         c3 =
-            Quantity.squared z
-                |> Quantity.ratio (Quantity.squared (zRadius ellipsoid))
+            Quantity.squared (zRadius ellipsoid)
+                |> Quantity.ratio (Quantity.squared z)
     in
     c1 + c2 + c3 <= 1
 
