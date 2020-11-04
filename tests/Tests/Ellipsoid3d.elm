@@ -25,7 +25,7 @@ import Test exposing (Test)
 ellipsoidAtOriginWithRadii : ( Float, Float, Float ) -> Ellipsoid3d Meters coordinates
 ellipsoidAtOriginWithRadii ( x, y, z ) =
     Ellipsoid3d.with
-        { axes = Frame3d.atPoint (Point3d.meters 0 0 0)
+        { axes = Frame3d.atOrigin
         , xRadius = Length.meters x
         , yRadius = Length.meters y
         , zRadius = Length.meters z
@@ -43,7 +43,7 @@ equivalences =
             \radius ->
                 let
                     sphere =
-                        Sphere3d.withRadius (meters radius) (Point3d.meters 0 0 0)
+                        Sphere3d.atOrigin (meters radius)
 
                     ellipsoid =
                         ellipsoidAtOriginWithRadii ( radius, radius, radius )
@@ -118,10 +118,11 @@ transformations =
                             (Axis3d.translateBy vector axis)
                             (Ellipsoid3d.translateBy vector ellipsoid)
                 in
-                Expect.equal True <|
-                    Quantity.equalWithin (Length.centimeters 1)
-                        (Interval.width afterTransformation)
-                        (Interval.width beforeTransformation)
+                afterTransformation
+                    |> Expect.all
+                        [ Interval.minValue >> Expect.quantity (Interval.minValue beforeTransformation)
+                        , Interval.maxValue >> Expect.quantity (Interval.maxValue beforeTransformation)
+                        ]
             )
         , Test.fuzz2
             (Fuzz.tuple ( Fuzz.ellipsoid3d, Fuzz.axis3d ))
@@ -137,10 +138,11 @@ transformations =
                             (Axis3d.mirrorAcross plane axis)
                             (Ellipsoid3d.mirrorAcross plane ellipsoid)
                 in
-                Expect.equal True <|
-                    Quantity.equalWithin (Length.centimeters 1)
-                        (Interval.width afterTransformation)
-                        (Interval.width beforeTransformation)
+                afterTransformation
+                    |> Expect.all
+                        [ Interval.minValue >> Expect.quantity (Interval.minValue beforeTransformation)
+                        , Interval.maxValue >> Expect.quantity (Interval.maxValue beforeTransformation)
+                        ]
             )
         , Test.fuzz2
             (Fuzz.tuple ( Fuzz.ellipsoid3d, Fuzz.axis3d ))
@@ -156,9 +158,10 @@ transformations =
                             (Axis3d.rotateAround rotAxis angle axis)
                             (Ellipsoid3d.rotateAround rotAxis angle ellipsoid)
                 in
-                Expect.equal True <|
-                    Quantity.equalWithin (Length.centimeters 1)
-                        (Interval.width afterTransformation)
-                        (Interval.width beforeTransformation)
+                afterTransformation
+                    |> Expect.all
+                        [ Interval.minValue >> Expect.quantity (Interval.minValue beforeTransformation)
+                        , Interval.maxValue >> Expect.quantity (Interval.maxValue beforeTransformation)
+                        ]
             )
         ]
