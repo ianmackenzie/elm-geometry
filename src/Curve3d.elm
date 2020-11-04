@@ -2,7 +2,7 @@ module Curve3d exposing
     ( Curve3d
     , lineSegment, arc, circle, ellipticalArc, ellipse, quadraticSpline, cubicSpline
     , startPoint, endPoint
-    , segments, approximate
+    , segments, approximate, samples
     , reverse, translateBy, scaleAbout, rotateAround, mirrorAcross, projectOnto, projectInto
     , placeIn, relativeTo
     , at, at_
@@ -18,7 +18,7 @@ module Curve3d exposing
 
 @docs startPoint, endPoint
 
-@docs segments, approximate
+@docs segments, approximate, samples
 
 @docs reverse, translateBy, scaleAbout, rotateAround, mirrorAcross, projectOnto, projectInto
 
@@ -195,6 +195,59 @@ approximate maxError givenCurve =
 
         Types.CubicSplineCurve3d givenCubicSpline ->
             CubicSpline3d.approximate maxError givenCubicSpline
+
+
+samples : Quantity Float units -> Curve3d units coordinates -> List ( Point3d units coordinates, Direction3d coordinates )
+samples maxError givenCurve =
+    let
+        numSegments =
+            numApproximationSegments maxError givenCurve
+    in
+    case givenCurve of
+        Types.LineSegmentCurve3d givenLineSegment ->
+            case LineSegment3d.direction givenLineSegment of
+                Just direction ->
+                    [ ( LineSegment3d.startPoint givenLineSegment, direction )
+                    , ( LineSegment3d.endPoint givenLineSegment, direction )
+                    ]
+
+                Nothing ->
+                    []
+
+        Types.ArcCurve3d givenArc ->
+            case Arc3d.nondegenerate givenArc of
+                Ok nondegenerateArc ->
+                    Parameter1d.steps numSegments (Arc3d.sample nondegenerateArc)
+
+                Err _ ->
+                    []
+
+        Types.EllipticalArcCurve3d givenEllipticalArc ->
+            case EllipticalArc3d.nondegenerate givenEllipticalArc of
+                Ok nondegenerateEllipticalArc ->
+                    Parameter1d.steps numSegments
+                        (EllipticalArc3d.sample nondegenerateEllipticalArc)
+
+                Err _ ->
+                    []
+
+        Types.QuadraticSplineCurve3d givenSpline ->
+            case QuadraticSpline3d.nondegenerate givenSpline of
+                Ok nondegenerateSpline ->
+                    Parameter1d.steps numSegments
+                        (QuadraticSpline3d.sample nondegenerateSpline)
+
+                Err _ ->
+                    []
+
+        Types.CubicSplineCurve3d givenSpline ->
+            case CubicSpline3d.nondegenerate givenSpline of
+                Ok nondegenerateSpline ->
+                    Parameter1d.steps numSegments
+                        (CubicSpline3d.sample nondegenerateSpline)
+
+                Err _ ->
+                    []
 
 
 reverse : Curve3d units coordinates -> Curve3d units coordinates
