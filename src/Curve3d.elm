@@ -7,6 +7,7 @@ module Curve3d exposing
     , placeIn, relativeTo
     , at, at_
     , boundingBox
+    , numApproximationSegments
     )
 
 {-|
@@ -26,6 +27,9 @@ module Curve3d exposing
 @docs at, at_
 
 @docs boundingBox
+
+@docs numApproximationSegments
+
 -}
 
 import Angle exposing (Angle)
@@ -435,3 +439,22 @@ boundingBox givenCurve =
 
         Types.CubicSplineCurve3d givenCubicSpline ->
             CubicSpline3d.boundingBox givenCubicSpline
+
+
+numApproximationSegments : Quantity Float units -> Curve3d units coordinates -> Int
+numApproximationSegments maxError givenCurve =
+    case givenCurve of
+        Types.LineSegmentCurve3d _ ->
+            1
+
+        Types.ArcCurve3d givenArc ->
+            Arc3d.numApproximationSegments maxError givenArc
+
+        Types.EllipticalArcCurve3d givenEllipticalArc ->
+            EllipticalArc3d.numApproximationSegments maxError givenEllipticalArc
+
+        Types.QuadraticSplineCurve3d givenQuadraticSpline ->
+            QuadraticSpline3d.numApproximationSegments maxError givenQuadraticSpline
+
+        Types.CubicSplineCurve3d givenCubicSpline ->
+            CubicSpline3d.numApproximationSegments maxError givenCubicSpline
