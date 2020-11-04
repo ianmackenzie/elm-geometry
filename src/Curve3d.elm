@@ -1,6 +1,6 @@
 module Curve3d exposing
     ( Curve3d
-    , lineSegment, arc, ellipticalArc, quadraticSpline, cubicSpline
+    , lineSegment, arc, circle, ellipticalArc, ellipse, quadraticSpline, cubicSpline
     , startPoint, endPoint
     , segments, approximate
     , reverse, translateBy, scaleAbout, rotateAround, mirrorAcross, projectOnto, projectInto
@@ -11,7 +11,7 @@ module Curve3d exposing
 
 @docs Curve3d
 
-@docs lineSegment, arc, ellipticalArc, quadraticSpline, cubicSpline, on
+@docs lineSegment, arc, circle, ellipticalArc, ellipse, quadraticSpline, cubicSpline, on
 
 @docs startPoint, endPoint
 
@@ -26,10 +26,12 @@ module Curve3d exposing
 import Angle exposing (Angle)
 import Arc3d exposing (Arc3d)
 import Axis3d exposing (Axis3d)
+import Circle3d exposing (Circle3d)
 import CubicSpline3d exposing (CubicSpline3d)
 import Curve
 import Curve2d exposing (Curve2d)
 import Direction3d exposing (Direction3d)
+import Ellipse3d exposing (Ellipse3d)
 import EllipticalArc3d exposing (EllipticalArc3d)
 import Frame3d exposing (Frame3d)
 import Geometry.Types as Types
@@ -58,9 +60,19 @@ arc givenArc =
     Types.ArcCurve3d givenArc
 
 
+circle : Circle3d units coordinates -> Curve3d units coordinates
+circle givenCircle =
+    arc (Circle3d.toArc givenCircle)
+
+
 ellipticalArc : EllipticalArc3d units coordinates -> Curve3d units coordinates
 ellipticalArc givenEllipticalArc =
     Types.EllipticalArcCurve3d givenEllipticalArc
+
+
+ellipse : Ellipse3d units coordinates -> Curve3d units coordinates
+ellipse givenEllipse =
+    ellipticalArc (Ellipse3d.toEllipticalArc givenEllipse)
 
 
 quadraticSpline : QuadraticSpline3d units coordinates -> Curve3d units coordinates
