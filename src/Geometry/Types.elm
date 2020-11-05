@@ -317,7 +317,7 @@ type Curve3d units coordinates
 
 
 type SurfaceHandedness
-    = RighHandedSurface
+    = RightHandedSurface
     | LeftHandedSurface
 
 
