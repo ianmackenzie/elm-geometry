@@ -9,7 +9,8 @@
 
 module CubicSpline2d exposing
     ( CubicSpline2d
-    , fromControlPoints, fromEndpoints, fromQuadraticSpline, bSplineSegments
+    , fromControlPoints, fromEndpoints, fromQuadraticSpline
+    , bSplineSegments, bSplineIntervals
     , startPoint, firstControlPoint, secondControlPoint, thirdControlPoint, fourthControlPoint, endPoint, startDerivative, endDerivative, boundingBox
     , pointOn
     , Nondegenerate, nondegenerate, fromNondegenerate
@@ -40,7 +41,12 @@ contains functionality for
 
 # Constructors
 
-@docs fromControlPoints, fromEndpoints, fromQuadraticSpline, bSplineSegments
+@docs fromControlPoints, fromEndpoints, fromQuadraticSpline
+
+
+## B-splines
+
+@docs bSplineSegments, bSplineIntervals
 
 
 # Properties
@@ -120,7 +126,8 @@ import Curve
 import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
-import LineSegment2d exposing (fromEndpoints, midpoint)
+import Interval exposing (Interval)
+import LineSegment2d exposing (LineSegment2d)
 import Parameter1d
 import Point2d exposing (Point2d)
 import Polyline2d exposing (Polyline2d)
@@ -234,13 +241,13 @@ bSplineSegments : List Float -> List (Point2d units coordinates) -> List (CubicS
 bSplineSegments givenKnots givenControlPoints =
     case ( List.sort givenKnots, givenControlPoints ) of
         ( u0 :: u1 :: u2 :: u3 :: u4 :: u5s, b012 :: b123 :: b234 :: b345s ) ->
-            bSplineHelp u0 u1 u2 u3 u4 u5s b012 b123 b234 b345s []
+            bSplineSegmentsHelp u0 u1 u2 u3 u4 u5s b012 b123 b234 b345s []
 
         _ ->
             []
 
 
-bSplineHelp :
+bSplineSegmentsHelp :
     Float
     -> Float
     -> Float
@@ -253,11 +260,11 @@ bSplineHelp :
     -> List (Point2d units coordinates)
     -> List (CubicSpline2d units coordinates)
     -> List (CubicSpline2d units coordinates)
-bSplineHelp u0 u1 u2 u3 u4 u5s b012 b123 b234 b345s accumulated =
+bSplineSegmentsHelp u0 u1 u2 u3 u4 u5s b012 b123 b234 b345s accumulated =
     case ( u5s, b345s ) of
         ( u5 :: u6s, b345 :: b456s ) ->
             if u2 == u3 then
-                bSplineHelp u1 u2 u3 u4 u5 u6s b123 b234 b345 b456s accumulated
+                bSplineSegmentsHelp u1 u2 u3 u4 u5 u6s b123 b234 b345 b456s accumulated
 
             else
                 let
@@ -282,9 +289,42 @@ bSplineHelp u0 u1 u2 u3 u4 u5s b012 b123 b234 b345s accumulated =
                     segment =
                         fromControlPoints b222 b223 b233 b333
                 in
-                bSplineHelp u1 u2 u3 u4 u5 u6s b123 b234 b345 b456s (segment :: accumulated)
+                bSplineSegmentsHelp u1 u2 u3 u4 u5 u6s b123 b234 b345 b456s (segment :: accumulated)
 
         _ ->
+            List.reverse accumulated
+
+
+{-| For a given set of B-spline knots, return the corresponding intervals
+between knots that correspond to individual spline [segments](#bSplineSegments).
+-}
+bSplineIntervals : List Float -> List (Interval Float)
+bSplineIntervals givenKnots =
+    case List.sort givenKnots of
+        _ :: _ :: u2 :: u3 :: u4 :: u5s ->
+            bSplineIntervalsHelp u2 u3 u4 u5s []
+
+        _ ->
+            []
+
+
+bSplineIntervalsHelp :
+    Float
+    -> Float
+    -> Float
+    -> List Float
+    -> List (Interval Float)
+    -> List (Interval Float)
+bSplineIntervalsHelp u2 u3 u4 u5s accumulated =
+    case u5s of
+        u5 :: u6s ->
+            if u2 == u3 then
+                bSplineIntervalsHelp u3 u4 u5 u6s accumulated
+
+            else
+                bSplineIntervalsHelp u3 u4 u5 u6s (Interval.from u2 u3 :: accumulated)
+
+        [] ->
             List.reverse accumulated
 
 
