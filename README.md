@@ -230,13 +230,19 @@ points that have different units or are defined in different coordinate systems.
 ## Installation
 
 Assuming you have [installed Elm](https://guide.elm-lang.org/install.html) and
-started a new project, you can install `elm-geometry` by running
+started a new project, you'll want to run
 
 ```text
 elm install ianmackenzie/elm-geometry
+elm install ianmackenzie/elm-units
 ```
 
-in a command prompt inside your project directory.
+in a command prompt inside your project directory. Note that even though
+`elm-units` is a dependency of `elm-geometry`, you'll still need to explicitly
+install it so that you can import modules like [`Quantity`](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Quantity)
+and [`Length`](https://package.elm-lang.org/packages/ianmackenzie/elm-units/latest/Length)
+in your own code (which will be needed in basically any code that uses
+`elm-geometry`.)
 
 ## Using the package
 
@@ -256,7 +262,7 @@ example, to calculate the distance between two 2D points, you would import the
 module Main exposing (main)
 
 import Html exposing (Html)
-import Length
+import Length -- from elm-units, see 'Installation'
 import Point2d
 
 main : Html msg
