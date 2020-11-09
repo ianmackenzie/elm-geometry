@@ -3,6 +3,7 @@ module Tests.Arc2d exposing
     , evaluateHalfIsMidpoint
     , evaluateOneIsEndPoint
     , evaluateZeroIsStartPoint
+    , firstDerivative
     , from
     , mirroredCenterPoint
     , reverseFlipsDirection
@@ -146,6 +147,11 @@ transformations =
         curveOperations
         Arc2d.placeIn
         Arc2d.relativeTo
+
+
+firstDerivative : Test
+firstDerivative =
+    Curve2d.firstDerivative curveOperations
 
 
 mirroredCenterPoint : Test

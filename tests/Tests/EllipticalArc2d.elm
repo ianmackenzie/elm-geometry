@@ -1,5 +1,6 @@
 module Tests.EllipticalArc2d exposing
     ( boundingBox
+    , firstDerivative
     , fromEndpointsReplicatesArc
     , reproducibleArc
     , reverseKeepsMidpoint
@@ -9,7 +10,7 @@ module Tests.EllipticalArc2d exposing
 
 import Angle
 import Arc2d exposing (Arc2d)
-import EllipticalArc2d
+import EllipticalArc2d exposing (EllipticalArc2d)
 import Expect
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
@@ -124,24 +125,30 @@ reverseKeepsMidpoint =
         )
 
 
+curveOperations : Tests.Generic.Curve2d.Operations (EllipticalArc2d Meters coordinates) coordinates
+curveOperations =
+    { fuzzer = Fuzz.ellipticalArc2d
+    , pointOn = EllipticalArc2d.pointOn
+    , firstDerivative = EllipticalArc2d.firstDerivative
+    , scaleAbout = EllipticalArc2d.scaleAbout
+    , translateBy = EllipticalArc2d.translateBy
+    , rotateAround = EllipticalArc2d.rotateAround
+    , mirrorAcross = EllipticalArc2d.mirrorAcross
+    }
+
+
 transformations : Test
 transformations =
-    let
-        curveOperations =
-            { fuzzer = Fuzz.ellipticalArc2d
-            , pointOn = EllipticalArc2d.pointOn
-            , firstDerivative = EllipticalArc2d.firstDerivative
-            , scaleAbout = EllipticalArc2d.scaleAbout
-            , translateBy = EllipticalArc2d.translateBy
-            , rotateAround = EllipticalArc2d.rotateAround
-            , mirrorAcross = EllipticalArc2d.mirrorAcross
-            }
-    in
     Tests.Generic.Curve2d.transformations
         curveOperations
         curveOperations
         EllipticalArc2d.placeIn
         EllipticalArc2d.relativeTo
+
+
+firstDerivative : Test
+firstDerivative =
+    Tests.Generic.Curve2d.firstDerivative curveOperations
 
 
 boundingBox : Test
