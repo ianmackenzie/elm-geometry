@@ -262,6 +262,54 @@ type CubicSpline3d units coordinates
         }
 
 
+type RationalQuadraticSpline2d units coordinates
+    = RationalQuadraticSpline2d
+        { firstControlPoint : Point2d units coordinates
+        , secondControlPoint : Point2d units coordinates
+        , thirdControlPoint : Point2d units coordinates
+        , firstWeight : Float
+        , secondWeight : Float
+        , thirdWeight : Float
+        }
+
+
+type RationalQuadraticSpline3d units coordinates
+    = RationalQuadraticSpline3d
+        { firstControlPoint : Point3d units coordinates
+        , secondControlPoint : Point3d units coordinates
+        , thirdControlPoint : Point3d units coordinates
+        , firstWeight : Float
+        , secondWeight : Float
+        , thirdWeight : Float
+        }
+
+
+type RationalCubicSpline2d units coordinates
+    = RationalCubicSpline2d
+        { firstControlPoint : Point2d units coordinates
+        , secondControlPoint : Point2d units coordinates
+        , thirdControlPoint : Point2d units coordinates
+        , fourthControlPoint : Point2d units coordinates
+        , firstWeight : Float
+        , secondWeight : Float
+        , thirdWeight : Float
+        , fourthWeight : Float
+        }
+
+
+type RationalCubicSpline3d units coordinates
+    = RationalCubicSpline3d
+        { firstControlPoint : Point3d units coordinates
+        , secondControlPoint : Point3d units coordinates
+        , thirdControlPoint : Point3d units coordinates
+        , fourthControlPoint : Point3d units coordinates
+        , firstWeight : Float
+        , secondWeight : Float
+        , thirdWeight : Float
+        , fourthWeight : Float
+        }
+
+
 type EllipticalArc2d units coordinates
     = EllipticalArc2d
         { ellipse : Ellipse2d units coordinates
