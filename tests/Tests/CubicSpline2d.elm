@@ -1,19 +1,23 @@
 module Tests.CubicSpline2d exposing
     ( arcLengthMatchesAnalytical
     , bSplineReproducesSpline
+    , bSplinesAreContinuous
     , fromEndpointsReproducesSpline
     , pointAtArcLengthIsEnd
     , pointAtZeroLengthIsStart
     )
 
 import CubicSpline2d
-import Expect exposing (FloatingPointTolerance(..))
+import Expect exposing (Expectation, FloatingPointTolerance(..))
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Interval
 import Length exposing (Length, inMeters, meters)
+import Point2d
 import Quantity exposing (zero)
 import Test exposing (Test)
 import Tests.QuadraticSpline2d
+import Vector2d
 
 
 fromEndpointsReproducesSpline : Test
@@ -132,3 +136,76 @@ bSplineReproducesSpline =
                 _ ->
                     Expect.fail "Expected a single B-spline segment"
         )
+
+
+expectAll : List Expectation -> Expectation
+expectAll expectations =
+    () |> Expect.all (List.map always expectations)
+
+
+forEach : (a -> Expectation) -> List a -> Expectation
+forEach toExpectation values =
+    case values of
+        [] ->
+            Expect.pass
+
+        _ ->
+            () |> Expect.all (List.map (\value () -> toExpectation value) values)
+
+
+bSplinesAreContinuous : Test
+bSplinesAreContinuous =
+    Test.test "B-splines are continuous" <|
+        \() ->
+            let
+                knots =
+                    [ 0, 0, 0, 1, 2, 4, 4, 5, 8, 10, 10, 10 ]
+
+                controlPoints =
+                    [ Point2d.meters 0 0
+                    , Point2d.meters 1 8
+                    , Point2d.meters 4 4
+                    , Point2d.meters 2 4
+                    , Point2d.meters 4 1
+                    , Point2d.meters 8 2
+                    , Point2d.meters 5 6
+                    , Point2d.meters 8 9
+                    , Point2d.meters 9 7
+                    , Point2d.meters 9 4
+                    ]
+
+                splines =
+                    CubicSpline2d.bSplineSegments knots controlPoints
+
+                knotIntervals =
+                    CubicSpline2d.bSplineIntervals knots
+
+                segments =
+                    List.map2 Tuple.pair splines knotIntervals
+
+                pairs =
+                    List.map2 Tuple.pair segments (List.drop 1 segments)
+            in
+            pairs
+                |> forEach
+                    (\( ( firstSpline, firstInterval ), ( secondSpline, secondInterval ) ) ->
+                        let
+                            firstEndPoint =
+                                CubicSpline2d.endPoint firstSpline
+
+                            secondStartPoint =
+                                CubicSpline2d.startPoint secondSpline
+
+                            firstEndDerivative =
+                                CubicSpline2d.endDerivative firstSpline
+                                    |> Vector2d.scaleBy (1.0 / Interval.width firstInterval)
+
+                            secondStartDerivative =
+                                CubicSpline2d.startDerivative secondSpline
+                                    |> Vector2d.scaleBy (1.0 / Interval.width secondInterval)
+                        in
+                        expectAll
+                            [ firstEndPoint |> Expect.point2d secondStartPoint
+                            , firstEndDerivative |> Expect.vector2d secondStartDerivative
+                            ]
+                    )
