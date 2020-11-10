@@ -12,13 +12,13 @@ module RationalCubicSpline2d exposing
     , bSplineSegments, bSplineIntervals
     , startPoint, endPoint, startDerivative, endDerivative, boundingBox
     , firstControlPoint, secondControlPoint, thirdControlPoint, fourthControlPoint, firstWeight, secondWeight, thirdWeight, fourthWeight
-    , pointOn
+    , pointOn, firstDerivative
     , segments, approximate
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , at, at_
     , relativeTo, placeIn
     , bisect, splitAt
-    , firstDerivative, numApproximationSegments
+    , numApproximationSegments
     )
 
 {-| A `RationalCubicSpline2d` is a rational cubic Bézier curve in 2D defined by
@@ -56,9 +56,7 @@ functionality for
 
 # Evaluation
 
-@docs pointOn
-@docs Nondegenerate, nondegenerate, fromNondegenerate
-@docs tangentDirection, sample
+@docs pointOn, firstDerivative
 
 
 # Linear approximation
@@ -89,32 +87,12 @@ module](Point2d#transformations).
 @docs bisect, splitAt
 
 
-# Arc length parameterization
-
-@docs ArcLengthParameterized, arcLengthParameterized, arcLength, midpoint
-
-For the following evaluation functions, the given arc length will be clamped to
-the arc length of the spline, so the result will always be on the spline.
-
-@docs pointAlong, tangentDirectionAlong, sampleAlong
-
-
-## Low level
-
-An `ArcLengthParameterized` value is a combination of an
-[`ArcLengthParameterization`](Geometry-ArcLengthParameterization) and an
-underlying `RationalCubicSpline2d`. If you need to do something fancy, you can extract
-these two values separately.
-
-@docs arcLengthParameterization, fromArcLengthParameterized
-
-
 # Advanced
 
 You are unlikely to need to use these functions directly, but they are useful if
 you are writing low-level geometric algorithms.
 
-@docs firstDerivative, secondDerivative, thirdDerivative, maxSecondDerivativeMagnitude, numApproximationSegments
+@docs numApproximationSegments
 
 -}
 
