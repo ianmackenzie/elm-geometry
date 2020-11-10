@@ -219,5 +219,5 @@ firstDerivative operations =
                         |> Vector2d.scaleBy 5.0e5
             in
             analyticalDerivative
-                |> Expect.vector2dWithin (Length.meters 1.0e-3) numericalDerivative
+                |> Expect.vector2dWithin (Length.meters 1.0e-6) numericalDerivative
         )
