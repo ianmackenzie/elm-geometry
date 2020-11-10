@@ -398,9 +398,9 @@ arc2d =
         point2d
         point2d
         (Fuzz.oneOf
-            [ Fuzz.floatRange -359 359
-            , Fuzz.floatRange 361 719
-            , Fuzz.floatRange -719 -361
+            [ Fuzz.floatRange -350 350
+            , Fuzz.floatRange 370 710
+            , Fuzz.floatRange -710 -370
             ]
             |> Fuzz.map Angle.degrees
         )
