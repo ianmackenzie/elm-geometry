@@ -4,7 +4,7 @@ module Geometry.Fuzz exposing
     , point2d, point3d, vector2d, vector3d, direction2d, direction3d, boundingBox2d, boundingBox3d
     , axis2d, axis3d, frame2d, frame3d, plane3d, sketchPlane3d
     , lineSegment2d, lineSegment3d, triangle2d, triangle3d, rectangle2d, block3d, polyline2d, polyline3d, polygon2d
-    , arc2d, arc3d, circle2d, circle3d, cubicSpline2d, cubicSpline3d, cylinder3d, cone3d, ellipse2d, ellipticalArc2d, ellipticalArc3d, quadraticSpline2d, quadraticSpline3d, sphere3d
+    , arc2d, arc3d, circle2d, circle3d, cubicSpline2d, cubicSpline3d, cylinder3d, cone3d, ellipse2d, ellipticalArc2d, ellipticalArc3d, quadraticSpline2d, quadraticSpline3d, rationalCubicSpline2d, sphere3d
     )
 
 {-| A collection of [`Fuzzer`](https://package.elm-lang.org/packages/elm-explorations/test/latest/Fuzz)s
@@ -52,7 +52,7 @@ running into any naming conflicts.
 
 # Complex geometry
 
-@docs arc2d, arc3d, circle2d, circle3d, cubicSpline2d, cubicSpline3d, cylinder3d, cone3d, ellipse2d, ellipticalArc2d, ellipticalArc3d, quadraticSpline2d, quadraticSpline3d, sphere3d
+@docs arc2d, arc3d, circle2d, circle3d, cubicSpline2d, cubicSpline3d, cylinder3d, cone3d, ellipse2d, ellipticalArc2d, ellipticalArc3d, quadraticSpline2d, quadraticSpline3d, rationalCubicSpline2d, sphere3d
 
 -}
 
@@ -91,6 +91,7 @@ import Polyline3d exposing (Polyline3d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
 import QuadraticSpline3d exposing (QuadraticSpline3d)
 import Quantity exposing (Quantity)
+import RationalCubicSpline2d exposing (RationalCubicSpline2d)
 import Rectangle2d exposing (Rectangle2d)
 import Shrink
 import SketchPlane3d exposing (SketchPlane3d)
@@ -432,6 +433,20 @@ quadraticSpline3d =
 cubicSpline2d : Fuzzer (CubicSpline2d Meters coordinates)
 cubicSpline2d =
     Fuzz.map4 CubicSpline2d.fromControlPoints point2d point2d point2d point2d
+
+
+weightedControlPoint : Fuzzer ( Point2d Meters coordinates, Float )
+weightedControlPoint =
+    Fuzz.map2 Tuple.pair point2d (Fuzz.floatRange 1 10)
+
+
+rationalCubicSpline2d : Fuzzer (RationalCubicSpline2d Meters coordinates)
+rationalCubicSpline2d =
+    Fuzz.map4 RationalCubicSpline2d.fromControlPoints
+        weightedControlPoint
+        weightedControlPoint
+        weightedControlPoint
+        weightedControlPoint
 
 
 {-| Generate a random `CubicSpline3d`.
