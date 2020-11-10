@@ -68,7 +68,7 @@ bSplines =
 
                 weightedControlPoints =
                     [ ( Point2d.meters 0 0, 1 )
-                    , ( Point2d.meters 1 8, 20 )
+                    , ( Point2d.meters 1 8, 2 )
                     , ( Point2d.meters 4 4, 5 )
                     , ( Point2d.meters 2 4, 1 )
                     , ( Point2d.meters 4 1, 3 )
