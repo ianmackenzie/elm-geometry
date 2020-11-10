@@ -28,7 +28,7 @@ main =
         weightedControlPoints =
             [ ( Point2d.meters 0 5, 1 )
             , ( Point2d.meters 1 8, 2 )
-            , ( Point2d.meters 4 4, 5 )
+            , ( Point2d.meters 4 5, 3 )
             , ( Point2d.meters 2 4, 1 )
             , ( Point2d.meters 4 1, 3 )
             , ( Point2d.meters 8 2, 1 )
@@ -107,7 +107,7 @@ main =
         , size = Drawing2d.fixed
         }
         []
-        [ Drawing2d.group [] (List.map2 drawSegment segments knotIntervals)
-        , Drawing2d.polyline [ Drawing2d.strokeColor Color.lightGrey ] (Polyline2d.fromVertices points)
+        [ Drawing2d.polyline [ Drawing2d.strokeColor Color.grey ] (Polyline2d.fromVertices points)
+        , Drawing2d.group [] (List.map2 drawSegment segments knotIntervals)
         , Drawing2d.group [] (List.map dot points)
         ]
