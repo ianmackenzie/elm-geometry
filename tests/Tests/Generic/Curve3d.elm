@@ -1,4 +1,10 @@
-module Tests.Generic.Curve3d exposing (GlobalCoordinates, LocalCoordinates, Operations, transformations)
+module Tests.Generic.Curve3d exposing
+    ( GlobalCoordinates
+    , LocalCoordinates
+    , Operations
+    , firstDerivative
+    , transformations
+    )
 
 import Angle exposing (Angle)
 import Axis3d exposing (Axis3d)
@@ -171,3 +177,25 @@ transformations global local placeIn relativeTo =
                 pointOnGlobalCurve |> Expect.point3d globalPoint
             )
         ]
+
+
+firstDerivative : Operations curve GlobalCoordinates -> Test
+firstDerivative operations =
+    Test.fuzz2
+        operations.fuzzer
+        Fuzz.parameterValue
+        "Analytical first derivative matches numerical"
+        (\curve t ->
+            let
+                analyticalDerivative =
+                    operations.firstDerivative curve t
+
+                numericalDerivative =
+                    Vector3d.from
+                        (operations.pointOn curve (t - 1.0e-6))
+                        (operations.pointOn curve (t + 1.0e-6))
+                        |> Vector3d.scaleBy 5.0e5
+            in
+            analyticalDerivative
+                |> Expect.vector3dWithin (Length.meters 1.0e-6) numericalDerivative
+        )
