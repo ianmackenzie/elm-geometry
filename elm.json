@@ -39,6 +39,7 @@
         "QuadraticSpline2d",
         "QuadraticSpline3d",
         "RationalCubicSpline2d",
+        "RationalCubicSpline3d",
         "Rectangle2d",
         "Rectangle3d",
         "SketchPlane3d",
