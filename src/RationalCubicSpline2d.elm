@@ -590,7 +590,7 @@ pointOn spline t =
     weightedInterpolation t w1234 p123 w123 p234 w234
 
 
-{-| Approximate a cubic spline by a given number of line segments. Note that the
+{-| Approximate a spline by a given number of line segments. Note that the
 number of points in the polyline will be one more than the number of segments.
 -}
 segments : Int -> RationalCubicSpline2d units coordinates -> Polyline2d units coordinates
@@ -598,8 +598,8 @@ segments numSegments spline =
     Polyline2d.fromVertices (Parameter1d.steps numSegments (pointOn spline))
 
 
-{-| Approximate a cubic spline as a polyline, within a given tolerance. Every
-point on the returned polyline will be within the given tolerance of the spline.
+{-| Approximate a spline as a polyline, within a given tolerance. Every point on
+the returned polyline will be within the given tolerance of the spline.
 -}
 approximate : Quantity Float units -> RationalCubicSpline2d units coordinates -> Polyline2d units coordinates
 approximate maxError spline =
