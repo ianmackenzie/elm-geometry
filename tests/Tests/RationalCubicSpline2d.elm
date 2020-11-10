@@ -1,4 +1,4 @@
-module Tests.RationalCubicSpline2d exposing (bSplines, firstDerivative, transformations)
+module Tests.RationalCubicSpline2d exposing (bSplines, firstDerivative, splitAt, transformations)
 
 import CubicSpline2d
 import Expect exposing (Expectation, FloatingPointTolerance(..))
@@ -114,3 +114,37 @@ bSplines =
                             , firstEndDerivative |> Expect.vector2d secondStartDerivative
                             ]
                     )
+
+
+splitAt : Test
+splitAt =
+    Test.describe "splitAt"
+        [ Test.fuzz3
+            Fuzz.rationalCubicSpline2d
+            Fuzz.parameterValue
+            Fuzz.parameterValue
+            "first"
+            (\spline t0 t1 ->
+                let
+                    ( first, _ ) =
+                        RationalCubicSpline2d.splitAt t0 spline
+                in
+                RationalCubicSpline2d.pointOn first t1
+                    |> Expect.point2d
+                        (RationalCubicSpline2d.pointOn spline (t1 * t0))
+            )
+        , Test.fuzz3
+            Fuzz.rationalCubicSpline2d
+            Fuzz.parameterValue
+            Fuzz.parameterValue
+            "second"
+            (\spline t0 t1 ->
+                let
+                    ( _, second ) =
+                        RationalCubicSpline2d.splitAt t0 spline
+                in
+                RationalCubicSpline2d.pointOn second t1
+                    |> Expect.point2d
+                        (RationalCubicSpline2d.pointOn spline (t0 + t1 * (1 - t0)))
+            )
+        ]
