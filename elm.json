@@ -24,6 +24,7 @@
         "Direction3d",
         "Ellipse2d",
         "Ellipse3d",
+        "Ellipsoid3d",
         "EllipticalArc2d",
         "EllipticalArc3d",
         "Frame2d",
