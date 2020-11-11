@@ -13,7 +13,7 @@ import Point2d exposing (Point2d)
 import Polyline2d exposing (Polyline2d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
 import Quantity
-import RationalCubicSpline2d exposing (RationalCubicSpline2d)
+import RationalQuadraticSpline2d exposing (RationalQuadraticSpline2d)
 import Rectangle2d exposing (Rectangle2d)
 import Triangle2d
 import Vector2d
@@ -23,11 +23,10 @@ main : Html Never
 main =
     let
         knots =
-            [ 0, 0, 0, 2, 3, 4, 5, 5, 8, 12, 12, 12 ]
+            [ 0, 0, 2, 3, 4, 5, 6, 8, 12, 12 ]
 
         weightedControlPoints =
-            [ ( Point2d.meters 0 5, 1 )
-            , ( Point2d.meters 1 8, 2 )
+            [ ( Point2d.meters 1 8, 2 )
             , ( Point2d.meters 4 5, 3 )
             , ( Point2d.meters 2 4, 1 )
             , ( Point2d.meters 4 1, 3 )
@@ -47,10 +46,10 @@ main =
             List.map Tuple.first weightedControlPoints
 
         segments =
-            RationalCubicSpline2d.bSplineSegments knots weightedControlPoints
+            RationalQuadraticSpline2d.bSplineSegments knots weightedControlPoints
 
         knotIntervals =
-            RationalCubicSpline2d.bSplineIntervals knots
+            RationalQuadraticSpline2d.bSplineIntervals knots
 
         arrow attributes point vector =
             let
@@ -79,27 +78,27 @@ main =
         drawSegment segment knotInterval =
             let
                 startPoint =
-                    RationalCubicSpline2d.startPoint segment
+                    RationalQuadraticSpline2d.startPoint segment
 
                 endPoint =
-                    RationalCubicSpline2d.endPoint segment
+                    RationalQuadraticSpline2d.endPoint segment
 
                 startDerivative =
-                    RationalCubicSpline2d.startDerivative segment
+                    RationalQuadraticSpline2d.startDerivative segment
                         |> Vector2d.scaleBy (1 / Interval.width knotInterval)
                         |> Vector2d.scaleBy 0.5
 
                 endDerivative =
-                    RationalCubicSpline2d.endDerivative segment
+                    RationalQuadraticSpline2d.endDerivative segment
                         |> Vector2d.scaleBy (1 / Interval.width knotInterval)
                         |> Vector2d.scaleBy 0.5
             in
             Drawing2d.group [ Drawing2d.blackFill ]
-                [ Drawing2d.polyline [] (RationalCubicSpline2d.segments 100 segment)
-                , dot (RationalCubicSpline2d.startPoint segment)
-                , dot (RationalCubicSpline2d.endPoint segment)
+                [ Drawing2d.polyline [] (RationalQuadraticSpline2d.segments 100 segment)
+                , dot (RationalQuadraticSpline2d.startPoint segment)
+                , dot (RationalQuadraticSpline2d.endPoint segment)
                 , arrow [ Drawing2d.strokeColor Color.blue, Drawing2d.fillColor Color.blue ] startPoint startDerivative
-                , arrow [ Drawing2d.strokeColor Color.blue, Drawing2d.fillColor Color.blue ] endPoint endDerivative
+                , arrow [ Drawing2d.strokeColor Color.orange, Drawing2d.fillColor Color.orange ] endPoint endDerivative
                 ]
     in
     Drawing2d.toHtml
