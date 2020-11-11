@@ -3,7 +3,7 @@
     "name": "ianmackenzie/elm-geometry",
     "summary": "2D/3D geometric data types and operations",
     "license": "MPL-2.0",
-    "version": "3.8.0",
+    "version": "3.9.0",
     "exposed-modules": [
         "Arc2d",
         "Arc3d",
