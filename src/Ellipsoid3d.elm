@@ -19,9 +19,8 @@ module Ellipsoid3d exposing
     )
 
 {-| An [ellipsoid](https://en.wikipedia.org/wiki/Ellipsoid) is defined by a
-center point, X, Y and Z radii, and a `Frame3d` representing the local
-coordinate system.
-This module includes functionality for
+center point, X, Y and Z radii, and a `Frame3d` representing the ellipsoid's
+axes. This module includes functionality for
 
   - Constructing ellipsoids
   - Scaling, rotating and translating ellipsoids
@@ -84,8 +83,8 @@ type alias Ellipsoid3d units coordinates =
     Types.Ellipsoid3d units coordinates
 
 
-{-| Construct a 3d ellipsoid from a [Frame3d](Frame3d) and the x, y and z
-radii. If you pass a negative radius, the absolute value will be used.
+{-| Construct a 3d ellipsoid from its axes and X, Y and Z radii. If you pass a
+negative radius, the absolute value will be used.
 
     exampleEllipsoid =
         Ellipsoid3d.with
