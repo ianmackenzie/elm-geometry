@@ -154,13 +154,25 @@ fromControlPoints ( p1, w1 ) ( p2, w2 ) ( p3, w3 ) =
         }
 
 
-{-| Construct a [B-spline](https://mathworld.wolfram.com/B-Spline.html) from a
-list of knot values and a list of control points with weights, and return the
-individual segments of that B-spline as a list.
+{-| Construct a [non-uniform rational B-spline](https://en.wikipedia.org/wiki/Non-uniform_rational_B-spline)
+(also known as a NURBS curve) from a list of knot values and a list of control
+points, and return the individual segments of that B-spline as a list.
 
-The number of control points should be two less than the number of knots; any
-extra knots or control pointss will be dropped. Knot values should be given in
-ascending order but will be sorted if necessary.
+The number of knots should be one greater than the number of control points; any
+extra knots or control points will be dropped. In most cases the first and last
+knots will be repeated two times; for example, the knots
+
+    [ 0, 0, 1, 2, 3, 4, 4 ]
+
+could be used along with 6 control points to form 4 spline segments.
+
+Note that a popular alternate convention uses two extra 'dummy' knot values at
+the start and end, so if you see an example where the number of knots is _three_
+greater than the number of control points (especially if you also notice that
+the first and last knots are repeated three times instead of two!) then you
+should drop the first and last knot values.
+
+Knot values should be given in ascending order but will be sorted if necessary.
 
 -}
 bSplineSegments : List Float -> List ( Point2d units coordinates, Float ) -> List (RationalQuadraticSpline2d units coordinates)

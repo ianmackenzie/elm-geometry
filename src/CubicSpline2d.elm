@@ -232,9 +232,21 @@ fromQuadraticSpline quadraticSpline =
 list of knot values and a list of control points, and return the individual
 segments of that B-spline as a list.
 
-The number of control points should be two less than the number of knots; any
-extra knots or control pointss will be dropped. Knot values should be given in
-ascending order but will be sorted if necessary.
+The number of knots should be two greater than the number of control points; any
+extra knots or control points will be dropped. In most cases the first and last
+knots will be repeated three times; for example, the knots
+
+    [ 0, 0, 0, 1, 2, 3, 4, 4, 4 ]
+
+could be used along with 7 control points to form 4 spline segments.
+
+Note that a popular alternate convention uses two extra 'dummy' knot values at
+the start and end, so if you see an example where the number of knots is _four_
+greater than the number of control points (especially if you also notice that
+the first and last knots are repeated four times instead of three!) then you
+should drop the first and last knot values.
+
+Knot values should be given in ascending order but will be sorted if necessary.
 
 -}
 bSplineSegments : List Float -> List (Point2d units coordinates) -> List (CubicSpline2d units coordinates)
