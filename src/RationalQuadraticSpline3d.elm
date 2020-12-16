@@ -13,7 +13,7 @@ module RationalQuadraticSpline3d exposing
     , startPoint, endPoint, startDerivative, endDerivative, boundingBox
     , firstControlPoint, secondControlPoint, thirdControlPoint, firstWeight, secondWeight, thirdWeight
     , pointOn, firstDerivative
-    , segments
+    , segments, approximate
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , at, at_
     , relativeTo, placeIn
@@ -60,7 +60,7 @@ functionality for
 
 # Linear approximation
 
-@docs segments
+@docs segments, approximate
 
 
 # Transformations
@@ -100,10 +100,12 @@ import Interval exposing (Interval)
 import LineSegment3d exposing (LineSegment3d)
 import Parameter1d
 import Point3d exposing (Point3d)
+import Point4d exposing (Point4d)
 import Polyline3d exposing (Polyline3d)
 import QuadraticSpline3d exposing (QuadraticSpline3d)
 import Quantity exposing (Quantity(..), Rate)
 import Vector3d exposing (Vector3d)
+import Vector4d exposing (Vector4d)
 
 
 {-| -}
@@ -499,13 +501,12 @@ segments numSegments spline =
     Polyline3d.fromVertices (Parameter1d.steps numSegments (pointOn spline))
 
 
-
--- {-| Approximate a spline as a polyline, within a given tolerance. Every point on
--- the returned polyline will be within the given tolerance of the spline.
--- -}
--- approximate : Quantity Float units -> RationalQuadraticSpline3d units coordinates -> Polyline3d units coordinates
--- approximate maxError spline =
---     segments (numApproximationSegments maxError spline) spline
+{-| Approximate a spline as a polyline, within a given tolerance. Every point on
+the returned polyline will be within the given tolerance of the spline.
+-}
+approximate : Quantity Float units -> RationalQuadraticSpline3d units coordinates -> Polyline3d units coordinates
+approximate maxError spline =
+    segments (numApproximationSegments maxError spline) spline
 
 
 {-| Reverse a spline so that the start point becomes the end point, and vice
@@ -676,47 +677,76 @@ firstDerivative spline t =
         |> Vector3d.scaleBy (2 * w12 * w23 / (w123 * w123))
 
 
+{-| Get the second derivative of a spline (for a quadratic spline, this is a
+constant).
+-}
+secondDerivative4d :
+    Point4d units coordinates
+    -> Point4d units coordinates
+    -> Point4d units coordinates
+    -> Vector4d units coordinates
+secondDerivative4d p1 p2 p3 =
+    let
+        v1 =
+            Vector4d.from p1 p2
 
--- scaledPoint : Point2d units coordinates -> Float -> Point3d units coordinates
--- scaledPoint (Types.Point2d p) w =
---     Types.Point3d { x = p.x * w, y = p.y * w, z = w }
--- {-| Determine the number of linear segments needed to approximate a cubic
--- spline to within a given tolerance.
--- -}
--- numApproximationSegments : Quantity Float units -> RationalQuadraticSpline2d units coordinats -> Int
--- numApproximationSegments maxError spline =
---     let
---         p1 =
---             firstControlPoint spline
---         p2 =
---             secondControlPoint spline
---         p3 =
---             thirdControlPoint spline
---         w1 =
---             firstWeight spline
---         w2 =
---             secondWeight spline
---         w3 =
---             thirdWeight spline
---         wMin =
---             min (min w1 w2) w3
---         s1 =
---             w1 / wMin
---         s2 =
---             w2 / wMin
---         s3 =
---             w3 / wMin
---         q1 =
---             scaledPoint p1 s1
---         q2 =
---             scaledPoint p2 s2
---         q3 =
---             scaledPoint p3 s3
---         spline3d =
---             QuadraticSpline3d.fromControlPoints q1 q2 q3
---     in
---     Curve.numApproximationSegments
---         { maxError = maxError
---         , maxSecondDerivativeMagnitude =
---             Vector3d.length (QuadraticSpline3d.secondDerivative spline3d)
---         }
+        v2 =
+            Vector4d.from p2 p3
+    in
+    Vector4d.twice (v2 |> Vector4d.minus v1)
+
+
+scaledPoint : Point3d units coordinates -> Float -> Point4d units coordinates
+scaledPoint (Types.Point3d p) w =
+    Types.Point4d { x = p.x * w, y = p.y * w, z = p.z * w, w = w }
+
+
+{-| Determine the number of linear segments needed to approximate a cubic
+spline to within a given tolerance.
+-}
+numApproximationSegments : Quantity Float units -> RationalQuadraticSpline3d units coordinats -> Int
+numApproximationSegments maxError spline =
+    let
+        p1 =
+            firstControlPoint spline
+
+        p2 =
+            secondControlPoint spline
+
+        p3 =
+            thirdControlPoint spline
+
+        w1 =
+            firstWeight spline
+
+        w2 =
+            secondWeight spline
+
+        w3 =
+            thirdWeight spline
+
+        wMin =
+            min (min w1 w2) w3
+
+        s1 =
+            w1 / wMin
+
+        s2 =
+            w2 / wMin
+
+        s3 =
+            w3 / wMin
+
+        q1 =
+            scaledPoint p1 s1
+
+        q2 =
+            scaledPoint p2 s2
+
+        q3 =
+            scaledPoint p3 s3
+    in
+    Curve.numApproximationSegments
+        { maxError = maxError
+        , maxSecondDerivativeMagnitude = Vector4d.length (secondDerivative4d q1 q2 q3)
+        }
