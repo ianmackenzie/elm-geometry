@@ -23,6 +23,10 @@ type Vector3d units coordinates
     = Vector3d { x : Float, y : Float, z : Float }
 
 
+type Vector4d units coordinates
+    = Vector4d { x : Float, y : Float, z : Float, w : Float }
+
+
 type Direction2d coordinates
     = Direction2d { x : Float, y : Float }
 
@@ -37,6 +41,10 @@ type Point2d units coordinates
 
 type Point3d units coordinates
     = Point3d { x : Float, y : Float, z : Float }
+
+
+type Point4d units coordinates
+    = Point4d { x : Float, y : Float, z : Float, w : Float }
 
 
 type Axis2d units coordinates
