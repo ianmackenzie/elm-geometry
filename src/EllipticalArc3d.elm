@@ -1002,7 +1002,7 @@ fromArcLengthParameterized (ArcLengthParameterized parameterized) =
 {-| Determine the number of linear segments needed to approximate an elliptical
 arc to within a given tolerance.
 -}
-numApproximationSegments : Quantity Float units -> EllipticalArc3d units coordinats -> Int
+numApproximationSegments : Quantity Float units -> EllipticalArc3d units coordinates -> Int
 numApproximationSegments maxError arc =
     Curve.numApproximationSegments
         { maxError = maxError

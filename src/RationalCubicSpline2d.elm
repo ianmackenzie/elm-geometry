@@ -822,7 +822,7 @@ scaledPoint (Types.Point2d p) w =
 {-| Determine the number of linear segments needed to approximate a cubic
 spline to within a given tolerance.
 -}
-numApproximationSegments : Quantity Float units -> RationalCubicSpline2d units coordinats -> Int
+numApproximationSegments : Quantity Float units -> RationalCubicSpline2d units coordinates -> Int
 numApproximationSegments maxError spline =
     let
         p1 =

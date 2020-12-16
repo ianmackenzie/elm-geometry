@@ -915,7 +915,7 @@ secondDerivative spline =
 {-| Determine the number of linear segments needed to approximate a quadratic
 spline to within a given tolerance.
 -}
-numApproximationSegments : Quantity Float units -> QuadraticSpline3d units coordinats -> Int
+numApproximationSegments : Quantity Float units -> QuadraticSpline3d units coordinates -> Int
 numApproximationSegments maxError spline =
     Curve.numApproximationSegments
         { maxError = maxError

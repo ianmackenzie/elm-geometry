@@ -918,7 +918,7 @@ placeIn frame (Types.Arc3d arc) =
 {-| Determine the number of linear segments needed to approximate an arc to
 within a given tolerance.
 -}
-numApproximationSegments : Quantity Float units -> Arc3d units coordinats -> Int
+numApproximationSegments : Quantity Float units -> Arc3d units coordinates -> Int
 numApproximationSegments maxError arc =
     Curve.arcApproximationSegments
         { maxError = maxError
