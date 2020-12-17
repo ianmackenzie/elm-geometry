@@ -102,10 +102,10 @@ type Triangle3d units coordinates
 
 type BoundingBox2d units coordinates
     = BoundingBox2d
-        { minX : Quantity Float units
-        , maxX : Quantity Float units
-        , minY : Quantity Float units
-        , maxY : Quantity Float units
+        { minX : Float
+        , maxX : Float
+        , minY : Float
+        , maxY : Float
         }
 
 

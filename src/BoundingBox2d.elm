@@ -134,23 +134,29 @@ diagonal of the bounding box.
 from : Point2d units coordinates -> Point2d units coordinates -> BoundingBox2d units coordinates
 from firstPoint secondPoint =
     let
+        (Types.Point2d p1) =
+            firstPoint
+
+        (Types.Point2d p2) =
+            secondPoint
+
         x1 =
-            Point2d.xCoordinate firstPoint
+            p1.x
 
         y1 =
-            Point2d.yCoordinate firstPoint
+            p1.y
 
         x2 =
-            Point2d.xCoordinate secondPoint
+            p2.x
 
         y2 =
-            Point2d.yCoordinate secondPoint
+            p2.y
     in
     Types.BoundingBox2d
-        { minX = Quantity.min x1 x2
-        , maxX = Quantity.max x1 x2
-        , minY = Quantity.min y1 y2
-        , maxY = Quantity.max y1 y2
+        { minX = min x1 x2
+        , maxX = max x1 x2
+        , minY = min y1 y2
+        , maxY = max y1 y2
         }
 
 
@@ -177,19 +183,25 @@ fromExtrema :
     }
     -> BoundingBox2d units coordinates
 fromExtrema given =
-    if
-        (given.minX |> Quantity.lessThanOrEqualTo given.maxX)
-            && (given.minY |> Quantity.lessThanOrEqualTo given.maxY)
-    then
-        Types.BoundingBox2d given
+    let
+        (Quantity x1) =
+            given.minX
 
-    else
-        Types.BoundingBox2d
-            { minX = Quantity.min given.minX given.maxX
-            , maxX = Quantity.max given.minX given.maxX
-            , minY = Quantity.min given.minY given.maxY
-            , maxY = Quantity.max given.minY given.maxY
-            }
+        (Quantity x2) =
+            given.maxX
+
+        (Quantity y1) =
+            given.minY
+
+        (Quantity y2) =
+            given.maxY
+    in
+    Types.BoundingBox2d
+        { minX = min x1 x2
+        , maxX = max x1 x2
+        , minY = min y1 y2
+        , maxY = max y1 y2
+        }
 
 
 {-| Construct a bounding box given its overall dimensions (width and height)
@@ -199,22 +211,25 @@ withDimensions :
     ( Quantity Float units, Quantity Float units )
     -> Point2d units coordinates
     -> BoundingBox2d units coordinates
-withDimensions ( givenWidth, givenHeight ) givenCenterPoint =
+withDimensions givenDimensions givenCenterPoint =
     let
-        ( x0, y0 ) =
-            Point2d.coordinates givenCenterPoint
+        (Types.Point2d { x, y }) =
+            givenCenterPoint
+
+        ( Quantity w, Quantity h ) =
+            givenDimensions
 
         halfWidth =
-            Quantity.half (Quantity.abs givenWidth)
+            abs w / 2
 
         halfHeight =
-            Quantity.half (Quantity.abs givenHeight)
+            abs h / 2
     in
     Types.BoundingBox2d
-        { minX = x0 |> Quantity.minus halfWidth
-        , maxX = x0 |> Quantity.plus halfWidth
-        , minY = y0 |> Quantity.minus halfHeight
-        , maxY = y0 |> Quantity.plus halfHeight
+        { minX = x - halfWidth
+        , maxX = x + halfWidth
+        , minY = y - halfHeight
+        , maxY = y + halfHeight
         }
 
 
@@ -222,11 +237,15 @@ withDimensions ( givenWidth, givenHeight ) givenCenterPoint =
 -}
 singleton : Point2d units coordinates -> BoundingBox2d units coordinates
 singleton point =
+    let
+        (Types.Point2d { x, y }) =
+            point
+    in
     Types.BoundingBox2d
-        { minX = Point2d.xCoordinate point
-        , maxX = Point2d.xCoordinate point
-        , minY = Point2d.yCoordinate point
-        , maxY = Point2d.yCoordinate point
+        { minX = x
+        , maxX = x
+        , minY = y
+        , maxY = y
         }
 
 
@@ -234,11 +253,18 @@ singleton point =
 -}
 xy : Interval Float units -> Interval Float units -> BoundingBox2d units coordinates
 xy givenXInterval givenYInterval =
+    let
+        ( Quantity x1, Quantity x2 ) =
+            Interval.endpoints givenXInterval
+
+        ( Quantity y1, Quantity y2 ) =
+            Interval.endpoints givenYInterval
+    in
     Types.BoundingBox2d
-        { minX = Interval.minValue givenXInterval
-        , maxX = Interval.maxValue givenXInterval
-        , minY = Interval.minValue givenYInterval
-        , maxY = Interval.maxValue givenYInterval
+        { minX = x1
+        , maxX = x2
+        , minY = y1
+        , maxY = y2
         }
 
 
@@ -295,10 +321,10 @@ hullHelp currentMinX currentMaxX currentMinY currentMaxY points =
 
         [] ->
             Types.BoundingBox2d
-                { minX = Quantity currentMinX
-                , maxX = Quantity currentMaxX
-                , minY = Quantity currentMinY
-                , maxY = Quantity currentMaxY
+                { minX = currentMinX
+                , maxX = currentMaxX
+                , minY = currentMinY
+                , maxY = currentMaxY
                 }
 
 
@@ -348,10 +374,10 @@ hullOfHelp currentMinX currentMaxX currentMinY currentMaxY getPoint list =
 
         [] ->
             Types.BoundingBox2d
-                { minX = Quantity currentMinX
-                , maxX = Quantity currentMaxX
-                , minY = Quantity currentMinY
-                , maxY = Quantity currentMaxY
+                { minX = currentMinX
+                , maxX = currentMaxX
+                , minY = currentMinY
+                , maxY = currentMaxY
                 }
 
 
@@ -369,29 +395,38 @@ but is more efficient.
 hull3 : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> BoundingBox2d units coordinates
 hull3 firstPoint secondPoint thirdPoint =
     let
+        (Types.Point2d p1) =
+            firstPoint
+
+        (Types.Point2d p2) =
+            secondPoint
+
+        (Types.Point2d p3) =
+            thirdPoint
+
         x1 =
-            Point2d.xCoordinate firstPoint
+            p1.x
 
         y1 =
-            Point2d.yCoordinate firstPoint
+            p1.y
 
         x2 =
-            Point2d.xCoordinate secondPoint
+            p2.x
 
         y2 =
-            Point2d.yCoordinate secondPoint
+            p2.y
 
         x3 =
-            Point2d.xCoordinate thirdPoint
+            p3.x
 
         y3 =
-            Point2d.yCoordinate thirdPoint
+            p3.y
     in
     Types.BoundingBox2d
-        { minX = Quantity.min x1 (Quantity.min x2 x3)
-        , maxX = Quantity.max x1 (Quantity.max x2 x3)
-        , minY = Quantity.min y1 (Quantity.min y2 y3)
-        , maxY = Quantity.max y1 (Quantity.max y2 y3)
+        { minX = min (min x1 x2) x3
+        , maxX = max (max x1 x2) x3
+        , minY = min (min y1 y2) y3
+        , maxY = max (max y1 y2) y3
         }
 
 
@@ -427,25 +462,25 @@ hullOfN getPoint items =
 aggregate : BoundingBox2d units coordinates -> List (BoundingBox2d units coordinates) -> BoundingBox2d units coordinates
 aggregate first rest =
     let
-        b1 =
-            extrema first
+        (Types.BoundingBox2d b1) =
+            first
     in
     aggregateHelp b1.minX b1.maxX b1.minY b1.maxY rest
 
 
-aggregateHelp : Quantity Float units -> Quantity Float units -> Quantity Float units -> Quantity Float units -> List (BoundingBox2d units coordinates) -> BoundingBox2d units coordinates
+aggregateHelp : Float -> Float -> Float -> Float -> List (BoundingBox2d units coordinates) -> BoundingBox2d units coordinates
 aggregateHelp currentMinX currentMaxX currentMinY currentMaxY boxes =
     case boxes of
         next :: rest ->
             let
-                b =
-                    extrema next
+                (Types.BoundingBox2d b) =
+                    next
             in
             aggregateHelp
-                (Quantity.min b.minX currentMinX)
-                (Quantity.max b.maxX currentMaxX)
-                (Quantity.min b.minY currentMinY)
-                (Quantity.max b.maxY currentMaxY)
+                (min b.minX currentMinX)
+                (max b.maxX currentMaxX)
+                (min b.minY currentMinY)
+                (max b.maxY currentMaxY)
                 rest
 
         [] ->
@@ -472,25 +507,25 @@ bounding box around four triangles:
 aggregateOf : (a -> BoundingBox2d units coordinates) -> a -> List a -> BoundingBox2d units coordinates
 aggregateOf getBoundingBox first rest =
     let
-        b1 =
-            extrema (getBoundingBox first)
+        (Types.BoundingBox2d b1) =
+            getBoundingBox first
     in
     aggregateOfHelp b1.minX b1.maxX b1.minY b1.maxY getBoundingBox rest
 
 
-aggregateOfHelp : Quantity Float units -> Quantity Float units -> Quantity Float units -> Quantity Float units -> (a -> BoundingBox2d units coordiantes) -> List a -> BoundingBox2d units coordinates
+aggregateOfHelp : Float -> Float -> Float -> Float -> (a -> BoundingBox2d units coordiantes) -> List a -> BoundingBox2d units coordinates
 aggregateOfHelp currentMinX currentMaxX currentMinY currentMaxY getBoundingBox items =
     case items of
         next :: rest ->
             let
-                b =
-                    extrema (getBoundingBox next)
+                (Types.BoundingBox2d b) =
+                    getBoundingBox next
             in
             aggregateOfHelp
-                (Quantity.min b.minX currentMinX)
-                (Quantity.max b.maxX currentMaxX)
-                (Quantity.min b.minY currentMinY)
-                (Quantity.max b.maxY currentMaxY)
+                (min b.minX currentMinX)
+                (max b.maxX currentMaxX)
+                (min b.minY currentMinY)
+                (max b.maxY currentMaxY)
                 getBoundingBox
                 rest
 
@@ -527,17 +562,17 @@ sense.)
 union : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
 union firstBox secondBox =
     let
-        b1 =
-            extrema firstBox
+        (Types.BoundingBox2d b1) =
+            firstBox
 
-        b2 =
-            extrema secondBox
+        (Types.BoundingBox2d b2) =
+            secondBox
     in
     Types.BoundingBox2d
-        { minX = Quantity.min b1.minX b2.minX
-        , maxX = Quantity.max b1.maxX b2.maxX
-        , minY = Quantity.min b1.minY b2.minY
-        , maxY = Quantity.max b1.maxY b2.maxY
+        { minX = min b1.minX b2.minX
+        , maxX = max b1.maxX b2.maxX
+        , minY = min b1.minY b2.minY
+        , maxY = max b1.maxY b2.maxY
         }
 
 
@@ -555,20 +590,20 @@ but is more efficient.
 aggregate3 : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
 aggregate3 firstBox secondBox thirdBox =
     let
-        b1 =
-            extrema firstBox
+        (Types.BoundingBox2d b1) =
+            firstBox
 
-        b2 =
-            extrema secondBox
+        (Types.BoundingBox2d b2) =
+            secondBox
 
-        b3 =
-            extrema thirdBox
+        (Types.BoundingBox2d b3) =
+            thirdBox
     in
     Types.BoundingBox2d
-        { minX = Quantity.min b1.minX (Quantity.min b2.minX b3.minX)
-        , maxX = Quantity.max b1.maxX (Quantity.max b2.maxX b3.maxX)
-        , minY = Quantity.min b1.minY (Quantity.min b2.minY b3.minY)
-        , maxY = Quantity.max b1.maxY (Quantity.max b2.maxY b3.maxY)
+        { minX = min b1.minX (min b2.minX b3.minX)
+        , maxX = max b1.maxX (max b2.maxX b3.maxX)
+        , minY = min b1.minY (min b2.minY b3.minY)
+        , maxY = max b1.maxY (max b2.maxY b3.maxY)
         }
 
 
@@ -603,13 +638,29 @@ conversion factor given as a rate of change of destination units with respect to
 source units.
 -}
 at : Quantity Float (Rate units2 units1) -> BoundingBox2d units1 coordinates -> BoundingBox2d units2 coordinates
-at rate (Types.BoundingBox2d boundingBox) =
-    fromExtrema
-        { minX = Quantity.at rate boundingBox.minX
-        , maxX = Quantity.at rate boundingBox.maxX
-        , minY = Quantity.at rate boundingBox.minY
-        , maxY = Quantity.at rate boundingBox.maxY
-        }
+at rate boundingBox =
+    let
+        (Quantity r) =
+            rate
+
+        (Types.BoundingBox2d b) =
+            boundingBox
+    in
+    if r >= 0 then
+        Types.BoundingBox2d
+            { minX = r * b.minX
+            , maxX = r * b.maxX
+            , minY = r * b.minY
+            , maxY = r * b.maxY
+            }
+
+    else
+        Types.BoundingBox2d
+            { minX = r * b.maxX
+            , maxX = r * b.minX
+            , minY = r * b.maxY
+            , maxY = r * b.minY
+            }
 
 
 {-| Convert a bounding box from one units type to another, by providing an
@@ -645,32 +696,40 @@ extrema :
         , minY : Quantity Float units
         , maxY : Quantity Float units
         }
-extrema (Types.BoundingBox2d boundingBoxExtrema) =
-    boundingBoxExtrema
+extrema boundingBox =
+    let
+        (Types.BoundingBox2d b) =
+            boundingBox
+    in
+    { minX = Quantity b.minX
+    , maxX = Quantity b.maxX
+    , minY = Quantity b.minY
+    , maxY = Quantity b.maxY
+    }
 
 
 {-| -}
 minX : BoundingBox2d units coordinates -> Quantity Float units
 minX (Types.BoundingBox2d boundingBox) =
-    boundingBox.minX
+    Quantity boundingBox.minX
 
 
 {-| -}
 maxX : BoundingBox2d units coordinates -> Quantity Float units
 maxX (Types.BoundingBox2d boundingBox) =
-    boundingBox.maxX
+    Quantity boundingBox.maxX
 
 
 {-| -}
 minY : BoundingBox2d units coordinates -> Quantity Float units
 minY (Types.BoundingBox2d boundingBox) =
-    boundingBox.minY
+    Quantity boundingBox.minY
 
 
 {-| -}
 maxY : BoundingBox2d units coordinates -> Quantity Float units
 maxY (Types.BoundingBox2d boundingBox) =
-    boundingBox.maxY
+    Quantity boundingBox.maxY
 
 
 {-| Get the X and Y dimensions (width and height) of a bounding box.
@@ -689,22 +748,61 @@ dimensions boundingBox =
 {-| Get the median (central) X value of a bounding box.
 -}
 midX : BoundingBox2d units coordinates -> Quantity Float units
-midX (Types.BoundingBox2d boundingBox) =
-    Quantity.interpolateFrom boundingBox.minX boundingBox.maxX 0.5
+midX boundingBox =
+    let
+        (Types.BoundingBox2d b) =
+            boundingBox
+
+        x1 =
+            b.minX
+
+        x2 =
+            b.maxX
+    in
+    Quantity (x1 + 0.5 * (x2 - x1))
 
 
 {-| Get the median (central) Y value of a bounding box.
 -}
 midY : BoundingBox2d units coordinates -> Quantity Float units
-midY (Types.BoundingBox2d boundingBox) =
-    Quantity.interpolateFrom boundingBox.minY boundingBox.maxY 0.5
+midY boundingBox =
+    let
+        (Types.BoundingBox2d b) =
+            boundingBox
+
+        y1 =
+            b.minY
+
+        y2 =
+            b.maxY
+    in
+    Quantity (y1 + 0.5 * (y2 - y1))
 
 
 {-| Get the point at the center of a bounding box.
 -}
 centerPoint : BoundingBox2d units coordinates -> Point2d units coordinates
 centerPoint boundingBox =
-    Point2d.xy (midX boundingBox) (midY boundingBox)
+    let
+        (Types.BoundingBox2d b) =
+            boundingBox
+
+        x1 =
+            b.minX
+
+        x2 =
+            b.maxX
+
+        y1 =
+            b.minY
+
+        y2 =
+            b.maxY
+    in
+    Types.Point2d
+        { x = x1 + 0.5 * (x2 - x1)
+        , y = y1 + 0.5 * (y2 - y1)
+        }
 
 
 {-| Get the range of X values contained by a bounding box.
@@ -732,10 +830,14 @@ intervals boundingBox =
 -}
 contains : Point2d units coordinates -> BoundingBox2d units coordinates -> Bool
 contains point boundingBox =
-    (Point2d.xCoordinate point |> Quantity.greaterThanOrEqualTo (minX boundingBox))
-        && (Point2d.xCoordinate point |> Quantity.lessThanOrEqualTo (maxX boundingBox))
-        && (Point2d.yCoordinate point |> Quantity.greaterThanOrEqualTo (minY boundingBox))
-        && (Point2d.yCoordinate point |> Quantity.lessThanOrEqualTo (maxY boundingBox))
+    let
+        (Types.Point2d p) =
+            point
+
+        (Types.BoundingBox2d b) =
+            boundingBox
+    in
+    (p.x >= b.minX) && (p.x <= b.maxX) && (p.y >= b.minY) && (p.y <= b.maxY)
 
 
 {-| Test if two boxes touch or overlap at all (have any points in common);
@@ -752,10 +854,14 @@ but is more efficient.
 -}
 intersects : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Bool
 intersects other boundingBox =
-    (minX boundingBox |> Quantity.lessThanOrEqualTo (maxX other))
-        && (maxX boundingBox |> Quantity.greaterThanOrEqualTo (minX other))
-        && (minY boundingBox |> Quantity.lessThanOrEqualTo (maxY other))
-        && (maxY boundingBox |> Quantity.greaterThanOrEqualTo (minY other))
+    let
+        (Types.BoundingBox2d b2) =
+            other
+
+        (Types.BoundingBox2d b1) =
+            boundingBox
+    in
+    (b1.minX <= b2.maxX) && (b1.maxX >= b2.minX) && (b1.minY <= b2.maxY) && (b1.maxY >= b2.minY)
 
 
 {-| Check two boxes overlap by at least the given amount. For example, you could
@@ -783,21 +889,25 @@ will return true even if the two boxes just touch each other.
 overlappingByAtLeast : Quantity Float units -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Bool
 overlappingByAtLeast tolerance firstBox secondBox =
     let
+        (Types.BoundingBox2d b1) =
+            firstBox
+
+        (Types.BoundingBox2d b2) =
+            secondBox
+
         xOverlap =
-            Quantity.min (maxX firstBox) (maxX secondBox)
-                |> Quantity.minus
-                    (Quantity.max (minX firstBox) (minX secondBox))
+            min b1.maxX b2.maxX - max b1.minX b2.minX
 
         yOverlap =
-            Quantity.min (maxY firstBox) (maxY secondBox)
-                |> Quantity.minus
-                    (Quantity.max (minY firstBox) (minY secondBox))
+            min b1.maxY b2.maxY - max b1.minY b2.minY
 
-        clampedTolerance =
-            Quantity.max tolerance Quantity.zero
+        (Quantity dGiven) =
+            tolerance
+
+        d =
+            max dGiven 0
     in
-    (xOverlap |> Quantity.greaterThanOrEqualTo clampedTolerance)
-        && (yOverlap |> Quantity.greaterThanOrEqualTo clampedTolerance)
+    (xOverlap >= d) && (yOverlap >= d)
 
 
 {-| Check if two boxes are separated by at least the given amount. For example,
@@ -825,35 +935,35 @@ will return true even if the two boxes just touch each other.
 separatedByAtLeast : Quantity Float units -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Bool
 separatedByAtLeast tolerance firstBox secondBox =
     let
-        clampedTolerance =
-            Quantity.max tolerance Quantity.zero
+        (Types.BoundingBox2d b1) =
+            firstBox
+
+        (Types.BoundingBox2d b2) =
+            secondBox
 
         xSeparation =
-            Quantity.max (minX firstBox) (minX secondBox)
-                |> Quantity.minus
-                    (Quantity.min (maxX firstBox) (maxX secondBox))
+            max b1.minX b2.minX - min b1.maxX b2.maxX
 
         ySeparation =
-            Quantity.max (minY firstBox) (minY secondBox)
-                |> Quantity.minus
-                    (Quantity.min (maxY firstBox) (maxY secondBox))
+            max b1.minY b2.minY - min b1.maxY b2.maxY
+
+        (Quantity dGiven) =
+            tolerance
+
+        d =
+            max dGiven 0
     in
-    if
-        (xSeparation |> Quantity.greaterThan Quantity.zero)
-            && (ySeparation |> Quantity.greaterThan Quantity.zero)
-    then
-        Quantity.squared xSeparation
-            |> Quantity.plus (Quantity.squared ySeparation)
-            |> Quantity.greaterThanOrEqualTo (Quantity.squared clampedTolerance)
+    if (xSeparation > 0) && (ySeparation > 0) then
+        xSeparation * xSeparation + ySeparation * ySeparation >= d * d
 
-    else if xSeparation |> Quantity.greaterThan Quantity.zero then
-        xSeparation |> Quantity.greaterThanOrEqualTo clampedTolerance
+    else if xSeparation > 0 then
+        xSeparation >= d
 
-    else if ySeparation |> Quantity.greaterThan Quantity.zero then
-        ySeparation |> Quantity.greaterThanOrEqualTo clampedTolerance
+    else if ySeparation > 0 then
+        ySeparation >= d
 
-    else if xSeparation == Quantity.zero || ySeparation == Quantity.zero then
-        clampedTolerance == Quantity.zero
+    else if xSeparation == 0 && ySeparation == 0 then
+        d == 0
 
     else
         False
@@ -886,10 +996,14 @@ separatedByAtLeast tolerance firstBox secondBox =
 -}
 isContainedIn : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Bool
 isContainedIn other boundingBox =
-    (minX other |> Quantity.lessThanOrEqualTo (minX boundingBox))
-        && (maxX boundingBox |> Quantity.lessThanOrEqualTo (maxX other))
-        && (minY other |> Quantity.lessThanOrEqualTo (minY boundingBox))
-        && (maxY boundingBox |> Quantity.lessThanOrEqualTo (maxY other))
+    let
+        (Types.BoundingBox2d b2) =
+            other
+
+        (Types.BoundingBox2d b1) =
+            boundingBox
+    in
+    (b2.minX <= b1.minX) && (b1.maxX <= b2.maxX) && (b2.minY <= b1.minY) && (b1.maxY <= b2.maxY)
 
 
 {-| Attempt to build a bounding box that contains all points common to both
@@ -935,12 +1049,19 @@ least one of its dimensions will be zero):
 intersection : BoundingBox2d units coordinates -> BoundingBox2d units coordinates -> Maybe (BoundingBox2d units coordinates)
 intersection firstBox secondBox =
     if intersects firstBox secondBox then
+        let
+            (Types.BoundingBox2d b1) =
+                firstBox
+
+            (Types.BoundingBox2d b2) =
+                secondBox
+        in
         Just
             (Types.BoundingBox2d
-                { minX = Quantity.max (minX firstBox) (minX secondBox)
-                , maxX = Quantity.min (maxX firstBox) (maxX secondBox)
-                , minY = Quantity.max (minY firstBox) (minY secondBox)
-                , maxY = Quantity.min (maxY firstBox) (maxY secondBox)
+                { minX = max b1.minX b2.minX
+                , maxX = min b1.maxX b2.maxX
+                , minY = max b1.minY b2.minY
+                , maxY = min b1.maxY b2.maxY
                 }
             )
 
@@ -953,38 +1074,38 @@ intersection firstBox secondBox =
 scaleAbout : Point2d units coordinates -> Float -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
 scaleAbout point scale boundingBox =
     let
-        x0 =
-            Point2d.xCoordinate point
+        (Types.Point2d { x, y }) =
+            point
 
-        y0 =
-            Point2d.yCoordinate point
+        (Types.BoundingBox2d b) =
+            boundingBox
 
-        scaledMinX =
-            Quantity.scaleAbout x0 scale (minX boundingBox)
+        x1 =
+            x + scale * (b.minX - x)
 
-        scaledMaxX =
-            Quantity.scaleAbout x0 scale (maxX boundingBox)
+        x2 =
+            x + scale * (b.maxX - x)
 
-        scaledMinY =
-            Quantity.scaleAbout y0 scale (minY boundingBox)
+        y1 =
+            y + scale * (b.minY - y)
 
-        scaledMaxY =
-            Quantity.scaleAbout y0 scale (maxY boundingBox)
+        y2 =
+            y + scale * (b.maxY - y)
     in
     if scale >= 0 then
         Types.BoundingBox2d
-            { minX = scaledMinX
-            , maxX = scaledMaxX
-            , minY = scaledMinY
-            , maxY = scaledMaxY
+            { minX = x1
+            , maxX = x2
+            , minY = y1
+            , maxY = y2
             }
 
     else
         Types.BoundingBox2d
-            { minX = scaledMaxX
-            , maxX = scaledMinX
-            , minY = scaledMaxY
-            , maxY = scaledMinY
+            { minX = x1
+            , maxX = x2
+            , minY = y1
+            , maxY = y2
             }
 
 
@@ -993,17 +1114,17 @@ scaleAbout point scale boundingBox =
 translateBy : Vector2d units coordinates -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
 translateBy displacement boundingBox =
     let
-        dx =
-            Vector2d.xComponent displacement
+        (Types.Vector2d { x, y }) =
+            displacement
 
-        dy =
-            Vector2d.yComponent displacement
+        (Types.BoundingBox2d b) =
+            boundingBox
     in
     Types.BoundingBox2d
-        { minX = minX boundingBox |> Quantity.plus dx
-        , maxX = maxX boundingBox |> Quantity.plus dx
-        , minY = minY boundingBox |> Quantity.plus dy
-        , maxY = maxY boundingBox |> Quantity.plus dy
+        { minX = b.minX + x
+        , maxX = b.maxX + x
+        , minY = b.minY + y
+        , maxY = b.maxY + y
         }
 
 
@@ -1012,19 +1133,6 @@ translateBy displacement boundingBox =
 translateIn : Direction2d coordinates -> Quantity Float units -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
 translateIn direction distance boundingBox =
     translateBy (Vector2d.withLength distance direction) boundingBox
-
-
-{-| Offsets boundingBox irrespective of the resulting bounding box is valid or
-not.
--}
-unsafeOffsetBy : Quantity Float units -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
-unsafeOffsetBy amount boundingBox =
-    Types.BoundingBox2d
-        { minX = minX boundingBox |> Quantity.minus amount
-        , minY = minY boundingBox |> Quantity.minus amount
-        , maxY = maxY boundingBox |> Quantity.plus amount
-        , maxX = maxX boundingBox |> Quantity.plus amount
-        }
 
 
 {-| Expand or shrink the given bounding box in all the directions by the given
@@ -1054,14 +1162,32 @@ If you only want to expand a bounding box, you can use
 offsetBy : Quantity Float units -> BoundingBox2d units coordinates -> Maybe (BoundingBox2d units coordinates)
 offsetBy amount boundingBox =
     let
-        ( width, height ) =
-            dimensions boundingBox
+        (Quantity d) =
+            amount
 
-        minValidOffset =
-            Quantity.multiplyBy -0.5 (Quantity.min width height)
+        (Types.BoundingBox2d b) =
+            boundingBox
+
+        x1 =
+            b.minX - d
+
+        x2 =
+            b.maxX + d
+
+        y1 =
+            b.minY - d
+
+        y2 =
+            b.maxY + d
     in
-    if amount |> Quantity.greaterThan minValidOffset then
-        Just <| unsafeOffsetBy amount boundingBox
+    if (x1 <= x2) && (y1 <= y2) then
+        Just <|
+            Types.BoundingBox2d
+                { minX = x1
+                , maxX = x2
+                , minY = y1
+                , maxY = y2
+                }
 
     else
         Nothing
@@ -1085,7 +1211,22 @@ need to be able to contract a bounding box, use
 -}
 expandBy : Quantity Float units -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
 expandBy amount boundingBox =
-    unsafeOffsetBy (Quantity.abs amount) boundingBox
+    let
+        (Quantity dGiven) =
+            amount
+
+        d =
+            abs dGiven
+
+        (Types.BoundingBox2d b) =
+            boundingBox
+    in
+    Types.BoundingBox2d
+        { minX = b.minX - d
+        , minY = b.minY - d
+        , maxY = b.maxY + d
+        , maxX = b.maxX + d
+        }
 
 
 {-| Create a [random generator](https://package.elm-lang.org/packages/elm/random/latest/Random)

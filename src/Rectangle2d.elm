@@ -669,10 +669,10 @@ boundingBox rectangle =
             p0.y + iy * halfWidth + jy * halfHeight
     in
     Types.BoundingBox2d
-        { minX = Quantity minX
-        , maxX = Quantity maxX
-        , minY = Quantity minY
-        , maxY = Quantity maxY
+        { minX = minX
+        , maxX = maxX
+        , minY = minY
+        , maxY = maxY
         }
 
 
