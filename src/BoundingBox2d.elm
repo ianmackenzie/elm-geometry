@@ -412,10 +412,10 @@ hullN points =
 {-| Combination of [`hullOf`](#hullOf) and [`hullN`](#hullN).
 -}
 hullOfN : (a -> Point2d units coordinates) -> List a -> Maybe (BoundingBox2d units coordinates)
-hullOfN getBoundingBox items =
+hullOfN getPoint items =
     case items of
         first :: rest ->
-            Just (hullOf getBoundingBox first rest)
+            Just (hullOf getPoint first rest)
 
         [] ->
             Nothing
