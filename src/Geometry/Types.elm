@@ -111,12 +111,12 @@ type BoundingBox2d units coordinates
 
 type BoundingBox3d units coordinates
     = BoundingBox3d
-        { minX : Quantity Float units
-        , maxX : Quantity Float units
-        , minY : Quantity Float units
-        , maxY : Quantity Float units
-        , minZ : Quantity Float units
-        , maxZ : Quantity Float units
+        { minX : Float
+        , maxX : Float
+        , minY : Float
+        , maxY : Float
+        , minZ : Float
+        , maxZ : Float
         }
 
 

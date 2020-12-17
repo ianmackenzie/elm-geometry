@@ -456,12 +456,12 @@ boundingBox rectangle =
             p0.z + iz * halfWidth + jz * halfHeight
     in
     Types.BoundingBox3d
-        { minX = Quantity minX
-        , maxX = Quantity maxX
-        , minY = Quantity minY
-        , maxY = Quantity maxY
-        , minZ = Quantity minZ
-        , maxZ = Quantity maxZ
+        { minX = minX
+        , maxX = maxX
+        , minY = minY
+        , maxY = maxY
+        , minZ = minZ
+        , maxZ = maxZ
         }
 
 
