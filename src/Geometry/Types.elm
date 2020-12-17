@@ -120,6 +120,39 @@ type BoundingBox3d units coordinates
         }
 
 
+type VectorBoundingBox2d units coordinates
+    = VectorBoundingBox2d
+        { minX : Float
+        , maxX : Float
+        , minY : Float
+        , maxY : Float
+        }
+
+
+type VectorBoundingBox3d units coordinates
+    = VectorBoundingBox3d
+        { minX : Float
+        , maxX : Float
+        , minY : Float
+        , maxY : Float
+        , minZ : Float
+        , maxZ : Float
+        }
+
+
+type VectorBoundingBox4d units coordinates
+    = VectorBoundingBox4d
+        { minX : Float
+        , maxX : Float
+        , minY : Float
+        , maxY : Float
+        , minZ : Float
+        , maxZ : Float
+        , minW : Float
+        , maxW : Float
+        }
+
+
 type Rectangle2d units coordinates
     = Rectangle2d
         { axes : Frame2d units coordinates {}
