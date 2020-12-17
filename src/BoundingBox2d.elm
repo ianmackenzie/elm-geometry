@@ -831,13 +831,13 @@ intervals boundingBox =
 contains : Point2d units coordinates -> BoundingBox2d units coordinates -> Bool
 contains point boundingBox =
     let
-        (Types.Point2d p) =
+        (Types.Point2d { x, y }) =
             point
 
         (Types.BoundingBox2d b) =
             boundingBox
     in
-    (p.x >= b.minX) && (p.x <= b.maxX) && (p.y >= b.minY) && (p.y <= b.maxY)
+    (x >= b.minX) && (x <= b.maxX) && (y >= b.minY) && (y <= b.maxY)
 
 
 {-| Test if two boxes touch or overlap at all (have any points in common);
