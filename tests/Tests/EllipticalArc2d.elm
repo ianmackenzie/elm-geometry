@@ -1,5 +1,6 @@
 module Tests.EllipticalArc2d exposing
-    ( boundingBox
+    ( approximate
+    , boundingBox
     , firstDerivative
     , fromEndpointsReplicatesArc
     , reproducibleArc
@@ -134,6 +135,7 @@ curveOperations =
     , translateBy = EllipticalArc2d.translateBy
     , rotateAround = EllipticalArc2d.rotateAround
     , mirrorAcross = EllipticalArc2d.mirrorAcross
+    , numApproximationSegments = EllipticalArc2d.numApproximationSegments
     }
 
 
@@ -149,6 +151,11 @@ transformations =
 firstDerivative : Test
 firstDerivative =
     Tests.Generic.Curve2d.firstDerivative curveOperations
+
+
+approximate : Test
+approximate =
+    Tests.Generic.Curve2d.approximate curveOperations
 
 
 boundingBox : Test

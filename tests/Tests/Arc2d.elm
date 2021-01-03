@@ -1,5 +1,6 @@
 module Tests.Arc2d exposing
-    ( boundingBox
+    ( approximate
+    , boundingBox
     , evaluateHalfIsMidpoint
     , evaluateOneIsEndPoint
     , evaluateZeroIsStartPoint
@@ -137,6 +138,7 @@ curveOperations =
     , translateBy = Arc2d.translateBy
     , rotateAround = Arc2d.rotateAround
     , mirrorAcross = Arc2d.mirrorAcross
+    , numApproximationSegments = Arc2d.numApproximationSegments
     }
 
 
@@ -152,6 +154,11 @@ transformations =
 firstDerivative : Test
 firstDerivative =
     Curve2d.firstDerivative curveOperations
+
+
+approximate : Test
+approximate =
+    Curve2d.approximate curveOperations
 
 
 mirroredCenterPoint : Test

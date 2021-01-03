@@ -2,6 +2,7 @@ module Tests.Generic.Curve2d exposing
     ( GlobalCoordinates
     , LocalCoordinates
     , Operations
+    , approximate
     , firstDerivative
     , transformations
     )
@@ -12,8 +13,12 @@ import Frame2d exposing (Frame2d)
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
-import Length exposing (Meters)
+import Length exposing (Length, Meters)
+import LineSegment2d
+import Parameter1d
 import Point2d exposing (Point2d)
+import Polyline2d
+import Quantity
 import Test exposing (Test)
 import Vector2d exposing (Vector2d)
 
@@ -34,6 +39,7 @@ type alias Operations curve coordinates =
     , translateBy : Vector2d Meters coordinates -> curve -> curve
     , rotateAround : Point2d Meters coordinates -> Angle -> curve -> curve
     , mirrorAcross : Axis2d Meters coordinates -> curve -> curve
+    , numApproximationSegments : Length -> curve -> Int
     }
 
 
@@ -220,4 +226,40 @@ firstDerivative operations =
             in
             analyticalDerivative
                 |> Expect.vector2dWithin (Length.meters 1.0e-6) numericalDerivative
+        )
+
+
+approximate : Operations curve GlobalCoordinates -> Test
+approximate operations =
+    Test.fuzz operations.fuzzer
+        "approximate has desired accuracy"
+        (\curve ->
+            let
+                tolerance =
+                    Length.centimeters 1
+
+                numSegments =
+                    operations.numApproximationSegments tolerance curve
+
+                vertices =
+                    Parameter1d.steps numSegments (operations.pointOn curve)
+
+                segments =
+                    Polyline2d.segments (Polyline2d.fromVertices vertices)
+
+                testPoints =
+                    Parameter1d.midpoints numSegments (operations.pointOn curve)
+
+                errors =
+                    List.map2
+                        (\segment testPoint ->
+                            Point2d.distanceFrom testPoint (LineSegment2d.midpoint segment)
+                        )
+                        segments
+                        testPoints
+
+                maxError =
+                    List.foldl Quantity.max Quantity.zero errors
+            in
+            maxError |> Expect.quantityLessThan tolerance
         )
