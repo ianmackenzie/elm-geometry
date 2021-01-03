@@ -17,6 +17,7 @@ module BoundingBox3d exposing
     , minX, maxX, minY, maxY, minZ, maxZ, dimensions, midX, midY, midZ, centerPoint
     , xInterval, yInterval, zInterval, intervals
     , contains, isContainedIn, intersects, overlappingByAtLeast, separatedByAtLeast
+    , interpolate
     , scaleAbout, translateBy, translateIn, expandBy, offsetBy
     , at, at_
     , randomPoint
@@ -84,6 +85,11 @@ You can also get the X, Y and Z ranges of a bounding box as [intervals](https://
 @docs contains, isContainedIn, intersects, overlappingByAtLeast, separatedByAtLeast
 
 
+# Interpolation
+
+@docs interpolate
+
+
 # Transformations
 
 @docs scaleAbout, translateBy, translateIn, expandBy, offsetBy
@@ -101,6 +107,7 @@ You can also get the X, Y and Z ranges of a bounding box as [intervals](https://
 -}
 
 import Direction3d exposing (Direction3d)
+import Float.Extra as Float
 import Geometry.Types as Types
 import Point3d exposing (Point3d)
 import Quantity exposing (Quantity(..), Rate)
@@ -1209,6 +1216,22 @@ intersection firstBox secondBox =
         Nothing
 
 
+{-| Interpolate within a bounding box based on parameter values which range from
+0 to 1.
+-}
+interpolate : BoundingBox3d units coordinates -> Float -> Float -> Float -> Point3d units coordinates
+interpolate boundingBox u v w =
+    let
+        (Types.BoundingBox3d b) =
+            boundingBox
+    in
+    Types.Point3d
+        { x = Float.interpolateFrom b.minX b.maxX u
+        , y = Float.interpolateFrom b.minY b.maxY v
+        , z = Float.interpolateFrom b.minZ b.maxZ w
+        }
+
+
 {-| Scale a bounding box about a given point by a given scale.
 -}
 scaleAbout : Point3d units coordinates -> Float -> BoundingBox3d units coordinates -> BoundingBox3d units coordinates
@@ -1401,10 +1424,7 @@ for points within a given bounding box.
 randomPoint : BoundingBox3d units coordinates -> Generator (Point3d units coordinates)
 randomPoint boundingBox =
     let
-        ( x, y, z ) =
-            intervals boundingBox
+        parameterValue =
+            Random.float 0 1
     in
-    Random.map3 Point3d.xyz
-        (Interval.randomValue x)
-        (Interval.randomValue y)
-        (Interval.randomValue z)
+    Random.map3 (interpolate boundingBox) parameterValue parameterValue parameterValue

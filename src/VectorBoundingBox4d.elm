@@ -15,6 +15,7 @@ module VectorBoundingBox4d exposing
     , aggregate, aggregate3, aggregateN, aggregateOf, aggregateOfN
     , xInterval, yInterval, zInterval, wInterval
     , contains, isContainedIn, intersects
+    , interpolate
     , at, at_
     )
 
@@ -61,12 +62,18 @@ contains all of the input boxes.
 @docs contains, isContainedIn, intersects
 
 
+# Interpolation
+
+@docs interpolate
+
+
 # Unit conversions
 
 @docs at, at_
 
 -}
 
+import Float.Extra as Float
 import Geometry.Types as Types
 import Quantity exposing (Quantity(..), Rate)
 import Quantity.Extra as Quantity
@@ -807,3 +814,20 @@ intersection firstBox secondBox =
 
     else
         Nothing
+
+
+{-| Interpolate within a bounding box based on parameter values which range from
+0 to 1.
+-}
+interpolate : VectorBoundingBox4d units coordinates -> Float -> Float -> Float -> Float -> Vector4d units coordinates
+interpolate boundingBox t u v w =
+    let
+        (Types.VectorBoundingBox4d b) =
+            boundingBox
+    in
+    Types.Vector4d
+        { x = Float.interpolateFrom b.minX b.maxX t
+        , y = Float.interpolateFrom b.minY b.maxY u
+        , z = Float.interpolateFrom b.minZ b.maxZ v
+        , w = Float.interpolateFrom b.minW b.maxW w
+        }

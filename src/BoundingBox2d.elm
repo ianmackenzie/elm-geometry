@@ -17,6 +17,7 @@ module BoundingBox2d exposing
     , minX, maxX, minY, maxY, dimensions, midX, midY, centerPoint
     , xInterval, yInterval, intervals
     , contains, isContainedIn, intersects, overlappingByAtLeast, separatedByAtLeast
+    , interpolate
     , scaleAbout, translateBy, translateIn, expandBy, offsetBy
     , at, at_
     , randomPoint
@@ -85,6 +86,11 @@ You can also get the X and Y ranges of a bounding box as [intervals](https://pac
 @docs contains, isContainedIn, intersects, overlappingByAtLeast, separatedByAtLeast
 
 
+# Interpolation
+
+@docs interpolate
+
+
 # Transformations
 
 @docs scaleAbout, translateBy, translateIn, expandBy, offsetBy
@@ -102,6 +108,7 @@ You can also get the X and Y ranges of a bounding box as [intervals](https://pac
 -}
 
 import Direction2d exposing (Direction2d)
+import Float.Extra as Float
 import Geometry.Types as Types
 import Point2d exposing (Point2d)
 import Quantity exposing (Quantity(..), Rate)
@@ -1069,6 +1076,21 @@ intersection firstBox secondBox =
         Nothing
 
 
+{-| Interpolate within a bounding box based on parameter values which range from
+0 to 1.
+-}
+interpolate : BoundingBox2d units coordinates -> Float -> Float -> Point2d units coordinates
+interpolate boundingBox u v =
+    let
+        (Types.BoundingBox2d b) =
+            boundingBox
+    in
+    Types.Point2d
+        { x = Float.interpolateFrom b.minX b.maxX u
+        , y = Float.interpolateFrom b.minY b.maxY v
+        }
+
+
 {-| Scale a bounding box about a given point by a given scale.
 -}
 scaleAbout : Point2d units coordinates -> Float -> BoundingBox2d units coordinates -> BoundingBox2d units coordinates
@@ -1235,7 +1257,7 @@ for points within a given bounding box.
 randomPoint : BoundingBox2d units coordinates -> Generator (Point2d units coordinates)
 randomPoint boundingBox =
     let
-        ( x, y ) =
-            intervals boundingBox
+        parameterValue =
+            Random.float 0 1
     in
-    Random.map2 Point2d.xy (Interval.randomValue x) (Interval.randomValue y)
+    Random.map2 (interpolate boundingBox) parameterValue parameterValue
