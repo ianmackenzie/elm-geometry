@@ -62,8 +62,8 @@
         "ianmackenzie/elm-float-extra": "1.1.0 <= v < 2.0.0",
         "ianmackenzie/elm-interval": "3.1.0 <= v < 4.0.0",
         "ianmackenzie/elm-triangular-mesh": "1.0.2 <= v < 2.0.0",
-        "ianmackenzie/elm-units": "2.2.0 <= v < 3.0.0",
-        "ianmackenzie/elm-units-interval": "2.2.1 <= v < 3.0.0"
+        "ianmackenzie/elm-units": "2.7.0 <= v < 3.0.0",
+        "ianmackenzie/elm-units-interval": "2.3.0 <= v < 3.0.0"
     },
     "test-dependencies": {
         "elm-community/list-extra": "8.0.0 <= v < 9.0.0",
