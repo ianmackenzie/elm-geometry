@@ -13,7 +13,7 @@ module VectorBoundingBox2d exposing
     , union, intersection
     , hull, hull3, hullN, hullOf, hullOfN
     , aggregate, aggregate3, aggregateN, aggregateOf, aggregateOfN
-    , xInterval, yInterval, intervals
+    , xInterval, yInterval, intervals, length
     , contains, isContainedIn, intersects
     , interpolate
     , at, at_
@@ -55,7 +55,7 @@ contains all of the input boxes.
 
 # Properties
 
-@docs xInterval, yInterval, intervals
+@docs xInterval, yInterval, intervals, length
 
 
 # Queries
@@ -538,6 +538,26 @@ yInterval boundingBox =
 intervals : VectorBoundingBox2d units coordinates -> ( Interval Float units, Interval Float units )
 intervals boundingBox =
     ( xInterval boundingBox, yInterval boundingBox )
+
+
+{-| Get the range of lengths of vectors contained in a given bounding box.
+-}
+length : VectorBoundingBox2d units coordinates -> Interval Float units
+length boundingBox =
+    let
+        ( Quantity xMin, Quantity xMax ) =
+            Interval.endpoints (Interval.abs (xInterval boundingBox))
+
+        ( Quantity yMin, Quantity yMax ) =
+            Interval.endpoints (Interval.abs (yInterval boundingBox))
+
+        minLength =
+            Quantity (sqrt (xMin * xMin + yMin * yMin))
+
+        maxLength =
+            Quantity (sqrt (xMax * xMax + yMax * yMax))
+    in
+    Interval.from minLength maxLength
 
 
 {-| Check if a bounding box contains a particular point.

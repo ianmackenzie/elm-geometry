@@ -13,7 +13,7 @@ module VectorBoundingBox4d exposing
     , union, intersection
     , hull, hull3, hullN, hullOf, hullOfN
     , aggregate, aggregate3, aggregateN, aggregateOf, aggregateOfN
-    , xInterval, yInterval, zInterval, wInterval
+    , xInterval, yInterval, zInterval, wInterval, length
     , contains, isContainedIn, intersects
     , interpolate
     , at, at_
@@ -55,7 +55,7 @@ contains all of the input boxes.
 
 # Properties
 
-@docs xInterval, yInterval, zInterval, wInterval
+@docs xInterval, yInterval, zInterval, wInterval, length
 
 
 # Queries
@@ -644,6 +644,32 @@ wInterval boundingBox =
             boundingBox
     in
     Interval.from (Quantity b.minW) (Quantity b.maxW)
+
+
+{-| Get the range of lengths of vectors contained in a given bounding box.
+-}
+length : VectorBoundingBox4d units coordinates -> Interval Float units
+length boundingBox =
+    let
+        ( Quantity xMin, Quantity xMax ) =
+            Interval.endpoints (Interval.abs (xInterval boundingBox))
+
+        ( Quantity yMin, Quantity yMax ) =
+            Interval.endpoints (Interval.abs (yInterval boundingBox))
+
+        ( Quantity zMin, Quantity zMax ) =
+            Interval.endpoints (Interval.abs (zInterval boundingBox))
+
+        ( Quantity wMin, Quantity wMax ) =
+            Interval.endpoints (Interval.abs (wInterval boundingBox))
+
+        minLength =
+            Quantity (sqrt (xMin * xMin + yMin * yMin + zMin * zMin + wMin * wMin))
+
+        maxLength =
+            Quantity (sqrt (xMax * xMax + yMax * yMax + zMax * zMax + wMax * wMax))
+    in
+    Interval.from minLength maxLength
 
 
 {-| Check if a bounding box contains a particular point.
