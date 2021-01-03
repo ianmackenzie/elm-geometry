@@ -17,6 +17,7 @@ module VectorBoundingBox3d exposing
     , contains, isContainedIn, intersects
     , interpolate
     , at, at_
+    , randomVector
     )
 
 {-| A `VectorBoundingBox3d` is a version of a `BoundingBox3d` that contains
@@ -71,6 +72,11 @@ contains all of the input boxes.
 
 @docs at, at_
 
+
+# Random vector generation
+
+@docs randomVector
+
 -}
 
 import Float.Extra as Float
@@ -78,6 +84,7 @@ import Geometry.Types as Types
 import Quantity exposing (Quantity(..), Rate)
 import Quantity.Extra as Quantity
 import Quantity.Interval as Interval exposing (Interval)
+import Random exposing (Generator)
 import Vector3d exposing (Vector3d)
 
 
@@ -771,3 +778,15 @@ interpolate boundingBox u v w =
         , y = Float.interpolateFrom b.minY b.maxY v
         , z = Float.interpolateFrom b.minZ b.maxZ w
         }
+
+
+{-| Create a [random generator](https://package.elm-lang.org/packages/elm/random/latest/Random)
+for vectors within a given bounding box.
+-}
+randomVector : VectorBoundingBox3d units coordinates -> Generator (Vector3d units coordinates)
+randomVector boundingBox =
+    let
+        parameterValue =
+            Random.float 0 1
+    in
+    Random.map3 (interpolate boundingBox) parameterValue parameterValue parameterValue
