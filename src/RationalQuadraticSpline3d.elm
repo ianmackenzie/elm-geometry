@@ -18,6 +18,7 @@ module RationalQuadraticSpline3d exposing
     , at, at_
     , relativeTo, placeIn
     , bisect, splitAt
+    , numApproximationSegments
     )
 
 {-| A `RationalQuadraticSpline3d` is a rational quadratic Bézier curve in 3D
@@ -84,6 +85,14 @@ module](Point3d#transformations).
 # Subdivision
 
 @docs bisect, splitAt
+
+
+# Advanced
+
+You are unlikely to need to use these functions directly, but they are useful if
+you are writing low-level geometric algorithms.
+
+@docs numApproximationSegments
 
 -}
 

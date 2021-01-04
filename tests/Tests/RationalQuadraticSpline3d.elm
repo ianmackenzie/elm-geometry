@@ -26,6 +26,7 @@ curveOperations =
     , translateBy = RationalQuadraticSpline3d.translateBy
     , rotateAround = RationalQuadraticSpline3d.rotateAround
     , mirrorAcross = RationalQuadraticSpline3d.mirrorAcross
+    , numApproximationSegments = RationalQuadraticSpline3d.numApproximationSegments
     }
 
 

@@ -2,6 +2,7 @@ module Tests.Generic.Curve3d exposing
     ( GlobalCoordinates
     , LocalCoordinates
     , Operations
+    , approximate
     , firstDerivative
     , transformations
     )
@@ -12,9 +13,13 @@ import Frame3d exposing (Frame3d)
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
-import Length exposing (Meters)
+import Length exposing (Length, Meters)
+import LineSegment3d
+import Parameter1d
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
+import Polyline3d
+import Quantity
 import Test exposing (Test)
 import Vector3d exposing (Vector3d)
 
@@ -35,6 +40,7 @@ type alias Operations curve coordinates =
     , translateBy : Vector3d Meters coordinates -> curve -> curve
     , rotateAround : Axis3d Meters coordinates -> Angle -> curve -> curve
     , mirrorAcross : Plane3d Meters coordinates -> curve -> curve
+    , numApproximationSegments : Length -> curve -> Int
     }
 
 
@@ -198,4 +204,40 @@ firstDerivative operations =
             in
             analyticalDerivative
                 |> Expect.vector3dWithin (Length.meters 1.0e-6) numericalDerivative
+        )
+
+
+approximate : Operations curve GlobalCoordinates -> Test
+approximate operations =
+    Test.fuzz operations.fuzzer
+        "approximate has desired accuracy"
+        (\curve ->
+            let
+                tolerance =
+                    Length.centimeters 1
+
+                numSegments =
+                    operations.numApproximationSegments tolerance curve
+
+                vertices =
+                    Parameter1d.steps numSegments (operations.pointOn curve)
+
+                segments =
+                    Polyline3d.segments (Polyline3d.fromVertices vertices)
+
+                testPoints =
+                    Parameter1d.midpoints numSegments (operations.pointOn curve)
+
+                errors =
+                    List.map2
+                        (\segment testPoint ->
+                            Point3d.distanceFrom testPoint (LineSegment3d.midpoint segment)
+                        )
+                        segments
+                        testPoints
+
+                maxError =
+                    List.foldl Quantity.max Quantity.zero errors
+            in
+            maxError |> Expect.quantityLessThan tolerance
         )

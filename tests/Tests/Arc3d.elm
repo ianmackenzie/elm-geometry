@@ -98,6 +98,7 @@ curveOperations =
     , translateBy = Arc3d.translateBy
     , rotateAround = Arc3d.rotateAround
     , mirrorAcross = Arc3d.mirrorAcross
+    , numApproximationSegments = Arc3d.numApproximationSegments
     }
 
 
@@ -108,6 +109,11 @@ transformations =
         curveOperations
         Arc3d.placeIn
         Arc3d.relativeTo
+
+
+approximate : Test
+approximate =
+    Curve3d.approximate curveOperations
 
 
 boundingBox : Test

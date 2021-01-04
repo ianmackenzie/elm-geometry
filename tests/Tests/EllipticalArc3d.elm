@@ -67,6 +67,7 @@ curveOperations =
     , translateBy = EllipticalArc3d.translateBy
     , rotateAround = EllipticalArc3d.rotateAround
     , mirrorAcross = EllipticalArc3d.mirrorAcross
+    , numApproximationSegments = EllipticalArc3d.numApproximationSegments
     }
 
 
@@ -77,6 +78,11 @@ transformations =
         curveOperations
         EllipticalArc3d.placeIn
         EllipticalArc3d.relativeTo
+
+
+approximate : Test
+approximate =
+    Curve3d.approximate curveOperations
 
 
 boundingBox : Test

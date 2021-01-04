@@ -26,6 +26,7 @@ curveOperations =
     , translateBy = RationalCubicSpline3d.translateBy
     , rotateAround = RationalCubicSpline3d.rotateAround
     , mirrorAcross = RationalCubicSpline3d.mirrorAcross
+    , numApproximationSegments = RationalCubicSpline3d.numApproximationSegments
     }
 
 
