@@ -3,7 +3,7 @@ module Geometry.Expect exposing
     , quantity, quantityWithin, angle, angleWithin
     , quantityAtLeast, quantityAtMost, quantityGreaterThan, quantityLessThan, quantityContainedIn
     , point2d, point2dWithin, point2dContainedIn, point3d, point3dWithin, point3dContainedIn
-    , vector2d, vector2dWithin, vector3d, vector3dWithin
+    , vector2d, vector2dWithin, vector2dContainedIn, vector3d, vector3dWithin, vector3dContainedIn
     , direction2d, direction2dWithin, direction2dPerpendicularTo, direction3d, direction3dWithin, direction3dPerpendicularTo
     , boundingBox2d, boundingBox2dWithin, boundingBox3d, boundingBox3dWithin
     , lineSegment2d, lineSegment2dWithin, lineSegment3d, lineSegment3dWithin, triangle2d, triangle2dWithin, triangle3d, triangle3dWithin, polyline2d, polyline2dWithin, polyline3d, polyline3dWithin, polygon2d, polygon2dWithin
@@ -59,7 +59,7 @@ tolerance.
 
 # Vectors
 
-@docs vector2d, vector2dWithin, vector3d, vector3dWithin
+@docs vector2d, vector2dWithin, vector2dContainedIn, vector3d, vector3dWithin, vector3dContainedIn
 
 
 # Directions
@@ -137,6 +137,8 @@ import Triangle2d exposing (Triangle2d)
 import Triangle3d exposing (Triangle3d)
 import Vector2d exposing (Vector2d)
 import Vector3d exposing (Vector3d)
+import VectorBoundingBox2d exposing (VectorBoundingBox2d)
+import VectorBoundingBox3d exposing (VectorBoundingBox3d)
 
 
 type alias Comparison a =
@@ -377,6 +379,31 @@ vector2dWithin tolerance =
     expect (Vector2d.equalWithin tolerance)
 
 
+{-| Check that a `Vector2d` is approximately contained in a given
+`VectorBoundingBox2d`.
+-}
+vector2dContainedIn : VectorBoundingBox2d units coordinates -> Vector2d units coordinates -> Expectation
+vector2dContainedIn box vector =
+    let
+        maxLength =
+            Interval.maxValue (VectorBoundingBox2d.length box)
+
+        tolerantBox =
+            VectorBoundingBox2d.expandBy (absoluteToleranceFor maxLength) box
+    in
+    if VectorBoundingBox2d.contains vector tolerantBox then
+        Expect.pass
+
+    else
+        Expect.fail
+            ("Expected vector "
+                ++ Debug.toString vector
+                ++ " to be within bounding box "
+                ++ Debug.toString box
+                ++ "."
+            )
+
+
 {-| Check that two `Vector3d` values are approximately equal.
 -}
 vector3d : Vector3d units coordinates -> Vector3d units coordinates -> Expectation
@@ -390,6 +417,31 @@ vector3d first second =
 vector3dWithin : Quantity Float units -> Vector3d units coordinates -> Vector3d units coordinates -> Expectation
 vector3dWithin tolerance =
     expect (Vector3d.equalWithin tolerance)
+
+
+{-| Check that a `Vector3d` is approximately contained in a given
+`VectorBoundingBox3d`.
+-}
+vector3dContainedIn : VectorBoundingBox3d units coordinates -> Vector3d units coordinates -> Expectation
+vector3dContainedIn box vector =
+    let
+        maxLength =
+            Interval.maxValue (VectorBoundingBox3d.length box)
+
+        tolerantBox =
+            VectorBoundingBox3d.expandBy (absoluteToleranceFor maxLength) box
+    in
+    if VectorBoundingBox3d.contains vector tolerantBox then
+        Expect.pass
+
+    else
+        Expect.fail
+            ("Expected vector "
+                ++ Debug.toString vector
+                ++ " to be within bounding box "
+                ++ Debug.toString box
+                ++ "."
+            )
 
 
 {-| -}
