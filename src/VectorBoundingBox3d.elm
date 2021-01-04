@@ -15,6 +15,7 @@ module VectorBoundingBox3d exposing
     , aggregate, aggregate3, aggregateN, aggregateOf, aggregateOfN
     , xInterval, yInterval, zInterval, intervals, length
     , contains, isContainedIn, intersects
+    , expandBy
     , interpolate
     , at, at_
     , randomVector
@@ -61,6 +62,11 @@ contains all of the input boxes.
 # Queries
 
 @docs contains, isContainedIn, intersects
+
+
+# Transformations
+
+@docs expandBy
 
 
 # Interpolation
@@ -785,6 +791,32 @@ intersection firstBox secondBox =
 
     else
         Nothing
+
+
+{-| Expand the given bounding box in all directions by the given offset.
+Negative offsets will be treated as positive (the absolute value will be used),
+so the resulting box will always be at least as large as the original.
+-}
+expandBy : Quantity Float units -> VectorBoundingBox3d units coordinates -> VectorBoundingBox3d units coordinates
+expandBy amount boundingBox =
+    let
+        (Quantity dGiven) =
+            amount
+
+        d =
+            abs dGiven
+
+        (Types.VectorBoundingBox3d b) =
+            boundingBox
+    in
+    Types.VectorBoundingBox3d
+        { minX = b.minX - d
+        , minY = b.minY - d
+        , minZ = b.minZ - d
+        , maxX = b.maxX + d
+        , maxY = b.maxY + d
+        , maxZ = b.maxZ + d
+        }
 
 
 {-| Interpolate within a bounding box based on parameter values which range from
