@@ -1,19 +1,21 @@
 module Tests.CubicSpline3d exposing
-    ( arcLengthMatchesAnalytical
+    ( approximate
+    , arcLengthMatchesAnalytical
     , bSplineReproducesSpline
     , fromEndpointsReproducesSpline
     , pointAtArcLengthIsEnd
     , pointAtZeroLengthIsStart
     )
 
-import CubicSpline3d
+import CubicSpline3d exposing (CubicSpline3d)
 import Expect
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
-import Length exposing (meters)
+import Length exposing (Meters, meters)
 import Quantity exposing (zero)
 import Test exposing (Test)
+import Tests.Generic.Curve3d as Curve3d
 import Tests.QuadraticSpline3d
 import Vector3d
 
@@ -134,3 +136,21 @@ bSplineReproducesSpline =
                 _ ->
                     Expect.fail "Expected a single B-spline segment"
         )
+
+
+curveOperations : Curve3d.Operations (CubicSpline3d Meters coordinates) coordinates
+curveOperations =
+    { fuzzer = Fuzz.cubicSpline3d
+    , pointOn = CubicSpline3d.pointOn
+    , firstDerivative = CubicSpline3d.firstDerivative
+    , scaleAbout = CubicSpline3d.scaleAbout
+    , translateBy = CubicSpline3d.translateBy
+    , rotateAround = CubicSpline3d.rotateAround
+    , mirrorAcross = CubicSpline3d.mirrorAcross
+    , numApproximationSegments = CubicSpline3d.numApproximationSegments
+    }
+
+
+approximate : Test
+approximate =
+    Curve3d.approximate curveOperations
