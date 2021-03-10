@@ -2,6 +2,7 @@ module Tests.Axis3d exposing
     ( directionExample
     , intersectionWithPlane
     , intersectionWithSphere
+    , intersectionWithTriangle
     , onExamples
     , originPointExample
     , throughPoints
@@ -27,6 +28,8 @@ import Quantity
 import SketchPlane3d
 import Sphere3d
 import Test exposing (Test)
+import Triangle3d
+import Vector3d
 
 
 xExample : Test
@@ -130,6 +133,65 @@ intersectionWithPlane =
 
             else
                 Expect.pass
+        )
+
+
+intersectionWithTriangle : Test
+intersectionWithTriangle =
+    Test.fuzz3
+        Fuzz.triangle3d
+        Fuzz.direction3d
+        Fuzz.vector3d
+        "intersectionWithTriangle works properly"
+        (\triangle axisDirection parameters ->
+            let
+                ( p0, p1, p2 ) =
+                    Triangle3d.vertices triangle
+
+                e1 =
+                    Vector3d.from p0 p1
+
+                e2 =
+                    Vector3d.from p0 p2
+
+                ( u, v, t ) =
+                    Vector3d.toTuple Quantity.unwrap parameters
+
+                planeIntersection =
+                    p0
+                        |> Point3d.translateBy (Vector3d.scaleBy u e1)
+                        |> Point3d.translateBy (Vector3d.scaleBy v e2)
+
+                direction =
+                    Vector3d.withLength (Length.meters 1) axisDirection
+
+                axisOrigin =
+                    planeIntersection
+                        |> Point3d.translateBy (Vector3d.scaleBy -t direction)
+
+                maybeAxis =
+                    Axis3d.throughPoints axisOrigin planeIntersection
+            in
+            case maybeAxis of
+                Nothing ->
+                    Expect.pass
+
+                Just axis ->
+                    case Axis3d.intersectionWithTriangle triangle axis of
+                        Nothing ->
+                            if u < 0 || v < 0 || u + v > 1 then
+                                Expect.pass
+
+                            else
+                                Expect.fail "Expected an intersection"
+
+                        Just point ->
+                            if u < 0 || v < 0 || u + v > 1 then
+                                Expect.fail "Expected no intersection"
+
+                            else
+                                Point3d.distanceFrom point planeIntersection
+                                    |> Expect.quantity Quantity.zero
         )
 
 
