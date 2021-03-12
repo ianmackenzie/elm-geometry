@@ -169,29 +169,23 @@ intersectionWithTriangle =
                     planeIntersection
                         |> Point3d.translateBy (Vector3d.scaleBy -t direction)
 
-                maybeAxis =
-                    Axis3d.throughPoints axisOrigin planeIntersection
+                axis =
+                    Axis3d.through axisOrigin axisDirection
             in
-            case maybeAxis of
+            case Axis3d.intersectionWithTriangle triangle axis of
                 Nothing ->
-                    Expect.pass
+                    if u < 0 || v < 0 || u + v > 1 then
+                        Expect.pass
 
-                Just axis ->
-                    case Axis3d.intersectionWithTriangle triangle axis of
-                        Nothing ->
-                            if u < 0 || v < 0 || u + v > 1 then
-                                Expect.pass
+                    else
+                        Expect.fail "Expected an intersection"
 
-                            else
-                                Expect.fail "Expected an intersection"
+                Just point ->
+                    if u < 0 || v < 0 || u + v > 1 then
+                        Expect.fail "Expected no intersection"
 
-                        Just point ->
-                            if u < 0 || v < 0 || u + v > 1 then
-                                Expect.fail "Expected no intersection"
-
-                            else
-                                Point3d.distanceFrom point planeIntersection
-                                    |> Expect.quantity Quantity.zero
+                    else
+                        Expect.point3d point planeIntersection
         )
 
 
