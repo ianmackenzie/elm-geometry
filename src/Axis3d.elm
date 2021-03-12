@@ -12,10 +12,11 @@ module Axis3d exposing
     , x, y, z
     , through, withDirection, throughPoints, on
     , originPoint, direction
-    , intersectionWithPlane, intersectionWithTriangle, intersectionWithSphere
+    , intersectionWithPlane, intersectionWithSphere
     , reverse, moveTo, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
     , at, at_
     , relativeTo, placeIn, projectInto
+    , intersectionWithTriangle
     )
 
 {-| An `Axis3d` represents an infinitely long straight line in 3D and is defined
@@ -255,8 +256,11 @@ the axis does not intersect the triangle, or if it is coplanar with it (lying
 perfectly in the plane of the triangle), returns `Nothing`.
 -}
 intersectionWithTriangle : Triangle3d units coordinates -> Axis3d units coordinates -> Maybe (Point3d units coordinates)
-intersectionWithTriangle (Types.Triangle3d ( p0, p1, p2 )) axis =
+intersectionWithTriangle triangle axis =
     let
+        (Types.Triangle3d ( p0, p1, p2 )) =
+            triangle
+
         axisDirection =
             direction axis |> Direction3d.toVector
 
