@@ -17,6 +17,7 @@ import Axis3d
 import Direction2d
 import Direction3d
 import Expect
+import Fuzz as ElmFuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Length exposing (meters)
@@ -141,51 +142,66 @@ intersectionWithTriangle =
     Test.fuzz3
         Fuzz.triangle3d
         Fuzz.direction3d
-        Fuzz.vector3d
+        (ElmFuzz.tuple3
+            ( ElmFuzz.floatRange -0.5 1.5
+            , ElmFuzz.floatRange -0.5 1.5
+            , ElmFuzz.floatRange -10 10
+            )
+        )
         "intersectionWithTriangle works properly"
         (\triangle axisDirection parameters ->
             let
-                ( p0, p1, p2 ) =
-                    Triangle3d.vertices triangle
-
-                e1 =
-                    Vector3d.from p0 p1
-
-                e2 =
-                    Vector3d.from p0 p2
-
-                ( u, v, t ) =
-                    Vector3d.toTuple Quantity.unwrap parameters
-
-                planeIntersection =
-                    p0
-                        |> Point3d.translateBy (Vector3d.scaleBy u e1)
-                        |> Point3d.translateBy (Vector3d.scaleBy v e2)
-
-                direction =
-                    Vector3d.withLength (Length.meters 1) axisDirection
-
-                axisOrigin =
-                    planeIntersection
-                        |> Point3d.translateBy (Vector3d.scaleBy -t direction)
-
-                axis =
-                    Axis3d.through axisOrigin axisDirection
+                s =
+                    Triangle3d.normalDirection triangle
+                        |> Maybe.map (Direction3d.componentIn axisDirection)
+                        |> Maybe.withDefault 0
             in
-            case Axis3d.intersectionWithTriangle triangle axis of
-                Nothing ->
-                    if u < 0 || v < 0 || u + v > 1 then
-                        Expect.pass
+            if abs s < 1.0e-3 then
+                Expect.pass
 
-                    else
-                        Expect.fail "Expected an intersection"
+            else
+                let
+                    ( p0, p1, p2 ) =
+                        Triangle3d.vertices triangle
 
-                Just point ->
-                    if u < 0 || v < 0 || u + v > 1 then
-                        Expect.fail "Expected no intersection"
+                    e1 =
+                        Vector3d.from p0 p1
 
-                    else
-                        Expect.point3d point planeIntersection
+                    e2 =
+                        Vector3d.from p0 p2
+
+                    ( u, v, t ) =
+                        parameters
+
+                    planeIntersection =
+                        p0
+                            |> Point3d.translateBy (Vector3d.scaleBy u e1)
+                            |> Point3d.translateBy (Vector3d.scaleBy v e2)
+
+                    direction =
+                        Vector3d.withLength (Length.meters 1) axisDirection
+
+                    axisOrigin =
+                        planeIntersection
+                            |> Point3d.translateBy (Vector3d.scaleBy -t direction)
+
+                    axis =
+                        Axis3d.through axisOrigin axisDirection
+                in
+                case Axis3d.intersectionWithTriangle triangle axis of
+                    Nothing ->
+                        if u < 0 || v < 0 || u + v > 1 then
+                            Expect.pass
+
+                        else
+                            Expect.fail "Expected an intersection"
+
+                    Just point ->
+                        if u < 0 || v < 0 || u + v > 1 then
+                            Expect.fail "Expected no intersection"
+
+                        else
+                            Expect.point3d planeIntersection point
         )
 
 
