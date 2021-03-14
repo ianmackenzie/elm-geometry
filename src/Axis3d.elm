@@ -16,6 +16,7 @@ module Axis3d exposing
     , reverse, moveTo, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
     , at, at_
     , relativeTo, placeIn, projectInto
+    , intersectionWithTriangle
     )
 
 {-| An `Axis3d` represents an infinitely long straight line in 3D and is defined
@@ -67,7 +68,7 @@ by an origin point and direction. Axes have several uses, such as:
 import Angle exposing (Angle)
 import Axis2d exposing (Axis2d)
 import Direction3d exposing (Direction3d)
-import Geometry.Types as Types exposing (Frame3d, LineSegment3d, Plane3d, SketchPlane3d, Sphere3d)
+import Geometry.Types as Types exposing (Frame3d, LineSegment3d, Plane3d, SketchPlane3d, Sphere3d, Triangle3d)
 import Point3d exposing (Point3d)
 import Quantity exposing (Quantity(..), Rate)
 import Vector3d exposing (Vector3d)
@@ -248,6 +249,63 @@ intersectionWithPlane plane axis =
                 normalDistance |> Quantity.multiplyBy (-1 / normalComponent)
         in
         Just (axisOrigin |> Point3d.translateIn axisDirection axialDistance)
+
+
+{-| Try to find the unique intersection point of an axis with a triangle. If
+the axis does not intersect the triangle, or if it is coplanar with it (lying
+perfectly in the plane of the triangle), returns `Nothing`.
+-}
+intersectionWithTriangle : Triangle3d units coordinates -> Axis3d units coordinates -> Maybe (Point3d units coordinates)
+intersectionWithTriangle triangle axis =
+    let
+        (Types.Triangle3d ( p0, p1, p2 )) =
+            triangle
+
+        axisDirection =
+            direction axis |> Vector3d.withLength (Quantity.unsafe 1)
+
+        e1 =
+            Vector3d.from p0 p1
+
+        e2 =
+            Vector3d.from p0 p2
+
+        pvec =
+            Vector3d.cross axisDirection e2
+
+        scale =
+            Vector3d.dot e1 pvec
+    in
+    if scale == Quantity.zero then
+        Nothing
+
+    else
+        let
+            tvec =
+                Vector3d.from p0 (originPoint axis)
+
+            u =
+                Quantity.ratio (Vector3d.dot tvec pvec) scale
+        in
+        if u < 0 || u > 1 then
+            Nothing
+
+        else
+            let
+                qvec =
+                    Vector3d.cross tvec e1
+
+                v =
+                    Quantity.ratio (Vector3d.dot axisDirection qvec) scale
+            in
+            if v < 0 || u + v > 1 then
+                Nothing
+
+            else
+                p0
+                    |> Point3d.translateBy (Vector3d.scaleBy u e1)
+                    |> Point3d.translateBy (Vector3d.scaleBy v e2)
+                    |> Just
 
 
 {-| Attempt to find the intersection of an axis with a sphere. The two points
