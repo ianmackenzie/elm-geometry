@@ -262,7 +262,7 @@ intersectionWithTriangle triangle axis =
             triangle
 
         axisDirection =
-            direction axis |> Direction3d.toVector
+            direction axis |> Vector3d.withLength (Quantity.unsafe 1)
 
         e1 =
             Vector3d.from p0 p1
@@ -273,10 +273,10 @@ intersectionWithTriangle triangle axis =
         pvec =
             Vector3d.cross axisDirection e2
 
-        (Quantity scale) =
+        scale =
             Vector3d.dot e1 pvec
     in
-    if scale == 0 then
+    if Quantity.unwrap scale == 0 then
         Nothing
 
     else
@@ -284,8 +284,8 @@ intersectionWithTriangle triangle axis =
             tvec =
                 Vector3d.from p0 (originPoint axis)
 
-            (Quantity u) =
-                Vector3d.dot tvec pvec |> Quantity.divideBy scale
+            u =
+                Quantity.ratio (Vector3d.dot tvec pvec) scale
         in
         if u < 0 || u > 1 then
             Nothing
@@ -295,8 +295,8 @@ intersectionWithTriangle triangle axis =
                 qvec =
                     Vector3d.cross tvec e1
 
-                (Quantity v) =
-                    Vector3d.dot axisDirection qvec |> Quantity.divideBy scale
+                v =
+                    Quantity.ratio (Vector3d.dot axisDirection qvec) scale
             in
             if v < 0 || u + v > 1 then
                 Nothing
