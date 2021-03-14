@@ -276,7 +276,7 @@ intersectionWithTriangle triangle axis =
         scale =
             Vector3d.dot e1 pvec
     in
-    if Quantity.unwrap scale == 0 then
+    if scale == Quantity.zero then
         Nothing
 
     else
