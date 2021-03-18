@@ -9,7 +9,7 @@
 
 module Polygon2d exposing
     ( Polygon2d
-    , singleLoop, withHoles, convexHull
+    , singleLoop, withHoles, convexHull, regular
     , outerLoop, innerLoops, vertices, edges, perimeter, area, centroid, boundingBox
     , contains
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
@@ -32,7 +32,7 @@ holes. This module contains a variety of polygon-related functionality, such as
 
 # Constructors
 
-@docs singleLoop, withHoles, convexHull
+@docs singleLoop, withHoles, convexHull, regular
 
 
 # Properties
@@ -259,6 +259,28 @@ convexHull points =
             chain (List.reverse sorted)
     in
     singleLoop (lower ++ upper)
+
+
+{-| Constructs a regular convex polygon with the specified center point, circumradius and number of sides.
+-}
+regular : Point2d units coordinates -> Quantity Float units -> Int -> Polygon2d units coordinates
+regular center radius sides =
+    let
+        n =
+            toFloat sides
+
+        angle =
+            Angle.turns 1 |> Quantity.divideBy n
+
+        startAngle =
+            Angle.degrees 90 |> Quantity.minus (Angle.degrees 180 |> Quantity.divideBy n)
+
+        point index =
+            Point2d.translateBy (Vector2d.rTheta radius (Quantity.plus startAngle (Quantity.multiplyBy index angle))) center
+    in
+    List.range 0 (sides - 1)
+        |> List.map (toFloat >> point)
+        |> singleLoop
 
 
 {-| Convert a polygon from one units type to another, by providing a conversion

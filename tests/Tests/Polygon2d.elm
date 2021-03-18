@@ -3,13 +3,14 @@ module Tests.Polygon2d exposing
     , convexHullContainsAllPoints
     , convexHullIsConvex
     , rectangleCentroidIsInTheCenter
+    , regularTest
     , rotatingAroundCentroidKeepsCentroid
     , triangulationHasCorrectArea
     , triangulationHasCorrectNumberOfTriangles
     , triangulationHasCorrectWeightedCentroid
     )
 
-import Area
+import Angle
 import Expect
 import Fuzz
 import Geometry.Expect as Expect
@@ -24,6 +25,48 @@ import Test exposing (Test)
 import Triangle2d
 import TriangularMesh
 import Vector2d
+
+
+{-| Implements the formula for area of a regular polygon.
+-}
+areaOfRegularNGon : Quantity.Quantity Float units -> Float -> Quantity.Quantity Float (Quantity.Squared units)
+areaOfRegularNGon radius sides =
+    Quantity.squared radius |> Quantity.multiplyBy sides |> Quantity.multiplyBy (Angle.sin (Angle.turns (1 / sides))) |> Quantity.divideBy 2
+
+
+regularTest : Test
+regularTest =
+    Test.describe "regular"
+        [ Test.fuzz3 Fuzz.point2d
+            Fuzz.length
+            (Fuzz.intRange 3 300)
+            "A centroid of a regular polygon is in the center"
+          <|
+            \center radius sides ->
+                Polygon2d.regular center radius sides
+                    |> Polygon2d.centroid
+                    |> Expect.just (Expect.point2d center)
+        , Test.fuzz3 Fuzz.point2d
+            Fuzz.length
+            (Fuzz.intRange 3 300)
+            "The area matches what we would expect from a regular polygon"
+          <|
+            \center radius sides ->
+                Polygon2d.regular center radius sides
+                    |> Polygon2d.area
+                    |> Expect.quantity (areaOfRegularNGon radius (toFloat sides))
+        , Test.test "sanity check" <|
+            \() ->
+                Polygon2d.regular (Point2d.meters 0.5 0.5) (meters (sqrt 2 / 2)) 4
+                    |> Expect.polygon2d
+                        (Polygon2d.singleLoop
+                            [ Point2d.meters 1 0
+                            , Point2d.meters 0 0
+                            , Point2d.meters 0 1
+                            , Point2d.meters 1 1
+                            ]
+                        )
+        ]
 
 
 convexHullIsConvex : Test
