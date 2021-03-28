@@ -273,7 +273,7 @@ regular center radius sides =
             Angle.turns 1 |> Quantity.divideBy n
 
         startAngle =
-            Angle.degrees 90 |> Quantity.minus (Angle.degrees 180 |> Quantity.divideBy n)
+            Angle.degrees -90 |> Quantity.plus (Angle.degrees 180 |> Quantity.divideBy n)
 
         point index =
             Point2d.translateBy (Vector2d.rTheta radius (Quantity.plus startAngle (Quantity.multiplyBy index angle))) center

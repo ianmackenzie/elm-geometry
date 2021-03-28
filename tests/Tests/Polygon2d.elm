@@ -61,9 +61,9 @@ regularTest =
                     |> Expect.polygon2d
                         (Polygon2d.singleLoop
                             [ Point2d.meters 1 0
-                            , Point2d.meters 0 0
-                            , Point2d.meters 0 1
                             , Point2d.meters 1 1
+                            , Point2d.meters 0 1
+                            , Point2d.meters 0 0
                             ]
                         )
         ]
