@@ -261,7 +261,10 @@ convexHull points =
     singleLoop (lower ++ upper)
 
 
-{-| Constructs a regular convex polygon with the specified center point, circumradius and number of sides.
+{-| Constructs a regular convex polygon with the specified center point,
+circumradius and number of sides. The polygon will be oriented so that the
+bottom edge is horizontal (assuming a Y-up coordinate system; note that SVG
+uses Y-down instead!).
 -}
 regular : Point2d units coordinates -> Quantity Float units -> Int -> Polygon2d units coordinates
 regular center radius sides =
