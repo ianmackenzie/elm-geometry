@@ -16,11 +16,13 @@ module CubicSpline1d exposing
     , endPoint
     , firstControlPoint
     , firstDerivative
+    , firstDerivativeBoundingBox
     , fourthControlPoint
     , fromControlPoints
     , pointOn
     , secondControlPoint
     , secondDerivative
+    , secondDerivativeBoundingBox
     , startDerivative
     , startPoint
     , thirdControlPoint
@@ -249,3 +251,63 @@ thirdDerivative spline =
             u3 |> Quantity.minus u2
     in
     Quantity.multiplyBy 6 (v2 |> Quantity.minus v1)
+
+
+firstDerivativeBoundingBox : CubicSpline1d units -> Interval Float units
+firstDerivativeBoundingBox spline =
+    let
+        p1 =
+            firstControlPoint spline
+
+        p2 =
+            secondControlPoint spline
+
+        p3 =
+            thirdControlPoint spline
+
+        p4 =
+            fourthControlPoint spline
+
+        u1 =
+            Quantity.multiplyBy 3 (p2 |> Quantity.minus p1)
+
+        u2 =
+            Quantity.multiplyBy 3 (p3 |> Quantity.minus p2)
+
+        u3 =
+            Quantity.multiplyBy 3 (p4 |> Quantity.minus p3)
+    in
+    Interval.hull3 u1 u2 u3
+
+
+secondDerivativeBoundingBox : CubicSpline1d units -> Interval Float units
+secondDerivativeBoundingBox spline =
+    let
+        p1 =
+            firstControlPoint spline
+
+        p2 =
+            secondControlPoint spline
+
+        p3 =
+            thirdControlPoint spline
+
+        p4 =
+            fourthControlPoint spline
+
+        u1 =
+            p2 |> Quantity.minus p1
+
+        u2 =
+            p3 |> Quantity.minus p2
+
+        u3 =
+            p4 |> Quantity.minus p3
+
+        v1 =
+            Quantity.multiplyBy 6 (u2 |> Quantity.minus u1)
+
+        v2 =
+            Quantity.multiplyBy 6 (u3 |> Quantity.minus u2)
+    in
+    Interval.from v1 v2
