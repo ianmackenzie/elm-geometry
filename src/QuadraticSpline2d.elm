@@ -23,7 +23,7 @@ module QuadraticSpline2d exposing
     , ArcLengthParameterized, arcLengthParameterized, arcLength
     , pointAlong, midpoint, tangentDirectionAlong, sampleAlong
     , arcLengthParameterization, fromArcLengthParameterized
-    , firstDerivative, secondDerivative, numApproximationSegments
+    , firstDerivative, secondDerivative, firstDerivativeBoundingBox, numApproximationSegments
     )
 
 {-| A `QuadraticSpline2d` is a quadratic [Bézier curve](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)
@@ -113,7 +113,7 @@ extract these two values separately.
 You are unlikely to need to use these functions directly, but they are useful if
 you are writing low-level geometric algorithms.
 
-@docs firstDerivative, secondDerivative, numApproximationSegments
+@docs firstDerivative, secondDerivative, firstDerivativeBoundingBox, numApproximationSegments
 
 -}
 
@@ -131,6 +131,7 @@ import Point2d exposing (Point2d)
 import Polyline2d exposing (Polyline2d)
 import Quantity exposing (Quantity(..), Rate)
 import Vector2d exposing (Vector2d)
+import VectorBoundingBox2d exposing (VectorBoundingBox2d)
 
 
 {-| -}
@@ -429,6 +430,29 @@ firstDerivative spline parameterValue =
             Vector2d.from p2 p3
     in
     Vector2d.twice (Vector2d.interpolateFrom v1 v2 parameterValue)
+
+
+{-| Get the bounds on the first deriative of a spline.
+-}
+firstDerivativeBoundingBox : QuadraticSpline2d units coordinates -> VectorBoundingBox2d units coordinates
+firstDerivativeBoundingBox spline =
+    let
+        p1 =
+            firstControlPoint spline
+
+        p2 =
+            secondControlPoint spline
+
+        p3 =
+            thirdControlPoint spline
+
+        v1 =
+            Vector2d.twice (Vector2d.from p1 p2)
+
+        v2 =
+            Vector2d.twice (Vector2d.from p2 p3)
+    in
+    VectorBoundingBox2d.from v1 v2
 
 
 derivativeMagnitude : QuadraticSpline2d units coordinates -> Float -> Quantity Float units

@@ -2,9 +2,11 @@ module Tests.CubicSpline3d exposing
     ( approximate
     , arcLengthMatchesAnalytical
     , bSplineReproducesSpline
+    , firstDerivativeBoundingBox
     , fromEndpointsReproducesSpline
     , pointAtArcLengthIsEnd
     , pointAtZeroLengthIsStart
+    , secondDerivativeBoundingBox
     )
 
 import CubicSpline3d exposing (CubicSpline3d)
@@ -12,6 +14,7 @@ import Expect
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Length exposing (Meters, meters)
 import Quantity exposing (zero)
 import Test exposing (Test)
@@ -154,3 +157,21 @@ curveOperations =
 approximate : Test
 approximate =
     Curve3d.approximate curveOperations
+
+
+firstDerivativeBoundingBox : Test
+firstDerivativeBoundingBox =
+    Curve3d.firstDerivativeBoundingBox
+        { generator = Random.cubicSpline3d
+        , firstDerivative = CubicSpline3d.firstDerivative
+        , firstDerivativeBoundingBox = CubicSpline3d.firstDerivativeBoundingBox
+        }
+
+
+secondDerivativeBoundingBox : Test
+secondDerivativeBoundingBox =
+    Curve3d.secondDerivativeBoundingBox
+        { generator = Random.cubicSpline3d
+        , secondDerivative = CubicSpline3d.secondDerivative
+        , secondDerivativeBoundingBox = CubicSpline3d.secondDerivativeBoundingBox
+        }

@@ -2,20 +2,24 @@ module Tests.CubicSpline2d exposing
     ( arcLengthMatchesAnalytical
     , bSplineReproducesSpline
     , bSplinesAreContinuous
+    , firstDerivativeBoundingBox
     , fromEndpointsReproducesSpline
     , pointAtArcLengthIsEnd
     , pointAtZeroLengthIsStart
+    , secondDerivativeBoundingBox
     )
 
 import CubicSpline2d
 import Expect exposing (Expectation, FloatingPointTolerance(..))
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Interval
 import Length exposing (Length, inMeters, meters)
 import Point2d
 import Quantity exposing (zero)
 import Test exposing (Test)
+import Tests.Generic.Curve2d as Curve2d
 import Tests.QuadraticSpline2d
 import Vector2d
 
@@ -209,3 +213,21 @@ bSplinesAreContinuous =
                             , firstEndDerivative |> Expect.vector2d secondStartDerivative
                             ]
                     )
+
+
+firstDerivativeBoundingBox : Test
+firstDerivativeBoundingBox =
+    Curve2d.firstDerivativeBoundingBox
+        { generator = Random.cubicSpline2d
+        , firstDerivative = CubicSpline2d.firstDerivative
+        , firstDerivativeBoundingBox = CubicSpline2d.firstDerivativeBoundingBox
+        }
+
+
+secondDerivativeBoundingBox : Test
+secondDerivativeBoundingBox =
+    Curve2d.secondDerivativeBoundingBox
+        { generator = Random.cubicSpline2d
+        , secondDerivative = CubicSpline2d.secondDerivative
+        , secondDerivativeBoundingBox = CubicSpline2d.secondDerivativeBoundingBox
+        }

@@ -4,6 +4,7 @@ module Tests.QuadraticSpline2d exposing
     , curvedSpline
     , degenerateSpline
     , exampleSpline
+    , firstDerivativeBoundingBox
     , line
     , parameterization
     )
@@ -15,11 +16,13 @@ import Float.Extra as Float
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Length exposing (Length, Meters, inMeters, meters)
 import Point2d
 import QuadraticSpline2d exposing (QuadraticSpline2d)
 import Quantity exposing (Quantity, zero)
 import Test exposing (Test)
+import Tests.Generic.Curve2d as Curve2d
 import Tests.Literals exposing (ok)
 
 
@@ -303,3 +306,12 @@ bSplineReproducesSpline =
                 _ ->
                     Expect.fail "Expected a single B-spline segment"
         )
+
+
+firstDerivativeBoundingBox : Test
+firstDerivativeBoundingBox =
+    Curve2d.firstDerivativeBoundingBox
+        { generator = Random.quadraticSpline2d
+        , firstDerivative = QuadraticSpline2d.firstDerivative
+        , firstDerivativeBoundingBox = QuadraticSpline2d.firstDerivativeBoundingBox
+        }
