@@ -278,6 +278,14 @@ type Arc3d units coordinates
         }
 
 
+type QuadraticSpline1d units
+    = QuadraticSpline1d
+        { firstControlPoint : Quantity Float units
+        , secondControlPoint : Quantity Float units
+        , thirdControlPoint : Quantity Float units
+        }
+
+
 type QuadraticSpline2d units coordinates
     = QuadraticSpline2d
         { firstControlPoint : Point2d units coordinates
@@ -291,6 +299,15 @@ type QuadraticSpline3d units coordinates
         { firstControlPoint : Point3d units coordinates
         , secondControlPoint : Point3d units coordinates
         , thirdControlPoint : Point3d units coordinates
+        }
+
+
+type CubicSpline1d units
+    = CubicSpline1d
+        { firstControlPoint : Quantity Float units
+        , secondControlPoint : Quantity Float units
+        , thirdControlPoint : Quantity Float units
+        , fourthControlPoint : Quantity Float units
         }
 
 
