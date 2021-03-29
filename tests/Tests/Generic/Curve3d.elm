@@ -4,6 +4,8 @@ module Tests.Generic.Curve3d exposing
     , Operations
     , approximate
     , firstDerivative
+    , firstDerivativeBoundingBox
+    , secondDerivativeBoundingBox
     , transformations
     )
 
@@ -20,8 +22,11 @@ import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Polyline3d
 import Quantity
+import Random exposing (Generator)
 import Test exposing (Test)
+import Test.Check as Test
 import Vector3d exposing (Vector3d)
+import VectorBoundingBox3d exposing (VectorBoundingBox3d)
 
 
 type GlobalCoordinates
@@ -240,4 +245,36 @@ approximate operations =
                     List.foldl Quantity.max Quantity.zero errors
             in
             maxError |> Expect.quantityLessThan tolerance
+        )
+
+
+firstDerivativeBoundingBox :
+    { generator : Generator curve
+    , firstDerivative : curve -> Float -> Vector3d Meters coordinates
+    , firstDerivativeBoundingBox : curve -> VectorBoundingBox3d Meters coordinates
+    }
+    -> Test
+firstDerivativeBoundingBox operations =
+    Test.check2 "firstDerivativeBoundingBox"
+        operations.generator
+        (Random.float 0 1)
+        (\curve parameterValue ->
+            operations.firstDerivative curve parameterValue
+                |> Expect.vector3dContainedIn (operations.firstDerivativeBoundingBox curve)
+        )
+
+
+secondDerivativeBoundingBox :
+    { generator : Generator curve
+    , secondDerivative : curve -> Float -> Vector3d Meters coordinates
+    , secondDerivativeBoundingBox : curve -> VectorBoundingBox3d Meters coordinates
+    }
+    -> Test
+secondDerivativeBoundingBox operations =
+    Test.check2 "secondDerivativeBoundingBox"
+        operations.generator
+        (Random.float 0 1)
+        (\curve parameterValue ->
+            operations.secondDerivative curve parameterValue
+                |> Expect.vector3dContainedIn (operations.secondDerivativeBoundingBox curve)
         )
