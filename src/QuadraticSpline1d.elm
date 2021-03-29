@@ -16,6 +16,7 @@ module QuadraticSpline1d exposing
     , endPoint
     , firstControlPoint
     , firstDerivative
+    , firstDerivativeBoundingBox
     , fromControlPoints
     , pointOn
     , secondControlPoint
