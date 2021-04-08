@@ -9,7 +9,7 @@
 
 module Polygon2d exposing
     ( Polygon2d
-    , singleLoop, withHoles, convexHull
+    , singleLoop, withHoles, convexHull, regular
     , outerLoop, innerLoops, vertices, edges, perimeter, area, centroid, boundingBox
     , contains
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
@@ -32,7 +32,7 @@ holes. This module contains a variety of polygon-related functionality, such as
 
 # Constructors
 
-@docs singleLoop, withHoles, convexHull
+@docs singleLoop, withHoles, convexHull, regular
 
 
 # Properties
@@ -259,6 +259,31 @@ convexHull points =
             chain (List.reverse sorted)
     in
     singleLoop (lower ++ upper)
+
+
+{-| Constructs a regular convex polygon with the specified center point,
+circumradius and number of sides. The polygon will be oriented so that the
+bottom edge is horizontal (assuming a Y-up coordinate system; note that SVG
+uses Y-down instead!).
+-}
+regular : { centerPoint : Point2d units coordinates, circumradius : Quantity Float units, numSides : Int } -> Polygon2d units coordinates
+regular { centerPoint, circumradius, numSides } =
+    let
+        n =
+            toFloat numSides
+
+        angle =
+            Angle.turns 1 |> Quantity.divideBy n
+
+        startAngle =
+            Angle.degrees -90 |> Quantity.plus (Angle.degrees 180 |> Quantity.divideBy n)
+
+        point index =
+            Point2d.translateBy (Vector2d.rTheta circumradius (Quantity.plus startAngle (Quantity.multiplyBy index angle))) centerPoint
+    in
+    List.range 0 (numSides - 1)
+        |> List.map (toFloat >> point)
+        |> singleLoop
 
 
 {-| Convert a polygon from one units type to another, by providing a conversion
