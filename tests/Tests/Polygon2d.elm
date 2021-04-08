@@ -31,7 +31,10 @@ import Vector2d
 -}
 areaOfRegularNGon : Quantity.Quantity Float units -> Float -> Quantity.Quantity Float (Quantity.Squared units)
 areaOfRegularNGon radius sides =
-    Quantity.squared radius |> Quantity.multiplyBy sides |> Quantity.multiplyBy (Angle.sin (Angle.turns (1 / sides))) |> Quantity.divideBy 2
+    Quantity.squared radius
+        |> Quantity.multiplyBy sides
+        |> Quantity.multiplyBy (Angle.sin (Angle.turns (1 / sides)))
+        |> Quantity.divideBy 2
 
 
 regularTest : Test
@@ -43,7 +46,7 @@ regularTest =
             "A centroid of a regular polygon is in the center"
           <|
             \center radius sides ->
-                Polygon2d.regular center radius sides
+                Polygon2d.regular { centerPoint = center, circumradius = radius, numSides = sides }
                     |> Polygon2d.centroid
                     |> Expect.just (Expect.point2d center)
         , Test.fuzz3 Fuzz.point2d
@@ -52,12 +55,12 @@ regularTest =
             "The area matches what we would expect from a regular polygon"
           <|
             \center radius sides ->
-                Polygon2d.regular center radius sides
+                Polygon2d.regular { centerPoint = center, circumradius = radius, numSides = sides }
                     |> Polygon2d.area
                     |> Expect.quantity (areaOfRegularNGon radius (toFloat sides))
         , Test.test "sanity check" <|
             \() ->
-                Polygon2d.regular (Point2d.meters 0.5 0.5) (meters (sqrt 2 / 2)) 4
+                Polygon2d.regular { centerPoint = Point2d.meters 0.5 0.5, circumradius = meters (sqrt 2 / 2), numSides = 4 }
                     |> Expect.polygon2d
                         (Polygon2d.singleLoop
                             [ Point2d.meters 1 0

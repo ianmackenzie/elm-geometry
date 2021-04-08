@@ -263,11 +263,11 @@ convexHull points =
 
 {-| Constructs a regular convex polygon with the specified center point, circumradius and number of sides.
 -}
-regular : Point2d units coordinates -> Quantity Float units -> Int -> Polygon2d units coordinates
-regular center radius sides =
+regular : { centerPoint : Point2d units coordinates, circumradius : Quantity Float units, numSides : Int } -> Polygon2d units coordinates
+regular { centerPoint, circumradius, numSides } =
     let
         n =
-            toFloat sides
+            toFloat numSides
 
         angle =
             Angle.turns 1 |> Quantity.divideBy n
@@ -276,9 +276,9 @@ regular center radius sides =
             Angle.degrees 90 |> Quantity.minus (Angle.degrees 180 |> Quantity.divideBy n)
 
         point index =
-            Point2d.translateBy (Vector2d.rTheta radius (Quantity.plus startAngle (Quantity.multiplyBy index angle))) center
+            Point2d.translateBy (Vector2d.rTheta circumradius (Quantity.plus startAngle (Quantity.multiplyBy index angle))) centerPoint
     in
-    List.range 0 (sides - 1)
+    List.range 0 (numSides - 1)
         |> List.map (toFloat >> point)
         |> singleLoop
 
