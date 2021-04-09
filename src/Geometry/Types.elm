@@ -451,3 +451,11 @@ type Body3d units coordinates
     | ExtrusionBody (SketchPlane3d units coordinates { defines : SketchCoordinates }) (Region2d units SketchCoordinates) (Interval Float units)
     | RevolutionBody (SketchPlane3d units coordinates { defines : SketchCoordinates }) (Region2d units SketchCoordinates) (Axis2d units SketchCoordinates) (Interval Float Radians)
     | BoundedBody (List (Surface3d units coordinates))
+
+
+type Transformation2d unitFn coordsFn restrictions
+    = Transformation2d Float Float Float Float Float Float
+
+
+type Allowed
+    = Allowed Never
