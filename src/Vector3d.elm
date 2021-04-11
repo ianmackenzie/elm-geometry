@@ -19,7 +19,7 @@ module Vector3d exposing
     , components, xComponent, yComponent, zComponent, componentIn, length, direction
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross, sum, twice, half
-    , product, times, over, over_
+    , product, times, timesUnitless, over, over_, overUnitless
     , reverse, normalize, scaleBy, scaleTo, rotateAround, mirrorAcross, projectionIn, projectOnto
     , at, at_
     , relativeTo, placeIn, projectInto
@@ -128,7 +128,7 @@ code that represents vectors as plain records.
 
 ## Vector/scalar products
 
-@docs product, times, over, over_
+@docs product, times, timesUnitless, over, over_, overUnitless
 
 
 # Transformations
@@ -1160,6 +1160,20 @@ times (Quantity a) (Types.Vector3d v) =
         }
 
 
+{-| Multiply a vector by a unitless quantity, leaving the units unchanged.
+-}
+timesUnitless :
+    Quantity Float Unitless
+    -> Vector3d units coordinates
+    -> Vector3d units coordinates
+timesUnitless (Quantity a) (Types.Vector3d v) =
+    Types.Vector3d
+        { x = a * v.x
+        , y = a * v.y
+        , z = a * v.z
+        }
+
+
 {-| Divide a vector with units `Product units1 units2` by a scalar with units
 `units1`, resulting in a vector with units `units2`.
 
@@ -1188,6 +1202,20 @@ over_ :
     -> Vector3d (Product units1 units2) coordinates
     -> Vector3d units1 coordinates
 over_ (Quantity a) (Types.Vector3d v) =
+    Types.Vector3d
+        { x = v.x / a
+        , y = v.y / a
+        , z = v.z / a
+        }
+
+
+{-| Divide a vector by a unitless quantity, leaving the units unchanged.
+-}
+overUnitless :
+    Quantity Float Unitless
+    -> Vector3d units coordinates
+    -> Vector3d units coordinates
+overUnitless (Quantity a) (Types.Vector3d v) =
     Types.Vector3d
         { x = v.x / a
         , y = v.y / a

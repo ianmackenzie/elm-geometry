@@ -19,7 +19,7 @@ module Vector2d exposing
     , components, xComponent, yComponent, componentIn, length, direction
     , equalWithin, lexicographicComparison
     , plus, minus, dot, cross, sum, twice, half
-    , product, times, over, over_
+    , product, times, timesUnitless, over, over_, overUnitless
     , reverse, normalize, scaleBy, scaleTo, rotateBy, rotateClockwise, rotateCounterclockwise, mirrorAcross, projectionIn, projectOnto
     , at, at_
     , relativeTo, placeIn
@@ -126,7 +126,7 @@ that represents vectors as plain records.
 
 ## Vector/scalar products
 
-@docs product, times, over, over_
+@docs product, times, timesUnitless, over, over_, overUnitless
 
 
 # Transformations
@@ -1027,6 +1027,19 @@ times (Quantity a) (Types.Vector2d v) =
         }
 
 
+{-| Multiply a vector by a unitless quantity, leaving the units unchanged.
+-}
+timesUnitless :
+    Quantity Float Unitless
+    -> Vector2d units coordinates
+    -> Vector2d units coordinates
+timesUnitless (Quantity a) (Types.Vector2d v) =
+    Types.Vector2d
+        { x = a * v.x
+        , y = a * v.y
+        }
+
+
 {-| Divide a vector with units `Product units1 units2` by a scalar with units
 `units1`, resulting in a vector with units `units2`.
 
@@ -1054,6 +1067,19 @@ over_ :
     -> Vector2d (Product units1 units2) coordinates
     -> Vector2d units1 coordinates
 over_ (Quantity a) (Types.Vector2d v) =
+    Types.Vector2d
+        { x = v.x / a
+        , y = v.y / a
+        }
+
+
+{-| Divide a vector by a unitless quantity, leaving the units unchanged.
+-}
+overUnitless :
+    Quantity Float Unitless
+    -> Vector2d units coordinates
+    -> Vector2d units coordinates
+overUnitless (Quantity a) (Types.Vector2d v) =
     Types.Vector2d
         { x = v.x / a
         , y = v.y / a
