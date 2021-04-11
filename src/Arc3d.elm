@@ -610,18 +610,18 @@ boundingBox ((Types.Arc3d arc) as arc_) =
 
             xInterval =
                 (x |> Interval.multiplyBy u.x)
-                    |> Interval.plus (y |> Interval.multiplyBy v.x)
-                    |> Interval.add (Quantity p.x)
+                    |> Interval.plusInterval (y |> Interval.multiplyBy v.x)
+                    |> Interval.plus (Quantity p.x)
 
             yInterval =
                 (x |> Interval.multiplyBy u.y)
-                    |> Interval.plus (y |> Interval.multiplyBy v.y)
-                    |> Interval.add (Quantity p.y)
+                    |> Interval.plusInterval (y |> Interval.multiplyBy v.y)
+                    |> Interval.plus (Quantity p.y)
 
             zInterval =
                 (x |> Interval.multiplyBy u.z)
-                    |> Interval.plus (y |> Interval.multiplyBy v.z)
-                    |> Interval.add (Quantity p.z)
+                    |> Interval.plusInterval (y |> Interval.multiplyBy v.z)
+                    |> Interval.plus (Quantity p.z)
         in
         BoundingBox3d.xyz xInterval yInterval zInterval
 
