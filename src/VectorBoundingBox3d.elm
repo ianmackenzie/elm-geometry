@@ -414,7 +414,7 @@ aggregateOf getBoundingBox first rest =
     aggregateOfHelp b1.minX b1.maxX b1.minY b1.maxY b1.minZ b1.maxZ getBoundingBox rest
 
 
-aggregateOfHelp : Float -> Float -> Float -> Float -> Float -> Float -> (a -> VectorBoundingBox3d units coordiantes) -> List a -> VectorBoundingBox3d units coordinates
+aggregateOfHelp : Float -> Float -> Float -> Float -> Float -> Float -> (a -> VectorBoundingBox3d units coordinates) -> List a -> VectorBoundingBox3d units coordinates
 aggregateOfHelp currentMinX currentMaxX currentMinY currentMaxY currentMinZ currentMaxZ getBoundingBox items =
     case items of
         next :: rest ->
