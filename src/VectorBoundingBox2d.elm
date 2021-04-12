@@ -18,6 +18,8 @@ module VectorBoundingBox2d exposing
     , expandBy
     , interpolate
     , at, at_
+    , multiplyBy, divideBy, half, twice
+    , plus, plusBoundingBox, minus, difference, minusBoundingBox, times, product, timesUnitless, timesInterval, intervalProduct, timesUnitlessInterval
     , randomVector
     )
 
@@ -79,6 +81,12 @@ contains all of the input boxes.
 @docs at, at_
 
 
+# Arithmetic
+
+@docs multiplyBy, divideBy, half, twice
+@docs plus, plusBoundingBox, minus, difference, minusBoundingBox, times, product, timesUnitless, timesInterval, intervalProduct, timesUnitlessInterval
+
+
 # Random vector generation
 
 @docs randomVector
@@ -87,7 +95,7 @@ contains all of the input boxes.
 
 import Float.Extra as Float
 import Geometry.Types as Types
-import Quantity exposing (Quantity(..), Rate)
+import Quantity exposing (Product, Quantity(..), Rate, Unitless)
 import Quantity.Extra as Quantity
 import Quantity.Interval as Interval exposing (Interval)
 import Random exposing (Generator)
@@ -515,6 +523,343 @@ respect to destination units.
 at_ : Quantity Float (Rate units1 units2) -> VectorBoundingBox2d units1 coordinates -> VectorBoundingBox2d units2 coordinates
 at_ rate boundingBox =
     at (Quantity.inverse rate) boundingBox
+
+
+{-| Multiply (scale) a bounding box by the given value.
+-}
+multiplyBy : Float -> VectorBoundingBox2d units coordinates -> VectorBoundingBox2d units coordinates
+multiplyBy scale boundingBox =
+    let
+        (Types.VectorBoundingBox2d b) =
+            boundingBox
+    in
+    if scale >= 0 then
+        Types.VectorBoundingBox2d
+            { minX = scale * b.minX
+            , maxX = scale * b.maxX
+            , minY = scale * b.minY
+            , maxY = scale * b.maxY
+            }
+
+    else
+        Types.VectorBoundingBox2d
+            { minX = scale * b.maxX
+            , maxX = scale * b.minX
+            , minY = scale * b.maxY
+            , maxY = scale * b.minY
+            }
+
+
+{-| Divide a bounding box by the given value.
+-}
+divideBy : Float -> VectorBoundingBox2d units coordinates -> VectorBoundingBox2d units coordinates
+divideBy scale boundingBox =
+    multiplyBy (1 / scale) boundingBox
+
+
+{-| Equivalent to `multiplyBy 0.5` but shorter and slightly faster.
+-}
+half : VectorBoundingBox2d units coordinates -> VectorBoundingBox2d units coordinates
+half boundingBox =
+    let
+        (Types.VectorBoundingBox2d b) =
+            boundingBox
+    in
+    Types.VectorBoundingBox2d
+        { minX = 0.5 * b.minX
+        , maxX = 0.5 * b.maxX
+        , minY = 0.5 * b.minY
+        , maxY = 0.5 * b.maxY
+        }
+
+
+{-| Equivalent to `multiplyBy 2` but shorter and slightly faster.
+-}
+twice : VectorBoundingBox2d units coordinates -> VectorBoundingBox2d units coordinates
+twice boundingBox =
+    let
+        (Types.VectorBoundingBox2d b) =
+            boundingBox
+    in
+    Types.VectorBoundingBox2d
+        { minX = 2 * b.minX
+        , maxX = 2 * b.maxX
+        , minY = 2 * b.minY
+        , maxY = 2 * b.maxY
+        }
+
+
+{-| Add a vector to a bounding box.
+-}
+plus :
+    Vector2d units coordinates
+    -> VectorBoundingBox2d units coordinates
+    -> VectorBoundingBox2d units coordinates
+plus vector boundingBox =
+    let
+        (Types.Vector2d v) =
+            vector
+
+        (Types.VectorBoundingBox2d b) =
+            boundingBox
+    in
+    Types.VectorBoundingBox2d
+        { minX = b.minX + v.x
+        , maxX = b.maxX + v.x
+        , minY = b.minY + v.y
+        , maxY = b.maxY + v.y
+        }
+
+
+{-| Add two bounding boxes together.
+-}
+plusBoundingBox :
+    VectorBoundingBox2d units coordinates
+    -> VectorBoundingBox2d units coordinates
+    -> VectorBoundingBox2d units coordinates
+plusBoundingBox secondBoundingBox firstBoundingBox =
+    let
+        (Types.VectorBoundingBox2d b2) =
+            secondBoundingBox
+
+        (Types.VectorBoundingBox2d b1) =
+            firstBoundingBox
+    in
+    Types.VectorBoundingBox2d
+        { minX = b1.minX + b2.minX
+        , maxX = b1.maxX + b2.maxX
+        , minY = b1.minY + b2.minY
+        , maxY = b1.maxY + b2.maxY
+        }
+
+
+{-| Subtract a vector from a bounding box. Note the argument order; to compute
+`box - vector` you would write
+
+    box |> VectorBoundingBox2d.minus vector
+
+which is equivalent to
+
+    VectorBoundingBox2d.minus vector box
+
+-}
+minus :
+    Vector2d units coordinates
+    -> VectorBoundingBox2d units coordinates
+    -> VectorBoundingBox2d units coordinates
+minus vector boundingBox =
+    let
+        (Types.Vector2d v) =
+            vector
+
+        (Types.VectorBoundingBox2d b) =
+            boundingBox
+    in
+    Types.VectorBoundingBox2d
+        { minX = b.minX - v.x
+        , maxX = b.maxX - v.x
+        , minY = b.minY - v.y
+        , maxY = b.maxY - v.y
+        }
+
+
+{-| Subtract a bounding box from a vector (the opposite of [`minus`](#minus)).
+To compute `vector - box` you would write
+
+    VectorBoundingBox2d.difference vector box
+
+-}
+difference :
+    Vector2d units coordinates
+    -> VectorBoundingBox2d units coordinates
+    -> VectorBoundingBox2d units coordinates
+difference vector boundingBox =
+    let
+        (Types.Vector2d v) =
+            vector
+
+        (Types.VectorBoundingBox2d b) =
+            boundingBox
+    in
+    Types.VectorBoundingBox2d
+        { minX = v.x - b.maxX
+        , maxX = v.x - b.minX
+        , minY = v.y - b.maxY
+        , maxY = v.y - b.minY
+        }
+
+
+{-| Subtract one bounding box from another. Note the argument order; to compute
+`firstBox - secondBox` you would write
+
+    firstBox
+        |> VectorBoundingBox2d.minusBoundingBox secondBox
+
+which is equivalent to
+
+    VectorBoundingBox2d.minusBoundingBox secondBox firstBox
+
+-}
+minusBoundingBox :
+    VectorBoundingBox2d units coordinates
+    -> VectorBoundingBox2d units coordinates
+    -> VectorBoundingBox2d units coordinates
+minusBoundingBox secondBoundingBox firstBoundingBox =
+    let
+        (Types.VectorBoundingBox2d b2) =
+            secondBoundingBox
+
+        (Types.VectorBoundingBox2d b1) =
+            firstBoundingBox
+    in
+    Types.VectorBoundingBox2d
+        { minX = b1.minX - b2.maxX
+        , maxX = b1.maxX - b2.minX
+        , minY = b1.minY - b2.maxY
+        , maxY = b1.maxY - b2.minY
+        }
+
+
+unsafeMultiply :
+    Quantity Float units1
+    -> VectorBoundingBox2d units2 coordinates
+    -> VectorBoundingBox2d units3 coordinates
+unsafeMultiply quantity boundingBox =
+    let
+        (Quantity a) =
+            quantity
+
+        (Types.VectorBoundingBox2d b) =
+            boundingBox
+    in
+    if a >= 0 then
+        Types.VectorBoundingBox2d
+            { minX = b.minX * a
+            , maxX = b.maxX * a
+            , minY = b.minY * a
+            , maxY = b.maxY * a
+            }
+
+    else
+        Types.VectorBoundingBox2d
+            { minX = b.maxX * a
+            , maxX = b.minX * a
+            , minY = b.maxY * a
+            , maxY = b.minY * a
+            }
+
+
+{-| Multiply a vector bounding box by a scalar quantity, resulting in a vector
+bounding box with units `Product vectorUnits scalarUnits`. (To the compiler
+`Product a b` and `Product b a` are different unit types, so sometimes you will
+have to swap from `product` to `times` or vice versa to make the types work
+out.)
+-}
+times :
+    Quantity Float scalarUnits
+    -> VectorBoundingBox2d vectorUnits coordinates
+    -> VectorBoundingBox2d (Product vectorUnits scalarUnits) coordinates
+times quantity boundingBox =
+    unsafeMultiply quantity boundingBox
+
+
+{-| Multiply a scalar quantity and a vector bounding box, resulting in a vector
+bounding box with units `Product scalarUnits vectorUnits`.
+-}
+product :
+    Quantity Float scalarUnits
+    -> VectorBoundingBox2d vectorUnits coordinates
+    -> VectorBoundingBox2d (Product scalarUnits vectorUnits) coordinates
+product quantity boundingBox =
+    unsafeMultiply quantity boundingBox
+
+
+{-| Multiply a vector bounding box by a unitless quantity, leaving the units
+unchanged.
+-}
+timesUnitless :
+    Quantity Float Unitless
+    -> VectorBoundingBox2d units coordinates
+    -> VectorBoundingBox2d units coordinates
+timesUnitless quantity boundingBox =
+    unsafeMultiply quantity boundingBox
+
+
+unsafeIntervalMultiply :
+    Interval Float units1
+    -> VectorBoundingBox2d units2 coordinates
+    -> VectorBoundingBox2d units3 coordinates
+unsafeIntervalMultiply interval boundingBox =
+    let
+        ( Quantity minA, Quantity maxA ) =
+            Interval.endpoints interval
+
+        (Types.VectorBoundingBox2d { minX, maxX, minY, maxY }) =
+            boundingBox
+
+        x1 =
+            minA * minX
+
+        x2 =
+            minA * maxX
+
+        x3 =
+            maxA * minX
+
+        x4 =
+            maxA * maxX
+
+        y1 =
+            minA * minY
+
+        y2 =
+            minA * maxY
+
+        y3 =
+            maxA * minY
+
+        y4 =
+            maxA * maxY
+    in
+    Types.VectorBoundingBox2d
+        { minX = min (min (min x1 x2) x3) x4
+        , maxX = max (max (max x1 x2) x3) x4
+        , minY = min (min (min y1 y2) y3) y4
+        , maxY = max (max (max y1 y2) y3) y4
+        }
+
+
+{-| Multiply a vector bounding box by an interval, resulting in a vector
+bounding box with units `Product vectorUnits scalarUnits`.
+-}
+timesInterval :
+    Interval Float scalarUnits
+    -> VectorBoundingBox2d vectorUnits coordinates
+    -> VectorBoundingBox2d (Product vectorUnits scalarUnits) coordinates
+timesInterval interval boundingBox =
+    unsafeIntervalMultiply interval boundingBox
+
+
+{-| Multiply an interval and a vector bounding box, resulting in a vector
+bounding box with units `Product scalarUnits vectorUnits`.
+-}
+intervalProduct :
+    Interval Float scalarUnits
+    -> VectorBoundingBox2d vectorUnits coordinates
+    -> VectorBoundingBox2d (Product scalarUnits vectorUnits) coordinates
+intervalProduct interval boundingBox =
+    unsafeIntervalMultiply interval boundingBox
+
+
+{-| Multiply a vector bounding box by a unitless interval, leaving the units
+unchanged.
+-}
+timesUnitlessInterval :
+    Interval Float Unitless
+    -> VectorBoundingBox2d units coordinates
+    -> VectorBoundingBox2d units coordinates
+timesUnitlessInterval interval boundingBox =
+    unsafeIntervalMultiply interval boundingBox
 
 
 {-| Get the range of X values contained by a bounding box.

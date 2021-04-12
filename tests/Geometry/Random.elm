@@ -12,6 +12,8 @@ module Geometry.Random exposing
     , rationalQuadraticSpline2d
     , rationalQuadraticSpline3d
     , scale
+    , unitlessInterval
+    , unitlessQuantity
     , vector2d
     , vector3d
     , vector4d
@@ -28,7 +30,8 @@ import Point2d exposing (Point2d)
 import Point3d exposing (Point3d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
 import QuadraticSpline3d exposing (QuadraticSpline3d)
-import Quantity exposing (Quantity)
+import Quantity exposing (Quantity, Unitless)
+import Quantity.Interval as Interval exposing (Interval)
 import Random exposing (Generator)
 import RationalCubicSpline2d exposing (RationalCubicSpline2d)
 import RationalCubicSpline3d exposing (RationalCubicSpline3d)
@@ -63,6 +66,16 @@ scale =
 length : Generator Length
 length =
     Random.map Length.meters (Random.float -10 10)
+
+
+unitlessQuantity : Generator (Quantity Float Unitless)
+unitlessQuantity =
+    Random.map Quantity.float scale
+
+
+unitlessInterval : Generator (Interval Float Unitless)
+unitlessInterval =
+    Random.map2 Interval.from unitlessQuantity unitlessQuantity
 
 
 positiveLength : Generator Length
