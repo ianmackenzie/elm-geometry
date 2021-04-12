@@ -18,7 +18,7 @@ module Vector3d exposing
     , per, for
     , components, xComponent, yComponent, zComponent, componentIn, length, direction
     , equalWithin, lexicographicComparison
-    , plus, minus, dot, cross, sum, twice, half
+    , multiplyBy, divideBy, plus, minus, dot, cross, sum, twice, half
     , product, times, timesUnitless, over, over_, overUnitless
     , reverse, normalize, scaleBy, scaleTo, rotateAround, mirrorAcross, projectionIn, projectOnto
     , at, at_
@@ -123,7 +123,7 @@ code that represents vectors as plain records.
 
 # Arithmetic
 
-@docs plus, minus, dot, cross, sum, twice, half
+@docs multiplyBy, divideBy, plus, minus, dot, cross, sum, twice, half
 
 
 ## Vector/scalar products
@@ -978,6 +978,21 @@ like
 normalize : Vector3d units coordinates -> Vector3d Unitless coordinates
 normalize =
     scaleTo (Quantity.float 1)
+
+
+{-| Alias for [`scaleBy`](#scaleBy) since a `Vector3d` can be kind of thought of
+as either a 'mathematical' or 'geometric' object.
+-}
+multiplyBy : Float -> Vector3d units coordinates -> Vector3d units coordinates
+multiplyBy scale vector =
+    scaleBy scale vector
+
+
+{-| Divide a vector by the given value.
+-}
+divideBy : Float -> Vector3d units coordinates -> Vector3d units coordinates
+divideBy scale vector =
+    scaleBy (1 / scale) vector
 
 
 {-| Find the sum of two vectors.
