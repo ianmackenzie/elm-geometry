@@ -19,7 +19,7 @@ module RationalCubicSpline2d exposing
     , at, at_
     , relativeTo, placeIn
     , bisect, splitAt
-    , numApproximationSegments
+    , numApproximationSegments, secondDerivativeBoundingBox, maxSecondDerivativeMagnitude
     )
 
 {-| A `RationalCubicSpline2d` is a rational cubic Bézier curve in 2D defined by
@@ -93,7 +93,7 @@ module](Point2d#transformations).
 You are unlikely to need to use these functions directly, but they are useful if
 you are writing low-level geometric algorithms.
 
-@docs numApproximationSegments
+@docs numApproximationSegments, secondDerivativeBoundingBox, maxSecondDerivativeMagnitude
 
 -}
 
@@ -101,6 +101,7 @@ import Angle exposing (Angle)
 import ArcLengthParameterization exposing (ArcLengthParameterization)
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
+import CubicSpline1d exposing (CubicSpline1d)
 import CubicSpline2d exposing (CubicSpline2d)
 import CubicSpline3d exposing (CubicSpline3d)
 import Curve
@@ -115,8 +116,10 @@ import Point2d exposing (Point2d)
 import Point3d exposing (Point3d)
 import Polyline2d exposing (Polyline2d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
-import Quantity exposing (Quantity(..), Rate)
+import Quantity exposing (Quantity(..), Rate, Unitless)
+import Quantity.Interval
 import Vector2d exposing (Vector2d)
+import VectorBoundingBox2d exposing (VectorBoundingBox2d)
 
 
 {-| -}
@@ -825,62 +828,151 @@ spline to within a given tolerance.
 -}
 numApproximationSegments : Quantity Float units -> RationalCubicSpline2d units coordinates -> Int
 numApproximationSegments maxError spline =
-    let
-        p1 =
-            firstControlPoint spline
-
-        p2 =
-            secondControlPoint spline
-
-        p3 =
-            thirdControlPoint spline
-
-        p4 =
-            fourthControlPoint spline
-
-        w1 =
-            firstWeight spline
-
-        w2 =
-            secondWeight spline
-
-        w3 =
-            thirdWeight spline
-
-        w4 =
-            fourthWeight spline
-
-        wMin =
-            min (min w1 w2) (min w3 w4)
-
-        s1 =
-            w1 / wMin
-
-        s2 =
-            w2 / wMin
-
-        s3 =
-            w3 / wMin
-
-        s4 =
-            w4 / wMin
-
-        q1 =
-            scaledPoint p1 s1
-
-        q2 =
-            scaledPoint p2 s2
-
-        q3 =
-            scaledPoint p3 s3
-
-        q4 =
-            scaledPoint p4 s4
-
-        spline3d =
-            CubicSpline3d.fromControlPoints q1 q2 q3 q4
-    in
     Curve.numApproximationSegments
         { maxError = maxError
-        , maxSecondDerivativeMagnitude = CubicSpline3d.maxSecondDerivativeMagnitude spline3d
+        , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude spline
         }
+
+
+asFraction : RationalCubicSpline2d units coordinates -> ( CubicSpline2d units coordinates, CubicSpline1d Unitless )
+asFraction (Types.RationalCubicSpline2d spline) =
+    let
+        (Types.Point2d p1) =
+            spline.firstControlPoint
+
+        (Types.Point2d p2) =
+            spline.secondControlPoint
+
+        (Types.Point2d p3) =
+            spline.thirdControlPoint
+
+        (Types.Point2d p4) =
+            spline.fourthControlPoint
+
+        w1 =
+            spline.firstWeight
+
+        w2 =
+            spline.secondWeight
+
+        w3 =
+            spline.thirdWeight
+
+        w4 =
+            spline.fourthWeight
+    in
+    ( CubicSpline2d.fromControlPoints
+        (Types.Point2d { x = p1.x * w1, y = p1.y * w1 })
+        (Types.Point2d { x = p2.x * w2, y = p2.y * w2 })
+        (Types.Point2d { x = p3.x * w3, y = p3.y * w3 })
+        (Types.Point2d { x = p4.x * w4, y = p4.y * w4 })
+    , CubicSpline1d.fromControlPoints
+        (Quantity.float w1)
+        (Quantity.float w2)
+        (Quantity.float w3)
+        (Quantity.float w4)
+    )
+
+
+secondDerivativeBoundingBox : RationalCubicSpline2d units coordinates -> VectorBoundingBox2d units coordinates
+secondDerivativeBoundingBox spline =
+    let
+        ( xySpline, wSpline ) =
+            asFraction spline
+
+        wBounds =
+            CubicSpline1d.boundingBox wSpline
+
+        wFirstDerivativeBounds =
+            CubicSpline1d.firstDerivativeBoundingBox wSpline
+
+        wSecondDerivativeBounds =
+            CubicSpline1d.secondDerivativeBoundingBox wSpline
+
+        wMin =
+            Quantity.toFloat (Quantity.Interval.minValue wBounds)
+
+        wMax =
+            Quantity.toFloat (Quantity.Interval.maxValue wBounds)
+
+        xyBounds =
+            CubicSpline2d.boundingBox xySpline
+
+        xyFirstDerivativeBounds =
+            CubicSpline2d.firstDerivativeBoundingBox xySpline
+
+        xySecondDerivativeBounds =
+            CubicSpline2d.secondDerivativeBoundingBox xySpline
+    in
+    if wMin < 0 && wMax > 0 then
+        VectorBoundingBox2d.xy
+            (Quantity.Interval.fromEndpoints ( Quantity.negativeInfinity, Quantity.positiveInfinity ))
+            (Quantity.Interval.fromEndpoints ( Quantity.negativeInfinity, Quantity.positiveInfinity ))
+
+    else
+        let
+            wMinInv =
+                1 / wMin
+
+            wMinInv2 =
+                wMinInv * wMinInv
+
+            wMinInv3 =
+                wMinInv2 * wMinInv
+
+            wMaxInv =
+                1 / wMax
+
+            wMaxInv2 =
+                wMaxInv * wMaxInv
+
+            wMaxInv3 =
+                wMaxInv2 * wMaxInv
+
+            wInv =
+                Quantity.Interval.from
+                    (Quantity.float wMaxInv)
+                    (Quantity.float wMinInv)
+
+            wInv2 =
+                Quantity.Interval.from
+                    (Quantity.float wMaxInv2)
+                    (Quantity.float wMinInv2)
+
+            wInv3 =
+                Quantity.Interval.from
+                    (Quantity.float wMaxInv3)
+                    (Quantity.float wMinInv3)
+
+            a =
+                xySecondDerivativeBounds |> VectorBoundingBox2d.timesUnitlessInterval wInv
+
+            b =
+                xyFirstDerivativeBounds
+                    |> VectorBoundingBox2d.timesUnitlessInterval
+                        (wInv2
+                            |> Quantity.Interval.timesUnitlessInterval wFirstDerivativeBounds
+                            |> Quantity.Interval.twice
+                        )
+
+            c1 =
+                Quantity.Interval.twice
+                    (wInv3
+                        |> Quantity.Interval.timesUnitlessInterval
+                            (Quantity.Interval.squaredUnitless wFirstDerivativeBounds)
+                    )
+
+            c2 =
+                wInv2 |> Quantity.Interval.timesUnitlessInterval wSecondDerivativeBounds
+
+            c =
+                VectorBoundingBox2d.from Point2d.origin xyBounds
+                    |> VectorBoundingBox2d.timesUnitlessInterval
+                        (c1 |> Quantity.Interval.minusInterval c2)
+        in
+        a |> VectorBoundingBox2d.minusBoundingBox b |> VectorBoundingBox2d.plusBoundingBox c
+
+
+maxSecondDerivativeMagnitude : RationalCubicSpline2d units coordinates -> Quantity Float units
+maxSecondDerivativeMagnitude spline =
+    Quantity.Interval.maxValue (VectorBoundingBox2d.length (secondDerivativeBoundingBox spline))

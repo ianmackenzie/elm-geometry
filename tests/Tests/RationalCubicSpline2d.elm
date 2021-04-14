@@ -1,4 +1,4 @@
-module Tests.RationalCubicSpline2d exposing (bSplines, firstDerivative, splitAt, transformations)
+module Tests.RationalCubicSpline2d exposing (approximate, bSplines, firstDerivative, splitAt, transformations)
 
 import CubicSpline2d
 import Expect exposing (Expectation, FloatingPointTolerance(..))
@@ -149,3 +149,8 @@ splitAt =
                         (RationalCubicSpline2d.pointOn spline (t0 + t1 * (1 - t0)))
             )
         ]
+
+
+approximate : Test
+approximate =
+    Tests.Generic.Curve2d.approximate curveOperations
