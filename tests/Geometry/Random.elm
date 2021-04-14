@@ -105,7 +105,7 @@ vector4d =
 
 vectorBoundingBox2d : Generator (VectorBoundingBox2d Meters coordinates)
 vectorBoundingBox2d =
-    Random.map2 VectorBoundingBox2d.from vector2d vector2d
+    Random.map2 VectorBoundingBox2d.hull2 vector2d vector2d
 
 
 vectorBoundingBox3d : Generator (VectorBoundingBox3d Meters coordinates)

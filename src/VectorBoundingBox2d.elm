@@ -9,12 +9,11 @@
 
 module VectorBoundingBox2d exposing
     ( VectorBoundingBox2d
-    , from, singleton, xy, fromIntervals
-    , union, intersection
-    , hull, hull3, hullN, hullOf, hullOfN
-    , aggregate, aggregate3, aggregateN, aggregateOf, aggregateOfN
+    , singleton, xy, fromIntervals, from, fromBoundingBox
+    , hull2, hull3, hull, hullN, hullOf, hullOfN
+    , aggregate2, aggregate3, aggregate, aggregateN, aggregateOf, aggregateOfN
     , xInterval, yInterval, intervals, length
-    , contains, isContainedIn, intersects
+    , contains, isContainedIn, intersects, intersection
     , expandBy
     , interpolate
     , at, at_
@@ -33,19 +32,14 @@ details.
 
 # Constructors
 
-@docs from, singleton, xy, fromIntervals
-
-
-## Booleans
-
-@docs union, intersection
+@docs singleton, xy, fromIntervals, from, fromBoundingBox
 
 
 ## Hull
 
 Functions for building bounding boxes containing several vectors.
 
-@docs hull, hull3, hullN, hullOf, hullOfN
+@docs hull2, hull3, hull, hullN, hullOf, hullOfN
 
 
 ## Aggregation
@@ -53,7 +47,7 @@ Functions for building bounding boxes containing several vectors.
 Functions for combining several bounding boxes into one bounding box that
 contains all of the input boxes.
 
-@docs aggregate, aggregate3, aggregateN, aggregateOf, aggregateOfN
+@docs aggregate2, aggregate3, aggregate, aggregateN, aggregateOf, aggregateOfN
 
 
 # Properties
@@ -63,7 +57,7 @@ contains all of the input boxes.
 
 # Queries
 
-@docs contains, isContainedIn, intersects
+@docs contains, isContainedIn, intersects, intersection
 
 
 # Transformations
@@ -93,8 +87,10 @@ contains all of the input boxes.
 
 -}
 
+import BoundingBox2d exposing (BoundingBox2d)
 import Float.Extra as Float
 import Geometry.Types as Types
+import Point2d exposing (Point2d)
 import Quantity exposing (Product, Quantity(..), Rate, Unitless)
 import Quantity.Extra as Quantity
 import Quantity.Interval as Interval exposing (Interval)
@@ -107,12 +103,10 @@ type alias VectorBoundingBox2d units coordinates =
     Types.VectorBoundingBox2d units coordinates
 
 
-{-| Construct a bounding box containing the two vectors. The vectors can be
-given in any order and don't have to represent the 'primary' diagonal of the
-bounding box.
+{-| Construct a bounding box containing the two vectors.
 -}
-from : Vector2d units coordinates -> Vector2d units coordinates -> VectorBoundingBox2d units coordinates
-from firstVector secondVector =
+hull2 : Vector2d units coordinates -> Vector2d units coordinates -> VectorBoundingBox2d units coordinates
+hull2 firstVector secondVector =
     let
         (Types.Vector2d v1) =
             firstVector
@@ -182,6 +176,52 @@ fromIntervals :
     -> VectorBoundingBox2d units coordinates
 fromIntervals ( givenXInterval, givenYInterval ) =
     xy givenXInterval givenYInterval
+
+
+{-| Given a point and a bounding box, compute the vector bounding box containing
+all possible vectors from that point to any point in the bounding box.
+-}
+from :
+    Point2d units coordinates
+    -> BoundingBox2d units coordinates
+    -> VectorBoundingBox2d units coordinates
+from start end =
+    let
+        (Types.Point2d p) =
+            start
+
+        (Types.BoundingBox2d b) =
+            end
+    in
+    Types.VectorBoundingBox2d
+        { minX = b.minX - p.x
+        , maxX = b.maxX - p.x
+        , minY = b.minY - p.y
+        , maxY = b.maxY - p.y
+        }
+
+
+{-| Given two bounding boxes, compute the vector bounding box containing all
+possible vectors from a point in the first box to a point in the second box.
+-}
+fromBoundingBox :
+    BoundingBox2d units coordinates
+    -> BoundingBox2d units coordinates
+    -> VectorBoundingBox2d units coordinates
+fromBoundingBox start end =
+    let
+        (Types.BoundingBox2d b1) =
+            start
+
+        (Types.BoundingBox2d b2) =
+            end
+    in
+    Types.VectorBoundingBox2d
+        { minX = b2.minX - b2.maxX
+        , maxX = b2.maxX - b2.minX
+        , minY = b2.minY - b2.maxY
+        , maxY = b2.maxY - b2.minY
+        }
 
 
 {-| Find the bounding box containing one or more input vectors:
@@ -409,11 +449,10 @@ aggregateOfHelp currentMinX currentMaxX currentMinY currentMaxY getBoundingBox i
                 }
 
 
-{-| Build a bounding box that contains both given bounding boxes. (Note that
-this is not strictly speaking a 'union' in the precise mathematical sense.)
+{-| Build a bounding box that contains both given bounding boxes.
 -}
-union : VectorBoundingBox2d units coordinates -> VectorBoundingBox2d units coordinates -> VectorBoundingBox2d units coordinates
-union firstBox secondBox =
+aggregate2 : VectorBoundingBox2d units coordinates -> VectorBoundingBox2d units coordinates -> VectorBoundingBox2d units coordinates
+aggregate2 firstBox secondBox =
     let
         (Types.VectorBoundingBox2d b1) =
             firstBox

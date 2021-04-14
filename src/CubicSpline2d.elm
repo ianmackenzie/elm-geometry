@@ -1130,7 +1130,7 @@ secondDerivativeBoundingBox spline =
         v2 =
             Vector2d.scaleBy 6 (u3 |> Vector2d.minus u2)
     in
-    VectorBoundingBox2d.from v1 v2
+    VectorBoundingBox2d.hull2 v1 v2
 
 
 {-| Find a conservative upper bound on the magnitude of the second derivative of

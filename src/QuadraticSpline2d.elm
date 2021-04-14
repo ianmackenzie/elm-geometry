@@ -452,7 +452,7 @@ firstDerivativeBoundingBox spline =
         v2 =
             Vector2d.twice (Vector2d.from p2 p3)
     in
-    VectorBoundingBox2d.from v1 v2
+    VectorBoundingBox2d.hull2 v1 v2
 
 
 derivativeMagnitude : QuadraticSpline2d units coordinates -> Float -> Quantity Float units
