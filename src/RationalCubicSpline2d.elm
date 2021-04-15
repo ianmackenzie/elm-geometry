@@ -818,11 +818,6 @@ firstDerivative spline t =
         |> Vector2d.scaleBy (3 * w123 * w234 / (w1234 * w1234))
 
 
-scaledPoint : Point2d units coordinates -> Float -> Point3d units coordinates
-scaledPoint (Types.Point2d p) w =
-    Types.Point3d { x = p.x * w, y = p.y * w, z = w }
-
-
 {-| Determine the number of linear segments needed to approximate a cubic
 spline to within a given tolerance.
 -}
