@@ -52,6 +52,8 @@
         "Triangle3d",
         "Vector2d",
         "Vector3d",
+        "VectorBoundingBox2d",
+        "VectorBoundingBox3d",
         "VoronoiDiagram2d"
     ],
     "elm-version": "0.19.0 <= v < 0.20.0",
