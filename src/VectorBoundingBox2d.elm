@@ -9,7 +9,7 @@
 
 module VectorBoundingBox2d exposing
     ( VectorBoundingBox2d
-    , singleton, xy, fromIntervals, from, fromBoundingBox
+    , singleton, xy, fromIntervals, from, between
     , hull2, hull3, hull, hullN, hullOf, hullOfN
     , aggregate2, aggregate3, aggregate, aggregateN, aggregateOf, aggregateOfN
     , xInterval, yInterval, intervals, length
@@ -32,7 +32,7 @@ details.
 
 # Constructors
 
-@docs singleton, xy, fromIntervals, from, fromBoundingBox
+@docs singleton, xy, fromIntervals, from, between
 
 
 ## Hull
@@ -204,11 +204,11 @@ from start end =
 {-| Given two bounding boxes, compute the vector bounding box containing all
 possible vectors from a point in the first box to a point in the second box.
 -}
-fromBoundingBox :
+between :
     BoundingBox2d units coordinates
     -> BoundingBox2d units coordinates
     -> VectorBoundingBox2d units coordinates
-fromBoundingBox start end =
+between start end =
     let
         (Types.BoundingBox2d b1) =
             start
