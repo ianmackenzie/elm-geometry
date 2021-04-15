@@ -1,4 +1,10 @@
-module Tests.RationalCubicSpline2d exposing (approximate, bSplines, firstDerivative, splitAt, transformations)
+module Tests.RationalCubicSpline2d exposing
+    ( approximate
+    , bSplines
+    , firstDerivative
+    , splitAt
+    , transformations
+    )
 
 import CubicSpline2d
 import Expect exposing (Expectation, FloatingPointTolerance(..))
