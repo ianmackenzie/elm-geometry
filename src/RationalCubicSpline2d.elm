@@ -874,6 +874,8 @@ asFraction (Types.RationalCubicSpline2d spline) =
     )
 
 
+{-| Compute the bounds on the second derivative of a spline.
+-}
 secondDerivativeBoundingBox : RationalCubicSpline2d units coordinates -> VectorBoundingBox2d units coordinates
 secondDerivativeBoundingBox spline =
     let
@@ -973,6 +975,8 @@ secondDerivativeBoundingBox spline =
         a |> VectorBoundingBox2d.minusBoundingBox b |> VectorBoundingBox2d.plusBoundingBox c
 
 
+{-| Find the maximum magnitude of the second derivative of a spline.
+-}
 maxSecondDerivativeMagnitude : RationalCubicSpline2d units coordinates -> Quantity Float units
 maxSecondDerivativeMagnitude spline =
     Quantity.Interval.maxValue (VectorBoundingBox2d.length (secondDerivativeBoundingBox spline))
