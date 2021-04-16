@@ -454,7 +454,17 @@ type Body3d units coordinates
 
 
 type Transformation2d unitFn coordsFn restrictions
-    = Transformation2d Float Float Float Float Float Float
+    = Transformation2d
+        { m11 : Float
+        , m12 : Float
+        , m13 : Float
+        , m21 : Float
+        , m22 : Float
+        , m23 : Float
+        , m31 : Float
+        , m32 : Float
+        , m33 : Float
+        }
 
 
 type Allowed

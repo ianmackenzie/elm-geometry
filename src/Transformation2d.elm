@@ -14,12 +14,32 @@ type alias Allowed =
 
 identity : Transformation2d (units -> units) (coords -> coords) restrictions
 identity =
-    Transformation2d 1 0 0 0 1 0
+    Transformation2d
+        { m11 = 1
+        , m12 = 0
+        , m13 = 0
+        , m21 = 0
+        , m22 = 1
+        , m23 = 0
+        , m31 = 0
+        , m32 = 0
+        , m33 = 1
+        }
 
 
 translateBy : Vector2d units coords -> Transformation2d (units -> units) (coords -> coords) restrictions
 translateBy (Types.Vector2d v) =
-    Transformation2d 1 0 v.x 0 1 v.y
+    Transformation2d
+        { m11 = 1
+        , m12 = 0
+        , m13 = v.x
+        , m21 = 0
+        , m22 = 1
+        , m23 = v.y
+        , m31 = 0
+        , m32 = 0
+        , m33 = 1
+        }
 
 
 translateIn :
@@ -27,17 +47,47 @@ translateIn :
     -> Quantity Float units
     -> Transformation2d (units -> units) (coords -> coords) restrictions
 translateIn (Types.Direction2d d) (Quantity distance) =
-    Transformation2d 1 0 (distance * d.x) 0 1 (distance * d.y)
+    Transformation2d
+        { m11 = 1
+        , m12 = 0
+        , m13 = distance * d.x
+        , m21 = 0
+        , m22 = 1
+        , m23 = distance * d.y
+        , m31 = 0
+        , m32 = 0
+        , m33 = 1
+        }
 
 
 at : Quantity Float (Rate destinationUnits sourceUnits) -> Transformation2d (sourceUnits -> destinationUnits) (coords -> coords) { a | scale : Allowed }
 at (Quantity rate) =
-    Transformation2d rate 0 0 0 rate 0
+    Transformation2d
+        { m11 = rate
+        , m12 = 0
+        , m13 = 0
+        , m21 = 0
+        , m22 = rate
+        , m23 = 0
+        , m31 = 0
+        , m32 = 0
+        , m33 = 1
+        }
 
 
 at_ : Quantity Float (Rate sourceUnits destinationUnits) -> Transformation2d (sourceUnits -> destinationUnits) (coords -> coords) { a | scale : Allowed }
 at_ (Quantity rate) =
-    Transformation2d (1 / rate) 0 0 0 (1 / rate) 0
+    Transformation2d
+        { m11 = 1 / rate
+        , m12 = 0
+        , m13 = 0
+        , m21 = 0
+        , m22 = 1 / rate
+        , m23 = 0
+        , m31 = 0
+        , m32 = 0
+        , m33 = 1
+        }
 
 
 scaleAbout :
@@ -45,7 +95,17 @@ scaleAbout :
     -> Float
     -> Transformation2d (units -> units) (coordinates -> coordinates) { a | scale : Allowed }
 scaleAbout (Types.Point2d p) k =
-    Transformation2d k 0 (k * p.x - p.x) 0 k (k * p.y - p.y)
+    Transformation2d
+        { m11 = k
+        , m12 = 0
+        , m13 = p.x - k * p.x
+        , m21 = 0
+        , m22 = k
+        , m23 = p.y - k * p.y
+        , m31 = 0
+        , m32 = 0
+        , m33 = 1
+        }
 
 
 relativeTo :
@@ -55,25 +115,52 @@ relativeTo (Types.Frame2d frame) =
     Debug.todo "Eh... How do we do this again?"
 
 
-unsafe : ( ( Float, Float, Float ), ( Float, Float, Float ) ) -> Transformation2d unitFn coordsFn restrictions
-unsafe ( ( a11, a12, a13 ), ( a21, a22, a23 ) ) =
-    Transformation2d a11 a12 a13 a21 a22 a23
+unsafe :
+    { m11 : Float
+    , m12 : Float
+    , m13 : Float
+    , m21 : Float
+    , m22 : Float
+    , m23 : Float
+    , m31 : Float
+    , m32 : Float
+    , m33 : Float
+    }
+    -> Transformation2d unitFn coordsFn restrictions
+unsafe transformation =
+    Transformation2d transformation
 
 
-unwrap : Transformation2d unitFn coordsFn restrictions -> ( ( Float, Float, Float ), ( Float, Float, Float ) )
-unwrap (Transformation2d a11 a12 a13 a21 a22 a23) =
-    ( ( a11, a12, a13 ), ( a21, a22, a23 ) )
+unwrap :
+    Transformation2d unitFn coordsFn restrictions
+    ->
+        { m11 : Float
+        , m12 : Float
+        , m13 : Float
+        , m21 : Float
+        , m22 : Float
+        , m23 : Float
+        , m31 : Float
+        , m32 : Float
+        , m33 : Float
+        }
+unwrap (Transformation2d transformation) =
+    transformation
 
 
 followedBy :
     Transformation2d (units2 -> units3) (coordinates2 -> coordinates3) restrictions
     -> Transformation2d (units1 -> units2) (coordinates1 -> coordinates2) restrictions
     -> Transformation2d (units1 -> units3) (coordinates1 -> coordinates3) restrictions
-followedBy (Transformation2d b11 b12 b13 b21 b22 b23) (Transformation2d a11 a12 a13 a21 a22 a23) =
+followedBy (Transformation2d b) (Transformation2d a) =
     Transformation2d
-        (a11 * b11 + a12 * b21)
-        (a11 * b12 + a12 * b22)
-        (a11 * b13 + a12 * b23 + a13)
-        (a21 * b11 + a22 * b21)
-        (a21 * b12 + a22 * b22)
-        (a21 * b13 + a22 * b23 + a23)
+        { m11 = a.m11 * b.m11 + a.m12 * b.m21 + a.m13 * b.m31
+        , m12 = a.m11 * b.m12 + a.m12 * b.m22 + a.m13 * b.m32
+        , m13 = a.m11 * b.m13 + a.m12 * b.m23 + a.m13 * b.m33
+        , m21 = a.m21 * b.m11 + a.m22 * b.m21 + a.m23 * b.m31
+        , m22 = a.m21 * b.m12 + a.m22 * b.m22 + a.m23 * b.m32
+        , m23 = a.m21 * b.m13 + a.m22 * b.m23 + a.m23 * b.m33
+        , m31 = a.m31 * b.m11 + a.m32 * b.m21 + a.m33 * b.m31
+        , m32 = a.m31 * b.m12 + a.m32 * b.m22 + a.m33 * b.m32
+        , m33 = a.m31 * b.m13 + a.m32 * b.m23 + a.m33 * b.m33
+        }

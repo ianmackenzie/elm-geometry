@@ -1348,8 +1348,8 @@ apply :
     Transformation2d (units1 -> units2) (coords1 -> coords2) restrictions
     -> Point2d units1 coords1
     -> Point2d units2 coords2
-apply (Types.Transformation2d a11 a12 a13 a21 a22 a23) (Types.Point2d p) =
+apply (Types.Transformation2d a) (Types.Point2d p) =
     Types.Point2d
-        { x = a11 * p.x + a12 * p.y + a13
-        , y = a21 * p.x + a22 * p.y + a23
+        { x = a.m11 * p.x + a.m12 * p.y + a.m13
+        , y = a.m21 * p.x + a.m22 * p.y + a.m23
         }
