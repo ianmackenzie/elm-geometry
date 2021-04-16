@@ -23,6 +23,7 @@ module Point2d exposing
     , relativeTo, placeIn
     , centroid, centroidOf, centroid3, centroidN
     , unsafe, unwrap
+    , apply
     )
 
 {-| A `Point2d` represents a position in 2D space and is defined by its X and Y
@@ -139,7 +140,7 @@ useful when writing generic/library code.
 import Angle exposing (Angle)
 import Direction2d exposing (Direction2d)
 import Float.Extra as Float
-import Geometry.Types as Types exposing (Axis2d, BoundingBox2d, Frame2d)
+import Geometry.Types as Types exposing (Axis2d, BoundingBox2d, Frame2d, Transformation2d)
 import Length exposing (Meters)
 import Pixels exposing (Pixels)
 import Quantity exposing (Quantity(..), Rate, Squared, Unitless)
@@ -1340,4 +1341,15 @@ placeIn (Types.Frame2d frame) (Types.Point2d p) =
     Types.Point2d
         { x = p0.x + p.x * i.x + p.y * j.x
         , y = p0.y + p.x * i.y + p.y * j.y
+        }
+
+
+apply :
+    Transformation2d (units1 -> units2) (coords1 -> coords2) restrictions
+    -> Point2d units1 coords1
+    -> Point2d units2 coords2
+apply (Types.Transformation2d a) (Types.Point2d p) =
+    Types.Point2d
+        { x = a.m11 * p.x + a.m12 * p.y + a.m13
+        , y = a.m21 * p.x + a.m22 * p.y + a.m23
         }
