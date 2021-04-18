@@ -157,10 +157,10 @@ firstDerivativeBoundingBox spline =
             thirdControlPoint spline
 
         v1 =
-            p2 |> Quantity.minus p1
+            Quantity.twice (p2 |> Quantity.minus p1)
 
         v2 =
-            p3 |> Quantity.minus p2
+            Quantity.twice (p3 |> Quantity.minus p2)
     in
     Interval.from v1 v2
 
