@@ -5,6 +5,7 @@ module Tests.Arc2d exposing
     , evaluateOneIsEndPoint
     , evaluateZeroIsStartPoint
     , firstDerivative
+    , firstDerivativeBoundingBox
     , from
     , mirroredCenterPoint
     , reverseFlipsDirection
@@ -19,6 +20,7 @@ import Expect
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Length exposing (Meters, meters)
 import Point2d exposing (Point2d)
 import Quantity exposing (Quantity, zero)
@@ -192,3 +194,12 @@ boundingBox =
             Arc2d.pointOn arc parameterValue
                 |> Expect.point2dContainedIn (Arc2d.boundingBox arc)
         )
+
+
+firstDerivativeBoundingBox : Test
+firstDerivativeBoundingBox =
+    Curve2d.firstDerivativeBoundingBox
+        { generator = Random.arc2d
+        , firstDerivative = Arc2d.firstDerivative
+        , firstDerivativeBoundingBox = Arc2d.firstDerivativeBoundingBox
+        }
