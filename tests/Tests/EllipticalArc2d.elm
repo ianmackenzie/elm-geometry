@@ -2,6 +2,7 @@ module Tests.EllipticalArc2d exposing
     ( approximate
     , boundingBox
     , firstDerivative
+    , firstDerivativeBoundingBox
     , fromEndpointsReplicatesArc
     , reproducibleArc
     , reverseKeepsMidpoint
@@ -16,6 +17,7 @@ import Expect
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Length exposing (Meters, meters)
 import Point2d
 import Quantity exposing (zero)
@@ -188,3 +190,12 @@ signedDistanceAlong =
             in
             projectedDistance |> Expect.quantityContainedIn distanceInterval
         )
+
+
+firstDerivativeBoundingBox : Test
+firstDerivativeBoundingBox =
+    Tests.Generic.Curve2d.firstDerivativeBoundingBox
+        { generator = Random.ellipticalArc2d
+        , firstDerivative = EllipticalArc2d.firstDerivative
+        , firstDerivativeBoundingBox = EllipticalArc2d.firstDerivativeBoundingBox
+        }
