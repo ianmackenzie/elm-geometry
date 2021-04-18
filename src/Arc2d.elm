@@ -18,7 +18,7 @@ module Arc2d exposing
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , at, at_
     , relativeTo, placeIn
-    , firstDerivative, numApproximationSegments
+    , firstDerivative, firstDerivativeBoundingBox, numApproximationSegments
     )
 
 {-| An `Arc2d` is a section of a circle, defined by its center point, start
@@ -77,7 +77,7 @@ module](Point2d#transformations).
 You are unlikely to need to use these functions directly, but they are useful if
 you are writing low-level geometric algorithms.
 
-@docs firstDerivative, numApproximationSegments
+@docs firstDerivative, firstDerivativeBoundingBox, numApproximationSegments
 
 -}
 
@@ -98,6 +98,7 @@ import Quantity.Extra as Quantity
 import Quantity.Interval as Interval
 import SweptAngle exposing (SweptAngle)
 import Vector2d exposing (Vector2d)
+import VectorBoundingBox2d exposing (VectorBoundingBox2d)
 
 
 {-| -}
@@ -725,18 +726,56 @@ pointOn (Types.Arc2d arc) parameterValue =
         Point2d.xy px py
 
 
+startDerivative : Arc2d units coordinates -> Vector2d units coordinates
+startDerivative arc =
+    let
+        (Types.Arc2d { signedLength, xDirection }) =
+            arc
+    in
+    Vector2d.withLength signedLength xDirection
+
+
+endDerivative : Arc2d units coordinates -> Vector2d units coordinates
+endDerivative arc =
+    startDerivative arc |> Vector2d.rotateBy (sweptAngle arc)
+
+
 {-| Get the first derivative of an arc at a given parameter value.
 -}
 firstDerivative : Arc2d units coordinates -> Float -> Vector2d units coordinates
-firstDerivative (Types.Arc2d arc) =
+firstDerivative arc =
     let
-        startDerivative =
-            Vector2d.withLength arc.signedLength arc.xDirection
+        v0 =
+            startDerivative arc
+
+        theta =
+            sweptAngle arc
     in
     \parameterValue ->
-        startDerivative
-            |> Vector2d.rotateBy
-                (Quantity.multiplyBy parameterValue arc.sweptAngle)
+        v0 |> Vector2d.rotateBy (Quantity.multiplyBy parameterValue theta)
+
+
+firstDerivativeBoundingBox : Arc2d units coordinates -> VectorBoundingBox2d units coordinates
+firstDerivativeBoundingBox arc =
+    let
+        v0 =
+            startDerivative arc
+    in
+    case Vector2d.direction v0 of
+        Just startDirection ->
+            let
+                derivativeArc =
+                    with
+                        { centerPoint = Point2d.origin
+                        , radius = Vector2d.length v0
+                        , startAngle = Direction2d.toAngle startDirection
+                        , sweptAngle = sweptAngle arc
+                        }
+            in
+            VectorBoundingBox2d.from Point2d.origin (boundingBox derivativeArc)
+
+        Nothing ->
+            VectorBoundingBox2d.singleton v0
 
 
 {-| Represents a nondegenerate spline (one that has finite, non-zero length).
