@@ -12,13 +12,13 @@ module RationalQuadraticSpline2d exposing
     , bSplineSegments, bSplineIntervals
     , startPoint, endPoint, startDerivative, endDerivative, boundingBox
     , firstControlPoint, secondControlPoint, thirdControlPoint, firstWeight, secondWeight, thirdWeight
-    , pointOn, firstDerivative
+    , pointOn
     , segments, approximate
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , at, at_
     , relativeTo, placeIn
     , bisect, splitAt
-    , numApproximationSegments
+    , numApproximationSegments, firstDerivative, secondDerivative, firstDerivativeBoundingBox, secondDerivativeBoundingBox
     )
 
 {-| A `RationalQuadraticSpline2d` is a rational quadratic Bézier curve in 2D
@@ -56,7 +56,7 @@ functionality for
 
 # Evaluation
 
-@docs pointOn, firstDerivative
+@docs pointOn
 
 
 # Linear approximation
@@ -92,7 +92,7 @@ module](Point2d#transformations).
 You are unlikely to need to use these functions directly, but they are useful if
 you are writing low-level geometric algorithms.
 
-@docs numApproximationSegments
+@docs numApproximationSegments, firstDerivative, secondDerivative, firstDerivativeBoundingBox, secondDerivativeBoundingBox
 
 -}
 
@@ -113,11 +113,14 @@ import Parameter1d
 import Point2d exposing (Point2d)
 import Point3d exposing (Point3d)
 import Polyline2d exposing (Polyline2d)
+import QuadraticSpline1d exposing (QuadraticSpline1d)
 import QuadraticSpline2d exposing (QuadraticSpline2d)
 import QuadraticSpline3d exposing (QuadraticSpline3d)
-import Quantity exposing (Quantity(..), Rate)
+import Quantity exposing (Quantity(..), Rate, Unitless)
+import Quantity.Interval
 import Vector2d exposing (Vector2d)
 import Vector3d exposing (Vector3d)
+import VectorBoundingBox2d exposing (VectorBoundingBox2d)
 
 
 {-| -}
@@ -670,61 +673,143 @@ firstDerivative spline t =
         |> Vector2d.scaleBy (2 * w12 * w23 / (w123 * w123))
 
 
-scaledPoint : Point2d units coordinates -> Float -> Point3d units coordinates
-scaledPoint (Types.Point2d p) w =
-    Types.Point3d { x = p.x * w, y = p.y * w, z = w }
+secondDerivative : RationalQuadraticSpline2d units coordinates -> Float -> Vector2d units coordinates
+secondDerivative spline t =
+    let
+        ( p, w ) =
+            asFraction spline
+
+        w0 =
+            QuadraticSpline1d.pointOn w t
+
+        w1 =
+            QuadraticSpline1d.firstDerivative w t
+
+        w2 =
+            QuadraticSpline1d.secondDerivative w
+
+        p2 =
+            QuadraticSpline2d.secondDerivative p
+
+        x0 =
+            Vector2d.from Point2d.origin (pointOn spline t)
+
+        x1 =
+            firstDerivative spline t
+    in
+    Vector2d.timesUnitless (Quantity.reciprocal w0)
+        (p2
+            |> Vector2d.minus (Vector2d.twice (Vector2d.timesUnitless w1 x1))
+            |> Vector2d.minus (Vector2d.timesUnitless w2 x0)
+        )
 
 
-{-| Determine the number of linear segments needed to approximate a cubic
+firstDerivativeBoundingBox : RationalQuadraticSpline2d units coordinates -> VectorBoundingBox2d units coordinates
+firstDerivativeBoundingBox spline =
+    let
+        ( p, w ) =
+            asFraction spline
+
+        w0 =
+            QuadraticSpline1d.boundingBox w
+
+        w1 =
+            QuadraticSpline1d.firstDerivativeBoundingBox w
+
+        p1 =
+            QuadraticSpline2d.firstDerivativeBoundingBox p
+
+        x0 =
+            VectorBoundingBox2d.from Point2d.origin (boundingBox spline)
+    in
+    VectorBoundingBox2d.timesUnitlessInterval (Quantity.Interval.reciprocal w0)
+        (p1
+            |> VectorBoundingBox2d.minusBoundingBox
+                (VectorBoundingBox2d.timesUnitlessInterval w1 x0)
+        )
+
+
+{-| Determine the number of linear segments needed to approximate a quadratic
 spline to within a given tolerance.
 -}
 numApproximationSegments : Quantity Float units -> RationalQuadraticSpline2d units coordinates -> Int
 numApproximationSegments maxError spline =
-    let
-        p1 =
-            firstControlPoint spline
-
-        p2 =
-            secondControlPoint spline
-
-        p3 =
-            thirdControlPoint spline
-
-        w1 =
-            firstWeight spline
-
-        w2 =
-            secondWeight spline
-
-        w3 =
-            thirdWeight spline
-
-        wMin =
-            min (min w1 w2) w3
-
-        s1 =
-            w1 / wMin
-
-        s2 =
-            w2 / wMin
-
-        s3 =
-            w3 / wMin
-
-        q1 =
-            scaledPoint p1 s1
-
-        q2 =
-            scaledPoint p2 s2
-
-        q3 =
-            scaledPoint p3 s3
-
-        spline3d =
-            QuadraticSpline3d.fromControlPoints q1 q2 q3
-    in
     Curve.numApproximationSegments
         { maxError = maxError
-        , maxSecondDerivativeMagnitude =
-            Vector3d.length (QuadraticSpline3d.secondDerivative spline3d)
+        , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude spline
         }
+
+
+asFraction : RationalQuadraticSpline2d units coordinates -> ( QuadraticSpline2d units coordinates, QuadraticSpline1d Unitless )
+asFraction (Types.RationalQuadraticSpline2d spline) =
+    let
+        (Types.Point2d p1) =
+            spline.firstControlPoint
+
+        (Types.Point2d p2) =
+            spline.secondControlPoint
+
+        (Types.Point2d p3) =
+            spline.thirdControlPoint
+
+        w1 =
+            spline.firstWeight
+
+        w2 =
+            spline.secondWeight
+
+        w3 =
+            spline.thirdWeight
+    in
+    ( QuadraticSpline2d.fromControlPoints
+        (Types.Point2d { x = p1.x * w1, y = p1.y * w1 })
+        (Types.Point2d { x = p2.x * w2, y = p2.y * w2 })
+        (Types.Point2d { x = p3.x * w3, y = p3.y * w3 })
+    , QuadraticSpline1d.fromControlPoints
+        (Quantity.float w1)
+        (Quantity.float w2)
+        (Quantity.float w3)
+    )
+
+
+{-| Compute the bounds on the second derivative of a spline.
+-}
+secondDerivativeBoundingBox : RationalQuadraticSpline2d units coordinates -> VectorBoundingBox2d units coordinates
+secondDerivativeBoundingBox spline =
+    let
+        ( p, w ) =
+            asFraction spline
+
+        w0 =
+            QuadraticSpline1d.boundingBox w
+
+        w1 =
+            QuadraticSpline1d.firstDerivativeBoundingBox w
+
+        w2 =
+            QuadraticSpline1d.secondDerivative w
+
+        p2 =
+            QuadraticSpline2d.secondDerivative p
+
+        x0 =
+            VectorBoundingBox2d.from Point2d.origin (boundingBox spline)
+
+        x1 =
+            firstDerivativeBoundingBox spline
+    in
+    VectorBoundingBox2d.timesUnitlessInterval (Quantity.Interval.reciprocal w0)
+        (VectorBoundingBox2d.singleton p2
+            |> VectorBoundingBox2d.minusBoundingBox
+                (VectorBoundingBox2d.twice <|
+                    VectorBoundingBox2d.timesUnitlessInterval w1 x1
+                )
+            |> VectorBoundingBox2d.minusBoundingBox (VectorBoundingBox2d.timesUnitless w2 x0)
+        )
+
+
+{-| Find the maximum magnitude of the second derivative of a spline.
+-}
+maxSecondDerivativeMagnitude : RationalQuadraticSpline2d units coordinates -> Quantity Float units
+maxSecondDerivativeMagnitude spline =
+    Quantity.Interval.maxValue (VectorBoundingBox2d.length (secondDerivativeBoundingBox spline))
