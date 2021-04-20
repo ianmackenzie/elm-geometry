@@ -21,7 +21,9 @@ curveOperations : Tests.Generic.Curve2d.Operations (RationalQuadraticSpline2d Me
 curveOperations =
     { fuzzer = Fuzz.rationalQuadraticSpline2d
     , pointOn = RationalQuadraticSpline2d.pointOn
+    , boundingBox = RationalQuadraticSpline2d.boundingBox
     , firstDerivative = RationalQuadraticSpline2d.firstDerivative
+    , firstDerivativeBoundingBox = RationalQuadraticSpline2d.firstDerivativeBoundingBox
     , scaleAbout = RationalQuadraticSpline2d.scaleAbout
     , translateBy = RationalQuadraticSpline2d.translateBy
     , rotateAround = RationalQuadraticSpline2d.rotateAround

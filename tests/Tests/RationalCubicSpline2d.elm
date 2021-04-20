@@ -27,7 +27,9 @@ curveOperations : Tests.Generic.Curve2d.Operations (RationalCubicSpline2d Meters
 curveOperations =
     { fuzzer = Fuzz.rationalCubicSpline2d
     , pointOn = RationalCubicSpline2d.pointOn
+    , boundingBox = RationalCubicSpline2d.boundingBox
     , firstDerivative = RationalCubicSpline2d.firstDerivative
+    , firstDerivativeBoundingBox = RationalCubicSpline2d.firstDerivativeBoundingBox
     , scaleAbout = RationalCubicSpline2d.scaleAbout
     , translateBy = RationalCubicSpline2d.translateBy
     , rotateAround = RationalCubicSpline2d.rotateAround

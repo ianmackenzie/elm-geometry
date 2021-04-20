@@ -145,7 +145,9 @@ curveOperations : Curve3d.Operations (CubicSpline3d Meters coordinates) coordina
 curveOperations =
     { fuzzer = Fuzz.cubicSpline3d
     , pointOn = CubicSpline3d.pointOn
+    , boundingBox = CubicSpline3d.boundingBox
     , firstDerivative = CubicSpline3d.firstDerivative
+    , firstDerivativeBoundingBox = CubicSpline3d.firstDerivativeBoundingBox
     , scaleAbout = CubicSpline3d.scaleAbout
     , translateBy = CubicSpline3d.translateBy
     , rotateAround = CubicSpline3d.rotateAround

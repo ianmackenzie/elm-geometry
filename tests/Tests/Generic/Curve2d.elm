@@ -11,6 +11,7 @@ module Tests.Generic.Curve2d exposing
 
 import Angle exposing (Angle)
 import Axis2d exposing (Axis2d)
+import BoundingBox2d exposing (BoundingBox2d)
 import Frame2d exposing (Frame2d)
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
@@ -39,7 +40,9 @@ type LocalCoordinates
 type alias Operations curve coordinates =
     { fuzzer : Fuzzer curve
     , pointOn : curve -> Float -> Point2d Meters coordinates
+    , boundingBox : curve -> BoundingBox2d Meters coordinates
     , firstDerivative : curve -> Float -> Vector2d Meters coordinates
+    , firstDerivativeBoundingBox : curve -> VectorBoundingBox2d Meters coordinates
     , scaleAbout : Point2d Meters coordinates -> Float -> curve -> curve
     , translateBy : Vector2d Meters coordinates -> curve -> curve
     , rotateAround : Point2d Meters coordinates -> Angle -> curve -> curve

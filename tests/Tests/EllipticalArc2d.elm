@@ -132,7 +132,9 @@ curveOperations : Tests.Generic.Curve2d.Operations (EllipticalArc2d Meters coord
 curveOperations =
     { fuzzer = Fuzz.ellipticalArc2d
     , pointOn = EllipticalArc2d.pointOn
+    , boundingBox = EllipticalArc2d.boundingBox
     , firstDerivative = EllipticalArc2d.firstDerivative
+    , firstDerivativeBoundingBox = EllipticalArc2d.firstDerivativeBoundingBox
     , scaleAbout = EllipticalArc2d.scaleAbout
     , translateBy = EllipticalArc2d.translateBy
     , rotateAround = EllipticalArc2d.rotateAround

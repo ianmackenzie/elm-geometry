@@ -95,7 +95,9 @@ curveOperations : Curve3d.Operations (Arc3d Meters coordinates) coordinates
 curveOperations =
     { fuzzer = Fuzz.arc3d
     , pointOn = Arc3d.pointOn
+    , boundingBox = Arc3d.boundingBox
     , firstDerivative = Arc3d.firstDerivative
+    , firstDerivativeBoundingBox = Arc3d.firstDerivativeBoundingBox
     , scaleAbout = Arc3d.scaleAbout
     , translateBy = Arc3d.translateBy
     , rotateAround = Arc3d.rotateAround

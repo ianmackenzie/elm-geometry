@@ -62,7 +62,9 @@ curveOperations : Curve3d.Operations (EllipticalArc3d Meters coordinates) coordi
 curveOperations =
     { fuzzer = Fuzz.ellipticalArc3d
     , pointOn = EllipticalArc3d.pointOn
+    , boundingBox = EllipticalArc3d.boundingBox
     , firstDerivative = EllipticalArc3d.firstDerivative
+    , firstDerivativeBoundingBox = EllipticalArc3d.firstDerivativeBoundingBox
     , scaleAbout = EllipticalArc3d.scaleAbout
     , translateBy = EllipticalArc3d.translateBy
     , rotateAround = EllipticalArc3d.rotateAround

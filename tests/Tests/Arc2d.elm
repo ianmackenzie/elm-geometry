@@ -135,7 +135,9 @@ curveOperations : Curve2d.Operations (Arc2d Meters coordinates) coordinates
 curveOperations =
     { fuzzer = Fuzz.arc2d
     , pointOn = Arc2d.pointOn
+    , boundingBox = Arc2d.boundingBox
     , firstDerivative = Arc2d.firstDerivative
+    , firstDerivativeBoundingBox = Arc2d.firstDerivativeBoundingBox
     , scaleAbout = Arc2d.scaleAbout
     , translateBy = Arc2d.translateBy
     , rotateAround = Arc2d.rotateAround
