@@ -3,6 +3,7 @@ module Tests.Arc3d exposing
     , evaluateHalfIsMidpoint
     , evaluateOneIsEndPoint
     , evaluateZeroIsStartPoint
+    , firstDerivativeBoundingBox
     , projectInto
     , reverseFlipsDirection
     , reverseKeepsMidpoint
@@ -15,6 +16,7 @@ import EllipticalArc2d
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Length exposing (Meters)
 import Point3d
 import Test exposing (Test)
@@ -126,3 +128,12 @@ boundingBox =
             Arc3d.pointOn arc parameterValue
                 |> Expect.point3dContainedIn (Arc3d.boundingBox arc)
         )
+
+
+firstDerivativeBoundingBox : Test
+firstDerivativeBoundingBox =
+    Curve3d.firstDerivativeBoundingBox
+        { generator = Random.arc3d
+        , firstDerivative = Arc3d.firstDerivative
+        , firstDerivativeBoundingBox = Arc3d.firstDerivativeBoundingBox
+        }
