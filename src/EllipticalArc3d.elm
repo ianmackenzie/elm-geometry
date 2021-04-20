@@ -23,7 +23,7 @@ module EllipticalArc3d exposing
     , ArcLengthParameterized, arcLengthParameterized, arcLength
     , pointAlong, midpoint, tangentDirectionAlong, sampleAlong
     , arcLengthParameterization, fromArcLengthParameterized
-    , firstDerivative, maxSecondDerivativeMagnitude, numApproximationSegments
+    , firstDerivative, firstDerivativeBoundingBox, maxSecondDerivativeMagnitude, numApproximationSegments
     )
 
 {-| An `EllipticalArc3d` is a section of an `Ellipse3d` with a start and end
@@ -113,7 +113,7 @@ these two values separately.
 You are unlikely to need to use these functions directly, but they are useful if
 you are writing low-level geometric algorithms.
 
-@docs firstDerivative, maxSecondDerivativeMagnitude, numApproximationSegments
+@docs firstDerivative, firstDerivativeBoundingBox, maxSecondDerivativeMagnitude, numApproximationSegments
 
 -}
 
@@ -142,6 +142,7 @@ import SweptAngle exposing (SweptAngle)
 import Unsafe.Direction3d as Direction3d
 import Vector2d exposing (Vector2d)
 import Vector3d exposing (Vector3d)
+import VectorBoundingBox3d exposing (VectorBoundingBox3d)
 
 
 {-| -}
@@ -284,6 +285,23 @@ firstDerivative arc parameterValue =
         (Quantity.rTheta (yRadius arc) deltaTheta
             |> Quantity.multiplyBy (Angle.cos theta)
         )
+
+
+firstDerivativeBoundingBox : EllipticalArc3d units coordinates -> VectorBoundingBox3d units coordinates
+firstDerivativeBoundingBox arc =
+    let
+        (Types.EllipticalArc3d original) =
+            arc
+
+        derivativeArc =
+            Types.EllipticalArc3d
+                { ellipse = original.ellipse
+                , startAngle = original.startAngle |> Quantity.plus (Angle.degrees 90)
+                , sweptAngle = original.sweptAngle
+                }
+    in
+    VectorBoundingBox3d.from (centerPoint arc) (boundingBox derivativeArc)
+        |> VectorBoundingBox3d.multiplyBy (Angle.inRadians original.sweptAngle)
 
 
 {-| Represents a nondegenerate spline (one that has finite, non-zero length).
