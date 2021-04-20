@@ -874,100 +874,41 @@ asFraction (Types.RationalCubicSpline2d spline) =
 secondDerivativeBoundingBox : RationalCubicSpline2d units coordinates -> VectorBoundingBox2d units coordinates
 secondDerivativeBoundingBox spline =
     let
-        ( xySpline, wSpline ) =
+        ( p, w ) =
             asFraction spline
 
-        wBounds =
-            CubicSpline1d.boundingBox wSpline
+        w0 =
+            CubicSpline1d.boundingBox w
 
-        wFirstDerivativeBounds =
-            CubicSpline1d.firstDerivativeBoundingBox wSpline
+        w1 =
+            CubicSpline1d.firstDerivativeBoundingBox w
 
-        wSecondDerivativeBounds =
-            CubicSpline1d.secondDerivativeBoundingBox wSpline
+        w2 =
+            CubicSpline1d.secondDerivativeBoundingBox w
 
-        wMin =
-            Quantity.toFloat (Quantity.Interval.minValue wBounds)
+        p0 =
+            CubicSpline2d.boundingBox p
 
-        wMax =
-            Quantity.toFloat (Quantity.Interval.maxValue wBounds)
+        p1 =
+            CubicSpline2d.firstDerivativeBoundingBox p
 
-        xyBounds =
-            CubicSpline2d.boundingBox xySpline
+        p2 =
+            CubicSpline2d.secondDerivativeBoundingBox p
 
-        xyFirstDerivativeBounds =
-            CubicSpline2d.firstDerivativeBoundingBox xySpline
+        x0 =
+            VectorBoundingBox2d.from Point2d.origin (boundingBox spline)
 
-        xySecondDerivativeBounds =
-            CubicSpline2d.secondDerivativeBoundingBox xySpline
+        x1 =
+            firstDerivativeBoundingBox spline
     in
-    if wMin < 0 && wMax > 0 then
-        VectorBoundingBox2d.xy
-            (Quantity.Interval.fromEndpoints ( Quantity.negativeInfinity, Quantity.positiveInfinity ))
-            (Quantity.Interval.fromEndpoints ( Quantity.negativeInfinity, Quantity.positiveInfinity ))
-
-    else
-        let
-            wMinInv =
-                1 / wMin
-
-            wMinInv2 =
-                wMinInv * wMinInv
-
-            wMinInv3 =
-                wMinInv2 * wMinInv
-
-            wMaxInv =
-                1 / wMax
-
-            wMaxInv2 =
-                wMaxInv * wMaxInv
-
-            wMaxInv3 =
-                wMaxInv2 * wMaxInv
-
-            wInv =
-                Quantity.Interval.from
-                    (Quantity.float wMaxInv)
-                    (Quantity.float wMinInv)
-
-            wInv2 =
-                Quantity.Interval.from
-                    (Quantity.float wMaxInv2)
-                    (Quantity.float wMinInv2)
-
-            wInv3 =
-                Quantity.Interval.from
-                    (Quantity.float wMaxInv3)
-                    (Quantity.float wMinInv3)
-
-            a =
-                xySecondDerivativeBounds |> VectorBoundingBox2d.timesUnitlessInterval wInv
-
-            b =
-                xyFirstDerivativeBounds
-                    |> VectorBoundingBox2d.timesUnitlessInterval
-                        (wInv2
-                            |> Quantity.Interval.timesUnitlessInterval wFirstDerivativeBounds
-                            |> Quantity.Interval.twice
-                        )
-
-            c1 =
-                Quantity.Interval.twice
-                    (wInv3
-                        |> Quantity.Interval.timesUnitlessInterval
-                            (Quantity.Interval.squaredUnitless wFirstDerivativeBounds)
-                    )
-
-            c2 =
-                wInv2 |> Quantity.Interval.timesUnitlessInterval wSecondDerivativeBounds
-
-            c =
-                VectorBoundingBox2d.from Point2d.origin xyBounds
-                    |> VectorBoundingBox2d.timesUnitlessInterval
-                        (c1 |> Quantity.Interval.minusInterval c2)
-        in
-        a |> VectorBoundingBox2d.minusBoundingBox b |> VectorBoundingBox2d.plusBoundingBox c
+    VectorBoundingBox2d.timesUnitlessInterval (Quantity.Interval.reciprocal w0)
+        (p2
+            |> VectorBoundingBox2d.minusBoundingBox
+                (VectorBoundingBox2d.twice <|
+                    VectorBoundingBox2d.timesUnitlessInterval w1 x1
+                )
+            |> VectorBoundingBox2d.minusBoundingBox (VectorBoundingBox2d.timesUnitlessInterval w2 x0)
+        )
 
 
 {-| Find the maximum magnitude of the second derivative of a spline.
