@@ -18,7 +18,7 @@ module Arc3d exposing
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto, projectInto
     , at, at_
     , relativeTo, placeIn
-    , firstDerivative, numApproximationSegments
+    , firstDerivative, firstDerivativeBoundingBox, numApproximationSegments
     )
 
 {-| An `Arc3d` is a section of a circle in 3D, defined by its central axis,
@@ -77,7 +77,7 @@ module](Point3d#transformations).
 You are unlikely to need to use these functions directly, but they are useful if
 you are writing low-level geometric algorithms.
 
-@docs firstDerivative, numApproximationSegments
+@docs firstDerivative, firstDerivativeBoundingBox, numApproximationSegments
 
 -}
 
@@ -105,6 +105,7 @@ import SketchPlane3d exposing (SketchPlane3d)
 import Unsafe.Direction3d as Direction3d
 import Vector2d exposing (Vector2d)
 import Vector3d exposing (Vector3d)
+import VectorBoundingBox3d exposing (VectorBoundingBox3d)
 
 
 {-| -}
@@ -375,6 +376,15 @@ pointOn (Types.Arc3d arc) t =
             }
 
 
+startDerivative : Arc3d units coordinates -> Vector3d units coordinates
+startDerivative arc =
+    let
+        (Types.Arc3d { signedLength, xDirection }) =
+            arc
+    in
+    Vector3d.withLength signedLength xDirection
+
+
 {-| Get the first derivative of an arc at a given parameter value.
 -}
 firstDerivative : Arc3d units coordinates -> Float -> Vector3d units coordinates
@@ -425,6 +435,31 @@ firstDerivative (Types.Arc3d arc) =
             (arcSignedLength
                 |> Quantity.multiplyBy (cosAngle * z1 + sinAngle * z2)
             )
+
+
+firstDerivativeBoundingBox : Arc3d units coordinates -> VectorBoundingBox3d units coordinates
+firstDerivativeBoundingBox arc =
+    if sweptAngle arc == Quantity.zero then
+        VectorBoundingBox3d.singleton (startDerivative arc)
+
+    else
+        let
+            (Types.Arc3d { xDirection, yDirection }) =
+                arc
+
+            axisDirection =
+                Direction3d.unsafeCrossProduct xDirection yDirection
+
+            derivativeAxis =
+                Axis3d.through Point3d.origin axisDirection
+
+            (Types.Vector3d p1) =
+                startDerivative arc
+
+            derivativeArc =
+                Types.Point3d p1 |> sweptAround derivativeAxis (sweptAngle arc)
+        in
+        VectorBoundingBox3d.from Point3d.origin (boundingBox derivativeArc)
 
 
 {-| Represents a nondegenerate spline (one that has finite, non-zero length).
