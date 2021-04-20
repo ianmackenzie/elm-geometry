@@ -13,13 +13,13 @@ module RationalCubicSpline2d exposing
     , bSplineSegments, bSplineIntervals
     , startPoint, endPoint, startDerivative, endDerivative, boundingBox
     , firstControlPoint, secondControlPoint, thirdControlPoint, fourthControlPoint, firstWeight, secondWeight, thirdWeight, fourthWeight
-    , pointOn, firstDerivative
+    , pointOn
     , segments, approximate
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , at, at_
     , relativeTo, placeIn
     , bisect, splitAt
-    , numApproximationSegments, secondDerivativeBoundingBox, maxSecondDerivativeMagnitude
+    , numApproximationSegments, firstDerivative, secondDerivative, firstDerivativeBoundingBox, secondDerivativeBoundingBox, maxSecondDerivativeMagnitude
     )
 
 {-| A `RationalCubicSpline2d` is a rational cubic Bézier curve in 2D defined by
@@ -57,7 +57,7 @@ functionality for
 
 # Evaluation
 
-@docs pointOn, firstDerivative
+@docs pointOn
 
 
 # Linear approximation
@@ -93,7 +93,7 @@ module](Point2d#transformations).
 You are unlikely to need to use these functions directly, but they are useful if
 you are writing low-level geometric algorithms.
 
-@docs numApproximationSegments, secondDerivativeBoundingBox, maxSecondDerivativeMagnitude
+@docs numApproximationSegments, firstDerivative, secondDerivative, firstDerivativeBoundingBox, secondDerivativeBoundingBox, maxSecondDerivativeMagnitude
 
 -}
 
@@ -816,6 +816,68 @@ firstDerivative spline t =
     in
     Vector2d.from p123 p234
         |> Vector2d.scaleBy (3 * w123 * w234 / (w1234 * w1234))
+
+
+secondDerivative : RationalCubicSpline2d units coordinates -> Float -> Vector2d units coordinates
+secondDerivative spline t =
+    let
+        ( p, w ) =
+            asFraction spline
+
+        w0 =
+            CubicSpline1d.pointOn w t
+
+        w1 =
+            CubicSpline1d.firstDerivative w t
+
+        w2 =
+            CubicSpline1d.secondDerivative w t
+
+        p0 =
+            CubicSpline2d.pointOn p t
+
+        p1 =
+            CubicSpline2d.firstDerivative p t
+
+        p2 =
+            CubicSpline2d.secondDerivative p t
+
+        x0 =
+            Vector2d.from Point2d.origin (pointOn spline t)
+
+        x1 =
+            firstDerivative spline t
+    in
+    Vector2d.timesUnitless (Quantity.reciprocal w0)
+        (p2
+            |> Vector2d.minus (Vector2d.twice (Vector2d.timesUnitless w1 x1))
+            |> Vector2d.minus (Vector2d.timesUnitless w2 x0)
+        )
+
+
+firstDerivativeBoundingBox : RationalCubicSpline2d units coordinates -> VectorBoundingBox2d units coordinates
+firstDerivativeBoundingBox spline =
+    let
+        ( p, w ) =
+            asFraction spline
+
+        w0 =
+            CubicSpline1d.boundingBox w
+
+        w1 =
+            CubicSpline1d.firstDerivativeBoundingBox w
+
+        p1 =
+            CubicSpline2d.firstDerivativeBoundingBox p
+
+        x0 =
+            VectorBoundingBox2d.from Point2d.origin (boundingBox spline)
+    in
+    VectorBoundingBox2d.timesUnitlessInterval (Quantity.Interval.reciprocal w0)
+        (p1
+            |> VectorBoundingBox2d.minusBoundingBox
+                (VectorBoundingBox2d.timesUnitlessInterval w1 x0)
+        )
 
 
 {-| Determine the number of linear segments needed to approximate a cubic
