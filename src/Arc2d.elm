@@ -757,25 +757,18 @@ firstDerivative arc =
 
 firstDerivativeBoundingBox : Arc2d units coordinates -> VectorBoundingBox2d units coordinates
 firstDerivativeBoundingBox arc =
-    let
-        v0 =
-            startDerivative arc
-    in
-    case Vector2d.direction v0 of
-        Just startDirection ->
-            let
-                derivativeArc =
-                    with
-                        { centerPoint = Point2d.origin
-                        , radius = Vector2d.length v0
-                        , startAngle = Direction2d.toAngle startDirection
-                        , sweptAngle = sweptAngle arc
-                        }
-            in
-            VectorBoundingBox2d.from Point2d.origin (boundingBox derivativeArc)
+    if sweptAngle arc == Quantity.zero then
+        VectorBoundingBox2d.singleton (startDerivative arc)
 
-        Nothing ->
-            VectorBoundingBox2d.singleton v0
+    else
+        let
+            (Types.Vector2d p1) =
+                startDerivative arc
+
+            derivativeArc =
+                Types.Point2d p1 |> sweptAround Point2d.origin (sweptAngle arc)
+        in
+        VectorBoundingBox2d.from Point2d.origin (boundingBox derivativeArc)
 
 
 {-| Represents a nondegenerate spline (one that has finite, non-zero length).
