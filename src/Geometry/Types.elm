@@ -23,10 +23,6 @@ type Vector3d units coordinates
     = Vector3d { x : Float, y : Float, z : Float }
 
 
-type Vector4d units coordinates
-    = Vector4d { x : Float, y : Float, z : Float, w : Float }
-
-
 type Direction2d coordinates
     = Direction2d { x : Float, y : Float }
 
@@ -41,10 +37,6 @@ type Point2d units coordinates
 
 type Point3d units coordinates
     = Point3d { x : Float, y : Float, z : Float }
-
-
-type Point4d units coordinates
-    = Point4d { x : Float, y : Float, z : Float, w : Float }
 
 
 type Axis2d units coordinates
@@ -137,19 +129,6 @@ type VectorBoundingBox3d units coordinates
         , maxY : Float
         , minZ : Float
         , maxZ : Float
-        }
-
-
-type VectorBoundingBox4d units coordinates
-    = VectorBoundingBox4d
-        { minX : Float
-        , maxX : Float
-        , minY : Float
-        , maxY : Float
-        , minZ : Float
-        , maxZ : Float
-        , minW : Float
-        , maxW : Float
         }
 
 

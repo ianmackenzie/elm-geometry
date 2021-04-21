@@ -25,10 +25,8 @@ module Geometry.Random exposing
     , unitlessQuantity
     , vector2d
     , vector3d
-    , vector4d
     , vectorBoundingBox2d
     , vectorBoundingBox3d
-    , vectorBoundingBox4d
     )
 
 import Angle exposing (Angle)
@@ -57,10 +55,8 @@ import RationalQuadraticSpline3d exposing (RationalQuadraticSpline3d)
 import SketchPlane3d exposing (SketchPlane3d)
 import Vector2d exposing (Vector2d)
 import Vector3d exposing (Vector3d)
-import Vector4d exposing (Vector4d)
 import VectorBoundingBox2d exposing (VectorBoundingBox2d)
 import VectorBoundingBox3d exposing (VectorBoundingBox3d)
-import VectorBoundingBox4d exposing (VectorBoundingBox4d)
 
 
 parameterValue : Generator Float
@@ -144,11 +140,6 @@ vector3d =
     Random.map3 Vector3d.xyz length length length
 
 
-vector4d : Generator (Vector4d Meters coordinates)
-vector4d =
-    Random.map4 Vector4d.xyzw length length length length
-
-
 vectorBoundingBox2d : Generator (VectorBoundingBox2d Meters coordinates)
 vectorBoundingBox2d =
     Random.map2 VectorBoundingBox2d.hull2 vector2d vector2d
@@ -157,11 +148,6 @@ vectorBoundingBox2d =
 vectorBoundingBox3d : Generator (VectorBoundingBox3d Meters coordinates)
 vectorBoundingBox3d =
     Random.map2 VectorBoundingBox3d.hull2 vector3d vector3d
-
-
-vectorBoundingBox4d : Generator (VectorBoundingBox4d Meters coordinates)
-vectorBoundingBox4d =
-    Random.map2 VectorBoundingBox4d.from vector4d vector4d
 
 
 point2d : Generator (Point2d Meters coordinates)
