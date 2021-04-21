@@ -143,7 +143,7 @@ bSplineReproducesSpline =
 
 curveOperations : Curve3d.Operations (CubicSpline3d Meters coordinates) coordinates
 curveOperations =
-    { fuzzer = Fuzz.cubicSpline3d
+    { generator = Random.cubicSpline3d
     , pointOn = CubicSpline3d.pointOn
     , boundingBox = CubicSpline3d.boundingBox
     , firstDerivative = CubicSpline3d.firstDerivative
@@ -163,11 +163,7 @@ approximate =
 
 firstDerivativeBoundingBox : Test
 firstDerivativeBoundingBox =
-    Curve3d.firstDerivativeBoundingBox
-        { generator = Random.cubicSpline3d
-        , firstDerivative = CubicSpline3d.firstDerivative
-        , firstDerivativeBoundingBox = CubicSpline3d.firstDerivativeBoundingBox
-        }
+    Curve3d.firstDerivativeBoundingBox curveOperations
 
 
 secondDerivativeBoundingBox : Test

@@ -13,6 +13,7 @@ import EllipticalArc3d exposing (EllipticalArc3d)
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Length exposing (Meters)
 import Point3d
 import Test exposing (Test)
@@ -60,7 +61,7 @@ projectInto =
 
 curveOperations : Curve3d.Operations (EllipticalArc3d Meters coordinates) coordinates
 curveOperations =
-    { fuzzer = Fuzz.ellipticalArc3d
+    { generator = Random.ellipticalArc3d
     , pointOn = EllipticalArc3d.pointOn
     , boundingBox = EllipticalArc3d.boundingBox
     , firstDerivative = EllipticalArc3d.firstDerivative

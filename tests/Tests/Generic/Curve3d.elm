@@ -17,6 +17,7 @@ import Frame3d exposing (Frame3d)
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Length exposing (Length, Meters)
 import LineSegment3d
 import Parameter1d
@@ -40,7 +41,7 @@ type LocalCoordinates
 
 
 type alias Operations curve coordinates =
-    { fuzzer : Fuzzer curve
+    { generator : Generator curve
     , pointOn : curve -> Float -> Point3d Meters coordinates
     , boundingBox : curve -> BoundingBox3d Meters coordinates
     , firstDerivative : curve -> Float -> Vector3d Meters coordinates
@@ -61,11 +62,10 @@ transformations :
     -> Test
 transformations global local placeIn relativeTo =
     Test.describe "Transformations"
-        [ Test.fuzz3
-            global.fuzzer
-            (Fuzz.tuple ( Fuzz.point3d, Fuzz.scale ))
-            Fuzz.parameterValue
-            "scaleAbout"
+        [ Test.check3 "scaleAbout"
+            global.generator
+            (Random.map2 Tuple.pair Random.point3d Random.scale)
+            Random.parameterValue
             (\curve ( basePoint, scale ) t ->
                 let
                     scaledCurve =
@@ -82,11 +82,10 @@ transformations global local placeIn relativeTo =
                 in
                 pointOnScaledCurve |> Expect.point3d scaledPoint
             )
-        , Test.fuzz3
-            global.fuzzer
-            Fuzz.vector3d
-            Fuzz.parameterValue
-            "translateBy"
+        , Test.check3 "translateBy"
+            global.generator
+            Random.vector3d
+            Random.parameterValue
             (\curve displacement t ->
                 let
                     translatedCurve =
@@ -103,15 +102,13 @@ transformations global local placeIn relativeTo =
                 in
                 pointOnTranslatedCurve |> Expect.point3d translatedPoint
             )
-        , Test.fuzz3
-            global.fuzzer
-            (Fuzz.tuple
-                ( Fuzz.axis3d
-                , Fuzz.map Angle.radians (Fuzz.floatRange (-2 * pi) (2 * pi))
-                )
+        , Test.check3 "rotateAround"
+            global.generator
+            (Random.map2 Tuple.pair
+                Random.axis3d
+                (Random.map Angle.radians (Random.float (-2 * pi) (2 * pi)))
             )
-            Fuzz.parameterValue
-            "rotateAround"
+            Random.parameterValue
             (\curve ( axis, angle ) t ->
                 let
                     rotatedCurve =
@@ -128,11 +125,10 @@ transformations global local placeIn relativeTo =
                 in
                 pointOnRotatedCurve |> Expect.point3d rotatedPoint
             )
-        , Test.fuzz3
-            global.fuzzer
-            Fuzz.plane3d
-            Fuzz.parameterValue
-            "mirrorAcross"
+        , Test.check3 "mirrorAcross"
+            global.generator
+            Random.plane3d
+            Random.parameterValue
             (\curve plane t ->
                 let
                     mirroredCurve =
@@ -149,11 +145,10 @@ transformations global local placeIn relativeTo =
                 in
                 pointOnMirroredCurve |> Expect.point3d mirroredPoint
             )
-        , Test.fuzz3
-            global.fuzzer
-            Fuzz.frame3d
-            Fuzz.parameterValue
-            "relativeTo"
+        , Test.check3 "relativeTo"
+            global.generator
+            Random.frame3d
+            Random.parameterValue
             (\globalCurve frame t ->
                 let
                     localCurve =
@@ -170,11 +165,10 @@ transformations global local placeIn relativeTo =
                 in
                 pointOnLocalCurve |> Expect.point3d localPoint
             )
-        , Test.fuzz3
-            local.fuzzer
-            Fuzz.frame3d
-            Fuzz.parameterValue
-            "placeIn"
+        , Test.check3 "placeIn"
+            local.generator
+            Random.frame3d
+            Random.parameterValue
             (\localCurve frame t ->
                 let
                     globalCurve =
@@ -196,10 +190,9 @@ transformations global local placeIn relativeTo =
 
 firstDerivative : Operations curve GlobalCoordinates -> Test
 firstDerivative operations =
-    Test.fuzz2
-        operations.fuzzer
-        Fuzz.parameterValue
-        "Analytical first derivative matches numerical"
+    Test.check2 "Analytical first derivative matches numerical"
+        operations.generator
+        Random.parameterValue
         (\curve t ->
             let
                 analyticalDerivative =
@@ -218,8 +211,8 @@ firstDerivative operations =
 
 approximate : Operations curve GlobalCoordinates -> Test
 approximate operations =
-    Test.fuzz operations.fuzzer
-        "approximate has desired accuracy"
+    Test.check "approximate has desired accuracy"
+        operations.generator
         (\curve ->
             let
                 tolerance =
@@ -254,22 +247,16 @@ approximate operations =
 
 boundingBox : Operations curve coordinates -> Test
 boundingBox operations =
-    Test.fuzz2
-        operations.fuzzer
-        Fuzz.parameterValue
-        "boundingBox"
+    Test.check2 "boundingBox"
+        operations.generator
+        Random.parameterValue
         (\curve t ->
             operations.pointOn curve t
                 |> Expect.point3dContainedIn (operations.boundingBox curve)
         )
 
 
-firstDerivativeBoundingBox :
-    { generator : Generator curve
-    , firstDerivative : curve -> Float -> Vector3d Meters coordinates
-    , firstDerivativeBoundingBox : curve -> VectorBoundingBox3d Meters coordinates
-    }
-    -> Test
+firstDerivativeBoundingBox : Operations curve coordinates -> Test
 firstDerivativeBoundingBox operations =
     Test.check2 "firstDerivativeBoundingBox"
         operations.generator

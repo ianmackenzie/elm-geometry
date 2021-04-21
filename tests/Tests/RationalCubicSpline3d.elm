@@ -29,7 +29,7 @@ import Vector3d
 
 curveOperations : Tests.Generic.Curve3d.Operations (RationalCubicSpline3d Meters coordinates) coordinates
 curveOperations =
-    { fuzzer = Fuzz.rationalCubicSpline3d
+    { generator = Random.rationalCubicSpline3d
     , pointOn = RationalCubicSpline3d.pointOn
     , boundingBox = RationalCubicSpline3d.boundingBox
     , firstDerivative = RationalCubicSpline3d.firstDerivative
@@ -170,11 +170,7 @@ boundingBox =
 
 firstDerivativeBoundingBox : Test
 firstDerivativeBoundingBox =
-    Tests.Generic.Curve3d.firstDerivativeBoundingBox
-        { generator = Random.rationalCubicSpline3d
-        , firstDerivative = RationalCubicSpline3d.firstDerivative
-        , firstDerivativeBoundingBox = RationalCubicSpline3d.firstDerivativeBoundingBox
-        }
+    Tests.Generic.Curve3d.firstDerivativeBoundingBox curveOperations
 
 
 secondDerivativeBoundingBox : Test

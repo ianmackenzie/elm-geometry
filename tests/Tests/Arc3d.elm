@@ -93,7 +93,7 @@ projectInto =
 
 curveOperations : Curve3d.Operations (Arc3d Meters coordinates) coordinates
 curveOperations =
-    { fuzzer = Fuzz.arc3d
+    { generator = Random.arc3d
     , pointOn = Arc3d.pointOn
     , boundingBox = Arc3d.boundingBox
     , firstDerivative = Arc3d.firstDerivative
@@ -134,8 +134,4 @@ boundingBox =
 
 firstDerivativeBoundingBox : Test
 firstDerivativeBoundingBox =
-    Curve3d.firstDerivativeBoundingBox
-        { generator = Random.arc3d
-        , firstDerivative = Arc3d.firstDerivative
-        , firstDerivativeBoundingBox = Arc3d.firstDerivativeBoundingBox
-        }
+    Curve3d.firstDerivativeBoundingBox curveOperations

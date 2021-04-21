@@ -20,8 +20,23 @@ import QuadraticSpline2d exposing (QuadraticSpline2d)
 import QuadraticSpline3d exposing (QuadraticSpline3d)
 import Quantity exposing (zero)
 import Test exposing (Test)
-import Tests.Generic.Curve3d as Curve3d
+import Tests.Generic.Curve3d
 import Tests.QuadraticSpline2d
+
+
+curveOperations : Tests.Generic.Curve3d.Operations (QuadraticSpline3d Meters coordinates) coordinates
+curveOperations =
+    { generator = Random.quadraticSpline3d
+    , pointOn = QuadraticSpline3d.pointOn
+    , boundingBox = QuadraticSpline3d.boundingBox
+    , firstDerivative = QuadraticSpline3d.firstDerivative
+    , firstDerivativeBoundingBox = QuadraticSpline3d.firstDerivativeBoundingBox
+    , scaleAbout = QuadraticSpline3d.scaleAbout
+    , translateBy = QuadraticSpline3d.translateBy
+    , rotateAround = QuadraticSpline3d.rotateAround
+    , mirrorAcross = QuadraticSpline3d.mirrorAcross
+    , numApproximationSegments = QuadraticSpline3d.numApproximationSegments
+    }
 
 
 analyticalLength : QuadraticSpline3d Meters coordinates -> Length
@@ -196,8 +211,4 @@ bSplineReproducesSpline =
 
 firstDerivativeBoundingBox : Test
 firstDerivativeBoundingBox =
-    Curve3d.firstDerivativeBoundingBox
-        { generator = Random.quadraticSpline3d
-        , firstDerivative = QuadraticSpline3d.firstDerivative
-        , firstDerivativeBoundingBox = QuadraticSpline3d.firstDerivativeBoundingBox
-        }
+    Tests.Generic.Curve3d.firstDerivativeBoundingBox curveOperations
