@@ -253,6 +253,8 @@ thirdDerivative spline =
     Quantity.multiplyBy 6 (v2 |> Quantity.minus v1)
 
 
+{-| Get the bounds on the first derivative of a spline.
+-}
 firstDerivativeBoundingBox : CubicSpline1d units -> Interval Float units
 firstDerivativeBoundingBox spline =
     let

@@ -437,6 +437,8 @@ firstDerivative (Types.Arc3d arc) =
             )
 
 
+{-| Get the bounds on the first derivative of an arc.
+-}
 firstDerivativeBoundingBox : Arc3d units coordinates -> VectorBoundingBox3d units coordinates
 firstDerivativeBoundingBox arc =
     if sweptAngle arc == Quantity.zero then

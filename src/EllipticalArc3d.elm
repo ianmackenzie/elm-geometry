@@ -287,6 +287,8 @@ firstDerivative arc parameterValue =
         )
 
 
+{-| Get the bounds on the first derivative of an elliptical arc.
+-}
 firstDerivativeBoundingBox : EllipticalArc3d units coordinates -> VectorBoundingBox3d units coordinates
 firstDerivativeBoundingBox arc =
     let

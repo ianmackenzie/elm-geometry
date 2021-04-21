@@ -855,6 +855,8 @@ secondDerivative spline t =
         )
 
 
+{-| Get the bounds on the first derivative of a spline.
+-}
 firstDerivativeBoundingBox : RationalCubicSpline2d units coordinates -> VectorBoundingBox2d units coordinates
 firstDerivativeBoundingBox spline =
     let

@@ -144,6 +144,8 @@ firstDerivative spline parameterValue =
     Quantity.twice (Quantity.interpolateFrom v1 v2 parameterValue)
 
 
+{-| Get the bounds on the first derivative of a spline.
+-}
 firstDerivativeBoundingBox : QuadraticSpline1d units -> Interval Float units
 firstDerivativeBoundingBox spline =
     let

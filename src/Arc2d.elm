@@ -755,6 +755,8 @@ firstDerivative arc =
         v0 |> Vector2d.rotateBy (Quantity.multiplyBy parameterValue theta)
 
 
+{-| Get the bounds on the first derivative of an arc.
+-}
 firstDerivativeBoundingBox : Arc2d units coordinates -> VectorBoundingBox2d units coordinates
 firstDerivativeBoundingBox arc =
     if sweptAngle arc == Quantity.zero then
