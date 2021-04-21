@@ -2,6 +2,8 @@ module Geometry.Random exposing
     ( angle
     , arc2d
     , arc3d
+    , axis2d
+    , axis3d
     , cubicSpline2d
     , cubicSpline3d
     , direction2d
@@ -9,6 +11,8 @@ module Geometry.Random exposing
     , ellipse2d
     , ellipticalArc2d
     , ellipticalArc3d
+    , frame2d
+    , frame3d
     , length
     , parameterValue
     , plane3d
@@ -34,6 +38,8 @@ module Geometry.Random exposing
 import Angle exposing (Angle)
 import Arc2d exposing (Arc2d)
 import Arc3d exposing (Arc3d)
+import Axis2d exposing (Axis2d)
+import Axis3d exposing (Axis3d)
 import CubicSpline2d exposing (CubicSpline2d)
 import CubicSpline3d exposing (CubicSpline3d)
 import Direction2d exposing (Direction2d)
@@ -41,6 +47,8 @@ import Direction3d exposing (Direction3d)
 import Ellipse2d exposing (Ellipse2d)
 import EllipticalArc2d exposing (EllipticalArc2d)
 import EllipticalArc3d exposing (EllipticalArc3d)
+import Frame2d exposing (Frame2d)
+import Frame3d exposing (Frame3d)
 import Length exposing (Length, Meters)
 import Plane3d exposing (Plane3d)
 import Point2d exposing (Point2d)
@@ -160,6 +168,66 @@ point2d =
 point3d : Generator (Point3d Meters coordinates)
 point3d =
     Random.map3 Point3d.xyz length length length
+
+
+axis2d : Generator (Axis2d Meters coordinates)
+axis2d =
+    Random.map2 Axis2d.through point2d direction2d
+
+
+axis3d : Generator (Axis3d Meters coordinates)
+axis3d =
+    Random.map2 Axis3d.through point3d direction3d
+
+
+bool : Generator Bool
+bool =
+    Random.uniform True [ False ]
+
+
+frame2d : Generator (Frame2d Meters coordinates { defines : localCoordinates })
+frame2d =
+    let
+        frame originPoint xDirection rightHanded =
+            let
+                rightHandedFrame =
+                    Frame2d.withXDirection xDirection originPoint
+            in
+            if rightHanded then
+                rightHandedFrame
+
+            else
+                Frame2d.reverseY rightHandedFrame
+    in
+    Random.map3 frame point2d direction2d bool
+
+
+frame3d : Generator (Frame3d Meters coordinates { defines : localCoordinates })
+frame3d =
+    let
+        frame originPoint xDirection reverseY reverseZ =
+            let
+                ( yDirection, zDirection ) =
+                    Direction3d.perpendicularBasis xDirection
+            in
+            Frame3d.unsafe
+                { originPoint = originPoint
+                , xDirection = xDirection
+                , yDirection =
+                    if reverseY then
+                        Direction3d.reverse yDirection
+
+                    else
+                        yDirection
+                , zDirection =
+                    if reverseZ then
+                        Direction3d.reverse zDirection
+
+                    else
+                        zDirection
+                }
+    in
+    Random.map4 frame point3d direction3d bool bool
 
 
 quadraticSpline2d : Generator (QuadraticSpline2d Meters coordinates)
