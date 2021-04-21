@@ -16,7 +16,7 @@ module Polygon2d.Monotone exposing
 
 import Array exposing (Array)
 import Dict exposing (Dict)
-import Geometry.Types as Types exposing (Polygon2d(..))
+import Geometry.Types as Types exposing (Polygon(..), Polygon2d)
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
 import Polygon2d.EdgeSet as EdgeSet exposing (EdgeSet)
@@ -36,8 +36,9 @@ type Kind
     | Merge
 
 
-type alias Vertex units coordinates =
-    { position : Point2d units coordinates
+type alias VertexRecord vertex units coordinates =
+    { vertex : vertex
+    , position : Point2d units coordinates
     , kind : Kind
     }
 
@@ -134,38 +135,58 @@ kind previous current next =
         Left
 
 
-toVertices : List (Point2d units coordinates) -> List (Vertex units coordinates)
-toVertices points =
-    case points of
+toVertexRecords : (vertex -> Point2d units coordinates) -> List vertex -> List (VertexRecord vertex units coordinates)
+toVertexRecords getPosition vertices =
+    case vertices of
         [] ->
             []
 
-        [ singlePoint ] ->
+        [ singleVertex ] ->
             -- TODO use as combined split/merge vertex
             []
 
-        [ firstPoint, secondPoint ] ->
+        [ firstVertex, secondVertex ] ->
+            let
+                firstPoint =
+                    getPosition firstVertex
+
+                secondPoint =
+                    getPosition secondVertex
+            in
             if comparePoints firstPoint secondPoint == GT then
-                [ { position = firstPoint, kind = Split }
-                , { position = secondPoint, kind = Merge }
+                [ { vertex = firstVertex, position = firstPoint, kind = Split }
+                , { vertex = secondVertex, position = secondPoint, kind = Merge }
                 ]
 
             else
-                [ { position = firstPoint, kind = Merge }
-                , { position = secondPoint, kind = Split }
+                [ { vertex = firstVertex, position = firstPoint, kind = Merge }
+                , { vertex = secondVertex, position = secondPoint, kind = Split }
                 ]
 
-        firstPoint :: secondPoint :: thirdPoint :: rest ->
+        firstVertex :: secondVertex :: thirdVertex :: rest ->
             let
-                lastPoint =
-                    List.foldl always thirdPoint rest
+                firstPoint =
+                    getPosition firstVertex
 
-                collect previousPoint currentPoint remainingPoints accumulated =
-                    case remainingPoints of
+                secondPoint =
+                    getPosition secondVertex
+
+                thirdPoint =
+                    getPosition thirdVertex
+
+                lastVertex =
+                    List.foldl always thirdVertex rest
+
+                lastPoint =
+                    getPosition lastVertex
+
+                collect previousVertex previousPoint currentVertex currentPoint remainingVertices accumulated =
+                    case remainingVertices of
                         [] ->
                             let
-                                lastVertex =
-                                    { position = currentPoint
+                                lastVertexRecord =
+                                    { vertex = currentVertex
+                                    , position = currentPoint
                                     , kind =
                                         kind
                                             previousPoint
@@ -173,12 +194,16 @@ toVertices points =
                                             firstPoint
                                     }
                             in
-                            List.reverse (lastVertex :: accumulated)
+                            List.reverse (lastVertexRecord :: accumulated)
 
-                        nextPoint :: followingPoints ->
+                        nextVertex :: followingVertices ->
                             let
-                                newVertex =
-                                    { position = currentPoint
+                                nextPoint =
+                                    getPosition nextVertex
+
+                                newVertexRecord =
+                                    { vertex = currentVertex
+                                    , position = currentPoint
                                     , kind =
                                         kind
                                             previousPoint
@@ -187,12 +212,14 @@ toVertices points =
                                     }
                             in
                             collect
+                                currentVertex
                                 currentPoint
+                                nextVertex
                                 nextPoint
-                                followingPoints
-                                (newVertex :: accumulated)
+                                followingVertices
+                                (newVertexRecord :: accumulated)
             in
-            collect lastPoint firstPoint (secondPoint :: thirdPoint :: rest) []
+            collect lastVertex lastPoint firstVertex firstPoint (secondVertex :: thirdVertex :: rest) []
 
 
 type alias Edge =
@@ -203,68 +230,68 @@ type alias Edge =
     }
 
 
-type alias Loops units coordinates =
-    { vertices : List (Vertex units coordinates)
+type alias Loops vertex units coordinates =
+    { vertexRecords : List (VertexRecord vertex units coordinates)
     , edges : Array Edge
     }
 
 
-removeDuplicates : List (Point2d units coordinates) -> List (Point2d units coordinates)
-removeDuplicates points =
-    case points of
+removeDuplicates : (vertex -> Point2d units coordinates) -> List vertex -> List vertex
+removeDuplicates getPosition vertices =
+    case vertices of
         [] ->
             []
 
-        firstPoint :: rest ->
+        firstVertex :: rest ->
             let
                 -- Strip out adjacent duplicates
-                accumulatedPoints =
-                    accumulateDistinctPoints firstPoint rest []
+                accumulatedVertices =
+                    accumulateDistinctVertices getPosition firstVertex rest []
             in
-            case accumulatedPoints of
-                lastPoint :: otherPoints ->
-                    if lastPoint == firstPoint then
+            case accumulatedVertices of
+                lastVertex :: otherVertices ->
+                    if getPosition lastVertex == getPosition firstVertex then
                         -- Drop the last point since it's equal to the
                         -- first
-                        firstPoint :: List.reverse otherPoints
+                        firstVertex :: List.reverse otherVertices
 
                     else
                         -- Keep all points
-                        firstPoint :: List.reverse accumulatedPoints
+                        firstVertex :: List.reverse accumulatedVertices
 
                 [] ->
-                    -- Just have the first point
-                    [ firstPoint ]
+                    -- Just have the first vertex
+                    [ firstVertex ]
 
 
-accumulateDistinctPoints : Point2d units coordinates -> List (Point2d units coordinates) -> List (Point2d units coordinates) -> List (Point2d units coordinates)
-accumulateDistinctPoints previousPoint points accumulatedPoints =
-    case points of
+accumulateDistinctVertices : (vertex -> Point2d units coordinates) -> vertex -> List vertex -> List vertex -> List vertex
+accumulateDistinctVertices getPosition previousVertex vertices accumulatedVertices =
+    case vertices of
         [] ->
-            accumulatedPoints
+            accumulatedVertices
 
-        point :: rest ->
+        vertex :: rest ->
             let
-                updatedPoints =
-                    if point == previousPoint then
-                        accumulatedPoints
+                updatedVertices =
+                    if getPosition vertex == getPosition previousVertex then
+                        accumulatedVertices
 
                     else
-                        point :: accumulatedPoints
+                        vertex :: accumulatedVertices
             in
-            accumulateDistinctPoints point rest updatedPoints
+            accumulateDistinctVertices getPosition vertex rest updatedVertices
 
 
-init : Polygon2d units coordinates -> Loops units coordinates
-init (Polygon2d { outerLoop, innerLoops }) =
+init : (vertex -> Point2d units coordinates) -> Polygon vertex -> Loops vertex units coordinates
+init getPosition (Polygon2d { outerLoop, innerLoops }) =
     let
         allLoops =
             (outerLoop :: innerLoops)
-                |> List.map (\loop -> removeDuplicates loop)
+                |> List.map (\loop -> removeDuplicates getPosition loop)
 
-        vertices =
+        vertexRecords =
             allLoops
-                |> List.map toVertices
+                |> List.map (toVertexRecords getPosition)
                 |> List.concat
 
         edges =
@@ -317,7 +344,7 @@ init (Polygon2d { outerLoop, innerLoops }) =
                 allLoops
                 |> Tuple.second
     in
-    { vertices = vertices
+    { vertexRecords = vertexRecords
     , edges = edges
     }
 
@@ -329,20 +356,20 @@ type alias HelperVertex =
     }
 
 
-type alias State units coordinates =
+type alias State vertex units coordinates =
     { edgeSet : EdgeSet units coordinates
     , helpers : Dict Int HelperVertex -- helper vertex by edge index
-    , vertices : Array (Vertex units coordinates)
+    , vertexRecords : Array (VertexRecord vertex units coordinates)
     , edges : Array Edge
     }
 
 
-getVertex : Int -> State units coordinates -> Maybe (Vertex units coordinates)
-getVertex index state =
-    Array.get index state.vertices
+getVertexRecord : Int -> State vertex units coordinates -> Maybe (VertexRecord vertex units coordinates)
+getVertexRecord index state =
+    Array.get index state.vertexRecords
 
 
-getEdge : Int -> State units coordinates -> Maybe Edge
+getEdge : Int -> State vertex units coordinates -> Maybe Edge
 getEdge index state =
     Array.get index state.edges
 
@@ -362,7 +389,7 @@ defaultTo defaultValue maybeValue =
             error defaultValue
 
 
-processLeftEdge : (EdgeSet.Edge units coordinates -> EdgeSet units coordinates -> EdgeSet units coordinates) -> Int -> State units coordinates -> State units coordinates
+processLeftEdge : (EdgeSet.Edge units coordinates -> EdgeSet units coordinates -> EdgeSet units coordinates) -> Int -> State vertex units coordinates -> State vertex units coordinates
 processLeftEdge insertOrRemove edgeIndex state =
     getEdge edgeIndex state
         |> Maybe.andThen
@@ -382,23 +409,23 @@ processLeftEdge insertOrRemove edgeIndex state =
                                     |> insertOrRemove ( edgeIndex, lineSegment )
                         }
                     )
-                    (getVertex edge.startVertexIndex state)
-                    (getVertex edge.endVertexIndex state)
+                    (getVertexRecord edge.startVertexIndex state)
+                    (getVertexRecord edge.endVertexIndex state)
             )
         |> defaultTo state
 
 
-insertLeftEdge : Int -> State units coordinates -> State units coordinates
+insertLeftEdge : Int -> State vertex units coordinates -> State vertex units coordinates
 insertLeftEdge =
     processLeftEdge EdgeSet.insert
 
 
-removeLeftEdge : Int -> State units coordinates -> State units coordinates
+removeLeftEdge : Int -> State vertex units coordinates -> State vertex units coordinates
 removeLeftEdge =
     processLeftEdge EdgeSet.remove
 
 
-setHelperOf : Int -> HelperVertex -> State units coordinates -> State units coordinates
+setHelperOf : Int -> HelperVertex -> State vertex units coordinates -> State vertex units coordinates
 setHelperOf edgeIndex helperVertex state =
     { state
         | helpers =
@@ -406,7 +433,7 @@ setHelperOf edgeIndex helperVertex state =
     }
 
 
-handleStartVertex : Int -> State units coordinates -> State units coordinates
+handleStartVertex : Int -> State vertex units coordinates -> State vertex units coordinates
 handleStartVertex index state =
     state
         |> insertLeftEdge index
@@ -433,7 +460,7 @@ setNextEdge index edge =
     { edge | nextEdgeIndex = index }
 
 
-addDiagonal : Int -> HelperVertex -> State units coordinates -> ( State units coordinates, Int )
+addDiagonal : Int -> HelperVertex -> State vertex units coordinates -> ( State vertex units coordinates, Int )
 addDiagonal vertexIndex helperVertex state =
     let
         n =
@@ -466,19 +493,19 @@ addDiagonal vertexIndex helperVertex state =
             , n
             )
         )
-        (Array.get vertexIndex state.vertices)
-        (Array.get helperVertex.index state.vertices)
+        (Array.get vertexIndex state.vertexRecords)
+        (Array.get helperVertex.index state.vertexRecords)
         (Array.get vertexIndex state.edges)
         (Array.get helperVertex.outgoingEdgeIndex state.edges)
         |> defaultTo ( state, -1 )
 
 
-getHelperOf : Int -> State units coordinates -> Maybe HelperVertex
+getHelperOf : Int -> State vertex units coordinates -> Maybe HelperVertex
 getHelperOf edgeIndex state =
     Dict.get edgeIndex state.helpers
 
 
-handleEndVertex : Int -> State units coordinates -> State units coordinates
+handleEndVertex : Int -> State vertex units coordinates -> State vertex units coordinates
 handleEndVertex index state =
     getEdge index state
         |> Maybe.andThen
@@ -503,12 +530,12 @@ handleEndVertex index state =
         |> defaultTo state
 
 
-getLeftEdge : Point2d units coordinates -> State units coordinates -> Maybe Int
+getLeftEdge : Point2d units coordinates -> State vertex units coordinates -> Maybe Int
 getLeftEdge point state =
     EdgeSet.leftOf point state.edgeSet
 
 
-handleSplitVertex : Int -> Point2d units coordinates -> State units coordinates -> State units coordinates
+handleSplitVertex : Int -> Point2d units coordinates -> State vertex units coordinates -> State vertex units coordinates
 handleSplitVertex index point state =
     getLeftEdge point state
         |> Maybe.andThen
@@ -529,7 +556,7 @@ handleSplitVertex index point state =
         |> defaultTo state
 
 
-handleMergeVertex : Int -> Point2d units coordinates -> State units coordinates -> State units coordinates
+handleMergeVertex : Int -> Point2d units coordinates -> State vertex units coordinates -> State vertex units coordinates
 handleMergeVertex index point state =
     getEdge index state
         |> Maybe.andThen
@@ -575,7 +602,7 @@ handleMergeVertex index point state =
         |> defaultTo state
 
 
-handleRightVertex : Int -> Point2d units coordinates -> State units coordinates -> State units coordinates
+handleRightVertex : Int -> Point2d units coordinates -> State vertex units coordinates -> State vertex units coordinates
 handleRightVertex index point state =
     getLeftEdge point state
         |> Maybe.andThen
@@ -599,7 +626,7 @@ handleRightVertex index point state =
         |> defaultTo state
 
 
-handleLeftVertex : Int -> State units coordinates -> State units coordinates
+handleLeftVertex : Int -> State vertex units coordinates -> State vertex units coordinates
 handleLeftVertex index state =
     getEdge index state
         |> Maybe.andThen
@@ -626,31 +653,33 @@ handleLeftVertex index state =
         |> defaultTo state
 
 
-type alias MonotoneVertex units coordinates =
+type alias MonotoneVertexRecord vertex units coordinates =
     { index : Int
+    , vertex : vertex
     , position : Point2d units coordinates
     , nextVertexIndex : Int
     }
 
 
-buildLoop : State units coordinates -> Array (Point2d units coordinates) -> Int -> Int -> ( Set Int, List (MonotoneVertex units coordinates) ) -> ( Set Int, List (MonotoneVertex units coordinates) )
-buildLoop state points startIndex currentIndex ( processedEdgeIndices, accumulated ) =
+buildLoop : State vertex units coordinates -> Array (VertexRecord vertex units coordinates) -> Int -> Int -> ( Set Int, List (MonotoneVertexRecord vertex units coordinates) ) -> ( Set Int, List (MonotoneVertexRecord vertex units coordinates) )
+buildLoop state vertexRecordArray startIndex currentIndex ( processedEdgeIndices, accumulated ) =
     case getEdge currentIndex state of
         Just currentEdge ->
-            case Array.get currentEdge.startVertexIndex points of
-                Just vertexPosition ->
+            case Array.get currentEdge.startVertexIndex vertexRecordArray of
+                Just vertexRecord ->
                     let
                         updatedEdgeIndices =
                             Set.insert currentIndex processedEdgeIndices
 
-                        newVertex =
+                        newMonotoneVertexRecord =
                             { index = currentEdge.startVertexIndex
-                            , position = vertexPosition
+                            , vertex = vertexRecord.vertex
+                            , position = vertexRecord.position
                             , nextVertexIndex = currentEdge.endVertexIndex
                             }
 
                         newAccumulated =
-                            newVertex :: accumulated
+                            newMonotoneVertexRecord :: accumulated
 
                         nextIndex =
                             currentEdge.nextEdgeIndex
@@ -663,7 +692,7 @@ buildLoop state points startIndex currentIndex ( processedEdgeIndices, accumulat
                     else
                         buildLoop
                             state
-                            points
+                            vertexRecordArray
                             startIndex
                             nextIndex
                             ( updatedEdgeIndices, newAccumulated )
@@ -675,11 +704,11 @@ buildLoop state points startIndex currentIndex ( processedEdgeIndices, accumulat
             error ( processedEdgeIndices, [] )
 
 
-collectMonotoneLoops : State units coordinates -> ( Array (Point2d units coordinates), List (List (MonotoneVertex units coordinates)) )
+collectMonotoneLoops : State vertex units coordinates -> ( Array vertex, List (List (MonotoneVertexRecord vertex units coordinates)) )
 collectMonotoneLoops state =
     let
-        points =
-            state.vertices |> Array.map .position
+        vertices =
+            state.vertexRecords |> Array.map .vertex
 
         processStartEdge index accumulated =
             let
@@ -692,7 +721,7 @@ collectMonotoneLoops state =
             else
                 let
                     ( updatedEdgeIndices, loop ) =
-                        buildLoop state points index index ( processedEdgeIndices, [] )
+                        buildLoop state state.vertexRecords index index ( processedEdgeIndices, [] )
                 in
                 ( updatedEdgeIndices, loop :: accumulatedLoops )
 
@@ -702,32 +731,32 @@ collectMonotoneLoops state =
         ( _, loops ) =
             List.foldl processStartEdge ( Set.empty, [] ) allEdgeIndices
     in
-    ( points, loops )
+    ( vertices, loops )
 
 
-monotonePolygons : Polygon2d units coordinates -> ( Array (Point2d units coordinates), List (List (MonotoneVertex units coordinates)) )
-monotonePolygons polygon =
+monotonePolygons : (vertex -> Point2d units coordinates) -> Polygon vertex -> ( Array vertex, List (List (MonotoneVertexRecord vertex units coordinates)) )
+monotonePolygons getPosition polygon =
     let
-        { vertices, edges } =
-            init polygon
+        { vertexRecords, edges } =
+            init getPosition polygon
 
         priorityQueue =
-            vertices
+            vertexRecords
                 |> List.indexedMap Tuple.pair
                 |> List.sortWith
-                    (\( _, firstVertex ) ( _, secondVertex ) ->
-                        comparePoints secondVertex.position firstVertex.position
+                    (\( _, firstVertexRecord ) ( _, secondVertexRecord ) ->
+                        comparePoints secondVertexRecord.position firstVertexRecord.position
                     )
+
+        vertexRecordArray =
+            Array.fromList vertexRecords
 
         initialState =
             { edgeSet = EdgeSet.empty
             , helpers = Dict.empty
-            , vertices = Array.fromList vertices
+            , vertexRecords = vertexRecordArray
             , edges = edges
             }
-
-        vertexArray =
-            Array.fromList vertices
 
         handleVertex ( index, vertex ) current =
             case vertex.kind of
@@ -755,21 +784,21 @@ monotonePolygons polygon =
     collectMonotoneLoops finalState
 
 
-type alias TriangulationState units coordinates =
-    { chainStart : MonotoneVertex units coordinates
-    , chainInterior : List (MonotoneVertex units coordinates)
-    , chainEnd : MonotoneVertex units coordinates
+type alias TriangulationState vertex units coordinates =
+    { chainStart : MonotoneVertexRecord vertex units coordinates
+    , chainInterior : List (MonotoneVertexRecord vertex units coordinates)
+    , chainEnd : MonotoneVertexRecord vertex units coordinates
     , faces : List ( Int, Int, Int )
     }
 
 
-signedArea : MonotoneVertex units coordinates -> MonotoneVertex units coordinates -> MonotoneVertex units coordinates -> Quantity Float (Squared units)
+signedArea : MonotoneVertexRecord vertex units coordinates -> MonotoneVertexRecord vertex units coordinates -> MonotoneVertexRecord vertex units coordinates -> Quantity Float (Squared units)
 signedArea first second third =
     Triangle2d.counterclockwiseArea <|
         Triangle2d.from first.position second.position third.position
 
 
-addLeftChainVertex : MonotoneVertex units coordinates -> TriangulationState units coordinates -> TriangulationState units coordinates
+addLeftChainVertex : MonotoneVertexRecord vertex units coordinates -> TriangulationState vertex units coordinates -> TriangulationState vertex units coordinates
 addLeftChainVertex vertex state =
     case state.chainInterior of
         [] ->
@@ -824,7 +853,7 @@ addLeftChainVertex vertex state =
                 }
 
 
-addRightChainVertex : MonotoneVertex units coordinates -> TriangulationState units coordinates -> TriangulationState units coordinates
+addRightChainVertex : MonotoneVertexRecord vertex units coordinates -> TriangulationState vertex units coordinates -> TriangulationState vertex units coordinates
 addRightChainVertex vertex state =
     case state.chainInterior of
         [] ->
@@ -879,7 +908,7 @@ addRightChainVertex vertex state =
                 }
 
 
-startNewRightChain : MonotoneVertex units coordinates -> TriangulationState units coordinates -> TriangulationState units coordinates
+startNewRightChain : MonotoneVertexRecord vertex units coordinates -> TriangulationState vertex units coordinates -> TriangulationState vertex units coordinates
 startNewRightChain vertex state =
     let
         collectFaces firstVertex otherVertices accumulated =
@@ -911,7 +940,7 @@ startNewRightChain vertex state =
     }
 
 
-startNewLeftChain : MonotoneVertex units coordinates -> TriangulationState units coordinates -> TriangulationState units coordinates
+startNewLeftChain : MonotoneVertexRecord vertex units coordinates -> TriangulationState vertex units coordinates -> TriangulationState vertex units coordinates
 startNewLeftChain vertex state =
     let
         collectFaces firstVertex otherVertices accumulated =
@@ -943,7 +972,7 @@ startNewLeftChain vertex state =
     }
 
 
-faces : List (MonotoneVertex units coordinates) -> List ( Int, Int, Int )
+faces : List (MonotoneVertexRecord vertex units coordinates) -> List ( Int, Int, Int )
 faces vertices =
     let
         sortedVertices =
@@ -994,10 +1023,10 @@ faces vertices =
             List.foldl processVertex initialState rest |> .faces
 
 
-triangulation : Polygon2d units coordinates -> TriangularMesh (Point2d units coordinates)
-triangulation polygon =
+triangulation : (vertex -> Point2d units coordinates) -> Polygon vertex -> TriangularMesh vertex
+triangulation getPosition polygon =
     let
         ( points, loops ) =
-            monotonePolygons polygon
+            monotonePolygons getPosition polygon
     in
     TriangularMesh.indexed points (List.map faces loops |> List.concat)

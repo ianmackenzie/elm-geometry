@@ -10,9 +10,11 @@
 module PolygonTriangulation exposing (main)
 
 import Angle exposing (Angle)
+import Array exposing (Array)
 import BoundingBox2d exposing (BoundingBox2d)
 import Browser
-import Color
+import Circle2d
+import Color exposing (Color)
 import Drawing2d
 import Drawing2d.Attributes as Attributes
 import Html exposing (Html)
@@ -20,8 +22,8 @@ import Html.Attributes
 import Html.Events
 import InputWidget as InputWidget
 import Pixels exposing (Pixels)
-import Point2d
-import Polygon2d exposing (Polygon2d)
+import Point2d exposing (Point2d)
+import Generic.Polygon2d as Polygon2d exposing (Polygon2d)
 import Polygon2d.Random as Random
 import Quantity exposing (Quantity)
 import Random exposing (Generator)
@@ -34,16 +36,56 @@ type ScreenCoordinates
     = ScreenCoordinates
 
 
+type Vertex
+    = ExteriorVertex (Point2d Pixels ScreenCoordinates)
+    | InteriorVertex (Point2d Pixels ScreenCoordinates)
+
+
 type alias Model =
-    { polygon : Polygon2d Pixels ScreenCoordinates
+    { polygon : Polygon2d Vertex
     , angle : Angle
     }
 
 
 type Msg
     = Click
-    | NewPolygon (Polygon2d Pixels ScreenCoordinates)
+    | NewPolygon (Polygon2d Vertex)
     | SetAngle Angle
+
+
+vertexPosition : Vertex -> Point2d Pixels ScreenCoordinates
+vertexPosition vertex =
+    case vertex of
+        ExteriorVertex position ->
+            position
+
+        InteriorVertex position ->
+            position
+
+
+vertexColor : Vertex -> Color
+vertexColor vertex =
+    case vertex of
+        ExteriorVertex _ ->
+            Color.blue
+
+        InteriorVertex _ ->
+            Color.orange
+
+
+mapVertex : (Point2d Pixels ScreenCoordinates -> Point2d Pixels ScreenCoordinates) -> Vertex -> Vertex
+mapVertex pointFunction vertex =
+    case vertex of
+        ExteriorVertex point ->
+            ExteriorVertex (pointFunction point)
+
+        InteriorVertex point ->
+            InteriorVertex (pointFunction point)
+
+
+vertexMidpoint : Vertex -> Vertex -> Vertex
+vertexMidpoint firstVertex secondVertex =
+    InteriorVertex (Point2d.midpoint (vertexPosition firstVertex) (vertexPosition secondVertex))
 
 
 renderBounds : BoundingBox2d Pixels ScreenCoordinates
@@ -53,16 +95,16 @@ renderBounds =
 
 generateNewPolygon : Cmd Msg
 generateNewPolygon =
-    Random.generate NewPolygon (Random.polygon2d renderBounds)
+    Random.generate NewPolygon (Random.polygon2d renderBounds |> Random.map (Polygon2d.mapVertices ExteriorVertex vertexPosition))
 
 
-square : Polygon2d Pixels ScreenCoordinates
+square : Polygon2d Vertex
 square =
-    Polygon2d.singleLoop
-        [ Point2d.pixels 100 100
-        , Point2d.pixels 400 100
-        , Point2d.pixels 400 400
-        , Point2d.pixels 100 400
+    Polygon2d.singleLoopBy vertexPosition
+        [ ExteriorVertex (Point2d.pixels 100 100)
+        , ExteriorVertex (Point2d.pixels 400 100)
+        , ExteriorVertex (Point2d.pixels 400 400)
+        , ExteriorVertex (Point2d.pixels 100 400)
         ]
 
 
@@ -93,26 +135,31 @@ view model =
             BoundingBox2d.dimensions renderBounds
 
         rotatedPolygon =
-            Polygon2d.rotateAround (BoundingBox2d.centerPoint renderBounds)
-                model.angle
+            Polygon2d.mapVertices
+                (mapVertex (Point2d.rotateAround (BoundingBox2d.centerPoint renderBounds) model.angle))
+                vertexPosition
                 model.polygon
 
         triangulationRule =
-            Polygon2d.edgeSubdivisions
-                (\p1 p2 ->
-                    let
-                        deltaY =
-                            Quantity.abs (Point2d.yCoordinate p2 |> Quantity.minus (Point2d.yCoordinate p1))
-                    in
-                    ceiling (Quantity.ratio deltaY (Pixels.float 20))
-                )
+            Polygon2d.maxTriangleDimensions Quantity.positiveInfinity (Pixels.float 50)
 
         mesh =
-            Polygon2d.triangulateWith triangulationRule rotatedPolygon
+            Polygon2d.triangulateWith
+                { triangulationRule = triangulationRule
+                , vertexPosition = vertexPosition
+                , midpoint = vertexMidpoint
+                }
+                rotatedPolygon
 
         triangles =
             TriangularMesh.faceVertices mesh
-                |> List.map Triangle2d.fromVertices
+                |> List.map
+                    (\( v1, v2, v3 ) ->
+                        Triangle2d.from
+                            (vertexPosition v1)
+                            (vertexPosition v2)
+                            (vertexPosition v3)
+                    )
 
         drawTriangle =
             Drawing2d.triangle
@@ -120,30 +167,31 @@ view model =
                 , Drawing2d.strokeColor (Color.rgb 0.5 0.5 0.5)
                 ]
 
-        polygonElement =
+        polygonEntity =
             Drawing2d.polygon
                 [ Drawing2d.noFill, Drawing2d.blackStroke ]
-                rotatedPolygon
+                (Polygon2d.mapVertices vertexPosition identity rotatedPolygon)
+
+        drawVertex vertex =
+            Drawing2d.circle [ Drawing2d.fillColor (vertexColor vertex) ]
+                (Circle2d.withRadius (Pixels.float 4) (vertexPosition vertex))
     in
     Html.div []
         [ Html.div [ Html.Events.onClick Click ]
-            [ Drawing2d.toHtml
-                { size = Drawing2d.fixed
-                , viewBox = Rectangle2d.fromBoundingBox renderBounds
+            [ Drawing2d.draw
+                { viewBox = Rectangle2d.fromBoundingBox renderBounds
+                , entities = [ polygonEntity ]
                 }
-                []
-                [ polygonElement
-                ]
             ]
         , Html.div [ Html.Events.onClick Click ]
-            [ Drawing2d.toHtml
-                { size = Drawing2d.fixed
-                , viewBox = Rectangle2d.fromBoundingBox renderBounds
+            [ Drawing2d.draw
+                { viewBox = Rectangle2d.fromBoundingBox renderBounds
+                , entities =
+                    [ Drawing2d.group [] (List.map drawTriangle triangles)
+                    , polygonEntity
+                    , Drawing2d.group [] (List.map drawVertex (Array.toList (TriangularMesh.vertices mesh)))
+                    ]
                 }
-                []
-                [ Drawing2d.group [] (List.map drawTriangle triangles)
-                , polygonElement
-                ]
             ]
         , InputWidget.slider
             [ Html.Attributes.style "width" (String.fromFloat (Pixels.toFloat width) ++ "px") ]

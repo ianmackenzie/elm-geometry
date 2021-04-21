@@ -1,17 +1,9 @@
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- This Source Code Form is subject to the terms of the Mozilla Public        --
--- License, v. 2.0. If a copy of the MPL was not distributed with this file,  --
--- you can obtain one at http://mozilla.org/MPL/2.0/.                         --
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-
-
-module Polygon2d exposing
+module Generic.Polygon2d exposing
     ( Polygon2d
-    , singleLoop, withHoles, convexHull
-    , outerLoop, innerLoops, vertices, edges, perimeter, area, centroid, boundingBox
-    , contains
+    , singleLoop, singleLoopBy, withHoles, withHolesBy, convexHull, convexHullBy
+    , outerLoop, innerLoops, vertices, edges, edgesBy, edgesOf, perimeter, perimeterBy, area, areaBy, centroid, centroidBy, boundingBox, boundingBoxBy
+    , contains, containsBy
+    , mapVertices
     , scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , at, at_
     , relativeTo, placeIn
@@ -32,17 +24,22 @@ holes. This module contains a variety of polygon-related functionality, such as
 
 # Constructors
 
-@docs singleLoop, withHoles, convexHull
+@docs singleLoop, singleLoopBy, withHoles, withHolesBy, convexHull, convexHullBy
 
 
 # Properties
 
-@docs outerLoop, innerLoops, vertices, edges, perimeter, area, centroid, boundingBox
+@docs outerLoop, innerLoops, vertices, edges, edgesBy, edgesOf, perimeter, perimeterBy, area, areaBy, centroid, centroidBy, boundingBox, boundingBoxBy
 
 
 # Queries
 
-@docs contains
+@docs contains, containsBy
+
+
+# Mapping
+
+@docs mapVertices
 
 
 # Transformations
@@ -87,12 +84,12 @@ import Vector2d exposing (Vector2d)
 
 
 {-| -}
-type alias Polygon2d units coordinates =
-    Types.Polygon2d units coordinates
+type alias Polygon2d vertex =
+    Types.Polygon vertex
 
 
-counterclockwiseArea : List (Point2d units coordinates) -> Quantity Float (Squared units)
-counterclockwiseArea vertices_ =
+counterclockwiseArea : (vertex -> Point2d units coordinates) -> List vertex -> Quantity Float (Squared units)
+counterclockwiseArea getPosition vertices_ =
     case vertices_ of
         [] ->
             Quantity.zero
@@ -105,9 +102,12 @@ counterclockwiseArea vertices_ =
 
         first :: second :: rest ->
             let
+                firstPosition =
+                    getPosition first
+
                 segmentArea start end =
                     Triangle2d.counterclockwiseArea
-                        (Triangle2d.from first start end)
+                        (Triangle2d.from firstPosition (getPosition start) (getPosition end))
 
                 segmentAreas =
                     List.map2 segmentArea (second :: rest) rest
@@ -115,10 +115,10 @@ counterclockwiseArea vertices_ =
             Quantity.sum segmentAreas
 
 
-makeOuterLoop : List (Point2d units coordinates) -> List (Point2d units coordinates)
-makeOuterLoop vertices_ =
+makeOuterLoop : (vertex -> Point2d units coordinates) -> List vertex -> List vertex
+makeOuterLoop getPosition vertices_ =
     if
-        counterclockwiseArea vertices_
+        counterclockwiseArea getPosition vertices_
             |> Quantity.greaterThanOrEqualTo Quantity.zero
     then
         vertices_
@@ -127,10 +127,10 @@ makeOuterLoop vertices_ =
         List.reverse vertices_
 
 
-makeInnerLoop : List (Point2d units coordinates) -> List (Point2d units coordinates)
-makeInnerLoop vertices_ =
+makeInnerLoop : (vertex -> Point2d units coordinates) -> List vertex -> List vertex
+makeInnerLoop getPosition vertices_ =
     if
-        counterclockwiseArea vertices_
+        counterclockwiseArea getPosition vertices_
             |> Quantity.lessThanOrEqualTo Quantity.zero
     then
         vertices_
@@ -155,9 +155,14 @@ ideally be provided in counterclockwise order; if they are provided in clockwise
 order they will be reversed.
 
 -}
-singleLoop : List (Point2d units coordinates) -> Polygon2d units coordinates
+singleLoop : List (Point2d units coordinates) -> Polygon2d (Point2d units coordinates)
 singleLoop givenOuterLoop =
-    withHoles [] givenOuterLoop
+    singleLoopBy identity givenOuterLoop
+
+
+singleLoopBy : (vertex -> Point2d units coordinates) -> List vertex -> Polygon2d vertex
+singleLoopBy getPosition givenOuterLoop =
+    withHolesBy getPosition [] givenOuterLoop
 
 
 {-| Construct a polygon with holes from one outer loop and a list of inner
@@ -186,49 +191,64 @@ provided in counterclockwise order and vertices of the inner loops should
 ideally be provided in clockwise order.
 
 -}
-withHoles : List (List (Point2d units coordinates)) -> List (Point2d units coordinates) -> Polygon2d units coordinates
+withHoles : List (List (Point2d units coordinates)) -> List (Point2d units coordinates) -> Polygon2d (Point2d units coordinates)
 withHoles givenInnerLoops givenOuterLoop =
+    withHolesBy identity givenInnerLoops givenOuterLoop
+
+
+withHolesBy : (vertex -> Point2d units coordinates) -> List (List vertex) -> List vertex -> Polygon2d vertex
+withHolesBy getPosition givenInnerLoops givenOuterLoop =
     Types.Polygon2d
-        { outerLoop = makeOuterLoop givenOuterLoop
-        , innerLoops = List.map makeInnerLoop givenInnerLoops
+        { outerLoop = makeOuterLoop getPosition givenOuterLoop
+        , innerLoops = List.map (makeInnerLoop getPosition) givenInnerLoops
         }
 
 
-counterclockwiseAround : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Bool
-counterclockwiseAround origin a b =
+counterclockwiseAround : (vertex -> Point2d units coordinates) -> vertex -> vertex -> vertex -> Bool
+counterclockwiseAround getPosition origin a b =
     let
+        originPoint =
+            getPosition origin
+
         crossProduct =
-            Vector2d.from origin a
+            Vector2d.from originPoint (getPosition a)
                 |> Vector2d.cross
-                    (Vector2d.from origin b)
+                    (Vector2d.from originPoint (getPosition b))
     in
     crossProduct |> Quantity.greaterThanOrEqualTo Quantity.zero
 
 
-chainHelp : List (Point2d units coordinates) -> List (Point2d units coordinates) -> List (Point2d units coordinates)
-chainHelp acc list =
+chainHelp : (vertex -> Point2d units coordinates) -> List vertex -> List vertex -> List vertex
+chainHelp getPosition acc list =
     case ( acc, list ) of
         ( r1 :: r2 :: rs, x :: xs ) ->
-            if counterclockwiseAround r2 r1 x then
-                chainHelp (r2 :: rs) (x :: xs)
+            if counterclockwiseAround getPosition r2 r1 x then
+                chainHelp getPosition (r2 :: rs) (x :: xs)
 
             else
-                chainHelp (x :: acc) xs
+                chainHelp getPosition (x :: acc) xs
 
         ( _, x :: xs ) ->
-            chainHelp (x :: acc) xs
+            chainHelp getPosition (x :: acc) xs
 
         ( _, [] ) ->
             List.drop 1 acc
 
 
-chain : List (Point2d units coordinates) -> List (Point2d units coordinates)
-chain =
-    chainHelp []
+chain : (vertex -> Point2d units coordinates) -> List vertex -> List vertex
+chain getPosition list =
+    chainHelp getPosition [] list
 
 
-compareCoordinates : Point2d units coordinates -> Point2d units coordinates -> Order
-compareCoordinates firstPoint secondPoint =
+compareCoordinates : (vertex -> Point2d units coordinates) -> vertex -> vertex -> Order
+compareCoordinates getPosition firstVertex secondVertex =
+    let
+        firstPoint =
+            getPosition firstVertex
+
+        secondPoint =
+            getPosition secondVertex
+    in
     if Point2d.xCoordinate firstPoint == Point2d.xCoordinate secondPoint then
         Quantity.compare (Point2d.yCoordinate firstPoint) (Point2d.yCoordinate secondPoint)
 
@@ -244,28 +264,33 @@ of points:
 This is an O(n log n) operation.
 
 -}
-convexHull : List (Point2d units coordinates) -> Polygon2d units coordinates
+convexHull : List (Point2d units coordinates) -> Polygon2d (Point2d units coordinates)
 convexHull points =
+    convexHullBy identity points
+
+
+convexHullBy : (vertex -> Point2d units coordinates) -> List vertex -> Polygon2d vertex
+convexHullBy getPosition givenVertices =
     -- See http://www.algorithmist.com/index.php/Monotone_Chain_Convex_Hull
     -- for a description of the algorithm.
     let
         sorted =
-            points |> List.sortWith compareCoordinates
+            givenVertices |> List.sortWith (compareCoordinates getPosition)
 
         lower =
-            chain sorted
+            chain getPosition sorted
 
         upper =
-            chain (List.reverse sorted)
+            chain getPosition (List.reverse sorted)
     in
-    singleLoop (lower ++ upper)
+    singleLoopBy getPosition (lower ++ upper)
 
 
 {-| Convert a polygon from one units type to another, by providing a conversion
 factor given as a rate of change of destination units with respect to source
 units.
 -}
-at : Quantity Float (Rate units2 units1) -> Polygon2d units1 coordinates -> Polygon2d units2 coordinates
+at : Quantity Float (Rate units2 units1) -> Polygon2d (Point2d units1 coordinates) -> Polygon2d (Point2d units2 coordinates)
 at rate (Types.Polygon2d polygon) =
     let
         convertPoint =
@@ -281,7 +306,7 @@ at rate (Types.Polygon2d polygon) =
 conversion factor given as a rate of change of source units with respect to
 destination units.
 -}
-at_ : Quantity Float (Rate units1 units2) -> Polygon2d units1 coordinates -> Polygon2d units2 coordinates
+at_ : Quantity Float (Rate units1 units2) -> Polygon2d (Point2d units1 coordinates) -> Polygon2d (Point2d units2 coordinates)
 at_ rate polygon =
     at (Quantity.inverse rate) polygon
 
@@ -297,7 +322,7 @@ The vertices will be in counterclockwise order.
     --> ]
 
 -}
-outerLoop : Polygon2d units coordinates -> List (Point2d units coordinates)
+outerLoop : Polygon2d vertex -> List vertex
 outerLoop (Types.Polygon2d polygon) =
     polygon.outerLoop
 
@@ -314,7 +339,7 @@ Each list of vertices will be in clockwise order.
     --> ]
 
 -}
-innerLoops : Polygon2d units coordinates -> List (List (Point2d units coordinates))
+innerLoops : Polygon2d vertex -> List (List vertex)
 innerLoops (Types.Polygon2d polygon) =
     polygon.innerLoops
 
@@ -323,32 +348,42 @@ innerLoops (Types.Polygon2d polygon) =
 loop of the polygon and all inner loops. The order of the returned vertices is
 undefined.
 -}
-vertices : Polygon2d units coordinates -> List (Point2d units coordinates)
+vertices : Polygon2d vertex -> List vertex
 vertices polygon =
     List.concat (outerLoop polygon :: innerLoops polygon)
 
 
-loopEdges : List (Point2d units coordinates) -> List (LineSegment2d units coordinates)
-loopEdges vertices_ =
+loopEdges : (vertex -> vertex -> edge) -> List vertex -> List edge
+loopEdges makeEdge vertices_ =
     case vertices_ of
         [] ->
             []
 
         (first :: rest) as all ->
-            List.map2 LineSegment2d.from all (rest ++ [ first ])
+            List.map2 makeEdge all (rest ++ [ first ])
 
 
 {-| Get all edges of a polygon. This will include both outer edges and inner
 (hole) edges.
 -}
-edges : Polygon2d units coordinates -> List (LineSegment2d units coordinates)
+edges : Polygon2d (Point2d units coordinates) -> List (LineSegment2d units coordinates)
 edges polygon =
+    edgesOf LineSegment2d.from polygon
+
+
+edgesBy : (vertex -> Point2d units coordinates) -> Polygon2d vertex -> List (LineSegment2d units coordinates)
+edgesBy getPosition polygon =
+    edgesOf (\v1 v2 -> LineSegment2d.from (getPosition v1) (getPosition v2)) polygon
+
+
+edgesOf : (vertex -> vertex -> edge) -> Polygon2d vertex -> List edge
+edgesOf makeEdge polygon =
     let
         outerEdges =
-            loopEdges (outerLoop polygon)
+            loopEdges makeEdge (outerLoop polygon)
 
         innerEdges =
-            List.map loopEdges (innerLoops polygon)
+            List.map (loopEdges makeEdge) (innerLoops polygon)
     in
     List.concat (outerEdges :: innerEdges)
 
@@ -360,9 +395,15 @@ includes the outer perimeter and the perimeter of any holes.
     --> Length.meters 16
 
 -}
-perimeter : Polygon2d units coordinates -> Quantity Float units
-perimeter =
-    edges >> List.map LineSegment2d.length >> Quantity.sum
+perimeter : Polygon2d (Point2d units coordinates) -> Quantity Float units
+perimeter polygon =
+    edges polygon |> List.map LineSegment2d.length |> Quantity.sum
+
+
+perimeterBy : (vertex -> Point2d units coordinates) -> Polygon2d vertex -> Quantity Float units
+perimeterBy getPosition polygon =
+    Quantity.sum <|
+        edgesOf (\v1 v2 -> Point2d.distanceFrom (getPosition v1) (getPosition v2)) polygon
 
 
 {-| Get the area of a polygon. This value will never be negative.
@@ -371,28 +412,42 @@ perimeter =
     --> Area.squareMeters 8
 
 -}
-area : Polygon2d units coordinates -> Quantity Float (Squared units)
+area : Polygon2d (Point2d units coordinates) -> Quantity Float (Squared units)
 area polygon =
-    counterclockwiseArea (outerLoop polygon)
+    areaBy identity polygon
+
+
+areaBy : (vertex -> Point2d units coordinates) -> Polygon2d vertex -> Quantity Float (Squared units)
+areaBy getPosition polygon =
+    counterclockwiseArea getPosition (outerLoop polygon)
         |> Quantity.plus
-            (Quantity.sum (List.map counterclockwiseArea (innerLoops polygon)))
+            (Quantity.sum (List.map (counterclockwiseArea getPosition) (innerLoops polygon)))
 
 
 {-| Get the centroid of a polygon. Returns `Nothing` if the polygon has no
 vertices or zero area.
 -}
-centroid : Polygon2d units coordinates -> Maybe (Point2d units coordinates)
+centroid : Polygon2d (Point2d units coordinates) -> Maybe (Point2d units coordinates)
 centroid polygon =
+    centroidBy identity polygon
+
+
+centroidBy : (vertex -> Point2d units coordinates) -> Polygon2d vertex -> Maybe (Point2d units coordinates)
+centroidBy getPosition polygon =
     case outerLoop polygon of
         first :: _ :: _ ->
             let
+                firstPosition =
+                    getPosition first
+
                 offset =
-                    Point2d.unwrap first
+                    Point2d.unwrap firstPosition
             in
             centroidHelp
+                getPosition
                 offset.x
                 offset.y
-                first
+                firstPosition
                 (outerLoop polygon)
                 (innerLoops polygon)
                 0
@@ -404,16 +459,17 @@ centroid polygon =
 
 
 centroidHelp :
-    Float
+    (vertex -> Point2d units coordinates)
+    -> Float
     -> Float
     -> Point2d units coordinates
-    -> List (Point2d units coordinates)
-    -> List (List (Point2d units coordinates))
+    -> List vertex
+    -> List (List vertex)
     -> Float
     -> Float
     -> Float
     -> Maybe (Point2d units coordinates)
-centroidHelp x0 y0 firstPoint currentLoop remainingLoops xSum ySum areaSum =
+centroidHelp getPosition x0 y0 firstPoint currentLoop remainingLoops xSum ySum areaSum =
     case currentLoop of
         [] ->
             case remainingLoops of
@@ -422,9 +478,10 @@ centroidHelp x0 y0 firstPoint currentLoop remainingLoops xSum ySum areaSum =
                         first :: _ :: _ ->
                             -- enqueue a new loop
                             centroidHelp
+                                getPosition
                                 x0
                                 y0
-                                first
+                                (getPosition first)
                                 loop
                                 newRemainingLoops
                                 xSum
@@ -434,6 +491,7 @@ centroidHelp x0 y0 firstPoint currentLoop remainingLoops xSum ySum areaSum =
                         _ ->
                             -- skip a loop with < 2 points
                             centroidHelp
+                                getPosition
                                 x0
                                 y0
                                 firstPoint
@@ -455,15 +513,15 @@ centroidHelp x0 y0 firstPoint currentLoop remainingLoops xSum ySum areaSum =
                     else
                         Nothing
 
-        point1 :: currentLoopRest ->
+        vertex1 :: currentLoopRest ->
             case currentLoopRest of
-                point2 :: _ ->
+                vertex2 :: _ ->
                     let
                         p1 =
-                            Point2d.unwrap point1
+                            Point2d.unwrap (getPosition vertex1)
 
                         p2 =
-                            Point2d.unwrap point2
+                            Point2d.unwrap (getPosition vertex2)
 
                         p1x =
                             p1.x - x0
@@ -490,6 +548,7 @@ centroidHelp x0 y0 firstPoint currentLoop remainingLoops xSum ySum areaSum =
                             areaSum + a
                     in
                     centroidHelp
+                        getPosition
                         x0
                         y0
                         firstPoint
@@ -502,7 +561,7 @@ centroidHelp x0 y0 firstPoint currentLoop remainingLoops xSum ySum areaSum =
                 [] ->
                     let
                         p1 =
-                            Point2d.unwrap point1
+                            Point2d.unwrap (getPosition vertex1)
 
                         p2 =
                             Point2d.unwrap firstPoint
@@ -537,9 +596,10 @@ centroidHelp x0 y0 firstPoint currentLoop remainingLoops xSum ySum areaSum =
                                 first :: _ :: _ ->
                                     -- enqueue a new loop
                                     centroidHelp
+                                        getPosition
                                         x0
                                         y0
-                                        first
+                                        (getPosition first)
                                         loop
                                         newRemainingLoops
                                         newXSum
@@ -549,6 +609,7 @@ centroidHelp x0 y0 firstPoint currentLoop remainingLoops xSum ySum areaSum =
                                 _ ->
                                     -- skip a loop with < 2 points
                                     centroidHelp
+                                        getPosition
                                         x0
                                         y0
                                         firstPoint
@@ -571,34 +632,46 @@ centroidHelp x0 y0 firstPoint currentLoop remainingLoops xSum ySum areaSum =
                                 Nothing
 
 
+mapVertices : (vertex1 -> vertex2) -> (vertex2 -> Point2d units coordinates) -> Polygon2d vertex1 -> Polygon2d vertex2
+mapVertices function getPosition polygon =
+    let
+        mappedOuterLoop =
+            List.map function (outerLoop polygon)
+
+        mappedInnerLoops =
+            List.map (List.map function) (innerLoops polygon)
+    in
+    withHolesBy getPosition mappedInnerLoops mappedOuterLoop
+
+
 {-| Scale a polygon about a given center point by a given scale. If the given
 scale is negative, the order of the polygon's vertices will be reversed so that
 the resulting polygon still has its outer vertices in counterclockwise order and
 its inner vertices in clockwise order.
 -}
-scaleAbout : Point2d units coordinates -> Float -> Polygon2d units coordinates -> Polygon2d units coordinates
+scaleAbout : Point2d units coordinates -> Float -> Polygon2d (Point2d units coordinates) -> Polygon2d (Point2d units coordinates)
 scaleAbout point scale =
-    mapVertices (Point2d.scaleAbout point scale) (scale < 0)
+    fastMap (scale >= 0) (Point2d.scaleAbout point scale)
 
 
 {-| Rotate a polygon around the given center point counterclockwise by the given
 angle.
 -}
-rotateAround : Point2d units coordinates -> Angle -> Polygon2d units coordinates -> Polygon2d units coordinates
+rotateAround : Point2d units coordinates -> Angle -> Polygon2d (Point2d units coordinates) -> Polygon2d (Point2d units coordinates)
 rotateAround point angle =
-    mapVertices (Point2d.rotateAround point angle) False
+    fastMap True (Point2d.rotateAround point angle)
 
 
 {-| Translate a polygon by the given displacement.
 -}
-translateBy : Vector2d units coordinates -> Polygon2d units coordinates -> Polygon2d units coordinates
+translateBy : Vector2d units coordinates -> Polygon2d (Point2d units coordinates) -> Polygon2d (Point2d units coordinates)
 translateBy vector =
-    mapVertices (Point2d.translateBy vector) False
+    fastMap True (Point2d.translateBy vector)
 
 
 {-| Translate a polygon in a given direction by a given distance.
 -}
-translateIn : Direction2d coordinates -> Quantity Float units -> Polygon2d units coordinates -> Polygon2d units coordinates
+translateIn : Direction2d coordinates -> Quantity Float units -> Polygon2d (Point2d units coordinates) -> Polygon2d (Point2d units coordinates)
 translateIn direction distance polygon =
     translateBy (Vector2d.withLength distance direction) polygon
 
@@ -607,13 +680,17 @@ translateIn direction distance polygon =
 will be reversed so that the resulting polygon still has its outer vertices in
 counterclockwise order and its inner vertices in clockwise order.
 -}
-mirrorAcross : Axis2d units coordinates -> Polygon2d units coordinates -> Polygon2d units coordinates
+mirrorAcross : Axis2d units coordinates -> Polygon2d (Point2d units coordinates) -> Polygon2d (Point2d units coordinates)
 mirrorAcross axis =
-    mapVertices (Point2d.mirrorAcross axis) True
+    fastMap False (Point2d.mirrorAcross axis)
 
 
-mapVertices : (Point2d unitsA coordinatesA -> Point2d unitsB coordinatesB) -> Bool -> Polygon2d unitsA coordinatesA -> Polygon2d unitsB coordinatesB
-mapVertices function invert polygon =
+fastMap :
+    Bool
+    -> (Point2d unitsA coordinatesA -> Point2d unitsB coordinatesB)
+    -> Polygon2d (Point2d unitsA coordinatesA)
+    -> Polygon2d (Point2d unitsB coordinatesB)
+fastMap signPreserving function polygon =
     let
         mappedOuterLoop =
             List.map function (outerLoop polygon)
@@ -621,16 +698,16 @@ mapVertices function invert polygon =
         mappedInnerLoops =
             List.map (List.map function) (innerLoops polygon)
     in
-    if invert then
+    if signPreserving then
         Types.Polygon2d
-            { outerLoop = List.reverse mappedOuterLoop
-            , innerLoops = List.map List.reverse mappedInnerLoops
+            { outerLoop = mappedOuterLoop
+            , innerLoops = mappedInnerLoops
             }
 
     else
         Types.Polygon2d
-            { outerLoop = mappedOuterLoop
-            , innerLoops = mappedInnerLoops
+            { outerLoop = List.reverse mappedOuterLoop
+            , innerLoops = List.map List.reverse mappedInnerLoops
             }
 
 
@@ -640,9 +717,12 @@ left-handed, the order of the polygon's vertices will be reversed so that the
 resulting polygon still has its outer vertices in counterclockwise order and its
 inner vertices in clockwise order.
 -}
-relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Polygon2d units globalCoordinates -> Polygon2d units localCoordinates
+relativeTo :
+    Frame2d units globalCoordinates { defines : localCoordinates }
+    -> Polygon2d (Point2d units globalCoordinates)
+    -> Polygon2d (Point2d units localCoordinates)
 relativeTo frame =
-    mapVertices (Point2d.relativeTo frame) (not (Frame2d.isRightHanded frame))
+    fastMap (Frame2d.isRightHanded frame) (Point2d.relativeTo frame)
 
 
 {-| Take a polygon considered to be defined in local coordinates relative to a
@@ -651,9 +731,12 @@ If the given frame is left-handed, the order of the polygon's vertices will be
 reversed so that the resulting polygon still has its outer vertices in
 counterclockwise order and its inner vertices in clockwise order.
 -}
-placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Polygon2d units localCoordinates -> Polygon2d units globalCoordinates
+placeIn :
+    Frame2d units globalCoordinates { defines : localCoordinates }
+    -> Polygon2d (Point2d units localCoordinates)
+    -> Polygon2d (Point2d units globalCoordinates)
 placeIn frame =
-    mapVertices (Point2d.placeIn frame) (not (Frame2d.isRightHanded frame))
+    fastMap (Frame2d.isRightHanded frame) (Point2d.placeIn frame)
 
 
 {-| Get the minimal bounding box containing a given polygon. Returns `Nothing`
@@ -666,9 +749,14 @@ if the polygon has no vertices.
     -->         (Point2d.meters 3 2)
 
 -}
-boundingBox : Polygon2d units coordinates -> Maybe (BoundingBox2d units coordinates)
+boundingBox : Polygon2d (Point2d units coordinates) -> Maybe (BoundingBox2d units coordinates)
 boundingBox polygon =
     BoundingBox2d.hullN (outerLoop polygon)
+
+
+boundingBoxBy : (vertex -> Point2d units coordinates) -> Polygon2d vertex -> Maybe (BoundingBox2d units coordinates)
+boundingBoxBy getPosition polygon =
+    BoundingBox2d.hullOfN getPosition (outerLoop polygon)
 
 
 {-| Triangulate a polygon. This uses the `TriangularMesh` data types from
@@ -684,9 +772,22 @@ can render using WebGL:
 ![Polygon with hole](https://ianmackenzie.github.io/elm-geometry/1.0.0/Polygon2d/triangulate2.svg)
 
 -}
-triangulate : Polygon2d units coordinates -> TriangularMesh (Point2d units coordinates)
+triangulate : Polygon2d (Point2d units coordinates) -> TriangularMesh (Point2d units coordinates)
 triangulate polygon =
-    Monotone.triangulation identity polygon
+    triangulateBy identity polygon
+
+
+triangulateBy : (vertex -> Point2d units coordinates) -> Polygon2d vertex -> TriangularMesh vertex
+triangulateBy getPosition polygon =
+    Monotone.triangulation getPosition polygon
+
+
+{-| -}
+type alias TriangulationConfig vertex units coordinates =
+    { triangulationRule : TriangulationRule units coordinates
+    , vertexPosition : vertex -> Point2d units coordinates
+    , midpoint : vertex -> vertex -> vertex
+    }
 
 
 {-| Triangulate a polygon with additional control over the size of the triangles
@@ -704,25 +805,36 @@ that the resulting triangles may still be very thin; no particular attempt is
 made to avoid large or small angles in triangles.
 
 -}
-triangulateWith : TriangulationRule units coordinates -> Polygon2d units coordinates -> TriangularMesh (Point2d units coordinates)
-triangulateWith triangulationRule polygon =
+triangulateWith : TriangulationConfig vertex units coordinates -> Polygon2d vertex -> TriangularMesh vertex
+triangulateWith config polygon =
     let
-        (TriangulationRule subdivisionFunction) =
-            triangulationRule
+        initialTriangulation =
+            Monotone.triangulation config.vertexPosition polygon
     in
-    Monotone.triangulation identity polygon
-        |> Refinement.refine
-            { vertexPosition = identity
-            , midpoint = Point2d.midpoint
-            , subdivisionFunction = subdivisionFunction
-            }
+    case config.triangulationRule of
+        NoRestrictions ->
+            initialTriangulation
+
+        TriangulationRule subdivisionFunction ->
+            initialTriangulation
+                |> Refinement.refine
+                    { subdivisionFunction = subdivisionFunction
+                    , vertexPosition = config.vertexPosition
+                    , midpoint = config.midpoint
+                    }
 
 
 {-| A `TriangulationRule` controls the polygon triangulation process and
 determines how large the faces/edges are in the resulting triangular mesh.
 -}
 type TriangulationRule units coordinates
-    = TriangulationRule (Point2d units coordinates -> Point2d units coordinates -> Int)
+    = NoRestrictions
+    | TriangulationRule (Point2d units coordinates -> Point2d units coordinates -> Int)
+
+
+noRestrictions : TriangulationRule units coordinates
+noRestrictions =
+    NoRestrictions
 
 
 {-| Ensure that every edge in a triangulation has at most the given length.
@@ -774,16 +886,22 @@ maxTriangleDimensions width height =
 This is an O(n) operation. The polygon can have holes and does not need to be convex.
 
 -}
-contains : Point2d units coordinates -> Polygon2d units coordinates -> Bool
+contains : Point2d units coordinates -> Polygon2d (Point2d units coordinates) -> Bool
 contains point polygon =
     let
-        (Quantity x) =
-            Point2d.xCoordinate point
-
-        (Quantity y) =
-            Point2d.yCoordinate point
+        { x, y } =
+            Point2d.unwrap point
     in
     containsPointHelp (edges polygon) x y 0
+
+
+containsBy : (vertex -> Point2d units coordinates) -> Point2d units coordinates -> Polygon2d vertex -> Bool
+containsBy getPosition point polygon =
+    let
+        { x, y } =
+            Point2d.unwrap point
+    in
+    containsPointHelp (edgesBy getPosition polygon) x y 0
 
 
 containsPointHelp : List (LineSegment2d units coordinates) -> Float -> Float -> Int -> Bool

@@ -8,49 +8,57 @@ import Quantity exposing (Quantity)
 import TriangularMesh exposing (TriangularMesh)
 
 
-type alias Vertex units coordinates =
-    { position : Point2d units coordinates
+type alias VertexRecord vertex units coordinates =
+    { vertex : vertex
+    , position : Point2d units coordinates
     , index : Int
     }
 
 
-type alias ShortEdge units coordinates =
-    { start : Vertex units coordinates
-    , end : Vertex units coordinates
+type alias ShortEdge vertex units coordinates =
+    { start : VertexRecord vertex units coordinates
+    , end : VertexRecord vertex units coordinates
     }
 
 
-type alias LongEdge units coordinates =
-    { start : Vertex units coordinates
-    , firstEdge : Edge units coordinates
-    , secondEdge : Edge units coordinates
-    , end : Vertex units coordinates
+type alias LongEdge vertex units coordinates =
+    { start : VertexRecord vertex units coordinates
+    , firstEdge : Edge vertex units coordinates
+    , secondEdge : Edge vertex units coordinates
+    , end : VertexRecord vertex units coordinates
     , level : Int
     }
 
 
-type Edge units coordinates
-    = Short (ShortEdge units coordinates)
-    | Long (LongEdge units coordinates)
+type Edge vertex units coordinates
+    = Short (ShortEdge vertex units coordinates)
+    | Long (LongEdge vertex units coordinates)
 
 
-type alias State units coordinates =
-    { vertexStack : List (Point2d units coordinates)
+type alias State vertex units coordinates =
+    { vertexStack : List vertex
     , vertexCount : Int
-    , edgeDict : Dict ( Int, Int ) (Edge units coordinates)
+    , edgeDict : Dict ( Int, Int ) (Edge vertex units coordinates)
     , accumulatedFaces : List ( Int, Int, Int )
     }
 
 
-type alias Face units coordinates =
-    ( Edge units coordinates, Edge units coordinates, Edge units coordinates )
+type alias Face vertex units coordinates =
+    ( Edge vertex units coordinates, Edge vertex units coordinates, Edge vertex units coordinates )
 
 
 type alias SubdivisionFunction units coordinates =
     Point2d units coordinates -> Point2d units coordinates -> Int
 
 
-initState : TriangularMesh (Point2d units coordinates) -> State units coordinates
+type alias Config vertex units coordinates =
+    { vertexPosition : vertex -> Point2d units coordinates
+    , midpoint : vertex -> vertex -> vertex
+    , subdivisionFunction : SubdivisionFunction units coordinates
+    }
+
+
+initState : TriangularMesh vertex -> State vertex units coordinates
 initState triangularMesh =
     let
         vertexArray =
@@ -64,18 +72,20 @@ initState triangularMesh =
 
 
 addVertex :
-    Point2d units coordinates
-    -> State units coordinates
-    -> ( Vertex units coordinates, State units coordinates )
-addVertex position state =
+    Config vertex units coordinates
+    -> vertex
+    -> State vertex units coordinates
+    -> ( VertexRecord vertex units coordinates, State vertex units coordinates )
+addVertex config vertex state =
     let
         currentCount =
             state.vertexCount
     in
-    ( { position = position
+    ( { vertex = vertex
+      , position = config.vertexPosition vertex
       , index = currentCount
       }
-    , { vertexStack = position :: state.vertexStack
+    , { vertexStack = vertex :: state.vertexStack
       , vertexCount = currentCount + 1
       , edgeDict = state.edgeDict
       , accumulatedFaces = state.accumulatedFaces
@@ -83,7 +93,7 @@ addVertex position state =
     )
 
 
-reverseEdge : Edge units coordinates -> Edge units coordinates
+reverseEdge : Edge vertex units coordinates -> Edge vertex units coordinates
 reverseEdge edge =
     case edge of
         Short { start, end } ->
@@ -100,34 +110,35 @@ reverseEdge edge =
 
 
 buildEdge :
-    Int
-    -> Vertex units coordinates
-    -> Vertex units coordinates
-    -> State units coordinates
-    -> ( Edge units coordinates, State units coordinates )
-buildEdge level startVertex endVertex state0 =
+    Config vertex units coordinates
+    -> Int
+    -> VertexRecord vertex units coordinates
+    -> VertexRecord vertex units coordinates
+    -> State vertex units coordinates
+    -> ( Edge vertex units coordinates, State vertex units coordinates )
+buildEdge config level startVertexRecord endVertexRecord state0 =
     if level <= 0 then
-        ( Short { start = startVertex, end = endVertex }, state0 )
+        ( Short { start = startVertexRecord, end = endVertexRecord }, state0 )
 
     else
         let
-            midpoint =
-                Point2d.midpoint startVertex.position endVertex.position
+            newVertex =
+                config.midpoint startVertexRecord.vertex endVertexRecord.vertex
 
-            ( midVertex, state1 ) =
-                addVertex midpoint state0
+            ( midVertexRecord, state1 ) =
+                addVertex config newVertex state0
 
             ( firstEdge, state2 ) =
-                buildEdge (level - 1) startVertex midVertex state1
+                buildEdge config (level - 1) startVertexRecord midVertexRecord state1
 
             ( secondEdge, state3 ) =
-                buildEdge (level - 1) midVertex endVertex state2
+                buildEdge config (level - 1) midVertexRecord endVertexRecord state2
         in
         ( Long
-            { start = startVertex
+            { start = startVertexRecord
             , firstEdge = firstEdge
             , secondEdge = secondEdge
-            , end = endVertex
+            , end = endVertexRecord
             , level = level
             }
         , state3
@@ -158,30 +169,39 @@ subdivisionLevels subdivisionFunction startPoint endPoint =
 
 
 createEdge :
-    TriangularMesh (Point2d units coordinates)
-    -> SubdivisionFunction units coordinates
+    Config vertex units coordinates
+    -> TriangularMesh vertex
     -> Int
     -> Int
-    -> Point2d units coordinates
-    -> Point2d units coordinates
-    -> State units coordinates
-    -> ( Edge units coordinates, State units coordinates )
-createEdge triangularMesh subdivisionFunction i j startPoint endPoint state0 =
+    -> vertex
+    -> vertex
+    -> State vertex units coordinates
+    -> ( Edge vertex units coordinates, State vertex units coordinates )
+createEdge config triangularMesh i j startVertex endVertex state0 =
     let
-        startVertex =
-            { position = startPoint
+        startPoint =
+            config.vertexPosition startVertex
+
+        endPoint =
+            config.vertexPosition endVertex
+
+        startVertexRecord =
+            { vertex = startVertex
+            , position = startPoint
             , index = i
             }
 
-        endVertex =
-            { position = endPoint
+        endVertexRecord =
+            { vertex = endVertex
+            , position = endPoint
             , index = j
             }
 
         ( newEdge, state1 ) =
-            buildEdge (subdivisionLevels subdivisionFunction startPoint endPoint)
-                startVertex
-                endVertex
+            buildEdge config
+                (subdivisionLevels config.subdivisionFunction startPoint endPoint)
+                startVertexRecord
+                endVertexRecord
                 state0
     in
     ( newEdge
@@ -194,13 +214,13 @@ createEdge triangularMesh subdivisionFunction i j startPoint endPoint state0 =
 
 
 getOrCreateEdge :
-    TriangularMesh (Point2d units coordinates)
-    -> SubdivisionFunction units coordinates
+    Config vertex units coordinates
+    -> TriangularMesh vertex
     -> Int
     -> Int
-    -> State units coordinates
-    -> ( Maybe (Edge units coordinates), State units coordinates )
-getOrCreateEdge triangularMesh subdivisionFunction i j state0 =
+    -> State vertex units coordinates
+    -> ( Maybe (Edge vertex units coordinates), State vertex units coordinates )
+getOrCreateEdge config triangularMesh i j state0 =
     case Dict.get ( j, i ) state0.edgeDict of
         Just oppositeEdge ->
             -- The opposite edge exists, use it
@@ -215,9 +235,9 @@ getOrCreateEdge triangularMesh subdivisionFunction i j state0 =
                 , TriangularMesh.vertex j triangularMesh
                 )
             of
-                ( Just startPoint, Just endPoint ) ->
+                ( Just startVertex, Just endVertex ) ->
                     Tuple.mapFirst Just <|
-                        createEdge triangularMesh subdivisionFunction i j startPoint endPoint state0
+                        createEdge config triangularMesh i j startVertex endVertex state0
 
                 _ ->
                     -- Shouldn't happen
@@ -225,24 +245,24 @@ getOrCreateEdge triangularMesh subdivisionFunction i j state0 =
 
 
 initFaces :
-    TriangularMesh (Point2d units coordinates)
-    -> SubdivisionFunction units coordinates
+    Config vertex units coordinates
+    -> TriangularMesh vertex
     -> List ( Int, Int, Int )
-    -> List (Face units coordinates)
-    -> State units coordinates
-    -> ( List (Face units coordinates), State units coordinates )
-initFaces triangularMesh subdivisionFunction faceIndices accumulated state0 =
+    -> List (Face vertex units coordinates)
+    -> State vertex units coordinates
+    -> ( List (Face vertex units coordinates), State vertex units coordinates )
+initFaces config triangularMesh faceIndices accumulated state0 =
     case faceIndices of
         ( i, j, k ) :: rest ->
             let
                 ( maybeEdge1, state1 ) =
-                    getOrCreateEdge triangularMesh subdivisionFunction i j state0
+                    getOrCreateEdge config triangularMesh i j state0
 
                 ( maybeEdge2, state2 ) =
-                    getOrCreateEdge triangularMesh subdivisionFunction j k state1
+                    getOrCreateEdge config triangularMesh j k state1
 
                 ( maybeEdge3, state3 ) =
-                    getOrCreateEdge triangularMesh subdivisionFunction k i state2
+                    getOrCreateEdge config triangularMesh k i state2
 
                 maybeFace =
                     Maybe.map3 (\edge1 edge2 edge3 -> ( edge1, edge2, edge3 ))
@@ -252,21 +272,21 @@ initFaces triangularMesh subdivisionFunction faceIndices accumulated state0 =
             in
             case maybeFace of
                 Just face ->
-                    initFaces triangularMesh subdivisionFunction rest (face :: accumulated) state3
+                    initFaces config triangularMesh rest (face :: accumulated) state3
 
                 Nothing ->
-                    initFaces triangularMesh subdivisionFunction rest accumulated state0
+                    initFaces config triangularMesh rest accumulated state0
 
         [] ->
             ( accumulated, state0 )
 
 
 addFace :
-    Vertex units coordinates
-    -> Vertex units coordinates
-    -> Vertex units coordinates
-    -> State units coordinates
-    -> State units coordinates
+    VertexRecord vertex units coordinates
+    -> VertexRecord vertex units coordinates
+    -> VertexRecord vertex units coordinates
+    -> State vertex units coordinates
+    -> State vertex units coordinates
 addFace v1 v2 v3 currentState =
     { vertexStack = currentState.vertexStack
     , vertexCount = currentState.vertexCount
@@ -276,7 +296,7 @@ addFace v1 v2 v3 currentState =
     }
 
 
-edgeStart : Edge units coordinates -> Vertex units coordinates
+edgeStart : Edge vertex units coordinates -> VertexRecord vertex units coordinates
 edgeStart edge =
     case edge of
         Short { start } ->
@@ -286,7 +306,7 @@ edgeStart edge =
             start
 
 
-edgeEnd : Edge units coordinates -> Vertex units coordinates
+edgeEnd : Edge vertex units coordinates -> VertexRecord vertex units coordinates
 edgeEnd edge =
     case edge of
         Short { end } ->
@@ -296,19 +316,19 @@ edgeEnd edge =
             end
 
 
-edgeMid : LongEdge units coordinates -> Vertex units coordinates
+edgeMid : LongEdge vertex units coordinates -> VertexRecord vertex units coordinates
 edgeMid { firstEdge } =
     edgeEnd firstEdge
 
 
 processSingleLongEdge :
-    SubdivisionFunction units coordinates
-    -> ShortEdge units coordinates
-    -> ShortEdge units coordinates
-    -> LongEdge units coordinates
-    -> State units coordinates
-    -> State units coordinates
-processSingleLongEdge subdivisionFunction e1 e2 e3 state =
+    Config vertex units coordinates
+    -> ShortEdge vertex units coordinates
+    -> ShortEdge vertex units coordinates
+    -> LongEdge vertex units coordinates
+    -> State vertex units coordinates
+    -> State vertex units coordinates
+processSingleLongEdge config e1 e2 e3 state =
     let
         midVertex =
             edgeMid e3
@@ -326,19 +346,23 @@ processSingleLongEdge subdivisionFunction e1 e2 e3 state =
             )
     in
     state
-        |> processFace subdivisionFunction f1
-        |> processFace subdivisionFunction f2
+        |> processFace config f1
+        |> processFace config f2
 
 
 processTrapezoid :
-    SubdivisionFunction units coordinates
-    -> ShortEdge units coordinates
-    -> Edge units coordinates
-    -> ShortEdge units coordinates
-    -> Edge units coordinates
-    -> State units coordinates
-    -> State units coordinates
-processTrapezoid subdivisionFunction bottom right top left state0 =
+    Config vertex units coordinates
+    -> ShortEdge vertex units coordinates
+    -> Edge vertex units coordinates
+    -> ShortEdge vertex units coordinates
+    -> Edge vertex units coordinates
+    -> State vertex units coordinates
+    -> State vertex units coordinates
+processTrapezoid config bottom right top left state0 =
+    let
+        subdivisionFunction =
+            config.subdivisionFunction
+    in
     case ( left, right ) of
         ( Short leftEdge, Short rightEdge ) ->
             let
@@ -352,11 +376,11 @@ processTrapezoid subdivisionFunction bottom right top left state0 =
                 -- Both diagonals are too long, create a middle vertex and
                 -- create four faces using it
                 let
-                    midpoint =
-                        Point2d.midpoint bottom.start.position top.start.position
+                    newVertex =
+                        config.midpoint bottom.start.vertex top.start.vertex
 
                     ( midVertex, state1 ) =
-                        addVertex midpoint state0
+                        addVertex config newVertex state0
                 in
                 state1
                     |> addFace bottom.start bottom.end midVertex
@@ -385,21 +409,18 @@ processTrapezoid subdivisionFunction bottom right top left state0 =
                     subdivisionLevels subdivisionFunction top.end.position midpoint.position
 
                 ( upperDiagonal, state1 ) =
-                    buildEdge upperSubdivisionLevels top.end midpoint state0
+                    buildEdge config upperSubdivisionLevels top.end midpoint state0
 
                 lowerSubdivisionLevels =
                     subdivisionLevels subdivisionFunction bottom.start.position midpoint.position
 
                 ( lowerDiagonal, state2 ) =
-                    buildEdge lowerSubdivisionLevels bottom.start midpoint state1
+                    buildEdge config lowerSubdivisionLevels bottom.start midpoint state1
             in
             state2
-                |> processFace subdivisionFunction
-                    ( Short bottom, rightEdge.firstEdge, reverseEdge lowerDiagonal )
-                |> processFace subdivisionFunction
-                    ( lowerDiagonal, reverseEdge upperDiagonal, left )
-                |> processFace subdivisionFunction
-                    ( rightEdge.secondEdge, Short top, upperDiagonal )
+                |> processFace config ( Short bottom, rightEdge.firstEdge, reverseEdge lowerDiagonal )
+                |> processFace config ( lowerDiagonal, reverseEdge upperDiagonal, left )
+                |> processFace config ( rightEdge.secondEdge, Short top, upperDiagonal )
 
         ( Long leftEdge, Short rightEdge ) ->
             let
@@ -410,21 +431,18 @@ processTrapezoid subdivisionFunction bottom right top left state0 =
                     subdivisionLevels subdivisionFunction top.start.position midpoint.position
 
                 ( upperDiagonal, state1 ) =
-                    buildEdge upperSubdivisionLevels top.start midpoint state0
+                    buildEdge config upperSubdivisionLevels top.start midpoint state0
 
                 lowerSubdivisionLevels =
                     subdivisionLevels subdivisionFunction bottom.end.position midpoint.position
 
                 ( lowerDiagonal, state2 ) =
-                    buildEdge lowerSubdivisionLevels bottom.end midpoint state1
+                    buildEdge config lowerSubdivisionLevels bottom.end midpoint state1
             in
             state2
-                |> processFace subdivisionFunction
-                    ( Short bottom, lowerDiagonal, leftEdge.secondEdge )
-                |> processFace subdivisionFunction
-                    ( reverseEdge lowerDiagonal, right, upperDiagonal )
-                |> processFace subdivisionFunction
-                    ( leftEdge.firstEdge, reverseEdge upperDiagonal, Short top )
+                |> processFace config ( Short bottom, lowerDiagonal, leftEdge.secondEdge )
+                |> processFace config ( reverseEdge lowerDiagonal, right, upperDiagonal )
+                |> processFace config ( leftEdge.firstEdge, reverseEdge upperDiagonal, Short top )
 
         ( Long leftEdge, Long rightEdge ) ->
             let
@@ -441,12 +459,12 @@ processTrapezoid subdivisionFunction bottom right top left state0 =
                     { start = leftMid, end = rightMid }
             in
             state0
-                |> processTrapezoid subdivisionFunction
+                |> processTrapezoid config
                     bottom
                     rightEdge.firstEdge
                     lowerTopEdge
                     leftEdge.secondEdge
-                |> processTrapezoid subdivisionFunction
+                |> processTrapezoid config
                     upperBottomEdge
                     rightEdge.secondEdge
                     top
@@ -454,13 +472,13 @@ processTrapezoid subdivisionFunction bottom right top left state0 =
 
 
 processSingleShortEdge :
-    SubdivisionFunction units coordinates
-    -> ShortEdge units coordinates
-    -> LongEdge units coordinates
-    -> LongEdge units coordinates
-    -> State units coordinates
-    -> State units coordinates
-processSingleShortEdge subdivisionFunction e1 e2 e3 state =
+    Config vertex units coordinates
+    -> ShortEdge vertex units coordinates
+    -> LongEdge vertex units coordinates
+    -> LongEdge vertex units coordinates
+    -> State vertex units coordinates
+    -> State vertex units coordinates
+processSingleShortEdge config e1 e2 e3 state =
     let
         mid2 =
             edgeMid e2
@@ -475,18 +493,18 @@ processSingleShortEdge subdivisionFunction e1 e2 e3 state =
             { start = mid2, end = mid3 }
     in
     state
-        |> processFace subdivisionFunction ( e2.secondEdge, e3.firstEdge, Short triangleBase )
-        |> processTrapezoid subdivisionFunction e1 e2.firstEdge trapezoidTop e3.secondEdge
+        |> processFace config ( e2.secondEdge, e3.firstEdge, Short triangleBase )
+        |> processTrapezoid config e1 e2.firstEdge trapezoidTop e3.secondEdge
 
 
 processThreeLongEdges :
-    SubdivisionFunction units coordinates
-    -> LongEdge units coordinates
-    -> LongEdge units coordinates
-    -> LongEdge units coordinates
-    -> State units coordinates
-    -> State units coordinates
-processThreeLongEdges subdivisionFunction e1 e2 e3 state0 =
+    Config vertex units coordinates
+    -> LongEdge vertex units coordinates
+    -> LongEdge vertex units coordinates
+    -> LongEdge vertex units coordinates
+    -> State vertex units coordinates
+    -> State vertex units coordinates
+processThreeLongEdges config e1 e2 e3 state0 =
     let
         v1 =
             edgeMid e1
@@ -498,13 +516,13 @@ processThreeLongEdges subdivisionFunction e1 e2 e3 state0 =
             edgeMid e3
 
         ( p1, state1 ) =
-            buildEdge (e1.level - 1) v2 v3 state0
+            buildEdge config (e1.level - 1) v2 v3 state0
 
         ( p2, state2 ) =
-            buildEdge (e2.level - 1) v3 v1 state1
+            buildEdge config (e2.level - 1) v3 v1 state1
 
         ( p3, state3 ) =
-            buildEdge (e3.level - 1) v1 v2 state2
+            buildEdge config (e3.level - 1) v1 v2 state2
 
         f1 =
             ( e1.firstEdge, reverseEdge p2, e3.secondEdge )
@@ -519,18 +537,18 @@ processThreeLongEdges subdivisionFunction e1 e2 e3 state0 =
             ( p1, p2, p3 )
     in
     state3
-        |> processFace subdivisionFunction f1
-        |> processFace subdivisionFunction f2
-        |> processFace subdivisionFunction f3
-        |> processFace subdivisionFunction f4
+        |> processFace config f1
+        |> processFace config f2
+        |> processFace config f3
+        |> processFace config f4
 
 
 processFace :
-    SubdivisionFunction units coordinates
-    -> Face units coordinates
-    -> State units coordinates
-    -> State units coordinates
-processFace subdivisionFunction face state =
+    Config vertex units coordinates
+    -> Face vertex units coordinates
+    -> State vertex units coordinates
+    -> State vertex units coordinates
+processFace config face state =
     case face of
         -- All short edges
         ( Short e1, Short e2, Short e3 ) ->
@@ -538,47 +556,47 @@ processFace subdivisionFunction face state =
 
         -- One long edge
         ( Short e1, Short e2, Long e3 ) ->
-            processSingleLongEdge subdivisionFunction e1 e2 e3 state
+            processSingleLongEdge config e1 e2 e3 state
 
         ( Short e1, Long e2, Short e3 ) ->
-            processSingleLongEdge subdivisionFunction e3 e1 e2 state
+            processSingleLongEdge config e3 e1 e2 state
 
         ( Long e1, Short e2, Short e3 ) ->
-            processSingleLongEdge subdivisionFunction e2 e3 e1 state
+            processSingleLongEdge config e2 e3 e1 state
 
         -- One short edge
         ( Long e1, Long e2, Short e3 ) ->
-            processSingleShortEdge subdivisionFunction e3 e1 e2 state
+            processSingleShortEdge config e3 e1 e2 state
 
         ( Long e1, Short e2, Long e3 ) ->
-            processSingleShortEdge subdivisionFunction e2 e3 e1 state
+            processSingleShortEdge config e2 e3 e1 state
 
         ( Short e1, Long e2, Long e3 ) ->
-            processSingleShortEdge subdivisionFunction e1 e2 e3 state
+            processSingleShortEdge config e1 e2 e3 state
 
         -- All long edges
         ( Long e1, Long e2, Long e3 ) ->
-            processThreeLongEdges subdivisionFunction e1 e2 e3 state
+            processThreeLongEdges config e1 e2 e3 state
 
 
 refine :
-    (Point2d units coordinates -> Point2d units coordinates -> Int)
-    -> TriangularMesh (Point2d units coordinates)
-    -> TriangularMesh (Point2d units coordinates)
-refine subdivisionFunction triangularMesh =
+    Config vertex units coordinates
+    -> TriangularMesh vertex
+    -> TriangularMesh vertex
+refine config triangularMesh =
     let
         state0 =
             initState triangularMesh
 
         ( initialFaces, state1 ) =
-            initFaces triangularMesh
-                subdivisionFunction
+            initFaces config
+                triangularMesh
                 (TriangularMesh.faceIndices triangularMesh)
                 []
                 state0
 
         state2 =
-            List.foldl (processFace subdivisionFunction) state1 initialFaces
+            List.foldl (processFace config) state1 initialFaces
 
         accumulatedVertices =
             Array.fromList (List.reverse state2.vertexStack)

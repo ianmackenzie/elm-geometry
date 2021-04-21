@@ -182,11 +182,15 @@ type Polyline3d units coordinates
     = Polyline3d (List (Point3d units coordinates))
 
 
-type Polygon2d units coordinates
+type Polygon vertex
     = Polygon2d
-        { outerLoop : List (Point2d units coordinates)
-        , innerLoops : List (List (Point2d units coordinates))
+        { outerLoop : List vertex
+        , innerLoops : List (List vertex)
         }
+
+
+type alias Polygon2d units coordinates =
+    Polygon (Point2d units coordinates)
 
 
 type Circle2d units coordinates
