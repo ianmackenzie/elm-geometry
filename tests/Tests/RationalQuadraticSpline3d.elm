@@ -1,10 +1,20 @@
-module Tests.RationalQuadraticSpline3d exposing (bSplines, firstDerivative, splitAt, transformations)
+module Tests.RationalQuadraticSpline3d exposing
+    ( approximate
+    , bSplines
+    , boundingBox
+    , firstDerivative
+    , firstDerivativeBoundingBox
+    , secondDerivativeBoundingBox
+    , splitAt
+    , transformations
+    )
 
 import CubicSpline3d
 import Expect exposing (Expectation, FloatingPointTolerance(..))
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Interval
 import Length exposing (Length, Meters)
 import Point3d exposing (Point3d)
@@ -150,3 +160,31 @@ splitAt =
                         (RationalQuadraticSpline3d.pointOn spline (t0 + t1 * (1 - t0)))
             )
         ]
+
+
+boundingBox : Test
+boundingBox =
+    Tests.Generic.Curve3d.boundingBox curveOperations
+
+
+firstDerivativeBoundingBox : Test
+firstDerivativeBoundingBox =
+    Tests.Generic.Curve3d.firstDerivativeBoundingBox
+        { generator = Random.rationalQuadraticSpline3d
+        , firstDerivative = RationalQuadraticSpline3d.firstDerivative
+        , firstDerivativeBoundingBox = RationalQuadraticSpline3d.firstDerivativeBoundingBox
+        }
+
+
+secondDerivativeBoundingBox : Test
+secondDerivativeBoundingBox =
+    Tests.Generic.Curve3d.secondDerivativeBoundingBox
+        { generator = Random.rationalQuadraticSpline3d
+        , secondDerivative = RationalQuadraticSpline3d.secondDerivative
+        , secondDerivativeBoundingBox = RationalQuadraticSpline3d.secondDerivativeBoundingBox
+        }
+
+
+approximate : Test
+approximate =
+    Tests.Generic.Curve3d.approximate curveOperations
