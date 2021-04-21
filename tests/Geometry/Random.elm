@@ -12,6 +12,8 @@ module Geometry.Random exposing
     , length
     , parameterValue
     , plane3d
+    , point2d
+    , point3d
     , positiveLength
     , quadraticSpline2d
     , quadraticSpline3d
