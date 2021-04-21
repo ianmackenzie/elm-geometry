@@ -81,7 +81,7 @@ import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import Point2d exposing (Point2d)
-import Quantity exposing (Quantity, Rate, Squared)
+import Quantity exposing (Quantity, Rate)
 import Quantity.Interval as Interval exposing (Interval)
 import Vector2d exposing (Vector2d)
 

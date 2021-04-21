@@ -127,7 +127,6 @@ import Direction2d exposing (Direction2d)
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import Interval exposing (Interval)
-import LineSegment2d exposing (LineSegment2d)
 import Parameter1d
 import Point2d exposing (Point2d)
 import Polyline2d exposing (Polyline2d)

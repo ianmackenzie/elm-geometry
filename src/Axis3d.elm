@@ -68,7 +68,7 @@ by an origin point and direction. Axes have several uses, such as:
 import Angle exposing (Angle)
 import Axis2d exposing (Axis2d)
 import Direction3d exposing (Direction3d)
-import Geometry.Types as Types exposing (Frame3d, LineSegment3d, Plane3d, SketchPlane3d, Sphere3d, Triangle3d)
+import Geometry.Types as Types exposing (Frame3d, Plane3d, SketchPlane3d, Sphere3d, Triangle3d)
 import Point3d exposing (Point3d)
 import Quantity exposing (Quantity(..), Rate)
 import Vector3d exposing (Vector3d)

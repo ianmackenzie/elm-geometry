@@ -87,11 +87,11 @@ import Arc2d exposing (Arc2d)
 import Axis3d exposing (Axis3d)
 import BoundingBox3d exposing (BoundingBox3d)
 import Curve
-import Direction2d exposing (Direction2d)
+import Direction2d
 import Direction3d exposing (Direction3d)
 import EllipticalArc2d exposing (EllipticalArc2d)
 import EllipticalArc3d exposing (EllipticalArc3d)
-import Frame2d exposing (Frame2d)
+import Frame2d
 import Frame3d exposing (Frame3d)
 import Geometry.Types as Types
 import Parameter1d

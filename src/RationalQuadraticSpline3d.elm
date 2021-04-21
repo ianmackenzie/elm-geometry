@@ -109,14 +109,12 @@ import Interval exposing (Interval)
 import LineSegment3d exposing (LineSegment3d)
 import Parameter1d
 import Point3d exposing (Point3d)
-import Point4d exposing (Point4d)
 import Polyline3d exposing (Polyline3d)
 import QuadraticSpline1d exposing (QuadraticSpline1d)
 import QuadraticSpline3d exposing (QuadraticSpline3d)
 import Quantity exposing (Quantity(..), Rate, Unitless)
 import Quantity.Interval
 import Vector3d exposing (Vector3d)
-import Vector4d exposing (Vector4d)
 import VectorBoundingBox2d
 import VectorBoundingBox3d exposing (VectorBoundingBox3d)
 

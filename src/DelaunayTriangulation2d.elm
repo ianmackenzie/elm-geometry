@@ -58,14 +58,11 @@ but should be O(log n) in the future.
 -}
 
 import Array exposing (Array)
-import Axis2d exposing (Axis2d)
 import Circle2d exposing (Circle2d)
 import Dict exposing (Dict)
 import Direction2d exposing (Direction2d)
 import Geometry.Types as Types exposing (DelaunayFace(..), DelaunayVertex)
 import Point2d exposing (Point2d)
-import Polygon2d exposing (Polygon2d)
-import Polyline2d exposing (Polyline2d)
 import Quantity exposing (Quantity)
 import Quantity.Extra as Quantity
 import Triangle2d exposing (Triangle2d)

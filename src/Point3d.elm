@@ -140,13 +140,11 @@ useful when writing generic/library code.
 
 import Angle exposing (Angle)
 import Direction3d exposing (Direction3d)
-import Float.Extra as Float
-import Geometry.Types as Types exposing (Axis3d, BoundingBox3d, Frame3d, Plane3d, SketchPlane3d)
+import Geometry.Types as Types exposing (Axis3d, Frame3d, Plane3d, SketchPlane3d)
 import Length exposing (Meters)
 import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
 import Quantity exposing (Quantity(..), Rate, Squared, Unitless)
-import Quantity.Extra as Quantity
 import Vector3d exposing (Vector3d)
 
 

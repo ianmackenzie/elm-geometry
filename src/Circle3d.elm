@@ -70,14 +70,13 @@ import Axis3d exposing (Axis3d)
 import BoundingBox3d exposing (BoundingBox3d)
 import Circle2d exposing (Circle2d)
 import Direction3d exposing (Direction3d)
-import Frame2d exposing (Frame2d)
+import Frame2d
 import Frame3d exposing (Frame3d)
 import Geometry.Types as Types exposing (Ellipse2d)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Quantity exposing (Quantity, Rate, Squared)
 import SketchPlane3d exposing (SketchPlane3d)
-import Vector2d exposing (Vector2d)
 import Vector3d exposing (Vector3d)
 
 

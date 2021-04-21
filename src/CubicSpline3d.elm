@@ -128,7 +128,6 @@ import Direction3d exposing (Direction3d)
 import Frame3d exposing (Frame3d)
 import Geometry.Types as Types exposing (VectorBoundingBox3d)
 import Interval exposing (Interval)
-import LineSegment3d exposing (LineSegment3d)
 import Parameter1d
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)

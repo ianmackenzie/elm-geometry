@@ -117,30 +117,28 @@ you are writing low-level geometric algorithms.
 
 -}
 
-import Angle exposing (Angle, Radians)
+import Angle exposing (Angle)
 import Angle.Interval
 import ArcLengthParameterization exposing (ArcLengthParameterization)
 import Axis3d exposing (Axis3d)
 import BoundingBox3d exposing (BoundingBox3d)
 import Curve
 import Direction3d exposing (Direction3d)
-import Ellipse2d exposing (Ellipse2d)
 import Ellipse3d exposing (Ellipse3d)
 import EllipticalArc2d exposing (EllipticalArc2d)
-import Frame2d exposing (Frame2d)
+import Frame2d
 import Frame3d exposing (Frame3d)
 import Geometry.Types as Types
 import Parameter1d
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Polyline3d exposing (Polyline3d)
-import Quantity exposing (Quantity(..), Rate, Squared)
+import Quantity exposing (Quantity(..), Rate)
 import Quantity.Extra as Quantity
 import Quantity.Interval as Interval exposing (Interval)
 import SketchPlane3d exposing (SketchPlane3d)
-import SweptAngle exposing (SweptAngle)
 import Unsafe.Direction3d as Direction3d
-import Vector2d exposing (Vector2d)
+import Vector2d
 import Vector3d exposing (Vector3d)
 import VectorBoundingBox3d exposing (VectorBoundingBox3d)
 

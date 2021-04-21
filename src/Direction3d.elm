@@ -116,7 +116,6 @@ import Geometry.Types as Types exposing (Axis3d, Frame3d, Plane3d, Point3d, Sket
 import Quantity exposing (Quantity(..), Unitless)
 import Quantity.Extra as Quantity
 import Random exposing (Generator)
-import Vector2d exposing (Vector2d)
 import Vector3d exposing (Vector3d)
 
 

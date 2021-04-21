@@ -111,7 +111,6 @@ import Interval exposing (Interval)
 import LineSegment3d exposing (LineSegment3d)
 import Parameter1d
 import Point3d exposing (Point3d)
-import Point4d exposing (Point4d)
 import Polyline3d exposing (Polyline3d)
 import Quantity exposing (Quantity(..), Rate, Unitless)
 import Quantity.Interval

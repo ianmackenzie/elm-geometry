@@ -83,7 +83,7 @@ import Geometry.Types as Types
 import LineSegment2d exposing (LineSegment2d)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
-import Quantity exposing (Quantity, Rate, Squared)
+import Quantity exposing (Quantity, Rate)
 import Quantity.Interval as Interval exposing (Interval)
 import SketchPlane3d exposing (SketchPlane3d)
 import Vector3d exposing (Vector3d)

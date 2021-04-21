@@ -73,7 +73,7 @@ import Frame3d exposing (Frame3d)
 import Geometry.Types as Types exposing (Ellipsoid3d)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
-import Quantity exposing (Cubed, Quantity, Rate, Squared)
+import Quantity exposing (Cubed, Quantity, Rate)
 import Quantity.Interval as Interval exposing (Interval)
 import Vector3d exposing (Vector3d)
 
