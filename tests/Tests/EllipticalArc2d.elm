@@ -130,7 +130,7 @@ reverseKeepsMidpoint =
 
 curveOperations : Tests.Generic.Curve2d.Operations (EllipticalArc2d Meters coordinates) coordinates
 curveOperations =
-    { fuzzer = Fuzz.ellipticalArc2d
+    { generator = Random.ellipticalArc2d
     , pointOn = EllipticalArc2d.pointOn
     , boundingBox = EllipticalArc2d.boundingBox
     , firstDerivative = EllipticalArc2d.firstDerivative
@@ -196,8 +196,4 @@ signedDistanceAlong =
 
 firstDerivativeBoundingBox : Test
 firstDerivativeBoundingBox =
-    Tests.Generic.Curve2d.firstDerivativeBoundingBox
-        { generator = Random.ellipticalArc2d
-        , firstDerivative = EllipticalArc2d.firstDerivative
-        , firstDerivativeBoundingBox = EllipticalArc2d.firstDerivativeBoundingBox
-        }
+    Tests.Generic.Curve2d.firstDerivativeBoundingBox curveOperations

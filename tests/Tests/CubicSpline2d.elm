@@ -9,19 +9,34 @@ module Tests.CubicSpline2d exposing
     , secondDerivativeBoundingBox
     )
 
-import CubicSpline2d
+import CubicSpline2d exposing (CubicSpline2d)
 import Expect exposing (Expectation, FloatingPointTolerance(..))
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Geometry.Random as Random
 import Interval
-import Length exposing (Length, inMeters, meters)
+import Length exposing (Length, Meters, inMeters, meters)
 import Point2d
 import Quantity exposing (zero)
 import Test exposing (Test)
-import Tests.Generic.Curve2d as Curve2d
+import Tests.Generic.Curve2d
 import Tests.QuadraticSpline2d
 import Vector2d
+
+
+curveOperations : Tests.Generic.Curve2d.Operations (CubicSpline2d Meters coordinates) coordinates
+curveOperations =
+    { generator = Random.cubicSpline2d
+    , pointOn = CubicSpline2d.pointOn
+    , boundingBox = CubicSpline2d.boundingBox
+    , firstDerivative = CubicSpline2d.firstDerivative
+    , firstDerivativeBoundingBox = CubicSpline2d.firstDerivativeBoundingBox
+    , scaleAbout = CubicSpline2d.scaleAbout
+    , translateBy = CubicSpline2d.translateBy
+    , rotateAround = CubicSpline2d.rotateAround
+    , mirrorAcross = CubicSpline2d.mirrorAcross
+    , numApproximationSegments = CubicSpline2d.numApproximationSegments
+    }
 
 
 fromEndpointsReproducesSpline : Test
@@ -217,16 +232,12 @@ bSplinesAreContinuous =
 
 firstDerivativeBoundingBox : Test
 firstDerivativeBoundingBox =
-    Curve2d.firstDerivativeBoundingBox
-        { generator = Random.cubicSpline2d
-        , firstDerivative = CubicSpline2d.firstDerivative
-        , firstDerivativeBoundingBox = CubicSpline2d.firstDerivativeBoundingBox
-        }
+    Tests.Generic.Curve2d.firstDerivativeBoundingBox curveOperations
 
 
 secondDerivativeBoundingBox : Test
 secondDerivativeBoundingBox =
-    Curve2d.secondDerivativeBoundingBox
+    Tests.Generic.Curve2d.secondDerivativeBoundingBox
         { generator = Random.cubicSpline2d
         , secondDerivative = CubicSpline2d.secondDerivative
         , secondDerivativeBoundingBox = CubicSpline2d.secondDerivativeBoundingBox

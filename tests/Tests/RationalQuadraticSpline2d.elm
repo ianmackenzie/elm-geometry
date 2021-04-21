@@ -29,7 +29,7 @@ import Vector2d
 
 curveOperations : Tests.Generic.Curve2d.Operations (RationalQuadraticSpline2d Meters coordinates) coordinates
 curveOperations =
-    { fuzzer = Fuzz.rationalQuadraticSpline2d
+    { generator = Random.rationalQuadraticSpline2d
     , pointOn = RationalQuadraticSpline2d.pointOn
     , boundingBox = RationalQuadraticSpline2d.boundingBox
     , firstDerivative = RationalQuadraticSpline2d.firstDerivative
@@ -169,11 +169,7 @@ boundingBox =
 
 firstDerivativeBoundingBox : Test
 firstDerivativeBoundingBox =
-    Tests.Generic.Curve2d.firstDerivativeBoundingBox
-        { generator = Random.rationalQuadraticSpline2d
-        , firstDerivative = RationalQuadraticSpline2d.firstDerivative
-        , firstDerivativeBoundingBox = RationalQuadraticSpline2d.firstDerivativeBoundingBox
-        }
+    Tests.Generic.Curve2d.firstDerivativeBoundingBox curveOperations
 
 
 secondDerivativeBoundingBox : Test

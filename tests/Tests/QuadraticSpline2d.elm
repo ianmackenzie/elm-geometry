@@ -22,8 +22,23 @@ import Point2d
 import QuadraticSpline2d exposing (QuadraticSpline2d)
 import Quantity exposing (Quantity, zero)
 import Test exposing (Test)
-import Tests.Generic.Curve2d as Curve2d
+import Tests.Generic.Curve2d
 import Tests.Literals exposing (ok)
+
+
+curveOperations : Tests.Generic.Curve2d.Operations (QuadraticSpline2d Meters coordinates) coordinates
+curveOperations =
+    { generator = Random.quadraticSpline2d
+    , pointOn = QuadraticSpline2d.pointOn
+    , boundingBox = QuadraticSpline2d.boundingBox
+    , firstDerivative = QuadraticSpline2d.firstDerivative
+    , firstDerivativeBoundingBox = QuadraticSpline2d.firstDerivativeBoundingBox
+    , scaleAbout = QuadraticSpline2d.scaleAbout
+    , translateBy = QuadraticSpline2d.translateBy
+    , rotateAround = QuadraticSpline2d.rotateAround
+    , mirrorAcross = QuadraticSpline2d.mirrorAcross
+    , numApproximationSegments = QuadraticSpline2d.numApproximationSegments
+    }
 
 
 degenerateSpline : Fuzzer (QuadraticSpline2d Meters coordinates)
@@ -310,8 +325,4 @@ bSplineReproducesSpline =
 
 firstDerivativeBoundingBox : Test
 firstDerivativeBoundingBox =
-    Curve2d.firstDerivativeBoundingBox
-        { generator = Random.quadraticSpline2d
-        , firstDerivative = QuadraticSpline2d.firstDerivative
-        , firstDerivativeBoundingBox = QuadraticSpline2d.firstDerivativeBoundingBox
-        }
+    Tests.Generic.Curve2d.firstDerivativeBoundingBox curveOperations

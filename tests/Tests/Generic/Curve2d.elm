@@ -17,6 +17,7 @@ import Frame2d exposing (Frame2d)
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Length exposing (Length, Meters)
 import LineSegment2d
 import Parameter1d
@@ -39,7 +40,7 @@ type LocalCoordinates
 
 
 type alias Operations curve coordinates =
-    { fuzzer : Fuzzer curve
+    { generator : Generator curve
     , pointOn : curve -> Float -> Point2d Meters coordinates
     , boundingBox : curve -> BoundingBox2d Meters coordinates
     , firstDerivative : curve -> Float -> Vector2d Meters coordinates
@@ -61,11 +62,10 @@ transformations :
 transformations global local placeIn relativeTo =
     Test.describe "Transformations"
         [ Test.describe "scaleAbout"
-            [ Test.fuzz3
-                global.fuzzer
-                (Fuzz.tuple ( Fuzz.point2d, Fuzz.scale ))
-                Fuzz.parameterValue
-                "position"
+            [ Test.check3 "position"
+                global.generator
+                (Random.map2 Tuple.pair Random.point2d Random.scale)
+                Random.parameterValue
                 (\curve ( basePoint, scale ) t ->
                     let
                         scaledCurve =
@@ -82,11 +82,10 @@ transformations global local placeIn relativeTo =
                     in
                     pointOnScaledCurve |> Expect.point2d scaledPoint
                 )
-            , Test.fuzz3
-                global.fuzzer
-                (Fuzz.tuple ( Fuzz.point2d, Fuzz.scale ))
-                Fuzz.parameterValue
-                "firstDerivative"
+            , Test.check3 "firstDerivative"
+                global.generator
+                (Random.map2 Tuple.pair Random.point2d Random.scale)
+                Random.parameterValue
                 (\curve ( basePoint, scale ) t ->
                     let
                         scaledCurve =
@@ -104,11 +103,10 @@ transformations global local placeIn relativeTo =
                     derivativeOfScaledCurve |> Expect.vector2d scaledDerivative
                 )
             ]
-        , Test.fuzz3
-            global.fuzzer
-            Fuzz.vector2d
-            Fuzz.parameterValue
-            "translateBy"
+        , Test.check3 "translateBy"
+            global.generator
+            Random.vector2d
+            Random.parameterValue
             (\curve displacement t ->
                 let
                     translatedCurve =
@@ -125,15 +123,13 @@ transformations global local placeIn relativeTo =
                 in
                 pointOnTranslatedCurve |> Expect.point2d translatedPoint
             )
-        , Test.fuzz3
-            global.fuzzer
-            (Fuzz.tuple
-                ( Fuzz.point2d
-                , Fuzz.map Angle.radians (Fuzz.floatRange (-2 * pi) (2 * pi))
-                )
+        , Test.check3 "rotateAround"
+            global.generator
+            (Random.map2 Tuple.pair
+                Random.point2d
+                (Random.map Angle.radians (Random.float (-2 * pi) (2 * pi)))
             )
-            Fuzz.parameterValue
-            "rotateAround"
+            Random.parameterValue
             (\curve ( centerPoint, angle ) t ->
                 let
                     rotatedCurve =
@@ -150,11 +146,10 @@ transformations global local placeIn relativeTo =
                 in
                 pointOnRotatedCurve |> Expect.point2d rotatedPoint
             )
-        , Test.fuzz3
-            global.fuzzer
-            Fuzz.axis2d
-            Fuzz.parameterValue
-            "mirrorAcross"
+        , Test.check3 "mirrorAcross"
+            global.generator
+            Random.axis2d
+            Random.parameterValue
             (\curve axis t ->
                 let
                     mirroredCurve =
@@ -171,11 +166,10 @@ transformations global local placeIn relativeTo =
                 in
                 pointOnMirroredCurve |> Expect.point2d mirroredPoint
             )
-        , Test.fuzz3
-            global.fuzzer
-            Fuzz.frame2d
-            Fuzz.parameterValue
-            "relativeTo"
+        , Test.check3 "relativeTo"
+            global.generator
+            Random.frame2d
+            Random.parameterValue
             (\globalCurve frame t ->
                 let
                     localCurve =
@@ -192,11 +186,10 @@ transformations global local placeIn relativeTo =
                 in
                 pointOnLocalCurve |> Expect.point2d localPoint
             )
-        , Test.fuzz3
-            local.fuzzer
-            Fuzz.frame2d
-            Fuzz.parameterValue
-            "placeIn"
+        , Test.check3 "placeIn"
+            local.generator
+            Random.frame2d
+            Random.parameterValue
             (\localCurve frame t ->
                 let
                     globalCurve =
@@ -218,10 +211,9 @@ transformations global local placeIn relativeTo =
 
 firstDerivative : Operations curve GlobalCoordinates -> Test
 firstDerivative operations =
-    Test.fuzz2
-        operations.fuzzer
-        Fuzz.parameterValue
-        "Analytical first derivative matches numerical"
+    Test.check2 "Analytical first derivative matches numerical"
+        operations.generator
+        Random.parameterValue
         (\curve t ->
             let
                 analyticalDerivative =
@@ -240,8 +232,8 @@ firstDerivative operations =
 
 approximate : Operations curve GlobalCoordinates -> Test
 approximate operations =
-    Test.fuzz operations.fuzzer
-        "approximate has desired accuracy"
+    Test.check "approximate has desired accuracy"
+        operations.generator
         (\curve ->
             let
                 tolerance =
@@ -276,22 +268,16 @@ approximate operations =
 
 boundingBox : Operations curve coordinates -> Test
 boundingBox operations =
-    Test.fuzz2
-        operations.fuzzer
-        Fuzz.parameterValue
-        "boundingBox"
+    Test.check2 "boundingBox"
+        operations.generator
+        Random.parameterValue
         (\curve t ->
             operations.pointOn curve t
                 |> Expect.point2dContainedIn (operations.boundingBox curve)
         )
 
 
-firstDerivativeBoundingBox :
-    { generator : Generator curve
-    , firstDerivative : curve -> Float -> Vector2d Meters coordinates
-    , firstDerivativeBoundingBox : curve -> VectorBoundingBox2d Meters coordinates
-    }
-    -> Test
+firstDerivativeBoundingBox : Operations curve coordinates -> Test
 firstDerivativeBoundingBox operations =
     Test.check2 "firstDerivativeBoundingBox"
         operations.generator

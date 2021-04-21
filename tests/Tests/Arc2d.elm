@@ -133,7 +133,7 @@ withRadius =
 
 curveOperations : Curve2d.Operations (Arc2d Meters coordinates) coordinates
 curveOperations =
-    { fuzzer = Fuzz.arc2d
+    { generator = Random.arc2d
     , pointOn = Arc2d.pointOn
     , boundingBox = Arc2d.boundingBox
     , firstDerivative = Arc2d.firstDerivative
@@ -200,8 +200,4 @@ boundingBox =
 
 firstDerivativeBoundingBox : Test
 firstDerivativeBoundingBox =
-    Curve2d.firstDerivativeBoundingBox
-        { generator = Random.arc2d
-        , firstDerivative = Arc2d.firstDerivative
-        , firstDerivativeBoundingBox = Arc2d.firstDerivativeBoundingBox
-        }
+    Curve2d.firstDerivativeBoundingBox curveOperations
