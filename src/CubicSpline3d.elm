@@ -1145,7 +1145,7 @@ thirdDerivative spline =
     Vector3d.scaleBy 6 (v2 |> Vector3d.minus v1)
 
 
-{-| Get the bounds on the first deriative of a spline.
+{-| Get the bounds on the first derivative of a spline.
 -}
 firstDerivativeBoundingBox : CubicSpline3d units coordinates -> VectorBoundingBox3d units coordinates
 firstDerivativeBoundingBox spline =
