@@ -1,12 +1,8 @@
 module Tests.RationalQuadraticSpline3d exposing
-    ( approximate
-    , bSplines
-    , boundingBox
-    , firstDerivative
-    , firstDerivativeBoundingBox
+    ( bSplines
+    , genericTests
     , secondDerivativeBoundingBox
     , splitAt
-    , transformations
     )
 
 import CubicSpline3d
@@ -42,18 +38,13 @@ curveOperations =
     }
 
 
-transformations : Test
-transformations =
-    Tests.Generic.Curve3d.transformations
+genericTests : Test
+genericTests =
+    Tests.Generic.Curve3d.tests
         curveOperations
         curveOperations
         RationalQuadraticSpline3d.placeIn
         RationalQuadraticSpline3d.relativeTo
-
-
-firstDerivative : Test
-firstDerivative =
-    Tests.Generic.Curve3d.firstDerivative curveOperations
 
 
 expectAll : List Expectation -> Expectation
@@ -162,16 +153,6 @@ splitAt =
         ]
 
 
-boundingBox : Test
-boundingBox =
-    Tests.Generic.Curve3d.boundingBox curveOperations
-
-
-firstDerivativeBoundingBox : Test
-firstDerivativeBoundingBox =
-    Tests.Generic.Curve3d.firstDerivativeBoundingBox curveOperations
-
-
 secondDerivativeBoundingBox : Test
 secondDerivativeBoundingBox =
     Tests.Generic.Curve3d.secondDerivativeBoundingBox
@@ -179,8 +160,3 @@ secondDerivativeBoundingBox =
         , secondDerivative = RationalQuadraticSpline3d.secondDerivative
         , secondDerivativeBoundingBox = RationalQuadraticSpline3d.secondDerivativeBoundingBox
         }
-
-
-approximate : Test
-approximate =
-    Tests.Generic.Curve3d.approximate curveOperations

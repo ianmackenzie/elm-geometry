@@ -2,12 +2,8 @@ module Tests.Generic.Curve3d exposing
     ( GlobalCoordinates
     , LocalCoordinates
     , Operations
-    , approximate
-    , boundingBox
-    , firstDerivative
-    , firstDerivativeBoundingBox
     , secondDerivativeBoundingBox
-    , transformations
+    , tests
     )
 
 import Angle exposing (Angle)
@@ -52,6 +48,22 @@ type alias Operations curve coordinates =
     , mirrorAcross : Plane3d Meters coordinates -> curve -> curve
     , numApproximationSegments : Length -> curve -> Int
     }
+
+
+tests :
+    Operations globalCurve GlobalCoordinates
+    -> Operations localCurve LocalCoordinates
+    -> (Frame3d Meters GlobalCoordinates { defines : LocalCoordinates } -> localCurve -> globalCurve)
+    -> (Frame3d Meters GlobalCoordinates { defines : LocalCoordinates } -> globalCurve -> localCurve)
+    -> Test
+tests global local placeIn relativeTo =
+    Test.describe "Generic 3D curve tests"
+        [ transformations global local placeIn relativeTo
+        , firstDerivative global
+        , approximate global
+        , boundingBox global
+        , firstDerivativeBoundingBox global
+        ]
 
 
 transformations :

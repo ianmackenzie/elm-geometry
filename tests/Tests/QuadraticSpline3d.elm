@@ -3,7 +3,7 @@ module Tests.QuadraticSpline3d exposing
     , arcLengthMatchesAnalytical
     , bSplineReproducesSpline
     , curvedSpline
-    , firstDerivativeBoundingBox
+    , genericTests
     , pointAtArcLengthIsEnd
     , pointAtZeroLengthIsStart
     )
@@ -14,6 +14,7 @@ import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Geometry.Random as Random
+import Geometry.Types exposing (QuadraticSpline3d)
 import Length exposing (Length, Meters, inMeters, meters)
 import Point3d
 import QuadraticSpline2d exposing (QuadraticSpline2d)
@@ -37,6 +38,15 @@ curveOperations =
     , mirrorAcross = QuadraticSpline3d.mirrorAcross
     , numApproximationSegments = QuadraticSpline3d.numApproximationSegments
     }
+
+
+genericTests : Test
+genericTests =
+    Tests.Generic.Curve3d.tests
+        curveOperations
+        curveOperations
+        QuadraticSpline3d.placeIn
+        QuadraticSpline3d.relativeTo
 
 
 analyticalLength : QuadraticSpline3d Meters coordinates -> Length
@@ -207,8 +217,3 @@ bSplineReproducesSpline =
                 _ ->
                     Expect.fail "Expected a single B-spline segment"
         )
-
-
-firstDerivativeBoundingBox : Test
-firstDerivativeBoundingBox =
-    Tests.Generic.Curve3d.firstDerivativeBoundingBox curveOperations

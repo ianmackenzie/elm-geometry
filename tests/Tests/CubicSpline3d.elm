@@ -1,9 +1,8 @@
 module Tests.CubicSpline3d exposing
-    ( approximate
-    , arcLengthMatchesAnalytical
+    ( arcLengthMatchesAnalytical
     , bSplineReproducesSpline
-    , firstDerivativeBoundingBox
     , fromEndpointsReproducesSpline
+    , genericTests
     , pointAtArcLengthIsEnd
     , pointAtZeroLengthIsStart
     , secondDerivativeBoundingBox
@@ -15,10 +14,11 @@ import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Geometry.Random as Random
+import Geometry.Types exposing (CubicSpline3d)
 import Length exposing (Meters, meters)
 import Quantity exposing (zero)
 import Test exposing (Test)
-import Tests.Generic.Curve3d as Curve3d
+import Tests.Generic.Curve3d
 import Tests.QuadraticSpline3d
 import Vector3d
 
@@ -141,7 +141,7 @@ bSplineReproducesSpline =
         )
 
 
-curveOperations : Curve3d.Operations (CubicSpline3d Meters coordinates) coordinates
+curveOperations : Tests.Generic.Curve3d.Operations (CubicSpline3d Meters coordinates) coordinates
 curveOperations =
     { generator = Random.cubicSpline3d
     , pointOn = CubicSpline3d.pointOn
@@ -156,19 +156,18 @@ curveOperations =
     }
 
 
-approximate : Test
-approximate =
-    Curve3d.approximate curveOperations
-
-
-firstDerivativeBoundingBox : Test
-firstDerivativeBoundingBox =
-    Curve3d.firstDerivativeBoundingBox curveOperations
+genericTests : Test
+genericTests =
+    Tests.Generic.Curve3d.tests
+        curveOperations
+        curveOperations
+        CubicSpline3d.placeIn
+        CubicSpline3d.relativeTo
 
 
 secondDerivativeBoundingBox : Test
 secondDerivativeBoundingBox =
-    Curve3d.secondDerivativeBoundingBox
+    Tests.Generic.Curve3d.secondDerivativeBoundingBox
         { generator = Random.cubicSpline3d
         , secondDerivative = CubicSpline3d.secondDerivative
         , secondDerivativeBoundingBox = CubicSpline3d.secondDerivativeBoundingBox

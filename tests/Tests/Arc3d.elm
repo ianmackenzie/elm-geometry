@@ -1,13 +1,11 @@
 module Tests.Arc3d exposing
-    ( boundingBox
-    , evaluateHalfIsMidpoint
+    ( evaluateHalfIsMidpoint
     , evaluateOneIsEndPoint
     , evaluateZeroIsStartPoint
-    , firstDerivativeBoundingBox
+    , genericTests
     , projectInto
     , reverseFlipsDirection
     , reverseKeepsMidpoint
-    , transformations
     )
 
 import Angle
@@ -20,7 +18,7 @@ import Geometry.Random as Random
 import Length exposing (Meters)
 import Point3d
 import Test exposing (Test)
-import Tests.Generic.Curve3d as Curve3d
+import Tests.Generic.Curve3d
 
 
 evaluateZeroIsStartPoint : Test
@@ -91,7 +89,7 @@ projectInto =
         )
 
 
-curveOperations : Curve3d.Operations (Arc3d Meters coordinates) coordinates
+curveOperations : Tests.Generic.Curve3d.Operations (Arc3d Meters coordinates) coordinates
 curveOperations =
     { generator = Random.arc3d
     , pointOn = Arc3d.pointOn
@@ -106,32 +104,10 @@ curveOperations =
     }
 
 
-transformations : Test
-transformations =
-    Curve3d.transformations
+genericTests : Test
+genericTests =
+    Tests.Generic.Curve3d.tests
         curveOperations
         curveOperations
         Arc3d.placeIn
         Arc3d.relativeTo
-
-
-approximate : Test
-approximate =
-    Curve3d.approximate curveOperations
-
-
-boundingBox : Test
-boundingBox =
-    Test.fuzz2
-        Fuzz.arc3d
-        (Fuzz.floatRange 0 1)
-        "Every point on an arc is within its bounding box"
-        (\arc parameterValue ->
-            Arc3d.pointOn arc parameterValue
-                |> Expect.point3dContainedIn (Arc3d.boundingBox arc)
-        )
-
-
-firstDerivativeBoundingBox : Test
-firstDerivativeBoundingBox =
-    Curve3d.firstDerivativeBoundingBox curveOperations

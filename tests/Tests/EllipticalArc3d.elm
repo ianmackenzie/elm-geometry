@@ -1,10 +1,8 @@
 module Tests.EllipticalArc3d exposing
-    ( boundingBox
-    , evaluateOneIsEndPoint
+    ( evaluateOneIsEndPoint
     , evaluateZeroIsStartPoint
     , projectInto
     , signedDistanceAlong
-    , transformations
     )
 
 import Angle
@@ -17,7 +15,7 @@ import Geometry.Random as Random
 import Length exposing (Meters)
 import Point3d
 import Test exposing (Test)
-import Tests.Generic.Curve3d as Curve3d
+import Tests.Generic.Curve3d
 
 
 evaluateZeroIsStartPoint : Test
@@ -59,7 +57,7 @@ projectInto =
         )
 
 
-curveOperations : Curve3d.Operations (EllipticalArc3d Meters coordinates) coordinates
+curveOperations : Tests.Generic.Curve3d.Operations (EllipticalArc3d Meters coordinates) coordinates
 curveOperations =
     { generator = Random.ellipticalArc3d
     , pointOn = EllipticalArc3d.pointOn
@@ -74,30 +72,13 @@ curveOperations =
     }
 
 
-transformations : Test
-transformations =
-    Curve3d.transformations
+genericTests : Test
+genericTests =
+    Tests.Generic.Curve3d.tests
         curveOperations
         curveOperations
         EllipticalArc3d.placeIn
         EllipticalArc3d.relativeTo
-
-
-approximate : Test
-approximate =
-    Curve3d.approximate curveOperations
-
-
-boundingBox : Test
-boundingBox =
-    Test.fuzz2
-        Fuzz.ellipticalArc3d
-        (Fuzz.floatRange 0 1)
-        "Every point on an arc is within its bounding box"
-        (\arc parameterValue ->
-            EllipticalArc3d.pointOn arc parameterValue
-                |> Expect.point3dContainedIn (EllipticalArc3d.boundingBox arc)
-        )
 
 
 signedDistanceAlong : Test
