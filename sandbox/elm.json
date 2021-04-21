@@ -4,7 +4,6 @@
         "src",
         "../src",
         "../../elm-geometry/tests",
-        "../../elm-geometry-svg/src",
         "../../elm-2d-drawing/src"
     ],
     "elm-version": "0.19.1",
@@ -24,8 +23,8 @@
             "ianmackenzie/elm-float-extra": "1.1.0",
             "ianmackenzie/elm-interval": "2.0.0",
             "ianmackenzie/elm-triangular-mesh": "1.0.4",
-            "ianmackenzie/elm-units": "2.7.0",
-            "ianmackenzie/elm-units-interval": "2.1.0",
+            "ianmackenzie/elm-units": "2.9.0",
+            "ianmackenzie/elm-units-interval": "2.3.0",
             "mdgriffith/elm-ui": "1.1.8",
             "mpizenberg/elm-pointer-events": "4.0.2",
             "robinheghan/murmur3": "1.0.0"
