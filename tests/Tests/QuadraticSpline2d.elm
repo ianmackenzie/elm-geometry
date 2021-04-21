@@ -4,7 +4,7 @@ module Tests.QuadraticSpline2d exposing
     , curvedSpline
     , degenerateSpline
     , exampleSpline
-    , firstDerivativeBoundingBox
+    , genericTests
     , line
     , parameterization
     )
@@ -323,6 +323,10 @@ bSplineReproducesSpline =
         )
 
 
-firstDerivativeBoundingBox : Test
-firstDerivativeBoundingBox =
-    Tests.Generic.Curve2d.firstDerivativeBoundingBox curveOperations
+genericTests : Test
+genericTests =
+    Tests.Generic.Curve2d.tests
+        curveOperations
+        curveOperations
+        QuadraticSpline2d.placeIn
+        QuadraticSpline2d.relativeTo

@@ -2,8 +2,8 @@ module Tests.CubicSpline2d exposing
     ( arcLengthMatchesAnalytical
     , bSplineReproducesSpline
     , bSplinesAreContinuous
-    , firstDerivativeBoundingBox
     , fromEndpointsReproducesSpline
+    , genericTests
     , pointAtArcLengthIsEnd
     , pointAtZeroLengthIsStart
     , secondDerivativeBoundingBox
@@ -37,6 +37,15 @@ curveOperations =
     , mirrorAcross = CubicSpline2d.mirrorAcross
     , numApproximationSegments = CubicSpline2d.numApproximationSegments
     }
+
+
+genericTests : Test
+genericTests =
+    Tests.Generic.Curve2d.tests
+        curveOperations
+        curveOperations
+        CubicSpline2d.placeIn
+        CubicSpline2d.relativeTo
 
 
 fromEndpointsReproducesSpline : Test
@@ -228,11 +237,6 @@ bSplinesAreContinuous =
                             , firstEndDerivative |> Expect.vector2d secondStartDerivative
                             ]
                     )
-
-
-firstDerivativeBoundingBox : Test
-firstDerivativeBoundingBox =
-    Tests.Generic.Curve2d.firstDerivativeBoundingBox curveOperations
 
 
 secondDerivativeBoundingBox : Test

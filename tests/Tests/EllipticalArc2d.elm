@@ -1,13 +1,9 @@
 module Tests.EllipticalArc2d exposing
-    ( approximate
-    , boundingBox
-    , firstDerivative
-    , firstDerivativeBoundingBox
-    , fromEndpointsReplicatesArc
+    ( fromEndpointsReplicatesArc
+    , genericTests
     , reproducibleArc
     , reverseKeepsMidpoint
     , signedDistanceAlong
-    , transformations
     )
 
 import Angle
@@ -143,35 +139,13 @@ curveOperations =
     }
 
 
-transformations : Test
-transformations =
-    Tests.Generic.Curve2d.transformations
+genericTests : Test
+genericTests =
+    Tests.Generic.Curve2d.tests
         curveOperations
         curveOperations
         EllipticalArc2d.placeIn
         EllipticalArc2d.relativeTo
-
-
-firstDerivative : Test
-firstDerivative =
-    Tests.Generic.Curve2d.firstDerivative curveOperations
-
-
-approximate : Test
-approximate =
-    Tests.Generic.Curve2d.approximate curveOperations
-
-
-boundingBox : Test
-boundingBox =
-    Test.fuzz2
-        Fuzz.ellipticalArc2d
-        (Fuzz.floatRange 0 1)
-        "Every point on an arc is within its bounding box"
-        (\arc parameterValue ->
-            EllipticalArc2d.pointOn arc parameterValue
-                |> Expect.point2dContainedIn (EllipticalArc2d.boundingBox arc)
-        )
 
 
 signedDistanceAlong : Test
@@ -192,8 +166,3 @@ signedDistanceAlong =
             in
             projectedDistance |> Expect.quantityContainedIn distanceInterval
         )
-
-
-firstDerivativeBoundingBox : Test
-firstDerivativeBoundingBox =
-    Tests.Generic.Curve2d.firstDerivativeBoundingBox curveOperations

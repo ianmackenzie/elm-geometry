@@ -1,16 +1,12 @@
 module Tests.Arc2d exposing
-    ( approximate
-    , boundingBox
-    , evaluateHalfIsMidpoint
+    ( evaluateHalfIsMidpoint
     , evaluateOneIsEndPoint
     , evaluateZeroIsStartPoint
-    , firstDerivative
-    , firstDerivativeBoundingBox
     , from
+    , genericTests
     , mirroredCenterPoint
     , reverseFlipsDirection
     , reverseKeepsMidpoint
-    , transformations
     , withRadius
     )
 
@@ -26,7 +22,7 @@ import Point2d
 import Quantity exposing (zero)
 import SweptAngle
 import Test exposing (Test)
-import Tests.Generic.Curve2d as Curve2d
+import Tests.Generic.Curve2d
 
 
 evaluateZeroIsStartPoint : Test
@@ -131,7 +127,7 @@ withRadius =
         )
 
 
-curveOperations : Curve2d.Operations (Arc2d Meters coordinates) coordinates
+curveOperations : Tests.Generic.Curve2d.Operations (Arc2d Meters coordinates) coordinates
 curveOperations =
     { generator = Random.arc2d
     , pointOn = Arc2d.pointOn
@@ -146,23 +142,13 @@ curveOperations =
     }
 
 
-transformations : Test
-transformations =
-    Curve2d.transformations
+genericTests : Test
+genericTests =
+    Tests.Generic.Curve2d.tests
         curveOperations
         curveOperations
         Arc2d.placeIn
         Arc2d.relativeTo
-
-
-firstDerivative : Test
-firstDerivative =
-    Curve2d.firstDerivative curveOperations
-
-
-approximate : Test
-approximate =
-    Curve2d.approximate curveOperations
 
 
 mirroredCenterPoint : Test
@@ -184,20 +170,3 @@ mirroredCenterPoint =
             else
                 Expect.pass
         )
-
-
-boundingBox : Test
-boundingBox =
-    Test.fuzz2
-        Fuzz.arc2d
-        (Fuzz.floatRange 0 1)
-        "Every point on an arc is within its bounding box"
-        (\arc parameterValue ->
-            Arc2d.pointOn arc parameterValue
-                |> Expect.point2dContainedIn (Arc2d.boundingBox arc)
-        )
-
-
-firstDerivativeBoundingBox : Test
-firstDerivativeBoundingBox =
-    Curve2d.firstDerivativeBoundingBox curveOperations

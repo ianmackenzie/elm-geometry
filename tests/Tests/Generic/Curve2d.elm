@@ -2,12 +2,8 @@ module Tests.Generic.Curve2d exposing
     ( GlobalCoordinates
     , LocalCoordinates
     , Operations
-    , approximate
-    , boundingBox
-    , firstDerivative
-    , firstDerivativeBoundingBox
     , secondDerivativeBoundingBox
-    , transformations
+    , tests
     )
 
 import Angle exposing (Angle)
@@ -51,6 +47,22 @@ type alias Operations curve coordinates =
     , mirrorAcross : Axis2d Meters coordinates -> curve -> curve
     , numApproximationSegments : Length -> curve -> Int
     }
+
+
+tests :
+    Operations globalCurve GlobalCoordinates
+    -> Operations localCurve LocalCoordinates
+    -> (Frame2d Meters GlobalCoordinates { defines : LocalCoordinates } -> localCurve -> globalCurve)
+    -> (Frame2d Meters GlobalCoordinates { defines : LocalCoordinates } -> globalCurve -> localCurve)
+    -> Test
+tests global local placeIn relativeTo =
+    Test.describe "Generic 2D curve tests"
+        [ transformations global local placeIn relativeTo
+        , firstDerivative global
+        , approximate global
+        , boundingBox global
+        , firstDerivativeBoundingBox global
+        ]
 
 
 transformations :

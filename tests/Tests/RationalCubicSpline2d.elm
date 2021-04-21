@@ -1,12 +1,8 @@
 module Tests.RationalCubicSpline2d exposing
-    ( approximate
-    , bSplines
-    , boundingBox
-    , firstDerivative
-    , firstDerivativeBoundingBox
+    ( bSplines
+    , genericTests
     , secondDerivativeBoundingBox
     , splitAt
-    , transformations
     )
 
 import CubicSpline2d
@@ -42,18 +38,13 @@ curveOperations =
     }
 
 
-transformations : Test
-transformations =
-    Tests.Generic.Curve2d.transformations
+genericTests : Test
+genericTests =
+    Tests.Generic.Curve2d.tests
         curveOperations
         curveOperations
         RationalCubicSpline2d.placeIn
         RationalCubicSpline2d.relativeTo
-
-
-firstDerivative : Test
-firstDerivative =
-    Tests.Generic.Curve2d.firstDerivative curveOperations
 
 
 expectAll : List Expectation -> Expectation
@@ -163,16 +154,6 @@ splitAt =
         ]
 
 
-boundingBox : Test
-boundingBox =
-    Tests.Generic.Curve2d.boundingBox curveOperations
-
-
-firstDerivativeBoundingBox : Test
-firstDerivativeBoundingBox =
-    Tests.Generic.Curve2d.firstDerivativeBoundingBox curveOperations
-
-
 secondDerivativeBoundingBox : Test
 secondDerivativeBoundingBox =
     Tests.Generic.Curve2d.secondDerivativeBoundingBox
@@ -180,8 +161,3 @@ secondDerivativeBoundingBox =
         , secondDerivative = RationalCubicSpline2d.secondDerivative
         , secondDerivativeBoundingBox = RationalCubicSpline2d.secondDerivativeBoundingBox
         }
-
-
-approximate : Test
-approximate =
-    Tests.Generic.Curve2d.approximate curveOperations
