@@ -187,6 +187,8 @@ firstDerivative spline parameterValue =
     Quantity.multiplyBy 3 (Quantity.interpolateFrom w1 w2 parameterValue)
 
 
+{-| Evaluate the second derivative of a spline at a given parameter value.
+-}
 secondDerivative : CubicSpline1d units -> Float -> Quantity Float units
 secondDerivative spline parameterValue =
     let

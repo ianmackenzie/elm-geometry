@@ -837,6 +837,8 @@ firstDerivative spline t =
         |> Vector3d.scaleBy (3 * w123 * w234 / (w1234 * w1234))
 
 
+{-| Evaluate the second derivative of a spline at a given parameter value.
+-}
 secondDerivative : RationalCubicSpline3d units coordinates -> Float -> Vector3d units coordinates
 secondDerivative spline t =
     let

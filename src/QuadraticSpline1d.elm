@@ -167,6 +167,9 @@ firstDerivativeBoundingBox spline =
     Interval.from v1 v2
 
 
+{-| Get the second derivative of a spline (for a quadratic spline, this is a
+constant).
+-}
 secondDerivative : QuadraticSpline1d units -> Quantity Float units
 secondDerivative spline =
     let
