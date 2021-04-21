@@ -12,13 +12,13 @@ module RationalQuadraticSpline3d exposing
     , bSplineSegments, bSplineIntervals
     , startPoint, endPoint, startDerivative, endDerivative, boundingBox
     , firstControlPoint, secondControlPoint, thirdControlPoint, firstWeight, secondWeight, thirdWeight
-    , pointOn, firstDerivative
+    , pointOn
     , segments, approximate
     , reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
     , at, at_
     , relativeTo, placeIn
     , bisect, splitAt
-    , numApproximationSegments, secondDerivative, firstDerivativeBoundingBox, secondDerivativeBoundingBox, maxSecondDerivativeMagnitude
+    , numApproximationSegments, firstDerivative, secondDerivative, firstDerivativeBoundingBox, secondDerivativeBoundingBox, maxSecondDerivativeMagnitude
     )
 
 {-| A `RationalQuadraticSpline3d` is a rational quadratic Bézier curve in 3D
@@ -56,7 +56,7 @@ functionality for
 
 # Evaluation
 
-@docs pointOn, firstDerivative
+@docs pointOn
 
 
 # Linear approximation
