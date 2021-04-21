@@ -17,13 +17,13 @@ import Circle2d
 import Color exposing (Color)
 import Drawing2d
 import Drawing2d.Attributes as Attributes
+import Generic.Polygon2d as Polygon2d exposing (Polygon2d)
 import Html exposing (Html)
 import Html.Attributes
 import Html.Events
 import InputWidget as InputWidget
 import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
-import Generic.Polygon2d as Polygon2d exposing (Polygon2d)
 import Polygon2d.Random as Random
 import Quantity exposing (Quantity)
 import Random exposing (Generator)
