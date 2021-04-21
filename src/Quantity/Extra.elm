@@ -8,7 +8,6 @@ module Quantity.Extra exposing
     )
 
 import Angle exposing (Angle)
-import Float.Extra as Float
 import Quantity exposing (Quantity(..))
 
 

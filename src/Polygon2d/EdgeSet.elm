@@ -18,7 +18,7 @@ module Polygon2d.EdgeSet exposing
 
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
-import Quantity exposing (Quantity)
+import Quantity
 import Quantity.Extra as Quantity
 
 

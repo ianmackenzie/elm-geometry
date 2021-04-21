@@ -1,10 +1,8 @@
 module Polygon2d.Refinement exposing (refine)
 
-import Array exposing (Array)
+import Array
 import Dict exposing (Dict)
-import LineSegment2d exposing (LineSegment2d)
-import Point2d exposing (Point2d, coordinates)
-import Quantity exposing (Quantity)
+import Point2d exposing (Point2d)
 import TriangularMesh exposing (TriangularMesh)
 
 

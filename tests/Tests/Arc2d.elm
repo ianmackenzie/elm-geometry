@@ -14,7 +14,7 @@ module Tests.Arc2d exposing
     , withRadius
     )
 
-import Angle exposing (Angle)
+import Angle
 import Arc2d exposing (Arc2d)
 import Expect
 import Fuzz
@@ -22,9 +22,9 @@ import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Geometry.Random as Random
 import Length exposing (Meters, meters)
-import Point2d exposing (Point2d)
-import Quantity exposing (Quantity, zero)
-import SweptAngle exposing (SweptAngle)
+import Point2d
+import Quantity exposing (zero)
+import SweptAngle
 import Test exposing (Test)
 import Tests.Generic.Curve2d as Curve2d
 

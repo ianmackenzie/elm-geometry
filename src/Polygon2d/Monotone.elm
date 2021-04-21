@@ -16,14 +16,14 @@ module Polygon2d.Monotone exposing
 
 import Array exposing (Array)
 import Dict exposing (Dict)
-import Geometry.Types as Types exposing (Polygon(..), Polygon2d)
-import LineSegment2d exposing (LineSegment2d)
+import Geometry.Types exposing (Polygon(..))
+import LineSegment2d
 import Point2d exposing (Point2d)
 import Polygon2d.EdgeSet as EdgeSet exposing (EdgeSet)
-import Quantity exposing (Quantity, Squared, Unitless)
+import Quantity exposing (Quantity, Squared)
 import Quantity.Extra as Quantity
 import Set exposing (Set)
-import Triangle2d exposing (Triangle2d)
+import Triangle2d
 import TriangularMesh exposing (TriangularMesh)
 
 
