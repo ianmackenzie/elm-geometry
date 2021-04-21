@@ -3,6 +3,7 @@ module Tests.Generic.Curve3d exposing
     , LocalCoordinates
     , Operations
     , approximate
+    , boundingBox
     , firstDerivative
     , firstDerivativeBoundingBox
     , secondDerivativeBoundingBox
@@ -248,6 +249,18 @@ approximate operations =
                     List.foldl Quantity.max Quantity.zero errors
             in
             maxError |> Expect.quantityLessThan tolerance
+        )
+
+
+boundingBox : Operations curve coordinates -> Test
+boundingBox operations =
+    Test.fuzz2
+        operations.fuzzer
+        Fuzz.parameterValue
+        "boundingBox"
+        (\curve t ->
+            operations.pointOn curve t
+                |> Expect.point3dContainedIn (operations.boundingBox curve)
         )
 
 
