@@ -168,14 +168,13 @@ subdivisionLevels subdivisionFunction startPoint endPoint =
 
 createEdge :
     Config vertex units coordinates
-    -> TriangularMesh vertex
     -> Int
     -> Int
     -> vertex
     -> vertex
     -> State vertex units coordinates
     -> ( Edge vertex units coordinates, State vertex units coordinates )
-createEdge config triangularMesh i j startVertex endVertex state0 =
+createEdge config i j startVertex endVertex state0 =
     let
         startPoint =
             config.vertexPosition startVertex
@@ -235,7 +234,7 @@ getOrCreateEdge config triangularMesh i j state0 =
             of
                 ( Just startVertex, Just endVertex ) ->
                     Tuple.mapFirst Just <|
-                        createEdge config triangularMesh i j startVertex endVertex state0
+                        createEdge config i j startVertex endVertex state0
 
                 _ ->
                     -- Shouldn't happen
