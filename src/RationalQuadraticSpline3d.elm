@@ -97,7 +97,6 @@ you are writing low-level geometric algorithms.
 -}
 
 import Angle exposing (Angle)
-import ArcLengthParameterization exposing (ArcLengthParameterization)
 import Axis3d exposing (Axis3d)
 import BoundingBox3d exposing (BoundingBox3d)
 import Curve
@@ -106,7 +105,6 @@ import Float.Extra as Float
 import Frame3d exposing (Frame3d)
 import Geometry.Types as Types
 import Interval exposing (Interval)
-import LineSegment3d exposing (LineSegment3d)
 import Parameter1d
 import Point3d exposing (Point3d)
 import Polyline3d exposing (Polyline3d)

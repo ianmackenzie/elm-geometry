@@ -103,7 +103,7 @@ import Quantity.Extra as Quantity
 import Quantity.Interval as Interval
 import SketchPlane3d exposing (SketchPlane3d)
 import Unsafe.Direction3d as Direction3d
-import Vector2d exposing (Vector2d)
+import Vector2d
 import Vector3d exposing (Vector3d)
 import VectorBoundingBox3d exposing (VectorBoundingBox3d)
 

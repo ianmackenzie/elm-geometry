@@ -138,11 +138,10 @@ useful when writing generic/library code.
 
 import Angle exposing (Angle)
 import Direction2d exposing (Direction2d)
-import Float.Extra as Float
 import Geometry.Types as Types exposing (Axis2d, Frame2d)
 import Length exposing (Meters)
 import Pixels exposing (Pixels)
-import Quantity exposing (Quantity(..), Rate, Squared, Unitless)
+import Quantity exposing (Quantity(..), Rate, Unitless)
 import Quantity.Extra as Quantity
 import Vector2d exposing (Vector2d)
 

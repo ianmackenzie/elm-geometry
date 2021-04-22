@@ -15,7 +15,7 @@ import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Geometry.Random as Random
 import Interval
-import Length exposing (Length, Meters, inMeters, meters)
+import Length exposing (Meters, meters)
 import Point2d
 import Quantity exposing (zero)
 import Test exposing (Test)

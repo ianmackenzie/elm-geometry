@@ -98,24 +98,19 @@ you are writing low-level geometric algorithms.
 -}
 
 import Angle exposing (Angle)
-import ArcLengthParameterization exposing (ArcLengthParameterization)
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import CubicSpline1d exposing (CubicSpline1d)
 import CubicSpline2d exposing (CubicSpline2d)
-import CubicSpline3d exposing (CubicSpline3d)
 import Curve
 import Direction2d exposing (Direction2d)
 import Float.Extra as Float
 import Frame2d exposing (Frame2d)
 import Geometry.Types as Types
 import Interval exposing (Interval)
-import LineSegment2d exposing (LineSegment2d)
 import Parameter1d
 import Point2d exposing (Point2d)
-import Point3d exposing (Point3d)
 import Polyline2d exposing (Polyline2d)
-import QuadraticSpline2d exposing (QuadraticSpline2d)
 import Quantity exposing (Quantity(..), Rate, Unitless)
 import Quantity.Interval
 import Vector2d exposing (Vector2d)

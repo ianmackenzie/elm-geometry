@@ -27,7 +27,6 @@ module QuadraticSpline1d exposing
     )
 
 import Geometry.Types as Types
-import Parameter1d
 import Quantity exposing (Quantity(..), Rate)
 import Quantity.Interval as Interval exposing (Interval)
 

@@ -5,15 +5,14 @@ module Tests.RationalQuadraticSpline3d exposing
     , splitAt
     )
 
-import CubicSpline3d
 import Expect exposing (Expectation, FloatingPointTolerance(..))
 import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Geometry.Random as Random
 import Interval
-import Length exposing (Length, Meters)
-import Point3d exposing (Point3d)
+import Length exposing (Meters)
+import Point3d
 import Quantity
 import Random
 import RationalQuadraticSpline3d exposing (RationalQuadraticSpline3d)

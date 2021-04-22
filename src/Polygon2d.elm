@@ -81,7 +81,7 @@ import Polygon2d.Monotone as Monotone
 import Polygon2d.Refinement as Refinement
 import Quantity exposing (Quantity(..), Rate, Squared)
 import Quantity.Extra as Quantity
-import Triangle2d exposing (Triangle2d)
+import Triangle2d
 import TriangularMesh exposing (TriangularMesh)
 import Vector2d exposing (Vector2d)
 

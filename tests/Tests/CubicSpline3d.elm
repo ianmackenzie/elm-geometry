@@ -20,7 +20,6 @@ import Quantity exposing (zero)
 import Test exposing (Test)
 import Tests.Generic.Curve3d
 import Tests.QuadraticSpline3d
-import Vector3d
 
 
 fromEndpointsReproducesSpline : Test

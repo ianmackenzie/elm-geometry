@@ -144,7 +144,7 @@ import Geometry.Types as Types exposing (Axis3d, Frame3d, Plane3d, SketchPlane3d
 import Length exposing (Meters)
 import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
-import Quantity exposing (Quantity(..), Rate, Squared, Unitless)
+import Quantity exposing (Quantity(..), Rate, Unitless)
 import Vector3d exposing (Vector3d)
 
 
