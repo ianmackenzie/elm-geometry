@@ -3,7 +3,7 @@ module Geometry.Fuzz exposing
     , length, positiveLength, angle, quantityRange
     , point2d, point3d, vector2d, vector3d, direction2d, direction3d, boundingBox2d, boundingBox3d
     , axis2d, axis3d, frame2d, frame3d, plane3d, sketchPlane3d
-    , lineSegment2d, lineSegment3d, triangle2d, triangle3d, rectangle2d, block3d, polyline2d, polyline3d, polygon2d
+    , lineSegment2d, lineSegment3d, triangle2d, triangle3d, rectangle2d, rectangle3d, block3d, polyline2d, polyline3d, polygon2d
     , arc2d, arc3d, circle2d, circle3d, cubicSpline2d, cubicSpline3d, cylinder3d, cone3d, ellipse2d, ellipticalArc2d, ellipticalArc3d, ellipsoid3d, quadraticSpline2d, quadraticSpline3d, rationalCubicSpline2d, rationalCubicSpline3d, rationalQuadraticSpline2d, rationalQuadraticSpline3d, sphere3d
     )
 
@@ -47,7 +47,7 @@ running into any naming conflicts.
 
 # Simple geometry
 
-@docs lineSegment2d, lineSegment3d, triangle2d, triangle3d, rectangle2d, block3d, polyline2d, polyline3d, polygon2d
+@docs lineSegment2d, lineSegment3d, triangle2d, triangle3d, rectangle2d, rectangle3d, block3d, polyline2d, polyline3d, polygon2d
 
 
 # Complex geometry
@@ -97,6 +97,7 @@ import RationalCubicSpline3d exposing (RationalCubicSpline3d)
 import RationalQuadraticSpline2d exposing (RationalQuadraticSpline2d)
 import RationalQuadraticSpline3d exposing (RationalQuadraticSpline3d)
 import Rectangle2d exposing (Rectangle2d)
+import Rectangle3d exposing (Rectangle3d)
 import Shrink
 import SketchPlane3d exposing (SketchPlane3d)
 import Sphere3d exposing (Sphere3d)
@@ -569,6 +570,13 @@ rectangle2d =
             Rectangle2d.centeredOn axes ( width, height )
     in
     Fuzz.map3 rectangle frame2d positiveLength positiveLength
+
+
+{-| Generate a random `Rectangle3d`.
+-}
+rectangle3d : Fuzzer (Rectangle3d Meters coordinates)
+rectangle3d =
+    Fuzz.map2 Rectangle3d.on sketchPlane3d rectangle2d
 
 
 {-| Generate a random `Block3d`.

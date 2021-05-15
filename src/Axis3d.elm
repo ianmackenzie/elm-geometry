@@ -12,7 +12,7 @@ module Axis3d exposing
     , x, y, z
     , through, withDirection, throughPoints, on
     , originPoint, direction
-    , intersectionWithPlane, intersectionWithSphere
+    , intersectionWithPlane, intersectionWithRectangle, intersectionWithSphere
     , reverse, moveTo, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
     , at, at_
     , relativeTo, placeIn, projectInto
@@ -46,7 +46,7 @@ by an origin point and direction. Axes have several uses, such as:
 
 # Intersection
 
-@docs intersectionWithPlane, intersectionWithSphere
+@docs intersectionWithPlane, intersectionWithRectangle, intersectionWithSphere
 
 
 # Transformations
@@ -68,9 +68,10 @@ by an origin point and direction. Axes have several uses, such as:
 import Angle exposing (Angle)
 import Axis2d exposing (Axis2d)
 import Direction3d exposing (Direction3d)
-import Geometry.Types as Types exposing (Frame3d, Plane3d, SketchPlane3d, Sphere3d, Triangle3d)
+import Geometry.Types as Types exposing (Frame3d, LineSegment3d, Plane3d, Rectangle3d, SketchPlane3d, Sphere3d, Triangle3d)
 import Point3d exposing (Point3d)
 import Quantity exposing (Quantity(..), Rate)
+import Unsafe.Direction3d as Direction3d
 import Vector3d exposing (Vector3d)
 
 
@@ -306,6 +307,44 @@ intersectionWithTriangle triangle axis =
                     |> Point3d.translateBy (Vector3d.scaleBy u e1)
                     |> Point3d.translateBy (Vector3d.scaleBy v e2)
                     |> Just
+
+
+{-| Try to find the unique intersection point of an axis with a rectangle. If
+the axis does not intersect the rectangle, or if it is coplanar with it (lying
+perfectly in the plane of the rectangle), returns `Nothing`.
+-}
+intersectionWithRectangle : Rectangle3d units coordinates -> Axis3d units coordinates -> Maybe (Point3d units coordinates)
+intersectionWithRectangle (Types.Rectangle3d { axes, dimensions }) axis =
+    let
+        (Types.SketchPlane3d sketchPlane) =
+            axes
+
+        plane =
+            Types.Plane3d
+                { normalDirection =
+                    Direction3d.unsafeCrossProduct
+                        sketchPlane.xDirection
+                        sketchPlane.yDirection
+                , originPoint = sketchPlane.originPoint
+                }
+    in
+    case intersectionWithPlane plane axis of
+        (Just point) as result ->
+            let
+                ( Quantity width, Quantity height ) =
+                    dimensions
+
+                (Types.Point2d p) =
+                    Point3d.projectInto (Types.SketchPlane3d sketchPlane) point
+            in
+            if abs p.x / width <= 0.5 && abs p.y / height <= 0.5 then
+                result
+
+            else
+                Nothing
+
+        Nothing ->
+            Nothing
 
 
 {-| Attempt to find the intersection of an axis with a sphere. The two points
