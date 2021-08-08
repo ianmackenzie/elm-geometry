@@ -1,4 +1,4 @@
-module Tests.Vector3d exposing (sum, vectorScaling)
+module Tests.Vector3d exposing (perpendicularTo, sum, vectorScaling)
 
 import Expect
 import Fuzz
@@ -45,3 +45,12 @@ vectorScaling =
                         |> Vector3d.length
                         |> Expect.quantity (Quantity.float 1)
         ]
+
+
+perpendicularTo : Test
+perpendicularTo =
+    Test.fuzz Fuzz.vector3d "perpendicularTo works properly" <|
+        \vector ->
+            Vector3d.perpendicularTo vector
+                |> Vector3d.dot vector
+                |> Expect.quantity Quantity.zero
