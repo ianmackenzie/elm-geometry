@@ -530,7 +530,7 @@ perpendicularTo (Types.Vector3d v) =
         Types.Vector3d { x = v.z, y = 0, z = -v.x }
 
     else
-        Types.Vector3d { x = -v.y, z = v.x, y = 0 }
+        Types.Vector3d { x = -v.y, y = v.x, z = 0 }
 
 
 {-| Construct a vector by interpolating from the first given vector to the
