@@ -20,7 +20,7 @@ module BoundingBox2d exposing
     , interpolate
     , scaleAbout, translateBy, translateIn, expandBy, offsetBy
     , at, at_
-    , randomPoint
+    , randomPoint, poissonDiskSamples
     )
 
 {-| A `BoundingBox2d` is a rectangular box in 2D defined by its minimum and
@@ -103,10 +103,12 @@ You can also get the X and Y ranges of a bounding box as [intervals](https://pac
 
 # Random point generation
 
-@docs randomPoint
+@docs randomPoint, poissonDiskSamples
 
 -}
 
+import Array exposing (Array)
+import BoundingBox2d.PDSGrid as Grid exposing (Grid)
 import Direction2d exposing (Direction2d)
 import Float.Extra as Float
 import Geometry.Types as Types
@@ -1261,3 +1263,126 @@ randomPoint boundingBox =
             Random.float 0 1
     in
     Random.map2 (interpolate boundingBox) parameterValue parameterValue
+
+
+
+-- Poisson Disk Sampling
+
+
+{-| Create a [random generator](https://package.elm-lang.org/packages/elm/random/latest/Random)
+for a list of points within a given bounding box. Unlike `randomPoint`, this generator has the
+property that it will keep the points apart from each other and will therefore fill the bounding
+box in a random, but relatively uniform way.
+
+The first argument represents how many points to generate, however due to the nature of the algorithm
+this acts more as a hint and it will generally generate slightly fewer points.
+
+![TODO: add image]()
+
+-}
+poissonDiskSamples : Int -> BoundingBox2d units coordinates -> Generator (List (Point2d units coordinates))
+poissonDiskSamples number boundingBox =
+    let
+        ( width, height ) =
+            Tuple.mapBoth Quantity.unwrap Quantity.unwrap (dimensions boundingBox)
+
+        radius2 =
+            width * height / (toFloat number * 1.5)
+
+        radius =
+            sqrt radius2
+
+        mx =
+            minX boundingBox |> Quantity.unwrap
+
+        my =
+            minY boundingBox |> Quantity.unwrap
+    in
+    Random.map3
+        (\seed fx fy ->
+            poissonDiskSamplesHelp seed PickRandomPoint (Array.push ( fx, fy ) Array.empty) (Grid.set ( fx, fy ) (Grid.initialize width height radius))
+                |> List.map
+                    (\( px, py ) ->
+                        Point2d.unsafe { x = mx + px, y = my + py }
+                    )
+        )
+        Random.independentSeed
+        (Random.float (width / 2 - radius) (width / 2 + radius))
+        (Random.float (height / 2 - radius) (height / 2 + radius))
+
+
+{-| How many attempts to make to find a suitable candidate point.
+-}
+k : Int
+k =
+    30
+
+
+{-| Using this type is not the most intuitive way to go. It is much more natural to implement this algorithm
+using two mutually recursive functions, but to prevent stack overflows this absolutely needs to be TCO'd,
+hence the two functions are inlined into a single function, and the following type controls its function,
+this then get's compiled into a single weird while loop.
+-}
+type PoissonDiskSamplesMode
+    = PickRandomPoint
+    | FindSuitableCandidateInNeighborhood Int Int ( Float, Float )
+
+
+poissonDiskSamplesHelp : Random.Seed -> PoissonDiskSamplesMode -> Array.Array ( Float, Float ) -> Grid -> List ( Float, Float )
+poissonDiskSamplesHelp seed mode queue grid =
+    case mode of
+        PickRandomPoint ->
+            let
+                n =
+                    Array.length queue
+            in
+            if n == 0 then
+                Grid.values grid
+
+            else
+                let
+                    ( parentIndex, newSeed ) =
+                        Random.step (Random.int 0 n) seed
+                in
+                poissonDiskSamplesHelp newSeed (FindSuitableCandidateInNeighborhood k parentIndex (Array.get parentIndex queue |> Maybe.withDefault ( 0 / 0, 0 / 0 ))) queue grid
+
+        FindSuitableCandidateInNeighborhood attempts parentIndex ( px, py ) ->
+            let
+                radius =
+                    Grid.getRadius grid
+
+                ( point, newSeed ) =
+                    Random.step
+                        (Random.map2
+                            (\a d ->
+                                ( px + d * cos a, py + d * sin a )
+                            )
+                            (Random.float 0 (2 * pi))
+                            (Random.float radius (2 * radius))
+                        )
+                        seed
+            in
+            if Grid.isNeighborhoodEmpty point grid then
+                poissonDiskSamplesHelp newSeed PickRandomPoint (Array.push point queue) (Grid.set point grid)
+
+            else if attempts > 0 then
+                poissonDiskSamplesHelp newSeed (FindSuitableCandidateInNeighborhood (attempts - 1) parentIndex ( px, py )) queue grid
+
+            else
+                poissonDiskSamplesHelp newSeed PickRandomPoint (arrayDelete parentIndex queue) grid
+
+
+arrayDelete : Int -> Array a -> Array a
+arrayDelete n xs =
+    if n < 0 then
+        xs
+
+    else
+        let
+            before =
+                Array.slice 0 n xs
+
+            after =
+                Array.slice (n + 1) (Array.length xs) xs
+        in
+        Array.append before after
