@@ -112,7 +112,34 @@ relativeTo :
     Frame2d units globalCoordinates { defines : localCoordinates }
     -> Transformation2d (units -> units) (globalCoordinates -> localCoordinates) restrictions
 relativeTo (Types.Frame2d frame) =
-    Debug.todo "Eh... How do we do this again?"
+    let
+        (Types.Point2d p0) =
+            frame.originPoint
+
+        (Types.Direction2d i) =
+            frame.xDirection
+
+        (Types.Direction2d j) =
+            frame.yDirection
+    in
+    Transformation2d
+        { m11 = i.x
+        , m12 = 0
+        , m13 = -p0.x
+        , m21 = 0
+        , m22 = i.y
+        , m23 = -p0.y
+        , m31 = 0
+        , m32 = 0
+        , m33 = 1
+        }
+
+
+
+-- Types.Point2d
+--     { x = deltaX * i.x + deltaY * i.y
+--     , y = deltaX * j.x + deltaY * j.y
+--     }
 
 
 unsafe :
@@ -148,6 +175,14 @@ unwrap (Transformation2d transformation) =
     transformation
 
 
+{-| This is the composition operator for Transformation2d.
+
+Note the argument order:
+
+     Transformation2d.translateBy (Vector2d.meters 20 0)
+        |> Transformation2d.followedBy (Transformation2d.translateBy (Vector2d.meters 0 1))
+
+-}
 followedBy :
     Transformation2d (units2 -> units3) (coordinates2 -> coordinates3) restrictions
     -> Transformation2d (units1 -> units2) (coordinates1 -> coordinates2) restrictions

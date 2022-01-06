@@ -1,6 +1,6 @@
 module Geometry.Fuzz exposing
     ( scale, parameterValue
-    , length, positiveLength, angle, quantityRange
+    , length, speed, positiveLength, angle, quantityRange
     , point2d, point3d, vector2d, vector3d, direction2d, direction3d, boundingBox2d, boundingBox3d
     , axis2d, axis3d, frame2d, frame3d, plane3d, sketchPlane3d
     , lineSegment2d, lineSegment3d, triangle2d, triangle3d, rectangle2d, block3d, polyline2d, polyline3d, polygon2d
@@ -32,7 +32,7 @@ running into any naming conflicts.
 
 # `Quantity` values
 
-@docs length, positiveLength, angle, quantityRange
+@docs length, speed, positiveLength, angle, quantityRange
 
 
 # Primitives
@@ -99,6 +99,7 @@ import RationalQuadraticSpline3d exposing (RationalQuadraticSpline3d)
 import Rectangle2d exposing (Rectangle2d)
 import Shrink
 import SketchPlane3d exposing (SketchPlane3d)
+import Speed exposing (Speed)
 import Sphere3d exposing (Sphere3d)
 import Triangle2d exposing (Triangle2d)
 import Triangle3d exposing (Triangle3d)
@@ -111,6 +112,13 @@ import Vector3d exposing (Vector3d)
 length : Fuzzer Length
 length =
     Fuzz.map Length.meters (Fuzz.floatRange -10 10)
+
+
+{-| Generate a random `Speed` in the range -10 to +10 meters.
+-}
+speed : Fuzzer Speed
+speed =
+    Fuzz.map Speed.metersPerSecond (Fuzz.floatRange -10 10)
 
 
 {-| Generate a random `Float` scaling factor in the range -10 to +10.
