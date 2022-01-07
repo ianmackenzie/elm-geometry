@@ -1334,7 +1334,7 @@ poissonDiskSamplesHelp seed mode queue grid =
         PickRandomPoint ->
             let
                 n =
-                    Array.length queue - 1
+                    Array.length queue
             in
             if n == 0 then
                 Grid.values grid
@@ -1342,9 +1342,9 @@ poissonDiskSamplesHelp seed mode queue grid =
             else
                 let
                     ( parentIndex, newSeed ) =
-                        Random.step (Random.int 0 n) seed
+                        Random.step (Random.int 0 (n - 1)) seed
                 in
-                poissonDiskSamplesHelp newSeed (FindSuitableCandidateInNeighborhood k parentIndex (Array.get parentIndex queue |> Maybe.withDefault ( 0 / 0, 0 / 0 ))) queue grid
+                poissonDiskSamplesHelp newSeed (FindSuitableCandidateInNeighborhood k parentIndex (Array.get parentIndex queue |> Maybe.withDefault defaultPoint)) queue grid
 
         FindSuitableCandidateInNeighborhood attempts parentIndex ( px, py ) ->
             let
@@ -1374,15 +1374,14 @@ poissonDiskSamplesHelp seed mode queue grid =
 
 arrayDelete : Int -> Array a -> Array a
 arrayDelete n xs =
-    if n < 0 then
-        xs
+    case Array.get 0 xs of
+        Nothing ->
+            xs
 
-    else
-        let
-            before =
-                Array.slice 0 n xs
+        Just val ->
+            Array.slice 1 9007199254740990 (Array.set n val xs)
 
-            after =
-                Array.slice (n + 1) (Array.length xs) xs
-        in
-        Array.append before after
+
+defaultPoint : ( Float, Float )
+defaultPoint =
+    ( 0 / 0, 0 / 0 )
