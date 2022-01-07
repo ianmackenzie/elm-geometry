@@ -10,6 +10,7 @@ module Tests.BoundingBox2d exposing
     , offsetResultIsValidOrNothing
     , overlappingBoxesCannotBySeparated
     , overlappingByDetectsIntersection
+    , poissonDiskSamplingTests
     , separatedBoxesCannotBeMadeToOverlap
     , separationIsCorrectForDiagonallyDisplacedBoxes
     , separationIsCorrectForHorizontallyDisplacedBoxes
@@ -17,13 +18,21 @@ module Tests.BoundingBox2d exposing
     , unionContainsInputs
     )
 
+import Array
 import BoundingBox2d
+import DelaunayTriangulation2d exposing (DelaunayTriangulation2d)
 import Expect
-import Fuzz
+import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
+import Length
+import LineSegment2d exposing (LineSegment2d)
+import Point2d exposing (Point2d)
 import Quantity
+import Random
+import Shrink
 import Test exposing (Test)
+import Triangle2d exposing (Triangle2d)
 import Vector2d
 
 
@@ -420,3 +429,61 @@ hullNIsOrderIndependent =
             BoundingBox2d.hullN (List.reverse points)
                 |> Expect.equal (BoundingBox2d.hullN points)
         )
+
+
+randomSeed : Fuzzer Random.Seed
+randomSeed =
+    Fuzz.custom Random.independentSeed Shrink.noShrink
+
+
+poissonDiskSamplingTests : Test
+poissonDiskSamplingTests =
+    Test.describe "poissonDiskSamples"
+        [ Test.fuzz2 randomSeed (Fuzz.intRange 20 100) "Produces within a reasonable bound of the desired count" <|
+            \seed count ->
+                let
+                    bbox =
+                        BoundingBox2d.from (Point2d.meters 5 5) (Point2d.meters 10 10)
+                in
+                Random.step (BoundingBox2d.poissonDiskSamples count bbox) seed
+                    |> Tuple.first
+                    |> List.length
+                    |> Expect.all
+                        [ Expect.atLeast (floor (toFloat count * 0.91))
+                        , Expect.atMost (ceiling (toFloat count * 1.5))
+                        ]
+        , Test.fuzz2 randomSeed (Fuzz.intRange 20 50) "points are reasonably far apart" <|
+            \seed count ->
+                let
+                    bbox =
+                        BoundingBox2d.from (Point2d.meters 0 0) (Point2d.meters 10 10)
+
+                    minDist =
+                        Length.meters (sqrt (100 / (toFloat count * 1.5)))
+                in
+                case
+                    Random.step (BoundingBox2d.poissonDiskSamples count bbox) seed
+                        |> Tuple.first
+                        |> Array.fromList
+                        |> DelaunayTriangulation2d.fromPoints
+                of
+                    Err (DelaunayTriangulation2d.CoincidentVertices v1 v2) ->
+                        Expect.fail <| "poissonDiskSamples produces coincident points " ++ Debug.toString v1 ++ " and " ++ Debug.toString v2
+
+                    Ok triangulation ->
+                        triangulation
+                            |> DelaunayTriangulation2d.triangles
+                            |> List.concatMap
+                                (\t ->
+                                    let
+                                        ( e1, e2, e3 ) =
+                                            Triangle2d.edges t
+                                    in
+                                    [ e1, e2, e3 ]
+                                )
+                            |> List.all
+                                (\e ->
+                                    LineSegment2d.length e |> Quantity.greaterThanOrEqualTo minDist
+                                )
+                            |> Expect.true "all points are at least minDist distant from each other"
+        ]

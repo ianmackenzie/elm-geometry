@@ -1285,30 +1285,35 @@ poissonDiskSamples number boundingBox =
     let
         ( width, height ) =
             Tuple.mapBoth Quantity.unwrap Quantity.unwrap (dimensions boundingBox)
-
-        radius2 =
-            width * height / (toFloat number * 1.5)
-
-        radius =
-            sqrt radius2
-
-        mx =
-            minX boundingBox |> Quantity.unwrap
-
-        my =
-            minY boundingBox |> Quantity.unwrap
     in
-    Random.map3
-        (\seed fx fy ->
-            poissonDiskSamplesHelp seed PickRandomPoint (Array.push ( fx, fy ) Array.empty) (Grid.set ( fx, fy ) (Grid.initialize width height radius))
-                |> List.map
-                    (\( px, py ) ->
-                        Point2d.unsafe { x = mx + px, y = my + py }
-                    )
-        )
-        Random.independentSeed
-        (Random.float (width / 2 - radius) (width / 2 + radius))
-        (Random.float (height / 2 - radius) (height / 2 + radius))
+    if number < 1 || width == 0 || height == 0 then
+        Random.constant []
+
+    else
+        let
+            radius2 =
+                width * height / (toFloat number * 1.5)
+
+            radius =
+                sqrt radius2
+
+            mx =
+                minX boundingBox |> Quantity.unwrap
+
+            my =
+                minY boundingBox |> Quantity.unwrap
+        in
+        Random.map3
+            (\seed fx fy ->
+                poissonDiskSamplesHelp seed PickRandomPoint (Array.push ( fx, fy ) Array.empty) (Grid.set ( fx, fy ) (Grid.initialize width height radius))
+                    |> List.map
+                        (\( px, py ) ->
+                            Point2d.unsafe { x = mx + px, y = my + py }
+                        )
+            )
+            Random.independentSeed
+            (Random.float (width / 2 - radius) (width / 2 + radius))
+            (Random.float (height / 2 - radius) (height / 2 + radius))
 
 
 {-| How many attempts to make to find a suitable candidate point.
