@@ -1334,7 +1334,7 @@ poissonDiskSamplesHelp seed mode queue grid =
         PickRandomPoint ->
             let
                 n =
-                    Array.length queue
+                    Array.length queue - 1
             in
             if n == 0 then
                 Grid.values grid
