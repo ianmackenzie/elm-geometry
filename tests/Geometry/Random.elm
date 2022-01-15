@@ -14,6 +14,8 @@ module Geometry.Random exposing
     , frame2d
     , frame3d
     , length
+    , lineSegment2d
+    , lineSegment3d
     , parameterValue
     , plane3d
     , point2d
@@ -27,6 +29,8 @@ module Geometry.Random exposing
     , rationalQuadraticSpline3d
     , scale
     , sketchPlane3d
+    , triangle2d
+    , triangle3d
     , unitlessInterval
     , unitlessQuantity
     , vector2d
@@ -50,6 +54,8 @@ import EllipticalArc3d exposing (EllipticalArc3d)
 import Frame2d exposing (Frame2d)
 import Frame3d exposing (Frame3d)
 import Length exposing (Length, Meters)
+import LineSegment2d exposing (LineSegment2d)
+import LineSegment3d exposing (LineSegment3d)
 import Plane3d exposing (Plane3d)
 import Point2d exposing (Point2d)
 import Point3d exposing (Point3d)
@@ -63,6 +69,8 @@ import RationalCubicSpline3d exposing (RationalCubicSpline3d)
 import RationalQuadraticSpline2d exposing (RationalQuadraticSpline2d)
 import RationalQuadraticSpline3d exposing (RationalQuadraticSpline3d)
 import SketchPlane3d exposing (SketchPlane3d)
+import Triangle2d exposing (Triangle2d)
+import Triangle3d exposing (Triangle3d)
 import Vector2d exposing (Vector2d)
 import Vector3d exposing (Vector3d)
 import VectorBoundingBox2d exposing (VectorBoundingBox2d)
@@ -228,6 +236,26 @@ frame3d =
                 }
     in
     Random.map4 frame point3d direction3d bool bool
+
+
+lineSegment2d : Generator (LineSegment2d Meters coordinates)
+lineSegment2d =
+    Random.map2 LineSegment2d.from point2d point2d
+
+
+lineSegment3d : Generator (LineSegment3d Meters coordinates)
+lineSegment3d =
+    Random.map2 LineSegment3d.from point3d point3d
+
+
+triangle2d : Generator (Triangle2d Meters coordinates)
+triangle2d =
+    Random.map3 Triangle2d.from point2d point2d point2d
+
+
+triangle3d : Generator (Triangle3d Meters coordinates)
+triangle3d =
+    Random.map3 Triangle3d.from point3d point3d point3d
 
 
 quadraticSpline2d : Generator (QuadraticSpline2d Meters coordinates)
