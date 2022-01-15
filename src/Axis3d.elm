@@ -12,11 +12,10 @@ module Axis3d exposing
     , x, y, z
     , through, withDirection, throughPoints, on
     , originPoint, direction
-    , intersectionWithPlane, intersectionWithSphere
+    , intersectionWithPlane, intersectionWithTriangle, intersectionWithSphere
     , reverse, moveTo, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
     , at, at_
     , relativeTo, placeIn, projectInto
-    , intersectionWithTriangle
     )
 
 {-| An `Axis3d` represents an infinitely long straight line in 3D and is defined
@@ -46,7 +45,7 @@ by an origin point and direction. Axes have several uses, such as:
 
 # Intersection
 
-@docs intersectionWithPlane, intersectionWithSphere
+@docs intersectionWithPlane, intersectionWithTriangle, intersectionWithSphere
 
 
 # Transformations
