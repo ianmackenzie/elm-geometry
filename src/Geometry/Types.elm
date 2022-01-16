@@ -458,4 +458,3 @@ type Body3d units coordinates
     | ConicalBody (Cone3d units coordinates)
     | ExtrusionBody (SketchPlane3d units coordinates { defines : SketchCoordinates }) (Region2d units SketchCoordinates) (Interval Float units)
     | RevolutionBody (SketchPlane3d units coordinates { defines : SketchCoordinates }) (Region2d units SketchCoordinates) (Axis2d units SketchCoordinates) (Interval Float Radians)
-    | BoundedBody (List (Surface3d units coordinates))
