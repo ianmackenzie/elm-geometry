@@ -2,6 +2,7 @@ module Tests.Generic.Curve3d exposing
     ( GlobalCoordinates
     , LocalCoordinates
     , Operations
+    , projectInto
     , secondDerivativeBoundingBox
     , tests
     )
@@ -20,8 +21,10 @@ import Point3d exposing (Point3d)
 import Polyline3d
 import Quantity
 import Random exposing (Generator)
+import SketchPlane3d exposing (SketchPlane3d)
 import Test exposing (Test)
 import Test.Check as Test
+import Tests.Generic.Curve2d as Curve2d
 import Vector3d exposing (Vector3d)
 import VectorBoundingBox3d exposing (VectorBoundingBox3d)
 
@@ -291,3 +294,49 @@ secondDerivativeBoundingBox operations =
             operations.secondDerivative curve parameterValue
                 |> Expect.vector3dContainedIn (operations.secondDerivativeBoundingBox curve)
         )
+
+
+projectInto : Operations curve coordinates -> (SketchPlane3d Meters coordinates { defines : coordinates2d } -> curve -> curve2d) -> Curve2d.Operations curve2d coordinates2d -> Test
+projectInto operations project operations2d =
+    Test.describe "projectInto"
+        [ Test.check3 "pointOn"
+            operations.generator
+            Random.sketchPlane3d
+            (Random.float 0 1)
+            (\curve sketchPlane parameterValue ->
+                let
+                    curve2d =
+                        project sketchPlane curve
+
+                    point3d =
+                        operations.pointOn curve parameterValue
+
+                    point2d =
+                        operations2d.pointOn curve2d parameterValue
+
+                    projectedPoint =
+                        Point3d.projectInto sketchPlane point3d
+                in
+                projectedPoint |> Expect.point2d point2d
+            )
+        , Test.check3 "firstDerivative"
+            operations.generator
+            Random.sketchPlane3d
+            (Random.float 0 1)
+            (\curve sketchPlane parameterValue ->
+                let
+                    curve2d =
+                        project sketchPlane curve
+
+                    derivative3d =
+                        operations.firstDerivative curve parameterValue
+
+                    derivative2d =
+                        operations2d.firstDerivative curve2d parameterValue
+
+                    projectedDerivative =
+                        Vector3d.projectInto sketchPlane derivative3d
+                in
+                projectedDerivative |> Expect.vector2d derivative2d
+            )
+        ]
