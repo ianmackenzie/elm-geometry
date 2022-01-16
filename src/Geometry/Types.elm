@@ -435,8 +435,9 @@ type Surface3d units coordinates
     = TriangularSurface SurfaceHandedness (Triangle3d units coordinates)
     | RectangularSurface SurfaceHandedness (Rectangle3d units coordinates)
     | CircularSurface (Circle3d units coordinates)
+    | EllipticalSurface SurfaceHandedness (Ellipse3d units coordinates)
     | ExtrusionSurface SurfaceHandedness (Curve3d units coordinates) (Vector3d units coordinates)
-    | RevolutionSurface SurfaceHandedness (Curve3d units coordinates) (Frame3d units coordinates Never) Angle
+    | RevolutionSurface SurfaceHandedness (Curve3d units coordinates) (Axis3d units coordinates) Angle
     | PlanarSurface SurfaceHandedness (Region2d units SketchCoordinates) (SketchPlane3d units coordinates { defines : SketchCoordinates })
 
 
