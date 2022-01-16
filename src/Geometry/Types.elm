@@ -360,6 +360,14 @@ type RationalCubicSpline3d units coordinates
         }
 
 
+type Spline2d units coordinates
+    = Spline2d (Point2d units coordinates) (List (Point2d units coordinates))
+
+
+type Spline3d units coordinates
+    = Spline3d (Point3d units coordinates) (List (Point3d units coordinates))
+
+
 type EllipticalArc2d units coordinates
     = EllipticalArc2d
         { ellipse : Ellipse2d units coordinates
