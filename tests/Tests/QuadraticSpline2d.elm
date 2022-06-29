@@ -12,7 +12,6 @@ module Tests.QuadraticSpline2d exposing
 import Angle
 import ArcLengthParameterization
 import Expect
-import Float.Extra as Float
 import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
