@@ -15,6 +15,7 @@ module Axis2d exposing
     , reverse, moveTo, rotateAround, rotateBy, translateBy, translateIn, mirrorAcross
     , at, at_
     , relativeTo, placeIn
+    , fromLineSegment
     )
 
 {-| An `Axis2d` represents an infinitely long straight line in 2D and is defined
@@ -59,8 +60,9 @@ by an origin point and direction. Axes have several uses, such as:
 -}
 
 import Angle exposing (Angle)
+import Axis2d
 import Direction2d exposing (Direction2d)
-import Geometry.Types as Types exposing (Frame2d)
+import Geometry.Types as Types exposing (Frame2d, LineSegment2d)
 import Point2d exposing (Point2d)
 import Quantity exposing (Quantity, Rate)
 import Vector2d exposing (Vector2d)
@@ -129,8 +131,8 @@ withDirection givenDirection givenPoint =
 
 is equivalent to
 
-    Maybe.map (Axis2d.through firstPoint)
-        (Direction2d.from firstPoint secondPoint)
+    Maybe.map (Axis2d.through p1)
+        (Direction2d.from p1 p2)
 
 -}
 throughPoints : Point2d units coordinates -> Point2d units coordinates -> Maybe (Axis2d units coordinates)
@@ -141,6 +143,21 @@ throughPoints firstPoint secondPoint =
 
         Nothing ->
             Nothing
+
+
+{-| Attempt to construct an axis through a line segment;
+
+    Axis2d.fromLineSegment (LineSegment2d.from p1 p2)
+
+is equivalent to
+
+    Maybe.map (Axis2d.through p1)
+        (Direction2d.from p1 p2)
+
+-}
+fromLineSegment : LineSegment2d units coordinates -> Maybe (Axis2d units coordinates)
+fromLineSegment (LineSegment2d ( startPoint, endPoint )) =
+    Axis2d.throughPoints startPoint endPoint
 
 
 {-| Convert an axis from one units type to another, by providing a conversion
