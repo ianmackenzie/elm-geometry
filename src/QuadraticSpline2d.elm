@@ -410,7 +410,8 @@ pointOn spline parameterValue =
 
 {-| Find the parameter value on a spline that is closest to a given point. You can combine this with pointOn to find the nearest point on the spline.
 
-nearestPoint spline p0 |> pointOn spline -- Nearest point to p0 that is on the spline
+    nearestPoint spline p0
+        |> pointOn spline -- Nearest point to p0 that is on the spline
 
 -}
 nearestPoint :
