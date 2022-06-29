@@ -1,5 +1,6 @@
 module Tests.Axis2d exposing
     ( directionExample
+    , intersectionPointTests
     , mirrorAcrossExample
     , moveToExample
     , originPointExample
@@ -18,6 +19,7 @@ import Axis2d
 import Direction2d
 import Expect
 import Frame2d
+import Fuzz
 import Geometry.Expect as Expect
 import Geometry.Fuzz as Fuzz
 import Length exposing (meters)
@@ -55,6 +57,30 @@ directionExample =
     Test.test "Axis2d.direction example" <|
         \() ->
             Axis2d.direction Axis2d.y |> Expect.direction2d Direction2d.y
+
+
+intersectionPointTests : Test
+intersectionPointTests =
+    Test.describe "intersectionPoint tests"
+        [ Test.test "Simple test" <|
+            \() ->
+                Axis2d.intersectionPoint Axis2d.x Axis2d.y |> Expect.equal (Just Point2d.origin)
+        , Test.fuzz2 Fuzz.point2d Fuzz.point2d "Parallel horizontal axes" <|
+            \p1 p2 ->
+                Axis2d.intersectionPoint (Axis2d.withDirection Direction2d.x p1) (Axis2d.withDirection Direction2d.x p2)
+                    |> Expect.equal Nothing
+        , Test.fuzz2 Fuzz.point2d Fuzz.point2d "Parallel vertical axes" <|
+            \p1 p2 ->
+                Axis2d.intersectionPoint (Axis2d.withDirection Direction2d.y p1) (Axis2d.withDirection Direction2d.y p2)
+                    |> Expect.equal Nothing
+        , Test.test "Intersection" <|
+            \() ->
+                Axis2d.intersectionPoint
+                    (Axis2d.withDirection (Direction2d.fromAngle (Angle.degrees 100)) (Point2d.meters 10 20))
+                    (Axis2d.withDirection (Direction2d.fromAngle (Angle.degrees -20)) (Point2d.meters 40 50))
+                    |> Expect.equal
+                        (Point2d.meters 2.2900499867154616 63.725299340502026 |> Just)
+        ]
 
 
 reverseExample : Test

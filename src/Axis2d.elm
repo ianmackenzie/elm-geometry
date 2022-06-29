@@ -10,12 +10,11 @@
 module Axis2d exposing
     ( Axis2d
     , x, y
-    , through, withDirection, throughPoints
-    , originPoint, direction
+    , through, withDirection, throughPoints, fromLineSegment
+    , originPoint, direction, intersectionPoint
     , reverse, moveTo, rotateAround, rotateBy, translateBy, translateIn, mirrorAcross
     , at, at_
     , relativeTo, placeIn
-    , fromLineSegment
     )
 
 {-| An `Axis2d` represents an infinitely long straight line in 2D and is defined
@@ -35,12 +34,12 @@ by an origin point and direction. Axes have several uses, such as:
 
 # Constructors
 
-@docs through, withDirection, throughPoints
+@docs through, withDirection, throughPoints, fromLineSegment
 
 
 # Properties
 
-@docs originPoint, direction
+@docs originPoint, direction, intersectionPoint
 
 
 # Transformations
@@ -60,9 +59,8 @@ by an origin point and direction. Axes have several uses, such as:
 -}
 
 import Angle exposing (Angle)
-import Axis2d
 import Direction2d exposing (Direction2d)
-import Geometry.Types as Types exposing (Frame2d, LineSegment2d)
+import Geometry.Types as Types exposing (Frame2d, LineSegment2d(..))
 import Point2d exposing (Point2d)
 import Quantity exposing (Quantity, Rate)
 import Vector2d exposing (Vector2d)
@@ -157,7 +155,7 @@ is equivalent to
 -}
 fromLineSegment : LineSegment2d units coordinates -> Maybe (Axis2d units coordinates)
 fromLineSegment (LineSegment2d ( startPoint, endPoint )) =
-    Axis2d.throughPoints startPoint endPoint
+    throughPoints startPoint endPoint
 
 
 {-| Convert an axis from one units type to another, by providing a conversion
@@ -201,6 +199,57 @@ originPoint (Types.Axis2d axis) =
 direction : Axis2d units coordinates -> Direction2d coordinates
 direction (Types.Axis2d axis) =
     axis.direction
+
+
+{-| Find the intersection point between two axes. If none exists (the axes are parallel) then Nothing is returned.
+-}
+intersectionPoint : Axis2d units coordinates -> Axis2d units coordinates -> Maybe (Point2d units coordinates)
+intersectionPoint axis1 axis2 =
+    let
+        a1p1 =
+            originPoint axis1
+
+        a1p2 =
+            Point2d.translateIn (direction axis1) (Quantity.unsafe 1) a1p1
+
+        a1 =
+            Vector2d.from a1p2 a1p1 |> Vector2d.yComponent |> Quantity.unwrap
+
+        b1 =
+            Vector2d.from a1p1 a1p2 |> Vector2d.xComponent |> Quantity.unwrap
+
+        c1 =
+            a1 * Quantity.unwrap (Point2d.xCoordinate a1p1) + b1 * Quantity.unwrap (Point2d.yCoordinate a1p1)
+
+        a2p1 =
+            originPoint axis2
+
+        a2p2 =
+            Point2d.translateIn (direction axis2) (Quantity.unsafe 1) a2p1
+
+        a2 =
+            Vector2d.from a2p2 a2p1 |> Vector2d.yComponent |> Quantity.unwrap
+
+        b2 =
+            Vector2d.from a2p1 a2p2 |> Vector2d.xComponent |> Quantity.unwrap
+
+        c2 =
+            a2 * Quantity.unwrap (Point2d.xCoordinate a2p1) + b2 * Quantity.unwrap (Point2d.yCoordinate a2p1)
+
+        delta =
+            a1 * b2 - a2 * b1
+
+        x_ =
+            (b2 * c1 - b1 * c2) / delta
+
+        y_ =
+            (a1 * c2 - a2 * c1) / delta
+    in
+    if isNaN x_ || isInfinite x_ || isNaN y_ || isInfinite y_ then
+        Nothing
+
+    else
+        Point2d.unsafe { x = x_, y = y_ } |> Just
 
 
 {-| Reverse the direction of an axis while keeping the same origin point.
