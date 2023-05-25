@@ -360,6 +360,14 @@ type RationalCubicSpline3d units coordinates
         }
 
 
+type Spline2d units coordinates
+    = Spline2d (Point2d units coordinates) (List (Point2d units coordinates))
+
+
+type Spline3d units coordinates
+    = Spline3d (Point3d units coordinates) (List (Point3d units coordinates))
+
+
 type EllipticalArc2d units coordinates
     = EllipticalArc2d
         { ellipse : Ellipse2d units coordinates
@@ -427,8 +435,9 @@ type Surface3d units coordinates
     = TriangularSurface SurfaceHandedness (Triangle3d units coordinates)
     | RectangularSurface SurfaceHandedness (Rectangle3d units coordinates)
     | CircularSurface (Circle3d units coordinates)
+    | EllipticalSurface SurfaceHandedness (Ellipse3d units coordinates)
     | ExtrusionSurface SurfaceHandedness (Curve3d units coordinates) (Vector3d units coordinates)
-    | RevolutionSurface SurfaceHandedness (Curve3d units coordinates) (Frame3d units coordinates Never) Angle
+    | RevolutionSurface SurfaceHandedness (Curve3d units coordinates) (Axis3d units coordinates) Angle
     | PlanarSurface SurfaceHandedness (Region2d units SketchCoordinates) (SketchPlane3d units coordinates { defines : SketchCoordinates })
 
 
@@ -450,4 +459,3 @@ type Body3d units coordinates
     | ConicalBody (Cone3d units coordinates)
     | ExtrusionBody (SketchPlane3d units coordinates { defines : SketchCoordinates }) (Region2d units SketchCoordinates) (Interval Float units)
     | RevolutionBody (SketchPlane3d units coordinates { defines : SketchCoordinates }) (Region2d units SketchCoordinates) (Axis2d units SketchCoordinates) (Interval Float Radians)
-    | BoundedBody (List (Surface3d units coordinates))

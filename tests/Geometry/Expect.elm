@@ -1,5 +1,5 @@
 module Geometry.Expect exposing
-    ( exactly, just
+    ( exactly, just, list
     , quantity, quantityWithin, angle, angleWithin
     , quantityAtLeast, quantityAtMost, quantityGreaterThan, quantityLessThan, quantityContainedIn
     , point2d, point2dWithin, point2dContainedIn, point3d, point3dWithin, point3dContainedIn
@@ -34,7 +34,7 @@ been imported this way.
 
 # Generic helpers
 
-@docs exactly, just
+@docs exactly, just, list
 
 
 # `Quantity` equality
@@ -210,6 +210,30 @@ just expectation actualMaybe =
 
         Nothing ->
             Expect.fail "Expected a Just but got Nothing"
+
+
+list : (a -> b -> Expectation) -> List a -> List b -> Expectation
+list expectation firstList secondList =
+    case ( firstList, secondList ) of
+        ( [], [] ) ->
+            Expect.pass
+
+        ( _, [] ) ->
+            Expect.fail "List lengths do not match"
+
+        ( [], _ ) ->
+            Expect.fail "List lengths do not match"
+
+        ( firstHead :: firstTail, secondHead :: secondTail ) ->
+            let
+                headExpectation =
+                    expectation firstHead secondHead
+            in
+            if headExpectation == Expect.pass then
+                list expectation firstTail secondTail
+
+            else
+                headExpectation
 
 
 defaultTolerance : Float
