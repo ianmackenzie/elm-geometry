@@ -1,6 +1,7 @@
 module Tests.Axis3d exposing
     ( directionExample
     , intersectionWithPlane
+    , intersectionWithRectangle
     , intersectionWithSphere
     , intersectionWithTriangle
     , onExamples
@@ -26,6 +27,8 @@ import Plane3d
 import Point2d
 import Point3d
 import Quantity
+import Rectangle2d exposing (Rectangle2d)
+import Rectangle3d
 import SketchPlane3d
 import Sphere3d
 import Test exposing (Test)
@@ -198,6 +201,63 @@ intersectionWithTriangle =
 
                     Just point ->
                         if u < 0 || v < 0 || u + v > 1 then
+                            Expect.fail "Expected no intersection"
+
+                        else
+                            Expect.point3d planeIntersection point
+        )
+
+
+intersectionWithRectangle : Test
+intersectionWithRectangle =
+    Test.fuzz3
+        Fuzz.rectangle3d
+        Fuzz.direction3d
+        (ElmFuzz.tuple3
+            ( ElmFuzz.floatRange -0.5 1.5
+            , ElmFuzz.floatRange -0.5 1.5
+            , ElmFuzz.floatRange -10 10
+            )
+        )
+        "intersectionWithRectangle works properly"
+        (\rectangle axisDirection parameters ->
+            let
+                s =
+                    Rectangle3d.axes rectangle
+                        |> SketchPlane3d.normalDirection
+                        |> Direction3d.componentIn axisDirection
+            in
+            if abs s < 1.0e-3 then
+                Expect.pass
+
+            else
+                let
+                    ( u, v, t ) =
+                        parameters
+
+                    planeIntersection =
+                        Rectangle3d.interpolate rectangle u v
+
+                    direction =
+                        Vector3d.withLength (Length.meters 1) axisDirection
+
+                    axisOrigin =
+                        planeIntersection
+                            |> Point3d.translateBy (Vector3d.scaleBy -t direction)
+
+                    axis =
+                        Axis3d.through axisOrigin axisDirection
+                in
+                case Axis3d.intersectionWithRectangle rectangle axis of
+                    Nothing ->
+                        if u < 0 || v < 0 || u > 1 || v > 1 then
+                            Expect.pass
+
+                        else
+                            Expect.fail "Expected an intersection"
+
+                    Just point ->
+                        if u < 0 || v < 0 || u > 1 || v > 1 then
                             Expect.fail "Expected no intersection"
 
                         else
