@@ -10,7 +10,7 @@
 module LineSegment2d exposing
     ( LineSegment2d
     , fromEndpoints, from, fromPointAndVector, along
-    , startPoint, endPoint, endpoints, midpoint, length, direction, perpendicularDirection, vector, boundingBox
+    , startPoint, endPoint, endpoints, midpoint, length, direction, axis, perpendicularDirection, vector, boundingBox
     , interpolate
     , intersectionPoint, intersectionWithAxis
     , signedDistanceAlong, signedDistanceFrom
@@ -37,7 +37,7 @@ functionality such as:
 
 # Properties
 
-@docs startPoint, endPoint, endpoints, midpoint, length, direction, perpendicularDirection, vector, boundingBox
+@docs startPoint, endPoint, endpoints, midpoint, length, direction, axis, perpendicularDirection, vector, boundingBox
 
 
 # Interpolation
@@ -132,8 +132,8 @@ given distances from the axis' origin point.
 
 -}
 along : Axis2d units coordinates -> Quantity Float units -> Quantity Float units -> LineSegment2d units coordinates
-along axis start end =
-    fromEndpoints ( Point2d.along axis start, Point2d.along axis end )
+along givenAxis start end =
+    fromEndpoints ( Point2d.along givenAxis start, Point2d.along givenAxis end )
 
 
 {-| Construct a line segment given its start point and the vector from its
@@ -266,6 +266,15 @@ line segment has zero length (the start and end points are the same), returns
 direction : LineSegment2d units coordinates -> Maybe (Direction2d coordinates)
 direction givenSegment =
     Vector2d.direction (vector givenSegment)
+
+
+{-| Construct an axis collinear with a given line segment; the origin point of the axis will be the
+start point of the line segment and the direction of the axis will be the direction of the line
+segment. Returns `Nothing` if the line segment has zero length.
+-}
+axis : LineSegment2d units coordinates -> Maybe (Axis2d units coordinates)
+axis givenSegment =
+    Maybe.map (Axis2d.through (startPoint givenSegment)) (direction givenSegment)
 
 
 {-| Get the direction perpendicular to a line segment, pointing to the left. If
@@ -461,16 +470,16 @@ lies perfectly along it), returns `Nothing`.
 
 -}
 intersectionWithAxis : Axis2d units coordinates -> LineSegment2d units coordinates -> Maybe (Point2d units coordinates)
-intersectionWithAxis axis lineSegment =
+intersectionWithAxis givenAxis lineSegment =
     let
         ( p1, p2 ) =
             endpoints lineSegment
 
         d1 =
-            Point2d.signedDistanceFrom axis p1
+            Point2d.signedDistanceFrom givenAxis p1
 
         d2 =
-            Point2d.signedDistanceFrom axis p2
+            Point2d.signedDistanceFrom givenAxis p2
 
         product =
             d1 |> Quantity.times d2
@@ -516,10 +525,10 @@ Note that reversing the line segment will _not_ affect the result.
 
 -}
 signedDistanceAlong : Axis2d units coordinates -> LineSegment2d units coordinates -> Interval Float units
-signedDistanceAlong axis (Types.LineSegment2d ( p1, p2 )) =
+signedDistanceAlong givenAxis (Types.LineSegment2d ( p1, p2 )) =
     Interval.from
-        (Point2d.signedDistanceAlong axis p1)
-        (Point2d.signedDistanceAlong axis p2)
+        (Point2d.signedDistanceAlong givenAxis p1)
+        (Point2d.signedDistanceAlong givenAxis p2)
 
 
 {-| Measure the distance of a line segment from an axis. If the returned interval:
@@ -532,10 +541,10 @@ Note that reversing the line segment will _not_ affect the result.
 
 -}
 signedDistanceFrom : Axis2d units coordinates -> LineSegment2d units coordinates -> Interval Float units
-signedDistanceFrom axis (Types.LineSegment2d ( p1, p2 )) =
+signedDistanceFrom givenAxis (Types.LineSegment2d ( p1, p2 )) =
     Interval.from
-        (Point2d.signedDistanceFrom axis p1)
-        (Point2d.signedDistanceFrom axis p2)
+        (Point2d.signedDistanceFrom givenAxis p1)
+        (Point2d.signedDistanceFrom givenAxis p2)
 
 
 {-| Scale a line segment about the given center point by the given scale.
@@ -574,15 +583,15 @@ mirrored normal direction of the original segment (since the normal direction is
 always considered to be 'to the left' of the line segment).
 -}
 mirrorAcross : Axis2d units coordinates -> LineSegment2d units coordinates -> LineSegment2d units coordinates
-mirrorAcross axis =
-    mapEndpoints (Point2d.mirrorAcross axis)
+mirrorAcross givenAxis =
+    mapEndpoints (Point2d.mirrorAcross givenAxis)
 
 
 {-| Project a line segment onto an axis.
 -}
 projectOnto : Axis2d units coordinates -> LineSegment2d units coordinates -> LineSegment2d units coordinates
-projectOnto axis =
-    mapEndpoints (Point2d.projectOnto axis)
+projectOnto givenAxis =
+    mapEndpoints (Point2d.projectOnto givenAxis)
 
 
 {-| Transform the start and end points of a line segment by a given function

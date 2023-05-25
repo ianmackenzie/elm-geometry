@@ -10,7 +10,7 @@
 module LineSegment3d exposing
     ( LineSegment3d
     , fromEndpoints, from, fromPointAndVector, along, on
-    , startPoint, endPoint, endpoints, midpoint, length, direction, perpendicularDirection, vector, boundingBox
+    , startPoint, endPoint, endpoints, midpoint, length, direction, axis, perpendicularDirection, vector, boundingBox
     , interpolate
     , intersectionWithPlane
     , signedDistanceAlong, signedDistanceFrom
@@ -37,7 +37,7 @@ functionality such as:
 
 # Properties
 
-@docs startPoint, endPoint, endpoints, midpoint, length, direction, perpendicularDirection, vector, boundingBox
+@docs startPoint, endPoint, endpoints, midpoint, length, direction, axis, perpendicularDirection, vector, boundingBox
 
 
 # Interpolation
@@ -135,10 +135,10 @@ given distances from the axis' origin point.
 
 -}
 along : Axis3d units coordinates -> Quantity Float units -> Quantity Float units -> LineSegment3d units coordinates
-along axis startDistance endDistance =
+along givenAxis startDistance endDistance =
     fromEndpoints
-        ( Point3d.along axis startDistance
-        , Point3d.along axis endDistance
+        ( Point3d.along givenAxis startDistance
+        , Point3d.along givenAxis endDistance
         )
 
 
@@ -336,10 +336,10 @@ Note that reversing the line segment will _not_ affect the result.
 
 -}
 signedDistanceAlong : Axis3d units coordinates -> LineSegment3d units coordinates -> Interval Float units
-signedDistanceAlong axis (Types.LineSegment3d ( p1, p2 )) =
+signedDistanceAlong givenAxis (Types.LineSegment3d ( p1, p2 )) =
     Interval.from
-        (Point3d.signedDistanceAlong axis p1)
-        (Point3d.signedDistanceAlong axis p2)
+        (Point3d.signedDistanceAlong givenAxis p1)
+        (Point3d.signedDistanceAlong givenAxis p2)
 
 
 {-| Measure the distance of a line segment from a plane. If the returned interval:
@@ -384,6 +384,15 @@ direction lineSegment =
     Vector3d.direction (vector lineSegment)
 
 
+{-| Construct an axis collinear with a given line segment; the origin point of the axis will be the
+start point of the line segment and the direction of the axis will be the direction of the line
+segment. Returns `Nothing` if the line segment has zero length.
+-}
+axis : LineSegment3d units coordinates -> Maybe (Axis3d units coordinates)
+axis lineSegment =
+    Maybe.map (Axis3d.through (startPoint lineSegment)) (direction lineSegment)
+
+
 {-| Get an arbitrary direction perpendicular to a line segment. If the line
 segment has zero length, returns `Nothing`.
 
@@ -421,8 +430,8 @@ scaleAbout point scale lineSegment =
 {-| Rotate a line segment around a given axis by a given angle.
 -}
 rotateAround : Axis3d units coordinates -> Angle -> LineSegment3d units coordinates -> LineSegment3d units coordinates
-rotateAround axis angle lineSegment =
-    mapEndpoints (Point3d.rotateAround axis angle) lineSegment
+rotateAround givenAxis angle lineSegment =
+    mapEndpoints (Point3d.rotateAround givenAxis angle) lineSegment
 
 
 {-| Translate a line segment by a given displacement.
