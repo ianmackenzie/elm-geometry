@@ -1,5 +1,6 @@
 module Tests.Axis2d exposing
     ( directionExample
+    , intersectionPoint
     , mirrorAcrossExample
     , moveToExample
     , originPointExample
@@ -176,4 +177,41 @@ throughPoints =
 
                 Nothing ->
                     firstPoint |> Expect.point2d secondPoint
+        )
+
+
+intersectionPoint : Test
+intersectionPoint =
+    Test.fuzz2
+        Fuzz.axis2d
+        Fuzz.axis2d
+        "intersectionPoint"
+        (\firstAxis secondAxis ->
+            let
+                -- Check how close the axes are to being parallel
+                differenceFromParallel =
+                    Direction2d.angleFrom (Axis2d.direction firstAxis) (Axis2d.direction secondAxis)
+                        |> Quantity.fractionalModBy (Angle.degrees 180)
+                        |> Quantity.abs
+            in
+            if differenceFromParallel |> Quantity.greaterThan (Angle.degrees 1) then
+                -- Axes are not close to parallel, check for a valid intersection
+                case Axis2d.intersectionPoint firstAxis secondAxis of
+                    Just point ->
+                        -- Check that the returned point is in fact on both axes
+                        let
+                            maxError =
+                                Quantity.max
+                                    (Quantity.abs (Point2d.signedDistanceFrom firstAxis point))
+                                    (Quantity.abs (Point2d.signedDistanceFrom secondAxis point))
+                        in
+                        maxError |> Expect.quantity Quantity.zero
+
+                    Nothing ->
+                        Expect.fail "Expected axis intersection point but got Nothing"
+
+            else
+                -- Axes are almost parallel, don't check intersection point (since it will be
+                -- numerically badly behaved)
+                Expect.pass
         )

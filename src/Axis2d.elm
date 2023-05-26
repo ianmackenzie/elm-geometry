@@ -12,6 +12,7 @@ module Axis2d exposing
     , x, y
     , through, withDirection, throughPoints
     , originPoint, direction
+    , intersectionPoint
     , reverse, moveTo, rotateAround, rotateBy, translateBy, translateIn, mirrorAcross
     , at, at_
     , relativeTo, placeIn
@@ -40,6 +41,11 @@ by an origin point and direction. Axes have several uses, such as:
 # Properties
 
 @docs originPoint, direction
+
+
+# Intersection
+
+@docs intersectionPoint
 
 
 # Transformations
@@ -184,6 +190,45 @@ originPoint (Types.Axis2d axis) =
 direction : Axis2d units coordinates -> Direction2d coordinates
 direction (Types.Axis2d axis) =
     axis.direction
+
+
+{-| Find the intersection point between two axes. If none exists (the axes are parallel) then
+`Nothing` is returned.
+-}
+intersectionPoint : Axis2d units coordinates -> Axis2d units coordinates -> Maybe (Point2d units coordinates)
+intersectionPoint axis1 axis2 =
+    let
+        p1 =
+            originPoint axis1
+
+        p2 =
+            originPoint axis2
+
+        d1 =
+            Direction2d.unwrap (direction axis1)
+
+        d2 =
+            Direction2d.unwrap (direction axis2)
+
+        crossProduct =
+            d1.x * d2.y - d1.y * d2.x
+    in
+    if crossProduct == 0 then
+        Nothing
+
+    else
+        let
+            distance1 =
+                Point2d.signedDistanceFrom axis2 p1
+
+            distance2 =
+                Point2d.signedDistanceFrom axis1 p2
+        in
+        if Quantity.abs distance1 |> Quantity.lessThanOrEqualTo (Quantity.abs distance2) then
+            Just (Point2d.along axis1 (distance1 |> Quantity.divideBy crossProduct))
+
+        else
+            Just (Point2d.along axis2 (distance2 |> Quantity.divideBy -crossProduct))
 
 
 {-| Reverse the direction of an axis while keeping the same origin point.
