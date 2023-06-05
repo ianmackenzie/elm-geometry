@@ -4,11 +4,19 @@ module Geometry.Random exposing
     , arc3d
     , axis2d
     , axis3d
+    , block3d
+    , boundingBox2d
+    , boundingBox3d
+    , circle2d
+    , circle3d
+    , cone3d
     , cubicSpline2d
     , cubicSpline3d
+    , cylinder3d
     , direction2d
     , direction3d
     , ellipse2d
+    , ellipsoid3d
     , ellipticalArc2d
     , ellipticalArc3d
     , frame2d
@@ -16,10 +24,12 @@ module Geometry.Random exposing
     , length
     , lineSegment2d
     , lineSegment3d
+    , oneOf
     , parameterValue
     , plane3d
     , point2d
     , point3d
+    , polygon2d
     , positiveLength
     , quadraticSpline2d
     , quadraticSpline3d
@@ -27,8 +37,12 @@ module Geometry.Random exposing
     , rationalCubicSpline3d
     , rationalQuadraticSpline2d
     , rationalQuadraticSpline3d
+    , rectangle2d
+    , rectangle3d
     , scale
     , sketchPlane3d
+    , smallList
+    , sphere3d
     , spline2d
     , spline3d
     , triangle2d
@@ -46,11 +60,19 @@ import Arc2d exposing (Arc2d)
 import Arc3d exposing (Arc3d)
 import Axis2d exposing (Axis2d)
 import Axis3d exposing (Axis3d)
+import Block3d exposing (Block3d)
+import BoundingBox2d exposing (BoundingBox2d)
+import BoundingBox3d exposing (BoundingBox3d)
+import Circle2d exposing (Circle2d)
+import Circle3d exposing (Circle3d)
+import Cone3d exposing (Cone3d)
 import CubicSpline2d exposing (CubicSpline2d)
 import CubicSpline3d exposing (CubicSpline3d)
+import Cylinder3d exposing (Cylinder3d)
 import Direction2d exposing (Direction2d)
 import Direction3d exposing (Direction3d)
 import Ellipse2d exposing (Ellipse2d)
+import Ellipsoid3d exposing (Ellipsoid3d)
 import EllipticalArc2d exposing (EllipticalArc2d)
 import EllipticalArc3d exposing (EllipticalArc3d)
 import Frame2d exposing (Frame2d)
@@ -61,6 +83,8 @@ import LineSegment3d exposing (LineSegment3d)
 import Plane3d exposing (Plane3d)
 import Point2d exposing (Point2d)
 import Point3d exposing (Point3d)
+import Polygon2d exposing (Polygon2d)
+import Polygon2d.Random
 import QuadraticSpline2d exposing (QuadraticSpline2d)
 import QuadraticSpline3d exposing (QuadraticSpline3d)
 import Quantity exposing (Quantity, Unitless)
@@ -70,7 +94,10 @@ import RationalCubicSpline2d exposing (RationalCubicSpline2d)
 import RationalCubicSpline3d exposing (RationalCubicSpline3d)
 import RationalQuadraticSpline2d exposing (RationalQuadraticSpline2d)
 import RationalQuadraticSpline3d exposing (RationalQuadraticSpline3d)
+import Rectangle2d exposing (Rectangle2d)
+import Rectangle3d exposing (Rectangle3d)
 import SketchPlane3d exposing (SketchPlane3d)
+import Sphere3d exposing (Sphere3d)
 import Spline2d exposing (Spline2d)
 import Spline3d exposing (Spline3d)
 import Triangle2d exposing (Triangle2d)
@@ -79,6 +106,16 @@ import Vector2d exposing (Vector2d)
 import Vector3d exposing (Vector3d)
 import VectorBoundingBox2d exposing (VectorBoundingBox2d)
 import VectorBoundingBox3d exposing (VectorBoundingBox3d)
+
+
+oneOf : Generator a -> List (Generator a) -> Generator a
+oneOf first rest =
+    Random.uniform first rest |> Random.andThen identity
+
+
+smallList : Generator a -> Generator (List a)
+smallList itemGenerator =
+    Random.int 0 32 |> Random.andThen (\size -> Random.list size itemGenerator)
 
 
 parameterValue : Generator Float
@@ -160,6 +197,16 @@ vector2d =
 vector3d : Generator (Vector3d Meters coordinates)
 vector3d =
     Random.map3 Vector3d.xyz length length length
+
+
+boundingBox2d : Generator (BoundingBox2d Meters coordinates)
+boundingBox2d =
+    Random.map2 BoundingBox2d.from point2d point2d
+
+
+boundingBox3d : Generator (BoundingBox3d Meters coordinates)
+boundingBox3d =
+    Random.map2 BoundingBox3d.from point3d point3d
 
 
 vectorBoundingBox2d : Generator (VectorBoundingBox2d Meters coordinates)
@@ -260,6 +307,20 @@ triangle2d =
 triangle3d : Generator (Triangle3d Meters coordinates)
 triangle3d =
     Random.map3 Triangle3d.from point3d point3d point3d
+
+
+rectangle2d : Generator (Rectangle2d Meters coordinates)
+rectangle2d =
+    let
+        rectangle axes width height =
+            Rectangle2d.centeredOn axes ( width, height )
+    in
+    Random.map3 rectangle frame2d positiveLength positiveLength
+
+
+rectangle3d : Generator (Rectangle3d Meters coordinates)
+rectangle3d =
+    Random.map2 Rectangle3d.on sketchPlane3d rectangle2d
 
 
 quadraticSpline2d : Generator (QuadraticSpline2d Meters coordinates)
@@ -418,3 +479,80 @@ ellipticalArc2d =
 ellipticalArc3d : Generator (EllipticalArc3d Meters coordinates)
 ellipticalArc3d =
     Random.map2 EllipticalArc3d.on sketchPlane3d ellipticalArc2d
+
+
+sphere3d : Generator (Sphere3d Meters coordinates)
+sphere3d =
+    Random.map2 Sphere3d.withRadius positiveLength point3d
+
+
+block3d : Generator (Block3d Meters coordinates)
+block3d =
+    let
+        block axes xDim yDim zDim =
+            Block3d.centeredOn axes ( xDim, yDim, zDim )
+    in
+    Random.map4 block frame3d positiveLength positiveLength positiveLength
+
+
+circle2d : Generator (Circle2d Meters coordinates)
+circle2d =
+    Random.map2 Circle2d.withRadius positiveLength point2d
+
+
+circle3d : Generator (Circle3d Meters coordinates)
+circle3d =
+    Random.map3 Circle3d.withRadius positiveLength direction3d point3d
+
+
+cone3d : Generator (Cone3d Meters coordinates)
+cone3d =
+    let
+        cone basePoint direction coneLength coneRadius =
+            Cone3d.startingAt basePoint direction <|
+                { length = coneLength
+                , radius = coneRadius
+                }
+    in
+    Random.map4 cone point3d direction3d positiveLength positiveLength
+
+
+cylinder3d : Generator (Cylinder3d Meters coordinates)
+cylinder3d =
+    let
+        cylinder centerPoint direction cylinderLength cylinderRadius =
+            Cylinder3d.centeredOn centerPoint direction <|
+                { length = cylinderLength
+                , radius = cylinderRadius
+                }
+    in
+    Random.map4 cylinder point3d direction3d positiveLength positiveLength
+
+
+ellipsoid3d : Generator (Ellipsoid3d Meters coordinates)
+ellipsoid3d =
+    let
+        ellipsoid axes xRadius yRadius zRadius =
+            Ellipsoid3d.with
+                { axes = axes
+                , xRadius = xRadius
+                , yRadius = yRadius
+                , zRadius = zRadius
+                }
+    in
+    Random.map4 ellipsoid
+        frame3d
+        positiveLength
+        positiveLength
+        positiveLength
+
+
+polygon2d : Generator (Polygon2d Meters coordinates)
+polygon2d =
+    Polygon2d.Random.polygon2d <|
+        BoundingBox2d.fromExtrema
+            { minX = Length.meters -10
+            , maxX = Length.meters 10
+            , minY = Length.meters -10
+            , maxY = Length.meters 10
+            }
