@@ -1,5 +1,5 @@
 module Geometry.Expect exposing
-    ( combine, exactly, just, list
+    ( exactly, just, list
     , quantity, quantityWithin, angle, angleWithin
     , quantityAtLeast, quantityAtMost, quantityGreaterThan, quantityLessThan, quantityContainedIn
     , point2d, point2dWithin, point2dContainedIn, point3d, point3dWithin, point3dContainedIn
@@ -34,7 +34,7 @@ been imported this way.
 
 # Generic helpers
 
-@docs combine, exactly, just, list
+@docs exactly, just, list
 
 
 # `Quantity` equality
@@ -139,11 +139,6 @@ import Vector2d exposing (Vector2d)
 import Vector3d exposing (Vector3d)
 import VectorBoundingBox2d exposing (VectorBoundingBox2d)
 import VectorBoundingBox3d exposing (VectorBoundingBox3d)
-
-
-combine : List Expectation -> Expectation
-combine expectations =
-    Expect.all (List.map always expectations) ()
 
 
 type alias Comparison a =
