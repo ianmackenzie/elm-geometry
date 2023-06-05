@@ -262,8 +262,12 @@ contains point cone =
             Point3d.distanceFromAxis coneAxis point
 
         radiusAtPoint =
-            Quantity.interpolateFrom (radius cone) Quantity.zero <|
-                Quantity.ratio axialDistance (length cone)
+            if length cone == Quantity.zero then
+                radius cone
+
+            else
+                Quantity.interpolateFrom (radius cone) Quantity.zero <|
+                    Quantity.ratio axialDistance (length cone)
     in
     (axialDistance |> Quantity.greaterThanOrEqualTo Quantity.zero)
         && (axialDistance |> Quantity.lessThanOrEqualTo (length cone))
